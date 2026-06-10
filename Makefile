@@ -1,6 +1,7 @@
 # d-check — Doc-Referenz-Checker.
 #
-# Docker-only-Workflow (AGENTS.md §3.1, Vorbild u-boot): Build/Lint/
+# Docker-only-Workflow (AGENTS.md §3.1; Vorbild:
+# https://github.com/pt9912/u-boot): Build/Lint/
 # Test/arch-check laufen über `docker build --target <stage>` in
 # Containern. Der Host braucht nur Docker, GNU make, bash und git.
 #

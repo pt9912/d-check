@@ -1,5 +1,6 @@
-# golangci-lint-Konfiguration für d-check (v2-Schema, Pin-Konvention
-# wie u-boot). Profil: die 5 Default-Linter; eine Erweiterung Richtung
+# golangci-lint-Konfiguration für d-check (v2-Schema; Pin-Konvention
+# wie https://github.com/pt9912/u-boot). Profil: die 5 Default-Linter;
+# eine Erweiterung Richtung
 # SOLID-Profil ist eine eigene ADR-Entscheidung.
 #
 # Hard Rule (AGENTS.md §3.2): //nolint-Direktiven im Code sind

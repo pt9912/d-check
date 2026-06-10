@@ -25,6 +25,13 @@ die kanonische Quelle (Source Precedence, siehe
   [`ai-harness-course`](https://github.com/pt9912/ai-harness-course)
   (Templates: `lab/templates/`, Konventionen:
   `kurs/de/grundlagen/konventionen.md`).
+- **Konventions-Vorbilder (Implementierung):**
+  [`u-boot`](https://github.com/pt9912/u-boot) — Hexagon-Ordnerkonvention
+  (ADR-0005), Dockerfile-/Makefile-Muster, Pin-Politik;
+  [`b-cad`](https://github.com/pt9912/b-cad) — Gate-Nachweis- und
+  Hook-Mechanik ([`MR-004`](#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild)/[`MR-005`](#mr-005--härtung-ggü-b-cad-inhaltsbasierter-gate-nachweis-sub-shell-prüfung));
+  [`d-migrate`](https://github.com/pt9912/d-migrate) — Ursprung des
+  vendorten Bootstrap-Sensors ([`MR-003`](#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh), aufgelöst).
 - **In-Repo (verkörperte Form):** `AGENTS.md`, `harness/README.md`,
   Verzeichniskonvention `spec/` + `docs/plan/` + `harness/`.
 

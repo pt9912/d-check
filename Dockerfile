@@ -3,7 +3,8 @@
 # ---------------------------------------------------------------------------
 # d-check — Doc-Referenz-Checker.
 #
-# Docker-only-Workflow (AGENTS.md §3.1, Vorbild u-boot): das Repo hat
+# Docker-only-Workflow (AGENTS.md §3.1; Vorbild:
+# https://github.com/pt9912/u-boot): das Repo hat
 # keine Host-Go-Anforderung. Build/Lint/Test/arch-check laufen über
 # `docker build --target <stage>` und sind im Makefile gewrappt.
 #
