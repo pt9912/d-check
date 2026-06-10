@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.2.0
+**Version:** 0.2.1
 
 **Status:** Draft
 
@@ -224,9 +224,9 @@ passende Muster gewinnt.
 
 **Akzeptanzkriterien:**
 
-- **Happy Path:** Given das Muster `ADR-\d{4}` und ein Vorkommen `[ADR-0003](docs/plan/adr/0003-x.md)`, when das Modul `ids` läuft, then kein Befund.
-- **Boundary:** Given ein Vorkommen `` `ADR-0003` `` in Inline-Code, when das Modul läuft, then kein Befund (Code-Vorkommen sind linkpflichtfrei).
-- **Negative:** Given ein nacktes `ADR-0003` im Fließtext, when das Modul läuft, then ein Befund mit Grund „Kennung ohne Link".
+- **Happy Path:** Given das Muster `ADR-\d{4}` und ein Vorkommen `[ADR-0042](docs/plan/adr/0042-beispiel.md)`, when das Modul `ids` läuft, then kein Befund.
+- **Boundary:** Given ein Vorkommen `` `ADR-0042` `` in Inline-Code, when das Modul läuft, then kein Befund (Code-Vorkommen sind linkpflichtfrei).
+- **Negative:** Given ein nacktes `ADR-0042` im Fließtext, when das Modul läuft, then ein Befund mit Grund „Kennung ohne Link".
 
 **Out-of-Scope:** Automatisches Ermitteln der Muster aus dem Repo-Inhalt; Prüfung, ob die verlinkte Definition inhaltlich zur Kennung passt.
 
@@ -250,7 +250,7 @@ maschinell prüfbar.
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Slice mit Link auf ein ADR mit Status `Accepted`, when das Modul `matrix` läuft, then kein Befund.
-- **Boundary:** Given ein ADR mit Status `Superseded by ADR-0007`, when ein Slice darauf verlinkt, then ein Befund mit Grund „Referenz auf inaktives ADR".
+- **Boundary:** Given ein ADR mit Status `Superseded by ADR-0099`, when ein Slice darauf verlinkt, then ein Befund mit Grund „Referenz auf inaktives ADR".
 - **Negative:** Given ein Link aus `spec/lastenheft.md` auf eine ADR-Datei, when das Modul läuft, then ein Befund mit Grund „verbotene Abwärtsreferenz" und Angabe beider Dokumentklassen.
 
 **Out-of-Scope:** Semantische Unterscheidung von Verweis-Zwecken (z. B. Verifikations-Zeiger vs. Entscheidungsgrundlage) — das bleibt Review-Aufgabe; Provenance-/Historie-Sektionen können per Konfiguration von der Prüfung ausgenommen werden, eine automatische Erkennung solcher Sektionen ist nicht gefordert.
@@ -360,7 +360,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
-| Kennung | Textuelle ID nach deklariertem Muster (z. B. `ADR-0003`), für die Linkpflicht gelten kann. |
+| Kennung | Textuelle ID nach deklariertem Muster (z. B. `ADR-0042`), für die Linkpflicht gelten kann. |
 | Dokumentklasse | Über Pfad-Muster definierte Gruppe von Dokumenten (z. B. Contract-Spec, ADR, Slice) als Knoten der Referenzmatrix. |
 | Referenzmatrix | Deklaration, welche Dokumentklasse auf welche verweisen darf, inkl. Status-Bedingungen. |
 | Aktives ADR | ADR, dessen Status-Feld keinen verbotenen Wert (`superseded`, `deprecated`) trägt. |
@@ -372,3 +372,4 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 |---|---|---|---|
 | 0.1.0 | 2026-06-10 | Initiale Fassung (Konsolidierung von 12 Quell-Tools, Modul-Schnitt, Docker-Distribution) | — |
 | 0.2.0 | 2026-06-10 | Review-Runde R1: Modul-Schnitt `links`/`anchors` präzisiert (Fragment-Zuständigkeit, fehlende Zieldatei), Slug-Duplikat-Reihenfolge, Symlink-Vorrang, RFC-3986-Dekodierung vor Escape-Prüfung, Redirect-Regel `external`, Muster-Präzedenz `ids`, Status-Default `matrix`, Scan-Wurzel- und Config-Vollvalidierung, Out-of-Scope Reference-Style-Links, Image-Default-Befehl | — |
+| 0.2.1 | 2026-06-10 | Redaktionell: Beispiel-Kennungen in DC-FA-ID-001/DC-FA-MTX-001/Glossar auf fiktive Nummern (`ADR-0042`, `ADR-0099`) umgestellt — Kollision mit real entstandenen/zukünftigen eigenen ADRs vermeiden; keine inhaltliche Änderung | — |
