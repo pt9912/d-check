@@ -1,12 +1,14 @@
-package configyaml
+package configyaml_test
 
 import (
 	"strings"
 	"testing"
+
+	"github.com/pt9912/d-check/internal/adapter/driven/configyaml"
 )
 
 func TestDecode_Vollbeispiel(t *testing.T) {
-	cfg, err := Decode([]byte(`
+	cfg, err := configyaml.Decode([]byte(`
 scan:
   roots: [docs, spec]
   ignore: ["docs/archive/**"]
@@ -39,7 +41,7 @@ external:
 }
 
 func TestDecode_UnbekannterSchluessel(t *testing.T) {
-	_, err := Decode([]byte("modul: x\n"))
+	_, err := configyaml.Decode([]byte("modul: x\n"))
 	if err == nil || !strings.Contains(err.Error(), "line") {
 		t.Fatalf("err = %v (Zeilenangabe erwartet)", err)
 	}
@@ -50,31 +52,31 @@ func TestDecode_UnbekannterSchluessel(t *testing.T) {
 
 func TestDecode_LeereUndKommentarDatei(t *testing.T) {
 	for _, content := range []string{"", "# nur kommentar\n", "\n\n"} {
-		cfg, err := Decode([]byte(content))
+		cfg, err := configyaml.Decode([]byte(content))
 		if err != nil || cfg.Roots != nil || cfg.Modules != nil {
-			t.Fatalf("Decode(%q): cfg=%+v err=%v (Defaults erwartet)", content, cfg, err)
+			t.Fatalf("configyaml.Decode(%q): cfg=%+v err=%v (Defaults erwartet)", content, cfg, err)
 		}
 	}
 }
 
 func TestDecode_UngueltigerRegex(t *testing.T) {
-	_, err := Decode([]byte("ids:\n  patterns:\n    - regex: '[unclosed'\n      target: docs/\n"))
+	_, err := configyaml.Decode([]byte("ids:\n  patterns:\n    - regex: '[unclosed'\n      target: docs/\n"))
 	if err == nil || !strings.Contains(err.Error(), "regex") {
 		t.Fatalf("err = %v", err)
 	}
 }
 
 func TestDecode_MatrixUndExternalConstraints(t *testing.T) {
-	if _, err := Decode([]byte("matrix:\n  classes:\n    - name: a\n      paths: [x]\n  rules:\n    - {from: a, to: fehlt, allow: false}\n")); err == nil {
+	if _, err := configyaml.Decode([]byte("matrix:\n  classes:\n    - name: a\n      paths: [x]\n  rules:\n    - {from: a, to: fehlt, allow: false}\n")); err == nil {
 		t.Fatal("undeklarierte Klasse: Fehler erwartet")
 	}
-	if _, err := Decode([]byte("external:\n  timeout-seconds: 999\n")); err == nil {
+	if _, err := configyaml.Decode([]byte("external:\n  timeout-seconds: 999\n")); err == nil {
 		t.Fatal("timeout außerhalb 1–300: Fehler erwartet")
 	}
 }
 
 func TestDecode_OhneDatei(t *testing.T) {
-	cfg, err := Decode(nil)
+	cfg, err := configyaml.Decode(nil)
 	if err != nil || cfg.Roots != nil || cfg.Modules != nil {
 		t.Fatalf("Defaults erwartet: %+v (%v)", cfg, err)
 	}

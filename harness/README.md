@@ -45,7 +45,7 @@ liegt in CI bzw. lokal (`make gates`), nicht hier.
 
 | Target | Vertrag | Bindung |
 |---|---|---|
-| `make lint` | golangci-lint, 5 Default-Linter; Inline-Suppressions verboten | — |
+| `make lint` | golangci-lint, SOLID-nahes Profil (5 Default- + 23 Linter, kalibriert; Ausnahmen zentral mit Why; Inline-Suppressions verboten) | [ADR-0006](../docs/plan/adr/0006-lint-profil-solid.md) |
 | `make test` | Akzeptanzkriterien der bezogenen `DC-FA-*` als Tests; Determinismus-Test | [`DC-QA-02`](../spec/lastenheft.md#dc-qa-02--determinismus) (DC-Bindung) |
 | `make arch-check` | Import-Regeln R1–R5 des Hexagon-Schnitts (`tools/arch-check.sh`, Dockerfile-Stage) | [ADR-0005](../docs/plan/adr/0005-modul-layout-hexagon-ordner.md); [`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (DC-Bindung) |
 | `make doc-check` | Links **und Anker** der gesamten Repo-Doku via `d-check` selbst (Dogfooding: Runtime-Image, read-only-Mount, [`.d-check.yml`](../.d-check.yml)) | [`DC-FA-LINK-001`](../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)/[`DC-FA-ANCH-001`](../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors) (DC-Bindung); [`MR-007`](conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding) |

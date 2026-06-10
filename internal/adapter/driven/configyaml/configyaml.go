@@ -18,13 +18,38 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/core"
 )
 
-// typeLeak entfernt interne Go-Typnamen aus yaml-Fehlermeldungen
-// (Review R1/B5): "field x not found in type configyaml.raw" →
-// "field x not found".
-var typeLeak = regexp.MustCompile(` in type \S+`)
-
 // FileName ist der feste Name der Konfigurationsdatei.
 const FileName = ".d-check.yml"
+
+type rawIDPattern struct {
+	Regex  string `yaml:"regex"`
+	Target string `yaml:"target"`
+}
+
+type rawIDs struct {
+	Patterns []rawIDPattern `yaml:"patterns"`
+}
+
+type rawMatrix struct {
+	Classes []struct {
+		Name  string   `yaml:"name"`
+		Paths []string `yaml:"paths"`
+	} `yaml:"classes"`
+	Rules []struct {
+		From  string `yaml:"from"`
+		To    string `yaml:"to"`
+		Allow bool   `yaml:"allow"`
+	} `yaml:"rules"`
+	Status *struct {
+		Forbidden []string `yaml:"forbidden"`
+	} `yaml:"status"`
+	ExcludeSections []string `yaml:"exclude-sections"`
+}
+
+type rawExternal struct {
+	TimeoutSeconds int `yaml:"timeout-seconds"`
+	Parallel       int `yaml:"parallel"`
+}
 
 // raw bildet das Voll-Schema von .d-check.yml ab
 // (spec/spezifikation.md §2). Unbekannte Schlüssel sind durch
@@ -34,32 +59,10 @@ type raw struct {
 		Roots  []string `yaml:"roots"`
 		Ignore []string `yaml:"ignore"`
 	} `yaml:"scan"`
-	Modules []string `yaml:"modules"`
-	IDs     *struct {
-		Patterns []struct {
-			Regex  string `yaml:"regex"`
-			Target string `yaml:"target"`
-		} `yaml:"patterns"`
-	} `yaml:"ids"`
-	Matrix *struct {
-		Classes []struct {
-			Name  string   `yaml:"name"`
-			Paths []string `yaml:"paths"`
-		} `yaml:"classes"`
-		Rules []struct {
-			From  string `yaml:"from"`
-			To    string `yaml:"to"`
-			Allow bool   `yaml:"allow"`
-		} `yaml:"rules"`
-		Status *struct {
-			Forbidden []string `yaml:"forbidden"`
-		} `yaml:"status"`
-		ExcludeSections []string `yaml:"exclude-sections"`
-	} `yaml:"matrix"`
-	External *struct {
-		TimeoutSeconds int `yaml:"timeout-seconds"`
-		Parallel       int `yaml:"parallel"`
-	} `yaml:"external"`
+	Modules  []string     `yaml:"modules"`
+	IDs      *rawIDs      `yaml:"ids"`
+	Matrix   *rawMatrix   `yaml:"matrix"`
+	External *rawExternal `yaml:"external"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -70,17 +73,12 @@ func Decode(content []byte) (core.Config, error) {
 	if content == nil {
 		return cfg, nil
 	}
-	var r raw
-	dec := yaml.NewDecoder(bytes.NewReader(content))
-	dec.KnownFields(true)
-	if err := dec.Decode(&r); err != nil {
-		// Leere oder Nur-Kommentar-Datei ist ein YAML-Null-Dokument —
-		// keine Exit-2-Bedingung aus DC-FA-CONF-001 greift → Defaults
-		// (Review R1/B2).
-		if errors.Is(err, io.EOF) {
-			return cfg, nil
-		}
-		return cfg, fmt.Errorf("%s: %s", FileName, typeLeak.ReplaceAllString(err.Error(), ""))
+	r, err := decodeStrict(content)
+	if err != nil {
+		return cfg, err
+	}
+	if r == nil {
+		return cfg, nil // leeres YAML-Null-Dokument → Defaults
 	}
 
 	if r.Scan != nil {
@@ -89,39 +87,81 @@ func Decode(content []byte) (core.Config, error) {
 	}
 	cfg.Modules = r.Modules
 
-	if r.IDs != nil {
-		for i, p := range r.IDs.Patterns {
-			re, err := regexp.Compile(p.Regex)
-			if err != nil {
-				return cfg, fmt.Errorf("%s: ids.patterns[%d].regex: %v", FileName, i, err)
-			}
-			if p.Target == "" {
-				return cfg, fmt.Errorf("%s: ids.patterns[%d].target fehlt", FileName, i)
-			}
-			cfg.IDPatterns = append(cfg.IDPatterns, core.IDPattern{Regex: re, Target: p.Target})
-		}
+	if err := applyIDs(r.IDs, &cfg); err != nil {
+		return cfg, err
 	}
-	if r.Matrix != nil {
-		classes := map[string]bool{}
-		for i, c := range r.Matrix.Classes {
-			if c.Name == "" || classes[c.Name] {
-				return cfg, fmt.Errorf("%s: matrix.classes[%d].name fehlt oder doppelt", FileName, i)
-			}
-			classes[c.Name] = true
-		}
-		for i, rule := range r.Matrix.Rules {
-			if !classes[rule.From] || !classes[rule.To] {
-				return cfg, fmt.Errorf("%s: matrix.rules[%d] referenziert undeklarierte Klasse", FileName, i)
-			}
-		}
+	if err := validateMatrix(r.Matrix); err != nil {
+		return cfg, err
 	}
-	if r.External != nil {
-		if t := r.External.TimeoutSeconds; t != 0 && (t < 1 || t > 300) {
-			return cfg, fmt.Errorf("%s: external.timeout-seconds außerhalb 1–300", FileName)
-		}
-		if p := r.External.Parallel; p != 0 && (p < 1 || p > 16) {
-			return cfg, fmt.Errorf("%s: external.parallel außerhalb 1–16", FileName)
-		}
+	if err := validateExternal(r.External); err != nil {
+		return cfg, err
 	}
 	return cfg, nil
+}
+
+// decodeStrict dekodiert mit KnownFields; nil-raw bei leerem Dokument
+// (Review R1/B2).
+func decodeStrict(content []byte) (*raw, error) {
+	var r raw
+	dec := yaml.NewDecoder(bytes.NewReader(content))
+	dec.KnownFields(true)
+	if err := dec.Decode(&r); err != nil {
+		if errors.Is(err, io.EOF) {
+			return nil, nil
+		}
+		// interne Go-Typnamen aus der yaml-Meldung entfernen
+		// (Review R1/B5).
+		typeLeak := regexp.MustCompile(` in type \S+`)
+		return nil, fmt.Errorf("%s: %s", FileName, typeLeak.ReplaceAllString(err.Error(), ""))
+	}
+	return &r, nil
+}
+
+func applyIDs(ids *rawIDs, cfg *core.Config) error {
+	if ids == nil {
+		return nil
+	}
+	for i, p := range ids.Patterns {
+		re, err := regexp.Compile(p.Regex)
+		if err != nil {
+			return fmt.Errorf("%s: ids.patterns[%d].regex: %v", FileName, i, err)
+		}
+		if p.Target == "" {
+			return fmt.Errorf("%s: ids.patterns[%d].target fehlt", FileName, i)
+		}
+		cfg.IDPatterns = append(cfg.IDPatterns, core.IDPattern{Regex: re, Target: p.Target})
+	}
+	return nil
+}
+
+func validateMatrix(m *rawMatrix) error {
+	if m == nil {
+		return nil
+	}
+	classes := map[string]bool{}
+	for i, c := range m.Classes {
+		if c.Name == "" || classes[c.Name] {
+			return fmt.Errorf("%s: matrix.classes[%d].name fehlt oder doppelt", FileName, i)
+		}
+		classes[c.Name] = true
+	}
+	for i, rule := range m.Rules {
+		if !classes[rule.From] || !classes[rule.To] {
+			return fmt.Errorf("%s: matrix.rules[%d] referenziert undeklarierte Klasse", FileName, i)
+		}
+	}
+	return nil
+}
+
+func validateExternal(e *rawExternal) error {
+	if e == nil {
+		return nil
+	}
+	if t := e.TimeoutSeconds; t != 0 && (t < 1 || t > 300) {
+		return fmt.Errorf("%s: external.timeout-seconds außerhalb 1–300", FileName)
+	}
+	if p := e.Parallel; p != 0 && (p < 1 || p > 16) {
+		return fmt.Errorf("%s: external.parallel außerhalb 1–16", FileName)
+	}
+	return nil
 }

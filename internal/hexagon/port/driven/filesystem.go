@@ -9,6 +9,7 @@ package driven
 // (DC-FA-LINK-002).
 type EntryKind int
 
+// Lstat-Klassifikationen eines Pfads.
 const (
 	KindMissing EntryKind = iota
 	KindFile

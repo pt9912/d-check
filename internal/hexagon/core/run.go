@@ -22,7 +22,7 @@ func Run(fsys driven.Filesystem, cfg Config, modules []string) (Result, error) {
 	var res Result
 	active := map[string]bool{}
 	for _, m := range modules {
-		if ImplementedModules[m] {
+		if isImplemented(m) {
 			active[m] = true
 		} else {
 			res.SkippedModules = append(res.SkippedModules, m)

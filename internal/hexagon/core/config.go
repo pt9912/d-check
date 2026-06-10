@@ -7,18 +7,26 @@ import (
 	"strings"
 )
 
-// ValidModules sind die vertraglich gültigen Regelmodul-Namen
+// validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
-var ValidModules = []string{"links", "anchors", "ids", "matrix", "external"}
+func validModules() []string {
+	return []string{"links", "anchors", "ids", "matrix", "external"}
+}
 
-// ImplementedModules sind die in diesem Stand lauffähigen Module.
+// isImplemented: in diesem Stand lauffähige Module.
 // `ids`/`matrix`/`external` folgen mit der Regelmodul-Welle; bis
 // dahin werden aktivierte, aber nicht implementierte Module mit
 // stderr-Hinweis übersprungen.
-var ImplementedModules = map[string]bool{"links": true, "anchors": true}
+func isImplemented(module string) bool {
+	switch module {
+	case "links", "anchors":
+		return true
+	}
+	return false
+}
 
-// DefaultModules ist der Default-Modulsatz (DC-FA-CLI-002).
-var DefaultModules = []string{"links", "anchors"}
+// defaultModules ist der Default-Modulsatz (DC-FA-CLI-002).
+func defaultModules() []string { return []string{"links", "anchors"} }
 
 // Config ist die validierte Konfiguration (Teilmenge, die der
 // aktuelle Stand auswertet; das Voll-Schema inkl. ids/matrix/external
@@ -46,24 +54,24 @@ type IDPattern struct {
 // Liste der gültigen Namen.
 func EffectiveModules(cfg Config, enable, disable []string) ([]string, error) {
 	valid := map[string]bool{}
-	for _, m := range ValidModules {
+	for _, m := range validModules() {
 		valid[m] = true
 	}
 	for _, m := range append(append([]string{}, enable...), disable...) {
 		if !valid[m] {
 			return nil, fmt.Errorf("unbekanntes Modul %q — gültig: %s",
-				m, strings.Join(ValidModules, ", "))
+				m, strings.Join(validModules(), ", "))
 		}
 	}
 	base := cfg.Modules
 	if base == nil {
-		base = DefaultModules
+		base = defaultModules()
 	}
 	set := map[string]bool{}
 	for _, m := range base {
 		if !valid[m] {
 			return nil, fmt.Errorf("unbekanntes Modul %q in der Konfiguration — gültig: %s",
-				m, strings.Join(ValidModules, ", "))
+				m, strings.Join(validModules(), ", "))
 		}
 		set[m] = true
 	}

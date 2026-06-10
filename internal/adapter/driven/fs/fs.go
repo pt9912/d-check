@@ -17,6 +17,7 @@ type Adapter struct {
 	Root string // absoluter Pfad der Repo-Wurzel
 }
 
+// New erzeugt einen Adapter über der gegebenen Repo-Wurzel (absolut).
 func New(root string) *Adapter { return &Adapter{Root: root} }
 
 func (a *Adapter) abs(rel string) string {
@@ -43,6 +44,7 @@ func (a *Adapter) Kind(rel string) (driven.EntryKind, error) {
 	}
 }
 
+// ReadFile liest den Datei-Inhalt unterhalb der Wurzel.
 func (a *Adapter) ReadFile(rel string) ([]byte, error) {
 	return os.ReadFile(a.abs(rel))
 }

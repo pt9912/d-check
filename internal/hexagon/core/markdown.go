@@ -30,8 +30,8 @@ func PreprocessMarkdown(content []byte) []Line {
 }
 
 // stripInlineCode leert Backtick-Spans. Ein Span wird von zwei gleich
-// langen Backtick-Folgen begrenzt (längste Folge zuerst, d. h. die
-// öffnende Folge bestimmt die schließende).
+// langen Backtick-Folgen begrenzt (die öffnende Folge bestimmt die
+// schließende).
 func stripInlineCode(s string) string {
 	var b strings.Builder
 	i := 0
@@ -41,36 +41,55 @@ func stripInlineCode(s string) string {
 			i++
 			continue
 		}
-		// öffnende Backtick-Folge vermessen
 		j := i
 		for j < len(s) && s[j] == '`' {
 			j++
 		}
-		runLen := j - i
-		// schließende Folge gleicher Länge suchen
-		close := -1
-		for k := j; k+runLen <= len(s); k++ {
-			if s[k] != '`' {
-				continue
-			}
-			l := k
-			for l < len(s) && s[l] == '`' {
-				l++
-			}
-			if l-k == runLen {
-				close = l
-				break
-			}
-			k = l - 1
-		}
-		if close == -1 {
-			// keine schließende Folge: Rest unverändert übernehmen
-			b.WriteString(s[i:])
+		closeAt := findClosingRun(s, j, j-i)
+		if closeAt == -1 {
+			b.WriteString(s[i:]) // keine schließende Folge
 			break
 		}
-		i = close // Span (inkl. Backticks) entfällt
+		i = closeAt // Span (inkl. Backticks) entfällt
 	}
 	return b.String()
+}
+
+// findClosingRun sucht ab from eine Backtick-Folge exakt der Länge
+// runLen und liefert die Position dahinter (-1 wenn keine existiert).
+func findClosingRun(s string, from, runLen int) int {
+	for k := from; k+runLen <= len(s); k++ {
+		if s[k] != '`' {
+			continue
+		}
+		l := k
+		for l < len(s) && s[l] == '`' {
+			l++
+		}
+		if l-k == runLen {
+			return l
+		}
+		k = l - 1
+	}
+	return -1
+}
+
+// matchBracket liefert die Position der balanciert schließenden
+// Klammer zur öffnenden an Position open.
+func matchBracket(s string, open int, lo, hi byte) (int, bool) {
+	depth := 0
+	for j := open; j < len(s); j++ {
+		switch s[j] {
+		case lo:
+			depth++
+		case hi:
+			depth--
+			if depth == 0 {
+				return j, true
+			}
+		}
+	}
+	return 0, false
 }
 
 // LinkRef ist ein extrahierter Markdown-Link.
@@ -82,59 +101,44 @@ type LinkRef struct {
 
 // ExtractLinks findet Inline-Links [text](ziel) und Bilder
 // ![alt](ziel); mehrere pro Zeile werden alle erfasst
-// (spec/spezifikation.md §DC-FA-LINK-001.a Schritt 3). Der Linktext
-// wird klammer-balanciert gelesen.
+// (spec/spezifikation.md §DC-FA-LINK-001.a Schritt 3).
 func ExtractLinks(lines []Line) []LinkRef {
 	var refs []LinkRef
 	for _, ln := range lines {
-		s := ln.Text
-		for i := 0; i < len(s); i++ {
-			isImage := false
-			start := i
-			if s[i] == '!' && i+1 < len(s) && s[i+1] == '[' {
-				isImage = true
-				start = i + 1
-			} else if s[i] != '[' {
+		for i := 0; i < len(ln.Text); i++ {
+			ref, next, ok := parseLinkAt(ln.Text, i)
+			if !ok {
 				continue
 			}
-			// Linktext klammer-balanciert bis zur schließenden ]
-			depth := 0
-			j := start
-			for ; j < len(s); j++ {
-				if s[j] == '[' {
-					depth++
-				} else if s[j] == ']' {
-					depth--
-					if depth == 0 {
-						break
-					}
-				}
-			}
-			if j >= len(s) || j+1 >= len(s) || s[j+1] != '(' {
-				continue
-			}
-			// Ziel bis zur schließenden ) (Klammern im Ziel balanciert)
-			k := j + 2
-			pdepth := 1
-			for ; k < len(s); k++ {
-				if s[k] == '(' {
-					pdepth++
-				} else if s[k] == ')' {
-					pdepth--
-					if pdepth == 0 {
-						break
-					}
-				}
-			}
-			if k >= len(s) {
-				continue
-			}
-			target := normalizeTarget(s[j+2 : k])
-			refs = append(refs, LinkRef{Line: ln.No, Target: target, IsImage: isImage})
-			i = k
+			ref.Line = ln.No
+			refs = append(refs, ref)
+			i = next
 		}
 	}
 	return refs
+}
+
+// parseLinkAt liest an Position i einen Inline-Link (Linktext
+// klammer-balanciert, Ziel mit balancierten Klammern).
+func parseLinkAt(s string, i int) (LinkRef, int, bool) {
+	isImage := false
+	start := i
+	switch {
+	case s[i] == '!' && i+1 < len(s) && s[i+1] == '[':
+		isImage = true
+		start = i + 1
+	case s[i] != '[':
+		return LinkRef{}, i, false
+	}
+	textEnd, ok := matchBracket(s, start, '[', ']')
+	if !ok || textEnd+1 >= len(s) || s[textEnd+1] != '(' {
+		return LinkRef{}, i, false
+	}
+	destEnd, ok := matchBracket(s, textEnd+1, '(', ')')
+	if !ok {
+		return LinkRef{}, i, false
+	}
+	return LinkRef{Target: normalizeTarget(s[textEnd+2 : destEnd]), IsImage: isImage}, destEnd, true
 }
 
 // normalizeTarget entquotet <…>-Ziele und trennt ein Titel-Suffix ab.

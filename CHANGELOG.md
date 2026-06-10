@@ -39,6 +39,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   (MR-003 → MR-007 aufgelöst); Vergleichslauf als erster
   DC-QA-04-Datenpunkt.
 
+- slice-005 — SOLID-nahes Lint-Profil (ADR-0006, u-boot-Parität ohne
+  depguard): 5 Default- + 23 Linter mit u-boot-Kalibrierung,
+  gomodguard-Anti-Module, Why-kommentierte Ausnahmen; Code-Refactoring
+  statt Carveouts (Globals → Funktionen, Komplexitäts-Splits in
+  cli/configyaml/core) — lint-clean ohne //nolint.
+
 ### Changed
 
 - Harness-Hooks gehärtet (MR-005): Gate-Nachweis inhaltsbasiert

@@ -53,29 +53,18 @@ func stripHeadingLinks(s string) string {
 			b.WriteByte(s[i])
 			continue
 		}
-		depth := 0
-		j := i
-		for ; j < len(s); j++ {
-			if s[j] == '[' {
-				depth++
-			} else if s[j] == ']' {
-				depth--
-				if depth == 0 {
-					break
-				}
-			}
-		}
-		if j >= len(s) || j+1 >= len(s) || s[j+1] != '(' {
+		textEnd, ok := matchBracket(s, i, '[', ']')
+		if !ok || textEnd+1 >= len(s) || s[textEnd+1] != '(' {
 			b.WriteByte(s[i])
 			continue
 		}
-		k := strings.IndexByte(s[j+1:], ')')
-		if k == -1 {
+		destEnd, ok := matchBracket(s, textEnd+1, '(', ')')
+		if !ok {
 			b.WriteByte(s[i])
 			continue
 		}
-		b.WriteString(s[i+1 : j]) // Linktext
-		i = j + 1 + k
+		b.WriteString(s[i+1 : textEnd]) // Linktext
+		i = destEnd
 	}
 	return b.String()
 }
@@ -120,72 +109,85 @@ func HeadingSlugs(content []byte) map[string]bool {
 	return set
 }
 
+// anchorRef ist ein Link mit Fragment, dessen Ziel auflösbar ist.
+type anchorRef struct {
+	line   int
+	target string // Original-Zielausdruck (für den Befund)
+	frag   string // dekodiertes Fragment
+	rel    string // Zieldatei (relativ zur Wurzel)
+	own    bool   // Ziel ist die prüfende Datei selbst
+}
+
+// resolveAnchorRef klassifiziert einen Link für das Modul anchors;
+// ok=false bedeutet: nicht zuständig (kein Fragment, extern, Escape,
+// Nicht-Markdown, fehlende Datei — Letzteres meldet `links`).
+func resolveAnchorRef(fsys driven.Filesystem, file string, ref LinkRef) (anchorRef, bool) {
+	t := ref.Target
+	if t == "" || IsExternalScheme(t) {
+		return anchorRef{}, false
+	}
+	idx := strings.IndexByte(t, '#')
+	if idx == -1 || idx+1 >= len(t) {
+		return anchorRef{}, false
+	}
+	frag := t[idx+1:]
+	if dec, err := url.PathUnescape(frag); err == nil {
+		frag = dec
+	}
+	out := anchorRef{line: ref.Line, target: t, frag: frag}
+	if idx == 0 {
+		out.rel, out.own = file, true
+		return out, true
+	}
+	rel, escaped, _ := ResolveTarget(file, t[:idx])
+	if escaped || !strings.HasSuffix(rel, ".md") {
+		return anchorRef{}, false
+	}
+	if kind, err := fsys.Kind(rel); err != nil || kind != driven.KindFile {
+		return anchorRef{}, false
+	}
+	out.rel = rel
+	return out, true
+}
+
 // checkAnchors ist das Regelmodul `anchors` (DC-FA-ANCH-001): Links
 // mit Fragment werden gegen die Heading-Slugs der Zieldatei geprüft.
-// Existiert die Zieldatei nicht (oder ist sie kein .md / ein
-// Symlink/Escape-Fall), schweigt das Modul — diese Befunde gehören
-// dem Modul `links`.
 func checkAnchors(fsys driven.Filesystem, file string, content []byte, lines []Line, cache map[string]map[string]bool) []Finding {
-	getSlugs := func(rel string, own []byte) map[string]bool {
-		if s, ok := cache[rel]; ok {
-			return s
-		}
-		c := own
-		if c == nil {
-			read, err := fsys.ReadFile(rel)
-			if err != nil {
-				cache[rel] = nil
-				return nil
-			}
-			c = read
-		}
-		s := HeadingSlugs(c)
-		cache[rel] = s
-		return s
-	}
-
 	var findings []Finding
 	for _, ref := range ExtractLinks(lines) {
-		t := ref.Target
-		if t == "" || IsExternalScheme(t) {
+		a, ok := resolveAnchorRef(fsys, file, ref)
+		if !ok {
 			continue
 		}
-		idx := strings.IndexByte(t, '#')
-		if idx == -1 {
+		slugs := slugsFor(fsys, cache, a, content)
+		if slugs == nil || slugs[a.frag] {
 			continue
 		}
-		frag := t[idx+1:]
-		if frag == "" {
-			continue
-		}
-		if dec, err := url.PathUnescape(frag); err == nil {
-			frag = dec
-		}
-		var rel string
-		var own []byte
-		if idx == 0 {
-			rel, own = file, content
-		} else {
-			r, escaped, _ := ResolveTarget(file, t[:idx])
-			if escaped || !strings.HasSuffix(r, ".md") {
-				continue
-			}
-			if kind, err := fsys.Kind(r); err != nil || kind != driven.KindFile {
-				continue // fehlende Datei/Symlink meldet `links`
-			}
-			rel = r
-		}
-		slugs := getSlugs(rel, own)
-		if slugs == nil {
-			continue
-		}
-		if !slugs[frag] {
-			findings = append(findings, Finding{
-				File: file, Line: ref.Line, Rule: "anchors",
-				Target: t, Reason: ReasonAnchorMissing,
-				Message: "Anker entspricht keinem Heading-Slug der Zieldatei",
-			})
-		}
+		findings = append(findings, Finding{
+			File: file, Line: a.line, Rule: "anchors",
+			Target: a.target, Reason: ReasonAnchorMissing,
+			Message: "Anker entspricht keinem Heading-Slug der Zieldatei",
+		})
 	}
 	return findings
+}
+
+// slugsFor liefert die Slug-Menge der Zieldatei aus dem Cache bzw.
+// liest sie nach (nil = nicht lesbar → Modul schweigt).
+func slugsFor(fsys driven.Filesystem, cache map[string]map[string]bool, a anchorRef, own []byte) map[string]bool {
+	if s, ok := cache[a.rel]; ok {
+		return s
+	}
+	content := own
+	if !a.own {
+		read, err := fsys.ReadFile(a.rel)
+		if err != nil {
+			cache[a.rel] = nil
+			return nil
+		}
+		content = read
+	}
+	s := HeadingSlugs(content)
+	cache[a.rel] = s
+	return s
 }

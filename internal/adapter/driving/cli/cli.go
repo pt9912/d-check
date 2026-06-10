@@ -36,10 +36,19 @@ func (m *multiFlag) Set(v string) error {
 	return nil
 }
 
+// options sind die geparsten CLI-Eingaben.
+type options struct {
+	root    string
+	json    bool
+	enable  []string
+	disable []string
+}
+
 // reorderArgs erlaubt Optionen auch NACH dem Pfad-Argument — nötig
 // für das Image-Aufrufmuster aus DC-FA-DIST-001/ADR-0002
-// (ENTRYPOINT ["/d-check","/repo"], Optionen werden angehängt):
-// Gos flag-Parser stoppt sonst am ersten Positional.
+// (ENTRYPOINT ["/d-check","/repo"], Optionen werden angehängt).
+// Ein wertnehmendes Flag ohne Wert ist ein Nutzungsfehler
+// (Review R2/A1: sonst würde das Pfad-Argument als Wert verschluckt).
 func reorderArgs(args []string) ([]string, error) {
 	valueFlags := map[string]bool{
 		"-enable": true, "--enable": true,
@@ -51,9 +60,6 @@ func reorderArgs(args []string) ([]string, error) {
 		if len(a) > 1 && a[0] == '-' {
 			flagArgs = append(flagArgs, a)
 			if valueFlags[a] {
-				// Hängendes wertnehmendes Flag am Ende würde nach dem
-				// Reordering das Pfad-Argument als Wert verschlucken
-				// (Review R2/A1) → Nutzungsfehler statt False Negative.
 				if i+1 >= len(args) {
 					return nil, fmt.Errorf("flag needs an argument: %s", a)
 				}
@@ -67,12 +73,11 @@ func reorderArgs(args []string) ([]string, error) {
 	return append(flagArgs, positionals...), nil
 }
 
-// Run führt das CLI aus und liefert den Prozess-Exit-Code
-// (DC-FA-CLI-003: 0 = keine Befunde, 1 = Befunde,
-// 2 = Nutzungs-/Umgebungsfehler).
-func Run(args []string, stdout, stderr io.Writer) int {
+// parseOptions parst die Argumente; code/done steuern den sofortigen
+// Exit (Usage-Fehler → 2, -h → 0).
+func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	flags := flag.NewFlagSet("d-check", flag.ContinueOnError)
-	flags.SetOutput(io.Discard) // Fehlertexte einheitlich über stderr unten
+	flags.SetOutput(io.Discard) // Fehlertexte einheitlich unten
 	var enable, disable multiFlag
 	jsonOut := flags.Bool("json", false, "maschinenlesbare JSON-Ausgabe")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
@@ -86,89 +91,115 @@ func Run(args []string, stdout, stderr io.Writer) int {
 		if errors.Is(err, flag.ErrHelp) {
 			flags.SetOutput(stderr)
 			flags.Usage()
-			return 0
+			return options{}, 0, true
 		}
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-		return 2 // ungültige Nutzung
+		return options{}, 2, true
 	}
-
-	root := "."
 	if flags.NArg() > 1 {
 		fmt.Fprintln(stderr, "d-check: error: höchstens ein Pfad-Argument")
-		return 2
+		return options{}, 2, true
 	}
+	opts := options{root: ".", json: *jsonOut, enable: enable, disable: disable}
 	if flags.NArg() == 1 {
-		root = flags.Arg(0)
+		opts.root = flags.Arg(0)
 	}
+	return opts, 0, false
+}
+
+// openRoot validiert die Scan-Wurzel (existiert, Verzeichnis, nicht
+// gänzlich leer — DC-FA-DIST-001 Negative) und liefert den
+// Filesystem-Adapter.
+func openRoot(root string, stderr io.Writer) (*fsadapter.Adapter, bool) {
 	absRoot, err := filepath.Abs(root)
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-		return 2
+		return nil, false
 	}
 	if info, err := os.Stat(absRoot); err != nil || !info.IsDir() {
 		fmt.Fprintf(stderr, "d-check: error: Scan-Wurzel nicht gefunden: %s%s\n",
 			root, mountHint(absRoot))
-		return 2
+		return nil, false
 	}
-
 	fsys := fsadapter.New(absRoot)
-
-	// Gänzlich leere Scan-Wurzel (keinerlei Einträge) → Umgebungsfehler
-	// mit Mount-Hinweis (DC-FA-DIST-001 Negative; eine Wurzel ohne
-	// Markdown-Dateien, aber mit Inhalt, bleibt Exit 0 — DC-FA-CLI-001
-	// Boundary).
-	if entries, lerr := fsys.List(""); lerr == nil && len(entries) == 0 {
+	if entries, err := fsys.List(""); err == nil && len(entries) == 0 {
 		fmt.Fprintf(stderr, "d-check: error: Scan-Wurzel ist leer: %s%s\n",
 			root, mountHint(absRoot))
-		return 2
+		return nil, false
 	}
+	return fsys, true
+}
 
-	// Config-Inhalt beschafft das CLI über den Filesystem-Adapter;
-	// der Config-Adapter dekodiert/validiert nur
-	// (spec/architecture.md §2).
+// loadConfig beschafft den Config-Inhalt über den Filesystem-Adapter
+// und lässt ihn vom Config-Adapter dekodieren/validieren
+// (spec/architecture.md §2).
+func loadConfig(fsys *fsadapter.Adapter, stderr io.Writer) (core.Config, bool) {
 	var content []byte
-	if kind, kerr := fsys.Kind(configyaml.FileName); kerr == nil && kind == driven.KindFile {
-		content, err = fsys.ReadFile(configyaml.FileName)
+	if kind, err := fsys.Kind(configyaml.FileName); err == nil && kind == driven.KindFile {
+		read, err := fsys.ReadFile(configyaml.FileName)
 		if err != nil {
 			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-			return 2
+			return core.Config{}, false
 		}
+		content = read
 	}
 	cfg, err := configyaml.Decode(content)
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-		return 2
+		return core.Config{}, false
 	}
+	return cfg, true
+}
 
-	modules, err := core.EffectiveModules(cfg, enable, disable)
-	if err != nil {
-		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-		return 2
-	}
-
-	res, err := core.Run(fsys, cfg, modules)
-	if err != nil {
-		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-		return 2
-	}
+// render gibt das Ergebnis aus und liefert den Exit-Code
+// (DC-FA-CLI-003/004).
+func render(res core.Result, jsonOut bool, stdout, stderr io.Writer) int {
 	for _, m := range res.SkippedModules {
 		fmt.Fprintf(stderr, "d-check: Hinweis: Modul %q ist noch nicht implementiert — übersprungen\n", m)
 	}
-
 	exit := 0
 	if len(res.Findings) > 0 {
 		exit = 1
 	}
 	sum := report.Summary{FilesChecked: res.FilesChecked, FindingCount: len(res.Findings)}
-	if *jsonOut {
+	if jsonOut {
 		if err := report.JSON(stdout, res.Findings, sum, exit); err != nil {
 			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 			return 2
 		}
-	} else {
-		if err := report.Text(stdout, stderr, res.Findings, sum); err != nil {
-			return 2
-		}
+		return exit
+	}
+	if err := report.Text(stdout, stderr, res.Findings, sum); err != nil {
+		return 2
 	}
 	return exit
+}
+
+// Run führt das CLI aus und liefert den Prozess-Exit-Code
+// (DC-FA-CLI-003: 0 = keine Befunde, 1 = Befunde,
+// 2 = Nutzungs-/Umgebungsfehler).
+func Run(args []string, stdout, stderr io.Writer) int {
+	opts, code, done := parseOptions(args, stderr)
+	if done {
+		return code
+	}
+	fsys, ok := openRoot(opts.root, stderr)
+	if !ok {
+		return 2
+	}
+	cfg, ok := loadConfig(fsys, stderr)
+	if !ok {
+		return 2
+	}
+	modules, err := core.EffectiveModules(cfg, opts.enable, opts.disable)
+	if err != nil {
+		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+		return 2
+	}
+	res, err := core.Run(fsys, cfg, modules)
+	if err != nil {
+		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+		return 2
+	}
+	return render(res, opts.json, stdout, stderr)
 }
