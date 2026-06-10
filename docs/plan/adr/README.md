@@ -12,4 +12,7 @@ Architecture Decision Records dieses Repos. Konventionen:
 
 | ID | Titel | Status | Datum | Bezug |
 |---|---|---|---|---|
-| — | *noch keine ADRs; die ersten entstehen mit slice-001 (Implementierungssprache, Distribution, Config-Format)* | | | |
+| [ADR-0001](0001-implementierungssprache.md) | Implementierungssprache: Go | Accepted | 2026-06-10 | [`DC-QA-01`](../../../spec/lastenheft.md#dc-qa-01--performance), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit), [`DC-FA-DIST-001`](../../../spec/lastenheft.md#dc-fa-dist-001--docker-image) |
+| [ADR-0002](0002-distribution-ghcr-image.md) | Distribution: GHCR-Image auf distroless/static | Accepted | 2026-06-10 | [`DC-FA-DIST-001`](../../../spec/lastenheft.md#dc-fa-dist-001--docker-image), ADR-0001 |
+| [ADR-0003](0003-config-format.md) | Config-Parsing: striktes YAML via gopkg.in/yaml.v3 | Accepted | 2026-06-10 | [`DC-FA-CONF-001`](../../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei), ADR-0001 |
+| [ADR-0004](0004-architektur-pattern-hexagonal.md) | Architektur-Pattern: Hexagon light | Accepted | 2026-06-10 | [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit), [`DC-FA-CLI-002`](../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) |

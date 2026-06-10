@@ -14,3 +14,6 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 - Greenfield-Harness-Bootstrap nach AI-Harness-Kurs: `AGENTS.md`,
   `harness/`, Planning-Struktur mit Roadmap und Slices 001–004,
   Makefile-Gates (`doc-check`, `gates`), `.claude`-Hooks.
+- Fundament-ADRs 0001–0004 (slice-001): Go, GHCR-Image auf
+  distroless/static (Binary-Distribution vertagt mit Trigger),
+  striktes YAML via yaml.v3, Architektur Hexagon light.

@@ -51,7 +51,7 @@ liegt in CI bzw. lokal (`make gates`), nicht hier.
 **Rote Gates:** keine (Bootstrap-Stand).
 **Nicht behauptet** (geplant):
 `make lint`, `make typecheck`, `make test`,
-`make arch-check` (Fitness Function zu ADR-0004, Bindung
+`make arch-check` (Fitness Function zu [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md), Bindung
 [`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit))
 — ab slice-003; `make coverage-gate` (bootstrap-aware,
 Kalibrierungs-Bindung mit Ramp) und `make gate-consistency`

@@ -24,7 +24,8 @@ input="$(cat)"
 
 verdict="$(printf '%s' "$input" | node -e '
   const BLOCKED = new Set(["apt","apt-get","brew","pip","pip3","pipx",
-    "npm","pnpm","yarn","npx","corepack","cargo","rustup","gem","conda"]);
+    "npm","pnpm","yarn","npx","corepack","cargo","rustup","gem","conda",
+    "go","gofmt","golangci-lint","staticcheck"]); // Host-Go: ADR-0001 + AGENTS §3.1
   const PREFIXES = new Set(["sudo","env","command","exec","nice","time","xargs"]);
   let s = "";
   process.stdin.on("data", d => s += d);

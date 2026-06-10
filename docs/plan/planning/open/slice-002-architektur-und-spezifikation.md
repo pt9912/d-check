@@ -7,7 +7,7 @@
 **Bezug:** [`DC-FA-CLI-004`](../../../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate),
 [`DC-FA-ANCH-001`](../../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors),
 [`DC-FA-CONF-001`](../../../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei),
-[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus); ADR-0001–0004 (aus slice-001).
+[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus); [ADR-0001](../../adr/0001-implementierungssprache.md)–[ADR-0004](../../adr/0004-architektur-pattern-hexagonal.md) (aus slice-001).
 
 **Autor:** pt9912. **Datum:** 2026-06-10.
 
@@ -23,7 +23,7 @@ Fundament-ADRs.
 ## 2. Definition of Done
 
 - [ ] `spec/spezifikation.md` existiert; enthält mindestens: Befund-Format (Text + JSON-Schema, [`DC-FA-CLI-004`](../../../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate)), GitHub-Slug-Algorithmus ([`DC-FA-ANCH-001`](../../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors)), Default-Konfiguration und `.d-check.yml`-Schema ([`DC-FA-CONF-001`](../../../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)), Determinismus-Festlegungen (Sortierung, [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
-- [ ] `spec/architecture.md` existiert; hexagonaler Schnitt gemäß ADR-0004 (Kern: Scanner, Regelmodule, Befund-Modell; Ports: Filesystem, HTTP, Config, Reporter; driving: CLI), Schichten-Constraints als Grundlage der `arch-check`-Fitness-Function; sprach- und meilensteinfrei ([`AGENTS.md`](../../../../AGENTS.md) §3.4).
+- [ ] `spec/architecture.md` existiert; hexagonaler Schnitt gemäß [ADR-0004](../../adr/0004-architektur-pattern-hexagonal.md) (Kern: Scanner, Regelmodule, Befund-Modell; Ports: Filesystem, HTTP, Config, Reporter; driving: CLI), Schichten-Constraints als Grundlage der `arch-check`-Fitness-Function; sprach- und meilensteinfrei ([`AGENTS.md`](../../../../AGENTS.md) §3.4).
 - [ ] Source-Precedence-Tabellen in [`AGENTS.md`](../../../../AGENTS.md) und [`harness/README.md`](../../../../harness/README.md) von „geplant" auf echte Links umgestellt (Auflösung des Geplant-Zustands aus [`MR-001`](../../../../harness/conventions.md#mr-001--source-precedence-mit-eigener-spezifikations-schicht)).
 - [ ] `make gates` grün (`doc-check` prüft die neuen Querverweise mit).
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.

@@ -30,26 +30,28 @@ In dieser Reihenfolge:
 
 ## 3. Harte Regeln
 
-### 3.1 make-only, keine Host-Toolchain
+### 3.1 Docker/make-only
 
-Die Implementierungssprache ist noch nicht entschieden (ADR-0001,
-slice-001). Bis dahin — und auch danach — gilt: **keine
-Host-Toolchain-Installationen und keine Host-Paketmanager** (`pip`,
-`npm`, `cargo`, `apt`, `brew`, …). Alle Checks laufen über `make`;
-nach der Sprachentscheidung läuft die Toolchain in Docker. Der Host
-braucht nur `git`, GNU `make`, `bash` und Docker.
+Implementierungssprache ist **Go**
+([ADR-0001](docs/plan/adr/0001-implementierungssprache.md)). Es gilt:
+**kein Host-Go und keine Host-Paketmanager** (`go`, `pip`, `npm`,
+`cargo`, `apt`, `brew`, …). Alle Checks laufen über `make`; die
+Go-Toolchain läuft in Docker (Multi-Stage gemäß
+[ADR-0002](docs/plan/adr/0002-distribution-ghcr-image.md), entsteht
+mit slice-003). Der Host braucht nur `git`, GNU `make`, `bash` und
+Docker.
 
-**Falsch:** `pip install …`, `npm install …`, `apt-get install …`
-**Richtig:** `make doc-check`, `make gates`
+**Falsch:** `go build ./…`, `go test ./…`, `pip install …`
+**Richtig:** `make gates` (Implementierungs-Gates entstehen mit slice-003)
 
 **Begründung:** Toolchain-Reproduzierbarkeit + Supply-Chain-Defense.
 
 ### 3.2 Suppression-Verbot
 
-Inline-Suppressions (Linter-Ausnahmen im Code) sind verboten.
-Ausnahmen leben in einer zentralen Konfigurationsdatei mit Begründung.
-Die sprachkonkreten Marker (z. B. `# noqa`, `//nolint`) werden mit
-ADR-0001 hier ergänzt.
+Inline-Suppressions sind verboten: `//nolint`-Direktiven im Code
+brechen das künftige Suppression-Gate. Ausnahmen leben zentral in
+`.golangci.yml` (exclude-rules) mit Begründung — die Datei entsteht
+mit slice-003.
 
 ### 3.3 git mv + Inhaltsänderung = zwei Commits
 
