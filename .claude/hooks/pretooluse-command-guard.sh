@@ -6,8 +6,11 @@
 # Geprüft wird die Befehlsposition jedes Kommando-Segments (Trennung
 # an ; && || | $( ` ( und Zeilenenden) — `git commit -m "docs: pip"`
 # oder `docker run img npm test` bleiben erlaubt; `/usr/bin/pip` und
-# `sudo pip` werden erkannt. Sub-Shell-Strings (`bash -c "…"`,
-# `sh -c '…'`) werden rekursiv geprüft (MR-005).
+# `sudo pip` werden erkannt. Sub-Shell-Strings (`bash -c "…"`, auch in
+# Flag-Bündeln wie `-lc`/`-ec`/`-cx`) werden rekursiv geprüft (MR-005).
+# Bewusst NICHT geprüft: andere Interpreter (`python -c`, `perl -e`,
+# `node -e`, `find -exec`) — der Guard ist ein Stolperdraht gegen
+# versehentliche Host-Toolchain-Nutzung, keine Sandbox.
 #
 # Im Pass-Fall: KEINE Ausgabe — "approve" würde das Permission-System
 # überspringen; ohne Ausgabe läuft die normale Permission-Entscheidung.
@@ -42,7 +45,10 @@ verdict="$(printf '%s' "$input" | node -e '
       const head = tokens[i].replace(/^.*\//, ""); // /usr/bin/pip → pip
       if (BLOCKED.has(head)) return true;
       if (SHELLS.has(head)) {
-        const cIdx = tokens.indexOf("-c", i + 1);
+        // -c auch in Flag-Bündeln erkennen (-lc, -ec, -cx, …): bei
+        // sh/bash ist c das einzige Single-Letter-Flag mit
+        // Kommando-String-Semantik, das Bündel ist also eindeutig.
+        const cIdx = tokens.findIndex((t, k) => k > i && /^-[a-z]*c[a-z]*$/.test(t));
         if (cIdx !== -1 && cIdx + 1 < tokens.length &&
             scan(tokens.slice(cIdx + 1).join(" "), depth + 1)) return true;
       }
