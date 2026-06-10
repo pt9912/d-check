@@ -20,8 +20,8 @@ Baseline, Modus-Deklarationen pro Sub-Area) leben in
 In dieser Reihenfolge:
 
 1. [`spec/lastenheft.md`](spec/lastenheft.md) — vertraglich abnahmebindend.
-2. `spec/spezifikation.md` — technisch verbindlich, fortschreibbar. **Geplant** (slice-002), existiert noch nicht.
-3. `spec/architecture.md` — Komponenten- und Sequenzsicht. **Geplant** (slice-002), existiert noch nicht.
+2. [`spec/spezifikation.md`](spec/spezifikation.md) — technisch verbindlich, fortschreibbar.
+3. [`spec/architecture.md`](spec/architecture.md) — Komponenten- und Sequenzsicht.
 4. [`docs/plan/adr/README.md`](docs/plan/adr/README.md) — ADR-Index.
 5. [`docs/plan/planning/in-progress/roadmap.md`](docs/plan/planning/in-progress/roadmap.md) — aktuelle Welle.
 6. [`README.md`](README.md) — Projekt-Überblick.
@@ -63,9 +63,9 @@ Wenn eine Datei verschoben **und** der Inhalt umgeschrieben wird:
 **Begründung:** Sonst fällt die Rename-Detection unter die
 50%-Similarity-Schwelle und `git log --follow` wird unzuverlässig.
 
-### 3.4 Architektur ist sprach- und meilensteinfrei
+### 3.4 Architektur ist meilensteinfrei
 
-`spec/architecture.md` (sobald vorhanden) referenziert ADRs und
+[`spec/architecture.md`](spec/architecture.md) referenziert ADRs und
 Modul-Pfade, aber **keine** Wellen, Slices, Commit-Hashes oder
 Closure-Daten. Die zeitliche Schicht lebt in `docs/plan/planning/`.
 

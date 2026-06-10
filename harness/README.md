@@ -18,8 +18,8 @@ pro Sub-Area) sowie Adaptionen ggü. der adoptierten Baseline leben in
 | Rang | Datei | Charakter |
 |---|---|---|
 | 1 | [`spec/lastenheft.md`](../spec/lastenheft.md) | vertraglich abnahmebindend |
-| 2 | `spec/spezifikation.md` | technisch fortschreibbar — **geplant** (slice-002) |
-| 3 | `spec/architecture.md` | Komponenten/Sequenzen, meilensteinfrei — **geplant** (slice-002) |
+| 2 | [`spec/spezifikation.md`](../spec/spezifikation.md) | technisch fortschreibbar |
+| 3 | [`spec/architecture.md`](../spec/architecture.md) | Komponenten/Sequenzen, meilensteinfrei |
 | 4 | [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
 | 5 | [`docs/plan/planning/in-progress/roadmap.md`](../docs/plan/planning/in-progress/roadmap.md) | aktuelle Welle |
 | 6 | [`README.md`](../README.md) | Projekt-Überblick |
@@ -31,6 +31,8 @@ pro Sub-Area) sowie Adaptionen ggü. der adoptierten Baseline leben in
 | Quelle | Inhalt |
 |---|---|
 | [`spec/lastenheft.md`](../spec/lastenheft.md) | Anforderungen (`DC-FA-*`, `DC-QA-*`), Akzeptanzkriterien |
+| [`spec/spezifikation.md`](../spec/spezifikation.md) | Algorithmen, Schemas (`--json`, `.d-check.yml`), Defaults, Grund-Codes |
+| [`spec/architecture.md`](../spec/architecture.md) | Hexagon-Schnitt, Import-Constraints, Sequenzen |
 | [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
 | [`docs/plan/planning/`](../docs/plan/planning/) | Slice-Pläne und Roadmap |
 | [`AGENTS.md`](../AGENTS.md) | Hard Rules, Source Precedence, Workflow |

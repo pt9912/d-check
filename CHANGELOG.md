@@ -17,6 +17,10 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 - Fundament-ADRs 0001–0004 (slice-001): Go, GHCR-Image auf
   distroless/static (Binary-Distribution vertagt mit Trigger),
   striktes YAML via yaml.v3, Architektur Hexagon light.
+- Spec-Straten 2+3 (slice-002): `spec/spezifikation.md` (Prüflauf-,
+  Slug-, Modul-Algorithmen; `--json`- und `.d-check.yml`-Schema;
+  Defaults; Grund-Codes) und `spec/architecture.md` (Hexagon-Schnitt,
+  Import-Constraints als arch-check-Grundlage, Sequenzen).
 
 ### Changed
 
