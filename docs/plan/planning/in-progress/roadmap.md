@@ -12,7 +12,7 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 **Welle-ID:** welle-02-mvp
 **Start:** 2026-06-10
-**Slices:** [slice-003](../open/slice-003-cli-kern-und-links-modul.md), [slice-004](../open/slice-004-anchors-modul-und-dogfooding.md)
+**Slices:** [slice-003](slice-003-cli-kern-und-links-modul.md) (in-progress), [slice-004](../open/slice-004-anchors-modul-und-dogfooding.md)
 
 **Closure-Trigger:** CLI-Kern mit Modulen `links` + `anchors`
 implementiert und getestet; `make doc-check` läuft über `d-check`
