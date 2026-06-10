@@ -45,21 +45,20 @@ liegt in CI bzw. lokal (`make gates`), nicht hier.
 
 | Target | Vertrag | Bindung |
 |---|---|---|
+| `make lint` | golangci-lint, 5 Default-Linter; Inline-Suppressions verboten | — |
+| `make test` | Akzeptanzkriterien der bezogenen `DC-FA-*` als Tests; Determinismus-Test | [`DC-QA-02`](../spec/lastenheft.md#dc-qa-02--determinismus) (DC-Bindung) |
+| `make arch-check` | Import-Regeln R1–R5 des Hexagon-Schnitts (`tools/arch-check.sh`, Dockerfile-Stage) | [ADR-0005](../docs/plan/adr/0005-modul-layout-hexagon-ordner.md); [`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (DC-Bindung) |
 | `make doc-check` | jedes lokale Markdown-Linkziel in `docs/`, `spec/`, `harness/` und den Top-Level-Dokumenten existiert | Bootstrap-Sensor (vendored, siehe [`MR-003`](conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh)); Ablösung: slice-004 |
 | `make record-gates` | Working-Tree-Hash-Nachweis für den Stop-Hook | — |
-| `make gates` | aggregiert alle inneren Gates, `record-gates` als letzter Schritt | — |
+| `make gates` | aggregiert doc-check + lint + test + arch-check, `record-gates` als letzter Schritt | — |
 
 **Aktueller Lauf-Status:** lokal `make gates`.
-**Rote Gates:** keine (Bootstrap-Stand).
-**Nicht behauptet** (geplant):
-`make lint`, `make typecheck`, `make test`,
-`make arch-check` (Fitness Function zu [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md), Bindung
-[`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit))
-— ab slice-003; `make coverage-gate` (bootstrap-aware,
+**Rote Gates:** keine.
+**Nicht behauptet** (geplant): `make coverage-gate` (bootstrap-aware,
 Kalibrierungs-Bindung mit Ramp) und `make gate-consistency`
-(Meta-Gate: Doku ↔ Makefile) — ab welle-03; `make versions` und
-`make fullbuild` (Reproduzierbarkeits-Bindung, Image-Hash) — ab
-welle-04.
+(Meta-Gate: Doku ↔ Makefile) — ab welle-03; `make versions`,
+`make fullbuild` und `make ci` (Reproduzierbarkeits-Bindung,
+Image-Hash) — ab welle-04.
 
 ## Traceability rules
 

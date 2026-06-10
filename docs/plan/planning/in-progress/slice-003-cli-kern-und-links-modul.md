@@ -12,7 +12,7 @@
 [`DC-FA-LINK-001`](../../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links),
 [`DC-FA-LINK-002`](../../../../spec/lastenheft.md#dc-fa-link-002--symlink-ablehnung),
 [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus),
-[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit); [ADR-0001](../../adr/0001-implementierungssprache.md)–[ADR-0004](../../adr/0004-architektur-pattern-hexagonal.md).
+[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit); [ADR-0001](../../adr/0001-implementierungssprache.md)–[ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md).
 
 **Autor:** pt9912. **Datum:** 2026-06-10.
 
@@ -39,7 +39,8 @@ erste implementierte Inkrement.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| Quellbaum gemäß [ADR-0004](../../adr/0004-architektur-pattern-hexagonal.md) (Modul-Pfade) und [`spec/architecture.md`](../../../../spec/architecture.md) (Rollen/Constraints) | neu | erstes Implementierungs-Inkrement |
+| Quellbaum gemäß [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md) (Modul-Pfade, u-boot-Konvention) und [`spec/architecture.md`](../../../../spec/architecture.md) (Rollen/Constraints) | neu | erstes Implementierungs-Inkrement |
+| [`docs/plan/adr/0005-modul-layout-hexagon-ordner.md`](../../adr/0005-modul-layout-hexagon-ordner.md) | neu | Pfad-Revision von ADR-0004 (immutable) auf u-boot-Ordnerkonvention — während der Umsetzung entschieden |
 | Test-Suite (Unit + Fixture-Repos) | neu | Akzeptanzkriterien sind testbar formuliert |
 | [`Makefile`](../../../../Makefile) (`lint`, `typecheck`, `test`, `arch-check`, Aggregation in `gates`) | update | neue Gates entstehen mit dem Code |
 | [`harness/README.md`](../../../../harness/README.md), [`AGENTS.md`](../../../../AGENTS.md) | update | Sensors-/Gates-Tabellen nachziehen |

@@ -1,0 +1,24 @@
+# golangci-lint-Konfiguration für d-check (v2-Schema, Pin-Konvention
+# wie u-boot). Profil: die 5 Default-Linter; eine Erweiterung Richtung
+# SOLID-Profil ist eine eigene ADR-Entscheidung.
+#
+# Hard Rule (AGENTS.md §3.2): //nolint-Direktiven im Code sind
+# verboten; Ausnahmen leben hier unter exclusions mit Begründung.
+
+version: "2"
+
+linters:
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+
+  settings:
+    errcheck:
+      exclude-functions:
+        - fmt.Fprintln
+        - fmt.Fprintf
+        - fmt.Fprint

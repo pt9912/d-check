@@ -22,6 +22,15 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Defaults; Grund-Codes) und `spec/architecture.md` (Hexagon-Schnitt,
   Import-Constraints als arch-check-Grundlage, Sequenzen).
 
+- slice-003 — erster Go-Code: CLI-Kern (`d-check [pfad]`,
+  `--enable/--disable/--json`), Scanner mit Default-Wurzeln/Ignores,
+  Modul `links` (Linkziele, Repo-Escape, Symlink-Vorrang,
+  RFC-3986-Dekodierung), strikte `.d-check.yml`-Validierung,
+  Text-/JSON-Reporter; Layout nach ADR-0005 (hexagon-/adapter-Ordner,
+  u-boot-Konvention); Dockerfile-Stages + Make-Gates `lint`, `test`,
+  `arch-check` (Fitness Function R1–R5), Runtime-Image
+  distroless/static mit Selbst-Smoke-Test (`make run`).
+
 ### Changed
 
 - Harness-Hooks gehärtet (MR-005): Gate-Nachweis inhaltsbasiert

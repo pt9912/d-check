@@ -90,16 +90,20 @@ Gates sind die häufigste Form von Harness-Lüge.
 
 | Target | Zweck |
 |---|---|
+| `make lint` | golangci-lint mit dem Projekt-Profil (§3.2) |
+| `make test` | `go test ./...` — Akzeptanzkriterien der `DC-FA-*` |
+| `make arch-check` | Import-Regeln des Hexagon-Schnitts (ADR-0005) |
 | `make doc-check` | interne Markdown-Linkziele existieren (Bootstrap-Sensor) |
-| `make record-gates` | Nachweis schreiben: Working-Tree-Hash für den Stop-Hook |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
-| `make help` | Targets anzeigen |
+| `make build` / `make run` | Runtime-Image bauen / Selbst-Smoke-Test |
+| `make deps` / `make compile` | Cache-Layer / schnelles Compile-Feedback |
+| `make record-gates` | Nachweis schreiben: Working-Tree-Hash für den Stop-Hook |
+| `make help` / `make clean` | Targets anzeigen / Images entfernen |
 
-**Nicht behauptet** (geplant): `make lint`, `make typecheck`,
-`make test`, `make arch-check` (ab slice-003); `make coverage-gate`,
+**Nicht behauptet** (geplant): `make coverage-gate`,
 `make gate-consistency` (ab welle-03); `make versions`,
-`make fullbuild` (ab welle-04). Details und Bindungen: Sensors-Tabelle
-in [`harness/README.md`](harness/README.md).
+`make fullbuild`, `make ci` (ab welle-04). Details und Bindungen:
+Sensors-Tabelle in [`harness/README.md`](harness/README.md).
 
 ## 5. Dokumentations-Regeln
 
