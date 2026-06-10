@@ -49,8 +49,15 @@ liegt in CI bzw. lokal (`make gates`), nicht hier.
 
 **Aktueller Lauf-Status:** lokal `make gates`.
 **Rote Gates:** keine (Bootstrap-Stand).
-**Nicht behauptet** (geplant): `make lint`, `make test`,
-`make arch-check`, `make coverage-gate` — entstehen ab slice-003.
+**Nicht behauptet** (geplant):
+`make lint`, `make typecheck`, `make test`,
+`make arch-check` (Fitness Function zu ADR-0004, Bindung
+[`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit))
+— ab slice-003; `make coverage-gate` (bootstrap-aware,
+Kalibrierungs-Bindung mit Ramp) und `make gate-consistency`
+(Meta-Gate: Doku ↔ Makefile) — ab welle-03; `make versions` und
+`make fullbuild` (Reproduzierbarkeits-Bindung, Image-Hash) — ab
+welle-04.
 
 ## Traceability rules
 

@@ -89,9 +89,11 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
 | `make help` | Targets anzeigen |
 
-**Nicht behauptet** (geplant): `make lint`, `make test`,
-`make arch-check`, `make coverage-gate` — entstehen ab slice-003 mit
-der Implementierung.
+**Nicht behauptet** (geplant): `make lint`, `make typecheck`,
+`make test`, `make arch-check` (ab slice-003); `make coverage-gate`,
+`make gate-consistency` (ab welle-03); `make versions`,
+`make fullbuild` (ab welle-04). Details und Bindungen: Sensors-Tabelle
+in [`harness/README.md`](harness/README.md).
 
 ## 5. Dokumentations-Regeln
 

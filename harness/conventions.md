@@ -101,8 +101,12 @@ die kanonische Quelle (Source Precedence, siehe
 
 ## Zusatzklassen-Deklaration für Sensors-Bindung
 
-— keine — (die kanonischen Klassen ADR, Carveout, Schwelle,
-Reproduzierbarkeit sowie Slice-IDs genügen).
+Zusätzlich zu den vier kanonischen Klassen (ADR, Carveout, Schwelle,
+Reproduzierbarkeit) und Slice-IDs:
+
+| Klasse | Form | Bedeutung | Beispiel |
+|---|---|---|---|
+| DC-Bindung | `DC-…` | Gate prüft eine konkrete Lastenheft-Anforderung | [`DC-QA-02`](../spec/lastenheft.md#dc-qa-02--determinismus) für das geplante Determinismus-Gate (slice-003); [`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) für das geplante `arch-check`-Gate |
 
 ## Modus-Deklaration pro Sub-Area
 

@@ -12,7 +12,7 @@
 [`DC-FA-LINK-001`](../../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links),
 [`DC-FA-LINK-002`](../../../../spec/lastenheft.md#dc-fa-link-002--symlink-ablehnung),
 [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus),
-[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit); ADR-0001–0003.
+[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit); ADR-0001–0004.
 
 **Autor:** pt9912. **Datum:** 2026-06-10.
 
@@ -28,7 +28,8 @@ erste implementierte Inkrement.
 
 - [ ] Akzeptanzkriterien (Happy/Boundary/Negative) der bezogenen `DC-FA-*` als automatisierte Tests umgesetzt und grün.
 - [ ] Determinismus-Test ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)): wiederholter Lauf, identische Ausgabe-Hashes.
-- [ ] `make lint` und `make test` existieren (Docker-basiert gemäß ADR-0001/0002) und sind in `make gates` aggregiert.
+- [ ] `make lint`, `make typecheck` (sofern die ADR-0001-Toolchain es vorsieht) und `make test` existieren (Docker-basiert gemäß ADR-0001/0002), tragen ID-Kommentare und sind in `make gates` aggregiert.
+- [ ] `make arch-check` existiert als Fitness Function zu ADR-0004: Kern ohne I/O-Imports, Netz nur im HTTP-Adapter — strukturelle Durchsetzung von [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit).
 - [ ] Sensors-Tabelle in [`harness/README.md`](../../../../harness/README.md) und Gates-Tabelle in [`AGENTS.md`](../../../../AGENTS.md) §4 aktualisiert — keine behaupteten Targets ohne Existenz.
 - [ ] `make gates` grün.
 - [ ] [`CHANGELOG.md`](../../../../CHANGELOG.md) aktualisiert.
@@ -40,7 +41,7 @@ erste implementierte Inkrement.
 |---|---|---|
 | Quellbaum gemäß `spec/architecture.md` (CLI, Scanner, Modul `links`, Reporter) | neu | erstes Implementierungs-Inkrement |
 | Test-Suite (Unit + Fixture-Repos) | neu | Akzeptanzkriterien sind testbar formuliert |
-| [`Makefile`](../../../../Makefile) (`lint`, `test`, Aggregation in `gates`) | update | neue Gates entstehen mit dem Code |
+| [`Makefile`](../../../../Makefile) (`lint`, `typecheck`, `test`, `arch-check`, Aggregation in `gates`) | update | neue Gates entstehen mit dem Code |
 | [`harness/README.md`](../../../../harness/README.md), [`AGENTS.md`](../../../../AGENTS.md) | update | Sensors-/Gates-Tabellen nachziehen |
 | `Dockerfile` | neu | Toolchain- und Gate-Stages gemäß ADR-0002 |
 
