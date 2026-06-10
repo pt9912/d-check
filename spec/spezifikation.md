@@ -32,7 +32,18 @@
    [`DC-FA-CLI-003`](lastenheft.md#dc-fa-cli-003--exit-codes).
 
 **Fehlermodi:** nicht lesbare Datei oder Scan-Wurzel → Umgebungsfehler,
-Exit 2 (kein Teilergebnis als Erfolg).
+Exit 2 (kein Teilergebnis als Erfolg). Eine **gänzlich leere**
+Scan-Wurzel (keinerlei Einträge) ist ebenfalls ein Umgebungsfehler —
+Exit 2 mit Mount-Hinweis
+([`DC-FA-DIST-001`](lastenheft.md#dc-fa-dist-001--docker-image)
+Negative); eine Wurzel ohne Markdown-Dateien, aber mit Inhalt, liefert
+„0 Datei(en) geprüft" und Exit 0
+([`DC-FA-CLI-001`](lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)
+Boundary). CLI-Optionen dürfen vor oder nach dem Pfad-Argument stehen
+(Container-Aufrufmuster: ENTRYPOINT setzt `/repo`, Optionen werden
+angehängt). Verzeichnis-Symlinks werden beim Scan weder verfolgt noch
+als Dateien gewertet (Symlink-Ablehnung,
+[`DC-FA-LINK-002`](lastenheft.md#dc-fa-link-002--symlink-ablehnung)).
 
 ### DC-FA-CLI-002.a — Modul-Auflösung
 
@@ -55,7 +66,9 @@ Nutzungsfehler (Exit 2) mit Auflistung der gültigen Namen.
 4. **Ziel-Normalisierung:** Prozent-Dekodierung (RFC 3986, vollständig)
    → Auflösung relativ zum Verzeichnis der enthaltenden Datei →
    lexikalische Normalisierung. Die Repo-Escape-Prüfung erfolgt **nach**
-   der Dekodierung (`DC-FA-LINK-001`).
+   der Dekodierung (`DC-FA-LINK-001`). Ziele mit führendem `/` werden
+   relativ zur Repo-Wurzel interpretiert (Schärfung über das
+   Lastenheft-Minimum „relative Ziele" hinaus).
 5. **Symlink-Prüfung** ([`DC-FA-LINK-002`](lastenheft.md#dc-fa-link-002--symlink-ablehnung)):
    alle Komponenten des lexikalisch aufgelösten Zielpfads, die
    innerhalb der Repo-Wurzel liegen, werden per Lstat geprüft
@@ -195,8 +208,12 @@ sondern eine stderr-Meldung (siehe [§4](#4-grund--und-fehler-codes)).
 
 ### `.d-check.yml`
 
-Unbekannte Schlüssel sind Fehler (striktes Decoding).
-Kommentiertes Vollbeispiel:
+Unbekannte Schlüssel sind Fehler (striktes Decoding). Eine leere oder
+nur kommentierte Datei ist ein YAML-Null-Dokument und wirkt wie keine
+Datei (Defaults). Explizit leere Listen ersetzen die Defaults durch
+die leere Menge (`scan.roots: []` prüft nichts, `modules: []` lässt
+kein Modul laufen — bewusste Setzung, kein Fehler). Kommentiertes
+Vollbeispiel:
 
 ```yaml
 scan:
@@ -296,3 +313,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-10 | Review R1: `scan.roots`-Constraint präzisiert (nur deklarierte Wurzeln pflichtig), Symlink-Prüf-Scope präzisiert, unspezifizierter Grund-Code `nested-link` entfernt | slice-002 |
 | 2026-06-10 | Review R2: Status-Extraktions-Reihenfolge fixiert (`**Status:**` vor `Status`-Heading), `exclude-sections`-Matching definiert (getrimmt, case-sensitiv), Exit-2-Hinweis an Config-Constraint-Tabelle | slice-002 |
 | 2026-06-10 | Referenzrichtungs-Korrektur: ADR-Abwärtsverweise entfernt — Spec-Straten verweisen nie abwärts; Traceability über die `Schärft:`-Felder der ADRs (Kurs-Baseline-Korrektur, MR-006) | slice-002 |
+| 2026-06-10 | Review-Runde Implementierung (Black-Box): Optionen vor/nach Pfad-Argument; gänzlich leere Wurzel → Exit 2 mit Mount-Hinweis vs. „ohne Markdown" → Exit 0; leere `.d-check.yml` = Defaults; explizit leere Listen; absolute Ziele; Verzeichnis-Symlinks beim Scan | slice-003 |

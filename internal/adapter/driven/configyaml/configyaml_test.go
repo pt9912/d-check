@@ -43,6 +43,18 @@ func TestDecode_UnbekannterSchluessel(t *testing.T) {
 	if err == nil || !strings.Contains(err.Error(), "line") {
 		t.Fatalf("err = %v (Zeilenangabe erwartet)", err)
 	}
+	if strings.Contains(err.Error(), "configyaml.raw") {
+		t.Fatalf("interner Typname leakt: %v", err)
+	}
+}
+
+func TestDecode_LeereUndKommentarDatei(t *testing.T) {
+	for _, content := range []string{"", "# nur kommentar\n", "\n\n"} {
+		cfg, err := Decode([]byte(content))
+		if err != nil || cfg.Roots != nil || cfg.Modules != nil {
+			t.Fatalf("Decode(%q): cfg=%+v err=%v (Defaults erwartet)", content, cfg, err)
+		}
+	}
 }
 
 func TestDecode_UngueltigerRegex(t *testing.T) {

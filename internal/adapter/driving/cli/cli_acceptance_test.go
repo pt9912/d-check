@@ -46,12 +46,54 @@ func TestCLI001_Happy(t *testing.T) {
 	}
 }
 
-// DC-FA-CLI-001 Boundary: keine Markdown-Dateien → 0 geprüft, Exit 0.
-func TestCLI001_Boundary_LeeresRepo(t *testing.T) {
+// DC-FA-CLI-001 Boundary: keine Markdown-Dateien (aber Inhalt) →
+// 0 geprüft, Exit 0.
+func TestCLI001_Boundary_KeineMarkdownDateien(t *testing.T) {
 	root := t.TempDir()
+	write(t, root, "src/main.txt", "kein markdown")
 	code, _, stderr := run(t, "--disable", "anchors", root)
 	if code != 0 || !strings.Contains(stderr, "0 Datei(en) geprüft") {
 		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+}
+
+// DC-FA-DIST-001 Negative: gänzlich leere Wurzel → Exit 2 mit Hinweis.
+func TestDIST001_GaenzlichLeereWurzel(t *testing.T) {
+	root := t.TempDir()
+	code, _, stderr := run(t, root)
+	if code != 2 || !strings.Contains(stderr, "leer") {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+}
+
+// DC-FA-DIST-001/ADR-0002: Optionen dürfen NACH dem Pfad stehen
+// (Container-Aufrufmuster: ENTRYPOINT setzt /repo, Optionen angehängt).
+func TestDIST001_OptionenNachPfad(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "[kaputt](fehlt.md)")
+	code, stdout, _ := run(t, root, "--json", "--disable", "anchors")
+	if code != 1 {
+		t.Fatalf("Exit = %d, want 1", code)
+	}
+	if !strings.HasPrefix(strings.TrimSpace(stdout), "{") {
+		t.Fatalf("kein JSON auf stdout: %q", stdout)
+	}
+}
+
+// DC-FA-CONF-001: leere bzw. Nur-Kommentar-Config = Defaults.
+func TestCONF001_LeereConfig(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, ".d-check.yml", "")
+	write(t, root, "docs/a.md", "[ok](b.md)")
+	write(t, root, "docs/b.md", "x")
+	code, _, stderr := run(t, "--disable", "anchors", root)
+	if code != 0 {
+		t.Fatalf("leere Config: Exit = %d, stderr = %q", code, stderr)
+	}
+	write(t, root, ".d-check.yml", "# nur ein Kommentar\n")
+	code, _, stderr = run(t, "--disable", "anchors", root)
+	if code != 0 {
+		t.Fatalf("Kommentar-Config: Exit = %d, stderr = %q", code, stderr)
 	}
 }
 
@@ -87,6 +129,7 @@ func TestCLI002_CLIVorConfig(t *testing.T) {
 // DC-FA-CLI-002 Negative: unbekanntes Modul → Exit 2 + gültige Namen.
 func TestCLI002_UnbekanntesModul(t *testing.T) {
 	root := t.TempDir()
+	write(t, root, "docs/a.md", "x")
 	code, _, stderr := run(t, "--enable", "foo", root)
 	if code != 2 || !strings.Contains(stderr, "links, anchors, ids, matrix, external") {
 		t.Fatalf("Exit = %d, stderr = %q", code, stderr)

@@ -8,13 +8,20 @@ package configyaml
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"io"
 	"regexp"
 
 	"gopkg.in/yaml.v3"
 
 	"github.com/pt9912/d-check/internal/hexagon/core"
 )
+
+// typeLeak entfernt interne Go-Typnamen aus yaml-Fehlermeldungen
+// (Review R1/B5): "field x not found in type configyaml.raw" →
+// "field x not found".
+var typeLeak = regexp.MustCompile(` in type \S+`)
 
 // FileName ist der feste Name der Konfigurationsdatei.
 const FileName = ".d-check.yml"
@@ -67,7 +74,13 @@ func Decode(content []byte) (core.Config, error) {
 	dec := yaml.NewDecoder(bytes.NewReader(content))
 	dec.KnownFields(true)
 	if err := dec.Decode(&r); err != nil {
-		return cfg, fmt.Errorf("%s: %w", FileName, err)
+		// Leere oder Nur-Kommentar-Datei ist ein YAML-Null-Dokument —
+		// keine Exit-2-Bedingung aus DC-FA-CONF-001 greift → Defaults
+		// (Review R1/B2).
+		if errors.Is(err, io.EOF) {
+			return cfg, nil
+		}
+		return cfg, fmt.Errorf("%s: %s", FileName, typeLeak.ReplaceAllString(err.Error(), ""))
 	}
 
 	if r.Scan != nil {
