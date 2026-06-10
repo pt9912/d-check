@@ -10,20 +10,20 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Welle-ID:** welle-01-fundament
+**Welle-ID:** welle-02-mvp
 **Start:** 2026-06-10
-**Slices:** [slice-001](../done/slice-001-adr-fundament.md) (done), [slice-002](slice-002-architektur-und-spezifikation.md) (in-progress)
+**Slices:** [slice-003](../open/slice-003-cli-kern-und-links-modul.md), [slice-004](../open/slice-004-anchors-modul-und-dogfooding.md)
 
-**Closure-Trigger:** Fundament-ADRs (Sprache, Distribution,
-Config-Format) `Accepted`; `spec/spezifikation.md` und
-`spec/architecture.md` existieren; Source-Precedence-Tabellen von
-„geplant" auf Links umgestellt; `make gates` grün.
+**Closure-Trigger:** CLI-Kern mit Modulen `links` + `anchors`
+implementiert und getestet; `make doc-check` läuft über `d-check`
+selbst (Dogfooding, vendorter Bootstrap-Sensor gelöscht);
+Implementierungs-Gates (`lint`, `test`, `arch-check`) existieren und
+sind in `make gates` aggregiert.
 
 ## Nächste Wellen
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| welle-02-mvp | welle-01 done | [slice-003](../open/slice-003-cli-kern-und-links-modul.md), [slice-004](../open/slice-004-anchors-modul-und-dogfooding.md) | M |
 | welle-03-regelmodule | welle-02 done | Module `ids`, `matrix`, `external`; Gate-Ausbau: `coverage-gate` (bootstrap-aware), `gate-consistency` (Slices werden bei Wellen-Start geschnitten) | M |
 | welle-04-distribution-und-migration | welle-03 done | GHCR-Release-Pipeline ([`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)), Reproduzierbarkeits-Belege (`versions`, `fullbuild` mit Image-Hash), Pilot-Migrationen in 3 Repos ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)) | M |
 
@@ -31,7 +31,7 @@ Config-Format) `Accepted`; `spec/spezifikation.md` und
 
 | Meilenstein | Welle(n) | Trigger | Status |
 |---|---|---|---|
-| M1: Spec-Fundament steht | welle-01 | Closure-Trigger welle-01 | offen |
+| M1: Spec-Fundament steht | welle-01 | Closure-Trigger welle-01 | **erreicht** (2026-06-10) |
 | M2: Dogfooding — `d-check` prüft die eigene Doku | welle-02 | slice-004 done, vendorter Bootstrap-Sensor gelöscht | offen |
 | M3: erstes GHCR-Release + Pilot-Migration | welle-04 | Image veröffentlicht, ≥1 Repo migriert | offen |
 
@@ -53,7 +53,7 @@ flowchart LR
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
-| — noch keine — | | |
+| welle-01-fundament | 2026-06-10 | [slice-001 §7](../done/slice-001-adr-fundament.md#7-closure-notiz-nach-done), [slice-002 §7](../done/slice-002-architektur-und-spezifikation.md#7-closure-notiz-nach-done) |
 
 ## Historische Trigger-Verschiebungen
 
