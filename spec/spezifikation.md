@@ -15,9 +15,9 @@
 **Eingabe:** Scan-Wurzel (Argument oder cwd), CLI-Optionen, optionale
 `.d-check.yml`. **Ausgabe:** Befundliste + Exit-Code. **Schritte:**
 
-1. Konfiguration laden und vollständig validieren
-   ([ADR-0003](../docs/plan/adr/0003-config-format.md)); jeder Fehler
-   → Exit 2, keine Prüfung.
+1. Konfiguration laden und vollständig validieren; jeder Fehler →
+   Exit 2, keine Prüfung
+   ([`DC-FA-CONF-001`](lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
 2. Effektive Module bestimmen (siehe
    [DC-FA-CLI-002.a](#dc-fa-cli-002a--modul-auflösung)).
 3. Markdown-Dateien gemäß
@@ -195,9 +195,8 @@ sondern eine stderr-Meldung (siehe [§4](#4-grund--und-fehler-codes)).
 
 ### `.d-check.yml`
 
-Unbekannte Schlüssel sind Fehler
-([ADR-0003](../docs/plan/adr/0003-config-format.md), striktes
-Decoding). Kommentiertes Vollbeispiel:
+Unbekannte Schlüssel sind Fehler (striktes Decoding).
+Kommentiertes Vollbeispiel:
 
 ```yaml
 scan:
@@ -285,9 +284,9 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | System | Version/Stand | Vertrag |
 |---|---|---|
-| `gopkg.in/yaml.v3` | gepinnt via `go.sum` | [ADR-0003](../docs/plan/adr/0003-config-format.md) |
+| `gopkg.in/yaml.v3` | gepinnt via `go.sum` | striktes Decoding (`KnownFields`); vollständig im Config-Adapter gekapselt |
 | GitHub Flavored Markdown (Slug-/Anker-Verhalten) | Referenzverhalten, Stand 2026-06 | [§1, DC-FA-ANCH-001.a](#dc-fa-anch-001a--github-slug-algorithmus) |
-| Runtime-Basis-Image distroless/static | Digest-gepinnt | [ADR-0002](../docs/plan/adr/0002-distribution-ghcr-image.md) |
+| Runtime-Basis-Image distroless/static | Digest-gepinnt | Multi-Stage-Build; nur volle Semver-Tags, kein `latest` |
 
 ## 7. Historie
 
@@ -296,3 +295,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-10 | Initiale Fassung | slice-002 |
 | 2026-06-10 | Review R1: `scan.roots`-Constraint präzisiert (nur deklarierte Wurzeln pflichtig), Symlink-Prüf-Scope präzisiert, unspezifizierter Grund-Code `nested-link` entfernt | slice-002 |
 | 2026-06-10 | Review R2: Status-Extraktions-Reihenfolge fixiert (`**Status:**` vor `Status`-Heading), `exclude-sections`-Matching definiert (getrimmt, case-sensitiv), Exit-2-Hinweis an Config-Constraint-Tabelle | slice-002 |
+| 2026-06-10 | Referenzrichtungs-Korrektur: ADR-Abwärtsverweise entfernt — Spec-Straten verweisen nie abwärts; Traceability über die `Schärft:`-Felder der ADRs (Kurs-Baseline-Korrektur, MR-006) | slice-002 |

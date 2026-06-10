@@ -27,3 +27,7 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 - Harness-Hooks gehärtet (MR-005): Gate-Nachweis inhaltsbasiert
   (Commit ohne Gate-Lauf wird vom Stop-Hook nicht mehr freigegeben),
   PreToolUse-Guard prüft `bash/sh -c`-Sub-Shell-Strings rekursiv.
+- Referenzrichtungs-Korrektur (MR-006): ADR-Abwärtsverweise aus
+  `spec/spezifikation.md` und `spec/architecture.md` entfernt
+  (Kurs-Template-Fehler; Spec-Straten verweisen nie abwärts,
+  Traceability über die `Schärft:`-Felder der ADRs).

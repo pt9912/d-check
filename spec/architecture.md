@@ -6,10 +6,12 @@
 Commit-Hashes oder Closure-Daten (`AGENTS.md` §3.4). Die zeitliche
 Schicht lebt in `docs/plan/planning/`.
 
-**Bezug:** [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md)
-(Hexagon light) setzt den Schnitt; diese Datei dokumentiert ihn als
-Zielbild. Bei Konflikt gewinnen [`lastenheft.md`](lastenheft.md) und
-[`spezifikation.md`](spezifikation.md).
+**Bezug:** [`lastenheft.md`](lastenheft.md) und
+[`spezifikation.md`](spezifikation.md) — bei Konflikt gewinnen diese.
+Der hexagonale Schnitt („Hexagon light") ist per ADR entschieden; die
+Begründung lebt dort, und die ADRs deklarieren ihre Schärfung dieser
+Datei aufwärts (`Schärft:`-Feld). Spec-Straten verweisen nicht abwärts
+auf ADRs oder Planning-Artefakte.
 
 ---
 
@@ -41,26 +43,25 @@ neue Module sind Kern-Erweiterungen, keine Architekturänderungen.
 
 ## 2. Schichten und Constraints
 
-| Bereich (Pfad) | Verantwortlichkeit | Darf importieren | Darf NICHT importieren | ADR |
-|---|---|---|---|---|
-| Kern (`internal/core`) | Markdown-Vorverarbeitung, Link-/Heading-/Kennungs-Extraktion, Slug, Regelmodule, Befund-Modell, deterministische Sortierung, Pfad-/Escape-Regeln; definiert die Ports | reine Stdlib (ohne I/O) | `os`, `net`, `net/http`, `syscall`, `internal/adapter/*`, `gopkg.in/yaml.v3` | [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md) |
-| Filesystem-Adapter (`internal/adapter/fs`) | Datei-Discovery, Lesen, Lstat/Symlink-Erkennung | Kern-Ports, `os`, `io/fs`, `path/filepath` | andere Adapter, `net/http` | [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md) |
-| HTTP-Adapter (`internal/adapter/httpcheck`) | HEAD/GET-Erreichbarkeit, Timeout, Redirect-Limit | Kern-Ports, `net/http` | andere Adapter, `os` | [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md) |
-| Config-Adapter (`internal/adapter/config`) | `.d-check.yml` strikt dekodieren, zweistufig validieren (den Datei-Inhalt beschafft das CLI über den Filesystem-Adapter — `os` bleibt dort die einzige I/O-Tür, ADR-0004) | Kern-Typen, `gopkg.in/yaml.v3` | andere Adapter, `os`, `net/http` | [ADR-0003](../docs/plan/adr/0003-config-format.md) |
-| Reporter-Adapter (`internal/adapter/report`) | Text-/JSON-Rendering auf stdout/stderr | Kern-Typen, `encoding/json` | andere Adapter, `net/http` | [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md) |
-| CLI (`cmd/d-check`) | Argument-Parsing, Composition Root, Exit-Code | alles oben | — | [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md) |
+| Bereich (Pfad) | Verantwortlichkeit | Darf importieren | Darf NICHT importieren |
+|---|---|---|---|
+| Kern (`internal/core`) | Markdown-Vorverarbeitung, Link-/Heading-/Kennungs-Extraktion, Slug, Regelmodule, Befund-Modell, deterministische Sortierung, Pfad-/Escape-Regeln; definiert die Ports | reine Stdlib (ohne I/O) | `os`, `net`, `net/http`, `syscall`, `internal/adapter/*`, `gopkg.in/yaml.v3` |
+| Filesystem-Adapter (`internal/adapter/fs`) | Datei-Discovery, Lesen, Lstat/Symlink-Erkennung | Kern-Ports, `os`, `io/fs`, `path/filepath` | andere Adapter, `net/http` |
+| HTTP-Adapter (`internal/adapter/httpcheck`) | HEAD/GET-Erreichbarkeit, Timeout, Redirect-Limit | Kern-Ports, `net/http` | andere Adapter, `os` |
+| Config-Adapter (`internal/adapter/config`) | `.d-check.yml` strikt dekodieren, zweistufig validieren (den Datei-Inhalt beschafft das CLI über den Filesystem-Adapter — `os` bleibt dort die einzige I/O-Tür) | Kern-Typen, `gopkg.in/yaml.v3` | andere Adapter, `os`, `net/http` |
+| Reporter-Adapter (`internal/adapter/report`) | Text-/JSON-Rendering auf stdout/stderr | Kern-Typen, `encoding/json` | andere Adapter, `net/http` |
+| CLI (`cmd/d-check`) | Argument-Parsing, Composition Root, Exit-Code | alles oben | — |
 
-Diese Tabelle ist die Quelle der `arch-check`-Fitness-Function
-(ADR-0004 §Fitness Function); eine Lockerung ist eine neue ADR
-(`AGENTS.md` §3.6).
+Diese Tabelle ist die Quelle der `arch-check`-Fitness-Function; eine
+Lockerung ist eine neue ADR (`AGENTS.md` §3.6).
 
 ## 3. Externe Abhängigkeiten
 
-| System | Rolle | ADR | Substituierbarkeit |
-|---|---|---|---|
-| `gopkg.in/yaml.v3` | YAML-Decoding im Config-Adapter | [ADR-0003](../docs/plan/adr/0003-config-format.md) | hoch — vollständig im Adapter gekapselt |
-| Go-Stdlib `net/http` | Erreichbarkeits-Checks im HTTP-Adapter | [ADR-0001](../docs/plan/adr/0001-implementierungssprache.md) | hoch — hinter HTTPPort |
-| distroless/static (Runtime-Image) | Auslieferung | [ADR-0002](../docs/plan/adr/0002-distribution-ghcr-image.md) | mittel — CA-Bundle/nonroot-Annahmen |
+| System | Rolle | Substituierbarkeit |
+|---|---|---|
+| `gopkg.in/yaml.v3` | YAML-Decoding im Config-Adapter | hoch — vollständig im Adapter gekapselt |
+| Go-Stdlib `net/http` | Erreichbarkeits-Checks im HTTP-Adapter | hoch — hinter HTTPPort |
+| distroless/static (Runtime-Image) | Auslieferung | mittel — CA-Bundle/nonroot-Annahmen |
 
 ## 4. Sequenz-Diagramme
 
@@ -108,13 +109,3 @@ sequenceDiagram
 Der Kern wirft keine I/O-Fehler selbst — sie erreichen ihn als
 Port-Ergebnisse; das geprüfte Repository wird nie beschrieben
 ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
-
-## 6. ADR-Index
-
-Architekturprägende ADRs (Voll-Index:
-[`docs/plan/adr/README.md`](../docs/plan/adr/README.md)):
-
-- [ADR-0001](../docs/plan/adr/0001-implementierungssprache.md) — Implementierungssprache: Go
-- [ADR-0002](../docs/plan/adr/0002-distribution-ghcr-image.md) — Distribution: GHCR-Image auf distroless/static
-- [ADR-0003](../docs/plan/adr/0003-config-format.md) — Config-Parsing: striktes YAML via gopkg.in/yaml.v3
-- [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md) — Architektur-Pattern: Hexagon light
