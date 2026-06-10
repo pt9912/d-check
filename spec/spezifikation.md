@@ -41,7 +41,9 @@ Negative); eine Wurzel ohne Markdown-Dateien, aber mit Inhalt, liefert
 ([`DC-FA-CLI-001`](lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)
 Boundary). CLI-Optionen dürfen vor oder nach dem Pfad-Argument stehen
 (Container-Aufrufmuster: ENTRYPOINT setzt `/repo`, Optionen werden
-angehängt). Verzeichnis-Symlinks werden beim Scan weder verfolgt noch
+angehängt); ein wertnehmendes Flag ohne Wert ist ein Nutzungsfehler
+(Exit 2), Nutzungsfehler tragen den Präfix `d-check: error:`, und
+`-h`/`--help` zeigt die Nutzung auf stderr und endet mit Exit 0. Verzeichnis-Symlinks werden beim Scan weder verfolgt noch
 als Dateien gewertet (Symlink-Ablehnung,
 [`DC-FA-LINK-002`](lastenheft.md#dc-fa-link-002--symlink-ablehnung)).
 
@@ -314,3 +316,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-10 | Review R2: Status-Extraktions-Reihenfolge fixiert (`**Status:**` vor `Status`-Heading), `exclude-sections`-Matching definiert (getrimmt, case-sensitiv), Exit-2-Hinweis an Config-Constraint-Tabelle | slice-002 |
 | 2026-06-10 | Referenzrichtungs-Korrektur: ADR-Abwärtsverweise entfernt — Spec-Straten verweisen nie abwärts; Traceability über die `Schärft:`-Felder der ADRs (Kurs-Baseline-Korrektur, MR-006) | slice-002 |
 | 2026-06-10 | Review-Runde Implementierung (Black-Box): Optionen vor/nach Pfad-Argument; gänzlich leere Wurzel → Exit 2 mit Mount-Hinweis vs. „ohne Markdown" → Exit 0; leere `.d-check.yml` = Defaults; explizit leere Listen; absolute Ziele; Verzeichnis-Symlinks beim Scan | slice-003 |
+| 2026-06-10 | Review R2 (Black-Box): hängendes wertnehmendes Flag = Nutzungsfehler; `d-check: error:`-Präfix für Flag-Fehler; `-h` → Usage auf stderr, Exit 0 | slice-003 |

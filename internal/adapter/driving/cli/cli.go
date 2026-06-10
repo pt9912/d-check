@@ -5,6 +5,7 @@
 package cli
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -39,7 +40,7 @@ func (m *multiFlag) Set(v string) error {
 // für das Image-Aufrufmuster aus DC-FA-DIST-001/ADR-0002
 // (ENTRYPOINT ["/d-check","/repo"], Optionen werden angehängt):
 // Gos flag-Parser stoppt sonst am ersten Positional.
-func reorderArgs(args []string) []string {
+func reorderArgs(args []string) ([]string, error) {
 	valueFlags := map[string]bool{
 		"-enable": true, "--enable": true,
 		"-disable": true, "--disable": true,
@@ -49,7 +50,13 @@ func reorderArgs(args []string) []string {
 		a := args[i]
 		if len(a) > 1 && a[0] == '-' {
 			flagArgs = append(flagArgs, a)
-			if valueFlags[a] && i+1 < len(args) {
+			if valueFlags[a] {
+				// Hängendes wertnehmendes Flag am Ende würde nach dem
+				// Reordering das Pfad-Argument als Wert verschlucken
+				// (Review R2/A1) → Nutzungsfehler statt False Negative.
+				if i+1 >= len(args) {
+					return nil, fmt.Errorf("flag needs an argument: %s", a)
+				}
 				i++
 				flagArgs = append(flagArgs, args[i])
 			}
@@ -57,7 +64,7 @@ func reorderArgs(args []string) []string {
 		}
 		positionals = append(positionals, a)
 	}
-	return append(flagArgs, positionals...)
+	return append(flagArgs, positionals...), nil
 }
 
 // Run führt das CLI aus und liefert den Prozess-Exit-Code
@@ -65,12 +72,23 @@ func reorderArgs(args []string) []string {
 // 2 = Nutzungs-/Umgebungsfehler).
 func Run(args []string, stdout, stderr io.Writer) int {
 	flags := flag.NewFlagSet("d-check", flag.ContinueOnError)
-	flags.SetOutput(stderr)
+	flags.SetOutput(io.Discard) // Fehlertexte einheitlich über stderr unten
 	var enable, disable multiFlag
 	jsonOut := flags.Bool("json", false, "maschinenlesbare JSON-Ausgabe")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
 	flags.Var(&disable, "disable", "Regelmodul deaktivieren (wiederholbar)")
-	if err := flags.Parse(reorderArgs(args)); err != nil {
+
+	reordered, err := reorderArgs(args)
+	if err == nil {
+		err = flags.Parse(reordered)
+	}
+	if err != nil {
+		if errors.Is(err, flag.ErrHelp) {
+			flags.SetOutput(stderr)
+			flags.Usage()
+			return 0
+		}
+		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return 2 // ungültige Nutzung
 	}
 

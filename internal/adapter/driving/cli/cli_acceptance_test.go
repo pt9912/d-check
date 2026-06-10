@@ -80,6 +80,29 @@ func TestDIST001_OptionenNachPfad(t *testing.T) {
 	}
 }
 
+// Review R2/A1: hängendes wertnehmendes Flag am Ende darf das
+// Pfad-Argument nicht als Wert verschlucken → Nutzungsfehler Exit 2.
+func TestR2A1_HaengendesWertFlag(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "links/doc.md", "[kaputt](fehlt.md)")
+	code, _, stderr := run(t, "links", "--disable")
+	if code != 2 || !strings.Contains(stderr, "needs an argument") {
+		t.Fatalf("Exit = %d, stderr = %q (Nutzungsfehler erwartet)", code, stderr)
+	}
+}
+
+// Flag-Fehler tragen den d-check: error:-Präfix; -h endet mit Exit 0.
+func TestFlagFehlerUndHelp(t *testing.T) {
+	code, _, stderr := run(t, "--foo")
+	if code != 2 || !strings.Contains(stderr, "d-check: error:") {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	code, stdout, stderr := run(t, "-h")
+	if code != 0 || stdout != "" || !strings.Contains(stderr, "-json") {
+		t.Fatalf("-h: Exit = %d, stdout = %q, stderr = %q", code, stdout, stderr)
+	}
+}
+
 // DC-FA-CONF-001: leere bzw. Nur-Kommentar-Config = Defaults.
 func TestCONF001_LeereConfig(t *testing.T) {
 	root := t.TempDir()
