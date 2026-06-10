@@ -12,10 +12,10 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 **Welle-ID:** welle-03-regelmodule
 **Start:** 2026-06-10
-**Slices:** [slice-005](slice-005-lint-profil-solid.md) (in-progress,
-Gate-Ausbau: Lint-Profil); weitere werden geschnitten — Module `ids`,
-`matrix`, `external`; `coverage-gate` (bootstrap-aware) und
-`gate-consistency`.
+**Slices:** [slice-005](../done/slice-005-lint-profil-solid.md)
+(done, Gate-Ausbau: Lint-Profil); weitere werden geschnitten —
+Module `ids`, `matrix`, `external`; `coverage-gate` (bootstrap-aware)
+und `gate-consistency`.
 
 **Closure-Trigger:** Module `ids`, `matrix`, `external` implementiert
 und getestet; matrix-Selbstkonfiguration in der eigenen `.d-check.yml`
