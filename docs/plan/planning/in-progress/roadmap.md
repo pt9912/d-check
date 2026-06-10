@@ -12,7 +12,7 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 **Welle-ID:** welle-01-fundament
 **Start:** 2026-06-10
-**Slices:** [slice-001](../open/slice-001-adr-fundament.md), [slice-002](../open/slice-002-architektur-und-spezifikation.md)
+**Slices:** [slice-001](slice-001-adr-fundament.md) (in-progress), [slice-002](../open/slice-002-architektur-und-spezifikation.md)
 
 **Closure-Trigger:** Fundament-ADRs (Sprache, Distribution,
 Config-Format) `Accepted`; `spec/spezifikation.md` und
