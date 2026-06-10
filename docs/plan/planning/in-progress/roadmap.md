@@ -13,9 +13,15 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 **Welle-ID:** welle-03-regelmodule
 **Start:** 2026-06-10
 **Slices:** [slice-005](../done/slice-005-lint-profil-solid.md)
-(done, Gate-Ausbau: Lint-Profil); weitere werden geschnitten —
-Module `ids`, `matrix`, `external`; `coverage-gate` (bootstrap-aware)
-und `gate-consistency`.
+(done, Lint-Profil),
+[slice-006](../open/slice-006-ids-modul.md) (`ids`),
+[slice-007](../open/slice-007-matrix-modul-selbstkonfiguration.md)
+(`matrix` + Selbstkonfiguration, nach 006),
+[slice-008](../open/slice-008-external-modul.md) (`external` +
+QA-03-Netzlos-Gate),
+[slice-009](../open/slice-009-coverage-und-meta-gates.md)
+(coverage-gate 85→90, gate-consistency, DC-QA-01-Benchmark — nach
+006–008, schließt die Welle).
 
 **Closure-Trigger:** Module `ids`, `matrix`, `external` implementiert
 und getestet; matrix-Selbstkonfiguration in der eigenen `.d-check.yml`
