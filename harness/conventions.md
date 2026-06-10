@@ -85,7 +85,7 @@ die kanonische Quelle (Source Precedence, siehe
   ab.
 - **Auflösungs-Trigger:** slice-004 — `make doc-check` läuft über
   `d-check` selbst (Dogfooding), das Skript wird gelöscht
-  ([Slice-Plan](../docs/plan/planning/open/slice-004-anchors-modul-und-dogfooding.md)).
+  ([Slice-Plan](../docs/plan/planning/in-progress/slice-004-anchors-modul-und-dogfooding.md)).
 
 ### MR-004 — Gate-Nachweis-Mechanik und `.claude`-Hooks nach b-cad-Vorbild
 
