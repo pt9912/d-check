@@ -99,6 +99,26 @@ die kanonische Quelle (Source Precedence, siehe
   Gate-Lauf"; keine Logik-Dopplung zwischen Makefile und Hook.
 - **Auflösungs-Trigger:** permanent.
 
+### MR-005 — Härtung ggü. b-cad: inhaltsbasierter Gate-Nachweis, Sub-Shell-Prüfung
+
+- **Datum:** 2026-06-10
+- **Geltungsbereich:** [`tools/harness/working-tree-hash.sh`](../tools/harness/working-tree-hash.sh), `.claude/hooks/`
+- **Adaption:** Zwei Abweichungen von der per [`MR-004`](#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild)
+  übernommenen b-cad-Mechanik:
+  (a) Der Working-Tree-Hash ist **inhaltsbasiert** (sha256 über alle
+  getrackten + untracked Dateiinhalte) statt diff-basiert. Damit gilt
+  der Gate-Nachweis über Commits hinweg (gleicher Inhalt = gleicher
+  Hash), und ein Commit *ohne* Gate-Lauf macht den Stop-Hook nicht
+  mehr grün. Restlücke bleibt: frischer Klon bzw. gelöschter
+  `.harness`-State mit cleanem Tree wird freigegeben — dort ist CI das
+  Netz.
+  (b) Der PreToolUse-Guard prüft Sub-Shell-Strings (`bash -c "…"`,
+  `sh -c '…'`) rekursiv (Tiefe ≤ 3, darüber fail-closed).
+- **Begründung:** Review-R2-Beobachtungen (User): Commit-Bypass des
+  Stop-Hooks und Guard-Umgehung via `bash -c`.
+- **Auflösungs-Trigger:** permanent. Rückport beider Härtungen nach
+  b-cad steht aus.
+
 ## Zusatzklassen-Deklaration für Sensors-Bindung
 
 Zusätzlich zu den vier kanonischen Klassen (ADR, Carveout, Schwelle,

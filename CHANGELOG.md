@@ -17,3 +17,9 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 - Fundament-ADRs 0001–0004 (slice-001): Go, GHCR-Image auf
   distroless/static (Binary-Distribution vertagt mit Trigger),
   striktes YAML via yaml.v3, Architektur Hexagon light.
+
+### Changed
+
+- Harness-Hooks gehärtet (MR-005): Gate-Nachweis inhaltsbasiert
+  (Commit ohne Gate-Lauf wird vom Stop-Hook nicht mehr freigegeben),
+  PreToolUse-Guard prüft `bash/sh -c`-Sub-Shell-Strings rekursiv.

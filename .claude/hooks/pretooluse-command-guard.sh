@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
-# pretooluse-command-guard — verbietet Host-Paketmanager und
-# Toolchain-Installationen (d-check ist make/Docker-only, AGENTS.md
-# §3.1; Implementierungssprache via ADR-0001 — Liste danach um die
-# sprachkonkreten Build-/Test-Tools erweitern).
+# pretooluse-command-guard — verbietet Host-Paketmanager und die
+# Host-Go-Toolchain (d-check ist make/Docker-only, AGENTS.md §3.1,
+# ADR-0001).
 #
-# Geprüft wird nur die Befehlsposition jedes Kommando-Segments
-# (Trennung an ; && || | $( ` ( und Zeilenenden), nicht beliebige
-# Argumente — `git commit -m "docs: pip"` oder
-# `docker run img npm test` bleiben erlaubt; `/usr/bin/pip` und
-# `sudo pip` werden erkannt.
+# Geprüft wird die Befehlsposition jedes Kommando-Segments (Trennung
+# an ; && || | $( ` ( und Zeilenenden) — `git commit -m "docs: pip"`
+# oder `docker run img npm test` bleiben erlaubt; `/usr/bin/pip` und
+# `sudo pip` werden erkannt. Sub-Shell-Strings (`bash -c "…"`,
+# `sh -c '…'`) werden rekursiv geprüft (MR-005).
 #
 # Im Pass-Fall: KEINE Ausgabe — "approve" würde das Permission-System
 # überspringen; ohne Ausgabe läuft die normale Permission-Entscheidung.
@@ -26,7 +25,31 @@ verdict="$(printf '%s' "$input" | node -e '
   const BLOCKED = new Set(["apt","apt-get","brew","pip","pip3","pipx",
     "npm","pnpm","yarn","npx","corepack","cargo","rustup","gem","conda",
     "go","gofmt","golangci-lint","staticcheck"]); // Host-Go: ADR-0001 + AGENTS §3.1
-  const PREFIXES = new Set(["sudo","env","command","exec","nice","time","xargs"]);
+  const PREFIXES = new Set(["sudo","env","command","exec","nice","time",
+    "xargs","eval"]);
+  const SHELLS = new Set(["bash","sh","zsh","dash","ksh"]);
+  const stripQuotes = t => t.replace(/^["'\'']+|["'\'']+$/g, "");
+
+  function scan(cmd, depth) {
+    if (depth > 3) return true; // zu tief verschachtelt → fail-closed
+    const segments = cmd.split(/(?:;|&&|\|\||\||\$\(|`|\(|\r?\n)/);
+    for (const seg of segments) {
+      const tokens = seg.trim().split(/\s+/).filter(Boolean).map(stripQuotes);
+      let i = 0;
+      while (i < tokens.length &&
+             (/^[A-Za-z_][A-Za-z0-9_]*=/.test(tokens[i]) || PREFIXES.has(tokens[i]))) i++;
+      if (i >= tokens.length) continue;
+      const head = tokens[i].replace(/^.*\//, ""); // /usr/bin/pip → pip
+      if (BLOCKED.has(head)) return true;
+      if (SHELLS.has(head)) {
+        const cIdx = tokens.indexOf("-c", i + 1);
+        if (cIdx !== -1 && cIdx + 1 < tokens.length &&
+            scan(tokens.slice(cIdx + 1).join(" "), depth + 1)) return true;
+      }
+    }
+    return false;
+  }
+
   let s = "";
   process.stdin.on("data", d => s += d);
   process.stdin.on("end", () => {
@@ -35,17 +58,7 @@ verdict="$(printf '%s' "$input" | node -e '
       const j = JSON.parse(s);
       cmd = String((j.tool_input && j.tool_input.command) || "");
     } catch { process.stdout.write("block"); return; } // unlesbar → fail-closed
-    const segments = cmd.split(/(?:;|&&|\|\||\||\$\(|`|\(|\r?\n)/);
-    for (const seg of segments) {
-      const tokens = seg.trim().split(/\s+/).filter(Boolean);
-      let i = 0;
-      while (i < tokens.length &&
-             (/^[A-Za-z_][A-Za-z0-9_]*=/.test(tokens[i]) || PREFIXES.has(tokens[i]))) i++;
-      if (i >= tokens.length) continue;
-      const head = tokens[i].replace(/^.*\//, ""); // /usr/bin/pip → pip
-      if (BLOCKED.has(head)) { process.stdout.write("block"); return; }
-    }
-    process.stdout.write("ok");
+    process.stdout.write(scan(cmd, 0) ? "block" : "ok");
   });
 ')"
 
@@ -53,7 +66,7 @@ if [ "$verdict" = "block" ]; then
   cat <<'JSON'
 {
   "decision": "block",
-  "reason": "d-check is make/Docker-only (AGENTS.md §3.1). Use make targets; do not install or run host package managers (apt/brew/pip/npm/cargo/...)."
+  "reason": "d-check is make/Docker-only (AGENTS.md §3.1, ADR-0001). Use make targets; do not install or run host package managers or host go (apt/brew/pip/npm/cargo/go/...)."
 }
 JSON
 fi
