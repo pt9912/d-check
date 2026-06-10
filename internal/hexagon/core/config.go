@@ -12,10 +12,10 @@ import (
 var ValidModules = []string{"links", "anchors", "ids", "matrix", "external"}
 
 // ImplementedModules sind die in diesem Stand lauffähigen Module.
-// `anchors` folgt mit dem Anchors-Slice, `ids`/`matrix`/`external`
-// mit der Regelmodul-Welle; bis dahin werden aktivierte, aber nicht
-// implementierte Module mit stderr-Hinweis übersprungen.
-var ImplementedModules = map[string]bool{"links": true}
+// `ids`/`matrix`/`external` folgen mit der Regelmodul-Welle; bis
+// dahin werden aktivierte, aber nicht implementierte Module mit
+// stderr-Hinweis übersprungen.
+var ImplementedModules = map[string]bool{"links": true, "anchors": true}
 
 // DefaultModules ist der Default-Modulsatz (DC-FA-CLI-002).
 var DefaultModules = []string{"links", "anchors"}

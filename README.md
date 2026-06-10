@@ -5,7 +5,8 @@ und Bildreferenzen, Heading-Anker, Linkpflicht für Kennungen (z. B.
 `ADR-NNNN`) und Referenzrichtungs-Regeln zwischen Dokumentklassen
 (Referenzmatrix). `d-check` konsolidiert zwölf funktional überlappende
 Einzeltools (`check_refs.py`, `docs-check.js`, `verify-doc-refs.sh`)
-aus den Repos unter `/Development` in ein konfigurierbares Tool.
+aus den Schwester-Repositories des Entwicklungs-Workspace in ein
+konfigurierbares Tool.
 
 **Status: Spec-Fundament steht (welle-01 abgeschlossen); die
 Implementierung beginnt mit welle-02-mvp.** Das Tool ist noch nicht

@@ -31,6 +31,14 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   `arch-check` (Fitness Function R1–R5), Runtime-Image
   distroless/static mit Selbst-Smoke-Test (`make run`).
 
+- slice-004 — Modul `anchors` (GitHub-Slug-Verfahren inkl.
+  Duplikat-Suffixen, Fragment-Dekodierung, Schweigen bei fehlender
+  Zieldatei) und **Dogfooding**: `make doc-check` läuft über `d-check`
+  selbst (`scan.roots: ["."]`, Module links+anchors — erstmals mit
+  Anker-Validierung); vendorter Bootstrap-Sensor gelöscht
+  (MR-003 → MR-007 aufgelöst); Vergleichslauf als erster
+  DC-QA-04-Datenpunkt.
+
 ### Changed
 
 - Harness-Hooks gehärtet (MR-005): Gate-Nachweis inhaltsbasiert

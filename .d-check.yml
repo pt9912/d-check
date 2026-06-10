@@ -1,0 +1,5 @@
+# d-check prüft sich selbst (Dogfooding, slice-004 / MR-007).
+# "." = gesamte Repo-Wurzel; SKIP_DIRS (.git, vendor, …) gelten immer.
+scan:
+  roots: ["."]
+modules: [links, anchors]

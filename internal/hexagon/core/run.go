@@ -35,6 +35,7 @@ func Run(fsys driven.Filesystem, cfg Config, modules []string) (Result, error) {
 	}
 	res.FilesChecked = len(files)
 
+	slugCache := map[string]map[string]bool{}
 	for _, file := range files {
 		content, err := fsys.ReadFile(file)
 		if err != nil {
@@ -43,6 +44,9 @@ func Run(fsys driven.Filesystem, cfg Config, modules []string) (Result, error) {
 		lines := PreprocessMarkdown(content)
 		if active["links"] {
 			res.Findings = append(res.Findings, checkLinks(fsys, file, lines)...)
+		}
+		if active["anchors"] {
+			res.Findings = append(res.Findings, checkAnchors(fsys, file, content, lines, slugCache)...)
 		}
 	}
 	res.Findings = SortFindings(res.Findings)

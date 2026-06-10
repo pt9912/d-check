@@ -84,7 +84,8 @@ Nutzungsfehler (Exit 2) mit Auflistung der gültigen Namen.
 **Eingabe:** Heading-Text (ATX, `#`–`######`). **Schritte:**
 
 1. Markdown-Inline-Auszeichnung entfernen: Code-Span-Backticks,
-   Emphasis-Marker (`*`, `_`), Links → Linktext.
+   Emphasis-Sterne (`*`), Links → Linktext; literale Unterstriche
+   bleiben erhalten (GitHub-Verhalten, Schritt 3 erlaubt `_`).
 2. Unicode-Kleinschreibung.
 3. Alle Zeichen entfernen, die nicht Unicode-Buchstabe, Ziffer,
    Leerzeichen, `-` oder `_` sind (Umlaute bleiben erhalten).
@@ -248,7 +249,7 @@ Exit 2 ohne Prüfung
 
 | Schlüssel | Typ | Default | Constraint |
 |---|---|---|---|
-| `scan.roots` | string[] | `DEFAULT_SCAN_ROOTS` | alle hier deklarierten Wurzeln müssen existieren (Exit 2); nur die Default-Wurzeln (kein `scan.roots` gesetzt) sind optional |
+| `scan.roots` | string[] | `DEFAULT_SCAN_ROOTS` | alle hier deklarierten Wurzeln müssen existieren (Exit 2); nur die Default-Wurzeln (kein `scan.roots` gesetzt) sind optional; `"."` steht für die gesamte Repo-Wurzel (rekursiv, `SKIP_DIRS` gelten weiter) |
 | `scan.ignore` | string[] | leer | Glob-Syntax |
 | `modules` | string[] | `DEFAULT_MODULES` | nur gültige Modulnamen |
 | `ids.patterns[].regex` | string | — | muss kompilieren (Exit 2) |
@@ -317,3 +318,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-10 | Referenzrichtungs-Korrektur: ADR-Abwärtsverweise entfernt — Spec-Straten verweisen nie abwärts; Traceability über die `Schärft:`-Felder der ADRs (Kurs-Baseline-Korrektur, MR-006) | slice-002 |
 | 2026-06-10 | Review-Runde Implementierung (Black-Box): Optionen vor/nach Pfad-Argument; gänzlich leere Wurzel → Exit 2 mit Mount-Hinweis vs. „ohne Markdown" → Exit 0; leere `.d-check.yml` = Defaults; explizit leere Listen; absolute Ziele; Verzeichnis-Symlinks beim Scan | slice-003 |
 | 2026-06-10 | Review R2 (Black-Box): hängendes wertnehmendes Flag = Nutzungsfehler; `d-check: error:`-Präfix für Flag-Fehler; `-h` → Usage auf stderr, Exit 0 | slice-003 |
+| 2026-06-10 | Modul `anchors` normiert umgesetzt; `scan.roots`-Wert `"."` = gesamte Repo-Wurzel; Slug-Schritt 1 präzisiert: Emphasis-Sterne entfallen, literale Unterstriche bleiben (GitHub-Verhalten) | slice-004 |

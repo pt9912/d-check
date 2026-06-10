@@ -30,6 +30,13 @@ func DiscoverFiles(fsys driven.Filesystem, explicitRoots, ignore []string) ([]st
 	if explicitRoots != nil {
 		for _, r := range explicitRoots {
 			r = strings.Trim(r, "/")
+			// "." steht für die Repo-Wurzel (gesamter Baum)
+			if r == "." || r == "" {
+				if err := walkMarkdown(fsys, "", ignore, &files); err != nil {
+					return nil, err
+				}
+				continue
+			}
 			kind, err := fsys.Kind(r)
 			if err != nil {
 				return nil, err
@@ -75,7 +82,10 @@ func walkMarkdown(fsys driven.Filesystem, dir string, ignore []string, out *[]st
 		return err
 	}
 	for _, e := range entries {
-		rel := dir + "/" + e.Name
+		rel := e.Name
+		if dir != "" {
+			rel = dir + "/" + e.Name
+		}
 		switch e.Kind {
 		case driven.KindDir:
 			if SkipDirs[e.Name] {

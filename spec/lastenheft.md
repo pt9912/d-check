@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.2.1
+**Version:** 0.2.2
 
 **Status:** Draft
 
@@ -16,8 +16,8 @@ Bildreferenzen, Heading-Anker, Linkpflicht für Anforderungs- und
 Entscheidungs-Kennungen sowie Referenzrichtungs-Regeln zwischen
 Dokumentklassen (Referenzmatrix). Es konsolidiert zwölf funktional
 überlappende Einzeltools (`check_refs.py`, `docs-check.js`,
-`verify-doc-refs.sh`), die heute als Kopien in den Repositories unter
-`/Development` gepflegt werden.
+`verify-doc-refs.sh`), die heute als Kopien in den
+Schwester-Repositories des Entwicklungs-Workspace gepflegt werden.
 
 Das Tool wird als Docker-Image über GHCR verteilt und in CI-Pipelines
 sowie lokal als einzelner Prüfschritt aufgerufen. Die Funktionalität
@@ -364,7 +364,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Dokumentklasse | Über Pfad-Muster definierte Gruppe von Dokumenten (z. B. Contract-Spec, ADR, Slice) als Knoten der Referenzmatrix. |
 | Referenzmatrix | Deklaration, welche Dokumentklasse auf welche verweisen darf, inkl. Status-Bedingungen. |
 | Aktives ADR | ADR, dessen Status-Feld keinen verbotenen Wert (`superseded`, `deprecated`) trägt. |
-| Quell-Tools | Die zwölf konsolidierten Alt-Tool-Vorkommen aus drei Familien (Shell: `verify-doc-refs.sh`, Python: `check_refs.py`, JavaScript: `docs-check.js`) in den Repos unter `/Development`. |
+| Quell-Tools | Die zwölf konsolidierten Alt-Tool-Vorkommen aus drei Familien (Shell: `verify-doc-refs.sh`, Python: `check_refs.py`, JavaScript: `docs-check.js`) in den Schwester-Repositories des Entwicklungs-Workspace. |
 
 ## 7. Historie
 
@@ -373,3 +373,4 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | 0.1.0 | 2026-06-10 | Initiale Fassung (Konsolidierung von 12 Quell-Tools, Modul-Schnitt, Docker-Distribution) | — |
 | 0.2.0 | 2026-06-10 | Review-Runde R1: Modul-Schnitt `links`/`anchors` präzisiert (Fragment-Zuständigkeit, fehlende Zieldatei), Slug-Duplikat-Reihenfolge, Symlink-Vorrang, RFC-3986-Dekodierung vor Escape-Prüfung, Redirect-Regel `external`, Muster-Präzedenz `ids`, Status-Default `matrix`, Scan-Wurzel- und Config-Vollvalidierung, Out-of-Scope Reference-Style-Links, Image-Default-Befehl | — |
 | 0.2.1 | 2026-06-10 | Redaktionell: Beispiel-Kennungen in DC-FA-ID-001/DC-FA-MTX-001/Glossar auf fiktive Nummern (`ADR-0042`, `ADR-0099`) umgestellt — Kollision mit real entstandenen/zukünftigen eigenen ADRs vermeiden; keine inhaltliche Änderung | — |
+| 0.2.2 | 2026-06-10 | Redaktionell: absolute Workspace-Pfade entfernt („Schwester-Repositories des Entwicklungs-Workspace" statt konkreter Pfade); keine inhaltliche Änderung | — |

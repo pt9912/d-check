@@ -66,8 +66,10 @@ run: build ## Smoke-Test: d-check prüft das eigene Repo (read-only).
 
 # ---- docs gates --------------------------------------------------------------
 
-doc-check: ## interne Markdown-Linkziele existieren (Bootstrap-Sensor; Ablösung: slice-004).
-	@bash tools/verify-doc-refs.sh
+# Dogfooding (MR-007): d-check prüft die eigene Doku — Module links +
+# anchors über die gesamte Repo-Wurzel (.d-check.yml, scan.roots ".").
+doc-check: build ## Doku-Links + Anker via d-check selbst (Dogfooding, DC-FA-LINK/ANCH).
+	docker run --rm -v "$(CURDIR)":/repo:ro $(IMAGE):latest
 
 # ---- harness -----------------------------------------------------------------
 

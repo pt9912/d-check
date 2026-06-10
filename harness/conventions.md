@@ -21,10 +21,10 @@ die kanonische Quelle (Source Precedence, siehe
 
 ## Adoptierte Konventions-Quellen
 
-- **Extern (Lehrmaterial):** `/Development/KI/ai-harness-course`
+- **Extern (Lehrmaterial):** Schwester-Repo `ai-harness-course`
   (Templates: `lab/templates/`, Konventionen:
-  `kurs/de/grundlagen/konventionen.md`) — Pfade außerhalb dieses
-  Repos, daher bewusst nicht verlinkt.
+  `kurs/de/grundlagen/konventionen.md`) — außerhalb dieses Repos,
+  daher bewusst nicht verlinkt und ohne absoluten Pfad referenziert.
 - **In-Repo (verkörperte Form):** `AGENTS.md`, `harness/README.md`,
   Verzeichniskonvention `spec/` + `docs/plan/` + `harness/`.
 
@@ -43,7 +43,7 @@ die kanonische Quelle (Source Precedence, siehe
 ### MR-001 — Source Precedence mit eigener Spezifikations-Schicht
 
 - **Datum:** 2026-06-10
-- **Geltungsbereich:** `harness/README.md` §Source precedence
+- **Geltungsbereich:** [`harness/README.md` §Source precedence](README.md#source-precedence)
 - **Adaption:** Die Source-Precedence-Tabelle führt
   `spec/spezifikation.md` als eigenen **Rang 2** zwischen Lastenheft
   (Rang 1) und Architektur (Rang 3). Der Kurs-Default setzt zwei
@@ -58,7 +58,7 @@ die kanonische Quelle (Source Precedence, siehe
 ### MR-002 — ID-Schema mit Bereichskürzeln ab initialer Fassung
 
 - **Datum:** 2026-06-10
-- **Geltungsbereich:** `spec/lastenheft.md`, alle Traceability-Verweise
+- **Geltungsbereich:** [`spec/lastenheft.md`](../spec/lastenheft.md), alle Traceability-Verweise
 - **Adaption:** Funktionale Anforderungen verwenden von Beginn an
   Bereichskürzel: `DC-FA-<BEREICH>-<NNN>` (z. B. `DC-FA-LINK-001`)
   statt des zweistelligen Kurs-Defaults `<PREFIX>-FA-<NN>`.
@@ -73,7 +73,7 @@ die kanonische Quelle (Source Precedence, siehe
 ### MR-003 — Vendorter Bootstrap-Sensor `tools/verify-doc-refs.sh`
 
 - **Datum:** 2026-06-10
-- **Geltungsbereich:** [`tools/verify-doc-refs.sh`](../tools/verify-doc-refs.sh), `make doc-check`
+- **Geltungsbereich:** `tools/verify-doc-refs.sh` (gelöscht mit slice-004, siehe [`MR-007`](#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)), `make doc-check`
 - **Adaption:** Bis `d-check` sich selbst prüfen kann, läuft
   `make doc-check` über ein aus `d-migrate` vendortes Shell-Skript
   (Markdown-Linkziel-Prüfung). Das ist Fremd-Code ohne eigene Spec in
@@ -90,7 +90,7 @@ die kanonische Quelle (Source Precedence, siehe
 ### MR-004 — Gate-Nachweis-Mechanik und `.claude`-Hooks nach b-cad-Vorbild
 
 - **Datum:** 2026-06-10
-- **Geltungsbereich:** `tools/harness/`, `.claude/`, `make record-gates`
+- **Geltungsbereich:** [`tools/harness/`](../tools/harness/), [`.claude/`](../.claude/), `make record-gates`
 - **Adaption:** Übernahme der Working-Tree-Hash-Mechanik
   (`record-gates` als letzter `gates`-Prerequisite, Stop-Hook
   vergleicht den Hash) und der `.claude`-Hooks (PreToolUse-Guard,
@@ -102,7 +102,7 @@ die kanonische Quelle (Source Precedence, siehe
 ### MR-005 — Härtung ggü. b-cad: inhaltsbasierter Gate-Nachweis, Sub-Shell-Prüfung
 
 - **Datum:** 2026-06-10
-- **Geltungsbereich:** [`tools/harness/working-tree-hash.sh`](../tools/harness/working-tree-hash.sh), `.claude/hooks/`
+- **Geltungsbereich:** [`tools/harness/working-tree-hash.sh`](../tools/harness/working-tree-hash.sh), [`.claude/hooks/`](../.claude/hooks/)
 - **Adaption:** Zwei Abweichungen von der per [`MR-004`](#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild)
   übernommenen b-cad-Mechanik:
   (a) Der Working-Tree-Hash ist **inhaltsbasiert** (sha256 über alle
@@ -122,7 +122,7 @@ die kanonische Quelle (Source Precedence, siehe
 ### MR-006 — Referenzrichtung: Spec-Straten verweisen nie abwärts auf ADRs
 
 - **Datum:** 2026-06-10
-- **Geltungsbereich:** `spec/*.md`, `AGENTS.md` §3.4
+- **Geltungsbereich:** `spec/*.md`, [`AGENTS.md` §3.4](../AGENTS.md#34-architektur-sprach-meilensteinfrei-spec-straten-nie-abwärts)
 - **Adaption:** Das adoptierte Template-Set 2026-06 sah ADR-Verweise
   in `spezifikation.md` (ADR-Spalte in Defaults/Historie) und
   `architecture.md` (ADR-Spalte, §ADR-Index) vor. Das ist als Fehler
@@ -142,6 +142,27 @@ die kanonische Quelle (Source Precedence, siehe
   ist, wird dieser Eintrag zur reinen Baseline-Konformität (bleibt
   als Provenienz stehen).
 
+### MR-007 — Auflösung von MR-003: doc-check als Dogfooding
+
+- **Datum:** 2026-06-10
+- **Geltungsbereich:** `make doc-check`, [`.d-check.yml`](../.d-check.yml)
+- **Adaption:** Der Auflösungs-Trigger von
+  [`MR-003`](#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh)
+  ist eingetreten: `make doc-check` läuft über `d-check` selbst
+  (Runtime-Image, read-only-Mount; Module `links` + `anchors` über
+  die gesamte Repo-Wurzel via `scan.roots: ["."]`). Das vendorte
+  Skript `tools/verify-doc-refs.sh` ist gelöscht; der
+  Geltungsbereich-Link in MR-003 wurde dafür auf einen Code-Span
+  umgestellt (Form-, keine Inhaltsänderung). Vergleichslauf
+  (erster Datenpunkt für
+  [`DC-QA-04`](../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)):
+  Alt-Skript 0 broken links, `d-check` 0 Befunde bei 23 Dateien —
+  bei strikt größerer Abdeckung (zusätzlich Anker-Validierung und
+  Bildreferenzen).
+- **Begründung:** Dogfooding-Ziel von slice-004; die BF-Sub-Area aus
+  der Modus-Tabelle ist damit graduiert (gelöscht).
+- **Auflösungs-Trigger:** permanent (Dogfooding ist der Zielzustand).
+
 ## Zusatzklassen-Deklaration für Sensors-Bindung
 
 Zusätzlich zu den vier kanonischen Klassen (ADR, Carveout, Schwelle,
@@ -156,5 +177,4 @@ Reproduzierbarkeit) und Slice-IDs:
 | Sub-Area (Pfad / Modul) | Modus | Begründung | Graduation-Bedingung / Folge-Slice |
 |---|---|---|---|
 | `*` (Default für gesamtes Repo) | Greenfield | Projekt startet spec-first; Doc führt, Code folgt | n/a (GF) |
-| `tools/verify-doc-refs.sh` | Brownfield | vendorter Fremd-Code ohne eigene Spec (siehe [`MR-003`](#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh)) | slice-004: Ersatz durch `d-check` selbst, Skript wird gelöscht |
 | `tools/harness/` | Greenfield | adoptierte Harness-Mechanik, konventionsgetragen über [`MR-004`](#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild) | n/a (GF) |
