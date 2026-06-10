@@ -21,10 +21,10 @@ die kanonische Quelle (Source Precedence, siehe
 
 ## Adoptierte Konventions-Quellen
 
-- **Extern (Lehrmaterial):** Schwester-Repo `ai-harness-course`
+- **Extern (Lehrmaterial):**
+  [`ai-harness-course`](https://github.com/pt9912/ai-harness-course)
   (Templates: `lab/templates/`, Konventionen:
-  `kurs/de/grundlagen/konventionen.md`) — außerhalb dieses Repos,
-  daher bewusst nicht verlinkt und ohne absoluten Pfad referenziert.
+  `kurs/de/grundlagen/konventionen.md`).
 - **In-Repo (verkörperte Form):** `AGENTS.md`, `harness/README.md`,
   Verzeichniskonvention `spec/` + `docs/plan/` + `harness/`.
 
