@@ -35,3 +35,6 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   statt Modul-Pfade und Imports; sprachkonkrete Übersetzung lebt in
   ADR-0004) — Template-Hard-Rule „sprach- und meilensteinfrei" wieder
   voll erfüllt.
+- Lastenheft 0.2.1 (redaktionell): Beispiel-Kennungen auf fiktive
+  Nummern (`ADR-0042`, `ADR-0099`) — keine Kollision mit real
+  entstandenen eigenen ADRs.

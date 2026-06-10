@@ -65,7 +65,7 @@ sie aufwärts. Eine Lockerung ist eine neue ADR (`AGENTS.md` §3.6).
 |---|---|---|
 | YAML-Bibliothek | Decoding im Config-Adapter | hoch — vollständig im Adapter gekapselt |
 | HTTP-Client der Standardbibliothek | Erreichbarkeits-Checks im HTTP-Adapter | hoch — hinter dem HTTP-Port |
-| Distroless-Runtime-Image | Auslieferung | mittel — CA-Bundle-/Non-root-Annahmen |
+| Minimal-Runtime ohne Shell/Paketmanager | Auslieferung | mittel — CA-Bundle-/Non-root-Annahmen |
 
 ## 4. Sequenz-Diagramme
 
