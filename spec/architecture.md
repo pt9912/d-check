@@ -46,7 +46,7 @@ neue Module sind Kern-Erweiterungen, keine Architekturänderungen.
 | Kern (`internal/core`) | Markdown-Vorverarbeitung, Link-/Heading-/Kennungs-Extraktion, Slug, Regelmodule, Befund-Modell, deterministische Sortierung, Pfad-/Escape-Regeln; definiert die Ports | reine Stdlib (ohne I/O) | `os`, `net`, `net/http`, `syscall`, `internal/adapter/*`, `gopkg.in/yaml.v3` | [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md) |
 | Filesystem-Adapter (`internal/adapter/fs`) | Datei-Discovery, Lesen, Lstat/Symlink-Erkennung | Kern-Ports, `os`, `io/fs`, `path/filepath` | andere Adapter, `net/http` | [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md) |
 | HTTP-Adapter (`internal/adapter/httpcheck`) | HEAD/GET-Erreichbarkeit, Timeout, Redirect-Limit | Kern-Ports, `net/http` | andere Adapter, `os` | [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md) |
-| Config-Adapter (`internal/adapter/config`) | `.d-check.yml` laden, strikt dekodieren, zweistufig validieren | Kern-Typen, `os`, `gopkg.in/yaml.v3` | andere Adapter, `net/http` | [ADR-0003](../docs/plan/adr/0003-config-format.md) |
+| Config-Adapter (`internal/adapter/config`) | `.d-check.yml` strikt dekodieren, zweistufig validieren (den Datei-Inhalt beschafft das CLI über den Filesystem-Adapter — `os` bleibt dort die einzige I/O-Tür, ADR-0004) | Kern-Typen, `gopkg.in/yaml.v3` | andere Adapter, `os`, `net/http` | [ADR-0003](../docs/plan/adr/0003-config-format.md) |
 | Reporter-Adapter (`internal/adapter/report`) | Text-/JSON-Rendering auf stdout/stderr | Kern-Typen, `encoding/json` | andere Adapter, `net/http` | [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md) |
 | CLI (`cmd/d-check`) | Argument-Parsing, Composition Root, Exit-Code | alles oben | — | [ADR-0004](../docs/plan/adr/0004-architektur-pattern-hexagonal.md) |
 
@@ -75,7 +75,9 @@ sequenceDiagram
     participant HTTP as HTTP-Adapter
     participant REP as Reporter
 
-    CLI->>CFG: laden + validieren (.d-check.yml)
+    CLI->>FS: Read(.d-check.yml)
+    FS-->>CLI: Datei-Inhalt | nicht vorhanden (→ Defaults)
+    CLI->>CFG: dekodieren + validieren
     CFG-->>CLI: Config | Fehler (Exit 2)
     CLI->>CORE: Run(Config, Ports)
     CORE->>FS: Discover(Wurzeln, Ignores)

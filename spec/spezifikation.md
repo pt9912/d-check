@@ -57,9 +57,12 @@ Nutzungsfehler (Exit 2) mit Auflistung der gültigen Namen.
    lexikalische Normalisierung. Die Repo-Escape-Prüfung erfolgt **nach**
    der Dekodierung (`DC-FA-LINK-001`).
 5. **Symlink-Prüfung** ([`DC-FA-LINK-002`](lastenheft.md#dc-fa-link-002--symlink-ablehnung)):
-   jede Pfad-Komponente des aufgelösten Ziels unterhalb der Repo-Wurzel
-   wird per Lstat geprüft; Symlink ⇒ Befund `symlink`, Vorrang vor
-   `repo-escape`, genau ein Befund pro Linkziel.
+   alle Komponenten des lexikalisch aufgelösten Zielpfads, die
+   innerhalb der Repo-Wurzel liegen, werden per Lstat geprüft
+   (außerhalb liegende Komponenten sind nicht prüfbar — dort greift
+   `repo-escape`). Ist eine Komponente oder das Ziel selbst ein
+   Symlink ⇒ Befund `symlink`, unabhängig vom Symlink-Ziel; Vorrang
+   vor `repo-escape`, genau ein Befund pro Linkziel.
 
 ### DC-FA-ANCH-001.a — GitHub-Slug-Algorithmus
 
@@ -95,13 +98,17 @@ innerhalb des Linktexts eines Markdown-Links liegt; sonst Befund
 1. **Klassenzuordnung:** Glob-Muster der `classes` in
    Deklarationsreihenfolge; die erste passende Klasse gilt. Dateien
    ohne Klasse nehmen nicht an der Matrix-Prüfung teil.
-2. **Status-Extraktion:** erster Treffer von `**Status:** <wert>` oder
-   erste Textzeile unter einem `## Status`-Heading; Vergleich
-   case-insensitiv als Präfix-Match gegen `status.forbidden` (so
-   matcht `Superseded by ADR-0007` den Wert `superseded`). Ohne
-   Status-Feld gilt das Dokument als aktiv.
+2. **Status-Extraktion** in fester Reihenfolge: (1) erste Zeile, die
+   mit `**Status:**` beginnt; (2) sonst erste nicht-leere Textzeile
+   unter einem `Status`-Heading (beliebige Ebene, Heading-Vergleich
+   case-insensitiv). Sind beide Formen vorhanden, zählt die
+   `**Status:**`-Zeile. Der Wert wird case-insensitiv als Präfix-Match
+   gegen `status.forbidden` verglichen (so matcht
+   `Superseded by ADR-0007` den Wert `superseded`). Ohne Status-Feld
+   gilt das Dokument als aktiv.
 3. **Sektions-Ausnahme:** Links innerhalb von Sektionen, deren
-   Heading-Text in `exclude-sections` steht (z. B. „Historie"),
+   Heading-Text (getrimmt, ohne Markdown-Auszeichnung, case-sensitiv)
+   in `exclude-sections` steht (z. B. „Historie"),
    werden von `matrix` nicht geprüft (Provenance-Ausnahme gemäß
    [`DC-FA-MTX-001`](lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
    Out-of-Scope).
@@ -217,9 +224,13 @@ external:
   parallel: 4
 ```
 
+Jede Verletzung eines Constraints der folgenden Tabelle führt zu
+Exit 2 ohne Prüfung
+([`DC-FA-CONF-001`](lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
+
 | Schlüssel | Typ | Default | Constraint |
 |---|---|---|---|
-| `scan.roots` | string[] | `DEFAULT_SCAN_ROOTS` | jede Wurzel muss existieren (Exit 2) |
+| `scan.roots` | string[] | `DEFAULT_SCAN_ROOTS` | alle hier deklarierten Wurzeln müssen existieren (Exit 2); nur die Default-Wurzeln (kein `scan.roots` gesetzt) sind optional |
 | `scan.ignore` | string[] | leer | Glob-Syntax |
 | `modules` | string[] | `DEFAULT_MODULES` | nur gültige Modulnamen |
 | `ids.patterns[].regex` | string | — | muss kompilieren (Exit 2) |
@@ -228,7 +239,7 @@ external:
 | `matrix.classes[].paths` | string[] | — | Glob |
 | `matrix.rules[]` | {from,to,allow} | — | Klassen müssen deklariert sein |
 | `matrix.status.forbidden` | string[] | `[superseded, deprecated]` | case-insensitiv |
-| `matrix.exclude-sections` | string[] | leer | Heading-Text-Vergleich exakt |
+| `matrix.exclude-sections` | string[] | leer | Vergleich gegen den getrimmten Heading-Text ohne Markdown-Auszeichnung, case-sensitiv |
 | `external.timeout-seconds` | integer | 10 | 1–300 |
 | `external.parallel` | integer | 4 | 1–16 |
 
@@ -253,7 +264,6 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `target-missing` | links | Linkziel existiert nicht |
 | `repo-escape` | links | aufgelöstes Ziel verlässt die Repo-Wurzel |
 | `symlink` | links | Ziel ist/enthält Symlink (Vorrang vor `repo-escape`) |
-| `nested-link` | links | verschachteltes Link-Artefakt |
 | `anchor-missing` | anchors | Anker entspricht keinem Heading-Slug |
 | `id-unlinked` | ids | Kennung im Fließtext ohne Markdown-Link |
 | `matrix-forbidden` | matrix | Referenz zwischen Klassen nicht erlaubt |
@@ -284,3 +294,5 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | Datum | Änderung | Verweis |
 |---|---|---|
 | 2026-06-10 | Initiale Fassung | slice-002 |
+| 2026-06-10 | Review R1: `scan.roots`-Constraint präzisiert (nur deklarierte Wurzeln pflichtig), Symlink-Prüf-Scope präzisiert, unspezifizierter Grund-Code `nested-link` entfernt | slice-002 |
+| 2026-06-10 | Review R2: Status-Extraktions-Reihenfolge fixiert (`**Status:**` vor `Status`-Heading), `exclude-sections`-Matching definiert (getrimmt, case-sensitiv), Exit-2-Hinweis an Config-Constraint-Tabelle | slice-002 |
