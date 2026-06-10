@@ -33,7 +33,7 @@ Das Modul `anchors` ist implementiert und `make doc-check` läuft über
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| Modul `anchors` (Pfad gemäß `spec/architecture.md`) | neu | [`DC-FA-ANCH-001`](../../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors) |
+| Modul `anchors` (Pfad gemäß [ADR-0004](../../adr/0004-architektur-pattern-hexagonal.md)) | neu | [`DC-FA-ANCH-001`](../../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors) |
 | Test-Suite (Anker-Fixtures, Slug-Kantenfälle) | neu | testbare Akzeptanzkriterien |
 | [`Makefile`](../../../../Makefile) (`doc-check` auf `d-check` umstellen) | update | Dogfooding, Ablösung Bootstrap-Sensor |
 | `tools/verify-doc-refs.sh` | löschen | [`MR-003`](../../../../harness/conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh)-Auflösungs-Trigger |

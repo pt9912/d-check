@@ -32,7 +32,7 @@ pro Sub-Area) sowie Adaptionen ggü. der adoptierten Baseline leben in
 |---|---|
 | [`spec/lastenheft.md`](../spec/lastenheft.md) | Anforderungen (`DC-FA-*`, `DC-QA-*`), Akzeptanzkriterien |
 | [`spec/spezifikation.md`](../spec/spezifikation.md) | Algorithmen, Schemas (`--json`, `.d-check.yml`), Defaults, Grund-Codes |
-| [`spec/architecture.md`](../spec/architecture.md) | Hexagon-Schnitt, Import-Constraints, Sequenzen |
+| [`spec/architecture.md`](../spec/architecture.md) | Hexagon-Schnitt (Rollen), Zugriffs-Constraints, Sequenzen |
 | [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
 | [`docs/plan/planning/`](../docs/plan/planning/) | Slice-Pläne und Roadmap |
 | [`AGENTS.md`](../AGENTS.md) | Hard Rules, Source Precedence, Workflow |

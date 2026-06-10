@@ -31,3 +31,7 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   `spec/spezifikation.md` und `spec/architecture.md` entfernt
   (Kurs-Template-Fehler; Spec-Straten verweisen nie abwärts,
   Traceability über die `Schärft:`-Felder der ADRs).
+- `spec/architecture.md` sprachneutral umformuliert (Schichten/Rollen
+  statt Modul-Pfade und Imports; sprachkonkrete Übersetzung lebt in
+  ADR-0004) — Template-Hard-Rule „sprach- und meilensteinfrei" wieder
+  voll erfüllt.

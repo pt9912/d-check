@@ -63,14 +63,15 @@ Wenn eine Datei verschoben **und** der Inhalt umgeschrieben wird:
 **Begründung:** Sonst fällt die Rename-Detection unter die
 50%-Similarity-Schwelle und `git log --follow` wird unzuverlässig.
 
-### 3.4 Spec-Straten verweisen nie abwärts
+### 3.4 Architektur sprach-/meilensteinfrei; Spec-Straten nie abwärts
 
-[`spec/architecture.md`](spec/architecture.md) und
-[`spec/spezifikation.md`](spec/spezifikation.md) referenzieren
-Anforderungen (`DC-*`) und Modul-Pfade, aber **keine** ADRs, Wellen,
-Slices, Commit-Hashes oder Closure-Daten. Begründungen leben in den
-ADRs, deren `Schärft:`-Feld aufwärts auf die Spec zeigt; die
-zeitliche Schicht lebt in `docs/plan/planning/`.
+[`spec/architecture.md`](spec/architecture.md) benennt Schichten und
+Rollen statt Technologie — keine Sprach-/Modul-Pfade. Kein
+Spec-Stratum (auch [`spec/spezifikation.md`](spec/spezifikation.md))
+referenziert ADRs, Wellen, Slices, Commit-Hashes oder Closure-Daten.
+Die sprachkonkrete Übersetzung (Modul-Pfade, Import-Regeln) und die
+Begründungen leben in den ADRs, deren `Schärft:`-Feld aufwärts zeigt;
+die zeitliche Schicht lebt in `docs/plan/planning/`.
 
 ### 3.5 ADRs sind nach `Accepted` immutable
 

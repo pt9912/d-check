@@ -2,16 +2,18 @@
 
 **Status:** Aktiv. **Letzte Änderung:** 2026-06-10.
 
-**Hard Rule:** Diese Datei enthält *keine* Wellen, Slices,
-Commit-Hashes oder Closure-Daten (`AGENTS.md` §3.4). Die zeitliche
-Schicht lebt in `docs/plan/planning/`.
+**Hard Rule:** Diese Datei ist **sprach- und meilensteinfrei**: Sie
+benennt Schichten und Rollen, keine Technologie, und enthält keine
+Wellen, Slices, Commit-Hashes oder Closure-Daten (`AGENTS.md` §3.4).
+Die zeitliche Schicht lebt in `docs/plan/planning/`.
 
 **Bezug:** [`lastenheft.md`](lastenheft.md) und
 [`spezifikation.md`](spezifikation.md) — bei Konflikt gewinnen diese.
 Der hexagonale Schnitt („Hexagon light") ist per ADR entschieden; die
-Begründung lebt dort, und die ADRs deklarieren ihre Schärfung dieser
-Datei aufwärts (`Schärft:`-Feld). Spec-Straten verweisen nicht abwärts
-auf ADRs oder Planning-Artefakte.
+Begründung und die sprachkonkrete Übersetzung (Modul-Pfade,
+Import-Regeln) leben dort, und die ADRs deklarieren ihre Schärfung
+dieser Datei aufwärts (`Schärft:`-Feld). Spec-Straten verweisen nicht
+abwärts auf ADRs oder Planning-Artefakte.
 
 ---
 
@@ -19,18 +21,18 @@ auf ADRs oder Planning-Artefakte.
 
 ```mermaid
 flowchart TB
-    CLI["CLI + Composition Root<br/>(cmd/d-check)"]
-    CORE["Kern: Regelmodule, Markdown-Analyse,<br/>Befund-Modell, Port-Interfaces<br/>(internal/core)"]
-    FS["Filesystem-Adapter<br/>(internal/adapter/fs)"]
-    HTTP["HTTP-Adapter<br/>(internal/adapter/httpcheck)"]
-    CFG["Config-Adapter<br/>(internal/adapter/config)"]
-    REP["Reporter-Adapter<br/>(internal/adapter/report)"]
+    CLI["CLI — einziger driving Adapter,<br/>Composition Root"]
+    CORE["Kern — Regelmodule, Markdown-Analyse,<br/>Befund-Modell; definiert die Ports"]
+    FS["Filesystem-Adapter"]
+    HTTP["HTTP-Adapter"]
+    CFG["Config-Adapter"]
+    REP["Reporter-Adapter"]
 
     CLI -->|"ruft auf, verdrahtet"| CORE
     CLI --> CFG
     CLI --> REP
-    FS -.->|"implementiert FilesystemPort"| CORE
-    HTTP -.->|"implementiert HTTPPort"| CORE
+    FS -.->|"implementiert Filesystem-Port"| CORE
+    HTTP -.->|"implementiert HTTP-Port"| CORE
     CFG -.->|"liefert validierte Config"| CORE
     REP -.->|"konsumiert Befundliste"| CORE
 ```
@@ -43,25 +45,27 @@ neue Module sind Kern-Erweiterungen, keine Architekturänderungen.
 
 ## 2. Schichten und Constraints
 
-| Bereich (Pfad) | Verantwortlichkeit | Darf importieren | Darf NICHT importieren |
+| Schicht / Rolle | Verantwortlichkeit | Darf nutzen | Darf NICHT nutzen |
 |---|---|---|---|
-| Kern (`internal/core`) | Markdown-Vorverarbeitung, Link-/Heading-/Kennungs-Extraktion, Slug, Regelmodule, Befund-Modell, deterministische Sortierung, Pfad-/Escape-Regeln; definiert die Ports | reine Stdlib (ohne I/O) | `os`, `net`, `net/http`, `syscall`, `internal/adapter/*`, `gopkg.in/yaml.v3` |
-| Filesystem-Adapter (`internal/adapter/fs`) | Datei-Discovery, Lesen, Lstat/Symlink-Erkennung | Kern-Ports, `os`, `io/fs`, `path/filepath` | andere Adapter, `net/http` |
-| HTTP-Adapter (`internal/adapter/httpcheck`) | HEAD/GET-Erreichbarkeit, Timeout, Redirect-Limit | Kern-Ports, `net/http` | andere Adapter, `os` |
-| Config-Adapter (`internal/adapter/config`) | `.d-check.yml` strikt dekodieren, zweistufig validieren (den Datei-Inhalt beschafft das CLI über den Filesystem-Adapter — `os` bleibt dort die einzige I/O-Tür) | Kern-Typen, `gopkg.in/yaml.v3` | andere Adapter, `os`, `net/http` |
-| Reporter-Adapter (`internal/adapter/report`) | Text-/JSON-Rendering auf stdout/stderr | Kern-Typen, `encoding/json` | andere Adapter, `net/http` |
-| CLI (`cmd/d-check`) | Argument-Parsing, Composition Root, Exit-Code | alles oben | — |
+| Kern | Markdown-Vorverarbeitung, Link-/Heading-/Kennungs-Extraktion, Slug, Regelmodule, Befund-Modell, deterministische Sortierung, Pfad-/Escape-Regeln; definiert die Ports | reine Standardbibliothek ohne I/O; Port-Interfaces | Dateisystem-, Netzwerk-, Prozess-APIs; Adapter; YAML-Bibliothek |
+| Filesystem-Adapter | Datei-Discovery, Lesen, Symlink-Erkennung (Lstat) | Kern-Ports; Dateisystem-API | andere Adapter; Netzwerk |
+| HTTP-Adapter | HEAD/GET-Erreichbarkeit, Timeout, Redirect-Limit | Kern-Ports; HTTP-Client | andere Adapter; Dateisystem |
+| Config-Adapter | `.d-check.yml` strikt dekodieren, zweistufig validieren — den Datei-Inhalt beschafft das CLI über den Filesystem-Adapter, der die einzige Dateisystem-Tür bleibt | Kern-Typen; YAML-Bibliothek | andere Adapter; Dateisystem; Netzwerk |
+| Reporter-Adapter | Text-/JSON-Rendering auf stdout/stderr | Kern-Typen; Serialisierung | andere Adapter; Netzwerk; Dateizugriffe jenseits stdout/stderr |
+| CLI | Argument-Parsing, Composition Root, Exit-Code | alles oben | — |
 
-Diese Tabelle ist die Quelle der `arch-check`-Fitness-Function; eine
-Lockerung ist eine neue ADR (`AGENTS.md` §3.6).
+Diese Tabelle ist die rollenbasierte Quelle der
+`arch-check`-Fitness-Function; ihre sprachkonkrete Übersetzung
+(Modul-Pfade, Import-Regeln) trägt die zugehörige ADR und deklariert
+sie aufwärts. Eine Lockerung ist eine neue ADR (`AGENTS.md` §3.6).
 
 ## 3. Externe Abhängigkeiten
 
 | System | Rolle | Substituierbarkeit |
 |---|---|---|
-| `gopkg.in/yaml.v3` | YAML-Decoding im Config-Adapter | hoch — vollständig im Adapter gekapselt |
-| Go-Stdlib `net/http` | Erreichbarkeits-Checks im HTTP-Adapter | hoch — hinter HTTPPort |
-| distroless/static (Runtime-Image) | Auslieferung | mittel — CA-Bundle/nonroot-Annahmen |
+| YAML-Bibliothek | Decoding im Config-Adapter | hoch — vollständig im Adapter gekapselt |
+| HTTP-Client der Standardbibliothek | Erreichbarkeits-Checks im HTTP-Adapter | hoch — hinter dem HTTP-Port |
+| Distroless-Runtime-Image | Auslieferung | mittel — CA-Bundle-/Non-root-Annahmen |
 
 ## 4. Sequenz-Diagramme
 
@@ -69,7 +73,7 @@ Lockerung ist eine neue ADR (`AGENTS.md` §3.6).
 
 ```mermaid
 sequenceDiagram
-    participant CLI as CLI (cmd/d-check)
+    participant CLI
     participant CFG as Config-Adapter
     participant CORE as Kern
     participant FS as Filesystem-Adapter

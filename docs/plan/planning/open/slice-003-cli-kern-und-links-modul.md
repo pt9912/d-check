@@ -39,7 +39,7 @@ erste implementierte Inkrement.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| Quellbaum gemäß `spec/architecture.md` (CLI, Scanner, Modul `links`, Reporter) | neu | erstes Implementierungs-Inkrement |
+| Quellbaum gemäß [ADR-0004](../../adr/0004-architektur-pattern-hexagonal.md) (Modul-Pfade) und [`spec/architecture.md`](../../../../spec/architecture.md) (Rollen/Constraints) | neu | erstes Implementierungs-Inkrement |
 | Test-Suite (Unit + Fixture-Repos) | neu | Akzeptanzkriterien sind testbar formuliert |
 | [`Makefile`](../../../../Makefile) (`lint`, `typecheck`, `test`, `arch-check`, Aggregation in `gates`) | update | neue Gates entstehen mit dem Code |
 | [`harness/README.md`](../../../../harness/README.md), [`AGENTS.md`](../../../../AGENTS.md) | update | Sensors-/Gates-Tabellen nachziehen |
