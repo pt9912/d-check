@@ -61,13 +61,15 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
 
 ## 6. Risiken und offene Punkte
 
-- Nackte Kennungen in **immutablen** Texten (ADR-Geschichte,
-  akzeptierte MR-Einträge): Inline-Code ist linkpflichtfrei und
-  Historie-Sektionen sind per `exclude-sections` ausnehmbar — falls
-  darüber hinaus Befunde in unveränderlichen Passagen bleiben, ist
-  eine dokumentierte Entscheidung nötig (Spez-Fortschreibung einer
-  Sektions-Ausnahme für `ids` ODER Form-Fix analog MR-007); nicht
-  stillschweigend lockern.
+- Nackte Kennungen in **immutablen** Texten: Bereinigt wird nur
+  lebende Doku — einmal `Accepted`e ADRs und akzeptierte MR-Einträge
+  werden **nicht** editiert, auch nicht zum Nachverlinken
+  (`AGENTS.md` §3.5). Inline-Code ist linkpflichtfrei und
+  Historie-Sektionen sind per `exclude-sections` ausnehmbar; bleiben
+  darüber hinaus Befunde in unveränderlichen Passagen, ist eine
+  dokumentierte Entscheidung nötig (Spez-Fortschreibung einer
+  Sektions-/Pfad-Ausnahme für `ids` ODER Form-Fix analog MR-007) —
+  nie stillschweigend lockern.
 - Klassen-Zuordnung über Globs muss mit der `"."`-Wurzel des
   Dogfoodings zusammenspielen (Pfade relativ zur Repo-Wurzel).
 

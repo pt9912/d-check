@@ -28,14 +28,21 @@ dokumentierte Messung.
   Kalibrierungs-Bindung „Schwelle 85 %, welle-03 done → 90 %";
   Verfehlung nach Trigger ⇒ Carveout-Pflicht (Kurs-Hard-Rule)
   dokumentiert.
-- [ ] `make gate-consistency`: jedes in
+- [ ] `make gate-consistency`: neues Target
+  (`tools/gate-consistency.sh`), das alle in
   [`harness/README.md`](../../../../harness/README.md) §Sensors und
-  [`AGENTS.md`](../../../../AGENTS.md) §4 als real dokumentierte
-  Make-Target existiert im Makefile (Meta-Gate gegen Harness-Lügen).
-- [ ] Spez-Schuld eingelöst: `spec/spezifikation.md` definiert den
-  `DC-QA-01`-Benchmark (Fixture-Generator: 1.000 Dateien/≤ 20 MB,
-  Messverfahren, Auswertung) — das „(folgt)" im Lastenheft ist damit
-  erfüllt; eine Messung ist in der Closure-Notiz dokumentiert.
+  [`AGENTS.md`](../../../../AGENTS.md) §4 als real dokumentierten
+  Make-Targets gegen das Makefile abgleicht; jedes fehlende Target →
+  Exit 1 mit Auflistung (Meta-Gate gegen Harness-Lügen); mit
+  Negativ-Test (absichtlich dokumentiertes Phantom-Target lässt das
+  Gate nachweislich feuern, analog `verify-depguard`-Idee).
+- [ ] Spez-Schuld eingelöst: `spec/spezifikation.md` erhält einen
+  Abschnitt `DC-QA-01.a — Benchmark` mit (1) Fixture-Spezifikation
+  (generiert: 1.000 Markdown-Dateien, ≤ 20 MB, definierter
+  Link-/Heading-Mix), (2) Messprotokoll (Default-Module, N ≥ 3 Läufe
+  im Container, Median zählt), (3) Pass-Kriterium (< 5 s) — das
+  „(folgt)" im Lastenheft ist damit erfüllt; eine durchgeführte
+  Messung ist in der Closure-Notiz dokumentiert.
 - [ ] Beide Gates in `make gates` aggregiert; „Nicht behauptet"-Listen
   in AGENTS/harness entsprechend verkürzt.
 - [ ] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
@@ -69,6 +76,9 @@ damit ist zugleich der welle-03-Closure-Trigger erfüllt.
   paket-lokale Abdeckung.
 - Der Benchmark misst im Container — Schwankungen der Host-Last;
   Schwelle (< 5 s) hat Puffer, Messung mehrfach ausführen.
+- `make doc-check` aktiviert `external` bewusst **nicht** (kein Netz
+  im Gate, `DC-QA-03`); die Coverage misst das Modul über seine
+  Tests, nicht über das Dogfooding.
 
 ## 7. Closure-Notiz (nach `done/`)
 

@@ -262,7 +262,7 @@ func TestQA02_Determinismus(t *testing.T) {
 	write(t, root, "docs/z.md", "[f](f1.md)\n[g](f2.md)")
 	write(t, root, "docs/a.md", "[h](f3.md)")
 	var first string
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 10; i++ { // 10 Läufe gemäß DC-QA-02-Messmethode
 		_, stdout, _ := run(t, "--json", "--disable", "anchors", root)
 		if i == 0 {
 			first = stdout

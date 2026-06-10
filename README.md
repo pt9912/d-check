@@ -8,9 +8,10 @@ Einzeltools (`check_refs.py`, `docs-check.js`, `verify-doc-refs.sh`)
 aus den Schwester-Repositories des Entwicklungs-Workspace in ein
 konfigurierbares Tool.
 
-**Status: Spec-Fundament steht (welle-01 abgeschlossen); die
-Implementierung beginnt mit welle-02-mvp.** Das Tool ist noch nicht
-implementiert; verbindlich ist das [Lastenheft](spec/lastenheft.md).
+**Status: MVP läuft** — die Module `links` und `anchors` prüfen
+produktiv (Dogfooding: d-check validiert die eigene Doku); `ids`,
+`matrix` und `external` entstehen in welle-03. Verbindlich ist das
+[Lastenheft](spec/lastenheft.md).
 
 ## Geplante Nutzung
 
