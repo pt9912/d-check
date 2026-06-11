@@ -108,6 +108,14 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
 ## 5. Dokumentations-Regeln
 
 - Commits/PRs müssen mindestens eine `DC-*`- oder `ADR-*`-ID nennen.
+- Neue oder geänderte `DC-*`-Anforderungen entstehen nur in
+  [`spec/lastenheft.md`](spec/lastenheft.md) (vertraglich,
+  Change-Request-Charakter): ID gemäß Schema-Konvention §3 (neues
+  Bereichskürzel dort deklarieren; NFAs: `DC-QA-<NN>`), drei
+  Akzeptanzkriterien (Happy/Boundary/Negative) plus Out-of-Scope,
+  Versions-Bump + Historie-Zeile. ADRs dürfen die Spezifikation
+  schärfen, nie das Lastenheft. Der Beleg (Test/Gate/Demo/ADR) folgt
+  mit dem umsetzenden Slice.
 - Neue ADRs müssen den ADR-Index aktualisieren.
 - Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der Architektur-Spec.
 - Slice-Lifecycle (`open → next → in-progress → done`) ist reine Datei-Bewegung (`git mv`, siehe §3.3).
