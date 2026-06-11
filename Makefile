@@ -86,8 +86,12 @@ versions: ## Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Images, Runtime-
 	@docker image inspect $(IMAGE):latest --format 'runtime-image={{.Id}}' 2>/dev/null \
 	    || echo "runtime-image=(nicht gebaut — make build)"
 
+# VERSION fließt ins OCI-Label org.opencontainers.image.version; die
+# Release-Pipeline setzt sie aus dem Git-Tag (make ci VERSION=…).
+VERSION ?= 0.0.0-dev
+
 build: ## Runtime-Image bauen (distroless static, nonroot — ADR-0002).
-	$(DOCKER_BUILD) --target runtime -t $(IMAGE):latest .
+	$(DOCKER_BUILD) --build-arg VERSION=$(VERSION) --target runtime -t $(IMAGE):latest .
 
 run: build ## Smoke-Test: d-check prüft das eigene Repo (read-only).
 	docker run --rm -v "$(CURDIR)":/repo:ro $(IMAGE):latest

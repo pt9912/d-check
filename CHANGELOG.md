@@ -6,8 +6,23 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+_nichts — der nächste Schnitt folgt mit dem nächsten Release._
+
+## [0.1.0] — 2026-06-11
+
+Erster Release: alle fünf Regelmodule, Gate-Vollausbau, Distribution
+via `ghcr.io/pt9912/d-check` (slice-011 — `DC-FA-DIST-001`).
+
 ### Added
 
+- GHCR-Release-Pipeline
+  ([`.github/workflows/release.yml`](.github/workflows/release.yml)):
+  Tag-Push `v*` → SemVer-Validate → `make ci` → OCI-Label-Pin
+  (`org.opencontainers.image.version` muss der Tag-Version
+  entsprechen) → Push mit Semver-Tag (+ `latest` nur für stabile
+  Releases) → Digest-Pin im Job-Summary und GitHub-Release;
+  Betriebs-/Release-Doku unter `docs/user/` (löst `MR-009`:
+  `docs/user` ist jetzt Rang 6 der Source Precedence).
 - MIT-Lizenz als Repository-Lizenz ergänzt ([`LICENSE`](LICENSE)).
 - Lastenheft 0.1.0 ([`spec/lastenheft.md`](spec/lastenheft.md)):
   Konsolidierung von 12 Quell-Tools, Modul-Schnitt (`links`, `anchors`,

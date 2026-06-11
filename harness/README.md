@@ -23,9 +23,10 @@ Diese Datei dupliziert sie nicht.
 | 3 | [`spec/architecture.md`](../spec/architecture.md) | Komponenten/Sequenzen, meilensteinfrei |
 | 4 | [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
 | 5 | [`docs/plan/planning/in-progress/roadmap.md`](../docs/plan/planning/in-progress/roadmap.md) | aktuelle Welle |
-| 6 | [`README.md`](../README.md) | Projekt-Überblick |
-| 7 | [`AGENTS.md`](../AGENTS.md) | Agent-Briefing |
-| 8 | diese Datei | Harness-Einstieg |
+| 6 | [`docs/user/`](../docs/user/) | Operations, Releasing (seit slice-011 — löst [`MR-009`](conventions.md#mr-009--source-precedence-ohne-docsuser-rang) auf) |
+| 7 | [`README.md`](../README.md) | Projekt-Überblick |
+| 8 | [`AGENTS.md`](../AGENTS.md) | Agent-Briefing |
+| 9 | diese Datei | Harness-Einstieg |
 
 ## Guides (Feedforward-Quellen)
 
@@ -60,7 +61,9 @@ liegt in CI bzw. lokal (`make gates`), nicht hier.
 | `make fullbuild` | volle Closure vor Welle-Merge/Release (gates + image-test + bench); schließt mit dem Image-Hash des Runtime-Builds ab | Reproduzierbarkeits-Bindung: Image-Hash (`sha256:…`) im Lauf-Abschluss; Pins via `make versions` (Kurs-Modul 14) |
 | `make versions` | Reproduzierbarkeits-Pins: `GO_VERSION`, `GOLANGCI_LINT_VERSION`, alle `FROM`-Basis-Images, Runtime-Image-ID | — |
 
-**Aktueller Lauf-Status:** lokal `make gates`.
+**Aktueller Lauf-Status:** lokal `make gates`; Releases laufen über
+[`release.yml`](../.github/workflows/release.yml) (Tag-Push `v*` →
+`make ci` → GHCR-Push mit Digest-Pin).
 **Rote Gates:** keine.
 **Nicht behauptet:** — keine — (alle geplanten Targets existieren;
 `make gate-consistency` bewacht die Tabelle in beide Richtungen).

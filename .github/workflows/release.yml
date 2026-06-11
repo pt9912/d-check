@@ -1,0 +1,165 @@
+name: release
+
+# GHCR-Release-Pipeline (slice-011, DC-FA-DIST-001, ADR-0002;
+# Vorbild: u-boot publish.yml — gleiche Build-Familie).
+#
+# Trigger: Push von Tags `v*`. Der Validate-Step verwirft alles, was
+# nicht `vMAJOR.MINOR.PATCH(-prerelease)?` ist, BEVOR eingeloggt,
+# gebaut oder gepusht wird. `:latest` wird ausschließlich für stabile
+# Tags gesetzt; Konsumenten werden auf Digest-Pins verwiesen
+# (docs/user/releasing.md).
+#
+# Docker-only-Pfad (AGENTS.md §3.1): `make ci` fährt die kompletten
+# Gates inkl. Image-Integrationstests und baut dabei das lokale
+# Runtime-Image (`d-check:latest`), das anschließend für GHCR
+# umgetaggt und gepusht wird.
+#
+# Action-Pinning (Supply-Chain-Härtung, u-boot-Konvention): alle
+# `uses:`-Einträge sind SHA-gepinnt mit Tag-Kommentar.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Top-level: alles entziehen; der Job lockert nur, was er braucht.
+permissions: {}
+
+jobs:
+  release:
+    name: release (ghcr.io image push)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write    # GitHub-Release mit Digest-Pin anlegen
+      packages: write
+    env:
+      DOCKER_BUILDKIT: '1'
+      REGISTRY: ghcr.io
+      IMAGE_NAME: pt9912/d-check
+      # LOCAL_IMAGE muss zum Makefile-Default `IMAGE ?= d-check`
+      # passen — `make ci` taggt `$(IMAGE):latest` lokal.
+      LOCAL_IMAGE: d-check
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # SemVer-Validate ZUERST (fail-fast vor Login/Build/Push):
+      # strikte SemVer-2.0-Prüfung, Build-Metadaten (`+`) abgelehnt
+      # ('+' ist kein gültiges OCI-Tag-Zeichen).
+      - name: Validate SemVer tag
+        id: tag
+        run: |
+          set -euo pipefail
+          TAG_REF="${GITHUB_REF#refs/tags/}"
+          if ! [[ "$TAG_REF" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(-((0|[1-9][0-9]*)|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\.((0|[1-9][0-9]*)|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?$ ]]; then
+            echo "::error::Tag '$TAG_REF' ist kein gültiger Release-Tag (erwartet vMAJOR.MINOR.PATCH oder -PRERELEASE; Build-Metadaten mit '+' abgelehnt)."
+            exit 1
+          fi
+          VERSION="${TAG_REF#v}"
+          if [[ "$VERSION" == *-* ]]; then IS_STABLE="false"; else IS_STABLE="true"; fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "is_stable=$IS_STABLE" >> "$GITHUB_OUTPUT"
+          echo "Resolved version=$VERSION, is_stable=$IS_STABLE"
+
+      # Volle Gates + Image-Integrationstests (DC-FA-DIST-001-AKs);
+      # baut zugleich das Runtime-Image mit der Tag-Version.
+      - name: Gates + Image-Integrationstests (make ci)
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: make ci VERSION="$VERSION"
+
+      - name: Log in to GHCR
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag image for GHCR
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+          IS_STABLE: ${{ steps.tag.outputs.is_stable }}
+        run: |
+          set -euo pipefail
+          docker tag "$LOCAL_IMAGE:latest" "$REGISTRY/$IMAGE_NAME:v$VERSION"
+          if [[ "$IS_STABLE" == "true" ]]; then
+            docker tag "$LOCAL_IMAGE:latest" "$REGISTRY/$IMAGE_NAME:latest"
+          fi
+
+      # OCI-Label-Pin: die Dockerfile-Labels müssen gesetzt sein, und
+      # org.opencontainers.image.version muss exakt der Tag-Version
+      # entsprechen — ein Build mit Version-Drift darf nicht shippen.
+      - name: Verify OCI labels
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          set -euo pipefail
+          REF="$REGISTRY/$IMAGE_NAME:v$VERSION"
+          for LABEL in \
+            org.opencontainers.image.source \
+            org.opencontainers.image.description \
+            org.opencontainers.image.licenses \
+            org.opencontainers.image.title \
+            org.opencontainers.image.vendor
+          do
+            VALUE=$(docker image inspect --format "{{ index .Config.Labels \"$LABEL\" }}" "$REF")
+            if [[ -z "$VALUE" ]]; then
+              echo "::error::OCI-Label $LABEL ist leer auf $REF."
+              exit 1
+            fi
+            echo "$LABEL=$VALUE"
+          done
+          IMAGE_VERSION=$(docker image inspect --format \
+            '{{ index .Config.Labels "org.opencontainers.image.version" }}' "$REF")
+          if [[ "$IMAGE_VERSION" != "$VERSION" ]]; then
+            echo "::error::org.opencontainers.image.version=[$IMAGE_VERSION] entspricht nicht der Tag-Version [$VERSION]."
+            exit 1
+          fi
+          echo "org.opencontainers.image.version=$IMAGE_VERSION (matcht Tag)"
+
+      - name: Push to GHCR
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+          IS_STABLE: ${{ steps.tag.outputs.is_stable }}
+        run: |
+          set -euo pipefail
+          docker push "$REGISTRY/$IMAGE_NAME:v$VERSION"
+          if [[ "$IS_STABLE" == "true" ]]; then
+            docker push "$REGISTRY/$IMAGE_NAME:latest"
+          fi
+          DIGEST=$(docker inspect --format '{{ index .RepoDigests 0 }}' "$REGISTRY/$IMAGE_NAME:v$VERSION")
+          echo "digest=$DIGEST" >> "$GITHUB_OUTPUT"
+          {
+            echo "### d-check v$VERSION"
+            echo ""
+            echo "Digest-Pin für Konsumenten:"
+            echo ""
+            echo '```'
+            echo "$DIGEST"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+        id: push
+
+      # GitHub-Release mit dem Digest-Pin in den Notes — der Pin ist
+      # die Referenz, die Pilot-Repos (slice-012) konsumieren.
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.tag.outputs.version }}
+          IS_STABLE: ${{ steps.tag.outputs.is_stable }}
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          set -euo pipefail
+          TAG="v$VERSION"
+          PRERELEASE_FLAG=""
+          if [[ "$IS_STABLE" != "true" ]]; then PRERELEASE_FLAG="--prerelease"; fi
+          if gh release view "$TAG" --json tagName --jq '.tagName' >/dev/null 2>&1; then
+            echo "GitHub-Release $TAG existiert bereits — wird wiederverwendet."
+          else
+            gh release create "$TAG" \
+              --title "d-check $TAG" \
+              --notes "Siehe [CHANGELOG.md §[$VERSION]](https://github.com/${GITHUB_REPOSITORY}/blob/main/CHANGELOG.md). Digest-Pin: \`$DIGEST\`" \
+              --target "$GITHUB_SHA" \
+              $PRERELEASE_FLAG
+          fi

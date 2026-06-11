@@ -109,10 +109,17 @@ RUN CGO_ENABLED=0 go build \
 # ---- runtime ---------------------------------------------------------------
 FROM gcr.io/distroless/static-debian12:nonroot AS runtime
 
+# VERSION wird von der Release-Pipeline aus dem Git-Tag durchgereicht
+# (make ci VERSION=…); der Workflow pinnt das Label gegen den Tag —
+# ein Build mit Version-Drift darf nicht shippen (release.yml).
+ARG VERSION=0.0.0-dev
+
 LABEL org.opencontainers.image.source="https://github.com/pt9912/d-check" \
       org.opencontainers.image.description="d-check — Doc-Referenz-Checker für Markdown-Dokumentation." \
       org.opencontainers.image.title="d-check" \
-      org.opencontainers.image.vendor="pt9912"
+      org.opencontainers.image.vendor="pt9912" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.version="${VERSION}"
 
 COPY --from=build /out/d-check /d-check
 
