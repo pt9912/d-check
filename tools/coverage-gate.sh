@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # coverage-gate.sh — Go-Coverage-Gate (Kalibrierungs-Bindung:
-# Schwelle 85 %, welle-03 done → 90 %; Verfehlung nach Trigger ⇒
-# Carveout-Pflicht — harness/README.md §Sensors). Muster: u-boot
-# scripts/coverage-gate.sh (gleiche Build-Familie).
+# Schwelle 90 % seit welle-03 done, Ramp 85 → 90 vollzogen;
+# Verfehlung ⇒ Carveout-Pflicht — harness/README.md §Sensors).
+# Muster: u-boot scripts/coverage-gate.sh (gleiche Build-Familie).
 #
 # Aufruf:
 #   coverage-gate.sh <coverage-func.txt> <threshold>

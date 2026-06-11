@@ -1,6 +1,6 @@
 # Slice slice-009: coverage-gate, gate-consistency + DC-QA-01-Benchmark
 
-**Status:** open.
+**Status:** done.
 
 **Welle:** welle-03-regelmodule (Gate-Ausbau, Abschluss).
 
@@ -23,12 +23,13 @@ dokumentierte Messung.
 
 ## 2. Definition of Done
 
-- [ ] `make coverage-gate`: Dockerfile-Stage + Schwellen-Skript
+- [x] `make coverage-gate`: Dockerfile-Stage + Schwellen-Skript
   (Variable `THRESHOLD ?= 85`); Sensors-Bindung als
   Kalibrierungs-Bindung „Schwelle 85 %, welle-03 done → 90 %";
   Verfehlung nach Trigger ⇒ Carveout-Pflicht (Kurs-Hard-Rule)
-  dokumentiert.
-- [ ] `make gate-consistency`: neues Target
+  dokumentiert. *(Ramp beim Wellen-Closure vollzogen: Default jetzt
+  90 %, Ist 92,9 % — siehe Closure-Notiz.)*
+- [x] `make gate-consistency`: neues Target
   (`tools/gate-consistency.sh`), das alle in
   [`harness/README.md`](../../../../harness/README.md) §Sensors und
   [`AGENTS.md`](../../../../AGENTS.md) §4 als real dokumentierten
@@ -41,17 +42,18 @@ dokumentierte Messung.
   [`.d-check.yml`](../../../../.d-check.yml) muss alle Module außer
   `external` enthalten — sonst verliert der `--network none`-Lauf
   still seine Beweis-Aussage (Review-R1-Finding zu slice-008:
-  Config-Kopplung des QA-03-Gates).
-- [ ] Spez-Schuld eingelöst: `spec/spezifikation.md` erhält einen
+  Config-Kopplung des QA-03-Gates). *(Umgesetzt inkl. Gegenrichtung:
+  Makefile-Targets müssen in `AGENTS.md` §4 gelistet sein.)*
+- [x] Spez-Schuld eingelöst: `spec/spezifikation.md` erhält einen
   Abschnitt `DC-QA-01.a — Benchmark` mit (1) Fixture-Spezifikation
   (generiert: 1.000 Markdown-Dateien, ≤ 20 MB, definierter
   Link-/Heading-Mix), (2) Messprotokoll (Default-Module, N ≥ 3 Läufe
   im Container, Median zählt), (3) Pass-Kriterium (< 5 s) — das
-  „(folgt)" im Lastenheft ist damit erfüllt; eine durchgeführte
-  Messung ist in der Closure-Notiz dokumentiert.
-- [ ] Beide Gates in `make gates` aggregiert; „Nicht behauptet"-Listen
+  „(folgt)" im Lastenheft ist damit erfüllt (0.2.3, redaktionell);
+  die durchgeführte Messung ist in der Closure-Notiz dokumentiert.
+- [x] Beide Gates in `make gates` aggregiert; „Nicht behauptet"-Listen
   in AGENTS/harness entsprechend verkürzt.
-- [ ] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
+- [x] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
   Closure-Notiz mit Steering-Loop-Lerneintrag.
 
 ## 3. Plan (vor Code)
@@ -88,7 +90,39 @@ damit ist zugleich der welle-03-Closure-Trigger erfüllt.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-<!-- Erst nach Abschluss füllen. -->
+**Umsetzung:** Commit `78716b2` (Gates, Benchmark, Spez-Schuld) plus
+Kalibrierungs-Schaltung im Closure-Commit. **Messungen:** Coverage
+**92,9 %** (Erstlauf gegen Schwelle 85, Ramp auf 90 vollzogen —
+Erhöhung, kein ADR nötig, `AGENTS.md` §3.6 betrifft Senkungen);
+`DC-QA-01`-Benchmark **Median 551 ms** (Läufe 559/517/551 ms, 1.000
+Dateien / 8 MB, inkl. Container-Start) — Faktor ~9 unter dem
+5-s-Budget.
+
+- **Was hat funktioniert:** Das u-boot-Coverage-Muster (Stage +
+  Schwellen-Skript, `-coverpkg` über Paketgrenzen) ließ sich
+  unverändert übernehmen; der `DC-QA-01`-Benchmark brauchte kein
+  eigenes Framework — deterministisches Shell-Fixture plus drei
+  getimte Container-Läufe genügen dem Messprotokoll.
+- **Anders als geplant:** (a) Das Meta-Gate prüft zusätzlich die
+  *Gegenrichtung* (jedes Makefile-Target muss in `AGENTS.md` §4
+  stehen) — die AGENTS-eigene „Nur hier gelistete"-Zusage war sonst
+  unbewacht. (b) Der Ramp 85 → 90 wurde direkt beim Wellen-Closure
+  vollzogen statt offen gelassen (Ist 92,9 % > 90).
+- **Steering-Loop-Lerneintrag:** Der *Erstlauf* des Meta-Gates fand
+  sofort sechs Diskrepanzen — drei frische Targets waren noch nicht
+  dokumentiert, und drei Bestands-Targets (`run`, `compile`, `clean`)
+  steckten in kombinierten Tabellen-Zellen, die der erste Parser
+  übersah. Beleg für zwei Kurs-Thesen: (1) ein Meta-Gate gegen
+  Harness-Lügen zahlt sich beim ersten Lauf aus; (2) der Sensor
+  selbst braucht den Steering-Loop (Parser-Härtung auf alle
+  `make`-Tokens pro Tabellenzeile). Außerdem: den Negativ-Test als
+  Selbsttest in den Gate-Lauf einzubetten ist billiger als ein
+  separater Test und beweist die Wirksamkeit bei jedem `make gates`.
+- **Folge-Slices:** keine — welle-03 ist mit diesem Slice
+  abgeschlossen (Wellen-Closure-Trigger erfüllt: alle fünf Module
+  implementiert und getestet, Selbstkonfiguration aktiv,
+  coverage-gate + gate-consistency in `gates` aggregiert). welle-04
+  (Distribution + Migration) übernimmt als aktive Welle.
 
 ## 8. Sub-Area-Modus-Begründung
 

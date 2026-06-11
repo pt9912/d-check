@@ -72,8 +72,9 @@ COPY . .
 RUN bash tools/arch-check.sh
 
 # ---- coverage --------------------------------------------------------------
-# Kalibrierungs-Bindung (harness/README.md §Sensors): Schwelle 85 %,
-# welle-03 done → 90 %; Verfehlung nach Trigger ⇒ Carveout-Pflicht.
+# Kalibrierungs-Bindung (harness/README.md §Sensors): Schwelle 90 %
+# seit welle-03 done (Ramp 85 → 90 vollzogen); Verfehlung ⇒
+# Carveout-Pflicht.
 # `-coverpkg` misst über die Paketgrenzen von ./internal/... (u-boot-
 # Muster) — sonst zählt nur paket-lokale Abdeckung.
 # `pipefail` via SHELL, damit `go test … | tee` den Exit-Code nicht
@@ -82,7 +83,7 @@ FROM deps AS coverage
 
 SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
-ARG COVERAGE_THRESHOLD=85
+ARG COVERAGE_THRESHOLD=90
 ENV COVERAGE_THRESHOLD=${COVERAGE_THRESHOLD}
 
 COPY . .
