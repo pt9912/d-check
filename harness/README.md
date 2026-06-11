@@ -40,6 +40,7 @@ Diese Datei dupliziert sie nicht.
 | [`AGENTS.md`](../AGENTS.md) | Hard Rules, Source Precedence, Workflow |
 | [`conventions.md`](conventions.md) | repo-lokale Strukturregeln, Adaptions-Block (`MR-*`), Modus-Deklarationen |
 | [`agents-digest.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/main/kurs/de/agents-digest.md) | adoptiertes Betriebsregelwerk der Baseline in Agenten-Kurzform; derivativ — Stand siehe [`conventions.md` §Baseline](conventions.md#baseline) |
+| [`.harness/skills/reviewer.md`](../.harness/skills/reviewer.md) | Reviewer-Skill: Kategorien-Anker, Output-Schema, Negativbefund-Pflicht; ein Report pro Lauf unter [`docs/reviews/`](../docs/reviews/) |
 
 ## Sensors (Feedback-Gates)
 

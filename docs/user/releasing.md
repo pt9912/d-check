@@ -31,7 +31,9 @@ Die Pipeline (`release.yml`) läuft bei jedem `v*`-Tag-Push:
 4. **Push** nach `ghcr.io/pt9912/d-check:v<version>`; `:latest`
    **nur** für stabile Releases (kein Prerelease-Suffix).
 5. **Digest-Pin** landet im Job-Summary und in den Notes des
-   automatisch angelegten GitHub-Releases.
+   automatisch angelegten GitHub-Releases. Existiert das Release zum
+   Tag bereits (z. B. Workflow-Re-Run), wird es wiederverwendet — der
+   aktuelle Digest steht dann nur im Job-Summary.
 
 ## Konsum (Digest-Pin)
 

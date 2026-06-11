@@ -8,10 +8,11 @@ Einzeltools (`check_refs.py`, `docs-check.js`, `verify-doc-refs.sh`)
 aus den Schwester-Repositories des Entwicklungs-Workspace in ein
 konfigurierbares Tool.
 
-**Status: released** — alle fünf Regelmodule (`links`, `anchors`,
-`ids`, `matrix`, `external`) sind implementiert und getestet; seit
+**Status: released** — die Regelmodule `links`, `anchors`, `ids`,
+`matrix` und `external` sind implementiert und getestet; seit
 `v0.1.0` als Image auf GHCR (Dogfooding: d-check validiert die eigene
-Doku bei jedem Gate-Lauf). Verbindlich ist das
+Doku bei jedem Gate-Lauf). Das sechste Modul `codepaths` (Change
+Request 0.3.0) ist in Umsetzung. Verbindlich ist das
 [Lastenheft](spec/lastenheft.md).
 
 ## Nutzung

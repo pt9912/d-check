@@ -6,7 +6,22 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-_nichts — der nächste Schnitt folgt mit dem nächsten Release._
+### Added
+
+- Review-Infrastruktur nach Digest-Welle-18-Konvention:
+  Reviewer-Skill (`.harness/skills/reviewer.md` — Kategorien-Anker,
+  Output-Schema, Negativbefund-Pflicht) und Report-Ablage
+  `docs/reviews/` (ein Report pro Lauf); `.gitignore` auf
+  `.harness/state/` verengt (Skills sind versionierte
+  Harness-Mechanik).
+
+### Changed
+
+- Lastenheft 0.3.0/0.3.1 — Change Request `DC-FA-CODE-001`: neues
+  opt-in-Modul `codepaths` (explizite Pfade in Inline-Code,
+  Zeilen-Opt-out `d-check:ignore` nur für dieses Modul) inkl.
+  Review-R1-Präzisierungen (Wert-Normalisierung, Anker-Prüfung bei
+  Markdown-Zielen); Umsetzung folgt mit slice-013.
 
 ## [0.1.0] — 2026-06-11
 

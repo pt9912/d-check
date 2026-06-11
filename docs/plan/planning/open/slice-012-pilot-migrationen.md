@@ -39,8 +39,10 @@ Vergleichsläufe sind dokumentiert und belegen `DC-QA-04`.
 - [ ] Pro Pilot-Repo: CI-/Make-Schritt auf
   `ghcr.io/pt9912/d-check@sha256:…` (Digest-Pin gemäß
   Release-Doku aus slice-011) umgestellt; die Alt-Tool-Kopie ist im
-  Ziel-Repo gelöscht oder als deprecated markiert (Entscheidung liegt
-  beim Ziel-Repo, wird dokumentiert).
+  Ziel-Repo gelöscht, auf einen Rest-Sensor für repo-spezifische
+  Prüfungen geschrumpft (Fall Kurs-Repo: Modul-Nummern-Checks) oder
+  als deprecated markiert — Entscheidung liegt beim Ziel-Repo, wird
+  dokumentiert.
 - [ ] Vergleichstabellen (Repo, Familie, Alt-Befunde, d-check-Befunde,
   Differenzen + Triage) in der Closure-Notiz — der zweite und dritte
   Datenpunkt nach dem Eigenlauf aus

@@ -33,7 +33,8 @@ Welle).
 
 **Closure-Trigger:** Image auf GHCR veröffentlicht (Semver-Tag,
 Digest-Pin); DIST-Akzeptanzkriterien als Integrationstests grün;
-`versions`/`fullbuild`/`ci` existieren und sind dokumentiert;
+`versions`/`fullbuild`/`ci` existieren und sind dokumentiert; Modul
+`codepaths` implementiert (Change Request 0.3.x, slice-013);
 mindestens drei Pilot-Migrationen mit Vergleichslauf dokumentiert.
 
 ## Nächste Wellen

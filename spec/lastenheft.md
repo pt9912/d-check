@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.3.0
+**Version:** 0.3.1
 
 **Status:** Draft
 
@@ -153,8 +153,12 @@ das Modul `anchors`. Fragment-Teile gemischter Ziele (`ziel.md#anker`)
 ignoriert dieses Modul ebenfalls — Anker-Validierung ist ausschließlich
 Aufgabe des Moduls `anchors` (ist `anchors` deaktiviert, bleiben
 fehlerhafte Anker unbemängelt). Vorkommen in Fenced-Code-Blöcken
-(``` / ~~~) und in Inline-Code werden nicht geprüft; HTML-Kommentare
-werden nicht gesondert behandelt (Links darin gelten als Fließtext).
+(``` / ~~~) und in Inline-Code werden **von diesem Modul** nicht
+geprüft (explizite Pfade in Inline-Code prüft das opt-in-Modul
+`codepaths`,
+[`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in));
+HTML-Kommentare werden nicht gesondert behandelt (Links darin gelten
+als Fließtext).
 
 **Akzeptanzkriterien:**
 
@@ -284,8 +288,15 @@ Netzwerkzugriffe erfolgen ausschließlich opt-in.
 Inline-Code-Spans geprüft, deren Inhalt ein expliziter relativer Pfad
 ist: beginnend mit `./` oder `../` (immer) oder mit einem der
 konfigurierten Wurzel-Präfixe (z. B. `docs/`, `tools/` — relativ zur
-Repository-Wurzel). Das Ziel muss nach Pfadauflösung existieren und
-innerhalb der Repository-Wurzel liegen. Werte mit Whitespace,
+Repository-Wurzel). Vor der Prüfung wird der Wert normalisiert:
+umschließende Anführungszeichen und schließende Satzzeichen entfallen
+(`` `../foo.md,` `` prüft `../foo.md`). Das Ziel muss nach
+Pfadauflösung existieren und innerhalb der Repository-Wurzel liegen;
+Fragment-Teile (`#…`) werden abgetrennt, und bei Markdown-Zielen wird
+der Anker zusätzlich gegen die Headings der Zieldatei geprüft —
+gleiches Slug-Verfahren wie
+[`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors).
+Werte mit Whitespace,
 Platzhalter-/Glob-Zeichen oder Ellipsen gelten nicht als Pfad
 (konservative Erkennung); Vorkommen in Fenced-Code-Blöcken werden
 nicht geprüft. Ein HTML-Kommentar `d-check:ignore` auf derselben
@@ -404,3 +415,4 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | 0.2.2 | 2026-06-10 | Redaktionell: absolute Workspace-Pfade entfernt („Schwester-Repositories des Entwicklungs-Workspace" statt konkreter Pfade); keine inhaltliche Änderung | — |
 | 0.2.3 | 2026-06-11 | Redaktionell: „(folgt)" in der `DC-QA-01`-Messmethode entfernt — die Benchmark-Definition existiert in der Spezifikation; keine inhaltliche Änderung | — |
 | 0.3.0 | 2026-06-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CODE-001` — Modul `codepaths` prüft explizite Pfade in Inline-Code (opt-in, konservative Erkennung, Zeilen-Opt-out `d-check:ignore` nur für dieses Modul). Anlass: `DC-QA-04`-Vergleichslauf gegen die JS-Familie (`docs-check.js`) zeigte die Prüfklasse als Konsolidierungs-Lücke. Bereich `CODE` in der Schema-Konvention deklariert; Modul-Listen in `DC-FA-CLI-002` und Glossar ergänzt | slice-013 |
+| 0.3.1 | 2026-06-11 | Review R1 zum Change Request: `DC-FA-CODE-001` präzisiert — Wert-Normalisierung (Anführungszeichen, schließende Satzzeichen) und Anker-Prüfung bei Markdown-Zielen (`DC-QA-04`-Parität zur JS-Familie); `DC-FA-LINK-001`-Inline-Code-Aussage auf Modul-Bezug eingegrenzt | slice-013 |

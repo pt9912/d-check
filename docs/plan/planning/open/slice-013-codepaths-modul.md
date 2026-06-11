@@ -45,6 +45,15 @@ vollständig migrieren.
   (Form-Fixes, wo nötig). Die QA-03-Modullisten-Prüfung in
   `tools/gate-consistency.sh` zieht das neue Modul in ihre
   „alle außer `external`"-Zusage ein.
+- [ ] Alle bestehenden Modul-Aufzählungen nachgezogen (Review-R1-
+  Finding F-4): `spec/spezifikation.md` (JSON-Schema-Enum,
+  `rule`-Tabellenzeile, `modules`-Constraint),
+  [`docs/user/operations.md`](../../../../docs/user/operations.md)
+  (Optionen-Tabelle), [`README.md`](../../../../README.md)
+  (Status-Absatz), doc-check-Zeilen in
+  [`harness/README.md`](../../../../harness/README.md) §Sensors und
+  [`AGENTS.md`](../../../../AGENTS.md) §4 (Modul-Aufzählung +
+  DC-Bindung um `DC-FA-CODE-001`).
 - [ ] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
   Closure-Notiz mit Steering-Loop-Lerneintrag.
 
