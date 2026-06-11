@@ -44,3 +44,7 @@ Der Host braucht nur `git`, GNU `make`, `bash` und Docker
 make help     # verfügbare Targets
 make gates    # alle inneren Gates (mandatory vor Handoff)
 ```
+
+## Lizenz
+
+Dieses Projekt steht unter der [MIT-Lizenz](LICENSE).
