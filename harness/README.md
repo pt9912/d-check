@@ -55,11 +55,15 @@ liegt in CI bzw. lokal (`make gates`), nicht hier.
 | `make gate-consistency` | Meta-Gate (`tools/gate-consistency.sh`): in `AGENTS.md` §4 / dieser Tabelle dokumentierte Targets ↔ Makefile (beide Richtungen) + `DC-QA-03`-Modulliste der [`.d-check.yml`](../.d-check.yml); Selbsttest mit Phantom-Target bei jedem Lauf | [`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (DC-Bindung) |
 | `make record-gates` | Working-Tree-Hash-Nachweis für den Stop-Hook | — |
 | `make gates` | aggregiert doc-check + lint + test + arch-check + coverage-gate + gate-consistency, `record-gates` als letzter Schritt | — |
+| `make image-test` | [`DC-FA-DIST-001`](../spec/lastenheft.md#dc-fa-dist-001--docker-image)-Akzeptanzkriterien gegen das lokal gebaute Image (`tools/image-test.sh`): Befund-Ausgabe und Exit-Code nativ vs. Container **byte-identisch**, read-only-Mount vollständig, fehlender Mount → Exit 2 mit Hinweis | [`DC-FA-DIST-001`](../spec/lastenheft.md#dc-fa-dist-001--docker-image)/[`DC-QA-02`](../spec/lastenheft.md#dc-qa-02--determinismus) (DC-Bindung) |
+| `make ci` | CI-äquivalenter Lauf (gates + image-test) — das Target der Release-Pipeline (slice-011) | — |
+| `make fullbuild` | volle Closure vor Welle-Merge/Release (gates + image-test + bench); schließt mit dem Image-Hash des Runtime-Builds ab | Reproduzierbarkeits-Bindung: Image-Hash (`sha256:…`) im Lauf-Abschluss; Pins via `make versions` (Kurs-Modul 14) |
+| `make versions` | Reproduzierbarkeits-Pins: `GO_VERSION`, `GOLANGCI_LINT_VERSION`, alle `FROM`-Basis-Images, Runtime-Image-ID | — |
 
 **Aktueller Lauf-Status:** lokal `make gates`.
 **Rote Gates:** keine.
-**Nicht behauptet** (geplant): `make versions`, `make fullbuild` und
-`make ci` (Reproduzierbarkeits-Bindung, Image-Hash) — ab welle-04.
+**Nicht behauptet:** — keine — (alle geplanten Targets existieren;
+`make gate-consistency` bewacht die Tabelle in beide Richtungen).
 
 ## Traceability rules
 

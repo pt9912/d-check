@@ -5,8 +5,8 @@
 # Test/arch-check laufen über `docker build --target <stage>` in
 # Containern. Der Host braucht nur Docker, GNU make, bash und git.
 #
-# `make gates` aggregiert nur real existierende Targets (Kurs-Modul 13).
-# versions/fullbuild/ci folgen ab welle-04 (harness/README.md §Sensors).
+# `make gates` aggregiert nur real existierende Targets (Kurs-Modul 13);
+# ci/fullbuild bauen darauf auf (harness/README.md §Sensors).
 
 IMAGE                 ?= d-check
 GO_VERSION            ?= 1.26.4
@@ -38,7 +38,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency bench build run doc-check record-gates gates clean
+.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency bench image-test versions build run doc-check record-gates gates ci fullbuild clean
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -76,6 +76,16 @@ gate-consistency: ## Meta-Gate: dokumentierte Targets ↔ Makefile, QA-03-Modull
 bench: build ## DC-QA-01-Benchmark: generiertes Fixture, N=3 Läufe, Median < 5 s (Spez §DC-QA-01.a).
 	@bash tools/bench-fixture.sh
 
+image-test: build ## DC-FA-DIST-001-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container, :ro, Mount-Hinweis).
+	@bash tools/image-test.sh
+
+versions: ## Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Images, Runtime-Image-ID).
+	@echo "GO_VERSION=$(GO_VERSION)"
+	@echo "GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION)"
+	@grep -E '^FROM ' Dockerfile | sort -u
+	@docker image inspect $(IMAGE):latest --format 'runtime-image={{.Id}}' 2>/dev/null \
+	    || echo "runtime-image=(nicht gebaut — make build)"
+
 build: ## Runtime-Image bauen (distroless static, nonroot — ADR-0002).
 	$(DOCKER_BUILD) --target runtime -t $(IMAGE):latest .
 
@@ -102,6 +112,16 @@ record-gates: ## Nachweis schreiben: Working-Tree-Hash (für den Stop-Hook).
 # nur, wenn alle Gates grün sind (sonst bricht make vorher ab).
 gates: doc-check lint test arch-check coverage-gate gate-consistency record-gates ## alle inneren Gates (mandatory vor Handoff).
 	@echo "[gates] doc-check + lint + test + arch-check + coverage-gate + gate-consistency green"
+
+# ci = gates + Image-Integrationstests — das Target, das die
+# Release-Pipeline (slice-011) fährt. fullbuild = volle Closure vor
+# Welle-Merge/Release inkl. Benchmark; bewusst NICHT Teil von gates
+# (inner loop bleibt schnell).
+ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (DC-FA-DIST-001).
+	@echo "[ci] gates + image-test green"
+
+fullbuild: gates image-test bench ## volle Closure: gates + image-test + bench; schließt mit dem Image-Hash (Reproduzierbarkeits-Bindung).
+	@docker image inspect $(IMAGE):latest --format '[fullbuild] green — image-hash {{.Id}}'
 
 # ---- maintenance -------------------------------------------------------------
 

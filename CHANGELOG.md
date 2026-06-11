@@ -77,6 +77,14 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   `isImplemented`/`SkippedModules` entfernt — alle fünf
   Vertragsmodule sind lauffähig.
 
+- slice-010 — Image-Integrationstests + Reproduzierbarkeits-Belege:
+  `make image-test` automatisiert die `DC-FA-DIST-001`-Akzeptanzkriterien
+  gegen das lokal gebaute Image (Befund-Ausgabe und Exit-Code nativ
+  vs. Container byte-identisch, read-only-Mount, fehlender Mount →
+  Exit 2 mit Hinweis); `make versions` (Pins + Runtime-Image-ID),
+  `make ci` (gates + image-test — Target der Release-Pipeline) und
+  `make fullbuild` (volle Closure inkl. Benchmark, schließt mit dem
+  Image-Hash); die „Nicht behauptet"-Listen sind leer.
 - slice-009 — Gate-Endausbau (welle-03-Abschluss): `make coverage-gate`
   (Coverage über `./internal/...` per `-coverpkg`, Kalibrierungs-Bindung
   85 % → 90 % bei welle-03 done; Ist-Stand 92,9 %),

@@ -104,15 +104,18 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile + `DC-QA-03`-Modulliste (Harness-Lügen-Schutz) |
 | `make doc-check` | Doku-Links, Anker, Kennungs-Linkpflicht + Referenzmatrix via `d-check` selbst (Dogfooding; netzlos — zugleich `DC-QA-03`-Messmethode) |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
+| `make ci` | CI-äquivalenter Lauf: gates + image-test (fährt die Release-Pipeline) |
+| `make fullbuild` | volle Closure: gates + image-test + bench, schließt mit dem Image-Hash |
+| `make image-test` | `DC-FA-DIST-001`-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container) |
 | `make bench` | `DC-QA-01`-Benchmark gegen generiertes Fixture (Median aus 3 Läufen, kein Gate in `gates`) |
+| `make versions` | Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Images, Runtime-Image-ID) |
 | `make build` / `make run` | Runtime-Image bauen / Selbst-Smoke-Test |
 | `make deps` / `make compile` | Cache-Layer / schnelles Compile-Feedback |
 | `make record-gates` | Nachweis schreiben: Working-Tree-Hash für den Stop-Hook |
 | `make help` / `make clean` | Targets anzeigen / Images entfernen |
 
-**Nicht behauptet** (geplant): `make versions`, `make fullbuild`,
-`make ci` (ab welle-04). Details und Bindungen: Sensors-Tabelle in
-[`harness/README.md`](harness/README.md).
+Alle dokumentiert-geplanten Targets existieren; Details und Bindungen:
+Sensors-Tabelle in [`harness/README.md`](harness/README.md).
 
 ## 5. Dokumentations-Regeln
 
