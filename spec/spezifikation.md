@@ -162,10 +162,12 @@ Verletzung ist ein Konfigurationsfehler (Exit 2, [§2](#d-checkyml)).
 
 HEAD-Request; bei HTTP 405/501 Fallback auf GET (Body verworfen).
 Redirects bis `REDIRECT_MAX` Stationen gefolgt. Pro URL genau eine
-Prüfung pro Lauf (Dedupe), begrenzte Parallelität
-(`EXTERNAL_PARALLEL`). Ergebnis-Auswertung: Status < 400 → kein
-Befund; ≥ 400 → `external-status`; Timeout → `external-timeout`;
-Redirect-Kette > `REDIRECT_MAX` → `external-redirects`.
+Prüfung pro Lauf (Dedupe — der Befund erscheint an jedem Vorkommen),
+begrenzte Parallelität (`EXTERNAL_PARALLEL`). Ergebnis-Auswertung:
+Status < 400 → kein Befund; ≥ 400 → `external-status`; Timeout →
+`external-timeout`; Redirect-Kette > `REDIRECT_MAX` →
+`external-redirects`; Transportfehler (DNS-/Verbindungsfehler) →
+`external-status` (Status 0, Grund in der Meldung).
 
 ### DC-QA-02.a — Determinismus und Sortierung
 
@@ -316,7 +318,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `id-unlinked` | ids | Kennung im Fließtext ohne Markdown-Link |
 | `matrix-forbidden` | matrix | Referenz zwischen Klassen nicht erlaubt |
 | `matrix-inactive` | matrix | Referenz auf Dokument mit verbotenem Status |
-| `external-status` | external | HTTP-Status ≥ 400 |
+| `external-status` | external | HTTP-Status ≥ 400 oder Transportfehler (DNS/Verbindung) |
 | `external-timeout` | external | Timeout überschritten |
 | `external-redirects` | external | mehr als `REDIRECT_MAX` Redirects |
 
@@ -352,3 +354,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-11 | Review R1 zu slice-006: Inline-Code-Stripping positionserhaltend (Leerzeichen statt Entfernen — keine Schein-Vorkommen); Repo-Escape-Verbot für `scan.roots` und `ids.patterns[].target`; Leerstring-matchende ids-Regexe als Konfigurationsfehler; zeilenbasierte Link-Extraktion als normative Grenze dokumentiert | slice-006 |
 | 2026-06-11 | Modul `matrix` normiert umgesetzt; §`DC-FA-ID-001.a` fortgeschrieben (Befund der Dogfooding-Selbstkonfiguration): ATX-Heading-Zeilen und Vorkommen im deklarierten Muster-Target (Definitions-Ort) sind linkpflichtfrei | slice-007 |
 | 2026-06-11 | Review R1 zu slice-007: Status-Extraktion liest nur Prosa-Zeilen (Fence-Inhalt ist kein Statuswert) und nur Markdown-Ziele (andere gelten als aktiv); Regel- und Status-Prüfung als unabhängig expliziert (ein Link kann zwei Befunde erzeugen) | slice-007 |
+| 2026-06-11 | Modul `external` normiert umgesetzt; §`DC-FA-EXT-001.a` präzisiert: Transportfehler (DNS/Verbindung) → `external-status` (Status 0); Dedupe-Semantik expliziert (eine Prüfung pro URL, Befund an jedem Vorkommen) | slice-008 |

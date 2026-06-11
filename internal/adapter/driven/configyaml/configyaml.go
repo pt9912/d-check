@@ -93,7 +93,7 @@ func Decode(content []byte) (core.Config, error) {
 	if err := applyMatrix(r.Matrix, &cfg); err != nil {
 		return cfg, err
 	}
-	if err := validateExternal(r.External); err != nil {
+	if err := applyExternal(r.External, &cfg); err != nil {
 		return cfg, err
 	}
 	return cfg, nil
@@ -164,7 +164,7 @@ func applyMatrix(m *rawMatrix, cfg *core.Config) error {
 	return nil
 }
 
-func validateExternal(e *rawExternal) error {
+func applyExternal(e *rawExternal, cfg *core.Config) error {
 	if e == nil {
 		return nil
 	}
@@ -174,5 +174,6 @@ func validateExternal(e *rawExternal) error {
 	if p := e.Parallel; p != 0 && (p < 1 || p > 16) {
 		return fmt.Errorf("%s: external.parallel außerhalb 1–16", FileName)
 	}
+	cfg.External = core.ExternalConfig{TimeoutSeconds: e.TimeoutSeconds, Parallel: e.Parallel}
 	return nil
 }

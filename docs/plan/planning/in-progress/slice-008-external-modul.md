@@ -1,6 +1,6 @@
 # Slice slice-008: Modul `external` + HTTP-Adapter
 
-**Status:** open.
+**Status:** in-progress.
 
 **Welle:** welle-03-regelmodule.
 

@@ -6,6 +6,8 @@ package cli_test
 import (
 	"bytes"
 	"encoding/json"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
@@ -272,6 +274,38 @@ func TestQA02_Determinismus(t *testing.T) {
 	}
 }
 
+// DC-FA-EXT-001: Modul external (opt-in) — Happy (erreichbar),
+// Negative (404 → external-status), Boundary (nicht aktiviert →
+// keine Befunde für externe Links).
+func TestEXT001(t *testing.T) {
+	var requests int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests++
+		if r.URL.Path == "/fehlt" {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer srv.Close()
+
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "[ok]("+srv.URL+"/da)\n[kaputt]("+srv.URL+"/fehlt)\n")
+
+	// Boundary: Modul nicht aktiviert → kein Befund, kein Request
+	code, _, _ := run(t, "--disable", "anchors", root)
+	if code != 0 || requests != 0 {
+		t.Fatalf("opt-in verletzt: Exit = %d, Requests = %d", code, requests)
+	}
+
+	// Happy + Negative: aktiviert → genau der 404-Link wird gemeldet
+	code, stdout, _ := run(t, "--enable", "external", "--disable", "anchors", root)
+	if code != 1 || !strings.Contains(stdout, "external-status") ||
+		strings.Contains(stdout, "/da\t") {
+		t.Fatalf("Exit = %d, stdout = %q", code, stdout)
+	}
+}
+
 // DC-FA-ID-001: Linkpflicht für Kennungen (Modul ids) — Happy
 // (verlinkt), Boundary (Inline-Code), Negative (nackt → id-unlinked).
 func TestID001(t *testing.T) {
@@ -284,9 +318,6 @@ func TestID001(t *testing.T) {
 	code, _, stderr := run(t, root)
 	if code != 0 {
 		t.Fatalf("Exit = %d, want 0 (stderr: %s)", code, stderr)
-	}
-	if strings.Contains(stderr, "nicht implementiert") {
-		t.Fatalf("Interim-Hinweis darf für ids nicht mehr erscheinen: %q", stderr)
 	}
 
 	write(t, root, "docs/a.md", "nacktes ADR-0042 im Fließtext\n")

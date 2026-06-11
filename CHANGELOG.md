@@ -66,6 +66,17 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   linkpflichtfrei; ~50 nackte Kennungen der eigenen Doku verlinkt
   bzw. als Code-Span fixiert.
 
+- slice-008 — Modul `external` (`DC-FA-EXT-001`, opt-in): HTTP-Port im
+  Hexagon + `httpcheck`-Adapter (HEAD mit GET-Fallback bei 405/501,
+  Timeout konfigurierbar, Redirect-Limit 5, begrenzte Parallelität,
+  eine Prüfung pro URL); Grund-Codes
+  `external-status`/`external-timeout`/`external-redirects`;
+  `make doc-check` läuft jetzt mit `--network none` und ist damit die
+  automatisierte `DC-QA-03`-Messmethode (netzloser Lauf aller Module
+  außer `external`); Interim-Mechanismus
+  `isImplemented`/`SkippedModules` entfernt — alle fünf
+  Vertragsmodule sind lauffähig.
+
 ### Changed
 
 - Review R1 zu slice-007: Status-Extraktion fence-aware (Fence-Inhalt

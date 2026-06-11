@@ -57,7 +57,7 @@ func TestAnchorsModul(t *testing.T) {
 		"docs/b.md": "# Abschnitt Zwei\n# Übersicht\n",
 		"docs/c.txt": "kein markdown",
 	})
-	res, err := Run(m, Config{}, []string{"anchors"})
+	res, err := Run(m, nil, Config{}, []string{"anchors"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -83,7 +83,7 @@ func TestAnchorsModul(t *testing.T) {
 // anchors schweigt (DC-FA-ANCH-001 Boundary).
 func TestAnchorsSchweigtBeiFehlenderDatei(t *testing.T) {
 	m := newMemFS(map[string]string{"docs/a.md": "[x](weg.md#frag)"})
-	res, err := Run(m, Config{}, []string{"links", "anchors"})
+	res, err := Run(m, nil, Config{}, []string{"links", "anchors"})
 	if err != nil {
 		t.Fatal(err)
 	}

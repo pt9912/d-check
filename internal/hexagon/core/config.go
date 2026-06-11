@@ -13,19 +13,6 @@ func validModules() []string {
 	return []string{"links", "anchors", "ids", "matrix", "external"}
 }
 
-// isImplemented: in diesem Stand lauffähige Module.
-// `external` folgt mit slice-008; bis dahin werden aktivierte, aber
-// nicht implementierte Module mit stderr-Hinweis übersprungen (der
-// Mechanismus entfällt danach als toter Code — Closure-Notiz
-// slice-006).
-func isImplemented(module string) bool {
-	switch module {
-	case "links", "anchors", "ids", "matrix":
-		return true
-	}
-	return false
-}
-
 // defaultModules ist der Default-Modulsatz (DC-FA-CLI-002).
 func defaultModules() []string { return []string{"links", "anchors"} }
 
@@ -43,6 +30,8 @@ type Config struct {
 	IDPatterns []IDPattern
 	// Matrix: Dokumentklassen und Referenzregeln (Modul matrix).
 	Matrix MatrixConfig
+	// External: Parameter des Moduls external.
+	External ExternalConfig
 }
 
 // IDPattern ist ein deklariertes Kennungs-Muster (DC-FA-ID-001).
@@ -71,6 +60,29 @@ type MatrixConfig struct {
 	Rules           []MatrixRule
 	StatusForbidden []string
 	ExcludeSections []string
+}
+
+// ExternalConfig sind die Parameter des Moduls external
+// (DC-FA-EXT-001); 0 = Default gemäß spec/spezifikation.md §3.
+type ExternalConfig struct {
+	TimeoutSeconds int
+	Parallel       int
+}
+
+// EffectiveTimeoutSeconds liefert das Timeout (EXTERNAL_TIMEOUT = 10 s).
+func (e ExternalConfig) EffectiveTimeoutSeconds() int {
+	if e.TimeoutSeconds == 0 {
+		return 10
+	}
+	return e.TimeoutSeconds
+}
+
+// EffectiveParallel liefert die Parallelität (EXTERNAL_PARALLEL = 4).
+func (e ExternalConfig) EffectiveParallel() int {
+	if e.Parallel == 0 {
+		return 4
+	}
+	return e.Parallel
 }
 
 // EffectiveModules wendet die Modul-Auflösung an

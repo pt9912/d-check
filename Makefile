@@ -70,8 +70,11 @@ run: build ## Smoke-Test: d-check prüft das eigene Repo (read-only).
 # Dogfooding (MR-007, Selbstkonfiguration slice-007): d-check prüft die
 # eigene Doku — Module links + anchors + ids + matrix über die gesamte
 # Repo-Wurzel (.d-check.yml, scan.roots ".").
-doc-check: build ## Doku-Links, Anker, ID-Linkpflicht + Referenzmatrix via d-check selbst (Dogfooding, DC-FA-LINK/ANCH/ID/MTX).
-	docker run --rm -v "$(CURDIR)":/repo:ro $(IMAGE):latest
+# Zugleich die automatisierte DC-QA-03-Messmethode (slice-008):
+# read-only-Mount + --network none — alle Module außer external aktiv,
+# der Lauf beweist Seiteneffektfreiheit und Netzlosigkeit.
+doc-check: build ## Doku-Links, Anker, ID-Linkpflicht + Referenzmatrix via d-check selbst (Dogfooding, DC-FA-LINK/ANCH/ID/MTX; netzlos: DC-QA-03).
+	docker run --rm --network none -v "$(CURDIR)":/repo:ro $(IMAGE):latest
 
 # ---- harness -----------------------------------------------------------------
 

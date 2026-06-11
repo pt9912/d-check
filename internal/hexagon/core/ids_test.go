@@ -23,7 +23,7 @@ func TestIDsModul(t *testing.T) {
 	cfg := Config{IDPatterns: []IDPattern{
 		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/"},
 	}}
-	res, err := Run(m, cfg, []string{"ids"})
+	res, err := Run(m, nil, cfg, []string{"ids"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -73,17 +73,17 @@ func TestIDsTargetMussExistieren(t *testing.T) {
 	cfg := Config{IDPatterns: []IDPattern{
 		{Regex: regexp.MustCompile(`X-\d`), Target: "gibt/es/nicht"},
 	}}
-	if _, err := Run(m, cfg, []string{"ids"}); err == nil {
+	if _, err := Run(m, nil, cfg, []string{"ids"}); err == nil {
 		t.Fatal("Fehler erwartet (Target fehlt)")
 	}
-	if _, err := Run(m, cfg, []string{"links"}); err == nil {
+	if _, err := Run(m, nil, cfg, []string{"links"}); err == nil {
 		t.Fatal("Fehler auch ohne aktives ids-Modul erwartet (Config-Constraint)")
 	}
 	cfgOK := Config{IDPatterns: []IDPattern{
 		{Regex: regexp.MustCompile(`X-\d`), Target: "docs/a.md"},
 		{Regex: regexp.MustCompile(`Y-\d`), Target: "docs/"},
 	}}
-	if _, err := Run(m, cfgOK, []string{"ids"}); err != nil {
+	if _, err := Run(m, nil, cfgOK, []string{"ids"}); err != nil {
 		t.Fatalf("unerwarteter Fehler: %v", err)
 	}
 }
@@ -97,7 +97,7 @@ func TestIDsTargetDarfWurzelNichtVerlassen(t *testing.T) {
 		cfg := Config{IDPatterns: []IDPattern{
 			{Regex: regexp.MustCompile(`X-\d`), Target: target},
 		}}
-		_, err := Run(m, cfg, []string{"ids"})
+		_, err := Run(m, nil, cfg, []string{"ids"})
 		if err == nil || !strings.Contains(err.Error(), "verlässt") {
 			t.Fatalf("Target %q: err = %v (Repo-Escape-Fehler erwartet)", target, err)
 		}
@@ -117,7 +117,7 @@ func TestIDsDefinitionsOrtUndHeadings(t *testing.T) {
 		{Regex: regexp.MustCompile(`DC-(FA-[A-Z]+|QA)-\d+`), Target: "spec/lastenheft.md"},
 		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/"},
 	}}
-	res, err := Run(m, cfg, []string{"ids"})
+	res, err := Run(m, nil, cfg, []string{"ids"})
 	if err != nil {
 		t.Fatal(err)
 	}

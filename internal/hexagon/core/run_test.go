@@ -15,7 +15,7 @@ func TestLinksModul(t *testing.T) {
 	})
 	m.files["docs/mit leer.md"] = "x"
 
-	res, err := Run(m, Config{}, []string{"links"})
+	res, err := Run(m, nil, Config{}, []string{"links"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,7 +47,7 @@ func TestSymlinkAblehnung(t *testing.T) {
 	m.symlinks["docs/link-intern.md"] = true // zeigt intern — trotzdem Befund
 	m.symlinks["docs/link-raus"] = true      // zeigt nach außen
 
-	res, err := Run(m, Config{}, []string{"links"})
+	res, err := Run(m, nil, Config{}, []string{"links"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -127,7 +127,7 @@ func TestDeterminismus(t *testing.T) {
 	})
 	var prev []Finding
 	for i := 0; i < 10; i++ {
-		res, err := Run(m, Config{}, []string{"links"})
+		res, err := Run(m, nil, Config{}, []string{"links"})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -149,14 +149,12 @@ func TestSortFindingsDedupe(t *testing.T) {
 	}
 }
 
-// Nicht implementierte Module werden gemeldet und übersprungen.
-func TestSkippedModules(t *testing.T) {
-	m := newMemFS(map[string]string{"docs/a.md": "x"})
-	res, err := Run(m, Config{}, []string{"external", "links"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !reflect.DeepEqual(res.SkippedModules, []string{"external"}) {
-		t.Fatalf("Skipped = %v", res.SkippedModules)
+// Aktives external ohne verdrahteten Checker (nil) bleibt ein
+// No-op — kein Fehler, keine Befunde (Kern-Tests laufen netzlos).
+func TestExternalOhneChecker(t *testing.T) {
+	m := newMemFS(map[string]string{"docs/a.md": "[x](https://example.org)"})
+	res, err := Run(m, nil, Config{}, []string{"external", "links"})
+	if err != nil || len(res.Findings) != 0 {
+		t.Fatalf("res = %+v, err = %v", res, err)
 	}
 }

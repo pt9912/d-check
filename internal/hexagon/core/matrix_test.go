@@ -30,7 +30,7 @@ func TestMatrixModul(t *testing.T) {
 		"docs/plan/planning/done/slice-001-a.md": "# S\n[ok](../../adr/0001-x.md)\n[inaktiv](../../adr/0002-y.md)\n",
 		"docs/notiz.md": "[unklassifiziert](plan/adr/0002-y.md)\n",
 	})
-	res, err := Run(m, Config{Matrix: matrixTestConfig()}, []string{"matrix"})
+	res, err := Run(m, nil, Config{Matrix: matrixTestConfig()}, []string{"matrix"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -76,7 +76,7 @@ func TestMatrixExcludeSectionsUndPraezedenz(t *testing.T) {
 			"[wieder geprüft](../docs/plan/adr/0001-x.md)\n", // Zeile 8: Befund
 		"docs/plan/adr/0001-x.md": "**Status:** Accepted\n",
 	})
-	res, err := Run(m, Config{Matrix: cfg}, []string{"matrix"})
+	res, err := Run(m, nil, Config{Matrix: cfg}, []string{"matrix"})
 	if err != nil {
 		t.Fatal(err)
 	}

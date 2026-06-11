@@ -11,9 +11,11 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	configyaml "github.com/pt9912/d-check/internal/adapter/driven/configyaml"
 	fsadapter "github.com/pt9912/d-check/internal/adapter/driven/fs"
+	"github.com/pt9912/d-check/internal/adapter/driven/httpcheck"
 	"github.com/pt9912/d-check/internal/adapter/driven/report"
 	"github.com/pt9912/d-check/internal/hexagon/core"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
@@ -154,9 +156,6 @@ func loadConfig(fsys *fsadapter.Adapter, stderr io.Writer) (core.Config, bool) {
 // render gibt das Ergebnis aus und liefert den Exit-Code
 // (DC-FA-CLI-003/004).
 func render(res core.Result, jsonOut bool, stdout, stderr io.Writer) int {
-	for _, m := range res.SkippedModules {
-		fmt.Fprintf(stderr, "d-check: Hinweis: Modul %q ist noch nicht implementiert — übersprungen\n", m)
-	}
 	exit := 0
 	if len(res.Findings) > 0 {
 		exit = 1
@@ -196,7 +195,10 @@ func Run(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return 2
 	}
-	res, err := core.Run(fsys, cfg, modules)
+	// Composition Root: der HTTP-Adapter wird nur vom explizit
+	// aktivierten Modul external benutzt (DC-QA-03).
+	checker := httpcheck.New(time.Duration(cfg.External.EffectiveTimeoutSeconds()) * time.Second)
+	res, err := core.Run(fsys, checker, cfg, modules)
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return 2
