@@ -1,6 +1,6 @@
 # Slice slice-006: Modul `ids` — Linkpflicht für Kennungen
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-03-regelmodule.
 
@@ -22,17 +22,17 @@ Definition sein.
 
 ## 2. Definition of Done
 
-- [ ] Akzeptanzkriterien von `DC-FA-ID-001` als Tests: ID als Link →
+- [x] Akzeptanzkriterien von `DC-FA-ID-001` als Tests: ID als Link →
   kein Befund; ID in Inline-Code → linkpflichtfrei; nackte ID →
   `id-unlinked` (Grund-Code gemäß Spezifikation §4).
-- [ ] Muster-Präzedenz getestet (Deklarationsreihenfolge, erstes
+- [x] Muster-Präzedenz getestet (Deklarationsreihenfolge, erstes
   Match gewinnt — Spezifikation §DC-FA-ID-001.a).
-- [ ] „Verlinkt" = Vorkommen liegt im Linktext eines Markdown-Links
+- [x] „Verlinkt" = Vorkommen liegt im Linktext eines Markdown-Links
   (Link-Text-Spannen aus der Extraktion).
-- [ ] Config-Constraint durchgesetzt: nicht existierendes
+- [x] Config-Constraint durchgesetzt: nicht existierendes
   `ids.patterns[].target` → Exit 2 (mit Test).
-- [ ] `ids` in `isImplemented` aufgenommen (Interim-Hinweis entfällt).
-- [ ] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md)
+- [x] `ids` in `isImplemented` aufgenommen (Interim-Hinweis entfällt).
+- [x] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md)
   aktualisiert; Closure-Notiz mit Steering-Loop-Lerneintrag.
 
 ## 3. Plan (vor Code)
@@ -64,7 +64,36 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-<!-- Erst nach Abschluss füllen. -->
+**Umsetzung:** Commit `6add093` (Modul `ids`, Link-Spannen-Export,
+Target-Constraint, Spec-Präzisierung, Tests).
+
+- **Was hat funktioniert:** Die Span-Arithmetik aus dem Risiko-Block
+  (überlappende Treffer) ließ sich klein lösen — pro Zeile eine
+  `claimed`-Intervallliste, erstes Muster gewinnt; beide
+  Deklarationsreihenfolgen sind getestet. Die Link-Text-Spannen kamen
+  als Refactoring von `parseLinkAt` ohne Verhaltensänderung für
+  `links`/`anchors` heraus (alle Bestandstests blieben grün).
+- **Anders als geplant:** Eine Spec-Lücke wurde sichtbar:
+  §DC-FA-ID-001.a hätte wörtlich genommen auch Vorkommen in der
+  Ziel-Klammer von Links und in Bildreferenzen als `id-unlinked`
+  geflaggt — in Repos, deren Definitions-Dateinamen die Kennung
+  tragen (`ADR-0042-beispiel.md`), würde damit jedes korrekt
+  verlinkte Vorkommen einen False-Positive aus der Ziel-Klammer
+  erzeugen. Die Spezifikation wurde fortgeschrieben (Ziel-Klammern
+  und Bildreferenzen sind kein Fließtext); das Lastenheft („im
+  Fließtext") blieb unberührt.
+- **Steering-Loop-Lerneintrag:** (a) Spec-Lücken-Klasse *inferential
+  feedforward* — die Algorithmus-Operationalisierung („sonst Befund")
+  hatte den Negativ-Raum (was ist *kein* Fließtext?) nicht
+  durchdekliniert; bei den kommenden Modulen `matrix`/`external` den
+  „sonst"-Zweig der Spezifikation vor Implementierung explizit gegen
+  Beispiel-Korpora prüfen. (b) Der Interim-Mechanismus
+  (`isImplemented`/`SkippedModules`) hängt jetzt nur noch an
+  `matrix`/`external` — nach slice-008 ist er toter Code und gehört
+  entfernt (Hinweis in slice-008 einplanen).
+- **Folge-Slices:** keine neuen; die Selbstkonfiguration (eigene
+  `DC-*`/`MR-*`/`ADR-*`-Muster in `.d-check.yml`) folgt wie geplant
+  in slice-007 (Ausnahme-Betrachtung für immutable ADR-/MR-Texte).
 
 ## 8. Sub-Area-Modus-Begründung
 
