@@ -17,7 +17,7 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 [slice-006](../done/slice-006-ids-modul.md) (done, `ids`),
 [slice-007](../done/slice-007-matrix-modul-selbstkonfiguration.md)
 (done, `matrix` + Selbstkonfiguration),
-[slice-008](../open/slice-008-external-modul.md) (`external` +
+[slice-008](slice-008-external-modul.md) (in-progress, `external` +
 QA-03-Netzlos-Gate),
 [slice-009](../open/slice-009-coverage-und-meta-gates.md)
 (coverage-gate 85→90, gate-consistency,
