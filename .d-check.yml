@@ -1,9 +1,9 @@
 # d-check prüft sich selbst (Dogfooding, slice-004 / MR-007;
-# Selbstkonfiguration ids+matrix: slice-007).
+# Selbstkonfiguration ids+matrix: slice-007, codepaths: slice-013).
 # "." = gesamte Repo-Wurzel; SKIP_DIRS (.git, vendor, …) gelten immer.
 scan:
   roots: ["."]
-modules: [links, anchors, ids, matrix]
+modules: [links, anchors, ids, matrix, codepaths]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.
@@ -33,3 +33,8 @@ matrix:
     forbidden: [superseded, deprecated]
   # exakter Heading-Vergleich: die Spec-Straten nummerieren ("7. Historie")
   exclude-sections: [Historie, "7. Historie", Geschichte]
+
+# Pfade in Inline-Code (DC-FA-CODE-001): ./ und ../ immer; dazu die
+# Wurzel-Präfixe der eigenen Verzeichniskonvention.
+codepaths:
+  roots: [docs, spec, tools, harness, internal, cmd]

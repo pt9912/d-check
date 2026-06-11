@@ -58,6 +58,9 @@ func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg Config, modules [
 		if active["matrix"] {
 			res.Findings = append(res.Findings, checkMatrix(fsys, file, content, lines, cfg.Matrix, statusCache)...)
 		}
+		if active["codepaths"] {
+			res.Findings = append(res.Findings, checkCodepaths(fsys, file, content, cfg.Codepaths, slugCache)...)
+		}
 		if active["external"] {
 			extRefs = append(extRefs, collectExternalURLs(file, lines)...)
 		}

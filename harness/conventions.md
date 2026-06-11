@@ -30,7 +30,7 @@ die kanonische Quelle (Source Precedence, siehe
   (Templates: `lab/templates/`, Konventionen:
   `kurs/de/grundlagen/konventionen.md`).
 - **Extern (Agenten-Destillat):**
-  [`agents-digest.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/main/kurs/de/agents-digest.md)
+  [`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/main/kurs/de/agents-regelwerk.md)
   — operatives Regelwerk für Code-Agenten ohne Didaktik; derivativ,
   bei Konflikt gilt das Lehrmaterial.
 - **Konventions-Vorbilder (Implementierung):**
@@ -89,7 +89,7 @@ die kanonische Quelle (Source Precedence, siehe
 ### MR-003 — Vendorter Bootstrap-Sensor `tools/verify-doc-refs.sh`
 
 - **Datum:** 2026-06-10
-- **Geltungsbereich:** `tools/verify-doc-refs.sh` (gelöscht mit slice-004, siehe [`MR-007`](#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)), `make doc-check`
+- **Geltungsbereich:** `tools/verify-doc-refs.sh` (gelöscht mit slice-004, siehe [`MR-007`](#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)), `make doc-check` <!-- d-check:ignore (historisch: gelöscht) -->
 - **Adaption:** Bis `d-check` sich selbst prüfen kann, läuft
   `make doc-check` über ein aus `d-migrate` vendortes Shell-Skript
   (Markdown-Linkziel-Prüfung). Das ist Fremd-Code ohne eigene Spec in
@@ -167,7 +167,7 @@ die kanonische Quelle (Source Precedence, siehe
   ist eingetreten: `make doc-check` läuft über `d-check` selbst
   (Runtime-Image, read-only-Mount; Module `links` + `anchors` über
   die gesamte Repo-Wurzel via `scan.roots: ["."]`). Das vendorte
-  Skript `tools/verify-doc-refs.sh` ist gelöscht; der
+  Skript `tools/verify-doc-refs.sh` ist gelöscht; der <!-- d-check:ignore (historisch: gelöscht) -->
   Geltungsbereich-Link in MR-003 wurde dafür auf einen Code-Span
   umgestellt (Form-, keine Inhaltsänderung). Vergleichslauf
   (erster Datenpunkt für

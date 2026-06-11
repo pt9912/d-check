@@ -132,7 +132,7 @@ Scan-Wurzeln müssen existieren; nur die Default-Wurzeln sind optional.
 
 **Akzeptanzkriterien:**
 
-- **Happy Path:** Given ein kaputter Link in `docs/a.md`, when `d-check` ohne Konfiguration läuft, then wird der Befund gemeldet.
+- **Happy Path:** Given ein kaputter Link in `docs/a.md`, when `d-check` ohne Konfiguration läuft, then wird der Befund gemeldet. <!-- d-check:ignore (AK-Beispiel) -->
 - **Boundary:** Given ein kaputter Link in `node_modules/x/README.md`, when `d-check` läuft, then wird kein Befund gemeldet.
 - **Negative:** Given eine Konfiguration, die explizit die Scan-Wurzel `handbuch/` deklariert, die nicht existiert, when `d-check` läuft, then Exit-Code 2 mit Hinweis auf die fehlende Wurzel (Default-Wurzeln dagegen sind optional).
 
@@ -164,7 +164,7 @@ als Fließtext).
 
 - **Happy Path:** Given ein Link auf eine existierende Datei im Repo, when das Modul `links` läuft, then kein Befund.
 - **Boundary:** Given ein Link auf eine nicht existierende Datei innerhalb eines Fenced-Code-Blocks, when das Modul läuft, then kein Befund.
-- **Negative:** Given ein Link `../../etc/passwd`, dessen Ziel die Repository-Wurzel verlässt, when das Modul läuft, then ein Befund mit Grund „verlässt Repository" — auch wenn der Zielpfad existiert.
+- **Negative:** Given ein Link `../../etc/passwd`, dessen Ziel die Repository-Wurzel verlässt, when das Modul läuft, then ein Befund mit Grund „verlässt Repository" — auch wenn der Zielpfad existiert. <!-- d-check:ignore (AK-Beispiel: Angriffs-Pfad) -->
 - **Negative:** Given ein Link auf eine nicht existierende Datei, when das Modul läuft, then ein Befund mit Datei, Zeile, Ziel und Grund, Exit-Code 1.
 
 **Out-of-Scope:** Reference-Style-Links (`[text][ref]` mit separater `[ref]: ziel`-Definition); semantische Prüfung, ob das verlinkte Dokument inhaltlich passt.
@@ -290,7 +290,7 @@ ist: beginnend mit `./` oder `../` (immer) oder mit einem der
 konfigurierten Wurzel-Präfixe (z. B. `docs/`, `tools/` — relativ zur
 Repository-Wurzel). Vor der Prüfung wird der Wert normalisiert:
 umschließende Anführungszeichen und schließende Satzzeichen entfallen
-(`` `../foo.md,` `` prüft `../foo.md`). Das Ziel muss nach
+(`` `../foo.md,` `` prüft `../foo.md`). Das Ziel muss nach <!-- d-check:ignore (Beispiel im Anforderungstext) -->
 Pfadauflösung existieren und innerhalb der Repository-Wurzel liegen;
 Fragment-Teile (`#…`) werden abgetrennt, und bei Markdown-Zielen wird
 der Anker zusätzlich gegen die Headings der Zieldatei geprüft —
@@ -332,7 +332,7 @@ statt.
 
 **Akzeptanzkriterien:**
 
-- **Happy Path:** Given eine `.d-check.yml` mit einem Ignorier-Muster `docs/archive/**`, when `d-check` läuft, then erzeugen kaputte Links unter `docs/archive/` keine Befunde.
+- **Happy Path:** Given eine `.d-check.yml` mit einem Ignorier-Muster `docs/archive/**`, when `d-check` läuft, then erzeugen kaputte Links unter `docs/archive/` keine Befunde. <!-- d-check:ignore (AK-Beispiel) -->
 - **Boundary:** Given keine `.d-check.yml`, when `d-check` läuft, then laufen genau die Default-Module (`links`, `anchors`) auf den Default-Scan-Wurzeln.
 - **Negative:** Given eine syntaktisch ungültige `.d-check.yml`, when `d-check` läuft, then Exit-Code 2 mit Fehlermeldung inkl. Zeilenangabe; es wird keine Prüfung mit stillschweigenden Defaults durchgeführt.
 

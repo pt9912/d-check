@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"regexp"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -66,6 +67,9 @@ type raw struct {
 	IDs      *rawIDs      `yaml:"ids"`
 	Matrix   *rawMatrix   `yaml:"matrix"`
 	External *rawExternal `yaml:"external"`
+	Codepaths *struct {
+		Roots []string `yaml:"roots"`
+	} `yaml:"codepaths"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -98,6 +102,17 @@ func Decode(content []byte) (core.Config, error) {
 	}
 	if err := applyExternal(r.External, &cfg); err != nil {
 		return cfg, err
+	}
+	if r.Codepaths != nil {
+		for _, root := range r.Codepaths.Roots {
+			if strings.TrimSpace(root) == "" {
+				return cfg, fmt.Errorf("%s: codepaths.roots enthält ein leeres Präfix", FileName)
+			}
+			if strings.HasPrefix(root, "/") || root == ".." || strings.Contains(root, "..") {
+				return cfg, fmt.Errorf("%s: codepaths.roots-Präfix %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')", FileName, root)
+			}
+		}
+		cfg.Codepaths = core.CodepathsConfig{Roots: r.Codepaths.Roots}
 	}
 	return cfg, nil
 }

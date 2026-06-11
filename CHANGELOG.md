@@ -8,6 +8,14 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
+- slice-013 — Modul `codepaths` (`DC-FA-CODE-001`, opt-in): explizite
+  Pfade in Inline-Code (`./`, `../`, konfigurierte Wurzel-Präfixe via <!-- d-check:ignore (Syntax-Beispiel) -->
+  `codepaths.roots`) werden auf Existenz, Repo-Escape und — bei
+  Markdown-Zielen mit Fragment — Anker geprüft; Wert-Normalisierung
+  (Anführungszeichen, Satzzeichen, `Datei:Zeile`-Suffix), Headings
+  ausgenommen, Zeilen-Opt-out `<!-- d-check:ignore (Begründung) -->`
+  wirkt nur auf dieses Modul. Dogfooding aktiv (eigene Doku
+  befundfrei; 16 begründete Marker an historischen/Beispiel-Pfaden).
 - Review-Infrastruktur nach Digest-Welle-18-Konvention:
   Reviewer-Skill (`.harness/skills/reviewer.md` — Kategorien-Anker,
   Output-Schema, Negativbefund-Pflicht) und Report-Ablage

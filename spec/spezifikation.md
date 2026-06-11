@@ -174,6 +174,40 @@ Status < 400 → kein Befund; ≥ 400 → `external-status`; Timeout →
 `external-redirects`; Transportfehler (DNS-/Verbindungsfehler) →
 `external-status` (Status 0, Grund in der Meldung).
 
+### DC-FA-CODE-001.a — Pfade in Inline-Code
+
+Arbeitet auf den **rohen Prosa-Zeilen** (fence-aware) — die übrige
+Vorverarbeitung entfernt Inline-Code gerade. **Schritte:**
+
+1. Zeilen mit dem Marker `d-check:ignore` (HTML-Kommentar, Begründung
+   in Klammern empfohlen) werden übersprungen — der Marker wirkt
+   ausschließlich auf dieses Modul. ATX-Heading-Zeilen werden ebenso
+   übersprungen: Titel sind keine Prosa-Referenzen (gleiche Ausnahme
+   wie [DC-FA-ID-001.a](#dc-fa-id-001a--kennungs-prüfung); ein Marker
+   im Heading würde zudem dessen Anker-Slug verändern).
+2. Pro Zeile alle Inline-Code-Spans extrahieren (CommonMark,
+   Multi-Backtick-fähig — dieselbe Span-Erkennung wie das
+   positionserhaltende Stripping der übrigen Module).
+3. Span-Wert normalisieren (iterativ bis stabil): Whitespace trimmen,
+   ein Zeilen-Suffix `:NNN` abtrennen (Datei:Zeile-Konvention),
+   umschließende einfache/doppelte Anführungszeichen und schließende
+   Satzzeichen (`.,;:`) entfernen.
+4. Konservative Pfad-Erkennung — **kein** Pfad ist ein Wert, der leer
+   ist, Whitespace oder Platzhalter-/Glob-Zeichen (`{}<>|*?=`)
+   enthält, Ellipsen/Pfeile (`…`, `->`, `→`) enthält, mit `//` oder
+   `#` beginnt oder ein externes Schema trägt. **Pfad** ist, was mit
+   `./` oder `../` beginnt (Datei-relativ) oder mit einem der
+   konfigurierten Präfixe aus `codepaths.roots` (Wurzel-relativ;
+   Vergleich gegen `präfix/`).
+5. Auflösung wie im Modul `links` (inkl. RFC-3986-Dekodierung):
+   Fragment abtrennen; Escape → `repo-escape`; fehlendes Ziel →
+   `codepath-missing`. Trägt der Wert ein Fragment und ist das Ziel
+   eine Markdown-Datei, wird der Anker gegen die Heading-Slugs der
+   Zieldatei geprüft (Verfahren und Slug-Cache wie
+   [DC-FA-ANCH-001.a](#dc-fa-anch-001a--github-slug-algorithmus);
+   Treffer fehlt → `anchor-missing`). Nicht lesbare Ziele: das Modul
+   schweigt zum Anker (Existenz wurde bereits geprüft).
+
 ### DC-QA-01.a — Benchmark
 
 **Fixture** (deterministisch generiert): 1.000 Markdown-Dateien unter
@@ -207,7 +241,7 @@ auch dort.
 |---|---|---|
 | `file` | string | Pfad relativ zur Repo-Wurzel, `/`-getrennt |
 | `line` | integer ≥ 1 | Zeile des Vorkommens |
-| `rule` | string | Regelmodul (`links`, `anchors`, `ids`, `matrix`, `external`) |
+| `rule` | string | Regelmodul (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`) |
 | `target` | string | geprüftes Ziel (Linkziel, Kennung, URL) |
 | `reason` | string | Grund-Code (siehe [§4](#4-grund--und-fehler-codes)) |
 | `message` | string | menschenlesbare Erläuterung (nicht stabilitätsgarantiert) |
@@ -237,7 +271,7 @@ Zusammenfassung auf stderr: `d-check: <N> Datei(en) geprüft, <M> Befund(e)`.
         "properties": {
           "file":    {"type": "string"},
           "line":    {"type": "integer", "minimum": 1},
-          "rule":    {"type": "string", "enum": ["links", "anchors", "ids", "matrix", "external"]},
+          "rule":    {"type": "string", "enum": ["links", "anchors", "ids", "matrix", "external", "codepaths"]},
           "target":  {"type": "string"},
           "reason":  {"type": "string"},
           "message": {"type": "string"}
@@ -292,6 +326,8 @@ matrix:
 external:
   timeout-seconds: 10
   parallel: 4
+codepaths:
+  roots: [docs, tools]           # Präfixe für Wurzel-relative Inline-Code-Pfade
 ```
 
 Jede Verletzung eines Constraints der folgenden Tabelle führt zu
@@ -312,6 +348,7 @@ Exit 2 ohne Prüfung
 | `matrix.exclude-sections` | string[] | leer | Vergleich gegen den getrimmten Heading-Text ohne Markdown-Auszeichnung, case-sensitiv |
 | `external.timeout-seconds` | integer | 10 | 1–300 |
 | `external.parallel` | integer | 4 | 1–16 |
+| `codepaths.roots` | string[] | leer | Präfixe relativ zur Repo-Wurzel: nicht leer, nicht absolut, kein `..` (Exit 2); `./`/`../` werden immer erkannt |
 
 ## 3. Defaults und Konstanten
 
@@ -332,14 +369,15 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | Code | Modul | Bedingung |
 |---|---|---|
 | `target-missing` | links | Linkziel existiert nicht |
-| `repo-escape` | links | aufgelöstes Ziel verlässt die Repo-Wurzel |
+| `repo-escape` | links, codepaths | aufgelöstes Ziel verlässt die Repo-Wurzel |
 | `symlink` | links | Ziel ist/enthält Symlink (Vorrang vor `repo-escape`) |
-| `anchor-missing` | anchors | Anker entspricht keinem Heading-Slug |
+| `anchor-missing` | anchors, codepaths | Anker entspricht keinem Heading-Slug |
 | `id-unlinked` | ids | Kennung im Fließtext ohne Markdown-Link |
 | `matrix-forbidden` | matrix | Referenz zwischen Klassen nicht erlaubt |
 | `matrix-inactive` | matrix | Referenz auf Dokument mit verbotenem Status |
 | `external-status` | external | HTTP-Status ≥ 400 oder Transportfehler (DNS/Verbindung) |
 | `external-timeout` | external | Timeout überschritten |
+| `codepath-missing` | codepaths | Ziel eines Inline-Code-Pfads existiert nicht |
 | `external-redirects` | external | mehr als `REDIRECT_MAX` Redirects |
 
 Nutzungs-/Umgebungsfehler (Exit 2) melden auf stderr mit Präfix
@@ -378,3 +416,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-11 | Review R1 zu slice-008: Fragment-Teil vor Prüfung/Dedupe entfernt (Befund nennt Original-Linkziel); Schema-Vergleich case-insensitiv; Timeout gilt pro Request (Fallback: bis zu zwei Requests); explizit gesetzte 0 in `external.timeout-seconds`/`parallel` ist Konfigurationsfehler | slice-008 |
 | 2026-06-11 | Spez-Schuld eingelöst: §`DC-QA-01.a` Benchmark-Definition (Fixture, Messprotokoll, Pass-Kriterium) | slice-009 |
 | 2026-06-11 | Review R1 zu slice-009/010: §`DC-QA-01.a`-Messprotokoll um die 2-vCPU-Begrenzung aus dem Lastenheft präzisiert (`--cpus 2`); N ungerade (Median = mittleres Element) | slice-009 |
+| 2026-06-11 | Modul `codepaths` normiert (§`DC-FA-CODE-001.a`: rohe Prosa-Zeilen, Marker-Semantik, Normalisierung, konservative Erkennung, Anker-Prüfung); Schema um `codepaths.roots`, Grund-Code `codepath-missing`, `repo-escape`/`anchor-missing` auch für codepaths; Modul-Aufzählungen ergänzt | slice-013 |

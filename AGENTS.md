@@ -17,7 +17,7 @@ Sensors-Bindung) leben in
 [`harness/conventions.md`](harness/conventions.md).
 
 Das Betriebsregelwerk der adoptierten Baseline in Agenten-Kurzform
-([`agents-digest.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/main/kurs/de/agents-digest.md))
+([`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/main/kurs/de/agents-regelwerk.md))
 einmal pro Session lesen, bevor der Workflow (§6) startet. Derivativ:
 bei Konflikt gelten die kanonischen Quellen; der adoptierte Stand
 steht in [`harness/conventions.md`](harness/conventions.md) §Baseline.
@@ -103,7 +103,7 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make arch-check` | Import-Regeln des Hexagon-Schnitts ([ADR-0005](docs/plan/adr/0005-modul-layout-hexagon-ordner.md)) |
 | `make coverage-gate` | Coverage-Schwelle über `./internal/...` (Kalibrierungs-Bindung, siehe [`harness/README.md`](harness/README.md) §Sensors) |
 | `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile + `DC-QA-03`-Modulliste (Harness-Lügen-Schutz) |
-| `make doc-check` | Doku-Links, Anker, Kennungs-Linkpflicht + Referenzmatrix via `d-check` selbst (Dogfooding; netzlos — zugleich `DC-QA-03`-Messmethode) |
+| `make doc-check` | Doku-Links, Anker, Kennungs-Linkpflicht, Referenzmatrix + Inline-Code-Pfade via `d-check` selbst (Dogfooding; netzlos — zugleich `DC-QA-03`-Messmethode) |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
 | `make ci` | CI-äquivalenter Lauf: gates + image-test (fährt die Release-Pipeline) |
 | `make fullbuild` | volle Closure: gates + image-test + bench, schließt mit dem Image-Hash |

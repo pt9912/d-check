@@ -17,13 +17,13 @@
 
 Das Modul `anchors` ist implementiert und `make doc-check` läuft über
 `d-check` selbst (Dogfooding) — der vendorte Bootstrap-Sensor
-`tools/verify-doc-refs.sh` wird gelöscht.
+`tools/verify-doc-refs.sh` wird gelöscht. <!-- d-check:ignore (historisch: mit diesem Slice gelöscht) -->
 
 ## 2. Definition of Done
 
 - [x] Akzeptanzkriterien von [`DC-FA-ANCH-001`](../../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors) als Tests umgesetzt und grün (inkl. Duplikat-Suffix-Boundary).
 - [x] `make doc-check` ruft `d-check` (Default-Module `links` + `anchors`) auf dem eigenen Repo auf und ist grün.
-- [x] `tools/verify-doc-refs.sh` gelöscht; [`harness/conventions.md`](../../../../harness/conventions.md): Auflösung von [`MR-003`](../../../../harness/conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh) als neuer MR-Eintrag nachgetragen, Modus-Tabelle bereinigt (BF-Sub-Area entfällt).
+- [x] `tools/verify-doc-refs.sh` gelöscht; [`harness/conventions.md`](../../../../harness/conventions.md): Auflösung von [`MR-003`](../../../../harness/conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh) als neuer MR-Eintrag nachgetragen, Modus-Tabelle bereinigt (BF-Sub-Area entfällt). <!-- d-check:ignore (historisch: gelöscht) -->
 - [x] Vergleichslauf dokumentiert: `d-check` findet auf diesem Repo mindestens die Befunde des Alt-Skripts, keine neuen False-Positives (erster Datenpunkt für [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)).
 - [x] `make gates` grün.
 - [x] [`CHANGELOG.md`](../../../../CHANGELOG.md) aktualisiert.
@@ -36,7 +36,7 @@ Das Modul `anchors` ist implementiert und `make doc-check` läuft über
 | Modul `anchors` (Pfad gemäß [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md)) | neu | [`DC-FA-ANCH-001`](../../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors) |
 | Test-Suite (Anker-Fixtures, Slug-Kantenfälle) | neu | testbare Akzeptanzkriterien |
 | [`Makefile`](../../../../Makefile) (`doc-check` auf `d-check` umstellen) | update | Dogfooding, Ablösung Bootstrap-Sensor |
-| `tools/verify-doc-refs.sh` | löschen | [`MR-003`](../../../../harness/conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh)-Auflösungs-Trigger |
+| `tools/verify-doc-refs.sh` | löschen | [`MR-003`](../../../../harness/conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh)-Auflösungs-Trigger | <!-- d-check:ignore (historisch: gelöscht) -->
 | [`harness/conventions.md`](../../../../harness/conventions.md) | update | MR-Eintrag zur Auflösung, Modus-Tabelle |
 | [`harness/README.md`](../../../../harness/README.md) | update | Sensors-Tabelle: `doc-check`-Bindung aktualisieren |
 
@@ -94,7 +94,7 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
 
 Berührt eine Sub-Area in BF; daher voller Begründungsblock.
 
-### Sub-Area: `tools/verify-doc-refs.sh` (vendorter Bootstrap-Sensor)
+### Sub-Area: `tools/verify-doc-refs.sh` (vendorter Bootstrap-Sensor) <!-- d-check:ignore (historisch: gelöscht) -->
 
 - **Modus:** BF
 - **Konventionen-Dichte:** hoch — Vendoring in [`harness/conventions.md`](../../../../harness/conventions.md)

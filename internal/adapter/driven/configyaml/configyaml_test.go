@@ -125,6 +125,20 @@ func TestDecode_MatrixUndExternalConstraints(t *testing.T) {
 	if _, err := configyaml.Decode([]byte(doppelt)); err == nil {
 		t.Fatal("doppelter Klassen-Name: Fehler erwartet")
 	}
+	// codepaths: Präfixe müssen relativ und ..-frei sein (DC-FA-CONF-001)
+	for _, bad := range []string{
+		"codepaths:\n  roots: [\"\"]\n",
+		"codepaths:\n  roots: [/abs]\n",
+		"codepaths:\n  roots: [\"../raus\"]\n",
+	} {
+		if _, err := configyaml.Decode([]byte(bad)); err == nil {
+			t.Fatalf("ungültiges codepaths-Präfix akzeptiert: %q", bad)
+		}
+	}
+	cfg, err := configyaml.Decode([]byte("codepaths:\n  roots: [docs, tools]\n"))
+	if err != nil || len(cfg.Codepaths.Roots) != 2 {
+		t.Fatalf("codepaths.roots nicht übernommen: %+v (%v)", cfg.Codepaths, err)
+	}
 }
 
 func TestDecode_OhneDatei(t *testing.T) {

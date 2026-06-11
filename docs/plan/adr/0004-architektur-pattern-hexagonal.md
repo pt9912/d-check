@@ -31,7 +31,7 @@ Application-/Domain-Unterteilung im Kern.
 
 | Bereich | Inhalt | Regel |
 |---|---|---|
-| `internal/core` | Markdown-Analyse (Links, Headings, Fences), GitHub-Slug, Regelmodule (`links`, `anchors`, `ids`, `matrix`, `external`-Logik) als Strategien hinter einem gemeinsamen Interface, Befund-Modell, deterministische Sortierung, Pfad-/Escape-Regeln; **Port-Interfaces werden hier definiert** | keine I/O-Imports (`os`, `net`, `net/http`, `syscall`), kein Import aus `internal/adapter` |
+| `internal/core` | Markdown-Analyse (Links, Headings, Fences), GitHub-Slug, Regelmodule (`links`, `anchors`, `ids`, `matrix`, `external`-Logik) als Strategien hinter einem gemeinsamen Interface, Befund-Modell, deterministische Sortierung, Pfad-/Escape-Regeln; **Port-Interfaces werden hier definiert** | keine I/O-Imports (`os`, `net`, `net/http`, `syscall`), kein Import aus `internal/adapter` | <!-- d-check:ignore (Layout-Skizze dieser ADR, real wurde ADR-0005) -->
 | `internal/adapter/{fs,httpcheck,config,report}` | Datei-Discovery/Lesen/Symlink-Erkennung; HTTP-Erreichbarkeit; `.d-check.yml` laden/validieren ([ADR-0003](0003-config-format.md)); Text-/JSON-Ausgabe | nur `adapter/httpcheck` importiert `net/http`; nur `adapter/fs` importiert `os`; Adapter importieren einander nicht |
 | `cmd/d-check` | CLI-Parsing, Composition Root (verdrahtet Adapter an Ports) | einziger driving Adapter — kein HTTP-Server o. ä. |
 
@@ -58,10 +58,10 @@ Application-/Domain-Unterteilung im Kern.
 
 `make arch-check` (ab slice-003, depguard-/golangci-lint-Regeln):
 
-1. `internal/core` importiert weder `os`, `net`, `net/http`, `syscall`
+1. `internal/core` importiert weder `os`, `net`, `net/http`, `syscall` <!-- d-check:ignore (Layout-Skizze dieser ADR) -->
    noch `internal/adapter/*`.
-2. `net/http` ausschließlich in `internal/adapter/httpcheck`;
-   `gopkg.in/yaml.v3` ausschließlich in `internal/adapter/config`.
+2. `net/http` ausschließlich in `internal/adapter/httpcheck`; <!-- d-check:ignore (Layout-Skizze dieser ADR) -->
+   `gopkg.in/yaml.v3` ausschließlich in `internal/adapter/config`. <!-- d-check:ignore (Layout-Skizze dieser ADR) -->
 3. `internal/adapter/*` importieren einander nicht.
 
 Rot = diese ADR ist verletzt; eine Lockerung der Regeln ist eine neue

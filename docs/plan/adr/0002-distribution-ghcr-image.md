@@ -63,7 +63,7 @@ macht ein statisches Binary verfügbar.
 ## Fitness Function
 
 - CI-Gate (welle-04): Image-Build aus identischem Source-Tree ist
-  digest-stabil; `harness/image-hash.txt` als Beleg-Manifest.
+  digest-stabil; `harness/image-hash.txt` als Beleg-Manifest. <!-- d-check:ignore (geplantes Beleg-Manifest, entsteht mit fullbuild-Praxis) -->
 - Negative-Kriterium aus `DC-FA-DIST-001` (kein Mount → Exit 2) läuft
   als Integrationstest gegen das gebaute Image.
 

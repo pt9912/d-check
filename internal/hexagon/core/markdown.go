@@ -56,10 +56,27 @@ func PreprocessMarkdown(content []byte) []Line {
 // bestimmt die schließende).
 func stripInlineCode(s string) string {
 	var b strings.Builder
+	last := 0
+	forEachInlineCodeSpan(s, func(start, end, _, _ int) {
+		b.WriteString(s[last:start])
+		for k := start; k < end; k++ {
+			b.WriteByte(' ')
+		}
+		last = end
+	})
+	b.WriteString(s[last:])
+	return b.String()
+}
+
+// forEachInlineCodeSpan ruft fn für jeden Inline-Code-Span auf:
+// [start,end) umfasst den Span inkl. Backticks, [valStart,valEnd)
+// den Inhalt. Gemeinsamer Scanner für das positionserhaltende
+// Stripping (übrige Module) und das Lesen der Span-Werte
+// (Modul codepaths, spec/spezifikation.md §DC-FA-CODE-001.a).
+func forEachInlineCodeSpan(s string, fn func(start, end, valStart, valEnd int)) {
 	i := 0
 	for i < len(s) {
 		if s[i] != '`' {
-			b.WriteByte(s[i])
 			i++
 			continue
 		}
@@ -69,14 +86,11 @@ func stripInlineCode(s string) string {
 		}
 		closeAt := findClosingRun(s, j, j-i)
 		if closeAt == -1 {
-			b.WriteString(s[i:]) // keine schließende Folge
-			break
+			return // keine schließende Folge
 		}
-		for ; i < closeAt; i++ {
-			b.WriteByte(' ')
-		}
+		fn(i, closeAt, j, closeAt-(j-i))
+		i = closeAt
 	}
-	return b.String()
 }
 
 // findClosingRun sucht ab from eine Backtick-Folge exakt der Länge

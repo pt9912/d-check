@@ -13,7 +13,7 @@ und die Rollen-Regeln bleiben unverändert),
 ## Kontext
 
 ADR-0004 legte neben dem Pattern auch konkrete Modul-Pfade fest
-(`internal/core`, `internal/adapter/{fs,httpcheck,config,report}`).
+(`internal/core`, `internal/adapter/{fs,httpcheck,config,report}`). <!-- d-check:ignore (u-boot-Layout, fremdes Repo) -->
 Das Ökosystem (u-boot als Referenz) verwendet eine andere, etablierte
 Ordnerkonvention: `internal/hexagon/…` für Kern und Ports,
 `internal/adapter/{driven,driving}/…` für Adapter. Einheitliche
@@ -55,7 +55,7 @@ Import-Regeln (sprachkonkrete Übersetzung der Rollen-Constraints):
 | Alternative | Pro | Contra |
 |---|---|---|
 | **u-boot-Konvention, light gefüllt (gewählt)** | Ökosystem-einheitlich; Ports als eigenes Paket testbar; driving/driven explizit | minimal mehr Verzeichnistiefe |
-| Layout aus ADR-0004 (`internal/core` + flache Adapter) | kürzeste Pfade | weicht vom Schwester-Repo-Standard ab; driving/driven nicht sichtbar |
+| Layout aus ADR-0004 (`internal/core` + flache Adapter) | kürzeste Pfade | weicht vom Schwester-Repo-Standard ab; driving/driven nicht sichtbar | <!-- d-check:ignore (verworfene Alternative aus ADR-0004) -->
 | u-boot-Konvention voll (domain/application-Split) | maximale Strukturgleichheit mit u-boot | Über-Zeremonie für ein Ein-Use-Case-Tool (Begründung in ADR-0004) |
 | Flaches `pkg/`-Layout | simpel | keine maschinell prüfbare Hexagon-Grenze |
 

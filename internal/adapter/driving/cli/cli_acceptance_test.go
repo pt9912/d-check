@@ -311,6 +311,29 @@ func TestEXT001(t *testing.T) {
 	}
 }
 
+// DC-FA-CODE-001: Pfade in Inline-Code (Modul codepaths, opt-in) —
+// Happy (existierender Pfad), Boundary (Marker), Negative
+// (codepath-missing, Exit 1).
+func TestCODE001(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, ".d-check.yml", "modules: [codepaths]\ncodepaths:\n  roots: [docs]\n")
+	write(t, root, "docs/a.md", "Siehe `docs/b.md`.\n")
+	write(t, root, "docs/b.md", "x\n")
+
+	code, _, stderr := run(t, root)
+	if code != 0 {
+		t.Fatalf("Happy: Exit = %d (stderr: %s)", code, stderr)
+	}
+
+	write(t, root, "docs/a.md", "Kaputt: `docs/fehlt.md`\n"+
+		"Beispiel: `../../etc/passwd` <!-- d-check:ignore (Lehrtext) -->\n")
+	code, stdout, _ := run(t, root)
+	if code != 1 || !strings.Contains(stdout, "codepath-missing") ||
+		strings.Contains(stdout, "repo-escape") {
+		t.Fatalf("Exit = %d, stdout = %q (genau codepath-missing erwartet)", code, stdout)
+	}
+}
+
 // DC-FA-ID-001: Linkpflicht für Kennungen (Modul ids) — Happy
 // (verlinkt), Boundary (Inline-Code), Negative (nackt → id-unlinked).
 func TestID001(t *testing.T) {

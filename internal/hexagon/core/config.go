@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths"}
 }
 
 // defaultModules ist der Default-Modulsatz (DC-FA-CLI-002).
@@ -32,6 +32,8 @@ type Config struct {
 	Matrix MatrixConfig
 	// External: Parameter des Moduls external.
 	External ExternalConfig
+	// Codepaths: Präfixe des Moduls codepaths.
+	Codepaths CodepathsConfig
 }
 
 // IDPattern ist ein deklariertes Kennungs-Muster (DC-FA-ID-001).

@@ -95,7 +95,7 @@ done <<<"$(makefile_targets Makefile)"
 # Bei Umstellung auf YAML-Listenform wird dieser Check laut rot
 # (fail-closed) — dann den Parser hier mitziehen.
 modules_line="$(grep -E '^modules:' .d-check.yml || true)"
-for m in links anchors ids matrix; do
+for m in links anchors ids matrix codepaths; do
   if [[ "$modules_line" != *"$m"* ]]; then
     echo "gate-consistency: FAIL — .d-check.yml modules ohne '$m'; der Netzlos-Lauf beweist DC-QA-03 nur mit allen Modulen außer external" >&2
     fail=1
