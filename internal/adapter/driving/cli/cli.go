@@ -195,9 +195,17 @@ func Run(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return 2
 	}
-	// Composition Root: der HTTP-Adapter wird nur vom explizit
-	// aktivierten Modul external benutzt (DC-QA-03).
-	checker := httpcheck.New(time.Duration(cfg.External.EffectiveTimeoutSeconds()) * time.Second)
+	// Composition Root: der HTTP-Adapter wird nur verdrahtet, wenn
+	// das Modul external aktiv ist — ohne Aktivierung existiert
+	// strukturell keine Netzwerk-Tür (DC-QA-03; der Kern behandelt
+	// nil als No-op).
+	var checker driven.HTTPChecker
+	for _, m := range modules {
+		if m == "external" {
+			checker = httpcheck.New(time.Duration(cfg.External.EffectiveTimeoutSeconds()) * time.Second)
+			break
+		}
+	}
 	res, err := core.Run(fsys, checker, cfg, modules)
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)

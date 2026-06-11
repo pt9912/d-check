@@ -78,6 +78,42 @@ func TestExternalModul(t *testing.T) {
 	}
 }
 
+// Review R1 zu slice-008: Fragmente werden vor Prüfung und Dedupe
+// entfernt (eine Prüfung pro Ressource), der Befund nennt das
+// Original-Linkziel; der Schema-Vergleich ist case-insensitiv.
+func TestExternalFragmenteUndSchemaCase(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"docs/a.md": "[a](https://seite.test/doc#kapitel-1)\n" +
+			"[b](https://seite.test/doc#kapitel-2)\n" +
+			"[gross](HTTPS://gross.test)\n",
+	})
+	checker := newFakeChecker(map[string]driven.HTTPResult{
+		"https://seite.test/doc": {Status: 404},
+		"HTTPS://gross.test":     {Status: 404},
+	})
+	res, err := Run(m, checker, Config{}, []string{"external"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// genau EIN Request für beide Fragment-Varianten
+	if checker.calls["https://seite.test/doc"] != 1 {
+		t.Fatalf("Aufrufe = %v, want 1 für die fragmentfreie URL", checker.calls)
+	}
+	// Befunde an beiden Vorkommen, Target = Original-Linkziel
+	var targets []string
+	for _, f := range res.Findings {
+		targets = append(targets, f.Target)
+	}
+	want := []string{ // sortiert nach Zeile (DC-QA-02.a)
+		"https://seite.test/doc#kapitel-1",
+		"https://seite.test/doc#kapitel-2",
+		"HTTPS://gross.test", // case-insensitives Schema wird geprüft
+	}
+	if fmt.Sprint(targets) != fmt.Sprint(want) {
+		t.Fatalf("Targets = %v, want %v", targets, want)
+	}
+}
+
 // DC-FA-EXT-001 Boundary: ohne aktiviertes Modul erfolgt kein einziger
 // Netzwerkzugriff — auch wenn externe Links existieren (DC-QA-03).
 func TestExternalOptIn(t *testing.T) {

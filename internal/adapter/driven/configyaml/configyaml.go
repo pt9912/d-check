@@ -46,9 +46,12 @@ type rawMatrix struct {
 	ExcludeSections []string `yaml:"exclude-sections"`
 }
 
+// rawExternal nutzt Pointer, damit ein explizit gesetzter Wert 0 vom
+// Nicht-Setzen unterscheidbar bleibt (Constraint 1–300 bzw. 1–16 —
+// auch 0 ist ein Konfigurationsfehler, kein stiller Default).
 type rawExternal struct {
-	TimeoutSeconds int `yaml:"timeout-seconds"`
-	Parallel       int `yaml:"parallel"`
+	TimeoutSeconds *int `yaml:"timeout-seconds"`
+	Parallel       *int `yaml:"parallel"`
 }
 
 // raw bildet das Voll-Schema von .d-check.yml ab
@@ -168,12 +171,17 @@ func applyExternal(e *rawExternal, cfg *core.Config) error {
 	if e == nil {
 		return nil
 	}
-	if t := e.TimeoutSeconds; t != 0 && (t < 1 || t > 300) {
-		return fmt.Errorf("%s: external.timeout-seconds außerhalb 1–300", FileName)
+	if t := e.TimeoutSeconds; t != nil {
+		if *t < 1 || *t > 300 {
+			return fmt.Errorf("%s: external.timeout-seconds außerhalb 1–300", FileName)
+		}
+		cfg.External.TimeoutSeconds = *t
 	}
-	if p := e.Parallel; p != 0 && (p < 1 || p > 16) {
-		return fmt.Errorf("%s: external.parallel außerhalb 1–16", FileName)
+	if p := e.Parallel; p != nil {
+		if *p < 1 || *p > 16 {
+			return fmt.Errorf("%s: external.parallel außerhalb 1–16", FileName)
+		}
+		cfg.External.Parallel = *p
 	}
-	cfg.External = core.ExternalConfig{TimeoutSeconds: e.TimeoutSeconds, Parallel: e.Parallel}
 	return nil
 }

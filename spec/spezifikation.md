@@ -161,6 +161,11 @@ Verletzung ist ein Konfigurationsfehler (Exit 2, [§2](#d-checkyml)).
 ### DC-FA-EXT-001.a — Externe Erreichbarkeit
 
 HEAD-Request; bei HTTP 405/501 Fallback auf GET (Body verworfen).
+Das Timeout gilt **pro Request** — im Fallback-Fall (HEAD → GET)
+können bis zu zwei Requests anfallen. Der Schema-Vergleich
+(`http:`/`https:`) ist case-insensitiv (RFC 3986). Der Fragment-Teil
+wird vor Prüfung und Dedupe entfernt (Fragmente werden nie
+übertragen); der Befund nennt das Original-Linkziel.
 Redirects bis `REDIRECT_MAX` Stationen gefolgt. Pro URL genau eine
 Prüfung pro Lauf (Dedupe — der Befund erscheint an jedem Vorkommen),
 begrenzte Parallelität (`EXTERNAL_PARALLEL`). Ergebnis-Auswertung:
@@ -355,3 +360,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-11 | Modul `matrix` normiert umgesetzt; §`DC-FA-ID-001.a` fortgeschrieben (Befund der Dogfooding-Selbstkonfiguration): ATX-Heading-Zeilen und Vorkommen im deklarierten Muster-Target (Definitions-Ort) sind linkpflichtfrei | slice-007 |
 | 2026-06-11 | Review R1 zu slice-007: Status-Extraktion liest nur Prosa-Zeilen (Fence-Inhalt ist kein Statuswert) und nur Markdown-Ziele (andere gelten als aktiv); Regel- und Status-Prüfung als unabhängig expliziert (ein Link kann zwei Befunde erzeugen) | slice-007 |
 | 2026-06-11 | Modul `external` normiert umgesetzt; §`DC-FA-EXT-001.a` präzisiert: Transportfehler (DNS/Verbindung) → `external-status` (Status 0); Dedupe-Semantik expliziert (eine Prüfung pro URL, Befund an jedem Vorkommen) | slice-008 |
+| 2026-06-11 | Review R1 zu slice-008: Fragment-Teil vor Prüfung/Dedupe entfernt (Befund nennt Original-Linkziel); Schema-Vergleich case-insensitiv; Timeout gilt pro Request (Fallback: bis zu zwei Requests); explizit gesetzte 0 in `external.timeout-seconds`/`parallel` ist Konfigurationsfehler | slice-008 |

@@ -79,6 +79,16 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
+- Review R1 zu slice-008: Fragmente werden vor Prüfung/Dedupe entfernt
+  (eine Prüfung pro Ressource, Befund am Original-Linkziel);
+  Schema-Vergleich case-insensitiv (kein stiller Gap zwischen `links`
+  und `external` bei `HTTP://`); explizit gesetzte 0 in
+  `external.timeout-seconds`/`parallel` ist Konfigurationsfehler statt
+  stillem Default; GET-Fallback drained den Body begrenzt (64 KB);
+  HTTP-Adapter wird nur noch bei aktivem `external` verdrahtet
+  (strukturelle Opt-in-Absicherung); Timeout-Semantik (pro Request)
+  spezifiziert; QA-03-Config-Kopplung als gate-consistency-Auftrag in
+  slice-009 eingetragen.
 - Review R1 zu slice-007: Status-Extraktion fence-aware (Fence-Inhalt
   ist kein Statuswert) und nur für Markdown-Ziele (kein Voll-Read von
   Binärdateien); Doppel-Befund forbidden+inactive als unabhängige

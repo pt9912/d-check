@@ -16,24 +16,42 @@ const (
 	ReasonExternalRedirects = "external-redirects"
 )
 
-// externalRef ist ein Vorkommen einer externen URL.
+// externalRef ist ein Vorkommen einer externen URL: target ist das
+// Original-Linkziel (Befund-Target), url die Prüf-URL ohne Fragment
+// (Request- und Dedupe-Key — Fragmente werden nie übertragen).
 type externalRef struct {
-	file string
-	line int
-	url  string
+	file   string
+	line   int
+	target string
+	url    string
 }
 
 // collectExternalURLs sammelt die http(s)-Linkziele einer Datei —
-// nur bei explizit aktiviertem Modul external (DC-FA-EXT-001, opt-in).
+// nur bei explizit aktiviertem Modul external (DC-FA-EXT-001,
+// opt-in). Der Schema-Vergleich ist case-insensitiv (RFC 3986);
+// konsistent mit IsExternalScheme, das solche Ziele für `links`
+// überspringt.
 func collectExternalURLs(file string, lines []Line) []externalRef {
 	var refs []externalRef
 	for _, ref := range ExtractLinks(lines) {
 		t := ref.Target
-		if strings.HasPrefix(t, "http://") || strings.HasPrefix(t, "https://") {
-			refs = append(refs, externalRef{file: file, line: ref.Line, url: t})
+		if !hasHTTPScheme(t) {
+			continue
 		}
+		url := t
+		if idx := strings.IndexByte(url, '#'); idx != -1 {
+			url = url[:idx]
+		}
+		refs = append(refs, externalRef{file: file, line: ref.Line, target: t, url: url})
 	}
 	return refs
+}
+
+// hasHTTPScheme prüft case-insensitiv auf http://- bzw.
+// https://-Schema (DC-FA-EXT-001: nur diese Schemata werden geprüft).
+func hasHTTPScheme(t string) bool {
+	return (len(t) >= 7 && strings.EqualFold(t[:7], "http://")) ||
+		(len(t) >= 8 && strings.EqualFold(t[:8], "https://"))
 }
 
 // checkExternal prüft die gesammelten URLs — genau eine Prüfung pro
@@ -54,7 +72,7 @@ func checkExternal(checker driven.HTTPChecker, refs []externalRef, parallel int)
 		}
 		findings = append(findings, Finding{
 			File: r.file, Line: r.line, Rule: "external",
-			Target: r.url, Reason: reason, Message: msg,
+			Target: r.target, Reason: reason, Message: msg,
 		})
 	}
 	return findings

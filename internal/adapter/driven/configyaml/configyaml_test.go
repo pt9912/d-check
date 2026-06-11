@@ -105,6 +105,14 @@ func TestDecode_MatrixUndExternalConstraints(t *testing.T) {
 	if _, err := configyaml.Decode([]byte("external:\n  timeout-seconds: 999\n")); err == nil {
 		t.Fatal("timeout außerhalb 1–300: Fehler erwartet")
 	}
+	// explizit gesetzte 0 ist KEIN stiller Default, sondern Fehler
+	// (Review R1 zu slice-008; Constraint 1–300 bzw. 1–16)
+	if _, err := configyaml.Decode([]byte("external:\n  timeout-seconds: 0\n")); err == nil {
+		t.Fatal("timeout-seconds: 0 muss Konfigurationsfehler sein")
+	}
+	if _, err := configyaml.Decode([]byte("external:\n  parallel: 0\n")); err == nil {
+		t.Fatal("parallel: 0 muss Konfigurationsfehler sein")
+	}
 }
 
 func TestDecode_OhneDatei(t *testing.T) {

@@ -99,7 +99,28 @@ Kernmodul `external`, QA-03-Netzlos-Gate, Interim-Rückbau).
 - **Folge-Slices:** keine neuen; slice-009 (coverage-gate,
   gate-consistency, `DC-QA-01`-Benchmark) schließt die Welle.
 
-## 8. Sub-Area-Modus-Begründung
+**Review R1 (nach Closure, Agent-Review mit getrenntem Kontext):**
+9 Findings (2 MEDIUM, 5 LOW, 2 INFO); 7 nachgeschärft in einem
+Folge-Commit: Fragment-Stripping vor Prüfung/Dedupe (häufigstes
+Link-Muster — Anker auf derselben Seite — erzeugte Mehrfach-Requests
+gegen dieselbe Ressource); case-insensitiver Schema-Vergleich
+(`HTTP://`-Links fielen still zwischen `links` und `external`);
+explizit gesetzte 0 in den external-Parametern ist jetzt
+Konfigurationsfehler (`*int` im Config-Schema statt stillem Default);
+GET-Fallback-Drain auf 64 KB begrenzt; HTTP-Adapter wird nur bei
+aktivem Modul verdrahtet (strukturelle Opt-in-Absicherung statt
+reiner Kern-Disziplin); Timeout-pro-Request-Semantik spezifiziert;
+QA-03-Config-Kopplung als gate-consistency-Auftrag in slice-009
+eingetragen. Zwei bewusste Won't-Fix-Design-Notizen: (a)
+`HTTPResult`-Exklusivität bleibt Kommentar-Invariante (der Adapter
+garantiert sie konstruktiv, ein Verdikt-Enum wäre Port-Churn ohne
+akuten Nutzen); (b) Goroutine-pro-URL statt Worker-Pool (bei
+realistischen Doku-Repos irrelevant — erst bei zigtausenden externen
+Links messbar). Steering-Loop-Beleg: zwei der drei substanziellen
+Findings (Fragment, Case) sind Konsistenz-Lücken *zwischen* Modulen —
+Lehre: bei Modulen, die dieselbe Eingabe-Klasse (Linkziele)
+verarbeiten, die Klassifikations-Helfer teilen statt parallel
+implementieren.
 
 Alle berührten Sub-Areas GF (spec-first; siehe Kurs Modul 5 §Worked
 Mini-Example).

@@ -36,6 +36,12 @@ dokumentierte Messung.
   Exit 1 mit Auflistung (Meta-Gate gegen Harness-Lügen); mit
   Negativ-Test (absichtlich dokumentiertes Phantom-Target lässt das
   Gate nachweislich feuern, analog `verify-depguard`-Idee).
+  Zusätzlich prüft das Meta-Gate die `DC-QA-03`-Zusage des
+  Netzlos-Gates: die `modules`-Liste der
+  [`.d-check.yml`](../../../../.d-check.yml) muss alle Module außer
+  `external` enthalten — sonst verliert der `--network none`-Lauf
+  still seine Beweis-Aussage (Review-R1-Finding zu slice-008:
+  Config-Kopplung des QA-03-Gates).
 - [ ] Spez-Schuld eingelöst: `spec/spezifikation.md` erhält einen
   Abschnitt `DC-QA-01.a — Benchmark` mit (1) Fixture-Spezifikation
   (generiert: 1.000 Markdown-Dateien, ≤ 20 MB, definierter

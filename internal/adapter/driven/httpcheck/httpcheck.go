@@ -61,7 +61,9 @@ func (a *Adapter) request(method, url string) driven.HTTPResult {
 		return classifyError(err)
 	}
 	defer func() { _ = resp.Body.Close() }()
-	_, _ = io.Copy(io.Discard, resp.Body) // Body verworfen (GET-Fallback)
+	// Body verworfen (GET-Fallback) — Drain begrenzt: kleine Bodies
+	// erhalten Keep-Alive, große werden nicht voll heruntergeladen.
+	_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 64<<10))
 	return driven.HTTPResult{Status: resp.StatusCode}
 }
 
