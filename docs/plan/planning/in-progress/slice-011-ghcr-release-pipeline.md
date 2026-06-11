@@ -1,6 +1,6 @@
 # Slice slice-011: GHCR-Release-Pipeline
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-04-distribution-und-migration.
 
@@ -23,13 +23,13 @@ Semver-Tag und dokumentiertem Digest-Pin. Der erste Release existiert.
 
 ## 2. Definition of Done
 
-- [ ] `.github/workflows/release.yml`: läuft bei Tag-Push `v*`;
+- [x] `.github/workflows/release.yml`: läuft bei Tag-Push `v*`;
   Schritte: Checkout → `make ci` (Gates aus slice-010) → Build →
   Push nach `ghcr.io/pt9912/d-check` mit Semver-Tag (zusätzlich
   `latest` nur für stabile Releases); der Image-Digest wird im
   Job-Log und im GitHub-Release festgehalten (Digest-Pin für
   Konsumenten).
-- [ ] Release-/Betriebs-Doku unter `docs/user/` (Releasing: wie wird
+- [x] Release-/Betriebs-Doku unter `docs/user/` (Releasing: wie wird
   getaggt, wie konsumieren Repos das Image per Digest-Pin;
   Operations: Aufruf-Referenz) — damit ist der Auflösungs-Trigger von
   [`MR-009`](../../../../harness/conventions.md#mr-009--source-precedence-ohne-docsuser-rang)
@@ -37,13 +37,13 @@ Semver-Tag und dokumentiertem Digest-Pin. Der erste Release existiert.
   ([`harness/README.md`](../../../../harness/README.md),
   [`AGENTS.md`](../../../../AGENTS.md) §2) eingefügt, der MR-Eintrag
   als aufgelöst markiert.
-- [ ] Erster Release `v0.1.0` ist tatsächlich veröffentlicht: Image
+- [x] Erster Release `v0.1.0` ist tatsächlich veröffentlicht: Image
   auf GHCR abrufbar, Digest in der Closure-Notiz dokumentiert —
   Meilenstein M3, Teil 1.
-- [ ] CI-Badge bzw. Lauf-Status-Verweis in
+- [x] CI-Badge bzw. Lauf-Status-Verweis in
   [`harness/README.md`](../../../../harness/README.md) §Sensors
   („Aktueller Lauf-Status") auf die Pipeline erweitert.
-- [ ] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md)
+- [x] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md)
   (Release-Sektion `0.1.0`); Closure-Notiz.
 
 ## 3. Plan (vor Code)
@@ -80,7 +80,36 @@ Closure-Notiz.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-<!-- Erst nach Abschluss füllen. -->
+**Umsetzung:** Commit `4180a83` (Workflow, docs/user,
+[`MR-010`](../../../../harness/conventions.md#mr-010--auflösung-von-mr-009-docsuser-rang-eingefügt),
+0.1.0-Schnitt). **Release-Beweis (extern verifiziert):** Run
+`27364508002` grün in 1m52s (alle Steps inkl. `make ci` und
+OCI-Label-Pin); `docker pull ghcr.io/pt9912/d-check:v0.1.0`
+erfolgreich; Smoke-Lauf per Digest-Pin gegen das eigene Repo: 35
+Dateien, 0 Befunde; Versions-Label `0.1.0` matcht den Tag.
+**Digest-Pin:**
+`ghcr.io/pt9912/d-check@sha256:5710b54bc4712af9769d7a820fd3fe62621451daeb43f3e9737b382099137b9e`
+— Meilenstein M3, Teil 1 (Image veröffentlicht).
+
+- **Was hat funktioniert:** Das u-boot-publish-Muster (SemVer-Validate
+  fail-fast, SHA-gepinnte Actions, latest-nur-stabil, Digest in die
+  Release-Notes) ließ sich nahezu unverändert übernehmen — der erste
+  echte Pipeline-Lauf war sofort grün, weil `make ci` lokal und in
+  Actions identisch ist (Docker-only zahlt sich exakt hier aus).
+- **Anders als geplant:** Die Tag↔Image-Versionskette
+  (`ARG VERSION` → OCI-Label `image.version`, vom Workflow gegen den
+  Tag gepinnt; plus `licenses=MIT`) war im Plan §3 nicht vorgesehen —
+  übernommen aus dem u-boot-Vorbild, weil Digest-Pins nur
+  vertrauenswürdig sind, wenn das Artefakt seine Version beweisbar
+  trägt.
+- **Steering-Loop-Lerneintrag:** Ein extern abhängiger Slice wird
+  beherrschbar, wenn der lokale Sensor (`make ci`) exakt das ist, was
+  die Pipeline fährt — die einzige echte Unbekannte war dann nur noch
+  die GitHub-Permission. Die Closure-Disziplin „offen bis zum realen
+  Pull-Beweis" hat sich als billig erwiesen (eine Stunde Latenz) und
+  verhindert die Harness-Lüge „Release behauptet, nie gezogen".
+- **Folge-Slices:** keine neuen; slice-012 (Pilot-Migrationen) ist
+  entriegelt und konsumiert den obigen Digest-Pin.
 
 ## 8. Sub-Area-Modus-Begründung
 
