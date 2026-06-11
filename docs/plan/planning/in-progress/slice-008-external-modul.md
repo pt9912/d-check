@@ -1,6 +1,6 @@
 # Slice slice-008: Modul `external` + HTTP-Adapter
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-03-regelmodule.
 
@@ -22,22 +22,26 @@ als automatisierter Test.
 
 ## 2. Definition of Done
 
-- [ ] Akzeptanzkriterien von `DC-FA-EXT-001` als Tests: Status < 400
+- [x] Akzeptanzkriterien von `DC-FA-EXT-001` als Tests: Status < 400
   ok; ≥ 400 → `external-status`; Timeout → `external-timeout`;
   > 5 Redirects → `external-redirects` (Spezifikation
   §`DC-FA-EXT-001.a`: HEAD mit GET-Fallback bei 405/501, Dedupe pro
   URL, begrenzte Parallelität, Timeout konfigurierbar 1–300 s).
-- [ ] Opt-in-Garantie getestet: ohne aktiviertes Modul keinerlei
+- [x] Opt-in-Garantie getestet: ohne aktiviertes Modul keinerlei
   Netzwerkzugriff; `external` ist nie Teil der Defaults.
-- [ ] HTTP-Port in `internal/hexagon/port/driven` definiert; Adapter
+- [x] HTTP-Port in `internal/hexagon/port/driven` definiert; Adapter
   in `internal/adapter/driven/httpcheck` (arch-check-Regel R2 greift
   nun positiv); Kern-Tests gegen Port-Fake, Adapter-Tests gegen
   `httptest.Server`.
-- [ ] `DC-QA-03`-Messmethode automatisiert: Gate-Lauf der
+- [x] `DC-QA-03`-Messmethode automatisiert: Gate-Lauf der
   Default-Module in netzwerkloser Umgebung (`--network none`) gegen
-  ein Fixture — als Make-Target in `gates` aggregiert.
-- [ ] `external` in `isImplemented` (alle fünf Vertragsmodule
-  lauffähig); `make gates` grün;
+  ein Fixture — als Make-Target in `gates` aggregiert (umgesetzt als
+  `--network none` im Dogfooding-Gate `doc-check`: alle Module außer
+  `external` gegen das eigene Repo).
+- [x] `external` lauffähig (alle fünf Vertragsmodule); der
+  Interim-Mechanismus `isImplemented`/`SkippedModules` ist damit
+  toter Code und wurde entfernt (statt erweitert — Steering-Loop-
+  Eintrag aus slice-006/007); `make gates` grün;
   [`CHANGELOG.md`](../../../../CHANGELOG.md); Closure-Notiz.
 
 ## 3. Plan (vor Code)
@@ -68,7 +72,32 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-<!-- Erst nach Abschluss füllen. -->
+**Umsetzung:** Commit `f4b603d` (HTTP-Port, `httpcheck`-Adapter,
+Kernmodul `external`, QA-03-Netzlos-Gate, Interim-Rückbau).
+
+- **Was hat funktioniert:** Die Port-Abstraktion trug sofort — der
+  Kern testet alle Verdikte gegen einen Fake (inkl. Opt-in-Garantie
+  über einen `panicChecker`), der Adapter isoliert gegen
+  `httptest.Server`; kein Test berührt echte URLs. Das QA-03-Gate
+  kostete eine Zeile: `--network none` im bestehenden Dogfooding-Lauf
+  — der netzlose Selbstlauf aller vier Default-nahen Module ist exakt
+  die Messmethode aus dem Lastenheft.
+- **Anders als geplant:** (a) Statt `external` in `isImplemented`
+  aufzunehmen, wurde der Mechanismus komplett entfernt (nach diesem
+  Slice toter Code — wie in den Closure-Notizen 006/007 vorgemerkt);
+  `Run` trägt jetzt den Checker als zweiten Port-Parameter.
+  (b) Spez-Fortschreibung aus der Implementierung: Transportfehler
+  (DNS/Verbindung) waren in §4 nicht gemappt → `external-status`
+  (Status 0); Dedupe-Semantik expliziert (eine Prüfung pro URL,
+  Befund an jedem Vorkommen).
+- **Steering-Loop-Lerneintrag:** Der „sonst"-Zweig wurde diesmal vor
+  der Implementierung gegen Fälle geprüft (Lehre aus slice-006/007) —
+  die Transportfehler-Lücke fiel dadurch beim Schreiben des
+  Verdikt-Mappings auf, nicht erst im Review. Die Lehre trägt:
+  Negativ-Raum-Prüfung der Spezifikation gehört in Schritt 4
+  (Plan), nicht in die Review-Runde.
+- **Folge-Slices:** keine neuen; slice-009 (coverage-gate,
+  gate-consistency, `DC-QA-01`-Benchmark) schließt die Welle.
 
 ## 8. Sub-Area-Modus-Begründung
 
