@@ -15,7 +15,7 @@
 #   test       — `go test ./...`.
 #   arch-check — Fitness Function zu ADR-0005 (Import-Regeln).
 #   coverage   — `go test -coverpkg` + tools/coverage-gate.sh
-#                (Kalibrierungs-Bindung 85 % → 90 %).
+#                (Kalibrierungs-Bindung, harness/README §Sensors).
 #   build      — statisch gelinktes Binary (CGO=0, -ldflags "-s -w").
 #   runtime    — distroless/static:nonroot (ADR-0002).
 #
@@ -72,9 +72,9 @@ COPY . .
 RUN bash tools/arch-check.sh
 
 # ---- coverage --------------------------------------------------------------
-# Kalibrierungs-Bindung (harness/README.md §Sensors): Schwelle 90 %
-# seit welle-03 done (Ramp 85 → 90 vollzogen); Verfehlung ⇒
-# Carveout-Pflicht.
+# Kalibrierungs-Bindung (harness/README.md §Sensors): Schwelle 93 %
+# (Kalibrierung 2026-06-11; zuvor Ramp 85 → 90 bei welle-03 done);
+# Verfehlung ⇒ Carveout-Pflicht.
 # `-coverpkg` misst über die Paketgrenzen von ./internal/... (u-boot-
 # Muster) — sonst zählt nur paket-lokale Abdeckung.
 # `pipefail` via SHELL, damit `go test … | tee` den Exit-Code nicht
@@ -83,7 +83,7 @@ FROM deps AS coverage
 
 SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
 
-ARG COVERAGE_THRESHOLD=90
+ARG COVERAGE_THRESHOLD=93
 ENV COVERAGE_THRESHOLD=${COVERAGE_THRESHOLD}
 
 COPY . .

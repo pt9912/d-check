@@ -112,3 +112,11 @@ func TestCheck_Transportfehler(t *testing.T) {
 		t.Fatalf("res = %+v (TransportError erwartet)", res)
 	}
 }
+
+// Nicht parsbare URL → TransportError ohne Netzzugriff.
+func TestCheck_UngueltigeURL(t *testing.T) {
+	res := adapter().Check("http://ungültig mit leerzeichen/")
+	if res.TransportError == "" || res.Status != 0 {
+		t.Fatalf("res = %+v (Parse-Fehler erwartet)", res)
+	}
+}

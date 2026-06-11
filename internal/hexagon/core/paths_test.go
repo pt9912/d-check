@@ -53,6 +53,14 @@ func TestMatchGlob(t *testing.T) {
 		{"*.md", "README.md", true},
 		{"*.md", "docs/a.md", false},
 		{"docs/*/intern.md", "docs/x/intern.md", true},
+		// '**' matcht auch NULL Segmente (DC-FA-SCAN-001.a)
+		{"docs/**/slice-*.md", "docs/slice-001.md", true},
+		{"docs/**/slice-*.md", "docs/a/b/slice-001.md", true},
+		{"docs/**/slice-*.md", "docs/a/b/notiz.md", false},
+		// '?' = genau ein Zeichen; Muster kürzer als Pfad
+		{"docs/f?.md", "docs/f1.md", true},
+		{"docs/f?.md", "docs/f12.md", false},
+		{"docs", "docs/a.md", false},
 	} {
 		if got := matchGlob(c.pattern, c.rel); got != c.want {
 			t.Errorf("matchGlob(%q,%q) = %v, want %v", c.pattern, c.rel, got, c.want)

@@ -59,3 +59,20 @@ func TestExtractLinks(t *testing.T) {
 		t.Fatalf("refs = %+v\nwant  %+v", refs, want)
 	}
 }
+
+// Parser-Kanten: unbalancierte Klammern, fehlende Ziel-Klammer,
+// unterminiertes <…>-Quoting — kein Link bzw. tolerantes Entquoten.
+func TestExtractLinks_Kanten(t *testing.T) {
+	lines := []Line{
+		{No: 1, Text: "[offen](ohne-ende und [kein-ziel] sowie [x]y"},
+		{No: 2, Text: "[q](<ohne-ende.md) und [ok](a.md)"},
+	}
+	refs := ExtractLinks(lines)
+	want := []LinkRef{
+		{Line: 2, Target: "ohne-ende.md"}, // <… ohne '>' → toleranter Prefix-Strip
+		{Line: 2, Target: "a.md"},
+	}
+	if !reflect.DeepEqual(refs, want) {
+		t.Fatalf("refs = %+v\nwant  %+v", refs, want)
+	}
+}

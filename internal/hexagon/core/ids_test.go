@@ -82,9 +82,29 @@ func TestIDsTargetMussExistieren(t *testing.T) {
 	cfgOK := Config{IDPatterns: []IDPattern{
 		{Regex: regexp.MustCompile(`X-\d`), Target: "docs/a.md"},
 		{Regex: regexp.MustCompile(`Y-\d`), Target: "docs/"},
+		{Regex: regexp.MustCompile(`Z-\d`), Target: "/"}, // Repo-Wurzel
 	}}
 	if _, err := Run(m, nil, cfgOK, []string{"ids"}); err != nil {
 		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+}
+
+// fileInTarget: Datei-/Verzeichnis-/Wurzel-Targets und Escape-Fälle.
+func TestFileInTarget(t *testing.T) {
+	cases := []struct {
+		file, target string
+		want         bool
+	}{
+		{"docs/a.md", "docs/a.md", true},    // Target-Datei selbst
+		{"docs/sub/b.md", "docs", true},     // unterhalb des Verzeichnisses
+		{"docs2/a.md", "docs", false},       // Präfix-Falle docs2
+		{"docs/a.md", "/", true},            // Repo-Wurzel: alles Definitions-Ort
+		{"docs/a.md", "../draussen", false}, // Escape zählt nie als Target
+	}
+	for _, c := range cases {
+		if got := fileInTarget(c.file, c.target); got != c.want {
+			t.Errorf("fileInTarget(%q, %q) = %v, want %v", c.file, c.target, got, c.want)
+		}
 	}
 }
 

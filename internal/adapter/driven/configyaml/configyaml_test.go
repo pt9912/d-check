@@ -113,6 +113,18 @@ func TestDecode_MatrixUndExternalConstraints(t *testing.T) {
 	if _, err := configyaml.Decode([]byte("external:\n  parallel: 0\n")); err == nil {
 		t.Fatal("parallel: 0 muss Konfigurationsfehler sein")
 	}
+	if _, err := configyaml.Decode([]byte("external:\n  parallel: 99\n")); err == nil {
+		t.Fatal("parallel außerhalb 1–16: Fehler erwartet")
+	}
+	// ids: Muster ohne Target ist unvollständig (DC-FA-CONF-001)
+	if _, err := configyaml.Decode([]byte("ids:\n  patterns:\n    - regex: \"X-\\\\d\"\n")); err == nil {
+		t.Fatal("ids-Muster ohne target: Fehler erwartet")
+	}
+	// matrix: doppelter Klassen-Name ist mehrdeutig
+	doppelt := "matrix:\n  classes:\n    - name: a\n      paths: [x]\n    - name: a\n      paths: [y]\n"
+	if _, err := configyaml.Decode([]byte(doppelt)); err == nil {
+		t.Fatal("doppelter Klassen-Name: Fehler erwartet")
+	}
 }
 
 func TestDecode_OhneDatei(t *testing.T) {

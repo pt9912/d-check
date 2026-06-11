@@ -103,6 +103,11 @@ func TestFlagFehlerUndHelp(t *testing.T) {
 	if code != 0 || stdout != "" || !strings.Contains(stderr, "-json") {
 		t.Fatalf("-h: Exit = %d, stdout = %q, stderr = %q", code, stdout, stderr)
 	}
+	// mehr als ein Pfad-Argument → Exit 2 (DC-FA-CLI-001)
+	code, _, stderr = run(t, "pfad1", "pfad2")
+	if code != 2 || !strings.Contains(stderr, "höchstens ein Pfad-Argument") {
+		t.Fatalf("zwei Pfade: Exit = %d, stderr = %q", code, stderr)
+	}
 }
 
 // DC-FA-CONF-001: leere bzw. Nur-Kommentar-Config = Defaults.

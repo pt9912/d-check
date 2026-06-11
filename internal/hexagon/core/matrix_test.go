@@ -133,3 +133,41 @@ func TestCachedStatusNurMarkdown(t *testing.T) {
 		t.Fatal("Nicht-Markdown-Ziel darf nicht gelesen/gecacht werden")
 	}
 }
+
+// Cache-Treffer: vorhandene Einträge (Wert und nil-Sentinel für
+// unlesbare Ziele) werden ohne erneuten Read beantwortet.
+func TestCachedStatusCacheTreffer(t *testing.T) {
+	m := newMemFS(map[string]string{})
+	wert := "Accepted"
+	cache := map[string]*string{
+		"docs/a.md": &wert,
+		"docs/b.md": nil, // unlesbar → matrix schweigt
+	}
+	if got := cachedStatus(m, cache, "docs/a.md"); got != "Accepted" {
+		t.Fatalf("Cache-Wert = %q", got)
+	}
+	if got := cachedStatus(m, cache, "docs/b.md"); got != "" {
+		t.Fatalf("nil-Sentinel = %q, want \"\"", got)
+	}
+	// unlesbares Ziel (fehlt im memFS) wird als nil gecacht
+	if got := cachedStatus(m, cache, "docs/fehlt.md"); got != "" {
+		t.Fatalf("unlesbares Ziel = %q, want \"\"", got)
+	}
+	if s, ok := cache["docs/fehlt.md"]; !ok || s != nil {
+		t.Fatal("unlesbares Ziel muss als nil gecacht werden")
+	}
+}
+
+// Eine explizit erlaubte Regel (allow: true) erzeugt keinen Befund.
+func TestMatrixErlaubteRegel(t *testing.T) {
+	cfg := matrixTestConfig()
+	cfg.Rules = []MatrixRule{{From: "slice", To: "adr", Allow: true}}
+	m := newMemFS(map[string]string{
+		"docs/plan/planning/done/slice-001-a.md": "[ok](../../adr/0001-x.md)\n",
+		"docs/plan/adr/0001-x.md":                "**Status:** Accepted\n",
+	})
+	res, err := Run(m, nil, Config{Matrix: cfg}, []string{"matrix"})
+	if err != nil || len(res.Findings) != 0 {
+		t.Fatalf("res = %+v, err = %v (erlaubte Regel)", res, err)
+	}
+}

@@ -131,6 +131,24 @@ func TestExternalOptIn(t *testing.T) {
 	}
 }
 
+// Konfigurations-Defaults: 0 = EXTERNAL_TIMEOUT/EXTERNAL_PARALLEL,
+// gesetzte Werte gewinnen; checkURLs klemmt parallel < 1 auf 1.
+func TestExternalConfigDefaultsUndParallelKlammer(t *testing.T) {
+	var e ExternalConfig
+	if e.EffectiveTimeoutSeconds() != 10 || e.EffectiveParallel() != 4 {
+		t.Fatalf("Defaults = %d/%d, want 10/4",
+			e.EffectiveTimeoutSeconds(), e.EffectiveParallel())
+	}
+	e = ExternalConfig{TimeoutSeconds: 30, Parallel: 2}
+	if e.EffectiveTimeoutSeconds() != 30 || e.EffectiveParallel() != 2 {
+		t.Fatalf("gesetzte Werte = %d/%d", e.EffectiveTimeoutSeconds(), e.EffectiveParallel())
+	}
+	checker := newFakeChecker(map[string]driven.HTTPResult{"https://x.test": {Status: 200}})
+	if res := checkURLs(checker, []string{"https://x.test"}, 0); len(res) != 1 {
+		t.Fatalf("parallel=0 muss auf 1 geklemmt werden: %v", res)
+	}
+}
+
 // DC-QA-02: identische Eingabe ⇒ identische Ausgabe trotz interner
 // Parallelität (Sortierung gilt auch für external).
 func TestExternalDeterminismus(t *testing.T) {

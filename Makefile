@@ -26,11 +26,11 @@ NO_CACHE_FILTER_LINT := --no-cache-filter lint
 NO_CACHE_FILTER_ARCH := --no-cache-filter arch-check
 NO_CACHE_FILTER_COV  := --no-cache-filter coverage
 
-# Kalibrierungs-Bindung (harness/README.md §Sensors): 90 % seit
-# welle-03 done (Ramp 85 → 90 vollzogen, slice-009; Ist 92,9 %).
-# Override: `make coverage-gate THRESHOLD=…`; Senkung nur per ADR
-# (AGENTS.md §3.6).
-THRESHOLD ?= 90
+# Kalibrierungs-Bindung (harness/README.md §Sensors): 93 % seit
+# 2026-06-11 (Kalibrierung nach Test-Ausbau, Ist 95,1 %; zuvor Ramp
+# 85 → 90 bei welle-03 done). Override: `make coverage-gate
+# THRESHOLD=…`; Senkung nur per ADR (AGENTS.md §3.6).
+THRESHOLD ?= 93
 
 DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
     --build-arg GO_VERSION=$(GO_VERSION) \
@@ -65,7 +65,7 @@ test: ## `go test ./...` in Docker (Akzeptanzkriterien DC-FA-*).
 arch-check: ## ADR-0005 — Import-Regeln des Hexagon-Schnitts (DC-QA-03).
 	$(DOCKER_BUILD) $(NO_CACHE_FILTER_ARCH) --target arch-check -t $(IMAGE):arch-check .
 
-coverage-gate: ## Coverage-Schwelle (Kalibrierungs-Bindung: 90 % seit welle-03 done).
+coverage-gate: ## Coverage-Schwelle (Kalibrierungs-Bindung: 93 %, Historie in harness/README §Sensors).
 	$(DOCKER_BUILD) $(NO_CACHE_FILTER_COV) \
 	    --build-arg COVERAGE_THRESHOLD=$(THRESHOLD) \
 	    --target coverage -t $(IMAGE):coverage .
