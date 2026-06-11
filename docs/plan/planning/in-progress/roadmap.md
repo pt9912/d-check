@@ -13,8 +13,8 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 **Welle-ID:** welle-04-distribution-und-migration
 **Start:** 2026-06-11 (Trigger erfüllt: welle-03 done)
 **Slices:**
-[slice-010](slice-010-image-integrationstests-und-repro-belege.md)
-(in-progress, Image-Integrationstests + `versions`/`fullbuild`/`ci` —
+[slice-010](../done/slice-010-image-integrationstests-und-repro-belege.md)
+(done, Image-Integrationstests + `versions`/`fullbuild`/`ci` —
 [`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)-AKs
 lokal beweisbar),
 [slice-011](../open/slice-011-ghcr-release-pipeline.md)
