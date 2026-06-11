@@ -12,14 +12,20 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 **Welle-ID:** welle-04-distribution-und-migration
 **Start:** 2026-06-11 (Trigger erfüllt: welle-03 done)
-**Slices:** werden beim Wellen-Start geschnitten — GHCR-Release-Pipeline
-mit Digest-Pins ([`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image),
-[ADR-0002](../../adr/0002-distribution-ghcr-image.md)),
-Image-Integrationstests (DIST-Akzeptanzkriterien automatisiert),
-Reproduzierbarkeits-Belege (`versions`, `fullbuild` mit Image-Hash),
-Pilot-Migrationen in 3 Repos
+**Slices:**
+[slice-010](../open/slice-010-image-integrationstests-und-repro-belege.md)
+(open, Image-Integrationstests + `versions`/`fullbuild`/`ci` —
+[`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)-AKs
+lokal beweisbar),
+[slice-011](../open/slice-011-ghcr-release-pipeline.md)
+(open, GHCR-Release-Pipeline mit Semver-Tag + Digest-Pin,
+[ADR-0002](../../adr/0002-distribution-ghcr-image.md), löst `MR-009`
+— nach 010),
+[slice-012](../open/slice-012-pilot-migrationen.md)
+(open, Pilot-Migrationen in 3 Repos
 ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools):
-Shell-, Python-/u-boot-, JS-Vertreter).
+Shell-, Python-/u-boot-, JS-Vertreter) — nach 011, schließt die
+Welle).
 
 **Closure-Trigger:** Image auf GHCR veröffentlicht (Semver-Tag,
 Digest-Pin); DIST-Akzeptanzkriterien als Integrationstests grün;
