@@ -12,8 +12,15 @@ die kanonische Quelle** (Source Precedence — siehe
 [`harness/README.md`](harness/README.md)).
 
 Strukturregeln (ID-Schemata, Verzeichniskonvention, Adaptionen ggü.
-Baseline, Modus-Deklarationen pro Sub-Area) leben in
+Baseline, Modus-Deklarationen pro Sub-Area, Zusatzklassen für
+Sensors-Bindung) leben in
 [`harness/conventions.md`](harness/conventions.md).
+
+Das Betriebsregelwerk der adoptierten Baseline in Agenten-Kurzform
+([`agents-digest.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/main/kurs/de/agents-digest.md))
+einmal pro Session lesen, bevor der Workflow (§6) startet. Derivativ:
+bei Konflikt gelten die kanonischen Quellen; der adoptierte Stand
+steht in [`harness/conventions.md`](harness/conventions.md) §Baseline.
 
 ## 2. Kanonische Quellen (Source Precedence)
 
@@ -108,6 +115,11 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
 ## 5. Dokumentations-Regeln
 
 - Commits/PRs müssen mindestens eine `DC-*`- oder `ADR-*`-ID nennen.
+  Vergeben werden IDs nur beim Spec-/ADR-Schreiben nach dem
+  deklarierten Schema
+  ([`MR-008`](harness/conventions.md#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage))
+  — nie ad hoc im Commit/PR; Agenten referenzieren IDs, sie erfinden
+  keine.
 - Neue oder geänderte `DC-*`-Anforderungen entstehen nur in
   [`spec/lastenheft.md`](spec/lastenheft.md) — nie per ADR (ADRs
   schärfen die Spezifikation, nicht das Lastenheft). Der
