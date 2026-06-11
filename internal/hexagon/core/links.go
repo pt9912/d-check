@@ -15,18 +15,10 @@ func checkLinks(fsys driven.Filesystem, file string, lines []Line) []Finding {
 	var findings []Finding
 	for _, ref := range ExtractLinks(lines) {
 		target := ref.Target
-		if target == "" || strings.HasPrefix(target, "#") || IsExternalScheme(target) {
+		rel, escaped, ok := localTarget(file, target)
+		if !ok {
 			continue
 		}
-		// Fragment abtrennen — Anker-Validierung ist Modul `anchors`
-		pathPart := target
-		if idx := strings.IndexByte(pathPart, '#'); idx != -1 {
-			pathPart = pathPart[:idx]
-		}
-		if pathPart == "" {
-			continue
-		}
-		rel, escaped, _ := ResolveTarget(file, pathPart)
 
 		// Symlink-Prüfung hat Vorrang: alle Komponenten des lexikalisch
 		// aufgelösten Ziels innerhalb der Repo-Wurzel per Lstat

@@ -141,10 +141,16 @@ Verletzung ist ein Konfigurationsfehler (Exit 2, [§2](#d-checkyml)).
    mit `**Status:**` beginnt; (2) sonst erste nicht-leere Textzeile
    unter einem `Status`-Heading (beliebige Ebene, Heading-Vergleich
    case-insensitiv). Sind beide Formen vorhanden, zählt die
-   `**Status:**`-Zeile. Der Wert wird case-insensitiv als Präfix-Match
+   `**Status:**`-Zeile. Beide Formen lesen nur Zeilen außerhalb von
+   Fenced-Code-Blöcken (Fence-Inhalt ist kein Statuswert); Status wird
+   nur aus Markdown-Zieldateien extrahiert, andere Ziele gelten als
+   aktiv. Der Wert wird case-insensitiv als Präfix-Match
    gegen `status.forbidden` verglichen (so matcht
    `Superseded by ADR-0007` den Wert `superseded`). Ohne Status-Feld
-   gilt das Dokument als aktiv.
+   gilt das Dokument als aktiv. Regel- und Status-Prüfung sind
+   unabhängig: ein Link kann `matrix-forbidden` **und**
+   `matrix-inactive` zugleich erzeugen (zwei verschiedene
+   Verletzungen, zwei Befunde).
 3. **Sektions-Ausnahme:** Links innerhalb von Sektionen, deren
    Heading-Text (getrimmt, ohne Markdown-Auszeichnung, case-sensitiv)
    in `exclude-sections` steht (z. B. „Historie"),
@@ -345,3 +351,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-11 | Modul `ids` normiert umgesetzt; §`DC-FA-ID-001.a` präzisiert: Ziel-Klammern von Links und Bildreferenzen (Alt-Text, Ziel) sind kein Fließtext (linkpflichtfrei); Überlappungs-Semantik der Muster-Präzedenz expliziert; Target-Existenz-Constraint im Algorithmus-Text verankert | slice-006 |
 | 2026-06-11 | Review R1 zu slice-006: Inline-Code-Stripping positionserhaltend (Leerzeichen statt Entfernen — keine Schein-Vorkommen); Repo-Escape-Verbot für `scan.roots` und `ids.patterns[].target`; Leerstring-matchende ids-Regexe als Konfigurationsfehler; zeilenbasierte Link-Extraktion als normative Grenze dokumentiert | slice-006 |
 | 2026-06-11 | Modul `matrix` normiert umgesetzt; §`DC-FA-ID-001.a` fortgeschrieben (Befund der Dogfooding-Selbstkonfiguration): ATX-Heading-Zeilen und Vorkommen im deklarierten Muster-Target (Definitions-Ort) sind linkpflichtfrei | slice-007 |
+| 2026-06-11 | Review R1 zu slice-007: Status-Extraktion liest nur Prosa-Zeilen (Fence-Inhalt ist kein Statuswert) und nur Markdown-Ziele (andere gelten als aktiv); Regel- und Status-Prüfung als unabhängig expliziert (ein Link kann zwei Befunde erzeugen) | slice-007 |

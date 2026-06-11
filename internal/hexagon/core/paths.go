@@ -51,6 +51,26 @@ func resolveConfigPath(p string) (rel string, escaped bool) {
 	return rel, false
 }
 
+// localTarget zerlegt ein Linkziel in seinen Pfad-Teil (Fragment
+// abgetrennt — Anker sind Aufgabe von `anchors`) und löst ihn relativ
+// zur enthaltenden Datei auf. ok=false für leere, reine Anker- und
+// externe Ziele. Gemeinsamer Kern der Ziel-Auflösung von `links` und
+// `matrix`.
+func localTarget(file, target string) (rel string, escaped, ok bool) {
+	if target == "" || strings.HasPrefix(target, "#") || IsExternalScheme(target) {
+		return "", false, false
+	}
+	pathPart := target
+	if idx := strings.IndexByte(pathPart, '#'); idx != -1 {
+		pathPart = pathPart[:idx]
+	}
+	if pathPart == "" {
+		return "", false, false
+	}
+	rel, escaped, _ = ResolveTarget(file, pathPart)
+	return rel, escaped, true
+}
+
 // IsExternalScheme prüft auf externes URL-Schema (http:, mailto:, …).
 func IsExternalScheme(target string) bool {
 	for i := 0; i < len(target); i++ {

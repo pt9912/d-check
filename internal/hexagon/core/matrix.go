@@ -29,8 +29,8 @@ func checkMatrix(fsys driven.Filesystem, file string, content []byte, lines []Li
 		if inRanges(excluded, ref.Line) {
 			continue // Provenance-Ausnahme
 		}
-		rel, ok := matrixTarget(file, ref.Target)
-		if !ok {
+		rel, escaped, ok := localTarget(file, ref.Target)
+		if !ok || escaped { // Repo-Escape meldet `links`
 			continue
 		}
 		dstClass, ok := classOf(cfg.Classes, rel)
@@ -53,26 +53,6 @@ func checkMatrix(fsys driven.Filesystem, file string, content []byte, lines []Li
 		}
 	}
 	return findings
-}
-
-// matrixTarget löst ein Linkziel für die Matrix-Prüfung auf; ok=false
-// bedeutet: nicht zuständig (leer, reiner Anker, extern, Repo-Escape —
-// Letzteres meldet `links`).
-func matrixTarget(file, target string) (string, bool) {
-	if target == "" || strings.HasPrefix(target, "#") || IsExternalScheme(target) {
-		return "", false
-	}
-	if idx := strings.IndexByte(target, '#'); idx != -1 {
-		target = target[:idx]
-	}
-	if target == "" {
-		return "", false
-	}
-	rel, escaped, _ := ResolveTarget(file, target)
-	if escaped {
-		return "", false
-	}
-	return rel, true
 }
 
 // classOf liefert die erste deklarierte Klasse, deren Glob den Pfad
@@ -159,34 +139,36 @@ func plainHeadingText(s string) string {
 // Reihenfolge (spec/spezifikation.md §DC-FA-MTX-001.a Schritt 2):
 // (1) erste Zeile, die mit `**Status:**` beginnt; (2) sonst erste
 // nicht-leere Textzeile unter einem Status-Heading (beliebige Ebene,
-// case-insensitiv). "" = kein Status (Dokument gilt als aktiv).
+// case-insensitiv). Beide Formen lesen nur Prosa-Zeilen — Inhalte in
+// Fenced-Code-Blöcken sind keine Statuswerte. "" = kein Status
+// (Dokument gilt als aktiv).
 func statusOf(content []byte) string {
-	lines := strings.Split(string(content), "\n")
-	inFence := false
-	for _, raw := range lines {
-		trimmed := strings.TrimLeft(raw, " \t")
-		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
-			inFence = !inFence
-			continue
-		}
-		if inFence {
-			continue
-		}
+	prose := proseLines(content)
+	for _, pl := range prose {
+		trimmed := strings.TrimLeft(pl.raw, " \t")
 		if strings.HasPrefix(trimmed, "**Status:**") {
 			return strings.TrimSpace(strings.TrimPrefix(trimmed, "**Status:**"))
 		}
 	}
-	headings := extractHeadingLines(content)
+	return statusUnderHeading(prose, extractHeadingLines(content))
+}
+
+// statusUnderHeading liefert die erste nicht-leere Prosa-Zeile unter
+// dem ersten Status-Heading (Form 2 der Status-Extraktion).
+func statusUnderHeading(prose []proseLine, headings []headingLine) string {
 	for i, h := range headings {
 		if !strings.EqualFold(plainHeadingText(h.text), "Status") {
 			continue
 		}
-		end := len(lines)
+		end := 0 // 0 = bis Dateiende
 		if i+1 < len(headings) {
-			end = headings[i+1].line - 1
+			end = headings[i+1].line
 		}
-		for ln := h.line; ln < end && ln < len(lines); ln++ {
-			if t := strings.TrimSpace(lines[ln]); t != "" {
+		for _, pl := range prose {
+			if pl.no <= h.line || (end != 0 && pl.no >= end) {
+				continue
+			}
+			if t := strings.TrimSpace(pl.raw); t != "" {
 				return t
 			}
 		}
@@ -212,8 +194,13 @@ func statusForbidden(status string, forbidden []string) bool {
 
 // cachedStatus liefert den Status der Zieldatei aus dem Cache bzw.
 // liest ihn nach (nil = nicht lesbar → matrix schweigt, `links`
-// meldet ein fehlendes Ziel).
+// meldet ein fehlendes Ziel). Status wird nur aus Markdown-Zielen
+// extrahiert — andere Ziele gelten als aktiv (kein Voll-Read von
+// Binärdateien; spec/spezifikation.md §DC-FA-MTX-001.a).
 func cachedStatus(fsys driven.Filesystem, cache map[string]*string, rel string) string {
+	if !strings.HasSuffix(rel, ".md") {
+		return ""
+	}
 	if s, ok := cache[rel]; ok {
 		if s == nil {
 			return ""

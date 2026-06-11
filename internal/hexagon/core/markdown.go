@@ -10,10 +10,19 @@ type Line struct {
 	Text string
 }
 
-// PreprocessMarkdown wendet Fence- und Inline-Code-Behandlung an.
-// Fence-Zeilen selbst und Zeilen im Fence-Zustand entfallen komplett.
-func PreprocessMarkdown(content []byte) []Line {
-	var out []Line
+// proseLine ist eine rohe Zeile außerhalb von Fenced-Code-Blöcken
+// (1-basierte Zeilennummer) — der gemeinsame Fence-Automat von
+// PreprocessMarkdown, extractHeadingLines und statusOf.
+type proseLine struct {
+	no  int
+	raw string
+}
+
+// proseLines liefert alle Zeilen außerhalb von Fenced-Code-Blöcken;
+// Fence-Zeilen selbst entfallen (spec/spezifikation.md
+// §DC-FA-LINK-001.a Schritt 1).
+func proseLines(content []byte) []proseLine {
+	var out []proseLine
 	inFence := false
 	for i, raw := range strings.Split(string(content), "\n") {
 		trimmed := strings.TrimLeft(raw, " \t")
@@ -24,7 +33,17 @@ func PreprocessMarkdown(content []byte) []Line {
 		if inFence {
 			continue
 		}
-		out = append(out, Line{No: i + 1, Text: stripInlineCode(raw)})
+		out = append(out, proseLine{no: i + 1, raw: raw})
+	}
+	return out
+}
+
+// PreprocessMarkdown wendet Fence- und Inline-Code-Behandlung an.
+// Fence-Zeilen selbst und Zeilen im Fence-Zustand entfallen komplett.
+func PreprocessMarkdown(content []byte) []Line {
+	var out []Line
+	for _, pl := range proseLines(content) {
+		out = append(out, Line{No: pl.no, Text: stripInlineCode(pl.raw)})
 	}
 	return out
 }
@@ -109,21 +128,12 @@ func parseATXHeading(raw string) (level int, text string, ok bool) {
 // nicht unterstützt — spec/spezifikation.md §DC-FA-ANCH-001.a).
 func extractHeadingLines(content []byte) []headingLine {
 	var out []headingLine
-	inFence := false
-	for i, raw := range strings.Split(string(content), "\n") {
-		trimmed := strings.TrimLeft(raw, " \t")
-		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
-			inFence = !inFence
-			continue
-		}
-		if inFence {
-			continue
-		}
-		level, text, ok := parseATXHeading(raw)
+	for _, pl := range proseLines(content) {
+		level, text, ok := parseATXHeading(pl.raw)
 		if !ok {
 			continue
 		}
-		out = append(out, headingLine{line: i + 1, level: level, text: text})
+		out = append(out, headingLine{line: pl.no, level: level, text: text})
 	}
 	return out
 }

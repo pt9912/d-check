@@ -23,7 +23,8 @@ func matrixTestConfig() MatrixConfig {
 // → matrix-forbidden mit beiden Klassen in der Meldung.
 func TestMatrixModul(t *testing.T) {
 	m := newMemFS(map[string]string{
-		"spec/lastenheft.md":      "# LH\n[verboten](../docs/plan/adr/0001-x.md)\n",
+		"spec/lastenheft.md": "# LH\n[verboten](../docs/plan/adr/0001-x.md)\n" +
+			"[doppelt](../docs/plan/adr/0002-y.md)\n",
 		"docs/plan/adr/0001-x.md": "# ADR-0001 — X\n\n**Status:** Accepted\n",
 		"docs/plan/adr/0002-y.md": "# ADR-0002 — Y\n\n**Status:** Superseded by ADR-0042\n",
 		"docs/plan/planning/done/slice-001-a.md": "# S\n[ok](../../adr/0001-x.md)\n[inaktiv](../../adr/0002-y.md)\n",
@@ -37,11 +38,16 @@ func TestMatrixModul(t *testing.T) {
 	for _, f := range res.Findings {
 		got = append(got, fmt.Sprintf("%s:%d %s", f.File, f.Line, f.Reason))
 	}
+	// Zeile 3 des Lastenhefts verletzt BEIDE Bedingungen — Regel- und
+	// Status-Prüfung sind unabhängig, zwei Befunde
+	// (spec/spezifikation.md §DC-FA-MTX-001.a).
 	want := []string{
 		"docs/plan/planning/done/slice-001-a.md:3 matrix-inactive",
 		"spec/lastenheft.md:2 matrix-forbidden",
+		"spec/lastenheft.md:3 matrix-forbidden",
+		"spec/lastenheft.md:3 matrix-inactive",
 	}
-	if len(got) != len(want) || got[0] != want[0] || got[1] != want[1] {
+	if fmt.Sprint(got) != fmt.Sprint(want) {
 		t.Fatalf("Befunde = %v, want %v", got, want)
 	}
 	// Negative verlangt beide Klassen in der Meldung
@@ -98,6 +104,9 @@ func TestStatusOf(t *testing.T) {
 		"```\n**Status:** im Fence\n```\n## Status\nAktiv\n": "Aktiv",
 		"## Status\n\n## Weiter\nText\n":                  "", // leere Status-Sektion
 		"## Status\nHeading-Form\n\n**Status:** Zeile gewinnt\n": "Zeile gewinnt",
+		// Fence-Inhalt in der Status-Sektion ist kein Statuswert
+		"## Status\n```\nSuperseded\n```\nAktiv\n": "Aktiv",
+		"## Status\n```\nnur Fence\n```\n":         "",
 	}
 	for in, want := range cases {
 		if got := statusOf([]byte(in)); got != want {
@@ -109,5 +118,18 @@ func TestStatusOf(t *testing.T) {
 	}
 	if statusForbidden("Accepted", []string{"superseded"}) || statusForbidden("", []string{"superseded"}) {
 		t.Error("aktive Dokumente dürfen nicht matchen")
+	}
+}
+
+// Status wird nur aus Markdown-Zielen extrahiert — Nicht-Markdown wird
+// weder gelesen noch gecacht (kein Voll-Read von Binärdateien).
+func TestCachedStatusNurMarkdown(t *testing.T) {
+	m := newMemFS(map[string]string{"docs/bild.png": "**Status:** Superseded\n"})
+	cache := map[string]*string{}
+	if got := cachedStatus(m, cache, "docs/bild.png"); got != "" {
+		t.Fatalf("Status = %q, want \"\" (Nicht-Markdown)", got)
+	}
+	if len(cache) != 0 {
+		t.Fatal("Nicht-Markdown-Ziel darf nicht gelesen/gecacht werden")
 	}
 }

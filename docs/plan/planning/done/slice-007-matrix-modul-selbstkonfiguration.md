@@ -114,6 +114,24 @@ Selbstkonfiguration, ids-Fortschreibung, Doku-Bereinigung).
   Interim-Mechanismus `isImplemented`/`SkippedModules` entfernen
   (Hinweis aus slice-006-Closure bleibt gültig).
 
+**Review R1 (nach Closure, Agent-Review mit getrenntem Kontext):**
+6 Findings (2 MEDIUM, 3 LOW, 1 INFO), alle nachgeschärft in einem
+Folge-Commit: Status-Extraktion fence-aware (Form 2 las Fence-Inhalt
+als Statuswert — der dritte unabhängige Fence-Automat war die
+Ursache; jetzt gemeinsamer Scanner `proseLines` für
+PreprocessMarkdown/Headings/Status); `.md`-Guard vor dem Status-Read
+(kein Voll-Read von Binärzielen); gemeinsame Ziel-Auflösung
+`localTarget` für `links`+`matrix` (dritte Kopie beseitigt);
+Doppel-Befund forbidden+inactive als unabhängige Verletzungen in der
+Spezifikation expliziert (mit Test); `exclude-sections` der
+Selbstkonfiguration um „7. Historie" ergänzt — der Eintrag „Historie"
+war gegen die real nummerierten Spec-Headings wirkungslos (tote
+Config als kleine Harness-Lüge, vom Review gefunden, nicht vom
+grünen Dogfooding-Lauf: dort existieren noch keine Links in den
+Historie-Sektionen). Steering-Loop-Beleg: ein grüner Selbstlauf
+beweist nur die geprüften Fälle — tote Konfiguration findet erst der
+Review mit Negativ-Blick.
+
 ## 8. Sub-Area-Modus-Begründung
 
 Alle berührten Sub-Areas GF (spec-first; siehe Kurs Modul 5 §Worked

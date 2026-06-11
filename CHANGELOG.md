@@ -8,6 +8,7 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
+- MIT-Lizenz als Repository-Lizenz ergänzt ([`LICENSE`](LICENSE)).
 - Lastenheft 0.1.0 ([`spec/lastenheft.md`](spec/lastenheft.md)):
   Konsolidierung von 12 Quell-Tools, Modul-Schnitt (`links`, `anchors`,
   `ids`, `matrix`, `external`), Docker-Distribution.
@@ -67,6 +68,13 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
+- Review R1 zu slice-007: Status-Extraktion fence-aware (Fence-Inhalt
+  ist kein Statuswert) und nur für Markdown-Ziele (kein Voll-Read von
+  Binärdateien); Doppel-Befund forbidden+inactive als unabhängige
+  Verletzungen spezifiziert; gemeinsamer Fence-Scanner (`proseLines`)
+  und gemeinsame Ziel-Auflösung (`localTarget`) statt Drittkopien;
+  `exclude-sections` der Selbstkonfiguration um die realen
+  nummerierten Headings („7. Historie") ergänzt.
 - Review R1 zu slice-006: Config-Pfade (`scan.roots`,
   `ids.patterns[].target`) dürfen die Repo-Wurzel nicht verlassen
   (Exit 2 statt stillem Escape); Leerstring-matchende ids-Regexe sind

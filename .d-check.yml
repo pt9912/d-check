@@ -31,4 +31,5 @@ matrix:
     - {from: spec-straten, to: slice, allow: false}
   status:
     forbidden: [superseded, deprecated]
-  exclude-sections: [Historie, Geschichte]
+  # exakter Heading-Vergleich: die Spec-Straten nummerieren ("7. Historie")
+  exclude-sections: [Historie, "7. Historie", Geschichte]
