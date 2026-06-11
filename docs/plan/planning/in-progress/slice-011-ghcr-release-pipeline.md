@@ -1,6 +1,6 @@
 # Slice slice-011: GHCR-Release-Pipeline
 
-**Status:** open.
+**Status:** in-progress.
 
 **Welle:** welle-04-distribution-und-migration.
 
