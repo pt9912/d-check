@@ -174,6 +174,18 @@ Status < 400 → kein Befund; ≥ 400 → `external-status`; Timeout →
 `external-redirects`; Transportfehler (DNS-/Verbindungsfehler) →
 `external-status` (Status 0, Grund in der Meldung).
 
+### DC-QA-01.a — Benchmark
+
+**Fixture** (deterministisch generiert): 1.000 Markdown-Dateien unter
+`docs/`, je ein H1- und zehn H2-Headings; pro Abschnitt ein
+Datei-Querverweis auf die zyklisch nächste Datei und ein Anker-Link
+auf deren gleichnamigen Abschnitt, plus Fülltext; Gesamtgröße ≤ 20 MB.
+**Messprotokoll:** Default-Module (`links`, `anchors`) ohne
+Konfigurationsdatei, Runtime-Container mit read-only-Mount und ohne
+Netz, N ≥ 3 Läufe; der **Median** zählt (inklusive Container-Start).
+**Pass-Kriterium:** Median < 5 s
+([`DC-QA-01`](lastenheft.md#dc-qa-01--performance)).
+
 ### DC-QA-02.a — Determinismus und Sortierung
 
 Befunde werden nach vollständiger Sammlung stabil sortiert:
@@ -361,3 +373,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-11 | Review R1 zu slice-007: Status-Extraktion liest nur Prosa-Zeilen (Fence-Inhalt ist kein Statuswert) und nur Markdown-Ziele (andere gelten als aktiv); Regel- und Status-Prüfung als unabhängig expliziert (ein Link kann zwei Befunde erzeugen) | slice-007 |
 | 2026-06-11 | Modul `external` normiert umgesetzt; §`DC-FA-EXT-001.a` präzisiert: Transportfehler (DNS/Verbindung) → `external-status` (Status 0); Dedupe-Semantik expliziert (eine Prüfung pro URL, Befund an jedem Vorkommen) | slice-008 |
 | 2026-06-11 | Review R1 zu slice-008: Fragment-Teil vor Prüfung/Dedupe entfernt (Befund nennt Original-Linkziel); Schema-Vergleich case-insensitiv; Timeout gilt pro Request (Fallback: bis zu zwei Requests); explizit gesetzte 0 in `external.timeout-seconds`/`parallel` ist Konfigurationsfehler | slice-008 |
+| 2026-06-11 | Spez-Schuld eingelöst: §`DC-QA-01.a` Benchmark-Definition (Fixture, Messprotokoll, Pass-Kriterium) | slice-009 |

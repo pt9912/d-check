@@ -77,6 +77,16 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   `isImplemented`/`SkippedModules` entfernt — alle fünf
   Vertragsmodule sind lauffähig.
 
+- slice-009 — Gate-Endausbau (welle-03-Abschluss): `make coverage-gate`
+  (Coverage über `./internal/...` per `-coverpkg`, Kalibrierungs-Bindung
+  85 % → 90 % bei welle-03 done; Ist-Stand 92,9 %),
+  `make gate-consistency` (Meta-Gate gegen Harness-Lügen: dokumentierte
+  Targets ↔ Makefile in beide Richtungen, `DC-QA-03`-Modulliste der
+  `.d-check.yml`, Selbsttest mit Phantom-Target bei jedem Lauf) — beide
+  in `make gates` aggregiert; `make bench` mit `DC-QA-01`-Benchmark
+  (Spez §`DC-QA-01.a` eingelöst: 1.000-Dateien-Fixture, Median aus 3
+  Container-Läufen; gemessen: 551 ms ≪ 5 s).
+
 ### Changed
 
 - Review R1 zu slice-008: Fragmente werden vor Prüfung/Dedupe entfernt

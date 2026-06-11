@@ -100,17 +100,19 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make lint` | golangci-lint mit dem Projekt-Profil (§3.2) |
 | `make test` | `go test ./...` — Akzeptanzkriterien der `DC-FA-*` |
 | `make arch-check` | Import-Regeln des Hexagon-Schnitts ([ADR-0005](docs/plan/adr/0005-modul-layout-hexagon-ordner.md)) |
+| `make coverage-gate` | Coverage-Schwelle über `./internal/...` (Kalibrierungs-Bindung, siehe [`harness/README.md`](harness/README.md) §Sensors) |
+| `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile + `DC-QA-03`-Modulliste (Harness-Lügen-Schutz) |
 | `make doc-check` | Doku-Links, Anker, Kennungs-Linkpflicht + Referenzmatrix via `d-check` selbst (Dogfooding; netzlos — zugleich `DC-QA-03`-Messmethode) |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
+| `make bench` | `DC-QA-01`-Benchmark gegen generiertes Fixture (Median aus 3 Läufen, kein Gate in `gates`) |
 | `make build` / `make run` | Runtime-Image bauen / Selbst-Smoke-Test |
 | `make deps` / `make compile` | Cache-Layer / schnelles Compile-Feedback |
 | `make record-gates` | Nachweis schreiben: Working-Tree-Hash für den Stop-Hook |
 | `make help` / `make clean` | Targets anzeigen / Images entfernen |
 
-**Nicht behauptet** (geplant): `make coverage-gate`,
-`make gate-consistency` (ab welle-03); `make versions`,
-`make fullbuild`, `make ci` (ab welle-04). Details und Bindungen:
-Sensors-Tabelle in [`harness/README.md`](harness/README.md).
+**Nicht behauptet** (geplant): `make versions`, `make fullbuild`,
+`make ci` (ab welle-04). Details und Bindungen: Sensors-Tabelle in
+[`harness/README.md`](harness/README.md).
 
 ## 5. Dokumentations-Regeln
 

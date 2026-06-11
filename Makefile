@@ -6,8 +6,7 @@
 # Containern. Der Host braucht nur Docker, GNU make, bash und git.
 #
 # `make gates` aggregiert nur real existierende Targets (Kurs-Modul 13).
-# coverage-gate/gate-consistency folgen ab welle-03, versions/fullbuild
-# ab welle-04 (harness/README.md §Sensors).
+# versions/fullbuild/ci folgen ab welle-04 (harness/README.md §Sensors).
 
 IMAGE                 ?= d-check
 GO_VERSION            ?= 1.26.4
@@ -25,6 +24,12 @@ endif
 NO_CACHE_FILTER_TEST := --no-cache-filter test
 NO_CACHE_FILTER_LINT := --no-cache-filter lint
 NO_CACHE_FILTER_ARCH := --no-cache-filter arch-check
+NO_CACHE_FILTER_COV  := --no-cache-filter coverage
+
+# Kalibrierungs-Bindung (harness/README.md §Sensors): 85 %,
+# welle-03 done → 90 %. Override: `make coverage-gate THRESHOLD=…`;
+# Senkung nur per ADR (AGENTS.md §3.6).
+THRESHOLD ?= 85
 
 DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
     --build-arg GO_VERSION=$(GO_VERSION) \
@@ -32,7 +37,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check build run doc-check record-gates gates clean
+.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency bench build run doc-check record-gates gates clean
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -59,6 +64,17 @@ test: ## `go test ./...` in Docker (Akzeptanzkriterien DC-FA-*).
 arch-check: ## ADR-0005 — Import-Regeln des Hexagon-Schnitts (DC-QA-03).
 	$(DOCKER_BUILD) $(NO_CACHE_FILTER_ARCH) --target arch-check -t $(IMAGE):arch-check .
 
+coverage-gate: ## Coverage-Schwelle (Kalibrierungs-Bindung 85 % → 90 %, welle-03 done).
+	$(DOCKER_BUILD) $(NO_CACHE_FILTER_COV) \
+	    --build-arg COVERAGE_THRESHOLD=$(THRESHOLD) \
+	    --target coverage -t $(IMAGE):coverage .
+
+gate-consistency: ## Meta-Gate: dokumentierte Targets ↔ Makefile, QA-03-Modulliste (Harness-Lügen-Schutz).
+	@bash tools/gate-consistency.sh
+
+bench: build ## DC-QA-01-Benchmark: generiertes Fixture, N=3 Läufe, Median < 5 s (Spez §DC-QA-01.a).
+	@bash tools/bench-fixture.sh
+
 build: ## Runtime-Image bauen (distroless static, nonroot — ADR-0002).
 	$(DOCKER_BUILD) --target runtime -t $(IMAGE):latest .
 
@@ -83,13 +99,14 @@ record-gates: ## Nachweis schreiben: Working-Tree-Hash (für den Stop-Hook).
 
 # record-gates läuft als LETZTER Prerequisite — der Nachweis entsteht
 # nur, wenn alle Gates grün sind (sonst bricht make vorher ab).
-gates: doc-check lint test arch-check record-gates ## alle inneren Gates (mandatory vor Handoff).
-	@echo "[gates] doc-check + lint + test + arch-check green"
+gates: doc-check lint test arch-check coverage-gate gate-consistency record-gates ## alle inneren Gates (mandatory vor Handoff).
+	@echo "[gates] doc-check + lint + test + arch-check + coverage-gate + gate-consistency green"
 
 # ---- maintenance -------------------------------------------------------------
 
 clean: ## Lokale Images entfernen.
 	@-docker image rm \
 	    $(IMAGE):latest $(IMAGE):deps $(IMAGE):compile \
-	    $(IMAGE):lint $(IMAGE):test $(IMAGE):arch-check 2>/dev/null || true
+	    $(IMAGE):lint $(IMAGE):test $(IMAGE):arch-check \
+	    $(IMAGE):coverage 2>/dev/null || true
 	@echo "[clean] images removed"

@@ -14,6 +14,8 @@
 #   lint       — golangci-lint mit dem Projekt-Profil.
 #   test       — `go test ./...`.
 #   arch-check — Fitness Function zu ADR-0005 (Import-Regeln).
+#   coverage   — `go test -coverpkg` + tools/coverage-gate.sh
+#                (Kalibrierungs-Bindung 85 % → 90 %).
 #   build      — statisch gelinktes Binary (CGO=0, -ldflags "-s -w").
 #   runtime    — distroless/static:nonroot (ADR-0002).
 #
@@ -68,6 +70,31 @@ FROM deps AS arch-check
 
 COPY . .
 RUN bash tools/arch-check.sh
+
+# ---- coverage --------------------------------------------------------------
+# Kalibrierungs-Bindung (harness/README.md §Sensors): Schwelle 85 %,
+# welle-03 done → 90 %; Verfehlung nach Trigger ⇒ Carveout-Pflicht.
+# `-coverpkg` misst über die Paketgrenzen von ./internal/... (u-boot-
+# Muster) — sonst zählt nur paket-lokale Abdeckung.
+# `pipefail` via SHELL, damit `go test … | tee` den Exit-Code nicht
+# maskiert.
+FROM deps AS coverage
+
+SHELL ["/bin/bash", "-eo", "pipefail", "-c"]
+
+ARG COVERAGE_THRESHOLD=85
+ENV COVERAGE_THRESHOLD=${COVERAGE_THRESHOLD}
+
+COPY . .
+RUN mkdir -p /out && \
+    COVERPKG=$(go list ./internal/... | tr '\n' ',' | sed 's/,$//') && \
+    CGO_ENABLED=0 go test \
+        -coverpkg="$COVERPKG" \
+        -coverprofile=/out/coverage.out \
+        -covermode=atomic \
+        ./... && \
+    go tool cover -func=/out/coverage.out | tee /out/coverage-func.txt && \
+    bash tools/coverage-gate.sh /out/coverage-func.txt "$COVERAGE_THRESHOLD"
 
 # ---- build -----------------------------------------------------------------
 FROM deps AS build

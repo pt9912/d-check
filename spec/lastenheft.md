@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.2.2
+**Version:** 0.2.3
 
 **Status:** Draft
 
@@ -325,7 +325,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 ### DC-QA-01 — Performance
 
 - **Anforderung:** Ein vollständiger Lauf der Default-Module über ein Repository mit 1.000 Markdown-Dateien (insgesamt ≤ 20 MB) terminiert in < 5 s auf Standard-Entwickler-Hardware (2 vCPU); das Modul `external` ist von dieser Schranke ausgenommen.
-- **Messmethode:** Benchmark-Lauf gegen ein generiertes Fixture-Repo, Definition in `spec/spezifikation.md` (folgt).
+- **Messmethode:** Benchmark-Lauf gegen ein generiertes Fixture-Repo, Definition in `spec/spezifikation.md`.
 
 ### DC-QA-02 — Determinismus
 
@@ -374,3 +374,4 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | 0.2.0 | 2026-06-10 | Review-Runde R1: Modul-Schnitt `links`/`anchors` präzisiert (Fragment-Zuständigkeit, fehlende Zieldatei), Slug-Duplikat-Reihenfolge, Symlink-Vorrang, RFC-3986-Dekodierung vor Escape-Prüfung, Redirect-Regel `external`, Muster-Präzedenz `ids`, Status-Default `matrix`, Scan-Wurzel- und Config-Vollvalidierung, Out-of-Scope Reference-Style-Links, Image-Default-Befehl | — |
 | 0.2.1 | 2026-06-10 | Redaktionell: Beispiel-Kennungen in DC-FA-ID-001/DC-FA-MTX-001/Glossar auf fiktive Nummern (`ADR-0042`, `ADR-0099`) umgestellt — Kollision mit real entstandenen/zukünftigen eigenen ADRs vermeiden; keine inhaltliche Änderung | — |
 | 0.2.2 | 2026-06-10 | Redaktionell: absolute Workspace-Pfade entfernt („Schwester-Repositories des Entwicklungs-Workspace" statt konkreter Pfade); keine inhaltliche Änderung | — |
+| 0.2.3 | 2026-06-11 | Redaktionell: „(folgt)" in der `DC-QA-01`-Messmethode entfernt — die Benchmark-Definition existiert in der Spezifikation; keine inhaltliche Änderung | — |
