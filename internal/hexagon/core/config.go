@@ -14,12 +14,12 @@ func validModules() []string {
 }
 
 // isImplemented: in diesem Stand lauffähige Module.
-// `ids`/`matrix`/`external` folgen mit der Regelmodul-Welle; bis
+// `matrix`/`external` folgen mit der Regelmodul-Welle; bis
 // dahin werden aktivierte, aber nicht implementierte Module mit
 // stderr-Hinweis übersprungen.
 func isImplemented(module string) bool {
 	switch module {
-	case "links", "anchors":
+	case "links", "anchors", "ids":
 		return true
 	}
 	return false

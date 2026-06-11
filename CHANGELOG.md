@@ -45,6 +45,13 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   statt Carveouts (Globals → Funktionen, Komplexitäts-Splits in
   cli/configyaml/core) — lint-clean ohne //nolint.
 
+- slice-006 — Modul `ids` (DC-FA-ID-001): Linkpflicht für Kennungen
+  nach konfigurierten Regex-Mustern (Reihenfolge = Präzedenz, erstes
+  Match gewinnt pro Vorkommen); „verlinkt" = Vorkommen im Linktext
+  eines Markdown-Links, Ziel-Klammern und Bildreferenzen sind
+  linkpflichtfrei (kein Fließtext); Grund-Code `id-unlinked`;
+  Config-Constraint `ids.patterns[].target` muss existieren (Exit 2).
+
 ### Changed
 
 - Harness-Hooks gehärtet (MR-005): Gate-Nachweis inhaltsbasiert

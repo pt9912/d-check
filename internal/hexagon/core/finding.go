@@ -11,6 +11,7 @@ const (
 	ReasonTargetMissing = "target-missing"
 	ReasonRepoEscape    = "repo-escape"
 	ReasonSymlink       = "symlink"
+	ReasonIDUnlinked    = "id-unlinked"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2).

@@ -1,6 +1,6 @@
 # Slice slice-006: Modul `ids` — Linkpflicht für Kennungen
 
-**Status:** open.
+**Status:** in-progress.
 
 **Welle:** welle-03-regelmodule.
 

@@ -148,11 +148,11 @@ func TestSortFindingsDedupe(t *testing.T) {
 // Nicht implementierte Module werden gemeldet und übersprungen.
 func TestSkippedModules(t *testing.T) {
 	m := newMemFS(map[string]string{"docs/a.md": "x"})
-	res, err := Run(m, Config{}, []string{"ids", "links"})
+	res, err := Run(m, Config{}, []string{"matrix", "links"})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !reflect.DeepEqual(res.SkippedModules, []string{"ids"}) {
+	if !reflect.DeepEqual(res.SkippedModules, []string{"matrix"}) {
 		t.Fatalf("Skipped = %v", res.SkippedModules)
 	}
 }

@@ -99,6 +99,17 @@ type LinkRef struct {
 	IsImage bool
 }
 
+// LinkSpan beschreibt die Byte-Spannen eines Inline-Links innerhalb
+// einer vorverarbeiteten Zeile: [Start,End) umfasst den ganzen Link,
+// [TextStart,TextEnd) den Linktext — Grundlage der „im
+// Linktext"-Erkennung des Moduls ids (spec/spezifikation.md
+// §DC-FA-ID-001.a).
+type LinkSpan struct {
+	Start, End         int
+	TextStart, TextEnd int
+	IsImage            bool
+}
+
 // ExtractLinks findet Inline-Links [text](ziel) und Bilder
 // ![alt](ziel); mehrere pro Zeile werden alle erfasst
 // (spec/spezifikation.md §DC-FA-LINK-001.a Schritt 3).
@@ -106,21 +117,36 @@ func ExtractLinks(lines []Line) []LinkRef {
 	var refs []LinkRef
 	for _, ln := range lines {
 		for i := 0; i < len(ln.Text); i++ {
-			ref, next, ok := parseLinkAt(ln.Text, i)
+			ref, span, ok := parseLinkAt(ln.Text, i)
 			if !ok {
 				continue
 			}
 			ref.Line = ln.No
 			refs = append(refs, ref)
-			i = next
+			i = span.End - 1
 		}
 	}
 	return refs
 }
 
+// ExtractLinkSpans liefert die Link-Spannen einer vorverarbeiteten
+// Zeile in Vorkommens-Reihenfolge.
+func ExtractLinkSpans(text string) []LinkSpan {
+	var spans []LinkSpan
+	for i := 0; i < len(text); i++ {
+		_, span, ok := parseLinkAt(text, i)
+		if !ok {
+			continue
+		}
+		spans = append(spans, span)
+		i = span.End - 1
+	}
+	return spans
+}
+
 // parseLinkAt liest an Position i einen Inline-Link (Linktext
 // klammer-balanciert, Ziel mit balancierten Klammern).
-func parseLinkAt(s string, i int) (LinkRef, int, bool) {
+func parseLinkAt(s string, i int) (LinkRef, LinkSpan, bool) {
 	isImage := false
 	start := i
 	switch {
@@ -128,17 +154,23 @@ func parseLinkAt(s string, i int) (LinkRef, int, bool) {
 		isImage = true
 		start = i + 1
 	case s[i] != '[':
-		return LinkRef{}, i, false
+		return LinkRef{}, LinkSpan{}, false
 	}
 	textEnd, ok := matchBracket(s, start, '[', ']')
 	if !ok || textEnd+1 >= len(s) || s[textEnd+1] != '(' {
-		return LinkRef{}, i, false
+		return LinkRef{}, LinkSpan{}, false
 	}
 	destEnd, ok := matchBracket(s, textEnd+1, '(', ')')
 	if !ok {
-		return LinkRef{}, i, false
+		return LinkRef{}, LinkSpan{}, false
 	}
-	return LinkRef{Target: normalizeTarget(s[textEnd+2 : destEnd]), IsImage: isImage}, destEnd, true
+	ref := LinkRef{Target: normalizeTarget(s[textEnd+2 : destEnd]), IsImage: isImage}
+	span := LinkSpan{
+		Start: i, End: destEnd + 1,
+		TextStart: start + 1, TextEnd: textEnd,
+		IsImage: isImage,
+	}
+	return ref, span, true
 }
 
 // normalizeTarget entquotet <…>-Ziele und trennt ein Titel-Suffix ab.

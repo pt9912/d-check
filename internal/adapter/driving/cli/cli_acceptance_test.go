@@ -272,6 +272,43 @@ func TestQA02_Determinismus(t *testing.T) {
 	}
 }
 
+// DC-FA-ID-001: Linkpflicht für Kennungen (Modul ids) — Happy
+// (verlinkt), Boundary (Inline-Code), Negative (nackt → id-unlinked).
+func TestID001(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, ".d-check.yml",
+		"modules: [ids]\nids:\n  patterns:\n    - regex: 'ADR-\\d{4}'\n      target: docs/plan/adr/\n")
+	write(t, root, "docs/plan/adr/0042-beispiel.md", "# ADR")
+	write(t, root, "docs/a.md",
+		"[ADR-0042](plan/adr/0042-beispiel.md)\n`ADR-0042` in Inline-Code\n")
+	code, _, stderr := run(t, root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, want 0 (stderr: %s)", code, stderr)
+	}
+	if strings.Contains(stderr, "nicht implementiert") {
+		t.Fatalf("Interim-Hinweis darf für ids nicht mehr erscheinen: %q", stderr)
+	}
+
+	write(t, root, "docs/a.md", "nacktes ADR-0042 im Fließtext\n")
+	code, stdout, _ := run(t, root)
+	if code != 1 || !strings.Contains(stdout, "docs/a.md:1\tADR-0042\tid-unlinked") {
+		t.Fatalf("Exit = %d, stdout = %q", code, stdout)
+	}
+}
+
+// DC-FA-CONF-001 (Constraint ids.patterns[].target muss existieren):
+// nicht existierendes Target → Exit 2 ohne Prüfung.
+func TestCONF001_IDTargetFehlt(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, ".d-check.yml",
+		"ids:\n  patterns:\n    - regex: 'ADR-\\d{4}'\n      target: gibt/es/nicht\n")
+	write(t, root, "docs/a.md", "x")
+	code, stdout, stderr := run(t, root)
+	if code != 2 || stdout != "" || !strings.Contains(stderr, "gibt/es/nicht") {
+		t.Fatalf("Exit = %d, stdout = %q, stderr = %q", code, stdout, stderr)
+	}
+}
+
 // DC-FA-CONF-001 Negative: ungültige Config → Exit 2 mit Zeilenangabe,
 // keine Prüfung mit stillschweigenden Defaults.
 func TestCONF001_UngueltigeConfig(t *testing.T) {

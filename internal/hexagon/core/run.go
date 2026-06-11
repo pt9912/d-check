@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
@@ -29,6 +30,13 @@ func Run(fsys driven.Filesystem, cfg Config, modules []string) (Result, error) {
 		}
 	}
 
+	// Config-Constraint (DC-FA-CONF-001, spec/spezifikation.md §2):
+	// deklarierte ids-Targets müssen existieren — unabhängig von den
+	// aktiven Modulen; Verletzung bedeutet Exit 2 ohne Prüfung.
+	if err := ensureIDTargetsExist(fsys, cfg.IDPatterns); err != nil {
+		return res, err
+	}
+
 	files, err := DiscoverFiles(fsys, cfg.Roots, cfg.Ignore)
 	if err != nil {
 		return res, err
@@ -48,7 +56,30 @@ func Run(fsys driven.Filesystem, cfg Config, modules []string) (Result, error) {
 		if active["anchors"] {
 			res.Findings = append(res.Findings, checkAnchors(fsys, file, content, lines, slugCache)...)
 		}
+		if active["ids"] {
+			res.Findings = append(res.Findings, checkIDs(file, lines, cfg.IDPatterns)...)
+		}
 	}
 	res.Findings = SortFindings(res.Findings)
 	return res, nil
+}
+
+// ensureIDTargetsExist prüft die Existenz der in ids.patterns[]
+// deklarierten Targets (Datei oder Verzeichnis, relativ zur
+// Repo-Wurzel).
+func ensureIDTargetsExist(fsys driven.Filesystem, patterns []IDPattern) error {
+	for _, p := range patterns {
+		rel := strings.Trim(p.Target, "/")
+		if rel == "" || rel == "." {
+			continue // Repo-Wurzel existiert per Definition
+		}
+		kind, err := fsys.Kind(rel)
+		if err != nil {
+			return err
+		}
+		if kind == driven.KindMissing {
+			return fmt.Errorf("konfiguriertes ids-Target existiert nicht: %s", p.Target)
+		}
+	}
+	return nil
 }

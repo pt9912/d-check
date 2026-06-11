@@ -105,9 +105,17 @@ die Zieldatei eines `ziel.md#anker`-Links nicht, schweigt `anchors`
 
 Pro Zeile (außerhalb Fence/Inline-Code) werden die konfigurierten
 Muster in Deklarationsreihenfolge gematcht; das erste passende Muster
-gewinnt pro Vorkommen. Ein Vorkommen gilt als verlinkt, wenn es
-innerhalb des Linktexts eines Markdown-Links liegt; sonst Befund
-`id-unlinked`.
+gewinnt pro Vorkommen (auch bei überlappenden Treffern: ein von einem
+früheren Muster beanspruchter Textbereich wird von späteren Mustern
+nicht erneut gematcht). Ein Vorkommen gilt als verlinkt, wenn es
+innerhalb des Linktexts eines Markdown-Links (keine Bildreferenz)
+liegt. Vorkommen innerhalb der Link-Syntax außerhalb des Linktexts
+(Ziel-Klammer) sowie innerhalb von Bildreferenzen (Alt-Text und Ziel)
+sind kein Fließtext und damit linkpflichtfrei. Alle übrigen Vorkommen
+erzeugen den Befund `id-unlinked`. Das deklarierte
+`ids.patterns[].target` (Datei oder Verzeichnis, relativ zur
+Repo-Wurzel) muss existieren — Verletzung ist ein
+Konfigurationsfehler (Exit 2, [§2](#d-checkyml)).
 
 ### DC-FA-MTX-001.a — Klassen- und Status-Auflösung
 
@@ -319,3 +327,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-10 | Review-Runde Implementierung (Black-Box): Optionen vor/nach Pfad-Argument; gänzlich leere Wurzel → Exit 2 mit Mount-Hinweis vs. „ohne Markdown" → Exit 0; leere `.d-check.yml` = Defaults; explizit leere Listen; absolute Ziele; Verzeichnis-Symlinks beim Scan | slice-003 |
 | 2026-06-10 | Review R2 (Black-Box): hängendes wertnehmendes Flag = Nutzungsfehler; `d-check: error:`-Präfix für Flag-Fehler; `-h` → Usage auf stderr, Exit 0 | slice-003 |
 | 2026-06-10 | Modul `anchors` normiert umgesetzt; `scan.roots`-Wert `"."` = gesamte Repo-Wurzel; Slug-Schritt 1 präzisiert: Emphasis-Sterne entfallen, literale Unterstriche bleiben (GitHub-Verhalten) | slice-004 |
+| 2026-06-11 | Modul `ids` normiert umgesetzt; §DC-FA-ID-001.a präzisiert: Ziel-Klammern von Links und Bildreferenzen (Alt-Text, Ziel) sind kein Fließtext (linkpflichtfrei); Überlappungs-Semantik der Muster-Präzedenz expliziert; Target-Existenz-Constraint im Algorithmus-Text verankert | slice-006 |
