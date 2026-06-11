@@ -15,28 +15,11 @@ const ReasonAnchorMissing = "anchor-missing"
 
 // ExtractHeadings liefert die Texte aller ATX-Headings (#–######)
 // außerhalb von Fenced-Code-Blöcken, in Dokumentreihenfolge
-// (DC-FA-ANCH-001; Setext wird in 0.x nicht unterstützt —
-// spec/spezifikation.md §DC-FA-ANCH-001.a).
+// (DC-FA-ANCH-001; gemeinsamer Scanner: extractHeadingLines).
 func ExtractHeadings(content []byte) []string {
 	var out []string
-	inFence := false
-	for _, raw := range strings.Split(string(content), "\n") {
-		trimmed := strings.TrimLeft(raw, " \t")
-		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
-			inFence = !inFence
-			continue
-		}
-		if inFence || !strings.HasPrefix(trimmed, "#") {
-			continue
-		}
-		level := 0
-		for level < len(trimmed) && trimmed[level] == '#' {
-			level++
-		}
-		if level > 6 || level >= len(trimmed) || (trimmed[level] != ' ' && trimmed[level] != '\t') {
-			continue
-		}
-		out = append(out, strings.TrimSpace(trimmed[level+1:]))
+	for _, h := range extractHeadingLines(content) {
+		out = append(out, h.text)
 	}
 	return out
 }

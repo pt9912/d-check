@@ -20,7 +20,9 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 [slice-008](../open/slice-008-external-modul.md) (`external` +
 QA-03-Netzlos-Gate),
 [slice-009](../open/slice-009-coverage-und-meta-gates.md)
-(coverage-gate 85→90, gate-consistency, DC-QA-01-Benchmark — nach
+(coverage-gate 85→90, gate-consistency,
+[`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)-Benchmark
+— nach
 006–008, schließt die Welle).
 
 **Closure-Trigger:** Module `ids`, `matrix`, `external` implementiert
@@ -32,7 +34,7 @@ aktiv; `coverage-gate` und `gate-consistency` existieren und sind in
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| welle-04-distribution-und-migration | welle-03 done | GHCR-Release-Pipeline mit Digest-Pins ([`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image), ADR-0002), Image-Integrationstests (DIST-Akzeptanzkriterien automatisiert), Reproduzierbarkeits-Belege (`versions`, `fullbuild` mit Image-Hash), Pilot-Migrationen in 3 Repos ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools): Shell-, Python-/u-boot-, JS-Vertreter) | M |
+| welle-04-distribution-und-migration | welle-03 done | GHCR-Release-Pipeline mit Digest-Pins ([`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image), [ADR-0002](../../adr/0002-distribution-ghcr-image.md)), Image-Integrationstests (DIST-Akzeptanzkriterien automatisiert), Reproduzierbarkeits-Belege (`versions`, `fullbuild` mit Image-Hash), Pilot-Migrationen in 3 Repos ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools): Shell-, Python-/u-boot-, JS-Vertreter) | M |
 
 ## Meilensteine
 

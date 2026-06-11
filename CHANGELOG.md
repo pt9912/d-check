@@ -26,7 +26,7 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   `--enable/--disable/--json`), Scanner mit Default-Wurzeln/Ignores,
   Modul `links` (Linkziele, Repo-Escape, Symlink-Vorrang,
   RFC-3986-Dekodierung), strikte `.d-check.yml`-Validierung,
-  Text-/JSON-Reporter; Layout nach ADR-0005 (hexagon-/adapter-Ordner,
+  Text-/JSON-Reporter; Layout nach `ADR-0005` (hexagon-/adapter-Ordner,
   u-boot-Konvention); Dockerfile-Stages + Make-Gates `lint`, `test`,
   `arch-check` (Fitness Function R1–R5), Runtime-Image
   distroless/static mit Selbst-Smoke-Test (`make run`).
@@ -36,21 +36,34 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Zieldatei) und **Dogfooding**: `make doc-check` läuft über `d-check`
   selbst (`scan.roots: ["."]`, Module links+anchors — erstmals mit
   Anker-Validierung); vendorter Bootstrap-Sensor gelöscht
-  (MR-003 → MR-007 aufgelöst); Vergleichslauf als erster
-  DC-QA-04-Datenpunkt.
+  (`MR-003` → `MR-007` aufgelöst); Vergleichslauf als erster
+  `DC-QA-04`-Datenpunkt.
 
-- slice-005 — SOLID-nahes Lint-Profil (ADR-0006, u-boot-Parität ohne
+- slice-005 — SOLID-nahes Lint-Profil (`ADR-0006`, u-boot-Parität ohne
   depguard): 5 Default- + 23 Linter mit u-boot-Kalibrierung,
   gomodguard-Anti-Module, Why-kommentierte Ausnahmen; Code-Refactoring
   statt Carveouts (Globals → Funktionen, Komplexitäts-Splits in
   cli/configyaml/core) — lint-clean ohne //nolint.
 
-- slice-006 — Modul `ids` (DC-FA-ID-001): Linkpflicht für Kennungen
+- slice-006 — Modul `ids` (`DC-FA-ID-001`): Linkpflicht für Kennungen
   nach konfigurierten Regex-Mustern (Reihenfolge = Präzedenz, erstes
   Match gewinnt pro Vorkommen); „verlinkt" = Vorkommen im Linktext
   eines Markdown-Links, Ziel-Klammern und Bildreferenzen sind
   linkpflichtfrei (kein Fließtext); Grund-Code `id-unlinked`;
   Config-Constraint `ids.patterns[].target` muss existieren (Exit 2).
+
+- slice-007 — Modul `matrix` (`DC-FA-MTX-001`): Dokumentklassen per
+  Glob (Reihenfolge = Präzedenz), Referenzregeln pro Klassen-Paar,
+  Status-Bedingungen (`**Status:**`-Zeile vor Status-Heading,
+  Präfix-Match case-insensitiv, ohne Status aktiv) und
+  `exclude-sections` (Provenance-Ausnahme); Grund-Codes
+  `matrix-forbidden`/`matrix-inactive`. **Dogfooding-
+  Selbstkonfiguration:** die eigene `.d-check.yml` aktiviert
+  `ids` + `matrix` (Muster `ADR-*`/`MR-*`/`DC-*`; `MR-006`-
+  Referenzrichtung maschinell kodiert); ids-Fortschreibung aus dem
+  Selbstlauf: Headings und Definitions-Ort des Musters sind
+  linkpflichtfrei; ~50 nackte Kennungen der eigenen Doku verlinkt
+  bzw. als Code-Span fixiert.
 
 ### Changed
 
@@ -60,16 +73,16 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Konfigurationsfehler; Inline-Code-Stripping positionserhaltend
   (keine Phantom-Kennungen durch Text-Verschmelzung); zeilenbasierte
   Link-Extraktion als normative Grenze dokumentiert.
-- Harness-Hooks gehärtet (MR-005): Gate-Nachweis inhaltsbasiert
+- Harness-Hooks gehärtet (`MR-005`): Gate-Nachweis inhaltsbasiert
   (Commit ohne Gate-Lauf wird vom Stop-Hook nicht mehr freigegeben),
   PreToolUse-Guard prüft `bash/sh -c`-Sub-Shell-Strings rekursiv.
-- Referenzrichtungs-Korrektur (MR-006): ADR-Abwärtsverweise aus
+- Referenzrichtungs-Korrektur (`MR-006`): ADR-Abwärtsverweise aus
   `spec/spezifikation.md` und `spec/architecture.md` entfernt
   (Kurs-Template-Fehler; Spec-Straten verweisen nie abwärts,
   Traceability über die `Schärft:`-Felder der ADRs).
 - `spec/architecture.md` sprachneutral umformuliert (Schichten/Rollen
   statt Modul-Pfade und Imports; sprachkonkrete Übersetzung lebt in
-  ADR-0004) — Template-Hard-Rule „sprach- und meilensteinfrei" wieder
+  `ADR-0004`) — Template-Hard-Rule „sprach- und meilensteinfrei" wieder
   voll erfüllt.
 - Lastenheft 0.2.1 (redaktionell): Beispiel-Kennungen auf fiktive
   Nummern (`ADR-0042`, `ADR-0099`) — keine Kollision mit real

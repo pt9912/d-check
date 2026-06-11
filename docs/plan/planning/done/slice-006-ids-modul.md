@@ -26,7 +26,7 @@ Definition sein.
   kein Befund; ID in Inline-Code → linkpflichtfrei; nackte ID →
   `id-unlinked` (Grund-Code gemäß Spezifikation §4).
 - [x] Muster-Präzedenz getestet (Deklarationsreihenfolge, erstes
-  Match gewinnt — Spezifikation §DC-FA-ID-001.a).
+  Match gewinnt — Spezifikation §`DC-FA-ID-001.a`).
 - [x] „Verlinkt" = Vorkommen liegt im Linktext eines Markdown-Links
   (Link-Text-Spannen aus der Extraktion).
 - [x] Config-Constraint durchgesetzt: nicht existierendes
@@ -74,7 +74,7 @@ Target-Constraint, Spec-Präzisierung, Tests).
   als Refactoring von `parseLinkAt` ohne Verhaltensänderung für
   `links`/`anchors` heraus (alle Bestandstests blieben grün).
 - **Anders als geplant:** Eine Spec-Lücke wurde sichtbar:
-  §DC-FA-ID-001.a hätte wörtlich genommen auch Vorkommen in der
+  §`DC-FA-ID-001.a` hätte wörtlich genommen auch Vorkommen in der
   Ziel-Klammer von Links und in Bildreferenzen als `id-unlinked`
   geflaggt — in Repos, deren Definitions-Dateinamen die Kennung
   tragen (`ADR-0042-beispiel.md`), würde damit jedes korrekt

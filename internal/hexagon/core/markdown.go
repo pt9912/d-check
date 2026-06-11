@@ -79,6 +79,55 @@ func findClosingRun(s string, from, runLen int) int {
 	return -1
 }
 
+// headingLine ist ein ATX-Heading mit Zeilennummer (1-basiert) und
+// Ebene — gemeinsamer Scanner für anchors (Slugs) und matrix
+// (Sektions-Ausnahmen, Status-Heading).
+type headingLine struct {
+	line  int
+	level int
+	text  string
+}
+
+// parseATXHeading erkennt eine ATX-Heading-Zeile (#–######) und
+// liefert Ebene und getrimmten Text.
+func parseATXHeading(raw string) (level int, text string, ok bool) {
+	trimmed := strings.TrimLeft(raw, " \t")
+	if !strings.HasPrefix(trimmed, "#") {
+		return 0, "", false
+	}
+	for level < len(trimmed) && trimmed[level] == '#' {
+		level++
+	}
+	if level > 6 || level >= len(trimmed) || (trimmed[level] != ' ' && trimmed[level] != '\t') {
+		return 0, "", false
+	}
+	return level, strings.TrimSpace(trimmed[level+1:]), true
+}
+
+// extractHeadingLines liefert alle ATX-Headings (#–######) außerhalb
+// von Fenced-Code-Blöcken, in Dokumentreihenfolge (Setext wird in 0.x
+// nicht unterstützt — spec/spezifikation.md §DC-FA-ANCH-001.a).
+func extractHeadingLines(content []byte) []headingLine {
+	var out []headingLine
+	inFence := false
+	for i, raw := range strings.Split(string(content), "\n") {
+		trimmed := strings.TrimLeft(raw, " \t")
+		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
+			inFence = !inFence
+			continue
+		}
+		if inFence {
+			continue
+		}
+		level, text, ok := parseATXHeading(raw)
+		if !ok {
+			continue
+		}
+		out = append(out, headingLine{line: i + 1, level: level, text: text})
+	}
+	return out
+}
+
 // matchBracket liefert die Position der balanciert schließenden
 // Klammer zur öffnenden an Position open.
 func matchBracket(s string, open int, lo, hi byte) (int, bool) {

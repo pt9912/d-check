@@ -43,6 +43,7 @@ func Run(fsys driven.Filesystem, cfg Config, modules []string) (Result, error) {
 	res.FilesChecked = len(files)
 
 	slugCache := map[string]map[string]bool{}
+	statusCache := map[string]*string{}
 	for _, file := range files {
 		content, err := fsys.ReadFile(file)
 		if err != nil {
@@ -57,6 +58,9 @@ func Run(fsys driven.Filesystem, cfg Config, modules []string) (Result, error) {
 		}
 		if active["ids"] {
 			res.Findings = append(res.Findings, checkIDs(file, lines, cfg.IDPatterns)...)
+		}
+		if active["matrix"] {
+			res.Findings = append(res.Findings, checkMatrix(fsys, file, content, lines, cfg.Matrix, statusCache)...)
 		}
 	}
 	res.Findings = SortFindings(res.Findings)

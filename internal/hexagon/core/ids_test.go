@@ -104,6 +104,28 @@ func TestIDsTargetDarfWurzelNichtVerlassen(t *testing.T) {
 	}
 }
 
+// Definitions-Ort und Headings sind linkpflichtfrei
+// (Spez-Fortschreibung slice-007): Vorkommen im deklarierten Target
+// des Musters sowie in ATX-Heading-Zeilen erzeugen keinen Befund.
+func TestIDsDefinitionsOrtUndHeadings(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"spec/lastenheft.md":      "### DC-FA-CLI-001 — Titel\nDC-FA-CLI-001 im eigenen Dokument\n",
+		"docs/plan/adr/0001-x.md": "# ADR-0001 — X\nersetzt ADR-0042 nicht\n",
+		"docs/a.md":               "## Abschnitt zu DC-FA-CLI-001\nnacktes DC-FA-CLI-001 hier\n",
+	})
+	cfg := Config{IDPatterns: []IDPattern{
+		{Regex: regexp.MustCompile(`DC-(FA-[A-Z]+|QA)-\d+`), Target: "spec/lastenheft.md"},
+		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/"},
+	}}
+	res, err := Run(m, cfg, []string{"ids"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 || res.Findings[0].File != "docs/a.md" || res.Findings[0].Line != 2 {
+		t.Fatalf("Befunde = %+v (genau docs/a.md:2 erwartet)", res.Findings)
+	}
+}
+
 // Positionserhaltendes Inline-Code-Stripping: angrenzender Text darf
 // nicht zu Phantom-Kennungen verschmelzen (Review R1 zu slice-006).
 func TestIDsKeinePhantomKennungDurchInlineCode(t *testing.T) {

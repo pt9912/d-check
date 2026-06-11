@@ -117,8 +117,14 @@ nicht erneut gematcht). Ein Vorkommen gilt als verlinkt, wenn es
 innerhalb des Linktexts eines Markdown-Links (keine Bildreferenz)
 liegt. Vorkommen innerhalb der Link-Syntax außerhalb des Linktexts
 (Ziel-Klammer) sowie innerhalb von Bildreferenzen (Alt-Text und Ziel)
-sind kein Fließtext und damit linkpflichtfrei. Alle übrigen Vorkommen
-erzeugen den Befund `id-unlinked`. Da die Extraktion zeilenbasiert
+sind kein Fließtext und damit linkpflichtfrei. Ebenfalls
+linkpflichtfrei sind ATX-Heading-Zeilen (Headings sind Struktur-,
+kein Fließtext — Definitions- und Schärfungs-Headings tragen ihre
+Kennung nackt) sowie alle Vorkommen innerhalb des deklarierten
+`target` des matchenden Musters (Definitions-Ort: die Target-Datei
+selbst bzw. alle Dateien unterhalb eines Target-Verzeichnisses — eine
+Definition muss nicht auf sich selbst verlinken). Alle übrigen
+Vorkommen erzeugen den Befund `id-unlinked`. Da die Extraktion zeilenbasiert
 ist ([§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 Schritt 3), gilt eine Kennung in mehrzeiligem Linktext als nackt —
 linkpflichtige Kennungen gehören in einzeilige Links. Das deklarierte
@@ -332,9 +338,10 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-10 | Initiale Fassung | slice-002 |
 | 2026-06-10 | Review R1: `scan.roots`-Constraint präzisiert (nur deklarierte Wurzeln pflichtig), Symlink-Prüf-Scope präzisiert, unspezifizierter Grund-Code `nested-link` entfernt | slice-002 |
 | 2026-06-10 | Review R2: Status-Extraktions-Reihenfolge fixiert (`**Status:**` vor `Status`-Heading), `exclude-sections`-Matching definiert (getrimmt, case-sensitiv), Exit-2-Hinweis an Config-Constraint-Tabelle | slice-002 |
-| 2026-06-10 | Referenzrichtungs-Korrektur: ADR-Abwärtsverweise entfernt — Spec-Straten verweisen nie abwärts; Traceability über die `Schärft:`-Felder der ADRs (Kurs-Baseline-Korrektur, MR-006) | slice-002 |
+| 2026-06-10 | Referenzrichtungs-Korrektur: ADR-Abwärtsverweise entfernt — Spec-Straten verweisen nie abwärts; Traceability über die `Schärft:`-Felder der ADRs (Kurs-Baseline-Korrektur, `MR-006`) | slice-002 |
 | 2026-06-10 | Review-Runde Implementierung (Black-Box): Optionen vor/nach Pfad-Argument; gänzlich leere Wurzel → Exit 2 mit Mount-Hinweis vs. „ohne Markdown" → Exit 0; leere `.d-check.yml` = Defaults; explizit leere Listen; absolute Ziele; Verzeichnis-Symlinks beim Scan | slice-003 |
 | 2026-06-10 | Review R2 (Black-Box): hängendes wertnehmendes Flag = Nutzungsfehler; `d-check: error:`-Präfix für Flag-Fehler; `-h` → Usage auf stderr, Exit 0 | slice-003 |
 | 2026-06-10 | Modul `anchors` normiert umgesetzt; `scan.roots`-Wert `"."` = gesamte Repo-Wurzel; Slug-Schritt 1 präzisiert: Emphasis-Sterne entfallen, literale Unterstriche bleiben (GitHub-Verhalten) | slice-004 |
-| 2026-06-11 | Modul `ids` normiert umgesetzt; §DC-FA-ID-001.a präzisiert: Ziel-Klammern von Links und Bildreferenzen (Alt-Text, Ziel) sind kein Fließtext (linkpflichtfrei); Überlappungs-Semantik der Muster-Präzedenz expliziert; Target-Existenz-Constraint im Algorithmus-Text verankert | slice-006 |
+| 2026-06-11 | Modul `ids` normiert umgesetzt; §`DC-FA-ID-001.a` präzisiert: Ziel-Klammern von Links und Bildreferenzen (Alt-Text, Ziel) sind kein Fließtext (linkpflichtfrei); Überlappungs-Semantik der Muster-Präzedenz expliziert; Target-Existenz-Constraint im Algorithmus-Text verankert | slice-006 |
 | 2026-06-11 | Review R1 zu slice-006: Inline-Code-Stripping positionserhaltend (Leerzeichen statt Entfernen — keine Schein-Vorkommen); Repo-Escape-Verbot für `scan.roots` und `ids.patterns[].target`; Leerstring-matchende ids-Regexe als Konfigurationsfehler; zeilenbasierte Link-Extraktion als normative Grenze dokumentiert | slice-006 |
+| 2026-06-11 | Modul `matrix` normiert umgesetzt; §`DC-FA-ID-001.a` fortgeschrieben (Befund der Dogfooding-Selbstkonfiguration): ATX-Heading-Zeilen und Vorkommen im deklarierten Muster-Target (Definitions-Ort) sind linkpflichtfrei | slice-007 |

@@ -27,7 +27,8 @@ die kanonische Quelle (Source Precedence, siehe
   `kurs/de/grundlagen/konventionen.md`).
 - **Konventions-Vorbilder (Implementierung):**
   [`u-boot`](https://github.com/pt9912/u-boot) — Hexagon-Ordnerkonvention
-  (ADR-0005), Dockerfile-/Makefile-Muster, Pin-Politik;
+  ([ADR-0005](../docs/plan/adr/0005-modul-layout-hexagon-ordner.md)),
+  Dockerfile-/Makefile-Muster, Pin-Politik;
   [`b-cad`](https://github.com/pt9912/b-cad) — Gate-Nachweis- und
   Hook-Mechanik ([`MR-004`](#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild)/[`MR-005`](#mr-005--härtung-ggü-b-cad-inhaltsbasierter-gate-nachweis-sub-shell-prüfung));
   [`d-migrate`](https://github.com/pt9912/d-migrate) — Ursprung des

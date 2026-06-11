@@ -90,7 +90,7 @@ func Decode(content []byte) (core.Config, error) {
 	if err := applyIDs(r.IDs, &cfg); err != nil {
 		return cfg, err
 	}
-	if err := validateMatrix(r.Matrix); err != nil {
+	if err := applyMatrix(r.Matrix, &cfg); err != nil {
 		return cfg, err
 	}
 	if err := validateExternal(r.External); err != nil {
@@ -137,7 +137,7 @@ func applyIDs(ids *rawIDs, cfg *core.Config) error {
 	return nil
 }
 
-func validateMatrix(m *rawMatrix) error {
+func applyMatrix(m *rawMatrix, cfg *core.Config) error {
 	if m == nil {
 		return nil
 	}
@@ -147,12 +147,20 @@ func validateMatrix(m *rawMatrix) error {
 			return fmt.Errorf("%s: matrix.classes[%d].name fehlt oder doppelt", FileName, i)
 		}
 		classes[c.Name] = true
+		cfg.Matrix.Classes = append(cfg.Matrix.Classes, core.MatrixClass{Name: c.Name, Paths: c.Paths})
 	}
 	for i, rule := range m.Rules {
 		if !classes[rule.From] || !classes[rule.To] {
 			return fmt.Errorf("%s: matrix.rules[%d] referenziert undeklarierte Klasse", FileName, i)
 		}
+		cfg.Matrix.Rules = append(cfg.Matrix.Rules, core.MatrixRule{From: rule.From, To: rule.To, Allow: rule.Allow})
 	}
+	if m.Status != nil {
+		cfg.Matrix.StatusForbidden = m.Status.Forbidden
+	} else {
+		cfg.Matrix.StatusForbidden = []string{"superseded", "deprecated"}
+	}
+	cfg.Matrix.ExcludeSections = m.ExcludeSections
 	return nil
 }
 

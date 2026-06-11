@@ -92,8 +92,8 @@ Gates sind die häufigste Form von Harness-Lüge.
 |---|---|
 | `make lint` | golangci-lint mit dem Projekt-Profil (§3.2) |
 | `make test` | `go test ./...` — Akzeptanzkriterien der `DC-FA-*` |
-| `make arch-check` | Import-Regeln des Hexagon-Schnitts (ADR-0005) |
-| `make doc-check` | Doku-Links + Anker via `d-check` selbst (Dogfooding) |
+| `make arch-check` | Import-Regeln des Hexagon-Schnitts ([ADR-0005](docs/plan/adr/0005-modul-layout-hexagon-ordner.md)) |
+| `make doc-check` | Doku-Links, Anker, Kennungs-Linkpflicht + Referenzmatrix via `d-check` selbst (Dogfooding) |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
 | `make build` / `make run` | Runtime-Image bauen / Selbst-Smoke-Test |
 | `make deps` / `make compile` | Cache-Layer / schnelles Compile-Feedback |

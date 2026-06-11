@@ -5,7 +5,7 @@
 **Welle:** welle-03-regelmodule (Gate-Ausbau).
 
 **Bezug:** [ADR-0001](../../adr/0001-implementierungssprache.md)
-(Lint-Profil als Konsequenz), ADR-0006 (entsteht in diesem Slice);
+(Lint-Profil als Konsequenz), `ADR-0006` (entsteht in diesem Slice);
 [`AGENTS.md`](../../../../AGENTS.md) §3.2 (Suppression-Verbot). Kein
 direkter Lastenheft-Bezug — Qualitätsinfrastruktur (Kurs-Modul 13).
 
@@ -17,14 +17,14 @@ direkter Lastenheft-Bezug — Qualitätsinfrastruktur (Kurs-Modul 13).
 
 Das golangci-lint-Profil erreicht u-boot-Parität (5 Default- + 24
 SOLID-nahe Linter inkl. Kalibrierung und Why-kommentierten
-Ausnahmen), beschlossen als ADR-0006; der Code ist ohne
+Ausnahmen), beschlossen als `ADR-0006`; der Code ist ohne
 Inline-Suppressions lint-clean.
 
 ## 2. Definition of Done
 
-- [x] ADR-0006 `Accepted` (min. 3 Alternativen; Abweichung vom
+- [x] `ADR-0006` `Accepted` (min. 3 Alternativen; Abweichung vom
   Vorbild begründet: kein `depguard` — Architektur-Regeln bleiben in
-  der ADR-0005-Fitness-Function `tools/arch-check.sh`).
+  der `ADR-0005`-Fitness-Function `tools/arch-check.sh`).
 - [x] `.golangci.yml` trägt das Profil; alle Ausnahmen zentral mit
   `Why:`-Kommentar (keine `//nolint`-Direktiven im Code).
 - [x] Code lint-clean; Globals außerhalb `cmd/` eliminiert statt
@@ -38,7 +38,7 @@ Inline-Suppressions lint-clean.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `docs/plan/adr/0006-lint-profil-solid.md` | neu | Profil-Entscheidung (Vorbild: u-boot-ADR-0003) |
+| `docs/plan/adr/0006-lint-profil-solid.md` | neu | Profil-Entscheidung (Vorbild: u-boot-`ADR-0003`) |
 | [`.golangci.yml`](../../../../.golangci.yml) | update | Profil + Kalibrierung + Ausnahmen |
 | `internal/hexagon/core` (Globals → Funktionen) | refactor | gochecknoglobals ehrlich erfüllen |
 | `internal/adapter/driven/configyaml` | refactor | Regex lokal; Test als Black-Box-Paket |
@@ -63,7 +63,7 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-**Umsetzung:** Commit `33e2cd5` (ADR-0006, Profil, Refactorings,
+**Umsetzung:** Commit `33e2cd5` (`ADR-0006`, Profil, Refactorings,
 Doku-Nachzug).
 
 - **Was hat funktioniert:** Die u-boot-Kalibrierung passte

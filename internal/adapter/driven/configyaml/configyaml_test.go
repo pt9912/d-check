@@ -38,6 +38,26 @@ external:
 	if len(cfg.Roots) != 2 || len(cfg.IDPatterns) != 1 || cfg.IDPatterns[0].Target != "docs/plan/adr/" {
 		t.Fatalf("cfg = %+v", cfg)
 	}
+	// matrix-Konfiguration wird in den Kern durchgereicht (DC-FA-MTX-001)
+	m := cfg.Matrix
+	if len(m.Classes) != 2 || m.Classes[0].Name != "contract" ||
+		len(m.Rules) != 1 || m.Rules[0].From != "contract" || m.Rules[0].Allow ||
+		len(m.StatusForbidden) != 2 || len(m.ExcludeSections) != 1 {
+		t.Fatalf("Matrix = %+v", m)
+	}
+}
+
+// matrix.status fehlt → Default [superseded, deprecated]
+// (spec/spezifikation.md §2).
+func TestDecode_MatrixStatusDefault(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("matrix:\n  classes:\n    - name: a\n      paths: [x.md]\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := cfg.Matrix.StatusForbidden
+	if len(got) != 2 || got[0] != "superseded" || got[1] != "deprecated" {
+		t.Fatalf("StatusForbidden = %v", got)
+	}
 }
 
 func TestDecode_UnbekannterSchluessel(t *testing.T) {

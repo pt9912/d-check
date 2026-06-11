@@ -55,7 +55,7 @@ dokumentierte Messung.
 | [`Dockerfile`](../../../../Dockerfile) (coverage-Stage), `tools/coverage-gate.sh` | neu | bootstrap-aware Schwelle (u-boot-Muster) |
 | `tools/gate-consistency.sh` | neu | dokumentierte Targets ↔ Makefile |
 | [`Makefile`](../../../../Makefile) | update | Targets + gates-Aggregation |
-| [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | DC-QA-01-Benchmark-Definition (+ Historie) |
+| [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | `DC-QA-01`-Benchmark-Definition (+ Historie) |
 | `tools/bench-fixture.sh` o. ä. | neu | generiertes Fixture-Repo für die Messung |
 
 ## 4. Trigger

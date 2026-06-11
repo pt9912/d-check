@@ -1,5 +1,34 @@
-# d-check prüft sich selbst (Dogfooding, slice-004 / MR-007).
+# d-check prüft sich selbst (Dogfooding, slice-004 / MR-007;
+# Selbstkonfiguration ids+matrix: slice-007).
 # "." = gesamte Repo-Wurzel; SKIP_DIRS (.git, vendor, …) gelten immer.
 scan:
   roots: ["."]
-modules: [links, anchors]
+modules: [links, anchors, ids, matrix]
+
+# Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
+# müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.
+ids:
+  patterns:
+    - regex: 'ADR-\d{4}'
+      target: docs/plan/adr/
+    - regex: 'MR-\d{3}'
+      target: harness/conventions.md
+    - regex: 'DC-(FA-[A-Z]+|QA)-\d+'
+      target: spec/lastenheft.md
+
+# Referenzmatrix (DC-FA-MTX-001): maschinelle Kodierung von MR-006 —
+# Spec-Straten verweisen nie abwärts auf ADRs oder Planning-Artefakte.
+matrix:
+  classes:
+    - name: spec-straten
+      paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+    - name: adr
+      paths: ["docs/plan/adr/[0-9]*.md"]
+    - name: slice
+      paths: ["docs/plan/planning/**/slice-*.md"]
+  rules:
+    - {from: spec-straten, to: adr, allow: false}
+    - {from: spec-straten, to: slice, allow: false}
+  status:
+    forbidden: [superseded, deprecated]
+  exclude-sections: [Historie, Geschichte]

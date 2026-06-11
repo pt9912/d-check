@@ -14,12 +14,13 @@ func validModules() []string {
 }
 
 // isImplemented: in diesem Stand lauffähige Module.
-// `matrix`/`external` folgen mit der Regelmodul-Welle; bis
-// dahin werden aktivierte, aber nicht implementierte Module mit
-// stderr-Hinweis übersprungen.
+// `external` folgt mit slice-008; bis dahin werden aktivierte, aber
+// nicht implementierte Module mit stderr-Hinweis übersprungen (der
+// Mechanismus entfällt danach als toter Code — Closure-Notiz
+// slice-006).
 func isImplemented(module string) bool {
 	switch module {
-	case "links", "anchors", "ids":
+	case "links", "anchors", "ids", "matrix":
 		return true
 	}
 	return false
@@ -40,12 +41,36 @@ type Config struct {
 	Modules []string
 	// IDPatterns: bereits kompilierte Kennungs-Muster (Modul ids).
 	IDPatterns []IDPattern
+	// Matrix: Dokumentklassen und Referenzregeln (Modul matrix).
+	Matrix MatrixConfig
 }
 
 // IDPattern ist ein deklariertes Kennungs-Muster (DC-FA-ID-001).
 type IDPattern struct {
 	Regex  *regexp.Regexp
 	Target string
+}
+
+// MatrixClass ist eine über Pfad-Globs deklarierte Dokumentklasse
+// (DC-FA-MTX-001; Deklarationsreihenfolge = Präzedenz).
+type MatrixClass struct {
+	Name  string
+	Paths []string
+}
+
+// MatrixRule deklariert, ob Referenzen von From nach To erlaubt sind.
+type MatrixRule struct {
+	From, To string
+	Allow    bool
+}
+
+// MatrixConfig ist die validierte matrix-Konfiguration
+// (DC-FA-MTX-001; Defaults gemäß spec/spezifikation.md §2).
+type MatrixConfig struct {
+	Classes         []MatrixClass
+	Rules           []MatrixRule
+	StatusForbidden []string
+	ExcludeSections []string
 }
 
 // EffectiveModules wendet die Modul-Auflösung an

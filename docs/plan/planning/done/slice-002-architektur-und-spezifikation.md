@@ -65,7 +65,7 @@ Precedence-/Guides-Umstellung in `AGENTS.md` + `harness/README.md`).
   mechanisch übersetzen).
 - **Anders als geplant:** `AGENTS.md` §3.4 wurde von „sprach- und
   meilensteinfrei" auf „meilensteinfrei" umbenannt — die Architektur
-  referenziert sprachkonkrete Modul-Pfade (per ADR-0001/0004 fixiert);
+  referenziert sprachkonkrete Modul-Pfade (per `ADR-0001`/0004 fixiert);
   das alte Wording wäre eine Harness-Lüge gewesen. Setext-Headings
   sind in der Slug-Spezifikation bewusst als nicht unterstützt
   deklariert (Quell-Tools nutzten nur ATX; fortschreibbar).

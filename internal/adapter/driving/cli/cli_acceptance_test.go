@@ -324,6 +324,45 @@ func TestCONF001_IDTargetVerlaesstWurzel(t *testing.T) {
 	}
 }
 
+// DC-FA-MTX-001: Referenzmatrix — Happy (Slice → aktives ADR),
+// Boundary (superseded ADR → matrix-inactive), Negative
+// (Lastenheft → ADR → matrix-forbidden).
+func TestMTX001(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, ".d-check.yml", `modules: [matrix]
+matrix:
+  classes:
+    - name: contract
+      paths: [spec/lastenheft.md]
+    - name: adr
+      paths: ["docs/plan/adr/[0-9]*.md"]
+    - name: slice
+      paths: ["docs/plan/planning/**/slice-*.md"]
+  rules:
+    - {from: contract, to: adr, allow: false}
+`)
+	write(t, root, "docs/plan/adr/0001-x.md", "# X\n\n**Status:** Accepted\n")
+	write(t, root, "docs/plan/adr/0002-y.md", "# Y\n\n**Status:** Superseded by ADR-0042\n")
+	write(t, root, "docs/plan/planning/done/slice-001-a.md", "[ok](../../adr/0001-x.md)\n")
+	write(t, root, "spec/lastenheft.md", "# LH\n")
+	code, _, stderr := run(t, root)
+	if code != 0 {
+		t.Fatalf("Happy: Exit = %d (stderr: %s)", code, stderr)
+	}
+
+	write(t, root, "docs/plan/planning/done/slice-001-a.md", "[inaktiv](../../adr/0002-y.md)\n")
+	code, stdout, _ := run(t, root)
+	if code != 1 || !strings.Contains(stdout, "matrix-inactive") {
+		t.Fatalf("Boundary: Exit = %d, stdout = %q", code, stdout)
+	}
+
+	write(t, root, "spec/lastenheft.md", "# LH\n[abwärts](../docs/plan/adr/0001-x.md)\n")
+	code, stdout, _ = run(t, root)
+	if code != 1 || !strings.Contains(stdout, "matrix-forbidden") {
+		t.Fatalf("Negative: Exit = %d, stdout = %q", code, stdout)
+	}
+}
+
 // DC-FA-CONF-001 Negative: ungültige Config → Exit 2 mit Zeilenangabe,
 // keine Prüfung mit stillschweigenden Defaults.
 func TestCONF001_UngueltigeConfig(t *testing.T) {

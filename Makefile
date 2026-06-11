@@ -67,9 +67,10 @@ run: build ## Smoke-Test: d-check prüft das eigene Repo (read-only).
 
 # ---- docs gates --------------------------------------------------------------
 
-# Dogfooding (MR-007): d-check prüft die eigene Doku — Module links +
-# anchors über die gesamte Repo-Wurzel (.d-check.yml, scan.roots ".").
-doc-check: build ## Doku-Links + Anker via d-check selbst (Dogfooding, DC-FA-LINK/ANCH).
+# Dogfooding (MR-007, Selbstkonfiguration slice-007): d-check prüft die
+# eigene Doku — Module links + anchors + ids + matrix über die gesamte
+# Repo-Wurzel (.d-check.yml, scan.roots ".").
+doc-check: build ## Doku-Links, Anker, ID-Linkpflicht + Referenzmatrix via d-check selbst (Dogfooding, DC-FA-LINK/ANCH/ID/MTX).
 	docker run --rm -v "$(CURDIR)":/repo:ro $(IMAGE):latest
 
 # ---- harness -----------------------------------------------------------------

@@ -25,7 +25,7 @@ als automatisierter Test.
 - [ ] Akzeptanzkriterien von `DC-FA-EXT-001` als Tests: Status < 400
   ok; ≥ 400 → `external-status`; Timeout → `external-timeout`;
   > 5 Redirects → `external-redirects` (Spezifikation
-  §DC-FA-EXT-001.a: HEAD mit GET-Fallback bei 405/501, Dedupe pro
+  §`DC-FA-EXT-001.a`: HEAD mit GET-Fallback bei 405/501, Dedupe pro
   URL, begrenzte Parallelität, Timeout konfigurierbar 1–300 s).
 - [ ] Opt-in-Garantie getestet: ohne aktiviertes Modul keinerlei
   Netzwerkzugriff; `external` ist nie Teil der Defaults.
@@ -60,7 +60,7 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
 ## 6. Risiken und offene Punkte
 
 - Netz-Nichtdeterminismus: `external` ist von der
-  Byte-Identitäts-Garantie ausgenommen (Spezifikation §DC-QA-02.a) —
+  Byte-Identitäts-Garantie ausgenommen (Spezifikation §`DC-QA-02.a`) —
   Tests dürfen nur gegen lokale `httptest`-Server laufen, nie gegen
   echte URLs.
 - Parallelität (Default 4) darf die Befund-Sortierung nicht
