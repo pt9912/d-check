@@ -187,7 +187,10 @@ Vorverarbeitung entfernt Inline-Code gerade. **Schritte:**
    im Heading würde zudem dessen Anker-Slug verändern).
 2. Pro Zeile alle Inline-Code-Spans extrahieren (CommonMark,
    Multi-Backtick-fähig — dieselbe Span-Erkennung wie das
-   positionserhaltende Stripping der übrigen Module).
+   positionserhaltende Stripping der übrigen Module). Spans, die der
+   Linktext eines Markdown-Links sind (`` [`…`](ziel) ``), sind
+   ausgenommen — deren Ziel prüft das Modul `links`, der Text ist
+   Beschriftung.
 3. Span-Wert normalisieren (iterativ bis stabil): Whitespace trimmen,
    ein Zeilen-Suffix `:NNN` abtrennen (Datei:Zeile-Konvention),
    umschließende einfache/doppelte Anführungszeichen und schließende

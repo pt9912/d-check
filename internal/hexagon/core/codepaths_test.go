@@ -15,7 +15,8 @@ func TestCodepathsModul(t *testing.T) {
 			"Kaputt: `../fehlt.md` und Escape: `../../etc/passwd`.\n" +
 			"```\n`../auch-weg.md` im Fence\n```\n" +
 			"Kein Pfad: `docs/{a,b}.md`, `a -> b`, `irgendwas`, `# anker`, `http://x`.\n" +
-			"## Heading mit `../weg.md` ist Titel, keine Referenz\n",
+			"## Heading mit `../weg.md` ist Titel, keine Referenz\n" +
+			"Linktext-Span: [`../auch-nicht.md`](b.md) prüft das Modul links\n",
 		"docs/b.md": "x",
 		"README.md": "x",
 	})

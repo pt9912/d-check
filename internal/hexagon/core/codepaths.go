@@ -38,7 +38,13 @@ func checkCodepaths(fsys driven.Filesystem, file string, content []byte, cfg Cod
 		if _, _, ok := parseATXHeading(pl.raw); ok {
 			continue
 		}
-		forEachInlineCodeSpan(pl.raw, func(_, _, valStart, valEnd int) {
+		forEachInlineCodeSpan(pl.raw, func(start, end, valStart, valEnd int) {
+			// Span als Linktext ([`…`](ziel)): das Ziel prüft das
+			// Modul links — der Text ist Beschriftung, kein Pfad-
+			// Anspruch (§DC-FA-CODE-001.a Schritt 2).
+			if start > 0 && pl.raw[start-1] == '[' && end < len(pl.raw) && pl.raw[end] == ']' {
+				return
+			}
 			value := normalizeCodepath(pl.raw[valStart:valEnd])
 			rootRel, ok := classifyCodepath(value, cfg.Roots)
 			if !ok {
