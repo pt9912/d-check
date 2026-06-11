@@ -14,7 +14,7 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 **Start:** 2026-06-10
 **Slices:** [slice-005](../done/slice-005-lint-profil-solid.md)
 (done, Lint-Profil),
-[slice-006](../open/slice-006-ids-modul.md) (`ids`),
+[slice-006](slice-006-ids-modul.md) (in-progress, `ids`),
 [slice-007](../open/slice-007-matrix-modul-selbstkonfiguration.md)
 (`matrix` + Selbstkonfiguration, nach 006),
 [slice-008](../open/slice-008-external-modul.md) (`external` +
