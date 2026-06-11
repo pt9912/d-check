@@ -1,6 +1,6 @@
 # Slice slice-007: Modul `matrix` + Dogfooding-Selbstkonfiguration
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-03-regelmodule.
 
@@ -24,22 +24,22 @@ Selbstkonfiguration — die `MR-006`-Referenzrichtungs-Regel
 
 ## 2. Definition of Done
 
-- [ ] Akzeptanzkriterien von `DC-FA-MTX-001` als Tests: Slice →
+- [x] Akzeptanzkriterien von `DC-FA-MTX-001` als Tests: Slice →
   aktives ADR ok; Referenz auf `Superseded …` → `matrix-inactive`;
   Lastenheft → ADR → `matrix-forbidden` mit beiden Klassen.
-- [ ] Status-Extraktion in fester Reihenfolge (`**Status:**` vor
+- [x] Status-Extraktion in fester Reihenfolge (`**Status:**` vor
   `Status`-Heading), Präfix-Match case-insensitiv; ohne Status aktiv
   (Spezifikation §`DC-FA-MTX-001.a`).
-- [ ] Klassen-Glob-Präzedenz (Deklarationsreihenfolge) und
+- [x] Klassen-Glob-Präzedenz (Deklarationsreihenfolge) und
   `exclude-sections` (getrimmt, ohne Auszeichnung, case-sensitiv)
   getestet.
-- [ ] Selbstkonfiguration aktiv: `.d-check.yml` deklariert
+- [x] Selbstkonfiguration aktiv: `.d-check.yml` deklariert
   Dokumentklassen (Spec-Straten, ADR, Slice), Regeln
   `{spec-straten → adr/slice: verboten}`, `status.forbidden`,
   `exclude-sections` (Historie/Geschichte) sowie `ids`-Muster für
   `DC-*`, `MR-*`, `ADR-*`; `make doc-check` läuft mit
   `links, anchors, ids, matrix` und ist auf dem eigenen Repo grün.
-- [ ] `matrix` in `isImplemented`; `make gates` grün;
+- [x] `matrix` in `isImplemented`; `make gates` grün;
   [`CHANGELOG.md`](../../../../CHANGELOG.md); Closure-Notiz.
 
 ## 3. Plan (vor Code)
@@ -81,7 +81,38 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-<!-- Erst nach Abschluss füllen. -->
+**Umsetzung:** Commit `18a4976` (Modul `matrix`, Config-Durchreichung,
+Selbstkonfiguration, ids-Fortschreibung, Doku-Bereinigung).
+
+- **Was hat funktioniert:** Die normierte Status-Extraktion und die
+  Sektions-Ausnahmen ließen sich direkt aus der Spezifikation in
+  Tabellen-Tests übersetzen; der gemeinsame Heading-Scanner
+  (`extractHeadingLines`) trägt jetzt `anchors` und `matrix` ohne
+  Dopplung. Die `MR-006`-Referenzrichtung ist maschinell kodiert —
+  der Kern-Vertrag dieses Slices.
+- **Anders als geplant:** Der erste Selbstlauf lieferte 111 Befunde
+  und legte eine konzeptuelle `ids`-Lücke offen: Definitions-Orte
+  (Lastenheft-Headings, MR-Einträge, ADR-Korpus) und Heading-Zeilen
+  wurden geflaggt, obwohl eine Definition nicht auf sich selbst
+  verlinken kann. Statt der im Risiko-Block erwogenen Datei-Listen-
+  Ausnahme wurde die Spezifikation prinzipiell fortgeschrieben
+  (Headings und Muster-Target sind kein linkpflichtiger Fließtext) —
+  das löste zugleich die Immutable-ADR-Frage ohne jede Editierung
+  der `Accepted`-Texte. Restliche ~50 Fließtext-Befunde wurden als
+  Form-Fixes bereinigt (lebende Docs: Links; historische
+  Docs/CHANGELOG: Code-Spans, analog `MR-007`).
+- **Steering-Loop-Lerneintrag:** (a) Der Dogfooding-Selbstlauf ist
+  der schärfste Spec-Reviewer — die Definitions-Ort-Lücke war in
+  Spec-Review und slice-006-Implementierung unsichtbar und wurde
+  erst durch die Anwendung auf den eigenen Bestand messbar (111 → 0
+  Befunde). Lehre für slice-008: das Netzlos-Gate ebenfalls zuerst
+  gegen das eigene Repo kalibrieren. (b) `gocognit` schlug beim
+  Erweitern von `checkIDs` an — Komplexitäts-Split statt Ausnahme
+  bestätigt die slice-005-Politik.
+- **Folge-Slices:** keine neuen; slice-008 (`external`) und slice-009
+  (Gates) stehen wie geplant; nach slice-008 den
+  Interim-Mechanismus `isImplemented`/`SkippedModules` entfernen
+  (Hinweis aus slice-006-Closure bleibt gültig).
 
 ## 8. Sub-Area-Modus-Begründung
 
