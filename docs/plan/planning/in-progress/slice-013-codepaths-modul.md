@@ -1,6 +1,6 @@
 # Slice slice-013: Modul `codepaths` — Pfade in Inline-Code
 
-**Status:** open.
+**Status:** in-progress.
 
 **Welle:** welle-04-distribution-und-migration (Einschub vor
 slice-012 — Nummerierung ist chronologisch, Reihenfolge per Trigger).

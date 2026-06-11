@@ -21,8 +21,8 @@ lokal beweisbar),
 (done, GHCR-Release-Pipeline mit Semver-Tag + Digest-Pin,
 [ADR-0002](../../adr/0002-distribution-ghcr-image.md), löst `MR-009`
 — nach 010),
-[slice-013](../open/slice-013-codepaths-modul.md)
-(open, Modul `codepaths` —
+[slice-013](slice-013-codepaths-modul.md)
+(in-progress, Modul `codepaths` —
 [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
 Change Request 0.3.0; Einschub vor 012),
 [slice-012](../open/slice-012-pilot-migrationen.md)
