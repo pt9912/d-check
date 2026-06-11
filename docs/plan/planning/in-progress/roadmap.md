@@ -19,11 +19,10 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 (done, `matrix` + Selbstkonfiguration),
 [slice-008](../done/slice-008-external-modul.md) (done, `external` +
 QA-03-Netzlos-Gate),
-[slice-009](../open/slice-009-coverage-und-meta-gates.md)
-(coverage-gate 85→90, gate-consistency,
+[slice-009](slice-009-coverage-und-meta-gates.md)
+(in-progress, coverage-gate 85→90, gate-consistency,
 [`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)-Benchmark
-— nach
-006–008, schließt die Welle).
+— schließt die Welle).
 
 **Closure-Trigger:** Module `ids`, `matrix`, `external` implementiert
 und getestet; matrix-Selbstkonfiguration in der eigenen `.d-check.yml`
