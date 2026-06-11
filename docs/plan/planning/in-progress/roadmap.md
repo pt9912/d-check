@@ -10,30 +10,27 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Welle-ID:** welle-03-regelmodule
-**Start:** 2026-06-10
-**Slices:** [slice-005](../done/slice-005-lint-profil-solid.md)
-(done, Lint-Profil),
-[slice-006](../done/slice-006-ids-modul.md) (done, `ids`),
-[slice-007](../done/slice-007-matrix-modul-selbstkonfiguration.md)
-(done, `matrix` + Selbstkonfiguration),
-[slice-008](../done/slice-008-external-modul.md) (done, `external` +
-QA-03-Netzlos-Gate),
-[slice-009](slice-009-coverage-und-meta-gates.md)
-(in-progress, coverage-gate 85→90, gate-consistency,
-[`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)-Benchmark
-— schließt die Welle).
+**Welle-ID:** welle-04-distribution-und-migration
+**Start:** 2026-06-11 (Trigger erfüllt: welle-03 done)
+**Slices:** werden beim Wellen-Start geschnitten — GHCR-Release-Pipeline
+mit Digest-Pins ([`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image),
+[ADR-0002](../../adr/0002-distribution-ghcr-image.md)),
+Image-Integrationstests (DIST-Akzeptanzkriterien automatisiert),
+Reproduzierbarkeits-Belege (`versions`, `fullbuild` mit Image-Hash),
+Pilot-Migrationen in 3 Repos
+([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools):
+Shell-, Python-/u-boot-, JS-Vertreter).
 
-**Closure-Trigger:** Module `ids`, `matrix`, `external` implementiert
-und getestet; matrix-Selbstkonfiguration in der eigenen `.d-check.yml`
-aktiv; `coverage-gate` und `gate-consistency` existieren und sind in
-`make gates` aggregiert.
+**Closure-Trigger:** Image auf GHCR veröffentlicht (Semver-Tag,
+Digest-Pin); DIST-Akzeptanzkriterien als Integrationstests grün;
+`versions`/`fullbuild`/`ci` existieren und sind dokumentiert;
+mindestens drei Pilot-Migrationen mit Vergleichslauf dokumentiert.
 
 ## Nächste Wellen
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| welle-04-distribution-und-migration | welle-03 done | GHCR-Release-Pipeline mit Digest-Pins ([`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image), [ADR-0002](../../adr/0002-distribution-ghcr-image.md)), Image-Integrationstests (DIST-Akzeptanzkriterien automatisiert), Reproduzierbarkeits-Belege (`versions`, `fullbuild` mit Image-Hash), Pilot-Migrationen in 3 Repos ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools): Shell-, Python-/u-boot-, JS-Vertreter) | M |
+| — (nach welle-04 per Roadmap-Fortschreibung) | | | |
 
 ## Meilensteine
 
@@ -63,6 +60,7 @@ flowchart LR
 |---|---|---|
 | welle-01-fundament | 2026-06-10 | [slice-001 §7](../done/slice-001-adr-fundament.md#7-closure-notiz-nach-done), [slice-002 §7](../done/slice-002-architektur-und-spezifikation.md#7-closure-notiz-nach-done) |
 | welle-02-mvp | 2026-06-10 | [slice-003 §7](../done/slice-003-cli-kern-und-links-modul.md#7-closure-notiz-nach-done), [slice-004 §7](../done/slice-004-anchors-modul-und-dogfooding.md#7-closure-notiz-nach-done) |
+| welle-03-regelmodule | 2026-06-11 | [slice-005 §7](../done/slice-005-lint-profil-solid.md#7-closure-notiz-nach-done), [slice-006 §7](../done/slice-006-ids-modul.md#7-closure-notiz-nach-done), [slice-007 §7](../done/slice-007-matrix-modul-selbstkonfiguration.md#7-closure-notiz-nach-done), [slice-008 §7](../done/slice-008-external-modul.md#7-closure-notiz-nach-done), [slice-009 §7](../done/slice-009-coverage-und-meta-gates.md#7-closure-notiz-nach-done) |
 
 ## Historische Trigger-Verschiebungen
 
