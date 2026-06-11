@@ -17,8 +17,8 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 (done, Image-Integrationstests + `versions`/`fullbuild`/`ci` —
 [`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)-AKs
 lokal beweisbar),
-[slice-011](slice-011-ghcr-release-pipeline.md)
-(in-progress, GHCR-Release-Pipeline mit Semver-Tag + Digest-Pin,
+[slice-011](../done/slice-011-ghcr-release-pipeline.md)
+(done, GHCR-Release-Pipeline mit Semver-Tag + Digest-Pin,
 [ADR-0002](../../adr/0002-distribution-ghcr-image.md), löst `MR-009`
 — nach 010),
 [slice-012](../open/slice-012-pilot-migrationen.md)
