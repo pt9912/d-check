@@ -171,6 +171,29 @@ die kanonische Quelle (Source Precedence, siehe
   der Modus-Tabelle ist damit graduiert (gelöscht).
 - **Auflösungs-Trigger:** permanent (Dogfooding ist der Zielzustand).
 
+## Anforderungs-Anlege-Prozess
+
+Neue oder geänderte `DC-*`-Anforderungen entstehen **nur** in
+[`spec/lastenheft.md`](../spec/lastenheft.md) (vertraglich,
+Change-Request-Charakter — Baseline-Regel der Spec-Stratifizierung;
+Rang-Struktur dieses Repos: [`MR-001`](#mr-001--source-precedence-mit-eigener-spezifikations-schicht)).
+Pflicht-Bausteine pro Anforderung:
+
+- **ID gemäß Schema-Konvention** im Lastenheft §3
+  (`DC-FA-<BEREICH>-<NNN>`, siehe
+  [`MR-002`](#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung));
+  ein neues Bereichskürzel wird dort in der Schema-Konvention
+  deklariert. Nichtfunktionale Anforderungen: `DC-QA-<NN>`.
+- **Drei Akzeptanzkriterien** (Happy/Boundary/Negative im
+  Given/When/Then-Stil) plus explizite **Out-of-Scope**-Liste.
+- **Versions-Bump + Historie-Zeile** im Lastenheft (§7).
+- **Schärfungs-Richtung:** ADRs dürfen die Spezifikation schärfen,
+  nie das Lastenheft (siehe `MR-001`-Begründung); wer das Lastenheft
+  ändern will, ändert es direkt — als Change Request, nicht per ADR.
+- **Beleg-Pflicht:** Test, Gate, Demo oder ADR folgt mit dem
+  umsetzenden Slice
+  ([`harness/README.md` §Traceability rules](README.md#traceability-rules)).
+
 ## Zusatzklassen-Deklaration für Sensors-Bindung
 
 Zusätzlich zu den vier kanonischen Klassen (ADR, Carveout, Schwelle,
