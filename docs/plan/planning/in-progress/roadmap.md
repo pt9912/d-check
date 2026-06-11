@@ -15,8 +15,8 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 **Slices:** [slice-005](../done/slice-005-lint-profil-solid.md)
 (done, Lint-Profil),
 [slice-006](../done/slice-006-ids-modul.md) (done, `ids`),
-[slice-007](../open/slice-007-matrix-modul-selbstkonfiguration.md)
-(`matrix` + Selbstkonfiguration, nach 006),
+[slice-007](slice-007-matrix-modul-selbstkonfiguration.md)
+(in-progress, `matrix` + Selbstkonfiguration),
 [slice-008](../open/slice-008-external-modul.md) (`external` +
 QA-03-Netzlos-Gate),
 [slice-009](../open/slice-009-coverage-und-meta-gates.md)
