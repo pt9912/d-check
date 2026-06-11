@@ -21,10 +21,14 @@ lokal beweisbar),
 (done, GHCR-Release-Pipeline mit Semver-Tag + Digest-Pin,
 [ADR-0002](../../adr/0002-distribution-ghcr-image.md), löst `MR-009`
 — nach 010),
+[slice-013](../open/slice-013-codepaths-modul.md)
+(open, Modul `codepaths` —
+[`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
+Change Request 0.3.0; Einschub vor 012),
 [slice-012](../open/slice-012-pilot-migrationen.md)
 (open, Pilot-Migrationen in 3 Repos
 ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools):
-Shell-, Python-/u-boot-, JS-Vertreter) — nach 011, schließt die
+Shell-, Python-/u-boot-, JS-Vertreter) — nach 011 + 013, schließt die
 Welle).
 
 **Closure-Trigger:** Image auf GHCR veröffentlicht (Semver-Tag,
@@ -72,4 +76,4 @@ flowchart LR
 
 | Datum | Was wurde geändert? | Warum? |
 |---|---|---|
-| — | | |
+| 2026-06-11 | slice-012-Trigger: „slice-011 done" → „slice-011 **und** slice-013 done" | Der [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Vergleichslauf gegen das erweiterte `docs-check.js` zeigte die Inline-Code-Pfad-Prüfung als Konsolidierungs-Lücke; Change Request [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) (Lastenheft 0.3.0) als slice-013 eingeschoben |

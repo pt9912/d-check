@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.2.3
+**Version:** 0.3.0
 
 **Status:** Draft
 
@@ -41,8 +41,8 @@ statt per Code-Kopie.
 > an Bereichskürzel: `DC-FA-<BEREICH>-<NNN>`. Bereiche: `CLI`
 > (Aufruf/Ausgabe), `SCAN` (Datei-Auswahl), `LINK` (Link-Modul), `ANCH`
 > (Anker-Modul), `ID` (ID-Linkpflicht-Modul), `MTX`
-> (Referenzmatrix-Modul), `EXT` (externe Links), `CONF`
-> (Konfiguration), `DIST` (Distribution).
+> (Referenzmatrix-Modul), `EXT` (externe Links), `CODE`
+> (Inline-Code-Pfade), `CONF` (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -64,8 +64,8 @@ Repository-Wurzel für alle Pfadauflösungen.
 ### DC-FA-CLI-002 — Regelmodul-Auswahl
 
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
-gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`. Ohne
-Konfiguration sind `links` und `anchors` aktiv. Module werden über
+gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
+`codepaths`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -278,6 +278,34 @@ Netzwerkzugriffe erfolgen ausschließlich opt-in.
 
 ---
 
+### DC-FA-CODE-001 — Explizite Pfade in Inline-Code (Modul `codepaths`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `codepaths` werden
+Inline-Code-Spans geprüft, deren Inhalt ein expliziter relativer Pfad
+ist: beginnend mit `./` oder `../` (immer) oder mit einem der
+konfigurierten Wurzel-Präfixe (z. B. `docs/`, `tools/` — relativ zur
+Repository-Wurzel). Das Ziel muss nach Pfadauflösung existieren und
+innerhalb der Repository-Wurzel liegen. Werte mit Whitespace,
+Platzhalter-/Glob-Zeichen oder Ellipsen gelten nicht als Pfad
+(konservative Erkennung); Vorkommen in Fenced-Code-Blöcken werden
+nicht geprüft. Ein HTML-Kommentar `d-check:ignore` auf derselben
+Zeile (Begründung in Klammern empfohlen) nimmt die Zeile von **genau
+dieser** Prüfung aus — bewusst nicht existierende Beispiel-Pfade
+(etwa Angriffs-Beispiele in Lehrtexten) sind kein Fehler, sondern
+eine zu dokumentierende Absicht. Für alle anderen Module existiert
+kein Opt-out-Marker: deterministische Befunde werden behoben, nicht
+unterdrückt.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given ein Inline-Code-Span `` `docs/plan/adr/` `` auf ein existierendes Verzeichnis und das konfigurierte Präfix `docs/`, when das Modul `codepaths` läuft, then kein Befund.
+- **Boundary:** Given ein Inline-Code-Span mit nicht existierendem Pfad und ein Kommentar `d-check:ignore` auf derselben Zeile, when das Modul läuft, then kein Befund — und der Marker hat keinerlei Wirkung auf Befunde anderer Module derselben Zeile.
+- **Negative:** Given ein Inline-Code-Span `` `../fehlt.md` ``, dessen Ziel nicht existiert (oder die Repository-Wurzel verlässt), when das Modul läuft, then ein Befund mit Datei, Zeile, Ziel und Grund, Exit-Code 1.
+
+**Out-of-Scope:** Pfad-Erkennung im Fließtext ohne Inline-Code; Pfade in Fenced-Code-Blöcken; Opt-out-Marker für andere Module; semantische Prüfung, ob der referenzierte Pfad inhaltlich passt.
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -356,7 +384,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -375,3 +403,4 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | 0.2.1 | 2026-06-10 | Redaktionell: Beispiel-Kennungen in DC-FA-ID-001/DC-FA-MTX-001/Glossar auf fiktive Nummern (`ADR-0042`, `ADR-0099`) umgestellt — Kollision mit real entstandenen/zukünftigen eigenen ADRs vermeiden; keine inhaltliche Änderung | — |
 | 0.2.2 | 2026-06-10 | Redaktionell: absolute Workspace-Pfade entfernt („Schwester-Repositories des Entwicklungs-Workspace" statt konkreter Pfade); keine inhaltliche Änderung | — |
 | 0.2.3 | 2026-06-11 | Redaktionell: „(folgt)" in der `DC-QA-01`-Messmethode entfernt — die Benchmark-Definition existiert in der Spezifikation; keine inhaltliche Änderung | — |
+| 0.3.0 | 2026-06-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CODE-001` — Modul `codepaths` prüft explizite Pfade in Inline-Code (opt-in, konservative Erkennung, Zeilen-Opt-out `d-check:ignore` nur für dieses Modul). Anlass: `DC-QA-04`-Vergleichslauf gegen die JS-Familie (`docs-check.js`) zeigte die Prüfklasse als Konsolidierungs-Lücke. Bereich `CODE` in der Schema-Konvention deklariert; Modul-Listen in `DC-FA-CLI-002` und Glossar ergänzt | slice-013 |

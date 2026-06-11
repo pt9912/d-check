@@ -61,8 +61,16 @@ Vergleichsläufe sind dokumentiert und belegen `DC-QA-04`.
 
 ## 4. Trigger
 
-slice-011 done — die Pilot-Repos konsumieren das **veröffentlichte**
-Image per Digest-Pin, nicht einen lokalen Build.
+slice-011 done (erfüllt 2026-06-11) **und** slice-013 done — die
+Pilot-Repos konsumieren das **veröffentlichte** Image per Digest-Pin,
+und die JS-Familie braucht das Modul `codepaths`
+([`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
+Change Request 0.3.0): Der `DC-QA-04`-Vergleichslauf gegen das
+erweiterte `docs-check.js` (2026-06-11) zeigte die
+Inline-Code-Pfad-Prüfung als Lücke; die drei `docs-check:ignore`-
+Marker des Kurs-Repos werden bei der Migration zu `d-check:ignore`.
+Der kurs-spezifische Modul-Nummern-Sensor bleibt als Rest-Sensor im
+Kurs-Repo (semantische Prüfung, out-of-scope laut Lastenheft).
 
 ## 5. Closure-Trigger
 

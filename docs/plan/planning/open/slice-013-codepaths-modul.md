@@ -1,0 +1,91 @@
+# Slice slice-013: Modul `codepaths` — Pfade in Inline-Code
+
+**Status:** open.
+
+**Welle:** welle-04-distribution-und-migration (Einschub vor
+slice-012 — Nummerierung ist chronologisch, Reihenfolge per Trigger).
+
+**Bezug:** [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
+(Change Request 0.3.0),
+[`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)
+(Modul-Auswahl),
+[`DC-FA-CONF-001`](../../../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)
+(Konfigurations-Vollvalidierung),
+[ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md) (Layout).
+
+**Autor:** pt9912. **Datum:** 2026-06-11.
+
+---
+
+## 1. Ziel
+
+Das Modul `codepaths` ist normiert spezifiziert und implementiert —
+die letzte generische Konsolidierungs-Lücke gegenüber der JS-Familie
+(`docs-check.js`) ist geschlossen; slice-012 kann den Kurs danach
+vollständig migrieren.
+
+## 2. Definition of Done
+
+- [ ] Spezifikation fortgeschrieben (Doc führt, Code folgt):
+  §`DC-FA-CODE-001.a` (Erkennungs-Algorithmus: Inline-Code-Spans,
+  `./`/`../` immer + konfigurierte Präfixe, konservative Ausschlüsse,
+  Marker-Semantik), `.d-check.yml`-Schema um `codepaths.roots`
+  (string[], Constraint-Tabelle), §4 Grund-Codes (z. B.
+  `codepath-missing`, Wiederverwendung von `repo-escape`), Historie.
+- [ ] Akzeptanzkriterien von `DC-FA-CODE-001` als Tests
+  (Happy/Boundary/Negative); Boundary belegt zusätzlich, dass der
+  Marker **nur** dieses Modul stilllegt (Link-Befund derselben Zeile
+  bleibt bestehen).
+- [ ] Kern-Modul `internal/hexagon/core/codepaths.go` (nutzt die
+  bestehende Inline-Code-Erkennung aus `markdown.go` — Spans werden
+  hierfür *gelesen* statt gestrippt); Config-Durchreichung
+  (`configyaml`), Modul in `validModules`.
+- [ ] Dogfooding: Selbstkonfiguration (`.d-check.yml`) aktiviert
+  `codepaths` mit passenden Präfixen; eigene Doku ist befundfrei
+  (Form-Fixes, wo nötig). Die QA-03-Modullisten-Prüfung in
+  `tools/gate-consistency.sh` zieht das neue Modul in ihre
+  „alle außer `external`"-Zusage ein.
+- [ ] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
+  Closure-Notiz mit Steering-Loop-Lerneintrag.
+
+## 3. Plan (vor Code)
+
+| Datei / Komponente | Änderungs-Art | Begründung |
+|---|---|---|
+| [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | §`DC-FA-CODE-001.a`, Schema, Grund-Codes (vor dem Code) |
+| `internal/hexagon/core/codepaths.go` (+ Test) | neu | Kern-Modul gegen In-Memory-FS |
+| [`internal/hexagon/core/markdown.go`](../../../../internal/hexagon/core/markdown.go) | update | Inline-Code-Spans als Werte zugänglich machen (heute nur positionserhaltendes Stripping) |
+| [`internal/adapter/driven/configyaml/configyaml.go`](../../../../internal/adapter/driven/configyaml/configyaml.go) | update | `codepaths.roots` strikt validieren |
+| [`.d-check.yml`](../../../../.d-check.yml), [`tools/gate-consistency.sh`](../../../../tools/gate-consistency.sh) | update | Dogfooding + QA-03-Modulliste |
+
+## 4. Trigger
+
+Sofort — der Change Request (Lastenheft 0.3.0) ist vom Auftraggeber
+freigegeben (2026-06-11).
+
+## 5. Closure-Trigger
+
+DoD vollständig + Commit(s) auf `main` + Closure-Notiz; entriegelt
+gemeinsam mit slice-011 den slice-012.
+
+## 6. Risiken und offene Punkte
+
+- Falsch-Positiv-Gefahr der Pfad-Heuristik (Prosa-Backticks, die wie
+  Pfade aussehen): konservative Erkennung übernehmen
+  (Whitespace/Glob-Zeichen/Ellipsen ausschließen — erprobtes
+  docs-check-Verhalten) und am eigenen Repo plus Kurs-Repo
+  gegentesten, **bevor** der Slice schließt.
+- Der Marker ist ein neuer CLI-Vertrag (`d-check:ignore`) —
+  Begründungs-Klammer empfohlen, nicht erzwungen (Erzwingung wäre
+  Stil-Polizei; das Review-Argument lebt in der Doku).
+- `markdown.go`-Umbau berührt gemeinsame Infrastruktur aller Module —
+  Regressionsschutz über die bestehende Testbasis (95 % Coverage).
+
+## 7. Closure-Notiz (nach `done/`)
+
+<!-- Erst nach Abschluss füllen. -->
+
+## 8. Sub-Area-Modus-Begründung
+
+Alle berührten Sub-Areas GF (spec-first; siehe Kurs Modul 5 §Worked
+Mini-Example).
