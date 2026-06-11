@@ -1,6 +1,6 @@
 # Slice slice-010: Image-Integrationstests + Reproduzierbarkeits-Belege
 
-**Status:** open.
+**Status:** done.
 
 **Welle:** welle-04-distribution-und-migration.
 
@@ -24,7 +24,7 @@ die „Nicht behauptet"-Listen in AGENTS/harness sind danach leer.
 
 ## 2. Definition of Done
 
-- [ ] Image-Integrationstest (`tools/image-test.sh`, Make-Target
+- [x] Image-Integrationstest (`tools/image-test.sh`, Make-Target
   `image-test`): die drei Akzeptanzkriterien von
   [`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)
   automatisiert — (1) Happy: Repo mit kaputtem Link → Befund-Ausgabe
@@ -33,19 +33,19 @@ die „Nicht behauptet"-Listen in AGENTS/harness sind danach leer.
   bleibt gewahrt); (2) Boundary: read-only-Mount (`:ro`) →
   vollständige Prüfung ohne Schreibfehler; (3) Negative: fehlender
   `/repo`-Mount → Exit 2 mit Mount-Hinweis.
-- [ ] `make versions`: gibt alle Pins reproduzierbar aus
+- [x] `make versions`: gibt alle Pins reproduzierbar aus
   (`GO_VERSION`, `GOLANGCI_LINT_VERSION`, Basis-Images, Image-Digest
   des Runtime-Builds) — Grundlage der Reproduzierbarkeits-Bindung.
-- [ ] `make fullbuild`: volle Closure (gates + image-test + bench),
+- [x] `make fullbuild`: volle Closure (gates + image-test + bench),
   schließt mit dem Image-Hash (`sha256:…`) ab; der Hash ist die
   Reproduzierbarkeits-Bindung in der Sensors-Tabelle (Kurs-Modul 14).
-- [ ] `make ci`: CI-äquivalenter Lauf (gates + image-test) — das
+- [x] `make ci`: CI-äquivalenter Lauf (gates + image-test) — das
   Target, das die Release-Pipeline (slice-011) aufruft.
-- [ ] Sensors-Tabelle ([`harness/README.md`](../../../../harness/README.md))
+- [x] Sensors-Tabelle ([`harness/README.md`](../../../../harness/README.md))
   und [`AGENTS.md`](../../../../AGENTS.md) §4 um die neuen Targets
   ergänzt; **„Nicht behauptet"-Listen leer** (`make gate-consistency`
   erzwingt die Konsistenz in beide Richtungen).
-- [ ] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
+- [x] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
   Closure-Notiz mit Steering-Loop-Lerneintrag.
 
 ## 3. Plan (vor Code)
@@ -80,7 +80,31 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-<!-- Erst nach Abschluss füllen. -->
+**Umsetzung:** Commit `c5f8a2a`. **Belege:** `make ci` grün (sechs
+Gates + image-test); `make fullbuild` grün — image-test OK,
+Benchmark-Median 526 ms, Abschluss mit Image-Hash
+`sha256:5a3a6a91…` (Reproduzierbarkeits-Bindung).
+
+- **Was hat funktioniert:** Die drei DIST-Akzeptanzkriterien ließen
+  sich als ein Shell-Skript mit einem Fixture abbilden; der
+  byte-identische Vergleich (stdout **und** stderr) ist dank der
+  relativen Pfade aus `DC-QA-02` trivial erfüllbar gewesen.
+- **Anders als geplant:** Das „native" Binary kommt per `docker cp`
+  aus dem **Runtime-Image** statt aus der compile-Stage (Plan §3
+  hatte eine mögliche Export-Stage vorgesehen) — so vergleicht der
+  Test exakt das Artefakt, das ausgeliefert wird, und das Dockerfile
+  blieb unverändert.
+- **Steering-Loop-Lerneintrag:** `gate-consistency` forderte die vier
+  neuen Targets unmittelbar nach ihrer Entstehung ein (Erstlauf rot,
+  vier Meldungen) — das Meta-Gate aus slice-009 wirkt bereits als
+  Promotion-Trigger-Wächter: ein Target kann nicht mehr entstehen,
+  ohne dokumentiert zu werden. Zweite Beobachtung: eine
+  Gate-Verkettung über `make`-Prerequisites (`ci: gates image-test`)
+  braucht keinerlei neue Logik — die `.NOTPARALLEL`-Disziplin aus
+  [`MR-005`](../../../../harness/conventions.md#mr-005--härtung-ggü-b-cad-inhaltsbasierter-gate-nachweis-sub-shell-prüfung)
+  trägt unverändert.
+- **Folge-Slices:** keine neuen; slice-011 (GHCR-Release) ist durch
+  `make ci` entriegelt (Trigger erfüllt).
 
 ## 8. Sub-Area-Modus-Begründung
 
