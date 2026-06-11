@@ -6,12 +6,16 @@ Diese Datei deklariert die *repo-lokalen* Strukturregeln dieses Repos
 gegenüber der adoptierten Harnesskonvention (Baseline):
 
 - **Adaptionen** ggü. der Baseline (mit Begründung und Auflösungs-Trigger).
+- **ID-Schema-Deklaration** — welches Präfix-Schema dieses Repo nutzt
+  ([`MR-008`](#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage)).
 - **Zusatzklassen-Deklarationen** für die Sensors-Bindung.
-- **Modus-Deklarationen** pro Sub-Area (Greenfield / Brownfield / Hybrid).
+- **Modus-Deklarationen** pro Sub-Area (Greenfield / Brownfield /
+  Hybrid) inklusive Konvergenz-Auftrag bei BF.
 
 Bei Konflikt zwischen dieser Datei und einer kanonischen Quelle gilt
 die kanonische Quelle (Source Precedence, siehe
-[`README.md`](README.md)).
+[`README.md`](README.md)). Diese Datei ist konformitätsbringend für
+*Form*-Fragen, nicht autoritativ über Inhalt.
 
 ## Baseline
 
@@ -25,6 +29,10 @@ die kanonische Quelle (Source Precedence, siehe
   [`ai-harness-course`](https://github.com/pt9912/ai-harness-course)
   (Templates: `lab/templates/`, Konventionen:
   `kurs/de/grundlagen/konventionen.md`).
+- **Extern (Agenten-Destillat):**
+  [`agents-digest.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/main/kurs/de/agents-digest.md)
+  — operatives Regelwerk für Code-Agenten ohne Didaktik; derivativ,
+  bei Konflikt gilt das Lehrmaterial.
 - **Konventions-Vorbilder (Implementierung):**
   [`u-boot`](https://github.com/pt9912/u-boot) — Hexagon-Ordnerkonvention
   ([ADR-0005](../docs/plan/adr/0005-modul-layout-hexagon-ordner.md)),
@@ -171,6 +179,31 @@ die kanonische Quelle (Source Precedence, siehe
   der Modus-Tabelle ist damit graduiert (gelöscht).
 - **Auflösungs-Trigger:** permanent (Dogfooding ist der Zielzustand).
 
+### MR-008 — ID-Schema-Deklaration (Nachtrag zur Baseline-Aussage)
+
+- **Datum:** 2026-06-11
+- **Geltungsbereich:** gesamtes Repo (alle Artefakt-IDs und
+  Traceability-Verweise)
+- **Adaption:** Nachtrag der im Konventions-Template als Teil von
+  MR-000 vorgesehenen ID-Schema-Deklaration, die in der
+  Initial-Setzung fehlte (MR-000 ist akzeptiert und bleibt
+  unverändert — Nachtrag daher als eigener Eintrag). Deklariertes
+  Schema: Anforderungen `DC-FA-<BEREICH>-<NNN>` (Bereichskürzel, siehe
+  [`MR-002`](#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung))
+  und `DC-QA-<NN>`; ADRs `ADR-NNNN` (vierstellig, gemäß
+  Kurs-ADR-Vorlage `NNNN-titel.template.md` — das Konventions-Template
+  nennt abweichend dreistellig `ADR-<NNN>`, eine
+  Kurs-Template-Inkonsistenz; Korrektur in der Kurs-Quelle steht aus,
+  analog [`MR-006`](#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs));
+  Konventions-Adaptionen `MR-NNN`; Carveouts `CO-NNN` (bisher
+  ungenutzt); Slices `slice-NNN`. Die `ids`-Selbstkonfiguration in
+  [`.d-check.yml`](../.d-check.yml) prüft die Linkpflicht der
+  Kennungen maschinell.
+- **Begründung:** Eine undeklarierte ID-Systematik ist eine stille
+  Setzung (gleiche Harness-Lüge-Klasse wie ein undeklariertes Gate);
+  sichtbar geworden im Template-Vergleich (User-Review, 2026-06-11).
+- **Auflösungs-Trigger:** permanent.
+
 ## Anforderungs-Anlege-Prozess
 
 Neue oder geänderte `DC-*`-Anforderungen entstehen **nur** in
@@ -197,11 +230,11 @@ Pflicht-Bausteine pro Anforderung:
 ## Zusatzklassen-Deklaration für Sensors-Bindung
 
 Zusätzlich zu den vier kanonischen Klassen (ADR, Carveout, Schwelle,
-Reproduzierbarkeit) und Slice-IDs:
+Reproduzierbarkeit):
 
 | Klasse | Form | Bedeutung | Beispiel |
 |---|---|---|---|
-| DC-Bindung | `DC-…` | Gate prüft eine konkrete Lastenheft-Anforderung | [`DC-QA-02`](../spec/lastenheft.md#dc-qa-02--determinismus) für das geplante Determinismus-Gate (slice-003); [`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) für das geplante `arch-check`-Gate |
+| DC-Bindung | `DC-…` | Gate prüft eine konkrete Lastenheft-Anforderung | [`DC-QA-02`](../spec/lastenheft.md#dc-qa-02--determinismus) für den Determinismus-Test in `make test`; [`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) für `make arch-check` und das Netzlos-Gate in `make doc-check` |
 
 ## Modus-Deklaration pro Sub-Area
 
