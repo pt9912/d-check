@@ -126,6 +126,9 @@ func applyIDs(ids *rawIDs, cfg *core.Config) error {
 		if err != nil {
 			return fmt.Errorf("%s: ids.patterns[%d].regex: %v", FileName, i, err)
 		}
+		if re.MatchString("") {
+			return fmt.Errorf("%s: ids.patterns[%d].regex matcht den Leerstring", FileName, i)
+		}
 		if p.Target == "" {
 			return fmt.Errorf("%s: ids.patterns[%d].target fehlt", FileName, i)
 		}

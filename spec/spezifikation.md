@@ -59,12 +59,18 @@ Nutzungsfehler (Exit 2) mit Auflistung der gültigen Namen.
 1. **Fences:** Zeilen, deren erste Nicht-Leerzeichen-Folge mit
    ` ``` ` oder `~~~` beginnt, schalten den Fence-Zustand um;
    Zeilen im Fence-Zustand werden von allen Modulen ignoriert.
-2. **Inline-Code:** Backtick-Spans werden zeilenweise entfernt,
-   längste Backtick-Folge zuerst (Mehrfach-Backticks).
+2. **Inline-Code:** Backtick-Spans werden zeilenweise durch
+   Leerzeichen gleicher Länge ersetzt (positionserhaltend —
+   angrenzender Text kann nicht zu Schein-Vorkommen verschmelzen);
+   die öffnende Backtick-Folge bestimmt die schließende
+   (Mehrfach-Backticks).
 3. **Extraktion:** Inline-Links `[text](ziel)` und Bilder
    `![alt](ziel)` per Klammer-balancierter Suche; mehrere Links pro
    Zeile werden alle erfasst. Ziele in `<…>` werden entquotet; ein
-   Titel-Suffix (` "…"`) wird abgetrennt.
+   Titel-Suffix (` "…"`) wird abgetrennt. Die Extraktion ist
+   **zeilenbasiert**: Inline-Links, deren Syntax sich über einen
+   Zeilenumbruch erstreckt (GFM-Soft-Break im Linktext), werden nicht
+   erkannt — normative Grenze für alle Module.
 4. **Ziel-Normalisierung:** Prozent-Dekodierung (RFC 3986, vollständig)
    → Auflösung relativ zum Verzeichnis der enthaltenden Datei →
    lexikalische Normalisierung. Die Repo-Escape-Prüfung erfolgt **nach**
@@ -112,10 +118,13 @@ innerhalb des Linktexts eines Markdown-Links (keine Bildreferenz)
 liegt. Vorkommen innerhalb der Link-Syntax außerhalb des Linktexts
 (Ziel-Klammer) sowie innerhalb von Bildreferenzen (Alt-Text und Ziel)
 sind kein Fließtext und damit linkpflichtfrei. Alle übrigen Vorkommen
-erzeugen den Befund `id-unlinked`. Das deklarierte
+erzeugen den Befund `id-unlinked`. Da die Extraktion zeilenbasiert
+ist ([§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+Schritt 3), gilt eine Kennung in mehrzeiligem Linktext als nackt —
+linkpflichtige Kennungen gehören in einzeilige Links. Das deklarierte
 `ids.patterns[].target` (Datei oder Verzeichnis, relativ zur
-Repo-Wurzel) muss existieren — Verletzung ist ein
-Konfigurationsfehler (Exit 2, [§2](#d-checkyml)).
+Repo-Wurzel) muss existieren und innerhalb der Repo-Wurzel liegen —
+Verletzung ist ein Konfigurationsfehler (Exit 2, [§2](#d-checkyml)).
 
 ### DC-FA-MTX-001.a — Klassen- und Status-Auflösung
 
@@ -257,11 +266,11 @@ Exit 2 ohne Prüfung
 
 | Schlüssel | Typ | Default | Constraint |
 |---|---|---|---|
-| `scan.roots` | string[] | `DEFAULT_SCAN_ROOTS` | alle hier deklarierten Wurzeln müssen existieren (Exit 2); nur die Default-Wurzeln (kein `scan.roots` gesetzt) sind optional; `"."` steht für die gesamte Repo-Wurzel (rekursiv, `SKIP_DIRS` gelten weiter) |
+| `scan.roots` | string[] | `DEFAULT_SCAN_ROOTS` | alle hier deklarierten Wurzeln müssen existieren und innerhalb der Repo-Wurzel liegen (Exit 2); nur die Default-Wurzeln (kein `scan.roots` gesetzt) sind optional; `"."` steht für die gesamte Repo-Wurzel (rekursiv, `SKIP_DIRS` gelten weiter) |
 | `scan.ignore` | string[] | leer | Glob-Syntax |
 | `modules` | string[] | `DEFAULT_MODULES` | nur gültige Modulnamen |
-| `ids.patterns[].regex` | string | — | muss kompilieren (Exit 2) |
-| `ids.patterns[].target` | string | — | muss existieren |
+| `ids.patterns[].regex` | string | — | muss kompilieren und darf den Leerstring nicht matchen (Exit 2) |
+| `ids.patterns[].target` | string | — | muss existieren und innerhalb der Repo-Wurzel liegen |
 | `matrix.classes[].name` | string | — | eindeutig |
 | `matrix.classes[].paths` | string[] | — | Glob |
 | `matrix.rules[]` | {from,to,allow} | — | Klassen müssen deklariert sein |
@@ -328,3 +337,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-10 | Review R2 (Black-Box): hängendes wertnehmendes Flag = Nutzungsfehler; `d-check: error:`-Präfix für Flag-Fehler; `-h` → Usage auf stderr, Exit 0 | slice-003 |
 | 2026-06-10 | Modul `anchors` normiert umgesetzt; `scan.roots`-Wert `"."` = gesamte Repo-Wurzel; Slug-Schritt 1 präzisiert: Emphasis-Sterne entfallen, literale Unterstriche bleiben (GitHub-Verhalten) | slice-004 |
 | 2026-06-11 | Modul `ids` normiert umgesetzt; §DC-FA-ID-001.a präzisiert: Ziel-Klammern von Links und Bildreferenzen (Alt-Text, Ziel) sind kein Fließtext (linkpflichtfrei); Überlappungs-Semantik der Muster-Präzedenz expliziert; Target-Existenz-Constraint im Algorithmus-Text verankert | slice-006 |
+| 2026-06-11 | Review R1 zu slice-006: Inline-Code-Stripping positionserhaltend (Leerzeichen statt Entfernen — keine Schein-Vorkommen); Repo-Escape-Verbot für `scan.roots` und `ids.patterns[].target`; Leerstring-matchende ids-Regexe als Konfigurationsfehler; zeilenbasierte Link-Extraktion als normative Grenze dokumentiert | slice-006 |

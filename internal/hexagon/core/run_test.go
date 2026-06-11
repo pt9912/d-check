@@ -87,6 +87,10 @@ func TestDiscoverFiles(t *testing.T) {
 	if _, err := DiscoverFiles(m, []string{"handbuch"}, nil); err == nil {
 		t.Fatal("fehlende explizite Wurzel: erwarteter Fehler blieb aus")
 	}
+	// explizite Wurzel darf die Repo-Wurzel nicht verlassen
+	if _, err := DiscoverFiles(m, []string{"../anderes-repo"}, nil); err == nil {
+		t.Fatal("Repo-Escape-Wurzel: erwarteter Fehler blieb aus")
+	}
 	// explizite Wurzel ersetzt Defaults
 	files, err = DiscoverFiles(m, []string{"irgendwo"}, nil)
 	if err != nil {

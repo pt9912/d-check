@@ -72,6 +72,12 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
   nie stillschweigend lockern.
 - Klassen-Zuordnung über Globs muss mit der `"."`-Wurzel des
   Dogfoodings zusammenspielen (Pfade relativ zur Repo-Wurzel).
+- Zeilenbasierte Link-Extraktion ist normative Grenze (Spezifikation
+  §DC-FA-LINK-001.a Schritt 3, Review R1 zu slice-006): Kennungen in
+  *mehrzeiligem* Linktext gelten für `ids` als nackt. Bei der
+  Selbstkonfiguration darauf achten, dass linkpflichtige Kennungen in
+  der eigenen Doku in einzeiligen Links stehen; auftretende Fälle
+  sind Form-Fixes der lebenden Doku, keine Modul-Bugs.
 
 ## 7. Closure-Notiz (nach `done/`)
 

@@ -35,6 +35,22 @@ func ResolveTarget(fromFile, target string) (rel string, escaped bool, ok bool) 
 	return joined, false, true
 }
 
+// resolveConfigPath normalisiert einen in der Konfiguration
+// deklarierten, zur Repo-Wurzel relativen Pfad (lexikalisch;
+// DC-FA-CONF-001). rel == "" steht für die Repo-Wurzel selbst;
+// escaped meldet Pfade, die die Repo-Wurzel verlassen — gemeinsamer
+// Helfer für Scan-Wurzeln und ids-Targets.
+func resolveConfigPath(p string) (rel string, escaped bool) {
+	rel = path.Clean(strings.Trim(p, "/"))
+	if rel == "." {
+		return "", false
+	}
+	if rel == ".." || strings.HasPrefix(rel, "../") {
+		return rel, true
+	}
+	return rel, false
+}
+
 // IsExternalScheme prüft auf externes URL-Schema (http:, mailto:, …).
 func IsExternalScheme(target string) bool {
 	for i := 0; i < len(target); i++ {

@@ -66,6 +66,18 @@ func TestDecode_UngueltigerRegex(t *testing.T) {
 	}
 }
 
+// ids-Regexe, die den Leerstring matchen (X*, (ADR)?), würden an
+// jeder Position Leer-Matches und damit unbrauchbare Befunde mit
+// leerem Target erzeugen — Konfigurationsfehler statt Befund-Flut.
+func TestDecode_LeerstringRegex(t *testing.T) {
+	for _, re := range []string{"X*", "(ADR)?", ""} {
+		_, err := configyaml.Decode([]byte("ids:\n  patterns:\n    - regex: '" + re + "'\n      target: docs/\n"))
+		if err == nil || !strings.Contains(err.Error(), "Leerstring") {
+			t.Fatalf("regex %q: err = %v (Leerstring-Ablehnung erwartet)", re, err)
+		}
+	}
+}
+
 func TestDecode_MatrixUndExternalConstraints(t *testing.T) {
 	if _, err := configyaml.Decode([]byte("matrix:\n  classes:\n    - name: a\n      paths: [x]\n  rules:\n    - {from: a, to: fehlt, allow: false}\n")); err == nil {
 		t.Fatal("undeklarierte Klasse: Fehler erwartet")

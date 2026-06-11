@@ -29,9 +29,12 @@ func PreprocessMarkdown(content []byte) []Line {
 	return out
 }
 
-// stripInlineCode leert Backtick-Spans. Ein Span wird von zwei gleich
-// langen Backtick-Folgen begrenzt (die öffnende Folge bestimmt die
-// schließende).
+// stripInlineCode ersetzt Backtick-Spans (inkl. Backticks) durch
+// Leerzeichen gleicher Länge — positionserhaltend, damit angrenzender
+// Text nicht zu Schein-Vorkommen verschmilzt (DC-FA-ID-001;
+// spec/spezifikation.md §DC-FA-LINK-001.a Schritt 2). Ein Span wird
+// von zwei gleich langen Backtick-Folgen begrenzt (die öffnende Folge
+// bestimmt die schließende).
 func stripInlineCode(s string) string {
 	var b strings.Builder
 	i := 0
@@ -50,7 +53,9 @@ func stripInlineCode(s string) string {
 			b.WriteString(s[i:]) // keine schließende Folge
 			break
 		}
-		i = closeAt // Span (inkl. Backticks) entfällt
+		for ; i < closeAt; i++ {
+			b.WriteByte(' ')
+		}
 	}
 	return b.String()
 }
@@ -110,21 +115,30 @@ type LinkSpan struct {
 	IsImage            bool
 }
 
+// forEachLink ruft fn für jeden Inline-Link der Zeile auf —
+// gemeinsamer Iterator von ExtractLinks und ExtractLinkSpans.
+func forEachLink(text string, fn func(LinkRef, LinkSpan)) {
+	for i := 0; i < len(text); i++ {
+		ref, span, ok := parseLinkAt(text, i)
+		if !ok {
+			continue
+		}
+		fn(ref, span)
+		i = span.End - 1
+	}
+}
+
 // ExtractLinks findet Inline-Links [text](ziel) und Bilder
 // ![alt](ziel); mehrere pro Zeile werden alle erfasst
 // (spec/spezifikation.md §DC-FA-LINK-001.a Schritt 3).
 func ExtractLinks(lines []Line) []LinkRef {
 	var refs []LinkRef
 	for _, ln := range lines {
-		for i := 0; i < len(ln.Text); i++ {
-			ref, span, ok := parseLinkAt(ln.Text, i)
-			if !ok {
-				continue
-			}
-			ref.Line = ln.No
+		no := ln.No
+		forEachLink(ln.Text, func(ref LinkRef, _ LinkSpan) {
+			ref.Line = no
 			refs = append(refs, ref)
-			i = span.End - 1
-		}
+		})
 	}
 	return refs
 }
@@ -133,14 +147,9 @@ func ExtractLinks(lines []Line) []LinkRef {
 // Zeile in Vorkommens-Reihenfolge.
 func ExtractLinkSpans(text string) []LinkSpan {
 	var spans []LinkSpan
-	for i := 0; i < len(text); i++ {
-		_, span, ok := parseLinkAt(text, i)
-		if !ok {
-			continue
-		}
+	forEachLink(text, func(_ LinkRef, span LinkSpan) {
 		spans = append(spans, span)
-		i = span.End - 1
-	}
+	})
 	return spans
 }
 

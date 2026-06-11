@@ -46,22 +46,25 @@ func DiscoverFiles(fsys driven.Filesystem, explicitRoots, ignore []string) ([]st
 
 func discoverExplicit(fsys driven.Filesystem, roots, ignore []string, files *[]string) error {
 	for _, r := range roots {
-		r = strings.Trim(r, "/")
-		if r == "." || r == "" {
+		rel, escaped := resolveConfigPath(r)
+		if escaped {
+			return fmt.Errorf("konfigurierte Scan-Wurzel verlässt die Repository-Wurzel: %s", r)
+		}
+		if rel == "" {
 			// "." steht für die gesamte Repo-Wurzel
 			if err := walkMarkdown(fsys, "", ignore, files); err != nil {
 				return err
 			}
 			continue
 		}
-		kind, err := fsys.Kind(r)
+		kind, err := fsys.Kind(rel)
 		if err != nil {
 			return err
 		}
 		if kind != driven.KindDir {
-			return fmt.Errorf("konfigurierte Scan-Wurzel existiert nicht: %s", r)
+			return fmt.Errorf("konfigurierte Scan-Wurzel existiert nicht: %s", rel)
 		}
-		if err := walkMarkdown(fsys, r, ignore, files); err != nil {
+		if err := walkMarkdown(fsys, rel, ignore, files); err != nil {
 			return err
 		}
 	}

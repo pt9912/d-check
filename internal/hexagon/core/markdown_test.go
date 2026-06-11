@@ -2,6 +2,7 @@ package core
 
 import (
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -17,21 +18,27 @@ func TestPreprocessMarkdown_FencesUndInlineCode(t *testing.T) {
 	if !reflect.DeepEqual(nums, want) {
 		t.Fatalf("Zeilennummern = %v, want %v", nums, want)
 	}
-	// Inline-Code-Span ist geleert (DC-FA-LINK-001 Boundary)
-	if got := lines[1].Text; got != "Zeile5  Ende" {
-		t.Fatalf("Inline-Code nicht entfernt: %q", got)
+	// Inline-Code-Span ist geleert — positionserhaltend durch
+	// Leerzeichen gleicher Länge (DC-FA-LINK-001 Boundary)
+	if got := lines[1].Text; got != "Zeile5 "+strings.Repeat(" ", len("`[code](x.md)`"))+" Ende" {
+		t.Fatalf("Inline-Code nicht positionserhaltend geleert: %q", got)
 	}
 }
 
 func TestStripInlineCode_MehrfachBackticks(t *testing.T) {
-	// Doppel-Backtick-Span mit einfachem Backtick im Inhalt
+	// Doppel-Backtick-Span mit einfachem Backtick im Inhalt —
+	// ersetzt durch Leerzeichen gleicher Länge (positionserhaltend)
 	got := stripInlineCode("a ``x ` y`` b")
-	if got != "a  b" {
+	if got != "a "+strings.Repeat(" ", len("``x ` y``"))+" b" {
 		t.Fatalf("got %q", got)
 	}
 	// unbalancierte Backticks bleiben erhalten
 	if got := stripInlineCode("a ` b"); got != "a ` b" {
 		t.Fatalf("unbalanciert: got %q", got)
+	}
+	// positionserhaltend: kein Verschmelzen angrenzenden Texts
+	if got := stripInlineCode("AD`x`R-0042"); got != "AD   R-0042" {
+		t.Fatalf("verschmolzen: %q", got)
 	}
 }
 

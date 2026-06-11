@@ -95,6 +95,22 @@ Target-Constraint, Spec-Präzisierung, Tests).
   `DC-*`/`MR-*`/`ADR-*`-Muster in `.d-check.yml`) folgt wie geplant
   in slice-007 (Ausnahme-Betrachtung für immutable ADR-/MR-Texte).
 
+**Review R1 (nach Closure, Agent-Review mit getrenntem Kontext):**
+6 Findings (2 MEDIUM, 3 LOW, 1 INFO), alle nachgeschärft in einem
+Folge-Commit: Repo-Escape-Verbot für `ids.patterns[].target` *und*
+`scan.roots` (gemeinsamer Helfer `resolveConfigPath` — die
+Scan-Wurzel-Lücke war eine Bestandslücke derselben Klasse aus
+slice-003, vom Review-Fix mit abgedeckt); Leerstring-matchende
+ids-Regexe als Konfigurationsfehler; Inline-Code-Stripping
+positionserhaltend (Leerzeichen statt Entfernen — keine
+Phantom-Kennungen); Schleifen-Dopplung über gemeinsamen
+Link-Iterator beseitigt; zeilenbasierte Extraktion als normative
+Grenze in der Spezifikation dokumentiert (Konsequenz für `ids` als
+Risiko-Punkt in slice-007 eingetragen). Steering-Loop-Beleg: das
+Review mit getrenntem Kontext fand eine Fehlerklasse (Repo-Escape in
+Config-Pfaden), die Implementierungs- und Selbstprüfungs-Kontext
+beide übersehen hatten — Bestätigung der Rollentrennung.
+
 ## 8. Sub-Area-Modus-Begründung
 
 Alle berührten Sub-Areas GF (spec-first; siehe Kurs Modul 5 §Worked

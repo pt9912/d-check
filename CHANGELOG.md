@@ -54,6 +54,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
+- Review R1 zu slice-006: Config-Pfade (`scan.roots`,
+  `ids.patterns[].target`) dürfen die Repo-Wurzel nicht verlassen
+  (Exit 2 statt stillem Escape); Leerstring-matchende ids-Regexe sind
+  Konfigurationsfehler; Inline-Code-Stripping positionserhaltend
+  (keine Phantom-Kennungen durch Text-Verschmelzung); zeilenbasierte
+  Link-Extraktion als normative Grenze dokumentiert.
 - Harness-Hooks gehärtet (MR-005): Gate-Nachweis inhaltsbasiert
   (Commit ohne Gate-Lauf wird vom Stop-Hook nicht mehr freigegeben),
   PreToolUse-Guard prüft `bash/sh -c`-Sub-Shell-Strings rekursiv.

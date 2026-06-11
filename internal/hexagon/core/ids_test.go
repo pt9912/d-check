@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"regexp"
+	"strings"
 	"testing"
 )
 
@@ -84,5 +85,31 @@ func TestIDsTargetMussExistieren(t *testing.T) {
 	}}
 	if _, err := Run(m, cfgOK, []string{"ids"}); err != nil {
 		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+}
+
+// DC-FA-CONF-001: ids-Targets sind relativ zur Repo-Wurzel — Pfade,
+// die die Wurzel verlassen (..), sind Konfigurationsfehler, auch wenn
+// das Ziel außerhalb existieren würde.
+func TestIDsTargetDarfWurzelNichtVerlassen(t *testing.T) {
+	m := newMemFS(map[string]string{"docs/a.md": "x"})
+	for _, target := range []string{"../draussen", "docs/../../x", ".."} {
+		cfg := Config{IDPatterns: []IDPattern{
+			{Regex: regexp.MustCompile(`X-\d`), Target: target},
+		}}
+		_, err := Run(m, cfg, []string{"ids"})
+		if err == nil || !strings.Contains(err.Error(), "verlässt") {
+			t.Fatalf("Target %q: err = %v (Repo-Escape-Fehler erwartet)", target, err)
+		}
+	}
+}
+
+// Positionserhaltendes Inline-Code-Stripping: angrenzender Text darf
+// nicht zu Phantom-Kennungen verschmelzen (Review R1 zu slice-006).
+func TestIDsKeinePhantomKennungDurchInlineCode(t *testing.T) {
+	lines := PreprocessMarkdown([]byte("AD`x`R-0042\n"))
+	p := []IDPattern{{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}}
+	if got := checkIDs("f.md", lines, p); len(got) != 0 {
+		t.Fatalf("Phantom-Befund: %+v", got)
 	}
 }

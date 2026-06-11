@@ -309,6 +309,21 @@ func TestCONF001_IDTargetFehlt(t *testing.T) {
 	}
 }
 
+// DC-FA-CONF-001: ids-Target außerhalb der Repo-Wurzel → Exit 2,
+// auch wenn der Pfad außerhalb tatsächlich existiert.
+func TestCONF001_IDTargetVerlaesstWurzel(t *testing.T) {
+	base := t.TempDir()
+	root := filepath.Join(base, "repo")
+	write(t, base, "draussen/def.md", "x") // existiert — außerhalb der Wurzel
+	write(t, root, ".d-check.yml",
+		"ids:\n  patterns:\n    - regex: 'ADR-\\d{4}'\n      target: ../draussen\n")
+	write(t, root, "docs/a.md", "x")
+	code, stdout, stderr := run(t, root)
+	if code != 2 || stdout != "" || !strings.Contains(stderr, "verlässt") {
+		t.Fatalf("Exit = %d, stdout = %q, stderr = %q", code, stdout, stderr)
+	}
+}
+
 // DC-FA-CONF-001 Negative: ungültige Config → Exit 2 mit Zeilenangabe,
 // keine Prüfung mit stillschweigenden Defaults.
 func TestCONF001_UngueltigeConfig(t *testing.T) {

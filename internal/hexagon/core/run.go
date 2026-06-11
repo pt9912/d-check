@@ -2,7 +2,6 @@ package core
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
@@ -64,13 +63,16 @@ func Run(fsys driven.Filesystem, cfg Config, modules []string) (Result, error) {
 	return res, nil
 }
 
-// ensureIDTargetsExist prüft die Existenz der in ids.patterns[]
-// deklarierten Targets (Datei oder Verzeichnis, relativ zur
-// Repo-Wurzel).
+// ensureIDTargetsExist prüft die in ids.patterns[] deklarierten
+// Targets (Datei oder Verzeichnis, relativ zur Repo-Wurzel): sie
+// müssen existieren und innerhalb der Repo-Wurzel liegen.
 func ensureIDTargetsExist(fsys driven.Filesystem, patterns []IDPattern) error {
 	for _, p := range patterns {
-		rel := strings.Trim(p.Target, "/")
-		if rel == "" || rel == "." {
+		rel, escaped := resolveConfigPath(p.Target)
+		if escaped {
+			return fmt.Errorf("konfiguriertes ids-Target verlässt die Repository-Wurzel: %s", p.Target)
+		}
+		if rel == "" {
 			continue // Repo-Wurzel existiert per Definition
 		}
 		kind, err := fsys.Kind(rel)
