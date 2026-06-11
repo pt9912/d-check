@@ -10,8 +10,11 @@ cd "$(dirname "$0")/.."
 
 FIXTURE="${BENCH_DIR:-/tmp/d-check-bench-fixture}"
 IMAGE="${IMAGE:-d-check}"
+# RUNS muss ungerade sein (Median = mittleres Element).
 RUNS=3
 
+# Bewusst KEIN trap-Cleanup: das Fixture bleibt nach dem Lauf zur
+# Inspektion liegen und wird beim nächsten Lauf ersetzt.
 rm -rf "$FIXTURE"
 mkdir -p "$FIXTURE/docs"
 
@@ -40,14 +43,20 @@ fi
 times=()
 for r in $(seq 1 "$RUNS"); do
   start=$(date +%s%N)
-  docker run --rm --network none -v "$FIXTURE":/repo:ro "$IMAGE":latest > /dev/null
+  # --cpus 2: Lastenheft DC-QA-01 normiert die Schranke auf
+  # 2-vCPU-Hardware — ohne Begrenzung maskiert ein schneller Host
+  # Regressionen.
+  docker run --rm --network none --cpus 2 -v "$FIXTURE":/repo:ro "$IMAGE":latest > /dev/null
   end=$(date +%s%N)
   ms=$(((end - start) / 1000000))
   times+=("$ms")
   echo "bench: Lauf $r — ${ms} ms"
 done
 
-median=$(printf '%s\n' "${times[@]}" | sort -n | sed -n 2p)
+# Median-Position folgt aus RUNS (bei ungeradem N das mittlere
+# Element) — nie hart verdrahten, sonst misst ein geändertes RUNS
+# still den falschen Wert (Review R1 zu slice-009/010).
+median=$(printf '%s\n' "${times[@]}" | sort -n | sed -n "$(((RUNS + 1) / 2))p")
 echo "bench: Median ${median} ms (Pass-Kriterium < 5000 ms — DC-QA-01)"
 if [ "$median" -ge 5000 ]; then
   echo "bench: FAIL — Median über 5 s" >&2

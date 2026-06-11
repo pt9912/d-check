@@ -124,6 +124,18 @@ Dateien / 8 MB, inkl. Container-Start) — Faktor ~9 unter dem
   coverage-gate + gate-consistency in `gates` aggregiert). welle-04
   (Distribution + Migration) übernimmt als aktive Welle.
 
+**Nachkalibrierung (2026-06-11, nach Closure):** Auf User-Wunsch
+Schwelle 93 % — gezielter Test-Ausbau hob das Ist von 92,9 % auf
+95,1 % (Commit `11731c7`), erst danach wurde geschaltet (statt das
+Gate rot zu stellen). Schwellen-Historie: 85 (DoD) → 90 (Ramp,
+welle-03 done) → 93 (Kalibrierung); maßgeblich dokumentiert in der
+Sensors-Bindung (`harness/README.md` §Sensors). **Review R1
+(gebündelt mit slice-010, nach Closure):** Median-Position aus `RUNS`
+abgeleitet statt hart `sed -n 2p`; `--cpus 2` im Benchmark +
+Spez-Präzisierung (2-vCPU-Normierung aus dem Lastenheft);
+Meta-Gate-Parser um Mehrfach-Target-Zeilen erweitert (mit
+Parser-Selbsttest).
+
 ## 8. Sub-Area-Modus-Begründung
 
 Alle berührten Sub-Areas GF (Gate-/Spez-Arbeit; siehe Kurs Modul 5

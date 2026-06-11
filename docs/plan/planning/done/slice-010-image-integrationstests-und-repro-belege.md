@@ -106,6 +106,19 @@ Benchmark-Median 526 ms, Abschluss mit Image-Hash
 - **Folge-Slices:** keine neuen; slice-011 (GHCR-Release) ist durch
   `make ci` entriegelt (Trigger erfüllt).
 
+**Review R1 (gebündelt über slice-009+010, Agent-Review mit
+getrenntem Kontext):** 9 Findings (2 MEDIUM, 4 LOW, 3 INFO), alle
+behoben — Kern: die einzige Stilles-Grün-Falle war die hart
+verdrahtete Median-Position im Benchmark (latent, hätte erst bei
+RUNS-Änderung gezündet); dazu die fehlende 2-vCPU-Normierung
+(Spec-Treue der Messmethode), eine Mehrfach-Target-Lücke im
+Meta-Gate-Parser (jetzt mit Parser-Selbsttest), `fullbuild: ci bench`
+statt Kettenduplikat, `versions` ohne Stage-Rauschen, drei
+dokumentierte Annahmen (QA-03-Format fail-closed, amd64,
+Fixture-Verbleib). Kein akuter Stilles-Grün-Pfad im ausgelieferten
+Stand — die Review-Beute waren latente Wartungsfallen und
+Spec-Treue, nicht aktive Bugs.
+
 ## 8. Sub-Area-Modus-Begründung
 
 Alle berührten Sub-Areas GF (Gate-/Tooling-Arbeit; siehe Kurs Modul 5

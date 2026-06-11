@@ -11,7 +11,10 @@
 #
 # „Nativ" in einem Docker-only-Repo: das statische Binary wird aus dem
 # Runtime-Image extrahiert (docker cp) und direkt ausgeführt — kein
-# Host-Go (AGENTS.md §3.1).
+# Host-Go (AGENTS.md §3.1). Annahme: Host-Architektur = Image-
+# Architektur (amd64); auf abweichenden Hosts (arm64) bricht der
+# Nativ-Lauf laut ab — dann Binary via qemu/binfmt ausführen oder den
+# Vergleich auf zwei Container-Varianten umstellen.
 set -euo pipefail
 
 IMAGE="${IMAGE:-d-check}"

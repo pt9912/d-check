@@ -27,9 +27,13 @@ doc_targets() {
     | sed -E 's/`make ([a-z0-9_-]+)`/\1/' | sort -u
 }
 
-# Makefile-Targets: Regelzeilen `<name>:` am Zeilenanfang.
+# Makefile-Targets: Regelzeilen am Zeilenanfang — auch
+# Mehrfach-Target-Zeilen (`a b: deps`). Zuweisungen (`X := y`,
+# `X ?= y`) sind ausgeschlossen, weil dort auf den Doppelpunkt ein
+# `=` folgt bzw. gar kein Doppelpunkt steht.
 makefile_targets() {
-  grep -oE '^[a-zA-Z][a-zA-Z0-9_-]*:' "$1" | tr -d ':' | sort -u
+  grep -oE '^[a-zA-Z][a-zA-Z0-9 _-]*:([^=]|$)' "$1" \
+    | sed 's/:.*//' | tr ' ' '\n' | sed '/^$/d' | sort -u
 }
 
 # Richtung 1: dokumentierte Targets müssen im Makefile existieren.
@@ -54,9 +58,16 @@ self_test() {
   local tmp
   tmp="$(mktemp -d)"
   printf '| `make phantom-target` | x |\n' > "$tmp/doc.md"
-  printf 'echtes-target:\n\ttrue\n' > "$tmp/Makefile"
+  printf 'echtes-target zweites-target: dep\n\ttrue\nVAR := x\n' > "$tmp/Makefile"
   if check_documented_exist "$tmp/Makefile" "$tmp/doc.md" 2>/dev/null; then
     echo "gate-consistency: Selbsttest FEHLGESCHLAGEN — Phantom-Target nicht erkannt" >&2
+    rm -rf "$tmp"
+    exit 2
+  fi
+  # Parser-Selbsttest: Mehrfach-Target-Zeile liefert beide Namen,
+  # die Variablen-Zuweisung keinen (Review R1 zu slice-009/010).
+  if [ "$(makefile_targets "$tmp/Makefile" | wc -l)" -ne 2 ]; then
+    echo "gate-consistency: Selbsttest FEHLGESCHLAGEN — Makefile-Parser (Mehrfach-Targets/Zuweisungen)" >&2
     rm -rf "$tmp"
     exit 2
   fi
@@ -79,7 +90,10 @@ while IFS= read -r t; do
   fi
 done <<<"$(makefile_targets Makefile)"
 
-# (3) DC-QA-03-Modulliste des Netzlos-Gates (.d-check.yml)
+# (3) DC-QA-03-Modulliste des Netzlos-Gates (.d-check.yml).
+# Format-Annahme: einzeilige Flow-Style-Liste (`modules: [a, b]`).
+# Bei Umstellung auf YAML-Listenform wird dieser Check laut rot
+# (fail-closed) — dann den Parser hier mitziehen.
 modules_line="$(grep -E '^modules:' .d-check.yml || true)"
 for m in links anchors ids matrix; do
   if [[ "$modules_line" != *"$m"* ]]; then

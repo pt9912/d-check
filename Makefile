@@ -82,7 +82,7 @@ image-test: build ## DC-FA-DIST-001-Akzeptanzkriterien gegen das lokale Image (n
 versions: ## Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Images, Runtime-Image-ID).
 	@echo "GO_VERSION=$(GO_VERSION)"
 	@echo "GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION)"
-	@grep -E '^FROM ' Dockerfile | sort -u
+	@grep -E '^FROM ' Dockerfile | grep -v '^FROM deps' | sort -u
 	@docker image inspect $(IMAGE):latest --format 'runtime-image={{.Id}}' 2>/dev/null \
 	    || echo "runtime-image=(nicht gebaut — make build)"
 
@@ -120,7 +120,7 @@ gates: doc-check lint test arch-check coverage-gate gate-consistency record-gate
 ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (DC-FA-DIST-001).
 	@echo "[ci] gates + image-test green"
 
-fullbuild: gates image-test bench ## volle Closure: gates + image-test + bench; schließt mit dem Image-Hash (Reproduzierbarkeits-Bindung).
+fullbuild: ci bench ## volle Closure: ci + bench; schließt mit dem Image-Hash (Reproduzierbarkeits-Bindung).
 	@docker image inspect $(IMAGE):latest --format '[fullbuild] green — image-hash {{.Id}}'
 
 # ---- maintenance -------------------------------------------------------------

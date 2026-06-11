@@ -181,8 +181,11 @@ Status < 400 → kein Befund; ≥ 400 → `external-status`; Timeout →
 Datei-Querverweis auf die zyklisch nächste Datei und ein Anker-Link
 auf deren gleichnamigen Abschnitt, plus Fülltext; Gesamtgröße ≤ 20 MB.
 **Messprotokoll:** Default-Module (`links`, `anchors`) ohne
-Konfigurationsdatei, Runtime-Container mit read-only-Mount und ohne
-Netz, N ≥ 3 Läufe; der **Median** zählt (inklusive Container-Start).
+Konfigurationsdatei, Runtime-Container mit read-only-Mount, ohne
+Netz und auf **2 vCPU begrenzt** (`--cpus 2` — die
+Hardware-Normierung aus
+[`DC-QA-01`](lastenheft.md#dc-qa-01--performance)), N ≥ 3 Läufe
+(ungerade); der **Median** zählt (inklusive Container-Start).
 **Pass-Kriterium:** Median < 5 s
 ([`DC-QA-01`](lastenheft.md#dc-qa-01--performance)).
 
@@ -374,3 +377,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-11 | Modul `external` normiert umgesetzt; §`DC-FA-EXT-001.a` präzisiert: Transportfehler (DNS/Verbindung) → `external-status` (Status 0); Dedupe-Semantik expliziert (eine Prüfung pro URL, Befund an jedem Vorkommen) | slice-008 |
 | 2026-06-11 | Review R1 zu slice-008: Fragment-Teil vor Prüfung/Dedupe entfernt (Befund nennt Original-Linkziel); Schema-Vergleich case-insensitiv; Timeout gilt pro Request (Fallback: bis zu zwei Requests); explizit gesetzte 0 in `external.timeout-seconds`/`parallel` ist Konfigurationsfehler | slice-008 |
 | 2026-06-11 | Spez-Schuld eingelöst: §`DC-QA-01.a` Benchmark-Definition (Fixture, Messprotokoll, Pass-Kriterium) | slice-009 |
+| 2026-06-11 | Review R1 zu slice-009/010: §`DC-QA-01.a`-Messprotokoll um die 2-vCPU-Begrenzung aus dem Lastenheft präzisiert (`--cpus 2`); N ungerade (Median = mittleres Element) | slice-009 |

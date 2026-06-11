@@ -97,6 +97,17 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
+- Review R1 zu slice-009/010 (Gate-Infrastruktur): Benchmark-Median
+  aus `RUNS` abgeleitet statt hart verdrahtet (latente
+  Stilles-Grün-Falle); `--cpus 2` im Benchmark-Lauf + Spez-Präzisierung
+  (2-vCPU-Normierung aus `DC-QA-01`); Meta-Gate-Parser erkennt
+  Mehrfach-Target-Zeilen und schließt Variablen-Zuweisungen aus (mit
+  Parser-Selbsttest); `fullbuild: ci bench` statt Kettenduplikat;
+  `make versions` ohne Stage-FROM-Rauschen; drei dokumentierte
+  Annahmen (QA-03-Listenformat fail-closed, amd64-Kopplung des
+  image-test, Bench-Fixture bleibt zur Inspektion liegen);
+  93-%-Kalibrierung als Nachtrag in der slice-009-Closure-Notiz.
+
 - Review R1 zu slice-008: Fragmente werden vor Prüfung/Dedupe entfernt
   (eine Prüfung pro Ressource, Befund am Original-Linkziel);
   Schema-Vergleich case-insensitiv (kein stiller Gap zwischen `links`
