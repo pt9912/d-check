@@ -80,7 +80,7 @@ der bess-ems-Rest-Sensor ablösbar (dortige Entscheidung).
 
 Change Request 0.6.0 im Lastenheft (erfüllt 2026-06-12) **und**
 Priorisierung durch den Auftraggeber (welle-06). Sinnvoll **nach**
-[slice-015](../in-progress/slice-015-spans-modul.md) (gemeinsames Minor-Release;
+[slice-015](../done/slice-015-spans-modul.md) (gemeinsames Minor-Release;
 beide Module teilen die Prosa-Helfer — wer zuerst läuft, legt die
 Schnittstelle).
 

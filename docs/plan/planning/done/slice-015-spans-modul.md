@@ -1,6 +1,6 @@
 # Slice slice-015: Modul `spans` — Markdown-Span-Artefakte
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-06-sensorik (per Roadmap-Fortschreibung;
 Start bei Priorisierung durch den Auftraggeber).

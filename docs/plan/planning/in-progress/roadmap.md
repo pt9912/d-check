@@ -14,8 +14,8 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 **Start:** 2026-06-12 (Trigger erfüllt: Change Requests 0.5.0 und
 0.6.0 im Lastenheft, Priorisierung durch den Auftraggeber)
 **Slices:**
-[slice-015](slice-015-spans-modul.md)
-(in-progress, Modul `spans` —
+[slice-015](../done/slice-015-spans-modul.md)
+(done, Modul `spans` —
 [`DC-FA-SPAN-001`](../../../../spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)),
 danach [slice-016](../open/slice-016-hostpaths-modul.md)
 (open, Modul `hostpaths` —
