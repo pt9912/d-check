@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -200,5 +201,115 @@ func TestExternalOhneChecker(t *testing.T) {
 	res, err := Run(m, nil, Config{}, []string{"external", "links"})
 	if err != nil || len(res.Findings) != 0 {
 		t.Fatalf("res = %+v, err = %v", res, err)
+	}
+}
+
+// DC-FA-CONF-002: Modul-lokaler Scan-Scope — die vier
+// Akzeptanzkriterien gegen das In-Memory-FS.
+func TestRun_ModulScope(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"README.md":          "ADR-0042 nackt und [kaputt](fehlt.md)",
+		"spec/s.md":          "ADR-0042 nackt in spec",
+		"docs/adr/0042-x.md": "# Titel",
+	})
+	pattern := []IDPattern{{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/adr/"}}
+
+	// Happy Path: ids nur auf spec/, links global — id-unlinked
+	// stammt ausschließlich aus spec/, links prüft weiter alles.
+	cfg := Config{
+		Roots:      []string{"."},
+		IDPatterns: pattern,
+		Scopes:     map[string]*ScopeConfig{"ids": {Roots: []string{"spec"}}},
+	}
+	res, err := Run(m, nil, cfg, []string{"links", "ids"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var idFiles, linkFiles []string
+	for _, f := range res.Findings {
+		switch f.Rule {
+		case "ids":
+			idFiles = append(idFiles, f.File)
+		case "links":
+			linkFiles = append(linkFiles, f.File)
+		}
+	}
+	if !reflect.DeepEqual(idFiles, []string{"spec/s.md"}) {
+		t.Fatalf("id-unlinked außerhalb des Modul-Scopes: %v", idFiles)
+	}
+	if !reflect.DeepEqual(linkFiles, []string{"README.md"}) {
+		t.Fatalf("links nicht mehr global: %v", linkFiles)
+	}
+	if res.FilesChecked != 3 {
+		t.Fatalf("Vereinigungsmenge erwartet 3, got %d", res.FilesChecked)
+	}
+
+	// Boundary: ohne scope byte-identisch zum globalen Lauf.
+	plain := Config{Roots: []string{"."}, IDPatterns: pattern}
+	resA, err := Run(m, nil, plain, []string{"links", "ids"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	withEmptyMap := plain
+	withEmptyMap.Scopes = map[string]*ScopeConfig{}
+	resB, err := Run(m, nil, withEmptyMap, []string{"links", "ids"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(resA, resB) {
+		t.Fatalf("ohne scope nicht identisch:\nA=%+v\nB=%+v", resA, resB)
+	}
+	if len(resA.Findings) != 3 { // 2× id-unlinked (README, spec) + 1× links
+		t.Fatalf("globaler Lauf erwartet 3 Befunde, got %d", len(resA.Findings))
+	}
+
+	// Boundary: explizit leere roots-Liste prüft nichts (für ids),
+	// Vereinigungsmenge bleibt der globale links-Scope.
+	cfg.Scopes = map[string]*ScopeConfig{"ids": {Roots: []string{}}}
+	res, err = Run(m, nil, cfg, []string{"links", "ids"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, f := range res.Findings {
+		if f.Rule == "ids" {
+			t.Fatalf("leerer Scope erzeugte ids-Befund: %+v", f)
+		}
+	}
+	if res.FilesChecked != 3 {
+		t.Fatalf("Union bei leerem ids-Scope erwartet 3, got %d", res.FilesChecked)
+	}
+
+	// Negative: nicht existente bzw. Repo-Escape-Wurzel → Fehler
+	// (Exit 2 im CLI), mit Modul-Präfix in der Meldung.
+	for _, bad := range [][]string{{"handbuch"}, {"../raus"}} {
+		cfg.Scopes = map[string]*ScopeConfig{"ids": {Roots: bad}}
+		if _, err := Run(m, nil, cfg, []string{"links", "ids"}); err == nil {
+			t.Fatalf("ungültige scope-Wurzel %v akzeptiert", bad)
+		} else if !strings.Contains(err.Error(), "ids.scope") {
+			t.Fatalf("Fehlermeldung ohne Modul-Kontext: %v", err)
+		}
+	}
+}
+
+// DC-FA-CONF-002: ein Modul-Scope kann Dateien umfassen, die der
+// globale Scan nicht enthält (eigener Discover-Lauf, kein Filter).
+func TestRun_ModulScopeAusserhalbGlobal(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"docs/a.md": "sauber",
+		"extra/e.md": "[kaputt](fehlt.md)",
+	})
+	cfg := Config{
+		Roots:  []string{"docs"},
+		Scopes: map[string]*ScopeConfig{"links": {Roots: []string{"extra"}}},
+	}
+	res, err := Run(m, nil, cfg, []string{"links", "anchors"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 || res.Findings[0].File != "extra/e.md" {
+		t.Fatalf("Scope außerhalb des globalen Scans nicht geprüft: %+v", res.Findings)
+	}
+	if res.FilesChecked != 2 { // docs/a.md (anchors global) + extra/e.md (links)
+		t.Fatalf("Union erwartet 2, got %d", res.FilesChecked)
 	}
 }

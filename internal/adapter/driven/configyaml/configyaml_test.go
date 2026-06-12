@@ -147,3 +147,49 @@ func TestDecode_OhneDatei(t *testing.T) {
 		t.Fatalf("Defaults erwartet: %+v (%v)", cfg, err)
 	}
 }
+
+// DC-FA-CONF-002: Modul-lokaler Scan-Scope — Decoding und Constraints.
+func TestDecode_ModulScope(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"scan:\n  roots: [\".\"]\n" +
+			"modules: [links, anchors, ids]\n" +
+			"links:\n  scope:\n    roots: [docs]\n" +
+			"ids:\n" +
+			"  scope:\n    roots: [spec, docs]\n    ignore: [\"docs/archive/**\"]\n" +
+			"  patterns:\n    - regex: 'ADR-\\d{4}'\n      target: docs\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	ids := cfg.Scopes["ids"]
+	if ids == nil || len(ids.Roots) != 2 || len(ids.Ignore) != 1 {
+		t.Fatalf("ids.scope nicht übernommen: %+v", cfg.Scopes)
+	}
+	links := cfg.Scopes["links"]
+	if links == nil || len(links.Roots) != 1 || links.Ignore != nil {
+		t.Fatalf("links.scope nicht übernommen: %+v", cfg.Scopes)
+	}
+	if cfg.Scopes["anchors"] != nil {
+		t.Fatalf("anchors ohne scope-Schlüssel darf keinen Scope tragen")
+	}
+
+	// explizit leere roots-Liste ist gültig (prüft nichts)
+	cfg, err = configyaml.Decode([]byte("ids:\n  scope:\n    roots: []\n  patterns:\n    - regex: 'X-\\d'\n      target: docs\n"))
+	if err != nil || cfg.Scopes["ids"] == nil || cfg.Scopes["ids"].Roots == nil || len(cfg.Scopes["ids"].Roots) != 0 {
+		t.Fatalf("leere scope.roots-Liste nicht übernommen: %+v (%v)", cfg.Scopes, err)
+	}
+}
+
+// scope ohne roots ist ein Konfigurationsfehler (keine stille
+// Vererbung); unbekannte Schlüssel im scope sind Fehler (strikt).
+func TestDecode_ModulScopeFehler(t *testing.T) {
+	for _, bad := range []string{
+		"links:\n  scope:\n    ignore: [\"x/**\"]\n",
+		"anchors:\n  scope: {}\n",
+		"matrix:\n  scope:\n    wurzeln: [docs]\n",
+		"links:\n  unbekannt: 1\n",
+	} {
+		if _, err := configyaml.Decode([]byte(bad)); err == nil {
+			t.Fatalf("ungültiger scope akzeptiert: %q", bad)
+		}
+	}
+}

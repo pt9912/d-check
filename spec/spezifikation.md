@@ -215,6 +215,32 @@ Vorverarbeitung entfernt Inline-Code gerade. **Schritte:**
    Treffer fehlt → `anchor-missing`). Nicht lesbare Ziele: das Modul
    schweigt zum Anker (Existenz wurde bereits geprüft).
 
+### DC-FA-CONF-002.a — Effektiver Scan-Scope pro Modul
+
+1. **Auflösung:** Für jedes aktive Modul gilt der globale Scan-Scope
+   (`scan.roots`/`scan.ignore`), außer das Modul deklariert
+   `<modul>.scope` — dann **ersetzt** dieser den globalen Scope für
+   genau dieses Modul (eigener Discover-Lauf; ein Modul-Scope kann
+   Dateien umfassen, die der globale Scan nicht enthält). Innerhalb
+   von `scope` ist `roots` Pflicht (fehlend = Konfigurationsfehler,
+   Exit 2 — keine stille Vererbung), `ignore` ist optional. Es gelten
+   unverändert die Scan-Regeln aus
+   [`DC-FA-SCAN-001`](lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln):
+   deklarierte Wurzeln müssen existieren und innerhalb der Repo-Wurzel
+   liegen (Exit 2), `"."` steht für die gesamte Repo-Wurzel,
+   Ignorier-Muster prunen den Verzeichnis-Abstieg, die `SKIP_DIRS`
+   gelten immer, eine explizit leere `roots`-Liste prüft nichts.
+2. **Lauf:** Geprüft wird die **Vereinigungsmenge** aller effektiven
+   Modul-Scopes in deterministischer Reihenfolge (Pfade bytewise
+   sortiert); jede Datei wird genau einmal gelesen und vorverarbeitet,
+   jedes Modul prüft nur Dateien seines effektiven Scopes. Die
+   Zusammenfassung („N Datei(en) geprüft") und das `files`-Feld der
+   JSON-Ausgabe zählen die Vereinigungsmenge. Die Befund-Sortierung
+   bleibt global ([DC-QA-02.a](#dc-qa-02a--determinismus-und-sortierung)).
+3. **Abwärtskompatibilität:** Ohne `scope`-Schlüssel ist das Verhalten
+   byte-identisch zum Lauf vor dieser Anforderung (ein globaler
+   Discover-Lauf, alle aktiven Module auf allen Dateien).
+
 ### DC-QA-01.a — Benchmark
 
 **Fixture** (deterministisch generiert): 1.000 Markdown-Dateien unter
@@ -316,6 +342,9 @@ scan:
   ignore: ["docs/archive/**"]    # Glob, relativ zur Repo-Wurzel
 modules: [links, anchors, ids]   # ersetzt DEFAULT_MODULES
 ids:
+  scope:                         # optional: ersetzt den globalen Scan
+    roots: [spec, docs/user]     #   nur für dieses Modul (DC-FA-CONF-002)
+    ignore: []
   patterns:                      # Reihenfolge = Präzedenz
     - regex: 'ADR-\d{4}'
       target: docs/plan/adr/     # Definition (Datei oder Verzeichnis)
@@ -346,6 +375,8 @@ Exit 2 ohne Prüfung
 | `scan.roots` | string[] | `DEFAULT_SCAN_ROOTS` | alle hier deklarierten Wurzeln müssen existieren und innerhalb der Repo-Wurzel liegen (Exit 2); nur die Default-Wurzeln (kein `scan.roots` gesetzt) sind optional; `"."` steht für die gesamte Repo-Wurzel (rekursiv; die `SKIP_DIRS` aus [§3](#3-defaults-und-konstanten) gelten immer und sind nicht konfigurierbar) |
 | `scan.ignore` | string[] | leer | Glob-Syntax; Muster prunen auch den Verzeichnis-Abstieg — ein vollständig ignorierter Teilbaum (`pfad/**` oder direkt matchendes Muster) wird nicht betreten, unlesbare ignorierte Verzeichnisse sind dadurch kein Laufzeitfehler |
 | `modules` | string[] | `DEFAULT_MODULES` | nur gültige Modulnamen |
+| `<modul>.scope.roots` | string[] | — (globaler Scope) | Pflicht, wenn `scope` gesetzt ist; Constraints wie `scan.roots` (Existenz, kein Repo-Escape, `"."` = Repo-Wurzel, leere Liste = nichts) |
+| `<modul>.scope.ignore` | string[] | leer | wie `scan.ignore` (Glob, Abstiegs-Pruning) |
 | `ids.patterns[].regex` | string | — | muss kompilieren und darf den Leerstring nicht matchen (Exit 2) |
 | `ids.patterns[].target` | string | — | muss existieren und innerhalb der Repo-Wurzel liegen |
 | `matrix.classes[].name` | string | — | eindeutig |
@@ -424,5 +455,6 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-11 | Spez-Schuld eingelöst: §`DC-QA-01.a` Benchmark-Definition (Fixture, Messprotokoll, Pass-Kriterium) | slice-009 |
 | 2026-06-11 | Review R1 zu slice-009/010: §`DC-QA-01.a`-Messprotokoll um die 2-vCPU-Begrenzung aus dem Lastenheft präzisiert (`--cpus 2`); N ungerade (Median = mittleres Element) | slice-009 |
 | 2026-06-11 | Modul `codepaths` normiert (§`DC-FA-CODE-001.a`: rohe Prosa-Zeilen, Marker-Semantik, Normalisierung, konservative Erkennung, Anker-Prüfung); Schema um `codepaths.roots`, Grund-Code `codepath-missing`, `repo-escape`/`anchor-missing` auch für codepaths; Modul-Aufzählungen ergänzt | slice-013 |
+| 2026-06-12 | Modul-lokaler Scan-Scope normiert (§`DC-FA-CONF-002.a`: `<modul>.scope` ersetzt den globalen Scope je Modul, `roots` Pflicht innerhalb `scope`, Lauf über die Vereinigungsmenge mit Einmal-Lese-Garantie, Zusammenfassung zählt die Union); Schema um `<modul>.scope.roots`/`.ignore` | slice-017 |
 | 2026-06-12 | Scan-Härtung aus der pkcs11-course-Adoption (slice-014): `scan.ignore`-Muster prunen den Verzeichnis-Abstieg (vollständig ignorierte Teilbäume werden nicht betreten — unlesbare ignorierte Verzeichnisse wie root-eigene Build-Reste sind kein Laufzeitfehler mehr); `SKIP_DIRS` um `.gradle` ergänzt (Parität zur JS-Alt-Familie) | slice-014 |
 | 2026-06-12 | Inline-Code-Erkennung absatzweise statt zeilenweise (§`DC-FA-LINK-001.a` Schritt 2): mehrzeilige Code-Spans gemäß CommonMark, Absatzgrenzen Leerzeile/Fence, ungeschlossene Folge literal. Anlass: `DC-QA-04`-Gegentest u-boot — über Zeilenumbrüche gebrochene Befehls-Spans invertierten die Backtick-Parität der Folgezeile und erzeugten False-Positive-`id-unlinked`-Befunde auf korrekt verlinkten Kennungen. Zeilenbasierte **Link**-Extraktion (Schritt 3) bleibt normative Grenze | slice-012 |

@@ -34,6 +34,18 @@ type Config struct {
 	External ExternalConfig
 	// Codepaths: Präfixe des Moduls codepaths.
 	Codepaths CodepathsConfig
+	// Scopes: modul-lokale Scan-Scopes (DC-FA-CONF-002); Schlüssel
+	// ist der Modulname, nil-Eintrag/fehlender Schlüssel = globaler
+	// Scope.
+	Scopes map[string]*ScopeConfig
+}
+
+// ScopeConfig ersetzt für genau ein Modul den globalen Scan-Scope
+// (DC-FA-CONF-002; Roots ist im Adapter als Pflichtfeld validiert —
+// nie nil, eine leere Liste prüft nichts).
+type ScopeConfig struct {
+	Roots  []string
+	Ignore []string
 }
 
 // IDPattern ist ein deklariertes Kennungs-Muster (DC-FA-ID-001).

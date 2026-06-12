@@ -28,10 +28,26 @@ type rawIDPattern struct {
 }
 
 type rawIDs struct {
+	Scope    *rawScope      `yaml:"scope"`
 	Patterns []rawIDPattern `yaml:"patterns"`
 }
 
+// rawScope ist der modul-lokale Scan-Scope (DC-FA-CONF-002). Roots
+// ist Pflicht, wenn scope gesetzt ist — nil (fehlend) ist von der
+// expliziten leeren Liste unterscheidbar.
+type rawScope struct {
+	Roots  []string `yaml:"roots"`
+	Ignore []string `yaml:"ignore"`
+}
+
+// rawScopeOnly traegt Module, die ausser scope keine eigenen
+// Konfigurations-Schluessel haben (links, anchors).
+type rawScopeOnly struct {
+	Scope *rawScope `yaml:"scope"`
+}
+
 type rawMatrix struct {
+	Scope   *rawScope `yaml:"scope"`
 	Classes []struct {
 		Name  string   `yaml:"name"`
 		Paths []string `yaml:"paths"`
@@ -51,8 +67,9 @@ type rawMatrix struct {
 // Nicht-Setzen unterscheidbar bleibt (Constraint 1–300 bzw. 1–16 —
 // auch 0 ist ein Konfigurationsfehler, kein stiller Default).
 type rawExternal struct {
-	TimeoutSeconds *int `yaml:"timeout-seconds"`
-	Parallel       *int `yaml:"parallel"`
+	Scope          *rawScope `yaml:"scope"`
+	TimeoutSeconds *int      `yaml:"timeout-seconds"`
+	Parallel       *int      `yaml:"parallel"`
 }
 
 // raw bildet das Voll-Schema von .d-check.yml ab
@@ -63,12 +80,15 @@ type raw struct {
 		Roots  []string `yaml:"roots"`
 		Ignore []string `yaml:"ignore"`
 	} `yaml:"scan"`
-	Modules  []string     `yaml:"modules"`
-	IDs      *rawIDs      `yaml:"ids"`
-	Matrix   *rawMatrix   `yaml:"matrix"`
-	External *rawExternal `yaml:"external"`
+	Modules  []string      `yaml:"modules"`
+	Links    *rawScopeOnly `yaml:"links"`
+	Anchors  *rawScopeOnly `yaml:"anchors"`
+	IDs      *rawIDs       `yaml:"ids"`
+	Matrix   *rawMatrix    `yaml:"matrix"`
+	External *rawExternal  `yaml:"external"`
 	Codepaths *struct {
-		Roots []string `yaml:"roots"`
+		Scope *rawScope `yaml:"scope"`
+		Roots []string  `yaml:"roots"`
 	} `yaml:"codepaths"`
 }
 
@@ -114,7 +134,80 @@ func Decode(content []byte) (core.Config, error) {
 		}
 		cfg.Codepaths = core.CodepathsConfig{Roots: r.Codepaths.Roots}
 	}
+	if err := applyScopes(r, &cfg); err != nil {
+		return cfg, err
+	}
 	return cfg, nil
+}
+
+// applyScopes übernimmt die modul-lokalen Scan-Scopes
+// (DC-FA-CONF-002): scope ersetzt den globalen Scan für genau dieses
+// Modul; roots ist Pflicht (keine stille Vererbung).
+func applyScopes(r *raw, cfg *core.Config) error {
+	scopes := []struct {
+		module string
+		scope  *rawScope
+	}{
+		{"links", scopeOf(r.Links)},
+		{"anchors", scopeOf(r.Anchors)},
+		{"ids", scopeOfIDs(r.IDs)},
+		{"matrix", scopeOfMatrix(r.Matrix)},
+		{"external", scopeOfExternal(r.External)},
+		{"codepaths", scopeOfCodepaths(r.Codepaths)},
+	}
+	for _, sc := range scopes {
+		if sc.scope == nil {
+			continue
+		}
+		if sc.scope.Roots == nil {
+			return fmt.Errorf("%s: %s.scope.roots fehlt — scope ersetzt den globalen Scan und braucht explizite Wurzeln (leere Liste prüft nichts)", FileName, sc.module)
+		}
+		if cfg.Scopes == nil {
+			cfg.Scopes = map[string]*core.ScopeConfig{}
+		}
+		cfg.Scopes[sc.module] = &core.ScopeConfig{Roots: sc.scope.Roots, Ignore: sc.scope.Ignore}
+	}
+	return nil
+}
+
+// scopeOf-Helfer: nil-sichere Extraktion des scope-Schluessels der
+// jeweiligen Modul-Sektion.
+func scopeOf(v *rawScopeOnly) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
+}
+
+func scopeOfIDs(v *rawIDs) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
+}
+
+func scopeOfMatrix(v *rawMatrix) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
+}
+
+func scopeOfExternal(v *rawExternal) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
+}
+
+func scopeOfCodepaths(v *struct {
+	Scope *rawScope `yaml:"scope"`
+	Roots []string  `yaml:"roots"`
+}) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
 }
 
 // decodeStrict dekodiert mit KnownFields; nil-raw bei leerem Dokument
