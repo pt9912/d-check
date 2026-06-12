@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-06-12
+
+Modul-lokaler Scan-Scope (`<modul>.scope`, Change Request des
+Erst-Bedarfsträgers grid-gym) — dazu der dokumentierte Abschluss des
+13/13-Migrations-Rollouts.
+
 ### Added
 
 - slice-017 — Modul-lokaler Scan-Scope
