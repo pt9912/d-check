@@ -1,6 +1,6 @@
 # Slice slice-012: Pilot-Migrationen (drei Tool-Familien)
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-04-distribution-und-migration (Abschluss).
 
