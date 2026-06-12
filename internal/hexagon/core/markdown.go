@@ -40,32 +40,121 @@ func proseLines(content []byte) []proseLine {
 
 // PreprocessMarkdown wendet Fence- und Inline-Code-Behandlung an.
 // Fence-Zeilen selbst und Zeilen im Fence-Zustand entfallen komplett.
+// Inline-Code-Spans werden absatzweise erkannt (CommonMark: ein Span
+// darf Zeilenumbrüche enthalten) und positionserhaltend geleert
+// (spec/spezifikation.md §DC-FA-LINK-001.a Schritt 2).
 func PreprocessMarkdown(content []byte) []Line {
-	var out []Line
-	for _, pl := range proseLines(content) {
-		out = append(out, Line{No: pl.no, Text: stripInlineCode(pl.raw)})
+	prose := proseLines(content)
+	stripped := stripInlineCodeByLine(prose)
+	out := make([]Line, 0, len(prose))
+	for _, pl := range prose {
+		text, ok := stripped[pl.no]
+		if !ok {
+			text = pl.raw // Leerzeile (kein Absatz-Mitglied)
+		}
+		out = append(out, Line{No: pl.no, Text: text})
 	}
 	return out
 }
 
-// stripInlineCode ersetzt Backtick-Spans (inkl. Backticks) durch
-// Leerzeichen gleicher Länge — positionserhaltend, damit angrenzender
-// Text nicht zu Schein-Vorkommen verschmilzt (DC-FA-ID-001;
-// spec/spezifikation.md §DC-FA-LINK-001.a Schritt 2). Ein Span wird
-// von zwei gleich langen Backtick-Folgen begrenzt (die öffnende Folge
-// bestimmt die schließende).
-func stripInlineCode(s string) string {
-	var b strings.Builder
-	last := 0
-	forEachInlineCodeSpan(s, func(start, end, _, _ int) {
-		b.WriteString(s[last:start])
-		for k := start; k < end; k++ {
-			b.WriteByte(' ')
+// proseParagraphs gruppiert Prosa-Zeilen zu Absätzen: Leerzeilen und
+// Lücken in der Zeilennummerierung (übersprungene Fences) beenden
+// einen Absatz — über solche Grenzen hinweg existiert kein
+// Inline-Code-Span (spec/spezifikation.md §DC-FA-LINK-001.a Schritt 2).
+func proseParagraphs(prose []proseLine) [][]proseLine {
+	var groups [][]proseLine
+	var cur []proseLine
+	prevNo := 0
+	for _, pl := range prose {
+		blank := strings.TrimSpace(pl.raw) == ""
+		if len(cur) > 0 && (blank || pl.no != prevNo+1) {
+			groups = append(groups, cur)
+			cur = nil
 		}
-		last = end
-	})
-	b.WriteString(s[last:])
-	return b.String()
+		if !blank {
+			cur = append(cur, pl)
+		}
+		prevNo = pl.no
+	}
+	if len(cur) > 0 {
+		groups = append(groups, cur)
+	}
+	return groups
+}
+
+// stripInlineCodeByLine ersetzt Backtick-Spans (inkl. Backticks)
+// absatzweise durch Leerzeichen gleicher Länge — positionserhaltend,
+// damit angrenzender Text nicht zu Schein-Vorkommen verschmilzt
+// (DC-FA-ID-001). Ein Span wird von zwei gleich langen
+// Backtick-Folgen begrenzt (die öffnende Folge bestimmt die
+// schließende) und darf innerhalb des Absatzes Zeilenumbrüche
+// enthalten; eine im Absatz ungeschlossene Folge ist literal.
+// Ergebnis: gestrippter Text pro Zeilennummer (nur Absatz-Zeilen).
+func stripInlineCodeByLine(prose []proseLine) map[int]string {
+	out := make(map[int]string, len(prose))
+	for _, grp := range proseParagraphs(prose) {
+		raws := make([]string, len(grp))
+		for i, pl := range grp {
+			raws[i] = pl.raw
+		}
+		joined := []byte(strings.Join(raws, "\n"))
+		forEachInlineCodeSpan(string(joined), func(start, end, _, _ int) {
+			for k := start; k < end; k++ {
+				if joined[k] != '\n' {
+					joined[k] = ' '
+				}
+			}
+		})
+		for i, line := range strings.Split(string(joined), "\n") {
+			out[grp[i].no] = line
+		}
+	}
+	return out
+}
+
+// inlineSpan ist ein Inline-Code-Span, der vollständig innerhalb
+// einer Zeile liegt (Offsets relativ zur Zeile, wie
+// forEachInlineCodeSpan).
+type inlineSpan struct {
+	start, end, valStart, valEnd int
+}
+
+// inlineSpansByLine liefert pro Zeilennummer die vollständig in der
+// Zeile liegenden Code-Spans — absatzweise Erkennung wie
+// stripInlineCodeByLine. Mehrzeilige Spans liefern keine Einträge
+// (ein Wert mit Zeilenumbruch ist nie ein Pfad, §DC-FA-CODE-001.a).
+func inlineSpansByLine(prose []proseLine) map[int][]inlineSpan {
+	out := make(map[int][]inlineSpan)
+	for _, grp := range proseParagraphs(prose) {
+		raws := make([]string, len(grp))
+		for i, pl := range grp {
+			raws[i] = pl.raw
+		}
+		joined := strings.Join(raws, "\n")
+		// Zeilen-Offsets im gejointen Absatz
+		starts := make([]int, len(grp))
+		off := 0
+		for i, r := range raws {
+			starts[i] = off
+			off += len(r) + 1
+		}
+		forEachInlineCodeSpan(joined, func(start, end, valStart, valEnd int) {
+			for i := range grp {
+				lineStart := starts[i]
+				lineEnd := lineStart + len(raws[i])
+				if start >= lineStart && end <= lineEnd {
+					out[grp[i].no] = append(out[grp[i].no], inlineSpan{
+						start:    start - lineStart,
+						end:      end - lineStart,
+						valStart: valStart - lineStart,
+						valEnd:   valEnd - lineStart,
+					})
+					break
+				}
+			}
+		})
+	}
+	return out
 }
 
 // forEachInlineCodeSpan ruft fn für jeden Inline-Code-Span auf:
@@ -86,7 +175,10 @@ func forEachInlineCodeSpan(s string, fn func(start, end, valStart, valEnd int)) 
 		}
 		closeAt := findClosingRun(s, j, j-i)
 		if closeAt == -1 {
-			return // keine schließende Folge
+			// keine schließende Folge: die öffnende ist literal,
+			// die Suche läuft dahinter weiter (CommonMark)
+			i = j
+			continue
 		}
 		fn(i, closeAt, j, closeAt-(j-i))
 		i = closeAt

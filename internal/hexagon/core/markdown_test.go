@@ -25,20 +25,69 @@ func TestPreprocessMarkdown_FencesUndInlineCode(t *testing.T) {
 	}
 }
 
+// stripLine: Einzelzeilen-Strip über die absatzweise API (Test-Helfer).
+func stripLine(s string) string {
+	return stripInlineCodeByLine([]proseLine{{no: 1, raw: s}})[1]
+}
+
 func TestStripInlineCode_MehrfachBackticks(t *testing.T) {
 	// Doppel-Backtick-Span mit einfachem Backtick im Inhalt —
 	// ersetzt durch Leerzeichen gleicher Länge (positionserhaltend)
-	got := stripInlineCode("a ``x ` y`` b")
+	got := stripLine("a ``x ` y`` b")
 	if got != "a "+strings.Repeat(" ", len("``x ` y``"))+" b" {
 		t.Fatalf("got %q", got)
 	}
 	// unbalancierte Backticks bleiben erhalten
-	if got := stripInlineCode("a ` b"); got != "a ` b" {
+	if got := stripLine("a ` b"); got != "a ` b" {
 		t.Fatalf("unbalanciert: got %q", got)
 	}
 	// positionserhaltend: kein Verschmelzen angrenzenden Texts
-	if got := stripInlineCode("AD`x`R-0042"); got != "AD   R-0042" {
+	if got := stripLine("AD`x`R-0042"); got != "AD   R-0042" {
 		t.Fatalf("verschmolzen: %q", got)
+	}
+	// ungeschlossene Folge ist literal, die Suche läuft dahinter
+	// weiter: der spätere Doppel-Backtick-Span wird erkannt
+	if got := stripLine("a ` b ``x`` c"); got != "a ` b "+strings.Repeat(" ", len("``x``"))+" c" {
+		t.Fatalf("Scan nach literaler Folge abgebrochen: %q", got)
+	}
+}
+
+// Mehrzeilige Code-Spans (CommonMark): ein über den Zeilenumbruch
+// gebrochener Span invertiert NICHT die Backtick-Parität der
+// Folgezeile — der DC-QA-04-False-Positive aus dem u-boot-Gegentest
+// (Slice slice-012): [`ID`](ziel) nach Span-Fortsetzung bleibt ein
+// intakter Link.
+func TestPreprocessMarkdown_MehrzeiligerSpan(t *testing.T) {
+	content := "vor (`u-boot init && u-boot add\n" +
+		"postgres && u-boot up`, `x.md` [`LH-AK-002`](l.md#a)) ohne\n" +
+		"\n" +
+		"neuer Absatz ` bleibt literal"
+	lines := PreprocessMarkdown([]byte(content))
+
+	// Zeile 2: beide Einzel-Spans geleert, der Link intakt
+	if !strings.Contains(lines[1].Text, "[") || !strings.Contains(lines[1].Text, "](l.md#a)") {
+		t.Fatalf("Link nach Span-Fortsetzung zerstört: %q", lines[1].Text)
+	}
+	if strings.Contains(lines[1].Text, "x.md` ") {
+		t.Fatalf("Einzel-Span nicht geleert: %q", lines[1].Text)
+	}
+	// Zeile 1: Span-Anteil ab Backtick geleert
+	if strings.Contains(lines[0].Text, "u-boot init") {
+		t.Fatalf("Span-Beginn nicht geleert: %q", lines[0].Text)
+	}
+	// Leerzeile beendet den Absatz: ungeschlossener Backtick im
+	// neuen Absatz bleibt literal
+	if lines[3].Text != "neuer Absatz ` bleibt literal" {
+		t.Fatalf("Absatzgrenze verletzt: %q", lines[3].Text)
+	}
+}
+
+// Fences unterbrechen Absätze: kein Span über eine Fence hinweg.
+func TestPreprocessMarkdown_FenceUnterbrichtAbsatz(t *testing.T) {
+	content := "a ` offen\n```\ncode\n```\nzu ` b"
+	lines := PreprocessMarkdown([]byte(content))
+	if lines[0].Text != "a ` offen" || lines[1].Text != "zu ` b" {
+		t.Fatalf("Fence-Grenze verletzt: %q / %q", lines[0].Text, lines[1].Text)
 	}
 }
 

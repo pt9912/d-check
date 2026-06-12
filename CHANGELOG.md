@@ -31,6 +31,18 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Review-R1-Präzisierungen (Wert-Normalisierung, Anker-Prüfung bei
   Markdown-Zielen); Umsetzung folgt mit slice-013.
 
+### Fixed
+
+- Inline-Code-Erkennung absatzweise statt zeilenweise (CommonMark:
+  Spans dürfen Zeilenumbrüche enthalten; Absatzgrenzen sind
+  Leerzeile/Fence, ungeschlossene Backtick-Folgen sind literal und
+  brechen den Scan nicht mehr ab). Behebt False-Positive-
+  `id-unlinked`-Befunde auf korrekt verlinkten Kennungen nach
+  Span-Fortsetzungszeilen — gefunden im
+  [`DC-QA-04`](spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Gegentest
+  gegen den u-boot-Vollausbau (slice-012); Spezifikation
+  §`DC-FA-LINK-001.a` Schritt 2 fortgeschrieben.
+
 ## [0.1.0] — 2026-06-11
 
 Erster Release: alle fünf Regelmodule, Gate-Vollausbau, Distribution

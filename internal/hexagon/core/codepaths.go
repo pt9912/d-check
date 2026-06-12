@@ -28,7 +28,9 @@ type CodepathsConfig struct {
 // Module gerade entfernt; teilt den Slug-Cache mit anchors.
 func checkCodepaths(fsys driven.Filesystem, file string, content []byte, cfg CodepathsConfig, slugCache map[string]map[string]bool) []Finding {
 	var findings []Finding
-	for _, pl := range proseLines(content) {
+	prose := proseLines(content)
+	spans := inlineSpansByLine(prose)
+	for _, pl := range prose {
 		if strings.Contains(pl.raw, ignoreMarker) {
 			continue
 		}
@@ -38,21 +40,21 @@ func checkCodepaths(fsys driven.Filesystem, file string, content []byte, cfg Cod
 		if _, _, ok := parseATXHeading(pl.raw); ok {
 			continue
 		}
-		forEachInlineCodeSpan(pl.raw, func(start, end, valStart, valEnd int) {
+		for _, sp := range spans[pl.no] {
 			// Span als Linktext ([`…`](ziel)): das Ziel prüft das
 			// Modul links — der Text ist Beschriftung, kein Pfad-
 			// Anspruch (§DC-FA-CODE-001.a Schritt 2).
-			if start > 0 && pl.raw[start-1] == '[' && end < len(pl.raw) && pl.raw[end] == ']' {
-				return
+			if sp.start > 0 && pl.raw[sp.start-1] == '[' && sp.end < len(pl.raw) && pl.raw[sp.end] == ']' {
+				continue
 			}
-			value := normalizeCodepath(pl.raw[valStart:valEnd])
+			value := normalizeCodepath(pl.raw[sp.valStart:sp.valEnd])
 			rootRel, ok := classifyCodepath(value, cfg.Roots)
 			if !ok {
-				return
+				continue
 			}
 			findings = append(findings,
 				checkCodepathTarget(fsys, file, pl.no, value, rootRel, slugCache)...)
-		})
+		}
 	}
 	return findings
 }

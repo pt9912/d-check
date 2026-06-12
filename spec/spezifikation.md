@@ -59,11 +59,15 @@ Nutzungsfehler (Exit 2) mit Auflistung der gültigen Namen.
 1. **Fences:** Zeilen, deren erste Nicht-Leerzeichen-Folge mit
    ` ``` ` oder `~~~` beginnt, schalten den Fence-Zustand um;
    Zeilen im Fence-Zustand werden von allen Modulen ignoriert.
-2. **Inline-Code:** Backtick-Spans werden zeilenweise durch
-   Leerzeichen gleicher Länge ersetzt (positionserhaltend —
-   angrenzender Text kann nicht zu Schein-Vorkommen verschmelzen);
-   die öffnende Backtick-Folge bestimmt die schließende
-   (Mehrfach-Backticks).
+2. **Inline-Code:** Backtick-Spans werden durch Leerzeichen gleicher
+   Länge ersetzt (positionserhaltend — angrenzender Text kann nicht
+   zu Schein-Vorkommen verschmelzen); die öffnende Backtick-Folge
+   bestimmt die schließende (Mehrfach-Backticks). Die Erkennung ist
+   **absatzweise** (CommonMark): ein Span darf Zeilenumbrüche
+   enthalten; Absatzgrenzen sind Leerzeilen und Fences, eine im
+   Absatz ungeschlossene Backtick-Folge ist literal. Damit invertiert
+   ein über den Zeilenumbruch gebrochener Span nicht die
+   Backtick-Parität der Folgezeile.
 3. **Extraktion:** Inline-Links `[text](ziel)` und Bilder
    `![alt](ziel)` per Klammer-balancierter Suche; mehrere Links pro
    Zeile werden alle erfasst. Ziele in `<…>` werden entquotet; ein
@@ -420,3 +424,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-11 | Spez-Schuld eingelöst: §`DC-QA-01.a` Benchmark-Definition (Fixture, Messprotokoll, Pass-Kriterium) | slice-009 |
 | 2026-06-11 | Review R1 zu slice-009/010: §`DC-QA-01.a`-Messprotokoll um die 2-vCPU-Begrenzung aus dem Lastenheft präzisiert (`--cpus 2`); N ungerade (Median = mittleres Element) | slice-009 |
 | 2026-06-11 | Modul `codepaths` normiert (§`DC-FA-CODE-001.a`: rohe Prosa-Zeilen, Marker-Semantik, Normalisierung, konservative Erkennung, Anker-Prüfung); Schema um `codepaths.roots`, Grund-Code `codepath-missing`, `repo-escape`/`anchor-missing` auch für codepaths; Modul-Aufzählungen ergänzt | slice-013 |
+| 2026-06-12 | Inline-Code-Erkennung absatzweise statt zeilenweise (§`DC-FA-LINK-001.a` Schritt 2): mehrzeilige Code-Spans gemäß CommonMark, Absatzgrenzen Leerzeile/Fence, ungeschlossene Folge literal. Anlass: `DC-QA-04`-Gegentest u-boot — über Zeilenumbrüche gebrochene Befehls-Spans invertierten die Backtick-Parität der Folgezeile und erzeugten False-Positive-`id-unlinked`-Befunde auf korrekt verlinkten Kennungen. Zeilenbasierte **Link**-Extraktion (Schritt 3) bleibt normative Grenze | slice-012 |
