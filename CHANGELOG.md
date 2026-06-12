@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-06-12
+
+Modul `codepaths` (Change Request 0.3.0) und der absatzweise
+Inline-Code-Parser aus dem `DC-QA-04`-Gegentest — damit enthält das
+Image alle sechs Regelmodule (slice-013, slice-012-Vorlauf).
+
 ### Added
 
 - slice-013 — Modul `codepaths` (`DC-FA-CODE-001`, opt-in): explizite

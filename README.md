@@ -4,9 +4,8 @@ Doc-Referenz-Checker für Markdown-Dokumentation — deterministisch,
 seiteneffektfrei, ausgeliefert als Container-Image.
 
 **Status: released** — alle sechs Regelmodule (`links`, `anchors`,
-`ids`, `matrix`, `external`, `codepaths`) sind implementiert und
-getestet. Das `v0.1.0`-Image auf GHCR enthält die ersten fünf;
-`codepaths` (Change Request 0.3.0) folgt mit dem nächsten Release.
+`ids`, `matrix`, `external`, `codepaths`) sind implementiert,
+getestet und seit `v0.2.0` im GHCR-Image enthalten.
 Verbindlich ist das [Lastenheft](spec/lastenheft.md).
 
 ## Was ist d-check?
@@ -99,7 +98,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.1.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.2.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
