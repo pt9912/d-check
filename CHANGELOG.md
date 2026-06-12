@@ -6,6 +6,20 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-014 — Rollout abgeschlossen
+  ([`DC-QA-04`](spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)
+  vollständig, 13/13): alle verbleibenden neun Alt-Tool-Vorkommen
+  migriert (Shell: b-trace, m-trace, cmake-xray, k-deskflight;
+  Python: c-hsm-doc, grid-gym; JS: euler-fourier-hilbert, b-cad;
+  eigenständige Linie: bess-ems — Inventur-Nachtrag Lastenheft
+  0.4.0). 16 echte Mehr-Befunde in den Ziel-Repos gefixt;
+  Rest-Sensoren für Math-Validierung, Host-Pfad-Prosa und
+  Modul-Nummern verbleiben dort. Zusatz: Neu-Adoption pkcs11-course
+  (Auslöser der v0.2.1-Scan-Härtung). Vergleichstabellen in der
+  slice-014-Closure-Notiz; schließt welle-05.
+
 ## [0.2.1] — 2026-06-12
 
 Scan-Härtung aus der pkcs11-course-Adoption (slice-014) plus der
