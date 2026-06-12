@@ -62,7 +62,7 @@ oder gar nicht (Repos ohne `ids`-Konfiguration).
 - [x] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
   Closure-Notiz mit Steering-Loop-Lerneintrag. Release-Hinweis:
   neues Modul ⇒ nächstes Minor-Release (v0.4.0 — v0.3.0 ist seit slice-017 vergeben —, gemeinsam mit
-  [slice-016](../in-progress/slice-016-hostpaths-modul.md)), Konsumenten-Pins
+  [slice-016](slice-016-hostpaths-modul.md)), Konsumenten-Pins
   sind Routine-Hebungen.
 
 ## 3. Plan (vor Code)
@@ -105,7 +105,7 @@ historischer Gegentest) + Closure-Notiz.
 ## 7. Closure-Notiz (nach `done/`)
 
 **Abgeschlossen:** 2026-06-12 (540e5c7). Release folgt gebündelt mit
-[slice-016](../in-progress/slice-016-hostpaths-modul.md) als v0.4.0.
+[slice-016](slice-016-hostpaths-modul.md) als v0.4.0.
 
 - **Kalibrierungslauf (14 Korpora: 13 migrierte Repos +
   pkcs11-course):** 17 echte Artefakte, 1 False-Positive-Klasse.

@@ -17,8 +17,8 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 [slice-015](../done/slice-015-spans-modul.md)
 (done, Modul `spans` —
 [`DC-FA-SPAN-001`](../../../../spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)),
-danach [slice-016](slice-016-hostpaths-modul.md)
-(in-progress, Modul `hostpaths` —
+danach [slice-016](../done/slice-016-hostpaths-modul.md)
+(done, Modul `hostpaths` —
 [`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in);
 schließt die Welle, gemeinsames Minor-Release v0.4.0).
 

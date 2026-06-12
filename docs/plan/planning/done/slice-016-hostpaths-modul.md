@@ -1,6 +1,6 @@
 # Slice slice-016: Modul `hostpaths` — host-lokale absolute Pfade
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-06-sensorik (Abschluss).
 
