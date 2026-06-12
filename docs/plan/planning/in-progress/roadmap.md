@@ -10,18 +10,12 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Welle-ID:** welle-07-modul-scope
-**Start:** 2026-06-12 (Trigger erfüllt: Change Request 0.7.0 im
-Lastenheft, Priorisierung durch den Auftraggeber — Erst-Bedarfsträger
-grid-gym wartet konkret; vorgezogen vor welle-06, orthogonal)
-**Slices:**
-[slice-017](slice-017-modul-scope.md)
-(in-progress, Modul-lokaler Scan-Scope
-[`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope)
-— schließt die Welle).
-
-**Closure-Trigger:** DoD von slice-017 vollständig
-(Abwärtskompatibilitäts-Beleg, dokumentierte grid-gym-Abnahme).
+Keine — welle-07-modul-scope ist abgeschlossen (2026-06-12:
+Abwärtskompatibilität byte-identisch belegt, grid-gym-Abnahme
+dokumentiert — 311 kuratierte vs. 2378 globale Befunde). Der
+produktive grid-gym-Umstieg folgt nach dem nächsten Minor-Release
+per Digest-Bump. Nächste Welle per Roadmap-Fortschreibung
+(welle-06-sensorik wartet auf Priorisierung).
 
 ## Nächste Wellen
 
@@ -60,6 +54,7 @@ flowchart LR
 | welle-01-fundament | 2026-06-10 | [slice-001 §7](../done/slice-001-adr-fundament.md#7-closure-notiz-nach-done), [slice-002 §7](../done/slice-002-architektur-und-spezifikation.md#7-closure-notiz-nach-done) |
 | welle-02-mvp | 2026-06-10 | [slice-003 §7](../done/slice-003-cli-kern-und-links-modul.md#7-closure-notiz-nach-done), [slice-004 §7](../done/slice-004-anchors-modul-und-dogfooding.md#7-closure-notiz-nach-done) |
 | welle-03-regelmodule | 2026-06-11 | [slice-005 §7](../done/slice-005-lint-profil-solid.md#7-closure-notiz-nach-done), [slice-006 §7](../done/slice-006-ids-modul.md#7-closure-notiz-nach-done), [slice-007 §7](../done/slice-007-matrix-modul-selbstkonfiguration.md#7-closure-notiz-nach-done), [slice-008 §7](../done/slice-008-external-modul.md#7-closure-notiz-nach-done), [slice-009 §7](../done/slice-009-coverage-und-meta-gates.md#7-closure-notiz-nach-done) |
+| welle-07-modul-scope | 2026-06-12 | [slice-017 §7](../done/slice-017-modul-scope.md#7-closure-notiz-nach-done) |
 | welle-05-rollout | 2026-06-12 | [slice-014 §7](../done/slice-014-rollout-restliche-repos.md#7-closure-notiz-nach-done) |
 | welle-04-distribution-und-migration | 2026-06-12 | [slice-010 §7](../done/slice-010-image-integrationstests-und-repro-belege.md#7-closure-notiz-nach-done), [slice-011 §7](../done/slice-011-ghcr-release-pipeline.md#7-closure-notiz-nach-done), [slice-013 §7](../done/slice-013-codepaths-modul.md#7-closure-notiz-nach-done), [slice-012 §7](../done/slice-012-pilot-migrationen.md#7-closure-notiz-nach-done) |
 

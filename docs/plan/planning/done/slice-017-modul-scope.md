@@ -1,6 +1,6 @@
 # Slice slice-017: Modul-lokaler Scan-Scope (`<modul>.scope`)
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-07-modul-scope (per Roadmap-Fortschreibung; Start
 bei Priorisierung durch den Auftraggeber — der Erst-Bedarfsträger
