@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.5.0
+**Version:** 0.6.0
 
 **Status:** Draft
 
@@ -42,8 +42,8 @@ statt per Code-Kopie.
 > (Aufruf/Ausgabe), `SCAN` (Datei-Auswahl), `LINK` (Link-Modul), `ANCH`
 > (Anker-Modul), `ID` (ID-Linkpflicht-Modul), `MTX`
 > (Referenzmatrix-Modul), `EXT` (externe Links), `CODE`
-> (Inline-Code-Pfade), `SPAN` (Markdown-Span-Artefakte), `CONF`
-> (Konfiguration), `DIST` (Distribution).
+> (Inline-Code-Pfade), `SPAN` (Markdown-Span-Artefakte), `HOST`
+> (Host-Pfad-Hygiene), `CONF` (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -66,7 +66,8 @@ Repository-Wurzel für alle Pfadauflösungen.
 
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
-`codepaths`, `spans`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`codepaths`, `spans`, `hostpaths`. Ohne Konfiguration sind `links` und
+`anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -357,6 +358,44 @@ bleibt auf das Modul `codepaths` beschränkt
 
 ---
 
+### DC-FA-HOST-001 — Host-lokale absolute Pfade (Modul `hostpaths`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `hostpaths` werden
+absolute Pfade gemeldet, die ein Maschinen-Layout statt einer
+Repo-Struktur beschreiben — sie funktionieren nur auf einem konkreten
+Host und leaken dessen Verzeichnis-Aufbau. Erkannt werden, jeweils
+als erstes Segment eines absoluten Pfads:
+
+1. **Unix-Host-Präfixe** (Default-Liste, als Wurzel-Verzeichnisnamen
+   deklariert: Development, home, Users, Volumes, mnt, media, tmp;
+   per `hostpaths.prefixes` ersetzbar),
+2. **Windows-Laufwerkspfade** (Laufwerksbuchstabe, Doppelpunkt,
+   Backslash) und **UNC-Pfade** (doppelter Backslash plus
+   Servername) — beide immer, nicht konfigurierbar.
+
+Geprüft werden Prosa-Zeilen **einschließlich Inline-Code** (dort
+leben solche Pfade typischerweise); Fenced-Code-Blöcke sind
+ausgenommen — Beispiel- und Lehrinhalte mit bewussten Host-Pfaden
+gehören in Fences. Vorbedingung ist eine Wortgrenze (kein
+unmittelbar vorangehendes URL-, Pfad- oder Wortzeichen); schließende
+Satzzeichen werden vom gemeldeten Pfad abgetrennt. Grund-Code
+`hostpath-forbidden` mit Datei, Zeile und gefundenem Pfad. Es gibt
+**keinen Opt-out-Marker** (der Zeilen-Marker `d-check:ignore` bleibt
+auf das Modul `codepaths` beschränkt,
+[`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)) —
+die Auswege sind Fences für beabsichtigte Beispiele und die
+Präfixliste für repo-spezifische Sonderfälle.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given Dokumentation, deren Pfad-Angaben relativ oder Repo-Wurzel-absolut sind, when das Modul `hostpaths` läuft, then kein Befund.
+- **Boundary:** Given ein host-lokaler absoluter Pfad innerhalb eines Fenced-Code-Blocks, when das Modul läuft, then kein Befund.
+- **Negative:** Given eine Prosa-Zeile oder ein Inline-Code-Span mit einem Pfad unterhalb eines deklarierten Host-Präfixes, when das Modul läuft, then ein Befund `hostpath-forbidden` mit Datei, Zeile, Pfad und Grund, Exit-Code 1.
+
+**Out-of-Scope:** Erkennung relativer Pfade (Aufgabe von `links`/`codepaths`); URL-Pfade hinter Schemata; Pfade in Fenced-Code-Blöcken; ein Opt-out-Marker für dieses Modul; automatische Umschreibung.
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -435,7 +474,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -454,6 +493,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | 0.2.1 | 2026-06-10 | Redaktionell: Beispiel-Kennungen in DC-FA-ID-001/DC-FA-MTX-001/Glossar auf fiktive Nummern (`ADR-0042`, `ADR-0099`) umgestellt — Kollision mit real entstandenen/zukünftigen eigenen ADRs vermeiden; keine inhaltliche Änderung | — |
 | 0.2.2 | 2026-06-10 | Redaktionell: absolute Workspace-Pfade entfernt („Schwester-Repositories des Entwicklungs-Workspace" statt konkreter Pfade); keine inhaltliche Änderung | — |
 | 0.2.3 | 2026-06-11 | Redaktionell: „(folgt)" in der `DC-QA-01`-Messmethode entfernt — die Benchmark-Definition existiert in der Spezifikation; keine inhaltliche Änderung | — |
+| 0.6.0 | 2026-06-12 | Change Request (Auftraggeber): neue Anforderung `DC-FA-HOST-001` — Modul `hostpaths` meldet host-lokale absolute Pfade in Prosa und Inline-Code (opt-in; Unix-Präfixliste konfigurierbar, Windows-/UNC-Muster fest; Fences ausgenommen, kein Opt-out-Marker). Anlass: der bess-ems-Rest-Sensor generalisiert (dort als eigenes Tool gebaut) plus die 8 Host-Pfad-Links aus dem d-migrate-Vergleichslauf und die eigene 0.2.2-Hygiene-Korrektur — dieselbe Leak-Klasse dreimal unabhängig. Bereich `HOST` deklariert; Modul-Listen in `DC-FA-CLI-002` und Glossar ergänzt | slice-016 |
 | 0.5.0 | 2026-06-12 | Change Request (Auftraggeber): neue Anforderung `DC-FA-SPAN-001` — Modul `spans` meldet ungeschlossene Code-Spans und verschachtelte Link-Artefakte (opt-in, konservative Erkennung: alleinstehende Backticks bleiben befundfrei; kein Opt-out-Marker). Anlass: die `DC-QA-04`-Vergleichsläufe aus slice-012/slice-014 — ~100 u-boot-Artefakte sowie Fälle in grid-gym und bess-ems wurden nur indirekt als `id-unlinked`-Folgefehler sichtbar; ein direkter Sensor meldet die Ursache statt der Symptome. Bereich `SPAN` in der Schema-Konvention deklariert; Modul-Listen in `DC-FA-CLI-002` und Glossar ergänzt | slice-015 |
 | 0.3.0 | 2026-06-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CODE-001` — Modul `codepaths` prüft explizite Pfade in Inline-Code (opt-in, konservative Erkennung, Zeilen-Opt-out `d-check:ignore` nur für dieses Modul). Anlass: `DC-QA-04`-Vergleichslauf gegen die JS-Familie (`docs-check.js`) zeigte die Prüfklasse als Konsolidierungs-Lücke. Bereich `CODE` in der Schema-Konvention deklariert; Modul-Listen in `DC-FA-CLI-002` und Glossar ergänzt | slice-013 |
 | 0.4.0 | 2026-06-12 | Change Request (Auftraggeber): Inventur-Nachtrag zu `DC-QA-04` — dreizehntes Alt-Tool-Vorkommen entdeckt (`check_markdown_links.py` in bess-ems, eigenständige Python-Linie, entstanden 2026-05-24 und damit vor der Inventur vom 2026-06-10 übersehen); Anforderungs-Text, Einleitung, Stakeholder-Tabelle und Glossar von zwölf auf dreizehn fortgeschrieben. Messmethode (drei Familien-Piloten) unverändert | slice-014 |
