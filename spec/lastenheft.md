@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.4.0
+**Version:** 0.5.0
 
 **Status:** Draft
 
@@ -42,7 +42,8 @@ statt per Code-Kopie.
 > (Aufruf/Ausgabe), `SCAN` (Datei-Auswahl), `LINK` (Link-Modul), `ANCH`
 > (Anker-Modul), `ID` (ID-Linkpflicht-Modul), `MTX`
 > (Referenzmatrix-Modul), `EXT` (externe Links), `CODE`
-> (Inline-Code-Pfade), `CONF` (Konfiguration), `DIST` (Distribution).
+> (Inline-Code-Pfade), `SPAN` (Markdown-Span-Artefakte), `CONF`
+> (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -65,7 +66,7 @@ Repository-Wurzel für alle Pfadauflösungen.
 
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
-`codepaths`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`codepaths`, `spans`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -317,6 +318,45 @@ unterdrückt.
 
 ---
 
+### DC-FA-SPAN-001 — Markdown-Span-Artefakte (Modul `spans`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `spans` werden zwei
+deterministische Artefakt-Klassen gemeldet, bei denen Markdown auf
+GitHub nachweislich anders rendert, als der Quelltext nahelegt:
+
+1. **Ungeschlossene Code-Spans** (`span-unclosed`): eine öffnende
+   Backtick-Folge, die unmittelbar von Nicht-Whitespace gefolgt wird
+   und im Absatz keine gleich lange schließende Folge findet
+   (Absatzgrenzen: Leerzeile und Fence — dieselbe Absatz-Semantik wie
+   die Vorverarbeitung der übrigen Module). Solche Opener kippen die
+   Backtick-Parität des restlichen Absatzes; nachfolgende Links und
+   Kennungen rendern zerrissen. Alleinstehende Backtick-Folgen
+   (beidseitig Whitespace oder Zeilenrand) gelten als beabsichtigt
+   literal und sind kein Befund (konservative Erkennung).
+2. **Verschachtelte Link-Artefakte** (`span-nested-link`): Link-Syntax
+   im Linktext eines weiteren Links (schließende Ziel-Klammer
+   unmittelbar gefolgt von einer weiteren Linktext-Schließung mit
+   Ziel-Öffnung) außerhalb von Fences und Code-Spans — für Leser
+   sieht das wie ein Link aus, wird aber nur teilweise als Link
+   geparst.
+
+Der Befund nennt Datei, Zeile (Opener- bzw. Muster-Zeile), die
+betroffene Backtick-Folge bzw. das Muster und den Grund. Es gilt die
+allgemeine Opt-out-Regel unverändert: deterministische Befunde werden
+behoben, nicht unterdrückt — der Zeilen-Marker `d-check:ignore`
+bleibt auf das Modul `codepaths` beschränkt
+([`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given ein Absatz mit ausschließlich balancierten Code-Spans — auch solchen, die einen Zeilenumbruch enthalten —, when das Modul `spans` läuft, then kein Befund.
+- **Boundary:** Given eine alleinstehende literale Backtick-Folge (beidseitig Whitespace), when das Modul läuft, then kein Befund.
+- **Negative:** Given ein Listenpunkt, dessen öffnende Backtick-Folge unmittelbar vor Nicht-Whitespace steht und im Absatz ungeschlossen bleibt, when das Modul läuft, then ein Befund `span-unclosed` mit Datei, Zeile und Grund, Exit-Code 1.
+
+**Out-of-Scope:** Emphasis-/Bold-Artefakte (`*`, `_`); Syntaxfehler in Fenced-Code-Blöcken; Reference-Style-Definitionen; automatische Korrektur; ein Opt-out-Marker für dieses Modul.
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -395,7 +435,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -414,6 +454,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | 0.2.1 | 2026-06-10 | Redaktionell: Beispiel-Kennungen in DC-FA-ID-001/DC-FA-MTX-001/Glossar auf fiktive Nummern (`ADR-0042`, `ADR-0099`) umgestellt — Kollision mit real entstandenen/zukünftigen eigenen ADRs vermeiden; keine inhaltliche Änderung | — |
 | 0.2.2 | 2026-06-10 | Redaktionell: absolute Workspace-Pfade entfernt („Schwester-Repositories des Entwicklungs-Workspace" statt konkreter Pfade); keine inhaltliche Änderung | — |
 | 0.2.3 | 2026-06-11 | Redaktionell: „(folgt)" in der `DC-QA-01`-Messmethode entfernt — die Benchmark-Definition existiert in der Spezifikation; keine inhaltliche Änderung | — |
+| 0.5.0 | 2026-06-12 | Change Request (Auftraggeber): neue Anforderung `DC-FA-SPAN-001` — Modul `spans` meldet ungeschlossene Code-Spans und verschachtelte Link-Artefakte (opt-in, konservative Erkennung: alleinstehende Backticks bleiben befundfrei; kein Opt-out-Marker). Anlass: die `DC-QA-04`-Vergleichsläufe aus slice-012/slice-014 — ~100 u-boot-Artefakte sowie Fälle in grid-gym und bess-ems wurden nur indirekt als `id-unlinked`-Folgefehler sichtbar; ein direkter Sensor meldet die Ursache statt der Symptome. Bereich `SPAN` in der Schema-Konvention deklariert; Modul-Listen in `DC-FA-CLI-002` und Glossar ergänzt | slice-015 |
 | 0.3.0 | 2026-06-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CODE-001` — Modul `codepaths` prüft explizite Pfade in Inline-Code (opt-in, konservative Erkennung, Zeilen-Opt-out `d-check:ignore` nur für dieses Modul). Anlass: `DC-QA-04`-Vergleichslauf gegen die JS-Familie (`docs-check.js`) zeigte die Prüfklasse als Konsolidierungs-Lücke. Bereich `CODE` in der Schema-Konvention deklariert; Modul-Listen in `DC-FA-CLI-002` und Glossar ergänzt | slice-013 |
 | 0.4.0 | 2026-06-12 | Change Request (Auftraggeber): Inventur-Nachtrag zu `DC-QA-04` — dreizehntes Alt-Tool-Vorkommen entdeckt (`check_markdown_links.py` in bess-ems, eigenständige Python-Linie, entstanden 2026-05-24 und damit vor der Inventur vom 2026-06-10 übersehen); Anforderungs-Text, Einleitung, Stakeholder-Tabelle und Glossar von zwölf auf dreizehn fortgeschrieben. Messmethode (drei Familien-Piloten) unverändert | slice-014 |
 | 0.3.1 | 2026-06-11 | Review R1 zum Change Request: `DC-FA-CODE-001` präzisiert — Wert-Normalisierung (Anführungszeichen, schließende Satzzeichen) und Anker-Prüfung bei Markdown-Zielen (`DC-QA-04`-Parität zur JS-Familie); `DC-FA-LINK-001`-Inline-Code-Aussage auf Modul-Bezug eingegrenzt | slice-013 |
