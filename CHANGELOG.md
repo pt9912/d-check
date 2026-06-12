@@ -6,6 +6,18 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-012 — Pilot-Migrationen
+  ([`DC-QA-04`](spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)):
+  drei Schwester-Repos prüfen ihre Doku jetzt digest-gepinnt über das
+  GHCR-Image — d-migrate (Shell-Familie, v0.1.0-Digest, Alt-Skript
+  gelöscht), ai-harness-course (JS-Familie, v0.2.0-Digest,
+  `docs-check.js` auf den Modul-Nummern-Rest-Sensor geschrumpft) und
+  u-boot (Python-Vollausbau, v0.2.0-Digest, `check_refs.py`
+  deprecated). Vergleichsläufe und Triage in der Closure-Notiz des
+  Slices; schließt welle-04 und Meilenstein M3.
+
 ## [0.2.0] — 2026-06-12
 
 Modul `codepaths` (Change Request 0.3.0) und der absatzweise
