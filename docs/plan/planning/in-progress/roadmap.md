@@ -10,21 +10,12 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Welle-ID:** welle-05-rollout
-**Start:** 2026-06-12 (Trigger erfüllt: welle-04 done, Release
-v0.2.0 mit allen sechs Modulen auf GHCR, drei Familien-Rezepte
-erprobt)
-**Slices:**
-[slice-014](slice-014-rollout-restliche-repos.md)
-(in-progress, Rollout der restlichen neun Alt-Tool-Vorkommen
-([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)
-vollständig: 13/13 nach Inventur-Nachtrag, Lastenheft 0.4.0) —
-Shell ×4, Python ×2, JS ×2, eigenständige Linie ×1 (bess-ems);
-schließt die Welle).
-
-**Closure-Trigger:** Alle dreizehn Quell-Tool-Vorkommen migriert
-(Vergleichstabelle 13/13 in der slice-014-Closure-Notiz); keine
-roten Make-/CI-Steps in den Ziel-Repos.
+Keine — welle-05-rollout ist abgeschlossen (2026-06-12, alle
+Closure-Trigger erfüllt: dreizehn Quell-Tool-Vorkommen migriert,
+Vergleichstabelle 13/13 in der slice-014-Closure-Notiz, alle
+Ziel-Repo-Make-/CI-Steps grün; Zwischenrelease v0.2.1 aus dem
+pkcs11-course-Adoptions-Befund). Die nächste Welle entsteht per
+Roadmap-Fortschreibung.
 
 ## Nächste Wellen
 
@@ -63,6 +54,7 @@ flowchart LR
 | welle-01-fundament | 2026-06-10 | [slice-001 §7](../done/slice-001-adr-fundament.md#7-closure-notiz-nach-done), [slice-002 §7](../done/slice-002-architektur-und-spezifikation.md#7-closure-notiz-nach-done) |
 | welle-02-mvp | 2026-06-10 | [slice-003 §7](../done/slice-003-cli-kern-und-links-modul.md#7-closure-notiz-nach-done), [slice-004 §7](../done/slice-004-anchors-modul-und-dogfooding.md#7-closure-notiz-nach-done) |
 | welle-03-regelmodule | 2026-06-11 | [slice-005 §7](../done/slice-005-lint-profil-solid.md#7-closure-notiz-nach-done), [slice-006 §7](../done/slice-006-ids-modul.md#7-closure-notiz-nach-done), [slice-007 §7](../done/slice-007-matrix-modul-selbstkonfiguration.md#7-closure-notiz-nach-done), [slice-008 §7](../done/slice-008-external-modul.md#7-closure-notiz-nach-done), [slice-009 §7](../done/slice-009-coverage-und-meta-gates.md#7-closure-notiz-nach-done) |
+| welle-05-rollout | 2026-06-12 | [slice-014 §7](../done/slice-014-rollout-restliche-repos.md#7-closure-notiz-nach-done) |
 | welle-04-distribution-und-migration | 2026-06-12 | [slice-010 §7](../done/slice-010-image-integrationstests-und-repro-belege.md#7-closure-notiz-nach-done), [slice-011 §7](../done/slice-011-ghcr-release-pipeline.md#7-closure-notiz-nach-done), [slice-013 §7](../done/slice-013-codepaths-modul.md#7-closure-notiz-nach-done), [slice-012 §7](../done/slice-012-pilot-migrationen.md#7-closure-notiz-nach-done) |
 
 ## Historische Trigger-Verschiebungen

@@ -1,6 +1,6 @@
 # Slice slice-014: Rollout — die restlichen neun Alt-Tool-Vorkommen
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-05-rollout (Abschluss).
 
