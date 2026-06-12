@@ -10,13 +10,20 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-Keine — welle-04-distribution-und-migration ist abgeschlossen
-(2026-06-12, alle Closure-Trigger erfüllt: Image auf GHCR mit
-Semver-Tag + Digest-Pin (v0.1.0, v0.2.0), DIST-Akzeptanzkriterien als
-Integrationstests grün, `versions`/`fullbuild`/`ci` dokumentiert,
-Modul `codepaths` implementiert, drei Pilot-Migrationen mit
-Vergleichslauf dokumentiert). Die nächste Welle entsteht per
-Roadmap-Fortschreibung.
+**Welle-ID:** welle-05-rollout
+**Start:** 2026-06-12 (Trigger erfüllt: welle-04 done, Release
+v0.2.0 mit allen sechs Modulen auf GHCR, drei Familien-Rezepte
+erprobt)
+**Slices:**
+[slice-014](../open/slice-014-rollout-restliche-repos.md)
+(open, Rollout der restlichen acht Alt-Tool-Vorkommen
+([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)
+vollständig: 12/12) — Shell ×4, Python ×2, JS ×2; schließt die
+Welle).
+
+**Closure-Trigger:** Alle zwölf Quell-Tool-Vorkommen migriert
+(Vergleichstabelle 12/12 in der slice-014-Closure-Notiz); keine
+roten Make-/CI-Steps in den Ziel-Repos.
 
 ## Nächste Wellen
 
@@ -40,10 +47,12 @@ flowchart LR
     W2[welle-02-mvp]
     W3[welle-03-regelmodule]
     W4[welle-04-distribution-und-migration]
+    W5[welle-05-rollout]
 
     W1 --> W2
     W2 --> W3
     W3 --> W4
+    W4 --> W5
 ```
 
 ## Abgeschlossene Wellen
