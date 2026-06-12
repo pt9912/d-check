@@ -6,6 +6,22 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-06-12
+
+Scan-Härtung aus der pkcs11-course-Adoption (slice-014) plus der
+dokumentierte Rollout-Stand.
+
+### Fixed
+
+- `scan.ignore`-Muster prunen jetzt den Verzeichnis-Abstieg: ein
+  vollständig ignorierter Teilbaum (`pfad/**` oder direkt matchendes
+  Muster) wird nicht betreten — unlesbare ignorierte Verzeichnisse
+  (z. B. root-eigene Laufzeit-Residuen wie SoftHSM-Tokens) brechen
+  den Lauf nicht mehr mit Exit 2 ab
+  ([`DC-FA-SCAN-001`](spec/lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln)).
+- `SKIP_DIRS` um `.gradle` ergänzt (Parität zur JS-Alt-Familie);
+  Spezifikation §3 inkl. Querverweis aus dem Config-Schema.
+
 ### Added
 
 - slice-012 — Pilot-Migrationen
