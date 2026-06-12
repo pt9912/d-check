@@ -21,7 +21,7 @@ Roadmap-Fortschreibung.
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| — (nach welle-04 per Roadmap-Fortschreibung) | | | |
+| welle-06-span-sensorik | Change Request 0.5.0 ([`DC-FA-SPAN-001`](../../../../spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)) im Lastenheft (erfüllt 2026-06-12); Start bei Priorisierung durch den Auftraggeber | [slice-015](../open/slice-015-spans-modul.md) (Modul `spans` + Minor-Release v0.3.0) | 1 Slice |
 
 ## Meilensteine
 
