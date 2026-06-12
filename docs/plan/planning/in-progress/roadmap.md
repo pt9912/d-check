@@ -21,7 +21,7 @@ Roadmap-Fortschreibung.
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| welle-06-span-sensorik | Change Request 0.5.0 ([`DC-FA-SPAN-001`](../../../../spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)) im Lastenheft (erfüllt 2026-06-12); Start bei Priorisierung durch den Auftraggeber | [slice-015](../open/slice-015-spans-modul.md) (Modul `spans` + Minor-Release v0.3.0) | 1 Slice |
+| welle-06-sensorik | Change Requests 0.5.0 ([`DC-FA-SPAN-001`](../../../../spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)) und 0.6.0 ([`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)) im Lastenheft (erfüllt 2026-06-12); Start bei Priorisierung durch den Auftraggeber | [slice-015](../open/slice-015-spans-modul.md) (Modul `spans`), danach [slice-016](../open/slice-016-hostpaths-modul.md) (Modul `hostpaths`, löst den bess-ems-Rest-Sensor ab); gemeinsames Minor-Release v0.3.0 | 2 Slices |
 
 ## Meilensteine
 

@@ -2,7 +2,7 @@
 
 **Status:** open.
 
-**Welle:** welle-06-span-sensorik (per Roadmap-Fortschreibung;
+**Welle:** welle-06-sensorik (per Roadmap-Fortschreibung;
 Start bei Priorisierung durch den Auftraggeber).
 
 **Bezug:** [`DC-FA-SPAN-001`](../../../../spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)
@@ -61,7 +61,8 @@ oder gar nicht (Repos ohne `ids`-Konfiguration).
   außer `external`).
 - [ ] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
   Closure-Notiz mit Steering-Loop-Lerneintrag. Release-Hinweis:
-  neues Modul ⇒ nächstes Minor-Release (v0.3.0), Konsumenten-Pins
+  neues Modul ⇒ nächstes Minor-Release (v0.3.0, gemeinsam mit
+  [slice-016](slice-016-hostpaths-modul.md)), Konsumenten-Pins
   sind Routine-Hebungen.
 
 ## 3. Plan (vor Code)
