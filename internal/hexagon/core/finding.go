@@ -14,6 +14,7 @@ const (
 	ReasonIDUnlinked     = "id-unlinked"
 	ReasonSpanUnclosed   = "span-unclosed"
 	ReasonSpanNestedLink = "span-nested-link"
+	ReasonHostpathForbidden = "hostpath-forbidden"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2).

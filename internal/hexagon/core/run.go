@@ -104,6 +104,9 @@ func (st *runState) checkFile(file string) error {
 	if st.applies("codepaths", file) {
 		st.findings = append(st.findings, checkCodepaths(st.fsys, file, content, st.cfg.Codepaths, st.slugCache)...)
 	}
+	if st.applies("hostpaths", file) {
+		st.findings = append(st.findings, checkHostpaths(file, content, st.cfg.Hostpaths)...)
+	}
 	if st.applies("spans", file) {
 		st.findings = append(st.findings, checkSpans(file, content, lines)...)
 	}

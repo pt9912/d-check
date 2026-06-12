@@ -249,6 +249,43 @@ den generischen Schlüssel `spans.scope`
 ([§DC-FA-CONF-002.a](#dc-fa-conf-002a--effektiver-scan-scope-pro-modul)),
 weitere Konfiguration existiert nicht.
 
+### DC-FA-HOST-001.a — Host-Pfad-Erkennung
+
+1. **Geltungsbereich:** rohe Prosa-Zeilen außerhalb von
+   Fenced-Code-Blöcken, **einschließlich Inline-Code** (dort leben
+   die Leaks typischerweise — bewusste Abweichung von den
+   Strip-Konsumenten; Beispiel-Inhalte gehören in Fences,
+   [`DC-FA-HOST-001`](lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)).
+2. **Muster** (jeweils mit Wortgrenzen-Vorbedingung — dem Treffer
+   darf kein Buchstabe, keine Ziffer und keines der Zeichen
+   Unterstrich, Punkt, Doppelpunkt, Schrägstrich oder Bindestrich
+   unmittelbar vorausgehen; URL-Pfade hinter Schemata sind damit
+   ausgenommen):
+   - **Unix:** Schrägstrich + Präfix-Verzeichnisname + Schrägstrich
+     + Restpfad (Zeichen bis Whitespace bzw. `<`, `>`, `)`, `]`,
+     Anführungszeichen oder Backtick — Inline-Code-Delimiter gehören
+     nicht zum Pfad). Die Präfixliste ist konfigurierbar
+     (`hostpaths.prefixes`, **ersetzt** den Default); Default-Namen:
+     Development, home, Users, Volumes, mnt, media (tmp bewusst
+     nicht — Lastenheft 0.7.2).
+   - **Windows-Laufwerk:** Buchstabe + Doppelpunkt + Backslash +
+     Restpfad (Vorbedingung hier: kein Wortzeichen davor).
+   - **UNC:** doppelter Backslash + Servername + Backslash +
+     Restpfad (Vorbedingung wie Windows-Laufwerk; der Servername
+     beginnt mit einem alphanumerischen Zeichen — Regex-Beispiele
+     wie escapte Punkt-Folgen matchen damit nicht).
+3. **Normalisierung:** schließende Satzzeichen (`.`, `,`, `;`, `:`)
+   werden vom gemeldeten Pfad abgetrennt (wie
+   `codepaths`-Normalisierung). Befund `hostpath-forbidden` mit
+   Datei, Zeile und dem normalisierten Pfad; kein Opt-out-Marker,
+   das Modul akzeptiert den generischen Schlüssel `hostpaths.scope`
+   ([§DC-FA-CONF-002.a](#dc-fa-conf-002a--effektiver-scan-scope-pro-modul)).
+
+**Bekannte Grenze:** ein Repo-Wurzel-relatives Linkziel, dessen
+erstes Segment zufällig ein Präfix-Name ist (etwa ein Verzeichnis
+`home/` im Repo), wird gemeldet — Ausweg ist die konfigurierbare
+Präfixliste; konservativer Default vor Vollständigkeit.
+
 ### DC-FA-CONF-002.a — Effektiver Scan-Scope pro Modul
 
 1. **Auflösung:** Für jedes aktive Modul gilt der globale Scan-Scope
@@ -411,6 +448,7 @@ Exit 2 ohne Prüfung
 | `modules` | string[] | `DEFAULT_MODULES` | nur gültige Modulnamen |
 | `<modul>.scope.roots` | string[] | — (globaler Scope) | Pflicht, wenn `scope` gesetzt ist; Constraints wie `scan.roots` (Existenz, kein Repo-Escape, `"."` = Repo-Wurzel, leere Liste = nichts) |
 | `<modul>.scope.ignore` | string[] | leer | wie `scan.ignore` (Glob, Abstiegs-Pruning) |
+| `hostpaths.prefixes` | string[] | Development, home, Users, Volumes, mnt, media | ersetzt die Default-Liste; Einträge sind nicht-leere Verzeichnisnamen ohne `/` (Exit 2) |
 | `ids.patterns[].regex` | string | — | muss kompilieren und darf den Leerstring nicht matchen (Exit 2) |
 | `ids.patterns[].target` | string | — | muss existieren und innerhalb der Repo-Wurzel liegen |
 | `matrix.classes[].name` | string | — | eindeutig |
@@ -450,6 +488,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `external-status` | external | HTTP-Status ≥ 400 oder Transportfehler (DNS/Verbindung) |
 | `external-timeout` | external | Timeout überschritten |
 | `codepath-missing` | codepaths | Ziel eines Inline-Code-Pfads existiert nicht |
+| `hostpath-forbidden` | hostpaths | host-lokaler absoluter Pfad (Maschinen-Layout-Leak) in Prosa oder Inline-Code |
 | `span-unclosed` | spans | ungeschlossene Code-Span-Öffnung klebt an Nicht-Whitespace (Absatz-Parität gekippt) |
 | `span-nested-link` | spans | Link-Syntax im Linktext eines weiteren Links (rendert zerrissen) |
 | `external-redirects` | external | mehr als `REDIRECT_MAX` Redirects |
@@ -491,6 +530,8 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-11 | Spez-Schuld eingelöst: §`DC-QA-01.a` Benchmark-Definition (Fixture, Messprotokoll, Pass-Kriterium) | slice-009 |
 | 2026-06-11 | Review R1 zu slice-009/010: §`DC-QA-01.a`-Messprotokoll um die 2-vCPU-Begrenzung aus dem Lastenheft präzisiert (`--cpus 2`); N ungerade (Median = mittleres Element) | slice-009 |
 | 2026-06-11 | Modul `codepaths` normiert (§`DC-FA-CODE-001.a`: rohe Prosa-Zeilen, Marker-Semantik, Normalisierung, konservative Erkennung, Anker-Prüfung); Schema um `codepaths.roots`, Grund-Code `codepath-missing`, `repo-escape`/`anchor-missing` auch für codepaths; Modul-Aufzählungen ergänzt | slice-013 |
+| 2026-06-12 | Kalibrierungs-Verengungen `hostpaths` (slice-016): UNC-Servername beginnt alphanumerisch (escapte Regex-Beispiele matchen nicht mehr); Default-Präfixliste ohne tmp (Lastenheft 0.7.2) | slice-016 |
+| 2026-06-12 | Modul `hostpaths` normiert (§`DC-FA-HOST-001.a`: Prosa inkl. Inline-Code, Fences ausgenommen; Unix-Präfixliste konfigurierbar via `hostpaths.prefixes`, Windows-/UNC-Muster fest; Wortgrenzen-Vorbedingung, Satzzeichen-Normalisierung; bekannte Grenze Repo-Verzeichnis mit Präfix-Namen dokumentiert); Schema + Grund-Code ergänzt | slice-016 |
 | 2026-06-12 | Modul `spans` normiert (§`DC-FA-SPAN-001.a`: `span-unclosed` absatzweise mit Folgezeichen-Bedingung und 30-Zeichen-Kappung, `span-nested-link` lexikalisch auf vorverarbeiteten Zeilen mit 40-Zeichen-Kappung; kein Opt-out, nur generischer `scope`); Grund-Codes ergänzt | slice-015 |
 | 2026-06-12 | Modul-lokaler Scan-Scope normiert (§`DC-FA-CONF-002.a`: `<modul>.scope` ersetzt den globalen Scope je Modul, `roots` Pflicht innerhalb `scope`, Lauf über die Vereinigungsmenge mit Einmal-Lese-Garantie, Zusammenfassung zählt die Union); Schema um `<modul>.scope.roots`/`.ignore` | slice-017 |
 | 2026-06-12 | Scan-Härtung aus der pkcs11-course-Adoption (slice-014): `scan.ignore`-Muster prunen den Verzeichnis-Abstieg (vollständig ignorierte Teilbäume werden nicht betreten — unlesbare ignorierte Verzeichnisse wie root-eigene Build-Reste sind kein Laufzeitfehler mehr); `SKIP_DIRS` um `.gradle` ergänzt (Parität zur JS-Alt-Familie) | slice-014 |

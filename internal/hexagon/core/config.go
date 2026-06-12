@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths"}
 }
 
 // defaultModules ist der Default-Modulsatz (DC-FA-CLI-002).
@@ -34,6 +34,8 @@ type Config struct {
 	External ExternalConfig
 	// Codepaths: Präfixe des Moduls codepaths.
 	Codepaths CodepathsConfig
+	// Hostpaths: Parameter des Moduls hostpaths.
+	Hostpaths HostpathsConfig
 	// Scopes: modul-lokale Scan-Scopes (DC-FA-CONF-002); Schlüssel
 	// ist der Modulname, nil-Eintrag/fehlender Schlüssel = globaler
 	// Scope.

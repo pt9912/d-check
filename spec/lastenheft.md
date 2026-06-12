@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.7.1
+**Version:** 0.7.2
 
 **Status:** Draft
 
@@ -368,8 +368,10 @@ Host und leaken dessen Verzeichnis-Aufbau. Erkannt werden, jeweils
 als erstes Segment eines absoluten Pfads:
 
 1. **Unix-Host-Präfixe** (Default-Liste, als Wurzel-Verzeichnisnamen
-   deklariert: Development, home, Users, Volumes, mnt, media, tmp;
-   per `hostpaths.prefixes` ersetzbar),
+   deklariert: Development, home, Users, Volumes, mnt, media;
+   per `hostpaths.prefixes` ersetzbar — tmp gehört bewusst nicht
+   dazu: ein POSIX-Standard-Laufzeitort, dessen Erwähnung legitime
+   Betriebs-Doku ist),
 2. **Windows-Laufwerkspfade** (Laufwerksbuchstabe, Doppelpunkt,
    Backslash) und **UNC-Pfade** (doppelter Backslash plus
    Servername) — beide immer, nicht konfigurierbar.
@@ -524,6 +526,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | 0.2.1 | 2026-06-10 | Redaktionell: Beispiel-Kennungen in DC-FA-ID-001/DC-FA-MTX-001/Glossar auf fiktive Nummern (`ADR-0042`, `ADR-0099`) umgestellt — Kollision mit real entstandenen/zukünftigen eigenen ADRs vermeiden; keine inhaltliche Änderung | — |
 | 0.2.2 | 2026-06-10 | Redaktionell: absolute Workspace-Pfade entfernt („Schwester-Repositories des Entwicklungs-Workspace" statt konkreter Pfade); keine inhaltliche Änderung | — |
 | 0.2.3 | 2026-06-11 | Redaktionell: „(folgt)" in der `DC-QA-01`-Messmethode entfernt — die Benchmark-Definition existiert in der Spezifikation; keine inhaltliche Änderung | — |
+| 0.7.2 | 2026-06-12 | Review zum Change Request `DC-FA-HOST-001` (Kalibrierungs-Befund slice-016): tmp aus der Default-Präfixliste gestrichen — der Kalibrierungslauf zeigte überwiegend legitime Laufzeit-Doku (Log-/Output-Pfade) statt Maschinen-Layout-Leaks; wer tmp prüfen will, konfiguriert es | slice-016 |
 | 0.7.1 | 2026-06-12 | Review zum Change Request `DC-FA-SPAN-001` (Kalibrierungs-Befund slice-015): Bildreferenzen als Linktext (`[![…](…)](…)` — Badge-Muster, z. B. Shields in vendorten Paket-READMEs) sind legales Markdown und kein `span-nested-link`-Treffer | slice-015 |
 | 0.7.0 | 2026-06-12 | Change Request (Erst-Bedarfsträger grid-gym): neue Anforderung `DC-FA-CONF-002` — optionaler modul-lokaler Scan-Scope `<modul>.scope` (`roots`/`ignore`), ersetzt für genau dieses Modul den globalen Scope; additiv und abwärtskompatibel, Constraints spiegeln `scan.*`. Anlass (gemessen, v0.2.0): `ids`-Aktivierung in grid-gym liefert global 2776 Befunde (Masse: Retro-Verlinkung historischer done-Planning-Docs = Umschreiben des Audit-Trails) vs. 312 echte, fixbare Befunde im kuratierten Scope `spec/` + `docs/user/` — der Linkpflicht-Nutzen ist heute nur um den Preis des globalen Sweeps oder des Verzichts auf breite `links`/`anchors`-Abdeckung zu haben | slice-017 |
 | 0.6.0 | 2026-06-12 | Change Request (Auftraggeber): neue Anforderung `DC-FA-HOST-001` — Modul `hostpaths` meldet host-lokale absolute Pfade in Prosa und Inline-Code (opt-in; Unix-Präfixliste konfigurierbar, Windows-/UNC-Muster fest; Fences ausgenommen, kein Opt-out-Marker). Anlass: der bess-ems-Rest-Sensor generalisiert (dort als eigenes Tool gebaut) plus die 8 Host-Pfad-Links aus dem d-migrate-Vergleichslauf und die eigene 0.2.2-Hygiene-Korrektur — dieselbe Leak-Klasse dreimal unabhängig. Bereich `HOST` deklariert; Modul-Listen in `DC-FA-CLI-002` und Glossar ergänzt | slice-016 |

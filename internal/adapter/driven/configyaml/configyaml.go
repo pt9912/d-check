@@ -84,6 +84,10 @@ type raw struct {
 	Links    *rawScopeOnly `yaml:"links"`
 	Anchors  *rawScopeOnly `yaml:"anchors"`
 	Spans    *rawScopeOnly `yaml:"spans"`
+	Hostpaths *struct {
+		Scope    *rawScope `yaml:"scope"`
+		Prefixes []string  `yaml:"prefixes"`
+	} `yaml:"hostpaths"`
 	IDs      *rawIDs       `yaml:"ids"`
 	Matrix   *rawMatrix    `yaml:"matrix"`
 	External *rawExternal  `yaml:"external"`
@@ -124,21 +128,51 @@ func Decode(content []byte) (core.Config, error) {
 	if err := applyExternal(r.External, &cfg); err != nil {
 		return cfg, err
 	}
-	if r.Codepaths != nil {
-		for _, root := range r.Codepaths.Roots {
-			if strings.TrimSpace(root) == "" {
-				return cfg, fmt.Errorf("%s: codepaths.roots enthält ein leeres Präfix", FileName)
-			}
-			if strings.HasPrefix(root, "/") || root == ".." || strings.Contains(root, "..") {
-				return cfg, fmt.Errorf("%s: codepaths.roots-Präfix %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')", FileName, root)
-			}
-		}
-		cfg.Codepaths = core.CodepathsConfig{Roots: r.Codepaths.Roots}
+	if err := applyCodepaths(r, &cfg); err != nil {
+		return cfg, err
+	}
+	if err := applyHostpaths(r, &cfg); err != nil {
+		return cfg, err
 	}
 	if err := applyScopes(r, &cfg); err != nil {
 		return cfg, err
 	}
 	return cfg, nil
+}
+
+// applyCodepaths validiert die codepaths-Präfixe (DC-FA-CODE-001).
+func applyCodepaths(r *raw, cfg *core.Config) error {
+	if r.Codepaths == nil {
+		return nil
+	}
+	for _, root := range r.Codepaths.Roots {
+		if strings.TrimSpace(root) == "" {
+			return fmt.Errorf("%s: codepaths.roots enthält ein leeres Präfix", FileName)
+		}
+		if strings.HasPrefix(root, "/") || root == ".." || strings.Contains(root, "..") {
+			return fmt.Errorf("%s: codepaths.roots-Präfix %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')", FileName, root)
+		}
+	}
+	cfg.Codepaths = core.CodepathsConfig{Roots: r.Codepaths.Roots}
+	return nil
+}
+
+// applyHostpaths validiert die hostpaths-Präfixliste (DC-FA-HOST-001:
+// nicht-leere Verzeichnisnamen ohne '/').
+func applyHostpaths(r *raw, cfg *core.Config) error {
+	if r.Hostpaths == nil {
+		return nil
+	}
+	for _, p := range r.Hostpaths.Prefixes {
+		if strings.TrimSpace(p) == "" {
+			return fmt.Errorf("%s: hostpaths.prefixes enthält einen leeren Namen", FileName)
+		}
+		if strings.Contains(p, "/") {
+			return fmt.Errorf("%s: hostpaths.prefixes-Eintrag %q muss ein Verzeichnisname ohne '/' sein", FileName, p)
+		}
+	}
+	cfg.Hostpaths = core.HostpathsConfig{Prefixes: r.Hostpaths.Prefixes}
+	return nil
 }
 
 // applyScopes übernimmt die modul-lokalen Scan-Scopes
@@ -152,6 +186,7 @@ func applyScopes(r *raw, cfg *core.Config) error {
 		{"links", scopeOf(r.Links)},
 		{"anchors", scopeOf(r.Anchors)},
 		{"spans", scopeOf(r.Spans)},
+		{"hostpaths", scopeOfHostpaths(r.Hostpaths)},
 		{"ids", scopeOfIDs(r.IDs)},
 		{"matrix", scopeOfMatrix(r.Matrix)},
 		{"external", scopeOfExternal(r.External)},
@@ -196,6 +231,16 @@ func scopeOfMatrix(v *rawMatrix) *rawScope {
 }
 
 func scopeOfExternal(v *rawExternal) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
+}
+
+func scopeOfHostpaths(v *struct {
+	Scope    *rawScope `yaml:"scope"`
+	Prefixes []string  `yaml:"prefixes"`
+}) *rawScope {
 	if v == nil {
 		return nil
 	}

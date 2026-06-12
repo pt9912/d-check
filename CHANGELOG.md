@@ -8,6 +8,21 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
+- slice-016 — Modul `hostpaths`
+  ([`DC-FA-HOST-001`](spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in),
+  Change Request 0.6.0, opt-in): meldet host-lokale absolute Pfade
+  (Maschinen-Layout-Leaks) in Prosa **und Inline-Code**
+  (`hostpath-forbidden`); Unix-Präfixliste konfigurierbar via
+  `hostpaths.prefixes` (Default ohne tmp — Lastenheft 0.7.2 aus dem
+  Kalibrierungs-Befund: Laufzeit-Doku ist legitim),
+  Windows-/UNC-Muster fest (UNC-Servername alphanumerisch — Schutz
+  vor Regex-Beispiel-Treffern), Fences ausgenommen, kein
+  Opt-out-Marker. Paritäts-Gegentest gegen den
+  bess-ems-Rest-Sensor: identische Befunde auf identischen Zeilen;
+  Kalibrierung über 14 Korpora trennte echte Workspace-Leaks
+  (k-deskflight-Spec gefixt) von gewollter
+  Windows-/WSL-Plattform-Doku (Opt-in-Entscheidung der Repos).
+
 - slice-015 — Modul `spans`
   ([`DC-FA-SPAN-001`](spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in),
   Change Request 0.5.0, opt-in): meldet ungeschlossene Code-Spans,

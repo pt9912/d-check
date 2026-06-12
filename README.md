@@ -5,8 +5,8 @@ seiteneffektfrei, ausgeliefert als Container-Image.
 
 **Status: released** — die Regelmodule `links`, `anchors`, `ids`,
 `matrix`, `external` und `codepaths` sind seit `v0.2.0` im
-GHCR-Image (Modul-Scope seit `v0.3.0`); `spans` (slice-015) folgt
-mit `v0.4.0`. Verbindlich ist das
+GHCR-Image (Modul-Scope seit `v0.3.0`); `spans` und `hostpaths`
+(welle-06) folgen mit `v0.4.0`. Verbindlich ist das
 [Lastenheft](spec/lastenheft.md).
 
 ## Was ist d-check?
@@ -30,6 +30,9 @@ Anforderung im [Lastenheft](spec/lastenheft.md):
 - `spans` — Markdown-Span-Artefakte (ungeschlossene Code-Spans,
   verschachtelte Links), opt-in
   ([`DC-FA-SPAN-001`](spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in))
+- `hostpaths` — host-lokale absolute Pfade (Maschinen-Layout-Leaks),
+  opt-in
+  ([`DC-FA-HOST-001`](spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
@@ -90,7 +93,8 @@ Lastenhefts, und beide werden gemessen, nicht behauptet:
   ([`DC-FA-CONF-001`](spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
 - **Dogfooding:** d-check validiert die eigene Doku bei jedem
   Gate-Lauf — mit der [Selbstkonfiguration](.d-check.yml) im
-  Vollausbau (sechs Module inkl. Referenzmatrix und Span-Artefakten).
+  Vollausbau (sieben Module inkl. Referenzmatrix, Span-Artefakten
+  und Host-Pfad-Hygiene).
 - **Container nativ-identisch:** Befund-Ausgabe und Exit-Code des
   Images sind byte-identisch zur nativen Ausführung, automatisiert
   getestet ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image));
