@@ -8,6 +8,18 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
+- slice-017 — Modul-lokaler Scan-Scope
+  ([`DC-FA-CONF-002`](spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope),
+  Change Request des Erst-Bedarfsträgers grid-gym): optionaler
+  Schlüssel `<modul>.scope` (`roots` Pflicht, `ignore` optional)
+  ersetzt für genau dieses Modul den globalen Scan-Scope — eigener
+  Discover-Lauf mit den bekannten Scan-Regeln, Lauf über die
+  Vereinigungsmenge mit Einmal-Lese-Garantie; ohne `scope`
+  byte-identisches Verhalten (belegt gegen v0.2.1 auf zwei Korpora).
+  Konsumenten-Abnahme grid-gym: `ids` kuratiert auf `spec/` +
+  `docs/user/` → 311 statt 2378 Befunde, `links`/`anchors`
+  unverändert global.
+
 - slice-014 — Rollout abgeschlossen
   ([`DC-QA-04`](spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)
   vollständig, 13/13): alle verbleibenden neun Alt-Tool-Vorkommen
