@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.6.0
+**Version:** 0.7.0
 
 **Status:** Draft
 
@@ -419,6 +419,36 @@ statt.
 
 ---
 
+### DC-FA-CONF-002 — Modul-lokaler Scan-Scope
+
+**Beschreibung:** Jedes Regelmodul akzeptiert in der
+Konfigurationsdatei optional einen Schlüssel `<modul>.scope` mit den
+Unterschlüsseln `roots` und `ignore`. Ist er gesetzt, **ersetzt** er
+für genau dieses Modul den globalen Scan-Scope
+(`scan.roots`/`scan.ignore`) — bewusst keine Schnittmengen- oder
+Vererbungs-Semantik (einfachste ehrliche Form). Module ohne `scope`
+erben den globalen Scan unverändert; bestehende Konfigurationen
+bleiben unverändert gültig (additiv, abwärtskompatibel). Für
+`scope.roots` und `scope.ignore` gelten dieselben Regeln und
+Constraints wie für die globalen Schlüssel: deklarierte Wurzeln
+müssen existieren und innerhalb der Repository-Wurzel liegen (jede
+Verletzung Exit 2,
+[`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei)),
+Ignorier-Muster prunen den Verzeichnis-Abstieg, die `SKIP_DIRS`
+gelten immer, und eine explizit leere `roots`-Liste prüft nichts
+(Leere-Menge-Semantik wie `scan.roots`).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given global `scan.roots: ["."]` und ein `ids`-`scope` mit `roots: ["spec"]`, when `d-check` läuft, then stammen `id-unlinked`-Befunde ausschließlich aus `spec/`, während `links`/`anchors` weiterhin den globalen Scope prüfen.
+- **Boundary:** Given ein Modul ohne `scope`-Schlüssel, when `d-check` läuft, then verhält es sich byte-identisch zum Verhalten ohne diese Anforderung.
+- **Boundary:** Given ein Modul-`scope` mit explizit leerer `roots`-Liste, when `d-check` läuft, then prüft dieses Modul nichts — bewusste Setzung, kein Fehler.
+- **Negative:** Given ein `scope.roots`-Eintrag, der nicht existiert oder die Repository-Wurzel verlässt, when `d-check` startet, then Exit-Code 2 mit Fehlermeldung; es findet keine Prüfung mit stillschweigenden Defaults statt.
+
+**Out-of-Scope:** Scope je Muster (`ids.patterns[].roots` — erst bei zweitem Bedarfsträger); Schnittmengen-/Unions-Semantik zwischen globalem und Modul-Scope; alternative Konfigurationsdateien, Mehrfach-Configs und Vererbung (Out-of-Scope-Linie von [`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei)).
+
+---
+
 ### DC-FA-DIST-001 — Docker-Image
 
 **Beschreibung:** Das Tool wird als Container-Image
@@ -493,6 +523,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | 0.2.1 | 2026-06-10 | Redaktionell: Beispiel-Kennungen in DC-FA-ID-001/DC-FA-MTX-001/Glossar auf fiktive Nummern (`ADR-0042`, `ADR-0099`) umgestellt — Kollision mit real entstandenen/zukünftigen eigenen ADRs vermeiden; keine inhaltliche Änderung | — |
 | 0.2.2 | 2026-06-10 | Redaktionell: absolute Workspace-Pfade entfernt („Schwester-Repositories des Entwicklungs-Workspace" statt konkreter Pfade); keine inhaltliche Änderung | — |
 | 0.2.3 | 2026-06-11 | Redaktionell: „(folgt)" in der `DC-QA-01`-Messmethode entfernt — die Benchmark-Definition existiert in der Spezifikation; keine inhaltliche Änderung | — |
+| 0.7.0 | 2026-06-12 | Change Request (Erst-Bedarfsträger grid-gym): neue Anforderung `DC-FA-CONF-002` — optionaler modul-lokaler Scan-Scope `<modul>.scope` (`roots`/`ignore`), ersetzt für genau dieses Modul den globalen Scope; additiv und abwärtskompatibel, Constraints spiegeln `scan.*`. Anlass (gemessen, v0.2.0): `ids`-Aktivierung in grid-gym liefert global 2776 Befunde (Masse: Retro-Verlinkung historischer done-Planning-Docs = Umschreiben des Audit-Trails) vs. 312 echte, fixbare Befunde im kuratierten Scope `spec/` + `docs/user/` — der Linkpflicht-Nutzen ist heute nur um den Preis des globalen Sweeps oder des Verzichts auf breite `links`/`anchors`-Abdeckung zu haben | slice-017 |
 | 0.6.0 | 2026-06-12 | Change Request (Auftraggeber): neue Anforderung `DC-FA-HOST-001` — Modul `hostpaths` meldet host-lokale absolute Pfade in Prosa und Inline-Code (opt-in; Unix-Präfixliste konfigurierbar, Windows-/UNC-Muster fest; Fences ausgenommen, kein Opt-out-Marker). Anlass: der bess-ems-Rest-Sensor generalisiert (dort als eigenes Tool gebaut) plus die 8 Host-Pfad-Links aus dem d-migrate-Vergleichslauf und die eigene 0.2.2-Hygiene-Korrektur — dieselbe Leak-Klasse dreimal unabhängig. Bereich `HOST` deklariert; Modul-Listen in `DC-FA-CLI-002` und Glossar ergänzt | slice-016 |
 | 0.5.0 | 2026-06-12 | Change Request (Auftraggeber): neue Anforderung `DC-FA-SPAN-001` — Modul `spans` meldet ungeschlossene Code-Spans und verschachtelte Link-Artefakte (opt-in, konservative Erkennung: alleinstehende Backticks bleiben befundfrei; kein Opt-out-Marker). Anlass: die `DC-QA-04`-Vergleichsläufe aus slice-012/slice-014 — ~100 u-boot-Artefakte sowie Fälle in grid-gym und bess-ems wurden nur indirekt als `id-unlinked`-Folgefehler sichtbar; ein direkter Sensor meldet die Ursache statt der Symptome. Bereich `SPAN` in der Schema-Konvention deklariert; Modul-Listen in `DC-FA-CLI-002` und Glossar ergänzt | slice-015 |
 | 0.3.0 | 2026-06-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CODE-001` — Modul `codepaths` prüft explizite Pfade in Inline-Code (opt-in, konservative Erkennung, Zeilen-Opt-out `d-check:ignore` nur für dieses Modul). Anlass: `DC-QA-04`-Vergleichslauf gegen die JS-Familie (`docs-check.js`) zeigte die Prüfklasse als Konsolidierungs-Lücke. Bereich `CODE` in der Schema-Konvention deklariert; Modul-Listen in `DC-FA-CLI-002` und Glossar ergänzt | slice-013 |
