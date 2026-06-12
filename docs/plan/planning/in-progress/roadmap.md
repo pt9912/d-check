@@ -15,8 +15,8 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 v0.2.0 mit allen sechs Modulen auf GHCR, drei Familien-Rezepte
 erprobt)
 **Slices:**
-[slice-014](../open/slice-014-rollout-restliche-repos.md)
-(open, Rollout der restlichen acht Alt-Tool-Vorkommen
+[slice-014](slice-014-rollout-restliche-repos.md)
+(in-progress, Rollout der restlichen acht Alt-Tool-Vorkommen
 ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)
 vollständig: 12/12) — Shell ×4, Python ×2, JS ×2; schließt die
 Welle).
