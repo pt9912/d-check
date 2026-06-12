@@ -63,7 +63,8 @@ der bess-ems-Rest-Sensor ablösbar (dortige Entscheidung).
   `hostpaths` + Pin-Hebung (Umsetzung ist dortige Entscheidung).
 - [ ] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
   Closure-Notiz mit Steering-Loop-Lerneintrag. Release-Hinweis:
-  fließt mit `spans` in das nächste Minor-Release (v0.3.0).
+  fließt mit `spans` in das nächste Minor-Release (v0.4.0 —
+  v0.3.0 ist seit slice-017 vergeben).
 
 ## 3. Plan (vor Code)
 
@@ -79,7 +80,7 @@ der bess-ems-Rest-Sensor ablösbar (dortige Entscheidung).
 
 Change Request 0.6.0 im Lastenheft (erfüllt 2026-06-12) **und**
 Priorisierung durch den Auftraggeber (welle-06). Sinnvoll **nach**
-[slice-015](slice-015-spans-modul.md) (gemeinsames Minor-Release;
+[slice-015](../in-progress/slice-015-spans-modul.md) (gemeinsames Minor-Release;
 beide Module teilen die Prosa-Helfer — wer zuerst läuft, legt die
 Schnittstelle).
 

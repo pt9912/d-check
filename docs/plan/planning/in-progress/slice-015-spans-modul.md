@@ -1,6 +1,6 @@
 # Slice slice-015: Modul `spans` — Markdown-Span-Artefakte
 
-**Status:** open.
+**Status:** in-progress.
 
 **Welle:** welle-06-sensorik (per Roadmap-Fortschreibung;
 Start bei Priorisierung durch den Auftraggeber).
@@ -61,8 +61,8 @@ oder gar nicht (Repos ohne `ids`-Konfiguration).
   außer `external`).
 - [ ] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
   Closure-Notiz mit Steering-Loop-Lerneintrag. Release-Hinweis:
-  neues Modul ⇒ nächstes Minor-Release (v0.3.0, gemeinsam mit
-  [slice-016](slice-016-hostpaths-modul.md)), Konsumenten-Pins
+  neues Modul ⇒ nächstes Minor-Release (v0.4.0 — v0.3.0 ist seit slice-017 vergeben —, gemeinsam mit
+  [slice-016](../open/slice-016-hostpaths-modul.md)), Konsumenten-Pins
   sind Routine-Hebungen.
 
 ## 3. Plan (vor Code)
