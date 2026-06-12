@@ -1,9 +1,8 @@
 # Slice slice-016: Modul `hostpaths` — host-lokale absolute Pfade
 
-**Status:** open.
+**Status:** in-progress.
 
-**Welle:** welle-06-sensorik (per Roadmap-Fortschreibung; Start bei
-Priorisierung durch den Auftraggeber).
+**Welle:** welle-06-sensorik (Abschluss).
 
 **Bezug:** [`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)
 (Change Request 0.6.0),
@@ -80,7 +79,7 @@ der bess-ems-Rest-Sensor ablösbar (dortige Entscheidung).
 
 Change Request 0.6.0 im Lastenheft (erfüllt 2026-06-12) **und**
 Priorisierung durch den Auftraggeber (welle-06). Sinnvoll **nach**
-[slice-015](../done/slice-015-spans-modul.md) (gemeinsames Minor-Release;
+[slice-015](../done/slice-015-spans-modul.md) (erfüllt 2026-06-12 — gemeinsames Minor-Release;
 beide Module teilen die Prosa-Helfer — wer zuerst läuft, legt die
 Schnittstelle).
 
