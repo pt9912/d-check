@@ -104,6 +104,9 @@ func (st *runState) checkFile(file string) error {
 	if st.applies("codepaths", file) {
 		st.findings = append(st.findings, checkCodepaths(st.fsys, file, content, st.cfg.Codepaths, st.slugCache)...)
 	}
+	if st.applies("spans", file) {
+		st.findings = append(st.findings, checkSpans(file, content, lines)...)
+	}
 	if st.applies("external", file) {
 		st.extRefs = append(st.extRefs, collectExternalURLs(file, lines)...)
 	}

@@ -83,6 +83,7 @@ type raw struct {
 	Modules  []string      `yaml:"modules"`
 	Links    *rawScopeOnly `yaml:"links"`
 	Anchors  *rawScopeOnly `yaml:"anchors"`
+	Spans    *rawScopeOnly `yaml:"spans"`
 	IDs      *rawIDs       `yaml:"ids"`
 	Matrix   *rawMatrix    `yaml:"matrix"`
 	External *rawExternal  `yaml:"external"`
@@ -150,6 +151,7 @@ func applyScopes(r *raw, cfg *core.Config) error {
 	}{
 		{"links", scopeOf(r.Links)},
 		{"anchors", scopeOf(r.Anchors)},
+		{"spans", scopeOf(r.Spans)},
 		{"ids", scopeOfIDs(r.IDs)},
 		{"matrix", scopeOfMatrix(r.Matrix)},
 		{"external", scopeOfExternal(r.External)},

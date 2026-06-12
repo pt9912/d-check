@@ -8,10 +8,12 @@ import "sort"
 // Grund-Codes der Befunde (spec/spezifikation.md §4 — stabil,
 // maschinenlesbar).
 const (
-	ReasonTargetMissing = "target-missing"
-	ReasonRepoEscape    = "repo-escape"
-	ReasonSymlink       = "symlink"
-	ReasonIDUnlinked    = "id-unlinked"
+	ReasonTargetMissing  = "target-missing"
+	ReasonRepoEscape     = "repo-escape"
+	ReasonSymlink        = "symlink"
+	ReasonIDUnlinked     = "id-unlinked"
+	ReasonSpanUnclosed   = "span-unclosed"
+	ReasonSpanNestedLink = "span-nested-link"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2).

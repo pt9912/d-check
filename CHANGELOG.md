@@ -6,6 +6,19 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-015 — Modul `spans`
+  ([`DC-FA-SPAN-001`](spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in),
+  Change Request 0.5.0, opt-in): meldet ungeschlossene Code-Spans,
+  die an Nicht-Whitespace kleben (`span-unclosed`, absatzweise —
+  alleinstehende Backticks bleiben literal) und Link-Syntax im
+  Linktext (`span-nested-link`; Badge-Muster `[![…](…)](…)` ist
+  legal — Lastenheft 0.7.1 aus dem Kalibrierungs-Befund). Dogfooding
+  aktiv; Kalibrierung über 14 Korpora fand 17 echte Artefakte (in
+  den Ziel-Repos gefixt), historischer Gegentest: 14 Befunde auf dem
+  u-boot-Stand vor den slice-014-Reparaturen, 0 danach.
+
 ## [0.3.0] — 2026-06-12
 
 Modul-lokaler Scan-Scope (`<modul>.scope`, Change Request des

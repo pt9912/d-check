@@ -3,10 +3,11 @@
 Doc-Referenz-Checker für Markdown-Dokumentation — deterministisch,
 seiteneffektfrei, ausgeliefert als Container-Image.
 
-**Status: released** — alle sechs Regelmodule (`links`, `anchors`,
-`ids`, `matrix`, `external`, `codepaths`) sind implementiert,
-getestet und seit `v0.2.0` im GHCR-Image enthalten.
-Verbindlich ist das [Lastenheft](spec/lastenheft.md).
+**Status: released** — die Regelmodule `links`, `anchors`, `ids`,
+`matrix`, `external` und `codepaths` sind seit `v0.2.0` im
+GHCR-Image (Modul-Scope seit `v0.3.0`); `spans` (slice-015) folgt
+mit `v0.4.0`. Verbindlich ist das
+[Lastenheft](spec/lastenheft.md).
 
 ## Was ist d-check?
 
@@ -26,6 +27,9 @@ Anforderung im [Lastenheft](spec/lastenheft.md):
   ([`DC-FA-EXT-001`](spec/lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in))
 - `codepaths` — explizite Pfade in Inline-Code, opt-in
   ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in))
+- `spans` — Markdown-Span-Artefakte (ungeschlossene Code-Spans,
+  verschachtelte Links), opt-in
+  ([`DC-FA-SPAN-001`](spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
@@ -86,7 +90,7 @@ Lastenhefts, und beide werden gemessen, nicht behauptet:
   ([`DC-FA-CONF-001`](spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
 - **Dogfooding:** d-check validiert die eigene Doku bei jedem
   Gate-Lauf — mit der [Selbstkonfiguration](.d-check.yml) im
-  Vollausbau (fünf Module inkl. Referenzmatrix).
+  Vollausbau (sechs Module inkl. Referenzmatrix und Span-Artefakten).
 - **Container nativ-identisch:** Befund-Ausgabe und Exit-Code des
   Images sind byte-identisch zur nativen Ausführung, automatisiert
   getestet ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image));

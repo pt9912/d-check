@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans"}
 }
 
 // defaultModules ist der Default-Modulsatz (DC-FA-CLI-002).

@@ -215,6 +215,40 @@ Vorverarbeitung entfernt Inline-Code gerade. **Schritte:**
    Treffer fehlt → `anchor-missing`). Nicht lesbare Ziele: das Modul
    schweigt zum Anker (Existenz wurde bereits geprüft).
 
+### DC-FA-SPAN-001.a — Span-Artefakt-Erkennung
+
+1. **`span-unclosed`:** absatzweise, mit derselben Absatz-Semantik
+   wie die Vorverarbeitung
+   ([§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+   Schritt 2: Grenzen sind Leerzeile und Fence). Im Absatz werden
+   Backtick-Folgen von links nach rechts gepaart (die öffnende Folge
+   bestimmt die gleich lange schließende; eine ungeschlossene Folge
+   ist literal, die Suche läuft dahinter weiter). Für jede
+   ungeschlossene Folge, auf die **unmittelbar ein
+   Nicht-Whitespace-Zeichen** folgt (kein Leerzeichen/Tab, kein
+   Zeilenumbruch, kein Absatz-Ende), entsteht ein Befund an der
+   Zeile der Folge; das gemeldete Ziel ist die Backtick-Folge samt
+   der unmittelbar folgenden Nicht-Whitespace-Zeichen, gekappt auf
+   30 Zeichen. Ungeschlossene Folgen mit Whitespace dahinter sind
+   beabsichtigt literal — kein Befund (konservative Erkennung,
+   [`DC-FA-SPAN-001`](lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)).
+2. **`span-nested-link`:** auf den vorverarbeiteten Zeilen (Fences
+   entfernt, Code-Spans geleert) wird jedes Vorkommen des Musters
+   „Linktext-Schließung mit Ziel, unmittelbar gefolgt von einer
+   weiteren Linktext-Schließung mit Ziel-Öffnung" gemeldet —
+   lexikalisch: `](` … `)` direkt gefolgt von `](`. Benachbarte
+   eigenständige Links sind kein Treffer (zwischen ihnen steht die
+   öffnende Linktext-Klammer), und **Bildreferenzen als Linktext**
+   (`[![…](…)](…)` — das Badge-Muster) sind legales Markdown und
+   ebenfalls kein Treffer (Kalibrierungs-Befund slice-015: vendorte
+   Paket-READMEs mit Shields-Badges). Das gemeldete Ziel ist der
+   Treffer, gekappt auf 40 Zeichen.
+
+Beide Prüfungen kennen keinen Opt-out-Marker; das Modul akzeptiert
+den generischen Schlüssel `spans.scope`
+([§DC-FA-CONF-002.a](#dc-fa-conf-002a--effektiver-scan-scope-pro-modul)),
+weitere Konfiguration existiert nicht.
+
 ### DC-FA-CONF-002.a — Effektiver Scan-Scope pro Modul
 
 1. **Auflösung:** Für jedes aktive Modul gilt der globale Scan-Scope
@@ -416,6 +450,8 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `external-status` | external | HTTP-Status ≥ 400 oder Transportfehler (DNS/Verbindung) |
 | `external-timeout` | external | Timeout überschritten |
 | `codepath-missing` | codepaths | Ziel eines Inline-Code-Pfads existiert nicht |
+| `span-unclosed` | spans | ungeschlossene Code-Span-Öffnung klebt an Nicht-Whitespace (Absatz-Parität gekippt) |
+| `span-nested-link` | spans | Link-Syntax im Linktext eines weiteren Links (rendert zerrissen) |
 | `external-redirects` | external | mehr als `REDIRECT_MAX` Redirects |
 
 Nutzungs-/Umgebungsfehler (Exit 2) melden auf stderr mit Präfix
@@ -455,6 +491,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-11 | Spez-Schuld eingelöst: §`DC-QA-01.a` Benchmark-Definition (Fixture, Messprotokoll, Pass-Kriterium) | slice-009 |
 | 2026-06-11 | Review R1 zu slice-009/010: §`DC-QA-01.a`-Messprotokoll um die 2-vCPU-Begrenzung aus dem Lastenheft präzisiert (`--cpus 2`); N ungerade (Median = mittleres Element) | slice-009 |
 | 2026-06-11 | Modul `codepaths` normiert (§`DC-FA-CODE-001.a`: rohe Prosa-Zeilen, Marker-Semantik, Normalisierung, konservative Erkennung, Anker-Prüfung); Schema um `codepaths.roots`, Grund-Code `codepath-missing`, `repo-escape`/`anchor-missing` auch für codepaths; Modul-Aufzählungen ergänzt | slice-013 |
+| 2026-06-12 | Modul `spans` normiert (§`DC-FA-SPAN-001.a`: `span-unclosed` absatzweise mit Folgezeichen-Bedingung und 30-Zeichen-Kappung, `span-nested-link` lexikalisch auf vorverarbeiteten Zeilen mit 40-Zeichen-Kappung; kein Opt-out, nur generischer `scope`); Grund-Codes ergänzt | slice-015 |
 | 2026-06-12 | Modul-lokaler Scan-Scope normiert (§`DC-FA-CONF-002.a`: `<modul>.scope` ersetzt den globalen Scope je Modul, `roots` Pflicht innerhalb `scope`, Lauf über die Vereinigungsmenge mit Einmal-Lese-Garantie, Zusammenfassung zählt die Union); Schema um `<modul>.scope.roots`/`.ignore` | slice-017 |
 | 2026-06-12 | Scan-Härtung aus der pkcs11-course-Adoption (slice-014): `scan.ignore`-Muster prunen den Verzeichnis-Abstieg (vollständig ignorierte Teilbäume werden nicht betreten — unlesbare ignorierte Verzeichnisse wie root-eigene Build-Reste sind kein Laufzeitfehler mehr); `SKIP_DIRS` um `.gradle` ergänzt (Parität zur JS-Alt-Familie) | slice-014 |
 | 2026-06-12 | Inline-Code-Erkennung absatzweise statt zeilenweise (§`DC-FA-LINK-001.a` Schritt 2): mehrzeilige Code-Spans gemäß CommonMark, Absatzgrenzen Leerzeile/Fence, ungeschlossene Folge literal. Anlass: `DC-QA-04`-Gegentest u-boot — über Zeilenumbrüche gebrochene Befehls-Spans invertierten die Backtick-Parität der Folgezeile und erzeugten False-Positive-`id-unlinked`-Befunde auf korrekt verlinkten Kennungen. Zeilenbasierte **Link**-Extraktion (Schritt 3) bleibt normative Grenze | slice-012 |

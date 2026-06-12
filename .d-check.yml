@@ -1,9 +1,10 @@
 # d-check prüft sich selbst (Dogfooding, slice-004 / MR-007;
-# Selbstkonfiguration ids+matrix: slice-007, codepaths: slice-013).
+# Selbstkonfiguration ids+matrix: slice-007, codepaths: slice-013,
+# spans: slice-015).
 # "." = gesamte Repo-Wurzel; SKIP_DIRS (.git, vendor, …) gelten immer.
 scan:
   roots: ["."]
-modules: [links, anchors, ids, matrix, codepaths]
+modules: [links, anchors, ids, matrix, codepaths, spans]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.
