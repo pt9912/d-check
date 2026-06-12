@@ -25,8 +25,8 @@ lokal beweisbar),
 (done, Modul `codepaths` —
 [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
 Change Request 0.3.0; Einschub vor 012),
-[slice-012](../open/slice-012-pilot-migrationen.md)
-(open, Pilot-Migrationen in 3 Repos
+[slice-012](slice-012-pilot-migrationen.md)
+(in-progress, Pilot-Migrationen in 3 Repos
 ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools):
 Shell-, Python-/u-boot-, JS-Vertreter) — nach 011 + 013, schließt die
 Welle).
