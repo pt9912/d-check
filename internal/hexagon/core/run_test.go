@@ -3,7 +3,10 @@ package core
 import (
 	"fmt"
 	"reflect"
+	"strings"
 	"testing"
+
+	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
 // DC-FA-LINK-001: Happy/Boundary/Negative gegen In-Memory-FS.
@@ -98,6 +101,47 @@ func TestDiscoverFiles(t *testing.T) {
 	}
 	if !reflect.DeepEqual(files, []string{"irgendwo/anders.md"}) {
 		t.Fatalf("files = %v", files)
+	}
+}
+
+// unreadableFS simuliert ein nicht lesbares Verzeichnis (z. B.
+// root-eigene Build-Reste wie .gradle/): List darauf schlägt fehl.
+type unreadableFS struct {
+	*memFS
+	deny string
+}
+
+func (u unreadableFS) List(relDir string) ([]driven.DirEntry, error) {
+	if relDir == u.deny || strings.HasPrefix(relDir, u.deny+"/") {
+		return nil, fmt.Errorf("open %s: permission denied", relDir)
+	}
+	return u.memFS.List(relDir)
+}
+
+// Ignore-Muster prunen den Verzeichnis-Abstieg: ein vollständig
+// ignorierter, unlesbarer Teilbaum ist kein Laufzeitfehler
+// (Adoptions-Befund pkcs11-course, slice-014; §scan.ignore).
+func TestDiscoverFiles_IgnorePruntAbstieg(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"README.md":         "x",
+		"kaputt/krams.md":   "x",
+		"kaputt/tief/t.md":  "x",
+		"docs/a.md":         "x",
+	})
+	fs := unreadableFS{memFS: m, deny: "kaputt"}
+
+	// ohne Ignore: der unlesbare Teilbaum bricht den Lauf ab
+	if _, err := DiscoverFiles(fs, []string{"."}, nil); err == nil {
+		t.Fatal("unlesbares Verzeichnis ohne Ignore: erwarteter Fehler blieb aus")
+	}
+	// mit `pfad/**`-Ignore wird der Teilbaum nicht betreten
+	files, err := DiscoverFiles(fs, []string{"."}, []string{"kaputt/**"})
+	if err != nil {
+		t.Fatalf("Ignore-Muster prunt nicht: %v", err)
+	}
+	want := []string{"README.md", "docs/a.md"}
+	if !reflect.DeepEqual(files, want) {
+		t.Fatalf("files = %v, want %v", files, want)
 	}
 }
 

@@ -13,7 +13,8 @@ import (
 func isSkipDir(name string) bool {
 	switch name {
 	case ".git", "node_modules", "build", "target", "dist",
-		"vendor", ".venv", "__pycache__", ".idea", ".vscode":
+		"vendor", ".venv", "__pycache__", ".idea", ".vscode",
+		".gradle":
 		return true
 	}
 	return false
@@ -109,7 +110,7 @@ func walkMarkdown(fsys driven.Filesystem, dir string, ignore []string, out *[]st
 		}
 		switch e.Kind {
 		case driven.KindDir:
-			if isSkipDir(e.Name) {
+			if isSkipDir(e.Name) || dirIgnored(rel, ignore) {
 				continue
 			}
 			if err := walkMarkdown(fsys, rel, ignore, out); err != nil {
@@ -127,6 +128,23 @@ func walkMarkdown(fsys driven.Filesystem, dir string, ignore []string, out *[]st
 func ignored(rel string, ignore []string) bool {
 	for _, pat := range ignore {
 		if matchGlob(pat, rel) {
+			return true
+		}
+	}
+	return false
+}
+
+// dirIgnored prunt den Verzeichnis-Abstieg: ein Teilbaum, dessen
+// Inhalte ein Ignore-Muster vollständig abdeckt (`pfad/**` bzw. ein
+// direkt auf das Verzeichnis matchendes Muster), wird nicht betreten —
+// unlesbare ignorierte Verzeichnisse sind dadurch kein Laufzeitfehler
+// (spec/spezifikation.md §`.d-check.yml` scan.ignore).
+func dirIgnored(rel string, ignore []string) bool {
+	for _, pat := range ignore {
+		if matchGlob(pat, rel) {
+			return true
+		}
+		if sub, ok := strings.CutSuffix(pat, "/**"); ok && matchGlob(sub, rel) {
 			return true
 		}
 	}
