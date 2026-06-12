@@ -10,19 +10,24 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-Keine — welle-05-rollout ist abgeschlossen (2026-06-12, alle
-Closure-Trigger erfüllt: dreizehn Quell-Tool-Vorkommen migriert,
-Vergleichstabelle 13/13 in der slice-014-Closure-Notiz, alle
-Ziel-Repo-Make-/CI-Steps grün; Zwischenrelease v0.2.1 aus dem
-pkcs11-course-Adoptions-Befund). Die nächste Welle entsteht per
-Roadmap-Fortschreibung.
+**Welle-ID:** welle-07-modul-scope
+**Start:** 2026-06-12 (Trigger erfüllt: Change Request 0.7.0 im
+Lastenheft, Priorisierung durch den Auftraggeber — Erst-Bedarfsträger
+grid-gym wartet konkret; vorgezogen vor welle-06, orthogonal)
+**Slices:**
+[slice-017](slice-017-modul-scope.md)
+(in-progress, Modul-lokaler Scan-Scope
+[`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope)
+— schließt die Welle).
+
+**Closure-Trigger:** DoD von slice-017 vollständig
+(Abwärtskompatibilitäts-Beleg, dokumentierte grid-gym-Abnahme).
 
 ## Nächste Wellen
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
 | welle-06-sensorik | Change Requests 0.5.0 ([`DC-FA-SPAN-001`](../../../../spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)) und 0.6.0 ([`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in)) im Lastenheft (erfüllt 2026-06-12); Start bei Priorisierung durch den Auftraggeber | [slice-015](../open/slice-015-spans-modul.md) (Modul `spans`), danach [slice-016](../open/slice-016-hostpaths-modul.md) (Modul `hostpaths`, löst den bess-ems-Rest-Sensor ab); gemeinsames Minor-Release v0.3.0 | 2 Slices |
-| welle-07-modul-scope | Change Request 0.7.0 ([`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope), Erst-Bedarfsträger grid-gym) im Lastenheft (erfüllt 2026-06-12); Start bei Priorisierung — grid-gym wartet konkret | [slice-017](../open/slice-017-modul-scope.md) (`<modul>.scope`, orthogonal zu welle-06; Release-Bündelung in v0.3.0 möglich) | 1 Slice |
 
 ## Meilensteine
 
