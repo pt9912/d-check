@@ -16,13 +16,14 @@ v0.2.0 mit allen sechs Modulen auf GHCR, drei Familien-Rezepte
 erprobt)
 **Slices:**
 [slice-014](slice-014-rollout-restliche-repos.md)
-(in-progress, Rollout der restlichen acht Alt-Tool-Vorkommen
+(in-progress, Rollout der restlichen neun Alt-Tool-Vorkommen
 ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)
-vollständig: 12/12) — Shell ×4, Python ×2, JS ×2; schließt die
-Welle).
+vollständig: 13/13 nach Inventur-Nachtrag, Lastenheft 0.4.0) —
+Shell ×4, Python ×2, JS ×2, eigenständige Linie ×1 (bess-ems);
+schließt die Welle).
 
-**Closure-Trigger:** Alle zwölf Quell-Tool-Vorkommen migriert
-(Vergleichstabelle 12/12 in der slice-014-Closure-Notiz); keine
+**Closure-Trigger:** Alle dreizehn Quell-Tool-Vorkommen migriert
+(Vergleichstabelle 13/13 in der slice-014-Closure-Notiz); keine
 roten Make-/CI-Steps in den Ziel-Repos.
 
 ## Nächste Wellen

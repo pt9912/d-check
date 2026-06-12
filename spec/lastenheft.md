@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.3.1
+**Version:** 0.4.0
 
 **Status:** Draft
 
@@ -14,7 +14,7 @@
 Repositories auf kaputte Referenzen prüft: lokale Links und
 Bildreferenzen, Heading-Anker, Linkpflicht für Anforderungs- und
 Entscheidungs-Kennungen sowie Referenzrichtungs-Regeln zwischen
-Dokumentklassen (Referenzmatrix). Es konsolidiert zwölf funktional
+Dokumentklassen (Referenzmatrix). Es konsolidiert dreizehn funktional
 überlappende Einzeltools (`check_refs.py`, `docs-check.js`,
 `verify-doc-refs.sh`), die heute als Kopien in den
 Schwester-Repositories des Entwicklungs-Workspace gepflegt werden.
@@ -30,7 +30,7 @@ statt per Code-Kopie.
 
 | Stakeholder | Rolle | Erwartung |
 |---|---|---|
-| Repo-Maintainer (pt9912) | Auftraggeber | Ein gepflegtes Tool statt zwölf driftender Kopien; Fixes wirken überall |
+| Repo-Maintainer (pt9912) | Auftraggeber | Ein gepflegtes Tool statt dreizehn driftender Kopien; Fixes wirken überall |
 | CI-Pipelines der Repos | Konsument | Ein Docker-Step mit deterministischen Exit-Codes und stabiler Ausgabe |
 | AI-Agenten (Harness-Sensorik) | Konsument | Verlässlicher, maschinenlesbarer Doku-Sensor (z. B. als `make`-Gate eingebunden) |
 | Harness-Projekte nach Kurs-Methodik | Nutznießer | Referenzmatrix- und ID-Regeln der Spec-Stratifizierung maschinell prüfbar |
@@ -378,7 +378,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 ### DC-QA-04 — Migrationsabdeckung der Alt-Tools
 
-- **Anforderung:** Jedes der zwölf Quell-Tools ist durch `d-check` mit passender Konfiguration ersetzbar: Auf dem jeweiligen Repo-Stand meldet `d-check` mindestens dieselben echten Befunde wie das Alt-Tool und erzeugt keine False-Positives, die eine bislang grüne CI brechen.
+- **Anforderung:** Jedes der dreizehn Quell-Tool-Vorkommen ist durch `d-check` mit passender Konfiguration ersetzbar: Auf dem jeweiligen Repo-Stand meldet `d-check` mindestens dieselben echten Befunde wie das Alt-Tool und erzeugt keine False-Positives, die eine bislang grüne CI brechen.
 - **Messmethode:** Pilot-Migration in mindestens drei Repos — je ein Vertreter der Shell-Familie (`verify-doc-refs.sh`), der Python-Familie (`check_refs.py`, inkl. u-boot-Vollausbau) und der JS-Familie (`docs-check.js`) — mit Vergleichslauf Alt-Tool vs. `d-check`.
 
 ## 5. Globale Out-of-Scope-Punkte
@@ -403,7 +403,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Dokumentklasse | Über Pfad-Muster definierte Gruppe von Dokumenten (z. B. Contract-Spec, ADR, Slice) als Knoten der Referenzmatrix. |
 | Referenzmatrix | Deklaration, welche Dokumentklasse auf welche verweisen darf, inkl. Status-Bedingungen. |
 | Aktives ADR | ADR, dessen Status-Feld keinen verbotenen Wert (`superseded`, `deprecated`) trägt. |
-| Quell-Tools | Die zwölf konsolidierten Alt-Tool-Vorkommen aus drei Familien (Shell: `verify-doc-refs.sh`, Python: `check_refs.py`, JavaScript: `docs-check.js`) in den Schwester-Repositories des Entwicklungs-Workspace. |
+| Quell-Tools | Die dreizehn konsolidierten Alt-Tool-Vorkommen in den Schwester-Repositories des Entwicklungs-Workspace: zwölf aus drei Familien (Shell: `verify-doc-refs.sh`, Python: `check_refs.py`, JavaScript: `docs-check.js`) plus eine eigenständige Python-Linie (`check_markdown_links.py`, Inventur-Nachtrag 2026-06-12). |
 
 ## 7. Historie
 
@@ -415,4 +415,5 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | 0.2.2 | 2026-06-10 | Redaktionell: absolute Workspace-Pfade entfernt („Schwester-Repositories des Entwicklungs-Workspace" statt konkreter Pfade); keine inhaltliche Änderung | — |
 | 0.2.3 | 2026-06-11 | Redaktionell: „(folgt)" in der `DC-QA-01`-Messmethode entfernt — die Benchmark-Definition existiert in der Spezifikation; keine inhaltliche Änderung | — |
 | 0.3.0 | 2026-06-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CODE-001` — Modul `codepaths` prüft explizite Pfade in Inline-Code (opt-in, konservative Erkennung, Zeilen-Opt-out `d-check:ignore` nur für dieses Modul). Anlass: `DC-QA-04`-Vergleichslauf gegen die JS-Familie (`docs-check.js`) zeigte die Prüfklasse als Konsolidierungs-Lücke. Bereich `CODE` in der Schema-Konvention deklariert; Modul-Listen in `DC-FA-CLI-002` und Glossar ergänzt | slice-013 |
+| 0.4.0 | 2026-06-12 | Change Request (Auftraggeber): Inventur-Nachtrag zu `DC-QA-04` — dreizehntes Alt-Tool-Vorkommen entdeckt (`check_markdown_links.py` in bess-ems, eigenständige Python-Linie, entstanden 2026-05-24 und damit vor der Inventur vom 2026-06-10 übersehen); Anforderungs-Text, Einleitung, Stakeholder-Tabelle und Glossar von zwölf auf dreizehn fortgeschrieben. Messmethode (drei Familien-Piloten) unverändert | slice-014 |
 | 0.3.1 | 2026-06-11 | Review R1 zum Change Request: `DC-FA-CODE-001` präzisiert — Wert-Normalisierung (Anführungszeichen, schließende Satzzeichen) und Anker-Prüfung bei Markdown-Zielen (`DC-QA-04`-Parität zur JS-Familie); `DC-FA-LINK-001`-Inline-Code-Aussage auf Modul-Bezug eingegrenzt | slice-013 |

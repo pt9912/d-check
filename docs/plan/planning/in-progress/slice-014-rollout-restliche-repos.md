@@ -1,14 +1,15 @@
-# Slice slice-014: Rollout — die restlichen acht Alt-Tool-Vorkommen
+# Slice slice-014: Rollout — die restlichen neun Alt-Tool-Vorkommen
 
 **Status:** in-progress.
 
 **Welle:** welle-05-rollout (Abschluss).
 
 **Bezug:** [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)
-(Anforderung gilt für **alle zwölf** Quell-Tool-Vorkommen; die
+(Anforderung gilt für **alle dreizehn** Quell-Tool-Vorkommen —
+Inventur-Nachtrag Lastenheft 0.4.0; die
 Messmethode — drei Piloten — ist seit
 [slice-012](../done/slice-012-pilot-migrationen.md) erfüllt, dieser
-Slice vervollständigt den Beleg auf 12/12);
+Slice vervollständigt den Beleg auf 13/13);
 [`DC-FA-CONF-001`](../../../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)
 (repo-spezifisches Verhalten per Config).
 
@@ -18,7 +19,7 @@ Slice vervollständigt den Beleg auf 12/12);
 
 ## 1. Ziel
 
-Die acht verbleibenden Alt-Tool-Vorkommen in den Schwester-Repos
+Die neun verbleibenden Alt-Tool-Vorkommen in den Schwester-Repos
 nutzen das veröffentlichte `d-check`-Image (Digest-Pin v0.2.0) statt
 ihrer Tool-Kopie — mit den in slice-012 erprobten Familien-Rezepten:
 
@@ -30,6 +31,9 @@ ihrer Tool-Kopie — mit den in slice-012 erprobten Familien-Rezepten:
 - **JS ×2** (`docs-check.js`): b-cad, euler-fourier-hilbert
   (Math-Validierung bleibt als Rest-Sensor — Mathematik-Prüfung ist
   laut Lastenheft §5 global out-of-scope).
+- **Eigenständige Linie ×1** (`check_markdown_links.py`): bess-ems —
+  Inventur-Nachtrag (Lastenheft 0.4.0, Fund Auftraggeber 2026-06-12);
+  der Host-Pfad-Prosa-Check bleibt dort als Rest-Sensor.
 
 ## 2. Definition of Done
 
@@ -42,15 +46,16 @@ ihrer Tool-Kopie — mit den in slice-012 erprobten Familien-Rezepten:
   dortige Ignore-Regel; False-Positive → Spec-Fortschreibung/Fix
   hier, vor Abschluss).
 - [ ] Pro Repo: Make-/CI-Schritt auf den v0.2.0-Digest-Pin
-  umgestellt; Alt-Tool-Kopie gelöscht, geschrumpft (Fall
-  euler-fourier-hilbert: Math-Rest-Sensor; ggf. b-cad) oder
+  umgestellt; Alt-Tool-Kopie gelöscht, geschrumpft (Fälle
+  euler-fourier-hilbert: Math-Rest-Sensor; bess-ems:
+  Host-Pfad-Rest-Sensor; ggf. b-cad) oder
   deprecated — Entscheidung beim Ziel-Repo, dokumentiert.
 - [ ] Vergleichstabelle (Repo, Familie, Alt-Befunde, d-check-Befunde,
   Differenzen + Triage) in der Closure-Notiz — zusammen mit
   slice-012 und dem Eigenlauf
   ([`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding))
   ist [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)
-  damit über alle zwölf Vorkommen belegt.
+  damit über alle dreizehn Vorkommen belegt.
 - [ ] `make gates` grün (dieses Repo);
   [`CHANGELOG.md`](../../../../CHANGELOG.md); Closure-Notiz mit
   Steering-Loop-Lerneintrag — erfüllt zugleich den
@@ -60,9 +65,9 @@ ihrer Tool-Kopie — mit den in slice-012 erprobten Familien-Rezepten:
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `<repo>/.d-check.yml` (8×, extern) | neu | Familien-äquivalente Konfiguration |
-| `<repo>`-Makefile/CI (8×, extern) | update | Digest-gepinnter `d-check`-Step, Alt-Tool-Ablösung |
-| Closure-Notiz dieses Slices | neu | 12/12-Vergleichstabelle als `DC-QA-04`-Beleg |
+| `<repo>/.d-check.yml` (9×, extern) | neu | Familien-äquivalente Konfiguration |
+| `<repo>`-Makefile/CI (9×, extern) | update | Digest-gepinnter `d-check`-Step, Alt-Tool-Ablösung |
+| Closure-Notiz dieses Slices | neu | 13/13-Vergleichstabelle als `DC-QA-04`-Beleg |
 | [`CHANGELOG.md`](../../../../CHANGELOG.md) | update | Rollout-Stand |
 
 ## 4. Trigger
@@ -73,7 +78,7 @@ Triage-Systematik steht. Kein neues Release nötig.
 
 ## 5. Closure-Trigger
 
-DoD vollständig (acht dokumentierte Vergleichsläufe, acht umgestellte
+DoD vollständig (neun dokumentierte Vergleichsläufe, neun umgestellte
 Make-/CI-Steps) + Closure-Notiz — erfüllt zugleich den
 welle-05-Closure-Trigger.
 
