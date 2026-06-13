@@ -10,17 +10,10 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Welle-ID:** welle-09-config-geruest
-**Start:** 2026-06-13 (Trigger erfüllt: Priorisierung durch den
-Auftraggeber — Adoptions-Reibung in neuen Repos ohne `.d-check.yml`).
-**Slices:**
-[slice-019](slice-019-print-config.md)
-(in-progress, `--print-config` gibt ein statisches Config-Gerüst auf
-stdout — [`DC-FA-CLI-005`](../../../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben),
-Change Request 0.9.0).
-
-**Closure-Trigger:** `--print-config` implementiert (End-to-End-Beleg),
-nutzersichtbar dokumentiert, `make gates` grün.
+**Keine aktive Welle.** welle-09-config-geruest ist abgeschlossen (siehe
+„Abgeschlossene Wellen"). Die nächste Welle wartet auf ihren Trigger —
+nächster Kandidat: slice-020 (`--suggest-config`, Ableitung der Config
+aus Autoritäts-Dokumenten, mit den Korpora als Gegentest).
 
 ## Nächste Wellen
 
@@ -63,6 +56,7 @@ flowchart LR
 | welle-04-distribution-und-migration | 2026-06-12 | [slice-010 §7](../done/slice-010-image-integrationstests-und-repro-belege.md#7-closure-notiz-nach-done), [slice-011 §7](../done/slice-011-ghcr-release-pipeline.md#7-closure-notiz-nach-done), [slice-013 §7](../done/slice-013-codepaths-modul.md#7-closure-notiz-nach-done), [slice-012 §7](../done/slice-012-pilot-migrationen.md#7-closure-notiz-nach-done) |
 | welle-06-sensorik | 2026-06-13 | [slice-015 §7](../done/slice-015-spans-modul.md#7-closure-notiz-nach-done), [slice-016 §7](../done/slice-016-hostpaths-modul.md#7-closure-notiz-nach-done); Minor-Release **v0.4.0** auf GHCR (Run `27456611216` grün in 1m54s, OCI-Label `image.version`=0.4.0, Smoke-Lauf 42 Dateien/0 Befunde), Digest-Pin `ghcr.io/pt9912/d-check@sha256:3281ce538272fbfa086c2ee045a058542af0d1653425e995d56bd886ad730d61` |
 | welle-08-linkpolitik | 2026-06-13 | [slice-018 §9](../done/slice-018-link-politik-ids.md#9-closure-notiz-nach-done); konfigurierbare `link-policy: prose\|always` für `ids` ([`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) 0.8.0), kalibriert (d-check 170, u-boot 2, b-trace 2), Dogfooding-Sweep ~127 Links gate-verifiziert, nutzersichtbar dokumentiert |
+| welle-09-config-geruest | 2026-06-13 | [slice-019 §7](../done/slice-019-print-config.md#7-closure-notiz-nach-done); Option `--print-config` gibt ein statisches `.d-check.yml`-Gerüst auf stdout ([`DC-FA-CLI-005`](../../../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben) 0.9.0), kein Repo-Zugriff/Schreiben, End-to-End belegt |
 
 ## Historische Trigger-Verschiebungen
 

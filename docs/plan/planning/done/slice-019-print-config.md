@@ -1,6 +1,6 @@
 # Slice slice-019: Konfigurations-Gerüst ausgeben (`--print-config`)
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-09-config-geruest (per Roadmap-Fortschreibung; Start
 bei Priorisierung durch den Auftraggeber — Adoptions-Reibung in neuen
@@ -79,7 +79,31 @@ DoD vollständig inkl. End-to-End-Beleg und grüner Gates.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-*(folgt mit dem Lifecycle-Übergang nach `done/`.)*
+**Umsetzung:** Vertrag ([`DC-FA-CLI-005`](../../../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben), Lastenheft 0.9.0) +
+Spezifikation [`DC-FA-CLI-005.a`](../../../../spec/spezifikation.md#dc-fa-cli-005a--konfigurations-gerüst),
+Flag `--print-config` mit eingebettetem `configTemplate`, Kurzschluss
+in `Run` **vor** jedem Repo-Zugriff (Commit `6073f75`). `make gates` grün.
+
+**End-to-End (echtes Artefakt):** `docker run … --print-config >
+.d-check.yml` erzeugte ein 50-Zeilen-Gerüst; `d-check` lief damit gegen
+ein Demo-Repo (2 Dateien, 0 Befunde) — das ausgegebene Gerüst ist real
+nutzbar, nicht nur parsebar.
+
+- **Was hat funktioniert:** Der Kurzschluss **vor** `openRoot` macht
+  [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
+  trivial nachweisbar — der Test `--print-config /gibt-es-nicht` → Exit 0
+  beweist, dass nicht einmal die Scan-Wurzel geöffnet wird (sonst
+  Exit 2). Die Invariante steht im Code, nicht in der Hoffnung.
+- **Lerneintrag:** „Erzeugen" muss nicht „Schreiben" heißen — die
+  Trennung Werkzeug-gibt-aus / Aufrufer-leitet-um hält den
+  read-only-Vertrag intakt und ist zugleich der ehrlichere Default
+  (der Mensch sieht, was entsteht, bevor es im Repo landet).
+- **Lerneintrag Prozess:** Ein Slice gehört während der Arbeit nach
+  `in-progress/` und wandert per `git mv` nach `done/` — die
+  Lifecycle-Spur ist kein Zierrat (User-Korrektur in diesem Slice: das
+  Direkt-in-`done/`-Anlegen verwischt, dass je daran gearbeitet wurde).
+- **Folge-Slice:** slice-020 (`--suggest-config`) — Ableitung aus
+  Autoritäts-Dokumenten, Korpora als Gegentest.
 
 ## 8. Sub-Area-Modus-Begründung
 
