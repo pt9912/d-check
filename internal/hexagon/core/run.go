@@ -96,7 +96,7 @@ func (st *runState) checkFile(file string) error {
 		st.findings = append(st.findings, checkAnchors(st.fsys, file, content, lines, st.slugCache)...)
 	}
 	if st.applies("ids", file) {
-		st.findings = append(st.findings, checkIDs(file, lines, st.cfg.IDPatterns)...)
+		st.findings = append(st.findings, checkIDs(file, content, lines, st.cfg.IDPatterns)...)
 	}
 	if st.applies("matrix", file) {
 		st.findings = append(st.findings, checkMatrix(st.fsys, file, content, lines, st.cfg.Matrix, st.statusCache)...)

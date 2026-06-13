@@ -44,11 +44,11 @@ func TestIDsMusterPraezedenz(t *testing.T) {
 	long := IDPattern{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}
 	short := IDPattern{Regex: regexp.MustCompile(`ADR-\d{2}`), Target: "x"}
 
-	got := checkIDs("f.md", lines, []IDPattern{long, short})
+	got := checkIDs("f.md", nil, lines, []IDPattern{long, short})
 	if len(got) != 1 || got[0].Target != "ADR-0042" {
 		t.Fatalf("lang zuerst: %+v", got)
 	}
-	got = checkIDs("f.md", lines, []IDPattern{short, long})
+	got = checkIDs("f.md", nil, lines, []IDPattern{short, long})
 	if len(got) != 1 || got[0].Target != "ADR-00" {
 		t.Fatalf("kurz zuerst: %+v", got)
 	}
@@ -59,7 +59,7 @@ func TestIDsMusterPraezedenz(t *testing.T) {
 func TestIDsLinktextSpannen(t *testing.T) {
 	lines := []Line{{No: 1, Text: "[ADR-0001](a.md) und ADR-0002 sowie [x ADR-0003 y](b.md)"}}
 	p := []IDPattern{{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}}
-	got := checkIDs("f.md", lines, p)
+	got := checkIDs("f.md", nil, lines, p)
 	if len(got) != 1 || got[0].Target != "ADR-0002" {
 		t.Fatalf("Befunde = %+v (genau ADR-0002 erwartet)", got)
 	}
@@ -149,9 +149,63 @@ func TestIDsDefinitionsOrtUndHeadings(t *testing.T) {
 // Positionserhaltendes Inline-Code-Stripping: angrenzender Text darf
 // nicht zu Phantom-Kennungen verschmelzen (Review R1 zu slice-006).
 func TestIDsKeinePhantomKennungDurchInlineCode(t *testing.T) {
-	lines := PreprocessMarkdown([]byte("AD`x`R-0042\n"))
+	content := []byte("AD`x`R-0042\n")
+	lines := PreprocessMarkdown(content)
 	p := []IDPattern{{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}}
-	if got := checkIDs("f.md", lines, p); len(got) != 0 {
+	if got := checkIDs("f.md", content, lines, p); len(got) != 0 {
 		t.Fatalf("Phantom-Befund: %+v", got)
+	}
+}
+
+// DC-FA-ID-001 (0.8.0) link-policy: always — Inline-Code-Vorkommen sind
+// linkpflichtig; die Ventile (Linktext, target, exempt-paths,
+// d-check:ignore, Fence, Heading) bleiben frei.
+func TestIDsLinkPolicyAlways(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"docs/a.md": "`ADR-0042` als Code-Span ohne Link\n" + // L1: Befund
+			"[`ADR-0043`](plan/adr/0043.md) verlinkt\n" + // L2: Linktext → frei
+			"`ADR-0044` <!-- d-check:ignore (Beispiel) -->\n" + // L3: Marker → frei
+			"## Heading mit `ADR-0047`\n" + // L4: Heading → frei
+			"```\n`ADR-0045` im Fence\n```\n", // L5-7: Fence → frei
+		"docs/reviews/r.md":      "`ADR-0046` literal im Review\n", // exempt-paths → frei
+		"docs/plan/adr/0043.md":  "x",                              // target-Dir
+		"docs/plan/adr/0099-x.md": "`ADR-0099` im eigenen target\n", // target → frei
+	})
+	cfg := Config{IDPatterns: []IDPattern{{
+		Regex:       regexp.MustCompile(`ADR-\d{4}`),
+		Target:      "docs/plan/adr/",
+		LinkPolicy:  "always",
+		ExemptPaths: []string{"docs/reviews/**"},
+	}}}
+	res, err := Run(m, nil, cfg, []string{"ids"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, fmt.Sprintf("%s:%d %s %s", f.File, f.Line, f.Target, f.Reason))
+	}
+	want := []string{"docs/a.md:1 ADR-0042 id-unlinked"}
+	if len(got) != len(want) || got[0] != want[0] {
+		t.Fatalf("always-Befunde = %v, want %v", got, want)
+	}
+}
+
+// Abwärtskompatibilität: ohne link-policy (Default prose) sind
+// Code-Span-Vorkommen weiterhin linkpflichtfrei (DC-QA-02).
+func TestIDsLinkPolicyProseDefault(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"docs/a.md":              "`ADR-0042` als Code-Span ohne Link\n", // prose → frei
+		"docs/plan/adr/0001-x.md": "x",
+	})
+	cfg := Config{IDPatterns: []IDPattern{
+		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/"}, // kein link-policy
+	}}
+	res, err := Run(m, nil, cfg, []string{"ids"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("prose-Default sollte Code-Spans frei lassen, got %+v", res.Findings)
 	}
 }

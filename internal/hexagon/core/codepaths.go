@@ -10,9 +10,11 @@ import (
 // (spec/spezifikation.md §4).
 const ReasonCodepathMissing = "codepath-missing"
 
-// ignoreMarker nimmt eine Zeile von der codepaths-Prüfung aus — und
-// nur von dieser: deterministische Befunde anderer Module werden
-// behoben, nicht unterdrückt (DC-FA-CODE-001).
+// ignoreMarker nimmt eine Zeile von der codepaths- und der
+// ids-`always`-Prüfung aus — nur von diesen beiden: deterministische
+// Befunde anderer Module werden behoben, nicht unterdrückt
+// (DC-FA-CODE-001; Geltungsbereich auf ids erweitert mit
+// DC-FA-ID-001 0.8.0, slice-018 — illustrative Beispiel-IDs).
 const ignoreMarker = "d-check:ignore"
 
 // CodepathsConfig trägt die Präfixe für Wurzel-relative

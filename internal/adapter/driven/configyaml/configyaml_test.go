@@ -86,6 +86,29 @@ func TestDecode_UngueltigerRegex(t *testing.T) {
 	}
 }
 
+// DC-FA-ID-001 (0.8.0): link-policy akzeptiert nur prose|always;
+// alles andere ist Konfigurationsfehler (Exit 2). Leerwert = Default
+// prose und wird akzeptiert.
+func TestDecode_LinkPolicy(t *testing.T) {
+	base := "ids:\n  patterns:\n    - regex: 'ADR-\\d{4}'\n      target: docs/\n      link-policy: "
+	if _, err := configyaml.Decode([]byte(base + "strict\n")); err == nil || !strings.Contains(err.Error(), "link-policy") {
+		t.Fatalf("ungültige link-policy: err = %v", err)
+	}
+	for _, ok := range []string{"prose", "always"} {
+		if _, err := configyaml.Decode([]byte(base + ok + "\n")); err != nil {
+			t.Fatalf("link-policy %q abgelehnt: %v", ok, err)
+		}
+	}
+	cfg, err := configyaml.Decode([]byte(base + "always\n      exempt-paths: [CHANGELOG.md]\n"))
+	if err != nil {
+		t.Fatalf("exempt-paths abgelehnt: %v", err)
+	}
+	if len(cfg.IDPatterns) != 1 || cfg.IDPatterns[0].LinkPolicy != "always" ||
+		len(cfg.IDPatterns[0].ExemptPaths) != 1 {
+		t.Fatalf("link-policy/exempt-paths nicht übernommen: %+v", cfg.IDPatterns)
+	}
+}
+
 // ids-Regexe, die den Leerstring matchen (X*, (ADR)?), würden an
 // jeder Position Leer-Matches und damit unbrauchbare Befunde mit
 // leerem Target erzeugen — Konfigurationsfehler statt Befund-Flut.

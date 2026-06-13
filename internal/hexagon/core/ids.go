@@ -10,7 +10,7 @@ import "strings"
 // Heading-Zeilen (Struktur, kein Fließtext) und Vorkommen im
 // deklarierten Target des Musters (Definitions-Ort;
 // spec/spezifikation.md §DC-FA-ID-001.a).
-func checkIDs(file string, lines []Line, patterns []IDPattern) []Finding {
+func checkIDs(file string, content []byte, lines []Line, patterns []IDPattern) []Finding {
 	if len(patterns) == 0 {
 		return nil
 	}
@@ -24,6 +24,83 @@ func checkIDs(file string, lines []Line, patterns []IDPattern) []Finding {
 			continue // Headings sind linkpflichtfrei
 		}
 		findings = append(findings, checkIDLine(file, ln, patterns, inTarget)...)
+	}
+	// link-policy: always — zusätzlich Vorkommen INNERHALB von
+	// Inline-Code-Spans (DC-FA-ID-001.a). Additiv zur prose-Prüfung;
+	// Code-Span- und Fließtext-Bereiche sind disjunkt.
+	findings = append(findings, checkIDsAlways(file, content, patterns, inTarget)...)
+	return findings
+}
+
+// checkIDsAlways prüft Kennungs-Vorkommen innerhalb von Inline-Code-Spans
+// für Muster mit LinkPolicy "always" (spec/spezifikation.md
+// §DC-FA-ID-001.a). Arbeitet — wie codepaths — auf den rohen
+// Prosa-Zeilen, weil die übrige Vorverarbeitung Inline-Code gerade
+// leert. Ein Code-Span-Vorkommen ist linkpflichtfrei, wenn es im
+// Linktext liegt, im target des Musters steht, die Datei ein
+// exempt-paths-Glob matcht, die Zeile d-check:ignore trägt oder es eine
+// Heading-Zeile ist.
+func checkIDsAlways(file string, content []byte, patterns []IDPattern, inTarget []bool) []Finding {
+	var active []int
+	for i, p := range patterns {
+		if p.LinkPolicy == AlwaysPolicy {
+			active = append(active, i)
+		}
+	}
+	if len(active) == 0 {
+		return nil
+	}
+	prose := proseLines(content)
+	spans := inlineSpansByLine(prose)
+	var findings []Finding
+	for _, pl := range prose {
+		findings = append(findings, alwaysLineFindings(file, pl, spans[pl.no], patterns, active, inTarget)...)
+	}
+	return findings
+}
+
+// alwaysLineFindings prüft die Inline-Code-Spans einer Prosa-Zeile gegen
+// die always-Muster (Deklarationsreihenfolge = Präzedenz über das
+// gemeinsame claimed). Linkpflichtfrei: Heading-Zeile, d-check:ignore.
+func alwaysLineFindings(file string, pl proseLine, codeSpans []inlineSpan, patterns []IDPattern, active []int, inTarget []bool) []Finding {
+	if len(codeSpans) == 0 || strings.Contains(pl.raw, ignoreMarker) {
+		return nil
+	}
+	if _, _, ok := parseATXHeading(pl.raw); ok {
+		return nil
+	}
+	linkSpans := ExtractLinkSpans(pl.raw)
+	var claimed [][2]int
+	var findings []Finding
+	for _, pi := range active {
+		findings = append(findings,
+			alwaysPatternFindings(file, pl, codeSpans, patterns[pi], inTarget[pi], linkSpans, &claimed)...)
+	}
+	return findings
+}
+
+// alwaysPatternFindings prüft ein einzelnes always-Muster gegen alle
+// Code-Span-Werte der Zeile; ein Vorkommen ist frei im target, in
+// exempt-paths oder im Linktext.
+func alwaysPatternFindings(file string, pl proseLine, codeSpans []inlineSpan, p IDPattern, inTgt bool, linkSpans []LinkSpan, claimed *[][2]int) []Finding {
+	var findings []Finding
+	for _, sp := range codeSpans {
+		val := pl.raw[sp.valStart:sp.valEnd]
+		for _, m := range p.Regex.FindAllStringIndex(val, -1) {
+			start, end := sp.valStart+m[0], sp.valStart+m[1]
+			if overlapsClaimed(*claimed, start, end) {
+				continue // Vorkommen gehört einem früheren Muster
+			}
+			*claimed = append(*claimed, [2]int{start, end})
+			if inTgt || ignored(file, p.ExemptPaths) || idOccurrenceExempt(linkSpans, start, end) {
+				continue
+			}
+			findings = append(findings, Finding{
+				File: file, Line: pl.no, Rule: "ids",
+				Target: val[m[0]:m[1]], Reason: ReasonIDUnlinked,
+				Message: "Kennung ohne Link auf ihre Definition",
+			})
+		}
 	}
 	return findings
 }

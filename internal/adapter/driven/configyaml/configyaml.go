@@ -23,8 +23,10 @@ import (
 const FileName = ".d-check.yml"
 
 type rawIDPattern struct {
-	Regex  string `yaml:"regex"`
-	Target string `yaml:"target"`
+	Regex       string   `yaml:"regex"`
+	Target      string   `yaml:"target"`
+	LinkPolicy  string   `yaml:"link-policy"`
+	ExemptPaths []string `yaml:"exempt-paths"`
 }
 
 type rawIDs struct {
@@ -290,7 +292,13 @@ func applyIDs(ids *rawIDs, cfg *core.Config) error {
 		if p.Target == "" {
 			return fmt.Errorf("%s: ids.patterns[%d].target fehlt", FileName, i)
 		}
-		cfg.IDPatterns = append(cfg.IDPatterns, core.IDPattern{Regex: re, Target: p.Target})
+		if p.LinkPolicy != "" && p.LinkPolicy != "prose" && p.LinkPolicy != core.AlwaysPolicy {
+			return fmt.Errorf("%s: ids.patterns[%d].link-policy: ungültig %q (erlaubt: prose, always)", FileName, i, p.LinkPolicy)
+		}
+		cfg.IDPatterns = append(cfg.IDPatterns, core.IDPattern{
+			Regex: re, Target: p.Target,
+			LinkPolicy: p.LinkPolicy, ExemptPaths: p.ExemptPaths,
+		})
 	}
 	return nil
 }

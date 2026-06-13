@@ -54,7 +54,18 @@ type ScopeConfig struct {
 type IDPattern struct {
 	Regex  *regexp.Regexp
 	Target string
+	// LinkPolicy: "" = prose (Default, abwärtskompatibel); "always"
+	// macht auch Inline-Code-Vorkommen linkpflichtig
+	// (spec/spezifikation.md §DC-FA-ID-001.a).
+	LinkPolicy string
+	// ExemptPaths: Globs (Syntax wie scan.ignore), in denen "always"
+	// nicht greift; nur bei LinkPolicy "always" wirksam.
+	ExemptPaths []string
 }
+
+// AlwaysPolicy ist der link-policy-Wert, der auch Inline-Code-Vorkommen
+// linkpflichtig macht (DC-FA-ID-001.a).
+const AlwaysPolicy = "always"
 
 // MatrixClass ist eine über Pfad-Globs deklarierte Dokumentklasse
 // (DC-FA-MTX-001; Deklarationsreihenfolge = Präzedenz).
