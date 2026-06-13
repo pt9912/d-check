@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-06-13
+
+Konfigurations-Startgerüst (`--print-config`, Change Request 0.9.0,
+slice-019): neue Repos kommen ohne Handarbeit zu einer `.d-check.yml` —
+das Werkzeug gibt aus, der Aufrufer leitet um; read-only bleibt.
+
 ### Added
 
 - slice-019 — Option `--print-config`
