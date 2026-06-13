@@ -10,16 +10,10 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Welle-ID:** welle-11-help
-**Start:** 2026-06-13 (Trigger erfüllt: Priorisierung durch den
-Auftraggeber — die `--help`-Ausgabe verschweigt das `[pfad]`-Argument).
-**Slices:**
-[slice-021](slice-021-help-usage.md)
-(in-progress, reichhaltige `--help` mit Synopsis + Pfad-Argument +
-Config-Pointer — Schärfung [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)).
-
-**Closure-Trigger:** `--help` zeigt Synopsis/`[pfad]`/Config-Pointer,
-`make gates` grün.
+**Keine aktive Welle.** welle-11-help ist abgeschlossen (siehe
+„Abgeschlossene Wellen"). Die nächste Welle wartet auf ihren Trigger
+(Change Request im Lastenheft oder Priorisierung durch den
+Auftraggeber).
 
 ## Nächste Wellen
 
@@ -64,6 +58,7 @@ flowchart LR
 | welle-08-linkpolitik | 2026-06-13 | [slice-018 §9](../done/slice-018-link-politik-ids.md#9-closure-notiz-nach-done); konfigurierbare `link-policy: prose\|always` für `ids` ([`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) 0.8.0), kalibriert (d-check 170, u-boot 2, b-trace 2), Dogfooding-Sweep ~127 Links gate-verifiziert, nutzersichtbar dokumentiert |
 | welle-09-config-geruest | 2026-06-13 | [slice-019 §7](../done/slice-019-print-config.md#7-closure-notiz-nach-done); Option `--print-config` gibt ein statisches `.d-check.yml`-Gerüst auf stdout ([`DC-FA-CLI-005`](../../../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben) 0.9.0), kein Repo-Zugriff/Schreiben, End-to-End belegt |
 | welle-10-config-ableitung | 2026-06-13 | [slice-020 §7](../done/slice-020-suggest-config.md#7-closure-notiz-nach-done); Option `--suggest-config` leitet `ids`-Muster aus Autoritäts-Quellen ab ([`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) 0.10.0, [`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)-Schärfung), read-only; Korpora-Gegentest dokumentiert (d-check round-trippt, b-trace zeigt die Heading-Grenze) |
+| welle-11-help | 2026-06-13 | [slice-021 §7](../done/slice-021-help-usage.md#7-closure-notiz-nach-done); reichhaltige `--help` (Synopsis, `[pfad]`-Argument, Config-Pointer auf `--print-config`) — Schärfung [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel) 0.11.0 |
 
 ## Historische Trigger-Verschiebungen
 

@@ -1,6 +1,6 @@
 # Slice slice-021: Reichhaltige `--help` (Synopsis, `[pfad]`, Config-Pointer)
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-11-help (Trigger: Priorisierung durch den Auftraggeber
 — die Default-`flag`-Usage verschweigt das `[pfad]`-Argument).
@@ -27,17 +27,17 @@ das Format kommentiert (kein Drift).
 
 ## 2. Definition of Done
 
-- [ ] **Lastenheft-Schärfung** [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)
+- [x] **Lastenheft-Schärfung** [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)
   (Version 0.11.0): neues Akzeptanzkriterium — `--help` nennt die
   Synopsis `d-check [optionen] [pfad]`, beschreibt das Pfad-Argument
   (Scan-Wurzel, Default cwd) und verweist für die Konfiguration auf
   `--print-config`.
-- [ ] **Spezifikation** §[`DC-FA-CLI-001.a`](../../../../spec/spezifikation.md#dc-fa-cli-001a--ablauf-eines-prüflaufs): Inhalt der `Usage`-Ausgabe
+- [x] **Spezifikation** §[`DC-FA-CLI-001.a`](../../../../spec/spezifikation.md#dc-fa-cli-001a--ablauf-eines-prüflaufs): Inhalt der `Usage`-Ausgabe
   präzisiert (Synopsis, Pfad-Zeile, Config-Pointer, Flag-Liste auf stderr).
-- [ ] **Implementierung**: eigene `flags.Usage`-Funktion; bestehender
+- [x] **Implementierung**: eigene `flags.Usage`-Funktion; bestehender
   Exit-0-/stderr-Pfad unverändert; Test prüft Synopsis, `[pfad]` und den
   `--print-config`-Verweis.
-- [ ] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
+- [x] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
   Closure-Notiz.
 
 ## 3. Plan (vor Code)
@@ -65,7 +65,23 @@ DoD vollständig, `make gates` grün.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-*(folgt mit dem Lifecycle-Übergang nach `done/`.)*
+**Umsetzung:** [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)-Schärfung
+(Lastenheft 0.11.0, neues Hilfe-AK) + Spezifikation §[`DC-FA-CLI-001.a`](../../../../spec/spezifikation.md#dc-fa-cli-001a--ablauf-eines-prüflaufs);
+`writeUsage` als eigene `flags.Usage`-Funktion (Kurzbeschreibung,
+Synopsis `d-check [optionen] [pfad]`, Pfad-Zeile, `flag.PrintDefaults`,
+Config-Pointer). Bestehender ErrHelp-/Exit-0-/stderr-Pfad unverändert.
+`make gates` grün.
+
+- **Was hat funktioniert:** Die `Usage`-Funktion hängt sich in den schon
+  vorhandenen `flag.ErrHelp`-Pfad — kein zweiter Codepfad, kein neuer
+  Exit-Code. Die neuen Flags `--print-config`/`--suggest-config`
+  erscheinen automatisch via `PrintDefaults`.
+- **Lerneintrag:** Die Antwort auf „sollen wir das Config-Format in die
+  Hilfe schreiben?" war **nein** — `--print-config` *ist* das Format
+  (kommentiert). Die Hilfe verweist darauf statt zu duplizieren: ein
+  Format, eine Wahrheit, kein Drift. Dieselbe „verlinken statt kopieren"-
+  Disziplin wie überall im Repo.
+- **Folge-Slices:** keine.
 
 ## 8. Sub-Area-Modus-Begründung
 
