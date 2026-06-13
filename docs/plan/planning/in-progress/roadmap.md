@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-12.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-13.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -10,20 +10,10 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Welle-ID:** welle-06-sensorik
-**Start:** 2026-06-12 (Trigger erfüllt: Change Requests 0.5.0 und
-0.6.0 im Lastenheft, Priorisierung durch den Auftraggeber)
-**Slices:**
-[slice-015](../done/slice-015-spans-modul.md)
-(done, Modul `spans` —
-[`DC-FA-SPAN-001`](../../../../spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)),
-danach [slice-016](../done/slice-016-hostpaths-modul.md)
-(done, Modul `hostpaths` —
-[`DC-FA-HOST-001`](../../../../spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in);
-schließt die Welle, gemeinsames Minor-Release v0.4.0).
-
-**Closure-Trigger:** beide Module implementiert (Kalibrierungsläufe
-+ Gegentests dokumentiert), Minor-Release v0.4.0 veröffentlicht.
+**Keine aktive Welle.** welle-06-sensorik ist abgeschlossen
+(Minor-Release v0.4.0 veröffentlicht — siehe „Abgeschlossene Wellen").
+Die nächste Welle wartet auf ihren Trigger (Change Request im
+Lastenheft oder Priorisierung durch den Auftraggeber).
 
 ## Nächste Wellen
 
@@ -64,6 +54,7 @@ flowchart LR
 | welle-07-modul-scope | 2026-06-12 | [slice-017 §7](../done/slice-017-modul-scope.md#7-closure-notiz-nach-done) |
 | welle-05-rollout | 2026-06-12 | [slice-014 §7](../done/slice-014-rollout-restliche-repos.md#7-closure-notiz-nach-done) |
 | welle-04-distribution-und-migration | 2026-06-12 | [slice-010 §7](../done/slice-010-image-integrationstests-und-repro-belege.md#7-closure-notiz-nach-done), [slice-011 §7](../done/slice-011-ghcr-release-pipeline.md#7-closure-notiz-nach-done), [slice-013 §7](../done/slice-013-codepaths-modul.md#7-closure-notiz-nach-done), [slice-012 §7](../done/slice-012-pilot-migrationen.md#7-closure-notiz-nach-done) |
+| welle-06-sensorik | 2026-06-13 | [slice-015 §7](../done/slice-015-spans-modul.md#7-closure-notiz-nach-done), [slice-016 §7](../done/slice-016-hostpaths-modul.md#7-closure-notiz-nach-done); Minor-Release **v0.4.0** auf GHCR (Run `27456611216` grün in 1m54s, OCI-Label `image.version`=0.4.0, Smoke-Lauf 42 Dateien/0 Befunde), Digest-Pin `ghcr.io/pt9912/d-check@sha256:3281ce538272fbfa086c2ee045a058542af0d1653425e995d56bd886ad730d61` |
 
 ## Historische Trigger-Verschiebungen
 
