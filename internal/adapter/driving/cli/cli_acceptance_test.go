@@ -101,7 +101,8 @@ func TestFlagFehlerUndHelp(t *testing.T) {
 		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
 	}
 	code, stdout, stderr := run(t, "-h")
-	if code != 0 || stdout != "" || !strings.Contains(stderr, "-json") {
+	if code != 0 || stdout != "" || !strings.Contains(stderr, "-json") ||
+		!strings.Contains(stderr, "[pfad]") || !strings.Contains(stderr, "print-config") {
 		t.Fatalf("-h: Exit = %d, stdout = %q, stderr = %q", code, stdout, stderr)
 	}
 	// mehr als ein Pfad-Argument → Exit 2 (DC-FA-CLI-001)

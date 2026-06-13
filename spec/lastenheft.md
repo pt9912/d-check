@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.10.0
+**Version:** 0.11.0
 
 **Status:** Draft
 
@@ -50,13 +50,19 @@ statt per Code-Kopie.
 **Beschreibung:** Das Tool wird als `d-check [pfad]` aufgerufen. Ohne
 Argument ist die Scan-Wurzel das aktuelle Arbeitsverzeichnis; mit
 Argument das angegebene Verzeichnis. Die Scan-Wurzel gilt als
-Repository-Wurzel für alle Pfadauflösungen.
+Repository-Wurzel für alle Pfadauflösungen. Die Hilfe (`-h`/`--help`)
+nennt eine Synopsis (`d-check [optionen] [pfad]`), beschreibt das
+Pfad-Argument als Scan-Wurzel (Default: aktuelles Verzeichnis) und
+verweist für das Konfigurations-Format auf
+[`DC-FA-CLI-005`](#dc-fa-cli-005--konfigurations-gerüst-ausgeben)
+(`--print-config`) — sie dupliziert das Format nicht.
 
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Repo ohne kaputte Referenzen, when `d-check` in der Repo-Wurzel aufgerufen wird, then Exit-Code 0 und eine Zusammenfassung „N Datei(en) geprüft, 0 Befunde".
 - **Boundary:** Given ein Verzeichnis ohne Markdown-Dateien, when `d-check` aufgerufen wird, then Exit-Code 0, Zusammenfassung „0 Datei(en) geprüft", kein Fehler.
 - **Negative:** Given ein nicht existierendes Verzeichnis als Argument, when `d-check /gibt/es/nicht` aufgerufen wird, then Exit-Code 2 und eine Fehlermeldung auf stderr.
+- **Hilfe:** Given `d-check --help`, when aufgerufen, then Exit-Code 0 und die Nutzung auf stderr enthält die Synopsis mit `[pfad]`, die Pfad-Argument-Beschreibung und einen Verweis auf `--print-config`.
 
 **Out-of-Scope:** Prüfung mehrerer Repos in einem Aufruf.
 
@@ -609,6 +615,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.11.0 | 2026-06-13 | Schärfung `DC-FA-CLI-001` (Auftraggeber): neues Akzeptanzkriterium für `--help` — die Hilfe nennt die Synopsis `d-check [optionen] [pfad]`, beschreibt das Pfad-Argument (Scan-Wurzel, Default cwd) und verweist für das Config-Format auf `--print-config` (kein Format-Duplikat). Anlass: die nackte `flag`-Default-Usage verschwieg das Pfad-Argument | slice-021 |
 | 0.10.0 | 2026-06-13 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-006` — Option `--suggest-config` leitet die `ids`-Config aus benannten Autoritäts-Dokumenten ab (definierte Kennungen → Muster + target, Round-Trip-Garantie; opt-in-Module nach Signal; Ausgabe-only, read-only). Dazu Schärfung von `DC-FA-ID-001`: das Muster-Ableitungs-Out-of-Scope gilt für die **Prüfung**; ein advisory Scaffold-Modus darf aus benannten Autoritäts-Quellen ableiten. Anlass: Adoptions-Reibung — neue Repos brauchen einen treffsicheren Config-Start statt eines rein statischen Gerüsts | slice-020 |
 | 0.9.0 | 2026-06-13 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-005` — Option `--print-config` gibt ein statisches, kommentiertes `.d-check.yml`-Startgerüst auf stdout aus (kein Repo-Zugriff, kein Schreiben — read-only-Vertrag bleibt; Umleiten via `> .d-check.yml` macht der Aufrufer). Anlass: Adoptions-Reibung in neuen Repos ohne Config; macht zugleich die verfügbaren Optionen sichtbar. Ableitung aus Repo-Inhalt bewusst nicht Teil (späterer eigener Modus) | slice-019 |
 | 0.8.0 | 2026-06-13 | Change Request (Auftraggeber): `DC-FA-ID-001` um konfigurierbare `link-policy: prose\|always` (je Muster) erweitert — `always` macht auch Inline-Code-Vorkommen linkpflichtig, Default `prose` (opt-in, abwärtskompatibel). Zwei Ventile: `exempt-paths` (Glob-Liste je Muster) und der Zeilen-Marker `d-check:ignore`, dessen Geltungsbereich von `codepaths`-only auf `ids` erweitert wird (illustrative Beispiel-IDs). Anlass: der `ids`-Sensor maß bislang nicht das Ziel „gut verlinkt" — ein Code-Span konnte stillschweigend einen fehlenden Link verbergen (Ausgangsbefund `DC-QA-03` in slice-017). Kalibrierung über die drei `ids`-Repos (d-check 155, u-boot 9, b-trace 2) bestimmte die Ventil-Form | slice-018 |

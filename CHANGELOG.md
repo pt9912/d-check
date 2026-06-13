@@ -6,6 +6,16 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- slice-021 — reichhaltige `--help`/`-h`
+  ([`DC-FA-CLI-001`](spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)
+  Schärfung 0.11.0): die Hilfe nennt jetzt eine Kurzbeschreibung, die
+  Synopsis `d-check [optionen] [pfad]` und beschreibt das bislang
+  verschwiegene Pfad-Argument (Scan-Wurzel, Default cwd); für das
+  Config-Format verweist sie auf `--print-config`/`--suggest-config`
+  (kein Format-Duplikat). Exit 0 / stderr unverändert.
+
 ## [0.7.0] — 2026-06-13
 
 Konfigurations-Vorschlag aus Autoritäts-Dokumenten (`--suggest-config`,

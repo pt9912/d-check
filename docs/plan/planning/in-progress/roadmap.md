@@ -10,10 +10,16 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-10-config-ableitung ist abgeschlossen
-(siehe „Abgeschlossene Wellen"). Die nächste Welle wartet auf ihren
-Trigger (Change Request im Lastenheft oder Priorisierung durch den
-Auftraggeber).
+**Welle-ID:** welle-11-help
+**Start:** 2026-06-13 (Trigger erfüllt: Priorisierung durch den
+Auftraggeber — die `--help`-Ausgabe verschweigt das `[pfad]`-Argument).
+**Slices:**
+[slice-021](slice-021-help-usage.md)
+(in-progress, reichhaltige `--help` mit Synopsis + Pfad-Argument +
+Config-Pointer — Schärfung [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)).
+
+**Closure-Trigger:** `--help` zeigt Synopsis/`[pfad]`/Config-Pointer,
+`make gates` grün.
 
 ## Nächste Wellen
 

@@ -79,6 +79,24 @@ func reorderArgs(args []string) ([]string, error) {
 	return append(flagArgs, positionals...), nil
 }
 
+// writeUsage gibt die Hilfe aus (DC-FA-CLI-001.a): Kurzbeschreibung,
+// Synopsis mit dem Pfad-Argument, Flag-Liste und ein Konfigurations-
+// Hinweis, der auf --print-config/--suggest-config verweist (das
+// Config-Format wird dort gezeigt, nicht hier dupliziert).
+func writeUsage(flags *flag.FlagSet) {
+	out := flags.Output()
+	fmt.Fprintln(out, "d-check — prüft Markdown-Dokumentation auf kaputte Referenzen")
+	fmt.Fprintln(out, "(lokale Links, Heading-Anker, Kennungs-Linkpflicht, Referenzmatrix u. a.).")
+	fmt.Fprintln(out, "\nAufruf:")
+	fmt.Fprintln(out, "  d-check [optionen] [pfad]")
+	fmt.Fprintln(out, "\n  [pfad]   Scan-Wurzel (Default: aktuelles Verzeichnis); gilt als Repo-Wurzel.")
+	fmt.Fprintln(out, "\nOptionen:")
+	flags.PrintDefaults()
+	fmt.Fprintln(out, "\nKonfiguration (optionale .d-check.yml in der Repo-Wurzel):")
+	fmt.Fprintln(out, "  d-check --print-config             kommentiertes Start-Gerüst ausgeben")
+	fmt.Fprintln(out, "  d-check --suggest-config <quelle>  Gerüst aus Autoritäts-Quellen vorschlagen")
+}
+
 // splitSources zerlegt den --suggest-config-Wert in einzelne Quellen
 // (kommagetrennt, getrimmt, leere verworfen).
 func splitSources(v string) []string {
@@ -102,6 +120,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	suggestConfig := flags.String("suggest-config", "", "Config aus Autoritäts-Quellen (kommagetrennt) vorschlagen und beenden")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
 	flags.Var(&disable, "disable", "Regelmodul deaktivieren (wiederholbar)")
+	flags.Usage = func() { writeUsage(flags) }
 
 	reordered, err := reorderArgs(args)
 	if err == nil {

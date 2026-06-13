@@ -43,7 +43,16 @@ Boundary). CLI-Optionen dürfen vor oder nach dem Pfad-Argument stehen
 (Container-Aufrufmuster: ENTRYPOINT setzt `/repo`, Optionen werden
 angehängt); ein wertnehmendes Flag ohne Wert ist ein Nutzungsfehler
 (Exit 2), Nutzungsfehler tragen den Präfix `d-check: error:`, und
-`-h`/`--help` zeigt die Nutzung auf stderr und endet mit Exit 0. Verzeichnis-Symlinks werden beim Scan weder verfolgt noch
+`-h`/`--help` zeigt die Nutzung auf stderr und endet mit Exit 0. Die
+Usage-Ausgabe führt (in dieser Reihenfolge) eine Kurzbeschreibung, die
+Synopsis `d-check [optionen] [pfad]`, eine Zeile zum Pfad-Argument
+(Scan-Wurzel, Default: aktuelles Verzeichnis), die Flag-Liste
+(`flag.PrintDefaults`) und einen Konfigurations-Hinweis, der auf
+[`DC-FA-CLI-005`](lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben)
+(`--print-config`) und
+[`DC-FA-CLI-006`](lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)
+(`--suggest-config`) verweist — das Config-Format wird nicht dupliziert.
+Verzeichnis-Symlinks werden beim Scan weder verfolgt noch
 als Dateien gewertet (Symlink-Ablehnung,
 [`DC-FA-LINK-002`](lastenheft.md#dc-fa-link-002--symlink-ablehnung)).
 
