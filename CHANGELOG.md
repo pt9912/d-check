@@ -6,6 +6,13 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-06-13
+
+Welle-06-sensorik: zwei opt-in-Sensormodule — `spans` (`DC-FA-SPAN-001`,
+Markdown-Span-Artefakte) und `hostpaths` (`DC-FA-HOST-001`, host-lokale
+absolute Pfade), je über 14 Korpora kalibriert und gegen die Alt-Sensoren
+gegengeprüft; schließt welle-06 (slice-015, slice-016).
+
 ### Added
 
 - slice-016 — Modul `hostpaths`
