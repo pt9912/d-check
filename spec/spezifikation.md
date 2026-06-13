@@ -136,6 +136,26 @@ linkpflichtige Kennungen gehören in einzeilige Links. Das deklarierte
 Repo-Wurzel) muss existieren und innerhalb der Repo-Wurzel liegen —
 Verletzung ist ein Konfigurationsfehler (Exit 2, [§2](#d-checkyml)).
 
+**Link-Politik (`ids.patterns[].link-policy`).** Default `prose` = das
+oben beschriebene Verhalten (Inline-Code-Vorkommen sind frei, weil die
+Vorverarbeitung sie leert). Bei `always` wird das Muster **zusätzlich**
+gegen die Werte der Inline-Code-Spans der rohen Prosa-Zeilen geprüft —
+dieselbe fence-aware Span-Erkennung wie
+[§DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code) Schritt 2.
+Ein Inline-Code-Vorkommen ist linkpflichtfrei genau dann, wenn eine der
+Bedingungen gilt: (1) der Code-Span ist der Linktext eines Markdown-Links
+(`` [`…`](ziel) ``); (2) das Vorkommen liegt im `target` des Musters;
+(3) die geprüfte Datei matcht ein Glob aus `ids.patterns[].exempt-paths`;
+(4) die Zeile trägt den Marker `d-check:ignore` (HTML-Kommentar — ab
+dieser Anforderung wirkt er auf `codepaths` **und** `ids`); (5) es ist
+eine ATX-Heading-Zeile. Alle übrigen Inline-Code-Vorkommen erzeugen
+`id-unlinked` (kein neuer Grund-Code). Muster-Präzedenz und
+`prose`-Befunde bleiben unverändert; `always` ist rein additiv (ein
+Muster mit `always` findet eine Obermenge seiner `prose`-Befunde).
+`exempt-paths` nutzt Glob-Syntax relativ zur Repo-Wurzel wie
+`scan.ignore`; die Glob-Auswertung ist reihenfolgestabil
+([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
+
 ### DC-FA-MTX-001.a — Klassen- und Status-Auflösung
 
 1. **Klassenzuordnung:** Glob-Muster der `classes` in
@@ -419,6 +439,8 @@ ids:
   patterns:                      # Reihenfolge = Präzedenz
     - regex: 'ADR-\d{4}'
       target: docs/plan/adr/     # Definition (Datei oder Verzeichnis)
+      link-policy: always        # prose (Default) | always: auch Inline-Code linkpflichtig
+      exempt-paths: [CHANGELOG.md]  # Globs, in denen always nicht greift
 matrix:
   classes:                       # Reihenfolge = Präzedenz
     - name: contract
@@ -451,6 +473,8 @@ Exit 2 ohne Prüfung
 | `hostpaths.prefixes` | string[] | Development, home, Users, Volumes, mnt, media | ersetzt die Default-Liste; Einträge sind nicht-leere Verzeichnisnamen ohne `/` (Exit 2) |
 | `ids.patterns[].regex` | string | — | muss kompilieren und darf den Leerstring nicht matchen (Exit 2) |
 | `ids.patterns[].target` | string | — | muss existieren und innerhalb der Repo-Wurzel liegen |
+| `ids.patterns[].link-policy` | string | `prose` | nur `prose` oder `always` (Exit 2); `always` macht auch Inline-Code-Vorkommen linkpflichtig |
+| `ids.patterns[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien, in denen `always` nicht greift |
 | `matrix.classes[].name` | string | — | eindeutig |
 | `matrix.classes[].paths` | string[] | — | Glob |
 | `matrix.rules[]` | {from,to,allow} | — | Klassen müssen deklariert sein |

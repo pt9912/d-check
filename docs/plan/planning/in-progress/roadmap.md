@@ -10,10 +10,19 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-06-sensorik ist abgeschlossen
-(Minor-Release v0.4.0 veröffentlicht — siehe „Abgeschlossene Wellen").
-Die nächste Welle wartet auf ihren Trigger (Change Request im
-Lastenheft oder Priorisierung durch den Auftraggeber).
+**Welle-ID:** welle-08-linkpolitik
+**Start:** 2026-06-13 (Trigger erfüllt: Priorisierung durch den
+Auftraggeber; Ausgangsbefund — der `ids`-Sensor misst nicht das Ziel
+„gut verlinkt", ein Code-Span verbirgt einen fehlenden Link).
+**Slices:**
+[slice-018](slice-018-link-politik-ids.md)
+(in-progress, konfigurierbare `link-policy: prose|always` für `ids` —
+[`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids),
+Change Request 0.8.0).
+
+**Closure-Trigger:** `link-policy` implementiert (über die drei
+ids-Korpora kalibriert + Gegentests), nutzersichtbare Doku der Option,
+Fleet-Entdeckungs-Lauf dokumentiert, Dogfooding (`always` aktiv).
 
 ## Nächste Wellen
 

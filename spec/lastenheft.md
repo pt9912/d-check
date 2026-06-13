@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.7.2
+**Version:** 0.8.0
 
 **Status:** Draft
 
@@ -228,13 +228,43 @@ ausgeführt sein. Überlappen mehrere Muster für dasselbe Vorkommen,
 gilt die Deklarationsreihenfolge in der Konfiguration: das erste
 passende Muster gewinnt.
 
+**Link-Politik (`link-policy`, je Muster konfigurierbar).** Pro Muster
+ist wählbar, wie streng die Linkpflicht greift:
+
+- `prose` (**Default**): wie oben — nur nackte Vorkommen im Fließtext
+  sind linkpflichtig; Inline-Code-Vorkommen sind frei.
+- `always`: auch Vorkommen **innerhalb von Inline-Code** müssen im
+  Linktext eines Markdown-Links stehen (`` [`ADR-0042`](ziel) `` ist
+  erfüllt, `` `ADR-0042` `` allein nicht). Fenced-Code-Blöcke,
+  Heading-Zeilen und das `target` des Musters bleiben frei.
+
+Der Default ist `prose`, damit bestehende Konfigurationen
+byte-identisch bleiben und kein Repo ungefragt rote Läufe bekommt
+(opt-in fürs Gating). Die Entdeckung ungenügender Verlinkung ist davon
+unabhängig eine Bringschuld des Werkzeug-Betreibers (fleet-weiter
+`always`-Lauf, [`DC-QA-04`](#dc-qa-04--migrationsabdeckung-der-alt-tools)-Muster);
+„opt-in" heißt nicht „unsichtbar". Zwei Ventile halten `always`
+treffsicher:
+
+- `exempt-paths` (Glob-Liste je Muster): Dateien, in denen die strenge
+  Regel nicht gilt (literal-schwere Artefakte wie Changelogs oder
+  Review-Reports).
+- Der Zeilen-Marker `d-check:ignore` (HTML-Kommentar, Begründung in
+  Klammern empfohlen) nimmt eine Zeile von der `ids`-Prüfung aus — für
+  bewusst illustrative Beispiel-IDs (gleiche Begründung wie bei
+  [`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in);
+  der Marker wirkt ab dieser Anforderung auf `codepaths` **und** `ids`).
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given das Muster `ADR-\d{4}` und ein Vorkommen `[ADR-0042](docs/plan/adr/0042-beispiel.md)`, when das Modul `ids` läuft, then kein Befund.
-- **Boundary:** Given ein Vorkommen `` `ADR-0042` `` in Inline-Code, when das Modul läuft, then kein Befund (Code-Vorkommen sind linkpflichtfrei).
+- **Boundary:** Given ein Vorkommen `` `ADR-0042` `` in Inline-Code und `link-policy: prose` (Default), when das Modul läuft, then kein Befund (Code-Vorkommen sind linkpflichtfrei).
 - **Negative:** Given ein nacktes `ADR-0042` im Fließtext, when das Modul läuft, then ein Befund mit Grund „Kennung ohne Link".
+- **`always` Happy Path:** Given `link-policy: always` und ein Vorkommen `` [`ADR-0042`](docs/plan/adr/0042-beispiel.md) ``, when das Modul läuft, then kein Befund (Code-Span im Linktext zählt als verlinkt).
+- **`always` Negative:** Given `link-policy: always` und ein Vorkommen `` `ADR-0042` `` ohne Link (außerhalb `exempt-paths` und ohne `d-check:ignore`), when das Modul läuft, then ein Befund `id-unlinked`.
+- **`always` Boundary (Ventile):** Given `link-policy: always`, ein `` `ADR-0042` `` in einer `exempt-paths`-Datei und ein zweites `` `ADR-0099` `` auf einer Zeile mit `d-check:ignore`, when das Modul läuft, then kein Befund für beide.
 
-**Out-of-Scope:** Automatisches Ermitteln der Muster aus dem Repo-Inhalt; Prüfung, ob die verlinkte Definition inhaltlich zur Kennung passt.
+**Out-of-Scope:** Automatisches Ermitteln der Muster aus dem Repo-Inhalt; Prüfung, ob die verlinkte Definition inhaltlich zur Kennung passt; ein `link-policy`-Default abweichend von `prose` (bewusst opt-in).
 
 ---
 
@@ -521,6 +551,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.8.0 | 2026-06-13 | Change Request (Auftraggeber): `DC-FA-ID-001` um konfigurierbare `link-policy: prose\|always` (je Muster) erweitert — `always` macht auch Inline-Code-Vorkommen linkpflichtig, Default `prose` (opt-in, abwärtskompatibel). Zwei Ventile: `exempt-paths` (Glob-Liste je Muster) und der Zeilen-Marker `d-check:ignore`, dessen Geltungsbereich von `codepaths`-only auf `ids` erweitert wird (illustrative Beispiel-IDs). Anlass: der `ids`-Sensor maß bislang nicht das Ziel „gut verlinkt" — ein Code-Span konnte stillschweigend einen fehlenden Link verbergen (Ausgangsbefund `DC-QA-03` in slice-017). Kalibrierung über die drei `ids`-Repos (d-check 155, u-boot 9, b-trace 2) bestimmte die Ventil-Form | slice-018 |
 | 0.1.0 | 2026-06-10 | Initiale Fassung (Konsolidierung von 12 Quell-Tools, Modul-Schnitt, Docker-Distribution) | — |
 | 0.2.0 | 2026-06-10 | Review-Runde R1: Modul-Schnitt `links`/`anchors` präzisiert (Fragment-Zuständigkeit, fehlende Zieldatei), Slug-Duplikat-Reihenfolge, Symlink-Vorrang, RFC-3986-Dekodierung vor Escape-Prüfung, Redirect-Regel `external`, Muster-Präzedenz `ids`, Status-Default `matrix`, Scan-Wurzel- und Config-Vollvalidierung, Out-of-Scope Reference-Style-Links, Image-Default-Befehl | — |
 | 0.2.1 | 2026-06-10 | Redaktionell: Beispiel-Kennungen in DC-FA-ID-001/DC-FA-MTX-001/Glossar auf fiktive Nummern (`ADR-0042`, `ADR-0099`) umgestellt — Kollision mit real entstandenen/zukünftigen eigenen ADRs vermeiden; keine inhaltliche Änderung | — |
