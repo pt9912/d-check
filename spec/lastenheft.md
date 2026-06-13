@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.9.0
+**Version:** 0.10.0
 
 **Status:** Draft
 
@@ -147,6 +147,38 @@ sie sichtbar sind.
 
 ---
 
+### DC-FA-CLI-006 — Konfigurations-Vorschlag aus Autoritäts-Dokumenten
+
+**Beschreibung:** Mit `--suggest-config <quelle>[,<quelle>…]` macht
+`d-check` einen **Lese**-Durchgang über das Repository und gibt ein
+*vorgeschlagenes* `.d-check.yml`-Gerüst auf **stdout** aus — wie
+[`DC-FA-CLI-005`](#dc-fa-cli-005--konfigurations-gerüst-ausgeben)
+schreibt es niemals selbst (read-only-Kernvertrag
+[`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
+bleibt; der Aufrufer leitet um). Jede `<quelle>` ist eine Datei oder ein
+Verzeichnis, in dem Kennungen **definiert** sind (z. B. das Lastenheft,
+die Konventionen, `adr/`). Aus den dort definierten Kennungen
+(führendes Token von ATX-Headings, das der allgemeinen Kennungs-Gestalt
+entspricht) wird je Quelle ein `ids`-Muster abgeleitet: ein `regex`,
+der **mindestens alle** dort gefundenen Kennungen matcht
+(Round-Trip-Garantie), mit `target` = der Quelle, und die Quell-Kennungen
+als Kommentar (Nachvollziehbarkeit). Zusätzlich werden die
+opt-in-Module vorgeschlagen, die in einem Probelauf echtes Signal
+liefern, sowie ein Scan-Scope. Der Vorschlag ist **advisory** — der
+Mensch prüft und verengt. Die Ableitung ist deterministisch
+([`DC-QA-02`](#dc-qa-02--determinismus)) und das Gerüst dekodiert über
+den eigenen Parser ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given eine Autoritäts-Quelle mit definierten Kennungen (Headings `ADR-0042`, `ADR-0099`), when `d-check --suggest-config docs/plan/adr/` läuft, then enthält die stdout-Ausgabe ein `ids`-Muster, dessen `regex` `ADR-0042` und `ADR-0099` matcht, mit `target: docs/plan/adr/`, Exit 0. <!-- d-check:ignore (fiktive Beispiel-IDs) -->
+- **Boundary:** Given eine benannte Quelle ohne Kennungs-Headings, when `--suggest-config` läuft, then entsteht für sie kein `ids`-Muster (sondern ein Hinweis-Kommentar), kein Absturz, und das Repository wird nicht geschrieben.
+- **Negative:** Given eine nicht existierende Quelle, when `d-check --suggest-config gibt/es/nicht` läuft, then Exit-Code 2 (Nutzungsfehler); ein read-only gemountetes Repository genügt (kein Schreibzugriff).
+
+**Out-of-Scope:** Schreiben der Datei (immer stdout); Muster-Ableitung aus beliebigem Fließtext (nur aus definierten Headings benannter Autoritäts-Quellen); Garantie eines minimalen/perfekten `regex` (Best-Guess-Generalisierung + Quell-Kennungs-Kommentar — der Mensch verengt); automatisches Ableiten von `link-policy`, `matrix`-Regeln oder `exempt-paths`.
+
+---
+
 ### DC-FA-SCAN-001 — Datei-Auswahl und Ignorier-Regeln
 
 **Beschreibung:** Geprüft werden Markdown-Dateien (`*.md`) unterhalb
@@ -290,7 +322,7 @@ treffsicher:
 - **`always` Negative:** Given `link-policy: always` und ein Vorkommen `` `ADR-0042` `` ohne Link (außerhalb `exempt-paths` und ohne `d-check:ignore`), when das Modul läuft, then ein Befund `id-unlinked`.
 - **`always` Boundary (Ventile):** Given `link-policy: always`, ein `` `ADR-0042` `` in einer `exempt-paths`-Datei und ein zweites `` `ADR-0099` `` auf einer Zeile mit `d-check:ignore`, when das Modul läuft, then kein Befund für beide.
 
-**Out-of-Scope:** Automatisches Ermitteln der Muster aus dem Repo-Inhalt; Prüfung, ob die verlinkte Definition inhaltlich zur Kennung passt; ein `link-policy`-Default abweichend von `prose` (bewusst opt-in).
+**Out-of-Scope:** Automatisches Ermitteln der Muster aus dem Repo-Inhalt **für die Prüfung** (die Prüfung läuft stets gegen explizit konfigurierte Muster — deterministisch, Vertrag); ein *advisory* Scaffold-Modus darf Muster aus **benannten Autoritäts-Quellen** ableiten (Ausgabe-only, vom Menschen bestätigt — [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)). Prüfung, ob die verlinkte Definition inhaltlich zur Kennung passt; ein `link-policy`-Default abweichend von `prose` (bewusst opt-in).
 
 ---
 
@@ -577,6 +609,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.10.0 | 2026-06-13 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-006` — Option `--suggest-config` leitet die `ids`-Config aus benannten Autoritäts-Dokumenten ab (definierte Kennungen → Muster + target, Round-Trip-Garantie; opt-in-Module nach Signal; Ausgabe-only, read-only). Dazu Schärfung von `DC-FA-ID-001`: das Muster-Ableitungs-Out-of-Scope gilt für die **Prüfung**; ein advisory Scaffold-Modus darf aus benannten Autoritäts-Quellen ableiten. Anlass: Adoptions-Reibung — neue Repos brauchen einen treffsicheren Config-Start statt eines rein statischen Gerüsts | slice-020 |
 | 0.9.0 | 2026-06-13 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-005` — Option `--print-config` gibt ein statisches, kommentiertes `.d-check.yml`-Startgerüst auf stdout aus (kein Repo-Zugriff, kein Schreiben — read-only-Vertrag bleibt; Umleiten via `> .d-check.yml` macht der Aufrufer). Anlass: Adoptions-Reibung in neuen Repos ohne Config; macht zugleich die verfügbaren Optionen sichtbar. Ableitung aus Repo-Inhalt bewusst nicht Teil (späterer eigener Modus) | slice-019 |
 | 0.8.0 | 2026-06-13 | Change Request (Auftraggeber): `DC-FA-ID-001` um konfigurierbare `link-policy: prose\|always` (je Muster) erweitert — `always` macht auch Inline-Code-Vorkommen linkpflichtig, Default `prose` (opt-in, abwärtskompatibel). Zwei Ventile: `exempt-paths` (Glob-Liste je Muster) und der Zeilen-Marker `d-check:ignore`, dessen Geltungsbereich von `codepaths`-only auf `ids` erweitert wird (illustrative Beispiel-IDs). Anlass: der `ids`-Sensor maß bislang nicht das Ziel „gut verlinkt" — ein Code-Span konnte stillschweigend einen fehlenden Link verbergen (Ausgangsbefund `DC-QA-03` in slice-017). Kalibrierung über die drei `ids`-Repos (d-check 155, u-boot 9, b-trace 2) bestimmte die Ventil-Form | slice-018 |
 | 0.1.0 | 2026-06-10 | Initiale Fassung (Konsolidierung von 12 Quell-Tools, Modul-Schnitt, Docker-Distribution) | — |

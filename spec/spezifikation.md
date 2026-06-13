@@ -74,6 +74,39 @@ ihren Optionen als kommentierte Beispiele (`ids.link-policy`,
 weiteren Optionen oder einem Pfad-Argument zusammen, gewinnt der
 Kurzschluss (die übrigen Angaben bleiben wirkungslos).
 
+### DC-FA-CLI-006.a — Konfigurations-Vorschlag
+
+`--suggest-config <quelle>[,<quelle>…]` ist ein **Lese**-Modus, der ein
+Gerüst statt Befunde ausgibt. Schreibzugriff entsteht nie
+([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+Schritte (deterministisch, alle Mengen bytewise sortiert —
+[`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)):
+
+1. **Quellen auflösen:** jede `<quelle>` (Datei oder Verzeichnis,
+   relativ zur Repo-Wurzel, kein Repo-Escape — sonst Exit 2). Eine nicht
+   existierende Quelle ist ein Nutzungsfehler (Exit 2).
+2. **Kennungen extrahieren:** je Quelle alle Markdown-Dateien lesen; aus
+   jeder ATX-Heading-Zeile das **führende** Token nehmen, das der
+   allgemeinen Kennungs-Gestalt entspricht
+   (`[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d+[A-Za-z]?`). Ergebnis je Quelle:
+   die sortierte Menge der dort *definierten* Kennungen (kein
+   Fließtext-Mining).
+3. **Muster ableiten (je Quelle):** jede Kennung in Präfix + `-\d+` +
+   optionalen Buchstaben zerlegen; die distinkten Präfixe ergeben
+   `(?:<präfix₁>|<präfix₂>|…)-\d+` (mit `[A-Za-z]?`, falls eine Kennung
+   einen Suffix-Buchstaben trug). **Round-Trip-Invariante:** der
+   abgeleitete `regex` matcht jede Quell-Kennung (Best-Guess-Verengung
+   ist Sache des Menschen — die Quell-Kennungen werden als Kommentar
+   mitgegeben). `target` = die Quelle.
+4. **Opt-in-Module nach Signal:** die opt-in-Module (`codepaths`,
+   `spans`, `hostpaths`) probeweise über das Repo laufen lassen; jene
+   mit ≥1 Befund werden als Vorschlag vermerkt (die Default-Module
+   `links`/`anchors` immer aktiv).
+5. **Scan-Scope** konservativ vorschlagen (Default-Wurzeln).
+6. Das zusammengesetzte, kommentierte Gerüst auf stdout schreiben,
+   Exit 0; es dekodiert über den eigenen Parser
+   ([`DC-FA-CONF-001`](lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
+
 ### DC-FA-LINK-001.a — Markdown-Vorverarbeitung und Link-Extraktion
 
 1. **Fences:** Zeilen, deren erste Nicht-Leerzeichen-Folge mit

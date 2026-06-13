@@ -10,10 +10,17 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-09-config-geruest ist abgeschlossen (siehe
-„Abgeschlossene Wellen"). Die nächste Welle wartet auf ihren Trigger —
-nächster Kandidat: slice-020 (`--suggest-config`, Ableitung der Config
-aus Autoritäts-Dokumenten, mit den Korpora als Gegentest).
+**Welle-ID:** welle-10-config-ableitung
+**Start:** 2026-06-13 (Trigger erfüllt: Priorisierung durch den
+Auftraggeber; baut auf slice-019 auf).
+**Slices:**
+[slice-020](slice-020-suggest-config.md)
+(in-progress, `--suggest-config` leitet die `ids`-Config aus benannten
+Autoritäts-Dokumenten ab — Schärfung
+[`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)).
+
+**Closure-Trigger:** `--suggest-config` implementiert, Korpora-Gegentest
+(abgeleitete vs. handgepflegte Muster) dokumentiert, `make gates` grün.
 
 ## Nächste Wellen
 

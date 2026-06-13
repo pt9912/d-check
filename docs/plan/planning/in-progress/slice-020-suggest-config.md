@@ -1,8 +1,8 @@
 # Slice slice-020: Konfiguration aus Autoritäts-Dokumenten vorschlagen (`--suggest-config`)
 
-**Status:** open.
+**Status:** in-progress.
 
-**Welle:** noch nicht zugeordnet (Trigger: Priorisierung durch den
+**Welle:** welle-10-config-ableitung (Trigger: Priorisierung durch den
 Auftraggeber; baut auf slice-019 auf).
 
 **Bezug:** [`DC-FA-CLI-005`](../../../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben)
