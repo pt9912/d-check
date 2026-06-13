@@ -10,17 +10,10 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Welle-ID:** welle-10-config-ableitung
-**Start:** 2026-06-13 (Trigger erfüllt: Priorisierung durch den
-Auftraggeber; baut auf slice-019 auf).
-**Slices:**
-[slice-020](slice-020-suggest-config.md)
-(in-progress, `--suggest-config` leitet die `ids`-Config aus benannten
-Autoritäts-Dokumenten ab — Schärfung
-[`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)).
-
-**Closure-Trigger:** `--suggest-config` implementiert, Korpora-Gegentest
-(abgeleitete vs. handgepflegte Muster) dokumentiert, `make gates` grün.
+**Keine aktive Welle.** welle-10-config-ableitung ist abgeschlossen
+(siehe „Abgeschlossene Wellen"). Die nächste Welle wartet auf ihren
+Trigger (Change Request im Lastenheft oder Priorisierung durch den
+Auftraggeber).
 
 ## Nächste Wellen
 
@@ -64,6 +57,7 @@ flowchart LR
 | welle-06-sensorik | 2026-06-13 | [slice-015 §7](../done/slice-015-spans-modul.md#7-closure-notiz-nach-done), [slice-016 §7](../done/slice-016-hostpaths-modul.md#7-closure-notiz-nach-done); Minor-Release **v0.4.0** auf GHCR (Run `27456611216` grün in 1m54s, OCI-Label `image.version`=0.4.0, Smoke-Lauf 42 Dateien/0 Befunde), Digest-Pin `ghcr.io/pt9912/d-check@sha256:3281ce538272fbfa086c2ee045a058542af0d1653425e995d56bd886ad730d61` |
 | welle-08-linkpolitik | 2026-06-13 | [slice-018 §9](../done/slice-018-link-politik-ids.md#9-closure-notiz-nach-done); konfigurierbare `link-policy: prose\|always` für `ids` ([`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) 0.8.0), kalibriert (d-check 170, u-boot 2, b-trace 2), Dogfooding-Sweep ~127 Links gate-verifiziert, nutzersichtbar dokumentiert |
 | welle-09-config-geruest | 2026-06-13 | [slice-019 §7](../done/slice-019-print-config.md#7-closure-notiz-nach-done); Option `--print-config` gibt ein statisches `.d-check.yml`-Gerüst auf stdout ([`DC-FA-CLI-005`](../../../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben) 0.9.0), kein Repo-Zugriff/Schreiben, End-to-End belegt |
+| welle-10-config-ableitung | 2026-06-13 | [slice-020 §7](../done/slice-020-suggest-config.md#7-closure-notiz-nach-done); Option `--suggest-config` leitet `ids`-Muster aus Autoritäts-Quellen ab ([`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) 0.10.0, [`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)-Schärfung), read-only; Korpora-Gegentest dokumentiert (d-check round-trippt, b-trace zeigt die Heading-Grenze) |
 
 ## Historische Trigger-Verschiebungen
 

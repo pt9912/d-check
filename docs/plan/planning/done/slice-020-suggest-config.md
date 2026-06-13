@@ -1,6 +1,6 @@
 # Slice slice-020: Konfiguration aus Autoritäts-Dokumenten vorschlagen (`--suggest-config`)
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-10-config-ableitung (Trigger: Priorisierung durch den
 Auftraggeber; baut auf slice-019 auf).
@@ -43,7 +43,7 @@ Schichten aus dem Repo-Inhalt:
 
 ## 2. Definition of Done
 
-- [ ] **Lastenheft-Change-Request** [`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)-**Schärfung**:
+- [x] **Lastenheft-Change-Request** [`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)-**Schärfung**:
   Das Out-of-Scope „Automatisches Ermitteln der Muster aus dem
   Repo-Inhalt" gilt unverändert für die **Prüfung**; ein
   **advisory Scaffold-Modus** darf Muster aus *benannten
@@ -51,21 +51,21 @@ Schichten aus dem Repo-Inhalt:
   bestätigt). Neue oder erweiterte CLI-Anforderung für
   `--suggest-config` (entweder [`DC-FA-CLI-005`](../../../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben)
   erweitert oder eine eigene neue Anforderung); drei AKs + Out-of-Scope.
-- [ ] **Spezifikation:** Ableitungs-Algorithmus (ID-Extraktion aus
+- [x] **Spezifikation:** Ableitungs-Algorithmus (ID-Extraktion aus
   Autoritäts-Headings, Regex-Generalisierung, Signal-Probe der
   opt-in-Module), Determinismus-Festlegung.
-- [ ] **Implementierung** im CLI-/Core-Layer; Ausgabe baut auf dem
+- [x] **Implementierung** im CLI-/Core-Layer; Ausgabe baut auf dem
   slice-019-Gerüst-Format auf.
-- [ ] **Regex-Politik:** generalisierter Best-Guess **plus** die
+- [x] **Regex-Politik:** generalisierter Best-Guess **plus** die
   Quell-IDs als Kommentar („abgeleitet aus: …") — Scaffold, kein
   Orakel; der Mensch verengt.
-- [ ] **Kalibrierung/Gegentest über die Korpora** ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Muster):
+- [x] **Kalibrierung/Gegentest über die Korpora** ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Muster):
   Ableitung gegen die *handgepflegten* `ids.patterns` von d-check (3),
   u-boot (4), b-trace (10) — matchen die abgeleiteten Muster dieselbe
   ID-Menge? b-trace ist der Härtetest der Generalisierung.
-- [ ] **Read-only-Beleg** ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)):
+- [x] **Read-only-Beleg** ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)):
   liest das Repo, schreibt nie (read-only-Mount genügt).
-- [ ] **Doku** unter `docs/user/`; `make gates` grün; Closure-Notiz.
+- [x] **Doku** unter `docs/user/`; `make gates` grün; Closure-Notiz.
 
 ## 3. Plan (vor Code)
 
@@ -98,6 +98,42 @@ Muster dokumentiert) und grüner Gates.
 - **Modul-Signal-Probe** bedeutet einen vollständigen Lese-Lauf — Laufzeit
   beachten (aber read-only, netzlos).
 
-## 7. Sub-Area-Modus-Begründung
+## 7. Closure-Notiz (nach `done/`)
+
+**Umsetzung:** Vertrag ([`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten), Lastenheft 0.10.0) +
+[`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)-Schärfung
++ Spezifikation [`DC-FA-CLI-006.a`](../../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag); `core.SuggestConfig` (ID-Extraktion
+aus Headings, Präfix-Alternation mit Round-Trip-Garantie, Modul-Signal-Probe,
+YAML-Render), CLI-Flag `--suggest-config`. `make gates` grün.
+
+**Korpora-Gegentest (das Orakel):** `--suggest-config` mit den
+Autoritäts-Quellen je Repo gegen die *handgepflegten* Muster:
+
+| Repo | Befund |
+|---|---|
+| d-check | alle 3 Familien round-trippen: `ADR-\d+`/`MR-\d+` ≈ handgepflegt; `DC` als explizite Präfix-Alternation (handgepflegt generalisiert `FA-[A-Z]+`) |
+| u-boot | `LH`-Familie round-trippt (verbose, 32 Präfixe); `slice`/`tranche` + `PH/TC/CO` **verfehlt** |
+| b-trace | nur `MR` erkannt — die Requirement-IDs stehen dort nicht als Heading-Token |
+
+- **Was hat funktioniert:** Die Round-Trip-Invariante (abgeleiteter
+  `regex` matcht jede Quell-Kennung) macht den Vorschlag *nie falsch*,
+  nur evtl. zu weit — und die Quell-Kennungs-Kommentare machen die
+  Ableitung prüfbar. Das Orakel war geschenkt: die Korpora *haben*
+  schon handgepflegte Muster.
+- **Anders/ehrlicher als erhofft:** Die Heading-basierte Extraktion hat
+  eine klare, dokumentierte Grenze (großgeschriebene Heading-Token;
+  keine `slice-001`/Tabellen-IDs). b-trace war exakt der Härtetest, der
+  sie sichtbar machte. Statt das wegzukaschieren, steht die Grenze in
+  [`docs/user/operations.md`](../../../../docs/user/operations.md) und
+  im Out-of-Scope — „Scaffold, kein Orakel" ist Vertrag, nicht Ausrede.
+- **Lerneintrag:** Eine Round-Trip-Garantie + Quell-Nachweis verwandelt
+  eine riskante Heuristik (Muster-Raten) in ein vertretbares
+  Komfort-Werkzeug — der Mensch verengt, wird aber nie in die Irre
+  geführt.
+- **Folge-Slices:** keine; eine Generalisierungs-Verbesserung (Stamm-
+  Kollabieren wie `DC-FA-[A-Z]+`) oder kleingeschriebene IDs wären
+  eigene, klar abgegrenzte Folge-Slices, falls Bedarf entsteht.
+
+## 8. Sub-Area-Modus-Begründung
 
 Alle berührten Sub-Areas GF (Spec-/Code-/Doku-Arbeit; Greenfield-Default).
