@@ -13,6 +13,7 @@ import (
 	"strings"
 	"testing"
 
+	configyaml "github.com/pt9912/d-check/internal/adapter/driven/configyaml"
 	"github.com/pt9912/d-check/internal/adapter/driving/cli"
 )
 
@@ -434,5 +435,34 @@ func TestCONF001_UngueltigeConfig(t *testing.T) {
 	}
 	if !strings.Contains(stderr, "line") && !strings.Contains(stderr, "Zeile") {
 		t.Fatalf("Zeilenangabe fehlt: %q", stderr)
+	}
+}
+
+// DC-FA-CLI-005 Happy: --print-config gibt gültiges, vom eigenen Parser
+// akzeptiertes YAML auf stdout aus, Exit 0.
+func TestCLI005_PrintConfig(t *testing.T) {
+	code, stdout, stderr := run(t, "--print-config")
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	if stdout == "" || !strings.Contains(stdout, "link-policy") || !strings.Contains(stdout, "modules:") {
+		t.Fatalf("Gerüst unvollständig: %q", stdout)
+	}
+	if _, err := configyaml.Decode([]byte(stdout)); err != nil {
+		t.Fatalf("eigener Parser lehnt das Gerüst ab: %v", err)
+	}
+}
+
+// DC-FA-CLI-005 Boundary/Negative: kein Repo-Zugriff — eine nicht
+// existierende Wurzel als Argument führt trotzdem zu Exit 0 (sonst
+// Exit 2), und die Ausgabe ist deterministisch (DC-QA-02).
+func TestCLI005_KeinRepoZugriff(t *testing.T) {
+	code, stdout, _ := run(t, "--print-config", filepath.Join(t.TempDir(), "gibt-es-nicht"))
+	if code != 0 {
+		t.Fatalf("Repo-Zugriff trotz --print-config: Exit = %d", code)
+	}
+	_, stdout2, _ := run(t, "--print-config")
+	if stdout != stdout2 {
+		t.Fatal("Ausgabe nicht deterministisch")
 	}
 }

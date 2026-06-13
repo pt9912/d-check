@@ -10,10 +10,17 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-08-linkpolitik ist abgeschlossen (siehe
-„Abgeschlossene Wellen"). Die nächste Welle wartet auf ihren Trigger
-(Change Request im Lastenheft oder Priorisierung durch den
-Auftraggeber).
+**Welle-ID:** welle-09-config-geruest
+**Start:** 2026-06-13 (Trigger erfüllt: Priorisierung durch den
+Auftraggeber — Adoptions-Reibung in neuen Repos ohne `.d-check.yml`).
+**Slices:**
+[slice-019](slice-019-print-config.md)
+(in-progress, `--print-config` gibt ein statisches Config-Gerüst auf
+stdout — [`DC-FA-CLI-005`](../../../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben),
+Change Request 0.9.0).
+
+**Closure-Trigger:** `--print-config` implementiert (End-to-End-Beleg),
+nutzersichtbar dokumentiert, `make gates` grün.
 
 ## Nächste Wellen
 

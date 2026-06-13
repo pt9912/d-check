@@ -54,6 +54,26 @@ Effektive Module = (`modules` aus Config, sonst `DEFAULT_MODULES`)
 der Config angewandt (CLI-Präzedenz). Unbekannte Modulnamen sind
 Nutzungsfehler (Exit 2) mit Auflistung der gültigen Namen.
 
+### DC-FA-CLI-005.a — Konfigurations-Gerüst
+
+`--print-config` ist ein Kurzschluss-Modus wie `-h`: Nach dem
+Optionen-Parsing — **vor** Scan-Wurzel-Öffnung, Config-Laden und
+Prüflauf — wird ein statisches, in das Binary eingebettetes
+`.d-check.yml`-Gerüst unverändert auf stdout geschrieben, Exit-Code 0.
+Es findet **kein** Zugriff auf das geprüfte Repository statt (weder
+Lesen noch Schreiben — die Seiteneffektfreiheit aus
+[`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
+ist hier trivial, da nicht einmal gelesen wird). Da das Gerüst eine
+Konstante ist, ist die Ausgabe deterministisch
+([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)). Das Gerüst ist
+gültiges YAML, das der eigene Konfigurations-Parser fehlerfrei
+dekodiert ([`DC-FA-CONF-001`](lastenheft.md#dc-fa-conf-001--konfigurationsdatei));
+es führt die aktiven Default-Einstellungen und die übrigen Module mit
+ihren Optionen als kommentierte Beispiele (`ids.link-policy`,
+`exempt-paths`, `<modul>.scope` u. a.). Trifft `--print-config` mit
+weiteren Optionen oder einem Pfad-Argument zusammen, gewinnt der
+Kurzschluss (die übrigen Angaben bleiben wirkungslos).
+
 ### DC-FA-LINK-001.a — Markdown-Vorverarbeitung und Link-Extraktion
 
 1. **Fences:** Zeilen, deren erste Nicht-Leerzeichen-Folge mit

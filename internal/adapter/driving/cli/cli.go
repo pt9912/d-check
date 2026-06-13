@@ -40,10 +40,11 @@ func (m *multiFlag) Set(v string) error {
 
 // options sind die geparsten CLI-Eingaben.
 type options struct {
-	root    string
-	json    bool
-	enable  []string
-	disable []string
+	root        string
+	json        bool
+	enable      []string
+	disable     []string
+	printConfig bool
 }
 
 // reorderArgs erlaubt Optionen auch NACH dem Pfad-Argument — nötig
@@ -82,6 +83,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	flags.SetOutput(io.Discard) // Fehlertexte einheitlich unten
 	var enable, disable multiFlag
 	jsonOut := flags.Bool("json", false, "maschinenlesbare JSON-Ausgabe")
+	printConfig := flags.Bool("print-config", false, "Konfigurations-Startgerüst auf stdout ausgeben und beenden")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
 	flags.Var(&disable, "disable", "Regelmodul deaktivieren (wiederholbar)")
 
@@ -102,7 +104,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 		fmt.Fprintln(stderr, "d-check: error: höchstens ein Pfad-Argument")
 		return options{}, 2, true
 	}
-	opts := options{root: ".", json: *jsonOut, enable: enable, disable: disable}
+	opts := options{root: ".", json: *jsonOut, enable: enable, disable: disable, printConfig: *printConfig}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}
@@ -181,6 +183,12 @@ func Run(args []string, stdout, stderr io.Writer) int {
 	opts, code, done := parseOptions(args, stderr)
 	if done {
 		return code
+	}
+	// DC-FA-CLI-005: Kurzschluss VOR jedem Repo-Zugriff (kein Scan,
+	// kein Lesen/Schreiben) — statisches Gerüst auf stdout, Exit 0.
+	if opts.printConfig {
+		fmt.Fprint(stdout, configTemplate)
+		return 0
 	}
 	fsys, ok := openRoot(opts.root, stderr)
 	if !ok {

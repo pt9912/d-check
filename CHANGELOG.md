@@ -6,6 +6,18 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-019 — Option `--print-config`
+  ([`DC-FA-CLI-005`](spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben),
+  Change Request 0.9.0): gibt ein kommentiertes `.d-check.yml`-Startgerüst
+  auf stdout aus und endet mit Exit 0 — **kein Scan, schreibt nichts**
+  (read-only-Vertrag bleibt; Anlegen via `d-check --print-config >
+  .d-check.yml`). Das Gerüst ist statisch, deterministisch und
+  dekodiert über den eigenen Parser; es macht die verfügbaren Module
+  und Optionen als Kommentare sichtbar. Senkt die Adoptions-Reibung in
+  neuen Repos ohne Konfiguration.
+
 ## [0.5.0] — 2026-06-13
 
 Konfigurierbare Link-Politik für das Modul `ids` (Change Request 0.8.0,

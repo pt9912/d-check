@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.8.0
+**Version:** 0.9.0
 
 **Status:** Draft
 
@@ -118,6 +118,32 @@ enthält dann keine unstrukturierten Textzeilen.
 - **Negative:** Given die unbekannte Option `--format` (kein Teil des CLI), when `d-check --json --format xml` aufgerufen wird, then Exit-Code 2 (ungültige Nutzung, vgl. [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)).
 
 **Out-of-Scope:** Weitere Formate (SARIF, JUnit-XML) in dieser Version.
+
+---
+
+### DC-FA-CLI-005 — Konfigurations-Gerüst ausgeben
+
+**Beschreibung:** Mit der Option `--print-config` gibt `d-check` ein
+kommentiertes `.d-check.yml`-Startgerüst auf **stdout** aus und endet
+mit Exit-Code 0 — **ohne das geprüfte Repository zu lesen oder zu
+beschreiben** (kein Scan). Der Aufrufer leitet selbst um
+(`d-check --print-config > .d-check.yml`); das Werkzeug schreibt
+niemals selbst (read-only-Kernvertrag
+[`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+Das Gerüst ist **statisch** (nicht aus Repo-Inhalt abgeleitet),
+deterministisch ([`DC-QA-02`](#dc-qa-02--determinismus)) und ist
+gültiges, vom eigenen Konfigurations-Parser vollständig validierendes
+YAML ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei)); es
+dokumentiert die verfügbaren Module und Optionen als Kommentare, damit
+sie sichtbar sind.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given ein beliebiger Aufruf-Kontext, when `d-check --print-config` läuft, then liegt auf stdout ein kommentiertes YAML, Exit-Code 0, und der eigene Konfigurations-Parser akzeptiert es ohne Fehler.
+- **Boundary:** Given ein Repo, das bereits eine `.d-check.yml` enthält, when `d-check --print-config` läuft, then wird diese weder gelesen noch verändert und es findet kein Scan statt (gleiche Ausgabe wie ohne vorhandene Datei).
+- **Negative:** Given ein read-only gemountetes Repository, when `d-check --print-config` läuft, then entsteht kein Schreibzugriff und Exit-Code 0 (Seiteneffektfreiheit wie [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Out-of-Scope:** Schreiben der Datei durch das Werkzeug selbst (immer stdout); Ableiten der Konfiguration aus dem Repo-Inhalt (eigener, späterer Modus — die Muster-Ableitung bleibt für die *Prüfung* Out-of-Scope, [`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)).
 
 ---
 
@@ -551,6 +577,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.9.0 | 2026-06-13 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-005` — Option `--print-config` gibt ein statisches, kommentiertes `.d-check.yml`-Startgerüst auf stdout aus (kein Repo-Zugriff, kein Schreiben — read-only-Vertrag bleibt; Umleiten via `> .d-check.yml` macht der Aufrufer). Anlass: Adoptions-Reibung in neuen Repos ohne Config; macht zugleich die verfügbaren Optionen sichtbar. Ableitung aus Repo-Inhalt bewusst nicht Teil (späterer eigener Modus) | slice-019 |
 | 0.8.0 | 2026-06-13 | Change Request (Auftraggeber): `DC-FA-ID-001` um konfigurierbare `link-policy: prose\|always` (je Muster) erweitert — `always` macht auch Inline-Code-Vorkommen linkpflichtig, Default `prose` (opt-in, abwärtskompatibel). Zwei Ventile: `exempt-paths` (Glob-Liste je Muster) und der Zeilen-Marker `d-check:ignore`, dessen Geltungsbereich von `codepaths`-only auf `ids` erweitert wird (illustrative Beispiel-IDs). Anlass: der `ids`-Sensor maß bislang nicht das Ziel „gut verlinkt" — ein Code-Span konnte stillschweigend einen fehlenden Link verbergen (Ausgangsbefund `DC-QA-03` in slice-017). Kalibrierung über die drei `ids`-Repos (d-check 155, u-boot 9, b-trace 2) bestimmte die Ventil-Form | slice-018 |
 | 0.1.0 | 2026-06-10 | Initiale Fassung (Konsolidierung von 12 Quell-Tools, Modul-Schnitt, Docker-Distribution) | — |
 | 0.2.0 | 2026-06-10 | Review-Runde R1: Modul-Schnitt `links`/`anchors` präzisiert (Fragment-Zuständigkeit, fehlende Zieldatei), Slug-Duplikat-Reihenfolge, Symlink-Vorrang, RFC-3986-Dekodierung vor Escape-Prüfung, Redirect-Regel `external`, Muster-Präzedenz `ids`, Status-Default `matrix`, Scan-Wurzel- und Config-Vollvalidierung, Out-of-Scope Reference-Style-Links, Image-Default-Befehl | — |

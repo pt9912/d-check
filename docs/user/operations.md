@@ -22,6 +22,7 @@ CLI-Optionen werden als Container-Argumente angehängt.
 |---|---|
 | `--enable <modul>` / `--disable <modul>` | Regelmodule zu-/abschalten (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`); CLI schlägt Konfiguration ([`DC-FA-CLI-002`](../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)) |
 | `--json` | maschinenlesbare Gesamt-Ausgabe ([Schema](../../spec/spezifikation.md)) |
+| `--print-config` | kommentiertes `.d-check.yml`-Startgerüst auf stdout, dann Exit 0 — **kein Scan, schreibt nichts**; Anlegen via Umleitung: `d-check --print-config > .d-check.yml` ([`DC-FA-CLI-005`](../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben)) |
 
 Default-Module ohne Konfiguration: `links` + `anchors`. Das Modul
 `external` ist strikt opt-in (einzige Netzwerk-Tür).
