@@ -472,7 +472,8 @@ func TestCLI005_KeinRepoZugriff(t *testing.T) {
 // Quelle, gültiges vom eigenen Parser akzeptiertes YAML.
 func TestCLI006_SuggestConfig(t *testing.T) {
 	root := t.TempDir()
-	write(t, root, "docs/plan/adr/0042-x.md", "# ADR-0042 — Beispiel\ntext\n")
+	// Doppelpunkt-Heading (ADR-0042:) deckt die Token-Bereinigung ab.
+	write(t, root, "docs/plan/adr/0042-x.md", "# ADR-0042: Beispiel\ntext\n")
 	write(t, root, "docs/plan/adr/0099-y.md", "# ADR-0099 — Beispiel\ntext\n")
 	code, stdout, stderr := run(t, "--suggest-config", "docs/plan/adr/", root)
 	if code != 0 {
@@ -491,6 +492,28 @@ func TestCLI006_SuggestConfig(t *testing.T) {
 	}
 	if cfg.IDPatterns[0].Target != "docs/plan/adr/" {
 		t.Fatalf("target = %q", cfg.IDPatterns[0].Target)
+	}
+	// das Modul ids MUSS in der Modul-Liste stehen, sonst sind die
+	// abgeleiteten Muster im erzeugten Config inaktiv (Review R1).
+	found := false
+	for _, m := range cfg.Modules {
+		if m == "ids" {
+			found = true
+		}
+	}
+	if !found {
+		t.Fatalf("ids fehlt in modules %v — Muster wären inaktiv\n%s", cfg.Modules, stdout)
+	}
+}
+
+// DC-FA-CLI-006: --suggest-config ohne reale Quelle (nur Trenner) ist
+// ein Nutzungsfehler (Review R1), kein stilles leeres Gerüst.
+func TestCLI006_LeereQuellen(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "# x\n")
+	code, stdout, stderr := run(t, "--suggest-config", ",", root)
+	if code != 2 || stdout != "" || !strings.Contains(stderr, "mindestens eine Quelle") {
+		t.Fatalf("Exit = %d, stdout = %q, stderr = %q", code, stdout, stderr)
 	}
 }
 

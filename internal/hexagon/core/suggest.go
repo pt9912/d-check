@@ -66,9 +66,15 @@ func extractDefinedIDs(fsys driven.Filesystem, rel string, kind driven.EntryKind
 			return nil, err
 		}
 		for _, h := range ExtractHeadings(content) {
-			fields := strings.Fields(h)
-			if len(fields) > 0 && idShape.MatchString(fields[0]) {
-				seen[fields[0]] = true
+			fields := strings.Fields(stripHeadingLinks(h))
+			if len(fields) == 0 {
+				continue
+			}
+			// führendes Token, von Markup/Satzzeichen befreit
+			// (`DC-…`, ADR-0001:, [ADR-0001](…) → die nackte Kennung)
+			tok := strings.Trim(fields[0], "`.,:;")
+			if idShape.MatchString(tok) {
+				seen[tok] = true
 			}
 		}
 	}
@@ -115,7 +121,10 @@ func deriveRegex(ids []string) string {
 // (in fester Reihenfolge) jene mit ≥1 Befund (DC-FA-CLI-006.a Schritt 4).
 func probeOptInModules(fsys driven.Filesystem) []string {
 	optIn := []string{"codepaths", "spans", "hostpaths"}
-	res, err := Run(fsys, nil, Config{Modules: optIn}, optIn)
+	// Roots ["."] = derselbe Scope wie das gerenderte Gerüst (sonst
+	// misst die Probe einen anderen Datei-Satz als die vorgeschlagene
+	// Config; Run nimmt die Module aus dem 4. Argument, nicht aus cfg).
+	res, err := Run(fsys, nil, Config{Roots: []string{"."}}, optIn)
 	if err != nil {
 		return nil
 	}
@@ -132,8 +141,21 @@ func probeOptInModules(fsys driven.Filesystem) []string {
 	return out
 }
 
-// renderSuggestion baut das kommentierte, dekodierbare Gerüst.
+// renderSuggestion baut das kommentierte, dekodierbare Gerüst. Quellen
+// ohne abgeleitete Kennungen werden als Hinweis vermerkt; gibt es
+// ids-Muster, wird `ids` in die Modul-Liste aufgenommen (sonst wären
+// die Muster im erzeugten Config inaktiv).
 func renderSuggestion(patterns []suggestedPattern, probed []string) string {
+	var withIDs []suggestedPattern
+	var noIDs []string
+	for _, p := range patterns {
+		if p.regex != "" {
+			withIDs = append(withIDs, p)
+		} else {
+			noIDs = append(noIDs, p.target)
+		}
+	}
+
 	var b strings.Builder
 	b.WriteString("# .d-check.yml — Vorschlag aus `d-check --suggest-config` (advisory).\n")
 	b.WriteString("# Prüfen und verengen: die ids-Muster sind eine Best-Guess-Ableitung\n")
@@ -141,15 +163,13 @@ func renderSuggestion(patterns []suggestedPattern, probed []string) string {
 	b.WriteString("scan:\n  roots: [\".\"]\n\n")
 
 	modules := append([]string{"links", "anchors"}, probed...)
+	if len(withIDs) > 0 {
+		modules = append(modules, "ids")
+	}
 	b.WriteString("modules: [" + strings.Join(modules, ", ") + "]\n")
 
-	var withIDs []suggestedPattern
-	for _, p := range patterns {
-		if p.regex != "" {
-			withIDs = append(withIDs, p)
-		} else {
-			fmt.Fprintf(&b, "# Hinweis: in %q keine definierten Kennungen gefunden.\n", p.target)
-		}
+	for _, t := range noIDs {
+		fmt.Fprintf(&b, "# Hinweis: in %q keine definierten Kennungen gefunden.\n", t)
 	}
 	if len(withIDs) == 0 {
 		return b.String()
@@ -158,7 +178,9 @@ func renderSuggestion(patterns []suggestedPattern, probed []string) string {
 	for _, p := range withIDs {
 		fmt.Fprintf(&b, "    # abgeleitet aus %d Kennung(en) in %s: %s\n",
 			len(p.ids), p.target, strings.Join(p.ids, ", "))
-		fmt.Fprintf(&b, "    - regex: '%s'\n      target: %s\n", p.regex, p.target)
+		// target gequotet: ein Quellpfad mit YAML-Sonderzeichen (`:`, `#`)
+		// soll das Gerüst nicht brechen oder still verfälschen.
+		fmt.Fprintf(&b, "    - regex: '%s'\n      target: %q\n", p.regex, p.target)
 		b.WriteString("      # link-policy: always   # einkommentieren für strenge Linkpflicht\n")
 	}
 	return b.String()

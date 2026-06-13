@@ -213,7 +213,12 @@ func Run(args []string, stdout, stderr io.Writer) int {
 	// DC-FA-CLI-006: Lese-Durchgang, gibt ein vorgeschlagenes Gerüst auf
 	// stdout aus (schreibt nie). openRoot oben hat die Wurzel validiert.
 	if opts.suggestConfig != "" {
-		out, err := core.SuggestConfig(fsys, splitSources(opts.suggestConfig))
+		sources := splitSources(opts.suggestConfig)
+		if len(sources) == 0 {
+			fmt.Fprintln(stderr, "d-check: error: --suggest-config braucht mindestens eine Quelle")
+			return 2
+		}
+		out, err := core.SuggestConfig(fsys, sources)
 		if err != nil {
 			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 			return 2

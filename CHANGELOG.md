@@ -23,6 +23,17 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   advisory Scaffold-Modus leitet ab. Korpora-Gegentest dokumentiert
   (d-check round-trippt, b-trace zeigt die Heading-Grenze).
 
+### Fixed
+
+- Review R1 zu slice-020 (`/code-review`): das `--suggest-config`-Gerüst
+  nimmt jetzt `ids` in die Modul-Liste auf (sonst waren die abgeleiteten
+  Muster im erzeugten Config inaktiv — gültiges YAML, semantisch
+  wirkungslos); Modul-Probelauf nutzt denselben Scope (`roots: ["."]`)
+  wie das Gerüst; `target` wird gequotet (Quellpfade mit `:`/`#` brechen
+  das YAML nicht mehr); Heading-Token-Extraktion strippt Links und
+  Satzzeichen (`ADR-0001:` wird erkannt); leere Quellenliste ist ein
+  Nutzungsfehler. Report unter `docs/reviews/`.
+
 ## [0.6.0] — 2026-06-13
 
 Konfigurations-Startgerüst (`--print-config`, Change Request 0.9.0,

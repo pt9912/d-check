@@ -130,6 +130,13 @@ Autoritäts-Quellen je Repo gegen die *handgepflegten* Muster:
   eine riskante Heuristik (Muster-Raten) in ein vertretbares
   Komfort-Werkzeug — der Mensch verengt, wird aber nie in die Irre
   geführt.
+- **Review R1** (`/code-review`, high — [Report](../../../../docs/reviews/2026-06-13-slice-020-suggest-config.md)):
+  fünf echte Defekte gefixt, am schwersten ein von den Gates *nicht*
+  fangbarer: das Gerüst emittierte `ids`-Muster, ließ aber `ids` aus der
+  Modul-Liste — gültiges YAML, semantisch wirkungslos. Genau die Klasse
+  „grün ≠ richtig", die den Review rechtfertigt. Dazu Probe-Scope-Fix,
+  `target`-Quoting, robustere Heading-Token-Extraktion, leere-Quellen-Fehler.
+  Fünf Edge-/Cleanup-Punkte bewusst akzeptiert (im Report dokumentiert).
 - **Folge-Slices:** keine; eine Generalisierungs-Verbesserung (Stamm-
   Kollabieren wie `DC-FA-[A-Z]+`) oder kleingeschriebene IDs wären
   eigene, klar abgegrenzte Folge-Slices, falls Bedarf entsteht.
