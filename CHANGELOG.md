@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.8.0] — 2026-06-13
+
+Reichhaltige `--help` (Schärfung `DC-FA-CLI-001`, slice-021): die Hilfe
+nennt Synopsis und das Pfad-Argument und verweist fürs Config-Format
+auf `--print-config`.
+
 ### Changed
 
 - slice-021 — reichhaltige `--help`/`-h`
