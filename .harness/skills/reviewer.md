@@ -19,11 +19,11 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   falschen Befunden/Exit-Codes; Verstoß gegen
   [ADR-0005](../../docs/plan/adr/0005-modul-layout-hexagon-ordner.md)-Import-Regeln;
   Gate-Suppression ohne ADR; Netzzugriff außerhalb `external`
-  (`DC-QA-03`).
+  ([`DC-QA-03`](../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 - **MEDIUM** (vor Merge zu klären): Spec-Treue-Lücke einer
   Messmethode; Konsistenz-Lücke **zwischen** Modulen derselben
   Eingabe-Klasse; Erkennungs-Differenz zur Alt-Tool-Familie
-  (`DC-QA-04`); fehlende Negativtests bei neuem öffentlichen Vertrag.
+  ([`DC-QA-04`](../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)); fehlende Negativtests bei neuem öffentlichen Vertrag.
 - **LOW** (nice-to-fix): Doku-Drift (Prosa-Modullisten, veraltete
   Beispiele); latente Wartungsfalle (hart verdrahteter Wert, der erst
   bei künftigem Edit zündet); Ketten-Duplikate in Make-Targets.

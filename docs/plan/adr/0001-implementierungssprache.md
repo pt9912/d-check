@@ -15,9 +15,9 @@ festgelegt).
 
 `d-check` ist ein CLI-Tool, das als kompaktes GHCR-Container-Image
 verteilt wird und identisch nativ wie im Container laufen soll
-(`DC-FA-DIST-001`). Die NFAs verlangen schnelle Läufe ohne
-Runtime-Warmup (`DC-QA-01`), keinerlei Laufzeit-Seiteneffekte und
-strukturell kontrollierbare Netzwerknutzung (`DC-QA-03`). Die zwölf
+([`DC-FA-DIST-001`](../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)). Die NFAs verlangen schnelle Läufe ohne
+Runtime-Warmup ([`DC-QA-01`](../../../spec/lastenheft.md#dc-qa-01--performance)), keinerlei Laufzeit-Seiteneffekte und
+strukturell kontrollierbare Netzwerknutzung ([`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)). Die zwölf
 Quell-Tools existieren in Shell, Python und JavaScript — keine dieser
 Basen ist gesetzt; das Lastenheft fordert Konsolidierung, nicht
 Portierung.
@@ -35,7 +35,7 @@ Build-Image per Digest gepinnt — siehe
   vertagte Binary-Distribution trivial nachrüstbar.
 - Die Standard-Library deckt Dateisystem, HTTP-Client, JSON und Regex
   ab; der Netz-Code bleibt sauber in einem Adapter isolierbar
-  ([ADR-0004](0004-architektur-pattern-hexagonal.md), `DC-QA-03`).
+  ([ADR-0004](0004-architektur-pattern-hexagonal.md), [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 - **Ökosystem-Konsistenz:** u-boot traf dieselbe Entscheidung
   (dortiges ADR-0001), k-deskflight ist die erprobte
   Go/Distroless-Referenz; Konventionen, Lint-Profile und

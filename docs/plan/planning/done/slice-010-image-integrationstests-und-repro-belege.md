@@ -88,7 +88,7 @@ Benchmark-Median 526 ms, Abschluss mit Image-Hash
 - **Was hat funktioniert:** Die drei DIST-Akzeptanzkriterien ließen
   sich als ein Shell-Skript mit einem Fixture abbilden; der
   byte-identische Vergleich (stdout **und** stderr) ist dank der
-  relativen Pfade aus `DC-QA-02` trivial erfüllbar gewesen.
+  relativen Pfade aus [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus) trivial erfüllbar gewesen.
 - **Anders als geplant:** Das „native" Binary kommt per `docker cp`
   aus dem **Runtime-Image** statt aus der compile-Stage (Plan §3
   hatte eine mögliche Export-Stage vorgesehen) — so vergleicht der

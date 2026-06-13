@@ -52,7 +52,7 @@ Semver-Tag und dokumentiertem Digest-Pin. Der erste Release existiert.
 |---|---|---|
 | `.github/workflows/release.yml` | neu | Tag-getriggerter Build + Push (GITHUB_TOKEN, packages:write) |
 | `docs/user/releasing.md`, `docs/user/operations.md` | neu | Release-Prozess + Aufruf-Referenz (löst [`MR-009`](../../../../harness/conventions.md#mr-009--source-precedence-ohne-docsuser-rang)) |
-| [`harness/README.md`](../../../../harness/README.md), [`AGENTS.md`](../../../../AGENTS.md), [`harness/conventions.md`](../../../../harness/conventions.md) | update | Source-Precedence-Rang `docs/user`, `MR-009`-Auflösung, Lauf-Status |
+| [`harness/README.md`](../../../../harness/README.md), [`AGENTS.md`](../../../../AGENTS.md), [`harness/conventions.md`](../../../../harness/conventions.md) | update | Source-Precedence-Rang `docs/user`, [`MR-009`](../../../../harness/conventions.md#mr-009--source-precedence-ohne-docsuser-rang)-Auflösung, Lauf-Status |
 | [`CHANGELOG.md`](../../../../CHANGELOG.md) | update | `0.1.0`-Release-Schnitt |
 
 ## 4. Trigger

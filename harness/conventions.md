@@ -76,7 +76,7 @@ die kanonische Quelle (Source Precedence, siehe
 - **Datum:** 2026-06-10
 - **Geltungsbereich:** [`spec/lastenheft.md`](../spec/lastenheft.md), alle Traceability-Verweise
 - **Adaption:** Funktionale Anforderungen verwenden von Beginn an
-  Bereichskürzel: `DC-FA-<BEREICH>-<NNN>` (z. B. `DC-FA-LINK-001`)
+  Bereichskürzel: `DC-FA-<BEREICH>-<NNN>` (z. B. [`DC-FA-LINK-001`](../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
   statt des zweistelligen Kurs-Defaults `<PREFIX>-FA-<NN>`.
   Nichtfunktionale Anforderungen bleiben beim Kurs-Default
   (`DC-QA-<NN>`).

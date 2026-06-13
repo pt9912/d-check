@@ -41,7 +41,7 @@ Application-/Domain-Unterteilung im Kern.
 |---|---|---|
 | **Hexagon light (gewählt)** | NFAs als Import-Regeln maschinell prüfbar; Kern-Tests gegen In-Memory-FS-Port schnell und deterministisch; Stack-Konsistenz | minimal mehr Struktur als nötig für ein kleines Tool |
 | Hexagonal voll (mit Application-Layer, Domain/UseCase-Trennung) | maximale Schichtung | Zeremonie ohne Nutzen — d-check hat einen Use Case („prüfe Repo") |
-| Klassisch geschichtet (cli → service → util) | vertraut, wenig Begriffe | I/O sickert erfahrungsgemäß in die Mitte; keine scharfe, prüfbare Grenze für `DC-QA-03` |
+| Klassisch geschichtet (cli → service → util) | vertraut, wenig Begriffe | I/O sickert erfahrungsgemäß in die Mitte; keine scharfe, prüfbare Grenze für [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
 | Flaches Paket mit Ad-hoc-Interfaces | minimaler Aufwand | keine maschinell prüfbare Architektur-Aussage → kein `arch-check`, NFA bleibt Versprechen |
 
 ## Konsequenzen
@@ -50,7 +50,7 @@ Application-/Domain-Unterteilung im Kern.
   und keine weitere Schichtung.
 - Die Akzeptanztests der Regelmodule laufen gegen einen
   In-Memory-Filesystem-Port — kein echtes Dateisystem nötig, was die
-  Determinismus-Messung (`DC-QA-02`) trivialisiert.
+  Determinismus-Messung ([`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)) trivialisiert.
 - Neue Regelmodule (welle-03) sind Kern-Strategien, keine
   Architekturänderungen.
 

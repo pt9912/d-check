@@ -235,7 +235,7 @@ ist wählbar, wie streng die Linkpflicht greift:
   sind linkpflichtig; Inline-Code-Vorkommen sind frei.
 - `always`: auch Vorkommen **innerhalb von Inline-Code** müssen im
   Linktext eines Markdown-Links stehen (`` [`ADR-0042`](ziel) `` ist
-  erfüllt, `` `ADR-0042` `` allein nicht). Fenced-Code-Blöcke,
+  erfüllt, `` `ADR-0042` `` allein nicht). Fenced-Code-Blöcke, <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
   Heading-Zeilen und das `target` des Musters bleiben frei.
 
 Der Default ist `prose`, damit bestehende Konfigurationen
@@ -258,8 +258,8 @@ treffsicher:
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given das Muster `ADR-\d{4}` und ein Vorkommen `[ADR-0042](docs/plan/adr/0042-beispiel.md)`, when das Modul `ids` läuft, then kein Befund.
-- **Boundary:** Given ein Vorkommen `` `ADR-0042` `` in Inline-Code und `link-policy: prose` (Default), when das Modul läuft, then kein Befund (Code-Vorkommen sind linkpflichtfrei).
-- **Negative:** Given ein nacktes `ADR-0042` im Fließtext, when das Modul läuft, then ein Befund mit Grund „Kennung ohne Link".
+- **Boundary:** Given ein Vorkommen `` `ADR-0042` `` in Inline-Code und `link-policy: prose` (Default), when das Modul läuft, then kein Befund (Code-Vorkommen sind linkpflichtfrei). <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
+- **Negative:** Given ein nacktes `ADR-0042` im Fließtext, when das Modul läuft, then ein Befund mit Grund „Kennung ohne Link". <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
 - **`always` Happy Path:** Given `link-policy: always` und ein Vorkommen `` [`ADR-0042`](docs/plan/adr/0042-beispiel.md) ``, when das Modul läuft, then kein Befund (Code-Span im Linktext zählt als verlinkt).
 - **`always` Negative:** Given `link-policy: always` und ein Vorkommen `` `ADR-0042` `` ohne Link (außerhalb `exempt-paths` und ohne `d-check:ignore`), when das Modul läuft, then ein Befund `id-unlinked`.
 - **`always` Boundary (Ventile):** Given `link-policy: always`, ein `` `ADR-0042` `` in einer `exempt-paths`-Datei und ein zweites `` `ADR-0099` `` auf einer Zeile mit `d-check:ignore`, when das Modul läuft, then kein Befund für beide.
@@ -286,7 +286,7 @@ maschinell prüfbar.
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Slice mit Link auf ein ADR mit Status `Accepted`, when das Modul `matrix` läuft, then kein Befund.
-- **Boundary:** Given ein ADR mit Status `Superseded by ADR-0099`, when ein Slice darauf verlinkt, then ein Befund mit Grund „Referenz auf inaktives ADR".
+- **Boundary:** Given ein ADR mit Status `Superseded by ADR-0099`, when ein Slice darauf verlinkt, then ein Befund mit Grund „Referenz auf inaktives ADR". <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
 - **Negative:** Given ein Link aus `spec/lastenheft.md` auf eine ADR-Datei, when das Modul läuft, then ein Befund mit Grund „verbotene Abwärtsreferenz" und Angabe beider Dokumentklassen.
 
 **Out-of-Scope:** Semantische Unterscheidung von Verweis-Zwecken (z. B. Verifikations-Zeiger vs. Entscheidungsgrundlage) — das bleibt Review-Aufgabe; Provenance-/Historie-Sektionen können per Konfiguration von der Prüfung ausgenommen werden, eine automatische Erkennung solcher Sektionen ist nicht gefordert.
@@ -541,7 +541,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
-| Kennung | Textuelle ID nach deklariertem Muster (z. B. `ADR-0042`), für die Linkpflicht gelten kann. |
+| Kennung | Textuelle ID nach deklariertem Muster (z. B. `ADR-0042`), für die Linkpflicht gelten kann. | <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
 | Dokumentklasse | Über Pfad-Muster definierte Gruppe von Dokumenten (z. B. Contract-Spec, ADR, Slice) als Knoten der Referenzmatrix. |
 | Referenzmatrix | Deklaration, welche Dokumentklasse auf welche verweisen darf, inkl. Status-Bedingungen. |
 | Aktives ADR | ADR, dessen Status-Feld keinen verbotenen Wert (`superseded`, `deprecated`) trägt. |
@@ -554,7 +554,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | 0.8.0 | 2026-06-13 | Change Request (Auftraggeber): `DC-FA-ID-001` um konfigurierbare `link-policy: prose\|always` (je Muster) erweitert — `always` macht auch Inline-Code-Vorkommen linkpflichtig, Default `prose` (opt-in, abwärtskompatibel). Zwei Ventile: `exempt-paths` (Glob-Liste je Muster) und der Zeilen-Marker `d-check:ignore`, dessen Geltungsbereich von `codepaths`-only auf `ids` erweitert wird (illustrative Beispiel-IDs). Anlass: der `ids`-Sensor maß bislang nicht das Ziel „gut verlinkt" — ein Code-Span konnte stillschweigend einen fehlenden Link verbergen (Ausgangsbefund `DC-QA-03` in slice-017). Kalibrierung über die drei `ids`-Repos (d-check 155, u-boot 9, b-trace 2) bestimmte die Ventil-Form | slice-018 |
 | 0.1.0 | 2026-06-10 | Initiale Fassung (Konsolidierung von 12 Quell-Tools, Modul-Schnitt, Docker-Distribution) | — |
 | 0.2.0 | 2026-06-10 | Review-Runde R1: Modul-Schnitt `links`/`anchors` präzisiert (Fragment-Zuständigkeit, fehlende Zieldatei), Slug-Duplikat-Reihenfolge, Symlink-Vorrang, RFC-3986-Dekodierung vor Escape-Prüfung, Redirect-Regel `external`, Muster-Präzedenz `ids`, Status-Default `matrix`, Scan-Wurzel- und Config-Vollvalidierung, Out-of-Scope Reference-Style-Links, Image-Default-Befehl | — |
-| 0.2.1 | 2026-06-10 | Redaktionell: Beispiel-Kennungen in DC-FA-ID-001/DC-FA-MTX-001/Glossar auf fiktive Nummern (`ADR-0042`, `ADR-0099`) umgestellt — Kollision mit real entstandenen/zukünftigen eigenen ADRs vermeiden; keine inhaltliche Änderung | — |
+| 0.2.1 | 2026-06-10 | Redaktionell: Beispiel-Kennungen in DC-FA-ID-001/DC-FA-MTX-001/Glossar auf fiktive Nummern (`ADR-0042`, `ADR-0099`) umgestellt — Kollision mit real entstandenen/zukünftigen eigenen ADRs vermeiden; keine inhaltliche Änderung | — | <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
 | 0.2.2 | 2026-06-10 | Redaktionell: absolute Workspace-Pfade entfernt („Schwester-Repositories des Entwicklungs-Workspace" statt konkreter Pfade); keine inhaltliche Änderung | — |
 | 0.2.3 | 2026-06-11 | Redaktionell: „(folgt)" in der `DC-QA-01`-Messmethode entfernt — die Benchmark-Definition existiert in der Spezifikation; keine inhaltliche Änderung | — |
 | 0.7.2 | 2026-06-12 | Review zum Change Request `DC-FA-HOST-001` (Kalibrierungs-Befund slice-016): tmp aus der Default-Präfixliste gestrichen — der Kalibrierungslauf zeigte überwiegend legitime Laufzeit-Doku (Log-/Output-Pfade) statt Maschinen-Layout-Leaks; wer tmp prüfen will, konfiguriert es | slice-016 |

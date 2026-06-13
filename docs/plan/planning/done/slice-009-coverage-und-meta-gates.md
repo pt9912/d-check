@@ -17,7 +17,7 @@ Kurs-Modul 13 (Kalibrierungs-Bindung, Meta-Gate).
 
 Die beiden ausstehenden Gates existieren (`coverage-gate`
 bootstrap-aware mit Ramp, `gate-consistency` als
-Doku↔Makefile-Meta-Gate), und die `DC-QA-01`-Performance-Anforderung
+Doku↔Makefile-Meta-Gate), und die [`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)-Performance-Anforderung
 hat ihre Benchmark-Definition in der Spezifikation plus eine
 dokumentierte Messung.
 
@@ -37,7 +37,7 @@ dokumentierte Messung.
   Exit 1 mit Auflistung (Meta-Gate gegen Harness-Lügen); mit
   Negativ-Test (absichtlich dokumentiertes Phantom-Target lässt das
   Gate nachweislich feuern, analog `verify-depguard`-Idee).
-  Zusätzlich prüft das Meta-Gate die `DC-QA-03`-Zusage des
+  Zusätzlich prüft das Meta-Gate die [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Zusage des
   Netzlos-Gates: die `modules`-Liste der
   [`.d-check.yml`](../../../../.d-check.yml) muss alle Module außer
   `external` enthalten — sonst verliert der `--network none`-Lauf
@@ -45,7 +45,7 @@ dokumentierte Messung.
   Config-Kopplung des QA-03-Gates). *(Umgesetzt inkl. Gegenrichtung:
   Makefile-Targets müssen in `AGENTS.md` §4 gelistet sein.)*
 - [x] Spez-Schuld eingelöst: `spec/spezifikation.md` erhält einen
-  Abschnitt `DC-QA-01.a — Benchmark` mit (1) Fixture-Spezifikation
+  Abschnitt `DC-QA-01.a — Benchmark` mit (1) Fixture-Spezifikation <!-- d-check:ignore (Sektions-Titel-Zitat, kein Requirement-Link) -->
   (generiert: 1.000 Markdown-Dateien, ≤ 20 MB, definierter
   Link-/Heading-Mix), (2) Messprotokoll (Default-Module, N ≥ 3 Läufe
   im Container, Median zählt), (3) Pass-Kriterium (< 5 s) — das
@@ -63,7 +63,7 @@ dokumentierte Messung.
 | [`Dockerfile`](../../../../Dockerfile) (coverage-Stage), `tools/coverage-gate.sh` | neu | bootstrap-aware Schwelle (u-boot-Muster) |
 | `tools/gate-consistency.sh` | neu | dokumentierte Targets ↔ Makefile |
 | [`Makefile`](../../../../Makefile) | update | Targets + gates-Aggregation |
-| [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | `DC-QA-01`-Benchmark-Definition (+ Historie) |
+| [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | [`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)-Benchmark-Definition (+ Historie) |
 | `tools/bench-fixture.sh` o. ä. | neu | generiertes Fixture-Repo für die Messung |
 
 ## 4. Trigger
@@ -85,7 +85,7 @@ damit ist zugleich der welle-03-Closure-Trigger erfüllt.
 - Der Benchmark misst im Container — Schwankungen der Host-Last;
   Schwelle (< 5 s) hat Puffer, Messung mehrfach ausführen.
 - `make doc-check` aktiviert `external` bewusst **nicht** (kein Netz
-  im Gate, `DC-QA-03`); die Coverage misst das Modul über seine
+  im Gate, [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)); die Coverage misst das Modul über seine
   Tests, nicht über das Dogfooding.
 
 ## 7. Closure-Notiz (nach `done/`)
@@ -94,13 +94,13 @@ damit ist zugleich der welle-03-Closure-Trigger erfüllt.
 Kalibrierungs-Schaltung im Closure-Commit. **Messungen:** Coverage
 **92,9 %** (Erstlauf gegen Schwelle 85, Ramp auf 90 vollzogen —
 Erhöhung, kein ADR nötig, `AGENTS.md` §3.6 betrifft Senkungen);
-`DC-QA-01`-Benchmark **Median 551 ms** (Läufe 559/517/551 ms, 1.000
+[`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)-Benchmark **Median 551 ms** (Läufe 559/517/551 ms, 1.000
 Dateien / 8 MB, inkl. Container-Start) — Faktor ~9 unter dem
 5-s-Budget.
 
 - **Was hat funktioniert:** Das u-boot-Coverage-Muster (Stage +
   Schwellen-Skript, `-coverpkg` über Paketgrenzen) ließ sich
-  unverändert übernehmen; der `DC-QA-01`-Benchmark brauchte kein
+  unverändert übernehmen; der [`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)-Benchmark brauchte kein
   eigenes Framework — deterministisches Shell-Fixture plus drei
   getimte Container-Läufe genügen dem Messprotokoll.
 - **Anders als geplant:** (a) Das Meta-Gate prüft zusätzlich die

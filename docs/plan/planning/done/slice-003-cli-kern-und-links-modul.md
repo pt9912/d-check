@@ -29,7 +29,7 @@ erste implementierte Inkrement.
 - [x] Akzeptanzkriterien (Happy/Boundary/Negative) der bezogenen `DC-FA-*` als automatisierte Tests umgesetzt und grün.
 - [x] Determinismus-Test ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)): wiederholter Lauf, identische Ausgabe-Hashes.
 - [x] `make lint`, `make typecheck` (sofern die Toolchain es vorsieht — bei Go deckt `go build`/`govet` das ab, kein eigenes Target) und `make test` existieren (Docker-basiert gemäß [ADR-0001](../../adr/0001-implementierungssprache.md)/[ADR-0002](../../adr/0002-distribution-ghcr-image.md)), tragen ID-Kommentare und sind in `make gates` aggregiert.
-- [x] `make arch-check` existiert als Fitness Function zu [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md) (Pfad-Revision von `ADR-0004`): Kern ohne I/O-Imports, Netz nur im HTTP-Adapter — strukturelle Durchsetzung von [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit).
+- [x] `make arch-check` existiert als Fitness Function zu [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md) (Pfad-Revision von [`ADR-0004`](../../adr/0004-architektur-pattern-hexagonal.md)): Kern ohne I/O-Imports, Netz nur im HTTP-Adapter — strukturelle Durchsetzung von [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit).
 - [x] Sensors-Tabelle in [`harness/README.md`](../../../../harness/README.md) und Gates-Tabelle in [`AGENTS.md`](../../../../AGENTS.md) §4 aktualisiert — keine behaupteten Targets ohne Existenz.
 - [x] `make gates` grün.
 - [x] [`CHANGELOG.md`](../../../../CHANGELOG.md) aktualisiert.
@@ -40,7 +40,7 @@ erste implementierte Inkrement.
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | Quellbaum gemäß [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md) (Modul-Pfade, u-boot-Konvention) und [`spec/architecture.md`](../../../../spec/architecture.md) (Rollen/Constraints) | neu | erstes Implementierungs-Inkrement |
-| [`docs/plan/adr/0005-modul-layout-hexagon-ordner.md`](../../adr/0005-modul-layout-hexagon-ordner.md) | neu | Pfad-Revision von `ADR-0004` (immutable) auf u-boot-Ordnerkonvention — während der Umsetzung entschieden |
+| [`docs/plan/adr/0005-modul-layout-hexagon-ordner.md`](../../adr/0005-modul-layout-hexagon-ordner.md) | neu | Pfad-Revision von [`ADR-0004`](../../adr/0004-architektur-pattern-hexagonal.md) (immutable) auf u-boot-Ordnerkonvention — während der Umsetzung entschieden |
 | Test-Suite (Unit + Fixture-Repos) | neu | Akzeptanzkriterien sind testbar formuliert |
 | [`Makefile`](../../../../Makefile) (`lint`, `typecheck`, `test`, `arch-check`, Aggregation in `gates`) | update | neue Gates entstehen mit dem Code |
 | [`harness/README.md`](../../../../harness/README.md), [`AGENTS.md`](../../../../AGENTS.md) | update | Sensors-/Gates-Tabellen nachziehen |
@@ -65,19 +65,19 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
 ## 7. Closure-Notiz (nach `done/`)
 
 **Umsetzung:** Commit `9354d85` (32 Dateien: Quellbaum, Tests,
-Dockerfile, Makefile, arch-check, Doku-Nachzug); `ADR-0005` entstand
+Dockerfile, Makefile, arch-check, Doku-Nachzug); [`ADR-0005`](../../adr/0005-modul-layout-hexagon-ordner.md) entstand
 während der Umsetzung.
 
 - **Was hat funktioniert:** Die Spezifikations-Algorithmen
   (Slug/Link-Extraktion/Modul-Auflösung) ließen sich 1:1 in Code und
-  Tests übersetzen; das In-Memory-FS aus `ADR-0004`-Konsequenz machte
+  Tests übersetzen; das In-Memory-FS aus [`ADR-0004`](../../adr/0004-architektur-pattern-hexagonal.md)-Konsequenz machte
   die Kern-Akzeptanztests trivial. `make run` liefert nebenbei den
   ersten Dogfooding-Datenpunkt: d-check prüft das eigene Repo aus dem
   distroless-Image (19 Dateien, 0 Befunde, Exit 0, read-only).
 - **Anders als geplant:** (a) Während der Umsetzung kam die
   User-Entscheidung, das Modul-Layout auf die u-boot-Ordnerkonvention
   zu heben (`internal/hexagon/…`, `adapter/{driven,driving}`) — da
-  `ADR-0004` immutable ist, als [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md)
+  [`ADR-0004`](../../adr/0004-architektur-pattern-hexagonal.md) immutable ist, als [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md)
   (Teil-Supersede der Pfad-Tabelle). (b) Kein eigenes
   `make typecheck` — Go deckt das über Build/govet ab. (c) Default-
   Modul `anchors` wird bis slice-004 mit stderr-Hinweis übersprungen
@@ -86,7 +86,7 @@ während der Umsetzung.
   beim ersten Lauf auf `net/url` an — die Fitness-Function-Wildcard
   (`net/*`) war strenger als das ADR-Wording (I/O-Verbot). Lehre für
   Gate-Autoren: Fitness Functions exakt am ADR-Wortlaut kalibrieren;
-  `ADR-0005` nennt die `net/url`-Ausnahme jetzt explizit.
+  [`ADR-0005`](../../adr/0005-modul-layout-hexagon-ordner.md) nennt die `net/url`-Ausnahme jetzt explizit.
 - **Folge-Slices:** keine neuen; slice-004 (anchors + Dogfooding) ist
   durch diesen Slice entsperrt.
 

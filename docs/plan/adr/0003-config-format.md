@@ -41,7 +41,7 @@ Gos Standard-Library enthält kein YAML (Konsequenz aus
 |---|---|---|
 | **gopkg.in/yaml.v3 (gewählt)** | etabliert, striktes Decoding, Zeilen-/Spalteninfo via Node-API | externes Modul (gepinnt) |
 | goccy/go-yaml | schneller, gute Fehlertexte | geringere Verbreitung im eigenen Stack, Mehrwert hier irrelevant (Config ist winzig) |
-| sigs.k8s.io/yaml | JSON-Schema-Tooling nutzbar | YAML→JSON-Umweg verliert Zeilennummern — verletzt das Negative-Kriterium von `DC-FA-CONF-001` |
+| sigs.k8s.io/yaml | JSON-Schema-Tooling nutzbar | YAML→JSON-Umweg verliert Zeilennummern — verletzt das Negative-Kriterium von [`DC-FA-CONF-001`](../../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei) |
 | JSON/TOML statt YAML | Stdlib (JSON) bzw. simpleres Format | verletzt den Lastenheft-Vertrag `.d-check.yml`; Formatwechsel wäre Change Request, kein ADR |
 
 ## Konsequenzen
@@ -57,7 +57,7 @@ Gos Standard-Library enthält kein YAML (Konsequenz aus
 
 ## Fitness Function
 
-- Tests gegen die Akzeptanzkriterien von `DC-FA-CONF-001` (Happy/
+- Tests gegen die Akzeptanzkriterien von [`DC-FA-CONF-001`](../../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei) (Happy/
   Boundary/Negative), inkl. „unbekannter Schlüssel → Exit 2 mit
   Zeilenangabe".
 - `make arch-check` (ab slice-003): yaml.v3 darf nur im Config-Adapter

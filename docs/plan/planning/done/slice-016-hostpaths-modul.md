@@ -28,7 +28,7 @@ der bess-ems-Rest-Sensor ablösbar (dortige Entscheidung).
 
 ## 2. Definition of Done
 
-- [x] Spezifikation fortgeschrieben: §`DC-FA-HOST-001.a`
+- [x] Spezifikation fortgeschrieben: §[`DC-FA-HOST-001.a`](../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung)
   (Muster-Definition: Unix-Präfixliste als erstes Pfad-Segment,
   Windows-Laufwerk/UNC fest; Wortgrenzen-Vorbedingung;
   Satzzeichen-Abtrennung wie `codepaths`-Normalisierung;
@@ -57,7 +57,7 @@ der bess-ems-Rest-Sensor ablösbar (dortige Entscheidung).
 - [x] Dogfooding: Selbstkonfiguration
   ([`.d-check.yml`](../../../../.d-check.yml)) aktiviert
   `hostpaths`; eigene Doku befundfrei (Bestand ist geprüft sauber);
-  `gate-consistency`-gebundene `DC-QA-03`-Modulliste nachgezogen.
+  `gate-consistency`-gebundene [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modulliste nachgezogen.
 - [x] Angebot an bess-ems dokumentiert: Rest-Sensor-Ablösung durch
   `hostpaths` + Pin-Hebung (Umsetzung ist dortige Entscheidung).
 - [x] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
@@ -69,7 +69,7 @@ der bess-ems-Rest-Sensor ablösbar (dortige Entscheidung).
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `spec/spezifikation.md` | update | §`DC-FA-HOST-001.a`, Schema (`hostpaths.prefixes`), Grund-Code |
+| `spec/spezifikation.md` | update | §[`DC-FA-HOST-001.a`](../../../../spec/spezifikation.md#dc-fa-host-001a--host-pfad-erkennung), Schema (`hostpaths.prefixes`), Grund-Code |
 | Modul `hostpaths` im Hexagon-Kern | neu | Prüflogik (geteilte Prosa-/Fence-Helfer) |
 | Tests (AK-Trio, Paritäts-Gegentest, Kalibrierung) | neu | Beleg-Pflicht |
 | [`.d-check.yml`](../../../../.d-check.yml) | update | Dogfooding-Aktivierung |

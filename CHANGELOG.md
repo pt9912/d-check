@@ -6,6 +6,29 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-018 — konfigurierbare Link-Politik `ids.patterns[].link-policy`
+  ([`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids),
+  Change Request 0.8.0): `link-policy: always` macht auch
+  Inline-Code-Vorkommen einer Kennung linkpflichtig — „gut verlinkt"
+  als gemessenes, konfigurierbares Property statt menschlicher
+  Aufmerksamkeit. Default `prose` (byte-identisch, opt-in fürs Gating).
+  Zwei Ventile: `exempt-paths` (Glob-Liste je Muster) und der
+  Zeilen-Marker `d-check:ignore` (Geltungsbereich von `codepaths` auf
+  `ids` erweitert — illustrative Beispiel-IDs). Kalibriert über die
+  drei ids-Repos (d-check, u-boot, b-trace); Dogfooding aktiv (d-check
+  setzt `always` und verlinkte den eigenen Befundsatz). Nutzersichtbar
+  dokumentiert in [`docs/user/operations.md`](docs/user/operations.md).
+
+### Changed
+
+- Dogfooding-Sweep: d-checks eigene Doku auf `link-policy: always`
+  umgestellt; Inline-Code-Kennungen in Slices, ADRs, AGENTS, harness
+  und Spezifikation als Links ausgeführt (Sektions-Referenzen `.a` auf
+  ihre Spez-Anker), `exempt-paths` für CHANGELOG + Reviews,
+  Beispiel-IDs mit `d-check:ignore`.
+
 ## [0.4.0] — 2026-06-13
 
 Welle-06-sensorik: zwei opt-in-Sensormodule — `spans` (`DC-FA-SPAN-001`,

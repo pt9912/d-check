@@ -27,12 +27,12 @@ vollständig migrieren.
 ## 2. Definition of Done
 
 - [x] Spezifikation fortgeschrieben (Doc führt, Code folgt):
-  §`DC-FA-CODE-001.a` (Erkennungs-Algorithmus: Inline-Code-Spans,
+  §[`DC-FA-CODE-001.a`](../../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) (Erkennungs-Algorithmus: Inline-Code-Spans,
   `./`/`../` immer + konfigurierte Präfixe, konservative Ausschlüsse,
   Marker-Semantik), `.d-check.yml`-Schema um `codepaths.roots`
   (string[], Constraint-Tabelle), §4 Grund-Codes (z. B.
   `codepath-missing`, Wiederverwendung von `repo-escape`), Historie.
-- [x] Akzeptanzkriterien von `DC-FA-CODE-001` als Tests
+- [x] Akzeptanzkriterien von [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) als Tests
   (Happy/Boundary/Negative); Boundary belegt zusätzlich, dass der
   Marker **nur** dieses Modul stilllegt (Link-Befund derselben Zeile
   bleibt bestehen).
@@ -53,7 +53,7 @@ vollständig migrieren.
   (Status-Absatz), doc-check-Zeilen in
   [`harness/README.md`](../../../../harness/README.md) §Sensors und
   [`AGENTS.md`](../../../../AGENTS.md) §4 (Modul-Aufzählung +
-  DC-Bindung um `DC-FA-CODE-001`).
+  DC-Bindung um [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)).
 - [x] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
   Closure-Notiz mit Steering-Loop-Lerneintrag.
 
@@ -61,7 +61,7 @@ vollständig migrieren.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | §`DC-FA-CODE-001.a`, Schema, Grund-Codes (vor dem Code) |
+| [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | §[`DC-FA-CODE-001.a`](../../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code), Schema, Grund-Codes (vor dem Code) |
 | `internal/hexagon/core/codepaths.go` (+ Test) | neu | Kern-Modul gegen In-Memory-FS |
 | [`internal/hexagon/core/markdown.go`](../../../../internal/hexagon/core/markdown.go) | update | Inline-Code-Spans als Werte zugänglich machen (heute nur positionserhaltendes Stripping) |
 | [`internal/adapter/driven/configyaml/configyaml.go`](../../../../internal/adapter/driven/configyaml/configyaml.go) | update | `codepaths.roots` strikt validieren |

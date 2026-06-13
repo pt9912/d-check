@@ -20,7 +20,7 @@ Drei Schwester-Repos — je ein Vertreter der Shell-Familie
 (`verify-doc-refs.sh`), der Python-Familie (`check_refs.py`, inkl.
 u-boot-Vollausbau) und der JS-Familie (`docs-check.js`) — nutzen das
 veröffentlichte `d-check`-Image statt ihrer Tool-Kopie; die
-Vergleichsläufe sind dokumentiert und belegen `DC-QA-04`.
+Vergleichsläufe sind dokumentiert und belegen [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools).
 
 ## 2. Definition of Done
 
@@ -58,7 +58,7 @@ Vergleichsläufe sind dokumentiert und belegen `DC-QA-04`.
 |---|---|---|
 | `<pilot-repo>/.d-check.yml` (3×, extern) | neu | Familien-äquivalente Konfiguration |
 | `<pilot-repo>`-CI/Makefile (3×, extern) | update | Digest-gepinnter `d-check`-Step, Alt-Tool-Ablösung |
-| Closure-Notiz dieses Slices | neu | Vergleichsläufe + Triage als `DC-QA-04`-Beleg |
+| Closure-Notiz dieses Slices | neu | Vergleichsläufe + Triage als [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Beleg |
 | [`CHANGELOG.md`](../../../../CHANGELOG.md) | update | Migrations-Stand |
 
 ## 4. Trigger
@@ -67,7 +67,7 @@ slice-011 done (erfüllt 2026-06-11) **und** slice-013 done — die
 Pilot-Repos konsumieren das **veröffentlichte** Image per Digest-Pin,
 und die JS-Familie braucht das Modul `codepaths`
 ([`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
-Change Request 0.3.0): Der `DC-QA-04`-Vergleichslauf gegen das
+Change Request 0.3.0): Der [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Vergleichslauf gegen das
 erweiterte `docs-check.js` (2026-06-11) zeigte die
 Inline-Code-Pfad-Prüfung als Lücke; die drei `docs-check:ignore`-
 Marker des Kurs-Repos werden bei der Migration zu `d-check:ignore`.
@@ -89,7 +89,7 @@ welle-04-Closure-Trigger und M3.
   Vergleich (größter Funktionsumfang der Alt-Familie); Differenzen
   dort können Spec-Fortschreibungen hier auslösen — bewusst als
   letzter der drei Vergleiche einplanen.
-- `DC-QA-04` verlangt „keine False-Positives, die eine grüne CI
+- [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools) verlangt „keine False-Positives, die eine grüne CI
   brechen" — bei legitimen Mehr-Befunden ist die Triage-Doku
   entscheidend (Mehr-Befund ≠ False-Positive).
 
@@ -105,7 +105,7 @@ Regelmodule im Image; die Pilot-CIs pinnen diesen Digest.
 |---|---|---|---|---|
 | d-migrate | Shell (`verify-doc-refs.sh`, 98 Z.) | 0 | 11 | 8 absolute Host-Pfade (nur auf der Build-Maschine auflösbar, auf GitHub kaputt) + 3 veraltete Anker — alle **echte Mehr-Befunde** (Alt-Tool prüfte weder die GitHub-Semantik absoluter Ziele noch Anker oder Bilder); Fix im Ziel-Repo (61cfae08). Keine False-Positives. |
 | ai-harness-course | JS (`docs-check.js`, 550 Z.) | 0 (116 Dateien) | 5 (116 Dateien) | Exakt die fünf `docs-check:ignore`-Markerzeilen (Slice-Plan nannte drei — seither gewachsen) → zu `d-check:ignore` konvertiert; identischer Scan-Umfang, `codepaths`-Parität inkl. Anker-Prüfung. Keine False-Positives. |
-| u-boot | Python-Vollausbau (`check_refs.py`, 609 Z.) | 0 | 35 → 106 → 0 | Dreiteilig: (a) **5 False-Positives in d-check** — legale mehrzeilige CommonMark-Code-Spans invertierten zeilenbasiert die Backtick-Parität; Spec-Fortschreibung §`DC-FA-LINK-001.a` Schritt 2 + Fix hier vor Abschluss (546674e, in v0.2.0). (b) 1 Config-Artefakt (fehlende `\b`-Wortgrenzen im übersetzten Muster) — Config-Fix. (c) Nach Parser-Fix **~100 echte Mehr-Befunde**: neun ungeschlossene Titel-Code-Spans im CHANGELOG kippten die Parität ganzer Einträge, dazu Link-im-Code-Span-Nesting in Planning-JSON-Pins — GitHub-Rendering nachweislich kaputt, vom zeilenbasierten Alt-Parser durch Text-Verschmelzung übersehen; Fix im Ziel-Repo (470be86). **Finaler Gegenlauf: d-check 0 Befunde, Alt-Tool 8 False-Positives** auf den korrekten Code-Spans — der Migrations-Nutzen, am Alt-Tool selbst gemessen. |
+| u-boot | Python-Vollausbau (`check_refs.py`, 609 Z.) | 0 | 35 → 106 → 0 | Dreiteilig: (a) **5 False-Positives in d-check** — legale mehrzeilige CommonMark-Code-Spans invertierten zeilenbasiert die Backtick-Parität; Spec-Fortschreibung §[`DC-FA-LINK-001.a`](../../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 2 + Fix hier vor Abschluss (546674e, in v0.2.0). (b) 1 Config-Artefakt (fehlende `\b`-Wortgrenzen im übersetzten Muster) — Config-Fix. (c) Nach Parser-Fix **~100 echte Mehr-Befunde**: neun ungeschlossene Titel-Code-Spans im CHANGELOG kippten die Parität ganzer Einträge, dazu Link-im-Code-Span-Nesting in Planning-JSON-Pins — GitHub-Rendering nachweislich kaputt, vom zeilenbasierten Alt-Parser durch Text-Verschmelzung übersehen; Fix im Ziel-Repo (470be86). **Finaler Gegenlauf: d-check 0 Befunde, Alt-Tool 8 False-Positives** auf den korrekten Code-Spans — der Migrations-Nutzen, am Alt-Tool selbst gemessen. |
 
 ### Umstellungen (CI-/Make-Schritt + Alt-Tool-Entscheidung)
 

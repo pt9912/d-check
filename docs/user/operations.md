@@ -40,3 +40,39 @@ Vollvalidierung gemäß
 [`DC-FA-CONF-001`](../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)
 (jeder Konfigurationsfehler → Exit 2). Ein Beispiel im Vollausbau ist
 die [Selbstkonfiguration dieses Repos](../../.d-check.yml).
+
+## Linkdichte erzwingen — `link-policy: always`
+
+Das Modul `ids` prüft per Default nur, dass *nackte* Kennungen im
+Fließtext verlinkt sind; eine Kennung in Inline-Code (`` `…` ``) bleibt
+frei. Wer **gut verlinkte Dokumente** als gemessenes Property will
+(jede Kennung eine navigierbare Referenz), setzt pro Muster
+`link-policy: always` — dann ist auch eine Kennung in Inline-Code
+linkpflichtig
+([`DC-FA-ID-001`](../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)):
+
+```yaml
+ids:
+  patterns:
+    - regex: 'ADR-\d{4}'
+      target: docs/plan/adr/
+      link-policy: always            # prose (Default) | always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+```
+
+Zwei Ventile halten `always` treffsicher:
+
+- **`exempt-paths`** (Glob-Liste, Syntax wie `scan.ignore`): Dateien,
+  in denen die strenge Regel nicht gilt — typischerweise literal-schwere
+  Artefakte wie Changelogs oder Review-Reports.
+- **`d-check:ignore`** (HTML-Kommentar auf der Zeile, Begründung
+  empfohlen): nimmt eine Zeile aus — für bewusst illustrative
+  Beispiel-Kennungen. Der Marker wirkt auf `ids` und `codepaths`.
+
+**Bewusst opt-in:** Der Default bleibt `prose`, damit bestehende
+Konfigurationen byte-identisch laufen und kein Repo ungefragt rote
+Läufe bekommt. Das heißt **nicht**, dass ungenügende Verlinkung
+unsichtbar bleibt: Sie zu *entdecken* ist eine Bringschuld des
+Betreibers — ein `always`-Lauf über die geprüften Repos zeigt die
+Lücken, unabhängig davon, ob ein Repo `always` schon aktiviert hat
+([`DC-QA-04`](../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Muster).

@@ -56,7 +56,7 @@ macht ein statisches Binary verfügbar.
 - Dockerfile (slice-003) ist Multi-Stage mit Digest-Pins; `make versions`
   (welle-04) belegt die Pins.
 - Kein `latest`-Tag bedeutet: Migrations-Doku der Konsumenten-Repos
-  nennt immer eine konkrete Version (`DC-QA-04`-Pilotläufe).
+  nennt immer eine konkrete Version ([`DC-QA-04`](../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Pilotläufe).
 - Debugging im Container erfolgt über lokal gebaute Debug-Stages,
   nicht im Release-Image.
 
@@ -64,7 +64,7 @@ macht ein statisches Binary verfügbar.
 
 - CI-Gate (welle-04): Image-Build aus identischem Source-Tree ist
   digest-stabil; `harness/image-hash.txt` als Beleg-Manifest. <!-- d-check:ignore (geplantes Beleg-Manifest, entsteht mit fullbuild-Praxis) -->
-- Negative-Kriterium aus `DC-FA-DIST-001` (kein Mount → Exit 2) läuft
+- Negative-Kriterium aus [`DC-FA-DIST-001`](../../../spec/lastenheft.md#dc-fa-dist-001--docker-image) (kein Mount → Exit 2) läuft
   als Integrationstest gegen das gebaute Image.
 
 ## Re-Evaluierungs-Trigger

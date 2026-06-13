@@ -19,17 +19,17 @@
 
 Das Regelmodul `matrix` ist implementiert, und die eigene
 `.d-check.yml` aktiviert `ids` + `matrix` mit der vollständigen
-Selbstkonfiguration — die `MR-006`-Referenzrichtungs-Regel
+Selbstkonfiguration — die [`MR-006`](../../../../harness/conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)-Referenzrichtungs-Regel
 (Spec-Straten verweisen nie abwärts) wird damit maschinell erzwungen.
 
 ## 2. Definition of Done
 
-- [x] Akzeptanzkriterien von `DC-FA-MTX-001` als Tests: Slice →
+- [x] Akzeptanzkriterien von [`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix) als Tests: Slice →
   aktives ADR ok; Referenz auf `Superseded …` → `matrix-inactive`;
   Lastenheft → ADR → `matrix-forbidden` mit beiden Klassen.
 - [x] Status-Extraktion in fester Reihenfolge (`**Status:**` vor
   `Status`-Heading), Präfix-Match case-insensitiv; ohne Status aktiv
-  (Spezifikation §`DC-FA-MTX-001.a`).
+  (Spezifikation §[`DC-FA-MTX-001.a`](../../../../spec/spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung)).
 - [x] Klassen-Glob-Präzedenz (Deklarationsreihenfolge) und
   `exclude-sections` (getrimmt, ohne Auszeichnung, case-sensitiv)
   getestet.
@@ -68,12 +68,12 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
   Historie-Sektionen sind per `exclude-sections` ausnehmbar; bleiben
   darüber hinaus Befunde in unveränderlichen Passagen, ist eine
   dokumentierte Entscheidung nötig (Spez-Fortschreibung einer
-  Sektions-/Pfad-Ausnahme für `ids` ODER Form-Fix analog `MR-007`) —
+  Sektions-/Pfad-Ausnahme für `ids` ODER Form-Fix analog [`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)) —
   nie stillschweigend lockern.
 - Klassen-Zuordnung über Globs muss mit der `"."`-Wurzel des
   Dogfoodings zusammenspielen (Pfade relativ zur Repo-Wurzel).
 - Zeilenbasierte Link-Extraktion ist normative Grenze (Spezifikation
-  §`DC-FA-LINK-001.a` Schritt 3, Review R1 zu slice-006): Kennungen in
+  §[`DC-FA-LINK-001.a`](../../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 3, Review R1 zu slice-006): Kennungen in
   *mehrzeiligem* Linktext gelten für `ids` als nackt. Bei der
   Selbstkonfiguration darauf achten, dass linkpflichtige Kennungen in
   der eigenen Doku in einzeiligen Links stehen; auftretende Fälle
@@ -88,7 +88,7 @@ Selbstkonfiguration, ids-Fortschreibung, Doku-Bereinigung).
   Sektions-Ausnahmen ließen sich direkt aus der Spezifikation in
   Tabellen-Tests übersetzen; der gemeinsame Heading-Scanner
   (`extractHeadingLines`) trägt jetzt `anchors` und `matrix` ohne
-  Dopplung. Die `MR-006`-Referenzrichtung ist maschinell kodiert —
+  Dopplung. Die [`MR-006`](../../../../harness/conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)-Referenzrichtung ist maschinell kodiert —
   der Kern-Vertrag dieses Slices.
 - **Anders als geplant:** Der erste Selbstlauf lieferte 111 Befunde
   und legte eine konzeptuelle `ids`-Lücke offen: Definitions-Orte
@@ -100,7 +100,7 @@ Selbstkonfiguration, ids-Fortschreibung, Doku-Bereinigung).
   das löste zugleich die Immutable-ADR-Frage ohne jede Editierung
   der `Accepted`-Texte. Restliche ~50 Fließtext-Befunde wurden als
   Form-Fixes bereinigt (lebende Docs: Links; historische
-  Docs/CHANGELOG: Code-Spans, analog `MR-007`).
+  Docs/CHANGELOG: Code-Spans, analog [`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)).
 - **Steering-Loop-Lerneintrag:** (a) Der Dogfooding-Selbstlauf ist
   der schärfste Spec-Reviewer — die Definitions-Ort-Lücke war in
   Spec-Review und slice-006-Implementierung unsichtbar und wurde

@@ -8,14 +8,24 @@ modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.
+# Dogfooding der Link-Politik (slice-018): link-policy: always macht
+# auch Inline-Code-Vorkommen linkpflichtig — „gut verlinkt" als
+# gemessenes Property. exempt-paths nimmt literal-schwere Artefakte
+# (Changelog, Review-Reports) aus; Beispiel-IDs tragen d-check:ignore.
 ids:
   patterns:
     - regex: 'ADR-\d{4}'
       target: docs/plan/adr/
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
     - regex: 'MR-\d{3}'
       target: harness/conventions.md
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
     - regex: 'DC-(FA-[A-Z]+|QA)-\d+'
       target: spec/lastenheft.md
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
 
 # Referenzmatrix (DC-FA-MTX-001): maschinelle Kodierung von MR-006 —
 # Spec-Straten verweisen nie abwärts auf ADRs oder Planning-Artefakte.

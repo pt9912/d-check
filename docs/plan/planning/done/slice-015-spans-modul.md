@@ -30,9 +30,9 @@ oder gar nicht (Repos ohne `ids`-Konfiguration).
 
 ## 2. Definition of Done
 
-- [x] Spezifikation fortgeschrieben: §`DC-FA-SPAN-001.a`
+- [x] Spezifikation fortgeschrieben: §[`DC-FA-SPAN-001.a`](../../../../spec/spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung)
   (Opener-Klassifikation, Absatz-Semantik identisch zur
-  Vorverarbeitung §`DC-FA-LINK-001.a` Schritt 2, Muster-Definition
+  Vorverarbeitung §[`DC-FA-LINK-001.a`](../../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 2, Muster-Definition
   `span-nested-link` nach Inline-Code-Stripping), `modules`-Liste im
   `.d-check.yml`-Schema, Grund-Codes-Tabelle (§4) um `span-unclosed`
   und `span-nested-link` ergänzt.
@@ -57,7 +57,7 @@ oder gar nicht (Repos ohne `ids`-Konfiguration).
 - [x] Dogfooding: Selbstkonfiguration
   ([`.d-check.yml`](../../../../.d-check.yml)) aktiviert `spans`;
   eigene Doku befundfrei; `gate-consistency`-gebundene
-  `DC-QA-03`-Modulliste nachgezogen (netzloser Lauf aller Module
+  [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modulliste nachgezogen (netzloser Lauf aller Module
   außer `external`).
 - [x] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
   Closure-Notiz mit Steering-Loop-Lerneintrag. Release-Hinweis:
@@ -69,7 +69,7 @@ oder gar nicht (Repos ohne `ids`-Konfiguration).
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `spec/spezifikation.md` | update | §`DC-FA-SPAN-001.a`, Schema, Grund-Codes |
+| `spec/spezifikation.md` | update | §[`DC-FA-SPAN-001.a`](../../../../spec/spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung), Schema, Grund-Codes |
 | Modul `spans` im Hexagon-Kern | neu | Prüflogik (geteilte Span-/Absatz-Helfer) |
 | Tests (AK-Trio, Kalibrierung, Gegentest) | neu | Beleg-Pflicht |
 | [`.d-check.yml`](../../../../.d-check.yml) | update | Dogfooding-Aktivierung |

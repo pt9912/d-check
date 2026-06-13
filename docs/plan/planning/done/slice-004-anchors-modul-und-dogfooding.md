@@ -62,7 +62,7 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
 ## 7. Closure-Notiz (nach `done/`)
 
 **Umsetzung:** Commit `3fd2067` (Modul `anchors`, Dogfooding-Schnitt,
-`MR-007`, Spez-Fortschreibung); Vorarbeiten in `2a2bd3f`/`52df5c3`
+[`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding), Spez-Fortschreibung); Vorarbeiten in `2a2bd3f`/`52df5c3`
 (Black-Box-Review-Fixes am CLI).
 
 - **Was hat funktioniert:** Der normierte Slug-Algorithmus aus der
@@ -72,17 +72,17 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
   eigenen Repos (23 Dateien, 0 Befunde) — und bestätigte damit
   maschinell das Doppel-Bindestrich-Urteil aus der Spec-Review-Runde.
   Der Vergleichslauf gegen das Alt-Skript (0/0, bei strikt größerer
-  Abdeckung) ist der erste Datenpunkt für `DC-QA-04`.
+  Abdeckung) ist der erste Datenpunkt für [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools).
 - **Anders als geplant:** `scan.roots` brauchte den Wert `"."`
   (gesamte Wurzel), damit das Dogfooding die Abdeckung des
   Alt-Skripts (harness/, Top-Level) erreicht — Spez fortgeschrieben.
   Slug-Schritt 1 wurde auf GitHub-Verhalten präzisiert (literale
-  Unterstriche bleiben). Der `MR-003`-Geltungsbereich-Link wurde nach
+  Unterstriche bleiben). Der [`MR-003`](../../../../harness/conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh)-Geltungsbereich-Link wurde nach
   der Skript-Löschung auf einen Code-Span umgestellt (Form-Fix,
-  dokumentiert in `MR-007`).
+  dokumentiert in [`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)).
 - **Steering-Loop-Lerneintrag:** Der dogfoodete Sensor schlug schon
   während des Slice produktiv zu (Lifecycle-Move von slice-004 brach
-  den `MR-003`-Link — doc-check rot, sofort gefixt): Der Sensor
+  den [`MR-003`](../../../../harness/conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh)-Link — doc-check rot, sofort gefixt): Der Sensor
   erzwingt jetzt die Link-Pflege, die vorher Review-Disziplin war.
   Lehre: Lifecycle-Moves immer mit `make doc-check` vor dem Commit.
 - **Folge-Slices:** keine neuen; welle-02-mvp ist mit diesem Slice

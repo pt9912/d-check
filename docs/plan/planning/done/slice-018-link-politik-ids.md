@@ -1,11 +1,11 @@
 # Slice slice-018: Konfigurierbare Link-Politik für `ids` (`link-policy`)
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-08-linkpolitik (per Roadmap-Fortschreibung; Start bei
 Priorisierung durch den Auftraggeber — Ausgangsbefund im Dialog
-2026-06-13: ein verlinktes `DC-QA-02` neben einem nur-Code-Span
-`DC-QA-03` in derselben DoD-Liste, vom grünen Gate nicht gefunden).
+2026-06-13: ein verlinktes [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus) neben einem nur-Code-Span
+[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) in derselben DoD-Liste, vom grünen Gate nicht gefunden).
 
 **Bezug:** [`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)
 (Change Request — neue konfigurierbare `link-policy`),
@@ -29,7 +29,7 @@ Fließtext"; eine ID in Backticks (Code-Span) ist per Design
 linkpflichtfrei. Dadurch ist der Sensor **blind** dafür, ob ein
 Code-Span eigentlich ein Link sein sollte — „gut verlinkt" ist kein
 gemessenes Property, sondern Glückssache menschlicher Aufmerksamkeit
-(Ausgangsbefund: `DC-QA-03` in slice-017).
+(Ausgangsbefund: [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) in slice-017).
 
 Ziel: „gut verlinkte Markdown-Dokumente" wird ein **im `.d-check.yml`
 konfigurierbares, gemessenes Property**. Pro `ids`-Muster wählt das
@@ -40,7 +40,7 @@ sichtbar gemacht hat.
 
 ## 2. Definition of Done
 
-- [ ] **Lastenheft-Change-Request** `DC-FA-ID-001` (Version-Bump 0.8.0,
+- [x] **Lastenheft-Change-Request** [`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) (Version-Bump 0.8.0,
   Historie-Zeile): neue konfigurierbare `link-policy: prose|always`
   (Default `prose` = heutiges Verhalten, opt-in fürs Gating —
   Abwärtskompatibilität), `exempt-paths` (Glob-Liste pro Muster) und
@@ -49,39 +49,39 @@ sichtbar gemacht hat.
   illustrative Beispiel-IDs); drei Akzeptanzkriterien
   (Happy/Boundary/Negative) + Out-of-Scope. Die Abwägung
   opt-in-Gating vs. Entdeckung ist im Anforderungstext festgehalten.
-- [ ] **Spezifikation** §`DC-FA-ID-001.a` fortgeschrieben: `always`
+- [x] **Spezifikation** §[`DC-FA-ID-001.a`](../../../../spec/spezifikation.md#dc-fa-id-001a--kennungs-prüfung) fortgeschrieben: `always`
   prüft zusätzlich Kennungs-Vorkommen *innerhalb* von Inline-Code-Spans
   (Wiederverwendung der `inlineSpansByLine`-Mechanik aus
-  `DC-FA-CODE-001.a`); ein solches Vorkommen ist linkpflichtfrei nur,
+  [`DC-FA-CODE-001.a`](../../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code)); ein solches Vorkommen ist linkpflichtfrei nur,
   wenn der Code-Span im Linktext eines Markdown-Links liegt
   (`[` `` `ID` `` `](ziel)`), im `target` des Musters steht, in einer
   `exempt-paths`-Datei liegt oder die Zeile den `d-check:ignore`-Marker
   trägt. Schema-Tabelle §`.d-check.yml` um
   `ids.patterns[].link-policy` und `.exempt-paths`; **kein** neuer
   Grund-Code (weiterhin `id-unlinked`).
-- [ ] **Implementierung** im Modul `ids` + Config-Layer; die drei
+- [x] **Implementierung** im Modul `ids` + Config-Layer; die drei
   Akzeptanzkriterien als Tests; Config-Validierung (`link-policy` nur
   `prose|always`, sonst Exit 2; `exempt-paths`-Globs spiegeln die
   `scan.ignore`-Constraints).
-- [ ] **Abwärtskompatibilitäts-Beleg** ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)):
+- [x] **Abwärtskompatibilitäts-Beleg** ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)):
   Configs ohne `link-policy` verhalten sich byte-identisch (Eigenlauf
   und ≥1 Schwester-Repo vor/nach, identische Ausgabe-Hashes).
-- [ ] **Doku der Option** (Auftraggeber-Anspruch — die Option muss
+- [x] **Doku der Option** (Auftraggeber-Anspruch — die Option muss
   *sichtbar* sein, sonst kehrt „nie davon erfahren" durch die
   Hintertür zurück): nutzersichtbarer Abschnitt unter `docs/user/`
   („Linkdichte erzwingen — `link-policy: always`": dass es die Option
   gibt, wie man sie einschaltet, die Ventile `exempt-paths`/`ignore`,
   die Entdeckungs-vs.-Gating-Logik).
-- [ ] **Fleet-Entdeckungs-Pflicht** ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Muster):
+- [x] **Fleet-Entdeckungs-Pflicht** ([`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Muster):
   `always`-Lauf über alle `ids`-nutzenden Repos (heute d-check,
   u-boot, b-trace), Befunde pro Repo in der Closure-Notiz dokumentiert
   — Entdeckung hängt nicht am Opt-in des einzelnen Repos.
-- [ ] **Dogfooding:** d-checks eigene `.d-check.yml` setzt
+- [x] **Dogfooding:** d-checks eigene `.d-check.yml` setzt
   `link-policy: always` (mit `exempt-paths` für CHANGELOG + reviews);
   der `always`-Befundsatz (Kalibrierung: ~110 Kern-Treffer) wird zu
   echten Links bzw. begründeten `d-check:ignore`-Markern. Der bereits
-  vorbereitete slice-017-Fix (`DC-QA-03` verlinkt) wird hier gefaltet.
-- [ ] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
+  vorbereitete slice-017-Fix ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) verlinkt) wird hier gefaltet.
+- [x] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
   Closure-Notiz mit Steering-Loop-Lerneintrag (der Sensor-Blindfleck
   „grün ≠ gut verlinkt" → konfigurierbare Politik).
 
@@ -89,8 +89,8 @@ sichtbar gemacht hat.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| [`spec/lastenheft.md`](../../../../spec/lastenheft.md) | update | Change Request `DC-FA-ID-001` (0.8.0): `link-policy`, `exempt-paths`, `ignore`-Erweiterung, AKs, Historie |
-| [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | §`DC-FA-ID-001.a` (`always`-Algorithmus, Ventile), Schema-Tabelle `.d-check.yml` |
+| [`spec/lastenheft.md`](../../../../spec/lastenheft.md) | update | Change Request [`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) (0.8.0): `link-policy`, `exempt-paths`, `ignore`-Erweiterung, AKs, Historie |
+| [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | §[`DC-FA-ID-001.a`](../../../../spec/spezifikation.md#dc-fa-id-001a--kennungs-prüfung) (`always`-Algorithmus, Ventile), Schema-Tabelle `.d-check.yml` |
 | `internal/hexagon/core/ids.go` | update | `always`: Vorkommen in Inline-Code-Spans prüfen, Linktext-/`exempt-paths`-/`ignore`-Ausnahmen |
 | `internal/hexagon/core/` (Config-Typen/Parsing/Validierung) | update | `IDPattern.LinkPolicy`, `.ExemptPaths`; Validierung |
 | `internal/hexagon/core/ids_test.go` | update | drei AKs + Abwärtskompatibilität |
@@ -101,8 +101,8 @@ sichtbar gemacht hat.
 ## 4. Trigger
 
 Priorisierung durch den Auftraggeber (Dialog 2026-06-13). Der
-Ausgangsbefund (slice-017: `DC-QA-03` Code-Span neben verlinktem
-`DC-QA-02`) ist ein Steering-Loop-Signal („3× → Lücke"): der
+Ausgangsbefund (slice-017: [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) Code-Span neben verlinktem
+[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)) ist ein Steering-Loop-Signal („3× → Lücke"): der
 `ids`-Sensor misst nicht das Ziel „gut verlinkt".
 
 ## 5. Closure-Trigger
@@ -125,7 +125,7 @@ Ausschluss).
 | b-trace | 2 |
 
 Triage der d-check-155: **39** literal-schwer (CHANGELOG 28 + Reviews
-11 → `exempt-paths`), **6** Spec-Beispiel-IDs (`ADR-0042`/`ADR-0099` —
+11 → `exempt-paths`), **6** Spec-Beispiel-IDs (`ADR-0042`/`ADR-0099` — <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
 fiktive Illustrationen → `d-check:ignore`), **~110** Kern (echte
 Inkonsistenzen wie AGENTS↔harness/README und Meta-Diskussion → Links).
 Folgerungen, die die Regel-Form bestimmen:
@@ -150,9 +150,55 @@ Folgerungen, die die Regel-Form bestimmen:
   in Spec-Beispiel-Kontexten erzeugen; iterativ wie slice-015/016
   („Kalibrierung in zwei Iterationen").
 - **Determinismus:** `exempt-paths`-Glob-Auswertung muss
-  reihenfolge-/plattformstabil sein (`DC-QA-02`).
+  reihenfolge-/plattformstabil sein ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
 
 ## 8. Sub-Area-Modus-Begründung
 
 Alle berührten Sub-Areas GF (Spec-/Code-/Doku-Arbeit; Greenfield-Default
 der Modus-Tabelle).
+
+## 9. Closure-Notiz (nach `done/`)
+
+**Umsetzung:** Vertrag + Spezifikation (Commit `569c786`),
+`ids`-Implementierung + Tests (`ba3deca`), Dogfooding-Sweep + Doku +
+Closure (dieser Commit). `make gates` grün (Coverage 95,0 %).
+
+**Fleet-Entdeckungs-Lauf (real, nicht Approximation):** `always` über
+die drei `ids`-Repos — **d-check 170, u-boot 2, b-trace 2**. Die
+Vorlauf-Approximation (§6: 155/9/2) überschätzte leicht (Backtick-Entfernen
+verschmolz Schein-IDs); der span-basierte Echtlauf ist präziser. u-boot
+und b-trace sind in *aktiver* Doku praktisch sauber (Treffer nur in
+`done/`/CHANGELOG) — der Sensor lohnt sich, ohne zu lärmen.
+
+**Dogfooding-Sweep (Auftraggeber-Entscheid: alle 77 `done/` fixen, kein
+`done/`-Exempt):** 130 Befunde nach `exempt-paths` (CHANGELOG + Reviews)
+aufgelöst — ~127 Inline-Code-Kennungen als Links ausgeführt
+(Requirement-Kennungen → Lastenheft-Anker, `.a`-Sektions-Referenzen →
+Spez-Sektionsanker), Beispiel-IDs (`ADR-0042`/`ADR-0099`) und zwei <!-- d-check:ignore (Beispiel-IDs, fiktiv) -->
+literale Zitate mit `d-check:ignore`. Deterministischer Rewriter
+(kanonische Ziele aus bestehenden Links geerntet, Slug-Fallback für
+unverlinkte Sektionen); der `anchors`-/`matrix`-/`links`-Sensor
+verifizierte jeden erzeugten Link (0 Befunde, keine verbotene
+spec→adr-Kante). **Abwärtskompatibilität** ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)):
+b-trace ohne `always` byte-identisch zu v0.4.0.
+
+- **Was hat funktioniert:** Den `always`-Befundsatz *aus dem echten Tool*
+  zu sweepen und vom eigenen `anchors`-Sensor verifizieren zu lassen —
+  ein falscher Anker hätte das Gate gerötet. Der Sweep musste nicht
+  „auf Verdacht" korrekt sein; das Gate war das Netz.
+- **Anders als geplant:** Die `.a`-Sektions-Referenzen waren eine
+  eigene Klasse (Requirement-ID als Teilstring eines Sektions-Tokens) —
+  der Rewriter wurde token-basiert mit getrennten Schlüsseln
+  (`ID` vs. `ID.a`), sonst hätte er Sektions-Verweise auf
+  Requirement-Anker fehlgeleitet.
+- **Steering-Loop-Lerneintrag (geschärfte Regel + neuer Sensor):** Der
+  `ids`-Sensor maß „keine *versehentlich* nackte ID", nicht das Ziel
+  „gut verlinkt" — ein Code-Span verbarg stillschweigend fehlende
+  Links (Blindfleck `grün ≠ gut verlinkt`). Geschärft: „gut verlinkt"
+  ist jetzt ein *konfigurierbares, gemessenes* Property
+  ([`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)
+  `link-policy: always`). Und: Opt-in fürs Gating, aber **Entdeckung
+  als Bringschuld** (Fleet-Lauf) — „opt-in" darf nicht „unsichtbar"
+  bedeuten.
+- **Folge-Slices:** keine; u-boot/b-trace könnten `always` selbst
+  aktivieren (ihre aktiven Doku-Befunde sind ~0).

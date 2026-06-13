@@ -67,7 +67,7 @@ ihrer Tool-Kopie — mit den in slice-012 erprobten Familien-Rezepten:
 |---|---|---|
 | `<repo>/.d-check.yml` (9×, extern) | neu | Familien-äquivalente Konfiguration |
 | `<repo>`-Makefile/CI (9×, extern) | update | Digest-gepinnter `d-check`-Step, Alt-Tool-Ablösung |
-| Closure-Notiz dieses Slices | neu | 13/13-Vergleichstabelle als `DC-QA-04`-Beleg |
+| Closure-Notiz dieses Slices | neu | 13/13-Vergleichstabelle als [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Beleg |
 | [`CHANGELOG.md`](../../../../CHANGELOG.md) | update | Rollout-Stand |
 
 ## 4. Trigger
@@ -115,7 +115,7 @@ ist vollständig belegt. Zwischenrelease **v0.2.1**
 | c-hsm-doc | Python (159 Z., Familien-Ursprung) | 0 | 0 | keine im Bestand; 4 Folge-Links auf das gelöschte Skript vom ersten d-check-Lauf gefangen und nachgezogen | gelöscht | 64dcc31 |
 | grid-gym | Python (154 Z.) | 0 | 4 → 0 | 4 echte Mehr-Befunde: 3 veraltete ADR-Verweise (CONTRIBUTING.md, außerhalb des Alt-Scopes) + 1 auf GitHub kaputter Roadmap-Link **hinter einem mehrzeiligen Commit-Span** (CommonMark-Klasse aus dem slice-012-Lerneintrag, drittes Repo mit dem Muster) | gelöscht inkl. Dockerfile-Stage | 766ae8c |
 | euler-fourier-hilbert | JS (520 Z., Familien-Basis) | 0 (318 Links, 1259 Math-Blöcke) | 0 | keine — auch die Slug-Differenz (Alt kollabiert Bindestriche) blieb im Bestand folgenlos | geschrumpft: **Math-Rest-Sensor** (MathJax + GitHub-Quirks, 520 → ~340 Z.) | 4f6b584 |
-| b-cad | JS (469 Z., vendorte Kurs-Kopie) | 0 | 8 → 0 | 8 echte Mehr-Befunde aus **adaptierten** codepaths-Wurzeln (die Kopie prüfte die toten Kurs-Präfixe `lab/`/`kurs/`): 2 Pfad-Fixes, 6 begründete Marker (geplante Artefakte, d-migrate-Verweise, Plan-Alternative). Build-Stage-Konvention (kein Bind-Mount) erhalten: `FROM d-check` + `COPY` + `RUN`; dortiges `MR-003` → `MR-007` aufgelöst | gelöscht | 77fbd17, dfbb44c |
+| b-cad | JS (469 Z., vendorte Kurs-Kopie) | 0 | 8 → 0 | 8 echte Mehr-Befunde aus **adaptierten** codepaths-Wurzeln (die Kopie prüfte die toten Kurs-Präfixe `lab/`/`kurs/`): 2 Pfad-Fixes, 6 begründete Marker (geplante Artefakte, d-migrate-Verweise, Plan-Alternative). Build-Stage-Konvention (kein Bind-Mount) erhalten: `FROM d-check` + `COPY` + `RUN`; dortiges [`MR-003`](../../../../harness/conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh) → [`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding) aufgelöst | gelöscht | 77fbd17, dfbb44c |
 | bess-ems | eigenständige Python-Linie (377 Z., Inventur-Nachtrag Lastenheft 0.4.0) | 0 (577 Links) | 1 → 0 | 1 echter Mehr-Befund (Self-Anker: `Daten- und` sluggt zu Doppel-Bindestrich, Alt kollabierte) | geschrumpft: **Host-Pfad-Rest-Sensor** (377 → ~130 Z.) | a6c8b9b, 1085912 |
 
 Bekannte, dokumentierte Abdeckungs-Deltas (jeweils im Bestand
@@ -134,7 +134,7 @@ unlesbare Laufzeit-Residuen (root-eigene `.gradle/`-,
 SoftHSM-Token-Verzeichnisse) brachen den Scan ab, und `scan.ignore`
 bot keinen Ausweg. Fix in **v0.2.1**: Ignore-Muster prunen den
 Verzeichnis-Abstieg, `.gradle` in den `SKIP_DIRS`
-(`DC-FA-SCAN-001`-Spec fortgeschrieben, 43d1c38).
+([`DC-FA-SCAN-001`](../../../../spec/lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln)-Spec fortgeschrieben, 43d1c38).
 
 ### Lerneintrag (Steering Loop)
 
@@ -151,7 +151,7 @@ Verzeichnis-Abstieg, `.gradle` in den `SKIP_DIRS`
    Parität, Adoptionen testen Robustheit.
 3. **Vendoring ohne lebende Quelle verwaist still:** b-cads
    „unverändert übernommene" Kopie hatte ihre Drift-Nachzieh-Pflicht
-   (deren `MR-003`) faktisch verloren, als die Quelle migrierte. Der
+   (deren [`MR-003`](../../../../harness/conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh)) faktisch verloren, als die Quelle migrierte. Der
    Digest-Pin ist das bessere Vendoring — Reproduzierbarkeit ohne
    Pflege-Pflicht.
 

@@ -102,13 +102,13 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make test` | `go test ./...` — Akzeptanzkriterien der `DC-FA-*` |
 | `make arch-check` | Import-Regeln des Hexagon-Schnitts ([ADR-0005](docs/plan/adr/0005-modul-layout-hexagon-ordner.md)) |
 | `make coverage-gate` | Coverage-Schwelle über `./internal/...` (Kalibrierungs-Bindung, siehe [`harness/README.md`](harness/README.md) §Sensors) |
-| `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile + `DC-QA-03`-Modulliste (Harness-Lügen-Schutz) |
-| `make doc-check` | Doku-Links, Anker, Kennungs-Linkpflicht, Referenzmatrix + Inline-Code-Pfade via `d-check` selbst (Dogfooding; netzlos — zugleich `DC-QA-03`-Messmethode) |
+| `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile + [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modulliste (Harness-Lügen-Schutz) |
+| `make doc-check` | Doku-Links, Anker, Kennungs-Linkpflicht, Referenzmatrix + Inline-Code-Pfade via `d-check` selbst (Dogfooding; netzlos — zugleich [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Messmethode) |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
 | `make ci` | CI-äquivalenter Lauf: gates + image-test (fährt die Release-Pipeline) |
 | `make fullbuild` | volle Closure: gates + image-test + bench, schließt mit dem Image-Hash |
-| `make image-test` | `DC-FA-DIST-001`-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container) |
-| `make bench` | `DC-QA-01`-Benchmark gegen generiertes Fixture (Median aus 3 Läufen, kein Gate in `gates`) |
+| `make image-test` | [`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container) |
+| `make bench` | [`DC-QA-01`](spec/lastenheft.md#dc-qa-01--performance)-Benchmark gegen generiertes Fixture (Median aus 3 Läufen, kein Gate in `gates`) |
 | `make versions` | Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Images, Runtime-Image-ID) |
 | `make build` / `make run` | Runtime-Image bauen / Selbst-Smoke-Test |
 | `make deps` / `make compile` | Cache-Layer / schnelles Compile-Feedback |

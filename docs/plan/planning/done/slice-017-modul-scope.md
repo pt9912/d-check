@@ -32,7 +32,7 @@ weiterhin die volle Repo-Wurzel prüfen.
 
 ## 2. Definition of Done
 
-- [x] Spezifikation fortgeschrieben: §`DC-FA-CONF-002.a`
+- [x] Spezifikation fortgeschrieben: §[`DC-FA-CONF-002.a`](../../../../spec/spezifikation.md#dc-fa-conf-002a--effektiver-scan-scope-pro-modul)
   (effektiver Scope pro Modul: eigener Discover-Lauf mit
   Modul-`roots`/`ignore` — der Modul-Scope kann Dateien umfassen,
   die der globale Scan nicht enthält; Konstraint-Spiegelung von
@@ -60,7 +60,8 @@ weiterhin die volle Repo-Wurzel prüfen.
   Slice-Bestandteil.
 - [x] Dogfooding: Selbstkonfiguration bleibt unverändert lauffähig
   (kein eigener `scope`-Bedarf); `gate-consistency`-gebundene
-  `DC-QA-03`-Modulliste unberührt.
+  [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modulliste
+  unberührt.
 - [x] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md);
   Closure-Notiz mit Steering-Loop-Lerneintrag. Release-Hinweis:
   fließt in das nächste Minor-Release (mit welle-06 gebündelt als
@@ -71,7 +72,7 @@ weiterhin die volle Repo-Wurzel prüfen.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `spec/spezifikation.md` | update | §`DC-FA-CONF-002.a`, Schema-Tabelle |
+| `spec/spezifikation.md` | update | §[`DC-FA-CONF-002.a`](../../../../spec/spezifikation.md#dc-fa-conf-002a--effektiver-scan-scope-pro-modul), Schema-Tabelle |
 | Config-Decoding + Validierung | update | `<modul>.scope` strikt validiert (Exit 2) |
 | Datei-Ermittlung im Hexagon-Kern | update | Discover pro Modul-Scope, geteilte Helfer |
 | Tests (4 AKs, Abwärtskompatibilität) | neu | Beleg-Pflicht |

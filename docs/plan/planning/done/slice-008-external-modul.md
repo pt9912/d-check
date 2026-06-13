@@ -17,15 +17,15 @@
 ## 1. Ziel
 
 Das opt-in-Regelmodul `external` ist implementiert (HTTP-Port im
-Hexagon, `httpcheck`-Adapter), und die `DC-QA-03`-Messmethode läuft
+Hexagon, `httpcheck`-Adapter), und die [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Messmethode läuft
 als automatisierter Test.
 
 ## 2. Definition of Done
 
-- [x] Akzeptanzkriterien von `DC-FA-EXT-001` als Tests: Status < 400
+- [x] Akzeptanzkriterien von [`DC-FA-EXT-001`](../../../../spec/lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in) als Tests: Status < 400
   ok; ≥ 400 → `external-status`; Timeout → `external-timeout`;
   > 5 Redirects → `external-redirects` (Spezifikation
-  §`DC-FA-EXT-001.a`: HEAD mit GET-Fallback bei 405/501, Dedupe pro
+  §[`DC-FA-EXT-001.a`](../../../../spec/spezifikation.md#dc-fa-ext-001a--externe-erreichbarkeit): HEAD mit GET-Fallback bei 405/501, Dedupe pro
   URL, begrenzte Parallelität, Timeout konfigurierbar 1–300 s).
 - [x] Opt-in-Garantie getestet: ohne aktiviertes Modul keinerlei
   Netzwerkzugriff; `external` ist nie Teil der Defaults.
@@ -33,7 +33,7 @@ als automatisierter Test.
   in `internal/adapter/driven/httpcheck` (arch-check-Regel R2 greift
   nun positiv); Kern-Tests gegen Port-Fake, Adapter-Tests gegen
   `httptest.Server`.
-- [x] `DC-QA-03`-Messmethode automatisiert: Gate-Lauf der
+- [x] [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Messmethode automatisiert: Gate-Lauf der
   Default-Module in netzwerkloser Umgebung (`--network none`) gegen
   ein Fixture — als Make-Target in `gates` aggregiert (umgesetzt als
   `--network none` im Dogfooding-Gate `doc-check`: alle Module außer
@@ -64,7 +64,7 @@ DoD vollständig + Commit(s) auf `main` + Closure-Notiz geschrieben.
 ## 6. Risiken und offene Punkte
 
 - Netz-Nichtdeterminismus: `external` ist von der
-  Byte-Identitäts-Garantie ausgenommen (Spezifikation §`DC-QA-02.a`) —
+  Byte-Identitäts-Garantie ausgenommen (Spezifikation §[`DC-QA-02.a`](../../../../spec/spezifikation.md#dc-qa-02a--determinismus-und-sortierung)) —
   Tests dürfen nur gegen lokale `httptest`-Server laufen, nie gegen
   echte URLs.
 - Parallelität (Default 4) darf die Befund-Sortierung nicht
@@ -97,7 +97,7 @@ Kernmodul `external`, QA-03-Netzlos-Gate, Interim-Rückbau).
   Negativ-Raum-Prüfung der Spezifikation gehört in Schritt 4
   (Plan), nicht in die Review-Runde.
 - **Folge-Slices:** keine neuen; slice-009 (coverage-gate,
-  gate-consistency, `DC-QA-01`-Benchmark) schließt die Welle.
+  gate-consistency, [`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)-Benchmark) schließt die Welle.
 
 **Review R1 (nach Closure, Agent-Review mit getrenntem Kontext):**
 9 Findings (2 MEDIUM, 5 LOW, 2 INFO); 7 nachgeschärft in einem
