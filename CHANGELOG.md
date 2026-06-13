@@ -6,6 +6,23 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-020 — Option `--suggest-config`
+  ([`DC-FA-CLI-006`](spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten),
+  Change Request 0.10.0): liest benannte Autoritäts-Quellen und schlägt
+  ein `.d-check.yml` vor — leitet je Quelle ein `ids`-Muster aus den in
+  Überschriften **definierten** Kennungen ab (Präfix-Alternation,
+  Round-Trip-Garantie; Quell-Kennungen als Kommentar) und schlägt
+  opt-in-Module nach Signal vor. **Liest, schreibt nie** (read-only-
+  Vertrag; Umleiten macht der Aufrufer). Bewusste Grenze: erkennt nur
+  großgeschriebene Heading-Token-IDs — Scaffold, kein Orakel, der
+  Mensch verengt/ergänzt. Dazu Schärfung von
+  [`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids):
+  Muster-Ableitung bleibt für die **Prüfung** Out-of-Scope, nur der
+  advisory Scaffold-Modus leitet ab. Korpora-Gegentest dokumentiert
+  (d-check round-trippt, b-trace zeigt die Heading-Grenze).
+
 ## [0.6.0] — 2026-06-13
 
 Konfigurations-Startgerüst (`--print-config`, Change Request 0.9.0,

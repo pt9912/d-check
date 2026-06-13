@@ -466,3 +466,58 @@ func TestCLI005_KeinRepoZugriff(t *testing.T) {
 		t.Fatal("Ausgabe nicht deterministisch")
 	}
 }
+
+// DC-FA-CLI-006 Happy: --suggest-config leitet aus definierten Kennungen
+// ein ids-Muster ab (Round-Trip: regex matcht die Quell-IDs), target =
+// Quelle, gültiges vom eigenen Parser akzeptiertes YAML.
+func TestCLI006_SuggestConfig(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/plan/adr/0042-x.md", "# ADR-0042 — Beispiel\ntext\n")
+	write(t, root, "docs/plan/adr/0099-y.md", "# ADR-0099 — Beispiel\ntext\n")
+	code, stdout, stderr := run(t, "--suggest-config", "docs/plan/adr/", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	cfg, err := configyaml.Decode([]byte(stdout))
+	if err != nil {
+		t.Fatalf("Vorschlag dekodiert nicht: %v\n%s", err, stdout)
+	}
+	if len(cfg.IDPatterns) != 1 {
+		t.Fatalf("erwartet 1 ids-Muster, got %d\n%s", len(cfg.IDPatterns), stdout)
+	}
+	re := cfg.IDPatterns[0].Regex
+	if !re.MatchString("ADR-0042") || !re.MatchString("ADR-0099") {
+		t.Fatalf("Round-Trip verletzt: %q matcht die Quell-IDs nicht", re.String())
+	}
+	if cfg.IDPatterns[0].Target != "docs/plan/adr/" {
+		t.Fatalf("target = %q", cfg.IDPatterns[0].Target)
+	}
+}
+
+// DC-FA-CLI-006 Boundary: Quelle ohne Kennungs-Headings → kein ids-Muster,
+// kein Absturz, gültiges YAML.
+func TestCLI006_KeineKennungen(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/notes.md", "# Notizen\nkein ID-Heading hier\n")
+	code, stdout, _ := run(t, "--suggest-config", "docs/", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d", code)
+	}
+	cfg, err := configyaml.Decode([]byte(stdout))
+	if err != nil {
+		t.Fatalf("dekodiert nicht: %v\n%s", err, stdout)
+	}
+	if len(cfg.IDPatterns) != 0 {
+		t.Fatalf("kein ids-Muster erwartet, got %d", len(cfg.IDPatterns))
+	}
+}
+
+// DC-FA-CLI-006 Negative: nicht existierende Quelle → Exit 2.
+func TestCLI006_QuelleFehlt(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "# x\n")
+	code, _, stderr := run(t, "--suggest-config", "gibt/es/nicht", root)
+	if code != 2 || !strings.Contains(stderr, "existiert nicht") {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+}

@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	configyaml "github.com/pt9912/d-check/internal/adapter/driven/configyaml"
@@ -40,11 +41,12 @@ func (m *multiFlag) Set(v string) error {
 
 // options sind die geparsten CLI-Eingaben.
 type options struct {
-	root        string
-	json        bool
-	enable      []string
-	disable     []string
-	printConfig bool
+	root          string
+	json          bool
+	enable        []string
+	disable       []string
+	printConfig   bool
+	suggestConfig string
 }
 
 // reorderArgs erlaubt Optionen auch NACH dem Pfad-Argument — nötig
@@ -56,6 +58,7 @@ func reorderArgs(args []string) ([]string, error) {
 	valueFlags := map[string]bool{
 		"-enable": true, "--enable": true,
 		"-disable": true, "--disable": true,
+		"-suggest-config": true, "--suggest-config": true,
 	}
 	var flagArgs, positionals []string
 	for i := 0; i < len(args); i++ {
@@ -76,6 +79,18 @@ func reorderArgs(args []string) ([]string, error) {
 	return append(flagArgs, positionals...), nil
 }
 
+// splitSources zerlegt den --suggest-config-Wert in einzelne Quellen
+// (kommagetrennt, getrimmt, leere verworfen).
+func splitSources(v string) []string {
+	var out []string
+	for _, s := range strings.Split(v, ",") {
+		if s = strings.TrimSpace(s); s != "" {
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
 // parseOptions parst die Argumente; code/done steuern den sofortigen
 // Exit (Usage-Fehler → 2, -h → 0).
 func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
@@ -84,6 +99,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	var enable, disable multiFlag
 	jsonOut := flags.Bool("json", false, "maschinenlesbare JSON-Ausgabe")
 	printConfig := flags.Bool("print-config", false, "Konfigurations-Startgerüst auf stdout ausgeben und beenden")
+	suggestConfig := flags.String("suggest-config", "", "Config aus Autoritäts-Quellen (kommagetrennt) vorschlagen und beenden")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
 	flags.Var(&disable, "disable", "Regelmodul deaktivieren (wiederholbar)")
 
@@ -104,7 +120,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 		fmt.Fprintln(stderr, "d-check: error: höchstens ein Pfad-Argument")
 		return options{}, 2, true
 	}
-	opts := options{root: ".", json: *jsonOut, enable: enable, disable: disable, printConfig: *printConfig}
+	opts := options{root: ".", json: *jsonOut, enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}
@@ -193,6 +209,17 @@ func Run(args []string, stdout, stderr io.Writer) int {
 	fsys, ok := openRoot(opts.root, stderr)
 	if !ok {
 		return 2
+	}
+	// DC-FA-CLI-006: Lese-Durchgang, gibt ein vorgeschlagenes Gerüst auf
+	// stdout aus (schreibt nie). openRoot oben hat die Wurzel validiert.
+	if opts.suggestConfig != "" {
+		out, err := core.SuggestConfig(fsys, splitSources(opts.suggestConfig))
+		if err != nil {
+			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+			return 2
+		}
+		fmt.Fprint(stdout, out)
+		return 0
 	}
 	cfg, ok := loadConfig(fsys, stderr)
 	if !ok {

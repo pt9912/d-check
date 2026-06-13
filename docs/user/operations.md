@@ -23,6 +23,7 @@ CLI-Optionen werden als Container-Argumente angehängt.
 | `--enable <modul>` / `--disable <modul>` | Regelmodule zu-/abschalten (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`); CLI schlägt Konfiguration ([`DC-FA-CLI-002`](../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)) |
 | `--json` | maschinenlesbare Gesamt-Ausgabe ([Schema](../../spec/spezifikation.md)) |
 | `--print-config` | kommentiertes `.d-check.yml`-Startgerüst auf stdout, dann Exit 0 — **kein Scan, schreibt nichts**; Anlegen via Umleitung: `d-check --print-config > .d-check.yml` ([`DC-FA-CLI-005`](../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben)) |
+| `--suggest-config <quelle>[,…]` | liest die benannten Autoritäts-Quellen und schlägt ein `.d-check.yml` vor (abgeleitete `ids`-Muster + opt-in-Module nach Signal) — **liest, schreibt nichts**; Umleiten via `> .d-check.yml` ([`DC-FA-CLI-006`](../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)) |
 
 Default-Module ohne Konfiguration: `links` + `anchors`. Das Modul
 `external` ist strikt opt-in (einzige Netzwerk-Tür).
@@ -77,3 +78,24 @@ unsichtbar bleibt: Sie zu *entdecken* ist eine Bringschuld des
 Betreibers — ein `always`-Lauf über die geprüften Repos zeigt die
 Lücken, unabhängig davon, ob ein Repo `always` schon aktiviert hat
 ([`DC-QA-04`](../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Muster).
+
+## Config vorschlagen — `--suggest-config`
+
+`d-check --suggest-config spec/lastenheft.md,harness/conventions.md,docs/plan/adr/`
+liest die benannten **Autoritäts-Quellen** (Dateien/Verzeichnisse, in
+denen Kennungen *definiert* sind) und gibt ein vorgeschlagenes
+`.d-check.yml` auf stdout aus — es liest das Repo, **schreibt aber nie**
+(read-only-Vertrag; Umleiten macht der Aufrufer). Je Quelle wird ein
+`ids`-Muster abgeleitet, dessen `regex` alle dort gefundenen Kennungen
+matcht (die Quell-Kennungen stehen als Kommentar dabei); zusätzlich
+werden opt-in-Module vorgeschlagen, die echtes Signal liefern.
+
+**Scaffold, kein Orakel — die Grenze ist bewusst:** Erkannt werden
+Kennungen, die als **führendes Token einer Überschrift** in
+Großschreibung definiert sind (`### DC-FA-ID-001 — …`, `# ADR-0001 — …`). <!-- d-check:ignore (Format-Beispiele) -->
+**Nicht** erkannt werden kleingeschriebene IDs (`slice-001`) und solche,
+die nicht in Überschriften definiert sind (z. B. in Tabellen). Der
+Vorschlag ist eine **Best-Guess-Ableitung**, die der Mensch prüft,
+verengt (etwa `ADR-\d+` → `ADR-\d{4}`) und ergänzt — kein automatisch
+verbindlicher Check (die Prüfung läuft stets gegen explizit
+konfigurierte Muster, [`DC-FA-ID-001`](../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)).
