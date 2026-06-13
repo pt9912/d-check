@@ -6,6 +6,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.7.0] — 2026-06-13
+
+Konfigurations-Vorschlag aus Autoritäts-Dokumenten (`--suggest-config`,
+Change Request 0.10.0, slice-020) — inkl. Review R1.
+
 ### Added
 
 - slice-020 — Option `--suggest-config`
