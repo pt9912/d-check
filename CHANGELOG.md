@@ -6,6 +6,12 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-06-13
+
+Konfigurierbare Link-Politik für das Modul `ids` (Change Request 0.8.0,
+slice-018): „gut verlinkte Dokumente" wird ein im `.d-check.yml`
+konfigurierbares, gemessenes Property.
+
 ### Added
 
 - slice-018 — konfigurierbare Link-Politik `ids.patterns[].link-policy`
