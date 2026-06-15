@@ -53,3 +53,13 @@ Mini-Härtung); Finding 2 und 3 sind günstige Test-Ergänzungen, die die
 beiden ungeprüften Arme der geteilten Anker-Menge abdecken — sinnvoll
 **vor** der Closure, da der Code dann offen ist. Die zwei INFO sind
 Notizen. `make gates` ist auf dem Review-Stand grün (Coverage 94,80 %).
+
+## Disposition (Review R1 — 2026-06-15)
+
+- **F1 — gefixt:** `htmlTagRE` ist quote-bewusst (`(?:"[^"]*"|'[^']*'|[^>'"])*`); ein `>` in einem Attributwert beendet den Tag nicht mehr. Test `<a title="x > y" name="gtinattr">` in `TestHTMLAnchors` (scheiterte mit der alten Regex).
+- **F2 — gefixt:** `TestAnchorsHTMLSelbeDatei` — HTML-Anker via `#frag` innerhalb derselben Datei plus Negativfall.
+- **F3 — gefixt:** `TestCodepathsHTMLAnker` — `codepaths`-Anker-Prüfung gegen eine HTML-`id` der Zieldatei plus Negativfall.
+- **F5 — gefixt:** `attrValue`-Kommentar dokumentiert die Annahme (leerer Attributwert ⇒ kein Anker).
+- **F4 — akzeptiert:** der Doppel-Scan ist über den `slugCache` gedeckelt (eine `AnchorSet` je distinktem Ziel); kein riskanter Refactor zugunsten einer INFO-Notiz.
+
+`make gates` nach R1 grün (50 Dateien / 0 Befunde, Coverage 94,80 %).
