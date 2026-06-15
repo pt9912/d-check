@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"net/url"
+	"regexp"
 	"strings"
 	"unicode"
 
@@ -92,6 +93,64 @@ func HeadingSlugs(content []byte) map[string]bool {
 	return set
 }
 
+var (
+	// htmlTagRE erfasst öffnende HTML-Tags (Tag-Name + Attribut-Teil)
+	// auf vorverarbeiteten Zeilen; Inline-Code ist dort bereits geleert.
+	htmlTagRE = regexp.MustCompile(`<([a-zA-Z][a-zA-Z0-9]*)([^>]*)>`)
+	// htmlAttrIDRE/htmlAttrNameRE lesen den Wert eines id- bzw.
+	// name-Attributs aus dem Attribut-Teil (doppelte oder einfache
+	// Anführungszeichen; Attributname an Wortgrenze, kein Treffer in
+	// `data-id`).
+	htmlAttrIDRE   = regexp.MustCompile(`(?i)(?:^|\s)id\s*=\s*(?:"([^"]*)"|'([^']*)')`)
+	htmlAttrNameRE = regexp.MustCompile(`(?i)(?:^|\s)name\s*=\s*(?:"([^"]*)"|'([^']*)')`)
+)
+
+// htmlAnchors liefert die Inline-HTML-Anker einer Datei (DC-FA-ANCH-001.b):
+// id-Werte an beliebigen Elementen und name-Werte an <a>-Elementen,
+// wörtlich. Erkennung auf den vorverarbeiteten Zeilen — Fenced-Code-
+// Blöcke und Inline-Code-Spans sind dort entfernt (GitHub rendert HTML
+// in Code-Auszeichnung nicht als Sprungziel).
+func htmlAnchors(content []byte) map[string]bool {
+	set := map[string]bool{}
+	for _, ln := range PreprocessMarkdown(content) {
+		for _, tag := range htmlTagRE.FindAllStringSubmatch(ln.Text, -1) {
+			if v := attrValue(htmlAttrIDRE, tag[2]); v != "" {
+				set[v] = true
+			}
+			if strings.EqualFold(tag[1], "a") {
+				if v := attrValue(htmlAttrNameRE, tag[2]); v != "" {
+					set[v] = true
+				}
+			}
+		}
+	}
+	return set
+}
+
+// attrValue liefert den erfassten Attributwert (doppelte vor einfachen
+// Anführungszeichen) oder "" (kein Treffer / leerer Wert).
+func attrValue(re *regexp.Regexp, attrs string) string {
+	m := re.FindStringSubmatch(attrs)
+	if m == nil {
+		return ""
+	}
+	if m[1] != "" {
+		return m[1]
+	}
+	return m[2]
+}
+
+// AnchorSet ist die gültige Anker-Menge einer Datei: Heading-Slugs
+// (DC-FA-ANCH-001.a) vereinigt mit Inline-HTML-Ankern
+// (DC-FA-ANCH-001.b). Geteilt von den Modulen anchors und codepaths.
+func AnchorSet(content []byte) map[string]bool {
+	set := HeadingSlugs(content)
+	for a := range htmlAnchors(content) {
+		set[a] = true
+	}
+	return set
+}
+
 // anchorRef ist ein Link mit Fragment, dessen Ziel auflösbar ist.
 type anchorRef struct {
 	line   int
@@ -149,14 +208,14 @@ func checkAnchors(fsys driven.Filesystem, file string, content []byte, lines []L
 		findings = append(findings, Finding{
 			File: file, Line: a.line, Rule: "anchors",
 			Target: a.target, Reason: ReasonAnchorMissing,
-			Message: "Anker entspricht keinem Heading-Slug der Zieldatei",
+			Message: "Anker entspricht keinem Heading-Slug und keinem HTML-Anker der Zieldatei",
 		})
 	}
 	return findings
 }
 
-// slugsFor liefert die Slug-Menge der Zieldatei aus dem Cache bzw.
-// liest sie nach (nil = nicht lesbar → Modul schweigt).
+// slugsFor liefert die gültige Anker-Menge der Zieldatei aus dem Cache
+// bzw. liest sie nach (nil = nicht lesbar → Modul schweigt).
 func slugsFor(fsys driven.Filesystem, cache map[string]map[string]bool, a anchorRef, own []byte) map[string]bool {
 	if s, ok := cache[a.rel]; ok {
 		return s
@@ -170,7 +229,7 @@ func slugsFor(fsys driven.Filesystem, cache map[string]map[string]bool, a anchor
 		}
 		content = read
 	}
-	s := HeadingSlugs(content)
+	s := AnchorSet(content)
 	cache[a.rel] = s
 	return s
 }

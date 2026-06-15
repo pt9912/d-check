@@ -157,11 +157,11 @@ func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value st
 	if slugs == nil || slugs[frag] {
 		return nil // nicht lesbar → schweigen; Anker ok → kein Befund
 	}
-	return finding(ReasonAnchorMissing, "Anker entspricht keinem Heading-Slug der Zieldatei")
+	return finding(ReasonAnchorMissing, "Anker entspricht keinem Heading-Slug und keinem HTML-Anker der Zieldatei")
 }
 
-// codepathSlugs liest die Slug-Menge der Zieldatei über denselben
-// Cache wie das Modul anchors (nil = nicht lesbar).
+// codepathSlugs liest die gültige Anker-Menge der Zieldatei über
+// denselben Cache wie das Modul anchors (nil = nicht lesbar).
 func codepathSlugs(fsys driven.Filesystem, cache map[string]map[string]bool, rel string) map[string]bool {
 	if s, ok := cache[rel]; ok {
 		return s
@@ -171,7 +171,7 @@ func codepathSlugs(fsys driven.Filesystem, cache map[string]map[string]bool, rel
 		cache[rel] = nil
 		return nil
 	}
-	s := HeadingSlugs(content)
+	s := AnchorSet(content)
 	cache[rel] = s
 	return s
 }

@@ -114,3 +114,81 @@ func TestDiscoverFiles_PunktWurzel(t *testing.T) {
 		}
 	}
 }
+
+// DC-FA-ANCH-001.b — Inline-HTML-Anker: id an beliebigem Element,
+// name nur an <a>; wörtlich; außerhalb Fence/Inline-Code; data-id und
+// name an <area> zählen nicht.
+func TestHTMLAnchors(t *testing.T) {
+	content := []byte(
+		"# Heading Eins\n" +
+			"<a name=\"namea\"></a>\n" +
+			"<div id=\"DivId\">x</div>\n" +
+			"<span id='singleid'></span>\n" +
+			"<a name='singlename'></a>\n" +
+			"<area id=\"areaid\">\n" +
+			"<area name=\"areaname\"></area>\n" +
+			"<div data-id=\"datid\">x</div>\n" +
+			"`<a id=\"inlineid\"></a>`\n" +
+			"```\n<a id=\"fenceid\"></a>\n```\n",
+	)
+	got := htmlAnchors(content)
+	for _, want := range []string{"namea", "DivId", "singleid", "singlename", "areaid"} {
+		if !got[want] {
+			t.Errorf("HTML-Anker %q fehlt: %v", want, got)
+		}
+	}
+	for _, no := range []string{"areaname", "datid", "inlineid", "fenceid", "heading-eins"} {
+		if got[no] {
+			t.Errorf("HTML-Anker %q dürfte nicht existieren: %v", no, got)
+		}
+	}
+	set := AnchorSet(content)
+	if !set["heading-eins"] || !set["namea"] || !set["DivId"] {
+		t.Errorf("AnchorSet vereinigt Heading-Slugs und HTML-Anker nicht: %v", set)
+	}
+}
+
+// DC-FA-ANCH-001 (HTML-Anker) Happy/Boundary/Negative über Run:
+// Heading-Slug, <a name>, id; Negativ: name an <area>, Inline-Code,
+// Fence, Case-Mismatch (HTML wörtlich/case-sensitiv).
+func TestAnchorsHTMLModul(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"docs/a.md": "[h](b.md#echtes-heading)\n" +
+			"[na](b.md#abschnitt-2)\n" +
+			"[iddiv](b.md#Übersicht)\n" +
+			"[aid](b.md#zonen-id)\n" +
+			"[an](b.md#zone)\n" +
+			"[inl](b.md#inline-phantom)\n" +
+			"[fen](b.md#fence-phantom)\n" +
+			"[low](b.md#übersicht)\n",
+		"docs/b.md": "# Echtes Heading\n" +
+			"<a name=\"abschnitt-2\"></a>\n" +
+			"<div id=\"Übersicht\">Inhalt</div>\n" +
+			"<area name=\"zone\"></area>\n" +
+			"<area id=\"zonen-id\">\n" +
+			"`<div id=\"inline-phantom\">`\n" +
+			"```\n<div id=\"fence-phantom\">\n```\n",
+	})
+	res, err := Run(m, nil, Config{}, []string{"anchors"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, fmt.Sprintf("%d %s %s", f.Line, f.Target, f.Reason))
+	}
+	want := []string{
+		"5 b.md#zone anchor-missing",
+		"6 b.md#inline-phantom anchor-missing",
+		"7 b.md#fence-phantom anchor-missing",
+		"8 b.md#übersicht anchor-missing",
+	}
+	if len(got) != len(want) {
+		t.Fatalf("Befunde = %v, want %v", got, want)
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("Befund %d = %q, want %q", i, got[i], want[i])
+		}
+	}
+}
