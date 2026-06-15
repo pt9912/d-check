@@ -6,6 +6,18 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-022 — Inline-HTML-Anker als gültige Anker-Menge
+  ([`DC-FA-ANCH-001`](spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors)
+  Schärfung 0.12.0): das Modul `anchors` (und mittelbar `codepaths`)
+  akzeptiert zusätzlich zu Heading-Slugs die Inline-HTML-Anker der
+  Zieldatei — `id` an beliebigem Element und `name` an `<a>`
+  (GitHub-Parität, wörtlicher/case-sensitiver Vergleich). HTML in
+  Code-Auszeichnung (Fenced-Block oder Inline-Code) zählt nicht.
+  Abwärtskompatibel: reduziert Falsch-Befunde `anchor-missing`, erzeugt
+  nie neue.
+
 ## [0.8.0] — 2026-06-13
 
 Reichhaltige `--help` (Schärfung `DC-FA-CLI-001`, slice-021): die Hilfe
