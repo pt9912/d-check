@@ -7,8 +7,8 @@ ist unangetastet.
 **Gegenstand:** Uncommitteter Working-Tree-Stand: `spec/lastenheft.md`
 (`DC-FA-ANCH-001` auf 0.12.0), `spec/spezifikation.md` (neu
 §`DC-FA-ANCH-001.b`, fortgeschriebener §`DC-FA-CODE-001.a`-Anker-Bezug),
-`docs/plan/planning/in-progress/slice-022-html-anker.md` (seither aus
-`open/` dorthin verschoben), Roadmap.
+`docs/plan/planning/done/slice-022-html-anker.md` (Lifecycle
+`open/` → `in-progress/` → `done/`), Roadmap.
 
 **Skill:** [`.harness/skills/reviewer.md`](../../.harness/skills/reviewer.md)
 · **Datum:** 2026-06-15
