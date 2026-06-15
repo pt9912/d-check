@@ -10,16 +10,15 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-11-help ist abgeschlossen (siehe
-„Abgeschlossene Wellen"). Die nächste Welle wartet auf ihren Trigger
-(Change Request im Lastenheft oder Priorisierung durch den
-Auftraggeber).
+**welle-12-html-anker** (in Arbeit). slice-022 erweitert die gültige
+Anker-Menge um Inline-HTML-Anker
+([`DC-FA-ANCH-001`](../../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors)
+0.12.0); implementiert, Closure nach Gate-Beleg ausstehend.
 
 ## Nächste Wellen
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| welle-12-html-anker | Change Request [`DC-FA-ANCH-001`](../../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors) (Lastenheft 0.12.0): Inline-HTML-Anker | slice-022 | klein (Erweiterung des bestehenden `anchors`-Moduls; kein neuer Port/Adapter) |
 
 ## Meilensteine
 

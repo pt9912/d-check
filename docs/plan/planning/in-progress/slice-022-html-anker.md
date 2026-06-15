@@ -1,6 +1,6 @@
 # Slice slice-022: Inline-HTML-Anker im Modul `anchors`
 
-**Status:** open (Doc-Schicht erstellt; Implementierung nach Review).
+**Status:** in-progress (implementiert; Closure nach Gate-Beleg ausstehend).
 
 **Welle:** welle-12-html-anker (Trigger: Change Request des Auftraggebers
 — Falsch-Befunde `anchor-missing` auf manuell gesetzte HTML-Anker in der
@@ -38,15 +38,15 @@ dasselbe Anker-Verfahren nutzt, gilt die Erweiterung dort konsistent mit.
   Extraktion (`id` beliebig, `name` an `<a>`), wörtlicher Vergleich,
   konservativ/zeilenbasiert; die `codepaths`-Anker-Prüfung auf die
   gemeinsame Anker-Menge fortgeschrieben.
-- [ ] **Implementierung** in `internal/hexagon/core/anchors.go`:
-  Inline-HTML-Anker-Extraktion (fence-bewusst, wie die Heading-Extraktion);
-  Anker-Menge als Union aus Heading-Slugs (geslugged) und HTML-Ankern
-  (wörtlich); bestehender Datei-Cache (`slugsFor`) unverändert nutzbar.
-- [ ] **Tests** in `internal/hexagon/core/anchors_test.go`: die drei neuen
-  HTML-Akzeptanzkriterien (Happy/Boundary/Negative) plus Fence-Ausschluss
-  und Case-Sensitivität; bestehende Heading-Tests bleiben grün.
-- [ ] `make gates` grün; bei nutzersichtbarer Wirkung
-  [`CHANGELOG.md`](../../../../CHANGELOG.md) gepflegt.
+- [x] **Implementierung** in `internal/hexagon/core/anchors.go`:
+  `htmlAnchors` + gemeinsame `AnchorSet` (Union aus Heading-Slugs und
+  Inline-HTML-Ankern); fence-/inline-code-bewusst via `PreprocessMarkdown`;
+  `anchors` und `codepaths` nutzen beide `AnchorSet`.
+- [x] **Tests** in `internal/hexagon/core/anchors_test.go`: `TestHTMLAnchors`
+  und `TestAnchorsHTMLModul` (Happy/Boundary/Negative, Inline-Code-/Fence-
+  Ausschluss, `<area>`-Negativfall, `data-id`, Case-Sensitivität);
+  bestehende Heading-Tests grün.
+- [x] `make gates` grün; [`CHANGELOG.md`](../../../../CHANGELOG.md) (Unreleased) gepflegt.
 
 ## 3. Betroffene Artefakte
 
