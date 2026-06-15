@@ -3,11 +3,11 @@
 Doc-Referenz-Checker für Markdown-Dokumentation — deterministisch,
 seiteneffektfrei, ausgeliefert als Container-Image.
 
-**Status: released** — die Regelmodule `links`, `anchors`, `ids`,
-`matrix`, `external` und `codepaths` sind seit `v0.2.0` im
-GHCR-Image (Modul-Scope seit `v0.3.0`); `spans` und `hostpaths`
-(welle-06) folgen mit `v0.4.0`. Verbindlich ist das
-[Lastenheft](spec/lastenheft.md).
+**Status: released** — alle acht Regelmodule (`links`, `anchors`, `ids`,
+`matrix`, `codepaths`, `spans`, `hostpaths`, `external`) sind im
+GHCR-Image; jüngste Erweiterung: Inline-HTML-Anker im Modul `anchors`
+(`v0.9.0`). Verbindlich ist das [Lastenheft](spec/lastenheft.md); die
+Versionshistorie führt die [CHANGELOG.md](CHANGELOG.md).
 
 ## Was ist d-check?
 
@@ -17,7 +17,8 @@ Anforderung im [Lastenheft](spec/lastenheft.md):
 
 - `links` — lokale Link- und Bildreferenzen: Ziel existiert, kein
   Repo-Escape ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
-- `anchors` — Heading-Anker nach GitHub-Slug-Verfahren
+- `anchors` — Heading-Anker (GitHub-Slug-Verfahren) und Inline-HTML-Anker
+  (`<a name>`, `id=`)
   ([`DC-FA-ANCH-001`](spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors))
 - `ids` — Linkpflicht für Kennungen (z. B. `ADR-NNNN`) nach
   deklarierten Mustern ([`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids))
@@ -68,10 +69,12 @@ statt zur Review-Meinung.
 Dabei gilt: **berichten, nie reparieren.** d-check ist ein reines
 Lese-Tool ([`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));
 deterministische Befunde werden behoben, nicht unterdrückt. Einen
-Opt-out-Marker gibt es nur dort, wo ein nicht existierendes Ziel
-dokumentierte Absicht sein kann (`d-check:ignore`, ausschließlich im
-Modul `codepaths` —
-[`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)).
+Opt-out-Marker gibt es nur dort, wo ein nicht existierendes Ziel oder
+eine illustrative Kennung dokumentierte Absicht sein kann
+(`d-check:ignore`, zeilenweise) — er stellt ausschließlich die Module
+`codepaths` und `ids` (bei `link-policy: always`) still
+([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
+[`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)).
 
 ## Was macht es vertrauenswürdig?
 
@@ -106,7 +109,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.2.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.9.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
