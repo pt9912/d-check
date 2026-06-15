@@ -1,6 +1,6 @@
 # Slice slice-022: Inline-HTML-Anker im Modul `anchors`
 
-**Status:** in-progress (implementiert; Closure nach Gate-Beleg ausstehend).
+**Status:** done.
 
 **Welle:** welle-12-html-anker (Trigger: Change Request des Auftraggebers
 — Falsch-Befunde `anchor-missing` auf manuell gesetzte HTML-Anker in der
@@ -89,5 +89,32 @@ dasselbe Anker-Verfahren nutzt, gilt die Erweiterung dort konsistent mit.
 ## 5. Lifecycle
 
 `open/` → `next/` → `in-progress/` → `done/` per reinem `git mv`
-(`AGENTS.md` §3.3). Closure-Notiz (§7) folgt in `done/` mit dem
-Commit-Hash der Umsetzung.
+(`AGENTS.md` §3.3). Closure-Notiz (§6) in `done/` mit dem Commit-Hash
+der Umsetzung.
+
+## 6. Closure-Notiz (nach `done/`)
+
+**Umsetzung:** [`DC-FA-ANCH-001`](../../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors)-Schärfung
+(Lastenheft 0.12.0) + Spezifikation
+§[`DC-FA-ANCH-001.b`](../../../../spec/spezifikation.md#dc-fa-anch-001b--inline-html-anker);
+Commit `6d402b8` (`htmlAnchors` + gemeinsame `AnchorSet`,
+fence-/inline-code-bewusst via `PreprocessMarkdown`; `anchors` und
+`codepaths` teilen die Anker-Menge). Zwei Review-Läufe (CR + Code) mit
+je R1, beide grün disponiert. `make gates` grün (Coverage 94,80 %),
+Release **v0.9.0**.
+
+- **Was hat funktioniert:** `PreprocessMarkdown` lieferte Fence- und
+  Inline-Code-Ausschluss kostenneutral; die gemeinsame `AnchorSet`
+  machte `anchors` und `codepaths` an einer Stelle konsistent (geteilter
+  Cache). Die Erweiterung ist strikt monoton — sie kann nur
+  Falsch-Befunde entfernen, nie neue erzeugen.
+- **Lerneintrag:** Das Dogfooding fing zweimal Fehler in den **eigenen**
+  Review-Artefakten (toter Inline-Code-Pfad nach `git mv`, Prosa-Kennung
+  ohne Backticks) — die Selbstprüfung reicht bis in die Reviews.
+  Nebenbefund: `ids`-`exempt-paths` deckt nur Inline-Code, nicht Prosa —
+  Kandidat für einen eigenen Change-Request.
+- **Folge-Slices:** keine.
+
+## 7. Sub-Area-Modus-Begründung
+
+Alle berührten Sub-Areas GF (Spec-/Code-/Doku-Arbeit; Greenfield-Default).
