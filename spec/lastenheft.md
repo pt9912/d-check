@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.11.0
+**Version:** 0.12.0
 
 **Status:** Draft
 
@@ -260,12 +260,17 @@ pro Linkziel entsteht genau ein Befund.
 ### DC-FA-ANCH-001 — Heading-Anker-Validierung (Modul `anchors`)
 
 **Beschreibung:** Links mit Fragment (`ziel.md#anker` sowie `#anker`
-innerhalb derselben Datei) werden gegen die tatsächlichen Headings der
-Zieldatei geprüft. Die Anker-Bildung folgt dem GitHub-Slug-Verfahren
-(Kleinschreibung, Sonderzeichen-Entfernung, Leerzeichen → `-`,
-Duplikat-Suffixe `-1`, `-2`, …). Headings aller Ebenen (`#`–`######`)
-zählen; bei gleichlautenden Headings erhält das erste Vorkommen in
-Dokumentreihenfolge den Basis-Slug, weitere die Suffixe `-1`, `-2`, ….
+innerhalb derselben Datei) werden gegen die **gültige Anker-Menge** der
+Zieldatei geprüft. Zu ihr zählen (1) die Heading-Slugs nach dem
+GitHub-Slug-Verfahren (Kleinschreibung, Sonderzeichen-Entfernung,
+Leerzeichen → `-`, Duplikat-Suffixe `-1`, `-2`, …; Headings aller Ebenen
+`#`–`######`, das erste gleichlautende Vorkommen in Dokumentreihenfolge
+trägt den Basis-Slug, weitere die Suffixe) und (2) die **Inline-HTML-Anker**
+der Datei: der Wert eines `id`-Attributs an einem beliebigen HTML-Element
+sowie der Wert eines `name`-Attributs an einem `<a>`-Element
+(GitHub-Render-Verhalten). HTML-Anker werden **wörtlich** verglichen (kein
+Slug, keine Kleinschreibung). Ein Fragment gilt als aufgelöst, wenn es
+einen Heading-Slug **oder** einen Inline-HTML-Anker der Zieldatei trifft.
 Existiert die Zieldatei nicht, wird die Anker-Prüfung für diesen Link
 übersprungen — der Befund kommt vom Modul `links`
 ([`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)).
@@ -276,8 +281,15 @@ Existiert die Zieldatei nicht, wird die Anker-Prüfung für diesen Link
 - **Boundary:** Given zwei gleichlautende Headings „Beispiel" in der Zieldatei, when ein Link auf `#beispiel-1` zeigt, then kein Befund (Duplikat-Suffix korrekt aufgelöst).
 - **Boundary:** Given ein Link `fehlt.md#x` auf eine nicht existierende Datei, when die Module `links` und `anchors` aktiv sind, then genau ein Befund — aus `links`; das Modul `anchors` schweigt.
 - **Negative:** Given ein Link auf `a.md#gibt-es-nicht`, when das Modul läuft, then ein Befund mit Grund „Anker nicht gefunden".
+- **Happy Path (HTML-Anker):** Given ein Link `a.md#abschnitt-2` und in `a.md` der Inline-HTML-Anker `<a name="abschnitt-2"></a>` (ohne gleichnamigen Heading), when das Modul läuft, then kein Befund.
+- **Boundary (HTML-Anker):** Given in der Zieldatei `<div id="Übersicht">` und ein Link auf `#Übersicht`, when das Modul läuft, then kein Befund (HTML-Anker wörtlich/case-sensitiv, nicht geslugged).
+- **Negative (HTML-Anker):** Given `id="x"` ausschließlich innerhalb einer Code-Auszeichnung (Fenced-Code-Block oder Inline-Code-Span, nicht gerendert) und ein Link auf `#x` ohne passenden Heading-Slug oder HTML-Anker außerhalb von Code-Auszeichnung, when das Modul läuft, then ein Befund mit Grund „Anker nicht gefunden".
 
-**Out-of-Scope:** Anker in HTML-Tags (`<a name=…>`, `id=…`) als Linkziele.
+**Out-of-Scope:**
+
+- HTML-Anker in über mehrere Zeilen verteilten Tags (Erkennung ist konservativ und zeilenbasiert).
+- `name`-Attribut an anderen Elementen als `<a>` (GitHub honoriert `name` nur dort).
+- Prüfung von HTML als eigenständigem Dateiformat — bleibt global Out-of-Scope (§5); erkannt werden ausschließlich Inline-HTML-Anker **innerhalb von Markdown-Dateien**.
 
 ---
 
@@ -389,8 +401,8 @@ umschließende Anführungszeichen und schließende Satzzeichen entfallen
 (`` `../foo.md,` `` prüft `../foo.md`). Das Ziel muss nach <!-- d-check:ignore (Beispiel im Anforderungstext) -->
 Pfadauflösung existieren und innerhalb der Repository-Wurzel liegen;
 Fragment-Teile (`#…`) werden abgetrennt, und bei Markdown-Zielen wird
-der Anker zusätzlich gegen die Headings der Zieldatei geprüft —
-gleiches Slug-Verfahren wie
+der Anker zusätzlich gegen die gültige Anker-Menge der Zieldatei geprüft
+(Heading-Slugs und Inline-HTML-Anker) — gleiches Verfahren wie
 [`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors).
 Werte mit Whitespace,
 Platzhalter-/Glob-Zeichen oder Ellipsen gelten nicht als Pfad
@@ -593,7 +605,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 - Build-Reproduzierbarkeits-Prüfung (Funktionalität von `repro-check.sh`).
 - Mathematik-/Formel-Validierung (MathJax-Rendering-Checks aus `euler-fourier-hilbert`) — Kandidat für eine spätere Version, nicht Teil von 0.x.
 - Automatisches Reparieren kaputter Referenzen (Auto-Fix) — das Tool berichtet nur.
-- Prüfung von Nicht-Markdown-Formaten (reStructuredText, AsciiDoc, HTML, Jupyter-Notebooks).
+- Prüfung von Nicht-Markdown-Formaten (reStructuredText, AsciiDoc, HTML, Jupyter-Notebooks) als eigenständige Dateien. Inline-HTML-Anker *innerhalb* von Markdown sind hiervon ausgenommen und werden geprüft ([`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors)).
 - Rechtschreib-, Stil- oder Markdown-Lint-Prüfungen (dafür existieren etablierte Tools).
 
 ## 6. Glossar
@@ -615,6 +627,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.12.0 | 2026-06-15 | Change Request (Auftraggeber): `DC-FA-ANCH-001` erweitert — Inline-HTML-Anker innerhalb von Markdown zählen zur gültigen Anker-Menge (`id` an beliebigem Element, `name` an `<a>`; GitHub-Parität, wörtlicher Vergleich). Hebt die bisherige HTML-Anker-Out-of-Scope-Zeile auf; Abgrenzung zu §5 (HTML als Dateiformat bleibt out-of-scope) explizit. Gilt mittelbar auch für `codepaths` (geteiltes Anker-Verfahren). Anlass: Falsch-Befunde `anchor-missing` auf manuell gesetzte HTML-Anker in der Doku | slice-022 |
 | 0.11.0 | 2026-06-13 | Schärfung `DC-FA-CLI-001` (Auftraggeber): neues Akzeptanzkriterium für `--help` — die Hilfe nennt die Synopsis `d-check [optionen] [pfad]`, beschreibt das Pfad-Argument (Scan-Wurzel, Default cwd) und verweist für das Config-Format auf `--print-config` (kein Format-Duplikat). Anlass: die nackte `flag`-Default-Usage verschwieg das Pfad-Argument | slice-021 |
 | 0.10.0 | 2026-06-13 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-006` — Option `--suggest-config` leitet die `ids`-Config aus benannten Autoritäts-Dokumenten ab (definierte Kennungen → Muster + target, Round-Trip-Garantie; opt-in-Module nach Signal; Ausgabe-only, read-only). Dazu Schärfung von `DC-FA-ID-001`: das Muster-Ableitungs-Out-of-Scope gilt für die **Prüfung**; ein advisory Scaffold-Modus darf aus benannten Autoritäts-Quellen ableiten. Anlass: Adoptions-Reibung — neue Repos brauchen einen treffsicheren Config-Start statt eines rein statischen Gerüsts | slice-020 |
 | 0.9.0 | 2026-06-13 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-005` — Option `--print-config` gibt ein statisches, kommentiertes `.d-check.yml`-Startgerüst auf stdout aus (kein Repo-Zugriff, kein Schreiben — read-only-Vertrag bleibt; Umleiten via `> .d-check.yml` macht der Aufrufer). Anlass: Adoptions-Reibung in neuen Repos ohne Config; macht zugleich die verfügbaren Optionen sichtbar. Ableitung aus Repo-Inhalt bewusst nicht Teil (späterer eigener Modus) | slice-019 |

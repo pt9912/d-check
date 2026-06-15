@@ -1,6 +1,6 @@
 # Spezifikation — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-10.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-15.
 
 **Bezug zum Lastenheft:** Diese Spezifikation präzisiert die in
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
@@ -173,6 +173,33 @@ die Zieldatei eines `ziel.md#anker`-Links nicht, schweigt `anchors`
 (Befund kommt von `links`,
 [`DC-FA-ANCH-001`](lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors)).
 
+### DC-FA-ANCH-001.b — Inline-HTML-Anker
+
+Zur **gültigen Anker-Menge** einer Datei zählen — zusätzlich zu den
+Heading-Slugs aus
+[DC-FA-ANCH-001.a](#dc-fa-anch-001a--github-slug-algorithmus) — ihre
+Inline-HTML-Anker. **Eingabe:** Dateiinhalt. **Erkannt** werden,
+zeilenbasiert und außerhalb von Fenced-Code-Blöcken **und
+Inline-Code-Spans** (GitHub rendert HTML in Code-Auszeichnung nicht als
+Sprungziel — es bleibt literaler Text; gleiche Code-Behandlung wie die
+Heading-Extraktion):
+
+1. der Wert eines `id`-Attributs an einem beliebigen HTML-Element;
+2. der Wert eines `name`-Attributs an einem `<a>`-Element — der Tag-Name
+   wird exakt verglichen (`a` mit Wortgrenze, kein Präfix-Treffer auf
+   `<area>`, `<abbr>` o. ä.).
+
+Attributwerte stehen in doppelten oder einfachen Anführungszeichen.
+HTML-Anker werden **wörtlich** in die Anker-Menge aufgenommen (kein
+Slug, keine Kleinschreibung — HTML-Fragment-Auflösung ist
+case-sensitiv). Der Fragment-Vergleich (nach RFC-3986-Dekodierung)
+trifft, wenn das Fragment einem Heading-Slug **oder** einem
+Inline-HTML-Anker der Zieldatei entspricht. Über Zeilengrenzen
+verteilte Tags werden nicht erkannt (konservativ). Eine zu groß
+geratene Anker-Menge führt nur dazu, dass das Modul schweigt (nie ein
+Falsch-Befund); die permissive Richtung ist daher bewusst und mit dem
+Schweige-Charakter des Moduls konsistent.
+
 ### DC-FA-ID-001.a — Kennungs-Prüfung
 
 Pro Zeile (außerhalb Fence/Inline-Code) werden die konfigurierten
@@ -291,9 +318,11 @@ Vorverarbeitung entfernt Inline-Code gerade. **Schritte:**
 5. Auflösung wie im Modul `links` (inkl. RFC-3986-Dekodierung):
    Fragment abtrennen; Escape → `repo-escape`; fehlendes Ziel →
    `codepath-missing`. Trägt der Wert ein Fragment und ist das Ziel
-   eine Markdown-Datei, wird der Anker gegen die Heading-Slugs der
-   Zieldatei geprüft (Verfahren und Slug-Cache wie
-   [DC-FA-ANCH-001.a](#dc-fa-anch-001a--github-slug-algorithmus);
+   eine Markdown-Datei, wird der Anker gegen die gültige Anker-Menge
+   der Zieldatei geprüft (Heading-Slugs und Inline-HTML-Anker; Verfahren
+   und Cache wie
+   [DC-FA-ANCH-001.a](#dc-fa-anch-001a--github-slug-algorithmus) /
+   [DC-FA-ANCH-001.b](#dc-fa-anch-001b--inline-html-anker);
    Treffer fehlt → `anchor-missing`). Nicht lesbare Ziele: das Modul
    schweigt zum Anker (Existenz wurde bereits geprüft).
 
@@ -620,5 +649,6 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-12 | Modul `hostpaths` normiert (§[`DC-FA-HOST-001.a`](spezifikation.md#dc-fa-host-001a--host-pfad-erkennung): Prosa inkl. Inline-Code, Fences ausgenommen; Unix-Präfixliste konfigurierbar via `hostpaths.prefixes`, Windows-/UNC-Muster fest; Wortgrenzen-Vorbedingung, Satzzeichen-Normalisierung; bekannte Grenze Repo-Verzeichnis mit Präfix-Namen dokumentiert); Schema + Grund-Code ergänzt | slice-016 |
 | 2026-06-12 | Modul `spans` normiert (§[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung): `span-unclosed` absatzweise mit Folgezeichen-Bedingung und 30-Zeichen-Kappung, `span-nested-link` lexikalisch auf vorverarbeiteten Zeilen mit 40-Zeichen-Kappung; kein Opt-out, nur generischer `scope`); Grund-Codes ergänzt | slice-015 |
 | 2026-06-12 | Modul-lokaler Scan-Scope normiert (§[`DC-FA-CONF-002.a`](spezifikation.md#dc-fa-conf-002a--effektiver-scan-scope-pro-modul): `<modul>.scope` ersetzt den globalen Scope je Modul, `roots` Pflicht innerhalb `scope`, Lauf über die Vereinigungsmenge mit Einmal-Lese-Garantie, Zusammenfassung zählt die Union); Schema um `<modul>.scope.roots`/`.ignore` | slice-017 |
+| 2026-06-15 | §[`DC-FA-ANCH-001.b`](spezifikation.md#dc-fa-anch-001b--inline-html-anker) ergänzt: Inline-HTML-Anker (`id` an beliebigem Element, `name` an `<a>`) zählen wörtlich zur gültigen Anker-Menge; konservativ, zeilenbasiert, außerhalb Fences. §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) fortgeschrieben: `codepaths`-Anker-Prüfung gegen die gemeinsame Anker-Menge statt nur Heading-Slugs | slice-022 |
 | 2026-06-12 | Scan-Härtung aus der pkcs11-course-Adoption (slice-014): `scan.ignore`-Muster prunen den Verzeichnis-Abstieg (vollständig ignorierte Teilbäume werden nicht betreten — unlesbare ignorierte Verzeichnisse wie root-eigene Build-Reste sind kein Laufzeitfehler mehr); `SKIP_DIRS` um `.gradle` ergänzt (Parität zur JS-Alt-Familie) | slice-014 |
 | 2026-06-12 | Inline-Code-Erkennung absatzweise statt zeilenweise (§[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 2): mehrzeilige Code-Spans gemäß CommonMark, Absatzgrenzen Leerzeile/Fence, ungeschlossene Folge literal. Anlass: [`DC-QA-04`](lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Gegentest u-boot — über Zeilenumbrüche gebrochene Befehls-Spans invertierten die Backtick-Parität der Folgezeile und erzeugten False-Positive-`id-unlinked`-Befunde auf korrekt verlinkten Kennungen. Zeilenbasierte **Link**-Extraktion (Schritt 3) bleibt normative Grenze | slice-012 |
