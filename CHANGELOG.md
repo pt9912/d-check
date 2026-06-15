@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.9.0] — 2026-06-15
+
 ### Added
 
 - slice-022 — Inline-HTML-Anker als gültige Anker-Menge
