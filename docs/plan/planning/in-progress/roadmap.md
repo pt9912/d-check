@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-13.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-15.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -19,6 +19,7 @@ Auftraggeber).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
+| welle-12-html-anker | Change Request [`DC-FA-ANCH-001`](../../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors) (Lastenheft 0.12.0): Inline-HTML-Anker | slice-022 | klein (Erweiterung des bestehenden `anchors`-Moduls; kein neuer Port/Adapter) |
 
 ## Meilensteine
 
