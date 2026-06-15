@@ -96,7 +96,10 @@ func HeadingSlugs(content []byte) map[string]bool {
 var (
 	// htmlTagRE erfasst öffnende HTML-Tags (Tag-Name + Attribut-Teil)
 	// auf vorverarbeiteten Zeilen; Inline-Code ist dort bereits geleert.
-	htmlTagRE = regexp.MustCompile(`<([a-zA-Z][a-zA-Z0-9]*)([^>]*)>`)
+	// Der Attribut-Teil erlaubt gequotete Werte (die ein `>` enthalten
+	// dürfen), damit ein literales `>` im Attribut den Tag nicht
+	// vorzeitig beendet.
+	htmlTagRE = regexp.MustCompile(`<([a-zA-Z][a-zA-Z0-9]*)((?:"[^"]*"|'[^']*'|[^>'"])*)>`)
 	// htmlAttrIDRE/htmlAttrNameRE lesen den Wert eines id- bzw.
 	// name-Attributs aus dem Attribut-Teil (doppelte oder einfache
 	// Anführungszeichen; Attributname an Wortgrenze, kein Treffer in
@@ -128,7 +131,9 @@ func htmlAnchors(content []byte) map[string]bool {
 }
 
 // attrValue liefert den erfassten Attributwert (doppelte vor einfachen
-// Anführungszeichen) oder "" (kein Treffer / leerer Wert).
+// Anführungszeichen) oder "". Ein leerer Wert (`id=""`) ist von „kein
+// Treffer" nicht unterscheidbar und erzeugt bewusst keinen Anker —
+// ein leeres Fragment ist als Sprungziel ohnehin nutzlos.
 func attrValue(re *regexp.Regexp, attrs string) string {
 	m := re.FindStringSubmatch(attrs)
 	if m == nil {

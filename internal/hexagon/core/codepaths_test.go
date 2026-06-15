@@ -79,6 +79,24 @@ func TestCodepathsNormalisierungUndAnker(t *testing.T) {
 	}
 }
 
+// §DC-FA-CODE-001.a — codepaths prüft den Anker gegen die gemeinsame
+// Anker-Menge inkl. Inline-HTML-Anker (slice-022): Treffer auf eine
+// HTML-id → kein Befund, Fehlschlag → anchor-missing.
+func TestCodepathsHTMLAnker(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"docs/a.md": "Siehe `./b.md#html-id` und `./b.md#fehlt`.\n",
+		"docs/b.md": "<div id=\"html-id\">Inhalt</div>\n",
+	})
+	res, err := Run(m, nil, Config{}, []string{"codepaths"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 || res.Findings[0].Reason != ReasonAnchorMissing ||
+		res.Findings[0].Target != "./b.md#fehlt" || res.Findings[0].Rule != "codepaths" {
+		t.Fatalf("Befunde = %+v (genau ein anchor-missing ./b.md#fehlt erwartet)", res.Findings)
+	}
+}
+
 // classifyCodepath: konservative Erkennung im Detail.
 func TestClassifyCodepath(t *testing.T) {
 	roots := []string{"docs/", "tools"}

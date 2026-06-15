@@ -125,6 +125,7 @@ func TestHTMLAnchors(t *testing.T) {
 			"<div id=\"DivId\">x</div>\n" +
 			"<span id='singleid'></span>\n" +
 			"<a name='singlename'></a>\n" +
+			"<a title=\"x > y\" name=\"gtinattr\"></a>\n" +
 			"<area id=\"areaid\">\n" +
 			"<area name=\"areaname\"></area>\n" +
 			"<div data-id=\"datid\">x</div>\n" +
@@ -132,7 +133,7 @@ func TestHTMLAnchors(t *testing.T) {
 			"```\n<a id=\"fenceid\"></a>\n```\n",
 	)
 	got := htmlAnchors(content)
-	for _, want := range []string{"namea", "DivId", "singleid", "singlename", "areaid"} {
+	for _, want := range []string{"namea", "DivId", "singleid", "singlename", "gtinattr", "areaid"} {
 		if !got[want] {
 			t.Errorf("HTML-Anker %q fehlt: %v", want, got)
 		}
@@ -145,6 +146,26 @@ func TestHTMLAnchors(t *testing.T) {
 	set := AnchorSet(content)
 	if !set["heading-eins"] || !set["namea"] || !set["DivId"] {
 		t.Errorf("AnchorSet vereinigt Heading-Slugs und HTML-Anker nicht: %v", set)
+	}
+}
+
+// DC-FA-ANCH-001 — HTML-Anker innerhalb derselben Datei (`#frag` auf
+// eigene id/name), plus Negativfall.
+func TestAnchorsHTMLSelbeDatei(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"docs/a.md": "<a name=\"hier\"></a>\n" +
+			"<div id=\"dort\">x</div>\n" +
+			"[ok1](#hier)\n" +
+			"[ok2](#dort)\n" +
+			"[weg](#nirgends)\n",
+	})
+	res, err := Run(m, nil, Config{}, []string{"anchors"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 || res.Findings[0].Reason != ReasonAnchorMissing ||
+		res.Findings[0].Target != "#nirgends" {
+		t.Fatalf("Befunde = %+v (genau ein anchor-missing #nirgends erwartet)", res.Findings)
 	}
 }
 
