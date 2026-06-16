@@ -1,6 +1,6 @@
 # Slice slice-023: `ids`-Ventile gelten auch für nackte Vorkommen
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-13-ventil-prosa (Trigger: reproduzierter Fremd-Repo-Befund,
 Priorisierung durch den Auftraggeber im Dialog 2026-06-16).
@@ -66,7 +66,7 @@ Datei, nicht nur ihre Backtick-Vorkommen.
   Befunde in explizit ausgenommenen Dateien/Zeilen.
 - [x] **Doku-Nachzug** (`config.go`-Kommentar, `docs/user/operations.md`)
   von der „nur `always`"-Kopplung gelöst.
-- [ ] `make gates` grün;
+- [x] `make gates` grün;
   [`CHANGELOG.md`](../../../../CHANGELOG.md); Closure-Notiz mit
   Steering-Loop-Lerneintrag.
 
@@ -120,4 +120,42 @@ Greenfield-Default der Modus-Tabelle).
 
 ## 8. Closure-Notiz (nach `done/`)
 
-*(folgt nach `make gates` grün und Move nach `done/`.)*
+**Umsetzung:** Vertrag + Spezifikation (Commit `c785ed7`), `ids`-Code +
+Tests (`873eab5`), Doku + Review-Report + Slice (`91e70fd`); Review R1
+verbesserte den Code vor der Closure (geteilte Exemption-Schicht,
+gehoistetes `exempt-paths`, geschlossene Testlücke). `make gates` grün
+(52 Dateien / 0 Befunde, Coverage 94,90 %).
+
+**Diagnose (der eigentliche Wert):** Der Befund kam als Fremd-Repo-Report
+„nacktes Vorkommen trotz `exempt-paths`". Die Eingrenzung schloss
+nacheinander die naheliegenden Ursachen aus — Glob-Syntax (jede
+Schreibweise scheiterte), Pfadform (emittierter Pfad repo-relativ ohne
+`./`), Versions-Regression (v0.8.0 ≡ v0.9.0 im Pfad) — und legte erst
+dann die strukturelle Ursache frei: zwei Prüfpfade (`checkIDLine` für
+nackte Prosa, `alwaysLineFindings` für Inline-Code), von denen nur der
+zweite die Ventile konsultierte. Lokaler Vorher/Nachher-Beweis am
+gebauten Image: derselbe exempte Fall 1 → 0 Befunde.
+
+- **Was hat funktioniert:** Den Befund am Quell-Image zu *reproduzieren*
+  und schichtweise auszuschließen, statt der ersten Glob-Hypothese zu
+  folgen — die Ursache lag eine Ebene tiefer als der Report andeutete.
+  Und: den Fix vom eigenen `doc-check`-Gate verifizieren zu lassen (die
+  exempten Review-Reports blieben bei 0 Befunden).
+- **Anders als geplant:** Der Review (R1) deckte auf, dass die erste
+  Implementierung das `d-check:ignore`-Ventil an *zwei* Stellen prüfte —
+  derselbe Defekt-Typ (Pfad-Asymmetrie), den der Slice behob, drohte als
+  Wartungsfalle zurückzukehren. Aufgelöst zu einer geteilten
+  `ignoreLines`-Map.
+- **Steering-Loop-Lerneintrag (geschärfte Regel):** Ein Ventil, das nur
+  *einen* von mehreren Prüfpfaden eines Moduls bedient, ist ein
+  Blindfleck — „Datei ausgenommen" muss die ganze Datei meinen, sonst
+  hängt die Wirkung an einer für den Nutzer unsichtbaren Form-Unterscheidung
+  (nackt vs. Backtick). Geschärft: die Ventile sind jetzt ein
+  Ganzdatei-/Ganzzeilen-Carve-out über *beide* Pfade
+  ([`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)
+  0.13.0), als geteilte Exemption-Schicht implementiert, damit die zwei
+  Pfade nicht erneut divergieren. Abwärtskompatibel
+  ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)):
+  Configs ohne gesetzte Ventile byte-identisch.
+- **Folge-Slices:** keine. Fremd-Repos profitieren, sobald sie die
+  Release-Version pinnen (kein Eingriff in den geprüften Repos nötig).

@@ -10,13 +10,10 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-13-ventil-prosa** (aktiv, Start 2026-06-16). Trigger:
-reproduzierter Fremd-Repo-Befund + Priorisierung durch den Auftraggeber.
-Einziger Slice [slice-023](slice-023-ventil-prosa.md): die `ids`-Ventile
-`exempt-paths` und `d-check:ignore` gelten auch für nackte
-Fließtext-Vorkommen, nicht nur für die `always`-Inline-Code-Vorkommen
-([`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)
-0.13.0).
+**Keine aktive Welle.** welle-13-ventil-prosa ist abgeschlossen (siehe
+„Abgeschlossene Wellen"). Die nächste Welle wartet auf ihren Trigger
+(Change Request im Lastenheft oder Priorisierung durch den
+Auftraggeber).
 
 ## Nächste Wellen
 
@@ -63,6 +60,7 @@ flowchart LR
 | welle-10-config-ableitung | 2026-06-13 | [slice-020 §7](../done/slice-020-suggest-config.md#7-closure-notiz-nach-done); Option `--suggest-config` leitet `ids`-Muster aus Autoritäts-Quellen ab ([`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) 0.10.0, [`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)-Schärfung), read-only; Korpora-Gegentest dokumentiert (d-check round-trippt, b-trace zeigt die Heading-Grenze) |
 | welle-11-help | 2026-06-13 | [slice-021 §7](../done/slice-021-help-usage.md#7-closure-notiz-nach-done); reichhaltige `--help` (Synopsis, `[pfad]`-Argument, Config-Pointer auf `--print-config`) — Schärfung [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel) 0.11.0 |
 | welle-12-html-anker | 2026-06-15 | [slice-022 §6](../done/slice-022-html-anker.md#6-closure-notiz-nach-done); Inline-HTML-Anker als gültige Anker-Menge ([`DC-FA-ANCH-001`](../../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors) 0.12.0), `anchors`+`codepaths` via gemeinsame `AnchorSet`; zwei Review-Läufe (CR+Code, je R1); Minor-Release **v0.9.0** auf GHCR (Run `27541267343` grün in 2m2s), Digest-Pin `ghcr.io/pt9912/d-check@sha256:5bccf9fb3d1c54639dec3a541771d2ea43db9a0c1c58c28b3f12f20d38133d1b` |
+| welle-13-ventil-prosa | 2026-06-16 | [slice-023 §8](../done/slice-023-ventil-prosa.md#8-closure-notiz-nach-done); die `ids`-Ventile `exempt-paths`/`d-check:ignore` gelten für nackte Fließtext-Vorkommen, nicht nur Inline-Code ([`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) Change Request 0.13.0), als geteilte Exemption-Schicht; Review R1 (1 MEDIUM/4 LOW disponiert); Minor-Release **v0.10.0** (GHCR-Digest-Pin nach Run-Abschluss nachgetragen) |
 
 ## Historische Trigger-Verschiebungen
 
