@@ -5,8 +5,9 @@ seiteneffektfrei, ausgeliefert als Container-Image.
 
 **Status: released** — alle acht Regelmodule (`links`, `anchors`, `ids`,
 `matrix`, `codepaths`, `spans`, `hostpaths`, `external`) sind im
-GHCR-Image; jüngste Erweiterung: Inline-HTML-Anker im Modul `anchors`
-(`v0.9.0`). Verbindlich ist das [Lastenheft](spec/lastenheft.md); die
+GHCR-Image; jüngste Erweiterung: die `ids`-Ventile `exempt-paths` und
+`d-check:ignore` gelten für nackte Fließtext-Vorkommen, nicht nur
+Inline-Code (`v0.10.0`). Verbindlich ist das [Lastenheft](spec/lastenheft.md); die
 Versionshistorie führt die [CHANGELOG.md](CHANGELOG.md).
 
 ## Was ist d-check?
@@ -72,7 +73,7 @@ deterministische Befunde werden behoben, nicht unterdrückt. Einen
 Opt-out-Marker gibt es nur dort, wo ein nicht existierendes Ziel oder
 eine illustrative Kennung dokumentierte Absicht sein kann
 (`d-check:ignore`, zeilenweise) — er stellt ausschließlich die Module
-`codepaths` und `ids` (bei `link-policy: always`) still
+`codepaths` und `ids` still
 ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
 [`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)).
 
@@ -109,7 +110,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.9.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.10.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
