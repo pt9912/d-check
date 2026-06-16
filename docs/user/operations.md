@@ -62,14 +62,21 @@ ids:
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
 ```
 
-Zwei Ventile halten `always` treffsicher:
+Zwei Ventile nehmen eine Datei bzw. Zeile von der Linkpflicht eines
+Musters aus — für **alle** Vorkommen (nackt im Fließtext wie in
+Inline-Code) und unabhängig von der `link-policy`:
 
-- **`exempt-paths`** (Glob-Liste, Syntax wie `scan.ignore`): Dateien,
-  in denen die strenge Regel nicht gilt — typischerweise literal-schwere
-  Artefakte wie Changelogs oder Review-Reports.
+- **`exempt-paths`** (Glob-Liste, Syntax wie `scan.ignore`): Dateien
+  ohne Linkpflicht für das Muster — typischerweise literal-schwere
+  Artefakte wie Changelogs oder Review-Reports. Gilt gleich, ob die
+  Kennung dort nackt oder in Backticks steht.
 - **`d-check:ignore`** (HTML-Kommentar auf der Zeile, Begründung
-  empfohlen): nimmt eine Zeile aus — für bewusst illustrative
+  empfohlen): nimmt die ganze Zeile aus — für bewusst illustrative
   Beispiel-Kennungen. Der Marker wirkt auf `ids` und `codepaths`.
+
+Beide Ventile gelten auch unter der Default-Politik `prose`: eine nackte
+Kennung in einem ausgenommenen Artefakt (etwa einem Review-Report) lässt
+sich so stummschalten, ohne `always` zu aktivieren.
 
 **Bewusst opt-in:** Der Default bleibt `prose`, damit bestehende
 Konfigurationen byte-identisch laufen und kein Repo ungefragt rote

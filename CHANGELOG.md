@@ -6,6 +6,22 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.10.0] — 2026-06-16
+
+### Changed
+
+- slice-023 — die `ids`-Ventile `exempt-paths` und `d-check:ignore`
+  gelten jetzt für **alle** Vorkommen eines Musters — nackt im Fließtext
+  **wie** in Inline-Code — und unabhängig von der `link-policy`
+  ([`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)
+  Change Request 0.13.0). Bisher griffen beide nur auf die
+  `always`-Inline-Code-Vorkommen; eine nackte Kennung in einer
+  `exempt-paths`-Datei (oder auf einer `d-check:ignore`-Zeile) wurde
+  weiterhin als `id-unlinked` gemeldet. Jetzt ein Ganzdatei- bzw.
+  Ganzzeilen-Carve-out. Abwärtskompatibel: Configs ohne gesetzte Ventile
+  sind byte-identisch; die Wirkung geht nur in Richtung *weniger* Befunde
+  in explizit ausgenommenen Dateien/Zeilen.
+
 ## [0.9.0] — 2026-06-15
 
 ### Added

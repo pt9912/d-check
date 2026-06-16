@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-15.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-16.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -10,10 +10,13 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-12-html-anker ist abgeschlossen (siehe
-„Abgeschlossene Wellen"). Die nächste Welle wartet auf ihren Trigger
-(Change Request im Lastenheft oder Priorisierung durch den
-Auftraggeber).
+**welle-13-ventil-prosa** (aktiv, Start 2026-06-16). Trigger:
+reproduzierter Fremd-Repo-Befund + Priorisierung durch den Auftraggeber.
+Einziger Slice [slice-023](slice-023-ventil-prosa.md): die `ids`-Ventile
+`exempt-paths` und `d-check:ignore` gelten auch für nackte
+Fließtext-Vorkommen, nicht nur für die `always`-Inline-Code-Vorkommen
+([`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)
+0.13.0).
 
 ## Nächste Wellen
 
