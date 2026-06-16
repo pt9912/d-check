@@ -209,3 +209,86 @@ func TestIDsLinkPolicyProseDefault(t *testing.T) {
 		t.Fatalf("prose-Default sollte Code-Spans frei lassen, got %+v", res.Findings)
 	}
 }
+
+// DC-FA-ID-001 (0.13.0): die Ventile exempt-paths und d-check:ignore
+// gelten auch für NACKTE Fließtext-Vorkommen (Ganzdatei-/Ganzzeilen-
+// Carve-out), nicht nur für die always-Inline-Code-Vorkommen.
+func TestIDsVentileNackteVorkommen(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"docs/reviews/r.md": "Nackt im Review: ADR-0042\n", // exempt-paths → frei
+		"docs/a.md":         "Nackt mit Marker: ADR-0043 <!-- d-check:ignore (Beispiel) -->\n", // ignore → frei
+		"docs/b.md":         "Nackt ohne Schutz: ADR-0044\n", // Kontrolle → Befund
+		"docs/plan/adr/0001-x.md": "x",
+	})
+	cfg := Config{IDPatterns: []IDPattern{{
+		Regex:       regexp.MustCompile(`ADR-\d{4}`),
+		Target:      "docs/plan/adr/",
+		LinkPolicy:  "always",
+		ExemptPaths: []string{"docs/reviews/**"},
+	}}}
+	res, err := Run(m, nil, cfg, []string{"ids"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, fmt.Sprintf("%s:%d %s %s", f.File, f.Line, f.Target, f.Reason))
+	}
+	want := []string{"docs/b.md:1 ADR-0044 id-unlinked"}
+	if len(got) != len(want) || got[0] != want[0] {
+		t.Fatalf("Ventil-Befunde (nackt) = %v, want %v", got, want)
+	}
+}
+
+// DC-FA-ID-001 (0.13.0): exempt-paths wirkt unabhängig von der
+// link-policy — auch unter dem Default prose nimmt es nackte
+// Vorkommen aus (Ganzdatei-Carve-out).
+func TestIDsExemptPathsProseDefault(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"docs/reviews/r.md":       "Nackt im Review: ADR-0042\n", // exempt → frei
+		"docs/b.md":               "Nackt: ADR-0043\n",           // Kontrolle → Befund
+		"docs/plan/adr/0001-x.md": "x",
+	})
+	cfg := Config{IDPatterns: []IDPattern{
+		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/",
+			ExemptPaths: []string{"docs/reviews/**"}}, // kein link-policy (prose)
+	}}
+	res, err := Run(m, nil, cfg, []string{"ids"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, fmt.Sprintf("%s:%d %s", f.File, f.Line, f.Reason))
+	}
+	want := []string{"docs/b.md:1 id-unlinked"}
+	if len(got) != len(want) || got[0] != want[0] {
+		t.Fatalf("exempt-paths unter prose = %v, want %v", got, want)
+	}
+}
+
+// DC-FA-ID-001 (0.13.0): der d-check:ignore-Marker nimmt eine NACKTE
+// Prosa-ID auch unter der Default-Politik prose aus (politik-unabhängig,
+// Gegenstück zu TestIDsExemptPathsProseDefault für das zweite Ventil).
+func TestIDsIgnoreMarkerProseDefault(t *testing.T) {
+	m := newMemFS(map[string]string{
+		"docs/a.md":               "Nackt mit Marker: ADR-0042 <!-- d-check:ignore (Beispiel) -->\n", // ignore → frei
+		"docs/b.md":               "Nackt: ADR-0043\n",                                               // Kontrolle → Befund
+		"docs/plan/adr/0001-x.md": "x",
+	})
+	cfg := Config{IDPatterns: []IDPattern{
+		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/"}, // kein link-policy (prose)
+	}}
+	res, err := Run(m, nil, cfg, []string{"ids"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, fmt.Sprintf("%s:%d %s", f.File, f.Line, f.Reason))
+	}
+	want := []string{"docs/b.md:1 id-unlinked"}
+	if len(got) != len(want) || got[0] != want[0] {
+		t.Fatalf("d-check:ignore unter prose = %v, want %v", got, want)
+	}
+}

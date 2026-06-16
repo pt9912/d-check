@@ -58,8 +58,10 @@ type IDPattern struct {
 	// macht auch Inline-Code-Vorkommen linkpflichtig
 	// (spec/spezifikation.md §DC-FA-ID-001.a).
 	LinkPolicy string
-	// ExemptPaths: Globs (Syntax wie scan.ignore), in denen "always"
-	// nicht greift; nur bei LinkPolicy "always" wirksam.
+	// ExemptPaths: Globs (Syntax wie scan.ignore) für Dateien ohne
+	// Linkpflicht des Musters — gilt für nackte Fließtext- wie für
+	// Inline-Code-Vorkommen, unabhängig von der LinkPolicy
+	// (spec/spezifikation.md §DC-FA-ID-001.a).
 	ExemptPaths []string
 }
 

@@ -7,28 +7,44 @@ import "strings"
 // müssen als Markdown-Link auf ihre Definition ausgeführt sein. Die
 // Muster werden in Deklarationsreihenfolge gematcht; das erste
 // passende Muster gewinnt pro Vorkommen. Linkpflichtfrei sind
-// Heading-Zeilen (Struktur, kein Fließtext) und Vorkommen im
-// deklarierten Target des Musters (Definitions-Ort;
-// spec/spezifikation.md §DC-FA-ID-001.a).
+// Heading-Zeilen (Struktur, kein Fließtext), Vorkommen im deklarierten
+// Target des Musters (Definitions-Ort), Dateien aus den `exempt-paths`
+// des Musters und Zeilen mit dem d-check:ignore-Marker — die beiden
+// Ventile sind ein Ganzdatei- bzw. Ganzzeilen-Carve-out und gelten für
+// nackte wie für Inline-Code-Vorkommen (spec/spezifikation.md
+// §DC-FA-ID-001.a).
 func checkIDs(file string, content []byte, lines []Line, patterns []IDPattern) []Finding {
 	if len(patterns) == 0 {
 		return nil
 	}
+	// Datei-Invarianten je Muster einmal vorberechnen (wie inTarget):
+	// Definitions-Ort und exempt-paths hängen nur von (Datei, Muster) ab,
+	// nicht vom einzelnen Vorkommen.
 	inTarget := make([]bool, len(patterns))
+	exemptFile := make([]bool, len(patterns))
 	for i, p := range patterns {
 		inTarget[i] = fileInTarget(file, p.Target)
+		exemptFile[i] = ignored(file, p.ExemptPaths)
 	}
+	// Rohe Prosa-Zeilen einmal gewinnen; daraus die d-check:ignore-Zeilen.
+	// Beide Prüfpfade (nackt + Inline-Code) konsultieren denselben Satz,
+	// damit die Zeilen-Ausnahme nicht divergieren kann.
+	prose := proseLines(content)
+	ignoreLines := markerLines(prose)
 	var findings []Finding
 	for _, ln := range lines {
 		if _, _, isHeading := parseATXHeading(ln.Text); isHeading {
 			continue // Headings sind linkpflichtfrei
 		}
-		findings = append(findings, checkIDLine(file, ln, patterns, inTarget)...)
+		if ignoreLines[ln.No] {
+			continue // d-check:ignore — Zeile von der ids-Prüfung frei
+		}
+		findings = append(findings, checkIDLine(file, ln, patterns, inTarget, exemptFile)...)
 	}
 	// link-policy: always — zusätzlich Vorkommen INNERHALB von
 	// Inline-Code-Spans (DC-FA-ID-001.a). Additiv zur prose-Prüfung;
 	// Code-Span- und Fließtext-Bereiche sind disjunkt.
-	findings = append(findings, checkIDsAlways(file, content, patterns, inTarget)...)
+	findings = append(findings, checkIDsAlways(file, prose, ignoreLines, patterns, inTarget, exemptFile)...)
 	return findings
 }
 
@@ -40,7 +56,7 @@ func checkIDs(file string, content []byte, lines []Line, patterns []IDPattern) [
 // Linktext liegt, im target des Musters steht, die Datei ein
 // exempt-paths-Glob matcht, die Zeile d-check:ignore trägt oder es eine
 // Heading-Zeile ist.
-func checkIDsAlways(file string, content []byte, patterns []IDPattern, inTarget []bool) []Finding {
+func checkIDsAlways(file string, prose []proseLine, ignoreLines map[int]bool, patterns []IDPattern, inTarget, exemptFile []bool) []Finding {
 	var active []int
 	for i, p := range patterns {
 		if p.LinkPolicy == AlwaysPolicy {
@@ -50,11 +66,10 @@ func checkIDsAlways(file string, content []byte, patterns []IDPattern, inTarget 
 	if len(active) == 0 {
 		return nil
 	}
-	prose := proseLines(content)
 	spans := inlineSpansByLine(prose)
 	var findings []Finding
 	for _, pl := range prose {
-		findings = append(findings, alwaysLineFindings(file, pl, spans[pl.no], patterns, active, inTarget)...)
+		findings = append(findings, alwaysLineFindings(file, pl, spans[pl.no], ignoreLines, patterns, active, inTarget, exemptFile)...)
 	}
 	return findings
 }
@@ -62,8 +77,8 @@ func checkIDsAlways(file string, content []byte, patterns []IDPattern, inTarget 
 // alwaysLineFindings prüft die Inline-Code-Spans einer Prosa-Zeile gegen
 // die always-Muster (Deklarationsreihenfolge = Präzedenz über das
 // gemeinsame claimed). Linkpflichtfrei: Heading-Zeile, d-check:ignore.
-func alwaysLineFindings(file string, pl proseLine, codeSpans []inlineSpan, patterns []IDPattern, active []int, inTarget []bool) []Finding {
-	if len(codeSpans) == 0 || strings.Contains(pl.raw, ignoreMarker) {
+func alwaysLineFindings(file string, pl proseLine, codeSpans []inlineSpan, ignoreLines map[int]bool, patterns []IDPattern, active []int, inTarget, exemptFile []bool) []Finding {
+	if len(codeSpans) == 0 || ignoreLines[pl.no] {
 		return nil
 	}
 	if _, _, ok := parseATXHeading(pl.raw); ok {
@@ -74,7 +89,7 @@ func alwaysLineFindings(file string, pl proseLine, codeSpans []inlineSpan, patte
 	var findings []Finding
 	for _, pi := range active {
 		findings = append(findings,
-			alwaysPatternFindings(file, pl, codeSpans, patterns[pi], inTarget[pi], linkSpans, &claimed)...)
+			alwaysPatternFindings(file, pl, codeSpans, patterns[pi], inTarget[pi], exemptFile[pi], linkSpans, &claimed)...)
 	}
 	return findings
 }
@@ -82,7 +97,7 @@ func alwaysLineFindings(file string, pl proseLine, codeSpans []inlineSpan, patte
 // alwaysPatternFindings prüft ein einzelnes always-Muster gegen alle
 // Code-Span-Werte der Zeile; ein Vorkommen ist frei im target, in
 // exempt-paths oder im Linktext.
-func alwaysPatternFindings(file string, pl proseLine, codeSpans []inlineSpan, p IDPattern, inTgt bool, linkSpans []LinkSpan, claimed *[][2]int) []Finding {
+func alwaysPatternFindings(file string, pl proseLine, codeSpans []inlineSpan, p IDPattern, inTgt, exempt bool, linkSpans []LinkSpan, claimed *[][2]int) []Finding {
 	var findings []Finding
 	for _, sp := range codeSpans {
 		val := pl.raw[sp.valStart:sp.valEnd]
@@ -92,7 +107,7 @@ func alwaysPatternFindings(file string, pl proseLine, codeSpans []inlineSpan, p 
 				continue // Vorkommen gehört einem früheren Muster
 			}
 			*claimed = append(*claimed, [2]int{start, end})
-			if inTgt || ignored(file, p.ExemptPaths) || idOccurrenceExempt(linkSpans, start, end) {
+			if inTgt || exempt || idOccurrenceExempt(linkSpans, start, end) {
 				continue
 			}
 			findings = append(findings, Finding{
@@ -108,7 +123,7 @@ func alwaysPatternFindings(file string, pl proseLine, codeSpans []inlineSpan, p 
 // checkIDLine prüft eine Fließtext-Zeile gegen alle Muster
 // (Deklarationsreihenfolge; überlappende Vorkommen gehören dem
 // früheren Muster).
-func checkIDLine(file string, ln Line, patterns []IDPattern, inTarget []bool) []Finding {
+func checkIDLine(file string, ln Line, patterns []IDPattern, inTarget, exemptFile []bool) []Finding {
 	spans := ExtractLinkSpans(ln.Text)
 	var claimed [][2]int
 	var findings []Finding
@@ -118,8 +133,8 @@ func checkIDLine(file string, ln Line, patterns []IDPattern, inTarget []bool) []
 				continue // Vorkommen gehört einem früheren Muster
 			}
 			claimed = append(claimed, [2]int{m[0], m[1]})
-			if inTarget[pi] || idOccurrenceExempt(spans, m[0], m[1]) {
-				continue // Definitions-Ort bzw. verlinkt/kein Fließtext
+			if inTarget[pi] || exemptFile[pi] || idOccurrenceExempt(spans, m[0], m[1]) {
+				continue // Definitions-Ort, exempt-paths bzw. verlinkt/kein Fließtext
 			}
 			findings = append(findings, Finding{
 				File: file, Line: ln.No, Rule: "ids",
@@ -129,6 +144,26 @@ func checkIDLine(file string, ln Line, patterns []IDPattern, inTarget []bool) []
 		}
 	}
 	return findings
+}
+
+// markerLines liefert die 1-basierten Nummern der Prosa-Zeilen, die den
+// d-check:ignore-Marker tragen — geprüft auf der rohen Zeile. Der eine
+// zurückgegebene Satz wird von beiden ids-Prüfpfaden konsultiert (nackte
+// Fließtext-Vorkommen in checkIDs, Inline-Code-Vorkommen in
+// alwaysLineFindings), damit die Zeilen-Ausnahme nicht divergieren kann
+// (spec/spezifikation.md §DC-FA-ID-001.a, Ventil für nackte wie
+// Inline-Code-Vorkommen).
+func markerLines(prose []proseLine) map[int]bool {
+	var out map[int]bool
+	for _, pl := range prose {
+		if strings.Contains(pl.raw, ignoreMarker) {
+			if out == nil {
+				out = make(map[int]bool)
+			}
+			out[pl.no] = true
+		}
+	}
+	return out
 }
 
 // fileInTarget: liegt die geprüfte Datei im deklarierten Target des
