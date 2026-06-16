@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.12.0
+**Version:** 0.13.0
 
 **Status:** Draft
 
@@ -312,33 +312,41 @@ ist wählbar, wie streng die Linkpflicht greift:
 - `always`: auch Vorkommen **innerhalb von Inline-Code** müssen im
   Linktext eines Markdown-Links stehen (`` [`ADR-0042`](ziel) `` ist
   erfüllt, `` `ADR-0042` `` allein nicht). Fenced-Code-Blöcke, <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
-  Heading-Zeilen und das `target` des Musters bleiben frei.
+  Heading-Zeilen, das `target` des Musters sowie die beiden unten
+  genannten Ventile (`exempt-paths`, `d-check:ignore`) bleiben frei.
 
 Der Default ist `prose`, damit bestehende Konfigurationen
 byte-identisch bleiben und kein Repo ungefragt rote Läufe bekommt
 (opt-in fürs Gating). Die Entdeckung ungenügender Verlinkung ist davon
 unabhängig eine Bringschuld des Werkzeug-Betreibers (fleet-weiter
 `always`-Lauf, [`DC-QA-04`](#dc-qa-04--migrationsabdeckung-der-alt-tools)-Muster);
-„opt-in" heißt nicht „unsichtbar". Zwei Ventile halten `always`
-treffsicher:
+„opt-in" heißt nicht „unsichtbar". Zwei Ventile nehmen eine Datei bzw.
+eine Zeile von der Linkpflicht eines Musters aus. Beide gelten für
+**alle** Vorkommen des Musters — nackt im Fließtext **wie** in
+Inline-Code — und unabhängig von der `link-policy`; sie sind ein
+Ganzdatei- bzw. Ganzzeilen-Carve-out, kein bloßes Dämpfen der
+`always`-Strenge:
 
-- `exempt-paths` (Glob-Liste je Muster): Dateien, in denen die strenge
-  Regel nicht gilt (literal-schwere Artefakte wie Changelogs oder
-  Review-Reports).
+- `exempt-paths` (Glob-Liste je Muster): Dateien, in denen das Muster
+  **keine** Linkpflicht erzeugt (literal-schwere Artefakte wie
+  Changelogs oder Review-Reports) — gleich, ob die Kennung dort nackt
+  oder in Backticks steht.
 - Der Zeilen-Marker `d-check:ignore` (HTML-Kommentar, Begründung in
-  Klammern empfohlen) nimmt eine Zeile von der `ids`-Prüfung aus — für
-  bewusst illustrative Beispiel-IDs (gleiche Begründung wie bei
-  [`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in);
-  der Marker wirkt ab dieser Anforderung auf `codepaths` **und** `ids`).
+  Klammern empfohlen) nimmt die **ganze Zeile** von der `ids`-Prüfung
+  aus — für bewusst illustrative Beispiel-IDs (gleiche Begründung wie
+  bei [`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in);
+  der Marker wirkt ab dieser Anforderung auf `codepaths` **und** `ids`),
+  ebenfalls für nacktes wie für Inline-Code-Vorkommen.
 
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given das Muster `ADR-\d{4}` und ein Vorkommen `[ADR-0042](docs/plan/adr/0042-beispiel.md)`, when das Modul `ids` läuft, then kein Befund.
 - **Boundary:** Given ein Vorkommen `` `ADR-0042` `` in Inline-Code und `link-policy: prose` (Default), when das Modul läuft, then kein Befund (Code-Vorkommen sind linkpflichtfrei). <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
-- **Negative:** Given ein nacktes `ADR-0042` im Fließtext, when das Modul läuft, then ein Befund mit Grund „Kennung ohne Link". <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
+- **Negative:** Given ein nacktes `ADR-0042` im Fließtext (außerhalb `exempt-paths`, ohne `d-check:ignore`), when das Modul läuft, then ein Befund mit Grund „Kennung ohne Link". <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
 - **`always` Happy Path:** Given `link-policy: always` und ein Vorkommen `` [`ADR-0042`](docs/plan/adr/0042-beispiel.md) ``, when das Modul läuft, then kein Befund (Code-Span im Linktext zählt als verlinkt).
 - **`always` Negative:** Given `link-policy: always` und ein Vorkommen `` `ADR-0042` `` ohne Link (außerhalb `exempt-paths` und ohne `d-check:ignore`), when das Modul läuft, then ein Befund `id-unlinked`.
 - **`always` Boundary (Ventile):** Given `link-policy: always`, ein `` `ADR-0042` `` in einer `exempt-paths`-Datei und ein zweites `` `ADR-0099` `` auf einer Zeile mit `d-check:ignore`, when das Modul läuft, then kein Befund für beide.
+- **Ventile für nackte Vorkommen:** Given ein **nacktes** `ADR-0042` im Fließtext einer `exempt-paths`-Datei und ein zweites nacktes `ADR-0099` auf einer Zeile mit `d-check:ignore`, when das Modul läuft, then kein Befund für beide — die Ventile gelten für alle Vorkommen des Musters (nackt wie Inline-Code), unabhängig von der `link-policy`. <!-- d-check:ignore (Beispiel-IDs, fiktiv) -->
 
 **Out-of-Scope:** Automatisches Ermitteln der Muster aus dem Repo-Inhalt **für die Prüfung** (die Prüfung läuft stets gegen explizit konfigurierte Muster — deterministisch, Vertrag); ein *advisory* Scaffold-Modus darf Muster aus **benannten Autoritäts-Quellen** ableiten (Ausgabe-only, vom Menschen bestätigt — [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)). Prüfung, ob die verlinkte Definition inhaltlich zur Kennung passt; ein `link-policy`-Default abweichend von `prose` (bewusst opt-in).
 
@@ -627,6 +635,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.13.0 | 2026-06-16 | Change Request (Auftraggeber): `DC-FA-ID-001` — Geltungsbereich der beiden Ventile `exempt-paths` und `d-check:ignore` auf **nackte Fließtext-Vorkommen** erweitert. Bisher griffen sie nur auf die `always`-Inline-Code-Vorkommen; eine nackte Kennung in einer `exempt-paths`-Datei (bzw. auf einer `d-check:ignore`-Zeile) wurde weiterhin als `id-unlinked` gemeldet. Neu: beide Ventile sind ein Ganzdatei- bzw. Ganzzeilen-Carve-out für alle Vorkommen des Musters, unabhängig von der `link-policy`. Abwärtskompatibel (`DC-QA-02`): Configs ohne gesetzte Ventile bleiben byte-identisch; Wirkung nur in Richtung *weniger* Befunde in explizit ausgenommenen Dateien/Zeilen. Anlass: reproduzierter Fremd-Repo-Befund (`ai-harness-init`, v0.8.0/v0.9.0) — nacktes `MR-004` in `docs/reviews/_t.md` trotz `exempt-paths: ["docs/reviews/**"]` gemeldet | slice-023 |
 | 0.12.0 | 2026-06-15 | Change Request (Auftraggeber): `DC-FA-ANCH-001` erweitert — Inline-HTML-Anker innerhalb von Markdown zählen zur gültigen Anker-Menge (`id` an beliebigem Element, `name` an `<a>`; GitHub-Parität, wörtlicher Vergleich). Hebt die bisherige HTML-Anker-Out-of-Scope-Zeile auf; Abgrenzung zu §5 (HTML als Dateiformat bleibt out-of-scope) explizit. Gilt mittelbar auch für `codepaths` (geteiltes Anker-Verfahren). Anlass: Falsch-Befunde `anchor-missing` auf manuell gesetzte HTML-Anker in der Doku | slice-022 |
 | 0.11.0 | 2026-06-13 | Schärfung `DC-FA-CLI-001` (Auftraggeber): neues Akzeptanzkriterium für `--help` — die Hilfe nennt die Synopsis `d-check [optionen] [pfad]`, beschreibt das Pfad-Argument (Scan-Wurzel, Default cwd) und verweist für das Config-Format auf `--print-config` (kein Format-Duplikat). Anlass: die nackte `flag`-Default-Usage verschwieg das Pfad-Argument | slice-021 |
 | 0.10.0 | 2026-06-13 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-006` — Option `--suggest-config` leitet die `ids`-Config aus benannten Autoritäts-Dokumenten ab (definierte Kennungen → Muster + target, Round-Trip-Garantie; opt-in-Module nach Signal; Ausgabe-only, read-only). Dazu Schärfung von `DC-FA-ID-001`: das Muster-Ableitungs-Out-of-Scope gilt für die **Prüfung**; ein advisory Scaffold-Modus darf aus benannten Autoritäts-Quellen ableiten. Anlass: Adoptions-Reibung — neue Repos brauchen einen treffsicheren Config-Start statt eines rein statischen Gerüsts | slice-020 |

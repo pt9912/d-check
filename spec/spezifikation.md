@@ -216,7 +216,13 @@ kein Fließtext — Definitions- und Schärfungs-Headings tragen ihre
 Kennung nackt) sowie alle Vorkommen innerhalb des deklarierten
 `target` des matchenden Musters (Definitions-Ort: die Target-Datei
 selbst bzw. alle Dateien unterhalb eines Target-Verzeichnisses — eine
-Definition muss nicht auf sich selbst verlinken). Alle übrigen
+Definition muss nicht auf sich selbst verlinken). Ebenso
+linkpflichtfrei ist ein nacktes Vorkommen, dessen Datei ein Glob aus
+`ids.patterns[].exempt-paths` matcht oder dessen Zeile den Marker
+`d-check:ignore` trägt — die beiden unten unter *Link-Politik*
+beschriebenen Ventile sind ein Ganzdatei- bzw. Ganzzeilen-Carve-out und
+wirken auf nackte Fließtext-Vorkommen genau wie auf
+Inline-Code-Vorkommen (unabhängig von der `link-policy`). Alle übrigen
 Vorkommen erzeugen den Befund `id-unlinked`. Da die Extraktion zeilenbasiert
 ist ([§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
 Schritt 3), gilt eine Kennung in mehrzeiligem Linktext als nackt —
@@ -238,9 +244,13 @@ Bedingungen gilt: (1) der Code-Span ist der Linktext eines Markdown-Links
 (4) die Zeile trägt den Marker `d-check:ignore` (HTML-Kommentar — ab
 dieser Anforderung wirkt er auf `codepaths` **und** `ids`); (5) es ist
 eine ATX-Heading-Zeile. Alle übrigen Inline-Code-Vorkommen erzeugen
-`id-unlinked` (kein neuer Grund-Code). Muster-Präzedenz und
-`prose`-Befunde bleiben unverändert; `always` ist rein additiv (ein
-Muster mit `always` findet eine Obermenge seiner `prose`-Befunde).
+`id-unlinked` (kein neuer Grund-Code). Die Ventile (3) `exempt-paths`
+und (4) `d-check:ignore` sind dieselben wie im Prosa-Basisalgorithmus
+oben — sie nehmen Datei bzw. Zeile vollständig aus, für nackte wie für
+Inline-Code-Vorkommen. Muster-Präzedenz bleibt unverändert; der Wechsel
+`prose`→`always` lässt den Prosa-Befundsatz unverändert und ist rein
+additiv (ein Muster mit `always` findet eine Obermenge seiner
+`prose`-Befunde).
 `exempt-paths` nutzt Glob-Syntax relativ zur Repo-Wurzel wie
 `scan.ignore`; die Glob-Auswertung ist reihenfolgestabil
 ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
@@ -531,7 +541,7 @@ ids:
     - regex: 'ADR-\d{4}'
       target: docs/plan/adr/     # Definition (Datei oder Verzeichnis)
       link-policy: always        # prose (Default) | always: auch Inline-Code linkpflichtig
-      exempt-paths: [CHANGELOG.md]  # Globs, in denen always nicht greift
+      exempt-paths: [CHANGELOG.md]  # Globs ohne Linkpflicht (nackt wie Inline-Code)
 matrix:
   classes:                       # Reihenfolge = Präzedenz
     - name: contract
@@ -565,7 +575,7 @@ Exit 2 ohne Prüfung
 | `ids.patterns[].regex` | string | — | muss kompilieren und darf den Leerstring nicht matchen (Exit 2) |
 | `ids.patterns[].target` | string | — | muss existieren und innerhalb der Repo-Wurzel liegen |
 | `ids.patterns[].link-policy` | string | `prose` | nur `prose` oder `always` (Exit 2); `always` macht auch Inline-Code-Vorkommen linkpflichtig |
-| `ids.patterns[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien, in denen `always` nicht greift |
+| `ids.patterns[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ohne Linkpflicht für das Muster — nackte wie Inline-Code-Vorkommen, unabhängig von der `link-policy` |
 | `matrix.classes[].name` | string | — | eindeutig |
 | `matrix.classes[].paths` | string[] | — | Glob |
 | `matrix.rules[]` | {from,to,allow} | — | Klassen müssen deklariert sein |
