@@ -266,6 +266,7 @@ func matchBracket(s string, open int, lo, hi byte) (int, bool) {
 type LinkRef struct {
 	Line    int
 	Target  string // roher Zielausdruck (ohne <>-Quoting und Titel)
+	Text    string // Linktext zwischen [ und ] (für den matrix-Lineage-Match)
 	IsImage bool
 }
 
@@ -300,8 +301,10 @@ func ExtractLinks(lines []Line) []LinkRef {
 	var refs []LinkRef
 	for _, ln := range lines {
 		no := ln.No
-		forEachLink(ln.Text, func(ref LinkRef, _ LinkSpan) {
+		text := ln.Text
+		forEachLink(text, func(ref LinkRef, span LinkSpan) {
 			ref.Line = no
+			ref.Text = text[span.TextStart:span.TextEnd]
 			refs = append(refs, ref)
 		})
 	}

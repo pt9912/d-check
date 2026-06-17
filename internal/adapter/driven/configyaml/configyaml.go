@@ -60,7 +60,9 @@ type rawMatrix struct {
 		Allow bool   `yaml:"allow"`
 	} `yaml:"rules"`
 	Status *struct {
-		Forbidden []string `yaml:"forbidden"`
+		Forbidden             []string `yaml:"forbidden"`
+		AllowSupersedeLineage bool     `yaml:"allow-supersede-lineage"`
+		SupersedeFields       []string `yaml:"supersede-fields"`
 	} `yaml:"status"`
 	ExcludeSections []string `yaml:"exclude-sections"`
 }
@@ -323,6 +325,13 @@ func applyMatrix(m *rawMatrix, cfg *core.Config) error {
 	}
 	if m.Status != nil {
 		cfg.Matrix.StatusForbidden = m.Status.Forbidden
+		cfg.Matrix.AllowSupersedeLineage = m.Status.AllowSupersedeLineage
+		for i, f := range m.Status.SupersedeFields {
+			if strings.TrimSpace(f) == "" {
+				return fmt.Errorf("%s: matrix.status.supersede-fields[%d] ist leer", FileName, i)
+			}
+		}
+		cfg.Matrix.SupersedeFields = m.Status.SupersedeFields
 	} else {
 		cfg.Matrix.StatusForbidden = []string{"superseded", "deprecated"}
 	}

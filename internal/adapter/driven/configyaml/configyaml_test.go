@@ -60,6 +60,31 @@ func TestDecode_MatrixStatusDefault(t *testing.T) {
 	}
 }
 
+// matrix.status.allow-supersede-lineage + supersede-fields werden
+// durchgereicht; leerer Feldname ist Konfigurationsfehler (Exit 2);
+// Default (kein Flag) ist false/leer (DC-FA-MTX-001 0.14.0).
+func TestDecode_MatrixSupersedeLineage(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("matrix:\n  classes:\n    - name: a\n      paths: [x.md]\n" +
+		"  status:\n    forbidden: [superseded]\n    allow-supersede-lineage: true\n" +
+		"    supersede-fields: [Supersedes, Aenderungstyp]\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !cfg.Matrix.AllowSupersedeLineage || len(cfg.Matrix.SupersedeFields) != 2 {
+		t.Fatalf("Lineage = %+v", cfg.Matrix)
+	}
+	// leerer Feldname → Exit 2
+	if _, err := configyaml.Decode([]byte("matrix:\n  classes:\n    - name: a\n      paths: [x]\n" +
+		"  status:\n    supersede-fields: [\"\"]\n")); err == nil || !strings.Contains(err.Error(), "supersede-fields") {
+		t.Fatalf("leerer Feldname: Fehler erwartet, got %v", err)
+	}
+	// Default: ohne Flag false/leer
+	def, err := configyaml.Decode([]byte("matrix:\n  classes:\n    - name: a\n      paths: [x.md]\n"))
+	if err != nil || def.Matrix.AllowSupersedeLineage || len(def.Matrix.SupersedeFields) != 0 {
+		t.Fatalf("Default-Lineage = %+v, err = %v", def.Matrix, err)
+	}
+}
+
 func TestDecode_UnbekannterSchluessel(t *testing.T) {
 	_, err := configyaml.Decode([]byte("modul: x\n"))
 	if err == nil || !strings.Contains(err.Error(), "line") {

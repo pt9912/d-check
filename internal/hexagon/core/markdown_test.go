@@ -98,11 +98,11 @@ func TestExtractLinks(t *testing.T) {
 	}
 	refs := ExtractLinks(lines)
 	want := []LinkRef{
-		{Line: 3, Target: "x.md"},
-		{Line: 3, Target: "img.png", IsImage: true},
-		{Line: 3, Target: "y.md"},
-		{Line: 7, Target: "z.md"},
-		{Line: 7, Target: "mit leer.md"},
+		{Line: 3, Target: "x.md", Text: "a"},
+		{Line: 3, Target: "img.png", Text: "bild", IsImage: true},
+		{Line: 3, Target: "y.md", Text: "b"},
+		{Line: 7, Target: "z.md", Text: "text [nested]"},
+		{Line: 7, Target: "mit leer.md", Text: "c"},
 	}
 	if !reflect.DeepEqual(refs, want) {
 		t.Fatalf("refs = %+v\nwant  %+v", refs, want)
@@ -118,8 +118,8 @@ func TestExtractLinks_Kanten(t *testing.T) {
 	}
 	refs := ExtractLinks(lines)
 	want := []LinkRef{
-		{Line: 2, Target: "ohne-ende.md"}, // <… ohne '>' → toleranter Prefix-Strip
-		{Line: 2, Target: "a.md"},
+		{Line: 2, Target: "ohne-ende.md", Text: "q"}, // <… ohne '>' → toleranter Prefix-Strip
+		{Line: 2, Target: "a.md", Text: "ok"},
 	}
 	if !reflect.DeepEqual(refs, want) {
 		t.Fatalf("refs = %+v\nwant  %+v", refs, want)

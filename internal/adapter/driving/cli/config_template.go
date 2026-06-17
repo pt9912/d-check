@@ -39,6 +39,9 @@ modules: [links, anchors]
 #   rules:
 #     - {from: contract, to: adr, allow: false}
 #   status: {forbidden: [superseded, deprecated]}
+#     # opt-in: ablösende Datei darf auf ihr abgelöstes (inaktives) Ziel zeigen
+#     # allow-supersede-lineage: true
+#     # supersede-fields: [Supersedes, Aenderungstyp]
 #   exclude-sections: [Historie]
 
 # --- codepaths: explizite Pfade in Inline-Code ---

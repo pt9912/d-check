@@ -88,6 +88,14 @@ type MatrixConfig struct {
 	Classes         []MatrixClass
 	Rules           []MatrixRule
 	StatusForbidden []string
+	// AllowSupersedeLineage (Default false) nimmt die deklarierte
+	// Supersede-Lineage-Kante von der Status-Prüfung aus; ohne true
+	// wird SupersedeFields nie konsultiert (byte-identisch, DC-QA-02).
+	AllowSupersedeLineage bool
+	// SupersedeFields: Feldnamen (z. B. "Supersedes", "Aenderungstyp"),
+	// aus deren Werten die Ablösung gelesen wird (nur wirksam bei
+	// AllowSupersedeLineage; spec/spezifikation.md §DC-FA-MTX-001.a).
+	SupersedeFields []string
 	ExcludeSections []string
 }
 

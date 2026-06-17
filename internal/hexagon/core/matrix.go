@@ -24,6 +24,13 @@ func checkMatrix(fsys driven.Filesystem, file string, content []byte, lines []Li
 		return nil
 	}
 	excluded := excludedRanges(content, cfg.ExcludeSections)
+	// Supersede-Lineage: einmal pro Quelldatei die Feld-Werte gewinnen.
+	// Ohne aktiviertes Flag bleibt die Menge leer und die Ausnahme ein
+	// No-op (Befundsatz byte-identisch, DC-QA-02).
+	var supersedeValues []string
+	if cfg.AllowSupersedeLineage {
+		supersedeValues = supersedeFieldValues(content, cfg.SupersedeFields)
+	}
 	var findings []Finding
 	for _, ref := range ExtractLinks(lines) {
 		if inRanges(excluded, ref.Line) {
@@ -45,14 +52,101 @@ func checkMatrix(fsys driven.Filesystem, file string, content []byte, lines []Li
 			})
 		}
 		if status := cachedStatus(fsys, statusCache, rel); statusForbidden(status, cfg.StatusForbidden) {
-			findings = append(findings, Finding{
-				File: file, Line: ref.Line, Rule: "matrix",
-				Target: ref.Target, Reason: ReasonMatrixInactive,
-				Message: "Referenz auf inaktives Dokument (Status: " + status + ")",
-			})
+			// Supersede-Lineage: die ablösende Datei darf auf das von
+			// ihr abgelöste (inaktive) Ziel verweisen — die Ausnahme
+			// gilt nur für matrix-inactive, nicht für matrix-forbidden.
+			if !lineageExempt(supersedeValues, ref.Text, rel) {
+				findings = append(findings, Finding{
+					File: file, Line: ref.Line, Rule: "matrix",
+					Target: ref.Target, Reason: ReasonMatrixInactive,
+					Message: "Referenz auf inaktives Dokument (Status: " + status + ")",
+				})
+			}
 		}
 	}
 	return findings
+}
+
+// supersedeFieldValues sammelt die Werte aller Felder aus fields in der
+// Quelldatei. Eine Feld-Zeile hat die Form `**Feld:** Wert` oder
+// `Feld: Wert` (Feldname case-insensitiv); gelesen werden nur
+// Prosa-Zeilen außerhalb von Fenced-Code (spec/spezifikation.md
+// §DC-FA-MTX-001.a Schritt 4).
+func supersedeFieldValues(content []byte, fields []string) []string {
+	if len(fields) == 0 {
+		return nil
+	}
+	var vals []string
+	for _, pl := range proseLines(content) {
+		if v, ok := supersedeFieldValue(pl.raw, fields); ok {
+			vals = append(vals, v)
+		}
+	}
+	return vals
+}
+
+// supersedeFieldValue liefert den Wert, wenn die getrimmte Zeile mit
+// einem der Felder als `**Feld:**`- oder `Feld:`-Präfix beginnt
+// (case-insensitiv); die fette Form hat Vorrang.
+func supersedeFieldValue(raw string, fields []string) (string, bool) {
+	t := strings.TrimSpace(raw)
+	for _, f := range fields {
+		if bold := "**" + f + ":**"; len(t) >= len(bold) && strings.EqualFold(t[:len(bold)], bold) {
+			return strings.TrimSpace(t[len(bold):]), true
+		}
+		if plain := f + ":"; len(t) >= len(plain) && strings.EqualFold(t[:len(plain)], plain) {
+			return strings.TrimSpace(t[len(plain):]), true
+		}
+	}
+	return "", false
+}
+
+// lineageExempt prüft, ob ein Supersede-Feldwert das Ziel der Referenz
+// nennt: normalisierter Teilzeichenketten-Vergleich gegen den Linktext
+// (falls nicht leer) bzw. den Zielpfad (rel, Basename, Basename ohne
+// Endung). Leere values ⇒ keine Ausnahme (Default byte-identisch).
+func lineageExempt(values []string, linkText, rel string) bool {
+	if len(values) == 0 {
+		return false
+	}
+	cands := lineageCandidates(linkText, rel)
+	for _, v := range values {
+		nv := normalizeLineage(v)
+		for _, c := range cands {
+			if strings.Contains(nv, c) {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// lineageCandidates liefert die normalisierten Erkennungsformen des
+// Referenzziels (Linktext, Pfad, Basename, Basename ohne Endung).
+func lineageCandidates(linkText, rel string) []string {
+	var out []string
+	add := func(s string) {
+		if n := normalizeLineage(s); n != "" {
+			out = append(out, n)
+		}
+	}
+	add(linkText)
+	add(rel)
+	base := rel
+	if i := strings.LastIndex(base, "/"); i >= 0 {
+		base = base[i+1:]
+	}
+	add(base)
+	if i := strings.LastIndex(base, "."); i > 0 {
+		add(base[:i])
+	}
+	return out
+}
+
+// normalizeLineage faltet Groß-/Kleinschreibung und kollabiert
+// Whitespace auf einzelne Leerzeichen (reihenfolgestabil, DC-QA-02).
+func normalizeLineage(s string) string {
+	return strings.ToLower(strings.Join(strings.Fields(s), " "))
 }
 
 // classOf liefert die erste deklarierte Klasse, deren Glob den Pfad

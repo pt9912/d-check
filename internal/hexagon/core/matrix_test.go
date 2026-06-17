@@ -158,6 +158,78 @@ func TestCachedStatusCacheTreffer(t *testing.T) {
 	}
 }
 
+// DC-FA-MTX-001 Supersede-Lineage (0.14.0): opt-in nimmt die deklarierte
+// Lineage-Kante von matrix-inactive aus (Happy); fremde Quellen bleiben
+// inaktiv (Boundary); Default aus ⇒ Befundsatz byte-identisch (Negative).
+func TestMatrixSupersedeLineage(t *testing.T) {
+	files := map[string]string{
+		// X löst Y ab (Feld in fetter Header-Form) und verweist darauf.
+		"docs/plan/adr/0006-x.md": "# ADR-0006 — X\n\n" +
+			"**Status:** Accepted\n" +
+			"**Aenderungstyp:** Supersedes ADR 0003\n\n" +
+			"**Bezug:** [ADR 0003](0003-lifecycle.md)\n",
+		// Y ist abgelöst (inaktiv).
+		"docs/plan/adr/0003-lifecycle.md": "# ADR-0003 — Lifecycle\n\n**Status:** Superseded by ADR-0006\n",
+		// Fremde Quelle ohne Supersede-Feld verweist ebenfalls auf Y.
+		"docs/plan/planning/done/slice-001-a.md": "# S\n[alt](../../adr/0003-lifecycle.md)\n",
+	}
+
+	// Happy + Boundary — Lineage AN: nur die fremde Quelle bleibt inaktiv.
+	cfg := matrixTestConfig()
+	cfg.AllowSupersedeLineage = true
+	cfg.SupersedeFields = []string{"Supersedes", "Aenderungstyp"}
+	res, err := Run(newMemFS(files), nil, Config{Matrix: cfg}, []string{"matrix"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := inactiveFiles(res.Findings); len(got) != 1 || got[0] != "docs/plan/planning/done/slice-001-a.md" {
+		t.Fatalf("Lineage AN: matrix-inactive = %v, want nur die fremde Quelle", got)
+	}
+
+	// Negative (Default aus): die Lineage-Kante erzeugt ebenfalls inactive.
+	resOff, err := Run(newMemFS(files), nil, Config{Matrix: matrixTestConfig()}, []string{"matrix"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := inactiveFiles(resOff.Findings); len(got) != 2 {
+		t.Fatalf("Lineage AUS: matrix-inactive = %v, want 2 (byte-identisch zum Alt-Verhalten)", got)
+	}
+}
+
+func inactiveFiles(fs []Finding) []string {
+	var out []string
+	for _, f := range fs {
+		if f.Reason == ReasonMatrixInactive {
+			out = append(out, f.File)
+		}
+	}
+	return out
+}
+
+// Feld-Extraktion (fette + Frontmatter-Form, case-insensitiv) und die
+// Match-Formen des Lineage-Vergleichs (Linktext, Basename, leere Werte).
+func TestSupersedeFieldValueUndLineage(t *testing.T) {
+	fields := []string{"Supersedes"}
+	if v, ok := supersedeFieldValue("Supersedes: ADR 0003", fields); !ok || v != "ADR 0003" {
+		t.Fatalf("plain-Form = (%q,%v)", v, ok)
+	}
+	if v, ok := supersedeFieldValue("**supersedes:** 0003-x.md", fields); !ok || v != "0003-x.md" {
+		t.Fatalf("fette Form case-insensitiv = (%q,%v)", v, ok)
+	}
+	if _, ok := supersedeFieldValue("**Bezug:** etwas", fields); ok {
+		t.Fatal("Nicht-Feld-Zeile darf nicht matchen")
+	}
+	if lineageExempt(nil, "ADR 0003", "docs/x.md") {
+		t.Fatal("leere values dürfen nicht ausnehmen")
+	}
+	if !lineageExempt([]string{"loest 0003-lifecycle ab"}, "", "docs/plan/adr/0003-lifecycle.md") {
+		t.Fatal("Basename-Match (ohne Linktext) erwartet")
+	}
+	if lineageExempt([]string{"verweist auf etwas anderes"}, "ADR 0099", "docs/plan/adr/0099-y.md") {
+		t.Fatal("ohne Nennung des Ziels keine Ausnahme")
+	}
+}
+
 // Eine explizit erlaubte Regel (allow: true) erzeugt keinen Befund.
 func TestMatrixErlaubteRegel(t *testing.T) {
 	cfg := matrixTestConfig()
