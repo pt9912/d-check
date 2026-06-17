@@ -1,6 +1,6 @@
 # Slice slice-024: `matrix` Supersede-Lineage-Carve-out
 
-**Status:** in-progress.
+**Status:** done.
 
 **Welle:** welle-14-matrix-lineage (Trigger: Change Request des
 Auftraggebers aus dem Fremd-Repo `grid-gym`, Dialog 2026-06-17).
@@ -51,19 +51,19 @@ nicht stummgeschaltet").
   `matrix-inactive`); Schema-Tabelle + Beispiel-YAML um
   `allow-supersede-lineage` und `supersede-fields`. **Kein** neuer
   Grund-Code (weiter `matrix-inactive`).
-- [ ] **Implementierung** im Modul `matrix`: `MatrixConfig` um
+- [x] **Implementierung** im Modul `matrix`: `MatrixConfig` um
   `AllowSupersedeLineage`/`SupersedeFields`; `rawMatrix.Status` +
   Validierung (nicht-leere Feldnamen, Exit 2); `LinkRef.Text` getragen;
   `checkMatrix` ehrt die Lineage-Ausnahme vor dem `matrix-inactive`.
   Die drei AKs als Tests.
-- [ ] **Abwärtskompatibilitäts-Beleg**
+- [x] **Abwärtskompatibilitäts-Beleg**
   ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)):
   Ohne `allow-supersede-lineage` wird `supersede-fields` nie konsultiert;
   Befundsatz byte-identisch (Default-Test).
-- [ ] **Doku-Nachzug** (`README.md`, `docs/user/operations.md`):
+- [x] **Doku-Nachzug** (`README.md`, `docs/user/operations.md`):
   Lineage-Carve-out dokumentiert; Marker-Abdeckung (`ids`/`codepaths`,
   `matrix` bewusst ausgenommen) explizit.
-- [ ] `make gates` grün (echte Ausgabe);
+- [x] `make gates` grün (echte Ausgabe);
   [`CHANGELOG.md`](../../../../CHANGELOG.md); Closure-Notiz §8.
 
 ## 3. Plan (vor Code)
@@ -128,4 +128,44 @@ Greenfield-Default der Modus-Tabelle in
 
 ## 8. Closure-Notiz (nach `done/`)
 
-_(folgt mit dem Abschluss)_
+**Umsetzung:** Vertrag + Spezifikation (Commit `1bd860e`), `matrix`-Code
++ Tests (`9e10e05`), Doku + Slice + Roadmap (`c0228c3`), Lifecycle-Move
+(`d7b4c16`). `make gates` grün (echte Ausgabe: doc-check + lint + test +
+arch-check + coverage-gate **95,00 %** ≥ 93 % + gate-consistency).
+
+**Vorher/Nachher-Beleg am gebauten Image** (`d-check:latest`,
+`--network none`, read-only-Mount): ein ablösendes ADR mit
+`**Aenderungstyp:** Supersedes ADR 0003` und Link auf das mit
+`Superseded by …` markierte Ziel erzeugte ohne das Flag **1**
+`matrix-inactive` (Exit 1); mit `allow-supersede-lineage: true` +
+`supersede-fields: [Supersedes, Aenderungstyp]` **0** Befunde (Exit 0).
+Boundary bestätigt: eine fremde Quelle ohne Supersede-Feld auf dasselbe
+Ziel blieb `matrix-inactive` — der Carve-out ist eng auf die deklarierte
+Lineage-Kante beschränkt.
+
+- **Was hat funktioniert:** Die Ausnahme als **strukturelle**
+  Konfiguration zu modellieren (wie `exclude-sections`) statt als
+  Zeilen-Marker. Der Match lokal in der Quelldatei (Linktext bzw.
+  Zielpfad gegen den Feldwert) vermeidet das ID-vs-Pfad-Formatproblem
+  über Dateigrenzen — beides ist in X' eigener Schreibweise notiert.
+- **Anders als geplant:** Das Tragen des Linktexts erforderte ein neues
+  Feld `LinkRef.Text`; zwei bestehende `ExtractLinks`-Tests prüften
+  implizit, dass `Text` leer ist, und mussten nachgezogen werden (kein
+  Verhaltens-, nur ein Erwartungs-Update).
+- **Steering-Loop-Lerneintrag (geschärfte Regel):** Legitime Ausnahmen
+  eines deterministischen Gates gehören in **deklarierte Konfiguration**,
+  nicht in verstreute Opt-out-Marker. Der Auftraggeber-Vorschlag bot
+  beides an (Lineage-Carve-out **oder** `d-check:ignore` für `matrix`);
+  gewählt wurde der Carve-out plus die explizite Doku, dass `matrix`
+  marker-frei bleibt — so bleibt „deterministische Befunde werden
+  behoben oder strukturell ausgenommen, nicht stummgeschaltet" intakt
+  ([`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
+  0.14.0). Abwärtskompatibel
+  ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)):
+  Default aus ⇒ byte-identisch.
+- **Folge-Slices:** keine. Das Melde-Repo `grid-gym` (und andere)
+  profitieren, sobald sie die Release-Version pinnen und
+  `allow-supersede-lineage` aktivieren; der Inline-Code-Workaround dort
+  kann auf den klickbaren Lineage-Link zurückgebaut werden.
+- **Offen:** Release `v0.11.0` (GHCR-Digest-Pin) folgt nach dem Review
+  des Auftraggebers („Review vor Release").
