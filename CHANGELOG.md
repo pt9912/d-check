@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.11.0] — 2026-06-17
+
 ### Added
 
 - slice-024 — Modul `matrix`: opt-in `allow-supersede-lineage` (mit
