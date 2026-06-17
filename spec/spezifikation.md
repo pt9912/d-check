@@ -1,6 +1,6 @@
 # Spezifikation — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-15.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-17.
 
 **Bezug zum Lastenheft:** Diese Spezifikation präzisiert die in
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
@@ -280,6 +280,27 @@ additiv (ein Muster mit `always` findet eine Obermenge seiner
    werden von `matrix` nicht geprüft (Provenance-Ausnahme gemäß
    [`DC-FA-MTX-001`](lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
    Out-of-Scope).
+4. **Supersede-Lineage-Ausnahme** (`allow-supersede-lineage`, Default
+   `false`): Ist das Flag gesetzt, wird vor dem Emittieren eines
+   `matrix-inactive`-Befundes geprüft, ob die Kante eine deklarierte
+   Ablösung ist. Aus der Quelldatei werden einmalig die Werte aller
+   Felder aus `supersede-fields` gewonnen; eine Feld-Zeile hat die Form
+   `**Feld:** Wert` oder `Feld: Wert` (Feldname case-insensitiv, nur
+   Zeilen außerhalb von Fenced-Code). Die Kante X → Y ist ausgenommen,
+   wenn ein solcher Feldwert — nach Normalisierung (Kleinschreibung,
+   Whitespace auf einzelne Leerzeichen kollabiert) — den Linktext der
+   Referenz (falls nicht leer) oder den aufgelösten Zielpfad (relativ
+   zur Repo-Wurzel, dessen Basename oder Basename ohne Endung) als
+   Teilzeichenkette enthält. Die Ausnahme wirkt ausschließlich auf
+   `matrix-inactive`; die Klassen-Regelprüfung (`matrix-forbidden`,
+   Schritt 1) bleibt unberührt, und nur die deklarierte Lineage-Kante
+   ist betroffen — andere Quellen ohne passendes Feld melden Y weiter
+   als inaktiv. Ohne gesetztes Flag wird `supersede-fields` nicht
+   konsultiert; der Befundsatz ist byte-identisch
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)). `matrix`
+   trägt — anders als `codepaths`/`ids` — keinen `d-check:ignore`-Marker
+   ([§DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code) Schritt 1
+   gilt nur für jene Module).
 
 ### DC-FA-EXT-001.a — Externe Erreichbarkeit
 
@@ -552,6 +573,8 @@ matrix:
     - {from: contract, to: adr, allow: false}
   status:
     forbidden: [superseded, deprecated]
+    allow-supersede-lineage: true        # ablösende Datei darf auf ihr abgelöstes Ziel zeigen
+    supersede-fields: [Supersedes, Aenderungstyp]   # Felder, aus denen die Ablösung gelesen wird
   exclude-sections: [Historie, Geschichte]
 external:
   timeout-seconds: 10
@@ -580,6 +603,8 @@ Exit 2 ohne Prüfung
 | `matrix.classes[].paths` | string[] | — | Glob |
 | `matrix.rules[]` | {from,to,allow} | — | Klassen müssen deklariert sein |
 | `matrix.status.forbidden` | string[] | `[superseded, deprecated]` | case-insensitiv |
+| `matrix.status.allow-supersede-lineage` | bool | `false` | nimmt die deklarierte Supersede-Lineage-Kante von der Status-Prüfung aus (nur `matrix-inactive`); ohne `true` byte-identisch |
+| `matrix.status.supersede-fields` | string[] | leer | Feldnamen (z. B. `Supersedes`, `Aenderungstyp`), aus denen die Ablösung gelesen wird; Einträge nicht leer (Exit 2); nur wirksam bei `allow-supersede-lineage: true` |
 | `matrix.exclude-sections` | string[] | leer | Vergleich gegen den getrimmten Heading-Text ohne Markdown-Auszeichnung, case-sensitiv |
 | `external.timeout-seconds` | integer | 10 | 1–300 |
 | `external.parallel` | integer | 4 | 1–16 |
@@ -660,5 +685,6 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-12 | Modul `spans` normiert (§[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung): `span-unclosed` absatzweise mit Folgezeichen-Bedingung und 30-Zeichen-Kappung, `span-nested-link` lexikalisch auf vorverarbeiteten Zeilen mit 40-Zeichen-Kappung; kein Opt-out, nur generischer `scope`); Grund-Codes ergänzt | slice-015 |
 | 2026-06-12 | Modul-lokaler Scan-Scope normiert (§[`DC-FA-CONF-002.a`](spezifikation.md#dc-fa-conf-002a--effektiver-scan-scope-pro-modul): `<modul>.scope` ersetzt den globalen Scope je Modul, `roots` Pflicht innerhalb `scope`, Lauf über die Vereinigungsmenge mit Einmal-Lese-Garantie, Zusammenfassung zählt die Union); Schema um `<modul>.scope.roots`/`.ignore` | slice-017 |
 | 2026-06-15 | §[`DC-FA-ANCH-001.b`](spezifikation.md#dc-fa-anch-001b--inline-html-anker) ergänzt: Inline-HTML-Anker (`id` an beliebigem Element, `name` an `<a>`) zählen wörtlich zur gültigen Anker-Menge; konservativ, zeilenbasiert, außerhalb Fences. §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) fortgeschrieben: `codepaths`-Anker-Prüfung gegen die gemeinsame Anker-Menge statt nur Heading-Slugs | slice-022 |
+| 2026-06-17 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 4 ergänzt: Supersede-Lineage-Ausnahme (`allow-supersede-lineage`, `supersede-fields`) nimmt die deklarierte Lineage-Kante von der `matrix-inactive`-Prüfung aus (Match über Linktext bzw. Zielpfad der Referenz); Default aus ⇒ byte-identisch. Schema-Tabelle + Beispiel ergänzt | slice-024 |
 | 2026-06-12 | Scan-Härtung aus der pkcs11-course-Adoption (slice-014): `scan.ignore`-Muster prunen den Verzeichnis-Abstieg (vollständig ignorierte Teilbäume werden nicht betreten — unlesbare ignorierte Verzeichnisse wie root-eigene Build-Reste sind kein Laufzeitfehler mehr); `SKIP_DIRS` um `.gradle` ergänzt (Parität zur JS-Alt-Familie) | slice-014 |
 | 2026-06-12 | Inline-Code-Erkennung absatzweise statt zeilenweise (§[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 2): mehrzeilige Code-Spans gemäß CommonMark, Absatzgrenzen Leerzeile/Fence, ungeschlossene Folge literal. Anlass: [`DC-QA-04`](lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Gegentest u-boot — über Zeilenumbrüche gebrochene Befehls-Spans invertierten die Backtick-Parität der Folgezeile und erzeugten False-Positive-`id-unlinked`-Befunde auf korrekt verlinkten Kennungen. Zeilenbasierte **Link**-Extraktion (Schritt 3) bleibt normative Grenze | slice-012 |

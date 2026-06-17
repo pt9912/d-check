@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.13.0
+**Version:** 0.14.0
 
 **Status:** Draft
 
@@ -367,13 +367,33 @@ Referenzrichtungs-Regeln der Spec-Stratifizierung (Lastenheft darf
 nicht abwärts auf ADR/Slice verweisen; Slices nur auf aktive ADRs)
 maschinell prüfbar.
 
+**Supersede-Lineage-Ausnahme (opt-in).** Ein ablösendes Dokument
+verweist per Definition auf das Dokument, das es ablöst (z. B.
+ADR→ADR-Lineage); dieser Verweis zielt notwendig auf ein inaktives
+Dokument und ist dennoch legitim. Ist `allow-supersede-lineage`
+aktiviert, wird genau die Kante X → Y von der Status-Prüfung
+ausgenommen, wenn die Quelle X über ein Feld aus `supersede-fields`
+(z. B. `Supersedes`, `Aenderungstyp`) deklariert, dass sie Y ablöst —
+der Feldwert nennt Y über den Linktext oder den Zielpfad der Referenz.
+Alle anderen Referenzen auf Y bleiben `matrix-inactive`, und die
+Klassen-Regelprüfung (`matrix-forbidden`) ist davon unberührt. Default:
+aus — ohne gesetztes Flag ist der Befundsatz byte-identisch
+([`DC-QA-02`](#dc-qa-02--determinismus)). Wie alle Module außer
+`codepaths`/`ids` trägt `matrix` **keinen** Zeilen-Opt-out-Marker
+(`d-check:ignore`): deterministische Befunde werden behoben oder
+strukturell ausgenommen (`exclude-sections`, `allow-supersede-lineage`),
+nicht zeilenweise stummgeschaltet.
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Slice mit Link auf ein ADR mit Status `Accepted`, when das Modul `matrix` läuft, then kein Befund.
 - **Boundary:** Given ein ADR mit Status `Superseded by ADR-0099`, when ein Slice darauf verlinkt, then ein Befund mit Grund „Referenz auf inaktives ADR". <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
 - **Negative:** Given ein Link aus `spec/lastenheft.md` auf eine ADR-Datei, when das Modul läuft, then ein Befund mit Grund „verbotene Abwärtsreferenz" und Angabe beider Dokumentklassen.
+- **Lineage Happy:** Given `allow-supersede-lineage: true`, `supersede-fields: [Aenderungstyp]` und ein ADR X, das ein Feld `Aenderungstyp: Supersedes ADR-0099` sowie einen Link `[ADR-0099](0099-x.md)` auf das mit `superseded` markierte ADR Y trägt, when das Modul läuft, then **kein** `matrix-inactive`-Befund für diese Kante. <!-- d-check:ignore (Beispiel-IDs, fiktiv) -->
+- **Lineage Boundary:** Given dieselbe Konfiguration und eine **andere** Datei ohne Supersede-Deklaration auf Y, die auf Y verlinkt, when das Modul läuft, then bleibt für diese Datei der `matrix-inactive`-Befund — der Carve-out gilt nur für die deklarierte Lineage-Kante.
+- **Lineage Negative (Default):** Given keine `allow-supersede-lineage`-Angabe (Default aus), when das Modul über dieselben Dateien läuft, then erzeugt auch die Lineage-Kante `matrix-inactive` — der Befundsatz ist bit-genau wie ohne das Feature.
 
-**Out-of-Scope:** Semantische Unterscheidung von Verweis-Zwecken (z. B. Verifikations-Zeiger vs. Entscheidungsgrundlage) — das bleibt Review-Aufgabe; Provenance-/Historie-Sektionen können per Konfiguration von der Prüfung ausgenommen werden, eine automatische Erkennung solcher Sektionen ist nicht gefordert.
+**Out-of-Scope:** Semantische Unterscheidung von Verweis-Zwecken (z. B. Verifikations-Zeiger vs. Entscheidungsgrundlage) — das bleibt Review-Aufgabe; Provenance-/Historie-Sektionen können per Konfiguration von der Prüfung ausgenommen werden, eine automatische Erkennung solcher Sektionen ist nicht gefordert; die Supersede-Lineage-Ausnahme erkennt Ablösungen ausschließlich über deklarierte `supersede-fields` (keine semantische Schlussfolgerung) und gilt nur für die Status-Prüfung (`matrix-inactive`), nicht für die Klassen-Regeln; ein zeilenweiser Opt-out-Marker für `matrix` ist nicht vorgesehen.
 
 ---
 
@@ -635,6 +655,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.14.0 | 2026-06-17 | Change Request (Auftraggeber): `DC-FA-MTX-001` — opt-in `allow-supersede-lineage` (+ `supersede-fields`) nimmt die Supersede-Lineage-Kante X → Y von der Status-Prüfung aus: ein ablösendes Dokument darf auf das von ihm abgelöste (inaktive) Dokument verweisen, ohne `matrix-inactive` zu erzeugen, sofern X über ein deklariertes Feld die Ablösung von Y benennt (Match über Linktext bzw. Zielpfad der Referenz). Carve-out beschränkt auf die deklarierte Lineage-Kante; `matrix-forbidden` (Klassen-Regeln) unberührt. Abwärtskompatibel (`DC-QA-02`): Default aus ⇒ Befundsatz byte-identisch. Marker-Politik (B2 der CR): `matrix` bleibt bewusst ohne Zeilen-Opt-out-Marker `d-check:ignore` (legitime Lineage strukturell ausgenommen, nicht stummgeschaltet). Anlass: reproduzierter Fremd-Repo-Befund (`grid-gym`, v0.10.0) — normative ADR→ADR-Lineage (`Aenderungstyp: Supersedes …`) als `matrix-inactive` gemeldet, brach `make docs-check` | slice-024 |
 | 0.13.0 | 2026-06-16 | Change Request (Auftraggeber): `DC-FA-ID-001` — Geltungsbereich der beiden Ventile `exempt-paths` und `d-check:ignore` auf **nackte Fließtext-Vorkommen** erweitert. Bisher griffen sie nur auf die `always`-Inline-Code-Vorkommen; eine nackte Kennung in einer `exempt-paths`-Datei (bzw. auf einer `d-check:ignore`-Zeile) wurde weiterhin als `id-unlinked` gemeldet. Neu: beide Ventile sind ein Ganzdatei- bzw. Ganzzeilen-Carve-out für alle Vorkommen des Musters, unabhängig von der `link-policy`. Abwärtskompatibel (`DC-QA-02`): Configs ohne gesetzte Ventile bleiben byte-identisch; Wirkung nur in Richtung *weniger* Befunde in explizit ausgenommenen Dateien/Zeilen. Anlass: reproduzierter Fremd-Repo-Befund (`ai-harness-init`, v0.8.0/v0.9.0) — nacktes `MR-004` in `docs/reviews/_t.md` trotz `exempt-paths: ["docs/reviews/**"]` gemeldet | slice-023 |
 | 0.12.0 | 2026-06-15 | Change Request (Auftraggeber): `DC-FA-ANCH-001` erweitert — Inline-HTML-Anker innerhalb von Markdown zählen zur gültigen Anker-Menge (`id` an beliebigem Element, `name` an `<a>`; GitHub-Parität, wörtlicher Vergleich). Hebt die bisherige HTML-Anker-Out-of-Scope-Zeile auf; Abgrenzung zu §5 (HTML als Dateiformat bleibt out-of-scope) explizit. Gilt mittelbar auch für `codepaths` (geteiltes Anker-Verfahren). Anlass: Falsch-Befunde `anchor-missing` auf manuell gesetzte HTML-Anker in der Doku | slice-022 |
 | 0.11.0 | 2026-06-13 | Schärfung `DC-FA-CLI-001` (Auftraggeber): neues Akzeptanzkriterium für `--help` — die Hilfe nennt die Synopsis `d-check [optionen] [pfad]`, beschreibt das Pfad-Argument (Scan-Wurzel, Default cwd) und verweist für das Config-Format auf `--print-config` (kein Format-Duplikat). Anlass: die nackte `flag`-Default-Usage verschwieg das Pfad-Argument | slice-021 |
