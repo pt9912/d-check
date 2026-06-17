@@ -167,5 +167,6 @@ Lineage-Kante beschränkt.
   profitieren, sobald sie die Release-Version pinnen und
   `allow-supersede-lineage` aktivieren; der Inline-Code-Workaround dort
   kann auf den klickbaren Lineage-Link zurückgebaut werden.
-- **Offen:** Release `v0.11.0` (GHCR-Digest-Pin) folgt nach dem Review
-  des Auftraggebers („Review vor Release").
+- **Release:** **v0.11.0** auf GHCR nach Review-Freigabe (Run
+  `27679319866` grün in 1m58s, Tags `v0.11.0`+`latest`), Digest-Pin
+  `ghcr.io/pt9912/d-check@sha256:6ec1c463b5276b3314881839bd800b5e9aab12fa624a35d31618cecb62f17795`.

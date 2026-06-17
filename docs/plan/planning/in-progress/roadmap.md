@@ -11,10 +11,9 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 ## Aktuelle Welle
 
 **Keine aktive Welle.** welle-14-matrix-lineage ist abgeschlossen (siehe
-„Abgeschlossene Wellen"); das Release `v0.11.0` (GHCR-Digest-Pin) steht
-noch aus (Review vor Release). Die nächste Welle wartet auf ihren Trigger
-(Change Request im Lastenheft oder Priorisierung durch den
-Auftraggeber).
+„Abgeschlossene Wellen"), Minor-Release `v0.11.0` auf GHCR. Die nächste
+Welle wartet auf ihren Trigger (Change Request im Lastenheft oder
+Priorisierung durch den Auftraggeber).
 
 ## Nächste Wellen
 
@@ -62,7 +61,7 @@ flowchart LR
 | welle-11-help | 2026-06-13 | [slice-021 §7](../done/slice-021-help-usage.md#7-closure-notiz-nach-done); reichhaltige `--help` (Synopsis, `[pfad]`-Argument, Config-Pointer auf `--print-config`) — Schärfung [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel) 0.11.0 |
 | welle-12-html-anker | 2026-06-15 | [slice-022 §6](../done/slice-022-html-anker.md#6-closure-notiz-nach-done); Inline-HTML-Anker als gültige Anker-Menge ([`DC-FA-ANCH-001`](../../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors) 0.12.0), `anchors`+`codepaths` via gemeinsame `AnchorSet`; zwei Review-Läufe (CR+Code, je R1); Minor-Release **v0.9.0** auf GHCR (Run `27541267343` grün in 2m2s), Digest-Pin `ghcr.io/pt9912/d-check@sha256:5bccf9fb3d1c54639dec3a541771d2ea43db9a0c1c58c28b3f12f20d38133d1b` |
 | welle-13-ventil-prosa | 2026-06-16 | [slice-023 §8](../done/slice-023-ventil-prosa.md#8-closure-notiz-nach-done); die `ids`-Ventile `exempt-paths`/`d-check:ignore` gelten für nackte Fließtext-Vorkommen, nicht nur Inline-Code ([`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) Change Request 0.13.0), als geteilte Exemption-Schicht; Review R1 (1 MEDIUM/4 LOW disponiert); Minor-Release **v0.10.0** auf GHCR (Run `27627924899` grün in 1m52s), Digest-Pin `ghcr.io/pt9912/d-check@sha256:ca49d33f22ecadfd08db03e4487b52b3f2a70dec01a41f2d0f472bfc2012797c` |
-| welle-14-matrix-lineage | 2026-06-17 | [slice-024 §8](../done/slice-024-matrix-supersede-lineage.md#8-closure-notiz-nach-done); opt-in `allow-supersede-lineage` (+ `supersede-fields`) nimmt die deklarierte Supersede-Lineage-Kante des Moduls `matrix` von der Status-Prüfung aus ([`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix) Change Request 0.14.0); nur `matrix-inactive`, `matrix-forbidden` unberührt; `matrix` bleibt marker-frei (Entscheidung B2). `make gates` grün (Coverage 95,00 %), Vorher/Nachher am Image belegt (1 → 0 Befunde). **Release v0.11.0 (GHCR-Digest-Pin) folgt nach Review** |
+| welle-14-matrix-lineage | 2026-06-17 | [slice-024 §8](../done/slice-024-matrix-supersede-lineage.md#8-closure-notiz-nach-done); opt-in `allow-supersede-lineage` (+ `supersede-fields`) nimmt die deklarierte Supersede-Lineage-Kante des Moduls `matrix` von der Status-Prüfung aus ([`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix) Change Request 0.14.0); nur `matrix-inactive`, `matrix-forbidden` unberührt; `matrix` bleibt marker-frei (Entscheidung B2). `make gates` grün (Coverage 95,00 %), Vorher/Nachher am Image belegt (1 → 0 Befunde); Minor-Release **v0.11.0** auf GHCR (Run `27679319866` grün in 1m58s, Tags `v0.11.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:6ec1c463b5276b3314881839bd800b5e9aab12fa624a35d31618cecb62f17795` |
 
 ## Historische Trigger-Verschiebungen
 
