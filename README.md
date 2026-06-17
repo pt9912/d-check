@@ -23,7 +23,10 @@ Anforderung im [Lastenheft](spec/lastenheft.md):
   ([`DC-FA-ANCH-001`](spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors))
 - `ids` — Linkpflicht für Kennungen (z. B. `ADR-NNNN`) nach
   deklarierten Mustern ([`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids))
-- `matrix` — Referenzrichtungs-Regeln zwischen Dokumentklassen
+- `matrix` — Referenzrichtungs-Regeln zwischen Dokumentklassen plus
+  Status-Bedingungen; legitime Ausnahmen sind **strukturell**
+  (`exclude-sections` für Provenance, opt-in `allow-supersede-lineage`
+  für die Supersede-Lineage-Kante), kein Zeilen-Marker
   ([`DC-FA-MTX-001`](spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix))
 - `external` — Erreichbarkeit externer URLs, strikt opt-in
   ([`DC-FA-EXT-001`](spec/lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in))

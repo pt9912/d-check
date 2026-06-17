@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-16.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-17.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -10,10 +10,14 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-13-ventil-prosa ist abgeschlossen (siehe
-„Abgeschlossene Wellen"). Die nächste Welle wartet auf ihren Trigger
-(Change Request im Lastenheft oder Priorisierung durch den
-Auftraggeber).
+**welle-14-matrix-lineage** (Trigger: Change Request des Auftraggebers
+aus dem Fremd-Repo `grid-gym`, 2026-06-17). Einziger Slice:
+[slice-024](slice-024-matrix-supersede-lineage.md) — opt-in
+Supersede-Lineage-Carve-out für das Modul `matrix`
+([`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
+0.14.0). Die ablösende Datei darf auf das von ihr abgelöste (inaktive)
+Dokument verweisen, ohne `matrix-inactive` zu erzeugen. Abwärtskompatibel
+(Default aus).
 
 ## Nächste Wellen
 

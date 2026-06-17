@@ -6,6 +6,21 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-024 — Modul `matrix`: opt-in `allow-supersede-lineage` (mit
+  `supersede-fields`) nimmt die Supersede-Lineage-Kante von der
+  Status-Prüfung aus — eine ablösende Datei darf auf das von ihr
+  abgelöste (inaktive) Dokument verweisen, ohne `matrix-inactive` zu
+  erzeugen, sofern sie die Ablösung über ein deklariertes Feld benennt
+  (Match über Linktext bzw. Zielpfad der Referenz)
+  ([`DC-FA-MTX-001`](spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
+  Change Request 0.14.0). Wirkt nur auf `matrix-inactive`;
+  `matrix-forbidden` (Klassen-Regeln) bleibt unberührt. `matrix` trägt
+  bewusst **keinen** `d-check:ignore`-Marker — legitime Ausnahmen sind
+  strukturell (`exclude-sections`, `allow-supersede-lineage`).
+  Abwärtskompatibel: Default aus ⇒ Befundsatz byte-identisch.
+
 ## [0.10.0] — 2026-06-16
 
 ### Changed

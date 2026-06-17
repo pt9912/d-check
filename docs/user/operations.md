@@ -86,6 +86,37 @@ Betreibers — ein `always`-Lauf über die geprüften Repos zeigt die
 Lücken, unabhängig davon, ob ein Repo `always` schon aktiviert hat
 ([`DC-QA-04`](../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Muster).
 
+## Referenzmatrix — Supersede-Lineage und Marker-Politik
+
+Das Modul `matrix`
+([`DC-FA-MTX-001`](../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix))
+meldet Referenzen auf inaktive Dokumente (Status `superseded`/
+`deprecated`) als `matrix-inactive`. Eine **ablösende** Datei verweist
+aber per Definition auf das Dokument, das sie ablöst — diese
+Lineage-Kante ist legitim. Die opt-in Konfiguration nimmt sie aus:
+
+```yaml
+matrix:
+  status:
+    forbidden: [superseded, deprecated]
+    allow-supersede-lineage: true
+    supersede-fields: [Supersedes, Aenderungstyp]
+```
+
+Genau die Kante X → Y wird von der Status-Prüfung ausgenommen, wenn X
+über eines der `supersede-fields` (Form `**Feld:** Wert` oder
+`Feld: Wert`) deklariert, dass es Y ablöst — erkannt am Linktext oder
+Zielpfad der Referenz. Alle anderen Referenzen auf Y bleiben
+`matrix-inactive`, und die Klassen-Regeln (`matrix-forbidden`) sind
+unberührt. Default aus: ohne das Flag ist der Befundsatz byte-identisch.
+
+**Kein Zeilen-Marker für `matrix`.** Der `d-check:ignore`-Marker wirkt
+ausschließlich auf `ids` und `codepaths` (illustrative Beispiele).
+`matrix`-Befunde werden behoben oder **strukturell** ausgenommen
+(`exclude-sections` für Provenance-/Historie-Sektionen,
+`allow-supersede-lineage` für die Lineage-Kante) — legitime Ausnahmen
+sind deklarierte Konfiguration, keine verstreuten Kommentare.
+
 ## Config vorschlagen — `--suggest-config`
 
 `d-check --suggest-config spec/lastenheft.md,harness/conventions.md,docs/plan/adr/`
