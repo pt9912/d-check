@@ -20,17 +20,20 @@ die kanonische Quelle (Source Precedence, siehe
 ## Baseline
 
 - **Konvention:** AI-Harness-Kurs
-- **Stand:** Template-Set 2026-06
+- **Stand:** [`v1.2.1`](https://github.com/pt9912/ai-harness-course/releases/tag/v1.2.1)
+  (Release-Tag, gepinnt 2026-06-18; ursprünglich unversioniert adoptiert
+  als „Template-Set 2026-06", nachgezogen mit
+  [`MR-011`](#mr-011--baseline-auf-release-tag-gepinnt))
 - **Datum der Adoption:** 2026-06-10
 
 ## Adoptierte Konventions-Quellen
 
 - **Extern (Lehrmaterial):**
-  [`ai-harness-course`](https://github.com/pt9912/ai-harness-course)
+  [`ai-harness-course@v1.2.1`](https://github.com/pt9912/ai-harness-course/tree/v1.2.1)
   (Templates: `lab/templates/`, Konventionen:
   `kurs/de/grundlagen/konventionen.md`).
 - **Extern (Agenten-Destillat):**
-  [`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/main/kurs/de/agents-regelwerk.md)
+  [`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/v1.2.1/kurs/de/agents-regelwerk.md)
   — operatives Regelwerk für Code-Agenten ohne Didaktik; derivativ,
   bei Konflikt gilt das Lehrmaterial.
 - **Konventions-Vorbilder (Implementierung):**
@@ -242,6 +245,35 @@ die kanonische Quelle (Source Precedence, siehe
 - **Begründung:** Baseline-Konformität, sobald die Dateien real
   existieren — kein Rang für Phantome, kein Phantom für Ränge.
 - **Auflösungs-Trigger:** permanent (Baseline-Konformität).
+
+### MR-011 — Baseline auf Release-Tag gepinnt
+
+- **Datum:** 2026-06-18
+- **Geltungsbereich:** [§Baseline](#baseline), [§Adoptierte
+  Konventions-Quellen](#adoptierte-konventions-quellen)
+- **Adaption:** Die Baseline-Aussage und die externen
+  Konventions-Quellen waren bislang **unversioniert**: der Stand als
+  bloßer Datumsstempel „Template-Set 2026-06" und die Quellen-Pointer
+  auf den `main`-Branch (`.../ai-harness-course/main/...`). Beides ist
+  auf den Release-Tag **`v1.2.1`** gepinnt — die Stand-Zeile, die
+  Raw-URL von `agents-regelwerk.md` und der Lehrmaterial-Repo-Link.
+  MR-000 bleibt unverändert (akzeptiert; Nachtrag daher als eigener
+  Eintrag, analog
+  [`MR-008`](#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage)).
+- **Begründung:** Ein `main`-Pointer ist genau die Doku-Drift, die das
+  Regelwerk für Außen-Verweise verbietet (tag-gepinnte URLs als
+  Anti-Drift-Default); ein unversionierter Stand macht die
+  Baseline-Konformitäts-Aussage von
+  [`MR-000`](#mr-000--baseline-aussage) („keine inhaltlichen Adaptionen
+  ggü. Baseline-Default") nicht mehr eindeutig prüfbar, sobald `main`
+  weiterläuft. Anlass: User-Direktive 2026-06-18, das aktuelle
+  Regelwerk (v1.2.1) zu befolgen.
+- **Auflösungs-Trigger:** permanent als Mechanik; der konkrete Tag wird
+  bei Adoption einer neueren Baseline-Version per Nachtrags-MR
+  hochgezogen (dann auch Re-Evaluierung der an die Kurs-Quelle
+  gekoppelten Trigger von
+  [`MR-006`](#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)
+  und [`MR-008`](#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage)).
 
 ## Anforderungs-Anlege-Prozess
 

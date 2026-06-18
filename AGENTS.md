@@ -17,7 +17,7 @@ Sensors-Bindung) leben in
 [`harness/conventions.md`](harness/conventions.md).
 
 Das Betriebsregelwerk der adoptierten Baseline in Agenten-Kurzform
-([`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/main/kurs/de/agents-regelwerk.md))
+([`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/v1.2.1/kurs/de/agents-regelwerk.md))
 einmal pro Session lesen, bevor der Workflow (§6) startet. Derivativ:
 bei Konflikt gelten die kanonischen Quellen; der adoptierte Stand
 steht in [`harness/conventions.md`](harness/conventions.md) §Baseline.
