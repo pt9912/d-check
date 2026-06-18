@@ -212,7 +212,7 @@ ableitbar** — einen **Fix-Kandidaten** (die vorgeschlagene Änderung,
 [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 Die Fix-Kandidaten entstehen aus derselben Mechanik, die
 [`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch) zum anwendbaren Patch
-rendert — eine Quelle, zwei Ausgaben. Die Diagnose ist deterministisch
+rendert — eine Quelle, mehrere Ausgaben (Prosa, Patch, JSON). Die Diagnose ist deterministisch
 ([`DC-QA-02`](#dc-qa-02--determinismus)); die Exit-Codes folgen
 [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes) (die Diagnose erscheint auf
 stdout unabhängig vom Code). Mit zusätzlichem `--json` wird die Diagnose
