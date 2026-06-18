@@ -3,7 +3,7 @@
 **Status:** open (geplant).
 
 **Welle:** welle-16-image-test-modi (Trigger: Entscheidung Auftraggeber —
-E2E-Lücke vor Release v0.16.0 schließen; baut auf slice-025/026).
+E2E-Lücke vor Release v0.12.0 schließen; baut auf slice-025/026).
 
 **Bezug:**
 [`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)
@@ -53,7 +53,7 @@ Lastenheft/Spezifikation unverändert (kein neuer Vertrag).
 
 ## 4. Trigger
 
-Entscheidung Auftraggeber (E2E-Lücke vor Release v0.16.0). Voraussetzung
+Entscheidung Auftraggeber (E2E-Lücke vor Release v0.12.0). Voraussetzung
 erfüllt: slice-025/026 done (`--doctor`/`--repair` existieren).
 
 ## 5. Closure-Trigger
@@ -97,7 +97,7 @@ HIGH 0 / MEDIUM 0 / LOW 0 / INFO 1 (konservatives `--repair` genügt für
 die Stufe) — freigegeben.
 
 **Welle:** welle-16-image-test-modi damit vollständig; die E2E-Lücke vor
-dem Release v0.16.0 ist geschlossen.
+dem Release v0.12.0 ist geschlossen.
 
 ## 8. Sub-Area-Modus-Begründung
 

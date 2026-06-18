@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.12.0] — 2026-06-18
+
 ### Added
 
 - slice-025 — Diagnose-Modus `--doctor`: erklärende, nach Datei
@@ -30,6 +32,14 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   kombinierbar; deterministisch (`DC-QA-02`), read-only (`DC-QA-03`).
   Wiederverwendung des Fix-Kandidaten-Modells aus slice-025
   ([`DC-FA-CLI-008`](spec/lastenheft.md#dc-fa-cli-008--reparatur-patch)).
+
+### Changed
+
+- slice-027 — `make image-test` deckt nun auch `--doctor`/`--repair` ab
+  (nativ == Container byte-identisch, stdout + stderr + Exit-Code); E2E-
+  Härtung des
+  [`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)-
+  Vertrags für die neuen Ausgabe-Modi (`DC-QA-02`-Parität).
 
 ## [0.11.0] — 2026-06-17
 

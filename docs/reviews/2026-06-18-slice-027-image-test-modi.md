@@ -47,4 +47,4 @@
 
 **Freigegeben.** Reine, am realen Image grüne Gate-Härtung; keine
 HIGH/MEDIUM/LOW. Closure kann erfolgen; welle-16 ist damit vollständig und
-die E2E-Lücke vor dem Release v0.16.0 geschlossen.
+die E2E-Lücke vor dem Release v0.12.0 geschlossen.
