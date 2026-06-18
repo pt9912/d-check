@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.16.0
+**Version:** 0.17.0
 
 **Status:** Draft
 
@@ -123,10 +123,13 @@ enthält dann keine unstrukturierten Textzeilen. Die Ausgabe-Modi
 [`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus) (`--doctor`) und
 [`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch) (`--repair`) ersetzen
 das Default-stdout-Format durch eine Diagnose bzw. einen unified diff;
-sie sind untereinander und mit `--json` **nicht kombinierbar** (jede
-solche Kombination ist ein Nutzungsfehler, Exit-Code 2 nach
-[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) — JSON-Varianten dieser
-Modi sind in dieser Version out of scope.
+`--doctor` ist mit `--json` **kombinierbar** — dann gibt es die Diagnose
+maschinenlesbar aus (JSON statt Prosa, siehe
+[`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus)). `--repair` mit `--json`
+und `--doctor` mit `--repair` bleiben **nicht kombinierbar**
+(Nutzungsfehler, Exit-Code 2 nach
+[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)); eine JSON-Variante des
+Patches ist out of scope.
 
 **Akzeptanzkriterien:**
 
@@ -212,15 +215,22 @@ Die Fix-Kandidaten entstehen aus derselben Mechanik, die
 rendert — eine Quelle, zwei Ausgaben. Die Diagnose ist deterministisch
 ([`DC-QA-02`](#dc-qa-02--determinismus)); die Exit-Codes folgen
 [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes) (die Diagnose erscheint auf
-stdout unabhängig vom Code).
+stdout unabhängig vom Code). Mit zusätzlichem `--json` wird die Diagnose
+**maschinenlesbar** ausgegeben: ein JSON-Dokument wie
+[`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate), dessen `findings` je
+Eintrag zusätzlich `reasonText` (Grund-Klartext) und `fixCandidate`
+(Objekt mit `original`/`replacement`/`note`, sonst `null`) tragen; die
+Gruppierung nach Datei trägt das `file`-Feld (keine Prosa-Einrückung). Es
+ist dieselbe Ableitung, ein drittes Rendering neben Prosa und Patch.
 
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Repo mit aktivem Modul `ids` und einem `id-unlinked`-Befund (eine nackte Kennung, deren Definition bekannt ist), when `d-check --doctor` läuft, then enthält stdout eine Diagnose-Gruppe für die betroffene Datei mit dem Grund in Klartext und einem Fix-Kandidaten (Kennung → Link auf ihre Definition), Exit-Code 1.
 - **Boundary:** Given ein Repo ohne Befunde, when `d-check --doctor` läuft, then Exit-Code 0 und eine Diagnose, die „0 Befunde" ausweist, ohne Fix-Kandidaten.
-- **Negative:** Given die Kombination `d-check --doctor --json` (eine JSON-Variante der Diagnose ist in dieser Version nicht vorgesehen), when aufgerufen, then Exit-Code 2 (Nutzungsfehler, vgl. [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) und keine Diagnose-Ausgabe; ein read-only gemountetes Repository genügt (kein Schreibzugriff, [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+- **JSON-Variante:** Given derselbe `id-unlinked`-Befund, when `d-check --doctor --json` läuft, then ist stdout als JSON parsbar (keine Nicht-JSON-Zeilen), der betroffene `findings`-Eintrag trägt `reasonText` und ein `fixCandidate` mit `replacement`, und `exitCode` ist 1.
+- **Negative:** Given die Kombination `d-check --doctor --repair`, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, vgl. [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) und keine Ausgabe auf stdout.
 
-**Out-of-Scope:** Anwenden der Fix-Kandidaten (das leistet als Patch [`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)); eine JSON-Variante der Diagnose (eigener späterer Modus); Fix-Kandidaten für Befunde ohne eindeutige Ableitung (sie werden erklärt, aber ohne Vorschlag).
+**Out-of-Scope:** Anwenden der Fix-Kandidaten (das leistet als Patch [`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)); Fix-Kandidaten für Befunde ohne eindeutige Ableitung (sie werden erklärt, aber ohne Vorschlag); eine JSON-Variante des **Patches** (`--repair --json` bleibt Nutzungsfehler).
 
 ---
 
@@ -727,6 +737,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.17.0 | 2026-06-18 | Change Request (Auftraggeber): `--doctor` wird mit `--json` kombinierbar — Schärfung `DC-FA-CLI-007` (maschinenlesbare Diagnose: `findings` je Eintrag um `reasonText` und `fixCandidate` erweitert, Gruppierung über das `file`-Feld) und `DC-FA-CLI-004` (Kombinierbarkeit `--doctor`+`--json` definiert statt verboten; `--repair`+`--json` und `--doctor`+`--repair` bleiben Nutzungsfehler). Dieselbe Grund-Klartext-/Fix-Kandidaten-Ableitung, drittes Rendering neben Prosa und Patch. Anlass: Auftraggeber-Wunsch nach maschinenlesbarer Diagnose | slice-029 |
 | 0.16.0 | 2026-06-18 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-008` (Option `--repair`: unified diff auf stdout, `git apply`-kompatibel, read-only; konservative Stufe als Default mit eindeutig ableitbaren Fixes — v1 v. a. `id-unlinked` → Definitions-Link —, breite Best-Guess-Stufe opt-in, Kennzeichnung review-pflichtiger Hunks auf stderr, damit der Patch `git apply`-rein bleibt). Baut auf den Ausgabe-Modi aus 0.15.0 auf; deterministisch (`DC-QA-02`), read-only-Kernvertrag (`DC-QA-03`); In-place-Schreiben bleibt Out-of-Scope (wäre eigene Anforderung + ADR) | slice-026 |
 | 0.15.0 | 2026-06-18 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-007` (Option `--doctor`: erklärende, nach Datei/Regel gruppierte Diagnose mit Fix-Kandidaten; read-only, stdout-only, deterministisch `DC-QA-02`/`DC-QA-03`). Mit-Schärfung `DC-FA-CLI-003` (die Ausgabe-Modi folgen den Codes 0/1/2, Ausgabe auf stdout unabhängig vom Code) und `DC-FA-CLI-004` (die Modi `--doctor`/`--repair` ersetzen das Default-stdout-Format; untereinander und mit `--json` nicht kombinierbar → Nutzungsfehler exit 2; JSON-Varianten out of scope). Anlass: Machbarkeitsfrage des Auftraggebers (2026-06-18) — beratende Diagnose/Reparatur ohne Bruch der Seiteneffektfreiheit | slice-025 |
 | 0.14.0 | 2026-06-17 | Change Request (Auftraggeber): `DC-FA-MTX-001` — opt-in `allow-supersede-lineage` (+ `supersede-fields`) nimmt die Supersede-Lineage-Kante X → Y von der Status-Prüfung aus: ein ablösendes Dokument darf auf das von ihm abgelöste (inaktive) Dokument verweisen, ohne `matrix-inactive` zu erzeugen, sofern X über ein deklariertes Feld die Ablösung von Y benennt (Match über Linktext bzw. Zielpfad der Referenz). Carve-out beschränkt auf die deklarierte Lineage-Kante; `matrix-forbidden` (Klassen-Regeln) unberührt. Abwärtskompatibel (`DC-QA-02`): Default aus ⇒ Befundsatz byte-identisch. Marker-Politik (B2 der CR): `matrix` bleibt bewusst ohne Zeilen-Opt-out-Marker `d-check:ignore` (legitime Lineage strukturell ausgenommen, nicht stummgeschaltet). Anlass: reproduzierter Fremd-Repo-Befund (`grid-gym`, v0.10.0) — normative ADR→ADR-Lineage (`Aenderungstyp: Supersedes …`) als `matrix-inactive` gemeldet, brach `make docs-check` | slice-024 |
