@@ -322,12 +322,14 @@ Fix-Kandidaten gibt es nur dort, wo er **eindeutig** ableitbar ist.
 **Ziel:** behebbare Befunde als anwendbaren Patch ausgeben.
 **Voraussetzung:** `git` zum Anwenden des Patches.
 
-**Vorgehen** (Patch erzeugen, prüfen, anwenden):
+**Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
 docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.12.0 \
   --enable ids --repair > fix.patch
+# fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
+rm fix.patch
 ```
 
 **Ergebnis:** Ein `git apply`-kompatibler unified diff auf stdout. d-check
@@ -343,6 +345,10 @@ selbst schreibt nichts — Sie wenden den Patch an.
   der Patch auf stdout sauber anwendbar bleibt. Lesen Sie den Patch vor
   dem Anwenden.
 - Nicht mit `--json` oder `--doctor` kombinierbar.
+- **`fix.patch` ist temporär:** nach dem Anwenden löschen
+  (`rm fix.patch`) — sonst bleibt die Datei im Repo liegen und kann
+  versehentlich mitcommittet werden. Die Pipe-Variante unten kommt ganz
+  ohne Zwischendatei aus.
 - **Einzeiler (Pipe):** Weil der Patch auf stdout und nur
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
