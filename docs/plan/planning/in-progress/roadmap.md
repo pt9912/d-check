@@ -10,12 +10,11 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-17-benutzerhandbuch ist abgeschlossen (siehe
-„Abgeschlossene Wellen") — aufgabenbasiertes Benutzerhandbuch unter
-docs/user/ nach dem adoptierten Standard. Release **v0.12.0**
-(`--doctor`/`--repair` + E2E) ist auf GHCR veröffentlicht. Die nächste
-Welle wartet auf ihren Trigger (Change Request im Lastenheft oder
-Priorisierung durch den Auftraggeber). Die nächste Welle wartet auf ihren Trigger
+**welle-18-doctor-json — aktiv.** `slice-029` macht `--doctor --json` zur
+maschinenlesbaren Diagnose (Change Request 0.17.0, `findings` um
+`reasonText`/`fixCandidate` erweitert; [Plan](../open/slice-029-doctor-json.md)).
+welle-17 (Benutzerhandbuch) zuvor abgeschlossen; Release **v0.12.0**
+(`--doctor`/`--repair` + E2E) ist auf GHCR veröffentlicht. Die nächste Welle wartet auf ihren Trigger
 (Change Request im Lastenheft oder Priorisierung durch den Auftraggeber).
 
 ## Nächste Wellen
