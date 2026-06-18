@@ -10,12 +10,12 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-16-image-test-modi ist abgeschlossen (siehe
-„Abgeschlossene Wellen") — `make image-test` deckt jetzt auch
-`--doctor`/`--repair` nativ == Container ab. Damit sind welle-15
-(Feature-Paar `--doctor`/`--repair`) und welle-16 (E2E) als **Release
-v0.12.0** auf GHCR veröffentlicht (Run `27779122412` grün in 2m13s, Tags
-`v0.12.0`+`latest`); der Digest-Pin steht in der welle-16-Zeile. Die nächste Welle wartet auf ihren Trigger
+**welle-17-benutzerhandbuch — aktiv.** `slice-028` schreibt ein
+aufgabenbasiertes Benutzerhandbuch unter docs/user/ nach dem adoptierten
+Standard ([Plan](../open/slice-028-benutzerhandbuch.md)) — alle Use Cases
+des v0.12.0-Funktionsumfangs. welle-15 (`--doctor`/`--repair`) und
+welle-16 (E2E) sind als **Release v0.12.0** auf GHCR veröffentlicht
+(Run `27779122412` grün in 2m13s, Digest-Pin s. welle-16-Zeile). Die nächste Welle wartet auf ihren Trigger
 (Change Request im Lastenheft oder Priorisierung durch den Auftraggeber).
 
 ## Nächste Wellen
