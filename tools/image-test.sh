@@ -8,6 +8,10 @@
 #   (2) Boundary: read-only-Mount (:ro) → vollständige Prüfung ohne
 #                 Schreibfehler (sauberes Fixture → Exit 0).
 #   (3) Negative: fehlender /repo-Mount → Exit 2 mit Mount-Hinweis.
+#   (4) Modi:     --doctor und --repair → Ausgabe nativ vs. Container
+#                 byte-identisch (DC-QA-02; CLI-Optionen als Container-
+#                 Argumente identisch zur nativen Ausführung,
+#                 DC-FA-DIST-001 / DC-FA-CLI-007 / DC-FA-CLI-008).
 #
 # „Nativ" in einem Docker-only-Repo: das statische Binary wird aus dem
 # Runtime-Image extrahiert (docker cp) und direkt ausgeführt — kein
@@ -70,5 +74,36 @@ docker run --rm --network none "$IMAGE":latest \
 grep -q '/repo gemountet' "$WORK/nomount.err" \
   || fail "Mount-Hinweis fehlt auf stderr: $(cat "$WORK/nomount.err")"
 echo "image-test: (3) Negative — kein Mount, Exit 2 mit Mount-Hinweis"
+
+# --- (4) Modi: --doctor und --repair nativ vs. Container ------------
+# Eigenes Fixture mit einer nackten Kennung (id-unlinked), damit --repair
+# einen nicht-leeren Patch liefert (ids-Modul + existierendes Target).
+mkdir -p "$WORK/idsfix/docs/plan/adr"
+cat > "$WORK/idsfix/.d-check.yml" <<'YML'
+modules: [ids]
+ids:
+  patterns:
+    - regex: 'ADR-\d{4}'
+      target: docs/plan/adr/
+YML
+printf '# ADR\n' > "$WORK/idsfix/docs/plan/adr/0042-x.md"
+printf '# Doc\n\nnacktes ADR-0042 im Text\n' > "$WORK/idsfix/docs/a.md"
+
+for mode in doctor repair; do
+  nx=0
+  "$WORK/d-check" "--$mode" "$WORK/idsfix" > "$WORK/n.$mode.out" 2> "$WORK/n.$mode.err" || nx=$?
+  cx=0
+  docker run --rm --network none -v "$WORK/idsfix":/repo:ro "$IMAGE":latest "--$mode" \
+    > "$WORK/c.$mode.out" 2> "$WORK/c.$mode.err" || cx=$?
+  [ "$nx" -eq "$cx" ] || fail "--$mode: Exit nativ $nx != Container $cx"
+  [ "$nx" -eq 1 ] || fail "--$mode: Exit $nx, want 1"
+  cmp -s "$WORK/n.$mode.out" "$WORK/c.$mode.out" \
+    || fail "--$mode: stdout nativ vs. Container nicht byte-identisch (DC-QA-02)"
+  cmp -s "$WORK/n.$mode.err" "$WORK/c.$mode.err" \
+    || fail "--$mode: stderr nativ vs. Container nicht byte-identisch"
+done
+grep -q 'Diagnose' "$WORK/c.doctor.out" || fail "--doctor: Diagnose-Ausgabe fehlt"
+grep -q '+nacktes \[`ADR-0042`\]' "$WORK/c.repair.out" || fail "--repair: erwarteter Hunk fehlt"
+echo "image-test: (4) Modi — --doctor/--repair nativ == Container, Exit 1"
 
 echo "image-test: OK — DC-FA-DIST-001-Akzeptanzkriterien erfüllt"
