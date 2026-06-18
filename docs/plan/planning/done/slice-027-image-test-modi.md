@@ -73,7 +73,31 @@ DoD vollständig inkl. `make image-test` grün und `make gates` grün.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-*(wird bei Closure gefüllt — Umsetzung, Belege, Lerneintrag, Review-Runde.)*
+**Umsetzung:** `tools/image-test.sh` Stufe (4): auf einem `id-unlinked`-
+Fixture werden `--doctor` und `--repair` (konservativ) nativ vs. Container
+byte-identisch verglichen (stdout + stderr + Exit-Code), mit Inhalts-
+Asserts (Diagnose-Ausgabe bzw. nicht-leerer Patch-Hunk). Kein Lastenheft-/
+Spezifikations-Change — reine Gate-Härtung unter
+[`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)
+/ [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus).
+
+**Belege:** `make image-test` grün (Stufe (4) am realen Image);
+`make gates` grün. Verifikation explizit über `make image-test` (läuft
+nicht in `make gates`).
+
+**Lerneintrag:** Der Distributions-Vertrag „identisch zur nativen
+Ausführung" galt für die neuen Modi nur transitiv (gleiches Binary); die
+Stufe macht ihn am ausgelieferten Image *explizit* prüfbar. Das Fixture
+trägt bewusst einen reparierbaren Befund — sonst wäre der Byte-Vergleich
+eine Leer-Ausgabe-Tautologie.
+
+**Review R1** (Self-Review,
+[Report](../../../reviews/2026-06-18-slice-027-image-test-modi.md)):
+HIGH 0 / MEDIUM 0 / LOW 0 / INFO 1 (konservatives `--repair` genügt für
+die Stufe) — freigegeben.
+
+**Welle:** welle-16-image-test-modi damit vollständig; die E2E-Lücke vor
+dem Release v0.16.0 ist geschlossen.
 
 ## 8. Sub-Area-Modus-Begründung
 
