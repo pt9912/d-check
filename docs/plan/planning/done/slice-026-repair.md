@@ -94,7 +94,45 @@ Determinismus-/read-only-Beleg und grüner Gates.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-*(wird bei Closure gefüllt — Umsetzung, Belege, Lerneintrag, Review-Runde.)*
+**Umsetzung:** Vertrag
+[`DC-FA-CLI-008`](../../../../spec/lastenheft.md#dc-fa-cli-008--reparatur-patch)
+(Lastenheft 0.16.0) + Spezifikation
+[`DC-FA-CLI-008.a`](../../../../spec/spezifikation.md#dc-fa-cli-008a--reparatur-patch);
+`core.RepairEdits` (Zeilen-Edits aus den slice-025-Fix-Kandidaten),
+`report.Repair` (unified diff auf stdout, Marker/Zusammenfassung auf
+stderr), CLI-Flags `--repair`/`--repair-broad`. `make gates` grün
+(Coverage 93,9 %).
+
+**Belege:**
+
+- **Round-Trip** (Happy): echter `git init` + `git apply` + erneuter Lauf
+  ohne Befund (CLI-Akzeptanztest).
+- **Stufen** (Boundary): konservativ leerer Patch bei nur
+  best-guess-fähigen Befunden; breit markierter Hunk, Marker auf stderr.
+- Kombinations-Verbote `--repair --json` / `--doctor --repair` → Exit 2;
+  Determinismus 10× ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus));
+  read-only ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Konservativ-Disziplin:** nur eindeutige Fixes — `id-unlinked` auf nackte
+Prosa-Vorkommen an Wortgrenzen; Inline-Code- und über-matchende Vorkommen
+bleiben unangetastet (kein zerrissener Span, kein Fehl-Patch). Best-Guess
+ist der breiten, review-pflichtigen Stufe vorbehalten (Marker auf stderr,
+Patch bleibt `git apply`-rein).
+
+**Lerneintrag:** „Eine Quelle, zwei Ausgaben" eingelöst — dieselbe
+`FixCandidateFor`-Ableitung speist Diagnose (slice-025) und Patch
+(slice-026). Der `git apply`-Round-Trip-Test ist das ehrliche Orakel: er
+belegt Anwendbarkeit *und* Wirkung (Befund weg), nicht nur das
+Patch-Format. Die Wortgrenzen- und Inline-Code-Schranken verhindern den
+„grün ≠ richtig"-Fehlpatch.
+
+**Review R1** (Self-Review,
+[Report](../../../reviews/2026-06-18-slice-026-repair.md)): HIGH 0 /
+MEDIUM 0 / LOW 0 / INFO 3 — freigegeben; ein Konservativ-Defekt
+(Über-Match) wurde im selben Stand mit Wortgrenzen-Prüfung geschlossen.
+
+**Welle:** welle-15-doctor-repair ist damit vollständig (slice-025 +
+slice-026).
 
 ## 8. Sub-Area-Modus-Begründung
 
