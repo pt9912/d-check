@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-17.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-18.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -10,15 +10,21 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-14-matrix-lineage ist abgeschlossen (siehe
-„Abgeschlossene Wellen"), Minor-Release `v0.11.0` auf GHCR. Die nächste
-Welle wartet auf ihren Trigger (Change Request im Lastenheft oder
-Priorisierung durch den Auftraggeber).
+**Keine aktive Welle** (Implementierung nicht gestartet).
+welle-14-matrix-lineage ist abgeschlossen (siehe „Abgeschlossene
+Wellen"), Minor-Release `v0.11.0` auf GHCR. **Geplant als nächstes:**
+welle-15-doctor-repair — Slice-Pläne liegen in [`open/`](../open/)
+([slice-025](../open/slice-025-doctor.md) `--doctor`,
+[slice-026](../open/slice-026-repair.md) `--repair`); der Trigger
+(Change Request 0.15.0/0.16.0,
+[`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)/[`DC-FA-CLI-008`](../../../../spec/lastenheft.md#dc-fa-cli-008--reparatur-patch))
+ist erfüllt; Start mit slice-025 auf Freigabe.
 
 ## Nächste Wellen
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
+| welle-15-doctor-repair | Change Request 0.15.0/0.16.0 akzeptiert ([`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)/[`DC-FA-CLI-008`](../../../../spec/lastenheft.md#dc-fa-cli-008--reparatur-patch)) | [slice-025](../open/slice-025-doctor.md) (`--doctor`) → [slice-026](../open/slice-026-repair.md) (`--repair`) | 2 Slices, mittel |
 
 ## Meilensteine
 
