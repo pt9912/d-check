@@ -10,12 +10,13 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-15-doctor-repair ist abgeschlossen (siehe
-„Abgeschlossene Wellen") — `--doctor` (slice-025) und `--repair`
-(slice-026) geliefert. welle-14-matrix-lineage zuvor abgeschlossen,
-Minor-Release `v0.11.0` auf GHCR. Die nächste Welle wartet auf ihren
-Trigger (Change Request im Lastenheft oder Priorisierung durch den
-Auftraggeber).
+**welle-16-image-test-modi — aktiv.** Schließt vor dem Release v0.16.0 die
+E2E-Lücke der Distributions-Stufe: `slice-027` dehnt `make image-test`
+([`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image))
+auf `--doctor`/`--repair` aus
+([Plan](../open/slice-027-image-test-modi.md)).
+welle-15-doctor-repair zuvor abgeschlossen (`--doctor` + `--repair`),
+welle-14-matrix-lineage davor; Minor-Release `v0.11.0` auf GHCR.
 
 ## Nächste Wellen
 
