@@ -151,6 +151,46 @@ ids-Muster iteriert, keine Map-Reihenfolge):
    Diagnose geht auf stdout, die Zusammenfassung (geprüfte Dateien,
    Befundzahl) auf stderr — analog zum Default-Reporter.
 
+### DC-FA-CLI-008.a — Reparatur-Patch
+
+`--repair` ist ein **Lese**-Modus, der statt der Befund-Zeilen einen
+**unified diff** auf stdout ausgibt (`git apply`-kompatibel); das Werkzeug
+schreibt nie
+([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+Zwei Stufen über Flags: **konservativ** (Default, `--repair`) und **breit**
+(opt-in, `--repair-broad`, impliziert `--repair`); `--repair` ist mit
+`--json` und `--doctor` nicht kombinierbar (Nutzungsfehler, Exit 2).
+Schritte (deterministisch,
+[`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus) — Befunde stabil
+sortiert, Ausgabe nach Datei/Zeile):
+
+1. **Prüflauf** wie im Default; Exit-Code-Logik 0/1/2 wie
+   [`DC-FA-CLI-003`](lastenheft.md#dc-fa-cli-003--exit-codes). Der Patch
+   erscheint auf stdout unabhängig vom Code.
+2. **Edits ableiten** je Befund:
+   - **konservativ** (beide Stufen): nur EINDEUTIGE Fixes — in dieser
+     Version `id-unlinked` → Markdown-Link auf das ids-Definitions-`target`
+     ([`DC-FA-CLI-007.a`](#dc-fa-cli-007a--diagnose-modus), gemeinsame
+     Ableitung), angewandt **nur auf nackte Prosa-Vorkommen**: das
+     Vorkommen wird im vorverarbeiteten Zeilentext (Inline-Code
+     positionserhaltend geleert) gesucht — Vorkommen innerhalb von
+     Inline-Code oder bereits in einem Link bleiben unangetastet (kein
+     zerrissener Span). Mehrere nackte Vorkommen derselben Kennung auf
+     einer Zeile werden alle ersetzt.
+   - **breit** (`--repair-broad`): zusätzlich **Best-Guess** — in dieser
+     Version `target-missing` → die im Scan-Bestand EINDEUTIG mit gleichem
+     Basisnamen vorkommende Datei (relativ zur Befund-Datei). Mehrdeutige
+     oder fehlende Treffer liefern keinen Edit. Best-Guess-Edits sind
+     **review-pflichtig**.
+3. **Hunks rendern:** je geänderte Zeile ein Null-Kontext-Hunk
+   (`@@ -L,1 +L,1 @@`) unter `--- a/<datei>` / `+++ b/<datei>`; der Patch
+   ist gegen den unveränderten Baum sauber anwendbar. Die
+   review-pflichtig-Markierung der breiten Stufe geht auf **stderr** (wie
+   Diagnose/Zusammenfassung) — damit bleibt der stdout-Patch
+   `git apply`-rein. Befunde ohne Edit in der gewählten Stufe bleiben
+   unangetastet und erscheinen unter
+   [`DC-FA-CLI-007`](lastenheft.md#dc-fa-cli-007--diagnose-modus).
+
 ### DC-FA-LINK-001.a — Markdown-Vorverarbeitung und Link-Extraktion
 
 1. **Fences:** Zeilen, deren erste Nicht-Leerzeichen-Folge mit
@@ -724,3 +764,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-12 | Scan-Härtung aus der pkcs11-course-Adoption (slice-014): `scan.ignore`-Muster prunen den Verzeichnis-Abstieg (vollständig ignorierte Teilbäume werden nicht betreten — unlesbare ignorierte Verzeichnisse wie root-eigene Build-Reste sind kein Laufzeitfehler mehr); `SKIP_DIRS` um `.gradle` ergänzt (Parität zur JS-Alt-Familie) | slice-014 |
 | 2026-06-12 | Inline-Code-Erkennung absatzweise statt zeilenweise (§[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 2): mehrzeilige Code-Spans gemäß CommonMark, Absatzgrenzen Leerzeile/Fence, ungeschlossene Folge literal. Anlass: [`DC-QA-04`](lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Gegentest u-boot — über Zeilenumbrüche gebrochene Befehls-Spans invertierten die Backtick-Parität der Folgezeile und erzeugten False-Positive-`id-unlinked`-Befunde auf korrekt verlinkten Kennungen. Zeilenbasierte **Link**-Extraktion (Schritt 3) bleibt normative Grenze | slice-012 |
 | 2026-06-18 | §[`DC-FA-CLI-007.a`](spezifikation.md#dc-fa-cli-007a--diagnose-modus) ergänzt: Diagnose-Modus `--doctor` — Lese-Lauf, nach Datei gruppierte Klartext-Diagnose auf stdout (statt Befund-Zeilen), Fix-Kandidat nur für `id-unlinked` (Link auf das ids-`target`); Grund-Klartext-Mapping über alle 14 Grund-Codes mit Vollständigkeits-Prüfung gegen die Reason-Konstanten; `--doctor`+`--json` = Nutzungsfehler (Exit 2); Determinismus über die sortierte Befundliste | slice-025 |
+| 2026-06-18 | §[`DC-FA-CLI-008.a`](spezifikation.md#dc-fa-cli-008a--reparatur-patch) ergänzt: Reparatur-Modus `--repair` — unified diff auf stdout (`git apply`-kompatibel), zwei Stufen (`--repair`/`--repair-broad`); konservativ nur eindeutige `id-unlinked`-Fixes auf nackte Prosa-Vorkommen, breit Best-Guess `target-missing` (eindeutiger Basisname) mit review-pflichtig-Marker auf stderr; nicht mit `--json`/`--doctor` kombinierbar; Determinismus über sortierte Edits | slice-026 |

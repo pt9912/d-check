@@ -44,6 +44,8 @@ type options struct {
 	root          string
 	json          bool
 	doctor        bool
+	repair        bool
+	repairBroad   bool
 	enable        []string
 	disable       []string
 	printConfig   bool
@@ -118,6 +120,8 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	var enable, disable multiFlag
 	jsonOut := flags.Bool("json", false, "maschinenlesbare JSON-Ausgabe")
 	doctorOut := flags.Bool("doctor", false, "erklärende, gruppierte Diagnose mit Fix-Kandidaten auf stdout (statt Befund-Zeilen)")
+	repairOut := flags.Bool("repair", false, "Reparatur-Patch (unified diff) auf stdout, git-apply-kompatibel; konservativ (nur eindeutige Fixes)")
+	repairBroadOut := flags.Bool("repair-broad", false, "wie --repair, zusätzlich Best-Guess-Reparaturen (review-pflichtig, Marker auf stderr)")
 	printConfig := flags.Bool("print-config", false, "Konfigurations-Startgerüst auf stdout ausgeben und beenden")
 	suggestConfig := flags.String("suggest-config", "", "Config aus Autoritäts-Quellen (kommagetrennt) vorschlagen und beenden")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
@@ -141,15 +145,21 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 		fmt.Fprintln(stderr, "d-check: error: höchstens ein Pfad-Argument")
 		return options{}, 2, true
 	}
-	opts := options{root: ".", json: *jsonOut, doctor: *doctorOut, enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig}
+	opts := options{root: ".", json: *jsonOut, doctor: *doctorOut,
+		repair: *repairOut || *repairBroadOut, repairBroad: *repairBroadOut,
+		enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}
-	// DC-FA-CLI-004: --doctor ersetzt das stdout-Format; eine JSON-Variante
-	// der Diagnose ist in dieser Version nicht vorgesehen — die Kombination
-	// ist ein Nutzungsfehler (DC-FA-CLI-003, Exit 2).
-	if opts.doctor && opts.json {
-		fmt.Fprintln(stderr, "d-check: error: --doctor ist nicht mit --json kombinierbar")
+	// DC-FA-CLI-004: --doctor und --repair ersetzen das stdout-Format; sie
+	// sind untereinander und mit --json nicht kombinierbar (Nutzungsfehler,
+	// DC-FA-CLI-003, Exit 2). JSON-Varianten dieser Modi sind out of scope.
+	if opts.json && (opts.doctor || opts.repair) {
+		fmt.Fprintln(stderr, "d-check: error: --doctor/--repair sind nicht mit --json kombinierbar")
+		return options{}, 2, true
+	}
+	if opts.doctor && opts.repair {
+		fmt.Fprintln(stderr, "d-check: error: --doctor und --repair sind nicht kombinierbar")
 		return options{}, 2, true
 	}
 	return opts, 0, false
@@ -203,7 +213,7 @@ func loadConfig(fsys *fsadapter.Adapter, stderr io.Writer) (core.Config, bool) {
 // (DC-FA-CLI-003/004). Die Ausgabe-Modi --doctor und --json ersetzen das
 // Default-Text-Format; der Exit-Code richtet sich allein nach dem
 // Befund-Stand (0 = keine, 1 = mindestens einer).
-func render(res core.Result, opts options, cfg core.Config, stdout, stderr io.Writer) int {
+func render(res core.Result, opts options, cfg core.Config, fsys driven.Filesystem, stdout, stderr io.Writer) int {
 	exit := 0
 	if len(res.Findings) > 0 {
 		exit = 1
@@ -212,6 +222,16 @@ func render(res core.Result, opts options, cfg core.Config, stdout, stderr io.Wr
 	switch {
 	case opts.doctor:
 		if err := report.Doctor(stdout, stderr, res.Findings, sum, cfg); err != nil {
+			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+			return 2
+		}
+	case opts.repair:
+		edits, err := core.RepairEdits(fsys, res.Findings, cfg, opts.repairBroad)
+		if err != nil {
+			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+			return 2
+		}
+		if err := report.Repair(stdout, stderr, edits); err != nil {
 			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 			return 2
 		}
@@ -287,5 +307,5 @@ func Run(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return 2
 	}
-	return render(res, opts, cfg, stdout, stderr)
+	return render(res, opts, cfg, fsys, stdout, stderr)
 }

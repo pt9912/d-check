@@ -19,6 +19,17 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   wiederverwendbare Eingabe für den folgenden Patch-Modus `--repair`
   (slice-026)
   ([`DC-FA-CLI-007`](spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)).
+- slice-026 — Reparatur-Patch `--repair`: gibt einen unified diff auf
+  stdout aus (`git apply`-kompatibel), der ableitbare Befunde behebt;
+  schreibt selbst nichts. **Konservativ** (Default) nur eindeutige Fixes
+  (`id-unlinked` → Definitions-Link, nur nackte Prosa-Vorkommen — keine
+  Inline-Code- oder Mehrdeutigkeits-Reparatur); **breit** (`--repair-broad`,
+  opt-in) zusätzlich Best-Guess (`target-missing` → Datei eindeutig
+  gleichen Basisnamens), review-pflichtig mit Marker auf stderr, sodass
+  der Patch `git apply`-rein bleibt. Nicht mit `--json`/`--doctor`
+  kombinierbar; deterministisch (`DC-QA-02`), read-only (`DC-QA-03`).
+  Wiederverwendung des Fix-Kandidaten-Modells aus slice-025
+  ([`DC-FA-CLI-008`](spec/lastenheft.md#dc-fa-cli-008--reparatur-patch)).
 
 ## [0.11.0] — 2026-06-17
 

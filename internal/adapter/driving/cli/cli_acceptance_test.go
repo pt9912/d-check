@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -418,6 +419,103 @@ func TestCLI007_Doctor_Determinismus(t *testing.T) {
 	var first string
 	for i := 0; i < 10; i++ {
 		_, stdout, _ := run(t, "--doctor", root)
+		if i == 0 {
+			first = stdout
+		} else if stdout != first {
+			t.Fatalf("Lauf %d weicht ab:\n%q\n---\n%q", i, first, stdout)
+		}
+	}
+}
+
+// DC-FA-CLI-008 Happy: --repair (konservativ) erzeugt einen unified diff,
+// der eine nackte Kennung verlinkt; git apply nimmt ihn sauber an und ein
+// erneuter Lauf meldet den Befund nicht mehr (Round-Trip).
+func TestCLI008_Repair_RoundTrip(t *testing.T) {
+	if _, err := exec.LookPath("git"); err != nil {
+		t.Skip("git nicht verfügbar")
+	}
+	root := t.TempDir()
+	write(t, root, ".d-check.yml",
+		"modules: [ids]\nids:\n  patterns:\n    - regex: 'ADR-\\d{4}'\n      target: docs/plan/adr/\n")
+	write(t, root, "docs/plan/adr/0042-x.md", "# ADR")
+	write(t, root, "docs/a.md", "nacktes ADR-0042 im Fließtext\n")
+
+	code, patch, _ := run(t, "--repair", root)
+	if code != 1 {
+		t.Fatalf("Exit = %d, want 1", code)
+	}
+	if !strings.Contains(patch, "--- a/docs/a.md") || !strings.Contains(patch, "+nacktes [`ADR-0042`](") {
+		t.Fatalf("Patch unerwartet:\n%s", patch)
+	}
+
+	git := func(args ...string) {
+		t.Helper()
+		cmd := exec.Command("git", args...)
+		cmd.Dir = root
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("git %v: %v\n%s\npatch:\n%s", args, err, out, patch)
+		}
+	}
+	git("init")
+	if err := os.WriteFile(filepath.Join(root, "fix.patch"), []byte(patch), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	git("apply", "fix.patch")
+
+	code2, _, _ := run(t, root) // erneuter Lauf auf dem gepatchten Baum
+	if code2 != 0 {
+		t.Fatalf("nach git apply noch Befunde: Exit = %d", code2)
+	}
+}
+
+// DC-FA-CLI-008 Boundary: nur best-guess-fähige Befunde (target-missing) →
+// konservativ leerer Patch; breite Stufe Best-Guess-Hunk + stderr-Marker.
+func TestCLI008_Repair_Boundary_Stufen(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "[x](alt.md)\n")
+	write(t, root, "docs/sub/alt.md", "ok\n")
+
+	code, stdout, _ := run(t, "--repair", "--disable", "anchors", root)
+	if code != 1 || stdout != "" {
+		t.Fatalf("konservativ: Exit = %d, stdout = %q (leerer Patch erwartet)", code, stdout)
+	}
+
+	code, stdout, stderr := run(t, "--repair-broad", "--disable", "anchors", root)
+	if code != 1 || !strings.Contains(stdout, "+[x](sub/alt.md)") {
+		t.Fatalf("breit: Exit = %d, stdout = %q", code, stdout)
+	}
+	if !strings.Contains(stderr, "review-pflichtig") {
+		t.Fatalf("breit: stderr ohne Best-Guess-Marker: %q", stderr)
+	}
+}
+
+// DC-FA-CLI-008 Negative: --repair mit --json bzw. --doctor → Exit 2,
+// keine Ausgabe auf stdout.
+func TestCLI008_Repair_Inkompatibel(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "x")
+	code, stdout, stderr := run(t, "--repair", "--json", root)
+	if code != 2 || stdout != "" || !strings.Contains(stderr, "nicht mit --json") {
+		t.Fatalf("--repair --json: Exit = %d, stdout = %q, stderr = %q", code, stdout, stderr)
+	}
+	code, _, stderr = run(t, "--doctor", "--repair", root)
+	if code != 2 || !strings.Contains(stderr, "nicht kombinierbar") {
+		t.Fatalf("--doctor --repair: Exit = %d, stderr = %q", code, stderr)
+	}
+}
+
+// DC-QA-02 für den Patch-Modus: 10 Läufe byte-identisch (auch mehrere
+// gleiche Kennungen auf einer Zeile).
+func TestCLI008_Repair_Determinismus(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, ".d-check.yml",
+		"modules: [ids]\nids:\n  patterns:\n    - regex: 'ADR-\\d{4}'\n      target: docs/plan/adr/\n")
+	write(t, root, "docs/plan/adr/0042-x.md", "# ADR")
+	write(t, root, "docs/z.md", "ADR-0042 und ADR-0042\n")
+	write(t, root, "docs/a.md", "ADR-0042\n")
+	var first string
+	for i := 0; i < 10; i++ {
+		_, stdout, _ := run(t, "--repair", root)
 		if i == 0 {
 			first = stdout
 		} else if stdout != first {

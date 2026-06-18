@@ -101,6 +101,36 @@ func distinctFiles(findings []core.Finding) int {
 	return n
 }
 
+// Repair schreibt den unified diff der Reparatur-Edits auf stdout
+// (`git apply`-kompatibel) und die review-pflichtig-Markierungen samt
+// Zusammenfassung auf stderr (DC-FA-CLI-008). Die Best-Guess-Marker
+// bleiben damit AUSSERHALB des Patches — der stdout-Patch bleibt
+// `git apply`-rein. Edits sind stabil sortiert (DC-QA-02).
+func Repair(stdout, stderr io.Writer, edits []core.RepairEdit) error {
+	curFile := ""
+	review := 0
+	for _, e := range edits {
+		if e.File != curFile {
+			curFile = e.File
+			if _, err := fmt.Fprintf(stdout, "--- a/%s\n+++ b/%s\n", e.File, e.File); err != nil {
+				return err
+			}
+		}
+		if _, err := fmt.Fprintf(stdout, "@@ -%d,1 +%d,1 @@\n-%s\n+%s\n",
+			e.Line, e.Line, e.OldLine, e.NewLine); err != nil {
+			return err
+		}
+		if e.ReviewRequired {
+			review++
+			if _, err := fmt.Fprintf(stderr, "review-pflichtig (Best-Guess): %s:%d\n", e.File, e.Line); err != nil {
+				return err
+			}
+		}
+	}
+	_, err := fmt.Fprintf(stderr, "d-check: %d Reparatur-Hunk(s), %d review-pflichtig\n", len(edits), review)
+	return err
+}
+
 type jsonDoc struct {
 	Findings []core.Finding `json:"findings"`
 	Summary  Summary        `json:"summary"`
