@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.14.0
+**Version:** 0.16.0
 
 **Status:** Draft
 
@@ -94,7 +94,11 @@ aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
 `0` = Prüfung gelaufen, keine Befunde; `1` = Prüfung gelaufen,
 mindestens ein Befund; `2` = Nutzungs- oder Umgebungsfehler (ungültige
 Option, ungültige Konfiguration, Scan-Wurzel nicht lesbar) — die
-Prüfung hat dann keine verlässliche Aussage geliefert.
+Prüfung hat dann keine verlässliche Aussage geliefert. Die Ausgabe-Modi
+[`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus) (`--doctor`) und
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch) (`--repair`) folgen
+denselben Codes; ihre Diagnose- bzw. Patch-Ausgabe erscheint auf stdout
+unabhängig vom Code.
 
 **Akzeptanzkriterien:**
 
@@ -115,7 +119,14 @@ gehen auf stderr. Mit `--json` erfolgt die gesamte Ausgabe auf stdout
 als ein maschinenlesbares JSON-Dokument mit mindestens den Feldern
 `findings` (Liste mit `file`, `line`, `target`, `rule`, `reason`),
 `summary` (`filesChecked`, `findingCount`) und `exitCode`; stdout
-enthält dann keine unstrukturierten Textzeilen.
+enthält dann keine unstrukturierten Textzeilen. Die Ausgabe-Modi
+[`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus) (`--doctor`) und
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch) (`--repair`) ersetzen
+das Default-stdout-Format durch eine Diagnose bzw. einen unified diff;
+sie sind untereinander und mit `--json` **nicht kombinierbar** (jede
+solche Kombination ist ein Nutzungsfehler, Exit-Code 2 nach
+[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) — JSON-Varianten dieser
+Modi sind in dieser Version out of scope.
 
 **Akzeptanzkriterien:**
 
@@ -182,6 +193,67 @@ den eigenen Parser ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei)).
 - **Negative:** Given eine nicht existierende Quelle, when `d-check --suggest-config gibt/es/nicht` läuft, then Exit-Code 2 (Nutzungsfehler); ein read-only gemountetes Repository genügt (kein Schreibzugriff).
 
 **Out-of-Scope:** Schreiben der Datei (immer stdout); Muster-Ableitung aus beliebigem Fließtext (nur aus definierten Headings benannter Autoritäts-Quellen); Garantie eines minimalen/perfekten `regex` (Best-Guess-Generalisierung + Quell-Kennungs-Kommentar — der Mensch verengt); automatisches Ableiten von `link-policy`, `matrix`-Regeln oder `exempt-paths`.
+
+---
+
+### DC-FA-CLI-007 — Diagnose-Modus
+
+**Beschreibung:** Mit der Option `--doctor` macht `d-check` einen
+**Lese**-Durchgang wie eine normale Prüfung, gibt aber statt der knappen
+Befund-Zeilen ([`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate)) eine
+**erklärende, nach Datei und Regel gruppierte Diagnose** auf stdout aus:
+je Befund den Grund-Code in Klartext und — wo aus dem Befund **eindeutig
+ableitbar** — einen **Fix-Kandidaten** (die vorgeschlagene Änderung,
+**nicht angewendet**). Das Werkzeug schreibt niemals selbst
+(read-only-Kernvertrag
+[`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+Die Fix-Kandidaten entstehen aus derselben Mechanik, die
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch) zum anwendbaren Patch
+rendert — eine Quelle, zwei Ausgaben. Die Diagnose ist deterministisch
+([`DC-QA-02`](#dc-qa-02--determinismus)); die Exit-Codes folgen
+[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes) (die Diagnose erscheint auf
+stdout unabhängig vom Code).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given ein Repo mit aktivem Modul `ids` und einem `id-unlinked`-Befund (eine nackte Kennung, deren Definition bekannt ist), when `d-check --doctor` läuft, then enthält stdout eine Diagnose-Gruppe für die betroffene Datei mit dem Grund in Klartext und einem Fix-Kandidaten (Kennung → Link auf ihre Definition), Exit-Code 1.
+- **Boundary:** Given ein Repo ohne Befunde, when `d-check --doctor` läuft, then Exit-Code 0 und eine Diagnose, die „0 Befunde" ausweist, ohne Fix-Kandidaten.
+- **Negative:** Given die Kombination `d-check --doctor --json` (eine JSON-Variante der Diagnose ist in dieser Version nicht vorgesehen), when aufgerufen, then Exit-Code 2 (Nutzungsfehler, vgl. [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) und keine Diagnose-Ausgabe; ein read-only gemountetes Repository genügt (kein Schreibzugriff, [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Out-of-Scope:** Anwenden der Fix-Kandidaten (das leistet als Patch [`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)); eine JSON-Variante der Diagnose (eigener späterer Modus); Fix-Kandidaten für Befunde ohne eindeutige Ableitung (sie werden erklärt, aber ohne Vorschlag).
+
+---
+
+### DC-FA-CLI-008 — Reparatur-Patch
+
+**Beschreibung:** Mit der Option `--repair` gibt `d-check` einen
+**unified diff auf stdout** aus, der ableitbare Befunde behebt —
+`git apply`-kompatibel; das Werkzeug schreibt selbst **nichts**
+(read-only-Kernvertrag
+[`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit);
+der Aufrufer wendet an: `d-check --repair > fix.patch`, dann
+`git apply fix.patch`). Es gibt **zwei Stufen**, per Schalter wählbar:
+die **konservative** Stufe (Default) emittiert nur Hunks für Befunde mit
+**eindeutig** ableitbarem Fix (in dieser Version insbesondere
+`id-unlinked` → Link auf die bekannte Definition); die **breite** Stufe
+(opt-in) schließt **Best-Guess**-Reparaturen ein (z. B. `target-missing`
+→ nächstliegende Überschrift bzw. Datei), die als **review-pflichtig**
+gekennzeichnet werden — die Kennzeichnung erscheint auf **stderr** (wie
+Diagnose/Zusammenfassung, [`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate)),
+damit der Patch auf stdout `git apply`-rein bleibt. Befunde ohne Fix in der
+gewählten Stufe bleiben unangetastet und erscheinen unter
+[`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus). Der Patch ist
+deterministisch ([`DC-QA-02`](#dc-qa-02--determinismus)): gleicher Input
+und gleiche Stufe → byte-identischer Patch; er ist gegen den
+unveränderten Arbeitsbaum sauber anwendbar.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given ein Repo mit einer nackten Kennung (`id-unlinked`, Definition bekannt), when `d-check --repair` in der konservativen Stufe läuft, then liegt auf stdout ein unified diff, der genau diese Zeile in die verlinkte Form ändert (Exit-Code 1, da der Befund im gescannten, ungepatchten Baum besteht), `git apply` nimmt ihn sauber an, und ein erneuter `d-check`-Lauf auf dem gepatchten Baum meldet den Befund nicht mehr.
+- **Boundary:** Given ein Repo, dessen einzige Befunde nur best-guess-fähig sind (z. B. `target-missing` — kein eindeutiger Fix), when `d-check --repair` konservativ läuft, then ist der Patch leer (keine Hunks) und das Repository bleibt ungeschrieben; in der breiten Stufe erscheint derselbe Befund als Best-Guess-Hunk (nächstliegende Überschrift bzw. Datei), dessen review-pflichtig-Kennzeichnung auf stderr erscheint.
+- **Negative:** Given einen unbekannten Wert für die Stufen-Wahl (bzw. die Kombination `d-check --repair --json`), when aufgerufen, then Exit-Code 2 (Nutzungsfehler, vgl. [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) und kein Patch; ein read-only gemountetes Repository genügt (kein Schreibzugriff, [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Out-of-Scope:** In-place-Schreiben der Dateien durch das Werkzeug selbst (immer stdout-Patch; ein In-place-Modus wäre ein Bruch von [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) und bräuchte eigene Anforderung samt ADR); eine JSON-Variante des Patches; Reparatur von Policy-Befunden ohne mechanischen Fix (`symlink`, `repo-escape`, `hostpath-forbidden`); die Garantie, dass die breite (Best-Guess-)Stufe semantisch korrekte Ziele trifft (deshalb review-pflichtig).
 
 ---
 
@@ -655,6 +727,8 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.16.0 | 2026-06-18 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-008` (Option `--repair`: unified diff auf stdout, `git apply`-kompatibel, read-only; konservative Stufe als Default mit eindeutig ableitbaren Fixes — v1 v. a. `id-unlinked` → Definitions-Link —, breite Best-Guess-Stufe opt-in, Kennzeichnung review-pflichtiger Hunks auf stderr, damit der Patch `git apply`-rein bleibt). Baut auf den Ausgabe-Modi aus 0.15.0 auf; deterministisch (`DC-QA-02`), read-only-Kernvertrag (`DC-QA-03`); In-place-Schreiben bleibt Out-of-Scope (wäre eigene Anforderung + ADR) | slice-026 |
+| 0.15.0 | 2026-06-18 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-007` (Option `--doctor`: erklärende, nach Datei/Regel gruppierte Diagnose mit Fix-Kandidaten; read-only, stdout-only, deterministisch `DC-QA-02`/`DC-QA-03`). Mit-Schärfung `DC-FA-CLI-003` (die Ausgabe-Modi folgen den Codes 0/1/2, Ausgabe auf stdout unabhängig vom Code) und `DC-FA-CLI-004` (die Modi `--doctor`/`--repair` ersetzen das Default-stdout-Format; untereinander und mit `--json` nicht kombinierbar → Nutzungsfehler exit 2; JSON-Varianten out of scope). Anlass: Machbarkeitsfrage des Auftraggebers (2026-06-18) — beratende Diagnose/Reparatur ohne Bruch der Seiteneffektfreiheit | slice-025 |
 | 0.14.0 | 2026-06-17 | Change Request (Auftraggeber): `DC-FA-MTX-001` — opt-in `allow-supersede-lineage` (+ `supersede-fields`) nimmt die Supersede-Lineage-Kante X → Y von der Status-Prüfung aus: ein ablösendes Dokument darf auf das von ihm abgelöste (inaktive) Dokument verweisen, ohne `matrix-inactive` zu erzeugen, sofern X über ein deklariertes Feld die Ablösung von Y benennt (Match über Linktext bzw. Zielpfad der Referenz). Carve-out beschränkt auf die deklarierte Lineage-Kante; `matrix-forbidden` (Klassen-Regeln) unberührt. Abwärtskompatibel (`DC-QA-02`): Default aus ⇒ Befundsatz byte-identisch. Marker-Politik (B2 der CR): `matrix` bleibt bewusst ohne Zeilen-Opt-out-Marker `d-check:ignore` (legitime Lineage strukturell ausgenommen, nicht stummgeschaltet). Anlass: reproduzierter Fremd-Repo-Befund (`grid-gym`, v0.10.0) — normative ADR→ADR-Lineage (`Aenderungstyp: Supersedes …`) als `matrix-inactive` gemeldet, brach `make docs-check` | slice-024 |
 | 0.13.0 | 2026-06-16 | Change Request (Auftraggeber): `DC-FA-ID-001` — Geltungsbereich der beiden Ventile `exempt-paths` und `d-check:ignore` auf **nackte Fließtext-Vorkommen** erweitert. Bisher griffen sie nur auf die `always`-Inline-Code-Vorkommen; eine nackte Kennung in einer `exempt-paths`-Datei (bzw. auf einer `d-check:ignore`-Zeile) wurde weiterhin als `id-unlinked` gemeldet. Neu: beide Ventile sind ein Ganzdatei- bzw. Ganzzeilen-Carve-out für alle Vorkommen des Musters, unabhängig von der `link-policy`. Abwärtskompatibel (`DC-QA-02`): Configs ohne gesetzte Ventile bleiben byte-identisch; Wirkung nur in Richtung *weniger* Befunde in explizit ausgenommenen Dateien/Zeilen. Anlass: reproduzierter Fremd-Repo-Befund (`ai-harness-init`, v0.8.0/v0.9.0) — nacktes `MR-004` in `docs/reviews/_t.md` trotz `exempt-paths: ["docs/reviews/**"]` gemeldet | slice-023 |
 | 0.12.0 | 2026-06-15 | Change Request (Auftraggeber): `DC-FA-ANCH-001` erweitert — Inline-HTML-Anker innerhalb von Markdown zählen zur gültigen Anker-Menge (`id` an beliebigem Element, `name` an `<a>`; GitHub-Parität, wörtlicher Vergleich). Hebt die bisherige HTML-Anker-Out-of-Scope-Zeile auf; Abgrenzung zu §5 (HTML als Dateiformat bleibt out-of-scope) explizit. Gilt mittelbar auch für `codepaths` (geteiltes Anker-Verfahren). Anlass: Falsch-Befunde `anchor-missing` auf manuell gesetzte HTML-Anker in der Doku | slice-022 |
