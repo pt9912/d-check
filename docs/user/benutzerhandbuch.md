@@ -343,6 +343,18 @@ selbst schreibt nichts — Sie wenden den Patch an.
   der Patch auf stdout sauber anwendbar bleibt. Lesen Sie den Patch vor
   dem Anwenden.
 - Nicht mit `--json` oder `--doctor` kombinierbar.
+- **Einzeiler (Pipe):** Weil der Patch auf stdout und nur
+  Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
+
+  ```bash
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.12.0 \
+    --enable ids --repair | git apply
+  ```
+
+  Das umgeht aber die Sichtprüfung. Bei `--repair-broad`
+  (review-pflichtig) und in CI-Shells mit `set -o pipefail` — dort lässt
+  der Befund-Exit-Code 1 die Pipe scheitern, obwohl `git apply` ok war —
+  ist die Datei-Variante (oben) die bessere Wahl.
 
 ### 4.11 Maschinenlesbare Ausgabe (`--json`)
 

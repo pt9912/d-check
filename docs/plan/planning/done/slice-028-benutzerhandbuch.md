@@ -78,7 +78,33 @@ DoD vollständig inkl. `make gates` grün.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-*(wird bei Closure gefüllt — Umsetzung, Belege, Lerneintrag, Review-Runde.)*
+**Umsetzung:** docs/user/benutzerhandbuch.md (Handbuch-Version 1.0,
+Software-Version v0.12.0) nach dem mit-getrackten
+`docs/user/benutzerhandbuch-standard.md`. Aufgabenbasiert, alle Use Cases
+(prüfen, Docker/CI, `--print-config`/`--suggest-config`, acht Module,
+`--doctor`, `--repair` konservativ/breit, `--json`, Konfiguration,
+Fehlerbehebung, FAQ, Glossar). CLI-Adaption des GUI-Standards.
+
+**Belege:** `make gates` grün — das Handbuch besteht d-checks eigene
+Module (Links/Anker/`ids`/`codepaths`/`spans`/`hostpaths`): TOC-Anker
+lösen auf, Beispiele in Fenced-Blöcken, keine `DC-*`-IDs/Host-Pfade im
+Fließtext.
+
+**Lerneintrag:** Den GUI-orientierten Standard auf ein CLI-Produkt zu
+übertragen heißt: Klicks→Befehle, Screenshots→Terminal-Ausgaben,
+Rollen/Rechte→entfällt (zustandsloses Lese-Tool). Die stdout/stderr-
+Trennung von `--repair` macht den dokumentierten Pipe-Einzeiler
+(`--repair | git apply`) erst sauber — ein Beleg, dass das Marker-auf-
+stderr-Design (slice-026) nutzersichtbar trägt.
+
+**Review R1** (Self-Review,
+[Report](../../../reviews/2026-06-18-slice-028-benutzerhandbuch.md)):
+HIGH 0 / MEDIUM 0 / LOW 0 / INFO 2 — freigegeben; ein Genauigkeitsfehler
+im `--doctor`-Beispiel (relativer Pfad) im selben Stand korrigiert.
+Nachgereicht (auf Auftraggeber-Frage): der Pipe-Einzeiler `--repair |
+git apply` mit Vorbehalten (`pipefail`/`--repair-broad`) in §4.10.
+
+**Welle:** welle-17-benutzerhandbuch damit vollständig.
 
 ## 8. Sub-Area-Modus-Begründung
 

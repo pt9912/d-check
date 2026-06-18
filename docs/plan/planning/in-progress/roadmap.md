@@ -10,12 +10,12 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-17-benutzerhandbuch — aktiv.** `slice-028` schreibt ein
-aufgabenbasiertes Benutzerhandbuch unter docs/user/ nach dem adoptierten
-Standard ([Plan](../open/slice-028-benutzerhandbuch.md)) — alle Use Cases
-des v0.12.0-Funktionsumfangs. welle-15 (`--doctor`/`--repair`) und
-welle-16 (E2E) sind als **Release v0.12.0** auf GHCR veröffentlicht
-(Run `27779122412` grün in 2m13s, Digest-Pin s. welle-16-Zeile). Die nächste Welle wartet auf ihren Trigger
+**Keine aktive Welle.** welle-17-benutzerhandbuch ist abgeschlossen (siehe
+„Abgeschlossene Wellen") — aufgabenbasiertes Benutzerhandbuch unter
+docs/user/ nach dem adoptierten Standard. Release **v0.12.0**
+(`--doctor`/`--repair` + E2E) ist auf GHCR veröffentlicht. Die nächste
+Welle wartet auf ihren Trigger (Change Request im Lastenheft oder
+Priorisierung durch den Auftraggeber). Die nächste Welle wartet auf ihren Trigger
 (Change Request im Lastenheft oder Priorisierung durch den Auftraggeber).
 
 ## Nächste Wellen
@@ -69,6 +69,7 @@ flowchart LR
 | welle-14-matrix-lineage | 2026-06-17 | [slice-024 §8](../done/slice-024-matrix-supersede-lineage.md#8-closure-notiz-nach-done); opt-in `allow-supersede-lineage` (+ `supersede-fields`) nimmt die deklarierte Supersede-Lineage-Kante des Moduls `matrix` von der Status-Prüfung aus ([`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix) Change Request 0.14.0); nur `matrix-inactive`, `matrix-forbidden` unberührt; `matrix` bleibt marker-frei (Entscheidung B2). `make gates` grün (Coverage 95,00 %), Vorher/Nachher am Image belegt (1 → 0 Befunde); Minor-Release **v0.11.0** auf GHCR (Run `27679319866` grün in 1m58s, Tags `v0.11.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:6ec1c463b5276b3314881839bd800b5e9aab12fa624a35d31618cecb62f17795` |
 | welle-15-doctor-repair | 2026-06-18 | [slice-025 §7](../done/slice-025-doctor.md#7-closure-notiz-nach-done), [slice-026 §7](../done/slice-026-repair.md#7-closure-notiz-nach-done); Diagnose-Modus `--doctor` ([`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus) 0.15.0) und Reparatur-Patch `--repair` ([`DC-FA-CLI-008`](../../../../spec/lastenheft.md#dc-fa-cli-008--reparatur-patch) 0.16.0); read-only/stdout-only, zwei `--repair`-Stufen (konservativ/breit), `git apply`-Round-Trip belegt; `make gates` grün (Coverage 93,9 %); in Release **v0.12.0** ausgeliefert (Digest-Pin s. welle-16-Zeile) |
 | welle-16-image-test-modi | 2026-06-18 | [slice-027 §7](../done/slice-027-image-test-modi.md#7-closure-notiz-nach-done); `make image-test` deckt `--doctor`/`--repair` nativ == Container byte-identisch ab ([`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)-Härtung, [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)); E2E-Lücke vor Release v0.12.0 geschlossen; Minor-Release **v0.12.0** auf GHCR (Run `27779122412` grün in 2m13s, Tags `v0.12.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:e65654ef8b35c9329f01eeee693bd0c10f583c9e6e01c89f24dd3c2615de32ac` |
+| welle-17-benutzerhandbuch | 2026-06-18 | [slice-028 §7](../done/slice-028-benutzerhandbuch.md#7-closure-notiz-nach-done); aufgabenbasiertes Benutzerhandbuch unter docs/user/ nach dem adoptierten (mit-getrackten) Standard — alle Use Cases (v0.12.0), inkl. `--repair`-Pipe-Einzeiler; Self-Review R1, doc-check-rein; abgeleitete Nutzer-Doku (kein Vertrag) |
 
 ## Historische Trigger-Verschiebungen
 
