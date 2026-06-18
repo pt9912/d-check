@@ -101,7 +101,45 @@ read-only-Beleg und grüner Gates.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-*(wird bei Closure gefüllt — Umsetzung, Belege, Lerneintrag, Review-Runde.)*
+**Umsetzung:** Vertrag
+[`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)
+(Lastenheft 0.15.0) + Spezifikation
+[`DC-FA-CLI-007.a`](../../../../spec/spezifikation.md#dc-fa-cli-007a--diagnose-modus);
+`core.FixCandidateFor`/`ReasonText`/`AllReasons` (Fix-Kandidaten-Modell +
+Grund-Klartext, alle als Funktionen statt Paket-Global), `report.Doctor`
+(gruppierter Renderer), CLI-Flag `--doctor` mit `--json`-Inkompatibilität.
+`make gates` grün (Coverage 94,5 %).
+
+**Belege:**
+
+- Happy/Boundary/Negative + Determinismus (10×) als CLI-Akzeptanztests;
+  Core-Tests für Klartext-Vollständigkeit und Kandidaten-Ableitung.
+- Default-Format **ersetzt** (Test: keine knappe Befund-Zeile unter
+  `--doctor`).
+- read-only ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit))
+  und Determinismus ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
+
+**Fix-Kandidaten-Modell:** v1 nur `id-unlinked` → Link auf das
+Definitions-`target` (Datei-Ebene). Bewusst konservativ — Best-Guess-Fälle
+liefern keinen Kandidaten und gehören in die breite `--repair`-Stufe. Die
+Ableitung (`FixCandidateFor`) ist die wiederverwendbare Eingabe für
+slice-026: eine Quelle, zwei Ausgaben.
+
+**Lerneintrag:** `FixCandidateFor` als Core-Funktion trennt das *Was*
+(eindeutiger Fix) vom *Wie* der Ausgabe (Diagnose hier, Patch in
+slice-026). Die Vollständigkeits-Prüfung gegen die Reason-Konstanten
+verwandelt eine stille Lücke (neuer Grund-Code ohne Klartext) in einen
+Test-Bruch. Der Verzicht auf das Paket-Global (Map/Slice → Funktion) hielt
+`gochecknoglobals` ohne Lint-Ausnahme grün.
+
+**Review R1** (Self-Review,
+[Report](../../../reviews/2026-06-18-slice-025-doctor.md)): HIGH 0 /
+MEDIUM 0 / LOW 1 / INFO 4 — freigegeben. LOW-1 (Map-pro-Aufruf) als
+bewusster Tausch gegen ein Global akzeptiert; INFO-1 (Verzeichnis-Target-
+Kandidat nur Datei-Ebene) als Forward-Note an slice-026 übergeben.
+
+**Folge-Slice:** slice-026 (`--repair`) — rendert die Fix-Kandidaten zum
+Patch; Trigger „slice-025 done" ist eingetreten.
 
 ## 8. Sub-Area-Modus-Begründung
 
