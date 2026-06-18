@@ -6,6 +6,20 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-025 — Diagnose-Modus `--doctor`: erklärende, nach Datei
+  gruppierte Klartext-Diagnose auf stdout statt der knappen Befund-Zeilen,
+  mit Fix-Kandidaten wo eindeutig ableitbar (in dieser Version
+  `id-unlinked` → Markdown-Link auf das ids-Definitions-`target`). Grund-
+  Klartext für alle 14 Grund-Codes, abgesichert durch eine
+  Vollständigkeits-Prüfung gegen die Reason-Konstanten. Read-only,
+  stdout-only; `--doctor` ist nicht mit `--json` kombinierbar
+  (Nutzungsfehler, Exit 2). Das Fix-Kandidaten-Modell ist die
+  wiederverwendbare Eingabe für den folgenden Patch-Modus `--repair`
+  (slice-026)
+  ([`DC-FA-CLI-007`](spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)).
+
 ## [0.11.0] — 2026-06-17
 
 ### Added

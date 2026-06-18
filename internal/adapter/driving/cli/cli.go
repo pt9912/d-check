@@ -43,6 +43,7 @@ func (m *multiFlag) Set(v string) error {
 type options struct {
 	root          string
 	json          bool
+	doctor        bool
 	enable        []string
 	disable       []string
 	printConfig   bool
@@ -116,6 +117,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	flags.SetOutput(io.Discard) // Fehlertexte einheitlich unten
 	var enable, disable multiFlag
 	jsonOut := flags.Bool("json", false, "maschinenlesbare JSON-Ausgabe")
+	doctorOut := flags.Bool("doctor", false, "erklärende, gruppierte Diagnose mit Fix-Kandidaten auf stdout (statt Befund-Zeilen)")
 	printConfig := flags.Bool("print-config", false, "Konfigurations-Startgerüst auf stdout ausgeben und beenden")
 	suggestConfig := flags.String("suggest-config", "", "Config aus Autoritäts-Quellen (kommagetrennt) vorschlagen und beenden")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
@@ -139,9 +141,16 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 		fmt.Fprintln(stderr, "d-check: error: höchstens ein Pfad-Argument")
 		return options{}, 2, true
 	}
-	opts := options{root: ".", json: *jsonOut, enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig}
+	opts := options{root: ".", json: *jsonOut, doctor: *doctorOut, enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
+	}
+	// DC-FA-CLI-004: --doctor ersetzt das stdout-Format; eine JSON-Variante
+	// der Diagnose ist in dieser Version nicht vorgesehen — die Kombination
+	// ist ein Nutzungsfehler (DC-FA-CLI-003, Exit 2).
+	if opts.doctor && opts.json {
+		fmt.Fprintln(stderr, "d-check: error: --doctor ist nicht mit --json kombinierbar")
+		return options{}, 2, true
 	}
 	return opts, 0, false
 }
@@ -191,22 +200,30 @@ func loadConfig(fsys *fsadapter.Adapter, stderr io.Writer) (core.Config, bool) {
 }
 
 // render gibt das Ergebnis aus und liefert den Exit-Code
-// (DC-FA-CLI-003/004).
-func render(res core.Result, jsonOut bool, stdout, stderr io.Writer) int {
+// (DC-FA-CLI-003/004). Die Ausgabe-Modi --doctor und --json ersetzen das
+// Default-Text-Format; der Exit-Code richtet sich allein nach dem
+// Befund-Stand (0 = keine, 1 = mindestens einer).
+func render(res core.Result, opts options, cfg core.Config, stdout, stderr io.Writer) int {
 	exit := 0
 	if len(res.Findings) > 0 {
 		exit = 1
 	}
 	sum := report.Summary{FilesChecked: res.FilesChecked, FindingCount: len(res.Findings)}
-	if jsonOut {
+	switch {
+	case opts.doctor:
+		if err := report.Doctor(stdout, stderr, res.Findings, sum, cfg); err != nil {
+			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+			return 2
+		}
+	case opts.json:
 		if err := report.JSON(stdout, res.Findings, sum, exit); err != nil {
 			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 			return 2
 		}
-		return exit
-	}
-	if err := report.Text(stdout, stderr, res.Findings, sum); err != nil {
-		return 2
+	default:
+		if err := report.Text(stdout, stderr, res.Findings, sum); err != nil {
+			return 2
+		}
 	}
 	return exit
 }
@@ -270,5 +287,5 @@ func Run(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return 2
 	}
-	return render(res, opts.json, stdout, stderr)
+	return render(res, opts, cfg, stdout, stderr)
 }

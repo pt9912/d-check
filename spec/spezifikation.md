@@ -1,6 +1,6 @@
 # Spezifikation — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-17.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-18.
 
 **Bezug zum Lastenheft:** Diese Spezifikation präzisiert die in
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
@@ -115,6 +115,41 @@ Schritte (deterministisch, alle Mengen bytewise sortiert —
 6. Das zusammengesetzte, kommentierte Gerüst auf stdout schreiben,
    Exit 0; es dekodiert über den eigenen Parser
    ([`DC-FA-CONF-001`](lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
+
+### DC-FA-CLI-007.a — Diagnose-Modus
+
+`--doctor` ist ein **Lese**-Modus, der statt der knappen Befund-Zeilen
+([`DC-FA-CLI-004`](lastenheft.md#dc-fa-cli-004--ausgabeformate)) eine
+erklärende, nach Datei gruppierte Diagnose ausgibt; Schreibzugriff
+entsteht nie
+([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)),
+die Kombination mit `--json` ist ein Nutzungsfehler (Exit 2). Schritte
+(deterministisch — [`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus):
+es wird nur über die stabil sortierte Befundliste und die geordneten
+ids-Muster iteriert, keine Map-Reihenfolge):
+
+1. **Prüflauf** wie im Default (Module nach Konfiguration/CLI; gleiche
+   Befundmenge und Exit-Code-Logik 0/1/2 wie
+   [`DC-FA-CLI-003`](lastenheft.md#dc-fa-cli-003--exit-codes)).
+2. **Gruppieren** der Befunde nach Datei (in der bestehenden
+   Sortierreihenfolge Datei → Zeile → Regel → Ziel → Grund).
+3. **Klartext je Befund:** der Grund-Code wird über ein festes Mapping
+   in einen Klartext übersetzt — für jeden Grund-Code aus
+   [§4](#4-grund--und-fehler-codes) genau ein Eintrag, abgesichert durch
+   eine Vollständigkeits-Prüfung gegen die Reason-Konstanten. Ausgegeben
+   werden Zeile, Klartext, Regelmodul und Stelle (Ziel).
+4. **Fix-Kandidat** (nur wo EINDEUTIG ableitbar, sonst keiner): in dieser
+   Version ausschließlich für `id-unlinked` — die nackte Kennung wird als
+   Markdown-Link auf das in der passenden ids-Regel deklarierte
+   Definitions-`target` vorgeschlagen (relativ zum Verzeichnis der
+   Befund-Datei, Datei-Ebene; den genauen Anker setzt der Mensch). Der
+   Kandidat wird **nicht angewendet**; er ist zugleich die
+   wiederverwendbare Eingabe des Patch-Modus (`--repair`, folgt). Best-
+   Guess-Fälle (`target-missing`, `span-*` …) liefern hier bewusst keinen
+   Kandidaten.
+5. Bei **null Befunden** weist die Diagnose das aus (kein Kandidat). Die
+   Diagnose geht auf stdout, die Zusammenfassung (geprüfte Dateien,
+   Befundzahl) auf stderr — analog zum Default-Reporter.
 
 ### DC-FA-LINK-001.a — Markdown-Vorverarbeitung und Link-Extraktion
 
@@ -688,3 +723,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-17 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 4 ergänzt: Supersede-Lineage-Ausnahme (`allow-supersede-lineage`, `supersede-fields`) nimmt die deklarierte Lineage-Kante von der `matrix-inactive`-Prüfung aus (Match über Linktext bzw. Zielpfad der Referenz); Default aus ⇒ byte-identisch. Schema-Tabelle + Beispiel ergänzt | slice-024 |
 | 2026-06-12 | Scan-Härtung aus der pkcs11-course-Adoption (slice-014): `scan.ignore`-Muster prunen den Verzeichnis-Abstieg (vollständig ignorierte Teilbäume werden nicht betreten — unlesbare ignorierte Verzeichnisse wie root-eigene Build-Reste sind kein Laufzeitfehler mehr); `SKIP_DIRS` um `.gradle` ergänzt (Parität zur JS-Alt-Familie) | slice-014 |
 | 2026-06-12 | Inline-Code-Erkennung absatzweise statt zeilenweise (§[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 2): mehrzeilige Code-Spans gemäß CommonMark, Absatzgrenzen Leerzeile/Fence, ungeschlossene Folge literal. Anlass: [`DC-QA-04`](lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Gegentest u-boot — über Zeilenumbrüche gebrochene Befehls-Spans invertierten die Backtick-Parität der Folgezeile und erzeugten False-Positive-`id-unlinked`-Befunde auf korrekt verlinkten Kennungen. Zeilenbasierte **Link**-Extraktion (Schritt 3) bleibt normative Grenze | slice-012 |
+| 2026-06-18 | §[`DC-FA-CLI-007.a`](spezifikation.md#dc-fa-cli-007a--diagnose-modus) ergänzt: Diagnose-Modus `--doctor` — Lese-Lauf, nach Datei gruppierte Klartext-Diagnose auf stdout (statt Befund-Zeilen), Fix-Kandidat nur für `id-unlinked` (Link auf das ids-`target`); Grund-Klartext-Mapping über alle 14 Grund-Codes mit Vollständigkeits-Prüfung gegen die Reason-Konstanten; `--doctor`+`--json` = Nutzungsfehler (Exit 2); Determinismus über die sortierte Befundliste | slice-025 |

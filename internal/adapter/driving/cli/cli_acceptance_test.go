@@ -357,6 +357,75 @@ func TestID001(t *testing.T) {
 	}
 }
 
+// DC-FA-CLI-007 Happy: --doctor gibt eine erklärende, gruppierte Diagnose
+// mit Fix-Kandidat auf stdout aus (statt der knappen Befund-Zeile),
+// Exit 1, Zusammenfassung auf stderr.
+func TestCLI007_Doctor_Happy(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, ".d-check.yml",
+		"modules: [ids]\nids:\n  patterns:\n    - regex: 'ADR-\\d{4}'\n      target: docs/plan/adr/\n")
+	write(t, root, "docs/plan/adr/0042-x.md", "# ADR")
+	write(t, root, "docs/a.md", "nacktes ADR-0042 im Fließtext\n")
+	code, stdout, stderr := run(t, "--doctor", root)
+	if code != 1 {
+		t.Fatalf("Exit = %d, want 1 (stderr: %s)", code, stderr)
+	}
+	for _, want := range []string{"Diagnose", "docs/a.md", "ohne Markdown-Link", "Fix-Kandidat", "[`ADR-0042`]("} {
+		if !strings.Contains(stdout, want) {
+			t.Fatalf("Diagnose ohne %q:\n%s", want, stdout)
+		}
+	}
+	// Default-Format ist ERSETZT, nicht ergänzt (DC-FA-CLI-004).
+	if strings.Contains(stdout, "docs/a.md:1\tADR-0042\tid-unlinked") {
+		t.Fatalf("knappe Befund-Zeile trotz --doctor:\n%s", stdout)
+	}
+	if !strings.Contains(stderr, "1 Befund(e)") {
+		t.Fatalf("Zusammenfassung auf stderr fehlt: %q", stderr)
+	}
+}
+
+// DC-FA-CLI-007 Boundary: keine Befunde → Diagnose weist „keine Befunde"
+// aus, Exit 0, keine Fix-Kandidaten.
+func TestCLI007_Doctor_KeineBefunde(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "[ok](b.md)")
+	write(t, root, "docs/b.md", "x")
+	code, stdout, _ := run(t, "--doctor", "--disable", "anchors", root)
+	if code != 0 || !strings.Contains(stdout, "keine Befunde") || strings.Contains(stdout, "Fix-Kandidat") {
+		t.Fatalf("Exit = %d, stdout = %q", code, stdout)
+	}
+}
+
+// DC-FA-CLI-007 Negative: --doctor mit --json ist ein Nutzungsfehler
+// (keine JSON-Variante der Diagnose) → Exit 2, keine Ausgabe auf stdout.
+func TestCLI007_Doctor_JSONInkompatibel(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "x")
+	code, stdout, stderr := run(t, "--doctor", "--json", root)
+	if code != 2 || stdout != "" || !strings.Contains(stderr, "nicht mit --json") {
+		t.Fatalf("Exit = %d, stdout = %q, stderr = %q", code, stdout, stderr)
+	}
+}
+
+// DC-QA-02 für den Diagnose-Modus: 10 Läufe byte-identisch.
+func TestCLI007_Doctor_Determinismus(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, ".d-check.yml",
+		"modules: [ids]\nids:\n  patterns:\n    - regex: 'ADR-\\d{4}'\n      target: docs/plan/adr/\n")
+	write(t, root, "docs/plan/adr/0042-x.md", "# ADR")
+	write(t, root, "docs/z.md", "ADR-0042 und nochmal ADR-0042\n")
+	write(t, root, "docs/a.md", "ADR-0042\n")
+	var first string
+	for i := 0; i < 10; i++ {
+		_, stdout, _ := run(t, "--doctor", root)
+		if i == 0 {
+			first = stdout
+		} else if stdout != first {
+			t.Fatalf("Lauf %d weicht ab:\n%q\n---\n%q", i, first, stdout)
+		}
+	}
+}
+
 // DC-FA-CONF-001 (Constraint ids.patterns[].target muss existieren):
 // nicht existierendes Target → Exit 2 ohne Prüfung.
 func TestCONF001_IDTargetFehlt(t *testing.T) {

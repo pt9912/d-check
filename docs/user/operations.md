@@ -22,6 +22,7 @@ CLI-Optionen werden als Container-Argumente angehängt.
 |---|---|
 | `--enable <modul>` / `--disable <modul>` | Regelmodule zu-/abschalten (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`); CLI schlägt Konfiguration ([`DC-FA-CLI-002`](../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)) |
 | `--json` | maschinenlesbare Gesamt-Ausgabe ([Schema](../../spec/spezifikation.md)) |
+| `--doctor` | erklärende, nach Datei gruppierte Diagnose auf stdout statt der Befund-Zeilen, mit Fix-Kandidaten wo eindeutig (v1: `id-unlinked` → Definitions-Link) — **liest, schreibt nichts**; nicht mit `--json` kombinierbar ([`DC-FA-CLI-007`](../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)) |
 | `--print-config` | kommentiertes `.d-check.yml`-Startgerüst auf stdout, dann Exit 0 — **kein Scan, schreibt nichts**; Anlegen via Umleitung: `d-check --print-config > .d-check.yml` ([`DC-FA-CLI-005`](../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben)) |
 | `--suggest-config <quelle>[,…]` | liest die benannten Autoritäts-Quellen und schlägt ein `.d-check.yml` vor (abgeleitete `ids`-Muster + opt-in-Module nach Signal) — **liest, schreibt nichts**; Umleiten via `> .d-check.yml` ([`DC-FA-CLI-006`](../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)) |
 
