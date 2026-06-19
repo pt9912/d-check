@@ -19,3 +19,4 @@ Architecture Decision Records dieses Repos. Konventionen:
 | [ADR-0005](0005-modul-layout-hexagon-ordner.md) | Modul-Layout: hexagon-/adapter-Ordner nach u-boot-Konvention | Accepted | 2026-06-10 | ADR-0004, [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) |
 | [ADR-0006](0006-lint-profil-solid.md) | Lint-Profil: SOLID-nah nach u-boot-Vorbild (ohne depguard) | Accepted | 2026-06-10 | ADR-0001, ADR-0005 |
 | [ADR-0007](0007-repository-lizenz-mit.md) | Repository-Lizenz: MIT | Accepted | 2026-06-11 | Repository-Veröffentlichung und Weiterverwendung |
+| [ADR-0008](0008-reparatur-ableitbarkeit.md) | Reparatur-Modus: nur deterministisch ableitbare Fixes; Best-Guess review-pflichtig | Accepted | 2026-06-19 | [`DC-FA-CLI-008`](../../../spec/lastenheft.md#dc-fa-cli-008--reparatur-patch), [`DC-FA-CLI-007`](../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus) |
