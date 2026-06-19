@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.17.1
+**Version:** 0.18.0
 
 **Status:** Draft
 
@@ -189,13 +189,40 @@ Mensch prüft und verengt. Die Ableitung ist deterministisch
 ([`DC-QA-02`](#dc-qa-02--determinismus)) und das Gerüst dekodiert über
 den eigenen Parser ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei)).
 
+**Reservierte Quelle `ai-harness`:** Statt eines Pfads schlägt
+`--suggest-config ai-harness` ein an die adoptierte
+**ai-harness-course-Konvention** angelehntes Gerüst vor — die
+strukturellen Konventionen, die eine reine Quellen-Ableitung nicht
+erzeugen kann: die kanonischen `ids`-Muster (für `ADR-`-, `DC-`-, `MR-`-,
+`slice-`- und Carveout-Kennungen mit ihren Definitions-`target`s), die
+`matrix`-Klassen (Vertrag/Spezifikation/ADR/Planning) samt
+**Referenzrichtung** (kein Spec-Stratum verweist abwärts auf ADRs oder
+Planning-Artefakte), das Standard-Modulset
+(`links`, `anchors`, `ids`, `matrix`, `codepaths`) sowie einen Scan-Scope
+(`spec`, `docs`, `harness`; modul-lokaler `ids`-Scope auf
+`spec`+`docs/user`, `exempt-paths` für Review-Reports). Die Vorlage ist
+**hybrid**: die strukturellen Konventionen werden immer ausgegeben, die
+konkreten Pfade aber **repo-bewusst** zugeschnitten — nur tatsächlich
+existierende `scan.roots`, und für im Repo fehlende Artefakte (z. B. kein
+`docs/plan/adr/`) ein **auskommentierter Block mit Hinweis** statt stillem
+Weglassen. `ai-harness` ist mit echten Quellen kombinierbar
+(`--suggest-config ai-harness,spec/lastenheft.md`); es bleibt **read-only
+und advisory** (der Mensch verengt), deterministisch
+([`DC-QA-02`](#dc-qa-02--determinismus)), und das Ergebnis dekodiert über
+den eigenen Parser
+([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei)). Ein
+Kommentar-Header nennt die zugrunde gelegte Baseline-Version.
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given eine Autoritäts-Quelle mit definierten Kennungen (Headings `ADR-0042`, `ADR-0099`), when `d-check --suggest-config docs/plan/adr/` läuft, then enthält die stdout-Ausgabe ein `ids`-Muster, dessen `regex` `ADR-0042` und `ADR-0099` matcht, mit `target: docs/plan/adr/`, Exit 0. <!-- d-check:ignore (fiktive Beispiel-IDs) -->
 - **Boundary:** Given eine benannte Quelle ohne Kennungs-Headings, when `--suggest-config` läuft, then entsteht für sie kein `ids`-Muster (sondern ein Hinweis-Kommentar), kein Absturz, und das Repository wird nicht geschrieben.
 - **Negative:** Given eine nicht existierende Quelle, when `d-check --suggest-config gibt/es/nicht` läuft, then Exit-Code 2 (Nutzungsfehler); ein read-only gemountetes Repository genügt (kein Schreibzugriff).
+- **`ai-harness` Happy:** Given ein Repo mit `docs/plan/adr/` und `spec/lastenheft.md`, when `d-check --suggest-config ai-harness` läuft, then enthält die stdout-Ausgabe ein vom eigenen Parser akzeptiertes `.d-check.yml` mit den kanonischen `ids`-Mustern (u. a. ein `regex`, der `ADR-`-Kennungen matcht, `target: docs/plan/adr/`), den `matrix`-Klassen samt Referenzrichtungs-Regel und dem Standard-Modulset, Exit 0.
+- **`ai-harness` Boundary:** Given ein Repo **ohne** `docs/plan/adr/`, when `d-check --suggest-config ai-harness` läuft, then erscheint der ADR-bezogene Block (zugehöriges `ids`-Muster und die `matrix`-Klasse für ADRs) **auskommentiert mit Hinweis** statt aktiv, `scan.roots` enthält nur existierende Pfade, und das Repository wird nicht geschrieben.
+- **`ai-harness` Abgrenzung:** Given es existiert keine Datei und kein Verzeichnis namens `ai-harness`, when `d-check --suggest-config ai-harness` läuft, then wird `ai-harness` als **reservierter Modus** erkannt (nicht als fehlende Quelle → **kein** Exit-Code 2 nach der Negative-Regel oben), Exit 0; ein read-only gemountetes Repository genügt.
 
-**Out-of-Scope:** Schreiben der Datei (immer stdout); Muster-Ableitung aus beliebigem Fließtext (nur aus definierten Headings benannter Autoritäts-Quellen); Garantie eines minimalen/perfekten `regex` (Best-Guess-Generalisierung + Quell-Kennungs-Kommentar — der Mensch verengt); automatisches Ableiten von `link-policy`, `matrix`-Regeln oder `exempt-paths`.
+**Out-of-Scope:** Schreiben der Datei (immer stdout); Muster-Ableitung aus beliebigem Fließtext (nur aus definierten Headings benannter Autoritäts-Quellen); Garantie eines minimalen/perfekten `regex` (Best-Guess-Generalisierung + Quell-Kennungs-Kommentar — der Mensch verengt); automatisches Ableiten von `link-policy`, `matrix`-Regeln oder `exempt-paths`. Die reservierte Quelle `ai-harness` ist hiervon ausgenommen — sie liefert `matrix`-Regeln, `link-policy` und `exempt-paths` aus der **bekannten Konvention** (nicht aus dem Repo abgeleitet); sie ist an **eine** adoptierte Baseline-Version gebunden (im Kommentar-Header genannt) — automatische Erkennung oder Hebung der Baseline-Version, das Anlegen der Verzeichnisstruktur (read-only) und das automatische Aktivieren bedarfsabhängiger opt-in-Module (`external`, `spans`, `hostpaths`) sind Out-of-Scope.
 
 ---
 
@@ -737,6 +764,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.18.0 | 2026-06-19 | Change Request (Auftraggeber): `DC-FA-CLI-006` um die reservierte Quelle `ai-harness` erweitert — `--suggest-config ai-harness` schlägt ein an die adoptierte ai-harness-course-Konvention angelehntes `.d-check.yml` vor (kanonische `ids`-Muster, `matrix`-Klassen samt Referenzrichtung, Standard-Modulset, Scan-Scope). Hybrid: strukturelle Konventionen immer, konkrete Pfade repo-bewusst (nur existierende roots; fehlende Artefakte auskommentiert mit Hinweis). Read-only/advisory, deterministisch (`DC-QA-02`); liefert — als Ausnahme zur reinen Quellen-Ableitung — `matrix`-Regeln/`link-policy`/`exempt-paths` aus der bekannten Konvention. Anlass: Adoptions-Start für Harness-Repos ohne manuelles Quellen-Auflisten | slice-030 |
 | 0.17.1 | 2026-06-19 | Change Request (Auftraggeber): Out-of-Scope von `DC-FA-CLI-008` präzisiert — reparierbar sind nur `id-unlinked` (konservativ) und `target-missing` als eindeutiger Datei-Move (breit; Markdown, im Scan-Bestand eindeutiger Basisname); alle übrigen Befundarten bleiben Befund unter `DC-FA-CLI-007`. VCS-/git-historienbasierte Move-/Rename-Erkennung explizit ausgeschlossen (erweiterte die Eingabe über den gescannten read-only-Baum hinaus, `DC-QA-02`; wäre ein eigenes opt-in-Modul analog `external`). Klarstellung des bestehenden Vertrags — keine Verhaltens-/Akzeptanzkriterien-Änderung; Begründung in eigener ADR festgehalten | — |
 | 0.17.0 | 2026-06-18 | Change Request (Auftraggeber): `--doctor` wird mit `--json` kombinierbar — Schärfung `DC-FA-CLI-007` (maschinenlesbare Diagnose: `findings` je Eintrag um `reasonText` und `fixCandidate` erweitert, Gruppierung über das `file`-Feld) und `DC-FA-CLI-004` (Kombinierbarkeit `--doctor`+`--json` definiert statt verboten; `--repair`+`--json` und `--doctor`+`--repair` bleiben Nutzungsfehler). Dieselbe Grund-Klartext-/Fix-Kandidaten-Ableitung, drittes Rendering neben Prosa und Patch. Anlass: Auftraggeber-Wunsch nach maschinenlesbarer Diagnose | slice-029 |
 | 0.16.0 | 2026-06-18 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-008` (Option `--repair`: unified diff auf stdout, `git apply`-kompatibel, read-only; konservative Stufe als Default mit eindeutig ableitbaren Fixes — v1 v. a. `id-unlinked` → Definitions-Link —, breite Best-Guess-Stufe opt-in, Kennzeichnung review-pflichtiger Hunks auf stderr, damit der Patch `git apply`-rein bleibt). Baut auf den Ausgabe-Modi aus 0.15.0 auf; deterministisch (`DC-QA-02`), read-only-Kernvertrag (`DC-QA-03`); In-place-Schreiben bleibt Out-of-Scope (wäre eigene Anforderung + ADR) | slice-026 |
