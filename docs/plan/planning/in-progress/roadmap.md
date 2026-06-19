@@ -11,13 +11,12 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 ## Aktuelle Welle
 
 **Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
-welle-19-suggest-ai-harness (`slice-030` — `--suggest-config ai-harness` /
-`ai-harness-init`: Harness-Vorlage in zwei Modi, Change Request 0.18.1;
-[Closure](../done/slice-030-suggest-config-ai-harness.md#7-closure-notiz-nach-done)),
-ausgeliefert als Release **v0.18.0** auf GHCR (`ai-harness`/`ai-harness-init`;
-Digest-Pin in der welle-19-Zeile). Die nächste Welle wartet auf ihren
-Trigger (Change Request im Lastenheft oder Priorisierung durch den
-Auftraggeber).
+welle-20-yaml-ausgabe (`slice-031` — Ausgabeformat `--yaml`, strukturgleich
+zu `--json` inkl. `--doctor --yaml`, Change Request 0.19.0;
+[Closure](../done/slice-031-yaml-ausgabe.md#7-closure-notiz-nach-done)).
+`slice-031` ist noch in keinem Release ausgeliefert (zuletzt **v0.18.0** auf
+GHCR). Die nächste Welle wartet auf ihren Trigger (Change Request im
+Lastenheft oder Priorisierung durch den Auftraggeber).
 
 ## Nächste Wellen
 
@@ -73,6 +72,7 @@ flowchart LR
 | welle-17-benutzerhandbuch | 2026-06-18 | [slice-028 §7](../done/slice-028-benutzerhandbuch.md#7-closure-notiz-nach-done); aufgabenbasiertes Benutzerhandbuch unter docs/user/ nach dem adoptierten (mit-getrackten) Standard — alle Use Cases (v0.12.0), inkl. `--repair`-Pipe-Einzeiler; Self-Review R1, doc-check-rein; abgeleitete Nutzer-Doku (kein Vertrag) |
 | welle-18-doctor-json | 2026-06-19 | [slice-029 §7](../done/slice-029-doctor-json.md#7-closure-notiz-nach-done); maschinenlesbare Diagnose `--doctor --json` ([`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus) Change Request 0.17.0) — dritte Ausgabe desselben Fix-Kandidaten-Modells, `findings` zusätzlich mit `reasonText`/`fixCandidate` (oder explizit `null`), `--doctor` nun mit `--json` kombinierbar; **unabhängiger** Review R1 (0 HIGH/MEDIUM/LOW, 2 INFO, INFO-1 in-flight geschlossen); `make gates` grün (Coverage 93,80 %); Minor-Release **v0.17.0** auf GHCR (Run `27806700510` grün in 1m56s, Tags `v0.17.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:fe8a1ccd718c04005e814aae7d82d32dc8f320688e9b738c85d7d0f9ac08935d` |
 | welle-19-suggest-ai-harness | 2026-06-19 | [slice-030 §7](../done/slice-030-suggest-config-ai-harness.md#7-closure-notiz-nach-done); `--suggest-config`-Harness-Vorlage in **zwei Modi** ([`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) Change Request 0.18.1) — `ai-harness-init` (Voll-Kanon fürs leere Repo) und `ai-harness` (repo-bewusst); kanonische ids-/matrix-/Modulset-Vorlage (Spiegel der `.d-check.yml`), read-only/advisory, deterministisch; Henne-Ei-Aufteilung nach Auftraggeber-Einwand; **unabhängiges** Review R1 (0 HIGH/MEDIUM/LOW, 2 INFO in-flight geschlossen); `make gates` grün (Coverage 93,70 %); Minor-Release **v0.18.0** auf GHCR (Run `27836313193` grün in 1m53s, Tags `v0.18.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:9c52e2d0e18de32146d0383257d240135288f2d1c25941e0fd08a465b8933e5c` |
+| welle-20-yaml-ausgabe | 2026-06-19 | [slice-031 §7](../done/slice-031-yaml-ausgabe.md#7-closure-notiz-nach-done); Ausgabeformat **YAML** (`--yaml`, [`DC-FA-CLI-004`](../../../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate) Change Request 0.19.0) — strukturgleich zu `--json`, volle Parität inkl. `--doctor --yaml`; yaml.v3 zusätzlich im report-Adapter ([ADR-0009](../../adr/0009-yaml-im-report-adapter.md)), arch-check R3 erweitert; **unabhängiges** Review R1 (0 HIGH/MEDIUM, 2 LOW in-flight geschlossen); `make gates` grün (Coverage 94,10 %); noch in keinem Release ausgeliefert |
 
 ## Historische Trigger-Verschiebungen
 
