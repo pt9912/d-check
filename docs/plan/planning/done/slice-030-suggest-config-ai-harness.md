@@ -1,6 +1,6 @@
 # Slice slice-030: `--suggest-config ai-harness`-Vorlage
 
-**Status:** open (geplant).
+**Status:** done (abgeschlossen 2026-06-19).
 
 **Welle:** welle-19-suggest-ai-harness (Trigger: Change Request 0.18.0
 akzeptiert; baut auf slice-020 (`--suggest-config`) auf).
@@ -40,11 +40,11 @@ Read-only, advisory, deterministisch; mit echten Quellen kombinierbar.
 
 ## 2. Definition of Done
 
-- [ ] **CLI/Core:** `ai-harness` und `ai-harness-init` werden in
+- [x] **CLI/Core:** `ai-harness` und `ai-harness-init` werden in
   `SuggestConfig` als **reservierte Schlüsselwörter** erkannt (nicht als
   Pfad → **kein** Exit 2 „Quelle existiert nicht"); kombinierbar mit
   echten Quellen.
-- [ ] **Vorlage (zwei Modi):** kanonische Blöcke aus d-checks
+- [x] **Vorlage (zwei Modi):** kanonische Blöcke aus d-checks
   `.d-check.yml` — `ids` (`ADR-\d{4}`→`docs/plan/adr/`,
   `MR-\d{3}`→`harness/conventions.md`,
   `DC-(FA-[A-Z]+|QA)-\d+`→`spec/lastenheft.md`,
@@ -57,19 +57,19 @@ Read-only, advisory, deterministisch; mit echten Quellen kombinierbar.
   Existenzprüfung). **`ai-harness`:** repo-bewusst — fehlendes Target/Pfad
   → **auskommentiert mit Hinweis** statt weglassen. Carveout (kein Target)
   in beiden auskommentiert. Kommentar-Header mit Baseline-Pin + Modus.
-- [ ] **Spezifikation:**
+- [x] **Spezifikation:**
   [`DC-FA-CLI-006.a`](../../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag)
   um die beiden Modi erweitert (Schritte + Vorlagen-Inhalt +
   Baseline-Pin `v1.3.0`).
-- [ ] **Tests:** die CR-Akzeptanzkriterien — `ai-harness` (Happy: Blöcke
+- [x] **Tests:** die CR-Akzeptanzkriterien — `ai-harness` (Happy: Blöcke
   vorhanden/Parser akzeptiert; Boundary: fehlendes `docs/plan/adr/` →
   ADR-Block auskommentiert, nur existierende roots; Abgrenzung: ≠ fehlende
   Quelle, Exit 0) und `ai-harness-init` (Voll-Kanon: alle Blöcke aktiv
   auch ohne Targets); Determinismus 10× ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus));
   read-only.
-- [ ] **Doku:** `docs/user/operations.md` (Options-Tabelle) +
+- [x] **Doku:** `docs/user/operations.md` (Options-Tabelle) +
   Benutzerhandbuch (§ zu `--suggest-config`) um den Modus ergänzt.
-- [ ] `make gates` grün; unabhängiges Review R1; Closure-Notiz.
+- [x] `make gates` grün; unabhängiges Review R1; Closure-Notiz.
 
 ## 3. Plan (vor Code)
 
@@ -107,7 +107,44 @@ DoD vollständig inkl. grüner Gates und Review R1.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-*(wird bei Closure gefüllt — Umsetzung, Belege, Lerneintrag, Review-Runde.)*
+**Umsetzung:** Vertrag
+[`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)
+(Lastenheft 0.18.1, zwei Modi) + Spezifikation
+[`DC-FA-CLI-006.a`](../../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag).
+Reservierte Quellen `ai-harness` (repo-bewusst) und `ai-harness-init`
+(Voll-Kanon); `renderHarness` mit `repoAware`-Schalter über gemeinsamem
+Kanon (`harnessIDPatterns`/`harnessClasses`, Spiegel von `.d-check.yml`).
+CLI unverändert (das Schlüsselwort wird im Core erkannt). `make gates` grün
+(Coverage 93,70 %).
+
+**Belege:**
+
+- 5 Akzeptanztests: `ai-harness` Happy/Boundary/Abgrenzung,
+  `ai-harness-init` Voll-Kanon, Determinismus 10×
+  ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
+- Beide Modi **am Image verifiziert**: `ai-harness-init` auf leerem Repo →
+  Voll-Kanon aktiv; `ai-harness` auf d-check → repo-bewusst (gespiegelte
+  `.d-check.yml`).
+- read-only ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit))
+  per `os.Stat` in beiden Happy-Tests belegt; rein lesender Core-Pfad.
+
+**Lerneintrag:** Henne-Ei — ein einzelner auto-hybrider Modus kommentierte
+im leeren Repo *alles* aus (nutzlos als Bootstrap), und ein naives „immer
+voll-aktiv" stirbt beim Lauf an `ensureIDTargetsExist` (Exit 2, fehlendes
+ids-Target). Auflösung: **zwei explizite, nutzergewählte Modi** statt
+Auto-Erkennung. Der Einwand kam vom Auftraggeber *vor* der Closure — der
+Review-/Abnahme-Schritt vor Release hat den Designfehler gefangen.
+
+**Review R1** (unabhängiger Reviewer-Subagent, eigener Kontext ohne
+DoD-Wissen,
+[Report](../../../reviews/2026-06-19-slice-030-suggest-config-ai-harness.md)):
+HIGH 0 / MEDIUM 0 / LOW 0 / INFO 2 — freigegeben; beide INFO im selben Stand
+geschlossen (Doppel-Token-Vorrang in der Spezifikation dokumentiert;
+read-only-Test für den `ai-harness-init`-Pfad ergänzt). Der erste Entwurf
+(Einzel-Hybrid) wurde nach dem Henne-Ei-Einwand verworfen und das
+Zwei-Modi-Design neu reviewt.
+
+**Welle:** welle-19-suggest-ai-harness ist damit vollständig (slice-030).
 
 ## 8. Sub-Area-Modus-Begründung
 
