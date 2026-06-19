@@ -6,6 +6,29 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.18.0] — 2026-06-19
+
+### Added
+
+- slice-030 — `--suggest-config ai-harness` / `ai-harness-init`: schlägt
+  ein an die ai-harness-course-Konvention (Baseline v1.3.0) angelehntes
+  `.d-check.yml` vor — kanonische `ids`-Muster, `matrix`-Klassen samt
+  Referenzrichtung, Standard-Modulset und Scan-Scope. **Zwei Modi:**
+  `ai-harness-init` (Voll-Kanon, alle Blöcke aktiv — Zielbild fürs leere
+  Repo, läuft nach Struktur-Anlage) und `ai-harness` (repo-bewusst — nur
+  vorhandene Pfade aktiv, fehlende auskommentiert mit Hinweis). Read-only,
+  advisory, deterministisch (`DC-QA-02`); mit echten Quellen kombinierbar
+  ([`DC-FA-CLI-006`](spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)).
+
+### Changed
+
+- Spezifikation/Dokumentation präzisiert: `--repair-broad` löst nur
+  **Verschiebungen** auf (gleicher Name), keine Umbenennungen; das
+  Out-of-Scope von `DC-FA-CLI-008` benennt die nicht-reparierbaren
+  Befundarten und schließt git-historienbasierte Move-/Rename-Erkennung
+  aus; die Reparatur-Ableitbarkeit ist als Entscheidung in `ADR-0008`
+  festgehalten (Handbuch §4.10).
+
 ## [0.17.0] — 2026-06-19
 
 ### Added
