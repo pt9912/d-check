@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-18.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-19.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -10,12 +10,14 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-18-doctor-json — aktiv.** `slice-029` macht `--doctor --json` zur
-maschinenlesbaren Diagnose (Change Request 0.17.0, `findings` um
-`reasonText`/`fixCandidate` erweitert; [Plan](../open/slice-029-doctor-json.md)).
-welle-17 (Benutzerhandbuch) zuvor abgeschlossen; Release **v0.12.0**
-(`--doctor`/`--repair` + E2E) ist auf GHCR veröffentlicht. Die nächste Welle wartet auf ihren Trigger
-(Change Request im Lastenheft oder Priorisierung durch den Auftraggeber).
+**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+welle-18-doctor-json (`slice-029` — `--doctor --json` als maschinenlesbare
+Diagnose, Change Request 0.17.0, `findings` um `reasonText`/`fixCandidate`
+erweitert; [Closure](../done/slice-029-doctor-json.md#7-closure-notiz-nach-done)).
+Release **v0.12.0** (`--doctor`/`--repair` + E2E) ist auf GHCR; `slice-029`
+ist noch in keinem Release ausgeliefert. Die nächste Welle wartet auf ihren
+Trigger (Change Request im Lastenheft oder Priorisierung durch den
+Auftraggeber).
 
 ## Nächste Wellen
 
@@ -69,6 +71,7 @@ flowchart LR
 | welle-15-doctor-repair | 2026-06-18 | [slice-025 §7](../done/slice-025-doctor.md#7-closure-notiz-nach-done), [slice-026 §7](../done/slice-026-repair.md#7-closure-notiz-nach-done); Diagnose-Modus `--doctor` ([`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus) 0.15.0) und Reparatur-Patch `--repair` ([`DC-FA-CLI-008`](../../../../spec/lastenheft.md#dc-fa-cli-008--reparatur-patch) 0.16.0); read-only/stdout-only, zwei `--repair`-Stufen (konservativ/breit), `git apply`-Round-Trip belegt; `make gates` grün (Coverage 93,9 %); in Release **v0.12.0** ausgeliefert (Digest-Pin s. welle-16-Zeile) |
 | welle-16-image-test-modi | 2026-06-18 | [slice-027 §7](../done/slice-027-image-test-modi.md#7-closure-notiz-nach-done); `make image-test` deckt `--doctor`/`--repair` nativ == Container byte-identisch ab ([`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)-Härtung, [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)); E2E-Lücke vor Release v0.12.0 geschlossen; Minor-Release **v0.12.0** auf GHCR (Run `27779122412` grün in 2m13s, Tags `v0.12.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:e65654ef8b35c9329f01eeee693bd0c10f583c9e6e01c89f24dd3c2615de32ac` |
 | welle-17-benutzerhandbuch | 2026-06-18 | [slice-028 §7](../done/slice-028-benutzerhandbuch.md#7-closure-notiz-nach-done); aufgabenbasiertes Benutzerhandbuch unter docs/user/ nach dem adoptierten (mit-getrackten) Standard — alle Use Cases (v0.12.0), inkl. `--repair`-Pipe-Einzeiler; Self-Review R1, doc-check-rein; abgeleitete Nutzer-Doku (kein Vertrag) |
+| welle-18-doctor-json | 2026-06-19 | [slice-029 §7](../done/slice-029-doctor-json.md#7-closure-notiz-nach-done); maschinenlesbare Diagnose `--doctor --json` ([`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus) Change Request 0.17.0) — dritte Ausgabe desselben Fix-Kandidaten-Modells, `findings` zusätzlich mit `reasonText`/`fixCandidate` (oder explizit `null`), `--doctor` nun mit `--json` kombinierbar; **unabhängiger** Review R1 (0 HIGH/MEDIUM/LOW, 2 INFO, INFO-1 in-flight geschlossen); `make gates` grün (Coverage 93,80 %); noch in keinem Release ausgeliefert |
 
 ## Historische Trigger-Verschiebungen
 
