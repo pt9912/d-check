@@ -397,14 +397,90 @@ func TestCLI007_Doctor_KeineBefunde(t *testing.T) {
 	}
 }
 
-// DC-FA-CLI-007 Negative: --doctor mit --json ist ein Nutzungsfehler
-// (keine JSON-Variante der Diagnose) → Exit 2, keine Ausgabe auf stdout.
-func TestCLI007_Doctor_JSONInkompatibel(t *testing.T) {
+// DC-FA-CLI-007 JSON-Variante: --doctor --json gibt die Diagnose
+// maschinenlesbar aus — je findings-Eintrag reasonText und fixCandidate
+// (Objekt mit replacement, sonst explizit null); stdout ist reines JSON,
+// Exit 1. Zwei Befunde: id-unlinked (mit Kandidat), target-missing (null).
+func TestCLI007_DoctorJSON_Happy(t *testing.T) {
 	root := t.TempDir()
-	write(t, root, "docs/a.md", "x")
+	write(t, root, ".d-check.yml",
+		"modules: [ids, links]\nids:\n  patterns:\n    - regex: 'ADR-\\d{4}'\n      target: docs/plan/adr/\n")
+	write(t, root, "docs/plan/adr/0042-x.md", "# ADR")
+	write(t, root, "docs/a.md", "nacktes ADR-0042 im Fließtext\n[x](fehlt.md)\n")
 	code, stdout, stderr := run(t, "--doctor", "--json", root)
-	if code != 2 || stdout != "" || !strings.Contains(stderr, "nicht mit --json") {
-		t.Fatalf("Exit = %d, stdout = %q, stderr = %q", code, stdout, stderr)
+	if code != 1 {
+		t.Fatalf("Exit = %d, want 1 (stderr: %s)", code, stderr)
+	}
+	var doc struct {
+		Findings []struct {
+			File         string `json:"file"`
+			Reason       string `json:"reason"`
+			ReasonText   string `json:"reasonText"`
+			FixCandidate *struct {
+				Original    string `json:"original"`
+				Replacement string `json:"replacement"`
+				Note        string `json:"note"`
+			} `json:"fixCandidate"`
+		} `json:"findings"`
+		Summary struct {
+			FindingCount int `json:"findingCount"`
+		} `json:"summary"`
+		ExitCode int `json:"exitCode"`
+	}
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("stdout ist kein JSON: %v\n%q", err, stdout)
+	}
+	if doc.ExitCode != 1 || doc.Summary.FindingCount != 2 || len(doc.Findings) != 2 {
+		t.Fatalf("JSON-Inhalt: %+v", doc)
+	}
+	withCand, nullCand := 0, 0
+	for _, f := range doc.Findings {
+		if f.ReasonText == "" {
+			t.Fatalf("reasonText fehlt: %+v", f)
+		}
+		switch f.Reason {
+		case "id-unlinked":
+			if f.FixCandidate == nil || !strings.Contains(f.FixCandidate.Replacement, "[`ADR-0042`](") {
+				t.Fatalf("id-unlinked ohne fixCandidate.replacement: %+v", f)
+			}
+			withCand++
+		default:
+			if f.FixCandidate == nil {
+				nullCand++
+			}
+		}
+	}
+	if withCand != 1 || nullCand != 1 {
+		t.Fatalf("Kandidaten-Verteilung: with=%d null=%d", withCand, nullCand)
+	}
+	// fixCandidate ist EXPLIZIT null (nicht weggelassen) — sonst verschwindet
+	// die Aussage „kein eindeutiger Fix".
+	if !strings.Contains(stdout, "\"fixCandidate\": null") {
+		t.Fatalf("fixCandidate nicht explizit null:\n%s", stdout)
+	}
+	// stdout ist reines JSON: keine Prosa-Diagnose.
+	if strings.Contains(stdout, "Diagnose") || strings.Contains(stdout, "Fix-Kandidat:") {
+		t.Fatalf("stdout enthält Prosa trotz --json:\n%s", stdout)
+	}
+}
+
+// DC-QA-02 für die JSON-Diagnose: 10 Läufe byte-identisch (feste
+// Struct-Reihenfolge, keine Map-Iteration).
+func TestCLI007_DoctorJSON_Determinismus(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, ".d-check.yml",
+		"modules: [ids]\nids:\n  patterns:\n    - regex: 'ADR-\\d{4}'\n      target: docs/plan/adr/\n")
+	write(t, root, "docs/plan/adr/0042-x.md", "# ADR")
+	write(t, root, "docs/z.md", "ADR-0042 und nochmal ADR-0042\n")
+	write(t, root, "docs/a.md", "ADR-0042\n")
+	var first string
+	for i := 0; i < 10; i++ {
+		_, stdout, _ := run(t, "--doctor", "--json", root)
+		if i == 0 {
+			first = stdout
+		} else if stdout != first {
+			t.Fatalf("Lauf %d weicht ab:\n%q\n---\n%q", i, first, stdout)
+		}
 	}
 }
 

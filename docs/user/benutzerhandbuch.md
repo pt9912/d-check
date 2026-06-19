@@ -313,9 +313,54 @@ docs/anleitung.md
         (Kennung als Markdown-Link auf ihre Definition (docs/plan/adr/) ausführen; Anker ggf. ergänzen)
 ```
 
-**Hinweise:** `--doctor` ist read-only und gibt nur auf stdout aus. Es ist
-nicht mit `--json` oder `--repair` kombinierbar (sonst Exit-Code 2). Einen
-Fix-Kandidaten gibt es nur dort, wo er **eindeutig** ableitbar ist.
+**Hinweise:** `--doctor` ist read-only und gibt nur auf stdout aus. Mit
+zusätzlichem `--json` wird dieselbe Diagnose **maschinenlesbar**
+ausgegeben (siehe unten). Nicht mit `--repair` kombinierbar (sonst
+Exit-Code 2). Einen Fix-Kandidaten gibt es nur dort, wo er **eindeutig**
+ableitbar ist.
+
+**Maschinenlesbare Diagnose (`--doctor --json`):** Statt der Prosa ein
+JSON-Dokument wie bei `--json` ([Abschnitt 4.11](#411-maschinenlesbare-ausgabe---json)),
+dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
+`fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
+
+```bash
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.12.0 \
+  --enable ids --doctor --json
+```
+
+```json
+{
+  "findings": [
+    {
+      "file": "docs/anleitung.md",
+      "line": 12,
+      "rule": "ids",
+      "target": "ADR-0007",
+      "reason": "id-unlinked",
+      "reasonText": "Kennung im Fließtext ohne Markdown-Link auf ihre Definition",
+      "fixCandidate": {
+        "original": "ADR-0007",
+        "replacement": "[`ADR-0007`](plan/adr)",
+        "note": "Kennung als Markdown-Link auf ihre Definition (docs/plan/adr/) ausführen; Anker ggf. ergänzen"
+      }
+    }
+  ],
+  "summary": { "filesChecked": 1, "findingCount": 1 },
+  "exitCode": 1
+}
+```
+
+`fixCandidate` ist `null`, wo kein Fix eindeutig ableitbar ist (nicht
+weggelassen — das `null` ist die Aussage „kein eindeutiger Fix").
+
+**Die drei Ausgaben im Vergleich:**
+
+| Aufruf | stdout | wofür |
+|---|---|---|
+| `--json` | JSON: knappe Befunde (`findings`/`summary`/`exitCode`) | CI/Maschine, reine Befundliste |
+| `--doctor` | Prosa: gruppierte Diagnose mit Klartext + Fix-Kandidaten | Mensch, zum Verstehen |
+| `--doctor --json` | JSON: Befunde zusätzlich mit `reasonText` + `fixCandidate` | Maschine, die die Diagnose weiterverarbeitet |
 
 ### 4.10 Befunde als Patch beheben (`--repair`)
 
@@ -557,3 +602,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | Handbuch-Version | Software-Version | Stand | Änderung |
 |---|---|---|---|
 | 1.0 | v0.12.0 | 2026-06-18 | Erstfassung: alle Use Cases inkl. `--doctor`/`--repair` |
+| 1.1 | v0.17.0 | 2026-06-19 | `--doctor --json`: maschinenlesbare Diagnose ergänzt (§4.9), Gegenüberstellung der drei Ausgaben |

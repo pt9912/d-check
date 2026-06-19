@@ -1,6 +1,6 @@
 # Spezifikation — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-18.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-19.
 
 **Bezug zum Lastenheft:** Diese Spezifikation präzisiert die in
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
@@ -122,8 +122,11 @@ Schritte (deterministisch, alle Mengen bytewise sortiert —
 ([`DC-FA-CLI-004`](lastenheft.md#dc-fa-cli-004--ausgabeformate)) eine
 erklärende, nach Datei gruppierte Diagnose ausgibt; Schreibzugriff
 entsteht nie
-([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)),
-die Kombination mit `--json` ist ein Nutzungsfehler (Exit 2). Schritte
+([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+Mit zusätzlichem `--json` wird dieselbe Diagnose **maschinenlesbar**
+gerendert (Schritt 6) — ein drittes Rendering desselben Modells neben
+Prosa und Patch; nur `--repair`+`--json` und `--doctor`+`--repair`
+bleiben Nutzungsfehler (Exit 2). Schritte
 (deterministisch — [`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus):
 es wird nur über die stabil sortierte Befundliste und die geordneten
 ids-Muster iteriert, keine Map-Reihenfolge):
@@ -150,6 +153,17 @@ ids-Muster iteriert, keine Map-Reihenfolge):
 5. Bei **null Befunden** weist die Diagnose das aus (kein Kandidat). Die
    Diagnose geht auf stdout, die Zusammenfassung (geprüfte Dateien,
    Befundzahl) auf stderr — analog zum Default-Reporter.
+6. **JSON-Rendering** (`--doctor --json`): statt der Prosa wird ein
+   JSON-Dokument wie die [JSON-Ausgabe](#json-ausgabe---json) auf stdout
+   geschrieben, dessen `findings` je Eintrag zusätzlich `reasonText`
+   (der Grund-Klartext aus Schritt 3) und `fixCandidate` tragen — das
+   Objekt `{original, replacement, note}` aus Schritt 4 oder explizit
+   `null`, wo kein eindeutiger Kandidat existiert (nicht weggelassen,
+   sonst verschwindet die Aussage „kein eindeutiger Fix"). Die
+   Datei-Gruppierung trägt das bereits vorhandene `file`-Feld (keine
+   Prosa-Einrückung); `summary`/`exitCode` wie die JSON-Ausgabe. stdout
+   enthält nur das JSON-Dokument (Felder in fester Reihenfolge, keine
+   Map-Iteration — [`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
 
 ### DC-FA-CLI-008.a — Reparatur-Patch
 
@@ -615,6 +629,38 @@ Zusammenfassung auf stderr: `d-check: <N> Datei(en) geprüft, <M> Befund(e)`.
 Nutzungs-/Umgebungsfehler (Exit 2) erzeugen **kein** JSON-Dokument,
 sondern eine stderr-Meldung (siehe [§4](#4-grund--und-fehler-codes)).
 
+### JSON-Diagnose (`--doctor --json`)
+
+Dasselbe Dokument wie die [JSON-Ausgabe](#json-ausgabe---json) — gleiche
+`summary`/`exitCode` und dieselben Befund-Basisfelder —, aber jeder
+`findings`-Eintrag trägt zusätzlich `reasonText` und `fixCandidate`
+([`DC-FA-CLI-007`](lastenheft.md#dc-fa-cli-007--diagnose-modus)). Delta
+zum `items`-Schema:
+
+```json
+{
+  "required": ["file", "line", "rule", "target", "reason", "reasonText", "fixCandidate"],
+  "properties": {
+    "reasonText": {"type": "string"},
+    "fixCandidate": {
+      "type": ["object", "null"],
+      "required": ["original", "replacement", "note"],
+      "properties": {
+        "original":    {"type": "string"},
+        "replacement": {"type": "string"},
+        "note":        {"type": "string"}
+      }
+    }
+  }
+}
+```
+
+`fixCandidate` ist `null` (nicht weggelassen), wo kein eindeutiger
+Kandidat existiert — das `null` ist die Aussage „kein eindeutiger Fix".
+Das optionale `message`-Feld des Basis-`items`-Schemas der
+[JSON-Ausgabe](#json-ausgabe---json) (nicht stabilitätsgarantiert) bleibt
+unverändert Teil jedes Eintrags und kann zusätzlich erscheinen.
+
 ### `.d-check.yml`
 
 Unbekannte Schlüssel sind Fehler (striktes Decoding). Eine leere oder
@@ -765,3 +811,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-12 | Inline-Code-Erkennung absatzweise statt zeilenweise (§[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 2): mehrzeilige Code-Spans gemäß CommonMark, Absatzgrenzen Leerzeile/Fence, ungeschlossene Folge literal. Anlass: [`DC-QA-04`](lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Gegentest u-boot — über Zeilenumbrüche gebrochene Befehls-Spans invertierten die Backtick-Parität der Folgezeile und erzeugten False-Positive-`id-unlinked`-Befunde auf korrekt verlinkten Kennungen. Zeilenbasierte **Link**-Extraktion (Schritt 3) bleibt normative Grenze | slice-012 |
 | 2026-06-18 | §[`DC-FA-CLI-007.a`](spezifikation.md#dc-fa-cli-007a--diagnose-modus) ergänzt: Diagnose-Modus `--doctor` — Lese-Lauf, nach Datei gruppierte Klartext-Diagnose auf stdout (statt Befund-Zeilen), Fix-Kandidat nur für `id-unlinked` (Link auf das ids-`target`); Grund-Klartext-Mapping über alle 14 Grund-Codes mit Vollständigkeits-Prüfung gegen die Reason-Konstanten; `--doctor`+`--json` = Nutzungsfehler (Exit 2); Determinismus über die sortierte Befundliste | slice-025 |
 | 2026-06-18 | §[`DC-FA-CLI-008.a`](spezifikation.md#dc-fa-cli-008a--reparatur-patch) ergänzt: Reparatur-Modus `--repair` — unified diff auf stdout (`git apply`-kompatibel), zwei Stufen (`--repair`/`--repair-broad`); konservativ nur eindeutige `id-unlinked`-Fixes auf nackte Prosa-Vorkommen, breit Best-Guess `target-missing` (eindeutiger Basisname) mit review-pflichtig-Marker auf stderr; nicht mit `--json`/`--doctor` kombinierbar; Determinismus über sortierte Edits | slice-026 |
+| 2026-06-19 | §[`DC-FA-CLI-007.a`](spezifikation.md#dc-fa-cli-007a--diagnose-modus) Schritt 6 + [JSON-Diagnose](spezifikation.md#json-diagnose---doctor---json)-Schema (§2) ergänzt: `--doctor --json` rendert dieselbe Diagnose maschinenlesbar — `findings` zusätzlich mit `reasonText` und `fixCandidate` (`{original,replacement,note}` oder explizit `null`), `file`-Gruppierung; nur noch `--repair`+`--json` und `--doctor`+`--repair` sind Nutzungsfehler | slice-029 |

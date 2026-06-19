@@ -147,3 +147,51 @@ func JSON(stdout io.Writer, findings []core.Finding, sum Summary, exitCode int) 
 	enc.SetIndent("", "  ")
 	return enc.Encode(jsonDoc{Findings: findings, Summary: sum, ExitCode: exitCode})
 }
+
+// jsonFixCandidate ist das JSON-Abbild von core.FixCandidate
+// (spec/spezifikation.md §DC-FA-CLI-007.a).
+type jsonFixCandidate struct {
+	Original    string `json:"original"`
+	Replacement string `json:"replacement"`
+	Note        string `json:"note"`
+}
+
+// jsonDiagFinding ergänzt den Befund um den Grund-Klartext und — wo
+// eindeutig ableitbar — den Fix-Kandidaten. Das eingebettete
+// core.Finding promotet seine Felder (file…message) flach in das
+// Objekt; reasonText und fixCandidate kommen hinzu. fixCandidate trägt
+// KEIN omitempty: fehlt der Kandidat, steht explizit `null` (die
+// Aussage „kein eindeutiger Fix"), nicht das Weglassen des Felds.
+type jsonDiagFinding struct {
+	core.Finding
+	ReasonText   string            `json:"reasonText"`
+	FixCandidate *jsonFixCandidate `json:"fixCandidate"`
+}
+
+type jsonDiagDoc struct {
+	Findings []jsonDiagFinding `json:"findings"`
+	Summary  Summary           `json:"summary"`
+	ExitCode int               `json:"exitCode"`
+}
+
+// DoctorJSON ist das dritte Rendering der Diagnose neben Prosa (Doctor)
+// und Patch (Repair) — dasselbe Modell, maschinenlesbar (DC-FA-CLI-007,
+// kombiniert --doctor --json). Je Befund: der Grund-Klartext über
+// core.ReasonText und der Fix-Kandidat über core.FixCandidateFor
+// (explizit `null`, wo keiner ableitbar ist). stdout enthält nur das
+// JSON-Dokument (keine Prosa, keine stderr-Zusammenfassung — sie steckt
+// im summary-Feld); Felder in fester Struct-Reihenfolge, keine
+// Map-Iteration (DC-QA-02).
+func DoctorJSON(stdout io.Writer, findings []core.Finding, sum Summary, exitCode int, cfg core.Config) error {
+	out := make([]jsonDiagFinding, 0, len(findings))
+	for _, f := range findings {
+		df := jsonDiagFinding{Finding: f, ReasonText: core.ReasonText(f.Reason)}
+		if c := core.FixCandidateFor(f, cfg); c != nil {
+			df.FixCandidate = &jsonFixCandidate{Original: c.Original, Replacement: c.Replacement, Note: c.Note}
+		}
+		out = append(out, df)
+	}
+	enc := json.NewEncoder(stdout)
+	enc.SetIndent("", "  ")
+	return enc.Encode(jsonDiagDoc{Findings: out, Summary: sum, ExitCode: exitCode})
+}

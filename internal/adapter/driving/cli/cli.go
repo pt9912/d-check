@@ -151,11 +151,13 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}
-	// DC-FA-CLI-004: --doctor und --repair ersetzen das stdout-Format; sie
-	// sind untereinander und mit --json nicht kombinierbar (Nutzungsfehler,
-	// DC-FA-CLI-003, Exit 2). JSON-Varianten dieser Modi sind out of scope.
-	if opts.json && (opts.doctor || opts.repair) {
-		fmt.Fprintln(stderr, "d-check: error: --doctor/--repair sind nicht mit --json kombinierbar")
+	// DC-FA-CLI-004: --doctor und --repair ersetzen das stdout-Format.
+	// --doctor IST mit --json kombinierbar (maschinenlesbare Diagnose,
+	// DC-FA-CLI-007). Nutzungsfehler (DC-FA-CLI-003, Exit 2) bleiben nur
+	// --repair+--json (eine JSON-Variante des Patches ist out of scope) und
+	// --doctor+--repair (sich ausschließende Ausgabe-Modi).
+	if opts.json && opts.repair {
+		fmt.Fprintln(stderr, "d-check: error: --repair ist nicht mit --json kombinierbar")
 		return options{}, 2, true
 	}
 	if opts.doctor && opts.repair {
@@ -220,6 +222,11 @@ func render(res core.Result, opts options, cfg core.Config, fsys driven.Filesyst
 	}
 	sum := report.Summary{FilesChecked: res.FilesChecked, FindingCount: len(res.Findings)}
 	switch {
+	case opts.doctor && opts.json:
+		if err := report.DoctorJSON(stdout, res.Findings, sum, exit, cfg); err != nil {
+			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+			return 2
+		}
 	case opts.doctor:
 		if err := report.Doctor(stdout, stderr, res.Findings, sum, cfg); err != nil {
 			fmt.Fprintf(stderr, "d-check: error: %v\n", err)

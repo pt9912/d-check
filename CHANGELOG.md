@@ -6,6 +6,24 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-029 — Maschinenlesbare Diagnose `--doctor --json`: dieselbe
+  Diagnose wie `--doctor`, aber als JSON-Dokument auf stdout. Die
+  `findings` tragen je Eintrag zusätzlich `reasonText` (Grund-Klartext)
+  und `fixCandidate` (`{original, replacement, note}` oder explizit
+  `null`, wo kein eindeutiger Fix existiert); `summary`/`exitCode` wie
+  bei `--json`. Ein drittes Rendering desselben Fix-Kandidaten-Modells
+  neben Prosa (`--doctor`) und Patch (`--repair`); deterministisch
+  (`DC-QA-02`), read-only (`DC-QA-03`).
+
+### Changed
+
+- `--doctor` ist nun **mit `--json` kombinierbar** (zuvor Nutzungsfehler).
+  Nutzungsfehler bleiben nur `--repair`+`--json` und `--doctor`+`--repair`
+  ([`DC-FA-CLI-007`](spec/lastenheft.md#dc-fa-cli-007--diagnose-modus),
+  [`DC-FA-CLI-004`](spec/lastenheft.md#dc-fa-cli-004--ausgabeformate)).
+
 ## [0.12.0] — 2026-06-18
 
 ### Added
