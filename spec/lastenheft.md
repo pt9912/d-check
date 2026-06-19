@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.18.1
+**Version:** 0.19.0
 
 **Status:** Draft
 
@@ -115,29 +115,34 @@ unabhängig vom Code.
 **Beschreibung:** Befunde werden zeilenweise im Format
 `<pfad>:<zeile>\t<ziel>\t<grund>` auf stdout ausgegeben (ein Befund pro
 Zeile, Pfade relativ zur Scan-Wurzel); Zusammenfassung und Diagnose
-gehen auf stderr. Mit `--json` erfolgt die gesamte Ausgabe auf stdout
-als ein maschinenlesbares JSON-Dokument mit mindestens den Feldern
-`findings` (Liste mit `file`, `line`, `target`, `rule`, `reason`),
-`summary` (`filesChecked`, `findingCount`) und `exitCode`; stdout
-enthält dann keine unstrukturierten Textzeilen. Die Ausgabe-Modi
-[`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus) (`--doctor`) und
-[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch) (`--repair`) ersetzen
-das Default-stdout-Format durch eine Diagnose bzw. einen unified diff;
-`--doctor` ist mit `--json` **kombinierbar** — dann gibt es die Diagnose
-maschinenlesbar aus (JSON statt Prosa, siehe
-[`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus)). `--repair` mit `--json`
-und `--doctor` mit `--repair` bleiben **nicht kombinierbar**
-(Nutzungsfehler, Exit-Code 2 nach
-[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)); eine JSON-Variante des
-Patches ist out of scope.
+gehen auf stderr. Mit `--json` **oder** `--yaml` erfolgt die gesamte
+Ausgabe auf stdout als ein maschinenlesbares Dokument (JSON bzw. YAML) mit
+mindestens den Feldern `findings` (Liste mit `file`, `line`, `target`,
+`rule`, `reason`), `summary` (`filesChecked`, `findingCount`) und
+`exitCode` — **gleiche Struktur, nur Serialisierung verschieden**; stdout
+enthält dann keine unstrukturierten Textzeilen. `--json` und `--yaml`
+schließen sich gegenseitig aus (Nutzungsfehler, Exit-Code 2). Die
+Ausgabe-Modi [`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus)
+(`--doctor`) und [`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)
+(`--repair`) ersetzen das Default-stdout-Format durch eine Diagnose bzw.
+einen unified diff; `--doctor` ist mit `--json` **oder** `--yaml`
+**kombinierbar** — dann gibt es die Diagnose maschinenlesbar (JSON bzw.
+YAML statt Prosa, siehe
+[`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus)). `--repair` mit
+`--json`/`--yaml` und `--doctor` mit `--repair` bleiben **nicht
+kombinierbar** (Nutzungsfehler, Exit-Code 2 nach
+[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)); eine JSON-/YAML-Variante
+des Patches ist out of scope.
 
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Repo mit zwei kaputten Links, when `d-check` läuft, then genau zwei Befund-Zeilen auf stdout, je mit Datei, Zeilennummer, Ziel und Grund.
 - **Boundary:** Given dieselben Befunde, when `d-check --json` läuft, then ist stdout als JSON parsbar, `summary.findingCount` ist 2 und stdout enthält keine Nicht-JSON-Zeilen.
 - **Negative:** Given die unbekannte Option `--format` (kein Teil des CLI), when `d-check --json --format xml` aufgerufen wird, then Exit-Code 2 (ungültige Nutzung, vgl. [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)).
+- **YAML:** Given dieselben zwei Befunde, when `d-check --yaml` läuft, then ist stdout als YAML parsbar mit derselben Struktur wie `--json` (`summary.findingCount` ist 2, keine unstrukturierten Zeilen); `d-check --doctor --yaml` ergänzt je `findings`-Eintrag `reasonText` und `fixCandidate` (analog `--doctor --json`).
+- **YAML Negative:** Given die Kombination `d-check --json --yaml`, when aufgerufen, then Exit-Code 2 (sich ausschließende Formate); ebenso `d-check --repair --yaml`.
 
-**Out-of-Scope:** Weitere Formate (SARIF, JUnit-XML) in dieser Version.
+**Out-of-Scope:** Weitere Formate (SARIF, JUnit-XML) in dieser Version (YAML ist mit 0.19.0 ergänzt).
 
 ---
 
@@ -776,6 +781,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.19.0 | 2026-06-19 | Change Request (Auftraggeber): `DC-FA-CLI-004` um das Ausgabeformat **YAML** (`--yaml`) erweitert — gleiche Struktur wie `--json` (`findings`/`summary`/`exitCode`), volle Parität inkl. `--doctor --yaml` (mit `reasonText`/`fixCandidate`); `--json`+`--yaml` und `--repair`+`--yaml` sind Nutzungsfehler (Exit 2). Serialisierung im report-Adapter braucht `gopkg.in/yaml.v3` dort — die Modul-Import-Regeln werden dafür per Folge-ADR erweitert. Anlass: YAML als lesbareres maschinenlesbares Format neben JSON | slice-031 |
 | 0.18.1 | 2026-06-19 | Schärfung `DC-FA-CLI-006` (Auftraggeber, vor Release): die ai-harness-Vorlage in **zwei explizite Modi** aufgeteilt (Henne-Ei — nicht aus der Repo-Existenz ableitbar) — `ai-harness-init` (Voll-Kanon, alle Blöcke aktiv; Zielbild für ein leeres/frisches Repo, läuft nach Struktur-Anlage) und `ai-harness` (repo-bewusst, fehlende Blöcke auskommentiert; läuft sofort gegen ein bestehendes Repo). Anlass: der einzelne hybride Modus kommentierte in einem leeren Repo alles aus und taugte nicht als Bootstrap-Vorlage | slice-030 |
 | 0.18.0 | 2026-06-19 | Change Request (Auftraggeber): `DC-FA-CLI-006` um die reservierte Quelle `ai-harness` erweitert — `--suggest-config ai-harness` schlägt ein an die adoptierte ai-harness-course-Konvention angelehntes `.d-check.yml` vor (kanonische `ids`-Muster, `matrix`-Klassen samt Referenzrichtung, Standard-Modulset, Scan-Scope). Hybrid: strukturelle Konventionen immer, konkrete Pfade repo-bewusst (nur existierende roots; fehlende Artefakte auskommentiert mit Hinweis). Read-only/advisory, deterministisch (`DC-QA-02`); liefert — als Ausnahme zur reinen Quellen-Ableitung — `matrix`-Regeln/`link-policy`/`exempt-paths` aus der bekannten Konvention. Anlass: Adoptions-Start für Harness-Repos ohne manuelles Quellen-Auflisten | slice-030 |
 | 0.17.1 | 2026-06-19 | Change Request (Auftraggeber): Out-of-Scope von `DC-FA-CLI-008` präzisiert — reparierbar sind nur `id-unlinked` (konservativ) und `target-missing` als eindeutiger Datei-Move (breit; Markdown, im Scan-Bestand eindeutiger Basisname); alle übrigen Befundarten bleiben Befund unter `DC-FA-CLI-007`. VCS-/git-historienbasierte Move-/Rename-Erkennung explizit ausgeschlossen (erweiterte die Eingabe über den gescannten read-only-Baum hinaus, `DC-QA-02`; wäre ein eigenes opt-in-Modul analog `external`). Klarstellung des bestehenden Vertrags — keine Verhaltens-/Akzeptanzkriterien-Änderung; Begründung in eigener ADR festgehalten | — |
