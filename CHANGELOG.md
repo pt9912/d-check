@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.17.0] — 2026-06-19
+
 ### Added
 
 - slice-029 — Maschinenlesbare Diagnose `--doctor --json`: dieselbe
