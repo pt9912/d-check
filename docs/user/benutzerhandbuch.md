@@ -347,7 +347,7 @@ Exit-Code 2). Einen Fix-Kandidaten gibt es nur dort, wo er **eindeutig**
 ableitbar ist.
 
 **Maschinenlesbare Diagnose (`--doctor --json`):** Statt der Prosa ein
-JSON-Dokument wie bei `--json` ([Abschnitt 4.11](#411-maschinenlesbare-ausgabe---json)),
+JSON-Dokument wie bei `--json` (Abschnitt 4.11),
 dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
@@ -388,6 +388,9 @@ weggelassen — das `null` ist die Aussage „kein eindeutiger Fix").
 | `--json` | JSON: knappe Befunde (`findings`/`summary`/`exitCode`) | CI/Maschine, reine Befundliste |
 | `--doctor` | Prosa: gruppierte Diagnose mit Klartext + Fix-Kandidaten | Mensch, zum Verstehen |
 | `--doctor --json` | JSON: Befunde zusätzlich mit `reasonText` + `fixCandidate` | Maschine, die die Diagnose weiterverarbeitet |
+
+Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
+`--doctor --yaml`) — gleiche Struktur, nur YAML statt JSON.
 
 ### 4.10 Befunde als Patch beheben (`--repair`)
 
@@ -442,7 +445,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   der Befund-Exit-Code 1 die Pipe scheitern, obwohl `git apply` ok war —
   ist die Datei-Variante (oben) die bessere Wahl.
 
-### 4.11 Maschinenlesbare Ausgabe (`--json`)
+### 4.11 Maschinenlesbare Ausgabe (`--json` / `--yaml`)
 
 **Ziel:** Befunde automatisiert weiterverarbeiten.
 **Voraussetzung:** keine.
@@ -466,7 +469,30 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.12.0 --json
 }
 ```
 
-**Hinweise:** Mit `--json` enthält stdout ausschließlich das JSON-Dokument.
+**Dasselbe als YAML (`--yaml`):** identische Struktur, nur YAML statt JSON
+(`--json` und `--yaml` schließen sich gegenseitig aus):
+
+```bash
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.12.0 --yaml
+```
+
+```yaml
+findings:
+  - file: docs/anleitung.md
+    line: 12
+    target: fehlt.md
+    rule: links
+    reason: target-missing
+summary:
+  filesChecked: 42
+  findingCount: 1
+exitCode: 1
+```
+
+**Hinweise:** Mit `--json` oder `--yaml` enthält stdout ausschließlich das
+Dokument. Auch `--doctor --json` bzw. `--doctor --yaml` geben die Diagnose
+maschinenlesbar aus (je Eintrag zusätzlich `reasonText`/`fixCandidate`,
+siehe Abschnitt 4.9).
 
 ## 5. Konfiguration
 

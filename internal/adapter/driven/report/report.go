@@ -8,13 +8,15 @@ import (
 	"fmt"
 	"io"
 
+	"gopkg.in/yaml.v3"
+
 	"github.com/pt9912/d-check/internal/hexagon/core"
 )
 
 // Summary sind die Lauf-Kennzahlen.
 type Summary struct {
-	FilesChecked int `json:"filesChecked"`
-	FindingCount int `json:"findingCount"`
+	FilesChecked int `json:"filesChecked" yaml:"filesChecked"`
+	FindingCount int `json:"findingCount" yaml:"findingCount"`
 }
 
 // Text schreibt Befunde zeilenweise auf stdout
@@ -131,67 +133,105 @@ func Repair(stdout, stderr io.Writer, edits []core.RepairEdit) error {
 	return err
 }
 
-type jsonDoc struct {
-	Findings []core.Finding `json:"findings"`
-	Summary  Summary        `json:"summary"`
-	ExitCode int            `json:"exitCode"`
+// outDoc ist das maschinenlesbare Befund-Dokument — formatneutral: die
+// json- und yaml-Tags liefern dieselbe Struktur für beide
+// Serialisierungen (DC-FA-CLI-004).
+type outDoc struct {
+	Findings []core.Finding `json:"findings" yaml:"findings"`
+	Summary  Summary        `json:"summary" yaml:"summary"`
+	ExitCode int            `json:"exitCode" yaml:"exitCode"`
 }
 
-// JSON schreibt das maschinenlesbare Dokument auf stdout; stdout
-// enthält dann keine unstrukturierten Zeilen (DC-FA-CLI-004).
-func JSON(stdout io.Writer, findings []core.Finding, sum Summary, exitCode int) error {
-	if findings == nil {
-		findings = []core.Finding{}
+// outFixCandidate ist das Serialisierungs-Abbild von core.FixCandidate
+// (spec/spezifikation.md §DC-FA-CLI-007.a).
+type outFixCandidate struct {
+	Original    string `json:"original" yaml:"original"`
+	Replacement string `json:"replacement" yaml:"replacement"`
+	Note        string `json:"note" yaml:"note"`
+}
+
+// outDiagFinding ergänzt den Befund um den Grund-Klartext und — wo
+// eindeutig ableitbar — den Fix-Kandidaten. Das eingebettete core.Finding
+// wird flach promotet: bei JSON über anonyme Einbettung, bei YAML über
+// `yaml:",inline"` (sonst verschachtelte yaml.v3 das Feld). fixCandidate
+// trägt KEIN omitempty: fehlt der Kandidat, steht explizit `null` (die
+// Aussage „kein eindeutiger Fix"), nicht das Weglassen des Felds.
+type outDiagFinding struct {
+	core.Finding `yaml:",inline"`
+	ReasonText   string           `json:"reasonText" yaml:"reasonText"`
+	FixCandidate *outFixCandidate `json:"fixCandidate" yaml:"fixCandidate"`
+}
+
+type outDiagDoc struct {
+	Findings []outDiagFinding `json:"findings" yaml:"findings"`
+	Summary  Summary          `json:"summary" yaml:"summary"`
+	ExitCode int              `json:"exitCode" yaml:"exitCode"`
+}
+
+// nonNil liefert eine leere statt einer nil-Befundliste, damit beide
+// Serialisierungen `[]` statt `null` ausgeben.
+func nonNil(f []core.Finding) []core.Finding {
+	if f == nil {
+		return []core.Finding{}
 	}
+	return f
+}
+
+// encodeJSON / encodeYAML sind die zwei Serialisierungen desselben
+// Dokuments (2-Space-Einrückung; deterministisch — keine Map).
+func encodeJSON(stdout io.Writer, v any) error {
 	enc := json.NewEncoder(stdout)
 	enc.SetIndent("", "  ")
-	return enc.Encode(jsonDoc{Findings: findings, Summary: sum, ExitCode: exitCode})
+	return enc.Encode(v)
 }
 
-// jsonFixCandidate ist das JSON-Abbild von core.FixCandidate
-// (spec/spezifikation.md §DC-FA-CLI-007.a).
-type jsonFixCandidate struct {
-	Original    string `json:"original"`
-	Replacement string `json:"replacement"`
-	Note        string `json:"note"`
+func encodeYAML(stdout io.Writer, v any) error {
+	enc := yaml.NewEncoder(stdout)
+	enc.SetIndent(2)
+	if err := enc.Encode(v); err != nil {
+		_ = enc.Close()
+		return err
+	}
+	return enc.Close()
 }
 
-// jsonDiagFinding ergänzt den Befund um den Grund-Klartext und — wo
-// eindeutig ableitbar — den Fix-Kandidaten. Das eingebettete
-// core.Finding promotet seine Felder (file…message) flach in das
-// Objekt; reasonText und fixCandidate kommen hinzu. fixCandidate trägt
-// KEIN omitempty: fehlt der Kandidat, steht explizit `null` (die
-// Aussage „kein eindeutiger Fix"), nicht das Weglassen des Felds.
-type jsonDiagFinding struct {
-	core.Finding
-	ReasonText   string            `json:"reasonText"`
-	FixCandidate *jsonFixCandidate `json:"fixCandidate"`
-}
-
-type jsonDiagDoc struct {
-	Findings []jsonDiagFinding `json:"findings"`
-	Summary  Summary           `json:"summary"`
-	ExitCode int               `json:"exitCode"`
-}
-
-// DoctorJSON ist das dritte Rendering der Diagnose neben Prosa (Doctor)
-// und Patch (Repair) — dasselbe Modell, maschinenlesbar (DC-FA-CLI-007,
-// kombiniert --doctor --json). Je Befund: der Grund-Klartext über
-// core.ReasonText und der Fix-Kandidat über core.FixCandidateFor
-// (explizit `null`, wo keiner ableitbar ist). stdout enthält nur das
-// JSON-Dokument (keine Prosa, keine stderr-Zusammenfassung — sie steckt
-// im summary-Feld); Felder in fester Struct-Reihenfolge, keine
-// Map-Iteration (DC-QA-02).
-func DoctorJSON(stdout io.Writer, findings []core.Finding, sum Summary, exitCode int, cfg core.Config) error {
-	out := make([]jsonDiagFinding, 0, len(findings))
+// buildDiagDoc baut die Diagnose-Struktur (Grund-Klartext über
+// core.ReasonText, Fix-Kandidat über core.FixCandidateFor — explizit
+// null, wo keiner ableitbar ist). Feste Struct-Reihenfolge, keine
+// Map-Iteration (DC-QA-02). Quelle für DoctorJSON und DoctorYAML.
+func buildDiagDoc(findings []core.Finding, sum Summary, exitCode int, cfg core.Config) outDiagDoc {
+	out := make([]outDiagFinding, 0, len(findings))
 	for _, f := range findings {
-		df := jsonDiagFinding{Finding: f, ReasonText: core.ReasonText(f.Reason)}
+		df := outDiagFinding{Finding: f, ReasonText: core.ReasonText(f.Reason)}
 		if c := core.FixCandidateFor(f, cfg); c != nil {
-			df.FixCandidate = &jsonFixCandidate{Original: c.Original, Replacement: c.Replacement, Note: c.Note}
+			df.FixCandidate = &outFixCandidate{Original: c.Original, Replacement: c.Replacement, Note: c.Note}
 		}
 		out = append(out, df)
 	}
-	enc := json.NewEncoder(stdout)
-	enc.SetIndent("", "  ")
-	return enc.Encode(jsonDiagDoc{Findings: out, Summary: sum, ExitCode: exitCode})
+	return outDiagDoc{Findings: out, Summary: sum, ExitCode: exitCode}
+}
+
+// JSON schreibt das maschinenlesbare Befund-Dokument als JSON auf stdout;
+// stdout enthält dann keine unstrukturierten Zeilen (DC-FA-CLI-004).
+func JSON(stdout io.Writer, findings []core.Finding, sum Summary, exitCode int) error {
+	return encodeJSON(stdout, outDoc{Findings: nonNil(findings), Summary: sum, ExitCode: exitCode})
+}
+
+// YAML schreibt dasselbe Dokument wie JSON, als YAML serialisiert — gleiche
+// Struktur, nur andere Serialisierung (DC-FA-CLI-004).
+func YAML(stdout io.Writer, findings []core.Finding, sum Summary, exitCode int) error {
+	return encodeYAML(stdout, outDoc{Findings: nonNil(findings), Summary: sum, ExitCode: exitCode})
+}
+
+// DoctorJSON ist das maschinenlesbare Rendering der Diagnose (--doctor
+// --json) — dasselbe Modell wie die Prosa-Diagnose; stdout enthält nur das
+// Dokument (die Zusammenfassung steckt im summary-Feld).
+func DoctorJSON(stdout io.Writer, findings []core.Finding, sum Summary, exitCode int, cfg core.Config) error {
+	return encodeJSON(stdout, buildDiagDoc(findings, sum, exitCode, cfg))
+}
+
+// DoctorYAML ist das YAML-Rendering der Diagnose (--doctor --yaml),
+// strukturgleich zu DoctorJSON.
+func DoctorYAML(stdout io.Writer, findings []core.Finding, sum Summary, exitCode int, cfg core.Config) error {
+	return encodeYAML(stdout, buildDiagDoc(findings, sum, exitCode, cfg))
 }

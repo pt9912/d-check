@@ -729,6 +729,18 @@ Das optionale `message`-Feld des Basis-`items`-Schemas der
 [JSON-Ausgabe](#json-ausgabe---json) (nicht stabilitätsgarantiert) bleibt
 unverändert Teil jedes Eintrags und kann zusätzlich erscheinen.
 
+### YAML-Ausgabe (`--yaml`)
+
+`--yaml` serialisiert **dasselbe Dokument** wie `--json` (knappe Befunde)
+bzw. `--doctor --yaml` dasselbe wie `--doctor --json` (Diagnose mit
+`reasonText`/`fixCandidate`) — identische Struktur und Feldnamen
+(`findings`/`summary`/`exitCode`, `filesChecked`/`findingCount`, …), nur
+als YAML statt JSON. `--json` und `--yaml` schließen sich aus
+([`DC-FA-CLI-004`](lastenheft.md#dc-fa-cli-004--ausgabeformate)); ein
+fehlender Fix-Kandidat steht auch in YAML explizit als `fixCandidate:
+null`. Deterministisch (feste Feld-Reihenfolge, keine Map) wie die
+JSON-Ausgabe.
+
 ### `.d-check.yml`
 
 Unbekannte Schlüssel sind Fehler (striktes Decoding). Eine leere oder

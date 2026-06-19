@@ -17,14 +17,16 @@ const (
 	ReasonHostpathForbidden = "hostpath-forbidden"
 )
 
-// Finding ist ein einzelner Befund (spec/spezifikation.md §2).
+// Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und
+// yaml-Tags halten dieselben Schlüssel für beide Serialisierungen
+// (DC-FA-CLI-004); ohne yaml-Tag würde yaml.v3 die Feldnamen kleinschreiben.
 type Finding struct {
-	File    string `json:"file"`
-	Line    int    `json:"line"`
-	Rule    string `json:"rule"`
-	Target  string `json:"target"`
-	Reason  string `json:"reason"`
-	Message string `json:"message,omitempty"`
+	File    string `json:"file" yaml:"file"`
+	Line    int    `json:"line" yaml:"line"`
+	Rule    string `json:"rule" yaml:"rule"`
+	Target  string `json:"target" yaml:"target"`
+	Reason  string `json:"reason" yaml:"reason"`
+	Message string `json:"message,omitempty" yaml:"message,omitempty"`
 }
 
 // SortFindings sortiert stabil nach (Datei, Zeile, Regel, Ziel, Grund)

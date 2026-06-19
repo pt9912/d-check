@@ -43,6 +43,7 @@ func (m *multiFlag) Set(v string) error {
 type options struct {
 	root          string
 	json          bool
+	yaml          bool
 	doctor        bool
 	repair        bool
 	repairBroad   bool
@@ -119,6 +120,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	flags.SetOutput(io.Discard) // Fehlertexte einheitlich unten
 	var enable, disable multiFlag
 	jsonOut := flags.Bool("json", false, "maschinenlesbare JSON-Ausgabe")
+	yamlOut := flags.Bool("yaml", false, "maschinenlesbare YAML-Ausgabe (gleiche Struktur wie --json)")
 	doctorOut := flags.Bool("doctor", false, "erklärende, gruppierte Diagnose mit Fix-Kandidaten auf stdout (statt Befund-Zeilen)")
 	repairOut := flags.Bool("repair", false, "Reparatur-Patch (unified diff) auf stdout, git-apply-kompatibel; konservativ (nur eindeutige Fixes)")
 	repairBroadOut := flags.Bool("repair-broad", false, "wie --repair, zusätzlich Best-Guess-Reparaturen (review-pflichtig, Marker auf stderr)")
@@ -145,19 +147,23 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 		fmt.Fprintln(stderr, "d-check: error: höchstens ein Pfad-Argument")
 		return options{}, 2, true
 	}
-	opts := options{root: ".", json: *jsonOut, doctor: *doctorOut,
+	opts := options{root: ".", json: *jsonOut, yaml: *yamlOut, doctor: *doctorOut,
 		repair: *repairOut || *repairBroadOut, repairBroad: *repairBroadOut,
 		enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}
-	// DC-FA-CLI-004: --doctor und --repair ersetzen das stdout-Format.
-	// --doctor IST mit --json kombinierbar (maschinenlesbare Diagnose,
-	// DC-FA-CLI-007). Nutzungsfehler (DC-FA-CLI-003, Exit 2) bleiben nur
-	// --repair+--json (eine JSON-Variante des Patches ist out of scope) und
-	// --doctor+--repair (sich ausschließende Ausgabe-Modi).
-	if opts.json && opts.repair {
-		fmt.Fprintln(stderr, "d-check: error: --repair ist nicht mit --json kombinierbar")
+	// DC-FA-CLI-004: --json und --yaml sind dasselbe Dokument in zwei
+	// Serialisierungen und schließen sich aus. --doctor IST mit --json
+	// oder --yaml kombinierbar (maschinenlesbare Diagnose, DC-FA-CLI-007).
+	// Nutzungsfehler (DC-FA-CLI-003, Exit 2): --json+--yaml,
+	// --repair+--json/--yaml und --doctor+--repair.
+	if opts.json && opts.yaml {
+		fmt.Fprintln(stderr, "d-check: error: --json und --yaml sind nicht kombinierbar")
+		return options{}, 2, true
+	}
+	if opts.repair && (opts.json || opts.yaml) {
+		fmt.Fprintln(stderr, "d-check: error: --repair ist nicht mit --json/--yaml kombinierbar")
 		return options{}, 2, true
 	}
 	if opts.doctor && opts.repair {
@@ -216,6 +222,19 @@ func loadConfig(fsys *fsadapter.Adapter, stderr io.Writer) (core.Config, bool) {
 // Default-Text-Format; der Exit-Code richtet sich allein nach dem
 // Befund-Stand (0 = keine, 1 = mindestens einer).
 func render(res core.Result, opts options, cfg core.Config, fsys driven.Filesystem, stdout, stderr io.Writer) int {
+	code, err := renderStdout(res, opts, cfg, fsys, stdout, stderr)
+	if err != nil {
+		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+		return 2
+	}
+	return code
+}
+
+// renderStdout wählt das Ausgabeformat und schreibt es auf stdout; es
+// liefert den Befund-Exit-Code (0/1) und einen etwaigen Render-Fehler, den
+// der Aufrufer auf Exit 2 abbildet. Die Modi --doctor/--repair sowie
+// --json/--yaml ersetzen das Default-Text-Format (DC-FA-CLI-004).
+func renderStdout(res core.Result, opts options, cfg core.Config, fsys driven.Filesystem, stdout, stderr io.Writer) (int, error) {
 	exit := 0
 	if len(res.Findings) > 0 {
 		exit = 1
@@ -223,36 +242,24 @@ func render(res core.Result, opts options, cfg core.Config, fsys driven.Filesyst
 	sum := report.Summary{FilesChecked: res.FilesChecked, FindingCount: len(res.Findings)}
 	switch {
 	case opts.doctor && opts.json:
-		if err := report.DoctorJSON(stdout, res.Findings, sum, exit, cfg); err != nil {
-			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-			return 2
-		}
+		return exit, report.DoctorJSON(stdout, res.Findings, sum, exit, cfg)
+	case opts.doctor && opts.yaml:
+		return exit, report.DoctorYAML(stdout, res.Findings, sum, exit, cfg)
 	case opts.doctor:
-		if err := report.Doctor(stdout, stderr, res.Findings, sum, cfg); err != nil {
-			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-			return 2
-		}
+		return exit, report.Doctor(stdout, stderr, res.Findings, sum, cfg)
 	case opts.repair:
 		edits, err := core.RepairEdits(fsys, res.Findings, cfg, opts.repairBroad)
 		if err != nil {
-			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-			return 2
+			return exit, err
 		}
-		if err := report.Repair(stdout, stderr, edits); err != nil {
-			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-			return 2
-		}
+		return exit, report.Repair(stdout, stderr, edits)
 	case opts.json:
-		if err := report.JSON(stdout, res.Findings, sum, exit); err != nil {
-			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-			return 2
-		}
+		return exit, report.JSON(stdout, res.Findings, sum, exit)
+	case opts.yaml:
+		return exit, report.YAML(stdout, res.Findings, sum, exit)
 	default:
-		if err := report.Text(stdout, stderr, res.Findings, sum); err != nil {
-			return 2
-		}
+		return exit, report.Text(stdout, stderr, res.Findings, sum)
 	}
-	return exit
 }
 
 // Run führt das CLI aus und liefert den Prozess-Exit-Code

@@ -14,6 +14,8 @@ import (
 	"strings"
 	"testing"
 
+	"gopkg.in/yaml.v3"
+
 	configyaml "github.com/pt9912/d-check/internal/adapter/driven/configyaml"
 	"github.com/pt9912/d-check/internal/adapter/driving/cli"
 )
@@ -223,6 +225,119 @@ func TestCLI004_Ausgabeformate(t *testing.T) {
 	code, _, _ = run(t, "--json", "--format", "xml", root)
 	if code != 2 {
 		t.Fatalf("--format: Exit = %d, want 2", code)
+	}
+}
+
+// DC-FA-CLI-004 YAML: --yaml gibt dieselbe Struktur wie --json aus, nur als
+// YAML; parsbar, gleiche findingCount, camelCase-Schlüssel-Parität, Exit 1.
+func TestCLI004_YAML(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "[k1](f1.md)\n[k2](f2.md)")
+	code, stdout, _ := run(t, "--yaml", "--disable", "anchors", root)
+	if code != 1 {
+		t.Fatalf("Exit = %d", code)
+	}
+	var doc struct {
+		Findings []map[string]any `yaml:"findings"`
+		Summary  struct {
+			FilesChecked int `yaml:"filesChecked"`
+			FindingCount int `yaml:"findingCount"`
+		} `yaml:"summary"`
+		ExitCode int `yaml:"exitCode"`
+	}
+	if err := yaml.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("stdout ist kein YAML: %v\n%q", err, stdout)
+	}
+	if doc.Summary.FindingCount != 2 || doc.ExitCode != 1 || len(doc.Findings) != 2 {
+		t.Fatalf("YAML-Inhalt: %+v", doc)
+	}
+	// Schlüssel-Parität: camelCase wie JSON (nicht kleingeschrieben durch yaml.v3).
+	if !strings.Contains(stdout, "findingCount:") || strings.Contains(stdout, "fileschecked:") {
+		t.Fatalf("YAML-Schlüssel weichen von JSON ab:\n%s", stdout)
+	}
+}
+
+// DC-FA-CLI-007 + DC-FA-CLI-004: --doctor --yaml = YAML-Diagnose mit
+// reasonText/fixCandidate (analog --doctor --json), eingebettete
+// Befund-Felder flach (yaml:",inline"), fixCandidate explizit null.
+func TestCLI007_DoctorYAML(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, ".d-check.yml",
+		"modules: [ids, links]\nids:\n  patterns:\n    - regex: 'ADR-\\d{4}'\n      target: docs/plan/adr/\n")
+	write(t, root, "docs/plan/adr/0042-x.md", "# ADR")
+	write(t, root, "docs/a.md", "nacktes ADR-0042 im Fließtext\n[x](fehlt.md)\n")
+	code, stdout, stderr := run(t, "--doctor", "--yaml", root)
+	if code != 1 {
+		t.Fatalf("Exit = %d (stderr: %s)", code, stderr)
+	}
+	var doc struct {
+		Findings []struct {
+			Reason       string `yaml:"reason"`
+			ReasonText   string `yaml:"reasonText"`
+			FixCandidate *struct {
+				Replacement string `yaml:"replacement"`
+			} `yaml:"fixCandidate"`
+		} `yaml:"findings"`
+		ExitCode int `yaml:"exitCode"`
+	}
+	if err := yaml.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("kein YAML: %v\n%q", err, stdout)
+	}
+	if doc.ExitCode != 1 || len(doc.Findings) != 2 {
+		t.Fatalf("YAML-Diagnose: %+v", doc)
+	}
+	withCand, nullCand := 0, 0
+	for _, f := range doc.Findings {
+		if f.ReasonText == "" {
+			t.Fatalf("reasonText fehlt (inline?): %+v", f)
+		}
+		switch f.Reason {
+		case "id-unlinked":
+			if f.FixCandidate == nil || !strings.Contains(f.FixCandidate.Replacement, "[`ADR-0042`](") {
+				t.Fatalf("id-unlinked ohne fixCandidate: %+v", f)
+			}
+			withCand++
+		default:
+			if f.FixCandidate == nil {
+				nullCand++
+			}
+		}
+	}
+	if withCand != 1 || nullCand != 1 {
+		t.Fatalf("Kandidaten: with=%d null=%d", withCand, nullCand)
+	}
+	if !strings.Contains(stdout, "fixCandidate: null") {
+		t.Fatalf("fixCandidate nicht explizit null:\n%s", stdout)
+	}
+}
+
+// DC-FA-CLI-004 YAML Negative: --json+--yaml und --repair+--yaml → Exit 2.
+func TestCLI004_YAML_Negative(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "x")
+	code, stdout, stderr := run(t, "--json", "--yaml", root)
+	if code != 2 || stdout != "" || !strings.Contains(stderr, "nicht kombinierbar") {
+		t.Fatalf("--json --yaml: Exit = %d, stdout = %q, stderr = %q", code, stdout, stderr)
+	}
+	code, _, stderr = run(t, "--repair", "--yaml", root)
+	if code != 2 || !strings.Contains(stderr, "nicht mit --json/--yaml") {
+		t.Fatalf("--repair --yaml: Exit = %d, stderr = %q", code, stderr)
+	}
+}
+
+// DC-QA-02 für die YAML-Ausgabe: 10 Läufe byte-identisch.
+func TestCLI004_YAML_Determinismus(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/z.md", "[f](f1.md)\n[g](f2.md)")
+	write(t, root, "docs/a.md", "[h](f3.md)")
+	var first string
+	for i := 0; i < 10; i++ {
+		_, stdout, _ := run(t, "--yaml", "--disable", "anchors", root)
+		if i == 0 {
+			first = stdout
+		} else if stdout != first {
+			t.Fatalf("Lauf %d weicht ab", i)
+		}
 	}
 }
 

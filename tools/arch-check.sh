@@ -9,7 +9,8 @@
 #       Reine Parser ohne I/O (net/url) sind erlaubt.
 #   R2  net/http ausschließlich in internal/adapter/driven/httpcheck.
 #   R3  gopkg.in/yaml.v3 ausschließlich in
-#       internal/adapter/driven/configyaml.
+#       internal/adapter/driven/{configyaml,report}
+#       (ADR-0009: Encode der YAML-Ausgabe im report-Adapter).
 #   R4  os ausschließlich in internal/adapter/driven/fs,
 #       internal/adapter/driving/cli und cmd/* (Composition Root).
 #   R5  driven Adapter importieren einander nicht.
@@ -43,8 +44,11 @@ while IFS='|' read -r pkg imports; do
     if [ "$imp" = "net/http" ] && [ "$rel" != "internal/adapter/driven/httpcheck" ]; then
       violation R2 "$rel importiert net/http"
     fi
-    if [ "$imp" = "gopkg.in/yaml.v3" ] && [ "$rel" != "internal/adapter/driven/configyaml" ]; then
-      violation R3 "$rel importiert gopkg.in/yaml.v3"
+    if [ "$imp" = "gopkg.in/yaml.v3" ]; then
+      case "$rel" in
+        internal/adapter/driven/configyaml|internal/adapter/driven/report) ;;
+        *) violation R3 "$rel importiert gopkg.in/yaml.v3" ;;
+      esac
     fi
     if [ "$imp" = "os" ]; then
       case "$rel" in
