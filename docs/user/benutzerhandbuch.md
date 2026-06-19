@@ -380,20 +380,23 @@ rm fix.patch
 **Ergebnis:** Ein `git apply`-kompatibler unified diff auf stdout. d-check
 selbst schreibt nichts — Sie wenden den Patch an.
 
+**Was `--repair` behebt** (alle anderen Befundarten bleiben Befund):
+
+| Befundart | Reparatur | Stufe |
+|---|---|---|
+| `id-unlinked` | nackte Kennung → Markdown-Link auf ihre Definition; nur **nackte Prosa**-Vorkommen (Inline-Code oder bereits verlinkt bleiben unangetastet) | konservativ (`--repair`) |
+| `target-missing` | Link → **verschobene** Markdown-Datei gleichen, im Repo **eindeutigen** Namens; **keine** Umbenennung (anderer Name), keine Nicht-Markdown-Ziele, mehrdeutige Namen → kein Edit | breit (`--repair-broad`) |
+| `anchor-missing`, `repo-escape`, `symlink`, `codepath-missing`, `matrix-inactive`, `matrix-forbidden`, `external-status`, `external-timeout`, `external-redirects`, `span-unclosed`, `span-nested-link`, `hostpath-forbidden` | — kein Auto-Fix, von Hand beheben | — |
+
 **Hinweise:**
 
-- **Konservativ** (Standard, `--repair`): nur eindeutige Fixes. In dieser
-  Version vor allem nackte Kennungen, die verlinkt werden.
-- **Breit** (`--repair-broad`): zusätzlich Best-Guess-Reparaturen. In
-  dieser Version: ein `target-missing`-Link auf eine **verschobene
-  Markdown-Datei** — d-check biegt den Link auf die Datei **gleichen
-  Namens** um, sofern dieser Name im Repo **eindeutig** (genau einmal)
-  vorkommt. Erkannt wird damit nur die **Verschiebung** (gleicher Name,
-  neuer Pfad) — **nicht** die **Umbenennung** (anderer Name) und keine
-  Nicht-Markdown-Ziele; mehrdeutige Namen (z. B. zwei `README.md`)
-  liefern bewusst keinen Edit. Diese Reparaturen sind **review-pflichtig**;
-  ihre Markierung erscheint auf **stderr**, damit der Patch auf stdout
-  sauber anwendbar bleibt. Lesen Sie den Patch vor dem Anwenden.
+- Best-Guess-Reparaturen der breiten Stufe (`--repair-broad`) sind
+  **review-pflichtig**; ihre Markierung erscheint auf **stderr**, damit der
+  Patch auf stdout `git apply`-rein bleibt. Lesen Sie den Patch vor dem
+  Anwenden.
+- Nicht reparierte Befundarten erscheinen weiter in der normalen Ausgabe
+  bzw. unter `--doctor` (mit Klartext-Grund, aber ohne Fix-Kandidat) und
+  sind von Hand zu beheben.
 - Nicht mit `--json` oder `--doctor` kombinierbar.
 - **`fix.patch` ist temporär:** nach dem Anwenden löschen
   (`rm fix.patch`) — sonst bleibt die Datei im Repo liegen und kann
