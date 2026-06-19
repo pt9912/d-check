@@ -384,11 +384,16 @@ selbst schreibt nichts — Sie wenden den Patch an.
 
 - **Konservativ** (Standard, `--repair`): nur eindeutige Fixes. In dieser
   Version vor allem nackte Kennungen, die verlinkt werden.
-- **Breit** (`--repair-broad`): zusätzlich Best-Guess-Reparaturen (etwa
-  ein fehlendes Linkziel auf eine Datei gleichen Namens). Diese sind
-  **review-pflichtig**; ihre Markierung erscheint auf **stderr**, damit
-  der Patch auf stdout sauber anwendbar bleibt. Lesen Sie den Patch vor
-  dem Anwenden.
+- **Breit** (`--repair-broad`): zusätzlich Best-Guess-Reparaturen. In
+  dieser Version: ein `target-missing`-Link auf eine **verschobene
+  Markdown-Datei** — d-check biegt den Link auf die Datei **gleichen
+  Namens** um, sofern dieser Name im Repo **eindeutig** (genau einmal)
+  vorkommt. Erkannt wird damit nur die **Verschiebung** (gleicher Name,
+  neuer Pfad) — **nicht** die **Umbenennung** (anderer Name) und keine
+  Nicht-Markdown-Ziele; mehrdeutige Namen (z. B. zwei `README.md`)
+  liefern bewusst keinen Edit. Diese Reparaturen sind **review-pflichtig**;
+  ihre Markierung erscheint auf **stderr**, damit der Patch auf stdout
+  sauber anwendbar bleibt. Lesen Sie den Patch vor dem Anwenden.
 - Nicht mit `--json` oder `--doctor` kombinierbar.
 - **`fix.patch` ist temporär:** nach dem Anwenden löschen
   (`rm fix.patch`) — sonst bleibt die Datei im Repo liegen und kann
@@ -529,9 +534,12 @@ ids:
 ### Häufige Befunde
 
 **`target-missing` — Linkziel existiert nicht.**
-Ursache: Datei umbenannt/verschoben oder Tippfehler im Link.
-Lösung: Pfad korrigieren; oder `--doctor` für eine Diagnose und
-`--repair-broad` für einen Best-Guess-Patch (review-pflichtig).
+Ursache: Datei verschoben, umbenannt oder Tippfehler im Link.
+Lösung: Pfad korrigieren. `--repair-broad` liefert einen Best-Guess-Patch
+(review-pflichtig) **nur für Verschiebungen** — eine Markdown-Datei
+gleichen, im Repo eindeutigen Namens an neuem Ort; bei **Umbenennung**
+(anderer Name) gibt es keinen Vorschlag. `--doctor` zeigt die Diagnose
+(für `target-missing` ohne Fix-Kandidat).
 
 **`anchor-missing` — Anker entspricht keinem Heading.**
 Ursache: Überschrift umbenannt oder falscher `#anker`.
