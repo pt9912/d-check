@@ -1,6 +1,6 @@
 # ADR-0009 — `gopkg.in/yaml.v3` auch im report-Adapter (Reporter-Serialisierung)
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-19
 **Autor:** pt9912
 **Bezug:** [ADR-0005](0005-modul-layout-hexagon-ordner.md) (erweitert dessen
@@ -69,4 +69,4 @@ bricht den Build. Bindung:
 
 | Datum | Ereignis |
 |---|---|
-| 2026-06-19 | Proposed (slice-031) |
+| 2026-06-19 | Proposed → Accepted (slice-031) |
