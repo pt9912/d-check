@@ -26,7 +26,7 @@ CLI-Optionen werden als Container-Argumente angehängt.
 | `--repair` | **konservativer** Reparatur-Patch (unified diff) auf stdout, `git apply`-kompatibel — nur eindeutige Fixes (v1: `id-unlinked` auf nackte Prosa-Vorkommen). **Liest, schreibt nichts**; Anwenden via `d-check --repair > fix.patch && git apply fix.patch`. Nicht mit `--json`/`--doctor` kombinierbar ([`DC-FA-CLI-008`](../../spec/lastenheft.md#dc-fa-cli-008--reparatur-patch)) |
 | `--repair-broad` | wie `--repair`, zusätzlich **Best-Guess** (z. B. `target-missing` → Datei gleichen Basisnamens) — review-pflichtig, die Markierung erscheint auf **stderr** (Patch auf stdout bleibt `git apply`-rein) |
 | `--print-config` | kommentiertes `.d-check.yml`-Startgerüst auf stdout, dann Exit 0 — **kein Scan, schreibt nichts**; Anlegen via Umleitung: `d-check --print-config > .d-check.yml` ([`DC-FA-CLI-005`](../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben)) |
-| `--suggest-config <quelle>[,…]` | liest die benannten Autoritäts-Quellen und schlägt ein `.d-check.yml` vor (abgeleitete `ids`-Muster + opt-in-Module nach Signal) — **liest, schreibt nichts**; Umleiten via `> .d-check.yml` ([`DC-FA-CLI-006`](../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)) |
+| `--suggest-config <quelle>[,…]` | liest die benannten Autoritäts-Quellen und schlägt ein `.d-check.yml` vor (abgeleitete `ids`-Muster + opt-in-Module nach Signal) — **liest, schreibt nichts**; Umleiten via `> .d-check.yml`. Die reservierten Quellen `ai-harness` (repo-bewusst) und `ai-harness-init` (Voll-Kanon fürs leere Repo) schlagen stattdessen eine an die ai-harness-course-Konvention angelehnte Vorlage vor (kanonische `ids`-Muster, `matrix` samt Referenzrichtung, Standard-Modulset) ([`DC-FA-CLI-006`](../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)) |
 
 Default-Module ohne Konfiguration: `links` + `anchors`. Das Modul
 `external` ist strikt opt-in (einzige Netzwerk-Tür).
@@ -130,6 +130,21 @@ denen Kennungen *definiert* sind) und gibt ein vorgeschlagenes
 `ids`-Muster abgeleitet, dessen `regex` alle dort gefundenen Kennungen
 matcht (die Quell-Kennungen stehen als Kommentar dabei); zusätzlich
 werden opt-in-Module vorgeschlagen, die echtes Signal liefern.
+
+**Harness-Vorlage (`ai-harness` / `ai-harness-init`):** Statt Pfaden geben
+sie eine an die ai-harness-course-Konvention (Baseline `v1.3.0`) angelehnte
+Vorlage aus: die kanonischen `ids`-Muster (`ADR-`, `MR-`, `DC-`, `slice`),
+die `matrix`-Klassen samt Referenzrichtung und das Standard-Modulset. Zwei
+Modi (das passende ist nicht auto-erkennbar — Henne-Ei):
+
+- **`ai-harness-init`** gibt den **Voll-Kanon** aus (alle Blöcke aktiv) —
+  Zielbild fürs **leere Repo**; läuft, sobald die Struktur (Scan-Wurzeln,
+  `ids`-Targets) existiert.
+- **`ai-harness`** ist **repo-bewusst** — nur existierende Pfade aktiv,
+  fehlende auskommentiert mit Hinweis; läuft sofort gegen ein
+  **bestehendes** Repo.
+
+Beide read-only und mit echten Quellen kombinierbar.
 
 **Scaffold, kein Orakel — die Grenze ist bewusst:** Erkannt werden
 Kennungen, die als **führendes Token einer Überschrift** in

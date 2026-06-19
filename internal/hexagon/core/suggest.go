@@ -22,14 +22,38 @@ type suggestedPattern struct {
 	ids    []string
 }
 
+// harnessSource ist das reservierte Schlüsselwort (kein Pfad), das die
+// ai-harness-course-Vorlage statt einer Quellen-Ableitung anfordert
+// (DC-FA-CLI-006.a). harnessBaseline ist der im Header genannte Pin.
+const (
+	harnessSource     = "ai-harness"      // Mode 2: repo-bewusst
+	harnessInitSource = "ai-harness-init" // Mode 1: Voll-Kanon
+	harnessBaseline   = "v1.3.0"
+	harnessExempt     = `[CHANGELOG.md, "docs/reviews/**"]`
+)
+
 // SuggestConfig liest die benannten Autoritäts-Quellen, leitet je Quelle
 // ein ids-Muster aus den dort definierten Kennungen ab und liefert ein
-// kommentiertes .d-check.yml-Gerüst (DC-FA-CLI-006.a). Reiner Lese-Pfad —
-// es wird nie geschrieben (DC-QA-03). Eine fehlende oder die Repo-Wurzel
-// verlassende Quelle ist ein Fehler (CLI: Exit 2).
+// kommentiertes .d-check.yml-Gerüst (DC-FA-CLI-006.a). Die reservierte
+// Quelle `ai-harness` erzeugt stattdessen die Harness-Vorlage (repo-
+// bewusst), kombinierbar mit echten Quellen. Reiner Lese-Pfad — es wird
+// nie geschrieben (DC-QA-03). Eine fehlende oder die Repo-Wurzel
+// verlassende (echte) Quelle ist ein Fehler (CLI: Exit 2).
 func SuggestConfig(fsys driven.Filesystem, sources []string) (string, error) {
-	var patterns []suggestedPattern
+	initMode, harness := false, false
+	var realSrc []string
 	for _, src := range sources {
+		switch src {
+		case harnessInitSource:
+			initMode = true
+		case harnessSource:
+			harness = true
+		default:
+			realSrc = append(realSrc, src)
+		}
+	}
+	var patterns []suggestedPattern
+	for _, src := range realSrc {
 		rel, escaped := resolveConfigPath(src)
 		if escaped {
 			return "", fmt.Errorf("Autoritäts-Quelle verlässt die Repository-Wurzel: %s", src)
@@ -43,6 +67,10 @@ func SuggestConfig(fsys driven.Filesystem, sources []string) (string, error) {
 			return "", err
 		}
 		patterns = append(patterns, suggestedPattern{target: src, regex: deriveRegex(ids), ids: ids})
+	}
+	if initMode || harness {
+		// initMode (Voll-Kanon) hat Vorrang: repoAware nur bei reinem ai-harness.
+		return renderHarness(fsys, patterns, !initMode), nil
 	}
 	return renderSuggestion(patterns, probeOptInModules(fsys)), nil
 }
@@ -183,5 +211,172 @@ func renderSuggestion(patterns []suggestedPattern, probed []string) string {
 		fmt.Fprintf(&b, "    - regex: '%s'\n      target: %q\n", p.regex, p.target)
 		b.WriteString("      # link-policy: always   # einkommentieren für strenge Linkpflicht\n")
 	}
+	return b.String()
+}
+
+// pathExists meldet, ob ein (repo-relativer) Pfad im gescannten Baum
+// existiert — Grundlage des repo-bewussten Zuschnitts der ai-harness-
+// Vorlage. Trailing-Slash (Verzeichnis-Schreibweise) wird toleriert.
+func pathExists(fsys driven.Filesystem, p string) bool {
+	kind, err := fsys.Kind(strings.TrimSuffix(p, "/"))
+	return err == nil && kind != driven.KindMissing
+}
+
+// existingRoots filtert eine feste Pfadliste deterministisch auf die im
+// Baum vorhandenen (Reihenfolge erhalten).
+func existingRoots(fsys driven.Filesystem, roots []string) []string {
+	var out []string
+	for _, r := range roots {
+		if pathExists(fsys, r) {
+			out = append(out, r)
+		}
+	}
+	return out
+}
+
+// harnessIDPattern ist ein kanonisches ids-Muster der Baseline-Konvention.
+// always: ohne festes Definitions-target → stets auskommentiert.
+type harnessIDPattern struct {
+	regex  string
+	target string
+	always bool
+	hint   string
+}
+
+// harnessIDPatterns spiegelt die ids-Konvention von .d-check.yml in fester
+// Reihenfolge (DC-QA-02; DC-FA-CLI-006.a).
+func harnessIDPatterns() []harnessIDPattern {
+	return []harnessIDPattern{
+		{regex: `ADR-\d{4}`, target: "docs/plan/adr/"},
+		{regex: `MR-\d{3}`, target: "harness/conventions.md"},
+		{regex: `DC-(FA-[A-Z]+|QA)-\d+`, target: "spec/lastenheft.md"},
+		{regex: `slice-\d{3}`, target: "docs/plan/planning/"},
+		{regex: `CO-\d{3}`, always: true, hint: "Carveouts: target setzen, falls genutzt"},
+	}
+}
+
+// harnessClass ist eine kanonische matrix-Klasse; probe ist der
+// Existenz-Prüfpfad, paths sind YAML-fertig (Globs gequotet).
+type harnessClass struct {
+	name  string
+	paths []string
+	probe string
+}
+
+func harnessClasses() []harnessClass {
+	return []harnessClass{
+		{name: "spec-straten", paths: []string{"spec/lastenheft.md", "spec/spezifikation.md", "spec/architecture.md"}, probe: "spec"},
+		{name: "adr", paths: []string{`"docs/plan/adr/[0-9]*.md"`}, probe: "docs/plan/adr"},
+		{name: "slice", paths: []string{`"docs/plan/planning/**/slice-*.md"`}, probe: "docs/plan/planning"},
+	}
+}
+
+// renderHarness baut die ai-harness-course-Vorlage (Baseline
+// harnessBaseline). repoAware=true (Quelle `ai-harness`): nur im Baum
+// vorhandene Pfade aktiv, fehlende auskommentiert mit Hinweis.
+// repoAware=false (`ai-harness-init`): Voll-Kanon, alle Blöcke aktiv
+// (Zielbild fürs leere Repo). extra sind aus echten Quellen abgeleitete
+// Muster (Kombi-Aufruf). Deterministisch: feste Reihenfolge, keine
+// Map-Iteration für die Ausgabe.
+func renderHarness(fsys driven.Filesystem, extra []suggestedPattern, repoAware bool) string {
+	var b strings.Builder
+	b.WriteString("# .d-check.yml — Vorschlag aus `d-check --suggest-config` (advisory).\n")
+	if repoAware {
+		fmt.Fprintf(&b, "# Quelle ai-harness (repo-bewusst), Baseline %s — fehlende Artefakte auskommentiert. Prüfen und verengen.\n\n", harnessBaseline)
+	} else {
+		fmt.Fprintf(&b, "# Quelle ai-harness-init (Voll-Kanon), Baseline %s — Zielbild; läuft, sobald die Struktur (Scan-Wurzeln, ids-Targets) existiert. Prüfen und verengen.\n\n", harnessBaseline)
+	}
+
+	roots := []string{"spec", "docs", "harness"}
+	if repoAware {
+		if roots = existingRoots(fsys, roots); len(roots) == 0 {
+			roots = []string{"."}
+		}
+	}
+	fmt.Fprintf(&b, "scan:\n  roots: [%s]\n\n", strings.Join(roots, ", "))
+	b.WriteString("modules: [links, anchors, ids, matrix, codepaths]\n\n")
+	b.WriteString(renderHarnessIDs(fsys, extra, repoAware))
+	b.WriteString("\n")
+	b.WriteString(renderHarnessMatrix(fsys, repoAware))
+	return b.String()
+}
+
+// renderHarnessIDs rendert den ids-Block: scope und kanonische Muster.
+// repoAware=true: Muster aktiv nur bei vorhandenem Target (sonst
+// auskommentiert mit Hinweis), scope auf existierende roots verengt.
+// repoAware=false: alle Muster aktiv (außer Carveout ohne Target), voller
+// scope. Danach die extra-Muster echter Quellen.
+func renderHarnessIDs(fsys driven.Filesystem, extra []suggestedPattern, repoAware bool) string {
+	var b strings.Builder
+	b.WriteString("ids:\n")
+	scope := []string{"spec", "docs/user"}
+	if repoAware {
+		scope = existingRoots(fsys, scope)
+	}
+	if len(scope) > 0 {
+		fmt.Fprintf(&b, "  scope:\n    roots: [%s]\n", strings.Join(scope, ", "))
+	}
+	b.WriteString("  patterns:\n")
+	for _, p := range harnessIDPatterns() {
+		if !p.always && (!repoAware || pathExists(fsys, p.target)) {
+			fmt.Fprintf(&b, "    - regex: '%s'\n      target: %s\n      link-policy: always\n      exempt-paths: %s\n",
+				p.regex, p.target, harnessExempt)
+			continue
+		}
+		if p.always {
+			fmt.Fprintf(&b, "    # %s\n", p.hint)
+		} else {
+			fmt.Fprintf(&b, "    # Hinweis: Target %s fehlt im Repo — Muster auskommentiert.\n", p.target)
+		}
+		tgt := p.target
+		if tgt == "" {
+			tgt = "<definition>"
+		}
+		fmt.Fprintf(&b, "    # - regex: '%s'\n    #   target: %s\n    #   link-policy: always\n    #   exempt-paths: %s\n",
+			p.regex, tgt, harnessExempt)
+	}
+	for _, p := range extra {
+		if p.regex == "" {
+			fmt.Fprintf(&b, "    # Hinweis: in %q keine definierten Kennungen gefunden.\n", p.target)
+			continue
+		}
+		fmt.Fprintf(&b, "    # abgeleitet aus %d Kennung(en) in %s: %s\n",
+			len(p.ids), p.target, strings.Join(p.ids, ", "))
+		fmt.Fprintf(&b, "    - regex: '%s'\n      target: %q\n", p.regex, p.target)
+	}
+	return b.String()
+}
+
+// renderHarnessMatrix rendert den matrix-Block. repoAware=true: Klassen
+// aktiv bei vorhandenem Pfad (sonst auskommentiert), Regeln nur aktiv,
+// wenn beide Endpunkt-Klassen aktiv sind (keine baumelnde Referenz).
+// repoAware=false: alle Klassen und Regeln aktiv. status und
+// exclude-sections sind pfad-unabhängig und immer aktiv.
+func renderHarnessMatrix(fsys driven.Filesystem, repoAware bool) string {
+	classes := harnessClasses()
+	active := make(map[string]bool, len(classes))
+	for _, c := range classes {
+		active[c.name] = !repoAware || pathExists(fsys, c.probe)
+	}
+	var b strings.Builder
+	b.WriteString("matrix:\n  classes:\n")
+	for _, c := range classes {
+		pre := ""
+		if !active[c.name] {
+			fmt.Fprintf(&b, "    # Hinweis: %s fehlt im Repo — Klasse auskommentiert.\n", c.probe)
+			pre = "# "
+		}
+		fmt.Fprintf(&b, "    %s- {name: %s, paths: [%s]}\n", pre, c.name, strings.Join(c.paths, ", "))
+	}
+	b.WriteString("  rules:\n")
+	for _, r := range [][2]string{{"spec-straten", "adr"}, {"spec-straten", "slice"}} {
+		pre := ""
+		if !active[r[0]] || !active[r[1]] {
+			pre = "# "
+		}
+		fmt.Fprintf(&b, "    %s- {from: %s, to: %s, allow: false}\n", pre, r[0], r[1])
+	}
+	b.WriteString("  status:\n    forbidden: [superseded, deprecated]\n")
+	b.WriteString("  exclude-sections: [Historie, \"7. Historie\", Geschichte]\n")
 	return b.String()
 }

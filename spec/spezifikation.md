@@ -116,6 +116,74 @@ Schritte (deterministisch, alle Mengen bytewise sortiert —
    Exit 0; es dekodiert über den eigenen Parser
    ([`DC-FA-CONF-001`](lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
 
+**Reservierte Quellen `ai-harness` / `ai-harness-init`.** Beide sind statt
+eines Pfads **reservierte Schlüsselwörter**: Schritt 1 löst sie nicht als
+Quelle auf (ein fehlendes Verzeichnis dieses Namens ist **kein** Fehler),
+stattdessen wird ein an die ai-harness-course-Konvention (Baseline
+**v1.3.0**) angelehntes Gerüst erzeugt. Kombinierbar mit echten Quellen
+(`<token>,<quelle>,…`); deren Muster (Schritte 2–4) werden unter
+`ids.patterns` angehängt. Read-only, deterministisch (feste Block- und
+Pfad-Reihenfolge, keine Map-Iteration für die Ausgabe). Das Modulset ist
+fix (`links`, `anchors`, `ids`, `matrix`, `codepaths`; kein Probelauf);
+`CO-\d{3}` (Carveouts) hat kein festes Definitions-`target` und bleibt in
+beiden Modi auskommentiert. **Zwei Modi** (Henne-Ei — nicht aus der
+Repo-Existenz ableitbar, daher explizit gewählt):
+
+1. **`ai-harness-init` (Voll-Kanon):** alle Blöcke **aktiv**, ohne
+   Existenzprüfung — `scan.roots: [spec, docs, harness]`, sämtliche
+   ids-Muster und matrix-Klassen/-Regeln aktiv. Zielbild für ein
+   leeres/frisches Repo; der erste Lauf erfordert die angelegte Struktur
+   (sonst Exit 2 wegen fehlender Scan-Wurzel / fehlendem ids-`target`).
+2. **`ai-harness` (repo-bewusst):** nur Blöcke, deren Pfad/Target im
+   gescannten Baum existiert, sind aktiv (`scan.roots` nur vorhandene);
+   fehlende werden **auskommentiert mit Hinweis** ausgegeben
+   (Existenz-Prüfung nur über den gescannten Baum — kein git, kein Netz).
+
+Sind beide Tokens zugleich angegeben, gewinnt `ai-harness-init` (Voll-Kanon).
+
+Kanonische Vorlage (Spiegel der Repo-Konvention; `ai-harness-init` gibt sie
+vollständig aktiv aus, `ai-harness` nur die im Baum vorhandenen Teile):
+
+```yaml
+scan:
+  roots: [spec, docs, harness]     # nur vorhandene
+modules: [links, anchors, ids, matrix, codepaths]
+ids:
+  scope:
+    roots: [spec, docs/user]       # Linkpflicht nicht über den ganzen Audit-Trail
+  patterns:
+    - regex: 'ADR-\d{4}'
+      target: docs/plan/adr/
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+    - regex: 'MR-\d{3}'
+      target: harness/conventions.md
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+    - regex: 'DC-(FA-[A-Z]+|QA)-\d+'
+      target: spec/lastenheft.md
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+    - regex: 'slice-\d{3}'
+      target: docs/plan/planning/
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+matrix:
+  classes:
+    - {name: spec-straten, paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]}
+    - {name: adr, paths: ["docs/plan/adr/[0-9]*.md"]}
+    - {name: slice, paths: ["docs/plan/planning/**/slice-*.md"]}
+  rules:
+    - {from: spec-straten, to: adr, allow: false}
+    - {from: spec-straten, to: slice, allow: false}
+  status:
+    forbidden: [superseded, deprecated]
+  exclude-sections: [Historie, "7. Historie", Geschichte]
+```
+
+Der aktive (nicht auskommentierte) Teil dekodiert über den eigenen Parser
+([`DC-FA-CONF-001`](lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
+
 ### DC-FA-CLI-007.a — Diagnose-Modus
 
 `--doctor` ist ein **Lese**-Modus, der statt der knappen Befund-Zeilen

@@ -210,6 +210,33 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.12.0 \
 **Hinweise:** Der Vorschlag ist beratend — prüfen und verengen Sie ihn.
 d-check liest dabei nur, es schreibt nichts.
 
+**Harness-Vorlage (`ai-harness` / `ai-harness-init`):** Für ein Repo nach
+dem ai-harness-course-Standard liefern zwei reservierte Quellen ein
+fertiges Gerüst — ohne die Quellen einzeln aufzulisten. Es enthält die
+kanonischen `ids`-Muster, die `matrix`-Referenzrichtung und das
+Standard-Modulset. Welche Quelle, hängt von Ihrer Ausgangslage ab:
+
+- **Frisches Repo → `ai-harness-init`** (Voll-Kanon, alle Blöcke aktiv).
+  Das ist Ihr Zielbild: legen Sie die Struktur an (`spec/`,
+  `docs/plan/adr/`, …), dann läuft d-check.
+
+  ```bash
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.12.0 \
+    --suggest-config ai-harness-init > .d-check.yml
+  ```
+
+- **Bestehendes Repo → `ai-harness`** (repo-bewusst): nur Pfade, die Ihr
+  Repo schon hat, sind aktiv; fehlende erscheinen auskommentiert mit
+  Hinweis (Ihre TODO-Liste). Läuft sofort.
+
+  ```bash
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.12.0 \
+    --suggest-config ai-harness > .d-check.yml
+  ```
+
+Beide sind beratend und kombinierbar mit echten Quellen (z. B. `ai-harness`
+zusätzlich zu `spec/lastenheft.md`).
+
 ### 4.5 Regelmodule zu- und abschalten
 
 **Ziel:** ein Modul aktivieren oder deaktivieren.

@@ -788,3 +788,171 @@ func TestCLI006_QuelleFehlt(t *testing.T) {
 		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
 	}
 }
+
+// harnessRepo legt ein Repo mit den Harness-Artefakten an (für die
+// ai-harness-Vorlage). Reihenfolge der Targets: ADR/MR/DC/slice + Scope.
+func harnessRepo(t *testing.T, root string) {
+	write(t, root, "spec/lastenheft.md", "# DC-FA-CLI-001 — x\n")
+	write(t, root, "harness/conventions.md", "# MR-000 — x\n")
+	write(t, root, "docs/plan/adr/0001-x.md", "# ADR-0001 — x\n")
+	write(t, root, "docs/plan/planning/open/slice-001-x.md", "# slice-001\n")
+	write(t, root, "docs/user/handbuch.md", "# Handbuch\n")
+}
+
+// DC-FA-CLI-006 ai-harness Happy: die reservierte Quelle erzeugt die
+// Harness-Vorlage — kanonische ids-Muster (aktiv, da Targets existieren),
+// matrix samt Referenzrichtung, Standard-Modulset; dekodiert über den
+// eigenen Parser, Exit 0; read-only (kein .d-check.yml geschrieben).
+func TestCLI006_AiHarness_Happy(t *testing.T) {
+	root := t.TempDir()
+	harnessRepo(t, root)
+	code, stdout, stderr := run(t, "--suggest-config", "ai-harness", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	cfg, err := configyaml.Decode([]byte(stdout))
+	if err != nil {
+		t.Fatalf("Vorlage dekodiert nicht: %v\n%s", err, stdout)
+	}
+	// alle vier Target-tragenden Muster aktiv (CO bleibt auskommentiert).
+	if len(cfg.IDPatterns) != 4 {
+		t.Fatalf("erwartet 4 aktive ids-Muster, got %d\n%s", len(cfg.IDPatterns), stdout)
+	}
+	var adr bool
+	for _, p := range cfg.IDPatterns {
+		if p.Regex.MatchString("ADR-0001") && p.Target == "docs/plan/adr/" {
+			adr = true
+		}
+	}
+	if !adr {
+		t.Fatalf("ADR-Muster fehlt/aktiv-falsch\n%s", stdout)
+	}
+	hasMod := func(m string) bool {
+		for _, x := range cfg.Modules {
+			if x == m {
+				return true
+			}
+		}
+		return false
+	}
+	if !hasMod("ids") || !hasMod("matrix") {
+		t.Fatalf("Modulset unvollständig: %v", cfg.Modules)
+	}
+	for _, want := range []string{"Baseline v1.3.0", "matrix:", "from: spec-straten, to: adr", "exclude-sections", "Carveouts"} {
+		if !strings.Contains(stdout, want) {
+			t.Fatalf("Vorlage ohne %q:\n%s", want, stdout)
+		}
+	}
+	// read-only: das Werkzeug schreibt nichts (Aufrufer leitet um).
+	if _, err := os.Stat(filepath.Join(root, ".d-check.yml")); !os.IsNotExist(err) {
+		t.Fatalf(".d-check.yml wurde geschrieben — read-only verletzt (DC-QA-03)")
+	}
+}
+
+// DC-FA-CLI-006 ai-harness Boundary: fehlt docs/plan/adr/, erscheint der
+// ADR-Block (ids-Muster + matrix-Klasse) auskommentiert mit Hinweis statt
+// aktiv; scan.roots enthält nur existierende Pfade.
+func TestCLI006_AiHarness_Boundary(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "# DC-FA-CLI-001 — x\n")
+	write(t, root, "docs/a.md", "# x\n")
+	code, stdout, _ := run(t, "--suggest-config", "ai-harness", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d", code)
+	}
+	cfg, err := configyaml.Decode([]byte(stdout))
+	if err != nil {
+		t.Fatalf("dekodiert nicht: %v\n%s", err, stdout)
+	}
+	// ADR-Muster darf NICHT aktiv sein (nur DC ist aktiv, da nur
+	// spec/lastenheft.md existiert).
+	for _, p := range cfg.IDPatterns {
+		if p.Target == "docs/plan/adr/" {
+			t.Fatalf("ADR-Muster aktiv trotz fehlendem docs/plan/adr/\n%s", stdout)
+		}
+	}
+	for _, want := range []string{
+		"Target docs/plan/adr/ fehlt im Repo",
+		"docs/plan/adr fehlt im Repo — Klasse auskommentiert",
+	} {
+		if !strings.Contains(stdout, want) {
+			t.Fatalf("Hinweis %q fehlt:\n%s", want, stdout)
+		}
+	}
+	// scan.roots nur existierende: harness/ fehlt → nicht in scan.roots
+	// (das Wort "harness" steht zwar im ai-harness-Header, aber nicht als root).
+	if !strings.Contains(stdout, "roots: [spec, docs]") || strings.Contains(stdout, "spec, docs, harness") {
+		t.Fatalf("scan.roots nicht auf existierende Pfade zugeschnitten:\n%s", stdout)
+	}
+}
+
+// DC-FA-CLI-006 ai-harness Abgrenzung: ai-harness ist ein reservierter
+// Modus, KEINE fehlende Quelle → kein Exit 2 (obwohl keine Datei
+// 'ai-harness' existiert), Exit 0.
+func TestCLI006_AiHarness_KeinQuellenfehler(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "# DC-FA-CLI-001 — x\n")
+	write(t, root, "docs/a.md", "# x\n")
+	code, stdout, stderr := run(t, "--suggest-config", "ai-harness", root)
+	if code != 0 || stdout == "" {
+		t.Fatalf("ai-harness als fehlende Quelle behandelt: Exit = %d, stderr = %q", code, stderr)
+	}
+	if _, err := configyaml.Decode([]byte(stdout)); err != nil {
+		t.Fatalf("dekodiert nicht: %v\n%s", err, stdout)
+	}
+}
+
+// DC-QA-02 für die ai-harness-Vorlage: 10 Läufe byte-identisch.
+func TestCLI006_AiHarness_Determinismus(t *testing.T) {
+	root := t.TempDir()
+	harnessRepo(t, root)
+	var first string
+	for i := 0; i < 10; i++ {
+		_, stdout, _ := run(t, "--suggest-config", "ai-harness", root)
+		if i == 0 {
+			first = stdout
+		} else if stdout != first {
+			t.Fatalf("Lauf %d weicht ab:\n%q\n---\n%q", i, first, stdout)
+		}
+	}
+}
+
+// DC-FA-CLI-006 ai-harness-init (Mode 1): Voll-Kanon — alle Blöcke aktiv,
+// auch ohne vorhandene Targets (Zielbild fürs leere Repo); kein
+// repo-bewusstes Auskommentieren. Decode prüft keine Target-Existenz.
+func TestCLI006_AiHarnessInit_VollKanon(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "# x\n") // minimal: kein spec/, kein docs/plan/adr/
+	code, stdout, stderr := run(t, "--suggest-config", "ai-harness-init", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	cfg, err := configyaml.Decode([]byte(stdout))
+	if err != nil {
+		t.Fatalf("Voll-Kanon dekodiert nicht: %v\n%s", err, stdout)
+	}
+	// alle vier Target-Muster aktiv, obwohl die Targets fehlen.
+	if len(cfg.IDPatterns) != 4 {
+		t.Fatalf("erwartet 4 aktive ids-Muster (Voll-Kanon), got %d\n%s", len(cfg.IDPatterns), stdout)
+	}
+	var adr bool
+	for _, p := range cfg.IDPatterns {
+		if p.Target == "docs/plan/adr/" {
+			adr = true
+		}
+	}
+	if !adr {
+		t.Fatalf("ADR-Muster nicht aktiv trotz Voll-Kanon\n%s", stdout)
+	}
+	// kein repo-bewusstes Auskommentieren; volle scan.roots.
+	if strings.Contains(stdout, "fehlt im Repo") {
+		t.Fatalf("Voll-Kanon kommentiert aus — unerwartet:\n%s", stdout)
+	}
+	if !strings.Contains(stdout, "roots: [spec, docs, harness]") {
+		t.Fatalf("Voll-Kanon: scan.roots nicht vollständig:\n%s", stdout)
+	}
+	// read-only (DC-QA-03): auch der init-Pfad schreibt nichts.
+	if _, err := os.Stat(filepath.Join(root, ".d-check.yml")); !os.IsNotExist(err) {
+		t.Fatalf(".d-check.yml geschrieben — read-only verletzt (DC-QA-03)")
+	}
+}
