@@ -3,6 +3,8 @@ package core
 import (
 	"regexp"
 	"testing"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 )
 
 func adrCfg() Config {
@@ -14,7 +16,7 @@ func adrCfg() Config {
 // Konservativ: ein nacktes Prosa-id-unlinked wird zum Definitions-Link;
 // genau ein Edit, kein ReviewRequired.
 func TestRepairEdits_Conservative_IDUnlinked(t *testing.T) {
-	fsys := newMemFS(map[string]string{"docs/a.md": "nacktes ADR-0042 hier\n"})
+	fsys := coretest.NewMemFS(map[string]string{"docs/a.md": "nacktes ADR-0042 hier\n"})
 	f := Finding{File: "docs/a.md", Line: 1, Rule: "ids", Target: "ADR-0042", Reason: ReasonIDUnlinked}
 	edits, err := RepairEdits(fsys, []Finding{f}, adrCfg(), false)
 	if err != nil {
@@ -32,7 +34,7 @@ func TestRepairEdits_Conservative_IDUnlinked(t *testing.T) {
 // NICHT repariert (sonst zerrissener Code-Span). Der vorverarbeitete Text
 // hat den Span geleert → keine nackte Fundstelle.
 func TestRepairEdits_InCode_NichtRepariert(t *testing.T) {
-	fsys := newMemFS(map[string]string{"docs/a.md": "siehe `ADR-0042` im Code\n"})
+	fsys := coretest.NewMemFS(map[string]string{"docs/a.md": "siehe `ADR-0042` im Code\n"})
 	f := Finding{File: "docs/a.md", Line: 1, Rule: "ids", Target: "ADR-0042", Reason: ReasonIDUnlinked}
 	edits, err := RepairEdits(fsys, []Finding{f}, adrCfg(), false)
 	if err != nil {
@@ -47,7 +49,7 @@ func TestRepairEdits_InCode_NichtRepariert(t *testing.T) {
 // NICHT repariert — die Wortgrenzen-Prüfung verhindert eine falsch
 // platzierte Ersetzung.
 func TestRepairEdits_Overmatch_NichtRepariert(t *testing.T) {
-	fsys := newMemFS(map[string]string{"docs/a.md": "siehe ADR-00012 hier\n"})
+	fsys := coretest.NewMemFS(map[string]string{"docs/a.md": "siehe ADR-00012 hier\n"})
 	f := Finding{File: "docs/a.md", Line: 1, Rule: "ids", Target: "ADR-0001", Reason: ReasonIDUnlinked}
 	edits, err := RepairEdits(fsys, []Finding{f}, adrCfg(), false)
 	if err != nil {
@@ -60,7 +62,7 @@ func TestRepairEdits_Overmatch_NichtRepariert(t *testing.T) {
 
 // Konservativ lässt target-missing unangetastet (kein eindeutiger Fix).
 func TestRepairEdits_Conservative_SkipTargetMissing(t *testing.T) {
-	fsys := newMemFS(map[string]string{"docs/a.md": "[x](alt.md)\n", "docs/sub/alt.md": "ok\n"})
+	fsys := coretest.NewMemFS(map[string]string{"docs/a.md": "[x](alt.md)\n", "docs/sub/alt.md": "ok\n"})
 	f := Finding{File: "docs/a.md", Line: 1, Rule: "links", Target: "alt.md", Reason: ReasonTargetMissing}
 	edits, err := RepairEdits(fsys, []Finding{f}, Config{}, false)
 	if err != nil {
@@ -73,7 +75,7 @@ func TestRepairEdits_Conservative_SkipTargetMissing(t *testing.T) {
 
 // Breit: target-missing → eindeutige Basisnamen-Datei, ReviewRequired.
 func TestRepairEdits_Broad_TargetMissing(t *testing.T) {
-	fsys := newMemFS(map[string]string{"docs/a.md": "[x](alt.md)\n", "docs/sub/alt.md": "ok\n"})
+	fsys := coretest.NewMemFS(map[string]string{"docs/a.md": "[x](alt.md)\n", "docs/sub/alt.md": "ok\n"})
 	f := Finding{File: "docs/a.md", Line: 1, Rule: "links", Target: "alt.md", Reason: ReasonTargetMissing}
 	edits, err := RepairEdits(fsys, []Finding{f}, Config{}, true)
 	if err != nil {
@@ -90,7 +92,7 @@ func TestRepairEdits_Broad_TargetMissing(t *testing.T) {
 // Breit ohne eindeutigen Basisnamen-Treffer → kein Edit (kein Raten ins
 // Leere).
 func TestRepairEdits_Broad_KeinEindeutigerTreffer(t *testing.T) {
-	fsys := newMemFS(map[string]string{"docs/a.md": "[x](weg.md)\n"})
+	fsys := coretest.NewMemFS(map[string]string{"docs/a.md": "[x](weg.md)\n"})
 	f := Finding{File: "docs/a.md", Line: 1, Rule: "links", Target: "weg.md", Reason: ReasonTargetMissing}
 	edits, err := RepairEdits(fsys, []Finding{f}, Config{}, true)
 	if err != nil {

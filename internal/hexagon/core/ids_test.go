@@ -5,13 +5,15 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 )
 
 // DC-FA-ID-001 Happy/Boundary/Negative über Run: verlinkt → kein
 // Befund; Inline-Code/Fence → linkpflichtfrei; nackt → id-unlinked;
 // Ziel-Teil eines Links und Bildreferenzen → kein Fließtext.
 func TestIDsModul(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "[ADR-0042](plan/adr/0042-beispiel.md)\n" + // verlinkt
 			"`ADR-0042` in Inline-Code\n" + // linkpflichtfrei
 			"nacktes ADR-0042 im Fließtext\n" + // Befund
@@ -69,7 +71,7 @@ func TestIDsLinktextSpannen(t *testing.T) {
 // unabhängig davon, ob das Modul ids aktiv ist; Datei- und
 // Verzeichnis-Targets (auch mit Slash) sind gültig.
 func TestIDsTargetMussExistieren(t *testing.T) {
-	m := newMemFS(map[string]string{"docs/a.md": "x"})
+	m := coretest.NewMemFS(map[string]string{"docs/a.md": "x"})
 	cfg := Config{IDPatterns: []IDPattern{
 		{Regex: regexp.MustCompile(`X-\d`), Target: "gibt/es/nicht"},
 	}}
@@ -112,7 +114,7 @@ func TestFileInTarget(t *testing.T) {
 // die die Wurzel verlassen (..), sind Konfigurationsfehler, auch wenn
 // das Ziel außerhalb existieren würde.
 func TestIDsTargetDarfWurzelNichtVerlassen(t *testing.T) {
-	m := newMemFS(map[string]string{"docs/a.md": "x"})
+	m := coretest.NewMemFS(map[string]string{"docs/a.md": "x"})
 	for _, target := range []string{"../draussen", "docs/../../x", ".."} {
 		cfg := Config{IDPatterns: []IDPattern{
 			{Regex: regexp.MustCompile(`X-\d`), Target: target},
@@ -128,7 +130,7 @@ func TestIDsTargetDarfWurzelNichtVerlassen(t *testing.T) {
 // (Spez-Fortschreibung slice-007): Vorkommen im deklarierten Target
 // des Musters sowie in ATX-Heading-Zeilen erzeugen keinen Befund.
 func TestIDsDefinitionsOrtUndHeadings(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"spec/lastenheft.md":      "### DC-FA-CLI-001 — Titel\nDC-FA-CLI-001 im eigenen Dokument\n",
 		"docs/plan/adr/0001-x.md": "# ADR-0001 — X\nersetzt ADR-0042 nicht\n",
 		"docs/a.md":               "## Abschnitt zu DC-FA-CLI-001\nnacktes DC-FA-CLI-001 hier\n",
@@ -161,7 +163,7 @@ func TestIDsKeinePhantomKennungDurchInlineCode(t *testing.T) {
 // linkpflichtig; die Ventile (Linktext, target, exempt-paths,
 // d-check:ignore, Fence, Heading) bleiben frei.
 func TestIDsLinkPolicyAlways(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "`ADR-0042` als Code-Span ohne Link\n" + // L1: Befund
 			"[`ADR-0043`](plan/adr/0043.md) verlinkt\n" + // L2: Linktext → frei
 			"`ADR-0044` <!-- d-check:ignore (Beispiel) -->\n" + // L3: Marker → frei
@@ -194,7 +196,7 @@ func TestIDsLinkPolicyAlways(t *testing.T) {
 // Abwärtskompatibilität: ohne link-policy (Default prose) sind
 // Code-Span-Vorkommen weiterhin linkpflichtfrei (DC-QA-02).
 func TestIDsLinkPolicyProseDefault(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md":              "`ADR-0042` als Code-Span ohne Link\n", // prose → frei
 		"docs/plan/adr/0001-x.md": "x",
 	})
@@ -214,7 +216,7 @@ func TestIDsLinkPolicyProseDefault(t *testing.T) {
 // gelten auch für NACKTE Fließtext-Vorkommen (Ganzdatei-/Ganzzeilen-
 // Carve-out), nicht nur für die always-Inline-Code-Vorkommen.
 func TestIDsVentileNackteVorkommen(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/reviews/r.md": "Nackt im Review: ADR-0042\n", // exempt-paths → frei
 		"docs/a.md":         "Nackt mit Marker: ADR-0043 <!-- d-check:ignore (Beispiel) -->\n", // ignore → frei
 		"docs/b.md":         "Nackt ohne Schutz: ADR-0044\n", // Kontrolle → Befund
@@ -244,7 +246,7 @@ func TestIDsVentileNackteVorkommen(t *testing.T) {
 // link-policy — auch unter dem Default prose nimmt es nackte
 // Vorkommen aus (Ganzdatei-Carve-out).
 func TestIDsExemptPathsProseDefault(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/reviews/r.md":       "Nackt im Review: ADR-0042\n", // exempt → frei
 		"docs/b.md":               "Nackt: ADR-0043\n",           // Kontrolle → Befund
 		"docs/plan/adr/0001-x.md": "x",
@@ -271,7 +273,7 @@ func TestIDsExemptPathsProseDefault(t *testing.T) {
 // Prosa-ID auch unter der Default-Politik prose aus (politik-unabhängig,
 // Gegenstück zu TestIDsExemptPathsProseDefault für das zweite Ventil).
 func TestIDsIgnoreMarkerProseDefault(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md":               "Nackt mit Marker: ADR-0042 <!-- d-check:ignore (Beispiel) -->\n", // ignore → frei
 		"docs/b.md":               "Nackt: ADR-0043\n",                                               // Kontrolle → Befund
 		"docs/plan/adr/0001-x.md": "x",

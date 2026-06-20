@@ -7,17 +7,18 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
 // DC-FA-LINK-001: Happy/Boundary/Negative gegen In-Memory-FS.
 func TestLinksModul(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md":   "[ok](b.md)\n[fehlt](nicht-da.md)\n```\n[imfence](auch-weg.md)\n```\n[escape](../../etc/passwd)\n[anker](#nur-anker)\n[extern](https://example.org)\n[frag](weg.md#x)",
 		"docs/b.md":   "ziel",
 		"docs/sub.md": "[leer](mit%20leer.md)",
 	})
-	m.files["docs/mit leer.md"] = "x"
+	m.AddFile("docs/mit leer.md", "x")
 
 	res, err := Run(m, nil, Config{}, []string{"links"})
 	if err != nil {
@@ -44,12 +45,12 @@ func TestLinksModul(t *testing.T) {
 
 // DC-FA-LINK-002: Symlink-Vorrang, genau ein Befund pro Ziel.
 func TestSymlinkAblehnung(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "[intern](link-intern.md)\n[außen](link-raus)\n[normal](b.md)",
 		"docs/b.md": "x",
 	})
-	m.symlinks["docs/link-intern.md"] = true // zeigt intern — trotzdem Befund
-	m.symlinks["docs/link-raus"] = true      // zeigt nach außen
+	m.AddSymlink("docs/link-intern.md") // zeigt intern — trotzdem Befund
+	m.AddSymlink("docs/link-raus")      // zeigt nach außen
 
 	res, err := Run(m, nil, Config{}, []string{"links"})
 	if err != nil {
@@ -67,7 +68,7 @@ func TestSymlinkAblehnung(t *testing.T) {
 
 // DC-FA-SCAN-001: Default-Wurzeln, Skip-Dirs, Ignore, explizite Wurzeln.
 func TestDiscoverFiles(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md":                   "x",
 		"docs/archive/alt.md":         "x",
 		"spec/s.md":                   "x",
@@ -108,7 +109,7 @@ func TestDiscoverFiles(t *testing.T) {
 // unreadableFS simuliert ein nicht lesbares Verzeichnis (z. B.
 // root-eigene Build-Reste wie .gradle/): List darauf schlägt fehl.
 type unreadableFS struct {
-	*memFS
+	*coretest.MemFS
 	deny string
 }
 
@@ -116,20 +117,20 @@ func (u unreadableFS) List(relDir string) ([]driven.DirEntry, error) {
 	if relDir == u.deny || strings.HasPrefix(relDir, u.deny+"/") {
 		return nil, fmt.Errorf("open %s: permission denied", relDir)
 	}
-	return u.memFS.List(relDir)
+	return u.MemFS.List(relDir)
 }
 
 // Ignore-Muster prunen den Verzeichnis-Abstieg: ein vollständig
 // ignorierter, unlesbarer Teilbaum ist kein Laufzeitfehler
 // (Adoptions-Befund pkcs11-course, slice-014; §scan.ignore).
 func TestDiscoverFiles_IgnorePruntAbstieg(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"README.md":         "x",
 		"kaputt/krams.md":   "x",
 		"kaputt/tief/t.md":  "x",
 		"docs/a.md":         "x",
 	})
-	fs := unreadableFS{memFS: m, deny: "kaputt"}
+	fs := unreadableFS{MemFS: m, deny: "kaputt"}
 
 	// ohne Ignore: der unlesbare Teilbaum bricht den Lauf ab
 	if _, err := DiscoverFiles(fs, []string{"."}, nil); err == nil {
@@ -165,7 +166,7 @@ func TestEffectiveModules(t *testing.T) {
 
 // DC-QA-02: identische Eingabe ⇒ identische, sortierte Ausgabe.
 func TestDeterminismus(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/z.md": "[f1](f1.md)\n[f2](f2.md)",
 		"docs/a.md": "[f3](f3.md)",
 		"spec/m.md": "[f4](f4.md)",
@@ -197,7 +198,7 @@ func TestSortFindingsDedupe(t *testing.T) {
 // Aktives external ohne verdrahteten Checker (nil) bleibt ein
 // No-op — kein Fehler, keine Befunde (Kern-Tests laufen netzlos).
 func TestExternalOhneChecker(t *testing.T) {
-	m := newMemFS(map[string]string{"docs/a.md": "[x](https://example.org)"})
+	m := coretest.NewMemFS(map[string]string{"docs/a.md": "[x](https://example.org)"})
 	res, err := Run(m, nil, Config{}, []string{"external", "links"})
 	if err != nil || len(res.Findings) != 0 {
 		t.Fatalf("res = %+v, err = %v", res, err)
@@ -207,7 +208,7 @@ func TestExternalOhneChecker(t *testing.T) {
 // DC-FA-CONF-002: Modul-lokaler Scan-Scope — die vier
 // Akzeptanzkriterien gegen das In-Memory-FS.
 func TestRun_ModulScope(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"README.md":          "ADR-0042 nackt und [kaputt](fehlt.md)",
 		"spec/s.md":          "ADR-0042 nackt in spec",
 		"docs/adr/0042-x.md": "# Titel",
@@ -294,7 +295,7 @@ func TestRun_ModulScope(t *testing.T) {
 // DC-FA-CONF-002: ein Modul-Scope kann Dateien umfassen, die der
 // globale Scan nicht enthält (eigener Discover-Lauf, kein Filter).
 func TestRun_ModulScopeAusserhalbGlobal(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "sauber",
 		"extra/e.md": "[kaputt](fehlt.md)",
 	})

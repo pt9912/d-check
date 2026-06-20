@@ -3,11 +3,13 @@ package core
 import (
 	"strings"
 	"testing"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 )
 
 // DC-FA-SPAN-001: Happy/Boundary/Negative gegen In-Memory-FS.
 func TestSpansModul(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		// Happy: balancierte Spans, auch mehrzeilig über den Umbruch
 		"docs/ok.md": "ein `span` und ein (`u-boot init &&\nu-boot up`, `noch einer`) fertig",
 		// Boundary: alleinstehende literale Backticks (beidseitig
@@ -42,7 +44,7 @@ func TestSpansModul(t *testing.T) {
 // span-nested-link: Link-Syntax im Linktext eines weiteren Links;
 // benachbarte eigenständige Links sind kein Treffer.
 func TestSpansNestedLink(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "[[innen](x.md)](y.md) kaputt\n[a](x.md)[b](y.md) ok\nin `code: ](x)](` kein Befund",
 		"docs/x.md": "x",
 		"docs/y.md": "y",
@@ -63,7 +65,7 @@ func TestSpansNestedLink(t *testing.T) {
 // Bildreferenz als Linktext (Badge-Muster) ist legales Markdown —
 // kein span-nested-link (Lastenheft 0.7.1, Kalibrierungs-Befund).
 func TestSpansBadgeKeinTreffer(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "[![Build](badge.svg)](https://ci.example.org) Status",
 		"docs/badge.svg": "x",
 	})
@@ -79,7 +81,7 @@ func TestSpansBadgeKeinTreffer(t *testing.T) {
 // Mehrzeilige Spans, deren Opener an Text klebt und die im Absatz
 // geschlossen werden, sind KEIN Befund — nur die Parität zählt.
 func TestSpansMehrzeiligGeschlossen(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "Befehl (`u-boot stop\npostgres && u-boot up`, `x`) Ende",
 	})
 	res, err := Run(m, nil, Config{Roots: []string{"docs"}}, []string{"spans"})

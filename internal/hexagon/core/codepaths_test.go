@@ -3,6 +3,8 @@ package core
 import (
 	"fmt"
 	"testing"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 )
 
 // DC-FA-CODE-001 Happy/Negative über Run: existierender Backtick-Pfad
@@ -10,7 +12,7 @@ import (
 // codepath-missing; Repo-Escape → repo-escape; Fence wird nicht
 // geprüft.
 func TestCodepathsModul(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "Siehe `docs/b.md` und `./b.md` sowie `../README.md`.\n" +
 			"Kaputt: `../fehlt.md` und Escape: `../../etc/passwd`.\n" +
 			"```\n`../auch-weg.md` im Fence\n```\n" +
@@ -41,7 +43,7 @@ func TestCodepathsModul(t *testing.T) {
 // DC-FA-CODE-001 Boundary: der Marker d-check:ignore stellt NUR
 // dieses Modul still — der Link-Befund derselben Zeile bleibt.
 func TestCodepathsIgnoreMarkerNurDiesesModul(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "Beispiel `../../etc/passwd` und [kaputt](fehlt.md) <!-- d-check:ignore (Angriffs-Beispiel) -->\n" +
 			"Ohne Marker: `../fehlt.md`\n",
 	})
@@ -65,7 +67,7 @@ func TestCodepathsIgnoreMarkerNurDiesesModul(t *testing.T) {
 // §DC-FA-CODE-001.a Schritt 3+5 — Normalisierung und Anker-Prüfung
 // (gleiches Slug-Verfahren wie anchors, geteilter Cache).
 func TestCodepathsNormalisierungUndAnker(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "Zitiert: `\"./b.md\",` und `./b.md#zweck` sowie `./b.md#gibt-es-nicht`.\n",
 		"docs/b.md": "# Zweck\n",
 	})
@@ -83,7 +85,7 @@ func TestCodepathsNormalisierungUndAnker(t *testing.T) {
 // Anker-Menge inkl. Inline-HTML-Anker (slice-022): Treffer auf eine
 // HTML-id → kein Befund, Fehlschlag → anchor-missing.
 func TestCodepathsHTMLAnker(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "Siehe `./b.md#html-id` und `./b.md#fehlt`.\n",
 		"docs/b.md": "<div id=\"html-id\">Inhalt</div>\n",
 	})

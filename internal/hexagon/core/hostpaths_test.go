@@ -3,13 +3,15 @@ package core
 import (
 	"reflect"
 	"testing"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 )
 
 // DC-FA-HOST-001: Happy/Boundary/Negative gegen In-Memory-FS.
 // (Die Beispiel-Pfade leben in Test-Strings, nicht in Doku — das
 // Modul selbst prüft nur Markdown.)
 func TestHostpathsModul(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		// Happy: relative und Repo-Wurzel-absolute Angaben
 		"docs/ok.md": "siehe [a](b.md) und `docs/x.md` sowie (/docs/y.md)\nhttps://example.org/home/x bleibt URL",
 		"docs/b.md":  "x",
@@ -47,7 +49,7 @@ func TestHostpathsModul(t *testing.T) {
 
 // Konfigurierbare Präfixliste ersetzt den Default.
 func TestHostpathsPrefixesKonfigurierbar(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "unter /" + "srv/data/x liegt es; /" + "home/y ist hier erlaubt",
 	})
 	cfg := Config{

@@ -3,6 +3,8 @@ package core
 import (
 	"fmt"
 	"testing"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 )
 
 // DC-FA-ANCH-001.a — Slug-Schritte gegen reale Heading-Formen dieses
@@ -44,7 +46,7 @@ func TestHeadingSlugs_DuplikateUndFences(t *testing.T) {
 
 // DC-FA-ANCH-001 Happy/Boundary/Negative über Run.
 func TestAnchorsModul(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "# Zweck und Geltungsbereich\n## Beispiel\n## Beispiel\n" +
 			"[ok](#zweck-und-geltungsbereich)\n" +
 			"[dup](#beispiel-1)\n" +
@@ -82,7 +84,7 @@ func TestAnchorsModul(t *testing.T) {
 // Genau EIN Befund (aus links) bei fehlender Zieldatei mit Fragment —
 // anchors schweigt (DC-FA-ANCH-001 Boundary).
 func TestAnchorsSchweigtBeiFehlenderDatei(t *testing.T) {
-	m := newMemFS(map[string]string{"docs/a.md": "[x](weg.md#frag)"})
+	m := coretest.NewMemFS(map[string]string{"docs/a.md": "[x](weg.md#frag)"})
 	res, err := Run(m, nil, Config{}, []string{"links", "anchors"})
 	if err != nil {
 		t.Fatal(err)
@@ -94,7 +96,7 @@ func TestAnchorsSchweigtBeiFehlenderDatei(t *testing.T) {
 
 // scan.roots "." = gesamte Repo-Wurzel inkl. Nicht-Default-Verzeichnissen.
 func TestDiscoverFiles_PunktWurzel(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"harness/h.md":  "x",
 		"docs/a.md":     "x",
 		"README.md":     "x",
@@ -152,7 +154,7 @@ func TestHTMLAnchors(t *testing.T) {
 // DC-FA-ANCH-001 — HTML-Anker innerhalb derselben Datei (`#frag` auf
 // eigene id/name), plus Negativfall.
 func TestAnchorsHTMLSelbeDatei(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "<a name=\"hier\"></a>\n" +
 			"<div id=\"dort\">x</div>\n" +
 			"[ok1](#hier)\n" +
@@ -173,7 +175,7 @@ func TestAnchorsHTMLSelbeDatei(t *testing.T) {
 // Heading-Slug, <a name>, id; Negativ: name an <area>, Inline-Code,
 // Fence, Case-Mismatch (HTML wörtlich/case-sensitiv).
 func TestAnchorsHTMLModul(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "[h](b.md#echtes-heading)\n" +
 			"[na](b.md#abschnitt-2)\n" +
 			"[iddiv](b.md#Übersicht)\n" +

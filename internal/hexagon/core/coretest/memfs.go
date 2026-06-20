@@ -1,4 +1,9 @@
-package core
+// Package coretest stellt Test-Helfer für die Kern-Pakete bereit —
+// insbesondere ein In-Memory-Filesystem, das den `driven.Filesystem`-Port
+// ohne echtes Dateisystem erfüllt (ADR-0004-Konsequenz: Akzeptanztests
+// ohne I/O). Es wird von den White-box-Tests aller Kern-Pakete genutzt und
+// liegt deshalb in einem eigenen, von ihnen importierbaren Paket.
+package coretest
 
 import (
 	"fmt"
@@ -8,18 +13,24 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
-// memFS ist ein In-Memory-Filesystem für Kern-Tests (ADR-0004
-// Konsequenz: Akzeptanztests ohne echtes Dateisystem).
-type memFS struct {
+// MemFS ist ein In-Memory-Filesystem für Kern-Tests.
+type MemFS struct {
 	files    map[string]string // rel → Inhalt
 	symlinks map[string]bool   // rel → ist Symlink
 }
 
-func newMemFS(files map[string]string) *memFS {
-	return &memFS{files: files, symlinks: map[string]bool{}}
+// NewMemFS erzeugt ein MemFS aus einer rel→Inhalt-Abbildung.
+func NewMemFS(files map[string]string) *MemFS {
+	return &MemFS{files: files, symlinks: map[string]bool{}}
 }
 
-func (m *memFS) dirs() map[string]bool {
+// AddFile fügt nach der Konstruktion eine Datei (rel→Inhalt) hinzu.
+func (m *MemFS) AddFile(rel, content string) { m.files[rel] = content }
+
+// AddSymlink markiert einen Pfad als Symlink.
+func (m *MemFS) AddSymlink(rel string) { m.symlinks[rel] = true }
+
+func (m *MemFS) dirs() map[string]bool {
 	out := map[string]bool{"": true}
 	add := func(p string) {
 		segs := strings.Split(p, "/")
@@ -36,7 +47,8 @@ func (m *memFS) dirs() map[string]bool {
 	return out
 }
 
-func (m *memFS) Kind(rel string) (driven.EntryKind, error) {
+// Kind erfüllt den driven.Filesystem-Port.
+func (m *MemFS) Kind(rel string) (driven.EntryKind, error) {
 	if m.symlinks[rel] {
 		return driven.KindSymlink, nil
 	}
@@ -49,14 +61,16 @@ func (m *memFS) Kind(rel string) (driven.EntryKind, error) {
 	return driven.KindMissing, nil
 }
 
-func (m *memFS) ReadFile(rel string) ([]byte, error) {
+// ReadFile erfüllt den driven.Filesystem-Port.
+func (m *MemFS) ReadFile(rel string) ([]byte, error) {
 	if c, ok := m.files[rel]; ok {
 		return []byte(c), nil
 	}
 	return nil, fmt.Errorf("not found: %s", rel)
 }
 
-func (m *memFS) List(relDir string) ([]driven.DirEntry, error) {
+// List erfüllt den driven.Filesystem-Port.
+func (m *MemFS) List(relDir string) ([]driven.DirEntry, error) {
 	prefix := ""
 	if relDir != "" {
 		prefix = relDir + "/"

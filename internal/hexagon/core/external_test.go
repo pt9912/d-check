@@ -5,6 +5,7 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
@@ -41,7 +42,7 @@ func (p panicChecker) Check(url string) driven.HTTPResult {
 // external-redirects; Transportfehler → external-status. Dedupe:
 // genau eine Prüfung pro URL, Befund an jedem Vorkommen.
 func TestExternalModul(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "[ok](https://ok.test)\n[kaputt](https://vierxx.test)\n" +
 			"[zeit](https://langsam.test)\n[kreis](https://kreis.test)\n" +
 			"[weg](https://dns.test)\n",
@@ -82,7 +83,7 @@ func TestExternalModul(t *testing.T) {
 // entfernt (eine Prüfung pro Ressource), der Befund nennt das
 // Original-Linkziel; der Schema-Vergleich ist case-insensitiv.
 func TestExternalFragmenteUndSchemaCase(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "[a](https://seite.test/doc#kapitel-1)\n" +
 			"[b](https://seite.test/doc#kapitel-2)\n" +
 			"[gross](HTTPS://gross.test)\n",
@@ -117,7 +118,7 @@ func TestExternalFragmenteUndSchemaCase(t *testing.T) {
 // DC-FA-EXT-001 Boundary: ohne aktiviertes Modul erfolgt kein einziger
 // Netzwerkzugriff — auch wenn externe Links existieren (DC-QA-03).
 func TestExternalOptIn(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "[extern](https://example.org)\n[kaputt](fehlt.md)\n",
 	})
 	res, err := Run(m, panicChecker{t}, Config{}, []string{"links", "anchors", "ids", "matrix"})
@@ -159,7 +160,7 @@ func TestExternalDeterminismus(t *testing.T) {
 		files[fmt.Sprintf("docs/f%02d.md", i)] = "[x](" + url + ")"
 		results[url] = driven.HTTPResult{Status: 404}
 	}
-	m := newMemFS(files)
+	m := coretest.NewMemFS(files)
 	var prev []Finding
 	for i := 0; i < 10; i++ {
 		res, err := Run(m, newFakeChecker(results), Config{External: ExternalConfig{Parallel: 4}}, []string{"external"})

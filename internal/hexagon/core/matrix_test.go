@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 )
 
 func matrixTestConfig() MatrixConfig {
@@ -22,7 +24,7 @@ func matrixTestConfig() MatrixConfig {
 // ok; Referenz auf superseded ADR → matrix-inactive; Lastenheft → ADR
 // → matrix-forbidden mit beiden Klassen in der Meldung.
 func TestMatrixModul(t *testing.T) {
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"spec/lastenheft.md": "# LH\n[verboten](../docs/plan/adr/0001-x.md)\n" +
 			"[doppelt](../docs/plan/adr/0002-y.md)\n",
 		"docs/plan/adr/0001-x.md": "# ADR-0001 — X\n\n**Status:** Accepted\n",
@@ -65,7 +67,7 @@ func TestMatrixModul(t *testing.T) {
 func TestMatrixExcludeSectionsUndPraezedenz(t *testing.T) {
 	cfg := matrixTestConfig()
 	cfg.ExcludeSections = []string{"Historie"}
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"spec/lastenheft.md": "# LH\n" +
 			"[vorher](../docs/plan/adr/0001-x.md)\n" + // Zeile 2: Befund
 			"## Historie\n" +
@@ -124,7 +126,7 @@ func TestStatusOf(t *testing.T) {
 // Status wird nur aus Markdown-Zielen extrahiert — Nicht-Markdown wird
 // weder gelesen noch gecacht (kein Voll-Read von Binärdateien).
 func TestCachedStatusNurMarkdown(t *testing.T) {
-	m := newMemFS(map[string]string{"docs/bild.png": "**Status:** Superseded\n"})
+	m := coretest.NewMemFS(map[string]string{"docs/bild.png": "**Status:** Superseded\n"})
 	cache := map[string]*string{}
 	if got := cachedStatus(m, cache, "docs/bild.png"); got != "" {
 		t.Fatalf("Status = %q, want \"\" (Nicht-Markdown)", got)
@@ -137,7 +139,7 @@ func TestCachedStatusNurMarkdown(t *testing.T) {
 // Cache-Treffer: vorhandene Einträge (Wert und nil-Sentinel für
 // unlesbare Ziele) werden ohne erneuten Read beantwortet.
 func TestCachedStatusCacheTreffer(t *testing.T) {
-	m := newMemFS(map[string]string{})
+	m := coretest.NewMemFS(map[string]string{})
 	wert := "Accepted"
 	cache := map[string]*string{
 		"docs/a.md": &wert,
@@ -178,7 +180,7 @@ func TestMatrixSupersedeLineage(t *testing.T) {
 	cfg := matrixTestConfig()
 	cfg.AllowSupersedeLineage = true
 	cfg.SupersedeFields = []string{"Supersedes", "Aenderungstyp"}
-	res, err := Run(newMemFS(files), nil, Config{Matrix: cfg}, []string{"matrix"})
+	res, err := Run(coretest.NewMemFS(files), nil, Config{Matrix: cfg}, []string{"matrix"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -187,7 +189,7 @@ func TestMatrixSupersedeLineage(t *testing.T) {
 	}
 
 	// Negative (Default aus): die Lineage-Kante erzeugt ebenfalls inactive.
-	resOff, err := Run(newMemFS(files), nil, Config{Matrix: matrixTestConfig()}, []string{"matrix"})
+	resOff, err := Run(coretest.NewMemFS(files), nil, Config{Matrix: matrixTestConfig()}, []string{"matrix"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -234,7 +236,7 @@ func TestSupersedeFieldValueUndLineage(t *testing.T) {
 func TestMatrixErlaubteRegel(t *testing.T) {
 	cfg := matrixTestConfig()
 	cfg.Rules = []MatrixRule{{From: "slice", To: "adr", Allow: true}}
-	m := newMemFS(map[string]string{
+	m := coretest.NewMemFS(map[string]string{
 		"docs/plan/planning/done/slice-001-a.md": "[ok](../../adr/0001-x.md)\n",
 		"docs/plan/adr/0001-x.md":                "**Status:** Accepted\n",
 	})
