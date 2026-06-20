@@ -5,12 +5,6 @@ import (
 	"strings"
 )
 
-// HostpathsConfig sind die Parameter des Moduls hostpaths
-// (DC-FA-HOST-001); Prefixes nil = Default-Liste.
-type HostpathsConfig struct {
-	Prefixes []string
-}
-
 // defaultHostPrefixes ist die Default-Präfixliste
 // (spec/spezifikation.md §DC-FA-HOST-001.a Schritt 2).
 func defaultHostPrefixes() []string {

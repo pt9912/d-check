@@ -17,13 +17,6 @@ const ReasonCodepathMissing = "codepath-missing"
 // DC-FA-ID-001 0.8.0, slice-018 — illustrative Beispiel-IDs).
 const ignoreMarker = "d-check:ignore"
 
-// CodepathsConfig trägt die Präfixe für Wurzel-relative
-// Inline-Code-Pfade (spec/spezifikation.md §2; `./`/`../` werden
-// immer erkannt).
-type CodepathsConfig struct {
-	Roots []string
-}
-
 // checkCodepaths prüft explizite Pfade in Inline-Code-Spans
 // (spec/spezifikation.md §DC-FA-CODE-001.a). Arbeitet auf den rohen
 // Prosa-Zeilen, weil die Vorverarbeitung Inline-Code für die übrigen

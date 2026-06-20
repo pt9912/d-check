@@ -122,6 +122,19 @@ func (e ExternalConfig) EffectiveParallel() int {
 	return e.Parallel
 }
 
+// CodepathsConfig trägt die Präfixe für Wurzel-relative
+// Inline-Code-Pfade (spec/spezifikation.md §2; `./`/`../` werden
+// immer erkannt).
+type CodepathsConfig struct {
+	Roots []string
+}
+
+// HostpathsConfig sind die Parameter des Moduls hostpaths
+// (DC-FA-HOST-001); Prefixes nil = Default-Liste.
+type HostpathsConfig struct {
+	Prefixes []string
+}
+
 // EffectiveModules wendet die Modul-Auflösung an
 // (spec/spezifikation.md §DC-FA-CLI-002.a): (Config oder Default)
 // ∪ enable ∖ disable; CLI nach Config. Unbekannte Namen → Fehler mit
