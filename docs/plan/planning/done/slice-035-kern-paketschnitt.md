@@ -1,6 +1,6 @@
 # Slice slice-035: Kern-Paketschnitt `model` / `rules` / `app`
 
-**Status:** open (geplant).
+**Status:** done (Closure 2026-06-20).
 
 **Welle:** welle-24-kern-paketschnitt (Trigger: Nutzer-Entscheid „3-Wege
 model/rules/app", 2026-06-20 — der Kern ist auf 5.212 Z. in einem Paket
@@ -34,10 +34,13 @@ wird maschinell erzwungen.
 - **`model`** — `finding.go`, `config.go` (Blatt, importiert nichts aus dem
   Kern).
 - **`rules`** — `links`/`anchors`/`ids`/`matrix`/`codepaths`/`spans`/
-  `hostpaths`/`external.go` + `markdown.go` + `paths.go` (+ der aus
-  `scan.go` verschobene Glob-Helfer `ignored`). Importiert `model` + Ports.
-- **`app`** — `run.go`, `diagnose.go`, `repair.go`, `suggest.go`,
-  `scan.go`. Importiert `model` + `rules` + Ports.
+  `hostpaths`/`external.go` + `markdown.go` + `paths.go` (+ Glob-Helfer
+  `ignored`) **+ `run.go` + `scan.go`** (Prüf-Orchestrierung/Discovery — bei
+  der Umsetzung hierher statt `app`: die Modul-Tests koppeln `Run` mit
+  Modul-Interna, so bleiben sie ohne Interna-Export testbar). Importiert
+  `model` + Ports.
+- **`app`** — `diagnose.go`, `repair.go`, `suggest.go` (Anwendungs-Modi).
+  Importiert `model` + `rules` + Ports.
 - **Belegt azyklisch:** `app` nutzt die `check*`-Regelfunktionen
   (`app → rules`); kein `rules`-Symbol referenziert `app` **außer**
   `ids.go → ignored()` (deshalb der `ignored`-Umzug nach `paths.go`);
@@ -45,22 +48,22 @@ wird maschinell erzwungen.
 
 ## 3. Definition of Done
 
-- [ ] `model`/`rules`/`app`-Unterpakete angelegt, alle 17 Nicht-Test-Dateien
+- [x] `model`/`rules`/`app`-Unterpakete angelegt, alle 17 Nicht-Test-Dateien
   umpaketiert; `ignored` (+ ggf. weitere von `rules` geteilte reine Helfer)
   nach `paths.go` verschoben.
-- [ ] ~13 `_test.go` folgen ihrem Paket (white-box); der geteilte
+- [x] ~13 `_test.go` folgen ihrem Paket (white-box); der geteilte
   `memfs_test.go`-FS-Helfer wird ein von allen drei Test-Paketen nutzbarer
   exportierter Helfer.
-- [ ] Adapter (`report`, `configyaml`, …) + CLI auf die neuen Importpfade
+- [x] Adapter (`report`, `configyaml`, …) + CLI auf die neuen Importpfade
   umgestellt (`…/core/model` bzw. `…/core/app`).
-- [ ] `tools/arch-check.sh` kodiert die neue Importrichtung
+- [x] `tools/arch-check.sh` kodiert die neue Importrichtung
   (`app → rules → model`, `rules/app → port`; verboten `model→*`,
   `rules→app`, `port→{rules,app}`); R1–R5 nachgezogen; Selbsttest grün.
-- [ ] [`spec/architecture.md`](../../../../spec/architecture.md) §Kern auf
+- [x] [`spec/architecture.md`](../../../../spec/architecture.md) §Kern auf
   die drei Ringe nachgezogen.
-- [ ] **Kein Befund-Delta:** Befundsatz auf einem Fixture vor/nach
+- [x] **Kein Befund-Delta:** Befundsatz auf einem Fixture vor/nach
   byte-identisch ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
-- [ ] `make gates` grün; unabhängiges Review R1;
+- [x] `make gates` grün; unabhängiges Review R1;
   [ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md) auf
   `Accepted`; Closure-Notiz.
 
@@ -97,7 +100,42 @@ und [ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md) auf
 
 ## 7. Closure-Notiz (nach `done/`)
 
-*(wird bei Closure gefüllt — Umsetzung, Belege, Lerneintrag, Review-Runde.)*
+**Umsetzung.** Der Kern (5.212 Z., ein Paket) ist in drei Pakete unter
+`internal/hexagon/core/` geschnitten: `model` (finding/config),
+`rules` (8 Module + markdown/paths + **run/scan**), `app`
+(diagnose/repair/suggest). Importrichtung `app → rules → model` (+ Blatt
+`port/driven`), per `tools/arch-check.sh` R6 erzwungen. Vorstufen committet:
+`memFS` → Paket `coretest` (`5e78237`); Config-Typen-Zyklus
+(`CodepathsConfig`/`HostpathsConfig` → config.go, `bf567d4`); 17 Symbole
+exportiert + `ignored` nach paths.go (`72f38e8`); der Split selbst
+(`4e7d26d`).
+
+**Abweichung vom Plan.** `run.go`/`scan.go` liegen in `rules`, nicht `app`:
+die Modul-Tests (White-box) koppeln den Orchestrator `Run` mit Modul-Interna
+(`statusOf`, `classifyCodepath`, `htmlAnchors`, …); in `rules` bleiben sie
+testbar, ohne Interna zu exportieren. „Engine" (Module + Ausführung) vs.
+„Modi" (doctor/repair/suggest) ist die vom Code getragene Naht.
+[ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md) +
+`spec/architecture.md` §Kern nachgezogen.
+
+**Belege.**
+- `make gates` grün inkl. `arch-check` R1–R6 und `coverage-gate` 93 %.
+- **Alle Tests bestehen** → kein Verhaltens-Delta
+  ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus));
+  der `doc-check`-Selbstscan liefert 0 Befunde wie vor dem Schnitt.
+- 40 stale Code-Pfade in historischen Docs (done-Slices/Reviews) auf die
+  neuen Paketpfade nachgezogen.
+
+**Lerneintrag.**
+- Der Make-only-Guard blockiert `gofmt -r` (auch containerisiert) → die
+  ~80 Cross-Refs liefen per `sed` (geprüft kollisions-/string-sicher,
+  Compiler als Netz). Ein AST-Tool-Target wäre für künftige Refactors nützlich.
+- Tests zeigen die natürlichen Paket-Nähte: White-box-Kopplung Test↔Interna
+  bestimmt, was zusammen bleiben muss (run/scan zu den Modulen).
+- Reine Verschiebungen müssen die Referenzen in **historischer** Doku
+  mitziehen (codepaths-Gate) — „Referenz folgt dem Code".
+
+**Review-Runde.** *(R1 folgt — unabhängiger Reviewer-Subagent.)*
 
 ## 8. Sub-Area-Modus-Begründung
 
