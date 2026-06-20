@@ -82,10 +82,11 @@ image-test: build ## DC-FA-DIST-001-Akzeptanzkriterien gegen das lokale Image (n
 semgrep: ## Security-/Static-Analysis-Gate: gepinntes semgrep-Image + gepinntes, lokal gecachtes go/lang/security-Regelset, netzloser Scan (Bestandteil von gates; ADR-0010).
 	@bash tools/semgrep.sh
 
-versions: ## Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Images, Runtime-Image-ID).
+versions: ## Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Image-Digests, semgrep, Runtime-Image-ID).
 	@echo "GO_VERSION=$(GO_VERSION)"
 	@echo "GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION)"
 	@grep -E '^FROM ' Dockerfile | grep -v '^FROM deps' | sort -u
+	@echo "semgrep-image=semgrep/semgrep:$$(sed -nE 's/.*SEMGREP_VERSION:-([^}]+)\}.*/\1/p' tools/semgrep.sh | head -1)@$$(sed -nE 's/.*SEMGREP_DIGEST:-([^}]+)\}.*/\1/p' tools/semgrep.sh | head -1)"
 	@docker image inspect $(IMAGE):latest --format 'runtime-image={{.Id}}' 2>/dev/null \
 	    || echo "runtime-image=(nicht gebaut — make build)"
 

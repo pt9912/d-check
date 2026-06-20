@@ -18,6 +18,9 @@
 set -euo pipefail
 
 SEMGREP_VERSION="${SEMGREP_VERSION:-1.167.0}"
+# Digest-Pin (ADR-0011): Tag bleibt lesbar, der @sha256:-Digest ist die
+# Wahrheit. Hebung von Version UND Digest gemeinsam (bewusster Commit).
+SEMGREP_DIGEST="${SEMGREP_DIGEST:-sha256:06938c1f365d3f67b8cedd8bc117607ae64253f88a0e768e9da9408548927dd6}"
 RULES_COMMIT="${SEMGREP_RULES_COMMIT:-d41fb34cf74466e2878af5f268ebf54466a04541}"
 RULES_SUBSET="go/lang/security"
 RULES_REMOTE="https://github.com/semgrep/semgrep-rules.git"
@@ -51,7 +54,7 @@ set +e
 docker run --rm --init --network none \
   -v "$ROOT:/src:ro" \
   -v "$RULES_DIR:/rules:ro" \
-  "semgrep/semgrep:${SEMGREP_VERSION}" \
+  "semgrep/semgrep:${SEMGREP_VERSION}@${SEMGREP_DIGEST}" \
   semgrep scan --error --metrics off --disable-version-check \
     --config "/rules/${RULES_SUBSET}" \
     /src 2>&1 | tee "$out"
