@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-19.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-20.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -11,12 +11,14 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 ## Aktuelle Welle
 
 **Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
-welle-20-yaml-ausgabe (`slice-031` — Ausgabeformat `--yaml`, strukturgleich
-zu `--json` inkl. `--doctor --yaml`, Change Request 0.19.0;
-[Closure](../done/slice-031-yaml-ausgabe.md#7-closure-notiz-nach-done)).
-`slice-031` ist noch in keinem Release ausgeliefert (zuletzt **v0.18.0** auf
-GHCR). Die nächste Welle wartet auf ihren Trigger (Change Request im
-Lastenheft oder Priorisierung durch den Auftraggeber).
+welle-24-kern-paketschnitt (`slice-035` — Kern in `model`/`rules`/`app`
+geschnitten, Importrichtung per arch-check R6 erzwungen, kein
+Verhaltens-Delta;
+[Closure](../done/slice-035-kern-paketschnitt.md#7-closure-notiz-nach-done)).
+Letztes Release **v0.19.0** auf GHCR (2026-06-20) bündelt slice-031/032/033
+(`--yaml` + semgrep-Gate + Digest-Pins); `slice-035` ist als reiner Refactor
+noch in keinem Release. Die nächste Welle wartet auf ihren Trigger (Change
+Request im Lastenheft oder Priorisierung durch den Auftraggeber).
 
 ## Nächste Wellen
 
@@ -72,7 +74,10 @@ flowchart LR
 | welle-17-benutzerhandbuch | 2026-06-18 | [slice-028 §7](../done/slice-028-benutzerhandbuch.md#7-closure-notiz-nach-done); aufgabenbasiertes Benutzerhandbuch unter docs/user/ nach dem adoptierten (mit-getrackten) Standard — alle Use Cases (v0.12.0), inkl. `--repair`-Pipe-Einzeiler; Self-Review R1, doc-check-rein; abgeleitete Nutzer-Doku (kein Vertrag) |
 | welle-18-doctor-json | 2026-06-19 | [slice-029 §7](../done/slice-029-doctor-json.md#7-closure-notiz-nach-done); maschinenlesbare Diagnose `--doctor --json` ([`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus) Change Request 0.17.0) — dritte Ausgabe desselben Fix-Kandidaten-Modells, `findings` zusätzlich mit `reasonText`/`fixCandidate` (oder explizit `null`), `--doctor` nun mit `--json` kombinierbar; **unabhängiger** Review R1 (0 HIGH/MEDIUM/LOW, 2 INFO, INFO-1 in-flight geschlossen); `make gates` grün (Coverage 93,80 %); Minor-Release **v0.17.0** auf GHCR (Run `27806700510` grün in 1m56s, Tags `v0.17.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:fe8a1ccd718c04005e814aae7d82d32dc8f320688e9b738c85d7d0f9ac08935d` |
 | welle-19-suggest-ai-harness | 2026-06-19 | [slice-030 §7](../done/slice-030-suggest-config-ai-harness.md#7-closure-notiz-nach-done); `--suggest-config`-Harness-Vorlage in **zwei Modi** ([`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) Change Request 0.18.1) — `ai-harness-init` (Voll-Kanon fürs leere Repo) und `ai-harness` (repo-bewusst); kanonische ids-/matrix-/Modulset-Vorlage (Spiegel der `.d-check.yml`), read-only/advisory, deterministisch; Henne-Ei-Aufteilung nach Auftraggeber-Einwand; **unabhängiges** Review R1 (0 HIGH/MEDIUM/LOW, 2 INFO in-flight geschlossen); `make gates` grün (Coverage 93,70 %); Minor-Release **v0.18.0** auf GHCR (Run `27836313193` grün in 1m53s, Tags `v0.18.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:9c52e2d0e18de32146d0383257d240135288f2d1c25941e0fd08a465b8933e5c` |
-| welle-20-yaml-ausgabe | 2026-06-19 | [slice-031 §7](../done/slice-031-yaml-ausgabe.md#7-closure-notiz-nach-done); Ausgabeformat **YAML** (`--yaml`, [`DC-FA-CLI-004`](../../../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate) Change Request 0.19.0) — strukturgleich zu `--json`, volle Parität inkl. `--doctor --yaml`; yaml.v3 zusätzlich im report-Adapter ([ADR-0009](../../adr/0009-yaml-im-report-adapter.md)), arch-check R3 erweitert; **unabhängiges** Review R1 (0 HIGH/MEDIUM, 2 LOW in-flight geschlossen); `make gates` grün (Coverage 94,10 %); noch in keinem Release ausgeliefert |
+| welle-20-yaml-ausgabe | 2026-06-19 | [slice-031 §7](../done/slice-031-yaml-ausgabe.md#7-closure-notiz-nach-done); Ausgabeformat **YAML** (`--yaml`, [`DC-FA-CLI-004`](../../../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate) Change Request 0.19.0) — strukturgleich zu `--json`, volle Parität inkl. `--doctor --yaml`; yaml.v3 zusätzlich im report-Adapter ([ADR-0009](../../adr/0009-yaml-im-report-adapter.md)), arch-check R3 erweitert; **unabhängiges** Review R1 (0 HIGH/MEDIUM, 2 LOW in-flight geschlossen); `make gates` grün (Coverage 94,10 %); in Release **v0.19.0** ausgeliefert (Digest s. welle-22-Zeile) |
+| welle-21-semgrep-gate | 2026-06-20 | [slice-032 §7](../done/slice-032-semgrep-gate.md#7-closure-notiz-nach-done); hermetisches semgrep-Gate ([ADR-0010](../../adr/0010-semgrep-hermetisches-gate.md)) — gepinntes Image `semgrep/semgrep:1.167.0` + gepinnter Regel-Commit, Umfang `go/lang/security` (55 Regeln, 0 Befunde), Host-XDG-Cache, `--network none`; Anti-Silent-Green erzwingt eine `Ran N rules`-Zeile (leerer Cache ⇒ Exit 2); Review R1 (HIGH-1 stilles Grün behoben); `make gates` grün; in Release **v0.19.0** ausgeliefert (Digest s. welle-22-Zeile) |
+| welle-22-digest-pins | 2026-06-20 | [slice-033 §7](../done/slice-033-dockerfile-digest-pins.md#7-closure-notiz-nach-done); alle vier extern bezogenen Images per `@sha256:`-**Manifest-Listen**-Digest (amd64+arm64) inline neben dem Tag gepinnt — drei `Dockerfile`-`FROM` + semgrep ([ADR-0011](../../adr/0011-digest-pins-build-gate-images.md), vereinheitlicht [ADR-0002](../../adr/0002-distribution-ghcr-image.md)/[ADR-0010](../../adr/0010-semgrep-hermetisches-gate.md) ohne Edit); `make versions` belegt alle Pins, `make ci` grün inkl. `image-test`; Review R1 (0 HIGH/1 MEDIUM verifiziert/2 LOW); Minor-Release **v0.19.0** auf GHCR (2026-06-20, Run `27871183930` grün, Tags `v0.19.0`+`latest`, bündelt slice-031/032/033), Digest-Pin `ghcr.io/pt9912/d-check@sha256:6134b8bd963de188858357ba05861a849dfb79dfac774437818f976100909ceb` |
+| welle-24-kern-paketschnitt | 2026-06-20 | [slice-035 §7](../done/slice-035-kern-paketschnitt.md#7-closure-notiz-nach-done); Kern (5.212 Z., ein Paket) in drei Pakete `model`/`rules`/`app` geschnitten, Importrichtung `app→rules→model` per arch-check **R6** erzwungen ([ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md)); **kein Verhaltens-Delta** (Befundsatz byte-identisch, alle Tests grün), `make gates` grün (Coverage 93 %); Review R1 merge-fähig (0 HIGH/0 MEDIUM/1 LOW/3 INFO); noch in keinem Release ausgeliefert (reiner Refactor) |
 
 ## Historische Trigger-Verschiebungen
 
