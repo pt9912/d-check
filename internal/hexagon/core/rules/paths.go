@@ -90,10 +90,10 @@ func IsExternalScheme(target string) bool {
 	return false
 }
 
-// MatchGlob prüft ein Ignore-Muster gegen einen '/'-relativen Pfad.
+// matchGlob prüft ein Ignore-Muster gegen einen '/'-relativen Pfad.
 // Unterstützt '*' und '?' segmentweise sowie '**' für beliebig viele
 // Segmente (spec/spezifikation.md §2, scan.ignore).
-func MatchGlob(pattern, rel string) bool {
+func matchGlob(pattern, rel string) bool {
 	return matchSegs(strings.Split(pattern, "/"), strings.Split(rel, "/"))
 }
 
@@ -118,11 +118,11 @@ func matchSegs(pat, segs []string) bool {
 	return matchSegs(pat[1:], segs[1:])
 }
 
-// Ignored prüft, ob ein '/'-relativer Pfad von einem der Ignore-Muster
+// ignored prüft, ob ein '/'-relativer Pfad von einem der Ignore-Muster
 // getroffen wird (scan.ignore; geteilt von ids und der Discovery).
-func Ignored(rel string, ignore []string) bool {
+func ignored(rel string, ignore []string) bool {
 	for _, pat := range ignore {
-		if MatchGlob(pat, rel) {
+		if matchGlob(pat, rel) {
 			return true
 		}
 	}

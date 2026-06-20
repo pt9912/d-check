@@ -91,7 +91,7 @@ func discoverDefaults(fsys driven.Filesystem, ignore []string, files *[]string) 
 		return err
 	}
 	for _, e := range entries {
-		if e.Kind == driven.KindFile && strings.HasSuffix(e.Name, ".md") && !Ignored(e.Name, ignore) {
+		if e.Kind == driven.KindFile && strings.HasSuffix(e.Name, ".md") && !ignored(e.Name, ignore) {
 			*files = append(*files, e.Name)
 		}
 	}
@@ -117,7 +117,7 @@ func walkMarkdown(fsys driven.Filesystem, dir string, ignore []string, out *[]st
 				return err
 			}
 		case driven.KindFile:
-			if strings.HasSuffix(e.Name, ".md") && !Ignored(rel, ignore) {
+			if strings.HasSuffix(e.Name, ".md") && !ignored(rel, ignore) {
 				*out = append(*out, rel)
 			}
 		}
@@ -132,10 +132,10 @@ func walkMarkdown(fsys driven.Filesystem, dir string, ignore []string, out *[]st
 // (spec/spezifikation.md §`.d-check.yml` scan.ignore).
 func dirIgnored(rel string, ignore []string) bool {
 	for _, pat := range ignore {
-		if MatchGlob(pat, rel) {
+		if matchGlob(pat, rel) {
 			return true
 		}
-		if sub, ok := strings.CutSuffix(pat, "/**"); ok && MatchGlob(sub, rel) {
+		if sub, ok := strings.CutSuffix(pat, "/**"); ok && matchGlob(sub, rel) {
 			return true
 		}
 	}

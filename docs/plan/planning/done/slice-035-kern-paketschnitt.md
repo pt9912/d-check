@@ -135,7 +135,13 @@ testbar, ohne Interna zu exportieren. „Engine" (Module + Ausführung) vs.
 - Reine Verschiebungen müssen die Referenzen in **historischer** Doku
   mitziehen (codepaths-Gate) — „Referenz folgt dem Code".
 
-**Review-Runde.** *(R1 folgt — unabhängiger Reviewer-Subagent.)*
+**Review-Runde R1** (`docs/reviews/2026-06-20-slice-035-kern-paketschnitt.md`):
+**merge-fähig** (0 HIGH / 0 MEDIUM, 1 LOW, 3 INFO). F1/F2 (`MatchGlob`/
+`Ignored` über-exportiert — 0 Konsumenten außerhalb `rules`, da `run`/`scan`
+dort liegen) → un-exportiert; F3 (stale `.golangci.yml`-Kommentar
+`stripInlineCode/matchGlob`) → behoben; F4 (architecture.md nennt Modus-Flags)
+won't-fix (von
+[ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md) sanktioniert).
 
 ## 8. Sub-Area-Modus-Begründung
 

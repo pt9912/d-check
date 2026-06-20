@@ -27,7 +27,7 @@ func CheckIDs(file string, content []byte, lines []Line, patterns []model.IDPatt
 	exemptFile := make([]bool, len(patterns))
 	for i, p := range patterns {
 		inTarget[i] = fileInTarget(file, p.Target)
-		exemptFile[i] = Ignored(file, p.ExemptPaths)
+		exemptFile[i] = ignored(file, p.ExemptPaths)
 	}
 	// Rohe Prosa-Zeilen einmal gewinnen; daraus die d-check:ignore-Zeilen.
 	// Beide Prüfpfade (nackt + Inline-Code) konsultieren denselben Satz,

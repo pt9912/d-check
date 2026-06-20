@@ -155,7 +155,7 @@ func normalizeLineage(s string) string {
 func classOf(classes []model.MatrixClass, rel string) (string, bool) {
 	for _, c := range classes {
 		for _, g := range c.Paths {
-			if MatchGlob(g, rel) {
+			if matchGlob(g, rel) {
 				return c.Name, true
 			}
 		}

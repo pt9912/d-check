@@ -174,7 +174,7 @@ linters:
         text: ^unused-receiver
 
       # Why: die Kern-Tests sind bewusst White-Box (unexportierte
-      # Analyse-Primitiven wie stripInlineCode/matchGlob und das
+      # Analyse-Primitiven wie matchGlob/classifyCodepath und das
       # In-Memory-FS); die Black-Box-Abdeckung der Verträge liegt in
       # den CLI-Akzeptanztests (package cli_test).
       - linters:

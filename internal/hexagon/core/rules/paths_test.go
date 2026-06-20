@@ -62,8 +62,8 @@ func TestMatchGlob(t *testing.T) {
 		{"docs/f?.md", "docs/f12.md", false},
 		{"docs", "docs/a.md", false},
 	} {
-		if got := MatchGlob(c.pattern, c.rel); got != c.want {
-			t.Errorf("MatchGlob(%q,%q) = %v, want %v", c.pattern, c.rel, got, c.want)
+		if got := matchGlob(c.pattern, c.rel); got != c.want {
+			t.Errorf("matchGlob(%q,%q) = %v, want %v", c.pattern, c.rel, got, c.want)
 		}
 	}
 }
