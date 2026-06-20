@@ -35,12 +35,12 @@ func ResolveTarget(fromFile, target string) (rel string, escaped bool, ok bool) 
 	return joined, false, true
 }
 
-// resolveConfigPath normalisiert einen in der Konfiguration
+// ResolveConfigPath normalisiert einen in der Konfiguration
 // deklarierten, zur Repo-Wurzel relativen Pfad (lexikalisch;
 // DC-FA-CONF-001). rel == "" steht für die Repo-Wurzel selbst;
 // escaped meldet Pfade, die die Repo-Wurzel verlassen — gemeinsamer
 // Helfer für Scan-Wurzeln und ids-Targets.
-func resolveConfigPath(p string) (rel string, escaped bool) {
+func ResolveConfigPath(p string) (rel string, escaped bool) {
 	rel = path.Clean(strings.Trim(p, "/"))
 	if rel == "." {
 		return "", false
@@ -90,10 +90,10 @@ func IsExternalScheme(target string) bool {
 	return false
 }
 
-// matchGlob prüft ein Ignore-Muster gegen einen '/'-relativen Pfad.
+// MatchGlob prüft ein Ignore-Muster gegen einen '/'-relativen Pfad.
 // Unterstützt '*' und '?' segmentweise sowie '**' für beliebig viele
 // Segmente (spec/spezifikation.md §2, scan.ignore).
-func matchGlob(pattern, rel string) bool {
+func MatchGlob(pattern, rel string) bool {
 	return matchSegs(strings.Split(pattern, "/"), strings.Split(rel, "/"))
 }
 
@@ -116,4 +116,15 @@ func matchSegs(pat, segs []string) bool {
 		return false
 	}
 	return matchSegs(pat[1:], segs[1:])
+}
+
+// Ignored prüft, ob ein '/'-relativer Pfad von einem der Ignore-Muster
+// getroffen wird (scan.ignore; geteilt von ids und der Discovery).
+func Ignored(rel string, ignore []string) bool {
+	for _, pat := range ignore {
+		if MatchGlob(pat, rel) {
+			return true
+		}
+	}
+	return false
 }

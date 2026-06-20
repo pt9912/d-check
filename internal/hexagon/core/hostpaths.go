@@ -19,11 +19,11 @@ var (
 	windowsUNCRE   = regexp.MustCompile(`(^|[^A-Za-z0-9_])(\\\\[A-Za-z0-9][A-Za-z0-9_.-]*\\[^\s<>)\]"'` + "`" + `]*)`)
 )
 
-// checkHostpaths meldet host-lokale absolute Pfade in Prosa und
+// CheckHostpaths meldet host-lokale absolute Pfade in Prosa und
 // Inline-Code (DC-FA-HOST-001, spec/spezifikation.md
 // §DC-FA-HOST-001.a). Fenced-Code-Blöcke sind ausgenommen — dort
 // gehören bewusste Beispiel-Pfade hin; es gibt keinen Opt-out-Marker.
-func checkHostpaths(file string, content []byte, cfg HostpathsConfig) []Finding {
+func CheckHostpaths(file string, content []byte, cfg HostpathsConfig) []Finding {
 	unixRE := unixHostpathRE(cfg)
 	var findings []Finding
 	for _, pl := range proseLines(content) {

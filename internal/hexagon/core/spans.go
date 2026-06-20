@@ -2,13 +2,13 @@ package core
 
 import "strings"
 
-// checkSpans prüft Markdown-Span-Artefakte (DC-FA-SPAN-001,
+// CheckSpans prüft Markdown-Span-Artefakte (DC-FA-SPAN-001,
 // spec/spezifikation.md §DC-FA-SPAN-001.a): ungeschlossene
 // Code-Span-Öffnungen, die an Nicht-Whitespace kleben
 // (span-unclosed), und Link-Syntax im Linktext eines weiteren Links
 // (span-nested-link). Es gibt keinen Opt-out-Marker — Befunde werden
 // behoben, nicht unterdrückt.
-func checkSpans(file string, content []byte, lines []Line) []Finding {
+func CheckSpans(file string, content []byte, lines []Line) []Finding {
 	var findings []Finding
 	findings = append(findings, checkUnclosedSpans(file, content)...)
 	findings = append(findings, checkNestedLinks(file, lines)...)

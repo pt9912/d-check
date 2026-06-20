@@ -25,9 +25,9 @@ func ExtractHeadings(content []byte) []string {
 	return out
 }
 
-// stripHeadingLinks ersetzt Markdown-Links im Heading-Text durch ihren
+// StripHeadingLinks ersetzt Markdown-Links im Heading-Text durch ihren
 // Linktext (Slug-Schritt 1).
-func stripHeadingLinks(s string) string {
+func StripHeadingLinks(s string) string {
 	var b strings.Builder
 	for i := 0; i < len(s); i++ {
 		if s[i] == '!' && i+1 < len(s) && s[i+1] == '[' {
@@ -59,7 +59,7 @@ func stripHeadingLinks(s string) string {
 // Unicode-Kleinschreibung, nur Buchstaben/Ziffern/Leerzeichen/-/_
 // behalten, jedes Leerzeichen → '-'.
 func Slugify(heading string) string {
-	t := strings.ToLower(stripHeadingLinks(heading))
+	t := strings.ToLower(StripHeadingLinks(heading))
 	var b strings.Builder
 	for _, r := range t {
 		switch {
@@ -197,9 +197,9 @@ func resolveAnchorRef(fsys driven.Filesystem, file string, ref LinkRef) (anchorR
 	return out, true
 }
 
-// checkAnchors ist das Regelmodul `anchors` (DC-FA-ANCH-001): Links
+// CheckAnchors ist das Regelmodul `anchors` (DC-FA-ANCH-001): Links
 // mit Fragment werden gegen die Heading-Slugs der Zieldatei geprüft.
-func checkAnchors(fsys driven.Filesystem, file string, content []byte, lines []Line, cache map[string]map[string]bool) []Finding {
+func CheckAnchors(fsys driven.Filesystem, file string, content []byte, lines []Line, cache map[string]map[string]bool) []Finding {
 	var findings []Finding
 	for _, ref := range ExtractLinks(lines) {
 		a, ok := resolveAnchorRef(fsys, file, ref)

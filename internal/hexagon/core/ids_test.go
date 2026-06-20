@@ -46,11 +46,11 @@ func TestIDsMusterPraezedenz(t *testing.T) {
 	long := IDPattern{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}
 	short := IDPattern{Regex: regexp.MustCompile(`ADR-\d{2}`), Target: "x"}
 
-	got := checkIDs("f.md", nil, lines, []IDPattern{long, short})
+	got := CheckIDs("f.md", nil, lines, []IDPattern{long, short})
 	if len(got) != 1 || got[0].Target != "ADR-0042" {
 		t.Fatalf("lang zuerst: %+v", got)
 	}
-	got = checkIDs("f.md", nil, lines, []IDPattern{short, long})
+	got = CheckIDs("f.md", nil, lines, []IDPattern{short, long})
 	if len(got) != 1 || got[0].Target != "ADR-00" {
 		t.Fatalf("kurz zuerst: %+v", got)
 	}
@@ -61,7 +61,7 @@ func TestIDsMusterPraezedenz(t *testing.T) {
 func TestIDsLinktextSpannen(t *testing.T) {
 	lines := []Line{{No: 1, Text: "[ADR-0001](a.md) und ADR-0002 sowie [x ADR-0003 y](b.md)"}}
 	p := []IDPattern{{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}}
-	got := checkIDs("f.md", nil, lines, p)
+	got := CheckIDs("f.md", nil, lines, p)
 	if len(got) != 1 || got[0].Target != "ADR-0002" {
 		t.Fatalf("Befunde = %+v (genau ADR-0002 erwartet)", got)
 	}
@@ -154,7 +154,7 @@ func TestIDsKeinePhantomKennungDurchInlineCode(t *testing.T) {
 	content := []byte("AD`x`R-0042\n")
 	lines := PreprocessMarkdown(content)
 	p := []IDPattern{{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}}
-	if got := checkIDs("f.md", content, lines, p); len(got) != 0 {
+	if got := CheckIDs("f.md", content, lines, p); len(got) != 0 {
 		t.Fatalf("Phantom-Befund: %+v", got)
 	}
 }

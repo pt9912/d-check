@@ -179,7 +179,7 @@ func bareOccurrences(text string, spans []LinkSpan, token string) [][2]int {
 		// Wortgrenze: das Vorkommen darf nicht Teil einer längeren Kennung
 		// sein (z. B. ADR-0001 in ADR-00012) — sonst landet die Ersetzung
 		// falsch; konservativ heißt eindeutig.
-		if wholeToken(text, start, end) && !idOccurrenceExempt(spans, start, end) {
+		if wholeToken(text, start, end) && !IDOccurrenceExempt(spans, start, end) {
 			out = append(out, [2]int{start, end})
 		}
 		off = end
@@ -212,7 +212,7 @@ func destSpan(text string, spans []LinkSpan, target string) ([2]int, bool) {
 		if start > end || end > len(text) {
 			continue
 		}
-		if normalizeTarget(text[start:end]) == target {
+		if NormalizeTarget(text[start:end]) == target {
 			return [2]int{start, end}, true
 		}
 	}

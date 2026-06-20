@@ -54,7 +54,7 @@ func SuggestConfig(fsys driven.Filesystem, sources []string) (string, error) {
 	}
 	var patterns []suggestedPattern
 	for _, src := range realSrc {
-		rel, escaped := resolveConfigPath(src)
+		rel, escaped := ResolveConfigPath(src)
 		if escaped {
 			return "", fmt.Errorf("Autoritäts-Quelle verlässt die Repository-Wurzel: %s", src)
 		}
@@ -94,7 +94,7 @@ func extractDefinedIDs(fsys driven.Filesystem, rel string, kind driven.EntryKind
 			return nil, err
 		}
 		for _, h := range ExtractHeadings(content) {
-			fields := strings.Fields(stripHeadingLinks(h))
+			fields := strings.Fields(StripHeadingLinks(h))
 			if len(fields) == 0 {
 				continue
 			}

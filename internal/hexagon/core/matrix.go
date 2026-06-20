@@ -12,12 +12,12 @@ const (
 	ReasonMatrixInactive  = "matrix-inactive"
 )
 
-// checkMatrix ist das Regelmodul `matrix` (DC-FA-MTX-001):
+// CheckMatrix ist das Regelmodul `matrix` (DC-FA-MTX-001):
 // Referenzregeln zwischen Dokumentklassen plus Status-Bedingungen.
 // Dateien ohne Klasse nehmen nicht an der Prüfung teil; Links in
 // ausgenommenen Sektionen (exclude-sections) werden übersprungen
 // (spec/spezifikation.md §DC-FA-MTX-001.a).
-func checkMatrix(fsys driven.Filesystem, file string, content []byte, lines []Line,
+func CheckMatrix(fsys driven.Filesystem, file string, content []byte, lines []Line,
 	cfg MatrixConfig, statusCache map[string]*string) []Finding {
 	srcClass, ok := classOf(cfg.Classes, file)
 	if !ok {
@@ -154,7 +154,7 @@ func normalizeLineage(s string) string {
 func classOf(classes []MatrixClass, rel string) (string, bool) {
 	for _, c := range classes {
 		for _, g := range c.Paths {
-			if matchGlob(g, rel) {
+			if MatchGlob(g, rel) {
 				return c.Name, true
 			}
 		}
@@ -219,7 +219,7 @@ func inRanges(rs []lineRange, line int) bool {
 // — Vergleichsbasis für exclude-sections (case-sensitiv) und das
 // Status-Heading (case-insensitiv).
 func plainHeadingText(s string) string {
-	t := stripHeadingLinks(s)
+	t := StripHeadingLinks(s)
 	t = strings.Map(func(r rune) rune {
 		if r == '`' || r == '*' {
 			return -1

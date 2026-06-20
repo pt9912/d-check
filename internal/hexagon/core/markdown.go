@@ -341,7 +341,7 @@ func parseLinkAt(s string, i int) (LinkRef, LinkSpan, bool) {
 	if !ok {
 		return LinkRef{}, LinkSpan{}, false
 	}
-	ref := LinkRef{Target: normalizeTarget(s[textEnd+2 : destEnd]), IsImage: isImage}
+	ref := LinkRef{Target: NormalizeTarget(s[textEnd+2 : destEnd]), IsImage: isImage}
 	span := LinkSpan{
 		Start: i, End: destEnd + 1,
 		TextStart: start + 1, TextEnd: textEnd,
@@ -350,8 +350,8 @@ func parseLinkAt(s string, i int) (LinkRef, LinkSpan, bool) {
 	return ref, span, true
 }
 
-// normalizeTarget entquotet <…>-Ziele und trennt ein Titel-Suffix ab.
-func normalizeTarget(t string) string {
+// NormalizeTarget entquotet <…>-Ziele und trennt ein Titel-Suffix ab.
+func NormalizeTarget(t string) string {
 	t = strings.TrimSpace(t)
 	if strings.HasPrefix(t, "<") {
 		if end := strings.IndexByte(t, '>'); end != -1 {

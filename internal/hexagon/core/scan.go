@@ -47,7 +47,7 @@ func DiscoverFiles(fsys driven.Filesystem, explicitRoots, ignore []string) ([]st
 
 func discoverExplicit(fsys driven.Filesystem, roots, ignore []string, files *[]string) error {
 	for _, r := range roots {
-		rel, escaped := resolveConfigPath(r)
+		rel, escaped := ResolveConfigPath(r)
 		if escaped {
 			return fmt.Errorf("konfigurierte Scan-Wurzel verlässt die Repository-Wurzel: %s", r)
 		}
@@ -91,7 +91,7 @@ func discoverDefaults(fsys driven.Filesystem, ignore []string, files *[]string) 
 		return err
 	}
 	for _, e := range entries {
-		if e.Kind == driven.KindFile && strings.HasSuffix(e.Name, ".md") && !ignored(e.Name, ignore) {
+		if e.Kind == driven.KindFile && strings.HasSuffix(e.Name, ".md") && !Ignored(e.Name, ignore) {
 			*files = append(*files, e.Name)
 		}
 	}
@@ -117,21 +117,12 @@ func walkMarkdown(fsys driven.Filesystem, dir string, ignore []string, out *[]st
 				return err
 			}
 		case driven.KindFile:
-			if strings.HasSuffix(e.Name, ".md") && !ignored(rel, ignore) {
+			if strings.HasSuffix(e.Name, ".md") && !Ignored(rel, ignore) {
 				*out = append(*out, rel)
 			}
 		}
 	}
 	return nil
-}
-
-func ignored(rel string, ignore []string) bool {
-	for _, pat := range ignore {
-		if matchGlob(pat, rel) {
-			return true
-		}
-	}
-	return false
 }
 
 // dirIgnored prunt den Verzeichnis-Abstieg: ein Teilbaum, dessen
@@ -141,10 +132,10 @@ func ignored(rel string, ignore []string) bool {
 // (spec/spezifikation.md §`.d-check.yml` scan.ignore).
 func dirIgnored(rel string, ignore []string) bool {
 	for _, pat := range ignore {
-		if matchGlob(pat, rel) {
+		if MatchGlob(pat, rel) {
 			return true
 		}
-		if sub, ok := strings.CutSuffix(pat, "/**"); ok && matchGlob(sub, rel) {
+		if sub, ok := strings.CutSuffix(pat, "/**"); ok && MatchGlob(sub, rel) {
 			return true
 		}
 	}

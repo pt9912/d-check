@@ -27,7 +27,7 @@ func FixCandidateFor(f Finding, cfg Config) *FixCandidate {
 	}
 	id := f.Target
 	// Erstes Muster in Deklarationsreihenfolge, das die Kennung VOLL
-	// matcht — dieselbe Präzedenz wie checkIDLine, das den Befund erzeugt.
+	// matcht — dieselbe Präzedenz wie CheckIDLine, das den Befund erzeugt.
 	for _, p := range cfg.IDPatterns {
 		if loc := p.Regex.FindStringIndex(id); loc != nil && loc[0] == 0 && loc[1] == len(id) {
 			return &FixCandidate{

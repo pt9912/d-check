@@ -17,11 +17,11 @@ const ReasonCodepathMissing = "codepath-missing"
 // DC-FA-ID-001 0.8.0, slice-018 — illustrative Beispiel-IDs).
 const ignoreMarker = "d-check:ignore"
 
-// checkCodepaths prüft explizite Pfade in Inline-Code-Spans
+// CheckCodepaths prüft explizite Pfade in Inline-Code-Spans
 // (spec/spezifikation.md §DC-FA-CODE-001.a). Arbeitet auf den rohen
 // Prosa-Zeilen, weil die Vorverarbeitung Inline-Code für die übrigen
 // Module gerade entfernt; teilt den Slug-Cache mit anchors.
-func checkCodepaths(fsys driven.Filesystem, file string, content []byte, cfg CodepathsConfig, slugCache map[string]map[string]bool) []Finding {
+func CheckCodepaths(fsys driven.Filesystem, file string, content []byte, cfg CodepathsConfig, slugCache map[string]map[string]bool) []Finding {
 	var findings []Finding
 	prose := proseLines(content)
 	spans := inlineSpansByLine(prose)
@@ -128,7 +128,7 @@ func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value st
 	var rel string
 	var escaped bool
 	if rootRel {
-		rel, escaped = resolveConfigPath(pathPart)
+		rel, escaped = ResolveConfigPath(pathPart)
 	} else {
 		var ok bool
 		rel, escaped, ok = ResolveTarget(file, pathPart)

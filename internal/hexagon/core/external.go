@@ -16,23 +16,23 @@ const (
 	ReasonExternalRedirects = "external-redirects"
 )
 
-// externalRef ist ein Vorkommen einer externen URL: target ist das
+// ExternalRef ist ein Vorkommen einer externen URL: target ist das
 // Original-Linkziel (Befund-Target), url die Prüf-URL ohne Fragment
 // (Request- und Dedupe-Key — Fragmente werden nie übertragen).
-type externalRef struct {
+type ExternalRef struct {
 	file   string
 	line   int
 	target string
 	url    string
 }
 
-// collectExternalURLs sammelt die http(s)-Linkziele einer Datei —
+// CollectExternalURLs sammelt die http(s)-Linkziele einer Datei —
 // nur bei explizit aktiviertem Modul external (DC-FA-EXT-001,
 // opt-in). Der Schema-Vergleich ist case-insensitiv (RFC 3986);
 // konsistent mit IsExternalScheme, das solche Ziele für `links`
 // überspringt.
-func collectExternalURLs(file string, lines []Line) []externalRef {
-	var refs []externalRef
+func CollectExternalURLs(file string, lines []Line) []ExternalRef {
+	var refs []ExternalRef
 	for _, ref := range ExtractLinks(lines) {
 		t := ref.Target
 		if !hasHTTPScheme(t) {
@@ -42,7 +42,7 @@ func collectExternalURLs(file string, lines []Line) []externalRef {
 		if idx := strings.IndexByte(url, '#'); idx != -1 {
 			url = url[:idx]
 		}
-		refs = append(refs, externalRef{file: file, line: ref.Line, target: t, url: url})
+		refs = append(refs, ExternalRef{file: file, line: ref.Line, target: t, url: url})
 	}
 	return refs
 }
@@ -54,12 +54,12 @@ func hasHTTPScheme(t string) bool {
 		(len(t) >= 8 && strings.EqualFold(t[:8], "https://"))
 }
 
-// checkExternal prüft die gesammelten URLs — genau eine Prüfung pro
+// CheckExternal prüft die gesammelten URLs — genau eine Prüfung pro
 // URL (Dedupe), begrenzte Parallelität — und mappt die Ergebnisse auf
 // Befunde pro Vorkommen (spec/spezifikation.md §DC-FA-EXT-001.a).
 // Die Parallelität darf die Ausgabe nicht beeinflussen (DC-QA-02.a) —
 // Befunde entstehen aus der deterministischen Vorkommens-Liste.
-func checkExternal(checker driven.HTTPChecker, refs []externalRef, parallel int) []Finding {
+func CheckExternal(checker driven.HTTPChecker, refs []ExternalRef, parallel int) []Finding {
 	if checker == nil || len(refs) == 0 {
 		return nil
 	}
@@ -79,7 +79,7 @@ func checkExternal(checker driven.HTTPChecker, refs []externalRef, parallel int)
 }
 
 // uniqueURLs liefert die URLs der Vorkommen dedupliziert und sortiert.
-func uniqueURLs(refs []externalRef) []string {
+func uniqueURLs(refs []ExternalRef) []string {
 	seen := map[string]bool{}
 	var urls []string
 	for _, r := range refs {

@@ -2,7 +2,7 @@ package core
 
 import "strings"
 
-// checkIDs ist das Regelmodul `ids` (DC-FA-ID-001): nackte Kennungen
+// CheckIDs ist das Regelmodul `ids` (DC-FA-ID-001): nackte Kennungen
 // im Fließtext — außerhalb von Inline-Code und Fenced-Code-Blöcken —
 // müssen als Markdown-Link auf ihre Definition ausgeführt sein. Die
 // Muster werden in Deklarationsreihenfolge gematcht; das erste
@@ -13,7 +13,7 @@ import "strings"
 // Ventile sind ein Ganzdatei- bzw. Ganzzeilen-Carve-out und gelten für
 // nackte wie für Inline-Code-Vorkommen (spec/spezifikation.md
 // §DC-FA-ID-001.a).
-func checkIDs(file string, content []byte, lines []Line, patterns []IDPattern) []Finding {
+func CheckIDs(file string, content []byte, lines []Line, patterns []IDPattern) []Finding {
 	if len(patterns) == 0 {
 		return nil
 	}
@@ -24,7 +24,7 @@ func checkIDs(file string, content []byte, lines []Line, patterns []IDPattern) [
 	exemptFile := make([]bool, len(patterns))
 	for i, p := range patterns {
 		inTarget[i] = fileInTarget(file, p.Target)
-		exemptFile[i] = ignored(file, p.ExemptPaths)
+		exemptFile[i] = Ignored(file, p.ExemptPaths)
 	}
 	// Rohe Prosa-Zeilen einmal gewinnen; daraus die d-check:ignore-Zeilen.
 	// Beide Prüfpfade (nackt + Inline-Code) konsultieren denselben Satz,
@@ -39,7 +39,7 @@ func checkIDs(file string, content []byte, lines []Line, patterns []IDPattern) [
 		if ignoreLines[ln.No] {
 			continue // d-check:ignore — Zeile von der ids-Prüfung frei
 		}
-		findings = append(findings, checkIDLine(file, ln, patterns, inTarget, exemptFile)...)
+		findings = append(findings, CheckIDLine(file, ln, patterns, inTarget, exemptFile)...)
 	}
 	// link-policy: always — zusätzlich Vorkommen INNERHALB von
 	// Inline-Code-Spans (DC-FA-ID-001.a). Additiv zur prose-Prüfung;
@@ -107,7 +107,7 @@ func alwaysPatternFindings(file string, pl proseLine, codeSpans []inlineSpan, p 
 				continue // Vorkommen gehört einem früheren Muster
 			}
 			*claimed = append(*claimed, [2]int{start, end})
-			if inTgt || exempt || idOccurrenceExempt(linkSpans, start, end) {
+			if inTgt || exempt || IDOccurrenceExempt(linkSpans, start, end) {
 				continue
 			}
 			findings = append(findings, Finding{
@@ -120,10 +120,10 @@ func alwaysPatternFindings(file string, pl proseLine, codeSpans []inlineSpan, p 
 	return findings
 }
 
-// checkIDLine prüft eine Fließtext-Zeile gegen alle Muster
+// CheckIDLine prüft eine Fließtext-Zeile gegen alle Muster
 // (Deklarationsreihenfolge; überlappende Vorkommen gehören dem
 // früheren Muster).
-func checkIDLine(file string, ln Line, patterns []IDPattern, inTarget, exemptFile []bool) []Finding {
+func CheckIDLine(file string, ln Line, patterns []IDPattern, inTarget, exemptFile []bool) []Finding {
 	spans := ExtractLinkSpans(ln.Text)
 	var claimed [][2]int
 	var findings []Finding
@@ -133,7 +133,7 @@ func checkIDLine(file string, ln Line, patterns []IDPattern, inTarget, exemptFil
 				continue // Vorkommen gehört einem früheren Muster
 			}
 			claimed = append(claimed, [2]int{m[0], m[1]})
-			if inTarget[pi] || exemptFile[pi] || idOccurrenceExempt(spans, m[0], m[1]) {
+			if inTarget[pi] || exemptFile[pi] || IDOccurrenceExempt(spans, m[0], m[1]) {
 				continue // Definitions-Ort, exempt-paths bzw. verlinkt/kein Fließtext
 			}
 			findings = append(findings, Finding{
@@ -149,7 +149,7 @@ func checkIDLine(file string, ln Line, patterns []IDPattern, inTarget, exemptFil
 // markerLines liefert die 1-basierten Nummern der Prosa-Zeilen, die den
 // d-check:ignore-Marker tragen — geprüft auf der rohen Zeile. Der eine
 // zurückgegebene Satz wird von beiden ids-Prüfpfaden konsultiert (nackte
-// Fließtext-Vorkommen in checkIDs, Inline-Code-Vorkommen in
+// Fließtext-Vorkommen in CheckIDs, Inline-Code-Vorkommen in
 // alwaysLineFindings), damit die Zeilen-Ausnahme nicht divergieren kann
 // (spec/spezifikation.md §DC-FA-ID-001.a, Ventil für nackte wie
 // Inline-Code-Vorkommen).
@@ -171,7 +171,7 @@ func markerLines(prose []proseLine) map[int]bool {
 // Target-Verzeichnisses)? Dort ist die Kennung „zu Hause" — die
 // Definitions-Stelle muss nicht auf sich selbst verlinken.
 func fileInTarget(file, target string) bool {
-	rel, escaped := resolveConfigPath(target)
+	rel, escaped := ResolveConfigPath(target)
 	if escaped {
 		return false
 	}
@@ -181,12 +181,12 @@ func fileInTarget(file, target string) bool {
 	return file == rel || strings.HasPrefix(file, rel+"/")
 }
 
-// idOccurrenceExempt prüft, ob ein Vorkommen [start,end) linkpflichtfrei
+// IDOccurrenceExempt prüft, ob ein Vorkommen [start,end) linkpflichtfrei
 // ist: es liegt im Linktext eines Nicht-Bild-Links (= verlinkt) oder
 // innerhalb der Link-/Bild-Syntax außerhalb des Linktexts
 // (Ziel-Klammer, Alt-Text — kein Fließtext;
 // spec/spezifikation.md §DC-FA-ID-001.a).
-func idOccurrenceExempt(spans []LinkSpan, start, end int) bool {
+func IDOccurrenceExempt(spans []LinkSpan, start, end int) bool {
 	for _, sp := range spans {
 		if start >= sp.TextStart && end <= sp.TextEnd && !sp.IsImage {
 			return true // verlinkt: im Linktext eines Markdown-Links

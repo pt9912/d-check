@@ -56,7 +56,7 @@ func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg Config, modules [
 	res.Findings = st.findings
 	if active["external"] {
 		res.Findings = append(res.Findings,
-			checkExternal(httpc, st.extRefs, cfg.External.EffectiveParallel())...)
+			CheckExternal(httpc, st.extRefs, cfg.External.EffectiveParallel())...)
 	}
 	res.Findings = SortFindings(res.Findings)
 	return res, nil
@@ -71,7 +71,7 @@ type runState struct {
 	inScope     map[string]map[string]bool
 	slugCache   map[string]map[string]bool
 	statusCache map[string]*string
-	extRefs     []externalRef
+	extRefs     []ExternalRef
 	findings    []Finding
 }
 
@@ -90,28 +90,28 @@ func (st *runState) checkFile(file string) error {
 	}
 	lines := PreprocessMarkdown(content)
 	if st.applies("links", file) {
-		st.findings = append(st.findings, checkLinks(st.fsys, file, lines)...)
+		st.findings = append(st.findings, CheckLinks(st.fsys, file, lines)...)
 	}
 	if st.applies("anchors", file) {
-		st.findings = append(st.findings, checkAnchors(st.fsys, file, content, lines, st.slugCache)...)
+		st.findings = append(st.findings, CheckAnchors(st.fsys, file, content, lines, st.slugCache)...)
 	}
 	if st.applies("ids", file) {
-		st.findings = append(st.findings, checkIDs(file, content, lines, st.cfg.IDPatterns)...)
+		st.findings = append(st.findings, CheckIDs(file, content, lines, st.cfg.IDPatterns)...)
 	}
 	if st.applies("matrix", file) {
-		st.findings = append(st.findings, checkMatrix(st.fsys, file, content, lines, st.cfg.Matrix, st.statusCache)...)
+		st.findings = append(st.findings, CheckMatrix(st.fsys, file, content, lines, st.cfg.Matrix, st.statusCache)...)
 	}
 	if st.applies("codepaths", file) {
-		st.findings = append(st.findings, checkCodepaths(st.fsys, file, content, st.cfg.Codepaths, st.slugCache)...)
+		st.findings = append(st.findings, CheckCodepaths(st.fsys, file, content, st.cfg.Codepaths, st.slugCache)...)
 	}
 	if st.applies("hostpaths", file) {
-		st.findings = append(st.findings, checkHostpaths(file, content, st.cfg.Hostpaths)...)
+		st.findings = append(st.findings, CheckHostpaths(file, content, st.cfg.Hostpaths)...)
 	}
 	if st.applies("spans", file) {
-		st.findings = append(st.findings, checkSpans(file, content, lines)...)
+		st.findings = append(st.findings, CheckSpans(file, content, lines)...)
 	}
 	if st.applies("external", file) {
-		st.extRefs = append(st.extRefs, collectExternalURLs(file, lines)...)
+		st.extRefs = append(st.extRefs, CollectExternalURLs(file, lines)...)
 	}
 	return nil
 }
@@ -182,7 +182,7 @@ func discoverInto(fsys driven.Filesystem, roots, ignore []string, union map[stri
 // müssen existieren und innerhalb der Repo-Wurzel liegen.
 func ensureIDTargetsExist(fsys driven.Filesystem, patterns []IDPattern) error {
 	for _, p := range patterns {
-		rel, escaped := resolveConfigPath(p.Target)
+		rel, escaped := ResolveConfigPath(p.Target)
 		if escaped {
 			return fmt.Errorf("konfiguriertes ids-Target verlässt die Repository-Wurzel: %s", p.Target)
 		}

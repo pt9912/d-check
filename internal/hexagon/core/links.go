@@ -6,12 +6,12 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
-// checkLinks ist das Regelmodul `links` (DC-FA-LINK-001/002): lokale
+// CheckLinks ist das Regelmodul `links` (DC-FA-LINK-001/002): lokale
 // Link- und Bildziele müssen existieren, innerhalb der Repo-Wurzel
 // liegen und symlink-frei sein. Fragment-Teile gemischter Ziele
 // ignoriert das Modul (Aufgabe von `anchors`); reine Anker-Ziele und
 // externe Schemata werden übersprungen.
-func checkLinks(fsys driven.Filesystem, file string, lines []Line) []Finding {
+func CheckLinks(fsys driven.Filesystem, file string, lines []Line) []Finding {
 	var findings []Finding
 	for _, ref := range ExtractLinks(lines) {
 		target := ref.Target
