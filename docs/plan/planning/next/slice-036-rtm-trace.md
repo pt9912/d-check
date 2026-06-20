@@ -23,7 +23,8 @@ Machbarkeit: 25 `DC-*` → ADR/Slice/Test, alle belegt).
 ## 1. Ziel
 
 Ein read-only-Modus `d-check --trace`, der eine **Requirements Traceability
-Matrix** als **Markdown-Tabelle auf stdout** ausgibt — **kein Dokument
+Matrix** auf stdout ausgibt (**Default Markdown-Tabelle**, optional
+maschinenlesbar `--trace --json` / `--trace --yaml`) — **kein Dokument
 erzeugt**, immer frisch aus den kanonischen Quellen abgeleitet. Reiht sich in
 die Advisory-Modi (`--print-config`/`--suggest-config`/`--doctor`) ein.
 
@@ -45,8 +46,10 @@ ihn, kaum neue Logik.
   weglassen (reine Doku-Traceability Anforderung→ADR→Slice) oder über
   `scan.roots` konfigurierbar scannen. Empfehlung: Kern-RTM doku-only;
   Code-Abdeckung optional.
-- **Kombinierbarkeit:** `--trace --json`/`--yaml` für maschinenlesbare
-  Trace-Ausgabe (analog `--doctor --json`)?
+- **Ausgabeformate (entschieden):** Default Markdown-Tabelle; **optional**
+  maschinenlesbar `--trace --json` / `--trace --yaml` (analog
+  `--doctor --json`/`--yaml`) — nutzt den vorhandenen report-Adapter
+  (slice-031, format-neutrale Output-Structs), kein neuer Serialisierer.
 
 ## 4. Definition of Done (vorläufig)
 
@@ -56,6 +59,9 @@ ihn, kaum neue Logik.
   ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)),
   read-only ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 - [ ] Lücken-Erkennung (Waisen: Anforderung ohne Slice/ADR).
+- [ ] **Optionale maschinenlesbare Ausgabe** `--trace --json` / `--trace
+  --yaml` (strukturgleich zur Tabelle, über die format-neutralen
+  report-Structs aus slice-031).
 - [ ] Akzeptanztests; `make gates` grün; unabhängiges Review R1; ADR nach
   Bedarf.
 
