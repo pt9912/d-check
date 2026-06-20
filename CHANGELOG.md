@@ -6,6 +6,30 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.19.0] — 2026-06-20
+
+### Added
+
+- slice-031 — YAML-Ausgabeformat `--yaml`: gibt die Befunde strukturgleich
+  zu `--json` als YAML auf stdout aus (`findings`/`summary`/`exitCode`);
+  `--doctor --yaml` analog `--doctor --json`. Deterministisch (`DC-QA-02`),
+  read-only (`DC-QA-03`)
+  ([`DC-FA-CLI-004`](spec/lastenheft.md#dc-fa-cli-004--ausgabeformate)).
+
+### Changed
+
+- slice-032 — semgrep als hermetisches Security-/Static-Analysis-Gate in
+  `make gates`: gepinntes Image (`semgrep/semgrep:1.167.0`) + gepinntes,
+  lokal außerhalb des Repos gecachtes `go/lang/security`-Regelset, netzloser
+  Scan (`--network none`); `--error` bricht das Gate bei Befund. Ergänzt
+  golangci-lint sprachübergreifend; reproduzierbar (`DC-QA-02`), netzlos
+  (`DC-QA-03`) (`ADR-0010`).
+- slice-033 — alle Build- und Gate-Images per `@sha256:`-Digest gepinnt
+  (alle Dockerfile-`FROM` — golang, golangci-lint, distroless — und das
+  semgrep-Image; Manifest-Listen-Digest amd64+arm64, inline neben dem Tag);
+  `make versions` belegt die Pins. Schließt die `ADR-0002`-§1-Digest-Drift
+  und vereinheitlicht die Image-Pin-Politik (`ADR-0011`).
+
 ## [0.18.0] — 2026-06-19
 
 ### Added
