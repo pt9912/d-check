@@ -1,6 +1,6 @@
 # ADR-0012 — Kern-Paketschnitt: `model` / `rules` / `app`
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-20
 **Autor:** pt9912
 **Bezug:** [ADR-0004](0004-architektur-pattern-hexagonal.md) („Hexagon
@@ -38,13 +38,19 @@ mit **strikt einbahniger** Importrichtung:
    Importiert **nichts** aus dem Kern (nur Standardbibliothek) — innerster
    Ring.
 2. **`rules`** — die acht Regelmodule (`links`/`anchors`/`ids`/`matrix`/
-   `codepaths`/`spans`/`hostpaths`/`external`) plus die Primitive
-   `markdown.go`, `paths.go` und der **dorthin verschobene** Glob-Helfer
-   `ignored`. Importiert `model` und die Ports (`port/driven`), **nicht**
-   `app`.
-3. **`app`** — `run.go` (Orchestrierung: Discover → Module → Befundliste),
-   `diagnose.go`, `repair.go`, `suggest.go`, `scan.go` (Discovery-Treiber).
-   Importiert `model`, `rules` und die Ports.
+   `codepaths`/`spans`/`hostpaths`/`external`), die Primitive `markdown.go`,
+   `paths.go` (mit dem dorthin verschobenen Glob-Helfer `ignored`) **sowie
+   die Prüf-Orchestrierung `run.go` und die Discovery `scan.go`** — die
+   I/O-freie Prüf-Engine. Importiert `model` und die Ports (`port/driven`),
+   **nicht** `app`.
+3. **`app`** — die Anwendungs-Modi auf den Befunden: `diagnose.go`
+   (`--doctor`), `repair.go` (`--repair`), `suggest.go`
+   (`--suggest-config`). Importiert `model`, `rules` und die Ports.
+
+**Zur Lage von `run`/`scan`** (Abweichung vom Erst-Plan, der sie `app`
+zuordnete): die Modul-Tests (White-box) koppeln den Orchestrator `Run` mit
+Modul-Interna; in `rules` bleiben sie ohne Interna-Export testbar. „Engine"
+(Module + ihre Ausführung) vs. „Modi" ist die vom Code getragene Naht.
 
 **Importregel (neu, maschinell erzwungen):**
 `app → rules → model`, `app → model`, `rules/app → port/driven`;
@@ -100,3 +106,4 @@ Fixture vor/nach byte-identisch.
 | Datum | Ereignis |
 |---|---|
 | 2026-06-20 | Proposed (slice-035) |
+| 2026-06-20 | Accepted — Umsetzung slice-035: `model`/`rules`/`app` geschnitten, `run`/`scan` in `rules` (Engine), arch-check R6 erzwingt die Richtung; `make gates` grün, alle Tests bestehen (kein Befund-Delta) |

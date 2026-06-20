@@ -41,7 +41,10 @@ Das CLI ist der **einzige driving Adapter** (kein Server-Modus). Die
 Regelmodule (`links`, `anchors`, `ids`, `matrix`, `external`) sind
 Strategien im Kern hinter einem gemeinsamen Interface
 ([`DC-FA-CLI-002`](lastenheft.md#dc-fa-cli-002--regelmodul-auswahl));
-neue Module sind Kern-Erweiterungen, keine Architekturänderungen.
+neue Module sind Kern-Erweiterungen, keine Architekturänderungen. Der Kern
+ist intern in drei Pakete mit einbahniger Importrichtung geschnitten —
+`model` (Daten) ← `rules` (Prüf-Engine: Module + Orchestrierung) ← `app`
+(Modi `--doctor`/`--repair`/`--suggest-config`).
 
 ## 2. Schichten und Constraints
 
