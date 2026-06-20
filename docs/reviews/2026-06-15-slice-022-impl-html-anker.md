@@ -4,8 +4,8 @@
 Doc/CR-Review). Gegenstand ist der Code, nicht erneut der Vertrag.
 
 **Gegenstand:** Commit `6d402b8` (`feat(anchors)`):
-`internal/hexagon/core/anchors.go` (+67), `anchors_test.go` (+78),
-`internal/hexagon/core/codepaths.go` (±8).
+`internal/hexagon/core/rules/anchors.go` (+67), `anchors_test.go` (+78),
+`internal/hexagon/core/rules/codepaths.go` (±8).
 
 **Skill:** `.harness/skills/reviewer.md` · **Datum:** 2026-06-15
 
@@ -19,11 +19,11 @@ slice-022, Doc-Review-Report (R1-Dispositionen).
 
 | # | Kategorie | Quelle | Pfad | Befund | Verifizierbar |
 |---|---|---|---|---|---|
-| 1 | 🟡 LOW | `DC-FA-ANCH-001` / Robustheit (Falsch-Positiv-Richtung) | `internal/hexagon/core/anchors.go:99` | `htmlTagRE` begrenzt den Tag mit `[^>]*`; ein rohes `>` in einem früheren Attributwert (`<a title="x > y" name="z">`) beendet die Erfassung vorzeitig, ein danach stehendes id/name wird übersehen. Ein Link darauf meldet dann fälschlich `anchor-missing` — das ist die „Wolf-rufen"-Richtung im Gate-Pfad (kann eine grüne doc-check-CI brechen). Eintritt nur bei literalem `>` im Attribut (regulär `&gt;`). | ja — Unit-Test mit `<a title="a > b" name="z">` + Link `#z`; erwartet kein Befund, aktuell anchor-missing |
-| 2 | 🟡 LOW | `DC-FA-ANCH-001` / Testabdeckung | `internal/hexagon/core/anchors_test.go` | Der Vertragsfall „`#anker` innerhalb derselben Datei" ist für HTML-Anker nicht direkt getestet; `TestAnchorsHTMLModul` prüft nur Cross-File-Ziele. Der Selbst-Datei-Pfad (`slugsFor` mit own-Content) teilt die Extraktion, ist aber für HTML-Anker ungeprüft. | ja — Test mit `<a name="x">` und Link `#x` in derselben Datei |
-| 3 | 🟡 LOW | `DC-FA-CODE-001` / Testabdeckung | `internal/hexagon/core/codepaths.go:174` | Die im Doc-Review verlangte HTML-Anker-Konsistenz für `codepaths` ist verdrahtet (`codepathSlugs` → `AnchorSet`), aber kein `codepaths`-Test prüft einen Inline-Code-Pfad mit Fragment gegen einen HTML-Anker des Ziels. | ja — codepaths-Test mit Inline-Code-Pfad `ziel.md#html-id` und `<div id="html-id">` in ziel.md |
-| 4 | 🔵 INFO | `DC-QA-01` / Maintainability (Perf) | `internal/hexagon/core/anchors.go:146` | `AnchorSet` ruft `HeadingSlugs` (extractHeadingLines-Scan) **und** `htmlAnchors` (PreprocessMarkdown-Scan) — zwei volle Zeilen-Durchläufe je Zieldatei plus Regex-Allokation je Prosa-Zeile. Pro distinktem Ziel via `slugCache` nur einmal (gedeckelt), bei sehr großen Korpora dennoch zusätzlicher Aufwand. | ja — `make bench` gegen das `DC-QA-01`-Fixture (Median), kein Gate |
-| 5 | 🔵 INFO | dokumentationswürdige Annahme | `internal/hexagon/core/anchors.go:132` | `attrValue` unterscheidet „leerer Wert" (`id=""`) nicht von „kein Treffer" (beide → `""`); ein leerer id/name erzeugt bewusst keinen Anker. Sinnvoll, aber als Annahme nicht in der Spezifikation vermerkt. | nein — Designnotiz |
+| 1 | 🟡 LOW | `DC-FA-ANCH-001` / Robustheit (Falsch-Positiv-Richtung) | `internal/hexagon/core/rules/anchors.go:99` | `htmlTagRE` begrenzt den Tag mit `[^>]*`; ein rohes `>` in einem früheren Attributwert (`<a title="x > y" name="z">`) beendet die Erfassung vorzeitig, ein danach stehendes id/name wird übersehen. Ein Link darauf meldet dann fälschlich `anchor-missing` — das ist die „Wolf-rufen"-Richtung im Gate-Pfad (kann eine grüne doc-check-CI brechen). Eintritt nur bei literalem `>` im Attribut (regulär `&gt;`). | ja — Unit-Test mit `<a title="a > b" name="z">` + Link `#z`; erwartet kein Befund, aktuell anchor-missing |
+| 2 | 🟡 LOW | `DC-FA-ANCH-001` / Testabdeckung | `internal/hexagon/core/rules/anchors_test.go` | Der Vertragsfall „`#anker` innerhalb derselben Datei" ist für HTML-Anker nicht direkt getestet; `TestAnchorsHTMLModul` prüft nur Cross-File-Ziele. Der Selbst-Datei-Pfad (`slugsFor` mit own-Content) teilt die Extraktion, ist aber für HTML-Anker ungeprüft. | ja — Test mit `<a name="x">` und Link `#x` in derselben Datei |
+| 3 | 🟡 LOW | `DC-FA-CODE-001` / Testabdeckung | `internal/hexagon/core/rules/codepaths.go:174` | Die im Doc-Review verlangte HTML-Anker-Konsistenz für `codepaths` ist verdrahtet (`codepathSlugs` → `AnchorSet`), aber kein `codepaths`-Test prüft einen Inline-Code-Pfad mit Fragment gegen einen HTML-Anker des Ziels. | ja — codepaths-Test mit Inline-Code-Pfad `ziel.md#html-id` und `<div id="html-id">` in ziel.md |
+| 4 | 🔵 INFO | `DC-QA-01` / Maintainability (Perf) | `internal/hexagon/core/rules/anchors.go:146` | `AnchorSet` ruft `HeadingSlugs` (extractHeadingLines-Scan) **und** `htmlAnchors` (PreprocessMarkdown-Scan) — zwei volle Zeilen-Durchläufe je Zieldatei plus Regex-Allokation je Prosa-Zeile. Pro distinktem Ziel via `slugCache` nur einmal (gedeckelt), bei sehr großen Korpora dennoch zusätzlicher Aufwand. | ja — `make bench` gegen das `DC-QA-01`-Fixture (Median), kein Gate |
+| 5 | 🔵 INFO | dokumentationswürdige Annahme | `internal/hexagon/core/rules/anchors.go:132` | `attrValue` unterscheidet „leerer Wert" (`id=""`) nicht von „kein Treffer" (beide → `""`); ein leerer id/name erzeugt bewusst keinen Anker. Sinnvoll, aber als Annahme nicht in der Spezifikation vermerkt. | nein — Designnotiz |
 
 ## Negativbefunde (geprüft, ohne Befund)
 

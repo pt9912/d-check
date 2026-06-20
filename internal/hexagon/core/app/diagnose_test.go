@@ -1,6 +1,8 @@
-package core
+package app
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/rules"
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"regexp"
 	"strings"
 	"testing"
@@ -37,10 +39,10 @@ func TestReasonTextUnbekannt(t *testing.T) {
 // FixCandidateFor: id-unlinked liefert einen Link-Kandidaten auf das
 // Definitions-Target (relativ zum Verzeichnis der Befund-Datei).
 func TestFixCandidateFor_IDUnlinked(t *testing.T) {
-	cfg := Config{IDPatterns: []IDPattern{
+	cfg := model.Config{IDPatterns: []model.IDPattern{
 		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/"},
 	}}
-	f := Finding{File: "docs/a.md", Line: 1, Rule: "ids", Target: "ADR-0042", Reason: ReasonIDUnlinked}
+	f := model.Finding{File: "docs/a.md", Line: 1, Rule: "ids", Target: "ADR-0042", Reason: model.ReasonIDUnlinked}
 	c := FixCandidateFor(f, cfg)
 	if c == nil {
 		t.Fatal("kein Kandidat für id-unlinked")
@@ -55,9 +57,9 @@ func TestFixCandidateFor_IDUnlinked(t *testing.T) {
 
 // FixCandidateFor: andere Grund-Codes liefern (noch) keinen Kandidaten.
 func TestFixCandidateFor_AndereCodesNil(t *testing.T) {
-	cfg := Config{}
-	for _, r := range []string{ReasonTargetMissing, ReasonSpanUnclosed, ReasonAnchorMissing} {
-		f := Finding{File: "docs/a.md", Line: 1, Target: "x", Reason: r}
+	cfg := model.Config{}
+	for _, r := range []string{model.ReasonTargetMissing, model.ReasonSpanUnclosed, rules.ReasonAnchorMissing} {
+		f := model.Finding{File: "docs/a.md", Line: 1, Target: "x", Reason: r}
 		if c := FixCandidateFor(f, cfg); c != nil {
 			t.Errorf("Grund-Code %q sollte keinen Kandidaten liefern, got %+v", r, c)
 		}
@@ -67,10 +69,10 @@ func TestFixCandidateFor_AndereCodesNil(t *testing.T) {
 // FixCandidateFor: id-unlinked ohne passendes Muster → kein Kandidat
 // (kein Raten ohne bekanntes Definitions-Target).
 func TestFixCandidateFor_OhneMusterNil(t *testing.T) {
-	cfg := Config{IDPatterns: []IDPattern{
+	cfg := model.Config{IDPatterns: []model.IDPattern{
 		{Regex: regexp.MustCompile(`MR-\d{3}`), Target: "harness/conventions.md"},
 	}}
-	f := Finding{File: "docs/a.md", Line: 1, Target: "ADR-0042", Reason: ReasonIDUnlinked}
+	f := model.Finding{File: "docs/a.md", Line: 1, Target: "ADR-0042", Reason: model.ReasonIDUnlinked}
 	if c := FixCandidateFor(f, cfg); c != nil {
 		t.Fatalf("ohne passendes Muster kein Kandidat erwartet, got %+v", c)
 	}

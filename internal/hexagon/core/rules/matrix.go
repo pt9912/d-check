@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
@@ -18,7 +19,7 @@ const (
 // ausgenommenen Sektionen (exclude-sections) werden übersprungen
 // (spec/spezifikation.md §DC-FA-MTX-001.a).
 func CheckMatrix(fsys driven.Filesystem, file string, content []byte, lines []Line,
-	cfg MatrixConfig, statusCache map[string]*string) []Finding {
+	cfg model.MatrixConfig, statusCache map[string]*string) []model.Finding {
 	srcClass, ok := classOf(cfg.Classes, file)
 	if !ok {
 		return nil
@@ -31,7 +32,7 @@ func CheckMatrix(fsys driven.Filesystem, file string, content []byte, lines []Li
 	if cfg.AllowSupersedeLineage {
 		supersedeValues = supersedeFieldValues(content, cfg.SupersedeFields)
 	}
-	var findings []Finding
+	var findings []model.Finding
 	for _, ref := range ExtractLinks(lines) {
 		if inRanges(excluded, ref.Line) {
 			continue // Provenance-Ausnahme
@@ -45,7 +46,7 @@ func CheckMatrix(fsys driven.Filesystem, file string, content []byte, lines []Li
 			continue
 		}
 		if rule, found := ruleFor(cfg.Rules, srcClass, dstClass); found && !rule.Allow {
-			findings = append(findings, Finding{
+			findings = append(findings, model.Finding{
 				File: file, Line: ref.Line, Rule: "matrix",
 				Target: ref.Target, Reason: ReasonMatrixForbidden,
 				Message: "Referenz " + srcClass + " → " + dstClass + " ist nicht erlaubt",
@@ -56,7 +57,7 @@ func CheckMatrix(fsys driven.Filesystem, file string, content []byte, lines []Li
 			// ihr abgelöste (inaktive) Ziel verweisen — die Ausnahme
 			// gilt nur für matrix-inactive, nicht für matrix-forbidden.
 			if !lineageExempt(supersedeValues, ref.Text, rel) {
-				findings = append(findings, Finding{
+				findings = append(findings, model.Finding{
 					File: file, Line: ref.Line, Rule: "matrix",
 					Target: ref.Target, Reason: ReasonMatrixInactive,
 					Message: "Referenz auf inaktives Dokument (Status: " + status + ")",
@@ -151,7 +152,7 @@ func normalizeLineage(s string) string {
 
 // classOf liefert die erste deklarierte Klasse, deren Glob den Pfad
 // matcht (Deklarationsreihenfolge = Präzedenz).
-func classOf(classes []MatrixClass, rel string) (string, bool) {
+func classOf(classes []model.MatrixClass, rel string) (string, bool) {
 	for _, c := range classes {
 		for _, g := range c.Paths {
 			if MatchGlob(g, rel) {
@@ -163,13 +164,13 @@ func classOf(classes []MatrixClass, rel string) (string, bool) {
 }
 
 // ruleFor liefert die erste deklarierte Regel für das Klassen-Paar.
-func ruleFor(rules []MatrixRule, from, to string) (MatrixRule, bool) {
+func ruleFor(rules []model.MatrixRule, from, to string) (model.MatrixRule, bool) {
 	for _, r := range rules {
 		if r.From == from && r.To == to {
 			return r, true
 		}
 	}
-	return MatrixRule{}, false
+	return model.MatrixRule{}, false
 }
 
 // lineRange ist ein 1-basierter Zeilenbereich [from, to);

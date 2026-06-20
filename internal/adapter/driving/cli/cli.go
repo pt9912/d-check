@@ -5,6 +5,9 @@
 package cli
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/rules"
+	"github.com/pt9912/d-check/internal/hexagon/core/app"
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"errors"
 	"flag"
 	"fmt"
@@ -18,7 +21,6 @@ import (
 	fsadapter "github.com/pt9912/d-check/internal/adapter/driven/fs"
 	"github.com/pt9912/d-check/internal/adapter/driven/httpcheck"
 	"github.com/pt9912/d-check/internal/adapter/driven/report"
-	"github.com/pt9912/d-check/internal/hexagon/core"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
@@ -199,20 +201,20 @@ func openRoot(root string, stderr io.Writer) (*fsadapter.Adapter, bool) {
 // loadConfig beschafft den Config-Inhalt über den Filesystem-Adapter
 // und lässt ihn vom Config-Adapter dekodieren/validieren
 // (spec/architecture.md §2).
-func loadConfig(fsys *fsadapter.Adapter, stderr io.Writer) (core.Config, bool) {
+func loadConfig(fsys *fsadapter.Adapter, stderr io.Writer) (model.Config, bool) {
 	var content []byte
 	if kind, err := fsys.Kind(configyaml.FileName); err == nil && kind == driven.KindFile {
 		read, err := fsys.ReadFile(configyaml.FileName)
 		if err != nil {
 			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-			return core.Config{}, false
+			return model.Config{}, false
 		}
 		content = read
 	}
 	cfg, err := configyaml.Decode(content)
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
-		return core.Config{}, false
+		return model.Config{}, false
 	}
 	return cfg, true
 }
@@ -221,7 +223,7 @@ func loadConfig(fsys *fsadapter.Adapter, stderr io.Writer) (core.Config, bool) {
 // (DC-FA-CLI-003/004). Die Ausgabe-Modi --doctor und --json ersetzen das
 // Default-Text-Format; der Exit-Code richtet sich allein nach dem
 // Befund-Stand (0 = keine, 1 = mindestens einer).
-func render(res core.Result, opts options, cfg core.Config, fsys driven.Filesystem, stdout, stderr io.Writer) int {
+func render(res rules.Result, opts options, cfg model.Config, fsys driven.Filesystem, stdout, stderr io.Writer) int {
 	code, err := renderStdout(res, opts, cfg, fsys, stdout, stderr)
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
@@ -234,7 +236,7 @@ func render(res core.Result, opts options, cfg core.Config, fsys driven.Filesyst
 // liefert den Befund-Exit-Code (0/1) und einen etwaigen Render-Fehler, den
 // der Aufrufer auf Exit 2 abbildet. Die Modi --doctor/--repair sowie
 // --json/--yaml ersetzen das Default-Text-Format (DC-FA-CLI-004).
-func renderStdout(res core.Result, opts options, cfg core.Config, fsys driven.Filesystem, stdout, stderr io.Writer) (int, error) {
+func renderStdout(res rules.Result, opts options, cfg model.Config, fsys driven.Filesystem, stdout, stderr io.Writer) (int, error) {
 	exit := 0
 	if len(res.Findings) > 0 {
 		exit = 1
@@ -248,7 +250,7 @@ func renderStdout(res core.Result, opts options, cfg core.Config, fsys driven.Fi
 	case opts.doctor:
 		return exit, report.Doctor(stdout, stderr, res.Findings, sum, cfg)
 	case opts.repair:
-		edits, err := core.RepairEdits(fsys, res.Findings, cfg, opts.repairBroad)
+		edits, err := app.RepairEdits(fsys, res.Findings, cfg, opts.repairBroad)
 		if err != nil {
 			return exit, err
 		}
@@ -288,7 +290,7 @@ func Run(args []string, stdout, stderr io.Writer) int {
 			fmt.Fprintln(stderr, "d-check: error: --suggest-config braucht mindestens eine Quelle")
 			return 2
 		}
-		out, err := core.SuggestConfig(fsys, sources)
+		out, err := app.SuggestConfig(fsys, sources)
 		if err != nil {
 			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 			return 2
@@ -300,7 +302,7 @@ func Run(args []string, stdout, stderr io.Writer) int {
 	if !ok {
 		return 2
 	}
-	modules, err := core.EffectiveModules(cfg, opts.enable, opts.disable)
+	modules, err := model.EffectiveModules(cfg, opts.enable, opts.disable)
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return 2
@@ -316,7 +318,7 @@ func Run(args []string, stdout, stderr io.Writer) int {
 			break
 		}
 	}
-	res, err := core.Run(fsys, checker, cfg, modules)
+	res, err := rules.Run(fsys, checker, cfg, modules)
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return 2

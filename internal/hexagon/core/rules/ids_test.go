@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"fmt"
 	"regexp"
 	"strings"
@@ -22,7 +23,7 @@ func TestIDsModul(t *testing.T) {
 			"![Diagramm ADR-0042](plan/adr/bild.png)\n", // Bildreferenz
 		"docs/plan/adr/0042-beispiel.md": "x",
 	})
-	cfg := Config{IDPatterns: []IDPattern{
+	cfg := model.Config{IDPatterns: []model.IDPattern{
 		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/"},
 	}}
 	res, err := Run(m, nil, cfg, []string{"ids"})
@@ -43,14 +44,14 @@ func TestIDsModul(t *testing.T) {
 // erste passende Muster gewinnt pro Vorkommen (überlappende Treffer).
 func TestIDsMusterPraezedenz(t *testing.T) {
 	lines := []Line{{No: 1, Text: "siehe ADR-0042 hier"}}
-	long := IDPattern{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}
-	short := IDPattern{Regex: regexp.MustCompile(`ADR-\d{2}`), Target: "x"}
+	long := model.IDPattern{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}
+	short := model.IDPattern{Regex: regexp.MustCompile(`ADR-\d{2}`), Target: "x"}
 
-	got := CheckIDs("f.md", nil, lines, []IDPattern{long, short})
+	got := CheckIDs("f.md", nil, lines, []model.IDPattern{long, short})
 	if len(got) != 1 || got[0].Target != "ADR-0042" {
 		t.Fatalf("lang zuerst: %+v", got)
 	}
-	got = CheckIDs("f.md", nil, lines, []IDPattern{short, long})
+	got = CheckIDs("f.md", nil, lines, []model.IDPattern{short, long})
 	if len(got) != 1 || got[0].Target != "ADR-00" {
 		t.Fatalf("kurz zuerst: %+v", got)
 	}
@@ -60,7 +61,7 @@ func TestIDsMusterPraezedenz(t *testing.T) {
 // Vorkommen zwischen den Links bleibt ein Befund.
 func TestIDsLinktextSpannen(t *testing.T) {
 	lines := []Line{{No: 1, Text: "[ADR-0001](a.md) und ADR-0002 sowie [x ADR-0003 y](b.md)"}}
-	p := []IDPattern{{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}}
+	p := []model.IDPattern{{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}}
 	got := CheckIDs("f.md", nil, lines, p)
 	if len(got) != 1 || got[0].Target != "ADR-0002" {
 		t.Fatalf("Befunde = %+v (genau ADR-0002 erwartet)", got)
@@ -72,16 +73,16 @@ func TestIDsLinktextSpannen(t *testing.T) {
 // Verzeichnis-Targets (auch mit Slash) sind gültig.
 func TestIDsTargetMussExistieren(t *testing.T) {
 	m := coretest.NewMemFS(map[string]string{"docs/a.md": "x"})
-	cfg := Config{IDPatterns: []IDPattern{
+	cfg := model.Config{IDPatterns: []model.IDPattern{
 		{Regex: regexp.MustCompile(`X-\d`), Target: "gibt/es/nicht"},
 	}}
 	if _, err := Run(m, nil, cfg, []string{"ids"}); err == nil {
 		t.Fatal("Fehler erwartet (Target fehlt)")
 	}
 	if _, err := Run(m, nil, cfg, []string{"links"}); err == nil {
-		t.Fatal("Fehler auch ohne aktives ids-Modul erwartet (Config-Constraint)")
+		t.Fatal("Fehler auch ohne aktives ids-Modul erwartet (model.Config-Constraint)")
 	}
-	cfgOK := Config{IDPatterns: []IDPattern{
+	cfgOK := model.Config{IDPatterns: []model.IDPattern{
 		{Regex: regexp.MustCompile(`X-\d`), Target: "docs/a.md"},
 		{Regex: regexp.MustCompile(`Y-\d`), Target: "docs/"},
 		{Regex: regexp.MustCompile(`Z-\d`), Target: "/"}, // Repo-Wurzel
@@ -116,7 +117,7 @@ func TestFileInTarget(t *testing.T) {
 func TestIDsTargetDarfWurzelNichtVerlassen(t *testing.T) {
 	m := coretest.NewMemFS(map[string]string{"docs/a.md": "x"})
 	for _, target := range []string{"../draussen", "docs/../../x", ".."} {
-		cfg := Config{IDPatterns: []IDPattern{
+		cfg := model.Config{IDPatterns: []model.IDPattern{
 			{Regex: regexp.MustCompile(`X-\d`), Target: target},
 		}}
 		_, err := Run(m, nil, cfg, []string{"ids"})
@@ -135,7 +136,7 @@ func TestIDsDefinitionsOrtUndHeadings(t *testing.T) {
 		"docs/plan/adr/0001-x.md": "# ADR-0001 — X\nersetzt ADR-0042 nicht\n",
 		"docs/a.md":               "## Abschnitt zu DC-FA-CLI-001\nnacktes DC-FA-CLI-001 hier\n",
 	})
-	cfg := Config{IDPatterns: []IDPattern{
+	cfg := model.Config{IDPatterns: []model.IDPattern{
 		{Regex: regexp.MustCompile(`DC-(FA-[A-Z]+|QA)-\d+`), Target: "spec/lastenheft.md"},
 		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/"},
 	}}
@@ -153,7 +154,7 @@ func TestIDsDefinitionsOrtUndHeadings(t *testing.T) {
 func TestIDsKeinePhantomKennungDurchInlineCode(t *testing.T) {
 	content := []byte("AD`x`R-0042\n")
 	lines := PreprocessMarkdown(content)
-	p := []IDPattern{{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}}
+	p := []model.IDPattern{{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "x"}}
 	if got := CheckIDs("f.md", content, lines, p); len(got) != 0 {
 		t.Fatalf("Phantom-Befund: %+v", got)
 	}
@@ -173,7 +174,7 @@ func TestIDsLinkPolicyAlways(t *testing.T) {
 		"docs/plan/adr/0043.md":  "x",                              // target-Dir
 		"docs/plan/adr/0099-x.md": "`ADR-0099` im eigenen target\n", // target → frei
 	})
-	cfg := Config{IDPatterns: []IDPattern{{
+	cfg := model.Config{IDPatterns: []model.IDPattern{{
 		Regex:       regexp.MustCompile(`ADR-\d{4}`),
 		Target:      "docs/plan/adr/",
 		LinkPolicy:  "always",
@@ -200,7 +201,7 @@ func TestIDsLinkPolicyProseDefault(t *testing.T) {
 		"docs/a.md":              "`ADR-0042` als Code-Span ohne Link\n", // prose → frei
 		"docs/plan/adr/0001-x.md": "x",
 	})
-	cfg := Config{IDPatterns: []IDPattern{
+	cfg := model.Config{IDPatterns: []model.IDPattern{
 		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/"}, // kein link-policy
 	}}
 	res, err := Run(m, nil, cfg, []string{"ids"})
@@ -222,7 +223,7 @@ func TestIDsVentileNackteVorkommen(t *testing.T) {
 		"docs/b.md":         "Nackt ohne Schutz: ADR-0044\n", // Kontrolle → Befund
 		"docs/plan/adr/0001-x.md": "x",
 	})
-	cfg := Config{IDPatterns: []IDPattern{{
+	cfg := model.Config{IDPatterns: []model.IDPattern{{
 		Regex:       regexp.MustCompile(`ADR-\d{4}`),
 		Target:      "docs/plan/adr/",
 		LinkPolicy:  "always",
@@ -251,7 +252,7 @@ func TestIDsExemptPathsProseDefault(t *testing.T) {
 		"docs/b.md":               "Nackt: ADR-0043\n",           // Kontrolle → Befund
 		"docs/plan/adr/0001-x.md": "x",
 	})
-	cfg := Config{IDPatterns: []IDPattern{
+	cfg := model.Config{IDPatterns: []model.IDPattern{
 		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/",
 			ExemptPaths: []string{"docs/reviews/**"}}, // kein link-policy (prose)
 	}}
@@ -278,7 +279,7 @@ func TestIDsIgnoreMarkerProseDefault(t *testing.T) {
 		"docs/b.md":               "Nackt: ADR-0043\n",                                               // Kontrolle → Befund
 		"docs/plan/adr/0001-x.md": "x",
 	})
-	cfg := Config{IDPatterns: []IDPattern{
+	cfg := model.Config{IDPatterns: []model.IDPattern{
 		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/"}, // kein link-policy (prose)
 	}}
 	res, err := Run(m, nil, cfg, []string{"ids"})

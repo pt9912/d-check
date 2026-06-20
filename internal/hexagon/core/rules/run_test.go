@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"fmt"
 	"reflect"
 	"regexp"
@@ -20,7 +21,7 @@ func TestLinksModul(t *testing.T) {
 	})
 	m.AddFile("docs/mit leer.md", "x")
 
-	res, err := Run(m, nil, Config{}, []string{"links"})
+	res, err := Run(m, nil, model.Config{}, []string{"links"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,7 +53,7 @@ func TestSymlinkAblehnung(t *testing.T) {
 	m.AddSymlink("docs/link-intern.md") // zeigt intern — trotzdem Befund
 	m.AddSymlink("docs/link-raus")      // zeigt nach außen
 
-	res, err := Run(m, nil, Config{}, []string{"links"})
+	res, err := Run(m, nil, model.Config{}, []string{"links"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +61,7 @@ func TestSymlinkAblehnung(t *testing.T) {
 		t.Fatalf("Befunde = %d, want 2: %+v", len(res.Findings), res.Findings)
 	}
 	for _, f := range res.Findings {
-		if f.Reason != ReasonSymlink {
+		if f.Reason != model.ReasonSymlink {
 			t.Errorf("Reason = %s, want symlink (genau ein Befund pro Ziel)", f.Reason)
 		}
 	}
@@ -149,17 +150,17 @@ func TestDiscoverFiles_IgnorePruntAbstieg(t *testing.T) {
 
 // DC-FA-CLI-002: Modul-Auflösung.
 func TestEffectiveModules(t *testing.T) {
-	mods, err := EffectiveModules(Config{}, nil, nil)
+	mods, err := model.EffectiveModules(model.Config{}, nil, nil)
 	if err != nil || !reflect.DeepEqual(mods, []string{"anchors", "links"}) {
 		t.Fatalf("Default = %v (%v)", mods, err)
 	}
-	// CLI-Präzedenz: Config aktiviert, CLI deaktiviert
-	mods, err = EffectiveModules(Config{Modules: []string{"links", "ids"}}, nil, []string{"ids"})
+	// CLI-Präzedenz: model.Config aktiviert, CLI deaktiviert
+	mods, err = model.EffectiveModules(model.Config{Modules: []string{"links", "ids"}}, nil, []string{"ids"})
 	if err != nil || !reflect.DeepEqual(mods, []string{"links"}) {
 		t.Fatalf("Präzedenz = %v (%v)", mods, err)
 	}
 	// unbekanntes Modul → Fehler mit Liste
-	if _, err := EffectiveModules(Config{}, []string{"foo"}, nil); err == nil {
+	if _, err := model.EffectiveModules(model.Config{}, []string{"foo"}, nil); err == nil {
 		t.Fatal("unbekanntes Modul: erwarteter Fehler blieb aus")
 	}
 }
@@ -171,9 +172,9 @@ func TestDeterminismus(t *testing.T) {
 		"docs/a.md": "[f3](f3.md)",
 		"spec/m.md": "[f4](f4.md)",
 	})
-	var prev []Finding
+	var prev []model.Finding
 	for i := 0; i < 10; i++ {
-		res, err := Run(m, nil, Config{}, []string{"links"})
+		res, err := Run(m, nil, model.Config{}, []string{"links"})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -188,8 +189,8 @@ func TestDeterminismus(t *testing.T) {
 }
 
 func TestSortFindingsDedupe(t *testing.T) {
-	f := Finding{File: "a.md", Line: 1, Rule: "links", Target: "x", Reason: "target-missing"}
-	out := SortFindings([]Finding{f, f, {File: "a.md", Line: 1, Rule: "links", Target: "x", Reason: "symlink"}})
+	f := model.Finding{File: "a.md", Line: 1, Rule: "links", Target: "x", Reason: "target-missing"}
+	out := model.SortFindings([]model.Finding{f, f, {File: "a.md", Line: 1, Rule: "links", Target: "x", Reason: "symlink"}})
 	if len(out) != 2 {
 		t.Fatalf("Dedupe: %d Befunde, want 2", len(out))
 	}
@@ -199,7 +200,7 @@ func TestSortFindingsDedupe(t *testing.T) {
 // No-op — kein Fehler, keine Befunde (Kern-Tests laufen netzlos).
 func TestExternalOhneChecker(t *testing.T) {
 	m := coretest.NewMemFS(map[string]string{"docs/a.md": "[x](https://example.org)"})
-	res, err := Run(m, nil, Config{}, []string{"external", "links"})
+	res, err := Run(m, nil, model.Config{}, []string{"external", "links"})
 	if err != nil || len(res.Findings) != 0 {
 		t.Fatalf("res = %+v, err = %v", res, err)
 	}
@@ -213,14 +214,14 @@ func TestRun_ModulScope(t *testing.T) {
 		"spec/s.md":          "ADR-0042 nackt in spec",
 		"docs/adr/0042-x.md": "# Titel",
 	})
-	pattern := []IDPattern{{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/adr/"}}
+	pattern := []model.IDPattern{{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/adr/"}}
 
 	// Happy Path: ids nur auf spec/, links global — id-unlinked
 	// stammt ausschließlich aus spec/, links prüft weiter alles.
-	cfg := Config{
+	cfg := model.Config{
 		Roots:      []string{"."},
 		IDPatterns: pattern,
-		Scopes:     map[string]*ScopeConfig{"ids": {Roots: []string{"spec"}}},
+		Scopes:     map[string]*model.ScopeConfig{"ids": {Roots: []string{"spec"}}},
 	}
 	res, err := Run(m, nil, cfg, []string{"links", "ids"})
 	if err != nil {
@@ -246,13 +247,13 @@ func TestRun_ModulScope(t *testing.T) {
 	}
 
 	// Boundary: ohne scope byte-identisch zum globalen Lauf.
-	plain := Config{Roots: []string{"."}, IDPatterns: pattern}
+	plain := model.Config{Roots: []string{"."}, IDPatterns: pattern}
 	resA, err := Run(m, nil, plain, []string{"links", "ids"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	withEmptyMap := plain
-	withEmptyMap.Scopes = map[string]*ScopeConfig{}
+	withEmptyMap.Scopes = map[string]*model.ScopeConfig{}
 	resB, err := Run(m, nil, withEmptyMap, []string{"links", "ids"})
 	if err != nil {
 		t.Fatal(err)
@@ -266,7 +267,7 @@ func TestRun_ModulScope(t *testing.T) {
 
 	// Boundary: explizit leere roots-Liste prüft nichts (für ids),
 	// Vereinigungsmenge bleibt der globale links-Scope.
-	cfg.Scopes = map[string]*ScopeConfig{"ids": {Roots: []string{}}}
+	cfg.Scopes = map[string]*model.ScopeConfig{"ids": {Roots: []string{}}}
 	res, err = Run(m, nil, cfg, []string{"links", "ids"})
 	if err != nil {
 		t.Fatal(err)
@@ -283,7 +284,7 @@ func TestRun_ModulScope(t *testing.T) {
 	// Negative: nicht existente bzw. Repo-Escape-Wurzel → Fehler
 	// (Exit 2 im CLI), mit Modul-Präfix in der Meldung.
 	for _, bad := range [][]string{{"handbuch"}, {"../raus"}} {
-		cfg.Scopes = map[string]*ScopeConfig{"ids": {Roots: bad}}
+		cfg.Scopes = map[string]*model.ScopeConfig{"ids": {Roots: bad}}
 		if _, err := Run(m, nil, cfg, []string{"links", "ids"}); err == nil {
 			t.Fatalf("ungültige scope-Wurzel %v akzeptiert", bad)
 		} else if !strings.Contains(err.Error(), "ids.scope") {
@@ -299,9 +300,9 @@ func TestRun_ModulScopeAusserhalbGlobal(t *testing.T) {
 		"docs/a.md": "sauber",
 		"extra/e.md": "[kaputt](fehlt.md)",
 	})
-	cfg := Config{
+	cfg := model.Config{
 		Roots:  []string{"docs"},
-		Scopes: map[string]*ScopeConfig{"links": {Roots: []string{"extra"}}},
+		Scopes: map[string]*model.ScopeConfig{"links": {Roots: []string{"extra"}}},
 	}
 	res, err := Run(m, nil, cfg, []string{"links", "anchors"})
 	if err != nil {

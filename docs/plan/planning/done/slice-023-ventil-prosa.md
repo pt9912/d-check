@@ -76,9 +76,9 @@ Datei, nicht nur ihre Backtick-Vorkommen.
 |---|---|---|
 | [`spec/lastenheft.md`](../../../../spec/lastenheft.md) | update | CR [`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) 0.13.0: Ventil-Neufassung, AKs, Historie |
 | [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | §[`DC-FA-ID-001.a`](../../../../spec/spezifikation.md#dc-fa-id-001a--kennungs-prüfung): Prosa-Ventile, Schema-Tabelle |
-| `internal/hexagon/core/ids.go` | update | `checkIDLine` + `exempt-paths`; `checkIDs` + `ignoreMarkerLines` |
-| `internal/hexagon/core/ids_test.go` | update | AK „Ventile für nackte Vorkommen" + politik-unabhängig |
-| `internal/hexagon/core/config.go` | update | Kommentar `ExemptPaths` entkoppelt |
+| `internal/hexagon/core/rules/ids.go` | update | `checkIDLine` + `exempt-paths`; `checkIDs` + `ignoreMarkerLines` |
+| `internal/hexagon/core/rules/ids_test.go` | update | AK „Ventile für nackte Vorkommen" + politik-unabhängig |
+| `internal/hexagon/core/model/config.go` | update | Kommentar `ExemptPaths` entkoppelt |
 | [`docs/user/operations.md`](../../../../docs/user/operations.md) | update | Ventil-Beschreibung entkoppelt |
 | [`CHANGELOG.md`](../../../../CHANGELOG.md) | update | 0.x-Eintrag (nutzersichtbar) |
 

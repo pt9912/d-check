@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"fmt"
 	"sync"
 	"testing"
@@ -55,7 +56,7 @@ func TestExternalModul(t *testing.T) {
 		"https://kreis.test":   {TooManyRedirects: true},
 		"https://dns.test":     {TransportError: "no such host"},
 	})
-	res, err := Run(m, checker, Config{}, []string{"external"})
+	res, err := Run(m, checker, model.Config{}, []string{"external"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -92,7 +93,7 @@ func TestExternalFragmenteUndSchemaCase(t *testing.T) {
 		"https://seite.test/doc": {Status: 404},
 		"HTTPS://gross.test":     {Status: 404},
 	})
-	res, err := Run(m, checker, Config{}, []string{"external"})
+	res, err := Run(m, checker, model.Config{}, []string{"external"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -121,7 +122,7 @@ func TestExternalOptIn(t *testing.T) {
 	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "[extern](https://example.org)\n[kaputt](fehlt.md)\n",
 	})
-	res, err := Run(m, panicChecker{t}, Config{}, []string{"links", "anchors", "ids", "matrix"})
+	res, err := Run(m, panicChecker{t}, model.Config{}, []string{"links", "anchors", "ids", "matrix"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -135,12 +136,12 @@ func TestExternalOptIn(t *testing.T) {
 // Konfigurations-Defaults: 0 = EXTERNAL_TIMEOUT/EXTERNAL_PARALLEL,
 // gesetzte Werte gewinnen; checkURLs klemmt parallel < 1 auf 1.
 func TestExternalConfigDefaultsUndParallelKlammer(t *testing.T) {
-	var e ExternalConfig
+	var e model.ExternalConfig
 	if e.EffectiveTimeoutSeconds() != 10 || e.EffectiveParallel() != 4 {
 		t.Fatalf("Defaults = %d/%d, want 10/4",
 			e.EffectiveTimeoutSeconds(), e.EffectiveParallel())
 	}
-	e = ExternalConfig{TimeoutSeconds: 30, Parallel: 2}
+	e = model.ExternalConfig{TimeoutSeconds: 30, Parallel: 2}
 	if e.EffectiveTimeoutSeconds() != 30 || e.EffectiveParallel() != 2 {
 		t.Fatalf("gesetzte Werte = %d/%d", e.EffectiveTimeoutSeconds(), e.EffectiveParallel())
 	}
@@ -161,9 +162,9 @@ func TestExternalDeterminismus(t *testing.T) {
 		results[url] = driven.HTTPResult{Status: 404}
 	}
 	m := coretest.NewMemFS(files)
-	var prev []Finding
+	var prev []model.Finding
 	for i := 0; i < 10; i++ {
-		res, err := Run(m, newFakeChecker(results), Config{External: ExternalConfig{Parallel: 4}}, []string{"external"})
+		res, err := Run(m, newFakeChecker(results), model.Config{External: model.ExternalConfig{Parallel: 4}}, []string{"external"})
 		if err != nil {
 			t.Fatal(err)
 		}

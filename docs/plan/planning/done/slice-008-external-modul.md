@@ -50,7 +50,7 @@ als automatisierter Test.
 |---|---|---|
 | `internal/hexagon/port/driven/http.go` | neu | HTTP-Port (Architektur §2) |
 | `internal/adapter/driven/httpcheck/` (+ Tests) | neu | HEAD/GET, Timeout, Redirect-Limit |
-| `internal/hexagon/core/external.go` (+ Tests) | neu | URL-Sammlung, Dedupe, Befund-Mapping |
+| `internal/hexagon/core/rules/external.go` (+ Tests) | neu | URL-Sammlung, Dedupe, Befund-Mapping |
 | [`Makefile`](../../../../Makefile)/[`Dockerfile`](../../../../Dockerfile) | update | QA-03-Netzlos-Gate |
 
 ## 4. Trigger

@@ -1,6 +1,8 @@
-package core
+package app
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/rules"
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"fmt"
 	"regexp"
 	"sort"
@@ -54,7 +56,7 @@ func SuggestConfig(fsys driven.Filesystem, sources []string) (string, error) {
 	}
 	var patterns []suggestedPattern
 	for _, src := range realSrc {
-		rel, escaped := ResolveConfigPath(src)
+		rel, escaped := rules.ResolveConfigPath(src)
 		if escaped {
 			return "", fmt.Errorf("Autoritäts-Quelle verlässt die Repository-Wurzel: %s", src)
 		}
@@ -81,7 +83,7 @@ func SuggestConfig(fsys driven.Filesystem, sources []string) (string, error) {
 func extractDefinedIDs(fsys driven.Filesystem, rel string, kind driven.EntryKind) ([]string, error) {
 	files := []string{rel}
 	if kind == driven.KindDir {
-		discovered, err := DiscoverFiles(fsys, []string{rel}, nil)
+		discovered, err := rules.DiscoverFiles(fsys, []string{rel}, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -93,8 +95,8 @@ func extractDefinedIDs(fsys driven.Filesystem, rel string, kind driven.EntryKind
 		if err != nil {
 			return nil, err
 		}
-		for _, h := range ExtractHeadings(content) {
-			fields := strings.Fields(StripHeadingLinks(h))
+		for _, h := range rules.ExtractHeadings(content) {
+			fields := strings.Fields(rules.StripHeadingLinks(h))
 			if len(fields) == 0 {
 				continue
 			}
@@ -151,8 +153,8 @@ func probeOptInModules(fsys driven.Filesystem) []string {
 	optIn := []string{"codepaths", "spans", "hostpaths"}
 	// Roots ["."] = derselbe Scope wie das gerenderte Gerüst (sonst
 	// misst die Probe einen anderen Datei-Satz als die vorgeschlagene
-	// Config; Run nimmt die Module aus dem 4. Argument, nicht aus cfg).
-	res, err := Run(fsys, nil, Config{Roots: []string{"."}}, optIn)
+	// model.Config; rules.Run nimmt die Module aus dem 4. Argument, nicht aus cfg).
+	res, err := rules.Run(fsys, nil, model.Config{Roots: []string{"."}}, optIn)
 	if err != nil {
 		return nil
 	}
@@ -172,7 +174,7 @@ func probeOptInModules(fsys driven.Filesystem) []string {
 // renderSuggestion baut das kommentierte, dekodierbare Gerüst. Quellen
 // ohne abgeleitete Kennungen werden als Hinweis vermerkt; gibt es
 // ids-Muster, wird `ids` in die Modul-Liste aufgenommen (sonst wären
-// die Muster im erzeugten Config inaktiv).
+// die Muster im erzeugten model.Config inaktiv).
 func renderSuggestion(patterns []suggestedPattern, probed []string) string {
 	var withIDs []suggestedPattern
 	var noIDs []string

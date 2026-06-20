@@ -1,6 +1,9 @@
-package core
+package rules
 
-import "strings"
+import (
+	"strings"
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
+)
 
 // CheckSpans prüft Markdown-Span-Artefakte (DC-FA-SPAN-001,
 // spec/spezifikation.md §DC-FA-SPAN-001.a): ungeschlossene
@@ -8,8 +11,8 @@ import "strings"
 // (span-unclosed), und Link-Syntax im Linktext eines weiteren Links
 // (span-nested-link). Es gibt keinen Opt-out-Marker — Befunde werden
 // behoben, nicht unterdrückt.
-func CheckSpans(file string, content []byte, lines []Line) []Finding {
-	var findings []Finding
+func CheckSpans(file string, content []byte, lines []Line) []model.Finding {
+	var findings []model.Finding
 	findings = append(findings, checkUnclosedSpans(file, content)...)
 	findings = append(findings, checkNestedLinks(file, lines)...)
 	return findings
@@ -20,8 +23,8 @@ func CheckSpans(file string, content []byte, lines []Line) []Finding {
 // gepaart; eine ungeschlossene Folge, auf die unmittelbar
 // Nicht-Whitespace folgt, kippt die Parität des Absatzes und ist ein
 // Befund (§DC-FA-SPAN-001.a Schritt 1).
-func checkUnclosedSpans(file string, content []byte) []Finding {
-	var findings []Finding
+func checkUnclosedSpans(file string, content []byte) []model.Finding {
+	var findings []model.Finding
 	for _, grp := range proseParagraphs(proseLines(content)) {
 		raws := make([]string, len(grp))
 		for i, pl := range grp {
@@ -33,9 +36,9 @@ func checkUnclosedSpans(file string, content []byte) []Finding {
 				continue
 			}
 			line, target := unclosedTarget(grp, joined, open)
-			findings = append(findings, Finding{
+			findings = append(findings, model.Finding{
 				File: file, Line: line, Rule: "spans",
-				Target: target, Reason: ReasonSpanUnclosed,
+				Target: target, Reason: model.ReasonSpanUnclosed,
 			})
 		}
 	}
@@ -114,13 +117,13 @@ func unclosedTarget(grp []proseLine, joined string, r runSpan) (int, string) {
 // checkNestedLinks meldet Link-Syntax im Linktext eines weiteren
 // Links — lexikalisch `](`…`)` direkt gefolgt von `](` auf den
 // vorverarbeiteten Zeilen (§DC-FA-SPAN-001.a Schritt 2).
-func checkNestedLinks(file string, lines []Line) []Finding {
-	var findings []Finding
+func checkNestedLinks(file string, lines []Line) []model.Finding {
+	var findings []model.Finding
 	for _, ln := range lines {
 		for _, m := range nestedLinkMatches(ln.Text) {
-			findings = append(findings, Finding{
+			findings = append(findings, model.Finding{
 				File: file, Line: ln.No, Rule: "spans",
-				Target: m, Reason: ReasonSpanNestedLink,
+				Target: m, Reason: model.ReasonSpanNestedLink,
 			})
 		}
 	}

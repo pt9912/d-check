@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
@@ -21,8 +22,8 @@ const ignoreMarker = "d-check:ignore"
 // (spec/spezifikation.md §DC-FA-CODE-001.a). Arbeitet auf den rohen
 // Prosa-Zeilen, weil die Vorverarbeitung Inline-Code für die übrigen
 // Module gerade entfernt; teilt den Slug-Cache mit anchors.
-func CheckCodepaths(fsys driven.Filesystem, file string, content []byte, cfg CodepathsConfig, slugCache map[string]map[string]bool) []Finding {
-	var findings []Finding
+func CheckCodepaths(fsys driven.Filesystem, file string, content []byte, cfg model.CodepathsConfig, slugCache map[string]map[string]bool) []model.Finding {
+	var findings []model.Finding
 	prose := proseLines(content)
 	spans := inlineSpansByLine(prose)
 	for _, pl := range prose {
@@ -114,13 +115,13 @@ func classifyCodepath(v string, roots []string) (rootRel, ok bool) {
 // checkCodepathTarget löst auf (Datei- bzw. Wurzel-relativ), prüft
 // Escape und Existenz; bei Markdown-Zielen mit Fragment zusätzlich
 // den Anker (§DC-FA-CODE-001.a Schritt 5).
-func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value string, rootRel bool, slugCache map[string]map[string]bool) []Finding {
+func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value string, rootRel bool, slugCache map[string]map[string]bool) []model.Finding {
 	pathPart, frag := value, ""
 	if idx := strings.IndexByte(value, '#'); idx != -1 {
 		pathPart, frag = value[:idx], value[idx+1:]
 	}
-	finding := func(reason, message string) []Finding {
-		return []Finding{{
+	finding := func(reason, message string) []model.Finding {
+		return []model.Finding{{
 			File: file, Line: line, Rule: "codepaths",
 			Target: value, Reason: reason, Message: message,
 		}}
@@ -137,7 +138,7 @@ func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value st
 		}
 	}
 	if escaped {
-		return finding(ReasonRepoEscape, "aufgelöstes Ziel verlässt die Repository-Wurzel")
+		return finding(model.ReasonRepoEscape, "aufgelöstes Ziel verlässt die Repository-Wurzel")
 	}
 	kind, err := fsys.Kind(rel)
 	if err != nil || kind == driven.KindMissing {

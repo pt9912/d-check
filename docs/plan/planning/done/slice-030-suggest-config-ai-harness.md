@@ -76,7 +76,7 @@ Read-only, advisory, deterministisch; mit echten Quellen kombinierbar.
 | Datei | Art | Begründung |
 |---|---|---|
 | `spec/spezifikation.md` | update | [`DC-FA-CLI-006.a`](../../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag) um `ai-harness`-Modus (Vorlage, Hybrid-Regel, Baseline-Pin) |
-| `internal/hexagon/core/suggest.go` | update | reserviertes Schlüsselwort, repo-bewusste Vorlagen-Erzeugung; Wiederverwendung `resolveConfigPath`/`fsys.Kind` |
+| `internal/hexagon/core/app/suggest.go` | update | reserviertes Schlüsselwort, repo-bewusste Vorlagen-Erzeugung; Wiederverwendung `resolveConfigPath`/`fsys.Kind` |
 | `internal/adapter/driving/cli/cli_acceptance_test.go` | update | drei AK + Determinismus + read-only |
 | `docs/user/operations.md`, `docs/user/benutzerhandbuch.md` | update | Modus dokumentieren |
 

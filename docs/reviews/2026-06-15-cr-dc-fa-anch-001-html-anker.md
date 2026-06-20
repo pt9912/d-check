@@ -58,7 +58,7 @@ Request** (reiner Doc-Fix) vor dem Code lösen:
   ergänzen (GitHub rendert nur Block-/Fließtext-HTML als Anker) und das
   HTML-Negativkriterium um den Inline-Code-Fall erweitern. Die
   Erkennungs-Infrastruktur existiert bereits (`stripInlineCodeByLine` in
-  `internal/hexagon/core/markdown.go`), ist also kostenneutral.
+  `internal/hexagon/core/rules/markdown.go`), ist also kostenneutral.
 - **F2** — den Lastenheft-Wortlaut `DC-FA-CODE-001` an die gemeinsame
   Anker-Menge angleichen (statt „gegen die Headings"), damit Rang 1 die
   Rang-2-Schärfung deckt.

@@ -36,7 +36,7 @@ vollständig migrieren.
   (Happy/Boundary/Negative); Boundary belegt zusätzlich, dass der
   Marker **nur** dieses Modul stilllegt (Link-Befund derselben Zeile
   bleibt bestehen).
-- [x] Kern-Modul `internal/hexagon/core/codepaths.go` (nutzt die
+- [x] Kern-Modul `internal/hexagon/core/rules/codepaths.go` (nutzt die
   bestehende Inline-Code-Erkennung aus `markdown.go` — Spans werden
   hierfür *gelesen* statt gestrippt); Config-Durchreichung
   (`configyaml`), Modul in `validModules`.
@@ -62,8 +62,8 @@ vollständig migrieren.
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | §[`DC-FA-CODE-001.a`](../../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code), Schema, Grund-Codes (vor dem Code) |
-| `internal/hexagon/core/codepaths.go` (+ Test) | neu | Kern-Modul gegen In-Memory-FS |
-| [`internal/hexagon/core/markdown.go`](../../../../internal/hexagon/core/markdown.go) | update | Inline-Code-Spans als Werte zugänglich machen (heute nur positionserhaltendes Stripping) |
+| `internal/hexagon/core/rules/codepaths.go` (+ Test) | neu | Kern-Modul gegen In-Memory-FS |
+| [`internal/hexagon/core/rules/markdown.go`](../../../../internal/hexagon/core/rules/markdown.go) | update | Inline-Code-Spans als Werte zugänglich machen (heute nur positionserhaltendes Stripping) |
 | [`internal/adapter/driven/configyaml/configyaml.go`](../../../../internal/adapter/driven/configyaml/configyaml.go) | update | `codepaths.roots` strikt validieren |
 | [`.d-check.yml`](../../../../.d-check.yml), [`tools/gate-consistency.sh`](../../../../tools/gate-consistency.sh) | update | Dogfooding + QA-03-Modulliste |
 

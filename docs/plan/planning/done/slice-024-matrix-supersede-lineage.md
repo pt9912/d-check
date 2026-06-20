@@ -72,11 +72,11 @@ nicht stummgeschaltet").
 |---|---|---|
 | [`spec/lastenheft.md`](../../../../spec/lastenheft.md) | update | CR [`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix) 0.14.0: Beschreibung, AKs, Out-of-Scope, Historie |
 | [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | §[`DC-FA-MTX-001.a`](../../../../spec/spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 4, Schema-Tabelle, Beispiel |
-| `internal/hexagon/core/config.go` | update | `MatrixConfig` +`AllowSupersedeLineage`/`SupersedeFields` |
+| `internal/hexagon/core/model/config.go` | update | `MatrixConfig` +`AllowSupersedeLineage`/`SupersedeFields` |
 | `internal/adapter/driven/configyaml/configyaml.go` | update | `rawMatrix.Status` + Mapping + Validierung |
-| `internal/hexagon/core/markdown.go` | update | `LinkRef.Text` (Linktext für den Lineage-Match) |
-| `internal/hexagon/core/matrix.go` | update | Lineage-Ausnahme vor `matrix-inactive`; Feld-/Match-Helper |
-| `internal/hexagon/core/matrix_test.go` | update | AKs Lineage Happy/Boundary/Default |
+| `internal/hexagon/core/rules/markdown.go` | update | `LinkRef.Text` (Linktext für den Lineage-Match) |
+| `internal/hexagon/core/rules/matrix.go` | update | Lineage-Ausnahme vor `matrix-inactive`; Feld-/Match-Helper |
+| `internal/hexagon/core/rules/matrix_test.go` | update | AKs Lineage Happy/Boundary/Default |
 | `internal/adapter/driven/configyaml/configyaml_test.go` | update | Parsing der zwei neuen Status-Schlüssel + Validierung |
 | `internal/adapter/driving/cli/config_template.go` | update | `--print-config`-Gerüst um die opt-in Keys (Kommentar) |
 | [`README.md`](../../../../README.md) | update | Lineage-Carve-out + Marker-Abdeckung |

@@ -1,6 +1,10 @@
-package core
+// Package rules trägt die I/O-freie Prüf-Engine des Kerns: die Regelmodule,
+// die Markdown-/Pfad-Primitive sowie die Prüf-Orchestrierung (Run, Discovery).
+// Importiert nur model und die Ports (spec/architecture.md §Kern; ADR-0012).
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"fmt"
 	"net/url"
 	"regexp"
@@ -199,8 +203,8 @@ func resolveAnchorRef(fsys driven.Filesystem, file string, ref LinkRef) (anchorR
 
 // CheckAnchors ist das Regelmodul `anchors` (DC-FA-ANCH-001): Links
 // mit Fragment werden gegen die Heading-Slugs der Zieldatei geprüft.
-func CheckAnchors(fsys driven.Filesystem, file string, content []byte, lines []Line, cache map[string]map[string]bool) []Finding {
-	var findings []Finding
+func CheckAnchors(fsys driven.Filesystem, file string, content []byte, lines []Line, cache map[string]map[string]bool) []model.Finding {
+	var findings []model.Finding
 	for _, ref := range ExtractLinks(lines) {
 		a, ok := resolveAnchorRef(fsys, file, ref)
 		if !ok {
@@ -210,7 +214,7 @@ func CheckAnchors(fsys driven.Filesystem, file string, content []byte, lines []L
 		if slugs == nil || slugs[a.frag] {
 			continue
 		}
-		findings = append(findings, Finding{
+		findings = append(findings, model.Finding{
 			File: file, Line: a.line, Rule: "anchors",
 			Target: a.target, Reason: ReasonAnchorMissing,
 			Message: "Anker entspricht keinem Heading-Slug und keinem HTML-Anker der Zieldatei",

@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"regexp"
 	"strings"
 )
@@ -23,9 +24,9 @@ var (
 // Inline-Code (DC-FA-HOST-001, spec/spezifikation.md
 // §DC-FA-HOST-001.a). Fenced-Code-Blöcke sind ausgenommen — dort
 // gehören bewusste Beispiel-Pfade hin; es gibt keinen Opt-out-Marker.
-func CheckHostpaths(file string, content []byte, cfg HostpathsConfig) []Finding {
+func CheckHostpaths(file string, content []byte, cfg model.HostpathsConfig) []model.Finding {
 	unixRE := unixHostpathRE(cfg)
-	var findings []Finding
+	var findings []model.Finding
 	for _, pl := range proseLines(content) {
 		for _, re := range []*regexp.Regexp{unixRE, windowsDriveRE, windowsUNCRE} {
 			for _, m := range re.FindAllStringSubmatch(pl.raw, -1) {
@@ -33,9 +34,9 @@ func CheckHostpaths(file string, content []byte, cfg HostpathsConfig) []Finding 
 				if path == "" {
 					continue
 				}
-				findings = append(findings, Finding{
+				findings = append(findings, model.Finding{
 					File: file, Line: pl.no, Rule: "hostpaths",
-					Target: path, Reason: ReasonHostpathForbidden,
+					Target: path, Reason: model.ReasonHostpathForbidden,
 				})
 			}
 		}
@@ -47,7 +48,7 @@ func CheckHostpaths(file string, content []byte, cfg HostpathsConfig) []Finding 
 // Präfixliste; die Wortgrenzen-Vorbedingung schließt Buchstaben,
 // Ziffern, `_`, `.`, `:`, `/`, `-` aus — URL-Pfade hinter Schemata
 // matchen damit nicht.
-func unixHostpathRE(cfg HostpathsConfig) *regexp.Regexp {
+func unixHostpathRE(cfg model.HostpathsConfig) *regexp.Regexp {
 	prefixes := cfg.Prefixes
 	if prefixes == nil {
 		prefixes = defaultHostPrefixes()

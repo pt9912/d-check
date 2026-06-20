@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"fmt"
 	"strings"
 	"testing"
@@ -8,14 +9,14 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 )
 
-func matrixTestConfig() MatrixConfig {
-	return MatrixConfig{
-		Classes: []MatrixClass{
+func matrixTestConfig() model.MatrixConfig {
+	return model.MatrixConfig{
+		Classes: []model.MatrixClass{
 			{Name: "contract", Paths: []string{"spec/lastenheft.md"}},
 			{Name: "adr", Paths: []string{"docs/plan/adr/[0-9]*.md"}},
 			{Name: "slice", Paths: []string{"docs/plan/planning/**/slice-*.md"}},
 		},
-		Rules:           []MatrixRule{{From: "contract", To: "adr", Allow: false}},
+		Rules:           []model.MatrixRule{{From: "contract", To: "adr", Allow: false}},
 		StatusForbidden: []string{"superseded", "deprecated"},
 	}
 }
@@ -32,7 +33,7 @@ func TestMatrixModul(t *testing.T) {
 		"docs/plan/planning/done/slice-001-a.md": "# S\n[ok](../../adr/0001-x.md)\n[inaktiv](../../adr/0002-y.md)\n",
 		"docs/notiz.md": "[unklassifiziert](plan/adr/0002-y.md)\n",
 	})
-	res, err := Run(m, nil, Config{Matrix: matrixTestConfig()}, []string{"matrix"})
+	res, err := Run(m, nil, model.Config{Matrix: matrixTestConfig()}, []string{"matrix"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -78,7 +79,7 @@ func TestMatrixExcludeSectionsUndPraezedenz(t *testing.T) {
 			"[wieder geprüft](../docs/plan/adr/0001-x.md)\n", // Zeile 8: Befund
 		"docs/plan/adr/0001-x.md": "**Status:** Accepted\n",
 	})
-	res, err := Run(m, nil, Config{Matrix: cfg}, []string{"matrix"})
+	res, err := Run(m, nil, model.Config{Matrix: cfg}, []string{"matrix"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,7 +88,7 @@ func TestMatrixExcludeSectionsUndPraezedenz(t *testing.T) {
 	}
 
 	// Präzedenz: dieselbe Datei matcht zwei Klassen — die erste gewinnt
-	classes := []MatrixClass{
+	classes := []model.MatrixClass{
 		{Name: "speziell", Paths: []string{"docs/plan/adr/0001-x.md"}},
 		{Name: "adr", Paths: []string{"docs/plan/adr/[0-9]*.md"}},
 	}
@@ -180,7 +181,7 @@ func TestMatrixSupersedeLineage(t *testing.T) {
 	cfg := matrixTestConfig()
 	cfg.AllowSupersedeLineage = true
 	cfg.SupersedeFields = []string{"Supersedes", "Aenderungstyp"}
-	res, err := Run(coretest.NewMemFS(files), nil, Config{Matrix: cfg}, []string{"matrix"})
+	res, err := Run(coretest.NewMemFS(files), nil, model.Config{Matrix: cfg}, []string{"matrix"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -189,7 +190,7 @@ func TestMatrixSupersedeLineage(t *testing.T) {
 	}
 
 	// Negative (Default aus): die Lineage-Kante erzeugt ebenfalls inactive.
-	resOff, err := Run(coretest.NewMemFS(files), nil, Config{Matrix: matrixTestConfig()}, []string{"matrix"})
+	resOff, err := Run(coretest.NewMemFS(files), nil, model.Config{Matrix: matrixTestConfig()}, []string{"matrix"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -198,7 +199,7 @@ func TestMatrixSupersedeLineage(t *testing.T) {
 	}
 }
 
-func inactiveFiles(fs []Finding) []string {
+func inactiveFiles(fs []model.Finding) []string {
 	var out []string
 	for _, f := range fs {
 		if f.Reason == ReasonMatrixInactive {
@@ -235,12 +236,12 @@ func TestSupersedeFieldValueUndLineage(t *testing.T) {
 // Eine explizit erlaubte Regel (allow: true) erzeugt keinen Befund.
 func TestMatrixErlaubteRegel(t *testing.T) {
 	cfg := matrixTestConfig()
-	cfg.Rules = []MatrixRule{{From: "slice", To: "adr", Allow: true}}
+	cfg.Rules = []model.MatrixRule{{From: "slice", To: "adr", Allow: true}}
 	m := coretest.NewMemFS(map[string]string{
 		"docs/plan/planning/done/slice-001-a.md": "[ok](../../adr/0001-x.md)\n",
 		"docs/plan/adr/0001-x.md":                "**Status:** Accepted\n",
 	})
-	res, err := Run(m, nil, Config{Matrix: cfg}, []string{"matrix"})
+	res, err := Run(m, nil, model.Config{Matrix: cfg}, []string{"matrix"})
 	if err != nil || len(res.Findings) != 0 {
 		t.Fatalf("res = %+v, err = %v (erlaubte Regel)", res, err)
 	}

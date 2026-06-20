@@ -5,7 +5,7 @@ Finder-Winkel (Korrektheit line-by-line, YAML-Output/Edge-Cases,
 Cross-File/Vertrag, Cleanup/Altitude) + Verifikation.
 
 **Gegenstand:** Commit-Range `origin/main...HEAD` (slice-020:
-`internal/hexagon/core/suggest.go` neu, `internal/adapter/driving/cli/cli.go`
+`internal/hexagon/core/app/suggest.go` neu, `internal/adapter/driving/cli/cli.go`
 geändert; Vertrag/Spez/Doku).
 
 **Skill:** `/code-review` · **Datum:** 2026-06-13

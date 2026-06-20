@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"reflect"
 	"testing"
 
@@ -20,13 +21,13 @@ func TestHostpathsModul(t *testing.T) {
 		// Negative: Prosa und Inline-Code
 		"docs/leak.md": "liegt unter /" + "home/alice/repo, fertig\nim Code: `/" + "mnt/data/token.db` und C:\\Users\\a\\x sowie \\\\srv\\share\\y",
 	})
-	res, err := Run(m, nil, Config{Roots: []string{"docs"}}, []string{"hostpaths"})
+	res, err := Run(m, nil, model.Config{Roots: []string{"docs"}}, []string{"hostpaths"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	var got []string
 	for _, f := range res.Findings {
-		if f.Reason != ReasonHostpathForbidden {
+		if f.Reason != model.ReasonHostpathForbidden {
 			t.Fatalf("unerwarteter Reason: %+v", f)
 		}
 		got = append(got, f.Target)
@@ -52,9 +53,9 @@ func TestHostpathsPrefixesKonfigurierbar(t *testing.T) {
 	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "unter /" + "srv/data/x liegt es; /" + "home/y ist hier erlaubt",
 	})
-	cfg := Config{
+	cfg := model.Config{
 		Roots:     []string{"docs"},
-		Hostpaths: HostpathsConfig{Prefixes: []string{"srv"}},
+		Hostpaths: model.HostpathsConfig{Prefixes: []string{"srv"}},
 	}
 	res, err := Run(m, nil, cfg, []string{"hostpaths"})
 	if err != nil {

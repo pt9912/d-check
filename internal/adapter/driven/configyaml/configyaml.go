@@ -7,6 +7,7 @@
 package configyaml
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"bytes"
 	"errors"
 	"fmt"
@@ -16,7 +17,6 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/pt9912/d-check/internal/hexagon/core"
 )
 
 // FileName ist der feste Name der Konfigurationsdatei.
@@ -104,8 +104,8 @@ type raw struct {
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
 // und statische Semantik; jeder Fehler bedeutet Exit 2 ohne Prüfung.
 // content == nil bedeutet: keine Konfigurationsdatei → Defaults.
-func Decode(content []byte) (core.Config, error) {
-	var cfg core.Config
+func Decode(content []byte) (model.Config, error) {
+	var cfg model.Config
 	if content == nil {
 		return cfg, nil
 	}
@@ -145,7 +145,7 @@ func Decode(content []byte) (core.Config, error) {
 }
 
 // applyCodepaths validiert die codepaths-Präfixe (DC-FA-CODE-001).
-func applyCodepaths(r *raw, cfg *core.Config) error {
+func applyCodepaths(r *raw, cfg *model.Config) error {
 	if r.Codepaths == nil {
 		return nil
 	}
@@ -157,13 +157,13 @@ func applyCodepaths(r *raw, cfg *core.Config) error {
 			return fmt.Errorf("%s: codepaths.roots-Präfix %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')", FileName, root)
 		}
 	}
-	cfg.Codepaths = core.CodepathsConfig{Roots: r.Codepaths.Roots}
+	cfg.Codepaths = model.CodepathsConfig{Roots: r.Codepaths.Roots}
 	return nil
 }
 
 // applyHostpaths validiert die hostpaths-Präfixliste (DC-FA-HOST-001:
 // nicht-leere Verzeichnisnamen ohne '/').
-func applyHostpaths(r *raw, cfg *core.Config) error {
+func applyHostpaths(r *raw, cfg *model.Config) error {
 	if r.Hostpaths == nil {
 		return nil
 	}
@@ -175,14 +175,14 @@ func applyHostpaths(r *raw, cfg *core.Config) error {
 			return fmt.Errorf("%s: hostpaths.prefixes-Eintrag %q muss ein Verzeichnisname ohne '/' sein", FileName, p)
 		}
 	}
-	cfg.Hostpaths = core.HostpathsConfig{Prefixes: r.Hostpaths.Prefixes}
+	cfg.Hostpaths = model.HostpathsConfig{Prefixes: r.Hostpaths.Prefixes}
 	return nil
 }
 
 // applyScopes übernimmt die modul-lokalen Scan-Scopes
 // (DC-FA-CONF-002): scope ersetzt den globalen Scan für genau dieses
 // Modul; roots ist Pflicht (keine stille Vererbung).
-func applyScopes(r *raw, cfg *core.Config) error {
+func applyScopes(r *raw, cfg *model.Config) error {
 	scopes := []struct {
 		module string
 		scope  *rawScope
@@ -204,9 +204,9 @@ func applyScopes(r *raw, cfg *core.Config) error {
 			return fmt.Errorf("%s: %s.scope.roots fehlt — scope ersetzt den globalen Scan und braucht explizite Wurzeln (leere Liste prüft nichts)", FileName, sc.module)
 		}
 		if cfg.Scopes == nil {
-			cfg.Scopes = map[string]*core.ScopeConfig{}
+			cfg.Scopes = map[string]*model.ScopeConfig{}
 		}
-		cfg.Scopes[sc.module] = &core.ScopeConfig{Roots: sc.scope.Roots, Ignore: sc.scope.Ignore}
+		cfg.Scopes[sc.module] = &model.ScopeConfig{Roots: sc.scope.Roots, Ignore: sc.scope.Ignore}
 	}
 	return nil
 }
@@ -279,7 +279,7 @@ func decodeStrict(content []byte) (*raw, error) {
 	return &r, nil
 }
 
-func applyIDs(ids *rawIDs, cfg *core.Config) error {
+func applyIDs(ids *rawIDs, cfg *model.Config) error {
 	if ids == nil {
 		return nil
 	}
@@ -294,10 +294,10 @@ func applyIDs(ids *rawIDs, cfg *core.Config) error {
 		if p.Target == "" {
 			return fmt.Errorf("%s: ids.patterns[%d].target fehlt", FileName, i)
 		}
-		if p.LinkPolicy != "" && p.LinkPolicy != "prose" && p.LinkPolicy != core.AlwaysPolicy {
+		if p.LinkPolicy != "" && p.LinkPolicy != "prose" && p.LinkPolicy != model.AlwaysPolicy {
 			return fmt.Errorf("%s: ids.patterns[%d].link-policy: ungültig %q (erlaubt: prose, always)", FileName, i, p.LinkPolicy)
 		}
-		cfg.IDPatterns = append(cfg.IDPatterns, core.IDPattern{
+		cfg.IDPatterns = append(cfg.IDPatterns, model.IDPattern{
 			Regex: re, Target: p.Target,
 			LinkPolicy: p.LinkPolicy, ExemptPaths: p.ExemptPaths,
 		})
@@ -305,7 +305,7 @@ func applyIDs(ids *rawIDs, cfg *core.Config) error {
 	return nil
 }
 
-func applyMatrix(m *rawMatrix, cfg *core.Config) error {
+func applyMatrix(m *rawMatrix, cfg *model.Config) error {
 	if m == nil {
 		return nil
 	}
@@ -315,13 +315,13 @@ func applyMatrix(m *rawMatrix, cfg *core.Config) error {
 			return fmt.Errorf("%s: matrix.classes[%d].name fehlt oder doppelt", FileName, i)
 		}
 		classes[c.Name] = true
-		cfg.Matrix.Classes = append(cfg.Matrix.Classes, core.MatrixClass{Name: c.Name, Paths: c.Paths})
+		cfg.Matrix.Classes = append(cfg.Matrix.Classes, model.MatrixClass{Name: c.Name, Paths: c.Paths})
 	}
 	for i, rule := range m.Rules {
 		if !classes[rule.From] || !classes[rule.To] {
 			return fmt.Errorf("%s: matrix.rules[%d] referenziert undeklarierte Klasse", FileName, i)
 		}
-		cfg.Matrix.Rules = append(cfg.Matrix.Rules, core.MatrixRule{From: rule.From, To: rule.To, Allow: rule.Allow})
+		cfg.Matrix.Rules = append(cfg.Matrix.Rules, model.MatrixRule{From: rule.From, To: rule.To, Allow: rule.Allow})
 	}
 	if m.Status != nil {
 		cfg.Matrix.StatusForbidden = m.Status.Forbidden
@@ -339,7 +339,7 @@ func applyMatrix(m *rawMatrix, cfg *core.Config) error {
 	return nil
 }
 
-func applyExternal(e *rawExternal, cfg *core.Config) error {
+func applyExternal(e *rawExternal, cfg *model.Config) error {
 	if e == nil {
 		return nil
 	}

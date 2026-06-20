@@ -1,7 +1,7 @@
-// Package core trägt die I/O-freie Prüf-Logik von d-check: Markdown-
-// Analyse, Regelmodule, Befund-Modell und die Port-Interfaces
-// (spec/architecture.md §2 — Kern; Modul-Pfade gemäß ADR-0004).
-package core
+// Package model trägt das Befund-Modell und die Konfigurations-Typen des
+// Kerns — der innerste, importfreie Daten-Ring (spec/architecture.md §Kern;
+// ADR-0012).
+package model
 
 import "sort"
 

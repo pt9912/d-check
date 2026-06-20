@@ -56,7 +56,7 @@ Nutzungsfehler (Exit 2). Deterministisch, read-only.
 
 | Datei | Art | Begründung |
 |---|---|---|
-| `internal/hexagon/core/finding.go` | update | yaml-Tags an `Finding` (Schlüssel-Parität zu JSON) |
+| `internal/hexagon/core/model/finding.go` | update | yaml-Tags an `Finding` (Schlüssel-Parität zu JSON) |
 | `internal/adapter/driven/report/report.go` | update | format-neutrale Structs (+yaml-Tags), `YAML`/`DoctorYAML`, yaml.v3-Import |
 | `internal/adapter/driving/cli/cli.go` | update | `--yaml`-Flag, Kombi-Check, render-Switch |
 | `tools/arch-check.sh` | update | R3: yaml.v3 auch in `report` ([ADR-0009](../../adr/0009-yaml-im-report-adapter.md)) |

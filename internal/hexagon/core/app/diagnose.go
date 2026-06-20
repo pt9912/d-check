@@ -1,6 +1,14 @@
-package core
+// Package app trägt die Anwendungs-Modi auf den Befunden: Diagnose
+// (--doctor), Reparatur-Patch (--repair) und Konfigurations-Vorschlag
+// (--suggest-config). Importiert model und rules (spec/architecture.md
+// §Kern; ADR-0012).
+package app
 
-import "path/filepath"
+import (
+	"github.com/pt9912/d-check/internal/hexagon/core/rules"
+	"path/filepath"
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
+)
 
 // FixCandidate beschreibt eine vorgeschlagene, NICHT angewendete Änderung
 // für einen Befund (spec/spezifikation.md §DC-FA-CLI-007.a). Sie ist die
@@ -21,13 +29,13 @@ type FixCandidate struct {
 // (`target-missing`, `span-*` …) liefern hier bewusst KEINEN Kandidaten
 // — sie gehören in die breite Stufe von --repair (slice-026). Gibt nil
 // zurück, wenn kein eindeutiger Kandidat existiert.
-func FixCandidateFor(f Finding, cfg Config) *FixCandidate {
-	if f.Reason != ReasonIDUnlinked {
+func FixCandidateFor(f model.Finding, cfg model.Config) *FixCandidate {
+	if f.Reason != model.ReasonIDUnlinked {
 		return nil
 	}
 	id := f.Target
 	// Erstes Muster in Deklarationsreihenfolge, das die Kennung VOLL
-	// matcht — dieselbe Präzedenz wie CheckIDLine, das den Befund erzeugt.
+	// matcht — dieselbe Präzedenz wie rules.CheckIDLine, das den Befund erzeugt.
 	for _, p := range cfg.IDPatterns {
 		if loc := p.Regex.FindStringIndex(id); loc != nil && loc[0] == 0 && loc[1] == len(id) {
 			return &FixCandidate{
@@ -58,11 +66,11 @@ func relLink(fromFile, target string) string {
 // Test, nicht still die Diagnose.
 func AllReasons() []string {
 	return []string{
-		ReasonTargetMissing, ReasonRepoEscape, ReasonSymlink,
-		ReasonAnchorMissing, ReasonIDUnlinked, ReasonCodepathMissing,
-		ReasonMatrixInactive, ReasonMatrixForbidden,
-		ReasonExternalStatus, ReasonExternalTimeout, ReasonExternalRedirects,
-		ReasonSpanUnclosed, ReasonSpanNestedLink, ReasonHostpathForbidden,
+		model.ReasonTargetMissing, model.ReasonRepoEscape, model.ReasonSymlink,
+		rules.ReasonAnchorMissing, model.ReasonIDUnlinked, rules.ReasonCodepathMissing,
+		rules.ReasonMatrixInactive, rules.ReasonMatrixForbidden,
+		rules.ReasonExternalStatus, rules.ReasonExternalTimeout, rules.ReasonExternalRedirects,
+		model.ReasonSpanUnclosed, model.ReasonSpanNestedLink, model.ReasonHostpathForbidden,
 	}
 }
 
@@ -72,20 +80,20 @@ func AllReasons() []string {
 // Codes.
 func reasonTexts() map[string]string {
 	return map[string]string{
-		ReasonTargetMissing:     "Linkziel existiert nicht",
-		ReasonRepoEscape:        "Aufgelöstes Ziel verlässt die Repository-Wurzel",
-		ReasonSymlink:           "Ziel ist oder enthält einen Symlink",
-		ReasonAnchorMissing:     "Anker entspricht keinem Heading-Slug",
-		ReasonIDUnlinked:        "Kennung im Fließtext ohne Markdown-Link auf ihre Definition",
-		ReasonCodepathMissing:   "Ziel eines Inline-Code-Pfads existiert nicht",
-		ReasonMatrixInactive:    "Referenz auf ein Dokument mit verbotenem Status (z. B. superseded)",
-		ReasonMatrixForbidden:   "Referenz zwischen Dokumentklassen nicht erlaubt (Referenzrichtung)",
-		ReasonExternalStatus:    "Externer Link: HTTP-Status ≥ 400 oder Transportfehler",
-		ReasonExternalTimeout:   "Externer Link: Zeitüberschreitung",
-		ReasonExternalRedirects: "Externer Link: zu viele Redirects",
-		ReasonSpanUnclosed:      "Ungeschlossene Code-Span-Öffnung (klebt an Nicht-Whitespace)",
-		ReasonSpanNestedLink:    "Verschachtelte Link-Syntax im Linktext (rendert zerrissen)",
-		ReasonHostpathForbidden: "Host-lokaler absoluter Pfad (Maschinen-Layout-Leak)",
+		model.ReasonTargetMissing:     "Linkziel existiert nicht",
+		model.ReasonRepoEscape:        "Aufgelöstes Ziel verlässt die Repository-Wurzel",
+		model.ReasonSymlink:           "Ziel ist oder enthält einen Symlink",
+		rules.ReasonAnchorMissing:     "Anker entspricht keinem Heading-Slug",
+		model.ReasonIDUnlinked:        "Kennung im Fließtext ohne Markdown-Link auf ihre Definition",
+		rules.ReasonCodepathMissing:   "Ziel eines Inline-Code-Pfads existiert nicht",
+		rules.ReasonMatrixInactive:    "Referenz auf ein Dokument mit verbotenem Status (z. B. superseded)",
+		rules.ReasonMatrixForbidden:   "Referenz zwischen Dokumentklassen nicht erlaubt (Referenzrichtung)",
+		rules.ReasonExternalStatus:    "Externer Link: HTTP-Status ≥ 400 oder Transportfehler",
+		rules.ReasonExternalTimeout:   "Externer Link: Zeitüberschreitung",
+		rules.ReasonExternalRedirects: "Externer Link: zu viele Redirects",
+		model.ReasonSpanUnclosed:      "Ungeschlossene Code-Span-Öffnung (klebt an Nicht-Whitespace)",
+		model.ReasonSpanNestedLink:    "Verschachtelte Link-Syntax im Linktext (rendert zerrissen)",
+		model.ReasonHostpathForbidden: "Host-lokaler absoluter Pfad (Maschinen-Layout-Leak)",
 	}
 }
 

@@ -39,9 +39,9 @@ Definition sein.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `internal/hexagon/core/ids.go` (+ Tests) | neu | Prüf-Logik des Moduls |
-| `internal/hexagon/core/markdown.go` | update | Link-Text-Spannen pro Zeile exportieren (für „in Linktext"-Erkennung) |
-| `internal/hexagon/core/run.go`, `config.go` | update | Modul-Registrierung; Target-Existenz beim Lauf-Start |
+| `internal/hexagon/core/rules/ids.go` (+ Tests) | neu | Prüf-Logik des Moduls |
+| `internal/hexagon/core/rules/markdown.go` | update | Link-Text-Spannen pro Zeile exportieren (für „in Linktext"-Erkennung) |
+| `internal/hexagon/core/rules/run.go`, `config.go` | update | Modul-Registrierung; Target-Existenz beim Lauf-Start |
 | Akzeptanztests (cli_test) | update | Black-Box-Abdeckung |
 
 ## 4. Trigger

@@ -13,7 +13,7 @@
   explizite Modi**: `ai-harness-init` (Mode 1, Voll-Kanon — alle Blöcke
   aktiv ohne Existenzprüfung) und `ai-harness` (Mode 2, repo-bewusst —
   fehlende Pfade/Targets auskommentiert). Neuer Render-Pfad in
-  `internal/hexagon/core/suggest.go`
+  `internal/hexagon/core/app/suggest.go`
   (`renderHarness`/`renderHarnessIDs`/`renderHarnessMatrix`,
   `pathExists`/`existingRoots`, `harnessIDPatterns`/`harnessClasses`),
   Dispatch in `SuggestConfig`, fünf neue Akzeptanztests, Lastenheft
@@ -51,7 +51,7 @@ Keine.
 
 - **Kategorie:** INFO
 - **Quelle:** Maintainability (Spec-/AK-Lücke einer Verhaltensvariante)
-- **Pfad:** `internal/hexagon/core/suggest.go:73` (`return renderHarness(fsys, patterns, !initMode), nil`)
+- **Pfad:** `internal/hexagon/core/app/suggest.go:73` (`return renderHarness(fsys, patterns, !initMode), nil`)
 - **Befund:** Sind in einem Aufruf **beide** reservierten Tokens gesetzt
   (`--suggest-config ai-harness,ai-harness-init`), gewinnt deterministisch
   Mode 1: `initMode` ist gesetzt, `repoAware = !initMode = false` → Voll-Kanon,

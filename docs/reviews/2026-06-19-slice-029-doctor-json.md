@@ -48,7 +48,7 @@ Keine.
   (eingebettetes `core.Finding`) · `spec/spezifikation.md` §2 „JSON-Diagnose"
 - **Befund:** Das eingebettete `core.Finding` promotet auch sein
   `Message`-Feld (`json:"message,omitempty"`,
-  `internal/hexagon/core/finding.go:27`) flach in jeden
+  `internal/hexagon/core/model/finding.go:27`) flach in jeden
   `findings`-Eintrag; das §2-Delta-Schema der JSON-Diagnose listet
   `message` weder im `required`-Block noch in den `properties`. Ist
   ein Befund mit nicht-leerer `Message` vorhanden, erscheint im
@@ -87,7 +87,7 @@ Keine.
   Ints — keine Map im gesamten Renderpfad
   (`report.go:165-197`). Iteriert wird über die bereits stabil
   sortierte `res.Findings` (`SortFindings`,
-  `internal/hexagon/core/finding.go:33`). Go-`encoding/json` gibt
+  `internal/hexagon/core/model/finding.go:33`). Go-`encoding/json` gibt
   promotete Felder eines eingebetteten Structs in Deklarationsreihenfolge
   aus — keine nicht-deterministische Quelle. Der Test
   `TestCLI007_DoctorJSON_Determinismus` (10× byte-identisch) belegt es

@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"strings"
 	"testing"
 
@@ -21,7 +22,7 @@ func TestSpansModul(t *testing.T) {
 		"docs/spec.md":   "# x",
 	})
 
-	res, err := Run(m, nil, Config{Roots: []string{"docs"}}, []string{"spans"})
+	res, err := Run(m, nil, model.Config{Roots: []string{"docs"}}, []string{"spans"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -32,7 +33,7 @@ func TestSpansModul(t *testing.T) {
 	// (er paart mit dem nächsten Backtick); der Befund zeigt auf die
 	// übrigbleibende ungeschlossene Folge des Absatzes — Zeile 2.
 	f := res.Findings[0]
-	if f.File != "docs/kaputt.md" || f.Line != 2 || f.Reason != ReasonSpanUnclosed {
+	if f.File != "docs/kaputt.md" || f.Line != 2 || f.Reason != model.ReasonSpanUnclosed {
 		t.Fatalf("Befund = %+v", f)
 	}
 	// Ziel: Backtick-Folge + folgende Nicht-Whitespace-Zeichen, ≤ 30
@@ -49,7 +50,7 @@ func TestSpansNestedLink(t *testing.T) {
 		"docs/x.md": "x",
 		"docs/y.md": "y",
 	})
-	res, err := Run(m, nil, Config{Roots: []string{"docs"}}, []string{"spans"})
+	res, err := Run(m, nil, model.Config{Roots: []string{"docs"}}, []string{"spans"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -57,7 +58,7 @@ func TestSpansNestedLink(t *testing.T) {
 		t.Fatalf("Befunde = %+v, want genau 1 span-nested-link", res.Findings)
 	}
 	f := res.Findings[0]
-	if f.Line != 1 || f.Reason != ReasonSpanNestedLink || !strings.HasPrefix(f.Target, "](x.md)](") {
+	if f.Line != 1 || f.Reason != model.ReasonSpanNestedLink || !strings.HasPrefix(f.Target, "](x.md)](") {
 		t.Fatalf("Befund = %+v", f)
 	}
 }
@@ -69,7 +70,7 @@ func TestSpansBadgeKeinTreffer(t *testing.T) {
 		"docs/a.md": "[![Build](badge.svg)](https://ci.example.org) Status",
 		"docs/badge.svg": "x",
 	})
-	res, err := Run(m, nil, Config{Roots: []string{"docs"}}, []string{"spans"})
+	res, err := Run(m, nil, model.Config{Roots: []string{"docs"}}, []string{"spans"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -84,7 +85,7 @@ func TestSpansMehrzeiligGeschlossen(t *testing.T) {
 	m := coretest.NewMemFS(map[string]string{
 		"docs/a.md": "Befehl (`u-boot stop\npostgres && u-boot up`, `x`) Ende",
 	})
-	res, err := Run(m, nil, Config{Roots: []string{"docs"}}, []string{"spans"})
+	res, err := Run(m, nil, model.Config{Roots: []string{"docs"}}, []string{"spans"})
 	if err != nil {
 		t.Fatal(err)
 	}

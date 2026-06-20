@@ -91,9 +91,9 @@ sichtbar gemacht hat.
 |---|---|---|
 | [`spec/lastenheft.md`](../../../../spec/lastenheft.md) | update | Change Request [`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) (0.8.0): `link-policy`, `exempt-paths`, `ignore`-Erweiterung, AKs, Historie |
 | [`spec/spezifikation.md`](../../../../spec/spezifikation.md) | update | §[`DC-FA-ID-001.a`](../../../../spec/spezifikation.md#dc-fa-id-001a--kennungs-prüfung) (`always`-Algorithmus, Ventile), Schema-Tabelle `.d-check.yml` |
-| `internal/hexagon/core/ids.go` | update | `always`: Vorkommen in Inline-Code-Spans prüfen, Linktext-/`exempt-paths`-/`ignore`-Ausnahmen |
+| `internal/hexagon/core/rules/ids.go` | update | `always`: Vorkommen in Inline-Code-Spans prüfen, Linktext-/`exempt-paths`-/`ignore`-Ausnahmen |
 | `internal/hexagon/core/` (Config-Typen/Parsing/Validierung) | update | `IDPattern.LinkPolicy`, `.ExemptPaths`; Validierung |
-| `internal/hexagon/core/ids_test.go` | update | drei AKs + Abwärtskompatibilität |
+| `internal/hexagon/core/rules/ids_test.go` | update | drei AKs + Abwärtskompatibilität |
 | `docs/user/` (neuer Abschnitt) | update/neu | Option sichtbar dokumentieren (Auftraggeber-Anspruch) |
 | [`.d-check.yml`](../../../../.d-check.yml) | update | Dogfooding: `link-policy: always` + `exempt-paths` |
 | [`CHANGELOG.md`](../../../../CHANGELOG.md) | update | 0.x-Eintrag |

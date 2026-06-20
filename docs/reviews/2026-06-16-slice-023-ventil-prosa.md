@@ -5,7 +5,7 @@
 Gegenstand ist die Umsetzung von slice-023, nicht erneut der Vertrag.
 
 **Gegenstand:** uncommitteter Diff (8 Dateien + neuer Slice):
-`internal/hexagon/core/ids.go`, `ids_test.go`, `config.go`,
+`internal/hexagon/core/rules/ids.go`, `ids_test.go`, `config.go`,
 `spec/lastenheft.md`, `spec/spezifikation.md`, `docs/user/operations.md`,
 `CHANGELOG.md`, `docs/plan/planning/in-progress/`.
 
@@ -20,12 +20,12 @@ Gegenstand ist die Umsetzung von slice-023, nicht erneut der Vertrag.
 
 | # | Kategorie | Quelle | Pfad | Befund | Verifizierbar |
 |---|---|---|---|---|---|
-| 1 | 🟡 MEDIUM | `DC-FA-ID-001` / fehlender Negativtest bei neuem Vertrag | `internal/hexagon/core/ids_test.go` | Die Politik-Unabhängigkeit des `d-check:ignore`-Ventils für nackte Vorkommen (Vertrag: gilt auch unter Default `prose`) war untestet; `exempt-paths` hatte einen prose-Default-Test, der Marker nur einen `always`-Test. Eine Regression, die den Marker politik-gated macht, wäre durch die Suite gekommen. | ja — `make test` mit Marker-Zeile unter Default-Politik |
-| 2 | 🟢 LOW | Maintainability (Altitude) | `internal/hexagon/core/ids.go:73` | Die Zeilen-Ausnahme „Zeile trägt `d-check:ignore`" wurde an zwei Stellen über dasselbe Prädikat geprüft (Prosa-Pfad via Map in `checkIDs`, Inline-Code-Pfad via `strings.Contains` in `alwaysLineFindings`). Eine spätere Änderung der Marker-Semantik müsste beide Stellen treffen — Divergenz-Risiko. | ja — Code-Lesung; `make test` deckt beide Pfade |
+| 1 | 🟡 MEDIUM | `DC-FA-ID-001` / fehlender Negativtest bei neuem Vertrag | `internal/hexagon/core/rules/ids_test.go` | Die Politik-Unabhängigkeit des `d-check:ignore`-Ventils für nackte Vorkommen (Vertrag: gilt auch unter Default `prose`) war untestet; `exempt-paths` hatte einen prose-Default-Test, der Marker nur einen `always`-Test. Eine Regression, die den Marker politik-gated macht, wäre durch die Suite gekommen. | ja — `make test` mit Marker-Zeile unter Default-Politik |
+| 2 | 🟢 LOW | Maintainability (Altitude) | `internal/hexagon/core/rules/ids.go:73` | Die Zeilen-Ausnahme „Zeile trägt `d-check:ignore`" wurde an zwei Stellen über dasselbe Prädikat geprüft (Prosa-Pfad via Map in `checkIDs`, Inline-Code-Pfad via `strings.Contains` in `alwaysLineFindings`). Eine spätere Änderung der Marker-Semantik müsste beide Stellen treffen — Divergenz-Risiko. | ja — Code-Lesung; `make test` deckt beide Pfade |
 | 3 | 🟢 LOW | `DC-FA-ID-001` / Doku-Drift | `spec/lastenheft.md:315` | Der `always`-Aufzählungssatz der linkpflichtfreien Fälle (Fence/Heading/`target`) las als erschöpfend, nannte die beiden Ventile aber nicht — ein Leser konnte folgern, ein Backtick-Vorkommen in einer `exempt-paths`-Datei sei unter `always` weiter meldepflichtig. | ja — Doc-Lesung gegen §`DC-FA-ID-001.a` |
-| 4 | 🟢 LOW | Maintainability (Perf) | `internal/hexagon/core/ids.go:128` | `ignored(file, p.ExemptPaths)` wurde je ID-Vorkommen im inneren Match-Loop ausgewertet, obwohl es nur von (Datei, Muster) abhängt — anders als das bereits gehoistete `inTarget`. | ja — Code-Lesung |
+| 4 | 🟢 LOW | Maintainability (Perf) | `internal/hexagon/core/rules/ids.go:128` | `ignored(file, p.ExemptPaths)` wurde je ID-Vorkommen im inneren Match-Loop ausgewertet, obwohl es nur von (Datei, Muster) abhängt — anders als das bereits gehoistete `inTarget`. | ja — Code-Lesung |
 | 5 | 🟢 LOW | `DC-FA-ID-001` / Doku-Drift | `docs/user/operations.md:65` | Der (korrekt politik-unabhängig formulierte) Ventil-Block stand allein unter der Überschrift „`link-policy: always`"; ein Nutzer unter Default `prose` (genau das Repro-Szenario) hätte ihn dort nicht gesucht. | nein — Struktur-/Auffindbarkeitsnotiz |
-| 6 | 🔵 INFO | `DC-QA-01` / Maintainability (Perf) | `internal/hexagon/core/ids.go:147` | `proseLines(content)` lief im `ids`-Modul zweimal (Marker-Scan + `checkIDsAlways`); der `PreprocessMarkdown`-Aufruf (`run.go`) ist ein dritter, geteilter Lauf der gesamten Pipeline. | ja — `make bench`, kein Gate |
+| 6 | 🔵 INFO | `DC-QA-01` / Maintainability (Perf) | `internal/hexagon/core/rules/ids.go:147` | `proseLines(content)` lief im `ids`-Modul zweimal (Marker-Scan + `checkIDsAlways`); der `PreprocessMarkdown`-Aufruf (`run.go`) ist ein dritter, geteilter Lauf der gesamten Pipeline. | ja — `make bench`, kein Gate |
 
 ## Negativbefunde (geprüft, ohne Befund)
 

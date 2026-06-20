@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"fmt"
 	"sort"
 	"strings"
@@ -59,18 +60,18 @@ func hasHTTPScheme(t string) bool {
 // Befunde pro Vorkommen (spec/spezifikation.md §DC-FA-EXT-001.a).
 // Die Parallelität darf die Ausgabe nicht beeinflussen (DC-QA-02.a) —
 // Befunde entstehen aus der deterministischen Vorkommens-Liste.
-func CheckExternal(checker driven.HTTPChecker, refs []ExternalRef, parallel int) []Finding {
+func CheckExternal(checker driven.HTTPChecker, refs []ExternalRef, parallel int) []model.Finding {
 	if checker == nil || len(refs) == 0 {
 		return nil
 	}
 	results := checkURLs(checker, uniqueURLs(refs), parallel)
-	var findings []Finding
+	var findings []model.Finding
 	for _, r := range refs {
 		reason, msg := externalVerdict(results[r.url])
 		if reason == "" {
 			continue
 		}
-		findings = append(findings, Finding{
+		findings = append(findings, model.Finding{
 			File: r.file, Line: r.line, Rule: "external",
 			Target: r.target, Reason: reason, Message: msg,
 		})

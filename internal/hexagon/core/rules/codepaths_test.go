@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"fmt"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestCodepathsModul(t *testing.T) {
 		"docs/b.md": "x",
 		"README.md": "x",
 	})
-	cfg := Config{Codepaths: CodepathsConfig{Roots: []string{"docs"}}}
+	cfg := model.Config{Codepaths: model.CodepathsConfig{Roots: []string{"docs"}}}
 	res, err := Run(m, nil, cfg, []string{"codepaths"})
 	if err != nil {
 		t.Fatal(err)
@@ -47,7 +48,7 @@ func TestCodepathsIgnoreMarkerNurDiesesModul(t *testing.T) {
 		"docs/a.md": "Beispiel `../../etc/passwd` und [kaputt](fehlt.md) <!-- d-check:ignore (Angriffs-Beispiel) -->\n" +
 			"Ohne Marker: `../fehlt.md`\n",
 	})
-	res, err := Run(m, nil, Config{}, []string{"codepaths", "links"})
+	res, err := Run(m, nil, model.Config{}, []string{"codepaths", "links"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -71,7 +72,7 @@ func TestCodepathsNormalisierungUndAnker(t *testing.T) {
 		"docs/a.md": "Zitiert: `\"./b.md\",` und `./b.md#zweck` sowie `./b.md#gibt-es-nicht`.\n",
 		"docs/b.md": "# Zweck\n",
 	})
-	res, err := Run(m, nil, Config{}, []string{"codepaths"})
+	res, err := Run(m, nil, model.Config{}, []string{"codepaths"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -89,7 +90,7 @@ func TestCodepathsHTMLAnker(t *testing.T) {
 		"docs/a.md": "Siehe `./b.md#html-id` und `./b.md#fehlt`.\n",
 		"docs/b.md": "<div id=\"html-id\">Inhalt</div>\n",
 	})
-	res, err := Run(m, nil, Config{}, []string{"codepaths"})
+	res, err := Run(m, nil, model.Config{}, []string{"codepaths"})
 	if err != nil {
 		t.Fatal(err)
 	}

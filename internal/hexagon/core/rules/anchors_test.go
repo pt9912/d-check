@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"fmt"
 	"testing"
 
@@ -59,7 +60,7 @@ func TestAnchorsModul(t *testing.T) {
 		"docs/b.md": "# Abschnitt Zwei\n# Übersicht\n",
 		"docs/c.txt": "kein markdown",
 	})
-	res, err := Run(m, nil, Config{}, []string{"anchors"})
+	res, err := Run(m, nil, model.Config{}, []string{"anchors"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,7 +86,7 @@ func TestAnchorsModul(t *testing.T) {
 // anchors schweigt (DC-FA-ANCH-001 Boundary).
 func TestAnchorsSchweigtBeiFehlenderDatei(t *testing.T) {
 	m := coretest.NewMemFS(map[string]string{"docs/a.md": "[x](weg.md#frag)"})
-	res, err := Run(m, nil, Config{}, []string{"links", "anchors"})
+	res, err := Run(m, nil, model.Config{}, []string{"links", "anchors"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -161,7 +162,7 @@ func TestAnchorsHTMLSelbeDatei(t *testing.T) {
 			"[ok2](#dort)\n" +
 			"[weg](#nirgends)\n",
 	})
-	res, err := Run(m, nil, Config{}, []string{"anchors"})
+	res, err := Run(m, nil, model.Config{}, []string{"anchors"})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -192,7 +193,7 @@ func TestAnchorsHTMLModul(t *testing.T) {
 			"`<div id=\"inline-phantom\">`\n" +
 			"```\n<div id=\"fence-phantom\">\n```\n",
 	})
-	res, err := Run(m, nil, Config{}, []string{"anchors"})
+	res, err := Run(m, nil, model.Config{}, []string{"anchors"})
 	if err != nil {
 		t.Fatal(err)
 	}

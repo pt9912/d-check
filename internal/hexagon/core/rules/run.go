@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"fmt"
 	"sort"
 
@@ -9,7 +10,7 @@ import (
 
 // Result ist das Ergebnis eines Prüflaufs.
 type Result struct {
-	Findings     []Finding
+	Findings     []model.Finding
 	FilesChecked int
 }
 
@@ -18,14 +19,14 @@ type Result struct {
 // Wurzel/Datei) führen zu error — der Aufrufer mappt auf Exit 2.
 // httpc wird ausschließlich vom explizit aktivierten Modul external
 // benutzt (DC-QA-03: keine Netzwerkzugriffe im Default).
-func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg Config, modules []string) (Result, error) {
+func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg model.Config, modules []string) (Result, error) {
 	var res Result
 	active := map[string]bool{}
 	for _, m := range modules {
 		active[m] = true
 	}
 
-	// Config-Constraint (DC-FA-CONF-001, spec/spezifikation.md §2):
+	// model.Config-Constraint (DC-FA-CONF-001, spec/spezifikation.md §2):
 	// deklarierte ids-Targets müssen existieren — unabhängig von den
 	// aktiven Modulen; Verletzung bedeutet Exit 2 ohne Prüfung.
 	if err := ensureIDTargetsExist(fsys, cfg.IDPatterns); err != nil {
@@ -58,7 +59,7 @@ func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg Config, modules [
 		res.Findings = append(res.Findings,
 			CheckExternal(httpc, st.extRefs, cfg.External.EffectiveParallel())...)
 	}
-	res.Findings = SortFindings(res.Findings)
+	res.Findings = model.SortFindings(res.Findings)
 	return res, nil
 }
 
@@ -66,13 +67,13 @@ func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg Config, modules [
 // Datei-Dispatch lebt in checkFile, damit Run flach bleibt.
 type runState struct {
 	fsys        driven.Filesystem
-	cfg         Config
+	cfg         model.Config
 	active      map[string]bool
 	inScope     map[string]map[string]bool
 	slugCache   map[string]map[string]bool
 	statusCache map[string]*string
 	extRefs     []ExternalRef
-	findings    []Finding
+	findings    []model.Finding
 }
 
 // applies: Modul aktiv und Datei in dessen effektivem Scope
@@ -121,7 +122,7 @@ func (st *runState) checkFile(file string) error {
 // (DC-FA-CONF-002.a). Der globale Scan läuft höchstens einmal; jeder
 // Modul-Scope ist ein eigener Discover-Lauf mit denselben Regeln
 // (Existenz, Repo-Escape, Pruning, SKIP_DIRS — DC-FA-SCAN-001).
-func discoverScopes(fsys driven.Filesystem, cfg Config, modules []string) (map[string]map[string]bool, []string, error) {
+func discoverScopes(fsys driven.Filesystem, cfg model.Config, modules []string) (map[string]map[string]bool, []string, error) {
 	inScope := map[string]map[string]bool{}
 	union := map[string]bool{}
 
@@ -180,7 +181,7 @@ func discoverInto(fsys driven.Filesystem, roots, ignore []string, union map[stri
 // ensureIDTargetsExist prüft die in ids.patterns[] deklarierten
 // Targets (Datei oder Verzeichnis, relativ zur Repo-Wurzel): sie
 // müssen existieren und innerhalb der Repo-Wurzel liegen.
-func ensureIDTargetsExist(fsys driven.Filesystem, patterns []IDPattern) error {
+func ensureIDTargetsExist(fsys driven.Filesystem, patterns []model.IDPattern) error {
 	for _, p := range patterns {
 		rel, escaped := ResolveConfigPath(p.Target)
 		if escaped {

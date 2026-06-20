@@ -1,6 +1,7 @@
-package core
+package rules
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
@@ -11,8 +12,8 @@ import (
 // liegen und symlink-frei sein. Fragment-Teile gemischter Ziele
 // ignoriert das Modul (Aufgabe von `anchors`); reine Anker-Ziele und
 // externe Schemata werden übersprungen.
-func CheckLinks(fsys driven.Filesystem, file string, lines []Line) []Finding {
-	var findings []Finding
+func CheckLinks(fsys driven.Filesystem, file string, lines []Line) []model.Finding {
+	var findings []model.Finding
 	for _, ref := range ExtractLinks(lines) {
 		target := ref.Target
 		rel, escaped, ok := localTarget(file, target)
@@ -25,27 +26,27 @@ func CheckLinks(fsys driven.Filesystem, file string, lines []Line) []Finding {
 		// (DC-FA-LINK-002; genau ein Befund pro Linkziel).
 		if !escaped {
 			if hit, err := symlinkInPath(fsys, rel); err == nil && hit {
-				findings = append(findings, Finding{
+				findings = append(findings, model.Finding{
 					File: file, Line: ref.Line, Rule: "links",
-					Target: target, Reason: ReasonSymlink,
+					Target: target, Reason: model.ReasonSymlink,
 					Message: "Linkziel ist oder enthält einen Symlink",
 				})
 				continue
 			}
 		}
 		if escaped {
-			findings = append(findings, Finding{
+			findings = append(findings, model.Finding{
 				File: file, Line: ref.Line, Rule: "links",
-				Target: target, Reason: ReasonRepoEscape,
+				Target: target, Reason: model.ReasonRepoEscape,
 				Message: "Linkziel verlässt die Repository-Wurzel",
 			})
 			continue
 		}
 		kind, err := fsys.Kind(rel)
 		if err != nil || kind == driven.KindMissing {
-			findings = append(findings, Finding{
+			findings = append(findings, model.Finding{
 				File: file, Line: ref.Line, Rule: "links",
-				Target: target, Reason: ReasonTargetMissing,
+				Target: target, Reason: model.ReasonTargetMissing,
 				Message: "Linkziel existiert nicht",
 			})
 		}

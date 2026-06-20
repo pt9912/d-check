@@ -38,11 +38,11 @@ dasselbe Anker-Verfahren nutzt, gilt die Erweiterung dort konsistent mit.
   Extraktion (`id` beliebig, `name` an `<a>`), wörtlicher Vergleich,
   konservativ/zeilenbasiert; die `codepaths`-Anker-Prüfung auf die
   gemeinsame Anker-Menge fortgeschrieben.
-- [x] **Implementierung** in `internal/hexagon/core/anchors.go`:
+- [x] **Implementierung** in `internal/hexagon/core/rules/anchors.go`:
   `htmlAnchors` + gemeinsame `AnchorSet` (Union aus Heading-Slugs und
   Inline-HTML-Ankern); fence-/inline-code-bewusst via `PreprocessMarkdown`;
   `anchors` und `codepaths` nutzen beide `AnchorSet`.
-- [x] **Tests** in `internal/hexagon/core/anchors_test.go`: `TestHTMLAnchors`
+- [x] **Tests** in `internal/hexagon/core/rules/anchors_test.go`: `TestHTMLAnchors`
   und `TestAnchorsHTMLModul` (Happy/Boundary/Negative, Inline-Code-/Fence-
   Ausschluss, `<area>`-Negativfall, `data-id`, Case-Sensitivität);
   bestehende Heading-Tests grün.

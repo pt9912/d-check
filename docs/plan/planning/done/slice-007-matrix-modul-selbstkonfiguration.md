@@ -46,8 +46,8 @@ Selbstkonfiguration — die [`MR-006`](../../../../harness/conventions.md#mr-006
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `internal/hexagon/core/matrix.go` (+ Tests) | neu | Klassen-/Regel-/Status-Logik |
-| `internal/hexagon/core/config.go`, `configyaml` | update | Matrix-Konfig in `core.Config` durchreichen |
+| `internal/hexagon/core/rules/matrix.go` (+ Tests) | neu | Klassen-/Regel-/Status-Logik |
+| `internal/hexagon/core/model/config.go`, `configyaml` | update | Matrix-Konfig in `core.Config` durchreichen |
 | [`.d-check.yml`](../../../../.d-check.yml) | update | Selbstkonfiguration (ids + matrix) |
 | Eigene Doku (lebende Dateien) | update | etwaige Befunde der Selbstkonfiguration bereinigen |
 

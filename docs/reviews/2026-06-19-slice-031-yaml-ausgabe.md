@@ -103,7 +103,7 @@ Keine.
   `findings`/`summary`/`exitCode`); `Summary` ebenso
   (`filesChecked`/`findingCount`, `report.go:14`); `core.Finding` ist mit
   yaml-Tags pro Feld versehen
-  (`internal/hexagon/core/finding.go:23` ff., `file`/`line`/`rule`/`target`/
+  (`internal/hexagon/core/model/finding.go:23` ff., `file`/`line`/`rule`/`target`/
   `reason`/`message,omitempty`). yaml.v3 v3.0.1 (`go.mod:5`) würde untaggte
   Feldnamen kleinschreiben (`filesChecked`→`fileschecked`); die expliziten
   Tags verhindern das. `TestCLI004_YAML`

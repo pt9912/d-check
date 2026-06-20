@@ -1,6 +1,8 @@
-package core
+package app
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/rules"
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"fmt"
 	"path"
 	"sort"
@@ -36,7 +38,7 @@ type posRepl struct {
 // Basisnamens, als ReviewRequired markiert. Read-only (liest betroffene
 // Dateien über fsys); deterministisch (Eingabe sortiert, Ausgabe nach
 // Datei/Zeile).
-func RepairEdits(fsys driven.Filesystem, findings []Finding, cfg Config, broad bool) ([]RepairEdit, error) {
+func RepairEdits(fsys driven.Filesystem, findings []model.Finding, cfg model.Config, broad bool) ([]RepairEdit, error) {
 	var basenameIdx map[string]string
 	if broad {
 		idx, err := uniqueBasenames(fsys, cfg)
@@ -46,7 +48,7 @@ func RepairEdits(fsys driven.Filesystem, findings []Finding, cfg Config, broad b
 		basenameIdx = idx
 	}
 	var files []string
-	perFile := map[string][]Finding{}
+	perFile := map[string][]model.Finding{}
 	for _, f := range findings {
 		if _, ok := perFile[f.File]; !ok {
 			files = append(files, f.File)
@@ -66,18 +68,18 @@ func RepairEdits(fsys driven.Filesystem, findings []Finding, cfg Config, broad b
 
 // repairFile liest die Datei einmal und erzeugt die Zeilen-Edits ihrer
 // Befunde (Zeilen in aufsteigender Reihenfolge).
-func repairFile(fsys driven.Filesystem, file string, findings []Finding, cfg Config, broad bool, basenameIdx map[string]string) ([]RepairEdit, error) {
+func repairFile(fsys driven.Filesystem, file string, findings []model.Finding, cfg model.Config, broad bool, basenameIdx map[string]string) ([]RepairEdit, error) {
 	content, err := fsys.ReadFile(file)
 	if err != nil {
 		return nil, fmt.Errorf("%s nicht lesbar: %w", file, err)
 	}
 	rawLines := strings.Split(string(content), "\n")
 	textByLine := map[int]string{}
-	for _, ln := range PreprocessMarkdown(content) {
+	for _, ln := range rules.PreprocessMarkdown(content) {
 		textByLine[ln.No] = ln.Text
 	}
 	var lines []int
-	perLine := map[int][]Finding{}
+	perLine := map[int][]model.Finding{}
 	for _, f := range findings {
 		if _, ok := perLine[f.Line]; !ok {
 			lines = append(lines, f.Line)
@@ -107,8 +109,8 @@ func repairFile(fsys driven.Filesystem, file string, findings []Finding, cfg Con
 // die id-unlinked-Kandidaten (alle nackten Prosa-Vorkommen je Token), mit
 // broad zusätzlich die target-missing-Best-Guesses. Liefert die neue Zeile
 // und ob ein Best-Guess (ReviewRequired) beteiligt war.
-func repairLine(raw, text, file string, findings []Finding, cfg Config, broad bool, basenameIdx map[string]string) (string, bool) {
-	spans := ExtractLinkSpans(text)
+func repairLine(raw, text, file string, findings []model.Finding, cfg model.Config, broad bool, basenameIdx map[string]string) (string, bool) {
+	spans := rules.ExtractLinkSpans(text)
 	repls := conservativeRepls(text, spans, findings, cfg)
 	review := false
 	if broad {
@@ -125,11 +127,11 @@ func repairLine(raw, text, file string, findings []Finding, cfg Config, broad bo
 
 // conservativeRepls liefert die eindeutigen Fixes einer Zeile: je
 // distinktem id-unlinked-Token alle nackten Prosa-Vorkommen → Link.
-func conservativeRepls(text string, spans []LinkSpan, findings []Finding, cfg Config) []posRepl {
+func conservativeRepls(text string, spans []rules.LinkSpan, findings []model.Finding, cfg model.Config) []posRepl {
 	var repls []posRepl
 	seen := map[string]bool{}
 	for _, f := range findings {
-		if f.Reason != ReasonIDUnlinked || seen[f.Target] {
+		if f.Reason != model.ReasonIDUnlinked || seen[f.Target] {
 			continue
 		}
 		seen[f.Target] = true
@@ -146,10 +148,10 @@ func conservativeRepls(text string, spans []LinkSpan, findings []Finding, cfg Co
 
 // broadRepls liefert die Best-Guess-Fixes einer Zeile: target-missing →
 // eindeutige Datei gleichen Basisnamens (relativ zur Befund-Datei).
-func broadRepls(text string, spans []LinkSpan, file string, findings []Finding, basenameIdx map[string]string) []posRepl {
+func broadRepls(text string, spans []rules.LinkSpan, file string, findings []model.Finding, basenameIdx map[string]string) []posRepl {
 	var repls []posRepl
 	for _, f := range findings {
-		if f.Reason != ReasonTargetMissing {
+		if f.Reason != model.ReasonTargetMissing {
 			continue
 		}
 		uniq, ok := basenameIdx[path.Base(f.Target)]
@@ -167,7 +169,7 @@ func broadRepls(text string, spans []LinkSpan, file string, findings []Finding, 
 // (vorverarbeiteten) text, die NICHT in einem Link liegen — Positionen
 // sind offset-gleich zur Rohzeile (Inline-Code ist positionserhaltend
 // geleert).
-func bareOccurrences(text string, spans []LinkSpan, token string) [][2]int {
+func bareOccurrences(text string, spans []rules.LinkSpan, token string) [][2]int {
 	var out [][2]int
 	for off := 0; off <= len(text)-len(token); {
 		i := strings.Index(text[off:], token)
@@ -179,7 +181,7 @@ func bareOccurrences(text string, spans []LinkSpan, token string) [][2]int {
 		// Wortgrenze: das Vorkommen darf nicht Teil einer längeren Kennung
 		// sein (z. B. ADR-0001 in ADR-00012) — sonst landet die Ersetzung
 		// falsch; konservativ heißt eindeutig.
-		if wholeToken(text, start, end) && !IDOccurrenceExempt(spans, start, end) {
+		if wholeToken(text, start, end) && !rules.IDOccurrenceExempt(spans, start, end) {
 			out = append(out, [2]int{start, end})
 		}
 		off = end
@@ -205,14 +207,14 @@ func isWordByte(b byte) bool {
 
 // destSpan findet die Ziel-Spanne [start,end) des Links, dessen Ziel auf
 // target normalisiert — für die Best-Guess-Ersetzung von target-missing.
-func destSpan(text string, spans []LinkSpan, target string) ([2]int, bool) {
+func destSpan(text string, spans []rules.LinkSpan, target string) ([2]int, bool) {
 	for _, sp := range spans {
 		start := sp.TextEnd + 2 // hinter "]("
 		end := sp.End - 1       // das ")"
 		if start > end || end > len(text) {
 			continue
 		}
-		if NormalizeTarget(text[start:end]) == target {
+		if rules.NormalizeTarget(text[start:end]) == target {
 			return [2]int{start, end}, true
 		}
 	}
@@ -237,8 +239,8 @@ func applyRepls(raw string, repls []posRepl) string {
 // uniqueBasenames bildet jeden Datei-Basisnamen, der im Scan-Bestand
 // genau einmal vorkommt, auf seinen (repo-relativen) Pfad ab — Grundlage
 // des target-missing-Best-Guess.
-func uniqueBasenames(fsys driven.Filesystem, cfg Config) (map[string]string, error) {
-	files, err := DiscoverFiles(fsys, cfg.Roots, cfg.Ignore)
+func uniqueBasenames(fsys driven.Filesystem, cfg model.Config) (map[string]string, error) {
+	files, err := rules.DiscoverFiles(fsys, cfg.Roots, cfg.Ignore)
 	if err != nil {
 		return nil, err
 	}

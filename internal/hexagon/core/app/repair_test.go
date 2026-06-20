@@ -1,14 +1,15 @@
-package core
+package app
 
 import (
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"regexp"
 	"testing"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 )
 
-func adrCfg() Config {
-	return Config{IDPatterns: []IDPattern{
+func adrCfg() model.Config {
+	return model.Config{IDPatterns: []model.IDPattern{
 		{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/"},
 	}}
 }
@@ -17,8 +18,8 @@ func adrCfg() Config {
 // genau ein Edit, kein ReviewRequired.
 func TestRepairEdits_Conservative_IDUnlinked(t *testing.T) {
 	fsys := coretest.NewMemFS(map[string]string{"docs/a.md": "nacktes ADR-0042 hier\n"})
-	f := Finding{File: "docs/a.md", Line: 1, Rule: "ids", Target: "ADR-0042", Reason: ReasonIDUnlinked}
-	edits, err := RepairEdits(fsys, []Finding{f}, adrCfg(), false)
+	f := model.Finding{File: "docs/a.md", Line: 1, Rule: "ids", Target: "ADR-0042", Reason: model.ReasonIDUnlinked}
+	edits, err := RepairEdits(fsys, []model.Finding{f}, adrCfg(), false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,8 +36,8 @@ func TestRepairEdits_Conservative_IDUnlinked(t *testing.T) {
 // hat den Span geleert → keine nackte Fundstelle.
 func TestRepairEdits_InCode_NichtRepariert(t *testing.T) {
 	fsys := coretest.NewMemFS(map[string]string{"docs/a.md": "siehe `ADR-0042` im Code\n"})
-	f := Finding{File: "docs/a.md", Line: 1, Rule: "ids", Target: "ADR-0042", Reason: ReasonIDUnlinked}
-	edits, err := RepairEdits(fsys, []Finding{f}, adrCfg(), false)
+	f := model.Finding{File: "docs/a.md", Line: 1, Rule: "ids", Target: "ADR-0042", Reason: model.ReasonIDUnlinked}
+	edits, err := RepairEdits(fsys, []model.Finding{f}, adrCfg(), false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,8 +51,8 @@ func TestRepairEdits_InCode_NichtRepariert(t *testing.T) {
 // platzierte Ersetzung.
 func TestRepairEdits_Overmatch_NichtRepariert(t *testing.T) {
 	fsys := coretest.NewMemFS(map[string]string{"docs/a.md": "siehe ADR-00012 hier\n"})
-	f := Finding{File: "docs/a.md", Line: 1, Rule: "ids", Target: "ADR-0001", Reason: ReasonIDUnlinked}
-	edits, err := RepairEdits(fsys, []Finding{f}, adrCfg(), false)
+	f := model.Finding{File: "docs/a.md", Line: 1, Rule: "ids", Target: "ADR-0001", Reason: model.ReasonIDUnlinked}
+	edits, err := RepairEdits(fsys, []model.Finding{f}, adrCfg(), false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -63,8 +64,8 @@ func TestRepairEdits_Overmatch_NichtRepariert(t *testing.T) {
 // Konservativ lässt target-missing unangetastet (kein eindeutiger Fix).
 func TestRepairEdits_Conservative_SkipTargetMissing(t *testing.T) {
 	fsys := coretest.NewMemFS(map[string]string{"docs/a.md": "[x](alt.md)\n", "docs/sub/alt.md": "ok\n"})
-	f := Finding{File: "docs/a.md", Line: 1, Rule: "links", Target: "alt.md", Reason: ReasonTargetMissing}
-	edits, err := RepairEdits(fsys, []Finding{f}, Config{}, false)
+	f := model.Finding{File: "docs/a.md", Line: 1, Rule: "links", Target: "alt.md", Reason: model.ReasonTargetMissing}
+	edits, err := RepairEdits(fsys, []model.Finding{f}, model.Config{}, false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -76,8 +77,8 @@ func TestRepairEdits_Conservative_SkipTargetMissing(t *testing.T) {
 // Breit: target-missing → eindeutige Basisnamen-Datei, ReviewRequired.
 func TestRepairEdits_Broad_TargetMissing(t *testing.T) {
 	fsys := coretest.NewMemFS(map[string]string{"docs/a.md": "[x](alt.md)\n", "docs/sub/alt.md": "ok\n"})
-	f := Finding{File: "docs/a.md", Line: 1, Rule: "links", Target: "alt.md", Reason: ReasonTargetMissing}
-	edits, err := RepairEdits(fsys, []Finding{f}, Config{}, true)
+	f := model.Finding{File: "docs/a.md", Line: 1, Rule: "links", Target: "alt.md", Reason: model.ReasonTargetMissing}
+	edits, err := RepairEdits(fsys, []model.Finding{f}, model.Config{}, true)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -93,8 +94,8 @@ func TestRepairEdits_Broad_TargetMissing(t *testing.T) {
 // Leere).
 func TestRepairEdits_Broad_KeinEindeutigerTreffer(t *testing.T) {
 	fsys := coretest.NewMemFS(map[string]string{"docs/a.md": "[x](weg.md)\n"})
-	f := Finding{File: "docs/a.md", Line: 1, Rule: "links", Target: "weg.md", Reason: ReasonTargetMissing}
-	edits, err := RepairEdits(fsys, []Finding{f}, Config{}, true)
+	f := model.Finding{File: "docs/a.md", Line: 1, Rule: "links", Target: "weg.md", Reason: model.ReasonTargetMissing}
+	edits, err := RepairEdits(fsys, []model.Finding{f}, model.Config{}, true)
 	if err != nil {
 		t.Fatal(err)
 	}
