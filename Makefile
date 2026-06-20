@@ -38,7 +38,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency bench image-test versions build run doc-check record-gates gates ci fullbuild clean
+.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency bench image-test semgrep versions build run doc-check record-gates gates ci fullbuild clean
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -79,6 +79,9 @@ bench: build ## DC-QA-01-Benchmark: generiertes Fixture, N=3 Läufe, Median < 5 
 image-test: build ## DC-FA-DIST-001-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container, :ro, Mount-Hinweis).
 	@bash tools/image-test.sh
 
+semgrep: ## Security-/Static-Analysis-Gate: gepinntes semgrep-Image + gepinntes, lokal gecachtes go/lang/security-Regelset, netzloser Scan (Bestandteil von gates; ADR-0010).
+	@bash tools/semgrep.sh
+
 versions: ## Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Images, Runtime-Image-ID).
 	@echo "GO_VERSION=$(GO_VERSION)"
 	@echo "GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION)"
@@ -114,8 +117,8 @@ record-gates: ## Nachweis schreiben: Working-Tree-Hash (für den Stop-Hook).
 
 # record-gates läuft als LETZTER Prerequisite — der Nachweis entsteht
 # nur, wenn alle Gates grün sind (sonst bricht make vorher ab).
-gates: doc-check lint test arch-check coverage-gate gate-consistency record-gates ## alle inneren Gates (mandatory vor Handoff).
-	@echo "[gates] doc-check + lint + test + arch-check + coverage-gate + gate-consistency green"
+gates: doc-check lint test arch-check coverage-gate semgrep gate-consistency record-gates ## alle inneren Gates (mandatory vor Handoff).
+	@echo "[gates] doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency green"
 
 # ci = gates + Image-Integrationstests — das Target, das die
 # Release-Pipeline (slice-011) fährt. fullbuild = volle Closure vor

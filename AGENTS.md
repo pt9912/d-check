@@ -109,6 +109,7 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make fullbuild` | volle Closure: gates + image-test + bench, schließt mit dem Image-Hash |
 | `make image-test` | [`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container) |
 | `make bench` | [`DC-QA-01`](spec/lastenheft.md#dc-qa-01--performance)-Benchmark gegen generiertes Fixture (Median aus 3 Läufen, kein Gate in `gates`) |
+| `make semgrep` | Security-/Static-Analysis-**Gate**: gepinntes semgrep-Image + gepinntes, lokal gecachtes `go/lang/security`-Regelset, netzloser Scan (`--network none`); **Bestandteil von `gates`** ([ADR-0010](docs/plan/adr/0010-semgrep-hermetisches-gate.md)) |
 | `make versions` | Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Images, Runtime-Image-ID) |
 | `make build` / `make run` | Runtime-Image bauen / Selbst-Smoke-Test |
 | `make deps` / `make compile` | Cache-Layer / schnelles Compile-Feedback |
