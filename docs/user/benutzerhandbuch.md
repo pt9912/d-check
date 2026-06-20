@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.0 · **Software-Version:** v0.12.0 ·
-**Stand:** 2026-06-18 · **Autor:** pt9912
+**Handbuch-Version:** 1.3 · **Software-Version:** v0.19.0 ·
+**Stand:** 2026-06-20 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -667,3 +667,5 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 |---|---|---|---|
 | 1.0 | v0.12.0 | 2026-06-18 | Erstfassung: alle Use Cases inkl. `--doctor`/`--repair` |
 | 1.1 | v0.17.0 | 2026-06-19 | `--doctor --json`: maschinenlesbare Diagnose ergänzt (§4.9), Gegenüberstellung der drei Ausgaben |
+| 1.2 | v0.18.0 | 2026-06-19 | `--suggest-config ai-harness`/`ai-harness-init`: Harness-Vorlage in zwei Modi ergänzt (§4.4) |
+| 1.3 | v0.19.0 | 2026-06-20 | YAML-Ausgabe `--yaml` (auch `--doctor --yaml`): maschinenlesbare Ausgabe um YAML erweitert (§4.11) |
