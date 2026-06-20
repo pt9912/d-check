@@ -14,6 +14,8 @@
 #   R4  os ausschließlich in internal/adapter/driven/fs,
 #       internal/adapter/driving/cli und cmd/* (Composition Root).
 #   R5  driven Adapter importieren einander nicht.
+#   R6  (ADR-0012) Kern-Paket-Richtung: model importiert weder rules
+#       noch app; rules importiert nicht app (model <- rules <- app).
 set -euo pipefail
 
 MODULE="$(go list -m)"
@@ -69,10 +71,25 @@ while IFS='|' read -r pkg imports; do
         esac
         ;;
     esac
+    # R6 (ADR-0012): Kern-Paket-Richtung model <- rules <- app.
+    case "$rel" in
+      internal/hexagon/core/model)
+        case "$imp" in
+          "$MODULE"/internal/hexagon/core/rules|"$MODULE"/internal/hexagon/core/rules/*|"$MODULE"/internal/hexagon/core/app|"$MODULE"/internal/hexagon/core/app/*)
+            echo "ARCH-CHECK FAIL (ADR-0012, R6): model (Daten-Ring) importiert $imp" >&2; fail=1 ;;
+        esac
+        ;;
+      internal/hexagon/core/rules)
+        case "$imp" in
+          "$MODULE"/internal/hexagon/core/app|"$MODULE"/internal/hexagon/core/app/*)
+            echo "ARCH-CHECK FAIL (ADR-0012, R6): rules (Engine) importiert app $imp" >&2; fail=1 ;;
+        esac
+        ;;
+    esac
   done
 done < <(go list -f '{{.ImportPath}}|{{join .Imports " "}}' ./...)
 
 if [ "$fail" -ne 0 ]; then
   exit 1
 fi
-echo "arch-check ok: Import-Regeln R1–R5 (ADR-0005) eingehalten."
+echo "arch-check ok: Import-Regeln R1–R5 (ADR-0005) + R6 (ADR-0012) eingehalten."

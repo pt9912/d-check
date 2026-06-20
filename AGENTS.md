@@ -100,7 +100,7 @@ Gates sind die häufigste Form von Harness-Lüge.
 |---|---|
 | `make lint` | golangci-lint mit dem Projekt-Profil (§3.2) |
 | `make test` | `go test ./...` — Akzeptanzkriterien der `DC-FA-*` |
-| `make arch-check` | Import-Regeln des Hexagon-Schnitts ([ADR-0005](docs/plan/adr/0005-modul-layout-hexagon-ordner.md)) |
+| `make arch-check` | Import-Regeln des Hexagon-Schnitts + Kern-Paket-Richtung ([ADR-0005](docs/plan/adr/0005-modul-layout-hexagon-ordner.md), [ADR-0012](docs/plan/adr/0012-kern-paketschnitt-model-rules-app.md)) |
 | `make coverage-gate` | Coverage-Schwelle über `./internal/...` (Kalibrierungs-Bindung, siehe [`harness/README.md`](harness/README.md) §Sensors) |
 | `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile + [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modulliste (Harness-Lügen-Schutz) |
 | `make doc-check` | Doku-Links, Anker, Kennungs-Linkpflicht, Referenzmatrix + Inline-Code-Pfade via `d-check` selbst (Dogfooding; netzlos — zugleich [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Messmethode) |
