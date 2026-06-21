@@ -91,18 +91,21 @@ sondern denselben Vertrag auf einen früheren Lebenszyklus-Punkt
 
    ```
    ADR-\d{4}              (ADR-IDs)
+   MR-\d{3}               (Konventions-Adaptionen)
    DC-(FA-[A-Z]+|QA)-\d+  (Anforderungs-IDs)
    slice-\d+              (Planungs-/Slice-IDs)
    ```
 
-   `slice-*` ist nötig, weil Planning-Lifecycle-Commits nur eine
-   Slice-ID tragen (6 der 15 jüngsten Commits) — ein reines
-   `DC-*`/`ADR-*`-Gate würde sie blocken. **Sync-Trigger (Folge-Slice):**
-   der Wortlaut in [`harness/README.md`](../../../harness/README.md)
-   §Traceability rules und die Commit-Disziplin in
-   [`AGENTS.md`](../../../AGENTS.md) werden um `slice-*` als zulässige
-   Planungs-ID nachgezogen, damit Regel und Gate deckungsgleich sind.
-   Ausnahmen (kein ID-Zwang): Merge- und `Revert`-Commits.
+   Die drei `.d-check.yml`-`ids`-Muster (ADR/MR/DC) **plus** `slice-*`:
+   `MR-*` lässt Konventions-Commits (`harness/conventions.md`) zu,
+   `slice-*` die Planning-Lifecycle-Commits (6 der 15 jüngsten Commits
+   tragen nur eine Slice-ID) — ein reines `DC-*`/`ADR-*`-Gate würde beide
+   blocken. **Sync-Trigger (Folge-Slice):** der Wortlaut in
+   [`harness/README.md`](../../../harness/README.md) §Traceability rules
+   und die Commit-Disziplin in [`AGENTS.md`](../../../AGENTS.md) werden um
+   `MR-*`/`slice-*` als zulässige IDs nachgezogen, damit Regel und Gate
+   deckungsgleich sind. Ausnahmen (kein ID-Zwang): Merge- und
+   `Revert`-Commits.
 
 5. **`make trace-check` ist NICHT Teil von `make gates` oder `make ci`.**
    Gates/`make ci` prüfen den **Arbeitsbaum-Inhalt** (Handoff-Bindepunkt)

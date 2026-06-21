@@ -14,13 +14,22 @@
 # brechen mit Exit 2 ab.
 set -euo pipefail
 
-# Kennungs-Muster, deckungsgleich mit .d-check.yml (ids) plus slice-NNN.
-ID_RE='(ADR-[0-9]{4}|DC-(FA-[A-Z]+|QA)-[0-9]+|slice-[0-9]+)'
+# Kennungs-Muster: die drei .d-check.yml-ids-Muster (ADR/MR/DC) plus
+# slice-NNN (Planning-ID). Eine Quelle der ID-Definition (ADR-0013).
+ID_RE='(ADR-[0-9]{4}|MR-[0-9]{3}|DC-(FA-[A-Z]+|QA)-[0-9]+|slice-[0-9]+)'
 
 cd "$(git rev-parse --show-toplevel 2>/dev/null || echo .)"
 
 is_exempt() { head -n1 <<<"$1" | grep -qE '^(Merge |Revert )'; }
 has_id()    { grep -qE "$ID_RE" <<<"$1"; }
+
+# Bereinigt eine ROHE Commit-Message wie git's Default-Cleanup (Review R1
+# HIGH-2): alles ab der scissors-Zeile (`# … >8 …`, verbose-Diff) weg, dann
+# Kommentarzeilen (`#…`) entfernen. Sonst faerbt eine ID, die nur in einem
+# #-Kommentar steht, den Hook gruen, waehrend git die Zeile entfernt und der
+# CI-Range-Check (`git log %B`) denselben Commit ablehnt — Hook/CI-Divergenz
+# gegen die "eine Wahrheit". Annahme: core.commentChar='#' (Default).
+clean_message() { sed -e '/^#.*>8/,$d' -e '/^#/d'; }
 
 # Prueft eine einzelne Message; 0 = ok, 1 = ID fehlt.
 check_msg() { # $1 message, $2 label
@@ -50,20 +59,24 @@ case "$mode" in
     [ -n "${2:-}" ] && [ -f "$2" ] \
       || { echo "trace-check: --message braucht eine Message-Datei" >&2; exit 2; }
     self_test
-    check_msg "$(cat "$2")" "commit-msg"   # bei Erfolg still (Hook-Hygiene)
+    # clean_message: nur pruefen, was git wirklich committet (HIGH-2).
+    check_msg "$(clean_message <"$2")" "commit-msg"   # bei Erfolg still (Hook-Hygiene)
     ;;
   --range)
     range="${2:-}"
     [ -n "$range" ] || { echo "trace-check: --range braucht <base>..<head>" >&2; exit 2; }
     self_test
     base="${range%%..*}"
-    # Neuer Branch / unbekannte Basis (Zero-SHA) -> nur HEAD pruefen,
-    # statt fail-closed an einem nicht aufloesbaren Range zu scheitern.
+    # fail-closed (Review R1 HIGH-1): eine nicht aufloesbare Basis (Zero-SHA
+    # bzw. fehlender Commit) wuerde sonst still nur HEAD pruefen und ID-lose
+    # Zwischen-Commits durchlassen. Der CI-Workflow liefert fuer neue Branches
+    # eine gueltige Basis (origin/<default-branch>); kommt hier dennoch keine
+    # an, blockieren wir LAUT statt leise.
     if [[ "$base" =~ ^0*$ ]] || ! git rev-parse -q --verify "${base}^{commit}" >/dev/null 2>&1; then
-      commits="$(git rev-list --no-merges -n1 HEAD)"
-    else
-      commits="$(git rev-list --no-merges "$range")"
+      echo "trace-check: FAIL — Range-Basis '$base' nicht auflösbar; der CI-Workflow muss eine gültige Basis liefern (z. B. origin/<default-branch>)." >&2
+      exit 2
     fi
+    commits="$(git rev-list --no-merges "$range")"
     fail=0 n=0
     while IFS= read -r sha; do
       [ -z "$sha" ] && continue
