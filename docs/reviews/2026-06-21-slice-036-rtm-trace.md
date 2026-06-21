@@ -24,7 +24,7 @@
 - **Reviewer:** Claude (Agent), Skill `.harness/skills/reviewer.md` v1.0.0.
 - **Modell:** `claude-opus-4-8[1m]`.
 - **Eingangs-Kontext:** Slice-Plan
-  `docs/plan/planning/in-progress/slice-036-rtm-trace.md`; Anforderung
+  `docs/plan/planning/done/slice-036-rtm-trace.md`; Anforderung
   `DC-FA-CLI-009` (Haupt — RTM, drei AK), `DC-FA-CLI-003` (Exit-Codes),
   `DC-FA-CLI-004` (Ausgabeformate, format-neutraler Reporter), `DC-QA-02`
   (Determinismus), `DC-QA-03` (read-only/netzlos); Spezifikation

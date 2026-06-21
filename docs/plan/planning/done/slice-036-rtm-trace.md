@@ -1,7 +1,6 @@
 # Slice slice-036: RTM als `d-check --trace`
 
-**Status:** in-progress (seit 2026-06-21; Code/Tests/Spec-CR/Spezifikation/
-Doku fertig, `make gates` grün; Review R1 + Closure ausstehend).
+**Status:** done (Closure 2026-06-21; Review R1+R2, kein ADR nötig).
 
 **Welle:** welle-27-rtm-trace (Trigger: Nutzer-Entscheid 2026-06-20 — RTM als
 d-check-Modus statt separatem Skript; ein Prototyp-Skript bewies die
@@ -71,7 +70,8 @@ ihn, kaum neue Logik.
 - [x] Akzeptanztests (`TestCLI036_Trace_*`); `make gates` grün; **Doku-only**
   entschieden (Code-Test-Spalte verworfen); kein ADR nötig (additiv,
   read-only, keine neuen Import-Kanten).
-- [ ] Unabhängiges Review R1; Closure.
+- [x] Unabhängiges Review R1 (0 HIGH/0 MEDIUM/1 LOW) + R2 (LOW-1/LOW-2
+  behoben); Closure.
 
 ## 5. Risiken / offene Punkte
 
@@ -93,3 +93,40 @@ Prototyp-Skript als Machbarkeitsbeleg.
 ## 7. Sub-Area-Modus-Begründung
 
 Alle berührten Sub-Areas GF (CLI-/Doku-Arbeit; Greenfield-Default).
+
+## 8. Closure-Notiz (nach `done/`)
+
+**Umsetzung.** Neuer read-only-Modus `--trace`
+([`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)):
+leitet die RTM aus den kanonischen Quellen ab (Anforderungen aus
+`spec/lastenheft.md`, Referenzen aus `docs/plan/adr/` + `docs/plan/planning/`)
+und rendert sie — Markdown-Default, `--trace --json`/`--yaml` über den
+format-neutralen report-Adapter (slice-031). **Doku-only** (Auftraggeber-
+Entscheidung); Code-Test-Spalte verworfen (bräuchte Go-Toolchain). Eigene
+Ableitung im `app`-Paket (ids/matrix liefern nur Findings, keinen Graphen),
+präfix-agnostisch, deterministisch sortiert; `runTrace`/`comboError` aus
+`cli.Run`/`parseOptions` ausgelagert (Komplexität). **Kein ADR** (additiv,
+read-only, keine neuen Import-Kanten; arch-check R1–R6 grün bestätigt).
+
+**Belege.** `make gates` grün (doc-check, lint, test, arch-check, coverage
+94,20 %, semgrep 28/0, gate-consistency); read-only
+([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)),
+deterministisch
+([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus),
+mehrfach byte-identisch). Dogfooding: `d-check --trace` über das eigene Repo
+→ 26 Anforderungen, 1 Waise (die neue Anforderung selbst — jetzt im Bezug
+oben nachgezogen, künftig belegt).
+
+**Review R1** (`docs/reviews/2026-06-21-slice-036-rtm-trace.md`):
+0 HIGH/0 MEDIUM/1 LOW/3 INFO. **R2**
+(`docs/reviews/2026-06-21-slice-036-r2-verifikation.md`): R1 bestätigt;
+LOW-1 (Backtick-Heading-Titel) behoben, dessen Fix LOW-2 (Titel-initialer
+Code-Span) einführte → mit der wrapper-nur-Strip-Lösung **beide**
+geschlossen. INFO (dangling refs verworfen, heading-level-agnostisch,
+Waisen → Exit 0, Em-Dash ohne Leerzeichen) won't-fix: spec-konform/bewusst.
+
+**Lerneintrag.** Der RTM-Modus verifiziert sich beim Dogfooding selbst — er
+fand seine **eigene** noch unbelegte Anforderung als Waise. Und: ein
+Trim-Fix gegen ein Heading-Artefakt kann eines derselben Klasse erzeugen
+(LOW-1 → LOW-2); die wrapper-präzise Lösung schlägt die
+Zeichenklassen-Erweiterung.

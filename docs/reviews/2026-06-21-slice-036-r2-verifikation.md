@@ -25,7 +25,7 @@
   `/tmp`. Realer Aufruf:
   `docker run --rm -v "<tmp>:/repo:ro" d-check:latest --trace [--json|--yaml]`.
 - **Eingangs-Kontext:** Slice-Plan
-  `docs/plan/planning/in-progress/slice-036-rtm-trace.md`; Anforderung
+  `docs/plan/planning/done/slice-036-rtm-trace.md`; Anforderung
   `DC-FA-CLI-009` (RTM, Titel-AK), `DC-QA-02` (Determinismus), `DC-QA-03`
   (read-only/netzlos); R1-Report (LOW-1, INFO-1..3).
 
