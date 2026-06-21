@@ -2,8 +2,9 @@
 
 Release-Prozess für `ghcr.io/pt9912/d-check`
 ([`DC-FA-DIST-001`](../../spec/lastenheft.md#dc-fa-dist-001--docker-image),
-[ADR-0002](../plan/adr/0002-distribution-ghcr-image.md)). Diese Datei
-beschreibt den Prozess; die Pipeline selbst ist
+[ADR-0002](../plan/adr/0002-distribution-ghcr-image.md),
+[ADR-0014](../plan/adr/0014-latest-tag-fuer-stabile-releases.md)). Diese
+Datei beschreibt den Prozess; die Pipeline selbst ist
 [`.github/workflows/release.yml`](../../.github/workflows/release.yml).
 
 ## Versionsquelle
@@ -29,7 +30,8 @@ Die Pipeline (`release.yml`) läuft bei jedem `v*`-Tag-Push:
 3. **OCI-Label-Pin** — `org.opencontainers.image.version` muss exakt
    der Tag-Version entsprechen (Version-Drift shippt nicht).
 4. **Push** nach `ghcr.io/pt9912/d-check:v<version>`; `:latest`
-   **nur** für stabile Releases (kein Prerelease-Suffix).
+   **nur** für stabile Releases (kein Prerelease-Suffix) —
+   [ADR-0014](../plan/adr/0014-latest-tag-fuer-stabile-releases.md).
 5. **Digest-Pin** landet im Job-Summary und in den Notes des
    automatisch angelegten GitHub-Releases. Existiert das Release zum
    Tag bereits (z. B. Workflow-Re-Run), wird es wiederverwendet — der

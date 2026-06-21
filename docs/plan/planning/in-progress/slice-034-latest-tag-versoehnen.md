@@ -1,6 +1,7 @@
 # Slice slice-034: `latest`-Tag-Politik versöhnen (ADR-0002 §4 ↔ release.yml)
 
-**Status:** next (geplant — noch nicht in Arbeit).
+**Status:** in-progress (seit 2026-06-21; **Richtung A** gewählt — Praxis
+ratifiziert via [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md)).
 
 **Welle:** welle-23-latest-tag (Trigger: ADR-Audit 2026-06-20 + Review R1 zu
 slice-033, INFO-1 — `docs/reviews/2026-06-20-slice-033-digest-pins.md`).
@@ -43,20 +44,29 @@ Eine von zwei Richtungen, festzuhalten in einer **neuen ADR**
 
 ## 3. Definition of Done (vorläufig)
 
-- [ ] Richtung A/B entschieden; **neue ADR** geschrieben (mit
-  `Supersedes`-Lineage auf [ADR-0002](../../adr/0002-distribution-ghcr-image.md),
-  Teil-Supersede von §4), Index-Zeile + Status-Lineage.
-- [ ] `release.yml` und `docs/user/releasing.md` konsistent zur Entscheidung;
-  der [ADR-0002](../../adr/0002-distribution-ghcr-image.md)-§4-Widerspruch ist
-  aufgelöst.
-- [ ] `make gates` grün (Doku-Konsistenz); Review nach Bedarf.
+- [x] Richtung **A** (Praxis ratifizieren) entschieden; neue
+  [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) geschrieben
+  (`Supersedes` [ADR-0002](../../adr/0002-distribution-ghcr-image.md) §4,
+  Teil-Supersede), ADR-Index-Zeile + Teil-Supersede-Notiz an
+  [ADR-0002](../../adr/0002-distribution-ghcr-image.md).
+- [x] `release.yml` und `docs/user/releasing.md` verweisen auf
+  [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md); der
+  [ADR-0002](../../adr/0002-distribution-ghcr-image.md)-§4-Widerspruch ist
+  aufgelöst (Code/Doku fuhren A bereits — nur die ADR-Ebene nachgezogen).
+- [ ] `make gates` grün (Doku-Konsistenz); unabhängiges Review R1;
+  [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) → `Accepted`;
+  Closure-Notiz + `git mv` nach `done/`.
 
 ## 4. Risiken / offene Punkte
 
 - [ADR-0002](../../adr/0002-distribution-ghcr-image.md) ist immutable →
-  Ablösung nur via neue ADR mit `Supersedes`-Klausel; das `matrix`-Modul
-  kennt `allow-supersede-lineage` (slice-024) — prüfen, ob die Supersede-Kante
-  eine Ausnahme braucht.
+  Ablösung via neue
+  [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) mit
+  `Supersedes`-Klausel (Datei unverändert). **Geprüft:** weil nur §4
+  *teil*-abgelöst wird, bleibt
+  [ADR-0002](../../adr/0002-distribution-ghcr-image.md) `Accepted`/aktiv —
+  der Verweis erzeugt **kein** `matrix-inactive`, ein
+  `allow-supersede-lineage` ist **nicht** nötig.
 - Reine Distributions-/Doku-Arbeit; kein neuer `DC-*`-Vertrag; kein Carveout.
 
 ## 5. Trigger

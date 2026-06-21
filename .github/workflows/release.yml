@@ -1,12 +1,13 @@
 name: release
 
-# GHCR-Release-Pipeline (slice-011, DC-FA-DIST-001, ADR-0002;
+# GHCR-Release-Pipeline (slice-011, DC-FA-DIST-001, ADR-0002, ADR-0014;
 # Vorbild: u-boot publish.yml — gleiche Build-Familie).
 #
 # Trigger: Push von Tags `v*`. Der Validate-Step verwirft alles, was
 # nicht `vMAJOR.MINOR.PATCH(-prerelease)?` ist, BEVOR eingeloggt,
 # gebaut oder gepusht wird. `:latest` wird ausschließlich für stabile
-# Tags gesetzt; Konsumenten werden auf Digest-Pins verwiesen
+# Tags gesetzt — ADR-0014 ratifiziert das und löst ADR-0002 §4 insoweit
+# ab; Konsumenten werden auf Digest-Pins verwiesen
 # (docs/user/releasing.md).
 #
 # Docker-only-Pfad (AGENTS.md §3.1): `make ci` fährt die kompletten
