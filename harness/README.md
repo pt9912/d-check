@@ -74,6 +74,38 @@ liegt in CI bzw. lokal (`make gates`), nicht hier.
 **Nicht behauptet:** — keine — (alle geplanten Targets existieren;
 `make gate-consistency` bewacht die Tabelle in beide Richtungen).
 
+### Gate-Taxonomie und Durchsetzungsgrenzen
+
+Die Sensors zerfallen in zwei Klassen — ehrlich benannt, weil ihre
+Durchsetzungskraft unterschiedlich ist:
+
+| Klasse | Was geprüft wird | Targets | Bindepunkt |
+| --- | --- | --- | --- |
+| **Produkt-Gates** | Eigenschaften des Arbeitsprodukts (Code, Doku, Image) | `lint`, `test`, `arch-check`, `coverage-gate`, `semgrep`, `doc-check`, `image-test` | Arbeitsbaum-Inhalt (in `make gates`/`ci`) |
+| **Meta-/Governance-Gates** | Harness-Integrität & Prozess-Invarianten („keine Harness-Lüge") | `gate-consistency`, `planning-check` (in `gates`); `trace-check`, `adr-check` (Commit-/Diff-Bindepunkt, **nicht** in `gates`/`ci`) | Doku↔Makefile, Roadmap↔Lifecycle, Commit↔ID, ADR-Immutability |
+
+Meta-Gates sind **ausführbare, fail-closed Gates mit Negativ-Selbsttest** —
+keine aspirativen Texte. Aber ihre Kraft ist real begrenzt:
+
+- **Lokale Hooks** (`commit-msg`-Traceability, `pre-commit`-ADR-Immutable)
+  sind **opt-in pro Klon** (`make hooks` setzt `core.hooksPath`); aus einem
+  fremden Klon sind sie nicht erzwingbar.
+- Der **klon-unabhängige Boden** ist die PR-/Push-CI
+  ([`ci.yml`](../.github/workflows/ci.yml)): sie fährt `make ci` **und** die
+  Range-Gates (`trace-check`, `adr-check`) auf jede Integration.
+- Die CI **blockiert** einen Merge aber nur, wenn **Branch Protection**
+  (Pflicht-Status-Checks auf dem Default-Branch) gesetzt ist. Das liegt
+  **außerhalb des Repos** und ist aus dem Klon **nicht auditierbar** — ohne
+  sie ist die CI nur *advisory*. **Betriebsempfehlung:** den `ci`-Check als
+  *required status check* für den Default-Branch konfigurieren
+  ([ADR-0013](../docs/plan/adr/0013-pr-ci-und-traceability-gate.md),
+  [ADR-0016](../docs/plan/adr/0016-adr-immutable-gate.md) benennen dieselbe
+  Restlücke).
+- Der `Stop`-Hook
+  ([`stop-require-gates.sh`](../.claude/hooks/stop-require-gates.sh)) ist
+  Claude-spezifisch und gibt frische, cleane Klone ohne lokalen Gate-State
+  frei — dafür ist die CI das Netz.
+
 ## Traceability rules
 
 - PRs/Commits **müssen** mindestens eine `DC-*`-, `ADR-*`-, `MR-*`- oder
