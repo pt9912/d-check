@@ -10,7 +10,10 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+**Aktive Welle: welle-30-adr-immutable** —
+[`slice-041`](slice-041-adr-immutable-gate.md) (ADR-Immutable-Gate `make
+adr-check`: Accepted-ADRs nicht inhaltlich ändern; CI-Range + pre-commit-Hook)
+in Arbeit; Closure-Trigger: slice-041 done. Zuletzt abgeschlossen:
 welle-29-planning-consistency
 ([`slice-040`](../done/slice-040-planning-consistency-gate.md) — Meta-Gate
 `make planning-check` erzwingt Roadmap §Aktuelle Welle ↔

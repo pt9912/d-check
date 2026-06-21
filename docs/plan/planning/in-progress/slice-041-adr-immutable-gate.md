@@ -1,6 +1,6 @@
 # Slice slice-041: ADR-Immutable-Gate (Accepted-ADRs nicht still ändern)
 
-**Status:** next (geplant — noch nicht in Arbeit).
+**Status:** in-progress (in Arbeit).
 
 **Welle:** welle-30-adr-immutable (Trigger: Nutzer-Audit 2026-06-21 —
 `AGENTS.md` §3.5 „ADRs sind nach `Accepted` immutable" ist dokumentiert,
