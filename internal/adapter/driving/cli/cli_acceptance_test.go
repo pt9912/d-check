@@ -1311,11 +1311,14 @@ func TestCLI036_Trace_KeinLastenheft(t *testing.T) {
 	}
 }
 
-// slice-036 (Review R1 LOW-1): backtick-umschlossener Heading-ID → Titel
-// ohne Kennung/Backticks (präfix-agnostischer Fremd-Repo-Einsatz).
+// slice-036 (Review R1 LOW-1 / R2 LOW-2): backtick-umschlossene Heading-ID →
+// Titel ohne Kennung/Backticks; ein Titel-initialer Code-Span bleibt aber
+// intakt (führender Backtick darf nicht mit-gestrippt werden).
 func TestCLI036_Trace_BacktickHeading(t *testing.T) {
 	root := t.TempDir()
-	write(t, root, "spec/lastenheft.md", "### `DC-FA-BTK-001` — Titel mit Backtick\nText.\n")
+	write(t, root, "spec/lastenheft.md",
+		"### `DC-FA-BTK-001` — Titel mit Backtick\nText.\n\n"+
+			"### DC-FA-MOD-001 — `links`-Modul beschrieben\nText.\n")
 	code, stdout, _ := run(t, "--trace", "--json", root)
 	if code != 0 {
 		t.Fatalf("Exit = %d", code)
@@ -1324,8 +1327,17 @@ func TestCLI036_Trace_BacktickHeading(t *testing.T) {
 	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
 		t.Fatalf("JSON dekodiert nicht: %v\n%s", err, stdout)
 	}
-	if len(doc.Requirements) != 1 || doc.Requirements[0].ID != "DC-FA-BTK-001" ||
-		doc.Requirements[0].Title != "Titel mit Backtick" {
-		t.Fatalf("Backtick-Heading falsch geparst: %+v", doc.Requirements)
+	want := map[string]string{
+		"DC-FA-BTK-001": "Titel mit Backtick",        // backtick-umschlossene Kennung (LOW-1)
+		"DC-FA-MOD-001": "`links`-Modul beschrieben", // Titel-initialer Code-Span bleibt (LOW-2)
+	}
+	got := map[string]string{}
+	for _, r := range doc.Requirements {
+		got[r.ID] = r.Title
+	}
+	for id, title := range want {
+		if got[id] != title {
+			t.Fatalf("Titel von %s = %q (erwartet %q)\n%s", id, got[id], title, stdout)
+		}
 	}
 }
