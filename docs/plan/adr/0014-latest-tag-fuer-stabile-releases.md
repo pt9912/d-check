@@ -1,6 +1,6 @@
 # ADR-0014 — `latest`-Tag für stabile Releases (ratifiziert ADR-0002 §4)
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-21
 **Autor:** pt9912
 **Bezug:**
@@ -9,7 +9,8 @@
 [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)
 (Konsumenten-Reproduzierbarkeit via Digest),
 [`DC-QA-04`](../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)
-(Migrations-Doku nennt konkrete Version),
+(Migrationsabdeckung — Pilot-/Konsumenten-Repos pinnen konkrete
+Versionen/Digests),
 [ADR-0011](0011-digest-pins-build-gate-images.md) (Digest-Pins tragen die
 Reproduzierbarkeit).
 **Supersedes:** [ADR-0002](0002-distribution-ghcr-image.md) §4 — **nur** die
@@ -54,8 +55,9 @@ ist `Accepted`/immutable (AGENTS.md §3.5) — die Versöhnung erfolgt per
    ([`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus),
    [ADR-0011](0011-digest-pins-build-gate-images.md)); `:latest` ist
    Komfort-Einstieg, **nicht** für CI-Pipelines. Migrations-/Konsumenten-
-   Doku nennt weiterhin konkrete Versionen/Digests
-   ([`DC-QA-04`](../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)).
+   Repos pinnen weiterhin konkrete Versionen/Digests
+   ([`DC-QA-04`](../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Pilotpraxis;
+   vgl. [ADR-0002](0002-distribution-ghcr-image.md) §Konsequenzen).
 4. **Eng begrenzte Ablösung.** Diese ADR löst **ausschließlich** die
    Tagging-Klausel „kein `latest`" aus
    [ADR-0002](0002-distribution-ghcr-image.md) §4 ab; §1 (Multi-Stage),
@@ -109,3 +111,4 @@ ist `Accepted`/immutable (AGENTS.md §3.5) — die Versöhnung erfolgt per
 | Datum | Ereignis |
 |---|---|
 | 2026-06-21 | Proposed — Audit 2026-06-20 (ADR-0002 §4 ↔ `release.yml` unversöhnt), slice-034 |
+| 2026-06-21 | Proposed → Accepted (slice-034; unabhängiges Review R1: 0 HIGH/0 MEDIUM/1 LOW/2 INFO) |

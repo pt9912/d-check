@@ -1,7 +1,7 @@
 # Slice slice-034: `latest`-Tag-Politik versöhnen (ADR-0002 §4 ↔ release.yml)
 
-**Status:** in-progress (seit 2026-06-21; **Richtung A** gewählt — Praxis
-ratifiziert via [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md)).
+**Status:** done (Closure 2026-06-21; **Richtung A** — Praxis ratifiziert via
+[ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md)).
 
 **Welle:** welle-23-latest-tag (Trigger: ADR-Audit 2026-06-20 + Review R1 zu
 slice-033, INFO-1 — `docs/reviews/2026-06-20-slice-033-digest-pins.md`).
@@ -53,7 +53,8 @@ Eine von zwei Richtungen, festzuhalten in einer **neuen ADR**
   [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md); der
   [ADR-0002](../../adr/0002-distribution-ghcr-image.md)-§4-Widerspruch ist
   aufgelöst (Code/Doku fuhren A bereits — nur die ADR-Ebene nachgezogen).
-- [ ] `make gates` grün (Doku-Konsistenz); unabhängiges Review R1;
+- [x] `make gates` grün (Doku-Konsistenz); unabhängiges Review R1
+  (0 HIGH/0 MEDIUM/1 LOW/2 INFO);
   [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) → `Accepted`;
   Closure-Notiz + `git mv` nach `done/`.
 
@@ -78,3 +79,51 @@ ADR-Audit (2026-06-20): [ADR-0002](../../adr/0002-distribution-ghcr-image.md)
 ## 6. Sub-Area-Modus-Begründung
 
 Alle berührten Sub-Areas GF (Distributions-/Doku-Arbeit; Greenfield-Default).
+
+## 7. Closure-Notiz (nach `done/`)
+
+**Umsetzung.** Richtung **A** (Praxis ratifizieren): neue
+[ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) (`Accepted`)
+löst die Tagging-Klausel „kein `latest`" aus
+[ADR-0002](../../adr/0002-distribution-ghcr-image.md) §4 **teil**-ab —
+`:latest` → neuestes **stabiles** Release, verbindlicher Konsum per
+`@sha256:`-Digest
+([ADR-0011](../../adr/0011-digest-pins-build-gate-images.md),
+[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
+[ADR-0002](../../adr/0002-distribution-ghcr-image.md) §1–3/5 bleiben gültig;
+die Datei ist **byte-unverändert** (Immutabilität, AGENTS.md §3.5) — die
+Versöhnung trägt allein [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md)
+plus die Teil-Supersede-Notiz in der ADR-Index-Zeile (gleiche Form wie die
+bestehende Teil-Supersede-Präzedenz im Index). `release.yml` und
+`docs/user/releasing.md` verweisen nun auf
+[ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) (sie fuhren
+Richtung A schon bewusst — **kein Verhaltens-Delta**, kein
+Release/`CHANGELOG`).
+
+**Belege.**
+- `make gates` grün (doc-check 90/0, lint, test, arch-check, coverage
+  94,20 %, semgrep 55/0, gate-consistency).
+- `matrix`: kein `matrix-inactive` —
+  [ADR-0002](../../adr/0002-distribution-ghcr-image.md) bleibt
+  `Accepted`/aktiv (Teil-Supersede ändert das Status-Feld nicht);
+  `allow-supersede-lineage` bestätigt **nicht** nötig.
+
+**Review-Runde R1** (`docs/reviews/2026-06-21-adr-0014-latest-tag.md`):
+0 HIGH, 0 MEDIUM, 1 LOW, 2 INFO. INFO-1 (die
+[`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Annotation
+schrieb dem Vertrag eine
+[ADR-0002](../../adr/0002-distribution-ghcr-image.md)-§Konsequenzen-Aussage
+zu) → **vor Accept behoben**
+(Bezug + Entscheidung §3 präzisiert). LOW-1 (Kopffeld `Supersedes:` nicht
+vorbenutzt; Token-Kollision mit künftigem `allow-supersede-lineage`) →
+**won't-fix:** folgt der Index-Konvention „Ablösung via `Supersedes ADR-NN`";
+das Flag ist in d-checks `.d-check.yml` aus, die Kollision rein hypothetisch
+und semantisch ohnehin korrekt. INFO-2 (`:latest` erstmals als gewollter
+Distributions-Vertrag dokumentiert) → akzeptiert, genau der Zweck der ADR.
+
+**Lerneintrag.** Ein Doku↔Code-Drift, bei dem der **Code** die bessere
+Entscheidung schon getroffen hatte, wird über eine **ratifizierende** ADR
+(neue Autorität) aufgelöst — nicht durch Rückbau des Codes; die immutable
+Vorgänger-ADR bleibt unangetastet, der Teil-Supersede lebt im Index.
+Independent Review fängt Faktentreue-Nuancen (INFO-1) vor der
+Immutabilität.
