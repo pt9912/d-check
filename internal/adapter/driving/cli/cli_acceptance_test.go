@@ -1310,3 +1310,22 @@ func TestCLI036_Trace_KeinLastenheft(t *testing.T) {
 		t.Fatalf("erwartet 0 Anforderungen, got %d", doc.Total)
 	}
 }
+
+// slice-036 (Review R1 LOW-1): backtick-umschlossener Heading-ID → Titel
+// ohne Kennung/Backticks (präfix-agnostischer Fremd-Repo-Einsatz).
+func TestCLI036_Trace_BacktickHeading(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "### `DC-FA-BTK-001` — Titel mit Backtick\nText.\n")
+	code, stdout, _ := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d", code)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON dekodiert nicht: %v\n%s", err, stdout)
+	}
+	if len(doc.Requirements) != 1 || doc.Requirements[0].ID != "DC-FA-BTK-001" ||
+		doc.Requirements[0].Title != "Titel mit Backtick" {
+		t.Fatalf("Backtick-Heading falsch geparst: %+v", doc.Requirements)
+	}
+}

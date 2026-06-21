@@ -123,8 +123,11 @@ func isFullReqID(tok string) bool {
 // traceTitle entfernt die führende Kennung und einen Trenner (—/-/:) aus
 // dem Heading-Klartext.
 func traceTitle(plain, id string) string {
-	rest := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(plain), id))
-	return strings.TrimSpace(strings.TrimLeft(rest, "—-:· "))
+	// Führende Backticks (`` `DC-…` ``-Heading) vor dem Abtrennen entfernen,
+	// damit der Titel die Kennung nicht behält (Review R1 LOW-1).
+	rest := strings.TrimLeft(strings.TrimSpace(plain), "`")
+	rest = strings.TrimSpace(strings.TrimPrefix(rest, id))
+	return strings.TrimSpace(strings.TrimLeft(rest, "`—-:· "))
 }
 
 // traceRefs scannt die Markdown-Dateien unter dir, leitet je Datei ihre
