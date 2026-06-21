@@ -18,11 +18,11 @@
   `internal/adapter/driving/cli/cli_acceptance_test.go`, `spec/lastenheft.md`
   (v0.20.0), `docs/plan/adr/0015-suggest-config-id-prefix.md`,
   `docs/plan/adr/README.md`, `docs/user/benutzerhandbuch.md`, `CHANGELOG.md`,
-  `docs/plan/planning/in-progress/slice-037-suggest-config-id-prefix.md`.
+  `docs/plan/planning/done/slice-037-suggest-config-id-prefix.md`.
 - **Reviewer:** Claude (Agent), Skill `.harness/skills/reviewer.md` v1.0.0.
 - **Modell:** `claude-opus-4-8[1m]`.
 - **Eingangs-Kontext:** Slice-Plan
-  `docs/plan/planning/in-progress/slice-037-suggest-config-id-prefix.md`;
+  `docs/plan/planning/done/slice-037-suggest-config-id-prefix.md`;
   Anforderung `DC-FA-CLI-006` (CR 0.20.0, AK), `DC-FA-ID-001` (emittiertes
   `ids`-Muster), `DC-QA-02` (Determinismus), `DC-QA-03` (read-only);
   Spezifikation §`DC-FA-CLI-006.a`; ADR-0015 (Proposed); Konvention

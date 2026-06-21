@@ -1,6 +1,6 @@
 # ADR-0015 — `--suggest-config`: Kennungs-Präfix parametrisierbar, kein stiller `DC-`-Default
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-21
 **Autor:** pt9912
 **Bezug:**
@@ -86,3 +86,4 @@ konventions-festen ai-harness-course-Muster.
 | Datum | Ereignis |
 |---|---|
 | 2026-06-21 | Proposed — slice-037 (Anlass: a-check-Bootstrap 2026-06-20) |
+| 2026-06-21 | Proposed → Accepted (Umsetzung slice-037; Review R1: 2 MEDIUM behoben, R2: bestätigt, keine neuen Findings) |

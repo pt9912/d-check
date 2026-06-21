@@ -11,12 +11,12 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 ## Aktuelle Welle
 
 **Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
-welle-25-pr-ci-traceability (`slice-039` — PR-/Push-CI + Traceability-Gate
-maschinell bindend; [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md)
-`Accepted`, unabhängiges Review R1+R2;
-[Closure](../done/slice-039-pr-ci-traceability-gate.md#7-closure-notiz-nach-done)).
-Davor welle-23-latest-tag (`slice-034`) und welle-24-kern-paketschnitt
-(`slice-035`).
+welle-26-suggest-prefix (`slice-037` — `--suggest-config` Kennungs-Präfix
+parametrisierbar (`--id-prefix`/Ableitung/Platzhalter) statt fixem `DC-`;
+[ADR-0015](../../adr/0015-suggest-config-id-prefix.md) `Accepted`, Review R1+R2;
+[Closure](../done/slice-037-suggest-config-id-prefix.md#8-closure-notiz-nach-done)).
+Davor welle-25-pr-ci-traceability (`slice-039`), welle-23-latest-tag
+(`slice-034`) und welle-24-kern-paketschnitt (`slice-035`).
 Letztes Release **v0.19.0** auf GHCR (2026-06-20) bündelt slice-031/032/033
 (`--yaml` + semgrep-Gate + Digest-Pins); `slice-035` ist als reiner Refactor
 noch in keinem Release. Die nächste Welle wartet auf ihren Trigger (Change
@@ -82,6 +82,7 @@ flowchart LR
 | welle-24-kern-paketschnitt | 2026-06-20 | [slice-035 §7](../done/slice-035-kern-paketschnitt.md#7-closure-notiz-nach-done); Kern (5.212 Z., ein Paket) in drei Pakete `model`/`rules`/`app` geschnitten, Importrichtung `app→rules→model` per arch-check **R6** erzwungen ([ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md)); **kein Verhaltens-Delta** (Befundsatz byte-identisch, alle Tests grün), `make gates` grün (Coverage 93 %); Review R1 merge-fähig (0 HIGH/0 MEDIUM/1 LOW/3 INFO); noch in keinem Release ausgeliefert (reiner Refactor) |
 | welle-23-latest-tag | 2026-06-21 | [slice-034 §7](../done/slice-034-latest-tag-versoehnen.md#7-closure-notiz-nach-done); [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) ratifiziert die `:latest`-für-stabile-Praxis und löst [ADR-0002](../../adr/0002-distribution-ghcr-image.md) §4 (Tagging-Klausel „kein `latest`") teil-ab — Konsum verbindlich per `@sha256:`-Digest ([ADR-0011](../../adr/0011-digest-pins-build-gate-images.md), [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)); **kein Verhaltens-Delta** (Code/Doku fuhren A bereits), `make gates` grün; unabhängiges Review R1 (0 HIGH/0 MEDIUM/1 LOW/2 INFO); kein Release (Doku-Ratifikation) |
 | welle-25-pr-ci-traceability | 2026-06-21 | [slice-039 §7](../done/slice-039-pr-ci-traceability-gate.md#7-closure-notiz-nach-done); PR-/Push-CI (`ci.yml`) ruft `make ci` + `make trace-check`; Traceability-Gate (`tools/trace-check.sh` + `commit-msg`-Hook via `make hooks`) erzwingt DC-/ADR-/MR-/slice-ID in Commits ([ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md)); unabhängiges Review R1 (2 HIGH/1 MEDIUM behoben) + R2 (HIGH-A behoben), adversarial verifiziert; `make gates` grün; kein Release (Harness-Infra) |
+| welle-26-suggest-prefix | 2026-06-21 | [slice-037 §8](../done/slice-037-suggest-config-id-prefix.md#8-closure-notiz-nach-done); `--suggest-config ai-harness[-init]` Kennungs-Präfix parametrisierbar — Flag `--id-prefix`, Ableitung aus dem Lastenheft (`ai-harness`), Platzhalter `<PREFIX>` + TODO statt fixem `DC-` ([`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) 0.20.0, [ADR-0015](../../adr/0015-suggest-config-id-prefix.md)); **Breaking** (Init ohne Präfix → Platzhalter); unabhängiges Review R1 (2 MEDIUM behoben) + R2 (bestätigt); `make gates` grün; kein Release |
 
 ## Historische Trigger-Verschiebungen
 
