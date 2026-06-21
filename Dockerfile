@@ -103,9 +103,13 @@ RUN mkdir -p /out && \
 # ---- build -----------------------------------------------------------------
 FROM deps AS build
 
+# VERSION (Git-Tag) ins Binary einbetten — Quelle des Image-Refs in
+# `--print-mk` (DC-FA-CLI-010, slice-038). Default für Dev-/Gate-Builds;
+# die Release-Pipeline setzt den Tag (make ci VERSION=…).
+ARG VERSION=0.0.0-dev
 COPY . .
 RUN CGO_ENABLED=0 go build \
-    -ldflags="-s -w" \
+    -ldflags="-s -w -X 'github.com/pt9912/d-check/internal/adapter/driving/cli.version=${VERSION}'" \
     -o /out/d-check \
     ./cmd/d-check
 

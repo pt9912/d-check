@@ -1341,3 +1341,31 @@ func TestCLI036_Trace_BacktickHeading(t *testing.T) {
 		}
 	}
 }
+
+// slice-038 Happy: --print-mk gibt ein include-bares d-check.mk auf stdout
+// (version-gepinntes Image + doc-check-Target), Exit 0; repo-frei (read-only).
+func TestCLI038_PrintMK(t *testing.T) {
+	code, stdout, stderr := run(t, "--print-mk")
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	for _, want := range []string{
+		"DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v", // version-gepinnter, überschreibbarer Ref
+		"@sha256:<digest>",                         // Digest-Override-Hinweis
+		"\ndoc-check:\n\tdocker run",               // Tab-eingerücktes Recipe
+		"--network none",
+		":/repo:ro",
+	} {
+		if !strings.Contains(stdout, want) {
+			t.Fatalf("d-check.mk ohne %q:\n%s", want, stdout)
+		}
+	}
+}
+
+// slice-038 Negative: --print-mk mit unbekanntem Flag → Nutzungsfehler (Exit 2).
+func TestCLI038_PrintMK_UnbekanntesFlag(t *testing.T) {
+	code, _, stderr := run(t, "--print-mk", "--bogus")
+	if code != 2 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+}

@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.21.0
+**Version:** 0.22.0
 
 **Status:** Draft
 
@@ -353,6 +353,37 @@ mit `--doctor`/`--repair` kombinierbar (Nutzungsfehler, Exit 2).
 - **Negative:** Given `d-check --trace --repair`, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)), keine RTM.
 
 **Out-of-Scope:** Erzeugen/Schreiben eines RTM-Dokuments (immer stdout); Code-/Test-Abdeckung (Scan von Go-Testdateien o. Ä. — verlässt die Markdown-Domäne und bräuchte eine Go-Toolchain, unvereinbar mit dem I/O-armen distroless-Design); Status-/Aktualitäts-Bewertung der referenzierenden ADRs (z. B. superseded); frei konfigurierbare Quell-Pfade jenseits der adoptierten Harness-Konvention.
+
+---
+
+### DC-FA-CLI-010 — Makefile-Fragment ausgeben
+
+**Beschreibung:** Mit `--print-mk` gibt `d-check` ein **include-bares
+Makefile-Fragment** (`d-check.mk`) auf **stdout** aus — kein Repo-Zugriff,
+kein Schreiben (read-only-Kernvertrag
+[`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit); wie
+[`DC-FA-CLI-005`](#dc-fa-cli-005--konfigurations-gerüst-ausgeben)). Das
+Fragment trägt eine überschreibbare Image-Variable
+`DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v<version>` — die **eingebettete
+Release-Version** des laufenden Binaries (das Binary kennt seine Version,
+nicht seinen eigenen Digest; für strikte Reproduzierbarkeit überschreibt der
+Konsument `DCHECK_IMAGE` mit einem `@sha256:`-Digest aus den Release-Notes,
+konsistent mit der Konsum-Pin-Politik aus
+[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie ein
+`doc-check`-Target (`docker run --network none -v "$PWD:/repo:ro"`).
+Konsumenten `include d-check.mk` und legen ihre eigene `.d-check.yml`
+daneben — **keine Recipe-/Skript-Kopie**, der Image-Pin lebt in d-check.
+Deterministisch ([`DC-QA-02`](#dc-qa-02--determinismus)): hängt nur an der
+eingebetteten Version. Reiht sich in die read-only-Generatoren
+(`--print-config`/`--suggest-config`) ein.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given ein installiertes `d-check`, when `d-check --print-mk` läuft, then liegt auf stdout ein Makefile-Fragment mit `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v…` und einem `doc-check`-Target (`docker run … --network none … :/repo:ro`), Exit 0; kein Repo-Zugriff nötig.
+- **Boundary:** Given das Fragment wird per `d-check --print-mk > d-check.mk` umgeleitet und in ein Makefile `include`-t, when `make doc-check` läuft, then ruft das Target das gepinnte Image (bzw. den per `DCHECK_IMAGE` gesetzten Override); d-check selbst schreibt dabei nichts.
+- **Negative:** Given `d-check --print-mk` mit einem unbekannten Flag, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)).
+
+**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits `doc-check` (Konsumenten komponieren `gates` selbst); Nicht-Make-Build-Systeme.
 
 ---
 
@@ -826,6 +857,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.22.0 | 2026-06-21 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-010` — Option `--print-mk` gibt ein include-bares `d-check.mk` (überschreibbare `DCHECK_IMAGE`-Variable mit version-gepinntem Image + `doc-check`-Target) auf stdout aus; read-only (`DC-QA-03`), deterministisch (`DC-QA-02`), kein Dokument geschrieben. Konsumenten `include`-n statt Recipe/Skript zu kopieren; der Image-Ref ist die ins Binary eingebettete Release-Version (Digest via `DCHECK_IMAGE`-Override — Henne-Ei: das Binary kennt seinen eigenen Digest nicht). Anlass: a-check-Bootstrap 2026-06-20 — `d-check.mk` wurde handgepflegt; `--print-mk` verlagert den Pin nach d-check | slice-038 |
 | 0.21.0 | 2026-06-21 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-009` — Option `--trace` gibt eine **Requirements Traceability Matrix** (Anforderung → referenzierende ADRs/Slices, Waisen-Markierung) auf stdout aus (Default Markdown-Tabelle, optional `--trace --json`/`--yaml` über den format-neutralen Reporter); read-only (`DC-QA-03`), deterministisch (`DC-QA-02`), kein Dokument erzeugt; **Doku-Domäne** (Lastenheft/ADR/Planning), kein Code/keine Go-Toolchain (arch-check bewusst ausgeklammert). Anlass: RTM als d-check-Modus statt separatem Skript (Nutzer-Entscheid 2026-06-20, Prototyp-Beleg) | slice-036 |
 | 0.20.0 | 2026-06-21 | Change Request (Auftraggeber): `DC-FA-CLI-006` um einen **Anforderungs-Präfix-Parameter** erweitert — `--suggest-config ai-harness[-init]` backt nicht mehr fix d-checks `DC-` ein: `--id-prefix <PREFIX>` setzt es explizit, der Modus `ai-harness` leitet es aus dem Lastenheft ab (eindeutige FA-/QA-Kennung; mehrere verschiedene ⇒ Nutzungsfehler), ohne Angabe/Ableitung erscheint ein markierter Platzhalter `<PREFIX>` + TODO statt eines stillen `DC-`. **Breaking** ggü. 0.18.1 (`ai-harness-init` ohne Präfix lieferte zuvor `DC-`); Begründung in eigener ADR. Anlass: a-check-Bootstrap 2026-06-20 — das Init-Template emittierte d-checks Eigen-Präfix in ein Fremd-Repo | slice-037 |
 | 0.19.0 | 2026-06-19 | Change Request (Auftraggeber): `DC-FA-CLI-004` um das Ausgabeformat **YAML** (`--yaml`) erweitert — gleiche Struktur wie `--json` (`findings`/`summary`/`exitCode`), volle Parität inkl. `--doctor --yaml` (mit `reasonText`/`fixCandidate`); `--json`+`--yaml` und `--repair`+`--yaml` sind Nutzungsfehler (Exit 2). Serialisierung im report-Adapter braucht `gopkg.in/yaml.v3` dort — die Modul-Import-Regeln werden dafür per Folge-ADR erweitert. Anlass: YAML als lesbareres maschinenlesbares Format neben JSON | slice-031 |

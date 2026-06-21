@@ -8,6 +8,13 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
+- slice-038 — Option `--print-mk`: gibt ein include-bares `d-check.mk`
+  (überschreibbare `DCHECK_IMAGE`-Variable mit version-gepinntem Image +
+  `doc-check`-Target) auf stdout aus — Konsumenten `include`-n statt
+  Recipe/Skript zu kopieren; der Image-Ref ist die ins Binary eingebettete
+  Release-Version (Digest via `DCHECK_IMAGE`-Override). read-only
+  (`DC-QA-03`), deterministisch (`DC-QA-02`)
+  ([`DC-FA-CLI-010`](spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)).
 - slice-036 — Option `--trace`: gibt eine **Requirements Traceability
   Matrix** (je Anforderung die referenzierenden ADRs/Slices + Waisen-
   Markierung) auf stdout aus — Default Markdown-Tabelle, mit `--json`/`--yaml`

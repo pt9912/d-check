@@ -311,6 +311,26 @@ Fehlende Quellen (kein Lastenheft / kein `adr`/`planning`-Verzeichnis)
 liefern eine leere bzw. teilbefüllte Matrix, **kein** Fehler. Nur mit
 `--doctor`/`--repair` ist `--trace` ein Nutzungsfehler (Exit 2).
 
+### DC-FA-CLI-010.a — Makefile-Fragment
+
+`--print-mk` ([`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben))
+ist ein **Lese**-Modus wie `--print-config`: kein Repo-Zugriff, keine Datei
+geschrieben ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));
+Kurzschluss vor der Wurzel-Auflösung. Ausgabe (deterministisch,
+[`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus) — hängt nur an der
+eingebetteten Version):
+
+1. Kommentar-Kopf: Einbindung via `include`, Hinweis zum
+   `DCHECK_IMAGE`-Override auf einen `@sha256:`-Digest.
+2. `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v<version>` — `<version>` ist die
+   beim Tag-Build via `-ldflags -X …/cli.version=<tag>` eingebettete
+   Release-Version (Default `0.0.0-dev` für lokale/Gate-Builds).
+3. `.PHONY: doc-check` und ein `doc-check`-Target mit **TAB**-eingerücktem
+   `docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_IMAGE)`.
+
+Der eigene Image-**Digest** wird NICHT eingebettet (er hasht das Binary
+selbst — Henne-Ei); der Konsument pinnt per `DCHECK_IMAGE`-Override.
+
 ### DC-FA-LINK-001.a — Markdown-Vorverarbeitung und Link-Extraktion
 
 1. **Fences:** Zeilen, deren erste Nicht-Leerzeichen-Folge mit

@@ -53,6 +53,7 @@ type options struct {
 	enable        []string
 	disable       []string
 	printConfig   bool
+	printMK       bool
 	suggestConfig string
 	idPrefix      string
 }
@@ -136,6 +137,21 @@ func comboError(o options) string {
 	return ""
 }
 
+// earlyGenerators behandelt die repo-freien stdout-Generatoren
+// (--print-config/--print-mk) — Kurzschluss vor jedem Repo-Zugriff;
+// true ⇒ behandelt (Run endet mit Exit 0; DC-FA-CLI-005/010).
+func earlyGenerators(o options, stdout io.Writer) bool {
+	switch {
+	case o.printConfig:
+		fmt.Fprint(stdout, configTemplate)
+	case o.printMK:
+		fmt.Fprint(stdout, makefileFragment())
+	default:
+		return false
+	}
+	return true
+}
+
 // runTrace gibt die Requirements Traceability Matrix aus (DC-FA-CLI-009) —
 // read-only; ausgelagert aus Run, um dessen Komplexität niedrig zu halten.
 func runTrace(fsys driven.Filesystem, opts options, stdout, stderr io.Writer) int {
@@ -170,6 +186,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	repairOut := flags.Bool("repair", false, "Reparatur-Patch (unified diff) auf stdout, git-apply-kompatibel; konservativ (nur eindeutige Fixes)")
 	repairBroadOut := flags.Bool("repair-broad", false, "wie --repair, zusätzlich Best-Guess-Reparaturen (review-pflichtig, Marker auf stderr)")
 	printConfig := flags.Bool("print-config", false, "Konfigurations-Startgerüst auf stdout ausgeben und beenden")
+	printMK := flags.Bool("print-mk", false, "include-bares d-check.mk (doc-check-Target, gepinntes Image) auf stdout ausgeben und beenden")
 	suggestConfig := flags.String("suggest-config", "", "Config aus Autoritäts-Quellen (kommagetrennt) vorschlagen und beenden")
 	idPrefix := flags.String("id-prefix", "", "Kennungs-Präfix für --suggest-config ai-harness[-init] (z. B. AC); ohne Angabe Platzhalter <PREFIX>")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
@@ -196,7 +213,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	opts := options{root: ".", json: *jsonOut, yaml: *yamlOut, doctor: *doctorOut,
 		repair: *repairOut || *repairBroadOut, repairBroad: *repairBroadOut,
 		enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig,
-		idPrefix: *idPrefix, trace: *traceOut}
+		idPrefix: *idPrefix, trace: *traceOut, printMK: *printMK}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}
@@ -311,8 +328,9 @@ func Run(args []string, stdout, stderr io.Writer) int {
 	}
 	// DC-FA-CLI-005: Kurzschluss VOR jedem Repo-Zugriff (kein Scan,
 	// kein Lesen/Schreiben) — statisches Gerüst auf stdout, Exit 0.
-	if opts.printConfig {
-		fmt.Fprint(stdout, configTemplate)
+	// Repo-freie stdout-Generatoren (--print-config/--print-mk): Kurzschluss
+	// vor jedem Repo-Zugriff (DC-FA-CLI-005/010), dann Exit 0.
+	if earlyGenerators(opts, stdout) {
 		return 0
 	}
 	fsys, ok := openRoot(opts.root, stderr)

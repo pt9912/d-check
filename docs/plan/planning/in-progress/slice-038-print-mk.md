@@ -1,12 +1,16 @@
 # Slice slice-038: `--print-mk` — `d-check.mk` ausgeben (include-bare Integration)
 
-**Status:** next (geplant — noch nicht in Arbeit).
+**Status:** in-progress (seit 2026-06-21; Code/Tests/Spec-CR/Spezifikation/
+Doku fertig, `make gates` grün; Review R1 + Closure ausstehend).
 
-**Welle:** welle-27-print-mk (Trigger: a-check-Bootstrap 2026-06-20 — a-check
+**Welle:** welle-28-print-mk (Trigger: a-check-Bootstrap 2026-06-20 — a-check
 bindet das Doku-Gate per **handgepflegtem** `d-check.mk` ein; der Pin lebt
-dadurch im Konsumenten statt in d-check).
+dadurch im Konsumenten statt in d-check). *(welle-Nummer von ursprünglich
+„welle-27" korrigiert — welle-27 ist welle-27-rtm-trace, slice-036.)*
 
 **Bezug:**
+[`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+(die umgesetzte Anforderung, CR 0.22.0),
 [`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)
 (verteiltes Image),
 [`DC-FA-CLI-005`](../../../../spec/lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben)
@@ -54,17 +58,22 @@ das, und der Pin lebt (richtig) in d-check.
 
 ## 4. Definition of Done (vorläufig)
 
-- [ ] Lastenheft-CR für `--print-mk` (neuer/erweiterter Vertrag).
-- [ ] Modus im Paket `app` (wie `--print-config`), gibt `d-check.mk` auf
-  stdout aus, **schreibt nichts**
+- [x] Lastenheft-CR (0.22.0) + Spezifikation (`spec/spezifikation.md` §…a)
+  für `--print-mk` (Bezug oben).
+- [x] Modus im Paket `cli` (wie `--print-config`, repo-frei), gibt
+  `d-check.mk` auf stdout aus, **schreibt nichts**
   ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)),
   deterministisch
   ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
-- [ ] Ausgabe trägt den **digest-gepinnten** Image-Ref des laufenden Release.
-- [ ] Akzeptanztest: `d-check --print-mk | make -f - doc-check` (o. Ä.) gegen
-  ein Fixture grün; `--print-mk` + unbekanntes Flag → Exit 2.
-- [ ] Benutzerhandbuch §Distribution ergänzt; `make gates` grün; Review R1;
-  ADR nach Bedarf.
+- [x] Ausgabe trägt einen **version-gepinnten** Image-Ref (ins Binary via
+  `-ldflags -X` eingebettet); Digest via `DCHECK_IMAGE`-Override (Henne-Ei,
+  Auftraggeber-Entscheidung) statt eingebettetem Digest.
+- [x] Akzeptanztests (`TestCLI038_PrintMK*`); Dogfooding
+  `--print-mk | make -n -f - doc-check` parst grün; unbekanntes Flag → Exit 2.
+- [x] `docs/user/operations.md` + `CHANGELOG` ergänzt; `make gates` grün;
+  **kein ADR** (Version-Tag-Default konsistent mit der ratifizierten
+  Konsum-Pin-Politik).
+- [ ] Unabhängiges Review R1; Closure.
 
 ## 5. Risiken / offene Punkte
 
