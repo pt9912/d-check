@@ -60,6 +60,8 @@ liegt in CI bzw. lokal (`make gates`), nicht hier.
 | `make gates` | aggregiert doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency, `record-gates` als letzter Schritt | — |
 | `make image-test` | [`DC-FA-DIST-001`](../spec/lastenheft.md#dc-fa-dist-001--docker-image)-Akzeptanzkriterien gegen das lokal gebaute Image (`tools/image-test.sh`): Befund-Ausgabe und Exit-Code nativ vs. Container **byte-identisch**, read-only-Mount vollständig, fehlender Mount → Exit 2 mit Hinweis | [`DC-FA-DIST-001`](../spec/lastenheft.md#dc-fa-dist-001--docker-image)/[`DC-QA-02`](../spec/lastenheft.md#dc-qa-02--determinismus) (DC-Bindung) |
 | `make ci` | CI-äquivalenter Lauf (gates + image-test) — das Target der Release-Pipeline (slice-011) | — |
+| `make trace-check` | Traceability-Gate (`tools/trace-check.sh`): jede Commit-Message nennt eine `DC-*`/`ADR-*`/`slice-*`-ID; Negativ-Selbsttest bei jedem Lauf; **nicht** Teil von `gates`/`ci` (Commit-Zeit-Bindepunkt) — gerufen vom `commit-msg`-Hook und der PR-/Push-CI ([`ci.yml`](../.github/workflows/ci.yml)) | [ADR-0013](../docs/plan/adr/0013-pr-ci-und-traceability-gate.md) |
+| `make hooks` | installiert `core.hooksPath` → [`.githooks/`](../.githooks/) und aktiviert damit das `commit-msg`-Traceability-Gate (opt-in pro Klon; CI ist der klon-unabhängige Backstop) | [ADR-0013](../docs/plan/adr/0013-pr-ci-und-traceability-gate.md) |
 | `make fullbuild` | volle Closure vor Welle-Merge/Release (gates + image-test + bench); schließt mit dem Image-Hash des Runtime-Builds ab | Reproduzierbarkeits-Bindung: Image-Hash (`sha256:…`) im Lauf-Abschluss; Pins via `make versions` (Kurs-Modul 14) |
 | `make versions` | Reproduzierbarkeits-Pins: `GO_VERSION`, `GOLANGCI_LINT_VERSION`, alle `FROM`-Basis-Images, Runtime-Image-ID | — |
 
@@ -72,7 +74,11 @@ liegt in CI bzw. lokal (`make gates`), nicht hier.
 
 ## Traceability rules
 
-- PRs/Commits **müssen** mindestens eine `DC-*`- oder `ADR-*`-ID nennen.
+- PRs/Commits **müssen** mindestens eine `DC-*`-, `ADR-*`- oder
+  `slice-*`-ID nennen — maschinell erzwungen über `make trace-check`
+  (lokaler `commit-msg`-Hook via `make hooks` + PR-/Push-CI; Ausnahme:
+  Merge-/Revert-Commits;
+  [ADR-0013](../docs/plan/adr/0013-pr-ci-und-traceability-gate.md)).
 - Neue oder geänderte Anforderungen brauchen einen Beleg: Test, Gate, Demo oder ADR.
 - Neue ADRs müssen im [ADR-Index](../docs/plan/adr/README.md) ergänzt werden.
 - Änderungen an Planning-Dokumenten folgen den Lifecycle-Regeln (`open → next → in-progress → done`; reine `git mv`-Commits, siehe `AGENTS.md` §3.3).

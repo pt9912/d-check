@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# commit-msg-Hook — Traceability-Gate (ADR-0013, slice-039).
+#
+# Verlangt mindestens eine DC-/ADR-/slice-ID in der Commit-Message
+# (harness/README.md §Traceability rules). Installiert via `make hooks`
+# (git config core.hooksPath .githooks) — opt-in pro Klon; die
+# klon-unabhaengige Kontrolle ist der CI-Range-Check (.github/workflows/ci.yml).
+#
+# EINE Wahrheit: ruft dasselbe Skript wie CI und `make trace-check`.
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+exec bash tools/trace-check.sh --message "$1"

@@ -1,0 +1,65 @@
+name: ci
+
+# PR-/Push-CI (slice-039, ADR-0013; DC-FA-DIST-001, DC-QA-02).
+#
+# Zieht denselben Vertrag wie der Release-Workflow auf jede Integration
+# (pre-integration statt nur Release): `make ci` (gates + image-test) mit
+# der digest-gepinnten Engine (ADR-0011) -> lokal = PR = Release; schliesst
+# die Stop-Hook-Restlücke "frischer Klon ohne Gate-State" ueber CI als Netz.
+# Zusaetzlich das Traceability-Gate (`make trace-check`) ueber den
+# Commit-Range: jede Commit-Message muss eine DC-/ADR-/slice-ID nennen.
+#
+# Tag-Pushes (`v*`) laufen ausschliesslich in release.yml -> hier per
+# tags-ignore ausgenommen, keine Doppellaeufe.
+#
+# Action-Pinning (Supply-Chain-Haertung, u-boot-Konvention): `uses:`
+# SHA-gepinnt mit Tag-Kommentar (gleicher Pin wie release.yml).
+
+on:
+  pull_request:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+
+# Top-level: alles entziehen; der Job lockert nur, was er braucht.
+permissions: {}
+
+jobs:
+  ci:
+    name: gates + image-test + traceability
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      DOCKER_BUILDKIT: '1'
+      CI: '1'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # Volle Historie fuer den Commit-Range des Traceability-Gates.
+          fetch-depth: 0
+
+      # Traceability ZUERST (billig, fail-fast vor dem teuren Docker-Build).
+      - name: Traceability-Gate (DC-/ADR-/slice-ID in Commits)
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PUSH_BEFORE: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT" == "pull_request" ]]; then
+            RANGE="$PR_BASE..$HEAD_SHA"
+          else
+            RANGE="$PUSH_BEFORE..$HEAD_SHA"
+          fi
+          echo "Pruefe Commit-Range: $RANGE"
+          make trace-check RANGE="$RANGE"
+
+      # Volle Gates + Image-Integrationstests (identische Engine wie Release).
+      - name: Gates + Image-Integrationstests (make ci)
+        run: make ci

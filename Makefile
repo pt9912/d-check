@@ -38,7 +38,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency bench image-test semgrep versions build run doc-check record-gates gates ci fullbuild clean
+.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency bench image-test semgrep versions build run doc-check record-gates gates ci fullbuild trace-check hooks clean
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -130,6 +130,20 @@ ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (DC-FA-DIST-00
 
 fullbuild: ci bench ## volle Closure: ci + bench; schließt mit dem Image-Hash (Reproduzierbarkeits-Bindung).
 	@docker image inspect $(IMAGE):latest --format '[fullbuild] green — image-hash {{.Id}}'
+
+# ---- traceability ------------------------------------------------------------
+
+# Traceability-Gate (ADR-0013): jede Commit-Message nennt eine
+# DC-/ADR-/slice-ID. Bewusst NICHT Teil von `gates`/`ci` — anderer
+# Bindepunkt (Commit-Zeit, nicht Arbeitsbaum-Inhalt): der CI-Workflow
+# (.github/workflows/ci.yml) ruft es getrennt über den Commit-Range, der
+# commit-msg-Hook prüft lokal. Eine Skript-Wahrheit (tools/trace-check.sh).
+trace-check: ## Traceability-Gate: DC-/ADR-/slice-ID in Commits (Selbsttest + HEAD; RANGE=a..b für CI). ADR-0013.
+	@bash tools/trace-check.sh $(if $(RANGE),--range $(RANGE),)
+
+hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Traceability). ADR-0013.
+	@git config core.hooksPath .githooks
+	@echo "[hooks] core.hooksPath=.githooks — commit-msg Traceability-Gate aktiv"
 
 # ---- maintenance -------------------------------------------------------------
 

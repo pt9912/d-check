@@ -1,6 +1,9 @@
 # Slice slice-039: PR-/Push-CI und Traceability-Gate
 
-**Status:** next (geplant — noch nicht in Arbeit).
+**Status:** in-progress (seit 2026-06-21; Artefakte gebaut, Hooks
+installiert, `make gates` grün; unabhängiges Review R1 +
+[ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md)→`Accepted`
+ausstehend).
 
 **Welle:** welle-25-pr-ci-traceability (Trigger: Audit 2026-06-21 —
 `harness/README.md` §Traceability rules ohne Wächter + kein
@@ -57,28 +60,28 @@ tools/trace-check.sh         # eine Wahrheit: Message- und Range-Modus
 Makefile: trace-check, hooks # duenner Target-Wrapper + core.hooksPath-Installer
 ```
 
-- [ ] `ci.yml`: Trigger `pull_request` (gegen Default-Branch) + `push`
+- [x] `ci.yml`: Trigger `pull_request` (gegen Default-Branch) + `push`
   auf Branches **ohne** Tags (keine Doppelläufe mit `release.yml`); Job
   ruft `make ci` **und** `make trace-check` (Range) als getrennte Schritte.
-- [ ] Gemeinsame Skript-Quelle mit Message- und Range-Modus;
+- [x] Gemeinsame Skript-Quelle mit Message- und Range-Modus;
   `make trace-check` ist ein **dünner Wrapper** ohne eigene Logik (sonst
   divergiert der Hook, der das Skript direkt ruft).
-- [ ] `make hooks` setzt `core.hooksPath` auf das versionierte
+- [x] `make hooks` setzt `core.hooksPath` auf das versionierte
   Hook-Verzeichnis; der `commit-msg`-Hook prüft die Message gegen die
   Kennungs-Muster aus
   [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md) (deckungsgleich
   mit `.d-check.yml`, inkl. `slice-`); Merge- und `Revert`-Commits
   ausgenommen.
-- [ ] Selbsttest des Skripts (grün bei vorhandener ID, rot ohne) — analog
+- [x] Selbsttest des Skripts (grün bei vorhandener ID, rot ohne) — analog
   zum Negativ-Selbsttest in `tools/gate-consistency.sh`.
-- [ ] **Doku-Sync (Sync-Trigger aus
+- [x] **Doku-Sync (Sync-Trigger aus
   [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md)):**
   `harness/README.md` §Traceability rules und die Commit-Disziplin in
   `AGENTS.md` um `slice-*` als zulässige Planungs-ID ergänzt;
   `make trace-check`/`make hooks` in `harness/README.md` §Sensors **und**
   `AGENTS.md` §4 dokumentiert (`make gate-consistency` prüft beide
   Richtungen).
-- [ ] `make gates` grün (inkl. `gate-consistency` über die neuen Targets);
+- [x] `make gates` grün (inkl. `gate-consistency` über die neuen Targets);
   `make trace-check` grün auf HEAD.
 - [ ] Unabhängiges Review R1; Closure-Notiz;
   [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md) auf `Accepted`

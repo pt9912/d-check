@@ -106,6 +106,8 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make doc-check` | Doku-Links, Anker, Kennungs-Linkpflicht, Referenzmatrix + Inline-Code-Pfade via `d-check` selbst (Dogfooding; netzlos — zugleich [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Messmethode) |
 | `make gates` | alle inneren Gates (mandatory vor Handoff) |
 | `make ci` | CI-äquivalenter Lauf: gates + image-test (fährt die Release-Pipeline) |
+| `make trace-check` | Traceability-Gate: DC-/ADR-/slice-ID in Commits (`commit-msg`-Hook + PR-CI; bewusst **nicht** Teil von `gates`/`ci`) ([ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md)) |
+| `make hooks` | git-Hooks installieren (`core.hooksPath` → `.githooks`; aktiviert das `commit-msg`-Traceability-Gate) ([ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md)) |
 | `make fullbuild` | volle Closure: gates + image-test + bench, schließt mit dem Image-Hash |
 | `make image-test` | [`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container) |
 | `make bench` | [`DC-QA-01`](spec/lastenheft.md#dc-qa-01--performance)-Benchmark gegen generiertes Fixture (Median aus 3 Läufen, kein Gate in `gates`) |
@@ -121,9 +123,12 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
 
 ## 5. Dokumentations-Regeln
 
-- Commits/PRs müssen mindestens eine `DC-*`- oder `ADR-*`-ID nennen.
-  Vergeben werden IDs nur beim Spec-/ADR-Schreiben nach dem
-  deklarierten Schema
+- Commits/PRs müssen mindestens eine `DC-*`-, `ADR-*`- oder `slice-*`-ID
+  nennen (maschinell erzwungen: `make trace-check` /
+  `commit-msg`-Hook / PR-CI,
+  [ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md);
+  Ausnahme: Merge-/Revert-Commits). Vergeben werden IDs nur beim
+  Spec-/ADR-Schreiben nach dem deklarierten Schema
   ([`MR-008`](harness/conventions.md#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage))
   — nie ad hoc im Commit/PR; Agenten referenzieren IDs, sie erfinden
   keine.
