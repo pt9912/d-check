@@ -33,6 +33,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   eines stillen `DC-`
   ([`DC-FA-CLI-006`](spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten),
   `ADR-0015`).
+- slice-034 — Distribution: der `:latest`-Tag zeigt explizit auf das
+  **neueste stabile** Release; Vorabversionen (Prereleases) erhalten kein
+  `:latest`. `:latest` ist Komfort-Einstieg — für reproduzierbare Läufe
+  weiterhin auf eine feste Version oder den `@sha256:`-Digest pinnen
+  (ratifiziert `ADR-0002` §4; `ADR-0014`).
 
 ## [0.19.0] — 2026-06-20
 

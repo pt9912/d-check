@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.3 · **Software-Version:** v0.19.0 ·
-**Stand:** 2026-06-20 · **Autor:** pt9912
+**Handbuch-Version:** 1.4 · **Software-Version:** v0.22.0 ·
+**Stand:** 2026-06-22 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.19.0
+docker pull ghcr.io/pt9912/d-check:v0.22.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -72,15 +72,18 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.19.0` — eine feste Version (empfohlen für reproduzierbare Läufe).
-- `:latest` — die jeweils neueste Version.
+- `:v0.22.0` — eine feste Version (empfohlen für reproduzierbare Läufe).
+- `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
+  (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
+  CI-Pipelines pinnen Sie ohnehin auf eine feste Version oder den Digest
+  (Komfort-Einstieg, nicht für reproduzierbare Läufe).
 
 Für vollständig reproduzierbare CI-Läufe pinnen Sie auf den Image-Digest
 (in den Release-Notes je Version angegeben):
 
 ```bash
 docker run --rm -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check@sha256:e65654ef8b35c9329f01eeee693bd0c10f583c9e6e01c89f24dd3c2615de32ac
+  ghcr.io/pt9912/d-check@sha256:<v0.22.0-Digest aus den Release-Notes>
 ```
 
 ### Native Nutzung
@@ -97,7 +100,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -143,7 +146,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -162,7 +165,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.19.0
+  ghcr.io/pt9912/d-check:v0.22.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -181,7 +184,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.19.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.22.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -200,7 +203,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -221,7 +224,7 @@ Standard-Modulset. Welche Quelle, hängt von Ihrer Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -230,7 +233,7 @@ Standard-Modulset. Welche Quelle, hängt von Ihrer Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -242,7 +245,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.20.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -262,7 +265,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 \
   --enable ids --disable anchors
 ```
 
@@ -283,7 +286,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 \
   --enable ids
 ```
 
@@ -304,7 +307,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 \
   --enable matrix
 ```
 
@@ -320,7 +323,7 @@ abgelöst) als `matrix-inactive`.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 \
   --enable external
 ```
 
@@ -340,7 +343,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 \
   --enable ids --doctor
 ```
 
@@ -368,7 +371,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 \
   --enable ids --doctor --json
 ```
 
@@ -416,7 +419,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -452,7 +455,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 \
     --enable ids --repair | git apply
   ```
 
@@ -469,7 +472,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -489,7 +492,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.19.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 --yaml
 ```
 
 ```yaml
@@ -509,6 +512,71 @@ exitCode: 1
 Dokument. Auch `--doctor --json` bzw. `--doctor --yaml` geben die Diagnose
 maschinenlesbar aus (je Eintrag zusätzlich `reasonText`/`fixCandidate`,
 siehe Abschnitt 4.9).
+
+### 4.12 Anforderungs-Abdeckung prüfen — Traceability-Matrix (`--trace`)
+
+**Ziel:** sehen, welche Anforderung von welchen Architekturentscheidungen
+(ADRs) und Umsetzungs-Slices referenziert wird — und welche Anforderung
+**niemand** referenziert (Waise).
+**Voraussetzung:** ein Repo nach Harness-Konvention (Anforderungen im
+Lastenheft, ADRs unter `docs/plan/adr/`, Slices unter `docs/plan/planning/`).
+
+**Vorgehen:**
+
+```bash
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.22.0 --trace
+```
+
+**Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
+referenzierende ADRs, referenzierende Slices und eine Status-Spalte (`ok`,
+bzw. `WAISE` für eine Anforderung, die kein Slice referenziert):
+
+```text
+# Requirements Traceability Matrix
+
+| Anforderung | Titel | ADRs | Slices | Status |
+|---|---|---|---|---|
+| DC-FA-CLI-009 | Requirements Traceability Matrix | — | slice-036 | ok |
+| DC-FA-CLI-010 | Makefile-Fragment ausgeben | — | slice-038 | ok |
+
+2 Anforderung(en), 0 Waise(n).
+```
+
+**Hinweise:** `--trace` ist read-only und arbeitet nur auf der Doku
+(Lastenheft/ADRs/Planning) — keine Code-Prüfung. Mit `--trace --json` bzw.
+`--trace --yaml` kommt dieselbe Matrix maschinenlesbar (`requirements` mit
+`id`/`title`/`adrs`/`slices`/`orphan`, plus `total`/`orphans`).
+
+### 4.13 Ein Makefile-Fragment einbinden (`--print-mk`)
+
+**Ziel:** d-check als `doc-check`-Schritt ins eigene Makefile einbinden, ohne
+ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
+**Voraussetzung:** ein Projekt mit Makefile; eine eigene `.d-check.yml`.
+
+**Vorgehen** (Fragment erzeugen, einbinden):
+
+```bash
+docker run --rm ghcr.io/pt9912/d-check:v0.22.0 --print-mk > d-check.mk
+# im eigenen Makefile:  include d-check.mk
+```
+
+**Ergebnis:** ein include-bares `d-check.mk` auf stdout — eine überschreibbare
+`DCHECK_IMAGE`-Variable (auf die ausgelieferte Release-Version gepinnt) plus
+ein `doc-check`-Target:
+
+```text
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.22.0
+
+.PHONY: doc-check
+doc-check:
+	docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_IMAGE)
+```
+
+**Hinweise:** `--print-mk` liest das Repository **nicht** und schreibt selbst
+nichts (die Umleitung `>` legt die Datei an). Der eingebettete Image-Ref ist
+die Version des aufrufenden d-check. Für strikte Reproduzierbarkeit
+überschreiben Sie auf den Digest, z. B.
+`make doc-check DCHECK_IMAGE=ghcr.io/pt9912/d-check@sha256:<digest>`.
 
 ## 5. Konfiguration
 
@@ -685,3 +753,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.1 | v0.17.0 | 2026-06-19 | `--doctor --json`: maschinenlesbare Diagnose ergänzt (§4.9), Gegenüberstellung der drei Ausgaben |
 | 1.2 | v0.18.0 | 2026-06-19 | `--suggest-config ai-harness`/`ai-harness-init`: Harness-Vorlage in zwei Modi ergänzt (§4.4) |
 | 1.3 | v0.19.0 | 2026-06-20 | YAML-Ausgabe `--yaml` (auch `--doctor --yaml`): maschinenlesbare Ausgabe um YAML erweitert (§4.11) |
+| 1.4 | v0.22.0 | 2026-06-22 | `--id-prefix` für `--suggest-config` (§4.4); Traceability-Matrix `--trace` (§4.12); Makefile-Fragment `--print-mk` (§4.13); `:latest` = neueste **stabile** Version (§2) |
