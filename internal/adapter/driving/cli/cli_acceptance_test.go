@@ -1197,3 +1197,116 @@ func TestCLI037_IDPrefix_FlagUebergehtKonflikt(t *testing.T) {
 		t.Fatalf("explizites Präfix nicht angewandt: %q", re.String())
 	}
 }
+
+// traceDoc spiegelt die JSON-Struktur der RTM (DC-FA-CLI-009).
+type traceDoc struct {
+	Requirements []struct {
+		ID     string   `json:"id"`
+		Title  string   `json:"title"`
+		ADRs   []string `json:"adrs"`
+		Slices []string `json:"slices"`
+		Orphan bool     `json:"orphan"`
+	} `json:"requirements"`
+	Total   int `json:"total"`
+	Orphans int `json:"orphans"`
+}
+
+// traceRepo: zwei Anforderungen — TRC-001 (von ADR + Slice referenziert),
+// TRC-002 (Waise, kein Slice).
+func traceRepo(t *testing.T, root string) {
+	write(t, root, "spec/lastenheft.md",
+		"### DC-FA-TRC-001 — Erste Anforderung\nText.\n\n### DC-FA-TRC-002 — Waise ohne Slice\nText.\n")
+	write(t, root, "docs/plan/adr/0099-x.md", "# ADR-0099 — x\nBezug: DC-FA-TRC-001\n")
+	write(t, root, "docs/plan/planning/done/slice-099-x.md", "# slice-099\nBezug: DC-FA-TRC-001\n")
+}
+
+// slice-036 Happy: --trace gibt eine Markdown-RTM mit Anforderung, ADR,
+// Slice und Waisen-Status aus; read-only (DC-QA-03).
+func TestCLI036_Trace_Markdown(t *testing.T) {
+	root := t.TempDir()
+	traceRepo(t, root)
+	code, stdout, stderr := run(t, "--trace", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	for _, want := range []string{"DC-FA-TRC-001", "ADR-0099", "slice-099", "DC-FA-TRC-002", "WAISE"} {
+		if !strings.Contains(stdout, want) {
+			t.Fatalf("RTM ohne %q:\n%s", want, stdout)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(root, ".d-check.yml")); !os.IsNotExist(err) {
+		t.Fatalf("--trace hat geschrieben — read-only verletzt (DC-QA-03)")
+	}
+}
+
+// slice-036: --trace --json — strukturgleich, Waisen-Erkennung.
+func TestCLI036_Trace_JSON(t *testing.T) {
+	root := t.TempDir()
+	traceRepo(t, root)
+	code, stdout, _ := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d", code)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON dekodiert nicht: %v\n%s", err, stdout)
+	}
+	if doc.Total != 2 || doc.Orphans != 1 {
+		t.Fatalf("Total/Orphans = %d/%d (erwartet 2/1)\n%s", doc.Total, doc.Orphans, stdout)
+	}
+	for _, r := range doc.Requirements {
+		switch r.ID {
+		case "DC-FA-TRC-001":
+			if r.Orphan || len(r.ADRs) != 1 || r.ADRs[0] != "ADR-0099" ||
+				len(r.Slices) != 1 || r.Slices[0] != "slice-099" {
+				t.Fatalf("TRC-001 falsch verlinkt: %+v", r)
+			}
+		case "DC-FA-TRC-002":
+			if !r.Orphan {
+				t.Fatalf("TRC-002 nicht als Waise erkannt: %+v", r)
+			}
+		}
+	}
+}
+
+// slice-036: --trace --yaml — gültige YAML-Struktur, Waisen-Flag.
+func TestCLI036_Trace_YAML(t *testing.T) {
+	root := t.TempDir()
+	traceRepo(t, root)
+	code, stdout, _ := run(t, "--trace", "--yaml", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d", code)
+	}
+	for _, want := range []string{"requirements:", "id: DC-FA-TRC-001", "orphan: true"} {
+		if !strings.Contains(stdout, want) {
+			t.Fatalf("YAML ohne %q:\n%s", want, stdout)
+		}
+	}
+}
+
+// slice-036 Negative: --trace + --repair ist ein Nutzungsfehler (Exit 2).
+func TestCLI036_Trace_RepairKonflikt(t *testing.T) {
+	root := t.TempDir()
+	traceRepo(t, root)
+	code, _, stderr := run(t, "--trace", "--repair", root)
+	if code != 2 || !strings.Contains(stderr, "nicht mit --doctor/--repair") {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+}
+
+// slice-036 Boundary: kein Lastenheft → leere RTM, Exit 0.
+func TestCLI036_Trace_KeinLastenheft(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "# x\n")
+	code, stdout, _ := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d", code)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON dekodiert nicht: %v\n%s", err, stdout)
+	}
+	if doc.Total != 0 {
+		t.Fatalf("erwartet 0 Anforderungen, got %d", doc.Total)
+	}
+}

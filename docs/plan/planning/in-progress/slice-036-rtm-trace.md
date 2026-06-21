@@ -1,12 +1,17 @@
 # Slice slice-036: RTM als `d-check --trace`
 
-**Status:** next (geplant — noch nicht in Arbeit).
+**Status:** in-progress (seit 2026-06-21; Code/Tests/Spec-CR/Spezifikation/
+Doku fertig, `make gates` grün; Review R1 + Closure ausstehend).
 
-**Welle:** welle-25-rtm-trace (Trigger: Nutzer-Entscheid 2026-06-20 — RTM als
+**Welle:** welle-27-rtm-trace (Trigger: Nutzer-Entscheid 2026-06-20 — RTM als
 d-check-Modus statt separatem Skript; ein Prototyp-Skript bewies die
-Machbarkeit: 25 `DC-*` → ADR/Slice/Test, alle belegt).
+Machbarkeit: 25 `DC-*` → ADR/Slice/Test, alle belegt). *(welle-Nummer von
+ursprünglich „welle-25" korrigiert — welle-25 ist welle-25-pr-ci-traceability,
+slice-039.)*
 
 **Bezug:**
+[`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
+(die umgesetzte Anforderung, CR 0.21.0),
 [`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)
 (Modul `ids` liefert Kennungen + ihre Referenzen),
 [`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
@@ -53,17 +58,20 @@ ihn, kaum neue Logik.
 
 ## 4. Definition of Done (vorläufig)
 
-- [ ] Lastenheft-CR + Spezifikation für `--trace` (neuer CLI-Vertrag).
-- [ ] Modus im Paket `app` (wie diagnose/suggest), nutzt den `ids`/`matrix`-
-  Referenzgraphen aus `rules`; Markdown-Tabelle auf stdout, deterministisch
+- [x] Lastenheft-CR (0.21.0) + Spezifikation (`spec/spezifikation.md`) für
+  `--trace` (neuer CLI-Vertrag; Bezug oben).
+- [x] Modus im Paket `app` (`trace.go`, wie diagnose/suggest); **eigene
+  Ableitung** (ids/matrix liefern nur Findings, keinen Graphen) mit
+  `rules`-Helfern; Markdown-Tabelle auf stdout, deterministisch
   ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)),
   read-only ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
-- [ ] Lücken-Erkennung (Waisen: Anforderung ohne Slice/ADR).
-- [ ] **Optionale maschinenlesbare Ausgabe** `--trace --json` / `--trace
-  --yaml` (strukturgleich zur Tabelle, über die format-neutralen
-  report-Structs aus slice-031).
-- [ ] Akzeptanztests; `make gates` grün; unabhängiges Review R1; ADR nach
-  Bedarf.
+- [x] Lücken-Erkennung (Waise = Anforderung ohne referenzierenden Slice).
+- [x] **Maschinenlesbare Ausgabe** `--trace --json` / `--trace --yaml`
+  (strukturgleich, über den format-neutralen report-Adapter, slice-031).
+- [x] Akzeptanztests (`TestCLI036_Trace_*`); `make gates` grün; **Doku-only**
+  entschieden (Code-Test-Spalte verworfen); kein ADR nötig (additiv,
+  read-only, keine neuen Import-Kanten).
+- [ ] Unabhängiges Review R1; Closure.
 
 ## 5. Risiken / offene Punkte
 

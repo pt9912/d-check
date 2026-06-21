@@ -6,6 +6,15 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-036 — Option `--trace`: gibt eine **Requirements Traceability
+  Matrix** (je Anforderung die referenzierenden ADRs/Slices + Waisen-
+  Markierung) auf stdout aus — Default Markdown-Tabelle, mit `--json`/`--yaml`
+  maschinenlesbar; read-only (`DC-QA-03`), deterministisch (`DC-QA-02`),
+  kein Dokument erzeugt; Doku-Domäne (Lastenheft/ADR/Planning)
+  ([`DC-FA-CLI-009`](spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)).
+
 ### Changed
 
 - slice-037 — `--suggest-config ai-harness[-init]`: das Anforderungs-`ids`-

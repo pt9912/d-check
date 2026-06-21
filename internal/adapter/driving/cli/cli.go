@@ -47,6 +47,7 @@ type options struct {
 	json          bool
 	yaml          bool
 	doctor        bool
+	trace         bool
 	repair        bool
 	repairBroad   bool
 	enable        []string
@@ -117,6 +118,45 @@ func splitSources(v string) []string {
 	return out
 }
 
+// comboError meldet die erste unzulässige Modus-Kombination (DC-FA-CLI-003/
+// 004); leerer String = zulässig. --doctor und --trace sind jeweils mit
+// --json/--yaml kombinierbar (maschinenlesbar), aber nicht mit --repair
+// bzw. untereinander.
+func comboError(o options) string {
+	switch {
+	case o.json && o.yaml:
+		return "--json und --yaml sind nicht kombinierbar"
+	case o.repair && (o.json || o.yaml):
+		return "--repair ist nicht mit --json/--yaml kombinierbar"
+	case o.doctor && o.repair:
+		return "--doctor und --repair sind nicht kombinierbar"
+	case o.trace && (o.doctor || o.repair):
+		return "--trace ist nicht mit --doctor/--repair kombinierbar"
+	}
+	return ""
+}
+
+// runTrace gibt die Requirements Traceability Matrix aus (DC-FA-CLI-009) —
+// read-only; ausgelagert aus Run, um dessen Komplexität niedrig zu halten.
+func runTrace(fsys driven.Filesystem, opts options, stdout, stderr io.Writer) int {
+	matrix, err := app.BuildTraceMatrix(fsys)
+	if err == nil {
+		switch {
+		case opts.json:
+			err = report.TraceJSON(stdout, matrix)
+		case opts.yaml:
+			err = report.TraceYAML(stdout, matrix)
+		default:
+			err = report.Trace(stdout, matrix)
+		}
+	}
+	if err != nil {
+		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+		return 2
+	}
+	return 0
+}
+
 // parseOptions parst die Argumente; code/done steuern den sofortigen
 // Exit (Usage-Fehler → 2, -h → 0).
 func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
@@ -126,6 +166,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	jsonOut := flags.Bool("json", false, "maschinenlesbare JSON-Ausgabe")
 	yamlOut := flags.Bool("yaml", false, "maschinenlesbare YAML-Ausgabe (gleiche Struktur wie --json)")
 	doctorOut := flags.Bool("doctor", false, "erklärende, gruppierte Diagnose mit Fix-Kandidaten auf stdout (statt Befund-Zeilen)")
+	traceOut := flags.Bool("trace", false, "Requirements Traceability Matrix (RTM) auf stdout — read-only, kein Dokument erzeugt; mit --json/--yaml maschinenlesbar")
 	repairOut := flags.Bool("repair", false, "Reparatur-Patch (unified diff) auf stdout, git-apply-kompatibel; konservativ (nur eindeutige Fixes)")
 	repairBroadOut := flags.Bool("repair-broad", false, "wie --repair, zusätzlich Best-Guess-Reparaturen (review-pflichtig, Marker auf stderr)")
 	printConfig := flags.Bool("print-config", false, "Konfigurations-Startgerüst auf stdout ausgeben und beenden")
@@ -155,7 +196,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	opts := options{root: ".", json: *jsonOut, yaml: *yamlOut, doctor: *doctorOut,
 		repair: *repairOut || *repairBroadOut, repairBroad: *repairBroadOut,
 		enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig,
-		idPrefix: *idPrefix}
+		idPrefix: *idPrefix, trace: *traceOut}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}
@@ -164,16 +205,8 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	// oder --yaml kombinierbar (maschinenlesbare Diagnose, DC-FA-CLI-007).
 	// Nutzungsfehler (DC-FA-CLI-003, Exit 2): --json+--yaml,
 	// --repair+--json/--yaml und --doctor+--repair.
-	if opts.json && opts.yaml {
-		fmt.Fprintln(stderr, "d-check: error: --json und --yaml sind nicht kombinierbar")
-		return options{}, 2, true
-	}
-	if opts.repair && (opts.json || opts.yaml) {
-		fmt.Fprintln(stderr, "d-check: error: --repair ist nicht mit --json/--yaml kombinierbar")
-		return options{}, 2, true
-	}
-	if opts.doctor && opts.repair {
-		fmt.Fprintln(stderr, "d-check: error: --doctor und --repair sind nicht kombinierbar")
+	if msg := comboError(opts); msg != "" {
+		fmt.Fprintln(stderr, "d-check: error: "+msg)
 		return options{}, 2, true
 	}
 	return opts, 0, false
@@ -307,6 +340,11 @@ func Run(args []string, stdout, stderr io.Writer) int {
 		}
 		fmt.Fprint(stdout, out)
 		return 0
+	}
+	// DC-FA-CLI-009 (slice-036): Requirements Traceability Matrix —
+	// read-only, kein Dokument erzeugt (ausgelagert: hält Run schlank).
+	if opts.trace {
+		return runTrace(fsys, opts, stdout, stderr)
 	}
 	cfg, ok := loadConfig(fsys, stderr)
 	if !ok {

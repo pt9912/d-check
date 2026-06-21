@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -236,3 +237,42 @@ func DoctorJSON(stdout io.Writer, findings []model.Finding, sum Summary, exitCod
 func DoctorYAML(stdout io.Writer, findings []model.Finding, sum Summary, exitCode int, cfg model.Config) error {
 	return encodeYAML(stdout, buildDiagDoc(findings, sum, exitCode, cfg))
 }
+
+// Trace rendert die Requirements Traceability Matrix als Markdown-Tabelle
+// auf stdout (DC-FA-CLI-009, slice-036) — Default-Format des --trace-Modus.
+func Trace(stdout io.Writer, m app.TraceMatrix) error {
+	var b strings.Builder
+	b.WriteString("# Requirements Traceability Matrix\n\n")
+	b.WriteString("| Anforderung | Titel | ADRs | Slices | Status |\n")
+	b.WriteString("|---|---|---|---|---|\n")
+	for _, r := range m.Requirements {
+		status := "ok"
+		if r.Orphan {
+			status = "WAISE"
+		}
+		fmt.Fprintf(&b, "| %s | %s | %s | %s | %s |\n",
+			r.ID, traceCell(r.Title), joinOrDash(r.ADRs), joinOrDash(r.Slices), status)
+	}
+	fmt.Fprintf(&b, "\n%d Anforderung(en), %d Waise(n).\n", m.Total, m.Orphans)
+	_, err := io.WriteString(stdout, b.String())
+	return err
+}
+
+// TraceJSON rendert die Matrix maschinenlesbar als JSON (--trace --json),
+// strukturgleich zur Markdown-Tabelle.
+func TraceJSON(stdout io.Writer, m app.TraceMatrix) error { return encodeJSON(stdout, m) }
+
+// TraceYAML rendert die Matrix maschinenlesbar als YAML (--trace --yaml),
+// strukturgleich zur Markdown-Tabelle.
+func TraceYAML(stdout io.Writer, m app.TraceMatrix) error { return encodeYAML(stdout, m) }
+
+// joinOrDash fügt Kennungen zusammen; leere Liste → Gedankenstrich.
+func joinOrDash(xs []string) string {
+	if len(xs) == 0 {
+		return "—"
+	}
+	return strings.Join(xs, ", ")
+}
+
+// traceCell entschärft Pipe-Zeichen, damit ein Titel die Tabelle nicht bricht.
+func traceCell(s string) string { return strings.ReplaceAll(s, "|", "\\|") }

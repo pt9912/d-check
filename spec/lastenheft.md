@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.20.0
+**Version:** 0.21.0
 
 **Status:** Draft
 
@@ -324,6 +324,35 @@ unveränderten Arbeitsbaum sauber anwendbar.
 - **Negative:** Given einen unbekannten Wert für die Stufen-Wahl (bzw. die Kombination `d-check --repair --json`), when aufgerufen, then Exit-Code 2 (Nutzungsfehler, vgl. [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) und kein Patch; ein read-only gemountetes Repository genügt (kein Schreibzugriff, [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 
 **Out-of-Scope:** In-place-Schreiben der Dateien durch das Werkzeug selbst (immer stdout-Patch; ein In-place-Modus wäre ein Bruch von [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) und bräuchte eigene Anforderung samt ADR); eine JSON-Variante des Patches; die Garantie, dass die breite (Best-Guess-)Stufe semantisch korrekte Ziele trifft (deshalb review-pflichtig). **Reparierbar sind nur eindeutig ableitbare Befunde:** in dieser Version `id-unlinked` (konservativ) und `target-missing` als eindeutiger Datei-Move (breit) — alle übrigen Befundarten (`anchor-missing`, `repo-escape`, `symlink`, `codepath-missing`, `matrix-inactive`, `matrix-forbidden`, `external-status`, `external-timeout`, `external-redirects`, `span-unclosed`, `span-nested-link`, `hostpath-forbidden`) liefern keinen Edit und bleiben Befund unter [`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus). **Move-/Rename-Erkennung über Datei-Historie:** der `target-missing`-Best-Guess matcht ausschließlich über einen im Scan-Bestand eindeutigen, gleichen Basisnamen einer Markdown-Datei — er erkennt also nur Verschiebungen, keine Umbenennungen und keine Nicht-Markdown-Ziele; eine VCS-/git-historienbasierte Erkennung ist ausgeschlossen, weil sie die Eingabe über den gescannten, read-only gemounteten Baum hinaus erweitern würde ([`DC-QA-02`](#dc-qa-02--determinismus): gleiche Eingabe ⇒ gleiche Ausgabe) und ein eigenes opt-in-Modul (analog `external`) als eigene Anforderung bräuchte.
+
+---
+
+### DC-FA-CLI-009 — Requirements Traceability Matrix
+
+**Beschreibung:** Mit `--trace` macht `d-check` einen **Lese**-Durchgang
+über die kanonischen Quellen und gibt eine **Requirements Traceability
+Matrix** (RTM) auf **stdout** aus — read-only
+([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)),
+deterministisch ([`DC-QA-02`](#dc-qa-02--determinismus)), **kein Dokument
+erzeugt**, immer frisch abgeleitet. Je Anforderung (Anforderungs-Kennung im
+Lastenheft, `<PREFIX>-FA-*`/`-QA-*`) zeigt die Matrix Titel, die
+referenzierenden **ADRs** und **Slices** sowie eine **Lücken-Markierung**
+(Anforderung ohne referenzierenden Slice = Waise). Default-Format ist eine
+**Markdown-Tabelle**; mit `--json`/`--yaml` wird dieselbe Matrix
+strukturgleich maschinenlesbar (format-neutraler Reporter,
+[`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate)). **Doku-Domäne:**
+Anforderungen aus `spec/lastenheft.md`, Referenzen aus `docs/plan/adr/`
+und `docs/plan/planning/` (kein Code/keine Go-Toolchain). Reiht sich in die
+Advisory-Modi (`--print-config`/`--suggest-config`/`--doctor`) ein; nicht
+mit `--doctor`/`--repair` kombinierbar (Nutzungsfehler, Exit 2).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given ein Repo mit einer Lastenheft-Anforderung, einer sie referenzierenden ADR und einem sie referenzierenden Slice, when `d-check --trace` läuft, then enthält die Markdown-RTM eine Zeile für die Anforderung mit der ADR- und der Slice-Kennung und Status „ok", Exit 0; ein read-only gemountetes Repository genügt.
+- **Boundary:** Given ein Repo ohne `spec/lastenheft.md` (oder ohne Anforderungs-Kennungen), when `--trace` läuft, then eine leere Matrix (0 Anforderungen), kein Absturz, Exit 0, kein Schreibzugriff.
+- **Negative:** Given `d-check --trace --repair`, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)), keine RTM.
+
+**Out-of-Scope:** Erzeugen/Schreiben eines RTM-Dokuments (immer stdout); Code-/Test-Abdeckung (Scan von Go-Testdateien o. Ä. — verlässt die Markdown-Domäne und bräuchte eine Go-Toolchain, unvereinbar mit dem I/O-armen distroless-Design); Status-/Aktualitäts-Bewertung der referenzierenden ADRs (z. B. superseded); frei konfigurierbare Quell-Pfade jenseits der adoptierten Harness-Konvention.
 
 ---
 
@@ -797,6 +826,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.21.0 | 2026-06-21 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-009` — Option `--trace` gibt eine **Requirements Traceability Matrix** (Anforderung → referenzierende ADRs/Slices, Waisen-Markierung) auf stdout aus (Default Markdown-Tabelle, optional `--trace --json`/`--yaml` über den format-neutralen Reporter); read-only (`DC-QA-03`), deterministisch (`DC-QA-02`), kein Dokument erzeugt; **Doku-Domäne** (Lastenheft/ADR/Planning), kein Code/keine Go-Toolchain (arch-check bewusst ausgeklammert). Anlass: RTM als d-check-Modus statt separatem Skript (Nutzer-Entscheid 2026-06-20, Prototyp-Beleg) | slice-036 |
 | 0.20.0 | 2026-06-21 | Change Request (Auftraggeber): `DC-FA-CLI-006` um einen **Anforderungs-Präfix-Parameter** erweitert — `--suggest-config ai-harness[-init]` backt nicht mehr fix d-checks `DC-` ein: `--id-prefix <PREFIX>` setzt es explizit, der Modus `ai-harness` leitet es aus dem Lastenheft ab (eindeutige FA-/QA-Kennung; mehrere verschiedene ⇒ Nutzungsfehler), ohne Angabe/Ableitung erscheint ein markierter Platzhalter `<PREFIX>` + TODO statt eines stillen `DC-`. **Breaking** ggü. 0.18.1 (`ai-harness-init` ohne Präfix lieferte zuvor `DC-`); Begründung in eigener ADR. Anlass: a-check-Bootstrap 2026-06-20 — das Init-Template emittierte d-checks Eigen-Präfix in ein Fremd-Repo | slice-037 |
 | 0.19.0 | 2026-06-19 | Change Request (Auftraggeber): `DC-FA-CLI-004` um das Ausgabeformat **YAML** (`--yaml`) erweitert — gleiche Struktur wie `--json` (`findings`/`summary`/`exitCode`), volle Parität inkl. `--doctor --yaml` (mit `reasonText`/`fixCandidate`); `--json`+`--yaml` und `--repair`+`--yaml` sind Nutzungsfehler (Exit 2). Serialisierung im report-Adapter braucht `gopkg.in/yaml.v3` dort — die Modul-Import-Regeln werden dafür per Folge-ADR erweitert. Anlass: YAML als lesbareres maschinenlesbares Format neben JSON | slice-031 |
 | 0.18.1 | 2026-06-19 | Schärfung `DC-FA-CLI-006` (Auftraggeber, vor Release): die ai-harness-Vorlage in **zwei explizite Modi** aufgeteilt (Henne-Ei — nicht aus der Repo-Existenz ableitbar) — `ai-harness-init` (Voll-Kanon, alle Blöcke aktiv; Zielbild für ein leeres/frisches Repo, läuft nach Struktur-Anlage) und `ai-harness` (repo-bewusst, fehlende Blöcke auskommentiert; läuft sofort gegen ein bestehendes Repo). Anlass: der einzelne hybride Modus kommentierte in einem leeren Repo alles aus und taugte nicht als Bootstrap-Vorlage | slice-030 |

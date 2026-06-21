@@ -285,6 +285,32 @@ sortiert, Ausgabe nach Datei/Zeile):
    unangetastet und erscheinen unter
    [`DC-FA-CLI-007`](lastenheft.md#dc-fa-cli-007--diagnose-modus).
 
+### DC-FA-CLI-009.a — Requirements Traceability Matrix
+
+`--trace` ([`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix))
+ist ein **Lese**-Modus; Schreibzugriff entsteht nie
+([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+Ableitung (deterministisch,
+[`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus); feste Sortierung, keine
+Map-Iteration in der Ausgabe):
+
+1. **Anforderungen** aus `spec/lastenheft.md`: führende Heading-Kennungen
+   der Anforderungs-Gestalt `<PREFIX>-FA-<BEREICH>-NNN` bzw. `<PREFIX>-QA-NN`
+   (präfix-agnostisch); Titel = Heading-Klartext ohne Kennung/Trenner.
+2. **Referenzen** aus `docs/plan/adr/` (ADR-Kennung über den Dateinamen
+   `NNNN-…md` → `ADR-NNNN`) und `docs/plan/planning/` (Slice-Kennung
+   `slice-NNN-…md` → `slice-NNN`): je Datei alle Vorkommen einer
+   Anforderungs-Kennung sammeln; Dateien ohne eigene Kennung (z. B.
+   `README.md`) übersprungen.
+3. **Zeile je Anforderung**: ID, Titel, sortierte ADR-/Slice-Kennungen,
+   **Waise** = keine referenzierende Slice-Kennung. Default-Rendering
+   Markdown-Tabelle; `--json`/`--yaml` serialisieren dieselbe Struktur
+   (`requirements[]`, `total`, `orphans`).
+
+Fehlende Quellen (kein Lastenheft / kein `adr`/`planning`-Verzeichnis)
+liefern eine leere bzw. teilbefüllte Matrix, **kein** Fehler. Nur mit
+`--doctor`/`--repair` ist `--trace` ein Nutzungsfehler (Exit 2).
+
 ### DC-FA-LINK-001.a — Markdown-Vorverarbeitung und Link-Extraktion
 
 1. **Fences:** Zeilen, deren erste Nicht-Leerzeichen-Folge mit
