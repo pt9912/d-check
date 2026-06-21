@@ -10,11 +10,14 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Aktive Welle: welle-30-adr-immutable** —
-[`slice-041`](slice-041-adr-immutable-gate.md) (ADR-Immutable-Gate `make
-adr-check`: Accepted-ADRs nicht inhaltlich ändern; CI-Range + pre-commit-Hook)
-in Arbeit; Closure-Trigger: slice-041 done. Zuletzt abgeschlossen:
-welle-29-planning-consistency
+**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+welle-30-adr-immutable
+([`slice-041`](../done/slice-041-adr-immutable-gate.md) — ADR-Immutable-Gate
+`make adr-check` erzwingt [`AGENTS.md` §3.5](../../../../AGENTS.md#35-adrs-sind-nach-accepted-immutable)
+(Accepted-ADRs nur `## Geschichte`-Anhang + Status-Übergang; CI-Range +
+pre-commit-Hook; [ADR-0016](../../adr/0016-adr-immutable-gate.md));
+[Closure](../done/slice-041-adr-immutable-gate.md#7-closure-notiz-nach-done)).
+Davor welle-29-planning-consistency
 ([`slice-040`](../done/slice-040-planning-consistency-gate.md) — Meta-Gate
 `make planning-check` erzwingt Roadmap §Aktuelle Welle ↔
 `in-progress/slice-*` (beide Richtungen, fail-closed); kein ADR;

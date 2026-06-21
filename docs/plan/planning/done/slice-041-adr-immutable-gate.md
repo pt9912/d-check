@@ -1,6 +1,6 @@
 # Slice slice-041: ADR-Immutable-Gate (Accepted-ADRs nicht still ändern)
 
-**Status:** in-progress (in Arbeit).
+**Status:** done (abgeschlossen, welle-30-adr-immutable).
 
 **Welle:** welle-30-adr-immutable (Trigger: Nutzer-Audit 2026-06-21 —
 `AGENTS.md` §3.5 „ADRs sind nach `Accepted` immutable" ist dokumentiert,
@@ -96,3 +96,40 @@ Folge-Slice ausgekoppelt (andere Mechanik: ADR-Diff statt Verzeichnis-State).
 ## 6. Sub-Area-Modus-Begründung
 
 Alle berührten Sub-Areas GF (Harness-Mechanik/Doku; Greenfield-Default).
+
+## 7. Closure-Notiz (nach `done/`)
+
+**Umsetzung.** Neues ADR-Immutable-Gate `make adr-check`
+(`tools/adr-immutable-check.sh`) erzwingt
+[`AGENTS.md` §3.5](../../../../AGENTS.md#35-adrs-sind-nach-accepted-immutable):
+eine `Accepted`-ADR wird nicht inhaltlich überschrieben. Methode „immutable
+core" = Datei **ohne** `## Geschichte`-Abschnitt **und ohne** die
+Kopf-`**Status:**`-Zeile; `core(BASE) ≠ core(HEAD)` bei BASE-Accepted → FAIL,
+plus HEAD-Status-Guard und Löschen-/Umbenennen-Schutz. Zwei Quadranten, **eine**
+Skript-Wahrheit (wie das Traceability-Gate): lokaler `pre-commit`-Hook
+(staged-Diff) + PR-/Push-CI (Range, derselbe RANGE wie `make trace-check`);
+**nicht** Teil von `make gates`/`ci` (Diff-/Commit-Zeit-Bindepunkt). Policy +
+Topologie in [ADR-0016](../../adr/0016-adr-immutable-gate.md) (Accepted).
+
+**Belege.** `make gates` grün (doc-check, lint, test, arch-check, coverage,
+semgrep, gate-consistency, planning-check); `make adr-check` Selbsttest (7
+Fälle) + drei adversariale Pfade grün (self-test, `--staged` an echter
+Accepted-ADR, `--range` via Wegwerf-Commit). Read-only/deterministisch (liest
+nur git-Objekte). Dogfooding: die Durchsetzungs-ADR reifte Proposed→Accepted
+unter dem laufenden Gate (BASE-Proposed = frei) und ist ab Accept selbst
+gate-geschützt.
+
+**Review R1** ([`2026-06-21-slice-041-r1.md`](../../../reviews/2026-06-21-slice-041-r1.md)):
+**MERGE-FÄHIG**, 1 MEDIUM / 2 LOW / 2 NIT. **MEDIUM behoben** (`4ce7b70`):
+`core()` strippte jede `**Status:**`-Zeile dateiweit → Edit an einer
+Körper-Zeile mit `**Status:**`-Beginn rutschte durch (latent); Fix: Status nur
+im Kopf-Block straffen, `classify` über die erste Status-Zeile. **LOW behoben:**
+Selbsttest-Fälle 6 (core-resume nach `## Geschichte`) + 7 (Körper-Status-Regress);
+`--range` ohne `..` → Exit 2. **NIT behoben:** Index + §3.5 auf vierstellig
+`ADR-NNNN`. Ein NIT (Meldungs-Wortlaut) won't-fix. **Kein R2** (Nutzer-Entscheid).
+
+**Lerneintrag.** Ein Doku-Immutability-Gate, das eine Markierungszeile
+(`**Status:**`) dateiweit strafft, öffnet ein silent-green, sobald dieselbe
+Markierung legitim im Körper vorkommt — Struktur-Anker gehören an ihre
+Position gebunden (Kopf-Block), nicht global. Dieselbe Klasse wie der
+slice-040-Heading-Guard: ein fail-closed-Gate muss seine Anker **verorten**.
