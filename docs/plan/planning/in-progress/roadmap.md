@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-20.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-21.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -24,8 +24,7 @@ Request im Lastenheft oder Priorisierung durch den Auftraggeber).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-
-_(Keine Folge-Welle geplant — wartet auf Trigger.)_
+| welle-25-pr-ci-traceability | Audit 2026-06-21 (Traceability-Regel ohne Wächter; nur Tag-Release-CI) → [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md) | slice-039 (PR-/Push-CI + Traceability-Gate) | 1 Slice (CI-Workflow + `commit-msg`-Hook + Skript/Targets + Doku-Sync) |
 
 ## Meilensteine
 
