@@ -35,6 +35,22 @@ has_slices() { # $1 progress-dir
   return 1
 }
 
+# Kanonische Überschrift des Aktiv-Status-Abschnitts. EINE Wahrheit für
+# heading_present (grep) und active_section (awk) — beide Muster müssen
+# wörtlich gleich bleiben, sonst entsteht zwischen Guard und Extraktion
+# eine Lücke (R1 zu slice-040).
+HEADING_RE='^## Aktuelle Welle[[:space:]]*$'
+
+# heading_present: die kanonische H2 existiert EXAKT. Fehlt sie (Tippfehler,
+# Umbenennung, Zusatztext wie "## Aktuelle Welle (Stand …)"), kann der
+# Aktiv-Status nicht bestimmt werden → der Aufrufer schlägt fehl
+# (fail-closed). Ohne diesen Guard liefe active_section leer und has_active
+# meldete still "aktiv" — ein silent-green, wenn zugleich ein Slice in
+# in-progress/ läge (R1-MEDIUM zu slice-040).
+heading_present() { # $1 roadmap
+  grep -qE "$HEADING_RE" "$1"
+}
+
 # active-Block: der Abschnitt "## Aktuelle Welle" bis zur nächsten
 # H2-Überschrift. Der Marker wird NUR in diesem Block gesucht, damit ein
 # erklärender Verweis anderswo den Status nicht verfälscht.
@@ -60,6 +76,10 @@ has_active() { # $1 roadmap
 # 1 bei Drift. Schreibt die Befund-Meldung nach stderr.
 check_pair() { # $1 progress-dir, $2 roadmap
   local d="$1" rm="$2" slices active
+  if ! heading_present "$rm"; then
+    echo "planning-consistency: FAIL — §\"## Aktuelle Welle\" nicht in $rm gefunden; ohne die kanonische Überschrift ist der Aktiv-Status nicht bestimmbar (fail-closed)" >&2
+    return 1
+  fi
   if has_slices "$d"; then slices=1; else slices=0; fi
   if has_active "$rm"; then active=1; else active=0; fi
   if [ "$slices" -eq "$active" ]; then
@@ -89,6 +109,15 @@ self_test() {
   mkdir -p "$tmp/b"; printf '%s\n' "$act" > "$tmp/rb.md"
   if check_pair "$tmp/b" "$tmp/rb.md" 2>/dev/null; then
     echo "planning-consistency: Selbsttest FEHLGESCHLAGEN — kein-Slice+aktiv nicht erkannt" >&2
+    rm -rf "$tmp"; exit 2
+  fi
+  # Richtung C (Heading-Guard, R1-MEDIUM): kaputte Überschrift trägt den
+  # idle-Marker, ein Slice liegt vor → ohne Guard wäre das silent-green;
+  # mit Guard muss es feuern.
+  local broken="## Aktuelle Wellen"$'\n\n'"$ACTIVE_MARKER — wartet."
+  printf '%s\n' "$broken" > "$tmp/rc.md"
+  if check_pair "$tmp/a" "$tmp/rc.md" 2>/dev/null; then
+    echo "planning-consistency: Selbsttest FEHLGESCHLAGEN — kaputte §Aktuelle-Welle-Überschrift nicht als fail-closed erkannt" >&2
     rm -rf "$tmp"; exit 2
   fi
   # Konsistente Gegenproben dürfen NICHT feuern.
