@@ -17,10 +17,16 @@ Sensors-Bindung) leben in
 [`harness/conventions.md`](harness/conventions.md).
 
 Das Betriebsregelwerk der adoptierten Baseline in Agenten-Kurzform
-([`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/v1.3.0/kurs/de/agents-regelwerk.md))
-einmal pro Session lesen, bevor der Workflow (§6) startet. Derivativ:
-bei Konflikt gelten die kanonischen Quellen; der adoptierte Stand
-steht in [`harness/conventions.md`](harness/conventions.md) §Baseline.
+einmal pro Session lesen, bevor der Workflow (§6) startet. Lese-Form:
+das nach Modulen und Grundlagen-Abschnitten aufgeteilte Release-Bundle
+[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.3.0/lab-regelwerk.zip)
+(`v1.3.0`) — so lädt ein Agent einen einzelnen Abschnitt, ohne das
+gesamte Regelwerk im Kontext zu halten. Das Bundle ist eine derivative
+Sicht auf die Quelldatei
+[`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/v1.3.0/kurs/de/agents-regelwerk.md);
+bei Konflikt gilt die Quelldatei, über ihr die kanonischen Quellen
+(Source Precedence). Der adoptierte Stand steht in
+[`harness/conventions.md`](harness/conventions.md) §Baseline.
 
 ## 2. Kanonische Quellen (Source Precedence)
 
@@ -96,35 +102,35 @@ ADR, kein PR-Kommentar.
 Nur hier gelistete Targets existieren im Makefile. Halluzinierte
 Gates sind die häufigste Form von Harness-Lüge.
 
-| Target | Zweck |
-|---|---|
-| `make lint` | golangci-lint mit dem Projekt-Profil (§3.2) |
-| `make test` | `go test ./...` — Akzeptanzkriterien der `DC-FA-*` |
-| `make arch-check` | Import-Regeln des Hexagon-Schnitts + Kern-Paket-Richtung ([ADR-0005](docs/plan/adr/0005-modul-layout-hexagon-ordner.md), [ADR-0012](docs/plan/adr/0012-kern-paketschnitt-model-rules-app.md)) |
-| `make coverage-gate` | Coverage-Schwelle über `./internal/...` (Kalibrierungs-Bindung, siehe [`harness/README.md`](harness/README.md) §Sensors) |
-| `make gate-consistency` | Meta-Gate: dokumentierte Targets ↔ Makefile + [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modulliste (Harness-Lügen-Schutz) |
-| `make doc-check` | Doku-Links, Anker, Kennungs-Linkpflicht, Referenzmatrix + Inline-Code-Pfade via `d-check` selbst (Dogfooding; netzlos — zugleich [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Messmethode) |
-| `make gates` | alle inneren Gates (mandatory vor Handoff) |
-| `make ci` | CI-äquivalenter Lauf: gates + image-test (fährt die Release-Pipeline) |
-| `make trace-check` | Traceability-Gate: DC-/ADR-/slice-ID in Commits (`commit-msg`-Hook + PR-CI; bewusst **nicht** Teil von `gates`/`ci`) ([ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md)) |
-| `make hooks` | git-Hooks installieren (`core.hooksPath` → `.githooks`; aktiviert das `commit-msg`-Traceability-Gate) ([ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md)) |
-| `make fullbuild` | volle Closure: gates + image-test + bench, schließt mit dem Image-Hash |
-| `make image-test` | [`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container) |
-| `make bench` | [`DC-QA-01`](spec/lastenheft.md#dc-qa-01--performance)-Benchmark gegen generiertes Fixture (Median aus 3 Läufen, kein Gate in `gates`) |
-| `make semgrep` | Security-/Static-Analysis-**Gate**: gepinntes semgrep-Image + gepinntes, lokal gecachtes `go/lang/security`-Regelset, netzloser Scan (`--network none`); **Bestandteil von `gates`** ([ADR-0010](docs/plan/adr/0010-semgrep-hermetisches-gate.md)) |
-| `make versions` | Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Images, Runtime-Image-ID) |
-| `make build` / `make run` | Runtime-Image bauen / Selbst-Smoke-Test |
-| `make deps` / `make compile` | Cache-Layer / schnelles Compile-Feedback |
-| `make record-gates` | Nachweis schreiben: Working-Tree-Hash für den Stop-Hook |
-| `make help` / `make clean` | Targets anzeigen / Images entfernen |
+| Target                       | Zweck                                                                                                                                                                                                                                              |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `make lint`                  | golangci-lint mit dem Projekt-Profil (§3.2)                                                                                                                                                                                                        |
+| `make test`                  | `go test ./...` — Akzeptanzkriterien der `DC-FA-*`                                                                                                                                                                                                 |
+| `make arch-check`            | Import-Regeln des Hexagon-Schnitts + Kern-Paket-Richtung ([ADR-0005](docs/plan/adr/0005-modul-layout-hexagon-ordner.md), [ADR-0012](docs/plan/adr/0012-kern-paketschnitt-model-rules-app.md))                                                      |
+| `make coverage-gate`         | Coverage-Schwelle über `./internal/...` (Kalibrierungs-Bindung, siehe [`harness/README.md`](harness/README.md) §Sensors)                                                                                                                           |
+| `make gate-consistency`      | Meta-Gate: dokumentierte Targets ↔ Makefile + [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modulliste (Harness-Lügen-Schutz)                                                                           |
+| `make doc-check`             | Doku-Links, Anker, Kennungs-Linkpflicht, Referenzmatrix + Inline-Code-Pfade via `d-check` selbst (Dogfooding; netzlos — zugleich [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Messmethode)             |
+| `make gates`                 | alle inneren Gates (mandatory vor Handoff)                                                                                                                                                                                                         |
+| `make ci`                    | CI-äquivalenter Lauf: gates + image-test (fährt die Release-Pipeline)                                                                                                                                                                              |
+| `make trace-check`           | Traceability-Gate: DC-/ADR-/slice-ID in Commits (`commit-msg`-Hook + PR-CI; bewusst **nicht** Teil von `gates`/`ci`) ([ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md))                                                               |
+| `make hooks`                 | git-Hooks installieren (`core.hooksPath` → `.githooks`; aktiviert das `commit-msg`-Traceability-Gate) ([ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md))                                                                              |
+| `make fullbuild`             | volle Closure: gates + image-test + bench, schließt mit dem Image-Hash                                                                                                                                                                             |
+| `make image-test`            | [`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container)                                                                                                                |
+| `make bench`                 | [`DC-QA-01`](spec/lastenheft.md#dc-qa-01--performance)-Benchmark gegen generiertes Fixture (Median aus 3 Läufen, kein Gate in `gates`)                                                                                                             |
+| `make semgrep`               | Security-/Static-Analysis-**Gate**: gepinntes semgrep-Image + gepinntes, lokal gecachtes `go/lang/security`-Regelset, netzloser Scan (`--network none`); **Bestandteil von `gates`** ([ADR-0010](docs/plan/adr/0010-semgrep-hermetisches-gate.md)) |
+| `make versions`              | Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Images, Runtime-Image-ID)                                                                                                                                                                       |
+| `make build` / `make run`    | Runtime-Image bauen / Selbst-Smoke-Test                                                                                                                                                                                                            |
+| `make deps` / `make compile` | Cache-Layer / schnelles Compile-Feedback                                                                                                                                                                                                           |
+| `make record-gates`          | Nachweis schreiben: Working-Tree-Hash für den Stop-Hook                                                                                                                                                                                            |
+| `make help` / `make clean`   | Targets anzeigen / Images entfernen                                                                                                                                                                                                                |
 
 Alle dokumentiert-geplanten Targets existieren; Details und Bindungen:
 Sensors-Tabelle in [`harness/README.md`](harness/README.md).
 
 ## 5. Dokumentations-Regeln
 
-- Commits/PRs müssen mindestens eine `DC-*`-, `ADR-*`- oder `slice-*`-ID
-  nennen (maschinell erzwungen: `make trace-check` /
+- Commits/PRs müssen mindestens eine `DC-*`-, `ADR-*`-, `MR-*`- oder
+  `slice-*`-ID nennen (maschinell erzwungen: `make trace-check` /
   `commit-msg`-Hook / PR-CI,
   [ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md);
   Ausnahme: Merge-/Revert-Commits). Vergeben werden IDs nur beim

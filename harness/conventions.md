@@ -36,7 +36,10 @@ die kanonische Quelle (Source Precedence, siehe
 - **Extern (Agenten-Destillat):**
   [`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/v1.3.0/kurs/de/agents-regelwerk.md)
   — operatives Regelwerk für Code-Agenten ohne Didaktik; derivativ,
-  bei Konflikt gilt das Lehrmaterial.
+  bei Konflikt gilt das Lehrmaterial. Lese-Form: das nach Modulen und
+  Grundlagen-Abschnitten aufgeteilte Release-Bundle
+  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.3.0/lab-regelwerk.zip)
+  lädt einen Abschnitt, ohne das ganze Regelwerk im Kontext zu halten.
 - **Konventions-Vorbilder (Implementierung):**
   [`u-boot`](https://github.com/pt9912/u-boot) — Hexagon-Ordnerkonvention
   ([ADR-0005](../docs/plan/adr/0005-modul-layout-hexagon-ordner.md)),
@@ -346,13 +349,13 @@ Pflicht-Bausteine pro Anforderung:
 Zusätzlich zu den vier kanonischen Klassen (ADR, Carveout, Schwelle,
 Reproduzierbarkeit):
 
-| Klasse | Form | Bedeutung | Beispiel |
-|---|---|---|---|
+| Klasse     | Form   | Bedeutung                                       | Beispiel                                                                                                                                                                                                                                                          |
+| ---------- | ------ | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | DC-Bindung | `DC-…` | Gate prüft eine konkrete Lastenheft-Anforderung | [`DC-QA-02`](../spec/lastenheft.md#dc-qa-02--determinismus) für den Determinismus-Test in `make test`; [`DC-QA-03`](../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) für `make arch-check` und das Netzlos-Gate in `make doc-check` |
 
 ## Modus-Deklaration pro Sub-Area
 
-| Sub-Area (Pfad / Modul) | Modus | Begründung | Graduation-Bedingung / Folge-Slice |
-|---|---|---|---|
-| `*` (Default für gesamtes Repo) | Greenfield | Projekt startet spec-first; Doc führt, Code folgt | n/a (GF) |
-| `tools/harness/` | Greenfield | adoptierte Harness-Mechanik, konventionsgetragen über [`MR-004`](#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild) | n/a (GF) |
+| Sub-Area (Pfad / Modul)         | Modus      | Begründung                                                                                                                          | Graduation-Bedingung / Folge-Slice |
+| ------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `*` (Default für gesamtes Repo) | Greenfield | Projekt startet spec-first; Doc führt, Code folgt                                                                                   | n/a (GF)                           |
+| `tools/harness/`                | Greenfield | adoptierte Harness-Mechanik, konventionsgetragen über [`MR-004`](#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild) | n/a (GF)                           |
