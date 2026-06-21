@@ -6,6 +6,18 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- slice-037 — `--suggest-config ai-harness[-init]`: das Anforderungs-`ids`-
+  Muster ist nicht mehr fix `DC-`. Neues Flag `--id-prefix <PREFIX>` setzt
+  das Präfix explizit; der Modus `ai-harness` leitet es aus
+  `spec/lastenheft.md` ab (mehrere verschiedene Präfixe ⇒ Fehler).
+  **Breaking:** ohne Präfix/Ableitung (typisch `ai-harness-init` im leeren
+  Repo) erscheint ein markierter Platzhalter `<PREFIX>` + `# TODO` statt
+  eines stillen `DC-`
+  ([`DC-FA-CLI-006`](spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten),
+  `ADR-0015`).
+
 ## [0.19.0] — 2026-06-20
 
 ### Added

@@ -11,6 +11,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -1069,5 +1070,98 @@ func TestCLI006_AiHarnessInit_VollKanon(t *testing.T) {
 	// read-only (DC-QA-03): auch der init-Pfad schreibt nichts.
 	if _, err := os.Stat(filepath.Join(root, ".d-check.yml")); !os.IsNotExist(err) {
 		t.Fatalf(".d-check.yml geschrieben — read-only verletzt (DC-QA-03)")
+	}
+}
+
+// reqPattern liefert das Anforderungs-Muster (target spec/lastenheft.md)
+// aus einem dekodierten Vorschlag.
+func reqPattern(t *testing.T, stdout string) *regexp.Regexp {
+	t.Helper()
+	cfg, err := configyaml.Decode([]byte(stdout))
+	if err != nil {
+		t.Fatalf("dekodiert nicht: %v\n%s", err, stdout)
+	}
+	for _, p := range cfg.IDPatterns {
+		if p.Target == "spec/lastenheft.md" {
+			return p.Regex
+		}
+	}
+	t.Fatalf("kein Anforderungs-Muster (target spec/lastenheft.md):\n%s", stdout)
+	return nil
+}
+
+// slice-037 Happy: --id-prefix AC backt das Fremd-Präfix ins
+// Anforderungs-Muster (statt d-checks DC-), Voll-Kanon.
+func TestCLI037_IDPrefix_Explizit(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "# x\n")
+	code, stdout, stderr := run(t, "--suggest-config", "ai-harness-init", "--id-prefix", "AC", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	re := reqPattern(t, stdout)
+	if !re.MatchString("AC-FA-CLI-001") {
+		t.Fatalf("Muster matcht AC-FA-CLI-001 nicht: %q", re.String())
+	}
+	if re.MatchString("DC-FA-CLI-001") {
+		t.Fatalf("Muster matcht noch DC- (Fremd-Präfix nicht angewandt): %q", re.String())
+	}
+}
+
+// slice-037 Boundary: ai-harness-init ohne Präfix → markierter Platzhalter
+// <PREFIX> + TODO, KEIN stiller DC--Default; Gerüst bleibt dekodierbar.
+func TestCLI037_IDPrefix_Platzhalter(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "# x\n")
+	code, stdout, _ := run(t, "--suggest-config", "ai-harness-init", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d", code)
+	}
+	if !strings.Contains(stdout, "<PREFIX>-(FA-") || !strings.Contains(stdout, "TODO") {
+		t.Fatalf("Platzhalter <PREFIX>/TODO fehlt:\n%s", stdout)
+	}
+	if strings.Contains(stdout, "DC-(FA-") {
+		t.Fatalf("stiller DC--Default trotz fehlendem Präfix:\n%s", stdout)
+	}
+	if _, err := configyaml.Decode([]byte(stdout)); err != nil {
+		t.Fatalf("Platzhalter-Gerüst dekodiert nicht: %v\n%s", err, stdout)
+	}
+}
+
+// slice-037: ai-harness (repo-bewusst) leitet das Präfix aus dem
+// Lastenheft ab (erste/eindeutige FA-Kennung), ohne --id-prefix.
+func TestCLI037_IDPrefix_AbleitungAiHarness(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "# AC-FA-CORE-001 — x\n")
+	write(t, root, "docs/a.md", "# x\n")
+	code, stdout, stderr := run(t, "--suggest-config", "ai-harness", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	re := reqPattern(t, stdout)
+	if !re.MatchString("AC-FA-CORE-001") {
+		t.Fatalf("abgeleitetes Präfix matcht AC- nicht: %q", re.String())
+	}
+}
+
+// slice-037 Negative: mehrdeutiges Präfix im Lastenheft → Nutzungsfehler
+// (Exit 2), der Mensch gibt --id-prefix explizit.
+func TestCLI037_IDPrefix_KonfliktFehler(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "# DC-FA-A-001 — x\n\n# AC-FA-B-001 — y\n")
+	write(t, root, "docs/a.md", "# x\n")
+	code, _, stderr := run(t, "--suggest-config", "ai-harness", root)
+	if code != 2 || !strings.Contains(stderr, "mehrdeutig") {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+}
+
+// slice-037 Negative: ungültiger --id-prefix-Wert → Exit 2.
+func TestCLI037_IDPrefix_Ungueltig(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "# x\n")
+	code, _, stderr := run(t, "--suggest-config", "ai-harness-init", "--id-prefix", "ac", root)
+	if code != 2 || !strings.Contains(stderr, "ungültiges --id-prefix") {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
 	}
 }

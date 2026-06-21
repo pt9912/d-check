@@ -53,6 +53,7 @@ type options struct {
 	disable       []string
 	printConfig   bool
 	suggestConfig string
+	idPrefix      string
 }
 
 // reorderArgs erlaubt Optionen auch NACH dem Pfad-Argument — nötig
@@ -65,6 +66,7 @@ func reorderArgs(args []string) ([]string, error) {
 		"-enable": true, "--enable": true,
 		"-disable": true, "--disable": true,
 		"-suggest-config": true, "--suggest-config": true,
+		"-id-prefix": true, "--id-prefix": true,
 	}
 	var flagArgs, positionals []string
 	for i := 0; i < len(args); i++ {
@@ -128,6 +130,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	repairBroadOut := flags.Bool("repair-broad", false, "wie --repair, zusätzlich Best-Guess-Reparaturen (review-pflichtig, Marker auf stderr)")
 	printConfig := flags.Bool("print-config", false, "Konfigurations-Startgerüst auf stdout ausgeben und beenden")
 	suggestConfig := flags.String("suggest-config", "", "Config aus Autoritäts-Quellen (kommagetrennt) vorschlagen und beenden")
+	idPrefix := flags.String("id-prefix", "", "Kennungs-Präfix für --suggest-config ai-harness[-init] (z. B. AC); ohne Angabe Platzhalter <PREFIX>")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
 	flags.Var(&disable, "disable", "Regelmodul deaktivieren (wiederholbar)")
 	flags.Usage = func() { writeUsage(flags) }
@@ -151,7 +154,8 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	}
 	opts := options{root: ".", json: *jsonOut, yaml: *yamlOut, doctor: *doctorOut,
 		repair: *repairOut || *repairBroadOut, repairBroad: *repairBroadOut,
-		enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig}
+		enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig,
+		idPrefix: *idPrefix}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}
@@ -290,7 +294,13 @@ func Run(args []string, stdout, stderr io.Writer) int {
 			fmt.Fprintln(stderr, "d-check: error: --suggest-config braucht mindestens eine Quelle")
 			return 2
 		}
-		out, err := app.SuggestConfig(fsys, sources)
+		// --id-prefix (slice-037): leer = Platzhalter/Ableitung; sonst muss
+		// der Wert der Präfix-Gestalt entsprechen (Negative: Exit 2).
+		if opts.idPrefix != "" && !app.ValidIDPrefix(opts.idPrefix) {
+			fmt.Fprintf(stderr, "d-check: error: ungültiges --id-prefix %q (erwartet Großbuchstaben-Präfix wie AC)\n", opts.idPrefix)
+			return 2
+		}
+		out, err := app.SuggestConfig(fsys, sources, opts.idPrefix)
 		if err != nil {
 			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 			return 2

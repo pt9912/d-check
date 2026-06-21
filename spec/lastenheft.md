@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.19.0
+**Version:** 0.20.0
 
 **Status:** Draft
 
@@ -223,6 +223,18 @@ Repo-Existenz ableitbar, daher explizit gewählt):
   gegen das **bestehende/teil-konforme** Repo; die Kommentare sind die
   TODO-Liste Richtung Konformität.
 
+**Anforderungs-Präfix (`--id-prefix`).** Das Anforderungs-`ids`-Muster ist
+projektspezifisch: nur sein **Präfix** (für d-check `DC`) wechselt pro Repo;
+die `ADR-`/`MR-`/`slice`/Carveout-Muster sind konventions-fest. Das Präfix
+ist **parametrisierbar** statt fix `DC`: `--id-prefix <PREFIX>` (z. B. `AC`)
+setzt es explizit; im Modus `ai-harness` wird es ohne Angabe aus dem
+Lastenheft **abgeleitet** — das eindeutige Projekt-Präfix der FA-/QA-Kennungen
+(mehrere verschiedene ⇒ Nutzungsfehler, der Mensch gibt `--id-prefix` an). Ist
+kein Präfix angegeben **und** keins ableitbar (insbesondere `ai-harness-init`
+fürs leere Repo), wird ein **markierter Platzhalter `<PREFIX>` mit
+TODO-Hinweis** emittiert — **kein** stiller `DC-`-Default (der wäre in einem
+Fremd-Repo schlicht falsch).
+
 Beide sind **read-only und advisory** (der Mensch verengt), deterministisch
 ([`DC-QA-02`](#dc-qa-02--determinismus)), mit echten Quellen kombinierbar
 (`…,<quelle>`); der aktive Teil dekodiert über den eigenen Parser
@@ -238,6 +250,10 @@ Kommentar-Header nennt die zugrunde gelegte Baseline-Version.
 - **`ai-harness` Boundary:** Given ein Repo **ohne** `docs/plan/adr/`, when `d-check --suggest-config ai-harness` läuft, then erscheint der ADR-bezogene Block (zugehöriges `ids`-Muster und die `matrix`-Klasse für ADRs) **auskommentiert mit Hinweis** statt aktiv, `scan.roots` enthält nur existierende Pfade, und das Repository wird nicht geschrieben.
 - **`ai-harness` Abgrenzung:** Given es existiert keine Datei und kein Verzeichnis namens `ai-harness`, when `d-check --suggest-config ai-harness` läuft, then wird `ai-harness` als **reservierter Modus** erkannt (nicht als fehlende Quelle → **kein** Exit-Code 2 nach der Negative-Regel oben), Exit 0; ein read-only gemountetes Repository genügt.
 - **`ai-harness-init` Voll-Kanon:** Given ein Repo **ohne** `docs/plan/adr/`, when `d-check --suggest-config ai-harness-init` läuft, then sind das ADR-`ids`-Muster und die `matrix`-Klasse `adr` **aktiv** (nicht auskommentiert — im Gegensatz zu `ai-harness`), der aktive Teil dekodiert über den eigenen Parser (das Decoding prüft keine Target-Existenz), Exit 0.
+- **`--id-prefix` Happy:** Given `d-check --suggest-config ai-harness-init --id-prefix AC`, when der Lauf endet, then matcht das Anforderungs-`ids`-Muster `AC-FA-…`/`AC-QA-…` und **nicht** `DC-…`, Exit 0.
+- **`--id-prefix` Ableitung:** Given ein Repo, dessen `spec/lastenheft.md`-FA-/QA-Kennungen das Präfix `AC` tragen, when `d-check --suggest-config ai-harness` ohne `--id-prefix` läuft, then ist das Anforderungs-Muster auf `AC` abgeleitet, Exit 0.
+- **`--id-prefix` Boundary (Platzhalter):** Given `d-check --suggest-config ai-harness-init` ohne `--id-prefix` und ohne ableitbares Präfix, when der Lauf endet, then enthält die Ausgabe den Platzhalter `<PREFIX>` mit TODO-Hinweis (kein `DC-`) und dekodiert über den eigenen Parser, Exit 0.
+- **`--id-prefix` Negative (Konflikt):** Given ein `spec/lastenheft.md` mit **mehreren** verschiedenen FA-/QA-Präfixen, when `d-check --suggest-config ai-harness` ohne `--id-prefix` läuft, then Exit-Code 2 (Nutzungsfehler), kein Gerüst.
 
 **Out-of-Scope:** Schreiben der Datei (immer stdout); Muster-Ableitung aus beliebigem Fließtext (nur aus definierten Headings benannter Autoritäts-Quellen); Garantie eines minimalen/perfekten `regex` (Best-Guess-Generalisierung + Quell-Kennungs-Kommentar — der Mensch verengt); automatisches Ableiten von `link-policy`, `matrix`-Regeln oder `exempt-paths`. Die reservierten Quellen `ai-harness`/`ai-harness-init` sind hiervon ausgenommen — sie liefern `matrix`-Regeln, `link-policy` und `exempt-paths` aus der **bekannten Konvention** (nicht aus dem Repo abgeleitet); sie sind an **eine** adoptierte Baseline-Version gebunden (im Kommentar-Header genannt) — automatische Erkennung oder Hebung der Baseline-Version, das Anlegen der Verzeichnisstruktur (read-only) und das automatische Aktivieren bedarfsabhängiger opt-in-Module (`external`, `spans`, `hostpaths`) sind Out-of-Scope.
 
@@ -781,6 +797,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.20.0 | 2026-06-21 | Change Request (Auftraggeber): `DC-FA-CLI-006` um einen **Anforderungs-Präfix-Parameter** erweitert — `--suggest-config ai-harness[-init]` backt nicht mehr fix d-checks `DC-` ein: `--id-prefix <PREFIX>` setzt es explizit, der Modus `ai-harness` leitet es aus dem Lastenheft ab (eindeutige FA-/QA-Kennung; mehrere verschiedene ⇒ Nutzungsfehler), ohne Angabe/Ableitung erscheint ein markierter Platzhalter `<PREFIX>` + TODO statt eines stillen `DC-`. **Breaking** ggü. 0.18.1 (`ai-harness-init` ohne Präfix lieferte zuvor `DC-`); Begründung in eigener ADR. Anlass: a-check-Bootstrap 2026-06-20 — das Init-Template emittierte d-checks Eigen-Präfix in ein Fremd-Repo | slice-037 |
 | 0.19.0 | 2026-06-19 | Change Request (Auftraggeber): `DC-FA-CLI-004` um das Ausgabeformat **YAML** (`--yaml`) erweitert — gleiche Struktur wie `--json` (`findings`/`summary`/`exitCode`), volle Parität inkl. `--doctor --yaml` (mit `reasonText`/`fixCandidate`); `--json`+`--yaml` und `--repair`+`--yaml` sind Nutzungsfehler (Exit 2). Serialisierung im report-Adapter braucht `gopkg.in/yaml.v3` dort — die Modul-Import-Regeln werden dafür per Folge-ADR erweitert. Anlass: YAML als lesbareres maschinenlesbares Format neben JSON | slice-031 |
 | 0.18.1 | 2026-06-19 | Schärfung `DC-FA-CLI-006` (Auftraggeber, vor Release): die ai-harness-Vorlage in **zwei explizite Modi** aufgeteilt (Henne-Ei — nicht aus der Repo-Existenz ableitbar) — `ai-harness-init` (Voll-Kanon, alle Blöcke aktiv; Zielbild für ein leeres/frisches Repo, läuft nach Struktur-Anlage) und `ai-harness` (repo-bewusst, fehlende Blöcke auskommentiert; läuft sofort gegen ein bestehendes Repo). Anlass: der einzelne hybride Modus kommentierte in einem leeren Repo alles aus und taugte nicht als Bootstrap-Vorlage | slice-030 |
 | 0.18.0 | 2026-06-19 | Change Request (Auftraggeber): `DC-FA-CLI-006` um die reservierte Quelle `ai-harness` erweitert — `--suggest-config ai-harness` schlägt ein an die adoptierte ai-harness-course-Konvention angelehntes `.d-check.yml` vor (kanonische `ids`-Muster, `matrix`-Klassen samt Referenzrichtung, Standard-Modulset, Scan-Scope). Hybrid: strukturelle Konventionen immer, konkrete Pfade repo-bewusst (nur existierende roots; fehlende Artefakte auskommentiert mit Hinweis). Read-only/advisory, deterministisch (`DC-QA-02`); liefert — als Ausnahme zur reinen Quellen-Ableitung — `matrix`-Regeln/`link-policy`/`exempt-paths` aus der bekannten Konvention. Anlass: Adoptions-Start für Harness-Repos ohne manuelles Quellen-Auflisten | slice-030 |

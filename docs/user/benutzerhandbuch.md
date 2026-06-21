@@ -237,6 +237,22 @@ Standard-Modulset. Welche Quelle, hängt von Ihrer Ausgangslage ab:
 Beide sind beratend und kombinierbar mit echten Quellen (z. B. `ai-harness`
 zusätzlich zu `spec/lastenheft.md`).
 
+**Kennungs-Präfix (`--id-prefix`):** Das Anforderungs-`ids`-Muster ist
+projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
+a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
+
+```bash
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.20.0 \
+  --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
+```
+
+Im Modus `ai-harness` wird das Präfix **ohne** `--id-prefix` aus dem
+vorhandenen `spec/lastenheft.md` abgeleitet (mehrere verschiedene Präfixe ⇒
+Fehler — dann `--id-prefix` setzen). Ohne Angabe **und** ohne Ableitung
+(typisch `ai-harness-init` im leeren Repo) erscheint ein markierter
+Platzhalter `<PREFIX>` mit `# TODO` — **kein** stilles `DC-`; ersetzen Sie
+ihn durch Ihr Projekt-Präfix.
+
 ### 4.5 Regelmodule zu- und abschalten
 
 **Ziel:** ein Modul aktivieren oder deaktivieren.

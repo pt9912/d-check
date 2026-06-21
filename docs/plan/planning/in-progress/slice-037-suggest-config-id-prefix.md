@@ -1,6 +1,8 @@
 # Slice slice-037: `--suggest-config` — Kennungs-Präfix als Option
 
-**Status:** next (geplant — noch nicht in Arbeit).
+**Status:** in-progress (seit 2026-06-21; Code/Tests, Spec-CR (0.20.0),
+[ADR-0015](../../adr/0015-suggest-config-id-prefix.md), Handbuch/CHANGELOG
+fertig, `make gates` grün; Review R1 + Accept ausstehend).
 
 **Welle:** welle-26-suggest-prefix (Trigger: a-check-Bootstrap 2026-06-20 —
 `--suggest-config ai-harness-init` emittierte d-checks **eigenes** `DC-`-Muster
@@ -56,17 +58,22 @@ still `DC-`** emittiert.
 
 ## 4. Definition of Done (vorläufig)
 
-- [ ] Lastenheft-CR:
+- [x] Lastenheft-CR (0.20.0):
   [`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)
-  um Präfix-Parameter/Ableitung erweitert.
-- [ ] CLI: `--id-prefix` (oder Token) wird von beiden `ai-harness`-Quellen
-  konsumiert; `ai-harness` leitet aus dem Lastenheft ab.
-- [ ] Ohne Präfix: Platzhalter `<PREFIX>` + Hinweis, kein `DC-`.
-- [ ] Tests Happy/Boundary/Negative; Determinismus
+  um Präfix-Parameter/Ableitung + Platzhalter-Default erweitert.
+- [x] CLI: **Flag** `--id-prefix` (Entscheidung: Flag, nicht Token) wird von
+  beiden `ai-harness`-Quellen konsumiert; `ai-harness` leitet aus dem
+  Lastenheft ab (Konflikt ⇒ Fehler).
+- [x] Ohne Präfix: Platzhalter `<PREFIX>` + `# TODO`, kein `DC-`.
+- [x] Tests Happy/Boundary/Negative (+ Ableitung, Konflikt, ungültiger
+  Wert); Determinismus
   ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)),
   read-only ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
-- [ ] Benutzerhandbuch §`--suggest-config` ergänzt.
-- [ ] ADR (Default-Änderung) nach Bedarf; `make gates` grün; Review R1.
+- [x] Benutzerhandbuch §`--suggest-config` ergänzt; `CHANGELOG` (Breaking).
+- [x] [ADR-0015](../../adr/0015-suggest-config-id-prefix.md) (Default-Änderung)
+  geschrieben; `make gates` grün.
+- [ ] Unabhängiges Review R1; Closure;
+  [ADR-0015](../../adr/0015-suggest-config-id-prefix.md) → `Accepted`.
 
 ## 5. Risiken / offene Punkte
 
