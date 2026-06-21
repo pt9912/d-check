@@ -1,6 +1,6 @@
 # ADR-0016 — ADR-Immutable-Gate (Accepted-ADRs maschinell unveränderlich)
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-21
 **Autor:** pt9912
 **Bezug:** [`AGENTS.md` §3.5](../../../AGENTS.md#35-adrs-sind-nach-accepted-immutable)
@@ -117,3 +117,4 @@ fordern.
 | Datum | Ereignis |
 |---|---|
 | 2026-06-21 | Proposed — Audit-Befund: §3.5 ohne Wächter; Topologie + Policy via Nutzer-Entscheid (CI-Range + Hook, eigene ADR) |
+| 2026-06-21 | Proposed → Accepted (Umsetzung slice-041; Review R1 MERGE-FÄHIG, 1 MEDIUM/2 LOW/1 NIT behoben — `core()`-Status-Strip nur im Header, Selbsttest 6/7, Range-`..`-Guard) |
