@@ -1,7 +1,6 @@
 # Slice slice-038: `--print-mk` — `d-check.mk` ausgeben (include-bare Integration)
 
-**Status:** in-progress (seit 2026-06-21; Code/Tests/Spec-CR/Spezifikation/
-Doku fertig, `make gates` grün; Review R1 + Closure ausstehend).
+**Status:** done (Closure 2026-06-21; Review R1+R2, kein ADR nötig).
 
 **Welle:** welle-28-print-mk (Trigger: a-check-Bootstrap 2026-06-20 — a-check
 bindet das Doku-Gate per **handgepflegtem** `d-check.mk` ein; der Pin lebt
@@ -73,7 +72,8 @@ das, und der Pin lebt (richtig) in d-check.
 - [x] `docs/user/operations.md` + `CHANGELOG` ergänzt; `make gates` grün;
   **kein ADR** (Version-Tag-Default konsistent mit der ratifizierten
   Konsum-Pin-Politik).
-- [ ] Unabhängiges Review R1; Closure.
+- [x] Unabhängiges Review R1 (0 HIGH/0 MEDIUM/1 LOW) + R2 (bestätigt);
+  Closure.
 
 ## 5. Risiken / offene Punkte
 
@@ -94,3 +94,38 @@ eingebunden (`include`). Das Zielbild ist d-check-eigene Ausgabe via
 ## 7. Sub-Area-Modus-Begründung
 
 Alle berührten Sub-Areas GF (CLI-/Core-/Doku-Arbeit; Greenfield-Default).
+
+## 8. Closure-Notiz (nach `done/`)
+
+**Umsetzung.** Neuer read-only-Generator `--print-mk`
+([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)):
+gibt ein include-bares `d-check.mk` auf stdout (wie `--print-config`,
+repo-frei via `earlyGenerators`). `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v<version>`
+— Version via `-ldflags -X` in der Dockerfile-build-Stage eingebettet,
+gespeist aus dem bestehenden `make ci VERSION=…` (kein `release.yml`-Edit) —
+plus ein `doc-check`-Target. **Digest via `DCHECK_IMAGE`-Override** (Henne-Ei:
+das Binary kennt seinen eigenen Digest nicht); Version-Tag-Default konsistent
+mit der ratifizierten Konsum-Pin-Politik. **Kein ADR** (additiv, keine neue
+Import-Kante; `print_mk.go` importiert nur `fmt`).
+
+**Belege.** `make gates` grün (doc-check, lint, test, arch-check, coverage
+94,20 %, semgrep 29/0, gate-consistency); read-only
+([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)),
+deterministisch
+([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
+Dogfooding: `d-check --print-mk | make -n -f - doc-check` parst + expandiert;
+Build mit `--build-arg VERSION=9.9.9-test` → `:v9.9.9-test` (R1/R2 verifiziert).
+
+**Review R1** (`docs/reviews/2026-06-21-slice-038-print-mk.md`):
+0 HIGH/0 MEDIUM/1 LOW/1 INFO. **R2**
+(`docs/reviews/2026-06-21-slice-038-r2-verifikation.md`): R1-Kern bestätigt,
+keine neuen blockierenden Punkte. **LOW-1** (`--print-mk` kombiniert still mit
+`--json`/`--doctor`) won't-fix: **identisch** zum Schwester-Generator
+`--print-config` (R2: kein Fall schlimmer; `comboError` greift vor
+`earlyGenerators`, daher `--print-mk --json --yaml` → Exit 2). INFO won't-fix.
+
+**Lerneintrag.** Ein Binary kann seinen eigenen Image-Digest nicht
+selbst-einbetten (der Digest hasht das Binary) — die ehrliche Lösung ist der
+Version-Tag als self-known Default plus `DCHECK_IMAGE`-Override für den
+strikten Digest-Pin. Und: ein neuer CLI-Modus kann die Komplexitäts-Schwelle
+von `Run` kippen — auslagern (`earlyGenerators`) statt inline.

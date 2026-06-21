@@ -11,14 +11,14 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 ## Aktuelle Welle
 
 **Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
-welle-27-rtm-trace (`slice-036` — RTM als read-only-Modus `--trace`
-(Anforderung → ADRs/Slices + Waisen), Markdown/JSON/YAML;
-[`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
-0.21.0, Review R1+R2, kein ADR;
-[Closure](../done/slice-036-rtm-trace.md#8-closure-notiz-nach-done)).
-Davor welle-26-suggest-prefix (`slice-037`), welle-25-pr-ci-traceability
-(`slice-039`), welle-23-latest-tag (`slice-034`) und
-welle-24-kern-paketschnitt (`slice-035`).
+welle-28-print-mk (`slice-038` — read-only-Generator `--print-mk` gibt ein
+include-bares `d-check.mk` (version-gepinntes Image + `doc-check`-Target) aus;
+[`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+0.22.0, Review R1+R2, kein ADR;
+[Closure](../done/slice-038-print-mk.md#8-closure-notiz-nach-done)).
+Davor welle-27-rtm-trace (`slice-036`), welle-26-suggest-prefix (`slice-037`),
+welle-25-pr-ci-traceability (`slice-039`), welle-23-latest-tag (`slice-034`)
+und welle-24-kern-paketschnitt (`slice-035`).
 Letztes Release **v0.19.0** auf GHCR (2026-06-20) bündelt slice-031/032/033
 (`--yaml` + semgrep-Gate + Digest-Pins); `slice-035` ist als reiner Refactor
 noch in keinem Release. Die nächste Welle wartet auf ihren Trigger (Change
@@ -86,6 +86,7 @@ flowchart LR
 | welle-25-pr-ci-traceability | 2026-06-21 | [slice-039 §7](../done/slice-039-pr-ci-traceability-gate.md#7-closure-notiz-nach-done); PR-/Push-CI (`ci.yml`) ruft `make ci` + `make trace-check`; Traceability-Gate (`tools/trace-check.sh` + `commit-msg`-Hook via `make hooks`) erzwingt DC-/ADR-/MR-/slice-ID in Commits ([ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md)); unabhängiges Review R1 (2 HIGH/1 MEDIUM behoben) + R2 (HIGH-A behoben), adversarial verifiziert; `make gates` grün; kein Release (Harness-Infra) |
 | welle-26-suggest-prefix | 2026-06-21 | [slice-037 §8](../done/slice-037-suggest-config-id-prefix.md#8-closure-notiz-nach-done); `--suggest-config ai-harness[-init]` Kennungs-Präfix parametrisierbar — Flag `--id-prefix`, Ableitung aus dem Lastenheft (`ai-harness`), Platzhalter `<PREFIX>` + TODO statt fixem `DC-` ([`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) 0.20.0, [ADR-0015](../../adr/0015-suggest-config-id-prefix.md)); **Breaking** (Init ohne Präfix → Platzhalter); unabhängiges Review R1 (2 MEDIUM behoben) + R2 (bestätigt); `make gates` grün; kein Release |
 | welle-27-rtm-trace | 2026-06-21 | [slice-036 §8](../done/slice-036-rtm-trace.md#8-closure-notiz-nach-done); read-only-Modus `--trace` gibt eine Requirements Traceability Matrix aus (je Anforderung referenzierende ADRs/Slices + Waisen-Markierung), Default Markdown, optional `--trace --json`/`--yaml` ([`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix), Lastenheft 0.21.0); Doku-only, eigene Ableitung in `app` (ids/matrix liefern nur Findings), kein ADR (additiv); unabhängiges Review R1 (1 LOW behoben) + R2 (LOW-2 behoben); `make gates` grün; kein Release |
+| welle-28-print-mk | 2026-06-21 | [slice-038 §8](../done/slice-038-print-mk.md#8-closure-notiz-nach-done); read-only-Generator `--print-mk` gibt ein include-bares `d-check.mk` aus — überschreibbare `DCHECK_IMAGE`-Variable (version-gepinntes Image, beim Tag-Build via `-ldflags -X` eingebettet; Digest via Override) + `doc-check`-Target ([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben), Lastenheft 0.22.0); kein ADR (Henne-Ei beim Digest, Version-Tag-Default konsistent mit Konsum-Pin-Politik); unabhängiges Review R1 (0 HIGH/0 MEDIUM/1 LOW won't-fix) + R2 (bestätigt); `make gates` grün; kein Release |
 
 ## Historische Trigger-Verschiebungen
 
