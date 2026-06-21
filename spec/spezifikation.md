@@ -141,6 +141,16 @@ Repo-Existenz ableitbar, daher explizit gewählt):
 
 Sind beide Tokens zugleich angegeben, gewinnt `ai-harness-init` (Voll-Kanon).
 
+**Anforderungs-Präfix.** Nur das Anforderungs-`ids`-Muster trägt ein
+projektspezifisches Präfix (`<PREFIX>`); `ADR-`/`MR-`/`slice`/Carveout sind
+konventions-fest. Quelle des Präfix: die Option `--id-prefix <PREFIX>`
+(explizit, gewinnt immer); im Modus `ai-harness` ohne Option das
+**eindeutige** Projekt-Präfix der FA-/QA-Kennungs-Headings in
+`spec/lastenheft.md` (mehrere verschiedene ⇒ Nutzungsfehler). Ohne Option
+**und** ohne Ableitung (insbesondere `ai-harness-init` fürs leere Repo)
+bleibt der markierte Platzhalter `<PREFIX>` mit `# TODO`-Hinweis stehen —
+**kein** stiller `DC-`.
+
 Kanonische Vorlage (Spiegel der Repo-Konvention; `ai-harness-init` gibt sie
 vollständig aktiv aus, `ai-harness` nur die im Baum vorhandenen Teile):
 
@@ -160,7 +170,9 @@ ids:
       target: harness/conventions.md
       link-policy: always
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
-    - regex: 'DC-(FA-[A-Z]+|QA)-\d+'
+    # <PREFIX>: via --id-prefix bzw. im ai-harness-Modus aus dem Lastenheft
+    # abgeleitet; ohne beides bleibt der Platzhalter + TODO stehen.
+    - regex: '<PREFIX>-(FA-[A-Z]+|QA)-\d+'
       target: spec/lastenheft.md
       link-policy: always
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]

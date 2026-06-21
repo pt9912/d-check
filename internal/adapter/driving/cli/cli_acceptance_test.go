@@ -1165,3 +1165,35 @@ func TestCLI037_IDPrefix_Ungueltig(t *testing.T) {
 		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
 	}
 }
+
+// slice-037 (Review R1 MEDIUM-2): --id-prefix überschreibt die Ableitung im
+// ai-harness-Modus (explizit gewinnt) trotz vorhandenem DC-Lastenheft.
+func TestCLI037_IDPrefix_UeberschreibtAbleitung(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "# DC-FA-CLI-001 — x\n")
+	write(t, root, "docs/a.md", "# x\n")
+	code, stdout, stderr := run(t, "--suggest-config", "ai-harness", "--id-prefix", "ZZ", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	re := reqPattern(t, stdout)
+	if !re.MatchString("ZZ-FA-CLI-001") || re.MatchString("DC-FA-CLI-001") {
+		t.Fatalf("--id-prefix überschreibt die DC-Ableitung nicht: %q", re.String())
+	}
+}
+
+// slice-037 (Review R1 MEDIUM-2): --id-prefix übergeht den Mehrdeutigkeits-
+// Fehler — explizites Präfix statt Ableitung, daher kein Konflikt.
+func TestCLI037_IDPrefix_FlagUebergehtKonflikt(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "# DC-FA-A-001 — x\n\n# AC-FA-B-001 — y\n")
+	write(t, root, "docs/a.md", "# x\n")
+	code, stdout, stderr := run(t, "--suggest-config", "ai-harness", "--id-prefix", "ZZ", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d (Flag sollte den Konflikt übergehen), stderr = %q", code, stderr)
+	}
+	re := reqPattern(t, stdout)
+	if !re.MatchString("ZZ-FA-A-001") {
+		t.Fatalf("explizites Präfix nicht angewandt: %q", re.String())
+	}
+}

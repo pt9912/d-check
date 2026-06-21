@@ -11,9 +11,10 @@
 [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus) (deterministisch),
 [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
 (read-only).
-**Schärft:** keine Spec-Stelle — Default-/Prozess-ADR; verbindlich für das
-Default-Verhalten von `--suggest-config ai-harness[-init]` (Präfix-Quelle,
-kein stiller `DC-`).
+**Schärft:**
+[`spec/spezifikation.md` §DC-FA-CLI-006.a](../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag)
+(technisches Vorlagen-/Ableitungs-Verhalten: Präfix-Quelle, Platzhalter
+statt stillem `DC-`) — nicht das Lastenheft.
 
 ## Kontext
 
