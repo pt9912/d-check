@@ -1,6 +1,6 @@
 # Slice slice-040: Planning-Konsistenz-Gate (Roadmap ↔ Slice-State)
 
-**Status:** next (geplant — noch nicht in Arbeit).
+**Status:** in-progress (in Arbeit).
 
 **Welle:** welle-29-planning-consistency (Trigger: Nutzer-Audit 2026-06-21 —
 `roadmap.md` sagte „Keine aktive Welle", während ein `slice-*` in

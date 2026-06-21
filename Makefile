@@ -38,7 +38,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency bench image-test semgrep versions build run doc-check record-gates gates ci fullbuild trace-check hooks clean
+.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency planning-check bench image-test semgrep versions build run doc-check record-gates gates ci fullbuild trace-check hooks clean
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -72,6 +72,9 @@ coverage-gate: ## Coverage-Schwelle (Kalibrierungs-Bindung: 93 %, Historie in ha
 
 gate-consistency: ## Meta-Gate: dokumentierte Targets ↔ Makefile, QA-03-Modulliste (Harness-Lügen-Schutz).
 	@bash tools/gate-consistency.sh
+
+planning-check: ## Meta-Gate: Roadmap §Aktuelle Welle ↔ in-progress/slice-* (Planning-Drift-Schutz; slice-040).
+	@bash tools/planning-consistency.sh
 
 bench: build ## DC-QA-01-Benchmark: generiertes Fixture, N=3 Läufe, Median < 5 s (Spez §DC-QA-01.a).
 	@bash tools/bench-fixture.sh
@@ -118,8 +121,8 @@ record-gates: ## Nachweis schreiben: Working-Tree-Hash (für den Stop-Hook).
 
 # record-gates läuft als LETZTER Prerequisite — der Nachweis entsteht
 # nur, wenn alle Gates grün sind (sonst bricht make vorher ab).
-gates: doc-check lint test arch-check coverage-gate semgrep gate-consistency record-gates ## alle inneren Gates (mandatory vor Handoff).
-	@echo "[gates] doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency green"
+gates: doc-check lint test arch-check coverage-gate semgrep gate-consistency planning-check record-gates ## alle inneren Gates (mandatory vor Handoff).
+	@echo "[gates] doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency + planning-check green"
 
 # ci = gates + Image-Integrationstests — das Target, das die
 # Release-Pipeline (slice-011) fährt. fullbuild = volle Closure vor

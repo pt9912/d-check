@@ -10,7 +10,10 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+**Aktive Welle: welle-29-planning-consistency** —
+[`slice-040`](slice-040-planning-consistency-gate.md) (Meta-Gate `make
+planning-check`: Roadmap-Marker ↔ `in-progress/`-Slice-State) in Arbeit;
+Closure-Trigger: slice-040 done. Zuletzt abgeschlossen:
 welle-28-print-mk (`slice-038` — read-only-Generator `--print-mk` gibt ein
 include-bares `d-check.mk` (version-gepinntes Image + `doc-check`-Target) aus;
 [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
