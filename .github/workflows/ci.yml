@@ -43,8 +43,9 @@ jobs:
           # Volle Historie fuer den Commit-Range des Traceability-Gates.
           fetch-depth: 0
 
-      # Traceability ZUERST (billig, fail-fast vor dem teuren Docker-Build).
-      - name: Traceability-Gate (DC-/ADR-/slice-ID in Commits)
+      # Commit-Range-Gates ZUERST (billig, fail-fast vor dem teuren Docker-Build):
+      # Traceability (DC-/ADR-/slice-ID) + ADR-Immutable (Accepted-ADRs).
+      - name: Traceability + ADR-Immutable (Commit-Range)
         env:
           EVENT: ${{ github.event_name }}
           PR_BASE: ${{ github.event.pull_request.base.sha }}
@@ -65,6 +66,7 @@ jobs:
           fi
           echo "Pruefe Commit-Range: $RANGE"
           make trace-check RANGE="$RANGE"
+          make adr-check RANGE="$RANGE"
 
       # Volle Gates + Image-Integrationstests (identische Engine wie Release).
       - name: Gates + Image-Integrationstests (make ci)

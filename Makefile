@@ -38,7 +38,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency planning-check bench image-test semgrep versions build run doc-check record-gates gates ci fullbuild trace-check hooks clean
+.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency planning-check bench image-test semgrep versions build run doc-check record-gates gates ci fullbuild trace-check adr-check hooks clean
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -144,9 +144,12 @@ fullbuild: ci bench ## volle Closure: ci + bench; schließt mit dem Image-Hash (
 trace-check: ## Traceability-Gate: DC-/ADR-/slice-ID in Commits (Selbsttest + HEAD; RANGE=a..b für CI). ADR-0013.
 	@bash tools/trace-check.sh $(if $(RANGE),--range $(RANGE),)
 
-hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Traceability). ADR-0013.
+adr-check: ## ADR-Immutable-Gate: Accepted-ADRs nicht inhaltlich ändern (Selbsttest + HEAD~1..HEAD; RANGE=a..b für CI). ADR-0016.
+	@bash tools/adr-immutable-check.sh $(if $(RANGE),--range $(RANGE),)
+
+hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Traceability + pre-commit ADR-Immutable). ADR-0013/0016.
 	@git config core.hooksPath .githooks
-	@echo "[hooks] core.hooksPath=.githooks — commit-msg Traceability-Gate aktiv"
+	@echo "[hooks] core.hooksPath=.githooks — commit-msg Traceability + pre-commit ADR-Immutable aktiv"
 
 # ---- maintenance -------------------------------------------------------------
 
