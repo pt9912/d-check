@@ -1,6 +1,6 @@
 # ADR-0013 — PR-/Push-CI und Traceability-Gate (DC-*/ADR-* in Commits)
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-21
 **Autor:** pt9912
 **Bezug:** [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)
@@ -178,3 +178,4 @@ sondern denselben Vertrag auf einen früheren Lebenszyklus-Punkt
 |---|---|
 | 2026-06-21 | Proposed — Audit-Befund: Traceability-Regel ohne Wächter, kein PR-/Push-CI |
 | 2026-06-21 | Review (docs/reviews/2026-06-21-adr-0013-pr-ci-traceability.md) eingearbeitet: Index-Zeile ergänzt; `slice-*` ins Muster (Planning-Commits); `make ci`/`make trace-check` entkoppelt; gate-consistency-Bewachung in `harness/README.md` + `AGENTS.md`; ID-Quote korrigiert |
+| 2026-06-21 | Proposed → Accepted (Umsetzung slice-039; Review R1: 2 HIGH/1 MEDIUM behoben, R2: HIGH-A behoben + `MR-*` ergänzt — beide Runden adversarial verifiziert) |

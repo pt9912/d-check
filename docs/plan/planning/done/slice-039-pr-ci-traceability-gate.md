@@ -1,9 +1,7 @@
 # Slice slice-039: PR-/Push-CI und Traceability-Gate
 
-**Status:** in-progress (seit 2026-06-21; Artefakte gebaut, Hooks
-installiert, `make gates` grün; unabhängiges Review R1 +
-[ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md)→`Accepted`
-ausstehend).
+**Status:** done (Closure 2026-06-21;
+[ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md) `Accepted`).
 
 **Welle:** welle-25-pr-ci-traceability (Trigger: Audit 2026-06-21 —
 `harness/README.md` §Traceability rules ohne Wächter + kein
@@ -83,9 +81,9 @@ Makefile: trace-check, hooks # duenner Target-Wrapper + core.hooksPath-Installer
   Richtungen).
 - [x] `make gates` grün (inkl. `gate-consistency` über die neuen Targets);
   `make trace-check` grün auf HEAD.
-- [ ] Unabhängiges Review R1; Closure-Notiz;
-  [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md) auf `Accepted`
-  (Acceptance-Trigger nach Umsetzung).
+- [x] Unabhängiges Review R1 (2 HIGH/1 MEDIUM behoben) + R2 (HIGH-A
+  behoben), beide adversarial verifiziert; Closure-Notiz;
+  [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md) auf `Accepted`.
 
 ## 4. Risiken und offene Punkte
 
@@ -129,3 +127,46 @@ Berührte Sub-Areas — alle **GF** (Greenfield-Default; Tooling/Build/Doku):
 
 Kein BF/Hybrid (kein Diskrepanz-Cluster, kein „Code vor Doku"); kein
 Reconciliation-Aufwand.
+
+## 7. Closure-Notiz (nach `done/`)
+
+**Umsetzung.** [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md) in
+bindende Kontrollen überführt:
+
+- `tools/trace-check.sh` — eine Skript-Wahrheit (Modi
+  `--message`/`--range`/`--self-test`/HEAD), Muster `ADR/MR/DC`
+  (= `.d-check.yml`-`ids`) plus `slice-*`, Merge-/Revert ausgenommen,
+  Negativ-Selbsttest bei jedem Lauf, **uniforme** `#`-Kommentar-Bereinigung
+  in allen Modi (Hook == CI).
+- `.githooks/commit-msg` + `make hooks` (`core.hooksPath`) — lokaler
+  feedforward-Wächter; `.github/workflows/ci.yml` — PR-/Push-CI (ohne Tags,
+  keine Doppelläufe mit `release.yml`) ruft `make trace-check` (Range; neuer
+  Branch → `origin/<default-branch>`) **und** `make ci`.
+- Makefile `trace-check`/`hooks` (dünne Wrapper), bewusst **nicht** in
+  `gates`/`ci` (Commit-Zeit-Bindepunkt). Doku-Sync:
+  `harness/README.md` §Traceability + `AGENTS.md` §5 um `MR-*`/`slice-*`;
+  beide Targets in §Sensors + §4 (`gate-consistency` beidseitig).
+
+**Belege.** `make gates` grün (doc-check, lint, test, arch-check, coverage
+94,20 %, semgrep 55/0, gate-consistency mit den neuen Targets). Hook **live**:
+die Closure-Commits liefen durch `commit-msg` (Message nennt slice-039).
+Adversarial verifiziert: Kommentar-ID → Exit 1, Zero-Basis → Exit 2
+(fail-closed), MR-only → Exit 0, `-m "#…"` Range == Hook.
+
+**Review R1** (`docs/reviews/2026-06-21-slice-039-pr-ci-traceability.md`):
+2 HIGH/1 MEDIUM/1 LOW/2 INFO → blockiert. HIGH-1 (Silent-Green neuer Branch)
++ HIGH-2 (Hook/CI-`#`-Kommentar-Divergenz) + MEDIUM-1 (`MR-` fehlte) behoben.
+**Review R2** (`docs/reviews/2026-06-21-slice-039-r2-verifikation.md`):
+R1-Fixes bestätigt; **HIGH-A** (`clean_message` nur im `--message`, nicht
+`--range` → falsches Rot) gefunden → uniforme Bereinigung behebt es.
+LOW-1/INFO won't-fix (konsistent mit `.d-check.yml` bzw. §3.1-konform).
+
+**Restlücke (benannt, kein Carveout).** Branch Protection liegt extern
+(GitHub-Settings), nicht aus dem Klon auditierbar — ohne sie ist die PR-CI
+nur *advisory*. Betriebshinweis für `docs/user/`.
+
+**Lerneintrag.** „Eine Wahrheit" heißt nicht nur *ein Skript*, sondern *eine
+Bewertung*: Hook und CI müssen dieselbe Message-Normalisierung anwenden,
+sonst entsteht Divergenz (R1 HIGH-2 falsch-grün, R2 HIGH-A falsch-rot —
+dieselbe Klasse). Independent Review fing beide Richtungen, die der
+Autor-Kontext je übersah.

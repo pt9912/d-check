@@ -13,12 +13,12 @@
   (Targets `trace-check`, `hooks`, `.PHONY`), `AGENTS.md` (§4-Zeilen, §5
   Commit-Disziplin um `slice-*`), `harness/README.md` (§Sensors-Zeilen,
   §Traceability rules um `slice-*`), Slice-Plan
-  `docs/plan/planning/in-progress/slice-039-pr-ci-traceability-gate.md`
+  `docs/plan/planning/done/slice-039-pr-ci-traceability-gate.md`
   (Status next→in-progress, DoD-Häkchen).
 - **Reviewer:** Claude (Agent), Skill `.harness/skills/reviewer.md` v1.0.0.
 - **Modell:** `claude-opus-4-8[1m]`.
 - **Eingangs-Kontext:** Slice-Plan
-  `docs/plan/planning/in-progress/slice-039-pr-ci-traceability-gate.md`; ADR
+  `docs/plan/planning/done/slice-039-pr-ci-traceability-gate.md`; ADR
   [ADR-0013](../plan/adr/0013-pr-ci-und-traceability-gate.md) (Status
   Proposed; Bezug [ADR-0011](../plan/adr/0011-digest-pins-build-gate-images.md),
   [ADR-0002](../plan/adr/0002-distribution-ghcr-image.md)); Anforderungen

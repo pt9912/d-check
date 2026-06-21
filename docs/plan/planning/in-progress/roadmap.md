@@ -11,16 +11,12 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 ## Aktuelle Welle
 
 **Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
-welle-23-latest-tag (`slice-034` —
-[ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) ratifiziert die
-`:latest`-für-stabile-Praxis und löst
-[ADR-0002](../../adr/0002-distribution-ghcr-image.md) §4 teil-ab; reine
-Doku-Ratifikation, kein Verhaltens-Delta;
-[Closure](../done/slice-034-latest-tag-versoehnen.md#7-closure-notiz-nach-done)).
-Davor welle-24-kern-paketschnitt (`slice-035` — Kern in `model`/`rules`/`app`
-geschnitten, Importrichtung per arch-check R6 erzwungen, kein
-Verhaltens-Delta;
-[Closure](../done/slice-035-kern-paketschnitt.md#7-closure-notiz-nach-done)).
+welle-25-pr-ci-traceability (`slice-039` — PR-/Push-CI + Traceability-Gate
+maschinell bindend; [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md)
+`Accepted`, unabhängiges Review R1+R2;
+[Closure](../done/slice-039-pr-ci-traceability-gate.md#7-closure-notiz-nach-done)).
+Davor welle-23-latest-tag (`slice-034`) und welle-24-kern-paketschnitt
+(`slice-035`).
 Letztes Release **v0.19.0** auf GHCR (2026-06-20) bündelt slice-031/032/033
 (`--yaml` + semgrep-Gate + Digest-Pins); `slice-035` ist als reiner Refactor
 noch in keinem Release. Die nächste Welle wartet auf ihren Trigger (Change
@@ -30,7 +26,8 @@ Request im Lastenheft oder Priorisierung durch den Auftraggeber).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| welle-25-pr-ci-traceability | Audit 2026-06-21 (Traceability-Regel ohne Wächter; nur Tag-Release-CI) → [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md) | slice-039 (PR-/Push-CI + Traceability-Gate) | 1 Slice (CI-Workflow + `commit-msg`-Hook + Skript/Targets + Doku-Sync) |
+
+_(Keine Folge-Welle geplant — wartet auf Trigger.)_
 
 ## Meilensteine
 
@@ -84,6 +81,7 @@ flowchart LR
 | welle-22-digest-pins | 2026-06-20 | [slice-033 §7](../done/slice-033-dockerfile-digest-pins.md#7-closure-notiz-nach-done); alle vier extern bezogenen Images per `@sha256:`-**Manifest-Listen**-Digest (amd64+arm64) inline neben dem Tag gepinnt — drei `Dockerfile`-`FROM` + semgrep ([ADR-0011](../../adr/0011-digest-pins-build-gate-images.md), vereinheitlicht [ADR-0002](../../adr/0002-distribution-ghcr-image.md)/[ADR-0010](../../adr/0010-semgrep-hermetisches-gate.md) ohne Edit); `make versions` belegt alle Pins, `make ci` grün inkl. `image-test`; Review R1 (0 HIGH/1 MEDIUM verifiziert/2 LOW); Minor-Release **v0.19.0** auf GHCR (2026-06-20, Run `27871183930` grün, Tags `v0.19.0`+`latest`, bündelt slice-031/032/033), Digest-Pin `ghcr.io/pt9912/d-check@sha256:6134b8bd963de188858357ba05861a849dfb79dfac774437818f976100909ceb` |
 | welle-24-kern-paketschnitt | 2026-06-20 | [slice-035 §7](../done/slice-035-kern-paketschnitt.md#7-closure-notiz-nach-done); Kern (5.212 Z., ein Paket) in drei Pakete `model`/`rules`/`app` geschnitten, Importrichtung `app→rules→model` per arch-check **R6** erzwungen ([ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md)); **kein Verhaltens-Delta** (Befundsatz byte-identisch, alle Tests grün), `make gates` grün (Coverage 93 %); Review R1 merge-fähig (0 HIGH/0 MEDIUM/1 LOW/3 INFO); noch in keinem Release ausgeliefert (reiner Refactor) |
 | welle-23-latest-tag | 2026-06-21 | [slice-034 §7](../done/slice-034-latest-tag-versoehnen.md#7-closure-notiz-nach-done); [ADR-0014](../../adr/0014-latest-tag-fuer-stabile-releases.md) ratifiziert die `:latest`-für-stabile-Praxis und löst [ADR-0002](../../adr/0002-distribution-ghcr-image.md) §4 (Tagging-Klausel „kein `latest`") teil-ab — Konsum verbindlich per `@sha256:`-Digest ([ADR-0011](../../adr/0011-digest-pins-build-gate-images.md), [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)); **kein Verhaltens-Delta** (Code/Doku fuhren A bereits), `make gates` grün; unabhängiges Review R1 (0 HIGH/0 MEDIUM/1 LOW/2 INFO); kein Release (Doku-Ratifikation) |
+| welle-25-pr-ci-traceability | 2026-06-21 | [slice-039 §7](../done/slice-039-pr-ci-traceability-gate.md#7-closure-notiz-nach-done); PR-/Push-CI (`ci.yml`) ruft `make ci` + `make trace-check`; Traceability-Gate (`tools/trace-check.sh` + `commit-msg`-Hook via `make hooks`) erzwingt DC-/ADR-/MR-/slice-ID in Commits ([ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md)); unabhängiges Review R1 (2 HIGH/1 MEDIUM behoben) + R2 (HIGH-A behoben), adversarial verifiziert; `make gates` grün; kein Release (Harness-Infra) |
 
 ## Historische Trigger-Verschiebungen
 
