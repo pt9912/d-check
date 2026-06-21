@@ -3,9 +3,10 @@
 Architecture Decision Records dieses Repos. Konventionen:
 
 - **Dateiname:** `<NNNN>-<kurzer-titel-kebab>.md` (vierstellig, zero-padded).
-- **Status:** `Proposed` → `Accepted`; danach immutable. Ablösung nur
-  via neue ADR mit `Supersedes ADR-NN` (Status der alten wird
-  `Superseded by ADR-NN`).
+- **Status:** `Proposed` → `Accepted`; danach immutable (maschinell
+  erzwungen, `make adr-check` / [ADR-0016](0016-adr-immutable-gate.md)).
+  Ablösung nur via neue ADR mit `Supersedes ADR-NNNN` (Status der alten wird
+  `Superseded by ADR-NNNN`; vierstellig, wie der Dateiname).
 - Jede ADR deklariert im `**Schärft:**`-Feld aufwärts, welche
   Spec-Stelle sie verbindlich macht (nie das Lastenheft).
 - Neue ADRs werden in der Tabelle unten ergänzt.

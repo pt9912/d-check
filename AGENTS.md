@@ -101,7 +101,10 @@ die zeitliche Schicht lebt in `docs/plan/planning/`.
 ### 3.5 ADRs sind nach `Accepted` immutable
 
 Eine ADR mit Status `Accepted` wird nicht inhaltlich überschrieben.
-Korrekturen entstehen als neue ADR mit `Supersedes ADR-NN`.
+Korrekturen entstehen als neue ADR mit `Supersedes ADR-NNNN` (vierstellig).
+Maschinell erzwungen über `make adr-check` (`pre-commit`-Hook + PR-/Push-CI;
+erlaubt bleiben `## Geschichte`-Anhänge + der `**Status:**`-Übergang;
+[ADR-0016](docs/plan/adr/0016-adr-immutable-gate.md)).
 
 ### 3.6 Gates dürfen nicht ohne ADR gelockert werden
 

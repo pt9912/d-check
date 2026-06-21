@@ -28,13 +28,17 @@ STATUS_HEAD_OK_RE='^\*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'
 # Nur echte ADR-Dateien: docs/plan/adr/NNNN-*.md (Index README.md ausgenommen).
 is_adr_file() { [[ "$1" =~ ^docs/plan/adr/[0-9]{4}-.*\.md$ ]]; }
 
-# immutable core: Geschichte-Abschnitt + Status-Zeile entfernen. Liest stdin.
+# immutable core: Geschichte-Abschnitt + die Metadaten-Status-Zeile entfernen.
+# Liest stdin. Die **Status:**-Zeile wird NUR im Kopf-Block (vor der ersten
+# `## `-H2) gestrippt — eine gleichlautende Zeile im Koerper bleibt Teil des
+# core (sonst False-Negative: ein Edit daran wuerde durchrutschen; R1-MEDIUM).
 core() {
   awk '
     /^## Geschichte[[:space:]]*$/ { skip=1; next }
-    skip && /^## /                { skip=0; print; next }
+    skip && /^## /                { skip=0; body=1; print; next }
     skip                          { next }
-    /^\*\*Status:\*\*/            { next }
+    /^## /                        { body=1; print; next }
+    !body && /^\*\*Status:\*\*/   { next }
     { print }
   '
 }
@@ -42,13 +46,18 @@ core() {
 # Vergleicht zwei Inhalts-Dateien (BASE, HEAD) einer ADR. 0 = ok, 1 = Verstoss.
 classify() { # $1 base-file, $2 head-file, $3 pfad-label
   local base="$1" head="$2" path="$3" fail=0
+  # Nur die Metadaten-Status-Zeile (erste **Status:**-Zeile) zaehlt — eine
+  # gleichlautende Zeile im Koerper darf den Status-Befund nicht verfaelschen.
+  local base_status head_status
+  base_status="$(grep -m1 -E '^\*\*Status:\*\*' "$base" || true)"
+  head_status="$(grep -m1 -E '^\*\*Status:\*\*' "$head" || true)"
   # Nur Accepted-ADRs sind immutabel; Proposed (BASE) ist frei.
-  grep -qE "$STATUS_ACCEPTED_RE" "$base" || return 0
+  grep -qE "$STATUS_ACCEPTED_RE" <<<"$base_status" || return 0
   if ! diff -q <(core <"$base") <(core <"$head") >/dev/null 2>&1; then
     echo "adr-immutable: FAIL — $path aendert den Koerper einer Accepted-ADR (nur ## Geschichte-Anhang + Status-Uebergang erlaubt; AGENTS §3.5)" >&2
     fail=1
   fi
-  if ! grep -qE "$STATUS_HEAD_OK_RE" "$head"; then
+  if ! grep -qE "$STATUS_HEAD_OK_RE" <<<"$head_status"; then
     echo "adr-immutable: FAIL — $path setzt den Status einer Accepted-ADR auf einen unzulaessigen Wert (erlaubt: 'Accepted…' oder 'Superseded by ADR-NNNN')" >&2
     fail=1
   fi
@@ -172,6 +181,52 @@ Tue A.
   classify "$tmp/pbase" "$tmp/pedit" "selftest-proposed" >/dev/null 2>&1 \
     || { echo "adr-immutable: Selbsttest FEHLGESCHLAGEN — Proposed-BASE faelschlich gefeuert" >&2; rm -rf "$tmp"; exit 2; }
 
+  # (6) Koerper-Abschnitt NACH ## Geschichte -> Edit dort MUSS feuern
+  # (core-resume an der naechsten ## -H2; slice-040-Klasse Boundary, R1-LOW).
+  local g6='# ADR-0099 — X
+
+**Status:** Accepted
+
+## Entscheidung
+
+Tue A.
+
+## Geschichte
+
+| Datum | Ereignis |
+|---|---|
+| 2026-01-01 | Proposed → Accepted |
+
+## Anhang
+
+Detail A.'
+  printf '%s\n' "$g6" > "$tmp/g6base"
+  printf '%s\n' "${g6/Detail A./Detail B.}" > "$tmp/g6head"
+  if classify "$tmp/g6base" "$tmp/g6head" "selftest-resume" >/dev/null 2>&1; then
+    echo "adr-immutable: Selbsttest FEHLGESCHLAGEN — Edit im Abschnitt nach ## Geschichte nicht erkannt" >&2; rm -rf "$tmp"; exit 2
+  fi
+
+  # (7) Koerper-Zeile, die mit **Status:** beginnt -> Edit MUSS feuern
+  # (nur die Metadaten-Status-Zeile darf gestrippt werden; R1-MEDIUM-Regress).
+  local s7='# ADR-0099 — X
+
+**Status:** Accepted
+
+## Konsequenzen
+
+**Status:** der Migration bleibt offen.
+
+## Geschichte
+
+| Datum | Ereignis |
+|---|---|
+| 2026-01-01 | Proposed → Accepted |'
+  printf '%s\n' "$s7" > "$tmp/s7base"
+  printf '%s\n' "${s7/bleibt offen./ist geklaert.}" > "$tmp/s7head"
+  if classify "$tmp/s7base" "$tmp/s7head" "selftest-bodystatus" >/dev/null 2>&1; then
+    echo "adr-immutable: Selbsttest FEHLGESCHLAGEN — Edit an Koerper-**Status:**-Zeile nicht erkannt (core strippt zu breit)" >&2; rm -rf "$tmp"; exit 2
+  fi
+
   rm -rf "$tmp"
 }
 
@@ -179,7 +234,8 @@ mode="${1:-}"
 case "$mode" in
   --range)
     range="${2:-}"
-    [ -n "$range" ] || { echo "adr-immutable: --range braucht <base>..<head>" >&2; exit 2; }
+    # `..`-Separator verlangen (sonst base==head -> leerer Diff, still gruen; R1-LOW).
+    [[ -n "$range" && "$range" == *..* ]] || { echo "adr-immutable: --range braucht <base>..<head>" >&2; exit 2; }
     self_test
     base="${range%%..*}"; head="${range##*..}"
     [ -n "$base" ] && [ -n "$head" ] || { echo "adr-immutable: --range braucht <base>..<head>" >&2; exit 2; }
