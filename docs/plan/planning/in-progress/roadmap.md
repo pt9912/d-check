@@ -10,16 +10,18 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Aktive Welle: welle-29-planning-consistency** —
-[`slice-040`](slice-040-planning-consistency-gate.md) (Meta-Gate `make
-planning-check`: Roadmap-Marker ↔ `in-progress/`-Slice-State) in Arbeit;
-Closure-Trigger: slice-040 done. Zuletzt abgeschlossen:
-welle-28-print-mk (`slice-038` — read-only-Generator `--print-mk` gibt ein
+**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+welle-29-planning-consistency
+([`slice-040`](../done/slice-040-planning-consistency-gate.md) — Meta-Gate
+`make planning-check` erzwingt Roadmap §Aktuelle Welle ↔
+`in-progress/slice-*` (beide Richtungen, fail-closed); kein ADR;
+[Closure](../done/slice-040-planning-consistency-gate.md#7-closure-notiz-nach-done)).
+Davor welle-28-print-mk (`slice-038` — read-only-Generator `--print-mk` gibt ein
 include-bares `d-check.mk` (version-gepinntes Image + `doc-check`-Target) aus;
 [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
 0.22.0, Review R1+R2, kein ADR;
-[Closure](../done/slice-038-print-mk.md#8-closure-notiz-nach-done)).
-Davor welle-27-rtm-trace (`slice-036`), welle-26-suggest-prefix (`slice-037`),
+[Closure](../done/slice-038-print-mk.md#8-closure-notiz-nach-done)),
+welle-27-rtm-trace (`slice-036`), welle-26-suggest-prefix (`slice-037`),
 welle-25-pr-ci-traceability (`slice-039`), welle-23-latest-tag (`slice-034`)
 und welle-24-kern-paketschnitt (`slice-035`).
 Letztes Release **v0.19.0** auf GHCR (2026-06-20) bündelt slice-031/032/033

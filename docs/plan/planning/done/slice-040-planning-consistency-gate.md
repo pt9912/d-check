@@ -1,6 +1,6 @@
 # Slice slice-040: Planning-Konsistenz-Gate (Roadmap ↔ Slice-State)
 
-**Status:** in-progress (in Arbeit).
+**Status:** done (abgeschlossen, welle-29-planning-consistency).
 
 **Welle:** welle-29-planning-consistency (Trigger: Nutzer-Audit 2026-06-21 —
 `roadmap.md` sagte „Keine aktive Welle", während ein `slice-*` in
@@ -76,3 +76,47 @@ State-Konsistenz; Schwester-Lücke ADR-immutable → slice-041.
 
 Alle berührten Sub-Areas GF (Harness-Mechanik/Doku; Greenfield-Default;
 `tools/harness/`-nahe Konvention).
+
+## 7. Closure-Notiz (nach `done/`)
+
+**Umsetzung.** Neues Meta-Gate `make planning-check`
+(`tools/planning-consistency.sh`): die Roadmap §Aktuelle Welle darf den
+Marker „Keine aktive Welle" **genau dann** tragen, wenn kein `slice-*` in
+`docs/plan/planning/in-progress/` liegt — beide Richtungen, fail-closed
+(Regel `hasActive == hasSlices`). Schließt die im Nutzer-Audit 2026-06-21
+gefundene Drift (die Konsistenz war über die Lifecycle-Konvention
+dokumentiert, aber nicht erzwungen). Aufgenommen in `make gates` vor
+`record-gates`; Doku-Sync in `AGENTS.md` §4 + `harness/README.md` §Sensors
+(sonst rotes `make gate-consistency`). **Kein ADR** (additives Meta-Gate,
+keine neue Import-Kante; enforct eine bestehende Konvention) — wie das
+Schwester-Gate `make gate-consistency`.
+
+**Belege.** `make gates` grün (doc-check, lint, test, arch-check, coverage,
+semgrep, gate-consistency, planning-check). Negativ-Selbsttest in **beiden**
+Inkonsistenz-Richtungen plus beiden Konsistenz-Gegenproben bei jedem Lauf.
+**Dogfooding:** solange slice-040 in `in-progress/` lag, trug die Roadmap
+eine benannte aktive Welle (welle-29) — der Lauf war grün, weil das Gate
+die echte Lage akzeptierte; mit der Closure (Slice → `done/`) kippt die
+Roadmap zurück auf „Keine aktive Welle", was dasselbe Gate selbst erzwingt.
+Akzeptanz: Wegwerf-Fixture mit Drift → Exit 1 (verifiziert).
+
+**Review R1** ([`2026-06-21-slice-040-r1.md`](../../../reviews/2026-06-21-slice-040-r1.md)):
+0 HIGH / 1 MEDIUM / 1 LOW / 1 NIT; Verdikt NACHBESSERN. **MEDIUM behoben**
+— bei umbenannter/verfälschter `## Aktuelle Welle`-Überschrift lief die
+awk-Extraktion leer und `has_active` meldete still „aktiv" (silent-green
+bei vorhandenem Slice; genau der Drift-Fall, den das Gate fangen soll). Fix:
+`heading_present()` erzwingt die kanonische H2 (eine `HEADING_RE`-Wahrheit
+für grep-Guard und awk-Extraktion), sonst fail-closed. **LOW behoben** —
+Selbsttest Richtung C (kaputte Überschrift + idle-Marker + Slice muss feuern)
+als Regress-Schutz. **NIT won't-fix** (tmp-Cleanup via `trap`): R1 stuft den
+Leak-Pfad als „practically unreachable / optional" ein; jeder Pfad räumt
+`tmp` bereits explizit ab. Kein R2 (Nutzer-Entscheid: Fix klein,
+selbsttest-gesichert, adversarial belegt → direkt Closure).
+
+**Lerneintrag.** Ein string-basiertes Doku-Gate braucht **eine** Wahrheit
+für die Struktur-Anker, die es liest: Guard (existiert die Überschrift?) und
+Extraktion (lies den Block darunter) müssen dasselbe Muster teilen — sonst
+ist die Lücke dazwischen genau das silent-green, das ein fail-closed-Gate
+vermeiden soll. Und: das Gate, das Planning-Konsistenz erzwingt, sollte
+sein eigenes Slice dogfooden (aktive Welle markiert, während es in Arbeit
+ist).
