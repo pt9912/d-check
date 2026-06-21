@@ -85,6 +85,14 @@ sondern denselben Vertrag auf einen früheren Lebenszyklus-Punkt
    Makefile: trace-check, hooks # Target-Wrapper + Installer
    ```
 
+   „Eine Wahrheit" heißt auch **uniforme Message-Bereinigung**: Hook
+   (`--message`) und CI (`--range`) wenden dieselbe `#`-Kommentar-/scissors-
+   Bereinigung an, bevor sie auf eine ID prüfen. Sonst divergieren sie an
+   Messages mit ID nur auf einer `#`-Zeile, je nach git-Cleanup-Modus
+   (`-m`=whitespace behält `#`, Editor=strip entfernt `#`) — eine ID gehört
+   auf eine Inhalts-Zeile, nicht in einen Kommentar (Review R1 HIGH-2 /
+   R2 HIGH-A, beide dieselbe Divergenz-Klasse).
+
 4. **Kennungs-Muster = eine Quelle.** Das Gate nutzt deckungsgleiche
    Muster mit `.d-check.yml` (`ids`), damit „gültige ID" nur **einmal**
    definiert ist:

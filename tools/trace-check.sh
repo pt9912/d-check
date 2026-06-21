@@ -23,12 +23,18 @@ cd "$(git rev-parse --show-toplevel 2>/dev/null || echo .)"
 is_exempt() { head -n1 <<<"$1" | grep -qE '^(Merge |Revert )'; }
 has_id()    { grep -qE "$ID_RE" <<<"$1"; }
 
-# Bereinigt eine ROHE Commit-Message wie git's Default-Cleanup (Review R1
-# HIGH-2): alles ab der scissors-Zeile (`# … >8 …`, verbose-Diff) weg, dann
-# Kommentarzeilen (`#…`) entfernen. Sonst faerbt eine ID, die nur in einem
-# #-Kommentar steht, den Hook gruen, waehrend git die Zeile entfernt und der
-# CI-Range-Check (`git log %B`) denselben Commit ablehnt — Hook/CI-Divergenz
-# gegen die "eine Wahrheit". Annahme: core.commentChar='#' (Default).
+# Bereinigt eine Commit-Message wie git's strip-Cleanup: alles ab der
+# scissors-Zeile (`# … >8 …`, verbose-Diff) weg, dann Kommentarzeilen
+# (`#…`). Annahme: core.commentChar='#' (Default).
+#
+# Wird in ALLEN Modi angewandt — Hook (--message), Range und HEAD —, damit
+# Hook und CI GENAU dieselbe (kommentar-bereinigte) Message pruefen. Sonst
+# divergieren sie an Messages mit ID nur auf einer #-Zeile, je nach
+# git-Cleanup-Modus (Editor=strip entfernt #, `-m`=whitespace behaelt #):
+# Review R1 HIGH-2 (falsches Gruen) und R2 HIGH-A (falsches Rot) sind
+# dieselbe Divergenz-Klasse. Uniforme Bereinigung loest beide: eine ID muss
+# auf einer Inhalts-Zeile stehen (nicht in einem #-Kommentar) — gleich
+# bewertet auf beiden Seiten.
 clean_message() { sed -e '/^#.*>8/,$d' -e '/^#/d'; }
 
 # Prueft eine einzelne Message; 0 = ok, 1 = ID fehlt.
@@ -81,7 +87,8 @@ case "$mode" in
     while IFS= read -r sha; do
       [ -z "$sha" ] && continue
       n=$((n + 1))
-      check_msg "$(git log -1 --format=%B "$sha")" "$sha" || fail=1
+      # clean_message wie im Hook -> identische Bewertung, keine Divergenz.
+      check_msg "$(git log -1 --format=%B "$sha" | clean_message)" "$sha" || fail=1
     done <<<"$commits"
     [ "$fail" -eq 0 ] && echo "trace-check: $n Commit(s) tragen eine DC-/ADR-/slice-ID (Selbsttest gefeuert)."
     exit "$fail"
@@ -92,7 +99,7 @@ case "$mode" in
     ;;
   "")
     self_test
-    check_msg "$(git log -1 --format=%B HEAD)" "HEAD"
+    check_msg "$(git log -1 --format=%B HEAD | clean_message)" "HEAD"
     echo "trace-check: HEAD trägt eine DC-/ADR-/slice-ID (Selbsttest gefeuert)."
     ;;
   *)
