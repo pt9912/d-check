@@ -17,16 +17,17 @@ Sensors-Bindung) leben in
 [`harness/conventions.md`](harness/conventions.md).
 
 Das Betriebsregelwerk der adoptierten Baseline in Agenten-Kurzform
-einmal pro Session lesen, bevor der Workflow (§6) startet. Lese-Form:
-das nach Modulen und Grundlagen-Abschnitten aufgeteilte Release-Bundle
+einmal pro Session lesen, bevor der Workflow (§6) startet. **Lese-Form ist
+ausschließlich das nach Modulen und Grundlagen-Abschnitten aufgeteilte
+Release-Bundle**
 [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.3.0/lab-regelwerk.zip)
-(`v1.3.0`) — so lädt ein Agent einen einzelnen Abschnitt, ohne das
-gesamte Regelwerk im Kontext zu halten. Das Bundle ist eine derivative
-Sicht auf die Quelldatei
-[`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/v1.3.0/kurs/de/agents-regelwerk.md);
-bei Konflikt gilt die Quelldatei, über ihr die kanonischen Quellen
-(Source Precedence). Der adoptierte Stand steht in
-[`harness/conventions.md`](harness/conventions.md) §Baseline.
+(`v1.3.0`): herunterladen, entpacken und **nur den benötigten Abschnitt**
+laden (die Bundle-`README.md` ist der Index), ohne das gesamte Regelwerk
+im Kontext zu halten. Das Bundle ist derivativ; bei Konflikt sticht die
+Quelldatei das Bundle, über ihr die kanonischen Quellen (Source
+Precedence). Den Link auf die Quelldatei und den adoptierten Stand führt
+[`harness/conventions.md`](harness/conventions.md) (§Adoptierte
+Konventions-Quellen bzw. §Baseline).
 
 ## 2. Kanonische Quellen (Source Precedence)
 
