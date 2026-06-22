@@ -38,7 +38,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency planning-check bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild trace-check adr-check hooks clean
+.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency planning-check bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -138,8 +138,16 @@ gates: doc-check lint test arch-check coverage-gate semgrep gate-consistency pla
 ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (DC-FA-DIST-001).
 	@echo "[ci] gates + image-test green"
 
-fullbuild: ci bench ## volle Closure: ci + bench; schließt mit dem Image-Hash (Reproduzierbarkeits-Bindung).
+fullbuild: ci bench completeness-check ## volle Closure: ci + bench + completeness-check; schließt mit dem Image-Hash (Reproduzierbarkeits-Bindung).
 	@docker image inspect $(IMAGE):latest --format '[fullbuild] green — image-hash {{.Id}}'
+
+# Requirements-Completeness-Gate (slice-042, ADR-0017): failt bei
+# Requirements-Waisen (--trace --json, orphans>0). Closure-Bindepunkt — an
+# `fullbuild` gehängt, bewusst NICHT in `gates`/`ci` (GF erlaubt transiente
+# Waisen, bis der umsetzende Slice landet). Eine Skript-Wahrheit + Negativ-
+# Selbsttest (fail-closed, beide Richtungen). Parsing bash/grep/awk (kein jq).
+completeness-check: build ## Requirements-Completeness: failt bei Requirements-Waisen (--trace --json orphans>0); Closure-Gate (in fullbuild, NICHT gates/ci). slice-042/ADR-0017.
+	@IMAGE=$(IMAGE) bash tools/completeness-check.sh
 
 # ---- traceability ------------------------------------------------------------
 
