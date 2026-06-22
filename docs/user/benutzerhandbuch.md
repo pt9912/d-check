@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.4 · **Software-Version:** v0.22.0 ·
+**Handbuch-Version:** 1.5 · **Software-Version:** v0.23.0 ·
 **Stand:** 2026-06-22 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -72,7 +72,7 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.22.0` — eine feste Version (empfohlen für reproduzierbare Läufe).
+- `:v0.23.0` — eine feste Version (empfohlen für reproduzierbare Läufe).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
   CI-Pipelines pinnen Sie ohnehin auf eine feste Version oder den Digest
@@ -83,7 +83,7 @@ Für vollständig reproduzierbare CI-Läufe pinnen Sie auf den Image-Digest
 
 ```bash
 docker run --rm -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check@sha256:2f2294eb28f9e3ff4073e6af28710cad23a1f49290cccbb5ed32ba8cc8edc6e5
+  ghcr.io/pt9912/d-check@sha256:<v0.23.0-Digest aus den Release-Notes>
 ```
 
 ### Native Nutzung
@@ -631,6 +631,7 @@ matrix:
 ```yaml
 codepaths:
   roots: [docs, spec]          # Pfade in Inline-Code prüfen
+  exempt-paths: ["docs/reviews/**"] # Dateien ganz ausnehmen (Glob, wie ids)
 hostpaths:
   prefixes: ["/home", "/Users"] # host-lokale Pfade melden
 external:
@@ -754,3 +755,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.2 | v0.18.0 | 2026-06-19 | `--suggest-config ai-harness`/`ai-harness-init`: Harness-Vorlage in zwei Modi ergänzt (§4.4) |
 | 1.3 | v0.19.0 | 2026-06-20 | YAML-Ausgabe `--yaml` (auch `--doctor --yaml`): maschinenlesbare Ausgabe um YAML erweitert (§4.11) |
 | 1.4 | v0.22.0 | 2026-06-22 | `--id-prefix` für `--suggest-config` (§4.4); Traceability-Matrix `--trace` (§4.12); Makefile-Fragment `--print-mk` (§4.13); `:latest` = neueste **stabile** Version (§2) |
+| 1.5 | v0.23.0 | 2026-06-22 | Modul `codepaths`: Datei-Ventil `exempt-paths` ergänzt (§5 Weitere Module) — ganze Dateien von der Inline-Code-Pfad-Prüfung ausnehmen, wie `ids` |
