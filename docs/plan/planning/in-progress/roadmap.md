@@ -10,16 +10,14 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-32-codepaths-exempt — aktiv.**
-[`slice-043`](slice-043-codepaths-exempt-paths.md): das Modul `codepaths`
-bekommt das `exempt-paths`-Ventil (Datei-Glob ohne codepath-Prüfung) wie
-`ids` — Change Request an
-[`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
-(Lastenheft 0.23.0), kein ADR. Trigger: slice-042-Nebenbefund (Review-Reports
-lösen `codepath-missing` aus).
-
-Zuletzt abgeschlossen:
-welle-31-requirements-completeness
+**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+welle-32-codepaths-exempt
+([`slice-043`](../done/slice-043-codepaths-exempt-paths.md) — Modul `codepaths`
+bekam das `exempt-paths`-Ventil (Datei-Glob ohne codepath-Prüfung) wie `ids`;
+Change Request [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
+(Lastenheft 0.23.0), kein ADR; unabhängiges R1 ACCEPT;
+[Closure](../done/slice-043-codepaths-exempt-paths.md#7-closure-notiz-nach-done)).
+Davor welle-31-requirements-completeness
 ([`slice-042`](../done/slice-042-requirements-completeness-gate.md) —
 Requirements-Completeness-Gate `make completeness-check` failt bei
 Requirements-Waisen (`d-check --trace --json` → `orphans > 0`), Closure-
