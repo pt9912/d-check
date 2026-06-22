@@ -10,7 +10,16 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+**welle-31-requirements-completeness — aktiv.**
+[`slice-042`](slice-042-requirements-completeness-gate.md):
+Closure-Meta-Gate `make completeness-check` schlägt bei Requirements-Waisen
+fehl (`d-check --trace --json` → `orphans > 0`), gebunden an `make fullbuild`
+(Wellen-/Release-Closure), bewusst **nicht** in `make gates`/`ci`
+([ADR-0017](../../adr/0017-requirements-completeness-gate.md), Proposed).
+Trigger: Nutzer 2026-06-22 — „damit kann man prüfen, ob die Arbeit
+abgeschlossen ist".
+
+Zuletzt abgeschlossen:
 welle-30-adr-immutable
 ([`slice-041`](../done/slice-041-adr-immutable-gate.md) — ADR-Immutable-Gate
 `make adr-check` erzwingt [`AGENTS.md` §3.5](../../../../AGENTS.md#35-adrs-sind-nach-accepted-immutable)
@@ -30,10 +39,12 @@ include-bares `d-check.mk` (version-gepinntes Image + `doc-check`-Target) aus;
 welle-27-rtm-trace (`slice-036`), welle-26-suggest-prefix (`slice-037`),
 welle-25-pr-ci-traceability (`slice-039`), welle-23-latest-tag (`slice-034`)
 und welle-24-kern-paketschnitt (`slice-035`).
-Letztes Release **v0.19.0** auf GHCR (2026-06-20) bündelt slice-031/032/033
-(`--yaml` + semgrep-Gate + Digest-Pins); `slice-035` ist als reiner Refactor
-noch in keinem Release. Die nächste Welle wartet auf ihren Trigger (Change
-Request im Lastenheft oder Priorisierung durch den Auftraggeber).
+Letztes Release **v0.22.0** auf GHCR (2026-06-22) bündelt
+slice-034/036/037/038 (`--latest-tag` + `--trace` + `--id-prefix` +
+`--print-mk`), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:2f2294eb28f9e3ff4073e6af28710cad23a1f49290cccbb5ed32ba8cc8edc6e5`;
+davor v0.19.0 (2026-06-20, slice-031/032/033). `slice-035` ist als reiner
+Refactor noch in keinem Release.
 
 ## Nächste Wellen
 
