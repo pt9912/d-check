@@ -1,6 +1,6 @@
 # Slice slice-042: Requirements-Completeness-Gate (Waisen als Closure-Invariante)
 
-**Status:** in-progress (Planung; welle-31-requirements-completeness).
+**Status:** done (abgeschlossen, welle-31-requirements-completeness).
 
 **Welle:** welle-31-requirements-completeness (Trigger: Nutzer 2026-06-22 —
 „damit kann man prüfen, ob die Arbeit abgeschlossen ist"; die RTM
@@ -126,4 +126,44 @@ Alle berührten Sub-Areas GF (Harness-Mechanik/Doku; Greenfield-Default;
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(folgt mit der Umsetzung.)_
+**Umsetzung.** Neues Closure-Meta-Gate `make completeness-check`
+(`completeness-check.sh` unter `tools/`): liest `d-check --trace --json`
+([`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix))
+und failt bei `orphans > 0` (Anforderung ohne referenzierenden Slice) mit
+Waisen-Liste. `--trace` bleibt advisory (Exit 0, kein Spec-Change); die
+Durchsetzung lebt im Wrapper. **Bindepunkt Closure:** an `make fullbuild`
+gehängt, bewusst **nicht** in `make gates`/`ci` — Greenfield erlaubt transiente
+Waisen, bis der umsetzende Slice landet (Schwester-Logik zu
+`trace-check`/`adr-check`). Parsing rein bash/grep/awk (kein jq/python). Policy +
+Bindepunkt in [ADR-0017](../../adr/0017-requirements-completeness-gate.md)
+(Accepted).
+
+**Belege.** `make gates` grün (doc-check, lint, test, arch-check, coverage,
+semgrep, gate-consistency, planning-check); `make completeness-check` grün (0
+Waisen, 27 Anforderungen); Negativ-Selbsttest in beide Richtungen bei jedem
+Lauf (`orphans: 1` feuert, `orphans: 0` nicht; leeres/feldloses/
+nicht-numerisches/kaputtes JSON ⇒ FAIL). **Adversarial:** Wegwerf-Repo mit
+einer Waisen-Anforderung → echtes Image `--trace --json` meldet `orphans: 1`,
+das Gate failt mit Exit 1 und nennt die Fixture-Waise. `make fullbuild`
+verdrahtet (Dry-Run bestätigt). Read-only/netzlos (`--network none`, ro-Mount).
+Doku-Sync: [`AGENTS.md` §4](../../../../AGENTS.md#4-quality-gates) +
+[`harness/README.md` §Sensors](../../../../harness/README.md#sensors-feedback-gates)
+/Gate-Taxonomie (dritter Bindepunkt „Closure") + Grenzen-Bullet;
+`make gate-consistency` grün (Target ↔ Doku beidseitig).
+
+**Review R1** ([`2026-06-22-slice-042-r1.md`](../../../reviews/2026-06-22-slice-042-r1.md)):
+unabhängiger Subagent, **NACHBESSERN** (0 HIGH / 1 MEDIUM / 1 LOW / 1 INFO),
+Kern adversarial bestätigt. **Alle Findings vor Accept eingearbeitet** (ADR war
+noch Proposed): F-1 MEDIUM — Negativ-Selbsttest deckt jetzt die
+Stilles-Grün-Vektoren ab; F-2 LOW — bash/grep-Parsing festgeschrieben (kein
+jq/python); F-3 INFO — „Closure" als dritter Bindepunkt der Gate-Taxonomie
+explizit benannt. Kein R2 (plan-seitig vor der Umsetzung geschlossen).
+
+**Lerneintrag.** Ein Gate, das eine externe JSON-Ausgabe parst, muss seine
+**Versagensrichtung** mittesten — nicht nur „Waise erkannt", sondern auch
+„fehlende/kaputte Eingabe ⇒ FAIL, nie stilles 0", sonst silent-green wie bei
+slice-040/041. Und: das Pre-Accept-Review (ADR `Proposed`) ist der richtige Ort,
+solche Selbsttest-Lücken zu schließen, solange Plan/ADR frei editierbar sind.
+Nebenbefund (offen): `codepaths` kennt — anders als `ids` — kein `exempt-paths`;
+Review-Reports müssen `Datei:Zeile` als Klartext schreiben (Kandidat für einen
+Mini-Slice).
