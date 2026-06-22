@@ -10,17 +10,15 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-31-requirements-completeness — aktiv.**
-[`slice-042`](slice-042-requirements-completeness-gate.md):
-Closure-Meta-Gate `make completeness-check` schlägt bei Requirements-Waisen
-fehl (`d-check --trace --json` → `orphans > 0`), gebunden an `make fullbuild`
-(Wellen-/Release-Closure), bewusst **nicht** in `make gates`/`ci`
-([ADR-0017](../../adr/0017-requirements-completeness-gate.md), Proposed).
-Trigger: Nutzer 2026-06-22 — „damit kann man prüfen, ob die Arbeit
-abgeschlossen ist".
-
-Zuletzt abgeschlossen:
-welle-30-adr-immutable
+**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+welle-31-requirements-completeness
+([`slice-042`](../done/slice-042-requirements-completeness-gate.md) —
+Requirements-Completeness-Gate `make completeness-check` failt bei
+Requirements-Waisen (`d-check --trace --json` → `orphans > 0`), Closure-
+Bindepunkt an `make fullbuild`, bewusst nicht in `make gates`/`ci`
+([ADR-0017](../../adr/0017-requirements-completeness-gate.md));
+[Closure](../done/slice-042-requirements-completeness-gate.md#7-closure-notiz-nach-done)).
+Davor welle-30-adr-immutable
 ([`slice-041`](../done/slice-041-adr-immutable-gate.md) — ADR-Immutable-Gate
 `make adr-check` erzwingt [`AGENTS.md` §3.5](../../../../AGENTS.md#35-adrs-sind-nach-accepted-immutable)
 (Accepted-ADRs nur `## Geschichte`-Anhang + Status-Übergang; CI-Range +
