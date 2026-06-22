@@ -49,3 +49,6 @@ matrix:
 # Wurzel-Präfixe der eigenen Verzeichniskonvention.
 codepaths:
   roots: [docs, spec, tools, harness, internal, cmd]
+  # Review-Reports zitieren naturgemäß Datei:Zeile/Pfade — wie bei ids
+  # vom Datei-Ventil ausgenommen (DC-FA-CODE-001, slice-043).
+  exempt-paths: ["docs/reviews/**"]

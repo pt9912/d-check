@@ -48,6 +48,15 @@ type rawScopeOnly struct {
 	Scope *rawScope `yaml:"scope"`
 }
 
+// rawCodepaths traegt scope, roots und das exempt-paths-Ventil
+// (DC-FA-CODE-001; benannt, damit der Typ in raw und scopeOfCodepaths
+// identisch ist).
+type rawCodepaths struct {
+	Scope       *rawScope `yaml:"scope"`
+	Roots       []string  `yaml:"roots"`
+	ExemptPaths []string  `yaml:"exempt-paths"`
+}
+
 type rawMatrix struct {
 	Scope   *rawScope `yaml:"scope"`
 	Classes []struct {
@@ -95,10 +104,7 @@ type raw struct {
 	IDs      *rawIDs       `yaml:"ids"`
 	Matrix   *rawMatrix    `yaml:"matrix"`
 	External *rawExternal  `yaml:"external"`
-	Codepaths *struct {
-		Scope *rawScope `yaml:"scope"`
-		Roots []string  `yaml:"roots"`
-	} `yaml:"codepaths"`
+	Codepaths *rawCodepaths `yaml:"codepaths"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -157,7 +163,7 @@ func applyCodepaths(r *raw, cfg *model.Config) error {
 			return fmt.Errorf("%s: codepaths.roots-Präfix %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')", FileName, root)
 		}
 	}
-	cfg.Codepaths = model.CodepathsConfig{Roots: r.Codepaths.Roots}
+	cfg.Codepaths = model.CodepathsConfig{Roots: r.Codepaths.Roots, ExemptPaths: r.Codepaths.ExemptPaths}
 	return nil
 }
 
@@ -251,10 +257,7 @@ func scopeOfHostpaths(v *struct {
 	return v.Scope
 }
 
-func scopeOfCodepaths(v *struct {
-	Scope *rawScope `yaml:"scope"`
-	Roots []string  `yaml:"roots"`
-}) *rawScope {
+func scopeOfCodepaths(v *rawCodepaths) *rawScope {
 	if v == nil {
 		return nil
 	}

@@ -187,6 +187,11 @@ func TestDecode_MatrixUndExternalConstraints(t *testing.T) {
 	if err != nil || len(cfg.Codepaths.Roots) != 2 {
 		t.Fatalf("codepaths.roots nicht übernommen: %+v (%v)", cfg.Codepaths, err)
 	}
+	// codepaths.exempt-paths wird übernommen (Datei-Ventil wie ids; slice-043)
+	cfgEx, err := configyaml.Decode([]byte("codepaths:\n  roots: [docs]\n  exempt-paths: [\"docs/reviews/**\"]\n"))
+	if err != nil || len(cfgEx.Codepaths.ExemptPaths) != 1 || cfgEx.Codepaths.ExemptPaths[0] != "docs/reviews/**" {
+		t.Fatalf("codepaths.exempt-paths nicht übernommen: %+v (%v)", cfgEx.Codepaths, err)
+	}
 }
 
 func TestDecode_OhneDatei(t *testing.T) {

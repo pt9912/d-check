@@ -47,6 +47,7 @@ modules: [links, anchors]
 # --- codepaths: explizite Pfade in Inline-Code ---
 # codepaths:
 #   roots: [docs, spec]            # Wurzel-Präfixe; ./ und ../ werden immer erkannt
+#   exempt-paths: [CHANGELOG.md, "docs/reviews/**"]   # Globs: Dateien ohne codepath-Prüfung (datei-weit, wie ids)
 
 # --- hostpaths: host-lokale absolute Pfade (Maschinen-Layout-Leaks) ---
 # hostpaths:

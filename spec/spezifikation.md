@@ -536,7 +536,17 @@ Status < 400 → kein Befund; ≥ 400 → `external-status`; Timeout →
 ### DC-FA-CODE-001.a — Pfade in Inline-Code
 
 Arbeitet auf den **rohen Prosa-Zeilen** (fence-aware) — die übrige
-Vorverarbeitung entfernt Inline-Code gerade. **Schritte:**
+Vorverarbeitung entfernt Inline-Code gerade.
+
+**Datei-Ventil (vorab):** Dateien, deren Pfad ein Glob aus
+`codepaths.exempt-paths` matcht (Syntax wie `scan.ignore`, relativ zur
+Repo-Wurzel), werden **ganz** übersprungen — datei-weit, unabhängig von
+`codepaths.roots`; dasselbe Ventil wie
+[DC-FA-ID-001.a](#dc-fa-id-001a--kennungs-prüfung), komplementär zum
+zeilenweisen `d-check:ignore` (Schritt 1). Ohne gesetztes `exempt-paths`
+byte-identisch.
+
+**Schritte:**
 
 1. Zeilen mit dem Marker `d-check:ignore` (HTML-Kommentar, Begründung
    in Klammern empfohlen) werden übersprungen — der Marker wirkt
@@ -840,6 +850,7 @@ external:
   parallel: 4
 codepaths:
   roots: [docs, tools]           # Präfixe für Wurzel-relative Inline-Code-Pfade
+  exempt-paths: [CHANGELOG.md, "docs/reviews/**"]   # Dateien ganz ohne codepath-Prüfung (datei-weit)
 ```
 
 Jede Verletzung eines Constraints der folgenden Tabelle führt zu
@@ -868,6 +879,7 @@ Exit 2 ohne Prüfung
 | `external.timeout-seconds` | integer | 10 | 1–300 |
 | `external.parallel` | integer | 4 | 1–16 |
 | `codepaths.roots` | string[] | leer | Präfixe relativ zur Repo-Wurzel: nicht leer, nicht absolut, kein `..` (Exit 2); `./`/`../` werden immer erkannt |
+| `codepaths.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `codepaths`-Prüfung — datei-weit, unabhängig von `roots` |
 
 ## 3. Defaults und Konstanten
 
@@ -950,3 +962,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-18 | §[`DC-FA-CLI-007.a`](spezifikation.md#dc-fa-cli-007a--diagnose-modus) ergänzt: Diagnose-Modus `--doctor` — Lese-Lauf, nach Datei gruppierte Klartext-Diagnose auf stdout (statt Befund-Zeilen), Fix-Kandidat nur für `id-unlinked` (Link auf das ids-`target`); Grund-Klartext-Mapping über alle 14 Grund-Codes mit Vollständigkeits-Prüfung gegen die Reason-Konstanten; `--doctor`+`--json` = Nutzungsfehler (Exit 2); Determinismus über die sortierte Befundliste | slice-025 |
 | 2026-06-18 | §[`DC-FA-CLI-008.a`](spezifikation.md#dc-fa-cli-008a--reparatur-patch) ergänzt: Reparatur-Modus `--repair` — unified diff auf stdout (`git apply`-kompatibel), zwei Stufen (`--repair`/`--repair-broad`); konservativ nur eindeutige `id-unlinked`-Fixes auf nackte Prosa-Vorkommen, breit Best-Guess `target-missing` (eindeutiger Basisname) mit review-pflichtig-Marker auf stderr; nicht mit `--json`/`--doctor` kombinierbar; Determinismus über sortierte Edits | slice-026 |
 | 2026-06-19 | §[`DC-FA-CLI-007.a`](spezifikation.md#dc-fa-cli-007a--diagnose-modus) Schritt 6 + [JSON-Diagnose](spezifikation.md#json-diagnose---doctor---json)-Schema (§2) ergänzt: `--doctor --json` rendert dieselbe Diagnose maschinenlesbar — `findings` zusätzlich mit `reasonText` und `fixCandidate` (`{original,replacement,note}` oder explizit `null`), `file`-Gruppierung; nur noch `--repair`+`--json` und `--doctor`+`--repair` sind Nutzungsfehler | slice-029 |
+| 2026-06-22 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) + §2-Schema ergänzt: Datei-Ventil `codepaths.exempt-paths` (Glob wie `scan.ignore`) nimmt ganze Dateien von der `codepaths`-Prüfung aus — datei-weit, unabhängig von `codepaths.roots`; Vorbild das gleichnamige ids-Ventil. Abwärtskompatibel: ohne gesetztes `exempt-paths` byte-identisch | slice-043 |

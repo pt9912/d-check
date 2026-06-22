@@ -127,6 +127,11 @@ func (e ExternalConfig) EffectiveParallel() int {
 // immer erkannt).
 type CodepathsConfig struct {
 	Roots []string
+	// ExemptPaths: Globs (Syntax wie scan.ignore) für Dateien, die das
+	// Modul codepaths nicht prüft — datei-weit, unabhängig von Roots
+	// (spec/spezifikation.md §DC-FA-CODE-001.a). Vorbild: das
+	// gleichnamige Ventil von IDPattern (DC-FA-ID-001).
+	ExemptPaths []string
 }
 
 // HostpathsConfig sind die Parameter des Moduls hostpaths

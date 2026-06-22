@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.22.0
+**Version:** 0.23.0
 
 **Status:** Draft
 
@@ -643,15 +643,22 @@ dieser** Prüfung aus — bewusst nicht existierende Beispiel-Pfade
 (etwa Angriffs-Beispiele in Lehrtexten) sind kein Fehler, sondern
 eine zu dokumentierende Absicht. Für alle anderen Module existiert
 kein Opt-out-Marker: deterministische Befunde werden behoben, nicht
-unterdrückt.
+unterdrückt. Zusätzlich nimmt eine optionale `exempt-paths`-Glob-Liste
+(Syntax wie `scan.ignore`, relativ zur Repository-Wurzel) **ganze Dateien**
+von der `codepaths`-Prüfung aus — datei-weit, unabhängig von den
+Wurzel-Präfixen; dasselbe Datei-Ventil wie bei
+[`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids),
+komplementär zum zeilenweisen `d-check:ignore`-Marker (typischer Fall:
+Review-Reports, die naturgemäß `Datei:Zeile`/Pfade zitieren).
 
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Inline-Code-Span `` `docs/plan/adr/` `` auf ein existierendes Verzeichnis und das konfigurierte Präfix `docs/`, when das Modul `codepaths` läuft, then kein Befund.
 - **Boundary:** Given ein Inline-Code-Span mit nicht existierendem Pfad und ein Kommentar `d-check:ignore` auf derselben Zeile, when das Modul läuft, then kein Befund — und der Marker hat keinerlei Wirkung auf Befunde anderer Module derselben Zeile.
 - **Negative:** Given ein Inline-Code-Span `` `../fehlt.md` ``, dessen Ziel nicht existiert (oder die Repository-Wurzel verlässt), when das Modul läuft, then ein Befund mit Datei, Zeile, Ziel und Grund, Exit-Code 1.
+- **Ventil (exempt-paths):** Given ein Inline-Code-Span mit nicht existierendem Pfad in einer Datei, die ein `codepaths.exempt-paths`-Glob matcht, when das Modul läuft, then kein Befund — und ohne gesetztes `exempt-paths` ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 
-**Out-of-Scope:** Pfad-Erkennung im Fließtext ohne Inline-Code; Pfade in Fenced-Code-Blöcken; Opt-out-Marker für andere Module; semantische Prüfung, ob der referenzierte Pfad inhaltlich passt.
+**Out-of-Scope:** Pfad-Erkennung im Fließtext ohne Inline-Code; Pfade in Fenced-Code-Blöcken; Opt-out-Marker für andere Module; semantische Prüfung, ob der referenzierte Pfad inhaltlich passt; Zeilen-Granularität von `exempt-paths` (datei-weit wie `ids`; für Zeilen der `d-check:ignore`-Marker).
 
 ---
 
@@ -857,6 +864,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.23.0 | 2026-06-22 | Change Request (Auftraggeber): `DC-FA-CODE-001` um das Datei-Ventil `exempt-paths` (Glob-Liste, Syntax wie `scan.ignore`) erweitert — nimmt **ganze Dateien** von der `codepaths`-Prüfung aus, datei-weit und unabhängig von `roots`; dasselbe Ventil wie `DC-FA-ID-001` (slice-018/023), komplementär zum zeilenweisen `d-check:ignore`-Marker. Abwärtskompatibel (`DC-QA-02`): ohne gesetztes `exempt-paths` byte-identisch. Anlass: slice-042-Nebenbefund — Review-Reports unter `docs/reviews/` zitieren naturgemäß `Datei:Zeile`/Pfade und lösten `codepath-missing` aus (`ids` exemptet `docs/reviews/**` längst; `codepaths` zieht nach) | slice-043 |
 | 0.22.0 | 2026-06-21 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-010` — Option `--print-mk` gibt ein include-bares `d-check.mk` (überschreibbare `DCHECK_IMAGE`-Variable mit version-gepinntem Image + `doc-check`-Target) auf stdout aus; read-only (`DC-QA-03`), deterministisch (`DC-QA-02`), kein Dokument geschrieben. Konsumenten `include`-n statt Recipe/Skript zu kopieren; der Image-Ref ist die ins Binary eingebettete Release-Version (Digest via `DCHECK_IMAGE`-Override — Henne-Ei: das Binary kennt seinen eigenen Digest nicht). Anlass: a-check-Bootstrap 2026-06-20 — `d-check.mk` wurde handgepflegt; `--print-mk` verlagert den Pin nach d-check | slice-038 |
 | 0.21.0 | 2026-06-21 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-009` — Option `--trace` gibt eine **Requirements Traceability Matrix** (Anforderung → referenzierende ADRs/Slices, Waisen-Markierung) auf stdout aus (Default Markdown-Tabelle, optional `--trace --json`/`--yaml` über den format-neutralen Reporter); read-only (`DC-QA-03`), deterministisch (`DC-QA-02`), kein Dokument erzeugt; **Doku-Domäne** (Lastenheft/ADR/Planning), kein Code/keine Go-Toolchain (arch-check bewusst ausgeklammert). Anlass: RTM als d-check-Modus statt separatem Skript (Nutzer-Entscheid 2026-06-20, Prototyp-Beleg) | slice-036 |
 | 0.20.0 | 2026-06-21 | Change Request (Auftraggeber): `DC-FA-CLI-006` um einen **Anforderungs-Präfix-Parameter** erweitert — `--suggest-config ai-harness[-init]` backt nicht mehr fix d-checks `DC-` ein: `--id-prefix <PREFIX>` setzt es explizit, der Modus `ai-harness` leitet es aus dem Lastenheft ab (eindeutige FA-/QA-Kennung; mehrere verschiedene ⇒ Nutzungsfehler), ohne Angabe/Ableitung erscheint ein markierter Platzhalter `<PREFIX>` + TODO statt eines stillen `DC-`. **Breaking** ggü. 0.18.1 (`ai-harness-init` ohne Präfix lieferte zuvor `DC-`); Begründung in eigener ADR. Anlass: a-check-Bootstrap 2026-06-20 — das Init-Template emittierte d-checks Eigen-Präfix in ein Fremd-Repo | slice-037 |

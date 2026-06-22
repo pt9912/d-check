@@ -4,6 +4,19 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [Unreleased]
+
+### Changed
+
+- slice-043 — Modul `codepaths`: neues Ventil `exempt-paths` (Glob-Liste,
+  Syntax wie `scan.ignore`) nimmt **ganze Dateien** von der codepath-Prüfung
+  aus — Parität zum gleichnamigen `ids`-Ventil; datei-weit, komplementär zum
+  `d-check:ignore`-Marker. Abwärtskompatibel: ohne `exempt-paths`
+  byte-identisch ([`DC-QA-02`](spec/lastenheft.md#dc-qa-02--determinismus)).
+  Dogfooding: die eigene `.d-check.yml` nimmt `docs/reviews/**` aus
+  ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
+  Change Request 0.23.0).
+
 ## [0.22.0] — 2026-06-22
 
 ### Added

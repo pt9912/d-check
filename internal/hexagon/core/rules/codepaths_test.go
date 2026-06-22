@@ -65,6 +65,31 @@ func TestCodepathsIgnoreMarkerNurDiesesModul(t *testing.T) {
 	}
 }
 
+// §DC-FA-CODE-001.a — exempt-paths nimmt eine ganze Datei von der
+// codepaths-Prüfung aus (Glob wie scan.ignore; Vorbild ids-Ventil,
+// slice-043). Ohne Ventil byte-identisch (DC-QA-02).
+func TestCodepathsExemptPaths(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/reviews/r1.md": "Report zitiert `../fehlt.md` und `docs/auch-weg.md`.\n",
+	})
+	cfgPlain := model.Config{Codepaths: model.CodepathsConfig{Roots: []string{"docs"}}}
+	plain, err := Run(m, nil, cfgPlain, []string{"codepaths"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(plain.Findings) != 2 {
+		t.Fatalf("ohne exempt-paths: %d Befunde, want 2", len(plain.Findings))
+	}
+	cfgExempt := model.Config{Codepaths: model.CodepathsConfig{Roots: []string{"docs"}, ExemptPaths: []string{"docs/reviews/**"}}}
+	exempt, err := Run(m, nil, cfgExempt, []string{"codepaths"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(exempt.Findings) != 0 {
+		t.Fatalf("mit exempt-paths docs/reviews/**: %d Befunde, want 0", len(exempt.Findings))
+	}
+}
+
 // §DC-FA-CODE-001.a Schritt 3+5 — Normalisierung und Anker-Prüfung
 // (gleiches Slug-Verfahren wie anchors, geteilter Cache).
 func TestCodepathsNormalisierungUndAnker(t *testing.T) {

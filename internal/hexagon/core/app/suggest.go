@@ -378,6 +378,10 @@ func renderHarness(fsys driven.Filesystem, extra []suggestedPattern, repoAware b
 	b.WriteString(renderHarnessIDs(fsys, extra, repoAware, reqPrefix))
 	b.WriteString("\n")
 	b.WriteString(renderHarnessMatrix(fsys, repoAware))
+	// codepaths: das Datei-Ventil der Konvention — Review-Reports/Changelog
+	// zitieren naturgemäß Datei:Zeile/Pfade und sollen kein codepath-missing
+	// auslösen (Parität zum ids-exempt; roots bleiben repo-spezifisch).
+	b.WriteString("\ncodepaths:\n  exempt-paths: " + harnessExempt + "\n")
 	return b.String()
 }
 

@@ -24,6 +24,12 @@ const ignoreMarker = "d-check:ignore"
 // Module gerade entfernt; teilt den Slug-Cache mit anchors.
 func CheckCodepaths(fsys driven.Filesystem, file string, content []byte, cfg model.CodepathsConfig, slugCache map[string]map[string]bool) []model.Finding {
 	var findings []model.Finding
+	// exempt-paths: ganze Datei von der codepaths-Prüfung ausnehmen
+	// (datei-weit, Glob wie scan.ignore; Vorbild ids-Ventil). Wirkt
+	// unabhängig von cfg.Roots (§DC-FA-CODE-001.a).
+	if ignored(file, cfg.ExemptPaths) {
+		return nil
+	}
 	prose := proseLines(content)
 	spans := inlineSpansByLine(prose)
 	for _, pl := range prose {
