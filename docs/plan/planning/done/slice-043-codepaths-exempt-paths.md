@@ -1,6 +1,6 @@
 # Slice slice-043: codepaths `exempt-paths` (Datei-Ventil wie ids)
 
-**Status:** in-progress (Planung; welle-32-codepaths-exempt).
+**Status:** done (abgeschlossen, welle-32-codepaths-exempt).
 
 **Welle:** welle-32-codepaths-exempt (Trigger: slice-042-Nebenbefund — das
 Modul `codepaths` kennt, anders als `ids`, kein `exempt-paths`; Review-Reports
@@ -105,4 +105,41 @@ Code folgt").
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(folgt mit der Umsetzung.)_
+**Umsetzung.** Das Modul `codepaths` hat das Datei-Ventil `exempt-paths`
+(`model.CodepathsConfig.ExemptPaths`, Decode über den benannten
+`rawCodepaths`-Typ): `CheckCodepaths` überspringt eine Datei ganz, wenn ihr
+Pfad ein `exempt-paths`-Glob matcht — via dem bestehenden `ignored(file, …)`-
+Helfer, datei-weit und unabhängig von `roots`. 1:1-Parität zum `ids`-Ventil.
+Lastenheft-CR
+[`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
+(0.23.0) + die `codepaths`-Sektion und das §2-Schema in `spec/spezifikation.md`;
+`--print-config`/`--suggest-config`-Parität. **Kein ADR** (additiv, spiegelt ein
+bestehendes Ventil; Präzedenz slice-023).
+
+**Belege.** `make gates` grün (lint, test, arch-check, coverage, semgrep,
+doc-check, gate-consistency, planning-check). Neue Tests:
+`TestCodepathsExemptPaths` (mit Ventil 0 Befunde, ohne 2 — byte-identisch,
+[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)) +
+configyaml-Decode. **Dogfooding (der Payoff):**
+[`.d-check.yml`](../../../../.d-check.yml) nimmt `docs/reviews/**` von `codepaths`
+aus — der slice-042-Nebenbefund ist gelöst; Review-Reports dürfen wieder
+Inline-Code-`Datei:Zeile` schreiben. Adversarial (R1) belegt: Wegwerf-Report
+unter `docs/reviews/` mit kaputten Inline-Code-Pfaden → 0 Befunde, derselbe
+Pfad außerhalb → 1 `codepath-missing`.
+
+**Review R1**
+([`2026-06-22-slice-043-r1.md`](../../../reviews/2026-06-22-slice-043-r1.md)):
+unabhängiger Subagent, **ACCEPT** (0 HIGH/MEDIUM/LOW, 2 INFO). INFO-1:
+`exempt-paths`-Globs werden nicht validiert — bewusst paritätisch zum
+`ids`-Ventil (kein falscher Befund, höchstens ein wirkungsloses Muster).
+INFO-2: der Determinismus-Test ist zählbasiert statt byte-gleich — die
+Byte-Identität hält am Code (`ignored(file, nil)` = false); als ausreichend
+belassen. Kein Nachbessern (beide INFO).
+
+**Lerneintrag.** Ein anonymer Struct als YAML-Feld-Typ, der an zweiter Stelle
+(`scopeOfCodepaths`) erneut als Literal-Typ steht, bricht bei jeder
+Feld-Erweiterung die Go-Typ-Identität — ein benannter Typ (`rawCodepaths`) ist
+die wartbare Form (sichtbar beim ersten Build-Fehler dieses Slice). Und: ein
+Ventil, das in einem Modul (`ids`) existiert, zieht über den geteilten
+`ignored`-Helfer reibungslos in ein zweites (`codepaths`) — Konsistenz vor
+Neuerfindung.
