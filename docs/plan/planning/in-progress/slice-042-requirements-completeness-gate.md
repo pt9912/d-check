@@ -45,13 +45,24 @@ Advisory-Vertrag von `--trace` anzutasten.
   (`requirements[].orphan == true`). `--trace` bleibt unangetastet Exit 0
   (kein Spec-Change an
   [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)).
+  **Parsing rein mit bash/grep** (kein `jq`/`python` — keine
+  Host-Binary-Abhängigkeit, konsistent mit den bestehenden Gate-Skripten unter
+  `tools/`); ein fehlendes oder nicht als Ganzzahl matchbares `orphans` ⇒ FAIL,
+  nicht stilles „0" (ein `jq '.orphans // 0'`-Notnagel ist verboten — er macht
+  aus fehlendem Feld ein grünes „0"). R1-F-2.
 - **ADR: ja** ([ADR-0017](../../adr/0017-requirements-completeness-gate.md),
   Proposed → Accepted nach Review) — pinnt die Bindepunkt-Policy (Closure-only)
   + die Advisory/Gate-Trennung; schärft keine Spec-Stelle (Prozess-ADR, analog
   [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md)/[ADR-0016](../../adr/0016-adr-immutable-gate.md)).
-- **Negativ-Selbsttest:** auf der Parser-Kernlogik (synthetisches JSON, ohne
-  Container): `orphans:1` feuert, `orphans:0` feuert nicht — wie
-  `gate-consistency`/`adr-check` ihre Logik testen.
+- **Negativ-Selbsttest (fail-closed, beide Richtungen — R1-F-1):** auf der
+  Parser-Kernlogik (synthetisches JSON, ohne Container) — testet ausdrücklich
+  die Stilles-Grün-Vektoren, nicht nur den Happy-Pfad: `orphans: 1` feuert ·
+  `orphans: 0` feuert nicht · **leeres stdout** (Image-Exit ≠ 0 / leerer Lauf)
+  ⇒ FAIL · **JSON ohne `orphans`-Feld** oder nicht-numerischer Wert ⇒ FAIL ·
+  kaputtes JSON ⇒ FAIL. Läuft bei jedem Gate-Lauf — wie
+  `gate-consistency`/`adr-check`. Hintergrund: dieselbe Falle wie R1 zu
+  slice-040 (Heading-Guard) / slice-041 (Status-Strip) — der Wächter muss seine
+  Versagensrichtung selbst beweisen, sonst silent-green.
 
 ## 3. Definition of Done
 
@@ -61,18 +72,22 @@ Geplante Artefakte (Pfad gefenced, da noch nicht existent):
 tools/completeness-check.sh   # Waechter: --trace --json lesen, orphans>0 => FAIL; + Negativ-Selbsttest
 ```
 
-- [ ] `completeness-check.sh` (unter `tools/`): ruft das Image
-  `--trace --json`, parst `orphans`, listet die Waisen-IDs bei Fehlschlag;
-  **Negativ-Selbsttest**
-  (synthetisches `orphans:1`/`:0`) + Selbsttest bei jedem Lauf; fail-closed bei
-  Parse-Fehler.
+- [ ] `completeness-check.sh` (unter `tools/`): ruft das Image `--trace --json`,
+  parst `orphans` **mit bash/grep** (kein `jq`/`python`), listet die Waisen-IDs
+  bei Fehlschlag; **Negativ-Selbsttest in beide Richtungen** — `orphans: 1`
+  feuert, `orphans: 0` nicht, **und** leeres stdout / fehlendes `orphans`-Feld /
+  nicht-numerischer Wert / kaputtes JSON ⇒ FAIL (kein stilles „0"); Selbsttest
+  bei jedem Lauf, fail-closed.
 - [ ] `make completeness-check` (`build`-Prerequisite; ro-Mount +
   `--network none`); **nicht** in `gates`/`ci`; eingehängt in `make fullbuild`;
   `.PHONY` + help.
 - [ ] Doku-Sync: [`AGENTS.md` §4](../../../../AGENTS.md#4-quality-gates) **und**
   [`harness/README.md` §Sensors](../../../../harness/README.md#sensors-feedback-gates)
-  + Gate-Taxonomie-Tabelle (Meta-/Governance-Gate, Closure-Bindepunkt) — sonst
-  rotes `make gate-consistency`.
+  (sonst rotes `make gate-consistency`). In der Gate-Taxonomie-Tabelle als
+  **Meta-/Governance-Gate** mit **neuem dritten Bindepunkt „Closure"** (neben
+  „in `gates`" und „Commit-/Diff-Bindepunkt") explizit eintragen — diese
+  Bindepunkt-Klasse ist eine Form-Setzung, die `gate-consistency` **nicht**
+  prüft (R1-F-3), daher bewusst benannt.
 - [ ] Prozess-ADR ([ADR-0017](../../adr/0017-requirements-completeness-gate.md)
   Proposed → Accepted nach Review) + ADR-Index.
 - [ ] `make gates` grün; `make completeness-check` grün (Ist: 0 Waisen);

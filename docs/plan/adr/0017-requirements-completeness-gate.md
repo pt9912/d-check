@@ -46,19 +46,29 @@ Wir führen ein **Closure-Meta-Gate `make completeness-check`** ein:
    (`--network none`, ro-Mount) und liest das Feld `orphans` (int) des
    RTM-JSON: `orphans > 0` ⇒ FAIL mit der Liste der Waisen-IDs
    (`requirements[].orphan == true`). `make completeness-check` ist der dünne
-   Wrapper.
+   Wrapper. **Parsing rein mit bash/grep** (kein `jq`/`python` — keine
+   Host-Binary-Abhängigkeit, konsistent mit den bestehenden `tools/`-Gate-
+   Skripten); ein fehlendes oder nicht-numerisches `orphans` ⇒ FAIL, nie
+   stilles „0".
 3. **`--trace` bleibt advisory (Exit 0).** Die Spec-Akzeptanz von
    [`DC-FA-CLI-009`](../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
    (Exit 0 bei Waisen) wird **nicht** angetastet — die Durchsetzung lebt im
    Gate-Wrapper, nicht im Produkt-Exit-Code. Kein Change Request am Lastenheft.
-4. **Negativ-Selbsttest bei jedem Lauf** auf der Parser-Kernlogik
-   (synthetisches JSON, ohne Container): `orphans:1` muss feuern, `orphans:0`
-   nicht — analog [`tools/`](../../../tools)-Gate-Skripten; fail-closed bei
-   Parse-Fehler.
+4. **Negativ-Selbsttest bei jedem Lauf (fail-closed, beide Richtungen).** Auf
+   der Parser-Kernlogik (synthetisches JSON, ohne Container): `orphans: 1` muss
+   feuern, `orphans: 0` nicht — **und** die Stilles-Grün-Vektoren müssen FAIL
+   ergeben: leeres stdout (Image-Exit ≠ 0 / leerer Lauf), JSON ohne
+   `orphans`-Feld, nicht-numerischer Wert, kaputtes JSON. Analog den
+   [`tools/`](../../../tools)-Gate-Skripten; ohne diese Richtungen wäre der
+   Wächter silent-green-anfällig (dieselbe Falle wie slice-040/041).
 5. **Doku-Kopplung.** [`AGENTS.md` §4](../../../AGENTS.md#4-quality-gates) +
    [`harness/README.md` §Sensors](../../../harness/README.md#sensors-feedback-gates)
    dokumentieren das Target (beide Richtungen ⇒ `make gate-consistency`); in der
-   Gate-Taxonomie als **Meta-/Governance-Gate** mit Closure-Bindepunkt geführt.
+   Gate-Taxonomie als **Meta-/Governance-Gate** mit einem **dritten Bindepunkt
+   „Closure"** (neben „in `gates`" und „Commit-/Diff-Bindepunkt") geführt. Die
+   Bindepunkt-Klassen-Zuordnung ist eine Form-Setzung, die `gate-consistency`
+   nicht prüft (es misst nur Target-Existenz) — daher in der Taxonomie explizit
+   benannt.
 
 ## Verglichene Alternativen
 
@@ -114,3 +124,4 @@ Wir führen ein **Closure-Meta-Gate `make completeness-check`** ein:
 | Datum | Ereignis |
 |---|---|
 | 2026-06-22 | Proposed — Nutzer-Wunsch „prüfen, ob die Arbeit abgeschlossen ist"; Bindepunkt-Policy (Closure/`fullbuild`, nicht per Commit) + Wrapper über `--trace --json` (advisory bleibt) via Nutzer-Entscheid; Umsetzung slice-042 |
+| 2026-06-22 | Proposed (Nachbesserung) — unabhängiges Review R1 zu slice-042 (NACHBESSERN, 1 MEDIUM): Negativ-Selbsttest auf Stilles-Grün-Vektoren erweitert (F-1), bash/grep-Parsing festgeschrieben (F-2), Closure-Bindepunkt als dritte Taxonomie-Klasse benannt (F-3) |
