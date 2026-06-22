@@ -1,6 +1,6 @@
 # ADR-0017 — Requirements-Completeness-Gate (Waisen als Closure-Invariante)
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-22
 **Autor:** pt9912
 **Bezug:** [`DC-FA-CLI-009`](../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
@@ -125,3 +125,4 @@ Wir führen ein **Closure-Meta-Gate `make completeness-check`** ein:
 |---|---|
 | 2026-06-22 | Proposed — Nutzer-Wunsch „prüfen, ob die Arbeit abgeschlossen ist"; Bindepunkt-Policy (Closure/`fullbuild`, nicht per Commit) + Wrapper über `--trace --json` (advisory bleibt) via Nutzer-Entscheid; Umsetzung slice-042 |
 | 2026-06-22 | Proposed (Nachbesserung) — unabhängiges Review R1 zu slice-042 (NACHBESSERN, 1 MEDIUM): Negativ-Selbsttest auf Stilles-Grün-Vektoren erweitert (F-1), bash/grep-Parsing festgeschrieben (F-2), Closure-Bindepunkt als dritte Taxonomie-Klasse benannt (F-3) |
+| 2026-06-22 | Proposed → Accepted (Umsetzung slice-042: `make completeness-check` + `tools/completeness-check.sh`, an `fullbuild` gehängt; `make gates` grün, adversariale Waisen-Fixture → Exit 1; R1-Findings F-1/F-2/F-3 eingearbeitet) |
