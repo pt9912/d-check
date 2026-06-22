@@ -38,7 +38,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency planning-check bench image-test semgrep versions build run doc-check record-gates gates ci fullbuild trace-check adr-check hooks clean
+.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency planning-check bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild trace-check adr-check hooks clean
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -113,6 +113,13 @@ run: build ## Smoke-Test: d-check prüft das eigene Repo (read-only).
 # der Lauf beweist Seiteneffektfreiheit und Netzlosigkeit.
 doc-check: build ## Doku-Links, Anker, ID-Linkpflicht + Referenzmatrix via d-check selbst (Dogfooding, DC-FA-LINK/ANCH/ID/MTX; netzlos: DC-QA-03).
 	docker run --rm --network none -v "$(CURDIR)":/repo:ro $(IMAGE):latest
+
+# Dogfooding-Render (kein Gate): die Requirements Traceability Matrix
+# (--trace, DC-FA-CLI-009) über Lastenheft/ADR/Planning auf stdout — Komfort
+# über das released Feature, read-only + --network none wie doc-check. Bewusst
+# NICHT in `gates` (rein informativ, kein Pass/Fail).
+trace: build ## Requirements Traceability Matrix via d-check selbst (Dogfooding, --trace; netzlos: DC-QA-03). DC-FA-CLI-009.
+	docker run --rm --network none -v "$(CURDIR)":/repo:ro $(IMAGE):latest --trace
 
 # ---- harness -----------------------------------------------------------------
 
