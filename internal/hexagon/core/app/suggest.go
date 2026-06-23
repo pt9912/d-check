@@ -374,7 +374,13 @@ func renderHarness(fsys driven.Filesystem, extra []suggestedPattern, repoAware b
 		}
 	}
 	fmt.Fprintf(&b, "scan:\n  roots: [%s]\n\n", strings.Join(roots, ", "))
-	b.WriteString("modules: [links, anchors, ids, matrix, codepaths]\n\n")
+	b.WriteString("modules: [links, anchors, ids, matrix, codepaths]\n")
+	// Auffindbarkeit (DC-FA-CLI-006): situative opt-in-Module werden nicht
+	// vorab aktiviert (diagrams braucht repo-spezifische patterns/defined-in,
+	// lässt sich nicht ableiten) — Verweis aufs Voll-Schema statt stiller
+	// Aktivierung eines inerten Moduls.
+	b.WriteString("# Weitere opt-in-Module (external, spans, hostpaths, diagrams) sind situativ\n")
+	b.WriteString("# und werden hier nicht vorab aktiviert; Voll-Schema: d-check --print-config.\n\n")
 	b.WriteString(renderHarnessIDs(fsys, extra, repoAware, reqPrefix))
 	b.WriteString("\n")
 	b.WriteString(renderHarnessMatrix(fsys, repoAware))

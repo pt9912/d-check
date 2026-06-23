@@ -10,8 +10,16 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
-welle-34-diagram-ids
+**welle-35-suggest-opt-in-hinweis — in Arbeit.**
+([`slice-046`](slice-046-suggest-config-opt-in-hinweis.md) — Schärfung der
+`--suggest-config ai-harness[-init]`-Ausgabe: sie nennt die nicht aktivierten
+situativen opt-in-Module (`external`/`spans`/`hostpaths`/`diagrams`) in einem Kommentar mit
+Verweis auf `--print-config` (Auffindbarkeit ohne Aktivieren eines inerten
+Moduls); `diagrams` zur Out-of-Scope-Liste ergänzt
+([`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten),
+Lastenheft 0.26.0); kein ADR. Anlass: Nutzer-Frage nach slice-045.)
+
+Zuletzt abgeschlossen: welle-34-diagram-ids
 ([`slice-045`](../done/slice-045-diagram-ids.md) — opt-in Modul `diagrams` öffnet
 gezielt benannte Diagramm-Fences (Default `mermaid`) und prüft die darin
 gefundenen Kennungen auf Existenz in ihrer `defined-in`-Quelle (Befund

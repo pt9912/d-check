@@ -954,7 +954,7 @@ func TestCLI006_AiHarness_Happy(t *testing.T) {
 	if !hasMod("ids") || !hasMod("matrix") {
 		t.Fatalf("Modulset unvollständig: %v", cfg.Modules)
 	}
-	for _, want := range []string{"Baseline v1.3.0", "matrix:", "from: spec-straten, to: adr", "exclude-sections", "Carveouts"} {
+	for _, want := range []string{"Baseline v1.3.0", "matrix:", "from: spec-straten, to: adr", "exclude-sections", "Carveouts", "(external, spans, hostpaths, diagrams)", "d-check --print-config"} {
 		if !strings.Contains(stdout, want) {
 			t.Fatalf("Vorlage ohne %q:\n%s", want, stdout)
 		}
