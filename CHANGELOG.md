@@ -4,6 +4,18 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.26.0] — 2026-06-23
+
+### Changed
+
+- slice-046 — `--suggest-config ai-harness[-init]`: die Ausgabe nennt die nicht
+  aktivierten situativen opt-in-Module (`external`, `spans`, `hostpaths`,
+  `diagrams`) jetzt in einem Kommentar mit Verweis auf `d-check --print-config`
+  (Auffindbarkeit ohne Aktivieren eines inerten Moduls — `diagrams` braucht
+  repo-spezifische `patterns`/`defined-in`). Schärfung
+  ([`DC-FA-CLI-006`](spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten),
+  Lastenheft 0.26.0).
+
 ## [0.25.0] — 2026-06-23
 
 ### Added
