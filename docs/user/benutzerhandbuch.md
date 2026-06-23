@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.5 · **Software-Version:** v0.23.0 ·
-**Stand:** 2026-06-22 · **Autor:** pt9912
+**Handbuch-Version:** 1.6 · **Software-Version:** v0.24.0 ·
+**Stand:** 2026-06-23 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -561,7 +561,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v<version> --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.24.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -571,7 +571,7 @@ docker run --rm ghcr.io/pt9912/d-check:v<version> --print-mk > d-check.mk
 und `doc-complete` (Vollständigkeits-Gate):
 
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v<version>
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.24.0
 TRACE_FLAGS ?=
 
 .PHONY: doc-check
@@ -775,3 +775,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.3 | v0.19.0 | 2026-06-20 | YAML-Ausgabe `--yaml` (auch `--doctor --yaml`): maschinenlesbare Ausgabe um YAML erweitert (§4.11) |
 | 1.4 | v0.22.0 | 2026-06-22 | `--id-prefix` für `--suggest-config` (§4.4); Traceability-Matrix `--trace` (§4.12); Makefile-Fragment `--print-mk` (§4.13); `:latest` = neueste **stabile** Version (§2) |
 | 1.5 | v0.23.0 | 2026-06-22 | Modul `codepaths`: Datei-Ventil `exempt-paths` ergänzt (§5 Weitere Module) — ganze Dateien von der Inline-Code-Pfad-Prüfung ausnehmen, wie `ids` |
+| 1.6 | v0.24.0 | 2026-06-23 | `--print-mk`-Fragment um `doc-trace`/`doc-complete`-Targets + `TRACE_FLAGS` erweitert (§4.13); opt-in `--trace --require-complete` (Vollständigkeits-Gate, Waise ⇒ Exit 1, §4.12) |
