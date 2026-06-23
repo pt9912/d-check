@@ -1351,8 +1351,8 @@ func TestCLI038_PrintMK(t *testing.T) {
 	}
 	for _, want := range []string{
 		"DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v", // version-gepinnter, überschreibbarer Ref
-		"@sha256:<digest>",                         // Digest-Override-Hinweis
-		"\ndoc-check:\n\tdocker run",               // Tab-eingerücktes Recipe
+		"DCHECK_DIGEST ?=",                         // Digest-Override-Variable
+		"\ndoc-check: ## ",                         // ##-annotiertes Target
 		"--network none",
 		":/repo:ro",
 	} {
@@ -1441,10 +1441,37 @@ func TestCLI044_PrintMK_TraceTargets(t *testing.T) {
 	}
 	for _, want := range []string{
 		"TRACE_FLAGS ?=",
-		"\ndoc-trace:\n\tdocker run",
+		"\ndoc-trace: ## ",
 		"--trace $(TRACE_FLAGS)",
-		"\ndoc-complete:\n\tdocker run",
+		"\ndoc-complete: ## ",
 		"--trace --require-complete $(TRACE_FLAGS)",
+	} {
+		if !strings.Contains(stdout, want) {
+			t.Fatalf("d-check.mk ohne %q:\n%s", want, stdout)
+		}
+	}
+}
+
+// slice-047: --print-mk-Fragment um doc-doctor/doc-repair/doc-help + die
+// DCHECK_DIGEST-Variable (Digest-Override per ifeq, sticht den Tag) erweitert;
+// doc-repair unterdrückt das Recipe-Echo (@), damit stdout git-apply-rein bleibt.
+func TestCLI047_PrintMK_NeueTargets(t *testing.T) {
+	code, stdout, stderr := run(t, "--print-mk")
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	for _, want := range []string{
+		"DCHECK_DIGEST ?=",
+		"ifeq ($(strip $(DCHECK_DIGEST)),)",
+		"DCHECK_REF := $(DCHECK_IMAGE)",
+		"d-check@$(DCHECK_DIGEST)",
+		"\ndoc-doctor: ## ",
+		"$(DCHECK_REF) --doctor",
+		"\ndoc-repair: ## ",
+		"\t@docker run", // doc-repair: Recipe-Echo unterdrückt (stdout-rein)
+		"$(DCHECK_REF) --repair",
+		"\ndoc-help: ## ",
+		"$(MAKEFILE_LIST)",
 	} {
 		if !strings.Contains(stdout, want) {
 			t.Fatalf("d-check.mk ohne %q:\n%s", want, stdout)

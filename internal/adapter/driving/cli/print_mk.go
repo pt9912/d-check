@@ -14,9 +14,11 @@ import "fmt"
 var version = "0.0.0-dev"
 
 // makefileFragment erzeugt das d-check.mk: version-gepinnter, per
-// DCHECK_IMAGE überschreibbarer Image-Ref plus die Targets `doc-check`
-// (Doku-Gate), `doc-trace` (advisory RTM, DC-FA-CLI-009) und `doc-complete`
-// (Vollständigkeits-Gate, DC-FA-CLI-011) sowie die `TRACE_FLAGS`-Variable.
+// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus sechs
+// `##`-annotierte Targets (doc-check/doc-trace/doc-complete/doc-doctor/
+// doc-repair/doc-help) und die TRACE_FLAGS-Variable. Der einzige
+// fmt-Verb des Templates ist das %s der Version — sonst KEIN '%'
+// (sed statt awk-printf im doc-help-Recipe), sonst bräche fmt.Sprintf.
 // Deterministisch (hängt nur an der eingebetteten Version), read-only.
 func makefileFragment() string { return fmt.Sprintf(mkTemplate, version) }
 
@@ -26,23 +28,41 @@ const mkTemplate = "# d-check.mk — erzeugt von: d-check --print-mk (DC-FA-CLI-
 	"# .d-check.yml danebenlegen. Keine Recipe-/Skript-Kopie — der Image-Pin\n" +
 	"# lebt in d-check.\n" +
 	"#\n" +
-	"# DCHECK_IMAGE ist überschreibbar. Für strikte Reproduzierbarkeit den\n" +
-	"# Digest aus den Release-Notes pinnen:\n" +
-	"#   DCHECK_IMAGE = ghcr.io/pt9912/d-check@sha256:<digest>\n" +
+	"# Für strikte Reproduzierbarkeit den Digest aus den Release-Notes pinnen —\n" +
+	"# direkt über DCHECK_IMAGE oder bequemer über DCHECK_DIGEST (sticht den Tag):\n" +
+	"#   DCHECK_DIGEST = sha256:<digest>\n" +
 	"DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v%s\n" +
+	"DCHECK_DIGEST ?=\n" +
 	"# TRACE_FLAGS: optionale Flags für die RTM-Targets (z. B. --json).\n" +
 	"TRACE_FLAGS ?=\n" +
 	"\n" +
+	"# Ein gesetzter DCHECK_DIGEST sticht den Tag von DCHECK_IMAGE.\n" +
+	"ifeq ($(strip $(DCHECK_DIGEST)),)\n" +
+	"DCHECK_REF := $(DCHECK_IMAGE)\n" +
+	"else\n" +
+	"DCHECK_REF := ghcr.io/pt9912/d-check@$(DCHECK_DIGEST)\n" +
+	"endif\n" +
+	"\n" +
 	".PHONY: doc-check\n" +
-	"doc-check:\n" +
-	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_IMAGE)\n" +
+	"doc-check: ## Doku-Referenzen prüfen (Befund-Gate)\n" +
+	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF)\n" +
 	"\n" +
-	"# doc-trace: advisory Requirements Traceability Matrix (DC-FA-CLI-009).\n" +
 	".PHONY: doc-trace\n" +
-	"doc-trace:\n" +
-	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_IMAGE) --trace $(TRACE_FLAGS)\n" +
+	"doc-trace: ## Requirements Traceability Matrix auf stdout (advisory, DC-FA-CLI-009)\n" +
+	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --trace $(TRACE_FLAGS)\n" +
 	"\n" +
-	"# doc-complete: Vollständigkeits-Gate — Requirements-Waise ⇒ Exit 1 (DC-FA-CLI-011).\n" +
 	".PHONY: doc-complete\n" +
-	"doc-complete:\n" +
-	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_IMAGE) --trace --require-complete $(TRACE_FLAGS)\n"
+	"doc-complete: ## Vollständigkeits-Gate: Requirements-Waise ⇒ Exit 1 (DC-FA-CLI-011)\n" +
+	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --trace --require-complete $(TRACE_FLAGS)\n" +
+	"\n" +
+	".PHONY: doc-doctor\n" +
+	"doc-doctor: ## erklärende Diagnose mit Fix-Kandidaten (DC-FA-CLI-007)\n" +
+	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --doctor\n" +
+	"\n" +
+	".PHONY: doc-repair\n" +
+	"doc-repair: ## Reparatur-Patch (unified diff) auf stdout, git-apply-rein (DC-FA-CLI-008)\n" +
+	"\t@docker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --repair\n" +
+	"\n" +
+	".PHONY: doc-help\n" +
+	"doc-help: ## diese Liste der doc-*-Targets\n" +
+	"\t@grep -hE '^doc-[a-z-]+:.*## ' $(MAKEFILE_LIST) | sort | sed -E 's/:.*## /  /'\n"

@@ -4,6 +4,18 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [Unreleased]
+
+### Added
+
+- slice-047 — `--print-mk`-Fragment um drei Targets + eine Variable erweitert:
+  `doc-doctor` (`--doctor`-Diagnose), `doc-repair` (`--repair`-Patch, Recipe-Echo
+  unterdrückt für `git apply`-reine stdout), `doc-help` (namespaced Self-Doku der
+  `doc-*`-Targets via `##`-Annotationen) sowie `DCHECK_DIGEST` (Digest-Override per
+  `ifeq`, sticht den Tag von `DCHECK_IMAGE`). Alle Targets `##`-annotiert
+  ([`DC-FA-CLI-010`](spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+  Change Request, Lastenheft 0.27.0).
+
 ## [0.26.0] — 2026-06-23
 
 ### Changed

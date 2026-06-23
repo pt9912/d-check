@@ -320,25 +320,36 @@ Kurzschluss vor der Wurzel-Auflösung. Ausgabe (deterministisch,
 [`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus) — hängt nur an der
 eingebetteten Version):
 
-1. Kommentar-Kopf: Einbindung via `include`, Hinweis zum
-   `DCHECK_IMAGE`-Override auf einen `@sha256:`-Digest.
+1. Kommentar-Kopf: Einbindung via `include`, Hinweis zum Digest-Pin via
+   `DCHECK_IMAGE` bzw. bequemer `DCHECK_DIGEST`.
 2. `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v<version>` — `<version>` ist die
    beim Tag-Build via `-ldflags -X …/cli.version=<tag>` eingebettete
    Release-Version (Default `0.0.0-dev` für lokale/Gate-Builds).
-3. `TRACE_FLAGS ?=` — überschreibbare Flag-Variable für die beiden
-   RTM-Targets (z. B. `--json`).
-4. `.PHONY: doc-check` und ein `doc-check`-Target mit **TAB**-eingerücktem
-   `docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_IMAGE)`.
-5. `.PHONY: doc-trace` und ein `doc-trace`-Target
-   `… $(DCHECK_IMAGE) --trace $(TRACE_FLAGS)` (advisory RTM,
-   [`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)).
-6. `.PHONY: doc-complete` und ein `doc-complete`-Target
-   `… $(DCHECK_IMAGE) --trace --require-complete $(TRACE_FLAGS)`
-   (Vollständigkeits-Gate,
-   [`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)).
+3. `DCHECK_DIGEST ?=` plus ein `ifeq`-Block: ein gesetzter `DCHECK_DIGEST` (ein
+   `@sha256:`-Digest) leitet `DCHECK_REF` auf `…/d-check@$(DCHECK_DIGEST)` um und
+   **sticht** so den Tag von `DCHECK_IMAGE`; sonst `DCHECK_REF := $(DCHECK_IMAGE)`.
+4. `TRACE_FLAGS ?=` — überschreibbare Flag-Variable für die RTM-Targets.
+5. Sechs `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
+   Konsumenten aufgreift) und **TAB**-eingerücktem
+   `docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) …`:
+   - `doc-check` (Befund-Gate, ohne Zusatz-Flag),
+   - `doc-trace` (`--trace $(TRACE_FLAGS)`, advisory RTM,
+     [`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)),
+   - `doc-complete` (`--trace --require-complete $(TRACE_FLAGS)`,
+     [`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)),
+   - `doc-doctor` (`--doctor`,
+     [`DC-FA-CLI-007`](lastenheft.md#dc-fa-cli-007--diagnose-modus)),
+   - `doc-repair` (`--repair`,
+     [`DC-FA-CLI-008`](lastenheft.md#dc-fa-cli-008--reparatur-patch)) — das Recipe ist
+     mit `@` **echo-unterdrückt**, damit stdout ein `git apply`-reiner Patch bleibt
+     (sonst verunreinigte die von `make` auf stdout gedruckte Recipe-Zeile den Patch),
+   - `doc-help` (listet die `doc-*`-Targets via `grep … $(MAKEFILE_LIST) | sed`
+     über die `##`-Annotationen; **namespaced** statt `help`, um die
+     Namens-Kollision mit dem Konsumenten-Makefile zu vermeiden).
 
 Der eigene Image-**Digest** wird NICHT eingebettet (er hasht das Binary
-selbst — Henne-Ei); der Konsument pinnt per `DCHECK_IMAGE`-Override.
+selbst — Henne-Ei); der Konsument pinnt per `DCHECK_IMAGE`- bzw.
+`DCHECK_DIGEST`-Override.
 
 ### DC-FA-CLI-011.a — Vollständigkeits-Prüfung (`--require-complete`)
 

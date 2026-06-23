@@ -10,8 +10,15 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
-welle-35-suggest-opt-in-hinweis
+**welle-36-print-mk-erweiterung — in Arbeit.**
+([`slice-047`](slice-047-print-mk-doctor-repair-help-digest.md) — CR an
+`--print-mk`: das Fragment bekommt `doc-doctor` (`--doctor`), `doc-repair`
+(`--repair`, `git apply`-rein via `@`) und `doc-help` (namespaced Self-Doku) plus
+`DCHECK_DIGEST` (Digest-Override per `ifeq`); alle Targets `##`-annotiert
+([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
+Lastenheft 0.27.0); kein ADR. Anlass: Auftraggeber-Wunsch.)
+
+Zuletzt abgeschlossen: welle-35-suggest-opt-in-hinweis
 ([`slice-046`](../done/slice-046-suggest-config-opt-in-hinweis.md) — Schärfung der
 `--suggest-config ai-harness[-init]`-Ausgabe: sie nennt die nicht aktivierten
 situativen opt-in-Module (`external`/`spans`/`hostpaths`/`diagrams`) in einem

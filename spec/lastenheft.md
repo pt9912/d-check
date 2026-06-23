@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.26.0
+**Version:** 0.27.0
 
 **Status:** Draft
 
@@ -371,13 +371,18 @@ Release-Version** des laufenden Binaries (das Binary kennt seine Version,
 nicht seinen eigenen Digest; für strikte Reproduzierbarkeit überschreibt der
 Konsument `DCHECK_IMAGE` mit einem `@sha256:`-Digest aus den Release-Notes,
 konsistent mit der Konsum-Pin-Politik aus
-[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie drei
-Targets: `doc-check` (Doku-Gate), `doc-trace` (advisory RTM,
-[`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)) und
-`doc-complete` (Vollständigkeits-Gate,
+[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie sechs
+`##`-annotierte Targets: `doc-check` (Doku-Gate), `doc-trace` (advisory RTM,
+[`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)), `doc-complete`
+(Vollständigkeits-Gate,
 [`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)),
-jeweils `docker run --network none -v "$PWD:/repo:ro"`, plus eine per
-`TRACE_FLAGS ?=` überschreibbare Flag-Variable für die beiden RTM-Targets.
+`doc-doctor` ([`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus)-Diagnose),
+`doc-repair` ([`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)-Patch — Recipe-Echo
+unterdrückt, damit stdout `git apply`-rein bleibt) und `doc-help` (listet die
+`doc-*`-Targets), jeweils `docker run --network none -v "$PWD:/repo:ro"`. Dazu die
+Variablen `TRACE_FLAGS` (Flags der RTM-Targets) und `DCHECK_DIGEST` (ein
+`@sha256:`-Digest, der den Tag von `DCHECK_IMAGE` sticht — strikte
+Reproduzierbarkeit, ohne den vollen Ref zu überschreiben).
 Konsumenten `include d-check.mk` und legen ihre eigene `.d-check.yml`
 daneben — **keine Recipe-/Skript-Kopie**, der Image-Pin lebt in d-check.
 Deterministisch ([`DC-QA-02`](#dc-qa-02--determinismus)): hängt nur an der
@@ -386,11 +391,11 @@ eingebetteten Version. Reiht sich in die read-only-Generatoren
 
 **Akzeptanzkriterien:**
 
-- **Happy Path:** Given ein installiertes `d-check`, when `d-check --print-mk` läuft, then liegt auf stdout ein Makefile-Fragment mit `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v…`, einer `TRACE_FLAGS`-Variable und den Targets `doc-check`, `doc-trace` und `doc-complete` (jeweils `docker run … --network none … :/repo:ro`), Exit 0; kein Repo-Zugriff nötig.
-- **Boundary:** Given das Fragment wird per `d-check --print-mk > d-check.mk` umgeleitet und in ein Makefile `include`-t, when `make doc-check` (bzw. `make doc-trace`/`make doc-complete`) läuft, then ruft das Target das gepinnte Image (bzw. den per `DCHECK_IMAGE` gesetzten Override) im passenden Modus (`doc-trace` → `--trace`, `doc-complete` → `--trace --require-complete`); d-check selbst schreibt dabei nichts.
+- **Happy Path:** Given ein installiertes `d-check`, when `d-check --print-mk` läuft, then liegt auf stdout ein Makefile-Fragment mit `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v…`, den Variablen `DCHECK_DIGEST` und `TRACE_FLAGS` und den `##`-annotierten Targets `doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`, `doc-repair` und `doc-help` (jeweils `docker run … --network none … :/repo:ro`), Exit 0; kein Repo-Zugriff nötig.
+- **Boundary:** Given das Fragment wird per `d-check --print-mk > d-check.mk` umgeleitet und in ein Makefile `include`-t, when `make doc-check` (bzw. `doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`) läuft, then ruft das Target das gepinnte Image (bzw. den per `DCHECK_IMAGE`/`DCHECK_DIGEST` gesetzten Override) im passenden Modus (`doc-trace` → `--trace`, `doc-complete` → `--trace --require-complete`, `doc-doctor` → `--doctor`, `doc-repair` → `--repair` mit unterdrücktem Recipe-Echo); d-check selbst schreibt dabei nichts.
 - **Negative:** Given `d-check --print-mk` mit einem unbekannten Flag, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)).
 
-**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits `doc-check`/`doc-trace`/`doc-complete` (Konsumenten komponieren weitere `gates` selbst); die Exit-Code-Semantik der RTM-Targets selbst (in [`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) bzw. [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix) festgelegt); Nicht-Make-Build-Systeme.
+**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits der gelisteten sechs (`doc-check`/`doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-help` — Konsumenten komponieren weitere `gates` selbst); ein `help`-Target (Namens-Kollision mit dem Konsumenten — daher namespaced `doc-help`); Nicht-`@sha256:`-Digest-Formen in `DCHECK_DIGEST`; die Exit-Code-Semantik der RTM-Targets selbst (in [`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) bzw. [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix) festgelegt); Nicht-Make-Build-Systeme.
 
 ---
 
@@ -943,6 +948,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.27.0 | 2026-06-23 | Change Request (Auftraggeber): `DC-FA-CLI-010` (`--print-mk`-Fragment) um drei Targets + eine Variable erweitert — `doc-doctor` (`--doctor`), `doc-repair` (`--repair`, Recipe-Echo unterdrückt für `git apply`-reine stdout) und `doc-help` (namespaced, listet die `doc-*`-Targets via `##`-Annotationen; **kein** `help` wegen Konsumenten-Kollision) sowie `DCHECK_DIGEST` (Digest-Override per `ifeq`, sticht den Tag). Alle Targets `##`-annotiert (greift das `help` des Konsumenten auf). Read-only/deterministisch unverändert. Anlass: Auftraggeber-Wunsch nach `doc-doctor`/`doc-repair`/Self-Doc/Digest-Komfort | slice-047 |
 | 0.26.0 | 2026-06-23 | Schärfung `DC-FA-CLI-006` (Auftraggeber): das opt-in-Modul `diagrams` zur Out-of-Scope-Liste der **nicht** auto-aktivierten situativen Module ergänzt (`external`/`spans`/`hostpaths`/`diagrams`); die `--suggest-config ai-harness[-init]`-Ausgabe nennt diese situativen Module stattdessen in einem **Kommentar mit Verweis auf `--print-config`** (Auffindbarkeit ohne Aktivieren eines inerten Moduls — `diagrams` braucht repo-spezifische `patterns`/`defined-in`, lässt sich nicht ableiten). Read-only/advisory unverändert. Anlass: Nutzer-Frage nach slice-045 (wird `diagrams` in `--suggest-config ai-harness` berücksichtigt?) | slice-046 |
 | 0.25.0 | 2026-06-23 | Change Request (Auftraggeber): neue Anforderung `DC-FA-DIAG-001` — opt-in Modul `diagrams` öffnet gezielt benannte Diagramm-Fences (Default `mermaid`) und prüft die darin gefundenen Kennungen auf **Existenz** in ihrer `defined-in`-Quelle (Befund `diagram-id-undefined`); reine Token-Extraktion ohne Mermaid-Parser, read-only/netzlos (`DC-QA-03`), deterministisch (`DC-QA-02`), Default aus (byte-identisch). Link-Policy gilt in Fences nicht (keine Markdown-Links möglich) → Existenz statt Linkpflicht. Bereich `DIAG` in der Schema-Konvention deklariert; Modul-Liste in `DC-FA-CLI-002` ergänzt. Anlass: belief-agent-Architektur — `ARC-NN`/`LH-*`-Kennungen in `mermaid`-Diagrammen entgehen heute allen Modulen, weil Fences opak sind | slice-045 |
 | 0.24.0 | 2026-06-23 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-011` — opt-in `--trace --require-complete` bindet die Waisen-Markierung an den Exit-Code (≥1 Requirements-Waise ⇒ Exit 1, sonst 0); Default-`--trace` bleibt advisory (Exit 0). Mit-Erweiterung `DC-FA-CLI-010`: das `--print-mk`-Fragment trägt zusätzlich `doc-trace` (advisory RTM) und `doc-complete` (Vollständigkeits-Gate) plus eine `TRACE_FLAGS`-Variable. Read-only (`DC-QA-03`), deterministisch (`DC-QA-02`), kein Dokument geschrieben. Anlass: Konsumenten (a-check-Bootstrap) sollen die Vollständigkeits-Invariante als Makefile-Gate binden, ohne die `completeness-check.sh`-Parsing-Logik zu kopieren | slice-044 |
