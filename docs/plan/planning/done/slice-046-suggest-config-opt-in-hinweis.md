@@ -1,6 +1,6 @@
 # Slice slice-046: `--suggest-config ai-harness` — Auffindbarkeits-Hinweis für situative opt-in-Module
 
-**Status:** in-progress (welle-35-suggest-opt-in-hinweis).
+**Status:** done (abgeschlossen, welle-35-suggest-opt-in-hinweis).
 
 **Welle:** welle-35-suggest-opt-in-hinweis (Trigger: Nutzer-Frage nach slice-045 —
 „wird `diagrams` in `--suggest-config ai-harness` berücksichtigt?").
@@ -70,5 +70,27 @@ GF (Produkt-Code `app` + Spec; „Doc führt, Code folgt"). Keine BF-Sub-Area.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(Wird beim Move nach `done/` gefüllt — Belege: `make gates`-Ausgabe,
-unabhängiges Review R1, ggf. Release.)_
+**Umsetzung.** Schärfung
+[`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten):
+die `--suggest-config ai-harness[-init]`-Ausgabe (`renderHarnessSuggestion` in
+`internal/hexagon/core/app/suggest.go`) trägt nach dem `modules:`-Eintrag einen
+YAML-Kommentar, der die nicht aktivierten situativen opt-in-Module
+(`external`/`spans`/`hostpaths`/`diagrams`) nennt und auf `--print-config`
+verweist — Auffindbarkeit ohne Aktivieren eines inerten Moduls (`diagrams` braucht
+repo-spezifische `patterns`/`defined-in`, lässt sich nicht ableiten). Lastenheft
+0.26.0 (Out-of-Scope + Auffindbarkeits-AK). **Kein ADR** (Schärfung der
+advisory Ausgabe).
+
+**Belege.** `make gates` grün; `TestCLI006_AiHarness_Happy` prüft Kommentar +
+fortbestehende Decode-Gültigkeit. Minor-Release **v0.26.0** auf GHCR (Run
+`28040897654` grün, Tags `v0.26.0`+`latest`), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:19d53a26d8d82a919015a8befe24f852bd61f2ddea58bd29e3f4cf944a8403f3`.
+Handbuch 1.8/v0.26.0, CHANGELOG `[0.26.0]`.
+
+**Review.** R1 ACCEPT (0 HIGH/0 MEDIUM/1 LOW); F-1 behoben — `external` durchgängig
+ergänzt, sodass Kommentar == AK == Out-of-Scope.
+
+**Lerneintrag.** Die kuratierte ai-harness-Vorlage lässt situative opt-ins bewusst
+weg; ein Modul, das ohne repo-spezifische Config inert ist (`diagrams`), gehört
+**nicht** in eine generische Vorlage — der richtige Schnitt ist ein Verweis aufs
+Voll-Schema (`--print-config`), nicht stilles Aktivieren.
