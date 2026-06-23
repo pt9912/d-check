@@ -1,6 +1,6 @@
 # Spezifikation — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-19.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-23.
 
 **Bezug zum Lastenheft:** Diese Spezifikation präzisiert die in
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
