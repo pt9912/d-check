@@ -10,16 +10,16 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-33-print-mk-trace — in Arbeit.**
-([`slice-044`](slice-044-print-mk-trace-targets.md) — opt-in
+**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+welle-33-print-mk-trace
+([`slice-044`](../done/slice-044-print-mk-trace-targets.md) — opt-in
 `--trace --require-complete` bindet Requirements-Waisen an Exit 1
 ([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code));
-das `--print-mk`-Fragment trägt zusätzlich `doc-trace` (advisory RTM) und
-`doc-complete` (Vollständigkeits-Gate) plus `TRACE_FLAGS`
-([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
-Lastenheft 0.24.0); kein ADR.)
-
-Zuletzt abgeschlossen: welle-32-codepaths-exempt
+das `--print-mk`-Fragment trägt zusätzlich `doc-trace`/`doc-complete` plus
+`TRACE_FLAGS` ([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
+Lastenheft 0.24.0); kein ADR; unabhängiges R1 ACCEPT + R2;
+[Closure](../done/slice-044-print-mk-trace-targets.md#7-closure-notiz-nach-done)).
+Davor welle-32-codepaths-exempt
 ([`slice-043`](../done/slice-043-codepaths-exempt-paths.md) — Modul `codepaths`
 bekam das `exempt-paths`-Ventil (Datei-Glob ohne codepath-Prüfung) wie `ids`;
 Change Request [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
@@ -51,12 +51,11 @@ include-bares `d-check.mk` (version-gepinntes Image + `doc-check`-Target) aus;
 welle-27-rtm-trace (`slice-036`), welle-26-suggest-prefix (`slice-037`),
 welle-25-pr-ci-traceability (`slice-039`), welle-23-latest-tag (`slice-034`)
 und welle-24-kern-paketschnitt (`slice-035`).
-Letztes Release **v0.22.0** auf GHCR (2026-06-22) bündelt
-slice-034/036/037/038 (`--latest-tag` + `--trace` + `--id-prefix` +
-`--print-mk`), Digest-Pin
-`ghcr.io/pt9912/d-check@sha256:2f2294eb28f9e3ff4073e6af28710cad23a1f49290cccbb5ed32ba8cc8edc6e5`;
-davor v0.19.0 (2026-06-20, slice-031/032/033). `slice-035` ist als reiner
-Refactor noch in keinem Release.
+Letztes Release **v0.24.0** auf GHCR (2026-06-23, slice-044:
+`--require-complete` + `doc-trace`/`doc-complete`), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:1c28a2b7e0e624763577ecba75b027f384692ecaa8a78a6e353a1a0c1889a4f8`;
+davor v0.23.0 (slice-043) und v0.22.0 (slice-034/036/037/038). `slice-035` ist
+als reiner Refactor noch in keinem Release.
 
 ## Nächste Wellen
 
@@ -125,6 +124,7 @@ flowchart LR
 | welle-30-adr-immutable | 2026-06-21 | [slice-041 §7](../done/slice-041-adr-immutable-gate.md#7-closure-notiz-nach-done); ADR-Immutable-Gate `make adr-check` erzwingt [`AGENTS.md` §3.5](../../../../AGENTS.md#35-adrs-sind-nach-accepted-immutable) (Accepted-ADRs nur `## Geschichte`-Anhang + Status-Übergang; CI-Range + pre-commit-Hook; [ADR-0016](../../adr/0016-adr-immutable-gate.md)); unabhängiges Review R1 (1 MEDIUM core-Status-Strip behoben); `make gates` grün; kein Release |
 | welle-31-requirements-completeness | 2026-06-22 | [slice-042 §7](../done/slice-042-requirements-completeness-gate.md#7-closure-notiz-nach-done); Closure-Meta-Gate `make completeness-check` failt bei Requirements-Waisen (`--trace --json`, `orphans>0`), an `make fullbuild` (bewusst nicht `gates`/`ci`); [ADR-0017](../../adr/0017-requirements-completeness-gate.md); unabhängiges Review R1 (NACHBESSERN, F-1/F-2/F-3 vor Accept gefixt); `make gates` grün; kein Release |
 | welle-32-codepaths-exempt | 2026-06-22 | [slice-043 §7](../done/slice-043-codepaths-exempt-paths.md#7-closure-notiz-nach-done); Modul `codepaths` bekam das Datei-Ventil `exempt-paths` (Glob wie `scan.ignore`, datei-weit) wie `ids` ([`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) Change Request, Lastenheft 0.23.0); Dogfooding `.d-check.yml` exemptet `docs/reviews/**`; kein ADR; unabhängiges Review R1 ACCEPT; Minor-Release **v0.23.0** auf GHCR, Digest-Pin `ghcr.io/pt9912/d-check@sha256:68951f5a3dd7ad3404e1996d45327f3df2585c0ef2b0b6bde7ccf790da4ddf6a` |
+| welle-33-print-mk-trace | 2026-06-23 | [slice-044 §7](../done/slice-044-print-mk-trace-targets.md#7-closure-notiz-nach-done); opt-in `--trace --require-complete` bindet Requirements-Waisen an Exit 1 (neue [`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code); Default-`--trace` bleibt advisory Exit 0); `--print-mk`-Fragment um `doc-trace`/`doc-complete`-Targets + `TRACE_FLAGS` erweitert ([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) Change Request, Lastenheft 0.24.0); kein ADR; unabhängiges R1 ACCEPT + R2 (Doku-Drift F-A behoben); `make gates`+`completeness-check` grün; Minor-Release **v0.24.0** auf GHCR (Run `28008942708` grün in 2m11s, Tags `v0.24.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:1c28a2b7e0e624763577ecba75b027f384692ecaa8a78a6e353a1a0c1889a4f8` |
 
 ## Historische Trigger-Verschiebungen
 
