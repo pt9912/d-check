@@ -10,8 +10,17 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
-welle-33-print-mk-trace
+**welle-34-diagram-ids — in Arbeit.**
+([`slice-045`](slice-045-diagram-ids.md) — opt-in Modul `diagrams` öffnet gezielt
+benannte Diagramm-Fences (Default `mermaid`) und prüft die darin gefundenen
+Kennungen auf Existenz in ihrer `defined-in`-Quelle (Befund `diagram-id-undefined`);
+reine Token-Extraktion ohne Mermaid-Parser, Existenz statt Link-Policy, Default
+aus ([`DC-FA-DIAG-001`](../../../../spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in),
+Lastenheft 0.25.0); eine ADR zur Preprocessing-Fence-Ausnahme entsteht mit der
+Implementierung. Anlass: belief-agent-Architektur (`ARC-NN`/`LH-*` in
+`mermaid`-Diagrammen).)
+
+Zuletzt abgeschlossen: welle-33-print-mk-trace
 ([`slice-044`](../done/slice-044-print-mk-trace-targets.md) — opt-in
 `--trace --require-complete` bindet Requirements-Waisen an Exit 1
 ([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code));

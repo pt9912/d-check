@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.24.0
+**Version:** 0.25.0
 
 **Status:** Draft
 
@@ -43,7 +43,8 @@ statt per Code-Kopie.
 > (Anker-Modul), `ID` (ID-Linkpflicht-Modul), `MTX`
 > (Referenzmatrix-Modul), `EXT` (externe Links), `CODE`
 > (Inline-Code-Pfade), `SPAN` (Markdown-Span-Artefakte), `HOST`
-> (Host-Pfad-Hygiene), `CONF` (Konfiguration), `DIST` (Distribution).
+> (Host-Pfad-Hygiene), `DIAG` (Diagramm-Kennungen), `CONF`
+> (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -72,7 +73,7 @@ verweist für das Konfigurations-Format auf
 
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
-`codepaths`, `spans`, `hostpaths`. Ohne Konfiguration sind `links` und
+`codepaths`, `spans`, `hostpaths`, `diagrams`. Ohne Konfiguration sind `links` und
 `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
@@ -780,6 +781,45 @@ Präfixliste für repo-spezifische Sonderfälle.
 
 ---
 
+### DC-FA-DIAG-001 — Kennungs-Konsistenz in Diagramm-Fences (Modul `diagrams`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `diagrams` öffnet d-check
+**gezielt benannte Diagramm-Fences** (Default `mermaid`; per `diagrams.fences`
+gesetzt) und extrahiert daraus **Kennungen per Regex** (Muster wie beim Modul
+[`ids`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids), je Muster eine
+Definitionsquelle `defined-in`). Geprüft wird **Existenz, nicht Linkpflicht**:
+jede im Diagramm gefundene Kennung muss in ihrer `defined-in`-Quelle **definiert**
+sein. **Definiert** heißt: die Kennung kommt in der `defined-in`-Datei als
+eigenständiges Kennungs-Token **außerhalb von Fences** vor — als Heading **oder**
+in Fließtext/Tabelle; bewusst **nicht** heading-zentriert (anders als das Modul
+`ids`), damit auch **tabellen-definierte** Komponenten-Kennungen (z. B.
+Architektur-IDs) erfasst werden. Eine Kennung ohne solche Definition ist der
+Befund `diagram-id-undefined` (Datei, Zeile im Fence, Kennung). **Link-Policy gilt hier nicht** (Mermaid kennt keine
+Markdown-Links; eine Diagramm-Kennung *kann* nicht verlinkt werden), daher das
+von [`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)
+abweichende Existenz-Kriterium.
+
+Das Modul **öffnet als bislang einziges** gezielt benannte Diagramm-Fences; alle
+übrigen Module behandeln Fence-Inhalt als opak (vgl. die Vorverarbeitung des
+Moduls [`links`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)).
+**Nur** die in `diagrams.fences` gelisteten Sprachen werden geöffnet, **kein** Mermaid-/
+Grammatik-Parsing (reine Token-Extraktion über Rohtext) — deterministisch
+([`DC-QA-02`](#dc-qa-02--determinismus)), read-only und netzlos
+([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)), ohne
+zusätzliche Toolchain. Strikt opt-in (Default aus): ohne `diagrams`-Block ist der
+Befundsatz **byte-identisch** zum Lauf ohne das Modul. Reiht sich in die
+opt-in-Module ([`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl)) ein.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `diagrams` aktiv (`fences: [mermaid]`) und ein `mermaid`-Block, dessen Kennungen alle in ihrer `defined-in`-Quelle vorkommen, when `d-check` läuft, then kein Befund, Exit 0; ein read-only gemountetes Repository genügt.
+- **Boundary:** Given ein `mermaid`-Block mit genau einer Kennung ohne Definition in `defined-in`, when das Modul läuft, then genau ein `diagram-id-undefined` (Datei, Zeile im Fence, Kennung), Exit 1; dieselbe Kennung in einem **nicht** gelisteten Fence (z. B. `bash`) oder außerhalb jedes Fence bleibt für dieses Modul unberührt.
+- **Negative:** Given **kein** `diagrams`-Block in der Konfiguration, when `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne das Modul ([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Out-of-Scope:** Mermaid-**Syntax**-/Rendering-Validierung (gehört in einen Diagramm-Linter, braucht den Original-Parser); Grammatik-Parsing der Diagramm-Sprache; Link-Policy innerhalb von Fences (technisch unmöglich); Vollständigkeit „jede definierte Kennung erscheint im Diagramm" (separater Folge-Check); Referenzrichtungs-Prüfung von Diagramm-Kennungen (Sache einer späteren `matrix`-Erweiterung); Nicht-Mermaid-Diagrammsprachen in der ersten Fassung.
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -888,7 +928,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -902,6 +942,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.25.0 | 2026-06-23 | Change Request (Auftraggeber): neue Anforderung `DC-FA-DIAG-001` — opt-in Modul `diagrams` öffnet gezielt benannte Diagramm-Fences (Default `mermaid`) und prüft die darin gefundenen Kennungen auf **Existenz** in ihrer `defined-in`-Quelle (Befund `diagram-id-undefined`); reine Token-Extraktion ohne Mermaid-Parser, read-only/netzlos (`DC-QA-03`), deterministisch (`DC-QA-02`), Default aus (byte-identisch). Link-Policy gilt in Fences nicht (keine Markdown-Links möglich) → Existenz statt Linkpflicht. Bereich `DIAG` in der Schema-Konvention deklariert; Modul-Liste in `DC-FA-CLI-002` ergänzt. Anlass: belief-agent-Architektur — `ARC-NN`/`LH-*`-Kennungen in `mermaid`-Diagrammen entgehen heute allen Modulen, weil Fences opak sind | slice-045 |
 | 0.24.0 | 2026-06-23 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-011` — opt-in `--trace --require-complete` bindet die Waisen-Markierung an den Exit-Code (≥1 Requirements-Waise ⇒ Exit 1, sonst 0); Default-`--trace` bleibt advisory (Exit 0). Mit-Erweiterung `DC-FA-CLI-010`: das `--print-mk`-Fragment trägt zusätzlich `doc-trace` (advisory RTM) und `doc-complete` (Vollständigkeits-Gate) plus eine `TRACE_FLAGS`-Variable. Read-only (`DC-QA-03`), deterministisch (`DC-QA-02`), kein Dokument geschrieben. Anlass: Konsumenten (a-check-Bootstrap) sollen die Vollständigkeits-Invariante als Makefile-Gate binden, ohne die `completeness-check.sh`-Parsing-Logik zu kopieren | slice-044 |
 | 0.23.0 | 2026-06-22 | Change Request (Auftraggeber): `DC-FA-CODE-001` um das Datei-Ventil `exempt-paths` (Glob-Liste, Syntax wie `scan.ignore`) erweitert — nimmt **ganze Dateien** von der `codepaths`-Prüfung aus, datei-weit und unabhängig von `roots`; dasselbe Ventil wie `DC-FA-ID-001` (slice-018/023), komplementär zum zeilenweisen `d-check:ignore`-Marker. Abwärtskompatibel (`DC-QA-02`): ohne gesetztes `exempt-paths` byte-identisch. Anlass: slice-042-Nebenbefund — Review-Reports unter `docs/reviews/` zitieren naturgemäß `Datei:Zeile`/Pfade und lösten `codepath-missing` aus (`ids` exemptet `docs/reviews/**` längst; `codepaths` zieht nach) | slice-043 |
 | 0.22.0 | 2026-06-21 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-010` — Option `--print-mk` gibt ein include-bares `d-check.mk` (überschreibbare `DCHECK_IMAGE`-Variable mit version-gepinntem Image + `doc-check`-Target) auf stdout aus; read-only (`DC-QA-03`), deterministisch (`DC-QA-02`), kein Dokument geschrieben. Konsumenten `include`-n statt Recipe/Skript zu kopieren; der Image-Ref ist die ins Binary eingebettete Release-Version (Digest via `DCHECK_IMAGE`-Override — Henne-Ei: das Binary kennt seinen eigenen Digest nicht). Anlass: a-check-Bootstrap 2026-06-20 — `d-check.mk` wurde handgepflegt; `--print-mk` verlagert den Pin nach d-check | slice-038 |
