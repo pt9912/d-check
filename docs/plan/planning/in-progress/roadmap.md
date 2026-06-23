@@ -10,16 +10,16 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-35-suggest-opt-in-hinweis — in Arbeit.**
-([`slice-046`](slice-046-suggest-config-opt-in-hinweis.md) — Schärfung der
+**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+welle-35-suggest-opt-in-hinweis
+([`slice-046`](../done/slice-046-suggest-config-opt-in-hinweis.md) — Schärfung der
 `--suggest-config ai-harness[-init]`-Ausgabe: sie nennt die nicht aktivierten
-situativen opt-in-Module (`external`/`spans`/`hostpaths`/`diagrams`) in einem Kommentar mit
-Verweis auf `--print-config` (Auffindbarkeit ohne Aktivieren eines inerten
-Moduls); `diagrams` zur Out-of-Scope-Liste ergänzt
+situativen opt-in-Module (`external`/`spans`/`hostpaths`/`diagrams`) in einem
+Kommentar mit Verweis auf `--print-config`
 ([`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten),
-Lastenheft 0.26.0); kein ADR. Anlass: Nutzer-Frage nach slice-045.)
-
-Zuletzt abgeschlossen: welle-34-diagram-ids
+Lastenheft 0.26.0); kein ADR; R1 ACCEPT;
+[Closure](../done/slice-046-suggest-config-opt-in-hinweis.md#7-closure-notiz-nach-done)).
+Davor welle-34-diagram-ids
 ([`slice-045`](../done/slice-045-diagram-ids.md) — opt-in Modul `diagrams` öffnet
 gezielt benannte Diagramm-Fences (Default `mermaid`) und prüft die darin
 gefundenen Kennungen auf Existenz in ihrer `defined-in`-Quelle (Befund
@@ -68,10 +68,10 @@ include-bares `d-check.mk` (version-gepinntes Image + `doc-check`-Target) aus;
 welle-27-rtm-trace (`slice-036`), welle-26-suggest-prefix (`slice-037`),
 welle-25-pr-ci-traceability (`slice-039`), welle-23-latest-tag (`slice-034`)
 und welle-24-kern-paketschnitt (`slice-035`).
-Letztes Release **v0.25.0** auf GHCR (2026-06-23, slice-045: Modul `diagrams`),
+Letztes Release **v0.26.0** auf GHCR (2026-06-23, slice-046: --suggest-config-Hinweis),
 Digest-Pin
-`ghcr.io/pt9912/d-check@sha256:a2c5428214f1b3c616e0ba2e8d25bf77e4b11bf74470f10c1cd65d748667eb0f`;
-davor v0.24.0 (slice-044) und v0.23.0 (slice-043). `slice-035` ist als reiner
+`ghcr.io/pt9912/d-check@sha256:19d53a26d8d82a919015a8befe24f852bd61f2ddea58bd29e3f4cf944a8403f3`;
+davor v0.25.0 (slice-045) und v0.24.0 (slice-044). `slice-035` ist als reiner
 Refactor noch in keinem Release.
 
 ## Nächste Wellen
@@ -143,6 +143,7 @@ flowchart LR
 | welle-32-codepaths-exempt | 2026-06-22 | [slice-043 §7](../done/slice-043-codepaths-exempt-paths.md#7-closure-notiz-nach-done); Modul `codepaths` bekam das Datei-Ventil `exempt-paths` (Glob wie `scan.ignore`, datei-weit) wie `ids` ([`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) Change Request, Lastenheft 0.23.0); Dogfooding `.d-check.yml` exemptet `docs/reviews/**`; kein ADR; unabhängiges Review R1 ACCEPT; Minor-Release **v0.23.0** auf GHCR, Digest-Pin `ghcr.io/pt9912/d-check@sha256:68951f5a3dd7ad3404e1996d45327f3df2585c0ef2b0b6bde7ccf790da4ddf6a` |
 | welle-33-print-mk-trace | 2026-06-23 | [slice-044 §7](../done/slice-044-print-mk-trace-targets.md#7-closure-notiz-nach-done); opt-in `--trace --require-complete` bindet Requirements-Waisen an Exit 1 (neue [`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code); Default-`--trace` bleibt advisory Exit 0); `--print-mk`-Fragment um `doc-trace`/`doc-complete`-Targets + `TRACE_FLAGS` erweitert ([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) Change Request, Lastenheft 0.24.0); kein ADR; unabhängiges R1 ACCEPT + R2 (Doku-Drift F-A behoben); `make gates`+`completeness-check` grün; Minor-Release **v0.24.0** auf GHCR (Run `28008942708` grün in 2m11s, Tags `v0.24.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:1c28a2b7e0e624763577ecba75b027f384692ecaa8a78a6e353a1a0c1889a4f8` |
 | welle-34-diagram-ids | 2026-06-23 | [slice-045 §7](../done/slice-045-diagram-ids.md#7-closure-notiz-nach-done); opt-in Modul `diagrams` öffnet gezielt benannte Diagramm-Fences (Default `mermaid`) und prüft die darin gefundenen Kennungen auf **Existenz** in ihrer `defined-in`-Quelle (Befund `diagram-id-undefined`); Existenz statt Link-Policy (in Fences kein Markdown-Link), reine Token-Extraktion ohne Mermaid-Parser, scoped Fence-Ausnahme ([`DC-FA-DIAG-001`](../../../../spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in), [ADR-0018](../../adr/0018-diagram-fence-ausnahme.md), Lastenheft 0.25.0); doc-first-Fundament R1 (NACHBESSERN→behoben)→R2 ACCEPT + Implementierungs-R1 ACCEPT (F-4-Tests ergänzt); `make gates` grün; Minor-Release **v0.25.0** auf GHCR (Run `28031261024` grün in 2m20s, Tags `v0.25.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:a2c5428214f1b3c616e0ba2e8d25bf77e4b11bf74470f10c1cd65d748667eb0f` |
+| welle-35-suggest-opt-in-hinweis | 2026-06-23 | [slice-046 §7](../done/slice-046-suggest-config-opt-in-hinweis.md#7-closure-notiz-nach-done); Schärfung [`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten): `--suggest-config ai-harness[-init]` nennt die nicht aktivierten situativen opt-in-Module (`external`/`spans`/`hostpaths`/`diagrams`) in einem Kommentar mit Verweis auf `--print-config` (Auffindbarkeit ohne Aktivieren eines inerten Moduls; `diagrams` nicht ableitbar — braucht repo-spezifische `patterns`/`defined-in`); Lastenheft 0.26.0, kein ADR; unabhängiges R1 ACCEPT (F-1 LOW `external` ergänzt); `make gates` grün; Minor-Release **v0.26.0** auf GHCR (Run `28040897654` grün, Tags `v0.26.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:19d53a26d8d82a919015a8befe24f852bd61f2ddea58bd29e3f4cf944a8403f3` |
 
 ## Historische Trigger-Verschiebungen
 
