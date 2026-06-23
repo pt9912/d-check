@@ -655,6 +655,11 @@ hostpaths:
   prefixes: ["/home", "/Users"] # host-lokale Pfade melden
 external:
   timeout-seconds: 10
+diagrams:                      # Kennungen in Diagramm-Fences prüfen
+  fences: [mermaid]            # zu öffnende Diagramm-Sprachen (Default mermaid)
+  patterns:
+    - regex: 'ARC-\d{2}'
+      defined-in: spec/architecture.md  # Token muss hier (außerhalb Fences) vorkommen
 ```
 
 ### Modul-lokaler Scan-Bereich

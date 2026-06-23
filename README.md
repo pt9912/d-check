@@ -3,18 +3,17 @@
 Doc-Referenz-Checker für Markdown-Dokumentation — deterministisch,
 seiteneffektfrei, ausgeliefert als Container-Image.
 
-**Status: released** — alle acht Regelmodule (`links`, `anchors`, `ids`,
-`matrix`, `codepaths`, `spans`, `hostpaths`, `external`) sind im
-GHCR-Image; jüngste Erweiterung: die `ids`-Ventile `exempt-paths` und
-`d-check:ignore` gelten für nackte Fließtext-Vorkommen, nicht nur
-Inline-Code (`v0.10.0`). Verbindlich ist das [Lastenheft](spec/lastenheft.md); die
-Versionshistorie führt die [CHANGELOG.md](CHANGELOG.md).
+**Status: released** — alle neun Regelmodule (`links`, `anchors`, `ids`,
+`matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `external`) sind im
+GHCR-Image. Verbindlich ist das [Lastenheft](spec/lastenheft.md); die jeweils
+jüngsten Änderungen (zuletzt das opt-in-Modul `diagrams`) führt die
+[CHANGELOG.md](CHANGELOG.md).
 
 ## Was ist d-check?
 
-**d-check** prüft Markdown-Dokumentation als Referenz-Netz: Jede
-Verweis-Art ist ein einzeln aktivierbares Regelmodul mit eigener
-Anforderung im [Lastenheft](spec/lastenheft.md):
+**d-check** prüft Markdown-Dokumentation als Referenz-Netz: Jede prüfbare
+Verweis- oder Kennungs-Invariante ist ein einzeln aktivierbares Regelmodul mit
+eigener Anforderung im [Lastenheft](spec/lastenheft.md):
 
 - `links` — lokale Link- und Bildreferenzen: Ziel existiert, kein
   Repo-Escape ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
@@ -38,6 +37,10 @@ Anforderung im [Lastenheft](spec/lastenheft.md):
 - `hostpaths` — host-lokale absolute Pfade (Maschinen-Layout-Leaks),
   opt-in
   ([`DC-FA-HOST-001`](spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in))
+- `diagrams` — Kennungs-Existenz in Diagramm-Fences (z. B. `mermaid`): jede
+  im Diagramm gefundene Kennung muss in ihrer `defined-in`-Quelle definiert
+  sein, opt-in
+  ([`DC-FA-DIAG-001`](spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
@@ -113,7 +116,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.10.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.25.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
