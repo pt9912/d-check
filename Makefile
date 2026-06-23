@@ -105,6 +105,12 @@ run: build ## Smoke-Test: d-check prüft das eigene Repo (read-only).
 
 # ---- docs gates --------------------------------------------------------------
 
+# Gemeinsamer Dogfooding-Lauf: das LOKAL gebaute Image ($(IMAGE):latest, NICHT
+# ein Release-Pin), read-only-Mount + --network none (DC-QA-03). Basis für
+# doc-check/trace/doc-complete — der Pin existiert hier nicht (Produzent baut
+# selbst), daher inline statt --print-mk-Fragment (das ist konsumenten-seitig).
+DCHECK_RUN = docker run --rm --network none -v "$(CURDIR)":/repo:ro $(IMAGE):latest
+
 # Dogfooding (MR-007, Selbstkonfiguration slice-007): d-check prüft die
 # eigene Doku — Module links + anchors + ids + matrix über die gesamte
 # Repo-Wurzel (.d-check.yml, scan.roots ".").
@@ -112,14 +118,21 @@ run: build ## Smoke-Test: d-check prüft das eigene Repo (read-only).
 # read-only-Mount + --network none — alle Module außer external aktiv,
 # der Lauf beweist Seiteneffektfreiheit und Netzlosigkeit.
 doc-check: build ## Doku-Links, Anker, ID-Linkpflicht + Referenzmatrix via d-check selbst (Dogfooding, DC-FA-LINK/ANCH/ID/MTX; netzlos: DC-QA-03).
-	docker run --rm --network none -v "$(CURDIR)":/repo:ro $(IMAGE):latest
+	$(DCHECK_RUN)
 
 # Dogfooding-Render (kein Gate): die Requirements Traceability Matrix
 # (--trace, DC-FA-CLI-009) über Lastenheft/ADR/Planning auf stdout — Komfort
 # über das released Feature, read-only + --network none wie doc-check. Bewusst
 # NICHT in `gates` (rein informativ, kein Pass/Fail).
 trace: build ## Requirements Traceability Matrix via d-check selbst (Dogfooding, --trace; netzlos: DC-QA-03). DC-FA-CLI-009.
-	docker run --rm --network none -v "$(CURDIR)":/repo:ro $(IMAGE):latest --trace
+	$(DCHECK_RUN) --trace
+
+# Dogfooding des opt-in Vollständigkeits-Modus (--require-complete, DC-FA-CLI-011):
+# Exit 1 bei Requirements-Waisen, sonst 0 — gegen das lokal gebaute Image. Bewusst
+# Konvenienz/Dogfooding, NICHT der Closure-Bindepunkt: die fail-closed Closure-
+# Wahrheit bleibt `make completeness-check` (ADR-0017-Wrapper, in fullbuild).
+doc-complete: build ## Vollständigkeits-Dogfood via d-check selbst (--trace --require-complete, Waise⇒Exit1; netzlos: DC-QA-03). DC-FA-CLI-011.
+	$(DCHECK_RUN) --trace --require-complete
 
 # ---- harness -----------------------------------------------------------------
 
