@@ -1,6 +1,6 @@
 # Slice slice-044: `doc-trace`/`doc-complete`-Fragment-Targets + opt-in `--require-complete`
 
-**Status:** in-progress (welle-33-print-mk-trace).
+**Status:** done (abgeschlossen, welle-33-print-mk-trace).
 
 **Welle:** welle-33-print-mk-trace (Trigger: a-check-Bootstrap — Konsumenten
 wollen die RTM/Vollständigkeits-Invariante als Makefile-Gate binden, ohne die
@@ -130,5 +130,46 @@ Default „Doc führt, Code folgt"). Keine BF-Sub-Area berührt.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(Wird beim Move nach `done/` gefüllt — Belege: `make gates`-Ausgabe,
-unabhängiges Review R1, ggf. Release-Digest.)_
+**Umsetzung.** Neue Anforderung
+[`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code):
+`--trace --require-complete` bindet die RTM-Waisen-Markierung an den Exit-Code
+(`matrix.Orphans > 0` ⇒ Exit 1, Zähl-Zeile auf stderr, RTM rein auf stdout;
+sonst Exit 0); `comboError` weist das Flag ohne `--trace` als Nutzungsfehler ab
+(Exit 2). Der Default-`--trace` bleibt advisory (Exit 0) — die Durchsetzung ist
+strikt opt-in, der Vertrag von
+[`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
+und die Wrapper-Mechanik von
+[ADR-0017](../../adr/0017-requirements-completeness-gate.md) bleiben unangetastet
+(Provenienz-Zeile dort angehängt). CR an
+[`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben):
+das `--print-mk`-Fragment trägt zusätzlich `doc-trace` (advisory RTM) und
+`doc-complete` (`--trace --require-complete`) plus die `TRACE_FLAGS`-Variable.
+Kein Kern-Eingriff — `matrix.Orphans` existierte bereits
+(`internal/hexagon/core/app/trace.go`); der Strict-Exit lebt im CLI-Adapter
+(`internal/adapter/driving/cli/cli.go`), das Fragment in
+`internal/adapter/driving/cli/print_mk.go`. **Kein ADR** (additiv; Präzedenz
+slice-036/slice-038).
+
+**Belege.** `make gates` grün (lint, test, arch-check, coverage 93,90 %, semgrep
+0, doc-check, gate-consistency, planning-check); `make completeness-check` grün
+(0 Waisen, 28 Anforderungen abgedeckt). Fünf neue Akzeptanztests `TestCLI044_*`
+(Happy 0 Waisen⇒0, Boundary Waise⇒1 mit RTM rein auf stdout, JSON-Gate-Pfad⇒1,
+Negative ohne `--trace`⇒2, Fragment-Targets). Minor-Release **v0.24.0** auf GHCR
+(Run `28008942708` grün in 2m11s, Tags `v0.24.0`+`latest`), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:1c28a2b7e0e624763577ecba75b027f384692ecaa8a78a6e353a1a0c1889a4f8`.
+
+**Reviews.** R1 (`docs/reviews/2026-06-23-slice-044-r1.md`): unabhängig, **ACCEPT**
+(0 HIGH/0 MEDIUM/2 LOW behoben/1 INFO won't-fix). R2
+(`docs/reviews/2026-06-23-slice-044-r2.md`): Slice-Doc gegen Implementierung,
+**ACCEPT**, fand F-A (Handbuch-Versionsdrift) — release-prep-gebunden aufgelöst;
+der v0.24.0-Stempel (Handbuch 1.6, CHANGELOG-Datum) lebt im separaten
+Release-Prep-Commit (Präzedenz `7716be3`).
+
+**Lerneintrag.** Eine Gate-Form für Konsumenten darf weder den advisory-Default
+umbiegen (die ADR-Invariante) noch Skript-Logik ins Recipe kopieren (das Verbot
+aus [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)) —
+der einzige saubere Schnitt ist ein **opt-in Produkt-Exit-Flag**, dessen Default
+nichts ändert. Und: `link-policy: always` zählt **jede** ID-Wiederholung im
+Fließtext (R2-Vorlauf: neun `id-unlinked` durch bare Wiederholungen im
+Slice-Entwurf) — Wiederholungen als „die Anforderung"/„die ADR" formulieren,
+nicht erneut als nackte Kennung.
