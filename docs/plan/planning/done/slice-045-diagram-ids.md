@@ -1,6 +1,6 @@
 # Slice slice-045: Modul `diagrams` — Kennungs-Konsistenz in Mermaid-Fences
 
-**Status:** in-progress (welle-34-diagram-ids).
+**Status:** done (abgeschlossen, welle-34-diagram-ids).
 
 **Welle:** welle-34-diagram-ids (Trigger: belief-agent-Architektur — `ARC-NN`/
 `LH-*`-Kennungen leben in `mermaid`-Diagrammen und entgehen heute allen Modulen,
@@ -119,5 +119,42 @@ Greenfield-Default „Doc führt, Code folgt"). Keine BF-Sub-Area berührt.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(Wird beim Move nach `done/` gefüllt — Belege: `make gates`-Ausgabe, ADR-Nummer,
-unabhängiges Review R1, ggf. Release-Digest.)_
+**Umsetzung.** Opt-in Modul `diagrams`
+([`DC-FA-DIAG-001`](../../../../spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in),
+[ADR-0018](../../adr/0018-diagram-fence-ausnahme.md)): ein eigener Fence-Automat
+(`diagramFenceLines` in `internal/hexagon/core/rules/markdown.go`) öffnet **nur**
+die in `diagrams.fences` gelisteten Sprachen (Default `mermaid`); die gemeinsame
+Vorverarbeitung der übrigen Module bleibt unverändert (keine `spans`-Interaktion).
+`CheckDiagrams` (`internal/hexagon/core/rules/diagrams.go`) zieht die Kennungen
+per Regex und prüft **Existenz** in der `defined-in`-Quelle (Token außerhalb von
+Fences, Heading **oder** Tabelle — nicht heading-zentriert wie `ids`); Befund
+`diagram-id-undefined`. `ensureDiagramsDefinedInExist` erzwingt vorhandene
+`defined-in` (Exit 2). Reine Token-Extraktion, **kein** Mermaid-Parser
+(distroless/netzlos,
+[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)),
+Default aus → byte-identisch
+([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
+
+**Belege.** `make gates` grün (lint, test, arch-check, coverage, semgrep,
+doc-check, gate-consistency, planning-check). Neue Tests `rules/diagrams_test.go`
+(Happy/Boundary/Negative/bash-Fence/Custom-Fence/Validierung/Präzedenz/
+Token-Grenze) + `configyaml/diagrams_test.go` (Decode + Fehlerfälle). Minor-Release
+**v0.25.0** auf GHCR (Run `28031261024` grün in 2m20s, Tags `v0.25.0`+`latest`),
+Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:a2c5428214f1b3c616e0ba2e8d25bf77e4b11bf74470f10c1cd65d748667eb0f`.
+Handbuch 1.7/v0.25.0 (§5/§6 `diagrams`); README auf neun Module aktualisiert
+(Nutzer-Funde: stale „acht"/`v0.10.0`).
+
+**Reviews.** doc-first-Fundament: R1 NACHBESSERN (F-1 — Vertragsbegriff „definiert"
+geschärft) → R2 ACCEPT. Implementierung: R1 ACCEPT (0 HIGH/1 MEDIUM/2 LOW/1 INFO;
+Auflage F-4 — Präzedenz-/Token-Grenzen-Tests — erfüllt). F-1/F-2 (Substring/
+mehrstellig) vertragskonform: die Token-Grenze ist an die Nutzer-Regex delegiert,
+exakt wie das Modul `ids`.
+
+**Lerneintrag.** Eine Kern-Invariante (Fence-Opazität) lässt sich **scoped**
+durchbrechen, ohne die übrigen Module zu berühren: ein **eigener** Fence-Automat
+auf demselben unveränderlichen `content` (statt den geteilten Fence-Zustand zu
+ändern) isoliert die Ausnahme — die `spans`-Freiheit fiel so ohne Sonderfall ab.
+Und: „Existenz statt Link-Policy" war der Schlüssel — in Fences ist kein
+Markdown-Link möglich, also wäre `ids`-Wiederverwendung ein unbehebbares
+`id-unlinked` gewesen.
