@@ -90,8 +90,9 @@ bleibt), `doc-help` (namespaced Self-Doku, `grep $(MAKEFILE_LIST) | sed` über d
 `##`-Annotationen) sowie `DCHECK_DIGEST` (Digest-Override per `ifeq`: gesetzt ⇒
 `DCHECK_REF := …/d-check@$(DCHECK_DIGEST)`, sonst der Tag). Alle sechs `doc-*`-Targets
 sind `##`-annotiert. Template bleibt `%`-frei außer dem Versions-`%s` (Code-Kommentar +
-`TestCLI047`). Doc-first: Lastenheft-CR `DC-FA-CLI-010` (0.27.0) + `spezifikation.md`
-`.a`-Sektion gingen dem Code voraus.
+`TestCLI047`). Doc-first: Lastenheft-CR
+[`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+(0.27.0) + `spezifikation.md` `.a`-Sektion gingen dem Code voraus.
 
 **Belege.**
 - `make gates` **grün** (doc-check, lint, test, arch-check, coverage ≥ 93 %, semgrep,
