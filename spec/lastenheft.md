@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.23.0
+**Version:** 0.24.0
 
 **Status:** Draft
 
@@ -369,8 +369,13 @@ Release-Version** des laufenden Binaries (das Binary kennt seine Version,
 nicht seinen eigenen Digest; für strikte Reproduzierbarkeit überschreibt der
 Konsument `DCHECK_IMAGE` mit einem `@sha256:`-Digest aus den Release-Notes,
 konsistent mit der Konsum-Pin-Politik aus
-[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie ein
-`doc-check`-Target (`docker run --network none -v "$PWD:/repo:ro"`).
+[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie drei
+Targets: `doc-check` (Doku-Gate), `doc-trace` (advisory RTM,
+[`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)) und
+`doc-complete` (Vollständigkeits-Gate,
+[`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)),
+jeweils `docker run --network none -v "$PWD:/repo:ro"`, plus eine per
+`TRACE_FLAGS ?=` überschreibbare Flag-Variable für die beiden RTM-Targets.
 Konsumenten `include d-check.mk` und legen ihre eigene `.d-check.yml`
 daneben — **keine Recipe-/Skript-Kopie**, der Image-Pin lebt in d-check.
 Deterministisch ([`DC-QA-02`](#dc-qa-02--determinismus)): hängt nur an der
@@ -379,11 +384,44 @@ eingebetteten Version. Reiht sich in die read-only-Generatoren
 
 **Akzeptanzkriterien:**
 
-- **Happy Path:** Given ein installiertes `d-check`, when `d-check --print-mk` läuft, then liegt auf stdout ein Makefile-Fragment mit `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v…` und einem `doc-check`-Target (`docker run … --network none … :/repo:ro`), Exit 0; kein Repo-Zugriff nötig.
-- **Boundary:** Given das Fragment wird per `d-check --print-mk > d-check.mk` umgeleitet und in ein Makefile `include`-t, when `make doc-check` läuft, then ruft das Target das gepinnte Image (bzw. den per `DCHECK_IMAGE` gesetzten Override); d-check selbst schreibt dabei nichts.
+- **Happy Path:** Given ein installiertes `d-check`, when `d-check --print-mk` läuft, then liegt auf stdout ein Makefile-Fragment mit `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v…`, einer `TRACE_FLAGS`-Variable und den Targets `doc-check`, `doc-trace` und `doc-complete` (jeweils `docker run … --network none … :/repo:ro`), Exit 0; kein Repo-Zugriff nötig.
+- **Boundary:** Given das Fragment wird per `d-check --print-mk > d-check.mk` umgeleitet und in ein Makefile `include`-t, when `make doc-check` (bzw. `make doc-trace`/`make doc-complete`) läuft, then ruft das Target das gepinnte Image (bzw. den per `DCHECK_IMAGE` gesetzten Override) im passenden Modus (`doc-trace` → `--trace`, `doc-complete` → `--trace --require-complete`); d-check selbst schreibt dabei nichts.
 - **Negative:** Given `d-check --print-mk` mit einem unbekannten Flag, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)).
 
-**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits `doc-check` (Konsumenten komponieren `gates` selbst); Nicht-Make-Build-Systeme.
+**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits `doc-check`/`doc-trace`/`doc-complete` (Konsumenten komponieren weitere `gates` selbst); die Exit-Code-Semantik der RTM-Targets selbst (in [`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) bzw. [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix) festgelegt); Nicht-Make-Build-Systeme.
+
+---
+
+### DC-FA-CLI-011 — Vollständigkeits-Prüfung als opt-in Exit-Code
+
+**Beschreibung:** Mit `--trace --require-complete` macht `d-check` denselben
+read-only RTM-Lauf wie
+[`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)
+(Anforderung → ADRs/Slices, Waisen-Markierung; read-only
+[`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit),
+deterministisch [`DC-QA-02`](#dc-qa-02--determinismus), kein Dokument erzeugt),
+**bindet das Ergebnis aber an den Exit-Code**: ≥1 Requirements-Waise
+(Anforderung ohne referenzierenden Slice) ⇒ **Exit 1** (Befund-Code,
+[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)); 0 Waisen ⇒ Exit 0. Die RTM
+erscheint unverändert auf stdout (Default Markdown, mit `--json`/`--yaml`
+maschinenlesbar) — `--require-complete` ändert nur den Exit-Code, nicht die
+Ausgabe. Es ist ein **Modifikator von `--trace`**: ohne `--trace` ein
+Nutzungsfehler (Exit 2,
+[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)). Der Default-`--trace` bleibt
+**advisory** (Exit 0 bei Waisen,
+[`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)
+unangetastet); die Durchsetzung ist opt-in. So binden Konsumenten die
+Vollständigkeits-Invariante als Makefile-Gate (vgl. das `doc-complete`-Target
+aus [`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben)), ohne die
+RTM-Parsing-Logik zu kopieren.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given ein Repo, dessen Lastenheft-Anforderungen alle von ≥1 Slice referenziert sind, when `d-check --trace --require-complete` läuft, then erscheint die RTM auf stdout und der Exit-Code ist 0; ein read-only gemountetes Repository genügt.
+- **Boundary:** Given ein Repo mit genau einer Requirements-Waise (Anforderung ohne referenzierenden Slice), when `d-check --trace --require-complete` (auch mit `--json`/`--yaml`) läuft, then ist der Exit-Code 1, die vollständige RTM erscheint auf stdout (Waise markiert), und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+- **Negative:** Given `d-check --require-complete` ohne `--trace`, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)), keine RTM.
+
+**Out-of-Scope:** Ändern des Default-`--trace`-Exit-Codes (bleibt advisory Exit 0, [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)); Bewertung des Slice-**Status** (done vs. in-progress — eine von ≥1 Slice beanspruchte Anforderung zählt als abgedeckt, unabhängig vom Fortschritt); Erzwingung anderer RTM-Eigenschaften als Waisenfreiheit (z. B. ADR-Abdeckung); Schreiben eines Reports.
 
 ---
 
@@ -864,6 +902,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.24.0 | 2026-06-23 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-011` — opt-in `--trace --require-complete` bindet die Waisen-Markierung an den Exit-Code (≥1 Requirements-Waise ⇒ Exit 1, sonst 0); Default-`--trace` bleibt advisory (Exit 0). Mit-Erweiterung `DC-FA-CLI-010`: das `--print-mk`-Fragment trägt zusätzlich `doc-trace` (advisory RTM) und `doc-complete` (Vollständigkeits-Gate) plus eine `TRACE_FLAGS`-Variable. Read-only (`DC-QA-03`), deterministisch (`DC-QA-02`), kein Dokument geschrieben. Anlass: Konsumenten (a-check-Bootstrap) sollen die Vollständigkeits-Invariante als Makefile-Gate binden, ohne die `completeness-check.sh`-Parsing-Logik zu kopieren | slice-044 |
 | 0.23.0 | 2026-06-22 | Change Request (Auftraggeber): `DC-FA-CODE-001` um das Datei-Ventil `exempt-paths` (Glob-Liste, Syntax wie `scan.ignore`) erweitert — nimmt **ganze Dateien** von der `codepaths`-Prüfung aus, datei-weit und unabhängig von `roots`; dasselbe Ventil wie `DC-FA-ID-001` (slice-018/023), komplementär zum zeilenweisen `d-check:ignore`-Marker. Abwärtskompatibel (`DC-QA-02`): ohne gesetztes `exempt-paths` byte-identisch. Anlass: slice-042-Nebenbefund — Review-Reports unter `docs/reviews/` zitieren naturgemäß `Datei:Zeile`/Pfade und lösten `codepath-missing` aus (`ids` exemptet `docs/reviews/**` längst; `codepaths` zieht nach) | slice-043 |
 | 0.22.0 | 2026-06-21 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-010` — Option `--print-mk` gibt ein include-bares `d-check.mk` (überschreibbare `DCHECK_IMAGE`-Variable mit version-gepinntem Image + `doc-check`-Target) auf stdout aus; read-only (`DC-QA-03`), deterministisch (`DC-QA-02`), kein Dokument geschrieben. Konsumenten `include`-n statt Recipe/Skript zu kopieren; der Image-Ref ist die ins Binary eingebettete Release-Version (Digest via `DCHECK_IMAGE`-Override — Henne-Ei: das Binary kennt seinen eigenen Digest nicht). Anlass: a-check-Bootstrap 2026-06-20 — `d-check.mk` wurde handgepflegt; `--print-mk` verlagert den Pin nach d-check | slice-038 |
 | 0.21.0 | 2026-06-21 | Change Request (Auftraggeber): neue Anforderung `DC-FA-CLI-009` — Option `--trace` gibt eine **Requirements Traceability Matrix** (Anforderung → referenzierende ADRs/Slices, Waisen-Markierung) auf stdout aus (Default Markdown-Tabelle, optional `--trace --json`/`--yaml` über den format-neutralen Reporter); read-only (`DC-QA-03`), deterministisch (`DC-QA-02`), kein Dokument erzeugt; **Doku-Domäne** (Lastenheft/ADR/Planning), kein Code/keine Go-Toolchain (arch-check bewusst ausgeklammert). Anlass: RTM als d-check-Modus statt separatem Skript (Nutzer-Entscheid 2026-06-20, Prototyp-Beleg) | slice-036 |

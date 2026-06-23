@@ -545,7 +545,12 @@ bzw. `WAISE` für eine Anforderung, die kein Slice referenziert):
 **Hinweise:** `--trace` ist read-only und arbeitet nur auf der Doku
 (Lastenheft/ADRs/Planning) — keine Code-Prüfung. Mit `--trace --json` bzw.
 `--trace --yaml` kommt dieselbe Matrix maschinenlesbar (`requirements` mit
-`id`/`title`/`adrs`/`slices`/`orphan`, plus `total`/`orphans`).
+`id`/`title`/`adrs`/`slices`/`orphan`, plus `total`/`orphans`). Standardmäßig
+ist `--trace` **advisory** (Exit 0, auch bei Waisen). Für ein **Gate** ergänzen
+Sie `--require-complete`: mindestens eine Waise ⇒ Exit 1 statt 0 (die Matrix
+bleibt unverändert auf stdout) — so lässt sich „jede Anforderung hat einen
+umsetzenden Slice" in CI erzwingen. Ohne `--trace` ist `--require-complete` ein
+Nutzungsfehler (Exit 2).
 
 ### 4.13 Ein Makefile-Fragment einbinden (`--print-mk`)
 
@@ -556,27 +561,41 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.22.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v<version> --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
 **Ergebnis:** ein include-bares `d-check.mk` auf stdout — eine überschreibbare
-`DCHECK_IMAGE`-Variable (auf die ausgelieferte Release-Version gepinnt) plus
-ein `doc-check`-Target:
+`DCHECK_IMAGE`-Variable (auf die ausgelieferte Release-Version gepinnt), eine
+`TRACE_FLAGS`-Variable und die Targets `doc-check`, `doc-trace` (advisory RTM)
+und `doc-complete` (Vollständigkeits-Gate):
 
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.22.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v<version>
+TRACE_FLAGS ?=
 
 .PHONY: doc-check
 doc-check:
 	docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_IMAGE)
+
+.PHONY: doc-trace
+doc-trace:
+	docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_IMAGE) --trace $(TRACE_FLAGS)
+
+.PHONY: doc-complete
+doc-complete:
+	docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_IMAGE) --trace --require-complete $(TRACE_FLAGS)
 ```
 
 **Hinweise:** `--print-mk` liest das Repository **nicht** und schreibt selbst
 nichts (die Umleitung `>` legt die Datei an). Der eingebettete Image-Ref ist
 die Version des aufrufenden d-check. Für strikte Reproduzierbarkeit
 überschreiben Sie auf den Digest, z. B.
-`make doc-check DCHECK_IMAGE=ghcr.io/pt9912/d-check@sha256:<digest>`.
+`make doc-check DCHECK_IMAGE=ghcr.io/pt9912/d-check@sha256:<digest>`. `make
+doc-trace` gibt die Requirements Traceability Matrix aus (advisory, Exit 0);
+`make doc-complete` ist dasselbe **als Gate** — bei mindestens einer
+Requirements-Waise endet es mit Exit 1 (`--require-complete`). Mit
+`TRACE_FLAGS=--json` werden beide RTM-Targets maschinenlesbar.
 
 ## 5. Konfiguration
 

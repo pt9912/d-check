@@ -325,11 +325,42 @@ eingebetteten Version):
 2. `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v<version>` — `<version>` ist die
    beim Tag-Build via `-ldflags -X …/cli.version=<tag>` eingebettete
    Release-Version (Default `0.0.0-dev` für lokale/Gate-Builds).
-3. `.PHONY: doc-check` und ein `doc-check`-Target mit **TAB**-eingerücktem
+3. `TRACE_FLAGS ?=` — überschreibbare Flag-Variable für die beiden
+   RTM-Targets (z. B. `--json`).
+4. `.PHONY: doc-check` und ein `doc-check`-Target mit **TAB**-eingerücktem
    `docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_IMAGE)`.
+5. `.PHONY: doc-trace` und ein `doc-trace`-Target
+   `… $(DCHECK_IMAGE) --trace $(TRACE_FLAGS)` (advisory RTM,
+   [`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)).
+6. `.PHONY: doc-complete` und ein `doc-complete`-Target
+   `… $(DCHECK_IMAGE) --trace --require-complete $(TRACE_FLAGS)`
+   (Vollständigkeits-Gate,
+   [`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)).
 
 Der eigene Image-**Digest** wird NICHT eingebettet (er hasht das Binary
 selbst — Henne-Ei); der Konsument pinnt per `DCHECK_IMAGE`-Override.
+
+### DC-FA-CLI-011.a — Vollständigkeits-Prüfung (`--require-complete`)
+
+`--require-complete`
+([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code))
+ist ein **Modifikator von `--trace`**, kein eigener Modus: der RTM-Lauf
+([`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix))
+und seine Ausgabe (Markdown bzw. `--json`/`--yaml`) bleiben **byte-identisch**
+([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)); allein der Exit-Code
+ändert sich:
+
+1. `matrix.orphans > 0` ⇒ **Exit 1** (Befund-Code,
+   [`DC-FA-CLI-003`](lastenheft.md#dc-fa-cli-003--exit-codes)); zusätzlich eine
+   deterministische Zähl-Zeile auf **stderr** (die RTM bleibt auf stdout rein).
+2. `matrix.orphans == 0` ⇒ Exit 0.
+3. `--require-complete` ohne `--trace` ⇒ Nutzungsfehler (Exit 2), behandelt in
+   der Kombinations-Prüfung vor jedem Repo-Zugriff.
+
+Der Default-`--trace` ohne dieses Flag bleibt **advisory** (Exit 0 auch bei
+Waisen) — die Durchsetzung ist strikt opt-in und ändert den
+[`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)-Vertrag
+nicht.
 
 ### DC-FA-LINK-001.a — Markdown-Vorverarbeitung und Link-Extraktion
 

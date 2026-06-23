@@ -1369,3 +1369,85 @@ func TestCLI038_PrintMK_UnbekanntesFlag(t *testing.T) {
 		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
 	}
 }
+
+// slice-044 Happy (DC-FA-CLI-011): --trace --require-complete bei 0 Waisen →
+// Exit 0; die advisory RTM bleibt unverändert auf stdout.
+func TestCLI044_RequireComplete_KeineWaisen(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "### DC-FA-TRC-001 — Referenzierte Anforderung\nText.\n")
+	write(t, root, "docs/plan/planning/done/slice-099-x.md", "# slice-099\nBezug: DC-FA-TRC-001\n")
+	code, _, stderr := run(t, "--trace", "--require-complete", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d (erwartet 0, keine Waisen), stderr = %q", code, stderr)
+	}
+}
+
+// slice-044 Boundary (DC-FA-CLI-011): --trace --require-complete bei einer Waise
+// → Exit 1 (Befund-Code, DC-FA-CLI-003); die RTM steht weiter vollständig auf
+// stdout, und es wird nichts geschrieben (DC-QA-03).
+func TestCLI044_RequireComplete_Waise(t *testing.T) {
+	root := t.TempDir()
+	traceRepo(t, root) // DC-FA-TRC-002 ist Waise
+	code, stdout, stderr := run(t, "--trace", "--require-complete", root)
+	if code != 1 {
+		t.Fatalf("Exit = %d (erwartet 1 bei Waise), stderr = %q", code, stderr)
+	}
+	for _, want := range []string{"DC-FA-TRC-002", "WAISE"} {
+		if !strings.Contains(stdout, want) {
+			t.Fatalf("RTM fehlt auf stdout trotz Strict-Exit (%q):\n%s", want, stdout)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(root, ".d-check.yml")); !os.IsNotExist(err) {
+		t.Fatalf("--require-complete hat geschrieben — read-only verletzt (DC-QA-03)")
+	}
+}
+
+// slice-044 (Konsumenten-Gate-Pfad, doc-complete mit TRACE_FLAGS=--json):
+// --trace --require-complete --json → Exit 1, RTM-JSON intakt (orphans == 1).
+func TestCLI044_RequireComplete_JSON(t *testing.T) {
+	root := t.TempDir()
+	traceRepo(t, root)
+	code, stdout, _ := run(t, "--trace", "--require-complete", "--json", root)
+	if code != 1 {
+		t.Fatalf("Exit = %d (erwartet 1)", code)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON dekodiert nicht: %v\n%s", err, stdout)
+	}
+	if doc.Orphans != 1 {
+		t.Fatalf("Orphans = %d (erwartet 1)\n%s", doc.Orphans, stdout)
+	}
+}
+
+// slice-044 Negative (DC-FA-CLI-011): --require-complete ohne --trace ist ein
+// Nutzungsfehler (Exit 2), keine RTM.
+func TestCLI044_RequireComplete_OhneTrace(t *testing.T) {
+	root := t.TempDir()
+	traceRepo(t, root)
+	code, _, stderr := run(t, "--require-complete", root)
+	if code != 2 || !strings.Contains(stderr, "--require-complete erfordert --trace") {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+}
+
+// slice-044 (DC-FA-CLI-010-Erweiterung): das --print-mk-Fragment trägt zusätzlich
+// die TRACE_FLAGS-Variable und die Targets doc-trace (advisory) sowie
+// doc-complete (--trace --require-complete).
+func TestCLI044_PrintMK_TraceTargets(t *testing.T) {
+	code, stdout, stderr := run(t, "--print-mk")
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	for _, want := range []string{
+		"TRACE_FLAGS ?=",
+		"\ndoc-trace:\n\tdocker run",
+		"--trace $(TRACE_FLAGS)",
+		"\ndoc-complete:\n\tdocker run",
+		"--trace --require-complete $(TRACE_FLAGS)",
+	} {
+		if !strings.Contains(stdout, want) {
+			t.Fatalf("d-check.mk ohne %q:\n%s", want, stdout)
+		}
+	}
+}

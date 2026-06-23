@@ -43,19 +43,20 @@ func (m *multiFlag) Set(v string) error {
 
 // options sind die geparsten CLI-Eingaben.
 type options struct {
-	root          string
-	json          bool
-	yaml          bool
-	doctor        bool
-	trace         bool
-	repair        bool
-	repairBroad   bool
-	enable        []string
-	disable       []string
-	printConfig   bool
-	printMK       bool
-	suggestConfig string
-	idPrefix      string
+	root            string
+	json            bool
+	yaml            bool
+	doctor          bool
+	trace           bool
+	repair          bool
+	repairBroad     bool
+	enable          []string
+	disable         []string
+	printConfig     bool
+	printMK         bool
+	suggestConfig   string
+	idPrefix        string
+	requireComplete bool
 }
 
 // reorderArgs erlaubt Optionen auch NACH dem Pfad-Argument — nötig
@@ -133,6 +134,8 @@ func comboError(o options) string {
 		return "--doctor und --repair sind nicht kombinierbar"
 	case o.trace && (o.doctor || o.repair):
 		return "--trace ist nicht mit --doctor/--repair kombinierbar"
+	case o.requireComplete && !o.trace:
+		return "--require-complete erfordert --trace"
 	}
 	return ""
 }
@@ -154,6 +157,7 @@ func earlyGenerators(o options, stdout io.Writer) bool {
 
 // runTrace gibt die Requirements Traceability Matrix aus (DC-FA-CLI-009) —
 // read-only; ausgelagert aus Run, um dessen Komplexität niedrig zu halten.
+// Mit opts.requireComplete (DC-FA-CLI-011) bindet es Waisen an Exit 1.
 func runTrace(fsys driven.Filesystem, opts options, stdout, stderr io.Writer) int {
 	matrix, err := app.BuildTraceMatrix(fsys)
 	if err == nil {
@@ -169,6 +173,14 @@ func runTrace(fsys driven.Filesystem, opts options, stdout, stderr io.Writer) in
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return 2
+	}
+	// DC-FA-CLI-011: opt-in Strict-Exit — ≥1 Requirements-Waise ⇒ Exit 1
+	// (Befund-Code, DC-FA-CLI-003). Der Default-Lauf ohne --require-complete
+	// bleibt advisory Exit 0 (DC-FA-CLI-009 unangetastet); die RTM steht
+	// bereits auf stdout, die Zähl-Zeile geht auf stderr.
+	if opts.requireComplete && matrix.Orphans > 0 {
+		fmt.Fprintf(stderr, "d-check: %d Requirements-Waise(n) ohne referenzierenden Slice (--require-complete)\n", matrix.Orphans)
+		return 1
 	}
 	return 0
 }
@@ -186,7 +198,8 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	repairOut := flags.Bool("repair", false, "Reparatur-Patch (unified diff) auf stdout, git-apply-kompatibel; konservativ (nur eindeutige Fixes)")
 	repairBroadOut := flags.Bool("repair-broad", false, "wie --repair, zusätzlich Best-Guess-Reparaturen (review-pflichtig, Marker auf stderr)")
 	printConfig := flags.Bool("print-config", false, "Konfigurations-Startgerüst auf stdout ausgeben und beenden")
-	printMK := flags.Bool("print-mk", false, "include-bares d-check.mk (doc-check-Target, gepinntes Image) auf stdout ausgeben und beenden")
+	printMK := flags.Bool("print-mk", false, "include-bares d-check.mk (doc-check/doc-trace/doc-complete-Targets, gepinntes Image) auf stdout ausgeben und beenden")
+	requireComplete := flags.Bool("require-complete", false, "mit --trace: ≥1 Requirements-Waise ⇒ Exit 1 statt 0 (opt-in Vollständigkeits-Gate); ohne --trace Nutzungsfehler")
 	suggestConfig := flags.String("suggest-config", "", "Config aus Autoritäts-Quellen (kommagetrennt) vorschlagen und beenden")
 	idPrefix := flags.String("id-prefix", "", "Kennungs-Präfix für --suggest-config ai-harness[-init] (z. B. AC); ohne Angabe Platzhalter <PREFIX>")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
@@ -213,7 +226,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	opts := options{root: ".", json: *jsonOut, yaml: *yamlOut, doctor: *doctorOut,
 		repair: *repairOut || *repairBroadOut, repairBroad: *repairBroadOut,
 		enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig,
-		idPrefix: *idPrefix, trace: *traceOut, printMK: *printMK}
+		idPrefix: *idPrefix, trace: *traceOut, printMK: *printMK, requireComplete: *requireComplete}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}

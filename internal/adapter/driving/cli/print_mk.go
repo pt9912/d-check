@@ -14,7 +14,9 @@ import "fmt"
 var version = "0.0.0-dev"
 
 // makefileFragment erzeugt das d-check.mk: version-gepinnter, per
-// DCHECK_IMAGE überschreibbarer Image-Ref plus ein `doc-check`-Target.
+// DCHECK_IMAGE überschreibbarer Image-Ref plus die Targets `doc-check`
+// (Doku-Gate), `doc-trace` (advisory RTM, DC-FA-CLI-009) und `doc-complete`
+// (Vollständigkeits-Gate, DC-FA-CLI-011) sowie die `TRACE_FLAGS`-Variable.
 // Deterministisch (hängt nur an der eingebetteten Version), read-only.
 func makefileFragment() string { return fmt.Sprintf(mkTemplate, version) }
 
@@ -28,7 +30,19 @@ const mkTemplate = "# d-check.mk — erzeugt von: d-check --print-mk (DC-FA-CLI-
 	"# Digest aus den Release-Notes pinnen:\n" +
 	"#   DCHECK_IMAGE = ghcr.io/pt9912/d-check@sha256:<digest>\n" +
 	"DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v%s\n" +
+	"# TRACE_FLAGS: optionale Flags für die RTM-Targets (z. B. --json).\n" +
+	"TRACE_FLAGS ?=\n" +
 	"\n" +
 	".PHONY: doc-check\n" +
 	"doc-check:\n" +
-	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_IMAGE)\n"
+	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_IMAGE)\n" +
+	"\n" +
+	"# doc-trace: advisory Requirements Traceability Matrix (DC-FA-CLI-009).\n" +
+	".PHONY: doc-trace\n" +
+	"doc-trace:\n" +
+	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_IMAGE) --trace $(TRACE_FLAGS)\n" +
+	"\n" +
+	"# doc-complete: Vollständigkeits-Gate — Requirements-Waise ⇒ Exit 1 (DC-FA-CLI-011).\n" +
+	".PHONY: doc-complete\n" +
+	"doc-complete:\n" +
+	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_IMAGE) --trace --require-complete $(TRACE_FLAGS)\n"

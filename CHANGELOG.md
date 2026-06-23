@@ -4,6 +4,26 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [Unreleased]
+
+### Added
+
+- slice-044 — Option `--require-complete` (nur mit `--trace`): bindet die
+  RTM-Waisen-Markierung an den Exit-Code — ≥1 Requirements-Waise ⇒ **Exit 1**
+  statt 0, sonst 0; die RTM bleibt unverändert auf stdout, der Default-`--trace`
+  bleibt advisory (Exit 0). Erlaubt Konsumenten ein Vollständigkeits-Gate im
+  eigenen Makefile, ohne Parsing-Logik zu kopieren. read-only (`DC-QA-03`),
+  deterministisch (`DC-QA-02`)
+  ([`DC-FA-CLI-011`](spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)).
+
+### Changed
+
+- slice-044 — `--print-mk`-Fragment: zusätzlich die Targets `doc-trace`
+  (advisory RTM) und `doc-complete` (`--trace --require-complete`, das
+  Vollständigkeits-Gate) plus eine überschreibbare `TRACE_FLAGS`-Variable
+  ([`DC-FA-CLI-010`](spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+  Change Request 0.24.0).
+
 ## [0.23.0] — 2026-06-22
 
 ### Changed

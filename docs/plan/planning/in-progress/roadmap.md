@@ -10,8 +10,16 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
-welle-32-codepaths-exempt
+**welle-33-print-mk-trace — in Arbeit.**
+([`slice-044`](slice-044-print-mk-trace-targets.md) — opt-in
+`--trace --require-complete` bindet Requirements-Waisen an Exit 1
+([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code));
+das `--print-mk`-Fragment trägt zusätzlich `doc-trace` (advisory RTM) und
+`doc-complete` (Vollständigkeits-Gate) plus `TRACE_FLAGS`
+([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
+Lastenheft 0.24.0); kein ADR.)
+
+Zuletzt abgeschlossen: welle-32-codepaths-exempt
 ([`slice-043`](../done/slice-043-codepaths-exempt-paths.md) — Modul `codepaths`
 bekam das `exempt-paths`-Ventil (Datei-Glob ohne codepath-Prüfung) wie `ids`;
 Change Request [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
