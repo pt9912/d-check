@@ -15,6 +15,7 @@ const (
 	ReasonSpanUnclosed   = "span-unclosed"
 	ReasonSpanNestedLink = "span-nested-link"
 	ReasonHostpathForbidden = "hostpath-forbidden"
+	ReasonDiagramIDUndefined = "diagram-id-undefined"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

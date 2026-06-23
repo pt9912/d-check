@@ -38,6 +38,48 @@ func proseLines(content []byte) []proseLine {
 	return out
 }
 
+// fenceInfo liefert die Info-String-Sprache einer Fence-Öffner-Zeile:
+// das erste Token nach der ```- bzw. ~~~-Folge, kleingeschrieben
+// (z. B. "```mermaid" → "mermaid").
+func fenceInfo(trimmed string) string {
+	ch := trimmed[0]
+	j := 0
+	for j < len(trimmed) && trimmed[j] == ch {
+		j++
+	}
+	info := strings.TrimSpace(trimmed[j:])
+	if sp := strings.IndexAny(info, " \t"); sp != -1 {
+		info = info[:sp]
+	}
+	return strings.ToLower(info)
+}
+
+// diagramFenceLines liefert die rohen Zeilen (1-basiert) INNERHALB von
+// Fenced-Code-Blöcken, deren Öffner-Sprache in langs steht — das
+// Gegenstück zu proseLines für das Modul diagrams (DC-FA-DIAG-001.a).
+// Genau diese sonst opaken Diagramm-Fences werden gelesen; alle übrigen
+// Fences und der Prosa-Text bleiben außen vor. Derselbe einfache
+// Fence-Automat wie proseLines (Umschalten bei jeder ```/~~~-Zeile).
+func diagramFenceLines(content []byte, langs map[string]bool) []proseLine {
+	var out []proseLine
+	inFence, open := false, false
+	for i, raw := range strings.Split(string(content), "\n") {
+		trimmed := strings.TrimLeft(raw, " \t")
+		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
+			if inFence {
+				inFence, open = false, false
+			} else {
+				inFence, open = true, langs[fenceInfo(trimmed)]
+			}
+			continue
+		}
+		if inFence && open {
+			out = append(out, proseLine{no: i + 1, raw: raw})
+		}
+	}
+	return out
+}
+
 // PreprocessMarkdown wendet Fence- und Inline-Code-Behandlung an.
 // Fence-Zeilen selbst und Zeilen im Fence-Zustand entfallen komplett.
 // Inline-Code-Spans werden absatzweise erkannt (CommonMark: ein Span

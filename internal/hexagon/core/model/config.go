@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams"}
 }
 
 // defaultModules ist der Default-Modulsatz (DC-FA-CLI-002).
@@ -36,6 +36,8 @@ type Config struct {
 	Codepaths CodepathsConfig
 	// Hostpaths: Parameter des Moduls hostpaths.
 	Hostpaths HostpathsConfig
+	// Diagrams: Parameter des Moduls diagrams (DC-FA-DIAG-001).
+	Diagrams DiagramsConfig
 	// Scopes: modul-lokale Scan-Scopes (DC-FA-CONF-002); Schlüssel
 	// ist der Modulname, nil-Eintrag/fehlender Schlüssel = globaler
 	// Scope.
@@ -138,6 +140,33 @@ type CodepathsConfig struct {
 // (DC-FA-HOST-001); Prefixes nil = Default-Liste.
 type HostpathsConfig struct {
 	Prefixes []string
+}
+
+// DiagramPattern ist ein Kennungs-Muster des Moduls diagrams
+// (DC-FA-DIAG-001): Regex erkennt das Token in der Diagramm-Fence,
+// DefinedIn ist die Datei, in der das Token als eigenständiges
+// Kennungs-Token außerhalb von Fences vorkommen muss (Existenz, nicht
+// Linkpflicht).
+type DiagramPattern struct {
+	Regex     *regexp.Regexp
+	DefinedIn string
+}
+
+// DiagramsConfig sind die Parameter des Moduls diagrams (DC-FA-DIAG-001);
+// Fences nil = Default ["mermaid"]. Ohne Patterns ist das Modul
+// wirkungslos (byte-identisch zum Lauf ohne das Modul, DC-QA-02).
+type DiagramsConfig struct {
+	Fences   []string
+	Patterns []DiagramPattern
+}
+
+// EffectiveFences liefert die zu öffnenden Fence-Sprachen (Default
+// "mermaid", DC-FA-DIAG-001.a).
+func (d DiagramsConfig) EffectiveFences() []string {
+	if len(d.Fences) == 0 {
+		return []string{"mermaid"}
+	}
+	return d.Fences
 }
 
 // EffectiveModules wendet die Modul-Auflösung an

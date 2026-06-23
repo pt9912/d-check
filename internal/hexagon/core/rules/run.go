@@ -32,6 +32,11 @@ func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg model.Config, mod
 	if err := ensureIDTargetsExist(fsys, cfg.IDPatterns); err != nil {
 		return res, err
 	}
+	// diagrams.patterns[].defined-in müssen existieren (DC-FA-DIAG-001,
+	// analog ids-Targets) — Verletzung bedeutet Exit 2 ohne Prüfung.
+	if err := ensureDiagramsDefinedInExist(fsys, cfg.Diagrams); err != nil {
+		return res, err
+	}
 
 	// Effektiver Scan-Scope pro Modul (DC-FA-CONF-002,
 	// spec/spezifikation.md §DC-FA-CONF-002.a): Module mit
@@ -48,6 +53,7 @@ func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg model.Config, mod
 		fsys: fsys, cfg: cfg, active: active, inScope: inScope,
 		slugCache:   map[string]map[string]bool{},
 		statusCache: map[string]*string{},
+		diagCache:   map[string]map[string]bool{},
 	}
 	for _, file := range files {
 		if err := st.checkFile(file); err != nil {
@@ -72,6 +78,7 @@ type runState struct {
 	inScope     map[string]map[string]bool
 	slugCache   map[string]map[string]bool
 	statusCache map[string]*string
+	diagCache   map[string]map[string]bool
 	extRefs     []ExternalRef
 	findings    []model.Finding
 }
@@ -110,6 +117,9 @@ func (st *runState) checkFile(file string) error {
 	}
 	if st.applies("spans", file) {
 		st.findings = append(st.findings, CheckSpans(file, content, lines)...)
+	}
+	if st.applies("diagrams", file) {
+		st.findings = append(st.findings, CheckDiagrams(st.fsys, file, content, st.cfg.Diagrams, st.diagCache)...)
 	}
 	if st.applies("external", file) {
 		st.extRefs = append(st.extRefs, CollectExternalURLs(file, lines)...)
@@ -196,6 +206,30 @@ func ensureIDTargetsExist(fsys driven.Filesystem, patterns []model.IDPattern) er
 		}
 		if kind == driven.KindMissing {
 			return fmt.Errorf("konfiguriertes ids-Target existiert nicht: %s", p.Target)
+		}
+	}
+	return nil
+}
+
+// ensureDiagramsDefinedInExist prüft die in diagrams.patterns[]
+// deklarierten defined-in-Dateien (DC-FA-DIAG-001): sie müssen
+// existieren und innerhalb der Repo-Wurzel liegen (analog
+// ensureIDTargetsExist).
+func ensureDiagramsDefinedInExist(fsys driven.Filesystem, cfg model.DiagramsConfig) error {
+	for i, p := range cfg.Patterns {
+		rel, escaped := ResolveConfigPath(p.DefinedIn)
+		if escaped {
+			return fmt.Errorf("diagrams.patterns[%d].defined-in verlässt die Repository-Wurzel: %s", i, p.DefinedIn)
+		}
+		if rel == "" {
+			continue
+		}
+		kind, err := fsys.Kind(rel)
+		if err != nil {
+			return err
+		}
+		if kind == driven.KindMissing {
+			return fmt.Errorf("diagrams.patterns[%d].defined-in existiert nicht: %s", i, p.DefinedIn)
 		}
 	}
 	return nil

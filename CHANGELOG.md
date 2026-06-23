@@ -4,6 +4,21 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [Unreleased]
+
+### Added
+
+- slice-045 — Modul `diagrams` (opt-in): öffnet gezielt benannte
+  Diagramm-Fences (Default `mermaid`) und prüft die darin gefundenen Kennungen
+  auf **Existenz** in ihrer `defined-in`-Quelle (Befund `diagram-id-undefined`).
+  Reine Token-Extraktion ohne Mermaid-Parser, **Existenz statt Link-Policy** (in
+  Fences kein Markdown-Link möglich), read-only/netzlos (`DC-QA-03`),
+  deterministisch (`DC-QA-02`), Default aus (byte-identisch). Fängt Drift/Typos
+  in Diagramm-Kennungen (z. B. Architektur-IDs in `mermaid`), die bei opaken
+  Fences heute unsichtbar bleiben
+  ([`DC-FA-DIAG-001`](spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in),
+  [ADR-0018](docs/plan/adr/0018-diagram-fence-ausnahme.md)).
+
 ## [0.24.0] — 2026-06-23
 
 ### Added

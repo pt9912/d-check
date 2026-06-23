@@ -18,7 +18,7 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, external
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, external
 # (external ist die einzige Netzwerk-Tür — strikt opt-in.)
 
 # --- ids: Linkpflicht für Kennungen ---
@@ -55,6 +55,13 @@ modules: [links, anchors]
 
 # --- spans: Markdown-Span-Artefakte (ungeschlossene Code-Spans u. a.) ---
 #   (keine eigenen Optionen; über modules aktivieren)
+
+# --- diagrams: Kennungs-Existenz in Diagramm-Fences (z. B. mermaid) ---
+# diagrams:
+#   fences: [mermaid]              # zu öffnende Diagramm-Sprachen (Default mermaid)
+#   patterns:                      # wie ids; geprüft wird Existenz in defined-in (nicht Linkpflicht)
+#     - regex: 'ARC-\d{2}'
+#       defined-in: spec/architecture.md
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---
 # external:

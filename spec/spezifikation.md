@@ -735,6 +735,37 @@ ist erlaubt, darf aber die Ausgabe nicht beeinflussen. Das Modul
 Server-Antworten variieren (Netz-Nichtdeterminismus); Sortierung gilt
 auch dort.
 
+### DC-FA-DIAG-001.a — Kennungs-Konsistenz in Diagramm-Fences (`diagrams`)
+
+Das Modul `diagrams`
+([`DC-FA-DIAG-001`](lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in))
+ist opt-in und arbeitet **gegenläufig** zur Vorverarbeitung
+([§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)),
+die Fences für alle übrigen Module entfernt:
+
+1. **Fence-Öffnung.** Ein eigener Fence-Automat sammelt die Roh-Zeilen
+   (1-basiert) innerhalb von Fenced-Blöcken, deren Info-String (erstes Token der
+   Öffner-Zeile nach den Fence-Zeichen, kleingeschrieben) in `diagrams.fences`
+   steht (Default `mermaid`). Alle übrigen Fences und der Prosa-Text bleiben außen
+   vor; die gemeinsame Vorverarbeitung der anderen Module bleibt unverändert
+   (keine `spans`-Interaktion).
+2. **Token-Extraktion.** Je Muster (`diagrams.patterns`, Gestalt wie
+   `ids.patterns`; Deklarationsreihenfolge = Präzedenz, überlappende Vorkommen
+   gehören dem früheren Muster) werden die Kennungs-Token der Fence-Zeile per
+   Regex gefunden. **Kein** Mermaid-/Grammatik-Parsing.
+3. **Existenz-Auflösung.** Eine Kennung gilt als **definiert**, wenn sie in der
+   `defined-in`-Datei des Musters als Token derselben Regex **außerhalb von
+   Fences** vorkommt (die Quelle wird dafür mit entfernten Fences gelesen —
+   Heading wie Tabelle/Fließtext zählen, bewusst nicht heading-zentriert wie
+   `ids`). Token ohne Definition ⇒ Grund-Code `diagram-id-undefined` (Datei, Zeile
+   im Fence, Kennung). Die Token-Menge je (`defined-in`, Regex) wird gecacht
+   (einmaliges Lesen).
+4. **Validierung beim Lauf-Start.** Jede `defined-in`-Datei muss existieren und
+   innerhalb der Repo-Wurzel liegen (sonst Exit 2 ohne Prüfung, analog
+   ids-Targets). **Link-Policy gilt nicht** (in Fences kein Markdown-Link
+   möglich). Ohne `diagrams`-Block ist der Befundsatz byte-identisch
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
+
 ## 2. Datenstrukturen und Schemas
 
 ### Befund
@@ -941,6 +972,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `external-timeout` | external | Timeout überschritten |
 | `codepath-missing` | codepaths | Ziel eines Inline-Code-Pfads existiert nicht |
 | `hostpath-forbidden` | hostpaths | host-lokaler absoluter Pfad (Maschinen-Layout-Leak) in Prosa oder Inline-Code |
+| `diagram-id-undefined` | diagrams | Kennung in einem geöffneten Diagramm-Fence ohne Definition in ihrer `defined-in`-Quelle |
 | `span-unclosed` | spans | ungeschlossene Code-Span-Öffnung klebt an Nicht-Whitespace (Absatz-Parität gekippt) |
 | `span-nested-link` | spans | Link-Syntax im Linktext eines weiteren Links (rendert zerrissen) |
 | `external-redirects` | external | mehr als `REDIRECT_MAX` Redirects |

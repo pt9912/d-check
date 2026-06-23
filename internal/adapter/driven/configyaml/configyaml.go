@@ -57,6 +57,19 @@ type rawCodepaths struct {
 	ExemptPaths []string  `yaml:"exempt-paths"`
 }
 
+// rawDiagrams trägt scope, fences und die Muster des Moduls diagrams
+// (DC-FA-DIAG-001).
+type rawDiagrams struct {
+	Scope    *rawScope           `yaml:"scope"`
+	Fences   []string            `yaml:"fences"`
+	Patterns []rawDiagramPattern `yaml:"patterns"`
+}
+
+type rawDiagramPattern struct {
+	Regex     string `yaml:"regex"`
+	DefinedIn string `yaml:"defined-in"`
+}
+
 type rawMatrix struct {
 	Scope   *rawScope `yaml:"scope"`
 	Classes []struct {
@@ -105,6 +118,7 @@ type raw struct {
 	Matrix   *rawMatrix    `yaml:"matrix"`
 	External *rawExternal  `yaml:"external"`
 	Codepaths *rawCodepaths `yaml:"codepaths"`
+	Diagrams  *rawDiagrams  `yaml:"diagrams"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -142,6 +156,9 @@ func Decode(content []byte) (model.Config, error) {
 		return cfg, err
 	}
 	if err := applyHostpaths(r, &cfg); err != nil {
+		return cfg, err
+	}
+	if err := applyDiagrams(r, &cfg); err != nil {
 		return cfg, err
 	}
 	if err := applyScopes(r, &cfg); err != nil {
@@ -185,6 +202,35 @@ func applyHostpaths(r *raw, cfg *model.Config) error {
 	return nil
 }
 
+// applyDiagrams validiert und kompiliert die diagrams-Muster
+// (DC-FA-DIAG-001): nicht-leere fences-Einträge, kompilierbarer Regex
+// (nicht den Leerstring matchend) und Pflicht-defined-in.
+func applyDiagrams(r *raw, cfg *model.Config) error {
+	if r.Diagrams == nil {
+		return nil
+	}
+	for _, f := range r.Diagrams.Fences {
+		if strings.TrimSpace(f) == "" {
+			return fmt.Errorf("%s: diagrams.fences enthält einen leeren Eintrag", FileName)
+		}
+	}
+	for i, p := range r.Diagrams.Patterns {
+		re, err := regexp.Compile(p.Regex)
+		if err != nil {
+			return fmt.Errorf("%s: diagrams.patterns[%d].regex: %v", FileName, i, err)
+		}
+		if re.MatchString("") {
+			return fmt.Errorf("%s: diagrams.patterns[%d].regex matcht den Leerstring", FileName, i)
+		}
+		if p.DefinedIn == "" {
+			return fmt.Errorf("%s: diagrams.patterns[%d].defined-in fehlt", FileName, i)
+		}
+		cfg.Diagrams.Patterns = append(cfg.Diagrams.Patterns, model.DiagramPattern{Regex: re, DefinedIn: p.DefinedIn})
+	}
+	cfg.Diagrams.Fences = r.Diagrams.Fences
+	return nil
+}
+
 // applyScopes übernimmt die modul-lokalen Scan-Scopes
 // (DC-FA-CONF-002): scope ersetzt den globalen Scan für genau dieses
 // Modul; roots ist Pflicht (keine stille Vererbung).
@@ -201,6 +247,7 @@ func applyScopes(r *raw, cfg *model.Config) error {
 		{"matrix", scopeOfMatrix(r.Matrix)},
 		{"external", scopeOfExternal(r.External)},
 		{"codepaths", scopeOfCodepaths(r.Codepaths)},
+		{"diagrams", scopeOfDiagrams(r.Diagrams)},
 	}
 	for _, sc := range scopes {
 		if sc.scope == nil {
@@ -258,6 +305,13 @@ func scopeOfHostpaths(v *struct {
 }
 
 func scopeOfCodepaths(v *rawCodepaths) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
+}
+
+func scopeOfDiagrams(v *rawDiagrams) *rawScope {
 	if v == nil {
 		return nil
 	}
