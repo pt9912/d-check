@@ -110,6 +110,47 @@ func TestDiagramsCustomFence(t *testing.T) {
 	}
 }
 
+// DC-FA-DIAG-001 (R1-impl F-4): Muster-Präzedenz — ein überlappendes Vorkommen
+// gehört dem früher deklarierten Muster (wie ids). ARC-01 gehört dem ersten
+// Muster (defined-in a.md, definiert) und wird NICHT dem zweiten zugeordnet
+// (defined-in b.md, leer) — sonst gäbe es einen Befund.
+func TestDiagramsMusterPraezedenz(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"spec/a.md": "| ARC-01 |\n```mermaid\nARC-01\n```\n",
+		"spec/b.md": "leer\n",
+	})
+	cfg := model.Config{Diagrams: model.DiagramsConfig{
+		Patterns: []model.DiagramPattern{
+			{Regex: regexp.MustCompile(`ARC-\d{2}`), DefinedIn: "spec/a.md"},
+			{Regex: regexp.MustCompile(`ARC-\d+`), DefinedIn: "spec/b.md"},
+		},
+	}}
+	res, err := Run(m, nil, cfg, []string{"diagrams"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("Präzedenz: ARC-01 gehört dem ersten (definierten) Muster → 0 Befunde, got %v", res.Findings)
+	}
+}
+
+// DC-FA-DIAG-001 (R1-impl F-1): die Token-Grenze trägt die Nutzer-Regex (exakt
+// wie ids); ARC-\d{2} matcht ARC-99 auch innerhalb eines größeren Worts. Pinnt
+// das vertragskonforme Verhalten (§DC-FA-DIAG-001.a: „Token derselben Regex") —
+// ein Bruch (still hinzugefügte Wortgrenzen) bliebe sonst grün.
+func TestDiagramsTokenGrenzeRegexDelegiert(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"spec/a.md": "keine Definition\n```mermaid\nXARC-99Y\n```\n",
+	})
+	res, err := Run(m, nil, diagramsCfg("spec/a.md"), []string{"diagrams"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 || res.Findings[0].Target != "ARC-99" {
+		t.Fatalf("Token-Grenze ist regex-delegiert: erwartet 1× ARC-99, got %v", res.Findings)
+	}
+}
+
 // DC-FA-DIAG-001: fehlendes bzw. escapendes defined-in → Exit 2 (Run-Fehler).
 func TestDiagramsDefinedInValidierung(t *testing.T) {
 	m := coretest.NewMemFS(map[string]string{"spec/arch.md": "```mermaid\nARC-01\n```\n"})
