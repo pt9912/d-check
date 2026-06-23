@@ -116,7 +116,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.25.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.27.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

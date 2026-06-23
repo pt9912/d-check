@@ -1,6 +1,6 @@
 # Slice slice-047: `--print-mk` — `doc-doctor`/`doc-repair`/`doc-help` + `DCHECK_DIGEST`
 
-**Status:** in-progress (welle-36-print-mk-erweiterung).
+**Status:** done (abgeschlossen, welle-36-print-mk-erweiterung).
 
 **Welle:** welle-36-print-mk-erweiterung (Trigger: Auftraggeber-Wunsch, das
 `--print-mk`-Fragment um Diagnose-/Reparatur-Targets, Self-Doku und einen
@@ -58,8 +58,9 @@ auf).
 - [x] Tests: `TestCLI038/044` an `##`-Format angepasst; `TestCLI047_PrintMK_NeueTargets`
   (neue Targets + `DCHECK_DIGEST` + `ifeq` + `@`). Fragment-Parse-Check (`make -n`)
   + Digest-Override manuell belegt.
-- [ ] `--print-config`-/Handbuch-Parität prüfen (§4.13). [`CHANGELOG.md`](../../../../CHANGELOG.md).
-- [ ] `make gates` grün; unabhängiges Review R1; Closure (Move nach `done/` +
+- [x] `--print-config`-/Handbuch-Parität geprüft (§4.13 auf Sechs-Target-Fragment
+  + `DCHECK_DIGEST`/`ifeq` gezogen). [`CHANGELOG.md`](../../../../CHANGELOG.md) `## [0.27.0]`.
+- [x] `make gates` grün; unabhängiges Review R1 ACCEPT; Closure (Move nach `done/` +
   Roadmap-Flip, [`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)).
 
 ## 4. Risiken / offene Punkte
@@ -82,5 +83,33 @@ GF (Produkt-Code `cli` + Spec; „Doc führt, Code folgt"). Keine BF-Sub-Area.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(Wird beim Move nach `done/` gefüllt — Belege: `make gates`-Ausgabe,
-Fragment-Parse-Check, unabhängiges Review R1, ggf. Release.)_
+**Umsetzung.** Das `--print-mk`-Fragment (`mkTemplate` in `print_mk.go`) wurde um
+drei Targets + zwei Variablen erweitert: `doc-doctor` (`--doctor`), `doc-repair`
+(`--repair`, Recipe-Echo via `@` unterdrückt, damit der Patch `git apply`-rein
+bleibt), `doc-help` (namespaced Self-Doku, `grep $(MAKEFILE_LIST) | sed` über die
+`##`-Annotationen) sowie `DCHECK_DIGEST` (Digest-Override per `ifeq`: gesetzt ⇒
+`DCHECK_REF := …/d-check@$(DCHECK_DIGEST)`, sonst der Tag). Alle sechs `doc-*`-Targets
+sind `##`-annotiert. Template bleibt `%`-frei außer dem Versions-`%s` (Code-Kommentar +
+`TestCLI047`). Doc-first: Lastenheft-CR `DC-FA-CLI-010` (0.27.0) + `spezifikation.md`
+`.a`-Sektion gingen dem Code voraus.
+
+**Belege.**
+- `make gates` **grün** (doc-check, lint, test, arch-check, coverage ≥ 93 %, semgrep,
+  gate-consistency, planning-check, record-gates) — Tests `TestCLI038/044` an
+  `##`-Format angepasst, `TestCLI047_PrintMK_NeueTargets` neu.
+- Fragment real validiert: `--print-mk | make -f - -n` parst alle sechs Targets;
+  `DCHECK_DIGEST=sha256:deadbeef` ⇒ `…/d-check@sha256:deadbeef` (Digest sticht Tag).
+- Unabhängiges Review **R1 ACCEPT** (3 INFO, keine Blocker) —
+  [`docs/reviews/2026-06-23-slice-047-r1.md`](../../../../docs/reviews/2026-06-23-slice-047-r1.md).
+- Minor-Release **v0.27.0** auf GHCR (Run `28047075398` grün, Tags `v0.27.0`+`latest`),
+  Digest-Pin
+  `ghcr.io/pt9912/d-check@sha256:2bc2598cbcd3622d98b33864a112fce02150b44776fc930fa404c98bd01668e1`.
+  CHANGELOG `## [0.27.0] — 2026-06-23`, Handbuch §4.13 + Header 1.9, README-Pin
+  nachgezogen.
+
+**Lerneintrag.** Die vier Makefile-Fallen beim Fragment-Erweitern, die je still
+brechen: (1) `make` druckt jede Recipe-Zeile auf stdout — patch-erzeugende Targets
+brauchen `@`; (2) ein `help`-Target kollidiert mit dem Konsumenten-Makefile →
+namespacen (`doc-help`); (3) `fmt.Sprintf`-Renderer verträgt nur das eine `%s` —
+jedes weitere `%` (z. B. `awk printf`) bräche das Template, daher `sed`; (4) Digest
+sticht Tag nur, wenn `ifeq` den leeren `DCHECK_DIGEST` korrekt prüft (`$(strip …)`).
