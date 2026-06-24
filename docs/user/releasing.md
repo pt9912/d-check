@@ -14,6 +14,35 @@ Releases ist der zugehörige Abschnitt in
 [`CHANGELOG.md`](../../CHANGELOG.md). Vor dem Tag wird dort der
 `[Unreleased]`-Stand unter die neue Version geschnitten.
 
+Die **aktuelle** Version führt zusätzlich das Release-Register
+[`version.md`](../../version.md#aktuell) (§Aktuell). Das opt-in Modul `versions`
+([`DC-FA-VER-001`](../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
+prüft im Dogfooding-Lauf, dass alle gepinnten `ghcr`-Image-Verweise genau diese
+Version tragen — der Bump beim Release ist daher nicht optional
+(siehe [Release-Prep](#release-prep-vor-dem-tag)).
+
+## Release-Prep (vor dem Tag)
+
+In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
+
+1. **`version.md`** — §Aktuell auf die neue Version, neue §Verlauf-Zeile, und den
+   `<a id>`-Anker **auf die neue Version verschieben** (die bisherige Zeile
+   verliert ihn; nur die aktuelle Version ist Anker-Ziel — veraltete
+   Markdown-Link-Pins brechen so via `anchors`-Gate).
+2. **Alle gepinnten `ghcr`-Image-Verweise** (README, Benutzerhandbuch) auf die
+   neue Version ziehen — das aktive `versions`-Gate meldet sonst `version-stale`
+   für jeden vergessenen Pin. Historische Pins in `done/`-Slices, `CHANGELOG.md`
+   und der Lastenheft-Historie sind per `exempt-paths` ausgenommen.
+3. **`CHANGELOG.md`** — den `[Unreleased]`-Stand unter die neue Version schneiden.
+4. **Benutzerhandbuch** — Header-Stempel (Handbuch-/Software-Version) und ggf.
+   neue Feature-Abschnitte; **README** — Modulzahl/Feature-Liste, falls ein Modul
+   hinzukam.
+5. **`make ci`** lokal grün fahren (Pre-Tag-De-Risk, „grün = Boden"), erst dann
+   taggen.
+
+Der Digest-Pin in Handbuch §2 entsteht **nach** dem Tag (er existiert erst nach
+dem GHCR-Push) als Folge-Commit.
+
 ## Release auslösen
 
 ```sh
