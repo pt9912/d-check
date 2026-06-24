@@ -20,7 +20,8 @@ diagnose-only
 ([`DC-FA-PIN-001`](../../../../spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in),
 [ADR-0020](../../adr/0020-content-pin-fence-ausnahme.md), Lastenheft 0.29.0);
 Plan-Review R1→R3 + Impl-Review (alle behoben); `make gates` grün (Cov 94 %);
-**Release v0.29.0: Tag-Push ausstehend**;
+Release **v0.29.0** auf GHCR, Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:07994926987a92b863a5f54eeb7668654c08e1be958be425da4bdb7712c002c2`;
 [Closure](../done/slice-049-pins-modul.md#7-closure-notiz-nach-done)). Davor
 welle-37-versions
 welle-37-versions ([`slice-048`](../done/slice-048-versions-modul.md) — opt-in
@@ -98,10 +99,10 @@ include-bares `d-check.mk` (version-gepinntes Image + `doc-check`-Target) aus;
 welle-27-rtm-trace (`slice-036`), welle-26-suggest-prefix (`slice-037`),
 welle-25-pr-ci-traceability (`slice-039`), welle-23-latest-tag (`slice-034`)
 und welle-24-kern-paketschnitt (`slice-035`).
-Letztes Release **v0.28.0** auf GHCR (2026-06-24, slice-048: Modul `versions`),
+Letztes Release **v0.29.0** auf GHCR (2026-06-24, slice-049: Modul `pins`),
 Digest-Pin
-`ghcr.io/pt9912/d-check@sha256:0bb84b529d3a65bdf9e849dd79cb8e9011bc388ecf9bffc5930f6c96bcc0cba8`;
-davor v0.27.0 (slice-047) und v0.26.0 (slice-046). `slice-035` ist als reiner
+`ghcr.io/pt9912/d-check@sha256:07994926987a92b863a5f54eeb7668654c08e1be958be425da4bdb7712c002c2`;
+davor v0.28.0 (slice-048) und v0.27.0 (slice-047). `slice-035` ist als reiner
 Refactor noch in keinem Release.
 
 ## Nächste Wellen
@@ -176,7 +177,7 @@ flowchart LR
 | welle-35-suggest-opt-in-hinweis | 2026-06-23 | [slice-046 §7](../done/slice-046-suggest-config-opt-in-hinweis.md#7-closure-notiz-nach-done); Schärfung [`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten): `--suggest-config ai-harness[-init]` nennt die nicht aktivierten situativen opt-in-Module (`external`/`spans`/`hostpaths`/`diagrams`) in einem Kommentar mit Verweis auf `--print-config` (Auffindbarkeit ohne Aktivieren eines inerten Moduls; `diagrams` nicht ableitbar — braucht repo-spezifische `patterns`/`defined-in`); Lastenheft 0.26.0, kein ADR; unabhängiges R1 ACCEPT (F-1 LOW `external` ergänzt); `make gates` grün; Minor-Release **v0.26.0** auf GHCR (Run `28040897654` grün, Tags `v0.26.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:19d53a26d8d82a919015a8befe24f852bd61f2ddea58bd29e3f4cf944a8403f3` |
 | welle-36-print-mk-erweiterung | 2026-06-23 | [slice-047 §7](../done/slice-047-print-mk-doctor-repair-help-digest.md#7-closure-notiz-nach-done); CR [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben): `--print-mk`-Fragment um `doc-doctor` (`--doctor`), `doc-repair` (`--repair`, `git apply`-rein via `@`), `doc-help` (namespaced Self-Doku) + `DCHECK_DIGEST` (Digest-Override per `ifeq`, sticht den Tag) erweitert; alle Targets `##`-annotiert; Lastenheft 0.27.0, kein ADR; unabhängiges R1 ACCEPT (3 INFO; Fragment real `make -n`-validiert, Digest-Override belegt); `make gates` grün; Minor-Release **v0.27.0** auf GHCR (Run `28047075398` grün, Tags `v0.27.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:2bc2598cbcd3622d98b33864a112fce02150b44776fc930fa404c98bd01668e1` |
 | welle-37-versions | 2026-06-24 | [slice-048 §7](../done/slice-048-versions-modul.md#7-closure-notiz-nach-done); neues opt-in Modul `versions` (10. Modul): Versions-Pin-Konsistenz — gepinnte `ghcr`-Image-Verweise gegen die aktuelle Version aus `version.md#aktuell`, Befund `version-stale`, liest auch Fenced-Code (gescopte Fence-Ausnahme), Ventile `exempt-paths`/`d-check:ignore`, fail-closed, diagnose-only ([`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in), [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md), Lastenheft 0.28.0); Doku-Boden `version.md` (only-current-anchor) + Release-Prep (alle ghcr-Pins → v0.28.0); Plan-Review R1→R3 ACCEPT + Impl-Review (4 Befunde); `make gates` grün (Coverage 93,90 %); Minor-Release **v0.28.0** auf GHCR (Run `28095582612` grün in 2m21s, Tags `v0.28.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:0bb84b529d3a65bdf9e849dd79cb8e9011bc388ecf9bffc5930f6c96bcc0cba8` |
-| welle-38-pins | 2026-06-24 | [slice-049 §7](../done/slice-049-pins-modul.md#7-closure-notiz-nach-done); neues opt-in Modul `pins` (11. Modul): Content-Pin gegen inhaltlichen Drift — ein Link mit `<!-- dpin: sha256:… -->` (gebunden an den unmittelbar vorausgehenden Link) wird gegen den whitespace-normalisierten **rohen** Ziel-Span (Datei/Heading-Section inkl. Fences) gehasst, Drift → `link-stale`; nur auflösbare repo-interne Ziele (struktureller Befund bleibt `links`/`anchors`, kein Doppelbefund), Scope-treu, diagnose-only ([`DC-FA-PIN-001`](../../../../spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in), [ADR-0020](../../adr/0020-content-pin-fence-ausnahme.md), Lastenheft 0.29.0); Plan-Review R1→R3 + Impl-Review (2 MEDIUM/1 LOW/1 INFO behoben); `make gates` grün (Coverage 94,00 %); Release **v0.29.0** Tag-Push + Digest ausstehend |
+| welle-38-pins | 2026-06-24 | [slice-049 §7](../done/slice-049-pins-modul.md#7-closure-notiz-nach-done); neues opt-in Modul `pins` (11. Modul): Content-Pin gegen inhaltlichen Drift — ein Link mit `<!-- dpin: sha256:… -->` (gebunden an den unmittelbar vorausgehenden Link) wird gegen den whitespace-normalisierten **rohen** Ziel-Span (Datei/Heading-Section inkl. Fences) gehasst, Drift → `link-stale`; nur auflösbare repo-interne Ziele (struktureller Befund bleibt `links`/`anchors`, kein Doppelbefund), Scope-treu, diagnose-only ([`DC-FA-PIN-001`](../../../../spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in), [ADR-0020](../../adr/0020-content-pin-fence-ausnahme.md), Lastenheft 0.29.0); Plan-Review R1→R3 + Impl-Review (2 MEDIUM/1 LOW/1 INFO behoben); `make gates` grün (Coverage 94,00 %); Release **v0.29.0** auf GHCR (Run `28102716631` grün, Tags `v0.29.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:07994926987a92b863a5f54eeb7668654c08e1be958be425da4bdb7712c002c2` |
 
 ## Historische Trigger-Verschiebungen
 

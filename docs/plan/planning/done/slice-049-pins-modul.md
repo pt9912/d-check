@@ -125,7 +125,9 @@ Grund-Code `link-stale` gingen dem Code voraus.
   die Querverweise sind Navigation (`ids`-Sache), der reale Drift war Versions-/
   Datums-Art (`versions`-Sache). `pins` ist ausgeliefert/opt-in; Adoption, wenn ein
   echtes Inhalts-Zitat auftaucht (Auftraggeber-Entscheid 2026-06-24).
-- Release **v0.29.0** auf GHCR: Tag-Push + Digest-Pin folgen (Closure vor Tag).
+- Release **v0.29.0** auf GHCR (Run `28102716631` grün, Tags `v0.29.0`+`latest`),
+  Digest-Pin
+  `ghcr.io/pt9912/d-check@sha256:07994926987a92b863a5f54eeb7668654c08e1be958be425da4bdb7712c002c2`.
 
 **Lerneintrag.** `pins` und `versions` (slice-048) sind dieselbe Disziplin (pinnen
 → bei Änderung neu segnen, wie der Image-Digest-Pin), aber getrennte Module:
