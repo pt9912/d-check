@@ -1,9 +1,12 @@
 # d-check — Release-Register
 
 > Kanonischer, **auflösender** Link-Ziel-Ort für Erwähnungen **eigener**
-> d-check-Releases — etwa [`v0.27.0`](#v0.27.0). Jede Zeile trägt einen
-> expliziten HTML-Anker `#vX.Y.Z`; der Heading-/Tabellen-Slug verschluckt
-> die Punkte, der `<a id="…">`-Anker bewahrt sie wörtlich.
+> d-check-Releases — etwa [`v0.27.0`](#v0.27.0). **Nur die aktuelle Version**
+> trägt einen expliziten HTML-Anker `#vX.Y.Z` (wörtlich, mit Punkten — der
+> Heading-/Tabellen-Slug verschluckt sie). Beim Release **wandert** der Anker zur
+> neuen aktuellen Version; die bisherige Zeile verliert ihn — dadurch *bricht*
+> jeder feste Markdown-Link-Pin auf eine veraltete Version (`anchor-missing`),
+> und ein vergessener Bump fällt auf (das ist der Zweck dieses Registers).
 >
 > **Kein Duplikat** der Detail-Changes — die stehen im
 > [CHANGELOG](CHANGELOG.md). Hier nur Versions-Koordinaten (Datum, Tag).
@@ -20,8 +23,10 @@ Aktuelle Version: [`v0.27.0`](#v0.27.0) — 2026-06-23.
 
 Aus anderen Dokumenten stabil referenzierbar als `version.md#aktuell`
 (zeigt immer hierher, nie auf eine feste Nummer). Pro Release sind genau
-diese Zeile **und** eine neue Tabellen-Zeile im Verlauf nachzuziehen —
-der einzige Bump-Punkt, analog zum README-Versions-Pin.
+diese Zeile **und** eine neue Tabellen-Zeile im Verlauf nachzuziehen **und der
+`<a id>`-Anker auf die neue Version zu verschieben** (die bisherige Zeile verliert
+ihn, sonst bleiben veraltete feste Pins auflösbar und die Anker-Kaskade meldet den
+vergessenen Bump nicht) — der einzige Bump-Punkt, analog zum README-Versions-Pin.
 
 ## Verlauf
 
