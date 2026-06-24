@@ -815,6 +815,44 @@ die Fences für alle übrigen Module entfernt:
    nichts geschrieben ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
    `version-stale` ist diagnose-only — kein `--repair`-Hunk in dieser Version.
 
+### DC-FA-PIN-001.a — Content-Pin gegen inhaltlichen Drift (`pins`)
+
+Das Modul `pins`
+([`DC-FA-PIN-001`](lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in))
+ist opt-in und liest den **Ziel-Span gegenläufig** zur Vorverarbeitung
+([§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)),
+die Fences sonst entfernt:
+
+1. **Marker-Erkennung + Bindung.** Je vorverarbeiteter Zeile werden Links
+   (`ExtractLinkSpans`) und `<!-- dpin: sha256:<hex> -->`-Marker gesucht. Ein
+   Marker bindet an den Link, dessen schließendes `)` ihm **unmittelbar**
+   vorausgeht (nur Whitespace dazwischen, gleiche Zeile); bei mehreren
+   Links/Markern je Zeile gilt die nächste-vorausgehende-Bindung. Ein Marker ohne
+   unmittelbar vorausgehenden Link ist **inert**. Nur gebundene Links werden
+   geprüft (opt-in pro Link).
+2. **Ziel-Span bestimmen.** Linkziel `datei` bzw. `datei#anker` (relativ zur
+   prüfenden Datei, repo-intern). Ohne Anker: ganze Ziel-Datei. Mit Anker: die
+   Heading-Section (Heading mit passendem Slug bis zur nächsten gleich-/
+   höherrangigen Überschrift; HTML-Anker ab dessen Zeile). Lässt sich Datei/Anker
+   nicht auflösen oder liegt das Ziel außerhalb des gescannten Baums ⇒ **kein**
+   `pins`-Befund (struktureller Befund bleibt `links`/`anchors`; auch im
+   pins-only-Lauf kein Ersatz-Befund, kein Doppelbefund).
+3. **Normalisierung + Hash.** Der Span wird **roh** gelesen (inkl. Fenced-Code —
+   anders als die übrige Vorverarbeitung), dann normalisiert: alle
+   Whitespace-Folgen (inkl. Zeilenumbrüche) zu **einem** Leerzeichen kollabiert,
+   Rand-Whitespace getrimmt. SHA-256 über das Ergebnis (hex).
+4. **Vergleich.** Hash ≠ Pin-Wert ⇒ Grund-Code `link-stale` (Datei, Zeile des
+   Links, `target` = Linkziel; `message` nennt erwartet vs. errechnet, gekürzt).
+   Gleichheit ⇒ kein Befund. **Diagnose-only**: kein `--repair`-Hunk (Re-Pinnen
+   ist menschliche Annahme der Drift).
+5. **Scope/Determinismus.** `pins` respektiert den Modul-Scope
+   ([§DC-FA-CONF-002.a](#dc-fa-conf-002a--effektiver-scan-scope-pro-modul)) wie
+   jedes Modul (die gepinnten Quell-Dateien folgen dem effektiven Scope; die
+   Ziel-Datei wird unabhängig davon zum Hashen gelesen). Ohne `pins` ist der
+   Befundsatz byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus));
+   nichts wird geschrieben
+   ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
 ## 2. Datenstrukturen und Schemas
 
 ### Befund
@@ -1029,6 +1067,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `span-nested-link` | spans | Link-Syntax im Linktext eines weiteren Links (rendert zerrissen) |
 | `external-redirects` | external | mehr als `REDIRECT_MAX` Redirects |
 | `version-stale` | versions | Versions-Pin weicht von der aktuellen Version (`versions.current-from`) ab |
+| `link-stale` | pins | normalisierter Ziel-Span eines gepinnten Links weicht vom hinterlegten `dpin`-Hash ab |
 
 Nutzungs-/Umgebungsfehler (Exit 2) melden auf stderr mit Präfix
 `d-check: error:`; Konfigurationsfehler nennen Datei und Zeile.

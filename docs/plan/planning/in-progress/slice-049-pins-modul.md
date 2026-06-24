@@ -59,7 +59,7 @@ angewandt.
 
 ## 3. Definition of Done
 
-- [ ] **Spec:** neue PIN-Anforderung im Lastenheft (neues Bereichskürzel `PIN` in
+- [x] **Spec:** neue PIN-Anforderung im Lastenheft (neues Bereichskürzel `PIN` in
   §3, Versions-Bump + §7-Historie) + begleitender ADR (Fence-Öffnung) +
   spezifikation `.a`-Sektion + Grund-Code `link-stale` (§4) + `pins` als gültiges
   Modul in [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)/Glossar

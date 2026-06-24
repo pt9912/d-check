@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.28.0
+**Version:** 0.29.0
 
 **Status:** Draft
 
@@ -44,7 +44,8 @@ statt per Code-Kopie.
 > (Referenzmatrix-Modul), `EXT` (externe Links), `CODE`
 > (Inline-Code-Pfade), `SPAN` (Markdown-Span-Artefakte), `HOST`
 > (Host-Pfad-Hygiene), `DIAG` (Diagramm-Kennungen), `VER`
-> (Versions-Pin-Konsistenz), `CONF` (Konfiguration), `DIST` (Distribution).
+> (Versions-Pin-Konsistenz), `PIN` (Content-Pin/Drift), `CONF` (Konfiguration),
+> `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -73,8 +74,8 @@ verweist für das Konfigurations-Format auf
 
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
-`codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`. Ohne Konfiguration
-sind `links` und `anchors` aktiv. Module werden über
+`codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`. Ohne
+Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -889,6 +890,61 @@ Schreiben oder Anlegen des Registers durch das Werkzeug selbst (read-only).
 
 ---
 
+### DC-FA-PIN-001 — Content-Pin gegen inhaltlichen Drift (Modul `pins`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `pins` prüft d-check
+Markdown-Links, die einen **Content-Pin** tragen — einen Inline-HTML-Kommentar
+`<!-- dpin: sha256:<hex> -->`, der **unmittelbar** (nur Whitespace dazwischen)
+auf der **gleichen Zeile** dem schließenden `)` des Links folgt. Der Pin bindet
+an genau diesen Link; ein Marker, der keinem Link unmittelbar folgt (allein, auf
+der Folgezeile oder durch Text getrennt), ist **inert** (kein Befund). Bei
+mehreren Links je Zeile bindet jeder Marker an den ihm direkt vorausgehenden Link.
+
+d-check löst das Linkziel auf, bestimmt den **Ziel-Span** — die ganze Ziel-Datei
+(Link ohne Anker) oder die **Heading-Section** des Ankers (Überschrift bis zur
+nächsten gleich-/höherrangigen) —, normalisiert ihn **whitespace-/reflow-invariant**
+(Whitespace-Folgen → ein Leerzeichen, Zeilenenden vereinheitlicht,
+führende/abschließende Leerzeilen entfernt), bildet den SHA-256 und vergleicht mit
+dem Pin. Abweichung → Befund `link-stale`. Der Span wird **roh** gehasht — inkl.
+Fenced-Code-Inhalt (Drift in Code-Beispielen soll gefangen werden; eng begrenzte
+Ausnahme von der Fence-Opazität).
+
+**Nur auflösbare Links:** Lässt sich das Ziel des gepinnten Links nicht auflösen
+(Datei fehlt, Anker ohne passende Section), erzeugt `pins` **keinen** Befund — der
+strukturelle Befund ist Sache von
+[`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)/[`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors)
+(`target-missing`/`anchor-missing`), auch im `pins`-only-Lauf (kein eigener, kein
+doppelter Befund).
+
+**Opt-in pro Link:** nur Links mit Pin werden geprüft. Strikt opt-in Modul
+(Default aus): ohne aktives `pins` byte-identisch
+([`DC-QA-02`](#dc-qa-02--determinismus)), nichts geschrieben
+([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)); der
+Modul-Scope ([`DC-FA-CONF-002`](#dc-fa-conf-002--modul-lokaler-scan-scope)) gilt
+wie für jedes Modul. **Diagnose-only:** `link-stale` liefert keinen
+`--repair`-Hunk — Re-Pinnen ist menschliche Annahme der Drift, kein eindeutig
+ableitbarer Fix; ein `--bless` wäre eine spätere, eigene Anforderung (berührt
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `pins` aktiv und `[…](ziel.md#abschnitt) <!-- dpin: sha256:<H> -->`, dessen normalisierter Ziel-Span `<H>` ergibt, when `d-check` läuft, then kein Befund, Exit 0; ein read-only gemountetes Repository genügt.
+- **Boundary (Reflow):** Given korrekter Pin und eine **nur**-Whitespace/Umbruch-Änderung am Ziel-Span (Wort-Inhalt identisch), when `d-check` läuft, then **kein** Befund (die Normalisierung absorbiert Reflow).
+- **Negative:** Given Pin und eine **inhaltliche** Änderung am Ziel-Span, when `d-check` läuft, then ein Befund `link-stale` (Datei:Zeile des Links, erwarteter vs. errechneter Hash gekürzt), Exit 1.
+- **Boundary (Marker-Bindung):** Given zwei Links in einer Zeile mit Pin nach dem zweiten, einen Marker zwischen den Links und einen Marker auf der Folgezeile, when `d-check` läuft, then prüft `pins` genau den zweiten Link, und die nicht unmittelbar gebundenen Marker sind inert (kein Befund daraus).
+- **Boundary (Ziel weg):** Given ein gepinnter Link mit fehlender Ziel-Datei oder fehlendem Anker, when `d-check --enable pins` (auch ohne `links`/`anchors`) läuft, then **kein** `link-stale`; mit aktivem `links`/`anchors` erscheint `target-missing`/`anchor-missing` **einmal** (kein Doppelbefund durch `pins`).
+- **Modul-aus:** Given **kein** aktives `pins`, when `d-check` läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Out-of-Scope:** semantische Prüfung, ob das Zitat *sinngemäß* passt
+(unentscheidbar); Pinnen/Re-Pinnen durch das Werkzeug selbst (read-only; ein
+`--bless`-Emissionsmodus wäre eine eigene Anforderung, berührt
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)); **Absatz-Ebene** als Span
+(in Markdown nicht stabil adressierbar); Pins auf Ziele **außerhalb** des
+gescannten Baums (nicht hashbar, [`DC-QA-02`](#dc-qa-02--determinismus));
+Default-on oder eine Pflicht zu pinnen; mehrere Hash-Algorithmen (nur `sha256`).
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -997,7 +1053,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -1011,6 +1067,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.29.0 | 2026-06-24 | Neue Anforderung `DC-FA-PIN-001` (Modul `pins`, opt-in): Content-Pin gegen inhaltlichen Drift — ein Link mit Inline-Marker `<!-- dpin: sha256:… -->` (bindet an den unmittelbar vorausgehenden Link derselben Zeile, sonst inert) wird gegen den whitespace-normalisierten **rohen** Ziel-Span (ganze Datei oder Heading-Section, inkl. Fenced-Code) gehasst; Mismatch → `link-stale`. Nur auflösbare Links (struktureller Befund bleibt `DC-FA-LINK-001`/`DC-FA-ANCH-001`, kein Doppelbefund, auch pins-only); opt-in pro Link, default-off byte-identisch (`DC-QA-02`), diagnose-only (`--bless` spätere CR). Bereichskürzel `PIN` in §3, `pins` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-PIN-001.a` + Grund-Code `link-stale` in der Spezifikation. Anlass: Auftraggeber-Idee 2 (stale citation) + Spike (Drift real, Rauschen ~0 bei Normalisierung) | slice-049 |
 | 0.28.0 | 2026-06-24 | Neue Anforderung `DC-FA-VER-001` (Modul `versions`, opt-in): Versions-Pin-Konsistenz — alle Pins (`versions.pin-pattern`) müssen die aktuelle Version aus `versions.current-from` (Default `version.md#aktuell`) tragen, sonst `version-stale`; liest dafür Pins **auch in Fenced-Code** (gescopte Fence-Ausnahme), Ventile `exempt-paths`/`d-check:ignore` für historische Pins; opt-in/default-off (ohne Block byte-identisch, `DC-QA-02`), diagnose-only (Auto-Bump-`--repair` als Folge-CR an `DC-FA-CLI-008`). Bereichskürzel `VER` in §3, `versions` als gültiges Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-VER-001.a`, Grund-Code `version-stale` und Config-Schema (`versions.pin-pattern`/`current-from`/`exempt-paths`) in der Spezifikation ergänzt. Anlass: Auftraggeber-Idee „nicht vergessen, die Version zu bumpen" + Spike (Meta-Gate-Skript wegen Copy-Drift über die Repo-Familie verworfen) | slice-048 |
 | 0.27.0 | 2026-06-23 | Change Request (Auftraggeber): `DC-FA-CLI-010` (`--print-mk`-Fragment) um drei Targets + eine Variable erweitert — `doc-doctor` (`--doctor`), `doc-repair` (`--repair`, Recipe-Echo unterdrückt für `git apply`-reine stdout) und `doc-help` (namespaced, listet die `doc-*`-Targets via `##`-Annotationen; **kein** `help` wegen Konsumenten-Kollision) sowie `DCHECK_DIGEST` (Digest-Override per `ifeq`, sticht den Tag). Alle Targets `##`-annotiert (greift das `help` des Konsumenten auf). Read-only/deterministisch unverändert. Anlass: Auftraggeber-Wunsch nach `doc-doctor`/`doc-repair`/Self-Doc/Digest-Komfort | slice-047 |
 | 0.26.0 | 2026-06-23 | Schärfung `DC-FA-CLI-006` (Auftraggeber): das opt-in-Modul `diagrams` zur Out-of-Scope-Liste der **nicht** auto-aktivierten situativen Module ergänzt (`external`/`spans`/`hostpaths`/`diagrams`); die `--suggest-config ai-harness[-init]`-Ausgabe nennt diese situativen Module stattdessen in einem **Kommentar mit Verweis auf `--print-config`** (Auffindbarkeit ohne Aktivieren eines inerten Moduls — `diagrams` braucht repo-spezifische `patterns`/`defined-in`, lässt sich nicht ableiten). Read-only/advisory unverändert. Anlass: Nutzer-Frage nach slice-045 (wird `diagrams` in `--suggest-config ai-harness` berücksichtigt?) | slice-046 |
