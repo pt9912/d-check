@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.9 · **Software-Version:** v0.27.0 ·
+**Handbuch-Version:** 1.9 · **Software-Version:** [v0.27.0](../../version.md#v0.27.0) ·
 **Stand:** 2026-06-23 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -402,10 +402,10 @@ weggelassen — das `null` ist die Aussage „kein eindeutiger Fix").
 
 **Die drei Ausgaben im Vergleich:**
 
-| Aufruf | stdout | wofür |
-|---|---|---|
-| `--json` | JSON: knappe Befunde (`findings`/`summary`/`exitCode`) | CI/Maschine, reine Befundliste |
-| `--doctor` | Prosa: gruppierte Diagnose mit Klartext + Fix-Kandidaten | Mensch, zum Verstehen |
+| Aufruf            | stdout                                                     | wofür                                        |
+| ----------------- | ---------------------------------------------------------- | -------------------------------------------- |
+| `--json`          | JSON: knappe Befunde (`findings`/`summary`/`exitCode`)     | CI/Maschine, reine Befundliste               |
+| `--doctor`        | Prosa: gruppierte Diagnose mit Klartext + Fix-Kandidaten   | Mensch, zum Verstehen                        |
 | `--doctor --json` | JSON: Befunde zusätzlich mit `reasonText` + `fixCandidate` | Maschine, die die Diagnose weiterverarbeitet |
 
 Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
@@ -431,11 +431,11 @@ selbst schreibt nichts — Sie wenden den Patch an.
 
 **Was `--repair` behebt** (alle anderen Befundarten bleiben Befund):
 
-| Befundart | Reparatur | Stufe |
-|---|---|---|
-| `id-unlinked` | nackte Kennung → Markdown-Link auf ihre Definition; nur **nackte Prosa**-Vorkommen (Inline-Code oder bereits verlinkt bleiben unangetastet) | konservativ (`--repair`) |
-| `target-missing` | Link → **verschobene** Markdown-Datei gleichen, im Repo **eindeutigen** Namens; **keine** Umbenennung (anderer Name), keine Nicht-Markdown-Ziele, mehrdeutige Namen → kein Edit | breit (`--repair-broad`) |
-| `anchor-missing`, `repo-escape`, `symlink`, `codepath-missing`, `matrix-inactive`, `matrix-forbidden`, `external-status`, `external-timeout`, `external-redirects`, `span-unclosed`, `span-nested-link`, `hostpath-forbidden` | — kein Auto-Fix, von Hand beheben | — |
+| Befundart                                                                                                                                                                                                                     | Reparatur                                                                                                                                                                       | Stufe                    |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `id-unlinked`                                                                                                                                                                                                                 | nackte Kennung → Markdown-Link auf ihre Definition; nur **nackte Prosa**-Vorkommen (Inline-Code oder bereits verlinkt bleiben unangetastet)                                     | konservativ (`--repair`) |
+| `target-missing`                                                                                                                                                                                                              | Link → **verschobene** Markdown-Datei gleichen, im Repo **eindeutigen** Namens; **keine** Umbenennung (anderer Name), keine Nicht-Markdown-Ziele, mehrdeutige Namen → kein Edit | breit (`--repair-broad`) |
+| `anchor-missing`, `repo-escape`, `symlink`, `codepath-missing`, `matrix-inactive`, `matrix-forbidden`, `external-status`, `external-timeout`, `external-redirects`, `span-unclosed`, `span-nested-link`, `hostpath-forbidden` | — kein Auto-Fix, von Hand beheben                                                                                                                                               | —                        |
 
 **Hinweise:**
 
@@ -534,10 +534,10 @@ bzw. `WAISE` für eine Anforderung, die kein Slice referenziert):
 ```text
 # Requirements Traceability Matrix
 
-| Anforderung | Titel | ADRs | Slices | Status |
-|---|---|---|---|---|
-| DC-FA-CLI-009 | Requirements Traceability Matrix | — | slice-036 | ok |
-| DC-FA-CLI-010 | Makefile-Fragment ausgeben | — | slice-038 | ok |
+| Anforderung   | Titel                            | ADRs | Slices    | Status |
+| ------------- | -------------------------------- | ---- | --------- | ------ |
+| DC-FA-CLI-009 | Requirements Traceability Matrix | —    | slice-036 | ok     |
+| DC-FA-CLI-010 | Makefile-Fragment ausgeben       | —    | slice-038 | ok     |
 
 2 Anforderung(en), 0 Waise(n).
 ```
@@ -686,27 +686,27 @@ ids:
 
 ## 6. Regelmodule
 
-| Modul | Standard | Prüft | Grund-Codes |
-|---|---|---|---|
-| `links` | aktiv | lokale Links/Bilder: Ziel existiert, innerhalb des Repos | `target-missing`, `repo-escape`, `symlink` |
-| `anchors` | aktiv | Heading-Anker (GitHub-Slugs), inkl. Inline-HTML-Anker | `anchor-missing` |
-| `ids` | opt-in | Linkpflicht für Kennungen im Fließtext | `id-unlinked` |
-| `matrix` | opt-in | erlaubte Referenzrichtung und -status zwischen Dokumentklassen | `matrix-forbidden`, `matrix-inactive` |
-| `codepaths` | opt-in | explizite Pfade in Inline-Code existieren | `codepath-missing` |
-| `spans` | opt-in | ungeschlossene Code-Spans, verschachtelte Links | `span-unclosed`, `span-nested-link` |
-| `hostpaths` | opt-in | host-lokale absolute Pfade (Maschinen-Layout-Leak) | `hostpath-forbidden` |
-| `diagrams` | opt-in | Kennungen in Diagramm-Fences (Default `mermaid`) existieren in ihrer `defined-in`-Quelle | `diagram-id-undefined` |
-| `external` | opt-in (Netz) | Erreichbarkeit externer Links | `external-status`, `external-timeout`, `external-redirects` |
+| Modul       | Standard      | Prüft                                                                                    | Grund-Codes                                                 |
+| ----------- | ------------- | ---------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| `links`     | aktiv         | lokale Links/Bilder: Ziel existiert, innerhalb des Repos                                 | `target-missing`, `repo-escape`, `symlink`                  |
+| `anchors`   | aktiv         | Heading-Anker (GitHub-Slugs), inkl. Inline-HTML-Anker                                    | `anchor-missing`                                            |
+| `ids`       | opt-in        | Linkpflicht für Kennungen im Fließtext                                                   | `id-unlinked`                                               |
+| `matrix`    | opt-in        | erlaubte Referenzrichtung und -status zwischen Dokumentklassen                           | `matrix-forbidden`, `matrix-inactive`                       |
+| `codepaths` | opt-in        | explizite Pfade in Inline-Code existieren                                                | `codepath-missing`                                          |
+| `spans`     | opt-in        | ungeschlossene Code-Spans, verschachtelte Links                                          | `span-unclosed`, `span-nested-link`                         |
+| `hostpaths` | opt-in        | host-lokale absolute Pfade (Maschinen-Layout-Leak)                                       | `hostpath-forbidden`                                        |
+| `diagrams`  | opt-in        | Kennungen in Diagramm-Fences (Default `mermaid`) existieren in ihrer `defined-in`-Quelle | `diagram-id-undefined`                                      |
+| `external`  | opt-in (Netz) | Erreichbarkeit externer Links                                                            | `external-status`, `external-timeout`, `external-redirects` |
 
 ## 7. Fehlerbehebung
 
 ### Exit-Codes
 
-| Code | Bedeutung |
-|---|---|
-| `0` | Prüfung gelaufen, keine Befunde |
-| `1` | Prüfung gelaufen, mindestens ein Befund |
-| `2` | Nutzungs- oder Umgebungsfehler — die Prüfung lieferte keine verlässliche Aussage |
+| Code | Bedeutung                                                                        |
+| ---- | -------------------------------------------------------------------------------- |
+| `0`  | Prüfung gelaufen, keine Befunde                                                  |
+| `1`  | Prüfung gelaufen, mindestens ein Befund                                          |
+| `2`  | Nutzungs- oder Umgebungsfehler — die Prüfung lieferte keine verlässliche Aussage |
 
 ### Häufige Befunde
 
@@ -784,15 +784,15 @@ Die Software-Änderungen je Version stehen im
 [Changelog](../../CHANGELOG.md). Dieses Handbuch ist an die
 Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 
-| Handbuch-Version | Software-Version | Stand | Änderung |
-|---|---|---|---|
-| 1.0 | v0.12.0 | 2026-06-18 | Erstfassung: alle Use Cases inkl. `--doctor`/`--repair` |
-| 1.1 | v0.17.0 | 2026-06-19 | `--doctor --json`: maschinenlesbare Diagnose ergänzt (§4.9), Gegenüberstellung der drei Ausgaben |
-| 1.2 | v0.18.0 | 2026-06-19 | `--suggest-config ai-harness`/`ai-harness-init`: Harness-Vorlage in zwei Modi ergänzt (§4.4) |
-| 1.3 | v0.19.0 | 2026-06-20 | YAML-Ausgabe `--yaml` (auch `--doctor --yaml`): maschinenlesbare Ausgabe um YAML erweitert (§4.11) |
-| 1.4 | v0.22.0 | 2026-06-22 | `--id-prefix` für `--suggest-config` (§4.4); Traceability-Matrix `--trace` (§4.12); Makefile-Fragment `--print-mk` (§4.13); `:latest` = neueste **stabile** Version (§2) |
-| 1.5 | v0.23.0 | 2026-06-22 | Modul `codepaths`: Datei-Ventil `exempt-paths` ergänzt (§5 Weitere Module) — ganze Dateien von der Inline-Code-Pfad-Prüfung ausnehmen, wie `ids` |
-| 1.6 | v0.24.0 | 2026-06-23 | `--print-mk`-Fragment um `doc-trace`/`doc-complete`-Targets + `TRACE_FLAGS` erweitert (§4.13); opt-in `--trace --require-complete` (Vollständigkeits-Gate, Waise ⇒ Exit 1, §4.12) |
-| 1.7 | v0.25.0 | 2026-06-23 | Modul `diagrams` (opt-in): Kennungs-Existenz in Diagramm-Fences (§5 Weitere Module) — `mermaid`-Diagramme auf undefinierte Kennungen prüfen (Befund `diagram-id-undefined`) |
-| 1.8 | v0.26.0 | 2026-06-23 | `--suggest-config ai-harness[-init]`: Kommentar-Hinweis auf die nicht aktivierten situativen opt-in-Module (`external`/`spans`/`hostpaths`/`diagrams`) mit Verweis auf `--print-config` |
-| 1.9 | v0.27.0 | 2026-06-23 | `--print-mk`-Fragment (§4.13) um `doc-doctor`/`doc-repair`/`doc-help`-Targets + `DCHECK_DIGEST` (Digest-Override, sticht den Tag) erweitert; alle Targets `##`-annotiert |
+| Handbuch-Version | Software-Version | Stand      | Änderung                                                                                                                                                                                |
+| ---------------- | ---------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1.0              | v0.12.0          | 2026-06-18 | Erstfassung: alle Use Cases inkl. `--doctor`/`--repair`                                                                                                                                 |
+| 1.1              | v0.17.0          | 2026-06-19 | `--doctor --json`: maschinenlesbare Diagnose ergänzt (§4.9), Gegenüberstellung der drei Ausgaben                                                                                        |
+| 1.2              | v0.18.0          | 2026-06-19 | `--suggest-config ai-harness`/`ai-harness-init`: Harness-Vorlage in zwei Modi ergänzt (§4.4)                                                                                            |
+| 1.3              | v0.19.0          | 2026-06-20 | YAML-Ausgabe `--yaml` (auch `--doctor --yaml`): maschinenlesbare Ausgabe um YAML erweitert (§4.11)                                                                                      |
+| 1.4              | v0.22.0          | 2026-06-22 | `--id-prefix` für `--suggest-config` (§4.4); Traceability-Matrix `--trace` (§4.12); Makefile-Fragment `--print-mk` (§4.13); `:latest` = neueste **stabile** Version (§2)                |
+| 1.5              | v0.23.0          | 2026-06-22 | Modul `codepaths`: Datei-Ventil `exempt-paths` ergänzt (§5 Weitere Module) — ganze Dateien von der Inline-Code-Pfad-Prüfung ausnehmen, wie `ids`                                        |
+| 1.6              | v0.24.0          | 2026-06-23 | `--print-mk`-Fragment um `doc-trace`/`doc-complete`-Targets + `TRACE_FLAGS` erweitert (§4.13); opt-in `--trace --require-complete` (Vollständigkeits-Gate, Waise ⇒ Exit 1, §4.12)       |
+| 1.7              | v0.25.0          | 2026-06-23 | Modul `diagrams` (opt-in): Kennungs-Existenz in Diagramm-Fences (§5 Weitere Module) — `mermaid`-Diagramme auf undefinierte Kennungen prüfen (Befund `diagram-id-undefined`)             |
+| 1.8              | v0.26.0          | 2026-06-23 | `--suggest-config ai-harness[-init]`: Kommentar-Hinweis auf die nicht aktivierten situativen opt-in-Module (`external`/`spans`/`hostpaths`/`diagrams`) mit Verweis auf `--print-config` |
+| 1.9              | v0.27.0          | 2026-06-23 | `--print-mk`-Fragment (§4.13) um `doc-doctor`/`doc-repair`/`doc-help`-Targets + `DCHECK_DIGEST` (Digest-Override, sticht den Tag) erweitert; alle Targets `##`-annotiert                |

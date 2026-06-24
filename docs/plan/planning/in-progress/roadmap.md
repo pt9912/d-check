@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-21.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-24.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -10,7 +10,12 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+**welle-37-versions** — [`slice-048`](slice-048-versions-modul.md):
+Modul `versions` (Idee 1, Versions-Pin-Konsistenz). **Schritt A gelandet** — das
+Release-Register [`version.md`](../../../../version.md#aktuell) (only-current-anchor:
+veraltete Markdown-Link-Pins brechen beim Release via `anchors`-Gate) plus der
+Handbuch-Header-Pin als Link. Offen: VER-Anforderung + ADR (Fence-Öffnung) +
+Modul `versions`. Zuletzt abgeschlossen:
 welle-36-print-mk-erweiterung
 ([`slice-047`](../done/slice-047-print-mk-doctor-repair-help-digest.md) — CR an
 `--print-mk`: das Fragment bekommt `doc-doctor`/`doc-repair`/`doc-help` plus
