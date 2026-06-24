@@ -1,7 +1,7 @@
 # d-check — Release-Register
 
 > Kanonischer, **auflösender** Link-Ziel-Ort für Erwähnungen **eigener**
-> d-check-Releases — etwa [`v0.27.0`](#v0.27.0). **Nur die aktuelle Version**
+> d-check-Releases — etwa [die jeweils aktuelle Version](#aktuell). **Nur die aktuelle Version**
 > trägt einen expliziten HTML-Anker `#vX.Y.Z` (wörtlich, mit Punkten — der
 > Heading-/Tabellen-Slug verschluckt sie). Beim Release **wandert** der Anker zur
 > neuen aktuellen Version; die bisherige Zeile verliert ihn — dadurch *bricht*

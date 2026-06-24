@@ -1,6 +1,6 @@
 # Spezifikation — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-23.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-24.
 
 **Bezug zum Lastenheft:** Diese Spezifikation präzisiert die in
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
@@ -1079,3 +1079,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-18 | §[`DC-FA-CLI-008.a`](spezifikation.md#dc-fa-cli-008a--reparatur-patch) ergänzt: Reparatur-Modus `--repair` — unified diff auf stdout (`git apply`-kompatibel), zwei Stufen (`--repair`/`--repair-broad`); konservativ nur eindeutige `id-unlinked`-Fixes auf nackte Prosa-Vorkommen, breit Best-Guess `target-missing` (eindeutiger Basisname) mit review-pflichtig-Marker auf stderr; nicht mit `--json`/`--doctor` kombinierbar; Determinismus über sortierte Edits | slice-026 |
 | 2026-06-19 | §[`DC-FA-CLI-007.a`](spezifikation.md#dc-fa-cli-007a--diagnose-modus) Schritt 6 + [JSON-Diagnose](spezifikation.md#json-diagnose---doctor---json)-Schema (§2) ergänzt: `--doctor --json` rendert dieselbe Diagnose maschinenlesbar — `findings` zusätzlich mit `reasonText` und `fixCandidate` (`{original,replacement,note}` oder explizit `null`), `file`-Gruppierung; nur noch `--repair`+`--json` und `--doctor`+`--repair` sind Nutzungsfehler | slice-029 |
 | 2026-06-22 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) + §2-Schema ergänzt: Datei-Ventil `codepaths.exempt-paths` (Glob wie `scan.ignore`) nimmt ganze Dateien von der `codepaths`-Prüfung aus — datei-weit, unabhängig von `codepaths.roots`; Vorbild das gleichnamige ids-Ventil. Abwärtskompatibel: ohne gesetztes `exempt-paths` byte-identisch | slice-043 |
+| 2026-06-24 | §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) + §2-Schema (`versions.pin-pattern`/`versions.current-from`/`versions.exempt-paths`) + Grund-Code `version-stale` ergänzt: opt-in Modul `versions` prüft Versions-Pins gegen die aus `versions.current-from` (Default `version.md#aktuell`) gelesene aktuelle Version; liest Pins **auch in Fences** (gescopte Ausnahme, Muster-Scan ohne Parser), Ventile `exempt-paths`/`d-check:ignore`, fail-closed bei unauflösbarer Quelle, diagnose-only (Auto-Bump-`--repair` als Folge-CR). Default-aus byte-identisch | slice-048 |
