@@ -1,6 +1,6 @@
 # ADR-0020 — Content-Pin: das Modul `pins` hasht den rohen, normalisierten Ziel-Span
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-24
 **Autor:** pt9912
 **Bezug:** [`DC-FA-PIN-001`](../../../spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in)
@@ -63,3 +63,4 @@ gepinnten Image, Konsum über `doc-check` — kein kopiertes Skript.
 | Datum | Ereignis |
 | --- | --- |
 | 2026-06-24 | Entwurf nach Spike (Idee 2; 86/116 Sections driften, 0/87 kosmetisch) + Plan-Review R1 (Marker-Bindung / Ziel-weg / Modul-Scope geschärft). Status Proposed. |
+| 2026-06-24 | Angenommen mit der slice-049-Closure: Plan-Review R1→R3 + unabhängiges Impl-Review (alle behoben), Modul `pins` implementiert + getestet, `make gates` grün. Status Accepted. |

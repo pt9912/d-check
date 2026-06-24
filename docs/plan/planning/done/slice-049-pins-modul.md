@@ -1,6 +1,6 @@
 # Slice slice-049: Modul `pins` — Content-Pin gegen inhaltlichen Drift (Idee 2)
 
-**Status:** in-progress (offen, welle-38-pins).
+**Status:** done (abgeschlossen, welle-38-pins).
 
 **Welle:** welle-38-pins (Trigger: Auftraggeber-Idee — „wenn man einen
 Markdown-Link auf eine Datei/Absatz setzt, könnte d-check den Drift bemerken";
@@ -100,4 +100,36 @@ GF (Produkt-Code + Spec; „Doc führt, Code folgt"). Keine BF-Sub-Area.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_folgt mit dem Abschluss des Slice._
+**Umsetzung.** Idee 2 als 11. Regelmodul `pins`: ein Link mit Content-Pin
+`<!-- dpin: sha256:… -->` (gebunden an den unmittelbar — nur Whitespace, geprüft
+auf der **rohen** Zeile — vorausgehenden Nicht-Bild-Link) wird gegen den
+whitespace-normalisierten **rohen** Ziel-Span (ganze Datei oder Heading-Section,
+inkl. Fenced-Code) gehasst; Drift → `link-stale`. Nur auflösbare, repo-interne
+Ziele (struktureller Befund bleibt `links`/`anchors`, kein Doppelbefund, auch
+pins-only); Scope-treu
+([`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope)),
+diagnose-only. Doc-first:
+[`DC-FA-PIN-001`](../../../../spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in)
+(Lastenheft 0.29.0, Bereich `PIN`) +
+[ADR-0020](../../adr/0020-content-pin-fence-ausnahme.md) + spezifikation `.a`/
+Grund-Code `link-stale` gingen dem Code voraus.
+
+**Belege.**
+- `make gates` **grün** (doc-check, lint, test, arch-check, Coverage 94,00 %,
+  semgrep, gate-consistency, planning-check); `make ci` grün (image-test).
+- Plan-Review **R1→R2→R3** (4→3→2 Befunde, alle behoben) + **unabhängiges
+  Impl-Review** (2 MEDIUM/1 LOW/1 INFO behoben: Marker-Bindung auf roher Zeile,
+  Negativtests, Bild-Link-/Leeranker-Spec).
+- 12 Tests (`rules/pins_test.go`); `CheckPins`/`bindPins`/`pinFinding` 100 % Coverage.
+- **Kein `.d-check.yml`-Dogfooding:** das Repo hat (noch) keine gepinnten Links —
+  die Querverweise sind Navigation (`ids`-Sache), der reale Drift war Versions-/
+  Datums-Art (`versions`-Sache). `pins` ist ausgeliefert/opt-in; Adoption, wenn ein
+  echtes Inhalts-Zitat auftaucht (Auftraggeber-Entscheid 2026-06-24).
+- Release **v0.29.0** auf GHCR: Tag-Push + Digest-Pin folgen (Closure vor Tag).
+
+**Lerneintrag.** `pins` und `versions` (slice-048) sind dieselbe Disziplin (pinnen
+→ bei Änderung neu segnen, wie der Image-Digest-Pin), aber getrennte Module:
+`versions` = Wert-Gleichheit gegen eine deklarierte aktuelle Version, `pins` =
+Span-Hash gegen einen hinterlegten Pin. Die Marker-Bindung muss auf der **rohen**
+Zeile geprüft werden (die Vorverarbeitung leert Inline-Code zu Leerzeichen —
+Impl-R1 F-1).
