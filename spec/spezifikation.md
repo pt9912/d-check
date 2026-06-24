@@ -894,7 +894,7 @@ Zusammenfassung auf stderr: `d-check: <N> Datei(en) geprüft, <M> Befund(e)`.
         "properties": {
           "file":    {"type": "string"},
           "line":    {"type": "integer", "minimum": 1},
-          "rule":    {"type": "string", "enum": ["links", "anchors", "ids", "matrix", "external", "codepaths"]},
+          "rule":    {"type": "string"},
           "target":  {"type": "string"},
           "reason":  {"type": "string"},
           "message": {"type": "string"}
