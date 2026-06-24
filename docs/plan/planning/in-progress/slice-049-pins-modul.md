@@ -63,11 +63,19 @@ angewandt.
   §3, Versions-Bump + §7-Historie) + begleitender ADR (Fence-Öffnung) +
   spezifikation `.a`-Sektion + Grund-Code `link-stale` (§4) + `pins` als gültiges
   Modul in [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)/Glossar
-  + ADR-Index; doc-first vor Code.
-- [ ] **Code:** Modul `pins` (Pin-Marker-Erkennung, Ziel-Span-Auflösung,
-  whitespace-Normalisierung, Hash + Vergleich, `link-stale`; kein zusätzlicher
-  Befund, wenn `links`/`anchors` schon `target-missing`/`anchor-missing` melden),
-  Tests (Happy/Reflow-Boundary/Negative/Modul-aus + Ziel-weg-Vorrang).
+  + ADR-Index; doc-first vor Code. Die `.a` legt **deterministisch** fest (R1):
+  (a) **Marker-Bindung** — der Pin bindet an den unmittelbar (nur Whitespace)
+  vorausgehenden Link derselben Zeile; nicht eindeutig zuordenbare Marker sind
+  inert; (b) **nicht auflösbares Ziel** — `pins` wertet nur auflösbare Links, der
+  strukturelle Befund bleibt bei `links`/`anchors` (kein eigener `pins`-Befund,
+  auch im pins-only-Lauf); (c) `pins` respektiert den Modul-Scope
+  ([`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope)).
+- [ ] **Code:** Modul `pins` (Marker-Erkennung mit deterministischer Bindung,
+  Ziel-Span-Auflösung, whitespace-Normalisierung, Hash + Vergleich, `link-stale`).
+  Tests: Happy/Reflow-Boundary/Negative/Modul-aus; **Marker-Ambiguität** (zwei
+  Links/Zeile, Marker zwischen Links, Marker auf Folgezeile); **Ziel-weg**
+  (pins-only → kein `link-stale`; mit `links` aktiv → `target-missing`, kein
+  Doppelbefund); **`pins.scope`** — Befunde nur im effektiven Modul-Scope.
 - [ ] `make gates` grün; unabhängiges Review; Closure (Move nach `done/` +
   Roadmap-Flip, [`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)).
 

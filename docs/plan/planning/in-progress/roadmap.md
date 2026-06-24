@@ -91,10 +91,10 @@ include-bares `d-check.mk` (version-gepinntes Image + `doc-check`-Target) aus;
 welle-27-rtm-trace (`slice-036`), welle-26-suggest-prefix (`slice-037`),
 welle-25-pr-ci-traceability (`slice-039`), welle-23-latest-tag (`slice-034`)
 und welle-24-kern-paketschnitt (`slice-035`).
-Letztes Release **v0.27.0** auf GHCR (2026-06-23, slice-047: --print-mk-Erweiterung),
+Letztes Release **v0.28.0** auf GHCR (2026-06-24, slice-048: Modul `versions`),
 Digest-Pin
-`ghcr.io/pt9912/d-check@sha256:2bc2598cbcd3622d98b33864a112fce02150b44776fc930fa404c98bd01668e1`;
-davor v0.26.0 (slice-046) und v0.25.0 (slice-045). `slice-035` ist als reiner
+`ghcr.io/pt9912/d-check@sha256:0bb84b529d3a65bdf9e849dd79cb8e9011bc388ecf9bffc5930f6c96bcc0cba8`;
+davor v0.27.0 (slice-047) und v0.26.0 (slice-046). `slice-035` ist als reiner
 Refactor noch in keinem Release.
 
 ## Nächste Wellen
