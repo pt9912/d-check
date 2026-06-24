@@ -37,6 +37,16 @@ func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg model.Config, mod
 	if err := ensureDiagramsDefinedInExist(fsys, cfg.Diagrams); err != nil {
 		return res, err
 	}
+	// Modul versions: aktuelle Version aus current-from auflösen
+	// (DC-FA-VER-001.a; fail-closed → Exit 2). Nur wenn aktiv + konfiguriert.
+	var versionsCurrent, versionsFromFile string
+	if active["versions"] && cfg.Versions.PinPattern != nil {
+		cur, from, verr := resolveCurrentVersion(fsys, cfg.Versions.EffectiveCurrentFrom())
+		if verr != nil {
+			return res, verr
+		}
+		versionsCurrent, versionsFromFile = cur, from
+	}
 
 	// Effektiver Scan-Scope pro Modul (DC-FA-CONF-002,
 	// spec/spezifikation.md §DC-FA-CONF-002.a): Module mit
@@ -51,9 +61,10 @@ func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg model.Config, mod
 
 	st := &runState{
 		fsys: fsys, cfg: cfg, active: active, inScope: inScope,
-		slugCache:   map[string]map[string]bool{},
-		statusCache: map[string]*string{},
-		diagCache:   map[string]map[string]bool{},
+		slugCache:       map[string]map[string]bool{},
+		statusCache:     map[string]*string{},
+		diagCache:       map[string]map[string]bool{},
+		versionsCurrent: versionsCurrent, versionsFromFile: versionsFromFile,
 	}
 	for _, file := range files {
 		if err := st.checkFile(file); err != nil {
@@ -81,6 +92,10 @@ type runState struct {
 	diagCache   map[string]map[string]bool
 	extRefs     []ExternalRef
 	findings    []model.Finding
+	// versionsCurrent/versionsFromFile: am Lauf-Start aufgelöste aktuelle
+	// Version + ihr Datei-Pfad (Modul versions, DC-FA-VER-001).
+	versionsCurrent  string
+	versionsFromFile string
 }
 
 // applies: Modul aktiv und Datei in dessen effektivem Scope
@@ -120,6 +135,9 @@ func (st *runState) checkFile(file string) error {
 	}
 	if st.applies("diagrams", file) {
 		st.findings = append(st.findings, CheckDiagrams(st.fsys, file, content, st.cfg.Diagrams, st.diagCache)...)
+	}
+	if st.applies("versions", file) {
+		st.findings = append(st.findings, CheckVersions(file, content, st.cfg.Versions, st.versionsCurrent, st.versionsFromFile)...)
 	}
 	if st.applies("external", file) {
 		st.extRefs = append(st.extRefs, CollectExternalURLs(file, lines)...)

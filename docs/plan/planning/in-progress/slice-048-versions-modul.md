@@ -73,10 +73,14 @@ sollen beim Release nicht mehr still veralten. Zwei sich ergänzende Mechaniken:
   (Bereichskürzel `VER` in §3, Versions-Bump 0.28.0 + §7-Historie) +
   [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md) (Fence-Öffnung,
   Status Proposed) + ADR-Index; doc-first vor Code.
-- [ ] **Schritt C (Code):** Modul `versions` (Pin-Muster, Wahrheitsquelle,
-  exempt-paths; Fence-Öffnung), `.d-check.yml`-Selbstkonfiguration; Konsum über
-  das bestehende `doc-check`-Target (**kein** neues `--print-mk`-Target); Tests
-  (Happy/Boundary/Negative + Modul-aus byte-identisch).
+- [x] **Schritt C (Code):** Modul `versions` (`rules/versions.go`: Fence-offener
+  `pin-pattern`-Scan, `current-from`-Auflösung via Heading-Section/HTML-Anker/
+  ganze Datei, `version-stale`, Ventile `exempt-paths`/`d-check:ignore`,
+  current-from-Datei selbst-ausgenommen, fail-closed), Config-Adapter +
+  rules-Registry verdrahtet, `.d-check.yml`-Selbstkonfiguration (Konsum über das
+  bestehende `doc-check`-Target, **kein** neues `--print-mk`-Target); 10 Tests
+  (Happy/Negative-in-Fence/Ventile/Modul-aus + current-from-Fälle). `make gates`
+  grün, Dogfooding live (~18 ghcr-Pins gegen `version.md#aktuell`).
 - [ ] `make gates` grün; unabhängiges Review; Closure (Move nach `done/` +
   Roadmap-Flip, [`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)).
 

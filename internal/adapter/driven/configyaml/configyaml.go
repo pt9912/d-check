@@ -70,6 +70,15 @@ type rawDiagramPattern struct {
 	DefinedIn string `yaml:"defined-in"`
 }
 
+// rawVersions trägt scope, das Pin-Muster, die Quelle der aktuellen Version
+// und das exempt-paths-Ventil des Moduls versions (DC-FA-VER-001).
+type rawVersions struct {
+	Scope       *rawScope `yaml:"scope"`
+	PinPattern  string    `yaml:"pin-pattern"`
+	CurrentFrom string    `yaml:"current-from"`
+	ExemptPaths []string  `yaml:"exempt-paths"`
+}
+
 type rawMatrix struct {
 	Scope   *rawScope `yaml:"scope"`
 	Classes []struct {
@@ -119,6 +128,7 @@ type raw struct {
 	External *rawExternal  `yaml:"external"`
 	Codepaths *rawCodepaths `yaml:"codepaths"`
 	Diagrams  *rawDiagrams  `yaml:"diagrams"`
+	Versions  *rawVersions  `yaml:"versions"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -159,6 +169,9 @@ func Decode(content []byte) (model.Config, error) {
 		return cfg, err
 	}
 	if err := applyDiagrams(r, &cfg); err != nil {
+		return cfg, err
+	}
+	if err := applyVersions(r, &cfg); err != nil {
 		return cfg, err
 	}
 	if err := applyScopes(r, &cfg); err != nil {
@@ -231,6 +244,29 @@ func applyDiagrams(r *raw, cfg *model.Config) error {
 	return nil
 }
 
+// applyVersions validiert und kompiliert das versions-Pin-Muster
+// (DC-FA-VER-001): Pflicht-pin-pattern (kompilierbar, nicht den Leerstring
+// matchend); current-from/exempt-paths werden im Kern beim Lauf-Start bzw. je
+// Datei ausgewertet.
+func applyVersions(r *raw, cfg *model.Config) error {
+	if r.Versions == nil {
+		return nil
+	}
+	v := r.Versions
+	if strings.TrimSpace(v.PinPattern) == "" {
+		return fmt.Errorf("%s: versions.pin-pattern fehlt", FileName)
+	}
+	re, err := regexp.Compile(v.PinPattern)
+	if err != nil {
+		return fmt.Errorf("%s: versions.pin-pattern: %v", FileName, err)
+	}
+	if re.MatchString("") {
+		return fmt.Errorf("%s: versions.pin-pattern matcht den Leerstring", FileName)
+	}
+	cfg.Versions = model.VersionsConfig{PinPattern: re, CurrentFrom: v.CurrentFrom, ExemptPaths: v.ExemptPaths}
+	return nil
+}
+
 // applyScopes übernimmt die modul-lokalen Scan-Scopes
 // (DC-FA-CONF-002): scope ersetzt den globalen Scan für genau dieses
 // Modul; roots ist Pflicht (keine stille Vererbung).
@@ -248,6 +284,7 @@ func applyScopes(r *raw, cfg *model.Config) error {
 		{"external", scopeOfExternal(r.External)},
 		{"codepaths", scopeOfCodepaths(r.Codepaths)},
 		{"diagrams", scopeOfDiagrams(r.Diagrams)},
+		{"versions", scopeOfVersions(r.Versions)},
 	}
 	for _, sc := range scopes {
 		if sc.scope == nil {
@@ -312,6 +349,13 @@ func scopeOfCodepaths(v *rawCodepaths) *rawScope {
 }
 
 func scopeOfDiagrams(v *rawDiagrams) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
+}
+
+func scopeOfVersions(v *rawVersions) *rawScope {
 	if v == nil {
 		return nil
 	}

@@ -1,0 +1,134 @@
+package rules
+
+import (
+	"fmt"
+	"regexp"
+	"strings"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
+	"github.com/pt9912/d-check/internal/hexagon/port/driven"
+)
+
+// versionRE erkennt einen Versionsstring (optionales führendes v) — daraus
+// wird die erwartete Version aus dem current-from-Span gezogen
+// (spec/spezifikation.md §DC-FA-VER-001.a Schritt 1).
+var versionRE = regexp.MustCompile(`v?\d+\.\d+\.\d+`)
+
+// CheckVersions ist das Regelmodul `versions` (DC-FA-VER-001): jeder
+// Versions-Pin (cfg.PinPattern) muss die aktuelle Version (current) tragen,
+// sonst Befund version-stale. Anders als die übrigen Module liest es die Pins
+// AUCH innerhalb von Fenced-Code (Pins leben in Kommando-Beispielen) — eine
+// gescopte Ausnahme von der Fence-Opazität, reiner Muster-Scan über die
+// Rohzeilen (kein Parser). Ventile wie ids/codepaths: exempt-paths (datei-weit)
+// und der Zeilen-Marker d-check:ignore; die current-from-Datei (fromFile) ist
+// selbst ausgenommen (ihr Verlauf listet bewusst alle Versionen). Ohne
+// PinPattern wirkungslos (byte-identisch, DC-QA-02).
+func CheckVersions(file string, content []byte, cfg model.VersionsConfig, current, fromFile string) []model.Finding {
+	if cfg.PinPattern == nil {
+		return nil
+	}
+	if file == fromFile || ignored(file, cfg.ExemptPaths) {
+		return nil
+	}
+	var findings []model.Finding
+	for i, raw := range strings.Split(string(content), "\n") {
+		if strings.Contains(raw, ignoreMarker) {
+			continue // d-check:ignore — Zeile von der versions-Prüfung frei
+		}
+		for _, m := range cfg.PinPattern.FindAllStringSubmatchIndex(raw, -1) {
+			ver := pinVersion(raw, m)
+			if ver == current {
+				continue
+			}
+			findings = append(findings, model.Finding{
+				File: file, Line: i + 1, Rule: "versions",
+				Target: ver, Reason: model.ReasonVersionStale,
+				Message: fmt.Sprintf("Versions-Pin trägt %s, erwartet %s (versions.current-from)", ver, current),
+			})
+		}
+	}
+	return findings
+}
+
+// pinVersion liefert die Version eines Pin-Treffers: Capture-Gruppe 1, falls
+// das Muster eine hat und sie matchte, sonst der ganze Treffer
+// (spec/spezifikation.md §DC-FA-VER-001.a Schritt 2).
+func pinVersion(raw string, m []int) string {
+	if len(m) >= 4 && m[2] >= 0 {
+		return raw[m[2]:m[3]]
+	}
+	return raw[m[0]:m[1]]
+}
+
+// resolveCurrentVersion liest die aktuelle Version aus der current-from-Quelle
+// (spec/spezifikation.md §DC-FA-VER-001.a Schritt 1): Datei links vom '#',
+// Anker rechts; der Span ist die Heading-Section des Ankers bzw. die ganze
+// Datei ohne Anker. Fehlt die Datei/der Anker oder trägt der Span keine
+// Version → Fehler (Exit 2, fail-closed). Liefert zusätzlich den aufgelösten
+// Datei-Pfad (Selbst-Ausnahme der current-from-Datei).
+func resolveCurrentVersion(fsys driven.Filesystem, currentFrom string) (version, fromFile string, err error) {
+	filePart, anchor := currentFrom, ""
+	if i := strings.IndexByte(currentFrom, '#'); i != -1 {
+		filePart, anchor = currentFrom[:i], currentFrom[i+1:]
+	}
+	rel, escaped := ResolveConfigPath(filePart)
+	if escaped {
+		return "", "", fmt.Errorf("versions.current-from verlässt die Repository-Wurzel: %s", currentFrom)
+	}
+	if rel == "" {
+		return "", "", fmt.Errorf("versions.current-from muss eine Datei benennen: %s", currentFrom)
+	}
+	content, err := fsys.ReadFile(rel)
+	if err != nil {
+		return "", "", fmt.Errorf("versions.current-from nicht lesbar (%s): %w", currentFrom, err)
+	}
+	span := string(content)
+	if anchor != "" {
+		s, ok := headingSection(content, anchor)
+		if !ok {
+			return "", "", fmt.Errorf("versions.current-from: Anker #%s nicht auflösbar in %s", anchor, filePart)
+		}
+		span = s
+	}
+	ver := versionRE.FindString(span)
+	if ver == "" {
+		return "", "", fmt.Errorf("versions.current-from: keine Version im adressierten Span von %s", currentFrom)
+	}
+	return ver, rel, nil
+}
+
+// headingSection liefert den Text der durch anchor adressierten Sektion: die
+// Heading-Section (Heading-Zeile bis zur nächsten gleich-/höherrangigen
+// Überschrift) eines Headings, dessen GitHub-Slug == anchor; sonst ab der
+// Zeile eines Inline-HTML-Ankers (id=/name=) bis zur nächsten Überschrift.
+func headingSection(content []byte, anchor string) (string, bool) {
+	lines := strings.Split(string(content), "\n")
+	headings := extractHeadingLines(content)
+	for idx, h := range headings {
+		if Slugify(h.text) == anchor {
+			end := len(lines)
+			for _, h2 := range headings[idx+1:] {
+				if h2.level <= h.level {
+					end = h2.line - 1
+					break
+				}
+			}
+			return strings.Join(lines[h.line-1:end], "\n"), true
+		}
+	}
+	htmlRE := regexp.MustCompile(`(?i)(?:id|name)\s*=\s*["']` + regexp.QuoteMeta(anchor) + `["']`)
+	for i, raw := range lines {
+		if htmlRE.MatchString(raw) {
+			start := i + 1
+			end := len(lines)
+			for _, h2 := range headings {
+				if h2.line > start {
+					end = h2.line - 1
+					break
+				}
+			}
+			return strings.Join(lines[start-1:end], "\n"), true
+		}
+	}
+	return "", false
+}

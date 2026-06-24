@@ -16,8 +16,9 @@ Release-Register [`version.md`](../../../../version.md#aktuell) (only-current-an
 veraltete Markdown-Link-Pins brechen beim Release via `anchors`-Gate) plus der
 Handbuch-Header-Pin als Link. **Spec gelandet**
 ([`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in)
-+ [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md), doc-first); offen:
-Modul `versions` (Code) + Release. Zuletzt abgeschlossen:
++ [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md), doc-first) **und das
+Modul `versions` (Code, Dogfooding live)**; offen: Release v0.28.0 + Review.
+Zuletzt abgeschlossen:
 welle-36-print-mk-erweiterung
 ([`slice-047`](../done/slice-047-print-mk-doctor-repair-help-digest.md) — CR an
 `--print-mk`: das Fragment bekommt `doc-doctor`/`doc-repair`/`doc-help` plus

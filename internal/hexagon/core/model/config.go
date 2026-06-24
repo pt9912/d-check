@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions"}
 }
 
 // defaultModules ist der Default-Modulsatz (DC-FA-CLI-002).
@@ -38,6 +38,8 @@ type Config struct {
 	Hostpaths HostpathsConfig
 	// Diagrams: Parameter des Moduls diagrams (DC-FA-DIAG-001).
 	Diagrams DiagramsConfig
+	// Versions: Parameter des Moduls versions (DC-FA-VER-001).
+	Versions VersionsConfig
 	// Scopes: modul-lokale Scan-Scopes (DC-FA-CONF-002); Schlüssel
 	// ist der Modulname, nil-Eintrag/fehlender Schlüssel = globaler
 	// Scope.
@@ -167,6 +169,27 @@ func (d DiagramsConfig) EffectiveFences() []string {
 		return []string{"mermaid"}
 	}
 	return d.Fences
+}
+
+// VersionsConfig sind die Parameter des Moduls versions (DC-FA-VER-001):
+// PinPattern erkennt einen Versions-Pin (Version in Capture-Gruppe 1, sonst
+// der ganze Treffer), CurrentFrom adressiert den Span mit der aktuellen
+// Version (Default `version.md#aktuell`), ExemptPaths nimmt ganze Dateien aus.
+// Ohne PinPattern ist das Modul wirkungslos (byte-identisch zum Lauf ohne das
+// Modul, DC-QA-02).
+type VersionsConfig struct {
+	PinPattern  *regexp.Regexp
+	CurrentFrom string
+	ExemptPaths []string
+}
+
+// EffectiveCurrentFrom liefert die Quelle der aktuellen Version (Default
+// `version.md#aktuell`, spec/spezifikation.md §DC-FA-VER-001.a).
+func (v VersionsConfig) EffectiveCurrentFrom() string {
+	if v.CurrentFrom == "" {
+		return "version.md#aktuell"
+	}
+	return v.CurrentFrom
 }
 
 // EffectiveModules wendet die Modul-Auflösung an
