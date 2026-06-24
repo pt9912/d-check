@@ -31,9 +31,8 @@ Beispiele zeigen die echte **Terminal-Ausgabe**.
 d-check prüft die **Markdown-Dokumentation** eines Repositorys auf kaputte
 Referenzen: lokale Links und Bildverweise, Heading-Anker, die Linkpflicht
 für Kennungen, die Referenzrichtung zwischen Dokumentklassen und weitere
-Doku-Hygiene. Es ersetzt eine Familie handgepflegter Einzelskripte durch
-ein Werkzeug — ein Image, ein Update-Pfad, repo-spezifisches Verhalten per
-Konfiguration.
+Doku-Hygiene. Ein Werkzeug für die gesamte Doku-Prüfung: ein Image, ein
+Update-Pfad, repo-spezifisches Verhalten per Konfiguration (`.d-check.yml`).
 
 d-check ist ein **Lese-Werkzeug**: Es verändert das geprüfte Repository
 nie und macht außer im optionalen Modul `external` keine
