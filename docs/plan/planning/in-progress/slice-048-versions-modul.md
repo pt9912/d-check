@@ -12,9 +12,9 @@ Lastenheft ein (Modul `versions`, Versions-Pin-Konsistenz) plus einen
 [ADR-0018](../../adr/0018-diagram-fence-ausnahme.md) für das opt-in Modul
 `diagrams`). Verteilung wie der Rest des Werkzeugs, nicht als kopiertes Skript
 ([`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Linie),
-Glue per
-[`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
-(`--print-mk`).
+konsumiert über das bestehende `doc-check`-Target
+([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)-`--print-mk`-Fragment)
+— **kein** neues `--print-mk`-Target.
 
 **Autor:** pt9912. **Datum:** 2026-06-24.
 
@@ -44,7 +44,10 @@ sollen beim Release nicht mehr still veralten. Zwei sich ergänzende Mechaniken:
   die Schwester-Repos per Datei-Kopie driften — genau die
   [`MR-003`](../../../../harness/conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh)→[`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Lektion
   (vendorter Sensor → durch Dogfooding ersetzt). Die Prüf-Logik lebt im
-  gepinnten Image, Config in `.d-check.yml`, Make-Glue per `--print-mk`.
+  gepinnten Image, Config in `.d-check.yml`; konsumiert über das bestehende
+  `doc-check`-Target — **kein** neues `--print-mk`-Target (das Modul läuft als
+  Teil von `doc-check`, sobald in `.d-check.yml` aktiviert; weitere
+  Fragment-Targets sind bewusst ausgegrenzt).
 - **Generisch, nicht d-check-spezifisch.** „Alle Versions-Pins == aktuelle
   Version" ist das Problem jedes Repos mit versioniertem Artefakt → eine
   generische Regel, kein Repo-Skript.
@@ -71,8 +74,9 @@ sollen beim Release nicht mehr still veralten. Zwei sich ergänzende Mechaniken:
   [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md) (Fence-Öffnung,
   Status Proposed) + ADR-Index; doc-first vor Code.
 - [ ] **Schritt C (Code):** Modul `versions` (Pin-Muster, Wahrheitsquelle,
-  exempt-paths; Fence-Öffnung), `.d-check.yml`-Selbstkonfiguration,
-  `--print-mk`-Glue, Tests (Happy/Boundary/Negative + Modul-aus byte-identisch).
+  exempt-paths; Fence-Öffnung), `.d-check.yml`-Selbstkonfiguration; Konsum über
+  das bestehende `doc-check`-Target (**kein** neues `--print-mk`-Target); Tests
+  (Happy/Boundary/Negative + Modul-aus byte-identisch).
 - [ ] `make gates` grün; unabhängiges Review; Closure (Move nach `done/` +
   Roadmap-Flip, [`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)).
 

@@ -73,8 +73,8 @@ verweist für das Konfigurations-Format auf
 
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
-`codepaths`, `spans`, `hostpaths`, `diagrams`. Ohne Konfiguration sind `links` und
-`anchors` aktiv. Module werden über
+`codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`. Ohne Konfiguration
+sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -997,7 +997,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -1011,7 +1011,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
-| 0.28.0 | 2026-06-24 | Neue Anforderung `DC-FA-VER-001` (Modul `versions`, opt-in): Versions-Pin-Konsistenz — alle Pins (`versions.pin-pattern`) müssen die aktuelle Version aus `versions.current-from` (Default `version.md#aktuell`) tragen, sonst `version-stale`; liest dafür Pins **auch in Fenced-Code** (gescopte Fence-Ausnahme), Ventile `exempt-paths`/`d-check:ignore` für historische Pins; opt-in/default-off (ohne Block byte-identisch, `DC-QA-02`), diagnose-only (Auto-Bump-`--repair` als Folge-CR an `DC-FA-CLI-008`). Bereichskürzel `VER` in §3 ergänzt. Anlass: Auftraggeber-Idee „nicht vergessen, die Version zu bumpen" + Spike (Meta-Gate-Skript wegen Copy-Drift über die Repo-Familie verworfen) | slice-048 |
+| 0.28.0 | 2026-06-24 | Neue Anforderung `DC-FA-VER-001` (Modul `versions`, opt-in): Versions-Pin-Konsistenz — alle Pins (`versions.pin-pattern`) müssen die aktuelle Version aus `versions.current-from` (Default `version.md#aktuell`) tragen, sonst `version-stale`; liest dafür Pins **auch in Fenced-Code** (gescopte Fence-Ausnahme), Ventile `exempt-paths`/`d-check:ignore` für historische Pins; opt-in/default-off (ohne Block byte-identisch, `DC-QA-02`), diagnose-only (Auto-Bump-`--repair` als Folge-CR an `DC-FA-CLI-008`). Bereichskürzel `VER` in §3, `versions` als gültiges Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-VER-001.a` + Grund-Code `version-stale` in der Spezifikation ergänzt. Anlass: Auftraggeber-Idee „nicht vergessen, die Version zu bumpen" + Spike (Meta-Gate-Skript wegen Copy-Drift über die Repo-Familie verworfen) | slice-048 |
 | 0.27.0 | 2026-06-23 | Change Request (Auftraggeber): `DC-FA-CLI-010` (`--print-mk`-Fragment) um drei Targets + eine Variable erweitert — `doc-doctor` (`--doctor`), `doc-repair` (`--repair`, Recipe-Echo unterdrückt für `git apply`-reine stdout) und `doc-help` (namespaced, listet die `doc-*`-Targets via `##`-Annotationen; **kein** `help` wegen Konsumenten-Kollision) sowie `DCHECK_DIGEST` (Digest-Override per `ifeq`, sticht den Tag). Alle Targets `##`-annotiert (greift das `help` des Konsumenten auf). Read-only/deterministisch unverändert. Anlass: Auftraggeber-Wunsch nach `doc-doctor`/`doc-repair`/Self-Doc/Digest-Komfort | slice-047 |
 | 0.26.0 | 2026-06-23 | Schärfung `DC-FA-CLI-006` (Auftraggeber): das opt-in-Modul `diagrams` zur Out-of-Scope-Liste der **nicht** auto-aktivierten situativen Module ergänzt (`external`/`spans`/`hostpaths`/`diagrams`); die `--suggest-config ai-harness[-init]`-Ausgabe nennt diese situativen Module stattdessen in einem **Kommentar mit Verweis auf `--print-config`** (Auffindbarkeit ohne Aktivieren eines inerten Moduls — `diagrams` braucht repo-spezifische `patterns`/`defined-in`, lässt sich nicht ableiten). Read-only/advisory unverändert. Anlass: Nutzer-Frage nach slice-045 (wird `diagrams` in `--suggest-config ai-harness` berücksichtigt?) | slice-046 |
 | 0.25.0 | 2026-06-23 | Change Request (Auftraggeber): neue Anforderung `DC-FA-DIAG-001` — opt-in Modul `diagrams` öffnet gezielt benannte Diagramm-Fences (Default `mermaid`) und prüft die darin gefundenen Kennungen auf **Existenz** in ihrer `defined-in`-Quelle (Befund `diagram-id-undefined`); reine Token-Extraktion ohne Mermaid-Parser, read-only/netzlos (`DC-QA-03`), deterministisch (`DC-QA-02`), Default aus (byte-identisch). Link-Policy gilt in Fences nicht (keine Markdown-Links möglich) → Existenz statt Linkpflicht. Bereich `DIAG` in der Schema-Konvention deklariert; Modul-Liste in `DC-FA-CLI-002` ergänzt. Anlass: belief-agent-Architektur — `ARC-NN`/`LH-*`-Kennungen in `mermaid`-Diagrammen entgehen heute allen Modulen, weil Fences opak sind | slice-045 |

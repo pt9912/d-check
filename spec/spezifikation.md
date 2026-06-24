@@ -777,6 +777,44 @@ die Fences für alle übrigen Module entfernt:
    möglich). Ohne `diagrams`-Block ist der Befundsatz byte-identisch
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
 
+### DC-FA-VER-001.a — Versions-Pin-Konsistenz (`versions`)
+
+Das Modul `versions`
+([`DC-FA-VER-001`](lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
+ist opt-in und arbeitet — wie `diagrams` — **gegenläufig** zur Vorverarbeitung
+([§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)),
+die Fences für alle übrigen Module entfernt:
+
+1. **Aktuelle Version auflösen (`current-from`).** Default `version.md#aktuell`:
+   Datei links vom `#`, Anker rechts. Der adressierte Span ist die
+   Heading-Section des Ankers (Heading bis zur nächsten gleich-/höherrangigen
+   Überschrift; bei einem HTML-Anker ab dessen Zeile) bzw. die ganze Datei ohne
+   Anker. Aus dem Span wird das **erste** Vorkommen eines Versions-Teilmusters
+   `v?\d+\.\d+\.\d+` als *erwartete* Version extrahiert. Existiert die Datei
+   nicht, löst der Anker nicht auf, oder trägt der Span keine erkennbare Version
+   ⇒ **Exit 2** ohne Prüfung (fail-closed, analog zur Target-Validierung von
+   `ids`/`diagrams`), keine stille Grün-Meldung.
+2. **Fence-Öffnung + Pin-Scan.** Ein eigener Fence-Automat liefert **alle**
+   Roh-Zeilen (1-basiert) — Prosa **und** Fenced-Code (Versions-Pins leben in
+   Kommando-Beispielen); die gemeinsame Vorverarbeitung der anderen Module bleibt
+   unverändert (keine `spans`-Interaktion). Je Zeile werden die Vorkommen des
+   konfigurierten `versions.pin-pattern` per Regex gesucht (Beispiel
+   `ghcr\.io/[^\s:]+:(v?\d+\.\d+\.\d+)`); die Version steht in Capture-Gruppe 1,
+   fehlt eine Gruppe, zählt der ganze Treffer.
+3. **Vergleich.** Weicht die im Pin gefundene Version von der erwarteten ab ⇒
+   Grund-Code `version-stale` (Datei, Zeile, `target` = gefundener Pin-Wert;
+   `message` nennt erwartet vs. gefunden). Gleichheit ⇒ kein Befund.
+4. **Ventile.** Wie `ids`/`codepaths`: die Glob-Liste `versions.exempt-paths`
+   (datei-weit — historische Pins in Planning-`done/`-Slices, `CHANGELOG.md`,
+   Lastenheft-Historie) und der Zeilen-Marker `d-check:ignore` nehmen Vorkommen
+   aus (nackt wie in Code, in Fence wie außerhalb). Die `current-from`-Datei ist
+   von der Pin-Prüfung **selbst ausgenommen** (ihr Verlauf listet bewusst alle
+   Versionen).
+5. **Read-only/Determinismus.** Ohne `versions`-Block ist der Befundsatz
+   byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)); es wird
+   nichts geschrieben ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+   `version-stale` ist diagnose-only — kein `--repair`-Hunk in dieser Version.
+
 ## 2. Datenstrukturen und Schemas
 
 ### Befund
@@ -987,6 +1025,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `span-unclosed` | spans | ungeschlossene Code-Span-Öffnung klebt an Nicht-Whitespace (Absatz-Parität gekippt) |
 | `span-nested-link` | spans | Link-Syntax im Linktext eines weiteren Links (rendert zerrissen) |
 | `external-redirects` | external | mehr als `REDIRECT_MAX` Redirects |
+| `version-stale` | versions | Versions-Pin weicht von der aktuellen Version (`versions.current-from`) ab |
 
 Nutzungs-/Umgebungsfehler (Exit 2) melden auf stderr mit Präfix
 `d-check: error:`; Konfigurationsfehler nennen Datei und Zeile.

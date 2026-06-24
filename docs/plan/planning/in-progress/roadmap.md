@@ -14,8 +14,10 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 Modul `versions` (Idee 1, Versions-Pin-Konsistenz). **Schritt A gelandet** — das
 Release-Register [`version.md`](../../../../version.md#aktuell) (only-current-anchor:
 veraltete Markdown-Link-Pins brechen beim Release via `anchors`-Gate) plus der
-Handbuch-Header-Pin als Link. Offen: VER-Anforderung + ADR (Fence-Öffnung) +
-Modul `versions`. Zuletzt abgeschlossen:
+Handbuch-Header-Pin als Link. **Spec gelandet**
+([`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in)
++ [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md), doc-first); offen:
+Modul `versions` (Code) + Release. Zuletzt abgeschlossen:
 welle-36-print-mk-erweiterung
 ([`slice-047`](../done/slice-047-print-mk-doctor-repair-help-digest.md) — CR an
 `--print-mk`: das Fragment bekommt `doc-doctor`/`doc-repair`/`doc-help` plus

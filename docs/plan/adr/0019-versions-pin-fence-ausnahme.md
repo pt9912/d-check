@@ -47,8 +47,9 @@ analog zu [ADR-0018](0018-diagram-fence-ausnahme.md), das Fences für `diagrams`
 öffnet, hier aber **breiter** (Muster-Scan über alle Fences statt nur gelistete
 Diagramm-Fences): deshalb diese eigene ADR. Kein Sprach-Parser, nur ein
 Muster-Scan. Verteilt wird die Regel wie der Rest des Werkzeugs — im gepinnten
-Image, konfiguriert über `.d-check.yml`, Make-Glue über das `--print-mk`-Fragment,
-nicht als kopiertes Skript.
+Image, konfiguriert über `.d-check.yml`, konsumiert über das bestehende
+`doc-check`-Target (das das `--print-mk`-Fragment bereits emittiert) — **kein**
+neues Fragment-Target, kein kopiertes Skript.
 
 ## Verglichene Alternativen
 
