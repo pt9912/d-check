@@ -33,10 +33,11 @@ sollen beim Release nicht mehr still veralten. Zwei sich ergänzende Mechaniken:
    (Anker wandert) und wird vom **bestehenden** `anchors`-Gate gefangen
    (Anker-Kaskade, kein neues Feature nötig). Der Handbuch-Header-Pin ist
    bereits als Markdown-Link auf `version.md#v0.27.0` ausgeführt.
-2. **Werkzeug-Regel (Schritt C — folgt):** ein opt-in Modul `versions`, das
-   alle Versions-Pins gegen die deklarierte aktuelle Version prüft (Befund bei
-   Abweichung) — auch in Fenced-Code (die ~18 `docker run`-Beispiele), die die
-   Vorverarbeitung sonst entfernt.
+2. **Werkzeug-Regel (Schritt C — erledigt, `43f9ed0`):** das opt-in Modul
+   `versions` prüft alle Versions-Pins gegen die deklarierte aktuelle Version
+   (Befund bei Abweichung) — auch in Fenced-Code (die ~18 `docker run`-Beispiele),
+   die die Vorverarbeitung sonst entfernt. In `.d-check.yml` aktiviert, Dogfooding
+   live.
 
 ## 2. Entscheidungen
 
@@ -90,8 +91,10 @@ sollen beim Release nicht mehr still veralten. Zwei sich ergänzende Mechaniken:
   gelistete Diagramm-Fences) — Begründung gehört in den ADR; opt-in default-off
   hält die [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)-Abwärtskompatibilität
   (ohne `versions`-Block byte-identisch).
-- **Bis zum Release** sind die Fenced-Command-Pins ungeschützt; nur die
-  Markdown-Link-Pins (Handbuch-Header) sichert die Anker-Kaskade schon jetzt.
+- **Release-Prep v0.28.0:** das aktive `versions`-Gate bewacht jetzt den eigenen
+  Release — beim Bump müssen `version.md#aktuell` **und** alle ~18 ghcr-Pins
+  gemeinsam gezogen werden, sonst `version-stale`. (Die Markdown-Link-Pins sichert
+  zusätzlich die Anker-Kaskade.)
 - **Historische Pins** (z. B. `:v0.1.0` in `done/`-Slices) dürfen nicht
   mitgebumpt werden → exempt-paths (wie `ids` `done/`/CHANGELOG ausnimmt).
 

@@ -18,7 +18,7 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, external
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, external
 # (external ist die einzige Netzwerk-Tür — strikt opt-in.)
 
 # --- ids: Linkpflicht für Kennungen ---
@@ -62,6 +62,12 @@ modules: [links, anchors]
 #   patterns:                      # wie ids; geprüft wird Existenz in defined-in (nicht Linkpflicht)
 #     - regex: 'ARC-\d{2}'
 #       defined-in: spec/architecture.md
+
+# --- versions: Versions-Pin-Konsistenz (alle Pins == aktuelle Version) ---
+# versions:
+#   pin-pattern: 'ghcr\.io/[^\s:]+:(v[0-9]+\.[0-9]+\.[0-9]+)'   # Version in Capture-Gruppe 1
+#   current-from: version.md#aktuell   # Datei#Anker (Span) mit der aktuellen Version
+#   exempt-paths: [CHANGELOG.md, "docs/plan/planning/done/**"]  # historische Pins (datei-weit)
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---
 # external:

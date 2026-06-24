@@ -246,3 +246,51 @@ func TestDecode_ModulScopeFehler(t *testing.T) {
 		}
 	}
 }
+
+// DC-FA-VER-001: Modul versions — Decoding des öffentlichen YAML-Vertrags
+// (pin-pattern, current-from, exempt-paths übernommen; current-from-Default).
+func TestDecode_Versions(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"versions:\n" +
+			"  pin-pattern: 'ghcr\\.io/[^\\s:]+:(v[0-9]+\\.[0-9]+\\.[0-9]+)'\n" +
+			"  current-from: version.md#aktuell\n" +
+			"  exempt-paths: [CHANGELOG.md, \"docs/plan/planning/done/**\"]\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.Versions.PinPattern == nil ||
+		cfg.Versions.CurrentFrom != "version.md#aktuell" ||
+		len(cfg.Versions.ExemptPaths) != 2 {
+		t.Fatalf("versions nicht übernommen: %+v", cfg.Versions)
+	}
+	// current-from optional → der Kern-Default greift (EffectiveCurrentFrom).
+	cfgD, err := configyaml.Decode([]byte("versions:\n  pin-pattern: 'x:(v\\d+\\.\\d+\\.\\d+)'\n"))
+	if err != nil || cfgD.Versions.EffectiveCurrentFrom() != "version.md#aktuell" {
+		t.Fatalf("current-from-Default nicht wirksam: %+v (%v)", cfgD.Versions, err)
+	}
+}
+
+// DC-FA-VER-001: pin-pattern ist Pflicht und muss ein gültiger, nicht den
+// Leerstring matchender Regex sein; unbekannte Schlüssel sind Fehler (Exit 2).
+func TestDecode_VersionsFehler(t *testing.T) {
+	for _, bad := range []string{
+		"versions:\n  current-from: version.md#aktuell\n", // pin-pattern fehlt
+		"versions:\n  pin-pattern: ''\n",                  // leer
+		"versions:\n  pin-pattern: '[unclosed'\n",         // Regex-Fehler
+		"versions:\n  pin-pattern: 'x*'\n",                // matcht den Leerstring
+		"versions:\n  pin-pattern: 'x'\n  unbekannt: 1\n", // unbekannter Schlüssel
+	} {
+		if _, err := configyaml.Decode([]byte(bad)); err == nil {
+			t.Fatalf("ungültige versions-Config akzeptiert: %q", bad)
+		}
+	}
+}
+
+// DC-FA-VER-001 / DC-FA-CONF-002: versions.scope wird übernommen.
+func TestDecode_VersionsScope(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"versions:\n  scope:\n    roots: [docs]\n  pin-pattern: 'x:(v\\d+\\.\\d+\\.\\d+)'\n"))
+	if err != nil || cfg.Scopes["versions"] == nil || len(cfg.Scopes["versions"].Roots) != 1 {
+		t.Fatalf("versions.scope nicht übernommen: %+v (%v)", cfg.Scopes, err)
+	}
+}

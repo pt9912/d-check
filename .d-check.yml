@@ -61,4 +61,6 @@ codepaths:
 versions:
   pin-pattern: 'ghcr\.io/[^\s:]+:(v[0-9]+\.[0-9]+\.[0-9]+)'
   current-from: version.md#aktuell
-  exempt-paths: [CHANGELOG.md, "docs/plan/planning/done/**", "docs/reviews/**"]
+  # historische Pins (DC-FA-VER-001): done/-Slices, Changelog, Lastenheft-
+  # Historie, Review-Reports bleiben unberührt.
+  exempt-paths: [CHANGELOG.md, "docs/plan/planning/done/**", spec/lastenheft.md, "docs/reviews/**"]
