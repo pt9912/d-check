@@ -135,7 +135,9 @@ Verteilung im gepinnten Image, Konsum über `doc-check`.
 - Dogfooding live: ~18 `ghcr`-Image-Pins gegen `version.md#aktuell` gateguarded;
   die Release-Prep v0.28.0 zog `version.md` + alle Pins gemeinsam — das Gate
   erzwang es (eat-your-own-dogfood).
-- Release **v0.28.0** auf GHCR: Tag-Push + Digest-Pin folgen (Closure vor Tag).
+- Release **v0.28.0** auf GHCR (Run `28095582612` grün in 2m21s, Tags
+  `v0.28.0`+`latest`), Digest-Pin
+  `ghcr.io/pt9912/d-check@sha256:0bb84b529d3a65bdf9e849dd79cb8e9011bc388ecf9bffc5930f6c96bcc0cba8`.
 
 **Lerneintrag.** Das `versions`-Gate bewacht ab sofort den eigenen Release: Bump =
 `version.md#aktuell` + `<a id>`-Anker verschieben + **alle** `ghcr`-Pins gemeinsam,
