@@ -4,6 +4,20 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.29.0] — 2026-06-24
+
+### Added
+
+- slice-049 — neues opt-in Regelmodul `pins` (11. Modul): Content-Pin gegen
+  inhaltlichen Drift. Ein Link mit Inline-Marker `<!-- dpin: sha256:<hex> -->`
+  (gebunden an den unmittelbar vorausgehenden Link derselben Zeile) wird gegen den
+  whitespace-normalisierten **rohen** Ziel-Span (ganze Datei oder Heading-Section,
+  inkl. Fenced-Code) gehasht; Drift → Befund `link-stale`. Nur auflösbare,
+  repo-interne Ziele (struktureller Befund bleibt `links`/`anchors`, kein
+  Doppelbefund); diagnose-only
+  ([`DC-FA-PIN-001`](spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in),
+  [ADR-0020](docs/plan/adr/0020-content-pin-fence-ausnahme.md), Lastenheft 0.29.0).
+
 ## [0.28.0] — 2026-06-24
 
 ### Added

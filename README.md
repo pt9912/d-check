@@ -3,10 +3,10 @@
 Doc-Referenz-Checker für Markdown-Dokumentation — deterministisch,
 seiteneffektfrei, ausgeliefert als Container-Image.
 
-**Status: released** — alle zehn Regelmodule (`links`, `anchors`, `ids`,
-`matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `external`)
-sind im GHCR-Image. Verbindlich ist das [Lastenheft](spec/lastenheft.md); die
-jeweils jüngsten Änderungen (zuletzt das opt-in-Modul `versions`) führt die
+**Status: released** — alle elf Regelmodule (`links`, `anchors`, `ids`,
+`matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
+`external`) sind im GHCR-Image. Verbindlich ist das [Lastenheft](spec/lastenheft.md);
+die jeweils jüngsten Änderungen (zuletzt das opt-in-Modul `pins`) führt die
 [CHANGELOG.md](CHANGELOG.md).
 
 ## Was ist d-check?
@@ -45,6 +45,10 @@ eigener Anforderung im [Lastenheft](spec/lastenheft.md):
   die aktuelle Version (aus `version.md#aktuell`) tragen, liest auch
   Fenced-Code, opt-in
   ([`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
+- `pins` — Content-Pin gegen inhaltlichen Drift: ein Link mit
+  `<!-- dpin: … -->` wird gegen den Hash seines Ziel-Spans geprüft (Befund
+  `link-stale` bei Drift), opt-in pro Link
+  ([`DC-FA-PIN-001`](spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
@@ -120,7 +124,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.28.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.29.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
