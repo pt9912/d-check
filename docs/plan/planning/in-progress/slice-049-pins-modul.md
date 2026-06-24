@@ -70,7 +70,7 @@ angewandt.
   strukturelle Befund bleibt bei `links`/`anchors` (kein eigener `pins`-Befund,
   auch im pins-only-Lauf); (c) `pins` respektiert den Modul-Scope
   ([`DC-FA-CONF-002`](../../../../spec/lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope)).
-- [ ] **Code:** Modul `pins` (Marker-Erkennung mit deterministischer Bindung,
+- [x] **Code:** Modul `pins` (Marker-Erkennung mit deterministischer Bindung,
   Ziel-Span-Auflösung, whitespace-Normalisierung, Hash + Vergleich, `link-stale`).
   Tests: Happy/Reflow-Boundary/Negative/Modul-aus; **Marker-Ambiguität** (zwei
   Links/Zeile, Marker zwischen Links, Marker auf Folgezeile); **Ziel-weg**

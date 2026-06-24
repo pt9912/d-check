@@ -119,6 +119,7 @@ type raw struct {
 	Links    *rawScopeOnly `yaml:"links"`
 	Anchors  *rawScopeOnly `yaml:"anchors"`
 	Spans    *rawScopeOnly `yaml:"spans"`
+	Pins     *rawScopeOnly `yaml:"pins"`
 	Hostpaths *struct {
 		Scope    *rawScope `yaml:"scope"`
 		Prefixes []string  `yaml:"prefixes"`
@@ -285,6 +286,7 @@ func applyScopes(r *raw, cfg *model.Config) error {
 		{"codepaths", scopeOfCodepaths(r.Codepaths)},
 		{"diagrams", scopeOfDiagrams(r.Diagrams)},
 		{"versions", scopeOfVersions(r.Versions)},
+		{"pins", scopeOf(r.Pins)},
 	}
 	for _, sc := range scopes {
 		if sc.scope == nil {

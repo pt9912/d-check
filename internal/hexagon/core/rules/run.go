@@ -64,6 +64,7 @@ func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg model.Config, mod
 		slugCache:       map[string]map[string]bool{},
 		statusCache:     map[string]*string{},
 		diagCache:       map[string]map[string]bool{},
+		spanCache:       map[string]string{},
 		versionsCurrent: versionsCurrent, versionsFromFile: versionsFromFile,
 	}
 	for _, file := range files {
@@ -90,6 +91,7 @@ type runState struct {
 	slugCache   map[string]map[string]bool
 	statusCache map[string]*string
 	diagCache   map[string]map[string]bool
+	spanCache   map[string]string
 	extRefs     []ExternalRef
 	findings    []model.Finding
 	// versionsCurrent/versionsFromFile: am Lauf-Start aufgelöste aktuelle
@@ -138,6 +140,9 @@ func (st *runState) checkFile(file string) error {
 	}
 	if st.applies("versions", file) {
 		st.findings = append(st.findings, CheckVersions(file, content, st.cfg.Versions, st.versionsCurrent, st.versionsFromFile)...)
+	}
+	if st.applies("pins", file) {
+		st.findings = append(st.findings, CheckPins(st.fsys, file, lines, st.spanCache)...)
 	}
 	if st.applies("external", file) {
 		st.extRefs = append(st.extRefs, CollectExternalURLs(file, lines)...)
