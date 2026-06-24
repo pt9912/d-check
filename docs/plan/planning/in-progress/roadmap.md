@@ -10,7 +10,12 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+**welle-38-pins** — [`slice-049`](slice-049-pins-modul.md):
+Modul `pins` (Idee 2, content-drift): ein optionaler Content-Pin (Hash des
+Ziel-Spans) erkennt, dass sich der **Inhalt** eines verlinkten Abschnitts seit
+dem Verlinken geändert hat (Befund `link-stale`) — über `target-missing`/
+`anchor-missing` hinaus. Spike erledigt (Kalibrier-Grundlage); doc-first als neue
+PIN-Anforderung + begleitender ADR (Fence-Öffnung). Zuletzt abgeschlossen:
 welle-37-versions ([`slice-048`](../done/slice-048-versions-modul.md) — opt-in
 Modul `versions` (10. Modul): gepinnte `ghcr`-Image-Verweise müssen die aktuelle
 Version aus `version.md#aktuell` tragen, sonst `version-stale`; liest Pins auch
