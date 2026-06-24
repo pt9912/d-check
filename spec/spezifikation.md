@@ -834,9 +834,10 @@ die Fences sonst entfernt:
    prüfenden Datei, repo-intern). Ohne Anker: ganze Ziel-Datei. Mit Anker: die
    Heading-Section (Heading mit passendem Slug bis zur nächsten gleich-/
    höherrangigen Überschrift; HTML-Anker ab dessen Zeile). Lässt sich Datei/Anker
-   nicht auflösen oder liegt das Ziel außerhalb des gescannten Baums ⇒ **kein**
-   `pins`-Befund (struktureller Befund bleibt `links`/`anchors`; auch im
-   pins-only-Lauf kein Ersatz-Befund, kein Doppelbefund).
+   nicht auflösen oder liegt das Ziel außerhalb der **Repo-Wurzel** (repo-escape)
+   ⇒ **kein** `pins`-Befund (struktureller Befund bleibt `links`/`anchors`; auch im
+   pins-only-Lauf kein Ersatz-Befund, kein Doppelbefund). Ein repo-internes Ziel
+   wird **unabhängig vom `pins`-Scope** gehasht (s. Punkt 5).
 3. **Normalisierung + Hash.** Der Span wird **roh** gelesen (inkl. Fenced-Code —
    anders als die übrige Vorverarbeitung), dann normalisiert: alle
    Whitespace-Folgen (inkl. Zeilenumbrüche) zu **einem** Leerzeichen kollabiert,
@@ -847,8 +848,10 @@ die Fences sonst entfernt:
    ist menschliche Annahme der Drift).
 5. **Scope/Determinismus.** `pins` respektiert den Modul-Scope
    ([§DC-FA-CONF-002.a](#dc-fa-conf-002a--effektiver-scan-scope-pro-modul)) wie
-   jedes Modul (die gepinnten Quell-Dateien folgen dem effektiven Scope; die
-   Ziel-Datei wird unabhängig davon zum Hashen gelesen). Ohne `pins` ist der
+   jedes Modul: **nur die gepinnten Quell-Dateien** folgen dem effektiven Scope.
+   Die **Ziel-Datei** wird davon unabhängig zum Hashen gelesen — sie muss nur
+   repo-intern und auflösbar sein (der Scope begrenzt nicht, *welche* Ziele
+   gehasht werden). Ohne `pins` ist der
    Befundsatz byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus));
    nichts wird geschrieben
    ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
@@ -861,7 +864,7 @@ die Fences sonst entfernt:
 |---|---|---|
 | `file` | string | Pfad relativ zur Repo-Wurzel, `/`-getrennt |
 | `line` | integer ≥ 1 | Zeile des Vorkommens |
-| `rule` | string | Regelmodul (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`) |
+| `rule` | string | Regelmodul-Name; gültige Werte siehe [`DC-FA-CLI-002`](lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) |
 | `target` | string | geprüftes Ziel (Linkziel, Kennung, URL) |
 | `reason` | string | Grund-Code (siehe [§4](#4-grund--und-fehler-codes)) |
 | `message` | string | menschenlesbare Erläuterung (nicht stabilitätsgarantiert) |
@@ -1119,3 +1122,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-19 | §[`DC-FA-CLI-007.a`](spezifikation.md#dc-fa-cli-007a--diagnose-modus) Schritt 6 + [JSON-Diagnose](spezifikation.md#json-diagnose---doctor---json)-Schema (§2) ergänzt: `--doctor --json` rendert dieselbe Diagnose maschinenlesbar — `findings` zusätzlich mit `reasonText` und `fixCandidate` (`{original,replacement,note}` oder explizit `null`), `file`-Gruppierung; nur noch `--repair`+`--json` und `--doctor`+`--repair` sind Nutzungsfehler | slice-029 |
 | 2026-06-22 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) + §2-Schema ergänzt: Datei-Ventil `codepaths.exempt-paths` (Glob wie `scan.ignore`) nimmt ganze Dateien von der `codepaths`-Prüfung aus — datei-weit, unabhängig von `codepaths.roots`; Vorbild das gleichnamige ids-Ventil. Abwärtskompatibel: ohne gesetztes `exempt-paths` byte-identisch | slice-043 |
 | 2026-06-24 | §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) + §2-Schema (`versions.pin-pattern`/`versions.current-from`/`versions.exempt-paths`) + Grund-Code `version-stale` ergänzt: opt-in Modul `versions` prüft Versions-Pins gegen die aus `versions.current-from` (Default `version.md#aktuell`) gelesene aktuelle Version; liest Pins **auch in Fences** (gescopte Ausnahme, Muster-Scan ohne Parser), Ventile `exempt-paths`/`d-check:ignore`, fail-closed bei unauflösbarer Quelle, diagnose-only (Auto-Bump-`--repair` als Folge-CR). Default-aus byte-identisch | slice-048 |
+| 2026-06-24 | §[`DC-FA-PIN-001.a`](spezifikation.md#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins) + Grund-Code `link-stale` (§4) ergänzt: opt-in Modul `pins` hasst den whitespace-normalisierten **rohen** Ziel-Span (Datei/Heading-Section inkl. Fenced-Code) eines gepinnten Links (`<!-- dpin: sha256:… -->`, gebunden an den unmittelbar vorausgehenden Link derselben Zeile, sonst inert) und meldet `link-stale` bei Drift; nur auflösbare repo-interne Ziele (struktureller Befund bleibt `links`/`anchors`, kein Doppelbefund), Scope-treu (nur Quell-Dateien), diagnose-only; §2-`rule`-Feld zeigt jetzt auf die Modulliste statt einer Enum | slice-049 |

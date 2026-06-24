@@ -931,7 +931,7 @@ ableitbarer Fix; ein `--bless` wäre eine spätere, eigene Anforderung (berührt
 - **Happy Path:** Given `pins` aktiv und `[…](ziel.md#abschnitt) <!-- dpin: sha256:<H> -->`, dessen normalisierter Ziel-Span `<H>` ergibt, when `d-check` läuft, then kein Befund, Exit 0; ein read-only gemountetes Repository genügt.
 - **Boundary (Reflow):** Given korrekter Pin und eine **nur**-Whitespace/Umbruch-Änderung am Ziel-Span (Wort-Inhalt identisch), when `d-check` läuft, then **kein** Befund (die Normalisierung absorbiert Reflow).
 - **Negative:** Given Pin und eine **inhaltliche** Änderung am Ziel-Span, when `d-check` läuft, then ein Befund `link-stale` (Datei:Zeile des Links, erwarteter vs. errechneter Hash gekürzt), Exit 1.
-- **Boundary (Marker-Bindung):** Given zwei Links in einer Zeile mit Pin nach dem zweiten, einen Marker zwischen den Links und einen Marker auf der Folgezeile, when `d-check` läuft, then prüft `pins` genau den zweiten Link, und die nicht unmittelbar gebundenen Marker sind inert (kein Befund daraus).
+- **Boundary (Marker-Bindung):** Given `[a](a.md) <!-- dpin:HA --> [b](b.md) <!-- dpin:HB -->` (zwei Links, je ein unmittelbar — nur Whitespace — folgender Marker) und zusätzlich einen Marker allein auf der Folgezeile, when `d-check` läuft, then prüft `pins` **beide** Links (HA bindet an `a`, HB an `b`); der Folgezeilen-Marker folgt keinem Link unmittelbar und ist inert (kein Befund daraus).
 - **Boundary (Ziel weg):** Given ein gepinnter Link mit fehlender Ziel-Datei oder fehlendem Anker, when `d-check --enable pins` (auch ohne `links`/`anchors`) läuft, then **kein** `link-stale`; mit aktivem `links`/`anchors` erscheint `target-missing`/`anchor-missing` **einmal** (kein Doppelbefund durch `pins`).
 - **Modul-aus:** Given **kein** aktives `pins`, when `d-check` läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 
@@ -939,8 +939,10 @@ ableitbarer Fix; ein `--bless` wäre eine spätere, eigene Anforderung (berührt
 (unentscheidbar); Pinnen/Re-Pinnen durch das Werkzeug selbst (read-only; ein
 `--bless`-Emissionsmodus wäre eine eigene Anforderung, berührt
 [`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)); **Absatz-Ebene** als Span
-(in Markdown nicht stabil adressierbar); Pins auf Ziele **außerhalb** des
-gescannten Baums (nicht hashbar, [`DC-QA-02`](#dc-qa-02--determinismus));
+(in Markdown nicht stabil adressierbar); Pins auf Ziele **außerhalb der
+Repo-Wurzel** (repo-escape, nicht hashbar — der `pins`-Scope begrenzt nur die
+gescannten Quell-Dateien, nicht das Hashen repo-interner Ziele;
+[`DC-QA-02`](#dc-qa-02--determinismus));
 Default-on oder eine Pflicht zu pinnen; mehrere Hash-Algorithmen (nur `sha256`).
 
 ---
