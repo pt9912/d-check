@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.27.0
+**Version:** 0.28.0
 
 **Status:** Draft
 
@@ -43,8 +43,8 @@ statt per Code-Kopie.
 > (Anker-Modul), `ID` (ID-Linkpflicht-Modul), `MTX`
 > (Referenzmatrix-Modul), `EXT` (externe Links), `CODE`
 > (Inline-Code-Pfade), `SPAN` (Markdown-Span-Artefakte), `HOST`
-> (Host-Pfad-Hygiene), `DIAG` (Diagramm-Kennungen), `CONF`
-> (Konfiguration), `DIST` (Distribution).
+> (Host-Pfad-Hygiene), `DIAG` (Diagramm-Kennungen), `VER`
+> (Versions-Pin-Konsistenz), `CONF` (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -826,6 +826,69 @@ opt-in-Module ([`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl)) ein.
 
 ---
 
+### DC-FA-VER-001 — Versions-Pin-Konsistenz (Modul `versions`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `versions` prüft `d-check`,
+dass alle **Versions-Pins** im Repo mit der **deklarierten aktuellen Version**
+übereinstimmen. Ein Versions-Pin ist ein Vorkommen des konfigurierten Musters
+`versions.pin-pattern` (z. B. `ghcr.io/…/d-check:v\d+\.\d+\.\d+`); die aktuelle
+Version stammt aus `versions.current-from` (Default `version.md#aktuell` — der
+Versionsstring im so adressierten Span). Weicht ein Pin von der aktuellen
+Version ab → Befund `version-stale` (Datei:Zeile, gefundene vs. erwartete
+Version).
+
+Anders als die übrigen Module liest `versions` die Pins **auch innerhalb von
+Fenced-Code-Blöcken** — Versions-Pins leben fast ausschließlich in
+Kommando-Beispielen. Das ist eine bewusste, auf das `pin-pattern` gescopte
+Ausnahme von der Fence-Opazität der Vorverarbeitung (kein Sprach-Parser, reiner
+Muster-Scan). Zwei Ventile wie bei
+[`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids): die
+Glob-Liste `exempt-paths` (historische Pins in Planning-`done/`-Slices,
+`CHANGELOG.md` und der Lastenheft-Historie bleiben unberührt) und der
+Zeilen-Marker `d-check:ignore`.
+
+Strikt opt-in (Default aus): ohne `versions`-Block ist der Befundsatz
+byte-identisch zum Lauf ohne das Modul
+([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird nichts geschrieben
+([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+**Fail-closed:** ist `versions.current-from` nicht auflösbar oder trägt der
+adressierte Span keine erkennbare Version, bricht der Lauf mit einem
+Nutzungsfehler (Exit 2, vgl.
+[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) statt einer stillen
+Grün-Meldung. `version-stale` ist in dieser Version **diagnose-only** — es
+liefert keinen `--repair`-Hunk; der konservative Auto-Bump (Pin → aktuelle
+Version, deterministisch ableitbar) folgt als eigener Change Request an
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `versions` aktiv (`pin-pattern` gesetzt, `current-from`
+  nennt `v0.27.0`) und alle Pins zeigen `v0.27.0`, when `d-check` läuft, then
+  kein Befund, Exit 0; ein read-only gemountetes Repository genügt.
+- **Negative:** Given ein Pin `…:v0.26.0` (auch innerhalb eines
+  Fenced-Code-Blocks), während `current-from` `v0.27.0` nennt, außerhalb
+  `exempt-paths` und ohne `d-check:ignore`, when `d-check` läuft, then ein
+  Befund `version-stale` (Datei:Zeile, gefunden `v0.26.0`, erwartet `v0.27.0`),
+  Exit 1.
+- **Boundary (Ventile):** Given ein Pin `…:v0.1.0` in einer `exempt-paths`-Datei
+  (z. B. ein Planning-`done/`-Slice) und ein zweiter Pin auf einer Zeile mit
+  `d-check:ignore`, when `d-check` läuft, then kein Befund für beide.
+- **Modul-aus:** Given **kein** `versions`-Block in der Konfiguration, when
+  `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne das
+  Modul ([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird nichts geschrieben
+  ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Out-of-Scope:** `--repair`/Auto-Bump von `version-stale` in dieser Version
+(deterministisch ableitbar, aber Folge-CR an
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)); Ableiten der aktuellen
+Version aus Git-Tags (außerhalb des read-only gemounteten Baums, bräche
+[`DC-QA-02`](#dc-qa-02--determinismus)); mehrere unabhängige Versions-Reihen pro
+Repo in der ersten Fassung (genau ein `pin-pattern` und ein `current-from`);
+semantische Versions-Ordnung (nur Gleichheit, keine „neuer als"-Prüfung);
+Schreiben oder Anlegen des Registers durch das Werkzeug selbst (read-only).
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -948,6 +1011,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.28.0 | 2026-06-24 | Neue Anforderung `DC-FA-VER-001` (Modul `versions`, opt-in): Versions-Pin-Konsistenz — alle Pins (`versions.pin-pattern`) müssen die aktuelle Version aus `versions.current-from` (Default `version.md#aktuell`) tragen, sonst `version-stale`; liest dafür Pins **auch in Fenced-Code** (gescopte Fence-Ausnahme), Ventile `exempt-paths`/`d-check:ignore` für historische Pins; opt-in/default-off (ohne Block byte-identisch, `DC-QA-02`), diagnose-only (Auto-Bump-`--repair` als Folge-CR an `DC-FA-CLI-008`). Bereichskürzel `VER` in §3 ergänzt. Anlass: Auftraggeber-Idee „nicht vergessen, die Version zu bumpen" + Spike (Meta-Gate-Skript wegen Copy-Drift über die Repo-Familie verworfen) | slice-048 |
 | 0.27.0 | 2026-06-23 | Change Request (Auftraggeber): `DC-FA-CLI-010` (`--print-mk`-Fragment) um drei Targets + eine Variable erweitert — `doc-doctor` (`--doctor`), `doc-repair` (`--repair`, Recipe-Echo unterdrückt für `git apply`-reine stdout) und `doc-help` (namespaced, listet die `doc-*`-Targets via `##`-Annotationen; **kein** `help` wegen Konsumenten-Kollision) sowie `DCHECK_DIGEST` (Digest-Override per `ifeq`, sticht den Tag). Alle Targets `##`-annotiert (greift das `help` des Konsumenten auf). Read-only/deterministisch unverändert. Anlass: Auftraggeber-Wunsch nach `doc-doctor`/`doc-repair`/Self-Doc/Digest-Komfort | slice-047 |
 | 0.26.0 | 2026-06-23 | Schärfung `DC-FA-CLI-006` (Auftraggeber): das opt-in-Modul `diagrams` zur Out-of-Scope-Liste der **nicht** auto-aktivierten situativen Module ergänzt (`external`/`spans`/`hostpaths`/`diagrams`); die `--suggest-config ai-harness[-init]`-Ausgabe nennt diese situativen Module stattdessen in einem **Kommentar mit Verweis auf `--print-config`** (Auffindbarkeit ohne Aktivieren eines inerten Moduls — `diagrams` braucht repo-spezifische `patterns`/`defined-in`, lässt sich nicht ableiten). Read-only/advisory unverändert. Anlass: Nutzer-Frage nach slice-045 (wird `diagrams` in `--suggest-config ai-harness` berücksichtigt?) | slice-046 |
 | 0.25.0 | 2026-06-23 | Change Request (Auftraggeber): neue Anforderung `DC-FA-DIAG-001` — opt-in Modul `diagrams` öffnet gezielt benannte Diagramm-Fences (Default `mermaid`) und prüft die darin gefundenen Kennungen auf **Existenz** in ihrer `defined-in`-Quelle (Befund `diagram-id-undefined`); reine Token-Extraktion ohne Mermaid-Parser, read-only/netzlos (`DC-QA-03`), deterministisch (`DC-QA-02`), Default aus (byte-identisch). Link-Policy gilt in Fences nicht (keine Markdown-Links möglich) → Existenz statt Linkpflicht. Bereich `DIAG` in der Schema-Konvention deklariert; Modul-Liste in `DC-FA-CLI-002` ergänzt. Anlass: belief-agent-Architektur — `ARC-NN`/`LH-*`-Kennungen in `mermaid`-Diagrammen entgehen heute allen Modulen, weil Fences opak sind | slice-045 |

@@ -65,9 +65,11 @@ sollen beim Release nicht mehr still veralten. Zwei sich ergänzende Mechaniken:
   (Register, only-current-anchor, `## Aktuell` + `## Verlauf` der 22 Tags) +
   Handbuch-Header-Pin als Markdown-Link; `make gates` grün (Anker-Kaskade aktiv
   via bestehendes `anchors`-Gate).
-- [ ] **Schritt C (Spec):** neue VER-Anforderung im Lastenheft (neues
-  Bereichskürzel `VER` in §3, Versions-Bump + §7-Historie) + begleitender ADR
-  (Fence-Öffnung) + ADR-Index; doc-first vor Code.
+- [x] **Schritt C (Spec):**
+  [`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in)
+  (Bereichskürzel `VER` in §3, Versions-Bump 0.28.0 + §7-Historie) +
+  [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md) (Fence-Öffnung,
+  Status Proposed) + ADR-Index; doc-first vor Code.
 - [ ] **Schritt C (Code):** Modul `versions` (Pin-Muster, Wahrheitsquelle,
   exempt-paths; Fence-Öffnung), `.d-check.yml`-Selbstkonfiguration,
   `--print-mk`-Glue, Tests (Happy/Boundary/Negative + Modul-aus byte-identisch).
