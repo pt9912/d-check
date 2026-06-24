@@ -10,15 +10,17 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-37-versions** — [`slice-048`](slice-048-versions-modul.md):
-Modul `versions` (Idee 1, Versions-Pin-Konsistenz). **Schritt A gelandet** — das
-Release-Register [`version.md`](../../../../version.md#aktuell) (only-current-anchor:
-veraltete Markdown-Link-Pins brechen beim Release via `anchors`-Gate) plus der
-Handbuch-Header-Pin als Link. **Spec gelandet**
-([`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in)
-+ [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md), doc-first) **und das
-Modul `versions` (Code, Dogfooding live)**; offen: Release v0.28.0 + Review.
-Zuletzt abgeschlossen:
+**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+welle-37-versions ([`slice-048`](../done/slice-048-versions-modul.md) — opt-in
+Modul `versions` (10. Modul): gepinnte `ghcr`-Image-Verweise müssen die aktuelle
+Version aus `version.md#aktuell` tragen, sonst `version-stale`; liest Pins auch
+in Fenced-Code (gescopte Ausnahme), Ventile `exempt-paths`/`d-check:ignore`,
+fail-closed, diagnose-only
+([`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in),
+[ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md), Lastenheft 0.28.0);
+Plan-Review R1→R3 ACCEPT + Impl-Review (4 Befunde behoben); `make gates` grün
+(Coverage 93,90 %); **Release v0.28.0: Tag-Push ausstehend** (Digest folgt);
+[Closure](../done/slice-048-versions-modul.md#7-closure-notiz-nach-done)). Davor
 welle-36-print-mk-erweiterung
 ([`slice-047`](../done/slice-047-print-mk-doctor-repair-help-digest.md) — CR an
 `--print-mk`: das Fragment bekommt `doc-doctor`/`doc-repair`/`doc-help` plus
@@ -160,6 +162,7 @@ flowchart LR
 | welle-34-diagram-ids | 2026-06-23 | [slice-045 §7](../done/slice-045-diagram-ids.md#7-closure-notiz-nach-done); opt-in Modul `diagrams` öffnet gezielt benannte Diagramm-Fences (Default `mermaid`) und prüft die darin gefundenen Kennungen auf **Existenz** in ihrer `defined-in`-Quelle (Befund `diagram-id-undefined`); Existenz statt Link-Policy (in Fences kein Markdown-Link), reine Token-Extraktion ohne Mermaid-Parser, scoped Fence-Ausnahme ([`DC-FA-DIAG-001`](../../../../spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in), [ADR-0018](../../adr/0018-diagram-fence-ausnahme.md), Lastenheft 0.25.0); doc-first-Fundament R1 (NACHBESSERN→behoben)→R2 ACCEPT + Implementierungs-R1 ACCEPT (F-4-Tests ergänzt); `make gates` grün; Minor-Release **v0.25.0** auf GHCR (Run `28031261024` grün in 2m20s, Tags `v0.25.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:a2c5428214f1b3c616e0ba2e8d25bf77e4b11bf74470f10c1cd65d748667eb0f` |
 | welle-35-suggest-opt-in-hinweis | 2026-06-23 | [slice-046 §7](../done/slice-046-suggest-config-opt-in-hinweis.md#7-closure-notiz-nach-done); Schärfung [`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten): `--suggest-config ai-harness[-init]` nennt die nicht aktivierten situativen opt-in-Module (`external`/`spans`/`hostpaths`/`diagrams`) in einem Kommentar mit Verweis auf `--print-config` (Auffindbarkeit ohne Aktivieren eines inerten Moduls; `diagrams` nicht ableitbar — braucht repo-spezifische `patterns`/`defined-in`); Lastenheft 0.26.0, kein ADR; unabhängiges R1 ACCEPT (F-1 LOW `external` ergänzt); `make gates` grün; Minor-Release **v0.26.0** auf GHCR (Run `28040897654` grün, Tags `v0.26.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:19d53a26d8d82a919015a8befe24f852bd61f2ddea58bd29e3f4cf944a8403f3` |
 | welle-36-print-mk-erweiterung | 2026-06-23 | [slice-047 §7](../done/slice-047-print-mk-doctor-repair-help-digest.md#7-closure-notiz-nach-done); CR [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben): `--print-mk`-Fragment um `doc-doctor` (`--doctor`), `doc-repair` (`--repair`, `git apply`-rein via `@`), `doc-help` (namespaced Self-Doku) + `DCHECK_DIGEST` (Digest-Override per `ifeq`, sticht den Tag) erweitert; alle Targets `##`-annotiert; Lastenheft 0.27.0, kein ADR; unabhängiges R1 ACCEPT (3 INFO; Fragment real `make -n`-validiert, Digest-Override belegt); `make gates` grün; Minor-Release **v0.27.0** auf GHCR (Run `28047075398` grün, Tags `v0.27.0`+`latest`), Digest-Pin `ghcr.io/pt9912/d-check@sha256:2bc2598cbcd3622d98b33864a112fce02150b44776fc930fa404c98bd01668e1` |
+| welle-37-versions | 2026-06-24 | [slice-048 §7](../done/slice-048-versions-modul.md#7-closure-notiz-nach-done); neues opt-in Modul `versions` (10. Modul): Versions-Pin-Konsistenz — gepinnte `ghcr`-Image-Verweise gegen die aktuelle Version aus `version.md#aktuell`, Befund `version-stale`, liest auch Fenced-Code (gescopte Fence-Ausnahme), Ventile `exempt-paths`/`d-check:ignore`, fail-closed, diagnose-only ([`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in), [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md), Lastenheft 0.28.0); Doku-Boden `version.md` (only-current-anchor) + Release-Prep (alle ghcr-Pins → v0.28.0); Plan-Review R1→R3 ACCEPT + Impl-Review (4 Befunde); `make gates` grün (Coverage 93,90 %); Release **v0.28.0** Tag-Push + Digest ausstehend |
 
 ## Historische Trigger-Verschiebungen
 
