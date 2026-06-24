@@ -3,10 +3,10 @@
 Doc-Referenz-Checker für Markdown-Dokumentation — deterministisch,
 seiteneffektfrei, ausgeliefert als Container-Image.
 
-**Status: released** — alle neun Regelmodule (`links`, `anchors`, `ids`,
-`matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `external`) sind im
-GHCR-Image. Verbindlich ist das [Lastenheft](spec/lastenheft.md); die jeweils
-jüngsten Änderungen (zuletzt das opt-in-Modul `diagrams`) führt die
+**Status: released** — alle zehn Regelmodule (`links`, `anchors`, `ids`,
+`matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `external`)
+sind im GHCR-Image. Verbindlich ist das [Lastenheft](spec/lastenheft.md); die
+jeweils jüngsten Änderungen (zuletzt das opt-in-Modul `versions`) führt die
 [CHANGELOG.md](CHANGELOG.md).
 
 ## Was ist d-check?
@@ -41,6 +41,10 @@ eigener Anforderung im [Lastenheft](spec/lastenheft.md):
   im Diagramm gefundene Kennung muss in ihrer `defined-in`-Quelle definiert
   sein, opt-in
   ([`DC-FA-DIAG-001`](spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in))
+- `versions` — Versions-Pin-Konsistenz: gepinnte `ghcr`-Image-Verweise müssen
+  die aktuelle Version (aus `version.md#aktuell`) tragen, liest auch
+  Fenced-Code, opt-in
+  ([`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
@@ -103,8 +107,8 @@ Lastenhefts, und beide werden gemessen, nicht behauptet:
   ([`DC-FA-CONF-001`](spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
 - **Dogfooding:** d-check validiert die eigene Doku bei jedem
   Gate-Lauf — mit der [Selbstkonfiguration](.d-check.yml) im
-  Vollausbau (sieben Module inkl. Referenzmatrix, Span-Artefakten
-  und Host-Pfad-Hygiene).
+  Vollausbau (acht Module inkl. Referenzmatrix, Span-Artefakten,
+  Host-Pfad-Hygiene und Versions-Pin-Konsistenz).
 - **Container nativ-identisch:** Befund-Ausgabe und Exit-Code des
   Images sind byte-identisch zur nativen Ausführung, automatisiert
   getestet ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image));
@@ -116,7 +120,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.27.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.28.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

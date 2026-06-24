@@ -4,6 +4,25 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.28.0] — 2026-06-24
+
+### Added
+
+- slice-048 — neues opt-in Regelmodul `versions` (zehntes Modul): prüft, dass alle
+  gepinnten `ghcr`-Image-Verweise die aktuelle Version aus `version.md#aktuell`
+  tragen, sonst Befund `version-stale`; liest die Pins **auch in Fenced-Code**
+  (gescopte Fence-Ausnahme), Ventile `exempt-paths`/`d-check:ignore`, fail-closed
+  bei unauflösbarer Quelle, diagnose-only
+  ([`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in),
+  [ADR-0019](docs/plan/adr/0019-versions-pin-fence-ausnahme.md), Lastenheft 0.28.0).
+- Release-Register `version.md` (only-current-anchor): kanonische Quelle der
+  aktuellen Version; `--print-config` führt den `versions:`-Block.
+
+### Changed
+
+- Dogfooding: `.d-check.yml` aktiviert `versions` — die `ghcr`-Image-Pins in
+  README und Benutzerhandbuch sind ab jetzt gateguarded.
+
 ## [0.27.0] — 2026-06-23
 
 ### Added
