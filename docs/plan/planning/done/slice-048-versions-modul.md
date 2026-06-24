@@ -1,6 +1,6 @@
 # Slice slice-048: Modul `versions` — Versions-Pin-Konsistenz (Idee 1)
 
-**Status:** in-progress (offen, welle-37-versions).
+**Status:** done (abgeschlossen, welle-37-versions).
 
 **Welle:** welle-37-versions (Trigger: Auftraggeber-Idee — „statt nacktem
 Versionsstring ein Markdownlink auf seine Definition", weiterentwickelt zu
@@ -32,7 +32,7 @@ sollen beim Release nicht mehr still veralten. Zwei sich ergänzende Mechaniken:
    *bricht* jeder Markdown-Link-Pin auf eine veraltete Version beim Release
    (Anker wandert) und wird vom **bestehenden** `anchors`-Gate gefangen
    (Anker-Kaskade, kein neues Feature nötig). Der Handbuch-Header-Pin ist
-   bereits als Markdown-Link auf `version.md#v0.27.0` ausgeführt.
+   bereits als Markdown-Link auf `version.md#<aktuelle>` ausgeführt.
 2. **Werkzeug-Regel (Schritt C — erledigt, `43f9ed0`):** das opt-in Modul
    `versions` prüft alle Versions-Pins gegen die deklarierte aktuelle Version
    (Befund bei Abweichung) — auch in Fenced-Code (die ~18 `docker run`-Beispiele),
@@ -110,4 +110,36 @@ Doku (Register), kein Vertrag. Keine BF-Sub-Area.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_folgt mit dem Abschluss des Slice._
+**Umsetzung.** Idee 1 in vier Schritten: **(A)** Doku-Boden — Release-Register
+[`version.md`](../../../../version.md#aktuell) (only-current-anchor: nur die
+aktuelle Version trägt einen `<a id>`-Anker, der beim Release wandert → veraltete
+Markdown-Link-Pins brechen via bestehendem `anchors`-Gate) + Handbuch-Header-Pin
+als Link. **(C-Spec)**
+[`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in)
+(Lastenheft 0.28.0, Bereich `VER`) + [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md)
+(Fence-Öffnung, breiter als [ADR-0018](../../adr/0018-diagram-fence-ausnahme.md)) +
+spezifikation `.a`/Schema/Grund-Code.
+**(C-Code)** Modul `versions` (`rules/versions.go`: Fence-offener Pin-Scan,
+`current-from`-Auflösung, `version-stale`, Ventile, fail-closed) + Config-Adapter/
+run-Wiring + `.d-check.yml`-Dogfooding + 10 Tests. **(Release)** v0.28.0.
+Meta-Gate-Shell-Skript bewusst verworfen (Copy-Drift über die Repo-Familie,
+[`MR-003`](../../../../harness/conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh)→[`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding));
+Verteilung im gepinnten Image, Konsum über `doc-check`.
+
+**Belege.**
+- `make gates` **grün** (doc-check inkl. live `versions`-Dogfooding, lint, test,
+  arch-check, Coverage 93,90 %, semgrep, gate-consistency, planning-check).
+- Plan-/Fundament-Review **R1→R2→R3 ACCEPT** (4→2→2-LOW Befunde, alle behoben) +
+  **Impl-Review** (4 Befunde: `--print-config`-Template, Adapter-Tests,
+  Lastenheft-Historie-Exempt, Slice-Doc).
+- Dogfooding live: ~18 `ghcr`-Image-Pins gegen `version.md#aktuell` gateguarded;
+  die Release-Prep v0.28.0 zog `version.md` + alle Pins gemeinsam — das Gate
+  erzwang es (eat-your-own-dogfood).
+- Release **v0.28.0** auf GHCR: Tag-Push + Digest-Pin folgen (Closure vor Tag).
+
+**Lerneintrag.** Das `versions`-Gate bewacht ab sofort den eigenen Release: Bump =
+`version.md#aktuell` + `<a id>`-Anker verschieben + **alle** `ghcr`-Pins gemeinsam,
+sonst `version-stale` (in [`docs/user/releasing.md`](../../../user/releasing.md)
+§Release-Prep dokumentiert). Generische Regel (jedes Repo mit versioniertem
+Artefakt), kein Repo-Skript — der entscheidbare Kern ist Wert-Gleichheit, nicht
+Semantik.

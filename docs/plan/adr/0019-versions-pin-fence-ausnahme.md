@@ -1,6 +1,6 @@
 # ADR-0019 — Versions-Pin-Fence-Ausnahme: das Modul `versions` liest Pins auch in Fences
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-24
 **Autor:** pt9912
 **Bezug:** [`DC-FA-VER-001`](../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in)
@@ -76,3 +76,4 @@ neues Fragment-Target, kein kopiertes Skript.
 | Datum | Ereignis |
 | --- | --- |
 | 2026-06-24 | Entwurf (Idee 1; Spike-Befund ~18 Fenced-Pins; kopiertes Meta-Gate wegen Copy-Drift verworfen). Status Proposed. |
+| 2026-06-24 | Angenommen mit der slice-048-Closure: Plan-Review R1→R3 ACCEPT + Impl-Review, Modul implementiert, Dogfooding live, `make gates` grün. Status Accepted. |
