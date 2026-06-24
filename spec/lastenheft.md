@@ -893,7 +893,7 @@ Schreiben oder Anlegen des Registers durch das Werkzeug selbst (read-only).
 ### DC-FA-PIN-001 — Content-Pin gegen inhaltlichen Drift (Modul `pins`, opt-in)
 
 **Beschreibung:** Bei explizit aktiviertem Modul `pins` prüft d-check
-Markdown-Links, die einen **Content-Pin** tragen — einen Inline-HTML-Kommentar
+Markdown-Links (Bild-Links ausgenommen), die einen **Content-Pin** tragen — einen Inline-HTML-Kommentar
 `<!-- dpin: sha256:<hex> -->`, der **unmittelbar** (nur Whitespace dazwischen)
 auf der **gleichen Zeile** dem schließenden `)` des Links folgt. Der Pin bindet
 an genau diesen Link; ein Marker, der keinem Link unmittelbar folgt (allein, auf

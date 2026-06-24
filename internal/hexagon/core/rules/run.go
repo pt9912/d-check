@@ -142,7 +142,7 @@ func (st *runState) checkFile(file string) error {
 		st.findings = append(st.findings, CheckVersions(file, content, st.cfg.Versions, st.versionsCurrent, st.versionsFromFile)...)
 	}
 	if st.applies("pins", file) {
-		st.findings = append(st.findings, CheckPins(st.fsys, file, lines, st.spanCache)...)
+		st.findings = append(st.findings, CheckPins(st.fsys, file, lines, content, st.spanCache)...)
 	}
 	if st.applies("external", file) {
 		st.extRefs = append(st.extRefs, CollectExternalURLs(file, lines)...)

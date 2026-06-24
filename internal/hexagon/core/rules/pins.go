@@ -26,10 +26,15 @@ var pinWhitespaceRE = regexp.MustCompile(`\s+`)
 // auflösbare, repo-interne Ziele — der strukturelle Befund bleibt
 // `links`/`anchors` (kein eigener/doppelter Befund). Diagnose-only. spanCache
 // cached den errechneten Hash je aufgelöstem (Datei, Anker)-Span.
-func CheckPins(fsys driven.Filesystem, file string, lines []Line, spanCache map[string]string) []model.Finding {
+func CheckPins(fsys driven.Filesystem, file string, lines []Line, content []byte, spanCache map[string]string) []model.Finding {
+	rawLines := strings.Split(string(content), "\n")
 	var findings []model.Finding
 	for _, ln := range lines {
-		for _, b := range bindPins(ln.Text) {
+		raw := ""
+		if i := ln.No - 1; i >= 0 && i < len(rawLines) {
+			raw = rawLines[i]
+		}
+		for _, b := range bindPins(ln.Text, raw) {
 			if f, ok := pinFinding(fsys, file, ln.No, b.target, b.hash, spanCache); ok {
 				findings = append(findings, f)
 			}
@@ -43,11 +48,16 @@ type pinBinding struct {
 	hash   string
 }
 
-// bindPins findet die dpin-Marker einer vorverarbeiteten Zeile und bindet jeden
-// an den Link, dessen schließendes `)` ihm **unmittelbar** (nur Whitespace)
-// vorausgeht; ein Marker ohne unmittelbar vorausgehenden (Nicht-Bild-)Link ist
-// inert (§DC-FA-PIN-001.a Schritt 1).
-func bindPins(text string) []pinBinding {
+// bindPins findet die dpin-Marker einer Zeile (Links + Marker auf der
+// vorverarbeiteten Zeile — so zählen nur echte, nicht in Inline-Code/Fences
+// liegende Vorkommen) und bindet jeden Marker an den Nicht-Bild-Link, dessen
+// schließendes `)` ihm **unmittelbar** vorausgeht. Die „nur Whitespace
+// dazwischen"-Prüfung läuft auf der **rohen** Zeile (`raw`): die Vorverarbeitung
+// leert Inline-Code positionserhaltend zu Leerzeichen, was den Vertrag sonst
+// verfälschte (Impl-R1 F-1). Positionen stimmen, weil das Stripping längen-
+// erhaltend ist. Ein Marker ohne unmittelbar vorausgehenden Link ist inert
+// (§DC-FA-PIN-001.a Schritt 1).
+func bindPins(text, raw string) []pinBinding {
 	markers := dpinRE.FindAllStringSubmatchIndex(text, -1)
 	if markers == nil {
 		return nil
@@ -67,7 +77,7 @@ func bindPins(text string) []pinBinding {
 		start := m[0]
 		best := -1
 		for i, l := range links {
-			if l.end <= start && strings.TrimSpace(text[l.end:start]) == "" {
+			if l.end <= start && start <= len(raw) && strings.TrimSpace(raw[l.end:start]) == "" {
 				if best == -1 || l.end > links[best].end {
 					best = i
 				}

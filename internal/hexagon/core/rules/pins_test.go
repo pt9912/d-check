@@ -146,3 +146,76 @@ func TestPinsScope(t *testing.T) {
 		t.Fatalf("pins.scope: nur docs/in geprüft, got %v", res.Findings)
 	}
 }
+
+// DC-FA-PIN-001 (Impl-R1 F-1): Inline-Code zwischen Link und Marker ist
+// Nicht-Whitespace → der Marker ist inert (Prüfung auf der ROHEN Zeile, nicht
+// der vorverarbeiteten, wo der Code zu Leerzeichen würde).
+func TestPinsInlineCodeZwischenInert(t *testing.T) {
+	fix := map[string]string{
+		"spec/z.md": "Inhalt.\n",
+		"docs/s.md": "[a](../spec/z.md) `code` <!-- dpin: sha256:deadbeef -->\n",
+	}
+	res, err := Run(coretest.NewMemFS(fix), nil, model.Config{}, []string{"pins"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("Code zwischen Link und Marker → inert, 0 Befunde, got %v", res.Findings)
+	}
+}
+
+// DC-FA-PIN-001 (Impl-R1 F-2): ein Pin an einem externen Link ist inert.
+func TestPinsExternInert(t *testing.T) {
+	fix := map[string]string{"docs/s.md": "[x](https://example.com/p) <!-- dpin: sha256:deadbeef -->\n"}
+	res, err := Run(coretest.NewMemFS(fix), nil, model.Config{}, []string{"pins"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("externes Ziel → kein pins-Befund, got %v", res.Findings)
+	}
+}
+
+// DC-FA-PIN-001 (Impl-R1 F-2): ein Ziel außerhalb der Repo-Wurzel (repo-escape)
+// erzeugt keinen pins-Befund (Out-of-Scope; struktureller Befund bleibt links).
+func TestPinsRepoEscape(t *testing.T) {
+	fix := map[string]string{"docs/s.md": "[x](../../outside.md) <!-- dpin: sha256:deadbeef -->\n"}
+	res, err := Run(coretest.NewMemFS(fix), nil, model.Config{}, []string{"pins"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("repo-escape-Ziel → kein pins-Befund, got %v", res.Findings)
+	}
+}
+
+// DC-FA-PIN-001 (Impl-R1 F-2): Same-file-Anker-Pin (Linkziel `#anker`) → der Span
+// ist die Heading-Section derselben Datei; Drift → link-stale.
+func TestPinsSameFileAnker(t *testing.T) {
+	fix := map[string]string{
+		"docs/s.md": "## A\n\nInhalt A.\n\n## B\n\n[x](#a) <!-- dpin: sha256:deadbeef -->\n",
+	}
+	res, err := Run(coretest.NewMemFS(fix), nil, model.Config{}, []string{"pins"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 || res.Findings[0].Target != "#a" || res.Findings[0].Reason != model.ReasonLinkStale {
+		t.Fatalf("Same-file-Anker-Drift → 1× link-stale (#a), got %v", res.Findings)
+	}
+}
+
+// DC-FA-PIN-001 (Impl-R1 F-2): ein Anker, der keine Section trifft, ist nicht
+// auflösbar → kein pins-Befund (struktureller Befund bleibt anchors).
+func TestPinsAnkerOhneSection(t *testing.T) {
+	fix := map[string]string{
+		"spec/z.md": "## A\n\nInhalt.\n",
+		"docs/s.md": "[x](../spec/z.md#fehlt) <!-- dpin: sha256:deadbeef -->\n",
+	}
+	res, err := Run(coretest.NewMemFS(fix), nil, model.Config{}, []string{"pins"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("Anker ohne Section → kein pins-Befund, got %v", res.Findings)
+	}
+}

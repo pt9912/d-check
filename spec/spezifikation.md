@@ -823,15 +823,19 @@ ist opt-in und liest den **Ziel-Span gegenläufig** zur Vorverarbeitung
 ([§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)),
 die Fences sonst entfernt:
 
-1. **Marker-Erkennung + Bindung.** Je vorverarbeiteter Zeile werden Links
-   (`ExtractLinkSpans`) und `<!-- dpin: sha256:<hex> -->`-Marker gesucht. Ein
+1. **Marker-Erkennung + Bindung.** Je vorverarbeiteter Zeile werden
+   **Nicht-Bild-Links** (`ExtractLinkSpans` ohne Bilder — ein Content-Pin
+   adressiert Text-Zitate, kein Bild) und `<!-- dpin: sha256:<hex> -->`-Marker
+   gesucht. Die „nur Whitespace dazwischen"-Bindung wird auf der **rohen** Zeile
+   geprüft (die Vorverarbeitung leert Inline-Code zu Leerzeichen). Ein
    Marker bindet an den Link, dessen schließendes `)` ihm **unmittelbar**
    vorausgeht (nur Whitespace dazwischen, gleiche Zeile); bei mehreren
    Links/Markern je Zeile gilt die nächste-vorausgehende-Bindung. Ein Marker ohne
    unmittelbar vorausgehenden Link ist **inert**. Nur gebundene Links werden
    geprüft (opt-in pro Link).
 2. **Ziel-Span bestimmen.** Linkziel `datei` bzw. `datei#anker` (relativ zur
-   prüfenden Datei, repo-intern). Ohne Anker: ganze Ziel-Datei. Mit Anker: die
+   prüfenden Datei, repo-intern). Ohne Anker (oder leerem Anker `datei#`): ganze
+   Ziel-Datei. Mit Anker: die
    Heading-Section (Heading mit passendem Slug bis zur nächsten gleich-/
    höherrangigen Überschrift; HTML-Anker ab dessen Zeile). Lässt sich Datei/Anker
    nicht auflösen oder liegt das Ziel außerhalb der **Repo-Wurzel** (repo-escape)
