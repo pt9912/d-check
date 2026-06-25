@@ -1,3 +1,4 @@
 # Harness-Laufzustand (Gate-Nachweis für den Stop-Hook, lokal —
 # NUR state/; .harness/skills/ ist versionierte Harness-Mechanik)
 .harness/state/
+.harness/cache/

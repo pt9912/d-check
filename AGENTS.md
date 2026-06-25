@@ -20,10 +20,16 @@ Das Betriebsregelwerk der adoptierten Baseline in Agenten-Kurzform
 einmal pro Session lesen, bevor der Workflow (§6) startet. **Lese-Form ist
 ausschließlich das nach Modulen und Grundlagen-Abschnitten aufgeteilte
 Release-Bundle**
-[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.3.0/lab-regelwerk.zip)
-(`v1.3.0`): herunterladen, entpacken und **nur den benötigten Abschnitt**
+[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.4.0/lab-regelwerk.zip)
+(`v1.4.0`): herunterladen, entpacken und **nur den benötigten Abschnitt**
 laden (die Bundle-`README.md` ist der Index), ohne das gesamte Regelwerk
-im Kontext zu halten. Das Bundle ist derivativ; bei Konflikt sticht die
+im Kontext zu halten. Konventioneller Ablageort des entpackten Bundles — und
+des analog entpackten `lab-templates.zip` — ist `.harness/cache/<tag>/regelwerk/`
+bzw. `.harness/cache/<tag>/templates/` (gitignored; Pfadschema siehe
+[`harness/conventions.md`](harness/conventions.md) §Adoptierte
+Konventions-Quellen); materialisieren per
+`tools/harness/fetch-baseline-cache.sh` (zieht + entpackt, Tag aus §Baseline).
+Das Bundle ist derivativ; bei Konflikt sticht die
 Quelldatei das Bundle, über ihr die kanonischen Quellen (Source
 Precedence). Den Link auf die Quelldatei und den adoptierten Stand führt
 [`harness/conventions.md`](harness/conventions.md) (§Adoptierte

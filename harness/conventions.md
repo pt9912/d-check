@@ -20,26 +20,32 @@ die kanonische Quelle (Source Precedence, siehe
 ## Baseline
 
 - **Konvention:** AI-Harness-Kurs
-- **Stand:** [`v1.3.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v1.3.0)
-  (Release-Tag, gepinnt 2026-06-18; ursprünglich unversioniert adoptiert
+- **Stand:** [`v1.4.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v1.4.0)
+  (Release-Tag, gepinnt 2026-06-25; ursprünglich unversioniert adoptiert
   als „Template-Set 2026-06", nachgezogen mit
   [`MR-011`](#mr-011--baseline-auf-release-tag-gepinnt), von v1.2.1 auf
-  v1.3.0 gehoben mit [`MR-012`](#mr-012--baseline-pin-hebung-nachtrag-zu-mr-011))
+  v1.3.0 gehoben mit [`MR-012`](#mr-012--baseline-pin-hebung-nachtrag-zu-mr-011),
+  von v1.3.0 auf v1.4.0 mit
+  [`MR-016`](#mr-016--baseline-pin-hebung-zweiter-nachtrag-zu-mr-011))
 - **Datum der Adoption:** 2026-06-10
 
 ## Adoptierte Konventions-Quellen
 
 - **Extern (Lehrmaterial):**
-  [`ai-harness-course@v1.3.0`](https://github.com/pt9912/ai-harness-course/tree/v1.3.0)
+  [`ai-harness-course@v1.4.0`](https://github.com/pt9912/ai-harness-course/tree/v1.4.0)
   (Templates: `lab/templates/`, Konventionen:
   `kurs/de/grundlagen/konventionen.md`).
 - **Extern (Agenten-Destillat):**
-  [`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/v1.3.0/kurs/de/agents-regelwerk.md)
+  [`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/v1.4.0/kurs/de/agents-regelwerk.md)
   — operatives Regelwerk für Code-Agenten ohne Didaktik; derivativ,
   bei Konflikt gilt das Lehrmaterial. Lese-Form: das nach Modulen und
   Grundlagen-Abschnitten aufgeteilte Release-Bundle
-  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.3.0/lab-regelwerk.zip)
+  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.4.0/lab-regelwerk.zip)
   lädt einen Abschnitt, ohne das ganze Regelwerk im Kontext zu halten.
+- **Lokale Lese-Form (materialisiert):** das entpackte Bundle/Template-Set
+  unter `.harness/cache/<tag>/regelwerk/` bzw. `.harness/cache/<tag>/templates/`
+  (gitignored, aus dem Selbst-Scan ausgenommen) — Konvention siehe
+  [`MR-017`](#mr-017--lokale-baseline-lese-form-cache-aus-dem-selbst-scan-ausgenommen).
 - **Konventions-Vorbilder (Implementierung):**
   [`u-boot`](https://github.com/pt9912/u-boot) — Hexagon-Ordnerkonvention
   ([ADR-0005](../docs/plan/adr/0005-modul-layout-hexagon-ordner.md)),
@@ -424,6 +430,96 @@ die kanonische Quelle (Source Precedence, siehe
   Korrektur, Nutzer-Entscheid 2026-06-22); ihre **Wirkung** auf die gepinnte
   Pointer-Liste wird hier nachgezogen.
 - **Auflösungs-Trigger:** permanent (Provenienz).
+
+### MR-016 — Baseline-Pin-Hebung (zweiter Nachtrag zu MR-011)
+
+- **Datum:** 2026-06-25
+- **Geltungsbereich:** [§Baseline](#baseline), [§Adoptierte
+  Konventions-Quellen](#adoptierte-konventions-quellen), die gespiegelten
+  `lab-regelwerk.zip`-Pointer in [`AGENTS.md`](../AGENTS.md) §1 und
+  [`harness/README.md`](README.md) §Guides sowie die kurs-gekoppelten Trigger
+  [`MR-006`](#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs),
+  [`MR-008`](#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage),
+  [`MR-014`](#mr-014--slice-adr-doc-struktur-repo-haus-stil-ggü-baseline-template)
+- **Adaption:** Der von
+  [`MR-011`](#mr-011--baseline-auf-release-tag-gepinnt) vorgesehene weitere
+  Nachtrag: der Baseline-Pin ist von `v1.3.0` auf den Release-Tag **`v1.4.0`**
+  gehoben. Aktualisiert: die §Baseline-Stand-Zeile, der Lehrmaterial-Repo-Link
+  und die `agents-regelwerk.md`-Raw-URL + `lab-regelwerk.zip`-Asset-URL in
+  §Adoptierte Konventions-Quellen, die gleichen beiden URLs in
+  `harness/README.md` §Guides sowie — zip-only seit
+  [`MR-015`](#mr-015--auflösung-der-mr-012-pointer-drift-agentsmd-routet-spiegelt-nicht-mehr) —
+  der `lab-regelwerk.zip`-Pointer samt `(v1.4.0)`-Stand-Markierung in
+  `AGENTS.md` §1. Das **Regelwerk ist inhaltlich unverändert**: `kurs/de/`
+  (Quelle von `agents-regelwerk.md` und Bundle) trägt zwischen `v1.3.0` und
+  `v1.4.0` keinen Diff; der Pin wandert, der Inhalt nicht. Der gesamte
+  v1.3.0→v1.4.0-Diff liegt in `lab/templates/`. Die beiden an die Kurs-Quelle
+  gekoppelten Trigger sind dabei re-evaluiert, am Tag `v1.4.0` verifiziert,
+  plus eine teilweise Auflösung von [`MR-014`](#mr-014--slice-adr-doc-struktur-repo-haus-stil-ggü-baseline-template):
+  - [`MR-006`](#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)-Trigger
+    **unverändert eingetreten:** die Spec-Straten-Vorlagen
+    (`spezifikation.template.md`, `architecture.template.md`) tragen keinen
+    Diff zwischen `v1.3.0` und `v1.4.0`; der zu `v1.3.0` festgestellte Stand
+    (kein ADR-Rückzeiger im bindenden Text) hält.
+  - [`MR-008`](#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage)-Konformität
+    **gehalten:** das ADR-Template (`NNNN-titel.template.md`) hat sich geändert
+    (Abschnitt „Verglichene Alternativen" von Option-A/B/C-Prosa auf eine
+    Pro/Contra-**Tabelle**), die ADR-ID-Stelligkeit bleibt jedoch durchgängig
+    vierstellig (`ADR-NNNN`).
+  - [`MR-014`](#mr-014--slice-adr-doc-struktur-repo-haus-stil-ggü-baseline-template)-Abweichung
+    **teilweise aufgelöst:** die dort als Haus-Stil deklarierte ADR-„Verglichene
+    Alternativen"-**Tabelle** (statt Option-A/B/C-Prosa) ist mit `v1.4.0`
+    **Baseline-Default** geworden — dieser eine Punkt ist damit baseline-konform
+    statt Abweichung. Die übrigen MR-014-Punkte (Slice-Abschnitts-Reihenfolge,
+    Fitness-Function als Prosa-Bullets, zweispaltige „Geschichte") stehen
+    unverändert: `slice.template.md` und die restliche ADR-Template-Struktur
+    tragen keinen Diff. Die `@v1.3.0`-Template-Links im MR-014-Body bleiben als
+    Vergangenheits-Aussage **unangetastet** (append-only, analog
+    [`MR-015`](#mr-015--auflösung-der-mr-012-pointer-drift-agentsmd-routet-spiegelt-nicht-mehr)).
+- **Begründung:** Die Tag-Hebung erfolgt per Nachtrags-MR (kein Überschreiben
+  des akzeptierten [`MR-012`](#mr-012--baseline-pin-hebung-nachtrag-zu-mr-011)-Eintrags),
+  wie in [`MR-011`](#mr-011--baseline-auf-release-tag-gepinnt) vorgesehen. v1.3.0
+  → v1.4.0 ist inhaltlich nur Template-Pflege: die ADR-Alternativen-Tabelle
+  (s. o.), `harness.mk` hebt den **d-check-Konsumenten**-Digest-Pin
+  (v0.8.0 → v0.23.0 — betrifft den Kurs als d-check-Nutzer, nicht d-checks
+  eigene Konventionen) und eine Templates-`README`-Notiz; keine Regelwerk- oder
+  sonstige Konventionsänderung.
+- **Auflösungs-Trigger:** permanent als Provenienz; die nächste
+  Baseline-Version wird erneut per Nachtrags-MR gehoben.
+
+### MR-017 — Lokale Baseline-Lese-Form (Cache) aus dem Selbst-Scan ausgenommen
+
+- **Datum:** 2026-06-25
+- **Geltungsbereich:** [`.d-check.yml`](../.d-check.yml) `scan.ignore`,
+  das Materialisierungs-Skript `tools/harness/fetch-baseline-cache.sh`,
+  [§Adoptierte Konventions-Quellen](#adoptierte-konventions-quellen),
+  [`AGENTS.md`](../AGENTS.md) §1, der gitignorierte Pfad `.harness/cache/`
+- **Adaption:** Die in [`AGENTS.md`](../AGENTS.md) §1 vorgesehene Lese-Form der
+  adoptierten Baseline (Bundle „herunterladen, entpacken, nur den benötigten
+  Abschnitt laden") wird lokal **materialisiert** nach dem Pfadschema
+  `.harness/cache/<tag>/regelwerk/` (entpacktes `lab-regelwerk.zip`) und
+  `.harness/cache/<tag>/templates/` (entpacktes `lab-templates.zip`); aktueller
+  `<tag>` = `v1.4.0`; materialisiert wird reproduzierbar per
+  `tools/harness/fetch-baseline-cache.sh` (zieht die beiden Release-Assets und
+  entpackt; Tag ohne Argument aus dieser §Baseline-Stand-Zeile abgeleitet —
+  kein Drift). Der Cache ist **gitignored** ([`.gitignore`](../.gitignore)
+  `.harness/cache/`) — ephemer, kein Repo-Vertrag — und wird über
+  `scan.ignore: [".harness/cache/**"]` in [`.d-check.yml`](../.d-check.yml) aus
+  dem Dogfooding-Selbst-Scan **ausgenommen**. Grund: der Cache trägt
+  Fremdinhalt (die Kurs-Docs referenzieren ihre eigenen `ADR-`/`MR-`-IDs und
+  Modulpfade, die in *diesem* Repo nicht existieren); ohne Ausnahme meldete
+  `make doc-check` sie als `id-unlinked`/`codepath-missing`. Selbe Klasse wie
+  die eingebauten `SKIP_DIRS` (`.git`, `vendor`, `node_modules` —
+  Fremd-/Generiertes), daher **keine** Gate-Lockerung im Sinne von
+  [`AGENTS.md` §3.6](../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden):
+  ausgenommen wird Nicht-Repo-Inhalt, keine Repo-Doku verliert Deckung.
+- **Begründung:** Sichtbar geworden bei der v1.4.0-Adoption
+  ([`MR-016`](#mr-016--baseline-pin-hebung-zweiter-nachtrag-zu-mr-011)), als der
+  Cache erstmals befüllt wurde (Nutzer-Auftrag 2026-06-25). Die Konvention ist
+  tag-generisch (`<tag>`), nicht v1.4.0-spezifisch — darum ein eigener Eintrag
+  statt Bündelung in den Pin-Bump-Nachtrag.
+- **Auflösungs-Trigger:** permanent, solange die Baseline-Lese-Form lokal
+  gecacht wird.
 
 ## Anforderungs-Anlege-Prozess
 
