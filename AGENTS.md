@@ -23,12 +23,18 @@ Release-Bundle**
 [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.4.0/lab-regelwerk.zip)
 (`v1.4.0`): herunterladen, entpacken und **nur den benötigten Abschnitt**
 laden (die Bundle-`README.md` ist der Index), ohne das gesamte Regelwerk
-im Kontext zu halten. Konventioneller Ablageort des entpackten Bundles — und
-des analog entpackten `lab-templates.zip` — ist `.harness/cache/<tag>/regelwerk/`
-bzw. `.harness/cache/<tag>/templates/` (gitignored; Pfadschema siehe
+im Kontext zu halten. Konventioneller Ablageort des entpackten **Regelwerks**
+ist `.harness/cache/<tag>/regelwerk/` (gitignored; materialisieren per
+`tools/harness/fetch-baseline-cache.sh`, Tag aus §Baseline; Pfadschema siehe
 [`harness/conventions.md`](harness/conventions.md) §Adoptierte
-Konventions-Quellen); materialisieren per
-`tools/harness/fetch-baseline-cache.sh` (zieht + entpackt, Tag aus §Baseline).
+Konventions-Quellen). **Templates** werden dagegen nicht aus dem Cache
+autoriert: d-check ist Producer-/Self-Hoster und verkörpert **keine**
+co-located `*.template.md` — wiederkehrende Artefakte (ADR, Slice, …) entstehen
+nativ im Haus-Stil aus dem gelebten Bestand, Singleton-Skelette sind beim
+Bootstrap einmalig gefüllt. Dasselbe Skript entpackt `lab-templates.zip` nach
+`.harness/cache/<tag>/templates/` **nur als Adoptions-/Drift-Audit-Staging,
+nicht als Autorenquelle**
+([`MR-018`](harness/conventions.md#mr-018--d-check-verkörpert-als-producer-self-hoster-keine-templates)).
 Das Bundle ist derivativ; bei Konflikt sticht die
 Quelldatei das Bundle, über ihr die kanonischen Quellen (Source
 Precedence). Den Link auf die Quelldatei und den adoptierten Stand führt
