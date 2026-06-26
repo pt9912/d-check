@@ -43,7 +43,7 @@ die kanonische Quelle (Source Precedence, siehe
   [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.4.0/lab-regelwerk.zip)
   lädt einen Abschnitt, ohne das ganze Regelwerk im Kontext zu halten.
 - **Lokale Lese-Form:** das **Regelwerk** ist **committet vendored** unter
-  `.harness/baseline/<tag>/regelwerk/` (entpacktes `lab-regelwerk.zip`) samt
+  `.harness/baseline/<tag>/regelwerk/` (aktuell [`v1.4.0`](../.harness/baseline/v1.4.0/regelwerk/); entpacktes `lab-regelwerk.zip`) samt
   `.harness/baseline/<tag>/SHA256SUMS`-Integritätsmanifest — netzlos auf jedem
   Checkout präsent ([`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)
   löst die Cache-Form von
@@ -660,6 +660,38 @@ die kanonische Quelle (Source Precedence, siehe
   liegt am Pin-Bump.
 - **Auflösungs-Trigger:** permanent, solange d-check template-frei ist; jeder
   Baseline-Pin-Bump führt den Drift-Audit aus.
+
+### MR-021 — In-Repo-Verweise auf das vendored Regelwerk sind pin-gebunden
+
+- **Datum:** 2026-06-26
+- **Geltungsbereich:** alle Markdown-Links auf `.harness/baseline/<tag>/…` in der
+  Live-Doku (aktuell [`harness/README.md`](README.md) §Guides/§Sensors,
+  [`docs/plan/planning/README.md`](../docs/plan/planning/README.md),
+  [§Adoptierte Konventions-Quellen](#adoptierte-konventions-quellen)); die
+  Baseline-Pin-Bump-Prozedur; Nachtrag zu
+  [`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)/[`MR-020`](#mr-020--baseline-template-propagation-per-drift-audit-template-frei-bestätigt)
+- **Adaption:** Seit
+  [`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)
+  ist das vendored Regelwerk ein in-repo auflösbares **Link-Ziel** — die
+  Live-Doku verweist auf konkrete Regelwerk-Dateien (Lesestoff: Modul-/
+  Grundlagen-Verweise) statt nur auf externe Kurs-URLs (die als **Provenienz**
+  bleiben). Diese Links tragen den **konkreten** Pin (`…/v1.4.0/…`), nicht
+  `<tag>` — sie sind damit **pin-gebunden**. Regel: Der Baseline-Pin-Bump-
+  Drift-Audit ([`MR-020`](#mr-020--baseline-template-propagation-per-drift-audit-template-frei-bestätigt))
+  (1) entfernt das alte `.harness/baseline/<alt-tag>/` und (2) zieht alle
+  vendored-Pfad-Links auf den neuen Tag. Wird (2) vergessen, schlägt nach (1)
+  `make doc-check` mit `target-missing` an — die Pin-Kopplung ist damit
+  **gate-erzwungen**, kein stiller Drift. (Bliebe das alte Tag-Verzeichnis
+  stehen, läge stiller Stale-Content vor; darum ist (1) Pflicht-Teil des Bumps.)
+- **Begründung:** Nutzer-Entscheid 2026-06-26, das vendored Regelwerk als
+  Lesestoff zu verlinken (§Guides-Lese-Form + Modul-13/14-Verweise +
+  §Adoptierte-Aktuell-Link). Der Nutzen (klickbar, netzlos, offline auffindbar)
+  hat als Preis die Pin-Bindung; die Regel macht den Preis explizit und delegiert
+  die Durchsetzung an das vorhandene `links`-Gate, statt einen neuen Sensor zu
+  bauen (Steering-Loop-Ökonomie: kein Gate für etwas, das ein vorhandenes Gate
+  schon fängt).
+- **Auflösungs-Trigger:** permanent, solange in-repo-Verweise auf das vendored
+  Regelwerk bestehen.
 
 ## Anforderungs-Anlege-Prozess
 
