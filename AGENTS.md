@@ -24,10 +24,13 @@ Release-Bundle**
 (`v1.4.0`): herunterladen, entpacken und **nur den benötigten Abschnitt**
 laden (die Bundle-`README.md` ist der Index), ohne das gesamte Regelwerk
 im Kontext zu halten. Konventioneller Ablageort des entpackten **Regelwerks**
-ist `.harness/cache/<tag>/regelwerk/` (gitignored; materialisieren per
+ist `.harness/baseline/<tag>/regelwerk/` — **committet vendored** (samt
+`.harness/baseline/<tag>/SHA256SUMS`-Integritätsmanifest, netzlos auf jedem
+Checkout präsent; materialisieren/verifizieren per
 `tools/harness/fetch-baseline-cache.sh`, Tag aus §Baseline; Pfadschema siehe
-[`harness/conventions.md`](harness/conventions.md) §Adoptierte
-Konventions-Quellen). **Templates** werden dagegen nicht aus dem Cache
+[`harness/conventions.md`](harness/conventions.md) §Adoptierte Konventions-Quellen,
+[`MR-019`](harness/conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)).
+**Templates** werden dagegen nicht aus dem Cache
 autoriert: d-check ist Producer-/Self-Hoster und verkörpert **keine**
 co-located `*.template.md` — wiederkehrende Artefakte (ADR, Slice, …) entstehen
 nativ im Haus-Stil aus dem gelebten Bestand, Singleton-Skelette sind beim

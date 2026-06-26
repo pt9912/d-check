@@ -2,14 +2,17 @@
 # Selbstkonfiguration ids+matrix: slice-007, codepaths: slice-013,
 # spans: slice-015, hostpaths: slice-016).
 # "." = gesamte Repo-Wurzel; SKIP_DIRS (.git, vendor, …) gelten immer.
-# ignore (MR-017): der gitignorierte, ephemere Lese-Cache der adoptierten
-# Baseline (`.harness/cache/<tag>/…`, AGENTS.md §1) trägt Fremdinhalt — die
+# ignore: die lokale Lese-Form der adoptierten Baseline trägt Fremdinhalt — die
 # Kurs-Docs referenzieren ihre eigenen IDs/Pfade, die hier nicht existieren.
 # Selbe Klasse wie die eingebauten SKIP_DIRS (Fremd-/Generiertes); kein eigener
-# Doku-Vertrag, also aus dem Dogfooding-Scan ausgenommen statt geprüft.
+# Doku-Vertrag, also aus dem Dogfooding-Scan ausgenommen statt geprüft. Zwei
+# Pfade, weil Regelwerk und Templates unterschiedlich verkörpert werden:
+#   .harness/baseline/<tag>/  — committetes, vendortes Regelwerk (MR-019)
+#   .harness/cache/<tag>/     — gitignorierter, ephemerer Cache (Templates-
+#                               Staging, MR-017/MR-018)
 scan:
   roots: ["."]
-  ignore: [".harness/cache/**"]
+  ignore: [".harness/baseline/**", ".harness/cache/**"]
 modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
