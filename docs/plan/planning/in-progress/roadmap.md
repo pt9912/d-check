@@ -20,7 +20,8 @@ Default-aus byte-identisch
 ([`DC-FA-MTX-002`](../../../../spec/lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix),
 [ADR-0021](../../adr/0021-matrix-klasseninterne-verweisrichtung.md), Lastenheft 0.30.0);
 zwei unabhängige Reviews (R1+R2, alle Befunde behoben); `make gates` grün; Release
-**v0.30.0** (Digest-Pin folgt mit dem GHCR-Push)
+**v0.30.0** auf GHCR (Pipeline-Run 28321705726 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:92a6327d50d9496c02f3b6a5cb6d45f721a44e5bb8a9b6b30acfc52e91ab2220`
 ([Closure](../done/slice-050-matrix-klasseninterne-richtung.md#7-closure-notiz-nach-done)). Davor
 welle-38-pins ([`slice-049`](../done/slice-049-pins-modul.md) — opt-in Modul
 `pins` (11. Modul, content-drift): ein Link mit Content-Pin

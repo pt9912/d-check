@@ -129,9 +129,10 @@ toten-Regel-Bruch.
 
 **Belege.**
 - `make gates` **grün** (doc-check, lint, test, arch-check, coverage, semgrep,
-  gate-consistency, planning-check). `make ci` (image-test) wird vor dem Tag
-  gefahren; Release **v0.30.0** folgt per Tag-Push, der Digest-Pin per
-  Folge-Commit (digest-backfill) in version.md-Verlauf + Handbuch §2.
+  gate-consistency, planning-check); `make ci` in der Release-Pipeline (image-test,
+  OCI-Label-Pin) **grün**. Release **v0.30.0** auf GHCR (Pipeline-Run 28321705726),
+  Digest-Pin `ghcr.io/pt9912/d-check@sha256:92a6327d50d9496c02f3b6a5cb6d45f721a44e5bb8a9b6b30acfc52e91ab2220`
+  (Handbuch §2 nachgezogen).
 - **Zwei unabhängige Reviews:** R1 fand einen echten BLOCKER (ein versehentliches
   `git checkout -- spec/lastenheft.md` hatte die uncommittete Anforderung samt
   §7-Zeile zurückgesetzt → 8× anchor-missing) plus MEDIUM/INFO; R2 verifizierte
