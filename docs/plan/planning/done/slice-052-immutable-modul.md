@@ -1,6 +1,6 @@
 # Slice slice-052: Modul `immutable` — Immutabilitäts-Pin gegen Core-Drift
 
-**Status:** in-progress (welle-41-immutable).
+**Status:** done (abgeschlossen, welle-41-immutable).
 
 **Welle:** welle-41-immutable (Trigger: Auftraggeber — „adr-immutable-check ist
 nur ein Skript (Copy-Drift); können wir die Immutabilitäts-Prüfung wie die
@@ -116,4 +116,48 @@ GF (Produkt-Code + Spec; „Doc führt, Code folgt"). Keine BF-Sub-Area.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(folgt bei Closure)_
+**Umsetzung.** slice-052 als **12. Regelmodul `immutable`**: eine Datei mit
+`<!-- immutable: sha256:… -->` (erster Marker je Datei, erkannt auf der
+**vorverarbeiteten** Zeile — in Fenced-/Inline-Code inert) wird gegen den
+whitespace-normalisierten **Core** gehasst: die rohe Datei **ohne** die
+Marker-Zeile und **ohne** die per `immutable.exclude-sections` benannten
+Abschnitte (für ADRs `Geschichte`); Abweichung → `core-drift`. **Hermetisch**
+(kein git, rein im read-only gescannten Arbeitsbaum), diagnose-only, opt-in pro
+Datei, default-off byte-identisch. Mechanik erbt die `pins`-Normalisierung +
+SHA-256. Doc-first:
+[`DC-FA-IMM-001`](../../../../spec/lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in)
+(Lastenheft 0.32.0, Bereich `IMM`) +
+[ADR-0023](../../adr/0023-immutable-core-pin.md) (Mechanisierungs-Strategie:
+hermetischer Pin jetzt, git-Diff/VCS-Adapter vertagt) + spezifikation `.a` +
+Grund-Code `core-drift` gingen dem Code voraus.
+
+**Belege.**
+- `make ci` **grün** (doc-check, lint, test, arch-check, Coverage 94,20 %,
+  semgrep, gate-consistency, planning-check; image-test nativ == Container
+  byte-identisch).
+- Zwei **unabhängige** Reviews (Reports
+  [r1](../../../reviews/2026-06-28-slice-052-immutable-r1.md)/[r2](../../../reviews/2026-06-28-slice-052-immutable-r2.md)):
+  R1 (Code, NACHBESSERN → MEDIUM „Dispatch/Modul-aus-Test" + LOW Inline-Code
+  behoben), R2 (Doc/Harness → MEDIUM F-1 „README-Release-Zeile" in den
+  Release-Prep-Commit verschoben + INFO F-2 ADR-Asymmetrie ergänzt). 9 Tests
+  (`internal/hexagon/core/rules/immutable_test.go`), inkl. Run()-basiertem
+  Modul-aus-/Dispatch-Test.
+- End-to-End am Image belegt: ein Anhang unter `## Geschichte` lässt den
+  Core-Hash unverändert (`exclude-sections` greift), ein Body-Edit ändert ihn
+  (`core-drift`).
+- **`adr-immutable-check.sh` bleibt unangetastet** (Schwester-Gate, volle
+  git-Garantie für d-checks eigene 21 `Accepted`-ADRs); `immutable` ist die
+  **verteilbare, hermetische** Stufe — un-dogfooded wie `pins` (ein Marker in eine
+  Alt-ADR zu setzen löste `adr-check` selbst aus).
+- Release **v0.32.0** auf GHCR (Pipeline-Run + Digest-Pin im Digest-Backfill
+  nachgetragen).
+
+**Lerneintrag.** `immutable` und `pins` teilen Normalisierung + Pin-Disziplin,
+sind aber getrennte Module: `pins` = Hash eines Link-**Ziel**-Spans, `immutable`
+= Selbst-Hash des Datei-**Core** (ohne Marker + `exclude-sections`). Die
+Hexagon-Analyse trennte die Immutabilitäts-Frage in zwei Hälften: hermetischer
+Pin (Slice A, hier) vs. nicht-hermetischer git-Adapter (Slice B, als Idee-Memo
+gesichert) — analog `external`/`httpcheck`. R2 schärfte die Konvention:
+README/Handbuch-Release-Zeilen (Modul-Zähler, „released im GHCR-Image") gehören in
+den **Release-Prep**-Commit, nie in den Feat-Commit (slice-049 belegt: dort gar
+nicht angefasst).
