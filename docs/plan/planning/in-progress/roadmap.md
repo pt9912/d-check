@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-24.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-28.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -10,7 +10,18 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+**welle-41-immutable — aktiv.** [`slice-052`](slice-052-immutable-modul.md) —
+neues opt-in Modul `immutable` (12.): Immutabilitäts-Pin gegen Core-Drift. Eine
+Datei mit `<!-- immutable: sha256:… -->` wird gegen den whitespace-normalisierten
+**Core** (Datei ohne Marker-Zeile + ohne `immutable.exclude-sections`) gehasst;
+Abweichung → `core-drift`. Hermetisch (kein git, read-only-Arbeitsbaum); die
+git-historienbasierte Diff-Form bleibt einem späteren VCS-Adapter vorbehalten
+([`DC-FA-IMM-001`](../../../../spec/lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in),
+[ADR-0023](../../adr/0023-immutable-core-pin.md), Lastenheft 0.32.0). doc-first
+steht (Lastenheft/ADR/Spezifikation/Slice); Code, zwei Reviews und Release
+v0.32.0 folgen.
+
+Zuletzt abgeschlossen:
 welle-40-matrix-token-richtung ([`slice-051`](../done/slice-051-matrix-token-richtung.md) —
 `matrix` um die **token-basierte** Referenz-Richtung erweitert: eine Klasse mit
 `token`-Regex fängt verbotene Referenzen auch als bare ID-Token im Körper (nicht

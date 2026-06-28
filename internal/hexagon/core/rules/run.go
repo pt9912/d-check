@@ -144,6 +144,9 @@ func (st *runState) checkFile(file string) error {
 	if st.applies("pins", file) {
 		st.findings = append(st.findings, CheckPins(st.fsys, file, lines, content, st.spanCache)...)
 	}
+	if st.applies("immutable", file) {
+		st.findings = append(st.findings, CheckImmutable(file, lines, content, st.cfg.Immutable)...)
+	}
 	if st.applies("external", file) {
 		st.extRefs = append(st.extRefs, CollectExternalURLs(file, lines)...)
 	}

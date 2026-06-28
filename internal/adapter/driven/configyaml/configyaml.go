@@ -79,6 +79,14 @@ type rawVersions struct {
 	ExemptPaths []string  `yaml:"exempt-paths"`
 }
 
+// rawImmutable trägt scope und exclude-sections des Moduls immutable
+// (DC-FA-IMM-001); es gibt keine Pflichtfelder (opt-in pro Datei über den
+// Pin-Marker).
+type rawImmutable struct {
+	Scope           *rawScope `yaml:"scope"`
+	ExcludeSections []string  `yaml:"exclude-sections"`
+}
+
 type rawMatrix struct {
 	Scope   *rawScope `yaml:"scope"`
 	Classes []struct {
@@ -134,6 +142,7 @@ type raw struct {
 	Codepaths *rawCodepaths `yaml:"codepaths"`
 	Diagrams  *rawDiagrams  `yaml:"diagrams"`
 	Versions  *rawVersions  `yaml:"versions"`
+	Immutable *rawImmutable `yaml:"immutable"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -179,6 +188,7 @@ func Decode(content []byte) (model.Config, error) {
 	if err := applyVersions(r, &cfg); err != nil {
 		return cfg, err
 	}
+	applyImmutable(r, &cfg)
 	if err := applyScopes(r, &cfg); err != nil {
 		return cfg, err
 	}
@@ -272,6 +282,17 @@ func applyVersions(r *raw, cfg *model.Config) error {
 	return nil
 }
 
+// applyImmutable übernimmt exclude-sections des Moduls immutable
+// (DC-FA-IMM-001). Keine Validierung/keine Pflichtfelder — ohne Pin-Marker in
+// einer Datei ist das Modul wirkungslos (opt-in pro Datei); die Marker-Erkennung
+// läuft im Kern.
+func applyImmutable(r *raw, cfg *model.Config) {
+	if r.Immutable == nil {
+		return
+	}
+	cfg.Immutable = model.ImmutableConfig{ExcludeSections: r.Immutable.ExcludeSections}
+}
+
 // applyScopes übernimmt die modul-lokalen Scan-Scopes
 // (DC-FA-CONF-002): scope ersetzt den globalen Scan für genau dieses
 // Modul; roots ist Pflicht (keine stille Vererbung).
@@ -291,6 +312,7 @@ func applyScopes(r *raw, cfg *model.Config) error {
 		{"diagrams", scopeOfDiagrams(r.Diagrams)},
 		{"versions", scopeOfVersions(r.Versions)},
 		{"pins", scopeOf(r.Pins)},
+		{"immutable", scopeOfImmutable(r.Immutable)},
 	}
 	for _, sc := range scopes {
 		if sc.scope == nil {
@@ -362,6 +384,13 @@ func scopeOfDiagrams(v *rawDiagrams) *rawScope {
 }
 
 func scopeOfVersions(v *rawVersions) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
+}
+
+func scopeOfImmutable(v *rawImmutable) *rawScope {
 	if v == nil {
 		return nil
 	}

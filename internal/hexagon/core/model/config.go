@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable"}
 }
 
 // defaultModules ist der Default-Modulsatz (DC-FA-CLI-002).
@@ -40,6 +40,8 @@ type Config struct {
 	Diagrams DiagramsConfig
 	// Versions: Parameter des Moduls versions (DC-FA-VER-001).
 	Versions VersionsConfig
+	// Immutable: Parameter des Moduls immutable (DC-FA-IMM-001).
+	Immutable ImmutableConfig
 	// Scopes: modul-lokale Scan-Scopes (DC-FA-CONF-002); Schlüssel
 	// ist der Modulname, nil-Eintrag/fehlender Schlüssel = globaler
 	// Scope.
@@ -211,6 +213,16 @@ func (v VersionsConfig) EffectiveCurrentFrom() string {
 		return "version.md#aktuell"
 	}
 	return v.CurrentFrom
+}
+
+// ImmutableConfig sind die Parameter des Moduls immutable (DC-FA-IMM-001):
+// ExcludeSections nennt Heading-Titel, deren Abschnitte nicht zum gehashten
+// Core zählen (für ADRs typisch ["Geschichte"]; Vergleich wie
+// MatrixConfig.ExcludeSections). Ohne Pin-Marker in einer Datei ist das Modul
+// für diese Datei wirkungslos (opt-in pro Datei) — die Konfiguration ist
+// daher optional.
+type ImmutableConfig struct {
+	ExcludeSections []string
 }
 
 // EffectiveModules wendet die Modul-Auflösung an

@@ -897,6 +897,46 @@ die Fences sonst entfernt:
    nichts wird geschrieben
    ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 
+### DC-FA-IMM-001.a — Immutabilitäts-Pin gegen Core-Drift (`immutable`)
+
+Das Modul `immutable`
+([`DC-FA-IMM-001`](lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in))
+ist opt-in und prüft den **Core** einer Datei gegen einen im Dokument
+hinterlegten Pin — **ohne git**, rein im gescannten Arbeitsbaum (die
+git-historienbasierte `core(BASE)`-vs-`core(HEAD)`-Form bleibt Out-of-Scope, in
+begleitender ADR festgehalten):
+
+1. **Marker-Erkennung.** Eine Datei trägt höchstens **einen** wirksamen Pin: den
+   **ersten** `<!-- immutable: sha256:<hex> -->` (case-insensitiver Hex). Die
+   Erkennung läuft auf der **vorverarbeiteten** Datei
+   ([§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)) —
+   ein Marker in Fenced- oder Inline-Code (z. B. ein Syntax-Beispiel in der Doku)
+   ist **kein** Pin. Ohne Marker wird die Datei nicht geprüft (opt-in pro Datei);
+   weitere Marker nach dem ersten sind inert.
+2. **Core bestimmen.** Der Core ist der **rohe** Datei-Inhalt ohne (a) die
+   **Marker-Zeile** selbst (sonst Selbstbezug — der Marker trägt den Hash des
+   Core) und (b) die Abschnitte, deren getrimmter Heading-Text (ohne
+   Markdown-Auszeichnung) ein Eintrag aus `immutable.exclude-sections` ist
+   (Heading-Zeile bis zur nächsten gleich-/höherrangigen Überschrift bzw. EOF —
+   dieselbe Section-Abgrenzung wie `matrix.exclude-sections`). Der verbleibende
+   Inhalt wird **roh** behandelt (inkl. Fenced-Code — eine Änderung an einem
+   Code-Beispiel im Core ist eine Core-Änderung, wie bei `pins`).
+3. **Normalisierung + Hash.** Wie
+   [§DC-FA-PIN-001.a Schritt 3](#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins):
+   alle Whitespace-Folgen (inkl. Zeilenumbrüche) zu **einem** Leerzeichen
+   kollabiert, Rand-Whitespace getrimmt, SHA-256 über das Ergebnis (hex).
+4. **Vergleich.** Hash ≠ Pin-Wert ⇒ Grund-Code `core-drift` (Datei, Zeile des
+   Markers, `target` = `sha256:<gekürzter-Pin>`; `message` nennt erwartet vs.
+   errechnet, gekürzt). Gleichheit ⇒ kein Befund. **Diagnose-only**: kein
+   `--repair`-Hunk (Neu-Pinnen ist menschliche Annahme der Änderung).
+5. **Scope/Determinismus.** `immutable` respektiert den Modul-Scope
+   ([§DC-FA-CONF-002.a](#dc-fa-conf-002a--effektiver-scan-scope-pro-modul)) wie
+   jedes Modul; nur Dateien **mit** Marker im effektiven Scope werden geprüft.
+   **Kein git**, kein Netz — die Prüfung liest nur die gescannte Datei selbst
+   ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+   Ohne `immutable` ist der Befundsatz byte-identisch
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
+
 ## 2. Datenstrukturen und Schemas
 
 ### Befund
@@ -1080,6 +1120,7 @@ Exit 2 ohne Prüfung
 | `versions.pin-pattern` | string | — | Regex; muss kompilieren und darf den Leerstring nicht matchen (Exit 2); die gefundene Version steht in Capture-Gruppe 1, sonst zählt der ganze Treffer |
 | `versions.current-from` | string | `version.md#aktuell` | `datei#anker` oder `datei`; die Datei muss existieren und innerhalb der Repo-Wurzel liegen, der adressierte Span muss eine Version (`v?\d+\.\d+\.\d+`) tragen (sonst Exit 2) |
 | `versions.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `versions`-Prüfung — datei-weit; die `current-from`-Datei ist stets ausgenommen |
+| `immutable.exclude-sections` | string[] | leer | Heading-Titel, deren Abschnitte **nicht** zum gehashten Core zählen (Vergleich gegen den getrimmten Heading-Text ohne Markdown-Auszeichnung, case-sensitiv — wie `matrix.exclude-sections`); für ADRs typisch `[Geschichte]` ([`DC-FA-IMM-001`](lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in)) |
 
 **Glob-Auswertung.** Alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`,
 `matrix.classes[].paths`/`.order`, die `*.exempt-paths`) werden **segmentweise
@@ -1124,6 +1165,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `external-redirects` | external | mehr als `REDIRECT_MAX` Redirects |
 | `version-stale` | versions | Versions-Pin weicht von der aktuellen Version (`versions.current-from`) ab |
 | `link-stale` | pins | normalisierter Ziel-Span eines gepinnten Links weicht vom hinterlegten `dpin`-Hash ab |
+| `core-drift` | immutable | normalisierter Core einer gepinnten Datei (ohne Marker-Zeile + `exclude-sections`) weicht vom hinterlegten `immutable`-Hash ab |
 
 Nutzungs-/Umgebungsfehler (Exit 2) melden auf stderr mit Präfix
 `d-check: error:`; Konfigurationsfehler nennen Datei und Zeile.

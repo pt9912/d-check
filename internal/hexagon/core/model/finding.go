@@ -18,6 +18,7 @@ const (
 	ReasonDiagramIDUndefined = "diagram-id-undefined"
 	ReasonVersionStale       = "version-stale"
 	ReasonLinkStale          = "link-stale"
+	ReasonCoreDrift          = "core-drift"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

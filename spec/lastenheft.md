@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.31.0
+**Version:** 0.32.0
 
 **Status:** Draft
 
@@ -44,8 +44,8 @@ statt per Code-Kopie.
 > (Referenzmatrix-Modul), `EXT` (externe Links), `CODE`
 > (Inline-Code-Pfade), `SPAN` (Markdown-Span-Artefakte), `HOST`
 > (Host-Pfad-Hygiene), `DIAG` (Diagramm-Kennungen), `VER`
-> (Versions-Pin-Konsistenz), `PIN` (Content-Pin/Drift), `CONF` (Konfiguration),
-> `DIST` (Distribution).
+> (Versions-Pin-Konsistenz), `PIN` (Content-Pin/Drift), `IMM`
+> (Immutabilitäts-/Core-Pin), `CONF` (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -74,8 +74,8 @@ verweist für das Konfigurations-Format auf
 
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
-`codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`. Ohne
-Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
+`immutable`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -1024,6 +1024,72 @@ Default-on oder eine Pflicht zu pinnen; mehrere Hash-Algorithmen (nur `sha256`).
 
 ---
 
+### DC-FA-IMM-001 — Immutabilitäts-Pin gegen Core-Drift (Modul `immutable`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `immutable` prüft d-check, ob
+der **unveränderliche Core** einer Datei seit dem Setzen eines Pins inhaltlich
+unverändert ist. Eine Datei trägt dazu einen Inline-HTML-Kommentar
+`<!-- immutable: sha256:<hex> -->` (den **Pin**). Ist er vorhanden (der **erste**
+Marker je Datei zählt; weitere sind inert), bildet d-check den **Core-Hash** der
+Datei und vergleicht ihn mit dem Pin. Abweichung → Befund `core-drift`.
+
+Der **Core** ist der Datei-Inhalt **ohne** (a) die Pin-Marker-Zeile selbst (sonst
+Selbstbezug — der Marker trägt den Hash des Core) und (b) die per
+`immutable.exclude-sections` benannten Abschnitte (Überschrift bis zur nächsten
+gleich-/höherrangigen; exakter Heading-Vergleich wie `matrix`). Der verbleibende
+Core wird **whitespace-/reflow-invariant** normalisiert (Whitespace-Folgen → ein
+Leerzeichen, führende/abschließende Leerzeichen entfernt) und per SHA-256 gehasht
+— dieselbe Normalisierung wie
+[`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in).
+
+**Zweck:** Eine *immutabel* erklärte Datei — etwa eine `Accepted`-ADR, deren
+Körper laut Prozess nicht mehr inhaltlich überschrieben werden darf (nur Anhänge
+unter einem ausgenommenen Abschnitt und der Status-Übergang) — erzeugt bei jeder
+versehentlichen oder unausgewiesenen Körper-Änderung einen Befund. Anders als eine
+git-historienbasierte Diff-Prüfung (läge außerhalb des read-only gemounteten
+Baums, bräche [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit))
+arbeitet `immutable` rein auf dem gescannten Arbeitsbaum: der Pin **ist** die im
+Dokument hinterlegte Wahrheit; ein bewusstes Neu-Pinnen ist die menschliche
+Annahme einer legitimen Änderung (dieselbe Disziplin wie `pins`/`versions`).
+
+**Opt-in pro Datei:** nur Dateien **mit** Pin werden geprüft (der Pin ist die
+bewusste „diese Datei ist eingefroren"-Markierung). Strikt opt-in Modul (Default
+aus): ohne aktives `immutable` byte-identisch
+([`DC-QA-02`](#dc-qa-02--determinismus)), nichts geschrieben
+([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)); der
+Modul-Scope ([`DC-FA-CONF-002`](#dc-fa-conf-002--modul-lokaler-scan-scope)) gilt
+wie für jedes Modul. **Diagnose-only:** `core-drift` liefert keinen
+`--repair`-Hunk — Neu-Pinnen ist menschliche Annahme der Änderung, kein eindeutig
+ableitbarer Fix (wie `link-stale`/`version-stale`); ein `--bless` wäre eine
+spätere, eigene Anforderung (berührt
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `immutable` aktiv und eine Datei mit `<!-- immutable: sha256:<H> -->`, deren normalisierter Core `<H>` ergibt, when `d-check` läuft, then kein Befund, Exit 0; ein read-only gemountetes Repository genügt.
+- **Boundary (Reflow):** Given korrekter Pin und eine **nur**-Whitespace/Umbruch-Änderung am Core (Wort-Inhalt identisch), when `d-check` läuft, then **kein** Befund (die Normalisierung absorbiert Reflow).
+- **Boundary (ausgenommener Abschnitt):** Given korrekter Pin und ein Anhang **innerhalb** eines `exclude-sections`-Abschnitts (z. B. eine neue Zeile unter `## Geschichte`), when `d-check` läuft, then **kein** Befund (der ausgenommene Abschnitt zählt nicht zum Core).
+- **Negative:** Given Pin und eine **inhaltliche** Änderung am Core **außerhalb** der ausgenommenen Abschnitte, when `d-check` läuft, then ein Befund `core-drift` (Datei:Zeile des Markers, erwarteter vs. errechneter Hash gekürzt), Exit 1.
+- **Boundary (kein Marker):** Given eine Datei **ohne** Pin-Marker, when `d-check --enable immutable` läuft, then **kein** Befund (nur gepinnte Dateien werden geprüft).
+- **Modul-aus:** Given **kein** aktives `immutable`, when `d-check` läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Out-of-Scope:** eine **VCS-/git-historienbasierte** Immutabilitäts-Prüfung
+(`core(BASE)` vs. `core(HEAD)` über eine Commit-Range) — sie erweiterte die
+Eingabe über den gescannten read-only-Baum hinaus
+([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)) und
+bräuchte einen eigenen nicht-hermetischen Port (analog `external`); eine spätere
+opt-in-Stufe als eigene Anforderung/ADR (die hier gewählte Pin-Form ist die
+hermetische, im Arbeitsbaum entscheidbare Hälfte, festgehalten in eigener ADR);
+Pinnen/Neu-Pinnen durch das Werkzeug selbst (read-only; ein `--bless`-Emissionsmodus
+wäre eine eigene Anforderung, berührt
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)); das Erzwingen, **welche**
+Status-Übergänge an einer gepinnten Datei zulässig sind (die Pin-Form sieht nur
+„Core unverändert / nicht" — ein den Core berührender Status-Wechsel verlangt ein
+bewusstes Neu-Pinnen); Default-on oder eine Pflicht zu pinnen; mehrere
+Hash-Algorithmen (nur `sha256`).
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -1132,7 +1198,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -1146,6 +1212,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.32.0 | 2026-06-28 | Neue Anforderung `DC-FA-IMM-001` (Modul `immutable`, opt-in): Immutabilitäts-Pin gegen Core-Drift — eine Datei mit Inline-Marker `<!-- immutable: sha256:… -->` wird gegen den whitespace-normalisierten **Core** (Datei ohne die Marker-Zeile und ohne die per `immutable.exclude-sections` benannten Abschnitte) gehasht; Abweichung → `core-drift`. Hermetische, im read-only-Arbeitsbaum entscheidbare Immutabilitäts-Prüfung (kein git; die git-historienbasierte Diff-Form bleibt Out-of-Scope bzw. spätere opt-in-Stufe, in begleitender ADR festgehalten). Opt-in pro Datei, default-off byte-identisch (`DC-QA-02`), diagnose-only. 12. Regelmodul; Bereichskürzel `IMM` in §3, `immutable` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-IMM-001.a` + Grund-Code `core-drift` + Schema-Key (`immutable.exclude-sections`) in der Spezifikation. Anlass: Auftraggeber — das ADR-Immutable-Gate war nur ein Skript (Copy-Drift über die Repo-Familie, [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Klasse „verteilen statt kopieren"); die verteilbare Pin-Form löst das hermetisch, die volle git-Garantie bleibt einem späteren VCS-Adapter vorbehalten | slice-052 |
 | 0.31.0 | 2026-06-28 | Neue Anforderung `DC-FA-MTX-003` (Modul `matrix`): **Token-basierte** Referenz-Richtung + Provenance-Marker + Grandfathering. Eine Klasse kann ein `token`-Regex tragen → `matrix` fängt verbotene Referenzen auch als bare ID-Token im Körper (nicht nur als Link), `matrix-forbidden` in Token-Form. Provenance-Marker `<!-- d-check:status-provenance -->` auf der Zeile nimmt eine verbotene Token-Referenz aus (deklarierte Provenance/Verifikations-Zeiger) — `matrix`' **erster** Zeilen-Marker, kehrt die „nur strukturelle Ausnahmen"-Haltung von `DC-FA-MTX-001` bewusst um (benannt/semantisch, nicht generisches Muting); Ehrlichkeit bleibt Reviewer. Neues `matrix.exempt-paths` grandfathered immutable `Accepted`-ADRs (Regelwerk §Referenz-Richtung). Default-aus byte-identisch (`DC-QA-02`). §DC-FA-MTX-001.a-Schritt + Schema-Keys (`matrix.classes[].token`, `matrix.exempt-paths`) in der Spezifikation. Anlass: Auftraggeber — d-check mechanisiert die Referenz-Richtung, die das adoptierte Regelwerk bewusst dem Reviewer überließ (wie schon [`MR-006`](../harness/conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)/`matrix`); der Marker macht die Provenance-vs-Entscheidungsgrundlage-Unterscheidung grep-bar | slice-051 |
 | 0.30.0 | 2026-06-28 | Neue Anforderung `DC-FA-MTX-002` (Modul `matrix`): Verweisrichtung **innerhalb** einer geordneten Dokumentklasse — eine Klasse kann `order` (Pfad-Globs, autoritativste Schicht zuerst; Rang = erster Treffer) plus `direction: no-downward` tragen; ein klasseninterner Abwärtsverweis (höherrangig → niederrangig, auch über mehrere Stufen) ⇒ neuer Grund-Code `matrix-downward`. Additiv zu den Klassen-Paar-Regeln (`DC-FA-MTX-001`); generalisiert die Spec-Straten-Schichtung auf viele Dateien je Schicht (Globs statt Einzeldateien-Listing). Fail-closed: `order`/`direction` nur zusammen, unbekannter `direction`-Wert ⇒ Config-Fehler; rangfreie Mitglieder nehmen nicht teil; Default beide leer ⇒ byte-identisch (`DC-QA-02`). Algorithmus-Schritt in `DC-FA-MTX-001.a`, Grund-Code `matrix-downward` + Schema-Keys (`matrix.classes[].order`/`.direction`) in der Spezifikation. Anlass: Auftraggeber — die alternative Einzelklassen-Aufzählung war als Richtung nicht erkennbar und verschattete (First-Match) tote Regeln; zugleich Konsumenten-Bedarf d-migrate (23 Spec-Dateien ⇒ Glob-Schichten statt 23-Zeilen-Listing) | slice-050 |
 | 0.29.0 | 2026-06-24 | Neue Anforderung `DC-FA-PIN-001` (Modul `pins`, opt-in): Content-Pin gegen inhaltlichen Drift — ein Link mit Inline-Marker `<!-- dpin: sha256:… -->` (bindet an den unmittelbar vorausgehenden Link derselben Zeile, sonst inert) wird gegen den whitespace-normalisierten **rohen** Ziel-Span (ganze Datei oder Heading-Section, inkl. Fenced-Code) gehasst; Mismatch → `link-stale`. Nur auflösbare Links (struktureller Befund bleibt `DC-FA-LINK-001`/`DC-FA-ANCH-001`, kein Doppelbefund, auch pins-only); opt-in pro Link, default-off byte-identisch (`DC-QA-02`), diagnose-only (`--bless` spätere CR). Bereichskürzel `PIN` in §3, `pins` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-PIN-001.a` + Grund-Code `link-stale` in der Spezifikation. Anlass: Auftraggeber-Idee 2 (stale citation) + Spike (Drift real, Rauschen ~0 bei Normalisierung) | slice-049 |
