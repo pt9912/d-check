@@ -1,8 +1,9 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.0.0 · **Datum:** 2026-06-11 ·
+**Version:** 1.1.0 · **Datum:** 2026-06-28 ·
 **Baseline:** Agents-Digest Kurs-Welle 18 §8 (Output-Schema,
-Kategorien-Semantik, Report-Pflicht).
+Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
+`grundlagen-konventionen.md` §Referenz-Richtung.
 
 ## Eingangs-Kontext (Pflicht — sonst nicht reproduzierbar)
 
@@ -23,7 +24,17 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
 - **MEDIUM** (vor Merge zu klären): Spec-Treue-Lücke einer
   Messmethode; Konsistenz-Lücke **zwischen** Modulen derselben
   Eingabe-Klasse; Erkennungs-Differenz zur Alt-Tool-Familie
-  ([`DC-QA-04`](../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)); fehlende Negativtests bei neuem öffentlichen Vertrag.
+  ([`DC-QA-04`](../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)); fehlende Negativtests bei neuem öffentlichen Vertrag;
+  **Referenz-Richtung (SDP)** — ein ADR (oder Spec-Stratum) referenziert
+  **abwärts** zum Volatileren (Slice/Plan), um eine Entscheidung/Spezifikation
+  zu **begründen**. Faustregel: *begründet* die ADR den Slice
+  (Entscheidungsgrundlage → Finding) oder *zeigt* sie nur, wo die Entscheidung
+  **verifiziert/entstanden** ist (Verifikations-Zeiger/Provenance → erlaubt)?
+  Abwärts-Provenance nur unter `## Geschichte`/Versions-Tabelle; bereits
+  `Accepted`-ADRs sind **grandfathered** (nur ab Einführung neu prüfen). Das ist
+  **bewusst Reviewer-, kein Linter-Befund** (ein grep auf `slice-NNN` im
+  ADR-Body flaggt legitime Verifikations-Zeiger falsch-positiv). Regelwerk:
+  [§Referenz-Richtung (SDP)](../baseline/v1.4.0/regelwerk/grundlagen-konventionen.md#referenz-richtung-sdp-wer-darf-wen-referenzieren).
 - **LOW** (nice-to-fix): Doku-Drift (Prosa-Modullisten, veraltete
   Beispiele); latente Wartungsfalle (hart verdrahteter Wert, der erst
   bei künftigem Edit zündet); Ketten-Duplikate in Make-Targets.
