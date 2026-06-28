@@ -4,6 +4,24 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.32.0] — 2026-06-28
+
+### Added
+
+- slice-052 — Neues opt-in-Regelmodul `immutable` (12. Modul, `DC-FA-IMM-001`):
+  Immutabilitäts-Pin gegen Core-Drift. Eine Datei mit dem Inline-Marker
+  `<!-- immutable: sha256:<hex> -->` wird gegen den whitespace-normalisierten
+  **Core** gehasst — den Datei-Inhalt **ohne** die Marker-Zeile und ohne die per
+  `immutable.exclude-sections` benannten Abschnitte (für ADRs typisch
+  `Geschichte`); Abweichung → Grund-Code `core-drift`. **Hermetisch** (kein git,
+  rein im read-only gescannten Arbeitsbaum); die git-historienbasierte
+  `core(BASE)`-vs-`core(HEAD)`-Form bleibt einem späteren opt-in VCS-Adapter
+  vorbehalten. Mechanik erbt die `pins`-Normalisierung; Marker auf der
+  vorverarbeiteten Zeile (in Fenced-/Inline-Code inert), erster Marker je Datei.
+  Diagnose-only, opt-in pro Datei, default-off byte-identisch
+  ([`DC-FA-IMM-001`](spec/lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in),
+  [ADR-0023](docs/plan/adr/0023-immutable-core-pin.md), Lastenheft 0.32.0).
+
 ## [0.31.0] — 2026-06-28
 
 ### Added

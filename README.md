@@ -3,11 +3,12 @@
 Doc-Referenz-Checker für Markdown-Dokumentation — deterministisch,
 seiteneffektfrei, ausgeliefert als Container-Image.
 
-**Status: released** — alle elf Regelmodule (`links`, `anchors`, `ids`,
+**Status: released** — alle zwölf Regelmodule (`links`, `anchors`, `ids`,
 `matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`external`) sind im GHCR-Image. Verbindlich ist das [Lastenheft](spec/lastenheft.md);
-die jeweils jüngsten Änderungen (zuletzt die token-basierte Referenz-Richtung im
-Modul `matrix`) führt die [CHANGELOG.md](CHANGELOG.md).
+`immutable`, `external`) sind im GHCR-Image. Verbindlich ist das
+[Lastenheft](spec/lastenheft.md); die jeweils jüngsten Änderungen (zuletzt das
+opt-in-Modul `immutable` für Immutabilitäts-Pins) führt die
+[CHANGELOG.md](CHANGELOG.md).
 
 ## Was ist d-check?
 
@@ -53,6 +54,11 @@ eigener Anforderung im [Lastenheft](spec/lastenheft.md):
   `<!-- dpin: … -->` wird gegen den Hash seines Ziel-Spans geprüft (Befund
   `link-stale` bei Drift), opt-in pro Link
   ([`DC-FA-PIN-001`](spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in))
+- `immutable` — Immutabilitäts-Pin gegen Core-Drift: eine Datei mit
+  `<!-- immutable: … -->` wird gegen den Hash ihres normalisierten **Core**
+  (ohne Marker-Zeile + `exclude-sections`) geprüft (Befund `core-drift` bei
+  Drift), opt-in pro Datei; hermetisch (kein git, read-only-Arbeitsbaum)
+  ([`DC-FA-IMM-001`](spec/lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
@@ -128,7 +134,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.31.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.32.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
