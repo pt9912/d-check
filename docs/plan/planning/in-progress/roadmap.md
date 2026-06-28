@@ -10,17 +10,18 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Aktive Welle: welle-39-matrix-richtung** — [`slice-050`](slice-050-matrix-klasseninterne-richtung.md):
-`matrix` um die **klasseninterne Verweisrichtung** erweitert — eine Klasse mit
-`order` (Glob-Rangliste, autoritativste Schicht zuerst) + `direction: no-downward`
+**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+welle-39-matrix-richtung ([`slice-050`](../done/slice-050-matrix-klasseninterne-richtung.md) —
+`matrix` um die **klasseninterne Verweisrichtung** erweitert: eine Klasse mit
+`order` (Glob-Rang, autoritativste Schicht zuerst) + `direction: no-downward`
 meldet klasseninterne Abwärtsverweise (Rang *i* → *j > i*, auch transitiv) als
-`matrix-downward`; additiv zu den Klassen-Paar-Regeln
-([`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)),
-fail-closed-Config, Default-aus byte-identisch
+`matrix-downward`; additiv zu den Klassen-Paar-Regeln, fail-closed-Config,
+Default-aus byte-identisch
 ([`DC-FA-MTX-002`](../../../../spec/lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix),
-[ADR-0021](../../adr/0021-matrix-klasseninterne-verweisrichtung.md), Lastenheft 0.30.0).
-
-Zuletzt abgeschlossen:
+[ADR-0021](../../adr/0021-matrix-klasseninterne-verweisrichtung.md), Lastenheft 0.30.0);
+zwei unabhängige Reviews (R1+R2, alle Befunde behoben); `make gates` grün; Release
+**v0.30.0** (Digest-Pin folgt mit dem GHCR-Push)
+([Closure](../done/slice-050-matrix-klasseninterne-richtung.md#7-closure-notiz-nach-done)). Davor
 welle-38-pins ([`slice-049`](../done/slice-049-pins-modul.md) — opt-in Modul
 `pins` (11. Modul, content-drift): ein Link mit Content-Pin
 `<!-- dpin: sha256:… -->` wird gegen den whitespace-normalisierten rohen
