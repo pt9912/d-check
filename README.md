@@ -6,7 +6,7 @@ seiteneffektfrei, ausgeliefert als Container-Image.
 **Status: released** — alle elf Regelmodule (`links`, `anchors`, `ids`,
 `matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
 `external`) sind im GHCR-Image. Verbindlich ist das [Lastenheft](spec/lastenheft.md);
-die jeweils jüngsten Änderungen (zuletzt die klasseninterne Verweisrichtung im
+die jeweils jüngsten Änderungen (zuletzt die token-basierte Referenz-Richtung im
 Modul `matrix`) führt die [CHANGELOG.md](CHANGELOG.md).
 
 ## Was ist d-check?
@@ -23,13 +23,14 @@ eigener Anforderung im [Lastenheft](spec/lastenheft.md):
 - `ids` — Linkpflicht für Kennungen (z. B. `ADR-NNNN`) nach
   deklarierten Mustern ([`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids))
 - `matrix` — Referenzrichtungs-Regeln zwischen Dokumentklassen
-  ([`DC-FA-MTX-001`](spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix))
-  **und innerhalb** einer geordneten Klasse (`order`/`direction` ⇒
-  `matrix-downward`,
+  ([`DC-FA-MTX-001`](spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)),
+  **innerhalb** einer geordneten Klasse (`order`/`direction` ⇒ `matrix-downward`,
   [`DC-FA-MTX-002`](spec/lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix))
-  plus Status-Bedingungen; legitime Ausnahmen sind **strukturell**
-  (`exclude-sections` für Provenance, opt-in `allow-supersede-lineage`
-  für die Supersede-Lineage-Kante), kein Zeilen-Marker
+  und auch als **bare ID-Token** im Körper (`token` ⇒ `matrix-forbidden`,
+  [`DC-FA-MTX-003`](spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix))
+  plus Status-Bedingungen; Ausnahmen sind strukturell (`exclude-sections`,
+  `allow-supersede-lineage`) oder per Provenance-Marker
+  `<!-- d-check:status-provenance -->` deklariert
 - `external` — Erreichbarkeit externer URLs, strikt opt-in
   ([`DC-FA-EXT-001`](spec/lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in))
 - `codepaths` — explizite Pfade in Inline-Code, opt-in
@@ -127,7 +128,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.30.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.31.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
