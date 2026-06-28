@@ -36,6 +36,12 @@ modules: [links, anchors]
 #   classes:
 #     - {name: contract, paths: [spec/lastenheft.md]}
 #     - {name: adr, paths: ["docs/plan/adr/[0-9]*.md"]}
+#     # order/direction prüft die Richtung INNERHALB einer geschichteten Klasse
+#     # (autoritativste Schicht zuerst; Abwärtsverweis ⇒ matrix-downward):
+#     # - name: spec
+#     #   paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+#     #   order: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+#     #   direction: no-downward
 #   rules:
 #     - {from: contract, to: adr, allow: false}
 #   status: {forbidden: [superseded, deprecated]}

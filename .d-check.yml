@@ -36,12 +36,20 @@ ids:
       link-policy: always
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
 
-# Referenzmatrix (DC-FA-MTX-001): maschinelle Kodierung von MR-006 —
-# Spec-Straten verweisen nie abwärts auf ADRs oder Planning-Artefakte.
+# Referenzmatrix (DC-FA-MTX-001 zwischen Klassen, DC-FA-MTX-002 innerhalb):
+# maschinelle Kodierung von MR-006 — Spec-Straten verweisen nie abwärts auf
+# ADRs/Planning (rules) UND nicht abwärts auf die autoritativere Spec-Schicht
+# (order/direction). architecture → spezifikation → lastenheft, nur aufwärts.
 matrix:
   classes:
     - name: spec-straten
       paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+      # Klasseninterne Verweisrichtung (DC-FA-MTX-002): Rang = autoritativste
+      # Schicht zuerst; ein Abwärtsverweis (z. B. lastenheft → architecture,
+      # auch transitiv) ⇒ matrix-downward. Generalisiert per Glob auf
+      # vielfiles-spec/ (hier drei Einzeldateien).
+      order: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+      direction: no-downward
     - name: adr
       paths: ["docs/plan/adr/[0-9]*.md"]
     - name: slice

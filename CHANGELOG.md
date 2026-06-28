@@ -4,6 +4,25 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.30.0] — 2026-06-28
+
+### Added
+
+- slice-050 — Modul `matrix` um die **klasseninterne Verweisrichtung** erweitert
+  (`DC-FA-MTX-002`): eine Dokumentklasse kann zusätzlich zu `paths` ein `order`
+  (Liste von Pfad-Globs, autoritativste Schicht zuerst; Rang = Index des ersten
+  Treffers) und `direction: no-downward` tragen. Ein **klasseninterner** Verweis
+  von einer höher- auf eine niederrangige Schicht (auch transitiv) erzeugt den
+  neuen Befund `matrix-downward`. Damit ist die Source-Precedence-Schichtung
+  *innerhalb* eines Stratums (`architecture → spezifikation → lastenheft`)
+  prüfbar, additiv zu den Klassen-Paar-Regeln (`DC-FA-MTX-001`); Globs
+  generalisieren auf Spec-Verzeichnisse mit vielen Dateien. Fehlkonfiguration ist
+  fail-closed (`order`/`direction` nur gemeinsam, unbekannter `direction`-Wert ⇒
+  Konfigurationsfehler); ohne beide Felder ist der Befundsatz byte-identisch
+  ([`DC-FA-MTX-002`](spec/lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix),
+  [ADR-0021](docs/plan/adr/0021-matrix-klasseninterne-verweisrichtung.md),
+  Lastenheft 0.30.0).
+
 ## [0.29.0] — 2026-06-24
 
 ### Added

@@ -78,7 +78,22 @@ const AlwaysPolicy = "always"
 type MatrixClass struct {
 	Name  string
 	Paths []string
+	// Order: optionale Rang-Globs der klasseninternen Schichtung
+	// (DC-FA-MTX-002), autoritativste Schicht zuerst. Der Rang einer Datei
+	// ist der Index des ersten matchenden Globs (First-Match wie die
+	// Klassenzuordnung); ohne Treffer ist die Datei rangfrei. Nur zusammen
+	// mit Direction wirksam (fail-closed im Config-Adapter validiert).
+	Order []string
+	// Direction: Richtungspolitik innerhalb der Klasse (DC-FA-MTX-002).
+	// "" = aus (byte-identisch zu DC-FA-MTX-001); DirectionNoDownward
+	// verbietet klasseninterne Verweise von höher- auf niederrangig.
+	Direction string
 }
+
+// DirectionNoDownward ist die einzige unterstützte Richtungspolitik
+// (DC-FA-MTX-002): klasseninterne Referenzen nur aufwärts zur
+// autoritativeren Schicht; ein Abwärtsverweis erzeugt matrix-downward.
+const DirectionNoDownward = "no-downward"
 
 // MatrixRule deklariert, ob Referenzen von From nach To erlaubt sind.
 type MatrixRule struct {

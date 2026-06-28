@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.29.0
+**Version:** 0.30.0
 
 **Status:** Draft
 
@@ -645,6 +645,40 @@ nicht zeilenweise stummgeschaltet.
 
 ---
 
+### DC-FA-MTX-002 — Verweisrichtung innerhalb einer geordneten Dokumentklasse (Modul `matrix`)
+
+**Beschreibung:** Eine Dokumentklasse
+([`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix))
+kann zusätzlich eine **geordnete Rangfolge** und eine **Richtungspolitik**
+tragen: `order` ist eine Liste von Pfad-Globs (autoritativste Schicht zuerst),
+`direction` die Politik. Bei `direction: no-downward` ist jede
+**klasseninterne** Referenz von einer höherrangigen (früher gelisteten,
+autoritativeren) Datei auf eine niederrangige verboten; der Rang einer Datei
+ist der Index des **ersten** `order`-Globs, den sie matcht (First-Match wie die
+Klassenzuordnung). Damit wird die Source-Precedence-Schichtung **innerhalb**
+eines Stratums maschinell prüfbar — kein Dokument verweist abwärts auf eine
+weniger autoritative Schicht —, additiv zu den Klassen-Paar-Regeln aus
+[`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix).
+`order` listet **Globs**, nicht zwingend Einzeldateien: eine Schicht kann viele
+Dateien fassen (eine Spec-Familie aus vielen Dateien braucht kein vollständiges
+Auflisten). Klassen-Mitglieder ohne `order`-Treffer sind **rangfrei** und nehmen
+an der Richtungsprüfung nicht teil. Fehlkonfiguration ist **fail-closed**:
+unbekannter `direction`-Wert, `direction` ohne `order` und `order` ohne
+`direction` sind Konfigurationsfehler — eine Richtungs-Deklaration darf nicht
+still wirkungslos sein. Default (beide Felder leer): das Modul verhält sich
+byte-identisch zu [`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
+([`DC-QA-02`](#dc-qa-02--determinismus)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given eine Klasse mit `order: [a.md, b.md]` und `direction: no-downward` und ein Link in `b.md` auf `a.md` (aufwärts), when das Modul `matrix` läuft, then kein Befund.
+- **Boundary:** Given dieselbe Klasse und ein Link in `a.md` auf `b.md` (abwärts — auch über mehr als eine Rang-Stufe), when das Modul läuft, then ein Befund mit Grund `matrix-downward` und Nennung beider Ränge.
+- **Negative:** Given `order` ohne `direction` (oder `direction` ohne `order`, oder ein unbekannter `direction`-Wert), when die Konfiguration geladen wird, then ein Konfigurationsfehler (Exit 2) statt eines stillen No-op.
+
+**Out-of-Scope:** Richtungsregeln **zwischen** verschiedenen Klassen (das sind die `rules`-Paare aus [`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)); automatische Herleitung der Rangfolge aus Dateiinhalt oder Source-Precedence-Tabelle (die Ordnung wird explizit deklariert); andere Politiken als `no-downward` (z. B. `no-upward`, `strict-adjacent`) bleiben einer späteren CR; rangfreie Mitglieder lösen keinen Befund aus; ein Zeilen-Opt-out-Marker bleibt — wie für `matrix` insgesamt — nicht vorgesehen.
+
+---
+
 ### DC-FA-EXT-001 — Externe Links (Modul `external`, opt-in)
 
 **Beschreibung:** Nur bei explizit aktiviertem Modul werden `http:`-
@@ -1069,6 +1103,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.30.0 | 2026-06-28 | Neue Anforderung `DC-FA-MTX-002` (Modul `matrix`): Verweisrichtung **innerhalb** einer geordneten Dokumentklasse — eine Klasse kann `order` (Pfad-Globs, autoritativste Schicht zuerst; Rang = erster Treffer) plus `direction: no-downward` tragen; ein klasseninterner Abwärtsverweis (höherrangig → niederrangig, auch über mehrere Stufen) ⇒ neuer Grund-Code `matrix-downward`. Additiv zu den Klassen-Paar-Regeln (`DC-FA-MTX-001`); generalisiert die Spec-Straten-Schichtung auf viele Dateien je Schicht (Globs statt Einzeldateien-Listing). Fail-closed: `order`/`direction` nur zusammen, unbekannter `direction`-Wert ⇒ Config-Fehler; rangfreie Mitglieder nehmen nicht teil; Default beide leer ⇒ byte-identisch (`DC-QA-02`). Algorithmus-Schritt in `DC-FA-MTX-001.a`, Grund-Code `matrix-downward` + Schema-Keys (`matrix.classes[].order`/`.direction`) in der Spezifikation. Anlass: Auftraggeber — die alternative Einzelklassen-Aufzählung war als Richtung nicht erkennbar und verschattete (First-Match) tote Regeln; zugleich Konsumenten-Bedarf d-migrate (23 Spec-Dateien ⇒ Glob-Schichten statt 23-Zeilen-Listing) | slice-050 |
 | 0.29.0 | 2026-06-24 | Neue Anforderung `DC-FA-PIN-001` (Modul `pins`, opt-in): Content-Pin gegen inhaltlichen Drift — ein Link mit Inline-Marker `<!-- dpin: sha256:… -->` (bindet an den unmittelbar vorausgehenden Link derselben Zeile, sonst inert) wird gegen den whitespace-normalisierten **rohen** Ziel-Span (ganze Datei oder Heading-Section, inkl. Fenced-Code) gehasst; Mismatch → `link-stale`. Nur auflösbare Links (struktureller Befund bleibt `DC-FA-LINK-001`/`DC-FA-ANCH-001`, kein Doppelbefund, auch pins-only); opt-in pro Link, default-off byte-identisch (`DC-QA-02`), diagnose-only (`--bless` spätere CR). Bereichskürzel `PIN` in §3, `pins` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-PIN-001.a` + Grund-Code `link-stale` in der Spezifikation. Anlass: Auftraggeber-Idee 2 (stale citation) + Spike (Drift real, Rauschen ~0 bei Normalisierung) | slice-049 |
 | 0.28.0 | 2026-06-24 | Neue Anforderung `DC-FA-VER-001` (Modul `versions`, opt-in): Versions-Pin-Konsistenz — alle Pins (`versions.pin-pattern`) müssen die aktuelle Version aus `versions.current-from` (Default `version.md#aktuell`) tragen, sonst `version-stale`; liest dafür Pins **auch in Fenced-Code** (gescopte Fence-Ausnahme), Ventile `exempt-paths`/`d-check:ignore` für historische Pins; opt-in/default-off (ohne Block byte-identisch, `DC-QA-02`), diagnose-only (Auto-Bump-`--repair` als Folge-CR an `DC-FA-CLI-008`). Bereichskürzel `VER` in §3, `versions` als gültiges Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-VER-001.a`, Grund-Code `version-stale` und Config-Schema (`versions.pin-pattern`/`current-from`/`exempt-paths`) in der Spezifikation ergänzt. Anlass: Auftraggeber-Idee „nicht vergessen, die Version zu bumpen" + Spike (Meta-Gate-Skript wegen Copy-Drift über die Repo-Familie verworfen) | slice-048 |
 | 0.27.0 | 2026-06-23 | Change Request (Auftraggeber): `DC-FA-CLI-010` (`--print-mk`-Fragment) um drei Targets + eine Variable erweitert — `doc-doctor` (`--doctor`), `doc-repair` (`--repair`, Recipe-Echo unterdrückt für `git apply`-reine stdout) und `doc-help` (namespaced, listet die `doc-*`-Targets via `##`-Annotationen; **kein** `help` wegen Konsumenten-Kollision) sowie `DCHECK_DIGEST` (Digest-Override per `ifeq`, sticht den Tag). Alle Targets `##`-annotiert (greift das `help` des Konsumenten auf). Read-only/deterministisch unverändert. Anlass: Auftraggeber-Wunsch nach `doc-doctor`/`doc-repair`/Self-Doc/Digest-Komfort | slice-047 |

@@ -294,3 +294,33 @@ func TestDecode_VersionsScope(t *testing.T) {
 		t.Fatalf("versions.scope nicht übernommen: %+v (%v)", cfg.Scopes, err)
 	}
 }
+
+// DC-FA-MTX-002: order/direction werden übernommen; gültige Kombination ok.
+func TestDecode_MatrixOrderDirection(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"matrix:\n  classes:\n    - name: a\n      paths: [x.md, y.md]\n" +
+			"      order: [x.md, y.md]\n      direction: no-downward\n"))
+	if err != nil {
+		t.Fatalf("gültige order/direction: %v", err)
+	}
+	c := cfg.Matrix.Classes[0]
+	if len(c.Order) != 2 || c.Direction != "no-downward" {
+		t.Fatalf("order/direction nicht übernommen: %+v", c)
+	}
+}
+
+// DC-FA-MTX-002 Negative (fail-closed): order/direction nur gemeinsam,
+// direction nur no-downward — sonst Konfigurationsfehler.
+func TestDecode_MatrixDirectionFailClosed(t *testing.T) {
+	base := "matrix:\n  classes:\n    - name: a\n      paths: [x.md]\n"
+	cases := map[string]string{
+		"order ohne direction":  base + "      order: [x.md]\n",
+		"direction ohne order":  base + "      direction: no-downward\n",
+		"unbekannte direction":  base + "      order: [x.md]\n      direction: sideways\n",
+	}
+	for name, in := range cases {
+		if _, err := configyaml.Decode([]byte(in)); err == nil {
+			t.Errorf("%s: Konfigurationsfehler erwartet, kein Fehler", name)
+		}
+	}
+}

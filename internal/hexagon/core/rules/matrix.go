@@ -2,6 +2,7 @@ package rules
 
 import (
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
+	"strconv"
 	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
@@ -11,6 +12,7 @@ import (
 const (
 	ReasonMatrixForbidden = "matrix-forbidden"
 	ReasonMatrixInactive  = "matrix-inactive"
+	ReasonMatrixDownward  = "matrix-downward"
 )
 
 // CheckMatrix ist das Regelmodul `matrix` (DC-FA-MTX-001):
@@ -24,6 +26,9 @@ func CheckMatrix(fsys driven.Filesystem, file string, content []byte, lines []Li
 	if !ok {
 		return nil
 	}
+	// srcOrdered != nil ⇒ die Quell-Klasse trägt eine aktive klasseninterne
+	// Richtung (DC-FA-MTX-002); dann wird der Rang gegen das Ziel geprüft.
+	srcOrdered := orderedClass(cfg.Classes, srcClass)
 	excluded := excludedRanges(content, cfg.ExcludeSections)
 	// Supersede-Lineage: einmal pro Quelldatei die Feld-Werte gewinnen.
 	// Ohne aktiviertes Flag bleibt die Menge leer und die Ausnahme ein
@@ -51,6 +56,11 @@ func CheckMatrix(fsys driven.Filesystem, file string, content []byte, lines []Li
 				Target: ref.Target, Reason: ReasonMatrixForbidden,
 				Message: "Referenz " + srcClass + " → " + dstClass + " ist nicht erlaubt",
 			})
+		}
+		// Klasseninterne Verweisrichtung (DC-FA-MTX-002), unabhängig von
+		// matrix-forbidden/-inactive.
+		if f, ok := downwardFinding(srcOrdered, srcClass, dstClass, file, rel, ref.Line, ref.Target); ok {
+			findings = append(findings, f)
 		}
 		if status := cachedStatus(fsys, statusCache, rel); statusForbidden(status, cfg.StatusForbidden) {
 			// Supersede-Lineage: die ablösende Datei darf auf das von
@@ -161,6 +171,53 @@ func classOf(classes []model.MatrixClass, rel string) (string, bool) {
 		}
 	}
 	return "", false
+}
+
+// orderedClass liefert die Klasse `name`, falls sie eine aktive
+// klasseninterne Richtung trägt (DC-FA-MTX-002: DirectionNoDownward +
+// nicht-leeres Order), sonst nil. Die fail-closed-Kopplung von
+// order/direction ist im Config-Adapter validiert.
+func orderedClass(classes []model.MatrixClass, name string) *model.MatrixClass {
+	for i := range classes {
+		if c := &classes[i]; c.Name == name &&
+			c.Direction == model.DirectionNoDownward && len(c.Order) > 0 {
+			return c
+		}
+	}
+	return nil
+}
+
+// rankOf liefert den Rang von rel = Index des ersten Order-Globs, den der
+// Pfad matcht (First-Match wie classOf); false, wenn keiner matcht
+// (rangfrei — nimmt an der Richtungsprüfung nicht teil).
+func rankOf(order []string, rel string) (int, bool) {
+	for i, g := range order {
+		if matchGlob(g, rel) {
+			return i, true
+		}
+	}
+	return 0, false
+}
+
+// downwardFinding prüft die klasseninterne Verweisrichtung (DC-FA-MTX-002):
+// Quelle und Ziel in derselben geordneten Klasse, beide rangbehaftet, Quell-Rang
+// kleiner (autoritativer) als Ziel-Rang ⇒ matrix-downward. Sonst ok=false.
+func downwardFinding(srcOrdered *model.MatrixClass, srcClass, dstClass, file, rel string,
+	line int, target string) (model.Finding, bool) {
+	if srcOrdered == nil || dstClass != srcClass {
+		return model.Finding{}, false
+	}
+	si, ok1 := rankOf(srcOrdered.Order, file)
+	di, ok2 := rankOf(srcOrdered.Order, rel)
+	if !ok1 || !ok2 || si >= di {
+		return model.Finding{}, false
+	}
+	return model.Finding{
+		File: file, Line: line, Rule: "matrix",
+		Target: target, Reason: ReasonMatrixDownward,
+		Message: "Abwärtsverweis innerhalb " + srcClass + ": Rang " +
+			strconv.Itoa(si) + " → " + strconv.Itoa(di) + " ist nicht erlaubt",
+	}, true
 }
 
 // ruleFor liefert die erste deklarierte Regel für das Klassen-Paar.

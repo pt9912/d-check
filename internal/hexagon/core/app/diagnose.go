@@ -68,7 +68,7 @@ func AllReasons() []string {
 	return []string{
 		model.ReasonTargetMissing, model.ReasonRepoEscape, model.ReasonSymlink,
 		rules.ReasonAnchorMissing, model.ReasonIDUnlinked, rules.ReasonCodepathMissing,
-		rules.ReasonMatrixInactive, rules.ReasonMatrixForbidden,
+		rules.ReasonMatrixInactive, rules.ReasonMatrixForbidden, rules.ReasonMatrixDownward,
 		rules.ReasonExternalStatus, rules.ReasonExternalTimeout, rules.ReasonExternalRedirects,
 		model.ReasonSpanUnclosed, model.ReasonSpanNestedLink, model.ReasonHostpathForbidden,
 	}
@@ -88,6 +88,7 @@ func reasonTexts() map[string]string {
 		rules.ReasonCodepathMissing:   "Ziel eines Inline-Code-Pfads existiert nicht",
 		rules.ReasonMatrixInactive:    "Referenz auf ein Dokument mit verbotenem Status (z. B. superseded)",
 		rules.ReasonMatrixForbidden:   "Referenz zwischen Dokumentklassen nicht erlaubt (Referenzrichtung)",
+		rules.ReasonMatrixDownward:    "Klasseninterner Abwärtsverweis gegen die deklarierte Rangordnung (order/direction)",
 		rules.ReasonExternalStatus:    "Externer Link: HTTP-Status ≥ 400 oder Transportfehler",
 		rules.ReasonExternalTimeout:   "Externer Link: Zeitüberschreitung",
 		rules.ReasonExternalRedirects: "Externer Link: zu viele Redirects",

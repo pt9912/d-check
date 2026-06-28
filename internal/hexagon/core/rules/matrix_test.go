@@ -246,3 +246,104 @@ func TestMatrixErlaubteRegel(t *testing.T) {
 		t.Fatalf("res = %+v, err = %v (erlaubte Regel)", res, err)
 	}
 }
+
+// DC-FA-MTX-002 Happy/Boundary: klasseninterne Richtung über order/direction.
+// Aufwärts (höherer Rang → kleinerer Index) ist ok; abwärts — auch transitiv —
+// erzeugt matrix-downward; ein rangfreies Klassen-Mitglied nimmt nicht teil.
+func TestMatrixDownwardRichtung(t *testing.T) {
+	cfg := model.MatrixConfig{
+		Classes: []model.MatrixClass{{
+			Name: "spec-straten",
+			Paths: []string{
+				"spec/lastenheft.md", "spec/spezifikation.md",
+				"spec/architecture.md", "spec/notiz.md",
+			},
+			Order: []string{
+				"spec/lastenheft.md", "spec/spezifikation.md", "spec/architecture.md",
+			},
+			Direction: model.DirectionNoDownward,
+		}},
+	}
+	m := coretest.NewMemFS(map[string]string{
+		// architecture (Rang 2) → lastenheft (Rang 0): aufwärts, kein Befund
+		"spec/architecture.md": "# A\n[hoch](lastenheft.md)\n",
+		// spezifikation (Rang 1) → architecture (Rang 2): abwärts, Befund Zeile 2
+		"spec/spezifikation.md": "# S\n[runter](architecture.md)\n",
+		// lastenheft (Rang 0) → architecture (Rang 2): abwärts transitiv, Befund Zeile 2
+		"spec/lastenheft.md": "# L\n[transitiv](architecture.md)\n",
+		// notiz.md ist Klassen-Mitglied, aber rangfrei (kein order-Treffer) → kein Befund
+		"spec/notiz.md": "# N\n[egal](architecture.md)\n",
+	})
+	res, err := Run(m, nil, model.Config{Matrix: cfg}, []string{"matrix"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, fmt.Sprintf("%s:%d %s", f.File, f.Line, f.Reason))
+	}
+	want := []string{
+		"spec/lastenheft.md:2 matrix-downward",
+		"spec/spezifikation.md:2 matrix-downward",
+	}
+	if fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("Befunde = %v, want %v", got, want)
+	}
+	// Boundary-Meldung nennt beide Ränge.
+	for _, f := range res.Findings {
+		if !strings.Contains(f.Message, "Rang") {
+			t.Fatalf("matrix-downward-Meldung ohne Ränge: %q", f.Message)
+		}
+	}
+}
+
+// DC-FA-MTX-002 Default-aus: ohne order/direction ist der Befundsatz
+// byte-identisch (keine matrix-downward-Befunde, DC-QA-02).
+func TestMatrixDownwardDefaultAus(t *testing.T) {
+	cfg := model.MatrixConfig{
+		Classes: []model.MatrixClass{
+			{Name: "spec-straten", Paths: []string{"spec/lastenheft.md", "spec/architecture.md"}},
+		},
+	}
+	m := coretest.NewMemFS(map[string]string{
+		"spec/lastenheft.md":   "# L\n[runter](architecture.md)\n",
+		"spec/architecture.md": "# A\n",
+	})
+	res, err := Run(m, nil, model.Config{Matrix: cfg}, []string{"matrix"})
+	if err != nil || len(res.Findings) != 0 {
+		t.Fatalf("res = %+v, err = %v (ohne order/direction kein Befund)", res, err)
+	}
+}
+
+// DC-FA-MTX-002 Kanten (Review MEDIUM-1): rangfreies Ziel, Gleichrang und
+// Selbstverweis lösen kein matrix-downward aus.
+func TestMatrixDownwardKanten(t *testing.T) {
+	noFinding := func(t *testing.T, name string, cfg model.MatrixConfig, files map[string]string) {
+		t.Helper()
+		res, err := Run(coretest.NewMemFS(files), nil, model.Config{Matrix: cfg}, []string{"matrix"})
+		if err != nil || len(res.Findings) != 0 {
+			t.Fatalf("%s: res=%+v err=%v (kein Befund erwartet)", name, res, err)
+		}
+	}
+	// (a) rangfreies Ziel: Quelle rangbehaftet, Ziel Klassen-Mitglied ohne order-Treffer.
+	noFinding(t, "rangfreies Ziel",
+		model.MatrixConfig{Classes: []model.MatrixClass{{
+			Name: "c", Paths: []string{"spec/lastenheft.md", "spec/notiz.md"},
+			Order: []string{"spec/lastenheft.md"}, Direction: model.DirectionNoDownward,
+		}}},
+		map[string]string{"spec/lastenheft.md": "# L\n[zu rangfrei](notiz.md)\n", "spec/notiz.md": "# N\n"})
+	// (b) Gleichrang: ein order-Glob matcht beide Dateien → gleicher Rang.
+	noFinding(t, "Gleichrang",
+		model.MatrixConfig{Classes: []model.MatrixClass{{
+			Name: "c", Paths: []string{"spec/a.md", "spec/b.md"},
+			Order: []string{"spec/*.md"}, Direction: model.DirectionNoDownward,
+		}}},
+		map[string]string{"spec/a.md": "# A\n[gleichrang](b.md)\n", "spec/b.md": "# B\n"})
+	// (c) Selbstverweis: Datei verweist auf sich selbst (si == di).
+	noFinding(t, "Selbstverweis",
+		model.MatrixConfig{Classes: []model.MatrixClass{{
+			Name: "c", Paths: []string{"spec/lastenheft.md", "spec/architecture.md"},
+			Order: []string{"spec/lastenheft.md", "spec/architecture.md"}, Direction: model.DirectionNoDownward,
+		}}},
+		map[string]string{"spec/lastenheft.md": "# L\n[selbst](lastenheft.md)\n", "spec/architecture.md": "# A\n"})
+}

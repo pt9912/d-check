@@ -341,11 +341,16 @@ type harnessClass struct {
 	name  string
 	paths []string
 	probe string
+	// order/direction (DC-FA-MTX-002): klasseninterne Verweisrichtung; nur
+	// gesetzt, wo eine geschichtete Klasse die Source-Precedence kodiert.
+	order     []string
+	direction string
 }
 
 func harnessClasses() []harnessClass {
 	return []harnessClass{
-		{name: "spec-straten", paths: []string{"spec/lastenheft.md", "spec/spezifikation.md", "spec/architecture.md"}, probe: "spec"},
+		{name: "spec-straten", paths: []string{"spec/lastenheft.md", "spec/spezifikation.md", "spec/architecture.md"}, probe: "spec",
+			order: []string{"spec/lastenheft.md", "spec/spezifikation.md", "spec/architecture.md"}, direction: "no-downward"},
 		{name: "adr", paths: []string{`"docs/plan/adr/[0-9]*.md"`}, probe: "docs/plan/adr"},
 		{name: "slice", paths: []string{`"docs/plan/planning/**/slice-*.md"`}, probe: "docs/plan/planning"},
 	}
@@ -458,6 +463,14 @@ func renderHarnessMatrix(fsys driven.Filesystem, repoAware bool) string {
 		if !active[c.name] {
 			fmt.Fprintf(&b, "    # Hinweis: %s fehlt im Repo — Klasse auskommentiert.\n", c.probe)
 			pre = "# "
+		}
+		if len(c.order) > 0 {
+			// Geschichtete Klasse: order/direction (DC-FA-MTX-002) in Blockform.
+			fmt.Fprintf(&b, "    %s- name: %s\n", pre, c.name)
+			fmt.Fprintf(&b, "    %s  paths: [%s]\n", pre, strings.Join(c.paths, ", "))
+			fmt.Fprintf(&b, "    %s  order: [%s]  # autoritativste Schicht zuerst\n", pre, strings.Join(c.order, ", "))
+			fmt.Fprintf(&b, "    %s  direction: %s  # Abwärtsverweis ⇒ matrix-downward\n", pre, c.direction)
+			continue
 		}
 		fmt.Fprintf(&b, "    %s- {name: %s, paths: [%s]}\n", pre, c.name, strings.Join(c.paths, ", "))
 	}

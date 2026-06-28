@@ -314,6 +314,29 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.29.0 \
 `matrix-forbidden`, Referenzen auf Dokumente mit verbotenem Status (etwa
 abgelöst) als `matrix-inactive`.
 
+**Richtung innerhalb einer Klasse (`order`/`direction`).** Trägt eine Klasse
+zusätzlich `order` (eine Liste von Pfad-Globs, **autoritativste Schicht
+zuerst**) und `direction: no-downward`, prüft d-check auch *klasseninterne*
+Referenzen: der Rang einer Datei ist der erste passende `order`-Glob; ein
+Verweis von einer höher- auf eine niederrangige Datei (auch über mehrere
+Stufen) erscheint als `matrix-downward`. Dateien ohne `order`-Treffer sind
+rangfrei und werden nicht geprüft. So lässt sich z. B. erzwingen, dass das
+Lastenheft nie „abwärts" auf Spezifikation oder Architektur verweist:
+
+```yaml
+matrix:
+  classes:
+    - name: spec
+      paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+      order: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+      direction: no-downward
+```
+
+`order` und `direction` gehören zusammen — eines ohne das andere (oder ein
+unbekannter `direction`-Wert) ist ein Konfigurationsfehler (Exit 2), damit eine
+Richtungsregel nie still wirkungslos ist. Ohne beide Felder verhält sich
+`matrix` unverändert.
+
 ### 4.8 Externe Links prüfen (Modul `external`)
 
 **Ziel:** die Erreichbarkeit externer (HTTP-)Links prüfen.

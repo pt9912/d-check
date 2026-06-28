@@ -182,7 +182,10 @@ ids:
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
 matrix:
   classes:
-    - {name: spec-straten, paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]}
+    - name: spec-straten
+      paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+      order: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]  # autoritativste zuerst
+      direction: no-downward  # klasseninterner Abwärtsverweis ⇒ matrix-downward
     - {name: adr, paths: ["docs/plan/adr/[0-9]*.md"]}
     - {name: slice, paths: ["docs/plan/planning/**/slice-*.md"]}
   rules:
@@ -558,6 +561,23 @@ additiv (ein Muster mit `always` findet eine Obermenge seiner
    trägt — anders als `codepaths`/`ids` — keinen `d-check:ignore`-Marker
    ([§DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code) Schritt 1
    gilt nur für jene Module).
+5. **Klasseninterne Verweisrichtung**
+   ([`DC-FA-MTX-002`](lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix)):
+   Trägt die in Schritt 1 zugeordnete Quell-Klasse ein nicht-leeres `order`
+   (Liste von Pfad-Globs) und `direction: no-downward`, wird — zusätzlich zur
+   Klassen-Regelprüfung — geprüft, ob die Zieldatei **derselben** Klasse
+   angehört. Ist das so, ist der **Rang** je Datei der Index des ersten
+   `order`-Globs, den sie matcht (First-Match wie die Klassenzuordnung; eine
+   Datei ohne Treffer ist rangfrei). Haben Quelle und Ziel je einen Rang und
+   ist der Quell-Rang **kleiner** als der Ziel-Rang (Verweis von der
+   autoritativeren auf die weniger autoritative Schicht, auch über mehrere
+   Stufen), entsteht ein `matrix-downward`-Befund (Datei, Zeile, Ziel; die
+   Meldung nennt beide Ränge). Rangfreie Dateien und klassenübergreifende
+   Referenzen lösen kein `matrix-downward` aus; die Prüfung ist unabhängig von
+   `matrix-forbidden`/`matrix-inactive`. Fehlkonfiguration ist fail-closed
+   (Config-Adapter, Exit 2): unbekannter `direction`-Wert, `direction` ohne
+   `order`, `order` ohne `direction`. Ohne beide Felder ist der Befundsatz
+   byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
 
 ### DC-FA-EXT-001.a — Externe Erreichbarkeit
 
@@ -1026,7 +1046,9 @@ Exit 2 ohne Prüfung
 | `ids.patterns[].link-policy` | string | `prose` | nur `prose` oder `always` (Exit 2); `always` macht auch Inline-Code-Vorkommen linkpflichtig |
 | `ids.patterns[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ohne Linkpflicht für das Muster — nackte wie Inline-Code-Vorkommen, unabhängig von der `link-policy` |
 | `matrix.classes[].name` | string | — | eindeutig |
-| `matrix.classes[].paths` | string[] | — | Glob |
+| `matrix.classes[].paths` | string[] | — | Glob (Mitgliedschaft) |
+| `matrix.classes[].order` | string[] | leer | Glob-Liste, autoritativste Schicht zuerst (Rang = Index des ersten Treffers); nur zusammen mit `direction` (Exit 2) |
+| `matrix.classes[].direction` | string | leer | nur `no-downward` (Exit 2 bei unbekanntem Wert); verlangt nicht-leeres `order` (Exit 2) — keine still wirkungslose Richtungs-Deklaration |
 | `matrix.rules[]` | {from,to,allow} | — | Klassen müssen deklariert sein |
 | `matrix.status.forbidden` | string[] | `[superseded, deprecated]` | case-insensitiv |
 | `matrix.status.allow-supersede-lineage` | bool | `false` | nimmt die deklarierte Supersede-Lineage-Kante von der Status-Prüfung aus (nur `matrix-inactive`); ohne `true` byte-identisch |
@@ -1065,6 +1087,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `id-unlinked` | ids | Kennung im Fließtext ohne Markdown-Link |
 | `matrix-forbidden` | matrix | Referenz zwischen Klassen nicht erlaubt |
 | `matrix-inactive` | matrix | Referenz auf Dokument mit verbotenem Status |
+| `matrix-downward` | matrix | klasseninterner Abwärtsverweis gegen die deklarierte Rangordnung (`order`/`direction: no-downward`) |
 | `external-status` | external | HTTP-Status ≥ 400 oder Transportfehler (DNS/Verbindung) |
 | `external-timeout` | external | Timeout überschritten |
 | `codepath-missing` | codepaths | Ziel eines Inline-Code-Pfads existiert nicht |
@@ -1127,3 +1150,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-22 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) + §2-Schema ergänzt: Datei-Ventil `codepaths.exempt-paths` (Glob wie `scan.ignore`) nimmt ganze Dateien von der `codepaths`-Prüfung aus — datei-weit, unabhängig von `codepaths.roots`; Vorbild das gleichnamige ids-Ventil. Abwärtskompatibel: ohne gesetztes `exempt-paths` byte-identisch | slice-043 |
 | 2026-06-24 | §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) + §2-Schema (`versions.pin-pattern`/`versions.current-from`/`versions.exempt-paths`) + Grund-Code `version-stale` ergänzt: opt-in Modul `versions` prüft Versions-Pins gegen die aus `versions.current-from` (Default `version.md#aktuell`) gelesene aktuelle Version; liest Pins **auch in Fences** (gescopte Ausnahme, Muster-Scan ohne Parser), Ventile `exempt-paths`/`d-check:ignore`, fail-closed bei unauflösbarer Quelle, diagnose-only (Auto-Bump-`--repair` als Folge-CR). Default-aus byte-identisch | slice-048 |
 | 2026-06-24 | §[`DC-FA-PIN-001.a`](spezifikation.md#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins) + Grund-Code `link-stale` (§4) ergänzt: opt-in Modul `pins` hasst den whitespace-normalisierten **rohen** Ziel-Span (Datei/Heading-Section inkl. Fenced-Code) eines gepinnten Links (`<!-- dpin: sha256:… -->`, gebunden an den unmittelbar vorausgehenden Link derselben Zeile, sonst inert) und meldet `link-stale` bei Drift; nur auflösbare repo-interne Ziele (struktureller Befund bleibt `links`/`anchors`, kein Doppelbefund), Scope-treu (nur Quell-Dateien), diagnose-only; §2-`rule`-Feld zeigt jetzt auf die Modulliste statt einer Enum | slice-049 |
+| 2026-06-28 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 5 + §2-Schema (`matrix.classes[].order`/`.direction`) + Grund-Code `matrix-downward` (§4) + Config-Beispiel ergänzt: klasseninterne Verweisrichtung ([`DC-FA-MTX-002`](lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix)) — eine Klasse mit `order` (Glob-Rang, First-Match) + `direction: no-downward` meldet klasseninterne Abwärtsverweise (Rang *i* → *j > i*, auch transitiv) als `matrix-downward`; rangfreie Mitglieder und klassenübergreifende Referenzen ausgenommen; fail-closed-Config (`order`/`direction` nur zusammen, unbekannter `direction`-Wert ⇒ Exit 2); Default-aus byte-identisch | slice-050 |

@@ -82,8 +82,10 @@ type rawVersions struct {
 type rawMatrix struct {
 	Scope   *rawScope `yaml:"scope"`
 	Classes []struct {
-		Name  string   `yaml:"name"`
-		Paths []string `yaml:"paths"`
+		Name      string   `yaml:"name"`
+		Paths     []string `yaml:"paths"`
+		Order     []string `yaml:"order"`
+		Direction string   `yaml:"direction"`
 	} `yaml:"classes"`
 	Rules []struct {
 		From  string `yaml:"from"`
@@ -408,6 +410,26 @@ func applyIDs(ids *rawIDs, cfg *model.Config) error {
 	return nil
 }
 
+// validateMatrixDirection erzwingt die fail-closed-Kopplung von
+// order/direction (DC-FA-MTX-002): direction nur DirectionNoDownward,
+// direction und order ausschließlich gemeinsam — eine Richtungs-Deklaration
+// darf nicht still wirkungslos sein.
+func validateMatrixDirection(i int, direction string, order []string) error {
+	switch {
+	case direction == "" && len(order) == 0:
+		return nil
+	case direction == "":
+		return fmt.Errorf("%s: matrix.classes[%d].order ohne direction", FileName, i)
+	case direction != model.DirectionNoDownward:
+		return fmt.Errorf("%s: matrix.classes[%d].direction %q unbekannt — nur %q",
+			FileName, i, direction, model.DirectionNoDownward)
+	case len(order) == 0:
+		return fmt.Errorf("%s: matrix.classes[%d].direction ohne order", FileName, i)
+	default:
+		return nil
+	}
+}
+
 func applyMatrix(m *rawMatrix, cfg *model.Config) error {
 	if m == nil {
 		return nil
@@ -417,8 +439,13 @@ func applyMatrix(m *rawMatrix, cfg *model.Config) error {
 		if c.Name == "" || classes[c.Name] {
 			return fmt.Errorf("%s: matrix.classes[%d].name fehlt oder doppelt", FileName, i)
 		}
+		if err := validateMatrixDirection(i, c.Direction, c.Order); err != nil {
+			return err
+		}
 		classes[c.Name] = true
-		cfg.Matrix.Classes = append(cfg.Matrix.Classes, model.MatrixClass{Name: c.Name, Paths: c.Paths})
+		cfg.Matrix.Classes = append(cfg.Matrix.Classes, model.MatrixClass{
+			Name: c.Name, Paths: c.Paths, Order: c.Order, Direction: c.Direction,
+		})
 	}
 	for i, rule := range m.Rules {
 		if !classes[rule.From] || !classes[rule.To] {
