@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
 )
 
@@ -115,5 +116,39 @@ func TestImmutableFirstMarkerWins(t *testing.T) {
 	}
 	if fs[0].Line != 4 {
 		t.Fatalf("Befund sollte am ersten Marker (Zeile 4) hängen, got Zeile %d", fs[0].Line)
+	}
+}
+
+// TestImmutableNichtAktivUndDispatch belegt die AK „Modul-aus" (Default-off
+// byte-identisch, DC-QA-02) UND den Gating-/Dispatch-Pfad über Run() statt
+// CheckImmutable direkt (R1-MEDIUM): eine gepinnte Datei mit falschem Hash gibt
+// ohne aktives immutable 0 Befunde, mit aktivem immutable genau ein core-drift.
+func TestImmutableNichtAktivUndDispatch(t *testing.T) {
+	fix := map[string]string{
+		"docs/a.md": "# A\n\n<!-- immutable: sha256:0 -->\n\nKörper.\n",
+	}
+	res, err := Run(coretest.NewMemFS(fix), nil, model.Config{}, []string{"links"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("immutable nicht aktiv → 0 Befunde, got %v", res.Findings)
+	}
+	res2, err := Run(coretest.NewMemFS(fix), nil, model.Config{}, []string{"immutable"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res2.Findings) != 1 || res2.Findings[0].Rule != "immutable" || res2.Findings[0].Reason != model.ReasonCoreDrift {
+		t.Fatalf("immutable aktiv → genau 1 core-drift über den Dispatch, got %v", res2.Findings)
+	}
+}
+
+// TestImmutableMarkerInInlineCodeInert: ein Marker NUR in Inline-Code (Syntax-
+// Beispiel im Fließtext) ist kein Live-Pin — Erkennung auf der vorverarbeiteten
+// Zeile, Inline-Code ist geleert (DC-FA-IMM-001.a Schritt 1; R1-LOW, analog Fence).
+func TestImmutableMarkerInInlineCodeInert(t *testing.T) {
+	content := "# Doku\n\nNutze `<!-- immutable: sha256:abc123 -->` als Pin-Syntax.\n\nKörper.\n"
+	if fs := runImmutable(t, content, nil); len(fs) != 0 {
+		t.Fatalf("Marker in Inline-Code: erwartet 0 Befunde (inert), got %d: %+v", len(fs), fs)
 	}
 }

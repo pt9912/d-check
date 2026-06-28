@@ -52,7 +52,13 @@ im gepinnten Image, Konsum über `doc-check` — **kein kopiertes Skript**.
 **Zwei Backends, bewusst koexistent.** Die Pin-Form ist die hermetische,
 verteilbare Hälfte; ihre Garantie ist **schwächer** als der git-Diff (der Pin
 ist neu-pinn-bar — wer den Core ändert *und* neu pinnt, kommt durch; der
-Reviewer ist der Boden, genau wie bei `pins`/`versions`). Die **harte**
+Reviewer ist der Boden, genau wie bei `pins`/`versions`). Umgekehrt ist der Pin
+an **einer** Stelle **strenger** als das Skript: die `**Status:**`-Zeile liegt
+stets im Core und ist per `exclude-sections` nicht ausnehmbar (das Ventil greift
+auf Abschnitte, nicht auf Einzelzeilen) — ein vom Skript erlaubter
+Supersede-Übergang berührt damit den Core und verlangt ein bewusstes Neu-Pinnen;
+die feinere „nur die Kopf-Status-Zeile strippen"-Semantik bleibt dem späteren
+VCS-Adapter (oder einer Folge-CR) vorbehalten. Die **harte**
 git-Garantie bleibt das bestehende `adr-check`
 ([ADR-0016](0016-adr-immutable-gate.md)) — es bleibt **unangetastet** und
 bewacht d-checks eigene 21 Accepted-ADRs weiter über die Range (der Produzent
