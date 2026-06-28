@@ -126,8 +126,10 @@ schrumpft auf die nicht grep-bare Resthälfte: **Marker-Ehrlichkeit**.
 
 **Belege.**
 - `make gates` **grün** (doc-check, lint, test, arch-check, coverage, semgrep,
-  gate-consistency, planning-check). `make ci` in der Release-Pipeline folgt;
-  Release **v0.31.0** per Tag-Push, Digest-Pin per digest-backfill.
+  gate-consistency, planning-check); `make ci` in der Release-Pipeline (image-test,
+  OCI-Label-Pin) **grün**. Release **v0.31.0** auf GHCR (Pipeline-Run 28331232379),
+  Digest-Pin `ghcr.io/pt9912/d-check@sha256:1455b05b71d04bc7fe1887705db017a08e5b5b8399adbcb9d30c0d2c817c6ec5`
+  (Handbuch §2 nachgezogen).
 - **Zwei unabhängige Reviews:** R1 (mergebar; MEDIUM F-4 Test-Lücke + LOWs) und R2
   (mergebar; alle R1-Auflösungen belegt, ein LOW N-1). F-4 (Fence-/Section-Fixtures),
   F-1 (alle Token je Zeile, `FindAllStringIndex`) und N-1 (Zwei-Token-Zeilen-Fixture)

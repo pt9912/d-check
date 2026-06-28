@@ -17,7 +17,8 @@ welle-40-matrix-token-richtung ([`slice-051`](../done/slice-051-matrix-token-ric
 nur als Link), `matrix-forbidden` in Token-Form; Provenance-Marker
 `<!-- d-check:status-provenance -->` deklariert legitime aus; `exempt-paths`
 grandfathered immutable ADRs; zwei unabhängige Reviews (R1+R2); Release
-**v0.31.0** (Digest-Pin folgt mit dem GHCR-Push)
+**v0.31.0** auf GHCR (Pipeline-Run 28331232379 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:1455b05b71d04bc7fe1887705db017a08e5b5b8399adbcb9d30c0d2c817c6ec5`
 ([`DC-FA-MTX-003`](../../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix),
 [ADR-0022](../../adr/0022-matrix-token-richtung-provenance-marker.md),
 [Closure](../done/slice-051-matrix-token-richtung.md#7-closure-notiz-nach-done)). Davor
