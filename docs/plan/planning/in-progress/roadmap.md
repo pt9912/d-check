@@ -10,7 +10,16 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+**Aktive Welle: welle-40-matrix-token-richtung** — [`slice-051`](slice-051-matrix-token-richtung.md):
+`matrix` um die **token-basierte** Referenz-Richtung erweitert — eine Klasse mit
+`token`-Regex fängt verbotene Referenzen auch als bare ID-Token im Körper (nicht
+nur als Link), `matrix-forbidden` in Token-Form; Provenance-Marker
+`<!-- d-check:status-provenance -->` deklariert legitime aus; `exempt-paths`
+grandfathered immutable ADRs
+([`DC-FA-MTX-003`](../../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix),
+[ADR-0022](../../adr/0022-matrix-token-richtung-provenance-marker.md), Lastenheft 0.31.0).
+
+Zuletzt abgeschlossen:
 welle-39-matrix-richtung ([`slice-050`](../done/slice-050-matrix-klasseninterne-richtung.md) —
 `matrix` um die **klasseninterne Verweisrichtung** erweitert: eine Klasse mit
 `order` (Glob-Rang, autoritativste Schicht zuerst) + `direction: no-downward`

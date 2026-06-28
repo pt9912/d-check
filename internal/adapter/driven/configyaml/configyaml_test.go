@@ -324,3 +324,30 @@ func TestDecode_MatrixDirectionFailClosed(t *testing.T) {
 		}
 	}
 }
+
+// DC-FA-MTX-003: matrix.classes[].token wird kompiliert, exempt-paths übernommen.
+func TestDecode_MatrixTokenUndExemptPaths(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"matrix:\n  classes:\n    - {name: slice, paths: [s.md], token: 'slice-\\d{3}'}\n" +
+			"  exempt-paths: [\"docs/plan/adr/0001-*.md\"]\n"))
+	if err != nil {
+		t.Fatalf("gültige token/exempt-paths: %v", err)
+	}
+	c := cfg.Matrix.Classes[0]
+	if c.Token == nil || !c.Token.MatchString("slice-042") {
+		t.Fatalf("token nicht kompiliert/übernommen: %+v", c)
+	}
+	if len(cfg.Matrix.ExemptPaths) != 1 {
+		t.Fatalf("exempt-paths nicht übernommen: %+v", cfg.Matrix.ExemptPaths)
+	}
+}
+
+// DC-FA-MTX-003 Negative (fail-closed): token kompiliert nicht / matcht Leerstring.
+func TestDecode_MatrixTokenFailClosed(t *testing.T) {
+	for _, tok := range []string{"[unclosed", "x*"} { // x* matcht den Leerstring
+		in := "matrix:\n  classes:\n    - {name: a, paths: [x.md], token: '" + tok + "'}\n"
+		if _, err := configyaml.Decode([]byte(in)); err == nil {
+			t.Errorf("token %q: Konfigurationsfehler erwartet", tok)
+		}
+	}
+}

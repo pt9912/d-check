@@ -42,13 +42,18 @@ modules: [links, anchors]
 #     #   paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
 #     #   order: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
 #     #   direction: no-downward
+#     # token erkennt Referenzen auch als bare ID-Token im Körper (nicht nur Link):
+#     # - {name: slice, paths: ["docs/plan/planning/**/slice-*.md"], token: 'slice-\d{3}'}
 #   rules:
 #     - {from: contract, to: adr, allow: false}
+#     # - {from: adr, to: slice, allow: false}   # ADR nennt Slice nur als deklarierte
+#     #   # Provenance: <!-- d-check:status-provenance --> auf der Zeile nimmt aus
 #   status: {forbidden: [superseded, deprecated]}
 #     # opt-in: ablösende Datei darf auf ihr abgelöstes (inaktives) Ziel zeigen
 #     # allow-supersede-lineage: true
 #     # supersede-fields: [Supersedes, Aenderungstyp]
 #   exclude-sections: [Historie]
+#   # exempt-paths: ["docs/plan/adr/0001-*.md"]   # immutable Alt-ADRs grandfathern
 
 # --- codepaths: explizite Pfade in Inline-Code ---
 # codepaths:

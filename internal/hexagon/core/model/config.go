@@ -88,6 +88,9 @@ type MatrixClass struct {
 	// "" = aus (byte-identisch zu DC-FA-MTX-001); DirectionNoDownward
 	// verbietet klasseninterne Verweise von höher- auf niederrangig.
 	Direction string
+	// Token: optionales Regex, das Referenzen auf diese Klasse als bare
+	// ID-Token im Fließtext erkennt (DC-FA-MTX-003). nil = nur Link-Erkennung.
+	Token *regexp.Regexp
 }
 
 // DirectionNoDownward ist die einzige unterstützte Richtungspolitik
@@ -116,6 +119,9 @@ type MatrixConfig struct {
 	// AllowSupersedeLineage; spec/spezifikation.md §DC-FA-MTX-001.a).
 	SupersedeFields []string
 	ExcludeSections []string
+	// ExemptPaths: Globs (Syntax wie scan.ignore); Dateien ganz ohne
+	// matrix-Prüfung — Grandfathering immutabler Dokumente (DC-FA-MTX-003).
+	ExemptPaths []string
 }
 
 // ExternalConfig sind die Parameter des Moduls external

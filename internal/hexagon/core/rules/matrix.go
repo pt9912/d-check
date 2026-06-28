@@ -2,6 +2,7 @@ package rules
 
 import (
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -15,6 +16,14 @@ const (
 	ReasonMatrixDownward  = "matrix-downward"
 )
 
+// provenanceMarker nimmt eine verbotene Token-Referenz aus (DC-FA-MTX-003):
+// die Autor-Deklaration „dies ist Provenance, keine Entscheidungsgrundlage".
+const provenanceMarker = "d-check:status-provenance"
+
+// linkSpanRe entfernt Markdown-Link-Spans `[text](ziel)` vor der Token-Suche —
+// Token in Links deckt die Link-Prüfung ab (kein Doppelbefund).
+var linkSpanRe = regexp.MustCompile(`\[[^\]]*\]\([^)]*\)`)
+
 // CheckMatrix ist das Regelmodul `matrix` (DC-FA-MTX-001):
 // Referenzregeln zwischen Dokumentklassen plus Status-Bedingungen.
 // Dateien ohne Klasse nehmen nicht an der Prüfung teil; Links in
@@ -22,6 +31,9 @@ const (
 // (spec/spezifikation.md §DC-FA-MTX-001.a).
 func CheckMatrix(fsys driven.Filesystem, file string, content []byte, lines []Line,
 	cfg model.MatrixConfig, statusCache map[string]*string) []model.Finding {
+	if ignored(file, cfg.ExemptPaths) {
+		return nil // grandfathered: ganz übersprungen (DC-FA-MTX-003)
+	}
 	srcClass, ok := classOf(cfg.Classes, file)
 	if !ok {
 		return nil
@@ -30,13 +42,9 @@ func CheckMatrix(fsys driven.Filesystem, file string, content []byte, lines []Li
 	// Richtung (DC-FA-MTX-002); dann wird der Rang gegen das Ziel geprüft.
 	srcOrdered := orderedClass(cfg.Classes, srcClass)
 	excluded := excludedRanges(content, cfg.ExcludeSections)
-	// Supersede-Lineage: einmal pro Quelldatei die Feld-Werte gewinnen.
-	// Ohne aktiviertes Flag bleibt die Menge leer und die Ausnahme ein
-	// No-op (Befundsatz byte-identisch, DC-QA-02).
-	var supersedeValues []string
-	if cfg.AllowSupersedeLineage {
-		supersedeValues = supersedeFieldValues(content, cfg.SupersedeFields)
-	}
+	// Supersede-Lineage: einmal pro Quelldatei die Feld-Werte gewinnen
+	// (No-op ohne Flag, Befundsatz byte-identisch, DC-QA-02).
+	supersedeValues := lineageValues(cfg, content)
 	var findings []model.Finding
 	for _, ref := range ExtractLinks(lines) {
 		if inRanges(excluded, ref.Line) {
@@ -75,7 +83,53 @@ func CheckMatrix(fsys driven.Filesystem, file string, content []byte, lines []Li
 			}
 		}
 	}
+	// Token-Referenzen (DC-FA-MTX-003): verbotene Referenzen als bare ID-Token
+	// im Prosa-Körper, sofern nicht per Provenance-Marker deklariert.
+	findings = append(findings, tokenFindings(srcClass, cfg, content, excluded, file)...)
 	return findings
+}
+
+// tokenFindings erkennt verbotene Referenzen als bare ID-Token (DC-FA-MTX-003):
+// je Prosa-Zeile außerhalb exclude-sections und ohne Provenance-Marker wird der
+// Link-befreite Text gegen das token-Regex jeder anderen Klasse geprüft; eine
+// verbotene Kante (`rules`) erzeugt matrix-forbidden. Token in Markdown-Links
+// (linkSpanRe-entfernt) und in Fences (proseLines) zählen nicht.
+func tokenFindings(srcClass string, cfg model.MatrixConfig, content []byte,
+	excluded []lineRange, file string) []model.Finding {
+	var findings []model.Finding
+	for _, pl := range proseLines(content) {
+		if inRanges(excluded, pl.no) || strings.Contains(pl.raw, provenanceMarker) {
+			continue
+		}
+		stripped := linkSpanRe.ReplaceAllString(pl.raw, " ")
+		for _, c := range cfg.Classes {
+			if c.Token == nil || c.Name == srcClass {
+				continue
+			}
+			if rule, found := ruleFor(cfg.Rules, srcClass, c.Name); !found || rule.Allow {
+				continue
+			}
+			for _, loc := range c.Token.FindAllStringIndex(stripped, -1) {
+				tok := stripped[loc[0]:loc[1]]
+				findings = append(findings, model.Finding{
+					File: file, Line: pl.no, Rule: "matrix",
+					Target: tok, Reason: ReasonMatrixForbidden,
+					Message: "Token-Referenz " + srcClass + " → " + c.Name + " (" + tok +
+						") ist nicht erlaubt — Provenance via <!-- d-check:status-provenance --> deklarieren",
+				})
+			}
+		}
+	}
+	return findings
+}
+
+// lineageValues liefert die Supersede-Feldwerte der Quelldatei, falls das
+// Flag aktiv ist — sonst nil (DC-QA-02: ohne Flag byte-identisch).
+func lineageValues(cfg model.MatrixConfig, content []byte) []string {
+	if cfg.AllowSupersedeLineage {
+		return supersedeFieldValues(content, cfg.SupersedeFields)
+	}
+	return nil
 }
 
 // supersedeFieldValues sammelt die Werte aller Felder aus fields in der

@@ -345,6 +345,9 @@ type harnessClass struct {
 	// gesetzt, wo eine geschichtete Klasse die Source-Precedence kodiert.
 	order     []string
 	direction string
+	// token (DC-FA-MTX-003): Regex, das Referenzen auf diese Klasse als bare
+	// ID-Token im Körper erkennt; nur für nicht-link-pflichtige Kennungen.
+	token string
 }
 
 func harnessClasses() []harnessClass {
@@ -352,7 +355,8 @@ func harnessClasses() []harnessClass {
 		{name: "spec-straten", paths: []string{"spec/lastenheft.md", "spec/spezifikation.md", "spec/architecture.md"}, probe: "spec",
 			order: []string{"spec/lastenheft.md", "spec/spezifikation.md", "spec/architecture.md"}, direction: "no-downward"},
 		{name: "adr", paths: []string{`"docs/plan/adr/[0-9]*.md"`}, probe: "docs/plan/adr"},
-		{name: "slice", paths: []string{`"docs/plan/planning/**/slice-*.md"`}, probe: "docs/plan/planning"},
+		{name: "slice", paths: []string{`"docs/plan/planning/**/slice-*.md"`}, probe: "docs/plan/planning",
+			token: `slice-\d{3}`},
 	}
 }
 
@@ -464,18 +468,23 @@ func renderHarnessMatrix(fsys driven.Filesystem, repoAware bool) string {
 			fmt.Fprintf(&b, "    # Hinweis: %s fehlt im Repo — Klasse auskommentiert.\n", c.probe)
 			pre = "# "
 		}
-		if len(c.order) > 0 {
-			// Geschichtete Klasse: order/direction (DC-FA-MTX-002) in Blockform.
+		if len(c.order) > 0 || c.token != "" {
+			// Blockform: order/direction (DC-FA-MTX-002) und/oder token (DC-FA-MTX-003).
 			fmt.Fprintf(&b, "    %s- name: %s\n", pre, c.name)
 			fmt.Fprintf(&b, "    %s  paths: [%s]\n", pre, strings.Join(c.paths, ", "))
-			fmt.Fprintf(&b, "    %s  order: [%s]  # autoritativste Schicht zuerst\n", pre, strings.Join(c.order, ", "))
-			fmt.Fprintf(&b, "    %s  direction: %s  # Abwärtsverweis ⇒ matrix-downward\n", pre, c.direction)
+			if len(c.order) > 0 {
+				fmt.Fprintf(&b, "    %s  order: [%s]  # autoritativste Schicht zuerst\n", pre, strings.Join(c.order, ", "))
+				fmt.Fprintf(&b, "    %s  direction: %s  # Abwärtsverweis ⇒ matrix-downward\n", pre, c.direction)
+			}
+			if c.token != "" {
+				fmt.Fprintf(&b, "    %s  token: '%s'  # ID-Token im Körper ⇒ matrix-forbidden, außer per Marker deklariert\n", pre, c.token)
+			}
 			continue
 		}
 		fmt.Fprintf(&b, "    %s- {name: %s, paths: [%s]}\n", pre, c.name, strings.Join(c.paths, ", "))
 	}
 	b.WriteString("  rules:\n")
-	for _, r := range [][2]string{{"spec-straten", "adr"}, {"spec-straten", "slice"}} {
+	for _, r := range [][2]string{{"spec-straten", "adr"}, {"spec-straten", "slice"}, {"adr", "slice"}} {
 		pre := ""
 		if !active[r[0]] || !active[r[1]] {
 			pre = "# "
@@ -484,5 +493,8 @@ func renderHarnessMatrix(fsys driven.Filesystem, repoAware bool) string {
 	}
 	b.WriteString("  status:\n    forbidden: [superseded, deprecated]\n")
 	b.WriteString("  exclude-sections: [Historie, \"7. Historie\", Geschichte]\n")
+	// exempt-paths ist repo-spezifisch (Grandfathering der vor Einführung
+	// Accepted-ADRs) — als Kommentar, der Adopter trägt die konkrete Liste ein.
+	b.WriteString("  # exempt-paths: [\"docs/plan/adr/0001-*.md\"]  # immutable Alt-ADRs grandfathern (DC-FA-MTX-003)\n")
 	return b.String()
 }

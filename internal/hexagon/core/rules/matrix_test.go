@@ -3,6 +3,7 @@ package rules
 import (
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"fmt"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -346,4 +347,54 @@ func TestMatrixDownwardKanten(t *testing.T) {
 			Order: []string{"spec/lastenheft.md", "spec/architecture.md"}, Direction: model.DirectionNoDownward,
 		}}},
 		map[string]string{"spec/lastenheft.md": "# L\n[selbst](lastenheft.md)\n", "spec/architecture.md": "# A\n"})
+}
+
+// DC-FA-MTX-003: token-basierte Referenz-Richtung. Unmarkierter Slice-Token im
+// ADR-Körper → matrix-forbidden; mit Provenance-Marker auf der Zeile → kein
+// Befund; in exempt-paths-Datei → grandfathered; Token nur im Markdown-Link →
+// kein Doppelbefund (Link-Pfad); Selbst-Klasse zählt nicht.
+func TestMatrixTokenReferenz(t *testing.T) {
+	cfg := model.MatrixConfig{
+		Classes: []model.MatrixClass{
+			{Name: "adr", Paths: []string{"docs/plan/adr/[0-9]*.md"}},
+			{Name: "slice", Paths: []string{"docs/plan/planning/**/slice-*.md"},
+				Token: regexp.MustCompile(`slice-\d{3}`)},
+		},
+		Rules:           []model.MatrixRule{{From: "adr", To: "slice", Allow: false}},
+		ExemptPaths:     []string{"docs/plan/adr/0001-*.md"},
+		ExcludeSections: []string{"Geschichte"},
+	}
+	m := coretest.NewMemFS(map[string]string{
+		"docs/plan/adr/0050-x.md": "# A\nEntsteht mit slice-042 als Grundlage.\n",                  // unmarkiert → Befund Z.2
+		"docs/plan/adr/0051-y.md": "# A\nVerifiziert in slice-043. <!-- d-check:status-provenance -->\n", // markiert → frei
+		"docs/plan/adr/0001-z.md": "# A\nWegen slice-044 entschieden.\n",                            // grandfathered → frei
+		"docs/plan/adr/0052-l.md": "# A\nSiehe [slice-045](../planning/done/slice-045-x.md).\n",     // nur Link → einmal (Link), kein Token-Doppel
+		"docs/plan/adr/0053-f.md": "# A\n```\nslice-077\n```\n",                                     // Token in Fenced-Code → zählt nicht
+		"docs/plan/adr/0054-h.md": "# A\n## Geschichte\nWegen slice-088 (Provenance).\n",            // Token unter exclude-sections → zählt nicht
+		"docs/plan/adr/0055-m.md": "# A\nFolgt slice-061 und slice-062.\n",                          // zwei Token in einer Zeile → zwei Befunde (FindAll)
+		"docs/plan/planning/done/slice-045-x.md": "# S\nFolgt slice-046.\n",                         // slice→slice: kein Befund (self-class)
+	})
+	res, err := Run(m, nil, model.Config{Matrix: cfg}, []string{"matrix"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, fmt.Sprintf("%s:%d %s", f.File, f.Line, f.Reason))
+	}
+	want := []string{
+		"docs/plan/adr/0050-x.md:2 matrix-forbidden",
+		"docs/plan/adr/0052-l.md:2 matrix-forbidden",
+		"docs/plan/adr/0055-m.md:2 matrix-forbidden", // slice-061
+		"docs/plan/adr/0055-m.md:2 matrix-forbidden", // slice-062
+	}
+	if fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("Befunde = %v, want %v", got, want)
+	}
+	// Token-Befund nennt beide Klassen.
+	for _, f := range res.Findings {
+		if f.File == "docs/plan/adr/0050-x.md" && (!strings.Contains(f.Message, "adr") || !strings.Contains(f.Message, "slice")) {
+			t.Fatalf("Token-Meldung ohne beide Klassen: %q", f.Message)
+		}
+	}
 }

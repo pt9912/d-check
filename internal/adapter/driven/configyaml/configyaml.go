@@ -86,6 +86,7 @@ type rawMatrix struct {
 		Paths     []string `yaml:"paths"`
 		Order     []string `yaml:"order"`
 		Direction string   `yaml:"direction"`
+		Token     string   `yaml:"token"`
 	} `yaml:"classes"`
 	Rules []struct {
 		From  string `yaml:"from"`
@@ -98,6 +99,7 @@ type rawMatrix struct {
 		SupersedeFields       []string `yaml:"supersede-fields"`
 	} `yaml:"status"`
 	ExcludeSections []string `yaml:"exclude-sections"`
+	ExemptPaths     []string `yaml:"exempt-paths"`
 }
 
 // rawExternal nutzt Pointer, damit ein explizit gesetzter Wert 0 vom
@@ -430,6 +432,23 @@ func validateMatrixDirection(i int, direction string, order []string) error {
 	}
 }
 
+// compileMatrixToken kompiliert das optionale token-Regex einer Klasse
+// (DC-FA-MTX-003): leer ⇒ nil (nur Link-Erkennung); sonst muss es kompilieren
+// und darf den Leerstring nicht matchen (sonst still jede Zeile, Exit 2).
+func compileMatrixToken(i int, token string) (*regexp.Regexp, error) {
+	if token == "" {
+		return nil, nil
+	}
+	re, err := regexp.Compile(token)
+	if err != nil {
+		return nil, fmt.Errorf("%s: matrix.classes[%d].token kompiliert nicht: %w", FileName, i, err)
+	}
+	if re.MatchString("") {
+		return nil, fmt.Errorf("%s: matrix.classes[%d].token matcht den Leerstring", FileName, i)
+	}
+	return re, nil
+}
+
 func applyMatrix(m *rawMatrix, cfg *model.Config) error {
 	if m == nil {
 		return nil
@@ -442,9 +461,13 @@ func applyMatrix(m *rawMatrix, cfg *model.Config) error {
 		if err := validateMatrixDirection(i, c.Direction, c.Order); err != nil {
 			return err
 		}
+		token, err := compileMatrixToken(i, c.Token)
+		if err != nil {
+			return err
+		}
 		classes[c.Name] = true
 		cfg.Matrix.Classes = append(cfg.Matrix.Classes, model.MatrixClass{
-			Name: c.Name, Paths: c.Paths, Order: c.Order, Direction: c.Direction,
+			Name: c.Name, Paths: c.Paths, Order: c.Order, Direction: c.Direction, Token: token,
 		})
 	}
 	for i, rule := range m.Rules {
@@ -466,6 +489,7 @@ func applyMatrix(m *rawMatrix, cfg *model.Config) error {
 		cfg.Matrix.StatusForbidden = []string{"superseded", "deprecated"}
 	}
 	cfg.Matrix.ExcludeSections = m.ExcludeSections
+	cfg.Matrix.ExemptPaths = m.ExemptPaths
 	return nil
 }
 

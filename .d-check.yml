@@ -36,31 +36,41 @@ ids:
       link-policy: always
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
 
-# Referenzmatrix (DC-FA-MTX-001 zwischen Klassen, DC-FA-MTX-002 innerhalb):
+# Referenzmatrix (DC-FA-MTX-001 zwischen Klassen, -002 innerhalb, -003 als Token):
 # maschinelle Kodierung von MR-006 — Spec-Straten verweisen nie abwärts auf
-# ADRs/Planning (rules) UND nicht abwärts auf die autoritativere Spec-Schicht
-# (order/direction). architecture → spezifikation → lastenheft, nur aufwärts.
+# ADRs/Planning (rules), nicht abwärts auf die autoritativere Spec-Schicht
+# (order/direction), und ADRs nennen Slices nicht abwärts als Token im Körper
+# (token + adr→slice + Provenance-Marker). architecture → spezifikation → lastenheft.
 matrix:
   classes:
     - name: spec-straten
       paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
       # Klasseninterne Verweisrichtung (DC-FA-MTX-002): Rang = autoritativste
       # Schicht zuerst; ein Abwärtsverweis (z. B. lastenheft → architecture,
-      # auch transitiv) ⇒ matrix-downward. Generalisiert per Glob auf
-      # vielfiles-spec/ (hier drei Einzeldateien).
+      # auch transitiv) ⇒ matrix-downward.
       order: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
       direction: no-downward
     - name: adr
       paths: ["docs/plan/adr/[0-9]*.md"]
     - name: slice
       paths: ["docs/plan/planning/**/slice-*.md"]
+      # Token-Erkennung (DC-FA-MTX-003): eine Slice-Kennung im ADR-/Spec-Körper
+      # ist eine Token-Referenz → matrix-forbidden, außer per Provenance-Marker
+      # <!-- d-check:status-provenance --> deklariert (ADRs verweisen abwärts nur
+      # als deklarierte Provenance/Verifikations-Zeiger, nie als Entscheidungsgrundlage).
+      token: 'slice-\d{3}'
   rules:
     - {from: spec-straten, to: adr, allow: false}
     - {from: spec-straten, to: slice, allow: false}
+    - {from: adr, to: slice, allow: false}
   status:
     forbidden: [superseded, deprecated]
   # exakter Heading-Vergleich: die Spec-Straten nummerieren ("7. Historie")
   exclude-sections: [Historie, "7. Historie", Geschichte]
+  # Grandfathering (DC-FA-MTX-003): die vor Einführung Accepted-ADRs (0001–0021)
+  # sind immutabel und nennen Slices als legitime Verifikations-Zeiger im Körper
+  # — sie werden ganz übersprungen; neue ADRs ab 0022 tragen den Marker.
+  exempt-paths: ["docs/plan/adr/00[01][0-9]-*.md", "docs/plan/adr/002[01]-*.md"]
 
 # Pfade in Inline-Code (DC-FA-CODE-001): ./ und ../ immer; dazu die
 # Wurzel-Präfixe der eigenen Verzeichniskonvention.

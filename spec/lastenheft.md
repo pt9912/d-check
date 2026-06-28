@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.30.0
+**Version:** 0.31.0
 
 **Status:** Draft
 
@@ -675,7 +675,50 @@ byte-identisch zu [`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-doku
 - **Boundary:** Given dieselbe Klasse und ein Link in `a.md` auf `b.md` (abwärts — auch über mehr als eine Rang-Stufe), when das Modul läuft, then ein Befund mit Grund `matrix-downward` und Nennung beider Ränge.
 - **Negative:** Given `order` ohne `direction` (oder `direction` ohne `order`, oder ein unbekannter `direction`-Wert), when die Konfiguration geladen wird, then ein Konfigurationsfehler (Exit 2) statt eines stillen No-op.
 
-**Out-of-Scope:** Richtungsregeln **zwischen** verschiedenen Klassen (das sind die `rules`-Paare aus [`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)); automatische Herleitung der Rangfolge aus Dateiinhalt oder Source-Precedence-Tabelle (die Ordnung wird explizit deklariert); andere Politiken als `no-downward` (z. B. `no-upward`, `strict-adjacent`) bleiben einer späteren CR; rangfreie Mitglieder lösen keinen Befund aus; ein Zeilen-Opt-out-Marker bleibt — wie für `matrix` insgesamt — nicht vorgesehen.
+**Out-of-Scope:** Richtungsregeln **zwischen** verschiedenen Klassen (das sind die `rules`-Paare aus [`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)); automatische Herleitung der Rangfolge aus Dateiinhalt oder Source-Precedence-Tabelle (die Ordnung wird explizit deklariert); andere Politiken als `no-downward` (z. B. `no-upward`, `strict-adjacent`) bleiben einer späteren CR; rangfreie Mitglieder lösen keinen Befund aus.
+
+---
+
+### DC-FA-MTX-003 — Token-basierte Referenz-Richtung mit Provenance-Marker (Modul `matrix`)
+
+**Beschreibung:** `matrix` erkennt verbotene Referenzen
+([`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix))
+bisher nur als **Links**; eine Referenz kann aber auch als **bare ID-Token** im
+Fließtext stehen (etwa eine Slice-Kennung in einem ADR-Körper), die der
+link-basierte Scan nicht sieht. Eine Klasse kann daher zusätzlich ein
+**`token`-Muster** (Regex) tragen, das Referenzen auf diese Klasse als Token
+erkennt. Tritt im Körper eines Dokuments der Klasse A ein `token` der Klasse B
+auf — außerhalb Fenced-Code, außerhalb `exclude-sections` und außerhalb von
+Markdown-Links (die deckt der Link-Scan ab) —, gilt das als Referenz A → B;
+eine verbotene Kante erzeugt `matrix-forbidden` in der **Token-Form**.
+
+**Provenance-Marker.** Eine verbotene Token-Referenz wird **ausgenommen**, wenn
+auf derselben Zeile der Marker `<!-- d-check:status-provenance -->` steht — die
+explizite Autor-Deklaration „dies ist Provenance/Verifikations-Zeiger, keine
+Entscheidungsgrundlage". Das ist `matrix`' **erster** Zeilen-Marker und kehrt die
+bisherige „nur strukturelle Ausnahmen"-Haltung von
+[`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
+bewusst um — als **benannte, semantische** Ausnahme (näher an
+`allow-supersede-lineage` als an einem generischen Stummschalt-Marker); der
+begleitende Architektur-Entscheid hält die Begründung fest. Die Deklaration ist
+Selbst-Auskunft → ihre **Ehrlichkeit** (echte Provenance vs. getarnte
+Entscheidungsgrundlage) bleibt Reviewer-Sache. **Links** bleiben markerlos:
+legitime Provenance ist ein stabiler Token, kein Datei-Link, und Provenance
+unter `## Geschichte`/Historie deckt bereits `exclude-sections` ab.
+
+**Grandfathering.** Eine Datei, die ein `matrix.exempt-paths`-Glob matcht, wird
+von `matrix` ganz übersprungen. Zweck: bereits `Accepted`-ADRs sind immutabel
+und können nicht nachträglich markiert werden; sie werden grandfathered, neue
+Dokumente ab Einführung tragen die Deklaration. Ohne `token`/`exempt-paths` ist
+der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given eine Klasse `slice` mit `token: 'slice-\d{3}'`, eine verbotene Regel `{from: adr, to: slice}` und ein ADR-Körper, der eine Slice-Kennung **mit** `<!-- d-check:status-provenance -->` auf derselben Zeile nennt, when das Modul `matrix` läuft, then kein Befund.
+- **Boundary:** Given dieselbe Konfiguration und derselbe ADR-Körper **ohne** Marker, when das Modul läuft, then ein `matrix-forbidden`-Befund (Token-Form) mit Nennung beider Klassen.
+- **Negative:** Given eine Datei, die ein `matrix.exempt-paths`-Glob matcht und einen unmarkierten verbotenen Token trägt, when das Modul läuft, then kein Befund (grandfathered).
+
+**Out-of-Scope:** Marker für **Link**-Referenzen (Links bleiben strukturell, `matrix-forbidden` ohne Ausnahme); die semantische Beurteilung „Provenance vs. Entscheidungsgrundlage" (sie steht hinter dem Marker und bleibt Reviewer-Sache, kein Linter-Urteil); Token-Erkennung für ohnehin link-pflichtige Kennungen (`ADR-`/`MR-`/`DC-` sind über `ids` Links — die Token-Erkennung zielt auf bare Kennungen ohne Linkpflicht).
 
 ---
 
@@ -1103,6 +1146,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.31.0 | 2026-06-28 | Neue Anforderung `DC-FA-MTX-003` (Modul `matrix`): **Token-basierte** Referenz-Richtung + Provenance-Marker + Grandfathering. Eine Klasse kann ein `token`-Regex tragen → `matrix` fängt verbotene Referenzen auch als bare ID-Token im Körper (nicht nur als Link), `matrix-forbidden` in Token-Form. Provenance-Marker `<!-- d-check:status-provenance -->` auf der Zeile nimmt eine verbotene Token-Referenz aus (deklarierte Provenance/Verifikations-Zeiger) — `matrix`' **erster** Zeilen-Marker, kehrt die „nur strukturelle Ausnahmen"-Haltung von `DC-FA-MTX-001` bewusst um (benannt/semantisch, nicht generisches Muting); Ehrlichkeit bleibt Reviewer. Neues `matrix.exempt-paths` grandfathered immutable `Accepted`-ADRs (Regelwerk §Referenz-Richtung). Default-aus byte-identisch (`DC-QA-02`). §DC-FA-MTX-001.a-Schritt + Schema-Keys (`matrix.classes[].token`, `matrix.exempt-paths`) in der Spezifikation. Anlass: Auftraggeber — d-check mechanisiert die Referenz-Richtung, die das adoptierte Regelwerk bewusst dem Reviewer überließ (wie schon [`MR-006`](../harness/conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)/`matrix`); der Marker macht die Provenance-vs-Entscheidungsgrundlage-Unterscheidung grep-bar | slice-051 |
 | 0.30.0 | 2026-06-28 | Neue Anforderung `DC-FA-MTX-002` (Modul `matrix`): Verweisrichtung **innerhalb** einer geordneten Dokumentklasse — eine Klasse kann `order` (Pfad-Globs, autoritativste Schicht zuerst; Rang = erster Treffer) plus `direction: no-downward` tragen; ein klasseninterner Abwärtsverweis (höherrangig → niederrangig, auch über mehrere Stufen) ⇒ neuer Grund-Code `matrix-downward`. Additiv zu den Klassen-Paar-Regeln (`DC-FA-MTX-001`); generalisiert die Spec-Straten-Schichtung auf viele Dateien je Schicht (Globs statt Einzeldateien-Listing). Fail-closed: `order`/`direction` nur zusammen, unbekannter `direction`-Wert ⇒ Config-Fehler; rangfreie Mitglieder nehmen nicht teil; Default beide leer ⇒ byte-identisch (`DC-QA-02`). Algorithmus-Schritt in `DC-FA-MTX-001.a`, Grund-Code `matrix-downward` + Schema-Keys (`matrix.classes[].order`/`.direction`) in der Spezifikation. Anlass: Auftraggeber — die alternative Einzelklassen-Aufzählung war als Richtung nicht erkennbar und verschattete (First-Match) tote Regeln; zugleich Konsumenten-Bedarf d-migrate (23 Spec-Dateien ⇒ Glob-Schichten statt 23-Zeilen-Listing) | slice-050 |
 | 0.29.0 | 2026-06-24 | Neue Anforderung `DC-FA-PIN-001` (Modul `pins`, opt-in): Content-Pin gegen inhaltlichen Drift — ein Link mit Inline-Marker `<!-- dpin: sha256:… -->` (bindet an den unmittelbar vorausgehenden Link derselben Zeile, sonst inert) wird gegen den whitespace-normalisierten **rohen** Ziel-Span (ganze Datei oder Heading-Section, inkl. Fenced-Code) gehasst; Mismatch → `link-stale`. Nur auflösbare Links (struktureller Befund bleibt `DC-FA-LINK-001`/`DC-FA-ANCH-001`, kein Doppelbefund, auch pins-only); opt-in pro Link, default-off byte-identisch (`DC-QA-02`), diagnose-only (`--bless` spätere CR). Bereichskürzel `PIN` in §3, `pins` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-PIN-001.a` + Grund-Code `link-stale` in der Spezifikation. Anlass: Auftraggeber-Idee 2 (stale citation) + Spike (Drift real, Rauschen ~0 bei Normalisierung) | slice-049 |
 | 0.28.0 | 2026-06-24 | Neue Anforderung `DC-FA-VER-001` (Modul `versions`, opt-in): Versions-Pin-Konsistenz — alle Pins (`versions.pin-pattern`) müssen die aktuelle Version aus `versions.current-from` (Default `version.md#aktuell`) tragen, sonst `version-stale`; liest dafür Pins **auch in Fenced-Code** (gescopte Fence-Ausnahme), Ventile `exempt-paths`/`d-check:ignore` für historische Pins; opt-in/default-off (ohne Block byte-identisch, `DC-QA-02`), diagnose-only (Auto-Bump-`--repair` als Folge-CR an `DC-FA-CLI-008`). Bereichskürzel `VER` in §3, `versions` als gültiges Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-VER-001.a`, Grund-Code `version-stale` und Config-Schema (`versions.pin-pattern`/`current-from`/`exempt-paths`) in der Spezifikation ergänzt. Anlass: Auftraggeber-Idee „nicht vergessen, die Version zu bumpen" + Spike (Meta-Gate-Skript wegen Copy-Drift über die Repo-Familie verworfen) | slice-048 |

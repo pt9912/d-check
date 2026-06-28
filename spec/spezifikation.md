@@ -578,6 +578,23 @@ additiv (ein Muster mit `always` findet eine Obermenge seiner
    (Config-Adapter, Exit 2): unbekannter `direction`-Wert, `direction` ohne
    `order`, `order` ohne `direction`. Ohne beide Felder ist der Befundsatz
    byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
+6. **Token-Referenzen und Grandfathering**
+   ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)):
+   Trägt eine Klasse ein `token`-Regex, scannt `matrix` zusätzlich zu den Links
+   den **Prosa-Körper** (außerhalb Fenced-Code, außerhalb `exclude-sections` und
+   ohne Markdown-Link-Spans — die deckt die Link-Prüfung ab) nach `token`
+   *anderer* Klassen. Ein Treffer der Klasse B im Dokument der Klasse A ist eine
+   Token-Referenz A → B; eine verbotene Kante (`rules`) erzeugt `matrix-forbidden`
+   (Token-Form; Datei, Zeile, Token; Meldung nennt beide Klassen) — **es sei
+   denn**, auf derselben **rohen** Zeile steht der Provenance-Marker
+   `<!-- d-check:status-provenance -->` (Match unabhängig vom Kommentar-Whitespace),
+   der die verbotene Token-Referenz als deklarierte Provenance ausnimmt. Token in
+   Markdown-Links und in Fenced-Code zählen nicht. Eine Datei, die ein
+   `exempt-paths`-Glob matcht, wird von `matrix` **ganz** übersprungen
+   (Grandfathering immutabler Dokumente). Fehlkonfiguration ist fail-closed
+   (Config-Adapter, Exit 2): `token` kompiliert nicht oder matcht den Leerstring.
+   Ohne `token`/`exempt-paths` ist der Befundsatz byte-identisch
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
 
 ### DC-FA-EXT-001.a — Externe Erreichbarkeit
 
@@ -669,7 +686,7 @@ byte-identisch.
    eigenständige Links sind kein Treffer (zwischen ihnen steht die
    öffnende Linktext-Klammer), und **Bildreferenzen als Linktext**
    (`[![…](…)](…)` — das Badge-Muster) sind legales Markdown und
-   ebenfalls kein Treffer (Kalibrierungs-Befund slice-015: vendorte
+   ebenfalls kein Treffer (Kalibrierungs-Befund: vendorte
    Paket-READMEs mit Shields-Badges). Das gemeldete Ziel ist der
    Treffer, gekappt auf 40 Zeichen.
 
@@ -1049,11 +1066,13 @@ Exit 2 ohne Prüfung
 | `matrix.classes[].paths` | string[] | — | Glob (Mitgliedschaft) |
 | `matrix.classes[].order` | string[] | leer | Glob-Liste, autoritativste Schicht zuerst (Rang = Index des ersten Treffers); nur zusammen mit `direction` (Exit 2) |
 | `matrix.classes[].direction` | string | leer | nur `no-downward` (Exit 2 bei unbekanntem Wert); verlangt nicht-leeres `order` (Exit 2) — keine still wirkungslose Richtungs-Deklaration |
+| `matrix.classes[].token` | string | leer | Regex; erkennt Referenzen auf diese Klasse als **bare ID-Token** im Fließtext ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)). Muss kompilieren und darf den Leerstring nicht matchen (Exit 2). Ohne `token` nur Link-Erkennung |
 | `matrix.rules[]` | {from,to,allow} | — | Klassen müssen deklariert sein |
 | `matrix.status.forbidden` | string[] | `[superseded, deprecated]` | case-insensitiv |
 | `matrix.status.allow-supersede-lineage` | bool | `false` | nimmt die deklarierte Supersede-Lineage-Kante von der Status-Prüfung aus (nur `matrix-inactive`); ohne `true` byte-identisch |
 | `matrix.status.supersede-fields` | string[] | leer | Feldnamen (z. B. `Supersedes`, `Aenderungstyp`), aus denen die Ablösung gelesen wird; Einträge nicht leer (Exit 2); nur wirksam bei `allow-supersede-lineage: true` |
 | `matrix.exclude-sections` | string[] | leer | Vergleich gegen den getrimmten Heading-Text ohne Markdown-Auszeichnung, case-sensitiv |
+| `matrix.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `matrix`-Prüfung — Grandfathering immutabler Dokumente ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)) |
 | `external.timeout-seconds` | integer | 10 | 1–300 |
 | `external.parallel` | integer | 4 | 1–16 |
 | `codepaths.roots` | string[] | leer | Präfixe relativ zur Repo-Wurzel: nicht leer, nicht absolut, kein `..` (Exit 2); `./`/`../` werden immer erkannt |
@@ -1092,7 +1111,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `symlink` | links | Ziel ist/enthält Symlink (Vorrang vor `repo-escape`) |
 | `anchor-missing` | anchors, codepaths | Anker entspricht keinem Heading-Slug |
 | `id-unlinked` | ids | Kennung im Fließtext ohne Markdown-Link |
-| `matrix-forbidden` | matrix | Referenz zwischen Klassen nicht erlaubt |
+| `matrix-forbidden` | matrix | Referenz zwischen Klassen nicht erlaubt (**Link** oder, bei gesetztem `matrix.classes[].token`, **bare ID-Token** im Körper; Token-Form via `<!-- d-check:status-provenance -->` deklarierbar) |
 | `matrix-inactive` | matrix | Referenz auf Dokument mit verbotenem Status |
 | `matrix-downward` | matrix | klasseninterner Abwärtsverweis gegen die deklarierte Rangordnung (`order`/`direction: no-downward`) |
 | `external-status` | external | HTTP-Status ≥ 400 oder Transportfehler (DNS/Verbindung) |
@@ -1159,3 +1178,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-24 | §[`DC-FA-PIN-001.a`](spezifikation.md#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins) + Grund-Code `link-stale` (§4) ergänzt: opt-in Modul `pins` hasst den whitespace-normalisierten **rohen** Ziel-Span (Datei/Heading-Section inkl. Fenced-Code) eines gepinnten Links (`<!-- dpin: sha256:… -->`, gebunden an den unmittelbar vorausgehenden Link derselben Zeile, sonst inert) und meldet `link-stale` bei Drift; nur auflösbare repo-interne Ziele (struktureller Befund bleibt `links`/`anchors`, kein Doppelbefund), Scope-treu (nur Quell-Dateien), diagnose-only; §2-`rule`-Feld zeigt jetzt auf die Modulliste statt einer Enum | slice-049 |
 | 2026-06-28 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 5 + §2-Schema (`matrix.classes[].order`/`.direction`) + Grund-Code `matrix-downward` (§4) + Config-Beispiel ergänzt: klasseninterne Verweisrichtung ([`DC-FA-MTX-002`](lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix)) — eine Klasse mit `order` (Glob-Rang, First-Match) + `direction: no-downward` meldet klasseninterne Abwärtsverweise (Rang *i* → *j > i*, auch transitiv) als `matrix-downward`; rangfreie Mitglieder und klassenübergreifende Referenzen ausgenommen; fail-closed-Config (`order`/`direction` nur zusammen, unbekannter `direction`-Wert ⇒ Exit 2); Default-aus byte-identisch | slice-050 |
 | 2026-06-28 | §2 „Glob-Auswertung" ergänzt: alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`, `matrix.classes[].paths`/`.order`, `*.exempt-paths`) werden segmentweise über Go-`path.Match` ausgewertet (`**` segmentübergreifend); negierte Zeichenklasse `[^…]` (Go), **nicht** `[!…]` (fnmatch). Reine Klarstellung des Bestands (`matchGlob`), kein Verhaltens-/Schema-Change | — |
+| 2026-06-28 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 6 + §2-Schema (`matrix.classes[].token`, `matrix.exempt-paths`) + §4 (`matrix-forbidden` Token-Form) ergänzt: token-basierte Referenz-Richtung ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)) — `matrix` fängt verbotene Referenzen auch als bare ID-Token im Prosa-Körper (außer Links/Fences/`exclude-sections`); Provenance-Marker `<!-- d-check:status-provenance -->` auf der rohen Zeile nimmt aus; `exempt-paths` grandfathered ganze Dateien. Fail-closed (`token` kompiliert/Leerstring). Default-aus byte-identisch. Außerdem §[`DC-FA-SPAN-001.a`](lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in): Slice-Token aus dem Spec-Körper entfernt (Provenance gehört in die Historie) | slice-051 |

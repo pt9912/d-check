@@ -337,6 +337,34 @@ unbekannter `direction`-Wert) ist ein Konfigurationsfehler (Exit 2), damit eine
 Richtungsregel nie still wirkungslos ist. Ohne beide Felder verhält sich
 `matrix` unverändert.
 
+**Token-Referenzen (`token`) und Provenance-Marker.** `matrix` sieht
+standardmäßig nur **Markdown-Links**. Eine Referenz kann aber auch als **bare
+ID-Token** im Fließtext stehen (eine Slice-Kennung in einem ADR-Körper). Trägt
+eine Klasse ein `token`-Regex, prüft `matrix` auch solche Token: ein Token im
+Körper eines Dokuments einer anderen Klasse ist eine Referenz, auf die dieselbe
+Regel greift — eine verbotene Kante meldet `matrix-forbidden` (Token in
+Markdown-Links und Fenced-Code zählen nicht). Eine **erlaubte Ausnahme**
+deklarieren Sie mit dem Marker `<!-- d-check:status-provenance -->` auf derselben
+Zeile (etwa „verifiziert in slice-042" als Verifikations-Zeiger, keine
+Entscheidungsgrundlage):
+
+```yaml
+matrix:
+  classes:
+    - {name: adr, paths: ["docs/plan/adr/[0-9]*.md"]}
+    - name: slice
+      paths: ["docs/plan/planning/**/slice-*.md"]
+      token: 'slice-\d{3}'                       # Slice-Kennung im Text erkennen
+  rules:
+    - {from: adr, to: slice, allow: false}       # ADR nennt Slice nur als Provenance
+  exempt-paths: ["docs/plan/adr/0001-*.md"]      # Alt-Dateien ganz ausnehmen
+```
+
+`exempt-paths` (Globs) nimmt **ganze Dateien** von der `matrix`-Prüfung aus —
+nützlich, um unveränderliche Bestandsdokumente zu grandfathern. Ein nicht
+kompilierbares `token`-Regex ist ein Konfigurationsfehler (Exit 2); ohne `token`
+verhält sich `matrix` unverändert.
+
 ### 4.8 Externe Links prüfen (Modul `external`)
 
 **Ziel:** die Erreichbarkeit externer (HTTP-)Links prüfen.

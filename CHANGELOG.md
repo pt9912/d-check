@@ -4,6 +4,25 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.31.0] — 2026-06-28
+
+### Added
+
+- slice-051 — Modul `matrix` um die **token-basierte** Referenz-Richtung erweitert
+  (`DC-FA-MTX-003`): eine Klasse kann zusätzlich zu `paths` ein `token`-Regex
+  tragen, mit dem `matrix` verbotene Referenzen auch als **bare ID-Token** im
+  Prosa-Körper fängt (nicht nur als Link) — `matrix-forbidden` in Token-Form. Ein
+  **Provenance-Marker** `<!-- d-check:status-provenance -->` auf derselben Zeile
+  nimmt eine verbotene Token-Referenz aus (deklarierte Provenance/Verifikations-
+  Zeiger statt Entscheidungsgrundlage) — `matrix`' erster Zeilen-Marker, eng
+  begrenzte Umkehr der „nur strukturelle Ausnahmen"-Haltung. Neues
+  `matrix.exempt-paths` überspringt ganze Dateien (Grandfathering immutabler,
+  vor Einführung `Accepted`-ADRs). Token in Markdown-Links und Fenced-Code zählen
+  nicht; ohne `token`/`exempt-paths` byte-identisch
+  ([`DC-FA-MTX-003`](spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix),
+  [ADR-0022](docs/plan/adr/0022-matrix-token-richtung-provenance-marker.md),
+  Lastenheft 0.31.0).
+
 ## [0.30.0] — 2026-06-28
 
 ### Added
