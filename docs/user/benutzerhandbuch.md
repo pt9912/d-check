@@ -645,6 +645,13 @@ scan:
   ignore: ["docs/archiv/**"]   # zusätzliche Ignorier-Muster (Globs)
 ```
 
+**Glob-Syntax.** Pro Pfad-Segment gilt Go-`path.Match` — `*` und `?` matchen
+**nicht** über `/` hinweg; `**` steht für beliebig viele Segmente. Eine
+**negierte** Zeichenklasse schreibt sich `[^…]` (Go), **nicht** `[!…]`
+(Shell/fnmatch): `[!a]` matcht in d-check die Literale `!` und `a`, nicht
+„alles außer `a`". Das gilt für alle Glob-Felder — `scan.ignore`,
+`matrix.classes[].paths`/`.order` und die `exempt-paths` der Module.
+
 ### Module wählen
 
 ```yaml

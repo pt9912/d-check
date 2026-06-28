@@ -1062,6 +1062,13 @@ Exit 2 ohne Prüfung
 | `versions.current-from` | string | `version.md#aktuell` | `datei#anker` oder `datei`; die Datei muss existieren und innerhalb der Repo-Wurzel liegen, der adressierte Span muss eine Version (`v?\d+\.\d+\.\d+`) tragen (sonst Exit 2) |
 | `versions.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `versions`-Prüfung — datei-weit; die `current-from`-Datei ist stets ausgenommen |
 
+**Glob-Auswertung.** Alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`,
+`matrix.classes[].paths`/`.order`, die `*.exempt-paths`) werden **segmentweise
+über Go-`path.Match`** ausgewertet (`*`/`?` matchen nicht über `/`), zusätzlich
+`**` für beliebig viele Segmente. Eine **negierte** Zeichenklasse ist `[^…]`
+(Go-Syntax), **nicht** `[!…]` (Shell/fnmatch) — `[!a]` matcht die Literale `!`
+und `a`, nicht „alles außer `a`".
+
 ## 3. Defaults und Konstanten
 
 | Name | Wert | Begründung | Bezug |
@@ -1151,3 +1158,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-24 | §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) + §2-Schema (`versions.pin-pattern`/`versions.current-from`/`versions.exempt-paths`) + Grund-Code `version-stale` ergänzt: opt-in Modul `versions` prüft Versions-Pins gegen die aus `versions.current-from` (Default `version.md#aktuell`) gelesene aktuelle Version; liest Pins **auch in Fences** (gescopte Ausnahme, Muster-Scan ohne Parser), Ventile `exempt-paths`/`d-check:ignore`, fail-closed bei unauflösbarer Quelle, diagnose-only (Auto-Bump-`--repair` als Folge-CR). Default-aus byte-identisch | slice-048 |
 | 2026-06-24 | §[`DC-FA-PIN-001.a`](spezifikation.md#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins) + Grund-Code `link-stale` (§4) ergänzt: opt-in Modul `pins` hasst den whitespace-normalisierten **rohen** Ziel-Span (Datei/Heading-Section inkl. Fenced-Code) eines gepinnten Links (`<!-- dpin: sha256:… -->`, gebunden an den unmittelbar vorausgehenden Link derselben Zeile, sonst inert) und meldet `link-stale` bei Drift; nur auflösbare repo-interne Ziele (struktureller Befund bleibt `links`/`anchors`, kein Doppelbefund), Scope-treu (nur Quell-Dateien), diagnose-only; §2-`rule`-Feld zeigt jetzt auf die Modulliste statt einer Enum | slice-049 |
 | 2026-06-28 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 5 + §2-Schema (`matrix.classes[].order`/`.direction`) + Grund-Code `matrix-downward` (§4) + Config-Beispiel ergänzt: klasseninterne Verweisrichtung ([`DC-FA-MTX-002`](lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix)) — eine Klasse mit `order` (Glob-Rang, First-Match) + `direction: no-downward` meldet klasseninterne Abwärtsverweise (Rang *i* → *j > i*, auch transitiv) als `matrix-downward`; rangfreie Mitglieder und klassenübergreifende Referenzen ausgenommen; fail-closed-Config (`order`/`direction` nur zusammen, unbekannter `direction`-Wert ⇒ Exit 2); Default-aus byte-identisch | slice-050 |
+| 2026-06-28 | §2 „Glob-Auswertung" ergänzt: alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`, `matrix.classes[].paths`/`.order`, `*.exempt-paths`) werden segmentweise über Go-`path.Match` ausgewertet (`**` segmentübergreifend); negierte Zeichenklasse `[^…]` (Go), **nicht** `[!…]` (fnmatch). Reine Klarstellung des Bestands (`matchGlob`), kein Verhaltens-/Schema-Change | — |
