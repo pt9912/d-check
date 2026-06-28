@@ -1,6 +1,6 @@
 # ADR-0023 — Immutabilität als Content-Pin: das Modul `immutable` prüft den Core hermetisch im Arbeitsbaum
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-28
 **Autor:** pt9912
 **Bezug:** [`DC-FA-IMM-001`](../../../spec/lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in)
@@ -104,3 +104,4 @@ Zitat-Frische), je einzeln opt-in und testbar.
 | Datum | Ereignis |
 | --- | --- |
 | 2026-06-28 | Entwurf nach Auftraggeber-Diskussion (adr-check ist nur ein Skript → Copy-Drift; Hexagon-Analyse: git-Diff = nicht-hermetischer Port analog `external`, Pin-Form = hermetische Hälfte). Zwei-Backend-Entscheid: `immutable`-Pin jetzt, VCS-Adapter vertagt. Begleitet slice-052. Status Proposed. |
+| 2026-06-28 | Angenommen mit der slice-052-Closure: Modul `immutable` implementiert + getestet (9 Tests), zwei unabhängige Reviews (R1+R2, alle Befunde behoben — u. a. F-2: die Strenger-Asymmetrie an der Status-Zeile ergänzt), `make ci` grün, Release v0.32.0. Status Accepted. |
