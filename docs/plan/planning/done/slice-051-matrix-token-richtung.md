@@ -1,6 +1,6 @@
 # Slice slice-051: Modul `matrix` — Token-basierte Referenz-Richtung + Provenance-Marker
 
-**Status:** in-progress (welle-40-matrix-token-richtung).
+**Status:** done (abgeschlossen, welle-40-matrix-token-richtung).
 
 **Welle:** welle-40-matrix-token-richtung (Trigger: Auftraggeber — die
 Referenz-Richtung mechanisieren, die das adoptierte Regelwerk bewusst dem
@@ -100,3 +100,49 @@ Auftraggeber (2026-06-28): nach der Referenz-Richtungs-Diskussion (Regelwerk
 ## 6. Sub-Area-Modus-Begründung
 
 GF (Produkt-Code + Spec; „Doc führt, Code folgt"). Keine BF-Sub-Area.
+
+## 7. Closure-Notiz (nach `done/`)
+
+**Umsetzung.** Das Modul `matrix`
+([`DC-FA-MTX-003`](../../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix))
+fängt verbotene Referenzen jetzt auch als **bare ID-Token** im Prosa-Körper:
+eine Klasse trägt optional ein `token`-Regex; ein Token einer anderen Klasse
+(außer in Links, Fences, `exclude-sections`) ist eine Referenz → `matrix-forbidden`
+in Token-Form. Der Provenance-Marker `<!-- d-check:status-provenance -->` auf der
+Zeile nimmt eine verbotene Token-Referenz aus (deklarierte Provenance/
+Verifikations-Zeiger). Neues `matrix.exempt-paths` überspringt ganze Dateien
+(Grandfathering immutabler `Accepted`-ADRs). Doc-first: Lastenheft 0.31.0 +
+[ADR-0022](../../adr/0022-matrix-token-richtung-provenance-marker.md) +
+Spezifikation [§DC-FA-MTX-001.a](../../../../spec/spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 6 gingen dem Code voraus.
+
+**Designweg.** d-check mechanisiert damit die Referenz-Richtung, die das
+adoptierte Regelwerk (§Referenz-Richtung) bewusst dem Reviewer überließ — der
+Marker macht die „Provenance vs. Entscheidungsgrundlage"-Unterscheidung **grep-bar**
+(deklariert/nicht statt Bedeutung). Weg B aus der Auftraggeber-Session: adr→slice
+auch mechanisch, statt nur Reviewer. Die Immutability-Falle (21 eingefrorene ADRs
+mit legitimen Verifikations-Zeigern) löst **Grandfathering per `exempt-paths`**
+(kein `adr-check`-Eingriff, kein Editieren immutabler ADRs). Der Reviewer-Anker
+schrumpft auf die nicht grep-bare Resthälfte: **Marker-Ehrlichkeit**.
+
+**Belege.**
+- `make gates` **grün** (doc-check, lint, test, arch-check, coverage, semgrep,
+  gate-consistency, planning-check). `make ci` in der Release-Pipeline folgt;
+  Release **v0.31.0** per Tag-Push, Digest-Pin per digest-backfill.
+- **Zwei unabhängige Reviews:** R1 (mergebar; MEDIUM F-4 Test-Lücke + LOWs) und R2
+  (mergebar; alle R1-Auflösungen belegt, ein LOW N-1). F-4 (Fence-/Section-Fixtures),
+  F-1 (alle Token je Zeile, `FindAllStringIndex`) und N-1 (Zwei-Token-Zeilen-Fixture)
+  behoben; F-2/F-3/F-5/F-6 als bekannte Grenzen in §4 dokumentiert.
+  [R1](../../../reviews/2026-06-28-slice-051-matrix-token-richtung-r1.md) /
+  [R2](../../../reviews/2026-06-28-slice-051-matrix-token-richtung-r2.md).
+- **Negativ-Probe** verifiziert: unmarkierter `slice-099` im nicht-grandfatherten
+  [ADR-0022](../../adr/0022-matrix-token-richtung-provenance-marker.md) ⇒ `matrix-forbidden`, doc-check rot (per **Edit** zurückgenommen, kein
+  `git checkout` — die slice-050-Lehre).
+- Dogfood aktiv: `slice`-Klasse `token: 'slice-\d{3}'`, Regel `adr→slice`,
+  `exempt-paths` 0001–0021; Spec-Fix (Slice-Token aus dem `spezifikation.md`-Körper);
+  [ADR-0022](../../adr/0022-matrix-token-richtung-provenance-marker.md) dogfoodet den Marker auf seinem eigenen Beleg-Verweis. Nutzersichtbar:
+  `--suggest-config`/`--print-config` + Benutzerhandbuch §4.7; Reviewer-Skill v1.2.0.
+
+**Lerneintrag.** Eine Marker-Selbst-Deklaration macht eine semantische
+Unterscheidung **grep-bar** (deklariert/nicht), aber nie **ehrlich** — der Reviewer
+bleibt der dünne Backstop gegen Marker-Missbrauch. Und: Probe-Reverts per gezieltem
+Edit, nie `git checkout -- <datei>` (das nimmt alle uncommitteten Änderungen mit).
