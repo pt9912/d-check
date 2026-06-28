@@ -10,16 +10,17 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Aktive Welle: welle-40-matrix-token-richtung** — [`slice-051`](slice-051-matrix-token-richtung.md):
-`matrix` um die **token-basierte** Referenz-Richtung erweitert — eine Klasse mit
+**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+welle-40-matrix-token-richtung ([`slice-051`](../done/slice-051-matrix-token-richtung.md) —
+`matrix` um die **token-basierte** Referenz-Richtung erweitert: eine Klasse mit
 `token`-Regex fängt verbotene Referenzen auch als bare ID-Token im Körper (nicht
 nur als Link), `matrix-forbidden` in Token-Form; Provenance-Marker
 `<!-- d-check:status-provenance -->` deklariert legitime aus; `exempt-paths`
-grandfathered immutable ADRs
+grandfathered immutable ADRs; zwei unabhängige Reviews (R1+R2); Release
+**v0.31.0** (Digest-Pin folgt mit dem GHCR-Push)
 ([`DC-FA-MTX-003`](../../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix),
-[ADR-0022](../../adr/0022-matrix-token-richtung-provenance-marker.md), Lastenheft 0.31.0).
-
-Zuletzt abgeschlossen:
+[ADR-0022](../../adr/0022-matrix-token-richtung-provenance-marker.md),
+[Closure](../done/slice-051-matrix-token-richtung.md#7-closure-notiz-nach-done)). Davor
 welle-39-matrix-richtung ([`slice-050`](../done/slice-050-matrix-klasseninterne-richtung.md) —
 `matrix` um die **klasseninterne Verweisrichtung** erweitert: eine Klasse mit
 `order` (Glob-Rang, autoritativste Schicht zuerst) + `direction: no-downward`
