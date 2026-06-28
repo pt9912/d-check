@@ -21,7 +21,8 @@ VCS-Adapter vorbehalten
 ([`DC-FA-IMM-001`](../../../../spec/lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in),
 [ADR-0023](../../adr/0023-immutable-core-pin.md), Lastenheft 0.32.0); zwei
 unabhängige Reviews (R1+R2, alle Befunde behoben); `make gates` grün; Release
-**v0.32.0** auf GHCR
+**v0.32.0** auf GHCR (Pipeline-Run 28333526980 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:28187eacaa7bf08b1704e5e8dd3a15928cf11310c9f6a8ec6bcfdabc2b34aa6c`
 ([Closure](../done/slice-052-immutable-modul.md#7-closure-notiz-nach-done)). Davor
 welle-40-matrix-token-richtung ([`slice-051`](../done/slice-051-matrix-token-richtung.md) —
 `matrix` um die **token-basierte** Referenz-Richtung erweitert: eine Klasse mit
@@ -134,10 +135,10 @@ include-bares `d-check.mk` (version-gepinntes Image + `doc-check`-Target) aus;
 welle-27-rtm-trace (`slice-036`), welle-26-suggest-prefix (`slice-037`),
 welle-25-pr-ci-traceability (`slice-039`), welle-23-latest-tag (`slice-034`)
 und welle-24-kern-paketschnitt (`slice-035`).
-Letztes Release **v0.29.0** auf GHCR (2026-06-24, slice-049: Modul `pins`),
+Letztes Release **v0.32.0** auf GHCR (2026-06-28, slice-052: Modul `immutable`),
 Digest-Pin
-`ghcr.io/pt9912/d-check@sha256:07994926987a92b863a5f54eeb7668654c08e1be958be425da4bdb7712c002c2`;
-davor v0.28.0 (slice-048) und v0.27.0 (slice-047). `slice-035` ist als reiner
+`ghcr.io/pt9912/d-check@sha256:28187eacaa7bf08b1704e5e8dd3a15928cf11310c9f6a8ec6bcfdabc2b34aa6c`;
+davor v0.31.0 (slice-051) und v0.30.0 (slice-050). `slice-035` ist als reiner
 Refactor noch in keinem Release.
 
 ## Nächste Wellen

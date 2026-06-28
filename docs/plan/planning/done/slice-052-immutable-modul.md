@@ -149,8 +149,8 @@ Grund-Code `core-drift` gingen dem Code voraus.
   git-Garantie für d-checks eigene 21 `Accepted`-ADRs); `immutable` ist die
   **verteilbare, hermetische** Stufe — un-dogfooded wie `pins` (ein Marker in eine
   Alt-ADR zu setzen löste `adr-check` selbst aus).
-- Release **v0.32.0** auf GHCR (Pipeline-Run + Digest-Pin im Digest-Backfill
-  nachgetragen).
+- Release **v0.32.0** auf GHCR (Pipeline-Run 28333526980 grün), Digest-Pin
+  `ghcr.io/pt9912/d-check@sha256:28187eacaa7bf08b1704e5e8dd3a15928cf11310c9f6a8ec6bcfdabc2b34aa6c`.
 
 **Lerneintrag.** `immutable` und `pins` teilen Normalisierung + Pin-Disziplin,
 sind aber getrennte Module: `pins` = Hash eines Link-**Ziel**-Spans, `immutable`
