@@ -27,8 +27,8 @@ Boden-Pin (Defense-in-Depth)
 ([`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
 [ADR-0024](../../adr/0024-vcs-immutable-gate.md), Lastenheft 0.33.0); zwei unabhängige
 Reviews (R1 doc + R2 code, alle Befunde behoben); `make ci` grün (Cov 93,4 %),
-`adr-check`-Dogfood (vcs) grün; Release **v0.33.0** auf GHCR
-(Digest-Pin folgt mit dem Tag-Push)
+`adr-check`-Dogfood (vcs) grün; Release **v0.33.0** auf GHCR (Pipeline-Run 28366480134 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:4980715aae510804a410246a04ecf2abe8300dca8682ed0272b9ebed3a1eb31f`
 ([Closure](../done/slice-053-vcs-modul.md#7-closure-notiz-nach-done)). Davor
 welle-41-immutable ([`slice-052`](../done/slice-052-immutable-modul.md) — neues
 opt-in Modul `immutable` (12. Modul, content-immutability): eine Datei mit

@@ -180,7 +180,8 @@ führen jetzt alle Module (`pins`/`immutable`/`vcs` nachgezogen).
 - Tests: `rules/vcs_test.go` (7 Skript-Selbsttest-Klassen via Fake-Port + Kombi +
   nil-status-line + fail-closed + Dispatch), `git/git_test.go` (on-disk go-git,
   black-box via `Open`), `cli/cli_vcs_test.go` (E2E echtes git).
-- Release **v0.33.0** auf GHCR (Digest-Pin via digest-backfill nach dem Tag-Push).
+- Release **v0.33.0** auf GHCR (Pipeline-Run 28366480134 grün), Digest-Pin
+  `ghcr.io/pt9912/d-check@sha256:4980715aae510804a410246a04ecf2abe8300dca8682ed0272b9ebed3a1eb31f`.
 
 **Lerneintrag.** `immutable` (hermetischer Pin, slice-052) und `vcs` (git-Diff) sind die
 zwei Hälften derselben Immutabilitäts-Frage ([ADR-0023](../../adr/0023-immutable-core-pin.md)
