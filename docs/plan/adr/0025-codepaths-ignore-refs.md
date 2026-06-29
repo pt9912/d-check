@@ -1,6 +1,6 @@
 # ADR-0025 — Referenz-Ventil `codepaths.ignore-refs`: Tombstone-Register entfernter Code-Pfade löst die Frozen-Doc-Refactoring-Falle und entfernt adr-immutable-check.sh
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-29
 **Autor:** pt9912
 **Bezug:** [`DC-FA-CODE-001`](../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
@@ -156,3 +156,4 @@ Akzeptanztest im Modul `vcs` weiter — kein Garantieverlust.
 | Datum | Ereignis |
 | --- | --- |
 | 2026-06-29 | Entwurf nach Auftraggeber-Auftrag („eine bessere Lösung, dass Refactoring/Löschen nicht immer wieder die `codepaths`-/Immutabilitäts-Falle auslöst"; Idee `ignore-code-ref` im `.d-check.yml`). Erweitert [`DC-FA-CODE-001`](../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) um das Referenz-Ventil `ignore-refs`; **Supersedes** die „Skript bleibt pfad-stabil"-Teilentscheidung von [ADR-0024](0024-vcs-immutable-gate.md) → entfernt `tools/adr-immutable-check.sh`. Begleitet slice-054. Status Proposed. |
+| 2026-06-29 | Angenommen mit der slice-054-Closure: `codepaths.ignore-refs` implementiert/getestet (Skip vor Escape/Existenz/Anker; Happy/Negative/Glob/referenz-weit/Default-leer + mutations-verifizierter Escape-/Anker-Lock-Test), `tools/adr-immutable-check.sh` per `git rm` entfernt und über `codepaths.ignore-refs` als Tombstone deklariert; zwei unabhängige Reviews (R1 doc + R2 code, alle Befunde behoben — u. a. R1-INFO-1: Claim auf die `codepaths`-Achse eingeschränkt, `links`-Achse als Re-Eval-Trigger), `make ci` grün (Cov 93,4 %), Release v0.34.0. Status Accepted. |

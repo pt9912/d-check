@@ -10,17 +10,23 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Aktive Welle: welle-43-ignore-refs** ([`slice-054`](slice-054-codepaths-ignore-refs.md) —
+**Keine aktive Welle** — kein Slice in `in-progress/` (Backlog offen). Zuletzt
+abgeschlossen: welle-43-ignore-refs ([`slice-054`](../done/slice-054-codepaths-ignore-refs.md) —
 `codepaths.ignore-refs` (Tombstone-Register bewusst entfernter Code-Artefakte) löst die
 **Frozen-Doc-Refactoring-Falle**: ein Inline-Code-Verweis auf einen deklariert-entfernten
 Pfad löst kein `codepath-missing` mehr (bewusster Akt **mit** Gate, kein Edit an
-immutabler Doku, kein klassenweites Ausnehmen). Erster Anwendungsfall: das in slice-053
-nur „pfad-stabil behaltene" `tools/adr-immutable-check.sh` wird **entfernt**; eine neue
-ADR `Supersedes` die „Skript-behalten"-Teilentscheidung von
-[ADR-0024](../../adr/0024-vcs-immutable-gate.md). DoD getrennt nach Verifikation +
-Validierung; Config-Surface (`--print-config`/Handbuch) Pflicht
+immutabler Doku, kein klassenweites Ausnehmen) — referenz-weit, dritte Ventil-Achse neben
+`d-check:ignore` (Zeile) und `exempt-paths` (Datei). Erster Anwendungsfall: das in slice-053
+nur „pfad-stabil behaltene" `tools/adr-immutable-check.sh` ist **entfernt**;
+[ADR-0025](../../adr/0025-codepaths-ignore-refs.md) `Supersedes` die
+„Skript-behalten"-Teilentscheidung von [ADR-0024](../../adr/0024-vcs-immutable-gate.md)
+(VCS-Port/Modul `vcs`/Dogfood bleiben gültig); die `links`-Achse bleibt bewusst offen
+(Re-Eval-Trigger)
 ([`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
-Lastenheft 0.34.0); doc-first läuft). Zuletzt abgeschlossen:
+Lastenheft 0.34.0); zwei unabhängige Reviews (R1 doc + R2 code, alle Befunde behoben,
+Lock-Test mutations-verifiziert); `make ci` grün (Cov 93,4 %); Release **v0.34.0** auf GHCR
+(Pipeline-Run + Digest-Pin folgen im Backfill)
+([Closure](../done/slice-054-codepaths-ignore-refs.md#7-closure-notiz-nach-done)). Davor
 welle-42-vcs ([`slice-053`](../done/slice-053-vcs-modul.md) — neues
 opt-in Modul `vcs` (13. Modul, git-historienbasierte Core-Immutabilität): vergleicht
 `core(BASE)` vs. `core(HEAD)` über eine Commit-Range (`--range <base>..<head>` /
