@@ -1,6 +1,6 @@
 # Slice slice-053: Modul `vcs` — Git-Diff-Immutabilität des Core über eine Commit-Range
 
-**Status:** in-progress (welle-42-vcs).
+**Status:** done (abgeschlossen, welle-42-vcs).
 
 **Welle:** welle-42-vcs (Trigger: Auftraggeber — „können wir `adr-immutable-check`
 regelkonform vollständig mechanisieren?" → die von
@@ -13,7 +13,7 @@ git-Diff/`core-drift-vcs`) plus [ADR-0024](../../adr/0024-vcs-immutable-gate.md)
 (neuer reine-Go-VCS-Port; **Teil-Supersede der Skript-Mechanik** von
 [ADR-0016](../../adr/0016-adr-immutable-gate.md) — Policy/Gate bleiben). Schwester-
 und Boden-Hälfte ist der hermetische `immutable`-Pin
-([`slice-052`](../done/slice-052-immutable-modul.md),
+([`slice-052`](slice-052-immutable-modul.md),
 [ADR-0023](../../adr/0023-immutable-core-pin.md)); der VCS-Port ist von
 [ADR-0008](../../adr/0008-reparatur-ableitbarkeit.md) als „künftiges VCS-Modul …
 analog `external`" vorgezeichnet. Verteilung wie der Rest des Werkzeugs (gepinntes
@@ -30,7 +30,7 @@ Image, kein kopiertes Skript —
 erzwingt die ADR-Immutabilität über einen **git-Diff** (`core(BASE)` vs.
 `core(HEAD)` über eine Commit-Range) — volle Garantie, aber als **Skript** nur per
 Kopie in Schwester-Repos nutzbar (Copy-Drift). Der hermetische `immutable`-Pin
-([`slice-052`](../done/slice-052-immutable-modul.md)) löste die **verteilbare**
+([`slice-052`](slice-052-immutable-modul.md)) löste die **verteilbare**
 Hälfte (neu-pinn-bar, schwächere Garantie). **Neu:** dieselbe **harte** git-Garantie
 verteilbar im Image — ein opt-in Modul `vcs` vergleicht `core(BASE)` ≟ `core(HEAD)`
 über `--range <base>..<head>` (CI/Push) bzw. `--staged` (pre-commit) und meldet
@@ -142,4 +142,53 @@ GF-Erweiterung der Hexagon-Adapter-Schicht (analog `httpcheck`); keine BF-Sub-Ar
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(folgt bei Closure)_
+**Umsetzung.** slice-053 als **13. Regelmodul `vcs`**: vergleicht den **Core** einer
+immutablen Datei über eine git-Commit-Range (`core(BASE)` vs. `core(HEAD)`) und meldet
+Körper-Drift, unzulässigen Status-Übergang (`vcs.head-allow`) oder Löschung/Umbenennung
+als `core-drift-vcs`. Neuer Driven-Port `VCS` (`ChangedPaths`/`FileAt`) + einziger
+git-berührender Adapter (`adapter/driven/git`, **go-git v5.19.1**, reine-Go, **kein
+git-Binary** → distroless unangetastet; `arch-check` R2 um die go-git-Einzeltür
+erweitert). Eingabe = read-only `.git` + Range — lokal/lesend/deterministisch
+([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)/[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
+unberührt); strikt opt-in, fail-closed ohne `.git`/Range. Core in Parität zum abgelösten
+`adr-immutable-check.sh` (nur Kopf-Status-Zeile gestrippt, `exclude-sections`). Doc-first:
+[`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
+(Lastenheft 0.33.0, Bereich `VCS`) + [ADR-0024](../../adr/0024-vcs-immutable-gate.md)
+(VCS-Port + Teil-Supersede der [ADR-0016](../../adr/0016-adr-immutable-gate.md)-Skript-
+Mechanik) + spezifikation `.a` + Grund-Code gingen dem Code voraus.
+
+**Dogfood + Verteilung.** Das `adr-check`-Gate (Makefile/`pre-commit`/CI) läuft jetzt
+über das Modul `vcs` (Image, `RANGE`/`STAGED`, auf nur-`vcs` fokussiert) statt des
+Skripts; `tools/adr-immutable-check.sh` bleibt pfad-stabiler Fallback (immutable
+[ADR-0016](../../adr/0016-adr-immutable-gate.md)-Inline-Referenz). `--print-mk` trägt ein `doc-immutable`-Target → Schwester-
+Repos beziehen die git-Garantie **verteilt** (der
+[`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Kern),
+ohne Skript-Kopie. Config-Surface-Bereinigung: `--print-config`/`--suggest-config`
+führen jetzt alle Module (`pins`/`immutable`/`vcs` nachgezogen).
+
+**Belege.**
+- `make ci` **grün** (doc-check 151/0, lint, test, arch-check, Coverage **93,4 %**,
+  semgrep 0/55, gate-consistency, planning-check; image-test nativ == Container).
+- `make adr-check` (Dogfood) **beide Modi grün** (`--range`/`--staged`) — go-git liest
+  das read-only `.git` end-to-end; die `pre-commit`-Hooks **dieses** Slice-Verlaufs
+  liefen alle über das neue vcs-Gate (der Dogfood bewies sich am eigenen Commit-Verlauf).
+- Zwei **unabhängige** Reviews (Reports
+  [r1](../../../reviews/2026-06-29-slice-053-vcs-doc-first-r1.md)/[r2](../../../reviews/2026-06-29-slice-053-vcs-code-r2.md)):
+  R1 (Doc) kein HIGH, 1 MEDIUM (7. Paritäts-Test) + 3 LOW; R2 (Code/Gate) kein HIGH,
+  1 MEDIUM (F-1: `make adr-check` lief nicht nur-`vcs` → über-feuern; behoben via
+  `VCS_DISABLE`) + 4 INFO. Alle Befunde eingearbeitet.
+- Tests: `rules/vcs_test.go` (7 Skript-Selbsttest-Klassen via Fake-Port + Kombi +
+  nil-status-line + fail-closed + Dispatch), `git/git_test.go` (on-disk go-git,
+  black-box via `Open`), `cli/cli_vcs_test.go` (E2E echtes git).
+- Release **v0.33.0** auf GHCR (Digest-Pin via digest-backfill nach dem Tag-Push).
+
+**Lerneintrag.** `immutable` (hermetischer Pin, slice-052) und `vcs` (git-Diff) sind die
+zwei Hälften derselben Immutabilitäts-Frage ([ADR-0023](../../adr/0023-immutable-core-pin.md)
+→ [ADR-0024](../../adr/0024-vcs-immutable-gate.md)) — Defense-in-Depth. go-git macht das
+git-Lesen rein-Go, sodass das distroless-Image unangetastet bleibt; der
+„nicht-hermetisch wie `external`"-Vorgriff
+([ADR-0008](../../adr/0008-reparatur-ableitbarkeit.md)) ist präzisiert: `vcs` ist
+lokal/deterministisch/read-only, nur der **Eingabe-Scope** ist erweitert. Eine immutable
+Accepted-ADR (0016) wird erst bei **Closure** annotiert (R1-F-4), nicht im Proposed-Zustand;
+das abgelöste Skript bleibt pfad-stabil. Drei Slices (049/052/053) hatten die
+Config-Discovery-Surfaces nicht nachgezogen — hier mitbereinigt.
