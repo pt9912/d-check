@@ -18,8 +18,9 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, external
-# (external ist die einzige Netzwerk-Tür — strikt opt-in.)
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, external
+# (external ist die einzige Netzwerk-Tür — strikt opt-in; vcs ist git-basiert
+#  und braucht .git + eine Commit-Range — strikt opt-in.)
 
 # --- ids: Linkpflicht für Kennungen ---
 # ids:
@@ -79,6 +80,26 @@ modules: [links, anchors]
 #   pin-pattern: 'ghcr\.io/[^\s:]+:(v[0-9]+\.[0-9]+\.[0-9]+)'   # Version in Capture-Gruppe 1
 #   current-from: version.md#aktuell   # Datei#Anker (Span) mit der aktuellen Version
 #   exempt-paths: [CHANGELOG.md, "docs/plan/planning/done/**"]  # historische Pins (datei-weit)
+
+# --- pins: Content-Pin gegen inhaltlichen Drift verlinkter Ziele ---
+#   (keine eigenen Optionen; über modules aktivieren. Ein Link mit
+#    <!-- dpin: sha256:… --> wird gegen den Hash seines rohen Ziel-Spans geprüft.)
+
+# --- immutable: Immutabilitäts-Pin gegen Core-Drift — hermetisch (kein git) ---
+# immutable:
+#   exclude-sections: [Geschichte]   # Abschnitte, die nicht zum gehashten Core zählen
+#   # Eine Datei mit <!-- immutable: sha256:… --> wird gegen ihren normalisierten
+#   # Core (ohne Marker-Zeile + exclude-sections) gehasht; Abweichung → core-drift.
+
+# --- vcs: git-Diff-Immutabilität des Core über eine Commit-Range — git, opt-in ---
+#   (braucht .git + eine Range; Aufruf über das print-mk-Target doc-immutable
+#    bzw. --range <base>..<head> / --staged. NICHT in modules: oben aufnehmen.)
+# vcs:
+#   paths: ["docs/plan/adr/[0-9]*.md"]                 # geschützte Datei-Klasse (Glob)
+#   immutable-when: '^\*\*Status:\*\* Accepted'        # BASE ab dieser Zeile immutabel
+#   exclude-sections: [Geschichte]                     # nicht zum Core zählende Abschnitte
+#   status-line: '^\*\*Status:\*\*'                    # Kopf-Status-Zeile (aus dem Core gestrippt)
+#   head-allow: '^\*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'  # erlaubter Status-Übergang
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---
 # external:

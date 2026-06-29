@@ -827,6 +827,28 @@ func TestCLI005_KeinRepoZugriff(t *testing.T) {
 	}
 }
 
+// slice-053 (Config-Surface-Bereinigung): das --print-config-Gerüst führt jetzt
+// alle Module — die „Verfügbar"-Zeile nennt `vcs` (und die zuvor fehlenden
+// `pins`/`immutable`), und es gibt kommentierte Blöcke für `immutable` und `vcs`.
+// Das Gerüst dekodiert weiterhin fehlerfrei (alle Blöcke auskommentiert).
+func TestCLI053_PrintConfig_VollesModulset(t *testing.T) {
+	_, stdout, _ := run(t, "--print-config")
+	for _, want := range []string{
+		"versions, pins, immutable, vcs, external", // vollständige Verfügbar-Liste
+		"# --- immutable:",
+		"# --- vcs:",
+		"# --- pins:",
+		"immutable-when:", // der vcs-Config-Key, nach dem gefragt wurde
+	} {
+		if !strings.Contains(stdout, want) {
+			t.Fatalf("--print-config ohne %q:\n%s", want, stdout)
+		}
+	}
+	if _, err := configyaml.Decode([]byte(stdout)); err != nil {
+		t.Fatalf("erweitertes Gerüst dekodiert nicht: %v", err)
+	}
+}
+
 // DC-FA-CLI-006 Happy: --suggest-config leitet aus definierten Kennungen
 // ein ids-Muster ab (Round-Trip: regex matcht die Quell-IDs), target =
 // Quelle, gültiges vom eigenen Parser akzeptiertes YAML.
@@ -954,7 +976,7 @@ func TestCLI006_AiHarness_Happy(t *testing.T) {
 	if !hasMod("ids") || !hasMod("matrix") {
 		t.Fatalf("Modulset unvollständig: %v", cfg.Modules)
 	}
-	for _, want := range []string{"Baseline v1.3.0", "matrix:", "from: spec-straten, to: adr", "exclude-sections", "Carveouts", "(external, spans, hostpaths, diagrams)", "d-check --print-config"} {
+	for _, want := range []string{"Baseline v1.3.0", "matrix:", "from: spec-straten, to: adr", "exclude-sections", "Carveouts", "external, spans, hostpaths, diagrams, versions,", "pins, immutable, vcs", "d-check --print-config"} {
 		if !strings.Contains(stdout, want) {
 			t.Fatalf("Vorlage ohne %q:\n%s", want, stdout)
 		}
