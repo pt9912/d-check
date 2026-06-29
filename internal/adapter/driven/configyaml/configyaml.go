@@ -55,6 +55,7 @@ type rawCodepaths struct {
 	Scope       *rawScope `yaml:"scope"`
 	Roots       []string  `yaml:"roots"`
 	ExemptPaths []string  `yaml:"exempt-paths"`
+	IgnoreRefs  []string  `yaml:"ignore-refs"`
 }
 
 // rawDiagrams trägt scope, fences und die Muster des Moduls diagrams
@@ -270,7 +271,11 @@ func applyCodepaths(r *raw, cfg *model.Config) error {
 			return fmt.Errorf("%s: codepaths.roots-Präfix %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')", FileName, root)
 		}
 	}
-	cfg.Codepaths = model.CodepathsConfig{Roots: r.Codepaths.Roots, ExemptPaths: r.Codepaths.ExemptPaths}
+	cfg.Codepaths = model.CodepathsConfig{
+		Roots:       r.Codepaths.Roots,
+		ExemptPaths: r.Codepaths.ExemptPaths,
+		IgnoreRefs:  r.Codepaths.IgnoreRefs,
+	}
 	return nil
 }
 

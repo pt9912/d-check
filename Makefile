@@ -181,7 +181,7 @@ trace-check: ## Traceability-Gate: DC-/ADR-/slice-ID in Commits (Selbsttest + HE
 # aber Über-Feuern).
 VCS_DISABLE := --disable links --disable anchors --disable ids --disable matrix \
     --disable codepaths --disable spans --disable hostpaths --disable versions
-adr-check: build ## ADR-Immutable-Gate via Modul vcs (Image, dogfood, nur vcs): Accepted-ADRs nicht inhaltlich ändern (RANGE=a..b für CI, STAGED=1 für den Hook, sonst HEAD~1..HEAD). ADR-0024 (löst die Skript-Mechanik von ADR-0016 ab; tools/adr-immutable-check.sh bleibt pfad-stabiler Fallback).
+adr-check: build ## ADR-Immutable-Gate via Modul vcs (Image, dogfood, nur vcs): Accepted-ADRs nicht inhaltlich ändern (RANGE=a..b für CI, STAGED=1 für den Hook, sonst HEAD~1..HEAD). ADR-0024 (löst die Skript-Mechanik von ADR-0016 ab); ADR-0025 entfernt das Alt-Skript.
 	$(DCHECK_RUN) --enable vcs $(VCS_DISABLE) $(if $(STAGED),--staged,--range $(if $(RANGE),$(RANGE),HEAD~1..HEAD))
 
 hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Traceability + pre-commit ADR-Immutable). ADR-0013/0016.

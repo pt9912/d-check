@@ -397,7 +397,10 @@ func renderHarness(fsys driven.Filesystem, extra []suggestedPattern, repoAware b
 	// codepaths: das Datei-Ventil der Konvention — Review-Reports/Changelog
 	// zitieren naturgemäß Datei:Zeile/Pfade und sollen kein codepath-missing
 	// auslösen (Parität zum ids-exempt; roots bleiben repo-spezifisch).
+	// ignore-refs startet leer (Tombstone-Register entfernter Artefakte ist
+	// repo-historie-spezifisch) — nur als Hinweis auskommentiert.
 	b.WriteString("\ncodepaths:\n  exempt-paths: " + harnessExempt + "\n")
+	b.WriteString("  # ignore-refs: [\"tools/altes-skript.sh\"]  # Ziel-Pfade entfernter Artefakte (referenz-weit; leer starten, DC-FA-CODE-001)\n")
 	return b.String()
 }
 

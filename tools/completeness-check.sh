@@ -13,7 +13,7 @@
 # fail-closed: leere/feldlose/nicht-numerische/kaputte RTM => FAIL, nie
 # stilles "0". Parsing rein bash/grep/awk (kein jq/python — keine
 # Host-Binary-Abhaengigkeit). Negativ-Selbsttest in beide Richtungen bei
-# jedem Lauf (analog tools/gate-consistency.sh, tools/adr-immutable-check.sh).
+# jedem Lauf (analog tools/gate-consistency.sh).
 set -euo pipefail
 
 cd "$(dirname "$0")/.."

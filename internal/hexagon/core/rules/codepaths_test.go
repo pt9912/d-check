@@ -90,6 +90,99 @@ func TestCodepathsExemptPaths(t *testing.T) {
 	}
 }
 
+// §DC-FA-CODE-001.a — ignore-refs nimmt einen aufgelösten Ziel-Pfad
+// REFERENZ-WEIT von der Existenz-Prüfung aus (Tombstone-Register,
+// ADR-0025): per-Pfad, nicht datei-weit — der Eintrag stellt genau
+// diesen Pfad in JEDER Datei still, übrige Verweise bleiben geprüft.
+// Ohne Eintrag byte-identisch (DC-QA-02).
+func TestCodepathsIgnoreRefs(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/adr.md":   "Frozen: `tools/weg.sh` und lebt: `../fehlt.md`.\n",
+		"docs/slice.md": "Auch frozen: `tools/weg.sh`.\n",
+	})
+	roots := []string{"docs", "tools"}
+	// Default-leer: der entfernte Pfad feuert in BEIDEN Dateien, dazu
+	// der zweite fehlende Verweis → 3 Befunde (byte-identisch zum
+	// Verhalten vor ignore-refs).
+	cfgPlain := model.Config{Codepaths: model.CodepathsConfig{Roots: roots}}
+	plain, err := Run(m, nil, cfgPlain, []string{"codepaths"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(plain.Findings) != 3 {
+		t.Fatalf("ohne ignore-refs: %d Befunde, want 3", len(plain.Findings))
+	}
+	// Mit ignore-refs tools/weg.sh: der Tombstone-Pfad ist in beiden
+	// Dateien still; nur der nicht-ignorierte ../fehlt.md bleibt
+	// (Negative: per-Pfad, kein klassenweites Loch).
+	cfgIgnore := model.Config{Codepaths: model.CodepathsConfig{Roots: roots, IgnoreRefs: []string{"tools/weg.sh"}}}
+	ign, err := Run(m, nil, cfgIgnore, []string{"codepaths"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range ign.Findings {
+		got = append(got, fmt.Sprintf("%s %s %s", f.File, f.Target, f.Reason))
+	}
+	want := []string{"docs/adr.md ../fehlt.md codepath-missing"}
+	if fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("mit ignore-refs tools/weg.sh: Befunde = %v\nwant %v", got, want)
+	}
+	// Glob-Form: tools/*.sh deckt denselben Pfad ab → wieder nur der
+	// lebende Verweis bleibt.
+	cfgGlob := model.Config{Codepaths: model.CodepathsConfig{Roots: roots, IgnoreRefs: []string{"tools/*.sh"}}}
+	g, err := Run(m, nil, cfgGlob, []string{"codepaths"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(g.Findings) != 1 {
+		t.Fatalf("mit ignore-refs-Glob tools/*.sh: %d Befunde, want 1", len(g.Findings))
+	}
+}
+
+// §DC-FA-CODE-001.a Schritt 5 / ADR-0025 — ein ignore-refs-Treffer
+// unterdrückt ALLE drei Grund-Codes (codepath-missing, repo-escape,
+// anchor-missing), weil das Match VOR Escape/Existenz/Anker greift.
+// Verriegelt die Schritt-Reihenfolge: verschöbe man den ignored()-Aufruf
+// hinter den Escape- oder Anker-Block, bräche genau dieser Test.
+func TestCodepathsIgnoreRefsUnterdruecktEscapeUndAnker(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		// existierende Zieldatei OHNE den Anker 'fehlt'
+		"docs/real.md": "# Titel\n",
+		// a.md an der Wurzel: `../oben.md` eskaliert (rohes Ziel ==
+		// aufgelöstes rel), `docs/real.md#fehlt` trägt einen toten Anker.
+		"a.md": "Escape: `../oben.md` und toter Anker: `docs/real.md#fehlt`.\n",
+	})
+	roots := []string{"docs"}
+	// Ohne ignore-refs: genau repo-escape + anchor-missing.
+	plain, err := Run(m, nil, model.Config{Codepaths: model.CodepathsConfig{Roots: roots}}, []string{"codepaths"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var reasons []string
+	for _, f := range plain.Findings {
+		reasons = append(reasons, f.Reason)
+	}
+	if len(plain.Findings) != 2 {
+		t.Fatalf("ohne ignore-refs: %d Befunde, want 2 (repo-escape + anchor-missing): %v", len(plain.Findings), reasons)
+	}
+	// Mit ignore-refs auf BEIDE aufgelösten Pfade: kein Befund — der
+	// Treffer unterdrückt repo-escape UND anchor-missing, nicht nur
+	// codepath-missing. Das Glob matcht den aufgelösten Wurzel-relativen
+	// Pfad (Escape: `../oben.md`; Anker: `docs/real.md` nach Fragment-Abtrennung).
+	cfg := model.Config{Codepaths: model.CodepathsConfig{
+		Roots:      roots,
+		IgnoreRefs: []string{"../oben.md", "docs/real.md"},
+	}}
+	ign, err := Run(m, nil, cfg, []string{"codepaths"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(ign.Findings) != 0 {
+		t.Fatalf("mit ignore-refs: %d Befunde, want 0 (repo-escape + anchor-missing unterdrückt)", len(ign.Findings))
+	}
+}
+
 // §DC-FA-CODE-001.a Schritt 3+5 — Normalisierung und Anker-Prüfung
 // (gleiches Slug-Verfahren wie anchors, geteilter Cache).
 func TestCodepathsNormalisierungUndAnker(t *testing.T) {

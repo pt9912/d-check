@@ -10,7 +10,17 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+**Aktive Welle: welle-43-ignore-refs** ([`slice-054`](slice-054-codepaths-ignore-refs.md) —
+`codepaths.ignore-refs` (Tombstone-Register bewusst entfernter Code-Artefakte) löst die
+**Frozen-Doc-Refactoring-Falle**: ein Inline-Code-Verweis auf einen deklariert-entfernten
+Pfad löst kein `codepath-missing` mehr (bewusster Akt **mit** Gate, kein Edit an
+immutabler Doku, kein klassenweites Ausnehmen). Erster Anwendungsfall: das in slice-053
+nur „pfad-stabil behaltene" `tools/adr-immutable-check.sh` wird **entfernt**; eine neue
+ADR `Supersedes` die „Skript-behalten"-Teilentscheidung von
+[ADR-0024](../../adr/0024-vcs-immutable-gate.md). DoD getrennt nach Verifikation +
+Validierung; Config-Surface (`--print-config`/Handbuch) Pflicht
+([`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
+Lastenheft 0.34.0); doc-first läuft). Zuletzt abgeschlossen:
 welle-42-vcs ([`slice-053`](../done/slice-053-vcs-modul.md) — neues
 opt-in Modul `vcs` (13. Modul, git-historienbasierte Core-Immutabilität): vergleicht
 `core(BASE)` vs. `core(HEAD)` über eine Commit-Range (`--range <base>..<head>` /

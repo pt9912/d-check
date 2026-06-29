@@ -79,6 +79,10 @@ codepaths:
   # Review-Reports zitieren naturgemäß Datei:Zeile/Pfade — wie bei ids
   # vom Datei-Ventil ausgenommen (DC-FA-CODE-001, slice-043).
   exempt-paths: ["docs/reviews/**"]
+  # Tombstone-Register (DC-FA-CODE-001, ADR-0025, slice-054): bewusst
+  # entfernte Artefakte, die immutable/historische Doku noch in Inline-Code
+  # zitiert — referenz-weit von der Existenz-Prüfung ausgenommen.
+  ignore-refs: ["tools/adr-immutable-check.sh"]
 
 # Versions-Pin-Konsistenz (DC-FA-VER-001, slice-048): jeder ghcr-Image-Pin in
 # den Live-Docs muss die aktuelle Version aus version.md#aktuell tragen — sonst

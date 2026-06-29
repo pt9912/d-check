@@ -55,7 +55,7 @@ func CheckCodepaths(fsys driven.Filesystem, file string, content []byte, cfg mod
 				continue
 			}
 			findings = append(findings,
-				checkCodepathTarget(fsys, file, pl.no, value, rootRel, slugCache)...)
+				checkCodepathTarget(fsys, file, pl.no, value, rootRel, cfg.IgnoreRefs, slugCache)...)
 		}
 	}
 	return findings
@@ -120,8 +120,10 @@ func classifyCodepath(v string, roots []string) (rootRel, ok bool) {
 
 // checkCodepathTarget löst auf (Datei- bzw. Wurzel-relativ), prüft
 // Escape und Existenz; bei Markdown-Zielen mit Fragment zusätzlich
-// den Anker (§DC-FA-CODE-001.a Schritt 5).
-func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value string, rootRel bool, slugCache map[string]map[string]bool) []model.Finding {
+// den Anker (§DC-FA-CODE-001.a Schritt 5). Ein aufgelöster Pfad, der
+// ein ignore-refs-Glob matcht, wird vor allen Prüfungen übersprungen
+// (referenz-weites Tombstone-Ventil, ADR-0025).
+func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value string, rootRel bool, ignoreRefs []string, slugCache map[string]map[string]bool) []model.Finding {
 	pathPart, frag := value, ""
 	if idx := strings.IndexByte(value, '#'); idx != -1 {
 		pathPart, frag = value[:idx], value[idx+1:]
@@ -142,6 +144,9 @@ func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value st
 		if !ok {
 			return nil
 		}
+	}
+	if ignored(rel, ignoreRefs) {
+		return nil
 	}
 	if escaped {
 		return finding(model.ReasonRepoEscape, "aufgelöstes Ziel verlässt die Repository-Wurzel")

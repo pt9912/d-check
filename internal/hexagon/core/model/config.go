@@ -168,6 +168,11 @@ type CodepathsConfig struct {
 	// (spec/spezifikation.md §DC-FA-CODE-001.a). Vorbild: das
 	// gleichnamige Ventil von IDPattern (DC-FA-ID-001).
 	ExemptPaths []string
+	// IgnoreRefs: Globs (Syntax wie scan.ignore) für aufgelöste
+	// Ziel-Pfade, die nicht existenz-/anker-geprüft werden — referenz-weit
+	// (datei-/zeilen-unabhängig), Tombstone-Register bewusst entfernter
+	// Artefakte (spec/spezifikation.md §DC-FA-CODE-001.a; ADR-0025).
+	IgnoreRefs []string
 }
 
 // HostpathsConfig sind die Parameter des Moduls hostpaths

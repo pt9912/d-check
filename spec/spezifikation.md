@@ -633,6 +633,15 @@ Repo-Wurzel), werden **ganz** übersprungen — datei-weit, unabhängig von
 zeilenweisen `d-check:ignore` (Schritt 1). Ohne gesetztes `exempt-paths`
 byte-identisch.
 
+**Referenz-Ventil (`ignore-refs`):** Ein in Schritt 5 Wurzel-relativ aufgelöster
+Ziel-Pfad, der ein Glob aus `codepaths.ignore-refs` matcht (Syntax wie `scan.ignore`),
+wird **nicht** existenz-, escape- oder anker-geprüft (kein `codepath-missing`,
+`repo-escape` oder `anchor-missing`) — **referenz-weit**, unabhängig von Datei
+und Zeile (anders als das datei-weite `exempt-paths` und das zeilenweise
+`d-check:ignore`). Register bewusst entfernter/historischer Artefakte (Tombstones),
+deren Pfad immutable/historische Doku noch zitiert; es unterdrückt nur die Prüfung
+*dieses* Pfads, keine anderen Befunde. Ohne gesetztes `ignore-refs` byte-identisch.
+
 **Schritte:**
 
 1. Zeilen mit dem Marker `d-check:ignore` (HTML-Kommentar, Begründung
@@ -659,7 +668,9 @@ byte-identisch.
    konfigurierten Präfixe aus `codepaths.roots` (Wurzel-relativ;
    Vergleich gegen `präfix/`).
 5. Auflösung wie im Modul `links` (inkl. RFC-3986-Dekodierung):
-   Fragment abtrennen; Escape → `repo-escape`; fehlendes Ziel →
+   Fragment abtrennen; matcht der Wurzel-relative Pfad ein
+   `codepaths.ignore-refs`-Glob, wird er übersprungen (kein Befund, s. o.
+   Referenz-Ventil); sonst: Escape → `repo-escape`; fehlendes Ziel →
    `codepath-missing`. Trägt der Wert ein Fragment und ist das Ziel
    eine Markdown-Datei, wird der Anker gegen die gültige Anker-Menge
    der Zieldatei geprüft (Heading-Slugs und Inline-HTML-Anker; Verfahren
@@ -1184,6 +1195,7 @@ Exit 2 ohne Prüfung
 | `external.parallel` | integer | 4 | 1–16 |
 | `codepaths.roots` | string[] | leer | Präfixe relativ zur Repo-Wurzel: nicht leer, nicht absolut, kein `..` (Exit 2); `./`/`../` werden immer erkannt |
 | `codepaths.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `codepaths`-Prüfung — datei-weit, unabhängig von `roots` |
+| `codepaths.ignore-refs` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden weder existenz-, escape- noch anker-geprüft (kein `codepath-missing`/`repo-escape`/`anchor-missing`) — **referenz-weit** (Datei-/Zeilen-unabhängig), Tombstone-Register bewusst entfernter Artefakte; ohne Eintrag byte-identisch |
 | `versions.pin-pattern` | string | — | Regex; muss kompilieren und darf den Leerstring nicht matchen (Exit 2); die gefundene Version steht in Capture-Gruppe 1, sonst zählt der ganze Treffer |
 | `versions.current-from` | string | `version.md#aktuell` | `datei#anker` oder `datei`; die Datei muss existieren und innerhalb der Repo-Wurzel liegen, der adressierte Span muss eine Version (`v?\d+\.\d+\.\d+`) tragen (sonst Exit 2) |
 | `versions.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `versions`-Prüfung — datei-weit; die `current-from`-Datei ist stets ausgenommen |
@@ -1295,3 +1307,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-28 | §2 „Glob-Auswertung" ergänzt: alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`, `matrix.classes[].paths`/`.order`, `*.exempt-paths`) werden segmentweise über Go-`path.Match` ausgewertet (`**` segmentübergreifend); negierte Zeichenklasse `[^…]` (Go), **nicht** `[!…]` (fnmatch). Reine Klarstellung des Bestands (`matchGlob`), kein Verhaltens-/Schema-Change | — |
 | 2026-06-28 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 6 + §2-Schema (`matrix.classes[].token`, `matrix.exempt-paths`) + §4 (`matrix-forbidden` Token-Form) ergänzt: token-basierte Referenz-Richtung ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)) — `matrix` fängt verbotene Referenzen auch als bare ID-Token im Prosa-Körper (außer Links/Fences/`exclude-sections`); Provenance-Marker `<!-- d-check:status-provenance -->` auf der rohen Zeile nimmt aus; `exempt-paths` grandfathered ganze Dateien. Fail-closed (`token` kompiliert/Leerstring). Default-aus byte-identisch. Außerdem §[`DC-FA-SPAN-001.a`](lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in): Slice-Token aus dem Spec-Körper entfernt (Provenance gehört in die Historie) | slice-051 |
 | 2026-06-29 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) + §2-Schema (`vcs.paths`/`immutable-when`/`exclude-sections`/`status-line`/`head-allow`) + Grund-Code `core-drift-vcs` (§4) ergänzt: opt-in Modul `vcs` vergleicht `core(BASE)` vs. `core(HEAD)` über eine Commit-Range (`--range <base>..<head>` / `--staged`), liest das read-only `.git` über einen reine-Go-VCS-Port (ohne git-Binary, ohne Netz); erweiterter Eingabe-Scope (git + Range), aber lokal/lesend/deterministisch — Determinismus/Read-only gehalten; fail-closed ohne `.git`/Range, diagnose-only. Core-Semantik in Parität zum abgelösten `adr-immutable-check.sh` (nur Kopf-Status-Zeile gestrippt, `exclude-sections`-Abschnitte). Default-aus byte-identisch. Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (6→7 Targets): `--print-mk` trägt `doc-immutable` (`--enable vcs` + aus `ValidModules` abgeleitete Fokus-`--disable`-Liste, `RANGE`/`STAGED`) — verteilt die git-Garantie an Konsumenten | slice-053 |
+| 2026-06-29 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) + §2-Schema (`codepaths.ignore-refs`) ergänzt: Referenz-Ventil `ignore-refs` — ein aufgelöster Ziel-Pfad, der ein Glob matcht, wird nicht existenz-/anker-geprüft (**referenz-weit**, Tombstone-Register entfernter Artefakte); dritte Ventil-Achse neben dem zeilenweisen `d-check:ignore` und dem datei-weiten `exempt-paths`, in Schritt 5 vor `codepath-missing`, ohne Eintrag byte-identisch. Anlass: Frozen-Doc-Refactoring-Falle (immutable ADRs zitieren entfernte Pfade) — zugleich das in slice-053 behaltene `adr-immutable-check.sh` entfernt | slice-054 |

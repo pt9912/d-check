@@ -60,6 +60,7 @@ modules: [links, anchors]
 # codepaths:
 #   roots: [docs, spec]            # Wurzel-Präfixe; ./ und ../ werden immer erkannt
 #   exempt-paths: [CHANGELOG.md, "docs/reviews/**"]   # Globs: Dateien ohne codepath-Prüfung (datei-weit, wie ids)
+#   ignore-refs: ["tools/altes-skript.sh"]            # Globs: Ziel-Pfade ohne Existenz-Prüfung (referenz-weit; Tombstones entfernter Artefakte)
 
 # --- hostpaths: host-lokale absolute Pfade (Maschinen-Layout-Leaks) ---
 # hostpaths:
