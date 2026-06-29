@@ -1478,3 +1478,29 @@ func TestCLI047_PrintMK_NeueTargets(t *testing.T) {
 		}
 	}
 }
+
+// slice-053 (DC-FA-CLI-010-Erweiterung): das --print-mk-Fragment trägt zusätzlich
+// das Target doc-immutable, das dem Konsumenten die git-Diff-Immutabilität (Modul
+// vcs, DC-FA-VCS-001) verteilt — nur vcs (alle übrigen Module via --disable
+// abgewählt, aus dem Modulsatz abgeleitet), RANGE/STAGED-getrieben.
+func TestCLI053_PrintMK_ImmutableTarget(t *testing.T) {
+	code, stdout, stderr := run(t, "--print-mk")
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	for _, want := range []string{
+		"\ndoc-immutable: ## ",
+		"--enable vcs ",
+		"--disable links",     // Fokus auf vcs (alle Doc-Module abgewählt)
+		"--disable immutable", // auch das hermetische Schwester-Modul
+		"$(if $(STAGED),--staged,--range $(RANGE))",
+	} {
+		if !strings.Contains(stdout, want) {
+			t.Fatalf("d-check.mk ohne %q:\n%s", want, stdout)
+		}
+	}
+	// doc-immutable darf vcs NICHT abwählen.
+	if strings.Contains(stdout, "--disable vcs") {
+		t.Fatalf("doc-immutable wählt vcs fälschlich ab:\n%s", stdout)
+	}
+}

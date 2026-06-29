@@ -13,6 +13,13 @@ func validModules() []string {
 	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs"}
 }
 
+// ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
+// genutzt vom --print-mk-Generator (DC-FA-CLI-010), damit das doc-immutable-
+// Target seine vcs-Fokus-Disable-Liste aus dem Modulsatz ableitet statt sie zu
+// duplizieren. Liefert bei jedem Aufruf eine frische Liste in Deklarations-
+// reihenfolge (deterministisch, DC-QA-02).
+func ValidModules() []string { return validModules() }
+
 // defaultModules ist der Default-Modulsatz (DC-FA-CLI-002).
 func defaultModules() []string { return []string{"links", "anchors"} }
 

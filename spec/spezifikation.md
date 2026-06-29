@@ -332,7 +332,7 @@ eingebetteten Version):
    `@sha256:`-Digest) leitet `DCHECK_REF` auf `…/d-check@$(DCHECK_DIGEST)` um und
    **sticht** so den Tag von `DCHECK_IMAGE`; sonst `DCHECK_REF := $(DCHECK_IMAGE)`.
 4. `TRACE_FLAGS ?=` — überschreibbare Flag-Variable für die RTM-Targets.
-5. Sechs `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
+5. Sieben `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
    Konsumenten aufgreift) und **TAB**-eingerücktem
    `docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) …`:
    - `doc-check` (Befund-Gate, ohne Zusatz-Flag),
@@ -346,6 +346,14 @@ eingebetteten Version):
      [`DC-FA-CLI-008`](lastenheft.md#dc-fa-cli-008--reparatur-patch)) — das Recipe ist
      mit `@` **echo-unterdrückt**, damit stdout ein `git apply`-reiner Patch bleibt
      (sonst verunreinigte die von `make` auf stdout gedruckte Recipe-Zeile den Patch),
+   - `doc-immutable` (`--enable vcs` + auf `vcs` fokussierte `--disable`-Liste,
+     [`DC-FA-VCS-001`](lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in));
+     `$(if $(STAGED),--staged,--range $(RANGE))` — die Range liefert der Konsument
+     aus seinem CI, `STAGED=1` für einen lokalen pre-commit-Lauf. Die `--disable`-
+     Liste wird aus dem Modulsatz (`ValidModules` ohne `vcs`) **abgeleitet**, nicht
+     dupliziert, damit das Target nur `vcs` läuft (sonst über-feuerten die
+     Doc-Module des Konsumenten auf Nicht-ADR-Befunde). Die **verteilte** git-Form
+     der Immutabilität — kein kopiertes Skript (der Antrieb hinter dem Modul `vcs`),
    - `doc-help` (listet die `doc-*`-Targets via `grep … $(MAKEFILE_LIST) | sed`
      über die `##`-Annotationen; **namespaced** statt `help`, um die
      Namens-Kollision mit dem Konsumenten-Makefile zu vermeiden).
@@ -1286,4 +1294,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-28 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 5 + §2-Schema (`matrix.classes[].order`/`.direction`) + Grund-Code `matrix-downward` (§4) + Config-Beispiel ergänzt: klasseninterne Verweisrichtung ([`DC-FA-MTX-002`](lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix)) — eine Klasse mit `order` (Glob-Rang, First-Match) + `direction: no-downward` meldet klasseninterne Abwärtsverweise (Rang *i* → *j > i*, auch transitiv) als `matrix-downward`; rangfreie Mitglieder und klassenübergreifende Referenzen ausgenommen; fail-closed-Config (`order`/`direction` nur zusammen, unbekannter `direction`-Wert ⇒ Exit 2); Default-aus byte-identisch | slice-050 |
 | 2026-06-28 | §2 „Glob-Auswertung" ergänzt: alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`, `matrix.classes[].paths`/`.order`, `*.exempt-paths`) werden segmentweise über Go-`path.Match` ausgewertet (`**` segmentübergreifend); negierte Zeichenklasse `[^…]` (Go), **nicht** `[!…]` (fnmatch). Reine Klarstellung des Bestands (`matchGlob`), kein Verhaltens-/Schema-Change | — |
 | 2026-06-28 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 6 + §2-Schema (`matrix.classes[].token`, `matrix.exempt-paths`) + §4 (`matrix-forbidden` Token-Form) ergänzt: token-basierte Referenz-Richtung ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)) — `matrix` fängt verbotene Referenzen auch als bare ID-Token im Prosa-Körper (außer Links/Fences/`exclude-sections`); Provenance-Marker `<!-- d-check:status-provenance -->` auf der rohen Zeile nimmt aus; `exempt-paths` grandfathered ganze Dateien. Fail-closed (`token` kompiliert/Leerstring). Default-aus byte-identisch. Außerdem §[`DC-FA-SPAN-001.a`](lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in): Slice-Token aus dem Spec-Körper entfernt (Provenance gehört in die Historie) | slice-051 |
-| 2026-06-29 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) + §2-Schema (`vcs.paths`/`immutable-when`/`exclude-sections`/`status-line`/`head-allow`) + Grund-Code `core-drift-vcs` (§4) ergänzt: opt-in Modul `vcs` vergleicht `core(BASE)` vs. `core(HEAD)` über eine Commit-Range (`--range <base>..<head>` / `--staged`), liest das read-only `.git` über einen reine-Go-VCS-Port (ohne git-Binary, ohne Netz); erweiterter Eingabe-Scope (git + Range), aber lokal/lesend/deterministisch — Determinismus/Read-only gehalten; fail-closed ohne `.git`/Range, diagnose-only. Core-Semantik in Parität zum abgelösten `adr-immutable-check.sh` (nur Kopf-Status-Zeile gestrippt, `exclude-sections`-Abschnitte). Default-aus byte-identisch | slice-053 |
+| 2026-06-29 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) + §2-Schema (`vcs.paths`/`immutable-when`/`exclude-sections`/`status-line`/`head-allow`) + Grund-Code `core-drift-vcs` (§4) ergänzt: opt-in Modul `vcs` vergleicht `core(BASE)` vs. `core(HEAD)` über eine Commit-Range (`--range <base>..<head>` / `--staged`), liest das read-only `.git` über einen reine-Go-VCS-Port (ohne git-Binary, ohne Netz); erweiterter Eingabe-Scope (git + Range), aber lokal/lesend/deterministisch — Determinismus/Read-only gehalten; fail-closed ohne `.git`/Range, diagnose-only. Core-Semantik in Parität zum abgelösten `adr-immutable-check.sh` (nur Kopf-Status-Zeile gestrippt, `exclude-sections`-Abschnitte). Default-aus byte-identisch. Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (6→7 Targets): `--print-mk` trägt `doc-immutable` (`--enable vcs` + aus `ValidModules` abgeleitete Fokus-`--disable`-Liste, `RANGE`/`STAGED`) — verteilt die git-Garantie an Konsumenten | slice-053 |

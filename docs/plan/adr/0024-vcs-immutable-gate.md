@@ -140,6 +140,11 @@ hermetisch; beide koexistieren als **Defense-in-Depth** — der Pin als Boden
   ([`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)).
 - **`adr-immutable-check.sh` bleibt im Baum** (Pfad-Stabilität für die immutable
   [ADR-0016](0016-adr-immutable-gate.md)-Inline-Referenz), aus dem Gate ausgehängt.
+- **Verteilung an Konsumenten** schließt den [`MR-007`](../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Kern
+  („verteilen statt kopieren"): `--print-mk` ([`DC-FA-CLI-010`](../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben))
+  trägt ein `doc-immutable`-Target — Schwester-Repos beziehen die git-Garantie über
+  das gepinnte Image, ohne ein Skript zu kopieren. Die Fokus-`--disable`-Liste leitet
+  der Generator aus dem Modulsatz ab (kein Duplikat), damit nur `vcs` läuft.
 
 ## Fitness Function
 

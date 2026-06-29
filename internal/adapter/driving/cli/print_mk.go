@@ -4,7 +4,12 @@ package cli
 // Read-only: das Fragment wird auf stdout ausgegeben, nie geschrieben
 // (DC-QA-03). Analog zum statischen --print-config-Gerüst.
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
+)
 
 // version ist die Release-Version. Beim Tag-Build via
 // `-ldflags "-X .../cli.version=<tag>"` eingebettet (Dockerfile build-Stage,
@@ -14,13 +19,31 @@ import "fmt"
 var version = "0.0.0-dev"
 
 // makefileFragment erzeugt das d-check.mk: version-gepinnter, per
-// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus sechs
+// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus sieben
 // `##`-annotierte Targets (doc-check/doc-trace/doc-complete/doc-doctor/
-// doc-repair/doc-help) und die TRACE_FLAGS-Variable. Der einzige
-// fmt-Verb des Templates ist das %s der Version — sonst KEIN '%'
-// (sed statt awk-printf im doc-help-Recipe), sonst bräche fmt.Sprintf.
-// Deterministisch (hängt nur an der eingebetteten Version), read-only.
-func makefileFragment() string { return fmt.Sprintf(mkTemplate, version) }
+// doc-repair/doc-immutable/doc-help) und die TRACE_FLAGS-Variable. Das
+// Template hat genau ZWEI fmt-Verben — das %s der Version und das %s der
+// vcs-Disable-Flags (doc-immutable); sonst KEIN '%' (sed statt awk-printf im
+// doc-help-Recipe), sonst bräche fmt.Sprintf. Deterministisch (hängt nur an der
+// eingebetteten Version + dem Modulsatz), read-only.
+func makefileFragment() string {
+	return fmt.Sprintf(mkTemplate, version, vcsOnlyDisableFlags())
+}
+
+// vcsOnlyDisableFlags liefert "--disable <m>"-Flags für alle Module außer vcs,
+// abgeleitet aus model.ValidModules (trackt den Modulsatz automatisch). So läuft
+// das doc-immutable-Target NUR das Modul vcs — sonst über-feuerten die
+// Doc-Module des Konsumenten auf Nicht-ADR-Befunde des Arbeitsbaums (ADR-0024,
+// vgl. das fokussierte `make adr-check` von d-check selbst).
+func vcsOnlyDisableFlags() string {
+	var flags []string
+	for _, m := range model.ValidModules() {
+		if m != "vcs" {
+			flags = append(flags, "--disable "+m)
+		}
+	}
+	return strings.Join(flags, " ")
+}
 
 const mkTemplate = "# d-check.mk — erzeugt von: d-check --print-mk (DC-FA-CLI-010).\n" +
 	"#\n" +
@@ -62,6 +85,10 @@ const mkTemplate = "# d-check.mk — erzeugt von: d-check --print-mk (DC-FA-CLI-
 	".PHONY: doc-repair\n" +
 	"doc-repair: ## Reparatur-Patch (unified diff) auf stdout, git-apply-rein (DC-FA-CLI-008)\n" +
 	"\t@docker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --repair\n" +
+	"\n" +
+	".PHONY: doc-immutable\n" +
+	"doc-immutable: ## Doc-/ADR-Immutabilität via git-Diff (Modul vcs); RANGE=base..head oder STAGED=1 (DC-FA-VCS-001)\n" +
+	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --enable vcs %s $(if $(STAGED),--staged,--range $(RANGE))\n" +
 	"\n" +
 	".PHONY: doc-help\n" +
 	"doc-help: ## diese Liste der doc-*-Targets\n" +
