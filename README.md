@@ -3,11 +3,12 @@
 Doc-Referenz-Checker für Markdown-Dokumentation — deterministisch,
 seiteneffektfrei, ausgeliefert als Container-Image.
 
-**Status: released** — alle zwölf Regelmodule (`links`, `anchors`, `ids`,
+**Status: released** — alle dreizehn Regelmodule (`links`, `anchors`, `ids`,
 `matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `external`) sind im GHCR-Image. Verbindlich ist das
+`immutable`, `vcs`, `external`) sind im GHCR-Image. Verbindlich ist das
 [Lastenheft](spec/lastenheft.md); die jeweils jüngsten Änderungen (zuletzt das
-opt-in-Modul `immutable` für Immutabilitäts-Pins) führt die
+opt-in-Modul `vcs` für git-Diff-Immutabilität, das die ADR-Immutabilität als
+verteilbares Modul mechanisiert) führt die
 [CHANGELOG.md](CHANGELOG.md).
 
 ## Was ist d-check?
@@ -134,7 +135,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.32.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

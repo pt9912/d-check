@@ -4,6 +4,45 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.33.0] — 2026-06-29
+
+### Added
+
+- slice-053 — Neues opt-in-Regelmodul `vcs` (13. Modul,
+  [`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)):
+  git-historienbasierte Immutabilität des **Core** über eine Commit-Range
+  (`core(BASE)` vs. `core(HEAD)`), geliefert über `--range <base>..<head>`
+  (CI/Push) oder `--staged` (pre-commit). Liest das read-only `.git` über einen
+  eigenen, **reine-Go-VCS-Port** (go-git; **ohne git-Binary** → das
+  distroless-Image bleibt unangetastet, **ohne Netz**); erweiterter Eingabe-Scope
+  (git + Range), aber lokal/lesend/deterministisch (`DC-QA-02`/`DC-QA-03`
+  unberührt). Geprüft wird jede in der Range geänderte Datei der Klasse
+  `vcs.paths` mit immutabler BASE (`vcs.immutable-when`): Körper-Drift,
+  unzulässiger Status-Übergang (`vcs.head-allow`) oder Löschung/Umbenennung →
+  `core-drift-vcs`. Core-Semantik in Parität zum bisherigen
+  `adr-immutable-check.sh` (nur Kopf-Status-Zeile gestrippt, `exclude-sections`).
+  Strikt opt-in, fail-closed ohne `.git`/Range, diagnose-only. **Die volle
+  git-Garantie, die der hermetische `immutable`-Pin (v0.32.0) bewusst der
+  VCS-Stufe überließ** — beide koexistieren als Defense-in-Depth
+  ([ADR-0024](docs/plan/adr/0024-vcs-immutable-gate.md), Lastenheft 0.33.0).
+- slice-053 — `--print-mk` (`DC-FA-CLI-010`) trägt ein `doc-immutable`-Target:
+  Schwester-Repos beziehen die git-Immutabilität über das gepinnte Image, ohne
+  ein Skript zu kopieren (RANGE/STAGED-getrieben, auf `vcs` fokussiert) — der
+  Verteilungs-Kern hinter dem Modul.
+
+### Changed
+
+- slice-053 — Das `adr-check`-Gate (Accepted-ADR-Immutabilität) läuft jetzt über
+  das Modul `vcs` (Dogfood, im Image verteilt) statt über
+  `tools/adr-immutable-check.sh` (bleibt pfad-stabiler Fallback); `pre-commit`-Hook
+  und CI rufen `make adr-check` ([ADR-0024](docs/plan/adr/0024-vcs-immutable-gate.md)
+  löst die Skript-Mechanik von [ADR-0016](docs/plan/adr/0016-adr-immutable-gate.md)
+  ab). Neues `make tidy` (go.mod/go.sum-Pflege in Docker).
+- slice-053 — Config-Surface-Bereinigung: `--print-config` (`DC-FA-CLI-005`) führt
+  jetzt alle Module (`pins`/`immutable`/`vcs` ergänzt) und `--suggest-config
+  ai-harness` (`DC-FA-CLI-006`) nennt die situativen opt-in-Module vollständig
+  (`versions`/`pins`/`immutable`/`vcs` nachgezogen).
+
 ## [0.32.0] — 2026-06-28
 
 ### Added
