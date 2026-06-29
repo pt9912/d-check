@@ -10,16 +10,19 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Aktive Welle: welle-44-completeness-rückbau** ([`slice-055`](slice-055-completeness-rueckbau.md) —
+**Keine aktive Welle** — kein Slice in `in-progress/` (Backlog welle-45/46 offen). Zuletzt
+abgeschlossen: welle-44-completeness-rückbau ([`slice-055`](../done/slice-055-completeness-rueckbau.md) —
 `make completeness-check` dogfoodet den in-Produkt-Flag `--trace --require-complete`
 ([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code))
-statt `tools/completeness-check.sh`; das Skript wird **entfernt** (zweiter
+statt `tools/completeness-check.sh`; das Skript ist **entfernt** (zweiter
 `codepaths.ignore-refs`-Tombstone, Dogfood von slice-054). Schließt den
 [`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Copy-Drift
-am eigenen Closure-Gate; begleitende ADR `Supersedes` die Skript-Mechanik von
-[ADR-0017](../../adr/0017-requirements-completeness-gate.md). **Kein** Produkt-Code, **kein**
-Release; doc-first läuft). Zuletzt
-abgeschlossen: welle-43-ignore-refs ([`slice-054`](../done/slice-054-codepaths-ignore-refs.md) —
+am eigenen Closure-Gate; [ADR-0026](../../adr/0026-completeness-in-product-gate.md) `Supersedes`
+die Skript-Mechanik von [ADR-0017](../../adr/0017-requirements-completeness-gate.md)
+(Policy/Bindepunkt bleiben). **Kein** Produkt-Code, Image byte-identisch, **kein** Release; zwei
+unabhängige Reviews (R1 doc + R2 mechanik, alle Befunde behoben), `make ci` + `completeness-check`
+grün ([Closure](../done/slice-055-completeness-rueckbau.md#7-closure-notiz-nach-done)). Davor
+welle-43-ignore-refs ([`slice-054`](../done/slice-054-codepaths-ignore-refs.md) —
 `codepaths.ignore-refs` (Tombstone-Register bewusst entfernter Code-Artefakte) löst die
 **Frozen-Doc-Refactoring-Falle**: ein Inline-Code-Verweis auf einen deklariert-entfernten
 Pfad löst kein `codepath-missing` mehr (bewusster Akt **mit** Gate, kein Edit an

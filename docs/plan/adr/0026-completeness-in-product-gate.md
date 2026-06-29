@@ -1,6 +1,6 @@
 # ADR-0026 — Completeness-Gate dogfoodet den in-Produkt-Flag: `make completeness-check` ruft `--trace --require-complete` und löst die Skript-Mechanik von ADR-0017 ab
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-29
 **Autor:** pt9912
 **Bezug:** der in-Produkt-Flag
@@ -126,3 +126,4 @@ byte-identisch. Reiner Harness-Refactor: kein Versions-Bump, kein GHCR-Release.
 | Datum | Ereignis |
 | --- | --- |
 | 2026-06-29 | Entwurf (slice-055, Auftraggeber-Audit „welche `tools/*.sh` noch in d-check mechanisieren?"): `make completeness-check` dogfoodet `--trace --require-complete` ([`DC-FA-CLI-011`](../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)), `tools/completeness-check.sh` entfernt und als `codepaths.ignore-refs`-Tombstone deklariert. **Supersedes** die Skript-als-Gate-Quelle-Teilentscheidung von [ADR-0017](0017-requirements-completeness-gate.md) (Policy/Bindepunkt unverändert). Kein Produkt-Code, kein Release. Status Proposed. |
+| 2026-06-29 | Angenommen mit der slice-055-Closure: `make completeness-check` ruft `$(DCHECK_RUN) $(COMPLETE_FLAGS)` (geteilte Variable, kein Divergenz-Risiko zu `doc-complete`), `tools/completeness-check.sh` per `git rm` entfernt + als `codepaths.ignore-refs`-Tombstone deklariert; AGENTS §4 + harness/README §Sensors nachgezogen. Adversariale Waisen-Probe trieb das Gate rot (`WAISE`-Zeile + Anzahl, danach revertiert); zwei unabhängige Reviews (R1 doc 0H/1M/1L + R2 mechanik 0H/0M/1L/1I/1 REFUTED, alle Befunde behoben — fail-closed-Regression mit Skript-Zitat widerlegt). Kein Produkt-Code → Image byte-identisch, kein Release. Status Accepted. |
