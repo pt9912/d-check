@@ -25,7 +25,8 @@ nur „pfad-stabil behaltene" `tools/adr-immutable-check.sh` ist **entfernt**;
 ([`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
 Lastenheft 0.34.0); zwei unabhängige Reviews (R1 doc + R2 code, alle Befunde behoben,
 Lock-Test mutations-verifiziert); `make ci` grün (Cov 93,4 %); Release **v0.34.0** auf GHCR
-(Pipeline-Run + Digest-Pin folgen im Backfill)
+(Pipeline-Run 28381441115 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:1cf0837fd62daa077be2705a2fa77d791a11b5f1d07ea65bb9c8c00c2116d64a`
 ([Closure](../done/slice-054-codepaths-ignore-refs.md#7-closure-notiz-nach-done)). Davor
 welle-42-vcs ([`slice-053`](../done/slice-053-vcs-modul.md) — neues
 opt-in Modul `vcs` (13. Modul, git-historienbasierte Core-Immutabilität): vergleicht

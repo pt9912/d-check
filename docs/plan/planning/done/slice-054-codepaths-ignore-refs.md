@@ -203,4 +203,5 @@ und `docs/reviews/2026-06-29-slice-054-ignore-refs-code-r2.md`.
 Beim Entfernen wurde ein solcher Markdown-Link im historischen Review slice-052-R2 zu
 Inline-Code entlinkt (Inhalt unverändert).
 
-**Release:** **v0.34.0** (Pipeline-Run + Digest-Pin folgen im Backfill).
+**Release:** **v0.34.0** auf GHCR (Pipeline-Run 28381441115 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:1cf0837fd62daa077be2705a2fa77d791a11b5f1d07ea65bb9c8c00c2116d64a`.
