@@ -1,6 +1,6 @@
 # Slice slice-054: `codepaths.ignore-refs` — die Frozen-Doc-Refactoring-Falle auflösen und `adr-immutable-check.sh` entfernen
 
-**Status:** in-progress (welle-43-ignore-refs).
+**Status:** done (welle-43-ignore-refs).
 
 **Welle:** welle-43-ignore-refs (Trigger: Auftraggeber — „Wir brauchen eine bessere
 Lösung, dass solch ein Problem — etwas wird refaktoriert/gelöscht — nicht immer
@@ -170,4 +170,37 @@ GF (Produkt-Code + Spec; „Doc führt, Code folgt"). `ignore-refs` ist eine add
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(folgt bei Closure)_
+**Geliefert:** Modul `codepaths` um `codepaths.ignore-refs` erweitert — eine Glob-Liste
+nimmt **aufgelöste Ziel-Pfade** referenz-weit (datei-/zeilen-unabhängig) von der
+Existenz-/Escape-/Anker-Prüfung aus (Skip vor allen drei Grund-Codes, Spezifikation
+[§DC-FA-CODE-001.a](../../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Schritt 5). Tombstone-Register bewusst entfernter Artefakte; löst die
+Frozen-Doc-Refactoring-Falle ohne Edit an immutabler Doku und ohne klassenweites
+Ausnehmen. Default leer → byte-identisch. **Falle am realen Fall bewiesen:**
+`tools/adr-immutable-check.sh` per `git rm` entfernt, `make doc-check` bleibt grün — die
+eingefrorenen [ADR-0016](../../adr/0016-adr-immutable-gate.md)/[ADR-0024](../../adr/0024-vcs-immutable-gate.md)-Inline-Referenzen
+sind als Tombstones deklariert.
+
+**Doc-first:** [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
+(Lastenheft 0.34.0), Spezifikation [§DC-FA-CODE-001.a](../../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) + §2-Schema;
+[ADR-0025](../../adr/0025-codepaths-ignore-refs.md) (Accepted, `Supersedes` die
+„Skript-behalten"-Teilentscheidung von [ADR-0024](../../adr/0024-vcs-immutable-gate.md) —
+deren VCS-Kern bleibt); Geschichte-Annotation an [ADR-0024](../../adr/0024-vcs-immutable-gate.md)/[ADR-0016](../../adr/0016-adr-immutable-gate.md).
+
+**Verifikation:** `make ci` grün (doc-check 155/0, lint, test, arch-check, Coverage
+93,40 %, semgrep 0, gate-consistency, planning-check, image-test) + `completeness-check`
+0 Waisen. Zwei unabhängige Reviews (R1 doc 0H/1M/1L/3I, R2 code 0H/1M/1I) — alle Befunde
+behoben; der Escape-/Anker-Lock-Test wurde per Mutationstest verifiziert (Guard hinter
+`escaped` → rot). Reports unter `docs/reviews/2026-06-29-slice-054-ignore-refs-doc-r1.md`
+und `docs/reviews/2026-06-29-slice-054-ignore-refs-code-r2.md`.
+
+**Validierung:** Mechanismus per-Pfad statt klassenweit (Test);
+`--print-config`/`--suggest-config`/Benutzerhandbuch zeigen `ignore-refs`
+(Auffindbarkeit); kein neues Modul, keine neue Dependency.
+
+**Bewusst offen (Re-Eval):** `ignore-refs` ist `codepaths`-lokal — die `links`-Achse (ein
+**Markdown-Link** statt Inline-Code auf einen entfernten Pfad) bleibt eine Rest-Falle, in
+[ADR-0025](../../adr/0025-codepaths-ignore-refs.md) als Re-Evaluierungs-Trigger verortet.
+Beim Entfernen wurde ein solcher Markdown-Link im historischen Review slice-052-R2 zu
+Inline-Code entlinkt (Inhalt unverändert).
+
+**Release:** **v0.34.0** (Pipeline-Run + Digest-Pin folgen im Backfill).
