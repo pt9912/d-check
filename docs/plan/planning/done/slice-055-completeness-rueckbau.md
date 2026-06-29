@@ -1,6 +1,6 @@
 # Slice slice-055: `make completeness-check` dogfoodet den in-Produkt-Flag — `completeness-check.sh` entfernen
 
-**Status:** in-progress (welle-44-completeness-rückbau).
+**Status:** done (welle-44-completeness-rückbau).
 
 **Welle:** welle-44-completeness-rückbau (Trigger: Auftraggeber-Audit 2026-06-29 „welche
 `tools/*.sh` lassen sich noch in d-check mechanisieren?" — erster, kleinster Hebel).
@@ -167,4 +167,38 @@ kein Spec-Eingriff). Doc-first bleibt für die ablösende ADR (Entscheidung füh
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(folgt bei Closure)_
+**Geliefert:** `make completeness-check` dogfoodet jetzt den in-Produkt-Flag `--trace
+--require-complete` ([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code))
+über die geteilte Makefile-Variable `COMPLETE_FLAGS` (eine Quelle mit `doc-complete`); das
+Skript `tools/completeness-check.sh` ist per `git rm` entfernt und als
+`codepaths.ignore-refs`-Tombstone deklariert (zweiter realer Einsatz des slice-054-Ventils,
+[ADR-0025](../../adr/0025-codepaths-ignore-refs.md)). Damit isst d-check für seine eigene
+Vollständigkeits-Invariante sein verteiltes Futter — der
+[`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Copy-Drift
+am Closure-Gate ist geschlossen.
+
+**Doc-first:** [ADR-0026](../../adr/0026-completeness-in-product-gate.md) (Accepted,
+`Supersedes` die Skript-als-Gate-Quelle-Teilentscheidung von
+[ADR-0017](../../adr/0017-requirements-completeness-gate.md) — Policy „Waise→FAIL" + Bindepunkt
+„`fullbuild`, nicht `gates`/`ci`" bleiben); ADR-Index (+ Korrektur der
+[ADR-0025](../../adr/0025-codepaths-ignore-refs.md)-Index-Zeile auf Accepted, ein
+slice-054-Closure-Miss) + [ADR-0017](../../adr/0017-requirements-completeness-gate.md)-Index-Annotation + Geschichte-Append.
+
+**Verifikation:** `make ci` + `make gate-consistency` grün; eine **adversariale Waise** (synthetische Test-Anforderung)
+trieb `make completeness-check` rot — Anzahl-Meldung + sichtbare `WAISE`-Zeile in der
+`--trace`-Tabelle, danach per Edit revertiert (lastenheft sauber). Zwei unabhängige Reviews
+(R1 doc 0H/1M/1L, R2 mechanik 0H/0M/1L/1I/1 REFUTED — fail-closed-Regression mit Skript-Zitat
+widerlegt), alle Befunde behoben; Reports unter `docs/reviews/2026-06-29-slice-055-completeness-doc-r1.md`
+und `docs/reviews/2026-06-29-slice-055-completeness-mechanic-r2.md`.
+
+**Validierung:** Copy-Drift geschlossen (eine Mechanik für Gate + Konsumenten); Tombstone-Ventil
+zum **zweiten** Mal wirksam (doc-check grün trotz entferntem, von immutabler
+[ADR-0017](../../adr/0017-requirements-completeness-gate.md) zitiertem Skript). **Kein Produkt-Code** (`internal/`/`cmd/` unberührt) → Image byte-identisch
+zu v0.34.0, **kein Release** (kein Versions-Bump, kein GHCR, kein Tag).
+
+**Bewusst offen (R2-INFO, vorbestehend):** leerer Scan-Scope ⇒ `Orphans==0` ⇒ Exit 0 — von
+slice-055 nicht eingeführt (das Skript hatte denselben Pfad); ein `total>0`-Boden wäre eine
+[`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)-Erweiterung.
+**Steering (R1-F-2):** die wiederkehrende Index-Status-Honesty-Klasse (slice-054 verfehlte den
+[ADR-0025](../../adr/0025-codepaths-ignore-refs.md)-Flip, slice-055 fängt ihn) ist Kandidat für eine künftige Mechanisierung (ADR-Datei-Status
+↔ Index-Zeilen-Status).
