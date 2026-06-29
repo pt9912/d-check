@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.15 · **Software-Version:** [v0.33.0](../../version.md#v0.33.0) ·
+**Handbuch-Version:** 1.16 · **Software-Version:** [v0.34.0](../../version.md#v0.34.0) ·
 **Stand:** 2026-06-29 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -63,7 +63,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.33.0
+docker pull ghcr.io/pt9912/d-check:v0.34.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -71,7 +71,7 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.33.0` — eine feste Version (empfohlen für reproduzierbare Läufe).
+- `:v0.34.0` — eine feste Version (empfohlen für reproduzierbare Läufe).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
   CI-Pipelines pinnen Sie ohnehin auf eine feste Version oder den Digest
@@ -99,7 +99,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -145,7 +145,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -164,7 +164,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.33.0
+  ghcr.io/pt9912/d-check:v0.34.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -183,7 +183,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.33.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.34.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -202,7 +202,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -223,7 +223,7 @@ Standard-Modulset. Welche Quelle, hängt von Ihrer Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -232,7 +232,7 @@ Standard-Modulset. Welche Quelle, hängt von Ihrer Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -244,7 +244,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -264,7 +264,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 \
   --enable ids --disable anchors
 ```
 
@@ -285,7 +285,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 \
   --enable ids
 ```
 
@@ -306,7 +306,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 \
   --enable matrix
 ```
 
@@ -373,7 +373,7 @@ verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 \
   --enable external
 ```
 
@@ -393,7 +393,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 \
   --enable ids --doctor
 ```
 
@@ -421,7 +421,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 \
   --enable ids --doctor --json
 ```
 
@@ -469,7 +469,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -505,7 +505,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 \
     --enable ids --repair | git apply
   ```
 
@@ -522,7 +522,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -542,7 +542,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 --yaml
 ```
 
 ```yaml
@@ -574,7 +574,7 @@ Lastenheft, ADRs unter `docs/plan/adr/`, Slices unter `docs/plan/planning/`).
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.33.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.34.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -611,7 +611,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.33.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.34.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -622,7 +622,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und sechs
 `doc-repair`, `doc-help`):
 
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.33.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.34.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -719,6 +719,7 @@ matrix:
 codepaths:
   roots: [docs, spec]          # Pfade in Inline-Code prüfen
   exempt-paths: ["docs/reviews/**"] # Dateien ganz ausnehmen (Glob, wie ids)
+  ignore-refs: ["tools/altes-skript.sh"] # Ziel-Pfade nie existenz-prüfen (referenz-weit)
 hostpaths:
   prefixes: ["/home", "/Users"] # host-lokale Pfade melden
 external:
@@ -738,6 +739,22 @@ vcs:                           # git-Diff-Immutabilität (opt-in; braucht .git +
   status-line: '^\*\*Status:\*\*'       # Kopf-Status-Zeile (aus dem Core gestrippt)
   head-allow: '^\*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'  # erlaubter Status-Übergang
 ```
+
+Das Modul `codepaths` kennt **drei** Ventil-Achsen, um einen Pfad von der
+Existenz-Prüfung auszunehmen: den zeilenweisen Marker `d-check:ignore` (eine
+einzelne Zeile), `exempt-paths` (ganze **Dateien**, Glob) und `ignore-refs`
+(bestimmte **Ziel-Pfade**, Glob — **referenz-weit**, also datei- und
+zeilen-unabhängig). `ignore-refs` ist als **Tombstone-Register** gedacht: Wird
+eine Datei refaktoriert oder gelöscht, die unveränderliche oder historische Doku
+(z. B. akzeptierte ADRs) noch in Inline-Code zitiert, dangelt der eingefrorene
+Verweis sonst als `codepath-missing` — nicht behebbar, ohne die immutable Doku zu
+editieren. Ein Eintrag in `ignore-refs` erklärt den Pfad als bewusst entfernt; er
+unterdrückt **nur** diesen einen Pfad (alle übrigen Verweise der Datei bleiben
+geprüft). Bewusster Akt **mit Gate**: vergessen Sie den Eintrag beim Löschen,
+meldet `codepath-missing` weiter — nichts verschwindet still. Das Glob matcht den
+**aufgelösten, Wurzel-relativen** Ziel-Pfad — nicht die rohe `./`- oder
+`../`-Schreibweise, die der Befund unter `Target` zeigt. Tragen Sie den Pfad also so
+ein, wie er von der Repo-Wurzel aus lautet.
 
 Das Modul `vcs` vergleicht den **Core** einer immutablen Datei über zwei
 git-Stände — es braucht daher eine **Commit-Range** und ist nie ein Default-Modul.
@@ -882,3 +899,5 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.12             | v0.30.0          | 2026-06-28 | Modul `matrix`: klasseninterne Verweisrichtung (§4.7) — eine Klasse mit `order` (Glob-Rang, autoritativste Schicht zuerst) + `direction: no-downward` meldet klasseninterne Abwärtsverweise als `matrix-downward`                |
 | 1.13             | v0.31.0          | 2026-06-28 | Modul `matrix`: token-basierte Referenz-Richtung (§4.7) — eine Klasse mit `token`-Regex fängt verbotene Referenzen auch als bare ID-Token im Körper (`matrix-forbidden`); Provenance-Marker `<!-- d-check:status-provenance -->` nimmt aus, `exempt-paths` grandfathered ganze Dateien                |
 | 1.14             | v0.32.0          | 2026-06-28 | Neues opt-in-Modul `immutable` (§6): Immutabilitäts-Pin gegen Core-Drift — eine Datei mit `<!-- immutable: sha256:… -->` wird gegen den whitespace-normalisierten **Core** (Datei ohne Marker-Zeile + `immutable.exclude-sections`) gehasht; Abweichung → `core-drift`. Hermetisch (kein git, read-only-Arbeitsbaum), diagnose-only, opt-in pro Datei                |
+| 1.15             | v0.33.0          | 2026-06-29 | Neues opt-in-Modul `vcs` (13., §5/§6): git-Diff-Immutabilität des Core über eine Commit-Range (`--range`/`--staged`, `core-drift-vcs`) — reine-Go-git im read-only `.git` (distroless bleibt, fail-closed, diagnose-only); löst die Skript-Mechanik des `adr-check`-Gates ab. `--print-mk`-Target `doc-immutable` verteilt die git-Garantie an Konsumenten                |
+| 1.16             | v0.34.0          | 2026-06-29 | Modul `codepaths`: Referenz-Ventil `ignore-refs` (§5/§6) — bestimmte **aufgelöste Ziel-Pfade** referenz-weit (datei-/zeilen-unabhängig) von der Existenz-/Escape-/Anker-Prüfung ausnehmen, als Tombstone-Register bewusst entfernter Artefakte; löst die Frozen-Doc-Refactoring-Falle. Dritte Ventil-Achse neben `d-check:ignore` (Zeile) und `exempt-paths` (Datei)                |

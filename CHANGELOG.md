@@ -4,6 +4,34 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.34.0] — 2026-06-29
+
+### Added
+
+- slice-054 — Modul `codepaths`
+  ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in))
+  um `codepaths.ignore-refs` erweitert: eine Glob-Liste nimmt **bestimmte
+  aufgelöste Ziel-Pfade** referenz-weit (datei-/zeilen-unabhängig) von der
+  Existenz-/Escape-/Anker-Prüfung aus — ein **Tombstone-Register** bewusst
+  entfernter Artefakte, die immutable oder historische Doku noch in Inline-Code
+  zitiert. Löst die Frozen-Doc-Refactoring-Falle (eingefrorene Verweise auf
+  refaktorierten/gelöschten Code dangeln sonst als `codepath-missing` an
+  uneditierbarer Doku) — ohne Edit an immutabler Doku, ohne ganze Doc-Klassen aus
+  dem Check zu nehmen. Bewusster Akt mit Gate (ohne Eintrag bleibt
+  `codepath-missing`); Default leer → byte-identisch
+  ([ADR-0025](docs/plan/adr/0025-codepaths-ignore-refs.md), Lastenheft 0.34.0).
+  Dritte Ventil-Achse neben `d-check:ignore` (Zeile) und `exempt-paths` (Datei).
+
+### Removed
+
+- slice-054 — `tools/adr-immutable-check.sh` entfernt (in v0.33.0 durch das Modul
+  `vcs` abgelöst und nur noch als „pfad-stabiler Fallback" gehalten). Die
+  immutablen [ADR-0016](docs/plan/adr/0016-adr-immutable-gate.md)/[ADR-0024](docs/plan/adr/0024-vcs-immutable-gate.md)-Inline-Referenzen
+  sind über `codepaths.ignore-refs` als Tombstones deklariert;
+  [ADR-0025](docs/plan/adr/0025-codepaths-ignore-refs.md) nimmt die
+  „Skript-behalten"-Teilentscheidung von ADR-0024 zurück (deren VCS-Port/Modul-
+  `vcs`-Kern bleibt gültig).
+
 ## [0.33.0] — 2026-06-29
 
 ### Added
