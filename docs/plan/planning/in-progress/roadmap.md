@@ -10,7 +10,15 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle** — kein Slice in `in-progress/` (Backlog offen). Zuletzt
+**Aktive Welle: welle-44-completeness-rückbau** ([`slice-055`](slice-055-completeness-rueckbau.md) —
+`make completeness-check` dogfoodet den in-Produkt-Flag `--trace --require-complete`
+([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code))
+statt `tools/completeness-check.sh`; das Skript wird **entfernt** (zweiter
+`codepaths.ignore-refs`-Tombstone, Dogfood von slice-054). Schließt den
+[`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Copy-Drift
+am eigenen Closure-Gate; begleitende ADR `Supersedes` die Skript-Mechanik von
+[ADR-0017](../../adr/0017-requirements-completeness-gate.md). **Kein** Produkt-Code, **kein**
+Release; doc-first läuft). Zuletzt
 abgeschlossen: welle-43-ignore-refs ([`slice-054`](../done/slice-054-codepaths-ignore-refs.md) —
 `codepaths.ignore-refs` (Tombstone-Register bewusst entfernter Code-Artefakte) löst die
 **Frozen-Doc-Refactoring-Falle**: ein Inline-Code-Verweis auf einen deklariert-entfernten
@@ -181,7 +189,6 @@ Refactor noch in keinem Release.
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| welle-44-completeness-rückbau | Auftraggeber-Audit „welche `tools/*.sh` noch in d-check mechanisieren?" (2026-06-29): `tools/completeness-check.sh` parst `orphans` in Bash, obwohl [`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) (`--trace --require-complete`) die Durchsetzung **schon im Produkt** leistet | Ein Slice: `make completeness-check` ruft `d-check --trace --require-complete` (Image), Skript zurückbauen/entfernen (Waisen-ID-Ausgabe-Parität sicherstellen); **kein** neues Modul, begleitende ADR (löst die Skript-Mechanik von [ADR-0017](../../adr/0017-requirements-completeness-gate.md) ab) | **klein** (Mechanik existiert seit slice-044) |
 | welle-45-trace-modul | gleicher Audit: `tools/trace-check.sh` (Commit-Message-IDs über eine Range) ist git-Domäne; sein ID-Regex ist d-checks `ids`-Musterfamilie, und der VCS-Port (slice-053, [ADR-0024](../../adr/0024-vcs-immutable-gate.md)) macht es mechanisierbar — das „nächste `adr-check`" | Neues opt-in Modul `trace` (neue Anforderung + neue ADR; VCS-Port um Commit-Message-Lesen erweitern; Dogfood-Ersatz des `trace-check`-Gates) | **mittel–groß** (Port-Erweiterung + ADR; erweitert den nicht-hermetischen Eingabe-Scope wie [ADR-0024](../../adr/0024-vcs-immutable-gate.md)) |
 | welle-46-planning-modul | gleicher Audit: `tools/planning-consistency.sh` (Roadmap-§Aktuelle-Welle-Marker ⟺ Präsenz von `in-progress/slice-*`) ist hermetische Markdown-↔-Dateisystem-Konsistenz — d-check-fit (Existenz-Prüfung wie `codepaths`), bleibt **ohne git** | Opt-in `planning`-Modul (neue Anforderung + ADR); bewusst nachrangig — die „Keine aktive Welle"-Konvention ist harness-layout-spezifisch, kleinerer Verteilungswert | **mittel** |
 

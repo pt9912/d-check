@@ -111,6 +111,11 @@ run: build ## Smoke-Test: d-check prüft das eigene Repo (read-only).
 # selbst), daher inline statt --print-mk-Fragment (das ist konsumenten-seitig).
 DCHECK_RUN = docker run --rm --network none -v "$(CURDIR)":/repo:ro $(IMAGE):latest
 
+# Vollständigkeits-Flag-Satz — EINE Quelle, geteilt von `doc-complete`
+# (Konsumenten-/print-mk-Name) und `completeness-check` (Closure-Gate); so können
+# die beiden Recipes nicht still divergieren (slice-055-R2-LOW). DC-FA-CLI-011.
+COMPLETE_FLAGS = --trace --require-complete
+
 # Dogfooding (MR-007, Selbstkonfiguration slice-007): d-check prüft die
 # eigene Doku — Module links + anchors + ids + matrix über die gesamte
 # Repo-Wurzel (.d-check.yml, scan.roots ".").
@@ -128,11 +133,11 @@ trace: build ## Requirements Traceability Matrix via d-check selbst (Dogfooding,
 	$(DCHECK_RUN) --trace
 
 # Dogfooding des opt-in Vollständigkeits-Modus (--require-complete, DC-FA-CLI-011):
-# Exit 1 bei Requirements-Waisen, sonst 0 — gegen das lokal gebaute Image. Bewusst
-# Konvenienz/Dogfooding, NICHT der Closure-Bindepunkt: die fail-closed Closure-
-# Wahrheit bleibt `make completeness-check` (ADR-0017-Wrapper, in fullbuild).
+# Exit 1 bei Requirements-Waisen, sonst 0 — gegen das lokal gebaute Image. Dies ist
+# der konsumenten-/print-mk-seitige Name; den Closure-Bindepunkt bildet
+# `make completeness-check` (dieselbe Mechanik, an fullbuild gehängt; ADR-0026).
 doc-complete: build ## Vollständigkeits-Dogfood via d-check selbst (--trace --require-complete, Waise⇒Exit1; netzlos: DC-QA-03). DC-FA-CLI-011.
-	$(DCHECK_RUN) --trace --require-complete
+	$(DCHECK_RUN) $(COMPLETE_FLAGS)
 
 # ---- harness -----------------------------------------------------------------
 
@@ -154,13 +159,15 @@ ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (DC-FA-DIST-00
 fullbuild: ci bench completeness-check ## volle Closure: ci + bench + completeness-check; schließt mit dem Image-Hash (Reproduzierbarkeits-Bindung).
 	@docker image inspect $(IMAGE):latest --format '[fullbuild] green — image-hash {{.Id}}'
 
-# Requirements-Completeness-Gate (slice-042, ADR-0017): failt bei
-# Requirements-Waisen (--trace --json, orphans>0). Closure-Bindepunkt — an
-# `fullbuild` gehängt, bewusst NICHT in `gates`/`ci` (GF erlaubt transiente
-# Waisen, bis der umsetzende Slice landet). Eine Skript-Wahrheit + Negativ-
-# Selbsttest (fail-closed, beide Richtungen). Parsing bash/grep/awk (kein jq).
-completeness-check: build ## Requirements-Completeness: failt bei Requirements-Waisen (--trace --json orphans>0); Closure-Gate (in fullbuild, NICHT gates/ci). slice-042/ADR-0017.
-	@IMAGE=$(IMAGE) bash tools/completeness-check.sh
+# Requirements-Completeness-Gate (Policy slice-042/ADR-0017; Mechanik seit
+# slice-055/ADR-0026 in-Produkt): failt bei Requirements-Waisen über den Flag
+# `--trace --require-complete` (DC-FA-CLI-011) statt des abgelösten Skripts —
+# die Waisen-IDs erscheinen als `WAISE`-Zeilen der --trace-Tabelle. Closure-
+# Bindepunkt, an `fullbuild` gehängt, bewusst NICHT in `gates`/`ci` (GF erlaubt
+# transiente Waisen). Dieselbe Mechanik wie `doc-complete`; completeness-check
+# ist die Gate-/Closure-Rolle (d-check isst sein eigenes verteiltes Futter).
+completeness-check: build ## Requirements-Completeness via in-Produkt-Flag (--trace --require-complete, Waise⇒Exit1); Closure-Gate (in fullbuild, NICHT gates/ci). ADR-0026 (löst ADR-0017-Skript ab).
+	$(DCHECK_RUN) $(COMPLETE_FLAGS)
 
 # ---- traceability ------------------------------------------------------------
 

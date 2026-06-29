@@ -82,7 +82,9 @@ codepaths:
   # Tombstone-Register (DC-FA-CODE-001, ADR-0025, slice-054): bewusst
   # entfernte Artefakte, die immutable/historische Doku noch in Inline-Code
   # zitiert — referenz-weit von der Existenz-Prüfung ausgenommen.
-  ignore-refs: ["tools/adr-immutable-check.sh"]
+  # - adr-immutable-check.sh: abgelöst durch Modul vcs (ADR-0024, slice-053)
+  # - completeness-check.sh: abgelöst durch --trace --require-complete (ADR-0026, slice-055)
+  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh"]
 
 # Versions-Pin-Konsistenz (DC-FA-VER-001, slice-048): jeder ghcr-Image-Pin in
 # den Live-Docs muss die aktuelle Version aus version.md#aktuell tragen — sonst
