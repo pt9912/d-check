@@ -1,6 +1,6 @@
 # ADR-0024 — Git-Diff-Immutabilität: das Modul `vcs` prüft den Core über eine Commit-Range und löst die Skript-Mechanik von ADR-0016 ab
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-06-29
 **Autor:** pt9912
 **Bezug:** [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
@@ -181,3 +181,4 @@ hermetisch; beide koexistieren als **Defense-in-Depth** — der Pin als Boden
 | Datum | Ereignis |
 | --- | --- |
 | 2026-06-29 | Entwurf nach Auftraggeber-Auftrag („`adr-immutable-check` regelkonform vollständig mechanisieren"). Vier Entscheidungen: eigenes Modul `vcs`; volle Parität `--range` + `--staged`; Dogfood-Ersatz des `adr-check`-Gates; git-Zugang reine-Go (distroless bleibt). Löst die von [ADR-0023](0023-immutable-core-pin.md) vertagte git-Stufe ein, Teil-Supersede der Skript-Mechanik von [ADR-0016](0016-adr-immutable-gate.md). Begleitet slice-053. Status Proposed. |
+| 2026-06-29 | Angenommen mit der slice-053-Closure: Modul `vcs` + go-git-Adapter + VCS-Port implementiert/getestet, `adr-check`-Gate dogfood-umgestellt, `--print-mk doc-immutable` verteilt die Stufe an Konsumenten; zwei unabhängige Reviews (R1 doc + R2 code, alle Befunde behoben — u. a. R2-F-1: `make adr-check` auf nur-`vcs` fokussiert), `make ci` grün (Cov 93,4 %), Release v0.33.0. Status Accepted. |

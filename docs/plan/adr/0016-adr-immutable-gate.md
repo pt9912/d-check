@@ -118,3 +118,4 @@ fordern.
 |---|---|
 | 2026-06-21 | Proposed — Audit-Befund: §3.5 ohne Wächter; Topologie + Policy via Nutzer-Entscheid (CI-Range + Hook, eigene ADR) |
 | 2026-06-21 | Proposed → Accepted (Umsetzung slice-041; Review R1 MERGE-FÄHIG, 1 MEDIUM/2 LOW/1 NIT behoben — `core()`-Status-Strip nur im Header, Selbsttest 6/7, Range-`..`-Guard) |
+| 2026-06-29 | Skript-Mechanik (`adr-immutable-check.sh`) teil-superseded durch [ADR-0024](0024-vcs-immutable-gate.md) (slice-053): das Gate `adr-check` läuft auf das d-check-Modul `vcs` um (reine-Go, im Image verteilt). **Policy und Gate unverändert**; das Skript bleibt pfad-stabiler Fallback im Baum. |

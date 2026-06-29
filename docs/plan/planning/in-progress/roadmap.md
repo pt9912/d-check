@@ -10,7 +10,8 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Aktive Welle: welle-42-vcs** ([`slice-053`](slice-053-vcs-modul.md) — neues
+**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+welle-42-vcs ([`slice-053`](../done/slice-053-vcs-modul.md) — neues
 opt-in Modul `vcs` (13. Modul, git-historienbasierte Core-Immutabilität): vergleicht
 `core(BASE)` vs. `core(HEAD)` über eine Commit-Range (`--range <base>..<head>` /
 `--staged`) und meldet Körper-Drift, unzulässigen Status-Übergang oder
@@ -24,8 +25,11 @@ von `adr-check` (Teil-Supersede der
 `immutable` ([`slice-052`](../done/slice-052-immutable-modul.md)) bleibt der
 Boden-Pin (Defense-in-Depth)
 ([`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
-[ADR-0024](../../adr/0024-vcs-immutable-gate.md), Lastenheft 0.33.0); **doc-first
-abgeschlossen, Code + Gate-Umbau laufen**). Zuletzt abgeschlossen:
+[ADR-0024](../../adr/0024-vcs-immutable-gate.md), Lastenheft 0.33.0); zwei unabhängige
+Reviews (R1 doc + R2 code, alle Befunde behoben); `make ci` grün (Cov 93,4 %),
+`adr-check`-Dogfood (vcs) grün; Release **v0.33.0** auf GHCR
+(Digest-Pin folgt mit dem Tag-Push)
+([Closure](../done/slice-053-vcs-modul.md#7-closure-notiz-nach-done)). Davor
 welle-41-immutable ([`slice-052`](../done/slice-052-immutable-modul.md) — neues
 opt-in Modul `immutable` (12. Modul, content-immutability): eine Datei mit
 `<!-- immutable: sha256:… -->` wird gegen den whitespace-normalisierten **Core**
