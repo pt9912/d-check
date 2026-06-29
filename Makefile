@@ -38,7 +38,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency planning-check bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean
+.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency planning-check bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -172,14 +172,36 @@ completeness-check: build ## Requirements-Completeness: failt bei Requirements-W
 trace-check: ## Traceability-Gate: DC-/ADR-/slice-ID in Commits (Selbsttest + HEAD; RANGE=a..b für CI). ADR-0013.
 	@bash tools/trace-check.sh $(if $(RANGE),--range $(RANGE),)
 
-adr-check: ## ADR-Immutable-Gate: Accepted-ADRs nicht inhaltlich ändern (Selbsttest + HEAD~1..HEAD; RANGE=a..b für CI). ADR-0016.
-	@bash tools/adr-immutable-check.sh $(if $(RANGE),--range $(RANGE),)
+# adr-check fokussiert auf das Modul vcs: --enable vcs aktiviert es, und ALLE
+# übrigen .d-check.yml-modules werden abgewählt — sonst über-feuerte das
+# ADR-Immutable-Gate auf Nicht-ADR-Befunde des Arbeitsbaums (im STAGED-Hook auf
+# ungestaged WIP), entgegen ADR-0024 „grün, sofern keine Accepted-ADR berührt".
+# Die VCS_DISABLE-Liste spiegelt die .d-check.yml-modules; wächst die dort, hier
+# nachziehen (das neue Modul liefe sonst in adr-check mit — kein Silent-Grün,
+# aber Über-Feuern).
+VCS_DISABLE := --disable links --disable anchors --disable ids --disable matrix \
+    --disable codepaths --disable spans --disable hostpaths --disable versions
+adr-check: build ## ADR-Immutable-Gate via Modul vcs (Image, dogfood, nur vcs): Accepted-ADRs nicht inhaltlich ändern (RANGE=a..b für CI, STAGED=1 für den Hook, sonst HEAD~1..HEAD). ADR-0024 (löst die Skript-Mechanik von ADR-0016 ab; tools/adr-immutable-check.sh bleibt pfad-stabiler Fallback).
+	$(DCHECK_RUN) --enable vcs $(VCS_DISABLE) $(if $(STAGED),--staged,--range $(if $(RANGE),$(RANGE),HEAD~1..HEAD))
 
 hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Traceability + pre-commit ADR-Immutable). ADR-0013/0016.
 	@git config core.hooksPath .githooks
 	@echo "[hooks] core.hooksPath=.githooks — commit-msg Traceability + pre-commit ADR-Immutable aktiv"
 
 # ---- maintenance -------------------------------------------------------------
+
+# go.mod/go.sum pflegen: die Go-Toolchain läuft in Docker (kein Host-Go,
+# §3.1), schreibt als Host-User in ephemere Caches; `go mod tidy` nimmt die
+# importierten Module auf (z. B. go-git für das Modul vcs, ADR-0024) und
+# erneuert go.sum. Bewusster Akt am Dependency-Stand, kein Routine-Gate —
+# go.sum ist der Reproduzierbarkeits-Anker, die deps-Stage prüft ihn beim
+# Build (`-mod=readonly`).
+tidy: ## go.mod/go.sum aufräumen (go mod tidy in Docker; Dependency-Pflege).
+	docker run --rm -u "$$(id -u):$$(id -g)" \
+	    -e HOME=/tmp -e GOCACHE=/tmp/gc -e GOMODCACHE=/tmp/gm \
+	    -e GOTOOLCHAIN=local -e GOFLAGS=-mod=mod \
+	    -v "$(CURDIR)":/src -w /src golang:$(GO_VERSION) \
+	    go mod tidy
 
 clean: ## Lokale Images entfernen.
 	@-docker image rm \

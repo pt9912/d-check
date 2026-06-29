@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.32.0
+**Version:** 0.33.0
 
 **Status:** Draft
 
@@ -45,7 +45,8 @@ statt per Code-Kopie.
 > (Inline-Code-Pfade), `SPAN` (Markdown-Span-Artefakte), `HOST`
 > (Host-Pfad-Hygiene), `DIAG` (Diagramm-Kennungen), `VER`
 > (Versions-Pin-Konsistenz), `PIN` (Content-Pin/Drift), `IMM`
-> (Immutabilitäts-/Core-Pin), `CONF` (Konfiguration), `DIST` (Distribution).
+> (Immutabilitäts-/Core-Pin), `VCS` (git-historienbasierte
+> Core-Immutabilität), `CONF` (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -75,7 +76,7 @@ verweist für das Konfigurations-Format auf
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
 `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`immutable`, `vcs`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -1090,6 +1091,83 @@ Hash-Algorithmen (nur `sha256`).
 
 ---
 
+### DC-FA-VCS-001 — Git-Diff-Immutabilität des Core über eine Commit-Range (Modul `vcs`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `vcs` prüft d-check über eine
+git-**Commit-Range**, ob der **unveränderliche Core** einer als immutabel
+erklärten Datei zwischen zwei Ständen inhaltlich gleich geblieben ist:
+`core(BASE)` ≟ `core(HEAD)`. Das ist die **volle** git-Garantie, die
+[`DC-FA-IMM-001`](#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in)
+(hermetischer Pin im Arbeitsbaum) bewusst offenließ — sie fängt auch eine
+Körper-Änderung, die *mit* einem gefälschten Neu-Pin getarnt würde, weil sie den
+Stand zweier Commits vergleicht statt einer im Dokument hinterlegten Zahl.
+
+Dafür liest `vcs` die git-Historie über einen eigenen **VCS-Port**: es öffnet das
+im read-only-Mount vorhandene `.git` über eine **reine-Go**-git-Implementierung —
+**ohne git-Binary** (das distroless-Laufzeit-Image bleibt unangetastet) und
+**ohne Netz**. Die Eingabe ist damit gegenüber den hermetischen Modulen
+**erweitert** (das `.git` und eine Range, nicht nur der gescannte Markdown-Baum),
+bleibt aber **lokal, lesend und deterministisch**: dieselbe git-Historie + dieselbe
+Range ⇒ derselbe Befundsatz ([`DC-QA-02`](#dc-qa-02--determinismus)), kein
+Netzzugriff und kein Schreiben ins Repository
+([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)). Die Range
+wird geliefert über `--range <base>..<head>` (PR-/Push-CI) oder `--staged`
+(lokaler pre-commit-Hook: BASE = `HEAD`, HEAD = der staged Index).
+
+Geprüft wird jede in der Range **geänderte** Datei, die der konfigurierten Klasse
+(`vcs.paths`, Glob) entspricht und deren **BASE**-Version die
+Immutabilitäts-Bedingung erfüllt (`vcs.immutable-when`, Zeilen-Regex — z. B.
+`**Status:** Accepted`):
+
+- `core(BASE)` ≠ `core(HEAD)` → Befund `core-drift-vcs` (Körper geändert).
+- HEAD-Status-Zeile außerhalb des erlaubten Musters (`vcs.head-allow`) → Befund
+  `core-drift-vcs` (unzulässiger Status-Übergang einer immutablen Datei).
+- **gelöschte** oder **umbenannte** immutable Datei → Befund `core-drift-vcs`
+  (der Pfad einer immutablen Datei ist stabil).
+
+Der **Core** ist — wie bei
+[`DC-FA-IMM-001`](#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in)
+— der normalisierte Inhalt ohne die per `vcs.exclude-sections` benannten
+Abschnitte; zusätzlich wird **nur die Kopf-Status-Zeile** (`vcs.status-line`,
+erstes Vorkommen **vor** der ersten H2) aus dem Core entfernt, eine gleichlautende
+Zeile im Körper bleibt Teil des Core (sonst rutschte ein Edit an ihr durch). Die
+verbleibende Eingabe wird **whitespace-/reflow-invariant** normalisiert und per
+SHA-256 gehasht — dieselbe Normalisierung wie
+[`DC-FA-IMM-001`](#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in)
+/ [`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in).
+
+**Strikt opt-in, fail-closed, diagnose-only:** `vcs` ist nie Default-Modul (wie
+`external`); ohne aktives `vcs` ist der Befundsatz byte-identisch
+([`DC-QA-02`](#dc-qa-02--determinismus)) und nichts wird gelesen, was über den
+Markdown-Baum hinausgeht ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+Der Modul-Scope ([`DC-FA-CONF-002`](#dc-fa-conf-002--modul-lokaler-scan-scope))
+gilt wie für jedes Modul. **fail-closed:** ein fehlendes oder unlesbares `.git`,
+eine fehlende oder nicht auflösbare Range (z. B. unbekannte Basis) → Fehler
+(Exit 2) mit Hinweis auf stderr, keine stille Grün-Meldung. `core-drift-vcs` ist
+**diagnose-only** — es liefert keinen `--repair`-Hunk (die Korrektur ist eine
+menschliche Entscheidung, kein eindeutig ableitbarer Fix; vgl.
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `vcs` aktiv mit `vcs.paths` auf eine Datei-Klasse und einer Range, in der eine immutable (`vcs.immutable-when`) Datei **nur** einen Anhang innerhalb eines `vcs.exclude-sections`-Abschnitts erhält, when `d-check --enable vcs --range <base>..<head>` läuft, then kein Befund, Exit 0.
+- **Boundary (Modul-aus / git-frei):** Given **kein** aktives `vcs`, when `d-check` ohne Range in einer netzlosen, read-only Umgebung läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)), es erfolgt kein git-Zugriff über den Scan hinaus und nichts wird geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+- **Negative:** Given `vcs` aktiv und eine Range, in der der Körper einer immutablen Datei **außerhalb** der ausgenommenen Abschnitte geändert (oder die Datei gelöscht/umbenannt) wird, when `d-check --enable vcs --range <base>..<head>` läuft, then ein Befund `core-drift-vcs` (Datei, Grund), Exit 1.
+- **fail-closed (git-Eingabe fehlt):** Given `vcs` aktiv, aber **kein** lesbares `.git` oder eine **fehlende/unauflösbare** Range (leere Basis, fehlender `..`-Separator), when `d-check --enable vcs` läuft, then **Exit 2** mit Hinweis auf stderr — kein stilles Grün (kein Exit 0) und kein Befund-Exit (kein Exit 1).
+
+**Out-of-Scope:** die hermetische Pin-Form — das ist
+[`DC-FA-IMM-001`](#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in),
+die im Arbeitsbaum entscheidbare Schwester-Hälfte (`vcs` ist die
+git-historienbasierte Hälfte, beide koexistieren als Defense-in-Depth); ein
+git-**Binary** im Laufzeit-Image (der Port liest `.git` rein in Go; das
+distroless-Image bleibt unangetastet, in begleitender ADR festgehalten);
+Forge-/Netz-API-Aufrufe (nur lokale git-Objekte); Umbenennungs-Erkennung über
+Inhalts-Ähnlichkeit statt Pfad (eine immutable Datei behält ihren Pfad);
+Schreiben/Neu-Pinnen durch das Werkzeug (read-only); mehrere Hash-Algorithmen
+(nur `sha256`).
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -1177,7 +1255,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 ### DC-QA-03 — Seiteneffektfreiheit und Netzwerk-Sparsamkeit
 
 - **Anforderung:** Das Tool schreibt nie in das geprüfte Repository und öffnet außer im explizit aktivierten Modul `external` keine Netzwerkverbindungen.
-- **Messmethode:** Integrationstest mit read-only-Mount und netzwerkloser Umgebung (`docker run --network none`), alle Module außer `external` aktiv.
+- **Messmethode:** Integrationstest mit read-only-Mount und netzwerkloser Umgebung (`docker run --network none`), alle Module außer `external` und `vcs` aktiv (beide brauchen eine explizite Eingabe jenseits des gescannten Markdown-Baums — `external` das Netz, `vcs` eine git-Range — und sind nie Teil des netzlosen Default-Laufs; `vcs` liest `.git` zwar read-only/netzlos, fail-closed ohne Range).
 
 ### DC-QA-04 — Migrationsabdeckung der Alt-Tools
 
@@ -1198,7 +1276,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -1212,6 +1290,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.33.0 | 2026-06-29 | Neue Anforderung `DC-FA-VCS-001` (Modul `vcs`, opt-in): git-historienbasierte Immutabilität des Core über eine Commit-Range — `core(BASE)` ≟ `core(HEAD)`, geliefert über `--range <base>..<head>` (CI/Push) oder `--staged` (pre-commit). Liest das read-only `.git` über einen eigenen **VCS-Port** (reine-Go-git, **ohne git-Binary** → distroless bleibt, **ohne Netz**); erweiterter Eingabe-Scope (git + Range statt nur Markdown-Baum), aber lokal/lesend/deterministisch — `DC-QA-02`/`DC-QA-03` unberührt. Geprüft wird jede in der Range geänderte, der Klasse (`vcs.paths`) entsprechende Datei mit immutabler BASE (`vcs.immutable-when`): Körper-Drift, unzulässiger Status-Übergang (`vcs.head-allow`) oder Löschung/Umbenennung → `core-drift-vcs`. Strikt opt-in (nie Default, wie `external`), fail-closed bei fehlendem `.git`/Range, diagnose-only. **Die volle git-Garantie, die `DC-FA-IMM-001` (hermetischer Pin) bewusst der späteren VCS-Stufe überließ** — beide koexistieren als Defense-in-Depth. 13. Regelmodul; Bereichskürzel `VCS` in §3, `vcs` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-VCS-001.a` + Grund-Code `core-drift-vcs` + Schema-Keys (`vcs.paths`/`immutable-when`/`exclude-sections`/`status-line`/`head-allow`) in der Spezifikation. Anlass: Auftraggeber — `adr-immutable-check.sh` vollständig mechanisieren (Copy-Drift über die Repo-Familie, [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Klasse): die verteilbare git-Form löst es im Image; d-check dogfooded das Modul für die eigenen Accepted-ADRs | slice-053 |
 | 0.32.0 | 2026-06-28 | Neue Anforderung `DC-FA-IMM-001` (Modul `immutable`, opt-in): Immutabilitäts-Pin gegen Core-Drift — eine Datei mit Inline-Marker `<!-- immutable: sha256:… -->` wird gegen den whitespace-normalisierten **Core** (Datei ohne die Marker-Zeile und ohne die per `immutable.exclude-sections` benannten Abschnitte) gehasht; Abweichung → `core-drift`. Hermetische, im read-only-Arbeitsbaum entscheidbare Immutabilitäts-Prüfung (kein git; die git-historienbasierte Diff-Form bleibt Out-of-Scope bzw. spätere opt-in-Stufe, in begleitender ADR festgehalten). Opt-in pro Datei, default-off byte-identisch (`DC-QA-02`), diagnose-only. 12. Regelmodul; Bereichskürzel `IMM` in §3, `immutable` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-IMM-001.a` + Grund-Code `core-drift` + Schema-Key (`immutable.exclude-sections`) in der Spezifikation. Anlass: Auftraggeber — das ADR-Immutable-Gate war nur ein Skript (Copy-Drift über die Repo-Familie, [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Klasse „verteilen statt kopieren"); die verteilbare Pin-Form löst das hermetisch, die volle git-Garantie bleibt einem späteren VCS-Adapter vorbehalten | slice-052 |
 | 0.31.0 | 2026-06-28 | Neue Anforderung `DC-FA-MTX-003` (Modul `matrix`): **Token-basierte** Referenz-Richtung + Provenance-Marker + Grandfathering. Eine Klasse kann ein `token`-Regex tragen → `matrix` fängt verbotene Referenzen auch als bare ID-Token im Körper (nicht nur als Link), `matrix-forbidden` in Token-Form. Provenance-Marker `<!-- d-check:status-provenance -->` auf der Zeile nimmt eine verbotene Token-Referenz aus (deklarierte Provenance/Verifikations-Zeiger) — `matrix`' **erster** Zeilen-Marker, kehrt die „nur strukturelle Ausnahmen"-Haltung von `DC-FA-MTX-001` bewusst um (benannt/semantisch, nicht generisches Muting); Ehrlichkeit bleibt Reviewer. Neues `matrix.exempt-paths` grandfathered immutable `Accepted`-ADRs (Regelwerk §Referenz-Richtung). Default-aus byte-identisch (`DC-QA-02`). §DC-FA-MTX-001.a-Schritt + Schema-Keys (`matrix.classes[].token`, `matrix.exempt-paths`) in der Spezifikation. Anlass: Auftraggeber — d-check mechanisiert die Referenz-Richtung, die das adoptierte Regelwerk bewusst dem Reviewer überließ (wie schon [`MR-006`](../harness/conventions.md#mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs)/`matrix`); der Marker macht die Provenance-vs-Entscheidungsgrundlage-Unterscheidung grep-bar | slice-051 |
 | 0.30.0 | 2026-06-28 | Neue Anforderung `DC-FA-MTX-002` (Modul `matrix`): Verweisrichtung **innerhalb** einer geordneten Dokumentklasse — eine Klasse kann `order` (Pfad-Globs, autoritativste Schicht zuerst; Rang = erster Treffer) plus `direction: no-downward` tragen; ein klasseninterner Abwärtsverweis (höherrangig → niederrangig, auch über mehrere Stufen) ⇒ neuer Grund-Code `matrix-downward`. Additiv zu den Klassen-Paar-Regeln (`DC-FA-MTX-001`); generalisiert die Spec-Straten-Schichtung auf viele Dateien je Schicht (Globs statt Einzeldateien-Listing). Fail-closed: `order`/`direction` nur zusammen, unbekannter `direction`-Wert ⇒ Config-Fehler; rangfreie Mitglieder nehmen nicht teil; Default beide leer ⇒ byte-identisch (`DC-QA-02`). Algorithmus-Schritt in `DC-FA-MTX-001.a`, Grund-Code `matrix-downward` + Schema-Keys (`matrix.classes[].order`/`.direction`) in der Spezifikation. Anlass: Auftraggeber — die alternative Einzelklassen-Aufzählung war als Richtung nicht erkennbar und verschattete (First-Match) tote Regeln; zugleich Konsumenten-Bedarf d-migrate (23 Spec-Dateien ⇒ Glob-Schichten statt 23-Zeilen-Listing) | slice-050 |

@@ -7,7 +7,10 @@
 #   R1  hexagon/* importiert weder I/O-APIs (os, syscall, io/fs,
 #       net-Sockets, net/http) noch Adapter noch die YAML-Bibliothek.
 #       Reine Parser ohne I/O (net/url) sind erlaubt.
-#   R2  net/http ausschließlich in internal/adapter/driven/httpcheck.
+#   R2  net/http ausschließlich in internal/adapter/driven/httpcheck;
+#       go-git (github.com/go-git/go-git/v5) ausschließlich in
+#       internal/adapter/driven/git (eine Tür je externer I/O-Abhängigkeit —
+#       der reine-Go-git-Adapter, ADR-0024).
 #   R3  gopkg.in/yaml.v3 ausschließlich in
 #       internal/adapter/driven/{configyaml,report}
 #       (ADR-0009: Encode der YAML-Ausgabe im report-Adapter).
@@ -46,6 +49,13 @@ while IFS='|' read -r pkg imports; do
     if [ "$imp" = "net/http" ] && [ "$rel" != "internal/adapter/driven/httpcheck" ]; then
       violation R2 "$rel importiert net/http"
     fi
+    case "$imp" in
+      github.com/go-git/go-git/v5|github.com/go-git/go-git/v5/*)
+        if [ "$rel" != "internal/adapter/driven/git" ]; then
+          violation R2 "$rel importiert go-git $imp (nur im git-Adapter erlaubt)"
+        fi
+        ;;
+    esac
     if [ "$imp" = "gopkg.in/yaml.v3" ]; then
       case "$rel" in
         internal/adapter/driven/configyaml|internal/adapter/driven/report) ;;

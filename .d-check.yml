@@ -91,3 +91,16 @@ versions:
   # historische Pins (DC-FA-VER-001): done/-Slices, Changelog, Lastenheft-
   # Historie, Review-Reports bleiben unberührt.
   exempt-paths: [CHANGELOG.md, "docs/plan/planning/done/**", spec/lastenheft.md, "docs/reviews/**"]
+
+# Modul vcs (DC-FA-VCS-001, slice-053): git-Diff-Immutabilität der eigenen
+# Accepted-ADRs über die Commit-Range — `make adr-check` aktiviert es mit
+# `--enable vcs` (NICHT in der modules-Liste oben, daher im Default-doc-check
+# inert/byte-identisch). Core in Parität zum abgelösten `adr-immutable-check.sh`
+# (nur Kopf-Status-Zeile gestrippt, Geschichte ausgenommen); löst dessen Mechanik
+# ab (ADR-0024, Teil-Supersede von ADR-0016).
+vcs:
+  paths: ["docs/plan/adr/[0-9]*.md"]
+  immutable-when: '^\*\*Status:\*\* Accepted'
+  exclude-sections: [Geschichte]
+  status-line: '^\*\*Status:\*\*'
+  head-allow: '^\*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'

@@ -937,6 +937,65 @@ begleitender ADR festgehalten):
    Ohne `immutable` ist der Befundsatz byte-identisch
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
 
+### DC-FA-VCS-001.a — Git-Diff-Immutabilität über eine Commit-Range (`vcs`)
+
+Das Modul `vcs`
+([`DC-FA-VCS-001`](lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in))
+ist opt-in und vergleicht den **Core** einer immutablen Datei über zwei git-Stände
+(`core(BASE)` vs. `core(HEAD)`). Es liest dazu das read-only `.git` über einen
+**VCS-Port** (reine-Go-git, **ohne** git-Binary, **ohne** Netz) — die Eingabe ist
+gegenüber den hermetischen Modulen um git-Historie + Range **erweitert**, bleibt
+aber lokal, lesend und deterministisch. Es ist die git-historienbasierte Hälfte
+der Immutabilität, deren hermetische Pin-Hälfte
+[§DC-FA-IMM-001.a](#dc-fa-imm-001a--immutabilitäts-pin-gegen-core-drift-immutable)
+abdeckt:
+
+1. **Range/Modus (vom CLI geliefert).**
+   - `--range <base>..<head>`: zwei Commit-Refs. Der `..`-Separator ist Pflicht —
+     ohne ihn ist `base == head`, der Diff leer und der Lauf still grün; das ist
+     ein **fail-closed** Nutzungsfehler (Exit 2). Eine leere oder nicht auflösbare
+     Basis (nur Nullen, oder kein `^{commit}`) → Fehler (Exit 2).
+   - `--staged`: BASE = `HEAD`, HEAD = der staged Index. Existiert kein `HEAD`
+     (erster Commit), ist nichts zu schützen (kein Befund).
+   - Fehlt das `.git` oder ist es unlesbar → Fehler (Exit 2). **fail-closed.**
+2. **Geänderte Kandidaten.** Aus dem Diff `BASE..HEAD` (bzw. staged) werden die
+   Pfade gewählt, die der Klasse `vcs.paths` entsprechen (Glob, `matchGlob` wie
+   `scan.ignore`). Pro Eintrag zählt der Diff-Status: Modifikation/Typänderung
+   (M/T) → Core-Vergleich; Löschung (D) / Umbenennung (R) →
+   Pfad-Stabilitäts-Prüfung; Hinzufügung (A) → frei (eine neue Datei ist noch
+   nicht immutabel — wie eine frisch reifende ADR).
+3. **Immutabilitäts-Bedingung.** Geprüft wird nur, wenn die **BASE**-Version die
+   Bedingung `vcs.immutable-when` erfüllt (Zeilen-Regex, erstes Vorkommen — z. B.
+   `^\*\*Status:\*\* Accepted`). Trägt BASE die Bedingung nicht (z. B.
+   `Proposed`), ist die Datei frei (auch ihre `Proposed → Accepted`-Reifung — das
+   automatische Grandfathering des abgelösten Skripts).
+4. **Core bestimmen.** Wie
+   [§DC-FA-IMM-001.a Schritt 2](#dc-fa-imm-001a--immutabilitäts-pin-gegen-core-drift-immutable):
+   roher Inhalt ohne die `vcs.exclude-sections`-Abschnitte (Section-Abgrenzung wie
+   `matrix.exclude-sections`); zusätzlich wird die **Kopf**-Status-Zeile
+   (`vcs.status-line`, erstes Vorkommen **vor** der ersten `## `-H2) entfernt —
+   eine gleichlautende Zeile im Körper (nach der ersten H2) **bleibt** Teil des
+   Core (sonst rutschte ein Edit an ihr durch). Anders als `immutable` gibt es
+   **keine** Marker-Zeile (der „Pin" ist hier der BASE-Commit selbst, kein im
+   Dokument hinterlegter Hash). Normalisierung + SHA-256 wie
+   [§DC-FA-PIN-001.a Schritt 3](#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins).
+5. **Vergleich.**
+   - `core(BASE)` ≠ `core(HEAD)` ⇒ Grund-Code `core-drift-vcs` (Körper geändert).
+   - HEAD-Status-Zeile (erstes Vorkommen) erfüllt `vcs.head-allow` **nicht** ⇒
+     `core-drift-vcs` (unzulässiger Status-Übergang einer immutablen Datei).
+   - D/R einer immutablen BASE ⇒ `core-drift-vcs` (Pfad stabil; `message` nennt
+     Löschung bzw. das Umbenennungs-Ziel).
+   Befund: Datei, Zeile (die `status-line` bzw. 1), `target` = der geprüfte Pfad,
+   `message` = Klartext der Verletzung. **Diagnose-only**: kein `--repair`-Hunk.
+6. **Determinismus/Read-only.** Identische git-Historie + identische Range ⇒
+   identischer, stabil sortierter Befundsatz
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)). Der Port liest `.git`
+   **nur lesend**, ohne Netz und ohne Schreiben ins Repository
+   ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));
+   die Determinismus-/Read-only-Zusage gilt also auch hier, lediglich der
+   **Eingabe-Scope** ist um `.git` + Range erweitert (darum strikt opt-in und
+   fail-closed ohne `.git`). Ohne `vcs` ist der Befundsatz byte-identisch.
+
 ## 2. Datenstrukturen und Schemas
 
 ### Befund
@@ -1121,6 +1180,11 @@ Exit 2 ohne Prüfung
 | `versions.current-from` | string | `version.md#aktuell` | `datei#anker` oder `datei`; die Datei muss existieren und innerhalb der Repo-Wurzel liegen, der adressierte Span muss eine Version (`v?\d+\.\d+\.\d+`) tragen (sonst Exit 2) |
 | `versions.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `versions`-Prüfung — datei-weit; die `current-from`-Datei ist stets ausgenommen |
 | `immutable.exclude-sections` | string[] | leer | Heading-Titel, deren Abschnitte **nicht** zum gehashten Core zählen (Vergleich gegen den getrimmten Heading-Text ohne Markdown-Auszeichnung, case-sensitiv — wie `matrix.exclude-sections`); für ADRs typisch `[Geschichte]` ([`DC-FA-IMM-001`](lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in)) |
+| `vcs.paths` | string[] | leer | Glob-Klasse (wie `scan.ignore`) der zu schützenden Dateien; nur in der Range geänderte Pfade dieser Klasse werden geprüft; leer ⇒ Modul inert ([`DC-FA-VCS-001`](lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)) |
+| `vcs.immutable-when` | string | — | Zeilen-Regex; die **BASE**-Version gilt als immutabel, wenn ihr **erstes** Vorkommen matcht (z. B. `^\*\*Status:\*\* Accepted`); muss kompilieren (sonst Exit 2) |
+| `vcs.exclude-sections` | string[] | leer | wie `immutable.exclude-sections` — Heading-Titel, deren Abschnitte nicht zum Core zählen (für ADRs `[Geschichte]`) |
+| `vcs.status-line` | string | leer | Zeilen-Regex der **Kopf**-Status-Zeile; ihr erstes Vorkommen **vor** der ersten `## `-H2 wird aus dem Core entfernt (eine gleichlautende Körper-Zeile bleibt); leer ⇒ keine Status-Zeile gestrippt |
+| `vcs.head-allow` | string | leer | Zeilen-Regex; die HEAD-Status-Zeile (erstes Vorkommen) muss matchen, sonst `core-drift-vcs` (unzulässiger Status-Übergang); leer ⇒ keine Status-Übergangs-Prüfung |
 
 **Glob-Auswertung.** Alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`,
 `matrix.classes[].paths`/`.order`, die `*.exempt-paths`) werden **segmentweise
@@ -1166,6 +1230,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `version-stale` | versions | Versions-Pin weicht von der aktuellen Version (`versions.current-from`) ab |
 | `link-stale` | pins | normalisierter Ziel-Span eines gepinnten Links weicht vom hinterlegten `dpin`-Hash ab |
 | `core-drift` | immutable | normalisierter Core einer gepinnten Datei (ohne Marker-Zeile + `exclude-sections`) weicht vom hinterlegten `immutable`-Hash ab |
+| `core-drift-vcs` | vcs | Core einer immutablen Datei (BASE erfüllt `vcs.immutable-when`) hat sich über die Commit-Range geändert, ihr Status-Übergang ist unzulässig (`vcs.head-allow`), oder die immutable Datei wurde gelöscht/umbenannt |
 
 Nutzungs-/Umgebungsfehler (Exit 2) melden auf stderr mit Präfix
 `d-check: error:`; Konfigurationsfehler nennen Datei und Zeile.
@@ -1221,3 +1286,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-28 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 5 + §2-Schema (`matrix.classes[].order`/`.direction`) + Grund-Code `matrix-downward` (§4) + Config-Beispiel ergänzt: klasseninterne Verweisrichtung ([`DC-FA-MTX-002`](lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix)) — eine Klasse mit `order` (Glob-Rang, First-Match) + `direction: no-downward` meldet klasseninterne Abwärtsverweise (Rang *i* → *j > i*, auch transitiv) als `matrix-downward`; rangfreie Mitglieder und klassenübergreifende Referenzen ausgenommen; fail-closed-Config (`order`/`direction` nur zusammen, unbekannter `direction`-Wert ⇒ Exit 2); Default-aus byte-identisch | slice-050 |
 | 2026-06-28 | §2 „Glob-Auswertung" ergänzt: alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`, `matrix.classes[].paths`/`.order`, `*.exempt-paths`) werden segmentweise über Go-`path.Match` ausgewertet (`**` segmentübergreifend); negierte Zeichenklasse `[^…]` (Go), **nicht** `[!…]` (fnmatch). Reine Klarstellung des Bestands (`matchGlob`), kein Verhaltens-/Schema-Change | — |
 | 2026-06-28 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 6 + §2-Schema (`matrix.classes[].token`, `matrix.exempt-paths`) + §4 (`matrix-forbidden` Token-Form) ergänzt: token-basierte Referenz-Richtung ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)) — `matrix` fängt verbotene Referenzen auch als bare ID-Token im Prosa-Körper (außer Links/Fences/`exclude-sections`); Provenance-Marker `<!-- d-check:status-provenance -->` auf der rohen Zeile nimmt aus; `exempt-paths` grandfathered ganze Dateien. Fail-closed (`token` kompiliert/Leerstring). Default-aus byte-identisch. Außerdem §[`DC-FA-SPAN-001.a`](lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in): Slice-Token aus dem Spec-Körper entfernt (Provenance gehört in die Historie) | slice-051 |
+| 2026-06-29 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) + §2-Schema (`vcs.paths`/`immutable-when`/`exclude-sections`/`status-line`/`head-allow`) + Grund-Code `core-drift-vcs` (§4) ergänzt: opt-in Modul `vcs` vergleicht `core(BASE)` vs. `core(HEAD)` über eine Commit-Range (`--range <base>..<head>` / `--staged`), liest das read-only `.git` über einen reine-Go-VCS-Port (ohne git-Binary, ohne Netz); erweiterter Eingabe-Scope (git + Range), aber lokal/lesend/deterministisch — Determinismus/Read-only gehalten; fail-closed ohne `.git`/Range, diagnose-only. Core-Semantik in Parität zum abgelösten `adr-immutable-check.sh` (nur Kopf-Status-Zeile gestrippt, `exclude-sections`-Abschnitte). Default-aus byte-identisch | slice-053 |

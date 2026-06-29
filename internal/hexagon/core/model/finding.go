@@ -19,6 +19,7 @@ const (
 	ReasonVersionStale       = "version-stale"
 	ReasonLinkStale          = "link-stale"
 	ReasonCoreDrift          = "core-drift"
+	ReasonCoreDriftVCS       = "core-drift-vcs"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

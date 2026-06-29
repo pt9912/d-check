@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
-# pre-commit-Hook — ADR-Immutable-Gate (ADR-0016, slice-041).
+# pre-commit-Hook — ADR-Immutable-Gate via Modul vcs (ADR-0024, slice-053).
 #
 # Verlangt, dass eine Accepted-ADR (docs/plan/adr/NNNN-*.md) nicht inhaltlich
-# ueberschrieben wird (AGENTS.md §3.5). Installiert via `make hooks`
-# (git config core.hooksPath .githooks) — opt-in pro Klon; die
+# ueberschrieben wird (AGENTS.md §3.5). Laeuft jetzt ueber das d-check-Modul vcs
+# (Image) statt des kopierten Skripts — `make adr-check STAGED=1` baut das Image
+# (per Docker-Cache schnell) und prueft den staged-Diff. Installiert via
+# `make hooks` (git config core.hooksPath .githooks) — opt-in pro Klon; die
 # klon-unabhaengige Kontrolle ist der CI-Range-Check (.github/workflows/ci.yml).
 #
-# EINE Wahrheit: ruft dasselbe Skript wie CI und `make adr-check`.
+# EINE Wahrheit: ruft dasselbe Gate wie CI und `make adr-check` (das Modul vcs).
+# Das abgeloeste tools/adr-immutable-check.sh bleibt pfad-stabiler Fallback.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
-exec bash tools/adr-immutable-check.sh --staged
+exec make adr-check STAGED=1

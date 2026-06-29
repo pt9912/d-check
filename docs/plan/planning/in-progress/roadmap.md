@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-28.
+**Status:** Aktiv. **Letzte Änderung:** 2026-06-29.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -10,7 +10,22 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle — wartet auf Trigger.** Zuletzt abgeschlossen:
+**Aktive Welle: welle-42-vcs** ([`slice-053`](slice-053-vcs-modul.md) — neues
+opt-in Modul `vcs` (13. Modul, git-historienbasierte Core-Immutabilität): vergleicht
+`core(BASE)` vs. `core(HEAD)` über eine Commit-Range (`--range <base>..<head>` /
+`--staged`) und meldet Körper-Drift, unzulässigen Status-Übergang oder
+Löschung/Umbenennung als `core-drift-vcs`; liest das read-only `.git` über einen
+reine-Go-**VCS-Port** (**ohne** git-Binary → distroless bleibt, **ohne** Netz),
+erweiterter Eingabe-Scope, aber lokal/lesend/deterministisch
+([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)/[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
+unberührt), fail-closed ohne `.git`/Range. **Dogfood-ersetzt die Skript-Mechanik**
+von `adr-check` (Teil-Supersede der
+[ADR-0016](../../adr/0016-adr-immutable-gate.md)-Skript-Mechanik); das hermetische
+`immutable` ([`slice-052`](../done/slice-052-immutable-modul.md)) bleibt der
+Boden-Pin (Defense-in-Depth)
+([`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
+[ADR-0024](../../adr/0024-vcs-immutable-gate.md), Lastenheft 0.33.0); **doc-first
+abgeschlossen, Code + Gate-Umbau laufen**). Zuletzt abgeschlossen:
 welle-41-immutable ([`slice-052`](../done/slice-052-immutable-modul.md) — neues
 opt-in Modul `immutable` (12. Modul, content-immutability): eine Datei mit
 `<!-- immutable: sha256:… -->` wird gegen den whitespace-normalisierten **Core**

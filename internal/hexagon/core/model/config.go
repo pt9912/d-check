@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs"}
 }
 
 // defaultModules ist der Default-Modulsatz (DC-FA-CLI-002).
@@ -42,6 +42,8 @@ type Config struct {
 	Versions VersionsConfig
 	// Immutable: Parameter des Moduls immutable (DC-FA-IMM-001).
 	Immutable ImmutableConfig
+	// VCS: Parameter des Moduls vcs (DC-FA-VCS-001).
+	VCS VCSConfig
 	// Scopes: modul-lokale Scan-Scopes (DC-FA-CONF-002); Schlüssel
 	// ist der Modulname, nil-Eintrag/fehlender Schlüssel = globaler
 	// Scope.
@@ -223,6 +225,23 @@ func (v VersionsConfig) EffectiveCurrentFrom() string {
 // daher optional.
 type ImmutableConfig struct {
 	ExcludeSections []string
+}
+
+// VCSConfig sind die Parameter des Moduls vcs (DC-FA-VCS-001): Paths ist die
+// Glob-Klasse der zu schützenden Dateien (leer ⇒ Modul inert); ImmutableWhen
+// entscheidet, ob die BASE-Version immutabel ist (irgendeine Zeile matcht);
+// ExcludeSections nennt Heading-Titel, deren Abschnitte nicht zum Core zählen
+// (wie ImmutableConfig.ExcludeSections); StatusLine erkennt die Kopf-Status-Zeile
+// (erstes Vorkommen vor der ersten H2 — wird aus dem Core entfernt und für die
+// HeadAllow-Prüfung gelesen); HeadAllow ist das erlaubte Muster der HEAD-Status-
+// Zeile (Übergangs-Prüfung). Die git-historienbasierte Hälfte der Immutabilität —
+// die hermetische Pin-Hälfte ist ImmutableConfig.
+type VCSConfig struct {
+	Paths           []string
+	ImmutableWhen   *regexp.Regexp
+	ExcludeSections []string
+	StatusLine      *regexp.Regexp
+	HeadAllow       *regexp.Regexp
 }
 
 // EffectiveModules wendet die Modul-Auflösung an

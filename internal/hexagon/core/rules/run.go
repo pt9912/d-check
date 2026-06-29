@@ -14,12 +14,20 @@ type Result struct {
 	FilesChecked int
 }
 
-// Run führt den Prüflauf aus (spec/spezifikation.md
+// Run führt den Prüflauf ohne das opt-in Modul vcs aus — der
+// abwärtskompatible Einstieg für bestehende Aufrufer (vgl. RunWithVCS).
+func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg model.Config, modules []string) (Result, error) {
+	return RunWithVCS(fsys, httpc, nil, "", "", cfg, modules)
+}
+
+// RunWithVCS führt den Prüflauf aus (spec/spezifikation.md
 // §DC-FA-CLI-001.a Schritte 3–5). Umgebungsfehler (nicht lesbare
 // Wurzel/Datei) führen zu error — der Aufrufer mappt auf Exit 2.
-// httpc wird ausschließlich vom explizit aktivierten Modul external
-// benutzt (DC-QA-03: keine Netzwerkzugriffe im Default).
-func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg model.Config, modules []string) (Result, error) {
+// httpc wird ausschließlich vom Modul external benutzt; vcs/vcsBase/vcsHead
+// ausschließlich vom opt-in Modul vcs (DC-FA-VCS-001) — ein nicht-hermetischer
+// git-Lauf, der nur das lokale read-only `.git` liest (DC-QA-03: keine
+// Netzwerkzugriffe; ohne aktives vcs bleibt vcs nil und ungenutzt).
+func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS, vcsBase, vcsHead string, cfg model.Config, modules []string) (Result, error) {
 	var res Result
 	active := map[string]bool{}
 	for _, m := range modules {
@@ -76,6 +84,16 @@ func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg model.Config, mod
 	if active["external"] {
 		res.Findings = append(res.Findings,
 			CheckExternal(httpc, st.extRefs, cfg.External.EffectiveParallel())...)
+	}
+	// Modul vcs (DC-FA-VCS-001): Post-Pass über den git-Diff der Range —
+	// arbeitet auf der git-Historie, nicht auf den gescannten Dateien. Ein
+	// Port-Fehler (fehlendes .git/Range) ist fail-closed (Exit 2).
+	if active["vcs"] {
+		vf, verr := CheckVCS(vcs, cfg.VCS, vcsBase, vcsHead)
+		if verr != nil {
+			return res, verr
+		}
+		res.Findings = append(res.Findings, vf...)
 	}
 	res.Findings = model.SortFindings(res.Findings)
 	return res, nil

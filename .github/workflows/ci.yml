@@ -43,8 +43,10 @@ jobs:
           # Volle Historie fuer den Commit-Range des Traceability-Gates.
           fetch-depth: 0
 
-      # Commit-Range-Gates ZUERST (billig, fail-fast vor dem teuren Docker-Build):
-      # Traceability (DC-/ADR-/slice-ID) + ADR-Immutable (Accepted-ADRs).
+      # Commit-Range-Gates: Traceability (DC-/ADR-/slice-ID) ist billig (bash) und
+      # laeuft fail-fast zuerst. ADR-Immutable laeuft seit ADR-0024 ueber das Modul
+      # vcs (Image) statt eines Skripts und baut dafuer das Runtime-Image — das
+      # `make ci` darunter per Docker-Cache wiederverwendet (kein Doppel-Build).
       - name: Traceability + ADR-Immutable (Commit-Range)
         env:
           EVENT: ${{ github.event_name }}

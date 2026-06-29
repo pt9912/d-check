@@ -87,6 +87,19 @@ type rawImmutable struct {
 	ExcludeSections []string  `yaml:"exclude-sections"`
 }
 
+// rawVCS trägt scope und die Parameter des Moduls vcs (DC-FA-VCS-001):
+// paths (Glob-Klasse der geschützten Dateien), immutable-when (Pflicht-Regex
+// der BASE-Immutabilität), exclude-sections, status-line (Kopf-Status-Zeile)
+// und head-allow (erlaubter Status-Übergang).
+type rawVCS struct {
+	Scope           *rawScope `yaml:"scope"`
+	Paths           []string  `yaml:"paths"`
+	ImmutableWhen   string    `yaml:"immutable-when"`
+	ExcludeSections []string  `yaml:"exclude-sections"`
+	StatusLine      string    `yaml:"status-line"`
+	HeadAllow       string    `yaml:"head-allow"`
+}
+
 type rawMatrix struct {
 	Scope   *rawScope `yaml:"scope"`
 	Classes []struct {
@@ -143,6 +156,7 @@ type raw struct {
 	Diagrams  *rawDiagrams  `yaml:"diagrams"`
 	Versions  *rawVersions  `yaml:"versions"`
 	Immutable *rawImmutable `yaml:"immutable"`
+	Vcs       *rawVCS       `yaml:"vcs"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -189,10 +203,58 @@ func Decode(content []byte) (model.Config, error) {
 		return cfg, err
 	}
 	applyImmutable(r, &cfg)
+	if err := applyVCS(r, &cfg); err != nil {
+		return cfg, err
+	}
 	if err := applyScopes(r, &cfg); err != nil {
 		return cfg, err
 	}
 	return cfg, nil
+}
+
+// compileVCSRegex kompiliert ein vcs-Regex (DC-FA-VCS-001). required ⇒ ein
+// leeres Muster ist ein Konfigurationsfehler; sonst ⇒ leer ergibt nil (Prüfung
+// aus). Ein nicht kompilierbares Muster ist immer ein Fehler (Exit 2).
+func compileVCSRegex(field, pattern string, required bool) (*regexp.Regexp, error) {
+	if strings.TrimSpace(pattern) == "" {
+		if required {
+			return nil, fmt.Errorf("%s: %s fehlt", FileName, field)
+		}
+		return nil, nil
+	}
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %s: %v", FileName, field, err)
+	}
+	return re, nil
+}
+
+// applyVCS validiert und kompiliert die Parameter des Moduls vcs
+// (DC-FA-VCS-001): immutable-when ist Pflicht, status-line/head-allow sind
+// optional; alle müssen kompilieren. Ohne paths ist das Modul inert
+// (byte-identisch zum Lauf ohne das Modul, DC-QA-02) — paths ist nicht Pflicht.
+func applyVCS(r *raw, cfg *model.Config) error {
+	if r.Vcs == nil {
+		return nil
+	}
+	v := r.Vcs
+	when, err := compileVCSRegex("vcs.immutable-when", v.ImmutableWhen, true)
+	if err != nil {
+		return err
+	}
+	statusLine, err := compileVCSRegex("vcs.status-line", v.StatusLine, false)
+	if err != nil {
+		return err
+	}
+	headAllow, err := compileVCSRegex("vcs.head-allow", v.HeadAllow, false)
+	if err != nil {
+		return err
+	}
+	cfg.VCS = model.VCSConfig{
+		Paths: v.Paths, ImmutableWhen: when, ExcludeSections: v.ExcludeSections,
+		StatusLine: statusLine, HeadAllow: headAllow,
+	}
+	return nil
 }
 
 // applyCodepaths validiert die codepaths-Präfixe (DC-FA-CODE-001).
@@ -313,6 +375,7 @@ func applyScopes(r *raw, cfg *model.Config) error {
 		{"versions", scopeOfVersions(r.Versions)},
 		{"pins", scopeOf(r.Pins)},
 		{"immutable", scopeOfImmutable(r.Immutable)},
+		{"vcs", scopeOfVcs(r.Vcs)},
 	}
 	for _, sc := range scopes {
 		if sc.scope == nil {
@@ -391,6 +454,13 @@ func scopeOfVersions(v *rawVersions) *rawScope {
 }
 
 func scopeOfImmutable(v *rawImmutable) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
+}
+
+func scopeOfVcs(v *rawVCS) *rawScope {
 	if v == nil {
 		return nil
 	}

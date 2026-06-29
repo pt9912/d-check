@@ -19,6 +19,7 @@ import (
 
 	configyaml "github.com/pt9912/d-check/internal/adapter/driven/configyaml"
 	fsadapter "github.com/pt9912/d-check/internal/adapter/driven/fs"
+	gitadapter "github.com/pt9912/d-check/internal/adapter/driven/git"
 	"github.com/pt9912/d-check/internal/adapter/driven/httpcheck"
 	"github.com/pt9912/d-check/internal/adapter/driven/report"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
@@ -57,6 +58,8 @@ type options struct {
 	suggestConfig   string
 	idPrefix        string
 	requireComplete bool
+	vcsRange        string
+	vcsStaged       bool
 }
 
 // reorderArgs erlaubt Optionen auch NACH dem Pfad-Argument — nötig
@@ -70,6 +73,7 @@ func reorderArgs(args []string) ([]string, error) {
 		"-disable": true, "--disable": true,
 		"-suggest-config": true, "--suggest-config": true,
 		"-id-prefix": true, "--id-prefix": true,
+		"-range": true, "--range": true,
 	}
 	var flagArgs, positionals []string
 	for i := 0; i < len(args); i++ {
@@ -136,6 +140,8 @@ func comboError(o options) string {
 		return "--trace ist nicht mit --doctor/--repair kombinierbar"
 	case o.requireComplete && !o.trace:
 		return "--require-complete erfordert --trace"
+	case o.vcsStaged && o.vcsRange != "":
+		return "--range und --staged sind nicht kombinierbar"
 	}
 	return ""
 }
@@ -200,6 +206,8 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	printConfig := flags.Bool("print-config", false, "Konfigurations-Startgerüst auf stdout ausgeben und beenden")
 	printMK := flags.Bool("print-mk", false, "include-bares d-check.mk (doc-check/doc-trace/doc-complete-Targets, gepinntes Image) auf stdout ausgeben und beenden")
 	requireComplete := flags.Bool("require-complete", false, "mit --trace: ≥1 Requirements-Waise ⇒ Exit 1 statt 0 (opt-in Vollständigkeits-Gate); ohne --trace Nutzungsfehler")
+	vcsRange := flags.String("range", "", "Modul vcs: git-Commit-Range <base>..<head> für die git-Diff-Immutabilität (DC-FA-VCS-001; fail-closed ohne .git)")
+	vcsStaged := flags.Bool("staged", false, "Modul vcs: staged-Diff (lokaler pre-commit) statt --range")
 	suggestConfig := flags.String("suggest-config", "", "Config aus Autoritäts-Quellen (kommagetrennt) vorschlagen und beenden")
 	idPrefix := flags.String("id-prefix", "", "Kennungs-Präfix für --suggest-config ai-harness[-init] (z. B. AC); ohne Angabe Platzhalter <PREFIX>")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
@@ -226,7 +234,8 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	opts := options{root: ".", json: *jsonOut, yaml: *yamlOut, doctor: *doctorOut,
 		repair: *repairOut || *repairBroadOut, repairBroad: *repairBroadOut,
 		enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig,
-		idPrefix: *idPrefix, trace: *traceOut, printMK: *printMK, requireComplete: *requireComplete}
+		idPrefix: *idPrefix, trace: *traceOut, printMK: *printMK, requireComplete: *requireComplete,
+		vcsRange: *vcsRange, vcsStaged: *vcsStaged}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}
@@ -390,17 +399,84 @@ func Run(args []string, stdout, stderr io.Writer) int {
 	// das Modul external aktiv ist — ohne Aktivierung existiert
 	// strukturell keine Netzwerk-Tür (DC-QA-03; der Kern behandelt
 	// nil als No-op).
-	var checker driven.HTTPChecker
-	for _, m := range modules {
-		if m == "external" {
-			checker = httpcheck.New(time.Duration(cfg.External.EffectiveTimeoutSeconds()) * time.Second)
-			break
-		}
+	checker := httpChecker(modules, cfg)
+	// Der VCS-/git-Adapter wird analog nur verdrahtet, wenn das Modul vcs
+	// aktiv ist — ohne Aktivierung existiert strukturell keine git-Tür
+	// (DC-FA-VCS-001; fail-closed ohne .git/Range → Exit 2).
+	vcsPort, vcsBase, vcsHead, code := resolveVCS(opts, modules, stderr)
+	if code != 0 {
+		return code
 	}
-	res, err := rules.Run(fsys, checker, cfg, modules)
+	res, err := rules.RunWithVCS(fsys, checker, vcsPort, vcsBase, vcsHead, cfg, modules)
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return 2
 	}
 	return render(res, opts, cfg, fsys, stdout, stderr)
+}
+
+// httpChecker verdrahtet den HTTP-Adapter nur, wenn das Modul external aktiv
+// ist (DC-QA-03: ohne Aktivierung keine Netzwerk-Tür; nil ist im Kern No-op).
+func httpChecker(modules []string, cfg model.Config) driven.HTTPChecker {
+	for _, m := range modules {
+		if m == "external" {
+			return httpcheck.New(time.Duration(cfg.External.EffectiveTimeoutSeconds()) * time.Second)
+		}
+	}
+	return nil
+}
+
+// vcsActive prüft, ob das Modul vcs im effektiven Modulsatz ist.
+func vcsActive(modules []string) bool {
+	for _, m := range modules {
+		if m == "vcs" {
+			return true
+		}
+	}
+	return false
+}
+
+// vcsRefs leitet base/head aus --range/--staged ab (DC-FA-VCS-001.a Schritt 1);
+// msg != "" ist ein fail-closed Nutzungsfehler (Exit 2). --staged: BASE=HEAD,
+// HEAD=staged Index. --range: <base>..<head> mit Pflicht-Separator und nicht
+// leeren Seiten.
+func vcsRefs(opts options) (base, head, msg string) {
+	switch {
+	case opts.vcsStaged:
+		return "HEAD", driven.IndexRef, ""
+	case opts.vcsRange != "":
+		b, h, ok := strings.Cut(opts.vcsRange, "..")
+		if !ok || b == "" || h == "" {
+			return "", "", "--range braucht <base>..<head>"
+		}
+		return b, h, ""
+	default:
+		return "", "", "Modul vcs braucht --range <base>..<head> oder --staged"
+	}
+}
+
+// resolveVCS verdrahtet den VCS-/git-Adapter und löst die Range auf, wenn das
+// Modul vcs aktiv ist (DC-FA-VCS-001). code: 0 = ok (Port nil, falls vcs
+// inaktiv), 2 = fail-closed (Nutzungs-/git-Fehler, bereits auf stderr gemeldet —
+// fehlende/kaputte Range oder fehlendes/unlesbares .git).
+func resolveVCS(opts options, modules []string, stderr io.Writer) (driven.VCS, string, string, int) {
+	if !vcsActive(modules) {
+		return nil, "", "", 0
+	}
+	base, head, msg := vcsRefs(opts)
+	if msg != "" {
+		fmt.Fprintln(stderr, "d-check: error: "+msg)
+		return nil, "", "", 2
+	}
+	absRoot, err := filepath.Abs(opts.root)
+	if err != nil {
+		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+		return nil, "", "", 2
+	}
+	adapter, err := gitadapter.Open(absRoot)
+	if err != nil {
+		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+		return nil, "", "", 2
+	}
+	return adapter, base, head, 0
 }
