@@ -1,6 +1,6 @@
 # ADR-0027 — Traceability-Kennung in Commit-Messages: das Modul `commits` mechanisiert `trace-check.sh` über den VCS-Port und löst dessen Skript-Mechanik von ADR-0013 ab
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-01
 **Autor:** pt9912
 **Bezug:** [`DC-FA-COMMITS-001`](../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)
@@ -196,3 +196,4 @@ auf Datei-Immutabilität; beide teilen den VCS-Port, aber nicht die Regel.
 | Datum | Ereignis |
 | --- | --- |
 | 2026-07-01 | Entwurf (slice-056, Auftraggeber-Audit „welche `tools/*.sh` noch in d-check mechanisieren?" — letztes Familien-Skript): opt-in Modul `commits` mechanisiert `tools/trace-check.sh` über den [ADR-0024](0024-vcs-immutable-gate.md)-VCS-Port (`CommitMessages`), `make trace-check`/`commit-msg`-Hook/PR-CI dogfood-umgestellt, Skript per `git rm` entfernt + als `codepaths.ignore-refs`-Tombstone deklariert. **Supersedes** die Skript-Mechanik von [ADR-0013](0013-pr-ci-und-traceability-gate.md) (Policy/Bindepunkt/CI-Topologie unverändert). Modulname `commits` statt `trace` (Kollision mit `--trace`/RTM). Produkt-Code geändert → Release v0.35.0. Status Proposed. |
+| 2026-07-01 | Angenommen mit der slice-056-Closure: Modul `commits` + Port-Erweiterung `CommitMessages` + go-git-Adapter implementiert/getestet, `make trace-check`/`commit-msg`-Hook dogfood-umgestellt (der Dogfood bewies sich an den slice-056-Commits selbst), `tools/trace-check.sh` per `git rm` entfernt + Tombstone; `--print-mk doc-commits` verteilt die Range-Prüfung (`DC-FA-CLI-010` 7→8). Drei unabhängige Reviews (R1 doc 1M/2L + R2 code 1M/1L/3I + R3 verifikation VERIFIED, Mutations-Beleg — alle Befunde behoben; keine Paritäts-Divergenz zum abgelösten Skript), `make ci`/`fullbuild` grün, Release v0.35.0. Status Accepted. |

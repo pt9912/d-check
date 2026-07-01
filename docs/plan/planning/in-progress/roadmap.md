@@ -10,17 +10,21 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-45-commits-modul** — [`slice-056`](slice-056-commits-modul.md) in `in-progress/`:
+**Keine aktive Welle** — kein Slice in `in-progress/` (Backlog welle-46 offen). Zuletzt
+abgeschlossen: welle-45-commits-modul ([`slice-056`](../done/slice-056-commits-modul.md) —
 neues opt-in Modul `commits` (14.) mechanisiert `tools/trace-check.sh` über den VCS-Port
 (erweitert um Commit-Message-Lesen, `CommitMessages`), prüft die Traceability-Kennung jeder
 Commit-Message (`commit-untraceable`) und ist der **Dogfood-Ersatz** des `make trace-check`-Gates;
 Skript entfernt (dritter `codepaths.ignore-refs`-Tombstone). Modulname `commits` statt `trace`
-(Kollision mit `--trace`/RTM). [ADR-0027](../../adr/0027-commits-traceability-modul.md) (Proposed;
-Supersedes die Skript-Mechanik von [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md),
-Policy/Bindepunkt bleiben),
+(Kollision mit `--trace`/RTM). [ADR-0027](../../adr/0027-commits-traceability-modul.md) `Supersedes`
+die Skript-Mechanik von [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md)
+(Policy/Bindepunkt/CI-Topologie bleiben),
 [`DC-FA-COMMITS-001`](../../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)
-(Lastenheft 0.35.0). Zuletzt
-abgeschlossen: welle-44-completeness-rückbau ([`slice-055`](../done/slice-055-completeness-rueckbau.md) —
+(Lastenheft 0.35.0); drei unabhängige Reviews (R1 doc + R2 code + R3 verifikation, **VERIFIED**,
+Mutations-Beleg — alle Befunde behoben, keine Paritäts-Divergenz zum abgelösten Skript),
+`make ci`/`fullbuild` grün; Release **v0.35.0** auf GHCR
+([Closure](../done/slice-056-commits-modul.md#7-closure-notiz-nach-done)). Davor
+welle-44-completeness-rückbau ([`slice-055`](../done/slice-055-completeness-rueckbau.md) —
 `make completeness-check` dogfoodet den in-Produkt-Flag `--trace --require-complete`
 ([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code))
 statt `tools/completeness-check.sh`; das Skript ist **entfernt** (zweiter
@@ -204,8 +208,8 @@ Refactor noch in keinem Release.
 | welle-46-planning-modul | gleicher Audit: `tools/planning-consistency.sh` (Roadmap-§Aktuelle-Welle-Marker ⟺ Präsenz von `in-progress/slice-*`) ist hermetische Markdown-↔-Dateisystem-Konsistenz — d-check-fit (Existenz-Prüfung wie `codepaths`), bleibt **ohne git** | Opt-in `planning`-Modul (neue Anforderung + ADR); bewusst nachrangig — die „Keine aktive Welle"-Konvention ist harness-layout-spezifisch, kleinerer Verteilungswert | **mittel** |
 
 Backlog aus dem Auftraggeber-Audit (2026-06-29). Reihenfolge nach Hebel: completeness
-(slice-055) und trace (welle-45-commits-modul, slice-056 — ADR-getrieben) umgesetzt bzw.
-aktiv; planning nachrangig. Bewusst
+(slice-055) und trace (welle-45-commits-modul, slice-056 — ADR-getrieben) umgesetzt;
+planning nachrangig. Bewusst
 **nicht** d-check-fähig und daher nicht hier: `arch-check` (Go-Importe → Schwester-Projekt
 a-check), `coverage-gate`/`semgrep` (Go-Build/SAST), `image-test` (testet das Image selbst),
 `bench-fixture` (Fixture-Generator), `gate-consistency` (spannt Markdown ↔ Makefile ↔ YAML),
