@@ -184,7 +184,8 @@ jeder Closure-Commit dieses Slices lief durch das neue `commits`-Modul (commit-m
   (on-disk go-git: Range-Ausschluss/Merge-Filter/fail-closed), `cli/cli_commits_test.go` (E2E
   Range + `--commit-msg` Datei/stdin + fail-closed), `configyaml_test.go` (Guard-Negativtests,
   mutations-verifiziert), `print_mk`-Test (`doc-commits`).
-- Release **v0.35.0** auf GHCR (Digest-Pin folgt via digest-backfill).
+- Release **v0.35.0** auf GHCR (Pipeline-Run 28503194677 grün), Digest-Pin
+  `ghcr.io/pt9912/d-check@sha256:9d7b23ac82b94a97bc98e36b748e48644dff7adc6702cb608f13402d309e6558`.
 
 **Lerneintrag.** Das **letzte** Familien-Skript (`trace-check.sh`) ist mechanisiert — der
 VCS-Port (slice-053) trägt jetzt zwei Modi: Datei-Inhalt für `vcs`, Commit-Messages für

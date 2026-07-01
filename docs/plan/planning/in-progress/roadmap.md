@@ -22,7 +22,8 @@ die Skript-Mechanik von [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md
 [`DC-FA-COMMITS-001`](../../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)
 (Lastenheft 0.35.0); drei unabhängige Reviews (R1 doc + R2 code + R3 verifikation, **VERIFIED**,
 Mutations-Beleg — alle Befunde behoben, keine Paritäts-Divergenz zum abgelösten Skript),
-`make ci`/`fullbuild` grün; Release **v0.35.0** auf GHCR
+`make ci`/`fullbuild` grün; Release **v0.35.0** auf GHCR (Pipeline-Run 28503194677 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:9d7b23ac82b94a97bc98e36b748e48644dff7adc6702cb608f13402d309e6558`
 ([Closure](../done/slice-056-commits-modul.md#7-closure-notiz-nach-done)). Davor
 welle-44-completeness-rückbau ([`slice-055`](../done/slice-055-completeness-rueckbau.md) —
 `make completeness-check` dogfoodet den in-Produkt-Flag `--trace --require-complete`
