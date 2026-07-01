@@ -101,6 +101,15 @@ type rawVCS struct {
 	HeadAllow       string    `yaml:"head-allow"`
 }
 
+// rawCommits trägt scope und die Parameter des Moduls commits
+// (DC-FA-COMMITS-001): id-patterns (Regex-Liste gültiger Traceability-Kennungen,
+// leer ⇒ inert) und exempt-pattern (Betreff-Ausnahme, z. B. `^(Merge |Revert )`).
+type rawCommits struct {
+	Scope         *rawScope `yaml:"scope"`
+	IDPatterns    []string  `yaml:"id-patterns"`
+	ExemptPattern string    `yaml:"exempt-pattern"`
+}
+
 type rawMatrix struct {
 	Scope   *rawScope `yaml:"scope"`
 	Classes []struct {
@@ -158,6 +167,7 @@ type raw struct {
 	Versions  *rawVersions  `yaml:"versions"`
 	Immutable *rawImmutable `yaml:"immutable"`
 	Vcs       *rawVCS       `yaml:"vcs"`
+	Commits   *rawCommits   `yaml:"commits"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -207,16 +217,20 @@ func Decode(content []byte) (model.Config, error) {
 	if err := applyVCS(r, &cfg); err != nil {
 		return cfg, err
 	}
+	if err := applyCommits(r, &cfg); err != nil {
+		return cfg, err
+	}
 	if err := applyScopes(r, &cfg); err != nil {
 		return cfg, err
 	}
 	return cfg, nil
 }
 
-// compileVCSRegex kompiliert ein vcs-Regex (DC-FA-VCS-001). required ⇒ ein
-// leeres Muster ist ein Konfigurationsfehler; sonst ⇒ leer ergibt nil (Prüfung
-// aus). Ein nicht kompilierbares Muster ist immer ein Fehler (Exit 2).
-func compileVCSRegex(field, pattern string, required bool) (*regexp.Regexp, error) {
+// compileConfigRegex kompiliert ein Zeilen-Regex einer Modul-Konfiguration
+// (vcs, commits). required ⇒ ein leeres Muster ist ein Konfigurationsfehler;
+// sonst ⇒ leer ergibt nil (Prüfung aus). Ein nicht kompilierbares Muster ist
+// immer ein Fehler (Exit 2).
+func compileConfigRegex(field, pattern string, required bool) (*regexp.Regexp, error) {
 	if strings.TrimSpace(pattern) == "" {
 		if required {
 			return nil, fmt.Errorf("%s: %s fehlt", FileName, field)
@@ -239,15 +253,15 @@ func applyVCS(r *raw, cfg *model.Config) error {
 		return nil
 	}
 	v := r.Vcs
-	when, err := compileVCSRegex("vcs.immutable-when", v.ImmutableWhen, true)
+	when, err := compileConfigRegex("vcs.immutable-when", v.ImmutableWhen, true)
 	if err != nil {
 		return err
 	}
-	statusLine, err := compileVCSRegex("vcs.status-line", v.StatusLine, false)
+	statusLine, err := compileConfigRegex("vcs.status-line", v.StatusLine, false)
 	if err != nil {
 		return err
 	}
-	headAllow, err := compileVCSRegex("vcs.head-allow", v.HeadAllow, false)
+	headAllow, err := compileConfigRegex("vcs.head-allow", v.HeadAllow, false)
 	if err != nil {
 		return err
 	}
@@ -255,6 +269,38 @@ func applyVCS(r *raw, cfg *model.Config) error {
 		Paths: v.Paths, ImmutableWhen: when, ExcludeSections: v.ExcludeSections,
 		StatusLine: statusLine, HeadAllow: headAllow,
 	}
+	return nil
+}
+
+// applyCommits validiert und kompiliert die Parameter des Moduls commits
+// (DC-FA-COMMITS-001): jedes id-patterns-Muster muss kompilieren und darf den
+// Leerstring nicht matchen (sonst gälte jede Message als getraced — Silent-Grün,
+// Exit 2); exempt-pattern ist optional. Ohne id-patterns ist das Modul inert
+// (byte-identisch zum Lauf ohne das Modul, DC-QA-02) — id-patterns ist nicht Pflicht.
+func applyCommits(r *raw, cfg *model.Config) error {
+	if r.Commits == nil {
+		return nil
+	}
+	c := r.Commits
+	var pats []*regexp.Regexp
+	for i, p := range c.IDPatterns {
+		if strings.TrimSpace(p) == "" {
+			return fmt.Errorf("%s: commits.id-patterns[%d] ist leer", FileName, i)
+		}
+		re, err := regexp.Compile(p)
+		if err != nil {
+			return fmt.Errorf("%s: commits.id-patterns[%d]: %v", FileName, i, err)
+		}
+		if re.MatchString("") {
+			return fmt.Errorf("%s: commits.id-patterns[%d] matcht den Leerstring", FileName, i)
+		}
+		pats = append(pats, re)
+	}
+	exempt, err := compileConfigRegex("commits.exempt-pattern", c.ExemptPattern, false)
+	if err != nil {
+		return err
+	}
+	cfg.Commits = model.CommitsConfig{IDPatterns: pats, ExemptPattern: exempt}
 	return nil
 }
 
@@ -381,6 +427,7 @@ func applyScopes(r *raw, cfg *model.Config) error {
 		{"pins", scopeOf(r.Pins)},
 		{"immutable", scopeOfImmutable(r.Immutable)},
 		{"vcs", scopeOfVcs(r.Vcs)},
+		{"commits", scopeOfCommits(r.Commits)},
 	}
 	for _, sc := range scopes {
 		if sc.scope == nil {
@@ -466,6 +513,13 @@ func scopeOfImmutable(v *rawImmutable) *rawScope {
 }
 
 func scopeOfVcs(v *rawVCS) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
+}
+
+func scopeOfCommits(v *rawCommits) *rawScope {
 	if v == nil {
 		return nil
 	}

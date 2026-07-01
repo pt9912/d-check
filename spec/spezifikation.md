@@ -332,7 +332,7 @@ eingebetteten Version):
    `@sha256:`-Digest) leitet `DCHECK_REF` auf `…/d-check@$(DCHECK_DIGEST)` um und
    **sticht** so den Tag von `DCHECK_IMAGE`; sonst `DCHECK_REF := $(DCHECK_IMAGE)`.
 4. `TRACE_FLAGS ?=` — überschreibbare Flag-Variable für die RTM-Targets.
-5. Sieben `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
+5. Acht `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
    Konsumenten aufgreift) und **TAB**-eingerücktem
    `docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) …`:
    - `doc-check` (Befund-Gate, ohne Zusatz-Flag),
@@ -354,6 +354,13 @@ eingebetteten Version):
      dupliziert, damit das Target nur `vcs` läuft (sonst über-feuerten die
      Doc-Module des Konsumenten auf Nicht-ADR-Befunde). Die **verteilte** git-Form
      der Immutabilität — kein kopiertes Skript (der Antrieb hinter dem Modul `vcs`),
+   - `doc-commits` (`--enable commits` + auf `commits` fokussierte `--disable`-Liste,
+     [`DC-FA-COMMITS-001`](lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in));
+     `--range $(RANGE)` — der Konsument liefert die Range aus seinem CI. Die
+     `--disable`-Liste wird analog zu `doc-immutable` aus dem Modulsatz
+     (`ValidModules` ohne `commits`) **abgeleitet**, damit das Target nur `commits`
+     läuft. Die **verteilte** Commit-Traceability — kein kopiertes Skript (der
+     Antrieb hinter dem Modul `commits`, dieselbe Linie wie `doc-immutable`),
    - `doc-help` (listet die `doc-*`-Targets via `grep … $(MAKEFILE_LIST) | sed`
      über die `##`-Annotationen; **namespaced** statt `help`, um die
      Namens-Kollision mit dem Konsumenten-Makefile zu vermeiden).
@@ -1015,6 +1022,62 @@ abdeckt:
    **Eingabe-Scope** ist um `.git` + Range erweitert (darum strikt opt-in und
    fail-closed ohne `.git`). Ohne `vcs` ist der Befundsatz byte-identisch.
 
+### DC-FA-COMMITS-001.a — Traceability-Kennung in Commit-Messages über eine Commit-Range (`commits`)
+
+Das Modul `commits`
+([`DC-FA-COMMITS-001`](lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in))
+ist opt-in und prüft, dass jede geprüfte Commit-Message eine Traceability-Kennung
+trägt. Es liest die Commit-**Messages** über **denselben VCS-Port** wie
+[§DC-FA-VCS-001.a](#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
+(reine-Go-git, **ohne** git-Binary, **ohne** Netz), erweitert um eine
+Message-Lese-Operation. Es ist die Portierung des abgelösten Traceability-Skripts:
+
+1. **Quelle/Modus (vom CLI geliefert).**
+   - `--range <base>..<head>`: **dieselbe** Range-Semantik wie `vcs`
+     ([§DC-FA-VCS-001.a](#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
+     Schritt 1) — der `..`-Separator ist Pflicht (ohne ihn `base == head`, still
+     grün ⇒ **fail-closed** Exit 2), leere/nicht auflösbare Basis ⇒ Exit 2, fehlendes
+     oder unlesbares `.git` ⇒ Exit 2. Der Port liefert die **Nicht-Merge**-Commit-
+     Messages der Range (`git rev-list --no-merges`-Parität) in deterministischer
+     Reihenfolge (nach Commit-SHA; die Befunde sortiert der Kern ohnehin,
+     [`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
+     Eine **gültige** Range mit 0 Commits ist kein Fehler (nichts zu prüfen ⇒ Exit 0,
+     wie `vcs` ohne geänderte Datei).
+   - `--commit-msg <datei>`: **Kurzschluss-Modus** (wie `--print-config`/`--trace`;
+     nach dem Optionen-Parsing, **ohne** Repo-Scan und **ohne** VCS-Port) — liest
+     **eine** Message aus der Datei (`-` = stdin) und prüft nur sie. Nicht lesbare
+     Datei/stdin ⇒ Exit 2. Bei leeren `commits.id-patterns` ist nichts zu prüfen ⇒
+     **fail-closed** Exit 2 (Misskonfiguration, kein stilles Grün). Dieser Modus
+     dient dem lokalen `commit-msg`-Hook (die Pending-Message existiert noch nicht
+     als Commit, ist also über keine Range erreichbar).
+2. **Message-Bereinigung.** Jede Message wird **uniform** wie git-`strip` bereinigt:
+   alles ab der ersten scissors-Zeile (`^#.*>8`, verbose-Diff) entfällt, danach alle
+   `#`-Kommentarzeilen (Annahme `core.commentChar='#'`, Default). Range- und
+   Message-Quelle wenden **dieselbe** Bereinigung an — gleiche Bewertung, keine
+   Divergenz je git-Cleanup-Modus (`-m`=whitespace behält `#`, Editor=strip entfernt
+   `#`); eine Kennung muss auf einer **Inhalts**-Zeile stehen, nicht in einem
+   Kommentar.
+3. **Ausnahme.** Trägt der **Betreff** (erste Zeile der bereinigten Message) einen
+   Match auf `commits.exempt-pattern` (Zeilen-Regex), ist die Message frei
+   (Selbstkonfiguration `^(Merge |Revert )` — Merge-/Revert-Commits). Leeres
+   `exempt-pattern` ⇒ keine Ausnahme. (Merge-Commits sind zudem schon aus der
+   Range-Aufzählung ausgenommen; die Betreff-Ausnahme deckt Revert und den
+   Message-Modus.)
+4. **Kennungs-Prüfung.** Die bereinigte Message muss auf **irgendeiner** Zeile
+   mindestens ein `commits.id-patterns`-Muster matchen (ODER über alle Regexe). Kein
+   Match ⇒ Grund-Code `commit-untraceable`. Befund: `file` = `target` =
+   Commit-Kurz-SHA (Range) bzw. `pending` (Message-Modus) — der „Ort" ist der Commit
+   (parallel zu `vcs`, wo `file` == `target`), `line` = 1, `message` = der Betreff.
+   **Diagnose-only**: kein `--repair`-Hunk (die Korrektur ist ein neuer Commit / ein
+   menschliches `--amend`).
+5. **Determinismus/Read-only.** Identische Historie + identische Range ⇒ identischer,
+   stabil sortierter Befundsatz
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)); der Port liest `.git` **nur
+   lesend**, netzlos, ohne Schreiben ins Repository
+   ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+   Der Eingabe-Scope ist um `.git` + Range (bzw. die Message-Datei) erweitert — darum
+   strikt opt-in und fail-closed. Ohne `commits` ist der Befundsatz byte-identisch.
+
 ## 2. Datenstrukturen und Schemas
 
 ### Befund
@@ -1205,6 +1268,8 @@ Exit 2 ohne Prüfung
 | `vcs.exclude-sections` | string[] | leer | wie `immutable.exclude-sections` — Heading-Titel, deren Abschnitte nicht zum Core zählen (für ADRs `[Geschichte]`) |
 | `vcs.status-line` | string | leer | Zeilen-Regex der **Kopf**-Status-Zeile; ihr erstes Vorkommen **vor** der ersten `## `-H2 wird aus dem Core entfernt (eine gleichlautende Körper-Zeile bleibt); leer ⇒ keine Status-Zeile gestrippt |
 | `vcs.head-allow` | string | leer | Zeilen-Regex; die HEAD-Status-Zeile (erstes Vorkommen) muss matchen, sonst `core-drift-vcs` (unzulässiger Status-Übergang); leer ⇒ keine Status-Übergangs-Prüfung |
+| `commits.id-patterns` | string[] | leer | Regex-Liste der gültigen Traceability-Kennungen; eine bereinigte Message ohne Match auf **irgendein** Muster ⇒ `commit-untraceable`; jedes Muster muss kompilieren (sonst Exit 2); leer ⇒ Modul inert (Range-Modus) bzw. Exit 2 (Message-Modus, nichts zu prüfen) ([`DC-FA-COMMITS-001`](lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)) |
+| `commits.exempt-pattern` | string | leer | Zeilen-Regex gegen den **Betreff** (erste Zeile); Match ⇒ Message kennungs-frei erlaubt (Selbstkonfig `^(Merge \|Revert )`); muss kompilieren (sonst Exit 2); leer ⇒ keine Ausnahme |
 
 **Glob-Auswertung.** Alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`,
 `matrix.classes[].paths`/`.order`, die `*.exempt-paths`) werden **segmentweise
@@ -1251,6 +1316,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `link-stale` | pins | normalisierter Ziel-Span eines gepinnten Links weicht vom hinterlegten `dpin`-Hash ab |
 | `core-drift` | immutable | normalisierter Core einer gepinnten Datei (ohne Marker-Zeile + `exclude-sections`) weicht vom hinterlegten `immutable`-Hash ab |
 | `core-drift-vcs` | vcs | Core einer immutablen Datei (BASE erfüllt `vcs.immutable-when`) hat sich über die Commit-Range geändert, ihr Status-Übergang ist unzulässig (`vcs.head-allow`), oder die immutable Datei wurde gelöscht/umbenannt |
+| `commit-untraceable` | commits | bereinigte Commit-Message trägt keine Kennung nach `commits.id-patterns` und ist nicht per `commits.exempt-pattern` (Betreff) ausgenommen |
 
 Nutzungs-/Umgebungsfehler (Exit 2) melden auf stderr mit Präfix
 `d-check: error:`; Konfigurationsfehler nennen Datei und Zeile.
@@ -1308,3 +1374,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-28 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 6 + §2-Schema (`matrix.classes[].token`, `matrix.exempt-paths`) + §4 (`matrix-forbidden` Token-Form) ergänzt: token-basierte Referenz-Richtung ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)) — `matrix` fängt verbotene Referenzen auch als bare ID-Token im Prosa-Körper (außer Links/Fences/`exclude-sections`); Provenance-Marker `<!-- d-check:status-provenance -->` auf der rohen Zeile nimmt aus; `exempt-paths` grandfathered ganze Dateien. Fail-closed (`token` kompiliert/Leerstring). Default-aus byte-identisch. Außerdem §[`DC-FA-SPAN-001.a`](lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in): Slice-Token aus dem Spec-Körper entfernt (Provenance gehört in die Historie) | slice-051 |
 | 2026-06-29 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) + §2-Schema (`vcs.paths`/`immutable-when`/`exclude-sections`/`status-line`/`head-allow`) + Grund-Code `core-drift-vcs` (§4) ergänzt: opt-in Modul `vcs` vergleicht `core(BASE)` vs. `core(HEAD)` über eine Commit-Range (`--range <base>..<head>` / `--staged`), liest das read-only `.git` über einen reine-Go-VCS-Port (ohne git-Binary, ohne Netz); erweiterter Eingabe-Scope (git + Range), aber lokal/lesend/deterministisch — Determinismus/Read-only gehalten; fail-closed ohne `.git`/Range, diagnose-only. Core-Semantik in Parität zum abgelösten `adr-immutable-check.sh` (nur Kopf-Status-Zeile gestrippt, `exclude-sections`-Abschnitte). Default-aus byte-identisch. Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (6→7 Targets): `--print-mk` trägt `doc-immutable` (`--enable vcs` + aus `ValidModules` abgeleitete Fokus-`--disable`-Liste, `RANGE`/`STAGED`) — verteilt die git-Garantie an Konsumenten | slice-053 |
 | 2026-06-29 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) + §2-Schema (`codepaths.ignore-refs`) ergänzt: Referenz-Ventil `ignore-refs` — ein aufgelöster Ziel-Pfad, der ein Glob matcht, wird nicht existenz-/anker-geprüft (**referenz-weit**, Tombstone-Register entfernter Artefakte); dritte Ventil-Achse neben dem zeilenweisen `d-check:ignore` und dem datei-weiten `exempt-paths`, in Schritt 5 vor `codepath-missing`, ohne Eintrag byte-identisch. Anlass: Frozen-Doc-Refactoring-Falle (immutable ADRs zitieren entfernte Pfade) — zugleich das in slice-053 behaltene `adr-immutable-check.sh` entfernt | slice-054 |
+| 2026-07-01 | §[`DC-FA-COMMITS-001.a`](spezifikation.md#dc-fa-commits-001a--traceability-kennung-in-commit-messages-über-eine-commit-range-commits) + §2-Schema (`commits.id-patterns`/`commits.exempt-pattern`) + Grund-Code `commit-untraceable` (§4) ergänzt: opt-in Modul `commits` prüft, dass jede Commit-Message eine Kennung nach `commits.id-patterns` trägt (`commit-untraceable`), über **denselben VCS-Port** wie `vcs` (reine-Go-git, ohne git-Binary, ohne Netz), erweitert um Message-Lesen; zwei Quellen: `--range <base>..<head>` (Nicht-Merge-Commits, `--no-merges`-Parität) und `--commit-msg <datei\|->` (Kurzschluss-Modus für den commit-msg-Hook, einzelne Pending-Message). Uniforme `#`-/scissors-Bereinigung (Kennung auf Inhalts-Zeile), Betreff-Ausnahme `commits.exempt-pattern`; fail-closed ohne `.git`/Range/Message-Datei, diagnose-only. Default-aus byte-identisch. Portierung des abgelösten `tools/trace-check.sh` (dieselbe VCS-Port-Präzedenz wie `vcs`, auf Commit-Messages statt Datei-Inhalt). Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (7→8 Targets): `--print-mk` trägt `doc-commits` (`--enable commits` + aus `ValidModules` abgeleitete Fokus-`--disable`-Liste, `--range`) — verteilt die Commit-Traceability an Konsumenten | slice-056 |

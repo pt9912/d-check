@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-29.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-01.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -10,7 +10,16 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle** — kein Slice in `in-progress/` (Backlog welle-45/46 offen). Zuletzt
+**welle-45-commits-modul** — [`slice-056`](slice-056-commits-modul.md) in `in-progress/`:
+neues opt-in Modul `commits` (14.) mechanisiert `tools/trace-check.sh` über den VCS-Port
+(erweitert um Commit-Message-Lesen, `CommitMessages`), prüft die Traceability-Kennung jeder
+Commit-Message (`commit-untraceable`) und ist der **Dogfood-Ersatz** des `make trace-check`-Gates;
+Skript entfernt (dritter `codepaths.ignore-refs`-Tombstone). Modulname `commits` statt `trace`
+(Kollision mit `--trace`/RTM). [ADR-0027](../../adr/0027-commits-traceability-modul.md) (Proposed;
+Supersedes die Skript-Mechanik von [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md),
+Policy/Bindepunkt bleiben),
+[`DC-FA-COMMITS-001`](../../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)
+(Lastenheft 0.35.0). Zuletzt
 abgeschlossen: welle-44-completeness-rückbau ([`slice-055`](../done/slice-055-completeness-rueckbau.md) —
 `make completeness-check` dogfoodet den in-Produkt-Flag `--trace --require-complete`
 ([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code))
@@ -192,11 +201,11 @@ Refactor noch in keinem Release.
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| welle-45-trace-modul | gleicher Audit: `tools/trace-check.sh` (Commit-Message-IDs über eine Range) ist git-Domäne; sein ID-Regex ist d-checks `ids`-Musterfamilie, und der VCS-Port (slice-053, [ADR-0024](../../adr/0024-vcs-immutable-gate.md)) macht es mechanisierbar — das „nächste `adr-check`" | Neues opt-in Modul `trace` (neue Anforderung + neue ADR; VCS-Port um Commit-Message-Lesen erweitern; Dogfood-Ersatz des `trace-check`-Gates) | **mittel–groß** (Port-Erweiterung + ADR; erweitert den nicht-hermetischen Eingabe-Scope wie [ADR-0024](../../adr/0024-vcs-immutable-gate.md)) |
 | welle-46-planning-modul | gleicher Audit: `tools/planning-consistency.sh` (Roadmap-§Aktuelle-Welle-Marker ⟺ Präsenz von `in-progress/slice-*`) ist hermetische Markdown-↔-Dateisystem-Konsistenz — d-check-fit (Existenz-Prüfung wie `codepaths`), bleibt **ohne git** | Opt-in `planning`-Modul (neue Anforderung + ADR); bewusst nachrangig — die „Keine aktive Welle"-Konvention ist harness-layout-spezifisch, kleinerer Verteilungswert | **mittel** |
 
 Backlog aus dem Auftraggeber-Audit (2026-06-29). Reihenfolge nach Hebel: completeness
-zuerst (Mechanik vorhanden), dann trace (ADR-getrieben), planning nachrangig. Bewusst
+(slice-055) und trace (welle-45-commits-modul, slice-056 — ADR-getrieben) umgesetzt bzw.
+aktiv; planning nachrangig. Bewusst
 **nicht** d-check-fähig und daher nicht hier: `arch-check` (Go-Importe → Schwester-Projekt
 a-check), `coverage-gate`/`semgrep` (Go-Build/SAST), `image-test` (testet das Image selbst),
 `bench-fixture` (Fixture-Generator), `gate-consistency` (spannt Markdown ↔ Makefile ↔ YAML),

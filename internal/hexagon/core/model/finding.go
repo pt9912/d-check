@@ -20,6 +20,7 @@ const (
 	ReasonLinkStale          = "link-stale"
 	ReasonCoreDrift          = "core-drift"
 	ReasonCoreDriftVCS       = "core-drift-vcs"
+	ReasonCommitUntraceable  = "commit-untraceable"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

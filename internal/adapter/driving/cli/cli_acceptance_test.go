@@ -834,9 +834,10 @@ func TestCLI005_KeinRepoZugriff(t *testing.T) {
 func TestCLI053_PrintConfig_VollesModulset(t *testing.T) {
 	_, stdout, _ := run(t, "--print-config")
 	for _, want := range []string{
-		"versions, pins, immutable, vcs, external", // vollständige Verfügbar-Liste
+		"versions, pins, immutable, vcs, commits, external", // vollständige Verfügbar-Liste
 		"# --- immutable:",
 		"# --- vcs:",
+		"# --- commits:",
 		"# --- pins:",
 		"immutable-when:", // der vcs-Config-Key, nach dem gefragt wurde
 	} {
@@ -1505,24 +1506,69 @@ func TestCLI047_PrintMK_NeueTargets(t *testing.T) {
 // das Target doc-immutable, das dem Konsumenten die git-Diff-Immutabilität (Modul
 // vcs, DC-FA-VCS-001) verteilt — nur vcs (alle übrigen Module via --disable
 // abgewählt, aus dem Modulsatz abgeleitet), RANGE/STAGED-getrieben.
+// mkTargetRecipe liefert die (einzelne) Recipe-Zeile des --print-mk-Fragments, die
+// marker enthält — nötig, seit mehrere Fokus-Targets (doc-immutable/doc-commits)
+// je eigene `--disable`-Listen tragen: eine Negativ-Prüfung („X nicht abgewählt")
+// muss auf DIE Recipe-Zeile schauen, nicht auf das ganze Fragment.
+func mkTargetRecipe(t *testing.T, stdout, marker string) string {
+	t.Helper()
+	for _, ln := range strings.Split(stdout, "\n") {
+		if strings.Contains(ln, marker) {
+			return ln
+		}
+	}
+	t.Fatalf("keine Recipe-Zeile mit %q:\n%s", marker, stdout)
+	return ""
+}
+
 func TestCLI053_PrintMK_ImmutableTarget(t *testing.T) {
 	code, stdout, stderr := run(t, "--print-mk")
 	if code != 0 {
 		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
 	}
+	if !strings.Contains(stdout, "\ndoc-immutable: ## ") {
+		t.Fatalf("d-check.mk ohne doc-immutable-Target:\n%s", stdout)
+	}
+	line := mkTargetRecipe(t, stdout, "--enable vcs ")
 	for _, want := range []string{
-		"\ndoc-immutable: ## ",
-		"--enable vcs ",
 		"--disable links",     // Fokus auf vcs (alle Doc-Module abgewählt)
 		"--disable immutable", // auch das hermetische Schwester-Modul
 		"$(if $(STAGED),--staged,--range $(RANGE))",
 	} {
-		if !strings.Contains(stdout, want) {
-			t.Fatalf("d-check.mk ohne %q:\n%s", want, stdout)
+		if !strings.Contains(line, want) {
+			t.Fatalf("doc-immutable-Recipe ohne %q:\n%s", want, line)
 		}
 	}
-	// doc-immutable darf vcs NICHT abwählen.
-	if strings.Contains(stdout, "--disable vcs") {
-		t.Fatalf("doc-immutable wählt vcs fälschlich ab:\n%s", stdout)
+	// doc-immutable darf vcs NICHT abwählen (in SEINER Recipe-Zeile).
+	if strings.Contains(line, "--disable vcs") {
+		t.Fatalf("doc-immutable wählt vcs fälschlich ab:\n%s", line)
+	}
+}
+
+// slice-056 (DC-FA-CLI-010-Erweiterung): das --print-mk-Fragment trägt zusätzlich
+// das Target doc-commits, das dem Konsumenten die Commit-Message-Traceability
+// (Modul commits, DC-FA-COMMITS-001) verteilt — nur commits (alle übrigen Module
+// via --disable abgewählt, aus dem Modulsatz abgeleitet), RANGE-getrieben.
+func TestCLI056_PrintMK_CommitsTarget(t *testing.T) {
+	code, stdout, stderr := run(t, "--print-mk")
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	if !strings.Contains(stdout, "\ndoc-commits: ## ") {
+		t.Fatalf("d-check.mk ohne doc-commits-Target:\n%s", stdout)
+	}
+	line := mkTargetRecipe(t, stdout, "--enable commits ")
+	for _, want := range []string{
+		"--disable links", // Fokus auf commits (alle Doc-Module abgewählt)
+		"--disable vcs",   // auch das git-Schwester-Modul
+		"--range $(RANGE)",
+	} {
+		if !strings.Contains(line, want) {
+			t.Fatalf("doc-commits-Recipe ohne %q:\n%s", want, line)
+		}
+	}
+	// doc-commits darf commits NICHT abwählen (in SEINER Recipe-Zeile).
+	if strings.Contains(line, "--disable commits") {
+		t.Fatalf("doc-commits wählt commits fälschlich ab:\n%s", line)
 	}
 }

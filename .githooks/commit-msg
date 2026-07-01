@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-# commit-msg-Hook — Traceability-Gate (ADR-0013, slice-039).
+# commit-msg-Hook — Traceability-Gate via Modul commits (ADR-0027, slice-056).
 #
-# Verlangt mindestens eine DC-/ADR-/slice-ID in der Commit-Message
-# (harness/README.md §Traceability rules). Installiert via `make hooks`
-# (git config core.hooksPath .githooks) — opt-in pro Klon; die
-# klon-unabhaengige Kontrolle ist der CI-Range-Check (.github/workflows/ci.yml).
+# Verlangt mindestens eine DC-/ADR-/MR-/slice-ID in der Commit-Message
+# (harness/README.md §Traceability rules). Laeuft jetzt ueber das d-check-Modul
+# commits (Image) statt des kopierten Skripts: `make trace-check MSGFILE="$1"`
+# pipet die Pending-Message ueber stdin an `d-check --commit-msg -`.
+# Installiert via `make hooks` (git config core.hooksPath .githooks) — opt-in pro
+# Klon; die klon-unabhaengige Kontrolle ist der CI-Range-Check
+# (.github/workflows/ci.yml).
 #
-# EINE Wahrheit: ruft dasselbe Skript wie CI und `make trace-check`.
+# EINE Wahrheit: ruft dasselbe Gate/Modul wie CI und `make trace-check`.
+# Das abgeloeste Alt-Skript wurde mit ADR-0027 entfernt (codepaths.ignore-refs).
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
-exec bash tools/trace-check.sh --message "$1"
+exec make trace-check MSGFILE="$1"

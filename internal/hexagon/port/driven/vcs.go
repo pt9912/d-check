@@ -26,6 +26,14 @@ type VCSChange struct {
 // DC-FA-VCS-001.a Schritt 1): BASE = HEAD, HEAD = der staged Index.
 const IndexRef = ":index:"
 
+// CommitMeta ist ein Commit mit Kurz-SHA und roher (unbereinigter) Message —
+// die Eingabe des Moduls commits (DC-FA-COMMITS-001). Die git-`strip`-Bereinigung
+// und die Kennungs-Prüfung leistet der Kern, nicht der Adapter.
+type CommitMeta struct {
+	ShortSHA string
+	Message  string
+}
+
 // VCS ist der driven Port des Moduls vcs (DC-FA-VCS-001): liest die
 // git-Historie **rein lesend** aus dem read-only `.git` — ohne externes
 // git-Binary, ohne Netz (spec/architecture.md §2). Der git-Adapter ist die
@@ -39,4 +47,12 @@ type VCS interface {
 	ChangedPaths(base, head string) ([]VCSChange, error)
 	// FileAt liefert den Inhalt von path an ref; ok=false, wenn an ref abwesend.
 	FileAt(ref, path string) (content []byte, ok bool, err error)
+	// CommitMessages liefert die rohen Messages der **Nicht-Merge**-Commits der
+	// Range base..head (git rev-list --no-merges-Parität) in deterministischer
+	// Reihenfolge (nach Commit-SHA) — die Eingabe des Moduls commits
+	// (DC-FA-COMMITS-001). Eine gültige, leere Range ist kein Fehler (leere
+	// Liste); ein nicht auflösbares Ref ⇒ Fehler (fail-closed, Exit 2). head ==
+	// IndexRef wird nicht unterstützt (die Pending-Message existiert nicht als
+	// Commit — dafür der --commit-msg-Kurzschluss-Modus) ⇒ Fehler.
+	CommitMessages(base, head string) ([]CommitMeta, error)
 }

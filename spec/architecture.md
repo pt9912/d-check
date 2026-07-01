@@ -55,7 +55,7 @@ ist intern in drei Pakete mit einbahniger Importrichtung geschnitten —
 | Kern | Markdown-Vorverarbeitung, Link-/Heading-/Kennungs-Extraktion, Slug, Regelmodule, Befund-Modell, deterministische Sortierung, Pfad-/Escape-Regeln; definiert die Ports | reine Standardbibliothek ohne I/O; Port-Interfaces | Dateisystem-, Netzwerk-, Prozess-APIs; Adapter; YAML-Bibliothek |
 | Filesystem-Adapter | Datei-Discovery, Lesen, Symlink-Erkennung (Lstat) | Kern-Ports; Dateisystem-API | andere Adapter; Netzwerk |
 | HTTP-Adapter | HEAD/GET-Erreichbarkeit, Timeout, Redirect-Limit | Kern-Ports; HTTP-Client | andere Adapter; Dateisystem |
-| VCS-/git-Adapter | Lesen der git-Historie aus `.git`: Datei-Inhalt an einem Commit-Ref, geänderte Pfade einer Commit-Range; **rein lesend**, ohne externes git-Binary, ohne Netz (opt-in Modul `vcs`) | Kern-Ports; git-Objekt-Bibliothek; read-only `.git` | andere Adapter; Netzwerk; Schreiben ins Repository |
+| VCS-/git-Adapter | Lesen der git-Historie aus `.git`: Datei-Inhalt an einem Commit-Ref, geänderte Pfade einer Commit-Range, Commit-Messages einer Range; **rein lesend**, ohne externes git-Binary, ohne Netz (opt-in Module `vcs`, `commits`) | Kern-Ports; git-Objekt-Bibliothek; read-only `.git` | andere Adapter; Netzwerk; Schreiben ins Repository |
 | Config-Adapter | `.d-check.yml` strikt dekodieren, zweistufig validieren — den Datei-Inhalt beschafft das CLI über den Filesystem-Adapter, der die einzige Dateisystem-Tür bleibt | Kern-Typen; YAML-Bibliothek | andere Adapter; Dateisystem; Netzwerk |
 | Reporter-Adapter | Text-/JSON-Rendering auf stdout/stderr | Kern-Typen; Serialisierung | andere Adapter; Netzwerk; Dateizugriffe jenseits stdout/stderr |
 | CLI | Argument-Parsing, Composition Root, Exit-Code | alles oben | — |
@@ -71,7 +71,7 @@ sie aufwärts. Eine Lockerung ist eine neue ADR (`AGENTS.md` §3.6).
 |---|---|---|
 | YAML-Bibliothek | Decoding im Config-Adapter | hoch — vollständig im Adapter gekapselt |
 | HTTP-Client der Standardbibliothek | Erreichbarkeits-Checks im HTTP-Adapter | hoch — hinter dem HTTP-Port |
-| git-Objekt-Bibliothek (rein in der Implementierungssprache, **kein** externes git-Binary) | Lesen von `.git` im VCS-Adapter (opt-in Modul `vcs`) | mittel — hinter dem VCS-Port; read-only, netzlos |
+| git-Objekt-Bibliothek (rein in der Implementierungssprache, **kein** externes git-Binary) | Lesen von `.git` im VCS-Adapter (opt-in Module `vcs`, `commits`) | mittel — hinter dem VCS-Port; read-only, netzlos |
 | Minimal-Runtime ohne Shell/Paketmanager | Auslieferung | mittel — CA-Bundle-/Non-root-Annahmen |
 
 ## 4. Sequenz-Diagramme
@@ -107,6 +107,10 @@ sequenceDiagram
         CORE->>VCS: FileAtRef(BASE/HEAD, Pfad) / ChangedFiles(Range)
         VCS-->>CORE: Inhalt | Diff | Fehler (.git/Range fehlt → Exit 2)
     end
+    opt Modul commits aktiv (--range)
+        CORE->>VCS: CommitMessages(Range)
+        VCS-->>CORE: Messages | Fehler (.git/Range fehlt → Exit 2)
+    end
     CORE-->>CLI: Befundliste (sortiert, DC-QA-02)
     CLI->>REP: Render(Text | JSON)
     CLI-->>CLI: Exit 0 | 1
@@ -121,7 +125,7 @@ sequenceDiagram
 | Scan-Wurzel/Datei nicht lesbar | Filesystem-Adapter → CLI | stderr, Exit 2 (kein Teilergebnis als Erfolg) |
 | Regelverletzung in Doku | Kern (Regelmodule) | Befund, Exit 1 |
 | HTTP-Fehler/Timeout (`external`) | HTTP-Adapter → Kern | Befund, kein Abbruch |
-| `.git` fehlt/unlesbar oder Range unauflösbar (`vcs`) | VCS-Adapter → CLI | stderr, Exit 2 (fail-closed; eine fehlende git-Eingabe ist kein stilles Grün) |
+| `.git` fehlt/unlesbar, Range unauflösbar oder Message-Datei unlesbar (`vcs`, `commits`) | VCS-Adapter → CLI | stderr, Exit 2 (fail-closed; eine fehlende git-Eingabe ist kein stilles Grün) |
 
 Der Kern wirft keine I/O-Fehler selbst — sie erreichen ihn als
 Port-Ergebnisse; das geprüfte Repository wird nie beschrieben

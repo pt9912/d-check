@@ -3,10 +3,12 @@ package git_test
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
 	gogit "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 
 	gitadapter "github.com/pt9912/d-check/internal/adapter/driven/git"
@@ -155,5 +157,91 @@ func TestStagedNoHead(t *testing.T) {
 func TestOpenMissing(t *testing.T) {
 	if _, err := gitadapter.Open(t.TempDir()); err == nil {
 		t.Fatal("Open ohne .git hätte fail-closed liefern müssen")
+	}
+}
+
+// TestCommitMessages: die Range base..head liefert die Nicht-Merge-Messages
+// (ohne die Basis selbst) — die git-Eingabe des Moduls commits (DC-FA-COMMITS-001).
+func TestCommitMessages(t *testing.T) {
+	dir, wt := repoAt(t)
+	put(t, dir, "f.md", "1\n")
+	base := snapshot(t, wt, "A: feat ADR-0001")
+	put(t, dir, "f.md", "2\n")
+	snapshot(t, wt, "B: chore ohne id")
+	put(t, dir, "f.md", "3\n")
+	head := snapshot(t, wt, "C: docs slice-056")
+
+	a, err := gitadapter.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	metas, err := a.CommitMessages(base, head)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := map[string]bool{}
+	for _, m := range metas {
+		got[strings.TrimSpace(m.Message)] = true
+		if len(m.ShortSHA) != 7 {
+			t.Errorf("ShortSHA %q nicht 7-stellig", m.ShortSHA)
+		}
+	}
+	if !got["B: chore ohne id"] || !got["C: docs slice-056"] {
+		t.Fatalf("Range A..C sollte B und C enthalten: %v", got)
+	}
+	if got["A: feat ADR-0001"] {
+		t.Fatal("Basis A darf nicht in der Range erscheinen")
+	}
+}
+
+// TestCommitMessagesSkipsMerges: ein Merge-Commit (2 Parents) wird übersprungen
+// (git rev-list --no-merges-Parität).
+func TestCommitMessagesSkipsMerges(t *testing.T) {
+	dir, wt := repoAt(t)
+	put(t, dir, "f.md", "1\n")
+	base := snapshot(t, wt, "A: ADR-0001")
+	put(t, dir, "f.md", "2\n")
+	b := snapshot(t, wt, "B: slice-056")
+	put(t, dir, "f.md", "3\n")
+	if err := wt.AddWithOptions(&gogit.AddOptions{All: true}); err != nil {
+		t.Fatal(err)
+	}
+	mh, err := wt.Commit("Merge: kein bezug", &gogit.CommitOptions{
+		Author:  &object.Signature{Name: "T", Email: "t@example.com", When: time.Unix(1700000000, 0)},
+		Parents: []plumbing.Hash{plumbing.NewHash(b), plumbing.NewHash(base)},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	a, err := gitadapter.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	metas, err := a.CommitMessages(base, mh.String())
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, m := range metas {
+		if strings.HasPrefix(m.Message, "Merge:") {
+			t.Fatalf("Merge-Commit darf nicht erscheinen: %v", metas)
+		}
+	}
+}
+
+// TestCommitMessagesFailClosed: staged (IndexRef) und eine unauflösbare Basis
+// brechen laut ab (fail-closed, Exit 2).
+func TestCommitMessagesFailClosed(t *testing.T) {
+	dir, wt := repoAt(t)
+	put(t, dir, "f.md", "1\n")
+	base := snapshot(t, wt, "A: ADR-0001")
+	a, err := gitadapter.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := a.CommitMessages(base, driven.IndexRef); err == nil {
+		t.Fatal("IndexRef (staged) muss fail-closed liefern")
+	}
+	if _, err := a.CommitMessages("0000000000000000000000000000000000000000", base); err == nil {
+		t.Fatal("unauflösbare Basis muss fail-closed liefern")
 	}
 }

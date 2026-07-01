@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -51,6 +51,8 @@ type Config struct {
 	Immutable ImmutableConfig
 	// VCS: Parameter des Moduls vcs (DC-FA-VCS-001).
 	VCS VCSConfig
+	// Commits: Parameter des Moduls commits (DC-FA-COMMITS-001).
+	Commits CommitsConfig
 	// Scopes: modul-lokale Scan-Scopes (DC-FA-CONF-002); Schlüssel
 	// ist der Modulname, nil-Eintrag/fehlender Schlüssel = globaler
 	// Scope.
@@ -254,6 +256,17 @@ type VCSConfig struct {
 	ExcludeSections []string
 	StatusLine      *regexp.Regexp
 	HeadAllow       *regexp.Regexp
+}
+
+// CommitsConfig sind die Parameter des Moduls commits (DC-FA-COMMITS-001):
+// IDPatterns sind die kompilierten Muster gültiger Traceability-Kennungen — eine
+// bereinigte Commit-Message ohne Match auf **irgendein** Muster erzeugt
+// `commit-untraceable` (leere Liste ⇒ Modul inert). ExemptPattern nimmt eine
+// Message aus, deren Betreff (erste Zeile) matcht (Selbstkonfig `^(Merge |Revert )`);
+// nil ⇒ keine Ausnahme. Die Portierung des abgelösten `tools/trace-check.sh`.
+type CommitsConfig struct {
+	IDPatterns    []*regexp.Regexp
+	ExemptPattern *regexp.Regexp
 }
 
 // EffectiveModules wendet die Modul-Auflösung an

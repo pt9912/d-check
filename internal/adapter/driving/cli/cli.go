@@ -60,6 +60,7 @@ type options struct {
 	requireComplete bool
 	vcsRange        string
 	vcsStaged       bool
+	commitMsg       string
 }
 
 // reorderArgs erlaubt Optionen auch NACH dem Pfad-Argument — nötig
@@ -74,6 +75,7 @@ func reorderArgs(args []string) ([]string, error) {
 		"-suggest-config": true, "--suggest-config": true,
 		"-id-prefix": true, "--id-prefix": true,
 		"-range": true, "--range": true,
+		"-commit-msg": true, "--commit-msg": true,
 	}
 	var flagArgs, positionals []string
 	for i := 0; i < len(args); i++ {
@@ -140,8 +142,19 @@ func comboError(o options) string {
 		return "--trace ist nicht mit --doctor/--repair kombinierbar"
 	case o.requireComplete && !o.trace:
 		return "--require-complete erfordert --trace"
+	}
+	return gitComboError(o)
+}
+
+// gitComboError prüft die Modus-Exklusivität der git-nutzenden Flags
+// (--range/--staged für vcs, --commit-msg für commits) — ausgelagert, damit
+// comboError unter der gocyclo-Schwelle bleibt.
+func gitComboError(o options) string {
+	switch {
 	case o.vcsStaged && o.vcsRange != "":
 		return "--range und --staged sind nicht kombinierbar"
+	case o.commitMsg != "" && (o.vcsRange != "" || o.vcsStaged || o.trace || o.doctor || o.repair):
+		return "--commit-msg ist ein eigener Modus (nicht mit --range/--staged/--trace/--doctor/--repair kombinierbar)"
 	}
 	return ""
 }
@@ -191,6 +204,39 @@ func runTrace(fsys driven.Filesystem, opts options, stdout, stderr io.Writer) in
 	return 0
 }
 
+// runCommitMsg prüft eine einzelne Commit-Message (Modul commits,
+// --commit-msg <datei|->) — der Kurzschluss-Modus für den commit-msg-Hook: ohne
+// Repo-Scan und ohne VCS-Port (die Pending-Message existiert noch nicht als
+// Commit). Fail-closed ohne konfigurierte commits.id-patterns oder bei nicht
+// lesbarer Message (Exit 2); ein `commit-untraceable`-Befund ⇒ Exit 1 (Befund-Zeile
+// im Text-Format auf stdout), sonst Exit 0 (DC-FA-COMMITS-001.a).
+func runCommitMsg(opts options, cfg model.Config, stdin io.Reader, stdout, stderr io.Writer) int {
+	if len(cfg.Commits.IDPatterns) == 0 {
+		fmt.Fprintln(stderr, "d-check: error: --commit-msg braucht konfigurierte commits.id-patterns (.d-check.yml)")
+		return 2
+	}
+	raw, err := readCommitMsg(opts.commitMsg, stdin)
+	if err != nil {
+		fmt.Fprintf(stderr, "d-check: error: Commit-Message nicht lesbar: %v\n", err)
+		return 2
+	}
+	f, bad := rules.CheckCommitMessage("pending", raw, cfg.Commits)
+	if !bad {
+		return 0
+	}
+	fmt.Fprintf(stdout, "%s:%d\t%s\t%s\n", f.File, f.Line, f.Target, f.Reason)
+	fmt.Fprintf(stderr, "d-check: commit-untraceable — Commit-Message ohne DC-/ADR-/MR-/slice-ID: %q\n", f.Message)
+	return 1
+}
+
+// readCommitMsg liest die Commit-Message aus <datei> (oder stdin bei "-").
+func readCommitMsg(path string, stdin io.Reader) ([]byte, error) {
+	if path == "-" {
+		return io.ReadAll(stdin)
+	}
+	return os.ReadFile(path)
+}
+
 // parseOptions parst die Argumente; code/done steuern den sofortigen
 // Exit (Usage-Fehler → 2, -h → 0).
 func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
@@ -206,8 +252,9 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	printConfig := flags.Bool("print-config", false, "Konfigurations-Startgerüst auf stdout ausgeben und beenden")
 	printMK := flags.Bool("print-mk", false, "include-bares d-check.mk (doc-check/doc-trace/doc-complete-Targets, gepinntes Image) auf stdout ausgeben und beenden")
 	requireComplete := flags.Bool("require-complete", false, "mit --trace: ≥1 Requirements-Waise ⇒ Exit 1 statt 0 (opt-in Vollständigkeits-Gate); ohne --trace Nutzungsfehler")
-	vcsRange := flags.String("range", "", "Modul vcs: git-Commit-Range <base>..<head> für die git-Diff-Immutabilität (DC-FA-VCS-001; fail-closed ohne .git)")
+	vcsRange := flags.String("range", "", "Module vcs/commits: git-Commit-Range <base>..<head> (vcs: git-Diff-Immutabilität DC-FA-VCS-001; commits: Traceability-Kennung DC-FA-COMMITS-001; fail-closed ohne .git)")
 	vcsStaged := flags.Bool("staged", false, "Modul vcs: staged-Diff (lokaler pre-commit) statt --range")
+	commitMsg := flags.String("commit-msg", "", "Modul commits: eine Commit-Message aus <datei> (oder - für stdin) auf eine Traceability-Kennung prüfen (commit-msg-Hook; DC-FA-COMMITS-001)")
 	suggestConfig := flags.String("suggest-config", "", "Config aus Autoritäts-Quellen (kommagetrennt) vorschlagen und beenden")
 	idPrefix := flags.String("id-prefix", "", "Kennungs-Präfix für --suggest-config ai-harness[-init] (z. B. AC); ohne Angabe Platzhalter <PREFIX>")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
@@ -235,7 +282,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 		repair: *repairOut || *repairBroadOut, repairBroad: *repairBroadOut,
 		enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig,
 		idPrefix: *idPrefix, trace: *traceOut, printMK: *printMK, requireComplete: *requireComplete,
-		vcsRange: *vcsRange, vcsStaged: *vcsStaged}
+		vcsRange: *vcsRange, vcsStaged: *vcsStaged, commitMsg: *commitMsg}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}
@@ -390,6 +437,12 @@ func Run(args []string, stdout, stderr io.Writer) int {
 	if !ok {
 		return 2
 	}
+	// DC-FA-COMMITS-001: --commit-msg-Kurzschluss (Modul commits) — prüft eine
+	// einzelne Pending-Message ohne Scan/VCS-Port (commit-msg-Hook). Braucht cfg
+	// (commits.id-patterns), daher nach loadConfig.
+	if opts.commitMsg != "" {
+		return runCommitMsg(opts, cfg, os.Stdin, stdout, stderr)
+	}
 	modules, err := model.EffectiveModules(cfg, opts.enable, opts.disable)
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
@@ -426,10 +479,11 @@ func httpChecker(modules []string, cfg model.Config) driven.HTTPChecker {
 	return nil
 }
 
-// vcsActive prüft, ob das Modul vcs im effektiven Modulsatz ist.
-func vcsActive(modules []string) bool {
+// gitModuleActive prüft, ob ein git-nutzendes Modul (vcs oder commits) im
+// effektiven Modulsatz ist — beide teilen den VCS-/git-Adapter und die Range.
+func gitModuleActive(modules []string) bool {
 	for _, m := range modules {
-		if m == "vcs" {
+		if m == "vcs" || m == "commits" {
 			return true
 		}
 	}
@@ -451,7 +505,7 @@ func vcsRefs(opts options) (base, head, msg string) {
 		}
 		return b, h, ""
 	default:
-		return "", "", "Modul vcs braucht --range <base>..<head> oder --staged"
+		return "", "", "ein git-nutzendes Modul (vcs/commits) braucht --range <base>..<head> oder --staged (commits: alternativ --commit-msg)"
 	}
 }
 
@@ -460,7 +514,7 @@ func vcsRefs(opts options) (base, head, msg string) {
 // inaktiv), 2 = fail-closed (Nutzungs-/git-Fehler, bereits auf stderr gemeldet —
 // fehlende/kaputte Range oder fehlendes/unlesbares .git).
 func resolveVCS(opts options, modules []string, stderr io.Writer) (driven.VCS, string, string, int) {
-	if !vcsActive(modules) {
+	if !gitModuleActive(modules) {
 		return nil, "", "", 0
 	}
 	base, head, msg := vcsRefs(opts)

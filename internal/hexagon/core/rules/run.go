@@ -95,6 +95,16 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 		}
 		res.Findings = append(res.Findings, vf...)
 	}
+	// Modul commits (DC-FA-COMMITS-001): Post-Pass über die Commit-Messages der
+	// Range — teilt den VCS-Port mit vcs, prüft aber Messages statt Datei-Inhalt.
+	// Ein Port-Fehler (fehlendes .git/Range) ist fail-closed (Exit 2).
+	if active["commits"] {
+		cf, cerr := CheckCommits(vcs, cfg.Commits, vcsBase, vcsHead)
+		if cerr != nil {
+			return res, cerr
+		}
+		res.Findings = append(res.Findings, cf...)
+	}
 	res.Findings = model.SortFindings(res.Findings)
 	return res, nil
 }

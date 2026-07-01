@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.34.0
+**Version:** 0.35.0
 
 **Status:** Draft
 
@@ -46,7 +46,8 @@ statt per Code-Kopie.
 > (Host-Pfad-Hygiene), `DIAG` (Diagramm-Kennungen), `VER`
 > (Versions-Pin-Konsistenz), `PIN` (Content-Pin/Drift), `IMM`
 > (Immutabilitäts-/Core-Pin), `VCS` (git-historienbasierte
-> Core-Immutabilität), `CONF` (Konfiguration), `DIST` (Distribution).
+> Core-Immutabilität), `COMMITS` (Traceability-Kennung in
+> Commit-Messages), `CONF` (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -76,7 +77,7 @@ verweist für das Konfigurations-Format auf
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
 `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`immutable`, `vcs`, `commits`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -373,7 +374,7 @@ Release-Version** des laufenden Binaries (das Binary kennt seine Version,
 nicht seinen eigenen Digest; für strikte Reproduzierbarkeit überschreibt der
 Konsument `DCHECK_IMAGE` mit einem `@sha256:`-Digest aus den Release-Notes,
 konsistent mit der Konsum-Pin-Politik aus
-[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie sieben
+[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie acht
 `##`-annotierte Targets: `doc-check` (Doku-Gate), `doc-trace` (advisory RTM,
 [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)), `doc-complete`
 (Vollständigkeits-Gate,
@@ -385,7 +386,11 @@ unterdrückt, damit stdout `git apply`-rein bleibt), `doc-immutable`
 [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
 — `--enable vcs` mit auf `vcs` fokussierter `--disable`-Liste, `RANGE=base..head`
 bzw. `STAGED=1`; die **verteilte** Form der git-Garantie für Konsumenten, ohne
-Skript-Kopie) und `doc-help` (listet die
+Skript-Kopie), `doc-commits` (Commit-Message-Traceability via Modul `commits`,
+[`DC-FA-COMMITS-001`](#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)
+— `--enable commits` mit auf `commits` fokussierter `--disable`-Liste, `--range $(RANGE)`;
+die **verteilte** Commit-Traceability für Konsumenten ohne Skript-Kopie, parallel zu
+`doc-immutable`) und `doc-help` (listet die
 `doc-*`-Targets), jeweils `docker run --network none -v "$PWD:/repo:ro"`. Dazu die
 Variablen `TRACE_FLAGS` (Flags der RTM-Targets) und `DCHECK_DIGEST` (ein
 `@sha256:`-Digest, der den Tag von `DCHECK_IMAGE` sticht — strikte
@@ -398,11 +403,11 @@ eingebetteten Version. Reiht sich in die read-only-Generatoren
 
 **Akzeptanzkriterien:**
 
-- **Happy Path:** Given ein installiertes `d-check`, when `d-check --print-mk` läuft, then liegt auf stdout ein Makefile-Fragment mit `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v…`, den Variablen `DCHECK_DIGEST` und `TRACE_FLAGS` und den `##`-annotierten Targets `doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`, `doc-repair`, `doc-immutable` (mit `--enable vcs` und einer auf `vcs` fokussierten `--disable`-Liste) und `doc-help` (jeweils `docker run … --network none … :/repo:ro`), Exit 0; kein Repo-Zugriff nötig.
-- **Boundary:** Given das Fragment wird per `d-check --print-mk > d-check.mk` umgeleitet und in ein Makefile `include`-t, when `make doc-check` (bzw. `doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`) läuft, then ruft das Target das gepinnte Image (bzw. den per `DCHECK_IMAGE`/`DCHECK_DIGEST` gesetzten Override) im passenden Modus (`doc-trace` → `--trace`, `doc-complete` → `--trace --require-complete`, `doc-doctor` → `--doctor`, `doc-repair` → `--repair` mit unterdrücktem Recipe-Echo, `doc-immutable` → `--enable vcs` + Fokus-`--disable` mit `--range $(RANGE)` bzw. `--staged`); d-check selbst schreibt dabei nichts.
+- **Happy Path:** Given ein installiertes `d-check`, when `d-check --print-mk` läuft, then liegt auf stdout ein Makefile-Fragment mit `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v…`, den Variablen `DCHECK_DIGEST` und `TRACE_FLAGS` und den `##`-annotierten Targets `doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`, `doc-repair`, `doc-immutable` (mit `--enable vcs` und einer auf `vcs` fokussierten `--disable`-Liste), `doc-commits` (mit `--enable commits` und einer auf `commits` fokussierten `--disable`-Liste) und `doc-help` (jeweils `docker run … --network none … :/repo:ro`), Exit 0; kein Repo-Zugriff nötig.
+- **Boundary:** Given das Fragment wird per `d-check --print-mk > d-check.mk` umgeleitet und in ein Makefile `include`-t, when `make doc-check` (bzw. `doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`) läuft, then ruft das Target das gepinnte Image (bzw. den per `DCHECK_IMAGE`/`DCHECK_DIGEST` gesetzten Override) im passenden Modus (`doc-trace` → `--trace`, `doc-complete` → `--trace --require-complete`, `doc-doctor` → `--doctor`, `doc-repair` → `--repair` mit unterdrücktem Recipe-Echo, `doc-immutable` → `--enable vcs` + Fokus-`--disable` mit `--range $(RANGE)` bzw. `--staged`, `doc-commits` → `--enable commits` + Fokus-`--disable` mit `--range $(RANGE)`); d-check selbst schreibt dabei nichts.
 - **Negative:** Given `d-check --print-mk` mit einem unbekannten Flag, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)).
 
-**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits der gelisteten sieben (`doc-check`/`doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-help` — Konsumenten komponieren weitere `gates` selbst); ein `help`-Target (Namens-Kollision mit dem Konsumenten — daher namespaced `doc-help`); Nicht-`@sha256:`-Digest-Formen in `DCHECK_DIGEST`; die Exit-Code-Semantik der RTM-Targets selbst (in [`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) bzw. [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix) festgelegt); Nicht-Make-Build-Systeme.
+**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits der gelisteten acht (`doc-check`/`doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`/`doc-help` — Konsumenten komponieren weitere `gates` selbst); ein `help`-Target (Namens-Kollision mit dem Konsumenten — daher namespaced `doc-help`); Nicht-`@sha256:`-Digest-Formen in `DCHECK_DIGEST`; die Exit-Code-Semantik der RTM-Targets selbst (in [`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) bzw. [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix) festgelegt); Nicht-Make-Build-Systeme.
 
 ---
 
@@ -1184,6 +1189,80 @@ Schreiben/Neu-Pinnen durch das Werkzeug (read-only); mehrere Hash-Algorithmen
 
 ---
 
+### DC-FA-COMMITS-001 — Traceability-Kennung in Commit-Messages über eine Commit-Range (Modul `commits`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `commits` prüft d-check, dass
+jede geprüfte **Commit-Message** mindestens eine **Traceability-Kennung** nach
+deklariertem Muster (`commits.id-patterns` — z. B. `ADR-`-, `MR-`-, `DC-`- oder
+`slice-`-Kennungen) auf einer Inhalts-Zeile trägt. Das ist die maschinelle
+Durchsetzung der Regel „PRs/Commits **müssen** mindestens eine `DC-*`-, `ADR-*`-,
+`MR-*`- oder `slice-*`-ID nennen"
+([`harness/README.md` §Traceability rules](../harness/README.md#traceability-rules)),
+als Regelmodul verkörpert — die verteilbare Form derselben Prüfung, die zuvor ein
+kopiertes Shell-Skript leistete.
+
+Dafür liest `commits` die Commit-Historie über **denselben VCS-Port** wie
+[`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
+(reine-Go-git, **ohne git-Binary** → das distroless-Laufzeit-Image bleibt
+unangetastet, **ohne Netz**), erweitert um das Lesen der Commit-**Messages** einer
+Range. Zwei Eingabe-Quellen speisen **dieselbe** Prüfung:
+
+- `--range <base>..<head>` (PR-/Push-CI, lokales Gate): jede **Nicht-Merge**-Commit-Message der Range.
+- `--commit-msg <datei>` (lokaler commit-msg-Hook; `-` = stdin): die **einzelne** Pending-Message, noch bevor der Commit existiert.
+
+Die Eingabe ist damit gegenüber den hermetischen Modulen **erweitert** (git-Historie
++ Range bzw. eine Message), bleibt aber **lokal, lesend und deterministisch**:
+dieselbe Historie + dieselbe Range ⇒ derselbe Befundsatz
+([`DC-QA-02`](#dc-qa-02--determinismus)), kein Netzzugriff und kein Schreiben ins
+Repository ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+Vor der Prüfung wird jede Message **uniform bereinigt** (git-`strip`-Cleanup: alles
+ab der scissors-Zeile `# … >8 …` sowie `#`-Kommentarzeilen entfällt) — damit die
+Range- und die Message-Quelle **dieselbe** (kommentar-bereinigte) Message bewerten
+und nicht je nach git-Cleanup-Modus divergieren; eine Kennung muss auf einer
+**Inhalts**-Zeile stehen, nicht in einem Kommentar. **Ausgenommen** (kennungs-frei
+erlaubt): eine Message, deren **Betreff** (erste Zeile) `commits.exempt-pattern`
+matcht — die Selbstkonfiguration setzt `^(Merge |Revert )` (Merge-/Revert-Commits,
+wie schon der Skript-Vorläufer).
+
+- Message ohne Kennung und **nicht** ausgenommen → Befund `commit-untraceable`
+  (`target` = Commit-Kurz-SHA bzw. `pending` für die Message-Quelle, `message` =
+  der Betreff).
+
+**Strikt opt-in, fail-closed, diagnose-only:** `commits` ist nie Default-Modul (wie
+`external`/`vcs`); ohne aktives `commits` ist der Befundsatz byte-identisch
+([`DC-QA-02`](#dc-qa-02--determinismus)) und nichts wird gelesen, was über den
+Markdown-Baum hinausgeht ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+Der Modul-Scope ([`DC-FA-CONF-002`](#dc-fa-conf-002--modul-lokaler-scan-scope))
+gilt wie für jedes Modul. **fail-closed:** eine fehlende oder nicht auflösbare
+Range (leere/unauflösbare Basis, fehlender `..`-Separator), ein fehlendes oder
+unlesbares `.git` im Range-Modus, oder eine nicht lesbare Message-Datei → Fehler
+(Exit 2) mit Hinweis auf stderr, keine stille Grün-Meldung. `commit-untraceable`
+ist **diagnose-only** — es liefert keinen `--repair`-Hunk (die Korrektur ist ein
+neuer Commit bzw. ein menschliches `--amend`; vgl.
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `commits` aktiv mit gesetzten `commits.id-patterns` und einer Range, in der jede Nicht-Merge-Commit-Message eine Kennung auf einer Inhalts-Zeile trägt, when `d-check --enable commits --range <base>..<head>` läuft, then kein Befund, Exit 0.
+- **Boundary (Modul-aus / git-frei):** Given **kein** aktives `commits`, when `d-check` ohne Range in einer netzlosen, read-only Umgebung läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)), es erfolgt kein git-Zugriff über den Scan hinaus und nichts wird geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+- **Negative:** Given `commits` aktiv und eine Range mit einer Nicht-Merge-Commit-Message **ohne** Kennung (und ohne Betreff-Ausnahme), when `d-check --enable commits --range <base>..<head>` läuft, then ein Befund `commit-untraceable` (Commit, Grund), Exit 1; eine `commits.exempt-pattern`-Message (Merge/Revert) in derselben Range erzeugt keinen Befund.
+- **fail-closed (git-/Range-Eingabe fehlt):** Given `commits` aktiv, aber eine **fehlende/unauflösbare** Range (leere Basis, fehlender `..`-Separator) bzw. ein **unlesbares** `.git`, when `d-check --enable commits` läuft, then **Exit 2** mit Hinweis auf stderr — kein stilles Grün (kein Exit 0) und kein Befund-Exit (kein Exit 1).
+
+**Out-of-Scope:** die semantische Prüfung, ob die genannte Kennung *fachlich passt*
+(nur Existenz eines Musters, keine Auflösung gegen Lastenheft/ADR-Index — das
+leisten [`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)/[`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
+und die RTM [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix));
+das Prüfen des Arbeitsbaum-/Index-**Inhalts** (das ist
+[`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in));
+Forge-/Netz-API-Aufrufe (nur lokale git-Objekte); das *Vergeben* von Kennungen
+(Agenten referenzieren, erfinden nicht); das Prüfen von **Merge**-Commits (per
+Range nicht aufgezählt, `--no-merges`-Parität); Schreiben durch das Werkzeug
+(read-only); ein git-**Binary** im Laufzeit-Image (der Port liest `.git` rein in
+Go; in begleitender ADR festgehalten).
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -1292,7 +1371,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -1306,6 +1385,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.35.0 | 2026-07-01 | Neue Anforderung `DC-FA-COMMITS-001` (Modul `commits`, opt-in): maschinelle Durchsetzung der Traceability-Regel — jede geprüfte Commit-Message muss eine Kennung nach `commits.id-patterns` (`ADR-`/`MR-`/`DC-`/`slice-`) auf einer Inhalts-Zeile tragen, sonst `commit-untraceable`. Liest die Commit-**Messages** über **denselben VCS-Port** wie `DC-FA-VCS-001` (reine-Go-git, **ohne git-Binary** → distroless bleibt, **ohne Netz**), erweitert um Message-Lesen; zwei Quellen für dieselbe Prüfung: `--range <base>..<head>` (CI/Push, Nicht-Merge-Commits) und `--commit-msg <datei\|->` (commit-msg-Hook, einzelne Pending-Message). Uniforme `#`-/scissors-Bereinigung (Kennung auf Inhalts-Zeile), Betreff-Ausnahme `commits.exempt-pattern` (Selbstkonfig `^(Merge \|Revert )`). Strikt opt-in (nie Default, wie `external`/`vcs`), fail-closed ohne `.git`/Range/Message, diagnose-only; erweiterter Eingabe-Scope, aber lokal/lesend/deterministisch — `DC-QA-02`/`DC-QA-03` unberührt. 14. Regelmodul; Bereichskürzel `COMMITS` in §3, `commits` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-COMMITS-001.a` + Grund-Code `commit-untraceable` + Schema-Keys (`commits.id-patterns`/`exempt-pattern`) in der Spezifikation. Anlass: Auftraggeber — `tools/trace-check.sh` vollständig mechanisieren (Copy-Drift über die Repo-Familie, [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Klasse „verteilen statt kopieren"): die verteilbare Modul-Form löst es im Image; d-check dogfoodet das Modul für sein eigenes `make trace-check`-Gate. Das „nächste `adr-check`" — dieselbe VCS-Port-Präzedenz wie `DC-FA-VCS-001`, hier auf Commit-Messages statt Datei-Inhalt. Zugleich **`DC-FA-CLI-010`-Erweiterung** (7→8 Targets): `--print-mk` trägt ein `doc-commits`-Target (`--enable commits` + aus `ValidModules` abgeleitete Fokus-`--disable`-Liste, `--range`) — die **verteilte** Commit-Traceability für Konsumenten ohne Skript-Kopie („verteilen statt kopieren", parallel zu `doc-immutable`); `--print-config`/`--suggest-config` führen `commits` in der Verfügbar-/opt-in-Liste | slice-056 |
 | 0.34.0 | 2026-06-29 | `DC-FA-CODE-001` (Modul `codepaths`) um `ignore-refs` erweitert: eine Glob-Liste nimmt **bestimmte Ziel-Pfade** von der Existenz-Prüfung aus — **referenz-weit** (egal Datei/Zeile), als Register bewusst entfernter/historischer Artefakte (Tombstones); dritte Ventil-Achse neben dem zeilenweisen `d-check:ignore` und dem datei-weiten `exempt-paths`. Bewusster Akt mit Gate (ohne Eintrag bleibt `codepath-missing`), Default-leer byte-identisch. Schema-Key `codepaths.ignore-refs` + §DC-FA-CODE-001.a-Schritt in der Spezifikation. Anlass: die Frozen-Doc-Refactoring-Falle — immutable ADRs zitieren Code-Pfade, die bei Refactoring/Löschung dangeln, aber nicht editierbar sind; gelöst und zugleich das in slice-053 nur „pfad-stabil behaltene" `tools/adr-immutable-check.sh` entfernt; begleitende ADR (Supersedes die „Skript-behalten"-Teilentscheidung der VCS-ADR) | slice-054 |
 | 0.33.0 | 2026-06-29 | Neue Anforderung `DC-FA-VCS-001` (Modul `vcs`, opt-in): git-historienbasierte Immutabilität des Core über eine Commit-Range — `core(BASE)` ≟ `core(HEAD)`, geliefert über `--range <base>..<head>` (CI/Push) oder `--staged` (pre-commit). Liest das read-only `.git` über einen eigenen **VCS-Port** (reine-Go-git, **ohne git-Binary** → distroless bleibt, **ohne Netz**); erweiterter Eingabe-Scope (git + Range statt nur Markdown-Baum), aber lokal/lesend/deterministisch — `DC-QA-02`/`DC-QA-03` unberührt. Geprüft wird jede in der Range geänderte, der Klasse (`vcs.paths`) entsprechende Datei mit immutabler BASE (`vcs.immutable-when`): Körper-Drift, unzulässiger Status-Übergang (`vcs.head-allow`) oder Löschung/Umbenennung → `core-drift-vcs`. Strikt opt-in (nie Default, wie `external`), fail-closed bei fehlendem `.git`/Range, diagnose-only. **Die volle git-Garantie, die `DC-FA-IMM-001` (hermetischer Pin) bewusst der späteren VCS-Stufe überließ** — beide koexistieren als Defense-in-Depth. 13. Regelmodul; Bereichskürzel `VCS` in §3, `vcs` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-VCS-001.a` + Grund-Code `core-drift-vcs` + Schema-Keys (`vcs.paths`/`immutable-when`/`exclude-sections`/`status-line`/`head-allow`) in der Spezifikation. Anlass: Auftraggeber — `adr-immutable-check.sh` vollständig mechanisieren (Copy-Drift über die Repo-Familie, [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Klasse): die verteilbare git-Form löst es im Image; d-check dogfooded das Modul für die eigenen Accepted-ADRs. Zugleich **DC-FA-CLI-010-Erweiterung** (6→7 Targets): `--print-mk` trägt ein `doc-immutable`-Target (`--enable vcs` + aus dem Modulsatz abgeleitete Fokus-`--disable`-Liste, RANGE/STAGED) — die **verteilte** git-Garantie für Konsumenten ohne Skript-Kopie („verteilen statt kopieren"); `model.ValidModules` dafür exportiert. Außerdem **Config-Surface-Bereinigung**: `--print-config` (`DC-FA-CLI-005`) führt jetzt **alle** Module (die zuvor fehlenden `pins`/`immutable` + `vcs` ergänzt) und `--suggest-config ai-harness` (`DC-FA-CLI-006`) nennt die situativen opt-in-Module vollständig (`versions`/`pins`/`immutable`/`vcs` nachgezogen) — die „Verfügbar"-Liste war eine Harness-Ehrlichkeits-Lücke über drei Slices (049/052/053) | slice-053 |
 | 0.32.0 | 2026-06-28 | Neue Anforderung `DC-FA-IMM-001` (Modul `immutable`, opt-in): Immutabilitäts-Pin gegen Core-Drift — eine Datei mit Inline-Marker `<!-- immutable: sha256:… -->` wird gegen den whitespace-normalisierten **Core** (Datei ohne die Marker-Zeile und ohne die per `immutable.exclude-sections` benannten Abschnitte) gehasht; Abweichung → `core-drift`. Hermetische, im read-only-Arbeitsbaum entscheidbare Immutabilitäts-Prüfung (kein git; die git-historienbasierte Diff-Form bleibt Out-of-Scope bzw. spätere opt-in-Stufe, in begleitender ADR festgehalten). Opt-in pro Datei, default-off byte-identisch (`DC-QA-02`), diagnose-only. 12. Regelmodul; Bereichskürzel `IMM` in §3, `immutable` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-IMM-001.a` + Grund-Code `core-drift` + Schema-Key (`immutable.exclude-sections`) in der Spezifikation. Anlass: Auftraggeber — das ADR-Immutable-Gate war nur ein Skript (Copy-Drift über die Repo-Familie, [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Klasse „verteilen statt kopieren"); die verteilbare Pin-Form löst das hermetisch, die volle git-Garantie bleibt einem späteren VCS-Adapter vorbehalten | slice-052 |

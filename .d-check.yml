@@ -84,7 +84,8 @@ codepaths:
   # zitiert — referenz-weit von der Existenz-Prüfung ausgenommen.
   # - adr-immutable-check.sh: abgelöst durch Modul vcs (ADR-0024, slice-053)
   # - completeness-check.sh: abgelöst durch --trace --require-complete (ADR-0026, slice-055)
-  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh"]
+  # - trace-check.sh: abgelöst durch Modul commits (ADR-0027, slice-056)
+  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh"]
 
 # Versions-Pin-Konsistenz (DC-FA-VER-001, slice-048): jeder ghcr-Image-Pin in
 # den Live-Docs muss die aktuelle Version aus version.md#aktuell tragen — sonst
@@ -110,3 +111,18 @@ vcs:
   exclude-sections: [Geschichte]
   status-line: '^\*\*Status:\*\*'
   head-allow: '^\*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'
+
+# Modul commits (DC-FA-COMMITS-001, slice-056): Traceability-Kennung in
+# Commit-Messages über eine Range — `make trace-check` aktiviert es mit
+# `--enable commits` (NICHT in der modules-Liste oben, daher im Default-doc-check
+# inert/byte-identisch). id-patterns = die drei ids-Muster (ADR/MR/DC) plus
+# slice-NNN (eine ID-Definition neben ids.patterns, statt im Skript-ID_RE);
+# exempt-pattern nimmt Merge-/Revert-Betreffe aus. Löst tools/trace-check.sh ab
+# (ADR-0027, Supersedes die Skript-Mechanik von ADR-0013).
+commits:
+  id-patterns:
+    - 'ADR-\d{4}'
+    - 'MR-\d{3}'
+    - 'DC-(FA-[A-Z]+|QA)-\d+'
+    - 'slice-\d+'
+  exempt-pattern: '^(Merge |Revert )'

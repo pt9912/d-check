@@ -146,6 +146,47 @@ func TestDecode_LeerstringRegex(t *testing.T) {
 	}
 }
 
+// TestDecode_CommitsFehler deckt die drei applyCommits-Ablehnungs-Guards ab
+// (DC-FA-COMMITS-001) — dieselbe Klasse wie TestDecode_LeerstringRegex für ids:
+// ohne diese Negativtests machte ein Refactor, der den Leerstring-Guard (das
+// Silent-Grün-Schutz-Ventil) entfernt, das Gate still grün, ohne dass ein Test fällt.
+func TestDecode_CommitsFehler(t *testing.T) {
+	// leerer id-patterns-Eintrag
+	if _, err := configyaml.Decode([]byte("commits:\n  id-patterns:\n    - ''\n")); err == nil {
+		t.Fatal("leeres commits.id-patterns[0]: Fehler erwartet")
+	}
+	// Leerstring-matchendes Muster ⇒ jeder Commit gälte als getraced (Silent-Grün)
+	for _, re := range []string{".*", "X*", "(ADR)?"} {
+		_, err := configyaml.Decode([]byte("commits:\n  id-patterns:\n    - '" + re + "'\n"))
+		if err == nil || !strings.Contains(err.Error(), "Leerstring") {
+			t.Fatalf("commits.id-patterns %q: err = %v (Leerstring-Ablehnung erwartet)", re, err)
+		}
+	}
+	// nicht kompilierbares id-pattern
+	if _, err := configyaml.Decode([]byte("commits:\n  id-patterns:\n    - '[unclosed'\n")); err == nil {
+		t.Fatal("ungültiges commits.id-patterns-Regex: Fehler erwartet")
+	}
+	// nicht kompilierbares exempt-pattern
+	if _, err := configyaml.Decode([]byte("commits:\n  id-patterns:\n    - 'ADR-\\d{4}'\n  exempt-pattern: '(unclosed'\n")); err == nil {
+		t.Fatal("ungültiges commits.exempt-pattern-Regex: Fehler erwartet")
+	}
+}
+
+// TestDecode_CommitsHappy: eine gültige commits-Config wird übernommen und die
+// Regexe kompiliert (der positive Gegenpol zu TestDecode_CommitsFehler).
+func TestDecode_CommitsHappy(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("commits:\n  id-patterns:\n    - 'ADR-\\d{4}'\n    - 'slice-\\d+'\n  exempt-pattern: '^(Merge |Revert )'\n"))
+	if err != nil {
+		t.Fatalf("gültige commits-Config abgelehnt: %v", err)
+	}
+	if len(cfg.Commits.IDPatterns) != 2 {
+		t.Fatalf("commits.id-patterns nicht übernommen: %+v", cfg.Commits)
+	}
+	if cfg.Commits.ExemptPattern == nil || !cfg.Commits.ExemptPattern.MatchString("Merge branch 'x'") {
+		t.Fatalf("commits.exempt-pattern nicht kompiliert/wirksam: %+v", cfg.Commits.ExemptPattern)
+	}
+}
+
 func TestDecode_MatrixUndExternalConstraints(t *testing.T) {
 	if _, err := configyaml.Decode([]byte("matrix:\n  classes:\n    - name: a\n      paths: [x]\n  rules:\n    - {from: a, to: fehlt, allow: false}\n")); err == nil {
 		t.Fatal("undeklarierte Klasse: Fehler erwartet")

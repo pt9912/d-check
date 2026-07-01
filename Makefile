@@ -110,6 +110,9 @@ run: build ## Smoke-Test: d-check prüft das eigene Repo (read-only).
 # doc-check/trace/doc-complete — der Pin existiert hier nicht (Produzent baut
 # selbst), daher inline statt --print-mk-Fragment (das ist konsumenten-seitig).
 DCHECK_RUN = docker run --rm --network none -v "$(CURDIR)":/repo:ro $(IMAGE):latest
+# Wie DCHECK_RUN, aber mit -i (stdin offen) — für den commit-msg-Hook, der die
+# Pending-Message über stdin an `--commit-msg -` pipet (Modul commits, ADR-0027).
+DCHECK_RUN_I = docker run --rm -i --network none -v "$(CURDIR)":/repo:ro $(IMAGE):latest
 
 # Vollständigkeits-Flag-Satz — EINE Quelle, geteilt von `doc-complete`
 # (Konsumenten-/print-mk-Name) und `completeness-check` (Closure-Gate); so können
@@ -171,25 +174,29 @@ completeness-check: build ## Requirements-Completeness via in-Produkt-Flag (--tr
 
 # ---- traceability ------------------------------------------------------------
 
-# Traceability-Gate (ADR-0013): jede Commit-Message nennt eine
-# DC-/ADR-/slice-ID. Bewusst NICHT Teil von `gates`/`ci` — anderer
-# Bindepunkt (Commit-Zeit, nicht Arbeitsbaum-Inhalt): der CI-Workflow
-# (.github/workflows/ci.yml) ruft es getrennt über den Commit-Range, der
-# commit-msg-Hook prüft lokal. Eine Skript-Wahrheit (tools/trace-check.sh).
-trace-check: ## Traceability-Gate: DC-/ADR-/slice-ID in Commits (Selbsttest + HEAD; RANGE=a..b für CI). ADR-0013.
-	@bash tools/trace-check.sh $(if $(RANGE),--range $(RANGE),)
+# Traceability-Gate (ADR-0013 Policy; Mechanik seit slice-056/ADR-0027 in-Produkt
+# über das Modul commits statt tools/trace-check.sh). Jede Commit-Message nennt
+# eine DC-/ADR-/MR-/slice-ID. Bewusst NICHT Teil von `gates`/`ci` — anderer
+# Bindepunkt (Commit-Zeit, nicht Arbeitsbaum-Inhalt). Zwei Modi, eine Wahrheit
+# (das Modul commits im Image):
+#   MSGFILE=<datei>  commit-msg-Hook: Pending-Message via stdin an --commit-msg -
+#   sonst            Range-Modus: --enable commits (fokussiert) --range (Default HEAD~1..HEAD)
+# Der CI-Workflow (.github/workflows/ci.yml) ruft den Range-Modus, der Hook den
+# Message-Modus. Fokus-Disable wie adr-check (nur commits läuft).
+trace-check: build ## Traceability-Gate via Modul commits (Image, dogfood): DC-/ADR-/MR-/slice-ID in Commit-Messages (RANGE=a..b für CI, MSGFILE=… für den Hook, sonst HEAD~1..HEAD). ADR-0027 (löst die Skript-Mechanik von ADR-0013 ab).
+	@$(if $(MSGFILE),$(DCHECK_RUN_I) --commit-msg - < $(MSGFILE),$(DCHECK_RUN) --enable commits $(FOCUS_DISABLE) --range $(if $(RANGE),$(RANGE),HEAD~1..HEAD))
 
-# adr-check fokussiert auf das Modul vcs: --enable vcs aktiviert es, und ALLE
-# übrigen .d-check.yml-modules werden abgewählt — sonst über-feuerte das
-# ADR-Immutable-Gate auf Nicht-ADR-Befunde des Arbeitsbaums (im STAGED-Hook auf
-# ungestaged WIP), entgegen ADR-0024 „grün, sofern keine Accepted-ADR berührt".
-# Die VCS_DISABLE-Liste spiegelt die .d-check.yml-modules; wächst die dort, hier
-# nachziehen (das neue Modul liefe sonst in adr-check mit — kein Silent-Grün,
+# FOCUS_DISABLE wählt ALLE .d-check.yml-modules ab, sodass ein fokussiertes Gate
+# nur sein eines opt-in-Modul laufen lässt (adr-check nur vcs, trace-check nur
+# commits) — sonst über-feuerten die Datei-Module auf den Arbeitsbaum-Inhalt (im
+# STAGED-Hook auf ungestaged WIP), entgegen ADR-0024 „grün, sofern keine
+# Accepted-ADR berührt". Spiegelt die .d-check.yml-modules-Liste; wächst die dort,
+# hier nachziehen (ein neues Default-Modul liefe sonst mit — kein Silent-Grün,
 # aber Über-Feuern).
-VCS_DISABLE := --disable links --disable anchors --disable ids --disable matrix \
+FOCUS_DISABLE := --disable links --disable anchors --disable ids --disable matrix \
     --disable codepaths --disable spans --disable hostpaths --disable versions
 adr-check: build ## ADR-Immutable-Gate via Modul vcs (Image, dogfood, nur vcs): Accepted-ADRs nicht inhaltlich ändern (RANGE=a..b für CI, STAGED=1 für den Hook, sonst HEAD~1..HEAD). ADR-0024 (löst die Skript-Mechanik von ADR-0016 ab); ADR-0025 entfernt das Alt-Skript.
-	$(DCHECK_RUN) --enable vcs $(VCS_DISABLE) $(if $(STAGED),--staged,--range $(if $(RANGE),$(RANGE),HEAD~1..HEAD))
+	$(DCHECK_RUN) --enable vcs $(FOCUS_DISABLE) $(if $(STAGED),--staged,--range $(if $(RANGE),$(RANGE),HEAD~1..HEAD))
 
 hooks: ## git-Hooks installieren (core.hooksPath -> .githooks; commit-msg Traceability + pre-commit ADR-Immutable). ADR-0013/0016.
 	@git config core.hooksPath .githooks

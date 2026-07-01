@@ -19,26 +19,26 @@ import (
 var version = "0.0.0-dev"
 
 // makefileFragment erzeugt das d-check.mk: version-gepinnter, per
-// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus sieben
+// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus acht
 // `##`-annotierte Targets (doc-check/doc-trace/doc-complete/doc-doctor/
-// doc-repair/doc-immutable/doc-help) und die TRACE_FLAGS-Variable. Das
-// Template hat genau ZWEI fmt-Verben — das %s der Version und das %s der
-// vcs-Disable-Flags (doc-immutable); sonst KEIN '%' (sed statt awk-printf im
-// doc-help-Recipe), sonst bräche fmt.Sprintf. Deterministisch (hängt nur an der
-// eingebetteten Version + dem Modulsatz), read-only.
+// doc-repair/doc-immutable/doc-commits/doc-help) und die TRACE_FLAGS-Variable. Das
+// Template hat genau DREI fmt-Verben — das %s der Version, das %s der vcs-Disable-
+// Flags (doc-immutable) und das %s der commits-Disable-Flags (doc-commits); sonst
+// KEIN '%' (sed statt awk-printf im doc-help-Recipe), sonst bräche fmt.Sprintf.
+// Deterministisch (hängt nur an der eingebetteten Version + dem Modulsatz), read-only.
 func makefileFragment() string {
-	return fmt.Sprintf(mkTemplate, version, vcsOnlyDisableFlags())
+	return fmt.Sprintf(mkTemplate, version, disableAllExcept("vcs"), disableAllExcept("commits"))
 }
 
-// vcsOnlyDisableFlags liefert "--disable <m>"-Flags für alle Module außer vcs,
+// disableAllExcept liefert "--disable <m>"-Flags für alle Module außer keep,
 // abgeleitet aus model.ValidModules (trackt den Modulsatz automatisch). So läuft
-// das doc-immutable-Target NUR das Modul vcs — sonst über-feuerten die
-// Doc-Module des Konsumenten auf Nicht-ADR-Befunde des Arbeitsbaums (ADR-0024,
-// vgl. das fokussierte `make adr-check` von d-check selbst).
-func vcsOnlyDisableFlags() string {
+// ein fokussiertes Target NUR das Modul keep — sonst über-feuerten die Doc-Module
+// des Konsumenten auf Nicht-Ziel-Befunde des Arbeitsbaums (vgl. das fokussierte
+// `make adr-check`/`make trace-check` von d-check selbst).
+func disableAllExcept(keep string) string {
 	var flags []string
 	for _, m := range model.ValidModules() {
-		if m != "vcs" {
+		if m != keep {
 			flags = append(flags, "--disable "+m)
 		}
 	}
@@ -89,6 +89,10 @@ const mkTemplate = "# d-check.mk — erzeugt von: d-check --print-mk (DC-FA-CLI-
 	".PHONY: doc-immutable\n" +
 	"doc-immutable: ## Doc-/ADR-Immutabilität via git-Diff (Modul vcs); RANGE=base..head oder STAGED=1 (DC-FA-VCS-001)\n" +
 	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --enable vcs %s $(if $(STAGED),--staged,--range $(RANGE))\n" +
+	"\n" +
+	".PHONY: doc-commits\n" +
+	"doc-commits: ## Commit-Message-Traceability via Modul commits; RANGE=base..head (DC-FA-COMMITS-001)\n" +
+	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --enable commits %s --range $(RANGE)\n" +
 	"\n" +
 	".PHONY: doc-help\n" +
 	"doc-help: ## diese Liste der doc-*-Targets\n" +

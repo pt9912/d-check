@@ -18,9 +18,9 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, external
-# (external ist die einzige Netzwerk-Tür — strikt opt-in; vcs ist git-basiert
-#  und braucht .git + eine Commit-Range — strikt opt-in.)
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, external
+# (external ist die einzige Netzwerk-Tür — strikt opt-in; vcs und commits sind
+#  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in.)
 
 # --- ids: Linkpflicht für Kennungen ---
 # ids:
@@ -101,6 +101,16 @@ modules: [links, anchors]
 #   exclude-sections: [Geschichte]                     # nicht zum Core zählende Abschnitte
 #   status-line: '^\*\*Status:\*\*'                    # Kopf-Status-Zeile (aus dem Core gestrippt)
 #   head-allow: '^\*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'  # erlaubter Status-Übergang
+
+# --- commits: Traceability-Kennung in Commit-Messages über eine Range — git, opt-in ---
+#   (braucht .git + eine Range bzw. --commit-msg; Aufruf über das make-Target
+#    trace-check bzw. --range <base>..<head> / --commit-msg <datei|->. NICHT in modules: oben.)
+# commits:
+#   id-patterns:                                       # Regex-Liste gültiger Kennungen
+#     - 'ADR-\d{4}'
+#     - 'DC-(FA-[A-Z]+|QA)-\d+'
+#     - 'slice-\d+'
+#   exempt-pattern: '^(Merge |Revert )'                # kennungsfreier Betreff (Merge/Revert)
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---
 # external:

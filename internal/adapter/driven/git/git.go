@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"sort"
 
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -139,6 +140,81 @@ func diffTreeIndex(headTree *object.Tree, idx *index.Index) ([]driven.VCSChange,
 		}
 	}
 	return out, nil
+}
+
+// CommitMessages liefert die rohen Messages der Nicht-Merge-Commits der Range
+// base..head (git rev-list --no-merges-Parität; Modul commits, DC-FA-COMMITS-001).
+// Vorgehen: die von base erreichbaren Commits (base + Vorfahren) bilden die
+// Ausschluss-Menge; von head aus werden die übrigen Commits durchlaufen und die
+// Nicht-Merges (≤ 1 Elternteil) gesammelt. Deterministisch nach Commit-SHA
+// sortiert (DC-QA-02). head == driven.IndexRef ist nicht auflösbar ⇒ Fehler
+// (fail-closed; die Pending-Message hat der --commit-msg-Kurzschluss-Modus).
+func (a *Adapter) CommitMessages(base, head string) ([]driven.CommitMeta, error) {
+	if head == driven.IndexRef {
+		return nil, fmt.Errorf("commits: --staged wird nicht unterstützt — nutze --range oder --commit-msg (die Pending-Message ist kein Commit)")
+	}
+	baseHash, err := a.repo.ResolveRevision(plumbing.Revision(base))
+	if err != nil {
+		return nil, fmt.Errorf("Range-Basis %q nicht auflösbar: %w", base, err)
+	}
+	headHash, err := a.repo.ResolveRevision(plumbing.Revision(head))
+	if err != nil {
+		return nil, fmt.Errorf("Range-Spitze %q nicht auflösbar: %w", head, err)
+	}
+	excluded, err := a.ancestors(*baseHash)
+	if err != nil {
+		return nil, fmt.Errorf("Range-Basis-Vorfahren nicht lesbar: %w", err)
+	}
+	visited := map[plumbing.Hash]bool{}
+	var metas []driven.CommitMeta
+	stack := []plumbing.Hash{*headHash}
+	for len(stack) > 0 {
+		cur := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		if visited[cur] || excluded[cur] {
+			continue
+		}
+		visited[cur] = true
+		c, err := a.repo.CommitObject(cur)
+		if err != nil {
+			return nil, fmt.Errorf("commit %s nicht lesbar: %w", cur, err)
+		}
+		if len(c.ParentHashes) <= 1 { // Nicht-Merge (--no-merges)
+			metas = append(metas, driven.CommitMeta{ShortSHA: cur.String()[:7], Message: c.Message})
+		}
+		for _, p := range c.ParentHashes {
+			if !visited[p] && !excluded[p] {
+				stack = append(stack, p)
+			}
+		}
+	}
+	sort.Slice(metas, func(i, j int) bool { return metas[i].ShortSHA < metas[j].ShortSHA })
+	return metas, nil
+}
+
+// ancestors sammelt alle von h erreichbaren Commit-Hashes (inkl. h) — die
+// Ausschluss-Menge für die Range base..head (der base-seitige rev-list-Ausschluss).
+func (a *Adapter) ancestors(h plumbing.Hash) (map[plumbing.Hash]bool, error) {
+	set := map[plumbing.Hash]bool{}
+	stack := []plumbing.Hash{h}
+	for len(stack) > 0 {
+		cur := stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+		if set[cur] {
+			continue
+		}
+		set[cur] = true
+		c, err := a.repo.CommitObject(cur)
+		if err != nil {
+			return nil, err
+		}
+		for _, p := range c.ParentHashes {
+			if !set[p] {
+				stack = append(stack, p)
+			}
+		}
+	}
+	return set, nil
 }
 
 // FileAt liefert den Inhalt von path an ref (ref == driven.IndexRef ⇒ staged
