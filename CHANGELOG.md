@@ -4,6 +4,36 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.36.0] — 2026-07-01
+
+### Added
+
+- slice-057 — neues opt-in Modul `planning` (15. Regelmodul,
+  [`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)):
+  prüft **hermetisch** (nur Roadmap-Datei + Verzeichnis-Listing, **kein** git,
+  **kein** Netz) die Planning-Lifecycle-Invariante — die Roadmap trägt den
+  Ruhe-Marker (`planning.marker`, „Keine aktive Welle") in ihrem
+  `planning.heading`-Abschnitt genau dann, wenn kein `slice-*` (`planning.slice-glob`)
+  im Roadmap-Verzeichnis liegt (`hasActive == hasSlices`), sonst `planning-drift`.
+  Fail-closed bei fehlender kanonischer Überschrift/Roadmap-Datei (Heading-Guard);
+  strikt opt-in, diagnose-only, default-aus byte-identisch; `heading`/`marker`/
+  `slice-glob` überschreibbar (parametrierbar für Adopter)
+  ([ADR-0028](docs/plan/adr/0028-planning-lifecycle-modul.md), Lastenheft 0.36.0).
+  Das **Gate `make planning-check`** läuft dogfood auf das Modul um (Image,
+  `--enable planning`); `--print-config`/`--suggest-config` führen `planning`, und
+  `--print-mk` trägt ein `doc-planning`-Target (hermetisch, ohne Range;
+  [`DC-FA-CLI-010`](spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+  8→9). Benutzerhandbuch §5/§6 dokumentiert das Modul.
+
+### Removed
+
+- slice-057 — `tools/planning-consistency.sh` entfernt (das **letzte** Gate-Skript
+  des `tools/*.sh`-Audits), abgelöst durch das Modul `planning`. Die immutable
+  [slice-040](docs/plan/planning/done/slice-040-planning-consistency-gate.md)-Inline-Referenz
+  ist über `codepaths.ignore-refs` als Tombstone deklariert (vierter Fall nach
+  `adr-immutable-check.sh`/`completeness-check.sh`/`trace-check.sh`); der
+  3-Richtungs-Negativ-Selbsttest lebt als Modul-Akzeptanztest (`make test`) weiter.
+
 ## [0.35.0] — 2026-07-01
 
 ### Added
