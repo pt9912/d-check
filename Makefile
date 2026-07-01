@@ -73,8 +73,8 @@ coverage-gate: ## Coverage-Schwelle (Kalibrierungs-Bindung: 93 %, Historie in ha
 gate-consistency: ## Meta-Gate: dokumentierte Targets ↔ Makefile, QA-03-Modulliste (Harness-Lügen-Schutz).
 	@bash tools/gate-consistency.sh
 
-planning-check: ## Meta-Gate: Roadmap §Aktuelle Welle ↔ in-progress/slice-* (Planning-Drift-Schutz; slice-040).
-	@bash tools/planning-consistency.sh
+planning-check: build ## Meta-Gate via Modul planning (Image, dogfood): Roadmap §Aktuelle Welle ↔ in-progress/slice-* (Planning-Drift-Schutz, in gates). ADR-0028 (löst die Skript-Mechanik von slice-040 ab).
+	$(DCHECK_RUN) --enable planning $(FOCUS_DISABLE)
 
 bench: build ## DC-QA-01-Benchmark: generiertes Fixture, N=3 Läufe, Median < 5 s (Spez §DC-QA-01.a).
 	@bash tools/bench-fixture.sh

@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"path"
 	"regexp"
 	"strings"
 
@@ -101,6 +102,17 @@ type rawVCS struct {
 	HeadAllow       string    `yaml:"head-allow"`
 }
 
+// rawPlanning trägt die Parameter des Moduls planning (DC-FA-PLAN-001): roadmap
+// (Pflicht zum Aktivieren, leer ⇒ inert) plus die Konventions-Defaults heading/
+// marker/slice-glob. **Keine** scope — planning ist ein Post-Pass ohne Datei-Scan
+// (ein `planning.scope` wäre wirkungslos; der strikte Decoder lehnt es ab).
+type rawPlanning struct {
+	Roadmap   string `yaml:"roadmap"`
+	Heading   string `yaml:"heading"`
+	Marker    string `yaml:"marker"`
+	SliceGlob string `yaml:"slice-glob"`
+}
+
 // rawCommits trägt scope und die Parameter des Moduls commits
 // (DC-FA-COMMITS-001): id-patterns (Regex-Liste gültiger Traceability-Kennungen,
 // leer ⇒ inert) und exempt-pattern (Betreff-Ausnahme, z. B. `^(Merge |Revert )`).
@@ -168,6 +180,7 @@ type raw struct {
 	Immutable *rawImmutable `yaml:"immutable"`
 	Vcs       *rawVCS       `yaml:"vcs"`
 	Commits   *rawCommits   `yaml:"commits"`
+	Planning  *rawPlanning  `yaml:"planning"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -192,38 +205,48 @@ func Decode(content []byte) (model.Config, error) {
 	}
 	cfg.Modules = r.Modules
 
-	if err := applyIDs(r.IDs, &cfg); err != nil {
-		return cfg, err
-	}
-	if err := applyMatrix(r.Matrix, &cfg); err != nil {
-		return cfg, err
-	}
-	if err := applyExternal(r.External, &cfg); err != nil {
-		return cfg, err
-	}
-	if err := applyCodepaths(r, &cfg); err != nil {
-		return cfg, err
-	}
-	if err := applyHostpaths(r, &cfg); err != nil {
-		return cfg, err
-	}
-	if err := applyDiagrams(r, &cfg); err != nil {
-		return cfg, err
-	}
-	if err := applyVersions(r, &cfg); err != nil {
-		return cfg, err
-	}
-	applyImmutable(r, &cfg)
-	if err := applyVCS(r, &cfg); err != nil {
-		return cfg, err
-	}
-	if err := applyCommits(r, &cfg); err != nil {
-		return cfg, err
-	}
-	if err := applyScopes(r, &cfg); err != nil {
+	if err := applyModules(r, &cfg); err != nil {
 		return cfg, err
 	}
 	return cfg, nil
+}
+
+// applyModules wendet die modul-spezifischen Validierungen/Kompilierungen in
+// fester Reihenfolge an und liefert den ersten Fehler (Exit 2). Ausgelagert aus
+// Decode, damit dessen gocyclo-Komplexität unter der Schwelle bleibt.
+func applyModules(r *raw, cfg *model.Config) error {
+	if err := applyIDs(r.IDs, cfg); err != nil {
+		return err
+	}
+	if err := applyMatrix(r.Matrix, cfg); err != nil {
+		return err
+	}
+	if err := applyExternal(r.External, cfg); err != nil {
+		return err
+	}
+	if err := applyCodepaths(r, cfg); err != nil {
+		return err
+	}
+	if err := applyHostpaths(r, cfg); err != nil {
+		return err
+	}
+	if err := applyDiagrams(r, cfg); err != nil {
+		return err
+	}
+	if err := applyVersions(r, cfg); err != nil {
+		return err
+	}
+	applyImmutable(r, cfg)
+	if err := applyVCS(r, cfg); err != nil {
+		return err
+	}
+	if err := applyCommits(r, cfg); err != nil {
+		return err
+	}
+	if err := applyPlanning(r, cfg); err != nil {
+		return err
+	}
+	return applyScopes(r, cfg)
 }
 
 // compileConfigRegex kompiliert ein Zeilen-Regex einer Modul-Konfiguration
@@ -301,6 +324,34 @@ func applyCommits(r *raw, cfg *model.Config) error {
 		return err
 	}
 	cfg.Commits = model.CommitsConfig{IDPatterns: pats, ExemptPattern: exempt}
+	return nil
+}
+
+// applyPlanning validiert die Parameter des Moduls planning (DC-FA-PLAN-001):
+// roadmap muss (wenn gesetzt) relativ zur Repo-Wurzel liegen (kein `/`, kein `..`);
+// die Existenz prüft der Kern beim Lauf (fail-closed → planning-drift). Leere
+// roadmap ⇒ Modul inert. heading/marker/slice-glob sind optional (Konventions-
+// Defaults im Kern).
+func applyPlanning(r *raw, cfg *model.Config) error {
+	if r.Planning == nil {
+		return nil
+	}
+	p := r.Planning
+	if strings.HasPrefix(p.Roadmap, "/") || strings.Contains(p.Roadmap, "..") {
+		return fmt.Errorf("%s: planning.roadmap %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')", FileName, p.Roadmap)
+	}
+	// slice-glob muss ein gültiges path.Match-Muster sein — sonst schluckte der Kern
+	// den ErrBadPattern und meldete fälschlich „keine Slices" (fail-open Silent-Grün am
+	// Config-Rand; R2-MEDIUM slice-057). Nur ein explizit gesetztes Muster prüfen; den
+	// Default `slice-*.md` kennt der Kern.
+	if p.SliceGlob != "" {
+		if _, err := path.Match(p.SliceGlob, "probe"); err != nil {
+			return fmt.Errorf("%s: planning.slice-glob %q ist kein gültiges Glob: %v", FileName, p.SliceGlob, err)
+		}
+	}
+	cfg.Planning = model.PlanningConfig{
+		Roadmap: p.Roadmap, Heading: p.Heading, Marker: p.Marker, SliceGlob: p.SliceGlob,
+	}
 	return nil
 }
 

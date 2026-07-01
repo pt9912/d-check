@@ -85,28 +85,42 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 		res.Findings = append(res.Findings,
 			CheckExternal(httpc, st.extRefs, cfg.External.EffectiveParallel())...)
 	}
-	// Modul vcs (DC-FA-VCS-001): Post-Pass über den git-Diff der Range —
-	// arbeitet auf der git-Historie, nicht auf den gescannten Dateien. Ein
-	// Port-Fehler (fehlendes .git/Range) ist fail-closed (Exit 2).
-	if active["vcs"] {
-		vf, verr := CheckVCS(vcs, cfg.VCS, vcsBase, vcsHead)
-		if verr != nil {
-			return res, verr
-		}
-		res.Findings = append(res.Findings, vf...)
+	// Post-Pässe (vcs/commits über den VCS-Port, planning hermetisch über fsys):
+	// arbeiten NACH dem Datei-Scan auf git-Historie bzw. Roadmap-Layout, nicht auf
+	// den gescannten Dateien. Ein Port-Fehler (fehlendes .git/Range) ist fail-closed.
+	post, perr := runPostPasses(fsys, vcs, vcsBase, vcsHead, cfg, active)
+	if perr != nil {
+		return res, perr
 	}
-	// Modul commits (DC-FA-COMMITS-001): Post-Pass über die Commit-Messages der
-	// Range — teilt den VCS-Port mit vcs, prüft aber Messages statt Datei-Inhalt.
-	// Ein Port-Fehler (fehlendes .git/Range) ist fail-closed (Exit 2).
-	if active["commits"] {
-		cf, cerr := CheckCommits(vcs, cfg.Commits, vcsBase, vcsHead)
-		if cerr != nil {
-			return res, cerr
-		}
-		res.Findings = append(res.Findings, cf...)
-	}
+	res.Findings = append(res.Findings, post...)
 	res.Findings = model.SortFindings(res.Findings)
 	return res, nil
+}
+
+// runPostPasses führt die nicht-datei-scannenden Module aus: vcs/commits (git-Diff
+// bzw. Commit-Messages über den VCS-Port, fail-closed als error) und planning
+// (hermetische Roadmap-↔-in-progress-Invariante über fsys, fail-closed als Befund).
+// Ausgelagert, damit RunWithVCS unter der gocyclo-Schwelle bleibt.
+func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, vcsBase, vcsHead string, cfg model.Config, active map[string]bool) ([]model.Finding, error) {
+	var out []model.Finding
+	if active["vcs"] {
+		vf, err := CheckVCS(vcs, cfg.VCS, vcsBase, vcsHead)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, vf...)
+	}
+	if active["commits"] {
+		cf, err := CheckCommits(vcs, cfg.Commits, vcsBase, vcsHead)
+		if err != nil {
+			return nil, err
+		}
+		out = append(out, cf...)
+	}
+	if active["planning"] {
+		out = append(out, CheckPlanning(fsys, cfg.Planning)...)
+	}
+	return out, nil
 }
 
 // runState bündelt den Lauf-Zustand (Caches, Befunde) — der

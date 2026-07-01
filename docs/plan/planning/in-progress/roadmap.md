@@ -10,7 +10,15 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle** — kein Slice in `in-progress/` (Backlog welle-46 offen). Zuletzt
+**welle-46-planning-modul** — [`slice-057`](slice-057-planning-modul.md) in `in-progress/`:
+neues **hermetisches** opt-in Modul `planning` (15.) mechanisiert `tools/planning-consistency.sh`
+(**kein** git — nur Roadmap-Datei + Verzeichnis-Listing), prüft `hasActive == hasSlices`
+(`planning-drift`, Heading-Guard fail-closed) und ist der **Dogfood-Ersatz** des
+`make planning-check`-Gates; Skript entfernt (vierter `codepaths.ignore-refs`-Tombstone).
+[ADR-0028](../../adr/0028-planning-lifecycle-modul.md) (Proposed; erste Planning-Gate-ADR,
+das slice-040-Skript war ADR-los),
+[`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+(Lastenheft 0.36.0). **Letzter** Kandidat des `tools/*.sh`-Audits (danach Backlog leer). Zuletzt
 abgeschlossen: welle-45-commits-modul ([`slice-056`](../done/slice-056-commits-modul.md) —
 neues opt-in Modul `commits` (14.) mechanisiert `tools/trace-check.sh` über den VCS-Port
 (erweitert um Commit-Message-Lesen, `CommitMessages`), prüft die Traceability-Kennung jeder
@@ -204,13 +212,10 @@ Refactor noch in keinem Release.
 
 ## Nächste Wellen
 
-| Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
-|---|---|---|---|
-| welle-46-planning-modul | gleicher Audit: `tools/planning-consistency.sh` (Roadmap-§Aktuelle-Welle-Marker ⟺ Präsenz von `in-progress/slice-*`) ist hermetische Markdown-↔-Dateisystem-Konsistenz — d-check-fit (Existenz-Prüfung wie `codepaths`), bleibt **ohne git** | Opt-in `planning`-Modul (neue Anforderung + ADR); bewusst nachrangig — die „Keine aktive Welle"-Konvention ist harness-layout-spezifisch, kleinerer Verteilungswert | **mittel** |
-
-Backlog aus dem Auftraggeber-Audit (2026-06-29). Reihenfolge nach Hebel: completeness
-(slice-055) und trace (welle-45-commits-modul, slice-056 — ADR-getrieben) umgesetzt;
-planning nachrangig. Bewusst
+**Keine geplanten Wellen.** Der Auftraggeber-`tools/*.sh`-Audit (2026-06-29) ist mit
+welle-46-planning-modul (slice-057, in Arbeit) **abgeschlossen**: alle mechanisierbaren
+Gate-Skripte sind d-check-Feature (completeness→in-Produkt-Flag slice-055, trace→`commits`
+slice-056, planning→`planning` slice-057; adr-immutable→`vcs` slice-053). Bewusst
 **nicht** d-check-fähig und daher nicht hier: `arch-check` (Go-Importe → Schwester-Projekt
 a-check), `coverage-gate`/`semgrep` (Go-Build/SAST), `image-test` (testet das Image selbst),
 `bench-fixture` (Fixture-Generator), `gate-consistency` (spannt Markdown ↔ Makefile ↔ YAML),

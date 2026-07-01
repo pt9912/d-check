@@ -834,10 +834,11 @@ func TestCLI005_KeinRepoZugriff(t *testing.T) {
 func TestCLI053_PrintConfig_VollesModulset(t *testing.T) {
 	_, stdout, _ := run(t, "--print-config")
 	for _, want := range []string{
-		"versions, pins, immutable, vcs, commits, external", // vollständige Verfügbar-Liste
+		"versions, pins, immutable, vcs, commits, planning, external", // vollständige Verfügbar-Liste
 		"# --- immutable:",
 		"# --- vcs:",
 		"# --- commits:",
+		"# --- planning:",
 		"# --- pins:",
 		"immutable-when:", // der vcs-Config-Key, nach dem gefragt wurde
 	} {
@@ -1570,5 +1571,34 @@ func TestCLI056_PrintMK_CommitsTarget(t *testing.T) {
 	// doc-commits darf commits NICHT abwählen (in SEINER Recipe-Zeile).
 	if strings.Contains(line, "--disable commits") {
 		t.Fatalf("doc-commits wählt commits fälschlich ab:\n%s", line)
+	}
+}
+
+// slice-057 (DC-FA-CLI-010-Erweiterung): das --print-mk-Fragment trägt zusätzlich
+// das Target doc-planning (Modul planning, DC-FA-PLAN-001) — **hermetisch**, ohne
+// --range (nur der Arbeitsbaum), nur planning (alle übrigen Module abgewählt).
+func TestCLI057_PrintMK_PlanningTarget(t *testing.T) {
+	code, stdout, stderr := run(t, "--print-mk")
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	if !strings.Contains(stdout, "\ndoc-planning: ## ") {
+		t.Fatalf("d-check.mk ohne doc-planning-Target:\n%s", stdout)
+	}
+	line := mkTargetRecipe(t, stdout, "--enable planning ")
+	for _, want := range []string{
+		"--disable links",   // Fokus auf planning (alle übrigen abgewählt)
+		"--disable commits", // auch das commits-Schwester-Modul
+	} {
+		if !strings.Contains(line, want) {
+			t.Fatalf("doc-planning-Recipe ohne %q:\n%s", want, line)
+		}
+	}
+	// doc-planning ist hermetisch: KEINE Range, und planning NICHT abgewählt.
+	if strings.Contains(line, "--range") || strings.Contains(line, "--staged") {
+		t.Fatalf("doc-planning trägt fälschlich eine Range:\n%s", line)
+	}
+	if strings.Contains(line, "--disable planning") {
+		t.Fatalf("doc-planning wählt planning fälschlich ab:\n%s", line)
 	}
 }

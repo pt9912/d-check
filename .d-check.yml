@@ -85,7 +85,8 @@ codepaths:
   # - adr-immutable-check.sh: abgelöst durch Modul vcs (ADR-0024, slice-053)
   # - completeness-check.sh: abgelöst durch --trace --require-complete (ADR-0026, slice-055)
   # - trace-check.sh: abgelöst durch Modul commits (ADR-0027, slice-056)
-  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh"]
+  # - planning-consistency.sh: abgelöst durch Modul planning (ADR-0028, slice-057)
+  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh", "tools/planning-consistency.sh"]
 
 # Versions-Pin-Konsistenz (DC-FA-VER-001, slice-048): jeder ghcr-Image-Pin in
 # den Live-Docs muss die aktuelle Version aus version.md#aktuell tragen — sonst
@@ -126,3 +127,12 @@ commits:
     - 'DC-(FA-[A-Z]+|QA)-\d+'
     - 'slice-\d+'
   exempt-pattern: '^(Merge |Revert )'
+
+# Modul planning (DC-FA-PLAN-001, slice-057): Roadmap-↔-in-progress-Lifecycle-
+# Konsistenz — `make planning-check` aktiviert es mit `--enable planning` (NICHT in
+# der modules-Liste oben, daher im Default-doc-check inert). Hermetisch (nur die
+# Roadmap-Datei + Verzeichnis-Listing, kein git, kein Netz); heading/marker/slice-glob
+# per Default (`## Aktuelle Welle` / „Keine aktive Welle" / `slice-*.md`). Löst
+# tools/planning-consistency.sh ab (ADR-0028, letztes Familien-Skript des tools/*.sh-Audits).
+planning:
+  roadmap: docs/plan/planning/in-progress/roadmap.md

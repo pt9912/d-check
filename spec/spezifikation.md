@@ -332,7 +332,7 @@ eingebetteten Version):
    `@sha256:`-Digest) leitet `DCHECK_REF` auf `…/d-check@$(DCHECK_DIGEST)` um und
    **sticht** so den Tag von `DCHECK_IMAGE`; sonst `DCHECK_REF := $(DCHECK_IMAGE)`.
 4. `TRACE_FLAGS ?=` — überschreibbare Flag-Variable für die RTM-Targets.
-5. Acht `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
+5. Neun `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
    Konsumenten aufgreift) und **TAB**-eingerücktem
    `docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) …`:
    - `doc-check` (Befund-Gate, ohne Zusatz-Flag),
@@ -361,6 +361,11 @@ eingebetteten Version):
      (`ValidModules` ohne `commits`) **abgeleitet**, damit das Target nur `commits`
      läuft. Die **verteilte** Commit-Traceability — kein kopiertes Skript (der
      Antrieb hinter dem Modul `commits`, dieselbe Linie wie `doc-immutable`),
+   - `doc-planning` (`--enable planning` + auf `planning` fokussierte `--disable`-Liste,
+     [`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in));
+     **kein** `--range`/`--staged` (hermetisch — nur der Arbeitsbaum). Die
+     `--disable`-Liste analog aus `ValidModules` ohne `planning` abgeleitet; verteilt
+     die Planning-Lifecycle-Konsistenz an Konsumenten mit demselben Roadmap-Layout,
    - `doc-help` (listet die `doc-*`-Targets via `grep … $(MAKEFILE_LIST) | sed`
      über die `##`-Annotationen; **namespaced** statt `help`, um die
      Namens-Kollision mit dem Konsumenten-Makefile zu vermeiden).
@@ -1078,6 +1083,42 @@ Message-Lese-Operation. Es ist die Portierung des abgelösten Traceability-Skrip
    Der Eingabe-Scope ist um `.git` + Range (bzw. die Message-Datei) erweitert — darum
    strikt opt-in und fail-closed. Ohne `commits` ist der Befundsatz byte-identisch.
 
+### DC-FA-PLAN-001.a — Planning-Lifecycle-Konsistenz (`planning`)
+
+Das Modul `planning`
+([`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
+ist opt-in und prüft die Roadmap-↔-in-progress-Invariante **hermetisch** (nur der
+read-only-Arbeitsbaum, **kein** git, **kein** Netz). Es ist ein **Post-Pass**, der
+nicht den Markdown-Baum scannt, sondern **eine** deklarierte Roadmap-Datei plus das
+Listing ihres Verzeichnisses prüft:
+
+1. **Inert/Config.** Leere `planning.roadmap` ⇒ Modul inert (kein Befund). Sonst
+   wird die Datei `planning.roadmap` (Wurzel-relativ, innerhalb der Repo-Wurzel)
+   gelesen; ihr Verzeichnis ist das **Slice-Verzeichnis**.
+2. **hasSlices.** Das Verzeichnis-Listing wird nach Dateien gefiltert, deren
+   Basisname `planning.slice-glob` (Default `slice-*.md`, per `path.Match`) matcht;
+   ≥1 Treffer ⇒ `hasSlices`.
+3. **Heading-Guard (fail-closed).** Fehlt die kanonische Überschrift
+   `planning.heading` (Default `## Aktuelle Welle`) **exakt** als eigene (getrimmte)
+   Zeile, **oder kommt sie mehrfach vor** (Aktiv-Status mehrdeutig — welcher Block
+   gilt?), ist der Aktiv-Status nicht bestimmbar ⇒ `planning-drift` (kein stilles
+   Grün — sonst gälte still „aktiv" bzw. gälte nur der erste Block). Fehlende/unlesbare
+   `planning.roadmap` ⇒ `planning-drift`.
+4. **hasActive.** Der Aktiv-Status-Block reicht von der `planning.heading`-Zeile bis
+   zur nächsten `## `-H2 (exklusive). Trägt er den `planning.marker` (Default „Keine
+   aktive Welle", literaler Teilstring), ist die Welle **ruhend** (`hasActive` =
+   false); sonst **aktiv**. Der Marker wird **nur** in diesem Block gesucht (ein
+   erklärender Verweis anderswo verfälscht den Status nicht).
+5. **Vergleich.** `hasActive ≠ hasSlices` ⇒ Grund-Code `planning-drift`. Befund:
+   `file` = `planning.roadmap`, `line` = Zeile der `planning.heading` (bzw. 1),
+   `target` = das Slice-Verzeichnis, `message` = Klartext der Drift-Richtung (Slice
+   vorhanden + Ruhe-Marker; kein Slice + aktive Welle; oder Heading/Datei fehlt).
+   **Diagnose-only** (kein `--repair`-Hunk).
+6. **Determinismus/Read-only.** Identischer Arbeitsbaum ⇒ identischer Befund
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)); nur lesend, netzlos, ohne
+   Schreiben ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+   Ohne `planning` ist der Befundsatz byte-identisch.
+
 ## 2. Datenstrukturen und Schemas
 
 ### Befund
@@ -1270,6 +1311,10 @@ Exit 2 ohne Prüfung
 | `vcs.head-allow` | string | leer | Zeilen-Regex; die HEAD-Status-Zeile (erstes Vorkommen) muss matchen, sonst `core-drift-vcs` (unzulässiger Status-Übergang); leer ⇒ keine Status-Übergangs-Prüfung |
 | `commits.id-patterns` | string[] | leer | Regex-Liste der gültigen Traceability-Kennungen; eine bereinigte Message ohne Match auf **irgendein** Muster ⇒ `commit-untraceable`; jedes Muster muss kompilieren (sonst Exit 2); leer ⇒ Modul inert (Range-Modus) bzw. Exit 2 (Message-Modus, nichts zu prüfen) ([`DC-FA-COMMITS-001`](lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)) |
 | `commits.exempt-pattern` | string | leer | Zeilen-Regex gegen den **Betreff** (erste Zeile); Match ⇒ Message kennungs-frei erlaubt (Selbstkonfig `^(Merge \|Revert )`); muss kompilieren (sonst Exit 2); leer ⇒ keine Ausnahme |
+| `planning.roadmap` | string | leer | `datei` (Wurzel-relativ, innerhalb der Repo-Wurzel); die Roadmap-Datei mit dem Aktiv-Status-Abschnitt. Ihr Verzeichnis ist das Slice-Verzeichnis. Leer ⇒ Modul inert ([`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
+| `planning.heading` | string | `## Aktuelle Welle` | die kanonische H2-Überschrift des Aktiv-Status-Abschnitts (exakter, getrimmter Zeilen-Vergleich); fehlt sie ⇒ `planning-drift` (fail-closed) |
+| `planning.marker` | string | `Keine aktive Welle` | literaler Ruhe-Marker-Teilstring; nur im `planning.heading`-Block gesucht; vorhanden ⇒ ruhende Welle |
+| `planning.slice-glob` | string | `slice-*.md` | Glob (`path.Match` auf den Basisnamen) der Slice-Dateien im Roadmap-Verzeichnis; ≥1 Treffer ⇒ aktive-Welle-erwartet; ein explizit gesetztes Muster muss ein gültiges `path.Match`-Glob sein (sonst Exit 2 — verhindert ein fail-open Silent-Grün) |
 
 **Glob-Auswertung.** Alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`,
 `matrix.classes[].paths`/`.order`, die `*.exempt-paths`) werden **segmentweise
@@ -1317,6 +1362,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `core-drift` | immutable | normalisierter Core einer gepinnten Datei (ohne Marker-Zeile + `exclude-sections`) weicht vom hinterlegten `immutable`-Hash ab |
 | `core-drift-vcs` | vcs | Core einer immutablen Datei (BASE erfüllt `vcs.immutable-when`) hat sich über die Commit-Range geändert, ihr Status-Übergang ist unzulässig (`vcs.head-allow`), oder die immutable Datei wurde gelöscht/umbenannt |
 | `commit-untraceable` | commits | bereinigte Commit-Message trägt keine Kennung nach `commits.id-patterns` und ist nicht per `commits.exempt-pattern` (Betreff) ausgenommen |
+| `planning-drift` | planning | Roadmap-Aktiv-Status (`planning.marker` im `planning.heading`-Block) und Präsenz von `planning.slice-glob`-Slices sind inkonsistent (`hasActive ≠ hasSlices`), oder die kanonische Überschrift fehlt/ist mehrdeutig bzw. die Roadmap-Datei fehlt (fail-closed) |
 
 Nutzungs-/Umgebungsfehler (Exit 2) melden auf stderr mit Präfix
 `d-check: error:`; Konfigurationsfehler nennen Datei und Zeile.
@@ -1375,3 +1421,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-29 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) + §2-Schema (`vcs.paths`/`immutable-when`/`exclude-sections`/`status-line`/`head-allow`) + Grund-Code `core-drift-vcs` (§4) ergänzt: opt-in Modul `vcs` vergleicht `core(BASE)` vs. `core(HEAD)` über eine Commit-Range (`--range <base>..<head>` / `--staged`), liest das read-only `.git` über einen reine-Go-VCS-Port (ohne git-Binary, ohne Netz); erweiterter Eingabe-Scope (git + Range), aber lokal/lesend/deterministisch — Determinismus/Read-only gehalten; fail-closed ohne `.git`/Range, diagnose-only. Core-Semantik in Parität zum abgelösten `adr-immutable-check.sh` (nur Kopf-Status-Zeile gestrippt, `exclude-sections`-Abschnitte). Default-aus byte-identisch. Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (6→7 Targets): `--print-mk` trägt `doc-immutable` (`--enable vcs` + aus `ValidModules` abgeleitete Fokus-`--disable`-Liste, `RANGE`/`STAGED`) — verteilt die git-Garantie an Konsumenten | slice-053 |
 | 2026-06-29 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) + §2-Schema (`codepaths.ignore-refs`) ergänzt: Referenz-Ventil `ignore-refs` — ein aufgelöster Ziel-Pfad, der ein Glob matcht, wird nicht existenz-/anker-geprüft (**referenz-weit**, Tombstone-Register entfernter Artefakte); dritte Ventil-Achse neben dem zeilenweisen `d-check:ignore` und dem datei-weiten `exempt-paths`, in Schritt 5 vor `codepath-missing`, ohne Eintrag byte-identisch. Anlass: Frozen-Doc-Refactoring-Falle (immutable ADRs zitieren entfernte Pfade) — zugleich das in slice-053 behaltene `adr-immutable-check.sh` entfernt | slice-054 |
 | 2026-07-01 | §[`DC-FA-COMMITS-001.a`](spezifikation.md#dc-fa-commits-001a--traceability-kennung-in-commit-messages-über-eine-commit-range-commits) + §2-Schema (`commits.id-patterns`/`commits.exempt-pattern`) + Grund-Code `commit-untraceable` (§4) ergänzt: opt-in Modul `commits` prüft, dass jede Commit-Message eine Kennung nach `commits.id-patterns` trägt (`commit-untraceable`), über **denselben VCS-Port** wie `vcs` (reine-Go-git, ohne git-Binary, ohne Netz), erweitert um Message-Lesen; zwei Quellen: `--range <base>..<head>` (Nicht-Merge-Commits, `--no-merges`-Parität) und `--commit-msg <datei\|->` (Kurzschluss-Modus für den commit-msg-Hook, einzelne Pending-Message). Uniforme `#`-/scissors-Bereinigung (Kennung auf Inhalts-Zeile), Betreff-Ausnahme `commits.exempt-pattern`; fail-closed ohne `.git`/Range/Message-Datei, diagnose-only. Default-aus byte-identisch. Portierung des abgelösten `tools/trace-check.sh` (dieselbe VCS-Port-Präzedenz wie `vcs`, auf Commit-Messages statt Datei-Inhalt). Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (7→8 Targets): `--print-mk` trägt `doc-commits` (`--enable commits` + aus `ValidModules` abgeleitete Fokus-`--disable`-Liste, `--range`) — verteilt die Commit-Traceability an Konsumenten | slice-056 |
+| 2026-07-01 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) + §2-Schema (`planning.roadmap`/`heading`/`marker`/`slice-glob`) + Grund-Code `planning-drift` (§4) ergänzt: opt-in Modul `planning` prüft **hermetisch** (nur Arbeitsbaum, kein git/Netz) die Roadmap-↔-in-progress-Invariante — Ruhe-Marker im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` im Verzeichnis (`hasActive == hasSlices`), sonst `planning-drift`; Heading-Guard fail-closed, Post-Pass wie `codepaths`-Existenz, diagnose-only. Default-aus byte-identisch. Portierung des abgelösten `tools/planning-consistency.sh`. Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (8→9 Targets): `--print-mk` trägt `doc-planning` (`--enable planning`, hermetisch ohne `--range`) | slice-057 |

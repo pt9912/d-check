@@ -18,9 +18,10 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, external
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, external
 # (external ist die einzige Netzwerk-Tür — strikt opt-in; vcs und commits sind
-#  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in.)
+#  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in; planning ist
+#  hermetisch (Roadmap-↔-in-progress-Konsistenz, kein git) — strikt opt-in.)
 
 # --- ids: Linkpflicht für Kennungen ---
 # ids:
@@ -111,6 +112,14 @@ modules: [links, anchors]
 #     - 'DC-(FA-[A-Z]+|QA)-\d+'
 #     - 'slice-\d+'
 #   exempt-pattern: '^(Merge |Revert )'                # kennungsfreier Betreff (Merge/Revert)
+
+# --- planning: Roadmap-↔-in-progress-Lifecycle-Konsistenz — hermetisch (kein git), opt-in ---
+#   (Aufruf über das make-Target planning-check bzw. --enable planning. NICHT in modules: oben.)
+# planning:
+#   roadmap: docs/plan/planning/in-progress/roadmap.md   # Roadmap-Datei; ihr Verzeichnis = Slice-Verzeichnis
+#   # heading: "## Aktuelle Welle"      # kanonische H2 (Default); fehlt sie ⇒ planning-drift (fail-closed)
+#   # marker: "Keine aktive Welle"      # literaler Ruhe-Marker (Default)
+#   # slice-glob: "slice-*.md"          # Basisnamen-Glob der Slice-Dateien (Default)
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---
 # external:

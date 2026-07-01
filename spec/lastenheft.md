@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.35.0
+**Version:** 0.36.0
 
 **Status:** Draft
 
@@ -47,7 +47,8 @@ statt per Code-Kopie.
 > (Versions-Pin-Konsistenz), `PIN` (Content-Pin/Drift), `IMM`
 > (Immutabilitäts-/Core-Pin), `VCS` (git-historienbasierte
 > Core-Immutabilität), `COMMITS` (Traceability-Kennung in
-> Commit-Messages), `CONF` (Konfiguration), `DIST` (Distribution).
+> Commit-Messages), `PLAN` (Planning-Lifecycle-Konsistenz), `CONF`
+> (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -77,7 +78,7 @@ verweist für das Konfigurations-Format auf
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
 `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`immutable`, `vcs`, `commits`, `planning`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -374,7 +375,7 @@ Release-Version** des laufenden Binaries (das Binary kennt seine Version,
 nicht seinen eigenen Digest; für strikte Reproduzierbarkeit überschreibt der
 Konsument `DCHECK_IMAGE` mit einem `@sha256:`-Digest aus den Release-Notes,
 konsistent mit der Konsum-Pin-Politik aus
-[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie acht
+[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie neun
 `##`-annotierte Targets: `doc-check` (Doku-Gate), `doc-trace` (advisory RTM,
 [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)), `doc-complete`
 (Vollständigkeits-Gate,
@@ -390,7 +391,10 @@ Skript-Kopie), `doc-commits` (Commit-Message-Traceability via Modul `commits`,
 [`DC-FA-COMMITS-001`](#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)
 — `--enable commits` mit auf `commits` fokussierter `--disable`-Liste, `--range $(RANGE)`;
 die **verteilte** Commit-Traceability für Konsumenten ohne Skript-Kopie, parallel zu
-`doc-immutable`) und `doc-help` (listet die
+`doc-immutable`), `doc-planning` (Planning-Lifecycle-Konsistenz via Modul `planning`,
+[`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+— `--enable planning` mit auf `planning` fokussierter `--disable`-Liste, **hermetisch**
+ohne `RANGE`/`STAGED`) und `doc-help` (listet die
 `doc-*`-Targets), jeweils `docker run --network none -v "$PWD:/repo:ro"`. Dazu die
 Variablen `TRACE_FLAGS` (Flags der RTM-Targets) und `DCHECK_DIGEST` (ein
 `@sha256:`-Digest, der den Tag von `DCHECK_IMAGE` sticht — strikte
@@ -403,11 +407,11 @@ eingebetteten Version. Reiht sich in die read-only-Generatoren
 
 **Akzeptanzkriterien:**
 
-- **Happy Path:** Given ein installiertes `d-check`, when `d-check --print-mk` läuft, then liegt auf stdout ein Makefile-Fragment mit `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v…`, den Variablen `DCHECK_DIGEST` und `TRACE_FLAGS` und den `##`-annotierten Targets `doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`, `doc-repair`, `doc-immutable` (mit `--enable vcs` und einer auf `vcs` fokussierten `--disable`-Liste), `doc-commits` (mit `--enable commits` und einer auf `commits` fokussierten `--disable`-Liste) und `doc-help` (jeweils `docker run … --network none … :/repo:ro`), Exit 0; kein Repo-Zugriff nötig.
-- **Boundary:** Given das Fragment wird per `d-check --print-mk > d-check.mk` umgeleitet und in ein Makefile `include`-t, when `make doc-check` (bzw. `doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`) läuft, then ruft das Target das gepinnte Image (bzw. den per `DCHECK_IMAGE`/`DCHECK_DIGEST` gesetzten Override) im passenden Modus (`doc-trace` → `--trace`, `doc-complete` → `--trace --require-complete`, `doc-doctor` → `--doctor`, `doc-repair` → `--repair` mit unterdrücktem Recipe-Echo, `doc-immutable` → `--enable vcs` + Fokus-`--disable` mit `--range $(RANGE)` bzw. `--staged`, `doc-commits` → `--enable commits` + Fokus-`--disable` mit `--range $(RANGE)`); d-check selbst schreibt dabei nichts.
+- **Happy Path:** Given ein installiertes `d-check`, when `d-check --print-mk` läuft, then liegt auf stdout ein Makefile-Fragment mit `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v…`, den Variablen `DCHECK_DIGEST` und `TRACE_FLAGS` und den `##`-annotierten Targets `doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`, `doc-repair`, `doc-immutable` (mit `--enable vcs` und einer auf `vcs` fokussierten `--disable`-Liste), `doc-commits` (mit `--enable commits` und einer auf `commits` fokussierten `--disable`-Liste), `doc-planning` (mit `--enable planning` und einer auf `planning` fokussierten `--disable`-Liste, ohne Range) und `doc-help` (jeweils `docker run … --network none … :/repo:ro`), Exit 0; kein Repo-Zugriff nötig.
+- **Boundary:** Given das Fragment wird per `d-check --print-mk > d-check.mk` umgeleitet und in ein Makefile `include`-t, when `make doc-check` (bzw. `doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`/`doc-planning`) läuft, then ruft das Target das gepinnte Image (bzw. den per `DCHECK_IMAGE`/`DCHECK_DIGEST` gesetzten Override) im passenden Modus (`doc-trace` → `--trace`, `doc-complete` → `--trace --require-complete`, `doc-doctor` → `--doctor`, `doc-repair` → `--repair` mit unterdrücktem Recipe-Echo, `doc-immutable` → `--enable vcs` + Fokus-`--disable` mit `--range $(RANGE)` bzw. `--staged`, `doc-commits` → `--enable commits` + Fokus-`--disable` mit `--range $(RANGE)`, `doc-planning` → `--enable planning` + Fokus-`--disable`, **hermetisch ohne Range**); d-check selbst schreibt dabei nichts.
 - **Negative:** Given `d-check --print-mk` mit einem unbekannten Flag, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)).
 
-**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits der gelisteten acht (`doc-check`/`doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`/`doc-help` — Konsumenten komponieren weitere `gates` selbst); ein `help`-Target (Namens-Kollision mit dem Konsumenten — daher namespaced `doc-help`); Nicht-`@sha256:`-Digest-Formen in `DCHECK_DIGEST`; die Exit-Code-Semantik der RTM-Targets selbst (in [`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) bzw. [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix) festgelegt); Nicht-Make-Build-Systeme.
+**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits der gelisteten neun (`doc-check`/`doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`/`doc-planning`/`doc-help` — Konsumenten komponieren weitere `gates` selbst); ein `help`-Target (Namens-Kollision mit dem Konsumenten — daher namespaced `doc-help`); Nicht-`@sha256:`-Digest-Formen in `DCHECK_DIGEST`; die Exit-Code-Semantik der RTM-Targets selbst (in [`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) bzw. [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix) festgelegt); Nicht-Make-Build-Systeme.
 
 ---
 
@@ -1263,6 +1267,60 @@ Go; in begleitender ADR festgehalten).
 
 ---
 
+### DC-FA-PLAN-001 — Planning-Lifecycle-Konsistenz (Modul `planning`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `planning` prüft d-check eine
+**Planning-Lifecycle-Invariante**: die Roadmap darf in ihrem Aktiv-Status-Abschnitt
+(`planning.heading`, per Konvention `## Aktuelle Welle`) genau dann den Ruhe-Marker
+(`planning.marker`, per Konvention „Keine aktive Welle") tragen, wenn **kein**
+`slice-*` (`planning.slice-glob`) im Slice-Verzeichnis liegt — und umgekehrt.
+Formal: `hasActive == hasSlices`, sonst Befund `planning-drift`. Es ist die
+maschinelle Durchsetzung der Lifecycle-/Roadmap-Kopplung aus
+[`AGENTS.md` §3.3](../AGENTS.md#33-git-mv--inhaltsänderung--zwei-commits) — als
+Regelmodul verkörpert, die verteilbare Form derselben Prüfung, die zuvor ein
+kopiertes Shell-Skript leistete.
+
+Die Prüfung ist **hermetisch**: sie liest nur den read-only-Arbeitsbaum — die
+Datei `planning.roadmap` und das Verzeichnis-Listing ihres Verzeichnisses; **kein**
+git, **kein** Netz, **kein** Schreiben. `planning` relativiert damit **weder**
+[`DC-QA-02`](#dc-qa-02--determinismus) **noch**
+[`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit); es ist ein
+normales hermetisches Modul (wie `codepaths`), **kein** eingabe-scope-erweiterndes
+wie `vcs`/`commits`.
+
+- `hasSlices`: ≥1 Datei im Verzeichnis der `planning.roadmap` matcht `planning.slice-glob` (per `path.Match`).
+- `hasActive`: der `planning.heading`-Abschnitt (kanonische H2 bis zur nächsten H2) enthält den `planning.marker` **nicht**.
+- `hasActive ≠ hasSlices` → Befund `planning-drift` — beide Drift-Richtungen: Slice vorhanden + Ruhe-Marker; oder kein Slice + benannte aktive Welle.
+
+**fail-closed (Heading-Guard):** fehlt die kanonische `planning.heading`-Überschrift
+**exakt** (Tippfehler, Zusatztext, Umbenennung), **kommt sie mehrfach vor**
+(mehrdeutiger Aktiv-Status) oder fehlt die `planning.roadmap`-Datei, ist der
+Aktiv-Status nicht bestimmbar → Befund `planning-drift` (kein stilles Grün —
+sonst gälte still „aktiv", auch wenn ein Slice vorliegt). Ein explizit gesetztes
+`planning.slice-glob` muss ein gültiges `path.Match`-Muster sein (sonst Exit 2).
+**Strikt opt-in,
+diagnose-only:** `planning` ist nie Default-Modul; ohne aktives `planning` ist der
+Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)). Leere
+`planning.roadmap` ⇒ Modul inert. `planning-drift` liefert keinen `--repair`-Hunk
+(die Korrektur ist eine Roadmap-/Lifecycle-Entscheidung; vgl.
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `planning` aktiv mit gesetzter `planning.roadmap`, einer Roadmap mit dem kanonischen `## Aktuelle Welle`-Abschnitt **ohne** den Ruhe-Marker und ≥1 `slice-*` im Verzeichnis, when `d-check --enable planning` läuft, then kein Befund, Exit 0 (ebenso konsistent: Ruhe-Marker vorhanden **und** kein Slice).
+- **Boundary (Modul-aus):** Given **kein** aktives `planning`, when `d-check` in einer netzlosen, read-only Umgebung läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)) und nichts wird geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+- **Negative:** Given `planning` aktiv und eine Drift (Slice im Verzeichnis, aber die Roadmap trägt den Ruhe-Marker; oder kein Slice, aber die Roadmap benennt eine aktive Welle), when `d-check --enable planning` läuft, then ein Befund `planning-drift`, Exit 1.
+- **fail-closed (Heading/Datei fehlt):** Given `planning` aktiv und eine Roadmap **ohne** die kanonische `planning.heading`-Überschrift (bzw. eine fehlende `planning.roadmap`-Datei), when `d-check --enable planning` läuft, then `planning-drift`, Exit 1 — kein stilles Grün.
+
+**Out-of-Scope:** eine git-/VCS-basierte Lifecycle-Prüfung (rein hermetisch, nur
+Arbeitsbaum); mehr als eine Roadmap bzw. ein Slice-Verzeichnis pro Lauf; das Prüfen
+des Slice-**Inhalts** (nur Datei-Existenz, wie `codepaths`); die Roadmap-Prosa
+jenseits des Aktiv-Status-Markers; ein `--repair`-Hunk; das Erzwingen der
+Lifecycle-Move-Commit-Bündelung selbst ([`MR-013`](../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)
+bleibt Commit-Zeit-Disziplin).
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -1371,7 +1429,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -1385,6 +1443,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.36.0 | 2026-07-01 | Neue Anforderung `DC-FA-PLAN-001` (Modul `planning`, opt-in): maschinelle Durchsetzung der Planning-Lifecycle-Invariante — die Roadmap trägt den Ruhe-Marker (`planning.marker`, „Keine aktive Welle") in ihrem `planning.heading`-Abschnitt (`## Aktuelle Welle`) genau dann, wenn kein `slice-*` (`planning.slice-glob`) im Verzeichnis liegt (`hasActive == hasSlices`), sonst `planning-drift`. **Hermetisch** (nur Roadmap-Datei + Verzeichnis-Listing, **kein** git, **kein** Netz, read-only) — normales Modul wie `codepaths`, `DC-QA-02`/`DC-QA-03` unberührt; fail-closed bei fehlender kanonischer Überschrift bzw. Roadmap-Datei (Heading-Guard), strikt opt-in, diagnose-only, default-aus byte-identisch. 15. Regelmodul; Bereichskürzel `PLAN` in §3, `planning` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-PLAN-001.a` + Grund-Code `planning-drift` + Schema-Keys (`planning.roadmap`/`marker`/`heading`/`slice-glob`) in der Spezifikation. Anlass: Auftraggeber — `tools/planning-consistency.sh` mechanisieren (letzter Kandidat des `tools/*.sh`-Audits, [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Klasse „verteilen statt kopieren"); bewusst nachrangig (die „Keine aktive Welle"-Konvention ist harness-layout-spezifisch, kleinerer Verteilungswert) — im Gegensatz zu `vcs`/`commits` **ohne** git/VCS-Port, rein hermetisch. `make planning-check` dogfoodet das Modul. Zugleich **`DC-FA-CLI-010`-Erweiterung** (8→9 Targets): `--print-mk` trägt ein `doc-planning`-Target; `--print-config`/`--suggest-config` führen `planning` | slice-057 |
 | 0.35.0 | 2026-07-01 | Neue Anforderung `DC-FA-COMMITS-001` (Modul `commits`, opt-in): maschinelle Durchsetzung der Traceability-Regel — jede geprüfte Commit-Message muss eine Kennung nach `commits.id-patterns` (`ADR-`/`MR-`/`DC-`/`slice-`) auf einer Inhalts-Zeile tragen, sonst `commit-untraceable`. Liest die Commit-**Messages** über **denselben VCS-Port** wie `DC-FA-VCS-001` (reine-Go-git, **ohne git-Binary** → distroless bleibt, **ohne Netz**), erweitert um Message-Lesen; zwei Quellen für dieselbe Prüfung: `--range <base>..<head>` (CI/Push, Nicht-Merge-Commits) und `--commit-msg <datei\|->` (commit-msg-Hook, einzelne Pending-Message). Uniforme `#`-/scissors-Bereinigung (Kennung auf Inhalts-Zeile), Betreff-Ausnahme `commits.exempt-pattern` (Selbstkonfig `^(Merge \|Revert )`). Strikt opt-in (nie Default, wie `external`/`vcs`), fail-closed ohne `.git`/Range/Message, diagnose-only; erweiterter Eingabe-Scope, aber lokal/lesend/deterministisch — `DC-QA-02`/`DC-QA-03` unberührt. 14. Regelmodul; Bereichskürzel `COMMITS` in §3, `commits` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-COMMITS-001.a` + Grund-Code `commit-untraceable` + Schema-Keys (`commits.id-patterns`/`exempt-pattern`) in der Spezifikation. Anlass: Auftraggeber — `tools/trace-check.sh` vollständig mechanisieren (Copy-Drift über die Repo-Familie, [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Klasse „verteilen statt kopieren"): die verteilbare Modul-Form löst es im Image; d-check dogfoodet das Modul für sein eigenes `make trace-check`-Gate. Das „nächste `adr-check`" — dieselbe VCS-Port-Präzedenz wie `DC-FA-VCS-001`, hier auf Commit-Messages statt Datei-Inhalt. Zugleich **`DC-FA-CLI-010`-Erweiterung** (7→8 Targets): `--print-mk` trägt ein `doc-commits`-Target (`--enable commits` + aus `ValidModules` abgeleitete Fokus-`--disable`-Liste, `--range`) — die **verteilte** Commit-Traceability für Konsumenten ohne Skript-Kopie („verteilen statt kopieren", parallel zu `doc-immutable`); `--print-config`/`--suggest-config` führen `commits` in der Verfügbar-/opt-in-Liste | slice-056 |
 | 0.34.0 | 2026-06-29 | `DC-FA-CODE-001` (Modul `codepaths`) um `ignore-refs` erweitert: eine Glob-Liste nimmt **bestimmte Ziel-Pfade** von der Existenz-Prüfung aus — **referenz-weit** (egal Datei/Zeile), als Register bewusst entfernter/historischer Artefakte (Tombstones); dritte Ventil-Achse neben dem zeilenweisen `d-check:ignore` und dem datei-weiten `exempt-paths`. Bewusster Akt mit Gate (ohne Eintrag bleibt `codepath-missing`), Default-leer byte-identisch. Schema-Key `codepaths.ignore-refs` + §DC-FA-CODE-001.a-Schritt in der Spezifikation. Anlass: die Frozen-Doc-Refactoring-Falle — immutable ADRs zitieren Code-Pfade, die bei Refactoring/Löschung dangeln, aber nicht editierbar sind; gelöst und zugleich das in slice-053 nur „pfad-stabil behaltene" `tools/adr-immutable-check.sh` entfernt; begleitende ADR (Supersedes die „Skript-behalten"-Teilentscheidung der VCS-ADR) | slice-054 |
 | 0.33.0 | 2026-06-29 | Neue Anforderung `DC-FA-VCS-001` (Modul `vcs`, opt-in): git-historienbasierte Immutabilität des Core über eine Commit-Range — `core(BASE)` ≟ `core(HEAD)`, geliefert über `--range <base>..<head>` (CI/Push) oder `--staged` (pre-commit). Liest das read-only `.git` über einen eigenen **VCS-Port** (reine-Go-git, **ohne git-Binary** → distroless bleibt, **ohne Netz**); erweiterter Eingabe-Scope (git + Range statt nur Markdown-Baum), aber lokal/lesend/deterministisch — `DC-QA-02`/`DC-QA-03` unberührt. Geprüft wird jede in der Range geänderte, der Klasse (`vcs.paths`) entsprechende Datei mit immutabler BASE (`vcs.immutable-when`): Körper-Drift, unzulässiger Status-Übergang (`vcs.head-allow`) oder Löschung/Umbenennung → `core-drift-vcs`. Strikt opt-in (nie Default, wie `external`), fail-closed bei fehlendem `.git`/Range, diagnose-only. **Die volle git-Garantie, die `DC-FA-IMM-001` (hermetischer Pin) bewusst der späteren VCS-Stufe überließ** — beide koexistieren als Defense-in-Depth. 13. Regelmodul; Bereichskürzel `VCS` in §3, `vcs` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-VCS-001.a` + Grund-Code `core-drift-vcs` + Schema-Keys (`vcs.paths`/`immutable-when`/`exclude-sections`/`status-line`/`head-allow`) in der Spezifikation. Anlass: Auftraggeber — `adr-immutable-check.sh` vollständig mechanisieren (Copy-Drift über die Repo-Familie, [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Klasse): die verteilbare git-Form löst es im Image; d-check dogfooded das Modul für die eigenen Accepted-ADRs. Zugleich **DC-FA-CLI-010-Erweiterung** (6→7 Targets): `--print-mk` trägt ein `doc-immutable`-Target (`--enable vcs` + aus dem Modulsatz abgeleitete Fokus-`--disable`-Liste, RANGE/STAGED) — die **verteilte** git-Garantie für Konsumenten ohne Skript-Kopie („verteilen statt kopieren"); `model.ValidModules` dafür exportiert. Außerdem **Config-Surface-Bereinigung**: `--print-config` (`DC-FA-CLI-005`) führt jetzt **alle** Module (die zuvor fehlenden `pins`/`immutable` + `vcs` ergänzt) und `--suggest-config ai-harness` (`DC-FA-CLI-006`) nennt die situativen opt-in-Module vollständig (`versions`/`pins`/`immutable`/`vcs` nachgezogen) — die „Verfügbar"-Liste war eine Harness-Ehrlichkeits-Lücke über drei Slices (049/052/053) | slice-053 |

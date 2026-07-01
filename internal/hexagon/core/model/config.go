@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -53,6 +53,8 @@ type Config struct {
 	VCS VCSConfig
 	// Commits: Parameter des Moduls commits (DC-FA-COMMITS-001).
 	Commits CommitsConfig
+	// Planning: Parameter des Moduls planning (DC-FA-PLAN-001).
+	Planning PlanningConfig
 	// Scopes: modul-lokale Scan-Scopes (DC-FA-CONF-002); Schlüssel
 	// ist der Modulname, nil-Eintrag/fehlender Schlüssel = globaler
 	// Scope.
@@ -267,6 +269,44 @@ type VCSConfig struct {
 type CommitsConfig struct {
 	IDPatterns    []*regexp.Regexp
 	ExemptPattern *regexp.Regexp
+}
+
+// PlanningConfig sind die Parameter des Moduls planning (DC-FA-PLAN-001):
+// Roadmap ist die Roadmap-Datei mit dem Aktiv-Status-Abschnitt (leer ⇒ Modul
+// inert; ihr Verzeichnis ist das Slice-Verzeichnis); Heading die kanonische
+// H2-Überschrift, Marker der literale Ruhe-Marker, SliceGlob das Basisnamen-Glob
+// der Slice-Dateien. Heading/Marker/SliceGlob leer ⇒ Konventions-Default
+// (`## Aktuelle Welle` / „Keine aktive Welle" / `slice-*.md`). Hermetisch — nur
+// der Filesystem-Port, kein git.
+type PlanningConfig struct {
+	Roadmap   string
+	Heading   string
+	Marker    string
+	SliceGlob string
+}
+
+// EffectiveHeading liefert die kanonische H2-Überschrift (Default `## Aktuelle Welle`).
+func (p PlanningConfig) EffectiveHeading() string {
+	if p.Heading == "" {
+		return "## Aktuelle Welle"
+	}
+	return p.Heading
+}
+
+// EffectiveMarker liefert den Ruhe-Marker (Default „Keine aktive Welle").
+func (p PlanningConfig) EffectiveMarker() string {
+	if p.Marker == "" {
+		return "Keine aktive Welle"
+	}
+	return p.Marker
+}
+
+// EffectiveSliceGlob liefert das Slice-Basisnamen-Glob (Default `slice-*.md`).
+func (p PlanningConfig) EffectiveSliceGlob() string {
+	if p.SliceGlob == "" {
+		return "slice-*.md"
+	}
+	return p.SliceGlob
 }
 
 // EffectiveModules wendet die Modul-Auflösung an

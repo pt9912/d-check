@@ -21,6 +21,7 @@ const (
 	ReasonCoreDrift          = "core-drift"
 	ReasonCoreDriftVCS       = "core-drift-vcs"
 	ReasonCommitUntraceable  = "commit-untraceable"
+	ReasonPlanningDrift      = "planning-drift"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

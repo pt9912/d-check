@@ -187,6 +187,39 @@ func TestDecode_CommitsHappy(t *testing.T) {
 	}
 }
 
+// TestDecode_PlanningFehler deckt den applyPlanning-Escape-Guard + die
+// scope-Ablehnung ab (DC-FA-PLAN-001; planning ist ein Post-Pass ohne Scan).
+func TestDecode_PlanningFehler(t *testing.T) {
+	for _, bad := range []string{
+		"planning:\n  roadmap: /abs/roadmap.md\n",
+		"planning:\n  roadmap: ../raus/roadmap.md\n",
+		"planning:\n  roadmap: r.md\n  slice-glob: 'slice-[.md'\n", // ungültiges path.Match-Glob (fail-open-Schutz)
+	} {
+		if _, err := configyaml.Decode([]byte(bad)); err == nil {
+			t.Fatalf("ungültige planning-Config akzeptiert: %q", bad)
+		}
+	}
+	// planning.scope existiert nicht (Post-Pass ohne Datei-Scan) ⇒ strikter Decoder lehnt ab
+	if _, err := configyaml.Decode([]byte("planning:\n  scope:\n    roots: [x]\n")); err == nil {
+		t.Fatal("unbekanntes planning.scope muss abgelehnt werden")
+	}
+}
+
+// TestDecode_PlanningHappy: eine gültige planning-Config wird übernommen, die
+// Defaults greifen.
+func TestDecode_PlanningHappy(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("planning:\n  roadmap: docs/plan/planning/in-progress/roadmap.md\n  marker: IDLE\n"))
+	if err != nil {
+		t.Fatalf("gültige planning-Config abgelehnt: %v", err)
+	}
+	if cfg.Planning.Roadmap == "" || cfg.Planning.Marker != "IDLE" {
+		t.Fatalf("planning-Config nicht übernommen: %+v", cfg.Planning)
+	}
+	if cfg.Planning.EffectiveHeading() != "## Aktuelle Welle" || cfg.Planning.EffectiveSliceGlob() != "slice-*.md" {
+		t.Fatalf("planning-Defaults falsch: heading=%q glob=%q", cfg.Planning.EffectiveHeading(), cfg.Planning.EffectiveSliceGlob())
+	}
+}
+
 func TestDecode_MatrixUndExternalConstraints(t *testing.T) {
 	if _, err := configyaml.Decode([]byte("matrix:\n  classes:\n    - name: a\n      paths: [x]\n  rules:\n    - {from: a, to: fehlt, allow: false}\n")); err == nil {
 		t.Fatal("undeklarierte Klasse: Fehler erwartet")
