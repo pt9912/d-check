@@ -16,8 +16,9 @@ of the `tools/*.sh` audit) are tracked in [CHANGELOG.md](CHANGELOG.md).
 ## What is d-check?
 
 **d-check** checks Markdown documentation as a verifiable **invariant network**:
-every machine-decidable documentation invariant is an individually enablable rule
-module with its own requirement in the [requirements spec](spec/lastenheft.md) —
+every machine-decidable documentation invariant is a rule module that can be
+enabled individually, with its own requirement in the
+[requirements spec](spec/lastenheft.md) —
 from the **reference network** (links, anchors, ID link obligations, reference
 matrix) through Markdown hygiene (span artifacts, host-path leaks), content drift
 and immutability (content/core pins, git diff) to version-pin, commit-traceability
@@ -112,7 +113,7 @@ to its definition, or a document class points downward is
 machine-decidable — d-check turns these invariants into a gate
 instead of a review opinion.
 
-The rule: **report, never repair.** d-check is a pure read
+The principle: **report, never repair.** d-check is a purely read-only
 tool ([`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));
 deterministic findings are fixed, not suppressed. An opt-out
 marker exists only where a non-existent target or an illustrative identifier
@@ -131,7 +132,7 @@ spec, and both are measured, not asserted:
   stably sorted; tested over ten repeated runs with
   hash comparison
   ([`DC-QA-02`](spec/lastenheft.md#dc-qa-02--determinismus)).
-- **Side-effect-free and network-less:** never writes into the checked
+- **Side-effect-free and network-free:** never writes into the checked
   repository, opens no network connections except in the opt-in module
   `external` — measured in the gate run with a read-only mount
   and `--network none`

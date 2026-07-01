@@ -34,9 +34,22 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
    für jeden vergessenen Pin. Historische Pins in `done/`-Slices, `CHANGELOG.md`
    und der Lastenheft-Historie sind per `exempt-paths` ausgenommen.
 3. **`CHANGELOG.md`** — den `[Unreleased]`-Stand unter die neue Version schneiden.
-4. **Benutzerhandbuch** — Header-Stempel (Handbuch-/Software-Version) und ggf.
-   neue Feature-Abschnitte; **README** — Modulzahl/Feature-Liste, falls ein Modul
-   hinzukam.
+4. **Prosa-Currency von Hand nachziehen — kein Gate erzwingt sie.** Der
+   `versions`-Gate prüft nur `ghcr`-**präfixierte** Pins gegen `version.md#aktuell`,
+   nicht Fließtext oder nackte Tags. Betroffen:
+   - **Benutzerhandbuch** — Header-Stempel (Handbuch-/Software-Version),
+     Versionsverlauf-Zeile, ggf. neue Feature-Abschnitte (§5/§6) und das
+     **bare-Tag-Beispiel** in §Versionen und Tags (`:vX.Y.Z` **ohne** `ghcr`-Präfix
+     ⇒ vom `versions`-Gate nicht erfasst, driftet still).
+   - **README — beide Sprachfassungen synchron halten:** `README.de.md` (Deutsch,
+     **kanonische Quelle — zuerst ändern**) und danach `README.md` (Englisch,
+     nachübersetzen). Bei einem neuen Modul in **jeder** Fassung: (a) die
+     **Status-Zeile** („alle N Regelmodule (…)" — Zahl *und* Enumeration *und* das
+     „zuletzt das Modul X"-Fragment) und (b) die **Modul-Liste** unter
+     §Was ist d-check ergänzen; das Intro-Framing prüfen, falls ein
+     Nicht-Referenz-Modul (Content-Drift/Immutabilität/Versions/Traceability/Planning)
+     neu ist. d-check prüft `links`/`anchors`/`ids`/`versions` in beiden READMEs, aber
+     **nicht** die inhaltliche DE↔EN-Synchronität der Prosa.
 5. **`make ci`** lokal grün fahren (Pre-Tag-De-Risk, „grün = Boden"), erst dann
    taggen.
 
