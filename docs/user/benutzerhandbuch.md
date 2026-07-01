@@ -71,7 +71,8 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.35.0` — eine feste Version (empfohlen für reproduzierbare Läufe).
+- `:v0.36.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+  aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
   CI-Pipelines pinnen Sie ohnehin auf eine feste Version oder den Digest
