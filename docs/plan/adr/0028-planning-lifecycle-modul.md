@@ -1,6 +1,6 @@
 # ADR-0028 — Planning-Lifecycle-Konsistenz: das hermetische Modul `planning` mechanisiert `planning-consistency.sh`
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-01
 **Autor:** pt9912
 **Bezug:** [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
@@ -143,3 +143,4 @@ begrenztem Wert (s. Kontext).
 | Datum | Ereignis |
 | --- | --- |
 | 2026-07-01 | Entwurf (slice-057, Auftraggeber-`tools/*.sh`-Audit — **letzter** Kandidat): opt-in Modul `planning` mechanisiert `tools/planning-consistency.sh` als **hermetischen** Post-Pass (Filesystem-Port, **kein** git/VCS-Port), `make planning-check` dogfood-umgestellt, Skript per `git rm` entfernt + `codepaths.ignore-refs`-Tombstone. Erste Planning-Gate-ADR (slice-040-Skript war ADR-los). `--print-mk doc-planning` ([`DC-FA-CLI-010`](../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 8→9). Bewusst nachrangig (layout-spezifischer Verteilungswert). Produkt-Code geändert → Release v0.36.0. Status Proposed. |
+| 2026-07-01 | Angenommen mit der slice-057-Closure: Modul `planning` (`CheckPlanning` über den Filesystem-Port) + Config (`planning.roadmap`/`heading`/`marker`/`slice-glob`, config-zeitig validiert) implementiert/getestet, `make planning-check` dogfood-umgestellt (bleibt in `make gates`), `tools/planning-consistency.sh` per `git rm` entfernt + Tombstone; `--print-mk doc-planning` verteilt die hermetische Prüfung. **Drei** unabhängige Reviews (R1 doc 1M/1L + R2 code 1M/2L/2I + R3 verifikation NACHBESSERN→behoben, Mutations-Belege für beide Fail-closed-Guards: slice-glob-Validierung + Duplikat-Überschrift); keine Paritäts-Divergenz zum abgelösten Skript. `make ci`/`fullbuild` grün, Release v0.36.0. **Schließt den `tools/*.sh`-Audit ab** (viertes/letztes Familien-Skript). Status Accepted. |

@@ -10,16 +10,19 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-46-planning-modul** — [`slice-057`](slice-057-planning-modul.md) in `in-progress/`:
-neues **hermetisches** opt-in Modul `planning` (15.) mechanisiert `tools/planning-consistency.sh`
-(**kein** git — nur Roadmap-Datei + Verzeichnis-Listing), prüft `hasActive == hasSlices`
-(`planning-drift`, Heading-Guard fail-closed) und ist der **Dogfood-Ersatz** des
-`make planning-check`-Gates; Skript entfernt (vierter `codepaths.ignore-refs`-Tombstone).
-[ADR-0028](../../adr/0028-planning-lifecycle-modul.md) (Proposed; erste Planning-Gate-ADR,
-das slice-040-Skript war ADR-los),
+**Keine aktive Welle** — kein Slice in `in-progress/`; der Auftraggeber-`tools/*.sh`-Audit ist
+**abgeschlossen** (Backlog leer). Zuletzt abgeschlossen: welle-46-planning-modul
+([`slice-057`](../done/slice-057-planning-modul.md) — neues **hermetisches** opt-in Modul
+`planning` (15.) mechanisiert `tools/planning-consistency.sh` (**kein** git — nur Roadmap-Datei
++ Verzeichnis-Listing), prüft `hasActive == hasSlices` (`planning-drift`, Heading-Guard
+fail-closed) und ist der **Dogfood-Ersatz** des `make planning-check`-Gates (bleibt in `gates`);
+Skript entfernt (vierter/letzter `codepaths.ignore-refs`-Tombstone).
+[ADR-0028](../../adr/0028-planning-lifecycle-modul.md) (erste Planning-Gate-ADR),
 [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
-(Lastenheft 0.36.0). **Letzter** Kandidat des `tools/*.sh`-Audits (danach Backlog leer). Zuletzt
-abgeschlossen: welle-45-commits-modul ([`slice-056`](../done/slice-056-commits-modul.md) —
+(Lastenheft 0.36.0); drei unabhängige Reviews (R1 doc + R2 code + R3 verifikation, Mutations-Belege),
+`make ci`/`fullbuild` grün; Release **v0.36.0** auf GHCR
+([Closure](../done/slice-057-planning-modul.md#7-closure-notiz-nach-done)). Davor
+welle-45-commits-modul ([`slice-056`](../done/slice-056-commits-modul.md) —
 neues opt-in Modul `commits` (14.) mechanisiert `tools/trace-check.sh` über den VCS-Port
 (erweitert um Commit-Message-Lesen, `CommitMessages`), prüft die Traceability-Kennung jeder
 Commit-Message (`commit-untraceable`) und ist der **Dogfood-Ersatz** des `make trace-check`-Gates;
