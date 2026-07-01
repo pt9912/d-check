@@ -104,8 +104,8 @@ wie `vcs` (**ohne** git-Binary → distroless bleibt, **ohne** Netz, read-only),
   per `git rm` entfernt + `codepaths.ignore-refs`-Tombstone; `COMMITS_DISABLE` (nur-`commits`,
   aus `ValidModules` abgeleitet, analog `VCS_DISABLE`); Doku (`harness/README.md` §Sensors,
   `AGENTS.md` §4) nachziehen; `gate-consistency` grün.
-- [ ] `make ci`/`make fullbuild` grün; `make trace-check` (Dogfood, beide Modi); zwei
-  unabhängige Reviews; CHANGELOG; Closure (Move nach `done/` + Roadmap-Flip,
+- [x] `make ci`/`make fullbuild` grün; `make trace-check` (Dogfood, beide Modi); drei
+  unabhängige Reviews (R1 doc + R2 code + R3 verifikation); CHANGELOG; Closure (Move nach `done/` + Roadmap-Flip,
   [`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise));
   bei Closure: [ADR-0027](../../adr/0027-commits-traceability-modul.md) → Accepted **und** die
   [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md)-Teil-Supersede-Annotation nachziehen
@@ -144,4 +144,53 @@ GF-Erweiterung des bestehenden VCS-Ports/`git`-Adapters (slice-053); keine BF-Su
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(folgt bei Closure — Umsetzung, Dogfood-Belege, Gate-Ausgaben, Reviews, Release.)_
+**Umsetzung.** slice-056 als **14. Regelmodul `commits`**: prüft, dass jede geprüfte
+Commit-Message eine Traceability-Kennung (`commits.id-patterns`) trägt, sonst
+`commit-untraceable`. Zwei Quellen, ein Kern (`CheckCommits`/`CheckCommitMessage`): der
+**Range**-Modus (`--enable commits --range`, via VCS-Port `CommitMessages` — CI +
+`make trace-check`) und der **Message**-Modus (`--commit-msg <datei|->`, Kurzschluss,
+commit-msg-Hook via stdin). Uniforme git-`strip`-Bereinigung (`#`-/scissors-Zeilen),
+Betreff-Ausnahme `commits.exempt-pattern`; strikt opt-in, fail-closed, diagnose-only,
+default-aus byte-identisch. Der [ADR-0024](../../adr/0024-vcs-immutable-gate.md)-VCS-Port
+um `CommitMessages` erweitert (go-git, **kein** git-Binary → distroless unangetastet;
+`arch-check` R2 hält go-git im Adapter). Doc-first:
+[`DC-FA-COMMITS-001`](../../../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)
+(Lastenheft 0.35.0, Bereich `COMMITS`) + [ADR-0027](../../adr/0027-commits-traceability-modul.md)
++ spezifikation `.a` + Grund-Code gingen dem Code voraus.
+
+**Dogfood + Verteilung.** Das `trace-check`-Gate (Makefile/`commit-msg`-Hook/CI) läuft jetzt
+über das Modul `commits` (Image, `--enable commits`/`--commit-msg -`, `FOCUS_DISABLE`) statt
+`tools/trace-check.sh`; das Skript ist per `git rm` **entfernt** (drittes Familien-Skript nach
+`adr-immutable-check.sh`/`completeness-check.sh`), seine immutable
+[ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md)-Inline-Referenz als
+`codepaths.ignore-refs`-Tombstone. **Der Dogfood bewies sich an den slice-056-Commits selbst** —
+jeder Closure-Commit dieses Slices lief durch das neue `commits`-Modul (commit-msg-Hook).
+`--print-mk doc-commits` verteilt die Range-Prüfung an Konsumenten ([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+7→8 Targets); `--print-config`/`--suggest-config`/Benutzerhandbuch §5/§6 führen `commits`.
+
+**Belege.**
+- `make ci` **grün** (doc-check 164/0, lint, test, arch-check, Coverage, semgrep 0/55,
+  gate-consistency, planning-check; image-test nativ == Container).
+- `make fullbuild` **grün** (36 Anforderungen/**0 Waisen**, lokaler Image-Hash `sha256:9ebb6ead…6139`).
+- `make trace-check` (Dogfood) **grün** in beiden Modi; adversariale Probe: kennungslose Message
+  → `commit-untraceable` + non-zero (Gate rot), ID-tragend → Exit 0.
+- **Drei** unabhängige Reviews (Reports
+  [r1](../../../reviews/2026-07-01-slice-056-commits-doc-r1.md)/[r2](../../../reviews/2026-07-01-slice-056-commits-code-r2.md)/[r3](../../../reviews/2026-07-01-slice-056-commits-verifikation-r3.md)):
+  R1 (doc) 1 MEDIUM (DC-FA-CLI-010-Körper-Zählung) + 2 LOW; R2 (code, adversarial) 1 MEDIUM
+  (applyCommits-Negativtests) + 1 LOW + 3 INFO, **keine Paritäts-Divergenz** zum abgelösten
+  Skript (14-Fall-Batterie `--message` vs. `--commit-msg -`); R3 (verifikation) **VERIFIED** +
+  Mutations-Beleg (Guard-Entfernung ⇒ `TestDecode_CommitsFehler` fällt). Alle Befunde eingearbeitet.
+- Tests: `rules/commits_test.go` (Skript-Selbsttest-Klassen via Fake-Port), `git/git_test.go`
+  (on-disk go-git: Range-Ausschluss/Merge-Filter/fail-closed), `cli/cli_commits_test.go` (E2E
+  Range + `--commit-msg` Datei/stdin + fail-closed), `configyaml_test.go` (Guard-Negativtests,
+  mutations-verifiziert), `print_mk`-Test (`doc-commits`).
+- Release **v0.35.0** auf GHCR (Digest-Pin folgt via digest-backfill).
+
+**Lerneintrag.** Das **letzte** Familien-Skript (`trace-check.sh`) ist mechanisiert — der
+VCS-Port (slice-053) trägt jetzt zwei Modi: Datei-Inhalt für `vcs`, Commit-Messages für
+`commits`. Modulname `commits` statt `trace` (Auftraggeber-Entscheid) hält `--trace`/RTM
+eindeutig — der geprüfte **Gegenstand** benennt das Modul, nicht die Prüfabsicht. Die
+Skript-Löschung erfolgte **atomar** mit dem Modul (der Umweg „pfad-stabil behalten" von
+slice-053 entfällt — Lehre gezogen). Config-Surface (print-config/suggest/print-mk/Handbuch)
+auf Auftraggeber-Nachtrag vollständig nachgezogen (`DC-FA-CLI-010` 7→8). Der `commit-msg`-Hook
+dogfoodet das Modul an den eigenen Commits — die stärkste Form des „iss dein eigenes Futter".
