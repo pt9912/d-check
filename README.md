@@ -13,9 +13,12 @@ verteilbares Modul mechanisiert) führt die
 
 ## Was ist d-check?
 
-**d-check** prüft Markdown-Dokumentation als Referenz-Netz: Jede prüfbare
-Verweis- oder Kennungs-Invariante ist ein einzeln aktivierbares Regelmodul mit
-eigener Anforderung im [Lastenheft](spec/lastenheft.md):
+**d-check** prüft Markdown-Dokumentation als prüfbares **Invarianten-Netz**: jede
+maschinell entscheidbare Doku-Invariante ist ein einzeln aktivierbares Regelmodul
+mit eigener Anforderung im [Lastenheft](spec/lastenheft.md) — vom **Referenz-Netz**
+(Links, Anker, ID-Linkpflicht, Referenzmatrix) über Markdown-Hygiene (Span-Artefakte,
+Host-Pfad-Leaks), Content-Drift und Immutabilität (Content-/Core-Pins, git-Diff) bis
+zu Versions-Pin-, Commit-Traceability- und Planning-Lifecycle-Konsistenz:
 
 - `links` — lokale Link- und Bildreferenzen: Ziel existiert, kein
   Repo-Escape ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
@@ -60,6 +63,20 @@ eigener Anforderung im [Lastenheft](spec/lastenheft.md):
   (ohne Marker-Zeile + `exclude-sections`) geprüft (Befund `core-drift` bei
   Drift), opt-in pro Datei; hermetisch (kein git, read-only-Arbeitsbaum)
   ([`DC-FA-IMM-001`](spec/lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in))
+- `vcs` — git-Diff-Immutabilität des Core über eine Commit-Range: mechanisiert die
+  ADR-Immutabilität als verteilbares Modul (`core-drift-vcs`), reine-Go-git im
+  read-only `.git` (**kein** git-Binary, **kein** Netz), opt-in
+  ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in))
+- `commits` — Traceability-Kennung in Commit-Messages über eine Range (`--range`)
+  bzw. der Pending-Message (`--commit-msg`): jede Commit-Message trägt eine
+  `DC-`/`ADR-`/`MR-`/`slice-`-ID (`commit-untraceable`), teilt den VCS-Port mit `vcs`,
+  opt-in
+  ([`DC-FA-COMMITS-001`](spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in))
+- `planning` — Roadmap-↔-in-progress-Lifecycle-Konsistenz: der Ruhe-Marker steht im
+  `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` im Verzeichnis liegt
+  (`planning-drift`); hermetisch (kein git), fail-closed bei fehlender/mehrdeutiger
+  Überschrift, opt-in
+  ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
