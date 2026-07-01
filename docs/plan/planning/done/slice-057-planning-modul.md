@@ -145,7 +145,8 @@ trace→`commits`, planning→`planning`).
 - Tests: `rules/planning_test.go` (Mem-FS: 3 Richtungen + Gegenproben + Heading-Guard + Duplikat-Guard
   load-bearing + Custom-Config), `configyaml_test.go` (applyPlanning-Guards, mutations-verifiziert),
   `cli/cli_planning_test.go` (E2E), print-mk-Test.
-- Release **v0.36.0** auf GHCR (Digest-Pin folgt via digest-backfill).
+- Release **v0.36.0** auf GHCR (Pipeline-Run 28517731564 grün), Digest-Pin
+  `ghcr.io/pt9912/d-check@sha256:887ff4fe446b8fe2de9a5f4a30955e3ab845c2b736ee0ac9747bdbbfdac2c7ea`.
 
 **Lerneintrag.** Der `tools/*.sh`-Audit ist **abgeschlossen** — vier Skripte mechanisiert; `planning`
 ist das **sauberste** (hermetisch, kein git/Port) und zeigt, dass nicht jedes Familien-Skript den

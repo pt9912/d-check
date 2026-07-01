@@ -20,7 +20,8 @@ Skript entfernt (vierter/letzter `codepaths.ignore-refs`-Tombstone).
 [ADR-0028](../../adr/0028-planning-lifecycle-modul.md) (erste Planning-Gate-ADR),
 [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 (Lastenheft 0.36.0); drei unabhängige Reviews (R1 doc + R2 code + R3 verifikation, Mutations-Belege),
-`make ci`/`fullbuild` grün; Release **v0.36.0** auf GHCR
+`make ci`/`fullbuild` grün; Release **v0.36.0** auf GHCR (Pipeline-Run 28517731564 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:887ff4fe446b8fe2de9a5f4a30955e3ab845c2b736ee0ac9747bdbbfdac2c7ea`
 ([Closure](../done/slice-057-planning-modul.md#7-closure-notiz-nach-done)). Davor
 welle-45-commits-modul ([`slice-056`](../done/slice-056-commits-modul.md) —
 neues opt-in Modul `commits` (14.) mechanisiert `tools/trace-check.sh` über den VCS-Port
