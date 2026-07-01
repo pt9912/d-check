@@ -4,6 +4,43 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.35.0] — 2026-07-01
+
+### Added
+
+- slice-056 — neues opt-in Modul `commits` (14. Regelmodul,
+  [`DC-FA-COMMITS-001`](spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)):
+  prüft, dass jede geprüfte **Commit-Message** eine Traceability-Kennung nach
+  `commits.id-patterns` (`ADR-`/`MR-`/`DC-`/`slice-`) auf einer Inhalts-Zeile
+  trägt, sonst `commit-untraceable`. Liest die Commit-Messages über **denselben
+  reine-Go-VCS-Port** wie `vcs` (erweitert um `CommitMessages`; **ohne**
+  git-Binary → distroless bleibt, **ohne** Netz); zwei Quellen, eine Prüfung:
+  `--range <base>..<head>` (CI/Push, Nicht-Merge-Commits) und
+  `--commit-msg <datei|->` (commit-msg-Hook, einzelne Pending-Message via stdin).
+  Uniforme `#`-/scissors-Bereinigung (Kennung auf Inhalts-Zeile, nicht im
+  Kommentar), Betreff-Ausnahme `commits.exempt-pattern` (Selbstkonfig
+  `^(Merge |Revert )`). Strikt opt-in (nie Default, wie `external`/`vcs`),
+  fail-closed ohne `.git`/Range/Message, diagnose-only; default-aus byte-identisch
+  ([ADR-0027](docs/plan/adr/0027-commits-traceability-modul.md), Lastenheft 0.35.0).
+  Das **Gate `make trace-check`** läuft dogfood auf das Modul um (Image,
+  `--enable commits` bzw. `--commit-msg -`). Config-Surface vollständig nachgezogen:
+  `--print-config`/`--suggest-config` führen `commits` in der Verfügbar-/opt-in-Liste,
+  und `--print-mk` trägt ein `doc-commits`-Target (verteilte Commit-Traceability,
+  parallel zu `doc-immutable`; [`DC-FA-CLI-010`](spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+  7→8 Targets). Benutzerhandbuch §5/§6 dokumentiert das Modul.
+
+### Removed
+
+- slice-056 — `tools/trace-check.sh` entfernt (das **letzte** Gate-Skript der
+  Familie), abgelöst durch das Modul `commits`. Die immutable
+  [ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md)-Inline-Referenz
+  ist über `codepaths.ignore-refs` als Tombstone deklariert (dritter Fall nach
+  `adr-immutable-check.sh`/`completeness-check.sh`);
+  [ADR-0027](docs/plan/adr/0027-commits-traceability-modul.md) supersedet die
+  Skript-Mechanik von [ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md)
+  (Policy, Bindepunkt und CI-Topologie unverändert). Der Negativ-Selbsttest lebt
+  als Modul-Akzeptanztest (`make test`) weiter.
+
 ## [0.34.0] — 2026-06-29
 
 ### Added
