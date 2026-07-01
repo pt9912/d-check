@@ -176,7 +176,7 @@ jeder Closure-Commit dieses Slices lief durch das neue `commits`-Modul (commit-m
   → `commit-untraceable` + non-zero (Gate rot), ID-tragend → Exit 0.
 - **Drei** unabhängige Reviews (Reports
   [r1](../../../reviews/2026-07-01-slice-056-commits-doc-r1.md)/[r2](../../../reviews/2026-07-01-slice-056-commits-code-r2.md)/[r3](../../../reviews/2026-07-01-slice-056-commits-verifikation-r3.md)):
-  R1 (doc) 1 MEDIUM (DC-FA-CLI-010-Körper-Zählung) + 2 LOW; R2 (code, adversarial) 1 MEDIUM
+  R1 (doc) 1 MEDIUM ([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)-Körper-Zählung) + 2 LOW; R2 (code, adversarial) 1 MEDIUM
   (applyCommits-Negativtests) + 1 LOW + 3 INFO, **keine Paritäts-Divergenz** zum abgelösten
   Skript (14-Fall-Batterie `--message` vs. `--commit-msg -`); R3 (verifikation) **VERIFIED** +
   Mutations-Beleg (Guard-Entfernung ⇒ `TestDecode_CommitsFehler` fällt). Alle Befunde eingearbeitet.
@@ -192,5 +192,5 @@ VCS-Port (slice-053) trägt jetzt zwei Modi: Datei-Inhalt für `vcs`, Commit-Mes
 eindeutig — der geprüfte **Gegenstand** benennt das Modul, nicht die Prüfabsicht. Die
 Skript-Löschung erfolgte **atomar** mit dem Modul (der Umweg „pfad-stabil behalten" von
 slice-053 entfällt — Lehre gezogen). Config-Surface (print-config/suggest/print-mk/Handbuch)
-auf Auftraggeber-Nachtrag vollständig nachgezogen (`DC-FA-CLI-010` 7→8). Der `commit-msg`-Hook
+auf Auftraggeber-Nachtrag vollständig nachgezogen ([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 7→8). Der `commit-msg`-Hook
 dogfoodet das Modul an den eigenen Commits — die stärkste Form des „iss dein eigenes Futter".
