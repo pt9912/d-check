@@ -1,211 +1,213 @@
 # d-check
 
-Doc-Referenz-Checker für Markdown-Dokumentation — deterministisch,
-seiteneffektfrei, ausgeliefert als Container-Image.
+> 🇬🇧 **English** · 🇩🇪 [Deutsch](README.de.md)
 
-**Status: released** — alle dreizehn Regelmodule (`links`, `anchors`, `ids`,
+Documentation reference checker for Markdown — deterministic,
+side-effect-free, shipped as a container image.
+
+**Status: released** — all fifteen rule modules (`links`, `anchors`, `ids`,
 `matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `external`) sind im GHCR-Image. Verbindlich ist das
-[Lastenheft](spec/lastenheft.md); die jeweils jüngsten Änderungen (zuletzt das
-opt-in-Modul `vcs` für git-Diff-Immutabilität, das die ADR-Immutabilität als
-verteilbares Modul mechanisiert) führt die
-[CHANGELOG.md](CHANGELOG.md).
+`immutable`, `vcs`, `commits`, `planning`, `external`) are in the GHCR image.
+The authoritative source is the [requirements spec](spec/lastenheft.md); the
+most recent changes (most recently the hermetic opt-in module `planning` for
+roadmap-↔-in-progress lifecycle consistency — the last mechanized gate script
+of the `tools/*.sh` audit) are tracked in [CHANGELOG.md](CHANGELOG.md).
 
-## Was ist d-check?
+## What is d-check?
 
-**d-check** prüft Markdown-Dokumentation als prüfbares **Invarianten-Netz**: jede
-maschinell entscheidbare Doku-Invariante ist ein einzeln aktivierbares Regelmodul
-mit eigener Anforderung im [Lastenheft](spec/lastenheft.md) — vom **Referenz-Netz**
-(Links, Anker, ID-Linkpflicht, Referenzmatrix) über Markdown-Hygiene (Span-Artefakte,
-Host-Pfad-Leaks), Content-Drift und Immutabilität (Content-/Core-Pins, git-Diff) bis
-zu Versions-Pin-, Commit-Traceability- und Planning-Lifecycle-Konsistenz:
+**d-check** checks Markdown documentation as a verifiable **invariant network**:
+every machine-decidable documentation invariant is an individually enablable rule
+module with its own requirement in the [requirements spec](spec/lastenheft.md) —
+from the **reference network** (links, anchors, ID link obligations, reference
+matrix) through Markdown hygiene (span artifacts, host-path leaks), content drift
+and immutability (content/core pins, git diff) to version-pin, commit-traceability
+and planning-lifecycle consistency:
 
-- `links` — lokale Link- und Bildreferenzen: Ziel existiert, kein
-  Repo-Escape ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
-- `anchors` — Heading-Anker (GitHub-Slug-Verfahren) und Inline-HTML-Anker
+- `links` — local link and image references: target exists, no
+  repo escape ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
+- `anchors` — heading anchors (GitHub slug procedure) and inline HTML anchors
   (`<a name>`, `id=`)
   ([`DC-FA-ANCH-001`](spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors))
-- `ids` — Linkpflicht für Kennungen (z. B. `ADR-NNNN`) nach
-  deklarierten Mustern ([`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids))
-- `matrix` — Referenzrichtungs-Regeln zwischen Dokumentklassen
+- `ids` — link obligation for identifiers (e.g. `ADR-NNNN`) per
+  declared patterns ([`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids))
+- `matrix` — reference-direction rules between document classes
   ([`DC-FA-MTX-001`](spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)),
-  **innerhalb** einer geordneten Klasse (`order`/`direction` ⇒ `matrix-downward`,
+  **within** an ordered class (`order`/`direction` ⇒ `matrix-downward`,
   [`DC-FA-MTX-002`](spec/lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix))
-  und auch als **bare ID-Token** im Körper (`token` ⇒ `matrix-forbidden`,
+  and also as a **bare ID token** in the body (`token` ⇒ `matrix-forbidden`,
   [`DC-FA-MTX-003`](spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix))
-  plus Status-Bedingungen; Ausnahmen sind strukturell (`exclude-sections`,
-  `allow-supersede-lineage`) oder per Provenance-Marker
-  `<!-- d-check:status-provenance -->` deklariert
-- `external` — Erreichbarkeit externer URLs, strikt opt-in
+  plus status conditions; exceptions are structural (`exclude-sections`,
+  `allow-supersede-lineage`) or declared via the provenance marker
+  `<!-- d-check:status-provenance -->`
+- `external` — reachability of external URLs, strictly opt-in
   ([`DC-FA-EXT-001`](spec/lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in))
-- `codepaths` — explizite Pfade in Inline-Code, opt-in
+- `codepaths` — explicit paths in inline code, opt-in
   ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in))
-- `spans` — Markdown-Span-Artefakte (ungeschlossene Code-Spans,
-  verschachtelte Links), opt-in
+- `spans` — Markdown span artifacts (unclosed code spans,
+  nested links), opt-in
   ([`DC-FA-SPAN-001`](spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in))
-- `hostpaths` — host-lokale absolute Pfade (Maschinen-Layout-Leaks),
+- `hostpaths` — host-local absolute paths (machine-layout leaks),
   opt-in
   ([`DC-FA-HOST-001`](spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in))
-- `diagrams` — Kennungs-Existenz in Diagramm-Fences (z. B. `mermaid`): jede
-  im Diagramm gefundene Kennung muss in ihrer `defined-in`-Quelle definiert
-  sein, opt-in
-  ([`DC-FA-DIAG-001`](spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in))
-- `versions` — Versions-Pin-Konsistenz: gepinnte `ghcr`-Image-Verweise müssen
-  die aktuelle Version (aus `version.md#aktuell`) tragen, liest auch
-  Fenced-Code, opt-in
-  ([`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
-- `pins` — Content-Pin gegen inhaltlichen Drift: ein Link mit
-  `<!-- dpin: … -->` wird gegen den Hash seines Ziel-Spans geprüft (Befund
-  `link-stale` bei Drift), opt-in pro Link
-  ([`DC-FA-PIN-001`](spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in))
-- `immutable` — Immutabilitäts-Pin gegen Core-Drift: eine Datei mit
-  `<!-- immutable: … -->` wird gegen den Hash ihres normalisierten **Core**
-  (ohne Marker-Zeile + `exclude-sections`) geprüft (Befund `core-drift` bei
-  Drift), opt-in pro Datei; hermetisch (kein git, read-only-Arbeitsbaum)
-  ([`DC-FA-IMM-001`](spec/lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in))
-- `vcs` — git-Diff-Immutabilität des Core über eine Commit-Range: mechanisiert die
-  ADR-Immutabilität als verteilbares Modul (`core-drift-vcs`), reine-Go-git im
-  read-only `.git` (**kein** git-Binary, **kein** Netz), opt-in
-  ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in))
-- `commits` — Traceability-Kennung in Commit-Messages über eine Range (`--range`)
-  bzw. der Pending-Message (`--commit-msg`): jede Commit-Message trägt eine
-  `DC-`/`ADR-`/`MR-`/`slice-`-ID (`commit-untraceable`), teilt den VCS-Port mit `vcs`,
+- `diagrams` — identifier existence in diagram fences (e.g. `mermaid`): every
+  identifier found in the diagram must be defined in its `defined-in` source,
   opt-in
+  ([`DC-FA-DIAG-001`](spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in))
+- `versions` — version-pin consistency: pinned `ghcr` image references must
+  carry the current version (from `version.md#aktuell`), also reads
+  fenced code, opt-in
+  ([`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
+- `pins` — content pin against content drift: a link with
+  `<!-- dpin: … -->` is checked against the hash of its target span (finding
+  `link-stale` on drift), opt-in per link
+  ([`DC-FA-PIN-001`](spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in))
+- `immutable` — immutability pin against core drift: a file with
+  `<!-- immutable: … -->` is checked against the hash of its normalized **core**
+  (without the marker line + `exclude-sections`) (finding `core-drift` on
+  drift), opt-in per file; hermetic (no git, read-only working tree)
+  ([`DC-FA-IMM-001`](spec/lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in))
+- `vcs` — git-diff immutability of the core over a commit range: mechanizes the
+  ADR immutability as a distributable module (`core-drift-vcs`), pure-Go git in
+  the read-only `.git` (**no** git binary, **no** network), opt-in
+  ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in))
+- `commits` — traceability identifier in commit messages over a range (`--range`)
+  or the pending message (`--commit-msg`): every commit message carries a
+  `DC-`/`ADR-`/`MR-`/`slice-` ID (`commit-untraceable`), shares the VCS port with
+  `vcs`, opt-in
   ([`DC-FA-COMMITS-001`](spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in))
-- `planning` — Roadmap-↔-in-progress-Lifecycle-Konsistenz: der Ruhe-Marker steht im
-  `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` im Verzeichnis liegt
-  (`planning-drift`); hermetisch (kein git), fail-closed bei fehlender/mehrdeutiger
-  Überschrift, opt-in
+- `planning` — roadmap-↔-in-progress lifecycle consistency: the idle marker sits
+  in the `## Aktuelle Welle` block exactly when no `slice-*` is in the directory
+  (`planning-drift`); hermetic (no git), fail-closed on a missing/ambiguous
+  heading, opt-in
   ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
 
-Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
-`0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
+Every finding names file, line, target and reason; exit codes:
+`0` clean, `1` findings, `2` environment or configuration error.
 
-## Warum d-check?
+## Why d-check?
 
-Zwölf funktional überlappende Tool-Kopien aus drei Familien
+Twelve functionally overlapping tool copies from three families
 (`verify-doc-refs.sh` — Shell, `check_refs.py` — Python,
-`docs-check.js` — JavaScript) sind in den Schwester-Repositories des
-Entwicklungs-Workspace gewachsen — jede mit eigenem Funktionsstand,
-eigener Drift, eigener Pflege. d-check ersetzt sie durch **ein** Tool:
+`docs-check.js` — JavaScript) grew across the sister repositories of the
+development workspace — each with its own feature set, its own drift, its
+own maintenance. d-check replaces them with **one** tool:
 
-- **Konfiguration statt Fork:** repo-spezifisches Verhalten lebt
-  deklarativ in `.d-check.yml`
+- **Configuration instead of fork:** repo-specific behavior lives
+  declaratively in `.d-check.yml`
   ([`DC-FA-CONF-001`](spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)),
-  nicht in kopierten Skripten.
-- **Ersetzbarkeit ist messbar:** Jedes Alt-Tool muss durch d-check
-  mit passender Konfiguration ablösbar sein — mindestens dieselben
-  echten Befunde, keine False-Positives, die eine grüne CI brechen
+  not in copied scripts.
+- **Replaceability is measurable:** every legacy tool must be replaceable by
+  d-check with matching configuration — at least the same real findings, no
+  false positives that break a green CI
   ([`DC-QA-04`](spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)).
-- **Ein Distributionsweg:** Container-Image mit Digest-Pin statt
-  n gepflegter Kopien
+- **One distribution path:** container image with digest pin instead of
+  n maintained copies
   ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)).
 
-## Kerngedanke
+## Core idea
 
-**Dokumentation ist ein Referenz-Graph mit prüfbaren Invarianten.**
-Ob ein Link sein Ziel erreicht, ein Anker existiert, eine Kennung auf
-ihre Definition verlinkt oder eine Dokumentklasse abwärts zeigt, ist
-maschinell entscheidbar — d-check macht diese Invarianten zum Gate
-statt zur Review-Meinung.
+**Documentation is a reference graph with verifiable invariants.**
+Whether a link reaches its target, an anchor exists, an identifier links
+to its definition, or a document class points downward is
+machine-decidable — d-check turns these invariants into a gate
+instead of a review opinion.
 
-Dabei gilt: **berichten, nie reparieren.** d-check ist ein reines
-Lese-Tool ([`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));
-deterministische Befunde werden behoben, nicht unterdrückt. Einen
-Opt-out-Marker gibt es nur dort, wo ein nicht existierendes Ziel oder
-eine illustrative Kennung dokumentierte Absicht sein kann
-(`d-check:ignore`, zeilenweise) — er stellt ausschließlich die Module
-`codepaths` und `ids` still
+The rule: **report, never repair.** d-check is a pure read
+tool ([`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));
+deterministic findings are fixed, not suppressed. An opt-out
+marker exists only where a non-existent target or an illustrative identifier
+can be documented intent (`d-check:ignore`, per line) — it silences
+exclusively the modules `codepaths` and `ids`
 ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
 [`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)).
 
-## Was macht es vertrauenswürdig?
+## What makes it trustworthy?
 
-**Ein Prüf-Tool, dessen eigene Aussagen wackeln, ist wertlos** —
-Determinismus und Seiteneffektfreiheit sind deshalb Kernverträge des
-Lastenhefts, und beide werden gemessen, nicht behauptet:
+**A checking tool whose own statements wobble is worthless** —
+determinism and side-effect freedom are therefore core contracts of the
+spec, and both are measured, not asserted:
 
-- **Determinismus:** identische Eingabe ⇒ byte-identische Ausgabe,
-  stabil sortiert; getestet über zehn wiederholte Läufe mit
-  Hash-Vergleich
+- **Determinism:** identical input ⇒ byte-identical output,
+  stably sorted; tested over ten repeated runs with
+  hash comparison
   ([`DC-QA-02`](spec/lastenheft.md#dc-qa-02--determinismus)).
-- **Seiteneffektfrei und netzlos:** schreibt nie in das geprüfte
-  Repository, öffnet außer im opt-in-Modul `external` keine
-  Netzwerkverbindungen — gemessen im Gate-Lauf mit read-only-Mount
-  und `--network none`
+- **Side-effect-free and network-less:** never writes into the checked
+  repository, opens no network connections except in the opt-in module
+  `external` — measured in the gate run with a read-only mount
+  and `--network none`
   ([`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
-- **Keine stillen Defaults:** Jede ungültige `.d-check.yml` bricht
-  mit Exit 2 ab; geprüft wird nie mit geratener Konfiguration
+- **No silent defaults:** every invalid `.d-check.yml` aborts
+  with exit 2; checking never proceeds with guessed configuration
   ([`DC-FA-CONF-001`](spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
-- **Dogfooding:** d-check validiert die eigene Doku bei jedem
-  Gate-Lauf — mit der [Selbstkonfiguration](.d-check.yml) im
-  Vollausbau (acht Module inkl. Referenzmatrix, Span-Artefakten,
-  Host-Pfad-Hygiene und Versions-Pin-Konsistenz).
-- **Container nativ-identisch:** Befund-Ausgabe und Exit-Code des
-  Images sind byte-identisch zur nativen Ausführung, automatisiert
-  getestet ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image));
-  CI-Konsum per Digest-Pin.
+- **Dogfooding:** d-check validates its own docs on every
+  gate run — with the [self-configuration](.d-check.yml) fully
+  built out (eight modules incl. reference matrix, span artifacts,
+  host-path hygiene and version-pin consistency).
+- **Container native-identical:** the image's finding output and exit code
+  are byte-identical to native execution, tested automatically
+  ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image));
+  CI consumption via digest pin.
 
-## Nutzung
+## Usage
 
-Verteilung als Container-Image über GHCR
+Distributed as a container image via GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
 docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.36.0
 ```
 
-CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
-bewegliche Tags — Details, Optionen und Exit-Codes:
-[`docs/user/operations.md`](docs/user/operations.md) und
+CI pipelines pin to the digest from the release notes rather than to
+moving tags — details, options and exit codes:
+[`docs/user/operations.md`](docs/user/operations.md) and
 [`docs/user/releasing.md`](docs/user/releasing.md).
 
-## Konfiguration (`.d-check.yml`)
+## Configuration (`.d-check.yml`)
 
-Optional in der Repo-Wurzel; ohne Datei laufen die Default-Module
-`links` + `anchors` über `docs/`, `spec/` und die Root-`*.md`:
+Optional in the repo root; without a file the default modules
+`links` + `anchors` run over `docs/`, `spec/` and the root `*.md`:
 
 ```yaml
 scan:
-  roots: ["."]                  # gesamte Repo-Wurzel
-modules: [links, anchors, ids]  # external bleibt strikt opt-in
+  roots: ["."]                  # entire repo root
+modules: [links, anchors, ids]  # external stays strictly opt-in
 ids:
   patterns:
     - regex: 'ADR-\d{4}'
-      target: docs/adr/         # Kennungen müssen hierhin verlinken
+      target: docs/adr/         # identifiers must link here
 ```
 
-Das vollständige Schema mit allen Schlüsseln, Defaults und
-Validierungs-Constraints steht in der
-[Spezifikation §`.d-check.yml`](spec/spezifikation.md#d-checkyml);
-ein lebendes Beispiel im Vollausbau (inkl. Referenzmatrix) ist die
-[Selbstkonfiguration dieses Repos](.d-check.yml). Jede ungültige
-Konfiguration bricht mit Exit 2 ab — geprüft wird nie mit
-stillschweigenden Defaults
+The full schema with all keys, defaults and
+validation constraints is in the
+[specification §`.d-check.yml`](spec/spezifikation.md#d-checkyml);
+a living example fully built out (incl. reference matrix) is
+[this repo's self-configuration](.d-check.yml). Every invalid
+configuration aborts with exit 2 — checking never proceeds with
+silent defaults
 ([`DC-FA-CONF-001`](spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
 
-## Einstieg
+## Getting started
 
-| Dokument | Inhalt |
+| Document | Contents |
 |---|---|
-| [`docs/user/operations.md`](docs/user/operations.md) | Aufruf-Referenz: Optionen, Exit-Codes, Konfiguration |
-| [`docs/user/releasing.md`](docs/user/releasing.md) | Release-Prozess, Digest-Pin-Konsum |
-| [`spec/lastenheft.md`](spec/lastenheft.md) | Anforderungen (`DC-FA-*`, `DC-QA-*`), Akzeptanzkriterien |
-| [`harness/README.md`](harness/README.md) | Harness-Einstieg: Source Precedence, Guides, Sensors |
-| [`AGENTS.md`](AGENTS.md) | Briefing für AI-Coding-Agenten, Hard Rules |
-| [`docs/plan/planning/in-progress/roadmap.md`](docs/plan/planning/in-progress/roadmap.md) | Wellen und Slices |
-| [`CHANGELOG.md`](CHANGELOG.md) | Änderungshistorie |
+| [`docs/user/operations.md`](docs/user/operations.md) | Invocation reference: options, exit codes, configuration |
+| [`docs/user/releasing.md`](docs/user/releasing.md) | Release process, digest-pin consumption |
+| [`spec/lastenheft.md`](spec/lastenheft.md) | Requirements (`DC-FA-*`, `DC-QA-*`), acceptance criteria |
+| [`harness/README.md`](harness/README.md) | Harness entry: source precedence, guides, sensors |
+| [`AGENTS.md`](AGENTS.md) | Briefing for AI coding agents, hard rules |
+| [`docs/plan/planning/in-progress/roadmap.md`](docs/plan/planning/in-progress/roadmap.md) | Waves and slices |
+| [`CHANGELOG.md`](CHANGELOG.md) | Change history |
 
-## Entwicklung
+## Development
 
-Der Host braucht nur `git`, GNU `make`, `bash` und Docker
-(siehe [`AGENTS.md`](AGENTS.md) §3.1).
+The host needs only `git`, GNU `make`, `bash` and Docker
+(see [`AGENTS.md`](AGENTS.md) §3.1).
 
 ```bash
-make help     # verfügbare Targets
-make gates    # alle inneren Gates (mandatory vor Handoff)
+make help     # available targets
+make gates    # all inner gates (mandatory before handoff)
 ```
 
-## Lizenz
+## License
 
-Dieses Projekt steht unter der [MIT-Lizenz](LICENSE).
+This project is licensed under the [MIT License](LICENSE).
