@@ -5,13 +5,13 @@
 Doc-Referenz-Checker für Markdown-Dokumentation — deterministisch,
 seiteneffektfrei, ausgeliefert als Container-Image.
 
-**Status: released** — alle fünfzehn Regelmodule (`links`, `anchors`, `ids`,
+**Status: released** — alle sechzehn Regelmodule (`links`, `anchors`, `ids`,
 `matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `external`) sind im GHCR-Image.
-Verbindlich ist das [Lastenheft](spec/lastenheft.md); die jeweils jüngsten
-Änderungen (zuletzt das hermetische opt-in-Modul `planning` für die
-Roadmap-↔-in-progress-Lifecycle-Konsistenz — das letzte mechanisierte Gate-Skript
-des `tools/*.sh`-Audits) führt die
+`immutable`, `vcs`, `commits`, `planning`, `tracked`, `external`) sind im
+GHCR-Image. Verbindlich ist das [Lastenheft](spec/lastenheft.md); die jeweils
+jüngsten Änderungen (zuletzt das opt-in-Modul `tracked`, das auflösbare
+Link-Ziele gegen den git-Index prüft — ein gitignoriertes/untracktes Ziel wäre
+auf jedem frischen Klon kaputt) führt die
 [CHANGELOG.md](CHANGELOG.md).
 
 ## Was ist d-check?
@@ -21,7 +21,8 @@ maschinell entscheidbare Doku-Invariante ist ein einzeln aktivierbares Regelmodu
 mit eigener Anforderung im [Lastenheft](spec/lastenheft.md) — vom **Referenz-Netz**
 (Links, Anker, ID-Linkpflicht, Referenzmatrix) über Markdown-Hygiene (Span-Artefakte,
 Host-Pfad-Leaks), Content-Drift und Immutabilität (Content-/Core-Pins, git-Diff) bis
-zu Versions-Pin-, Commit-Traceability- und Planning-Lifecycle-Konsistenz:
+zu Versions-Pin-, Commit-Traceability-, Planning-Lifecycle- und
+Getrackt-Status-Konsistenz:
 
 - `links` — lokale Link- und Bildreferenzen: Ziel existiert, kein
   Repo-Escape ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
@@ -80,6 +81,11 @@ zu Versions-Pin-, Commit-Traceability- und Planning-Lifecycle-Konsistenz:
   (`planning-drift`); hermetisch (kein git), fail-closed bei fehlender/mehrdeutiger
   Überschrift, opt-in
   ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
+- `tracked` — Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele
+  gegen den git-**Index** (`target-untracked`: ein untracktes/gitignoriertes
+  Ziel fehlt auf jedem frischen Klon); Index-Wahrheit (gestagt = getrackt,
+  keine `.gitignore`-Interpretation), liest `.git` read-only ohne Range, opt-in
+  ([`DC-FA-TRK-001`](spec/lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
@@ -155,7 +161,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.36.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.37.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

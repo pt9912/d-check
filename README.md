@@ -5,13 +5,14 @@
 Documentation reference checker for Markdown — deterministic,
 side-effect-free, shipped as a container image.
 
-**Status: released** — all fifteen rule modules (`links`, `anchors`, `ids`,
+**Status: released** — all sixteen rule modules (`links`, `anchors`, `ids`,
 `matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `external`) are in the GHCR image.
-The authoritative source is the [requirements spec](spec/lastenheft.md); the
-most recent changes (most recently the hermetic opt-in module `planning` for
-roadmap-↔-in-progress lifecycle consistency — the last mechanized gate script
-of the `tools/*.sh` audit) are tracked in [CHANGELOG.md](CHANGELOG.md).
+`immutable`, `vcs`, `commits`, `planning`, `tracked`, `external`) are in the
+GHCR image. The authoritative source is the
+[requirements spec](spec/lastenheft.md); the most recent changes (most
+recently the opt-in module `tracked`, which checks resolvable link targets
+against the git index — a gitignored/untracked target would be broken on
+every fresh clone) are tracked in [CHANGELOG.md](CHANGELOG.md).
 
 ## What is d-check?
 
@@ -21,8 +22,8 @@ enabled individually, with its own requirement in the
 [requirements spec](spec/lastenheft.md) —
 from the **reference network** (links, anchors, ID link obligations, reference
 matrix) through Markdown hygiene (span artifacts, host-path leaks), content drift
-and immutability (content/core pins, git diff) to version-pin, commit-traceability
-and planning-lifecycle consistency:
+and immutability (content/core pins, git diff) to version-pin, commit-traceability,
+planning-lifecycle and tracked-status consistency:
 
 - `links` — local link and image references: target exists, no
   repo escape ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
@@ -81,6 +82,11 @@ and planning-lifecycle consistency:
   (`planning-drift`); hermetic (no git), fail-closed on a missing/ambiguous
   heading, opt-in
   ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
+- `tracked` — tracked status of resolvable, **existing** link/image targets
+  against the git **index** (`target-untracked`: an untracked/gitignored
+  target is missing on every fresh clone); index truth (staged = tracked, no
+  `.gitignore` interpretation), reads `.git` read-only without a range, opt-in
+  ([`DC-FA-TRK-001`](spec/lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in))
 
 Every finding names file, line, target and reason; exit codes:
 `0` clean, `1` findings, `2` environment or configuration error.
@@ -155,7 +161,7 @@ Distributed as a container image via GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.36.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.37.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to
