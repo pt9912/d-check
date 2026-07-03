@@ -71,6 +71,7 @@ func AllReasons() []string {
 		rules.ReasonMatrixInactive, rules.ReasonMatrixForbidden, rules.ReasonMatrixDownward,
 		rules.ReasonExternalStatus, rules.ReasonExternalTimeout, rules.ReasonExternalRedirects,
 		model.ReasonSpanUnclosed, model.ReasonSpanNestedLink, model.ReasonHostpathForbidden,
+		model.ReasonTargetUntracked,
 	}
 }
 
@@ -95,6 +96,7 @@ func reasonTexts() map[string]string {
 		model.ReasonSpanUnclosed:      "Ungeschlossene Code-Span-Öffnung (klebt an Nicht-Whitespace)",
 		model.ReasonSpanNestedLink:    "Verschachtelte Link-Syntax im Linktext (rendert zerrissen)",
 		model.ReasonHostpathForbidden: "Host-lokaler absoluter Pfad (Maschinen-Layout-Leak)",
+		model.ReasonTargetUntracked:   "Linkziel nicht im git-Index getrackt (fehlt auf jedem frischen Klon)",
 	}
 }
 

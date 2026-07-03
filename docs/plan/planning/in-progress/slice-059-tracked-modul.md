@@ -41,13 +41,19 @@ meldet `target-untracked` — die Falle wird am Entstehungsort gefangen.
   Regel-Interpreter; frisch gestagte Dateien gelten als getrackt
   (WIP-tauglich — `git add` macht neue Doku grün).
 - **VCS-Port, dritte Nutzung — ohne Range:** Port-Erweiterung um die
-  Index-Abfrage (Präzedenz: `commits` erweiterte um Message-Lesen); Post-Pass
-  in `run.go` über die `links`-Auflösung. Eingabe erweitert (`.git`), aber
+  Index-Abfrage (Präzedenz: `commits` erweiterte um Message-Lesen); Prüfung
+  **je gescannter Quell-Datei** über dieselbe Auflösungs-Mechanik wie `links`
+  (unabhängig von dessen Aktivierung; Index-Menge einmal je Lauf — R1-M1).
+  Eingabe erweitert (`.git`), aber
   lokal/lesend/deterministisch
   ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)/[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
   in der `vcs`-Lesart).
-- **Kein Doppelbefund:** nur existierende, aufgelöste Ziele; `target-missing`
-  bleibt `links` (`pins`-Prinzip).
+- **Kein Doppelbefund:** nur existierende, aufgelöste **Datei**-Ziele;
+  `target-missing` bleibt `links` (`pins`-Prinzip); Verzeichnis-Ziele kein
+  Kandidat (Index führt nur Dateien — R1-M3 dokumentiert), Symlink-Referenzen
+  kategorisch `links`-Domäne (R2-M2/M3: false-positive hinter getrackten
+  Verzeichnis-Symlinks vermieden, Skip beidseitig verriegelt); der Befund
+  nennt den **aufgelösten** Zielpfad (Ventil-Parität — R2-M1).
 - **Ventil `tracked.exempt-targets`** (Glob über den aufgelösten Zielpfad,
   referenz-weit analog `codepaths.ignore-refs`) für absichtlich untrackte
   Ziele; ohne Eintrag byte-identisch.

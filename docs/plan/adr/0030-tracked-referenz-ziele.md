@@ -38,10 +38,13 @@ read-only in reinem Go liest — die Infrastruktur, um den Getrackt-Status am
 
 ## Entscheidung
 
-Ein opt-in Modul **`tracked`** (16. Modul, Default aus) prüft als Post-Pass die
-**Datei-Ebene** der von `links` aufgelösten, **existierenden** repo-internen
-Link-/Bild-Ziele gegen den **git-Index**; ein untracktes Ziel ⇒ Grund-Code
-`target-untracked`. **Diagnose-only.**
+Ein opt-in Modul **`tracked`** (16. Modul, Default aus) prüft **je gescannter
+Quell-Datei** die **Datei-Ebene** der aufgelösten, **existierenden**
+repo-internen Link-/Bild-Ziele gegen den **git-Index** (dieselbe
+Auflösungs-Mechanik wie `links`, aber unabhängig von dessen Aktivierung —
+ein fokussierter Lauf prüft vollständig; die Index-Menge wird einmal je Lauf
+geladen); ein untracktes Ziel ⇒ Grund-Code `target-untracked`.
+**Diagnose-only.**
 
 - **Index statt `.gitignore`-Interpretation.** d-check baut keinen zweiten
   ignore-Regel-Interpreter; der Index ist die einzige Wahrheit. Eine frisch
@@ -56,7 +59,12 @@ Link-/Bild-Ziele gegen den **git-Index**; ein untracktes Ziel ⇒ Grund-Code
   in der `vcs`-Lesart.
 - **Kein Doppelbefund.** Nicht existierende Ziele bleiben `target-missing`
   (`links`); `tracked` prüft nur, was die Link-Auflösung fand
-  ([ADR-0020](0020-content-pin-fence-ausnahme.md)-Prinzip).
+  ([ADR-0020](0020-content-pin-fence-ausnahme.md)-Prinzip). Ebenso sind
+  **Verzeichnis-Ziele** (der Index führt nur Dateien) und
+  **Symlink-Referenzen** kein Kandidat — Letztere sind kategorisch die
+  Domäne der Symlink-Ablehnung des Moduls `links`; der Index führt den
+  realen Pfad, nicht den Alias (sonst false-positive hinter getrackten
+  Verzeichnis-Symlinks — R2-proben-belegt).
 - **Ventil `tracked.exempt-targets`** (Glob über den aufgelösten Zielpfad,
   referenz-weit wie [ADR-0025](0025-codepaths-ignore-refs.md)): absichtlich
   untrackte Ziele (lokal generierte Artefakte) bleiben deklariert erlaubt.
@@ -121,4 +129,5 @@ Link-/Bild-Ziele gegen den **git-Index**; ein untracktes Ziel ⇒ Grund-Code
 
 | Datum | Ereignis |
 | --- | --- |
+| 2026-07-03 | Reviews R1 (doc, 5 MEDIUM/3 LOW/1 INFO) + R2 (code, 4 MEDIUM/2 LOW/2 INFO) eingearbeitet: Befund-`target` = **aufgelöster** Zielpfad (Ventil-Parität, Code-Fix + Verriegelung); Symlink-Referenzen kategorisch `links`-Domäne (Verzeichnis-Symlink-false-positive per Probe belegt, Code-Fix + Test); Bild-Einschluss und Auflösung mutations-verriegelt (die IsImage-Skip-Mutation überlebte zuvor); `exempt-targets` segmentweise validiert; `target-untracked` mit `--doctor`-Klartext (der Bestands-Rückstand älterer Grund-Codes bleibt eigener Folgepunkt); „Post-Pass"-Wording auf „je gescannter Quell-Datei, links-unabhängig" präzisiert (Spec/Slice nachgezogen); [`DC-FA-CLI-010`](../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)-AKs auf zehn Targets. Lastenheft 0.37.1. Status Proposed. |
 | 2026-07-03 | Entwurf (slice-059, welle-48): opt-in Modul `tracked` prüft auflösbare, existierende Link-/Bild-Ziele gegen den git-Index (`target-untracked`); dritte VCS-Port-Nutzung (ohne Range), Index statt `.gitignore`-Interpretation, kein Doppelbefund, Ventil `tracked.exempt-targets`, fail-closed ohne `.git`. Anlass: Auftraggeber-Frage „Was passiert, wenn ein Dokument ein gitignoriertes Dokument referenziert?" + Fixture-Demo (Erzeuger grün, frischer Klon rot). Lastenheft 0.37.0 ([`DC-FA-TRK-001`](../../../spec/lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in) + [`DC-FA-CLI-010`](../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 9→10). Status Proposed. |

@@ -1127,11 +1127,14 @@ Listing ihres Verzeichnisses prüft:
 
 ### DC-FA-TRK-001.a — Getrackt-Status auflösbarer Referenz-Ziele (`tracked`)
 
-Opt-in-Post-Pass ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)):
-prüft die **Datei-Ebene** der von `links` aufgelösten repo-internen
-Link-/Bild-Ziele gegen den **git-Index** — die dritte Nutzung des VCS-Ports
+Opt-in-Prüfung **je gescannter Quell-Datei** ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)):
+prüft die **Datei-Ebene** der aufgelösten repo-internen Link-/Bild-Ziele
+gegen den **git-Index** — dieselbe Auflösungs-**Mechanik** wie
+[`DC-FA-LINK-001`](lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links),
+aber **unabhängig** von der Aktivierung des Moduls `links` (ein fokussierter
+`--enable tracked`-Lauf prüft vollständig). Die dritte Nutzung des VCS-Ports
 (`vcs`: Range-Diff, `commits`: Commit-Messages, `tracked`: Index), diesmal
-**ohne** Range/`--staged`.
+**ohne** Range/`--staged`; die Index-Menge wird **einmal je Lauf** geladen.
 
 1. **Aktivierung/fail-closed.** Nur bei explizit aktiviertem `tracked`. Aktiv,
    aber kein lesbares `.git` unter der Repo-Wurzel ⇒ **Exit 2** mit
@@ -1140,10 +1143,14 @@ Link-/Bild-Ziele gegen den **git-Index** — die dritte Nutzung des VCS-Ports
 2. **Index-Menge.** Der VCS-Port liefert die Menge der **getrackten Pfade**
    (git-Index des Arbeitsbaums; eine gestagte, noch nie committete Datei ist
    enthalten — der Index ist die Wahrheit, keine `.gitignore`-Interpretation).
-3. **Kandidaten.** Alle von `links` **erfolgreich aufgelösten, existierenden**
-   repo-internen Datei-Ziele der gescannten Quell-Dateien (Fragment/Anker wird
-   verworfen; Bild-Ziele eingeschlossen). Nicht existierende Ziele sind kein
-   Kandidat — der Befund bleibt `target-missing`
+3. **Kandidaten.** Alle **erfolgreich aufgelösten, existierenden**
+   repo-internen **Datei**-Ziele der gescannten Quell-Dateien (Fragment/Anker
+   wird verworfen; Bild-Ziele eingeschlossen). **Kein** Kandidat sind:
+   Verzeichnis-Ziele (der Index führt nur Dateien), Symlink-Referenzen (Ziel
+   ist oder durchläuft einen Symlink — kategorisch
+   [`DC-FA-LINK-002`](lastenheft.md#dc-fa-link-002--symlink-ablehnung)-Domäne;
+   der Index führt den realen Pfad, nicht den Alias) und nicht existierende
+   Ziele — deren Befund bleibt `target-missing`
    ([`DC-FA-LINK-001`](lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links),
    **kein Doppelbefund** — Prinzip von
    [`DC-FA-PIN-001`](lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in)).
@@ -1152,10 +1159,12 @@ Link-/Bild-Ziele gegen den **git-Index** — die dritte Nutzung des VCS-Ports
 4. **Ventil.** Matcht der aufgelöste Zielpfad ein `tracked.exempt-targets`-Glob
    (`matchGlob`, wie `scan.ignore`), wird die Referenz übersprungen —
    **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich
-   untrackte Ziele.
+   untrackte Ziele. Jedes Glob wird config-zeitig **segmentweise** validiert
+   (ungültig/leer ⇒ Exit 2 — kein still wirkungsloses Ventil).
 5. **Vergleich.** Ziel existiert ∧ Pfad ∉ Index ⇒ Grund-Code `target-untracked`.
-   Befund: `file`/`line` = Quell-Datei/Link-Zeile, `target` = der aufgelöste
-   Zielpfad, `message` benennt, dass das Ziel auf einem frischen Klon fehlt
+   Befund: `file`/`line` = Quell-Datei/Link-Zeile, `target` = der **aufgelöste**
+   Zielpfad (dieselbe Form, die das Ventil matcht — nicht die rohe
+   Link-Schreibweise), `message` benennt, dass das Ziel auf einem frischen Klon fehlt
    (untracked/gitignoriert). **Diagnose-only** (kein `--repair`-Hunk; `git add`
    bzw. Committen ist eine menschliche Entscheidung). Pro Referenz maximal ein
    Befund; mehrere Referenzen auf dasselbe untrackte Ziel melden je Referenz
@@ -1362,7 +1371,7 @@ Exit 2 ohne Prüfung
 | `planning.heading` | string | `## Aktuelle Welle` | die kanonische H2-Überschrift des Aktiv-Status-Abschnitts (exakter, getrimmter Zeilen-Vergleich); fehlt sie ⇒ `planning-drift` (fail-closed) |
 | `planning.marker` | string | `Keine aktive Welle` | literaler Ruhe-Marker-Teilstring; nur im `planning.heading`-Block gesucht; vorhanden ⇒ ruhende Welle |
 | `planning.slice-glob` | string | `slice-*.md` | Glob (`path.Match` auf den Basisnamen) der Slice-Dateien im Roadmap-Verzeichnis; ≥1 Treffer ⇒ aktive-Welle-erwartet; ein explizit gesetztes Muster muss ein gültiges `path.Match`-Glob sein (sonst Exit 2 — verhindert ein fail-open Silent-Grün) |
-| `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
+| `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 
 **Glob-Auswertung.** Alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`,
 `matrix.classes[].paths`/`.order`, die `*.exempt-paths`) werden **segmentweise
@@ -1472,3 +1481,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-07-01 | §[`DC-FA-COMMITS-001.a`](spezifikation.md#dc-fa-commits-001a--traceability-kennung-in-commit-messages-über-eine-commit-range-commits) + §2-Schema (`commits.id-patterns`/`commits.exempt-pattern`) + Grund-Code `commit-untraceable` (§4) ergänzt: opt-in Modul `commits` prüft, dass jede Commit-Message eine Kennung nach `commits.id-patterns` trägt (`commit-untraceable`), über **denselben VCS-Port** wie `vcs` (reine-Go-git, ohne git-Binary, ohne Netz), erweitert um Message-Lesen; zwei Quellen: `--range <base>..<head>` (Nicht-Merge-Commits, `--no-merges`-Parität) und `--commit-msg <datei\|->` (Kurzschluss-Modus für den commit-msg-Hook, einzelne Pending-Message). Uniforme `#`-/scissors-Bereinigung (Kennung auf Inhalts-Zeile), Betreff-Ausnahme `commits.exempt-pattern`; fail-closed ohne `.git`/Range/Message-Datei, diagnose-only. Default-aus byte-identisch. Portierung des abgelösten `tools/trace-check.sh` (dieselbe VCS-Port-Präzedenz wie `vcs`, auf Commit-Messages statt Datei-Inhalt). Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (7→8 Targets): `--print-mk` trägt `doc-commits` (`--enable commits` + aus `ValidModules` abgeleitete Fokus-`--disable`-Liste, `--range`) — verteilt die Commit-Traceability an Konsumenten | slice-056 |
 | 2026-07-01 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) + §2-Schema (`planning.roadmap`/`heading`/`marker`/`slice-glob`) + Grund-Code `planning-drift` (§4) ergänzt: opt-in Modul `planning` prüft **hermetisch** (nur Arbeitsbaum, kein git/Netz) die Roadmap-↔-in-progress-Invariante — Ruhe-Marker im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` im Verzeichnis (`hasActive == hasSlices`), sonst `planning-drift`; Heading-Guard fail-closed, Post-Pass wie `codepaths`-Existenz, diagnose-only. Default-aus byte-identisch. Portierung des abgelösten `tools/planning-consistency.sh`. Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (8→9 Targets): `--print-mk` trägt `doc-planning` (`--enable planning`, hermetisch ohne `--range`) | slice-057 |
 | 2026-07-03 | §[`DC-FA-TRK-001.a`](spezifikation.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked) + §2-Schema (`tracked.exempt-targets`) + Grund-Code `target-untracked` (§4) ergänzt: opt-in Modul `tracked` prüft die Datei-Ebene der von `links` aufgelösten, **existierenden** repo-internen Ziele gegen den **git-Index** — dritte VCS-Port-Nutzung (`vcs` Range-Diff, `commits` Messages, `tracked` Index), **ohne** Range/`--staged`; Index statt `.gitignore`-Interpretation (gestagte Dateien gelten als getrackt), kein Doppelbefund (`target-missing` bleibt `links`), Ventil referenz-weit analog `codepaths.ignore-refs`; fail-closed ohne lesbares `.git` (Exit 2), diagnose-only, default-aus byte-identisch. Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (9→10 Targets): `--print-mk` trägt `doc-tracked` (`--enable tracked` + fokussierte `--disable`-Liste, ohne Range) | slice-059 |
+| 2026-07-03 | Review R1/R2 zu §[`DC-FA-TRK-001.a`](spezifikation.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked), präzisiert: Prüfung **je gescannter Quell-Datei** statt „Post-Pass" (Auflösungs-Mechanik unabhängig von der Aktivierung des Moduls `links` — ein fokussierter Lauf prüft vollständig); Verzeichnis-Ziele und Symlink-Referenzen (Ziel ist/durchläuft einen Symlink) explizit kein Kandidat ([`DC-FA-LINK-002`](lastenheft.md#dc-fa-link-002--symlink-ablehnung)-Domäne — false-positive hinter getrackten Verzeichnis-Symlinks vermieden); `target` = aufgelöster Pfad bekräftigt (Ventil-Parität); `exempt-targets` segmentweise validiert (Exit 2) | slice-059 |

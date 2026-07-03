@@ -64,17 +64,21 @@ func TestTracked_ExemptTargets(t *testing.T) {
 }
 
 // DC-FA-CONF-001 Negative: ein ungültiges exempt-targets-Glob ⇒ Exit 2
-// (config-zeitig, fail-closed — kein still wirkungsloses Ventil).
+// (config-zeitig, fail-closed — kein still wirkungsloses Ventil). Die
+// Validierung läuft SEGMENTWEISE wie die Laufzeit (matchGlob) — ein nur
+// als Ganzes gültiges Muster mit kaputtem Segment fällt ebenso durch.
 func TestTracked_UngueltigesGlobExit2(t *testing.T) {
-	dir := t.TempDir()
-	initVCSRepo(t, dir)
-	writeAt(t, dir, ".d-check.yml", "tracked:\n  exempt-targets: [\"[\"]\n")
-	writeAt(t, dir, "doc.md", "x\n")
+	for _, glob := range []string{"[", "[a/b].md"} {
+		dir := t.TempDir()
+		initVCSRepo(t, dir)
+		writeAt(t, dir, ".d-check.yml", "tracked:\n  exempt-targets: [\""+glob+"\"]\n")
+		writeAt(t, dir, "doc.md", "x\n")
 
-	var stdout, stderr bytes.Buffer
-	code := cli.Run([]string{"--enable", "tracked", dir}, &stdout, &stderr)
-	if code != 2 || !strings.Contains(stderr.String(), "exempt-targets") {
-		t.Fatalf("Exit = %d, stderr = %q, want 2 + exempt-targets-Hinweis", code, stderr.String())
+		var stdout, stderr bytes.Buffer
+		code := cli.Run([]string{"--enable", "tracked", dir}, &stdout, &stderr)
+		if code != 2 || !strings.Contains(stderr.String(), "exempt-targets") {
+			t.Fatalf("Glob %q: Exit = %d, stderr = %q, want 2 + exempt-targets-Hinweis", glob, code, stderr.String())
+		}
 	}
 }
 

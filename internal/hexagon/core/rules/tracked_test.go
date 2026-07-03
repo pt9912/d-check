@@ -13,12 +13,14 @@ import (
 var errIndex = errors.New("git-Index nicht lesbar (Test)")
 
 // trackedFiles: eine Quell-Datei verlinkt ein getracktes, ein untracktes,
-// ein fehlendes und ein Verzeichnis-Ziel (DC-FA-TRK-001-Akzeptanzkriterien).
+// ein fehlendes, ein Verzeichnis- und ein Bild-Ziel
+// (DC-FA-TRK-001-Akzeptanzkriterien; Bild-Referenzen zählen — Schritt 3).
 func trackedFiles() map[string]string {
 	return map[string]string{
-		"doc.md":    "[t](t.md) [u](u.md) [m](m.md) [d](sub) [out](../raus.md)\n",
+		"doc.md":    "[t](t.md) [u](u.md) [m](m.md) [d](sub) [out](../raus.md) ![i](img.png)\n",
 		"t.md":      "x",
 		"u.md":      "x",
+		"img.png":   "px",
 		"sub/in.md": "x",
 	}
 }
@@ -29,16 +31,62 @@ func TestCheckTracked_HappyUndNegative(t *testing.T) {
 	fsys := coretest.NewMemFS(trackedFiles())
 	lines := PreprocessMarkdown([]byte(trackedFiles()["doc.md"]))
 	f := CheckTracked(fsys, "doc.md", lines, model.TrackedConfig{}, map[string]bool{"t.md": true, "sub/in.md": true})
+	// Zwei Befunde: das untrackte Link-Ziel u.md UND das untrackte
+	// Bild-Ziel img.png (Bild-Referenzen zählen — verriegelt Schritt 3
+	// gegen eine IsImage-Skip-Mutation, R2-M4).
+	if len(f) != 2 {
+		t.Fatalf("Findings = %d, want 2: %+v", len(f), f)
+	}
+	targets := map[string]bool{}
+	for _, fd := range f {
+		if fd.Reason != model.ReasonTargetUntracked || fd.Rule != "tracked" || fd.File != "doc.md" {
+			t.Fatalf("unerwarteter Befund: %+v", fd)
+		}
+		targets[fd.Target] = true
+	}
+	if !targets["u.md"] || !targets["img.png"] {
+		t.Fatalf("Targets = %v, want u.md + img.png", targets)
+	}
+	if !strings.Contains(f[0].Message, "frischen Klon") {
+		t.Fatalf("Message ohne Klon-Hinweis: %q", f[0].Message)
+	}
+}
+
+// Befund-target trägt den AUFGELÖSTEN Zielpfad (Spec .a Schritt 5) — die
+// Form, die das exempt-targets-Ventil matcht; roh geschriebene "./"-Ziele
+// werden für Lookup UND Befund normalisiert (R2-M1-Verriegelung).
+func TestCheckTracked_TargetAufgeloest(t *testing.T) {
+	fsys := coretest.NewMemFS(map[string]string{
+		"doc.md": "[roh](./v.md) [ok](./t.md)\n",
+		"v.md":   "x",
+		"t.md":   "x",
+	})
+	lines := PreprocessMarkdown([]byte("[roh](./v.md) [ok](./t.md)\n"))
+	f := CheckTracked(fsys, "doc.md", lines, model.TrackedConfig{}, map[string]bool{"t.md": true})
 	if len(f) != 1 {
-		t.Fatalf("Findings = %d, want 1: %+v", len(f), f)
+		t.Fatalf("Findings = %d, want 1 (nur ./v.md; ./t.md ist über den aufgelösten Pfad getrackt): %+v", len(f), f)
 	}
-	got := f[0]
-	if got.Reason != model.ReasonTargetUntracked || got.Rule != "tracked" ||
-		got.File != "doc.md" || got.Line != 1 || got.Target != "u.md" {
-		t.Fatalf("unerwarteter Befund: %+v", got)
+	if f[0].Target != "v.md" {
+		t.Fatalf("Target = %q, want aufgelöst \"v.md\" (nicht die rohe Schreibweise)", f[0].Target)
 	}
-	if !strings.Contains(got.Message, "frischen Klon") {
-		t.Fatalf("Message ohne Klon-Hinweis: %q", got.Message)
+}
+
+// Symlink-Referenzen sind die Domäne von DC-FA-LINK-002 (links meldet
+// `symlink` kategorisch): tracked prüft weder ein Symlink-Ziel noch einen
+// Pfad DURCH einen Verzeichnis-Symlink — sonst false-positive, denn der
+// Index führt den realen Pfad, nicht den Alias (R2-M2/M3-Verriegelung).
+func TestCheckTracked_SymlinkZieleUeberspringen(t *testing.T) {
+	fsys := coretest.NewMemFS(map[string]string{
+		"doc.md":       "[s](slink.md) [durch](dlink/in.md)\n",
+		"slink.md":     "x",
+		"dlink/in.md":  "x",
+	})
+	fsys.AddSymlink("slink.md")
+	fsys.AddSymlink("dlink")
+	lines := PreprocessMarkdown([]byte("[s](slink.md) [durch](dlink/in.md)\n"))
+	f := CheckTracked(fsys, "doc.md", lines, model.TrackedConfig{}, map[string]bool{})
+	if len(f) != 0 {
+		t.Fatalf("Findings = %d, want 0 (Symlink-Pfade sind links-Domäne): %+v", len(f), f)
 	}
 }
 
@@ -48,11 +96,11 @@ func TestCheckTracked_HappyUndNegative(t *testing.T) {
 func TestCheckTracked_KeinDoppelbefundKeineDirsKeinEscape(t *testing.T) {
 	fsys := coretest.NewMemFS(trackedFiles())
 	lines := PreprocessMarkdown([]byte(trackedFiles()["doc.md"]))
-	// Leere Index-Menge: NUR die existierenden Datei-Ziele t.md/u.md dürfen
-	// feuern — m.md (fehlt), sub (Dir) und ../raus.md (escaped) nie.
+	// Leere Index-Menge: NUR die existierenden Datei-Ziele t.md/u.md/img.png
+	// dürfen feuern — m.md (fehlt), sub (Dir) und ../raus.md (escaped) nie.
 	f := CheckTracked(fsys, "doc.md", lines, model.TrackedConfig{}, map[string]bool{})
-	if len(f) != 2 {
-		t.Fatalf("Findings = %d, want 2 (nur t.md+u.md): %+v", len(f), f)
+	if len(f) != 3 {
+		t.Fatalf("Findings = %d, want 3 (nur t.md+u.md+img.png): %+v", len(f), f)
 	}
 	for _, fd := range f {
 		if fd.Target == "m.md" || fd.Target == "sub" || fd.Target == "../raus.md" {
@@ -66,10 +114,10 @@ func TestCheckTracked_KeinDoppelbefundKeineDirsKeinEscape(t *testing.T) {
 func TestCheckTracked_ExemptTargets(t *testing.T) {
 	fsys := coretest.NewMemFS(trackedFiles())
 	lines := PreprocessMarkdown([]byte(trackedFiles()["doc.md"]))
-	cfg := model.TrackedConfig{ExemptTargets: []string{"u.*"}}
+	cfg := model.TrackedConfig{ExemptTargets: []string{"u.*", "img.png"}}
 	f := CheckTracked(fsys, "doc.md", lines, cfg, map[string]bool{"t.md": true})
 	if len(f) != 0 {
-		t.Fatalf("Findings = %d, want 0 (u.md exempt): %+v", len(f), f)
+		t.Fatalf("Findings = %d, want 0 (u.md + img.png exempt): %+v", len(f), f)
 	}
 }
 
@@ -109,16 +157,16 @@ func TestRunWithVCS_TrackedEndToEnd(t *testing.T) {
 			missing++
 		case model.ReasonTargetUntracked:
 			untracked++
-			if f.Target != "u.md" {
-				t.Fatalf("target-untracked auf %q, want u.md", f.Target)
+			if f.Target != "u.md" && f.Target != "img.png" {
+				t.Fatalf("target-untracked auf %q, want u.md/img.png", f.Target)
 			}
 		}
 	}
 	// links: m.md fehlt (+ ../raus.md ist repo-escape, nicht missing);
-	// tracked: genau u.md (auch die untracked Quell-Dateien doc.md/u.md selbst
-	// sind KEIN Befund — Out-of-Scope der ersten Ausbaustufe).
-	if missing != 1 || untracked != 1 {
-		t.Fatalf("missing=%d untracked=%d, want 1/1: %+v", missing, untracked, res.Findings)
+	// tracked: genau u.md + img.png (auch die untracked Quell-Dateien
+	// doc.md/u.md selbst sind KEIN Befund — Out-of-Scope der ersten Stufe).
+	if missing != 1 || untracked != 2 {
+		t.Fatalf("missing=%d untracked=%d, want 1/2: %+v", missing, untracked, res.Findings)
 	}
 }
 

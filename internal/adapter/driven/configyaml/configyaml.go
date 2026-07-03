@@ -381,8 +381,16 @@ func applyTracked(r *raw, cfg *model.Config) error {
 		if g == "" {
 			return fmt.Errorf("%s: tracked.exempt-targets enthält ein leeres Glob", FileName)
 		}
-		if _, err := path.Match(g, "probe"); err != nil {
-			return fmt.Errorf("%s: tracked.exempt-targets %q ist kein gültiges Glob: %v", FileName, g, err)
+		// Segmentweise validieren — die Laufzeit (matchGlob) matcht je
+		// '/'-Segment; ein nur als Ganzes gültiges Muster wäre still
+		// wirkungslos (R2-LOW-Lehre slice-059).
+		for _, seg := range strings.Split(g, "/") {
+			if seg == "**" {
+				continue
+			}
+			if _, err := path.Match(seg, "probe"); err != nil {
+				return fmt.Errorf("%s: tracked.exempt-targets %q ist kein gültiges Glob (Segment %q): %v", FileName, g, seg, err)
+			}
 		}
 	}
 	cfg.Tracked = model.TrackedConfig{ExemptTargets: r.Tracked.ExemptTargets}

@@ -811,15 +811,18 @@ make doc-planning
 ```
 
 Das Modul `tracked` prüft, dass jedes **auflösbare, existierende**
-Link-/Bild-Ziel im **git-Index getrackt** ist — ein untracktes oder
+Link-/Bild-**Datei**-Ziel im **git-Index getrackt** ist — ein untracktes oder
 gitignoriertes Ziel ist beim Erzeuger grün, wäre aber auf jedem frischen
 Klon ein `target-missing`; der Befund `target-untracked` fängt diese
 Umgebungs-Drift am Entstehungsort. Die Wahrheit ist der **Index**, nicht
 die `.gitignore`-Syntax: eine frisch per `git add` gestagte Datei gilt als
 getrackt. Fehlende Ziele bleiben Sache von `links` (kein Doppelbefund);
-`exempt-targets` (Globs über den **aufgelösten** Zielpfad) nimmt absichtlich
-untrackte Ziele aus. Braucht ein lesbares `.git` unter der Scan-Wurzel
-(sonst Exit 2, fail-closed), aber **keine** Commit-Range:
+`exempt-targets` (Globs über den **aufgelösten** Zielpfad — dieselbe Form,
+die auch der Befund nennt) nimmt absichtlich untrackte Ziele aus; die Globs
+werden beim Laden segmentweise validiert (ungültig ⇒ Exit 2).
+Verzeichnis-Ziele und Symlink-Referenzen prüft `tracked` nicht (Symlinks
+meldet `links` ohnehin kategorisch). Braucht ein lesbares `.git` unter der
+Scan-Wurzel (sonst Exit 2, fail-closed), aber **keine** Commit-Range:
 
 ```yaml
 tracked:
