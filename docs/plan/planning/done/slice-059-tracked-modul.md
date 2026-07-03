@@ -1,6 +1,6 @@
 # Slice slice-059: Modul `tracked` — Getrackt-Status auflösbarer Referenz-Ziele
 
-**Status:** in-progress (welle-48-tracked-modul).
+**Status:** done (welle-48-tracked-modul, Closure 2026-07-03).
 
 **Welle:** welle-48-tracked-modul (Trigger: Auftraggeber-Frage 2026-07-03 —
 „Was passiert, wenn ein Dokument ein gitignoriertes Dokument referenziert?" —
@@ -79,22 +79,22 @@ meldet `target-untracked` — die Falle wird am Entstehungsort gefangen.
   9→10) + [ADR-0030](../../adr/0030-tracked-referenz-ziele.md) (Proposed, +
   Index) + Spezifikation `.a` + Grund-Code `target-untracked` (§4) +
   Schema-Key `tracked.exempt-targets` (§2).
-- [ ] **Code:** VCS-Port um Index-Abfrage erweitern (getrackte Pfade;
+- [x] **Code:** VCS-Port um Index-Abfrage erweitern (getrackte Pfade;
   gestagte Dateien enthalten), `tracked`-Post-Pass in `run.go` über die
   aufgelösten `links`-Ziele (existierend ∧ ∉ Index ∧ kein
   `exempt-targets`-Match ⇒ `target-untracked`), `model`-Config +
   `validModules()` + Reason, `configyaml` (rawTracked/applyTracked, Glob
   config-zeitig validiert — fail-closed), fail-closed ohne `.git` (Exit 2).
-- [ ] **Tests:** die sieben Akzeptanzkriterien (Happy/Index-Wahrheit/
+- [x] **Tests:** die sieben Akzeptanzkriterien (Happy/Index-Wahrheit/
   Modul-aus-byte-identisch/Negative/Kein-Doppelbefund/Ventil/fail-closed)
   gegen git-Fixture-Repos; Guards mutations-verifiziert (slice-057-R3-Lehre:
   jede Probe verriegelt genau ihren Guard; Injektion/Aufbau je Probe
   verifiziert — slice-058-Harness-Lehre).
-- [ ] **Config-Surface:** `--print-mk doc-tracked`; `--print-config`/
+- [x] **Config-Surface:** `--print-mk doc-tracked`; `--print-config`/
   `--suggest-config` (opt-in-Kommentar); Benutzerhandbuch-Abschnitt;
   `FOCUS_DISABLE`-Kommentarlage im Makefile geprüft (`tracked` ist kein
   Default-Modul — Liste wächst nicht).
-- [ ] **Belege:** `make ci`/`make fullbuild` grün; Beleg-Lauf
+- [x] **Belege:** `make ci`/`make fullbuild` grün; Beleg-Lauf
   `--enable tracked` gegen das eigene Repo (grün) + adversariale Probe
   (temporär untracktes, verlinktes Ziel ⇒ rot, Revert ⇒ grün); unabhängige
   Reviews (mind. R1 doc + R2 code) vor Closure; CHANGELOG; release-prep
@@ -136,5 +136,57 @@ eine GF-Erweiterung der Kern-Regel-Schicht über den bestehenden VCS-Port
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(folgt bei Closure — Umsetzung, Fixture-/Mutations-Belege, Beleg-Lauf gegen
-das eigene Repo, Gate-Ausgaben, Reviews, Release.)_
+**Umsetzung.** slice-059 als **16. Regelmodul `tracked`**: der VCS-Port ist um die
+Index-Abfrage `TrackedPaths()` erweitert (dritte Nutzung — `vcs`: Range-Diff,
+`commits`: Messages, `tracked`: **Index**, ohne Range; gestagte, nie committete
+Dateien enthalten = Index-Wahrheit, keine `.gitignore`-Interpretation); das Modul
+prüft **je gescannter Quell-Datei** die aufgelösten, existierenden repo-internen
+Link-/Bild-**Datei**-Ziele (dieselbe Auflösungs-Mechanik wie `links`, unabhängig
+von dessen Aktivierung) und meldet `target-untracked` mit dem **aufgelösten**
+Zielpfad. Kein Doppelbefund (`target-missing` bleibt `links`; Verzeichnis-Ziele
+kein Kandidat, Symlink-Referenzen kategorisch `links`-Domäne), Ventil
+`tracked.exempt-targets` (referenz-weit, segmentweise validiert — Exit 2 bei
+kaputtem Glob), fail-closed ohne lesbares `.git` bzw. verdrahteten Port (Exit 2).
+CLI öffnet den git-Adapter für `tracked` **ohne** Range-Pflicht. Config-Surface:
+`--print-mk doc-tracked` ([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+9→10), `--print-config`/`--suggest-config`, Handbuch 1.19, README (DE zuerst, EN
+nachgezogen — sechzehn Module), CHANGELOG. Doc-first:
+[`DC-FA-TRK-001`](../../../../spec/lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)
+(Lastenheft 0.37.0, Review-Präzisierung 0.37.1) +
+[ADR-0030](../../adr/0030-tracked-referenz-ziele.md) (bei Closure Accepted) +
+Spezifikation `.a`/§2/§4 gingen dem Code voraus.
+
+**Belege.**
+- `make ci` **grün** (doc-check 178/0, lint, test, arch-check via a-check 0 Befunde,
+  Coverage, semgrep 0/55, gate-consistency, planning-check; image-test nativ ==
+  Container); `make fullbuild` **grün** (38 Anforderungen/**0 Waisen**).
+- **AK-Tests** an git-Fixtures (committed/staged/untracked; Mem-FS + fakeVCS + E2E-
+  Temp-Repos): alle sieben Kriterien; **Mutations-Verriegelung** beider Fail-closed-
+  Guards (Glob-Validierung entfernt ⇒ genau `TestTracked_UngueltigesGlobExit2` rot;
+  nil-Port-Guard entfernt ⇒ genau `TestRunWithVCS_TrackedFailClosedOhnePort` rot) —
+  von R2 unabhängig reproduziert; nach R2 zusätzlich Bild-Einschluss, Auflösung
+  (`./`-Form) und Symlink-Skips verriegelt (die IsImage-Skip-Mutation überlebte
+  zuvor — R2-Fund).
+- **Beleg-Lauf** `--enable tracked` gegen das eigene Repo: **grün** (Index-Zugriff
+  im read-only-Mount); adversariale Probe (untracktes, verlinktes Ziel) ⇒ rot mit
+  `target-untracked`, Revert ⇒ grün.
+- **Zwei unabhängige Reviews** (Reports
+  [r1](../../../reviews/2026-07-03-slice-059-tracked-doc-r1.md)/[r2](../../../reviews/2026-07-03-slice-059-tracked-code-r2.md)):
+  R1 doc (5 MEDIUM/3 LOW/1 INFO — u. a. Post-Pass-Wording, CLI-010-Neun-Drift,
+  Verzeichnis-Ziel-Doku) und R2 code (4 MEDIUM/2 LOW/2 INFO — u. a. roh-vs-aufgelöst,
+  Verzeichnis-Symlink-false-positive per Klon-Gegenprobe, überlebende
+  Bild-Skip-Mutation, Glob-Segment-Validierung); **alle Befunde eingearbeitet** und
+  regressions-verprobt (Lastenheft 0.37.1).
+- Release **v0.37.0** auf GHCR — Pipeline-Run + Digest-Pin folgen als
+  Digest-Backfill nach dem Tag.
+
+**Lerneintrag.** (1) Rollen-Teilung trägt: R1 (doc) fand die Spec-Treue-Drifts
+(„Post-Pass", Neun-Targets), R2 (code) die semantischen Ränder (Symlink-Alias vs.
+Index-Realpfad — nur per Klon-Gegenprobe sichtbar) und die überlebende
+Bild-Skip-Mutation; keiner der Funde überlappte. (2) Die slice-057/058-Lehren
+zahlten direkt ein: Mutations-Verriegelung je Guard und fail-closed-Proben-Harness
+waren von Anfang an Teil der DoD — R2 bestätigte beide unabhängig. (3) Bestands-
+Folgepunkt: die `--doctor`-Klartext-Liste (`AllReasons`/`reasonTexts`) hinkte seit
+v0.25 sieben Grund-Codes hinterher (hier `target-untracked` ergänzt; der Rest ist
+Kandidat für einen Hygiene-Slice samt Vollständigkeits-Verriegelung §4 ↔
+`AllReasons`).
