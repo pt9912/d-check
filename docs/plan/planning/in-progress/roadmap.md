@@ -10,24 +10,24 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-47-arch-check-a-check** — [`slice-058`](slice-058-arch-check-via-a-check.md) in
-`in-progress/`: das `make arch-check`-Gate konsumiert das **Schwester-Tool
-[a-check](https://github.com/pt9912/a-check)** (digest-gepinntes GHCR-Image, netzlos/read-only)
-über ein include-bares `a-check.mk` plus repo-eigene `.a-check.yml` statt `tools/arch-check.sh`
-(Dockerfile-Stage); die Import-Regeln R1–R6
+**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**welle-47-arch-check-a-check** ([`slice-058`](../done/slice-058-arch-check-via-a-check.md) —
+das `make arch-check`-Gate konsumiert das **Schwester-Tool
+[a-check](https://github.com/pt9912/a-check)** (digest-gepinntes v0.8.0-Image, netzlos/read-only)
+über ein include-bares `a-check.mk` plus repo-eigene `.a-check.yml` statt `tools/arch-check.sh`;
+Dockerfile-Stage entfernt, Skript per `git rm` (fünfter `codepaths.ignore-refs`-Tombstone). Die
+Import-Regeln R1–R6
 ([ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md)/[ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md))
-bleiben unverändert Policy, nur die Durchsetzungs-Mechanik wechselt; Skript + Stage entfernt
-(fünfter `codepaths.ignore-refs`-Tombstone), **Paritäts-Beleg per Proben-Matrix je
-Skript-Verbotszweig + Allow-Gegenproben** Pflicht vor der Umstellung; drei quellen-belegte
-a-check-v0.6.0-Deltas (Ein-Pattern-ein-Adapter, `*_test.go`-Scope,
-`composition_root`-Total-Ausnahme) sind **CR-Vorbedingung** im Schwester-Repo (Plan-Review R1
-eingearbeitet). [ADR-0029](../../adr/0029-arch-check-via-a-check.md) (Proposed;
-Supersedes die Fitness-Function-Mechanik von
-[ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md)/[ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md)).
-**Kein** Lastenheft-CR (Gate-Mechanik, kein Produkt-Feature), kein Release erwartet. Löst den
-§Nächste-Wellen-Zeiger „arch-check → Schwester-Projekt a-check" ein — erste Welle nach dem
-`tools/*.sh`-Audit, erstmals Ablösung durch das Schwester-Tool statt durch ein d-check-Modul.
-Zuletzt abgeschlossen: welle-46-planning-modul
+bleiben unverändert Policy; [ADR-0029](../../adr/0029-arch-check-via-a-check.md) (Accepted)
+supersedet nur die Fitness-Function-Mechanik. **Kein** Lastenheft-CR (Gate-Mechanik, kein
+Produkt-Feature), **kein** Release (Image byte-identisch). Vorbedingung lieferte das
+Schwester-Repo (a-check v0.8.0: `tech.adapter`-Liste, `composition_root: forbid`, `exclude` —
+dortiger CR/slice-023). Paritäts-Beleg: 20er-Proben-Matrix je Skript-Verbotszweig +
+Allow-Gegenproben + exclude-/Präfix-Vetter-Mutationen; zwei unabhängige Reviews (R1 Plan +
+R2 Impl, je NACHBESSERN → alle Befunde eingearbeitet); `make ci`/`fullbuild` grün
+([Closure](../done/slice-058-arch-check-via-a-check.md#7-closure-notiz-nach-done)) — erste
+Ablösung durch das Schwester-Tool statt durch ein d-check-Modul. Davor
+welle-46-planning-modul
 ([`slice-057`](../done/slice-057-planning-modul.md) — neues **hermetisches** opt-in Modul
 `planning` (15.) mechanisiert `tools/planning-consistency.sh` (**kein** git — nur Roadmap-Datei
 + Verzeichnis-Listing), prüft `hasActive == hasSlices` (`planning-drift`, Heading-Guard
@@ -237,7 +237,8 @@ welle-46-planning-modul ([`slice-057`](../done/slice-057-planning-modul.md)) **a
 alle mechanisierbaren Gate-Skripte sind d-check-Feature (completeness→in-Produkt-Flag slice-055,
 trace→`commits` slice-056, planning→`planning` slice-057; adr-immutable→`vcs` slice-053). Der
 dort benannte Schwester-Projekt-Zeiger „`arch-check` (Go-Importe) → a-check" wird von
-**welle-47** (aktuelle Welle, [`slice-058`](slice-058-arch-check-via-a-check.md)) eingelöst.
+**welle-47** ([`slice-058`](../done/slice-058-arch-check-via-a-check.md), abgeschlossen
+2026-07-03) **eingelöst**.
 Bewusst weder d-check- noch a-check-fähig und daher nicht hier: `coverage-gate`/`semgrep`
 (Go-Build/SAST), `image-test` (testet das Image selbst), `bench-fixture` (Fixture-Generator),
 `gate-consistency` (spannt Markdown ↔ Makefile ↔ YAML), `harness/*`

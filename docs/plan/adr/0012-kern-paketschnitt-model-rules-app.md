@@ -107,3 +107,4 @@ Fixture vor/nach byte-identisch.
 |---|---|
 | 2026-06-20 | Proposed (slice-035) |
 | 2026-06-20 | Accepted — Umsetzung slice-035: `model`/`rules`/`app` geschnitten, `run`/`scan` in `rules` (Engine), arch-check R6 erzwingt die Richtung; `make gates` grün, alle Tests bestehen (kein Befund-Delta) |
+| 2026-07-03 | R6-Durchsetzungs-Mechanik teil-superseded durch [ADR-0029](0029-arch-check-via-a-check.md) (slice-058): `go list`-Skript → a-check-`edges` (`model`←`rules`←`app` als Richtungs-Allowlist); die R6-Policy dieser ADR bleibt unverändert |

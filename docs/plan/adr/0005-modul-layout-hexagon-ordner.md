@@ -86,3 +86,4 @@ Verstoß bricht den Build. Bindung:
 | Datum | Ereignis |
 |---|---|
 | 2026-06-10 | Proposed → Accepted (slice-003) |
+| 2026-07-03 | Fitness-Function-Mechanik teil-superseded durch [ADR-0029](0029-arch-check-via-a-check.md) (slice-058): `tools/arch-check.sh`/Dockerfile-Stage → digest-gepinntes a-check-Image (`a-check.mk` + `.a-check.yml`); die Import-Regeln R1–R5 dieser ADR bleiben unverändert die Policy |

@@ -1,6 +1,6 @@
 # ADR-0029 — arch-check via Schwester-Tool a-check: das Gate konsumiert das digest-gepinnte a-check-Image statt `tools/arch-check.sh`
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-03
 **Autor:** pt9912
 **Bezug:** **Supersedes die Fitness-Function-Mechanik** von
@@ -173,3 +173,4 @@ Richtungs-Allowlist, `tech` für die **vollständige** Kapsel-Liste des Skripts 
 | --- | --- |
 | 2026-07-03 | Entwurf (slice-058, welle-47): `make arch-check` konsumiert das digest-gepinnte a-check-Image via `a-check.mk` + `.a-check.yml` statt `tools/arch-check.sh` (Dockerfile-Stage); Regeln R1–R6 bleiben Policy, Paritäts-Beleg per Mutations-Proben Pflicht, Skript + Stage entfernt + fünfter Tombstone. Löst den Roadmap-Zeiger „arch-check → Schwester-Projekt a-check" ein. Kein d-check-Produkt-Code, kein Release. Status Proposed. |
 | 2026-07-03 | Plan-Review R1 eingearbeitet ([Report](../../reviews/2026-07-03-slice-058-arch-check-plan-r1.md)): Regel-Übersetzung gegen das Skript vervollständigt (R2-go-git-Kapsel, R3-report-Erlaubnis [ADR-0009](0009-yaml-im-report-adapter.md), R1-Bannliste, explizite Rollen-Zuordnung); drei quellen-belegte a-check-v0.6.0-Deltas (Ein-Pattern-ein-Adapter, `*_test.go`-Scope, `composition_root`-Total-Ausnahme) als **CR-Vorbedingung** der Umstellung aufgenommen; Proben-Matrix je Verbotszweig + Allow-Gegenproben statt „je Regel"; `net/url`-Frage nach Quellen-Lage geklärt. Status Proposed. |
+| 2026-07-03 | Angenommen mit der slice-058-Closure: Vorbedingung geliefert (a-check **v0.8.0**, Schwester-CR: `tech.adapter`-Liste, `composition_root: forbid`, `exclude`); `make arch-check` konsumiert das digest-gepinnte v0.8.0-Image via `a-check.mk` + `.a-check.yml`, Skript + Dockerfile-Stage entfernt, fünfter `codepaths.ignore-refs`-Tombstone. Paritäts-Beleg: 20er-Proben-Matrix (17 Verbots-Proben je Zweig rot mit korrektem Grund-Code, Allow-Gegenproben grün, exclude- und Präfix-Vetter-Mutationen rot). Impl-Review R2 eingearbeitet ([Report](../../reviews/2026-07-03-slice-058-arch-check-impl-r2.md)); Lehre: die `net/url`-Ausnahme geht **nur über Nicht-Nennung** (Rollen-Reinheit macht jedes tech-Muster im Kern kategorisch — verbotene `net`-Familie enumeriert), `tech.adapter`-Werte enden auf `/` (Substring-Match, Präfix-Vettern). Kein Produkt-Code, kein Release. Status Accepted. |
