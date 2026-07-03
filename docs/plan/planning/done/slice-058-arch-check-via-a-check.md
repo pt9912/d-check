@@ -1,6 +1,6 @@
 # Slice slice-058: arch-check via Schwester-Tool a-check
 
-**Status:** in-progress (welle-47-arch-check-a-check).
+**Status:** done (welle-47-arch-check-a-check, Closure 2026-07-03).
 
 **Welle:** welle-47-arch-check-a-check (Trigger: der Roadmap-§Nächste-Wellen-Zeiger
 „`arch-check` (Go-Importe → Schwester-Projekt a-check)" ist einlösbar — a-check ist
@@ -106,30 +106,30 @@ adressierte Finding.
 
 - [x] **Doc-first:** [ADR-0029](../../adr/0029-arch-check-via-a-check.md) (Proposed, +
   Index), Roadmap welle-47 aktiv; **kein** Lastenheft-CR (Begründung: §Bezug).
-- [ ] **Vorbedingung erfüllt:** die drei v0.6.0-Deltas (§2) per CR im a-check-Repo
+- [x] **Vorbedingung erfüllt:** die drei v0.6.0-Deltas (§2) per CR im a-check-Repo
   adressiert und in einem Release geliefert; a-check-Pin auf dieses Release gehoben —
   **vor** dem Makefile-Umbau.
-- [ ] **Config:** `.a-check.yml` (alle Skript-Verbotszweige als
+- [x] **Config:** `.a-check.yml` (alle Skript-Verbotszweige als
   `layers`/`edges`/`tech`/`composition_root`, inkl. `role: domain` für
   `model`/`rules`, `coretest`-Zuordnung, beide R2-Kapseln, R3-Doppel-Erlaubnis,
   R1-Bannliste) + `a-check.mk` (digest-gepinnt, `--network none`, read-only-Mount,
   `##`-Help-Annotation).
-- [ ] **Makefile/Dockerfile:** `arch-check`-Target bleibt im `Makefile` definiert und
+- [x] **Makefile/Dockerfile:** `arch-check`-Target bleibt im `Makefile` definiert und
   delegiert an das Fragment-Target `a-check` (gate-consistency parst nur `Makefile`);
   die Dockerfile-Stage `arch-check` + `NO_CACHE_FILTER_ARCH` + die
   `$(IMAGE):arch-check`-Zeile im `clean`-Target + der Makefile-/Dockerfile-Kopfkommentar
   bereinigt; `make versions` weist den a-check-Pin aus.
-- [ ] **Rückbau:** `tools/arch-check.sh` per `git rm`; fünfter
+- [x] **Rückbau:** `tools/arch-check.sh` per `git rm`; fünfter
   `codepaths.ignore-refs`-Tombstone in `.d-check.yml`; `make doc-check` bleibt grün.
-- [ ] **Paritäts-Beleg:** Proben-Matrix je Verbotszweig (R1 in `core/model`, R2a, R2b,
+- [x] **Paritäts-Beleg:** Proben-Matrix je Verbotszweig (R1 in `core/model`, R2a, R2b,
   R3, R4, R5, R6: Verstoß ⇒ rot, Revert ⇒ grün) **plus** Allow-Gegenproben (`net/url`
   im Kern, `yaml` im report-Adapter: kein Befund), Ausgaben im Review-Report/der
   Closure-Notiz; Rest-Deltas explizit gelistet (insb. `composition_root`-Deckung auf
   CLI/`cmd`, falls ungelöst).
-- [ ] **Doku-Currency:** [`harness/README.md`](../../../../harness/README.md) §Sensors
+- [x] **Doku-Currency:** [`harness/README.md`](../../../../harness/README.md) §Sensors
   (arch-check-Zeile: Mechanik + Bindung) + [`AGENTS.md`](../../../../AGENTS.md) §4 +
   Makefile-Kopfkommentar; `make gate-consistency` grün.
-- [ ] **Gates + Review:** `make gates` und `make ci` grün; mindestens ein unabhängiger
+- [x] **Gates + Review:** `make gates` und `make ci` grün; mindestens ein unabhängiger
   Review (R1) vor Closure; Closure-Move nach `done/` + Roadmap-Flip
   ([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise));
   bei Closure [ADR-0029](../../adr/0029-arch-check-via-a-check.md) → Accepted +
@@ -178,5 +178,57 @@ Harness); hier entstehen nur Config (`.a-check.yml`), Makefile-Verdrahtung und R
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(folgt bei Closure — Umsetzung, Paritäts-/Mutations-Belege je R1–R6, Gate-Ausgaben,
-Review, Rest-Deltas.)_
+**Umsetzung.** `make arch-check` konsumiert das **a-check-v0.8.0-Image**
+(digest-gepinnt `@sha256:a1c9c4d6…`, [ADR-0011](../../adr/0011-digest-pins-build-gate-images.md)-Politik)
+über das include-bare `a-check.mk` (aus `a-check --print-mk`, Kommentar-adaptiert,
+sonst fragment-identisch) plus die repo-eigene `.a-check.yml`; das Target `arch-check`
+bleibt im `Makefile` und delegiert ans Fragment-Target (gate-consistency-sicher).
+`tools/arch-check.sh` + Dockerfile-Stage + `NO_CACHE_FILTER_ARCH` + `clean`-Zeile
+entfernt (fünfter `codepaths.ignore-refs`-Tombstone); `make versions` weist den
+a-check-Pin aus; Sensors-Tabelle/AGENTS §4/`.golangci.yml`-Kommentar nachgezogen.
+**Vorbedingung geliefert:** der Schwester-CR (a-check slice-023, dortiges Lastenheft
+0.14.0, Release v0.8.0) brachte `tech.adapter`-Liste, `composition_root: forbid` und
+`exclude` — exakt die drei R1-Deltas. Lauf netzlos + read-only
+([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Bindung
+gehalten); **kein** Produkt-Code, Image byte-identisch, **kein** Release, **kein**
+Lastenheft-CR (§Bezug).
+
+**Belege.**
+- `make ci` **grün** (doc-check 174/0, lint, test, **arch-check via a-check-Image
+  0 Befunde**, coverage, semgrep 0/55, gate-consistency, planning-check; image-test
+  nativ == Container); `make fullbuild` **grün** (37 Anforderungen/**0 Waisen**,
+  Image-Hash `sha256:04b40f3d…`).
+- **Paritäts-/Proben-Matrix (20 Proben, alle verriegelt; Injektion je Probe
+  verifiziert):** 17 Verbots-Proben rot mit korrektem Grund-Code — R1a `syscall`@Kern,
+  R1b Adapter-Import@Kern, R1c `yaml`@Kern, R1d/R1e `net/textproto`+`net/http/httputil`@Kern,
+  R2a `net/http`@fs **und** @CLI (`composition_root: forbid` greift — Deckungs-Beweis),
+  R2b go-git@fs **und** @CLI, R3 `yaml`@fs **und** @CLI, R4 `os`@report, R5 fs→httpcheck
+  (`lateral-adapter`), R6a model→rules, R6b rules→app (`wrong-direction`), R6c model→app;
+  **Mutations-Proben:** `exclude` entfernt ⇒ rot (load-bearing), Präfix-Vetter
+  `driven/gitlab` mit go-git ⇒ rot (Schrägstrich-Konvention); **Allow-Gegenproben:**
+  `net/url`@Kern injiziert ⇒ grün, Bestands-Importe (`yaml`@report, `net/url`@rules,
+  `net`@httpcheck, `os`@CLI) via CLEAN-Lauf 0 Befunde.
+- **Zwei unabhängige Reviews** (Reports
+  [r1](../../../reviews/2026-07-03-slice-058-arch-check-plan-r1.md)/[r2](../../../reviews/2026-07-03-slice-058-arch-check-impl-r2.md)):
+  R1 Plan (2 HIGH/3 MEDIUM/2 LOW/1 INFO — Regel-Übersetzung vervollständigt,
+  CR-Vorbedingung etabliert) und R2 Impl (2 MEDIUM/1 LOW/2 INFO — net-Familie
+  enumeriert, Substring-Falle geschlossen, Proben-Lücken nachgezogen, Über-Deckung
+  benannt); alle Befunde eingearbeitet und regressions-verprobt.
+- Benannte **Rest-Deltas** (ehrlich, §4): `edges`/`tech` wirken auch außerhalb des
+  Kerns (Über-Deckung, strenger als das Skript); **neue** `net/*`-stdlib-Subpakete
+  brauchen einen Enumerations-Nachtrag; Build-Tags/Transitive sieht nur `go list`
+  (Text-Heuristik-Grenze, a-check-seitig als `AC-QA-02` deklariert).
+
+**Lerneintrag.** (1) Die R2-MEDIUM-1-Einarbeitung widerlegte den Review-Vorschlag
+selbst: eine `net/url`-**Vorrang-Zeile** scheitert an der Rollen-Reinheit — im Kern ist
+**jedes** tech-Muster kategorisch `core-/app-impurity`, egal an welchen Adapter
+gebunden; eine Tech-Ausnahme im Kern geht **nur über Nicht-Nennung** (Enumeration der
+verbotenen Familie ohne das erlaubte Mitglied). Erst die Probe zeigte es (CLEAN wurde
+rot) — Review-Vorschläge sind Hypothesen, die Proben-Matrix ist die Wahrheit.
+(2) Auch das **Proben-Harness** braucht Fail-closed-Disziplin: die erste Matrix-Fassung
+injizierte bei Slash-haltigen Importen **gar nichts** (sed-Delimiter) und meldete
+falsche FEHLSCHLÄGE — seither wird jede Injektion verifiziert, eine Probe ohne
+gelungene Injektion ist INVALID statt grün (Erweiterung der slice-057-R3-Lehre auf
+das Werkzeug selbst). (3) Erste Schwester-Tool-Ablösung: der Konsolidierungs-Weg
+(CR drüben → Release → Digest-Pin hier) trägt — vier divergente `arch-check.sh`-Kopien
+haben jetzt eine gepflegte Heimat.
