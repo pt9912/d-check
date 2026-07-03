@@ -37,23 +37,55 @@ Schwester-Beziehung wird symmetrisch (a-check konsumiert d-check bereits via `d-
 
 ## 2. Entscheidungen
 
+Plan-Review R1 ([Report](../../../reviews/2026-07-03-slice-058-arch-check-plan-r1.md),
+Verdikt NACHBESSERN) ist eingearbeitet; die `(R1-…)`-Anker unten benennen das jeweils
+adressierte Finding.
+
 - **Konsum-Form:** `a-check.mk` (aus `a-check --print-mk`, an die Repo-Politik angepasst)
   wird ins Makefile eingebunden; das Image ist `@sha256:`-digest-gepinnt
   ([ADR-0011](../../adr/0011-digest-pins-build-gate-images.md)-Politik, aktueller Stand
   v0.6.0); der Lauf ist `docker run --network none` mit read-only-Mount —
   [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-konform
   wie `make semgrep` ([ADR-0010](../../adr/0010-semgrep-hermetisches-gate.md)).
-- **Regel-Übersetzung:** `.a-check.yml` bildet R1–R6 ab — `layers` für
-  Kern/Ports/Adapter **und** die drei Kern-Pakete (`model`/`rules`/`app`), `edges` als
-  Richtungs-Allowlist (R6 + Hexagon-Richtung), `tech` für die Kapselung
-  (`net/http` → httpcheck-Adapter, `yaml` → configyaml-Adapter, `os` → fs-Adapter),
-  `composition_root` für CLI + `cmd` (die R4-Ausnahme-Zone).
-- **Paritäts-Beleg (Pflicht, vor der Umstellung):** je Regel R1–R6 eine adversariale
-  Mutations-Probe — ein injizierter verbotener Import muss `make arch-check` rot machen
-  (wie die Mutations-Belege der Vorgänger-Ablösungen). Rest-Deltas der Text-Heuristik
-  gegenüber `go list` werden dokumentiert; nicht per Config schließbare Deltas werden
-  Change Request an das a-check-Lastenheft (Schwester-Repo) — keine stille Lockerung
+- **gate-consistency-Verdrahtung (R1-MEDIUM-3):** `tools/gate-consistency.sh` parst in
+  beiden Richtungen **nur die Datei `Makefile`** (keine includes), und das generierte
+  Fragment-Target heißt `a-check`, nicht `arch-check`. Daher: das Gate-Target
+  **`arch-check` bleibt im `Makefile` selbst definiert** und delegiert an das
+  Fragment-Target `a-check` (das Fragment liefert Pin + Basis-Target unverändert).
+  Die Delegation ist zugleich das Ventil gegen Fragment-Divergenz: bei Pin-Hebung wird
+  `a-check.mk` per `--print-mk` neu erzeugt, ohne das `arch-check`-Target anzufassen.
+- **Regel-Übersetzung (R1-HIGH-1/LOW-2 — vollständig gegen das Skript, nicht gegen die
+  Regel-Kurzform):** `.a-check.yml` bildet **alle Verbotszweige** von
+  `tools/arch-check.sh` ab — `layers` für Kern/Ports/Adapter **und** die Kern-Pakete
+  (`model`/`rules`/`app` **plus** Test-Helfer `coretest`; `model`/`rules` brauchen
+  **explizite** `role: domain`, die Namens-Inferenz kennt sie nicht), `edges` als
+  Richtungs-Allowlist (R6 + Hexagon-Richtung), `tech` für **beide** R2-Kapseln
+  (`net/http` → httpcheck **und** go-git → git-Adapter), R3 (`yaml` → configyaml
+  **und** report, [ADR-0009](../../adr/0009-yaml-im-report-adapter.md)), R4
+  (`os` → fs-Adapter) **und** die restliche R1-Bannliste (`net`-Familie
+  regex-verankert enumeriert — nicht Substring, sonst fällt `net/url`; `syscall`,
+  `io/fs`); `composition_root` für CLI + `cmd` (die R4-Ausnahme-Zone).
+- **Paritäts-Beleg (Pflicht, vor der Umstellung; R1-MEDIUM-2):** adversariale
+  **Proben-Matrix je Skript-Verbotszweig** — R1, R2a (`net/http`), R2b (go-git), R3,
+  R4, R5, R6: injizierter verbotener Import ⇒ `make arch-check` rot, Revert ⇒ grün —
+  **plus Allow-Gegenproben**: `net/url` im Kern und `yaml` im report-Adapter dürfen
+  **nicht** flaggen; die R1-Probe liegt in `core/model` (verriegelt die explizite
+  Rollen-Zuordnung mit). Zählung je Verbotszweig, nicht je Regel-Nummer
+  (slice-057-R3-Lehre: sonst bleibt eine Kapsel unverriegelt). Rest-Deltas der
+  Text-Heuristik gegenüber `go list` werden dokumentiert; nicht per Config schließbare
+  Deltas werden Change Request an das a-check-Lastenheft (Schwester-Repo) — keine
+  stille Lockerung
   ([`AGENTS.md` §3.6](../../../../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)).
+- **Umstellungs-Vorbedingung (R1-HIGH-1/HIGH-2/MEDIUM-1 — drei heute quellen-belegte
+  a-check-v0.6.0-Deltas ⇒ CR ans Schwester-Repo, Umstellung wartet):**
+  (a) `tech` bindet ein Pattern an **einen** Adapter-Pfad (Erst-Treffer) — die
+  R3-Zwei-Adapter-Erlaubnis ist nicht ausdrückbar; (b) der Scanner erfasst
+  **`*_test.go`** (Glob-Engine ohne Negation), das Skript prüfte nur
+  Nicht-Test-Imports — schon `os` in einem Adapter-Test macht den sauberen Baum rot;
+  (c) `composition_root` ist eine **Total-Ausnahme** (auch von `tech`) — auf CLI/`cmd`
+  ginge die heutige R2-/R3-Deckung verloren; wird (c) nicht per a-check-Feature
+  schließbar, wird der Deckungsverlust als Rest-Delta **explizit gelistet**, nicht
+  verschwiegen.
 - **Rückbau atomar:** `tools/arch-check.sh` per `git rm` + Dockerfile-Stage `arch-check`
   (samt `--no-cache-filter`-Variable) entfernt; die immutablen Inline-Referenzen
   ([ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md) §Fitness Function,
@@ -69,16 +101,26 @@ Schwester-Beziehung wird symmetrisch (a-check konsumiert d-check bereits via `d-
 
 - [x] **Doc-first:** [ADR-0029](../../adr/0029-arch-check-via-a-check.md) (Proposed, +
   Index), Roadmap welle-47 aktiv; **kein** Lastenheft-CR (Begründung: §Bezug).
-- [ ] **Config:** `.a-check.yml` (R1–R6 als `layers`/`edges`/`tech`/`composition_root`)
-  + `a-check.mk` (digest-gepinnt, `--network none`, read-only-Mount, `##`-Help-Annotation).
-- [ ] **Makefile/Dockerfile:** `make arch-check` läuft über das a-check-Image; die
-  Dockerfile-Stage `arch-check` + `NO_CACHE_FILTER_ARCH` entfernt; `make versions` weist
-  den a-check-Pin aus.
+- [ ] **Vorbedingung erfüllt:** die drei v0.6.0-Deltas (§2) per CR im a-check-Repo
+  adressiert und in einem Release geliefert; a-check-Pin auf dieses Release gehoben —
+  **vor** dem Makefile-Umbau.
+- [ ] **Config:** `.a-check.yml` (alle Skript-Verbotszweige als
+  `layers`/`edges`/`tech`/`composition_root`, inkl. `role: domain` für
+  `model`/`rules`, `coretest`-Zuordnung, beide R2-Kapseln, R3-Doppel-Erlaubnis,
+  R1-Bannliste) + `a-check.mk` (digest-gepinnt, `--network none`, read-only-Mount,
+  `##`-Help-Annotation).
+- [ ] **Makefile/Dockerfile:** `arch-check`-Target bleibt im `Makefile` definiert und
+  delegiert an das Fragment-Target `a-check` (gate-consistency parst nur `Makefile`);
+  die Dockerfile-Stage `arch-check` + `NO_CACHE_FILTER_ARCH` + die
+  `$(IMAGE):arch-check`-Zeile im `clean`-Target + der Makefile-/Dockerfile-Kopfkommentar
+  bereinigt; `make versions` weist den a-check-Pin aus.
 - [ ] **Rückbau:** `tools/arch-check.sh` per `git rm`; fünfter
   `codepaths.ignore-refs`-Tombstone in `.d-check.yml`; `make doc-check` bleibt grün.
-- [ ] **Paritäts-Beleg:** sechs Mutations-Proben (je R1–R6 ein injizierter Verstoß ⇒
-  `make arch-check` rot, Revert ⇒ grün), Ausgaben im Review-Report/der Closure-Notiz;
-  Rest-Deltas explizit gelistet (ggf. CR ans a-check-Repo).
+- [ ] **Paritäts-Beleg:** Proben-Matrix je Verbotszweig (R1 in `core/model`, R2a, R2b,
+  R3, R4, R5, R6: Verstoß ⇒ rot, Revert ⇒ grün) **plus** Allow-Gegenproben (`net/url`
+  im Kern, `yaml` im report-Adapter: kein Befund), Ausgaben im Review-Report/der
+  Closure-Notiz; Rest-Deltas explizit gelistet (insb. `composition_root`-Deckung auf
+  CLI/`cmd`, falls ungelöst).
 - [ ] **Doku-Currency:** [`harness/README.md`](../../../../harness/README.md) §Sensors
   (arch-check-Zeile: Mechanik + Bindung) + [`AGENTS.md`](../../../../AGENTS.md) §4 +
   Makefile-Kopfkommentar; `make gate-consistency` grün.
@@ -93,12 +135,13 @@ Schwester-Beziehung wird symmetrisch (a-check konsumiert d-check bereits via `d-
 ## 4. Risiken / offene Punkte
 
 - **Präzisions-Trade `go list` → Text-Heuristik:** a-check extrahiert Importe
-  text-heuristisch (dokumentierte Grenze, dort `AC-QA-02`). Kritische Sonderfälle, die
-  die Proben klären müssen: (a) R1 erlaubt `net/url` (reiner Parser) — flaggt a-checks
-  Kern-Reinheits-Regel das fälschlich? (b) R4 erlaubt `os` in **drei** Zonen (fs-Adapter,
-  CLI, `cmd`) — `tech` bindet ein Pattern an **einen** Adapter; CLI/`cmd` müssen als
-  `composition_root` sauber herausfallen. Falls nicht abbildbar: CR ans a-check-Repo,
-  Umstellung wartet.
+  text-heuristisch (dokumentierte Grenze, dort `AC-QA-02`); Build-Tags/Transitive sieht
+  nur `go list`. Nach Quellen-Lage bereits geklärt (R1-Review): (a) `net/url` flaggt
+  **nicht** (Kern-Reinheit trifft nur Layer-/`tech`-Auflösungen) — Bedingung ist
+  Pattern-Disziplin in der `.a-check.yml` (verbotene `net`-Familie enumerieren, RE2
+  ohne Lookahead); (b) die R4-Zone läuft über `composition_root`, kostet dort aber die
+  R2-/R3-Deckung (Total-Ausnahme). Die drei harten v0.6.0-Deltas stehen in §2 als
+  CR-Vorbedingung — Umstellung wartet auf das liefernde a-check-Release.
 - **Externe Release-Abhängigkeit:** das Gate hängt am a-check-Release-Stand (wie semgrep
   am gepinnten Regelset) — Digest-Pin macht es reproduzierbar, Pin-Hebung bewusst.
 - **Bootstrap-Reihenfolge:** Umstellung + Skript-Löschung + Tombstone müssen in einem

@@ -62,23 +62,41 @@ Schwester-Beziehung wird mit dieser Entscheidung symmetrisch.
 (`@sha256:`-Pin gemäß [ADR-0011](0011-digest-pins-build-gate-images.md)) über ein
 include-bares **`a-check.mk`** (aus `a-check --print-mk`, an die Repo-Politik
 angepasst — analog dem `d-check.mk`, das a-check konsumiert) plus eine
-repo-eigene **`.a-check.yml`**, die die Import-Regeln R1–R6 deklarativ ausdrückt
-(`layers` für Kern/Ports/Adapter **und** die drei Kern-Pakete, `edges` für die
-erlaubten Richtungen, `tech` für die `net/http`-/`yaml`-/`os`-Kapselung,
-`composition_root` für CLI/`cmd`).
+repo-eigene **`.a-check.yml`**, die die Import-Regeln R1–R6 deklarativ ausdrückt:
+`layers` für Kern/Ports/Adapter **und** die Kern-Pakete (mit **expliziter**
+Rollen-Zuordnung — die Namens-Inferenz kennt `model`/`rules` nicht), `edges` als
+Richtungs-Allowlist, `tech` für die **vollständige** Kapsel-Liste des Skripts —
+`net/http` → httpcheck **und** go-git → git-Adapter (beide R2), yaml → configyaml
+**und** report (R3, [ADR-0009](0009-yaml-im-report-adapter.md)), `os` → fs-Adapter
+(R4) sowie die R1-Bannliste (`net`-Familie regex-verankert enumeriert, `syscall`,
+`io/fs`) — und `composition_root` für CLI/`cmd`.
 
 - **Policy unverändert, nur die Mechanik wechselt.** R1–R5
   ([ADR-0005](0005-modul-layout-hexagon-ordner.md)) und R6
   ([ADR-0012](0012-kern-paketschnitt-model-rules-app.md)) bleiben die
   verbindliche Regel-Menge; der Bindepunkt bleibt Produkt-Gate in
   `make gates`/`ci`.
-- **Paritäts-Beleg vor Umstellung (Pflicht).** Je Regel R1–R6 eine adversariale
-  Mutations-Probe (verbotener Import injiziert ⇒ `make arch-check` rot) — wie
-  die Paritäts-Belege der Skript-Ablösungs-Präzedenzfälle. Verbleibende
-  Präzisions-Deltas (text-heuristische Extraktion statt `go list`) werden
-  ehrlich dokumentiert; ist ein Delta nicht per Config schließbar, ist das ein
-  Change Request an das a-check-Lastenheft im Schwester-Repo — **keine** stille
-  Lockerung hier.
+- **Paritäts-Beleg vor Umstellung (Pflicht).** Eine adversariale
+  **Proben-Matrix je Skript-Verbotszweig** — R1, R2a (`net/http`), R2b (go-git),
+  R3, R4, R5, R6: injizierter verbotener Import ⇒ `make arch-check` rot — **plus
+  Allow-Gegenproben** (`net/url` im Kern und yaml im report-Adapter dürfen
+  **nicht** flaggen); die Zählung folgt den Verbotszweigen, nicht der
+  Regel-Nummerierung (sonst bleibt eine Kapsel unverriegelt — die dokumentierte
+  Test-Wirksamkeits-Lehre der Vorgänger-Ablösung). Verbleibende Präzisions-Deltas
+  (text-heuristische Extraktion statt `go list`) werden ehrlich dokumentiert;
+  ist ein Delta nicht per Config schließbar, ist das ein Change Request an das
+  a-check-Lastenheft im Schwester-Repo — **keine** stille Lockerung hier.
+- **Umstellungs-Vorbedingung: drei quellen-belegte a-check-v0.6.0-Deltas.**
+  (a) `tech` bindet ein Pattern an **einen** Adapter-Pfad (Erst-Treffer) — die
+  R3-Zwei-Adapter-Erlaubnis (configyaml **und** report) ist nicht ausdrückbar;
+  (b) der Scanner erfasst **`*_test.go`** (Glob-Engine ohne Negation), das
+  Skript prüfte via `go list` nur Nicht-Test-Imports — `os`-Importe in
+  Test-Dateien machten den sauberen Baum sofort rot; (c) `composition_root`
+  ist eine **Total-Ausnahme** (auch von `tech`) — die R4-Lösung für CLI/`cmd`
+  kostet dort die heute geltende R2-/R3-Deckung. Diese Deltas werden per CR an
+  das a-check-Lastenheft geschlossen (Pin-Hebung aufs liefernde Release ist
+  Teil des Umsetzungs-Slices); bis dahin **wartet die Umstellung** — bewusst
+  kein Start mit gelockerter Config.
 - **Skript und Stage entfernt.** `tools/arch-check.sh` wird atomar per `git rm`
   entfernt, die Dockerfile-Stage `arch-check` (samt `--no-cache-filter`) entfällt;
   die immutablen Inline-Referenzen
@@ -108,11 +126,14 @@ erlaubten Richtungen, `tech` für die `net/http`-/`yaml`-/`os`-Kapselung,
   Setup (Netz, wie Image-Pull), der Prüf-Lauf selbst ist netzlos/read-only.
 - **Präzisions-Trade:** `go list` (Compiler-Sicht, Build-Tags, Transitive)
   weicht der text-heuristischen Import-Extraktion (dokumentierte a-check-Grenze,
-  dort `AC-QA-02`). Die Mutations-Proben je R1–R6 machen die reale Abdeckung
-  sichtbar; jedes Rest-Delta wird beim Umsetzungs-Slice benannt statt
-  verschwiegen. Sonderfälle, die die Proben klären müssen: die
-  `net/url`-Erlaubnis in R1 (reiner Parser ohne I/O) und die R4-Dreifach-Zone
-  (`os` in fs-Adapter, CLI und `cmd` — CLI/`cmd` als `composition_root`).
+  dort `AC-QA-02`). Die Proben-Matrix macht die reale Abdeckung sichtbar; jedes
+  Rest-Delta wird beim Umsetzungs-Slice benannt statt verschwiegen. Nach
+  Quellen-Lage bereits geklärt: die `net/url`-Erlaubnis in R1 bleibt erhalten
+  (a-checks Kern-Reinheit flaggt nur Layer- und `tech`-Treffer — Bedingung ist
+  Pattern-Disziplin: die verbotene `net`-Familie enumerieren statt als
+  Substring binden); die R4-Dreifach-Zone (`os` in fs-Adapter, CLI, `cmd`)
+  läuft über `composition_root` — um den Preis der dortigen Total-Ausnahme
+  (s. Vorbedingungs-Delta (c)).
 - Die Dockerfile verliert die `arch-check`-Stage; `make arch-check` wird vom
   `docker build --target` zum `docker run` des gepinnten Images.
 - `gate-consistency` bleibt bindend: die Sensors-Tabelle
@@ -151,3 +172,4 @@ erlaubten Richtungen, `tech` für die `net/http`-/`yaml`-/`os`-Kapselung,
 | Datum | Ereignis |
 | --- | --- |
 | 2026-07-03 | Entwurf (slice-058, welle-47): `make arch-check` konsumiert das digest-gepinnte a-check-Image via `a-check.mk` + `.a-check.yml` statt `tools/arch-check.sh` (Dockerfile-Stage); Regeln R1–R6 bleiben Policy, Paritäts-Beleg per Mutations-Proben Pflicht, Skript + Stage entfernt + fünfter Tombstone. Löst den Roadmap-Zeiger „arch-check → Schwester-Projekt a-check" ein. Kein d-check-Produkt-Code, kein Release. Status Proposed. |
+| 2026-07-03 | Plan-Review R1 eingearbeitet ([Report](../../reviews/2026-07-03-slice-058-arch-check-plan-r1.md)): Regel-Übersetzung gegen das Skript vervollständigt (R2-go-git-Kapsel, R3-report-Erlaubnis [ADR-0009](0009-yaml-im-report-adapter.md), R1-Bannliste, explizite Rollen-Zuordnung); drei quellen-belegte a-check-v0.6.0-Deltas (Ein-Pattern-ein-Adapter, `*_test.go`-Scope, `composition_root`-Total-Ausnahme) als **CR-Vorbedingung** der Umstellung aufgenommen; Proben-Matrix je Verbotszweig + Allow-Gegenproben statt „je Regel"; `net/url`-Frage nach Quellen-Lage geklärt. Status Proposed. |

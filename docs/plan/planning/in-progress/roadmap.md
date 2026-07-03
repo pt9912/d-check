@@ -17,8 +17,11 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 (Dockerfile-Stage); die Import-Regeln R1–R6
 ([ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md)/[ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md))
 bleiben unverändert Policy, nur die Durchsetzungs-Mechanik wechselt; Skript + Stage entfernt
-(fünfter `codepaths.ignore-refs`-Tombstone), **Paritäts-Beleg per Mutations-Proben je Regel**
-Pflicht vor der Umstellung. [ADR-0029](../../adr/0029-arch-check-via-a-check.md) (Proposed;
+(fünfter `codepaths.ignore-refs`-Tombstone), **Paritäts-Beleg per Proben-Matrix je
+Skript-Verbotszweig + Allow-Gegenproben** Pflicht vor der Umstellung; drei quellen-belegte
+a-check-v0.6.0-Deltas (Ein-Pattern-ein-Adapter, `*_test.go`-Scope,
+`composition_root`-Total-Ausnahme) sind **CR-Vorbedingung** im Schwester-Repo (Plan-Review R1
+eingearbeitet). [ADR-0029](../../adr/0029-arch-check-via-a-check.md) (Proposed;
 Supersedes die Fitness-Function-Mechanik von
 [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md)/[ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md)).
 **Kein** Lastenheft-CR (Gate-Mechanik, kein Produkt-Feature), kein Release erwartet. Löst den
