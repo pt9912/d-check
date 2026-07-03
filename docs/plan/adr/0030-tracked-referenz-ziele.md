@@ -1,6 +1,6 @@
 # ADR-0030 — Getrackt-Status von Referenz-Zielen: das Modul `tracked` prüft auflösbare Ziele gegen den git-Index (VCS-Port, ohne Range)
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-03
 **Autor:** pt9912
 **Bezug:** [`DC-FA-TRK-001`](../../../spec/lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)
@@ -129,5 +129,6 @@ geladen); ein untracktes Ziel ⇒ Grund-Code `target-untracked`.
 
 | Datum | Ereignis |
 | --- | --- |
+| 2026-07-03 | Angenommen mit der slice-059-Closure: VCS-Port um `TrackedPaths()` erweitert (Index inkl. gestagter Dateien), Modul `tracked` je gescannter Quell-Datei, Config-Surface (print-config/suggest/print-mk `doc-tracked`), Handbuch/README/CHANGELOG. AK-Tests an git-Fixtures (committed/staged/untracked), Guards + Bild-/Auflösungs-/Symlink-Skips mutations-verriegelt; Beleg-Lauf gegen das eigene Repo grün, adversariale Untracked-Probe rot. `make ci`/`fullbuild` grün (38 Anforderungen/0 Waisen). Release v0.37.0. Status Accepted. |
 | 2026-07-03 | Reviews R1 (doc, 5 MEDIUM/3 LOW/1 INFO) + R2 (code, 4 MEDIUM/2 LOW/2 INFO) eingearbeitet: Befund-`target` = **aufgelöster** Zielpfad (Ventil-Parität, Code-Fix + Verriegelung); Symlink-Referenzen kategorisch `links`-Domäne (Verzeichnis-Symlink-false-positive per Probe belegt, Code-Fix + Test); Bild-Einschluss und Auflösung mutations-verriegelt (die IsImage-Skip-Mutation überlebte zuvor); `exempt-targets` segmentweise validiert; `target-untracked` mit `--doctor`-Klartext (der Bestands-Rückstand älterer Grund-Codes bleibt eigener Folgepunkt); „Post-Pass"-Wording auf „je gescannter Quell-Datei, links-unabhängig" präzisiert (Spec/Slice nachgezogen); [`DC-FA-CLI-010`](../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)-AKs auf zehn Targets. Lastenheft 0.37.1. Status Proposed. |
 | 2026-07-03 | Entwurf (slice-059, welle-48): opt-in Modul `tracked` prüft auflösbare, existierende Link-/Bild-Ziele gegen den git-Index (`target-untracked`); dritte VCS-Port-Nutzung (ohne Range), Index statt `.gitignore`-Interpretation, kein Doppelbefund, Ventil `tracked.exempt-targets`, fail-closed ohne `.git`. Anlass: Auftraggeber-Frage „Was passiert, wenn ein Dokument ein gitignoriertes Dokument referenziert?" + Fixture-Demo (Erzeuger grün, frischer Klon rot). Lastenheft 0.37.0 ([`DC-FA-TRK-001`](../../../spec/lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in) + [`DC-FA-CLI-010`](../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 9→10). Status Proposed. |

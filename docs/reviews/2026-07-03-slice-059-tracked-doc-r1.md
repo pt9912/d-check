@@ -9,7 +9,7 @@
 [Spezifikation §DC-FA-TRK-001.a](../../spec/spezifikation.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked)
 (+ §2 `tracked.exempt-targets`, §4 `target-untracked`, CLI-010.a, §7),
 [ADR-0030](../plan/adr/0030-tracked-referenz-ziele.md) (Proposed) + ADR-Index,
-[slice-059](../plan/planning/in-progress/slice-059-tracked-modul.md) + Roadmap (welle-48),
+[slice-059](../plan/planning/done/slice-059-tracked-modul.md) + Roadmap (welle-48),
 [Benutzerhandbuch](../user/benutzerhandbuch.md) §4.13/§5/§6,
 [CHANGELOG](../../CHANGELOG.md) `[Unreleased]` — jeweils gegen die Implementierung
 (feat-Commit `d39dd3f`).

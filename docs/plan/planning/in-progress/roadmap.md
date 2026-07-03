@@ -10,22 +10,26 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-48-tracked-modul** — [`slice-059`](slice-059-tracked-modul.md) in `in-progress/`:
-neues **opt-in Modul `tracked`** (16.) prüft die von `links` aufgelösten, **existierenden**
-repo-internen Link-/Bild-Ziele gegen den **git-Index** — ein untracktes/gitignoriertes Ziel
-⇒ `target-untracked` (beim Erzeuger grün, auf jedem frischen Klon `target-missing`: die
-Umgebungs-Drift wird am Entstehungsort gefangen statt erst in der CI des nächsten Checkouts).
-Dritte VCS-Port-Nutzung (`vcs`: Range-Diff, `commits`: Messages, `tracked`: **Index**, ohne
-Range), Index statt `.gitignore`-Interpretation (gestagte Dateien gelten als getrackt), kein
-Doppelbefund (`target-missing` bleibt `links`), Ventil `tracked.exempt-targets`, fail-closed
-ohne `.git`, strikt opt-in/default-aus byte-identisch.
-[ADR-0030](../../adr/0030-tracked-referenz-ziele.md) (Proposed),
+**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**welle-48-tracked-modul** ([`slice-059`](../done/slice-059-tracked-modul.md) — neues
+**opt-in Modul `tracked`** (16.) prüft die aufgelösten, **existierenden** repo-internen
+Link-/Bild-**Datei**-Ziele gegen den **git-Index**: untracktes/gitignoriertes Ziel ⇒
+`target-untracked` (beim Erzeuger grün, auf jedem frischen Klon `target-missing` — die
+Umgebungs-Drift wird am Entstehungsort gefangen). Dritte VCS-Port-Nutzung (`vcs`: Range-Diff,
+`commits`: Messages, `tracked`: **Index**, ohne Range), Index-Wahrheit statt
+`.gitignore`-Interpretation (gestagt = getrackt), kein Doppelbefund (`target-missing` bleibt
+`links`; Verzeichnis-/Symlink-Ziele kein Kandidat), Ventil `tracked.exempt-targets`
+(aufgelöster Zielpfad, segmentweise validiert), fail-closed ohne `.git`.
+[ADR-0030](../../adr/0030-tracked-referenz-ziele.md) (Accepted),
 [`DC-FA-TRK-001`](../../../../spec/lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)
-(Lastenheft 0.37.0; zugleich
+(Lastenheft 0.37.1; zugleich
 [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
-9→10: `doc-tracked`). Anlass: Auftraggeber-Frage „Was passiert, wenn ein Dokument ein
-gitignoriertes Dokument referenziert?" + Fixture-Demo. Release v0.37.0 erwartet
-(Produkt-Code). Zuletzt abgeschlossen:
+9→10: `doc-tracked`); zwei unabhängige Reviews (R1 doc + R2 code, je NACHBESSERN → alle
+Befunde eingearbeitet, Symlink-/Bild-/Ventil-Verriegelungen mutations-belegt);
+`make ci`/`fullbuild` grün; Release **v0.37.0**
+([Closure](../done/slice-059-tracked-modul.md#7-closure-notiz-nach-done)). Anlass:
+Auftraggeber-Frage „Was passiert, wenn ein Dokument ein gitignoriertes Dokument
+referenziert?" + Fixture-Demo. Davor
 **welle-47-arch-check-a-check** ([`slice-058`](../done/slice-058-arch-check-via-a-check.md) —
 das `make arch-check`-Gate konsumiert das **Schwester-Tool
 [a-check](https://github.com/pt9912/a-check)** (digest-gepinntes v0.8.0-Image, netzlos/read-only)
