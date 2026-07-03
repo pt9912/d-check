@@ -26,7 +26,9 @@ Umgebungs-Drift wird am Entstehungsort gefangen). Dritte VCS-Port-Nutzung (`vcs`
 [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
 9→10: `doc-tracked`); zwei unabhängige Reviews (R1 doc + R2 code, je NACHBESSERN → alle
 Befunde eingearbeitet, Symlink-/Bild-/Ventil-Verriegelungen mutations-belegt);
-`make ci`/`fullbuild` grün; Release **v0.37.0**
+`make ci`/`fullbuild` grün; Release **v0.37.0** auf GHCR (Pipeline-Run 28679242142 grün),
+Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:b5bbf94f6c59c246ff5a305ec1f43d247811eaf1727c00890fbc8cc11cb9b0b1`
 ([Closure](../done/slice-059-tracked-modul.md#7-closure-notiz-nach-done)). Anlass:
 Auftraggeber-Frage „Was passiert, wenn ein Dokument ein gitignoriertes Dokument
 referenziert?" + Fixture-Demo. Davor

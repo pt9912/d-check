@@ -177,8 +177,9 @@ Spezifikation `.a`/§2/§4 gingen dem Code voraus.
   Verzeichnis-Symlink-false-positive per Klon-Gegenprobe, überlebende
   Bild-Skip-Mutation, Glob-Segment-Validierung); **alle Befunde eingearbeitet** und
   regressions-verprobt (Lastenheft 0.37.1).
-- Release **v0.37.0** auf GHCR — Pipeline-Run + Digest-Pin folgen als
-  Digest-Backfill nach dem Tag.
+- Release **v0.37.0** auf GHCR (Pipeline-Run 28679242142 grün; Push-CI
+  28679241206 grün), Digest-Pin
+  `ghcr.io/pt9912/d-check@sha256:b5bbf94f6c59c246ff5a305ec1f43d247811eaf1727c00890fbc8cc11cb9b0b1`.
 
 **Lerneintrag.** (1) Rollen-Teilung trägt: R1 (doc) fand die Spec-Treue-Drifts
 („Post-Pass", Neun-Targets), R2 (code) die semantischen Ränder (Symlink-Alias vs.
