@@ -55,4 +55,11 @@ type VCS interface {
 	// IndexRef wird nicht unterstützt (die Pending-Message existiert nicht als
 	// Commit — dafür der --commit-msg-Kurzschluss-Modus) ⇒ Fehler.
 	CommitMessages(base, head string) ([]CommitMeta, error)
+	// TrackedPaths liefert die Menge der im git-Index getrackten Pfade
+	// ('/'-getrennt, repo-relativ) — die Eingabe des Moduls tracked
+	// (DC-FA-TRK-001). Der Index ist die Wahrheit (keine .gitignore-
+	// Interpretation): eine gestagte, noch nie committete Datei ist
+	// enthalten. Ein unlesbarer Index ⇒ Fehler (fail-closed, Exit 2);
+	// ein leerer Index (frisches Repo) ist kein Fehler (leere Menge).
+	TrackedPaths() (map[string]bool, error)
 }

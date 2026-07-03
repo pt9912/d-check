@@ -618,9 +618,10 @@ docker run --rm ghcr.io/pt9912/d-check:v0.36.0 --print-mk > d-check.mk
 
 **Ergebnis:** ein include-bares `d-check.mk` auf stdout — eine überschreibbare
 `DCHECK_IMAGE`-Variable (auf die ausgelieferte Release-Version gepinnt), die
-Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und neun
+Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und zehn
 `##`-annotierte Targets (`doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`,
-`doc-repair`, `doc-immutable`, `doc-commits`, `doc-planning`, `doc-help`):
+`doc-repair`, `doc-immutable`, `doc-commits`, `doc-planning`, `doc-tracked`,
+`doc-help`):
 
 ```text
 DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.36.0
@@ -744,6 +745,8 @@ commits:                       # Traceability-Kennung in Commit-Messages (opt-in
     - 'ADR-\d{4}'
     - 'slice-\d+'
   exempt-pattern: '^(Merge |Revert )'   # kennungsfreier Betreff (Merge/Revert)
+tracked:                       # Getrackt-Status von Link-Zielen (opt-in; git-Index, ohne Range)
+  exempt-targets: ["build/**"] # absichtlich untrackte Ziele (Glob über den aufgelösten Pfad)
 ```
 
 Das Modul `codepaths` kennt **drei** Ventil-Achsen, um einen Pfad von der
@@ -807,6 +810,29 @@ Prüfung an eigene Repos mit demselben Roadmap-Layout:
 make doc-planning
 ```
 
+Das Modul `tracked` prüft, dass jedes **auflösbare, existierende**
+Link-/Bild-Ziel im **git-Index getrackt** ist — ein untracktes oder
+gitignoriertes Ziel ist beim Erzeuger grün, wäre aber auf jedem frischen
+Klon ein `target-missing`; der Befund `target-untracked` fängt diese
+Umgebungs-Drift am Entstehungsort. Die Wahrheit ist der **Index**, nicht
+die `.gitignore`-Syntax: eine frisch per `git add` gestagte Datei gilt als
+getrackt. Fehlende Ziele bleiben Sache von `links` (kein Doppelbefund);
+`exempt-targets` (Globs über den **aufgelösten** Zielpfad) nimmt absichtlich
+untrackte Ziele aus. Braucht ein lesbares `.git` unter der Scan-Wurzel
+(sonst Exit 2, fail-closed), aber **keine** Commit-Range:
+
+```yaml
+tracked:
+  exempt-targets: []   # z. B. ["build/**"] für lokal generierte Ziele
+```
+
+Das `--print-mk`-Target `doc-tracked` (ohne Range; das `.git` liegt im
+read-only-Mount) verteilt die Prüfung:
+
+```bash
+make doc-tracked
+```
+
 ### Modul-lokaler Scan-Bereich
 
 Ein Modul kann einen eigenen, vom globalen abweichenden Scan-Bereich
@@ -836,6 +862,7 @@ ids:
 | `vcs`       | opt-in (git)  | git-Diff-Immutabilität: **Core** einer immutablen Datei (`immutable-when`) unverändert über eine Commit-Range (`--range`/`--staged`); liest `.git` read-only (kein git-Binary, kein Netz) | `core-drift-vcs`                                            |
 | `commits`   | opt-in (git)  | Traceability-Kennung (`id-patterns`) in jeder Commit-Message einer Range (`--range`) bzw. der Pending-Message (`--commit-msg`); liest `.git` read-only (kein git-Binary, kein Netz) | `commit-untraceable`                                        |
 | `planning`  | opt-in        | Roadmap-↔-in-progress-Lifecycle-Konsistenz: der Ruhe-Marker (`marker`) steht im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt; **hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift | `planning-drift`                                            |
+| `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
 | `external`  | opt-in (Netz) | Erreichbarkeit externer Links                                                            | `external-status`, `external-timeout`, `external-redirects` |
 
 ## 7. Fehlerbehebung

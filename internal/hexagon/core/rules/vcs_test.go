@@ -17,6 +17,7 @@ type fakeVCS struct {
 	changes []driven.VCSChange
 	files   map[string]map[string][]byte // ref → pfad → inhalt
 	commits []driven.CommitMeta          // Modul commits (DC-FA-COMMITS-001)
+	tracked map[string]bool              // Modul tracked (DC-FA-TRK-001)
 	err     error
 }
 
@@ -32,6 +33,13 @@ func (f *fakeVCS) CommitMessages(_, _ string) ([]driven.CommitMeta, error) {
 		return nil, f.err
 	}
 	return f.commits, nil
+}
+
+func (f *fakeVCS) TrackedPaths() (map[string]bool, error) {
+	if f.err != nil {
+		return nil, f.err
+	}
+	return f.tracked, nil
 }
 
 func (f *fakeVCS) FileAt(ref, path string) ([]byte, bool, error) {

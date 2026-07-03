@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -55,6 +55,8 @@ type Config struct {
 	Commits CommitsConfig
 	// Planning: Parameter des Moduls planning (DC-FA-PLAN-001).
 	Planning PlanningConfig
+	// Tracked: Parameter des Moduls tracked (DC-FA-TRK-001).
+	Tracked TrackedConfig
 	// Scopes: modul-lokale Scan-Scopes (DC-FA-CONF-002); Schlüssel
 	// ist der Modulname, nil-Eintrag/fehlender Schlüssel = globaler
 	// Scope.
@@ -307,6 +309,14 @@ func (p PlanningConfig) EffectiveSliceGlob() string {
 		return "slice-*.md"
 	}
 	return p.SliceGlob
+}
+
+// TrackedConfig sind die Parameter des Moduls tracked (DC-FA-TRK-001):
+// ExemptTargets nimmt aufgelöste Ziel-Pfade referenz-weit von der
+// Getrackt-Prüfung aus (Glob wie scan.ignore; analog codepaths.ignore-refs) —
+// für absichtlich untrackte Ziele. Ohne Einträge byte-identisch.
+type TrackedConfig struct {
+	ExemptTargets []string
 }
 
 // EffectiveModules wendet die Modul-Auflösung an

@@ -18,10 +18,11 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, external
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, external
 # (external ist die einzige Netzwerk-Tür — strikt opt-in; vcs und commits sind
-#  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in; planning ist
-#  hermetisch (Roadmap-↔-in-progress-Konsistenz, kein git) — strikt opt-in.)
+#  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in; tracked ist
+#  git-basiert und braucht nur .git (Index, ohne Range) — strikt opt-in; planning
+#  ist hermetisch (Roadmap-↔-in-progress-Konsistenz, kein git) — strikt opt-in.)
 
 # --- ids: Linkpflicht für Kennungen ---
 # ids:
@@ -120,6 +121,12 @@ modules: [links, anchors]
 #   # heading: "## Aktuelle Welle"      # kanonische H2 (Default); fehlt sie ⇒ planning-drift (fail-closed)
 #   # marker: "Keine aktive Welle"      # literaler Ruhe-Marker (Default)
 #   # slice-glob: "slice-*.md"          # Basisnamen-Glob der Slice-Dateien (Default)
+
+# --- tracked: Getrackt-Status aufgelöster Link-/Bild-Ziele — git-Index (ohne Range), opt-in ---
+#   (--enable tracked; fail-closed ohne lesbares .git. Ein existierendes, aber
+#    untracked/gitignoriertes Ziel wäre auf jedem frischen Klon target-missing.)
+# tracked:
+#   exempt-targets: []   # Globs über den AUFGELÖSTEN Zielpfad — absichtlich untrackte Ziele (referenz-weit)
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---
 # external:

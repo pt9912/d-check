@@ -4,6 +4,25 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [Unreleased]
+
+### Added
+
+- slice-059 — neues opt-in Modul `tracked` (16. Regelmodul,
+  [`DC-FA-TRK-001`](spec/lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)):
+  prüft jedes **auflösbare, existierende** Link-/Bild-Ziel gegen den
+  **git-Index** — ein untracktes/gitignoriertes Ziel wäre auf jedem frischen
+  Klon `target-missing`; Befund `target-untracked` fängt die Umgebungs-Drift
+  am Entstehungsort. Index-Wahrheit (gestagt = getrackt, keine
+  `.gitignore`-Interpretation), kein Doppelbefund (fehlende Ziele bleiben
+  `links`), Ventil `tracked.exempt-targets` (referenz-weit); liest `.git`
+  read-only über den VCS-Port (reine-Go, **ohne** Range), fail-closed ohne
+  `.git` (Exit 2), strikt opt-in/default-aus byte-identisch, diagnose-only.
+- `--print-mk`: das Fragment trägt zusätzlich **`doc-tracked`**
+  (`--enable tracked` + fokussierte `--disable`-Liste, ohne Range;
+  [`DC-FA-CLI-010`](spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+  9→10 Targets); `--print-config`/`--suggest-config` führen `tracked`.
+
 ## [0.36.0] — 2026-07-01
 
 ### Added

@@ -241,6 +241,23 @@ func (a *Adapter) FileAt(ref, path string) ([]byte, bool, error) {
 	return []byte(s), true, nil
 }
 
+// TrackedPaths liefert die Menge der im git-Index getrackten Pfade
+// (DC-FA-TRK-001.a Schritt 2). Index-Wahrheit: gestagte, noch nie
+// committete Dateien sind enthalten; .gitignore wird nicht interpretiert.
+// Ein frisches Repo ohne Einträge liefert eine leere Menge (kein Fehler);
+// ein unlesbarer Index ⇒ Fehler (fail-closed, Exit 2).
+func (a *Adapter) TrackedPaths() (map[string]bool, error) {
+	idx, err := a.repo.Storer.Index()
+	if err != nil {
+		return nil, fmt.Errorf("git-Index nicht lesbar: %w", err)
+	}
+	set := make(map[string]bool, len(idx.Entries))
+	for _, e := range idx.Entries {
+		set[e.Name] = true
+	}
+	return set, nil
+}
+
 // fileFromIndex liest den staged Blob eines Pfads (DC-FA-VCS-001.a; --staged).
 func (a *Adapter) fileFromIndex(path string) ([]byte, bool, error) {
 	idx, err := a.repo.Storer.Index()

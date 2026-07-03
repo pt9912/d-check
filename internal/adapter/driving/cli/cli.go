@@ -479,11 +479,16 @@ func httpChecker(modules []string, cfg model.Config) driven.HTTPChecker {
 	return nil
 }
 
-// gitModuleActive prüft, ob ein git-nutzendes Modul (vcs oder commits) im
-// effektiven Modulsatz ist — beide teilen den VCS-/git-Adapter und die Range.
+// gitModuleActive prüft, ob ein range-nutzendes git-Modul (vcs oder commits)
+// im effektiven Modulsatz ist — beide teilen den VCS-/git-Adapter und die Range.
 func gitModuleActive(modules []string) bool {
+	return moduleActive(modules, "vcs") || moduleActive(modules, "commits")
+}
+
+// moduleActive prüft die Mitgliedschaft eines Moduls im effektiven Satz.
+func moduleActive(modules []string, name string) bool {
 	for _, m := range modules {
-		if m == "vcs" || m == "commits" {
+		if m == name {
 			return true
 		}
 	}
@@ -514,13 +519,21 @@ func vcsRefs(opts options) (base, head, msg string) {
 // inaktiv), 2 = fail-closed (Nutzungs-/git-Fehler, bereits auf stderr gemeldet —
 // fehlende/kaputte Range oder fehlendes/unlesbares .git).
 func resolveVCS(opts options, modules []string, stderr io.Writer) (driven.VCS, string, string, int) {
-	if !gitModuleActive(modules) {
+	// tracked braucht den Adapter, aber KEINE Range (nur der Index-Stand,
+	// DC-FA-TRK-001); vcs/commits brauchen Adapter + Range.
+	rangeNeeded := gitModuleActive(modules)
+	indexNeeded := moduleActive(modules, "tracked")
+	if !rangeNeeded && !indexNeeded {
 		return nil, "", "", 0
 	}
-	base, head, msg := vcsRefs(opts)
-	if msg != "" {
-		fmt.Fprintln(stderr, "d-check: error: "+msg)
-		return nil, "", "", 2
+	var base, head string
+	if rangeNeeded {
+		var msg string
+		base, head, msg = vcsRefs(opts)
+		if msg != "" {
+			fmt.Fprintln(stderr, "d-check: error: "+msg)
+			return nil, "", "", 2
+		}
 	}
 	absRoot, err := filepath.Abs(opts.root)
 	if err != nil {

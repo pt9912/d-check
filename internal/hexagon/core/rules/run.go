@@ -23,10 +23,12 @@ func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg model.Config, mod
 // RunWithVCS führt den Prüflauf aus (spec/spezifikation.md
 // §DC-FA-CLI-001.a Schritte 3–5). Umgebungsfehler (nicht lesbare
 // Wurzel/Datei) führen zu error — der Aufrufer mappt auf Exit 2.
-// httpc wird ausschließlich vom Modul external benutzt; vcs/vcsBase/vcsHead
-// ausschließlich vom opt-in Modul vcs (DC-FA-VCS-001) — ein nicht-hermetischer
-// git-Lauf, der nur das lokale read-only `.git` liest (DC-QA-03: keine
-// Netzwerkzugriffe; ohne aktives vcs bleibt vcs nil und ungenutzt).
+// httpc wird ausschließlich vom Modul external benutzt; vcs ausschließlich
+// von den opt-in git-Modulen (vcs/commits: mit vcsBase/vcsHead-Range,
+// DC-FA-VCS-001/DC-FA-COMMITS-001; tracked: nur der Index, ohne Range,
+// DC-FA-TRK-001) — nicht-hermetische Läufe, die nur das lokale read-only
+// `.git` lesen (DC-QA-03: keine Netzwerkzugriffe; ohne aktives git-Modul
+// bleibt vcs nil und ungenutzt).
 func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS, vcsBase, vcsHead string, cfg model.Config, modules []string) (Result, error) {
 	var res Result
 	active := map[string]bool{}
@@ -56,6 +58,22 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 		versionsCurrent, versionsFromFile = cur, from
 	}
 
+	// Modul tracked (DC-FA-TRK-001.a Schritte 1–2): die Index-Menge wird
+	// einmal je Lauf über den VCS-Port geladen — fail-closed: aktives
+	// tracked ohne verdrahteten Port (kein lesbares .git) oder mit
+	// unlesbarem Index ⇒ error, der Aufrufer mappt auf Exit 2.
+	var trackedSet map[string]bool
+	if active["tracked"] {
+		if vcs == nil {
+			return res, fmt.Errorf("das Modul tracked braucht ein lesbares .git unter der Scan-Wurzel (DC-FA-TRK-001, fail-closed)")
+		}
+		set, terr := vcs.TrackedPaths()
+		if terr != nil {
+			return res, terr
+		}
+		trackedSet = set
+	}
+
 	// Effektiver Scan-Scope pro Modul (DC-FA-CONF-002,
 	// spec/spezifikation.md §DC-FA-CONF-002.a): Module mit
 	// deklariertem scope laufen über einen eigenen Discover-Lauf,
@@ -74,6 +92,7 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 		diagCache:       map[string]map[string]bool{},
 		spanCache:       map[string]string{},
 		versionsCurrent: versionsCurrent, versionsFromFile: versionsFromFile,
+		tracked:         trackedSet,
 	}
 	for _, file := range files {
 		if err := st.checkFile(file); err != nil {
@@ -140,6 +159,9 @@ type runState struct {
 	// Version + ihr Datei-Pfad (Modul versions, DC-FA-VER-001).
 	versionsCurrent  string
 	versionsFromFile string
+	// tracked: die einmal je Lauf geladene git-Index-Menge (Modul tracked,
+	// DC-FA-TRK-001.a Schritt 2); nil, wenn das Modul inaktiv ist.
+	tracked map[string]bool
 }
 
 // applies: Modul aktiv und Datei in dessen effektivem Scope
@@ -188,6 +210,9 @@ func (st *runState) checkFile(file string) error {
 	}
 	if st.applies("immutable", file) {
 		st.findings = append(st.findings, CheckImmutable(file, lines, content, st.cfg.Immutable)...)
+	}
+	if st.applies("tracked", file) {
+		st.findings = append(st.findings, CheckTracked(st.fsys, file, lines, st.cfg.Tracked, st.tracked)...)
 	}
 	if st.applies("external", file) {
 		st.extRefs = append(st.extRefs, CollectExternalURLs(file, lines)...)

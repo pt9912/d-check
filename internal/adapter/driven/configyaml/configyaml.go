@@ -113,6 +113,15 @@ type rawPlanning struct {
 	SliceGlob string `yaml:"slice-glob"`
 }
 
+// rawTracked trägt scope und die Parameter des Moduls tracked
+// (DC-FA-TRK-001): exempt-targets (Globs über aufgelöste Ziel-Pfade,
+// referenz-weit — absichtlich untrackte Ziele). scope gilt für die
+// Quell-Dateien (DC-FA-CONF-002) wie bei jedem scannenden Modul.
+type rawTracked struct {
+	Scope         *rawScope `yaml:"scope"`
+	ExemptTargets []string  `yaml:"exempt-targets"`
+}
+
 // rawCommits trägt scope und die Parameter des Moduls commits
 // (DC-FA-COMMITS-001): id-patterns (Regex-Liste gültiger Traceability-Kennungen,
 // leer ⇒ inert) und exempt-pattern (Betreff-Ausnahme, z. B. `^(Merge |Revert )`).
@@ -181,6 +190,7 @@ type raw struct {
 	Vcs       *rawVCS       `yaml:"vcs"`
 	Commits   *rawCommits   `yaml:"commits"`
 	Planning  *rawPlanning  `yaml:"planning"`
+	Tracked   *rawTracked   `yaml:"tracked"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -244,6 +254,9 @@ func applyModules(r *raw, cfg *model.Config) error {
 		return err
 	}
 	if err := applyPlanning(r, cfg); err != nil {
+		return err
+	}
+	if err := applyTracked(r, cfg); err != nil {
 		return err
 	}
 	return applyScopes(r, cfg)
@@ -352,6 +365,27 @@ func applyPlanning(r *raw, cfg *model.Config) error {
 	cfg.Planning = model.PlanningConfig{
 		Roadmap: p.Roadmap, Heading: p.Heading, Marker: p.Marker, SliceGlob: p.SliceGlob,
 	}
+	return nil
+}
+
+// applyTracked validiert die Parameter des Moduls tracked (DC-FA-TRK-001):
+// jedes exempt-targets-Glob muss ein gültiges path.Match-Muster sein — sonst
+// schluckte der Kern den ErrBadPattern und das Ventil wäre still wirkungslos
+// bzw. die Prüfung fail-open (dieselbe Config-Rand-Disziplin wie
+// planning.slice-glob, slice-057-R2-Lehre).
+func applyTracked(r *raw, cfg *model.Config) error {
+	if r.Tracked == nil {
+		return nil
+	}
+	for _, g := range r.Tracked.ExemptTargets {
+		if g == "" {
+			return fmt.Errorf("%s: tracked.exempt-targets enthält ein leeres Glob", FileName)
+		}
+		if _, err := path.Match(g, "probe"); err != nil {
+			return fmt.Errorf("%s: tracked.exempt-targets %q ist kein gültiges Glob: %v", FileName, g, err)
+		}
+	}
+	cfg.Tracked = model.TrackedConfig{ExemptTargets: r.Tracked.ExemptTargets}
 	return nil
 }
 
@@ -479,6 +513,7 @@ func applyScopes(r *raw, cfg *model.Config) error {
 		{"immutable", scopeOfImmutable(r.Immutable)},
 		{"vcs", scopeOfVcs(r.Vcs)},
 		{"commits", scopeOfCommits(r.Commits)},
+		{"tracked", scopeOfTracked(r.Tracked)},
 	}
 	for _, sc := range scopes {
 		if sc.scope == nil {
@@ -571,6 +606,13 @@ func scopeOfVcs(v *rawVCS) *rawScope {
 }
 
 func scopeOfCommits(v *rawCommits) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
+}
+
+func scopeOfTracked(v *rawTracked) *rawScope {
 	if v == nil {
 		return nil
 	}

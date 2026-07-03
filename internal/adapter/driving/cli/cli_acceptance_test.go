@@ -834,11 +834,12 @@ func TestCLI005_KeinRepoZugriff(t *testing.T) {
 func TestCLI053_PrintConfig_VollesModulset(t *testing.T) {
 	_, stdout, _ := run(t, "--print-config")
 	for _, want := range []string{
-		"versions, pins, immutable, vcs, commits, planning, external", // vollständige Verfügbar-Liste
+		"versions, pins, immutable, vcs, commits, planning, tracked, external", // vollständige Verfügbar-Liste
 		"# --- immutable:",
 		"# --- vcs:",
 		"# --- commits:",
 		"# --- planning:",
+		"# --- tracked:",
 		"# --- pins:",
 		"immutable-when:", // der vcs-Config-Key, nach dem gefragt wurde
 	} {

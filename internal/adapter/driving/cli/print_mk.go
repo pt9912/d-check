@@ -19,15 +19,15 @@ import (
 var version = "0.0.0-dev"
 
 // makefileFragment erzeugt das d-check.mk: version-gepinnter, per
-// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus neun
+// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus zehn
 // `##`-annotierte Targets (doc-check/doc-trace/doc-complete/doc-doctor/
-// doc-repair/doc-immutable/doc-commits/doc-planning/doc-help) und die TRACE_FLAGS-
-// Variable. Das Template hat genau VIER fmt-Verben — das %s der Version + je ein %s
-// der vcs-/commits-/planning-Disable-Flags (doc-immutable/doc-commits/doc-planning);
-// sonst KEIN '%' (sed statt awk-printf im doc-help-Recipe), sonst bräche fmt.Sprintf.
+// doc-repair/doc-immutable/doc-commits/doc-planning/doc-tracked/doc-help) und die
+// TRACE_FLAGS-Variable. Das Template hat genau FÜNF fmt-Verben — das %s der Version
+// + je ein %s der vcs-/commits-/planning-/tracked-Disable-Flags; sonst KEIN '%'
+// (sed statt awk-printf im doc-help-Recipe), sonst bräche fmt.Sprintf.
 // Deterministisch (hängt nur an der eingebetteten Version + dem Modulsatz), read-only.
 func makefileFragment() string {
-	return fmt.Sprintf(mkTemplate, version, disableAllExcept("vcs"), disableAllExcept("commits"), disableAllExcept("planning"))
+	return fmt.Sprintf(mkTemplate, version, disableAllExcept("vcs"), disableAllExcept("commits"), disableAllExcept("planning"), disableAllExcept("tracked"))
 }
 
 // disableAllExcept liefert "--disable <m>"-Flags für alle Module außer keep,
@@ -97,6 +97,10 @@ const mkTemplate = "# d-check.mk — erzeugt von: d-check --print-mk (DC-FA-CLI-
 	".PHONY: doc-planning\n" +
 	"doc-planning: ## Planning-Lifecycle-Konsistenz (Roadmap <-> in-progress) via Modul planning; hermetisch, ohne Range (DC-FA-PLAN-001)\n" +
 	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --enable planning %s\n" +
+	"\n" +
+	".PHONY: doc-tracked\n" +
+	"doc-tracked: ## Getrackt-Status aufloesbarer Referenz-Ziele via Modul tracked; braucht .git im Mount, ohne Range (DC-FA-TRK-001)\n" +
+	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --enable tracked %s\n" +
 	"\n" +
 	".PHONY: doc-help\n" +
 	"doc-help: ## diese Liste der doc-*-Targets\n" +
