@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.36.0
+**Version:** 0.37.0
 
 **Status:** Draft
 
@@ -47,7 +47,8 @@ statt per Code-Kopie.
 > (Versions-Pin-Konsistenz), `PIN` (Content-Pin/Drift), `IMM`
 > (Immutabilitäts-/Core-Pin), `VCS` (git-historienbasierte
 > Core-Immutabilität), `COMMITS` (Traceability-Kennung in
-> Commit-Messages), `PLAN` (Planning-Lifecycle-Konsistenz), `CONF`
+> Commit-Messages), `PLAN` (Planning-Lifecycle-Konsistenz), `TRK`
+> (Getrackt-Status von Referenz-Zielen), `CONF`
 > (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
@@ -78,7 +79,7 @@ verweist für das Konfigurations-Format auf
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
 `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`immutable`, `vcs`, `commits`, `planning`, `tracked`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -375,7 +376,7 @@ Release-Version** des laufenden Binaries (das Binary kennt seine Version,
 nicht seinen eigenen Digest; für strikte Reproduzierbarkeit überschreibt der
 Konsument `DCHECK_IMAGE` mit einem `@sha256:`-Digest aus den Release-Notes,
 konsistent mit der Konsum-Pin-Politik aus
-[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie neun
+[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie zehn
 `##`-annotierte Targets: `doc-check` (Doku-Gate), `doc-trace` (advisory RTM,
 [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)), `doc-complete`
 (Vollständigkeits-Gate,
@@ -394,7 +395,11 @@ die **verteilte** Commit-Traceability für Konsumenten ohne Skript-Kopie, parall
 `doc-immutable`), `doc-planning` (Planning-Lifecycle-Konsistenz via Modul `planning`,
 [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 — `--enable planning` mit auf `planning` fokussierter `--disable`-Liste, **hermetisch**
-ohne `RANGE`/`STAGED`) und `doc-help` (listet die
+ohne `RANGE`/`STAGED`), `doc-tracked` (Getrackt-Status auflösbarer Referenz-Ziele
+via Modul `tracked`,
+[`DC-FA-TRK-001`](#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)
+— `--enable tracked` mit auf `tracked` fokussierter `--disable`-Liste, ohne
+`RANGE`/`STAGED`; liest das `.git` im read-only-Mount) und `doc-help` (listet die
 `doc-*`-Targets), jeweils `docker run --network none -v "$PWD:/repo:ro"`. Dazu die
 Variablen `TRACE_FLAGS` (Flags der RTM-Targets) und `DCHECK_DIGEST` (ein
 `@sha256:`-Digest, der den Tag von `DCHECK_IMAGE` sticht — strikte
@@ -1321,6 +1326,72 @@ bleibt Commit-Zeit-Disziplin).
 
 ---
 
+### DC-FA-TRK-001 — Getrackt-Status auflösbarer Referenz-Ziele (Modul `tracked`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `tracked` prüft d-check für
+jedes **auflösbare, existierende** repo-interne Link-/Bild-Ziel (die Datei-Ebene
+der [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)-Auflösung;
+Anker sind hier irrelevant), ob die Zieldatei im **git-Index getrackt** ist.
+Existiert das Ziel nur im Arbeitsbaum — untracked, gleich ob vergessen oder
+gitignoriert —, entsteht der Befund `target-untracked`: die Referenz ist beim
+Erzeuger grün, wäre aber auf **jedem frischen Klon** ein `target-missing`
+(Umgebungs-Drift zwischen Arbeitsbäumen). Das Modul fängt diese Falle am
+Entstehungsort statt erst in der CI des nächsten Checkouts.
+
+Die **Wahrheit ist der Index**, nicht die `.gitignore`-Syntax: d-check parst
+keine ignore-Regeln (kein zweiter Regel-Interpreter); eine frisch per `git add`
+gestagte, noch nie committete Datei gilt als **getrackt** — neue Doku wird mit
+dem Staging grün, der Inner-Loop bleibt arbeitsfähig.
+
+Dafür liest `tracked` das im read-only-Mount vorhandene `.git` über den
+**VCS-Port** ([`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)/[`DC-FA-COMMITS-001`](#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in):
+reine-Go-Implementierung, **ohne git-Binary**, **ohne Netz**) — aber **ohne
+Commit-Range**: geprüft wird ausschließlich der Index-Stand des Arbeitsbaums.
+Die Eingabe ist gegenüber den hermetischen Modulen erweitert (das `.git`),
+bleibt aber **lokal, lesend und deterministisch**: derselbe Arbeitsbaum +
+derselbe Index ⇒ derselbe Befundsatz ([`DC-QA-02`](#dc-qa-02--determinismus)),
+kein Netzzugriff, kein Schreiben
+([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Kein Doppelbefund:** ein nicht existierendes Ziel bleibt `target-missing`
+([`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links));
+`tracked` prüft nur Ziele, die die Link-Auflösung erfolgreich fand (dasselbe
+Prinzip wie [`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in)
+— struktureller Befund bleibt beim Struktur-Modul). Ventil:
+`tracked.exempt-targets` (Glob über den **aufgelösten** Zielpfad, Syntax wie
+`scan.ignore`) nimmt absichtlich untrackte Ziele aus (z. B. lokal generierte
+Artefakte, deren Erzeugung der Konsument selbst verantwortet).
+
+**Strikt opt-in, fail-closed, diagnose-only:** `tracked` ist nie Default-Modul
+(wie `vcs`/`commits`); ohne aktives `tracked` ist der Befundsatz byte-identisch
+und nichts wird über den Markdown-Baum hinaus gelesen. **fail-closed:** aktives
+`tracked` ohne lesbares `.git` ⇒ Fehler (Exit 2) mit Hinweis auf stderr — kein
+stilles Grün. `target-untracked` liefert keinen `--repair`-Hunk (`git add` bzw.
+Committen ist eine menschliche Entscheidung; vgl.
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `tracked` aktiv und ein Link auf eine existierende, im git-Index getrackte Datei, when `d-check --enable tracked` läuft, then kein Befund, Exit 0.
+- **Boundary (Index-Wahrheit):** Given ein Link auf eine existierende Datei, die frisch per `git add` gestagt und noch nie committet ist, when `d-check --enable tracked` läuft, then kein Befund — der Index entscheidet, nicht die Commit-Historie.
+- **Boundary (Modul-aus / git-frei):** Given **kein** aktives `tracked`, when `d-check` in einer netzlosen, read-only Umgebung läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)) und es erfolgt kein `.git`-Zugriff ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+- **Negative:** Given `tracked` aktiv und ein Link auf eine Datei, die im Arbeitsbaum existiert, aber nicht im Index getrackt ist (untracked oder gitignoriert), when `d-check --enable tracked` läuft, then ein Befund `target-untracked` (Datei, Zeile, aufgelöstes Ziel), Exit 1.
+- **Kein Doppelbefund:** Given `tracked` aktiv und ein Link auf eine **nicht existierende** Datei, when `d-check --enable tracked` läuft, then nur `target-missing` (Modul `links`), kein zusätzliches `target-untracked`.
+- **Ventil:** Given ein untracktes, existierendes Ziel, dessen aufgelöster Pfad einem `tracked.exempt-targets`-Glob entspricht, when `d-check --enable tracked` läuft, then kein Befund für dieses Ziel.
+- **fail-closed (git-Eingabe fehlt):** Given `tracked` aktiv, aber **kein** lesbares `.git` unter der Scan-Wurzel, when `d-check --enable tracked` läuft, then **Exit 2** mit Hinweis auf stderr — kein stilles Grün.
+
+**Out-of-Scope:** Inline-Code-Pfade
+([`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)-Ziele)
+in der ersten Ausbaustufe (Re-Evaluierung nach Praxis-Evidenz); der
+Getrackt-Status **gescannter Dateien selbst** (würde jede WIP-Datei vor dem
+ersten `git add` flaggen — die Gegenrichtung der Drift bleibt bei der
+`scan.ignore`-Disziplin und der CI als Netz); Interpretation der
+`.gitignore`-Syntax (der Index ist die einzige Wahrheit); Submodule und
+verschachtelte Arbeitsbäume; Schreiben/`git add` durch das Werkzeug
+(read-only).
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -1429,7 +1500,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -1443,6 +1514,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.37.0 | 2026-07-03 | Neue Anforderung `DC-FA-TRK-001` (Modul `tracked`, opt-in): Getrackt-Status auflösbarer Referenz-Ziele — jedes auflösbare, **existierende** Link-/Bild-Ziel muss im **git-Index getrackt** sein, sonst `target-untracked` (die Referenz wäre auf jedem frischen Klon `target-missing` — Umgebungs-Drift zwischen Arbeitsbäumen, am Entstehungsort gefangen statt erst in der CI des nächsten Checkouts). Wahrheit ist der **Index**, nicht die `.gitignore`-Syntax (kein zweiter Regel-Interpreter; frisch gestagte Dateien gelten als getrackt — WIP-tauglich). Liest `.git` über den **VCS-Port** (dritte Nutzung: `vcs` Range-Diff, `commits` Messages, `tracked` **Index** — ohne Range), reine-Go/ohne Netz, lokal/lesend/deterministisch (`DC-QA-02`/`DC-QA-03` wie bei `DC-FA-VCS-001` formuliert). Kein Doppelbefund (nur existierende Ziele; `target-missing` bleibt `links`, Prinzip von `DC-FA-PIN-001`), Ventil `tracked.exempt-targets`, strikt opt-in/fail-closed (aktiv ohne lesbares `.git` ⇒ Exit 2)/diagnose-only/default-aus byte-identisch. 16. Regelmodul; Bereichskürzel `TRK` in §3, `tracked` in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-TRK-001.a` + Grund-Code `target-untracked` + Schema-Key (`tracked.exempt-targets`) in der Spezifikation. Zugleich **`DC-FA-CLI-010`-Erweiterung** (9→10 Targets): `--print-mk` trägt ein `doc-tracked`-Target. Anlass: Auftraggeber-Frage 2026-07-03 („Was passiert, wenn ein Dokument ein gitignoriertes Dokument referenziert?") + Demo-Beleg (Erzeuger-Checkout grün, frischer Klon `target-missing`); heutige Ventile (CI-Netz, gitignore+`scan.ignore`-Doppel nach [`MR-017`](../harness/conventions.md#mr-017--lokale-baseline-lese-form-cache-aus-dem-selbst-scan-ausgenommen)-Muster, Vendoring nach [`MR-019`](../harness/conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)-Muster) fangen die Falle erst spät oder nur je Einzelfall | slice-059 |
 | 0.36.0 | 2026-07-01 | Neue Anforderung `DC-FA-PLAN-001` (Modul `planning`, opt-in): maschinelle Durchsetzung der Planning-Lifecycle-Invariante — die Roadmap trägt den Ruhe-Marker (`planning.marker`, „Keine aktive Welle") in ihrem `planning.heading`-Abschnitt (`## Aktuelle Welle`) genau dann, wenn kein `slice-*` (`planning.slice-glob`) im Verzeichnis liegt (`hasActive == hasSlices`), sonst `planning-drift`. **Hermetisch** (nur Roadmap-Datei + Verzeichnis-Listing, **kein** git, **kein** Netz, read-only) — normales Modul wie `codepaths`, `DC-QA-02`/`DC-QA-03` unberührt; fail-closed bei fehlender kanonischer Überschrift bzw. Roadmap-Datei (Heading-Guard), strikt opt-in, diagnose-only, default-aus byte-identisch. 15. Regelmodul; Bereichskürzel `PLAN` in §3, `planning` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-PLAN-001.a` + Grund-Code `planning-drift` + Schema-Keys (`planning.roadmap`/`marker`/`heading`/`slice-glob`) in der Spezifikation. Anlass: Auftraggeber — `tools/planning-consistency.sh` mechanisieren (letzter Kandidat des `tools/*.sh`-Audits, [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Klasse „verteilen statt kopieren"); bewusst nachrangig (die „Keine aktive Welle"-Konvention ist harness-layout-spezifisch, kleinerer Verteilungswert) — im Gegensatz zu `vcs`/`commits` **ohne** git/VCS-Port, rein hermetisch. `make planning-check` dogfoodet das Modul. Zugleich **`DC-FA-CLI-010`-Erweiterung** (8→9 Targets): `--print-mk` trägt ein `doc-planning`-Target; `--print-config`/`--suggest-config` führen `planning` | slice-057 |
 | 0.35.0 | 2026-07-01 | Neue Anforderung `DC-FA-COMMITS-001` (Modul `commits`, opt-in): maschinelle Durchsetzung der Traceability-Regel — jede geprüfte Commit-Message muss eine Kennung nach `commits.id-patterns` (`ADR-`/`MR-`/`DC-`/`slice-`) auf einer Inhalts-Zeile tragen, sonst `commit-untraceable`. Liest die Commit-**Messages** über **denselben VCS-Port** wie `DC-FA-VCS-001` (reine-Go-git, **ohne git-Binary** → distroless bleibt, **ohne Netz**), erweitert um Message-Lesen; zwei Quellen für dieselbe Prüfung: `--range <base>..<head>` (CI/Push, Nicht-Merge-Commits) und `--commit-msg <datei\|->` (commit-msg-Hook, einzelne Pending-Message). Uniforme `#`-/scissors-Bereinigung (Kennung auf Inhalts-Zeile), Betreff-Ausnahme `commits.exempt-pattern` (Selbstkonfig `^(Merge \|Revert )`). Strikt opt-in (nie Default, wie `external`/`vcs`), fail-closed ohne `.git`/Range/Message, diagnose-only; erweiterter Eingabe-Scope, aber lokal/lesend/deterministisch — `DC-QA-02`/`DC-QA-03` unberührt. 14. Regelmodul; Bereichskürzel `COMMITS` in §3, `commits` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-COMMITS-001.a` + Grund-Code `commit-untraceable` + Schema-Keys (`commits.id-patterns`/`exempt-pattern`) in der Spezifikation. Anlass: Auftraggeber — `tools/trace-check.sh` vollständig mechanisieren (Copy-Drift über die Repo-Familie, [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Klasse „verteilen statt kopieren"): die verteilbare Modul-Form löst es im Image; d-check dogfoodet das Modul für sein eigenes `make trace-check`-Gate. Das „nächste `adr-check`" — dieselbe VCS-Port-Präzedenz wie `DC-FA-VCS-001`, hier auf Commit-Messages statt Datei-Inhalt. Zugleich **`DC-FA-CLI-010`-Erweiterung** (7→8 Targets): `--print-mk` trägt ein `doc-commits`-Target (`--enable commits` + aus `ValidModules` abgeleitete Fokus-`--disable`-Liste, `--range`) — die **verteilte** Commit-Traceability für Konsumenten ohne Skript-Kopie („verteilen statt kopieren", parallel zu `doc-immutable`); `--print-config`/`--suggest-config` führen `commits` in der Verfügbar-/opt-in-Liste | slice-056 |
 | 0.34.0 | 2026-06-29 | `DC-FA-CODE-001` (Modul `codepaths`) um `ignore-refs` erweitert: eine Glob-Liste nimmt **bestimmte Ziel-Pfade** von der Existenz-Prüfung aus — **referenz-weit** (egal Datei/Zeile), als Register bewusst entfernter/historischer Artefakte (Tombstones); dritte Ventil-Achse neben dem zeilenweisen `d-check:ignore` und dem datei-weiten `exempt-paths`. Bewusster Akt mit Gate (ohne Eintrag bleibt `codepath-missing`), Default-leer byte-identisch. Schema-Key `codepaths.ignore-refs` + §DC-FA-CODE-001.a-Schritt in der Spezifikation. Anlass: die Frozen-Doc-Refactoring-Falle — immutable ADRs zitieren Code-Pfade, die bei Refactoring/Löschung dangeln, aber nicht editierbar sind; gelöst und zugleich das in slice-053 nur „pfad-stabil behaltene" `tools/adr-immutable-check.sh` entfernt; begleitende ADR (Supersedes die „Skript-behalten"-Teilentscheidung der VCS-ADR) | slice-054 |
