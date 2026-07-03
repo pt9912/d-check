@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-01.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-03.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -10,8 +10,21 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle** — kein Slice in `in-progress/`; der Auftraggeber-`tools/*.sh`-Audit ist
-**abgeschlossen** (Backlog leer). Zuletzt abgeschlossen: welle-46-planning-modul
+**welle-47-arch-check-a-check** — [`slice-058`](slice-058-arch-check-via-a-check.md) in
+`in-progress/`: das `make arch-check`-Gate konsumiert das **Schwester-Tool
+[a-check](https://github.com/pt9912/a-check)** (digest-gepinntes GHCR-Image, netzlos/read-only)
+über ein include-bares `a-check.mk` plus repo-eigene `.a-check.yml` statt `tools/arch-check.sh`
+(Dockerfile-Stage); die Import-Regeln R1–R6
+([ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md)/[ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md))
+bleiben unverändert Policy, nur die Durchsetzungs-Mechanik wechselt; Skript + Stage entfernt
+(fünfter `codepaths.ignore-refs`-Tombstone), **Paritäts-Beleg per Mutations-Proben je Regel**
+Pflicht vor der Umstellung. [ADR-0029](../../adr/0029-arch-check-via-a-check.md) (Proposed;
+Supersedes die Fitness-Function-Mechanik von
+[ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md)/[ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md)).
+**Kein** Lastenheft-CR (Gate-Mechanik, kein Produkt-Feature), kein Release erwartet. Löst den
+§Nächste-Wellen-Zeiger „arch-check → Schwester-Projekt a-check" ein — erste Welle nach dem
+`tools/*.sh`-Audit, erstmals Ablösung durch das Schwester-Tool statt durch ein d-check-Modul.
+Zuletzt abgeschlossen: welle-46-planning-modul
 ([`slice-057`](../done/slice-057-planning-modul.md) — neues **hermetisches** opt-in Modul
 `planning` (15.) mechanisiert `tools/planning-consistency.sh` (**kein** git — nur Roadmap-Datei
 + Verzeichnis-Listing), prüft `hasActive == hasSlices` (`planning-drift`, Heading-Guard
@@ -216,14 +229,16 @@ Refactor noch in keinem Release.
 
 ## Nächste Wellen
 
-**Keine geplanten Wellen.** Der Auftraggeber-`tools/*.sh`-Audit (2026-06-29) ist mit
-welle-46-planning-modul (slice-057, in Arbeit) **abgeschlossen**: alle mechanisierbaren
-Gate-Skripte sind d-check-Feature (completeness→in-Produkt-Flag slice-055, trace→`commits`
-slice-056, planning→`planning` slice-057; adr-immutable→`vcs` slice-053). Bewusst
-**nicht** d-check-fähig und daher nicht hier: `arch-check` (Go-Importe → Schwester-Projekt
-a-check), `coverage-gate`/`semgrep` (Go-Build/SAST), `image-test` (testet das Image selbst),
-`bench-fixture` (Fixture-Generator), `gate-consistency` (spannt Markdown ↔ Makefile ↔ YAML),
-`harness/*` (Cache-/Hook-Infrastruktur).
+**Keine weiteren geplanten Wellen.** Der Auftraggeber-`tools/*.sh`-Audit (2026-06-29) ist mit
+welle-46-planning-modul ([`slice-057`](../done/slice-057-planning-modul.md)) **abgeschlossen**:
+alle mechanisierbaren Gate-Skripte sind d-check-Feature (completeness→in-Produkt-Flag slice-055,
+trace→`commits` slice-056, planning→`planning` slice-057; adr-immutable→`vcs` slice-053). Der
+dort benannte Schwester-Projekt-Zeiger „`arch-check` (Go-Importe) → a-check" wird von
+**welle-47** (aktuelle Welle, [`slice-058`](slice-058-arch-check-via-a-check.md)) eingelöst.
+Bewusst weder d-check- noch a-check-fähig und daher nicht hier: `coverage-gate`/`semgrep`
+(Go-Build/SAST), `image-test` (testet das Image selbst), `bench-fixture` (Fixture-Generator),
+`gate-consistency` (spannt Markdown ↔ Makefile ↔ YAML), `harness/*`
+(Cache-/Hook-Infrastruktur).
 
 ## Meilensteine
 
