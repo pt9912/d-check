@@ -232,3 +232,14 @@ gelungene Injektion ist INVALID statt grün (Erweiterung der slice-057-R3-Lehre 
 das Werkzeug selbst). (3) Erste Schwester-Tool-Ablösung: der Konsolidierungs-Weg
 (CR drüben → Release → Digest-Pin hier) trägt — vier divergente `arch-check.sh`-Kopien
 haben jetzt eine gepflegte Heimat.
+
+**Nachtrag (2026-07-03, nach Closure).** Das oben benannte Rest-Delta „**neue**
+`net/*`-stdlib-Subpakete brauchen einen Enumerations-Nachtrag" ist **getilgt** statt
+getragen: Auftraggeber-Einwand — ein done/-Slice ist Archiv, kein lebender Träger für
+offene Verpflichtungen (die wären Roadmap-/Carveout-Material gewesen). Die Enumeration
+in der `.a-check.yml` ist durch eine RE2-**Ausschluss-Klasse** ersetzt
+(`^net/([^u].*|u([^r].*)?|ur([^l].*)?|url.+)$` — alles nach `net/` außer exakt `url`,
+ohne Lookahead; die frühere „nur Enumeration möglich"-Begründung war als Absolutaussage
+falsch). Proben-belegt: fiktives `net/futurepkg` im Kern ⇒ rot, Präfix-Vetter
+`net/urlx` ⇒ rot, `net/url` (Bestand + neu injiziert) ⇒ grün. Config-only, keine
+Lockerung — künftige stdlib-Erweiterungen fallen automatisch unter den R1-Fang.

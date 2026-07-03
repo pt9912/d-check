@@ -46,17 +46,19 @@ tech:
   # (composition_root: forbid = Parität zum Skript, das dort keine
   # Ausnahme kannte).
   - { pattern: '^net/http$', match: regex, adapter: "internal/adapter/driven/httpcheck/", composition_root: forbid }
-  # R1: verbotene net-Familie ENUMERIERT ohne net/url (R2-MEDIUM-1).
-  # net/url bleibt bewusst tech-unsichtbar: die Rollen-Reinheit
+  # R1: verbotene net-Familie als AUSSCHLUSS-KLASSE — alles nach net/
+  # außer exakt net/url; braucht kein Lookahead ([^u] / u[^r] / ur[^l]
+  # / url.+). net/url bleibt bewusst tech-unsichtbar: die Rollen-Reinheit
   # (core-/app-impurity) verbietet im Kern JEDES tech-Muster kategorisch
   # — ein „Pass-Eintrag" ist mechanisch unmöglich (proben-belegt), die
   # Ausnahme geht nur über Nicht-Nennung. Rohes net + Subpakete ans
   # Netz-Tor gebunden (httpcheck nutzt rohe net-Sockets); im Kern rot =
   # Skript-Parität, außerhalb strenger als das Skript (dort unreguliert)
-  # — dokumentierte Über-Deckung. Rest-Delta: künftige NEUE
-  # net/*-stdlib-Subpakete brauchen einen Enumerations-Nachtrag.
+  # — dokumentierte Über-Deckung. Zukunftsfest: auch NEUE
+  # net/*-stdlib-Subpakete fallen automatisch unter den Fang
+  # (futurepkg-Probe, slice-058 §7-Nachtrag).
   - { pattern: '^net$', match: regex, adapter: "internal/adapter/driven/httpcheck/" }
-  - { pattern: '^net/(http|mail|rpc|smtp|textproto|netip)(/.*)?$', match: regex, adapter: "internal/adapter/driven/httpcheck/" }
+  - { pattern: '^net/([^u].*|u([^r].*)?|ur([^l].*)?|url.+)$', match: regex, adapter: "internal/adapter/driven/httpcheck/" }
   # R2b (ADR-0024): go-git nur im git-Adapter, auch nicht in CLI/cmd.
   - { pattern: '^github\.com/go-git/go-git/v5(/.*)?$', match: regex, adapter: "internal/adapter/driven/git/", composition_root: forbid }
   # R3 (ADR-0009): yaml in configyaml UND report — Adapter-Liste
