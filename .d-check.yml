@@ -86,7 +86,8 @@ codepaths:
   # - completeness-check.sh: abgelöst durch --trace --require-complete (ADR-0026, slice-055)
   # - trace-check.sh: abgelöst durch Modul commits (ADR-0027, slice-056)
   # - planning-consistency.sh: abgelöst durch Modul planning (ADR-0028, slice-057)
-  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh", "tools/planning-consistency.sh"]
+  # - arch-check.sh: abgelöst durch das Schwester-Tool a-check (ADR-0029, slice-058)
+  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh", "tools/planning-consistency.sh", "tools/arch-check.sh"]
 
 # Versions-Pin-Konsistenz (DC-FA-VER-001, slice-048): jeder ghcr-Image-Pin in
 # den Live-Docs muss die aktuelle Version aus version.md#aktuell tragen — sonst

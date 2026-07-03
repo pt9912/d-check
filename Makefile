@@ -1,9 +1,10 @@
 # d-check — Doc-Referenz-Checker.
 #
 # Docker-only-Workflow (AGENTS.md §3.1; Vorbild:
-# https://github.com/pt9912/u-boot): Build/Lint/
-# Test/arch-check laufen über `docker build --target <stage>` in
-# Containern. Der Host braucht nur Docker, GNU make, bash und git.
+# https://github.com/pt9912/u-boot): Build/Lint/Test
+# laufen über `docker build --target <stage>` in Containern; arch-check
+# läuft über das digest-gepinnte a-check-Image (a-check.mk, ADR-0029).
+# Der Host braucht nur Docker, GNU make, bash und git.
 #
 # `make gates` aggregiert nur real existierende Targets (Kurs-Modul 13);
 # ci/fullbuild bauen darauf auf (harness/README.md §Sensors).
@@ -23,8 +24,13 @@ endif
 # darf keine rote Stage maskieren.
 NO_CACHE_FILTER_TEST := --no-cache-filter test
 NO_CACHE_FILTER_LINT := --no-cache-filter lint
-NO_CACHE_FILTER_ARCH := --no-cache-filter arch-check
 NO_CACHE_FILTER_COV  := --no-cache-filter coverage
+
+# Architektur-Gate via Schwester-Tool a-check (ADR-0029): das Fragment
+# liefert A_CHECK_IMAGE (digest-gepinnt) + das Basis-Target; das
+# arch-check-Target unten delegiert dorthin und bleibt in DIESER Datei
+# (gate-consistency parst nur das Makefile, keine includes).
+include a-check.mk
 
 # Kalibrierungs-Bindung (harness/README.md §Sensors): 93 % seit
 # 2026-06-11 (Kalibrierung nach Test-Ausbau, Ist 95,1 %; zuvor Ramp
@@ -62,8 +68,7 @@ lint: ## golangci-lint mit dem Projekt-Profil (AGENTS.md §3.2).
 test: ## `go test ./...` in Docker (Akzeptanzkriterien DC-FA-*).
 	$(DOCKER_BUILD) $(NO_CACHE_FILTER_TEST) --target test -t $(IMAGE):test .
 
-arch-check: ## ADR-0005 — Import-Regeln des Hexagon-Schnitts (DC-QA-03).
-	$(DOCKER_BUILD) $(NO_CACHE_FILTER_ARCH) --target arch-check -t $(IMAGE):arch-check .
+arch-check: a-check ## Import-Regeln R1–R6 (ADR-0005/ADR-0012) via a-check-Image (.a-check.yml; netzlos, read-only — DC-QA-03). ADR-0029 (löst tools/arch-check.sh ab).
 
 coverage-gate: ## Coverage-Schwelle (Kalibrierungs-Bindung: 93 %, Historie in harness/README §Sensors).
 	$(DOCKER_BUILD) $(NO_CACHE_FILTER_COV) \
@@ -85,11 +90,12 @@ image-test: build ## DC-FA-DIST-001-Akzeptanzkriterien gegen das lokale Image (n
 semgrep: ## Security-/Static-Analysis-Gate: gepinntes semgrep-Image + gepinntes, lokal gecachtes go/lang/security-Regelset, netzloser Scan (Bestandteil von gates; ADR-0010).
 	@bash tools/semgrep.sh
 
-versions: ## Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Image-Digests, semgrep, Runtime-Image-ID).
+versions: ## Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Image-Digests, semgrep, a-check, Runtime-Image-ID).
 	@echo "GO_VERSION=$(GO_VERSION)"
 	@echo "GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION)"
 	@grep -E '^FROM ' Dockerfile | grep -v '^FROM deps' | sort -u
 	@echo "semgrep-image=semgrep/semgrep:$$(sed -nE 's/.*SEMGREP_VERSION:-([^}]+)\}.*/\1/p' tools/semgrep.sh | head -1)@$$(sed -nE 's/.*SEMGREP_DIGEST:-([^}]+)\}.*/\1/p' tools/semgrep.sh | head -1)"
+	@echo "a-check-image=$(A_CHECK_IMAGE)"
 	@docker image inspect $(IMAGE):latest --format 'runtime-image={{.Id}}' 2>/dev/null \
 	    || echo "runtime-image=(nicht gebaut — make build)"
 
@@ -220,6 +226,6 @@ tidy: ## go.mod/go.sum aufräumen (go mod tidy in Docker; Dependency-Pflege).
 clean: ## Lokale Images entfernen.
 	@-docker image rm \
 	    $(IMAGE):latest $(IMAGE):deps $(IMAGE):compile \
-	    $(IMAGE):lint $(IMAGE):test $(IMAGE):arch-check \
+	    $(IMAGE):lint $(IMAGE):test \
 	    $(IMAGE):coverage 2>/dev/null || true
 	@echo "[clean] images removed"

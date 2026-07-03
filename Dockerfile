@@ -5,15 +5,16 @@
 #
 # Docker-only-Workflow (AGENTS.md §3.1; Vorbild:
 # https://github.com/pt9912/u-boot): das Repo hat
-# keine Host-Go-Anforderung. Build/Lint/Test/arch-check laufen über
-# `docker build --target <stage>` und sind im Makefile gewrappt.
+# keine Host-Go-Anforderung. Build/Lint/Test laufen über
+# `docker build --target <stage>` und sind im Makefile gewrappt;
+# das Architektur-Gate (make arch-check) läuft seit ADR-0029 über das
+# digest-gepinnte a-check-Image (a-check.mk + .a-check.yml).
 #
 # Stages:
 #   deps       — Go-Modul-Auflösung (Cache-Layer).
 #   compile    — schnelles Compile-Feedback ohne Tests/Lint.
 #   lint       — golangci-lint mit dem Projekt-Profil.
 #   test       — `go test ./...`.
-#   arch-check — Fitness Function zu ADR-0005 (Import-Regeln).
 #   coverage   — `go test -coverpkg` + tools/coverage-gate.sh
 #                (Kalibrierungs-Bindung, harness/README §Sensors).
 #   build      — statisch gelinktes Binary (CGO=0, -ldflags "-s -w").
@@ -64,15 +65,6 @@ FROM deps AS test
 
 COPY . .
 RUN CGO_ENABLED=0 go test ./...
-
-# ---- arch-check ------------------------------------------------------------
-# Fitness Function zu ADR-0005 (Hexagon light, u-boot-Ordnerkonvention):
-# Import-Regeln werden über `go list` geprüft — Verstöße brechen den
-# Build (strukturelle Durchsetzung von DC-QA-03).
-FROM deps AS arch-check
-
-COPY . .
-RUN bash tools/arch-check.sh
 
 # ---- coverage --------------------------------------------------------------
 # Kalibrierungs-Bindung (harness/README.md §Sensors): Schwelle 93 %

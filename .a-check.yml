@@ -1,0 +1,66 @@
+# .a-check.yml — d-check prüft seine eigene Hexagon-Architektur mit dem
+# Schwester-Tool a-check (ADR-0029, slice-058; löst tools/arch-check.sh ab).
+# Übersetzt die Import-Regeln R1–R5 (ADR-0005) + R6 (ADR-0012) deklarativ:
+# layers/edges tragen Schicht- und Kern-Paket-Richtung, tech die Kapseln,
+# composition_root die R4-Ausnahme-Zone (CLI + cmd = Verdrahtungspunkt).
+#
+# Rollen: model = domain (rein, keine Ausgänge); rules/app/coretest = app
+# (sprechen die Port-Sprache, importieren aber weder Adapter noch Tech —
+# a-checks app-impurity deckt die R1-Klasse); ports = port (importfrei).
+version: 1
+languages:
+  go: ["**/*.go"]
+
+# Skript-Parität: das abgelöste go list-Gate sah nur Nicht-Test-Imports
+# (z. B. importiert der git-Adapter-Test os) — ohne exclude wäre der
+# saubere Baum rot. a-check >= v0.8.0 (slice-023-Deltas).
+exclude: ["**/*_test.go"]
+
+layers:
+  model:    { globs: ["internal/hexagon/core/model/**"], role: domain }
+  rules:    { globs: ["internal/hexagon/core/rules/**"], role: app }
+  app:      { globs: ["internal/hexagon/core/app/**"], role: app }
+  coretest: { globs: ["internal/hexagon/core/coretest/**"], role: app }
+  ports:    { globs: ["internal/hexagon/port/**"], role: port }
+  adapters: { globs: ["internal/adapter/driven/**"], role: adapter }
+
+# R6 (ADR-0012): model <- rules <- app — model hat keine Ausgänge,
+# rules kennt app nicht. Adapter implementieren Ports und sprechen die
+# Kern-Sprache; report rendert zusätzlich app-Ausgaben (RTM).
+edges:
+  - { from: rules, to: model }
+  - { from: rules, to: ports }
+  - { from: app, to: model }
+  - { from: app, to: rules }
+  - { from: app, to: ports }
+  - { from: coretest, to: ports }
+  - { from: adapters, to: ports }
+  - { from: adapters, to: model }
+  - { from: adapters, to: app }
+
+tech:
+  # R2a: net/http nur im httpcheck-Adapter — auch nicht in CLI/cmd
+  # (composition_root: forbid = Parität zum Skript, das dort keine
+  # Ausnahme kannte).
+  - { pattern: '^net/http$', match: regex, adapter: "internal/adapter/driven/httpcheck", composition_root: forbid }
+  # httpcheck nutzt zusätzlich rohe net-Sockets (Timeout-Dialer).
+  - { pattern: '^net$', match: regex, adapter: "internal/adapter/driven/httpcheck" }
+  # R2b (ADR-0024): go-git nur im git-Adapter, auch nicht in CLI/cmd.
+  - { pattern: '^github\.com/go-git/go-git/v5(/.*)?$', match: regex, adapter: "internal/adapter/driven/git", composition_root: forbid }
+  # R3 (ADR-0009): yaml in configyaml UND report — Adapter-Liste
+  # (a-check >= v0.8.0), auch nicht in CLI/cmd.
+  - { pattern: '^gopkg\.in/yaml\.v3$', match: regex, adapter: ["internal/adapter/driven/configyaml", "internal/adapter/driven/report"], composition_root: forbid }
+  # R4: os nur im fs-Adapter; CLI + cmd über composition_root (Default
+  # allow = Skript-Parität).
+  - { pattern: '^os$', match: regex, adapter: "internal/adapter/driven/fs" }
+  # R1-Bannliste (im Kern verboten): heute außerhalb des Kerns nirgends
+  # genutzt, ans fs-/I/O-Tor gebunden. net/url bleibt bewusst
+  # unreguliert (reiner Parser, im Kern erlaubt — ADR-0005 R1).
+  # Dokumentiertes Rest-Delta: weitere net/*-Subpakete (außer http/url)
+  # sind nicht enumeriert — RE2 kennt kein Lookahead; jede Nutzung wäre
+  # ein bewusster neuer Import (Review-/Proben-Pflicht).
+  - { pattern: '^os/', match: regex, adapter: "internal/adapter/driven/fs" }
+  - { pattern: '^syscall(/.*)?$', match: regex, adapter: "internal/adapter/driven/fs" }
+  - { pattern: '^io/fs$', match: regex, adapter: "internal/adapter/driven/fs" }
+
+composition_root: ["cmd/**", "internal/adapter/driving/cli/**"]
