@@ -62,9 +62,14 @@ adressierte Finding.
   Richtungs-Allowlist (R6 + Hexagon-Richtung), `tech` für **beide** R2-Kapseln
   (`net/http` → httpcheck **und** go-git → git-Adapter), R3 (`yaml` → configyaml
   **und** report, [ADR-0009](../../adr/0009-yaml-im-report-adapter.md)), R4
-  (`os` → fs-Adapter) **und** die restliche R1-Bannliste (`net`-Familie
-  regex-verankert enumeriert — nicht Substring, sonst fällt `net/url`; `syscall`,
-  `io/fs`); `composition_root` für CLI + `cmd` (die R4-Ausnahme-Zone).
+  (`os` → fs-Adapter) **und** die restliche R1-Bannliste (verbotene `net`-Familie
+  **enumeriert ohne `net/url`** — die Rollen-Reinheit verbietet im Kern jedes
+  tech-Muster kategorisch, ein „Pass-Eintrag" für `net/url` ist mechanisch
+  unmöglich (R2-proben-belegt), die Ausnahme geht nur über Nicht-Nennung;
+  dazu `syscall`, `io/fs`, `os/`); alle `adapter`-Werte enden auf `/`
+  (Substring-Match — sonst erbt ein Präfix-Vetter wie `gitlab` die
+  `git`-Kapsel, R2-MEDIUM-2); `composition_root` für CLI + `cmd`
+  (die R4-Ausnahme-Zone).
 - **Paritäts-Beleg (Pflicht, vor der Umstellung; R1-MEDIUM-2):** adversariale
   **Proben-Matrix je Skript-Verbotszweig** — R1, R2a (`net/http`), R2b (go-git), R3,
   R4, R5, R6: injizierter verbotener Import ⇒ `make arch-check` rot, Revert ⇒ grün —
@@ -142,6 +147,12 @@ adressierte Finding.
   ohne Lookahead); (b) die R4-Zone läuft über `composition_root`, kostet dort aber die
   R2-/R3-Deckung (Total-Ausnahme). Die drei harten v0.6.0-Deltas stehen in §2 als
   CR-Vorbedingung — Umstellung wartet auf das liefernde a-check-Release.
+- **Über-Deckungs-Richtung (R2-INFO-1, benannt):** die `edges`-Allowlist und die
+  tech-Bindungen wirken auch **außerhalb** des Kerns (das Skript regulierte dort
+  nicht) — strenger als R1–R6, keine Lockerung; ein legitimer neuer Querbezug
+  braucht künftig eine bewusste `edges`-/`tech`-Erweiterung statt stillen
+  Durchrutschens. Rest-Delta bleibt: **neue** `net/*`-stdlib-Subpakete brauchen
+  einen Enumerations-Nachtrag in der `.a-check.yml`.
 - **Externe Release-Abhängigkeit:** das Gate hängt am a-check-Release-Stand (wie semgrep
   am gepinnten Regelset) — Digest-Pin macht es reproduzierbar, Pin-Hebung bewusst.
 - **Bootstrap-Reihenfolge:** Umstellung + Skript-Löschung + Tombstone müssen in einem
