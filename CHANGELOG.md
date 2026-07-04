@@ -4,6 +4,21 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.37.1] — 2026-07-04
+
+### Fixed
+
+- slice-060 — `--doctor`-Klartext-Vollständigkeit
+  ([`DC-FA-CLI-007`](spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)):
+  die Diagnose zeigte für sieben seit v0.25 hinzugekommene Grund-Codes
+  (`diagram-id-undefined`, `version-stale`, `link-stale`, `core-drift`,
+  `core-drift-vcs`, `commit-untraceable`, `planning-drift`) den rohen Code
+  statt des Klartexts; `--doctor --json`/`--yaml` trug ihn im
+  `reasonText`-Feld. Die sieben Klartexte sind ergänzt; ein neuer Test
+  verriegelt die kanonische Grund-Code-Liste beidseitig gegen die
+  §4-Grund-Code-Tabelle der Spezifikation (fail-closed) — die Lücke kann
+  nicht wieder still wachsen.
+
 ## [0.37.0] — 2026-07-03
 
 ### Added

@@ -161,7 +161,7 @@ Distributed as a container image via GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.37.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.37.1
 ```
 
 CI pipelines pin to the digest from the release notes rather than to
