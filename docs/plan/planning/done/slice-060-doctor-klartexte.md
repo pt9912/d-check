@@ -1,6 +1,6 @@
 # Slice slice-060: `--doctor`-Klartext-Vollständigkeit (AllReasons ↔ §4)
 
-**Status:** in-progress (welle-49-doctor-klartexte).
+**Status:** done (welle-49-doctor-klartexte, Closure 2026-07-04).
 
 **Welle:** welle-49-doctor-klartexte (Trigger: Bestands-Folgepunkt aus dem
 slice-059-Closure-Lerneintrag; Nutzer-Auftrag 2026-07-04, die offenen
@@ -98,7 +98,7 @@ damit zu.
 - [x] **Beleg-Lauf:** `--doctor` an einer Probe mit einem der sieben Codes
   zeigt den Klartext statt des rohen Codes; `--doctor --json` trägt
   `reasonText` ≠ Code (Vorher/Nachher).
-- [ ] **Belege/Prozess:** `make gates`/`make ci` grün; unabhängiges Review
+- [x] **Belege/Prozess:** `make gates`/`make ci` grün; unabhängiges Review
   vor Closure; CHANGELOG (Fixed); release-prep v0.37.1; Closure-Move nach
   `done/` + Roadmap-Flip
   ([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)),
@@ -135,4 +135,51 @@ Adapter, keine BF-Sub-Area.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-*(bei Closure: Umsetzung, Belege, Lerneintrag, Steering-Loop-Eintrag.)*
+**Umsetzung.** Defekt-Fix wie geplant: `AllReasons()` und `reasonTexts()`
+(`internal/hexagon/core/app/diagnose.go`) tragen die sieben seit v0.25
+fehlenden Grund-Codes (`diagram-id-undefined`, `version-stale`, `link-stale`,
+`core-drift`, `core-drift-vcs`, `commit-untraceable`, `planning-drift`) über
+die Reason-Konstanten; `--doctor` zeigt für diese Module den Klartext statt
+des rohen Codes, `--doctor --json`/`--yaml` trägt ihn im `reasonText`-Feld.
+Der neue Test `TestAllReasonsDeckungGegenSpezifikationGrundCodes`
+(`internal/hexagon/core/app/diagnose_test.go`) verriegelt `AllReasons()`
+beidseitig gegen die §4-Grund-Code-Tabelle der Spezifikation — fail-closed
+bei unlesbarer Spec, fehlender/mehrdeutiger Überschrift, leerer Tabelle und
+(seit R1-LOW-1) jeder Tabellen-Body-Zeile ohne Backtick-Code. Kein CR, kein
+ADR, keine neue Config-Surface. Commit-Kette: doc-first `1e5cf41` → feat
+`f1017f8` → R1 `7e64fb5` → release-prep `7053583` → closure-move `a26915e`
+→ closure-body (dieser Commit) → digest-backfill.
+
+**Belege.**
+- `make gates` und `make ci` **grün** (doc-check 180/0, lint, test,
+  arch-check via a-check, coverage-gate, semgrep 0/55, gate-consistency,
+  planning-check; image-test nativ == Container byte-identisch).
+- **Vier Mutations-Belege** (R3-Lehre slice-057, jede Probe verriegelt genau
+  ihren Guard): (a) `link-stale`-**Paar** aus `AllReasons()`+`reasonTexts()`
+  entfernt (historischer Fehlermodus) ⇒ **genau** der neue §4-Test rot
+  („§4-Grund-Code "link-stale" fehlt in AllReasons()"), Deckungs-Test grün;
+  (b) Klartext allein entfernt ⇒ genau der Deckungs-Test rot (drei
+  Fehlerzeilen); (c) Überschrift für den Parser unauffindbar ⇒
+  fail-closed-Fatal statt stillem Grün; (d) §4-Zeile ohne Backticks ⇒
+  lauter Fatal mit Zeilen-Zitat (R1-LOW-1-Guard).
+- **Beleg-Lauf** (planning-drift-Probe, fehlende Roadmap): **v0.37.0-Image**
+  zeigt `Z. 1 · planning-drift [planning]` (roher Code), **lokaler Build**
+  zeigt den Klartext; `--doctor --json` trägt `reasonText` ≠ Code.
+- **Unabhängiges Review R1**
+  ([Report](../../../reviews/2026-07-04-slice-060-doctor-klartexte-r1.md)):
+  **ACCEPT**, 0 HIGH/0 MEDIUM/2 LOW/1 INFO — alle eingearbeitet (LOW-1
+  Zeilen-Format-Guard + Mutations-Beleg (d), LOW-2 planning-drift-Klartext
+  nennt „mehrdeutig", INFO-1 Ein-Tabellen-Annahme dokumentiert).
+- Release **v0.37.1** auf GHCR (erster **Patch**-Release; Tag auf dem
+  Closure-Stand, Digest-Pin per Backfill-Commit).
+
+**Lerneintrag.** (1) Die R1-Beobachtung trägt über den Slice hinaus: ein
+Mengen-Verriegelungs-Test braucht neben dem Leere-Menge-Guard auch einen
+**Zeilen-Format-Guard**, sonst kehrt der historische Fehlermodus über eine
+einzelne still ausgelassene Zeile zurück. (2) Der Deckungs-Test von
+slice-025 war korrekt und trotzdem machtlos: er prüfte das **Paar**
+`reasonTexts` ↔ `AllReasons`, nicht die Liste gegen ihre Autorität — eine
+hand-gepflegte kanonische Liste braucht eine **Gegen-Autorität außerhalb
+ihrer selbst** (hier: die doc-first gepflegte §4-Tabelle). Steering-Loop:
+Feedback (siebenfache stille Lücke, slice-059-Lerneintrag) wurde als
+Sensor-Verschärfung verkörpert, nicht nur behoben.
