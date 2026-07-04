@@ -3,6 +3,8 @@ package app
 import (
 	"github.com/pt9912/d-check/internal/hexagon/core/rules"
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
@@ -27,6 +29,72 @@ func TestReasonTextDeckungGegenAllReasons(t *testing.T) {
 		t.Errorf("reasonTexts hat %d Einträge, AllReasons %d — verwaister oder fehlender Code",
 			len(texts), len(reasons))
 	}
+}
+
+// Verriegelung AllReasons ↔ Spezifikation §4 (slice-060): jeder in der
+// §4-Grund-Code-Tabelle dokumentierte Code steht in AllReasons, und
+// AllReasons führt keinen Code ohne §4-Zeile. Die hand-gepflegte Liste
+// kann der doc-first gepflegten Spec damit nicht mehr still
+// hinterherhinken (von v0.25 bis v0.37 fehlten so sieben Codes, die der
+// Deckungs-Test oben nicht sehen konnte — er prüft nur das Paar
+// reasonTexts ↔ AllReasons, nicht die Liste selbst).
+func TestAllReasonsDeckungGegenSpezifikationGrundCodes(t *testing.T) {
+	specCodes := grundCodesAusSpezifikation(t)
+	inAll := map[string]bool{}
+	for _, r := range AllReasons() {
+		inAll[r] = true
+	}
+	for code := range specCodes {
+		if !inAll[code] {
+			t.Errorf("§4-Grund-Code %q fehlt in AllReasons()", code)
+		}
+	}
+	for r := range inAll {
+		if !specCodes[r] {
+			t.Errorf("AllReasons()-Code %q hat keine Zeile in Spezifikation §4", r)
+		}
+	}
+}
+
+// grundCodesAusSpezifikation extrahiert die Code-Spalte der Grund-Code-
+// Tabelle aus spec/spezifikation.md §4 (Pfad relativ zum Paket; der
+// Docker-Build-Kontext trägt die gesamte Repo-Wurzel). Fail-closed:
+// unlesbare Spec, fehlende oder mehrdeutige Überschrift und eine leere
+// Tabelle sind Fehler — kein stilles Grün mit leerer Menge.
+func grundCodesAusSpezifikation(t *testing.T) map[string]bool {
+	t.Helper()
+	raw, err := os.ReadFile(filepath.Join("..", "..", "..", "..", "spec", "spezifikation.md"))
+	if err != nil {
+		t.Fatalf("Spezifikation nicht lesbar (fail-closed): %v", err)
+	}
+	heading := regexp.MustCompile(`^## \d+\. Grund- und Fehler-Codes$`)
+	row := regexp.MustCompile("^\\| `([a-z0-9-]+)` \\|")
+	lines := strings.Split(string(raw), "\n")
+	start := -1
+	for i, l := range lines {
+		if heading.MatchString(strings.TrimSpace(l)) {
+			if start >= 0 {
+				t.Fatalf("Grund-Code-Überschrift mehrdeutig (Zeilen %d und %d, fail-closed)", start+1, i+1)
+			}
+			start = i
+		}
+	}
+	if start < 0 {
+		t.Fatal("Grund-Code-Überschrift in der Spezifikation nicht gefunden (fail-closed)")
+	}
+	codes := map[string]bool{}
+	for _, l := range lines[start+1:] {
+		if strings.HasPrefix(l, "## ") {
+			break
+		}
+		if m := row.FindStringSubmatch(l); m != nil {
+			codes[m[1]] = true
+		}
+	}
+	if len(codes) == 0 {
+		t.Fatal("keine Grund-Codes in der §4-Tabelle gefunden (fail-closed)")
+	}
+	return codes
 }
 
 // ReasonText: unbekannter Code → fail-safe der nackte Code.

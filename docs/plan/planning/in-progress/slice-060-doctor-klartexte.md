@@ -70,11 +70,13 @@ damit zu.
   Befundausgabe, Exit-Codes und `--repair` bleiben unberührt
   (`FixCandidateFor` liefert weiter nur für `id-unlinked` einen Kandidaten).
 - **Mutations-Beleg je Verriegelung (R3-Lehre slice-057 — jede Probe
-  verriegelt genau ihren Guard):** (a) ein Eintrag aus `AllReasons()`
-  entfernt ⇒ **genau** der neue §4-Test rot; (b) ein Klartext aus
-  `reasonTexts()` entfernt ⇒ **genau** der bestehende Deckungs-Test rot;
-  (c) §4-Überschrift für den Parser unauffindbar ⇒ der fail-closed-Zweig
-  schlägt an (kein stilles Grün bei leerer Menge).
+  verriegelt genau ihren Guard):** (a) ein Code-**Paar** aus `AllReasons()`
+  **und** `reasonTexts()` entfernt (der historische Fehlermodus: das Paar
+  bleibt in sich konsistent, nur die Liste hinkt der Spec hinterher) ⇒
+  **genau** der neue §4-Test rot, der bestehende Deckungs-Test bleibt grün;
+  (b) ein Klartext nur aus `reasonTexts()` entfernt ⇒ der bestehende
+  Deckungs-Test rot; (c) §4-Überschrift für den Parser unauffindbar ⇒ der
+  fail-closed-Zweig schlägt an (kein stilles Grün bei leerer Menge).
 - **Release als Patch v0.37.1** (SemVer: Fehlerbehebung am bestehenden
   Vertrag, keine neue Funktionalität, keine neue Config-Surface) — erster
   Patch-Release des Repos; Release-Prep nach
@@ -83,17 +85,17 @@ damit zu.
 
 ## 3. Definition of Done
 
-- [ ] **Code:** `AllReasons()` und `reasonTexts()` in
+- [x] **Code:** `AllReasons()` und `reasonTexts()` in
   `internal/hexagon/core/app/diagnose.go` um die sieben Codes/Klartexte
   ergänzt (über die Reason-Konstanten aus `model`/`rules`, keine
   String-Literale).
-- [ ] **Verriegelung:** neuer Test parst die §4-Grund-Code-Tabelle der
+- [x] **Verriegelung:** neuer Test parst die §4-Grund-Code-Tabelle der
   Spezifikation und vergleicht beidseitig mit `AllReasons()`; fail-closed
   bei fehlender/mehrdeutiger Überschrift oder leerer Tabelle; der
   bestehende Deckungs-Test `reasonTexts` ↔ `AllReasons` bleibt.
-- [ ] **Mutations-Belege** (a)–(c) aus §2 erbracht und im Closure
+- [x] **Mutations-Belege** (a)–(c) aus §2 erbracht und im Closure
   dokumentiert.
-- [ ] **Beleg-Lauf:** `--doctor` an einer Probe mit einem der sieben Codes
+- [x] **Beleg-Lauf:** `--doctor` an einer Probe mit einem der sieben Codes
   zeigt den Klartext statt des rohen Codes; `--doctor --json` trägt
   `reasonText` ≠ Code (Vorher/Nachher).
 - [ ] **Belege/Prozess:** `make gates`/`make ci` grün; unabhängiges Review

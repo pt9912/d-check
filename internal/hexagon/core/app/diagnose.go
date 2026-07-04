@@ -63,7 +63,10 @@ func relLink(fromFile, target string) string {
 // Wahrheit für die Vollständigkeits-Prüfung des Klartext-Mappings
 // (diagnose_test.go). Als Funktion statt Paket-Global (gochecknoglobals).
 // Ein neuer Grund-Code wird hier ergänzt; fehlt der Klartext, bricht der
-// Test, nicht still die Diagnose.
+// Test, nicht still die Diagnose. Die Liste selbst ist beidseitig gegen
+// die §4-Grund-Code-Tabelle der Spezifikation verriegelt (slice-060):
+// ein doc-first in §4 ergänzter Code ohne Eintrag hier bricht den Test
+// ebenso — die Liste kann der Spec nicht mehr still hinterherhinken.
 func AllReasons() []string {
 	return []string{
 		model.ReasonTargetMissing, model.ReasonRepoEscape, model.ReasonSymlink,
@@ -71,7 +74,9 @@ func AllReasons() []string {
 		rules.ReasonMatrixInactive, rules.ReasonMatrixForbidden, rules.ReasonMatrixDownward,
 		rules.ReasonExternalStatus, rules.ReasonExternalTimeout, rules.ReasonExternalRedirects,
 		model.ReasonSpanUnclosed, model.ReasonSpanNestedLink, model.ReasonHostpathForbidden,
-		model.ReasonTargetUntracked,
+		model.ReasonDiagramIDUndefined, model.ReasonVersionStale, model.ReasonLinkStale,
+		model.ReasonCoreDrift, model.ReasonCoreDriftVCS, model.ReasonCommitUntraceable,
+		model.ReasonPlanningDrift, model.ReasonTargetUntracked,
 	}
 }
 
@@ -81,22 +86,29 @@ func AllReasons() []string {
 // Codes.
 func reasonTexts() map[string]string {
 	return map[string]string{
-		model.ReasonTargetMissing:     "Linkziel existiert nicht",
-		model.ReasonRepoEscape:        "Aufgelöstes Ziel verlässt die Repository-Wurzel",
-		model.ReasonSymlink:           "Ziel ist oder enthält einen Symlink",
-		rules.ReasonAnchorMissing:     "Anker entspricht keinem Heading-Slug",
-		model.ReasonIDUnlinked:        "Kennung im Fließtext ohne Markdown-Link auf ihre Definition",
-		rules.ReasonCodepathMissing:   "Ziel eines Inline-Code-Pfads existiert nicht",
-		rules.ReasonMatrixInactive:    "Referenz auf ein Dokument mit verbotenem Status (z. B. superseded)",
-		rules.ReasonMatrixForbidden:   "Referenz zwischen Dokumentklassen nicht erlaubt (Referenzrichtung)",
-		rules.ReasonMatrixDownward:    "Klasseninterner Abwärtsverweis gegen die deklarierte Rangordnung (order/direction)",
-		rules.ReasonExternalStatus:    "Externer Link: HTTP-Status ≥ 400 oder Transportfehler",
-		rules.ReasonExternalTimeout:   "Externer Link: Zeitüberschreitung",
-		rules.ReasonExternalRedirects: "Externer Link: zu viele Redirects",
-		model.ReasonSpanUnclosed:      "Ungeschlossene Code-Span-Öffnung (klebt an Nicht-Whitespace)",
-		model.ReasonSpanNestedLink:    "Verschachtelte Link-Syntax im Linktext (rendert zerrissen)",
-		model.ReasonHostpathForbidden: "Host-lokaler absoluter Pfad (Maschinen-Layout-Leak)",
-		model.ReasonTargetUntracked:   "Linkziel nicht im git-Index getrackt (fehlt auf jedem frischen Klon)",
+		model.ReasonTargetMissing:      "Linkziel existiert nicht",
+		model.ReasonRepoEscape:         "Aufgelöstes Ziel verlässt die Repository-Wurzel",
+		model.ReasonSymlink:            "Ziel ist oder enthält einen Symlink",
+		rules.ReasonAnchorMissing:      "Anker entspricht keinem Heading-Slug",
+		model.ReasonIDUnlinked:         "Kennung im Fließtext ohne Markdown-Link auf ihre Definition",
+		rules.ReasonCodepathMissing:    "Ziel eines Inline-Code-Pfads existiert nicht",
+		rules.ReasonMatrixInactive:     "Referenz auf ein Dokument mit verbotenem Status (z. B. superseded)",
+		rules.ReasonMatrixForbidden:    "Referenz zwischen Dokumentklassen nicht erlaubt (Referenzrichtung)",
+		rules.ReasonMatrixDownward:     "Klasseninterner Abwärtsverweis gegen die deklarierte Rangordnung (order/direction)",
+		rules.ReasonExternalStatus:     "Externer Link: HTTP-Status ≥ 400 oder Transportfehler",
+		rules.ReasonExternalTimeout:    "Externer Link: Zeitüberschreitung",
+		rules.ReasonExternalRedirects:  "Externer Link: zu viele Redirects",
+		model.ReasonSpanUnclosed:       "Ungeschlossene Code-Span-Öffnung (klebt an Nicht-Whitespace)",
+		model.ReasonSpanNestedLink:     "Verschachtelte Link-Syntax im Linktext (rendert zerrissen)",
+		model.ReasonHostpathForbidden:  "Host-lokaler absoluter Pfad (Maschinen-Layout-Leak)",
+		model.ReasonDiagramIDUndefined: "Kennung im Diagramm-Fence ohne Definition in ihrer defined-in-Quelle",
+		model.ReasonVersionStale:       "Versions-Pin weicht von der aktuellen Version ab",
+		model.ReasonLinkStale:          "Ziel-Inhalt eines gepinnten Links weicht vom hinterlegten Content-Pin ab",
+		model.ReasonCoreDrift:          "Core einer gepinnten Datei weicht vom hinterlegten Immutabilitäts-Pin ab",
+		model.ReasonCoreDriftVCS:       "Core einer immutablen Datei über die Commit-Range geändert, gelöscht/umbenannt oder mit unzulässigem Status-Übergang",
+		model.ReasonCommitUntraceable:  "Commit-Message ohne Traceability-Kennung",
+		model.ReasonPlanningDrift:      "Roadmap-Aktiv-Status und Slice-Bestand inkonsistent (oder Roadmap/Überschrift fehlt — fail-closed)",
+		model.ReasonTargetUntracked:    "Linkziel nicht im git-Index getrackt (fehlt auf jedem frischen Klon)",
 	}
 }
 
