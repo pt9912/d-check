@@ -723,7 +723,7 @@ codepaths:
   exempt-paths: ["docs/reviews/**"] # Dateien ganz ausnehmen (Glob, wie ids)
   ignore-refs: ["tools/altes-skript.sh"] # Ziel-Pfade nie existenz-prüfen (referenz-weit)
 hostpaths:
-  prefixes: ["/home", "/Users"] # host-lokale Pfade melden
+  prefixes: [home, Users]       # Verzeichnisnamen OHNE / (führender /… ⇒ Exit 2)
 external:
   timeout-seconds: 10
 diagrams:                      # Kennungen in Diagramm-Fences prüfen
