@@ -287,7 +287,22 @@ Refactor noch in keinem Release.
 
 ## Nächste Wellen
 
-**Keine weiteren geplanten Wellen.** Der Auftraggeber-`tools/*.sh`-Audit (2026-06-29) ist mit
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:**
+
+- [`slice-062`](../next/slice-062-handbuch-e2e-beispiele.md) — Handbuch-**E2E**-Beispiel-Verankerung:
+  die Kommando-/Ausgabe-Beispiele des Benutzerhandbuchs (Exit-Code, „N Befund(e)"-Zeile,
+  `--doctor`-Diagnose) gegen das echte Binary über Fixtures prüfen (Dimension B aus
+  welle-50, Nutzer-Anregung 2026-07-04; Dimension A = Config-Beispiele lief mit
+  [`slice-061`](../done/slice-061-doc-config-beispiel-verifikation.md)).
+
+**Kandidat (noch kein Slice, auf Freigabe wartend):** ein `--print-version-md`-Scaffold, das ein
+`version.md`-Skelett mit Platzhaltern auf stdout ausgibt (Familie `--print-config`/`--print-mk`/
+`--suggest-config`; read-only, deterministisch). Produkt-Feature ⇒ Change Request
+(`DC-FA-CLI-*` im Lastenheft) + Slice + Spezifikation-`.a`, **kein** ADR (additive CLI-Ausgabe).
+Anlass: Nutzer-Frage 2026-07-04 zum Nachbau von `version.md` in Fremd-Repos (der Aufbau selbst ist
+seit Handbuch 1.21 dokumentiert).
+
+Der Auftraggeber-`tools/*.sh`-Audit (2026-06-29) ist mit
 welle-46-planning-modul ([`slice-057`](../done/slice-057-planning-modul.md)) **abgeschlossen**:
 alle mechanisierbaren Gate-Skripte sind d-check-Feature (completeness→in-Produkt-Flag slice-055,
 trace→`commits` slice-056, planning→`planning` slice-057; adr-immutable→`vcs` slice-053). Der
