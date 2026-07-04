@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.20 · **Software-Version:** [v0.37.1](../../version.md#v0.37.1) ·
+**Handbuch-Version:** 1.21 · **Software-Version:** [v0.37.1](../../version.md#v0.37.1) ·
 **Stand:** 2026-07-04 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -836,6 +836,57 @@ read-only-Mount) verteilt die Prüfung:
 make doc-tracked
 ```
 
+### Das Versions-Register `version.md` aufbauen (für Modul `versions`)
+
+Das Modul `versions` liest die aktuelle Version aus `version.md#aktuell`
+(Schlüssel `current-from`) und prüft damit die gepinnten `ghcr`-Image-Verweise.
+Diese Datei ist zugleich ein **auflösbares Link-Ziel** für Erwähnungen der
+eigenen Releases. Ein eigenes Repo baut sie nach diesem Muster nach — zwei
+Abschnitte und eine Anker-Mechanik:
+
+- **`## Aktuell`** — eine Zeile, die die aktuelle Version nennt. Der
+  Heading-Slug `#aktuell` ist der **stabile** Verweispunkt
+  (`current-from: version.md#aktuell`); er zeigt immer auf die jeweils aktuelle
+  Version, nie auf eine feste Nummer.
+- **`## Verlauf`** — eine Tabelle mit einer Zeile pro Release (Version, Datum,
+  Release-Link).
+- **Der explizite HTML-Anker `<a id="vX.Y.Z"></a>`** — nur die **aktuelle**
+  Versions-Zeile trägt ihn. Grund: der automatische Markdown-Slug verschluckt
+  die Punkte einer Versionsnummer (`v1.2.0` → `v120`), sodass ein fester Pin
+  `…#v1.2.0` sonst nicht auflöst; der explizite Anker macht die Version wörtlich
+  (mit Punkten) verlinkbar.
+
+**Die Anker-Wanderung ist Absicht:** Bei jedem Release wandert der `<a id>`-Anker
+auf die neue aktuelle Version; die bisherige Zeile **verliert** ihn. Dadurch
+**bricht** jeder feste Pin auf eine veraltete Version (`anchor-missing` über das
+Modul `anchors`) — ein vergessener Versions-Bump fällt so auf, statt still auf
+eine alte Version zu zeigen. Der zugehörige Release-Ablauf steht in
+[releasing.md](releasing.md).
+
+Minimales Muster zum Übernehmen:
+
+```markdown
+# <projekt> — Release-Register
+
+## Aktuell
+
+Aktuelle Version: [`vX.Y.Z`](#vX.Y.Z) — <datum>.
+
+Aus anderen Dokumenten stabil referenzierbar als `version.md#aktuell`
+(zeigt immer hierher, nie auf eine feste Nummer).
+
+## Verlauf
+
+| Version                      | Datum   | Release                     |
+| ---------------------------- | ------- | --------------------------- |
+| `vX.Y.Z` <a id="vX.Y.Z"></a> | <datum> | [Tag vX.Y.Z](<release-url>) |
+| `vX.Y.W`                     | <datum> | [Tag vX.Y.W](<release-url>) |
+```
+
+Beim nächsten Release: die `## Aktuell`-Zeile auf die neue Version ziehen, eine
+neue `## Verlauf`-Zeile einfügen und den `<a id>`-Anker von der bisherigen auf
+die neue Version verschieben (die bisherige Zeile behält nur ihren Text).
+
 ### Modul-lokaler Scan-Bereich
 
 Ein Modul kann einen eigenen, vom globalen abweichenden Scan-Bereich
@@ -977,3 +1028,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.18             | v0.36.0          | 2026-07-01 | Neues opt-in-Modul `planning` (15., §5/§6): Roadmap-↔-in-progress-Lifecycle-Konsistenz — der Ruhe-Marker steht im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` im Verzeichnis liegt (`planning-drift`); **hermetisch** (nur Roadmap + Verzeichnis-Listing, kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, diagnose-only. Löst die Skript-Mechanik des `planning-check`-Gates ab (letztes Familien-Skript). `--print-mk`-Target `doc-planning` (hermetisch, ohne Range) verteilt die Prüfung                |
 | 1.19             | v0.37.0          | 2026-07-03 | Neues opt-in-Modul `tracked` (16., §5/§6): Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (`target-untracked` — untracked/gitignoriertes Ziel fehlt auf jedem frischen Klon); Index-Wahrheit (gestagt = getrackt), kein Doppelbefund, Ventil `exempt-targets` (aufgelöster Zielpfad, segmentweise validiert), fail-closed ohne `.git`, **ohne** Commit-Range. `--print-mk`-Target `doc-tracked` (zehn Targets, §4.13) verteilt die Prüfung                |
 | 1.20             | v0.37.1          | 2026-07-04 | Fix: `--doctor` zeigt für die sieben seit v0.25 hinzugekommenen Grund-Codes (`diagram-id-undefined`, `version-stale`, `link-stale`, `core-drift`, `core-drift-vcs`, `commit-untraceable`, `planning-drift`) den Klartext statt des rohen Codes — auch als `reasonText` in `--doctor --json`/`--yaml`; die Klartext-Liste ist testseitig beidseitig gegen die Grund-Code-Tabelle der Spezifikation verriegelt (fail-closed)                |
+| 1.21             | v0.37.1          | 2026-07-04 | Anleitung „Das Versions-Register `version.md` aufbauen" (§5) — Aufbau (`## Aktuell`/`## Verlauf`), die `<a id="vX.Y.Z">`-Anker-Mechanik samt Anker-Wanderung beim Release und ein kopierbares Muster zum Nachbau in eigenen Repos                |
