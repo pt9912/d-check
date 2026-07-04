@@ -38,7 +38,8 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
    `versions`-Gate prüft nur `ghcr`-**präfixierte** Pins gegen `version.md#aktuell`,
    nicht Fließtext oder nackte Tags. Betroffen:
    - **Benutzerhandbuch** — Header-Stempel (Handbuch-/Software-Version),
-     Versionsverlauf-Zeile, ggf. neue Feature-Abschnitte (§5/§6) und das
+     Versionsverlauf-Zeile (§11; die neue Zeile **chronologisch unter die
+     letzte**, nicht oben anfügen), ggf. neue Feature-Abschnitte (§5/§6) und das
      **bare-Tag-Beispiel** in §Versionen und Tags (`:vX.Y.Z` **ohne** `ghcr`-Präfix
      ⇒ vom `versions`-Gate nicht erfasst, driftet still).
    - **README — beide Sprachfassungen synchron halten:** `README.de.md` (Deutsch,
@@ -50,6 +51,11 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
      Nicht-Referenz-Modul (Content-Drift/Immutabilität/Versions/Traceability/Planning)
      neu ist. d-check prüft `links`/`anchors`/`ids`/`versions` in beiden READMEs, aber
      **nicht** die inhaltliche DE↔EN-Synchronität der Prosa.
+   - **Operations-Referenz** ([`operations.md`](operations.md)) — bei einem
+     neuen Modul die Modul-Enumeration der `--enable`/`--disable`-Zeile, bei
+     einer neuen CLI-Option die Optionen-Tabelle ergänzen. Kein Gate prüft
+     diese Enumerationen — die Modul-Liste blieb so von v0.25 bis v0.37 still
+     bei acht Modulen stehen.
 5. **`make ci`** lokal grün fahren (Pre-Tag-De-Risk, „grün = Boden"), erst dann
    taggen.
 
