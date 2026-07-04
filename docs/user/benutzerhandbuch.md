@@ -546,6 +546,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.37.1 --json
 docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.37.1 --yaml
 ```
 
+<!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
 ```yaml
 findings:
   - file: docs/anleitung.md
