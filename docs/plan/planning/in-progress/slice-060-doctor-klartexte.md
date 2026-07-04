@@ -64,7 +64,7 @@ damit zu.
   | `core-drift` | Core einer gepinnten Datei weicht vom hinterlegten Immutabilitäts-Pin ab |
   | `core-drift-vcs` | Core einer immutablen Datei über die Commit-Range geändert, gelöscht/umbenannt oder mit unzulässigem Status-Übergang |
   | `commit-untraceable` | Commit-Message ohne Traceability-Kennung |
-  | `planning-drift` | Roadmap-Aktiv-Status und Slice-Bestand inkonsistent (oder Roadmap/Überschrift fehlt — fail-closed) |
+  | `planning-drift` | Roadmap-Aktiv-Status und Slice-Bestand inkonsistent (oder Roadmap/Überschrift fehlt bzw. mehrdeutig — fail-closed) |
 
 - **Kein Verhaltens-Delta außerhalb der Diagnose:** Default-/JSON-/YAML-
   Befundausgabe, Exit-Codes und `--repair` bleiben unberührt

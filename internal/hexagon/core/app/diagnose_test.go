@@ -59,8 +59,13 @@ func TestAllReasonsDeckungGegenSpezifikationGrundCodes(t *testing.T) {
 // grundCodesAusSpezifikation extrahiert die Code-Spalte der Grund-Code-
 // Tabelle aus spec/spezifikation.md §4 (Pfad relativ zum Paket; der
 // Docker-Build-Kontext trägt die gesamte Repo-Wurzel). Fail-closed:
-// unlesbare Spec, fehlende oder mehrdeutige Überschrift und eine leere
-// Tabelle sind Fehler — kein stilles Grün mit leerer Menge.
+// unlesbare Spec, fehlende oder mehrdeutige Überschrift, eine leere
+// Tabelle und jede Tabellen-Body-Zeile ohne Backtick-Code sind Fehler —
+// kein stilles Grün mit leerer Menge, kein stilles Auslassen einzelner
+// Zeilen (R1-LOW-1). Annahme: alle Tabellenzeilen unter §4 sind
+// Grund-Codes; eine künftige zweite Tabelle (z. B. Fehler-Codes) macht
+// den Test laut rot und verlangt eine bewusste Parser-Anpassung
+// (R1-INFO-1).
 func grundCodesAusSpezifikation(t *testing.T) map[string]bool {
 	t.Helper()
 	raw, err := os.ReadFile(filepath.Join("..", "..", "..", "..", "spec", "spezifikation.md"))
@@ -68,7 +73,8 @@ func grundCodesAusSpezifikation(t *testing.T) map[string]bool {
 		t.Fatalf("Spezifikation nicht lesbar (fail-closed): %v", err)
 	}
 	heading := regexp.MustCompile(`^## \d+\. Grund- und Fehler-Codes$`)
-	row := regexp.MustCompile("^\\| `([a-z0-9-]+)` \\|")
+	row := regexp.MustCompile("^\\|\\s*`([a-z0-9-]+)`\\s*\\|")
+	divider := regexp.MustCompile(`^\|[\s:|-]+$`)
 	lines := strings.Split(string(raw), "\n")
 	start := -1
 	for i, l := range lines {
@@ -87,9 +93,14 @@ func grundCodesAusSpezifikation(t *testing.T) map[string]bool {
 		if strings.HasPrefix(l, "## ") {
 			break
 		}
-		if m := row.FindStringSubmatch(l); m != nil {
-			codes[m[1]] = true
+		if !strings.HasPrefix(l, "|") || divider.MatchString(l) || strings.HasPrefix(l, "| Code |") {
+			continue // keine Tabellenzeile, Trennzeile oder Kopfzeile
 		}
+		m := row.FindStringSubmatch(l)
+		if m == nil {
+			t.Fatalf("§4-Tabellenzeile ohne Backtick-Code (fail-closed): %q", l)
+		}
+		codes[m[1]] = true
 	}
 	if len(codes) == 0 {
 		t.Fatal("keine Grund-Codes in der §4-Tabelle gefunden (fail-closed)")

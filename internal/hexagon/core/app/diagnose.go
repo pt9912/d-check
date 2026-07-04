@@ -107,7 +107,7 @@ func reasonTexts() map[string]string {
 		model.ReasonCoreDrift:          "Core einer gepinnten Datei weicht vom hinterlegten Immutabilitäts-Pin ab",
 		model.ReasonCoreDriftVCS:       "Core einer immutablen Datei über die Commit-Range geändert, gelöscht/umbenannt oder mit unzulässigem Status-Übergang",
 		model.ReasonCommitUntraceable:  "Commit-Message ohne Traceability-Kennung",
-		model.ReasonPlanningDrift:      "Roadmap-Aktiv-Status und Slice-Bestand inkonsistent (oder Roadmap/Überschrift fehlt — fail-closed)",
+		model.ReasonPlanningDrift:      "Roadmap-Aktiv-Status und Slice-Bestand inkonsistent (oder Roadmap/Überschrift fehlt bzw. mehrdeutig — fail-closed)",
 		model.ReasonTargetUntracked:    "Linkziel nicht im git-Index getrackt (fehlt auf jedem frischen Klon)",
 	}
 }
