@@ -10,19 +10,23 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-49-doctor-klartexte** — [slice-060](slice-060-doctor-klartexte.md)
-(in Arbeit): `--doctor`-Klartext-Vollständigkeit als **Defekt-Fix** gegen
+**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**welle-49-doctor-klartexte** ([`slice-060`](../done/slice-060-doctor-klartexte.md) —
+`--doctor`-Klartext-Vollständigkeit als **Defekt-Fix** gegen
 [`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)
 (Spezifikation
 [§`DC-FA-CLI-007.a`](../../../../spec/spezifikation.md#dc-fa-cli-007a--diagnose-modus)
-Schritt 3): die kanonische Grund-Code-Liste
-(`AllReasons`) hinkt seit v0.25 sieben Codes hinterher
-(`diagram-id-undefined`, `version-stale`, `link-stale`, `core-drift`,
-`core-drift-vcs`, `commit-untraceable`, `planning-drift`) — `--doctor` zeigt
-dort den rohen Code statt des Klartexts, `--doctor --json`/`--yaml` trägt ihn
-im `reasonText`-Feld. Die sieben Klartexte plus beidseitige Verriegelung
-`AllReasons` ↔ Spezifikation §4 (fail-closed); kein CR, kein ADR;
-Patch-Release v0.37.1 geplant. Zuletzt abgeschlossen:
+Schritt 3): die kanonische Grund-Code-Liste (`AllReasons`) hinkte seit v0.25
+sieben Codes hinterher (`diagram-id-undefined`, `version-stale`, `link-stale`,
+`core-drift`, `core-drift-vcs`, `commit-untraceable`, `planning-drift`) —
+`--doctor` zeigte dort den rohen Code statt des Klartexts,
+`--doctor --json`/`--yaml` trug ihn im `reasonText`-Feld. Die sieben Klartexte
+ergänzt plus beidseitige **Verriegelung** `AllReasons` ↔ Spezifikation §4
+(fail-closed inkl. Zeilen-Format-Guard; vier Mutations-Belege); kein CR, kein
+ADR; unabhängiges Review R1 (ACCEPT, 2 LOW/1 INFO eingearbeitet); `make ci`
+grün; **Patch-Release v0.37.1** (erster Patch-Release; Tag nach Closure,
+Digest-Pin per Backfill)
+([Closure](../done/slice-060-doctor-klartexte.md#7-closure-notiz-nach-done)). Davor
 **welle-48-tracked-modul** ([`slice-059`](../done/slice-059-tracked-modul.md) — neues
 **opt-in Modul `tracked`** (16.) prüft die aufgelösten, **existierenden** repo-internen
 Link-/Bild-**Datei**-Ziele gegen den **git-Index**: untracktes/gitignoriertes Ziel ⇒

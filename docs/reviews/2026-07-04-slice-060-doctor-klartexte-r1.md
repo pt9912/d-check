@@ -3,7 +3,7 @@
 **Datum:** 2026-07-04
 **Reviewer-Rolle:** unabhängig/adversarial (Code + Doku; nicht der Autor).
 **Gegenstand:** slice-060 (welle-49), zwei Commits —
-`1e5cf41` (doc-first: [slice-060](../plan/planning/in-progress/slice-060-doctor-klartexte.md)
+`1e5cf41` (doc-first: [slice-060](../plan/planning/done/slice-060-doctor-klartexte.md)
 + Roadmap-Flip) und `f1017f8` (feat:
 `internal/hexagon/core/app/diagnose.go` + `diagnose_test.go` + DoD-Häkchen).
 **Anforderungs-Anker:** [`DC-FA-CLI-007`](../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus),
