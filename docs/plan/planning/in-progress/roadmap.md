@@ -11,15 +11,16 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 ## Aktuelle Welle
 
 **welle-50-handbuch-beispiel-verifikation** —
-[slice-061](slice-061-doc-config-beispiel-verifikation.md) (in Planung):
-Test-Harness, der die **Beispiele** des Benutzerhandbuchs an die Realität
-koppelt — **Dimension A** validiert die gefenceten `.d-check.yml`-Config-
-Fragmente gegen `configyaml.Decode` (schließt die Blindspot-Klasse hinter dem
-`hostpaths.prefixes`-Doku-Bug `c8c33a0`), **Dimension B** (E2E, auf
-Nutzer-Anregung) verankert die Kommando-/Ausgabe-Beispiele gegen das echte
-Binary über Fixtures. Kein CR, kein ADR; kein Release (Test-Infra). Offener
-Entscheid: A+B in einem Slice oder B als slice-062 abgespalten. Zuletzt
-abgeschlossen: **welle-49-doctor-klartexte**
+[slice-061](slice-061-doc-config-beispiel-verifikation.md) (in Arbeit):
+Test-Harness, der die gefenceten `.d-check.yml`-**Config-Beispiele** der
+Live-Doku (Handbuch/README) gegen `configyaml.Decode` validiert (**Dimension
+A** — schließt die Blindspot-Klasse hinter dem `hostpaths.prefixes`-Doku-Bug
+`c8c33a0`; Opt-out-Marker für Nicht-Config-Blöcke wie das `--yaml`-Ausgabe-
+Beispiel). Die E2E-Verankerung der Kommando-/Ausgabe-Beispiele gegen das echte
+Binary (**Dimension B**, Nutzer-Anregung) ist als
+[`slice-062`](../next/slice-062-handbuch-e2e-beispiele.md) ausgegliedert
+(Backlog, Nutzer-Entscheid „A jetzt / B später"). Kein CR, kein ADR; kein
+Release (Test-Infra). Zuletzt abgeschlossen: **welle-49-doctor-klartexte**
 ([`slice-060`](../done/slice-060-doctor-klartexte.md) —
 `--doctor`-Klartext-Vollständigkeit als **Defekt-Fix** gegen
 [`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)
