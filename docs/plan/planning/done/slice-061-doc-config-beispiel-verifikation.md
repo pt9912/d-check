@@ -1,6 +1,6 @@
 # Slice slice-061: Config-Beispiel-Verifikation (Fenced-YAML ↔ Validator)
 
-**Status:** in-progress (welle-50-handbuch-beispiel-verifikation).
+**Status:** done (welle-50-handbuch-beispiel-verifikation, Closure 2026-07-04).
 
 **Welle:** welle-50-handbuch-beispiel-verifikation (Trigger: Nutzer-Frage
 2026-07-04 „Haben wir keine Tests dafür geschrieben?" nach dem
@@ -79,20 +79,20 @@ nicht nur der `hostpaths`-Einzelfall.
 
 ## 3. Definition of Done
 
-- [ ] **Harness:** Go-Test, der die Doku-Menge liest, je ` ```yaml `-Block
-  extrahiert (Fence-Balance geprüft), die per Marker ausgenommenen überspringt
-  und den Rest gegen `configyaml.Decode` validiert; jede Ablehnung ⇒ Testfehler
-  mit Datei:Zeile + Validator-Meldung.
-- [ ] **Marker-Anwendung:** die identifizierten Nicht-Config-Blöcke (Stand
-  Sondierung: das `--yaml`-Ausgabe-Beispiel) tragen den beschlossenen
-  Skip-Marker mit Grund.
-- [ ] **Fail-closed-Guards** (fehlende Datei / keine Fence / unbalancierter
-  Fence / leere Menge) mutations-verifiziert (slice-057-R3-Lehre: jede Probe
-  verriegelt genau ihren Guard).
-- [ ] **Regressions-Beleg:** ein bewusst kaputtes Config-Beispiel (z. B.
-  `hostpaths.prefixes: ["/x"]` temporär) ⇒ Harness rot; Revert ⇒ grün.
-- [ ] **Belege/Prozess:** `make gates`/`make ci` grün; unabhängiges Review vor
-  Closure; Closure-Move nach `done/` + Roadmap-Flip
+- [x] **Harness:** Go-Test, der die Doku-Menge liest, je ` ```yaml `-Block
+  extrahiert (Fence-Zustandsverfolgung), die per Marker ausgenommenen
+  überspringt und den Rest gegen `configyaml.Decode` validiert; jede Ablehnung
+  ⇒ Testfehler mit Datei:Zeile + Validator-Meldung.
+- [x] **Marker-Anwendung:** der eine Nicht-Config-Block (das
+  `--yaml`-Ausgabe-Beispiel `findings:`) trägt den Skip-Marker mit Grund.
+- [x] **Fail-closed-Guards** (fehlende Datei / unbalancierter Fence / leere
+  Menge) mutations-verifiziert; zusätzlich `TestExtractYAMLBlocks` (Extraktion,
+  yaml-in-markdown, Marker-Vorzeilen-Regel, unbalanciert, Info-Varianten).
+- [x] **Regressions-Beleg:** kaputtes Config-Beispiel ⇒ Harness rot an der
+  Zeile (Handbuch-`hostpaths` **und** operations.md-`ids`), Revert ⇒ grün.
+- [x] **Belege/Prozess:** `make gates`/`make ci` grün; unabhängiges Review R1
+  (NACHBESSERN → alle Befunde eingearbeitet); Closure-Move nach `done/` +
+  Roadmap-Flip
   ([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)),
   Closure-Body als Folge-Commit. **Kein Produkt-Code, Image byte-identisch,
   kein Release** (Test-/Harness-Infra, analog slice-055).
@@ -127,4 +127,55 @@ den bestehenden Validator-Vertrag). Kein neuer Adapter, keine BF-Sub-Area.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-*(bei Closure: Umsetzung, Belege, Lerneintrag, Steering-Loop-Eintrag.)*
+**Umsetzung.** Dimension A als Go-Test
+`TestDocExamples_ConfigBeispieleValidieren`
+(`internal/adapter/driven/configyaml/docexamples_test.go`): er liest die
+wartungsaktive Nutzer-Doku (Benutzerhandbuch, `operations.md`, `README.md`/
+`README.de.md`) über repo-relative Pfade (Präzedenz slice-060), extrahiert jeden
+` ```yaml `-Block und validiert ihn gegen `configyaml.Decode`. Der Extraktor
+`extractYAMLBlocks` führt echte **Fence-Zustandsverfolgung** (ein Fence öffnet
+auf ` ``` `, schließt erst auf ein nacktes ` ``` `) — ein ` ```yaml ` innerhalb
+eines ` ```markdown `-Blocks ist damit Body, kein eigener Block; als reine
+Funktion (Fehler statt `t.Fatalf`) ist er über `TestExtractYAMLBlocks`
+unit-testbar. Nicht-Config-Blöcke tragen den Opt-out-Marker
+`<!-- d-check-test:not-config: <Grund> -->` in der Zeile unmittelbar vor dem
+Fence (fail-closed zum Prüfen hin: neues echtes Beispiel automatisch abgedeckt,
+neuer Nicht-Config-Block bricht laut). Der **Audit fand nur einen** Nicht-Config-
+Block (das `--yaml`-Ausgabe-Beispiel `findings:`) und **keinen neuen echten
+Config-Bug** (der `hostpaths`-Fall war mit `c8c33a0` bereits behoben). Dimension
+B (E2E-Verankerung der Kommando-/Ausgabe-Beispiele) ist als
+[`slice-062`](../next/slice-062-handbuch-e2e-beispiele.md) ausgegliedert.
+Commit-Kette: doc-first `df07a03` (+ Verengung `46a0127`) → feat `0e7d3b4` → R1
+`<review>` → closure-move → closure-body.
+
+**Belege.**
+- `make gates`/`make ci` **grün** (doc-check 183/0, lint, test, arch-check,
+  coverage, semgrep, gate-consistency, planning-check; image-test).
+- **Vier Fail-closed-Mutations-Belege** (jede verriegelt genau ihren Guard):
+  kaputtes Config-Beispiel ⇒ rot an der Zeile (Handbuch-`hostpaths` **und**,
+  nach R1, operations.md-`ids` via Unbekannter-Key-Injektion an
+  `operations.md:66`); unbalancierter Fence / fehlende Datei / leere Menge ⇒
+  fail-closed Fatal. Plus `TestExtractYAMLBlocks` (Extraktion, yaml-in-markdown,
+  Marker-Vorzeilen-Regel, unbalanciert, `yml`/`YAML`/Info-Suffix).
+- **Unabhängiges Review R1**
+  ([Report](../../../reviews/2026-07-04-slice-061-doc-config-harness-r1.md)):
+  **NACHBESSERN**, 0 HIGH/1 MEDIUM/2 LOW/2 INFO — alle eingearbeitet. MEDIUM-1
+  (operations.md trug zwei ungeprüfte Config-Beispiele) aufgenommen; LOW-1
+  (Extraktor-Robustheit) per Fence-Zustandsverfolgung + Unit-Tests behoben;
+  LOW-2/INFO-1a (Vorzeilen-Regel) in Fehlermeldung/Doc; INFO-1b (`validated>0`
+  statt `total>0`) und INFO-2 (Info-String-Varianten) geschlossen.
+- **Kein Release** (nur Test-Code + ein HTML-Kommentar-Marker; Image
+  byte-identisch).
+
+**Lerneintrag.** (1) Der R1-MEDIUM bestätigt: der **Scope einer Doku-Menge ist
+selbst ein Silent-Green-Risiko** — die Blindspot-Klasse ist erst geschlossen,
+wenn *alle* config-tragenden Live-Docs erfasst sind (operations.md fehlte
+zuerst). Ein Scope-Entscheid gehört explizit begründet, nicht implizit gelassen.
+(2) Ein naiver Fence-Extraktor („öffne auf ` ```yaml `") ist bei gemischten
+Fences (` ```markdown `-Beispiele) falsch; korrekt ist **Fence-Zustand führen**
+und am Info-String entscheiden. (3) Die Schwester-Beziehung zu slice-060 hält:
+beide koppeln Doku an Code über eine Mengen-/Format-Verriegelung mit
+Fail-closed-Guards — hier Doku-Beispiel ↔ Validator statt Grund-Code-Liste ↔
+Spec-§4. Steering-Loop: Feedback (Doku-Beispiel bricht Validator) als
+Sensor-Verankerung verkörpert, nicht nur einmalig behoben. Dimension B (E2E)
+bleibt der offene Folge-Schritt ([`slice-062`](../next/slice-062-handbuch-e2e-beispiele.md)).
