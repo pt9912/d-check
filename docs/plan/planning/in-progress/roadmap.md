@@ -24,8 +24,9 @@ sieben Codes hinterher (`diagram-id-undefined`, `version-stale`, `link-stale`,
 ergänzt plus beidseitige **Verriegelung** `AllReasons` ↔ Spezifikation §4
 (fail-closed inkl. Zeilen-Format-Guard; vier Mutations-Belege); kein CR, kein
 ADR; unabhängiges Review R1 (ACCEPT, 2 LOW/1 INFO eingearbeitet); `make ci`
-grün; **Patch-Release v0.37.1** (erster Patch-Release; Tag nach Closure,
-Digest-Pin per Backfill)
+grün; **Patch-Release v0.37.1** auf GHCR (erster Patch-Release;
+Release-Run 28695142320 + Push-CI 28695142147 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:3bbdb19bb73200fa37e30eff961cd5429a44e9e945fff3fb65ba7dc4b3cd88dd`
 ([Closure](../done/slice-060-doctor-klartexte.md#7-closure-notiz-nach-done)). Davor
 **welle-48-tracked-modul** ([`slice-059`](../done/slice-059-tracked-modul.md) — neues
 **opt-in Modul `tracked`** (16.) prüft die aufgelösten, **existierenden** repo-internen

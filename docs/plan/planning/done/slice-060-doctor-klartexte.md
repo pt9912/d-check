@@ -171,7 +171,9 @@ ADR, keine neue Config-Surface. Commit-Kette: doc-first `1e5cf41` → feat
   Zeilen-Format-Guard + Mutations-Beleg (d), LOW-2 planning-drift-Klartext
   nennt „mehrdeutig", INFO-1 Ein-Tabellen-Annahme dokumentiert).
 - Release **v0.37.1** auf GHCR (erster **Patch**-Release; Tag auf dem
-  Closure-Stand, Digest-Pin per Backfill-Commit).
+  Closure-Stand `5f1420d`, Release-Run 28695142320 grün, Push-CI
+  28695142147 grün), Digest-Pin
+  `ghcr.io/pt9912/d-check@sha256:3bbdb19bb73200fa37e30eff961cd5429a44e9e945fff3fb65ba7dc4b3cd88dd`.
 
 **Lerneintrag.** (1) Die R1-Beobachtung trägt über den Slice hinaus: ein
 Mengen-Verriegelungs-Test braucht neben dem Leere-Menge-Guard auch einen
