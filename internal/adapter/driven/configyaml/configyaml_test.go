@@ -187,6 +187,42 @@ func TestDecode_CommitsHappy(t *testing.T) {
 	}
 }
 
+// TestDecode_HostpathsPrefixesFehler deckt die beiden applyHostpaths-Ablehnungs-
+// Guards ab (DC-FA-HOST-001 / DC-FA-CONF-001) — dieselbe Silent-Grün-Klasse wie
+// TestDecode_CommitsFehler: ohne diese Negativtests machte ein Refactor, der den
+// leerer-Name- oder den '/'-Guard entfernt, die Validierung still nachgiebig, ohne
+// dass ein Test fällt. Der '/'-Guard ist genau die Regel, gegen die das frühere
+// Handbuch-Beispiel `prefixes: ["/home"]` verstieß (führender / ⇒ Exit 2, Fix c8c33a0).
+func TestDecode_HostpathsPrefixesFehler(t *testing.T) {
+	// Eintrag mit '/' ⇒ Konfigurationsfehler (bare Verzeichnisnamen; die Regex
+	// klammert die umgebenden Slashes selbst — ein führender/innerer / matchte nie).
+	for _, p := range []string{"/home", "home/x", "/"} {
+		if _, err := configyaml.Decode([]byte("hostpaths:\n  prefixes: [\"" + p + "\"]\n")); err == nil ||
+			!strings.Contains(err.Error(), "ohne '/'") {
+			t.Fatalf("hostpaths.prefixes %q: err = %v (Ablehnung „ohne /“ erwartet)", p, err)
+		}
+	}
+	// leerer Name ⇒ Konfigurationsfehler
+	if _, err := configyaml.Decode([]byte("hostpaths:\n  prefixes: [\"\"]\n")); err == nil ||
+		!strings.Contains(err.Error(), "leeren Namen") {
+		t.Fatalf("leerer hostpaths.prefixes-Name: Fehler erwartet, got %v", err)
+	}
+}
+
+// TestDecode_HostpathsPrefixesHappy: bare Verzeichnisnamen (ohne /) werden
+// akzeptiert und in den Kern durchgereicht (der positive Gegenpol; zugleich die
+// korrekte Form des Handbuch-Beispiels `prefixes: [home, Users]`).
+func TestDecode_HostpathsPrefixesHappy(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("hostpaths:\n  prefixes: [home, Users]\n"))
+	if err != nil {
+		t.Fatalf("gültige hostpaths.prefixes abgelehnt: %v", err)
+	}
+	if len(cfg.Hostpaths.Prefixes) != 2 ||
+		cfg.Hostpaths.Prefixes[0] != "home" || cfg.Hostpaths.Prefixes[1] != "Users" {
+		t.Fatalf("hostpaths.prefixes nicht durchgereicht: %+v", cfg.Hostpaths)
+	}
+}
+
 // TestDecode_PlanningFehler deckt den applyPlanning-Escape-Guard + die
 // scope-Ablehnung ab (DC-FA-PLAN-001; planning ist ein Post-Pass ohne Scan).
 func TestDecode_PlanningFehler(t *testing.T) {
