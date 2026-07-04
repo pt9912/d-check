@@ -10,17 +10,24 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-50-handbuch-beispiel-verifikation** —
-[slice-061](slice-061-doc-config-beispiel-verifikation.md) (in Arbeit):
+**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**welle-50-handbuch-beispiel-verifikation**
+([`slice-061`](../done/slice-061-doc-config-beispiel-verifikation.md) —
 Test-Harness, der die gefenceten `.d-check.yml`-**Config-Beispiele** der
-Live-Doku (Handbuch/README) gegen `configyaml.Decode` validiert (**Dimension
-A** — schließt die Blindspot-Klasse hinter dem `hostpaths.prefixes`-Doku-Bug
-`c8c33a0`; Opt-out-Marker für Nicht-Config-Blöcke wie das `--yaml`-Ausgabe-
-Beispiel). Die E2E-Verankerung der Kommando-/Ausgabe-Beispiele gegen das echte
-Binary (**Dimension B**, Nutzer-Anregung) ist als
+Live-Doku (Handbuch/operations.md/README) gegen `configyaml.Decode` validiert
+(**Dimension A** — schließt die Blindspot-Klasse hinter dem
+`hostpaths.prefixes`-Doku-Bug `c8c33a0`, den kein Gate fing, weil Fenced-Code
+nicht gescannt wird; Opt-out-Marker `<!-- d-check-test:not-config -->` für
+Nicht-Config-Blöcke wie das `--yaml`-Ausgabe-Beispiel; Extraktor mit
+Fence-Zustandsverfolgung, vier Fail-closed-Mutations-Belege). Kein CR, kein ADR,
+kein Release (Test-Infra); unabhängiges Review R1 (NACHBESSERN → operations.md
+aufgenommen, Extraktor gehärtet, alle Befunde eingearbeitet); `make ci` grün.
+Die E2E-Verankerung der Kommando-/Ausgabe-Beispiele gegen das echte Binary
+(**Dimension B**, Nutzer-Anregung) ist als
 [`slice-062`](../next/slice-062-handbuch-e2e-beispiele.md) ausgegliedert
-(Backlog, Nutzer-Entscheid „A jetzt / B später"). Kein CR, kein ADR; kein
-Release (Test-Infra). Zuletzt abgeschlossen: **welle-49-doctor-klartexte**
+(Backlog, Nutzer-Entscheid „A jetzt / B später")
+([Closure](../done/slice-061-doc-config-beispiel-verifikation.md#7-closure-notiz-nach-done)).
+Davor **welle-49-doctor-klartexte**
 ([`slice-060`](../done/slice-060-doctor-klartexte.md) —
 `--doctor`-Klartext-Vollständigkeit als **Defekt-Fix** gegen
 [`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)

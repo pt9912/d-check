@@ -11,7 +11,7 @@ Exit-Codes;
 [`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)
 Image-Verhalten). **Kein Change Request** (kein neuer Vertrag), **kein ADR**
 (E2E-Test-Erweiterung im bestehenden Schnitt). Schwester-Slice zu
-[`slice-061`](../in-progress/slice-061-doc-config-beispiel-verifikation.md)
+[`slice-061`](../done/slice-061-doc-config-beispiel-verifikation.md)
 (dort Dimension A: Config-Fragmente ↔ Parse; hier Dimension B: Kommando-/
 Ausgabe-Beispiele ↔ Verhalten).
 
@@ -75,7 +75,7 @@ Handbuch Beispiele aufgeführt sind").
 
 ## 5. Trigger
 
-Ausgegliedert aus [`slice-061`](../in-progress/slice-061-doc-config-beispiel-verifikation.md)
+Ausgegliedert aus [`slice-061`](../done/slice-061-doc-config-beispiel-verifikation.md)
 per Nutzer-Entscheid 2026-07-04 (Stufung „A jetzt / B als slice-062"); die
 E2E-Anregung selbst kam vom Auftraggeber in derselben Sitzung. Aufnahme in eine
 Welle, wenn slice-061 (Dimension A) abgeschlossen ist.
