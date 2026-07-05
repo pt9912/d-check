@@ -16,20 +16,19 @@ Baseline, Modus-Deklarationen pro Sub-Area, Zusatzklassen für
 Sensors-Bindung) leben in
 [`harness/conventions.md`](harness/conventions.md).
 
-Das Betriebsregelwerk der adoptierten Baseline in Agenten-Kurzform
-einmal pro Session lesen, bevor der Workflow (§6) startet. **Lese-Form ist
-ausschließlich das nach Modulen und Grundlagen-Abschnitten aufgeteilte
-Release-Bundle**
-[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.4.0/lab-regelwerk.zip)
-(`v1.4.0`): herunterladen, entpacken und **nur den benötigten Abschnitt**
-laden (die Bundle-`README.md` ist der Index), ohne das gesamte Regelwerk
-im Kontext zu halten. Konventioneller Ablageort des entpackten **Regelwerks**
-ist `.harness/baseline/<tag>/regelwerk/` — **committet vendored** (samt
-`.harness/baseline/<tag>/SHA256SUMS`-Integritätsmanifest, netzlos auf jedem
-Checkout präsent; materialisieren/verifizieren per
-`tools/harness/fetch-baseline-cache.sh`, Tag aus §Baseline; Pfadschema siehe
+Das Betriebsregelwerk der adoptierten Baseline ist **committet vendored**:
+das nach Modulen und Grundlagen-Abschnitten aufgeteilte Regelwerk liegt
+entpackt unter `.harness/baseline/<tag>/regelwerk/` (die dortige `README.md`
+ist der Index), samt `.harness/baseline/<tag>/SHA256SUMS`-Integritätsmanifest —
+**netzlos auf jedem Checkout präsent**, offline materialisier-/verifizierbar
+per `tools/harness/fetch-baseline-cache.sh` (`--verify`; Tag aus §Baseline;
+Quelle ist das derivative Release-Bundle
+[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.4.0/lab-regelwerk.zip);
+Pfadschema/Provenance siehe
 [`harness/conventions.md`](harness/conventions.md) §Adoptierte Konventions-Quellen,
 [`MR-019`](harness/conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)).
+Pro Session **nur den benötigten Abschnitt** lesen, bevor der Workflow (§6)
+startet — nicht das gesamte Regelwerk im Kontext halten.
 **Templates** werden dagegen nicht aus dem Cache
 autoriert: d-check ist Producer-/Self-Hoster und verkörpert **keine**
 co-located `*.template.md` — wiederkehrende Artefakte (ADR, Slice, …) entstehen
