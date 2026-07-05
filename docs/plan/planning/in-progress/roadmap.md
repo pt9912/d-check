@@ -318,7 +318,16 @@ Refactor noch in keinem Release.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** — keiner.
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:**
+[`slice-064`](../next/slice-064-gate-consistency-tombstone.md)
+(welle-53-gate-consistency-tombstone) — der bewusst als Folge-Slice
+zurückgestellte **Voll-Tombstone** von `tools/gate-consistency.sh`: die
+repo-spezifische Modullisten-Restprüfung (Netzlos-Gate-Integrität; das
+**letzte** `tools/*.sh`) wandert in einen Go-Test, `make gate-consistency` fährt
+danach nur noch den `targets`-Modul-Dogfood
+([ADR-0032](../../adr/0032-gate-consistency-tombstone.md), revidiert die
+„Skript nicht voll entfernt"-Konsequenz von
+[ADR-0031](../../adr/0031-targets-deklarations-konsistenz-modul.md)).
 Die zuletzt offene Dimension B (E2E-Verankerung der Handbuch-Kommando-/
 Ausgabe-Beispiele) ist mit
 [`slice-062`](../done/slice-062-handbuch-e2e-beispiele.md) (welle-51)
@@ -340,8 +349,10 @@ dort benannte Schwester-Projekt-Zeiger „`arch-check` (Go-Importe) → a-check"
 2026-07-03) **eingelöst**.
 Bewusst weder d-check- noch a-check-fähig und daher nicht hier: `coverage-gate`/`semgrep`
 (Go-Build/SAST), `image-test` (testet das Image selbst), `bench-fixture` (Fixture-Generator),
-`gate-consistency` (spannt Markdown ↔ Makefile ↔ YAML), `harness/*`
-(Cache-/Hook-Infrastruktur).
+`harness/*` (Cache-/Hook-Infrastruktur). (`gate-consistency` galt hier früher als „nicht
+d-check-fähig" — widerlegt: der Doku-↔-Makefile-Kern ist seit slice-063 das Modul `targets`,
+die Modullisten-Restprüfung wird mit welle-53/[`slice-064`](../next/slice-064-gate-consistency-tombstone.md)
+ein Go-Test.)
 
 ## Meilensteine
 
