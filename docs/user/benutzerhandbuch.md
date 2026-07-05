@@ -624,6 +624,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und zehn
 `doc-repair`, `doc-immutable`, `doc-commits`, `doc-planning`, `doc-tracked`,
 `doc-help`):
 
+<!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
 DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.37.1
 DCHECK_DIGEST ?=
