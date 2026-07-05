@@ -5,14 +5,15 @@
 Documentation reference checker for Markdown — deterministic,
 side-effect-free, shipped as a container image.
 
-**Status: released** — all sixteen rule modules (`links`, `anchors`, `ids`,
+**Status: released** — all seventeen rule modules (`links`, `anchors`, `ids`,
 `matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `tracked`, `external`) are in the
+`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `external`) are in the
 GHCR image. The authoritative source is the
 [requirements spec](spec/lastenheft.md); the most recent changes (most
-recently the opt-in module `tracked`, which checks resolvable link targets
-against the git index — a gitignored/untracked target would be broken on
-every fresh clone) are tracked in [CHANGELOG.md](CHANGELOG.md).
+recently the opt-in module `targets`, which checks declaration consistency
+between docs and build targets — a `make X` claimed in a doc table without a
+Makefile rule, or a rule without a doc entry) are tracked in
+[CHANGELOG.md](CHANGELOG.md).
 
 ## What is d-check?
 
@@ -87,6 +88,11 @@ planning-lifecycle and tracked-status consistency:
   target is missing on every fresh clone); index truth (staged = tracked, no
   `.gitignore` interpretation), reads `.git` read-only without a range, opt-in
   ([`DC-FA-TRK-001`](spec/lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in))
+- `targets` — declaration consistency between docs and build targets: a `make X`
+  claimed in a doc **table row** without a Makefile rule (`gate-phantom`), or a
+  Makefile rule without an entry in the authority doc (`gate-undocumented`);
+  **hermetic** (no git, no Makefile execution), fail-closed, opt-in
+  ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in))
 
 Every finding names file, line, target and reason; exit codes:
 `0` clean, `1` findings, `2` environment or configuration error.
@@ -161,7 +167,7 @@ Distributed as a container image via GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.37.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.38.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

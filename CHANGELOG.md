@@ -4,6 +4,32 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.38.0] — 2026-07-05
+
+### Added
+
+- slice-063 — neues opt-in Regelmodul `targets` (17.), das die
+  Deklarations-Konsistenz zwischen Doku und Build-Targets prüft
+  ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in),
+  [ADR-0031](docs/plan/adr/0031-targets-deklarations-konsistenz-modul.md)):
+  ein in einer Doku-**Tabellenzeile** als `` `make X` `` behauptetes Target
+  ohne Makefile-Regel ⇒ `gate-phantom` (Richtung 1); jede Makefile-Regel
+  (minus `exempt-targets`) ohne Eintrag in der Autoritäts-Doku ⇒
+  `gate-undocumented` (Richtung 2). **Hermetisch** (nur der Filesystem-Port,
+  kein git/Netz/Makefile-Ausführen), fail-closed bei fehlender Datei,
+  default-aus byte-identisch.
+- `--print-mk` trägt das elfte Target `doc-targets`, `--print-config`/
+  `--suggest-config` führen `targets`
+  ([`DC-FA-CLI-010`](spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)).
+
+### Changed
+
+- Das Meta-Gate `make gate-consistency` dogfoodet nun das Modul `targets`
+  für den Doku-↔-Makefile-Kern (via Image); `tools/gate-consistency.sh` ist
+  auf die repo-spezifische DC-QA-03-Modullisten-Prüfung reduziert — der
+  cross-repo-driftende Skript-Kern ist mechanisiert und verteilbar
+  ([ADR-0031](docs/plan/adr/0031-targets-deklarations-konsistenz-modul.md)).
+
 ## [0.37.1] — 2026-07-04
 
 ### Fixed

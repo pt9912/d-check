@@ -5,13 +5,14 @@
 Doc-Referenz-Checker für Markdown-Dokumentation — deterministisch,
 seiteneffektfrei, ausgeliefert als Container-Image.
 
-**Status: released** — alle sechzehn Regelmodule (`links`, `anchors`, `ids`,
+**Status: released** — alle siebzehn Regelmodule (`links`, `anchors`, `ids`,
 `matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `tracked`, `external`) sind im
+`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `external`) sind im
 GHCR-Image. Verbindlich ist das [Lastenheft](spec/lastenheft.md); die jeweils
-jüngsten Änderungen (zuletzt das opt-in-Modul `tracked`, das auflösbare
-Link-Ziele gegen den git-Index prüft — ein gitignoriertes/untracktes Ziel wäre
-auf jedem frischen Klon kaputt) führt die
+jüngsten Änderungen (zuletzt das opt-in-Modul `targets`, das die Deklarations-
+Konsistenz zwischen Doku und Build-Targets prüft — ein in einer Doku-Tabelle als
+`make X` behauptetes Target ohne Makefile-Regel, oder eine Regel ohne
+Doku-Eintrag) führt die
 [CHANGELOG.md](CHANGELOG.md).
 
 ## Was ist d-check?
@@ -86,6 +87,12 @@ Getrackt-Status-Konsistenz:
   Ziel fehlt auf jedem frischen Klon); Index-Wahrheit (gestagt = getrackt,
   keine `.gitignore`-Interpretation), liest `.git` read-only ohne Range, opt-in
   ([`DC-FA-TRK-001`](spec/lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in))
+- `targets` — Deklarations-Konsistenz zwischen Doku und Build-Targets: ein in
+  einer Doku-**Tabellenzeile** als `make X` behauptetes Target ohne
+  Makefile-Regel (`gate-phantom`), oder eine Makefile-Regel ohne Eintrag in der
+  Autoritäts-Doku (`gate-undocumented`); **hermetisch** (kein git, kein
+  Makefile-Ausführen), fail-closed, opt-in
+  ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
@@ -161,7 +168,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.37.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.38.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
