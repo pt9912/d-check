@@ -10,7 +10,22 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**welle-52-targets-modul** (aktiv):
+[`slice-063`](../in-progress/slice-063-targets-modul.md) — 17. opt-in Modul
+`targets` (Deklarations-Konsistenz Doku ↔ Build-Targets): mechanisiert den
+cross-repo-driftenden Kern von `tools/gate-consistency.sh` als **hermetisches**
+Modul (Filesystem-Port, kein git/Netz/Makefile-Ausführen) — ein dokumentiertes
+` `make X` ` ohne Makefile-Regel ⇒ `gate-phantom`, eine Makefile-Regel ohne
+Autoritäts-Doku-Eintrag ⇒ `gate-undocumented`.
+[`DC-FA-TGT-001`](../../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)/[ADR-0031](../../adr/0031-targets-deklarations-konsistenz-modul.md)
+(Identitäts-Ausweitung zum Deklarations-Konsistenz-Checker; löst die
+[ADR-0028](../../adr/0028-planning-lifecycle-modul.md)-„nicht d-check-fähig"-Einstufung auf). **Stand:** Doc-first-Fundament
+(Lastenheft + Spezifikation + ADR) + Fundament-Review R1 (NACHBESSERN,
+eingearbeitet) done; Implementierung läuft. **Closure-Trigger:** slice-063 in
+`done/` (Modul + §4-Grund-Codes + Paritäts-Beleg vs. Skript-Kern +
+Config-Surface + zwei Reviews), Release **v0.38.0**.
+
+Zuletzt abgeschlossen:
 **welle-51-handbuch-e2e-verankerung**
 ([`slice-062`](../done/slice-062-handbuch-e2e-beispiele.md) — E2E-Harness
 (**Dimension B** zu slice-061): koppelt die dokumentierten Kommando-/
