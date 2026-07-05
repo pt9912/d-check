@@ -1229,7 +1229,11 @@ scannt, sondern **deklarierte** Dateien liest:
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)), nur lesend, netzlos,
    ohne Schreiben
    ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
-   Ohne aktives `targets` ist der Befundsatz byte-identisch.
+   Ohne aktives `targets` ist der Befundsatz byte-identisch. Befunde entstehen
+   **je Vorkommen** (mehrere Tabellenzeilen bzw. Regelzeilen mit demselben Namen
+   ⇒ je ein Befund an seiner Datei:Zeile) — dieselbe **Detektion** wie das
+   abgelöste `tools/gate-consistency.sh`, aber ohne dessen `sort -u`-Namens-
+   Deduplizierung (fundstellen-präzise statt namens-eindeutig).
 
 ## 2. Datenstrukturen und Schemas
 
@@ -1431,7 +1435,7 @@ Exit 2 ohne Prüfung
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien, aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
 | `targets.authority` | string | leer | Wurzel-relative Doku-Datei; **jede** nicht-exempte Makefile-Regel muss dort als `make X`-Tabellenzeile stehen (Richtung 2 `gate-undocumented`); leer ⇒ Richtung 2 entfällt; fehlende Datei ⇒ Exit 2 |
-| `targets.exempt-targets` | string[] | leer | Regelnamen (exakt), die von der Doku-Pflicht (Richtung 2) ausgenommen sind (Utility-Targets); ohne Eintrag prüft Richtung 2 jede Regel |
+| `targets.exempt-targets` | string[] | leer | Regelnamen (**exakt**-Vergleich, **kein** Glob — anders als `tracked.exempt-targets`, das Pfad-Globs matcht), die von der Doku-Pflicht (Richtung 2) ausgenommen sind (Utility-Targets); ohne Eintrag prüft Richtung 2 jede Regel |
 
 **Glob-Auswertung.** Alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`,
 `matrix.classes[].paths`/`.order`, die `*.exempt-paths`) werden **segmentweise

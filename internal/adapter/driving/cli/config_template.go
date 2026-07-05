@@ -135,7 +135,7 @@ modules: [links, anchors]
 #   makefiles: [Makefile]                        # Regelnamen-Quelle(n)
 #   doc-tables: [AGENTS.md, harness/README.md]   # Dateien mit make-X-Tabellen (Richtung 1 ⇒ gate-phantom)
 #   authority: AGENTS.md                         # Vollständigkeits-Quelle (Richtung 2 ⇒ gate-undocumented)
-#   exempt-targets: []                           # Regelnamen ohne Doku-Pflicht (Utility-Targets)
+#   exempt-targets: []                           # Regelnamen EXAKT (kein Glob, anders als tracked) — Utility-Targets ohne Doku-Pflicht
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---
 # external:

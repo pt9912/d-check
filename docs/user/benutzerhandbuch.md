@@ -753,7 +753,7 @@ targets:                       # Deklarations-Konsistenz Doku ↔ Build-Targets 
   makefiles: [Makefile]        # Regelnamen-Quelle(n)
   doc-tables: [AGENTS.md]      # make-X-Tabellen (Richtung 1 ⇒ gate-phantom)
   authority: AGENTS.md         # Vollständigkeits-Quelle (Richtung 2 ⇒ gate-undocumented)
-  exempt-targets: []           # Regelnamen ohne Doku-Pflicht (Utility-Targets)
+  exempt-targets: []           # Regelnamen EXAKT (kein Glob, anders als tracked) — Utility ohne Doku-Pflicht
 ```
 
 Das Modul `codepaths` kennt **drei** Ventil-Achsen, um einen Pfad von der
