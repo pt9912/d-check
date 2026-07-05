@@ -12,7 +12,7 @@
 - **Lauf:** R1 · **Datum:** 2026-07-05 · **Reviewer:** unabhängig (nicht
   Mitautor).
 - **Pflichtlektüre:** `.harness/skills/reviewer.md`,
-  `docs/plan/planning/next/slice-062-handbuch-e2e-beispiele.md`,
+  `docs/plan/planning/done/slice-062-handbuch-e2e-beispiele.md`,
   `docs/plan/planning/done/slice-061-doc-config-beispiel-verifikation.md`,
   `AGENTS.md` §3, `harness/conventions.md`.
 - **Bezug:** `DC-FA-CLI-003` (Exit-Codes), `DC-FA-DIST-001` (Image);

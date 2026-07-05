@@ -144,7 +144,7 @@ neuer Nicht-Config-Block bricht laut). Der **Audit fand nur einen** Nicht-Config
 Block (das `--yaml`-Ausgabe-Beispiel `findings:`) und **keinen neuen echten
 Config-Bug** (der `hostpaths`-Fall war mit `c8c33a0` bereits behoben). Dimension
 B (E2E-Verankerung der Kommando-/Ausgabe-Beispiele) ist als
-[`slice-062`](../next/slice-062-handbuch-e2e-beispiele.md) ausgegliedert.
+[`slice-062`](slice-062-handbuch-e2e-beispiele.md) ausgegliedert.
 Commit-Kette: doc-first `df07a03` (+ Verengung `46a0127`) → feat `0e7d3b4` → R1
 `<review>` → closure-move → closure-body.
 
@@ -178,4 +178,4 @@ beide koppeln Doku an Code über eine Mengen-/Format-Verriegelung mit
 Fail-closed-Guards — hier Doku-Beispiel ↔ Validator statt Grund-Code-Liste ↔
 Spec-§4. Steering-Loop: Feedback (Doku-Beispiel bricht Validator) als
 Sensor-Verankerung verkörpert, nicht nur einmalig behoben. Dimension B (E2E)
-bleibt der offene Folge-Schritt ([`slice-062`](../next/slice-062-handbuch-e2e-beispiele.md)).
+bleibt der offene Folge-Schritt ([`slice-062`](slice-062-handbuch-e2e-beispiele.md)).

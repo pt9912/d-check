@@ -11,7 +11,24 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 ## Aktuelle Welle
 
 **Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
-**welle-50-handbuch-beispiel-verifikation**
+**welle-51-handbuch-e2e-verankerung**
+([`slice-062`](../done/slice-062-handbuch-e2e-beispiele.md) — E2E-Harness
+(**Dimension B** zu slice-061): koppelt die dokumentierten Kommando-/
+Ausgabe-Beispiele des Benutzerhandbuchs (sauberes Repo / kaputter Link /
+`--doctor` / `--json` / `--yaml` / `--trace`) gegen das **echte Binary**
+(`cli.Run`) — je Beispiel eine Prämissen-Fixture, die **dokumentierten**
+Flags, Assertion auf Exit-Code + Ausgabe-**Form** (Anker in BEIDEM:
+Doku-Block UND echter Ausgabe) plus strukturelle Schlüssel-Kopplung
+(json/yaml, dokumentiert ⊆ real). **Fail-closed:** jeder `text`/`json`/
+Brücken-`yaml`-Ausgabeblock ist verankert oder trägt den
+`not-replayable`-Marker (kein stiller Ausschluss — Opt-out wie slice-061s
+`not-config`). Auf **Form** geprüft, nicht auf Datei-Zahlen/Pfade (keine
+Wartungsfalle). Kein CR, kein ADR, kein Release (Test-Infra); zwei
+Mutations-Belege (adversariale Probe + Silent-Exclusion-Guard) +
+Extraktor-/Verifier-Unit-Tests; unabhängiges Review R1 (ACCEPT, F-1
+yaml-Brücke / F-2 Richtungs-Semantik eingearbeitet); `make ci` grün
+([Closure](../done/slice-062-handbuch-e2e-beispiele.md#7-closure-notiz-nach-done)).
+Davor **welle-50-handbuch-beispiel-verifikation**
 ([`slice-061`](../done/slice-061-doc-config-beispiel-verifikation.md) —
 Test-Harness, der die gefenceten `.d-check.yml`-**Config-Beispiele** der
 Live-Doku (Handbuch/operations.md/README) gegen `configyaml.Decode` validiert
@@ -23,9 +40,9 @@ Fence-Zustandsverfolgung, vier Fail-closed-Mutations-Belege). Kein CR, kein ADR,
 kein Release (Test-Infra); unabhängiges Review R1 (NACHBESSERN → operations.md
 aufgenommen, Extraktor gehärtet, alle Befunde eingearbeitet); `make ci` grün.
 Die E2E-Verankerung der Kommando-/Ausgabe-Beispiele gegen das echte Binary
-(**Dimension B**, Nutzer-Anregung) ist als
-[`slice-062`](../next/slice-062-handbuch-e2e-beispiele.md) ausgegliedert
-(Backlog, Nutzer-Entscheid „A jetzt / B später")
+(**Dimension B**, Nutzer-Anregung) ist mit
+[`slice-062`](../done/slice-062-handbuch-e2e-beispiele.md) (welle-51, s. o.)
+abgeschlossen
 ([Closure](../done/slice-061-doc-config-beispiel-verifikation.md#7-closure-notiz-nach-done)).
 Davor **welle-49-doctor-klartexte**
 ([`slice-060`](../done/slice-060-doctor-klartexte.md) —
@@ -287,13 +304,11 @@ Refactor noch in keinem Release.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:**
-
-- [`slice-062`](../next/slice-062-handbuch-e2e-beispiele.md) — Handbuch-**E2E**-Beispiel-Verankerung:
-  die Kommando-/Ausgabe-Beispiele des Benutzerhandbuchs (Exit-Code, „N Befund(e)"-Zeile,
-  `--doctor`-Diagnose) gegen das echte Binary über Fixtures prüfen (Dimension B aus
-  welle-50, Nutzer-Anregung 2026-07-04; Dimension A = Config-Beispiele lief mit
-  [`slice-061`](../done/slice-061-doc-config-beispiel-verifikation.md)).
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** — keiner.
+Die zuletzt offene Dimension B (E2E-Verankerung der Handbuch-Kommando-/
+Ausgabe-Beispiele) ist mit
+[`slice-062`](../done/slice-062-handbuch-e2e-beispiele.md) (welle-51)
+abgeschlossen (s. [§Aktuelle Welle](#aktuelle-welle)).
 
 **Kandidat (noch kein Slice, auf Freigabe wartend):** ein `--print-version-md`-Scaffold, das ein
 `version.md`-Skelett mit Platzhaltern auf stdout ausgibt (Familie `--print-config`/`--print-mk`/
