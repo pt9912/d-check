@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.21 · **Software-Version:** [v0.37.1](../../version.md#v0.37.1) ·
+**Handbuch-Version:** 1.22 · **Software-Version:** [v0.37.1](../../version.md#v0.37.1) ·
 **Stand:** 2026-07-04 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -619,10 +619,10 @@ docker run --rm ghcr.io/pt9912/d-check:v0.37.1 --print-mk > d-check.mk
 
 **Ergebnis:** ein include-bares `d-check.mk` auf stdout — eine überschreibbare
 `DCHECK_IMAGE`-Variable (auf die ausgelieferte Release-Version gepinnt), die
-Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und zehn
+Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 `##`-annotierte Targets (`doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`,
 `doc-repair`, `doc-immutable`, `doc-commits`, `doc-planning`, `doc-tracked`,
-`doc-help`):
+`doc-targets`, `doc-help`):
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
@@ -749,6 +749,11 @@ commits:                       # Traceability-Kennung in Commit-Messages (opt-in
   exempt-pattern: '^(Merge |Revert )'   # kennungsfreier Betreff (Merge/Revert)
 tracked:                       # Getrackt-Status von Link-Zielen (opt-in; git-Index, ohne Range)
   exempt-targets: ["build/**"] # absichtlich untrackte Ziele (Glob über den aufgelösten Pfad)
+targets:                       # Deklarations-Konsistenz Doku ↔ Build-Targets (opt-in; hermetisch, kein git)
+  makefiles: [Makefile]        # Regelnamen-Quelle(n)
+  doc-tables: [AGENTS.md]      # make-X-Tabellen (Richtung 1 ⇒ gate-phantom)
+  authority: AGENTS.md         # Vollständigkeits-Quelle (Richtung 2 ⇒ gate-undocumented)
+  exempt-targets: []           # Regelnamen ohne Doku-Pflicht (Utility-Targets)
 ```
 
 Das Modul `codepaths` kennt **drei** Ventil-Achsen, um einen Pfad von der
@@ -919,6 +924,7 @@ ids:
 | `commits`   | opt-in (git)  | Traceability-Kennung (`id-patterns`) in jeder Commit-Message einer Range (`--range`) bzw. der Pending-Message (`--commit-msg`); liest `.git` read-only (kein git-Binary, kein Netz) | `commit-untraceable`                                        |
 | `planning`  | opt-in        | Roadmap-↔-in-progress-Lifecycle-Konsistenz: der Ruhe-Marker (`marker`) steht im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt; **hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift | `planning-drift`                                            |
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
+| `targets`   | opt-in        | Deklarations-Konsistenz Doku ↔ Build-Targets: jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`makefiles`), und jede Regel steht in der Autoritäts-Doku (`authority`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed bei fehlender Datei | `gate-phantom`, `gate-undocumented`                         |
 | `external`  | opt-in (Netz) | Erreichbarkeit externer Links                                                            | `external-status`, `external-timeout`, `external-redirects` |
 
 ## 7. Fehlerbehebung
@@ -1031,3 +1037,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.19             | v0.37.0          | 2026-07-03 | Neues opt-in-Modul `tracked` (16., §5/§6): Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (`target-untracked` — untracked/gitignoriertes Ziel fehlt auf jedem frischen Klon); Index-Wahrheit (gestagt = getrackt), kein Doppelbefund, Ventil `exempt-targets` (aufgelöster Zielpfad, segmentweise validiert), fail-closed ohne `.git`, **ohne** Commit-Range. `--print-mk`-Target `doc-tracked` (zehn Targets, §4.13) verteilt die Prüfung                |
 | 1.20             | v0.37.1          | 2026-07-04 | Fix: `--doctor` zeigt für die sieben seit v0.25 hinzugekommenen Grund-Codes (`diagram-id-undefined`, `version-stale`, `link-stale`, `core-drift`, `core-drift-vcs`, `commit-untraceable`, `planning-drift`) den Klartext statt des rohen Codes — auch als `reasonText` in `--doctor --json`/`--yaml`; die Klartext-Liste ist testseitig beidseitig gegen die Grund-Code-Tabelle der Spezifikation verriegelt (fail-closed)                |
 | 1.21             | v0.37.1          | 2026-07-04 | Anleitung „Das Versions-Register `version.md` aufbauen" (§5) — Aufbau (`## Aktuell`/`## Verlauf`), die `<a id="vX.Y.Z">`-Anker-Mechanik samt Anker-Wanderung beim Release und ein kopierbares Muster zum Nachbau in eigenen Repos                |
+| 1.22             | v0.38.0          | 2026-07-05 | Neues opt-in-Modul `targets` (17., §5/§6): Deklarations-Konsistenz Doku ↔ Build-Targets — jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`gate-phantom`), jede Regel steht in der Autoritäts-Doku (`gate-undocumented`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed. Löst den Doku-↔-Makefile-Kern des `gate-consistency.sh`-Meta-Gates ab; `--print-mk`-Target `doc-targets` (elf Targets, §4.13) verteilt die Prüfung                |
