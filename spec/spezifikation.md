@@ -332,7 +332,7 @@ eingebetteten Version):
    `@sha256:`-Digest) leitet `DCHECK_REF` auf `…/d-check@$(DCHECK_DIGEST)` um und
    **sticht** so den Tag von `DCHECK_IMAGE`; sonst `DCHECK_REF := $(DCHECK_IMAGE)`.
 4. `TRACE_FLAGS ?=` — überschreibbare Flag-Variable für die RTM-Targets.
-5. Zehn `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
+5. Elf `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
    Konsumenten aufgreift) und **TAB**-eingerücktem
    `docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) …`:
    - `doc-check` (Befund-Gate, ohne Zusatz-Flag),
@@ -372,6 +372,12 @@ eingebetteten Version):
      das `.git` liegt im read-only-Mount). Die `--disable`-Liste analog aus
      `ValidModules` ohne `tracked` abgeleitet; verteilt den
      Getrackt-Status-Check an Konsumenten ohne Skript-Kopie,
+   - `doc-targets` (`--enable targets` + auf `targets` fokussierte `--disable`-Liste,
+     [`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in));
+     **kein** `--range`/`--staged` (hermetisch — nur der Arbeitsbaum: Makefile +
+     Doku-Tabellen). Die `--disable`-Liste analog aus `ValidModules` ohne `targets`
+     abgeleitet; verteilt die Deklarations-Konsistenz-Prüfung an Konsumenten ohne
+     Skript-Kopie,
    - `doc-help` (listet die `doc-*`-Targets via `grep … $(MAKEFILE_LIST) | sed`
      über die `##`-Annotationen; **namespaced** statt `help`, um die
      Namens-Kollision mit dem Konsumenten-Makefile zu vermeiden).
@@ -1175,6 +1181,56 @@ aber **unabhängig** von der Aktivierung des Moduls `links` (ein fokussierter
    ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
    in der `vcs`-Lesart: erweiterte, aber lokale/lesende Eingabe).
 
+### DC-FA-TGT-001.a — Deklarations-Konsistenz Doku und Build-Targets (`targets`)
+
+Das Modul `targets`
+([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in))
+ist opt-in und prüft **hermetisch** (Filesystem-Port `ReadFile`, **kein** git,
+**kein Ausführen** des Makefile, **kein** Netz), ob die in der Doku als
+` `make X` ` behaupteten Build-Targets und die real definierten Makefile-Regeln
+übereinstimmen. Wie `planning` ein **Post-Pass**, der nicht den Markdown-Baum
+scannt, sondern **deklarierte** Dateien liest:
+
+1. **Inert/Config/fail-closed.** Leeres `targets.makefiles` ⇒ Modul inert
+   (keine Regelmenge, kein Befund). Sonst wird jede konfigurierte Datei
+   (Wurzel-relativ, innerhalb der Repo-Wurzel) gelesen; eine fehlende/unlesbare
+   konfigurierte Datei ⇒ **Exit 2** mit stderr-Hinweis (kein stilles Grün).
+   **Richtung 1** (Schritt 4) läuft nur bei nicht-leerem `targets.doc-tables`,
+   **Richtung 2** (Schritt 5) nur bei nicht-leerem `targets.authority` — die
+   beiden Richtungen sind voneinander unabhängig.
+2. **Makefile-Regelmenge.** Aus jeder `targets.makefiles`-Datei werden die
+   Regelnamen extrahiert: eine Zeile, die am **Zeilenanfang** mit einem oder
+   mehreren durch Leerzeichen getrennten Namen (`[A-Za-z][A-Za-z0-9_-]*`)
+   gefolgt von `:` beginnt, wobei nach dem `:` **kein** `=` folgt (Zuweisungen
+   `X :=`/`X ?=` ausgenommen) und kein Name mit `.` beginnt (`.PHONY`/
+   `.DEFAULT_GOAL` ausgenommen). Pattern-Rules (`%`), variabel benannte und über
+   `include` eingezogene Targets sind **kein** Kandidat — rein statische
+   Zeilen-Heuristik, in Parität zum abgelösten `tools/gate-consistency.sh`.
+3. **Dokumentierte-Target-Menge (Tabellen-Scoping).** Aus jeder Doku-Datei
+   werden ` `make X` `-Tokens (`X` = `[a-z][a-z0-9_-]*`, in Parität zum Skript)
+   **ausschließlich aus Tabellenzeilen** extrahiert — eine Tabellenzeile ist eine
+   Zeile, deren **erstes Zeichen** ein Pipe `|` ist (**Spalte 0**, in Parität zu
+   `grep -E '^\|'`; **Einrückung zählt nicht**). Prosa-Erwähnungen (z. B.
+   „Richtig: ` `make gates` `") zählen **nicht**, sonst entstünden aus
+   entfernten, nur in Prosa erwähnten Targets spuriöse `gate-phantom`.
+4. **Richtung 1 (Phantom).** Für jede `targets.doc-tables`-Datei: jedes
+   dokumentierte ` `make X` `, dessen `X` **nicht** in der Makefile-Regelmenge
+   (Schritt 2) ist ⇒ Grund-Code `gate-phantom`. Befund: `file`/`line` =
+   Doku-Datei/Tabellenzeile, `target` = `X`, `message` = dokumentiertes Target
+   ohne Makefile-Regel.
+5. **Richtung 2 (undokumentiert).** Jede Makefile-Regel `X` (Schritt 2), die
+   **nicht** in `targets.exempt-targets` steht und **nicht** in der aus
+   `targets.authority` (Tabellen-Scoping) gewonnenen Menge enthalten ist ⇒
+   Grund-Code `gate-undocumented`. Befund: `file`/`line` = Makefile/Regelzeile,
+   `target` = `X`, `message` = Makefile-Regel ohne Doku-Deklaration. Leeres
+   `targets.authority` ⇒ Richtung 2 entfällt.
+6. **Diagnose-only / Determinismus / Read-only.** Kein `--repair`-Hunk;
+   identischer Arbeitsbaum ⇒ identischer Befundsatz
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)), nur lesend, netzlos,
+   ohne Schreiben
+   ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+   Ohne aktives `targets` ist der Befundsatz byte-identisch.
+
 ## 2. Datenstrukturen und Schemas
 
 ### Befund
@@ -1372,6 +1428,10 @@ Exit 2 ohne Prüfung
 | `planning.marker` | string | `Keine aktive Welle` | literaler Ruhe-Marker-Teilstring; nur im `planning.heading`-Block gesucht; vorhanden ⇒ ruhende Welle |
 | `planning.slice-glob` | string | `slice-*.md` | Glob (`path.Match` auf den Basisnamen) der Slice-Dateien im Roadmap-Verzeichnis; ≥1 Treffer ⇒ aktive-Welle-erwartet; ein explizit gesetztes Muster muss ein gültiges `path.Match`-Glob sein (sonst Exit 2 — verhindert ein fail-open Silent-Grün) |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
+| `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien, aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
+| `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
+| `targets.authority` | string | leer | Wurzel-relative Doku-Datei; **jede** nicht-exempte Makefile-Regel muss dort als `make X`-Tabellenzeile stehen (Richtung 2 `gate-undocumented`); leer ⇒ Richtung 2 entfällt; fehlende Datei ⇒ Exit 2 |
+| `targets.exempt-targets` | string[] | leer | Regelnamen (exakt), die von der Doku-Pflicht (Richtung 2) ausgenommen sind (Utility-Targets); ohne Eintrag prüft Richtung 2 jede Regel |
 
 **Glob-Auswertung.** Alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`,
 `matrix.classes[].paths`/`.order`, die `*.exempt-paths`) werden **segmentweise
@@ -1482,3 +1542,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-07-01 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) + §2-Schema (`planning.roadmap`/`heading`/`marker`/`slice-glob`) + Grund-Code `planning-drift` (§4) ergänzt: opt-in Modul `planning` prüft **hermetisch** (nur Arbeitsbaum, kein git/Netz) die Roadmap-↔-in-progress-Invariante — Ruhe-Marker im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` im Verzeichnis (`hasActive == hasSlices`), sonst `planning-drift`; Heading-Guard fail-closed, Post-Pass wie `codepaths`-Existenz, diagnose-only. Default-aus byte-identisch. Portierung des abgelösten `tools/planning-consistency.sh`. Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (8→9 Targets): `--print-mk` trägt `doc-planning` (`--enable planning`, hermetisch ohne `--range`) | slice-057 |
 | 2026-07-03 | §[`DC-FA-TRK-001.a`](spezifikation.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked) + §2-Schema (`tracked.exempt-targets`) + Grund-Code `target-untracked` (§4) ergänzt: opt-in Modul `tracked` prüft die Datei-Ebene der von `links` aufgelösten, **existierenden** repo-internen Ziele gegen den **git-Index** — dritte VCS-Port-Nutzung (`vcs` Range-Diff, `commits` Messages, `tracked` Index), **ohne** Range/`--staged`; Index statt `.gitignore`-Interpretation (gestagte Dateien gelten als getrackt), kein Doppelbefund (`target-missing` bleibt `links`), Ventil referenz-weit analog `codepaths.ignore-refs`; fail-closed ohne lesbares `.git` (Exit 2), diagnose-only, default-aus byte-identisch. Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (9→10 Targets): `--print-mk` trägt `doc-tracked` (`--enable tracked` + fokussierte `--disable`-Liste, ohne Range) | slice-059 |
 | 2026-07-03 | Review R1/R2 zu §[`DC-FA-TRK-001.a`](spezifikation.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked), präzisiert: Prüfung **je gescannter Quell-Datei** statt „Post-Pass" (Auflösungs-Mechanik unabhängig von der Aktivierung des Moduls `links` — ein fokussierter Lauf prüft vollständig); Verzeichnis-Ziele und Symlink-Referenzen (Ziel ist/durchläuft einen Symlink) explizit kein Kandidat ([`DC-FA-LINK-002`](lastenheft.md#dc-fa-link-002--symlink-ablehnung)-Domäne — false-positive hinter getrackten Verzeichnis-Symlinks vermieden); `target` = aufgelöster Pfad bekräftigt (Ventil-Parität); `exempt-targets` segmentweise validiert (Exit 2) | slice-059 |
+| 2026-07-05 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) + §2-Schema (`targets.makefiles`/`doc-tables`/`authority`/`exempt-targets`) ergänzt: opt-in Modul `targets` prüft **hermetisch** (Filesystem-Port `ReadFile`, **kein** git/Netz/Makefile-Ausführen) die Doku-↔-Makefile-Deklarations-Konsistenz — ein nur aus **Tabellenzeilen** (Pipe-Präfix, keine Prosa) dokumentiertes `make X` ohne Makefile-Regel ⇒ `gate-phantom`, eine Makefile-Regel (nicht `targets.exempt-targets`) ohne Eintrag in `targets.authority` ⇒ `gate-undocumented`; statische Zeilen-Heuristik für Regelnamen (keine Pattern-Rules/variablen Targets, in Parität zu `tools/gate-consistency.sh`), fail-closed bei fehlender konfigurierter Datei, diagnose-only, default-aus byte-identisch; Analogie zu `planning` (Doku-Behauptung ↔ Repo-Struktur, hermetisch). Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (10→11 Targets): `--print-mk` trägt `doc-targets` (`--enable targets`, hermetisch ohne Range). Die Grund-Codes `gate-phantom`/`gate-undocumented` (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep) | slice-063 |

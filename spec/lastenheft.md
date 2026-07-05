@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.37.1
+**Version:** 0.38.0
 
 **Status:** Draft
 
@@ -48,8 +48,8 @@ statt per Code-Kopie.
 > (Immutabilitäts-/Core-Pin), `VCS` (git-historienbasierte
 > Core-Immutabilität), `COMMITS` (Traceability-Kennung in
 > Commit-Messages), `PLAN` (Planning-Lifecycle-Konsistenz), `TRK`
-> (Getrackt-Status von Referenz-Zielen), `CONF`
-> (Konfiguration), `DIST` (Distribution).
+> (Getrackt-Status von Referenz-Zielen), `TGT` (Deklarations-Konsistenz
+> Doku ↔ Build-Targets), `CONF` (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -79,7 +79,7 @@ verweist für das Konfigurations-Format auf
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
 `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `tracked`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -376,7 +376,7 @@ Release-Version** des laufenden Binaries (das Binary kennt seine Version,
 nicht seinen eigenen Digest; für strikte Reproduzierbarkeit überschreibt der
 Konsument `DCHECK_IMAGE` mit einem `@sha256:`-Digest aus den Release-Notes,
 konsistent mit der Konsum-Pin-Politik aus
-[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie zehn
+[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie elf
 `##`-annotierte Targets: `doc-check` (Doku-Gate), `doc-trace` (advisory RTM,
 [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)), `doc-complete`
 (Vollständigkeits-Gate,
@@ -399,7 +399,11 @@ ohne `RANGE`/`STAGED`), `doc-tracked` (Getrackt-Status auflösbarer Referenz-Zie
 via Modul `tracked`,
 [`DC-FA-TRK-001`](#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)
 — `--enable tracked` mit auf `tracked` fokussierter `--disable`-Liste, ohne
-`RANGE`/`STAGED`; liest das `.git` im read-only-Mount) und `doc-help` (listet die
+`RANGE`/`STAGED`; liest das `.git` im read-only-Mount), `doc-targets`
+(Deklarations-Konsistenz Doku ↔ Build-Targets via Modul `targets`,
+[`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
+— `--enable targets` mit auf `targets` fokussierter `--disable`-Liste,
+**hermetisch** ohne `RANGE`/`STAGED`) und `doc-help` (listet die
 `doc-*`-Targets), jeweils `docker run --network none -v "$PWD:/repo:ro"`. Dazu die
 Variablen `TRACE_FLAGS` (Flags der RTM-Targets) und `DCHECK_DIGEST` (ein
 `@sha256:`-Digest, der den Tag von `DCHECK_IMAGE` sticht — strikte
@@ -412,11 +416,11 @@ eingebetteten Version. Reiht sich in die read-only-Generatoren
 
 **Akzeptanzkriterien:**
 
-- **Happy Path:** Given ein installiertes `d-check`, when `d-check --print-mk` läuft, then liegt auf stdout ein Makefile-Fragment mit `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v…`, den Variablen `DCHECK_DIGEST` und `TRACE_FLAGS` und den `##`-annotierten Targets `doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`, `doc-repair`, `doc-immutable` (mit `--enable vcs` und einer auf `vcs` fokussierten `--disable`-Liste), `doc-commits` (mit `--enable commits` und einer auf `commits` fokussierten `--disable`-Liste), `doc-planning` (mit `--enable planning` und einer auf `planning` fokussierten `--disable`-Liste, ohne Range), `doc-tracked` (mit `--enable tracked` und einer auf `tracked` fokussierten `--disable`-Liste, ohne Range) und `doc-help` (jeweils `docker run … --network none … :/repo:ro`), Exit 0; kein Repo-Zugriff nötig.
-- **Boundary:** Given das Fragment wird per `d-check --print-mk > d-check.mk` umgeleitet und in ein Makefile `include`-t, when `make doc-check` (bzw. `doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`/`doc-planning`/`doc-tracked`) läuft, then ruft das Target das gepinnte Image (bzw. den per `DCHECK_IMAGE`/`DCHECK_DIGEST` gesetzten Override) im passenden Modus (`doc-trace` → `--trace`, `doc-complete` → `--trace --require-complete`, `doc-doctor` → `--doctor`, `doc-repair` → `--repair` mit unterdrücktem Recipe-Echo, `doc-immutable` → `--enable vcs` + Fokus-`--disable` mit `--range $(RANGE)` bzw. `--staged`, `doc-commits` → `--enable commits` + Fokus-`--disable` mit `--range $(RANGE)`, `doc-planning` → `--enable planning` + Fokus-`--disable`, **hermetisch ohne Range**, `doc-tracked` → `--enable tracked` + Fokus-`--disable`, ohne Range); d-check selbst schreibt dabei nichts.
+- **Happy Path:** Given ein installiertes `d-check`, when `d-check --print-mk` läuft, then liegt auf stdout ein Makefile-Fragment mit `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v…`, den Variablen `DCHECK_DIGEST` und `TRACE_FLAGS` und den `##`-annotierten Targets `doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`, `doc-repair`, `doc-immutable` (mit `--enable vcs` und einer auf `vcs` fokussierten `--disable`-Liste), `doc-commits` (mit `--enable commits` und einer auf `commits` fokussierten `--disable`-Liste), `doc-planning` (mit `--enable planning` und einer auf `planning` fokussierten `--disable`-Liste, ohne Range), `doc-tracked` (mit `--enable tracked` und einer auf `tracked` fokussierten `--disable`-Liste, ohne Range), `doc-targets` (mit `--enable targets` und einer auf `targets` fokussierten `--disable`-Liste, ohne Range) und `doc-help` (jeweils `docker run … --network none … :/repo:ro`), Exit 0; kein Repo-Zugriff nötig.
+- **Boundary:** Given das Fragment wird per `d-check --print-mk > d-check.mk` umgeleitet und in ein Makefile `include`-t, when `make doc-check` (bzw. `doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`/`doc-planning`/`doc-tracked`/`doc-targets`) läuft, then ruft das Target das gepinnte Image (bzw. den per `DCHECK_IMAGE`/`DCHECK_DIGEST` gesetzten Override) im passenden Modus (`doc-trace` → `--trace`, `doc-complete` → `--trace --require-complete`, `doc-doctor` → `--doctor`, `doc-repair` → `--repair` mit unterdrücktem Recipe-Echo, `doc-immutable` → `--enable vcs` + Fokus-`--disable` mit `--range $(RANGE)` bzw. `--staged`, `doc-commits` → `--enable commits` + Fokus-`--disable` mit `--range $(RANGE)`, `doc-planning` → `--enable planning` + Fokus-`--disable`, **hermetisch ohne Range**, `doc-tracked` → `--enable tracked` + Fokus-`--disable`, ohne Range, `doc-targets` → `--enable targets` + Fokus-`--disable`, **hermetisch ohne Range**); d-check selbst schreibt dabei nichts.
 - **Negative:** Given `d-check --print-mk` mit einem unbekannten Flag, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)).
 
-**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits der gelisteten zehn (`doc-check`/`doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`/`doc-planning`/`doc-tracked`/`doc-help` — Konsumenten komponieren weitere `gates` selbst); ein `help`-Target (Namens-Kollision mit dem Konsumenten — daher namespaced `doc-help`); Nicht-`@sha256:`-Digest-Formen in `DCHECK_DIGEST`; die Exit-Code-Semantik der RTM-Targets selbst (in [`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) bzw. [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix) festgelegt); Nicht-Make-Build-Systeme.
+**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits der gelisteten elf (`doc-check`/`doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`/`doc-planning`/`doc-tracked`/`doc-targets`/`doc-help` — Konsumenten komponieren weitere `gates` selbst); ein `help`-Target (Namens-Kollision mit dem Konsumenten — daher namespaced `doc-help`); Nicht-`@sha256:`-Digest-Formen in `DCHECK_DIGEST`; die Exit-Code-Semantik der RTM-Targets selbst (in [`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) bzw. [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix) festgelegt); Nicht-Make-Build-Systeme.
 
 ---
 
@@ -1406,6 +1410,76 @@ Schreiben/`git add` durch das Werkzeug (read-only).
 
 ---
 
+### DC-FA-TGT-001 — Deklarations-Konsistenz zwischen Doku und Build-Targets (Modul `targets`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `targets` prüft d-check, dass
+die in der Doku als ` `make X` ` **behaupteten** Build-Targets und die real im
+Makefile definierten Targets übereinstimmen — die maschinelle Form des
+Vertrags „kein halluziniertes Gate / kein undokumentiertes Gate" (Meta-Gate
+gegen Harness-Lügen). Zwei Richtungen mit je eigenem Grund-Code:
+
+- **Phantom-Gate (`gate-phantom`):** ein ` `make X` `-Token in einer
+  konfigurierten Doku-Datei (`targets.doc-tables`), zu dem **keine** Regel in
+  einer konfigurierten Makefile-Quelle (`targets.makefiles`) existiert — die
+  Doku behauptet ein Gate, das es nicht gibt (Befund an Datei:Zeile der
+  Doku-Behauptung).
+- **Undeklariertes Gate (`gate-undocumented`):** eine Makefile-Regel (minus
+  `targets.exempt-targets`), die in der Autoritäts-Doku (`targets.authority`)
+  **nicht** als ` `make X` ` steht — ein Gate ohne Deklaration (Befund an
+  Datei:Zeile der Makefile-Regel).
+
+**Tabellen-Scoping (Erkennungs-Vertrag):** ` `make X` ` gilt **nur in
+Tabellenzeilen** (Zeilen mit `|`-Präfix) als Existenz-/Vollständigkeits-
+Behauptung — Prosa-Erwähnungen (z. B. „Richtig: ` `make gates` `") zählen
+**nicht**. Ohne diese Regel würden in Prosa erwähnte, entfernte Targets zu
+spuriösen `gate-phantom`-Befunden.
+
+Dafür liest `targets` die konfigurierten Doku- und Makefile-Dateien über den
+**Filesystem-Port** (`ReadFile`) — **hermetisch** wie das Modul `planning`
+([`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)):
+**kein** git, **kein Ausführen** des Makefile, **kein** Netz. Die
+Target-Erkennung im Makefile ist eine Zeilen-Heuristik (literale Regelnamen am
+Zeilenanfang, ohne Zuweisungen und `.PHONY`); Pattern-Rules und variabel
+benannte Targets sind kein Kandidat. Die Eingabe bleibt lokal, lesend und
+deterministisch ([`DC-QA-02`](#dc-qa-02--determinismus)/[`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+Dieselbe Klasse wie `planning` — „Doku-Behauptung ↔ Repo-Struktur": dort
+Roadmap ↔ Verzeichnis, hier Doku-Tabelle ↔ Makefile-Regeln.
+
+**Strikt opt-in, fail-closed, diagnose-only:** `targets` ist nie Default-Modul;
+ohne aktives `targets` ist der Befundsatz byte-identisch
+([`DC-QA-02`](#dc-qa-02--determinismus)) und nichts über den Markdown-Baum
+hinaus wird gelesen. **fail-closed:** aktiv mit einer fehlenden konfigurierten
+Datei (Makefile oder Doku-Datei) ⇒ **Exit 2** mit Hinweis auf stderr — kein
+stilles Grün. Leeres `targets.makefiles` ⇒ Modul inert (keine Regelmenge);
+leeres `targets.doc-tables` ⇒ Richtung 1 (Phantom) entfällt, leeres
+`targets.authority` ⇒ Richtung 2 entfällt — die beiden Richtungen sind
+voneinander unabhängig.
+`gate-phantom`/`gate-undocumented` liefern keinen `--repair`-Hunk
+([`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)) — Doku- bzw. Makefile-Edit
+ist eine menschliche Entscheidung.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `targets` aktiv, eine Doku-Tabellenzeile mit ` `make foo` `, ein Makefile mit der Regel `foo:` und ein Eintrag ` `make foo` ` in der Autoritäts-Doku, when `d-check --enable targets` läuft, then kein Befund, Exit 0.
+- **Boundary (Prosa zählt nicht):** Given `targets` aktiv und ein ` `make bar` ` **nur in Prosa** (keine Tabellenzeile), zu dem keine Makefile-Regel existiert, when `d-check --enable targets` läuft, then **kein** `gate-phantom` — nur Tabellenzeilen sind Existenz-Behauptung.
+- **Boundary (Modul-aus):** Given **kein** aktives `targets`, when `d-check` in einer netzlosen, read-only Umgebung läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)) und weder das Makefile noch die Doku-Tabellen-Konsistenz werden gelesen/geprüft ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+- **Negative (Phantom):** Given `targets` aktiv und eine Doku-Tabellenzeile mit ` `make ghost` `, zu der **keine** Makefile-Regel existiert, when `d-check --enable targets` läuft, then ein Befund `gate-phantom` (Datei, Zeile, Target `ghost`), Exit 1.
+- **Negative (undokumentiert):** Given `targets` aktiv und eine Makefile-Regel `secret:` (nicht in `targets.exempt-targets`), die in der Autoritäts-Doku fehlt, when `d-check --enable targets` läuft, then ein Befund `gate-undocumented` (Makefile, Zeile, Target `secret`), Exit 1.
+- **Boundary (exempt):** Given `targets` aktiv und eine Makefile-Regel `clean:`, die in `targets.exempt-targets` steht und in der Autoritäts-Doku **fehlt**, when `d-check --enable targets` läuft, then **kein** `gate-undocumented` für `clean` (Utility-Regeln sind von der Doku-Pflicht ausgenommen).
+- **fail-closed (fehlende Datei):** Given `targets` aktiv und eine konfigurierte Makefile-/Doku-Datei existiert nicht, when `d-check --enable targets` läuft, then **Exit 2** mit Hinweis auf stderr — kein stilles Grün.
+
+**Out-of-Scope:** Ausführen des Makefile oder Auflösen von `include`-Direktiven,
+Variablen- oder Pattern-Rule-Targets (rein statische Zeilen-Heuristik, identisch
+zum abgelösten `tools/gate-consistency.sh`); Section-/Heading-Scoping innerhalb
+der Autoritäts-Doku (die **ganze** Datei wird nach Tabellenzeilen gescannt — ein
+optionaler `authority`-Section-Anker bleibt spätere Anforderung); die
+`.d-check.yml`-Modul-Listen-Selbstkonsistenz des netzlosen doc-check
+(repo-spezifische Prüfung der Netzlos-Gate-Config, **kein** cross-repo-Kern,
+verbleibt im repo-lokalen Rest von `gate-consistency.sh`); Nicht-Make-Build-
+Systeme; ein Auto-Fix (`--repair`).
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -1514,7 +1588,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -1528,6 +1602,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.38.0 | 2026-07-05 | Neue Anforderung `DC-FA-TGT-001` (Modul `targets`, opt-in): Deklarations-Konsistenz zwischen Doku und Build-Targets — jedes in einer Doku-**Tabellenzeile** als ` `make X` ` behauptete Target muss eine Makefile-Regel sein (sonst `gate-phantom`), und jede Makefile-Regel (minus `targets.exempt-targets`) muss in der Autoritäts-Doku als ` `make X` ` stehen (sonst `gate-undocumented`) — die maschinelle Form des Vertrags „kein halluziniertes / kein undokumentiertes Gate". **Tabellen-Scoping** (`^\|`, nur Tabellenzeilen — Prosa zählt nicht, sonst spuriöse `gate-phantom`). **Hermetisch** wie `DC-FA-PLAN-001`: Filesystem-Port `ReadFile` auf die konfigurierten Dateien, **kein** Makefile-Ausführen, **kein** git, **kein** Netz (`DC-QA-02`/`DC-QA-03` unberührt); Zeilen-Heuristik für Regelnamen (keine Pattern-Rules/variablen Targets, ≡ dem abgelösten Skript). Strikt opt-in, fail-closed (fehlende konfigurierte Datei ⇒ Exit 2; leeres `makefiles`/`doc-tables` ⇒ inert), diagnose-only, default-aus byte-identisch. 17. Regelmodul; Bereichskürzel `TGT` in §3, `targets` in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-TGT-001.a` + Schema-Keys (`targets.makefiles`/`doc-tables`/`authority`/`exempt-targets`) in der Spezifikation; die Grund-Codes `gate-phantom`/`gate-undocumented` (§4) landen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep). Zugleich **`DC-FA-CLI-010`-Erweiterung** (10→11 Targets): `--print-mk` trägt ein `doc-targets`-Target (`--enable targets` + Fokus-`--disable`, hermetisch ohne Range); `--print-config`/`--suggest-config` führen `targets`. Anlass: Auftraggeber 2026-07-05 — `tools/gate-consistency.sh` driftet über die Repo-Familie (a-check ≠ d-check), Klasse-A-Mechanisierung [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding) „verteilen statt kopieren": die verteilbare Modul-Form löst den cross-repo-Kern (Doku↔Makefile), d-check dogfoodet das Modul für sein eigenes `make gate-consistency`-Gate. Identitäts-Ausweitung „Doku-Checker → Deklarations-Konsistenz-Checker" (Makefile-Lesen via Filesystem-Port, wie `planning` die Verzeichnis-Struktur) in begleitender ADR | slice-063 |
 | 0.37.1 | 2026-07-03 | Review R1 (doc) + R2 (code) zum `DC-FA-TRK-001`-CR, präzisiert: Verzeichnis-Ziele (Index führt nur Dateien) und Symlink-Referenzen (kategorisch [`DC-FA-LINK-002`](#dc-fa-link-002--symlink-ablehnung)-Domäne — sonst false-positive hinter getrackten Verzeichnis-Symlinks) explizit kein Kandidat/Out-of-Scope; Auflösungs-Mechanik ausdrücklich unabhängig von der Aktivierung des Moduls `links`; intent-to-add + linked worktree als Ränder benannt. `DC-FA-CLI-010`-AKs/Out-of-Scope von neun auf **zehn** Targets nachgezogen (`doc-tracked` — Selbstwiderspruch behoben); `DC-FA-CLI-006`-Enumeration der situativen Module um `commits`/`planning`/`tracked` vervollständigt | slice-059 |
 | 0.37.0 | 2026-07-03 | Neue Anforderung `DC-FA-TRK-001` (Modul `tracked`, opt-in): Getrackt-Status auflösbarer Referenz-Ziele — jedes auflösbare, **existierende** Link-/Bild-Ziel muss im **git-Index getrackt** sein, sonst `target-untracked` (die Referenz wäre auf jedem frischen Klon `target-missing` — Umgebungs-Drift zwischen Arbeitsbäumen, am Entstehungsort gefangen statt erst in der CI des nächsten Checkouts). Wahrheit ist der **Index**, nicht die `.gitignore`-Syntax (kein zweiter Regel-Interpreter; frisch gestagte Dateien gelten als getrackt — WIP-tauglich). Liest `.git` über den **VCS-Port** (dritte Nutzung: `vcs` Range-Diff, `commits` Messages, `tracked` **Index** — ohne Range), reine-Go/ohne Netz, lokal/lesend/deterministisch (`DC-QA-02`/`DC-QA-03` wie bei `DC-FA-VCS-001` formuliert). Kein Doppelbefund (nur existierende Ziele; `target-missing` bleibt `links`, Prinzip von `DC-FA-PIN-001`), Ventil `tracked.exempt-targets`, strikt opt-in/fail-closed (aktiv ohne lesbares `.git` ⇒ Exit 2)/diagnose-only/default-aus byte-identisch. 16. Regelmodul; Bereichskürzel `TRK` in §3, `tracked` in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-TRK-001.a` + Grund-Code `target-untracked` + Schema-Key (`tracked.exempt-targets`) in der Spezifikation. Zugleich **`DC-FA-CLI-010`-Erweiterung** (9→10 Targets): `--print-mk` trägt ein `doc-tracked`-Target. Anlass: Auftraggeber-Frage 2026-07-03 („Was passiert, wenn ein Dokument ein gitignoriertes Dokument referenziert?") + Demo-Beleg (Erzeuger-Checkout grün, frischer Klon `target-missing`); heutige Ventile (CI-Netz, gitignore+`scan.ignore`-Doppel nach [`MR-017`](../harness/conventions.md#mr-017--lokale-baseline-lese-form-cache-aus-dem-selbst-scan-ausgenommen)-Muster, Vendoring nach [`MR-019`](../harness/conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)-Muster) fangen die Falle erst spät oder nur je Einzelfall | slice-059 |
 | 0.36.0 | 2026-07-01 | Neue Anforderung `DC-FA-PLAN-001` (Modul `planning`, opt-in): maschinelle Durchsetzung der Planning-Lifecycle-Invariante — die Roadmap trägt den Ruhe-Marker (`planning.marker`, „Keine aktive Welle") in ihrem `planning.heading`-Abschnitt (`## Aktuelle Welle`) genau dann, wenn kein `slice-*` (`planning.slice-glob`) im Verzeichnis liegt (`hasActive == hasSlices`), sonst `planning-drift`. **Hermetisch** (nur Roadmap-Datei + Verzeichnis-Listing, **kein** git, **kein** Netz, read-only) — normales Modul wie `codepaths`, `DC-QA-02`/`DC-QA-03` unberührt; fail-closed bei fehlender kanonischer Überschrift bzw. Roadmap-Datei (Heading-Guard), strikt opt-in, diagnose-only, default-aus byte-identisch. 15. Regelmodul; Bereichskürzel `PLAN` in §3, `planning` als Modul in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-PLAN-001.a` + Grund-Code `planning-drift` + Schema-Keys (`planning.roadmap`/`marker`/`heading`/`slice-glob`) in der Spezifikation. Anlass: Auftraggeber — `tools/planning-consistency.sh` mechanisieren (letzter Kandidat des `tools/*.sh`-Audits, [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Klasse „verteilen statt kopieren"); bewusst nachrangig (die „Keine aktive Welle"-Konvention ist harness-layout-spezifisch, kleinerer Verteilungswert) — im Gegensatz zu `vcs`/`commits` **ohne** git/VCS-Port, rein hermetisch. `make planning-check` dogfoodet das Modul. Zugleich **`DC-FA-CLI-010`-Erweiterung** (8→9 Targets): `--print-mk` trägt ein `doc-planning`-Target; `--print-config`/`--suggest-config` führen `planning` | slice-057 |
