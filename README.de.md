@@ -2,18 +2,10 @@
 
 > 🇩🇪 **Deutsch** · 🇬🇧 [English](README.md)
 
-Doc-Referenz-Checker für Markdown-Dokumentation — deterministisch,
-seiteneffektfrei, ausgeliefert als Container-Image.
-
-**Status: released** — alle siebzehn Regelmodule (`links`, `anchors`, `ids`,
-`matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `external`) sind im
-GHCR-Image. Verbindlich ist das [Lastenheft](spec/lastenheft.md); die jeweils
-jüngsten Änderungen (zuletzt das opt-in-Modul `targets`, das die Deklarations-
-Konsistenz zwischen Doku und Build-Targets prüft — ein in einer Doku-Tabelle als
-`make X` behauptetes Target ohne Makefile-Regel, oder eine Regel ohne
-Doku-Eintrag) führt die
-[CHANGELOG.md](CHANGELOG.md).
+Konsistenz-Checker: prüft die Dokumentation eines Repos gegen dessen
+tatsächlichen Zustand — Markdown-Referenzen (Links, Bilder, Anker, Kennungen)
+plus Deklarationen (Build-Targets, Versions-Pins, Commit-Trace, Planning).
+Deterministisch, seiteneffektfrei, als Container-Image.
 
 ## Was ist d-check?
 

@@ -2,18 +2,10 @@
 
 > 🇬🇧 **English** · 🇩🇪 [Deutsch](README.de.md)
 
-Documentation reference checker for Markdown — deterministic,
-side-effect-free, shipped as a container image.
-
-**Status: released** — all seventeen rule modules (`links`, `anchors`, `ids`,
-`matrix`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `external`) are in the
-GHCR image. The authoritative source is the
-[requirements spec](spec/lastenheft.md); the most recent changes (most
-recently the opt-in module `targets`, which checks declaration consistency
-between docs and build targets — a `make X` claimed in a doc table without a
-Makefile rule, or a rule without a doc entry) are tracked in
-[CHANGELOG.md](CHANGELOG.md).
+Consistency checker that verifies a repository's documentation against its
+actual state — Markdown references (links, images, anchors, identifiers) plus
+declarations (build targets, version pins, commit trace, planning).
+Deterministic, side-effect-free, shipped as a container image.
 
 ## What is d-check?
 
