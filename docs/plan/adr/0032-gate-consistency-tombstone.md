@@ -62,12 +62,29 @@ Dogfood; das Target bleibt (Name und Selbstbezug unverändert), verliert nur die
   `grep`), nicht mehr als Shell-Hook in `make gate-consistency`. Robuster gegen
   YAML-Format-Änderungen (der Skript-`grep` nahm Flow-Style an; ein Wechsel zur
   Listenform hätte ihn still falsch-grün gemacht — der Go-Test dekodiert echt).
+  Der Assertions-**Umfang** wird dabei an die aktuelle Netzlos-Messmethode
+  gekoppelt (alle netzlosen Default-`modules` außer `external`/`vcs`) statt die
+  alte 5-Modul-Skript-Teilmenge fest zu verdrahten — sonst bliebe er grün, wenn
+  `spans`/`hostpaths`/`versions` aus der `modules`-Liste fielen (R1-F-6).
 - **Trade-off:** die Restprüfung ist keine eigene `make`-Gate-Zeile mehr, sondern
   ein Unit-Test — minimal weniger „gate-sichtbar", aber verlässlicher und ohne
   Shell.
-- **Doku-Nachzug:** die `make gate-consistency`-Beschreibung (AGENTS §4,
-  `harness/README.md` §Sensors) und die Skript-Verweise in `.d-check.yml` /
-  `config_template.go` verlieren ihren „Rest-Skript"-Teil; die Roadmap-Notiz
+- **`codepaths.ignore-refs`-Tombstone (Pflicht, [ADR-0025](0025-codepaths-ignore-refs.md)).**
+  ~30 Inline-Code-Verweise `tools/gate-consistency.sh` (CHANGELOG, Spec, ADRs,
+  Roadmap, `done/`-Slices) werden nach dem `git rm` sonst `codepath-missing` —
+  `tools/gate-consistency.sh` kommt in `.d-check.yml` `codepaths.ignore-refs`
+  (wie die fünf Vorgänger-Skripte). Die **zwei Markdown-Links** aufs Skript
+  (`harness/README.md` §Sensors, eine `done/`-Slice) fängt das Register **nicht**
+  (die `links`-Achse ist per [ADR-0025](0025-codepaths-ignore-refs.md) bewusste
+  Rest-Falle) → sie werden **editiert** (Code-Span bzw. Entfernung, inkl. eines
+  `done/`-Inhalts-Edits); ebenso der live Go-Paritäts-Kommentar in
+  `internal/hexagon/core/rules/targets.go`.
+- **Netzlos-Bindung wandert mit.** `make gate-consistency` bindet danach nur
+  noch das Modul `targets`; die Netzlos-Modullisten-Integrität prüft der Go-Test
+  unter `make test`. Die **Bindungsspalte** in `harness/README.md` §Sensors und
+  die `AGENTS.md` §4-Beschreibung werden entsprechend umgeschrieben (nicht nur die
+  Prosa) — sonst behauptete die Sensors-Zeile eine Netzlos-Integritäts-Durchsetzung
+  durch `gate-consistency`, die dort nicht mehr stattfindet. Die Roadmap-Notiz
   „`gate-consistency` bewusst nicht d-check-fähig" (seit der `targets`-Einführung
   ohnehin falsch) entfällt.
 - **Reversibel:** rein interne Gate-Mechanik, kein nutzersichtbares Verhalten,

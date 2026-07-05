@@ -1,6 +1,6 @@
 # ADR-0031 — Deklarations-Konsistenz Doku ↔ Build-Targets: das hermetische Modul `targets` mechanisiert den `gate-consistency.sh`-Kern
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-05
 **Autor:** pt9912
 **Bezug:** [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
@@ -172,3 +172,4 @@ modul-internen **Negativ-Selbsttest** (Guard entfernt ⇒ Test rot, wie
 | Datum | Ereignis |
 | --- | --- |
 | 2026-07-05 | Entwurf (slice-063, Auftraggeber „driftende Skripte einfangen" + „d-check = declaration-checker, Klasse A regelkonform"): opt-in Modul `targets` mechanisiert den Doku-↔-Makefile-Kern von `tools/gate-consistency.sh` als **hermetischen** Post-Pass (Filesystem-Port, **kein** git/Netz/Makefile-Ausführen). Zwei Richtungen `gate-phantom`/`gate-undocumented`, `^|`-Tabellen-Scoping, statische Zeilen-Heuristik (Parität zum Skript). Löst die von [ADR-0028](0028-planning-lifecycle-modul.md) notierte „nicht d-check-fähig"-Einstufung auf (dessen `planning`-Muster verschob die Prämisse) — Identitäts-Ausweitung zum Deklarations-Konsistenz-Checker. Skript **reduziert** (Prüfung-3-Rest bleibt), kein Tombstone. `--print-mk doc-targets` ([`DC-FA-CLI-010`](../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 10→11). Produkt-Code geändert → Release v0.38.0. Status Proposed. |
+| 2026-07-05 | **Angenommen** mit der Closure des umsetzenden Slice (Modul `targets` implementiert, reviewt und als **v0.38.0** released; `make gates`/`ci`/`fullbuild` grün). Status **Accepted** (Closure-Backfill, R1-F-4 zu welle-53). Der Prüfung-3-Rest-Verbleib im Skript wird mit welle-53/[ADR-0032](0032-gate-consistency-tombstone.md) revidiert (Voll-Tombstone). |
