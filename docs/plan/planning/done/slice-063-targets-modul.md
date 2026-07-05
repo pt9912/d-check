@@ -1,11 +1,13 @@
 # Slice slice-063: Modul `targets` — Deklarations-Konsistenz Doku ↔ Build-Targets
 
-**Status:** in-progress (welle-52-targets-modul). Das **Doc-first-Fundament**
-(Lastenheft-CR + Spezifikation + ADR) ist geschrieben, gate-grün und per
-**Fundament-Review R1** nachgebessert (§8); die Implementierung (Modul + §4-
-Grund-Codes + Akzeptanztests + Paritäts-Beleg) folgt. Move `next → in-progress`
-+ Roadmap-Flip atomar
-([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)).
+**Status:** done (welle-52-targets-modul, Release **v0.38.0**). Alle DoD-Punkte
+erfüllt (§3): Modul + §4-Grund-Codes + Akzeptanztests, Paritäts-Mutations-Beleg
+vs. `gate-consistency.sh`, Dogfood + Selbstbezug, Config-Surface. **Zwei
+unabhängige Reviews** (Fundament R1 + Impl R2, beide ACCEPT/eingearbeitet, §8);
+`make gates`/`make ci`/`make fullbuild` grün (39 Anforderungen, 0 Waisen).
+Lifecycle-Move + Roadmap-Flip atomar
+([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise));
+Closure-Notiz §7.
 
 **Welle:** welle-52-targets-modul.
 
@@ -117,28 +119,28 @@ Makefile ↔ YAML"-Einstufung auf.
 
 ## 3. Definition of Done (R1 eingearbeitet)
 
-- [ ] **Modul `targets`** (Kern-Regel + Config + fail-closed) + Akzeptanztests
+- [x] **Modul `targets`** (Kern-Regel + Config + fail-closed) + Akzeptanztests
   (Happy/Boundary/Negative je Richtung, Determinismus, default-aus
   byte-identisch) + Bootstrap-Negativ-Selbsttest.
-- [ ] **Paritäts-Nachweis (R1-F-2):** der Modul-Befundsatz ≡ der Befundsatz des
+- [x] **Paritäts-Nachweis (R1-F-2):** der Modul-Befundsatz ≡ der Befundsatz des
   abgelösten `gate-consistency.sh` (Richtung 1+2) auf dem aktuellen Repo-Baum —
   Belege je Richtung (Mutations-Proben: dokumentiertes Phantom-Target,
   undokumentiertes Makefile-Target), wie arch→a-check/vcs/commits. Ein aktives
   Gate wird nur mit belegter Parität stillgelegt.
-- [ ] **Doc-first:** neue Anforderung (Bereich `TGT`) im Lastenheft (+ Modul-
+- [x] **Doc-first:** neue Anforderung (Bereich `TGT`) im Lastenheft (+ Modul-
   Liste + Glossar + Makefile-Fragment-Vertrag + Historie/Version); Spezifikation
   (Algorithmus **inkl. `^|`-Tabellen-Scoping**, Schema `targets.*`, Grund-Codes
   `gate-phantom`/`gate-undocumented`); begleitende ADR (Motivation **mit
   auditierbarem Pointer auf a-checks `gate-consistency.sh`-Fassung**, R1-F-9) +
   ADR-Index.
-- [ ] **Dogfood + Selbstbezug (R1-F-6):** `make gate-consistency` auf das Modul
+- [x] **Dogfood + Selbstbezug (R1-F-6):** `make gate-consistency` auf das Modul
   umgestellt (Kern), d-checks eigene ` .d-check.yml ` `targets:`-Config (mit
   leerem `exempt-targets`) aktiviert; **die `make gate-consistency`-Zeilen in
   AGENTS.md §4 und `harness/README.md` §Sensors** an die Umstellung angepasst —
   und genau diese Tabellen prüft `targets` (wechselseitig konsistent).
-- [ ] **Config-Surface:** `--print-config`/`--suggest-config`/`--print-mk`
+- [x] **Config-Surface:** `--print-config`/`--suggest-config`/`--print-mk`
   (`doc-targets`) + Benutzerhandbuch §5/§6.
-- [ ] `make gates`/`make ci`/`make fullbuild` grün; **zwei unabhängige Reviews**
+- [x] `make gates`/`make ci`/`make fullbuild` grün; **zwei unabhängige Reviews**
   (dieses Doc-first-Fundament-Review R1 + Impl-Review); Closure-Move + Body +
   **Lerneintrag** (Modul 5); Release (nutzersichtbar: neues Modul) +
   Digest-Backfill.
@@ -180,7 +182,51 @@ Code-Konformität). Kein neuer Adapter/Port, keine BF-Sub-Area.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-*(bei Closure zu füllen.)*
+**Ergebnis:** das 17. opt-in Regelmodul `targets` ist released (v0.38.0). Es prüft
+**hermetisch** (nur der Filesystem-Port, kein git/Netz/Makefile-Ausführen) die
+Deklarations-Konsistenz Doku ↔ Build-Targets: ein in einer Doku-**Tabellenzeile**
+behauptetes `make X` ohne Makefile-Regel ⇒ `gate-phantom` (Richtung 1); jede
+Makefile-Regel (minus `exempt-targets`) ohne Autoritäts-Doku-Eintrag ⇒
+`gate-undocumented` (Richtung 2). fail-closed bei fehlender Datei, default-aus
+byte-identisch.
+
+**Retirement (der Kern-Wert).** `make gate-consistency` dogfoodet nun das Modul
+für den Doku-↔-Makefile-Kern (via Image, `--enable targets`);
+`tools/gate-consistency.sh` ist auf die repo-spezifische
+[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modullisten-Prüfung
+reduziert. Der cross-repo-driftende Skript-Kern ist damit **verteilbar
+mechanisiert** — a-check/belief-agent/… ersetzen ihn künftig durch
+`--enable targets` + eigene Config (vierte Tombstone-Klasse nach
+`adr-immutable→vcs`, `trace→commits`, `planning→planning`).
+
+**Paritäts-Beleg (DoD-kritisch).** Auf dem echten Repo-Baum sind Modul und Skript
+beide grün; unter zwei Mutationen (ein Phantom-Target in AGENTS.md §4, ein
+undokumentierter Makefile-Target) feuern **Skript und Modul identisch** auf
+dieselben zwei Targets — das Modul zusätzlich mit präziser Datei:Zeile. Der
+Impl-Review bestätigte die Regex-Fidelity als **zeichensatz-exakt** zum Skript.
+
+**Config-Surface.** `--print-mk` trägt das elfte Target `doc-targets`
+([`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
+10→11 — schloss die einzige Vertrags-Lücke), `--print-config`/`--suggest-config`
+führen `targets`, Benutzerhandbuch §5/§6/§4.13/§11.
+
+**Reviews.** Zwei unabhängige Reviews: Fundament R1 (NACHBESSERN, 6 Befunde
+eingearbeitet — u. a. `^|`-Tabellen-Scoping als Spec-Vertrag, Paritäts-DoD) +
+Impl R2 (ACCEPT, 0H/0M/1L/1I — F-1 Vorkommen-Granularität + F-2
+`exempt-targets`-exakt-vs-Glob als Klarstellungen eingearbeitet).
+
+**Commit-Kette:** doc-first-Fundament → Reviews → Plan/welle-52 → Feat-Kern →
+Dogfood/Retirement → Config-Surface → Handbuch → Impl-R2 → Release-Prep →
+Closure-Move → Closure-Body (Tag `v0.38.0`) → Digest-Backfill.
+
+**Lehren:** (i) ein neues Modul ist gleichzeitig ein **Retirement** (Skript-Kern)
+und ein **Selbstbezug** (d-check prüft seine eigene Doku↔Makefile-Tabelle) — die
+Dogfood-Config und die `make gate-consistency`-Zeilen in AGENTS.md §4 /
+`harness/README.md` §Sensors müssen im selben Zug konsistent bleiben. (ii) Der
+`--print-mk`-Target-Count ist ein **stiller Vertrag** (Lastenheft sagte 11, Code
+emittierte 10; kein Gate fing es) — beim Modul-Slice den Print-mk-Count mitziehen.
+(iii) Modul- und Code-Präfix müssen nicht gleich sein (`targets` → `gate-*`), um
+Grund-Code-Kollisionen mit `target-missing`/`target-untracked` zu vermeiden.
 
 ## 8. Review-Nachtrag (Design-Review R1)
 
