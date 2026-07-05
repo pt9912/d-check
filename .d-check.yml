@@ -137,3 +137,18 @@ commits:
 # tools/planning-consistency.sh ab (ADR-0028, letztes Familien-Skript des tools/*.sh-Audits).
 planning:
   roadmap: docs/plan/planning/in-progress/roadmap.md
+
+# Modul targets (DC-FA-TGT-001, slice-063): Deklarations-Konsistenz Doku ↔
+# Build-Targets — `make gate-consistency` aktiviert es mit `--enable targets`
+# (NICHT in der modules-Liste oben, daher im Default-doc-check inert). Hermetisch
+# (Filesystem-Port, kein git/Netz/Makefile-Ausführen): ein in einer Doku-Tabellen-
+# zeile behauptetes `make X` ohne Makefile-Regel ⇒ gate-phantom; jede Makefile-
+# Regel ohne Eintrag in der Autoritäts-Doku (AGENTS.md §4) ⇒ gate-undocumented.
+# exempt-targets bleibt leer — d-check dokumentiert alle Targets in AGENTS.md §4
+# (die erschöpfende Prüfung des abgelösten gate-consistency.sh-Kerns). Löst den
+# Doku-↔-Makefile-Kern von tools/gate-consistency.sh ab (ADR-0031).
+targets:
+  makefiles: [Makefile]
+  doc-tables: [AGENTS.md, harness/README.md]
+  authority: AGENTS.md
+  exempt-targets: []

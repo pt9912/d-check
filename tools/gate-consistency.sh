@@ -1,99 +1,26 @@
 #!/usr/bin/env bash
-# gate-consistency.sh — Meta-Gate gegen Harness-Lügen (Kurs-Modul 13):
+# gate-consistency.sh — Meta-Gate gegen Harness-Lügen, **Rest-Prüfung (3)**:
+# die DC-QA-03-Modulliste des netzlosen doc-check-Gates.
 #
-#   (1) Jedes in AGENTS.md §4 bzw. harness/README.md §Sensors als
-#       Tabellenzeile dokumentierte `make`-Target existiert im Makefile
-#       (kein halluziniertes Gate).
-#   (2) Jedes Makefile-Target ist in AGENTS.md §4 gelistet — AGENTS'
-#       eigene Zusage: "Nur hier gelistete Targets existieren im
-#       Makefile" (kein undokumentiertes Gate).
-#   (3) DC-QA-03-Zusage des Netzlos-Gates: die modules-Liste der
-#       .d-check.yml enthält alle Module außer `external` — sonst
-#       verliert der `--network none`-Lauf still seine Beweis-Aussage
-#       (Review R1 zu slice-008).
+# Der cross-repo-driftende **Kern** (Prüfung 1+2: dokumentierte `make X` ↔
+# Makefile-Regeln, in beide Richtungen) ist seit ADR-0031/slice-063 das opt-in
+# Modul `targets` — `make gate-consistency` dogfoodet es via Image (verteilbar,
+# kein kopiertes Skript mehr; der phantom-Target-Selbsttest lebt als
+# Modul-Akzeptanztest in rules/targets_test.go). Hier bleibt nur die
+# **repo-spezifische** Modul-Listen-Selbstkonsistenz (kein cross-repo-Kopie-
+# Drift, daher nicht d-check-mechanisiert):
 #
-# Negativ-Test: vor der echten Prüfung läuft ein Selbsttest, in dem
-# ein absichtlich dokumentiertes Phantom-Target das Gate nachweislich
-# feuern lässt (analog verify-depguard-Idee).
+#   (3) DC-QA-03: die modules-Liste der .d-check.yml führt alle netzlosen
+#       Doku-Module (links/anchors/ids/matrix/codepaths) und **nicht** external
+#       — sonst verliert der `--network none`-Lauf still seine Beweis-Aussage.
 set -euo pipefail
-
 cd "$(dirname "$0")/.."
 
-# Dokumentierte Targets: alle `make <name>`-Tokens in Tabellenzeilen
-# (auch kombinierte Zellen wie "`make build` / `make run`"; eine
-# Erwähnung in einer Tabellenzeile ist eine Existenz-Behauptung).
-doc_targets() {
-  grep -E '^\|' "$1" | grep -oE '`make [a-z][a-z0-9_-]*`' \
-    | sed -E 's/`make ([a-z0-9_-]+)`/\1/' | sort -u
-}
-
-# Makefile-Targets: Regelzeilen am Zeilenanfang — auch
-# Mehrfach-Target-Zeilen (`a b: deps`). Zuweisungen (`X := y`,
-# `X ?= y`) sind ausgeschlossen, weil dort auf den Doppelpunkt ein
-# `=` folgt bzw. gar kein Doppelpunkt steht.
-makefile_targets() {
-  grep -oE '^[a-zA-Z][a-zA-Z0-9 _-]*:([^=]|$)' "$1" \
-    | sed 's/:.*//' | tr ' ' '\n' | sed '/^$/d' | sort -u
-}
-
-# Richtung 1: dokumentierte Targets müssen im Makefile existieren.
-check_documented_exist() { # $1 Makefile, $2.. Doku-Dateien
-  local mk="$1" fail=0 doc t
-  shift
-  local mk_targets
-  mk_targets="$(makefile_targets "$mk")"
-  for doc in "$@"; do
-    while IFS= read -r t; do
-      [ -z "$t" ] && continue
-      if ! grep -qx "$t" <<<"$mk_targets"; then
-        echo "gate-consistency: FAIL — $doc dokumentiert 'make $t', das Makefile kennt es nicht" >&2
-        fail=1
-      fi
-    done <<<"$(doc_targets "$doc")"
-  done
-  return "$fail"
-}
-
-self_test() {
-  local tmp
-  tmp="$(mktemp -d)"
-  printf '| `make phantom-target` | x |\n' > "$tmp/doc.md"
-  printf 'echtes-target zweites-target: dep\n\ttrue\nVAR := x\n' > "$tmp/Makefile"
-  if check_documented_exist "$tmp/Makefile" "$tmp/doc.md" 2>/dev/null; then
-    echo "gate-consistency: Selbsttest FEHLGESCHLAGEN — Phantom-Target nicht erkannt" >&2
-    rm -rf "$tmp"
-    exit 2
-  fi
-  # Parser-Selbsttest: Mehrfach-Target-Zeile liefert beide Namen,
-  # die Variablen-Zuweisung keinen (Review R1 zu slice-009/010).
-  if [ "$(makefile_targets "$tmp/Makefile" | wc -l)" -ne 2 ]; then
-    echo "gate-consistency: Selbsttest FEHLGESCHLAGEN — Makefile-Parser (Mehrfach-Targets/Zuweisungen)" >&2
-    rm -rf "$tmp"
-    exit 2
-  fi
-  rm -rf "$tmp"
-}
-
-self_test
 fail=0
 
-# (1) Doku → Makefile
-check_documented_exist Makefile AGENTS.md harness/README.md || fail=1
-
-# (2) Makefile → AGENTS.md §4 (AGENTS' "Nur hier gelistete"-Zusage)
-agents_targets="$(doc_targets AGENTS.md)"
-while IFS= read -r t; do
-  [ -z "$t" ] && continue
-  if ! grep -qx "$t" <<<"$agents_targets"; then
-    echo "gate-consistency: FAIL — Makefile-Target '$t' fehlt in AGENTS.md §4" >&2
-    fail=1
-  fi
-done <<<"$(makefile_targets Makefile)"
-
-# (3) DC-QA-03-Modulliste des Netzlos-Gates (.d-check.yml).
-# Format-Annahme: einzeilige Flow-Style-Liste (`modules: [a, b]`).
-# Bei Umstellung auf YAML-Listenform wird dieser Check laut rot
-# (fail-closed) — dann den Parser hier mitziehen.
+# Format-Annahme: einzeilige Flow-Style-Liste (`modules: [a, b]`). Bei Umstellung
+# auf YAML-Listenform wird dieser Check laut rot (fail-closed) — dann den Parser
+# hier mitziehen.
 modules_line="$(grep -E '^modules:' .d-check.yml || true)"
 for m in links anchors ids matrix codepaths; do
   if [[ "$modules_line" != *"$m"* ]]; then
@@ -109,4 +36,4 @@ fi
 if [ "$fail" -ne 0 ]; then
   exit 1
 fi
-echo "gate-consistency ok: Doku ↔ Makefile konsistent, QA-03-Modulliste intakt (Selbsttest gefeuert)."
+echo "gate-consistency ok: QA-03-Modulliste intakt (Doku↔Makefile-Kern via Modul targets, ADR-0031)."
