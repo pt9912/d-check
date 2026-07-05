@@ -328,6 +328,10 @@ danach nur noch den `targets`-Modul-Dogfood
 ([ADR-0032](../../adr/0032-gate-consistency-tombstone.md), revidiert die
 „Skript nicht voll entfernt"-Konsequenz von
 [ADR-0031](../../adr/0031-targets-deklarations-konsistenz-modul.md)).
+**Umsetzungsbereit:** doc-first + Plan-Review R1 (NACHBESSERN) eingearbeitet
+(§5 des Slice); **erster Schritt bei Umsetzung** — `tools/gate-consistency.sh`
+in `codepaths.ignore-refs` **vor** dem `git rm` eintragen (R1-F-1, sonst
+~30 `codepath-missing` und rotes Gate), dann Move `next/`→`in-progress/`.
 Die zuletzt offene Dimension B (E2E-Verankerung der Handbuch-Kommando-/
 Ausgabe-Beispiele) ist mit
 [`slice-062`](../done/slice-062-handbuch-e2e-beispiele.md) (welle-51)
