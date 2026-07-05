@@ -77,6 +77,7 @@ func AllReasons() []string {
 		model.ReasonDiagramIDUndefined, model.ReasonVersionStale, model.ReasonLinkStale,
 		model.ReasonCoreDrift, model.ReasonCoreDriftVCS, model.ReasonCommitUntraceable,
 		model.ReasonPlanningDrift, model.ReasonTargetUntracked,
+		rules.ReasonGatePhantom, rules.ReasonGateUndocumented,
 	}
 }
 
@@ -109,6 +110,8 @@ func reasonTexts() map[string]string {
 		model.ReasonCommitUntraceable:  "Commit-Message ohne Traceability-Kennung",
 		model.ReasonPlanningDrift:      "Roadmap-Aktiv-Status und Slice-Bestand inkonsistent (oder Roadmap/Überschrift fehlt bzw. mehrdeutig — fail-closed)",
 		model.ReasonTargetUntracked:    "Linkziel nicht im git-Index getrackt (fehlt auf jedem frischen Klon)",
+		rules.ReasonGatePhantom:        "In der Doku als `make X` behauptetes Target ohne Makefile-Regel (halluziniertes Gate)",
+		rules.ReasonGateUndocumented:   "Makefile-Regel ohne Deklaration in der Autoritäts-Doku (undokumentiertes Gate)",
 	}
 }
 

@@ -122,6 +122,19 @@ type rawTracked struct {
 	ExemptTargets []string  `yaml:"exempt-targets"`
 }
 
+// rawTargets trägt die Parameter des Moduls targets (DC-FA-TGT-001): makefiles
+// (Regelnamen-Quellen), doc-tables (make-X-Tabellen für Richtung 1), authority
+// (Vollständigkeits-Quelle für Richtung 2), exempt-targets (Utility-Regeln ohne
+// Doku-Pflicht). **Keine** scope — targets ist ein Post-Pass ohne Datei-Scan
+// (wie planning; ein targets.scope wäre wirkungslos, der strikte Decoder lehnt
+// es ab).
+type rawTargets struct {
+	Makefiles     []string `yaml:"makefiles"`
+	DocTables     []string `yaml:"doc-tables"`
+	Authority     string   `yaml:"authority"`
+	ExemptTargets []string `yaml:"exempt-targets"`
+}
+
 // rawCommits trägt scope und die Parameter des Moduls commits
 // (DC-FA-COMMITS-001): id-patterns (Regex-Liste gültiger Traceability-Kennungen,
 // leer ⇒ inert) und exempt-pattern (Betreff-Ausnahme, z. B. `^(Merge |Revert )`).
@@ -191,6 +204,7 @@ type raw struct {
 	Commits   *rawCommits   `yaml:"commits"`
 	Planning  *rawPlanning  `yaml:"planning"`
 	Tracked   *rawTracked   `yaml:"tracked"`
+	Targets   *rawTargets   `yaml:"targets"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -257,6 +271,9 @@ func applyModules(r *raw, cfg *model.Config) error {
 		return err
 	}
 	if err := applyTracked(r, cfg); err != nil {
+		return err
+	}
+	if err := applyTargets(r, cfg); err != nil {
 		return err
 	}
 	return applyScopes(r, cfg)
@@ -394,6 +411,31 @@ func applyTracked(r *raw, cfg *model.Config) error {
 		}
 	}
 	cfg.Tracked = model.TrackedConfig{ExemptTargets: r.Tracked.ExemptTargets}
+	return nil
+}
+
+// applyTargets validiert die Parameter des Moduls targets (DC-FA-TGT-001): jeder
+// konfigurierte Pfad (makefiles/doc-tables/authority) muss relativ zur
+// Repo-Wurzel liegen (die Existenz prüft der Kern beim Lauf, fail-closed →
+// Exit 2). Leere makefiles ⇒ Modul inert.
+func applyTargets(r *raw, cfg *model.Config) error {
+	if r.Targets == nil {
+		return nil
+	}
+	t := r.Targets
+	paths := append(append(append([]string{}, t.Makefiles...), t.DocTables...), t.Authority)
+	for _, p := range paths {
+		if p == "" {
+			continue
+		}
+		if strings.HasPrefix(p, "/") || strings.Contains(p, "..") {
+			return fmt.Errorf("%s: targets-Pfad %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')", FileName, p)
+		}
+	}
+	cfg.Targets = model.TargetsConfig{
+		Makefiles: t.Makefiles, DocTables: t.DocTables,
+		Authority: t.Authority, ExemptTargets: t.ExemptTargets,
+	}
 	return nil
 }
 

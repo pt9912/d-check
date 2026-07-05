@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -57,6 +57,8 @@ type Config struct {
 	Planning PlanningConfig
 	// Tracked: Parameter des Moduls tracked (DC-FA-TRK-001).
 	Tracked TrackedConfig
+	// Targets: Parameter des Moduls targets (DC-FA-TGT-001).
+	Targets TargetsConfig
 	// Scopes: modul-lokale Scan-Scopes (DC-FA-CONF-002); Schlüssel
 	// ist der Modulname, nil-Eintrag/fehlender Schlüssel = globaler
 	// Scope.
@@ -316,6 +318,22 @@ func (p PlanningConfig) EffectiveSliceGlob() string {
 // Getrackt-Prüfung aus (Glob wie scan.ignore; analog codepaths.ignore-refs) —
 // für absichtlich untrackte Ziele. Ohne Einträge byte-identisch.
 type TrackedConfig struct {
+	ExemptTargets []string
+}
+
+// TargetsConfig sind die Parameter des Moduls targets (DC-FA-TGT-001):
+// Makefiles sind die Wurzel-relativen Makefile-Quellen, aus denen Regelnamen
+// per statischer Zeilen-Heuristik extrahiert werden (leer ⇒ Modul inert);
+// DocTables sind die Doku-Dateien, deren `make X`-Tabellenzeilen gegen die
+// Regelmenge geprüft werden (Richtung 1, gate-phantom; leer ⇒ Richtung 1
+// entfällt); Authority ist die Doku-Datei, in der jede nicht-exempte Regel als
+// `make X`-Tabellenzeile stehen muss (Richtung 2, gate-undocumented; leer ⇒
+// Richtung 2 entfällt); ExemptTargets nimmt Regelnamen (exakt) von der
+// Doku-Pflicht aus (Utility-Targets). Hermetisch — nur der Filesystem-Port.
+type TargetsConfig struct {
+	Makefiles     []string
+	DocTables     []string
+	Authority     string
 	ExemptTargets []string
 }
 
