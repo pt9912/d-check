@@ -18,11 +18,12 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, external
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, external
 # (external ist die einzige Netzwerk-Tür — strikt opt-in; vcs und commits sind
 #  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in; tracked ist
 #  git-basiert und braucht nur .git (Index, ohne Range) — strikt opt-in; planning
-#  ist hermetisch (Roadmap-↔-in-progress-Konsistenz, kein git) — strikt opt-in.)
+#  und targets sind hermetisch (Roadmap-↔-in-progress- bzw. Doku-↔-Makefile-
+#  Konsistenz, kein git) — strikt opt-in.)
 
 # --- ids: Linkpflicht für Kennungen ---
 # ids:
@@ -127,6 +128,14 @@ modules: [links, anchors]
 #    untracked/gitignoriertes Ziel wäre auf jedem frischen Klon target-missing.)
 # tracked:
 #   exempt-targets: []   # Globs über den AUFGELÖSTEN Zielpfad — absichtlich untrackte Ziele (referenz-weit)
+
+# --- targets: Deklarations-Konsistenz Doku ↔ Build-Targets — hermetisch (kein git), opt-in ---
+#   (Aufruf über das make-Target gate-consistency bzw. --enable targets. NICHT in modules: oben.)
+# targets:
+#   makefiles: [Makefile]                        # Regelnamen-Quelle(n)
+#   doc-tables: [AGENTS.md, harness/README.md]   # Dateien mit make-X-Tabellen (Richtung 1 ⇒ gate-phantom)
+#   authority: AGENTS.md                         # Vollständigkeits-Quelle (Richtung 2 ⇒ gate-undocumented)
+#   exempt-targets: []                           # Regelnamen ohne Doku-Pflicht (Utility-Targets)
 
 # --- external: Erreichbarkeit von http(s)-Links — NETZZUGRIFF, opt-in ---
 # external:

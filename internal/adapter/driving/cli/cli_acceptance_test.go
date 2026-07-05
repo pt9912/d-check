@@ -834,12 +834,13 @@ func TestCLI005_KeinRepoZugriff(t *testing.T) {
 func TestCLI053_PrintConfig_VollesModulset(t *testing.T) {
 	_, stdout, _ := run(t, "--print-config")
 	for _, want := range []string{
-		"versions, pins, immutable, vcs, commits, planning, tracked, external", // vollständige Verfügbar-Liste
+		"versions, pins, immutable, vcs, commits, planning, tracked, targets, external", // vollständige Verfügbar-Liste
 		"# --- immutable:",
 		"# --- vcs:",
 		"# --- commits:",
 		"# --- planning:",
 		"# --- tracked:",
+		"# --- targets:",
 		"# --- pins:",
 		"immutable-when:", // der vcs-Config-Key, nach dem gefragt wurde
 	} {
@@ -1601,5 +1602,35 @@ func TestCLI057_PrintMK_PlanningTarget(t *testing.T) {
 	}
 	if strings.Contains(line, "--disable planning") {
 		t.Fatalf("doc-planning wählt planning fälschlich ab:\n%s", line)
+	}
+}
+
+// slice-063 (DC-FA-CLI-010-Erweiterung, 10→11): das --print-mk-Fragment trägt
+// zusätzlich das Target doc-targets (Modul targets, DC-FA-TGT-001) —
+// **hermetisch**, ohne --range (nur Makefile + Doku-Tabellen im Mount), nur
+// targets (alle übrigen Module abgewählt).
+func TestCLI063_PrintMK_TargetsTarget(t *testing.T) {
+	code, stdout, stderr := run(t, "--print-mk")
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	if !strings.Contains(stdout, "\ndoc-targets: ## ") {
+		t.Fatalf("d-check.mk ohne doc-targets-Target:\n%s", stdout)
+	}
+	line := mkTargetRecipe(t, stdout, "--enable targets ")
+	for _, want := range []string{
+		"--disable links",    // Fokus auf targets (alle übrigen abgewählt)
+		"--disable planning", // auch das hermetische Schwester-Modul
+	} {
+		if !strings.Contains(line, want) {
+			t.Fatalf("doc-targets-Recipe ohne %q:\n%s", want, line)
+		}
+	}
+	// doc-targets ist hermetisch: KEINE Range, und targets NICHT abgewählt.
+	if strings.Contains(line, "--range") || strings.Contains(line, "--staged") {
+		t.Fatalf("doc-targets trägt fälschlich eine Range:\n%s", line)
+	}
+	if strings.Contains(line, "--disable targets") {
+		t.Fatalf("doc-targets wählt targets fälschlich ab:\n%s", line)
 	}
 }

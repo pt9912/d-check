@@ -389,7 +389,7 @@ func renderHarness(fsys driven.Filesystem, extra []suggestedPattern, repoAware b
 	// lässt sich nicht ableiten) — Verweis aufs Voll-Schema statt stiller
 	// Aktivierung eines inerten Moduls.
 	b.WriteString("# Weitere opt-in-Module (external, spans, hostpaths, diagrams, versions,\n")
-	b.WriteString("# pins, immutable, vcs, commits, planning, tracked) sind situativ und werden hier nicht vorab\n")
+	b.WriteString("# pins, immutable, vcs, commits, planning, tracked, targets) sind situativ und werden hier nicht vorab\n")
 	b.WriteString("# aktiviert; Voll-Schema: d-check --print-config.\n\n")
 	b.WriteString(renderHarnessIDs(fsys, extra, repoAware, reqPrefix))
 	b.WriteString("\n")

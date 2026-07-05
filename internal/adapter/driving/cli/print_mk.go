@@ -19,15 +19,16 @@ import (
 var version = "0.0.0-dev"
 
 // makefileFragment erzeugt das d-check.mk: version-gepinnter, per
-// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus zehn
+// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus elf
 // `##`-annotierte Targets (doc-check/doc-trace/doc-complete/doc-doctor/
-// doc-repair/doc-immutable/doc-commits/doc-planning/doc-tracked/doc-help) und die
-// TRACE_FLAGS-Variable. Das Template hat genau FÜNF fmt-Verben — das %s der Version
-// + je ein %s der vcs-/commits-/planning-/tracked-Disable-Flags; sonst KEIN '%'
-// (sed statt awk-printf im doc-help-Recipe), sonst bräche fmt.Sprintf.
-// Deterministisch (hängt nur an der eingebetteten Version + dem Modulsatz), read-only.
+// doc-repair/doc-immutable/doc-commits/doc-planning/doc-tracked/doc-targets/
+// doc-help) und die TRACE_FLAGS-Variable. Das Template hat genau SECHS fmt-Verben
+// — das %s der Version + je ein %s der vcs-/commits-/planning-/tracked-/targets-
+// Disable-Flags; sonst KEIN '%' (sed statt awk-printf im doc-help-Recipe), sonst
+// bräche fmt.Sprintf. Deterministisch (hängt nur an der eingebetteten Version +
+// dem Modulsatz), read-only.
 func makefileFragment() string {
-	return fmt.Sprintf(mkTemplate, version, disableAllExcept("vcs"), disableAllExcept("commits"), disableAllExcept("planning"), disableAllExcept("tracked"))
+	return fmt.Sprintf(mkTemplate, version, disableAllExcept("vcs"), disableAllExcept("commits"), disableAllExcept("planning"), disableAllExcept("tracked"), disableAllExcept("targets"))
 }
 
 // disableAllExcept liefert "--disable <m>"-Flags für alle Module außer keep,
@@ -101,6 +102,10 @@ const mkTemplate = "# d-check.mk — erzeugt von: d-check --print-mk (DC-FA-CLI-
 	".PHONY: doc-tracked\n" +
 	"doc-tracked: ## Getrackt-Status aufloesbarer Referenz-Ziele via Modul tracked; braucht .git im Mount, ohne Range (DC-FA-TRK-001)\n" +
 	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --enable tracked %s\n" +
+	"\n" +
+	".PHONY: doc-targets\n" +
+	"doc-targets: ## Deklarations-Konsistenz Doku<->Build-Targets via Modul targets; hermetisch, ohne Range (DC-FA-TGT-001)\n" +
+	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --enable targets %s\n" +
 	"\n" +
 	".PHONY: doc-help\n" +
 	"doc-help: ## diese Liste der doc-*-Targets\n" +
