@@ -980,7 +980,16 @@ func TestCLI006_AiHarness_Happy(t *testing.T) {
 	if !hasMod("ids") || !hasMod("matrix") {
 		t.Fatalf("Modulset unvollständig: %v", cfg.Modules)
 	}
-	for _, want := range []string{"Baseline v1.3.0", "matrix:", "from: spec-straten, to: adr", "exclude-sections", "Carveouts", "external, spans, hostpaths, diagrams, versions,", "pins, immutable, vcs", "d-check --print-config"} {
+	// spans/hostpaths sind Teil der fixen Aktiv-Menge (slice-065, DC-FA-CLI-006).
+	if !hasMod("spans") || !hasMod("hostpaths") {
+		t.Fatalf("spans/hostpaths fehlen im fixen Modulset: %v", cfg.Modules)
+	}
+	// planning ist repo-bewusst: harnessRepo legt KEINE Roadmap an → auskommentiert,
+	// nicht in modules (das Modul fiele sonst fail-closed).
+	if hasMod("planning") {
+		t.Fatalf("planning aktiv trotz fehlender Roadmap: %v", cfg.Modules)
+	}
+	for _, want := range []string{"Baseline v1.3.0", "matrix:", "from: spec-straten, to: adr", "exclude-sections", "Carveouts", "external, diagrams, versions, pins, immutable, tracked, targets", "d-check --print-mk", "d-check --print-config", "Modul planning auskommentiert"} {
 		if !strings.Contains(stdout, want) {
 			t.Fatalf("Vorlage ohne %q:\n%s", want, stdout)
 		}
@@ -988,6 +997,38 @@ func TestCLI006_AiHarness_Happy(t *testing.T) {
 	// read-only: das Werkzeug schreibt nichts (Aufrufer leitet um).
 	if _, err := os.Stat(filepath.Join(root, ".d-check.yml")); !os.IsNotExist(err) {
 		t.Fatalf(".d-check.yml wurde geschrieben — read-only verletzt (DC-QA-03)")
+	}
+}
+
+// DC-FA-CLI-006 ai-harness planning repo-bewusst (slice-065): liegt die Roadmap
+// im Baum, ist Modul planning aktiv (in modules) und der planning-Block gesetzt;
+// fehlt sie, ist beides auskommentiert (siehe TestCLI006_AiHarness_Happy).
+func TestCLI006_AiHarness_PlanningAktiv(t *testing.T) {
+	root := t.TempDir()
+	harnessRepo(t, root)
+	write(t, root, "docs/plan/planning/in-progress/roadmap.md", "## Aktuelle Welle\n\nKeine aktive Welle.\n")
+	code, stdout, stderr := run(t, "--suggest-config", "ai-harness", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	cfg, err := configyaml.Decode([]byte(stdout))
+	if err != nil {
+		t.Fatalf("dekodiert nicht: %v\n%s", err, stdout)
+	}
+	var planning bool
+	for _, m := range cfg.Modules {
+		if m == "planning" {
+			planning = true
+		}
+	}
+	if !planning {
+		t.Fatalf("planning nicht in modules trotz vorhandener Roadmap: %v", cfg.Modules)
+	}
+	if !strings.Contains(stdout, "planning:\n  roadmap: docs/plan/planning/in-progress/roadmap.md") {
+		t.Fatalf("planning-Block nicht aktiv trotz Roadmap:\n%s", stdout)
+	}
+	if strings.Contains(stdout, "Modul planning auskommentiert") {
+		t.Fatalf("planning auskommentiert trotz vorhandener Roadmap:\n%s", stdout)
 	}
 }
 
@@ -1085,6 +1126,23 @@ func TestCLI006_AiHarnessInit_VollKanon(t *testing.T) {
 	}
 	if !adr {
 		t.Fatalf("ADR-Muster nicht aktiv trotz Voll-Kanon\n%s", stdout)
+	}
+	// slice-065: spans/hostpaths gehören zur fixen Aktiv-Menge; planning ist im
+	// Voll-Kanon aktiv (Modul + Block), obwohl keine Roadmap existiert (Zielbild
+	// fürs leere Repo — läuft, sobald die Struktur angelegt ist).
+	hasMod := func(m string) bool {
+		for _, x := range cfg.Modules {
+			if x == m {
+				return true
+			}
+		}
+		return false
+	}
+	if !hasMod("spans") || !hasMod("hostpaths") || !hasMod("planning") {
+		t.Fatalf("Voll-Kanon: spans/hostpaths/planning fehlen im Modulset: %v", cfg.Modules)
+	}
+	if !strings.Contains(stdout, "planning:\n  roadmap: docs/plan/planning/in-progress/roadmap.md") {
+		t.Fatalf("Voll-Kanon: planning-Block nicht aktiv:\n%s", stdout)
 	}
 	// kein repo-bewusstes Auskommentieren; volle scan.roots.
 	if strings.Contains(stdout, "fehlt im Repo") {

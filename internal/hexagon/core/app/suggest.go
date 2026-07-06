@@ -46,6 +46,10 @@ const (
 	harnessInitSource = "ai-harness-init" // Mode 1: Voll-Kanon
 	harnessBaseline   = "v1.3.0"
 	harnessExempt     = `[CHANGELOG.md, "docs/reviews/**"]`
+	// harnessRoadmap ist der Konventions-Pfad der Planning-Roadmap; der
+	// repo-bewusste planning-Block der ai-harness-Vorlage hängt an seiner Existenz
+	// (DC-FA-CLI-006, K1–K4).
+	harnessRoadmap = "docs/plan/planning/in-progress/roadmap.md"
 )
 
 // SuggestConfig liest die benannten Autoritäts-Quellen, leitet je Quelle
@@ -383,17 +387,28 @@ func renderHarness(fsys driven.Filesystem, extra []suggestedPattern, repoAware b
 		}
 	}
 	fmt.Fprintf(&b, "scan:\n  roots: [%s]\n\n", strings.Join(roots, ", "))
-	b.WriteString("modules: [links, anchors, ids, matrix, codepaths]\n")
-	// Auffindbarkeit (DC-FA-CLI-006): situative opt-in-Module werden nicht
-	// vorab aktiviert (diagrams braucht repo-spezifische patterns/defined-in,
-	// lässt sich nicht ableiten) — Verweis aufs Voll-Schema statt stiller
-	// Aktivierung eines inerten Moduls.
-	b.WriteString("# Weitere opt-in-Module (external, spans, hostpaths, diagrams, versions,\n")
-	b.WriteString("# pins, immutable, vcs, commits, planning, tracked, targets) sind situativ und werden hier nicht vorab\n")
-	b.WriteString("# aktiviert; Voll-Schema: d-check --print-config.\n\n")
+	// Fixe Aktiv-Menge (DC-FA-CLI-006, Eignungs-Kriterium K1–K4): hermetische,
+	// konfig-freie Baum-Scan-Module, die die adoptierte Konvention führt. planning
+	// kommt hinzu, wenn seine Roadmap existiert (repo-bewusst) bzw. im Voll-Kanon —
+	// sonst fiele es fail-closed (Exit 2 ohne Roadmap).
+	modules := []string{"links", "anchors", "ids", "matrix", "codepaths", "spans", "hostpaths"}
+	if !repoAware || pathExists(fsys, harnessRoadmap) {
+		modules = append(modules, "planning")
+	}
+	fmt.Fprintf(&b, "modules: [%s]\n", strings.Join(modules, ", "))
+	// Auffindbarkeit (DC-FA-CLI-006): die nicht qualifizierten situativen Module
+	// werden nicht vorab aktiviert — Verweis aufs Voll-Schema statt stiller
+	// Aktivierung eines inerten Moduls. vcs/commits brauchen eine Commit-Range
+	// (kein .d-check.yml-Material) und gehen über --print-mk; versions/targets sind
+	// repo-spezifisch (pin-pattern/authority) und bewusst vertagt.
+	b.WriteString("# Weitere opt-in-Module sind situativ und hier nicht vorab aktiviert:\n")
+	b.WriteString("# external, diagrams, versions, pins, immutable, tracked, targets — Voll-Schema: d-check --print-config.\n")
+	b.WriteString("# vcs/commits brauchen eine Commit-Range und werden als Makefile-Target verteilt: d-check --print-mk.\n\n")
 	b.WriteString(renderHarnessIDs(fsys, extra, repoAware, reqPrefix))
 	b.WriteString("\n")
 	b.WriteString(renderHarnessMatrix(fsys, repoAware))
+	b.WriteString("\n")
+	b.WriteString(renderHarnessPlanning(fsys, repoAware))
 	// codepaths: das Datei-Ventil der Konvention — Review-Reports/Changelog
 	// zitieren naturgemäß Datei:Zeile/Pfade und sollen kein codepath-missing
 	// auslösen (Parität zum ids-exempt; roots bleiben repo-spezifisch).
@@ -501,4 +516,18 @@ func renderHarnessMatrix(fsys driven.Filesystem, repoAware bool) string {
 	// Accepted-ADRs) — als Kommentar, der Adopter trägt die konkrete Liste ein.
 	b.WriteString("  # exempt-paths: [\"docs/plan/adr/0001-*.md\"]  # immutable Alt-ADRs grandfathern (DC-FA-MTX-003)\n")
 	return b.String()
+}
+
+// renderHarnessPlanning rendert den planning-Block (DC-FA-CLI-006, K1–K4).
+// repoAware=true: aktiv nur bei vorhandener Roadmap (sonst auskommentiert mit
+// Hinweis — das Modul fällt ohne Roadmap fail-closed, DC-FA-PLAN-001). repoAware=
+// false (Voll-Kanon): aktiv. Nur roadmap wird gesetzt; heading/marker/slice-glob
+// sind Konventions-Defaults. Der Aktiv-Zustand deckt sich mit der Aufnahme von
+// planning ins modules-Set in renderHarness (gleiche Bedingung).
+func renderHarnessPlanning(fsys driven.Filesystem, repoAware bool) string {
+	if repoAware && !pathExists(fsys, harnessRoadmap) {
+		return "# Hinweis: " + harnessRoadmap + " fehlt im Repo — Modul planning auskommentiert.\n" +
+			"# planning:\n#   roadmap: " + harnessRoadmap + "\n"
+	}
+	return "planning:\n  roadmap: " + harnessRoadmap + "\n"
 }
