@@ -10,7 +10,17 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**In Umsetzung: welle-54-suggest-ai-harness-modulset**
+([`slice-065`](slice-065-suggest-ai-harness-modulset.md) — die
+`--suggest-config ai-harness[-init]`-Vorlage an die **gelebte** Konvention
+angleichen: `spans`/`hostpaths` ins fixe Modulset, `planning` repo-bewusst,
+`vcs`/`commits` → `--print-mk` verwiesen, `versions`/`targets` dokumentiert
+vertagt; zugleich deckt die kanonische Vorlage der Spezifikation die emittierte
+Ausgabe 1:1 (Eignungs-Kriterium K1–K4,
+[ADR-0033](../../adr/0033-ai-harness-template-modulset.md); Lastenheft-CR,
+Release v0.39.0 geplant)).
+
+Zuletzt abgeschlossen:
 **welle-52-targets-modul**
 ([`slice-063`](../done/slice-063-targets-modul.md) — 17. opt-in Modul `targets`
 (Deklarations-Konsistenz Doku ↔ Build-Targets): mechanisiert den cross-repo-
@@ -332,20 +342,6 @@ danach nur noch den `targets`-Modul-Dogfood
 (§5 des Slice); **erster Schritt bei Umsetzung** — `tools/gate-consistency.sh`
 in `codepaths.ignore-refs` **vor** dem `git rm` eintragen (R1-F-1, sonst
 ~30 `codepath-missing` und rotes Gate), dann Move `next/`→`in-progress/`.
-
-Ferner [`slice-065`](../next/slice-065-suggest-ai-harness-modulset.md)
-(welle-54-suggest-ai-harness-modulset) — die `--suggest-config ai-harness[-init]`-
-Vorlage an die **gelebte** Konvention angleichen: d-checks eigener Dogfood führt
-im Default acht Module, die Vorlage nur fünf. `spans`/`hostpaths` wandern ins
-fixe Modulset, `planning` wird ein repo-bewusster Block (analog `matrix`),
-`vcs`/`commits` werden auf `--print-mk` verwiesen (Laufzeit-Range, kein
-`.d-check.yml`-Material), `versions`/`targets` bleiben dokumentiert vertagt;
-zugleich deckt die kanonische Vorlage der Spezifikation die emittierte Ausgabe
-1:1 (Normativitäts-Spalt geschlossen). **Lastenheft-CR** (Modulset nutzersichtbar)
-+ [ADR-0033](../../adr/0033-ai-harness-template-modulset.md)
-(Eignungs-Kriterium K1–K4; revidiert die slice-046-Einordnung von
-`spans`/`hostpaths`); Release v0.39.0 geplant. Doc-first geschrieben, unabhängig
-von slice-064 (Reihenfolge offen).
 
 Die zuletzt offene Dimension B (E2E-Verankerung der Handbuch-Kommando-/
 Ausgabe-Beispiele) ist mit

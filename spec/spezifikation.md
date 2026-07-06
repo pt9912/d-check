@@ -123,8 +123,15 @@ stattdessen wird ein an die ai-harness-course-Konvention (Baseline
 **v1.3.0**) angelehntes Gerüst erzeugt. Kombinierbar mit echten Quellen
 (`<token>,<quelle>,…`); deren Muster (Schritte 2–4) werden unter
 `ids.patterns` angehängt. Read-only, deterministisch (feste Block- und
-Pfad-Reihenfolge, keine Map-Iteration für die Ausgabe). Das Modulset ist
-fix (`links`, `anchors`, `ids`, `matrix`, `codepaths`; kein Probelauf);
+Pfad-Reihenfolge, keine Map-Iteration für die Ausgabe). Das fixe Modulset ist
+`links`, `anchors`, `ids`, `matrix`, `codepaths`, `spans`, `hostpaths` (kein
+Probelauf), dazu ein **repo-bewusster `planning`-Block** (Modul + `roadmap:`-Block
+aktiv, wenn `docs/plan/planning/in-progress/roadmap.md` existiert bzw. im
+Voll-Kanon, sonst auskommentiert). Aufnahme-Kriterium (K1–K4) und geschlossene
+Aktiv-Menge: [`DC-FA-CLI-006`](lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten);
+die situativen Range-Module `vcs`/`commits` werden über
+[`--print-mk`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) verteilt,
+nicht ins statische `modules` gelegt.
 `CO-\d{3}` (Carveouts) hat kein festes Definitions-`target` und bleibt in
 beiden Modi auskommentiert. **Zwei Modi** (Henne-Ei — nicht aus der
 Repo-Existenz ableitbar, daher explizit gewählt):
@@ -157,7 +164,10 @@ vollständig aktiv aus, `ai-harness` nur die im Baum vorhandenen Teile):
 ```yaml
 scan:
   roots: [spec, docs, harness]     # nur vorhandene
-modules: [links, anchors, ids, matrix, codepaths]
+modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, planning]
+# Weitere opt-in-Module sind situativ und hier nicht vorab aktiviert:
+# external, diagrams, versions, pins, immutable, tracked, targets — Voll-Schema: d-check --print-config.
+# vcs/commits brauchen eine Commit-Range und werden als Makefile-Target verteilt: d-check --print-mk.
 ids:
   scope:
     roots: [spec, docs/user]       # Linkpflicht nicht über den ganzen Audit-Trail
@@ -194,6 +204,10 @@ matrix:
   status:
     forbidden: [superseded, deprecated]
   exclude-sections: [Historie, "7. Historie", Geschichte]
+planning:
+  roadmap: docs/plan/planning/in-progress/roadmap.md
+codepaths:
+  exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
 ```
 
 Der aktive (nicht auskommentierte) Teil dekodiert über den eigenen Parser

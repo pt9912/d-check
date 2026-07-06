@@ -1,12 +1,13 @@
 # Slice slice-065: ai-harness-Vorlage — Modulset an die gelebte Konvention angleichen
 
-**Status:** next (Backlog, welle-54-suggest-ai-harness-modulset). Das
-Doc-first-Fundament ([ADR-0033](../../adr/0033-ai-harness-template-modulset.md)) ist
-geschrieben; die Implementierung startet **frisch** (sobald der Implementer
-beginnt ⇒ Move nach `in-progress/`, Roadmap-Flip, [`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)).
+**Status:** in-progress (welle-54-suggest-ai-harness-modulset). Move
+`next/`→`in-progress/` + Roadmap-Flip §Aktuelle Welle vollzogen
+([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise));
+[ADR-0033](../../adr/0033-ai-harness-template-modulset.md) bleibt **Proposed** bis
+zur Closure (ADR-Annotation erst bei Closure).
 
-**Welle:** welle-54-suggest-ai-harness-modulset (Kandidat; unabhängig von
-[`slice-064`](slice-064-gate-consistency-tombstone.md), Reihenfolge offen).
+**Welle:** welle-54-suggest-ai-harness-modulset (unabhängig von
+[`slice-064`](../next/slice-064-gate-consistency-tombstone.md), Reihenfolge offen).
 
 **Bezug:** [ADR-0033](../../adr/0033-ai-harness-template-modulset.md)
 (Template-Eignungs-Kriterium K1–K4 + die konkreten Modul-Zuordnungen) +
@@ -105,7 +106,7 @@ sichtbar; Zuschnitt bestätigt: **spans+hostpaths fix, planning repo-bewusst,
 
 ## 5. Offene Punkte / Risiken
 
-- **Reihenfolge zu [`slice-064`](slice-064-gate-consistency-tombstone.md):** beide
+- **Reihenfolge zu [`slice-064`](../next/slice-064-gate-consistency-tombstone.md):** beide
   liegen im Backlog, unabhängig. Der Implementer/Auftraggeber wählt die Welle-
   Aufnahme; kein technischer Zwang.
 - **`ai-harness-init` fürs leere Repo:** `planning` aktiv im Voll-Kanon setzt die
