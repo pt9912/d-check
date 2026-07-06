@@ -1,6 +1,6 @@
 # ADR-0033 — ai-harness-Vorlage: Modulset an die gelebte Konvention angleichen (Template-Eignungs-Kriterium)
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-06
 **Autor:** pt9912
 **Bezug:** [`DC-FA-CLI-006`](../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)
@@ -130,3 +130,4 @@ Aktiv-Menge. Damit läuft der Code der Norm nicht länger voraus.
 | Datum | Ereignis |
 | --- | --- |
 | 2026-07-06 | Entwurf (slice-065, welle-54; Auftraggeber-Analyse „welche Module werden in `--suggest-config ai-harness` nicht verwendet, und warum nicht"): das Eignungs-Kriterium K1–K4 macht die Template-Modul-Zuordnung explizit; `spans`/`hostpaths` ins fixe Modulset (revidiert die Lastenheft-0.26.0-Einordnung), `planning` als repo-bewusster Block, `vcs`/`commits` → `--print-mk` (Laufzeit-Range, K3), `versions`/`targets` dokumentiert vertagt (K2); zugleich deckt die kanonische Vorlage der Spezifikation die emittierte Ausgabe 1:1 (Normativitäts-Spalt geschlossen). Lastenheft-CR, Release v0.39.0 geplant. Status Proposed. |
+| 2026-07-06 | Angenommen mit der slice-065-Closure: `renderHarness` um `spans`/`hostpaths` + `renderHarnessPlanning` erweitert (Modul-Aufnahme an Roadmap-Existenz gekoppelt, De-Morgan-identisch zum Block-Aktiv-Zustand), Kommentarzeile mit `--print-mk`-Verweis; Lastenheft-Body/AKs/Out-of-Scope + Spezifikations-Vorlage decken die Ausgabe 1:1; Tests (Happy/PlanningAktiv/VollKanon) mutations-hart. Impl-Review R1 ACCEPT (F-1 Kommentar-Exit-Code, F-2 Spec-`ignore-refs` eingearbeitet). `make ci` grün, Release v0.39.0. Status Accepted. |

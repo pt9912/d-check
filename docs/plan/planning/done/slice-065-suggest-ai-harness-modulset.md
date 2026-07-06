@@ -1,10 +1,10 @@
 # Slice slice-065: ai-harness-Vorlage — Modulset an die gelebte Konvention angleichen
 
-**Status:** in-progress (welle-54-suggest-ai-harness-modulset). Move
-`next/`→`in-progress/` + Roadmap-Flip §Aktuelle Welle vollzogen
-([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise));
-[ADR-0033](../../adr/0033-ai-harness-template-modulset.md) bleibt **Proposed** bis
-zur Closure (ADR-Annotation erst bei Closure).
+**Status:** done (welle-54-suggest-ai-harness-modulset). Lifecycle abgeschlossen
+(`next`→`in-progress`→`done`, Roadmap-Flip §Aktuelle Welle,
+[`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise));
+[ADR-0033](../../adr/0033-ai-harness-template-modulset.md) auf **Accepted**
+(ADR-Annotation bei Closure). Ergebnis + Belege in §7.
 
 **Welle:** welle-54-suggest-ai-harness-modulset (unabhängig von
 [`slice-064`](../next/slice-064-gate-consistency-tombstone.md), Reihenfolge offen).
@@ -115,3 +115,50 @@ sichtbar; Zuschnitt bestätigt: **spans+hostpaths fix, planning repo-bewusst,
 - **Doku-Harnesse (slice-061/062):** die neue emittierte YAML muss weiter
   dekodieren; falls ein `--suggest-config`-Beispiel im Handbuch steht, wandert es
   in die Verankerung — im Release-Prep prüfen.
+
+## 6. Review-Nachtrag (Impl-R1)
+
+Unabhängiger Impl-Review (26 Tool-Uses, alle Artefakte real gelesen) —
+**Verdikt ACCEPT**, 2 nicht-blockierende Befunde, beide eingearbeitet
+(Report: [`docs/reviews/2026-07-06-slice-065-suggest-ai-harness-modulset.md`](../../../reviews/2026-07-06-slice-065-suggest-ai-harness-modulset.md)):
+
+- **F-1 (LOW):** die Code-Kommentare begründeten die repo-bewusste
+  planning-Behandlung mit „fail-closed (Exit 2 ohne Roadmap)"; real meldet das
+  Modul zur Laufzeit `planning-drift` (**Exit 1**). Kommentare korrigiert.
+- **F-2 (INFO):** der Renderer emittiert im `codepaths`-Block eine
+  `# ignore-refs`-Kommentarzeile, die im kanonischen Spezifikations-Beispiel
+  fehlte — Widerspruch zum „1:1"-Anspruch. Zeile in der Spezifikations-Vorlage ergänzt.
+
+Verifiziert sauber: Kopplung `modules` ↔ planning-Block (De-Morgan-identisch),
+Decode aller Ausgabe-Pfade, Spec↔Code-Parität (17 Module), Test-Härte (drei
+Mutationen sterben), Determinismus, Read-only-Vertrag.
+
+## 7. Closure-Notiz (nach done)
+
+**Umgesetzt:** die `--suggest-config ai-harness[-init]`-Vorlage führt nun das fixe
+Standard-Modulset `links, anchors, ids, matrix, codepaths, spans, hostpaths` plus
+einen **repo-bewussten `planning`-Block** (aktiv bei vorhandener Roadmap bzw. im
+Voll-Kanon, sonst auskommentiert — an dieselbe Bedingung gekoppelt wie die
+`modules`-Aufnahme). `vcs`/`commits` (Commit-Range) sind auf `--print-mk`
+verwiesen, `versions`/`targets` dokumentiert vertagt. Das Eignungs-Kriterium
+K1–K4 und die geschlossene Aktiv-Menge stehen im Lastenheft-Body; die kanonische
+Vorlage der Spezifikation deckt die emittierte Ausgabe **1:1** (Normativitäts-
+Spalt geschlossen).
+
+**Belege:** `make gates` grün (doc-check + lint + test + arch-check +
+coverage-gate + semgrep + gate-consistency + planning-check); `make ci` grün
+(inkl. image-test); drei Ausgabe-Modi smoke-verifiziert (repo-mit-Roadmap →
+planning aktiv; `ai-harness-init` leer → Voll-Kanon aktiv; repo-ohne-Roadmap →
+auskommentiert). Impl-Review R1 ACCEPT (§6).
+
+**Commit-Kette:** `290b7a2` (Backlog-Fundament) · `4a90b13` (Move) · `571ce58`
+(Spec-CR) · `eee472f` (feat) · `9567910` (release-prep v0.39.0) · `3efb1ae`
+(Review-Fix) · Closure-Move + Closure-Body. **Release v0.39.0** (Push → Tag →
+GHCR → digest-backfill) nach Auftraggeber-Freigabe.
+
+**Lehre:** `releasing.md` §4 ist beim Release-Prep verbindlich abzuarbeiten — der
+`versions`-Gate fängt nur ghcr-**präfixierte** Pins, nicht den bare-Tag
+(§Versionen) und nicht die DE↔EN-README-Synchronität; `README.de.md` ist die
+kanonische Fassung (zuerst). ADR dürfen Slices nur im `## Geschichte`-Abschnitt
+(matrix-`exclude-sections`) nennen; blanke `DC-`-Tokens sind nur in
+`spec/lastenheft.md` selbst link-frei.
