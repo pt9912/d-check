@@ -153,8 +153,9 @@ auskommentiert). Impl-Review R1 ACCEPT (§6).
 
 **Commit-Kette:** `290b7a2` (Backlog-Fundament) · `4a90b13` (Move) · `571ce58`
 (Spec-CR) · `eee472f` (feat) · `9567910` (release-prep v0.39.0) · `3efb1ae`
-(Review-Fix) · Closure-Move + Closure-Body. **Release v0.39.0** (Push → Tag →
-GHCR → digest-backfill) nach Auftraggeber-Freigabe.
+(Review-Fix) · Closure-Move + Closure-Body · digest-backfill. **Release v0.39.0**
+auf GHCR (Release-Run 28769888005 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:59535d8276f69695bd02ad4621b82fd70f8c3c8051b3a50e499fbb77fa8595ad`.
 
 **Lehre:** `releasing.md` §4 ist beim Release-Prep verbindlich abzuarbeiten — der
 `versions`-Gate fängt nur ghcr-**präfixierte** Pins, nicht den bare-Tag

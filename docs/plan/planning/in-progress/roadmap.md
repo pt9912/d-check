@@ -19,8 +19,9 @@ repo-bewusster Block, `vcs`/`commits` → `--print-mk`, `versions`/`targets`
 bewusst vertagt; die kanonische Vorlage der Spezifikation deckt die emittierte
 Ausgabe 1:1 (Eignungs-Kriterium K1–K4,
 [ADR-0033](../../adr/0033-ai-harness-template-modulset.md); Lastenheft-CR,
-Release **v0.39.0** ausstehend — Push → Tag → GHCR). Impl-Review R1 ACCEPT
-(F-1/F-2 eingearbeitet), `make ci` grün
+Release **v0.39.0** auf GHCR (Release-Run 28769888005 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:59535d8276f69695bd02ad4621b82fd70f8c3c8051b3a50e499fbb77fa8595ad`).
+Impl-Review R1 ACCEPT (F-1/F-2 eingearbeitet), `make ci` grün
 ([Closure](../done/slice-065-suggest-ai-harness-modulset.md#7-closure-notiz-nach-done))).
 Davor **welle-52-targets-modul**
 ([`slice-063`](../done/slice-063-targets-modul.md) — 17. opt-in Modul `targets`
