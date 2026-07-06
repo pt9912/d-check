@@ -1,9 +1,10 @@
 # Slice slice-064: `gate-consistency.sh` Voll-Tombstone — Prüfung 3 in Go-Test
 
-**Status:** next (Backlog, welle-53-gate-consistency-tombstone). Das
-Doc-first-Fundament ([ADR-0032](../../adr/0032-gate-consistency-tombstone.md)) ist
-geschrieben; die Implementierung startet **frisch** (sobald der Implementer
-beginnt ⇒ Move nach `in-progress/`, Roadmap-Flip, [`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)).
+**Status:** done (welle-53-gate-consistency-tombstone). Lifecycle abgeschlossen
+(`next`→`in-progress`→`done`, Roadmap-Flip §Aktuelle Welle,
+[`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise));
+[ADR-0032](../../adr/0032-gate-consistency-tombstone.md) auf **Accepted**
+(ADR-Annotation bei Closure). Ergebnis + Belege in §7.
 
 **Welle:** welle-53-gate-consistency-tombstone (Kandidat).
 
@@ -117,3 +118,56 @@ Umsetzung beginnt:
 - **F-6 (INFO, Test-Umfang):** die Assertion koppelt an die Netzlos-Messmethode
   (alle Default-`modules` außer `external`/`vcs`) statt an die 5-Modul-Skript-
   Teilmenge (§2 und die ADR-Konsequenz).
+
+## 6. Review-Nachtrag (Impl-R1)
+
+Unabhängiger Impl-Review (19 Tool-Uses, alle Artefakte real gelesen) — **Verdikt
+NACHBESSERN → behoben** (Kern korrekt/vollständig, ein Bindungs-MEDIUM; Report
+[`2026-07-06-slice-064-gate-consistency-tombstone`](../../../reviews/2026-07-06-slice-064-gate-consistency-tombstone.md)):
+
+- **MEDIUM (behoben):** in `harness/README.md` §Sensors war nur die Vertrags-,
+  nicht die **Bindungs**-Spalte migriert — die `make gate-consistency`-Zeile band
+  noch die Netzlos-Modullisten-Integrität, obwohl der Vertrag sie als „voll
+  abgelöst → `make test`" ausweist (Row-interner Widerspruch), und `make test`
+  trug sie in der Bindung nicht. Genau die von
+  [ADR-0032](../../adr/0032-gate-consistency-tombstone.md)/DoD-F-3 verlangte „nicht
+  nur Prosa"-Migration. **Behoben:** `gate-consistency`-Bindung → das
+  `targets`-Modul-Requirement ([ADR-0031](../../adr/0031-targets-deklarations-konsistenz-modul.md),
+  parallel zu `planning-check`), `make test`-Bindung um die Netzlos-Integrität
+  ergänzt.
+- **Verifiziert sauber:** Paritäts-Äquivalenz (Go-Test strikt stärker als das
+  Skript — fängt auch den Abfall von `spans`/`hostpaths`/`versions`, R1-F-6),
+  Fail-closed (Read-/Decode-Fehler → rot, Relativpfad korrekt), Guard-Isolation
+  (synthetische Listen treffen nur die Assertion, drei Mutationen sterben),
+  Tombstone-Vollständigkeit (0 verbliebene Skript-Links, kein dangling
+  Produkt-Code-Verweis), Makefile-Rückbau (`targets`-Dogfood bleibt grün).
+
+## 7. Closure-Notiz (nach done)
+
+**Umgesetzt:** `tools/gate-consistency.sh` ist **vollständig entfernt** (`git rm`)
+— das **letzte** `tools/*.sh`; der `tools/*.sh`-Audit ist restlos abgeschlossen
+(adr-immutable→`vcs`, completeness→Flag, trace→`commits`, planning→`planning`,
+arch→a-check, gate-consistency→`targets`+Go-Test). Die Prüfung-3-Restmenge (die
+Netzlos-Modulliste der `.d-check.yml`, Vertrag
+[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit))
+ist ein getippter `configyaml.Decode`-Go-Test
+(`internal/adapter/driven/configyaml/gate_consistency_test.go`): Live-Prüfung
+(fail-closed bei fehlender/undekodierbarer Datei) + Guard-Mutationstest, an die
+Netzlos-Messmethode gekoppelt (alle 8 netzlosen Doku-Module präsent,
+`external`/`vcs` abwesend) statt der alten 5-Modul-Skript-Teilmenge (R1-F-6).
+`make gate-consistency` fährt nur noch `--enable targets` (Modul-Dogfood).
+
+**Belege:** `make gates` + `make ci` grün (gate-consistency = nur `targets`,
+`planning-check` grün, neuer `configyaml`-Test grün, image-test byte-identisch).
+**Kein Release** (interne Gate-Mechanik, Image byte-identisch — GHCR bleibt
+v0.39.0), **kein Lastenheft-CR** (keine neue Anforderung). Impl-Review R1 ACCEPT
+nach Nachbesserung (§6). Commit-Kette: feat+lifecycle-in `ea857a6` · closure-move
+· closure-body (kein digest-backfill — kein Release).
+
+**Lehre:** (i) beim Bindungs-Nachzug in Sensor-Tabellen ist die **Bindungs-Spalte**
+(nicht nur der Vertrags-Text) zu migrieren — sonst überlebt die Harness-Lüge, die
+der Slice tilgt, und **kein** Gate fängt es (`targets` prüft nur `make X`↔Regel);
+(ii) `git rm` eines gate-gescannten Skripts braucht `codepaths.ignore-refs` **vor**
+dem Entfernen (Inline-Verweise) UND separate Link-Edits (die `links`-Achse fängt
+`ignore-refs` nicht); (iii) awk-`mv` aus `mktemp` überträgt 600-Rechte → im
+Container (nonroot, read-only) „permission denied", `chmod 644` nachziehen.

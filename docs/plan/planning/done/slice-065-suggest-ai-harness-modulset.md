@@ -7,7 +7,7 @@
 (ADR-Annotation bei Closure). Ergebnis + Belege in §7.
 
 **Welle:** welle-54-suggest-ai-harness-modulset (unabhängig von
-[`slice-064`](../next/slice-064-gate-consistency-tombstone.md), Reihenfolge offen).
+[`slice-064`](slice-064-gate-consistency-tombstone.md), Reihenfolge offen).
 
 **Bezug:** [ADR-0033](../../adr/0033-ai-harness-template-modulset.md)
 (Template-Eignungs-Kriterium K1–K4 + die konkreten Modul-Zuordnungen) +
@@ -106,7 +106,7 @@ sichtbar; Zuschnitt bestätigt: **spans+hostpaths fix, planning repo-bewusst,
 
 ## 5. Offene Punkte / Risiken
 
-- **Reihenfolge zu [`slice-064`](../next/slice-064-gate-consistency-tombstone.md):** beide
+- **Reihenfolge zu [`slice-064`](slice-064-gate-consistency-tombstone.md):** beide
   liegen im Backlog, unabhängig. Der Implementer/Auftraggeber wählt die Welle-
   Aufnahme; kein technischer Zwang.
 - **`ai-harness-init` fürs leere Repo:** `planning` aktiv im Voll-Kanon setzt die

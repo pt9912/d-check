@@ -342,20 +342,9 @@ Refactor noch in keinem Release.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:**
-[`slice-064`](../next/slice-064-gate-consistency-tombstone.md)
-(welle-53-gate-consistency-tombstone) — der bewusst als Folge-Slice
-zurückgestellte **Voll-Tombstone** von `tools/gate-consistency.sh`: die
-repo-spezifische Modullisten-Restprüfung (Netzlos-Gate-Integrität; das
-**letzte** `tools/*.sh`) wandert in einen Go-Test, `make gate-consistency` fährt
-danach nur noch den `targets`-Modul-Dogfood
-([ADR-0032](../../adr/0032-gate-consistency-tombstone.md), revidiert die
-„Skript nicht voll entfernt"-Konsequenz von
-[ADR-0031](../../adr/0031-targets-deklarations-konsistenz-modul.md)).
-**Umsetzungsbereit:** doc-first + Plan-Review R1 (NACHBESSERN) eingearbeitet
-(§5 des Slice); **erster Schritt bei Umsetzung** — `tools/gate-consistency.sh`
-in `codepaths.ignore-refs` **vor** dem `git rm` eintragen (R1-F-1, sonst
-~30 `codepath-missing` und rotes Gate), dann Move `next/`→`in-progress/`.
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner —
+`slice-064` (welle-53-gate-consistency-tombstone) ist abgeschlossen
+(s. [§Aktuelle Welle](#aktuelle-welle)).
 
 Die zuletzt offene Dimension B (E2E-Verankerung der Handbuch-Kommando-/
 Ausgabe-Beispiele) ist mit
@@ -380,7 +369,7 @@ Bewusst weder d-check- noch a-check-fähig und daher nicht hier: `coverage-gate`
 (Go-Build/SAST), `image-test` (testet das Image selbst), `bench-fixture` (Fixture-Generator),
 `harness/*` (Cache-/Hook-Infrastruktur). (`gate-consistency` galt hier früher als „nicht
 d-check-fähig" — widerlegt: der Doku-↔-Makefile-Kern ist seit slice-063 das Modul `targets`,
-die Modullisten-Restprüfung wird mit welle-53/[`slice-064`](../next/slice-064-gate-consistency-tombstone.md)
+die Modullisten-Restprüfung wurde mit welle-53/[`slice-064`](../done/slice-064-gate-consistency-tombstone.md)
 ein Go-Test.)
 
 ## Meilensteine

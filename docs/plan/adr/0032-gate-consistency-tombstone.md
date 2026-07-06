@@ -1,6 +1,6 @@
 # ADR-0032 — `gate-consistency.sh` Voll-Tombstone: die `DC-QA-03`-Restprüfung wandert in einen Go-Test
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-05
 **Autor:** pt9912
 **Bezug:** [`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
@@ -89,3 +89,9 @@ Dogfood; das Target bleibt (Name und Selbstbezug unverändert), verliert nur die
   ohnehin falsch) entfällt.
 - **Reversibel:** rein interne Gate-Mechanik, kein nutzersichtbares Verhalten,
   **kein Release** (wie die `arch-check`- und `completeness`-Rückbauten).
+
+## Geschichte
+
+| Datum | Ereignis |
+| --- | --- |
+| 2026-07-06 | Angenommen mit der slice-064-Closure: `tools/gate-consistency.sh` per `git rm` entfernt (**letztes** `tools/*.sh`, Audit restlos abgeschlossen); die Netzlos-Modullisten-Restprüfung als getippter `configyaml.Decode`-Go-Test (Live + Guards + fail-closed, an die Netzlos-Messmethode gekoppelt — alle 8 netzlosen Doku-Module präsent, `external`/`vcs` abwesend, R1-F-6); `make gate-consistency` fährt nur noch `--enable targets`; `codepaths.ignore-refs` += Skript-Pfad (R1-F-1) + zwei Markdown-Link-Edits (R1-F-2); Bindungsspalten (`harness/README.md` §Sensors, `AGENTS.md` §4) auf `make test` bzw. [ADR-0031](0031-targets-deklarations-konsistenz-modul.md) migriert (R1-F-3, im Impl-Review als MEDIUM nachgezogen). Impl-Review R1 NACHBESSERN → behoben, dann ACCEPT. `make ci` grün, kein Lastenheft-CR, kein Release (Image byte-identisch). Status Accepted. |
