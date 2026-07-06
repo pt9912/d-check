@@ -10,7 +10,15 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**In Umsetzung: welle-53-gate-consistency-tombstone**
+([`slice-064`](slice-064-gate-consistency-tombstone.md) — der Voll-Tombstone von
+`tools/gate-consistency.sh`: die Modullisten-Restprüfung (Prüfung 3,
+Netzlos-Gate-Integrität) wandert in einen getippten Go-Test, das **letzte**
+`tools/*.sh` wird per `git rm` entfernt, `make gate-consistency` fährt nur noch
+den `targets`-Modul-Dogfood ([ADR-0032](../../adr/0032-gate-consistency-tombstone.md);
+kein Lastenheft-CR, kein Release)).
+
+Zuletzt abgeschlossen:
 **welle-54-suggest-ai-harness-modulset**
 ([`slice-065`](../done/slice-065-suggest-ai-harness-modulset.md) — die
 `--suggest-config ai-harness[-init]`-Vorlage an die **gelebte** Konvention

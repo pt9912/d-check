@@ -65,7 +65,7 @@ vollständig migrieren.
 | `internal/hexagon/core/rules/codepaths.go` (+ Test) | neu | Kern-Modul gegen In-Memory-FS |
 | [`internal/hexagon/core/rules/markdown.go`](../../../../internal/hexagon/core/rules/markdown.go) | update | Inline-Code-Spans als Werte zugänglich machen (heute nur positionserhaltendes Stripping) |
 | [`internal/adapter/driven/configyaml/configyaml.go`](../../../../internal/adapter/driven/configyaml/configyaml.go) | update | `codepaths.roots` strikt validieren |
-| [`.d-check.yml`](../../../../.d-check.yml), [`tools/gate-consistency.sh`](../../../../tools/gate-consistency.sh) | update | Dogfooding + QA-03-Modulliste |
+| [`.d-check.yml`](../../../../.d-check.yml), `tools/gate-consistency.sh` | update | Dogfooding + QA-03-Modulliste |
 
 ## 4. Trigger
 

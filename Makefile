@@ -75,9 +75,8 @@ coverage-gate: ## Coverage-Schwelle (Kalibrierungs-Bindung: 93 %, Historie in ha
 	    --build-arg COVERAGE_THRESHOLD=$(THRESHOLD) \
 	    --target coverage -t $(IMAGE):coverage .
 
-gate-consistency: build ## Meta-Gate: Deklarations-Konsistenz Doku↔Makefile via Modul targets (Image, dogfood) + QA-03-Modulliste (Rest-Skript). ADR-0031 (löst den Skript-Kern ab).
+gate-consistency: build ## Meta-Gate: Deklarations-Konsistenz Doku↔Makefile via Modul targets (Image, dogfood). ADR-0031/ADR-0032 (Skript voll abgelöst; DC-QA-03-Modulliste jetzt Go-Test in `make test`).
 	$(DCHECK_RUN) --enable targets $(FOCUS_DISABLE)
-	@bash tools/gate-consistency.sh
 
 planning-check: build ## Meta-Gate via Modul planning (Image, dogfood): Roadmap §Aktuelle Welle ↔ in-progress/slice-* (Planning-Drift-Schutz, in gates). ADR-0028 (löst die Skript-Mechanik von slice-040 ab).
 	$(DCHECK_RUN) --enable planning $(FOCUS_DISABLE)

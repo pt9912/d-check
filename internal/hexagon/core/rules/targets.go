@@ -16,14 +16,14 @@ const (
 )
 
 var (
-	// makefileRuleRe erkennt eine Regelzeile in Parität zum abgelösten
-	// tools/gate-consistency.sh (`^[a-zA-Z][a-zA-Z0-9 _-]*:([^=]|$)`):
-	// Regelname(n) am Zeilenanfang, gefolgt von `:` ohne unmittelbar folgendes
-	// `=` (Zuweisungen `X :=`/`X ?=` ausgenommen); der erste Name ist ein
-	// Buchstabe (`.PHONY`/`.DEFAULT_GOAL` und Pattern-Rules `%…` fallen weg).
+	// makefileRuleRe erkennt eine Makefile-Regelzeile
+	// (`^[a-zA-Z][a-zA-Z0-9 _-]*:([^=]|$)`): Regelname(n) am Zeilenanfang,
+	// gefolgt von `:` ohne unmittelbar folgendes `=` (Zuweisungen `X :=`/`X ?=`
+	// ausgenommen); der erste Name ist ein Buchstabe (`.PHONY`/`.DEFAULT_GOAL`
+	// und Pattern-Rules `%…` fallen weg).
 	makefileRuleRe = regexp.MustCompile(`^([A-Za-z][A-Za-z0-9 _-]*):([^=]|$)`)
-	// docTargetRe erkennt ein `make X`-Token (X = [a-z][a-z0-9_-]*, in Parität
-	// zum Skript-`grep -oE '`+"`"+`make [a-z][a-z0-9_-]*`+"`"+`'`).
+	// docTargetRe erkennt ein `make X`-Token (X = [a-z][a-z0-9_-]*) in einer
+	// Doku-Tabellenzeile.
 	docTargetRe = regexp.MustCompile("`make ([a-z][a-z0-9_-]*)`")
 )
 
