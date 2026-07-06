@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-04.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-06.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -332,6 +332,21 @@ danach nur noch den `targets`-Modul-Dogfood
 (§5 des Slice); **erster Schritt bei Umsetzung** — `tools/gate-consistency.sh`
 in `codepaths.ignore-refs` **vor** dem `git rm` eintragen (R1-F-1, sonst
 ~30 `codepath-missing` und rotes Gate), dann Move `next/`→`in-progress/`.
+
+Ferner [`slice-065`](../next/slice-065-suggest-ai-harness-modulset.md)
+(welle-54-suggest-ai-harness-modulset) — die `--suggest-config ai-harness[-init]`-
+Vorlage an die **gelebte** Konvention angleichen: d-checks eigener Dogfood führt
+im Default acht Module, die Vorlage nur fünf. `spans`/`hostpaths` wandern ins
+fixe Modulset, `planning` wird ein repo-bewusster Block (analog `matrix`),
+`vcs`/`commits` werden auf `--print-mk` verwiesen (Laufzeit-Range, kein
+`.d-check.yml`-Material), `versions`/`targets` bleiben dokumentiert vertagt;
+zugleich deckt die kanonische Vorlage der Spezifikation die emittierte Ausgabe
+1:1 (Normativitäts-Spalt geschlossen). **Lastenheft-CR** (Modulset nutzersichtbar)
++ [ADR-0033](../../adr/0033-ai-harness-template-modulset.md)
+(Eignungs-Kriterium K1–K4; revidiert die slice-046-Einordnung von
+`spans`/`hostpaths`); Release v0.39.0 geplant. Doc-first geschrieben, unabhängig
+von slice-064 (Reihenfolge offen).
+
 Die zuletzt offene Dimension B (E2E-Verankerung der Handbuch-Kommando-/
 Ausgabe-Beispiele) ist mit
 [`slice-062`](../done/slice-062-handbuch-e2e-beispiele.md) (welle-51)
