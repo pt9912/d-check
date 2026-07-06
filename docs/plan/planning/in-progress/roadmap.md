@@ -10,18 +10,19 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**In Umsetzung: welle-54-suggest-ai-harness-modulset**
-([`slice-065`](slice-065-suggest-ai-harness-modulset.md) — die
+**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**welle-54-suggest-ai-harness-modulset**
+([`slice-065`](../done/slice-065-suggest-ai-harness-modulset.md) — die
 `--suggest-config ai-harness[-init]`-Vorlage an die **gelebte** Konvention
-angleichen: `spans`/`hostpaths` ins fixe Modulset, `planning` repo-bewusst,
-`vcs`/`commits` → `--print-mk` verwiesen, `versions`/`targets` dokumentiert
-vertagt; zugleich deckt die kanonische Vorlage der Spezifikation die emittierte
+angeglichen: `spans`/`hostpaths` ins fixe Standard-Modulset, `planning` als
+repo-bewusster Block, `vcs`/`commits` → `--print-mk`, `versions`/`targets`
+bewusst vertagt; die kanonische Vorlage der Spezifikation deckt die emittierte
 Ausgabe 1:1 (Eignungs-Kriterium K1–K4,
 [ADR-0033](../../adr/0033-ai-harness-template-modulset.md); Lastenheft-CR,
-Release v0.39.0 geplant)).
-
-Zuletzt abgeschlossen:
-**welle-52-targets-modul**
+Release **v0.39.0** ausstehend — Push → Tag → GHCR). Impl-Review R1 ACCEPT
+(F-1/F-2 eingearbeitet), `make ci` grün
+([Closure](../done/slice-065-suggest-ai-harness-modulset.md#7-closure-notiz-nach-done))).
+Davor **welle-52-targets-modul**
 ([`slice-063`](../done/slice-063-targets-modul.md) — 17. opt-in Modul `targets`
 (Deklarations-Konsistenz Doku ↔ Build-Targets): mechanisiert den cross-repo-
 driftenden Kern von `tools/gate-consistency.sh` als **hermetisches** Modul
