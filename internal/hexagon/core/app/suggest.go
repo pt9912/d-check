@@ -390,7 +390,7 @@ func renderHarness(fsys driven.Filesystem, extra []suggestedPattern, repoAware b
 	// Fixe Aktiv-Menge (DC-FA-CLI-006, Eignungs-Kriterium K1–K4): hermetische,
 	// konfig-freie Baum-Scan-Module, die die adoptierte Konvention führt. planning
 	// kommt hinzu, wenn seine Roadmap existiert (repo-bewusst) bzw. im Voll-Kanon —
-	// sonst fiele es fail-closed (Exit 2 ohne Roadmap).
+	// sonst meldete es beim ersten Lauf planning-drift (Exit 1; die Roadmap fehlt).
 	modules := []string{"links", "anchors", "ids", "matrix", "codepaths", "spans", "hostpaths"}
 	if !repoAware || pathExists(fsys, harnessRoadmap) {
 		modules = append(modules, "planning")
@@ -520,7 +520,7 @@ func renderHarnessMatrix(fsys driven.Filesystem, repoAware bool) string {
 
 // renderHarnessPlanning rendert den planning-Block (DC-FA-CLI-006, K1–K4).
 // repoAware=true: aktiv nur bei vorhandener Roadmap (sonst auskommentiert mit
-// Hinweis — das Modul fällt ohne Roadmap fail-closed, DC-FA-PLAN-001). repoAware=
+// Hinweis — das Modul meldete ohne Roadmap sonst planning-drift, DC-FA-PLAN-001). repoAware=
 // false (Voll-Kanon): aktiv. Nur roadmap wird gesetzt; heading/marker/slice-glob
 // sind Konventions-Defaults. Der Aktiv-Zustand deckt sich mit der Aufnahme von
 // planning ins modules-Set in renderHarness (gleiche Bedingung).

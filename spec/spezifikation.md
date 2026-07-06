@@ -208,6 +208,7 @@ planning:
   roadmap: docs/plan/planning/in-progress/roadmap.md
 codepaths:
   exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+  # ignore-refs: ["tools/altes-skript.sh"]  # Ziel-Pfade entfernter Artefakte (referenz-weit; leer starten, DC-FA-CODE-001)
 ```
 
 Der aktive (nicht auskommentierte) Teil dekodiert über den eigenen Parser
