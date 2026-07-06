@@ -141,7 +141,10 @@ werden opt-in-Module vorgeschlagen, die echtes Signal liefern.
 **Harness-Vorlage (`ai-harness` / `ai-harness-init`):** Statt Pfaden geben
 sie eine an die ai-harness-course-Konvention (Baseline `v1.3.0`) angelehnte
 Vorlage aus: die kanonischen `ids`-Muster (`ADR-`, `MR-`, `DC-`, `slice`),
-die `matrix`-Klassen samt Referenzrichtung und das Standard-Modulset. Zwei
+die `matrix`-Klassen samt Referenzrichtung und das fixe Standard-Modulset
+(`links`, `anchors`, `ids`, `matrix`, `codepaths`, `spans`, `hostpaths`) samt
+repo-bewusstem `planning`-Block; situative Range-Module (`vcs`/`commits`) liefert
+`--print-mk`, den Rest zeigt `--print-config`. Zwei
 Modi (das passende ist nicht auto-erkennbar — Henne-Ei):
 
 - **`ai-harness-init`** gibt den **Voll-Kanon** aus (alle Blöcke aktiv) —

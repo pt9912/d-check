@@ -4,6 +4,25 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.39.0] — 2026-07-06
+
+### Changed
+
+- slice-065 — `--suggest-config ai-harness[-init]` gleicht das vorgeschlagene
+  Modulset an die **gelebte** Dogfood-Konvention an
+  ([`DC-FA-CLI-006`](spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten),
+  [ADR-0033](docs/plan/adr/0033-ai-harness-template-modulset.md)): `spans` und
+  `hostpaths` gehören jetzt zur **fixen** Aktiv-Menge, dazu ein **repo-bewusster
+  `planning`-Block** (aktiv bei vorhandener Roadmap bzw. im Voll-Kanon
+  `ai-harness-init`, sonst auskommentiert). `vcs`/`commits` (die eine
+  Commit-Range brauchen) werden auf `--print-mk` verwiesen statt ins statische
+  `modules` gelegt; `versions`/`targets` bleiben bewusst vertagt
+  (repo-spezifische `pin-pattern`/`authority`). Ein Eignungs-Kriterium K1–K4
+  macht die Modul-Aufnahme explizit; die kanonische Vorlage der Spezifikation
+  (`DC-FA-CLI-006.a`) deckt die emittierte Ausgabe nun **1:1**. Betrifft nur die
+  `ai-harness`-Vorlage — nicht den generischen Quellen-Modus und nicht die eigene
+  `.d-check.yml`.
+
 ## [0.38.0] — 2026-07-05
 
 ### Added
