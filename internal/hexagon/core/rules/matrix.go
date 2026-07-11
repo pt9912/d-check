@@ -366,6 +366,40 @@ func HeadingTexts(content []byte) []string {
 	return out
 }
 
+// HeadingSection ist eine Überschrift mit ihrem Body — den Zeilen unter der
+// Überschrift bis zur nächsten gleich-/höherrangigen (exklusive), dieselbe
+// Span-Semantik wie exclude-sections. Für die Modalitäts-Klassifikation
+// (DC-FA-MOD-001).
+type HeadingSection struct {
+	Text string // Heading-Text (nach den #, wie ExtractHeadings)
+	Body string // rohe Body-Zeilen (ohne die Heading-Zeile), "\n"-verbunden
+}
+
+// HeadingSections liefert je Überschrift ihren Body (Span bis zur nächsten
+// gleich-/höherrangigen Überschrift).
+func HeadingSections(content []byte) []HeadingSection {
+	lines := strings.Split(string(content), "\n")
+	hs := extractHeadingLines(content)
+	out := make([]HeadingSection, 0, len(hs))
+	for i, h := range hs {
+		end := len(lines) + 1 // 1-basiert, exklusive
+		for _, h2 := range hs[i+1:] {
+			if h2.level <= h.level {
+				end = h2.line
+				break
+			}
+		}
+		var body []string
+		for ln := h.line + 1; ln < end; ln++ {
+			if ln-1 >= 0 && ln-1 < len(lines) {
+				body = append(body, lines[ln-1])
+			}
+		}
+		out = append(out, HeadingSection{Text: h.text, Body: strings.Join(body, "\n")})
+	}
+	return out
+}
+
 // plainHeadingText liefert den getrimmten Heading-Text ohne
 // Markdown-Auszeichnung (Links → Linktext, Backticks/Sterne entfernt)
 // — Vergleichsbasis für exclude-sections (case-sensitiv) und das

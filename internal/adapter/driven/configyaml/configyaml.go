@@ -181,8 +181,9 @@ type rawExternal struct {
 // Kern (byte-identisch, DC-QA-02).
 type rawTrace struct {
 	Requirements *struct {
-		Source    string `yaml:"source"`
-		IDPattern string `yaml:"id-pattern"`
+		Source    string       `yaml:"source"`
+		IDPattern string       `yaml:"id-pattern"`
+		Modality  *rawModality `yaml:"modality"`
 	} `yaml:"requirements"`
 	ADRs *struct {
 		Dir         string `yaml:"dir"`
@@ -195,6 +196,12 @@ type rawTrace struct {
 		IDPrefix    string `yaml:"id-prefix"`
 	} `yaml:"slices"`
 	Coverage []rawCoverage `yaml:"coverage"`
+}
+
+// rawModality bildet den opt-in Modalitäts-Block ab (DC-FA-MOD-001).
+type rawModality struct {
+	Levels        map[string][]string `yaml:"levels"`
+	RequireLevels []string            `yaml:"require-levels"`
 }
 
 // rawCoverage bildet eine kuratierte Coverage-Quelle ab (DC-FA-COV-001).
@@ -363,6 +370,11 @@ func applyTrace(r *raw, cfg *model.Config) error {
 			return err
 		}
 		tc.Source, tc.ReqPattern = req.Source, re
+		mod, err := applyModality(req.Modality)
+		if err != nil {
+			return err
+		}
+		tc.Modality = mod
 	}
 	if adr := t.ADRs; adr != nil {
 		if err := validateTracePath("trace.adrs.dir", adr.Dir); err != nil {
@@ -388,6 +400,60 @@ func applyTrace(r *raw, cfg *model.Config) error {
 		return err
 	}
 	cfg.Trace = tc
+	return nil
+}
+
+// applyModality validiert den opt-in Modalitäts-Block (DC-FA-MOD-001) und liefert
+// ihn (nil ⇒ abwesend, aus). Präsenz — auch leere Map — ist aktiv. Fail-closed
+// (Exit 2): leerer Stufen-Name, reservierter Name `unknown`, leeres Keyword,
+// dasselbe Keyword in mehreren Stufen (Nondeterminismus), oder ein require-levels-
+// Eintrag, der weder deklarierte (bzw. Default-)Stufe noch `unknown` ist.
+func applyModality(raw *rawModality) (*model.TraceModality, error) {
+	if raw == nil {
+		return nil, nil
+	}
+	if err := validateModalityLevels(raw.Levels); err != nil {
+		return nil, err
+	}
+	effective := raw.Levels
+	if len(effective) == 0 {
+		effective = model.DefaultModalityLevels()
+	}
+	valid := map[string]bool{"unknown": true}
+	for name := range effective {
+		valid[name] = true
+	}
+	for _, rl := range raw.RequireLevels {
+		if !valid[rl] {
+			return nil, fmt.Errorf("%s: trace.requirements.modality.require-levels: %q ist keine deklarierte Stufe (noch \"unknown\")", FileName, rl)
+		}
+	}
+	return &model.TraceModality{Levels: raw.Levels, RequireLevels: raw.RequireLevels}, nil
+}
+
+// validateModalityLevels prüft eine explizit gesetzte levels-Map fail-closed:
+// leerer Stufen-Name, reservierter Name `unknown`, leeres Keyword, dasselbe
+// Keyword in mehreren Stufen (Nondeterminismus). Leere Map ⇒ Defaults, ok.
+func validateModalityLevels(levels map[string][]string) error {
+	seenKW := map[string]string{}
+	for name, kws := range levels {
+		if strings.TrimSpace(name) == "" {
+			return fmt.Errorf("%s: trace.requirements.modality.levels: leerer Stufen-Name", FileName)
+		}
+		if name == "unknown" {
+			return fmt.Errorf("%s: trace.requirements.modality.levels: Stufen-Name \"unknown\" ist reserviert", FileName)
+		}
+		for _, kw := range kws {
+			if strings.TrimSpace(kw) == "" {
+				return fmt.Errorf("%s: trace.requirements.modality.levels[%q]: leeres Keyword", FileName, name)
+			}
+			key := strings.ToLower(strings.TrimSpace(kw))
+			if other, dup := seenKW[key]; dup && other != name {
+				return fmt.Errorf("%s: trace.requirements.modality: Keyword %q in mehreren Stufen (%q, %q) — nondeterministisch", FileName, kw, other, name)
+			}
+			seenKW[key] = name
+		}
+	}
 	return nil
 }
 

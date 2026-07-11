@@ -1291,6 +1291,7 @@ type traceDoc struct {
 		ADRs     []string `json:"adrs"`
 		Slices   []string `json:"slices"`
 		Coverage []string `json:"coverage"`
+		Modality string   `json:"modality"`
 		Orphan   bool     `json:"orphan"`
 	} `json:"requirements"`
 	Total   int `json:"total"`
@@ -1875,6 +1876,118 @@ func TestCLI067_Coverage_RangesFalse(t *testing.T) {
 	}
 	if i := traceReqIdx(doc, "GG-QA-003"); i < 0 || !doc.Requirements[i].Orphan {
 		t.Fatalf("GG-QA-003 sollte ohne Range-Expansion Waise sein\n%s", js)
+	}
+}
+
+// slice-068 (DC-FA-MOD-001): trace.requirements.modality klassifiziert je
+// Anforderung die RFC-2119-Stufe (Modality-Spalte); --require-complete gatet nur
+// require-levels (Default [must]).
+func TestCLI068_Modality_KlassifikationUndGating(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md",
+		"### GG-QA-001\nStatische Analyse MUSS verfügbar sein.\n\n"+
+			"### GG-QA-002\nSonarQube SOLLTE bereitgestellt werden.\n\n"+
+			"### GG-FUTURE-001\nDie Plattform KANN RL unterstuetzen.\n")
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    id-pattern: 'GG-[A-Z][A-Z0-9]*-\\d{3}'\n    modality: {}\n")
+	_, md, _ := run(t, "--trace", root)
+	if !strings.Contains(md, "| Modality |") {
+		t.Fatalf("keine Modality-Spalte:\n%s", md)
+	}
+	code, js, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(js), &doc); err != nil {
+		t.Fatalf("JSON: %v\n%s", err, js)
+	}
+	for id, lvl := range map[string]string{"GG-QA-001": "must", "GG-QA-002": "should", "GG-FUTURE-001": "may"} {
+		i := traceReqIdx(doc, id)
+		if i < 0 {
+			t.Fatalf("%s fehlt in der RTM\n%s", id, js)
+		}
+		if doc.Requirements[i].Modality != lvl {
+			t.Fatalf("%s Modality = %q (want %q)\n%s", id, doc.Requirements[i].Modality, lvl, js)
+		}
+	}
+	// Default require-levels [must] ⇒ nur GG-QA-001 (must) gatet ⇒ Exit 1.
+	gc, _, gerr := run(t, "--trace", "--require-complete", root)
+	if gc != 1 || !strings.Contains(gerr, "gatende") {
+		t.Fatalf("Gating: Exit = %d, stderr = %q", gc, gerr)
+	}
+}
+
+// slice-068: KANN-Anforderungen sind unter Default require-levels [must] advisory
+// (Exit 0), ohne modality gaten alle Waisen (Exit 1); require-levels [may] gatet KANN.
+func TestCLI068_Modality_KannAdvisory(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "### GG-FUTURE-001\nDie Plattform KANN A.\n\n### GG-FUTURE-002\nSie KANN B.\n")
+
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    id-pattern: 'GG-[A-Z][A-Z0-9]*-\\d{3}'\n")
+	if code, _, _ := run(t, "--trace", "--require-complete", root); code != 1 {
+		t.Fatalf("ohne modality: Exit != 1 (alle Waisen gaten)")
+	}
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    id-pattern: 'GG-[A-Z][A-Z0-9]*-\\d{3}'\n    modality: {}\n")
+	if code, _, stderr := run(t, "--trace", "--require-complete", root); code != 0 {
+		t.Fatalf("mit modality [must]: Exit = %d (erwartet 0, KANN advisory), stderr=%q", code, stderr)
+	}
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    id-pattern: 'GG-[A-Z][A-Z0-9]*-\\d{3}'\n    modality:\n      require-levels: [may]\n")
+	if code, _, _ := run(t, "--trace", "--require-complete", root); code != 1 {
+		t.Fatalf("require-levels [may]: Exit != 1 (KANN gatet)")
+	}
+}
+
+// slice-068 (L2): eine Anforderung ohne Modalverb ist "unknown"; sie gatet unter
+// Default require-levels [must] NICHT (advisory), aber sehr wohl, sobald
+// require-levels "unknown" explizit einschließt (positive Gating-Richtung).
+func TestCLI068_Modality_UnknownGating(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "### GG-QA-001\nEtwas ganz ohne Modalverb.\n")
+	base := "trace:\n  requirements:\n    id-pattern: 'GG-[A-Z][A-Z0-9]*-\\d{3}'\n"
+	write(t, root, ".d-check.yml", base+"    modality: {}\n")
+	if code, _, stderr := run(t, "--trace", "--require-complete", root); code != 0 {
+		t.Fatalf("unknown unter [must]: Exit = %d (erwartet 0, advisory), stderr=%q", code, stderr)
+	}
+	write(t, root, ".d-check.yml", base+"    modality:\n      require-levels: [must, unknown]\n")
+	if code, _, _ := run(t, "--trace", "--require-complete", root); code != 1 {
+		t.Fatalf("require-levels [must, unknown]: Exit != 1 (unknown gatet)")
+	}
+}
+
+// slice-068: ohne modality keine Modality-Spalte, kein modality-Feld (byte-identisch).
+func TestCLI068_Modality_ByteIdentischOhneBlock(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "### GG-QA-001\nX MUSS Y.\n")
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    id-pattern: 'GG-[A-Z][A-Z0-9]*-\\d{3}'\n")
+	_, md, _ := run(t, "--trace", root)
+	if strings.Contains(md, "Modality") {
+		t.Fatalf("Modality-Spalte trotz fehlendem Block:\n%s", md)
+	}
+	_, js, _ := run(t, "--trace", "--json", root)
+	if strings.Contains(js, "modality") {
+		t.Fatalf("modality-Feld trotz fehlendem Block:\n%s", js)
+	}
+}
+
+// slice-068 Negative: ungültige modality-Config ⇒ Exit 2 (fail-closed).
+func TestCLI068_Modality_NegativeConfig(t *testing.T) {
+	cases := []struct{ name, yaml, msg string }{
+		{"dup keyword", "    modality:\n      levels:\n        must: [ZWINGEND]\n        should: [ZWINGEND]\n", "mehreren Stufen"},
+		{"reserved unknown", "    modality:\n      levels:\n        unknown: [X]\n", "reserviert"},
+		{"invalid require-levels", "    modality:\n      require-levels: [foo]\n", "deklarierte Stufe"},
+		{"empty keyword", "    modality:\n      levels:\n        must: ['']\n", "leeres Keyword"},
+		{"empty level name", "    modality:\n      levels:\n        '': [X]\n", "leerer Stufen-Name"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			write(t, root, "spec/lastenheft.md", "### GG-QA-001\nX MUSS Y.\n")
+			write(t, root, ".d-check.yml", "trace:\n  requirements:\n    id-pattern: 'GG-[A-Z][A-Z0-9]*-\\d{3}'\n"+tc.yaml)
+			code, _, stderr := run(t, "--trace", root)
+			if code != 2 || !strings.Contains(stderr, tc.msg) {
+				t.Fatalf("Exit = %d (erwartet 2), stderr = %q (erwartet %q)", code, stderr, tc.msg)
+			}
+		})
 	}
 }
 

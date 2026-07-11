@@ -37,7 +37,10 @@ type TraceRow struct {
 	ADRs     []string `json:"adrs" yaml:"adrs"`
 	Slices   []string `json:"slices" yaml:"slices"`
 	Coverage []string `json:"coverage,omitempty" yaml:"coverage,omitempty"`
-	Orphan   bool     `json:"orphan" yaml:"orphan"`
+	// Modality: RFC-2119-Stufe (DC-FA-MOD-001; `omitempty` ⇒ ohne aktives
+	// modality byte-identisch).
+	Modality string `json:"modality,omitempty" yaml:"modality,omitempty"`
+	Orphan   bool   `json:"orphan" yaml:"orphan"`
 }
 
 // TraceMatrix ist die vollständige Requirements Traceability Matrix,
@@ -50,6 +53,12 @@ type TraceMatrix struct {
 	// rendert die Coverage-Spalte (DC-FA-COV-001). Nicht serialisiert — reine
 	// Reporter-Steuerung; ohne Quelle false ⇒ RTM byte-identisch.
 	CoverageActive bool `json:"-" yaml:"-"`
+	// ModalityActive: trace.requirements.modality präsent ⇒ Modality-Spalte
+	// (DC-FA-MOD-001). GatingOrphans: Zahl der Waisen, die --require-complete
+	// gaten — ohne modality == Orphans (alle), mit modality nur die
+	// require-levels-Stufen. Nicht serialisiert.
+	ModalityActive bool `json:"-" yaml:"-"`
+	GatingOrphans  int  `json:"-" yaml:"-"`
 }
 
 // Kanonische Default-Quellen der RTM (d-check-Konvention; Doku-Domäne). Per
@@ -135,24 +144,51 @@ func BuildTraceMatrix(fsys driven.Filesystem, tc model.TraceConfig) (TraceMatrix
 	m := TraceMatrix{
 		Requirements:   make([]TraceRow, 0, len(order)),
 		CoverageActive: len(rt.coverage) > 0,
+		ModalityActive: tc.Modality != nil,
+	}
+	var mm modalityMatcher
+	var modByID map[string]string
+	if m.ModalityActive {
+		mm = resolveModality(tc.Modality)
+		if modByID, err = requirementModality(fsys, rt.source, rt.reqPat, mm); err != nil {
+			return TraceMatrix{}, err
+		}
 	}
 	for _, id := range order {
-		row := TraceRow{ID: id, Title: titles[id], ADRs: adrRefs[id], Slices: sliceRefs[id], Coverage: covRefs[id]}
-		if row.ADRs == nil {
-			row.ADRs = []string{}
-		}
-		if row.Slices == nil {
-			row.Slices = []string{}
-		}
-		// Waise = weder Slice- noch Coverage-Referenz (DC-FA-CLI-011, slice-067).
-		if len(row.Slices) == 0 && len(row.Coverage) == 0 {
-			row.Orphan = true
+		row := traceRow(id, titles, adrRefs, sliceRefs, covRefs, modByID, m.ModalityActive)
+		// Waise = weder Slice- noch Coverage-Referenz (DC-FA-CLI-011, slice-067);
+		// gatend nur, wenn ohne modality (alle) oder die Stufe in require-levels
+		// liegt (DC-FA-MOD-001, slice-068).
+		if row.Orphan {
 			m.Orphans++
+			if !m.ModalityActive || mm.requireLevels[row.Modality] {
+				m.GatingOrphans++
+			}
 		}
 		m.Requirements = append(m.Requirements, row)
 	}
 	m.Total = len(m.Requirements)
 	return m, nil
+}
+
+// traceRow baut eine RTM-Zeile aus den Referenz-Maps und bestimmt die
+// Waisen-Markierung (¬slice ∧ ¬coverage); bei aktivem modality die Stufe
+// (Default `unknown`).
+func traceRow(id string, titles map[string]string, adrRefs, sliceRefs, covRefs map[string][]string, modByID map[string]string, modalityActive bool) TraceRow {
+	row := TraceRow{ID: id, Title: titles[id], ADRs: adrRefs[id], Slices: sliceRefs[id], Coverage: covRefs[id]}
+	if row.ADRs == nil {
+		row.ADRs = []string{}
+	}
+	if row.Slices == nil {
+		row.Slices = []string{}
+	}
+	if modalityActive {
+		if row.Modality = modByID[id]; row.Modality == "" {
+			row.Modality = "unknown"
+		}
+	}
+	row.Orphan = len(row.Slices) == 0 && len(row.Coverage) == 0
+	return row
 }
 
 // traceRequirements sammelt die im Anforderungs-Quelldokument (source)
@@ -401,4 +437,111 @@ func expandRange(id, rest string, reqPat *regexp.Regexp) ([]string, error) {
 		return out, nil
 	}
 	return nil, nil
+}
+
+// mdEmphasis matcht Markdown-Emphasis-Zeichen (`*`/`` ` ``) für die
+// Body-Normalisierung der Modalitäts-Klassifikation (DC-FA-MOD-001).
+var mdEmphasis = regexp.MustCompile("[*`]+")
+
+// modalityMatcher hält den kompilierten Keyword-Matcher (längster Treffer via
+// longest-first-Alternation), die Rückabbildung Keyword→Stufe und die gatenden
+// Stufen (DC-FA-MOD-001).
+type modalityMatcher struct {
+	re            *regexp.Regexp
+	kwToLevel     map[string]string // lowercased Keyword → Stufe
+	requireLevels map[string]bool
+}
+
+// resolveModality baut den Matcher aus der (ggf. Default-)Keyword-Menge:
+// Alternation längster-zuerst (deterministisch, bei Gleichstand byte-sortiert),
+// `(?i)\b…\b`; require-levels Default `[must]`.
+func resolveModality(m *model.TraceModality) modalityMatcher {
+	levels := m.Levels
+	if len(levels) == 0 {
+		levels = model.DefaultModalityLevels()
+	}
+	kwToLevel := map[string]string{}
+	var kws []string
+	for level, list := range levels {
+		for _, kw := range list {
+			key := strings.ToLower(strings.TrimSpace(kw))
+			if key == "" {
+				continue
+			}
+			kwToLevel[key] = level
+			kws = append(kws, strings.TrimSpace(kw))
+		}
+	}
+	sort.Slice(kws, func(i, j int) bool {
+		if len(kws[i]) != len(kws[j]) {
+			return len(kws[i]) > len(kws[j])
+		}
+		return kws[i] < kws[j]
+	})
+	quoted := make([]string, len(kws))
+	for i, kw := range kws {
+		quoted[i] = regexp.QuoteMeta(kw)
+	}
+	req := m.RequireLevels
+	if len(req) == 0 {
+		req = []string{"must"}
+	}
+	rl := map[string]bool{}
+	for _, r := range req {
+		rl[r] = true
+	}
+	mm := modalityMatcher{kwToLevel: kwToLevel, requireLevels: rl}
+	if len(quoted) > 0 {
+		mm.re = regexp.MustCompile(`(?i)\b(?:` + strings.Join(quoted, "|") + `)\b`)
+	}
+	return mm
+}
+
+// classify liefert die Stufe der Anforderung anhand des ersten (frühesten)/
+// längsten Keyword-Treffers im normalisierten Body; kein Treffer ⇒ "unknown".
+func (mm modalityMatcher) classify(body string) string {
+	if mm.re == nil {
+		return "unknown"
+	}
+	if hit := mm.re.FindString(normalizeBody(body)); hit != "" {
+		if level, ok := mm.kwToLevel[strings.ToLower(hit)]; ok {
+			return level
+		}
+	}
+	return "unknown"
+}
+
+// normalizeBody entfernt Markdown-Emphasis und zieht Whitespace/Umbrüche zu je
+// einem Leerzeichen zusammen (DC-FA-MOD-001.a Schritt 2) — sonst matchte
+// `**MUSS** NICHT` oder `MUSS\nNICHT` die Phrase nicht.
+func normalizeBody(body string) string {
+	return strings.Join(strings.Fields(mdEmphasis.ReplaceAllString(body, "")), " ")
+}
+
+// requirementModality klassifiziert je Anforderung (source) ihre Stufe über den
+// Body-Abschnitt (rules.HeadingSections); nur Headings, deren erstes Token eine
+// Anforderungs-Kennung (reqPat) ist (DC-FA-MOD-001).
+func requirementModality(fsys driven.Filesystem, source string, reqPat *regexp.Regexp, mm modalityMatcher) (map[string]string, error) {
+	res := map[string]string{}
+	if !pathExists(fsys, source) {
+		return res, nil
+	}
+	content, err := fsys.ReadFile(source)
+	if err != nil {
+		return nil, err
+	}
+	for _, hs := range rules.HeadingSections(content) {
+		fields := strings.Fields(rules.StripHeadingLinks(hs.Text))
+		if len(fields) == 0 {
+			continue
+		}
+		tok := strings.Trim(fields[0], "`.,:;")
+		if !isFullReqID(reqPat, tok) {
+			continue
+		}
+		if _, seen := res[tok]; !seen {
+			res[tok] = mm.classify(hs.Body)
+		}
+	}
+	return res, nil
 }

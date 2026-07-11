@@ -362,6 +362,31 @@ type TraceConfig struct {
 	// Coverage: opt-in kuratierte Coverage-Quellen (DC-FA-COV-001); leer ⇒
 	// keine Coverage-Spalte, RTM byte-identisch.
 	Coverage []TraceCoverage
+	// Modality: opt-in Modalitäts-Klassifikation (DC-FA-MOD-001); nil ⇒ aus
+	// (byte-identisch). Präsenz (auch leere Map `modality: {}`) ⇒ aktiv, dann
+	// greifen die Default-Keywords.
+	Modality *TraceModality
+}
+
+// TraceModality sind die Parameter der Modalitäts-Klassifikation (DC-FA-MOD-001):
+// Levels bildet Stufen-Name → Modal-Verb-Keywords ab (leer ⇒ Built-in DE+EN-
+// RFC-2119-Default im app-Kern); RequireLevels nennt die Stufen, deren Waisen
+// `--require-complete` gaten (leer ⇒ Default `[must]`).
+type TraceModality struct {
+	Levels        map[string][]string
+	RequireLevels []string
+}
+
+// DefaultModalityLevels ist die kanonische Built-in-DE+EN-RFC-2119-Keyword-Menge
+// (DC-FA-MOD-001) — genutzt, wenn `modality.levels` leer ist. Deterministisch
+// (frische Map je Aufruf); dup-frei über die Stufen. Die DE-Negations-Asymmetrie
+// ist bewusst: `DARF NICHT` = Verbot (must), `MUSS NICHT` = braucht-nicht (may).
+func DefaultModalityLevels() map[string][]string {
+	return map[string][]string{
+		"must":   {"MUSS", "MUESSEN", "MÜSSEN", "DARF NICHT", "DÜRFEN NICHT", "MUST", "SHALL", "MUST NOT", "SHALL NOT"},
+		"should": {"SOLLTE", "SOLLTEN", "SOLLTE NICHT", "SOLLTEN NICHT", "SHOULD", "SHOULD NOT"},
+		"may":    {"KANN", "KÖNNEN", "MUSS NICHT", "MÜSSEN NICHT", "MAY", "OPTIONAL"},
+	}
 }
 
 // TraceCoverage ist eine kuratierte Coverage-Quelle der RTM (DC-FA-COV-001):

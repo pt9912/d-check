@@ -243,31 +243,45 @@ func DoctorYAML(stdout io.Writer, findings []model.Finding, sum Summary, exitCod
 func Trace(stdout io.Writer, m app.TraceMatrix) error {
 	var b strings.Builder
 	b.WriteString("# Requirements Traceability Matrix\n\n")
-	// Coverage-Spalte nur bei aktiver trace.coverage (DC-FA-COV-001) — vor
-	// Status; ohne Quelle byte-identisch zur bisherigen 5-Spalten-Tabelle.
+	// Spalten dynamisch: Coverage (DC-FA-COV-001) und Modality (DC-FA-MOD-001)
+	// je konditional, beide **vor** Status. Ohne beide byte-identisch zur
+	// bisherigen 5-Spalten-Tabelle (DC-QA-02).
+	headers := []string{"Anforderung", "Titel", "ADRs", "Slices"}
 	if m.CoverageActive {
-		b.WriteString("| Anforderung | Titel | ADRs | Slices | Coverage | Status |\n")
-		b.WriteString("|---|---|---|---|---|---|\n")
-	} else {
-		b.WriteString("| Anforderung | Titel | ADRs | Slices | Status |\n")
-		b.WriteString("|---|---|---|---|---|\n")
+		headers = append(headers, "Coverage")
 	}
+	if m.ModalityActive {
+		headers = append(headers, "Modality")
+	}
+	headers = append(headers, "Status")
+	b.WriteString("| " + strings.Join(headers, " | ") + " |\n")
+	b.WriteString("|" + strings.Repeat("---|", len(headers)) + "\n")
 	for _, r := range m.Requirements {
 		status := "ok"
 		if r.Orphan {
 			status = "WAISE"
 		}
+		cells := []string{r.ID, traceCell(r.Title), joinOrDash(r.ADRs), joinOrDash(r.Slices)}
 		if m.CoverageActive {
-			fmt.Fprintf(&b, "| %s | %s | %s | %s | %s | %s |\n",
-				r.ID, traceCell(r.Title), joinOrDash(r.ADRs), joinOrDash(r.Slices), joinOrDash(r.Coverage), status)
-		} else {
-			fmt.Fprintf(&b, "| %s | %s | %s | %s | %s |\n",
-				r.ID, traceCell(r.Title), joinOrDash(r.ADRs), joinOrDash(r.Slices), status)
+			cells = append(cells, joinOrDash(r.Coverage))
 		}
+		if m.ModalityActive {
+			cells = append(cells, orDash(r.Modality))
+		}
+		cells = append(cells, status)
+		b.WriteString("| " + strings.Join(cells, " | ") + " |\n")
 	}
 	fmt.Fprintf(&b, "\n%d Anforderung(en), %d Waise(n).\n", m.Total, m.Orphans)
 	_, err := io.WriteString(stdout, b.String())
 	return err
+}
+
+// orDash liefert s oder einen Gedankenstrich bei leerem s.
+func orDash(s string) string {
+	if s == "" {
+		return "—"
+	}
+	return s
 }
 
 // TraceJSON rendert die Matrix maschinenlesbar als JSON (--trace --json),

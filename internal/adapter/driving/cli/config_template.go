@@ -150,6 +150,12 @@ modules: [links, anchors]
 #   requirements:
 #     source: spec/lastenheft.md   # Datei mit den Anforderungs-Headings
 #     id-pattern: '[A-Z][A-Z0-9]*-(?:FA-[A-Z]+|QA)-\d+[A-Za-z]?'   # Kennung im Heading UND als Referenz
+#     modality:                    # RFC-2119-Klassifikation je Anforderung (eigene Spalte); {} = Built-in DE+EN-Defaults
+#       # levels:                  # Stufe -> Modal-Verb-Keywords (überschreibt die Defaults; kein Keyword in 2 Stufen)
+#       #   must:   [MUSS, MUESSEN, "DARF NICHT", MUST, SHALL]
+#       #   should: [SOLLTE, SHOULD]
+#       #   may:    [KANN, "MUSS NICHT", MAY]
+#       require-levels: [must]     # nur diese Stufen gaten --require-complete (unknown nur wenn gelistet)
 #   adrs:
 #     dir: docs/plan/adr
 #     file-pattern: '^(\d{4})-.*\.md$'          # Capture 1 = Owner-Kennung
