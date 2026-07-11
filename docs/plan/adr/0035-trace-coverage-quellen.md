@@ -1,6 +1,6 @@
 # ADR-0035 — Kuratierte Coverage-Quellen der RTM (`trace.coverage`, range-aware)
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-11
 **Autor:** pt9912
 **Bezug:** [`DC-FA-COV-001`](../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
@@ -154,3 +154,4 @@ die bestehenden Byte-Identitäts-Tests und die Handbuch-E2E-Beispiele
 | Datum | Ereignis |
 | --- | --- |
 | 2026-07-11 | Entwurf (slice-067, welle-56; Konsumenten-Analyse grid-gym: 171 „Waisen" zu ≥122 anderswo belegt — ADR/`traceability.md`/Wellen —, weil die slice-zentrische RTM die kuratierte Deckungs-Matrix mit Bereichs-Notation nicht erkennt). Dritte opt-in Referenzklasse `trace.coverage` (Liste benannter `files` + `label` + `ranges` + `sections`/`exclude-sections`), range-aware (`<FAM>-AAA..BBB`/`/`-Enum, breiten-erhaltend, gegen `id-pattern` validiert, fail-closed), Abschnitts-Scoping über die bestehende `matrix`-Span-Semantik (gegen die §27.1.1-„ohne Design-Artefakt"-Falle); Coverage zählt zur Waisen-Definition ([`DC-FA-CLI-011`](../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)), eigene RTM-Spalte konditional (byte-identisch ohne Quelle). `files`-statt-`dir` gegen ADR-Kontamination; ADR-Referenz deckt weiter nicht. Lastenheft-CR (v0.41.0), Release geplant. Status Proposed. |
+| 2026-07-11 | Angenommen mit der slice-067-Closure: `model.TraceCoverage` + `configyaml.applyTraceCoverage` (fail-closed) + `app.coverageRefs`/`expandRange`/`checkSectionNames` + `rules.SelectSections`/`HeadingTexts` (Section-Span-Wiederverwendung); Reporter-konditionale Coverage-Spalte. End-to-End gegen grid-gyms echte `traceability.md` verifiziert: Waisen **113 → 10** (`GG-QA-001..006` via Range gedeckt). Doc-first-Review R1 NACHBESSERN (Sektionsname = voller Heading-Text + fail-closed-Guard) + Impl-Review R2 ACCEPT-WITH-NITS (Whitelist-/`ranges:false`-Test, Meldungs-Text) eingearbeitet. `make gates` grün, Release v0.41.0. Status Accepted. |

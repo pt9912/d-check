@@ -1,10 +1,10 @@
 # Slice slice-067: Kuratierte Coverage-Quellen der RTM (`trace.coverage`, range-aware)
 
-**Status:** in-progress (welle-56-trace-coverage-quellen). Doc-first-Fundament
-gelegt (Lastenheft-CR, Spezifikation, [ADR-0035](../../adr/0035-trace-coverage-quellen.md)
-Proposed); Implementierung + Review + Release folgen. Lifecycle
-`in-progress`→`done` mit Roadmap-Flip bei Closure
-([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)).
+**Status:** done (welle-56-trace-coverage-quellen). Lifecycle abgeschlossen
+(`in-progress`→`done`, Roadmap-Flip §Aktuelle Welle,
+[`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise));
+[ADR-0035](../../adr/0035-trace-coverage-quellen.md) auf **Accepted** (ADR-Annotation
+bei Closure). Ergebnis + Belege in §7.
 
 **Welle:** welle-56-trace-coverage-quellen.
 
@@ -140,3 +140,47 @@ Explizit sauber verifiziert (R2, per Fallanalyse mutations-hart): Byte-Identitä
 Voll-Match); Sektions-Filter kein Off-by-one (beide `proseLines`/`i+1`), Guard
 über alle `files`; Fail-closed bis Exit 2 verdrahtet; Spec↔Code-Parität;
 `sortedSets`-Extraktion verhaltensgleich zum Inline-Dedup.
+
+## 7. Closure-Notiz (nach done)
+
+**Umgesetzt:** Die RTM (`--trace`,
+[`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix))
+trägt eine dritte opt-in Referenzklasse
+[`trace.coverage`](../../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in):
+eine Liste kuratierter Quellen (`files`+`label`+`ranges`+`sections`/`exclude-sections`),
+die Deckungs-Matrizen als **eigene Coverage-Spalte** einliest — **range-aware**
+(`<FAM>-AAA..BBB` breiten-erhaltend + `/`-Enum, gegen `id-pattern` validiert) und
+**abschnitts-gescopt** (Whitelist/Blacklist über die bestehende
+`matrix`-Span-Semantik, voller Heading-Klartext). Eine Anforderung ist **Waise**
+nur ohne Slice **und** ohne Coverage
+([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)
+angepasst). Fail-closed (fehlende Datei / leeres `label` / Sektion ohne
+Heading-Treffer / ungültige Range ⇒ Exit 2). **Ohne `trace.coverage` byte-identisch**
+(keine Spalte, kein `coverage`-Feld; [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)). `files`-statt-`dir` verhindert
+ADR-Kontamination strukturell.
+
+**Belege:** `make gates` grün (doc-check + lint + test + arch-check + coverage-gate
++ semgrep + gate-consistency + planning-check). **End-to-End gegen grid-gyms echte
+`traceability.md`** verifiziert: Slices (NNN+M-Welle) allein **113** Waisen; mit
+`coverage` (ranges + `exclude-sections: ["27.1.1 Anforderungen ohne Design-Artefakt"]`)
+**10** Waisen — `GG-QA-001..006` via Range alle als `Trace` gedeckt. Zwei
+unabhängige Reviews (Doc-first R1 NACHBESSERN + Impl R2 ACCEPT-WITH-NITS, alle
+eingearbeitet, §6).
+
+**Commit-Kette:** `78f6c1a` (doc-first) · `5ebd6f6` (feat) · `1a41c22`
+(release-prep v0.41.0) · `97e0ac4` (Review R1+R2) · `d013def` (Closure-Move) ·
+Closure-Body · digest-backfill. **Release v0.41.0** (Push → CI → Tag → GHCR →
+digest-backfill; Digest-Pin folgt).
+
+**Lehre:** (i) Coverage ist eine **andere Dimension** als Slice-Implementierung —
+eine getrennte Referenzklasse mit **eigener Spalte** (statt `slices` zu überladen)
+hält beide ehrlich; `files`-statt-`dir` verhindert ADR-Kontamination strukturell.
+(ii) Wird eine bestehende **exakt-vergleichende** Mechanik (`plainHeadingText`)
+wiederverwendet, müssen die **Beispiele** die exakte Form treffen (voller
+Heading-Text, nicht Kurzform) — sonst still falsch; ein fail-closed-Guard
+(Sektion ohne Treffer ⇒ Exit 2) macht die Falle laut (Doc-first-R1). (iii) Ein
+**Default-byte-identisch**-Test deckt den **Include-Zweig** einer Whitelist nicht
+ab, wenn der einzige Whitelist-Test schon im Guard abbricht — den positiven Pfad
+separat testen (Impl-R2). (iv) Der Range-Parser (breiten-erhaltend, Familie =
+Kennung ohne Trailing-Ziffern) ist die einzige neue Kernlogik — isoliert
+unit-testen.
