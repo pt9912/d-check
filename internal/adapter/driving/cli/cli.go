@@ -177,8 +177,8 @@ func earlyGenerators(o options, stdout io.Writer) bool {
 // runTrace gibt die Requirements Traceability Matrix aus (DC-FA-CLI-009) —
 // read-only; ausgelagert aus Run, um dessen Komplexität niedrig zu halten.
 // Mit opts.requireComplete (DC-FA-CLI-011) bindet es Waisen an Exit 1.
-func runTrace(fsys driven.Filesystem, opts options, stdout, stderr io.Writer) int {
-	matrix, err := app.BuildTraceMatrix(fsys)
+func runTrace(fsys driven.Filesystem, cfg model.Config, opts options, stdout, stderr io.Writer) int {
+	matrix, err := app.BuildTraceMatrix(fsys, cfg.Trace)
 	if err == nil {
 		switch {
 		case opts.json:
@@ -428,14 +428,16 @@ func Run(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprint(stdout, out)
 		return 0
 	}
-	// DC-FA-CLI-009 (slice-036): Requirements Traceability Matrix —
-	// read-only, kein Dokument erzeugt (ausgelagert: hält Run schlank).
-	if opts.trace {
-		return runTrace(fsys, opts, stdout, stderr)
-	}
 	cfg, ok := loadConfig(fsys, stderr)
 	if !ok {
 		return 2
+	}
+	// DC-FA-CLI-009 (slice-036/066): Requirements Traceability Matrix —
+	// read-only, kein Dokument erzeugt (ausgelagert: hält Run schlank). Braucht
+	// cfg (den opt-in trace-Block, slice-066), daher nach loadConfig; ein
+	// trace-Config-Fehler ⇒ Exit 2 (fail-closed).
+	if opts.trace {
+		return runTrace(fsys, cfg, opts, stdout, stderr)
 	}
 	// DC-FA-COMMITS-001: --commit-msg-Kurzschluss (Modul commits) — prüft eine
 	// einzelne Pending-Message ohne Scan/VCS-Port (commit-msg-Hook). Braucht cfg

@@ -59,6 +59,9 @@ type Config struct {
 	Tracked TrackedConfig
 	// Targets: Parameter des Moduls targets (DC-FA-TGT-001).
 	Targets TargetsConfig
+	// Trace: konfigurierbare Quellen der RTM (DC-FA-CLI-009); Nullwert =
+	// Konventions-Default (byte-identisch).
+	Trace TraceConfig
 	// Scopes: modul-lokale Scan-Scopes (DC-FA-CONF-002); Schlüssel
 	// ist der Modulname, nil-Eintrag/fehlender Schlüssel = globaler
 	// Scope.
@@ -335,6 +338,27 @@ type TargetsConfig struct {
 	DocTables     []string
 	Authority     string
 	ExemptTargets []string
+}
+
+// TraceConfig sind die konfigurierbaren Quellen der Requirements Traceability
+// Matrix (DC-FA-CLI-009): Source ist die Anforderungs-Quelldatei; ReqPattern
+// erkennt eine Anforderungs-Kennung (Ganz-Token im Heading UND als Referenz in
+// ADR/Slice-Dateien); ADRDir/SliceDir sind die Referenz-Verzeichnisse;
+// ADRFile/SliceFile leiten je Datei die Owner-Kennung über den Basisnamen ab
+// (Capture-Gruppe 1), ADRPrefix/SlicePrefix werden ihr vorangestellt. Reiner
+// Daten-Struct: der **Nullwert** (alle Felder leer/nil) bedeutet „Konventions-
+// Default"; die Auflösung der Defaults liegt im app-Kern (trace.go), wo die
+// Default-Regex/-Pfade als Konstanten leben. Ohne trace-Block ⇒ RTM
+// byte-identisch (DC-QA-02).
+type TraceConfig struct {
+	Source      string
+	ReqPattern  *regexp.Regexp
+	ADRDir      string
+	ADRFile     *regexp.Regexp
+	ADRPrefix   string
+	SliceDir    string
+	SliceFile   *regexp.Regexp
+	SlicePrefix string
 }
 
 // EffectiveModules wendet die Modul-Auflösung an

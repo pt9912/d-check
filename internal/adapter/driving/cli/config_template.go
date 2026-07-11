@@ -141,4 +141,21 @@ modules: [links, anchors]
 # external:
 #   timeout-seconds: 10
 #   parallel: 4
+
+# --- trace: konfigurierbare Quellen der Requirements Traceability Matrix (--trace) ---
+#   (KEIN Modul — steuert nur --trace / --require-complete. Jedes Feld optional;
+#    abwesend ⇒ d-checks Konventions-Default ⇒ RTM byte-identisch. Eine gesetzte
+#    file-pattern braucht eine Capture-Gruppe (…) = Owner-Kennung, sonst Exit 2.)
+# trace:
+#   requirements:
+#     source: spec/lastenheft.md   # Datei mit den Anforderungs-Headings
+#     id-pattern: '[A-Z][A-Z0-9]*-(?:FA-[A-Z]+|QA)-\d+[A-Za-z]?'   # Kennung im Heading UND als Referenz
+#   adrs:
+#     dir: docs/plan/adr
+#     file-pattern: '^(\d{4})-.*\.md$'          # Capture 1 = Owner-Kennung
+#     id-prefix: 'ADR-'
+#   slices:
+#     dir: docs/plan/planning
+#     file-pattern: '^(slice-\d+)-.*\.md$'      # z. B. '^(\d+)-.*\.md$' für NNN-titel.md
+#     id-prefix: ''                             # der Owner-Kennung vorangestellt (Default leer)
 `

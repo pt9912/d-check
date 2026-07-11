@@ -176,6 +176,26 @@ type rawExternal struct {
 	Parallel       *int      `yaml:"parallel"`
 }
 
+// rawTrace bildet den opt-in trace-Block ab (DC-FA-CLI-009): konfigurierbare
+// RTM-Quellen. Jeder Unter-Block/jedes Feld ist optional; abwesend ⇒ Default im
+// Kern (byte-identisch, DC-QA-02).
+type rawTrace struct {
+	Requirements *struct {
+		Source    string `yaml:"source"`
+		IDPattern string `yaml:"id-pattern"`
+	} `yaml:"requirements"`
+	ADRs *struct {
+		Dir         string `yaml:"dir"`
+		FilePattern string `yaml:"file-pattern"`
+		IDPrefix    string `yaml:"id-prefix"`
+	} `yaml:"adrs"`
+	Slices *struct {
+		Dir         string `yaml:"dir"`
+		FilePattern string `yaml:"file-pattern"`
+		IDPrefix    string `yaml:"id-prefix"`
+	} `yaml:"slices"`
+}
+
 // raw bildet das Voll-Schema von .d-check.yml ab
 // (spec/spezifikation.md §2). Unbekannte Schlüssel sind durch
 // KnownFields(true) Fehler.
@@ -205,6 +225,7 @@ type raw struct {
 	Planning  *rawPlanning  `yaml:"planning"`
 	Tracked   *rawTracked   `yaml:"tracked"`
 	Targets   *rawTargets   `yaml:"targets"`
+	Trace     *rawTrace     `yaml:"trace"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -276,7 +297,85 @@ func applyModules(r *raw, cfg *model.Config) error {
 	if err := applyTargets(r, cfg); err != nil {
 		return err
 	}
+	if err := applyTrace(r, cfg); err != nil {
+		return err
+	}
 	return applyScopes(r, cfg)
+}
+
+// compileTracePattern kompiliert ein trace-Muster (DC-FA-CLI-009). Leer ⇒ nil
+// (Default im Kern). Ein nicht kompilierbares Muster ist ein Fehler (Exit 2);
+// requireCapture ⇒ das Muster muss mindestens eine Capture-Gruppe tragen, sonst
+// wäre die Owner-Kennung (m[1]) undefiniert (fail-closed, verhindert ein
+// Laufzeit-Panic).
+func compileTracePattern(field, pattern string, requireCapture bool) (*regexp.Regexp, error) {
+	if strings.TrimSpace(pattern) == "" {
+		return nil, nil
+	}
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %s: %v", FileName, field, err)
+	}
+	if requireCapture && re.NumSubexp() < 1 {
+		return nil, fmt.Errorf("%s: %s braucht mindestens eine Capture-Gruppe '(…)' für die Owner-Kennung", FileName, field)
+	}
+	return re, nil
+}
+
+// validateTracePath prüft, dass ein trace-Pfad relativ zur Repo-Wurzel liegt
+// (kein führendes '/', kein '..') — analog planning.roadmap. Leer ⇒ zulässig
+// (Default im Kern). Die Existenz prüft der Kern beim Lauf (fehlende Quelle ⇒
+// leere/teilbefüllte Matrix, kein Fehler; DC-FA-CLI-009.a).
+func validateTracePath(field, p string) error {
+	if strings.HasPrefix(p, "/") || strings.Contains(p, "..") {
+		return fmt.Errorf("%s: %s %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')", FileName, field, p)
+	}
+	return nil
+}
+
+// applyTrace validiert und kompiliert den opt-in trace-Block (DC-FA-CLI-009):
+// je Unter-Block Pfad-Validierung + Regex-Kompilierung; die file-pattern der
+// Referenzklassen brauchen eine Capture-Gruppe. Alles fail-closed (Exit 2). Ohne
+// trace-Block bleibt cfg.Trace der Nullwert ⇒ Konventions-Default im Kern
+// (byte-identisch, DC-QA-02).
+func applyTrace(r *raw, cfg *model.Config) error {
+	if r.Trace == nil {
+		return nil
+	}
+	t := r.Trace
+	var tc model.TraceConfig
+	if req := t.Requirements; req != nil {
+		if err := validateTracePath("trace.requirements.source", req.Source); err != nil {
+			return err
+		}
+		re, err := compileTracePattern("trace.requirements.id-pattern", req.IDPattern, false)
+		if err != nil {
+			return err
+		}
+		tc.Source, tc.ReqPattern = req.Source, re
+	}
+	if adr := t.ADRs; adr != nil {
+		if err := validateTracePath("trace.adrs.dir", adr.Dir); err != nil {
+			return err
+		}
+		re, err := compileTracePattern("trace.adrs.file-pattern", adr.FilePattern, true)
+		if err != nil {
+			return err
+		}
+		tc.ADRDir, tc.ADRFile, tc.ADRPrefix = adr.Dir, re, adr.IDPrefix
+	}
+	if sl := t.Slices; sl != nil {
+		if err := validateTracePath("trace.slices.dir", sl.Dir); err != nil {
+			return err
+		}
+		re, err := compileTracePattern("trace.slices.file-pattern", sl.FilePattern, true)
+		if err != nil {
+			return err
+		}
+		tc.SliceDir, tc.SliceFile, tc.SlicePrefix = sl.Dir, re, sl.IDPrefix
+	}
+	cfg.Trace = tc
+	return nil
 }
 
 // compileConfigRegex kompiliert ein Zeilen-Regex einer Modul-Konfiguration

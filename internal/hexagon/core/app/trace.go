@@ -6,18 +6,22 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"github.com/pt9912/d-check/internal/hexagon/core/rules"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
-// reqIDFull erkennt eine vollständige Anforderungs-Kennung
+// reqIDFull ist die **Default**-Gestalt einer Anforderungs-Kennung
 // (`<PREFIX>-FA-<BEREICH>-NNN` bzw. `<PREFIX>-QA-NN`) — präfix-agnostisch
 // (DC, AC, …), deckungsgleich mit dem ids-/matrix-Anforderungs-Muster
-// (slice-036, DC-FA-CLI-009).
+// (slice-036, DC-FA-CLI-009); per `trace.requirements.id-pattern` überschreibbar
+// (slice-066).
 var reqIDFull = regexp.MustCompile(`[A-Z][A-Z0-9]*-(?:FA-[A-Z]+|QA)-\d+[A-Za-z]?`)
 
 // adrFileShape: `0013-foo.md` → Capture `0013` (ADR-Kennung über den
-// Dateinamen). sliceFileShape: `slice-039-foo.md` → `slice-039`.
+// Dateinamen). sliceFileShape: `slice-039-foo.md` → `slice-039`. Die **Default**-
+// Datei-Gestalten; per `trace.adrs.file-pattern`/`trace.slices.file-pattern`
+// überschreibbar (slice-066).
 var adrFileShape = regexp.MustCompile(`^(\d{4})-.*\.md$`)
 var sliceFileShape = regexp.MustCompile(`^(slice-\d+)-.*\.md$`)
 
@@ -39,27 +43,77 @@ type TraceMatrix struct {
 	Orphans      int        `json:"orphans" yaml:"orphans"`
 }
 
-// Kanonische Quellen der RTM (d-check-Konvention; Doku-Domäne).
+// Kanonische Default-Quellen der RTM (d-check-Konvention; Doku-Domäne). Per
+// trace-Block überschreibbar (slice-066, DC-FA-CLI-009).
 const (
 	traceReqSource = "spec/lastenheft.md"
 	traceADRDir    = "docs/plan/adr"
 	traceSliceDir  = "docs/plan/planning"
 )
 
-// BuildTraceMatrix leitet die RTM aus den kanonischen Quellen ab
-// (DC-FA-CLI-009, slice-036): Anforderungen aus dem Lastenheft, ihre
-// Referenzen aus ADR- und Slice-Dateien (Doku-only). Reiner Lese-Pfad
-// (DC-QA-03), deterministisch (DC-QA-02).
-func BuildTraceMatrix(fsys driven.Filesystem) (TraceMatrix, error) {
-	titles, order, err := traceRequirements(fsys)
+// resolvedTrace hält die aufgelösten RTM-Quellen (konfigurierter Wert über
+// Konventions-Default). Der Nullwert einer model.TraceConfig ⇒ alle Defaults ⇒
+// byte-identisch (DC-QA-02).
+type resolvedTrace struct {
+	source      string
+	reqPat      *regexp.Regexp
+	adrDir      string
+	adrFile     *regexp.Regexp
+	adrPrefix   string
+	sliceDir    string
+	sliceFile   *regexp.Regexp
+	slicePrefix string
+}
+
+// resolveTrace legt die Konventions-Defaults an und überschreibt sie mit jedem
+// gesetzten trace-Feld. Ein leerer ADR-Präfix bleibt bewusst Default `ADR-`
+// (nicht ausdrückbar, DC-FA-CLI-009 Out-of-Scope); der Slice-Präfix ist per
+// Default leer und wird direkt übernommen.
+func resolveTrace(tc model.TraceConfig) resolvedTrace {
+	rt := resolvedTrace{
+		source: traceReqSource, reqPat: reqIDFull,
+		adrDir: traceADRDir, adrFile: adrFileShape, adrPrefix: "ADR-",
+		sliceDir: traceSliceDir, sliceFile: sliceFileShape, slicePrefix: tc.SlicePrefix,
+	}
+	if tc.Source != "" {
+		rt.source = tc.Source
+	}
+	if tc.ReqPattern != nil {
+		rt.reqPat = tc.ReqPattern
+	}
+	if tc.ADRDir != "" {
+		rt.adrDir = tc.ADRDir
+	}
+	if tc.ADRFile != nil {
+		rt.adrFile = tc.ADRFile
+	}
+	if tc.ADRPrefix != "" {
+		rt.adrPrefix = tc.ADRPrefix
+	}
+	if tc.SliceDir != "" {
+		rt.sliceDir = tc.SliceDir
+	}
+	if tc.SliceFile != nil {
+		rt.sliceFile = tc.SliceFile
+	}
+	return rt
+}
+
+// BuildTraceMatrix leitet die RTM aus den (per trace-Block konfigurierbaren)
+// Quellen ab (DC-FA-CLI-009, slice-036/066): Anforderungen aus dem Lastenheft,
+// ihre Referenzen aus ADR- und Slice-Dateien (Doku-only). Der Nullwert von tc ⇒
+// Konventions-Default ⇒ byte-identisch (DC-QA-02). Reiner Lese-Pfad (DC-QA-03).
+func BuildTraceMatrix(fsys driven.Filesystem, tc model.TraceConfig) (TraceMatrix, error) {
+	rt := resolveTrace(tc)
+	titles, order, err := traceRequirements(fsys, rt.source, rt.reqPat)
 	if err != nil {
 		return TraceMatrix{}, err
 	}
-	adrRefs, err := traceRefs(fsys, traceADRDir, adrFileShape, "ADR-")
+	adrRefs, err := traceRefs(fsys, rt.adrDir, rt.adrFile, rt.adrPrefix, rt.reqPat)
 	if err != nil {
 		return TraceMatrix{}, err
 	}
-	sliceRefs, err := traceRefs(fsys, traceSliceDir, sliceFileShape, "")
+	sliceRefs, err := traceRefs(fsys, rt.sliceDir, rt.sliceFile, rt.slicePrefix, rt.reqPat)
 	if err != nil {
 		return TraceMatrix{}, err
 	}
@@ -80,14 +134,14 @@ func BuildTraceMatrix(fsys driven.Filesystem) (TraceMatrix, error) {
 	return m, nil
 }
 
-// traceRequirements sammelt die im Lastenheft definierten Anforderungen
-// (Heading mit führender Anforderungs-Kennung) als ID→Titel plus die
-// byteweise sortierte Reihenfolge.
-func traceRequirements(fsys driven.Filesystem) (map[string]string, []string, error) {
-	if !pathExists(fsys, traceReqSource) {
+// traceRequirements sammelt die im Anforderungs-Quelldokument (source)
+// definierten Anforderungen (Heading mit führender Anforderungs-Kennung nach
+// reqPat) als ID→Titel plus die byteweise sortierte Reihenfolge.
+func traceRequirements(fsys driven.Filesystem, source string, reqPat *regexp.Regexp) (map[string]string, []string, error) {
+	if !pathExists(fsys, source) {
 		return map[string]string{}, nil, nil
 	}
-	content, err := fsys.ReadFile(traceReqSource)
+	content, err := fsys.ReadFile(source)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -99,7 +153,7 @@ func traceRequirements(fsys driven.Filesystem) (map[string]string, []string, err
 			continue
 		}
 		tok := strings.Trim(fields[0], "`.,:;")
-		if !isFullReqID(tok) {
+		if !isFullReqID(reqPat, tok) {
 			continue
 		}
 		if _, seen := titles[tok]; !seen {
@@ -114,10 +168,10 @@ func traceRequirements(fsys driven.Filesystem) (map[string]string, []string, err
 	return titles, order, nil
 }
 
-// isFullReqID prüft, ob tok GANZ eine Anforderungs-Kennung ist (nicht nur
-// als Teilstring) — verhindert, dass `DC-FA-CLI-006.a` o. Ä. zählt.
-func isFullReqID(tok string) bool {
-	return tok != "" && reqIDFull.FindString(tok) == tok
+// isFullReqID prüft, ob tok GANZ eine Anforderungs-Kennung nach reqPat ist
+// (nicht nur als Teilstring) — verhindert, dass ein Sub-ID-Suffix o. Ä. zählt.
+func isFullReqID(reqPat *regexp.Regexp, tok string) bool {
+	return tok != "" && reqPat.FindString(tok) == tok
 }
 
 // traceTitle entfernt die führende Kennung und einen Trenner (—/-/:) aus
@@ -134,11 +188,11 @@ func traceTitle(plain, id string) string {
 }
 
 // traceRefs scannt die Markdown-Dateien unter dir, leitet je Datei ihre
-// eigene Kennung über den Dateinamen ab (fileShape + prefix) und sammelt
-// pro referenzierter Anforderungs-Kennung die referenzierenden
+// eigene Kennung über den Dateinamen ab (fileShape-Capture 1 + prefix) und
+// sammelt pro referenzierter Anforderungs-Kennung (reqPat) die referenzierenden
 // Datei-Kennungen (dedupliziert, sortiert). Dateien ohne passende Kennung
 // (z. B. README.md) werden übersprungen.
-func traceRefs(fsys driven.Filesystem, dir string, fileShape *regexp.Regexp, prefix string) (map[string][]string, error) {
+func traceRefs(fsys driven.Filesystem, dir string, fileShape *regexp.Regexp, prefix string, reqPat *regexp.Regexp) (map[string][]string, error) {
 	if !pathExists(fsys, dir) {
 		return map[string][]string{}, nil
 	}
@@ -157,7 +211,7 @@ func traceRefs(fsys driven.Filesystem, dir string, fileShape *regexp.Regexp, pre
 		if err != nil {
 			return nil, err
 		}
-		for _, ref := range reqIDFull.FindAllString(string(content), -1) {
+		for _, ref := range reqPat.FindAllString(string(content), -1) {
 			if seen[ref] == nil {
 				seen[ref] = map[string]bool{}
 			}

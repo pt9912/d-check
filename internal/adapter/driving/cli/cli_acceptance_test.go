@@ -841,6 +841,7 @@ func TestCLI053_PrintConfig_VollesModulset(t *testing.T) {
 		"# --- planning:",
 		"# --- tracked:",
 		"# --- targets:",
+		"# --- trace:", // slice-066: konfigurierbare RTM-Quellen im Gerüst
 		"# --- pins:",
 		"immutable-when:", // der vcs-Config-Key, nach dem gefragt wurde
 	} {
@@ -1423,6 +1424,216 @@ func TestCLI036_Trace_BacktickHeading(t *testing.T) {
 		if got[id] != title {
 			t.Fatalf("Titel von %s = %q (erwartet %q)\n%s", id, got[id], title, stdout)
 		}
+	}
+}
+
+// traceReqIdx liefert den Index der Anforderung id in der RTM (oder -1).
+func traceReqIdx(d traceDoc, id string) int {
+	for i := range d.Requirements {
+		if d.Requirements[i].ID == id {
+			return i
+		}
+	}
+	return -1
+}
+
+// slice-066 (DC-FA-CLI-009): ohne trace-Block liefert die RTM byte-identisch
+// dasselbe wie mit einem trace-Block, der die Konventions-Defaults 1:1 restated —
+// Regressionsschutz für resolveTrace (jeder Default-Override muss inert sein).
+func TestCLI066_Trace_DefaultByteIdentisch(t *testing.T) {
+	rootA := t.TempDir()
+	traceRepo(t, rootA)
+	_, stdoutA, _ := run(t, "--trace", rootA)
+
+	rootB := t.TempDir()
+	traceRepo(t, rootB)
+	write(t, rootB, ".d-check.yml", `trace:
+  requirements:
+    source: spec/lastenheft.md
+    id-pattern: '[A-Z][A-Z0-9]*-(?:FA-[A-Z]+|QA)-\d+[A-Za-z]?'
+  adrs:
+    dir: docs/plan/adr
+    file-pattern: '^(\d{4})-.*\.md$'
+    id-prefix: 'ADR-'
+  slices:
+    dir: docs/plan/planning
+    file-pattern: '^(slice-\d+)-.*\.md$'
+    id-prefix: ''
+`)
+	_, stdoutB, _ := run(t, "--trace", rootB)
+
+	if stdoutA != stdoutB {
+		t.Fatalf("trace-Default nicht byte-identisch:\n--- ohne Block ---\n%s\n--- mit Default-Block ---\n%s", stdoutA, stdoutB)
+	}
+}
+
+// slice-066 (DC-FA-CLI-009): ein trace-Block bildet eine Fremd-Konvention
+// vollständig ab (grid-gym-Gestalt GG-<FAMILIE>-NNN, Slices NNN-titel.md).
+// Vorher/Nachher: ohne Block trifft der Default-Regex nur die QA-Familie und
+// keinen NNN-Slice; mit Block werden alle Familien + Slice-Owner erkannt.
+func TestCLI066_Trace_FremdKonvention(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md",
+		"### GG-ARCH-001\nHexagonale Grenzen.\n\n"+
+			"### GG-QA-001\nStatische Analyse.\n\n"+
+			"### GG-QA-002\nWaise ohne Slice.\n")
+	write(t, root, "docs/plan/adr/0007-x.md", "# ADR-0007\nBezug: GG-ARCH-001\n")
+	write(t, root, "docs/plan/planning/063-arch.md", "# 063\nBezug: GG-ARCH-001 und GG-QA-001\n")
+
+	// Vorher: Default-Konvention.
+	_, before, _ := run(t, "--trace", "--json", root)
+	var db traceDoc
+	if err := json.Unmarshal([]byte(before), &db); err != nil {
+		t.Fatalf("JSON (vorher) dekodiert nicht: %v\n%s", err, before)
+	}
+	if traceReqIdx(db, "GG-ARCH-001") >= 0 {
+		t.Fatalf("GG-ARCH-001 ohne Config sichtbar — der Default sollte die ARCH-Familie nicht treffen:\n%s", before)
+	}
+	if i := traceReqIdx(db, "GG-QA-001"); i < 0 || !db.Requirements[i].Orphan {
+		t.Fatalf("GG-QA-001 ohne Config sollte Waise sein (NNN-Slice unerkannt):\n%s", before)
+	}
+
+	// Nachher: trace-Block für die Fremd-Konvention.
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'
+  slices:
+    file-pattern: '^(\d+)-.*\.md$'
+`)
+	_, after, _ := run(t, "--trace", "--json", root)
+	var da traceDoc
+	if err := json.Unmarshal([]byte(after), &da); err != nil {
+		t.Fatalf("JSON (nachher) dekodiert nicht: %v\n%s", err, after)
+	}
+	if da.Total != 3 || da.Orphans != 1 {
+		t.Fatalf("Total/Orphans = %d/%d (erwartet 3/1)\n%s", da.Total, da.Orphans, after)
+	}
+	arch := traceReqIdx(da, "GG-ARCH-001")
+	if arch < 0 || da.Requirements[arch].Orphan ||
+		len(da.Requirements[arch].Slices) != 1 || da.Requirements[arch].Slices[0] != "063" ||
+		len(da.Requirements[arch].ADRs) != 1 || da.Requirements[arch].ADRs[0] != "ADR-0007" {
+		t.Fatalf("GG-ARCH-001 nach Config falsch: %+v\n%s", da.Requirements, after)
+	}
+	if i := traceReqIdx(da, "GG-QA-001"); i < 0 || da.Requirements[i].Orphan {
+		t.Fatalf("GG-QA-001 nach Config sollte via Slice 063 kein Waise sein\n%s", after)
+	}
+	if i := traceReqIdx(da, "GG-QA-002"); i < 0 || !da.Requirements[i].Orphan {
+		t.Fatalf("GG-QA-002 sollte Waise sein\n%s", after)
+	}
+}
+
+// slice-066 (DC-FA-CLI-009): ALLE acht Override-Achsen mit Nicht-Default-Werten
+// (eigene Quell-Datei, Kennungs-Regex, ADR-/Slice-Verzeichnis, -Dateimuster und
+// -Owner-Präfix) — mutations-hart: das Ergebnis (Owner-Kennungen mit den
+// custom-Präfixen aus den custom-Verzeichnissen) fällt weg, sobald ein einzelner
+// resolveTrace-Zweig auf den Default zurückfällt.
+func TestCLI066_Trace_VollCustomKonvention(t *testing.T) {
+	root := t.TempDir()
+	// Custom Anforderungs-Quelle + -Kennung (nicht spec/lastenheft.md, nicht -FA-/-QA-).
+	write(t, root, "spec/reqs.md", "### REQ-42 — Eine Anforderung\nText.\n")
+	// Custom ADR-Verzeichnis + -Dateimuster (D-NNNN statt NNNN) + Präfix DEC-.
+	write(t, root, "decisions/D-0007-x.md", "# Decision\nBezug: REQ-42\n")
+	// Custom Slice-Verzeichnis + -Dateimuster (task-N) + Präfix T.
+	write(t, root, "work/task-5-y.md", "# Task\nBezug: REQ-42\n")
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    source: spec/reqs.md
+    id-pattern: 'REQ-\d+'
+  adrs:
+    dir: decisions
+    file-pattern: '^D-(\d{4})-.*\.md$'
+    id-prefix: 'DEC-'
+  slices:
+    dir: work
+    file-pattern: '^task-(\d+)-.*\.md$'
+    id-prefix: 'T'
+`)
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON dekodiert nicht: %v\n%s", err, stdout)
+	}
+	if doc.Total != 1 {
+		t.Fatalf("Total = %d (erwartet 1: REQ-42)\n%s", doc.Total, stdout)
+	}
+	i := traceReqIdx(doc, "REQ-42")
+	if i < 0 {
+		t.Fatalf("REQ-42 nicht gefunden (custom source/id-pattern greift nicht)\n%s", stdout)
+	}
+	r := doc.Requirements[i]
+	if r.Title != "Eine Anforderung" {
+		t.Fatalf("Titel = %q (erwartet 'Eine Anforderung')", r.Title)
+	}
+	if r.Orphan || len(r.ADRs) != 1 || r.ADRs[0] != "DEC-0007" || len(r.Slices) != 1 || r.Slices[0] != "T5" {
+		t.Fatalf("REQ-42 falsch aufgelöst: %+v (erwartet ADRs=[DEC-0007], Slices=[T5], kein Waise)\n%s", r, stdout)
+	}
+}
+
+// slice-066 Negative (Config): eine ungültige trace-Regex ⇒ Exit 2 (fail-closed).
+func TestCLI066_Trace_UngueltigeRegex(t *testing.T) {
+	root := t.TempDir()
+	traceRepo(t, root)
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    id-pattern: '['\n")
+	code, _, stderr := run(t, "--trace", root)
+	if code != 2 {
+		t.Fatalf("Exit = %d (erwartet 2), stderr = %q", code, stderr)
+	}
+	if !strings.Contains(stderr, "id-pattern") {
+		t.Fatalf("stderr nennt das Feld nicht: %q", stderr)
+	}
+}
+
+// slice-066 Negative (Config): eine file-pattern ohne Capture-Gruppe ⇒ Exit 2 —
+// verhindert das m[1]-Panic der Owner-Ableitung (fail-closed).
+func TestCLI066_Trace_FilePatternOhneCapture(t *testing.T) {
+	root := t.TempDir()
+	traceRepo(t, root)
+	write(t, root, ".d-check.yml", `trace:
+  slices:
+    file-pattern: '^slice-\d+-.*\.md$'
+`)
+	code, _, stderr := run(t, "--trace", root)
+	if code != 2 {
+		t.Fatalf("Exit = %d (erwartet 2), stderr = %q", code, stderr)
+	}
+	if !strings.Contains(stderr, "Capture-Gruppe") {
+		t.Fatalf("stderr nennt die Capture-Gruppe nicht: %q", stderr)
+	}
+}
+
+// slice-066: --require-complete (DC-FA-CLI-011) erbt die konfigurierten Quellen —
+// eine nur per trace.id-pattern sichtbare Waisen-Anforderung ⇒ Exit 1 (ohne
+// Config wäre sie unsichtbar ⇒ Exit 0).
+func TestCLI066_Trace_RequireCompleteErbtConfig(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "### GG-ARCH-001\nWaise ohne Slice.\n")
+
+	// Ohne Config: der Default-Regex sieht GG-ARCH-001 nicht ⇒ 0 Waisen ⇒ Exit 0.
+	if code, _, _ := run(t, "--trace", "--require-complete", root); code != 0 {
+		t.Fatalf("ohne Config: Exit = %d (erwartet 0 — GG-ARCH-001 unsichtbar)", code)
+	}
+
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    id-pattern: 'GG-[A-Z][A-Z0-9]*-\\d{3}'\n")
+	if code, _, stderr := run(t, "--trace", "--require-complete", root); code != 1 {
+		t.Fatalf("mit Config: Exit = %d (erwartet 1 — GG-ARCH-001 Waise), stderr = %q", code, stderr)
+	}
+}
+
+// slice-066 Negative (Config): ein trace-Pfad, der die Repo-Wurzel verlässt
+// (führendes '..'), ⇒ Exit 2 (fail-closed, analog planning.roadmap).
+func TestCLI066_Trace_PfadEscape(t *testing.T) {
+	root := t.TempDir()
+	traceRepo(t, root)
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    source: ../outside.md\n")
+	code, _, stderr := run(t, "--trace", root)
+	if code != 2 {
+		t.Fatalf("Exit = %d (erwartet 2), stderr = %q", code, stderr)
+	}
+	if !strings.Contains(stderr, "relativ zur Repo-Wurzel") {
+		t.Fatalf("stderr nennt die Pfad-Regel nicht: %q", stderr)
 	}
 }
 
