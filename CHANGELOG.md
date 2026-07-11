@@ -4,6 +4,31 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.41.0] — 2026-07-11
+
+### Added
+
+- slice-067 — neue opt-in **Coverage-Referenzklasse `trace.coverage`**
+  ([`DC-FA-COV-001`](spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in),
+  [ADR-0035](docs/plan/adr/0035-trace-coverage-quellen.md)) für die Requirements
+  Traceability Matrix. Eine **Liste** kuratierter Quellen liest Deckungs-Matrizen
+  (z. B. eine ausgelagerte Traceability-Datei) als **eigene Coverage-Dimension**
+  ein — je Quelle `files` (explizite Pfade, keine `dir`/`file-pattern` → keine
+  ADR-Kontamination), `label` (Owner-Kennung in einer eigenen **Coverage**-Spalte),
+  `ranges` (Default true; expandiert `<FAM>-AAA..BBB` und `<FAM>-AAA/BBB/CCC`
+  breiten-erhaltend, gegen `requirements.id-pattern` validiert) sowie `sections`
+  (Whitelist) / `exclude-sections` (Blacklist) über die
+  `matrix.exclude-sections`-Span-Semantik (voller Heading-Klartext). Eine
+  Anforderung ist damit **Waise** nur ohne Slice **und** ohne Coverage
+  ([`DC-FA-CLI-011`](spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)
+  angepasst); `--json`/`--yaml` tragen ein `coverage`-Feld. Fail-closed (fehlende
+  Datei / leeres `label` / Sektionsname ohne Heading-Treffer / ungültige Range
+  ⇒ Exit 2). **Ohne `trace.coverage` ist die RTM byte-identisch** (keine
+  Coverage-Spalte, kein Feld; `DC-QA-02`). Anlass: Konsument grid-gym — 171
+  „Waisen" waren zu ≥122 anderswo (ADR/Traceability-Matrix/Wellen) belegt; mit
+  `trace.coverage` (Range + `exclude-sections`) sinken sie an den realen Daten
+  von 113 auf 10.
+
 ## [0.40.0] — 2026-07-11
 
 ### Changed

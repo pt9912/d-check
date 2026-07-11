@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.24 · **Software-Version:** [v0.40.0](../../version.md#v0.40.0) ·
+**Handbuch-Version:** 1.25 · **Software-Version:** [v0.41.0](../../version.md#v0.41.0) ·
 **Stand:** 2026-07-04 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -63,7 +63,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.40.0
+docker pull ghcr.io/pt9912/d-check:v0.41.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -71,7 +71,7 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.40.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.41.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -100,7 +100,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -146,7 +146,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -165,7 +165,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.40.0
+  ghcr.io/pt9912/d-check:v0.41.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -184,7 +184,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.40.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.41.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -203,7 +203,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -229,7 +229,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -238,7 +238,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -250,7 +250,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -270,7 +270,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
   --enable ids --disable anchors
 ```
 
@@ -291,7 +291,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
   --enable ids
 ```
 
@@ -312,7 +312,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
   --enable matrix
 ```
 
@@ -379,7 +379,7 @@ verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
   --enable external
 ```
 
@@ -399,7 +399,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
   --enable ids --doctor
 ```
 
@@ -427,7 +427,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
   --enable ids --doctor --json
 ```
 
@@ -475,7 +475,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -511,7 +511,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
     --enable ids --repair | git apply
   ```
 
@@ -528,7 +528,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -548,7 +548,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -581,7 +581,7 @@ Lastenheft, ADRs unter `docs/plan/adr/`, Slices unter `docs/plan/planning/`).
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -627,6 +627,31 @@ Damit bildet die RTM auch ein Repo mit eigener Kennungs-/Datei-Konvention
 vollständig ab (Details und alle Felder in §5). Ein Muster ohne Capture-Gruppe
 in `file-pattern` ist ein Konfigurationsfehler (Exit 2).
 
+**Kuratierte Coverage-Quellen (`trace.coverage`).** Liegt die Abdeckung mancher
+Anforderungen nicht in ADRs/Slices, sondern in einer **kuratierten Matrix** (z. B.
+einer ausgelagerten Traceability-Datei), zählt der Referenz-Scan sie fälschlich
+als Waisen. Der opt-in `trace.coverage`-Block liest solche Dateien als **eigene
+Coverage-Dimension** (separate Spalte) ein — **range-aware** (`GG-QA-001..006`
+deckt alle sechs) und **abschnitts-gescopt**:
+
+```yaml
+trace:
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'
+  coverage:
+    - files: [docs/plan/traceability.md]   # EXPLIZITE Dateien (keine dir/pattern)
+      label: Trace                          # Owner-Kennung in der Coverage-Spalte
+      ranges: true                          # AAA..BBB + AAA/BBB expandieren
+      exclude-sections: ["27.1.1 Anforderungen ohne Design-Artefakt"]  # voller Heading-Text!
+```
+
+Eine Anforderung ist dann **Waise** nur ohne Slice **und** ohne Coverage; mit
+`--require-complete` bricht das Gate entsprechend. **Wichtig:** ein Sektionsname
+ist der **volle Heading-Klartext** (nicht die Kurzform `27.1.1`) — ein Name ohne
+Treffer, eine fehlende `files`-Datei oder eine ungültige Range (`AAA>BBB`) sind
+Konfigurationsfehler (Exit 2). Ohne `trace.coverage` bleibt die RTM
+byte-identisch (keine Coverage-Spalte). Alle Felder in §5.
+
 ### 4.13 Ein Makefile-Fragment einbinden (`--print-mk`)
 
 **Ziel:** d-check als `doc-check`-Schritt ins eigene Makefile einbinden, ohne
@@ -636,7 +661,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.40.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.41.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -649,7 +674,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.40.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.41.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -782,6 +807,12 @@ trace:                         # konfigurierbare RTM-Quellen (KEIN Modul; steuer
     id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'  # Anforderungs-Kennung (Default: <PREFIX>-FA-…/-QA-…)
   slices:
     file-pattern: '^(\d+)-.*\.md$'          # Slice-Dateiname NNN-titel.md (Capture 1 = Owner-Kennung)
+  coverage:                                 # kuratierte Coverage-Quellen (eigene RTM-Spalte)
+    - files: [docs/plan/traceability.md]    # EXPLIZITE Dateien (keine dir/pattern → keine ADR-Kontamination)
+      label: Trace                          # Owner-Kennung in der Coverage-Spalte
+      ranges: true                          # GG-QA-001..006 → alle sechs; gegen id-pattern validiert
+      # sections: ["27.1 Anforderung zu Design"]                      # Whitelist (voller Heading-Text)
+      # exclude-sections: ["27.1.1 Anforderungen ohne Design-Artefakt"]  # Blacklist (voller Heading-Text)
 ```
 
 Das Modul `codepaths` kennt **drei** Ventil-Achsen, um einen Pfad von der
@@ -948,6 +979,21 @@ ist optional; ein abwesendes fällt auf den Default zurück, und **ohne
 nicht kompilierbares Muster oder eine `file-pattern` ohne Capture-Gruppe ist ein
 Konfigurationsfehler (Exit 2, fail-closed).
 
+Zusätzlich liest der opt-in **`trace.coverage`**-Block (eine **Liste** benannter
+Quellen) **kuratierte Matrizen** als **eigene Coverage-Dimension** ein — für
+Anforderungen, deren Abdeckung weder in ADRs noch Slices liegt (siehe §4.12). Je
+Quelle: `files` (explizite Pfade — keine `dir`/`file-pattern`, gegen
+ADR-Kontamination), `label` (Owner-Kennung in der eigenen Coverage-Spalte),
+`ranges` (Default true; expandiert `<FAM>-AAA..BBB` und `<FAM>-AAA/BBB/CCC`
+breiten-erhaltend, gegen `requirements.id-pattern` validiert) sowie `sections`
+(Whitelist) / `exclude-sections` (Blacklist) — beide über die
+`matrix.exclude-sections`-Span-Semantik, mit dem **vollen Heading-Klartext** als
+Namen. Eine Anforderung ist dann **Waise** nur ohne Slice **und** ohne Coverage.
+Fail-closed (Exit 2): fehlende `files`-Datei, leeres `label`, ein Sektionsname
+ohne Heading-Treffer, eine ungültige Range (`AAA>BBB`/Breite). Ist **keine**
+Coverage-Quelle konfiguriert, erscheint **keine** Coverage-Spalte und die RTM
+bleibt byte-identisch.
+
 ## 6. Regelmodule
 
 | Modul       | Standard      | Prüft                                                                                    | Grund-Codes                                                 |
@@ -1083,3 +1129,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.22             | v0.38.0          | 2026-07-05 | Neues opt-in-Modul `targets` (17., §5/§6): Deklarations-Konsistenz Doku ↔ Build-Targets — jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`gate-phantom`), jede Regel steht in der Autoritäts-Doku (`gate-undocumented`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed. Löst den Doku-↔-Makefile-Kern des `gate-consistency.sh`-Meta-Gates ab; `--print-mk`-Target `doc-targets` (elf Targets, §4.13) verteilt die Prüfung                |
 | 1.23             | v0.39.0          | 2026-07-06 | `--suggest-config ai-harness[-init]` (§4.4): Vorlage an die **gelebte** Konvention angeglichen — `spans`/`hostpaths` ins fixe Standard-Modulset, repo-bewusster `planning`-Block; `vcs`/`commits` (Commit-Range) via `--print-mk`, `versions`/`targets` bewusst vertagt; kanonische Vorlage der Spezifikation deckt die emittierte Ausgabe 1:1                |
 | 1.24             | v0.40.0          | 2026-07-11 | Requirements Traceability Matrix (`--trace`, §4.12) über einen opt-in `trace`-Block quell-/kennungs-konfigurierbar (§5): Anforderungs-Quelldatei + Kennungs-Regex sowie je Referenzklasse Verzeichnis + Dateimuster + Owner-Präfix; Default = Konvention ⇒ byte-identisch, fail-closed bei ungültiger Regex / Muster ohne Capture-Gruppe. Bildet auch Repos mit abweichender Kennungs-/Datei-Konvention vollständig ab                |
+| 1.25             | v0.41.0          | 2026-07-11 | Kuratierte Coverage-Quellen `trace.coverage` (§4.12/§5): eine Liste benannter `files` liest Deckungs-Matrizen als **eigene Coverage-Spalte** ein — `ranges` (`GG-QA-001..006` → alle sechs, `/`-Aufzählung), `sections`/`exclude-sections` (voller Heading-Text). Waise = ohne Slice **und** ohne Coverage; fail-closed (fehlende Datei / leeres label / Sektion ohne Treffer / ungültige Range ⇒ Exit 2); ohne Block byte-identisch                |
