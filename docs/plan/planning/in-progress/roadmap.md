@@ -23,8 +23,10 @@ die eine ausgelagerte Traceability-Matrix **range-aware**
 byte-identisch. Anlass: grid-gyms 171 „Waisen" waren zu ≥122 anderswo belegt;
 an den Realdaten sinken sie mit `trace.coverage` (Range + `exclude-sections`) von
 113 auf 10. Zwei Reviews (Doc-first R1 + Impl R2, ACCEPT-WITH-NITS, eingearbeitet),
-Lastenheft-CR, **Release v0.41.0** auf GHCR (Digest-Pin folgt bei Backfill),
-[Closure](../done/slice-067-trace-coverage-quellen.md)).
+Lastenheft-CR, **Release v0.41.0** auf GHCR (Release-Run 29149090517 grün),
+Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:c930804146a2e14d1cfb95046532dce5881c355f39b3223e3a2ed371776f874a`,
+[Closure](../done/slice-067-trace-coverage-quellen.md#7-closure-notiz-nach-done)).
 Davor **welle-55-trace-konfigurierbare-quellen**
 ([`slice-066`](../done/slice-066-trace-konfigurierbare-quellen.md) — die
 Requirements Traceability Matrix (`--trace`,

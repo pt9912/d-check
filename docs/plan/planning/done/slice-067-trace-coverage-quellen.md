@@ -169,8 +169,10 @@ eingearbeitet, §6).
 
 **Commit-Kette:** `78f6c1a` (doc-first) · `5ebd6f6` (feat) · `1a41c22`
 (release-prep v0.41.0) · `97e0ac4` (Review R1+R2) · `d013def` (Closure-Move) ·
-Closure-Body · digest-backfill. **Release v0.41.0** (Push → CI → Tag → GHCR →
-digest-backfill; Digest-Pin folgt).
+`c589993` (Closure-Body) · digest-backfill. **Release v0.41.0** auf GHCR
+(Release-Run 29149090517 grün — Push-Retry nach transientem GHCR-`unknown blob`),
+Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:c930804146a2e14d1cfb95046532dce5881c355f39b3223e3a2ed371776f874a`.
 
 **Lehre:** (i) Coverage ist eine **andere Dimension** als Slice-Implementierung —
 eine getrennte Referenzklasse mit **eigener Spalte** (statt `slices` zu überladen)
