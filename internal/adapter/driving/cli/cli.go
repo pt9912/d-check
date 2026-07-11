@@ -198,7 +198,13 @@ func runTrace(fsys driven.Filesystem, cfg model.Config, opts options, stdout, st
 	// bleibt advisory Exit 0 (DC-FA-CLI-009 unangetastet); die RTM steht
 	// bereits auf stdout, die Zähl-Zeile geht auf stderr.
 	if opts.requireComplete && matrix.Orphans > 0 {
-		fmt.Fprintf(stderr, "d-check: %d Requirements-Waise(n) ohne referenzierenden Slice (--require-complete)\n", matrix.Orphans)
+		// Waise = ohne Slice, und — bei aktiver trace.coverage — auch ohne
+		// Coverage (DC-FA-COV-001/DC-FA-CLI-011).
+		lack := "ohne referenzierenden Slice"
+		if matrix.CoverageActive {
+			lack = "ohne referenzierenden Slice und ohne Coverage"
+		}
+		fmt.Fprintf(stderr, "d-check: %d Requirements-Waise(n) %s (--require-complete)\n", matrix.Orphans, lack)
 		return 1
 	}
 	return 0

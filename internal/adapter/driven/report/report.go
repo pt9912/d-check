@@ -243,15 +243,27 @@ func DoctorYAML(stdout io.Writer, findings []model.Finding, sum Summary, exitCod
 func Trace(stdout io.Writer, m app.TraceMatrix) error {
 	var b strings.Builder
 	b.WriteString("# Requirements Traceability Matrix\n\n")
-	b.WriteString("| Anforderung | Titel | ADRs | Slices | Status |\n")
-	b.WriteString("|---|---|---|---|---|\n")
+	// Coverage-Spalte nur bei aktiver trace.coverage (DC-FA-COV-001) — vor
+	// Status; ohne Quelle byte-identisch zur bisherigen 5-Spalten-Tabelle.
+	if m.CoverageActive {
+		b.WriteString("| Anforderung | Titel | ADRs | Slices | Coverage | Status |\n")
+		b.WriteString("|---|---|---|---|---|---|\n")
+	} else {
+		b.WriteString("| Anforderung | Titel | ADRs | Slices | Status |\n")
+		b.WriteString("|---|---|---|---|---|\n")
+	}
 	for _, r := range m.Requirements {
 		status := "ok"
 		if r.Orphan {
 			status = "WAISE"
 		}
-		fmt.Fprintf(&b, "| %s | %s | %s | %s | %s |\n",
-			r.ID, traceCell(r.Title), joinOrDash(r.ADRs), joinOrDash(r.Slices), status)
+		if m.CoverageActive {
+			fmt.Fprintf(&b, "| %s | %s | %s | %s | %s | %s |\n",
+				r.ID, traceCell(r.Title), joinOrDash(r.ADRs), joinOrDash(r.Slices), joinOrDash(r.Coverage), status)
+		} else {
+			fmt.Fprintf(&b, "| %s | %s | %s | %s | %s |\n",
+				r.ID, traceCell(r.Title), joinOrDash(r.ADRs), joinOrDash(r.Slices), status)
+		}
 	}
 	fmt.Fprintf(&b, "\n%d Anforderung(en), %d Waise(n).\n", m.Total, m.Orphans)
 	_, err := io.WriteString(stdout, b.String())

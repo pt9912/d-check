@@ -158,4 +158,10 @@ modules: [links, anchors]
 #     dir: docs/plan/planning
 #     file-pattern: '^(slice-\d+)-.*\.md$'      # z. B. '^(\d+)-.*\.md$' für NNN-titel.md
 #     id-prefix: ''                             # der Owner-Kennung vorangestellt (Default leer)
+#   coverage:                                   # kuratierte Coverage-Quellen (Liste; eigene RTM-Spalte)
+#     - files: [docs/plan/traceability.md]      # EXPLIZITE Dateien (keine dir/pattern) — gegen ADR-Kontamination
+#       label: 'Trace'                          # Owner-Kennung in der Coverage-Spalte
+#       ranges: true                            # GG-QA-001..006 -> alle sechs (+ /-Aufzählung); gegen id-pattern validiert
+#       # sections: ["27.1 Anforderung zu Design"]              # Whitelist: NUR diese Abschnitte (voller Heading-Text!)
+#       # exclude-sections: ["27.1.1 Anforderungen ohne Design-Artefakt"]  # Blacklist (voller Heading-Text)
 `

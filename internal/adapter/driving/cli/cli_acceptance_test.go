@@ -1286,11 +1286,12 @@ func TestCLI037_IDPrefix_FlagUebergehtKonflikt(t *testing.T) {
 // traceDoc spiegelt die JSON-Struktur der RTM (DC-FA-CLI-009).
 type traceDoc struct {
 	Requirements []struct {
-		ID     string   `json:"id"`
-		Title  string   `json:"title"`
-		ADRs   []string `json:"adrs"`
-		Slices []string `json:"slices"`
-		Orphan bool     `json:"orphan"`
+		ID       string   `json:"id"`
+		Title    string   `json:"title"`
+		ADRs     []string `json:"adrs"`
+		Slices   []string `json:"slices"`
+		Coverage []string `json:"coverage"`
+		Orphan   bool     `json:"orphan"`
 	} `json:"requirements"`
 	Total   int `json:"total"`
 	Orphans int `json:"orphans"`
@@ -1634,6 +1635,246 @@ func TestCLI066_Trace_PfadEscape(t *testing.T) {
 	}
 	if !strings.Contains(stderr, "relativ zur Repo-Wurzel") {
 		t.Fatalf("stderr nennt die Pfad-Regel nicht: %q", stderr)
+	}
+}
+
+// covRepo: Fremd-Konvention (GG-<FAM>-NNN), keine Slices — Deckung liegt in der
+// kuratierten traceability.md (slice-067, DC-FA-COV-001).
+func covRepo(t *testing.T, root string) {
+	write(t, root, "spec/lastenheft.md",
+		"### GG-QA-001\nText.\n\n### GG-QA-002\nText.\n\n### GG-QA-003\nText.\n\n"+
+			"### GG-QA-004\nText.\n\n### GG-QA-005\nText.\n\n### GG-QA-006\nText.\n\n### GG-RT-001\nText.\n")
+}
+
+// slice-067 (DC-FA-COV-001): eine trace.coverage-Quelle mit Range deckt
+// slice-lose Anforderungen ab — Coverage-Spalte erscheint, gedeckte sind keine
+// Waisen; die Range `001..006` deckt alle sechs.
+func TestCLI067_Coverage_RangeDecktAb(t *testing.T) {
+	root := t.TempDir()
+	covRepo(t, root)
+	write(t, root, "docs/plan/traceability.md", "# Trace\n\nGG-QA-001..006 sind statisch geprüft.\n")
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'
+  coverage:
+    - files: [docs/plan/traceability.md]
+      label: Trace
+      ranges: true
+`)
+	_, md, _ := run(t, "--trace", root)
+	if !strings.Contains(md, "| Anforderung | Titel | ADRs | Slices | Coverage | Status |") {
+		t.Fatalf("Coverage-Spalte fehlt:\n%s", md)
+	}
+	code, js, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(js), &doc); err != nil {
+		t.Fatalf("JSON: %v\n%s", err, js)
+	}
+	if doc.Total != 7 || doc.Orphans != 1 {
+		t.Fatalf("Total/Orphans = %d/%d (erwartet 7/1)\n%s", doc.Total, doc.Orphans, js)
+	}
+	for _, id := range []string{"GG-QA-001", "GG-QA-004", "GG-QA-006"} {
+		i := traceReqIdx(doc, id)
+		if i < 0 || doc.Requirements[i].Orphan ||
+			len(doc.Requirements[i].Coverage) != 1 || doc.Requirements[i].Coverage[0] != "Trace" {
+			t.Fatalf("%s nicht via Range gedeckt: %+v\n%s", id, doc.Requirements[i], js)
+		}
+	}
+	if i := traceReqIdx(doc, "GG-RT-001"); i < 0 || !doc.Requirements[i].Orphan {
+		t.Fatalf("GG-RT-001 (keine Coverage) sollte Waise sein\n%s", js)
+	}
+}
+
+// slice-067: ohne trace.coverage keine Coverage-Spalte und kein coverage-Feld
+// (byte-identisch); mit Quelle erscheinen beide.
+func TestCLI067_Coverage_ByteIdentischOhneBlock(t *testing.T) {
+	root := t.TempDir()
+	covRepo(t, root)
+	write(t, root, "docs/plan/traceability.md", "# Trace\n\nGG-QA-001..006.\n")
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    id-pattern: 'GG-[A-Z][A-Z0-9]*-\\d{3}'\n")
+	_, md, _ := run(t, "--trace", root)
+	if strings.Contains(md, "Coverage") {
+		t.Fatalf("Coverage-Spalte trotz fehlendem Block:\n%s", md)
+	}
+	_, js, _ := run(t, "--trace", "--json", root)
+	if strings.Contains(js, "coverage") {
+		t.Fatalf("coverage-Feld trotz fehlendem Block:\n%s", js)
+	}
+}
+
+// slice-067: exclude-sections nimmt eine „ohne Design-Artefakt"-Sektion aus —
+// nur dort genannte IDs werden NICHT kreditiert (voller Heading-Text).
+func TestCLI067_Coverage_ExcludeSection(t *testing.T) {
+	root := t.TempDir()
+	covRepo(t, root)
+	write(t, root, "docs/plan/traceability.md",
+		"## 27.1 Design\n\nGG-QA-001..003 geprüft.\n\n"+
+			"### 27.1.1 Ohne Design\n\nGG-QA-004..006 offen.\n")
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'
+  coverage:
+    - files: [docs/plan/traceability.md]
+      label: Trace
+      exclude-sections: ["27.1.1 Ohne Design"]
+`)
+	code, js, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	_ = json.Unmarshal([]byte(js), &doc)
+	if i := traceReqIdx(doc, "GG-QA-002"); i < 0 || doc.Requirements[i].Orphan {
+		t.Fatalf("GG-QA-002 (§27.1) sollte gedeckt sein\n%s", js)
+	}
+	if i := traceReqIdx(doc, "GG-QA-005"); i < 0 || !doc.Requirements[i].Orphan {
+		t.Fatalf("GG-QA-005 (nur §27.1.1, ausgeschlossen) sollte Waise sein\n%s", js)
+	}
+}
+
+// slice-067 Negative: ein Sektionsname ohne Heading-Treffer (Kurzform statt
+// vollem Text) ⇒ Exit 2 (fail-closed Guard gegen stilles Leer-Blanking).
+func TestCLI067_Coverage_SektionOhneTreffer(t *testing.T) {
+	root := t.TempDir()
+	covRepo(t, root)
+	write(t, root, "docs/plan/traceability.md", "## 27.1 Design\n\nGG-QA-001..003.\n")
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'
+  coverage:
+    - files: [docs/plan/traceability.md]
+      label: Trace
+      sections: ["27.1"]
+`)
+	code, _, stderr := run(t, "--trace", root)
+	if code != 2 || !strings.Contains(stderr, "Abschnitt") {
+		t.Fatalf("Exit = %d (erwartet 2), stderr = %q", code, stderr)
+	}
+}
+
+// slice-067 Negative: fehlende Coverage-Datei ⇒ Exit 2 (files sind explizit
+// benannt, Fehlen ist Fehler, nicht Skip).
+func TestCLI067_Coverage_FehlendeDatei(t *testing.T) {
+	root := t.TempDir()
+	covRepo(t, root)
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'
+  coverage:
+    - files: [docs/plan/nicht-da.md]
+      label: Trace
+`)
+	code, _, stderr := run(t, "--trace", root)
+	if code != 2 || !strings.Contains(stderr, "fehlt") {
+		t.Fatalf("Exit = %d (erwartet 2), stderr = %q", code, stderr)
+	}
+}
+
+// slice-067 Negative: eine ungültige Range (AAA>BBB) in der Coverage-Quelle
+// ⇒ Exit 2.
+func TestCLI067_Coverage_UngueltigeRange(t *testing.T) {
+	root := t.TempDir()
+	covRepo(t, root)
+	write(t, root, "docs/plan/traceability.md", "# Trace\n\nGG-QA-009..003 (falsch).\n")
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'
+  coverage:
+    - files: [docs/plan/traceability.md]
+      label: Trace
+      ranges: true
+`)
+	code, _, stderr := run(t, "--trace", root)
+	if code != 2 || !strings.Contains(stderr, "AAA>BBB") {
+		t.Fatalf("Exit = %d (erwartet 2), stderr = %q", code, stderr)
+	}
+}
+
+// slice-067: --require-complete berücksichtigt Coverage — sind alle
+// Anforderungen via Slice ODER Coverage gedeckt, Exit 0 (ohne Coverage Exit 1).
+func TestCLI067_Coverage_RequireComplete(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "### GG-QA-001\nText.\n\n### GG-QA-002\nText.\n")
+	write(t, root, "docs/plan/traceability.md", "# Trace\n\nGG-QA-001..002 geprüft.\n")
+
+	// Ohne Coverage-Block: beide Waisen ⇒ Exit 1.
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    id-pattern: 'GG-[A-Z][A-Z0-9]*-\\d{3}'\n")
+	if code, _, _ := run(t, "--trace", "--require-complete", root); code != 1 {
+		t.Fatalf("ohne Coverage: Exit = %d (erwartet 1)", code)
+	}
+
+	// Mit Coverage-Block: beide gedeckt ⇒ Exit 0.
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'
+  coverage:
+    - files: [docs/plan/traceability.md]
+      label: Trace
+      ranges: true
+`)
+	if code, _, stderr := run(t, "--trace", "--require-complete", root); code != 0 {
+		t.Fatalf("mit Coverage: Exit = %d (erwartet 0), stderr = %q", code, stderr)
+	}
+}
+
+// slice-067 (R1-MEDIUM): die positive sections-Whitelist zählt NUR die gelisteten
+// Abschnitte — IDs außerhalb werden nicht kreditiert (Include-Zweig SelectSections).
+func TestCLI067_Coverage_IncludeSection(t *testing.T) {
+	root := t.TempDir()
+	covRepo(t, root)
+	write(t, root, "docs/plan/traceability.md",
+		"## 27.1 Design\n\nGG-QA-001..003 nur Design.\n\n"+
+			"## 27.2 Impl\n\nGG-QA-004..006 implementiert.\n")
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'
+  coverage:
+    - files: [docs/plan/traceability.md]
+      label: Trace
+      sections: ["27.2 Impl"]
+`)
+	code, js, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	_ = json.Unmarshal([]byte(js), &doc)
+	if i := traceReqIdx(doc, "GG-QA-005"); i < 0 || doc.Requirements[i].Orphan {
+		t.Fatalf("GG-QA-005 (§27.2, Whitelist) sollte gedeckt sein\n%s", js)
+	}
+	if i := traceReqIdx(doc, "GG-QA-002"); i < 0 || !doc.Requirements[i].Orphan {
+		t.Fatalf("GG-QA-002 (§27.1, NICHT in Whitelist) sollte Waise sein\n%s", js)
+	}
+}
+
+// slice-067 (R1-LOW): ranges:false expandiert keine `..`-Range end-to-end —
+// nur die exakte Kennung wird gedeckt (Pointer-Default-Auflösung im Decode).
+func TestCLI067_Coverage_RangesFalse(t *testing.T) {
+	root := t.TempDir()
+	covRepo(t, root)
+	write(t, root, "docs/plan/traceability.md", "# Trace\n\nGG-QA-001..006.\n")
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'
+  coverage:
+    - files: [docs/plan/traceability.md]
+      label: Trace
+      ranges: false
+`)
+	code, js, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	_ = json.Unmarshal([]byte(js), &doc)
+	if i := traceReqIdx(doc, "GG-QA-001"); i < 0 || doc.Requirements[i].Orphan {
+		t.Fatalf("GG-QA-001 (exakt) sollte gedeckt sein\n%s", js)
+	}
+	if i := traceReqIdx(doc, "GG-QA-003"); i < 0 || !doc.Requirements[i].Orphan {
+		t.Fatalf("GG-QA-003 sollte ohne Range-Expansion Waise sein\n%s", js)
 	}
 }
 

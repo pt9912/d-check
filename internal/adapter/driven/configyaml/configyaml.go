@@ -194,6 +194,16 @@ type rawTrace struct {
 		FilePattern string `yaml:"file-pattern"`
 		IDPrefix    string `yaml:"id-prefix"`
 	} `yaml:"slices"`
+	Coverage []rawCoverage `yaml:"coverage"`
+}
+
+// rawCoverage bildet eine kuratierte Coverage-Quelle ab (DC-FA-COV-001).
+type rawCoverage struct {
+	Files           []string `yaml:"files"`
+	Label           string   `yaml:"label"`
+	Ranges          *bool    `yaml:"ranges"`
+	Sections        []string `yaml:"sections"`
+	ExcludeSections []string `yaml:"exclude-sections"`
 }
 
 // raw bildet das Voll-Schema von .d-check.yml ab
@@ -374,7 +384,42 @@ func applyTrace(r *raw, cfg *model.Config) error {
 		}
 		tc.SliceDir, tc.SliceFile, tc.SlicePrefix = sl.Dir, re, sl.IDPrefix
 	}
+	if err := applyTraceCoverage(t.Coverage, &tc); err != nil {
+		return err
+	}
 	cfg.Trace = tc
+	return nil
+}
+
+// applyTraceCoverage validiert die opt-in Coverage-Quellen (DC-FA-COV-001):
+// nicht-leere files (jede innerhalb der Repo-Wurzel), nicht-leeres label,
+// ranges-Default true. Fehlende Datei / Sektions-/Range-Fehler sind Lauf-zeitig
+// (Kern), da config-zeitig kein I/O erfolgt.
+func applyTraceCoverage(coverage []rawCoverage, tc *model.TraceConfig) error {
+	for i, cov := range coverage {
+		if len(cov.Files) == 0 {
+			return fmt.Errorf("%s: trace.coverage[%d].files ist leer", FileName, i)
+		}
+		for _, f := range cov.Files {
+			if strings.TrimSpace(f) == "" {
+				return fmt.Errorf("%s: trace.coverage[%d].files enthält einen leeren Pfad", FileName, i)
+			}
+			if err := validateTracePath(fmt.Sprintf("trace.coverage[%d].files", i), f); err != nil {
+				return err
+			}
+		}
+		if strings.TrimSpace(cov.Label) == "" {
+			return fmt.Errorf("%s: trace.coverage[%d].label ist leer", FileName, i)
+		}
+		ranges := true // Default true (DC-FA-COV-001); der Pointer unterscheidet nicht-gesetzt.
+		if cov.Ranges != nil {
+			ranges = *cov.Ranges
+		}
+		tc.Coverage = append(tc.Coverage, model.TraceCoverage{
+			Files: cov.Files, Label: cov.Label, Ranges: ranges,
+			Sections: cov.Sections, ExcludeSections: cov.ExcludeSections,
+		})
+	}
 	return nil
 }
 

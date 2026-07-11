@@ -326,6 +326,46 @@ func inRanges(rs []lineRange, line int) bool {
 	return false
 }
 
+// SelectSections schränkt content auf die per include benannten Abschnitte ein
+// (leer ⇒ ganze Datei) und entfernt die per exclude benannten (DC-FA-COV-001):
+// beide über dieselbe Heading-Span-Semantik wie exclude-sections (Überschrift
+// bis zur nächsten gleich-/höherrangigen; Name = voller Heading-Klartext,
+// exakter Vergleich via plainHeadingText). So ergibt include
+// ["27.1 Anforderung zu Design"] + exclude ["27.1.1 Anforderungen ohne
+// Design-Artefakt"] genau „§27.1 ohne §27.1.1". Zeilen-basiert (join mit "\n").
+func SelectSections(content []byte, include, exclude []string) []byte {
+	if len(include) == 0 && len(exclude) == 0 {
+		return content
+	}
+	inc := excludedRanges(content, include)
+	exc := excludedRanges(content, exclude)
+	lines := strings.Split(string(content), "\n")
+	keep := make([]string, 0, len(lines))
+	for i, ln := range lines {
+		no := i + 1
+		if len(include) > 0 && !inRanges(inc, no) {
+			continue
+		}
+		if inRanges(exc, no) {
+			continue
+		}
+		keep = append(keep, ln)
+	}
+	return []byte(strings.Join(keep, "\n"))
+}
+
+// HeadingTexts liefert die Klartext-Überschriften von content (voller
+// Heading-Text ohne Markdown-Auszeichnung, wie der Vergleich in exclude-sections)
+// — für den fail-closed Sektionsnamen-Guard des Coverage-Scans (DC-FA-COV-001).
+func HeadingTexts(content []byte) []string {
+	hs := extractHeadingLines(content)
+	out := make([]string, 0, len(hs))
+	for _, h := range hs {
+		out = append(out, plainHeadingText(h.text))
+	}
+	return out
+}
+
 // plainHeadingText liefert den getrimmten Heading-Text ohne
 // Markdown-Auszeichnung (Links → Linktext, Backticks/Sterne entfernt)
 // — Vergleichsbasis für exclude-sections (case-sensitiv) und das

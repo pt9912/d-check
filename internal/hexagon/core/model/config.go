@@ -359,6 +359,23 @@ type TraceConfig struct {
 	SliceDir    string
 	SliceFile   *regexp.Regexp
 	SlicePrefix string
+	// Coverage: opt-in kuratierte Coverage-Quellen (DC-FA-COV-001); leer ⇒
+	// keine Coverage-Spalte, RTM byte-identisch.
+	Coverage []TraceCoverage
+}
+
+// TraceCoverage ist eine kuratierte Coverage-Quelle der RTM (DC-FA-COV-001):
+// Files sind die explizit benannten Quell-Dateien (keine dir/pattern-Ableitung —
+// gegen ADR-Kontamination); Label ist die feste Owner-Kennung in der
+// Coverage-Spalte; Ranges (Default true) aktiviert die `<FAM>-AAA..BBB`-/
+// `/`-Enum-Expansion; Sections/ExcludeSections scopen den gescannten Text über
+// die Heading-Span-Semantik (voller Heading-Klartext, wie matrix.exclude-sections).
+type TraceCoverage struct {
+	Files           []string
+	Label           string
+	Ranges          bool
+	Sections        []string
+	ExcludeSections []string
 }
 
 // EffectiveModules wendet die Modul-Auflösung an
