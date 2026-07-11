@@ -164,8 +164,11 @@ eingearbeitet, §6).
 
 **Commit-Kette:** `e85f9b3` (doc-first) · `4643425` (feat) · `c759590`
 (release-prep v0.42.0) · `dcb8f46` (Review R1+R2) · `f8c0be7` (Closure-Move) ·
-Closure-Body (dieser, = Tag `v0.42.0`) · digest-backfill (folgt). **Release
-v0.42.0** auf GHCR — Digest-Pin folgt bei Backfill.
+`e9e71ea` (Closure-Body, = Tag `v0.42.0`) · digest-backfill. **Release v0.42.0**
+auf GHCR (Release-Run 29164636339 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:bdd9dad22390782ba1f5ab6c3bc09ea7720be0b1b159af6418280d69b84d8db4`.
+Publiziertes Image smoke-verifiziert (MUSS/DÜRFEN NICHT ⇒ `must`, SOLLTE ⇒
+`should`, KANN ⇒ `may`; `--require-complete` gatet 2 von 4 Waisen).
 
 **Lehre:** (i) Modalität ist eine **andere Dimension** als Deckung/Slice — eine
 **eigene Spalte** + ein **eigenes Gate** (`require-levels`) halten „was ist

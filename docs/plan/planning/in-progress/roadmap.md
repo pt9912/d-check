@@ -27,7 +27,8 @@ Nicht-Ziele + 1 DARF NICHT — mit `modality: {}` + Default `require-levels: [mu
 gaten an den Realdaten nur noch **2** (die DARF-NICHT-Pflicht GG-MVP-004 + eine
 NONGOAL-Klausel mit `muessen`-Verb), acht werden advisory. Zwei Reviews (Doc-first
 R1 NACHBESSERN + Impl R2 ACCEPT-WITH-NITS, eingearbeitet), Lastenheft-CR,
-**Release v0.42.0** auf GHCR (Digest-Pin folgt bei Backfill),
+**Release v0.42.0** auf GHCR (Release-Run 29164636339 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:bdd9dad22390782ba1f5ab6c3bc09ea7720be0b1b159af6418280d69b84d8db4`,
 [Closure](../done/slice-068-trace-modality-klassifikation.md#7-closure-notiz-nach-done)).
 Davor **welle-56-trace-coverage-quellen**
 ([`slice-067`](../done/slice-067-trace-coverage-quellen.md) — die RTM (`--trace`)
