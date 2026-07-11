@@ -23,8 +23,9 @@ Accepted). Anlass: der Konsument grid-gym sah via `make doc-trace` nur 6 von 243
 Anforderungen (allein die `GG-QA-*`-Familie trifft d-checks `-QA-`-Default); mit
 `trace`-Config sind alle 243 sichtbar (real verifiziert). Lastenheft-CR (v0.40.0),
 Impl-Review R1 ACCEPT-WITH-NITS (eingearbeitet), **Release v0.40.0** auf GHCR
-(Digest-Pin folgt bei Backfill),
-[Closure](../done/slice-066-trace-konfigurierbare-quellen.md)).
+(Release-Run 29143442890 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:e691053abd820f85e652a343f3d700ba135f2d8d66523151e1388c353af2ba75`,
+[Closure](../done/slice-066-trace-konfigurierbare-quellen.md#7-closure-notiz-nach-done)).
 Davor **welle-53-gate-consistency-tombstone**
 ([`slice-064`](../done/slice-064-gate-consistency-tombstone.md) — der
 Voll-Tombstone von `tools/gate-consistency.sh` (**letztes** `tools/*.sh`): die

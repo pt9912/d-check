@@ -180,8 +180,9 @@ ACCEPT-WITH-NITS (§6; MEDIUM-Test-Deckung + LOW eingearbeitet).
 
 **Commit-Kette:** `4971b11` (doc-first) · `029fb61` (feat) · `09b945a`
 (release-prep v0.40.0) · `bc8411c` (Review) · `1bb5e3f` (Closure-Move) ·
-Closure-Body · digest-backfill. **Release v0.40.0** (Push → CI → Tag → GHCR →
-digest-backfill; Digest-Pin folgt).
+`dcfa44c` (Closure-Body) · digest-backfill. **Release v0.40.0** auf GHCR
+(Release-Run 29143442890 grün), Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:e691053abd820f85e652a343f3d700ba135f2d8d66523151e1388c353af2ba75`.
 
 **Lehre:** Ein via `--print-mk` an alle Konsumenten verteiltes Feature
 (`doc-trace`/`doc-complete`) muss konfigurierbar sein, sonst bedient es nur die
