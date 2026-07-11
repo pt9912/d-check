@@ -61,30 +61,31 @@ Coverage einlesen, **ohne** `adrs`/`slices` zu berühren; eigene RTM-Spalte; Wai
 - [x] **Spezifikation** [§`DC-FA-COV-001.a`](../../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
   (Verrechnung + Range-Parser + Sektionen) + §2-Schema (`trace.coverage[].*`) + Historie.
 - [x] **[ADR-0035](../../adr/0035-trace-coverage-quellen.md)** (Proposed) + ADR-Index.
-- [ ] **Modell** [`config.go`](../../../../internal/hexagon/core/model/config.go):
+- [x] **Modell** [`config.go`](../../../../internal/hexagon/core/model/config.go):
   `TraceCoverage` + `TraceConfig.Coverage`; `TraceRow.Coverage` (omitempty);
-  Coverage-Aktiv-Flag der `TraceMatrix`.
-- [ ] **Config-Decode** [`configyaml.go`](../../../../internal/adapter/driven/configyaml/configyaml.go):
-  `rawTrace.Coverage`; `files`/`label` nicht-leer, `ranges`-Default-true (Pointer),
-  fail-closed.
-- [ ] **Range-Parser** ([`trace.go`](../../../../internal/hexagon/core/app/trace.go)):
-  isolierte Funktion + `rules`-Section-Span-Wiederverwendung (ggf. `excludedRanges`
-  exportieren/`SelectSections`-Helfer); Coverage-Scan; Waise-Neubestimmung.
-- [ ] **Reporter** [`report.go`](../../../../internal/adapter/driven/report/report.go):
-  konditionale Coverage-Spalte (Markdown), `coverage` in json/yaml.
-- [ ] **`--print-config`** [`config_template.go`](../../../../internal/adapter/driving/cli/config_template.go):
+  `TraceMatrix.CoverageActive`.
+- [x] **Config-Decode** [`configyaml.go`](../../../../internal/adapter/driven/configyaml/configyaml.go):
+  `rawCoverage` + `applyTraceCoverage`; `files`/`label` nicht-leer, files-Escape,
+  `ranges`-Default-true (Pointer), fail-closed.
+- [x] **Range-Parser + Scan** ([`trace.go`](../../../../internal/hexagon/core/app/trace.go)):
+  `expandRange`/`coverageIDs`/`coverageRefs`/`checkSectionNames`;
+  `rules.SelectSections`/`HeadingTexts` (Section-Span-Wiederverwendung);
+  Waise = ¬slice ∧ ¬coverage.
+- [x] **Reporter** [`report.go`](../../../../internal/adapter/driven/report/report.go):
+  konditionale Coverage-Spalte (vor `Status`); `coverage` in json/yaml (omitempty).
+- [x] **`--print-config`** [`config_template.go`](../../../../internal/adapter/driving/cli/config_template.go):
   kommentierter `coverage`-Block.
-- [ ] **Tests**: Coverage-Klasse (Label, kein Waise); Range (`001..006` ⇒ alle
-  sechs) + `/`-Enum; Sektionen (exclude §27.1.1 nicht kreditiert, include-Whitelist);
-  keine ADR-Kontamination; Negative (fehlende Datei / `AAA>BBB` / Breiten-Mismatch
-  ⇒ Exit 2); `--require-complete` mit Coverage; **Default-aus byte-identisch**
-  (kein Spalten-/Feld-Diff); Range-Parser-Unit-Tests; mutations-hart.
-- [ ] **Release-Prep**: Handbuch §4.12 (Coverage) + §5 (Schema), `CHANGELOG.md`;
-  slice-061/062-Harnesse grün; bare-Tag-Sweep + `version.md` nach
-  [`releasing.md` §4](../../../../docs/user).
-- [ ] `make gates` / `make ci` grün; **unabhängiger Impl-Review**; Verifikation an
-  grid-gym-Realdaten (Waisen-Rückgang); Closure-Move + Body + **Lerneintrag**.
-  **Release v0.41.0**.
+- [x] **Tests**: Coverage-Klasse/Range/`/`-Enum; Sektionen exclude **und** include
+  (R1-MEDIUM); keine ADR-Kontamination; Negative (fehlende Datei/`AAA>BBB`/Breite/
+  Sektion-ohne-Treffer ⇒ Exit 2); `--require-complete`; `ranges:false`;
+  Default-aus byte-identisch; Range-Parser-Unit-Tests; mutations-hart.
+- [x] **Release-Prep**: Handbuch §4.12 + §5 + §11, `CHANGELOG.md` `[0.41.0]`,
+  bare-Tag-Sweep + `version.md`; slice-061/062-Harnesse grün.
+- [x] **Verifikation** grid-gym-Realdaten: Waisen **113 → 10**.
+- [x] `make gates` grün; **zwei unabhängige Reviews** (Doc-first R1 + Impl R2,
+  ACCEPT-WITH-NITS, alle eingearbeitet — §6).
+- [ ] **Offen:** `make ci` (image-test) + Closure-Move + Body + **Lerneintrag**;
+  **Release v0.41.0** (Push → CI → Tag → GHCR → digest-backfill).
 
 ## 4. Trigger
 
@@ -110,3 +111,32 @@ verfehlt die kuratierte Matrix. Nutzer-Vorschlag „Feature-Spec `trace.coverage
   kippt Default-Semantik.
 - **Fehlende `files`-Datei ⇒ Exit 2** (anders als `adrs.dir`/`slices.dir`, wo
   Fehlen = Skip): Coverage-`files` sind **explizit benannt**, fail-closed.
+
+## 6. Review-Nachtrag (Doc-first R1 + Impl R2)
+
+Zwei unabhängige Reviews (Report:
+[`docs/reviews/2026-07-11-slice-067-trace-coverage-quellen.md`](../../../reviews/2026-07-11-slice-067-trace-coverage-quellen.md)):
+
+- **R1 Doc-first — NACHBESSERN → behoben.** MEDIUM: die wiederverwendete
+  Span-Mechanik vergleicht den **vollen Heading-Text exakt**; die Beispiele
+  nutzten die Kurzform (`exclude-sections: [27.1.1]`), die die reale Überschrift
+  nicht matcht ⇒ falsche Kredite bzw. (Whitelist-Tippfehler) still leere Datei ⇒
+  alle falsche Waisen. Behoben: vollen Heading-Text überall + explizite Aussage +
+  **fail-closed-Guard** (`checkSectionNames`: Sektion ohne Treffer ⇒ Exit 2).
+  Dazu INFO: Spalten-Position (`Coverage` vor `Status`), `files`-Escape,
+  „kein eigenes Regex".
+- **R2 Impl — ACCEPT-WITH-NITS → behoben.** MEDIUM: positive `sections`-Whitelist
+  (Include-Zweig) ungetestet ⇒ `TestCLI067_Coverage_IncludeSection`. LOW:
+  `ranges:false` end-to-end ⇒ `TestCLI067_Coverage_RangesFalse`. LOW:
+  `--require-complete`-Meldung „ohne Slice" ⇒ bei aktiver Coverage „ohne Slice und
+  ohne Coverage". INFO **bewusst nicht behoben:** die Range-Schleife läuft
+  `end-start`-mal unabhängig vom `id-pattern` (≤1000 bei 3-Ziffern-Konvention,
+  Atoi-Overflow entschärft die Extremform; trusted-Repo-Eingabe, kein
+  Sicherheitsproblem — kein Cap).
+
+Explizit sauber verifiziert (R2, per Fallanalyse mutations-hart): Byte-Identität
+(`omitempty` json+yaml, `CoverageActive json:"-"`, 5-Spalten-Fallback,
+`Slices==nil`-Normalisierung verhaltensgleich); Range-Parser (DNP3/Breite/AAA>BBB,
+Voll-Match); Sektions-Filter kein Off-by-one (beide `proseLines`/`i+1`), Guard
+über alle `files`; Fail-closed bis Exit 2 verdrahtet; Spec↔Code-Parität;
+`sortedSets`-Extraktion verhaltensgleich zum Inline-Dedup.
