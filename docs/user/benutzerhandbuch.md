@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.23 · **Software-Version:** [v0.39.0](../../version.md#v0.39.0) ·
+**Handbuch-Version:** 1.24 · **Software-Version:** [v0.40.0](../../version.md#v0.40.0) ·
 **Stand:** 2026-07-04 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -63,7 +63,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.39.0
+docker pull ghcr.io/pt9912/d-check:v0.40.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -100,7 +100,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -146,7 +146,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -165,7 +165,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.39.0
+  ghcr.io/pt9912/d-check:v0.40.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -184,7 +184,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.39.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.40.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -203,7 +203,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -229,7 +229,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -238,7 +238,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -250,7 +250,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -270,7 +270,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
   --enable ids --disable anchors
 ```
 
@@ -291,7 +291,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
   --enable ids
 ```
 
@@ -312,7 +312,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
   --enable matrix
 ```
 
@@ -379,7 +379,7 @@ verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
   --enable external
 ```
 
@@ -399,7 +399,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
   --enable ids --doctor
 ```
 
@@ -427,7 +427,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
   --enable ids --doctor --json
 ```
 
@@ -475,7 +475,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -511,7 +511,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 \
     --enable ids --repair | git apply
   ```
 
@@ -528,7 +528,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -548,7 +548,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -581,7 +581,7 @@ Lastenheft, ADRs unter `docs/plan/adr/`, Slices unter `docs/plan/planning/`).
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.39.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.40.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -609,6 +609,24 @@ bleibt unverändert auf stdout) — so lässt sich „jede Anforderung hat einen
 umsetzenden Slice" in CI erzwingen. Ohne `--trace` ist `--require-complete` ein
 Nutzungsfehler (Exit 2).
 
+**Andere Repo-Konvention (`trace`-Block).** Standardmäßig erkennt `--trace`
+Anforderungen der Gestalt `<PREFIX>-FA-…`/`-QA-…` und Slice-Dateien
+`slice-NNN-….md`. Weicht Ihr Repo davon ab, überschreiben Sie die Quell-Achsen
+in `.d-check.yml` (jedes Feld optional; ohne `trace`-Block bleibt die Ausgabe
+byte-identisch):
+
+```yaml
+trace:
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'   # Ihre Anforderungs-Kennung
+  slices:
+    file-pattern: '^(\d+)-.*\.md$'          # z. B. Slices NNN-titel.md
+```
+
+Damit bildet die RTM auch ein Repo mit eigener Kennungs-/Datei-Konvention
+vollständig ab (Details und alle Felder in §5). Ein Muster ohne Capture-Gruppe
+in `file-pattern` ist ein Konfigurationsfehler (Exit 2).
+
 ### 4.13 Ein Makefile-Fragment einbinden (`--print-mk`)
 
 **Ziel:** d-check als `doc-check`-Schritt ins eigene Makefile einbinden, ohne
@@ -618,7 +636,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.39.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.40.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -631,7 +649,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.39.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.40.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -759,6 +777,11 @@ targets:                       # Deklarations-Konsistenz Doku ↔ Build-Targets 
   doc-tables: [AGENTS.md]      # make-X-Tabellen (Richtung 1 ⇒ gate-phantom)
   authority: AGENTS.md         # Vollständigkeits-Quelle (Richtung 2 ⇒ gate-undocumented)
   exempt-targets: []           # Regelnamen EXAKT (kein Glob, anders als tracked) — Utility ohne Doku-Pflicht
+trace:                         # konfigurierbare RTM-Quellen (KEIN Modul; steuert nur --trace)
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'  # Anforderungs-Kennung (Default: <PREFIX>-FA-…/-QA-…)
+  slices:
+    file-pattern: '^(\d+)-.*\.md$'          # Slice-Dateiname NNN-titel.md (Capture 1 = Owner-Kennung)
 ```
 
 Das Modul `codepaths` kennt **drei** Ventil-Achsen, um einen Pfad von der
@@ -909,6 +932,21 @@ ids:
   scope:
     roots: [spec, docs/user]
 ```
+
+### Konfigurierbare RTM-Quellen (`trace`)
+
+Die Traceability-Matrix (`--trace`, siehe §4.12) erkennt Anforderungen und ihre
+ADR-/Slice-Referenzen standardmäßig nach d-checks eigener Konvention (Kennungen
+`<PREFIX>-FA-…`/`-QA-…` im Lastenheft, Slice-Dateien `slice-NNN-….md`,
+ADR-Dateien `NNNN-….md`). Folgt Ihr Repo einer anderen Konvention, überschreibt
+der optionale `trace`-Block (oben im Beispiel) die vier Quell-Achsen:
+`requirements` (`source` + `id-pattern`) sowie je Referenzklasse `adrs`/`slices`
+(`dir` + `file-pattern` + `id-prefix`; die **Capture-Gruppe** der `file-pattern`
+liefert die Owner-Kennung, der `id-prefix` wird ihr vorangestellt). Jedes Feld
+ist optional; ein abwesendes fällt auf den Default zurück, und **ohne
+`trace`-Block ist die RTM-Ausgabe byte-identisch** zum bisherigen Verhalten. Ein
+nicht kompilierbares Muster oder eine `file-pattern` ohne Capture-Gruppe ist ein
+Konfigurationsfehler (Exit 2, fail-closed).
 
 ## 6. Regelmodule
 

@@ -4,6 +4,31 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.40.0] — 2026-07-11
+
+### Changed
+
+- slice-066 — die **Requirements Traceability Matrix** (`--trace`,
+  [`DC-FA-CLI-009`](spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix),
+  [ADR-0034](docs/plan/adr/0034-trace-konfigurierbare-quellen.md)) ist über einen
+  opt-in **`trace`-Config-Block** in `.d-check.yml` quell- und
+  kennungs-konfigurierbar. Bislang waren die vier RTM-Annahmen hart an d-checks
+  eigene Konvention gebunden — Anforderungs-Quelldatei + Kennungs-Gestalt
+  (`-FA-`/`-QA-`) sowie die Slice-/ADR-Dateinamen (`slice-NNN-…`/`NNNN-…`). Neu
+  überschreibt `trace.requirements.source`/`.id-pattern`,
+  `trace.adrs.dir`/`.file-pattern`/`.id-prefix` und
+  `trace.slices.dir`/`.file-pattern`/`.id-prefix` diese Achsen (Capture-Gruppe 1
+  der `file-pattern` = Owner-Kennung). **Jedes Feld ist optional; ohne
+  `trace`-Block ist die RTM byte-identisch** zum bisherigen Verhalten
+  ([`DC-QA-02`](spec/lastenheft.md#dc-qa-02--determinismus)); fail-closed bei
+  ungültiger Regex oder `file-pattern` ohne Capture-Gruppe (Exit 2). Damit bildet
+  die RTM auch Konsumenten-Repos mit abweichender Kennungs-/Datei-Konvention
+  vollständig ab (Anlass: grid-gym sah 6 von 243 Anforderungen).
+  `--require-complete`
+  ([`DC-FA-CLI-011`](spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code))
+  erbt die konfigurierten Quellen. `--print-config` führt einen kommentierten
+  `trace`-Block.
+
 ## [0.39.0] — 2026-07-06
 
 ### Changed
