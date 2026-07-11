@@ -75,27 +75,30 @@ abbildet.
   §2-Schema-Tabelle um die acht `trace.*`-Keys; §7-Historie.
 - [x] **[ADR-0034](../../adr/0034-trace-konfigurierbare-quellen.md)** (Proposed) +
   ADR-Index-Zeile.
-- [ ] **Modell** [`config.go`](../../../../internal/hexagon/core/model/config.go):
+- [x] **Modell** [`config.go`](../../../../internal/hexagon/core/model/config.go):
   `TraceConfig` (Regex + Strings, Nullwert = Default); `Config` trägt `Trace`.
-- [ ] **Config-Decode** [`configyaml.go`](../../../../internal/adapter/driven/configyaml/configyaml.go):
-  `trace`-Top-Level-Key; Regex-Kompilierung + Capture-Gruppen-Guard + Pfad-
-  Validierung (Exit 2).
-- [ ] **RTM** [`trace.go`](../../../../internal/hexagon/core/app/trace.go):
-  `resolveTrace` (Default-Auflösung) + `BuildTraceMatrix(fsys, tc)`; `traceRequirements`/
-  `traceRefs`/`isFullReqID` parametrisiert.
-- [ ] **CLI** [`cli.go`](../../../../internal/adapter/driving/cli/cli.go):
-  `loadConfig` **vor** dem `--trace`-Zweig; `cfg.Trace` durchreichen; Config-Fehler
+  Default-Auflösung in `trace.go`, nicht im globals-freien Modell (lint-sicher).
+- [x] **Config-Decode** [`configyaml.go`](../../../../internal/adapter/driven/configyaml/configyaml.go):
+  `trace`-Top-Level-Key; `compileTracePattern` (Regex + Capture-Guard) +
+  `validateTracePath` — alles fail-closed (Exit 2).
+- [x] **RTM** [`trace.go`](../../../../internal/hexagon/core/app/trace.go):
+  `resolveTrace` + `BuildTraceMatrix(fsys, tc)`; `traceRequirements`/`traceRefs`/
+  `isFullReqID` parametrisiert.
+- [x] **CLI** [`cli.go`](../../../../internal/adapter/driving/cli/cli.go):
+  `loadConfig` **vor** dem `--trace`-Zweig; `cfg.Trace` durchgereicht; Config-Fehler
   ⇒ Exit 2.
-- [ ] **`--print-config`** [`config_template.go`](../../../../internal/adapter/driving/cli/config_template.go):
-  kommentierter `trace`-Block.
-- [ ] **Tests**: Default byte-identisch; Fremd-Konvention (grid-gym-Gestalt,
-  Vorher/Nachher); Voll-Custom-Konvention (alle 8 Achsen); Negative-Config (Regex /
-  Capture / Pfad-Escape ⇒ Exit 2); `--require-complete`-Vererbung; mutations-hart.
-- [ ] **Release-Prep**: Benutzerhandbuch (`trace`-Config + Beispiel), `operations.md`,
-  `CHANGELOG.md`; slice-061/062-Harnesse grün; bare-Tag-Sweep `v0.39.0`→`v0.40.0`
-  + `version.md`-Register nach [`releasing.md` §4](../../../../docs/user).
-- [ ] `make gates` / `make ci` grün; **ein unabhängiger Impl-Review**; Closure-Move +
-  Body + **Lerneintrag**. **Release v0.40.0** (Push → CI → Tag → GHCR → digest-backfill).
+- [x] **`--print-config`** [`config_template.go`](../../../../internal/adapter/driving/cli/config_template.go):
+  kommentierter `trace`-Block (in `TestCLI053` verankert).
+- [x] **Tests**: Default byte-identisch; Fremd-Konvention (Vorher/Nachher);
+  Voll-Custom (alle 8 Achsen, mutations-hart); Negative-Config (Regex / Capture /
+  Pfad-Escape ⇒ Exit 2); `--require-complete`-Vererbung.
+- [x] **Release-Prep**: Benutzerhandbuch §4.12+§5, `operations.md`, `CHANGELOG.md`
+  `[0.40.0]`; bare-Tag-Sweep `v0.39.0`→`v0.40.0` + `version.md`-Register;
+  slice-061/062-Harnesse grün.
+- [x] **Verifikation** gegen grid-gym-Realdaten: **6 → 243** Anforderungen sichtbar.
+- [x] `make gates` grün; **unabhängiger Impl-Review R1 ACCEPT-WITH-NITS** (§6).
+- [ ] **Offen:** `make ci` (image-test) + Closure-Move + Body + **Lerneintrag**;
+  **Release v0.40.0** (Push → CI → Tag → GHCR → digest-backfill).
 
 ## 4. Trigger
 
@@ -120,3 +123,34 @@ statt „Feature in grid-gym entfernen").
   im Handbuch muss über `configyaml.Decode` laufen; darum das Schema als **Tabelle**
   dokumentiert (kein gefencter Config-Block in der Spezifikation), Handbuch-Beispiel
   erst nach der Decode-Implementierung.
+
+## 6. Review-Nachtrag (Impl-R1)
+
+Unabhängiger Impl-Review (24 Tool-Uses, alle geänderten/neuen Dateien + voller
+Diff real gelesen) — **Verdikt ACCEPT-WITH-NITS**, beide nicht-blockierenden
+Befunde eingearbeitet (Report:
+[`docs/reviews/2026-07-11-slice-066-trace-konfigurierbare-quellen.md`](../../../reviews/2026-07-11-slice-066-trace-konfigurierbare-quellen.md)):
+
+- **F-1 (MEDIUM):** Nur 2 der 8 Config-Achsen waren differenziell getestet; die
+  übrigen 6 (`requirements.source`, `adrs.dir`/`.file-pattern`/`.id-prefix`,
+  `slices.dir`/`.id-prefix`) liefen im Default-Test zwar durch, waren aber
+  mutations-inert (ein gelöschter Override-Zweig bliebe ungefangen). Behoben mit
+  `TestCLI066_Trace_VollCustomKonvention` — eine vollständig eigene Konvention
+  (custom Quelle/Regex/Verzeichnisse/Dateimuster/Präfixe) assertet die
+  aufgelösten Owner-Kennungen (`DEC-0007`/`T5`); jeder Default-Rückfall macht ihn
+  rot.
+- **F-2 (LOW):** der kommentierte `--print-config`-`trace`-Block war in
+  `TestCLI053`s Präsenzliste nicht verankert (Entfernen bliebe ungefangen).
+  `"# --- trace:"` ergänzt.
+- **F-3 (INFO):** `loadConfig` läuft nun VOR dem `--trace`-Zweig — eine defekte,
+  trace-fremde `.d-check.yml` liefert bei `--trace` jetzt Exit 2 statt einer RTM.
+  Beabsichtigt und in [ADR-0034](../../adr/0034-trace-konfigurierbare-quellen.md)
+  §Konsequenzen dokumentiert (fail-closed); nur notiert.
+
+Explizit sauber verifiziert: Byte-Identität im Default (zeilenweise gegen die
+alten hart kodierten `traceRefs`-Aufrufe), Capture-Guard greift für **beide**
+`file-pattern` (kein `m[1]`-Panic-Pfad), `--require-complete` erbt die Config,
+Norm↔Code-Parität (8 `rawTrace`-Keys == 8 §2-Schema-Zeilen, Default-Werte
+deckungsgleich), Prefix-Semantik konsistent, Determinismus/Read-only,
+Harness-Regeln (ADR nennt den Slice nur in `## Geschichte`, Versions-Header
+0.40.0 == §7-Top == CHANGELOG), gocyclo unter Schwelle.
