@@ -349,6 +349,68 @@ Fehlende Quellen (kein `requirements.source` / kein `adrs.dir`/`slices.dir`)
 liefern eine leere bzw. teilbefüllte Matrix, **kein** Fehler. Nur mit
 `--doctor`/`--repair` ist `--trace` ein Nutzungsfehler (Exit 2).
 
+### DC-FA-COV-001.a — Kuratierte Coverage-Quellen (`trace.coverage`)
+
+Die opt-in Liste `trace.coverage`
+([`DC-FA-COV-001`](lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in))
+erweitert die RTM-Verrechnung (Schritt 2 von
+[§`DC-FA-CLI-009.a`](spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix))
+um eine dritte Referenzklasse. Verrechnung (deterministisch,
+[`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)):
+
+1. **Je Quelle** (`{files, label, ranges, sections, exclude-sections}`) je Datei
+   in `files`: den Datei-Inhalt **abschnitts-filtern** — ein Sektionsname ist der
+   **volle Heading-Klartext** (exakter Vergleich wie `matrix.exclude-sections`,
+   z. B. `"27.1 Anforderung zu Design"`, **nicht** die Kurzform `"27.1"`):
+   - `sections` gesetzt ⇒ **nur** die Zeilen der gelisteten Abschnitte behalten
+     (Span wie `matrix.exclude-sections`: Überschrift bis zur nächsten
+     gleich-/höherrangigen); leer ⇒ ganze Datei;
+   - `exclude-sections` ⇒ die Zeilen der gelisteten Abschnitte **entfernen**
+     (dieselbe Span-Mechanik, `excludedRanges`). Reihenfolge: erst Whitelist, dann
+     Blacklist. So ergibt `sections: ["27.1 Anforderung zu Design"]` +
+     `exclude-sections: ["27.1.1 Anforderungen ohne Design-Artefakt"]` genau
+     „§27.1 ohne §27.1.1".
+   - **Fail-closed:** ein konfigurierter Sektionsname (in `sections` **oder**
+     `exclude-sections`), der über alle `files` der Quelle **keine** Überschrift
+     trifft ⇒ **Exit 2** (Tippfehler-/Kurzform-Guard — sonst blankt eine
+     Whitelist ohne Treffer still die ganze Datei bzw. greift eine Blacklist
+     nicht, und Anforderungen würden falsch (un)gedeckt).
+2. **ID-Extraktion** aus dem gefilterten Text: alle exakten
+   `requirements.id-pattern`-Treffer; bei `ranges: true` zusätzlich die
+   **Range-/Enum-Expansion** (Schritt 3).
+3. **Range-Parser** (isolierte, deterministische Funktion, parametrisiert über
+   `id-pattern`): für jede `id-pattern`-Fundstelle prüfen, ob unmittelbar
+   - `..<Ziffern>` folgt (`<FAM>-AAA..BBB`): Familie = Fundstelle ohne
+     Trailing-`-<Ziffern>`, Start `AAA` = diese Trailing-Ziffern (Breite `W`),
+     Ende `BBB` = die Folge-Ziffern; expandiere `<FAM>-<i>` für `i ∈ [AAA, BBB]`,
+     **`W`-breit null-aufgefüllt**; `AAA>BBB` oder `len(BBB)≠W` ⇒ **Exit 2**;
+   - `/<Ziffern>`-Folgen folgen (`<FAM>-AAA/BBB/CCC`): je `<FAM>-<Ziffern>`;
+   jede expandierte ID wird gegen `id-pattern` geprüft und bei Nicht-Treffer
+   **verworfen**.
+4. **Zuordnung**: jede abgedeckte Anforderungs-Kennung erhält das `label` der
+   Quelle in ihrer **Coverage**-Menge (dedupliziert, sortiert; mehrere Quellen ⇒
+   mehrere Labels).
+5. **Waise-Neubestimmung** ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)):
+   `orphan = (keine Slice-Referenz) ∧ (keine Coverage-Referenz)`. ADR-Referenzen
+   zählen wie bisher **nicht** zur Waisen-Freiheit.
+
+**Rendering/Config-Auflösung.** Ist ≥1 `trace.coverage`-Quelle konfiguriert,
+trägt die Markdown-RTM eine zusätzliche **Coverage**-Spalte **vor** der
+`Status`-Spalte (`… | Slices | Coverage | Status |`; Labels, sonst „—");
+`--json`/`--yaml` tragen je Anforderung ein `coverage`-Feld (`omitempty` — leer
+⇒ entfällt). Die Spalten-Entscheidung hängt an einem expliziten Aktiv-Flag der
+Matrix (≥1 Quelle konfiguriert), nicht am Zeilen-Inhalt. **Kein `trace.coverage`
+⇒ kein Flag, keine Spalte, kein Feld ⇒ RTM byte-identisch.** **Fail-closed**
+(Config-/Lauf-Zeit, Exit 2): leere `files`-Liste, ein `files`-Pfad außerhalb der
+Repo-Wurzel (führendes `/` oder `..`) oder eine **fehlende** `files`-Datei
+(anders als `adrs.dir`/`slices.dir`, wo Fehlen = Skip — `files` sind **explizit
+benannt**), leeres `label`, ein Sektionsname ohne Heading-Treffer, oder eine
+ungültige Range (`AAA>BBB`/Breite). `trace.coverage` führt **kein** eigenes Regex
+(nutzt `requirements.id-pattern`, bereits config-zeitig geprüft). Read-only
+([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)) —
+nur Markdown-Lesen der benannten `files` im gemounteten Baum, kein neuer
+Eingabe-Scope darüber hinaus.
+
 ### DC-FA-CLI-010.a — Makefile-Fragment
 
 `--print-mk` ([`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben))
@@ -1479,6 +1541,12 @@ Exit 2 ohne Prüfung
 | `trace.slices.dir` | string | `docs/plan/planning` | Wurzel-relatives Referenz-Verzeichnis der Slices (rekursiv); fehlt es ⇒ keine Slice-Referenzen (alle Anforderungen Waisen); leer ⇒ Default |
 | `trace.slices.file-pattern` | string | `^(slice-\d+)-.*\.md$` | Regex auf den **Basisnamen**; **Capture-Gruppe 1** = Owner-Kennung; muss kompilieren **und ≥1 Capture-Gruppe** haben (sonst Exit 2); Dateien ohne Treffer (z. B. `README.md`) übersprungen; leer ⇒ Default |
 | `trace.slices.id-prefix` | string | leer | der Owner-Kennung vorangestellt; Default **leer** (der Slice-Dateiname trägt die volle Kennung `slice-NNN`); setzbar (z. B. `Slice ` ⇒ `Slice 063`) |
+| `trace.coverage` | list | leer | opt-in **Liste** kuratierter Coverage-Quellen ([`DC-FA-COV-001`](lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)); leer/abwesend ⇒ **keine** Coverage-Spalte, RTM byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)) |
+| `trace.coverage[].files` | string[] | — | **explizite** Wurzel-relative Pfad-Liste (keine `dir`/`file-pattern`-Ableitung — gegen ADR-/Slice-Kontamination); nicht leer; jede Datei muss existieren (sonst Exit 2, fail-closed) |
+| `trace.coverage[].label` | string | — | feste Owner-Kennung in der **Coverage**-Spalte (z. B. `Trace`); nicht leer (Exit 2) |
+| `trace.coverage[].ranges` | bool | `true` | expandiert Range-/Enum-Notation: `<FAM>-AAA..BBB` (inklusiv, breiten-erhaltend) + `<FAM>-AAA/BBB/CCC`; jede expandierte ID gegen `trace.requirements.id-pattern` validiert (Nicht-Treffer verworfen); `AAA>BBB` oder Breiten-Mismatch ⇒ Exit 2. `false` ⇒ nur exakte IDs |
+| `trace.coverage[].sections` | string[] | leer | **Whitelist**: nur diese H2/H3-Abschnitte zählen als Coverage (Span wie `matrix.exclude-sections` — Überschrift bis zur nächsten gleich-/höherrangigen); leer ⇒ ganze Datei |
+| `trace.coverage[].exclude-sections` | string[] | leer | **Blacklist**: diese Abschnitte zählen **nicht** (Span wie `matrix.exclude-sections`); gegen „…ohne Design-Artefakt"-Listen, die sonst nicht gedeckte IDs kreditierten |
 
 **Glob-Auswertung.** Alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`,
 `matrix.classes[].paths`/`.order`, die `*.exempt-paths`) werden **segmentweise
@@ -1592,4 +1660,5 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-07-03 | §[`DC-FA-TRK-001.a`](spezifikation.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked) + §2-Schema (`tracked.exempt-targets`) + Grund-Code `target-untracked` (§4) ergänzt: opt-in Modul `tracked` prüft die Datei-Ebene der von `links` aufgelösten, **existierenden** repo-internen Ziele gegen den **git-Index** — dritte VCS-Port-Nutzung (`vcs` Range-Diff, `commits` Messages, `tracked` Index), **ohne** Range/`--staged`; Index statt `.gitignore`-Interpretation (gestagte Dateien gelten als getrackt), kein Doppelbefund (`target-missing` bleibt `links`), Ventil referenz-weit analog `codepaths.ignore-refs`; fail-closed ohne lesbares `.git` (Exit 2), diagnose-only, default-aus byte-identisch. Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (9→10 Targets): `--print-mk` trägt `doc-tracked` (`--enable tracked` + fokussierte `--disable`-Liste, ohne Range) | slice-059 |
 | 2026-07-03 | Review R1/R2 zu §[`DC-FA-TRK-001.a`](spezifikation.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked), präzisiert: Prüfung **je gescannter Quell-Datei** statt „Post-Pass" (Auflösungs-Mechanik unabhängig von der Aktivierung des Moduls `links` — ein fokussierter Lauf prüft vollständig); Verzeichnis-Ziele und Symlink-Referenzen (Ziel ist/durchläuft einen Symlink) explizit kein Kandidat ([`DC-FA-LINK-002`](lastenheft.md#dc-fa-link-002--symlink-ablehnung)-Domäne — false-positive hinter getrackten Verzeichnis-Symlinks vermieden); `target` = aufgelöster Pfad bekräftigt (Ventil-Parität); `exempt-targets` segmentweise validiert (Exit 2) | slice-059 |
 | 2026-07-05 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) + §2-Schema (`targets.makefiles`/`doc-tables`/`authority`/`exempt-targets`) ergänzt: opt-in Modul `targets` prüft **hermetisch** (Filesystem-Port `ReadFile`, **kein** git/Netz/Makefile-Ausführen) die Doku-↔-Makefile-Deklarations-Konsistenz — ein nur aus **Tabellenzeilen** (Pipe-Präfix, keine Prosa) dokumentiertes `make X` ohne Makefile-Regel ⇒ `gate-phantom`, eine Makefile-Regel (nicht `targets.exempt-targets`) ohne Eintrag in `targets.authority` ⇒ `gate-undocumented`; statische Zeilen-Heuristik für Regelnamen (keine Pattern-Rules/variablen Targets, in Parität zu `tools/gate-consistency.sh`), fail-closed bei fehlender konfigurierter Datei, diagnose-only, default-aus byte-identisch; Analogie zu `planning` (Doku-Behauptung ↔ Repo-Struktur, hermetisch). Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (10→11 Targets): `--print-mk` trägt `doc-targets` (`--enable targets`, hermetisch ohne Range). Die Grund-Codes `gate-phantom`/`gate-undocumented` (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep) | slice-063 |
+| 2026-07-11 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) + §2-Schema (`trace.coverage[].files`/`label`/`ranges`/`sections`/`exclude-sections`) ergänzt: dritte opt-in RTM-Referenzklasse `trace.coverage` ([`DC-FA-COV-001`](lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)) liest kuratierte Matrizen range-aware als Coverage — Abschnitts-Whitelist/Blacklist über die bestehende `matrix`-Span-Semantik (`excludedRanges`), Range-Parser (`<FAM>-AAA..BBB` breiten-erhaltend + `/`-Enum, gegen `id-pattern` validiert, `AAA>BBB`/Breite ⇒ Exit 2), Waise = ¬slice ∧ ¬coverage. Konditionale Coverage-Spalte + `coverage`-Feld (omitempty) ⇒ ohne Quelle byte-identisch. Mit-Modifikation §[`DC-FA-CLI-009.a`](spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) (Spalte) + [`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) (Waisen-Definition). `--print-config` führt den `coverage`-Block. Fail-closed | slice-067 |
 | 2026-07-11 | §[`DC-FA-CLI-009.a`](spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritte 1/2 + Config-Auflösungs-Absatz + §2-Schema (`trace.requirements.source`/`.id-pattern`, `trace.adrs.dir`/`.file-pattern`/`.id-prefix`, `trace.slices.dir`/`.file-pattern`/`.id-prefix`) ergänzt: die vier RTM-Konventions-Annahmen ([`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)) sind über einen opt-in `trace`-Block überschreibbar — Anforderungs-Quelldatei + Kennungs-Regex (Ganz-Token im Heading, Referenz-Zählung in ADR/Slice) sowie je Referenzklasse Verzeichnis + Basisnamen-Regex (Capture-Gruppe 1 = Owner-Kennung) + Owner-Präfix. Jedes Feld optional, abwesend ⇒ Default (byte-identisch, [`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)); fail-closed zur Config-Zeit (ungültige Regex bzw. `file-pattern` ohne Capture-Gruppe ⇒ Exit 2). Gilt unverändert für `--require-complete` ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)). Kein neuer Grund-Code (`--trace` bleibt advisory). Design spiegelt `ids.patterns` (begleitende ADR) | slice-066 |

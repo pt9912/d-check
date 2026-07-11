@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.40.0
+**Version:** 0.41.0
 
 **Status:** Draft
 
@@ -49,7 +49,8 @@ statt per Code-Kopie.
 > Core-Immutabilität), `COMMITS` (Traceability-Kennung in
 > Commit-Messages), `PLAN` (Planning-Lifecycle-Konsistenz), `TRK`
 > (Getrackt-Status von Referenz-Zielen), `TGT` (Deklarations-Konsistenz
-> Doku ↔ Build-Targets), `CONF` (Konfiguration), `DIST` (Distribution).
+> Doku ↔ Build-Targets), `COV` (kuratierte Coverage-Quellen der RTM),
+> `CONF` (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -366,10 +367,17 @@ erzeugt**, immer frisch abgeleitet. Je Anforderung (Anforderungs-Kennung im
 Lastenheft; Default-Gestalt `<PREFIX>-FA-*`/`-QA-*`, per
 `trace.requirements.id-pattern` konfigurierbar) zeigt die Matrix Titel, die
 referenzierenden **ADRs** und **Slices** sowie eine **Lücken-Markierung**
-(Anforderung ohne referenzierenden Slice = Waise). Default-Format ist eine
+(Anforderung ohne referenzierenden Slice **und** ohne Coverage = Waise). Ist
+**mindestens eine** kuratierte Coverage-Quelle konfiguriert (opt-in
+`trace.coverage`, [`DC-FA-COV-001`](#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)),
+trägt die Matrix zusätzlich eine **Coverage**-Spalte (die Quell-Labels);
+**ohne** `trace.coverage` erscheint **keine** Coverage-Spalte und die RTM ist
+byte-identisch zur Fassung vor dieser Erweiterung
+([`DC-QA-02`](#dc-qa-02--determinismus)). Default-Format ist eine
 **Markdown-Tabelle**; mit `--json`/`--yaml` wird dieselbe Matrix
-strukturgleich maschinenlesbar (format-neutraler Reporter,
-[`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate)). **Doku-Domäne:**
+strukturgleich maschinenlesbar (je Anforderung ein `coverage`-Feld, das ohne
+Coverage-Referenz entfällt — byte-identisch ohne aktive Quelle; format-neutraler
+Reporter, [`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate)). **Doku-Domäne:**
 Anforderungen aus `spec/lastenheft.md`, Referenzen aus `docs/plan/adr/`
 und `docs/plan/planning/` (Default-Pfade; kein Code/keine Go-Toolchain).
 
@@ -472,7 +480,9 @@ read-only RTM-Lauf wie
 [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit),
 deterministisch [`DC-QA-02`](#dc-qa-02--determinismus), kein Dokument erzeugt),
 **bindet das Ergebnis aber an den Exit-Code**: ≥1 Requirements-Waise
-(Anforderung ohne referenzierenden Slice) ⇒ **Exit 1** (Befund-Code,
+(Anforderung ohne referenzierenden Slice **und** — falls `trace.coverage`
+konfiguriert ist — ohne Coverage-Referenz, [`DC-FA-COV-001`](#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in))
+⇒ **Exit 1** (Befund-Code,
 [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)); 0 Waisen ⇒ Exit 0. Die RTM
 erscheint unverändert auf stdout (Default Markdown, mit `--json`/`--yaml`
 maschinenlesbar) — `--require-complete` ändert nur den Exit-Code, nicht die
@@ -489,10 +499,69 @@ RTM-Parsing-Logik zu kopieren.
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Repo, dessen Lastenheft-Anforderungen alle von ≥1 Slice referenziert sind, when `d-check --trace --require-complete` läuft, then erscheint die RTM auf stdout und der Exit-Code ist 0; ein read-only gemountetes Repository genügt.
-- **Boundary:** Given ein Repo mit genau einer Requirements-Waise (Anforderung ohne referenzierenden Slice), when `d-check --trace --require-complete` (auch mit `--json`/`--yaml`) läuft, then ist der Exit-Code 1, die vollständige RTM erscheint auf stdout (Waise markiert), und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+- **Boundary:** Given ein Repo mit genau einer Requirements-Waise (Anforderung ohne referenzierenden Slice und ohne Coverage-Referenz), when `d-check --trace --require-complete` (auch mit `--json`/`--yaml`) läuft, then ist der Exit-Code 1, die vollständige RTM erscheint auf stdout (Waise markiert), und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+- **Coverage deckt ab:** Given ein Repo mit einer Anforderung **ohne** Slice, aber **mit** einer `trace.coverage`-Referenz, when `d-check --trace --require-complete` läuft, then ist diese Anforderung **keine** Waise; sind alle Anforderungen so abgedeckt, Exit 0.
 - **Negative:** Given `d-check --require-complete` ohne `--trace`, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)), keine RTM.
 
-**Out-of-Scope:** Ändern des Default-`--trace`-Exit-Codes (bleibt advisory Exit 0, [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)); Bewertung des Slice-**Status** (done vs. in-progress — eine von ≥1 Slice beanspruchte Anforderung zählt als abgedeckt, unabhängig vom Fortschritt); Erzwingung anderer RTM-Eigenschaften als Waisenfreiheit (z. B. ADR-Abdeckung); Schreiben eines Reports.
+**Out-of-Scope:** Ändern des Default-`--trace`-Exit-Codes (bleibt advisory Exit 0, [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)); Bewertung des Slice-**Status** (done vs. in-progress — eine von ≥1 Slice beanspruchte Anforderung zählt als abgedeckt, unabhängig vom Fortschritt); Erzwingung anderer RTM-Eigenschaften als Waisenfreiheit (Slice **oder** Coverage genügt; eine bloße ADR-Referenz ohne Slice/Coverage deckt weiterhin **nicht** ab); Schreiben eines Reports.
+
+---
+
+### DC-FA-COV-001 — Kuratierte Coverage-Quellen der RTM (`trace.coverage`, opt-in)
+
+**Beschreibung:** Die RTM
+([`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)) leitet
+Abdeckung aus **Referenz-Scans** von ADR-/Slice-Dateien ab. Anforderungen, deren
+Abdeckung in einer **kuratierten Matrix** (eine ausgelagerte
+Traceability-Datei, außerhalb `adrs`/`slices`) nachgewiesen ist,
+erscheinen daher als **falsche Waisen** — die Matrix ist weder
+ein ADR noch ein Slice, und sie nutzt oft **Bereichs-Notation**
+(`<FAM>-001..006`), die der Scanner nur als erste ID erkennt. `trace.coverage`
+ist eine **dritte, opt-in Referenzklasse**: eine **Liste** benannter kuratierter
+Quellen, die **range-aware** als Coverage eingelesen werden, **ohne**
+`adrs`/`slices` zu berühren.
+
+Je Quelle: **`files`** (explizite Pfad-Liste — **keine** `dir`+`file-pattern`-Ableitung,
+damit ADR-/Slice-Dateien nicht als Coverage kontaminieren), **`label`** (feste
+Owner-Kennung in der eigenen **Coverage**-Spalte der RTM, z. B. `Trace`), optional
+**`ranges`** (bool, Default **true**), optional **`sections`** (Whitelist: nur die
+genannten H2/H3-Abschnitte zählen) und **`exclude-sections`** (Blacklist: die
+genannten Abschnitte zählen nicht — z. B. eine „…ohne Design-Artefakt"-Liste, die
+sonst **nicht** gedeckte IDs fälschlich krediten würde). Beide Abschnitts-Mengen
+nutzen dieselbe Heading-Span-Semantik wie `matrix.exclude-sections` (Abschnitt bis
+zur nächsten gleich-/höherrangigen Überschrift).
+
+Eine Anforderung gilt als von der Quelle **abgedeckt**, wenn ihre Kennung im
+(abschnitts-gefilterten) Text vorkommt — **exakt** (`requirements.id-pattern`)
+**oder**, bei `ranges: true`, **range-expandiert**: `<FAM>-AAA..BBB` deckt alle
+IDs `AAA…BBB` **inklusive** ab, die Aufzählung `<FAM>-AAA/BBB/CCC` die genannten;
+jede expandierte ID muss zum `requirements.id-pattern` passen, sonst wird sie
+verworfen. Abgedeckte Anforderungen tragen das `label` der Quelle in der
+Coverage-Spalte; eine Anforderung ist **Waise** nur, wenn sie **weder** Slice-
+**noch** Coverage-Referenz trägt ([`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)).
+Read-only ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)),
+deterministisch ([`DC-QA-02`](#dc-qa-02--determinismus)). **Fail-closed** (Exit 2):
+leere `files`-Liste, ein `files`-Pfad außerhalb der Repo-Wurzel (führendes `/`
+oder `..`), eine **fehlende** `files`-Datei (`files` sind **explizit** benannt —
+Fehlen ist Fehler, nicht Skip wie bei `adrs.dir`/`slices.dir`), leeres `label`,
+ein **Sektionsname ohne Heading-Treffer** (Tippfehler-/Kurzform-Guard), oder eine
+Range mit `AAA>BBB` bzw. abweichender Ziffern-Breite. Ein Sektionsname ist der
+**volle Heading-Klartext** (exakt wie `matrix.exclude-sections`, z. B.
+`"27.1.1 Anforderungen ohne Design-Artefakt"`, nicht die Kurzform). `trace.coverage`
+führt **kein** eigenes Regex (nutzt `requirements.id-pattern`). **Strikt opt-in:** ohne
+`trace.coverage` ist die RTM byte-identisch (keine Coverage-Spalte, kein
+`coverage`-Feld), und `adrs`/`slices`-Semantik bleibt unberührt.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `trace.coverage: [{files: [docs/plan/traceability.md], label: Trace}]` und eine Anforderung **ohne** Slice, deren Kennung **exakt** in `traceability.md` steht, when `d-check --trace` läuft, then trägt ihre RTM-Zeile das Label `Trace` in der Coverage-Spalte und ist **keine** Waise, Exit 0; ein read-only gemountetes Repository genügt.
+- **Range:** Given `ranges: true` und die Zeile `GG-QA-001..006` in der Quelle (bei `requirements.id-pattern` `GG-…-\d{3}`), when `d-check --trace` läuft, then sind **alle sechs** `GG-QA-001`…`GG-QA-006` als von `Trace` abgedeckt markiert (nicht nur `001`).
+- **Sektionen (Blacklist):** Given eine Quelle mit `exclude-sections: ["27.1.1 Anforderungen ohne Design-Artefakt"]`, deren §27.1.1 sonst nicht gedeckte IDs listet, when `d-check --trace` läuft, then werden die **nur** in §27.1.1 genannten IDs **nicht** als Coverage gewertet.
+- **Keine ADR-Kontamination:** Given `trace.coverage` mit `files`, when `d-check --trace` läuft, then werden ADR-/Slice-Dateien **nicht** als Coverage gezählt (nur die gelisteten `files`), und die Coverage-Labels stehen in ihrer **eigenen** Spalte (keine Kollision mit Slice-Namen).
+- **Negative (Config/Range):** Given eine fehlende `files`-Datei **oder** eine ungültige Range `GG-RT-009..003` (`AAA>BBB`), when `d-check --trace` läuft, then Exit-Code 2 (Konfigurationsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) mit erklärender Meldung.
+- **Modul-aus:** Given **kein** `trace.coverage`, when `d-check --trace` läuft, then ist die RTM byte-identisch zur Fassung vor dieser Anforderung ([`DC-QA-02`](#dc-qa-02--determinismus)) — keine Coverage-Spalte, kein `coverage`-Feld — und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Out-of-Scope:** Parsen **semantischer Design-Mappings** (z. B. `GG-AR-*`-Architektur-Kennungen) — Coverage ist reine **ID-Präsenz** in der Quelle; ein **Erfüllungs-/Status-Urteil** (Coverage ≠ „erfüllt", nur „in kuratierter Quelle referenziert"; kein `✓`); **Auto-Generierung** oder Schreiben der Coverage-Datei; `dir`+`file-pattern`-Ableitung für Coverage-Quellen (bewusst nur explizite `files`, gegen ADR-Kontamination); range-/enum-Erkennung außerhalb `trace.coverage` (eine spätere `commits`/`ids`-Range wäre eigener CR); fam-qualifizierte Range-Enden (`<FAM>-AAA..<FAM>-BBB` — nur die Kurzform `..BBB`).
 
 ---
 
@@ -1641,6 +1710,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.41.0 | 2026-07-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-COV-001` — **kuratierte Coverage-Quellen der RTM** (`trace.coverage`, opt-in): eine dritte Referenzklasse (Liste benannter `files` + `label` + `ranges` + `sections`/`exclude-sections`), die eine ausgelagerte Traceability-Matrix **range-aware** als Coverage einliest, **ohne** `adrs`/`slices` zu berühren. `<FAM>-AAA..BBB`/`<FAM>-AAA/BBB/CCC` expandieren (breiten-erhaltend, gegen `requirements.id-pattern` validiert); Abschnitts-Whitelist/Blacklist (dieselbe Span-Semantik wie `matrix.exclude-sections` — gegen die „…ohne Design-Artefakt"-Falle). Mit-Modifikationen: `DC-FA-CLI-009` (RTM trägt bei aktiver `trace.coverage` eine **Coverage-Spalte** + `coverage`-Feld in `--json`/`--yaml`) und `DC-FA-CLI-011` (**Waise = ¬slice ∧ ¬coverage**; Slice **oder** Coverage deckt ab, bloße ADR-Referenz weiterhin nicht). Fail-closed (fehlende Datei / ungültige Range `AAA>BBB` / Breiten-Mismatch ⇒ Exit 2), strikt opt-in, default-aus **byte-identisch** (`DC-QA-02`/`DC-QA-03`). Bereich `COV` in §3; `DC-FA-COV-001.a` + Schema-Keys (`trace.coverage[].files`/`label`/`ranges`/`sections`/`exclude-sections`) in der Spezifikation; `--print-config` führt den `coverage`-Block. Begründung + Range-/Sektions-Semantik in begleitender ADR. Anlass: Konsumenten-Analyse grid-gym — 171 „Waisen" waren zu ≥122 anderswo (ADR/traceability.md/Wellen) belegt; d-checks slice-zentrische RTM verfehlte die kuratierte Deckungs-Matrix | slice-067 |
 | 0.40.0 | 2026-07-11 | Change Request (Auftraggeber): `DC-FA-CLI-009` (Requirements Traceability Matrix) um einen **opt-in `trace`-Config-Block** erweitert — die vier bislang hart an d-checks Konvention gebundenen RTM-Annahmen sind überschreibbar: Anforderungs-Quelldatei + Kennungs-Gestalt (`trace.requirements.source`/`.id-pattern`) sowie je Referenzklasse ADR/Slice das Verzeichnis, die Dateinamen-Gestalt (Capture-Gruppe = Owner-Kennung) und das Owner-Präfix (`trace.adrs.*`/`trace.slices.*`). Jedes Feld optional; abwesend ⇒ d-checks Konventions-Default ⇒ RTM **byte-identisch** (`DC-QA-02`), nichts geschrieben (`DC-QA-03`). Fail-closed: ungültige Regex oder `file-pattern` ohne Capture-Gruppe ⇒ Exit 2. **Kehrt die 0.21.0-Out-of-Scope-Zeile „frei konfigurierbare Quell-Pfade jenseits der adoptierten Harness-Konvention" um** (durch bewusst begrenzte, explizit gesetzte Config ersetzt — kein Ableiten, je eine ADR-/Slice-Klasse, kein leerer ADR-Präfix, kein VCS). Config-Schema `trace.*` + Algorithmus-Konfigurierbarkeit in `DC-FA-CLI-009.a` der Spezifikation; Begründung (Konsumenten-Konventions-Bindung, Design spiegelt `ids.patterns`) in begleitender ADR. `DC-FA-CLI-011` (`--require-complete`) erbt die konfigurierten Quellen unverändert (gleicher RTM-Lauf). Anlass: Konsumenten-Befund grid-gym 2026-07-11 — `make doc-trace` sah nur 6 von 243 Anforderungen (allein die `GG-QA-*`-Familie traf zufällig d-checks `-QA-`-Default-Gestalt), die übrigen 40 Familien und alle `NNN-…md`-Slices blieben unsichtbar | slice-066 |
 | 0.39.0 | 2026-07-06 | Schärfung `DC-FA-CLI-006` (Auftraggeber): die `--suggest-config ai-harness[-init]`-Vorlage an die **gelebte** Dogfood-Konvention angeglichen — `spans`/`hostpaths` ins fixe Standard-Modulset aufgenommen (revidiert die 0.26.0-„situativ nicht aktiviert"-Einordnung; d-checks eigene `.d-check.yml` führte sie längst) und ein **repo-bewusster `planning`-Block** ergänzt (aktiv bei vorhandener `roadmap`, sonst auskommentiert; im Voll-Kanon `ai-harness-init` aktiv). `vcs`/`commits` (Commit-Range) werden auf `--print-mk` verwiesen statt ins statische `modules` gelegt; `versions`/`targets` bleiben bewusst vertagt (repo-spezifische `pin-pattern`/`authority`). Neu benannt: **Eignungs-Kriterium K1–K4** (konventions-kanonisch · ableitungsfrei/konventions-feste Config · Baum-Scan-tauglich · hermetisch) + die **geschlossene** Aktiv-Menge im Body; die kanonische Vorlage in der Spezifikation (`DC-FA-CLI-006.a`) deckt jetzt die emittierte Ausgabe **1:1** (Kommentarzeile inkl. `--print-mk`-Verweis + `codepaths`-Block ergänzt) — der Normativitäts-Spalt (Code-Kommentar ≠ Norm) ist geschlossen. Zugleich die situativen-Modul-Enumeration (AKs/Out-of-Scope) um das seit 0.38.0 fehlende `targets` vervollständigt. Betrifft nur die `ai-harness`-Vorlage (nicht den generischen Quellen-Modus, nicht die eigene `.d-check.yml`); `DC-QA-02`/`DC-QA-03` unberührt (nur mehr Ausgabe). Begründung + Eignungs-Kriterium in begleitender ADR. Anlass: Nutzer-Analyse „welche Module nutzt `--suggest-config ai-harness` nicht, und warum nicht" (2026-07-06) | slice-065 |
 | 0.38.0 | 2026-07-05 | Neue Anforderung `DC-FA-TGT-001` (Modul `targets`, opt-in): Deklarations-Konsistenz zwischen Doku und Build-Targets — jedes in einer Doku-**Tabellenzeile** als ` `make X` ` behauptete Target muss eine Makefile-Regel sein (sonst `gate-phantom`), und jede Makefile-Regel (minus `targets.exempt-targets`) muss in der Autoritäts-Doku als ` `make X` ` stehen (sonst `gate-undocumented`) — die maschinelle Form des Vertrags „kein halluziniertes / kein undokumentiertes Gate". **Tabellen-Scoping** (`^\|`, nur Tabellenzeilen — Prosa zählt nicht, sonst spuriöse `gate-phantom`). **Hermetisch** wie `DC-FA-PLAN-001`: Filesystem-Port `ReadFile` auf die konfigurierten Dateien, **kein** Makefile-Ausführen, **kein** git, **kein** Netz (`DC-QA-02`/`DC-QA-03` unberührt); Zeilen-Heuristik für Regelnamen (keine Pattern-Rules/variablen Targets, ≡ dem abgelösten Skript). Strikt opt-in, fail-closed (fehlende konfigurierte Datei ⇒ Exit 2; leeres `makefiles`/`doc-tables` ⇒ inert), diagnose-only, default-aus byte-identisch. 17. Regelmodul; Bereichskürzel `TGT` in §3, `targets` in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-TGT-001.a` + Schema-Keys (`targets.makefiles`/`doc-tables`/`authority`/`exempt-targets`) in der Spezifikation; die Grund-Codes `gate-phantom`/`gate-undocumented` (§4) landen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep). Zugleich **`DC-FA-CLI-010`-Erweiterung** (10→11 Targets): `--print-mk` trägt ein `doc-targets`-Target (`--enable targets` + Fokus-`--disable`, hermetisch ohne Range); `--print-config`/`--suggest-config` führen `targets`. Anlass: Auftraggeber 2026-07-05 — `tools/gate-consistency.sh` driftet über die Repo-Familie (a-check ≠ d-check), Klasse-A-Mechanisierung [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding) „verteilen statt kopieren": die verteilbare Modul-Form löst den cross-repo-Kern (Doku↔Makefile), d-check dogfoodet das Modul für sein eigenes `make gate-consistency`-Gate. Identitäts-Ausweitung „Doku-Checker → Deklarations-Konsistenz-Checker" (Makefile-Lesen via Filesystem-Port, wie `planning` die Verzeichnis-Struktur) in begleitender ADR | slice-063 |
