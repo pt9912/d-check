@@ -312,20 +312,40 @@ Ableitung (deterministisch,
 [`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus); feste Sortierung, keine
 Map-Iteration in der Ausgabe):
 
-1. **Anforderungen** aus `spec/lastenheft.md`: führende Heading-Kennungen
-   der Anforderungs-Gestalt `<PREFIX>-FA-<BEREICH>-NNN` bzw. `<PREFIX>-QA-NN`
-   (präfix-agnostisch); Titel = Heading-Klartext ohne Kennung/Trenner.
-2. **Referenzen** aus `docs/plan/adr/` (ADR-Kennung über den Dateinamen
-   `NNNN-…md` → `ADR-NNNN`) und `docs/plan/planning/` (Slice-Kennung
-   `slice-NNN-…md` → `slice-NNN`): je Datei alle Vorkommen einer
-   Anforderungs-Kennung sammeln; Dateien ohne eigene Kennung (z. B.
-   `README.md`) übersprungen.
+1. **Anforderungen** aus `trace.requirements.source` (Default
+   `spec/lastenheft.md`): führende Heading-Kennungen der Anforderungs-Gestalt
+   `trace.requirements.id-pattern` (Default `<PREFIX>-FA-<BEREICH>-NNN` bzw.
+   `<PREFIX>-QA-NN`, präfix-agnostisch); ein Heading zählt nur, wenn der Regex
+   das **erste Token** als **Ganz-Token** matcht (`FindString(tok) == tok` —
+   verhindert, dass ein Sub-ID-Suffix (`…-NNN.a` o. Ä.) als eigene Anforderung
+   zählt). Titel = Heading-Klartext ohne Kennung/Trenner.
+2. **Referenzen** aus `trace.adrs.dir` (Default `docs/plan/adr/`; Owner-Kennung
+   über den Basisnamen `trace.adrs.file-pattern`, Default `NNNN-…md` → Capture 1,
+   Präfix `trace.adrs.id-prefix` Default `ADR-` → `ADR-NNNN`) und
+   `trace.slices.dir` (Default `docs/plan/planning/`; Owner-Kennung
+   `trace.slices.file-pattern`, Default `slice-NNN-…md` → Capture 1, Präfix
+   `trace.slices.id-prefix` Default leer → `slice-NNN`): je Datei alle Vorkommen
+   einer Anforderungs-Kennung (`trace.requirements.id-pattern`) sammeln; Dateien,
+   deren Basisname das `file-pattern` **nicht** matcht (z. B. `README.md`),
+   übersprungen.
 3. **Zeile je Anforderung**: ID, Titel, sortierte ADR-/Slice-Kennungen,
    **Waise** = keine referenzierende Slice-Kennung. Default-Rendering
    Markdown-Tabelle; `--json`/`--yaml` serialisieren dieselbe Struktur
    (`requirements[]`, `total`, `orphans`).
 
-Fehlende Quellen (kein Lastenheft / kein `adr`/`planning`-Verzeichnis)
+**Config-Auflösung (opt-in `trace`-Block, [`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)).**
+Jedes `trace`-Feld ist optional; ein abwesender/leerer Wert fällt auf den
+Default oben zurück. **Kein `trace`-Block ⇒ RTM byte-identisch**
+([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)) zur Fassung ohne diese
+Erweiterung. **Fail-closed** (Config-Zeit, vor jedem Scan, Exit 2 mit
+erklärender Meldung): jede gesetzte `id-pattern`/`file-pattern` muss ein
+gültiges Regex sein, und jede gesetzte `file-pattern` muss **mindestens eine
+Capture-Gruppe** tragen (sonst wäre die Owner-Kennung undefiniert). Die
+konfigurierten Quellen gelten unverändert auch für
+`--require-complete` ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code),
+gleicher RTM-Lauf).
+
+Fehlende Quellen (kein `requirements.source` / kein `adrs.dir`/`slices.dir`)
 liefern eine leere bzw. teilbefüllte Matrix, **kein** Fehler. Nur mit
 `--doctor`/`--repair` ist `--trace` ein Nutzungsfehler (Exit 2).
 
@@ -1451,6 +1471,14 @@ Exit 2 ohne Prüfung
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
 | `targets.authority` | string | leer | Wurzel-relative Doku-Datei; **jede** nicht-exempte Makefile-Regel muss dort als `make X`-Tabellenzeile stehen (Richtung 2 `gate-undocumented`); leer ⇒ Richtung 2 entfällt; fehlende Datei ⇒ Exit 2 |
 | `targets.exempt-targets` | string[] | leer | Regelnamen (**exakt**-Vergleich, **kein** Glob — anders als `tracked.exempt-targets`, das Pfad-Globs matcht), die von der Doku-Pflicht (Richtung 2) ausgenommen sind (Utility-Targets); ohne Eintrag prüft Richtung 2 jede Regel |
+| `trace.requirements.source` | string | `spec/lastenheft.md` | Wurzel-relative Datei mit den Anforderungs-Headings; muss innerhalb der Repo-Wurzel liegen; leer/abwesend ⇒ Default. Kein `trace`-Block ⇒ alle Felder Default ⇒ RTM byte-identisch ([`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)) |
+| `trace.requirements.id-pattern` | string | `[A-Z][A-Z0-9]*-(?:FA-[A-Z]+\|QA)-\d+[A-Za-z]?` | Regex; erkennt eine Anforderungs-Kennung als **Ganz-Token** im Lastenheft-Heading (der Treffer muss das ganze Token sein) **und** als Vorkommen in ADR-/Slice-Dateien (Referenz-Zählung); muss kompilieren (sonst Exit 2); leer ⇒ Default (d-checks `-FA-`/`-QA-`-Gestalt) |
+| `trace.adrs.dir` | string | `docs/plan/adr` | Wurzel-relatives Referenz-Verzeichnis der ADRs (rekursiv gescannt); fehlt es ⇒ keine ADR-Referenzen (kein Fehler); leer ⇒ Default |
+| `trace.adrs.file-pattern` | string | `^(\d{4})-.*\.md$` | Regex auf den **Basisnamen**; **Capture-Gruppe 1** = Owner-Kennung der Datei; muss kompilieren **und ≥1 Capture-Gruppe** haben (sonst Exit 2 — sonst wäre die Owner-Ableitung undefiniert); Dateien ohne Treffer übersprungen; leer ⇒ Default |
+| `trace.adrs.id-prefix` | string | `ADR-` | der Owner-Kennung (Capture-Gruppe 1) vorangestellt (`ADR-` + Capture `NNNN` ⇒ die ADR-Kennung `ADR-NNNN`); leer ⇒ Default `ADR-` (ein leerer ADR-Präfix ist nicht ausdrückbar, [`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) Out-of-Scope) |
+| `trace.slices.dir` | string | `docs/plan/planning` | Wurzel-relatives Referenz-Verzeichnis der Slices (rekursiv); fehlt es ⇒ keine Slice-Referenzen (alle Anforderungen Waisen); leer ⇒ Default |
+| `trace.slices.file-pattern` | string | `^(slice-\d+)-.*\.md$` | Regex auf den **Basisnamen**; **Capture-Gruppe 1** = Owner-Kennung; muss kompilieren **und ≥1 Capture-Gruppe** haben (sonst Exit 2); Dateien ohne Treffer (z. B. `README.md`) übersprungen; leer ⇒ Default |
+| `trace.slices.id-prefix` | string | leer | der Owner-Kennung vorangestellt; Default **leer** (der Slice-Dateiname trägt die volle Kennung `slice-NNN`); setzbar (z. B. `Slice ` ⇒ `Slice 063`) |
 
 **Glob-Auswertung.** Alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`,
 `matrix.classes[].paths`/`.order`, die `*.exempt-paths`) werden **segmentweise
@@ -1564,3 +1592,4 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-07-03 | §[`DC-FA-TRK-001.a`](spezifikation.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked) + §2-Schema (`tracked.exempt-targets`) + Grund-Code `target-untracked` (§4) ergänzt: opt-in Modul `tracked` prüft die Datei-Ebene der von `links` aufgelösten, **existierenden** repo-internen Ziele gegen den **git-Index** — dritte VCS-Port-Nutzung (`vcs` Range-Diff, `commits` Messages, `tracked` Index), **ohne** Range/`--staged`; Index statt `.gitignore`-Interpretation (gestagte Dateien gelten als getrackt), kein Doppelbefund (`target-missing` bleibt `links`), Ventil referenz-weit analog `codepaths.ignore-refs`; fail-closed ohne lesbares `.git` (Exit 2), diagnose-only, default-aus byte-identisch. Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (9→10 Targets): `--print-mk` trägt `doc-tracked` (`--enable tracked` + fokussierte `--disable`-Liste, ohne Range) | slice-059 |
 | 2026-07-03 | Review R1/R2 zu §[`DC-FA-TRK-001.a`](spezifikation.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked), präzisiert: Prüfung **je gescannter Quell-Datei** statt „Post-Pass" (Auflösungs-Mechanik unabhängig von der Aktivierung des Moduls `links` — ein fokussierter Lauf prüft vollständig); Verzeichnis-Ziele und Symlink-Referenzen (Ziel ist/durchläuft einen Symlink) explizit kein Kandidat ([`DC-FA-LINK-002`](lastenheft.md#dc-fa-link-002--symlink-ablehnung)-Domäne — false-positive hinter getrackten Verzeichnis-Symlinks vermieden); `target` = aufgelöster Pfad bekräftigt (Ventil-Parität); `exempt-targets` segmentweise validiert (Exit 2) | slice-059 |
 | 2026-07-05 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) + §2-Schema (`targets.makefiles`/`doc-tables`/`authority`/`exempt-targets`) ergänzt: opt-in Modul `targets` prüft **hermetisch** (Filesystem-Port `ReadFile`, **kein** git/Netz/Makefile-Ausführen) die Doku-↔-Makefile-Deklarations-Konsistenz — ein nur aus **Tabellenzeilen** (Pipe-Präfix, keine Prosa) dokumentiertes `make X` ohne Makefile-Regel ⇒ `gate-phantom`, eine Makefile-Regel (nicht `targets.exempt-targets`) ohne Eintrag in `targets.authority` ⇒ `gate-undocumented`; statische Zeilen-Heuristik für Regelnamen (keine Pattern-Rules/variablen Targets, in Parität zu `tools/gate-consistency.sh`), fail-closed bei fehlender konfigurierter Datei, diagnose-only, default-aus byte-identisch; Analogie zu `planning` (Doku-Behauptung ↔ Repo-Struktur, hermetisch). Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (10→11 Targets): `--print-mk` trägt `doc-targets` (`--enable targets`, hermetisch ohne Range). Die Grund-Codes `gate-phantom`/`gate-undocumented` (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep) | slice-063 |
+| 2026-07-11 | §[`DC-FA-CLI-009.a`](spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritte 1/2 + Config-Auflösungs-Absatz + §2-Schema (`trace.requirements.source`/`.id-pattern`, `trace.adrs.dir`/`.file-pattern`/`.id-prefix`, `trace.slices.dir`/`.file-pattern`/`.id-prefix`) ergänzt: die vier RTM-Konventions-Annahmen ([`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)) sind über einen opt-in `trace`-Block überschreibbar — Anforderungs-Quelldatei + Kennungs-Regex (Ganz-Token im Heading, Referenz-Zählung in ADR/Slice) sowie je Referenzklasse Verzeichnis + Basisnamen-Regex (Capture-Gruppe 1 = Owner-Kennung) + Owner-Präfix. Jedes Feld optional, abwesend ⇒ Default (byte-identisch, [`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)); fail-closed zur Config-Zeit (ungültige Regex bzw. `file-pattern` ohne Capture-Gruppe ⇒ Exit 2). Gilt unverändert für `--require-complete` ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)). Kein neuer Grund-Code (`--trace` bleibt advisory). Design spiegelt `ids.patterns` (begleitende ADR) | slice-066 |

@@ -10,7 +10,20 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**welle-55-trace-konfigurierbare-quellen** —
+[`slice-066`](slice-066-trace-konfigurierbare-quellen.md) macht die Requirements
+Traceability Matrix (`--trace`,
+[`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix))
+über einen opt-in `trace`-Config-Block quell-/kennungs-konfigurierbar (die vier
+Konventions-Achsen — Anforderungs-Quelle + Kennungs-Regex; je Referenzklasse
+Verzeichnis + Basisnamen-Gestalt + Owner-Präfix; Default = Konvention ⇒
+byte-identisch, [ADR-0034](../../adr/0034-trace-konfigurierbare-quellen.md)
+Proposed). Anlass: der Konsument grid-gym sah via `make doc-trace` nur 6 von 243
+Anforderungen (allein die `GG-QA-*`-Familie trifft d-checks `-QA-`-Default).
+Doc-first-Fundament gelegt (Lastenheft-CR v0.40.0, Spezifikation und ADR);
+Implementierung + Review + Release v0.40.0 folgen.
+
+Zuletzt abgeschlossen:
 **welle-53-gate-consistency-tombstone**
 ([`slice-064`](../done/slice-064-gate-consistency-tombstone.md) — der
 Voll-Tombstone von `tools/gate-consistency.sh` (**letztes** `tools/*.sh`): die

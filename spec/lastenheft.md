@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.38.0
+**Version:** 0.40.0
 
 **Status:** Draft
 
@@ -363,14 +363,29 @@ Matrix** (RTM) auf **stdout** aus — read-only
 ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)),
 deterministisch ([`DC-QA-02`](#dc-qa-02--determinismus)), **kein Dokument
 erzeugt**, immer frisch abgeleitet. Je Anforderung (Anforderungs-Kennung im
-Lastenheft, `<PREFIX>-FA-*`/`-QA-*`) zeigt die Matrix Titel, die
+Lastenheft; Default-Gestalt `<PREFIX>-FA-*`/`-QA-*`, per
+`trace.requirements.id-pattern` konfigurierbar) zeigt die Matrix Titel, die
 referenzierenden **ADRs** und **Slices** sowie eine **Lücken-Markierung**
 (Anforderung ohne referenzierenden Slice = Waise). Default-Format ist eine
 **Markdown-Tabelle**; mit `--json`/`--yaml` wird dieselbe Matrix
 strukturgleich maschinenlesbar (format-neutraler Reporter,
 [`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate)). **Doku-Domäne:**
 Anforderungen aus `spec/lastenheft.md`, Referenzen aus `docs/plan/adr/`
-und `docs/plan/planning/` (kein Code/keine Go-Toolchain). Reiht sich in die
+und `docs/plan/planning/` (Default-Pfade; kein Code/keine Go-Toolchain).
+
+**Konfigurierbare Quellen (opt-in `trace`-Block):** Die vier Konventions-
+Annahmen der RTM — die Quell-Datei der Anforderungen samt ihrer
+Kennungs-Gestalt sowie je Referenzklasse (ADR, Slice) das Verzeichnis, die
+Dateinamen-Gestalt und das Owner-Präfix — sind über einen `trace`-Block in
+`.d-check.yml` überschreibbar (`requirements.source`/`.id-pattern`;
+`adrs.dir`/`.file-pattern`/`.id-prefix`;
+`slices.dir`/`.file-pattern`/`.id-prefix`). **Jedes Feld ist optional; jeder
+abwesende Wert fällt auf d-checks eigene Konvention zurück** — eine Config
+ohne `trace`-Block (oder mit leerem Block) liefert eine **byte-identische**
+RTM ([`DC-QA-02`](#dc-qa-02--determinismus)). So bildet die RTM auch
+Konsumenten-Repos mit abweichender Kennungs-/Datei-Konvention **vollständig**
+ab, statt nur die Familie zu treffen, die d-checks Schema zufällig teilt.
+Reiht sich in die
 Advisory-Modi (`--print-config`/`--suggest-config`/`--doctor`) ein; nicht
 mit `--doctor`/`--repair` kombinierbar (Nutzungsfehler, Exit 2).
 
@@ -379,8 +394,11 @@ mit `--doctor`/`--repair` kombinierbar (Nutzungsfehler, Exit 2).
 - **Happy Path:** Given ein Repo mit einer Lastenheft-Anforderung, einer sie referenzierenden ADR und einem sie referenzierenden Slice, when `d-check --trace` läuft, then enthält die Markdown-RTM eine Zeile für die Anforderung mit der ADR- und der Slice-Kennung und Status „ok", Exit 0; ein read-only gemountetes Repository genügt.
 - **Boundary:** Given ein Repo ohne `spec/lastenheft.md` (oder ohne Anforderungs-Kennungen), when `--trace` läuft, then eine leere Matrix (0 Anforderungen), kein Absturz, Exit 0, kein Schreibzugriff.
 - **Negative:** Given `d-check --trace --repair`, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)), keine RTM.
+- **Konfiguriert (Fremd-Konvention):** Given ein Repo, dessen Anforderungs-Kennungen und Slice-Dateinamen einer von d-checks Default abweichenden Konvention folgen (z. B. `GG-QA-001` und `063-titel.md`), und eine `.d-check.yml` mit `trace.requirements.id-pattern` und `trace.slices.file-pattern` für diese Konvention, when `d-check --trace` läuft, then listet die RTM **alle** so definierten Anforderungen (nicht nur die zufällig zur Default-Gestalt passenden) mit ihren referenzierenden ADRs/Slices, Exit 0; ein read-only gemountetes Repository genügt.
+- **Default byte-identisch:** Given **kein** `trace`-Block (oder ein leerer) in der Konfiguration, when `d-check --trace` läuft, then ist die RTM byte-identisch zur Fassung vor dieser Erweiterung ([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+- **Negative (Config):** Given ein `trace`-Block mit einem ungültigen Regex (`id-pattern`/`file-pattern`) **oder** einer `file-pattern` ohne Capture-Gruppe, when `d-check --trace` läuft, then Exit-Code 2 (Konfigurationsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) mit erklärender Meldung, keine RTM (fail-closed).
 
-**Out-of-Scope:** Erzeugen/Schreiben eines RTM-Dokuments (immer stdout); Code-/Test-Abdeckung (Scan von Go-Testdateien o. Ä. — verlässt die Markdown-Domäne und bräuchte eine Go-Toolchain, unvereinbar mit dem I/O-armen distroless-Design); Status-/Aktualitäts-Bewertung der referenzierenden ADRs (z. B. superseded); frei konfigurierbare Quell-Pfade jenseits der adoptierten Harness-Konvention.
+**Out-of-Scope:** Erzeugen/Schreiben eines RTM-Dokuments (immer stdout); Code-/Test-Abdeckung (Scan von Go-Testdateien o. Ä. — verlässt die Markdown-Domäne und bräuchte eine Go-Toolchain, unvereinbar mit dem I/O-armen distroless-Design); Status-/Aktualitäts-Bewertung der referenzierenden ADRs (z. B. superseded); **Ableiten** der `trace`-Config aus dem Repo (der Block wird explizit gesetzt, nicht wie `--suggest-config` erraten); ein leerer **ADR**-Owner-Präfix (leerer Wert = Default `ADR-`; der Slice-Owner-Präfix ist per Default leer und bleibt setzbar); mehr als je eine ADR- und eine Slice-Referenzklasse; VCS-/git-historienbasierte Referenz-Erkennung (bliebe außerhalb des read-only Markdown-Baums, [`DC-QA-02`](#dc-qa-02--determinismus)).
 
 ---
 
@@ -1623,6 +1641,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.40.0 | 2026-07-11 | Change Request (Auftraggeber): `DC-FA-CLI-009` (Requirements Traceability Matrix) um einen **opt-in `trace`-Config-Block** erweitert — die vier bislang hart an d-checks Konvention gebundenen RTM-Annahmen sind überschreibbar: Anforderungs-Quelldatei + Kennungs-Gestalt (`trace.requirements.source`/`.id-pattern`) sowie je Referenzklasse ADR/Slice das Verzeichnis, die Dateinamen-Gestalt (Capture-Gruppe = Owner-Kennung) und das Owner-Präfix (`trace.adrs.*`/`trace.slices.*`). Jedes Feld optional; abwesend ⇒ d-checks Konventions-Default ⇒ RTM **byte-identisch** (`DC-QA-02`), nichts geschrieben (`DC-QA-03`). Fail-closed: ungültige Regex oder `file-pattern` ohne Capture-Gruppe ⇒ Exit 2. **Kehrt die 0.21.0-Out-of-Scope-Zeile „frei konfigurierbare Quell-Pfade jenseits der adoptierten Harness-Konvention" um** (durch bewusst begrenzte, explizit gesetzte Config ersetzt — kein Ableiten, je eine ADR-/Slice-Klasse, kein leerer ADR-Präfix, kein VCS). Config-Schema `trace.*` + Algorithmus-Konfigurierbarkeit in `DC-FA-CLI-009.a` der Spezifikation; Begründung (Konsumenten-Konventions-Bindung, Design spiegelt `ids.patterns`) in begleitender ADR. `DC-FA-CLI-011` (`--require-complete`) erbt die konfigurierten Quellen unverändert (gleicher RTM-Lauf). Anlass: Konsumenten-Befund grid-gym 2026-07-11 — `make doc-trace` sah nur 6 von 243 Anforderungen (allein die `GG-QA-*`-Familie traf zufällig d-checks `-QA-`-Default-Gestalt), die übrigen 40 Familien und alle `NNN-…md`-Slices blieben unsichtbar | slice-066 |
 | 0.39.0 | 2026-07-06 | Schärfung `DC-FA-CLI-006` (Auftraggeber): die `--suggest-config ai-harness[-init]`-Vorlage an die **gelebte** Dogfood-Konvention angeglichen — `spans`/`hostpaths` ins fixe Standard-Modulset aufgenommen (revidiert die 0.26.0-„situativ nicht aktiviert"-Einordnung; d-checks eigene `.d-check.yml` führte sie längst) und ein **repo-bewusster `planning`-Block** ergänzt (aktiv bei vorhandener `roadmap`, sonst auskommentiert; im Voll-Kanon `ai-harness-init` aktiv). `vcs`/`commits` (Commit-Range) werden auf `--print-mk` verwiesen statt ins statische `modules` gelegt; `versions`/`targets` bleiben bewusst vertagt (repo-spezifische `pin-pattern`/`authority`). Neu benannt: **Eignungs-Kriterium K1–K4** (konventions-kanonisch · ableitungsfrei/konventions-feste Config · Baum-Scan-tauglich · hermetisch) + die **geschlossene** Aktiv-Menge im Body; die kanonische Vorlage in der Spezifikation (`DC-FA-CLI-006.a`) deckt jetzt die emittierte Ausgabe **1:1** (Kommentarzeile inkl. `--print-mk`-Verweis + `codepaths`-Block ergänzt) — der Normativitäts-Spalt (Code-Kommentar ≠ Norm) ist geschlossen. Zugleich die situativen-Modul-Enumeration (AKs/Out-of-Scope) um das seit 0.38.0 fehlende `targets` vervollständigt. Betrifft nur die `ai-harness`-Vorlage (nicht den generischen Quellen-Modus, nicht die eigene `.d-check.yml`); `DC-QA-02`/`DC-QA-03` unberührt (nur mehr Ausgabe). Begründung + Eignungs-Kriterium in begleitender ADR. Anlass: Nutzer-Analyse „welche Module nutzt `--suggest-config ai-harness` nicht, und warum nicht" (2026-07-06) | slice-065 |
 | 0.38.0 | 2026-07-05 | Neue Anforderung `DC-FA-TGT-001` (Modul `targets`, opt-in): Deklarations-Konsistenz zwischen Doku und Build-Targets — jedes in einer Doku-**Tabellenzeile** als ` `make X` ` behauptete Target muss eine Makefile-Regel sein (sonst `gate-phantom`), und jede Makefile-Regel (minus `targets.exempt-targets`) muss in der Autoritäts-Doku als ` `make X` ` stehen (sonst `gate-undocumented`) — die maschinelle Form des Vertrags „kein halluziniertes / kein undokumentiertes Gate". **Tabellen-Scoping** (`^\|`, nur Tabellenzeilen — Prosa zählt nicht, sonst spuriöse `gate-phantom`). **Hermetisch** wie `DC-FA-PLAN-001`: Filesystem-Port `ReadFile` auf die konfigurierten Dateien, **kein** Makefile-Ausführen, **kein** git, **kein** Netz (`DC-QA-02`/`DC-QA-03` unberührt); Zeilen-Heuristik für Regelnamen (keine Pattern-Rules/variablen Targets, ≡ dem abgelösten Skript). Strikt opt-in, fail-closed (fehlende konfigurierte Datei ⇒ Exit 2; leeres `makefiles`/`doc-tables` ⇒ inert), diagnose-only, default-aus byte-identisch. 17. Regelmodul; Bereichskürzel `TGT` in §3, `targets` in `DC-FA-CLI-002` + Glossar, Algorithmus-Sektion `DC-FA-TGT-001.a` + Schema-Keys (`targets.makefiles`/`doc-tables`/`authority`/`exempt-targets`) in der Spezifikation; die Grund-Codes `gate-phantom`/`gate-undocumented` (§4) landen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep). Zugleich **`DC-FA-CLI-010`-Erweiterung** (10→11 Targets): `--print-mk` trägt ein `doc-targets`-Target (`--enable targets` + Fokus-`--disable`, hermetisch ohne Range); `--print-config`/`--suggest-config` führen `targets`. Anlass: Auftraggeber 2026-07-05 — `tools/gate-consistency.sh` driftet über die Repo-Familie (a-check ≠ d-check), Klasse-A-Mechanisierung [`MR-007`](../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding) „verteilen statt kopieren": die verteilbare Modul-Form löst den cross-repo-Kern (Doku↔Makefile), d-check dogfoodet das Modul für sein eigenes `make gate-consistency`-Gate. Identitäts-Ausweitung „Doku-Checker → Deklarations-Konsistenz-Checker" (Makefile-Lesen via Filesystem-Port, wie `planning` die Verzeichnis-Struktur) in begleitender ADR | slice-063 |
 | 0.37.1 | 2026-07-03 | Review R1 (doc) + R2 (code) zum `DC-FA-TRK-001`-CR, präzisiert: Verzeichnis-Ziele (Index führt nur Dateien) und Symlink-Referenzen (kategorisch [`DC-FA-LINK-002`](#dc-fa-link-002--symlink-ablehnung)-Domäne — sonst false-positive hinter getrackten Verzeichnis-Symlinks) explizit kein Kandidat/Out-of-Scope; Auflösungs-Mechanik ausdrücklich unabhängig von der Aktivierung des Moduls `links`; intent-to-add + linked worktree als Ränder benannt. `DC-FA-CLI-010`-AKs/Out-of-Scope von neun auf **zehn** Targets nachgezogen (`doc-tracked` — Selbstwiderspruch behoben); `DC-FA-CLI-006`-Enumeration der situativen Module um `commits`/`planning`/`tracked` vervollständigt | slice-059 |
