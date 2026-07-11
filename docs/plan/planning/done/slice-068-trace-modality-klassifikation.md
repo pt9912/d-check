@@ -121,7 +121,7 @@ Modal-Verben mit Defaults + opt-in, voller Slice.
   `TestCLI068_Modality_NegativeConfig` (mutations-verriegelt: nur der
   `leerer Stufen-Name`-Guard löst Exit 2 aus). LOW L2: positive `unknown`-Gating-
   Richtung (`require-levels: [must, unknown]`) ⇒ `TestCLI068_Modality_UnknownGating`.
-  INFO I1: ADR-0036-Default-Keyword-Beispiel mit der Impl synchronisiert
+  INFO I1: [ADR-0036](../../adr/0036-trace-modality-klassifikation.md)-Default-Keyword-Beispiel mit der Impl synchronisiert
   (`SHALL NOT`/`SOLLTEN NICHT`). I4: negativer Index-Panic im Test-`Fatalf`
   entschärft. **Bewusst nicht behoben:** L1 (bare `modality:` YAML-null inaktiv —
   im Handbuch/Template durchgängig `modality: {}` gezeigt), I2 (Quelle bei aktiver
@@ -133,3 +133,50 @@ frühester Treffer, Wortgrenze `MUSS`≠`musste`, Markup-Normalisierung),
 Byte-Identität (`omitempty` json+yaml, `ModalityActive json:"-"`, 5-Spalten-
 Fallback), Fail-closed bis Exit 2 config-zeitig, Gating-Semantik (`GatingOrphans`
 = Waisen deren Stufe in `require-levels`), Hexagon-Grenzen (kein git/IO im Kern).
+
+## 7. Closure-Notiz (nach done)
+
+**Umgesetzt:** Die RTM (`--trace`,
+[`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix))
+trägt eine opt-in **Modalitäts-Klassifikation**
+[`trace.requirements.modality`](../../../../spec/lastenheft.md#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in):
+aus **konfigurierbaren** Modal-Verb-Keywords (Built-in DE+EN-RFC-2119-Defaults,
+`levels`/`require-levels`) klassifiziert sie jede Anforderung nach RFC-2119-Stufe
+(MUSS/SOLLTE/KANN) in einer **eigenen Modality-Spalte** — **längster/frühester
+Treffer** im **markup-normalisierten** Body (`**MUSS** NICHT`/`MUSS\nNICHT` ⇒
+`may`), **wortgrenzen-genau** (`MUSS` ≠ `musste`), `unknown`-Fallback sichtbar.
+`--require-complete` bricht **nur** auf `require-levels`
+([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)
+angepasst; Default `[must]`) — SOLLTE/KANN/`unknown` advisory. Fail-closed (leerer
+Stufen-Name / reserviertes `unknown` / leeres Keyword / Keyword in zwei Stufen /
+ungültiges `require-levels` ⇒ Exit 2). **Ohne `modality` byte-identisch** (keine
+Spalte, kein Feld, unverändertes Gating;
+[`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
+
+**Belege:** `make gates` grün (doc-check + lint + test + arch-check + coverage-gate
++ semgrep + gate-consistency + planning-check). **End-to-End gegen grid-gyms echtes
+Lastenheft** verifiziert: die **10** Coverage-Rest-Waisen (slice-067) gaten unter
+`modality: {}` + Default `require-levels: [must]` nur noch **2** — GG-MVP-004
+(`DARF NICHT` ⇒ must) und GG-NONGOAL-005 (Klausel `… muessen offen austauschbar …`
+⇒ must); die übrigen acht (5 KANN + 3 modalitätslose Nicht-Ziele) werden advisory.
+Zwei unabhängige Reviews (Doc-first R1 NACHBESSERN + Impl R2 ACCEPT-WITH-NITS, alle
+eingearbeitet, §6).
+
+**Commit-Kette:** `e85f9b3` (doc-first) · `4643425` (feat) · `c759590`
+(release-prep v0.42.0) · `dcb8f46` (Review R1+R2) · `f8c0be7` (Closure-Move) ·
+Closure-Body (dieser, = Tag `v0.42.0`) · digest-backfill (folgt). **Release
+v0.42.0** auf GHCR — Digest-Pin folgt bei Backfill.
+
+**Lehre:** (i) Modalität ist eine **andere Dimension** als Deckung/Slice — eine
+**eigene Spalte** + ein **eigenes Gate** (`require-levels`) halten „was ist
+gefordert" und „wie stark ist es gefordert" getrennt; MUSS und KANN als gleich
+gewichtete Waisen zu zählen war das eigentliche Rauschen. (ii) Eine am **rohen
+Body** ansetzende Klassifikation muss **vor** dem Match normalisieren (Whitespace +
+Emphasis/Code-Markup) — sonst verschluckt ein umbrochenes/emphasiertes `**MUSS**
+NICHT` die Negation und fällt still auf `must` zurück (Doc-first-R1). (iii)
+Überlappende Mehr-Wort-Keywords (`MUSS` ⊂ `MUSS NICHT`) verlangen **längster-
+Treffer-zuerst**; bei Byte-Sortierung ist zu prüfen, dass die Umlaut-Bytes die
+Längen-Ordnung nicht verdrehen (nur ASCII-Suffixe ` NICHT`/` NOT` angehängt). (iv)
+Ein **konfigurierbarer** Keyword-Satz gehört als Built-in-Default in den **Kern**
+(nicht in die Doku-`yaml`) — Kern-Default, Spec-Beispiel und ADR-Beispiel
+konsistent halten (Impl-R2 I1: `SHALL NOT`/`SOLLTEN NICHT` nachgezogen).

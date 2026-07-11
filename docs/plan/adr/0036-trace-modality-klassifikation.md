@@ -1,6 +1,6 @@
 # ADR-0036 — Modalitäts-Klassifikation der Anforderungen (`trace.requirements.modality`)
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-11
 **Autor:** pt9912
 **Bezug:** [`DC-FA-MOD-001`](../../../spec/lastenheft.md#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in)
@@ -147,3 +147,4 @@ Konditional-Mechanik wie die Coverage-Spalte (ADR-0035).
 | Datum | Ereignis |
 | --- | --- |
 | 2026-07-11 | Entwurf (slice-068, welle-57; Nutzer-Frage „unterscheidet Traceability MUSS/SOLLTE?" + Hinweis, dass das Lastenheft MUSS/SOLLTE/DARF NICHT trägt — meine erste Analyse [„Modalität hülfe nicht"] war durch einen Body-Scan-Bug falsch; die 10 Coverage-Rest-Waisen sind 5 KANN + 4 Nicht-Ziele + 1 DARF NICHT). Opt-in `trace.requirements.modality`: konfigurierbare Modal-Verb-Keywords (DE+EN-RFC-2119-Defaults, `levels`/`require-levels`), erster/längster Treffer im Body-Abschnitt, `unknown`-Fallback sichtbar; Modality-Spalte konditional; `--require-complete` gatet nur `require-levels`-Stufen (Default `[must]`). Byte-identisch ohne `modality`; fail-closed (Config/`require-levels`). Design spiegelt `trace`-Config (Default+Override). Lastenheft-CR (v0.42.0), Release geplant. Status Proposed. |
+| 2026-07-11 | **Accepted** (slice-068 umgesetzt + zwei Reviews eingearbeitet). Präzisierungen aus R1: Body-**Markup-Normalisierung** vor dem Match (`**MUSS** NICHT`/`MUSS\nNICHT` ⇒ `may`, nicht fälschlich `must`); dasselbe Keyword in zwei Stufen ist **fail-closed** (Exit 2, Nondeterminismus); Aktivierung = **Schlüssel-Präsenz**. End-to-End gegen grid-gym: 10 Coverage-Rest-Waisen ⇒ unter `modality: {}` + `require-levels: [must]` gaten nur **2** (GG-MVP-004 `DARF NICHT` + GG-NONGOAL-005 `muessen`-Klausel), acht advisory. Release v0.42.0. |
