@@ -4,6 +4,30 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.42.0] — 2026-07-11
+
+### Added
+
+- slice-068 — neue opt-in **Modalitäts-Klassifikation `trace.requirements.modality`**
+  ([`DC-FA-MOD-001`](spec/lastenheft.md#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in),
+  [ADR-0036](docs/plan/adr/0036-trace-modality-klassifikation.md)) für die
+  Requirements Traceability Matrix. d-check klassifiziert jede Anforderung nach
+  RFC-2119-Stufe (MUSS/SOLLTE/KANN) anhand **konfigurierbarer Modal-Verb-
+  Schlüsselwörter** (Built-in DE+EN-Defaults; `levels` Stufe→Keywords,
+  `require-levels` welche Stufen gaten, Default `[must]`) über den ersten/
+  längsten Treffer im **normalisierten** Anforderungs-Body (`MUSS NICHT`=may vor
+  `MUSS`=must, `DARF NICHT`=must; whitespace-/emphasis-normalisiert, wortgrenzen-
+  genau); kein Treffer ⇒ Stufe `unknown`. Neue konditionale **Modality**-Spalte;
+  `--require-complete`
+  ([`DC-FA-CLI-011`](spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code))
+  bricht dann **nur** bei Waisen der `require-levels`-Stufen — SOLLTE/KANN/`unknown`
+  advisory. Fail-closed (leeres Keyword / gleiches Keyword in zwei Stufen /
+  reservierter Name `unknown` / ungültiges `require-levels` ⇒ Exit 2). **Ohne
+  `modality` byte-identisch** (keine Spalte, kein Feld, alle Waisen gaten;
+  `DC-QA-02`). Anlass: grid-gyms 10 Coverage-Rest-„Waisen" sind 5× KANN + 4×
+  Nicht-Ziele + 1× DARF NICHT; an den Realdaten gaten mit `modality` nur noch die
+  2 echten MUSS-Lücken (`GG-MVP-004` `DARF NICHT`, `GG-NONGOAL-005` „muessen").
+
 ## [0.41.0] — 2026-07-11
 
 ### Added

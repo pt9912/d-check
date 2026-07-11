@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.25 · **Software-Version:** [v0.41.0](../../version.md#v0.41.0) ·
+**Handbuch-Version:** 1.26 · **Software-Version:** [v0.42.0](../../version.md#v0.42.0) ·
 **Stand:** 2026-07-04 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -63,7 +63,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.41.0
+docker pull ghcr.io/pt9912/d-check:v0.42.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -71,7 +71,7 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.41.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.42.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -100,7 +100,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -146,7 +146,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -165,7 +165,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.41.0
+  ghcr.io/pt9912/d-check:v0.42.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -184,7 +184,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.41.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.42.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -203,7 +203,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -229,7 +229,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -238,7 +238,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -250,7 +250,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -270,7 +270,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 \
   --enable ids --disable anchors
 ```
 
@@ -291,7 +291,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 \
   --enable ids
 ```
 
@@ -312,7 +312,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 \
   --enable matrix
 ```
 
@@ -379,7 +379,7 @@ verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 \
   --enable external
 ```
 
@@ -399,7 +399,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 \
   --enable ids --doctor
 ```
 
@@ -427,7 +427,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 \
   --enable ids --doctor --json
 ```
 
@@ -475,7 +475,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -511,7 +511,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 \
     --enable ids --repair | git apply
   ```
 
@@ -528,7 +528,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -548,7 +548,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -581,7 +581,7 @@ Lastenheft, ADRs unter `docs/plan/adr/`, Slices unter `docs/plan/planning/`).
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.41.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -652,6 +652,31 @@ Treffer, eine fehlende `files`-Datei oder eine ungültige Range (`AAA>BBB`) sind
 Konfigurationsfehler (Exit 2). Ohne `trace.coverage` bleibt die RTM
 byte-identisch (keine Coverage-Spalte). Alle Felder in §5.
 
+**Modalität (`trace.requirements.modality`).** Tragen Ihre Anforderungen
+RFC-2119-Modalität (MUSS/SOLLTE/KANN) im Text, klassifiziert der opt-in
+`modality`-Block jede Anforderung anhand **konfigurierbarer Modal-Verb-
+Schlüsselwörter** (mit DE+EN-Defaults) und zeigt die Stufe in einer eigenen
+**Modality**-Spalte. `--require-complete` bricht dann **nur** bei Waisen der
+`require-levels`-Stufen (Default `[must]`) — SOLLTE/KANN/`unknown` bleiben
+advisory:
+
+```yaml
+trace:
+  requirements:
+    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'
+    modality: {}          # {} = Built-in DE+EN-Defaults; require-levels [must]
+```
+
+Klassifiziert wird über den ersten Modal-Verb-Treffer im Anforderungs-Body
+(längster zuerst: `MUSS NICHT`=may vor `MUSS`=must, `DARF NICHT`=must; Body wird
+whitespace-/emphasis-normalisiert); ohne Treffer ⇒ Stufe `unknown` (sichtbar,
+advisory bei Default). **Wichtig:** ein `unknown` unter `require-levels: [must]`
+gatet **nicht** — ein echtes MUSS mit unaufgeführtem Verb entkäme so dem Gate;
+Gegenmittel: die Spalte prüfen und ggf. `levels` ergänzen oder strikt
+`require-levels: [must, unknown]`. Fail-closed (Exit 2): leeres Keyword, gleiches
+Keyword in zwei Stufen, `unknown` als Stufen-Name, ungültiges `require-levels`.
+Ohne `modality` byte-identisch (keine Spalte). Details in §5.
+
 ### 4.13 Ein Makefile-Fragment einbinden (`--print-mk`)
 
 **Ziel:** d-check als `doc-check`-Schritt ins eigene Makefile einbinden, ohne
@@ -661,7 +686,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.41.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.42.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -674,7 +699,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.41.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.42.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -805,6 +830,7 @@ targets:                       # Deklarations-Konsistenz Doku ↔ Build-Targets 
 trace:                         # konfigurierbare RTM-Quellen (KEIN Modul; steuert nur --trace)
   requirements:
     id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'  # Anforderungs-Kennung (Default: <PREFIX>-FA-…/-QA-…)
+    modality: {}                          # RFC-2119-Stufe je Anforderung (eigene Spalte); {} = DE+EN-Defaults, require-levels [must]
   slices:
     file-pattern: '^(\d+)-.*\.md$'          # Slice-Dateiname NNN-titel.md (Capture 1 = Owner-Kennung)
   coverage:                                 # kuratierte Coverage-Quellen (eigene RTM-Spalte)
@@ -994,6 +1020,20 @@ ohne Heading-Treffer, eine ungültige Range (`AAA>BBB`/Breite). Ist **keine**
 Coverage-Quelle konfiguriert, erscheint **keine** Coverage-Spalte und die RTM
 bleibt byte-identisch.
 
+Der opt-in **`trace.requirements.modality`**-Block klassifiziert jede Anforderung
+nach RFC-2119-Stufe (siehe §4.12). `levels` (Map Stufe → Modal-Verb-Keywords;
+leer/`{}` ⇒ Built-in DE+EN-Defaults inkl. `DARF NICHT`→must, `MUSS NICHT`→may)
+und `require-levels` (welche Stufen `--require-complete` gaten, Default `[must]`).
+Klassifiziert wird über den ersten (frühesten), bei Gleichstand **längsten**
+Keyword-Treffer im **normalisierten** Body-Abschnitt (Emphasis raus, Whitespace/
+Umbrüche zu einem Leerzeichen), case-insensitiv und wortgrenzen-genau (`\b` ist
+ASCII — ein konfiguriertes Umlaut-Rand-Keyword träfe nicht); kein Treffer ⇒ Stufe
+`unknown`. **Aktiv schon bei bloßer Präsenz** (`modality: {}`). Fail-closed
+(Exit 2): leerer Stufen-Name/leeres Keyword, reservierter Name `unknown` in
+`levels`, gleiches Keyword in zwei Stufen, ungültiges `require-levels`. Ohne
+`modality` byte-identisch (keine Spalte, kein Feld, `--require-complete` gatet
+alle Waisen).
+
 ## 6. Regelmodule
 
 | Modul       | Standard      | Prüft                                                                                    | Grund-Codes                                                 |
@@ -1130,3 +1170,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.23             | v0.39.0          | 2026-07-06 | `--suggest-config ai-harness[-init]` (§4.4): Vorlage an die **gelebte** Konvention angeglichen — `spans`/`hostpaths` ins fixe Standard-Modulset, repo-bewusster `planning`-Block; `vcs`/`commits` (Commit-Range) via `--print-mk`, `versions`/`targets` bewusst vertagt; kanonische Vorlage der Spezifikation deckt die emittierte Ausgabe 1:1                |
 | 1.24             | v0.40.0          | 2026-07-11 | Requirements Traceability Matrix (`--trace`, §4.12) über einen opt-in `trace`-Block quell-/kennungs-konfigurierbar (§5): Anforderungs-Quelldatei + Kennungs-Regex sowie je Referenzklasse Verzeichnis + Dateimuster + Owner-Präfix; Default = Konvention ⇒ byte-identisch, fail-closed bei ungültiger Regex / Muster ohne Capture-Gruppe. Bildet auch Repos mit abweichender Kennungs-/Datei-Konvention vollständig ab                |
 | 1.25             | v0.41.0          | 2026-07-11 | Kuratierte Coverage-Quellen `trace.coverage` (§4.12/§5): eine Liste benannter `files` liest Deckungs-Matrizen als **eigene Coverage-Spalte** ein — `ranges` (`GG-QA-001..006` → alle sechs, `/`-Aufzählung), `sections`/`exclude-sections` (voller Heading-Text). Waise = ohne Slice **und** ohne Coverage; fail-closed (fehlende Datei / leeres label / Sektion ohne Treffer / ungültige Range ⇒ Exit 2); ohne Block byte-identisch                |
+| 1.26             | v0.42.0          | 2026-07-11 | Modalitäts-Klassifikation `trace.requirements.modality` (§4.12/§5): aus konfigurierbaren Modalverb-Stichwörtern (DE+EN-Defaults, opt-in) klassifiziert die RTM jede Anforderung als MUSS/SOLLTE/KANN in einer **eigenen Modalitäts-Spalte** (längster Treffer, Wortgrenze, Markup-normalisiert); optional gatet `require-levels`, welche Stufen einen Waisen zum Exit-1-Fehler machen (Default: nur MUSS). Fail-closed bei leerem Level/Stichwort, reserviertem `unknown`, Stichwort in zwei Stufen, ungültigem `require-levels` ⇒ Exit 2; ohne Block byte-identisch                |
