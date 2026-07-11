@@ -1024,6 +1024,11 @@ Der opt-in **`trace.requirements.modality`**-Block klassifiziert jede Anforderun
 nach RFC-2119-Stufe (siehe §4.12). `levels` (Map Stufe → Modal-Verb-Keywords;
 leer/`{}` ⇒ Built-in DE+EN-Defaults inkl. `DARF NICHT`→must, `MUSS NICHT`→may)
 und `require-levels` (welche Stufen `--require-complete` gaten, Default `[must]`).
+Ein gesetztes `levels` **ersetzt** die Defaults vollständig (kein Merge): wer
+`levels` konfiguriert, muss **jede** gewünschte Stufe und **jedes** gewünschte
+Verb selbst auflisten (auch die gewünschten Built-ins) — die vollständige
+Default-Menge steht in `spec/spezifikation.md` (Abschnitt
+`trace.requirements.modality`).
 Klassifiziert wird über den ersten (frühesten), bei Gleichstand **längsten**
 Keyword-Treffer im **normalisierten** Body-Abschnitt (Emphasis raus, Whitespace/
 Umbrüche zu einem Leerzeichen), case-insensitiv und wortgrenzen-genau (`\b` ist
