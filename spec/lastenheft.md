@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.41.0
+**Version:** 0.42.0
 
 **Status:** Draft
 
@@ -50,7 +50,8 @@ statt per Code-Kopie.
 > Commit-Messages), `PLAN` (Planning-Lifecycle-Konsistenz), `TRK`
 > (Getrackt-Status von Referenz-Zielen), `TGT` (Deklarations-Konsistenz
 > Doku ↔ Build-Targets), `COV` (kuratierte Coverage-Quellen der RTM),
-> `CONF` (Konfiguration), `DIST` (Distribution).
+> `MOD` (Modalitäts-Klassifikation der Anforderungen), `CONF`
+> (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -373,7 +374,10 @@ referenzierenden **ADRs** und **Slices** sowie eine **Lücken-Markierung**
 trägt die Matrix zusätzlich eine **Coverage**-Spalte (die Quell-Labels);
 **ohne** `trace.coverage` erscheint **keine** Coverage-Spalte und die RTM ist
 byte-identisch zur Fassung vor dieser Erweiterung
-([`DC-QA-02`](#dc-qa-02--determinismus)). Default-Format ist eine
+([`DC-QA-02`](#dc-qa-02--determinismus)). Analog trägt sie bei aktivem opt-in
+`trace.requirements.modality` eine **Modality**-Spalte (RFC-2119-Stufe je
+Anforderung, [`DC-FA-MOD-001`](#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in));
+ohne sie **keine** Modality-Spalte, byte-identisch. Default-Format ist eine
 **Markdown-Tabelle**; mit `--json`/`--yaml` wird dieselbe Matrix
 strukturgleich maschinenlesbar (je Anforderung ein `coverage`-Feld, das ohne
 Coverage-Referenz entfällt — byte-identisch ohne aktive Quelle; format-neutraler
@@ -483,7 +487,11 @@ deterministisch [`DC-QA-02`](#dc-qa-02--determinismus), kein Dokument erzeugt),
 (Anforderung ohne referenzierenden Slice **und** — falls `trace.coverage`
 konfiguriert ist — ohne Coverage-Referenz, [`DC-FA-COV-001`](#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in))
 ⇒ **Exit 1** (Befund-Code,
-[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)); 0 Waisen ⇒ Exit 0. Die RTM
+[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)); 0 Waisen ⇒ Exit 0. Ist zusätzlich
+`trace.requirements.modality` aktiv ([`DC-FA-MOD-001`](#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in)),
+gatet eine Waise **nur**, wenn ihre Modalitäts-Stufe in `require-levels` liegt
+(Default `[must]`) — SOLLTE/KANN/`unknown`-Waisen bleiben advisory. Ohne
+`modality` gaten wie bisher **alle** Waisen. Die RTM
 erscheint unverändert auf stdout (Default Markdown, mit `--json`/`--yaml`
 maschinenlesbar) — `--require-complete` ändert nur den Exit-Code, nicht die
 Ausgabe. Es ist ein **Modifikator von `--trace`**: ohne `--trace` ein
@@ -562,6 +570,62 @@ führt **kein** eigenes Regex (nutzt `requirements.id-pattern`). **Strikt opt-in
 - **Modul-aus:** Given **kein** `trace.coverage`, when `d-check --trace` läuft, then ist die RTM byte-identisch zur Fassung vor dieser Anforderung ([`DC-QA-02`](#dc-qa-02--determinismus)) — keine Coverage-Spalte, kein `coverage`-Feld — und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 
 **Out-of-Scope:** Parsen **semantischer Design-Mappings** (z. B. `GG-AR-*`-Architektur-Kennungen) — Coverage ist reine **ID-Präsenz** in der Quelle; ein **Erfüllungs-/Status-Urteil** (Coverage ≠ „erfüllt", nur „in kuratierter Quelle referenziert"; kein `✓`); **Auto-Generierung** oder Schreiben der Coverage-Datei; `dir`+`file-pattern`-Ableitung für Coverage-Quellen (bewusst nur explizite `files`, gegen ADR-Kontamination); range-/enum-Erkennung außerhalb `trace.coverage` (eine spätere `commits`/`ids`-Range wäre eigener CR); fam-qualifizierte Range-Enden (`<FAM>-AAA..<FAM>-BBB` — nur die Kurzform `..BBB`).
+
+---
+
+### DC-FA-MOD-001 — Modalitäts-Klassifikation der Anforderungen (`trace.requirements.modality`, opt-in)
+
+**Beschreibung:** Anforderungen tragen eine **Modalität** (RFC-2119-Stufe:
+MUSS/SOLLTE/KANN bzw. MUST/SHOULD/MAY) im Anforderungs-**Text**. Die RTM
+([`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)) liest heute
+nur die Heading-Kennung und behandelt jede Anforderung gleich — eine reine
+**KANN**-Anforderung ohne Slice/Coverage erscheint wie eine unabgedeckte
+**MUSS**-Pflicht. Bei explizit aktiviertem opt-in `trace.requirements.modality`
+klassifiziert d-check jede Anforderung anhand von **Modal-Verb-Schlüsselwörtern**
+im Body und macht die Stufe in einer eigenen **Modality**-Spalte sichtbar; die
+Vollständigkeits-Prüfung ([`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code))
+kann so **nur auf verpflichtende Stufen** brechen.
+
+Die Schlüsselwörter sind **konfigurierbar mit Built-in-Defaults**:
+`modality.levels` bildet Stufen-Namen → Schlüsselwort-Liste ab (Default eine
+DE+EN-RFC-2119-Menge — `must`/`should`/`may`); `modality.require-levels` nennt die
+Stufen, die `--require-complete` gaten (Default `[must]`). Klassifiziert wird über
+den Schlüsselwort-Treffer an der **frühesten Position** im Body-Abschnitt der
+Anforderung (Überschrift bis zur nächsten gleich-/höherrangigen); mehrere Phrasen
+an **derselben** Position: **längster** Treffer zuerst (damit `DARF NICHT` vor
+`DARF`, und `MUSS NICHT` [may] nicht als `MUSS` [must] verschluckt wird),
+Schlüsselwörter case-insensitiv und wortgrenzen-genau (`MUSS` matcht nicht
+`musste`). Der Body wird vor dem Matching **normalisiert** (Markdown-Emphasis
+entfernt, Whitespace-/Umbruch-Folgen zu einem Leerzeichen) — sonst matchte eine
+umbrochene/emphasierte Phrase `**MUSS** NICHT`/`MUSS\nNICHT` nicht und fiele still
+auf `MUSS` zurück. Eine Anforderung **ohne** Treffer erhält die Stufe
+**`unknown`** (in der Spalte sichtbar); ob `unknown` gatet, entscheidet
+`require-levels` (Default: nicht — `unknown` ∉ `[must]`).
+
+**Waise-Interaktion:** `--require-complete` bricht (Exit 1) nur bei Waisen
+(¬slice ∧ ¬coverage), **deren Stufe in `require-levels` liegt** (die stderr-Zeile
+nennt die gatende von der Gesamt-Waisenzahl). Ist `trace.requirements.modality`
+**nicht** gesetzt, gaten wie bisher **alle** Waisen (byte-identisch); **aktiv** ist
+`modality` schon bei bloßer **Schlüssel-Präsenz** (`modality: {}` ⇒ Defaults + Spalte).
+Read-only ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)),
+deterministisch ([`DC-QA-02`](#dc-qa-02--determinismus)). **Fail-closed** (Exit 2):
+leerer Stufen-Name/leeres Schlüsselwort; der **reservierte** Stufen-Name
+`unknown` in `levels`; **dasselbe Keyword in mehr als einer Stufe** (sonst
+nondeterministisch); ein `require-levels`-Eintrag, der weder deklarierter
+Stufen-Name noch `unknown` ist. **Strikt opt-in:** ohne `modality` keine
+Modality-Spalte, kein `modality`-Feld, `--require-complete`-Semantik unverändert
+— byte-identisch.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `trace.requirements.modality: {}` (Defaults) und eine Anforderung, deren Body `… MUSS …` enthält, when `d-check --trace` läuft, then trägt ihre RTM-Zeile die Modality `must`, Exit 0; ein read-only gemountetes Repository genügt.
+- **Gate nach Stufe:** Given eine **KANN**-Anforderung ohne Slice/Coverage und `require-levels: [must]` (Default), when `d-check --trace --require-complete` läuft, then ist sie **keine** gatende Waise (Exit 0, sofern keine MUSS-Waise); dieselbe Anforderung mit `require-levels: [must, may]` ⇒ Exit 1.
+- **Längster Treffer / Negation:** Given ein Body mit `… MUSS NICHT …` (Default-`may` enthält `MUSS NICHT`) und ein zweiter mit `… DARF NICHT …` (Default-`must`), when `d-check --trace` läuft, then wird der erste als `may` (nicht `must`) und der zweite als `must` klassifiziert — auch wenn die Phrase **zeilenumbrochen** (`MUSS\nNICHT`) oder **emphasiert** (`**MUSS** NICHT`) ist (Body-Normalisierung).
+- **Unknown:** Given eine Anforderung ohne Modal-Verb (z. B. ein deklaratives Nicht-Ziel), when `d-check --trace` läuft, then Modality `unknown`; sie gatet nur, wenn `require-levels` `unknown` enthält.
+- **Negative (Config):** Given eine ungültige `modality`-Config — ein `require-levels`-Eintrag, der weder deklarierte Stufe noch `unknown` ist; **oder** ein leerer Stufen-Name/leeres Keyword; **oder** der reservierte Stufen-Name `unknown` in `levels`; **oder** dasselbe Keyword in zwei Stufen — when `d-check --trace` läuft, then Exit-Code 2 (Konfigurationsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)).
+- **Modul-aus:** Given **kein** `trace.requirements.modality`, when `d-check --trace [--require-complete]` läuft, then keine Modality-Spalte, kein Feld, alle Waisen gaten wie bisher — byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)), nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Out-of-Scope:** Semantische Sprach-Analyse jenseits der Schlüsselwort-Präsenz (keine NLP; „der Satz **verweist** auf eine MUSS-Regel" wird nicht erkannt); Modalität aus dem Heading-Titel statt dem Body; mehrere Modalitäten je Anforderung (genau **eine** Stufe = erster Treffer); automatische Sprach-Erkennung der Defaults (die Default-Menge ist DE+EN-fix, sonst konfiguriert der Mensch); Ableitung von `require-levels` (explizit gesetzt); Bewertung, **ob** die Modalität semantisch korrekt vergeben ist (nur Klassifikation, kein Urteil).
 
 ---
 
@@ -1710,6 +1774,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.42.0 | 2026-07-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-MOD-001` — **Modalitäts-Klassifikation der Anforderungen** (`trace.requirements.modality`, opt-in): d-check klassifiziert jede RTM-Anforderung anhand **konfigurierbarer Modal-Verb-Schlüsselwörter** (Built-in DE+EN-RFC-2119-Defaults; `modality.levels` Stufe→Keywords, `modality.require-levels` welche Stufen gaten, Default `[must]`) über den **ersten** Treffer im Anforderungs-Body (Längster-Treffer-zuerst gegen `MUSS NICHT`≠`DARF NICHT`, case-insensitiv/wortgrenzen-genau; kein Treffer ⇒ Stufe `unknown`). Neue **Modality-Spalte** (konditional); `--require-complete` ([`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)) bricht dann **nur** bei Waisen der `require-levels`-Stufen (SOLLTE/KANN/`unknown` advisory). Fail-closed (leerer Stufen-Name/Keyword, `require-levels`-Eintrag weder Stufe noch `unknown` ⇒ Exit 2), strikt opt-in, default-aus **byte-identisch** (`DC-QA-02`/`DC-QA-03`; ohne `modality` gaten alle Waisen wie bisher). Bereich `MOD` in §3; `DC-FA-MOD-001.a` + Schema-Keys (`trace.requirements.modality.levels`/`require-levels`) in der Spezifikation; Mit-Modifikation `DC-FA-CLI-009` (Modality-Spalte). `--print-config` führt den `modality`-Block. Begründung + Matching-/Unknown-Semantik in begleitender ADR. Anlass: Konsumenten-Analyse grid-gym — die 10 Coverage-Rest-„Waisen" sind 5× KANN (Future) + 4× Nicht-Ziele + 1× DARF NICHT; die slice-zentrische RTM behandelte MUSS und KANN gleich | slice-068 |
 | 0.41.0 | 2026-07-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-COV-001` — **kuratierte Coverage-Quellen der RTM** (`trace.coverage`, opt-in): eine dritte Referenzklasse (Liste benannter `files` + `label` + `ranges` + `sections`/`exclude-sections`), die eine ausgelagerte Traceability-Matrix **range-aware** als Coverage einliest, **ohne** `adrs`/`slices` zu berühren. `<FAM>-AAA..BBB`/`<FAM>-AAA/BBB/CCC` expandieren (breiten-erhaltend, gegen `requirements.id-pattern` validiert); Abschnitts-Whitelist/Blacklist (dieselbe Span-Semantik wie `matrix.exclude-sections` — gegen die „…ohne Design-Artefakt"-Falle). Mit-Modifikationen: `DC-FA-CLI-009` (RTM trägt bei aktiver `trace.coverage` eine **Coverage-Spalte** + `coverage`-Feld in `--json`/`--yaml`) und `DC-FA-CLI-011` (**Waise = ¬slice ∧ ¬coverage**; Slice **oder** Coverage deckt ab, bloße ADR-Referenz weiterhin nicht). Fail-closed (fehlende Datei / ungültige Range `AAA>BBB` / Breiten-Mismatch ⇒ Exit 2), strikt opt-in, default-aus **byte-identisch** (`DC-QA-02`/`DC-QA-03`). Bereich `COV` in §3; `DC-FA-COV-001.a` + Schema-Keys (`trace.coverage[].files`/`label`/`ranges`/`sections`/`exclude-sections`) in der Spezifikation; `--print-config` führt den `coverage`-Block. Begründung + Range-/Sektions-Semantik in begleitender ADR. Anlass: Konsumenten-Analyse grid-gym — 171 „Waisen" waren zu ≥122 anderswo (ADR/traceability.md/Wellen) belegt; d-checks slice-zentrische RTM verfehlte die kuratierte Deckungs-Matrix | slice-067 |
 | 0.40.0 | 2026-07-11 | Change Request (Auftraggeber): `DC-FA-CLI-009` (Requirements Traceability Matrix) um einen **opt-in `trace`-Config-Block** erweitert — die vier bislang hart an d-checks Konvention gebundenen RTM-Annahmen sind überschreibbar: Anforderungs-Quelldatei + Kennungs-Gestalt (`trace.requirements.source`/`.id-pattern`) sowie je Referenzklasse ADR/Slice das Verzeichnis, die Dateinamen-Gestalt (Capture-Gruppe = Owner-Kennung) und das Owner-Präfix (`trace.adrs.*`/`trace.slices.*`). Jedes Feld optional; abwesend ⇒ d-checks Konventions-Default ⇒ RTM **byte-identisch** (`DC-QA-02`), nichts geschrieben (`DC-QA-03`). Fail-closed: ungültige Regex oder `file-pattern` ohne Capture-Gruppe ⇒ Exit 2. **Kehrt die 0.21.0-Out-of-Scope-Zeile „frei konfigurierbare Quell-Pfade jenseits der adoptierten Harness-Konvention" um** (durch bewusst begrenzte, explizit gesetzte Config ersetzt — kein Ableiten, je eine ADR-/Slice-Klasse, kein leerer ADR-Präfix, kein VCS). Config-Schema `trace.*` + Algorithmus-Konfigurierbarkeit in `DC-FA-CLI-009.a` der Spezifikation; Begründung (Konsumenten-Konventions-Bindung, Design spiegelt `ids.patterns`) in begleitender ADR. `DC-FA-CLI-011` (`--require-complete`) erbt die konfigurierten Quellen unverändert (gleicher RTM-Lauf). Anlass: Konsumenten-Befund grid-gym 2026-07-11 — `make doc-trace` sah nur 6 von 243 Anforderungen (allein die `GG-QA-*`-Familie traf zufällig d-checks `-QA-`-Default-Gestalt), die übrigen 40 Familien und alle `NNN-…md`-Slices blieben unsichtbar | slice-066 |
 | 0.39.0 | 2026-07-06 | Schärfung `DC-FA-CLI-006` (Auftraggeber): die `--suggest-config ai-harness[-init]`-Vorlage an die **gelebte** Dogfood-Konvention angeglichen — `spans`/`hostpaths` ins fixe Standard-Modulset aufgenommen (revidiert die 0.26.0-„situativ nicht aktiviert"-Einordnung; d-checks eigene `.d-check.yml` führte sie längst) und ein **repo-bewusster `planning`-Block** ergänzt (aktiv bei vorhandener `roadmap`, sonst auskommentiert; im Voll-Kanon `ai-harness-init` aktiv). `vcs`/`commits` (Commit-Range) werden auf `--print-mk` verwiesen statt ins statische `modules` gelegt; `versions`/`targets` bleiben bewusst vertagt (repo-spezifische `pin-pattern`/`authority`). Neu benannt: **Eignungs-Kriterium K1–K4** (konventions-kanonisch · ableitungsfrei/konventions-feste Config · Baum-Scan-tauglich · hermetisch) + die **geschlossene** Aktiv-Menge im Body; die kanonische Vorlage in der Spezifikation (`DC-FA-CLI-006.a`) deckt jetzt die emittierte Ausgabe **1:1** (Kommentarzeile inkl. `--print-mk`-Verweis + `codepaths`-Block ergänzt) — der Normativitäts-Spalt (Code-Kommentar ≠ Norm) ist geschlossen. Zugleich die situativen-Modul-Enumeration (AKs/Out-of-Scope) um das seit 0.38.0 fehlende `targets` vervollständigt. Betrifft nur die `ai-harness`-Vorlage (nicht den generischen Quellen-Modus, nicht die eigene `.d-check.yml`); `DC-QA-02`/`DC-QA-03` unberührt (nur mehr Ausgabe). Begründung + Eignungs-Kriterium in begleitender ADR. Anlass: Nutzer-Analyse „welche Module nutzt `--suggest-config ai-harness` nicht, und warum nicht" (2026-07-06) | slice-065 |

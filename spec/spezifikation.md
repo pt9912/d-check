@@ -411,6 +411,69 @@ ungültige Range (`AAA>BBB`/Breite). `trace.coverage` führt **kein** eigenes Re
 nur Markdown-Lesen der benannten `files` im gemounteten Baum, kein neuer
 Eingabe-Scope darüber hinaus.
 
+### DC-FA-MOD-001.a — Modalitäts-Klassifikation (`trace.requirements.modality`)
+
+Der opt-in Block `trace.requirements.modality`
+([`DC-FA-MOD-001`](lastenheft.md#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in))
+weist jeder RTM-Anforderung eine **Stufe** zu. Ableitung (deterministisch,
+[`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)):
+
+0. **Aktiv-Prädikat.** `modality` gilt als aktiv, sobald der **Schlüssel
+   vorhanden** ist — auch als leere Map `modality: {}` (dann greifen die
+   Defaults). **Nicht** an `len(levels)>0` hängen (sonst wäre `modality: {}`
+   fälschlich inaktiv). Fehlt der Schlüssel ⇒ inaktiv, byte-identisch.
+1. **Keyword-Menge.** `modality.levels` (Map Stufe→Keywords); leer ⇒ die
+   **kanonische Built-in-Default-Menge** (fix, reproduzierbar):
+   - `must`:   `MUSS`, `MUESSEN`, `MÜSSEN`, `DARF NICHT`, `DÜRFEN NICHT`, `MUST`, `SHALL`, `MUST NOT`, `SHALL NOT`
+   - `should`: `SOLLTE`, `SOLLTEN`, `SOLLTE NICHT`, `SOLLTEN NICHT`, `SHOULD`, `SHOULD NOT`
+   - `may`:    `KANN`, `KÖNNEN`, `MUSS NICHT`, `MÜSSEN NICHT`, `MAY`, `OPTIONAL`
+
+   Config-zeitig **fail-closed** (Exit 2): leerer Stufen-Name; leeres Keyword;
+   der reservierte Stufen-Name **`unknown`** in `levels` (kollidiert mit dem
+   Kein-Treffer-Sentinel); **dasselbe Keyword in mehr als einer Stufe** (sonst
+   hinge die gewinnende Stufe an der Map-Iteration ⇒ Nondeterminismus, verletzt
+   [`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
+2. **Body-Abschnitt + Normalisierung.** Je Anforderung der Text von ihrer
+   Heading-Zeile bis zur nächsten gleich-/höherrangigen Überschrift (Span-Mechanik
+   wie `matrix.exclude-sections`/`SelectSections`), dann **normalisiert**:
+   Markdown-Emphasis (`*`/`` ` ``) entfernt (wie `StripHeadingLinks` bei Headings)
+   und **Whitespace-Folgen inkl. Zeilenumbrüchen zu je einem Leerzeichen**
+   zusammengezogen. Ohne diese Normalisierung matchte eine umbrochene/emphasierte
+   Phrase `**MUSS** NICHT` bzw. `MUSS\nNICHT` **nicht** und fiele still auf `MUSS`
+   (must) statt `may` zurück.
+3. **Erster/längster Treffer.** Über den normalisierten Abschnitt wird die
+   **früheste Position** gesucht, an der **irgendein** Keyword matcht; bei
+   mehreren Keywords an **derselben** Position gewinnt die **längste** Phrase
+   (`DARF NICHT` vor `DARF`; `MUSS NICHT` [may] vor `MUSS` [must]). Matching
+   **case-insensitiv** und **wortgrenzen-genau** — implementiert als
+   `(?i)\bKEYWORD\b` mit regex-gequotetem Keyword. **Caveat:** RE2-`\b` ist
+   **ASCII**-basiert; die Default-Keywords haben ausschließlich ASCII-Ränder
+   (`MÜSSEN`/`KÖNNEN`/`DÜRFEN NICHT` beginnen/enden ASCII) und sind sicher; ein
+   **konfiguriertes** Keyword mit führendem/schließendem Umlaut träfe wegen der
+   ASCII-`\b` nicht — dann Wortgrenze weglassen bzw. das Keyword anders fassen.
+   Die Stufe des gewinnenden Keywords ist die Modalität; **kein** Treffer ⇒
+   `unknown`.
+4. **Rendering.** Bei aktivem `modality` trägt die Markdown-RTM eine **Modality**-
+   Spalte (Stufe, sonst „—") **vor** `Status` (nach `Coverage`; Voll-Ordnung
+   `Anforderung|Titel|ADRs|Slices|[Coverage]|[Modality]|Status`); `--json`/`--yaml`
+   ein `modality`-Feld (`omitempty`). Ohne `modality`: keine Spalte, kein Feld ⇒
+   byte-identisch.
+5. **Gating** ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)):
+   `--require-complete` zählt eine Waise (¬slice ∧ ¬coverage) nur dann als
+   gatend (Exit 1), wenn ihre Stufe in `modality.require-levels` liegt (Default
+   `[must]`; `unknown` gatet nur, wenn explizit gelistet). Ohne `modality` gaten
+   **alle** Waisen (byte-identisch). Die **Status**-Spalte bleibt für jede Waise
+   „WAISE" (die Modalität steht in ihrer eigenen Spalte); die stderr-Zeile von
+   `--require-complete` nennt die **gatende** Zahl (`N gatende von M Waisen`),
+   nicht nur die Gesamtzahl. Fail-closed: ein `require-levels`-Eintrag, der weder
+   deklarierte Stufe noch `unknown` ist ⇒ Exit 2.
+
+Read-only ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)) —
+nur Body-Lesen im gemounteten Baum. **Fail-open-Grenze** (bewusst): eine
+Anforderung mit **unaufgeführtem** Modal-Verb fällt auf `unknown` (advisory bei
+Default-`require-levels`) — sichtbar in der Spalte, per `require-levels: [must, unknown]`
+strikt gatbar.
+
 ### DC-FA-CLI-010.a — Makefile-Fragment
 
 `--print-mk` ([`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben))
@@ -1547,6 +1610,9 @@ Exit 2 ohne Prüfung
 | `trace.coverage[].ranges` | bool | `true` | expandiert Range-/Enum-Notation: `<FAM>-AAA..BBB` (inklusiv, breiten-erhaltend) + `<FAM>-AAA/BBB/CCC`; jede expandierte ID gegen `trace.requirements.id-pattern` validiert (Nicht-Treffer verworfen); `AAA>BBB` oder Breiten-Mismatch ⇒ Exit 2. `false` ⇒ nur exakte IDs |
 | `trace.coverage[].sections` | string[] | leer | **Whitelist**: nur diese H2/H3-Abschnitte zählen als Coverage (Span wie `matrix.exclude-sections` — Überschrift bis zur nächsten gleich-/höherrangigen); leer ⇒ ganze Datei |
 | `trace.coverage[].exclude-sections` | string[] | leer | **Blacklist**: diese Abschnitte zählen **nicht** (Span wie `matrix.exclude-sections`); gegen „…ohne Design-Artefakt"-Listen, die sonst nicht gedeckte IDs kreditierten |
+| `trace.requirements.modality` | map | leer | opt-in Modalitäts-Klassifikation ([`DC-FA-MOD-001`](lastenheft.md#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in)); abwesend ⇒ **keine** Modality-Spalte, `--require-complete` gatet alle Waisen, RTM byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)) |
+| `trace.requirements.modality.levels` | map | Built-in DE+EN | Stufen-Name → Schlüsselwort-Liste; leer ⇒ Default (`must`/`should`/`may` mit DE+EN-RFC-2119-Verben inkl. Negationen `DARF NICHT`→must, `MUSS NICHT`→may). Ein leerer Stufen-Name/leeres Keyword ⇒ Exit 2. Matching: erster Treffer im Anforderungs-Body (Span wie `matrix.exclude-sections`), **längste Phrase zuerst**, case-insensitiv, wortgrenzen-genau |
+| `trace.requirements.modality.require-levels` | string[] | `[must]` | Stufen, deren Waisen `--require-complete` gaten ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)); jeder Eintrag muss ein deklarierter Stufen-Name **oder** `unknown` sein (sonst Exit 2). Anforderung ohne Keyword-Treffer ⇒ Stufe `unknown` |
 
 **Glob-Auswertung.** Alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`,
 `matrix.classes[].paths`/`.order`, die `*.exempt-paths`) werden **segmentweise
@@ -1660,5 +1726,6 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-07-03 | §[`DC-FA-TRK-001.a`](spezifikation.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked) + §2-Schema (`tracked.exempt-targets`) + Grund-Code `target-untracked` (§4) ergänzt: opt-in Modul `tracked` prüft die Datei-Ebene der von `links` aufgelösten, **existierenden** repo-internen Ziele gegen den **git-Index** — dritte VCS-Port-Nutzung (`vcs` Range-Diff, `commits` Messages, `tracked` Index), **ohne** Range/`--staged`; Index statt `.gitignore`-Interpretation (gestagte Dateien gelten als getrackt), kein Doppelbefund (`target-missing` bleibt `links`), Ventil referenz-weit analog `codepaths.ignore-refs`; fail-closed ohne lesbares `.git` (Exit 2), diagnose-only, default-aus byte-identisch. Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (9→10 Targets): `--print-mk` trägt `doc-tracked` (`--enable tracked` + fokussierte `--disable`-Liste, ohne Range) | slice-059 |
 | 2026-07-03 | Review R1/R2 zu §[`DC-FA-TRK-001.a`](spezifikation.md#dc-fa-trk-001a--getrackt-status-auflösbarer-referenz-ziele-tracked), präzisiert: Prüfung **je gescannter Quell-Datei** statt „Post-Pass" (Auflösungs-Mechanik unabhängig von der Aktivierung des Moduls `links` — ein fokussierter Lauf prüft vollständig); Verzeichnis-Ziele und Symlink-Referenzen (Ziel ist/durchläuft einen Symlink) explizit kein Kandidat ([`DC-FA-LINK-002`](lastenheft.md#dc-fa-link-002--symlink-ablehnung)-Domäne — false-positive hinter getrackten Verzeichnis-Symlinks vermieden); `target` = aufgelöster Pfad bekräftigt (Ventil-Parität); `exempt-targets` segmentweise validiert (Exit 2) | slice-059 |
 | 2026-07-05 | §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) + §2-Schema (`targets.makefiles`/`doc-tables`/`authority`/`exempt-targets`) ergänzt: opt-in Modul `targets` prüft **hermetisch** (Filesystem-Port `ReadFile`, **kein** git/Netz/Makefile-Ausführen) die Doku-↔-Makefile-Deklarations-Konsistenz — ein nur aus **Tabellenzeilen** (Pipe-Präfix, keine Prosa) dokumentiertes `make X` ohne Makefile-Regel ⇒ `gate-phantom`, eine Makefile-Regel (nicht `targets.exempt-targets`) ohne Eintrag in `targets.authority` ⇒ `gate-undocumented`; statische Zeilen-Heuristik für Regelnamen (keine Pattern-Rules/variablen Targets, in Parität zu `tools/gate-consistency.sh`), fail-closed bei fehlender konfigurierter Datei, diagnose-only, default-aus byte-identisch; Analogie zu `planning` (Doku-Behauptung ↔ Repo-Struktur, hermetisch). Außerdem §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) (10→11 Targets): `--print-mk` trägt `doc-targets` (`--enable targets`, hermetisch ohne Range). Die Grund-Codes `gate-phantom`/`gate-undocumented` (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep) | slice-063 |
+| 2026-07-11 | §[`DC-FA-MOD-001.a`](spezifikation.md#dc-fa-mod-001a--modalitäts-klassifikation-tracerequirementsmodality) + §2-Schema (`trace.requirements.modality.levels`/`require-levels`) ergänzt: opt-in Modalitäts-Klassifikation ([`DC-FA-MOD-001`](lastenheft.md#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in)) — je Anforderung die RFC-2119-Stufe aus konfigurierbaren Modal-Verb-Keywords (DE+EN-Defaults, erster/längster Treffer im Body-Abschnitt via Span-Mechanik, `unknown`-Fallback), konditionale Modality-Spalte; `--require-complete` gatet nur `require-levels`-Stufen (Default `[must]`, `unknown` explizit). Byte-identisch ohne Block; fail-closed (leerer Stufen-Name/Keyword, `require-levels` weder Stufe noch `unknown` ⇒ Exit 2). Mit-Modifikation §[`DC-FA-CLI-009.a`](spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) (Spalte) + [`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) (gatende Stufen). `--print-config` führt den `modality`-Block | slice-068 |
 | 2026-07-11 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) + §2-Schema (`trace.coverage[].files`/`label`/`ranges`/`sections`/`exclude-sections`) ergänzt: dritte opt-in RTM-Referenzklasse `trace.coverage` ([`DC-FA-COV-001`](lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)) liest kuratierte Matrizen range-aware als Coverage — Abschnitts-Whitelist/Blacklist über die bestehende `matrix`-Span-Semantik (`excludedRanges`), Range-Parser (`<FAM>-AAA..BBB` breiten-erhaltend + `/`-Enum, gegen `id-pattern` validiert, `AAA>BBB`/Breite ⇒ Exit 2), Waise = ¬slice ∧ ¬coverage. Konditionale Coverage-Spalte + `coverage`-Feld (omitempty) ⇒ ohne Quelle byte-identisch. Mit-Modifikation §[`DC-FA-CLI-009.a`](spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) (Spalte) + [`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) (Waisen-Definition). `--print-config` führt den `coverage`-Block. Fail-closed | slice-067 |
 | 2026-07-11 | §[`DC-FA-CLI-009.a`](spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix) Schritte 1/2 + Config-Auflösungs-Absatz + §2-Schema (`trace.requirements.source`/`.id-pattern`, `trace.adrs.dir`/`.file-pattern`/`.id-prefix`, `trace.slices.dir`/`.file-pattern`/`.id-prefix`) ergänzt: die vier RTM-Konventions-Annahmen ([`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)) sind über einen opt-in `trace`-Block überschreibbar — Anforderungs-Quelldatei + Kennungs-Regex (Ganz-Token im Heading, Referenz-Zählung in ADR/Slice) sowie je Referenzklasse Verzeichnis + Basisnamen-Regex (Capture-Gruppe 1 = Owner-Kennung) + Owner-Präfix. Jedes Feld optional, abwesend ⇒ Default (byte-identisch, [`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)); fail-closed zur Config-Zeit (ungültige Regex bzw. `file-pattern` ohne Capture-Gruppe ⇒ Exit 2). Gilt unverändert für `--require-complete` ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)). Kein neuer Grund-Code (`--trace` bleibt advisory). Design spiegelt `ids.patterns` (begleitende ADR) | slice-066 |
