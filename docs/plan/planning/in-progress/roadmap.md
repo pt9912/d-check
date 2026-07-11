@@ -10,23 +10,26 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-57-trace-modality-klassifikation** —
-[`slice-068`](slice-068-trace-modality-klassifikation.md) ergänzt die RTM
-(`--trace`) um eine opt-in **Modalitäts-Klassifikation** `trace.requirements.modality`:
-**konfigurierbare** Modal-Verb-Keywords (Built-in DE+EN-RFC-2119-Defaults,
-`levels`/`require-levels`) klassifizieren jede Anforderung nach RFC-2119-Stufe
-(MUSS/SOLLTE/KANN, erster/längster Treffer im Body, `unknown`-Fallback) — eigene
-**Modality-Spalte**; `--require-complete` bricht **nur** auf `require-levels`
-(Default `[must]`), SOLLTE/KANN/`unknown` advisory
+**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**welle-57-trace-modality-klassifikation**
+([`slice-068`](../done/slice-068-trace-modality-klassifikation.md) — die RTM
+(`--trace`) trägt nun eine opt-in **Modalitäts-Klassifikation**
+`trace.requirements.modality`: **konfigurierbare** Modal-Verb-Keywords (Built-in
+DE+EN-RFC-2119-Defaults, `levels`/`require-levels`) klassifizieren jede
+Anforderung nach RFC-2119-Stufe (MUSS/SOLLTE/KANN, erster/längster Treffer im
+markup-normalisierten Body, `unknown`-Fallback) — eigene **Modality-Spalte**;
+`--require-complete` bricht **nur** auf `require-levels` (Default `[must]`),
+SOLLTE/KANN/`unknown` advisory
 ([`DC-FA-MOD-001`](../../../../spec/lastenheft.md#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in),
-[ADR-0036](../../adr/0036-trace-modality-klassifikation.md) Proposed). Default-aus
+[ADR-0036](../../adr/0036-trace-modality-klassifikation.md) Accepted). Default-aus
 byte-identisch. Anlass: grid-gyms 10 Coverage-Rest-Waisen sind 5 KANN + 4
-Nicht-Ziele + 1 DARF NICHT — MUSS und KANN wurden gleichbehandelt. Doc-first-
-Fundament gelegt (Lastenheft-CR v0.42.0, Spezifikation und ADR); Implementierung +
-Review + Release v0.42.0 folgen.
-
-Zuletzt abgeschlossen:
-**welle-56-trace-coverage-quellen**
+Nicht-Ziele + 1 DARF NICHT — mit `modality: {}` + Default `require-levels: [must]`
+gaten an den Realdaten nur noch **2** (die DARF-NICHT-Pflicht GG-MVP-004 + eine
+NONGOAL-Klausel mit `muessen`-Verb), acht werden advisory. Zwei Reviews (Doc-first
+R1 NACHBESSERN + Impl R2 ACCEPT-WITH-NITS, eingearbeitet), Lastenheft-CR,
+**Release v0.42.0** auf GHCR (Digest-Pin folgt bei Backfill),
+[Closure](../done/slice-068-trace-modality-klassifikation.md#7-closure-notiz-nach-done)).
+Davor **welle-56-trace-coverage-quellen**
 ([`slice-067`](../done/slice-067-trace-coverage-quellen.md) — die RTM (`--trace`)
 trägt nun eine **dritte, opt-in Referenzklasse `trace.coverage`**: eine Liste
 benannter kuratierter Quellen (`files`+`label`+`ranges`+`sections`/`exclude-sections`),
