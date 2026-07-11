@@ -1,10 +1,10 @@
 # Slice slice-066: RTM-Quellen und Kennungs-Muster konfigurierbar (`trace`-Block)
 
-**Status:** in-progress (welle-55-trace-konfigurierbare-quellen). Doc-first-
-Fundament gelegt (Lastenheft-CR, Spezifikation, [ADR-0034](../../adr/0034-trace-konfigurierbare-quellen.md)
-Proposed); Implementierung + Review + Release folgen. Lifecycle
-`in-progress`→`done` mit Roadmap-Flip §Aktuelle Welle bei Closure
-([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)).
+**Status:** done (welle-55-trace-konfigurierbare-quellen). Lifecycle
+abgeschlossen (`in-progress`→`done`, Roadmap-Flip §Aktuelle Welle,
+[`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise));
+[ADR-0034](../../adr/0034-trace-konfigurierbare-quellen.md) auf **Accepted**
+(ADR-Annotation bei Closure). Ergebnis + Belege in §7.
 
 **Welle:** welle-55-trace-konfigurierbare-quellen.
 
@@ -154,3 +154,40 @@ Norm↔Code-Parität (8 `rawTrace`-Keys == 8 §2-Schema-Zeilen, Default-Werte
 deckungsgleich), Prefix-Semantik konsistent, Determinismus/Read-only,
 Harness-Regeln (ADR nennt den Slice nur in `## Geschichte`, Versions-Header
 0.40.0 == §7-Top == CHANGELOG), gocyclo unter Schwelle.
+
+## 7. Closure-Notiz (nach done)
+
+**Umgesetzt:** Die Requirements Traceability Matrix (`--trace`,
+[`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix))
+liest ihre vier Quell-Achsen jetzt aus einem opt-in `trace`-Block der
+`.d-check.yml`: Anforderungs-Quelldatei + Kennungs-Regex sowie je Referenzklasse
+(ADR/Slice) Verzeichnis, Basisnamen-Regex (Capture-Gruppe 1 = Owner-Kennung) und
+Owner-Präfix. Jedes Feld ist optional; der Nullwert löst auf d-checks
+Konventions-Default auf ⇒ RTM **byte-identisch**
+([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)).
+Fail-closed zur Config-Zeit (ungültige Regex / `file-pattern` ohne Capture-Gruppe
+/ Pfad-Escape ⇒ Exit 2). Kehrt die 0.21.0-Out-of-Scope-Zeile „frei
+konfigurierbare Quell-Pfade" um; kein neues Modul, keine neue `DC-*`-ID, kein
+neuer Grund-Code (`--trace` bleibt advisory).
+
+**Belege:** `make gates` grün (doc-check + lint + test + arch-check +
+coverage-gate 93,7 % + semgrep + gate-consistency + planning-check).
+**End-to-End gegen grid-gyms Realdaten** verifiziert: ohne `trace`-Block **6**
+Anforderung(en) (nur die `GG-QA-*`-Familie trifft d-checks `-QA-`-Default), mit
+`trace`-Block (`id-pattern: 'GG-…-\d{3}'`, `slices.file-pattern: '^(\d+)-…'`)
+**243** Anforderung(en) mit aufgelösten ADRs/Slices. Impl-Review R1
+ACCEPT-WITH-NITS (§6; MEDIUM-Test-Deckung + LOW eingearbeitet).
+
+**Commit-Kette:** `4971b11` (doc-first) · `029fb61` (feat) · `09b945a`
+(release-prep v0.40.0) · `bc8411c` (Review) · `1bb5e3f` (Closure-Move) ·
+Closure-Body · digest-backfill. **Release v0.40.0** (Push → CI → Tag → GHCR →
+digest-backfill; Digest-Pin folgt).
+
+**Lehre:** Ein via `--print-mk` an alle Konsumenten verteiltes Feature
+(`doc-trace`/`doc-complete`) muss konfigurierbar sein, sonst bedient es nur die
+Repo-Familie, die d-checks internes Schema zufällig teilt — der Konsumenten-Befund
+(grid-gym 6/243) machte die Konventions-Bindung sichtbar. `file-pattern` mit
+Capture-Gruppe braucht einen `NumSubexp()`-Guard, sonst `m[1]`-Panic. Ein
+Default-„byte-identisch"-Test ist mutations-inert, wenn er alle Achsen auf ihre
+Defaults setzt — ein **Voll-Custom**-Test (jede Achse non-default) fängt einen
+weggebrochenen Override-Zweig (R1-MEDIUM).

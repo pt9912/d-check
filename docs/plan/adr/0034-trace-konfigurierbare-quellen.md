@@ -1,6 +1,6 @@
 # ADR-0034 — RTM-Quellen und Kennungs-Muster konfigurierbar (opt-in `trace`-Block)
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-11
 **Autor:** pt9912
 **Bezug:** [`DC-FA-CLI-009`](../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
@@ -151,3 +151,4 @@ Exit 2 mit erklärender Meldung, vor jedem Scan — dieselbe fail-closed-Politik
 | Datum | Ereignis |
 | --- | --- |
 | 2026-07-11 | Entwurf (slice-066, welle-55; Konsumenten-Befund grid-gym: `make doc-trace` sah 6 von 243 Anforderungen, weil nur die `GG-QA-*`-Familie zufällig d-checks `-QA-`-Default-Gestalt trifft und `NNN-…md`-Slices unerkannt bleiben). Opt-in `trace`-Block überschreibt die vier Konventions-Achsen (Anforderungs-Quelle + Kennungs-Regex; je Referenzklasse Verzeichnis + Basisnamen-Gestalt + Owner-Präfix); Default = heutige Konstante ⇒ byte-identisch; Design spiegelt `ids.patterns` (dediziert, nicht abgeleitet); fail-closed (Regex/Capture-Gruppe). Kehrt die Lastenheft-0.21.0-Out-of-Scope-Zeile um. Lastenheft-CR (v0.40.0), Release geplant. Status Proposed. |
+| 2026-07-11 | Angenommen mit der slice-066-Closure: `model.TraceConfig` + `configyaml.applyTrace` (Regex-/Capture-/Pfad-Guards, Exit 2) + `app.resolveTrace`/`BuildTraceMatrix(fsys, tc)`; `--print-config` führt einen kommentierten `trace`-Block. End-to-End gegen grid-gyms Realdaten verifiziert (6 → 243 Anforderungen). Impl-Review R1 ACCEPT-WITH-NITS (Voll-Custom-Test für alle 8 Achsen + `TestCLI053`-Verankerung eingearbeitet). `make gates` grün, Release v0.40.0. Status Accepted. |
