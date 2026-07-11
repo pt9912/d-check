@@ -104,3 +104,32 @@ Modal-Verben mit Defaults + opt-in, voller Slice.
   Handbuch-E2E müssen grün bleiben.
 - **Default-Keywords als Config-Rand:** die eingebaute Menge lebt im Kern (nicht
   in der Doku-`yaml`) — Doku-Beispiel + Kern-Default konsistent halten.
+
+## 6. Review-Nachtrag (Doc-first R1 + Impl R2)
+
+- **R1 Doc-first — NACHBESSERN → behoben** (inline eingearbeitet, keine separate
+  Report-Datei). MEDIUM-1: der Body-Span trägt rohen Markdown-Text; ein
+  umbrochenes/emphasiertes `**MUSS** NICHT` bzw. `MUSS\nNICHT` würde als `must`
+  fehlklassifiziert ⇒ **Whitespace-/Markup-Normalisierung** (`normalizeBody`)
+  ergänzt. MEDIUM-2: dasselbe Keyword in zwei Stufen ist nondeterministisch ⇒
+  **fail-closed Exit 2**. Dazu LOW/INFO: Aktivierung = **Schlüssel-Präsenz**
+  (nicht `len(levels)>0`), gatende Zahl in der `--require-complete`-Meldung, das
+  RE2-ASCII-`\b`-Caveat 1:1 im Vertrag, kanonische Defaults in der Spezifikation.
+- **R2 Impl — ACCEPT WITH NITS → behoben** (Report:
+  [`docs/reviews/2026-07-11-slice-068-trace-modality-impl-r2.md`](../../../reviews/2026-07-11-slice-068-trace-modality-impl-r2.md)).
+  MEDIUM M1: „leerer Stufen-Name ⇒ Exit 2" war ungetestet ⇒ Fall in
+  `TestCLI068_Modality_NegativeConfig` (mutations-verriegelt: nur der
+  `leerer Stufen-Name`-Guard löst Exit 2 aus). LOW L2: positive `unknown`-Gating-
+  Richtung (`require-levels: [must, unknown]`) ⇒ `TestCLI068_Modality_UnknownGating`.
+  INFO I1: ADR-0036-Default-Keyword-Beispiel mit der Impl synchronisiert
+  (`SHALL NOT`/`SOLLTEN NICHT`). I4: negativer Index-Panic im Test-`Fatalf`
+  entschärft. **Bewusst nicht behoben:** L1 (bare `modality:` YAML-null inaktiv —
+  im Handbuch/Template durchgängig `modality: {}` gezeigt), I2 (Quelle bei aktiver
+  Modalität zweimal read-only gelesen — kein Korrektheits-Impact), I3
+  (`normalizeBody` strippt `*`/Backtick, nicht `_` — spec-konsistent).
+
+Explizit sauber verifiziert (R2): Spec-Konformität, Klassifikator (längster/
+frühester Treffer, Wortgrenze `MUSS`≠`musste`, Markup-Normalisierung),
+Byte-Identität (`omitempty` json+yaml, `ModalityActive json:"-"`, 5-Spalten-
+Fallback), Fail-closed bis Exit 2 config-zeitig, Gating-Semantik (`GatingOrphans`
+= Waisen deren Stufe in `require-levels`), Hexagon-Grenzen (kein git/IO im Kern).
