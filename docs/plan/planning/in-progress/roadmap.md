@@ -10,21 +10,22 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**welle-56-trace-coverage-quellen** —
-[`slice-067`](slice-067-trace-coverage-quellen.md) ergänzt die RTM (`--trace`)
-um eine **dritte, opt-in Referenzklasse `trace.coverage`**: eine Liste benannter
-kuratierter Quellen (`files`+`label`+`ranges`+`sections`/`exclude-sections`), die
-eine ausgelagerte Traceability-Matrix **range-aware**
-(`GG-QA-001..006` ⇒ alle sechs) und **abschnitts-gescopt** als Coverage einlesen
+**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**welle-56-trace-coverage-quellen**
+([`slice-067`](../done/slice-067-trace-coverage-quellen.md) — die RTM (`--trace`)
+trägt nun eine **dritte, opt-in Referenzklasse `trace.coverage`**: eine Liste
+benannter kuratierter Quellen (`files`+`label`+`ranges`+`sections`/`exclude-sections`),
+die eine ausgelagerte Traceability-Matrix **range-aware**
+(`GG-QA-001..006` ⇒ alle sechs) und **abschnitts-gescopt** als Coverage einliest
 — eigene RTM-Spalte, Waise = ¬slice ∧ ¬coverage
 ([`DC-FA-COV-001`](../../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in),
-[ADR-0035](../../adr/0035-trace-coverage-quellen.md) Proposed). Default-aus
-byte-identisch. Anlass: grid-gyms 171 „Waisen" waren zu ≥122 anderswo belegt
-(ADR/traceability.md/Wellen). Doc-first-Fundament gelegt (Lastenheft-CR v0.41.0,
-Spezifikation und ADR); Implementierung + Review + Release v0.41.0 folgen.
-
-Zuletzt abgeschlossen:
-**welle-55-trace-konfigurierbare-quellen**
+[ADR-0035](../../adr/0035-trace-coverage-quellen.md) Accepted). Default-aus
+byte-identisch. Anlass: grid-gyms 171 „Waisen" waren zu ≥122 anderswo belegt;
+an den Realdaten sinken sie mit `trace.coverage` (Range + `exclude-sections`) von
+113 auf 10. Zwei Reviews (Doc-first R1 + Impl R2, ACCEPT-WITH-NITS, eingearbeitet),
+Lastenheft-CR, **Release v0.41.0** auf GHCR (Digest-Pin folgt bei Backfill),
+[Closure](../done/slice-067-trace-coverage-quellen.md)).
+Davor **welle-55-trace-konfigurierbare-quellen**
 ([`slice-066`](../done/slice-066-trace-konfigurierbare-quellen.md) — die
 Requirements Traceability Matrix (`--trace`,
 [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix))
