@@ -28,11 +28,11 @@
 # im Body.
 # ---------------------------------------------------------------------------
 
-ARG GO_VERSION=1.26.4
+ARG GO_VERSION=1.26.5
 ARG GOLANGCI_LINT_VERSION=v2.12.2
 
 # ---- deps ------------------------------------------------------------------
-FROM golang:${GO_VERSION}@sha256:792443b89f65105abba56b9bd5e97f680a80074ac62fc844a584212f8c8102c3 AS deps
+FROM golang:${GO_VERSION}@sha256:079e59808d2d252516e27e3f3a9c003740dee7f75e55aa71528766d52bcfc16a AS deps
 
 WORKDIR /src
 ENV GOFLAGS="-mod=readonly -buildvcs=false" \
