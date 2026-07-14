@@ -402,9 +402,14 @@ Refactor noch in keinem Release.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner —
-`slice-064` (welle-53-gate-consistency-tombstone) ist abgeschlossen
-(s. [§Aktuelle Welle](#aktuelle-welle)).
+**Offen (`open/`), noch nicht aktiv:**
+[`slice-070`](../open/slice-070-trace-tabellenquellen-nullmengen-guard.md) —
+Lastenheft-CR 0.43.0 für native, über Header-Namen konfigurierte
+Requirement-Tabellen (`trace.requirements.format: table`) und einen
+fail-closed Nullmengen-Guard bei expliziter Anforderungsquelle. Geplanter
+Kandidat für welle-59; Aufnahme erst nach Closure von `slice-069`.
+
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
 
 Die zuletzt offene Dimension B (E2E-Verankerung der Handbuch-Kommando-/
 Ausgabe-Beispiele) ist mit
