@@ -92,11 +92,10 @@ Tabellenmodus explizit auswählt.
   unpassende Regex brechen jeweils fail-closed.
 - [x] **Nutzerdoku:** Handbuch-Brownfield-Hinweis durch native Config ergänzt,
   Warnung auf Versionsgrenze aktualisiert sowie Changelog/Operations gepflegt.
-- [ ] **Release:** Versionsregister und Release-Prep für v0.43.0 pflegen; erst
-  nach Lifecycle-Aufnahme und Closure.
+- [x] **Release:** Versionsregister/Release-Prep, Tag und GHCR-Release v0.43.0
+  samt Digest-Backfill abgeschlossen (Release-Run 29340521688).
 - [x] **Qualität:** Self-Reviews liegen vor; `make gates` und `make ci` sind
-  grün. Für Closure bleiben unabhängiger Review, Release und Digest-Backfill
-  erforderlich.
+  grün. Für Closure bleibt ein personell unabhängiger Review erforderlich.
 
 ## 4. Risiken / offene Designpunkte
 
@@ -145,7 +144,15 @@ Read-only-Lauf des lokalen Runtime-Images gegen eine Kopie des
 Das Original-Repository wurde nicht verändert; der Container mountete nur die
 Kopie read-only und lief mit `--network none`.
 
+Das publizierte v0.43.0-Digest-Image wurde zusätzlich mit einer read-only
+Tabellen-Fixture smoke-verifiziert: zwei Anforderungen wurden aus den Spalten
+`Kennung | Prioritaet | Anforderung` erkannt und als `must` beziehungsweise
+`may` klassifiziert. Release-Run 29340521688 war grün; Digest-Pin:
+`ghcr.io/pt9912/d-check@sha256:2963f882c40a0b34d1fc03ba0e91feaf18423e55a35084bead1efa9d5500bd53`.
+
 ## 8. Closure-Notiz (nach `done/`)
 
-Offen bis Implementierung, Realdatenbeleg, unabhängiger Review, Gates, Release
-und Digest-Backfill abgeschlossen sind.
+Implementierung, Realdatenbeleg, Gates, Release v0.43.0 und Digest-Backfill sind
+abgeschlossen. Offen bleiben das personell unabhängige Review und danach der
+zweistufige Lifecycle-Move nach `done/`; bis dahin bleibt der Slice ehrlich in
+`in-progress/`.

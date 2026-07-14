@@ -19,7 +19,9 @@ Anforderungsquelle und aktiviert bei expliziter Quelle einen fail-closed
 Nullmengen-Guard. Heading-Default und unkonfigurierte Nullmenge bleiben
 byte-identisch; Lastenheft-CR 0.43.0 und
 [ADR-0037](../../adr/0037-trace-tabellenquellen-nullmengen-guard.md) bilden den
-Vertrag.
+Vertrag. **Release v0.43.0** ist über Release-Run 29340521688 publiziert;
+Digest-Pin
+`ghcr.io/pt9912/d-check@sha256:2963f882c40a0b34d1fc03ba0e91feaf18423e55a35084bead1efa9d5500bd53`.
 
 **Vorgänger-Trigger:** welle-58-trace-handbuch-parsergrenzen ist nach
 ACCEPT-Folgereview abgeschlossen; kein anderer Slice liegt in `in-progress/`.
@@ -28,8 +30,9 @@ ACCEPT-Folgereview abgeschlossen; kein anderer Slice liegt in `in-progress/`.
 Anforderungen ergaben mit v0.42.0 trotz expliziter Quelle `total: 0` und Exit 0.
 
 **Closure-Trigger:** Tabellen-Happy-Path und Fehlpfade sind gegen Unit-, CLI-
-und Realdatenbelege verriegelt; `make ci` ist grün, v0.43.0 ist veröffentlicht
-und der Digest-Backfill dokumentiert.
+und Realdatenbelege verriegelt; `make ci` ist grün, v0.43.0 ist veröffentlicht,
+der Digest-Backfill dokumentiert und ein personell unabhängiges Review liegt
+vor.
 
 Zuletzt abgeschlossen:
 **welle-58-trace-handbuch-parsergrenzen**
