@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.43.0] — 2026-07-14
+
 ### Added
 
 - [`slice-070`](docs/plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md)
