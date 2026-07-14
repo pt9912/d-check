@@ -10,30 +10,18 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Welle-ID:** welle-58-trace-handbuch-parsergrenzen
-
-**Slice:**
-[`slice-069`](slice-069-trace-handbuch-parsergrenzen.md) — das
-Benutzerhandbuch dokumentiert die feste Heading-Grammatik von `--trace`, die
-Body-Grenze der Modalitätsklassifikation, die Waisen-/Referenzscan-Semantik
-und die in v0.42.0 fail-open behandelte Nullmenge; tabellenbasierte
-Brownfield-Repos erhalten einen sicheren Migrationsweg. Kein Lastenheft-CR,
-kein ADR und kein Produkt-/Release-Delta.
-
-**Vorgänger-Trigger:** welle-57-trace-modality-klassifikation ist
-abgeschlossen; kein anderer Slice liegt in `in-progress/`.
-
-**Trigger:** reproduzierter Konsumentenbefund in `m-trace`: 371 Anforderungen
-in Tabellenzeilen ergeben trotz expliziter Trace-Quelle und passender ID-Regex
-`0 Anforderungen, 0 Waisen` bei Exit 0.
-
-**Closure-Trigger:** Handbuch nennt Definitionssyntax, Nullmengenwarnung,
-Brownfield-Migration sowie Modalitäts-, Waisen- und Referenzscan-Semantik;
-die Handbuch-Verifikation verriegelt die Kernhinweise; `make gates` ist grün
-und der Slice trägt Closure- und Lerneintrag.
-
-Zuletzt abgeschlossen:
-**welle-57-trace-modality-klassifikation**
+**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**welle-58-trace-handbuch-parsergrenzen**
+([`slice-069`](../done/slice-069-trace-handbuch-parsergrenzen.md) — das
+Benutzerhandbuch dokumentiert für v0.42.0 die feste Heading-Grammatik von
+`--trace`, die Body-Grenze der Modalitätsklassifikation, die exakte Waisen- und
+Referenzscan-Semantik sowie die fail-open behandelte Nullmenge. Tabellenbasierte
+Brownfield-Repos erhalten zwei sichere Migrationswege. Das Replay-Harness
+verriegelt die Nullmengen-Grenze; Review R1 (NACHBESSERN, alle drei Befunde
+eingearbeitet) und R2 (ACCEPT) sind abgeschlossen, `make gates` ist grün. Kein
+Lastenheft-CR, kein ADR und kein Produkt-/Release-Delta,
+[Closure](../done/slice-069-trace-handbuch-parsergrenzen.md#7-closure-notiz-nach-done)).
+Davor **welle-57-trace-modality-klassifikation**
 ([`slice-068`](../done/slice-068-trace-modality-klassifikation.md) — die RTM
 (`--trace`) trägt nun eine opt-in **Modalitäts-Klassifikation**
 `trace.requirements.modality`: **konfigurierbare** Modal-Verb-Keywords (Built-in
