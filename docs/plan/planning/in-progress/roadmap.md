@@ -10,7 +10,26 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**Welle-ID:** welle-59-trace-tabellenquellen
+
+**Slice:**
+[`slice-070`](slice-070-trace-tabellenquellen-nullmengen-guard.md) ergänzt
+`--trace` um native, über Header-Namen konfigurierte Markdown-Pipe-Tabellen als
+Anforderungsquelle und aktiviert bei expliziter Quelle einen fail-closed
+Nullmengen-Guard. Heading-Default und unkonfigurierte Nullmenge bleiben
+byte-identisch; Lastenheft-CR 0.43.0 und ADR-0037 bilden den Vertrag.
+
+**Vorgänger-Trigger:** welle-58-trace-handbuch-parsergrenzen ist nach
+ACCEPT-Folgereview abgeschlossen; kein anderer Slice liegt in `in-progress/`.
+
+**Trigger:** reproduzierter Konsumentenbefund in `m-trace`: 371 tabellarische
+Anforderungen ergaben mit v0.42.0 trotz expliziter Quelle `total: 0` und Exit 0.
+
+**Closure-Trigger:** Tabellen-Happy-Path und Fehlpfade sind gegen Unit-, CLI-
+und Realdatenbelege verriegelt; `make ci` ist grün, v0.43.0 ist veröffentlicht
+und der Digest-Backfill dokumentiert.
+
+Zuletzt abgeschlossen:
 **welle-58-trace-handbuch-parsergrenzen**
 ([`slice-069`](../done/slice-069-trace-handbuch-parsergrenzen.md) — das
 Benutzerhandbuch dokumentiert für v0.42.0 die feste Heading-Grammatik von
@@ -402,12 +421,7 @@ Refactor noch in keinem Release.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:**
-[`slice-070`](../next/slice-070-trace-tabellenquellen-nullmengen-guard.md) —
-Lastenheft-CR 0.43.0 für native, über Header-Namen konfigurierte
-Requirement-Tabellen (`trace.requirements.format: table`) und einen
-fail-closed Nullmengen-Guard bei expliziter Anforderungsquelle; Kandidat für
-welle-59, Vorgänger `slice-069` ist abgeschlossen.
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
 
 Die zuletzt offene Dimension B (E2E-Verankerung der Handbuch-Kommando-/
 Ausgabe-Beispiele) ist mit
