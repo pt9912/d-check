@@ -402,14 +402,12 @@ Refactor noch in keinem Release.
 
 ## Nächste Wellen
 
-**Offen (`open/`), noch nicht aktiv:**
-[`slice-070`](../open/slice-070-trace-tabellenquellen-nullmengen-guard.md) —
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:**
+[`slice-070`](../next/slice-070-trace-tabellenquellen-nullmengen-guard.md) —
 Lastenheft-CR 0.43.0 für native, über Header-Namen konfigurierte
 Requirement-Tabellen (`trace.requirements.format: table`) und einen
-fail-closed Nullmengen-Guard bei expliziter Anforderungsquelle. Geplanter
-Kandidat für welle-59; Aufnahme erst nach Closure von `slice-069`.
-
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
+fail-closed Nullmengen-Guard bei expliziter Anforderungsquelle; Kandidat für
+welle-59, Vorgänger `slice-069` ist abgeschlossen.
 
 Die zuletzt offene Dimension B (E2E-Verankerung der Handbuch-Kommando-/
 Ausgabe-Beispiele) ist mit
