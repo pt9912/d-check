@@ -17,7 +17,9 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 `--trace` um native, über Header-Namen konfigurierte Markdown-Pipe-Tabellen als
 Anforderungsquelle und aktiviert bei expliziter Quelle einen fail-closed
 Nullmengen-Guard. Heading-Default und unkonfigurierte Nullmenge bleiben
-byte-identisch; Lastenheft-CR 0.43.0 und ADR-0037 bilden den Vertrag.
+byte-identisch; Lastenheft-CR 0.43.0 und
+[ADR-0037](../../adr/0037-trace-tabellenquellen-nullmengen-guard.md) bilden den
+Vertrag.
 
 **Vorgänger-Trigger:** welle-58-trace-handbuch-parsergrenzen ist nach
 ACCEPT-Folgereview abgeschlossen; kein anderer Slice liegt in `in-progress/`.

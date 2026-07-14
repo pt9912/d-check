@@ -6,6 +6,26 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- [`slice-070`](docs/plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md)
+  ergänzt für `--trace` native Markdown-Pipe-Tabellen als Anforderungsquelle
+  ([`DC-FA-REQ-001`](spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen),
+  [ADR-0037](docs/plan/adr/0037-trace-tabellenquellen-nullmengen-guard.md)).
+  `trace.requirements.format: table` bindet ID-, einen oder mehrere alternative
+  Text-Header und eine optionale Modalitätsspalte über exakte Namen;
+  `duplicate-ids` bietet die expliziten Brownfield-Politiken `first`/`last`
+  neben dem sicheren Default `error`. Escaped Pipes und Pipes in einzeiligen
+  Code-Spans bleiben Teil der Zelle.
+
+### Changed
+
+- Eine nichtleer explizite `trace.requirements.source` oder der Tabellenmodus
+  bricht bei fehlender Quelle beziehungsweise null erkannten Anforderungen nun
+  mit Exit 2 ab. `source: ""` und der unkonfigurierte Heading-Default behalten
+  das bisherige Verhalten byte-identisch; mehrdeutige Tabellen-Header,
+  fehlerhafte Zeilenbreiten und doppelte IDs werden fail-closed abgewiesen.
+
 ### Fixed
 
 - [`slice-069`](docs/plan/planning/done/slice-069-trace-handbuch-parsergrenzen.md)

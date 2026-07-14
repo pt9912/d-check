@@ -1,10 +1,10 @@
 # Slice slice-070: Trace-Tabellenquellen und Nullmengen-Guard
 
-**Status:** open (Kandidat für welle-59-trace-tabellenquellen).
+**Status:** in-progress (welle-59-trace-tabellenquellen).
 
-**Welle:** noch nicht aktiv; Vorgänger
+**Welle:** aktiv; Vorgänger
 [`slice-069`](../done/slice-069-trace-handbuch-parsergrenzen.md) ist
-abgeschlossen, Aufnahme in welle-59 steht an.
+abgeschlossen.
 
 **Bezug:** neuer Lastenheft-Change-Request
 [`DC-FA-REQ-001`](../../../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)
@@ -95,8 +95,8 @@ Tabellenmodus explizit auswählt.
 - [ ] **Release:** Versionsregister und Release-Prep für v0.43.0 pflegen; erst
   nach Lifecycle-Aufnahme und Closure.
 - [x] **Qualität:** Self-Reviews liegen vor; `make gates` und `make ci` sind
-  grün. Für Closure bleiben unabhängiger Review, Lifecycle-Move und Release mit
-  Digest-Backfill erforderlich.
+  grün. Für Closure bleiben unabhängiger Review, Release und Digest-Backfill
+  erforderlich.
 
 ## 4. Risiken / offene Designpunkte
 

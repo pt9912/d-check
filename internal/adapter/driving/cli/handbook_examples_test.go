@@ -82,15 +82,15 @@ const notConfigMarker = "d-check-test:not-config"
 
 // handbookExample verankert genau ein dokumentiertes Kommando-Beispiel.
 type handbookExample struct {
-	name       string                        // Label für Meldungen
-	outputInfo string                        // Fence-Typ des Ausgabeblocks: text|json|yaml
-	outputDisc string                        // Diskriminator: eindeutiger Teilstring GENAU des Ausgabeblocks (skoped auf outputInfo)
-	flags      []string                      // Flags, mit denen das echte Binary läuft (der Pfad wird angehängt)
-	wantFlags  []string                      // Flag-Token, die in IRGENDEINEM ```bash-Block dokumentiert sein müssen (Aufruf-Kopplung)
-	wantExit   int                           // erwarteter Exit-Code
+	name       string                          // Label für Meldungen
+	outputInfo string                          // Fence-Typ des Ausgabeblocks: text|json|yaml
+	outputDisc string                          // Diskriminator: eindeutiger Teilstring GENAU des Ausgabeblocks (skoped auf outputInfo)
+	flags      []string                        // Flags, mit denen das echte Binary läuft (der Pfad wird angehängt)
+	wantFlags  []string                        // Flag-Token, die in IRGENDEINEM ```bash-Block dokumentiert sein müssen (Aufruf-Kopplung)
+	wantExit   int                             // erwarteter Exit-Code
 	fixture    func(t *testing.T, root string) // stellt die Prämisse her
-	formTokens []string                      // Form-Anker: müssen in BEIDEM stehen — Doku-Block UND echter (stdout+stderr)-Ausgabe
-	structured bool                          // zusätzlich: dokumentierte Schlüssel-Menge ⊆ echte (json/yaml)
+	formTokens []string                        // Form-Anker: müssen in BEIDEM stehen — Doku-Block UND echter (stdout+stderr)-Ausgabe
+	structured bool                            // zusätzlich: dokumentierte Schlüssel-Menge ⊆ echte (json/yaml)
 }
 
 func handbookExamples() []handbookExample {
@@ -152,14 +152,14 @@ func handbookExamples() []handbookExample {
 			formTokens: []string{"# Requirements Traceability Matrix", "| Anforderung", "Anforderung(en),", "Waise(n)."},
 		},
 		{
-			name:       "§4.12 --trace --require-complete (tabellarische Quelle bleibt leer)",
+			name:       "§4.12 --trace --require-complete (explizite Quelle bleibt leer)",
 			outputInfo: "text",
-			outputDisc: "0 Anforderung(en), 0 Waise(n).",
+			outputDisc: "ergab 0 Anforderungen",
 			flags:      []string{"--trace", "--require-complete"},
 			wantFlags:  []string{"--trace", "--require-complete"},
-			wantExit:   0,
+			wantExit:   2,
 			fixture:    tableOnlyRequirements,
-			formTokens: []string{"0 Anforderung(en), 0 Waise(n)."},
+			formTokens: []string{"d-check: error:", "ergab 0 Anforderungen"},
 		},
 		{
 			name:       "§4.11 --json (Befundliste)",
@@ -196,8 +196,8 @@ func handbookExamples() []handbookExample {
 
 // TestHandbook_TraceParsergrenzenDokumentiert koppelt die nicht aus der
 // Konfiguration ableitbaren Parsergrenzen an die Nutzer-Doku. Die eigentliche
-// Verhaltensprobe (tabellarische Quelle + --require-complete => leere RTM,
-// Exit 0) ist als achtes Replay-Beispiel oben verankert; diese Marker verhindern,
+// Verhaltensprobe (explizite Quelle + falsches Format + --require-complete =>
+// Exit 2) ist als achtes Replay-Beispiel oben verankert; diese Marker verhindern,
 // dass Warnung, Definitionsgrammatik oder Waisen-/Owner-Semantik unabhängig
 // davon still aus dem Handbuch verschwinden (slice-069).
 func TestHandbook_TraceParsergrenzenDokumentiert(t *testing.T) {
@@ -216,7 +216,8 @@ func TestHandbook_TraceParsergrenzenDokumentiert(t *testing.T) {
 		"gaten nur Waisen der in `require-levels` gelisteten Stufen",
 		"Basisdateinamen",
 		"Capture-Gruppe 1 zusammen mit",
-		"native, konfigurierbare Tabellenspalten",
+		"`table.id-column`, genau eine von `table.text-column` oder `table.text-columns`",
+		"`duplicate-ids: error`",
 	} {
 		if !strings.Contains(text, want) {
 			t.Errorf("Trace-Parsergrenze %q fehlt im Benutzerhandbuch", want)

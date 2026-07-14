@@ -75,6 +75,9 @@ const (
 type resolvedTrace struct {
 	source      string
 	reqPat      *regexp.Regexp
+	format      string
+	table       *model.TraceTableConfig
+	strictReqs  bool
 	adrDir      string
 	adrFile     *regexp.Regexp
 	adrPrefix   string
@@ -91,15 +94,24 @@ type resolvedTrace struct {
 func resolveTrace(tc model.TraceConfig) resolvedTrace {
 	rt := resolvedTrace{
 		source: traceReqSource, reqPat: reqIDFull,
+		format: model.TraceFormatHeadings,
 		adrDir: traceADRDir, adrFile: adrFileShape, adrPrefix: "ADR-",
 		sliceDir: traceSliceDir, sliceFile: sliceFileShape, slicePrefix: tc.SlicePrefix,
 		coverage: tc.Coverage,
 	}
 	if tc.Source != "" {
 		rt.source = tc.Source
+		rt.strictReqs = true
 	}
 	if tc.ReqPattern != nil {
 		rt.reqPat = tc.ReqPattern
+	}
+	if tc.Format != "" {
+		rt.format = tc.Format
+	}
+	rt.table = tc.Table
+	if rt.format == model.TraceFormatTable {
+		rt.strictReqs = true
 	}
 	if tc.ADRDir != "" {
 		rt.adrDir = tc.ADRDir
@@ -125,7 +137,7 @@ func resolveTrace(tc model.TraceConfig) resolvedTrace {
 // Konventions-Default ⇒ byte-identisch (DC-QA-02). Reiner Lese-Pfad (DC-QA-03).
 func BuildTraceMatrix(fsys driven.Filesystem, tc model.TraceConfig) (TraceMatrix, error) {
 	rt := resolveTrace(tc)
-	titles, order, err := traceRequirements(fsys, rt.source, rt.reqPat)
+	titles, order, tableModality, err := loadTraceRequirements(fsys, rt)
 	if err != nil {
 		return TraceMatrix{}, err
 	}
@@ -146,13 +158,9 @@ func BuildTraceMatrix(fsys driven.Filesystem, tc model.TraceConfig) (TraceMatrix
 		CoverageActive: len(rt.coverage) > 0,
 		ModalityActive: tc.Modality != nil,
 	}
-	var mm modalityMatcher
-	var modByID map[string]string
-	if m.ModalityActive {
-		mm = resolveModality(tc.Modality)
-		if modByID, err = requirementModality(fsys, rt.source, rt.reqPat, mm); err != nil {
-			return TraceMatrix{}, err
-		}
+	mm, modByID, err := traceModalities(fsys, tc.Modality, rt, tableModality)
+	if err != nil {
+		return TraceMatrix{}, err
 	}
 	for _, id := range order {
 		row := traceRow(id, titles, adrRefs, sliceRefs, covRefs, modByID, m.ModalityActive)
@@ -169,6 +177,38 @@ func BuildTraceMatrix(fsys driven.Filesystem, tc model.TraceConfig) (TraceMatrix
 	}
 	m.Total = len(m.Requirements)
 	return m, nil
+}
+
+func loadTraceRequirements(fsys driven.Filesystem, rt resolvedTrace) (map[string]string, []string, map[string]string, error) {
+	if rt.format != model.TraceFormatHeadings && rt.format != model.TraceFormatTable {
+		return nil, nil, nil, fmt.Errorf("trace.requirements: unbekanntes Format %q", rt.format)
+	}
+	if rt.format == model.TraceFormatTable && rt.table == nil {
+		return nil, nil, nil, fmt.Errorf("trace.requirements: Format table braucht eine Tabellenkonfiguration")
+	}
+	if rt.strictReqs && !pathExists(fsys, rt.source) {
+		return nil, nil, nil, fmt.Errorf("trace.requirements: Quelle %q fehlt (Format %s)", rt.source, rt.format)
+	}
+	titles, order, tableModality, err := traceRequirements(fsys, rt)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	if rt.strictReqs && len(order) == 0 {
+		return nil, nil, nil, fmt.Errorf("trace.requirements: Quelle %q im Format %s ergab 0 Anforderungen", rt.source, rt.format)
+	}
+	return titles, order, tableModality, nil
+}
+
+func traceModalities(fsys driven.Filesystem, cfg *model.TraceModality, rt resolvedTrace, tableTexts map[string]string) (modalityMatcher, map[string]string, error) {
+	if cfg == nil {
+		return modalityMatcher{}, nil, nil
+	}
+	matcher := resolveModality(cfg)
+	if rt.format == model.TraceFormatTable {
+		return matcher, classifyRequirementTexts(tableTexts, matcher), nil
+	}
+	modalities, err := requirementModality(fsys, rt.source, rt.reqPat, matcher)
+	return matcher, modalities, err
 }
 
 // traceRow baut eine RTM-Zeile aus den Referenz-Maps und bestimmt die
@@ -191,10 +231,20 @@ func traceRow(id string, titles map[string]string, adrRefs, sliceRefs, covRefs m
 	return row
 }
 
-// traceRequirements sammelt die im Anforderungs-Quelldokument (source)
-// definierten Anforderungen (Heading mit führender Anforderungs-Kennung nach
-// reqPat) als ID→Titel plus die byteweise sortierte Reihenfolge.
-func traceRequirements(fsys driven.Filesystem, source string, reqPat *regexp.Regexp) (map[string]string, []string, error) {
+// traceRequirements wählt den konfigurierten Extraktor und liefert Titel,
+// sortierte Kennungen und (nur für table) den Modalitäts-Eingabetext.
+func traceRequirements(fsys driven.Filesystem, rt resolvedTrace) (map[string]string, []string, map[string]string, error) {
+	if rt.format == model.TraceFormatTable {
+		return traceTableRequirements(fsys, rt.source, rt.reqPat, rt.table)
+	}
+	titles, order, err := traceHeadingRequirements(fsys, rt.source, rt.reqPat, rt.strictReqs)
+	return titles, order, nil, err
+}
+
+// traceHeadingRequirements sammelt führende Heading-Kennungen. Im Strict-
+// Modus ist eine doppelte ID ein Quelldatenfehler; im Default gewinnt wie
+// bisher der erste Treffer (byte-identisch, DC-QA-02).
+func traceHeadingRequirements(fsys driven.Filesystem, source string, reqPat *regexp.Regexp, strict bool) (map[string]string, []string, error) {
 	if !pathExists(fsys, source) {
 		return map[string]string{}, nil, nil
 	}
@@ -213,9 +263,13 @@ func traceRequirements(fsys driven.Filesystem, source string, reqPat *regexp.Reg
 		if !isFullReqID(reqPat, tok) {
 			continue
 		}
-		if _, seen := titles[tok]; !seen {
-			titles[tok] = traceTitle(plain, tok)
+		if _, seen := titles[tok]; seen {
+			if strict {
+				return nil, nil, fmt.Errorf("trace.requirements: doppelte Anforderungs-ID %q in Quelle %q", tok, source)
+			}
+			continue
 		}
+		titles[tok] = traceTitle(plain, tok)
 	}
 	order := make([]string, 0, len(titles))
 	for id := range titles {
@@ -223,6 +277,16 @@ func traceRequirements(fsys driven.Filesystem, source string, reqPat *regexp.Reg
 	}
 	sort.Strings(order)
 	return titles, order, nil
+}
+
+// classifyRequirementTexts wendet denselben Modalitätsmatcher auf die vom
+// Tabellenextraktor gelieferte Spalte an (DC-FA-REQ-001/DC-FA-MOD-001).
+func classifyRequirementTexts(texts map[string]string, mm modalityMatcher) map[string]string {
+	res := make(map[string]string, len(texts))
+	for id, body := range texts {
+		res[id] = mm.classify(body)
+	}
+	return res
 }
 
 // isFullReqID prüft, ob tok GANZ eine Anforderungs-Kennung nach reqPat ist
@@ -439,7 +503,7 @@ func expandRange(id, rest string, reqPat *regexp.Regexp) ([]string, error) {
 	return nil, nil
 }
 
-// mdEmphasis matcht Markdown-Emphasis-Zeichen (`*`/`` ` ``) für die
+// mdEmphasis matcht Markdown-Emphasis-Zeichen (Sternchen/Backtick) für die
 // Body-Normalisierung der Modalitäts-Klassifikation (DC-FA-MOD-001).
 var mdEmphasis = regexp.MustCompile("[*`]+")
 

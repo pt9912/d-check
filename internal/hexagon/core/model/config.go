@@ -341,9 +341,10 @@ type TargetsConfig struct {
 }
 
 // TraceConfig sind die konfigurierbaren Quellen der Requirements Traceability
-// Matrix (DC-FA-CLI-009): Source ist die Anforderungs-Quelldatei; ReqPattern
-// erkennt eine Anforderungs-Kennung (Ganz-Token im Heading UND als Referenz in
-// ADR/Slice-Dateien); ADRDir/SliceDir sind die Referenz-Verzeichnisse;
+// Matrix (DC-FA-CLI-009/DC-FA-REQ-001): Source ist die Anforderungs-Quelldatei;
+// Format/Table wählen Heading- oder Tabellenextraktion; ReqPattern erkennt eine
+// Anforderungs-Kennung (Ganz-Token/-Zelle UND als Referenz in ADR/Slice-Dateien);
+// ADRDir/SliceDir sind die Referenz-Verzeichnisse;
 // ADRFile/SliceFile leiten je Datei die Owner-Kennung über den Basisnamen ab
 // (Capture-Gruppe 1), ADRPrefix/SlicePrefix werden ihr vorangestellt. Reiner
 // Daten-Struct: der **Nullwert** (alle Felder leer/nil) bedeutet „Konventions-
@@ -353,6 +354,8 @@ type TargetsConfig struct {
 type TraceConfig struct {
 	Source      string
 	ReqPattern  *regexp.Regexp
+	Format      string
+	Table       *TraceTableConfig
 	ADRDir      string
 	ADRFile     *regexp.Regexp
 	ADRPrefix   string
@@ -366,6 +369,31 @@ type TraceConfig struct {
 	// (byte-identisch). Präsenz (auch leere Map `modality: {}`) ⇒ aktiv, dann
 	// greifen die Default-Keywords.
 	Modality *TraceModality
+}
+
+const (
+	// TraceFormatHeadings ist die bestehende ATX-Heading-Grammatik und der
+	// Default bei leerem Format (byte-identisch, DC-QA-02).
+	TraceFormatHeadings = "headings"
+	// TraceFormatTable aktiviert Markdown-Pipe-Tabellen (DC-FA-REQ-001).
+	TraceFormatTable = "table"
+	// TraceDuplicateError ist die sichere Default-Politik für doppelte
+	// Tabellen-IDs; First/Last sind explizite Brownfield-Overrides.
+	TraceDuplicateError = "error"
+	// TraceDuplicateFirst behält bei Mehrfachdefinitionen die erste Zeile.
+	TraceDuplicateFirst = "first"
+	// TraceDuplicateLast behält bei Mehrfachdefinitionen die letzte Zeile.
+	TraceDuplicateLast = "last"
+)
+
+// TraceTableConfig bindet die Rollen einer Requirement-Tabelle an exakte
+// Header-Namen. TextColumns enthält mindestens einen alternativen Header;
+// ModalityColumn ist optional. DuplicateIDs ist error, first oder last.
+type TraceTableConfig struct {
+	IDColumn       string
+	TextColumns    []string
+	ModalityColumn string
+	DuplicateIDs   string
 }
 
 // TraceModality sind die Parameter der Modalitäts-Klassifikation (DC-FA-MOD-001):

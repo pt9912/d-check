@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.26 · **Software-Version:** [v0.42.0](../../version.md#v0.42.0) ·
-**Stand:** 2026-07-04 · **Autor:** pt9912
+**Handbuch-Version:** 1.27 · **Software-Version:** [v0.42.0](../../version.md#v0.42.0) ·
+**Stand:** 2026-07-14 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -580,8 +580,8 @@ verhindert den Waisenstatus nicht.
 **Voraussetzung:** ein Repo nach Harness-Konvention (Anforderungen im
 Lastenheft, ADRs unter `docs/plan/adr/`, Slices unter `docs/plan/planning/`).
 
-**Unterstützte Definitionssyntax:** `--trace` erkennt eine Anforderung nur aus
-einer ATX-Markdown-Überschrift (`#` bis `######`, außerhalb von
+**Unterstützte Definitionssyntax:** Standardmäßig erkennt `--trace` eine
+Anforderung aus einer ATX-Markdown-Überschrift (`#` bis `######`, außerhalb von
 Fenced-Code-Blöcken). Die ID muss das **erste vollständige Token** der
 Überschrift sein und als Ganzes auf `trace.requirements.id-pattern` passen:
 
@@ -591,16 +591,44 @@ Fenced-Code-Blöcken). Die ID muss das **erste vollständige Token** der
 Das Repository MUSS alle Hauptbestandteile enthalten.
 ```
 
-Tabellenzeilen, Listen, Fließtext und Setext-Überschriften gelten nicht als
-Anforderungsdefinition. Eine angepasste ID-Regex ändert nur die zulässige
-Kennungsgestalt, **nicht** diese Dokumentgrammatik. Beispielsweise definiert
-dieser verbreitete Brownfield-Bestand für `--trace` keine Anforderung:
+Im Defaultformat `headings` gelten Tabellenzeilen, Listen, Fließtext und
+Setext-Überschriften nicht als Anforderungsdefinition. Eine angepasste ID-Regex
+ändert nur die zulässige Kennungsgestalt, **nicht** diese Dokumentgrammatik.
+Beispielsweise definiert dieser verbreitete Brownfield-Bestand ohne weitere
+Formatkonfiguration keine Anforderung:
 
 ```markdown
 | ID  | Modalität | Anforderung                                      |
 | --- | ---------- | ------------------------------------------------ |
 | F-1 | Muss       | Das Repository enthält alle Hauptbestandteile. |
 ```
+
+Ab v0.43.0 liest `trace.requirements.format: table` solche Markdown-Pipe-
+Tabellen nativ. Die Spalten werden über ihre exakten Header-Namen gebunden:
+
+```yaml
+trace:
+  requirements:
+    source: spec/lastenheft.md
+    id-pattern: 'F-[0-9]+'
+    format: table
+    table:
+      id-column: ID
+      text-column: Anforderung
+      modality-column: Modalität   # optional; sonst wird die Textspalte klassifiziert
+      duplicate-ids: error         # Default; alternativ first oder last
+    modality: {}                     # optional: MUSS/SOLLTE/KANN sichtbar machen
+```
+
+`table.id-column` und genau eine von `table.text-column` oder
+`table.text-columns` sind Pflicht; jeder darin deklarierte alternative Header
+muss mindestens einmal in der Quelle vorkommen.
+`table.modality-column` ist optional. Die ID-Zelle muss als Ganzes auf
+`id-pattern` passen. Header fehlen/doppelt, eine doppelte erkannte ID unter der
+Default-Politik `duplicate-ids: error` oder eine fehlerhafte
+Tabellenzeilenbreite ergeben Exit 2. Für historische Mehrfachdefinitionen sind
+`first` und `last` explizite, deterministische Overrides. Escaped Pipes (`\|`) und Pipes
+in einzeiligen Backtick-Code-Spans bleiben Teil derselben Zelle.
 
 **Vorgehen:**
 
@@ -635,25 +663,26 @@ Eine ADR-Referenz allein verhindert den Waisenstatus nicht:
 eine so gatende Waise ergibt Exit 1 (die Matrix bleibt unverändert auf stdout).
 Ohne `--trace` ist `--require-complete` ein Nutzungsfehler (Exit 2).
 
-> **Achtung: Eine leere RTM ist in v0.42.0 kein Konfigurationsfehler.** Eine
-> fehlende `requirements.source`-Datei, eine nicht unterstützte
-> Definitionsform (insbesondere Tabellen) oder null Treffer der ID-Regex
-> ergeben derzeit eine leere Matrix. Auch `--trace --require-complete` endet
-> dann mit Exit 0, weil keine erkannte Anforderung als Waise gelten kann:
+> **Versionsgrenze:** Bis v0.42.0 war eine leere RTM kein
+> Konfigurationsfehler. Ab v0.43.0 gilt: Ist `requirements.source` mit einem
+> nichtleeren Wert explizit konfiguriert oder `format: table` aktiv und werden
+> null Anforderungen erkannt, endet `--trace` ebenso wie
+> `--trace --require-complete` fail-closed mit Exit 2:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 --trace --require-complete
+# DCHECK_IMAGE auf v0.43.0 oder neuer pinnen.
+docker run --rm -v "$PWD:/repo:ro" "$DCHECK_IMAGE" --trace --require-complete
 ```
 
 ```text
-0 Anforderung(en), 0 Waise(n).
+d-check: error: trace.requirements: Quelle "spec/lastenheft.md" im Format headings ergab 0 Anforderungen
 ```
 
-Dieser Exit 0 ist nur für einen **erwartet leeren** Bestand ein belastbares
-Ergebnis. Bevor `--require-complete` als Gate gebunden wird, muss die erkannte
-Gesamtzahl gegen die erwartete Zahl der Anforderungen plausibilisiert werden;
-bei `total: 0` bzw. der obigen Summenzeile darf ein nichtleeres Lastenheft nicht
-grün freigegeben werden.
+`source: ""` gilt weiterhin wie ein abwesender Wert und fällt auf die
+Defaultquelle zurück. Ohne explizite Quelle und im Defaultformat bleibt ein
+erwartet leerer Bestand kompatibel: leere Matrix, Exit 0. Für eine zusätzliche
+Bestandsinvariante kann ein Konsument die erkannte Gesamtzahl weiterhin gegen
+seine erwartete Zahl plausibilisieren.
 
 **Andere Repo-Konvention (`trace`-Block).** Standardmäßig erkennt `--trace`
 Anforderungen der Gestalt `<PREFIX>-FA-…`/`-QA-…` und Slice-Dateien
@@ -669,9 +698,9 @@ trace:
     file-pattern: '^(\d+)-.*\.md$'          # z. B. Slices NNN-titel.md
 ```
 
-Damit lassen sich Quellpfad, Kennungsgestalt und ADR-/Slice-Dateinamen an eine
-andere Repo-Konvention anpassen (Details und alle Felder in §5). Die oben
-beschriebene Heading-basierte Definitionssyntax bleibt dabei unverändert. Ein
+Damit lassen sich Quellpfad, Kennungsgestalt, Definitionsformat und ADR-/Slice-
+Dateinamen an eine andere Repo-Konvention anpassen (Details und alle Felder in
+§5). Ohne `format: table` bleibt die oben beschriebene Heading-Syntax aktiv. Ein
 Muster ohne Capture-Gruppe in `file-pattern` ist ein Konfigurationsfehler
 (Exit 2).
 
@@ -720,8 +749,10 @@ Built-in-Defaults. Klassifiziert wird über den ersten Modal-Verb-Treffer im
 Body **unterhalb der erkannten Requirement-Überschrift bis zur nächsten gleich-
 oder höherrangigen Überschrift** (längster Treffer zuerst: `MUSS NICHT`=may vor
 `MUSS`=must, `DARF NICHT`=must; Body wird whitespace-/emphasis-normalisiert).
-Die Requirement-Überschrift selbst und eine Tabellenspalte wie `Muss` werden
-nicht ausgewertet. Ohne Treffer ⇒ Stufe `unknown` (sichtbar, advisory bei
+Die Requirement-Überschrift selbst wird nicht ausgewertet. Im Tabellenformat
+liefert eine konfigurierte `table.modality-column` stattdessen ausschließlich
+deren Zelleninhalt; ohne diese Spalte wird die jeweils gebundene Textspalte klassifiziert.
+Ohne Treffer ⇒ Stufe `unknown` (sichtbar, advisory bei
 Default). **Wichtig:** ein `unknown` unter `require-levels: [must]` gatet
 **nicht** — ein echtes MUSS mit unaufgeführtem Verb entkäme so dem Gate;
 Gegenmittel: die Spalte prüfen und ggf. `levels` ergänzen oder strikt
@@ -729,8 +760,27 @@ Gegenmittel: die Spalte prüfen und ggf. `levels` ergänzen oder strikt
 gleiches Keyword in zwei Stufen, `unknown` als Stufen-Name, ungültiges
 `require-levels`. Ohne `modality` byte-identisch (keine Spalte). Details in §5.
 
-**Tabellenbasiertes Lastenheft migrieren.** Für einen Brownfield-Bestand gibt
-es in v0.42.0 zwei sichere Wege:
+**Tabellenbasiertes Lastenheft migrieren.** Ab v0.43.0 ist die native
+Tabellenquelle der direkte Weg: `format: table` setzen und die vorhandenen
+ID-/Text-/Modalitätsheader wie oben binden. Verwendet ein Lastenheft mehrere
+Text-Header für dieselbe Rolle, werden sie explizit gelistet; historische
+Mehrfachdefinitionen brauchen eine bewusste Duplikatpolitik:
+
+```yaml
+trace:
+  requirements:
+    source: spec/lastenheft.md
+    id-pattern: '(F|NF|MVP|AK|RAK)-[0-9]+'
+    format: table
+    table:
+      id-column: Kennung
+      text-columns: [Anforderung, Akzeptanzkriterium]
+      modality-column: Prioritaet
+      duplicate-ids: last
+```
+
+Zwei Alternativen bleiben für
+Tabellen außerhalb der unterstützten Pipe-Tabellen-Grammatik:
 
 1. Die Tabelle in Heading-plus-Body-Abschnitte wie im ersten Beispiel dieses
    Kapitels überführen. ID und Titel stehen in der Überschrift, der normative
@@ -740,8 +790,9 @@ es in v0.42.0 zwei sichere Wege:
    Projektion nicht unbemerkt driftet, muss ein eigener Konsistenzsensor die
    erzeugten IDs und Texte gegen die autoritative Tabelle prüfen.
 
-Eine ID-Regex allein migriert das Format nicht; native, konfigurierbare
-Tabellenspalten für ID, Modalität und Text unterstützt `--trace` derzeit nicht.
+Eine ID-Regex allein migriert das Format nicht; für native Tabellen müssen
+`format: table`, `table.id-column`, genau eine von `table.text-column` oder
+`table.text-columns` und optional `table.modality-column` konfiguriert sein.
 
 ### 4.13 Ein Makefile-Fragment einbinden (`--print-mk`)
 
@@ -895,7 +946,15 @@ targets:                       # Deklarations-Konsistenz Doku ↔ Build-Targets 
   exempt-targets: []           # Regelnamen EXAKT (kein Glob, anders als tracked) — Utility ohne Doku-Pflicht
 trace:                         # konfigurierbare RTM-Quellen (KEIN Modul; steuert nur --trace)
   requirements:
+    source: spec/lastenheft.md              # nichtleer explizit: fehlend/0 Treffer => Exit 2
     id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'  # Anforderungs-Kennung (Default: <PREFIX>-FA-…/-QA-…)
+    format: headings                         # headings (Default) oder table
+    # table:                                 # Pflicht bei format: table; exakte Header-Namen
+    #   id-column: Kennung
+    #   text-column: Anforderung
+    #   # text-columns: [Anforderung, Akzeptanzkriterium] # alternativ zu text-column
+    #   modality-column: Prioritaet          # optional; sonst Textspalte
+    #   duplicate-ids: error                 # error (Default), first oder last
     modality: {}                          # RFC-2119-Stufe je Anforderung (eigene Spalte); {} = DE+EN-Defaults, require-levels [must]
   slices:
     file-pattern: '^(\d+)-.*\.md$'          # Slice-Dateiname NNN-titel.md (Capture 1 = Owner-Kennung)
@@ -1062,14 +1121,36 @@ Die Traceability-Matrix (`--trace`, siehe §4.12) erkennt Anforderungen und ihre
 ADR-/Slice-Referenzen standardmäßig nach d-checks eigener Konvention (Kennungen
 `<PREFIX>-FA-…`/`-QA-…` im Lastenheft, Slice-Dateien `slice-NNN-….md`,
 ADR-Dateien `NNNN-….md`). Folgt Ihr Repo einer anderen Konvention, überschreibt
-der optionale `trace`-Block (oben im Beispiel) die vier Quell-Achsen:
-`requirements` (`source` + `id-pattern`) sowie je Referenzklasse `adrs`/`slices`
+der optionale `trace`-Block (oben im Beispiel) die Quell-Achsen:
+`requirements` (`source`, `id-pattern`, `format` und bei Tabellen `table.*`)
+sowie je Referenzklasse `adrs`/`slices`
 (`dir` + `file-pattern` + `id-prefix`; die **Capture-Gruppe** der `file-pattern`
 liefert die Owner-Kennung, der `id-prefix` wird ihr vorangestellt). Jedes Feld
 ist optional; ein abwesendes fällt auf den Default zurück, und **ohne
 `trace`-Block ist die RTM-Ausgabe byte-identisch** zum bisherigen Verhalten. Ein
 nicht kompilierbares Muster oder eine `file-pattern` ohne Capture-Gruppe ist ein
 Konfigurationsfehler (Exit 2, fail-closed).
+
+`requirements.format` ist `headings` (Default) oder `table`. Bei `headings`
+definiert nur eine ATX-Überschrift mit einer vollständig passenden ID im ersten
+Token eine Anforderung. Bei `table` sind `table.id-column` und
+genau eine von `table.text-column` oder der nichtleeren Alternativliste
+`table.text-columns` Pflicht; jeder Listenwert muss quellweit mindestens einmal
+gebunden werden. `table.modality-column` ist optional. Die Namen
+werden nach Trimmen exakt an die Tabellen-Header gebunden. Fehlende, leere oder
+doppelte konfigurierte Header, eine relevante Zeile mit falscher Zellenzahl und
+doppelte IDs sind unter `table.duplicate-ids: error` (Default)
+Konfigurationsfehler (Exit 2). `first` behält bei historischen Duplikaten die
+erste, `last` die letzte Definition. Nur eine vollständig auf
+`id-pattern` passende ID-Zelle definiert eine Anforderung. Escaped Pipes und
+Pipes in einzeiligen, passend begrenzten Code-Spans bleiben Bestandteil der
+Zelle; Tabellen in Code-Fences und mehrzeilige Zellen werden nicht gelesen.
+
+Eine **nichtleer explizite** `requirements.source` oder `format: table`
+aktiviert den Nullmengen-Guard: Fehlt die Quelldatei oder werden darin null
+Anforderungen erkannt, endet `--trace` mit Exit 2 vor jeder RTM-Ausgabe.
+`source: ""` gilt dagegen wie ein abwesendes Feld und hält den bisherigen
+Default-Fallback einschließlich leerer RTM/Exit 0 kompatibel.
 
 Der ADR-/Slice-Referenzscan läuft rekursiv über die gefundenen Dateien unter
 dem jeweiligen `dir`. `file-pattern` wird gegen den **Basisdateinamen** und
@@ -1104,7 +1185,9 @@ Verb selbst auflisten (auch die gewünschten Built-ins) — die vollständige
 Default-Menge steht in `spec/spezifikation.md` (Abschnitt
 `trace.requirements.modality`).
 Klassifiziert wird über den ersten (frühesten), bei Gleichstand **längsten**
-Keyword-Treffer im **normalisierten** Body-Abschnitt (Emphasis raus, Whitespace/
+Keyword-Treffer. Im Heading-Format ist die Quelle der **normalisierte**
+Body-Abschnitt, im Tabellenformat exklusiv `table.modality-column`, sofern
+konfiguriert, andernfalls die Textzelle (Emphasis raus, Whitespace/
 Umbrüche zu einem Leerzeichen), case-insensitiv und wortgrenzen-genau (`\b` ist
 ASCII — ein konfiguriertes Umlaut-Rand-Keyword träfe nicht); kein Treffer ⇒ Stufe
 `unknown`. **Aktiv schon bei bloßer Präsenz** (`modality: {}`). Fail-closed

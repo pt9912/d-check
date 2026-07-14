@@ -7,7 +7,6 @@
 package configyaml
 
 import (
-	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"bytes"
 	"errors"
 	"fmt"
@@ -16,8 +15,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"gopkg.in/yaml.v3"
-
 )
 
 // FileName ist der feste Name der Konfigurationsdatei.
@@ -180,12 +179,8 @@ type rawExternal struct {
 // RTM-Quellen. Jeder Unter-Block/jedes Feld ist optional; abwesend ⇒ Default im
 // Kern (byte-identisch, DC-QA-02).
 type rawTrace struct {
-	Requirements *struct {
-		Source    string       `yaml:"source"`
-		IDPattern string       `yaml:"id-pattern"`
-		Modality  *rawModality `yaml:"modality"`
-	} `yaml:"requirements"`
-	ADRs *struct {
+	Requirements *rawTraceRequirements `yaml:"requirements"`
+	ADRs         *struct {
 		Dir         string `yaml:"dir"`
 		FilePattern string `yaml:"file-pattern"`
 		IDPrefix    string `yaml:"id-prefix"`
@@ -196,6 +191,24 @@ type rawTrace struct {
 		IDPrefix    string `yaml:"id-prefix"`
 	} `yaml:"slices"`
 	Coverage []rawCoverage `yaml:"coverage"`
+}
+
+type rawTraceRequirements struct {
+	Source    string         `yaml:"source"`
+	IDPattern string         `yaml:"id-pattern"`
+	Format    string         `yaml:"format"`
+	Table     *rawTraceTable `yaml:"table"`
+	Modality  *rawModality   `yaml:"modality"`
+}
+
+// rawTraceTable bindet tabellarische Anforderungsquellen an exakte
+// Header-Namen (DC-FA-REQ-001).
+type rawTraceTable struct {
+	IDColumn       string   `yaml:"id-column"`
+	TextColumn     string   `yaml:"text-column"`
+	TextColumns    []string `yaml:"text-columns"`
+	ModalityColumn string   `yaml:"modality-column"`
+	DuplicateIDs   string   `yaml:"duplicate-ids"`
 }
 
 // rawModality bildet den opt-in Modalitäts-Block ab (DC-FA-MOD-001).
@@ -221,18 +234,18 @@ type raw struct {
 		Roots  []string `yaml:"roots"`
 		Ignore []string `yaml:"ignore"`
 	} `yaml:"scan"`
-	Modules  []string      `yaml:"modules"`
-	Links    *rawScopeOnly `yaml:"links"`
-	Anchors  *rawScopeOnly `yaml:"anchors"`
-	Spans    *rawScopeOnly `yaml:"spans"`
-	Pins     *rawScopeOnly `yaml:"pins"`
+	Modules   []string      `yaml:"modules"`
+	Links     *rawScopeOnly `yaml:"links"`
+	Anchors   *rawScopeOnly `yaml:"anchors"`
+	Spans     *rawScopeOnly `yaml:"spans"`
+	Pins      *rawScopeOnly `yaml:"pins"`
 	Hostpaths *struct {
 		Scope    *rawScope `yaml:"scope"`
 		Prefixes []string  `yaml:"prefixes"`
 	} `yaml:"hostpaths"`
-	IDs      *rawIDs       `yaml:"ids"`
-	Matrix   *rawMatrix    `yaml:"matrix"`
-	External *rawExternal  `yaml:"external"`
+	IDs       *rawIDs       `yaml:"ids"`
+	Matrix    *rawMatrix    `yaml:"matrix"`
+	External  *rawExternal  `yaml:"external"`
 	Codepaths *rawCodepaths `yaml:"codepaths"`
 	Diagrams  *rawDiagrams  `yaml:"diagrams"`
 	Versions  *rawVersions  `yaml:"versions"`
@@ -341,8 +354,8 @@ func compileTracePattern(field, pattern string, requireCapture bool) (*regexp.Re
 
 // validateTracePath prüft, dass ein trace-Pfad relativ zur Repo-Wurzel liegt
 // (kein führendes '/', kein '..') — analog planning.roadmap. Leer ⇒ zulässig
-// (Default im Kern). Die Existenz prüft der Kern beim Lauf (fehlende Quelle ⇒
-// leere/teilbefüllte Matrix, kein Fehler; DC-FA-CLI-009.a).
+// (Default im Kern). Die Existenz prüft der Kern beim Lauf; eine nichtleer
+// explizite Requirements-Quelle ist dabei fail-closed (DC-FA-REQ-001.a).
 func validateTracePath(field, p string) error {
 	if strings.HasPrefix(p, "/") || strings.Contains(p, "..") {
 		return fmt.Errorf("%s: %s %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')", FileName, field, p)
@@ -362,19 +375,9 @@ func applyTrace(r *raw, cfg *model.Config) error {
 	t := r.Trace
 	var tc model.TraceConfig
 	if req := t.Requirements; req != nil {
-		if err := validateTracePath("trace.requirements.source", req.Source); err != nil {
+		if err := applyTraceRequirements(req, &tc); err != nil {
 			return err
 		}
-		re, err := compileTracePattern("trace.requirements.id-pattern", req.IDPattern, false)
-		if err != nil {
-			return err
-		}
-		tc.Source, tc.ReqPattern = req.Source, re
-		mod, err := applyModality(req.Modality)
-		if err != nil {
-			return err
-		}
-		tc.Modality = mod
 	}
 	if adr := t.ADRs; adr != nil {
 		if err := validateTracePath("trace.adrs.dir", adr.Dir); err != nil {
@@ -401,6 +404,108 @@ func applyTrace(r *raw, cfg *model.Config) error {
 	}
 	cfg.Trace = tc
 	return nil
+}
+
+func applyTraceRequirements(req *rawTraceRequirements, tc *model.TraceConfig) error {
+	if err := validateTracePath("trace.requirements.source", req.Source); err != nil {
+		return err
+	}
+	re, err := compileTracePattern("trace.requirements.id-pattern", req.IDPattern, false)
+	if err != nil {
+		return err
+	}
+	tc.Source, tc.ReqPattern = req.Source, re
+	if err := applyTraceRequirementsFormat(req.Format, req.Table, tc); err != nil {
+		return err
+	}
+	mod, err := applyModality(req.Modality)
+	if err != nil {
+		return err
+	}
+	tc.Modality = mod
+	return nil
+}
+
+// applyTraceRequirementsFormat validiert die Format-/Block-Konsistenz vor
+// jedem I/O (DC-FA-REQ-001): table braucht eindeutig benannte Rollen,
+// headings akzeptiert keinen wirkungslosen table-Block.
+func applyTraceRequirementsFormat(format string, table *rawTraceTable, tc *model.TraceConfig) error {
+	switch format {
+	case "", model.TraceFormatHeadings:
+		if table != nil {
+			return fmt.Errorf("%s: trace.requirements.table ist nur mit format: table zulässig", FileName)
+		}
+		tc.Format = format
+		return nil
+	case model.TraceFormatTable:
+		if table == nil {
+			return fmt.Errorf("%s: trace.requirements.format: table braucht einen table-Block", FileName)
+		}
+	default:
+		return fmt.Errorf("%s: trace.requirements.format %q ist ungültig (erwartet: headings oder table)", FileName, format)
+	}
+	return applyTraceTableConfig(table, tc)
+}
+
+func applyTraceTableConfig(table *rawTraceTable, tc *model.TraceConfig) error {
+	id := strings.TrimSpace(table.IDColumn)
+	mod := strings.TrimSpace(table.ModalityColumn)
+	if id == "" {
+		return fmt.Errorf("%s: trace.requirements.table.id-column darf nicht leer sein", FileName)
+	}
+	texts, err := traceTextColumns(table)
+	if err != nil {
+		return err
+	}
+	if mod != "" && mod == id {
+		return fmt.Errorf("%s: trace.requirements.table-Spaltennamen müssen verschieden sein", FileName)
+	}
+	for _, txt := range texts {
+		if txt == id || mod != "" && txt == mod {
+			return fmt.Errorf("%s: trace.requirements.table-Spaltennamen müssen verschieden sein", FileName)
+		}
+	}
+	duplicateIDs := strings.TrimSpace(table.DuplicateIDs)
+	if duplicateIDs == "" {
+		duplicateIDs = model.TraceDuplicateError
+	}
+	if !validDuplicatePolicy(duplicateIDs) {
+		return fmt.Errorf("%s: trace.requirements.table.duplicate-ids %q ist ungültig (erwartet: error, first oder last)", FileName, duplicateIDs)
+	}
+	tc.Format = model.TraceFormatTable
+	tc.Table = &model.TraceTableConfig{IDColumn: id, TextColumns: texts, ModalityColumn: mod, DuplicateIDs: duplicateIDs}
+	return nil
+}
+
+func validDuplicatePolicy(policy string) bool {
+	return policy == model.TraceDuplicateError || policy == model.TraceDuplicateFirst || policy == model.TraceDuplicateLast
+}
+
+func traceTextColumns(table *rawTraceTable) ([]string, error) {
+	single := strings.TrimSpace(table.TextColumn)
+	if single != "" && len(table.TextColumns) > 0 {
+		return nil, fmt.Errorf("%s: trace.requirements.table.text-column und text-columns sind alternativ, nicht gleichzeitig zulässig", FileName)
+	}
+	if single != "" {
+		return []string{single}, nil
+	}
+	if len(table.TextColumns) == 0 {
+		return nil, fmt.Errorf("%s: trace.requirements.table braucht text-column oder text-columns", FileName)
+	}
+	texts := make([]string, 0, len(table.TextColumns))
+	seen := map[string]bool{}
+	for _, raw := range table.TextColumns {
+		text := strings.TrimSpace(raw)
+		if text == "" {
+			return nil, fmt.Errorf("%s: trace.requirements.table.text-columns darf keinen leeren Header enthalten", FileName)
+		}
+		if seen[text] {
+			return nil, fmt.Errorf("%s: trace.requirements.table.text-columns enthält %q doppelt", FileName, text)
+		}
+		seen[text] = true
+		texts = append(texts, text)
+	}
+	return texts, nil
 }
 
 // applyModality validiert den opt-in Modalitäts-Block (DC-FA-MOD-001) und liefert

@@ -6,6 +6,7 @@ package cli_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -842,6 +843,11 @@ func TestCLI053_PrintConfig_VollesModulset(t *testing.T) {
 		"# --- tracked:",
 		"# --- targets:",
 		"# --- trace:", // slice-066: konfigurierbare RTM-Quellen im Gerüst
+		"#     format: headings",
+		"#     # table:",
+		"#     #   id-column: Kennung",
+		"#     #   # text-columns: [Anforderung, Akzeptanzkriterium]",
+		"#     #   duplicate-ids: error",
 		"# --- pins:",
 		"immutable-when:", // der vcs-Config-Key, nach dem gefragt wurde
 	} {
@@ -1989,6 +1995,213 @@ func TestCLI068_Modality_NegativeConfig(t *testing.T) {
 			}
 		})
 	}
+}
+
+// slice-070 (DC-FA-REQ-001): native Tabellenquelle liest den m-trace-Schnitt
+// Kennung|Prioritaet|Anforderung vollständig; die Modalität kommt exklusiv aus
+// der konfigurierten Spalte, nicht aus dem widersprechenden Text.
+func TestCLI070_TraceTable_371UndModalitaet(t *testing.T) {
+	root := t.TempDir()
+	var src strings.Builder
+	src.WriteString("# Lastenheft\n\n| Kennung | Prioritaet | Anforderung |\n|---|---|---|\n")
+	for i := 1; i <= 236; i++ {
+		priority, text := "Muss", "Die Funktion KANN genutzt werden."
+		if i == 2 {
+			priority, text = "Kann", "Die Funktion MUSS dokumentiert werden."
+		}
+		fmt.Fprintf(&src, "| F-%d | %s | %s |\n", i, priority, text)
+	}
+	src.WriteString("\n| Kennung | Prioritaet | Akzeptanzkriterium |\n|---|---|---|\n")
+	for i := 237; i <= 371; i++ {
+		fmt.Fprintf(&src, "| F-%d | Muss | Das Kriterium MUSS gelten. |\n", i)
+	}
+	// Spätere Neudefinition; sie gewinnt durch die explizite Politik.
+	src.WriteString("| F-1 | Kann | Hochstufung wurde zurückgenommen. |\n")
+	write(t, root, "spec/lastenheft.md", src.String())
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    source: spec/lastenheft.md
+    id-pattern: 'F-[0-9]+'
+    format: table
+    table:
+      id-column: Kennung
+      text-columns: [Anforderung, Akzeptanzkriterium]
+      modality-column: Prioritaet
+      duplicate-ids: last
+    modality: {}
+`)
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON: %v\n%s", err, stdout)
+	}
+	if doc.Total != 371 {
+		t.Fatalf("Total = %d (erwartet 371)", doc.Total)
+	}
+	for id, want := range map[string]string{"F-1": "may", "F-2": "may", "F-371": "must"} {
+		i := traceReqIdx(doc, id)
+		if i < 0 || doc.Requirements[i].Modality != want {
+			t.Fatalf("%s Modality = %+v (erwartet %s)", id, doc.Requirements[i], want)
+		}
+	}
+}
+
+// slice-070 Boundary: ohne modality-column klassifiziert derselbe Matcher die
+// Textspalte; escaped Pipe und Pipe im Code-Span bleiben in einer Zelle.
+func TestCLI070_TraceTable_TextFallbackUndPipes(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md", "| ID | Text |\n|---|---|\n| R-1 | Wert \\| `a|b` MUSS bleiben. |\n")
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    source: spec/reqs.md
+    id-pattern: 'R-[0-9]+'
+    format: table
+    table:
+      id-column: ID
+      text-column: Text
+    modality: {}
+`)
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	_ = json.Unmarshal([]byte(stdout), &doc)
+	if doc.Total != 1 || doc.Requirements[0].Title != "Wert | `a|b` MUSS bleiben." || doc.Requirements[0].Modality != "must" {
+		t.Fatalf("Tabellenzeile falsch: %+v", doc.Requirements)
+	}
+}
+
+// slice-070 Negative: nichtleer explizite Heading-Quelle mit 0 Treffern ist
+// auch unter --require-complete ein Quellenfehler (Exit 2, keine RTM).
+func TestCLI070_Trace_NullmengeFailClosed(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md", "| ID | Text |\n|---|---|\n| R-1 | Nur Tabelle |\n")
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    source: spec/reqs.md\n    id-pattern: 'R-[0-9]+'\n")
+	code, stdout, stderr := run(t, "--trace", "--require-complete", root)
+	if code != 2 || stdout != "" || !strings.Contains(stderr, "0 Anforderungen") || !strings.Contains(stderr, "headings") {
+		t.Fatalf("Exit/stdout/stderr = %d/%q/%q", code, stdout, stderr)
+	}
+}
+
+// slice-070 Review R1: source:"" bleibt wie abwesend; fehlende Default-Quelle
+// liefert weiterhin eine leere RTM/Exit 0.
+func TestCLI070_Trace_LeereSourceBleibtDefault(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    source: ''\n")
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 || stderr != "" {
+		t.Fatalf("Exit/stderr = %d/%q", code, stderr)
+	}
+	var doc traceDoc
+	_ = json.Unmarshal([]byte(stdout), &doc)
+	if doc.Total != 0 {
+		t.Fatalf("Total = %d (erwartet 0)", doc.Total)
+	}
+}
+
+// slice-070 Review R1: Heading-Duplikate bleiben im Default dedupliziert,
+// werden bei nichtleer expliziter Quelle aber fail-closed abgewiesen.
+func TestCLI070_Trace_HeadingDuplikatStrictGrenze(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "### DC-FA-X-001 — Erstes\nA.\n\n### DC-FA-X-001 — Zweites\nB.\n")
+	code, stdout, _ := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Default-Exit = %d", code)
+	}
+	var doc traceDoc
+	_ = json.Unmarshal([]byte(stdout), &doc)
+	if doc.Total != 1 || doc.Requirements[0].Title != "Erstes" {
+		t.Fatalf("Default-Deduplizierung falsch: %+v", doc.Requirements)
+	}
+	write(t, root, ".d-check.yml", "trace:\n  requirements:\n    source: spec/lastenheft.md\n")
+	if code, _, stderr := run(t, "--trace", root); code != 2 || !strings.Contains(stderr, "doppelte Anforderungs-ID") {
+		t.Fatalf("Strict-Exit/stderr = %d/%q", code, stderr)
+	}
+}
+
+// slice-070 Negative: Tabellen-Header, Duplikate, Zeilenbreite und Format-
+// Block-Konsistenz brechen vor einer RTM fail-closed ab.
+func TestCLI070_TraceTable_Negative(t *testing.T) {
+	cases := []struct {
+		name, source, config, want string
+	}{
+		{"missing header", "| ID | Beschreibung |\n|---|---|\n| R-1 | X |\n", tableConfig("Text"), "konfigurierten Headern"},
+		{"duplicate header", "| ID | ID | Text |\n|---|---|---|\n| R-1 | X | Y |\n", tableConfig("Text"), "mehrfach"},
+		{"duplicate id", "| ID | Text |\n|---|---|\n| R-1 | X |\n| R-1 | Y |\n", tableConfig("Text"), "doppelte Anforderungs-ID"},
+		{"row width", "| ID | Text |\n|---|---|\n| R-1 | X | extra |\n", tableConfig("Text"), "statt 2 Zellen"},
+		{"zero by regex", "| ID | Text |\n|---|---|\n| X-1 | X |\n", tableConfig("Text"), "0 Anforderungen"},
+		{"missing source", "", strings.Replace(tableConfig("Text"), "spec/reqs.md", "spec/fehlt.md", 1), "fehlt"},
+		{"missing table block", "| ID | Text |\n|---|---|\n| R-1 | X |\n", "trace:\n  requirements:\n    format: table\n", "braucht einen table-Block"},
+		{"unknown format", "### R-1\nX\n", "trace:\n  requirements:\n    format: csv\n", "format"},
+		{"table under headings", "### R-1\nX\n", "trace:\n  requirements:\n    table:\n      id-column: ID\n      text-column: Text\n", "nur mit format: table"},
+		{"both text forms", "| ID | Text | Beschreibung |\n|---|---|---|\n| R-1 | X | Y |\n", tableConfig("Text") + "      text-columns: [Beschreibung]\n", "alternativ"},
+		{"unused text alternative", "| ID | Text |\n|---|---|\n| R-1 | X |\n", strings.Replace(tableConfig("Text"), "text-column: Text", "text-columns: [Text, Tippfehler]", 1), "Tippfehler"},
+		{"unknown duplicate policy", "| ID | Text |\n|---|---|\n| R-1 | X |\n", tableConfig("Text") + "      duplicate-ids: merge\n", "duplicate-ids"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			root := t.TempDir()
+			write(t, root, "spec/reqs.md", tc.source)
+			write(t, root, ".d-check.yml", tc.config)
+			code, stdout, stderr := run(t, "--trace", root)
+			if code != 2 || stdout != "" || !strings.Contains(stderr, tc.want) {
+				t.Fatalf("Exit/stdout/stderr = %d/%q/%q (want %q)", code, stdout, stderr, tc.want)
+			}
+		})
+	}
+}
+
+// slice-070 Boundary: Tabellen in Fences sind Beispiele, keine Quellen; mehrere
+// echte Tabellen mit denselben konfigurierten Headern werden zusammengeführt.
+func TestCLI070_TraceTable_FencesUndMehrereTabellen(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md", "```markdown\n~~~\n| ID | Text |\n|---|---|\n| R-0 | MUSS ignoriert werden |\n~~~\n```\n\n| ID | Text |\n|---|---|\n| R-1 | MUSS eins |\n\n| ID | Text |\n|---|---|\n| R-2 | MUSS zwei |\n")
+	write(t, root, ".d-check.yml", tableConfig("Text"))
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON: %v", err)
+	}
+	if doc.Total != 2 || traceReqIdx(doc, "R-0") >= 0 || traceReqIdx(doc, "R-1") < 0 || traceReqIdx(doc, "R-2") < 0 {
+		t.Fatalf("Tabellen-Auswahl falsch: %+v", doc.Requirements)
+	}
+}
+
+func TestCLI070_TraceTable_DuplikatPolicies(t *testing.T) {
+	for _, tc := range []struct {
+		policy, wantTitle string
+	}{
+		{"first", "Erstes"},
+		{"last", "Zweites"},
+	} {
+		t.Run(tc.policy, func(t *testing.T) {
+			root := t.TempDir()
+			write(t, root, "spec/reqs.md", "| ID | Text |\n|---|---|\n| R-1 | Erstes |\n| R-1 | Zweites |\n")
+			write(t, root, ".d-check.yml", tableConfig("Text")+"      duplicate-ids: "+tc.policy+"\n")
+			code, stdout, stderr := run(t, "--trace", "--json", root)
+			if code != 0 {
+				t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+			}
+			var doc traceDoc
+			if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+				t.Fatalf("JSON: %v", err)
+			}
+			if doc.Total != 1 || doc.Requirements[0].Title != tc.wantTitle {
+				t.Fatalf("Policy %s: %+v", tc.policy, doc.Requirements)
+			}
+		})
+	}
+}
+
+func tableConfig(textColumn string) string {
+	return "trace:\n  requirements:\n    source: spec/reqs.md\n    id-pattern: 'R-[0-9]+'\n    format: table\n    table:\n      id-column: ID\n      text-column: " + textColumn + "\n"
 }
 
 // slice-038 Happy: --print-mk gibt ein include-bares d-check.mk auf stdout

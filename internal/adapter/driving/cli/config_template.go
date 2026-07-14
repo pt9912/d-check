@@ -148,8 +148,15 @@ modules: [links, anchors]
 #    file-pattern braucht eine Capture-Gruppe (…) = Owner-Kennung, sonst Exit 2.)
 # trace:
 #   requirements:
-#     source: spec/lastenheft.md   # Datei mit den Anforderungs-Headings
-#     id-pattern: '[A-Z][A-Z0-9]*-(?:FA-[A-Z]+|QA)-\d+[A-Za-z]?'   # Kennung im Heading UND als Referenz
+#     source: spec/lastenheft.md   # nichtleer explizit => 0 Anforderungen ist Exit 2
+#     id-pattern: '[A-Z][A-Z0-9]*-(?:FA-[A-Z]+|QA)-\d+[A-Za-z]?'   # Kennung als Ganz-Token/-Zelle UND als Referenz
+#     format: headings             # headings (Default) oder table
+#     # table:                     # Pflicht bei format: table; exakte Header-Namen
+#     #   id-column: Kennung
+#     #   text-column: Anforderung
+#     #   # text-columns: [Anforderung, Akzeptanzkriterium]  # alternativ zu text-column
+#     #   modality-column: Prioritaet  # optional; sonst klassifiziert modality die Textspalte
+#     #   duplicate-ids: error      # error (Default), first oder last
 #     modality:                    # RFC-2119-Klassifikation je Anforderung (eigene Spalte); {} = Built-in DE+EN-Defaults
 #       # levels:                  # Stufe -> Modal-Verb-Keywords (überschreibt die Defaults; kein Keyword in 2 Stufen)
 #       #   must:   [MUSS, MUESSEN, "DARF NICHT", MUST, SHALL]
