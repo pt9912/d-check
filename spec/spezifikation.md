@@ -313,12 +313,12 @@ Ableitung (deterministisch,
 Map-Iteration in der Ausgabe):
 
 1. **Anforderungen** aus `trace.requirements.source` (Default
-   `spec/lastenheft.md`): führende Heading-Kennungen der Anforderungs-Gestalt
-   `trace.requirements.id-pattern` (Default `<PREFIX>-FA-<BEREICH>-NNN` bzw.
-   `<PREFIX>-QA-NN`, präfix-agnostisch); ein Heading zählt nur, wenn der Regex
-   das **erste Token** als **Ganz-Token** matcht (`FindString(tok) == tok` —
-   verhindert, dass ein Sub-ID-Suffix (`…-NNN.a` o. Ä.) als eigene Anforderung
-   zählt). Titel = Heading-Klartext ohne Kennung/Trenner.
+   `spec/lastenheft.md`) gemäß
+   [§`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen):
+   `trace.requirements.format` wählt Heading- oder Tabellenextraktion; beide
+   liefern Kennung, Titel und Modalitäts-Eingabetext. Die Kennung muss als
+   Ganz-Token/-Zelle auf `trace.requirements.id-pattern` passen (Default
+   `<PREFIX>-FA-<BEREICH>-NNN` bzw. `<PREFIX>-QA-NN`, präfix-agnostisch).
 2. **Referenzen** aus `trace.adrs.dir` (Default `docs/plan/adr/`; Owner-Kennung
    über den Basisnamen `trace.adrs.file-pattern`, Default `NNNN-…md` → Capture 1,
    Präfix `trace.adrs.id-prefix` Default `ADR-` → `ADR-NNNN`) und
@@ -345,9 +345,72 @@ konfigurierten Quellen gelten unverändert auch für
 `--require-complete` ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code),
 gleicher RTM-Lauf).
 
-Fehlende Quellen (kein `requirements.source` / kein `adrs.dir`/`slices.dir`)
-liefern eine leere bzw. teilbefüllte Matrix, **kein** Fehler. Nur mit
+Fehlende Quellen: Ohne nichtleer explizite `requirements.source` liefert eine
+fehlende Default-Quelle weiterhin eine leere Matrix, **kein** Fehler. Eine
+nichtleer explizite Anforderungsquelle oder `format: table` aktiviert dagegen
+den fail-closed Quellenvertrag aus [§`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen).
+Fehlende `adrs.dir`/`slices.dir` liefern weiterhin nur keine Referenzen. Nur mit
 `--doctor`/`--repair` ist `--trace` ein Nutzungsfehler (Exit 2).
+
+### DC-FA-REQ-001.a — Anforderungsquellen (Headings und Tabellen)
+
+Der Requirements-Extraktor wird vor Schritt 2 der RTM ausgeführt und liefert
+eine nach Kennung sortierte Menge `{id, title, modalityText}`. Danach ist der
+Ablauf formatunabhängig.
+
+1. **Format-Auflösung.** Leer/abwesend oder `headings` wählt den bestehenden
+   ATX-Heading-Pfad. `table` wählt den Pipe-Tabellen-Pfad. Jeder andere Wert ist
+   config-zeitig Exit 2. Ein `table`-Block ist bei `format: table` Pflicht und
+   bei `headings`/leer verboten (kein inert akzeptierter Block).
+2. **Heading-Pfad.** Außerhalb von Fenced-Code zählt eine ATX-Überschrift nur,
+   wenn `id-pattern` ihr erstes Token als Ganzes matcht
+   (`FindString(tok) == tok`); Titel = Heading-Klartext ohne Kennung/Trenner,
+   `modalityText` = Body bis zur nächsten gleich-/höherrangigen Überschrift.
+3. **Tabellen-Lexik.** Außerhalb von Fenced-Code beginnt eine Tabelle mit einer
+   Headerzeile und der unmittelbar folgenden Trennzeile. Jede Trennzelle matcht
+   `^:?-{3,}:?$`; führende/abschließende Pipes sind optional. Ein `\|` und eine
+   Pipe in einem auf derselben Zeile korrekt geschlossenen Backtick-Code-Span
+   teilen keine Zelle. Zellen werden getrimmt; `\|` wird danach zu `|`.
+   Mehrzeilige Zellen/Fences innerhalb einer Zelle, HTML-Tabellen und
+   Block-Markdown sind keine Tabelle dieses Extraktors.
+4. **Header-Bindung.** `table.id-column` und genau eine von
+   `table.text-column` (ein Name) oder `table.text-columns` (nichtleere,
+   duplikatfreie Liste alternativer Namen) sind Pflicht;
+   `table.modality-column` ist optional. Vergleich gegen die
+   normalisierte Headerzelle ist exakt und case-sensitiv. Eine relevante
+   Tabelle muss ID, Modalität (wenn gesetzt) und **genau einen** der
+   Text-Header je genau einmal tragen; fehlt eine Rolle über alle Tabellen,
+   kommt ein Header doppelt oder kommen zwei Text-Alternativen in derselben
+   Tabelle vor ⇒ Exit 2. Zusätzlich muss **jede** in `text-columns`
+   deklarierte Alternative über die gesamte Quelle mindestens einmal gebunden
+   werden; ein unbenutzter Name ist ein Tippfehler-/Teilmenge-Guard und Exit 2.
+   Mehrere relevante Tabellen werden in Quellreihenfolge zusammengeführt.
+5. **Datenzeilen.** Eine Zeile gehört bis zur ersten Leer-/Nicht-Tabellenzeile
+   zur Tabelle und muss dieselbe Zellenzahl wie der Header tragen; sonst Exit 2.
+   Nur wenn die getrimmte ID-Zelle als Ganzes auf `id-pattern` passt, definiert
+   sie eine Anforderung; andere Datenzeilen werden ignoriert. Titel = Inhalt der
+   in dieser Tabelle gebundenen Textspalte. `modalityText` = Inhalt von
+   `modality-column`, wenn gesetzt, sonst Inhalt derselben Textspalte.
+6. **Duplikate und Nullmenge.** `table.duplicate-ids` ist `error` (Default),
+   `first` oder `last`. Bei `first` bleibt die erste Definition, bei `last`
+   überschreibt die spätere Titel und `modalityText`; die ID-Reihenfolge bleibt
+   wegen der abschließenden Sortierung unabhängig davon deterministisch. Jeder
+   andere Wert ist config-zeitig Exit 2. `strictSource = (nichtleerer, expliziter
+   requirements.source) ∨ (format == table)`. Bei `strictSource` gilt:
+   fehlende/unlesbare Quelle, doppelte erkannte ID unter Politik `error` oder null erkannte
+   Anforderungen ⇒ Exit 2. Die Nullmengenmeldung nennt Quelle und Format.
+   Ohne `strictSource` behält der Heading-Pfad die alte Semantik: fehlende
+   Default-Quelle/null Treffer ⇒ leere RTM; doppelte ID ⇒ erster Treffer
+   gewinnt. `source: ""` gilt wie abwesend und aktiviert `strictSource` nicht.
+7. **Modalität.** Bei aktivem `trace.requirements.modality` klassifiziert der
+   bestehende Matcher aus [§`DC-FA-MOD-001.a`](spezifikation.md#dc-fa-mod-001a--modalitäts-klassifikation-tracerequirementsmodality)
+   `modalityText`; Keywords, Normalisierung, `unknown` und `require-levels`
+   bleiben unverändert. Ohne aktive Modalität wird der Text nicht ausgewertet.
+
+**Fehlerpräzedenz:** striktes YAML/Format-/Block-Schema → Quelle lesen →
+Tabellenstruktur/Header → Duplicate-ID → Nullmenge → Referenz-/Coverage-
+Scans. Der erste Fehler beendet den Lauf vor dem Reporter; `--trace` und
+`--trace --require-complete` liefern Exit 2 und keine RTM.
 
 ### DC-FA-COV-001.a — Kuratierte Coverage-Quellen (`trace.coverage`)
 
@@ -1596,8 +1659,15 @@ Exit 2 ohne Prüfung
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
 | `targets.authority` | string | leer | Wurzel-relative Doku-Datei; **jede** nicht-exempte Makefile-Regel muss dort als `make X`-Tabellenzeile stehen (Richtung 2 `gate-undocumented`); leer ⇒ Richtung 2 entfällt; fehlende Datei ⇒ Exit 2 |
 | `targets.exempt-targets` | string[] | leer | Regelnamen (**exakt**-Vergleich, **kein** Glob — anders als `tracked.exempt-targets`, das Pfad-Globs matcht), die von der Doku-Pflicht (Richtung 2) ausgenommen sind (Utility-Targets); ohne Eintrag prüft Richtung 2 jede Regel |
-| `trace.requirements.source` | string | `spec/lastenheft.md` | Wurzel-relative Datei mit den Anforderungs-Headings; muss innerhalb der Repo-Wurzel liegen; leer/abwesend ⇒ Default. Kein `trace`-Block ⇒ alle Felder Default ⇒ RTM byte-identisch ([`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)) |
-| `trace.requirements.id-pattern` | string | `[A-Z][A-Z0-9]*-(?:FA-[A-Z]+\|QA)-\d+[A-Za-z]?` | Regex; erkennt eine Anforderungs-Kennung als **Ganz-Token** im Lastenheft-Heading (der Treffer muss das ganze Token sein) **und** als Vorkommen in ADR-/Slice-Dateien (Referenz-Zählung); muss kompilieren (sonst Exit 2); leer ⇒ Default (d-checks `-FA-`/`-QA-`-Gestalt) |
+| `trace.requirements.source` | string | `spec/lastenheft.md` | Wurzel-relative Anforderungsdatei; muss innerhalb der Repo-Wurzel liegen; leer/abwesend ⇒ Default und aktiviert keinen Strict-Guard. Ein **nichtleerer expliziter** Wert aktiviert fail-closed bei fehlender Quelle/null erkannten Anforderungen ([`DC-FA-REQ-001`](lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)) |
+| `trace.requirements.id-pattern` | string | `[A-Z][A-Z0-9]*-(?:FA-[A-Z]+\|QA)-\d+[A-Za-z]?` | Regex; erkennt eine Anforderungs-Kennung als **Ganz-Token** im Heading bzw. **Ganzzelle** der ID-Spalte und als Vorkommen in ADR-/Slice-Dateien; muss kompilieren (sonst Exit 2); leer ⇒ Default |
+| `trace.requirements.format` | string | `headings` | `headings` oder `table`; leer ⇒ `headings`; anderer Wert ⇒ Exit 2. `table` aktiviert den Strict-Guard und verlangt `trace.requirements.table`; ohne `trace`-Block bleibt die RTM byte-identisch |
+| `trace.requirements.table` | map | — | Pflicht genau bei `format: table`, bei `headings`/leer verboten (sonst Exit 2); bindet Tabellenzellen nach exaktem Header-Namen |
+| `trace.requirements.table.id-column` | string | — | nichtleerer Header-Name der ID-Spalte; muss in einer relevanten Tabelle genau einmal vorkommen, sonst Exit 2 |
+| `trace.requirements.table.text-column` | string | — | einzelner nichtleerer Header-Name der Text-/Titelspalte; alternativ zu `text-columns` |
+| `trace.requirements.table.text-columns` | string[] | — | nichtleere, duplikatfreie Liste alternativer exakter Text-Header; je relevanter Tabelle muss genau einer und jeder deklarierte Name quellweit mindestens einmal vorkommen; alternativ zu `text-column` |
+| `trace.requirements.table.modality-column` | string | leer | optionaler Header-Name der alleinigen Modalitätsquelle; gesetzt ⇒ muss genau einmal vorkommen, sonst Exit 2; ohne ihn klassifiziert `modality` die Textspalte |
+| `trace.requirements.table.duplicate-ids` | string | `error` | `error`, `first` oder `last`; Default weist doppelte IDs ab, die Overrides lösen historische Mehrfachdefinitionen deterministisch |
 | `trace.adrs.dir` | string | `docs/plan/adr` | Wurzel-relatives Referenz-Verzeichnis der ADRs (rekursiv gescannt); fehlt es ⇒ keine ADR-Referenzen (kein Fehler); leer ⇒ Default |
 | `trace.adrs.file-pattern` | string | `^(\d{4})-.*\.md$` | Regex auf den **Basisnamen**; **Capture-Gruppe 1** = Owner-Kennung der Datei; muss kompilieren **und ≥1 Capture-Gruppe** haben (sonst Exit 2 — sonst wäre die Owner-Ableitung undefiniert); Dateien ohne Treffer übersprungen; leer ⇒ Default |
 | `trace.adrs.id-prefix` | string | `ADR-` | der Owner-Kennung (Capture-Gruppe 1) vorangestellt (`ADR-` + Capture `NNNN` ⇒ die ADR-Kennung `ADR-NNNN`); leer ⇒ Default `ADR-` (ein leerer ADR-Präfix ist nicht ausdrückbar, [`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) Out-of-Scope) |
@@ -1686,6 +1756,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung | Verweis |
 |---|---|---|
+| 2026-07-14 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) + §2-Schema (`trace.requirements.format`/`table.*`) ergänzt: `headings` bleibt Default, `table` extrahiert Markdown-Pipe-Tabellen außerhalb von Fences über exakt benannte ID-/Text-/optionale Modalitätsheader; `\|` und Pipes in einzeiligen Code-Spans teilen keine Zelle. Beide Extraktoren liefern dasselbe `{id,title,modalityText}`-Modell vor Referenzscan/Gating. Nichtleer explizite Quelle oder Tabellenmodus aktiviert fail-closed (fehlende Quelle, Header-/Zeilenstruktur, Duplicate-ID, null Treffer ⇒ Exit 2); `source: ""` und unkonfigurierter Heading-Pfad behalten Empty⇒Default/Deduplizierung/leere RTM byte-identisch. Modalität klassifiziert im Tabellenmodus die konfigurierte Modalitätsspalte, sonst die Textspalte. Begründung in [ADR-0037](../docs/plan/adr/0037-trace-tabellenquellen-nullmengen-guard.md) | slice-070 |
 | 2026-06-10 | Initiale Fassung | slice-002 |
 | 2026-06-10 | Review R1: `scan.roots`-Constraint präzisiert (nur deklarierte Wurzeln pflichtig), Symlink-Prüf-Scope präzisiert, unspezifizierter Grund-Code `nested-link` entfernt | slice-002 |
 | 2026-06-10 | Review R2: Status-Extraktions-Reihenfolge fixiert (`**Status:**` vor `Status`-Heading), `exclude-sections`-Matching definiert (getrimmt, case-sensitiv), Exit-2-Hinweis an Config-Constraint-Tabelle | slice-002 |

@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.42.0
+**Version:** 0.43.0
 
 **Status:** Draft
 
@@ -50,8 +50,9 @@ statt per Code-Kopie.
 > Commit-Messages), `PLAN` (Planning-Lifecycle-Konsistenz), `TRK`
 > (Getrackt-Status von Referenz-Zielen), `TGT` (Deklarations-Konsistenz
 > Doku ↔ Build-Targets), `COV` (kuratierte Coverage-Quellen der RTM),
-> `MOD` (Modalitäts-Klassifikation der Anforderungen), `CONF`
-> (Konfiguration), `DIST` (Distribution).
+> `MOD` (Modalitäts-Klassifikation der Anforderungen), `REQ`
+> (Anforderungsquellen der RTM), `CONF` (Konfiguration), `DIST`
+> (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -366,7 +367,9 @@ Matrix** (RTM) auf **stdout** aus — read-only
 deterministisch ([`DC-QA-02`](#dc-qa-02--determinismus)), **kein Dokument
 erzeugt**, immer frisch abgeleitet. Je Anforderung (Anforderungs-Kennung im
 Lastenheft; Default-Gestalt `<PREFIX>-FA-*`/`-QA-*`, per
-`trace.requirements.id-pattern` konfigurierbar) zeigt die Matrix Titel, die
+`trace.requirements.id-pattern` konfigurierbar; Definitionsformat gemäß
+[`DC-FA-REQ-001`](#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen))
+zeigt die Matrix Titel, die
 referenzierenden **ADRs** und **Slices** sowie eine **Lücken-Markierung**
 (Anforderung ohne referenzierenden Slice **und** ohne Coverage = Waise). Ist
 **mindestens eine** kuratierte Coverage-Quelle konfiguriert (opt-in
@@ -385,9 +388,10 @@ Reporter, [`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate)). **Doku-Domäne:**
 Anforderungen aus `spec/lastenheft.md`, Referenzen aus `docs/plan/adr/`
 und `docs/plan/planning/` (Default-Pfade; kein Code/keine Go-Toolchain).
 
-**Konfigurierbare Quellen (opt-in `trace`-Block):** Die vier Konventions-
+**Konfigurierbare Quellen (opt-in `trace`-Block):** Die Konventions-
 Annahmen der RTM — die Quell-Datei der Anforderungen samt ihrer
-Kennungs-Gestalt sowie je Referenzklasse (ADR, Slice) das Verzeichnis, die
+Kennungs-Gestalt und ihres Definitionsformats sowie je Referenzklasse
+(ADR, Slice) das Verzeichnis, die
 Dateinamen-Gestalt und das Owner-Präfix — sind über einen `trace`-Block in
 `.d-check.yml` überschreibbar (`requirements.source`/`.id-pattern`;
 `adrs.dir`/`.file-pattern`/`.id-prefix`;
@@ -404,7 +408,7 @@ mit `--doctor`/`--repair` kombinierbar (Nutzungsfehler, Exit 2).
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Repo mit einer Lastenheft-Anforderung, einer sie referenzierenden ADR und einem sie referenzierenden Slice, when `d-check --trace` läuft, then enthält die Markdown-RTM eine Zeile für die Anforderung mit der ADR- und der Slice-Kennung und Status „ok", Exit 0; ein read-only gemountetes Repository genügt.
-- **Boundary:** Given ein Repo ohne `spec/lastenheft.md` (oder ohne Anforderungs-Kennungen), when `--trace` läuft, then eine leere Matrix (0 Anforderungen), kein Absturz, Exit 0, kein Schreibzugriff.
+- **Boundary:** Given ein Repo ohne `spec/lastenheft.md` (oder ohne Anforderungs-Kennungen) und **ohne explizit konfigurierte** `trace.requirements.source` bzw. Tabellenformat, when `--trace` läuft, then eine leere Matrix (0 Anforderungen), kein Absturz, Exit 0, kein Schreibzugriff.
 - **Negative:** Given `d-check --trace --repair`, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)), keine RTM.
 - **Konfiguriert (Fremd-Konvention):** Given ein Repo, dessen Anforderungs-Kennungen und Slice-Dateinamen einer von d-checks Default abweichenden Konvention folgen (z. B. `GG-QA-001` und `063-titel.md`), und eine `.d-check.yml` mit `trace.requirements.id-pattern` und `trace.slices.file-pattern` für diese Konvention, when `d-check --trace` läuft, then listet die RTM **alle** so definierten Anforderungen (nicht nur die zufällig zur Default-Gestalt passenden) mit ihren referenzierenden ADRs/Slices, Exit 0; ein read-only gemountetes Repository genügt.
 - **Default byte-identisch:** Given **kein** `trace`-Block (oder ein leerer) in der Konfiguration, when `d-check --trace` läuft, then ist die RTM byte-identisch zur Fassung vor dieser Erweiterung ([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
@@ -626,6 +630,68 @@ Modality-Spalte, kein `modality`-Feld, `--require-complete`-Semantik unveränder
 - **Modul-aus:** Given **kein** `trace.requirements.modality`, when `d-check --trace [--require-complete]` läuft, then keine Modality-Spalte, kein Feld, alle Waisen gaten wie bisher — byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)), nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 
 **Out-of-Scope:** Semantische Sprach-Analyse jenseits der Schlüsselwort-Präsenz (keine NLP; „der Satz **verweist** auf eine MUSS-Regel" wird nicht erkannt); Modalität aus dem Heading-Titel statt dem Body; mehrere Modalitäten je Anforderung (genau **eine** Stufe = erster Treffer); automatische Sprach-Erkennung der Defaults (die Default-Menge ist DE+EN-fix, sonst konfiguriert der Mensch); Ableitung von `require-levels` (explizit gesetzt); Bewertung, **ob** die Modalität semantisch korrekt vergeben ist (nur Klassifikation, kein Urteil).
+
+---
+
+### DC-FA-REQ-001 — Anforderungsquellen als Headings oder Tabellen
+
+**Beschreibung:** Die Requirements Traceability Matrix
+([`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)) liest
+Anforderungsdefinitionen standardmäßig aus ATX-Überschriften: Die Kennung muss
+als erstes vollständiges Heading-Token auf
+`trace.requirements.id-pattern` passen; der nachfolgende Abschnitt liefert
+Titel und Body. Zusätzlich kann `trace.requirements.format: table` ein
+tabellenbasiertes Lastenheft nativ einlesen. Der zugehörige `table`-Block
+benennt die Spalten über ihre Header statt über instabile Positionen:
+`id-column` (Kennung), genau eine von `text-column` (ein Text-Header) oder
+`text-columns` (explizite alternative Text-Header, von denen jeder mindestens
+einmal in der Quelle vorkommen muss) sowie
+optional `modality-column` (Modalitätsquelle). d-check scannt Markdown-
+Pipe-Tabellen der konfigurierten Quelldatei; eine Datenzeile definiert genau
+dann eine Anforderung, wenn ihre ID-Zelle als Ganzes auf `id-pattern` passt.
+
+Ist `trace.requirements.modality` aktiv
+([`DC-FA-MOD-001`](#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in)),
+klassifiziert d-check im Tabellenformat bei gesetzter `modality-column`
+**ausschließlich deren Zelleninhalt** mit denselben konfigurierten Keywords;
+ohne `modality-column` dient der Inhalt der jeweils gebundenen Textspalte als Body. Damit ist
+etwa `Kennung | Prioritaet | Anforderung` durch `id-column: Kennung`,
+`modality-column: Prioritaet` und `text-column: Anforderung` abbildbar. Die
+Heading- und Tabellenform liefern danach dasselbe RTM-Modell; Referenzscan,
+Coverage, Waisenstatus und Ausgabeformate bleiben identisch.
+
+Die Quellenwahl ist **fail-closed**: Ist `trace.requirements.source`
+mit einem **nichtleeren** Wert explizit konfiguriert oder `format: table`
+aktiviert und werden **null**
+Anforderungen erkannt, endet `--trace` ebenso wie
+`--trace --require-complete` mit Exit 2 und einer erklärenden Meldung statt
+einer irreführend grünen leeren RTM. Ebenso sind ein unbekanntes `format`, ein
+fehlender `table`-Block, leere Spaltennamen, ein in keiner Tabelle vorhandener
+oder dort doppelt vorkommender konfigurierter Header sowie standardmäßig eine
+doppelte erkannte Anforderungs-ID im Tabellenmodus oder bei nichtleer expliziter
+Quelle Konfigurations-/Quelldatenfehler (Exit 2). Für historische
+Mehrfachdefinitionen wählt `table.duplicate-ids` explizit `first` oder `last`;
+Default `error` bleibt fail-closed. `source: ""` gilt wie bisher als
+abwesend und fällt auf den Default zurück. Ohne `trace`-Block bleibt
+`format: headings` der Default; eine fehlende Default-Quelle bzw. null
+Heading-Treffer liefert aus Kompatibilitätsgründen weiterhin die leere RTM
+mit Exit 0 ([`DC-QA-02`](#dc-qa-02--determinismus)). Beide Formate sind
+read-only ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given eine explizit konfigurierte Tabellenquelle mit `Kennung | Prioritaet | Anforderung` sowie `Kennung | Prioritaet | Akzeptanzkriterium`, `format: table`, `text-columns: [Anforderung, Akzeptanzkriterium]`, 372 passende Datenzeilen und 371 eindeutige IDs (eine historische Hochstufung doppelt), when `duplicate-ids: last` gesetzt ist und `d-check --trace` läuft, then enthält die RTM genau 371 Anforderungen; die spätere Definition gewinnt, Referenzen/Waisen werden wie bei Heading-Definitionen berechnet, Exit 0.
+- **Boundary (Modalität):** Given eine Tabellenzeile `F-1 | Muss | Das Repository muss …`, eine konfigurierte `modality-column: Prioritaet` und aktive Default-`modality`, when `d-check --trace` läuft, then ist die Anforderung als `must` klassifiziert; der Text der Anforderung beeinflusst diese Klassifikation nicht. Ohne `modality-column` wird stattdessen `text-column` klassifiziert.
+- **Negative (Nullmenge):** Given eine mit einem **nichtleeren** Wert explizit konfigurierte `trace.requirements.source`, deren Format oder Inhalte keine einzige Definition gemäß der gewählten Grammatik und `id-pattern` ergeben, when `d-check --trace [--require-complete]` läuft, then Exit 2 mit Quelle, Format und Hinweis auf null erkannte Anforderungen; keine grüne leere RTM. `source: ""` gilt wie Abwesenheit und behält die Default-Semantik.
+- **Negative (Schema):** Given `format: table` ohne genau eine der Alternativen `text-column`/`text-columns`, mit einem fehlenden/leer benannten oder in der Quelle nicht vorhandenen Rollen-Header beziehungsweise mit unbekanntem `duplicate-ids`, when `d-check --trace` läuft, then Exit 2 mit dem betroffenen Feld oder Spaltennamen.
+- **Default byte-identisch:** Given kein `trace`-Block oder `trace.requirements.source: ""`, when `d-check --trace [--require-complete]` auf demselben Repo läuft, then bleiben Heading-Erkennung, Deduplizierung, Ausgabe und Exit-Code byte-identisch zur Fassung vor dieser Anforderung; insbesondere bleibt die unkonfigurierte Nullmenge Exit 0 ([`DC-QA-02`](#dc-qa-02--determinismus)).
+
+**Out-of-Scope:** HTML-Tabellen; Tabellen ohne Markdown-Header-/Trennzeile;
+zusammengeführte Zellen, mehrzeilige Tabellenzeilen oder Block-Markdown in
+einer Zelle; automatische Spalten-Ableitung über Synonyme oder Positionen;
+gleichzeitiges Mischen von Heading- und Tabellen-Definitionen in einem Lauf
+(genau ein `format`); mehrere Anforderungs-Quelldateien; semantische Bewertung
+des Anforderungstextes jenseits der bestehenden Keyword-Klassifikation.
 
 ---
 
@@ -1774,6 +1840,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.43.0 | 2026-07-14 | Change Request (Auftraggeber): neue Anforderung `DC-FA-REQ-001` — **native tabellarische Anforderungsquellen + Nullmengen-Guard** für die RTM. `trace.requirements.format: table` liest Markdown-Pipe-Tabellen über konfigurierte Header-Namen (`table.id-column`, genau eine von `table.text-column`/`.text-columns`, optional `.modality-column`); die ID-Zelle muss als Ganzes auf `id-pattern` passen, die gebundene Textzelle liefert RTM-Titel/Body, eine gesetzte Modalitätsspalte ist die alleinige Keyword-Quelle für `DC-FA-MOD-001`. `table.duplicate-ids` ist `error` (Default), `first` oder `last`. Beide Formate münden in dasselbe RTM-Modell. **Fail-closed:** nichtleer explizite `requirements.source` oder Tabellenmodus mit null erkannten Anforderungen sowie unbekanntes Format/fehlende oder doppelte konfigurierte Spalten ⇒ Exit 2 (auch mit `--require-complete`) statt irreführendem `0 Anforderungen, 0 Waisen`/Exit 0. `source: ""` gilt wie abwesend. Ohne `trace`-Block bleibt der Heading-Default samt Deduplizierung/leerer RTM/Exit 0 byte-identisch (`DC-QA-02`/`DC-QA-03`). Mit-Modifikation `DC-FA-CLI-009`; Bereich `REQ` in §3; Spezifikation, ADR, Implementierung, Realdatenbeleg und Release folgen in `slice-070`. Anlass: reproduzierter Konsumentenbefund `m-trace` mit d-check v0.42.0 — 371 eindeutige IDs in Tabellen mit den Text-Headern `Anforderung`/`Akzeptanzkriterium`, explizite Quelle und passende Regex ergaben null Anforderungen bei Exit 0 | slice-070 |
 | 0.42.0 | 2026-07-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-MOD-001` — **Modalitäts-Klassifikation der Anforderungen** (`trace.requirements.modality`, opt-in): d-check klassifiziert jede RTM-Anforderung anhand **konfigurierbarer Modal-Verb-Schlüsselwörter** (Built-in DE+EN-RFC-2119-Defaults; `modality.levels` Stufe→Keywords, `modality.require-levels` welche Stufen gaten, Default `[must]`) über den **ersten** Treffer im Anforderungs-Body (Längster-Treffer-zuerst gegen `MUSS NICHT`≠`DARF NICHT`, case-insensitiv/wortgrenzen-genau; kein Treffer ⇒ Stufe `unknown`). Neue **Modality-Spalte** (konditional); `--require-complete` ([`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)) bricht dann **nur** bei Waisen der `require-levels`-Stufen (SOLLTE/KANN/`unknown` advisory). Fail-closed (leerer Stufen-Name/Keyword, `require-levels`-Eintrag weder Stufe noch `unknown` ⇒ Exit 2), strikt opt-in, default-aus **byte-identisch** (`DC-QA-02`/`DC-QA-03`; ohne `modality` gaten alle Waisen wie bisher). Bereich `MOD` in §3; `DC-FA-MOD-001.a` + Schema-Keys (`trace.requirements.modality.levels`/`require-levels`) in der Spezifikation; Mit-Modifikation `DC-FA-CLI-009` (Modality-Spalte). `--print-config` führt den `modality`-Block. Begründung + Matching-/Unknown-Semantik in begleitender ADR. Anlass: Konsumenten-Analyse grid-gym — die 10 Coverage-Rest-„Waisen" sind 5× KANN (Future) + 4× Nicht-Ziele + 1× DARF NICHT; die slice-zentrische RTM behandelte MUSS und KANN gleich | slice-068 |
 | 0.41.0 | 2026-07-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-COV-001` — **kuratierte Coverage-Quellen der RTM** (`trace.coverage`, opt-in): eine dritte Referenzklasse (Liste benannter `files` + `label` + `ranges` + `sections`/`exclude-sections`), die eine ausgelagerte Traceability-Matrix **range-aware** als Coverage einliest, **ohne** `adrs`/`slices` zu berühren. `<FAM>-AAA..BBB`/`<FAM>-AAA/BBB/CCC` expandieren (breiten-erhaltend, gegen `requirements.id-pattern` validiert); Abschnitts-Whitelist/Blacklist (dieselbe Span-Semantik wie `matrix.exclude-sections` — gegen die „…ohne Design-Artefakt"-Falle). Mit-Modifikationen: `DC-FA-CLI-009` (RTM trägt bei aktiver `trace.coverage` eine **Coverage-Spalte** + `coverage`-Feld in `--json`/`--yaml`) und `DC-FA-CLI-011` (**Waise = ¬slice ∧ ¬coverage**; Slice **oder** Coverage deckt ab, bloße ADR-Referenz weiterhin nicht). Fail-closed (fehlende Datei / ungültige Range `AAA>BBB` / Breiten-Mismatch ⇒ Exit 2), strikt opt-in, default-aus **byte-identisch** (`DC-QA-02`/`DC-QA-03`). Bereich `COV` in §3; `DC-FA-COV-001.a` + Schema-Keys (`trace.coverage[].files`/`label`/`ranges`/`sections`/`exclude-sections`) in der Spezifikation; `--print-config` führt den `coverage`-Block. Begründung + Range-/Sektions-Semantik in begleitender ADR. Anlass: Konsumenten-Analyse grid-gym — 171 „Waisen" waren zu ≥122 anderswo (ADR/traceability.md/Wellen) belegt; d-checks slice-zentrische RTM verfehlte die kuratierte Deckungs-Matrix | slice-067 |
 | 0.40.0 | 2026-07-11 | Change Request (Auftraggeber): `DC-FA-CLI-009` (Requirements Traceability Matrix) um einen **opt-in `trace`-Config-Block** erweitert — die vier bislang hart an d-checks Konvention gebundenen RTM-Annahmen sind überschreibbar: Anforderungs-Quelldatei + Kennungs-Gestalt (`trace.requirements.source`/`.id-pattern`) sowie je Referenzklasse ADR/Slice das Verzeichnis, die Dateinamen-Gestalt (Capture-Gruppe = Owner-Kennung) und das Owner-Präfix (`trace.adrs.*`/`trace.slices.*`). Jedes Feld optional; abwesend ⇒ d-checks Konventions-Default ⇒ RTM **byte-identisch** (`DC-QA-02`), nichts geschrieben (`DC-QA-03`). Fail-closed: ungültige Regex oder `file-pattern` ohne Capture-Gruppe ⇒ Exit 2. **Kehrt die 0.21.0-Out-of-Scope-Zeile „frei konfigurierbare Quell-Pfade jenseits der adoptierten Harness-Konvention" um** (durch bewusst begrenzte, explizit gesetzte Config ersetzt — kein Ableiten, je eine ADR-/Slice-Klasse, kein leerer ADR-Präfix, kein VCS). Config-Schema `trace.*` + Algorithmus-Konfigurierbarkeit in `DC-FA-CLI-009.a` der Spezifikation; Begründung (Konsumenten-Konventions-Bindung, Design spiegelt `ids.patterns`) in begleitender ADR. `DC-FA-CLI-011` (`--require-complete`) erbt die konfigurierten Quellen unverändert (gleicher RTM-Lauf). Anlass: Konsumenten-Befund grid-gym 2026-07-11 — `make doc-trace` sah nur 6 von 243 Anforderungen (allein die `GG-QA-*`-Familie traf zufällig d-checks `-QA-`-Default-Gestalt), die übrigen 40 Familien und alle `NNN-…md`-Slices blieben unsichtbar | slice-066 |
