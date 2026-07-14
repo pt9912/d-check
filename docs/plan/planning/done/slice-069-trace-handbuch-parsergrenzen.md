@@ -1,6 +1,6 @@
 # Slice slice-069: Trace-Handbuch — Definitionssyntax und Nullmengen-Grenze
 
-**Status:** in-progress (welle-58-trace-handbuch-parsergrenzen).
+**Status:** done (welle-58-trace-handbuch-parsergrenzen).
 
 **Welle:** welle-58-trace-handbuch-parsergrenzen (Trigger: reproduzierter
 Konsumentenbefund in `m-trace`: 371 tabellarisch definierte Anforderungen
@@ -102,8 +102,19 @@ angeglichen. Kein neuer Adapter, keine BF-/Hybrid-Sub-Area.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-Offen bis DoD, Review und Gates erfüllt sind. Self-Review R1
-([Report](../../../reviews/2026-07-14-slice-069-trace-handbuch-r1.md)) mit
-Verdikt NACHBESSERN (0 HIGH/2 MEDIUM/1 LOW): alle drei Befunde eingearbeitet
+Abgeschlossen am 2026-07-14. Self-Review R1
+([Report](../../../reviews/2026-07-14-slice-069-trace-handbuch-r1.md)) ergab
+NACHBESSERN (0 HIGH/2 MEDIUM/1 LOW); alle drei Befunde wurden eingearbeitet
 (einleitende Waisen-Definition, `modality.require-levels`-Gate-Semantik,
-konditionale JSON-/YAML-Felder); Folgereview steht aus.
+konditionale JSON-/YAML-Felder). Das Folgereview R2
+([Report](../../../reviews/2026-07-14-slice-069-trace-handbuch-r2.md)) endet mit
+ACCEPT (0 HIGH/0 MEDIUM/0 LOW/0 INFO). Die Handbuch-Verifikation reproduziert
+die v0.42.0-Nullmenge einer tabellarischen Quelle mit Exit 0 und verriegelt die
+übrigen Parsergrenzen; `make gates` war grün.
+
+**Learning:** Eine reine Konfigurierbarkeit von Pfad und ID-Regex darf im
+Handbuch nicht als Format-Konfigurierbarkeit erscheinen. Nicht offensichtliche
+Parsergrenzen brauchen neben präziser Prosa mindestens eine ausführbare
+Verhaltensprobe. Die dokumentierte Nullmengen-Gefahr bleibt bewusst sichtbar,
+bis der Folge-CR aus `slice-070` native Tabellenquellen und den fail-closed
+Guard liefert.
