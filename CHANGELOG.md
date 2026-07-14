@@ -4,6 +4,18 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [Unreleased]
+
+### Fixed
+
+- [`slice-069`](docs/plan/planning/in-progress/slice-069-trace-handbuch-parsergrenzen.md)
+  präzisiert die Dokumentation von `--trace` für v0.42.0: Anforderungen
+  werden nur aus ATX-Überschriften mit der ID als erstem vollständigem Token
+  definiert; Tabellen-/Listen-/Fließtext, Body-only-Modalität, die exakte
+  Waisen- und Referenzscan-Semantik sowie die leere RTM mit Exit 0 sind nun
+  ausdrücklich beschrieben. Eine Brownfield-Anleitung zeigt die Migration
+  tabellarischer Lastenhefte, ohne native Tabellenunterstützung zu behaupten.
+
 ## [0.42.0] — 2026-07-11
 
 ### Added

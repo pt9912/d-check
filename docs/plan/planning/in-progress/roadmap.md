@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-06.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-14.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**,
 keine Reihenfolge von Terminen. Termine erscheinen — falls überhaupt —
@@ -10,7 +10,29 @@ als Konsequenz der Wellen-Schätzung, nicht als Treiber.
 
 ## Aktuelle Welle
 
-**Keine aktive Welle** — kein Slice in `in-progress/`. Zuletzt abgeschlossen:
+**Welle-ID:** welle-58-trace-handbuch-parsergrenzen
+
+**Slice:**
+[`slice-069`](slice-069-trace-handbuch-parsergrenzen.md) — das
+Benutzerhandbuch dokumentiert die feste Heading-Grammatik von `--trace`, die
+Body-Grenze der Modalitätsklassifikation, die Waisen-/Referenzscan-Semantik
+und die in v0.42.0 fail-open behandelte Nullmenge; tabellenbasierte
+Brownfield-Repos erhalten einen sicheren Migrationsweg. Kein Lastenheft-CR,
+kein ADR und kein Produkt-/Release-Delta.
+
+**Vorgänger-Trigger:** welle-57-trace-modality-klassifikation ist
+abgeschlossen; kein anderer Slice liegt in `in-progress/`.
+
+**Trigger:** reproduzierter Konsumentenbefund in `m-trace`: 371 Anforderungen
+in Tabellenzeilen ergeben trotz expliziter Trace-Quelle und passender ID-Regex
+`0 Anforderungen, 0 Waisen` bei Exit 0.
+
+**Closure-Trigger:** Handbuch nennt Definitionssyntax, Nullmengenwarnung,
+Brownfield-Migration sowie Modalitäts-, Waisen- und Referenzscan-Semantik;
+die Handbuch-Verifikation verriegelt die Kernhinweise; `make gates` ist grün
+und der Slice trägt Closure- und Lerneintrag.
+
+Zuletzt abgeschlossen:
 **welle-57-trace-modality-klassifikation**
 ([`slice-068`](../done/slice-068-trace-modality-klassifikation.md) — die RTM
 (`--trace`) trägt nun eine opt-in **Modalitäts-Klassifikation**

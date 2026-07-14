@@ -573,10 +573,34 @@ siehe Abschnitt 4.9).
 ### 4.12 Anforderungs-Abdeckung prüfen — Traceability-Matrix (`--trace`)
 
 **Ziel:** sehen, welche Anforderung von welchen Architekturentscheidungen
-(ADRs) und Umsetzungs-Slices referenziert wird — und welche Anforderung
-**niemand** referenziert (Waise).
+(ADRs), Umsetzungs-Slices und kuratierten Coverage-Quellen referenziert wird.
+`WAISE` bedeutet dabei nicht „ohne jede Referenz", sondern: weder ein Slice noch
+eine konfigurierte Coverage-Quelle deckt die Anforderung ab; eine ADR allein
+verhindert den Waisenstatus nicht.
 **Voraussetzung:** ein Repo nach Harness-Konvention (Anforderungen im
 Lastenheft, ADRs unter `docs/plan/adr/`, Slices unter `docs/plan/planning/`).
+
+**Unterstützte Definitionssyntax:** `--trace` erkennt eine Anforderung nur aus
+einer ATX-Markdown-Überschrift (`#` bis `######`, außerhalb von
+Fenced-Code-Blöcken). Die ID muss das **erste vollständige Token** der
+Überschrift sein und als Ganzes auf `trace.requirements.id-pattern` passen:
+
+```markdown
+### F-1 — Repository-Struktur
+
+Das Repository MUSS alle Hauptbestandteile enthalten.
+```
+
+Tabellenzeilen, Listen, Fließtext und Setext-Überschriften gelten nicht als
+Anforderungsdefinition. Eine angepasste ID-Regex ändert nur die zulässige
+Kennungsgestalt, **nicht** diese Dokumentgrammatik. Beispielsweise definiert
+dieser verbreitete Brownfield-Bestand für `--trace` keine Anforderung:
+
+```markdown
+| ID  | Modalität | Anforderung                                      |
+| --- | ---------- | ------------------------------------------------ |
+| F-1 | Muss       | Das Repository enthält alle Hauptbestandteile. |
+```
 
 **Vorgehen:**
 
@@ -585,8 +609,9 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
-referenzierende ADRs, referenzierende Slices und eine Status-Spalte (`ok`,
-bzw. `WAISE` für eine Anforderung, die kein Slice referenziert):
+referenzierende ADRs, referenzierende Slices und eine Status-Spalte. `WAISE`
+bedeutet exakt: **weder eine Slice- noch eine konfigurierte Coverage-Referenz**.
+Eine ADR-Referenz allein verhindert den Waisenstatus nicht:
 
 ```text
 # Requirements Traceability Matrix
@@ -602,12 +627,33 @@ bzw. `WAISE` für eine Anforderung, die kein Slice referenziert):
 **Hinweise:** `--trace` ist read-only und arbeitet nur auf der Doku
 (Lastenheft/ADRs/Planning) — keine Code-Prüfung. Mit `--trace --json` bzw.
 `--trace --yaml` kommt dieselbe Matrix maschinenlesbar (`requirements` mit
-`id`/`title`/`adrs`/`slices`/`orphan`, plus `total`/`orphans`). Standardmäßig
-ist `--trace` **advisory** (Exit 0, auch bei Waisen). Für ein **Gate** ergänzen
-Sie `--require-complete`: mindestens eine Waise ⇒ Exit 1 statt 0 (die Matrix
-bleibt unverändert auf stdout) — so lässt sich „jede Anforderung hat einen
-umsetzenden Slice" in CI erzwingen. Ohne `--trace` ist `--require-complete` ein
-Nutzungsfehler (Exit 2).
+`id`/`title`/`adrs`/`slices`, konditional `coverage` und `modality`, sowie
+`orphan`; auf Matrix-Ebene `total`/`orphans`). Standardmäßig ist `--trace`
+**advisory** (Exit 0, auch bei Waisen). Für ein **Gate** ergänzen Sie
+`--require-complete`: Ohne aktive `modality` gatet jede Waise; mit aktiver
+`modality` gaten nur Waisen der in `require-levels` gelisteten Stufen. Mindestens
+eine so gatende Waise ergibt Exit 1 (die Matrix bleibt unverändert auf stdout).
+Ohne `--trace` ist `--require-complete` ein Nutzungsfehler (Exit 2).
+
+> **Achtung: Eine leere RTM ist in v0.42.0 kein Konfigurationsfehler.** Eine
+> fehlende `requirements.source`-Datei, eine nicht unterstützte
+> Definitionsform (insbesondere Tabellen) oder null Treffer der ID-Regex
+> ergeben derzeit eine leere Matrix. Auch `--trace --require-complete` endet
+> dann mit Exit 0, weil keine erkannte Anforderung als Waise gelten kann:
+
+```bash
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.42.0 --trace --require-complete
+```
+
+```text
+0 Anforderung(en), 0 Waise(n).
+```
+
+Dieser Exit 0 ist nur für einen **erwartet leeren** Bestand ein belastbares
+Ergebnis. Bevor `--require-complete` als Gate gebunden wird, muss die erkannte
+Gesamtzahl gegen die erwartete Zahl der Anforderungen plausibilisiert werden;
+bei `total: 0` bzw. der obigen Summenzeile darf ein nichtleeres Lastenheft nicht
+grün freigegeben werden.
 
 **Andere Repo-Konvention (`trace`-Block).** Standardmäßig erkennt `--trace`
 Anforderungen der Gestalt `<PREFIX>-FA-…`/`-QA-…` und Slice-Dateien
@@ -623,9 +669,11 @@ trace:
     file-pattern: '^(\d+)-.*\.md$'          # z. B. Slices NNN-titel.md
 ```
 
-Damit bildet die RTM auch ein Repo mit eigener Kennungs-/Datei-Konvention
-vollständig ab (Details und alle Felder in §5). Ein Muster ohne Capture-Gruppe
-in `file-pattern` ist ein Konfigurationsfehler (Exit 2).
+Damit lassen sich Quellpfad, Kennungsgestalt und ADR-/Slice-Dateinamen an eine
+andere Repo-Konvention anpassen (Details und alle Felder in §5). Die oben
+beschriebene Heading-basierte Definitionssyntax bleibt dabei unverändert. Ein
+Muster ohne Capture-Gruppe in `file-pattern` ist ein Konfigurationsfehler
+(Exit 2).
 
 **Kuratierte Coverage-Quellen (`trace.coverage`).** Liegt die Abdeckung mancher
 Anforderungen nicht in ADRs/Slices, sondern in einer **kuratierten Matrix** (z. B.
@@ -667,15 +715,33 @@ trace:
     modality: {}          # {} = Built-in DE+EN-Defaults; require-levels [must]
 ```
 
-Klassifiziert wird über den ersten Modal-Verb-Treffer im Anforderungs-Body
-(längster zuerst: `MUSS NICHT`=may vor `MUSS`=must, `DARF NICHT`=must; Body wird
-whitespace-/emphasis-normalisiert); ohne Treffer ⇒ Stufe `unknown` (sichtbar,
-advisory bei Default). **Wichtig:** ein `unknown` unter `require-levels: [must]`
-gatet **nicht** — ein echtes MUSS mit unaufgeführtem Verb entkäme so dem Gate;
+Schon die Schreibweise `modality: {}` **aktiviert** die Klassifikation mit den
+Built-in-Defaults. Klassifiziert wird über den ersten Modal-Verb-Treffer im
+Body **unterhalb der erkannten Requirement-Überschrift bis zur nächsten gleich-
+oder höherrangigen Überschrift** (längster Treffer zuerst: `MUSS NICHT`=may vor
+`MUSS`=must, `DARF NICHT`=must; Body wird whitespace-/emphasis-normalisiert).
+Die Requirement-Überschrift selbst und eine Tabellenspalte wie `Muss` werden
+nicht ausgewertet. Ohne Treffer ⇒ Stufe `unknown` (sichtbar, advisory bei
+Default). **Wichtig:** ein `unknown` unter `require-levels: [must]` gatet
+**nicht** — ein echtes MUSS mit unaufgeführtem Verb entkäme so dem Gate;
 Gegenmittel: die Spalte prüfen und ggf. `levels` ergänzen oder strikt
-`require-levels: [must, unknown]`. Fail-closed (Exit 2): leeres Keyword, gleiches
-Keyword in zwei Stufen, `unknown` als Stufen-Name, ungültiges `require-levels`.
-Ohne `modality` byte-identisch (keine Spalte). Details in §5.
+`require-levels: [must, unknown]`. Fail-closed (Exit 2): leeres Keyword,
+gleiches Keyword in zwei Stufen, `unknown` als Stufen-Name, ungültiges
+`require-levels`. Ohne `modality` byte-identisch (keine Spalte). Details in §5.
+
+**Tabellenbasiertes Lastenheft migrieren.** Für einen Brownfield-Bestand gibt
+es in v0.42.0 zwei sichere Wege:
+
+1. Die Tabelle in Heading-plus-Body-Abschnitte wie im ersten Beispiel dieses
+   Kapitels überführen. ID und Titel stehen in der Überschrift, der normative
+   Text samt Modalverb im Body.
+2. Aus der Tabelle deterministisch ein separates Heading-plus-Body-Dokument
+   erzeugen und dieses als `trace.requirements.source` konfigurieren. Damit die
+   Projektion nicht unbemerkt driftet, muss ein eigener Konsistenzsensor die
+   erzeugten IDs und Texte gegen die autoritative Tabelle prüfen.
+
+Eine ID-Regex allein migriert das Format nicht; native, konfigurierbare
+Tabellenspalten für ID, Modalität und Text unterstützt `--trace` derzeit nicht.
 
 ### 4.13 Ein Makefile-Fragment einbinden (`--print-mk`)
 
@@ -1005,6 +1071,14 @@ ist optional; ein abwesendes fällt auf den Default zurück, und **ohne
 nicht kompilierbares Muster oder eine `file-pattern` ohne Capture-Gruppe ist ein
 Konfigurationsfehler (Exit 2, fail-closed).
 
+Der ADR-/Slice-Referenzscan läuft rekursiv über die gefundenen Dateien unter
+dem jeweiligen `dir`. `file-pattern` wird gegen den **Basisdateinamen** und
+nicht gegen den vollständigen Pfad geprüft. Dateien ohne Match werden
+übersprungen; bei einem Match bildet Capture-Gruppe 1 zusammen mit
+`id-prefix` die Owner-Kennung. Danach wird der gesamte Dateiinhalt nach
+Treffern von `requirements.id-pattern` durchsucht. Owner je Requirement werden
+dedupliziert und deterministisch sortiert.
+
 Zusätzlich liest der opt-in **`trace.coverage`**-Block (eine **Liste** benannter
 Quellen) **kuratierte Matrizen** als **eigene Coverage-Dimension** ein — für
 Anforderungen, deren Abdeckung weder in ADRs noch Slices liegt (siehe §4.12). Je
@@ -1173,6 +1247,7 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.21             | v0.37.1          | 2026-07-04 | Anleitung „Das Versions-Register `version.md` aufbauen" (§5) — Aufbau (`## Aktuell`/`## Verlauf`), die `<a id="vX.Y.Z">`-Anker-Mechanik samt Anker-Wanderung beim Release und ein kopierbares Muster zum Nachbau in eigenen Repos                |
 | 1.22             | v0.38.0          | 2026-07-05 | Neues opt-in-Modul `targets` (17., §5/§6): Deklarations-Konsistenz Doku ↔ Build-Targets — jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`gate-phantom`), jede Regel steht in der Autoritäts-Doku (`gate-undocumented`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed. Löst den Doku-↔-Makefile-Kern des `gate-consistency.sh`-Meta-Gates ab; `--print-mk`-Target `doc-targets` (elf Targets, §4.13) verteilt die Prüfung                |
 | 1.23             | v0.39.0          | 2026-07-06 | `--suggest-config ai-harness[-init]` (§4.4): Vorlage an die **gelebte** Konvention angeglichen — `spans`/`hostpaths` ins fixe Standard-Modulset, repo-bewusster `planning`-Block; `vcs`/`commits` (Commit-Range) via `--print-mk`, `versions`/`targets` bewusst vertagt; kanonische Vorlage der Spezifikation deckt die emittierte Ausgabe 1:1                |
-| 1.24             | v0.40.0          | 2026-07-11 | Requirements Traceability Matrix (`--trace`, §4.12) über einen opt-in `trace`-Block quell-/kennungs-konfigurierbar (§5): Anforderungs-Quelldatei + Kennungs-Regex sowie je Referenzklasse Verzeichnis + Dateimuster + Owner-Präfix; Default = Konvention ⇒ byte-identisch, fail-closed bei ungültiger Regex / Muster ohne Capture-Gruppe. Bildet auch Repos mit abweichender Kennungs-/Datei-Konvention vollständig ab                |
+| 1.24             | v0.40.0          | 2026-07-11 | Requirements Traceability Matrix (`--trace`, §4.12) über einen opt-in `trace`-Block quell-/kennungs-konfigurierbar (§5): Anforderungs-Quelldatei + Kennungs-Regex sowie je Referenzklasse Verzeichnis + Dateimuster + Owner-Präfix; Default = Konvention ⇒ byte-identisch, fail-closed bei ungültiger Regex / Muster ohne Capture-Gruppe. Passt diese Quellachsen an abweichende Repo-Konventionen an; die Heading-basierte Definitionssyntax bleibt bestehen                |
 | 1.25             | v0.41.0          | 2026-07-11 | Kuratierte Coverage-Quellen `trace.coverage` (§4.12/§5): eine Liste benannter `files` liest Deckungs-Matrizen als **eigene Coverage-Spalte** ein — `ranges` (`GG-QA-001..006` → alle sechs, `/`-Aufzählung), `sections`/`exclude-sections` (voller Heading-Text). Waise = ohne Slice **und** ohne Coverage; fail-closed (fehlende Datei / leeres label / Sektion ohne Treffer / ungültige Range ⇒ Exit 2); ohne Block byte-identisch                |
 | 1.26             | v0.42.0          | 2026-07-11 | Modalitäts-Klassifikation `trace.requirements.modality` (§4.12/§5): aus konfigurierbaren Modalverb-Stichwörtern (DE+EN-Defaults, opt-in) klassifiziert die RTM jede Anforderung als MUSS/SOLLTE/KANN in einer **eigenen Modalitäts-Spalte** (längster Treffer, Wortgrenze, Markup-normalisiert); optional gatet `require-levels`, welche Stufen einen Waisen zum Exit-1-Fehler machen (Default: nur MUSS). Fail-closed bei leerem Level/Stichwort, reserviertem `unknown`, Stichwort in zwei Stufen, ungültigem `require-levels` ⇒ Exit 2; ohne Block byte-identisch                |
+| 1.27             | v0.42.0          | 2026-07-14 | Trace-Präzisierung (§4.12/§5): Requirement-Definition nur als ATX-Heading mit ID im ersten Token; Tabellen-/Listen-/Fließtextgrenze, Body-only-Modalität, exakte Waisen- und Referenzscan-Semantik, Warnung vor leerer RTM mit Exit 0 sowie Brownfield-Migration für tabellarische Lastenhefte dokumentiert                |

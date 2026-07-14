@@ -19,9 +19,11 @@ package cli_test
 //      nicht auf wörtliche Datei-Zahlen/Pfade (sonst Wartungsfalle).
 //
 // Beispiel-Auswahl (DoD „E2E-verankert vs. begründet ausgenommen"):
-//   VERANKERT (7): §3/§4.1 sauberes Repo (Summary, Exit 0) · §3/§4.1 kaputter
+//   VERANKERT (8): §3/§4.1 sauberes Repo (Summary, Exit 0) · §3/§4.1 kaputter
 //     Link (Befund-Zeilen-Schema + Exit 1) · §4.9 --doctor (Prosa-Diagnose) ·
-//     §4.9 --doctor --json · §4.11 --json · §4.11 --yaml · §4.12 --trace (RTM).
+//     §4.9 --doctor --json · §4.11 --json · §4.11 --yaml · §4.12 --trace
+//     (RTM) · §4.12 --trace --require-complete (tabellarische Quelle,
+//     Nullmenge/Exit 0 als dokumentierte v0.42.0-Grenze).
 //   AUSGENOMMEN mit Grund:
 //     · §4.13 --print-mk: ```text ist eine ABGEKÜRZTE Illustration (Elision
 //       „# …"), nicht die wörtliche Ausgabe → not-replayable-Marker.
@@ -101,6 +103,10 @@ func handbookExamples() []handbookExample {
 	brokenLink := func(t *testing.T, root string) {
 		write(t, root, "docs/a.md", "[kaputt](fehlt.md)\n")
 	}
+	tableOnlyRequirements := func(t *testing.T, root string) {
+		write(t, root, ".d-check.yml", "trace:\n  requirements:\n    source: spec/lastenheft.md\n    id-pattern: 'F-[0-9]+'\n")
+		write(t, root, "spec/lastenheft.md", "| ID | Modalität | Anforderung |\n| --- | --- | --- |\n| F-1 | Muss | Das Repository enthält alles. |\n")
+	}
 	return []handbookExample{
 		{
 			name:       "§3/§4.1 sauberes Repo (Summary, Exit 0)",
@@ -146,6 +152,16 @@ func handbookExamples() []handbookExample {
 			formTokens: []string{"# Requirements Traceability Matrix", "| Anforderung", "Anforderung(en),", "Waise(n)."},
 		},
 		{
+			name:       "§4.12 --trace --require-complete (tabellarische Quelle bleibt leer)",
+			outputInfo: "text",
+			outputDisc: "0 Anforderung(en), 0 Waise(n).",
+			flags:      []string{"--trace", "--require-complete"},
+			wantFlags:  []string{"--trace", "--require-complete"},
+			wantExit:   0,
+			fixture:    tableOnlyRequirements,
+			formTokens: []string{"0 Anforderung(en), 0 Waise(n)."},
+		},
+		{
 			name:       "§4.11 --json (Befundliste)",
 			outputInfo: "json",
 			outputDisc: "target-missing",
@@ -175,6 +191,44 @@ func handbookExamples() []handbookExample {
 			fixture:    brokenLink,
 			structured: true,
 		},
+	}
+}
+
+// TestHandbook_TraceParsergrenzenDokumentiert koppelt die nicht aus der
+// Konfiguration ableitbaren Parsergrenzen an die Nutzer-Doku. Die eigentliche
+// Verhaltensprobe (tabellarische Quelle + --require-complete => leere RTM,
+// Exit 0) ist als achtes Replay-Beispiel oben verankert; diese Marker verhindern,
+// dass Warnung, Definitionsgrammatik oder Waisen-/Owner-Semantik unabhängig
+// davon still aus dem Handbuch verschwinden (slice-069).
+func TestHandbook_TraceParsergrenzenDokumentiert(t *testing.T) {
+	raw, err := os.ReadFile(handbookPath)
+	if err != nil {
+		t.Fatalf("Handbuch nicht lesbar: %v", err)
+	}
+	text := strings.Join(strings.Fields(string(raw)), " ")
+	for _, want := range []string{
+		"ATX-Markdown-Überschrift",
+		"erste vollständige Token",
+		"Tabellenzeilen, Listen, Fließtext und Setext-Überschriften",
+		"Eine ADR-Referenz allein verhindert den Waisenstatus nicht",
+		"konditional `coverage` und `modality`",
+		"Ohne aktive `modality` gatet jede Waise",
+		"gaten nur Waisen der in `require-levels` gelisteten Stufen",
+		"Basisdateinamen",
+		"Capture-Gruppe 1 zusammen mit",
+		"native, konfigurierbare Tabellenspalten",
+	} {
+		if !strings.Contains(text, want) {
+			t.Errorf("Trace-Parsergrenze %q fehlt im Benutzerhandbuch", want)
+		}
+	}
+	for _, forbidden := range []string{
+		"**niemand** referenziert (Waise)",
+		"mindestens eine Waise ⇒ Exit 1 statt 0",
+	} {
+		if strings.Contains(text, forbidden) {
+			t.Errorf("widersprüchliche Trace-Aussage %q steht noch im Benutzerhandbuch", forbidden)
+		}
 	}
 }
 
