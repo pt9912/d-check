@@ -6,6 +6,18 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.43.1] — 2026-07-15
+
+### Fixed
+
+- `--trace` Tabellen-Parser: ein ungeschlossener Backtick-Span bleibt literal,
+  die folgende Pipe trennt wieder Zellen — verhindert falsche Zeilenbreiten-Fehler.
+- `trace.requirements.table`: die Exklusivität von `text-column`/`text-columns`
+  ist präsenz- statt inhaltsbasiert (auch `text-column: ''` bzw. `text-columns: []`
+  neben der anderen Form ist fail-closed).
+- Fehlerpräzedenz: die Header-Prüfung (unbenutzte `text-columns`-Alternative) greift
+  vor der Duplicate-ID-Meldung (DC-FA-REQ-001.a „Header → Duplicate-ID“).
+
 ## [0.43.0] — 2026-07-14
 
 ### Added
