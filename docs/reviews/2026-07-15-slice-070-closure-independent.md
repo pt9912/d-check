@@ -4,7 +4,7 @@
 **Review-Art:** unabhängiger Closure-Review (kontext-getrennt; frisches
 Kontextfenster, nicht der Implementierer-Kontext der Self-Reviews R1–R7)
 **Gegenstand:**
-[`slice-070`](../plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md) —
+[`slice-070`](../plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md) —
 Trace-Tabellenquellen und Nullmengen-Guard (Feat-Commit `5b6b284` + uncommittete
 R4-/R6-Fixes im Arbeitsbaum)
 **Reviewer:** Claude (personell/kontext-unabhängiger Lauf)
@@ -14,7 +14,7 @@ R4-/R6-Fixes im Arbeitsbaum)
 ## Eingangs-Kontext
 
 - Slice-Vertrag §2/§3/§4/§7
-  [`slice-070`](../plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md)
+  [`slice-070`](../plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md)
 - Lastenheft
   [`DC-FA-REQ-001`](../../spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen),
   [`DC-FA-CLI-009`](../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix),

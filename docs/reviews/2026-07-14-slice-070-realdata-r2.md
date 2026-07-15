@@ -3,7 +3,7 @@
 **Datum:** 2026-07-14
 **Review-Art:** Realdaten-Review während der Implementierung
 **Gegenstand:** Tabellenvertrag von
-[`slice-070`](../plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md)
+[`slice-070`](../plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md)
 gegen `m-trace/spec/lastenheft.md`
 **Reviewer:** Codex (Self-Review; kein unabhängiger Review)
 **Skill:** `.harness/skills/reviewer.md` v1.2.0
@@ -24,7 +24,7 @@ gegen `m-trace/spec/lastenheft.md`
 
 - **kategorie:** HIGH
 - **quelle:** Realdaten-DoD von
-  [`slice-070`](../plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md)
+  [`slice-070`](../plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md)
 - **pfad:** `m-trace/spec/lastenheft.md:502,1898`
 - **befund:** Der Slice behauptet eine einheitliche Textspalte `Anforderung`.
   Tatsächlich tragen 236 Requirement-Zeilen diesen Header, weitere 136
@@ -38,7 +38,7 @@ gegen `m-trace/spec/lastenheft.md`
 
 - **kategorie:** HIGH
 - **quelle:** Realdaten-DoD und Duplikatvertrag von
-  [`slice-070`](../plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md)
+  [`slice-070`](../plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md)
 - **pfad:** `m-trace/spec/lastenheft.md:2045,2060`
 - **befund:** m-trace enthält 372 passende Tabellenzeilen, aber 371 eindeutige
   IDs, weil `RAK-51` als historische Kann-Aussage und spätere Muss-Hochstufung

@@ -3,7 +3,7 @@
 **Datum:** 2026-07-14  
 **Review-Art:** technisches Implementierungs- und Plan-Folgereview  
 **Gegenstand:** Commit-Range `4fc4d81..f047bc3` zu
-[`slice-070`](../plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md)  
+[`slice-070`](../plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md)  
 **Reviewer:** Codex (kein personell unabhängiger Review)  
 **Skill:** `.harness/skills/reviewer.md` v1.2.0  
 **Modell:** GPT-5 Codex

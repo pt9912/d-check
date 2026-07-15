@@ -4,7 +4,7 @@
 **Review-Art:** technischer Folgereview der R4-Befunde  
 **Gegenstand:** Arbeitsbaum-Diff nach
 [`Review R4`](2026-07-14-slice-070-follow-up-r4.md) zu
-[`slice-070`](../plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md)  
+[`slice-070`](../plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md)  
 **Reviewer:** Codex (Self-Folgereview; kein personell unabhängiger Review)  
 **Skill:** `.harness/skills/reviewer.md` v1.2.0  
 **Modell:** GPT-5 Codex

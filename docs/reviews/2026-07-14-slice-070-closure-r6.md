@@ -4,7 +4,7 @@
 **Review-Art:** technischer Code-/Closure-Review  
 **Gegenstand:** Commit-Range `4fc4d81..f047bc3` einschließlich des aktuellen
 Arbeitsbaum-Diffs zu
-[`slice-070`](../plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md)  
+[`slice-070`](../plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md)  
 **Reviewer:** Codex (technisch eigenständiger Lauf; personelle Unabhängigkeit
 nicht belegbar)  
 **Skill:** `.harness/skills/reviewer.md` v1.2.0  

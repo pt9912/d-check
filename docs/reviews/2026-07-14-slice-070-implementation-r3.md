@@ -3,7 +3,7 @@
 **Datum:** 2026-07-14
 **Review-Art:** Implementierungsreview nach Realdatenkorrektur
 **Gegenstand:** uncommitteter Arbeitsbaum zu
-[`slice-070`](../plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md)
+[`slice-070`](../plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md)
 **Reviewer:** Codex (Self-Review; kein unabhängiger Review)
 **Skill:** `.harness/skills/reviewer.md` v1.2.0
 **Modell:** GPT-5 Codex
@@ -16,7 +16,7 @@
   `internal/adapter/driven/configyaml/` bzw. `internal/hexagon/core/app/`
 - CLI-Akzeptanztests einschließlich synthetischem 372-Zeilen-/371-ID-Fall
 - Realdatenbeleg aus
-  [`slice-070` §7](../plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md#7-realdatenbeleg)
+  [`slice-070` §7](../plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md#7-realdatenbeleg)
 - Nutzervertrag in Handbuch, Operations und Changelog
 
 ## Findings

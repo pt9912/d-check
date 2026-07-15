@@ -4,7 +4,7 @@
 **Review-Art:** technischer Folgereview des R6-Befunds  
 **Gegenstand:** Arbeitsbaum-Diff nach
 [`Review R6`](2026-07-14-slice-070-closure-r6.md) zu
-[`slice-070`](../plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md)  
+[`slice-070`](../plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md)  
 **Reviewer:** Codex (Self-Folgereview; kein personell unabhängiger Review)  
 **Skill:** `.harness/skills/reviewer.md` v1.2.0  
 **Modell:** GPT-5 Codex

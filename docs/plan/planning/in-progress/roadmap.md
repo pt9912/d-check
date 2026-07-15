@@ -8,20 +8,7 @@
 
 ## Aktuelle Welle
 
-**Welle-ID:** welle-59-trace-tabellenquellen
-
-**Slice:**
-[`slice-070`](slice-070-trace-tabellenquellen-nullmengen-guard.md) — native,
-über Header-Namen konfigurierte Markdown-Pipe-Tabellen als
-`--trace`-Anforderungsquelle plus fail-closed Nullmengen-Guard bei expliziter
-Quelle; Heading-Default byte-identisch. Vertrag: Lastenheft-CR 0.43.0,
-[ADR-0037](../../adr/0037-trace-tabellenquellen-nullmengen-guard.md).
-
-**Vorgänger-Trigger:** welle-58-trace-handbuch-parsergrenzen ist nach
-ACCEPT-Folgereview abgeschlossen; kein anderer Slice liegt in `in-progress/`.
-
-**Closure-Trigger:**
-- slice-070 in `done/`.
+Keine aktive Welle.
 
 ## Nächste Wellen
 

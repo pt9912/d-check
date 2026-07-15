@@ -10,7 +10,7 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Added
 
-- [`slice-070`](docs/plan/planning/in-progress/slice-070-trace-tabellenquellen-nullmengen-guard.md)
+- [`slice-070`](docs/plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md)
   ergänzt für `--trace` native Markdown-Pipe-Tabellen als Anforderungsquelle
   ([`DC-FA-REQ-001`](spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen),
   [ADR-0037](docs/plan/adr/0037-trace-tabellenquellen-nullmengen-guard.md)).
