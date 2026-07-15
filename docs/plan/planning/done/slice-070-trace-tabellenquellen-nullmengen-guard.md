@@ -153,7 +153,17 @@ Tabellen-Fixture smoke-verifiziert: zwei Anforderungen wurden aus den Spalten
 
 ## 8. Closure-Notiz (nach `done/`)
 
-Implementierung, Realdatenbeleg, Gates, Release v0.43.0 und Digest-Backfill sind
-abgeschlossen. Offen bleiben das unabhängige Review und danach der
-zweistufige Lifecycle-Move nach `done/`; bis dahin bleibt der Slice ehrlich in
-`in-progress/`.
+Abgeschlossen. Der unabhängige, kontext-getrennte Closure-Review (Modul 8:
+Kontext-Trennung, nicht Personen-Trennung) verdiktierte **ACCEPT-WITH-NITS**
+(0 HIGH/0 MEDIUM); die zwei Nits — gofmt-Ausrichtung (F-1) und Fehlerpräzedenz
+Header→Duplicate-ID (F-2) — sind behoben und per Akzeptanztest verriegelt.
+Release v0.43.0, Digest-Backfill, Realdatenbeleg und `make gates` grün;
+zweistufiger Lifecycle-Move nach `done/` vollzogen.
+
+**Lerneintrag:** Die Tabellen-Fehlerpräzedenz muss Header-/Struktur-Prüfungen
+VOR die Duplicate-ID-Meldung ziehen — ein Duplicate-Fehler mitten im Zeilen-Scan
+preemptet sonst einen unbenutzten-Text-Header-Fehler entgegen der
+Spec-Reihenfolge (F-2, gelöst durch zurückgestellten Fehler). Und: „unabhängiges
+Review" ist regelwerks-korrekt **Kontext**-Trennung (Modul 8), nicht
+Personen-Trennung — ein frischer Reviewer-Subagent mit eigenem Kontextfenster
+erfüllt es.
