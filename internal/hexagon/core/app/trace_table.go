@@ -45,6 +45,9 @@ func traceTableRequirements(fsys driven.Filesystem, source string, reqPat *regex
 			return nil, nil, nil, fmt.Errorf("trace.requirements: konfigurierter Text-Header %q kommt in keiner Tabelle in %q vor", name, source)
 		}
 	}
+	if extracted.dupErr != nil {
+		return nil, nil, nil, extracted.dupErr
+	}
 	order := make([]string, 0, len(extracted.titles))
 	for id := range extracted.titles {
 		order = append(order, id)
@@ -58,6 +61,7 @@ type tableExtraction struct {
 	modalityTexts   map[string]string
 	usedTextHeaders map[string]bool
 	foundTable      bool
+	dupErr          error
 }
 
 func extractTableAt(lines []markdownTableLine, i int, source string, reqPat *regexp.Regexp, cfg *model.TraceTableConfig, out *tableExtraction) (int, bool, error) {
@@ -108,27 +112,31 @@ func consumeTableRows(lines []markdownTableLine, start, width int, cols tableCol
 			return j, nil
 		}
 		if relevant {
-			if err := addTableRequirement(cells, cols, source, reqPat, cfg, out); err != nil {
-				return j, err
-			}
+			addTableRequirement(cells, cols, source, reqPat, cfg, out)
 		}
 	}
 	return len(lines), nil
 }
 
-func addTableRequirement(cells []string, cols tableColumns, source string, reqPat *regexp.Regexp, cfg *model.TraceTableConfig, out *tableExtraction) error {
+func addTableRequirement(cells []string, cols tableColumns, source string, reqPat *regexp.Regexp, cfg *model.TraceTableConfig, out *tableExtraction) {
 	id := strings.TrimSpace(cells[cols.id])
 	if !isFullReqID(reqPat, id) {
-		return nil
+		return
 	}
 	if _, duplicate := out.titles[id]; duplicate {
 		switch cfg.DuplicateIDs {
 		case model.TraceDuplicateFirst:
-			return nil
+			return
 		case model.TraceDuplicateLast:
 			// Überschreiben ist der explizite Brownfield-Vertrag.
 		default:
-			return fmt.Errorf("trace.requirements: doppelte Anforderungs-ID %q in Tabellenquelle %q", id, source)
+			// Fehler zurückstellen, damit Header-/Struktur-Präzedenz (unbenutzte
+			// Text-Alternative) vor der Duplicate-ID-Meldung greift
+			// (DC-FA-REQ-001.a). Bis dahin gewinnt die erste ID (kein Überschreiben).
+			if out.dupErr == nil {
+				out.dupErr = fmt.Errorf("trace.requirements: doppelte Anforderungs-ID %q in Tabellenquelle %q", id, source)
+			}
+			return
 		}
 	}
 	out.titles[id] = strings.TrimSpace(cells[cols.text])
@@ -137,7 +145,6 @@ func addTableRequirement(cells []string, cols tableColumns, source string, reqPa
 		modalityColumn = cols.modality
 	}
 	out.modalityTexts[id] = strings.TrimSpace(cells[modalityColumn])
-	return nil
 }
 
 type tableColumns struct {
@@ -314,12 +321,35 @@ func (p *pipeLineSplitter) consumeBackticks(s string, i int) int {
 	run := j - i
 	switch p.codeRun {
 	case 0:
-		p.codeRun = run
+		if hasClosingBacktickRun(s, j, run) {
+			p.codeRun = run
+		}
 	case run:
 		p.codeRun = 0
 	}
 	p.cell.WriteString(s[i:j])
 	return j
+}
+
+// hasClosingBacktickRun prüft vor dem Öffnen, ob auf derselben Zeile eine
+// exakt gleich lange schließende Folge existiert. Ohne Abschluss ist die
+// aktuelle Folge literal und nachfolgende Pipes bleiben Zelltrenner.
+func hasClosingBacktickRun(s string, from, runLen int) bool {
+	for i := from; i < len(s); {
+		if s[i] != '`' {
+			i++
+			continue
+		}
+		j := i
+		for j < len(s) && s[j] == '`' {
+			j++
+		}
+		if j-i == runLen {
+			return true
+		}
+		i = j
+	}
+	return false
 }
 
 func hasUnescapedTrailingPipe(s string) bool {

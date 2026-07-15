@@ -204,11 +204,11 @@ type rawTraceRequirements struct {
 // rawTraceTable bindet tabellarische Anforderungsquellen an exakte
 // Header-Namen (DC-FA-REQ-001).
 type rawTraceTable struct {
-	IDColumn       string   `yaml:"id-column"`
-	TextColumn     string   `yaml:"text-column"`
-	TextColumns    []string `yaml:"text-columns"`
-	ModalityColumn string   `yaml:"modality-column"`
-	DuplicateIDs   string   `yaml:"duplicate-ids"`
+	IDColumn       string    `yaml:"id-column"`
+	TextColumn     *string   `yaml:"text-column"`
+	TextColumns    *[]string `yaml:"text-columns"`
+	ModalityColumn string    `yaml:"modality-column"`
+	DuplicateIDs   string    `yaml:"duplicate-ids"`
 }
 
 // rawModality bildet den opt-in Modalitäts-Block ab (DC-FA-MOD-001).
@@ -482,19 +482,27 @@ func validDuplicatePolicy(policy string) bool {
 }
 
 func traceTextColumns(table *rawTraceTable) ([]string, error) {
-	single := strings.TrimSpace(table.TextColumn)
-	if single != "" && len(table.TextColumns) > 0 {
+	singleSet := table.TextColumn != nil
+	multipleSet := table.TextColumns != nil
+	if singleSet && multipleSet {
 		return nil, fmt.Errorf("%s: trace.requirements.table.text-column und text-columns sind alternativ, nicht gleichzeitig zulässig", FileName)
 	}
-	if single != "" {
+	if singleSet {
+		single := strings.TrimSpace(*table.TextColumn)
+		if single == "" {
+			return nil, fmt.Errorf("%s: trace.requirements.table.text-column darf nicht leer sein", FileName)
+		}
 		return []string{single}, nil
 	}
-	if len(table.TextColumns) == 0 {
+	if !multipleSet {
 		return nil, fmt.Errorf("%s: trace.requirements.table braucht text-column oder text-columns", FileName)
 	}
-	texts := make([]string, 0, len(table.TextColumns))
+	if len(*table.TextColumns) == 0 {
+		return nil, fmt.Errorf("%s: trace.requirements.table.text-columns darf nicht leer sein", FileName)
+	}
+	texts := make([]string, 0, len(*table.TextColumns))
 	seen := map[string]bool{}
-	for _, raw := range table.TextColumns {
+	for _, raw := range *table.TextColumns {
 		text := strings.TrimSpace(raw)
 		if text == "" {
 			return nil, fmt.Errorf("%s: trace.requirements.table.text-columns darf keinen leeren Header enthalten", FileName)

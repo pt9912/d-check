@@ -2133,13 +2133,17 @@ func TestCLI070_TraceTable_Negative(t *testing.T) {
 		{"duplicate header", "| ID | ID | Text |\n|---|---|---|\n| R-1 | X | Y |\n", tableConfig("Text"), "mehrfach"},
 		{"duplicate id", "| ID | Text |\n|---|---|\n| R-1 | X |\n| R-1 | Y |\n", tableConfig("Text"), "doppelte Anforderungs-ID"},
 		{"row width", "| ID | Text |\n|---|---|\n| R-1 | X | extra |\n", tableConfig("Text"), "statt 2 Zellen"},
+		{"unclosed code span", "| ID | Text |\n|---|---|\n| R-1 | `abc | extra\n", tableConfig("Text"), "statt 2 Zellen"},
 		{"zero by regex", "| ID | Text |\n|---|---|\n| X-1 | X |\n", tableConfig("Text"), "0 Anforderungen"},
 		{"missing source", "", strings.Replace(tableConfig("Text"), "spec/reqs.md", "spec/fehlt.md", 1), "fehlt"},
 		{"missing table block", "| ID | Text |\n|---|---|\n| R-1 | X |\n", "trace:\n  requirements:\n    format: table\n", "braucht einen table-Block"},
 		{"unknown format", "### R-1\nX\n", "trace:\n  requirements:\n    format: csv\n", "format"},
 		{"table under headings", "### R-1\nX\n", "trace:\n  requirements:\n    table:\n      id-column: ID\n      text-column: Text\n", "nur mit format: table"},
 		{"both text forms", "| ID | Text | Beschreibung |\n|---|---|---|\n| R-1 | X | Y |\n", tableConfig("Text") + "      text-columns: [Beschreibung]\n", "alternativ"},
+		{"empty single plus list", "| ID | Text |\n|---|---|\n| R-1 | X |\n", strings.Replace(tableConfig("Text"), "text-column: Text", "text-column: ''\n      text-columns: [Text]", 1), "alternativ"},
+		{"single plus empty list", "| ID | Text |\n|---|---|\n| R-1 | X |\n", tableConfig("Text") + "      text-columns: []\n", "alternativ"},
 		{"unused text alternative", "| ID | Text |\n|---|---|\n| R-1 | X |\n", strings.Replace(tableConfig("Text"), "text-column: Text", "text-columns: [Text, Tippfehler]", 1), "Tippfehler"},
+		{"unused text header before duplicate id", "| ID | Text |\n|---|---|\n| R-1 | X |\n| R-1 | Y |\n", strings.Replace(tableConfig("Text"), "text-column: Text", "text-columns: [Text, Tippfehler]", 1), "Tippfehler"},
 		{"unknown duplicate policy", "| ID | Text |\n|---|---|\n| R-1 | X |\n", tableConfig("Text") + "      duplicate-ids: merge\n", "duplicate-ids"},
 	}
 	for _, tc := range cases {
