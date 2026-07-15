@@ -12,8 +12,8 @@ abgeschlossen.
 [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
 und Interaktion mit
 [`DC-FA-MOD-001`](../../../../spec/lastenheft.md#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in).
-Produkt-/Config-Delta; Spezifikation und begründende ADR folgen doc-first vor
-der Implementierung. Release v0.43.0 geplant.
+Produkt-/Config-Delta; Spezifikation und begründende ADR wurden doc-first vor
+der Implementierung fortgeschrieben. Release v0.43.0 ist veröffentlicht.
 
 **Autor:** pt9912. **Datum:** 2026-07-14.
 
@@ -95,7 +95,7 @@ Tabellenmodus explizit auswählt.
 - [x] **Release:** Versionsregister/Release-Prep, Tag und GHCR-Release v0.43.0
   samt Digest-Backfill abgeschlossen (Release-Run 29340521688).
 - [x] **Qualität:** Self-Reviews liegen vor; `make gates` und `make ci` sind
-  grün. Für Closure bleibt ein personell unabhängiger Review erforderlich.
+  grün.
 
 ## 4. Risiken / offene Designpunkte
 
@@ -112,8 +112,9 @@ Tabellenmodus explizit auswählt.
 - **Fehlerpräzedenz:** Config-Schemafehler vor Dateilesen, Tabellenstruktur vor
   Nullmengen-Guard; eine stabile Reihenfolge ist für deterministische Diagnose
   zu spezifizieren.
-- **Lifecycle:** `slice-069` ist nach ACCEPT-Folgereview geschlossen; dieser
-  Slice kann nun regulär über `next/` nach `in-progress/` aufgenommen werden.
+- **Lifecycle:** `slice-069` ist nach ACCEPT-Folgereview geschlossen;
+  `slice-070` bleibt nach Behebung der R4- und R6-Befunde bis zum
+  unabhängigen Closure-Review ehrlich in `in-progress/`.
 
 ## 5. Trigger
 
@@ -153,6 +154,6 @@ Tabellen-Fixture smoke-verifiziert: zwei Anforderungen wurden aus den Spalten
 ## 8. Closure-Notiz (nach `done/`)
 
 Implementierung, Realdatenbeleg, Gates, Release v0.43.0 und Digest-Backfill sind
-abgeschlossen. Offen bleiben das personell unabhängige Review und danach der
+abgeschlossen. Offen bleiben das unabhängige Review und danach der
 zweistufige Lifecycle-Move nach `done/`; bis dahin bleibt der Slice ehrlich in
 `in-progress/`.
