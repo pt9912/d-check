@@ -412,6 +412,59 @@ Tabellenstruktur/Header → Duplicate-ID → Nullmenge → Referenz-/Coverage-
 Scans. Der erste Fehler beendet den Lauf vor dem Reporter; `--trace` und
 `--trace --require-complete` liefern Exit 2 und keine RTM.
 
+### DC-FA-XREF-001.a — Kreuzverweis-Konsistenz (`cross-consistency`)
+
+Der opt-in `trace.cross-consistency`-Abgleich
+([`DC-FA-XREF-001`](lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in))
+läuft nach der RTM-Verrechnung (Schritt 2 von
+[§`DC-FA-CLI-009.a`](spezifikation.md#dc-fa-cli-009a--requirements-traceability-matrix))
+und ändert die RTM selbst nicht. Verrechnung (deterministisch,
+[`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)):
+
+1. **Aktivierung.** Nur bei vorhandenem `trace.cross-consistency`. `forward` und
+   `backward` sind beide Pflicht; fehlt einer, ist die Config Exit 2. Ohne Block
+   bleibt die RTM byte-identisch.
+2. **Vorwärts-Menge `F`.** Aus `forward.file`, auf `forward.sections` /
+   `forward.exclude-sections` gespannt (Span-Semantik wie
+   [§`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)),
+   wird jede relevante Tabelle über den header-gebundenen Reader
+   ([§`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen))
+   gelesen: `req-column` liefert die Anforderungs-IDs (bei `ranges: true`
+   range-/enum-expandiert), `design-column` die Design-Artefakt-IDs über alle
+   `design-pattern`-Treffer der Zelle. Ergebnis: je Anforderung `R` die Menge
+   `F(R)` der genannten Design-Artefakte.
+3. **Rückwärts-Menge `B`.** Aus `backward.file`, auf `backward.sections` gespannt,
+   zählt jede Tabelle mit einem `edge-column`-Header. Die Artefakt-ID ist der erste
+   Treffer von `forward.design-pattern` in der **ersten Spalte**
+   (`artifact-id-column: first`; alternativ ein Header-Name), da der ID-Spalten-
+   Header über die Tabellen variiert; die `edge-column`-Zelle liefert die
+   Anforderungs-IDs (`req-pattern`, bei `ranges: true` expandiert). Invertiert: je
+   so genannter Anforderung `R` wird die Artefakt-ID in `B(R)` aufgenommen.
+   **Vorbedingung:** Vorwärts- (`design-column`) und Rückwärts-Artefakt-IDs werden
+   bewusst mit **demselben** `forward.design-pattern` extrahiert und liegen damit im
+   selben Namensraum — sonst wäre der Mengen-Diff (Schritt 5) inhärent leer/voll und
+   bedeutungslos.
+4. **Ausschluss.** Anforderungs-IDs, die auf `exclude-req` (RE2) passen, werden vor
+   dem Diff aus den Schlüsselmengen von `F` und `B` entfernt (Ableitungssprünge in
+   Mittelschichten).
+5. **Diff.** Für jede Anforderung `R ∈ keys(F) ∪ keys(B)`: `F(R) \ B(R)` und
+   `B(R) \ F(R)`. `mode: equal` meldet beide Richtungen, `mode: superset` nur
+   `B(R) \ F(R)`. Jede Differenz ist ein Befund mit Quell-`Datei:Zeile`,
+   Anforderungs-ID, fehlender/überzähliger Artefaktmenge und Richtungslabel;
+   Befunde werden nach `(R, Artefakt-ID, Richtung)` deterministisch sortiert.
+6. **Gatung.** Der Abgleich ist advisory: `--trace` bleibt Exit 0. Nur das globale
+   `--require-complete`
+   ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code))
+   wertet die Befunde als Gate (Exit 1 bei ≥1 Differenz).
+
+**Fehlerpräzedenz:** Config-Schema (Pflichtblöcke, `mode`, kompilierende
+`design-pattern`/`req-pattern`/`exclude-req`) → Quellen lesen (fehlende
+`forward.file`/`backward.file` ⇒ Exit 2,
+[`DC-FA-CLI-003`](lastenheft.md#dc-fa-cli-003--exit-codes)) → Header-Bindung
+(`req-column`/`design-column`/`edge-column` sowie `artifact-id-column`, wenn ≠
+`first`, je genau einmal) → Range-Expansion (ungültige Range ⇒ Exit 2) → Diff. Der
+erste Fehler beendet den Lauf vor dem Reporter.
+
 ### DC-FA-COV-001.a — Kuratierte Coverage-Quellen (`trace.coverage`)
 
 Die opt-in Liste `trace.coverage`
@@ -1683,6 +1736,22 @@ Exit 2 ohne Prüfung
 | `trace.requirements.modality` | map | leer | opt-in Modalitäts-Klassifikation ([`DC-FA-MOD-001`](lastenheft.md#dc-fa-mod-001--modalitäts-klassifikation-der-anforderungen-tracerequirementsmodality-opt-in)); abwesend ⇒ **keine** Modality-Spalte, `--require-complete` gatet alle Waisen, RTM byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)) |
 | `trace.requirements.modality.levels` | map | Built-in DE+EN | Stufen-Name → Schlüsselwort-Liste; leer ⇒ Default (`must`/`should`/`may` mit DE+EN-RFC-2119-Verben inkl. Negationen `DARF NICHT`→must, `MUSS NICHT`→may). Ein leerer Stufen-Name/leeres Keyword ⇒ Exit 2. Matching: erster Treffer im Anforderungs-Body (Span wie `matrix.exclude-sections`), **längste Phrase zuerst**, case-insensitiv, wortgrenzen-genau |
 | `trace.requirements.modality.require-levels` | string[] | `[must]` | Stufen, deren Waisen `--require-complete` gaten ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)); jeder Eintrag muss ein deklarierter Stufen-Name **oder** `unknown` sein (sonst Exit 2). Anforderung ohne Keyword-Treffer ⇒ Stufe `unknown` |
+| `trace.cross-consistency` | map | leer | opt-in Kreuzverweis-Abgleich zweier Traceability-Sichten ([`DC-FA-XREF-001`](lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)); leer/abwesend ⇒ kein Abgleich, RTM byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)); verlangt `forward` **und** `backward` (sonst Exit 2) |
+| `trace.cross-consistency.forward.file` | string | — | Wurzel-relative Vorwärts-Tabellendatei (Anforderung → Design); muss innerhalb der Repo-Wurzel liegen und existieren (sonst Exit 2) |
+| `trace.cross-consistency.forward.sections` | string[] | leer | **Whitelist** der H2/H3-Abschnitte (Span wie `matrix.exclude-sections`); leer ⇒ ganze Datei |
+| `trace.cross-consistency.forward.exclude-sections` | string[] | leer | **Blacklist** der Abschnitte (Span wie `matrix.exclude-sections`) |
+| `trace.cross-consistency.forward.req-column` | string | — | header-gebundener Name der Anforderungs-Spalte; muss je relevanter Tabelle genau einmal vorkommen (sonst Exit 2) |
+| `trace.cross-consistency.forward.design-column` | string | — | header-gebundener Name der Design-Spalte; genau einmal je Tabelle (sonst Exit 2) |
+| `trace.cross-consistency.forward.design-pattern` | string | — | Regex; extrahiert Design-Artefakt-IDs aus der Design-Zelle (alle Treffer); muss kompilieren (sonst Exit 2) |
+| `trace.cross-consistency.forward.ranges` | bool | `true` | Range-/Enum-Expansion der Anforderungs-IDs der ID-Spalte (`<FAM>-AAA..BBB`/`/`-Enum, wie `trace.coverage[].ranges`); `false` ⇒ nur exakte IDs |
+| `trace.cross-consistency.backward.file` | string | — | Wurzel-relative Rück-Kanten-Datei (Design → Anforderung); muss innerhalb der Repo-Wurzel liegen und existieren (sonst Exit 2) |
+| `trace.cross-consistency.backward.sections` | string[] | leer | **Whitelist** der Abschnitte, deren `edge-column`-Tabellen zählen; leer ⇒ ganze Datei |
+| `trace.cross-consistency.backward.artifact-id-column` | string | `first` | Header-Name (dann genau einmal je relevanter Tabelle, sonst Exit 2) **oder** Sentinel `first` (erste Spalte — für über die Tabellen heterogene ID-Header); die Artefakt-ID wird per `forward.design-pattern` aus der Zelle extrahiert (bewusst geteilt — sichert den gemeinsamen Namensraum mit der Vorwärts-Sicht) |
+| `trace.cross-consistency.backward.edge-column` | string | — | header-gebundener Name der Kanten-Spalte (z. B. `Bezug`); genau einmal je relevanter Tabelle (sonst Exit 2) |
+| `trace.cross-consistency.backward.req-pattern` | string | — | Regex; erkennt Anforderungs-IDs in der `edge-column`-Zelle; muss kompilieren (sonst Exit 2) |
+| `trace.cross-consistency.backward.ranges` | bool | `true` | Range-/Enum-Expansion der Anforderungs-IDs der Kanten-Zelle; `false` ⇒ nur exakte IDs |
+| `trace.cross-consistency.mode` | string | `equal` | `equal` (beide Differenzen `F\B` und `B\F` gaten) oder `superset` (nur `B\F`); anderer Wert ⇒ Exit 2 |
+| `trace.cross-consistency.exclude-req` | string | leer | Regex; Anforderungs-IDs, die vor dem Diff aus beiden Sichten fallen (Ableitungssprünge in Mittelschichten); muss kompilieren (sonst Exit 2); leer ⇒ keine Ausnahme |
 
 **Glob-Auswertung.** Alle Glob-Felder (`scan.ignore`, `<modul>.scope.ignore`,
 `matrix.classes[].paths`/`.order`, die `*.exempt-paths`) werden **segmentweise
@@ -1756,6 +1825,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung | Verweis |
 |---|---|---|
+| 2026-07-16 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) + §2-Schema (`trace.cross-consistency.*`) ergänzt: opt-in Mengenabgleich zweier Traceability-Sichten — Vorwärts-RTM-Tabelle (Anforderung→Design) gegen Rückwärts-`Bezug`-Kanten (Design→Anforderung), je Anforderung `F\B`/`B\F` mit Richtung, Modus `equal`/`superset`. Beide über den header-gebundenen Reader ([§`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)) + range-aware Span-Semantik ([§`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)); Rück-Artefakt-ID = erste Spalte via `design-pattern`, `exclude-req`-Ventil (RE2). Advisory unter `--trace`; Gatung über globales `--require-complete` ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)). Fail-closed, ohne Block byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)). Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) | slice-071 |
 | 2026-07-14 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) + §2-Schema (`trace.requirements.format`/`table.*`) ergänzt: `headings` bleibt Default, `table` extrahiert Markdown-Pipe-Tabellen außerhalb von Fences über exakt benannte ID-/Text-/optionale Modalitätsheader; `\|` und Pipes in einzeiligen Code-Spans teilen keine Zelle. Beide Extraktoren liefern dasselbe `{id,title,modalityText}`-Modell vor Referenzscan/Gating. Nichtleer explizite Quelle oder Tabellenmodus aktiviert fail-closed (fehlende Quelle, Header-/Zeilenstruktur, Duplicate-ID, null Treffer ⇒ Exit 2); `source: ""` und unkonfigurierter Heading-Pfad behalten Empty⇒Default/Deduplizierung/leere RTM byte-identisch. Modalität klassifiziert im Tabellenmodus die konfigurierte Modalitätsspalte, sonst die Textspalte. Begründung in [ADR-0037](../docs/plan/adr/0037-trace-tabellenquellen-nullmengen-guard.md) | slice-070 |
 | 2026-06-10 | Initiale Fassung | slice-002 |
 | 2026-06-10 | Review R1: `scan.roots`-Constraint präzisiert (nur deklarierte Wurzeln pflichtig), Symlink-Prüf-Scope präzisiert, unspezifizierter Grund-Code `nested-link` entfernt | slice-002 |

@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.43.0
+**Version:** 0.44.0
 
 **Status:** Draft
 
@@ -51,7 +51,8 @@ statt per Code-Kopie.
 > (Getrackt-Status von Referenz-Zielen), `TGT` (Deklarations-Konsistenz
 > Doku ↔ Build-Targets), `COV` (kuratierte Coverage-Quellen der RTM),
 > `MOD` (Modalitäts-Klassifikation der Anforderungen), `REQ`
-> (Anforderungsquellen der RTM), `CONF` (Konfiguration), `DIST`
+> (Anforderungsquellen der RTM), `XREF` (Kreuzverweis-Konsistenz zweier
+> Traceability-Sichten), `CONF` (Konfiguration), `DIST`
 > (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
@@ -692,6 +693,91 @@ einer Zelle; automatische Spalten-Ableitung über Synonyme oder Positionen;
 gleichzeitiges Mischen von Heading- und Tabellen-Definitionen in einem Lauf
 (genau ein `format`); mehrere Anforderungs-Quelldateien; semantische Bewertung
 des Anforderungstextes jenseits der bestehenden Keyword-Klassifikation.
+
+---
+
+### DC-FA-XREF-001 — Kreuzverweis-Konsistenz zweier Traceability-Sichten (`trace.cross-consistency`, opt-in)
+
+**Beschreibung:** Anforderung→Design wird in zwei Sichten geführt: **Rückwärts-
+Kanten**, die — dort authort, wo das Design lebt — je Design-Artefakt aufwärts die
+umgesetzten Anforderungen nennen (**Quelle der Wahrheit**, driftarm), und einer
+**Vorwärts-Sicht** (die RTM-Tabelle nennt je Anforderung die Design-Artefaktmenge),
+die als kuratierter Spiegel driftet. Mit einem opt-in `trace.cross-consistency`-
+Block macht [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)
+zusätzlich zum RTM-Lauf einen **Mengenabgleich**: Für jede Anforderungs-ID `R` sei
+`F(R)` die Design-Artefaktmenge aus der Vorwärts-Sicht und `B(R)` die Menge der
+Artefakte, deren Rück-Kante `R` nennt. Gemeldet werden je `R` die Differenzen
+`F(R) \ B(R)` („in der RTM, ohne Rück-Kante") und `B(R) \ F(R)` („Rück-Kante ohne
+RTM-Eintrag"), je mit Richtungslabel. `1:N` ist Normalfall; Modus `equal` (`F = B`,
+beide Differenzen gaten) oder `superset` (`F ⊇ B`, nur `B \ F` gatet).
+
+Beide Sichten sind **kuratierte Markdown-Tabellen**, gelesen über den vorhandenen
+header-gebundenen Tabellen-Reader
+([`DC-FA-REQ-001`](#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen))
+plus die Abschnitts-/Span- und **range-aware** ID-Semantik von
+[`DC-FA-COV-001`](#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
+(Range-/Enum-Notation `<FAM>-AAA..BBB` und `/`-Aufzählung). Die einzige neue Logik
+ist: eine Sicht invertieren und die Mengen diffen — **kein neuer Parser**.
+
+- **Vorwärts:** header-gebundene Anforderungs- und Design-Spalte; Design-Artefakte
+  per `design-pattern` (RE2) aus der Design-Zelle, Anforderungen range-aware aus der
+  ID-Spalte.
+- **Rückwärts:** je Tabelle mit einer `Bezug`-Spalte (header-gebunden) ist die
+  **Artefakt-ID die erste Spalte** (positionell, da deren Header je Tabelle variiert
+  — `Kennung`/`Port-ID`/`Tabu-ID`/`Komponente` —, per `design-pattern` extrahiert);
+  die `Bezug`-Zelle liefert die Anforderungs-IDs (`req-pattern`, range-aware).
+- **Namensraum-Vorbedingung:** Vorwärts- und Rückwärts-Artefakt-IDs werden mit
+  **demselben** `design-pattern` erkannt und liegen damit im selben Namensraum;
+  andernfalls wäre der Mengen-Diff inhärent leer/voll und bedeutungslos.
+
+Bei mehrschichtigen Spec-Modellen (Vertrag → Spezifikation → Architektur) zeigen
+Rück-Kanten teils auf **Mittelschicht-IDs** ohne eigene RTM-Vorwärts-Zeile. Diese
+**Ableitungssprünge** nimmt `exclude-req` (RE2) aus dem Abgleich. Das Ventil ist
+selbst eine kuratierte Kante, die mit der Schicht-Struktur synchron bleiben muss
+und driften kann (wie `matrix.exclude-sections`) — bewusst benannter Trade-off.
+
+Der Abgleich ist **fail-closed** (ungültiges Regex, fehlende Spalte, ID-Header
+nicht genau einmal, unbekannter `mode` ⇒ Exit 2,
+[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) und **advisory**: ohne Block ist die
+RTM byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)), nichts wird geschrieben
+([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)); der Exit-
+Code ändert sich nur unter dem globalen
+[`--require-complete`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)
+(**kein** block-lokaler Schalter). Befund-Ausgabe ist deterministisch sortiert.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path (konsistentes 1:N):** Given eine Anforderung, die vorwärts fünf
+  Design-Artefakte nennt, und Rück-Kanten derselben fünf Artefakte auf sie, when
+  `d-check --trace` mit `trace.cross-consistency` (`mode: equal`) läuft, then keine
+  Differenz, Exit 0; ein read-only gemountetes Repository genügt.
+- **Boundary (Richtungs-Differenz):** Given `F(R) = {A, B}`, `B(R) = {B, C}`, when
+  der Abgleich läuft, then zwei Befunde — `A` „in RTM, ohne Rück-Kante", `C`
+  „Rück-Kante, ohne RTM-Eintrag" — je mit `Datei:Zeile`, Anforderungs-ID, Richtung.
+- **Range-aware:** Given eine Rück-Kante `<FAM>-001..009` und eine Vorwärts-Zeile
+  `<FAM>-001..004`, when der Abgleich läuft, then werden beide Bereiche expandiert
+  und je Einzel-ID verglichen.
+- **Superset-Modus:** Given `mode: superset` und `F(R) ⊋ B(R)`, then ist
+  `F(R) \ B(R)` kein Befund, nur `B(R) \ F(R)` würde einen erzeugen.
+- **Ableitungssprung ausgeschlossen:** Given eine Rück-Kante auf eine
+  `exclude-req`-ID (Mittelschicht-Familie), then fällt sie aus dem Vergleich —
+  weder Differenz noch Waise.
+- **Negative (Config, fail-closed):** Given ungültiges Regex, unbekannter `mode`,
+  fehlende header-gebundene Spalte oder ID-Header nicht genau einmal, when
+  `d-check --trace` läuft, then Exit 2, kein Abgleich.
+- **Default byte-identisch:** Given **kein** `trace.cross-consistency`-Block, when
+  `d-check --trace [--require-complete]` läuft, then RTM und Exit byte-identisch zur
+  Fassung vor dieser Anforderung ([`DC-QA-02`](#dc-qa-02--determinismus)), nichts
+  geschrieben.
+
+**Out-of-Scope:** (1) Der **Generator** (Vorwärts-RTM aus den Rück-Kanten erzeugen
+statt hand-pflegen) — Schreib-Pfad, näher an
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch); Ziel-Zustand, aber eigene
+spätere Anforderung/ADR (dieses Gate ist sein Korrektheits-Harness). (2) **Prosa**-
+`Bezug:`-Zeilen ohne Tabelle (v1 liest nur `Bezug`-**Spalten**; Konsument
+tabellarisiert oder akzeptiert Nicht-Gatung). (3) **Transitive Mehr-Hop-Auflösung**
+über mehr als eine Zwischenschicht. (4) Kuratierte, bewusst designlose Anforderungen
+(Abschnitts-Blacklist, nicht invertierbar).
 
 ---
 
@@ -1840,6 +1926,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.44.0 | 2026-07-16 | Change Request (Auftraggeber): neue Anforderung `DC-FA-XREF-001` — **Kreuzverweis-Konsistenz zweier Traceability-Sichten** (`trace.cross-consistency`, opt-in): der `--trace`-Lauf vergleicht zusätzlich die Vorwärts-RTM-Tabelle (Anforderung → Design-Menge) gegen die Rückwärts-`Bezug`-Kanten (Design → Anforderung) und meldet je Anforderung die beiden Mengendifferenzen `F(R) \ B(R)`/`B(R) \ F(R)` mit Richtungslabel; Modus `equal`/`superset`, `1:N` Normalfall. Beide Sichten kuratierte Tabellen über den header-gebundenen Reader (`DC-FA-REQ-001`) + range-aware Span-Semantik (`DC-FA-COV-001`); Rück-Kanten = Quelle der Wahrheit (Artefakt-ID = erste Spalte via `design-pattern`, `Bezug`-Zelle range-aware). Ableitungssprünge per `exclude-req` (RE2) ausgenommen. Advisory unter `--trace`; Exit-Änderung nur über das globale `--require-complete` (`DC-FA-CLI-011`). Fail-closed (ungültiges Regex/fehlende Spalte/ID-Header nicht genau einmal/unbekannter `mode` ⇒ Exit 2); ohne `trace.cross-consistency`-Block RTM byte-identisch (`DC-QA-02`/`DC-QA-03`). Bereich `XREF` in §3; additive Erweiterung des `--trace`-Laufs (`DC-FA-CLI-009`) **ohne** RTM-Änderung (separate advisory Befunde, keine RTM-Spalte); `DC-FA-XREF-001.a` + Schema-Keys (`trace.cross-consistency.*`) in der Spezifikation; Implementierung, Realdatenbeleg und Release folgen in `slice-071`. Anlass: Konsument grid-gym (Trigger 088) — §27.1 nannte {GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN}, die `Bezug`-Rück-Kanten {GG-AR-P-005, GG-AR-P-009, GG-AR-COMP-SCHED}, Schnittmenge null, von keinem Gate bemerkt | slice-071 |
 | 0.43.0 | 2026-07-14 | Change Request (Auftraggeber): neue Anforderung `DC-FA-REQ-001` — **native tabellarische Anforderungsquellen + Nullmengen-Guard** für die RTM. `trace.requirements.format: table` liest Markdown-Pipe-Tabellen über konfigurierte Header-Namen (`table.id-column`, genau eine von `table.text-column`/`.text-columns`, optional `.modality-column`); die ID-Zelle muss als Ganzes auf `id-pattern` passen, die gebundene Textzelle liefert RTM-Titel/Body, eine gesetzte Modalitätsspalte ist die alleinige Keyword-Quelle für `DC-FA-MOD-001`. `table.duplicate-ids` ist `error` (Default), `first` oder `last`. Beide Formate münden in dasselbe RTM-Modell. **Fail-closed:** nichtleer explizite `requirements.source` oder Tabellenmodus mit null erkannten Anforderungen sowie unbekanntes Format/fehlende oder doppelte konfigurierte Spalten ⇒ Exit 2 (auch mit `--require-complete`) statt irreführendem `0 Anforderungen, 0 Waisen`/Exit 0. `source: ""` gilt wie abwesend. Ohne `trace`-Block bleibt der Heading-Default samt Deduplizierung/leerer RTM/Exit 0 byte-identisch (`DC-QA-02`/`DC-QA-03`). Mit-Modifikation `DC-FA-CLI-009`; Bereich `REQ` in §3; Spezifikation, ADR, Implementierung, Realdatenbeleg und Release folgen in `slice-070`. Anlass: reproduzierter Konsumentenbefund `m-trace` mit d-check v0.42.0 — 371 eindeutige IDs in Tabellen mit den Text-Headern `Anforderung`/`Akzeptanzkriterium`, explizite Quelle und passende Regex ergaben null Anforderungen bei Exit 0 | slice-070 |
 | 0.42.0 | 2026-07-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-MOD-001` — **Modalitäts-Klassifikation der Anforderungen** (`trace.requirements.modality`, opt-in): d-check klassifiziert jede RTM-Anforderung anhand **konfigurierbarer Modal-Verb-Schlüsselwörter** (Built-in DE+EN-RFC-2119-Defaults; `modality.levels` Stufe→Keywords, `modality.require-levels` welche Stufen gaten, Default `[must]`) über den **ersten** Treffer im Anforderungs-Body (Längster-Treffer-zuerst gegen `MUSS NICHT`≠`DARF NICHT`, case-insensitiv/wortgrenzen-genau; kein Treffer ⇒ Stufe `unknown`). Neue **Modality-Spalte** (konditional); `--require-complete` ([`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)) bricht dann **nur** bei Waisen der `require-levels`-Stufen (SOLLTE/KANN/`unknown` advisory). Fail-closed (leerer Stufen-Name/Keyword, `require-levels`-Eintrag weder Stufe noch `unknown` ⇒ Exit 2), strikt opt-in, default-aus **byte-identisch** (`DC-QA-02`/`DC-QA-03`; ohne `modality` gaten alle Waisen wie bisher). Bereich `MOD` in §3; `DC-FA-MOD-001.a` + Schema-Keys (`trace.requirements.modality.levels`/`require-levels`) in der Spezifikation; Mit-Modifikation `DC-FA-CLI-009` (Modality-Spalte). `--print-config` führt den `modality`-Block. Begründung + Matching-/Unknown-Semantik in begleitender ADR. Anlass: Konsumenten-Analyse grid-gym — die 10 Coverage-Rest-„Waisen" sind 5× KANN (Future) + 4× Nicht-Ziele + 1× DARF NICHT; die slice-zentrische RTM behandelte MUSS und KANN gleich | slice-068 |
 | 0.41.0 | 2026-07-11 | Change Request (Auftraggeber): neue Anforderung `DC-FA-COV-001` — **kuratierte Coverage-Quellen der RTM** (`trace.coverage`, opt-in): eine dritte Referenzklasse (Liste benannter `files` + `label` + `ranges` + `sections`/`exclude-sections`), die eine ausgelagerte Traceability-Matrix **range-aware** als Coverage einliest, **ohne** `adrs`/`slices` zu berühren. `<FAM>-AAA..BBB`/`<FAM>-AAA/BBB/CCC` expandieren (breiten-erhaltend, gegen `requirements.id-pattern` validiert); Abschnitts-Whitelist/Blacklist (dieselbe Span-Semantik wie `matrix.exclude-sections` — gegen die „…ohne Design-Artefakt"-Falle). Mit-Modifikationen: `DC-FA-CLI-009` (RTM trägt bei aktiver `trace.coverage` eine **Coverage-Spalte** + `coverage`-Feld in `--json`/`--yaml`) und `DC-FA-CLI-011` (**Waise = ¬slice ∧ ¬coverage**; Slice **oder** Coverage deckt ab, bloße ADR-Referenz weiterhin nicht). Fail-closed (fehlende Datei / ungültige Range `AAA>BBB` / Breiten-Mismatch ⇒ Exit 2), strikt opt-in, default-aus **byte-identisch** (`DC-QA-02`/`DC-QA-03`). Bereich `COV` in §3; `DC-FA-COV-001.a` + Schema-Keys (`trace.coverage[].files`/`label`/`ranges`/`sections`/`exclude-sections`) in der Spezifikation; `--print-config` führt den `coverage`-Block. Begründung + Range-/Sektions-Semantik in begleitender ADR. Anlass: Konsumenten-Analyse grid-gym — 171 „Waisen" waren zu ≥122 anderswo (ADR/traceability.md/Wellen) belegt; d-checks slice-zentrische RTM verfehlte die kuratierte Deckungs-Matrix | slice-067 |
