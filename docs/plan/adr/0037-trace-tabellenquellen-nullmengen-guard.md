@@ -1,6 +1,6 @@
 # ADR-0037 — RTM-Anforderungen aus Tabellen und fail-closed Nullmengen
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-14
 **Autor:** pt9912
 **Schärft:**
@@ -137,3 +137,4 @@ ausdrückt.
 | Datum | Ereignis |
 |---|---|
 | 2026-07-14 | Entwurf zu slice-070 nach Konsumentenbefund `m-trace` (371 Tabellenanforderungen → 0/Exit 0). Plan-Review R1 schärfte zwei Kompatibilitätsgrenzen: `source: ""` bleibt abwesend; Duplicate-ID-Fehler nur bei Tabellenmodus oder nichtleer expliziter Quelle. Realdaten-Review R2 fand zwei Text-Header und 372 Zeilen/371 IDs; `text-columns` und explizite `duplicate-ids`-Politik ergänzt. Status Proposed. |
+| 2026-07-15 | **Accepted** — slice-070 umgesetzt, zwei Reviews eingearbeitet und v0.43.0/v0.43.1 released (nativer Tabellen-Reader + fail-closed Nullmengen-/Duplicate-Guard; Realdatenbeleg `m-trace` 371 Anforderungen). Kopf- und Index-Status blieben bei der Closure irrtümlich auf Proposed und wurden am 2026-07-16 nachgezogen. |
