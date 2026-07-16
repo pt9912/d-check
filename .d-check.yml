@@ -153,3 +153,28 @@ targets:
   doc-tables: [AGENTS.md, harness/README.md]
   authority: AGENTS.md
   exempt-targets: []
+
+# --trace ist ein Flag-Modus (DC-FA-CLI-009), KEIN --enable-Modul — steht daher
+# NICHT in der modules-Liste oben. d-check dogfoodet ihn über `make trace` (advisory
+# RTM) und `make completeness-check`/`doc-complete` (--require-complete, DC-FA-CLI-011,
+# in fullbuild). Der Block setzt die vier RTM-Konventionen auf EXAKT ihre Defaults
+# (spezifikation.md §2) — die RTM bleibt byte-identisch (DC-QA-02). Einziger Verhaltens-
+# Effekt: `requirements.source` ist NICHTLEER explizit gesetzt und armiert damit den
+# fail-closed Nullmengen-Guard (DC-FA-REQ-001, ADR-0037, slice-070): verlöre
+# spec/lastenheft.md je die Heading-Konvention (0 erkannte Anforderungen), bräche
+# `make trace`/`completeness-check` mit Exit 2 statt still-grün mit leerer RTM. Heute
+# nachweislich safe (42 Anforderungen, 0 Waisen).
+trace:
+  requirements:
+    # explizit nichtleer = Guard scharf (leer/abwesend ⇒ Default ohne Guard)
+    source: spec/lastenheft.md
+    # Default-Regex: Anforderungs-Kennung als Ganz-Token im Heading
+    id-pattern: '[A-Z][A-Z0-9]*-(?:FA-[A-Z]+|QA)-\d+[A-Za-z]?'
+  adrs:
+    dir: docs/plan/adr
+    file-pattern: '^(\d{4})-.*\.md$'      # Capture-Gruppe 1 = NNNN
+    id-prefix: 'ADR-'                      # ⇒ ADR-NNNN
+  slices:
+    dir: docs/plan/planning
+    file-pattern: '^(slice-\d+)-.*\.md$'   # Capture-Gruppe 1 = volle Kennung slice-NNN
+    id-prefix: ''                          # leer: der Dateiname trägt die volle Kennung
