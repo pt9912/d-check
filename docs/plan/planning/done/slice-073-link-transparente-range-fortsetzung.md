@@ -1,11 +1,12 @@
 # Slice slice-073: Link-transparente Range-Fortsetzung (ausgelieferter Coverage-Defekt)
 
-**Status:** in-progress (welle-60-trace-cross-consistency).
+**Status:** **done** (2026-07-17, welle-60-trace-cross-consistency). Ausgeliefert
+als v0.45.1; R2 ACCEPT-WITH-NITS, R2-F-1 geschlossen.
 
-**Welle:** aktiv (welle-60), **vorrangig** vor der Rest-Arbeit von
-[`slice-071`](../open/slice-071-trace-cross-consistency-gate.md) — der Fix sitzt im
-**geteilten** Parser und ist damit Voraussetzung von dessen Realdatenbeleg, nicht
-eine Parallelbaustelle.
+**Welle:** welle-60 — der Fix sitzt im **geteilten** Parser und ist damit
+Voraussetzung des Realdatenbelegs von
+[`slice-071`](../open/slice-071-trace-cross-consistency-gate.md), nicht eine
+Parallelbaustelle.
 
 **Bezug:** **Defekt-Fix**, **kein Change Request**: das Lastenheft verspricht die
 Range-Expansion unqualifiziert
@@ -62,22 +63,32 @@ nutzt, verliert die Expansion still. Der Slice macht den Parser link-transparent
   Link-Suffix; unverlinkte Ranges, Enum-Notation und die Fail-closed-Fälle
   (`AAA>BBB`, Breiten-Mismatch) bleiben unverändert.
 - [x] **Tests (positiv):** identische Quelle, einmal `GG-UI-001..003`, einmal
-  `` [`GG-UI-001`](…)..003 `` ⇒ **gleiches** Ergebnis — je einmal für
-  `trace.coverage` (die ausgelieferte Regression: 2 Waisen ⇒ 0) und für
-  `trace.cross-consistency` (2 Differenzen ⇒ 0). Enum-Form `` [`ID`](…)/004/005 ``
-  ebenso.
+  `` [`GG-UI-001`](…)..003 `` ⇒ **gleiches** Ergebnis für `trace.coverage` (die
+  ausgelieferte Regression: 2 Waisen ⇒ 0). Enum-Form `` [`ID`](…)/004/005 `` ebenso.
+  Der zugesagte `trace.cross-consistency`-Test (verlinkte Range durch den
+  Kreuzverweis-Abgleich) **fehlte im v0.45.1-Stand** und wurde erst nach dem
+  R2-Review nachgezogen (`b8c503a`, R2-F-1) — inkl. des scharfen Klammer-URL-Falls,
+  der bei der Fix-Mutation kippt (die Coverage-Tests allein deckten die Achse
+  nicht).
 - [x] **Tests (negativ, gegen das Raten):** zwei Link-Suffixe hintereinander, ein
   Zeichen zwischen `)` und `..`, Whitespace davor ⇒ **keine** Expansion. Ohne diese
   Tests wäre „genau eins" eine Behauptung.
 - [x] **Mutations-Härte:** verifiziert — die Suffix-Überspringung entfernt kippt
   `range hinter Link mit Code-Span`, die „genau eins"-Grenze aufgehoben kippt
   `zwei Link-Suffixe`.
-- [ ] **Nutzerdoku:** Handbuch (§5 `trace.coverage`/`cross-consistency`:
-  Range-Notation unter Linkpflicht) + CHANGELOG (als **Fixed**, mit dem Hinweis,
-  dass ausgelieferte Läufe grüner werden können).
-- [ ] **Release:** v0.44.1, Release-Prep + Tag + GHCR + Digest-Backfill.
-- [ ] **Qualität:** unabhängiger, kontext-getrennter Review; `make gates`/`make ci`
-  grün.
+- [x] **Nutzerdoku:** Handbuch §5 (Range-Notation unter Linkpflicht, mit dem
+  Klammer-URL-Beispiel) + Handbuch-Historie 1.33; CHANGELOG als **Fixed** (0.44.1
+  Erst-Fix; 0.45.1 klammer-balancierte Nachbesserung, „Betroffen: v0.44.1 und
+  v0.45.0"). Die durch R1-F-3 widerlegten Zusagen des 0.44.1-Blocks sind dort
+  sichtbar als „war falsch"/„traf nicht zu" korrigiert.
+- [x] **Release:** v0.44.1 (Erst-Fix), **überholt durch v0.45.1** (R1-F-1:
+  Ziel klammer-balanciert) — der finale ausgelieferte Stand ist v0.45.1. Beide
+  getaggt, in `version.md` registriert, auf GHCR (v0.45.1-RepoDigest im R2-Report
+  belegt). Der Test-Nachzug `b8c503a` härtet nur die Suite und ändert kein
+  ausgeliefertes Verhalten ⇒ kein weiterer Bump.
+- [x] **Qualität:** R1 (REJECT, F-1…F-5) → **R2** (ACCEPT-WITH-NITS, alle fünf
+  R1-Befunde durch eigene Messung geschlossen; einziger Rest R2-F-1 mit `b8c503a`
+  behoben), beide kontext-getrennt; `make gates`/`make ci` grün.
 
 ## 4. Risiken / offene Punkte
 
@@ -116,7 +127,43 @@ bestehender, spezifizierter Code — die Schärfung ist ein Vertrags-, kein
 Rückbau-Zug; die Kompatibilität der unverlinkten Formen ist durch die vorhandenen
 Akzeptanztests (slice-067) geschützt.
 
-## 7. Closure-Notiz (nach `done/`)
+## 7. Closure-Notiz
 
-_Ausstehend — wird bei Abschluss mit Commit-Hash, Review-Verdikt und Lerneintrag
-gefüllt._
+**Abgeschlossen 2026-07-17**, welle-60. Ausgelieferter Stand **v0.45.1**.
+
+**Commit-Kette:** `2954e4d` (feat: Range-Fortsetzung link-transparent, ein
+Suffix) · `6925987` (fix R1-F-1: Ziel klammer-balanciert über `LinkSuffixEnd`
+statt Regex `[^)]*`; zugleich v0.45.1-Tag-Commit) · `b8c503a` (test R2-F-1:
+cross-consistency-Achse verriegelt). [ADR-0039](../../adr/0039-link-transparente-range-fortsetzung.md) mit der Closure auf `Accepted`
+(Folge-Commit) — die Entscheidung ist umgesetzt und ausgeliefert.
+
+**Review-Verlauf:** R1 **REJECT** (1 HIGH, 3 MEDIUM, 1 LOW), nachgeholt nach der
+Auslieferung von v0.44.1 — der HIGH war eine **neue** Falsch-Deckung: die naive
+„bis zur ersten `)`"-Abgrenzung riss bei Klammern im Linkziel den URL-Rest in den
+Range-Parser und versteckte Waisen (stiller-Grün-Pfad). Behoben in v0.45.1. R2
+**ACCEPT-WITH-NITS** (kontext-getrennter Subagent, ohne Zugriff auf die
+Session-Analyse): alle fünf R1-Befunde durch **eigene Messung** gegen das
+ausgelieferte Image geschlossen, per Mutation belegt; einziger Rest R2-F-1 (LOW,
+die Cross-Seite test-blind) mit `b8c503a` geschlossen.
+
+**Lerneintrag (reusable):**
+- **Zwei Konsumenten, zwei Vorläufe — ein geteilter Fix verriegelt nicht
+  automatisch beide.** Der Fix wirkt über `skipLinkSuffix` auf `trace.coverage`
+  (Prosa-Text) **und** `trace.cross-consistency` (Tabellenzellen via
+  `rangeAwareIDs`). Die Coverage-Tests deckten die Cross-Achse **nicht** — R2-F-1.
+  Ein „ein Fix, zwei Konsumenten" braucht **je einen** Test pro Konsument, sonst
+  ist die zweite Seite gegen einen seitenspezifischen Umbau blind.
+- **Ein grüner Test beweist nichts über die Sensor-Härte.** Mein erster
+  Cross-Test nutzte ein Linkziel ohne innere Klammer und kippte bei der
+  Fix-Mutation **nicht** — er pinnte den gutartigen Zweig (die R1-F-4-Falle). Erst
+  der Klammer-URL-Fall, per Mutation gemessen **vor** dem Commit, verriegelt die
+  Achse wirklich. Sensor-Härte gehört gemessen, nicht behauptet.
+- **Ein Defekt kann drei Releases still überleben** (v0.41.0 → v0.44.0), obwohl
+  `trace.coverage` einen Realdatenbeleg hatte. Er fiel erst auf, als der
+  Kreuzverweis-Abgleich **zwei** Sichten verglich und die Asymmetrie sichtbar
+  machte — die Dogfood-Lücke (§4) besteht fort: d-check nutzt selbst keine
+  Range-Notation.
+- **Ein nachgeholter Review nach dem Release ist kein Widerspruch, sondern die
+  Rettung:** R1 fand nach v0.44.1 einen HIGH, der zu v0.45.1 führte. Die
+  slice-073-Lehre für den Flow: der unabhängige Review gehört **vor** den Tag —
+  hier kam er zu spät und kostete einen Patch-Release.
