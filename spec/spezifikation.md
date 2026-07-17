@@ -515,7 +515,9 @@ um eine dritte Referenzklasse. Verrechnung (deterministisch,
    `requirements.id-pattern`-Treffer; bei `ranges: true` zusätzlich die
    **Range-/Enum-Expansion** (Schritt 3).
 3. **Range-Parser** (isolierte, deterministische Funktion, parametrisiert über
-   `id-pattern`): für jede `id-pattern`-Fundstelle prüfen, ob unmittelbar
+   `id-pattern`): für jede `id-pattern`-Fundstelle prüfen, ob unmittelbar — oder
+   **genau ein** Markdown-Link-Suffix `](…)` später (**link-transparent**, siehe
+   unten) —
    - `..<Ziffern>` folgt (`<FAM>-AAA..BBB`): Familie = Fundstelle ohne
      Trailing-`-<Ziffern>`, Start `AAA` = diese Trailing-Ziffern (Breite `W`),
      Ende `BBB` = die Folge-Ziffern; expandiere `<FAM>-<i>` für `i ∈ [AAA, BBB]`,
@@ -523,6 +525,21 @@ um eine dritte Referenzklasse. Verrechnung (deterministisch,
    - `/<Ziffern>`-Folgen folgen (`<FAM>-AAA/BBB/CCC`): je `<FAM>-<Ziffern>`;
    jede expandierte ID wird gegen `id-pattern` geprüft und bei Nicht-Treffer
    **verworfen**.
+
+   **Link-Transparenz.** Steht die Kennung unter Linkpflicht
+   ([`DC-FA-ID-001`](lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)),
+   trägt sie ein Link-Suffix, und die Fortsetzung folgt der Fundstelle nicht mehr
+   unmittelbar: `` [`GG-UI-001`](…)..009 ``. Der Parser überspringt daher hinter
+   der Fundstelle **höchstens einmal** ein unmittelbar anschließendes Suffix der
+   Form `` `](…) `` (optionales schließendes Code-Span-Backtick, `]`, geklammertes
+   Ziel) und prüft **dahinter** wieder **unmittelbar** auf `..`/`/`. Ohne diese
+   Regel bräche die unqualifizierte Range-Zusage des Lastenhefts genau dort, wo
+   d-checks eigene Linkpflicht greift.
+   **Nicht** übersprungen werden — bewusst, weil jede weitere Toleranz die
+   Autor-Absicht rät statt sie zu lesen: Whitespace, Emphasis, ein zweites
+   Link-Suffix, beliebiger Text zwischen `)` und der Fortsetzung. Die ID selbst
+   darf im Code-Span des Linktexts stehen (das leistet bereits die
+   `id-pattern`-Suche).
 4. **Zuordnung**: jede abgedeckte Anforderungs-Kennung erhält das `label` der
    Quelle in ihrer **Coverage**-Menge (dedupliziert, sortiert; mehrere Quellen ⇒
    mehrere Labels).
@@ -1845,6 +1862,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung | Verweis |
 |---|---|---|
+| 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 (Range-Parser) um **Link-Transparenz** geschärft: die Fortsetzung `..NNN`/`/NNN` darf **genau einmal** durch ein Markdown-Link-Suffix `](…)` unterbrochen sein, dahinter gilt wieder „unmittelbar“; weitergehendes Peeling (Whitespace, Emphasis, zweites Suffix) bleibt ausgeschlossen. Wirkt über den geteilten Parser zugleich auf §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). **Defekt-Fix, kein CR:** das Lastenheft verspricht die Expansion unqualifiziert — die Verengung „unmittelbar“ stand allein hier und kollidierte strukturell mit der Linkpflicht ([`DC-FA-ID-001`](lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)); betroffen war `trace.coverage` seit v0.41.0 (verlinkte Range ⇒ falsche Waisen). Begründung in [ADR-0039](../docs/plan/adr/0039-link-transparente-range-fortsetzung.md) | slice-073 |
 | 2026-07-17 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) um die **Vakuitäts-Stufe** (Schritt 5) geschärft: ein Abgleich ohne eine einzige Kante ist Exit 2 statt `0 Differenz(en)`/Exit 0 — beide Sichten kantenleer (geteiltes `design-pattern` greift am Namensraum vorbei) oder Rück-Sicht kantenleer unter `mode: superset`. Eine **einseitig** leere Vorwärts-Sicht bleibt wohldefiniert (Diff über `keys(F) ∪ keys(B)`) und meldet `B \ F` laut. Vakuität wird **nach** dem Ausschluss (Schritt 4) gemessen — ein `exclude-req`, das alle Anforderungen verschluckt, schaltet das Gate ebenso still ab wie ein fehlgreifendes Muster. Fehlerpräzedenz um die Abschnitts-Spannungs- und die Ausschluss-Stufe ergänzt und als **stufenweise über beide Sichten** präzisiert. Lastenheft-CR 0.44.1; Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) (Entscheidung 8) | slice-071 |
 | 2026-07-16 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) + §2-Schema (`trace.cross-consistency.*`) ergänzt: opt-in Mengenabgleich zweier Traceability-Sichten — Vorwärts-RTM-Tabelle (Anforderung→Design) gegen Rückwärts-`Bezug`-Kanten (Design→Anforderung), je Anforderung `F\B`/`B\F` mit Richtung, Modus `equal`/`superset`. Beide über den header-gebundenen Reader ([§`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)) + range-aware Span-Semantik ([§`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)); Rück-Artefakt-ID = erste Spalte via `design-pattern`, `exclude-req`-Ventil (RE2). Advisory unter `--trace`; Gatung über globales `--require-complete` ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)). Fail-closed, ohne Block byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)). Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) | slice-071 |
 | 2026-07-14 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) + §2-Schema (`trace.requirements.format`/`table.*`) ergänzt: `headings` bleibt Default, `table` extrahiert Markdown-Pipe-Tabellen außerhalb von Fences über exakt benannte ID-/Text-/optionale Modalitätsheader; `\|` und Pipes in einzeiligen Code-Spans teilen keine Zelle. Beide Extraktoren liefern dasselbe `{id,title,modalityText}`-Modell vor Referenzscan/Gating. Nichtleer explizite Quelle oder Tabellenmodus aktiviert fail-closed (fehlende Quelle, Header-/Zeilenstruktur, Duplicate-ID, null Treffer ⇒ Exit 2); `source: ""` und unkonfigurierter Heading-Pfad behalten Empty⇒Default/Deduplizierung/leere RTM byte-identisch. Modalität klassifiziert im Tabellenmodus die konfigurierte Modalitätsspalte, sonst die Textspalte. Begründung in [ADR-0037](../docs/plan/adr/0037-trace-tabellenquellen-nullmengen-guard.md) | slice-070 |
