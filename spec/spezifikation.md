@@ -531,15 +531,19 @@ um eine dritte Referenzklasse. Verrechnung (deterministisch,
    - `/<Ziffern>`-Folgen folgen (`<FAM>-AAA/BBB/CCC`): je `<FAM>-<Ziffern>`;
    jede expandierte ID wird gegen `id-pattern` geprüft und bei Nicht-Treffer
    **verworfen**.
-   **Komma-Kurzform ⇒ Exit 2.** Folgt der Fundstelle (nach der Link-Transparenz,
-   s. u.) ein Komma und **unmittelbar darauf Ziffern** (`<FAM>-AAA, BBB`), ist das
-   eine Aufzählungs-**Gestalt** ohne zugesagte Notation: **Exit 2** mit Hinweis auf
-   `/` und `..`. Weder still verschlucken (die Kurzform verschwände und erzeugte
+   **Komma-Kurzform ⇒ Exit 2.** Folgt der Fundstelle — **oder der von ihr
+   ausgehenden zugesagten Notation** (`..BBB`/`/BBB`, nachdem diese konsumiert ist)
+   — nach der Link-Transparenz ein Komma und **unmittelbar darauf Ziffern**
+   (`<FAM>-AAA, BBB`; ebenso `<FAM>-AAA..CCC, DDD` und `<FAM>-AAA/CCC, DDD`), ist
+   das eine Aufzählungs-**Gestalt** ohne zugesagte Notation: **Exit 2** mit Hinweis
+   auf `/` und `..`. Weder still verschlucken (die Kurzform verschwände und erzeugte
    eine falsche Waise) noch expandieren (`GG-QA-001, 007 Sekunden` wäre eine
    geratene Absicht) — dieselbe Logik wie bei `AAA>BBB`: die Gestalt triggert, der
-   Inhalt ist ungültig. Ein Komma vor einer **vollständigen** Kennung
-   (`<FAM>-AAA, <FAM>-BBB`) ist **keine** Kurzform und unberührt; beide Kennungen
-   werden regulär gefunden.
+   Inhalt ist ungültig. Die Prüfung greift **an jeder der drei Positionen**
+   (hinter der nackten Kennung, hinter einer Range, hinter einem Enum) auf dem
+   nach der Notation verbleibenden Rest. Ein Komma vor einer **vollständigen**
+   Kennung (`<FAM>-AAA, <FAM>-BBB`, auch `<FAM>-AAA..CCC, <FAM>-DDD`) ist **keine**
+   Kurzform und unberührt; beide Kennungen werden regulär gefunden.
 
    **Link-Transparenz.** Steht die Kennung unter Linkpflicht
    ([`DC-FA-ID-001`](lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)),
@@ -1886,6 +1890,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung | Verweis |
 |---|---|---|
+| 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 — **Komma-Kurzform-Regel geschärft** (bei der Implementierung): sie greift nicht nur direkt hinter der Kennung, sondern **auch hinter einer konsumierten Range/Enum** (`<FAM>-AAA..CCC, DDD`). Anlass: der reale Auslöser in grid-gyms `traceability.md` ist `GG-SCN-001..005, 007, 008` — die enge Erst-Formulierung („folgt der Fundstelle ein Komma") ließ `007, 008` **still** fallen (Exit 0, 3 Waisen, gemessen), obwohl genau dieser stille Drop der Zweck des Slice war. Ein Komma vor einer vollständigen Kennung bleibt auch nach einer Range unberührt. Begründung in [ADR-0041](../docs/plan/adr/0041-komma-kurzform-fail-closed.md) | slice-075 |
 | 2026-07-17 | **Markdown-Lexik an CommonMark/GFM angeglichen**, zwei Regeln: §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritt 3 — Trennzelle `^:?-{3,}:?$` → `^:?-+:?$` (GFM verlangt **einen** Bindestrich, wir verlangten drei; jede reale Tabelle mit `\| -- \|` war für d-check keine Tabelle). §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 1 — **Infozeilen-Regel**: eine ` ``` `-Zeile mit Backtick im Rest ist kein Fence-Öffner (CommonMark), sondern Fließtext; ohne sie blendet ein Satz **über** einen Fence **alle** Module bis zum Dateiende (Exit 1 ⇒ Exit 0, gemessen). Beides **still** und **ausgeliefert**; belegt per Differential-Spike gegen goldmark v1.8.4 über 522 reale Dateien (490 Tabellen ⇒ 8 Abweichungen, alle „d-check ist blind"). **Defekt-Fix, kein CR** (das Lastenheft sagt weder, was eine Trennzeile ist, noch was einen Fence öffnet), aber **SemVer-Minor**: d-check findet danach **mehr**. Begründung in [ADR-0042](../docs/plan/adr/0042-markdown-lexik-folgt-commonmark.md) | slice-076 |
 | 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 um die **Komma-Kurzform** ergänzt: Kennung + Komma + Ziffern ⇒ Exit 2 mit Hinweis auf die zugesagten Notationen, statt stillem Drop oder geratener Expansion. Komma vor einer vollständigen Kennung bleibt unberührt. Lastenheft-CR 0.46.0; Begründung in der begleitenden ADR | slice-075 |
 | 2026-07-17 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) Schritt 2 + §2-Schema um **`forward.req-pattern`** ergänzt (Default `trace.requirements.id-pattern`, symmetrisch zu `backward.req-pattern`). Die Vorwärts-Sicht las ihre IDs bis dahin **still** über das RTM-Muster — die Kopplung war nirgends ausgesprochen. Festgehalten: die **Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge** (das Muster entscheidet, nicht die RTM-Mitgliedschaft). Lastenheft-CR 0.45.0; Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) (Entscheidung 9) | slice-071 |

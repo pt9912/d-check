@@ -31,10 +31,16 @@ dass seine Notation nicht gelesen wurde.
 ## Entscheidung
 
 1. **Die Gestalt triggert, der Inhalt entscheidet: Exit 2.** Folgt einer
-   `id-pattern`-Fundstelle ein Komma und **unmittelbar darauf Ziffern**, ist das
-   eine Aufzählungs-Gestalt ohne zugesagte Notation ⇒ **Exit 2** mit Hinweis auf
-   `/` und `..`. Exakt die Logik von `AAA>BBB`: die Syntax hat getriggert, der
-   Inhalt ist ungültig — also rot, nicht still.
+   `id-pattern`-Fundstelle — **oder ihrer konsumierten Range/Enum-Notation** — ein
+   Komma und **unmittelbar darauf Ziffern**, ist das eine Aufzählungs-Gestalt ohne
+   zugesagte Notation ⇒ **Exit 2** mit Hinweis auf `/` und `..`. Exakt die Logik
+   von `AAA>BBB`: die Syntax hat getriggert, der Inhalt ist ungültig — also rot,
+   nicht still. Die Prüfung greift **an allen drei Positionen** auf dem nach der
+   zugesagten Notation verbleibenden Rest: hinter der nackten Kennung
+   (`GG-SCN-001, 007`), hinter einer Range (`GG-SCN-001..005, 007`) und hinter
+   einem Enum (`GG-SCN-001/003, 007`). Der reale Auslöser ist der gemischte Fall:
+   grid-gym schreibt `GG-SCN-001..005, 007, 008` — eine gültige Range plus einen
+   Komma-Schwanz, dessen `007, 008` ohne diese Regel **still** fielen.
 
 2. **Komma vor einer vollständigen Kennung ist unberührt.**
    `<FAM>-AAA, <FAM>-BBB` ist keine Kurzform; beide Kennungen werden regulär
@@ -59,7 +65,12 @@ dass seine Notation nicht gelesen wurde.
 **Fitness-Funktion:**
 
 - `GG-SCN-001, 007` ⇒ Exit 2 mit Hinweis auf `/` und `..` — nicht 1 Waise, nicht 2 Deckungen.
+- `GG-SCN-001..005, 007, 008` (der reale grid-gym-Fall) ⇒ Exit 2 — die Range
+  expandiert, aber der Komma-Schwanz `007, 008` ist die nicht-zugesagte Kurzform;
+  **nicht** 3 stille Waisen.
 - `GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN` ⇒ beide Kennungen gelesen, **kein** Fehler.
+- `GG-SCN-001..005, GG-SCN-007` ⇒ Range expandiert, die volle Kennung hinter dem
+  Komma wird regulär gefunden, **kein** Fehler.
 - `GG-QA-001, siehe X` ⇒ kein Fehler (kein Ziffern-Suffix).
 - `..`/`/`-Notation und die Fail-closed-Fälle unverändert
   ([`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)).
@@ -85,4 +96,5 @@ dass seine Notation nicht gelesen wurde.
 
 | Datum | Ereignis |
 |---|---|
+| 2026-07-17 | **Regel bei der Implementierung geschärft** (Status weiter `Proposed`): sie greift nicht nur direkt hinter der Kennung, sondern auch **hinter einer konsumierten Range/Enum**. Anlass: der Realdatenbeleg gegen grid-gyms `traceability.md` zeigte, dass der reale Auslöser `GG-SCN-001..005, 007, 008` lautet (Range + Komma-Schwanz), nicht die reduzierte Repro `GG-SCN-001, 007` aus dem Kontext — die enge Erst-Formulierung ließ `007, 008` still fallen (Exit 0, 3 Waisen, gemessen). Entscheidung Punkt 1 und die Fitness-Funktion um den gemischten Fall geschärft; Implementierung als Single-Check auf dem nach der Notation verbleibenden Rest (feuert an allen drei Positionen). Umsetzender Slice slice-075. |
 | 2026-07-17 | Proposed. Anlass: Konsumenten-Report grid-gym gegen v0.45.1 — `GG-SCN-001, 007` ließ das produktiv verdrahtete `trace.coverage` das Mapping nicht zählen. Der Konsument benannte die Klasse selbst („stiller Drop ist die schlechteste der drei Optionen") und stellte fest, dass die Kurzform out of spec ist. Vierter Realdaten-Befund; Nutzer-Entscheid: fail-closed statt Notations-Ausbau. Umsetzender Slice slice-075. |
