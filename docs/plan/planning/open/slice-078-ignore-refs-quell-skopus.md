@@ -198,7 +198,7 @@ ignoriert, **nichts** Reales blind, Gate grün.
   Alias eine Deprecation-Frist bekommt, ist Teil der ADR — nicht dieses Slices.
 - **Der Konsument ist heute blind, nicht rot.** Die 63 Verweise sind intakt; das
   Gate fehlt, es schlägt nicht fehl. Dringlichkeit daher niedriger als
-  [slice-075](slice-075-komma-kurzform-fail-closed.md) (verfälscht produktiv
+  [slice-075](../in-progress/slice-075-komma-kurzform-fail-closed.md) (verfälscht produktiv
   verdrahtete Zahlen) — aber die Blindheit wird beim Release **eingefroren**, und
   das ist der Grund, warum sie nicht beliebig warten kann.
 - **Glob-Syntax trägt:** `matchGlob` löst `**` segmentweise auf

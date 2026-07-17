@@ -1,14 +1,12 @@
 # Slice slice-075: Komma-Kurzform fail-closed statt still verschluckt
 
-**Status:** open (Eingang; noch keiner Welle zugeordnet) — **Dringlichkeit erhöht
-2026-07-17.**
+**Status:** in-progress (welle-60-trace-cross-consistency, 2026-07-17).
 
-**Welle:** keine; wartet auf Aufnahme in eine Welle. **Vorrangig einzuplanen:**
-der Auftraggeber (grid-gym) meldet den stillen Komma-Enum-Drop als einen von drei
-offenen Punkten und stellt klar, dass er **produktiv verdrahtetes**
-`trace.coverage` **verfälscht** — nicht latent, sondern aktiv falsche Ergebnisse
-bei einem realen Konsumenten. Damit ist dies der einzige offene Punkt, der heute
-**still falsche Zahlen liefert** und dabei verdrahtet ist.
+**Welle:** aktiv (welle-60), **vorrangig** in Arbeit genommen: der Auftraggeber
+(grid-gym) meldet den stillen Komma-Enum-Drop als **produktiv verdrahtetes**
+`trace.coverage`-Problem — aktiv falsche Ergebnisse bei einem realen Konsumenten,
+der einzige offene Punkt, der still falsche Zahlen liefert und dabei verdrahtet
+ist.
 
 **Bezug:** **Change Request** (neue fail-closed-Klasse = neues Akzeptanzkriterium):
 [`DC-FA-COV-001`](../../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
@@ -19,7 +17,7 @@ Algorithmus in
 Schritt 3; begründende Entscheidung
 [ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) (Proposed).
 **SemVer-Minor** — Vertrags-Zuwachs, anders als die Defekt-Fixes
-[slice-073](../done/slice-073-link-transparente-range-fortsetzung.md)/[slice-074](slice-074-kommentar-suffix-tabellenzeilen.md).
+[slice-073](../done/slice-073-link-transparente-range-fortsetzung.md)/[slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md).
 
 **Autor:** pt9912. **Datum:** 2026-07-17.
 
@@ -79,7 +77,7 @@ zugesagten Notationen — statt stillem Drop **oder** geratener Expansion.
   Jede einzeln begründet, aber das Muster ist ein Signal: der lexikalische
   ID-Leser trifft laufend auf Markdown-/Prosa-Realität. Offener Punkt — gemeinsam
   mit dem gleichlautenden Risiko in
-  [slice-074](slice-074-kommentar-suffix-tabellenzeilen.md) §4: ab
+  [slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md) §4: ab
   wann ist das die falsche Abstraktion?
 
 ## 5. Trigger

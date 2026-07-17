@@ -8,23 +8,21 @@
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-60-trace-cross-consistency ist **nicht
-abgeschlossen**, hat aber gerade **keinen Slice in Arbeit**: slice-073 ist fertig
-(`done/`, v0.45.1), der WIP-Slot ist frei (Modul 5, WIP-Limit = 1), und der
-nächste Slice ist noch nicht eingeplant. Sobald ein Slice nach `in-progress/`
-wandert, wird dieser Marker durch die Welle-Beschreibung ersetzt (planning-Gate:
-`hasActive == hasSlices`). **Nächster Zug:** slice-075 einplanen
-(`open`→`next`→`in-progress`, Vorrang — verfälscht produktiv verdrahtetes
-`trace.coverage`).
+**Welle-ID:** welle-60-trace-cross-consistency
 
-**Stand von welle-60** (pausiert, nicht abgeschlossen):
-[`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md)
-**abgeschlossen** (`done/`, v0.45.1; R2 ACCEPT-WITH-NITS). ·
+**Slices** (WIP-Limit = 1, Modul 5 — **genau einer in Arbeit**):
+[`slice-075`](slice-075-komma-kurzform-fail-closed.md) **in Arbeit** —
+Komma-Kurzform fail-closed: `GG-SCN-001, 007` ließ `007` **still** fallen und
+verfälschte produktiv verdrahtetes `trace.coverage`; künftig Exit 2 mit
+Notations-Hinweis (Change Request, [ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md),
+Lastenheft 0.46.0, SemVer-Minor). ·
 [`slice-076`](../next/slice-076-markdown-lexik-commonmark.md) in `next/`, wartet
 auf den WIP-Slot. · [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md)
 in `open/`, **blockiert** (Realdatenbeleg hängt an slice-074);
 [`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in),
-Code und Reviews liegen vor, v0.44.0/v0.45.0 sind getaggt.
+Code und Reviews liegen vor, v0.44.0/v0.45.0 sind getaggt. ·
+[`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) in `done/`
+(v0.45.1, R2 ACCEPT-WITH-NITS).
 
 **Vorgänger-Trigger:** welle-59-trace-tabellenquellen abgeschlossen
 ([`slice-070`](../done/slice-070-trace-tabellenquellen-nullmengen-guard.md) in
@@ -60,9 +58,6 @@ null, von keinem Gate bemerkt.
 [`slice-076`](../next/slice-076-markdown-lexik-commonmark.md).
 
 **Im Eingang (`open/`), auf Wellen-Einplanung wartend:**
-[`slice-075`](../open/slice-075-komma-kurzform-fail-closed.md) (**vorrangig** —
-verfälscht produktiv verdrahtetes `trace.coverage`; nächster Slice nach der
-Closure von slice-073) ·
 [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md) (blockiert) ·
 [`slice-074`](../open/slice-074-kommentar-suffix-tabellenzeilen.md)
 (zurückgestellt, Implementierung zurückgenommen) ·
