@@ -11,7 +11,7 @@ nicht der Autor) · **Lauf:** R2 nach BLOCK/HIGH in
 Schritte 3/5, [`DC-FA-XREF-001.a`](../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency),
 [ADR-0040](../plan/adr/0040-kommentar-suffix-in-tabellenzeilen.md) (neu gefasst),
 [ADR-0037](../plan/adr/0037-trace-tabellenquellen-nullmengen-guard.md),
-[slice-074](../plan/planning/in-progress/slice-074-kommentar-suffix-tabellenzeilen.md),
+[slice-074](../plan/planning/open/slice-074-kommentar-suffix-tabellenzeilen.md),
 [`AGENTS.md`](../../AGENTS.md) §3.
 
 **Verifikations-Basis:** `make build` (HEAD, Image-ID `425a8f1c9ba6`) gegen
@@ -106,11 +106,11 @@ Konsumenten-Fixture mit zwei leerzeilenlos benachbarten Tabellen den Befund.
 
 ### F-2 · MEDIUM · Der Slice-Plan schreibt weiterhin genau die Platzierung vor, die ADR-0040 als Defekt verworfen hat — DoD und ADR widersprechen sich frontal
 
-**quelle:** [slice-074](../plan/planning/in-progress/slice-074-kommentar-suffix-tabellenzeilen.md)
+**quelle:** [slice-074](../plan/planning/open/slice-074-kommentar-suffix-tabellenzeilen.md)
 §3 DoD gegen [ADR-0040](../plan/adr/0040-kommentar-suffix-in-tabellenzeilen.md)
 §Entscheidung 2; Source Precedence ([`AGENTS.md`](../../AGENTS.md) §3).
 
-**pfad:** `docs/plan/planning/in-progress/slice-074-kommentar-suffix-tabellenzeilen.md:52-53`
+**pfad:** `docs/plan/planning/open/slice-074-kommentar-suffix-tabellenzeilen.md:52-53`
 (auch `:30-31`, `:35-41`, `:60-61`, `:72-74`).
 
 **befund:** Die DoD verlangt unverändert „**Implementierung:** im geteilten
@@ -126,7 +126,7 @@ Suffix-Abstreifung mehr. R1 hat denselben DoD-Satz als Quelle des Defekts zitier
 nicht. Eine DoD-Abhakung gegen diesen Wortlaut ist entweder unmöglich oder
 verlangt die Rückkehr zum Defekt.
 
-**verifizierbar:** ja — `grep -n "Splitter" docs/plan/planning/in-progress/slice-074-kommentar-suffix-tabellenzeilen.md`
+**verifizierbar:** ja — `grep -n "Splitter" docs/plan/planning/open/slice-074-kommentar-suffix-tabellenzeilen.md`
 gegen `grep -n "nicht im Splitter" docs/plan/adr/0040-kommentar-suffix-in-tabellenzeilen.md`;
 `grep -rn "dropCommentSuffix" internal/` ist leer.
 
@@ -181,7 +181,7 @@ Enumeration, die es als Exit 2 mitbehauptet, ist neu.
 
 ### F-5 · LOW · Für `trace.requirements.format: table` pinnt kein Konsumententest die tolerierte **Datenzeile** — also gerade den motivierenden Realfall
 
-**quelle:** [slice-074](../plan/planning/in-progress/slice-074-kommentar-suffix-tabellenzeilen.md)
+**quelle:** [slice-074](../plan/planning/open/slice-074-kommentar-suffix-tabellenzeilen.md)
 §3 DoD („Tests (positiv): … **je einmal** für `trace.requirements.format: table`
 und `trace.cross-consistency`, auf **Konsumenten-Ebene**"); Reviewer-Anker MEDIUM
 (Negativtests am neuen Vertrag) — hier positiv-seitig, daher LOW.

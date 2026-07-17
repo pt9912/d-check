@@ -10,15 +10,7 @@
 
 **Welle-ID:** welle-60-trace-cross-consistency
 
-**Slices:** [`slice-074`](slice-074-kommentar-suffix-tabellenzeilen.md) —
-Kommentar-Suffix in Tabellenzeilen: d-checks eigene Ignore-Direktive
-(`<!-- d-check:ignore … -->`) macht d-checks eigenen Tabellen-Reader blind
-(Exit 2 auf einer Zeile, die jeder Renderer normal darstellt). **Blockiert den
-Realdatenbeleg von slice-071 vollständig** und läuft daher zuerst; ausgeliefert
-seit v0.43.0 für `trace.requirements.format: table`. Defekt-Fix, kein CR
-([ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md)).
-
-[`slice-073`](slice-073-link-transparente-range-fortsetzung.md) —
+**Slices:** [`slice-073`](slice-073-link-transparente-range-fortsetzung.md) —
 link-transparente Range-Fortsetzung: eine verlinkte Range (`` [`ID`](…)..009 ``)
 expandiert nicht, weil die Spec-Verengung „unmittelbar" strukturell mit d-checks
 eigener Linkpflicht kollidiert. **Ausgelieferter Defekt seit v0.41.0**
@@ -48,6 +40,10 @@ null, von keinem Gate bemerkt.
   `exclude-req`-Ventil sind als Akzeptanztests verriegelt; der Default ohne
   `trace.cross-consistency`-Block ist byte-identisch belegt.
 - Der reale grid-gym-Drift wird geflaggt, die Mittelschicht-Familien nicht.
+  **Offen:** der von [ADR-0038](../../adr/0038-trace-cross-consistency.md)
+  Entscheidung 7 geforderte Realdatenbeleg bricht an grid-gyms
+  `architecture.md:913` weiter mit Exit 2 ab — die Direktiven-Zeile ist mit der
+  Rücknahme von slice-074 wieder unlesbar. Der Beleg hängt an slice-074/076.
 - Eine verlinkte Range expandiert wie die unverlinkte (slice-073); der
   ausgelieferte `trace.coverage`-Falschbefund ist weg und als Patch veröffentlicht.
 - [ADR-0038](../../adr/0038-trace-cross-consistency.md) und
@@ -59,7 +55,18 @@ null, von keinem Gate bemerkt.
 
 **Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
 
-**Im Eingang (`open/`), auf Wellen-Einplanung wartend:** slice-075 —
+**Im Eingang (`open/`), auf Wellen-Einplanung wartend:**
+[`slice-074`](../open/slice-074-kommentar-suffix-tabellenzeilen.md) —
+Direktiven-Zelle in Tabellenzeilen ([ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md)
+Proposed). **Aus `in-progress/` zurückgestellt, Implementierung zurückgenommen**
+(2026-07-17): drei unabhängige Reviews haben an fünf aufeinanderfolgenden
+Fassungen dieselbe Klasse belegt — zuletzt R3-F-1, ein Stilles-Grün-Pfad
+(Exit 1 ⇒ Exit 0) in beiden Konsumenten. Der Defekt bleibt offen und
+ausgeliefert (Exit 2 auf einer Zeile, die jeder Renderer normal darstellt);
+die Rücknahme ist die ehrliche Zwischenlage, nicht die Lösung. Vorbedingung
+für den Realdatenbeleg von slice-071.
+
+Ferner slice-075 —
 Komma-Kurzform fail-closed
 ([ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) Proposed; **Change
 Request**, Lastenheft 0.46.0, SemVer-Minor). `GG-SCN-001, 007` deckte nur die
