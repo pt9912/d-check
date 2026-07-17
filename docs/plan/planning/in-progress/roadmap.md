@@ -51,16 +51,9 @@ null, von keinem Gate bemerkt.
 
 **Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
 
-**Im Eingang (`open/`), auf Wellen-Einplanung wartend:** slice-074 —
-Kommentar-Suffix in Tabellenzeilen
-([ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md) Proposed;
-Defekt-Fix, kein CR). d-checks eigene Ignore-Direktive macht d-checks eigenen
-Tabellen-Reader blind (Exit 2 auf einer Zeile, die jeder Renderer normal
-darstellt); ausgeliefert seit v0.43.0 für `trace.requirements.format: table`.
-**Blockiert den Realdatenbeleg von slice-071 vollständig** — Kandidat für welle-60,
-vorrangig.
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** slice-074 — Kommentar-Suffix in Tabellenzeilen ([ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md) Proposed; Defekt-Fix, kein CR), blockiert den Realdatenbeleg von slice-071.
 
-Ferner slice-072 — Handbuch-
+**Im Eingang (`open/`), auf Wellen-Einplanung wartend:** slice-072 — Handbuch-
 Aufgabenorientierung der §4-Kapitel gegen den
 [Benutzerhandbuch-Standard](../../../user/benutzerhandbuch-standard.md) §2
 (sieben Audit-Befunde; rein redaktionell — kein Change Request, kein ADR, kein
