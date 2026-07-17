@@ -3,6 +3,9 @@ package app
 import (
 	"regexp"
 	"testing"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 )
 
 // ggPat spiegelt eine Fremd-Konvention (grid-gym): GG-<FAMILIE>-NNN.
@@ -118,7 +121,11 @@ func TestExpandRangeLinkTransparent(t *testing.T) {
 		{"Zeichen zwischen ) und ..", "`](a.md)x..003", nil},
 		{"Whitespace zwischen ) und ..", "`](a.md) ..003", nil},
 		{"Link ohne Fortsetzung", "`](a.md)", nil},
-		{"Klammer in der URL bricht das Suffix", "`](a(1).md)..003", nil},
+		// Ein Klammer-Ziel ist ein LEGITIMER Link (der kanonische Reader grenzt
+		// balanciert ab) — die Fortsetzung dahinter wird gelesen. Die erste Fassung
+		// erwartete hier nil und schrieb damit den Defekt fest (R1-F-1/F-2).
+		{"balanciertes Klammer-Ziel, danach Range", "`](a(1).md)..003",
+			[]string{"GG-QA-001", "GG-QA-002", "GG-QA-003"}},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -141,5 +148,68 @@ func TestExpandRangeLinkTransparentFailClosed(t *testing.T) {
 	}
 	if _, err := expandRange("trace.coverage", "GG-QA-001", "`](x.md)..0010", ggPat); err == nil {
 		t.Fatal("Breiten-Mismatch hinter einem Link muss fail-closed bleiben")
+	}
+}
+
+// slice-073 R1-F-1 (HIGH): Klammern im Linkziel. Die erste Fassung grenzte das
+// Ziel per Regex an der ERSTEN `)` ab — eine zweite Link-Definition neben dem
+// kanonischen Reader. Folge: der URL-REST landete im Range-Parser, und eine Zelle
+// GANZ OHNE Range-Notation expandierte (`/002/003` aus dem Pfad) und versteckte
+// damit Waisen. Ein stiller Falschbefund, gefährlicher als der behobene laute.
+func TestExpandRangeBalancedLinkTarget(t *testing.T) {
+	tests := []struct {
+		name string
+		rest string
+		want []string
+	}{
+		// KEINE Range-Notation in der Zelle — es darf nichts expandieren.
+		{"Pfadsegmente hinter Klammer-URL sind kein Enum", "`](../specs/Rev(2)/002/003.md)", nil},
+		{"Range-artiger Text in der URL", "`](../a(1)..003.md)", nil},
+		// Balanciertes Ziel: das Suffix endet korrekt, die Fortsetzung wird gelesen.
+		{"Klammer-URL, danach echte Range", "`](https://x.org/A_(b))..003",
+			[]string{"GG-QA-001", "GG-QA-002", "GG-QA-003"}},
+		{"Klammer-URL, danach echtes Enum", "`](https://x.org/A_(b))/002/003",
+			[]string{"GG-QA-002", "GG-QA-003"}},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := expandRange("trace.coverage", "GG-QA-001", tc.rest, ggPat)
+			if err != nil {
+				t.Fatalf("unerwarteter Fehler: %v", err)
+			}
+			if !equalStrings(got, tc.want) {
+				t.Fatalf("expandRange(GG-QA-001, %q) = %v, want %v", tc.rest, got, tc.want)
+			}
+		})
+	}
+}
+
+// slice-073 R1-F-4: die DoD hakte Tests auf KONSUMENTEN-Ebene ab, die nicht
+// existierten — alle Tests riefen expandRange direkt. Das hier ist die
+// Fitness-Aussage von ADR-0039, an ihrer echten Wirkungsstelle gemessen:
+// verlinkt und unverlinkt decken identisch ab.
+func TestCoverageRefsLinkTransparent(t *testing.T) {
+	reqs := func(body string) map[string]string {
+		return map[string]string{"docs/traceability.md": "# T\n\n" + body + "\n"}
+	}
+	src := []model.TraceCoverage{{Files: []string{"docs/traceability.md"}, Label: "Trace", Ranges: true}}
+	for _, tc := range []struct {
+		name string
+		body string
+		want int
+	}{
+		{"unverlinkt", "Abdeckung: GG-QA-001..003", 3},
+		{"verlinkt", "Abdeckung: [`GG-QA-001`](../spec/x.md)..003", 3},
+		{"verlinkt mit Klammer-URL, ohne Range", "Abdeckung: [`GG-QA-001`](../a(2)/002/003.md)", 1},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := coverageRefs(coretest.NewMemFS(reqs(tc.body)), src, ggPat)
+			if err != nil {
+				t.Fatalf("unerwarteter Fehler: %v", err)
+			}
+			if len(got) != tc.want {
+				t.Fatalf("abgedeckte Anforderungen = %d, want %d (%v)", len(got), tc.want, got)
+			}
+		})
 	}
 }

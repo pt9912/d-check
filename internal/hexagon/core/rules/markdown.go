@@ -304,6 +304,28 @@ func matchBracket(s string, open int, lo, hi byte) (int, bool) {
 	return 0, false
 }
 
+// LinkSuffixEnd liefert das Ende (exklusiv) eines Markdown-Link-Suffixes `](…)`,
+// das an Position i beginnt — oder -1, wenn dort keines steht. Das Ziel wird
+// **klammer-balanciert** abgegrenzt, mit demselben matchBracket wie der
+// Link-Reader (parseLinkAt): es gibt genau EINE Link-Definition im Repo.
+//
+// Gebraucht vom range-aware ID-Leser (DC-FA-COV-001.a Link-Transparenz): steht
+// eine Kennung unter Linkpflicht, folgt ihre Range-Fortsetzung erst hinter dem
+// Suffix. Eine eigene, regex-basierte Abgrenzung („bis zur ersten `)`") wäre eine
+// zweite Definition — und riss bei Klammern im Ziel den URL-Rest in den
+// Range-Parser (slice-073 R1-F-1: `](…/Rev(2)/002/003.md)` expandierte `/002/003`
+// als Enum und versteckte damit Waisen).
+func LinkSuffixEnd(s string, i int) int {
+	if i+1 >= len(s) || s[i] != ']' || s[i+1] != '(' {
+		return -1
+	}
+	destEnd, ok := matchBracket(s, i+1, '(', ')')
+	if !ok {
+		return -1
+	}
+	return destEnd + 1
+}
+
 // LinkRef ist ein extrahierter Markdown-Link.
 type LinkRef struct {
 	Line    int

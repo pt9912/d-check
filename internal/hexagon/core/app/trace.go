@@ -365,13 +365,6 @@ var (
 	trailingDigits = regexp.MustCompile(`\d+$`)
 	rangeSuffix    = regexp.MustCompile(`^\.\.(\d+)`)
 	enumSuffix     = regexp.MustCompile(`^(?:/\d+)+`)
-	// linkSuffix erkennt ein Markdown-Link-Suffix unmittelbar hinter der Kennung:
-	// optionales schließendes Code-Span-Backtick, `]`, geklammertes Ziel
-	// (DC-FA-COV-001.a Link-Transparenz, ADR-0039). Das Ziel endet an der ERSTEN
-	// `)` — enthält eine URL selbst eine Klammer, greift die Regel nicht und es
-	// wird nicht expandiert. Das ist die sichere Richtung: lieber keine Expansion
-	// als eine geratene.
-	linkSuffix = regexp.MustCompile("^`?\\]\\([^)]*\\)")
 )
 
 // skipLinkSuffix überspringt **höchstens ein** Markdown-Link-Suffix hinter einer
@@ -381,9 +374,19 @@ var (
 // unqualifizierte Range-Zusage des Lastenhefts genau dort, wo d-checks eigene
 // Linkpflicht greift. Bewusst NUR eines und sonst nichts (kein Whitespace, keine
 // Emphasis, kein zweites Suffix): jede weitere Toleranz rät die Autor-Absicht.
+//
+// Die Ziel-Abgrenzung kommt aus rules.LinkSuffixEnd — **klammer-balanciert**, wie
+// der kanonische Link-Reader. Eine eigene Regex-Abgrenzung („bis zur ersten `)`")
+// wäre eine zweite Link-Definition und riss bei Klammern im Ziel den URL-Rest in
+// den Range-Parser: `](…/Rev(2)/002/003.md)` expandierte `/002/003` als Enum und
+// versteckte damit Waisen (slice-073 R1-F-1).
 func skipLinkSuffix(rest string) string {
-	if m := linkSuffix.FindString(rest); m != "" {
-		return rest[len(m):]
+	i := 0
+	if i < len(rest) && rest[i] == '`' { // schließendes Code-Span-Backtick der ID
+		i++
+	}
+	if end := rules.LinkSuffixEnd(rest, i); end >= 0 {
+		return rest[end:]
 	}
 	return rest
 }

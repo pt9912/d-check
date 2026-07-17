@@ -74,7 +74,8 @@ Vorkommen ohne Code-Span, null mit einem Zeichen zwischen `)` und der Fortsetzun
 
 | Option | Pro | Contra |
 |---|---|---|
-| **Genau ein Link-Suffix überspringen** (gewählt) | deckt 100 % des belegten Bestands; bleibt deterministisch; ein Fix für beide Konsumenten | ein neuer Sonderweg im Parser (Markdown-Wissen in einer bisher rein lexikalischen Funktion) |
+| **Genau ein Link-Suffix überspringen, Ziel klammer-balanciert über den kanonischen Reader** (gewählt) | deckt 100 % des belegten Bestands; bleibt deterministisch; ein Fix für beide Konsumenten; **eine** Link-Definition im Repo | ein neuer Sonderweg im Parser (Markdown-Wissen in einer bisher rein lexikalischen Funktion) |
+| Ziel per Regex bis zur ersten `)` abgrenzen (**erste Fassung, verworfen**) | kein Rückgriff auf den Reader | **zweite** Link-Definition neben `rules.parseLinkAt`; bei einer Klammer im Ziel landet der URL-Rest im Range-Parser und expandiert Pfadsegmente als Enum — versteckt Waisen (still) statt sie zu melden (laut) |
 | Beliebiges Peeling (Whitespace/Emphasis/Mehrfach-Links) | träfe auch ungesehene Schreibweisen | rät die Autor-Absicht; Falsch-Expansionen; aus dem Parser wird eine Heuristik |
 | Zelle vor dem Scan Markdown-normalisieren (Links zu Klartext) | konzeptionell sauber | zweiter Markdown-Pfad neben dem Reader; ändert die Fundstellen-Offsets und damit `Datei:Zeile`; große Fläche für einen kleinen Defekt |
 | Nichts tun — Konsument schreibt die Range in den Linktext (`` [`ID..009`](…) ``) | kein Code | verlagert die Last auf jeden Konsumenten; die Lastenheft-Zusage bleibt gebrochen; die Kollision mit der Linkpflicht bleibt strukturell bestehen |
@@ -83,6 +84,11 @@ Vorkommen ohne Code-Span, null mit einem Zeichen zwischen `)` und der Fortsetzun
 
 - Eine verlinkte Range expandiert wie die unverlinkte: identische Quelle, einmal
   `GG-UI-001..003`, einmal `` [`GG-UI-001`](…)..003 `` ⇒ **gleiches** Ergebnis.
+- Eine Zelle **ohne** Range-Notation expandiert **nie** — auch nicht, wenn das
+  Linkziel Klammern oder ziffern-artige Pfadsegmente trägt
+  (`` [`GG-QA-001`](…/Rev(2)/002/003.md) ``). Diese Richtung ist die kritische:
+  eine Falsch-Expansion **versteckt** Waisen (stilles Grün), eine fehlende meldet
+  zu viele (lautes Rot).
 - Der ausgelieferte `trace.coverage`-Falschbefund (2 Waisen statt 0) ist weg.
 - Zwei Link-Suffixe hintereinander oder ein Zeichen zwischen `)` und `..` werden
   **nicht** expandiert (kein Raten) — negativ belegt.
@@ -111,4 +117,5 @@ Vorkommen ohne Code-Span, null mit einem Zeichen zwischen `)` und der Fortsetzun
 
 | Datum | Ereignis |
 |---|---|
+| 2026-07-17 | Ziel-Abgrenzung auf den **klammer-balancierten** kanonischen Reader (`rules.LinkSuffixEnd`) gezogen; die erste Fassung grenzte per Regex bis zur ersten `)` ab und war damit eine zweite Link-Definition. Anlass: nachgeholter unabhängiger Review zu slice-073 (R1-F-1, HIGH) — bei einer Klammer im Ziel landete der URL-Rest im Range-Parser, `/002/003` expandierte als Enum, und eine Zelle ohne jede Range-Notation versteckte Waisen (Exit 1 → Exit 0). Fitness-Funktion um die kritische Richtung ergänzt. Status weiterhin `Proposed`. |
 | 2026-07-17 | Proposed. Anlass: Realdaten-Lauf des Konsumenten grid-gym gegen v0.44.0 (Defekt 2 von zweien) — reproduziert und dabei als **ausgelieferter** `trace.coverage`-Defekt seit v0.41.0 erkannt, den der Konsumenten-Report nicht sehen konnte. Umsetzender Slice slice-073. |

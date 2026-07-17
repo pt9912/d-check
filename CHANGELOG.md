@@ -6,6 +6,35 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.45.1] — 2026-07-17
+
+### Fixed
+
+- **Keine Falsch-Expansion mehr bei Klammern im Linkziel** (`trace.coverage`,
+  `trace.cross-consistency`). Die Link-Transparenz aus v0.44.1 grenzte das Linkziel
+  per Regex an der **ersten** `)` ab — eine zweite Link-Definition neben dem
+  kanonischen Reader, der klammer-**balanciert** liest. Enthielt ein Ziel eine
+  Klammer, landete der URL-Rest im Range-Parser: `` [`GG-QA-001`](…/Rev(2)/002/003.md) ``
+  expandierte die Pfadsegmente `/002/003` als Enum — in einer Zelle **ohne jede
+  Range-Notation**. Folge: **falsche Deckung, die Waisen versteckt**
+  (`--require-complete` Exit 1 → Exit 0).
+
+  **Betroffen: v0.44.1 und v0.45.0.** Wer ein Linkziel mit Klammern in einer
+  `trace.coverage`-Quelle führt, sollte aktualisieren — der Defekt macht Läufe
+  fälschlich **grün**, ist also still. Alle anderen Formen sind unverändert.
+
+- **Klammern im Linkziel brechen die Range-Fortsetzung nicht mehr.** Umgekehrte
+  Richtung derselben Wurzel: `` [`GG-QA-001`](https://x.org/A_(b))..003 `` expandiert
+  jetzt. Damit ist die strukturelle Kollision zwischen Range-Notation und
+  Linkpflicht auch für Ziele mit Klammern aufgelöst — `ids` sah den Link als
+  erfüllt, der Range-Parser nicht.
+
+### Changed
+
+- Die Link-Abgrenzung des Range-Parsers kommt jetzt aus `rules.LinkSuffixEnd` —
+  **eine** Link-Definition im Repo statt zwei
+  ([ADR-0039](docs/plan/adr/0039-link-transparente-range-fortsetzung.md)).
+
 ## [0.45.0] — 2026-07-17
 
 ### Added
@@ -51,15 +80,20 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   ([ADR-0039](docs/plan/adr/0039-link-transparente-range-fortsetzung.md)).
 
   **Wirkung auf bestehende Läufe:** Wer verlinkte Ranges führt, sieht **weniger**
-  Waisen bzw. Differenzen — ein fälschlich roter Lauf wird grün. Kein Konsument
-  verliert Deckung, kein Befund entsteht neu. Wer keine verlinkten Ranges nutzt,
-  ist nicht betroffen (byte-identisch).
+  Waisen bzw. Differenzen — ein fälschlich roter Lauf wird grün.
+
+  **Richtigstellung (0.45.1):** Die ursprüngliche Zusage „Wer keine verlinkten
+  Ranges nutzt, ist nicht betroffen (byte-identisch)" war **falsch** — bei
+  Klammern im Linkziel expandierte auch eine Zelle ohne Range-Notation und
+  versteckte Waisen. Behoben in 0.45.1; die Zusage gilt erst ab dort.
 
   Bewusst eng gefasst: übersprungen wird **nur** ein Link-Suffix — nicht
   Whitespace, Emphasis, ein zweites Suffix oder Text zwischen `)` und der
   Fortsetzung. Jede weitere Toleranz würde die Autor-Absicht raten. Die
   Fail-closed-Fälle (`AAA>BBB`, abweichende Ziffern-Breite) gelten unverändert
-  auch hinter einem Link.
+  auch hinter einem Link. (Die hier ursprünglich behauptete Aussage „Enthält das
+  Linkziel selbst eine Klammer, greift die Regel nicht" traf **nicht** zu — siehe
+  0.45.1.)
 
 ## [0.44.0] — 2026-07-17
 
