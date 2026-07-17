@@ -1,8 +1,14 @@
 # Slice slice-075: Komma-Kurzform fail-closed statt still verschluckt
 
-**Status:** open (Backlog; noch keiner Welle zugeordnet).
+**Status:** open (Eingang; noch keiner Welle zugeordnet) — **Dringlichkeit erhöht
+2026-07-17.**
 
-**Welle:** keine; wartet auf Aufnahme in eine Welle.
+**Welle:** keine; wartet auf Aufnahme in eine Welle. **Vorrangig einzuplanen:**
+der Auftraggeber (grid-gym) meldet den stillen Komma-Enum-Drop als einen von drei
+offenen Punkten und stellt klar, dass er **produktiv verdrahtetes**
+`trace.coverage` **verfälscht** — nicht latent, sondern aktiv falsche Ergebnisse
+bei einem realen Konsumenten. Damit ist dies der einzige offene Punkt, der heute
+**still falsche Zahlen liefert** und dabei verdrahtet ist.
 
 **Bezug:** **Change Request** (neue fail-closed-Klasse = neues Akzeptanzkriterium):
 [`DC-FA-COV-001`](../../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)

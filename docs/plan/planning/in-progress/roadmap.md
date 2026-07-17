@@ -74,7 +74,9 @@ Fassungen dieselbe Klasse belegt — zuletzt R3-F-1, ein Stilles-Grün-Pfad
 (Exit 1 ⇒ Exit 0) in beiden Konsumenten. Der Defekt bleibt offen und
 ausgeliefert (Exit 2 auf einer Zeile, die jeder Renderer normal darstellt);
 die Rücknahme ist die ehrliche Zwischenlage, nicht die Lösung. Vorbedingung
-für den Realdatenbeleg von slice-071.
+für den Realdatenbeleg von slice-071. **Der Auftraggeber führt ihn (2026-07-17)
+weiterhin als einen von drei offenen Punkten** — die Rücknahme hat den Blocker
+bei ihm wiederhergestellt, sie hat ihn nicht erledigt.
 
 Ferner [`slice-077`](../open/slice-077-stiller-tabellen-uebersprung.md) —
 stiller Tabellen-Übersprung: eine **irrelevante** Tabelle gleicher Breite
@@ -84,12 +86,14 @@ das ausgelieferte v0.45.1, **ohne** jeden Marker). **Bewusst ohne ADR erfasst �
 die tragende Regel ist offen**, und die naheliegende ist bereits widerlegt. Von
 den offenen Tabellen-Defekten der einzige, der still Waisen verschweigt.
 
-Ferner slice-075 —
-Komma-Kurzform fail-closed
-([ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) Proposed; **Change
-Request**, Lastenheft 0.46.0, SemVer-Minor). `GG-SCN-001, 007` deckte nur die
-erste Kennung — still. Die Kurzform war nie zugesagt; der Defekt ist das fehlende
-Signal, nicht die fehlende Unterstützung.
+[`slice-075`](../open/slice-075-komma-kurzform-fail-closed.md) — Komma-Kurzform
+fail-closed ([ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) Proposed;
+**Change Request**, Lastenheft 0.46.0, SemVer-Minor). `GG-SCN-001, 007` deckte
+nur die erste Kennung — still. Die Kurzform war nie zugesagt; der Defekt ist das
+fehlende Signal, nicht die fehlende Unterstützung. **Vorrangig einzuplanen
+(Auftraggeber-Meldung 2026-07-17):** der stille Drop **verfälscht produktiv
+verdrahtetes** `trace.coverage` bei grid-gym — der einzige offene Punkt, der
+heute still falsche Zahlen liefert und dabei verdrahtet ist.
 
 Ferner slice-072 — Handbuch-
 Aufgabenorientierung der §4-Kapitel gegen den
@@ -98,7 +102,20 @@ Aufgabenorientierung der §4-Kapitel gegen den
 Release). Ursache ist strukturell: §4.12 wuchs über die Slices 066–071, weil jeder
 Slice seine Fähigkeit anhängte, statt eine Aufgabe zu schreiben.
 
-**Kandidat (noch kein Slice, auf Freigabe wartend):** ein `--print-version-md`-Scaffold, das ein
+**Kandidat (noch kein Slice, auf Freigabe wartend):** der **RTM-Generator** —
+die Vorwärts-RTM aus den Rückwärts-`Bezug`-Kanten **erzeugen**, statt sie nur
+gegen sie abzugleichen. Von [ADR-0038](../../adr/0038-trace-cross-consistency.md)
+Entscheidung 7 bewusst als **spätere CR** sequenziert; das
+`trace.cross-consistency`-Gate aus
+[`slice-071`](slice-071-trace-cross-consistency-gate.md) ist sein
+Korrektheits-Harness. **Auftraggeber-Nachreichung 2026-07-17 (grid-gym), einer
+von drei offenen Punkten:** der Generator soll zusätzlich **Artefakt-Titel** und
+**Kanten-Anmerkung** tragen. Produkt-Feature ⇒ Change Request (`DC-FA-*` im
+Lastenheft) + Slice + Spezifikation-`.a` + ADR. **Freigabe und Scope offen** —
+insbesondere, woher der Artefakt-Titel kommt (die Rück-Sicht bindet heute nur die
+erste Spalte als Artefakt-ID) und was eine Kanten-Anmerkung normativ ist.
+
+Ferner ein `--print-version-md`-Scaffold, das ein
 `version.md`-Skelett mit Platzhaltern auf stdout ausgibt (Familie `--print-config`/`--print-mk`/
 `--suggest-config`; read-only, deterministisch). Produkt-Feature ⇒ Change Request
 (`DC-FA-CLI-*` im Lastenheft) + Slice + Spezifikation-`.a`, **kein** ADR (additive CLI-Ausgabe).
