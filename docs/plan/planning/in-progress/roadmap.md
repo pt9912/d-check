@@ -55,7 +55,7 @@ verfälscht produktiv verdrahtetes `trace.coverage`) ·
 [`slice-074`](../open/slice-074-kommentar-suffix-tabellenzeilen.md)
 (zurückgestellt, Implementierung zurückgenommen) ·
 [`slice-077`](../open/slice-077-stiller-tabellen-uebersprung.md) ·
-[`slice-078`](../open/slice-078-ignore-refs-quell-skopus.md) ·
+[`slice-078`](../open/slice-078-ignore-refs-quell-skopus.md) · [`slice-079`](../open/slice-079-zitat-verifikation.md) ·
 [`slice-072`](../open/slice-072-handbuch-aufgabenorientierung.md).
 
 **Kandidat (noch kein Slice, auf Freigabe wartend):** der **RTM-Generator** (RTM
