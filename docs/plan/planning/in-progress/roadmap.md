@@ -10,7 +10,7 @@
 
 **Keine aktive Welle.** welle-60-trace-cross-consistency ist **nicht
 abgeschlossen**, hat aber gerade **keinen Slice in Arbeit**: slice-075 ist fertig
-und reviewt (`done/`; Tag v0.46.0 steht aus), der WIP-Slot ist frei (Modul 5,
+und reviewt (`done/`, **v0.46.0 veröffentlicht**), der WIP-Slot ist frei (Modul 5,
 WIP-Limit = 1). **Nächster Zug:** slice-076 aus `next/` in Arbeit nehmen, oder
 slice-071 entblocken (hängt an slice-074).
 
@@ -18,7 +18,7 @@ slice-071 entblocken (hängt an slice-074).
 [`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) **done**
 (v0.45.1, R2 ACCEPT-WITH-NITS). ·
 [`slice-075`](../done/slice-075-komma-kurzform-fail-closed.md) **done**
-(Komma-Kurzform fail-closed, R1 ACCEPT-WITH-NITS; Tag v0.46.0 ausstehend). ·
+(Komma-Kurzform fail-closed, R1 ACCEPT-WITH-NITS, **v0.46.0 veröffentlicht**). ·
 [`slice-076`](../next/slice-076-markdown-lexik-commonmark.md) in `next/`, wartet
 auf den WIP-Slot. · [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md)
 in `open/`, **blockiert** (Realdatenbeleg hängt an slice-074);

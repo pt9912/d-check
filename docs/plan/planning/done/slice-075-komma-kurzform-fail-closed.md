@@ -2,7 +2,7 @@
 
 **Status:** **done** (2026-07-17, welle-60-trace-cross-consistency). Code fertig,
 zweifach reviewt (ACCEPT-WITH-NITS), `make gates` grün. **Release v0.46.0:
-Release-Prep erledigt, Tag + GHCR-Push + Digest-Backfill stehen aus (Nutzer).**
+v0.46.0 veröffentlicht (Tag, GHCR-Push, Digest-Backfill komplett).**
 
 **Welle:** welle-60 — **vorrangig** in Arbeit genommen, weil der Auftraggeber
 (grid-gym) den stillen Komma-Drop als **produktiv verdrahtetes**
@@ -70,9 +70,10 @@ zugesagten Notationen — statt stillem Drop **oder** geratener Expansion.
   Range + volle Kennung ⇒ Exit 0.
 - [x] **Nutzerdoku:** Handbuch §5 (die zwei zugesagten Notationen + die Komma-
   Fehlerklasse, einfach **und** hinter Range) + Historie 1.34; CHANGELOG 0.46.0.
-- [ ] **Release:** v0.46.0 (Minor), Release-Prep **erledigt** (CHANGELOG,
-  version.md, ghcr-Tag-Pins nachgezogen); Tag + GHCR-Push + Digest-Backfill
-  stehen aus (Nutzer).
+- [x] **Release:** **v0.46.0 veröffentlicht** — CHANGELOG, version.md,
+  ghcr-Tag-Pins, Handbuch; Tag `v0.46.0` gepusht, `release.yml` grün
+  (make ci + GHCR-Push + GitHub Release), Image-Digest
+  `sha256:9c317bf116a614…36a1`, Digest-Backfill (Handbuch §4) committet.
 - [x] **Qualität:** `make gates`/`make ci` grün; **kontext-getrennter R1**
   ([`2026-07-17-slice-075-implementation-r1.md`](../../../reviews/2026-07-17-slice-075-implementation-r1.md),
   ACCEPT-WITH-NITS, frischer Subagent gegen das gebaute Image) — dazu ein
@@ -109,10 +110,11 @@ Spezifikation stehen vor der Implementierung.
 
 ## 7. Closure-Notiz
 
-**Abgeschlossen 2026-07-17**, welle-60. **Release v0.46.0: Release-Prep fertig
-(CHANGELOG, version.md, ghcr-Tag-Pins, Handbuch), Tag + GHCR-Push +
-Digest-Backfill stehen als Nutzer-Schritt aus.** [ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) mit der Closure auf
-`Accepted` (Folge-Commit).
+**Abgeschlossen 2026-07-17**, welle-60. **v0.46.0 veröffentlicht:** Tag `v0.46.0`
+gepusht, `release.yml` grün (make ci + GHCR-Push + GitHub Release), Image-Digest
+`sha256:9c317bf116a614…36a1`, Digest-Backfill (Handbuch §4) committet.
+[ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) mit der Closure auf
+`Accepted`.
 
 **Commit-Kette:** `0edee0a` (Einplanung `open`→`next`→`in-progress`, Welle
 reaktiviert) · `a30318c` (doc-first Spec/ADR-Schärfung auf alle drei Positionen)
