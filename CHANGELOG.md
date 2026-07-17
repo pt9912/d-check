@@ -6,6 +6,28 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.46.0] — 2026-07-17
+
+### Added
+
+- **Komma-Kurzform in Coverage-Quellen ist fail-closed** (`trace.coverage`,
+  `trace.cross-consistency`). Folgt einer Kennung — oder ihrer Range/Enum-Notation
+  — ein Komma und **unmittelbar Ziffern** (`GG-SCN-001, 007`, ebenso
+  `GG-SCN-001..005, 007, 008`), bricht d-check mit **Exit 2** und einem Hinweis auf
+  die zugesagten Notationen ab, statt die Kurzform still fallen zu lassen. Bis
+  v0.45.1 verschwand `007` lautlos und erzeugte in `trace.coverage` eine falsche
+  Waise — bei einem produktiv verdrahteten Konsumenten. Die Kurzform war nie eine
+  zugesagte Notation; der Defekt war das fehlende Signal. Ein Komma **vor** einer
+  vollständigen Kennung (`GG-SCN-001, GG-SCN-007`, auch hinter einer Range) bleibt
+  unberührt ([ADR-0041](docs/plan/adr/0041-komma-kurzform-fail-closed.md),
+  Lastenheft 0.46.0).
+
+  **Wirkung auf bestehende Läufe:** eine Quelle mit Komma-Kurzform **oder** einer
+  Prosa-Zahl direkt hinter einer Kennung (`GG-QA-001, 2026`) läuft künftig auf
+  Exit 2 — laut und in Sekunden behebbar. Das ist ein **Vertrags-Zuwachs** (neues
+  Akzeptanzkriterium), daher SemVer-**Minor**. Wer nur `..`/`/`-Notation oder
+  komma-getrennte volle Kennungen nutzt, ist nicht betroffen.
+
 ## [0.45.1] — 2026-07-17
 
 ### Fixed

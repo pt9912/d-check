@@ -25,7 +25,7 @@ Trennzeile und allen Datenzeilen — und weil die verschluckende Tabelle
 irrelevant ist, meldet `extractTable` nichts. **Die Anforderungen der zweiten
 Tabelle existieren nicht, und kein Gate sagt es.**
 
-Gemessen gegen das **ausgelieferte** `ghcr.io/pt9912/d-check:v0.45.1`, Fixture
+Gemessen gegen das **ausgelieferte** `ghcr.io/pt9912/d-check:v0.45.1` <!-- d-check:ignore (historischer Beleg gegen das damals ausgelieferte Image; darf nicht auf die aktuelle Version mitwandern) -->, Fixture
 `fx-s`, **ohne jeden Marker**:
 
 ```markdown
