@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-16.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-17.
 
 **Form:** folgt [Kurs-Modul 6](../../../../.harness/baseline/v1.4.0/regelwerk/modul-06-roadmap.md).
 
@@ -12,13 +12,14 @@ Keine aktive Welle.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
-
-**Im Eingang (`open/`), doc-first-Vertrag committed, auf Wellen-Einplanung +
-Implementierung wartend:** slice-071 — Trace-Kreuzverweis-Konsistenz-Gate
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** slice-071 —
+Trace-Kreuzverweis-Konsistenz-Gate
 ([`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in),
 [ADR-0038](../../adr/0038-trace-cross-consistency.md) Proposed); Rückkanten-Vertrag
 gegen grid-gyms reale Quellen geerdet, Generator als spätere CR sequenziert.
+
+**Im Eingang (`open/`), doc-first-Vertrag committed, auf Wellen-Einplanung
+wartend:** derzeit keiner.
 
 **Kandidat (noch kein Slice, auf Freigabe wartend):** ein `--print-version-md`-Scaffold, das ein
 `version.md`-Skelett mit Platzhaltern auf stdout ausgibt (Familie `--print-config`/`--print-mk`/
