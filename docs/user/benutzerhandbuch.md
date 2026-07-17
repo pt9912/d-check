@@ -83,7 +83,7 @@ Für vollständig reproduzierbare CI-Läufe pinnen Sie auf den Image-Digest
 
 ```bash
 docker run --rm -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check@sha256:718acb28b1992863b0a23b2e172144dccf3ada1c4552fcacc37478bc3e0fddd9
+  ghcr.io/pt9912/d-check@sha256:0f8a60246cf73dd4ce8b67fa73a81f7836459967b2ec9d5e5a20a4aceafe29fd
 ```
 
 ### Native Nutzung
