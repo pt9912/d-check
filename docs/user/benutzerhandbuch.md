@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.33 · **Software-Version:** [v0.45.1](../../version.md#v0.46.0) ·
+**Handbuch-Version:** 1.34 · **Software-Version:** [v0.46.0](../../version.md#v0.46.0) ·
 **Stand:** 2026-07-17 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -71,7 +71,7 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.45.1` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.46.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für

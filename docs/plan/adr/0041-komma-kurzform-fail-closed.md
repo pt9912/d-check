@@ -84,7 +84,7 @@ dass seine Notation nicht gelesen wurde.
   Bewusst in Kauf genommen: laut und behebbar sticht still und unbemerkt. Wer die
   Kurzform nutzt, muss seine Quellen anfassen — **das ist der Punkt**, nicht der
   Preis.
-- **Scope-Grenzen von „unmittelbar" (bewusst, aus zwei Review-Nits):**
+- **Scope-Grenzen von „unmittelbar" (bewusst, aus den Reviews):**
   - **Inline, kein Zeilenumbruch.** Der Whitespace zwischen Komma und Ziffer ist
     `[ \t]`, **nicht** `\s` — ein `\n` trennt zwei unabhängige Prosa-Zeilen (der
     `text` einer Coverage-Quelle reicht über Zeilengrenzen). Sonst würde eine Zeile,
@@ -96,6 +96,14 @@ dass seine Notation nicht gelesen wurde.
     an „Komma direkt hinter der Fundstelle/Notation", grid-gyms Realform trägt kein
     Vor-Komma-Leerzeichen, und ein Ausweiten (`^[ \t]*,`) brächte neue Falsch-Rot-
     Fälle ohne Realdaten-Bedarf. Ein schmaler Rest derselben Klasse, offen gelassen.
+  - **Buchstaben-suffigierte Kennung bleibt out of scope.** Erlaubt ein
+    `id-pattern` ein Buchstaben-Suffix (`<FAM>-05a`), endet die Kennung nicht auf
+    Ziffern; die Range-/Enum-Notation und mit ihr der Komma-Check greifen dort gar
+    nicht (früher Ausstieg mangels Trailing-Ziffern). Ein `<FAM>-05a, 007` lässt die
+    `007` still fallen. Bewusst: die zugesagten Notationen (`..`/`/`) sind
+    ziffern-basiert und für buchstaben-suffigierte Kennungen ohnehin bedeutungslos;
+    grid-gyms Kennungen sind rein ziffern-endend. Dritter schmaler Rest derselben
+    „unmittelbar"-Klasse, offen gelassen.
 - **Verhaltensänderung für Bestandskonsumenten:** eine Quelle mit Komma-Kurzform
   oder Prosa-Zahl hinter einer Kennung läuft künftig auf Exit 2. Das ist ein
   **Vertrags-Zuwachs** (neues Akzeptanzkriterium), daher Lastenheft-CR 0.46.0 und
