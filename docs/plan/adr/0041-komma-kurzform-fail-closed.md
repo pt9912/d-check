@@ -84,7 +84,7 @@ dass seine Notation nicht gelesen wurde.
   Bewusst in Kauf genommen: laut und behebbar sticht still und unbemerkt. Wer die
   Kurzform nutzt, muss seine Quellen anfassen — **das ist der Punkt**, nicht der
   Preis.
-- **Scope-Grenzen von „unmittelbar" (bewusst, Review-Nits slice-075):**
+- **Scope-Grenzen von „unmittelbar" (bewusst, aus zwei Review-Nits):**
   - **Inline, kein Zeilenumbruch.** Der Whitespace zwischen Komma und Ziffer ist
     `[ \t]`, **nicht** `\s` — ein `\n` trennt zwei unabhängige Prosa-Zeilen (der
     `text` einer Coverage-Quelle reicht über Zeilengrenzen). Sonst würde eine Zeile,
