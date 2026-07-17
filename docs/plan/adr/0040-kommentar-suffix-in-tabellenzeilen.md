@@ -1,6 +1,13 @@
 # ADR-0040 — Direktiven-Zelle in Tabellenzeilen: Header GFM-streng, Datenzeilen verengt nachsichtig
 
-**Status:** Proposed
+**Status:** Proposed — **Entscheid ausgesetzt, Implementierung zurückgenommen**
+(2026-07-17). Die unten getroffene Entscheidung ist **falsifiziert**: Review R3
+hat an ihr einen Stilles-Grün-Pfad belegt (F-1), und ihre zentrale Zusage („die
+Toleranz greift **nie** über eine Tabellengrenze") ebenso widerlegt wie die
+Mutations-Zusage aus Entscheidung 3 (F-2). Der Kontext (§Kontext) gilt
+unverändert — der Defekt besteht. Was fehlt, ist eine tragende Regel. Bis dahin
+ist der Reader byte-identisch v0.45.1; Details in
+[slice-074](../planning/open/slice-074-kommentar-suffix-tabellenzeilen.md) §2.
 **Datum:** 2026-07-17
 **Autor:** pt9912
 **Schärft:** [`DC-FA-REQ-001.a`](../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
@@ -144,6 +151,7 @@ Achse. Es gab keine durchgehende Regel.
 
 | Datum | Ereignis |
 |---|---|
+| 2026-07-17 | **Entscheid ausgesetzt, Implementierung zurückgenommen** (`05e1889`, `806051f`); slice-074 `in-progress/` → `open/`. Anlass: Review R3 (BLOCK) — F-1 (HIGH) belegt gegen das **ausgelieferte** v0.45.1 einen Stilles-Grün-Pfad in **beiden** Konsumenten: eine tolerierte Direktiven-**Datenzeile** entfernt den Wiederaufsetz-Punkt des Header-Scans und verschluckt die **gesamte** Folgetabelle (Exit 1 ⇒ Exit 0). Damit sind die in der vorigen Zeile **neu** gegebene Zusage („die Toleranz greift nie über eine Tabellengrenze") und die SemVer-Begründung („keine Zeile wird anders gelesen") falsifiziert. F-2 (MEDIUM): die Zusage „beide Grenzen sind per Mutation gepinnt" war für beide Grenzen aus `670ebaf` **falsch** — Rückdrehen und Panic-Guard-Entfernen lassen die Suite grün. **Fünfte Wiederholung derselben Klasse** in dieser Code-Region; ein sechster Vorschlag (`isNewTableHeader` unbedingt) wurde vor dem Code an Fixture `fx-t` widerlegt. Konsequenz: nicht der sechste Anlauf, sondern Rücknahme — ein Gate-Werkzeug trägt keinen bekannten stillen Pfad auf `main`, auch ungetaggt nicht. Nachträglich belegt (`fx-s`, gegen v0.45.1): der stille Pfad ist **älter** als dieser Slice und braucht **keinen** Marker ⇒ eigener Defekt. Spike goldmark v1.8.4 (522 reale Dateien): ein echter GFM-Parser schließt diese Klasse **nicht** — er stimmt auf `fx-s`/`fx-p` exakt mit dem heutigen Reader überein; die Achse ist Policy, nicht Grammatik. Die Alternativen-Tabelle bleibt insoweit gültig, ihre Begründung „schließt die Klasse nicht" ist jetzt **gemessen** statt behauptet |
 | 2026-07-17 | Toleranz um die **Tabellengrenze** verengt (`isNewTableHeader`) und die Reichweiten-Zusage korrigiert. Anlass: Review R2 (BLOCK) — die Neufassung behauptete „stiller Übersprung strukturell unmöglich"; R2 falsifizierte das: die Toleranz fraß den Direktiven-Header einer unmittelbar folgenden Tabelle, deren Anforderungen verschwanden lautlos (Exit 2 ⇒ Exit 0). Der angebotene Ausweg „ehrliche Reichweiten-Angabe statt Code-Verengung" wurde **verworfen**: eine Zusage zu entschärfen, damit ein stiller Verlust hineinpasst, ist die Bewegung, gegen die dieses Werkzeug gebaut ist. Verhalten jetzt byte-identisch zu v0.45.1 an allen geprüften Achsen. |
 | 2026-07-17 | **Prämisse verworfen und Entscheid neu gefasst**, Status weiterhin `Proposed`. Anlass: unabhängiger Review VOR dem Release (BLOCK, HIGH). Die erste Fassung („Kommentar ist ein Suffix, keine Zelle") war sachlich falsch — in GFM ist er eine Zelle, N+1 gegen N+1-Trennzeile ist die einzige renderbare Header-Form. Sie strippte deshalb im Splitter, wandte damit eine Body-Regel auf den Header an, ließ dessen Zellenzahl unter die Trennzeile fallen und übersprang die Tabelle **wortlos**: echte Waisen verschwanden, Exit 1 wurde Exit 0 — der eigene Satz „Kein Lauf wird stiller" war widerlegt. Neu: Header GFM-streng (unberührt), Datenzeilen verengt nachsichtig, Regel dort wo der Header-Kontext bekannt ist. Kein Strippen, nur Tolerieren — der stille Übersprung ist damit strukturell unmöglich statt behoben. |
 | 2026-07-17 | Proposed. Anlass: Realdatenlauf gegen grid-gym (der von [ADR-0038](0038-trace-cross-consistency.md) Entscheidung 7 geforderte Beleg) — v0.45.1 brach an einer realen `architecture.md`-Zeile ab, die d-checks eigenen Ignore-Marker trägt. Dritter Defekt, den erst die Realdaten zeigten; die ersten beiden lagen in den Mustern, dieser in der Grammatik. Umsetzender Slice slice-074. |
