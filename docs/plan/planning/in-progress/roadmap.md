@@ -10,12 +10,21 @@
 
 **Welle-ID:** welle-60-trace-cross-consistency
 
-**Slice:** [`slice-071`](slice-071-trace-cross-consistency-gate.md) — der
+**Slices:** [`slice-073`](slice-073-link-transparente-range-fortsetzung.md) —
+link-transparente Range-Fortsetzung: eine verlinkte Range (`` [`ID`](…)..009 ``)
+expandiert nicht, weil die Spec-Verengung „unmittelbar" strukturell mit d-checks
+eigener Linkpflicht kollidiert. **Ausgelieferter Defekt seit v0.41.0**
+(`trace.coverage` meldet falsche Waisen); Defekt-Fix, kein CR
+([ADR-0039](../../adr/0039-link-transparente-range-fortsetzung.md)). Läuft
+**vorrangig** — er trifft Bestandskonsumenten und blockiert zugleich, über den
+geteilten Parser, den Realdatenbeleg von slice-071.
+
+[`slice-071`](slice-071-trace-cross-consistency-gate.md) — der
 `--trace`-Lauf vergleicht opt-in die Vorwärts-RTM-Tabelle (Anforderung → Design)
 gegen die Rückwärts-`Bezug`-Kanten (Design → Anforderung) und meldet je
 Anforderung beide Mengendifferenzen. Vertrag:
 [`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)
-(Lastenheft 0.44.0) und [ADR-0038](../../adr/0038-trace-cross-consistency.md).
+(Lastenheft 0.44.2) und [ADR-0038](../../adr/0038-trace-cross-consistency.md).
 
 **Vorgänger-Trigger:** welle-59-trace-tabellenquellen ist abgeschlossen
 ([`slice-070`](../done/slice-070-trace-tabellenquellen-nullmengen-guard.md) in
@@ -31,20 +40,16 @@ null, von keinem Gate bemerkt.
   `exclude-req`-Ventil sind als Akzeptanztests verriegelt; der Default ohne
   `trace.cross-consistency`-Block ist byte-identisch belegt.
 - Der reale grid-gym-Drift wird geflaggt, die Mittelschicht-Familien nicht.
-- [ADR-0038](../../adr/0038-trace-cross-consistency.md) ist `Accepted`;
-  unabhängiger, kontext-getrennter Closure-Review liegt vor.
+- Eine verlinkte Range expandiert wie die unverlinkte (slice-073); der
+  ausgelieferte `trace.coverage`-Falschbefund ist weg und als Patch veröffentlicht.
+- [ADR-0038](../../adr/0038-trace-cross-consistency.md) und
+  [ADR-0039](../../adr/0039-link-transparente-range-fortsetzung.md) sind
+  `Accepted`; unabhängiger, kontext-getrennter Closure-Review liegt vor.
 - `make gates` und `make ci` grün, Release samt GHCR-Digest-Backfill dokumentiert.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** slice-073 —
-link-transparente Range-Fortsetzung
-([ADR-0039](../../adr/0039-link-transparente-range-fortsetzung.md) Proposed;
-Defekt-Fix, kein CR). **Ausgelieferter Defekt seit v0.41.0**: eine verlinkte Range
-expandiert nicht, `trace.coverage` meldet dadurch falsche Waisen — die
-Range-Zusage kollidiert strukturell mit d-checks eigener Linkpflicht. Kandidat für
-welle-60, weil der geteilte Parser zugleich den Realdatenbeleg von slice-071
-blockiert.
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
 
 **Im Eingang (`open/`), auf Wellen-Einplanung wartend:** slice-072 — Handbuch-
 Aufgabenorientierung der §4-Kapitel gegen den
