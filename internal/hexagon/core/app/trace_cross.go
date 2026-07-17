@@ -106,10 +106,11 @@ func crossConsistency(fsys driven.Filesystem, cc *model.TraceCrossConsistency, r
 	if err != nil {
 		return nil, err
 	}
-	if err := crossVacuity(fwd, bwd, cc.Mode); err != nil {
+	fwd, bwd = excludeReqs(fwd, cc.ExcludeReq), excludeReqs(bwd, cc.ExcludeReq)
+	if err := crossVacuity(fwd, bwd, cc); err != nil {
 		return nil, err
 	}
-	return diffViews(fwd, bwd, cc), nil
+	return diffViews(fwd, bwd, cc.Mode), nil
 }
 
 // crossSource ist eine gelesene Sicht-Quelle samt ihrer Abschnitts-Maske.
@@ -269,6 +270,24 @@ func backwardEdges(tables []boundTable, bc model.TraceCrossBackward, designPat *
 	return view, nil
 }
 
+// excludeReqs entfernt die auf exclude-req passenden Anforderungen aus einer Sicht
+// (DC-FA-XREF-001.a Schritt 4: Ableitungssprünge in Mittelschichten). Eigene Stufe
+// **vor** der Vakuitäts-Prüfung, denn maßgeblich ist, was am Ende tatsächlich
+// verglichen wird: ein Ventil, das alle Anforderungen verschluckt, schaltet das
+// Gate ebenso still ab wie ein fehlgreifendes Muster. nil ⇒ keine Ausnahme.
+func excludeReqs(view crossView, exclude *regexp.Regexp) crossView {
+	if exclude == nil {
+		return view
+	}
+	out := crossView{}
+	for req, artifacts := range view {
+		if !exclude.MatchString(req) {
+			out[req] = artifacts
+		}
+	}
+	return out
+}
+
 // crossVacuity prüft, ob der Abgleich überhaupt etwas vergleicht
 // (DC-FA-XREF-001.a Schritt 5). Ein Abgleich ohne eine einzige Kante ist **kein
 // bestandener** Abgleich: die Muster greifen am Inhalt vorbei, und ein
@@ -286,16 +305,28 @@ func backwardEdges(tables []boundTable, bc model.TraceCrossBackward, designPat *
 // unrestrukturierte Vorwärts-Sicht bei gepflegten Rück-Kanten ist der erwartete
 // Bootstrap-Zustand (ADR-0038 Entscheidungen 3/7) — sie meldet `B \ F` laut. Ein
 // symmetrisch je Sicht feuernder Guard würgte sie mit einer Config-Fehldiagnose ab.
-func crossVacuity(fwd, bwd crossView, mode string) error {
+func crossVacuity(fwd, bwd crossView, cc *model.TraceCrossConsistency) error {
 	if len(fwd) == 0 && len(bwd) == 0 {
-		return fmt.Errorf("trace.cross-consistency: beide Sichten ergaben 0 Kanten — der Abgleich verglich nichts; "+
-			"prüfe, ob %s.design-pattern den Artefakt-Namensraum beider Sichten trifft", crossForwardField)
+		return fmt.Errorf("trace.cross-consistency: beide Sichten ergaben 0 Kanten — der Abgleich verglich nichts; %s",
+			vacuityHint(cc, crossForwardField+".design-pattern trifft den Artefakt-Namensraum beider Sichten"))
 	}
-	if len(bwd) == 0 && mode == model.TraceCrossModeSuperset {
+	if len(bwd) == 0 && cc.Mode == model.TraceCrossModeSuperset {
 		return fmt.Errorf("trace.cross-consistency: die Rück-Sicht ergab 0 Kanten und mode: superset gatet allein "+
-			"B \\ F — der Abgleich könnte nie eine Differenz melden; prüfe %s.edge-column/req-pattern", crossBackwardField)
+			"B \\ F — der Abgleich könnte nie eine Differenz melden; %s",
+			vacuityHint(cc, crossBackwardField+".edge-column/req-pattern treffen die Rück-Kanten"))
 	}
 	return nil
+}
+
+// vacuityHint benennt die möglichen Ursachen — und nennt das Ventil nur, wenn es
+// überhaupt gesetzt ist. Eine Meldung, die pauschal in die Muster-Config schickt,
+// wäre bei einem übergriffigen `exclude-req` eine Fehldiagnose (dieselbe Klasse,
+// die den symmetrischen Guard aus dem Erst-Entwurf disqualifizierte).
+func vacuityHint(cc *model.TraceCrossConsistency, patternHint string) string {
+	if cc.ExcludeReq != nil {
+		return "prüfe, ob " + patternHint + " — und ob exclude-req nicht alle Anforderungen verschluckt"
+	}
+	return "prüfe, ob " + patternHint
 }
 
 // crossBadRow macht einen Zellenzahl-Bruch in einer relevanten Tabelle
@@ -357,10 +388,10 @@ func checkCrossSections(field string, content []byte, include, exclude []string)
 }
 
 // diffViews bildet je Anforderung die beiden Mengendifferenzen
-// (DC-FA-XREF-001.a Schritte 4–5): `exclude-req`-Kennungen fallen vor dem Diff
-// aus beiden Sichten (Ableitungssprünge in Mittelschichten); `mode: superset`
-// meldet nur B\F. Sortiert nach (Anforderung, Artefakt, Richtung).
-func diffViews(fwd, bwd crossView, cc *model.TraceCrossConsistency) []CrossFinding {
+// (DC-FA-XREF-001.a Schritt 6) über `keys(F) ∪ keys(B)`; `mode: superset` meldet
+// nur B\F. Die Ausschluss-Stufe ist bereits gelaufen (Schritt 4). Sortiert nach
+// (Anforderung, Artefakt, Richtung).
+func diffViews(fwd, bwd crossView, mode string) []CrossFinding {
 	reqs := map[string]bool{}
 	for r := range fwd {
 		reqs[r] = true
@@ -370,10 +401,7 @@ func diffViews(fwd, bwd crossView, cc *model.TraceCrossConsistency) []CrossFindi
 	}
 	out := []CrossFinding{}
 	for r := range reqs {
-		if cc.ExcludeReq != nil && cc.ExcludeReq.MatchString(r) {
-			continue
-		}
-		if cc.Mode != model.TraceCrossModeSuperset {
+		if mode != model.TraceCrossModeSuperset {
 			out = append(out, crossMissing(r, fwd[r], bwd[r], CrossDirForwardOnly)...)
 		}
 		out = append(out, crossMissing(r, bwd[r], fwd[r], CrossDirBackwardOnly)...)

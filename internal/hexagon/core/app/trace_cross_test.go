@@ -317,6 +317,10 @@ func TestCrossConsistencyVakuumBeideSichtenLeer(t *testing.T) {
 	if !strings.Contains(err.Error(), "beide Sichten ergaben 0 Kanten") {
 		t.Fatalf("Fehlertext benennt das Vakuum nicht: %v", err)
 	}
+	// Ohne gesetztes Ventil darf die Diagnose es auch nicht erwähnen.
+	if strings.Contains(err.Error(), "exclude-req") {
+		t.Fatalf("Diagnose nennt ein gar nicht gesetztes Ventil: %v", err)
+	}
 }
 
 // Vakuum b (DC-FA-XREF-001.a Schritt 5): unter `superset` gatet allein B\F — eine
@@ -420,5 +424,79 @@ func TestCrossConsistencyBackwardIDHeaderBenannt(t *testing.T) {
 	}
 	if len(got) != 0 {
 		t.Fatalf("benannte ID-Spalte nicht gebunden (Differenzen statt Deckung): %+v", got)
+	}
+}
+
+// Vakuum nach dem Ventil (DC-FA-XREF-001.a Schritte 4–5): `exclude-req` läuft VOR
+// der Vakuitäts-Prüfung — ein Ventil, das alle Anforderungen verschluckt, schaltet
+// das Gate ebenso still ab wie ein fehlgreifendes Muster. Ohne die Stufenfolge
+// meldete echter Drift `0 Differenz(en)`/Exit 0 (R3-F-1).
+func TestCrossConsistencyVakuumDurchUebergriffigesVentil(t *testing.T) {
+	// Echter Drift: F={CORE}, B={SCHED}, Schnittmenge null.
+	fs := crossFS(
+		"| GG-ARCH-006 | GG-AR-COMP-CORE |\n",
+		"| GG-AR-COMP-SCHED | GG-ARCH-006 |\n",
+	)
+	cfg := crossCfg()
+	cfg.ExcludeReq = regexp.MustCompile(`.`) // verschluckt jede Anforderung
+	_, err := crossConsistency(fs, cfg, ggReqPat)
+	if err == nil {
+		t.Fatal("übergriffiges exclude-req schaltete das Gate still ab (Exit 0 trotz Drift)")
+	}
+	if !strings.Contains(err.Error(), "beide Sichten ergaben 0 Kanten") {
+		t.Fatalf("Fehlertext benennt das Vakuum nicht: %v", err)
+	}
+	// Die Diagnose muss das Ventil nennen — pauschal in die Muster-Config zu
+	// schicken wäre hier eine Fehldiagnose (die Muster sind korrekt).
+	if !strings.Contains(err.Error(), "exclude-req") {
+		t.Fatalf("Fehldiagnose: Meldung nennt das übergriffige Ventil nicht: %v", err)
+	}
+	// Gegenprobe: ein eng gefasstes Ventil lässt den Drift stehen und meldet ihn.
+	cfg.ExcludeReq = regexp.MustCompile(`^GG-SPEC-`)
+	got, err := crossConsistency(fs, cfg, ggReqPat)
+	if err != nil {
+		t.Fatalf("enges Ventil darf kein Vakuum sein: %v", err)
+	}
+	if len(got) != 2 {
+		t.Fatalf("erwartete 2 Differenzen trotz Ventil, got %+v", got)
+	}
+}
+
+// Fehlerpräzedenz (DC-FA-XREF-001.a): die Stufe „Quellen lesen" läuft über BEIDE
+// Sichten, bevor die Abschnitts-Spannung beginnt. Sonst verdeckte ein
+// Vorwärts-Sektionsfehler die eine Stufe früher liegende fehlende Rück-Datei
+// (R2-F-2/R3-F-3).
+func TestCrossConsistencyPraezedenzQuelleVorAbschnitt(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"docs/traceability.md": fwdDoc("| GG-ARCH-006 | GG-AR-COMP-CORE |\n"),
+		// spec/architecture.md fehlt absichtlich.
+	})
+	cfg := crossCfg()
+	cfg.Forward.Sections = []string{"Tippfehler-Abschnitt"} // Fehler einer SPÄTEREN Stufe
+	_, err := crossConsistency(fs, cfg, ggReqPat)
+	if err == nil {
+		t.Fatal("erwartete Fehler")
+	}
+	if !strings.Contains(err.Error(), "backward.file") {
+		t.Fatalf("Vorwärts-Sektionsfehler verdeckte die fehlende Rück-Datei: %v", err)
+	}
+}
+
+// Doppelter ID-Header ist fail-closed (DC-FA-XREF-001: ID-Header nicht genau
+// einmal ⇒ Exit 2) — sonst bände er still an sein erstes Vorkommen (R3-F-4).
+func TestCrossConsistencyBackwardIDHeaderDoppelt(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"docs/traceability.md": fwdDoc("| GG-ARCH-006 | GG-AR-COMP-CORE |\n"),
+		"spec/architecture.md": "# A\n\n## 4 K\n\n| Kennung | Bezug | Kennung |\n|---|---|---|\n" +
+			"| GG-AR-COMP-CORE | GG-ARCH-006 | GG-AR-COMP-ALT |\n",
+	})
+	cfg := crossCfg()
+	cfg.Backward.ArtifactIDColumn = "Kennung"
+	_, err := crossConsistency(fs, cfg, ggReqPat)
+	if err == nil {
+		t.Fatal("doppelter ID-Header band still an das erste Vorkommen")
+	}
+	if !strings.Contains(err.Error(), "2-mal") {
+		t.Fatalf("Fehlertext benennt die Mehrfach-Bindung nicht: %v", err)
 	}
 }
