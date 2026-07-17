@@ -1,6 +1,6 @@
 # ADR-0041 — Komma-Kurzform ist fail-closed, nicht still und nicht geraten
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-17
 **Autor:** pt9912
 **Schärft:** [`DC-FA-COV-001.a`](../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
@@ -116,5 +116,6 @@ dass seine Notation nicht gelesen wurde.
 
 | Datum | Ereignis |
 |---|---|
+| 2026-07-17 | **Accepted** mit der Closure von slice-075. Die Entscheidung ist umgesetzt, zweifach reviewt (Session-Kontext + kontext-getrennter R1, beide ACCEPT-WITH-NITS, alle Nits adressiert) und `make gates`/`make ci` grün; der v0.46.0-Tag/GHCR-Push steht als Nutzer-Schritt aus (der Digest-Backfill folgt dem Push, wie üblich). Kein Inhalt geändert — nur der Status folgt dem Abschluss nach (Statusdrift vermeiden, vgl. ADR-0037/0039 bei slice-070/073). |
 | 2026-07-17 | **Regel bei der Implementierung geschärft** (Status weiter `Proposed`): sie greift nicht nur direkt hinter der Kennung, sondern auch **hinter einer konsumierten Range/Enum**. Anlass: der Realdatenbeleg gegen grid-gyms `traceability.md` zeigte, dass der reale Auslöser `GG-SCN-001..005, 007, 008` lautet (Range + Komma-Schwanz), nicht die reduzierte Repro `GG-SCN-001, 007` aus dem Kontext — die enge Erst-Formulierung ließ `007, 008` still fallen (Exit 0, 3 Waisen, gemessen). Entscheidung Punkt 1 und die Fitness-Funktion um den gemischten Fall geschärft; Implementierung als Single-Check auf dem nach der Notation verbleibenden Rest (feuert an allen drei Positionen). Umsetzender Slice slice-075. |
 | 2026-07-17 | Proposed. Anlass: Konsumenten-Report grid-gym gegen v0.45.1 — `GG-SCN-001, 007` ließ das produktiv verdrahtete `trace.coverage` das Mapping nicht zählen. Der Konsument benannte die Klasse selbst („stiller Drop ist die schlechteste der drei Optionen") und stellte fest, dass die Kurzform out of spec ist. Vierter Realdaten-Befund; Nutzer-Entscheid: fail-closed statt Notations-Ausbau. Umsetzender Slice slice-075. |

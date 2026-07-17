@@ -16,7 +16,7 @@ Konsumenten).
 Algorithmus in
 [`DC-FA-COV-001.a`](../../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)
 Schritt 3; begründende Entscheidung
-[ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) (Proposed).
+[ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) (Accepted).
 **SemVer-Minor** — Vertrags-Zuwachs, anders als die Defekt-Fixes
 [slice-073](../done/slice-073-link-transparente-range-fortsetzung.md)/[slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md).
 
