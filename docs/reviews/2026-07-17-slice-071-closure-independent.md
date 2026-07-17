@@ -4,7 +4,7 @@
 **Review-Art:** unabhängiger **Closure**-Review (kontext-getrennt; adversarial —
 Auftrag war, Gründe zum Stoppen des Releases zu finden)
 **Gegenstand:** der **vollständige** Slice
-[`slice-071`](../plan/planning/in-progress/slice-071-trace-cross-consistency-gate.md),
+[`slice-071`](../plan/planning/open/slice-071-trace-cross-consistency-gate.md),
 Diff `2562dc2..HEAD` (`c4439e8`), neun Commits, 29 Dateien
 **Vor-Reviews (Kontext, nicht meine Meinung):**
 [R1](2026-07-17-slice-071-implementation-r1.md) (REJECT),
@@ -122,7 +122,7 @@ Diff `2562dc2..HEAD` (`c4439e8`), neun Commits, 29 Dateien
 - **kategorie:** LOW
 - **quelle:** Maintainability / `AGENTS.md` §5 (Doku-Regeln)
 - **pfad:**
-  `docs/plan/planning/in-progress/slice-071-trace-cross-consistency-gate.md:7-9,
+  `docs/plan/planning/open/slice-071-trace-cross-consistency-gate.md:7-9,
   55-59, 63-66`
 - **befund:** §Bezug und die DoD-Zeile führen weiterhin „Lastenheft 0.44.0"
   und „ADR-0038 (Proposed)"; §2 „Vertrag aus dem Change Request" listet die

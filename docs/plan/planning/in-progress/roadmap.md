@@ -10,13 +10,15 @@
 
 **Welle-ID:** welle-60-trace-cross-consistency
 
-**Slices:** [`slice-073`](slice-073-link-transparente-range-fortsetzung.md) —
-link-transparente Range-Fortsetzung (**vorrangig**: ausgelieferter Defekt seit
-v0.41.0, trifft Bestandskonsumenten). ·
-[`slice-076`](slice-076-markdown-lexik-commonmark.md) — Markdown-Lexik an
-CommonMark/GFM angleichen (ausgelieferte stille Blindheit; unabhängig von den
-anderen beiden). · [`slice-071`](slice-071-trace-cross-consistency-gate.md) —
-`trace.cross-consistency`-Gate ([`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)).
+**Slices** (WIP-Limit = 1, Modul 5 — **genau einer in Arbeit**):
+[`slice-073`](slice-073-link-transparente-range-fortsetzung.md) **in Arbeit** —
+link-transparente Range-Fortsetzung; Code ausgeliefert (v0.44.1, nachgebessert in
+v0.45.1), offen sind vier von fünf R1-Befunden und der bestätigende Review. ·
+[`slice-076`](../next/slice-076-markdown-lexik-commonmark.md) in `next/` — wartet
+auf den WIP-Slot. · [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md)
+in `open/` — **blockiert** (Realdatenbeleg hängt an slice-074);
+[`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in),
+Code und Reviews liegen vor, v0.44.0/v0.45.0 sind getaggt.
 
 **Vorgänger-Trigger:** welle-59-trace-tabellenquellen abgeschlossen
 ([`slice-070`](../done/slice-070-trace-tabellenquellen-nullmengen-guard.md) in
@@ -47,11 +49,14 @@ null, von keinem Gate bemerkt.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
+**Im Backlog (`next/`), in welle-60 eingeplant, auf den WIP-Slot wartend:**
+[`slice-076`](../next/slice-076-markdown-lexik-commonmark.md).
 
 **Im Eingang (`open/`), auf Wellen-Einplanung wartend:**
 [`slice-075`](../open/slice-075-komma-kurzform-fail-closed.md) (**vorrangig** —
-verfälscht produktiv verdrahtetes `trace.coverage`) ·
+verfälscht produktiv verdrahtetes `trace.coverage`; nächster Slice nach der
+Closure von slice-073) ·
+[`slice-071`](../open/slice-071-trace-cross-consistency-gate.md) (blockiert) ·
 [`slice-074`](../open/slice-074-kommentar-suffix-tabellenzeilen.md)
 (zurückgestellt, Implementierung zurückgenommen) ·
 [`slice-077`](../open/slice-077-stiller-tabellen-uebersprung.md) ·
@@ -76,4 +81,5 @@ Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
 | Datum | Was wurde geändert? | Warum? |
 |---|---|---|
 | 2026-06-11 | slice-012-Trigger: „slice-011 done" → „slice-011 **und** slice-013 done" | Der [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Vergleichslauf gegen das erweiterte `docs-check.js` zeigte die Inline-Code-Pfad-Prüfung als Konsolidierungs-Lücke; Change Request [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) (Lastenheft 0.3.0) als slice-013 eingeschoben |
+| 2026-07-17 | **WIP-Limit wiederhergestellt:** slice-071 `in-progress`→`open` (Blocker), slice-076 `in-progress`→`next`; welle-60 führt nur noch slice-073 in Arbeit. Reihenfolge danach: slice-073 zu Ende (vier offene R1-Befunde + bestätigender Review) → Closure → slice-075 | `in-progress/` trug **drei** Slices gleichzeitig; Modul 5: „WIP-Limit pro Implementer = 1 ist eine harte Größe, kein Vorschlag" und `next→in-progress` verlangt „WIP-Limit frei". Bei slice-076 wurde die Bedingung beim Einplanen schlicht nicht geprüft (`6d60094`); slice-071 war bereits blockiert und hätte nach Modul 5 längst zurückgeführt gehört — beides still, bis der Auftraggeber die Regel einforderte. slice-075 erhält Vorrang vor slice-076, weil er produktiv verdrahtetes `trace.coverage` **verfälscht** (Auftraggeber-Meldung grid-gym), während slice-076 Blindheit ohne Falschaussage ist |
 | 2026-07-17 | slice-074 aus welle-60 zurückgestellt (`in-progress/` → `open/`), Implementierung zurückgenommen; slice-076 in welle-60 nachgenommen | Drei unabhängige Reviews belegten an fünf aufeinanderfolgenden Fassungen dieselbe Klasse, zuletzt einen Stilles-Grün-Pfad (R3-F-1). Der Realdatenbeleg für slice-071 ist damit weiter blockiert — offen ausgewiesen statt still weitergeschoben. slice-076 kam aus dem Spike, den die Rücknahme ausgelöst hat |

@@ -1,11 +1,17 @@
 # Slice slice-076: Markdown-Lexik an CommonMark/GFM angleichen (Trennzeile + Fence-Infozeile)
 
-**Status:** in-progress (welle-60-trace-cross-consistency).
+**Status:** next — **in welle-60 eingeplant, wartet auf den WIP-Slot.**
+**`in-progress` → `next` am 2026-07-17, Korrektur:** der Slice wurde bei
+**belegtem WIP-Limit** nach `in-progress/` gezogen. Modul 5: „WIP-Limit pro
+Implementer = 1 ist eine harte Größe, kein Vorschlag" — und `next→in-progress`
+trägt ausdrücklich die Bedingung „WIP-Limit frei". Die war nicht erfüllt; die
+Implementierung hat nie begonnen. Nichts geht verloren: Doc-first ([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md),
+Spezifikation) ist fertig und bleibt.
 
-**Welle:** aktiv (welle-60). Läuft **neben** slice-073/slice-071, blockiert
-keinen von beiden: der Defekt trifft denselben geteilten Reader und dieselbe
-Vorverarbeitung, ist aber unabhängig — er wurde bei der Rücknahme von slice-074
-gefunden, nicht von ihr verursacht.
+**Welle:** welle-60-trace-cross-consistency. Blockiert niemanden und wird von
+niemandem blockiert — der Defekt trifft denselben geteilten Reader und dieselbe
+Vorverarbeitung, ist aber unabhängig; gefunden bei der Rücknahme von slice-074,
+nicht von ihr verursacht.
 
 **Bezug:** **Defekt-Fix**, **kein Change Request**: das Lastenheft sagt weder, was
 eine Trennzeile ist, noch was einen Fence öffnet — beides ist

@@ -4,7 +4,7 @@
 **Review-Art:** unabhängiger Vertrags- und Fix-Review (kontext-getrennt;
 adversarial, nicht bestätigend)
 **Gegenstand:**
-[`slice-071`](../plan/planning/in-progress/slice-071-trace-cross-consistency-gate.md) —
+[`slice-071`](../plan/planning/open/slice-071-trace-cross-consistency-gate.md) —
 `815a2a7` (Auflösung des R3-Vertragswiderspruchs zugunsten **post**-Ausschluss:
 Spec Schritt 5 + Fehlerpräzedenz + Code + Tests + Diagnose);
 Slice gesamt `6c4ccf5..HEAD`

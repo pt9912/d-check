@@ -4,7 +4,7 @@
 **Review-Art:** unabhängiger Implementierungs-Review (kontext-getrennt; frisches
 Kontextfenster, nicht der Implementierer-Kontext)
 **Gegenstand:**
-[`slice-071`](../plan/planning/in-progress/slice-071-trace-cross-consistency-gate.md) —
+[`slice-071`](../plan/planning/open/slice-071-trace-cross-consistency-gate.md) —
 Trace-Kreuzverweis-Konsistenz-Gate; Feat-Commit `1bfa7f8` (Range `6c4ccf5..HEAD`)
 **Reviewer:** Claude (kontext-unabhängiger Lauf)
 **Skill:** `.harness/skills/reviewer.md` v1.2.0
@@ -13,7 +13,7 @@ Trace-Kreuzverweis-Konsistenz-Gate; Feat-Commit `1bfa7f8` (Range `6c4ccf5..HEAD`
 ## Eingangs-Kontext
 
 - Slice-Vertrag §2/§4/§5
-  [`slice-071`](../plan/planning/in-progress/slice-071-trace-cross-consistency-gate.md)
+  [`slice-071`](../plan/planning/open/slice-071-trace-cross-consistency-gate.md)
   (DoD §3 bewusst **nicht** erhalten — anderes Prüf-Artefakt)
 - Lastenheft
   [`DC-FA-XREF-001`](../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in),

@@ -3,7 +3,7 @@
 **Status:** in-progress (welle-60-trace-cross-consistency).
 
 **Welle:** aktiv (welle-60), **vorrangig** vor der Rest-Arbeit von
-[`slice-071`](slice-071-trace-cross-consistency-gate.md) — der Fix sitzt im
+[`slice-071`](../open/slice-071-trace-cross-consistency-gate.md) — der Fix sitzt im
 **geteilten** Parser und ist damit Voraussetzung von dessen Realdatenbeleg, nicht
 eine Parallelbaustelle.
 

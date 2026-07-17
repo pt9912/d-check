@@ -1,8 +1,18 @@
 # Slice slice-071: Trace-Kreuzverweis-Konsistenz-Gate (Vorwärts-RTM ↔ Rück-Kanten)
 
-**Status:** in-progress (welle-60-trace-cross-consistency).
+**Status:** open — **`in-progress` → `open` am 2026-07-17 (Blocker)**. Code,
+Spezifikation, [ADR-0038](../../adr/0038-trace-cross-consistency.md) und vier Review-Runden plus Closure-Review liegen vor;
+v0.44.0/v0.45.0 sind getaggt. **Offen ist allein der Realdatenbeleg**, und der
+ist blockiert: der Lauf gegen grid-gyms `spec/architecture.md` bricht an Zeile 913
+mit Exit 2 ab, weil dort d-checks eigene Ignore-Direktive in einer Tabellenzeile
+steht — [slice-074](slice-074-kommentar-suffix-tabellenzeilen.md), dessen
+Implementierung am selben Tag zurückgenommen wurde und dessen tragende Regel offen
+ist.
 
-**Welle:** aktiv; Vorgänger welle-59-trace-tabellenquellen ist abgeschlossen.
+**Welle:** welle-60-trace-cross-consistency — **inhaltlich weiter Teil der Welle**,
+aber nicht in Arbeit. Modul 5: `in-progress→open` ist der Übergang für „Blocker,
+Priorität offen"; ein blockierter Slice gehört **sichtbar zurück, nicht still
+weitergeschoben**. Wiederaufnahme, sobald slice-074 eine tragende Regel hat.
 
 **Bezug:** neuer Lastenheft-Change-Request
 [`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)
