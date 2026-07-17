@@ -37,18 +37,16 @@ null, von keinem Gate bemerkt.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
-
-**Im Eingang (`open/`), auf Wellen-Einplanung wartend:** slice-073 —
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** slice-073 —
 link-transparente Range-Fortsetzung
 ([ADR-0039](../../adr/0039-link-transparente-range-fortsetzung.md) Proposed;
 Defekt-Fix, kein CR). **Ausgelieferter Defekt seit v0.41.0**: eine verlinkte Range
 expandiert nicht, `trace.coverage` meldet dadurch falsche Waisen — die
 Range-Zusage kollidiert strukturell mit d-checks eigener Linkpflicht. Kandidat für
 welle-60, weil der geteilte Parser zugleich den Realdatenbeleg von slice-071
-blockiert. Priorität vor slice-071s Rest-Arbeit (trifft Bestandskonsumenten).
+blockiert.
 
-Ferner slice-072 — Handbuch-
+**Im Eingang (`open/`), auf Wellen-Einplanung wartend:** slice-072 — Handbuch-
 Aufgabenorientierung der §4-Kapitel gegen den
 [Benutzerhandbuch-Standard](../../../user/benutzerhandbuch-standard.md) §2
 (sieben Audit-Befunde; rein redaktionell — kein Change Request, kein ADR, kein
