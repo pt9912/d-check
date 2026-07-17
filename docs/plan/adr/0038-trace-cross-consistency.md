@@ -77,6 +77,30 @@ read-only — sie passt in das `--trace`/`--require-complete`-Idiom
    der eigene ADR-Behandlung verdient. Dieses Gate ist sein Korrektheits-Harness
    („erst das Gate, dann der Generator").
 
+8. **Vakuum ≠ Konsistenz — aber eine einseitig leere Sicht ist ein Ergebnis.**
+   (Nachtrag, 2026-07-17, Status noch `Proposed`.) Die Namensraum-Kongruenz
+   (Entscheidungen 2/4) war zunächst nur als **Vorbedingung beschrieben** —
+   beschriebene Vorbedingungen halten nicht. Ein `design-pattern`, das kompiliert,
+   aber am Artefakt-Namensraum vorbeigreift, räumt (weil es **geteilt** ist) *beide*
+   Sichten leer und liefert `0 Differenz(en)`/Exit 0: eine behauptete, nie geprüfte
+   Konsistenz. Der Abgleich prüft daher seine eigene **Vakuität** — keine Kante aus
+   beiden Sichten ⇒ Exit 2; ebenso eine kantenleere Rück-Sicht unter
+   `mode: superset`, wo allein `B \ F` gatet und damit konstruktionsbedingt nie ein
+   Befund entstehen kann.
+   **Bewusst nicht** geguardet ist die *einseitig* leere Sicht: der Diff läuft über
+   `keys(F) ∪ keys(B)` und ist für `F = ∅` wohldefiniert — eine noch
+   unrestrukturierte Vorwärts-Sicht bei gepflegten Rück-Kanten ist genau der
+   Bootstrap-Zustand, den Entscheidung 3 dem Konsumenten aufträgt und den
+   Entscheidung 7 als Generator-Eingang braucht. Ein symmetrisch je Sicht feuernder
+   Guard würgte ihn mit einer Config-**Fehl**diagnose ab, statt die Rück-Kanten laut
+   zu melden.
+   **Abgrenzung zu [ADR-0037](0037-trace-tabellenquellen-nullmengen-guard.md):**
+   dort hängt der Nullmengen-Guard an der *explizit gesetzten Quelle*
+   (`strictSource`) und schützt die RTM selbst; hier ist der Bezugspunkt nicht eine
+   Sicht, sondern der **Vergleich** — geguardet wird, was nie einen Befund liefern
+   kann. Dieselbe Lehre („fail-closed statt irreführender Nullmenge"), enger
+   gefasster Auslöser.
+
 ### Verglichene Alternativen
 
 | Option | Pro | Contra |
@@ -93,6 +117,9 @@ read-only — sie passt in das `--trace`/`--require-complete`-Idiom
   Range-/Enum-Notation beidseitig korrekt expandiert.
 - In die Mittelschicht verschobene Familien werden nicht fälschlich als Waisen
   gemeldet (Ventil greift).
+- Ein Abgleich, der nichts vergleicht, ist **rot**, nicht grün: Muster am
+  Namensraum vorbei ⇒ Exit 2; eine einseitig leere Vorwärts-Sicht meldet dagegen
+  ihre Rück-Kanten laut (Entscheidung 8).
 - Ohne Block jede RTM byte-identisch
   ([`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)), kein
   Schreibzugriff/Netz
@@ -129,3 +156,4 @@ read-only — sie passt in das `--trace`/`--require-complete`-Idiom
 | Datum | Ereignis |
 |---|---|
 | 2026-07-16 | Proposed. Change Request grid-gym (Trigger 088, ADR 0080 §4.4 iii), v2 nach Design-Review; Ziel-Architektur „Gate jetzt, Generator später" gegen grid-gyms reale Quellen bestätigt. Umsetzender Slice slice-071. |
+| 2026-07-17 | Entscheidung 8 (Vakuität) nachgetragen, Status weiterhin `Proposed`. Anlass: unabhängiges Closure-Review zu slice-071 — R1 reproduzierte, dass die nur *beschriebene* Namensraum-Vorbedingung ein stilles Grün zuließ (HIGH); R2 wies den ersten, symmetrisch je Sicht feuernden Fix als vertragswidrig nach (er brach den Bootstrap-Zustand aus Entscheidung 3). Vertrag nachgezogen als Lastenheft-CR 0.44.1 ([`DC-FA-XREF-001`](../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)) + [`DC-FA-XREF-001.a`](../../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) Schritt 5. |

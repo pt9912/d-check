@@ -1,6 +1,6 @@
 # Spezifikation — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-03.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-17.
 
 **Bezug zum Lastenheft:** Diese Spezifikation präzisiert die in
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
@@ -447,12 +447,24 @@ und ändert die RTM selbst nicht. Verrechnung (deterministisch,
 4. **Ausschluss.** Anforderungs-IDs, die auf `exclude-req` (RE2) passen, werden vor
    dem Diff aus den Schlüsselmengen von `F` und `B` entfernt (Ableitungssprünge in
    Mittelschichten).
-5. **Diff.** Für jede Anforderung `R ∈ keys(F) ∪ keys(B)`: `F(R) \ B(R)` und
+5. **Vakuitäts-Prüfung.** Ein Abgleich, aus dem **keine Kante** fällt, ist kein
+   bestandener Abgleich: die Muster greifen dann am Inhalt vorbei, und ein
+   `0 Differenz(en)`/Exit 0 behauptete eine nie geprüfte Konsistenz. **Exit 2**,
+   wenn (a) `F` **und** `B` leer sind — der typische Anlass ist ein
+   `design-pattern`, das kompiliert, aber am Artefakt-Namensraum vorbeigreift und
+   damit **beide** Sichten leerräumt (es ist geteilt, Schritt 3) — oder (b) `B`
+   leer ist **und** `mode: superset` gilt, weil dann allein `B \ F` gatet und
+   konstruktionsbedingt nie ein Befund entstehen kann. **Nicht** vakuum ist eine
+   **einseitig** leere Sicht mit nicht-leerer Gegenseite: der Diff (Schritt 6)
+   läuft über `keys(F) ∪ keys(B)` und ist dafür wohldefiniert — eine noch
+   unrestrukturierte Vorwärts-Sicht bei gepflegten Rück-Kanten meldet jede
+   Rück-Kante als `B \ F` und ist der erwartete Bootstrap-Zustand, kein Fehler.
+6. **Diff.** Für jede Anforderung `R ∈ keys(F) ∪ keys(B)`: `F(R) \ B(R)` und
    `B(R) \ F(R)`. `mode: equal` meldet beide Richtungen, `mode: superset` nur
    `B(R) \ F(R)`. Jede Differenz ist ein Befund mit Quell-`Datei:Zeile`,
    Anforderungs-ID, fehlender/überzähliger Artefaktmenge und Richtungslabel;
    Befunde werden nach `(R, Artefakt-ID, Richtung)` deterministisch sortiert.
-6. **Gatung.** Der Abgleich ist advisory: `--trace` bleibt Exit 0. Nur das globale
+7. **Gatung.** Der Abgleich ist advisory: `--trace` bleibt Exit 0. Nur das globale
    `--require-complete`
    ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code))
    wertet die Befunde als Gate (Exit 1 bei ≥1 Differenz).
@@ -460,10 +472,13 @@ und ändert die RTM selbst nicht. Verrechnung (deterministisch,
 **Fehlerpräzedenz:** Config-Schema (Pflichtblöcke, `mode`, kompilierende
 `design-pattern`/`req-pattern`/`exclude-req`) → Quellen lesen (fehlende
 `forward.file`/`backward.file` ⇒ Exit 2,
-[`DC-FA-CLI-003`](lastenheft.md#dc-fa-cli-003--exit-codes)) → Header-Bindung
+[`DC-FA-CLI-003`](lastenheft.md#dc-fa-cli-003--exit-codes)) → Abschnitts-Spannung
+(konfigurierter Sektionsname ohne Heading-Treffer ⇒ Exit 2) → Header-Bindung
 (`req-column`/`design-column`/`edge-column` sowie `artifact-id-column`, wenn ≠
-`first`, je genau einmal) → Range-Expansion (ungültige Range ⇒ Exit 2) → Diff. Der
-erste Fehler beendet den Lauf vor dem Reporter.
+`first`, je genau einmal) → Range-Expansion (ungültige Range ⇒ Exit 2) →
+Vakuität (Schritt 5) → Diff. Jede Stufe läuft **über beide Sichten**, bevor die
+nächste beginnt (sonst verdeckte ein Vorwärts-Fehler einen früherstufigen
+Rückwärts-Fehler); der erste Fehler beendet den Lauf vor dem Reporter.
 
 ### DC-FA-COV-001.a — Kuratierte Coverage-Quellen (`trace.coverage`)
 
@@ -1825,6 +1840,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung | Verweis |
 |---|---|---|
+| 2026-07-17 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) um die **Vakuitäts-Stufe** (Schritt 5) geschärft: ein Abgleich ohne eine einzige Kante ist Exit 2 statt `0 Differenz(en)`/Exit 0 — beide Sichten kantenleer (geteiltes `design-pattern` greift am Namensraum vorbei) oder Rück-Sicht kantenleer unter `mode: superset`. Eine **einseitig** leere Vorwärts-Sicht bleibt wohldefiniert (Diff über `keys(F) ∪ keys(B)`) und meldet `B \ F` laut. Fehlerpräzedenz um die Abschnitts-Spannungs-Stufe ergänzt und als **stufenweise über beide Sichten** präzisiert. Lastenheft-CR 0.44.1; Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) (Entscheidung 8) | slice-071 |
 | 2026-07-16 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) + §2-Schema (`trace.cross-consistency.*`) ergänzt: opt-in Mengenabgleich zweier Traceability-Sichten — Vorwärts-RTM-Tabelle (Anforderung→Design) gegen Rückwärts-`Bezug`-Kanten (Design→Anforderung), je Anforderung `F\B`/`B\F` mit Richtung, Modus `equal`/`superset`. Beide über den header-gebundenen Reader ([§`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)) + range-aware Span-Semantik ([§`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)); Rück-Artefakt-ID = erste Spalte via `design-pattern`, `exclude-req`-Ventil (RE2). Advisory unter `--trace`; Gatung über globales `--require-complete` ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)). Fail-closed, ohne Block byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)). Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) | slice-071 |
 | 2026-07-14 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) + §2-Schema (`trace.requirements.format`/`table.*`) ergänzt: `headings` bleibt Default, `table` extrahiert Markdown-Pipe-Tabellen außerhalb von Fences über exakt benannte ID-/Text-/optionale Modalitätsheader; `\|` und Pipes in einzeiligen Code-Spans teilen keine Zelle. Beide Extraktoren liefern dasselbe `{id,title,modalityText}`-Modell vor Referenzscan/Gating. Nichtleer explizite Quelle oder Tabellenmodus aktiviert fail-closed (fehlende Quelle, Header-/Zeilenstruktur, Duplicate-ID, null Treffer ⇒ Exit 2); `source: ""` und unkonfigurierter Heading-Pfad behalten Empty⇒Default/Deduplizierung/leere RTM byte-identisch. Modalität klassifiziert im Tabellenmodus die konfigurierte Modalitätsspalte, sonst die Textspalte. Begründung in [ADR-0037](../docs/plan/adr/0037-trace-tabellenquellen-nullmengen-guard.md) | slice-070 |
 | 2026-06-10 | Initiale Fassung | slice-002 |
