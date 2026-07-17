@@ -373,11 +373,6 @@ Ablauf formatunabhängig.
    teilen keine Zelle. Zellen werden getrimmt; `\|` wird danach zu `|`.
    Mehrzeilige Zellen/Fences innerhalb einer Zelle, HTML-Tabellen und
    Block-Markdown sind keine Tabelle dieses Extraktors.
-   **Direktiven-Zelle.** Ein abschließender HTML-Kommentar **ist** eine Zelle (so
-   auch in GFM); er wird **nicht** entfernt. d-checks Direktiven-Konvention
-   (`<!-- d-check:ignore (…) -->`) steht in einer Tabellenzeile hinter der letzten
-   Pipe — in einer Zelle wäre sie Inhalt. Die Nachsicht ist nach **Zeilenart**
-   getrennt (Schritte 4/5), nicht im Splitter: er entfernt nie etwas.
 4. **Header-Bindung.** `table.id-column` und genau eine von
    `table.text-column` (ein Name) oder `table.text-columns` (nichtleere,
    duplikatfreie Liste alternativer Namen) sind Pflicht;
@@ -392,19 +387,6 @@ Ablauf formatunabhängig.
    Mehrere relevante Tabellen werden in Quellreihenfolge zusammengeführt.
 5. **Datenzeilen.** Eine Zeile gehört bis zur ersten Leer-/Nicht-Tabellenzeile
    zur Tabelle und muss dieselbe Zellenzahl wie der Header tragen; sonst Exit 2.
-   **Verengte Nachsicht (GFM-Body-Regel):** GFM ignoriert in Datenzeilen jede
-   überzählige Zelle; d-check toleriert **genau eine** — und nur, wenn sie
-   ganzzellig ein HTML-Kommentar ist (die Direktiven-Zelle, Schritt 3). Zwei
-   überzählige, eine überzählige Nicht-Kommentar-Zelle oder eine fehlende Zelle
-   bleiben Exit 2. Der **Header** ist davon unberührt und bleibt GFM-**streng**
-   (Schritt 3: Header-Zellenzahl == Trennzeile): trägt er die Direktive, ist sie
-   eine Spalte — N+1 gegen eine N+1-Trennzeile wird regulär erkannt, und die
-   Extra-Spalte bindet an keine Rolle. Eine Nachsichts-Regel im Splitter wäre eine
-   **Body-Regel am Header** und ließe die Tabelle still verschwinden.
-   **Die Nachsicht endet an der Tabellengrenze:** eine Zeile, der eine passende
-   Trennzeile folgt, ist der Header einer **neuen** Tabelle und wird nie als
-   Datenzeile der laufenden toleriert — sonst verschwänden die Anforderungen der
-   Folgetabelle lautlos.
    Nur wenn die getrimmte ID-Zelle als Ganzes auf `id-pattern` passt, definiert
    sie eine Anforderung; andere Datenzeilen werden ignoriert. Titel = Inhalt der
    in dieser Tabelle gebundenen Textspalte. `modalityText` = Inhalt von
@@ -1896,7 +1878,6 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | Datum | Änderung | Verweis |
 |---|---|---|
 | 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 um die **Komma-Kurzform** ergänzt: Kennung + Komma + Ziffern ⇒ Exit 2 mit Hinweis auf die zugesagten Notationen, statt stillem Drop oder geratener Expansion. Komma vor einer vollständigen Kennung bleibt unberührt. Lastenheft-CR 0.46.0; Begründung in der begleitenden ADR | slice-075 |
-| 2026-07-17 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritte 3/5 um die **Direktiven-Zelle** geschärft: ein abschließender HTML-Kommentar **ist** eine Zelle (wie in GFM) und wird nicht entfernt; die Nachsicht ist nach **Zeilenart** getrennt — Header GFM-**streng** (Header == Trennzeile, die Direktive ist dort eine Spalte), Datenzeilen GFM-nachsichtig aber **verengt** (genau **eine** überzählige Zelle, nur ganzzellig Kommentar). Ohne die Regel machte d-checks **eigene** Direktiven-Konvention (`<!-- d-check:ignore (…) -->`, die außerhalb einer Zelle stehen muss) die Zeile für d-checks **eigenen** Tabellen-Reader unlesbar — Exit 2 auf einer Zeile, die jeder Markdown-Renderer normal darstellt (GFM ignoriert überzählige Zellen). Wirkt über den geteilten Reader auf `trace.requirements.format: table` (ausgeliefert seit v0.43.0) und §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). Defekt-Fix, kein CR (das Lastenheft definiert keine Zellenzahl). Begründung in [ADR-0040](../docs/plan/adr/0040-kommentar-suffix-in-tabellenzeilen.md) | slice-074 |
 | 2026-07-17 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) Schritt 2 + §2-Schema um **`forward.req-pattern`** ergänzt (Default `trace.requirements.id-pattern`, symmetrisch zu `backward.req-pattern`). Die Vorwärts-Sicht las ihre IDs bis dahin **still** über das RTM-Muster — die Kopplung war nirgends ausgesprochen. Festgehalten: die **Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge** (das Muster entscheidet, nicht die RTM-Mitgliedschaft). Lastenheft-CR 0.45.0; Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) (Entscheidung 9) | slice-071 |
 | 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 (Range-Parser) um **Link-Transparenz** geschärft: die Fortsetzung `..NNN`/`/NNN` darf **genau einmal** durch ein Markdown-Link-Suffix `](…)` unterbrochen sein, dahinter gilt wieder „unmittelbar“; weitergehendes Peeling (Whitespace, Emphasis, zweites Suffix) bleibt ausgeschlossen. Wirkt über den geteilten Parser zugleich auf §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). **Defekt-Fix, kein CR:** das Lastenheft verspricht die Expansion unqualifiziert — die Verengung „unmittelbar“ stand allein hier und kollidierte strukturell mit der Linkpflicht ([`DC-FA-ID-001`](lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)); betroffen war `trace.coverage` seit v0.41.0 (verlinkte Range ⇒ falsche Waisen). Begründung in [ADR-0039](../docs/plan/adr/0039-link-transparente-range-fortsetzung.md) | slice-073 |
 | 2026-07-17 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) um die **Vakuitäts-Stufe** (Schritt 5) geschärft: ein Abgleich ohne eine einzige Kante ist Exit 2 statt `0 Differenz(en)`/Exit 0 — beide Sichten kantenleer (geteiltes `design-pattern` greift am Namensraum vorbei) oder Rück-Sicht kantenleer unter `mode: superset`. Eine **einseitig** leere Vorwärts-Sicht bleibt wohldefiniert (Diff über `keys(F) ∪ keys(B)`) und meldet `B \ F` laut. Vakuität wird **nach** dem Ausschluss (Schritt 4) gemessen — ein `exclude-req`, das alle Anforderungen verschluckt, schaltet das Gate ebenso still ab wie ein fehlgreifendes Muster. Fehlerpräzedenz um die Abschnitts-Spannungs- und die Ausschluss-Stufe ergänzt und als **stufenweise über beide Sichten** präzisiert. Lastenheft-CR 0.44.1; Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) (Entscheidung 8) | slice-071 |

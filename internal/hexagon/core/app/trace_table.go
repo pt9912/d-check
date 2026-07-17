@@ -12,12 +12,6 @@ import (
 
 var tableDelimiterCell = regexp.MustCompile(`^:?-{3,}:?$`)
 
-// htmlCommentCell matcht eine Zelle, die **ganz** aus GENAU EINEM HTML-Kommentar
-// besteht (DC-FA-REQ-001.a, ADR-0040). Die Innen-Alternation verbietet ein `-->`
-// in der Mitte — zwei Kommentare in einer Zelle sind damit KEINE tolerierte
-// Direktiven-Zelle und laufen in den Zellenzahl-Guard.
-var htmlCommentCell = regexp.MustCompile(`^<!--(?:[^-]|-[^-]|--[^>])*-->$`)
-
 // traceTableRequirements extrahiert Anforderungen aus allen relevanten
 // Markdown-Pipe-Tabellen der Quelle (DC-FA-REQ-001). Relevanz entsteht allein
 // durch die exakt konfigurierten Header-Namen; Positionen werden nie geraten.
@@ -156,58 +150,13 @@ func consumeTableRows(lines []markdownTableLine, start int, mask []bool, t *mdTa
 		if !row {
 			return j
 		}
-		// Exakte Breite: unverändert wie bisher — kein Blick voraus. NUR die
-		// Nachsicht (N+1 mit Direktiven-Zelle) braucht ihn: eine solche Zeile kann
-		// der **Header einer neuen Tabelle** sein und sähe wie eine tolerierbare
-		// Datenzeile aus. Ohne diese Grenze fräße die Toleranz ihn, und die
-		// Anforderungen der Folgetabelle verschwänden LAUTLOS (Review R2-F-1:
-		// v0.45.1 Exit 2 ⇒ Exit 0). Dann endet die Tabelle hier — wie ohne
-		// Nachsicht, also byte-identisch zu v0.45.1.
-		if len(cells) != len(t.header) &&
-			(!cellCountOK(cells, t.header) || isNewTableHeader(lines, j)) {
+		if len(cells) != len(t.header) {
 			t.badLine, t.badCells = lines[j].no, len(cells)
 			return j
 		}
 		t.rows = append(t.rows, mdTableRow{cells: cells, line: lines[j].no})
 	}
 	return len(lines)
-}
-
-// isNewTableHeader sagt, ob an Zeile j eine neue Tabelle beginnt (Header +
-// passende Trennzeile). Wird **ausschließlich** in der Nachsichts-Entscheidung
-// gefragt — eine exakt breite Zeile wird nie so geprüft, sonst änderte sich
-// Verhalten, das niemand begründet hat (siehe consumeTableRows).
-func isNewTableHeader(lines []markdownTableLine, j int) bool {
-	if j+1 >= len(lines) {
-		return false
-	}
-	_, ok := tableHeaderAt(lines, j)
-	return ok
-}
-
-// cellCountOK entscheidet, ob eine **Daten**zeile zur Tabelle passt
-// (DC-FA-REQ-001.a, ADR-0040). Die Regel folgt GFM entlang der Achse
-// „nachsichtig vs. fail-closed", aber getrennt nach Zeilenart:
-//
-//   - Der **Header**-Pfad ist GFM-streng und wird hier gar nicht berührt
-//     (tableHeaderAt verlangt Header == Trennzeile). Trägt ein Header die
-//     Direktive, ist sie eine Spalte: N+1 gegen eine N+1-Trennzeile wird regulär
-//     erkannt, und die Extra-Spalte bindet an keine Rolle.
-//   - **Datenzeilen** sind GFM-nachsichtig, aber **verengt**: GFM ignoriert jede
-//     überzählige Zelle; d-check toleriert **genau eine** — und nur, wenn sie
-//     ganzzellig ein HTML-Kommentar ist. Alles andere bleibt fail-closed
-//     (ADR-0037: eine still abreißende Tabelle verlöre Anforderungen lautlos).
-//
-// Damit wohnt die Regel dort, wo der Header-Kontext bekannt ist. Die erste
-// Fassung strippte im Splitter — der kennt den Unterschied zwischen Header und
-// Datenzeile nicht und wandte deshalb eine Body-Regel auf den Header an: dessen
-// Zellenzahl fiel unter die der Trennzeile, die Tabelle wurde WORTLOS
-// übersprungen und ihre Anforderungen verschwanden (Review slice-074 R1-F-1).
-func cellCountOK(cells, header []string) bool {
-	if len(cells) == len(header) {
-		return true
-	}
-	return len(cells) == len(header)+1 && htmlCommentCell.MatchString(cells[len(cells)-1])
 }
 
 // maskAllows prüft die 1-basierte Zeilennummer gegen die Abschnitts-Maske.
