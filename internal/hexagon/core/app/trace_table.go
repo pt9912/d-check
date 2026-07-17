@@ -13,10 +13,9 @@ import (
 var tableDelimiterCell = regexp.MustCompile(`^:?-{3,}:?$`)
 
 // htmlCommentCell matcht eine Zelle, die **ganz** aus GENAU EINEM HTML-Kommentar
-// besteht (DC-FA-REQ-001.a Kommentar-Suffix, ADR-0040). Die Innen-Alternation
-// verbietet ein `-->` in der Mitte — zwei Trailing-Kommentare sind damit KEIN
-// Suffix und laufen weiter in den Zellenzahl-Guard, statt still verschluckt zu
-// werden.
+// besteht (DC-FA-REQ-001.a, ADR-0040). Die Innen-Alternation verbietet ein `-->`
+// in der Mitte — zwei Kommentare in einer Zelle sind damit KEINE tolerierte
+// Direktiven-Zelle und laufen in den Zellenzahl-Guard.
 var htmlCommentCell = regexp.MustCompile(`^<!--(?:[^-]|-[^-]|--[^>])*-->$`)
 
 // traceTableRequirements extrahiert Anforderungen aus allen relevanten
@@ -157,13 +156,38 @@ func consumeTableRows(lines []markdownTableLine, start int, mask []bool, t *mdTa
 		if !row {
 			return j
 		}
-		if len(cells) != len(t.header) {
+		if !cellCountOK(cells, t.header) {
 			t.badLine, t.badCells = lines[j].no, len(cells)
 			return j
 		}
 		t.rows = append(t.rows, mdTableRow{cells: cells, line: lines[j].no})
 	}
 	return len(lines)
+}
+
+// cellCountOK entscheidet, ob eine **Daten**zeile zur Tabelle passt
+// (DC-FA-REQ-001.a, ADR-0040). Die Regel folgt GFM entlang der Achse
+// „nachsichtig vs. fail-closed", aber getrennt nach Zeilenart:
+//
+//   - Der **Header**-Pfad ist GFM-streng und wird hier gar nicht berührt
+//     (tableHeaderAt verlangt Header == Trennzeile). Trägt ein Header die
+//     Direktive, ist sie eine Spalte: N+1 gegen eine N+1-Trennzeile wird regulär
+//     erkannt, und die Extra-Spalte bindet an keine Rolle.
+//   - **Datenzeilen** sind GFM-nachsichtig, aber **verengt**: GFM ignoriert jede
+//     überzählige Zelle; d-check toleriert **genau eine** — und nur, wenn sie
+//     ganzzellig ein HTML-Kommentar ist. Alles andere bleibt fail-closed
+//     (ADR-0037: eine still abreißende Tabelle verlöre Anforderungen lautlos).
+//
+// Damit wohnt die Regel dort, wo der Header-Kontext bekannt ist. Die erste
+// Fassung strippte im Splitter — der kennt den Unterschied zwischen Header und
+// Datenzeile nicht und wandte deshalb eine Body-Regel auf den Header an: dessen
+// Zellenzahl fiel unter die der Trennzeile, die Tabelle wurde WORTLOS
+// übersprungen und ihre Anforderungen verschwanden (Review slice-074 R1-F-1).
+func cellCountOK(cells, header []string) bool {
+	if len(cells) == len(header) {
+		return true
+	}
+	return len(cells) == len(header)+1 && htmlCommentCell.MatchString(cells[len(cells)-1])
 }
 
 // maskAllows prüft die 1-basierte Zeilennummer gegen die Abschnitts-Maske.
@@ -338,29 +362,7 @@ func splitPipeTableLine(line string) ([]string, bool) {
 	if trailing && len(cells) > 0 {
 		cells = cells[:len(cells)-1]
 	}
-	return dropCommentSuffix(cells), true
-}
-
-// dropCommentSuffix entfernt einen abschließenden HTML-Kommentar, der die **ganze
-// letzte Zelle** ausmacht (DC-FA-REQ-001.a Kommentar-Suffix, ADR-0040): er ist ein
-// Zeilen-Suffix, keine Zelle.
-//
-// Grund: d-checks eigene Direktiven-Konvention `<!-- d-check:ignore (Grund) -->`
-// MUSS in einer Tabellenzeile hinter der letzten Pipe stehen — in einer Zelle wäre
-// sie Zellinhalt (Titel bzw. Kanten-Menge). Ohne diese Regel zählte der Reader sie
-// als Extra-Zelle und brach fail-closed ab: die eigene Konvention machte den
-// eigenen Reader blind (belegt am Realdatenlauf grid-gym, architecture.md:913).
-// GFM ignoriert überzählige Zellen; die Zeile rendert überall normal.
-//
-// Bewusst eng: nur am ENDE, nur GANZZELLIG, nur EINER. Ein Kommentar innerhalb
-// einer Zelle oder in der Zeilenmitte bleibt Zellinhalt, und der Zellenzahl-Guard
-// aus ADR-0037 bleibt sonst scharf — die GFM-weite Aufweichung ist verworfen, weil
-// sie genau die Klasse still machte, gegen die der Guard gebaut wurde.
-func dropCommentSuffix(cells []string) []string {
-	if n := len(cells); n > 0 && htmlCommentCell.MatchString(cells[n-1]) {
-		return cells[:n-1]
-	}
-	return cells
+	return cells, true
 }
 
 type pipeLineSplitter struct {

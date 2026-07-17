@@ -613,3 +613,46 @@ func TestCrossConsistencyZellenzahlGuardBleibtScharf(t *testing.T) {
 		t.Fatalf("Fehlertext unerwartet: %v", err)
 	}
 }
+
+// slice-074 R1-F-1 (HIGH): der Header-Pfad darf NIE angefasst werden. Trägt ein
+// Header die Direktive, ist sie eine Spalte — N+1 gegen eine N+1-Trennzeile wird
+// regulär erkannt (die einzige GFM-renderbare Form), und die Extra-Spalte bindet
+// an keine Rolle. Die erste Fassung strippte im Splitter, wodurch der Header unter
+// die Trennzeilen-Breite fiel und die Tabelle WORTLOS übersprungen wurde: echte
+// Waisen verschwanden, Exit 1 wurde Exit 0.
+func TestTraceTableHeaderMitDirektiveWirdErkannt(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"spec/lastenheft.md": "# L\n\n" +
+			"| Kennung | Anforderung | <!-- d-check:ignore (Alt-Tabelle) --> |\n|---|---|---|\n" +
+			"| F-2 | Echte Waise eins. | x |\n| F-3 | Echte Waise zwei. | x |\n",
+	})
+	cfg := model.TraceConfig{
+		Source: "spec/lastenheft.md", Format: model.TraceFormatTable,
+		ReqPattern: regexp.MustCompile(`F-[0-9]+`),
+		Table:      &model.TraceTableConfig{IDColumn: "Kennung", TextColumns: []string{"Anforderung"}, DuplicateIDs: model.TraceDuplicateError},
+	}
+	m, err := BuildTraceMatrix(fs, cfg)
+	if err != nil {
+		t.Fatalf("Header mit Direktive machte die Tabelle unlesbar: %v", err)
+	}
+	if m.Total != 2 || m.Orphans != 2 {
+		t.Fatalf("Tabelle wurde still übersprungen: %d Anforderungen, %d Waisen (want 2/2)", m.Total, m.Orphans)
+	}
+}
+
+// Gegenprobe zur Toleranz: eine Datenzeile, der eine ECHTE Zelle fehlt, bleibt
+// laut fail-closed — die Toleranz gilt genau einer Kommentar-Zelle, nicht
+// „überzählige Zellen egal" (ADR-0037-Guard unangetastet).
+func TestTraceTableEchterZellenbruchBleibtLaut(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"spec/lastenheft.md": "# L\n\n| Kennung | Anforderung |\n|---|---|\n| F-1 | Text | eine zu viel |\n",
+	})
+	cfg := model.TraceConfig{
+		Source: "spec/lastenheft.md", Format: model.TraceFormatTable,
+		ReqPattern: regexp.MustCompile(`F-[0-9]+`),
+		Table:      &model.TraceTableConfig{IDColumn: "Kennung", TextColumns: []string{"Anforderung"}, DuplicateIDs: model.TraceDuplicateError},
+	}
+	if _, err := BuildTraceMatrix(fs, cfg); err == nil {
+		t.Fatal("echter Zellenbruch muss fail-closed bleiben")
+	}
+}

@@ -214,24 +214,23 @@ func TestCoverageRefsLinkTransparent(t *testing.T) {
 	}
 }
 
-// slice-074 (ADR-0040): die Suffix-Regel ist eng — nur am ENDE, nur GANZZELLIG,
-// nur EINER. Ohne diese Negativtests wäre „genau einer" eine Behauptung.
-func TestSplitPipeTableLineKommentarSuffix(t *testing.T) {
+// slice-074 (ADR-0040): der Splitter ist ein REINER Splitter — er kennt den
+// Unterschied zwischen Header und Datenzeile nicht und darf deshalb nichts
+// entfernen. Die erste Fassung strippte hier und wandte damit eine Body-Regel auf
+// den Header an; die Tabelle fiel unter die Trennzeilen-Breite und wurde wortlos
+// übersprungen (Review R1-F-1). Dieser Test pinnt die Nicht-Zuständigkeit.
+func TestSplitPipeTableLineLaesstKommentarZelleStehen(t *testing.T) {
 	tests := []struct {
 		name string
 		line string
 		want []string
 	}{
-		{"Suffix ohne Schluss-Pipe", "| a | b | <!-- d-check:ignore (x) -->", []string{"a", "b"}},
-		{"Suffix mit Schluss-Pipe", "| a | b | <!-- d-check:ignore (x) --> |", []string{"a", "b"}},
-		{"ohne Suffix unverändert", "| a | b |", []string{"a", "b"}},
-		// Negativ: der Kommentar ist Zellinhalt, kein Suffix.
-		{"Kommentar IN einer Zelle", "| a <!-- x --> | b |", []string{"a <!-- x -->", "b"}},
-		{"Kommentar in der Zeilenmitte", "| a | <!-- x --> | b |", []string{"a", "<!-- x -->", "b"}},
-		// Negativ: zwei Trailing-Kommentare sind KEIN Suffix — sie laufen weiter in
-		// den Zellenzahl-Guard, statt still verschluckt zu werden.
-		{"zwei Trailing-Kommentare", "| a | b | <!-- x --> <!-- y -->",
-			[]string{"a", "b", "<!-- x --> <!-- y -->"}},
+		{"Kommentar am Ende ist eine Zelle", "| a | b | <!-- d-check:ignore (x) -->",
+			[]string{"a", "b", "<!-- d-check:ignore (x) -->"}},
+		{"auch mit Schluss-Pipe", "| a | b | <!-- d-check:ignore (x) --> |",
+			[]string{"a", "b", "<!-- d-check:ignore (x) -->"}},
+		{"Kommentar in einer Zelle bleibt Inhalt", "| a <!-- x --> | b |", []string{"a <!-- x -->", "b"}},
+		{"ohne Kommentar unverändert", "| a | b |", []string{"a", "b"}},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -241,6 +240,31 @@ func TestSplitPipeTableLineKommentarSuffix(t *testing.T) {
 			}
 			if !equalStrings(got, tc.want) {
 				t.Fatalf("splitPipeTableLine(%q) = %v, want %v", tc.line, got, tc.want)
+			}
+		})
+	}
+}
+
+// slice-074 (ADR-0040): die Toleranz sitzt dort, wo der Header-Kontext bekannt ist.
+// Genau eine überzählige Zelle, und nur wenn sie ganzzellig ein Kommentar ist.
+func TestCellCountOK(t *testing.T) {
+	hdr := []string{"Kennung", "Anforderung"}
+	tests := []struct {
+		name  string
+		cells []string
+		want  bool
+	}{
+		{"exakt", []string{"F-1", "Text"}, true},
+		{"eine Kommentar-Zelle zu viel — toleriert", []string{"F-1", "Text", "<!-- d-check:ignore (x) -->"}, true},
+		{"eine ECHTE Zelle zu viel — fail-closed", []string{"F-1", "Text", "x"}, false},
+		{"zwei zu viel, letzte Kommentar — fail-closed", []string{"F-1", "Text", "x", "<!-- y -->"}, false},
+		{"eine zu wenig — fail-closed", []string{"F-1"}, false},
+		{"zwei Kommentare in einer Zelle — fail-closed", []string{"F-1", "Text", "<!-- x --> <!-- y -->"}, false},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := cellCountOK(tc.cells, hdr); got != tc.want {
+				t.Fatalf("cellCountOK(%v) = %v, want %v", tc.cells, got, tc.want)
 			}
 		})
 	}
