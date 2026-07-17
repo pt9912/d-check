@@ -10,7 +10,15 @@
 
 **Welle-ID:** welle-60-trace-cross-consistency
 
-**Slices:** [`slice-073`](slice-073-link-transparente-range-fortsetzung.md) —
+**Slices:** [`slice-074`](slice-074-kommentar-suffix-tabellenzeilen.md) —
+Kommentar-Suffix in Tabellenzeilen: d-checks eigene Ignore-Direktive
+(`<!-- d-check:ignore … -->`) macht d-checks eigenen Tabellen-Reader blind
+(Exit 2 auf einer Zeile, die jeder Renderer normal darstellt). **Blockiert den
+Realdatenbeleg von slice-071 vollständig** und läuft daher zuerst; ausgeliefert
+seit v0.43.0 für `trace.requirements.format: table`. Defekt-Fix, kein CR
+([ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md)).
+
+[`slice-073`](slice-073-link-transparente-range-fortsetzung.md) —
 link-transparente Range-Fortsetzung: eine verlinkte Range (`` [`ID`](…)..009 ``)
 expandiert nicht, weil die Spec-Verengung „unmittelbar" strukturell mit d-checks
 eigener Linkpflicht kollidiert. **Ausgelieferter Defekt seit v0.41.0**
@@ -51,7 +59,7 @@ null, von keinem Gate bemerkt.
 
 **Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** slice-074 — Kommentar-Suffix in Tabellenzeilen ([ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md) Proposed; Defekt-Fix, kein CR), blockiert den Realdatenbeleg von slice-071.
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
 
 **Im Eingang (`open/`), auf Wellen-Einplanung wartend:** slice-072 — Handbuch-
 Aufgabenorientierung der §4-Kapitel gegen den

@@ -1,9 +1,9 @@
 # Slice slice-074: Kommentar-Suffix in Tabellenzeilen (Reader vs. eigene Direktive)
 
-**Status:** open (Backlog; noch keiner Welle zugeordnet).
+**Status:** in-progress (welle-60-trace-cross-consistency).
 
-**Welle:** keine; Kandidat für welle-60 — der Defekt blockiert den Realdatenbeleg
-von [`slice-071`](../in-progress/slice-071-trace-cross-consistency-gate.md)
+**Welle:** aktiv (welle-60), **vorrangig** — der Defekt blockiert den
+Realdatenbeleg von [`slice-071`](slice-071-trace-cross-consistency-gate.md)
 vollständig (Exit 2 beim Lesen der Rück-Sicht).
 
 **Bezug:** **Defekt-Fix**, **kein Change Request**: das Lastenheft definiert keine
