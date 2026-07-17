@@ -115,6 +115,30 @@ Lastenheft) + Slice + Spezifikation-`.a` + ADR. **Freigabe und Scope offen** —
 insbesondere, woher der Artefakt-Titel kommt (die Rück-Sicht bindet heute nur die
 erste Spalte als Artefakt-ID) und was eine Kanten-Anmerkung normativ ist.
 
+Ferner **`ignore-refs` mit Quell-Skopus** (`in:`) — Konsumenten-CR
+`ai-harness-course` (2026-07-17), **Design nach Rückfragen verfeinert**:
+„Referenz auf Y nicht prüfen, **wenn sie in X steht**". Das ist **keine** vierte
+Ventil-Achse, sondern das **Kreuzprodukt der zwei vorhandenen** — `scan.ignore`
+skopiert über die **Quelle**, `ignore-refs` über das **Ziel**, der Zeilen-Marker
+ist der lokale Notausgang; was fehlt, ist die Kombination. Statt eines
+danebenstehenden `ignore-refs-in` (das die Ziel-Achse duplizierte) ein `in:` an
+`ignore-refs`. **Zwei Felder statt `!`-Negation:** `ignore if match(refs) and not
+match(keep)` — `keep` gewinnt unbedingt und **reihenfolge-unabhängig**, nicht
+gitignore-Last-Match; die Messung des Konsumenten hat genau diese Semantik
+gefahren (38 ignoriert / **0** fälschlich blind / 63 geprüft), der CR-Text war an
+der Stelle nur falsch beschriftet. Der Preis (zwei Felder können nicht
+alternieren) ist gemessen **null**: alle 24 von `keep` zurückgeholten Ziele
+existieren, kein Fall braucht ein Re-Ignore.
+**Bedingung:** `ignore-refs` sitzt heute **in**
+[`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
+und ist modul-lokal — 37 der 42 Findings sind `links`, der Key **erreicht den
+Fall gar nicht**. Skopieren hilft nur, wenn er zugleich **nach oben wandert** und
+für `links`/`anchors`/`codepaths` gilt; `codepaths.ignore-refs` bliebe **Alias**
+⇒ kein Config-Bruch. **Freigabe offen; blockierende Vorfrage:** wo die
+Anforderung wohnt (neues Bereichskürzel in Lastenheft §3 vs. Änderung der drei
+bestehenden). Problem belegt: 63 Verweise ungeprüft, deren Auflösung beim Release
+in ein ausgeliefertes Artefakt eingefroren wird.
+
 Ferner ein `--print-version-md`-Scaffold, das ein
 `version.md`-Skelett mit Platzhaltern auf stdout ausgibt (Familie `--print-config`/`--print-mk`/
 `--suggest-config`; read-only, deterministisch). Produkt-Feature ⇒ Change Request
