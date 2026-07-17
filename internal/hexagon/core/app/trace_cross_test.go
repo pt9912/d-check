@@ -167,6 +167,20 @@ func TestCrossConsistencyRangeAwareLinkTransparent(t *testing.T) {
 	}
 }
 
+// Komma-Kurzform über den Kreuzverweis-Abgleich (DC-FA-COV-001.a/ADR-0041, über
+// den geteilten Range-Parser auch DC-FA-XREF-001): eine `Bezug`-Zelle mit
+// `GG-SIM-001, 007` ist die reale grid-gym-Form — sie muss fail-closed sein, nicht
+// still `007` fallen lassen.
+func TestCrossConsistencyCommaShortform(t *testing.T) {
+	fs := crossFS(
+		"| GG-SIM-001 | GG-AR-COMP-SIM |\n",
+		"| GG-AR-COMP-SIM | GG-SIM-001, 007 |\n",
+	)
+	if _, err := crossConsistency(fs, crossCfg(), ggReqPat); err == nil {
+		t.Fatal("Komma-Kurzform in der Bezug-Zelle muss Exit 2 auslösen, nicht 007 still fallen lassen")
+	}
+}
+
 // Superset-Modus (DC-FA-XREF-001): F ⊋ B ⇒ F\B ist kein Befund.
 func TestCrossConsistencySupersetMode(t *testing.T) {
 	fwd := "| GG-ARCH-006 | GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN |\n"

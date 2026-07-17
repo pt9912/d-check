@@ -2,6 +2,7 @@ package app
 
 import (
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
@@ -148,6 +149,62 @@ func TestExpandRangeLinkTransparentFailClosed(t *testing.T) {
 	}
 	if _, err := expandRange("trace.coverage", "GG-QA-001", "`](x.md)..0010", ggPat); err == nil {
 		t.Fatal("Breiten-Mismatch hinter einem Link muss fail-closed bleiben")
+	}
+}
+
+// Komma-Kurzform (DC-FA-COV-001.a, ADR-0041): Komma + unmittelbar Ziffern ist
+// eine Aufzählungs-Gestalt ohne zugesagte Notation ⇒ Exit 2. Komma vor einer
+// vollständigen Kennung oder vor Prosa ohne Ziffer ist unberührt.
+func TestExpandRangeCommaShortform(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		rest    string
+		wantErr bool
+	}{
+		{"Komma-Kurzform", ", 007", true},
+		{"Komma-Kurzform ohne Space", ",007", true},
+		{"Prosa-Zahl hinter Kennung", ", 2026 geplant", true},
+		{"verlinkte Komma-Kurzform", "`](x.md), 007", true},
+		{"Komma-Schwanz hinter Range", "..005, 007", true},
+		{"Komma-Schwanz hinter Enum", "/003, 007", true},
+		{"Range dann volle Kennung", "..005, GG-QA-007", false},
+		{"saubere Range ohne Schwanz", "..005", false},
+		{"Komma vor voller Kennung", ", GG-QA-002", false},
+		{"Komma vor Prosa ohne Ziffer", ", siehe GG-QA-002", false},
+		{"kein Suffix", " deckt X", false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := expandRange("trace.coverage", "GG-QA-001", tc.rest, ggPat)
+			if (err != nil) != tc.wantErr {
+				t.Fatalf("rest %q: err=%v, wantErr=%v", tc.rest, err, tc.wantErr)
+			}
+			if tc.wantErr && err != nil && !strings.Contains(err.Error(), "..") {
+				t.Fatalf("Fehlermeldung muss auf die zugesagten Notationen hinweisen: %q", err.Error())
+			}
+		})
+	}
+}
+
+// Komma-Kurzform auf Konsumenten-Ebene (coverageRefs): der Fehler schlägt bis
+// zum Gate durch, und nur bei aktiven Ranges — mit ranges:false bleibt die
+// Quelle unberührt (die Regel gehört zur Range-Fähigkeit).
+func TestCoverageRefsCommaShortform(t *testing.T) {
+	src := func(ranges bool) []model.TraceCoverage {
+		return []model.TraceCoverage{{Files: []string{"docs/traceability.md"}, Label: "Trace", Ranges: ranges}}
+	}
+	fs := func(body string) *coretest.MemFS {
+		return coretest.NewMemFS(map[string]string{"docs/traceability.md": "# T\n\n" + body + "\n"})
+	}
+	// Einfacher und realer (gemischter) Auslöser: beide fail-closed unter ranges:true.
+	if _, err := coverageRefs(fs("Abdeckung: GG-SCN-001, 007"), src(true), ggPat); err == nil {
+		t.Fatal("Komma-Kurzform GG-SCN-001, 007 muss unter ranges:true Exit 2 auslösen")
+	}
+	if _, err := coverageRefs(fs("Abdeckung: GG-SCN-001..005, 007, 008"), src(true), ggPat); err == nil {
+		t.Fatal("realer grid-gym-Fall GG-SCN-001..005, 007, 008 (Range + Komma-Schwanz) muss Exit 2 auslösen, nicht 007/008 still fallen lassen")
+	}
+	// Mit ranges:false gehört die Komma-Kurzform nicht zur aktiven Fähigkeit.
+	if _, err := coverageRefs(fs("Abdeckung: GG-SCN-001, 007"), src(false), ggPat); err != nil {
+		t.Fatalf("mit ranges:false ist die Komma-Kurzform unberührt: %v", err)
 	}
 }
 

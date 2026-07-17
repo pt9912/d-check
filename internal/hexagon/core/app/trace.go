@@ -360,11 +360,14 @@ func traceRefs(fsys driven.Filesystem, dir string, fileShape *regexp.Regexp, pre
 
 // Range-/Enum-Suffixe hinter einer Anforderungs-Kennung (DC-FA-COV-001):
 // trailingDigits schneidet die Familie ab, rangeSuffix erkennt `..BBB`,
-// enumSuffix `/BBB/CCC`.
+// enumSuffix `/BBB/CCC`. commaShortform erkennt die **nicht** zugesagte
+// Komma-Kurzform `<FAM>-AAA, BBB` (Komma, dann unmittelbar Ziffern) — sie ist
+// fail-closed statt still verschluckt oder geraten (DC-FA-COV-001.a, ADR-0041).
 var (
 	trailingDigits = regexp.MustCompile(`\d+$`)
 	rangeSuffix    = regexp.MustCompile(`^\.\.(\d+)`)
 	enumSuffix     = regexp.MustCompile(`^(?:/\d+)+`)
+	commaShortform = regexp.MustCompile(`^,\s*\d`)
 )
 
 // skipLinkSuffix überspringt **höchstens ein** Markdown-Link-Suffix hinter einer
@@ -517,6 +520,7 @@ func expandRange(field, id, rest string, reqPat *regexp.Regexp) ([]string, error
 	fam, startStr := id[:d[0]], id[d[0]:]
 	width := len(startStr)
 	rest = skipLinkSuffix(rest)
+	var out []string
 	if rm := rangeSuffix.FindStringSubmatch(rest); rm != nil {
 		endStr := rm[1]
 		if len(endStr) != width {
@@ -527,24 +531,33 @@ func expandRange(field, id, rest string, reqPat *regexp.Regexp) ([]string, error
 		if start > end {
 			return nil, fmt.Errorf("%s: Range %s..%s mit AAA>BBB", field, id, endStr)
 		}
-		var out []string
 		for i := start; i <= end; i++ {
 			if cand := fmt.Sprintf("%s%0*d", fam, width, i); reqPat.FindString(cand) == cand {
 				out = append(out, cand)
 			}
 		}
-		return out, nil
-	}
-	if em := enumSuffix.FindString(rest); em != "" {
-		var out []string
+		rest = rest[len(rm[0]):]
+	} else if em := enumSuffix.FindString(rest); em != "" {
 		for _, part := range strings.Split(strings.TrimPrefix(em, "/"), "/") {
 			if cand := fam + part; reqPat.FindString(cand) == cand {
 				out = append(out, cand)
 			}
 		}
-		return out, nil
+		rest = rest[len(em):]
 	}
-	return nil, nil
+	// Komma-Kurzform: bleibt hinter der Kennung (bzw. hinter der konsumierten
+	// Range/Enum) ein Komma + unmittelbar Ziffern stehen, ist das eine
+	// Aufzählungs-Gestalt ohne zugesagte Notation. Fail-closed statt still (die
+	// Kurzform verschwände) oder geraten (`GG-QA-001, 007 Sekunden` — eine
+	// Prosa-Zahl passierte die id-pattern-Validierung); dieselbe Logik wie AAA>BBB
+	// (ADR-0041). Ein Komma vor einer vollständigen Kennung (`<FAM>-AAA, <FAM>-BBB`,
+	// auch hinter einer Range) trägt keine Ziffer direkt hinterm Komma und ist
+	// unberührt. Der Check greift an allen drei Positionen, weil rest jeweils hinter
+	// die konsumierte Notation vorgeschoben wurde.
+	if commaShortform.MatchString(rest) {
+		return nil, fmt.Errorf("%s: Komma-Kurzform hinter %s ist keine zugesagte Notation — nutze %s..BBB oder %s/BBB", field, id, id, id)
+	}
+	return out, nil
 }
 
 // mdEmphasis matcht Markdown-Emphasis-Zeichen (Sternchen/Backtick) für die
