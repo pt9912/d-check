@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.44.1
+**Version:** 0.44.2
 
 **Status:** Draft
 
@@ -736,11 +736,15 @@ Rück-Kanten teils auf **Mittelschicht-IDs** ohne eigene RTM-Vorwärts-Zeile. Di
 selbst eine kuratierte Kante, die mit der Schicht-Struktur synchron bleiben muss
 und driften kann (wie `matrix.exclude-sections`) — bewusst benannter Trade-off.
 
-Ein **vakuumer Abgleich** ist kein bestandener Abgleich: greifen die Muster am
-Inhalt vorbei, fällt aus beiden Sichten keine Kante, und ein `0 Differenz(en)`
-behauptete eine nie geprüfte Konsistenz. Vakuum heißt: **beide** Sichten
-kantenleer — oder, unter `mode: superset`, die **Rück**-Sicht kantenleer (dann
-kann `B \ F` konstruktionsbedingt nie einen Befund liefern). Beides ⇒ Exit 2.
+Ein **vakuumer Abgleich** ist kein bestandener Abgleich: bleibt nach allen Stufen
+keine Kante übrig, behauptete ein `0 Differenz(en)` eine nie geprüfte Konsistenz.
+Maßgeblich ist die **Wirkung**, nicht die Ursache — geprüft wird, ob der Abgleich
+konstruktionsbedingt überhaupt einen Befund liefern könnte. Vakuum heißt: **beide**
+Sichten kantenleer — oder, unter `mode: superset`, die **Rück**-Sicht kantenleer
+(dann kann `B \ F` nie einen Befund liefern). Beides ⇒ Exit 2. Gemessen wird
+**nach** dem `exclude-req`-Ausschluss: ein Ventil, das alle Anforderungen
+verschluckt, schaltet das Gate ebenso still ab wie ein Muster, das am Inhalt
+vorbeigreift — es ist selbst eine kuratierte, drift-fähige Kante.
 Eine **einseitig** leere Sicht ist dagegen ein wohldefiniertes Ergebnis, kein
 Fehler: der Diff läuft über `keys(F) ∪ keys(B)`, und eine noch unrestrukturierte
 Vorwärts-Sicht bei gepflegten Rück-Kanten ist der erwartete Bootstrap-Zustand —
@@ -779,6 +783,11 @@ Code ändert sich nur unter dem globalen
   aber am Artefakt-Namensraum vorbeigreift (beide Sichten kantenleer) — oder eine
   kantenleere Rück-Sicht unter `mode: superset` —, when `d-check --trace` läuft,
   then Exit 2 statt `0 Differenz(en)`/Exit 0.
+- **Negative (übergriffiges Ventil, fail-closed):** Given fehlerfreie Muster, aber
+  ein `exclude-req`, das **jede** Anforderung beider Sichten verschluckt, when
+  `d-check --trace` gegen einen realen Drift läuft, then Exit 2 — der Abgleich
+  könnte nie einen Befund liefern; die Meldung benennt das **Ventil**, nicht die
+  korrekten Muster.
 - **Boundary (einseitig leere Sicht):** Given eine kantenleere **Vorwärts**-Sicht
   und `B(R) ≠ ∅`, when der Abgleich läuft, then ist das **kein** Fehler: jede
   Rück-Kante wird als `B \ F` gemeldet (der Bootstrap-Zustand vor der
@@ -1944,6 +1953,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.44.2 | 2026-07-17 | Change Request (Auftraggeber): die Vakuitäts-Stufe aus 0.44.1 von einer **Ursachen-** auf eine **Wirkungs**-Fassung gezogen. 0.44.1 band Vakuum an die Muster-Ursache („Given ein `design-pattern`, das … vorbeigreift“); ein **übergriffiges `exclude-req`** — fehlerfreie Muster, aber ein Ventil, das jede Anforderung verschluckt — schaltete das Gate bei realem Drift ebenso still ab, war aber von keinem Akzeptanzkriterium gedeckt. Vakuität wird daher **nach** dem Ausschluss gemessen (das Ventil ist selbst eine kuratierte, drift-fähige Kante), und geprüft wird die **Wirkung** — ob der Abgleich konstruktionsbedingt überhaupt einen Befund liefern könnte — statt einer Ursachenliste, die bei der nächsten unbekannten Ursache erneut risse. Neues Negative-Kriterium (Ventil, samt ventil-benennender Meldung); Ausschluss-Stufe in der Fehlerpräzedenz von `DC-FA-XREF-001.a`; Begründung in der begleitenden ADR. Anlass: unabhängiges Closure-Review zu `slice-071` — R3 reproduzierte `exclude-req: '.'` mit `0 Differenz(en)`/Exit 0 bei echtem Drift, R4 wies die AK-Lücke nach | slice-071 |
 | 0.44.1 | 2026-07-17 | Change Request (Auftraggeber): `DC-FA-XREF-001` um eine **Vakuitäts-Stufe** geschärft — ein Abgleich, aus dem keine Kante fällt, ist **kein bestandener** Abgleich, sondern Exit 2. Vakuum ist definiert als **beide** Sichten kantenleer (typischer Anlass: ein `design-pattern`, das kompiliert, aber am Artefakt-Namensraum vorbeigreift — die Namensraum-Kongruenz war bis dahin nur als Vorbedingung *beschrieben*, nicht mechanisiert) **oder** die Rück-Sicht kantenleer unter `mode: superset` (dann kann `B \ F` konstruktionsbedingt nie einen Befund liefern). Abgegrenzt: eine **einseitig** leere Vorwärts-Sicht bleibt ein wohldefiniertes Ergebnis (Diff über `keys(F) ∪ keys(B)`) und meldet `B \ F` laut — der erwartete Bootstrap-Zustand vor der Restrukturierung der Vorwärts-Sicht, den ein Guard sonst mit einer Config-Fehldiagnose abwürgte. Neues Negative- und Boundary-Kriterium; Vakuitäts-Stufe in der Fehlerpräzedenz von `DC-FA-XREF-001.a` der Spezifikation; Begründung + Abgrenzung zum Nullmengen-Guard der Tabellenquellen in der begleitenden ADR. Anlass: unabhängiges Closure-Review zu `slice-071` — R1 reproduzierte das stille Grün, R2 wies den ersten, symmetrisch je Sicht feuernden Fix als vertragswidrig nach | slice-071 |
 | 0.44.0 | 2026-07-16 | Change Request (Auftraggeber): neue Anforderung `DC-FA-XREF-001` — **Kreuzverweis-Konsistenz zweier Traceability-Sichten** (`trace.cross-consistency`, opt-in): der `--trace`-Lauf vergleicht zusätzlich die Vorwärts-RTM-Tabelle (Anforderung → Design-Menge) gegen die Rückwärts-`Bezug`-Kanten (Design → Anforderung) und meldet je Anforderung die beiden Mengendifferenzen `F(R) \ B(R)`/`B(R) \ F(R)` mit Richtungslabel; Modus `equal`/`superset`, `1:N` Normalfall. Beide Sichten kuratierte Tabellen über den header-gebundenen Reader (`DC-FA-REQ-001`) + range-aware Span-Semantik (`DC-FA-COV-001`); Rück-Kanten = Quelle der Wahrheit (Artefakt-ID = erste Spalte via `design-pattern`, `Bezug`-Zelle range-aware). Ableitungssprünge per `exclude-req` (RE2) ausgenommen. Advisory unter `--trace`; Exit-Änderung nur über das globale `--require-complete` (`DC-FA-CLI-011`). Fail-closed (ungültiges Regex/fehlende Spalte/ID-Header nicht genau einmal/unbekannter `mode` ⇒ Exit 2); ohne `trace.cross-consistency`-Block RTM byte-identisch (`DC-QA-02`/`DC-QA-03`). Bereich `XREF` in §3; additive Erweiterung des `--trace`-Laufs (`DC-FA-CLI-009`) **ohne** RTM-Änderung (separate advisory Befunde, keine RTM-Spalte); `DC-FA-XREF-001.a` + Schema-Keys (`trace.cross-consistency.*`) in der Spezifikation; Implementierung, Realdatenbeleg und Release folgen in `slice-071`. Anlass: Konsument grid-gym (Trigger 088) — §27.1 nannte {GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN}, die `Bezug`-Rück-Kanten {GG-AR-P-005, GG-AR-P-009, GG-AR-COMP-SCHED}, Schnittmenge null, von keinem Gate bemerkt | slice-071 |
 | 0.43.0 | 2026-07-14 | Change Request (Auftraggeber): neue Anforderung `DC-FA-REQ-001` — **native tabellarische Anforderungsquellen + Nullmengen-Guard** für die RTM. `trace.requirements.format: table` liest Markdown-Pipe-Tabellen über konfigurierte Header-Namen (`table.id-column`, genau eine von `table.text-column`/`.text-columns`, optional `.modality-column`); die ID-Zelle muss als Ganzes auf `id-pattern` passen, die gebundene Textzelle liefert RTM-Titel/Body, eine gesetzte Modalitätsspalte ist die alleinige Keyword-Quelle für `DC-FA-MOD-001`. `table.duplicate-ids` ist `error` (Default), `first` oder `last`. Beide Formate münden in dasselbe RTM-Modell. **Fail-closed:** nichtleer explizite `requirements.source` oder Tabellenmodus mit null erkannten Anforderungen sowie unbekanntes Format/fehlende oder doppelte konfigurierte Spalten ⇒ Exit 2 (auch mit `--require-complete`) statt irreführendem `0 Anforderungen, 0 Waisen`/Exit 0. `source: ""` gilt wie abwesend. Ohne `trace`-Block bleibt der Heading-Default samt Deduplizierung/leerer RTM/Exit 0 byte-identisch (`DC-QA-02`/`DC-QA-03`). Mit-Modifikation `DC-FA-CLI-009`; Bereich `REQ` in §3; Spezifikation, ADR, Implementierung, Realdatenbeleg und Release folgen in `slice-070`. Anlass: reproduzierter Konsumentenbefund `m-trace` mit d-check v0.42.0 — 371 eindeutige IDs in Tabellen mit den Text-Headern `Anforderung`/`Akzeptanzkriterium`, explizite Quelle und passende Regex ergaben null Anforderungen bei Exit 0 | slice-070 |

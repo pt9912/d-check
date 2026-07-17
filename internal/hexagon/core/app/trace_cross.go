@@ -308,12 +308,12 @@ func excludeReqs(view crossView, exclude *regexp.Regexp) crossView {
 func crossVacuity(fwd, bwd crossView, cc *model.TraceCrossConsistency) error {
 	if len(fwd) == 0 && len(bwd) == 0 {
 		return fmt.Errorf("trace.cross-consistency: beide Sichten ergaben 0 Kanten — der Abgleich verglich nichts; %s",
-			vacuityHint(cc, crossForwardField+".design-pattern trifft den Artefakt-Namensraum beider Sichten"))
+			vacuityHint(cc, crossForwardField+".design-pattern den Artefakt-Namensraum beider Sichten trifft"))
 	}
 	if len(bwd) == 0 && cc.Mode == model.TraceCrossModeSuperset {
 		return fmt.Errorf("trace.cross-consistency: die Rück-Sicht ergab 0 Kanten und mode: superset gatet allein "+
 			"B \\ F — der Abgleich könnte nie eine Differenz melden; %s",
-			vacuityHint(cc, crossBackwardField+".edge-column/req-pattern treffen die Rück-Kanten"))
+			vacuityHint(cc, crossBackwardField+".edge-column/req-pattern die Rück-Kanten treffen"))
 	}
 	return nil
 }

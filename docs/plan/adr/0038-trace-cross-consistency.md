@@ -63,7 +63,10 @@ read-only — sie passt in das `--trace`/`--require-complete`-Idiom
 
 5. **Ableitungssprünge per `exclude-req` (RE2)** als benanntes Ventil (kuratierte
    Kante mit eigener Drift-Gefahr, wie `matrix.exclude-sections`) — **kein**
-   gelöstes Problem.
+   gelöstes Problem. *(Nachtrag 2026-07-17: sein **Totalfall** ist inzwischen
+   geguardet — ein Ventil, das alle Anforderungen verschluckt, ist Vakuum, siehe
+   Entscheidung 8. Die Drift-Gefahr der **Teil**-Ausschlüsse bleibt unverändert
+   ungelöst.)*
 
 6. **Eine Pattern-Syntax (RE2), fail-closed, ohne Block byte-identisch.** Der
    Abgleich gatet über das **globale** `--require-complete`
@@ -100,6 +103,22 @@ read-only — sie passt in das `--trace`/`--require-complete`-Idiom
    Sicht, sondern der **Vergleich** — geguardet wird, was nie einen Befund liefern
    kann. Dieselbe Lehre („fail-closed statt irreführender Nullmenge"), enger
    gefasster Auslöser.
+   **Der Guard fasst die Wirkung, nicht die Ursache** (Nachtrag 2026-07-17): er
+   wird **nach** dem `exclude-req`-Ausschluss (Entscheidung 5) gemessen, denn
+   maßgeblich ist, was am Ende tatsächlich verglichen wird. Ein Ventil, das alle
+   Anforderungen verschluckt, schaltet das Gate ebenso still ab wie ein
+   fehlgreifendes Muster — es ist selbst eine kuratierte, drift-fähige Kante, und
+   der normative Satz oben („geguardet wird, was konstruktionsbedingt nie einen
+   Befund liefern kann") trägt beide Ursachen. Eine Ursachen**liste** risse bei der
+   nächsten unbekannten Ursache erneut; die Wirkungs-Fassung nicht. Weil
+   `exclude-req` dasselbe Prädikat auf **beide** Sichten anwendet, heißt
+   post-Ausschluss-Leere „jede vergleichbare Anforderung ist ausgenommen" — und
+   „hier nicht prüfen" wird korrekt ausgedrückt, indem man den opt-in Block
+   **weglässt**, nicht indem man ihn konfiguriert und leerräumt.
+   *Provenienz:* das unabhängige Closure-Review (R3) las die schweigende
+   Fehlerpräzedenz als „prä-Ausschluss gemeint" und neigte dazu; die Auflösung
+   gegen diese Neigung fiel zugunsten der Wirkungs-Fassung — R4 bestätigte sie und
+   revidierte die eigene Lesart. Vertrag nachgezogen als Lastenheft-CR 0.44.2.
 
 ### Verglichene Alternativen
 
@@ -156,4 +175,5 @@ read-only — sie passt in das `--trace`/`--require-complete`-Idiom
 | Datum | Ereignis |
 |---|---|
 | 2026-07-16 | Proposed. Change Request grid-gym (Trigger 088, ADR 0080 §4.4 iii), v2 nach Design-Review; Ziel-Architektur „Gate jetzt, Generator später" gegen grid-gyms reale Quellen bestätigt. Umsetzender Slice slice-071. |
+| 2026-07-17 | Entscheidung 8 auf die **Wirkungs-Fassung** gezogen (Messung nach dem `exclude-req`-Ausschluss) + Entscheidung 5 um den geguardeten Totalfall annotiert; Status weiterhin `Proposed`. Anlass: Review R3 reproduzierte, dass `exclude-req: '.'` das Gate bei realem Drift still abschaltete — dieselbe Silent-Green-Klasse, andere Ursache. Vertrag nachgezogen als Lastenheft-CR 0.44.2. |
 | 2026-07-17 | Entscheidung 8 (Vakuität) nachgetragen, Status weiterhin `Proposed`. Anlass: unabhängiges Closure-Review zu slice-071 — R1 reproduzierte, dass die nur *beschriebene* Namensraum-Vorbedingung ein stilles Grün zuließ (HIGH); R2 wies den ersten, symmetrisch je Sicht feuernden Fix als vertragswidrig nach (er brach den Bootstrap-Zustand aus Entscheidung 3). Vertrag nachgezogen als Lastenheft-CR 0.44.1 ([`DC-FA-XREF-001`](../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)) + [`DC-FA-XREF-001.a`](../../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) Schritt 5. |

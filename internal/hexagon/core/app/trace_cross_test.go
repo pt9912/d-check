@@ -321,6 +321,12 @@ func TestCrossConsistencyVakuumBeideSichtenLeer(t *testing.T) {
 	if strings.Contains(err.Error(), "exclude-req") {
 		t.Fatalf("Diagnose nennt ein gar nicht gesetztes Ventil: %v", err)
 	}
+	// Der Hint muss auf DIESE Ursache zeigen (design-pattern), nicht auf die der
+	// anderen Vakuum-Art — sonst wären die Hints vertauschbar, ohne dass ein Test
+	// kippt, und die Meldung schickte in die falsche Config-Ecke.
+	if !strings.Contains(err.Error(), "design-pattern") || strings.Contains(err.Error(), "edge-column") {
+		t.Fatalf("Hint zeigt nicht auf das design-pattern: %v", err)
+	}
 }
 
 // Vakuum b (DC-FA-XREF-001.a Schritt 5): unter `superset` gatet allein B\F — eine
@@ -340,6 +346,11 @@ func TestCrossConsistencyVakuumRueckSichtLeerUnterSuperset(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "Rück-Sicht ergab 0 Kanten") {
 		t.Fatalf("Fehlertext benennt die leere Rück-Sicht nicht: %v", err)
+	}
+	// Gegenstück zur Hint-Pinnung oben: hier muss die Rück-Kanten-Config genannt
+	// sein, nicht das design-pattern.
+	if !strings.Contains(err.Error(), "edge-column") || strings.Contains(err.Error(), "design-pattern") {
+		t.Fatalf("Hint zeigt nicht auf die Rück-Kanten-Config: %v", err)
 	}
 	// Gegenprobe: unter `equal` ist derselbe Stand KEIN Vakuum — F\B gatet und
 	// meldet laut. Ohne diese Zeile wäre der mode-Zweig oben nicht belegt.
