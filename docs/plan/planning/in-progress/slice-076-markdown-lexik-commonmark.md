@@ -1,6 +1,11 @@
 # Slice slice-076: Markdown-Lexik an CommonMark/GFM angleichen (Trennzeile + Fence-Infozeile)
 
-**Status:** next (Backlog, auf Aufnahme in eine Welle wartend).
+**Status:** in-progress (welle-60-trace-cross-consistency).
+
+**Welle:** aktiv (welle-60). Läuft **neben** slice-073/slice-071, blockiert
+keinen von beiden: der Defekt trifft denselben geteilten Reader und dieselbe
+Vorverarbeitung, ist aber unabhängig — er wurde bei der Rücknahme von slice-074
+gefunden, nicht von ihr verursacht.
 
 **Bezug:** **Defekt-Fix**, **kein Change Request**: das Lastenheft sagt weder, was
 eine Trennzeile ist, noch was einen Fence öffnet — beides ist

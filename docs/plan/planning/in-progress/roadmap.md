@@ -19,6 +19,16 @@ eigener Linkpflicht kollidiert. **Ausgelieferter Defekt seit v0.41.0**
 **vorrangig** — er trifft Bestandskonsumenten und blockiert zugleich, über den
 geteilten Parser, den Realdatenbeleg von slice-071.
 
+[`slice-076`](slice-076-markdown-lexik-commonmark.md) — Markdown-Lexik an
+CommonMark/GFM angleichen: die Trennzelle verlangt drei Bindestriche statt einem
+(GFM), und eine `` ``` ``-Zeile mit Backtick in der Infozeile öffnet fälschlich
+einen Fence und blendet **alle** Module bis zum Dateiende. Beides **ausgeliefert
+und still**; belegt per Differential gegen goldmark v1.8.4 über 522 reale Dateien
+(490 Tabellen ⇒ 8 Abweichungen, alle „d-check ist blind"). Defekt-Fix, kein CR,
+aber **SemVer-Minor** — d-check findet danach **mehr**
+([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md)). Unabhängig von
+slice-073/slice-071, blockiert keinen von beiden.
+
 [`slice-071`](slice-071-trace-cross-consistency-gate.md) — der
 `--trace`-Lauf vergleicht opt-in die Vorwärts-RTM-Tabelle (Anforderung → Design)
 gegen die Rückwärts-`Bezug`-Kanten (Design → Anforderung) und meldet je
@@ -53,11 +63,7 @@ null, von keinem Gate bemerkt.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:**
-[`slice-076`](../next/slice-076-markdown-lexik-commonmark.md) —
-Markdown-Lexik an CommonMark/GFM angleichen
-([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) Proposed;
-Defekt-Fix, kein CR, aber **SemVer-Minor** — d-check findet danach **mehr**).
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
 
 **Im Eingang (`open/`), auf Wellen-Einplanung wartend:**
 [`slice-074`](../open/slice-074-kommentar-suffix-tabellenzeilen.md) —
