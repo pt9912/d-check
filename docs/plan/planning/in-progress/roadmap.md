@@ -8,15 +8,36 @@
 
 ## Aktuelle Welle
 
-Keine aktive Welle.
+**Welle-ID:** welle-60-trace-cross-consistency
+
+**Slice:** [`slice-071`](slice-071-trace-cross-consistency-gate.md) — der
+`--trace`-Lauf vergleicht opt-in die Vorwärts-RTM-Tabelle (Anforderung → Design)
+gegen die Rückwärts-`Bezug`-Kanten (Design → Anforderung) und meldet je
+Anforderung beide Mengendifferenzen. Vertrag:
+[`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)
+(Lastenheft 0.44.0) und [ADR-0038](../../adr/0038-trace-cross-consistency.md).
+
+**Vorgänger-Trigger:** welle-59-trace-tabellenquellen ist abgeschlossen
+([`slice-070`](../done/slice-070-trace-tabellenquellen-nullmengen-guard.md) in
+`done/`, v0.43.1 veröffentlicht); kein anderer Slice liegt in `in-progress/`.
+
+**Trigger:** Auftraggeber-Befund grid-gym (Trigger 088) — die §27.1-Vorwärts-Zeile
+einer Architektur-Anforderung und ihre `Bezug`-Rück-Kanten hatten Schnittmenge
+null, von keinem Gate bemerkt.
+
+**Closure-Trigger:**
+
+- Beide Richtungsdifferenzen, `superset`, range-aware Expansion und das
+  `exclude-req`-Ventil sind als Akzeptanztests verriegelt; der Default ohne
+  `trace.cross-consistency`-Block ist byte-identisch belegt.
+- Der reale grid-gym-Drift wird geflaggt, die Mittelschicht-Familien nicht.
+- [ADR-0038](../../adr/0038-trace-cross-consistency.md) ist `Accepted`;
+  unabhängiger, kontext-getrennter Closure-Review liegt vor.
+- `make gates` und `make ci` grün, Release samt GHCR-Digest-Backfill dokumentiert.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** slice-071 —
-Trace-Kreuzverweis-Konsistenz-Gate
-([`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in),
-[ADR-0038](../../adr/0038-trace-cross-consistency.md) Proposed); Rückkanten-Vertrag
-gegen grid-gyms reale Quellen geerdet, Generator als spätere CR sequenziert.
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
 
 **Im Eingang (`open/`), doc-first-Vertrag committed, auf Wellen-Einplanung
 wartend:** derzeit keiner.
