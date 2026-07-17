@@ -8,21 +8,22 @@
 
 ## Aktuelle Welle
 
-**Welle-ID:** welle-60-trace-cross-consistency
+**Keine aktive Welle.** welle-60-trace-cross-consistency ist **nicht
+abgeschlossen**, hat aber gerade **keinen Slice in Arbeit**: slice-075 ist fertig
+und reviewt (`done/`; Tag v0.46.0 steht aus), der WIP-Slot ist frei (Modul 5,
+WIP-Limit = 1). **Nächster Zug:** slice-076 aus `next/` in Arbeit nehmen, oder
+slice-071 entblocken (hängt an slice-074).
 
-**Slices** (WIP-Limit = 1, Modul 5 — **genau einer in Arbeit**):
-[`slice-075`](slice-075-komma-kurzform-fail-closed.md) **in Arbeit** —
-Komma-Kurzform fail-closed: `GG-SCN-001, 007` ließ `007` **still** fallen und
-verfälschte produktiv verdrahtetes `trace.coverage`; künftig Exit 2 mit
-Notations-Hinweis (Change Request, [ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md),
-Lastenheft 0.46.0, SemVer-Minor). ·
+**Stand von welle-60** (pausiert, nicht abgeschlossen):
+[`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) **done**
+(v0.45.1, R2 ACCEPT-WITH-NITS). ·
+[`slice-075`](../done/slice-075-komma-kurzform-fail-closed.md) **done**
+(Komma-Kurzform fail-closed, R1 ACCEPT-WITH-NITS; Tag v0.46.0 ausstehend). ·
 [`slice-076`](../next/slice-076-markdown-lexik-commonmark.md) in `next/`, wartet
 auf den WIP-Slot. · [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md)
 in `open/`, **blockiert** (Realdatenbeleg hängt an slice-074);
 [`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in),
-Code und Reviews liegen vor, v0.44.0/v0.45.0 sind getaggt. ·
-[`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) in `done/`
-(v0.45.1, R2 ACCEPT-WITH-NITS).
+Code und Reviews liegen vor, v0.44.0/v0.45.0 sind getaggt.
 
 **Vorgänger-Trigger:** welle-59-trace-tabellenquellen abgeschlossen
 ([`slice-070`](../done/slice-070-trace-tabellenquellen-nullmengen-guard.md) in
