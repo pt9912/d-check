@@ -59,8 +59,6 @@ null, von keinem Gate bemerkt.
 
 **Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
-
 **Im Eingang (`open/`), auf Wellen-Einplanung wartend:** slice-075 —
 Komma-Kurzform fail-closed
 ([ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) Proposed; **Change

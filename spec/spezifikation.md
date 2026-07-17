@@ -377,7 +377,7 @@ Ablauf formatunabhängig.
    auch in GFM); er wird **nicht** entfernt. d-checks Direktiven-Konvention
    (`<!-- d-check:ignore (…) -->`) steht in einer Tabellenzeile hinter der letzten
    Pipe — in einer Zelle wäre sie Inhalt. Die Nachsicht ist nach **Zeilenart**
-   getrennt (Schritte 3a/5), nicht im Splitter: er entfernt nie etwas.
+   getrennt (Schritte 4/5), nicht im Splitter: er entfernt nie etwas.
 4. **Header-Bindung.** `table.id-column` und genau eine von
    `table.text-column` (ein Name) oder `table.text-columns` (nichtleere,
    duplikatfreie Liste alternativer Namen) sind Pflicht;
@@ -401,6 +401,10 @@ Ablauf formatunabhängig.
    eine Spalte — N+1 gegen eine N+1-Trennzeile wird regulär erkannt, und die
    Extra-Spalte bindet an keine Rolle. Eine Nachsichts-Regel im Splitter wäre eine
    **Body-Regel am Header** und ließe die Tabelle still verschwinden.
+   **Die Nachsicht endet an der Tabellengrenze:** eine Zeile, der eine passende
+   Trennzeile folgt, ist der Header einer **neuen** Tabelle und wird nie als
+   Datenzeile der laufenden toleriert — sonst verschwänden die Anforderungen der
+   Folgetabelle lautlos.
    Nur wenn die getrimmte ID-Zelle als Ganzes auf `id-pattern` passt, definiert
    sie eine Anforderung; andere Datenzeilen werden ignoriert. Titel = Inhalt der
    in dieser Tabelle gebundenen Textspalte. `modalityText` = Inhalt von

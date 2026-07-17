@@ -656,3 +656,52 @@ func TestTraceTableEchterZellenbruchBleibtLaut(t *testing.T) {
 		t.Fatal("echter Zellenbruch muss fail-closed bleiben")
 	}
 }
+
+// slice-074 R2-F-1: die Direktiven-Toleranz darf den Header einer FOLGE-Tabelle
+// nicht als Datenzeile fressen. Ohne die Grenze verschwanden dessen Anforderungen
+// lautlos (Exit 2 ⇒ Exit 0) — laut wurde still, zum dritten Mal in dieser Region.
+// Die Vortabelle ist bewusst irrelevant: sonst maskierte ihr Zellenzahl-Fehler
+// den Verlust, und der foundTable-Guard maskierte ihn ebenfalls.
+func TestTraceTableFolgeHeaderWirdNichtGefressen(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"spec/lastenheft.md": "# L\n\n" +
+			"| Kennung | Anforderung |\n|---|---|\n| F-1 | Gedeckt. |\n\n" +
+			"| Notiz | Wert |\n|---|---|\n| irrelevant | x |\n" +
+			"| Kennung | Anforderung | <!-- d-check:ignore (x) --> |\n|---|---|---|\n" +
+			"| F-2 | Waise eins. |\n",
+	})
+	cfg := model.TraceConfig{
+		Source: "spec/lastenheft.md", Format: model.TraceFormatTable,
+		ReqPattern: regexp.MustCompile(`F-[0-9]+`),
+		Table:      &model.TraceTableConfig{IDColumn: "Kennung", TextColumns: []string{"Anforderung"}, DuplicateIDs: model.TraceDuplicateError},
+	}
+	// Die Folgetabelle wird erkannt; ihre N-Datenzeilen passen nicht zum
+	// N+1-Header ⇒ LAUT (Exit 2). Entscheidend ist: nicht still verschwinden.
+	if _, err := BuildTraceMatrix(fs, cfg); err == nil {
+		t.Fatal("Folge-Header wurde gefressen — die Tabelle verschwand lautlos")
+	}
+}
+
+// slice-074 R2-LOW: der grid-gym-Realfall auf Konsumenten-Ebene für
+// `format: table` — eine Datenzeile mit Direktive wird gelesen wie ohne.
+func TestTraceTableDatenzeileMitDirektive(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"spec/lastenheft.md": "# L\n\n| Kennung | Anforderung |\n|---|---|\n" +
+			"| F-1 | Normal. |\n| F-2 | Mit Marker. | <!-- d-check:ignore (geplant) -->\n",
+	})
+	cfg := model.TraceConfig{
+		Source: "spec/lastenheft.md", Format: model.TraceFormatTable,
+		ReqPattern: regexp.MustCompile(`F-[0-9]+`),
+		Table:      &model.TraceTableConfig{IDColumn: "Kennung", TextColumns: []string{"Anforderung"}, DuplicateIDs: model.TraceDuplicateError},
+	}
+	m, err := BuildTraceMatrix(fs, cfg)
+	if err != nil {
+		t.Fatalf("Datenzeile mit Direktive unlesbar: %v", err)
+	}
+	if m.Total != 2 {
+		t.Fatalf("%d Anforderungen, want 2 — die Marker-Zeile fiel weg", m.Total)
+	}
+	if m.Requirements[1].Title != "Mit Marker." {
+		t.Fatalf("Titel falsch gebunden: %q", m.Requirements[1].Title)
+	}
+}

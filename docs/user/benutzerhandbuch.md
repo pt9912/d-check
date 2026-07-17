@@ -1241,6 +1241,12 @@ Alles andere bleibt Exit 2: zwei überzählige Zellen, eine überzählige
 Nicht-Kommentar-Zelle, eine fehlende Zelle. (Bis v0.45.1 brach **jede**
 Tabellenzeile mit Marker den Reader — die eigene Konvention machte ihn blind.)
 
+Eine Grenze, die Sie kennen sollten: Trägt ein **Header** den Marker, aber die
+Trennzeile hat die Spalte **nicht**, ist das für d-check wie für jeden Renderer
+keine gültige Tabelle — sie wird übersprungen, und zwar **ohne Meldung**. Lassen
+Sie zwischen zwei Tabellen eine Leerzeile und halten Sie Header und Trennzeile
+gleich breit; dann kann Ihnen das nicht passieren.
+
 Eine **nichtleer explizite** `requirements.source` oder `format: table`
 aktiviert den Nullmengen-Guard: Fehlt die Quelldatei oder werden darin null
 Anforderungen erkannt, endet `--trace` mit Exit 2 vor jeder RTM-Ausgabe.

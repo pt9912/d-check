@@ -156,6 +156,16 @@ func consumeTableRows(lines []markdownTableLine, start int, mask []bool, t *mdTa
 		if !row {
 			return j
 		}
+		if isNewTableHeader(lines, j) {
+			// Eine Zeile, der eine passende Trennzeile folgt, ist der Header einer
+			// NEUEN Tabelle — keine tolerierbare Datenzeile der laufenden. Ohne
+			// diese Grenze fräße die Direktiven-Toleranz den Header der Folgetabelle
+			// (N+1 mit Kommentar-Zelle sieht wie eine tolerierbare Datenzeile aus),
+			// und deren Anforderungen verschwänden LAUTLOS (Review R2-F-1:
+			// v0.45.1 Exit 2 ⇒ Exit 0). Nur die Toleranz braucht diesen Blick
+			// voraus; ohne sie beendete die Zellenzahl die Tabelle ohnehin hier.
+			return j
+		}
 		if !cellCountOK(cells, t.header) {
 			t.badLine, t.badCells = lines[j].no, len(cells)
 			return j
@@ -163,6 +173,16 @@ func consumeTableRows(lines []markdownTableLine, start int, mask []bool, t *mdTa
 		t.rows = append(t.rows, mdTableRow{cells: cells, line: lines[j].no})
 	}
 	return len(lines)
+}
+
+// isNewTableHeader sagt, ob an Zeile j eine neue Tabelle beginnt (Header +
+// passende Trennzeile). Grenze der Direktiven-Toleranz: siehe consumeTableRows.
+func isNewTableHeader(lines []markdownTableLine, j int) bool {
+	if j+1 >= len(lines) {
+		return false
+	}
+	_, ok := tableHeaderAt(lines, j)
+	return ok
 }
 
 // cellCountOK entscheidet, ob eine **Daten**zeile zur Tabelle passt

@@ -73,10 +73,19 @@ Achse. Es gab keine durchgehende Regel.
    Anforderungen verschwanden (Exit 1 ⇒ Exit 0). `splitPipeTableLine` bleibt ein
    **reiner** Splitter und entfernt nichts.
 
-3. **Nichts wird gestrippt, nur toleriert.** Damit ist ein stiller Übersprung
-   **strukturell unmöglich**, nicht bloß behoben: keine Zeilenart verliert Zellen,
-   und die einzige Nachsicht ist explizit auf eine Kommentar-Zelle in einer
-   Datenzeile begrenzt.
+3. **Nichts wird gestrippt, nur toleriert** — keine Zeilenart verliert Zellen, und
+   die Nachsicht ist auf eine Kommentar-Zelle in einer Datenzeile begrenzt.
+   **Die Toleranz endet am nächsten Tabellen-Header.** Eine Zeile, der eine
+   passende Trennzeile folgt, ist der Header einer **neuen** Tabelle und keine
+   tolerierbare Datenzeile der laufenden. Ohne diese Grenze fräße die Toleranz
+   einen Direktiven-Header der Folgetabelle (N+1 mit Kommentar-Zelle sieht wie eine
+   tolerierbare Datenzeile aus) und dessen Anforderungen verschwänden **lautlos**
+   (Review R2-F-1: Exit 2 ⇒ Exit 0).
+   *Zur Reichweite, ehrlich:* Die erste Neufassung behauptete, der stille
+   Übersprung sei „strukturell unmöglich". Das war eine **Universal-Zusage ohne
+   Beweis** — R2 hat sie an genau diesem Pfad falsifiziert. Die Zusage lautet jetzt
+   enger und prüfbar: **keine Zeilenart verliert Zellen, und die Toleranz greift
+   nie über eine Tabellengrenze**; beide Grenzen sind per Mutation gepinnt.
 
 4. **Kein Lastenheft-Change-Request.** Das Lastenheft definiert die Zellenzahl
    nicht; „was eine Zelle ist" ist Spezifikations-Sache (Rang 2, fortschreibbar).
@@ -105,6 +114,9 @@ Achse. Es gab keine durchgehende Regel.
   lesbar — keine Regression gegenüber v0.45.1.
 - Eine echt verrutschte Zeile (Zelle zu viel/zu wenig, **kein** Kommentar) bleibt
   Exit 2 — der Guard ist nicht aufgeweicht.
+- Folgt der laufenden Tabelle **ohne Leerzeile** eine neue mit Direktiven-Header,
+  wird deren Header **nicht** als Datenzeile toleriert; das Verhalten ist
+  byte-identisch zu v0.45.1 (laut, nicht still).
 - Der Realdatenlauf gegen grid-gyms `spec/architecture.md` läuft durch, statt an
   Zeile 913 (einer **Daten**zeile) abzubrechen.
 
@@ -132,5 +144,6 @@ Achse. Es gab keine durchgehende Regel.
 
 | Datum | Ereignis |
 |---|---|
+| 2026-07-17 | Toleranz um die **Tabellengrenze** verengt (`isNewTableHeader`) und die Reichweiten-Zusage korrigiert. Anlass: Review R2 (BLOCK) — die Neufassung behauptete „stiller Übersprung strukturell unmöglich"; R2 falsifizierte das: die Toleranz fraß den Direktiven-Header einer unmittelbar folgenden Tabelle, deren Anforderungen verschwanden lautlos (Exit 2 ⇒ Exit 0). Der angebotene Ausweg „ehrliche Reichweiten-Angabe statt Code-Verengung" wurde **verworfen**: eine Zusage zu entschärfen, damit ein stiller Verlust hineinpasst, ist die Bewegung, gegen die dieses Werkzeug gebaut ist. Verhalten jetzt byte-identisch zu v0.45.1 an allen geprüften Achsen. |
 | 2026-07-17 | **Prämisse verworfen und Entscheid neu gefasst**, Status weiterhin `Proposed`. Anlass: unabhängiger Review VOR dem Release (BLOCK, HIGH). Die erste Fassung („Kommentar ist ein Suffix, keine Zelle") war sachlich falsch — in GFM ist er eine Zelle, N+1 gegen N+1-Trennzeile ist die einzige renderbare Header-Form. Sie strippte deshalb im Splitter, wandte damit eine Body-Regel auf den Header an, ließ dessen Zellenzahl unter die Trennzeile fallen und übersprang die Tabelle **wortlos**: echte Waisen verschwanden, Exit 1 wurde Exit 0 — der eigene Satz „Kein Lauf wird stiller" war widerlegt. Neu: Header GFM-streng (unberührt), Datenzeilen verengt nachsichtig, Regel dort wo der Header-Kontext bekannt ist. Kein Strippen, nur Tolerieren — der stille Übersprung ist damit strukturell unmöglich statt behoben. |
 | 2026-07-17 | Proposed. Anlass: Realdatenlauf gegen grid-gym (der von [ADR-0038](0038-trace-cross-consistency.md) Entscheidung 7 geforderte Beleg) — v0.45.1 brach an einer realen `architecture.md`-Zeile ab, die d-checks eigenen Ignore-Marker trägt. Dritter Defekt, den erst die Realdaten zeigten; die ersten beiden lagen in den Mustern, dieser in der Grammatik. Umsetzender Slice slice-074. |

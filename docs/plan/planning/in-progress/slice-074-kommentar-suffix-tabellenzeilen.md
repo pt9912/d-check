@@ -49,19 +49,25 @@ einer Zelle — und lässt den Zellenzahl-Guard sonst unangetastet.
   Schritt 3, inkl. der negativen Abgrenzung (Kommentar in der Zelle) + Historie.
 - [x] **ADR + Index:** [ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md),
   Status Proposed, im Index.
-- [ ] **Implementierung:** im geteilten Zeilen-Splitter, vor dem Zellen-Zählen —
-  Header-, Trenn- und Datenzeilen gleichermaßen.
-- [ ] **Tests (positiv):** Zeile mit `<!-- d-check:ignore (…) -->` wird gelesen wie
+- [x] **Implementierung:** **nicht** im Splitter (der kennt Header ≠ Datenzeile
+  nicht — die erste Fassung wandte dadurch eine Body-Regel auf den Header an und
+  ließ Tabellen lautlos verschwinden, Review R1-F-1). Stattdessen `cellCountOK` in
+  der Zeilen-Schleife, wo der Header-Kontext bekannt ist: **nichts strippen, nur
+  tolerieren**; Grenze am nächsten Tabellen-Header (R2-F-1).
+- [x] **Tests (positiv):** Zeile mit `<!-- d-check:ignore (…) -->` wird gelesen wie
   ohne Marker — je einmal für `trace.requirements.format: table` und
   `trace.cross-consistency`, auf **Konsumenten-Ebene** (nicht nur am Splitter).
-- [ ] **Tests (negativ):** echt verrutschte Zeile ohne Kommentar bleibt Exit 2;
-  Kommentar **in** einer Zelle bleibt Zellinhalt; zwei Trailing-Kommentare
-  expandieren nicht still.
+- [x] **Tests (negativ):** echt verrutschte Zeile ohne Kommentar bleibt Exit 2;
+  Kommentar **in** einer Zelle bleibt Zellinhalt; zwei Kommentare in einer Zelle
+  werden nicht toleriert; Header mit Direktive wird erkannt (R1-F-1);
+  Folge-Header wird nicht gefressen (R2-F-1).
 - [ ] **Mutations-Härte:** Suffix-Abstreifung entfernt kippt genau einen Test; die
   „nur am Ende"-Grenze ebenso.
-- [ ] **Realdatenbeleg:** der Lauf gegen grid-gyms echte `spec/architecture.md`
-  bricht nicht mehr an Zeile 913 ab.
-- [ ] **Nutzerdoku:** Handbuch (§5 Tabellen-Grammatik) + CHANGELOG (Fixed).
+- [x] **Realdatenbeleg:** der Lauf gegen grid-gyms echte `spec/architecture.md`
+  bricht nicht mehr an Zeile 913 ab (174 Differenzen statt Exit 2).
+- [x] **Nutzerdoku:** Handbuch §5 (Referenz, vollständige Regel) + §4.12 nur
+  korrigiert (sein Grammatik-Block ist als B-3 im Handbuch-Audit erfasst).
+  CHANGELOG folgt mit dem Release-Prep.
 - [ ] **Release:** v0.45.2, Release-Prep + Tag + GHCR + Digest-Backfill.
 - [ ] **Qualität:** unabhängiger, kontext-getrennter Review **vor** dem Release
   (die slice-073-Lehre: ein Fix, der Befunde entfernen kann, verdient ihn zuerst);
@@ -79,10 +85,16 @@ einer Zelle — und lässt den Zellenzahl-Guard sonst unangetastet.
   Trailing-Marker und konnte den Defekt daher an sich selbst nicht bemerken —
   dieselbe Klasse wie die Range-Notation (slice-073 §4). Offener Punkt: ob die
   Reader-Grammatik einen Konsumenten-nahen Fixture-Anker braucht.
-- **Der Guard ist jetzt zweimal aufgeweicht worden** (Link-Suffix, Kommentar-Suffix),
-  beide Male begründet und eng. Ein drittes Mal wäre ein Signal, dass die
-  „lexikalischer Splitter"-Annahme selbst falsch ist und der Reader einen echten
-  Markdown-Parser braucht — das wäre eine eigene, große Entscheidung.
+- **Die Diagnose „der lexikalische Splitter ist die falsche Abstraktion" war
+  falsch** (Auftraggeber-Analyse, bestätigt): ein echter GFM-Parser gäbe für
+  `| a | b | <!-- x -->` **N+1** Zellen zurück — in GFM **ist** der Kommentar eine
+  Zelle — und ließe die Frage, wo die Direktive legal wohnt, exakt so offen. Die
+  Klasse ist nicht der Lexer, sondern dass **keine durchgehende Regel** existierte:
+  d-check will zugleich GFM-nachsichtig und fail-closed sein, und jeder Patch
+  wählte für einen anderen Codepfad einen anderen Punkt auf dieser Achse.
+  `dropCommentSuffix` im Splitter war das in Reinform — eine Body-Regel am Header.
+  Die Regel lautet jetzt durchgehend: **Header GFM-streng, Datenzeilen
+  GFM-nachsichtig aber verengt, Regel dort wo der Header-Kontext bekannt ist.**
 
 ## 5. Trigger
 
