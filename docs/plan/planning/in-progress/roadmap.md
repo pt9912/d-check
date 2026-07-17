@@ -10,10 +10,12 @@
 
 **Welle-ID:** welle-60-trace-cross-consistency
 
-**Slices** (WIP-Limit = 1, Modul 5 — **genau einer in Arbeit**):
-[`slice-073`](slice-073-link-transparente-range-fortsetzung.md) **in Arbeit** —
-link-transparente Range-Fortsetzung; Code ausgeliefert (v0.44.1, nachgebessert in
-v0.45.1), offen sind vier von fünf R1-Befunden und der bestätigende Review. ·
+**Slices** (WIP-Limit = 1, Modul 5 — **genau einer in Arbeit**): **derzeit keiner
+in Arbeit; der WIP-Slot ist frei.** Nächster Zug: slice-075 einplanen
+(`open`→`next`→`in-progress`, Vorrang, s. u.).
+[`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) —
+link-transparente Range-Fortsetzung — ist **abgeschlossen** (`done/`, v0.45.1;
+R2 ACCEPT-WITH-NITS, R2-F-1 durch einen Cross-Test geschlossen). ·
 [`slice-076`](../next/slice-076-markdown-lexik-commonmark.md) in `next/` — wartet
 auf den WIP-Slot. · [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md)
 in `open/` — **blockiert** (Realdatenbeleg hängt an slice-074);
@@ -37,8 +39,9 @@ null, von keinem Gate bemerkt.
   **Offen:** der von [ADR-0038](../../adr/0038-trace-cross-consistency.md)
   Entscheidung 7 geforderte Realdatenbeleg bricht an grid-gyms
   `architecture.md:913` weiter mit Exit 2 ab — er hängt an slice-074.
-- Eine verlinkte Range expandiert wie die unverlinkte (slice-073); der
-  ausgelieferte `trace.coverage`-Falschbefund ist weg und als Patch veröffentlicht.
+- **[erfüllt]** Eine verlinkte Range expandiert wie die unverlinkte (slice-073);
+  der ausgelieferte `trace.coverage`-Falschbefund ist weg und als Patch (v0.44.1,
+  klammer-balanciert nachgebessert in v0.45.1) veröffentlicht. slice-073 in `done/`.
 - Die zwei Lexik-Regeln aus slice-076 sind per Mutation gepinnt und als Minor
   veröffentlicht.
 - [ADR-0038](../../adr/0038-trace-cross-consistency.md),

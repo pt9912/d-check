@@ -5,7 +5,7 @@
 (adversarial, nicht bestätigend). **Nachgeholt** — der Gegenstand ist bereits
 als **v0.45.1** veröffentlicht. Zweite Runde nach dem R1-REJECT (F-1…F-5).
 **Gegenstand:**
-[`slice-073`](../plan/planning/in-progress/slice-073-link-transparente-range-fortsetzung.md) —
+[`slice-073`](../plan/planning/done/slice-073-link-transparente-range-fortsetzung.md) —
 Range `2954e4d` (feat: Range-Fortsetzung link-transparent) + `6925987`
 (fix: Link-Ziel klammer-balanciert; zugleich v0.45.1-Tag-Commit). HEAD `e4880ee`;
 seit v0.45.1 hat nur die Rücknahme von slice-074 `trace_table.go` angefasst, **nicht**

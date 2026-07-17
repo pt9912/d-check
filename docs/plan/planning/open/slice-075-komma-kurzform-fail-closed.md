@@ -19,7 +19,7 @@ Algorithmus in
 Schritt 3; begründende Entscheidung
 [ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) (Proposed).
 **SemVer-Minor** — Vertrags-Zuwachs, anders als die Defekt-Fixes
-[slice-073](../in-progress/slice-073-link-transparente-range-fortsetzung.md)/[slice-074](slice-074-kommentar-suffix-tabellenzeilen.md).
+[slice-073](../done/slice-073-link-transparente-range-fortsetzung.md)/[slice-074](slice-074-kommentar-suffix-tabellenzeilen.md).
 
 **Autor:** pt9912. **Datum:** 2026-07-17.
 

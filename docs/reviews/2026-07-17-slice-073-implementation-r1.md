@@ -5,7 +5,7 @@
 adversarial, nicht bestätigend). **Nachgeholt** — der Gegenstand ist bereits
 als v0.44.1 veröffentlicht.
 **Gegenstand:**
-[`slice-073`](../plan/planning/in-progress/slice-073-link-transparente-range-fortsetzung.md) —
+[`slice-073`](../plan/planning/done/slice-073-link-transparente-range-fortsetzung.md) —
 Range `ca0d631~1..91f1a52` (`ca0d631` doc-first, `2954e4d` Fix + Tests,
 `a5bcdec` Release-Prep, `91f1a52` Digest-Backfill)
 **Reviewer:** Claude (kontext-unabhängiger Lauf)
