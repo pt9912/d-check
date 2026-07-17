@@ -12,6 +12,13 @@ import (
 
 var tableDelimiterCell = regexp.MustCompile(`^:?-{3,}:?$`)
 
+// htmlCommentCell matcht eine Zelle, die **ganz** aus GENAU EINEM HTML-Kommentar
+// besteht (DC-FA-REQ-001.a Kommentar-Suffix, ADR-0040). Die Innen-Alternation
+// verbietet ein `-->` in der Mitte — zwei Trailing-Kommentare sind damit KEIN
+// Suffix und laufen weiter in den Zellenzahl-Guard, statt still verschluckt zu
+// werden.
+var htmlCommentCell = regexp.MustCompile(`^<!--(?:[^-]|-[^-]|--[^>])*-->$`)
+
 // traceTableRequirements extrahiert Anforderungen aus allen relevanten
 // Markdown-Pipe-Tabellen der Quelle (DC-FA-REQ-001). Relevanz entsteht allein
 // durch die exakt konfigurierten Header-Namen; Positionen werden nie geraten.
@@ -331,7 +338,29 @@ func splitPipeTableLine(line string) ([]string, bool) {
 	if trailing && len(cells) > 0 {
 		cells = cells[:len(cells)-1]
 	}
-	return cells, true
+	return dropCommentSuffix(cells), true
+}
+
+// dropCommentSuffix entfernt einen abschließenden HTML-Kommentar, der die **ganze
+// letzte Zelle** ausmacht (DC-FA-REQ-001.a Kommentar-Suffix, ADR-0040): er ist ein
+// Zeilen-Suffix, keine Zelle.
+//
+// Grund: d-checks eigene Direktiven-Konvention `<!-- d-check:ignore (Grund) -->`
+// MUSS in einer Tabellenzeile hinter der letzten Pipe stehen — in einer Zelle wäre
+// sie Zellinhalt (Titel bzw. Kanten-Menge). Ohne diese Regel zählte der Reader sie
+// als Extra-Zelle und brach fail-closed ab: die eigene Konvention machte den
+// eigenen Reader blind (belegt am Realdatenlauf grid-gym, architecture.md:913).
+// GFM ignoriert überzählige Zellen; die Zeile rendert überall normal.
+//
+// Bewusst eng: nur am ENDE, nur GANZZELLIG, nur EINER. Ein Kommentar innerhalb
+// einer Zelle oder in der Zeilenmitte bleibt Zellinhalt, und der Zellenzahl-Guard
+// aus ADR-0037 bleibt sonst scharf — die GFM-weite Aufweichung ist verworfen, weil
+// sie genau die Klasse still machte, gegen die der Guard gebaut wurde.
+func dropCommentSuffix(cells []string) []string {
+	if n := len(cells); n > 0 && htmlCommentCell.MatchString(cells[n-1]) {
+		return cells[:n-1]
+	}
+	return cells
 }
 
 type pipeLineSplitter struct {

@@ -577,3 +577,39 @@ func TestCrossConsistencyForwardReqPatternDefault(t *testing.T) {
 		t.Fatalf("Default-Fallback auf das RTM-Muster greift nicht: %+v", got)
 	}
 }
+
+// slice-074 (ADR-0040): d-checks eigene Ignore-Direktive MUSS in einer
+// Tabellenzeile hinter der letzten Pipe stehen — in einer Zelle wäre sie
+// Zellinhalt. Der Reader zählte sie als Extra-Zelle und brach fail-closed ab:
+// die eigene Konvention machte den eigenen Reader blind (Realdatenlauf grid-gym,
+// architecture.md:913). Gemessen auf Konsumenten-Ebene, nicht am Splitter.
+func TestCrossConsistencyKommentarSuffix(t *testing.T) {
+	fs := crossFS(
+		"| GG-ARCH-006 | GG-AR-COMP-CORE |\n",
+		"| GG-AR-COMP-CORE | GG-ARCH-006 | <!-- d-check:ignore (geplant: …) -->\n",
+	)
+	got, err := crossConsistency(fs, crossCfg(), ggReqPat)
+	if err != nil {
+		t.Fatalf("Ignore-Marker machte die Zeile unlesbar: %v", err)
+	}
+	if len(got) != 0 {
+		t.Fatalf("Zeile mit Marker anders gelesen als ohne: %+v", got)
+	}
+}
+
+// Der Zellenzahl-Guard bleibt scharf (ADR-0040 Entscheidung 3): eine echt
+// verrutschte Zeile OHNE Kommentar ist unverändert Exit 2 — die Ausnahme ist die
+// eigene Direktive, keine allgemeine Aufweichung.
+func TestCrossConsistencyZellenzahlGuardBleibtScharf(t *testing.T) {
+	fs := crossFS(
+		"| GG-ARCH-006 | GG-AR-COMP-CORE |\n",
+		"| GG-AR-COMP-CORE | GG-ARCH-006 | eine Zelle zu viel |\n",
+	)
+	_, err := crossConsistency(fs, crossCfg(), ggReqPat)
+	if err == nil {
+		t.Fatal("verrutschte Zeile ohne Kommentar muss fail-closed bleiben")
+	}
+	if !strings.Contains(err.Error(), "statt 2 Zellen") {
+		t.Fatalf("Fehlertext unerwartet: %v", err)
+	}
+}

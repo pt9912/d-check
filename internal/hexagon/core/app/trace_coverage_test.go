@@ -213,3 +213,35 @@ func TestCoverageRefsLinkTransparent(t *testing.T) {
 		})
 	}
 }
+
+// slice-074 (ADR-0040): die Suffix-Regel ist eng — nur am ENDE, nur GANZZELLIG,
+// nur EINER. Ohne diese Negativtests wäre „genau einer" eine Behauptung.
+func TestSplitPipeTableLineKommentarSuffix(t *testing.T) {
+	tests := []struct {
+		name string
+		line string
+		want []string
+	}{
+		{"Suffix ohne Schluss-Pipe", "| a | b | <!-- d-check:ignore (x) -->", []string{"a", "b"}},
+		{"Suffix mit Schluss-Pipe", "| a | b | <!-- d-check:ignore (x) --> |", []string{"a", "b"}},
+		{"ohne Suffix unverändert", "| a | b |", []string{"a", "b"}},
+		// Negativ: der Kommentar ist Zellinhalt, kein Suffix.
+		{"Kommentar IN einer Zelle", "| a <!-- x --> | b |", []string{"a <!-- x -->", "b"}},
+		{"Kommentar in der Zeilenmitte", "| a | <!-- x --> | b |", []string{"a", "<!-- x -->", "b"}},
+		// Negativ: zwei Trailing-Kommentare sind KEIN Suffix — sie laufen weiter in
+		// den Zellenzahl-Guard, statt still verschluckt zu werden.
+		{"zwei Trailing-Kommentare", "| a | b | <!-- x --> <!-- y -->",
+			[]string{"a", "b", "<!-- x --> <!-- y -->"}},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got, ok := splitPipeTableLine(tc.line)
+			if !ok {
+				t.Fatalf("Zeile nicht als Tabellenzeile erkannt: %q", tc.line)
+			}
+			if !equalStrings(got, tc.want) {
+				t.Fatalf("splitPipeTableLine(%q) = %v, want %v", tc.line, got, tc.want)
+			}
+		})
+	}
+}
