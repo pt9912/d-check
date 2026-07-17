@@ -125,6 +125,48 @@ func TestCrossConsistencyRangeAware(t *testing.T) {
 	}
 }
 
+// Link-transparente Range über den Kreuzverweis-Abgleich (DC-FA-XREF-001,
+// ADR-0039 „Ein Fix, zwei Konsumenten"): die Vorwärts-/Rück-Sicht speist ihre
+// Zellen über rangeAwareIDs (row.cells) — ein anderer Vorlauf als der Prosa-Text
+// der Coverage-Quelle; diese Achse verriegelt kein Coverage-Test (slice-073
+// R2-F-1). Zwei Achsen, beide gegen die Mutation von LinkSuffixEnd gehärtet:
+//   - „verlinkt": das Link-Suffix darf eine echte Range dahinter nicht brechen.
+//   - „Klammer-URL": ein geklammertes Ziel, dessen Pfadsegmente wie ein Enum
+//     aussehen, darf NICHT expandieren — sonst injizierte eine naive „bis zur
+//     ersten `)`"-Abgrenzung falsche Rück-Kanten (die stille Richtung aus R1-F-1).
+//     Asymmetrisch nur in der Rück-Sicht, damit die Falsch-Expansion als
+//     Differenz sichtbar wird statt sich beidseitig aufzuheben.
+func TestCrossConsistencyRangeAwareLinkTransparent(t *testing.T) {
+	for _, tc := range []struct {
+		name             string
+		forward, backward string
+		wantDiffs        int
+	}{
+		{
+			"verlinkt, echte Range dahinter",
+			"| [`GG-SIM-001`](../spec/x.md)..004 | GG-AR-COMP-SIM |\n",
+			"| GG-AR-COMP-SIM | [`GG-SIM-001`](../spec/x.md)..009 |\n",
+			5, // 001..004 beidseitig, 005..009 nur rückwärts
+		},
+		{
+			"Klammer-URL, Pfadsegmente sind kein Enum",
+			"| GG-SIM-001 | GG-AR-COMP-SIM |\n",
+			"| GG-AR-COMP-SIM | [`GG-SIM-001`](../a(2)/002/003.md) |\n",
+			0, // beide Sichten kennen nur 001; /002/003 ist URL-intern, kein Enum
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := crossConsistency(crossFS(tc.forward, tc.backward), crossCfg(), ggReqPat)
+			if err != nil {
+				t.Fatalf("unerwarteter Fehler: %v", err)
+			}
+			if len(got) != tc.wantDiffs {
+				t.Fatalf("Differenzen = %d, want %d: %+v", len(got), tc.wantDiffs, got)
+			}
+		})
+	}
+}
+
 // Superset-Modus (DC-FA-XREF-001): F ⊋ B ⇒ F\B ist kein Befund.
 func TestCrossConsistencySupersetMode(t *testing.T) {
 	fwd := "| GG-ARCH-006 | GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN |\n"
