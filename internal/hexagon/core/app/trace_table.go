@@ -20,20 +20,15 @@ func traceTableRequirements(fsys driven.Filesystem, source string, reqPat *regex
 	if err != nil {
 		return nil, nil, nil, err
 	}
-	lines := markdownTableLines(content)
 	extracted := tableExtraction{
 		titles:          map[string]string{},
 		modalityTexts:   map[string]string{},
 		usedTextHeaders: map[string]bool{},
 	}
 
-	for i := 0; i+1 < len(lines); i++ {
-		next, found, err := extractTableAt(lines, i, source, reqPat, cfg, &extracted)
-		if err != nil {
+	for _, t := range markdownTables(content, nil) {
+		if err := extractTable(t, source, reqPat, cfg, &extracted); err != nil {
 			return nil, nil, nil, err
-		}
-		if found {
-			i = next
 		}
 	}
 
@@ -64,21 +59,27 @@ type tableExtraction struct {
 	dupErr          error
 }
 
-func extractTableAt(lines []markdownTableLine, i int, source string, reqPat *regexp.Regexp, cfg *model.TraceTableConfig, out *tableExtraction) (int, bool, error) {
-	header, ok := tableHeaderAt(lines, i)
-	if !ok {
-		return i, false, nil
-	}
-	cols, relevant, err := bindTableColumns(header, cfg)
+// extractTable wertet eine Tabelle aus, sofern ihre Header alle konfigurierten
+// Rollen tragen. Ein Zellenzahl-Bruch in einer **relevanten** Tabelle ist
+// fail-closed (DC-FA-REQ-001) — sonst risse die Tabelle still ab und
+// Anforderungen verschwänden lautlos.
+func extractTable(t mdTable, source string, reqPat *regexp.Regexp, cfg *model.TraceTableConfig, out *tableExtraction) error {
+	cols, relevant, err := bindTableColumns(t.header, cfg)
 	if err != nil {
-		return i, false, fmt.Errorf("trace.requirements: Tabelle ab Zeile %d: %w", lines[i].no, err)
+		return fmt.Errorf("trace.requirements: Tabelle ab Zeile %d: %w", t.line, err)
 	}
-	if relevant {
-		out.foundTable = true
-		out.usedTextHeaders[cols.textName] = true
+	if !relevant {
+		return nil
 	}
-	next, err := consumeTableRows(lines, i+2, len(header), cols, relevant, source, reqPat, cfg, out)
-	return next - 1, true, err
+	out.foundTable = true
+	out.usedTextHeaders[cols.textName] = true
+	if t.badLine != 0 {
+		return fmt.Errorf("trace.requirements: Tabellenzeile %d hat %d statt %d Zellen", t.badLine, t.badCells, len(t.header))
+	}
+	for _, row := range t.rows {
+		addTableRequirement(row.cells, cols, source, reqPat, cfg, out)
+	}
+	return nil
 }
 
 func tableHeaderAt(lines []markdownTableLine, i int) ([]string, bool) {
@@ -96,26 +97,71 @@ func tableHeaderAt(lines []markdownTableLine, i int) ([]string, bool) {
 	return header, true
 }
 
-func consumeTableRows(lines []markdownTableLine, start, width int, cols tableColumns, relevant bool, source string, reqPat *regexp.Regexp, cfg *model.TraceTableConfig, out *tableExtraction) (int, error) {
+// mdTableRow ist eine Datenzeile samt **Original**-Zeilennummer.
+type mdTableRow struct {
+	cells []string
+	line  int
+}
+
+// mdTable ist eine erkannte Markdown-Pipe-Tabelle: Header-Zellen, Datenzeilen und
+// die erste Pipe-Zeile mit abweichender Zellenzahl (badLine 0 ⇒ keine; der
+// Konsument entscheidet, ob das ein Fehler ist — für eine nicht-relevante Tabelle
+// ist es bloß das Tabellenende). Der gemeinsame Lese-Kern der header-gebundenen
+// Tabellen-Konsumenten (DC-FA-REQ-001, DC-FA-XREF-001).
+type mdTable struct {
+	header   []string
+	line     int
+	rows     []mdTableRow
+	badLine  int
+	badCells int
+}
+
+// markdownTables liefert alle Pipe-Tabellen von content in Dokument-Reihenfolge.
+// mask (nil ⇒ ganze Datei) blendet Zeilen außerhalb der gewählten Abschnitte aus
+// — eine ausgeblendete Zeile beendet die laufende Tabelle wie Fließtext, und die
+// Zeilennummern bleiben die der Original-Datei (rules.SectionMask).
+func markdownTables(content []byte, mask []bool) []mdTable {
+	lines := markdownTableLines(content)
+	var out []mdTable
+	for i := 0; i+1 < len(lines); i++ {
+		if !maskAllows(mask, lines[i].no) || !maskAllows(mask, lines[i+1].no) {
+			continue
+		}
+		header, ok := tableHeaderAt(lines, i)
+		if !ok {
+			continue
+		}
+		t := mdTable{header: header, line: lines[i].no}
+		next := consumeTableRows(lines, i+2, mask, &t)
+		out = append(out, t)
+		i = next - 1
+	}
+	return out
+}
+
+// consumeTableRows sammelt die Datenzeilen ab start und liefert den Index der
+// ersten Zeile, die nicht mehr zur Tabelle gehört.
+func consumeTableRows(lines []markdownTableLine, start int, mask []bool, t *mdTable) int {
 	for j := start; j < len(lines); j++ {
-		if !lines[j].prose || strings.TrimSpace(lines[j].text) == "" {
-			return j, nil
+		if !lines[j].prose || !maskAllows(mask, lines[j].no) {
+			return j
 		}
 		cells, row := splitPipeTableLine(lines[j].text)
 		if !row {
-			return j, nil
+			return j
 		}
-		if len(cells) != width {
-			if relevant {
-				return j, fmt.Errorf("trace.requirements: Tabellenzeile %d hat %d statt %d Zellen", lines[j].no, len(cells), width)
-			}
-			return j, nil
+		if len(cells) != len(t.header) {
+			t.badLine, t.badCells = lines[j].no, len(cells)
+			return j
 		}
-		if relevant {
-			addTableRequirement(cells, cols, source, reqPat, cfg, out)
-		}
+		t.rows = append(t.rows, mdTableRow{cells: cells, line: lines[j].no})
 	}
-	return len(lines), nil
+	return len(lines)
+}
+
+// maskAllows prüft die 1-basierte Zeilennummer gegen die Abschnitts-Maske.
+func maskAllows(mask []bool, no int) bool {
+	return mask == nil || no-1 < len(mask) && mask[no-1]
 }
 
 func addTableRequirement(cells []string, cols tableColumns, source string, reqPat *regexp.Regexp, cfg *model.TraceTableConfig, out *tableExtraction) {

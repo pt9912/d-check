@@ -272,8 +272,29 @@ func Trace(stdout io.Writer, m app.TraceMatrix) error {
 		b.WriteString("| " + strings.Join(cells, " | ") + " |\n")
 	}
 	fmt.Fprintf(&b, "\n%d Anforderung(en), %d Waise(n).\n", m.Total, m.Orphans)
+	traceCross(&b, m)
 	_, err := io.WriteString(stdout, b.String())
 	return err
+}
+
+// traceCross hängt den Kreuzverweis-Abgleich an die RTM an (DC-FA-XREF-001) —
+// additiv **neben** der Matrix, ohne RTM-Spalte. Nur bei aktivem
+// trace.cross-consistency-Block; ohne ihn bleibt die Ausgabe byte-identisch
+// (DC-QA-02). Bei 0 Differenzen wird der Beleg trotzdem gedruckt (Schweigen
+// wäre nicht von „Abgleich lief nicht" unterscheidbar).
+func traceCross(b *strings.Builder, m app.TraceMatrix) {
+	if !m.CrossActive {
+		return
+	}
+	b.WriteString("\n## Kreuzverweis-Konsistenz\n\n")
+	if len(m.CrossConsistency) > 0 {
+		b.WriteString("| Anforderung | Artefakt | Richtung | Quelle |\n|---|---|---|---|\n")
+		for _, f := range m.CrossConsistency {
+			fmt.Fprintf(b, "| %s | %s | %s | %s:%d |\n", f.Requirement, f.Artifact, f.Direction, f.File, f.Line)
+		}
+		b.WriteString("\n")
+	}
+	fmt.Fprintf(b, "%d Differenz(en).\n", len(m.CrossConsistency))
 }
 
 // orDash liefert s oder einen Gedankenstrich bei leerem s.

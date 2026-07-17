@@ -177,4 +177,22 @@ modules: [links, anchors]
 #       ranges: true                            # GG-QA-001..006 -> alle sechs (+ /-Aufzählung); gegen id-pattern validiert
 #       # sections: ["27.1 Anforderung zu Design"]              # Whitelist: NUR diese Abschnitte (voller Heading-Text!)
 #       # exclude-sections: ["27.1.1 Anforderungen ohne Design-Artefakt"]  # Blacklist (voller Heading-Text)
+#   # cross-consistency:                          # Mengenabgleich zweier Traceability-Sichten (advisory; gatet via --require-complete)
+#   #   forward:                                  # Vorwärts-Sicht: Anforderung -> Design-Menge (der kuratierte Spiegel, der driftet)
+#   #     file: docs/plan/traceability.md
+#   #     sections: ["27.1 Anforderung zu Design"]   # optional; Whitelist (voller Heading-Text!)
+#   #     # exclude-sections: ["27.1.1 Anforderungen ohne Design-Artefakt"]
+#   #     req-column: Anforderung                 # header-gebunden; je relevanter Tabelle genau einmal
+#   #     design-column: Design-Artefakte         # header-gebunden
+#   #     design-pattern: 'GG-AR-[A-Z-]+\d*'      # extrahiert die Artefakt-IDs; GETEILT mit backward (gemeinsamer Namensraum!)
+#   #     ranges: true                            # GG-SIM-001..009 der ID-Spalte expandieren
+#   #   backward:                                 # Rück-Kanten: Design -> Anforderung (Quelle der Wahrheit)
+#   #     file: spec/architecture.md
+#   #     sections: ["4 Komponenten", "5 Ports"]  # optional; Whitelist
+#   #     artifact-id-column: first               # 'first' = erste Spalte (heterogene ID-Header) ODER ein Header-Name
+#   #     edge-column: Bezug                      # header-gebunden; macht die Tabelle relevant
+#   #     req-pattern: 'GG-[A-Z]+-\d+'            # erkennt die Anforderungs-IDs in der Bezug-Zelle
+#   #     ranges: true
+#   #   mode: equal                               # equal (Default: F\B und B\F gaten) oder superset (nur B\F)
+#   #   exclude-req: '^GG-SPEC-'                  # Ableitungssprünge (Mittelschicht-IDs) aus dem Abgleich nehmen
 `

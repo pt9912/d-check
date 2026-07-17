@@ -30,7 +30,7 @@ func TestExpandRange(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			got, err := expandRange(tc.id, tc.rest, ggPat)
+			got, err := expandRange("trace.coverage", tc.id, tc.rest, ggPat)
 			if tc.wantErr {
 				if err == nil {
 					t.Fatalf("erwartete Fehler, got %v", got)
@@ -47,27 +47,27 @@ func TestExpandRange(t *testing.T) {
 	}
 }
 
-// coverageIDs: exakte Treffer plus (bei ranges) die Expansion; range-Fehler
+// rangeAwareIDs: exakte Treffer plus (bei ranges) die Expansion; range-Fehler
 // propagiert.
-func TestCoverageIDs(t *testing.T) {
+func TestRangeAwareIDs(t *testing.T) {
 	text := "Abdeckung: GG-QA-001..003 und GG-RT-004/005.\n"
-	got, err := coverageIDs(text, ggPat, true)
+	got, err := rangeAwareIDs("trace.coverage", text, ggPat, true)
 	if err != nil {
 		t.Fatalf("Fehler: %v", err)
 	}
 	// exakt: GG-QA-001, GG-RT-004; expandiert: GG-QA-001..003, GG-RT-005.
 	for _, want := range []string{"GG-QA-001", "GG-QA-002", "GG-QA-003", "GG-RT-004", "GG-RT-005"} {
 		if !contains(got, want) {
-			t.Fatalf("coverageIDs ohne %q: %v", want, got)
+			t.Fatalf("rangeAwareIDs ohne %q: %v", want, got)
 		}
 	}
 	// ranges:false ⇒ nur exakte Treffer, keine Expansion.
-	got2, _ := coverageIDs(text, ggPat, false)
+	got2, _ := rangeAwareIDs("trace.coverage", text, ggPat, false)
 	if contains(got2, "GG-QA-003") {
 		t.Fatalf("ranges:false expandierte trotzdem: %v", got2)
 	}
 	// ungültige Range propagiert als Fehler.
-	if _, err := coverageIDs("GG-RT-009..003", ggPat, true); err == nil {
+	if _, err := rangeAwareIDs("trace.coverage", "GG-RT-009..003", ggPat, true); err == nil {
 		t.Fatal("erwartete Fehler bei AAA>BBB")
 	}
 }

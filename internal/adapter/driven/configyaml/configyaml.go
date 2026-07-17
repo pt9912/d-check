@@ -13,6 +13,7 @@ import (
 	"io"
 	"path"
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
@@ -190,7 +191,38 @@ type rawTrace struct {
 		FilePattern string `yaml:"file-pattern"`
 		IDPrefix    string `yaml:"id-prefix"`
 	} `yaml:"slices"`
-	Coverage []rawCoverage `yaml:"coverage"`
+	Coverage         []rawCoverage        `yaml:"coverage"`
+	CrossConsistency *rawCrossConsistency `yaml:"cross-consistency"`
+}
+
+// rawCrossConsistency bildet den opt-in Kreuzverweis-Abgleich ab
+// (DC-FA-XREF-001); forward und backward sind beide Pflicht.
+type rawCrossConsistency struct {
+	Forward    *rawCrossForward  `yaml:"forward"`
+	Backward   *rawCrossBackward `yaml:"backward"`
+	Mode       string            `yaml:"mode"`
+	ExcludeReq string            `yaml:"exclude-req"`
+}
+
+// rawCrossForward ist die Vorwärts-Sicht (Anforderung → Design).
+type rawCrossForward struct {
+	File            string   `yaml:"file"`
+	Sections        []string `yaml:"sections"`
+	ExcludeSections []string `yaml:"exclude-sections"`
+	ReqColumn       string   `yaml:"req-column"`
+	DesignColumn    string   `yaml:"design-column"`
+	DesignPattern   string   `yaml:"design-pattern"`
+	Ranges          *bool    `yaml:"ranges"`
+}
+
+// rawCrossBackward ist die Rück-Kanten-Sicht (Design → Anforderung).
+type rawCrossBackward struct {
+	File             string   `yaml:"file"`
+	Sections         []string `yaml:"sections"`
+	ArtifactIDColumn string   `yaml:"artifact-id-column"`
+	EdgeColumn       string   `yaml:"edge-column"`
+	ReqPattern       string   `yaml:"req-pattern"`
+	Ranges           *bool    `yaml:"ranges"`
 }
 
 type rawTraceRequirements struct {
@@ -402,8 +434,127 @@ func applyTrace(r *raw, cfg *model.Config) error {
 	if err := applyTraceCoverage(t.Coverage, &tc); err != nil {
 		return err
 	}
+	if err := applyCrossConsistency(t.CrossConsistency, &tc); err != nil {
+		return err
+	}
 	cfg.Trace = tc
 	return nil
+}
+
+// applyCrossConsistency validiert den opt-in Kreuzverweis-Block (DC-FA-XREF-001)
+// und kompiliert seine Muster. Fail-closed (Exit 2): fehlender Pflichtblock,
+// unbekannter mode, nicht kompilierendes Regex, leeres Pflichtfeld. Abwesend ⇒
+// kein Abgleich, RTM byte-identisch (DC-QA-02). Datei-Existenz und Header-Bindung
+// prüft der Kern beim Lauf (config-zeitig erfolgt kein I/O).
+func applyCrossConsistency(raw *rawCrossConsistency, tc *model.TraceConfig) error {
+	if raw == nil {
+		return nil
+	}
+	if raw.Forward == nil || raw.Backward == nil {
+		return fmt.Errorf("%s: trace.cross-consistency braucht forward und backward", FileName)
+	}
+	mode := raw.Mode
+	if mode == "" {
+		mode = model.TraceCrossModeEqual
+	}
+	if mode != model.TraceCrossModeEqual && mode != model.TraceCrossModeSuperset {
+		return fmt.Errorf("%s: trace.cross-consistency.mode %q ist ungültig (erwartet: equal oder superset)", FileName, mode)
+	}
+	excludeReq, err := compileTracePattern("trace.cross-consistency.exclude-req", raw.ExcludeReq, false)
+	if err != nil {
+		return err
+	}
+	forward, err := applyCrossForward(raw.Forward)
+	if err != nil {
+		return err
+	}
+	backward, err := applyCrossBackward(raw.Backward)
+	if err != nil {
+		return err
+	}
+	tc.CrossConsistency = &model.TraceCrossConsistency{
+		Forward: forward, Backward: backward, Mode: mode, ExcludeReq: excludeReq,
+	}
+	return nil
+}
+
+// applyCrossForward validiert die Vorwärts-Sicht: alle vier Pflichtfelder gesetzt,
+// Datei innerhalb der Repo-Wurzel, design-pattern kompilierbar; ranges-Default true.
+func applyCrossForward(raw *rawCrossForward) (model.TraceCrossForward, error) {
+	var out model.TraceCrossForward
+	if err := requireCrossFields(map[string]string{
+		"trace.cross-consistency.forward.file":           raw.File,
+		"trace.cross-consistency.forward.req-column":     raw.ReqColumn,
+		"trace.cross-consistency.forward.design-column":  raw.DesignColumn,
+		"trace.cross-consistency.forward.design-pattern": raw.DesignPattern,
+	}); err != nil {
+		return out, err
+	}
+	if err := validateTracePath("trace.cross-consistency.forward.file", raw.File); err != nil {
+		return out, err
+	}
+	designPat, err := compileTracePattern("trace.cross-consistency.forward.design-pattern", raw.DesignPattern, false)
+	if err != nil {
+		return out, err
+	}
+	return model.TraceCrossForward{
+		File: raw.File, Sections: raw.Sections, ExcludeSections: raw.ExcludeSections,
+		ReqColumn: raw.ReqColumn, DesignColumn: raw.DesignColumn,
+		DesignPattern: designPat, Ranges: crossRanges(raw.Ranges),
+	}, nil
+}
+
+// applyCrossBackward validiert die Rück-Sicht; artifact-id-column ist per Default
+// der positionelle Sentinel `first` (heterogene ID-Header, ADR-0038).
+func applyCrossBackward(raw *rawCrossBackward) (model.TraceCrossBackward, error) {
+	var out model.TraceCrossBackward
+	if err := requireCrossFields(map[string]string{
+		"trace.cross-consistency.backward.file":        raw.File,
+		"trace.cross-consistency.backward.edge-column": raw.EdgeColumn,
+		"trace.cross-consistency.backward.req-pattern": raw.ReqPattern,
+	}); err != nil {
+		return out, err
+	}
+	if err := validateTracePath("trace.cross-consistency.backward.file", raw.File); err != nil {
+		return out, err
+	}
+	reqPat, err := compileTracePattern("trace.cross-consistency.backward.req-pattern", raw.ReqPattern, false)
+	if err != nil {
+		return out, err
+	}
+	idColumn := raw.ArtifactIDColumn
+	if idColumn == "" {
+		idColumn = model.TraceCrossArtifactFirst
+	}
+	return model.TraceCrossBackward{
+		File: raw.File, Sections: raw.Sections, ArtifactIDColumn: idColumn,
+		EdgeColumn: raw.EdgeColumn, ReqPattern: reqPat, Ranges: crossRanges(raw.Ranges),
+	}, nil
+}
+
+// requireCrossFields meldet das erste leere Pflichtfeld — deterministisch über
+// die sortierten Schlüssel (Map-Iteration ist es nicht).
+func requireCrossFields(fields map[string]string) error {
+	names := make([]string, 0, len(fields))
+	for name := range fields {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		if strings.TrimSpace(fields[name]) == "" {
+			return fmt.Errorf("%s: %s ist leer", FileName, name)
+		}
+	}
+	return nil
+}
+
+// crossRanges löst den ranges-Default auf (true, DC-FA-XREF-001); der Pointer
+// unterscheidet nicht-gesetzt von explizit false.
+func crossRanges(set *bool) bool {
+	if set == nil {
+		return true
+	}
+	return *set
 }
 
 func applyTraceRequirements(req *rawTraceRequirements, tc *model.TraceConfig) error {

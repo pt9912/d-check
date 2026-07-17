@@ -49,6 +49,10 @@ type TraceMatrix struct {
 	Requirements []TraceRow `json:"requirements" yaml:"requirements"`
 	Total        int        `json:"total" yaml:"total"`
 	Orphans      int        `json:"orphans" yaml:"orphans"`
+	// CrossConsistency: Befunde des opt-in Kreuzverweis-Abgleichs
+	// (DC-FA-XREF-001) — additiv **neben** der RTM, keine RTM-Spalte;
+	// `omitempty` ⇒ ohne Block byte-identisch (DC-QA-02).
+	CrossConsistency []CrossFinding `json:"crossConsistency,omitempty" yaml:"crossConsistency,omitempty"`
 	// CoverageActive: ≥1 trace.coverage-Quelle konfiguriert ⇒ der Reporter
 	// rendert die Coverage-Spalte (DC-FA-COV-001). Nicht serialisiert — reine
 	// Reporter-Steuerung; ohne Quelle false ⇒ RTM byte-identisch.
@@ -59,6 +63,10 @@ type TraceMatrix struct {
 	// require-levels-Stufen. Nicht serialisiert.
 	ModalityActive bool `json:"-" yaml:"-"`
 	GatingOrphans  int  `json:"-" yaml:"-"`
+	// CrossActive: trace.cross-consistency präsent ⇒ der Reporter rendert den
+	// Abgleich-Abschnitt auch bei 0 Differenzen (Beleg statt Schweigen). Nicht
+	// serialisiert — ohne Block false ⇒ RTM byte-identisch.
+	CrossActive bool `json:"-" yaml:"-"`
 }
 
 // Kanonische Default-Quellen der RTM (d-check-Konvention; Doku-Domäne). Per
@@ -153,10 +161,18 @@ func BuildTraceMatrix(fsys driven.Filesystem, tc model.TraceConfig) (TraceMatrix
 	if err != nil {
 		return TraceMatrix{}, err
 	}
+	// Der Kreuzverweis-Abgleich läuft nach der RTM-Verrechnung und ändert die
+	// RTM selbst nicht (DC-FA-XREF-001.a Schritt 1).
+	cross, err := crossConsistency(fsys, tc.CrossConsistency, rt.reqPat)
+	if err != nil {
+		return TraceMatrix{}, err
+	}
 	m := TraceMatrix{
-		Requirements:   make([]TraceRow, 0, len(order)),
-		CoverageActive: len(rt.coverage) > 0,
-		ModalityActive: tc.Modality != nil,
+		Requirements:     make([]TraceRow, 0, len(order)),
+		CoverageActive:   len(rt.coverage) > 0,
+		ModalityActive:   tc.Modality != nil,
+		CrossConsistency: cross,
+		CrossActive:      tc.CrossConsistency != nil,
 	}
 	mm, modByID, err := traceModalities(fsys, tc.Modality, rt, tableModality)
 	if err != nil {
@@ -377,7 +393,7 @@ func scanCoverageSource(fsys driven.Filesystem, src model.TraceCoverage, reqPat 
 	}
 	for _, c := range contents {
 		text := string(rules.SelectSections(c, src.Sections, src.ExcludeSections))
-		ids, err := coverageIDs(text, reqPat, src.Ranges)
+		ids, err := rangeAwareIDs("trace.coverage", text, reqPat, src.Ranges)
 		if err != nil {
 			return err
 		}
@@ -444,15 +460,18 @@ func checkSectionNames(src model.TraceCoverage, contents [][]byte) error {
 	return nil
 }
 
-// coverageIDs extrahiert die abgedeckten Anforderungs-Kennungen aus text: exakte
-// reqPat-Treffer plus (bei ranges) die range-/enum-expandierten IDs (DC-FA-COV-001).
-func coverageIDs(text string, reqPat *regexp.Regexp, ranges bool) ([]string, error) {
+// rangeAwareIDs extrahiert die Anforderungs-Kennungen aus text: exakte
+// reqPat-Treffer plus (bei ranges) die range-/enum-expandierten IDs
+// (DC-FA-COV-001). field benennt den Config-Schlüssel für Fehlermeldungen — die
+// Range-Semantik teilen sich die Coverage-Quellen und beide Sichten des
+// Kreuzverweis-Abgleichs (DC-FA-XREF-001).
+func rangeAwareIDs(field, text string, reqPat *regexp.Regexp, ranges bool) ([]string, error) {
 	out := append([]string{}, reqPat.FindAllString(text, -1)...)
 	if !ranges {
 		return out, nil
 	}
 	for _, loc := range reqPat.FindAllStringIndex(text, -1) {
-		exp, err := expandRange(text[loc[0]:loc[1]], text[loc[1]:], reqPat)
+		exp, err := expandRange(field, text[loc[0]:loc[1]], text[loc[1]:], reqPat)
 		if err != nil {
 			return nil, err
 		}
@@ -466,7 +485,7 @@ func coverageIDs(text string, reqPat *regexp.Regexp, ranges bool) ([]string, err
 // `..BBB` breiten-erhaltend inklusiv, `/BBB/CCC` als Aufzählung; jede expandierte
 // ID gegen reqPat geprüft (Nicht-Treffer verworfen). Fail-closed: AAA>BBB oder
 // abweichende Ziffern-Breite ⇒ Fehler.
-func expandRange(id, rest string, reqPat *regexp.Regexp) ([]string, error) {
+func expandRange(field, id, rest string, reqPat *regexp.Regexp) ([]string, error) {
 	d := trailingDigits.FindStringIndex(id)
 	if d == nil {
 		return nil, nil // Kennung endet nicht auf Ziffern → keine Range
@@ -476,12 +495,12 @@ func expandRange(id, rest string, reqPat *regexp.Regexp) ([]string, error) {
 	if rm := rangeSuffix.FindStringSubmatch(rest); rm != nil {
 		endStr := rm[1]
 		if len(endStr) != width {
-			return nil, fmt.Errorf("trace.coverage: Range %s..%s mit abweichender Ziffern-Breite", id, endStr)
+			return nil, fmt.Errorf("%s: Range %s..%s mit abweichender Ziffern-Breite", field, id, endStr)
 		}
 		start, _ := strconv.Atoi(startStr)
 		end, _ := strconv.Atoi(endStr)
 		if start > end {
-			return nil, fmt.Errorf("trace.coverage: Range %s..%s mit AAA>BBB", id, endStr)
+			return nil, fmt.Errorf("%s: Range %s..%s mit AAA>BBB", field, id, endStr)
 		}
 		var out []string
 		for i := start; i <= end; i++ {

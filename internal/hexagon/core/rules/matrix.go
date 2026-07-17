@@ -337,21 +337,32 @@ func SelectSections(content []byte, include, exclude []string) []byte {
 	if len(include) == 0 && len(exclude) == 0 {
 		return content
 	}
-	inc := excludedRanges(content, include)
-	exc := excludedRanges(content, exclude)
+	mask := SectionMask(content, include, exclude)
 	lines := strings.Split(string(content), "\n")
 	keep := make([]string, 0, len(lines))
 	for i, ln := range lines {
-		no := i + 1
-		if len(include) > 0 && !inRanges(inc, no) {
-			continue
+		if mask[i] {
+			keep = append(keep, ln)
 		}
-		if inRanges(exc, no) {
-			continue
-		}
-		keep = append(keep, ln)
 	}
 	return []byte(strings.Join(keep, "\n"))
+}
+
+// SectionMask ist die zeilennummer-erhaltende Form von SelectSections
+// (DC-FA-XREF-001): Index = Zeilennummer−1, Wert = ob die Zeile nach
+// include/exclude ausgewählt ist. SelectSections verwirft die nicht gewählten
+// Zeilen und verschiebt damit alle Zeilennummern; der Kreuzverweis-Abgleich
+// meldet aber `Datei:Zeile` der Quelle und braucht die Original-Nummer.
+func SectionMask(content []byte, include, exclude []string) []bool {
+	inc := excludedRanges(content, include)
+	exc := excludedRanges(content, exclude)
+	lines := strings.Split(string(content), "\n")
+	mask := make([]bool, len(lines))
+	for i := range lines {
+		no := i + 1
+		mask[i] = (len(include) == 0 || inRanges(inc, no)) && !inRanges(exc, no)
+	}
+	return mask
 }
 
 // HeadingTexts liefert die Klartext-Überschriften von content (voller

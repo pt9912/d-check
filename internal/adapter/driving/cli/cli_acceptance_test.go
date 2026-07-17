@@ -2474,3 +2474,182 @@ func TestCLI063_PrintMK_TargetsTarget(t *testing.T) {
 		t.Fatalf("doc-targets wählt targets fälschlich ab:\n%s", line)
 	}
 }
+
+// crossDoc erweitert traceDoc um die Kreuzverweis-Befunde (DC-FA-XREF-001).
+type crossDoc struct {
+	Total            int `json:"total"`
+	CrossConsistency []struct {
+		Requirement string `json:"requirement"`
+		Artifact    string `json:"artifact"`
+		Direction   string `json:"direction"`
+		File        string `json:"file"`
+		Line        int    `json:"line"`
+	} `json:"crossConsistency"`
+}
+
+// crossRepo legt den realen grid-gym-Drift an (Trigger 088): die Vorwärts-Zeile
+// nennt {COMP-CORE, COMP-DOMAIN}, die Rück-Kanten {P-005, P-009, COMP-SCHED} —
+// Schnittmenge null. Die Mittelschicht-Kante GG-SPEC-042 prüft das Ventil.
+// Bewusst **waisenfrei** (Slice referenziert die Anforderung): so ist ein Exit 1
+// unter --require-complete eindeutig dem Kreuzverweis-Abgleich zuzuschreiben und
+// nicht der Waisen-Invariante (DC-FA-CLI-011).
+func crossRepo(t *testing.T, root string) {
+	t.Helper()
+	write(t, root, "spec/lastenheft.md", "### GG-ARCH-006\nDer Scheduler MUSS entkoppelt sein.\n")
+	write(t, root, "docs/plan/planning/slice-071-scheduler.md", "# slice-071\nBezug: GG-ARCH-006\n")
+	write(t, root, "docs/traceability.md",
+		"# Traceability\n\n## 27.1 Anforderung zu Design\n\n"+
+			"| Anforderung | Design-Artefakte |\n|---|---|\n"+
+			"| GG-ARCH-006 | GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN |\n")
+	write(t, root, "spec/architecture.md",
+		"# Architektur\n\n## 5 Ports\n\n"+
+			"| Port-ID | Bezug |\n|---|---|\n"+
+			"| GG-AR-P-005 | GG-ARCH-006 |\n| GG-AR-P-009 | GG-ARCH-006 |\n\n"+
+			"## 4 Komponenten\n\n"+
+			"| Komponente | Bezug |\n|---|---|\n"+
+			"| GG-AR-COMP-SCHED | GG-ARCH-006 |\n| GG-AR-COMP-MID | GG-SPEC-042 |\n")
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z]+-\d{3}'
+  cross-consistency:
+    forward:
+      file: docs/traceability.md
+      sections: ["27.1 Anforderung zu Design"]
+      req-column: Anforderung
+      design-column: Design-Artefakte
+      design-pattern: 'GG-AR-[A-Z0-9-]+'
+    backward:
+      file: spec/architecture.md
+      edge-column: Bezug
+      req-pattern: 'GG-[A-Z]+-\d{3}'
+    exclude-req: '^GG-SPEC-'
+`)
+}
+
+// slice-071 (DC-FA-XREF-001): der reale grid-gym-Drift wird geflaggt — beide
+// Richtungen, deterministisch sortiert, mit Datei:Zeile. Advisory: --trace allein
+// bleibt Exit 0 (DC-FA-CLI-009 unangetastet).
+func TestCLI071_Cross_RealerDriftAdvisory(t *testing.T) {
+	root := t.TempDir()
+	crossRepo(t, root)
+
+	code, stdout, _ := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("--trace ohne --require-complete muss advisory Exit 0 sein, got %d\n%s", code, stdout)
+	}
+	var d crossDoc
+	if err := json.Unmarshal([]byte(stdout), &d); err != nil {
+		t.Fatalf("JSON dekodiert nicht: %v\n%s", err, stdout)
+	}
+	// {CORE, DOMAIN} vorwärts-only; {P-005, P-009, SCHED} rückwärts-only;
+	// GG-SPEC-042 fällt per exclude-req heraus.
+	if len(d.CrossConsistency) != 5 {
+		t.Fatalf("erwartete 5 Differenzen, got %d:\n%s", len(d.CrossConsistency), stdout)
+	}
+	for _, f := range d.CrossConsistency {
+		if f.Requirement != "GG-ARCH-006" {
+			t.Fatalf("Mittelschicht-ID nicht ausgenommen bzw. fremde Anforderung: %+v", f)
+		}
+		if f.Line == 0 || f.File == "" {
+			t.Fatalf("Befund ohne Fundstelle: %+v", f)
+		}
+	}
+	// Sortierung nach (Anforderung, Artefakt, Richtung).
+	first, last := d.CrossConsistency[0], d.CrossConsistency[4]
+	if first.Artifact != "GG-AR-COMP-CORE" || first.Direction != "in RTM, ohne Rück-Kante" {
+		t.Fatalf("erster Befund unerwartet: %+v", first)
+	}
+	if last.Artifact != "GG-AR-P-009" || last.Direction != "Rück-Kante, ohne RTM-Eintrag" {
+		t.Fatalf("letzter Befund unerwartet: %+v", last)
+	}
+}
+
+// slice-071 (DC-FA-XREF-001/DC-FA-CLI-011): die Gatung läuft ausschließlich über
+// das globale --require-complete — kein block-lokaler Schalter.
+func TestCLI071_Cross_RequireCompleteGatet(t *testing.T) {
+	root := t.TempDir()
+	crossRepo(t, root)
+	code, stdout, stderr := run(t, "--trace", "--require-complete", root)
+	if code != 1 {
+		t.Fatalf("--require-complete mit Differenzen muss Exit 1 sein, got %d\n%s", code, stdout)
+	}
+	if !strings.Contains(stderr, "5 Kreuzverweis-Differenz(en)") {
+		t.Fatalf("stderr nennt die Differenz-Zahl nicht:\n%s", stderr)
+	}
+	// Die RTM steht weiterhin auf stdout, der Abgleich daneben (keine RTM-Spalte).
+	if !strings.Contains(stdout, "## Kreuzverweis-Konsistenz") || !strings.Contains(stdout, "5 Differenz(en).") {
+		t.Fatalf("Abgleich-Abschnitt fehlt auf stdout:\n%s", stdout)
+	}
+	if strings.Contains(stdout, "| Anforderung | Titel | ADRs | Slices | Kreuz") {
+		t.Fatalf("RTM trägt fälschlich eine Kreuzverweis-Spalte:\n%s", stdout)
+	}
+}
+
+// slice-071 (DC-FA-XREF-001): ein konsistenter Stand läuft auch unter
+// --require-complete grün — und belegt den Abgleich mit `0 Differenz(en).`
+// (Schweigen wäre nicht von „lief nicht" unterscheidbar).
+func TestCLI071_Cross_KonsistentGruen(t *testing.T) {
+	root := t.TempDir()
+	crossRepo(t, root)
+	// Vorwärts-Sicht auf die Rück-Kanten ziehen ⇒ F = B.
+	write(t, root, "docs/traceability.md",
+		"# Traceability\n\n## 27.1 Anforderung zu Design\n\n"+
+			"| Anforderung | Design-Artefakte |\n|---|---|\n"+
+			"| GG-ARCH-006 | GG-AR-P-005, GG-AR-P-009, GG-AR-COMP-SCHED |\n")
+	code, stdout, _ := run(t, "--trace", "--require-complete", root)
+	if code != 0 {
+		t.Fatalf("konsistenter Stand muss Exit 0 sein, got %d\n%s", code, stdout)
+	}
+	if !strings.Contains(stdout, "0 Differenz(en).") {
+		t.Fatalf("Abgleich-Beleg fehlt:\n%s", stdout)
+	}
+}
+
+// slice-071 (DC-QA-02): ohne trace.cross-consistency-Block ist die RTM
+// byte-identisch zur Fassung vor dieser Anforderung — der Abgleich-Abschnitt
+// erscheint nicht, und --require-complete verhält sich unverändert.
+func TestCLI071_Cross_DefaultByteIdentisch(t *testing.T) {
+	rootA := t.TempDir()
+	traceRepo(t, rootA)
+	codeA, stdoutA, _ := run(t, "--trace", rootA)
+
+	rootB := t.TempDir()
+	traceRepo(t, rootB)
+	write(t, rootB, ".d-check.yml", "trace:\n  requirements:\n    source: spec/lastenheft.md\n")
+	codeB, stdoutB, _ := run(t, "--trace", rootB)
+
+	if stdoutA != stdoutB || codeA != codeB {
+		t.Fatalf("RTM ohne cross-consistency nicht byte-identisch:\n--- A ---\n%s\n--- B ---\n%s", stdoutA, stdoutB)
+	}
+	if strings.Contains(stdoutA, "Kreuzverweis") {
+		t.Fatalf("Abgleich-Abschnitt ohne Block gerendert:\n%s", stdoutA)
+	}
+}
+
+// slice-071 (DC-FA-XREF-001, fail-closed): eine fehlende Sicht-Quelle ist Exit 2
+// — nicht ein stiller Vergleich gegen die leere Menge.
+func TestCLI071_Cross_FailClosed(t *testing.T) {
+	root := t.TempDir()
+	crossRepo(t, root)
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z]+-\d{3}'
+  cross-consistency:
+    forward:
+      file: docs/fehlt.md
+      req-column: Anforderung
+      design-column: Design-Artefakte
+      design-pattern: 'GG-AR-[A-Z0-9-]+'
+    backward:
+      file: spec/architecture.md
+      edge-column: Bezug
+      req-pattern: 'GG-[A-Z]+-\d{3}'
+`)
+	code, _, stderr := run(t, "--trace", "--require-complete", root)
+	if code != 2 {
+		t.Fatalf("fehlende Vorwärts-Quelle muss Exit 2 sein, got %d\n%s", code, stderr)
+	}
+	if !strings.Contains(stderr, "fehlt") {
+		t.Fatalf("stderr benennt die fehlende Datei nicht:\n%s", stderr)
+	}
+}

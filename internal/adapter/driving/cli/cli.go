@@ -193,13 +193,24 @@ func runTrace(fsys driven.Filesystem, cfg model.Config, opts options, stdout, st
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return 2
 	}
-	// DC-FA-CLI-011: opt-in Strict-Exit — ≥1 Requirements-Waise ⇒ Exit 1
-	// (Befund-Code, DC-FA-CLI-003). Der Default-Lauf ohne --require-complete
-	// bleibt advisory Exit 0 (DC-FA-CLI-009 unangetastet); die RTM steht
-	// bereits auf stdout, die Zähl-Zeile geht auf stderr.
+	if !opts.requireComplete {
+		return 0
+	}
+	return requireCompleteExit(matrix, stderr)
+}
+
+// requireCompleteExit wertet die opt-in Strict-Exit-Invariante (DC-FA-CLI-011):
+// ≥1 gatende Requirements-Waise **oder** — bei aktivem trace.cross-consistency —
+// ≥1 Kreuzverweis-Differenz (DC-FA-XREF-001) ⇒ Exit 1 (Befund-Code,
+// DC-FA-CLI-003). Der Default-Lauf ohne --require-complete bleibt advisory Exit 0
+// (DC-FA-CLI-009 unangetastet); die RTM steht bereits auf stdout, die Zähl-Zeilen
+// gehen auf stderr. Beide Ursachen melden getrennt — sonst verschwiege die eine
+// die andere.
+func requireCompleteExit(matrix app.TraceMatrix, stderr io.Writer) int {
+	exit := 0
 	// Gatend sind ohne modality alle Waisen, mit modality nur die
 	// require-levels-Stufen (DC-FA-MOD-001, slice-068).
-	if opts.requireComplete && matrix.GatingOrphans > 0 {
+	if matrix.GatingOrphans > 0 {
 		// Waise = ohne Slice, und — bei aktiver trace.coverage — auch ohne
 		// Coverage (DC-FA-COV-001/DC-FA-CLI-011).
 		lack := "ohne referenzierenden Slice"
@@ -213,9 +224,13 @@ func runTrace(fsys driven.Filesystem, cfg model.Config, opts options, stdout, st
 		} else {
 			fmt.Fprintf(stderr, "d-check: %d Requirements-Waise(n) %s (--require-complete)\n", matrix.Orphans, lack)
 		}
-		return 1
+		exit = 1
 	}
-	return 0
+	if n := len(matrix.CrossConsistency); n > 0 {
+		fmt.Fprintf(stderr, "d-check: %d Kreuzverweis-Differenz(en) zwischen Vorwärts- und Rück-Sicht (--require-complete)\n", n)
+		exit = 1
+	}
+	return exit
 }
 
 // runCommitMsg prüft eine einzelne Commit-Message (Modul commits,

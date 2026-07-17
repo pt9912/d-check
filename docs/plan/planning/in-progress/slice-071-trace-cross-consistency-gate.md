@@ -1,8 +1,8 @@
 # Slice slice-071: Trace-Kreuzverweis-Konsistenz-Gate (Vorwärts-RTM ↔ Rück-Kanten)
 
-**Status:** open (Backlog; noch keiner Welle zugeordnet).
+**Status:** in-progress (welle-60-trace-cross-consistency).
 
-**Welle:** keine; wartet auf Aufnahme in eine Welle (Roadmap §Nächste Wellen).
+**Welle:** aktiv; Vorgänger welle-59-trace-tabellenquellen ist abgeschlossen.
 
 **Bezug:** neuer Lastenheft-Change-Request
 [`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)
@@ -71,20 +71,26 @@ Reader-Reuse und byte-identischer RTM für Nicht-Konsumenten.
   (`trace.cross-consistency.*`) + Historie.
 - [x] **ADR + Index:** [ADR-0038](../../adr/0038-trace-cross-consistency.md)
   (Platzierung, Reader-Reuse, Generator-Sequenzierung), Status Proposed, im Index.
-- [ ] **Modell/Config:** `trace.cross-consistency` abbilden, vollständig
+- [x] **Modell/Config:** `trace.cross-consistency` abbilden, vollständig
   validieren, in `--print-config` sichtbar machen.
-- [ ] **Extraktion:** Rück-Kanten (erste-Spalte-ID + header-gebundene `Bezug`) und
+- [x] **Extraktion:** Rück-Kanten (erste-Spalte-ID + header-gebundene `Bezug`) und
   Vorwärts-Sicht (header-gebunden) deterministisch/read-only; range-aware Reuse.
-- [ ] **Set-Diff:** Inversion + `F\B`/`B\F` je `R`, Modi `equal`/`superset`,
+- [x] **Set-Diff:** Inversion + `F\B`/`B\F` je `R`, Modi `equal`/`superset`,
   `exclude-req`-Ventil; deterministisch sortierte Befunde.
-- [ ] **Gate-Bindung:** advisory unter `--trace`, Gatung über globales
+- [x] **Gate-Bindung:** advisory unter `--trace`, Gatung über globales
   `--require-complete`.
-- [ ] **Tests:** konsistentes 1:N grün, beide Richtungsdifferenzen, range-aware,
+- [x] **Tests:** konsistentes 1:N grün, beide Richtungsdifferenzen, range-aware,
   superset, Ableitungssprung-Ausschluss, fail-closed-Config, byte-identischer
   Default.
 - [ ] **Realdatenbeleg grid-gym:** der reale §27.1-↔-`Bezug`-Drift wird geflaggt,
   die nach `spezifikation.md` verschobenen Familien nicht (Ventil greift); ein
-  konsistentes 1:N läuft grün.
+  konsistentes 1:N läuft grün. — **Teilstand:** die Drift-*Gestalt* des Triggers
+  (`F = {COMP-CORE, COMP-DOMAIN}` vs. `B = {P-005, P-009, COMP-SCHED}`,
+  Schnittmenge null, plus Mittelschicht-Kante) ist als CLI-Akzeptanztest
+  reproduziert und wird geflaggt; das Ventil greift, das konsistente 1:N läuft
+  grün. Der Lauf gegen das **echte** grid-gym-Repo steht aus — er hängt an der in
+  §4 benannten Konsumenten-Vorarbeit (§27.1 auf konkrete IDs restrukturieren) und
+  ist erst danach aussagekräftig.
 - [ ] **Nutzerdoku:** Handbuch/Changelog/Operations gepflegt.
 - [ ] **Release:** Versionsregister/Release-Prep, Tag und GHCR samt
   Digest-Backfill.

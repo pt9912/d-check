@@ -369,6 +369,68 @@ type TraceConfig struct {
 	// (byte-identisch). Präsenz (auch leere Map `modality: {}`) ⇒ aktiv, dann
 	// greifen die Default-Keywords.
 	Modality *TraceModality
+	// CrossConsistency: opt-in Kreuzverweis-Abgleich zweier Traceability-Sichten
+	// (DC-FA-XREF-001); nil ⇒ kein Abgleich, RTM byte-identisch.
+	CrossConsistency *TraceCrossConsistency
+}
+
+const (
+	// TraceCrossModeEqual verlangt F = B und meldet beide Richtungsdifferenzen
+	// (Default, DC-FA-XREF-001).
+	TraceCrossModeEqual = "equal"
+	// TraceCrossModeSuperset verlangt nur F ⊇ B — allein B\F ist ein Befund.
+	TraceCrossModeSuperset = "superset"
+	// TraceCrossArtifactFirst ist der positionelle Sentinel der Rückwärts-ID-Spalte
+	// (erste Spalte statt Header-Name) — begründet durch die über die Tabellen
+	// heterogenen ID-Header (`Kennung`/`Port-ID`/…), während die Kanten-Spalte
+	// einheitlich heißt (ADR-0038).
+	TraceCrossArtifactFirst = "first"
+)
+
+// TraceCrossConsistency ist der opt-in Mengenabgleich zweier unabhängig
+// gepflegter Sichten derselben Anforderung→Design-Relation (DC-FA-XREF-001):
+// Forward ist die kuratierte Vorwärts-RTM-Tabelle (Anforderung → Design-Menge),
+// Backward sind die Rück-Kanten (Design → Anforderung) und die **Quelle der
+// Wahrheit**. Mode ist TraceCrossModeEqual oder TraceCrossModeSuperset;
+// ExcludeReq nimmt Ableitungssprung-Kennungen (Mittelschicht-Familien) vor dem
+// Diff aus beiden Sichten (nil ⇒ keine Ausnahme).
+type TraceCrossConsistency struct {
+	Forward    TraceCrossForward
+	Backward   TraceCrossBackward
+	Mode       string
+	ExcludeReq *regexp.Regexp
+}
+
+// TraceCrossForward beschreibt die Vorwärts-Sicht (DC-FA-XREF-001): File ist die
+// Wurzel-relative Tabellendatei, Sections/ExcludeSections spannen sie über die
+// Heading-Span-Semantik (wie matrix.exclude-sections). ReqColumn und DesignColumn
+// sind header-gebundene Spaltennamen; DesignPattern extrahiert die
+// Design-Artefakt-Kennungen aus der Design-Zelle und wird bewusst mit der
+// Rückwärts-Sicht geteilt (gemeinsamer Namensraum — sonst wäre der Diff
+// bedeutungslos). Ranges aktiviert die Range-/Enum-Expansion der Anforderungs-IDs.
+type TraceCrossForward struct {
+	File            string
+	Sections        []string
+	ExcludeSections []string
+	ReqColumn       string
+	DesignColumn    string
+	DesignPattern   *regexp.Regexp
+	Ranges          bool
+}
+
+// TraceCrossBackward beschreibt die Rück-Kanten-Sicht (DC-FA-XREF-001): File ist
+// die Wurzel-relative Quelle, Sections spannt sie (Whitelist). ArtifactIDColumn
+// ist ein Header-Name oder der Sentinel TraceCrossArtifactFirst (erste Spalte);
+// EdgeColumn ist der header-gebundene Name der Kanten-Spalte (z. B. `Bezug`),
+// ReqPattern erkennt die Anforderungs-Kennungen in deren Zelle. Ranges aktiviert
+// die Range-/Enum-Expansion.
+type TraceCrossBackward struct {
+	File             string
+	Sections         []string
+	ArtifactIDColumn string
+	EdgeColumn       string
+	ReqPattern       *regexp.Regexp
+	Ranges           bool
 }
 
 const (
