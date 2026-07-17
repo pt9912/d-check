@@ -50,20 +50,30 @@ zugesagten Notationen — statt stillem Drop **oder** geratener Expansion.
 - [x] **Spezifikation:** Komma-Kurzform in Schritt 3 + Historie.
 - [x] **ADR + Index:** [ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md),
   Proposed, im Index.
-- [ ] **Implementierung:** im geteilten Range-Parser, **nach** der
-  Link-Transparenz (eine verlinkte Kennung mit Komma-Kurzform muss ebenso feuern).
-- [ ] **Tests (positiv/negativ):** `GG-SCN-001, 007` ⇒ Exit 2 mit Notations-Hinweis;
-  `GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN` ⇒ beide gelesen, kein Fehler;
-  `GG-QA-001, siehe X` ⇒ kein Fehler; verlinkte Kurzform ⇒ Exit 2; `ranges: false`
-  ⇒ unberührt.
-- [ ] **Mutations-Härte:** die Ziffern-Bedingung entfernt kippt den
-  Volle-Kennung-Test; die Regel entfernt kippt den Kurzform-Test.
-- [ ] **Realdatenbeleg:** grid-gyms echte `traceability.md` (führt
-  `GG-SCN-001, 007`) meldet Exit 2 mit Hinweis statt stiller Nicht-Deckung.
-- [ ] **Nutzerdoku:** Handbuch (§5 Notationen + die neue Fehlerklasse) + CHANGELOG.
-- [ ] **Release:** v0.46.0 (Minor), Release-Prep + Tag + GHCR + Digest-Backfill.
-- [ ] **Qualität:** unabhängiger, kontext-getrennter Review **vor** dem Release;
-  `make gates`/`make ci` grün.
+- [x] **Implementierung:** im geteilten Range-Parser (`expandRange`), Single-Check
+  auf dem nach der Notation verbleibenden Rest — feuert **an allen drei
+  Positionen** (nackte Kennung, hinter Range, hinter Enum), nach der
+  Link-Transparenz. **Schärfung gegenüber der Erst-Formulierung:** der reale
+  grid-gym-Fall ist `GG-SCN-001..005, 007, 008` (Range + Komma-Schwanz), nicht
+  `GG-SCN-001, 007` — die enge Fassung hätte ihn verfehlt (§2.1 / ADR-0041
+  Geschichte). Range-Expansion in `expandNumericRange` ausgelagert (nestif).
+- [x] **Tests (positiv/negativ):** `TestExpandRangeCommaShortform` (table-driven,
+  inkl. `..005, 007` / `/003, 007` / `..005, GG-QA-007` als Gegenprobe),
+  `TestCoverageRefsCommaShortform` (einfach + **realer gemischter Fall** +
+  `ranges: false` unberührt), `TestCrossConsistencyCommaShortform` (Bezug-Zelle).
+- [x] **Mutations-Härte** (gemessen im Scratch-Worktree): Regel entfernt ⇒ 10
+  Testzeilen kippen; `\d`-Bedingung entfernt (`^,\s*\d`→`^,`) ⇒ die
+  „volle Kennung"/„Prosa"-Fälle kippen (auch der gemischte `..005, GG-QA-007`).
+- [x] **Realdatenbeleg** (gegen das gebaute Image): `GG-SCN-001..005, 007, 008`
+  (grid-gyms echte Form) ⇒ Exit 2 mit Notations-Hinweis; saubere Range und
+  Range + volle Kennung ⇒ Exit 0.
+- [x] **Nutzerdoku:** Handbuch §5 (die zwei zugesagten Notationen + die Komma-
+  Fehlerklasse, einfach **und** hinter Range) + Historie 1.34; CHANGELOG 0.46.0.
+- [ ] **Release:** v0.46.0 (Minor), Release-Prep **erledigt** (CHANGELOG,
+  version.md, ghcr-Tag-Pins nachgezogen); Tag + GHCR-Push + Digest-Backfill
+  stehen aus (Nutzer).
+- [ ] **Qualität:** `make gates`/`make ci` grün (erreicht); unabhängiger,
+  kontext-getrennter Review **vor** dem Release steht aus.
 
 ## 4. Risiken / offene Punkte
 
