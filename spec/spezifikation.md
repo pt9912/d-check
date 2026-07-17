@@ -429,9 +429,14 @@ und ändert die RTM selbst nicht. Verrechnung (deterministisch,
    [§`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)),
    wird jede relevante Tabelle über den header-gebundenen Reader
    ([§`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen))
-   gelesen: `req-column` liefert die Anforderungs-IDs (bei `ranges: true`
-   range-/enum-expandiert), `design-column` die Design-Artefakt-IDs über alle
-   `design-pattern`-Treffer der Zelle. Ergebnis: je Anforderung `R` die Menge
+   gelesen: `req-column` liefert über `forward.req-pattern` die Anforderungs-IDs
+   (bei `ranges: true` range-/enum-expandiert), `design-column` die
+   Design-Artefakt-IDs über alle `design-pattern`-Treffer der Zelle.
+   **Scope-Trennung:** `forward.req-pattern` fällt per Default auf
+   `requirements.id-pattern` zurück, ist aber **eigenständig** — welche
+   Anforderungen der Abgleich vergleicht, entscheidet allein das Muster, nicht die
+   RTM-Mitgliedschaft. Eine ID, die das Muster trifft, aber keine RTM-Zeile hat,
+   wird verglichen; eine RTM-Anforderung, die das Muster nicht trifft, nicht. Ergebnis: je Anforderung `R` die Menge
    `F(R)` der genannten Design-Artefakte.
 3. **Rückwärts-Menge `B`.** Aus `backward.file`, auf `backward.sections` gespannt,
    zählt jede Tabelle mit einem `edge-column`-Header. Die Artefakt-ID ist der erste
@@ -1780,6 +1785,7 @@ Exit 2 ohne Prüfung
 | `trace.cross-consistency.forward.req-column` | string | — | header-gebundener Name der Anforderungs-Spalte; muss je relevanter Tabelle genau einmal vorkommen (sonst Exit 2) |
 | `trace.cross-consistency.forward.design-column` | string | — | header-gebundener Name der Design-Spalte; genau einmal je Tabelle (sonst Exit 2) |
 | `trace.cross-consistency.forward.design-pattern` | string | — | Regex; extrahiert Design-Artefakt-IDs aus der Design-Zelle (alle Treffer); muss kompilieren (sonst Exit 2) |
+| `trace.cross-consistency.forward.req-pattern` | string | `trace.requirements.id-pattern` | Regex; erkennt die Anforderungs-IDs in der `req-column`-Zelle — symmetrisch zu `backward.req-pattern`. Muss kompilieren (sonst Exit 2). **Der Default ist eine bewusste Kopplung, keine Ableitung:** wer die RTM auf eine Teilmenge scopt, aber weiter über die volle Menge vergleichen will, setzt ihn explizit — die Vergleichs-Schlüsselmenge ist **nicht** die RTM-Anforderungsmenge |
 | `trace.cross-consistency.forward.ranges` | bool | `true` | Range-/Enum-Expansion der Anforderungs-IDs der ID-Spalte (`<FAM>-AAA..BBB`/`/`-Enum, wie `trace.coverage[].ranges`); `false` ⇒ nur exakte IDs |
 | `trace.cross-consistency.backward.file` | string | — | Wurzel-relative Rück-Kanten-Datei (Design → Anforderung); muss innerhalb der Repo-Wurzel liegen und existieren (sonst Exit 2) |
 | `trace.cross-consistency.backward.sections` | string[] | leer | **Whitelist** der Abschnitte, deren `edge-column`-Tabellen zählen; leer ⇒ ganze Datei |
@@ -1862,6 +1868,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung | Verweis |
 |---|---|---|
+| 2026-07-17 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) Schritt 2 + §2-Schema um **`forward.req-pattern`** ergänzt (Default `trace.requirements.id-pattern`, symmetrisch zu `backward.req-pattern`). Die Vorwärts-Sicht las ihre IDs bis dahin **still** über das RTM-Muster — die Kopplung war nirgends ausgesprochen. Festgehalten: die **Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge** (das Muster entscheidet, nicht die RTM-Mitgliedschaft). Lastenheft-CR 0.45.0; Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) (Entscheidung 9) | slice-071 |
 | 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 (Range-Parser) um **Link-Transparenz** geschärft: die Fortsetzung `..NNN`/`/NNN` darf **genau einmal** durch ein Markdown-Link-Suffix `](…)` unterbrochen sein, dahinter gilt wieder „unmittelbar“; weitergehendes Peeling (Whitespace, Emphasis, zweites Suffix) bleibt ausgeschlossen. Wirkt über den geteilten Parser zugleich auf §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). **Defekt-Fix, kein CR:** das Lastenheft verspricht die Expansion unqualifiziert — die Verengung „unmittelbar“ stand allein hier und kollidierte strukturell mit der Linkpflicht ([`DC-FA-ID-001`](lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)); betroffen war `trace.coverage` seit v0.41.0 (verlinkte Range ⇒ falsche Waisen). Begründung in [ADR-0039](../docs/plan/adr/0039-link-transparente-range-fortsetzung.md) | slice-073 |
 | 2026-07-17 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) um die **Vakuitäts-Stufe** (Schritt 5) geschärft: ein Abgleich ohne eine einzige Kante ist Exit 2 statt `0 Differenz(en)`/Exit 0 — beide Sichten kantenleer (geteiltes `design-pattern` greift am Namensraum vorbei) oder Rück-Sicht kantenleer unter `mode: superset`. Eine **einseitig** leere Vorwärts-Sicht bleibt wohldefiniert (Diff über `keys(F) ∪ keys(B)`) und meldet `B \ F` laut. Vakuität wird **nach** dem Ausschluss (Schritt 4) gemessen — ein `exclude-req`, das alle Anforderungen verschluckt, schaltet das Gate ebenso still ab wie ein fehlgreifendes Muster. Fehlerpräzedenz um die Abschnitts-Spannungs- und die Ausschluss-Stufe ergänzt und als **stufenweise über beide Sichten** präzisiert. Lastenheft-CR 0.44.1; Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) (Entscheidung 8) | slice-071 |
 | 2026-07-16 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) + §2-Schema (`trace.cross-consistency.*`) ergänzt: opt-in Mengenabgleich zweier Traceability-Sichten — Vorwärts-RTM-Tabelle (Anforderung→Design) gegen Rückwärts-`Bezug`-Kanten (Design→Anforderung), je Anforderung `F\B`/`B\F` mit Richtung, Modus `equal`/`superset`. Beide über den header-gebundenen Reader ([§`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)) + range-aware Span-Semantik ([§`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage)); Rück-Artefakt-ID = erste Spalte via `design-pattern`, `exclude-req`-Ventil (RE2). Advisory unter `--trace`; Gatung über globales `--require-complete` ([`DC-FA-CLI-011`](lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)). Fail-closed, ohne Block byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)). Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) | slice-071 |

@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.44.2
+**Version:** 0.45.0
 
 **Status:** Draft
 
@@ -720,8 +720,9 @@ plus die Abschnitts-/Span- und **range-aware** ID-Semantik von
 ist: eine Sicht invertieren und die Mengen diffen — **kein neuer Parser**.
 
 - **Vorwärts:** header-gebundene Anforderungs- und Design-Spalte; Design-Artefakte
-  per `design-pattern` (RE2) aus der Design-Zelle, Anforderungen range-aware aus der
-  ID-Spalte.
+  per `design-pattern` (RE2) aus der Design-Zelle, Anforderungen range-aware per
+  `forward.req-pattern` (RE2) aus der ID-Spalte — **symmetrisch** zum
+  `backward.req-pattern` der Rück-Sicht.
 - **Rückwärts:** je Tabelle mit einer `Bezug`-Spalte (header-gebunden) ist die
   **Artefakt-ID die erste Spalte** (positionell, da deren Header je Tabelle variiert
   — `Kennung`/`Port-ID`/`Tabu-ID`/`Komponente` —, per `design-pattern` extrahiert);
@@ -729,6 +730,14 @@ ist: eine Sicht invertieren und die Mengen diffen — **kein neuer Parser**.
 - **Namensraum-Vorbedingung:** Vorwärts- und Rückwärts-Artefakt-IDs werden mit
   **demselben** `design-pattern` erkannt und liegen damit im selben Namensraum;
   andernfalls wäre der Mengen-Diff inhärent leer/voll und bedeutungslos.
+- **Die Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge.** Welche
+  Anforderungen verglichen werden, entscheiden allein `forward.req-pattern` und
+  `backward.req-pattern` — **nicht**, ob eine Anforderung in der RTM steht. Beide
+  fallen per Default auf `requirements.id-pattern` zurück; wer die RTM bewusst auf
+  eine Teilmenge scopt (etwa Architektur-Meta ausschließt), setzt sie **explizit**
+  weiter. Die Kopplung ist damit eine sichtbare Konfigurationsentscheidung: still
+  erzeugte sie eine leere Vorwärts-Sicht, deren Rück-Kanten wie echter Drift
+  aussehen.
 
 Bei mehrschichtigen Spec-Modellen (Vertrag → Spezifikation → Architektur) zeigen
 Rück-Kanten teils auf **Mittelschicht-IDs** ohne eigene RTM-Vorwärts-Zeile. Diese
@@ -788,6 +797,11 @@ Code ändert sich nur unter dem globalen
   `d-check --trace` gegen einen realen Drift läuft, then Exit 2 — der Abgleich
   könnte nie einen Befund liefern; die Meldung benennt das **Ventil**, nicht die
   korrekten Muster.
+- **Boundary (RTM-Scope ≠ Vergleichs-Scope):** Given ein `requirements.id-pattern`,
+  das eine Familie bewusst ausschließt (Architektur-Meta), und ein
+  `forward.req-pattern`, das sie einschließt, when der Abgleich läuft, then wird
+  diese Familie **verglichen** — beide Richtungsdifferenzen erscheinen, obwohl die
+  RTM sie nicht führt.
 - **Boundary (einseitig leere Sicht):** Given eine kantenleere **Vorwärts**-Sicht
   und `B(R) ≠ ∅`, when der Abgleich läuft, then ist das **kein** Fehler: jede
   Rück-Kante wird als `B \ F` gemeldet (der Bootstrap-Zustand vor der
@@ -1953,6 +1967,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.45.0 | 2026-07-17 | Change Request (Auftraggeber): `DC-FA-XREF-001` um **`forward.req-pattern`** erweitert (RE2, Default `requirements.id-pattern`) — symmetrisch zum vorhandenen `backward.req-pattern`, ein Denkmodell statt zwei. Bis dahin las die Vorwärts-Sicht ihre Anforderungs-IDs **still** über `requirements.id-pattern`, die Rück-Sicht über ihr eigenes Muster; die Kopplung stand weder im Vertrag noch in der Config-Oberfläche. Folge bei einer bewusst gescopten RTM (Architektur-Meta ausgeschlossen): die Vorwärts-Sicht ist leer, **jede** Rück-Kante wird als „ohne RTM-Eintrag“ gemeldet, und die eigentliche `F \ B`-Drift verschwindet — ein Falschbefund, der wie echter Drift aussieht. Neu festgehalten: **die Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge** (belegt: eine ID, die das Muster trifft, aber keine RTM-Zeile hat, wird verglichen). Neues Boundary-Kriterium (RTM-Scope ≠ Vergleichs-Scope); Schema-Zeile + Algorithmus-Schritt 2 in `DC-FA-XREF-001.a`; Begründung in der begleitenden ADR. Anlass: Realdaten-Lauf des Konsumenten grid-gym gegen v0.44.0 (Defekt 1 von zweien), belegt durch Umschalten **nur** dieses Musters bei identischen Dateien | slice-071 |
 | 0.44.2 | 2026-07-17 | Change Request (Auftraggeber): die Vakuitäts-Stufe aus 0.44.1 von einer **Ursachen-** auf eine **Wirkungs**-Fassung gezogen. 0.44.1 band Vakuum an die Muster-Ursache („Given ein `design-pattern`, das … vorbeigreift“); ein **übergriffiges `exclude-req`** — fehlerfreie Muster, aber ein Ventil, das jede Anforderung verschluckt — schaltete das Gate bei realem Drift ebenso still ab, war aber von keinem Akzeptanzkriterium gedeckt. Vakuität wird daher **nach** dem Ausschluss gemessen (das Ventil ist selbst eine kuratierte, drift-fähige Kante), und geprüft wird die **Wirkung** — ob der Abgleich konstruktionsbedingt überhaupt einen Befund liefern könnte — statt einer Ursachenliste, die bei der nächsten unbekannten Ursache erneut risse. Neues Negative-Kriterium (Ventil, samt ventil-benennender Meldung); Ausschluss-Stufe in der Fehlerpräzedenz von `DC-FA-XREF-001.a`; Begründung in der begleitenden ADR. Anlass: unabhängiges Closure-Review zu `slice-071` — R3 reproduzierte `exclude-req: '.'` mit `0 Differenz(en)`/Exit 0 bei echtem Drift, R4 wies die AK-Lücke nach | slice-071 |
 | 0.44.1 | 2026-07-17 | Change Request (Auftraggeber): `DC-FA-XREF-001` um eine **Vakuitäts-Stufe** geschärft — ein Abgleich, aus dem keine Kante fällt, ist **kein bestandener** Abgleich, sondern Exit 2. Vakuum ist definiert als **beide** Sichten kantenleer (typischer Anlass: ein `design-pattern`, das kompiliert, aber am Artefakt-Namensraum vorbeigreift — die Namensraum-Kongruenz war bis dahin nur als Vorbedingung *beschrieben*, nicht mechanisiert) **oder** die Rück-Sicht kantenleer unter `mode: superset` (dann kann `B \ F` konstruktionsbedingt nie einen Befund liefern). Abgegrenzt: eine **einseitig** leere Vorwärts-Sicht bleibt ein wohldefiniertes Ergebnis (Diff über `keys(F) ∪ keys(B)`) und meldet `B \ F` laut — der erwartete Bootstrap-Zustand vor der Restrukturierung der Vorwärts-Sicht, den ein Guard sonst mit einer Config-Fehldiagnose abwürgte. Neues Negative- und Boundary-Kriterium; Vakuitäts-Stufe in der Fehlerpräzedenz von `DC-FA-XREF-001.a` der Spezifikation; Begründung + Abgrenzung zum Nullmengen-Guard der Tabellenquellen in der begleitenden ADR. Anlass: unabhängiges Closure-Review zu `slice-071` — R1 reproduzierte das stille Grün, R2 wies den ersten, symmetrisch je Sicht feuernden Fix als vertragswidrig nach | slice-071 |
 | 0.44.0 | 2026-07-16 | Change Request (Auftraggeber): neue Anforderung `DC-FA-XREF-001` — **Kreuzverweis-Konsistenz zweier Traceability-Sichten** (`trace.cross-consistency`, opt-in): der `--trace`-Lauf vergleicht zusätzlich die Vorwärts-RTM-Tabelle (Anforderung → Design-Menge) gegen die Rückwärts-`Bezug`-Kanten (Design → Anforderung) und meldet je Anforderung die beiden Mengendifferenzen `F(R) \ B(R)`/`B(R) \ F(R)` mit Richtungslabel; Modus `equal`/`superset`, `1:N` Normalfall. Beide Sichten kuratierte Tabellen über den header-gebundenen Reader (`DC-FA-REQ-001`) + range-aware Span-Semantik (`DC-FA-COV-001`); Rück-Kanten = Quelle der Wahrheit (Artefakt-ID = erste Spalte via `design-pattern`, `Bezug`-Zelle range-aware). Ableitungssprünge per `exclude-req` (RE2) ausgenommen. Advisory unter `--trace`; Exit-Änderung nur über das globale `--require-complete` (`DC-FA-CLI-011`). Fail-closed (ungültiges Regex/fehlende Spalte/ID-Header nicht genau einmal/unbekannter `mode` ⇒ Exit 2); ohne `trace.cross-consistency`-Block RTM byte-identisch (`DC-QA-02`/`DC-QA-03`). Bereich `XREF` in §3; additive Erweiterung des `--trace`-Laufs (`DC-FA-CLI-009`) **ohne** RTM-Änderung (separate advisory Befunde, keine RTM-Spalte); `DC-FA-XREF-001.a` + Schema-Keys (`trace.cross-consistency.*`) in der Spezifikation; Implementierung, Realdatenbeleg und Release folgen in `slice-071`. Anlass: Konsument grid-gym (Trigger 088) — §27.1 nannte {GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN}, die `Bezug`-Rück-Kanten {GG-AR-P-005, GG-AR-P-009, GG-AR-COMP-SCHED}, Schnittmenge null, von keinem Gate bemerkt | slice-071 |

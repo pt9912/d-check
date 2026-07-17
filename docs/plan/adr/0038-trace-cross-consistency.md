@@ -120,6 +120,37 @@ read-only — sie passt in das `--trace`/`--require-complete`-Idiom
    gegen diese Neigung fiel zugunsten der Wirkungs-Fassung — R4 bestätigte sie und
    revidierte die eigene Lesart. Vertrag nachgezogen als Lastenheft-CR 0.44.2.
 
+9. **Die Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge.**
+   (Nachtrag, 2026-07-17, Status noch `Proposed`.) Die Vorwärts-Sicht las ihre
+   Anforderungs-IDs **still** über `trace.requirements.id-pattern`, während die
+   Rück-Sicht ihr eigenes `req-pattern` mitbrachte. Diese Asymmetrie war beim
+   Entwurf gesehen und dem Schema folgend übernommen — aber **nirgends
+   ausgesprochen**: weder im Lastenheft noch in der Config-Oberfläche.
+   Sie bricht jede Konfiguration, die die RTM bewusst scopt: schließt
+   `requirements.id-pattern` eine Familie aus (Architektur-Meta ist keine
+   Anforderung), ist `F` für sie leer, **jede** Rück-Kante wird als „ohne
+   RTM-Eintrag" gemeldet, und die eigentliche `F \ B`-Drift **verschwindet**. Der
+   Lauf sieht aus wie ein Treffer und ist ein Nebeneffekt von `F = ∅`.
+   Verschärfend: dieser Zustand ist von dem legitimen Bootstrap-Fall
+   (Entscheidung 8) **nicht unterscheidbar** — der Vakuitäts-Guard lässt ihn
+   bewusst durch.
+   **Entscheidung:** `forward.req-pattern` (RE2, Default
+   `trace.requirements.id-pattern`) — symmetrisch zu `backward.req-pattern`, ein
+   Denkmodell statt zwei, kein neues Konzept. Der Default hält die
+   Abwärtskompatibilität; die Kopplung wird durch die Existenz des Schlüssels
+   **sichtbar**.
+   **Verworfen — „die Vorwärts-Sicht ganz von der RTM entkoppeln":** ein
+   Scheinschnitt. Der Abgleich filtert schon heute am **Muster**, nicht an der
+   RTM-Mitgliedschaft (belegt: eine ID, die das Muster trifft, aber keine
+   Lastenheft-Überschrift hat, wird verglichen — 0 Differenzen statt einer
+   feuernden Rück-Kante). Die unabhängige ID-Erkennung **ist** bereits da; sie
+   hatte nur keinen eigenen Schlüssel. Die größere Fläche kauft nichts.
+   **Die eigentliche Lehre** ist nicht der fehlende Schlüssel, sondern seine
+   Unsichtbarkeit: eine still wirkende Kopplung ist ein Falschbefund, der wie
+   echter Drift aussieht; ausgesprochen ist sie eine Konfigurationsentscheidung.
+   Deshalb steht sie jetzt im Lastenheft, im Schema und im Handbuch — nicht nur
+   im Code.
+
 ### Verglichene Alternativen
 
 | Option | Pro | Contra |
@@ -176,4 +207,5 @@ read-only — sie passt in das `--trace`/`--require-complete`-Idiom
 |---|---|
 | 2026-07-16 | Proposed. Change Request grid-gym (Trigger 088, ADR 0080 §4.4 iii), v2 nach Design-Review; Ziel-Architektur „Gate jetzt, Generator später" gegen grid-gyms reale Quellen bestätigt. Umsetzender Slice slice-071. |
 | 2026-07-17 | Entscheidung 8 (Vakuität) nachgetragen, Status weiterhin `Proposed`. Anlass: unabhängiges Closure-Review zu slice-071 — R1 reproduzierte, dass die nur *beschriebene* Namensraum-Vorbedingung ein stilles Grün zuließ (HIGH); R2 wies den ersten, symmetrisch je Sicht feuernden Fix als vertragswidrig nach (er brach den Bootstrap-Zustand aus Entscheidung 3). Vertrag nachgezogen als Lastenheft-CR 0.44.1 ([`DC-FA-XREF-001`](../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)) + [`DC-FA-XREF-001.a`](../../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) Schritt 5. |
+| 2026-07-17 | Entscheidung 9 (Vergleichs-Schlüsselmenge ≠ RTM-Anforderungsmenge) nachgetragen: `forward.req-pattern` macht die bis dahin stille Kopplung an `requirements.id-pattern` sichtbar und überschreibbar. Status weiterhin `Proposed`. Anlass: Realdaten-Lauf des Konsumenten grid-gym gegen v0.44.0 (Defekt 1) — bei gescopter RTM verschwand die `F \ B`-Drift, und der verbleibende Befund sah wie ein Treffer aus. Vertrag nachgezogen als Lastenheft-CR 0.45.0. |
 | 2026-07-17 | Entscheidung 8 auf die **Wirkungs-Fassung** gezogen (Messung nach dem `exclude-req`-Ausschluss) + Entscheidung 5 um den geguardeten Totalfall annotiert; Status weiterhin `Proposed`. Anlass: Review R3 reproduzierte, dass `exclude-req: '.'` das Gate bei realem Drift still abschaltete — dieselbe Silent-Green-Klasse, andere Ursache. Vertrag nachgezogen als Lastenheft-CR 0.44.2. |
