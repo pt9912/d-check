@@ -61,56 +61,83 @@ func (v crossView) add(req, artifact string, e crossEdge) {
 }
 
 // crossConsistency führt den opt-in Kreuzverweis-Abgleich aus (DC-FA-XREF-001.a):
-// beide Quellen lesen, Sichten extrahieren, invertieren, Mengen diffen. cc nil ⇒
-// kein Abgleich (RTM byte-identisch, DC-QA-02). reqPat ist das
+// cc nil ⇒ kein Abgleich (RTM byte-identisch, DC-QA-02). reqPat ist das
 // `trace.requirements.id-pattern` — es erkennt die Anforderungen der
 // Vorwärts-ID-Spalte, während die Rück-Sicht ihr eigenes `req-pattern` für die
 // Kanten-Zelle mitbringt (freier Prosa-Text statt kuratierter ID-Spalte).
-// Die Fehlerpräzedenz ist die des Vertrags: Quellen lesen → Header-Bindung →
-// Range-Expansion → Diff. Reiner Lese-Pfad (DC-QA-03).
+//
+// Die Phasen folgen der Fehlerpräzedenz des Vertrags und sind bewusst **über
+// beide Sichten** gestaffelt, nicht je Sicht durchlaufen: Quellen lesen →
+// Header-Bindung → Range-Expansion → Diff. Der erste Fehler beendet den Lauf.
+// Reiner Lese-Pfad (DC-QA-03).
 func crossConsistency(fsys driven.Filesystem, cc *model.TraceCrossConsistency, reqPat *regexp.Regexp) ([]CrossFinding, error) {
 	if cc == nil {
 		return nil, nil
 	}
-	fwdContent, err := readCrossFile(fsys, crossForwardField, cc.Forward.File)
+	fwdSrc, err := loadCrossSource(fsys, crossForwardField, cc.Forward.File, cc.Forward.Sections, cc.Forward.ExcludeSections)
 	if err != nil {
 		return nil, err
 	}
-	bwdContent, err := readCrossFile(fsys, crossBackwardField, cc.Backward.File)
+	bwdSrc, err := loadCrossSource(fsys, crossBackwardField, cc.Backward.File, cc.Backward.Sections, nil)
 	if err != nil {
 		return nil, err
 	}
-	fwd, err := forwardView(fwdContent, cc.Forward, reqPat)
+	fwdTables, err := bindForwardTables(fwdSrc, cc.Forward)
 	if err != nil {
 		return nil, err
 	}
-	bwd, err := backwardView(bwdContent, cc.Backward, cc.Forward.DesignPattern)
+	bwdTables, err := bindBackwardTables(bwdSrc, cc.Backward)
+	if err != nil {
+		return nil, err
+	}
+	fwd, err := forwardEdges(fwdTables, cc.Forward, reqPat)
+	if err != nil {
+		return nil, err
+	}
+	bwd, err := backwardEdges(bwdTables, cc.Backward, cc.Forward.DesignPattern)
 	if err != nil {
 		return nil, err
 	}
 	return diffViews(fwd, bwd, cc), nil
 }
 
-// readCrossFile liest eine Sicht-Quelle; eine fehlende Datei ist fail-closed
-// (Exit 2) — eine stillschweigend leere Sicht meldete sonst jede Kante der
-// Gegenseite als Differenz.
-func readCrossFile(fsys driven.Filesystem, field, file string) ([]byte, error) {
-	if !pathExists(fsys, file) {
-		return nil, fmt.Errorf("%s.file: Datei %q fehlt", field, file)
-	}
-	return fsys.ReadFile(file)
+// crossSource ist eine gelesene Sicht-Quelle samt ihrer Abschnitts-Maske.
+type crossSource struct {
+	file    string
+	content []byte
+	mask    []bool
 }
 
-// forwardView liest die Vorwärts-Sicht: je Anforderung der ID-Spalte (range-aware)
-// alle Design-Artefakte der Design-Zelle (DC-FA-XREF-001.a Schritt 2).
-func forwardView(content []byte, fc model.TraceCrossForward, reqPat *regexp.Regexp) (crossView, error) {
-	if err := checkCrossSections(crossForwardField, content, fc.Sections, fc.ExcludeSections); err != nil {
-		return nil, err
+// boundTable ist eine **relevante** Tabelle mit aufgelösten Spaltenindizes:
+// vorwärts (Anforderungs-Spalte, Design-Spalte), rückwärts (Artefakt-ID-Spalte,
+// Kanten-Spalte).
+type boundTable struct {
+	rows      []mdTableRow
+	primary   int
+	secondary int
+}
+
+// loadCrossSource liest eine Sicht-Quelle und spannt sie auf ihre Abschnitte.
+// Fail-closed: eine fehlende Datei ist Exit 2 — eine stillschweigend leere Sicht
+// meldete sonst jede Kante der Gegenseite als Differenz.
+func loadCrossSource(fsys driven.Filesystem, field, file string, sections, exclude []string) (crossSource, error) {
+	if !pathExists(fsys, file) {
+		return crossSource{}, fmt.Errorf("%s.file: Datei %q fehlt", field, file)
 	}
-	mask := rules.SectionMask(content, fc.Sections, fc.ExcludeSections)
-	view := crossView{}
-	found := false
-	for _, t := range markdownTables(content, mask) {
+	content, err := fsys.ReadFile(file)
+	if err != nil {
+		return crossSource{}, err
+	}
+	if err := checkCrossSections(field, content, sections, exclude); err != nil {
+		return crossSource{}, err
+	}
+	return crossSource{file: file, content: content, mask: rules.SectionMask(content, sections, exclude)}, nil
+}
+
+// bindForwardTables bindet die Vorwärts-Rollen an ihre Spalten (Header-Phase).
+func bindForwardTables(src crossSource, fc model.TraceCrossForward) ([]boundTable, error) {
+	var out []boundTable
+	for _, t := range markdownTables(src.content, src.mask) {
 		idx, relevant, err := bindCrossColumns(t.header, fc.ReqColumn, fc.DesignColumn)
 		if err != nil {
 			return nil, fmt.Errorf("%s: Tabelle ab Zeile %d: %w", crossForwardField, t.line, err)
@@ -118,90 +145,129 @@ func forwardView(content []byte, fc model.TraceCrossForward, reqPat *regexp.Rege
 		if !relevant {
 			continue
 		}
-		found = true
 		if err := crossBadRow(crossForwardField, t); err != nil {
 			return nil, err
 		}
-		if err := forwardRows(t, idx[0], idx[1], fc, reqPat, view); err != nil {
-			return nil, err
-		}
+		out = append(out, boundTable{rows: t.rows, primary: idx[0], secondary: idx[1]})
 	}
-	if !found {
+	if len(out) == 0 {
 		return nil, fmt.Errorf("%s: keine Tabelle mit den konfigurierten Headern %q, %q in %q",
-			crossForwardField, fc.ReqColumn, fc.DesignColumn, fc.File)
+			crossForwardField, fc.ReqColumn, fc.DesignColumn, src.file)
 	}
-	return view, nil
+	return out, nil
 }
 
-// forwardRows trägt die Kanten einer relevanten Vorwärts-Tabelle ein: je
-// Anforderung der ID-Zelle (range-aware) jedes Artefakt der Design-Zelle.
-func forwardRows(t mdTable, reqIdx, designIdx int, fc model.TraceCrossForward, reqPat *regexp.Regexp, view crossView) error {
-	for _, row := range t.rows {
-		reqs, err := rangeAwareIDs(crossForwardField, row.cells[reqIdx], reqPat, fc.Ranges)
-		if err != nil {
-			return err
-		}
-		for _, req := range reqs {
-			for _, artifact := range fc.DesignPattern.FindAllString(row.cells[designIdx], -1) {
-				view.add(req, artifact, crossEdge{file: fc.File, line: row.line})
-			}
-		}
-	}
-	return nil
-}
-
-// backwardView liest die Rück-Kanten und **invertiert** sie: je in der
-// Kanten-Zelle genannter Anforderung wird die Artefakt-ID aufgenommen
-// (DC-FA-XREF-001.a Schritt 3). Die Artefakt-ID kommt bewusst über
-// designPat — dasselbe Muster wie die Vorwärts-Sicht, denn nur ein
-// gemeinsamer Namensraum macht den Mengen-Diff bedeutungsvoll.
-func backwardView(content []byte, bc model.TraceCrossBackward, designPat *regexp.Regexp) (crossView, error) {
-	if err := checkCrossSections(crossBackwardField, content, bc.Sections, nil); err != nil {
-		return nil, err
-	}
-	mask := rules.SectionMask(content, bc.Sections, nil)
-	view := crossView{}
-	found := false
-	for _, t := range markdownTables(content, mask) {
-		idIdx, edgeIdx, relevant, err := bindBackwardColumns(t.header, bc)
+// bindBackwardTables bindet die Rück-Rollen. Relevanz entsteht **allein** über die
+// Kanten-Spalte (DC-FA-XREF-001.a Schritt 3: „zählt jede Tabelle mit einem
+// edge-column-Header"); die Artefakt-ID-Spalte wird danach aufgelöst — fehlt ein
+// konfigurierter ID-Header in einer relevanten Tabelle, ist das Exit 2 und kein
+// stilles Überspringen, sonst verschwänden ihre Rück-Kanten lautlos.
+func bindBackwardTables(src crossSource, bc model.TraceCrossBackward) ([]boundTable, error) {
+	var out []boundTable
+	for _, t := range markdownTables(src.content, src.mask) {
+		idx, relevant, err := bindCrossColumns(t.header, bc.EdgeColumn)
 		if err != nil {
 			return nil, fmt.Errorf("%s: Tabelle ab Zeile %d: %w", crossBackwardField, t.line, err)
 		}
 		if !relevant {
 			continue
 		}
-		found = true
+		idIdx, err := backwardIDColumn(t, bc)
+		if err != nil {
+			return nil, err
+		}
 		if err := crossBadRow(crossBackwardField, t); err != nil {
 			return nil, err
 		}
-		if err := backwardRows(t, idIdx, edgeIdx, bc, designPat, view); err != nil {
-			return nil, err
-		}
+		out = append(out, boundTable{rows: t.rows, primary: idIdx, secondary: idx[0]})
 	}
-	if !found {
+	if len(out) == 0 {
 		return nil, fmt.Errorf("%s: keine Tabelle mit dem konfigurierten Header %q in %q",
-			crossBackwardField, bc.EdgeColumn, bc.File)
+			crossBackwardField, bc.EdgeColumn, src.file)
 	}
-	return view, nil
+	return out, nil
 }
 
-// backwardRows trägt die invertierten Kanten einer relevanten Rück-Tabelle ein:
-// je Anforderung der Kanten-Zelle (range-aware) die Artefakt-ID der ID-Spalte.
-func backwardRows(t mdTable, idIdx, edgeIdx int, bc model.TraceCrossBackward, designPat *regexp.Regexp, view crossView) error {
-	for _, row := range t.rows {
-		artifact := designPat.FindString(row.cells[idIdx])
-		if artifact == "" {
-			continue // Zeile ohne Artefakt-Kennung (Zwischenüberschrift o. Ä.)
-		}
-		reqs, err := rangeAwareIDs(crossBackwardField, row.cells[edgeIdx], bc.ReqPattern, bc.Ranges)
-		if err != nil {
-			return err
-		}
-		for _, req := range reqs {
-			view.add(req, artifact, crossEdge{file: bc.File, line: row.line})
+// backwardIDColumn löst die Artefakt-ID-Spalte einer bereits relevanten Tabelle
+// auf: der Sentinel `first` nimmt die erste Spalte (heterogene ID-Header,
+// ADR-0038); ein Header-Name muss genau einmal vorkommen (sonst Exit 2).
+func backwardIDColumn(t mdTable, bc model.TraceCrossBackward) (int, error) {
+	if bc.ArtifactIDColumn == model.TraceCrossArtifactFirst {
+		return 0, nil
+	}
+	count, idx := 0, 0
+	for i, cell := range t.header {
+		if cell == bc.ArtifactIDColumn {
+			if count == 0 {
+				idx = i
+			}
+			count++
 		}
 	}
-	return nil
+	if count != 1 {
+		return 0, fmt.Errorf("%s: Tabelle ab Zeile %d: konfigurierter Header %q kommt %d-mal vor (genau einmal erwartet)",
+			crossBackwardField, t.line, bc.ArtifactIDColumn, count)
+	}
+	return idx, nil
+}
+
+// forwardEdges extrahiert die Kanten der Vorwärts-Sicht (Range-Phase): je
+// Anforderung der ID-Zelle (range-aware) jedes Artefakt der Design-Zelle.
+func forwardEdges(tables []boundTable, fc model.TraceCrossForward, reqPat *regexp.Regexp) (crossView, error) {
+	view := crossView{}
+	for _, bt := range tables {
+		for _, row := range bt.rows {
+			reqs, err := rangeAwareIDs(crossForwardField, row.cells[bt.primary], reqPat, fc.Ranges)
+			if err != nil {
+				return nil, err
+			}
+			for _, req := range reqs {
+				for _, artifact := range fc.DesignPattern.FindAllString(row.cells[bt.secondary], -1) {
+					view.add(req, artifact, crossEdge{file: fc.File, line: row.line})
+				}
+			}
+		}
+	}
+	return view, crossNullGuard(crossForwardField, view, fc.File,
+		"req-column/design-column die Rollen treffen und design-pattern den Artefakt-Namensraum")
+}
+
+// backwardEdges extrahiert die **invertierten** Kanten der Rück-Sicht: je
+// Anforderung der Kanten-Zelle (range-aware) die Artefakt-ID der ID-Spalte. Die
+// Artefakt-ID kommt bewusst über designPat — dasselbe Muster wie die
+// Vorwärts-Sicht, denn nur ein gemeinsamer Namensraum macht den Diff bedeutsam.
+func backwardEdges(tables []boundTable, bc model.TraceCrossBackward, designPat *regexp.Regexp) (crossView, error) {
+	view := crossView{}
+	for _, bt := range tables {
+		for _, row := range bt.rows {
+			artifact := designPat.FindString(row.cells[bt.primary])
+			if artifact == "" {
+				continue // Zeile ohne Artefakt-Kennung (Zwischenüberschrift o. Ä.)
+			}
+			reqs, err := rangeAwareIDs(crossBackwardField, row.cells[bt.secondary], bc.ReqPattern, bc.Ranges)
+			if err != nil {
+				return nil, err
+			}
+			for _, req := range reqs {
+				view.add(req, artifact, crossEdge{file: bc.File, line: row.line})
+			}
+		}
+	}
+	return view, crossNullGuard(crossBackwardField, view, bc.File,
+		"artifact-id-column/edge-column die Rollen treffen und design-pattern/req-pattern die Namensräume")
+}
+
+// crossNullGuard mechanisiert die **Namensraum-Vorbedingung** (DC-FA-XREF-001.a
+// Schritt 3): gebundene Tabellen, aus denen keine einzige Kante fällt, bedeuten,
+// dass die Muster am Inhalt vorbeigreifen — dann wäre der Mengen-Diff „inhärent
+// leer und bedeutungslos", und ein `0 Differenz(en)`/Exit 0 behauptete eine nie
+// geprüfte Konsistenz. Dieselbe Nullmengen-Lehre wie ADR-0037 (fail-closed statt
+// irreführender Nullmenge).
+func crossNullGuard(field string, view crossView, file, hint string) error {
+	if len(view) > 0 {
+		return nil
+	}
+	return fmt.Errorf("%s: die gebundenen Tabellen in %q ergaben 0 Kanten — prüfe, dass %s", field, file, hint)
 }
 
 // crossBadRow macht einen Zellenzahl-Bruch in einer relevanten Tabelle
@@ -240,25 +306,6 @@ func bindCrossColumns(header []string, names ...string) ([]int, bool, error) {
 		idx = append(idx, indices[n])
 	}
 	return idx, true, nil
-}
-
-// bindBackwardColumns bindet die Kanten-Spalte über ihren Header und die
-// Artefakt-ID-Spalte entweder positionell (Sentinel `first`, da deren Header über
-// die Tabellen variiert — ADR-0038) oder ebenfalls über den Header-Namen.
-func bindBackwardColumns(header []string, bc model.TraceCrossBackward) (int, int, bool, error) {
-	names := []string{bc.EdgeColumn}
-	if bc.ArtifactIDColumn != model.TraceCrossArtifactFirst {
-		names = append(names, bc.ArtifactIDColumn)
-	}
-	idx, relevant, err := bindCrossColumns(header, names...)
-	if err != nil || !relevant {
-		return 0, 0, false, err
-	}
-	idIdx := 0
-	if len(idx) > 1 {
-		idIdx = idx[1]
-	}
-	return idIdx, idx[0], true, nil
 }
 
 // checkCrossSections spiegelt den fail-closed Sektionsnamen-Guard der

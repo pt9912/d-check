@@ -52,8 +52,8 @@ func bwdDoc(rows string) string {
 
 func crossFS(fwdRows, bwdRows string) *coretest.MemFS {
 	return coretest.NewMemFS(map[string]string{
-		"docs/traceability.md":  fwdDoc(fwdRows),
-		"spec/architecture.md":  bwdDoc(bwdRows),
+		"docs/traceability.md": fwdDoc(fwdRows),
+		"spec/architecture.md": bwdDoc(bwdRows),
 	})
 }
 
@@ -296,5 +296,69 @@ func TestBuildTraceMatrixWithoutCrossBlock(t *testing.T) {
 	}
 	if m.CrossConsistency != nil {
 		t.Fatalf("Befunde ohne Block: %+v", m.CrossConsistency)
+	}
+}
+
+// R1-F-1 (HIGH, DC-FA-XREF-001.a Schritt 3): die Namensraum-Vorbedingung ist
+// mechanisiert. Ein design-pattern, das kompiliert, aber am Artefakt-Namensraum
+// vorbeigreift, macht BEIDE Sichten kantenleer — der Diff wäre „inhärent leer",
+// und `0 Differenz(en)`/Exit 0 behauptete eine nie geprüfte Konsistenz
+// (Nullmengen-Lehre ADR-0037). Erwartet: Exit 2 statt stillem Grün.
+func TestCrossConsistencyNamensraumVorbedingung(t *testing.T) {
+	fs := crossFS(
+		"| GG-ARCH-006 | GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN |\n",
+		"| GG-AR-COMP-SCHED | GG-ARCH-006 |\n",
+	)
+	cfg := crossCfg()
+	// Tippfehler-Klasse: kompiliert, trifft aber kein Artefakt (GG-ARCH- statt GG-AR-).
+	cfg.Forward.DesignPattern = regexp.MustCompile(`GG-ARCH-COMP-[A-Z]+`)
+	_, err := crossConsistency(fs, cfg, ggReqPat)
+	if err == nil {
+		t.Fatal("Namensraum-Fehlgriff ergab stilles Grün statt Exit 2")
+	}
+	if !strings.Contains(err.Error(), "0 Kanten") {
+		t.Fatalf("Fehlertext benennt die Nullmenge nicht: %v", err)
+	}
+}
+
+// R1-F-2 (MEDIUM, DC-FA-XREF-001.a Schritt 3): Relevanz entsteht allein über die
+// Kanten-Spalte — „zählt jede Tabelle mit einem edge-column-Header". Fehlt in einer
+// so relevanten Tabelle der konfigurierte ID-Header, ist das Exit 2; ein stilles
+// Überspringen ließe ihre Rück-Kanten lautlos verschwinden.
+func TestCrossConsistencyBackwardIDHeaderFehlt(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"docs/traceability.md": fwdDoc("| GG-ARCH-006 | GG-AR-COMP-CORE |\n"),
+		// Relevante Tabelle (Bezug), aber ohne den konfigurierten ID-Header „Kennung".
+		"spec/architecture.md": "# A\n\n## 5 Ports\n\n| Port-ID | Bezug |\n|---|---|\n" +
+			"| GG-AR-P-005 | GG-ARCH-006 |\n",
+	})
+	cfg := crossCfg()
+	cfg.Backward.ArtifactIDColumn = "Kennung"
+	_, err := crossConsistency(fs, cfg, ggReqPat)
+	if err == nil {
+		t.Fatal("relevante Bezug-Tabelle ohne ID-Header wurde still übersprungen")
+	}
+	if !strings.Contains(err.Error(), "Kennung") {
+		t.Fatalf("Fehlertext benennt den fehlenden Header nicht: %v", err)
+	}
+}
+
+// Gegenpol zu R1-F-2: ein benannter ID-Header wird korrekt gebunden (nicht nur
+// der `first`-Sentinel) — sonst wäre der Fehlpfad oben trivial grün.
+func TestCrossConsistencyBackwardIDHeaderBenannt(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"docs/traceability.md": fwdDoc("| GG-ARCH-006 | GG-AR-COMP-CORE |\n"),
+		// ID-Spalte NICHT die erste — nur die Header-Bindung findet sie.
+		"spec/architecture.md": "# A\n\n## 4 Komponenten\n\n| Schicht | Kennung | Bezug |\n|---|---|---|\n" +
+			"| Kern | GG-AR-COMP-CORE | GG-ARCH-006 |\n",
+	})
+	cfg := crossCfg()
+	cfg.Backward.ArtifactIDColumn = "Kennung"
+	got, err := crossConsistency(fs, cfg, ggReqPat)
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if len(got) != 0 {
+		t.Fatalf("benannte ID-Spalte nicht gebunden (Differenzen statt Deckung): %+v", got)
 	}
 }
