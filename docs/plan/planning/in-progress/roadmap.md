@@ -39,8 +39,12 @@ null, von keinem Gate bemerkt.
 
 **Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
 
-**Im Eingang (`open/`), doc-first-Vertrag committed, auf Wellen-Einplanung
-wartend:** derzeit keiner.
+**Im Eingang (`open/`), auf Wellen-Einplanung wartend:** slice-072 — Handbuch-
+Aufgabenorientierung der §4-Kapitel gegen den
+[Benutzerhandbuch-Standard](../../../user/benutzerhandbuch-standard.md) §2
+(sieben Audit-Befunde; rein redaktionell — kein Change Request, kein ADR, kein
+Release). Ursache ist strukturell: §4.12 wuchs über die Slices 066–071, weil jeder
+Slice seine Fähigkeit anhängte, statt eine Aufgabe zu schreiben.
 
 **Kandidat (noch kein Slice, auf Freigabe wartend):** ein `--print-version-md`-Scaffold, das ein
 `version.md`-Skelett mit Platzhaltern auf stdout ausgibt (Familie `--print-config`/`--print-mk`/
