@@ -299,12 +299,10 @@ func TestBuildTraceMatrixWithoutCrossBlock(t *testing.T) {
 	}
 }
 
-// R1-F-1 (HIGH, DC-FA-XREF-001.a Schritt 3): die Namensraum-Vorbedingung ist
-// mechanisiert. Ein design-pattern, das kompiliert, aber am Artefakt-Namensraum
-// vorbeigreift, macht BEIDE Sichten kantenleer — der Diff wäre „inhärent leer",
-// und `0 Differenz(en)`/Exit 0 behauptete eine nie geprüfte Konsistenz
-// (Nullmengen-Lehre ADR-0037). Erwartet: Exit 2 statt stillem Grün.
-func TestCrossConsistencyNamensraumVorbedingung(t *testing.T) {
+// Vakuum a (DC-FA-XREF-001.a Schritt 5): ein design-pattern, das kompiliert, aber
+// am Artefakt-Namensraum vorbeigreift, räumt BEIDE Sichten leer (es ist geteilt) —
+// `0 Differenz(en)`/Exit 0 behauptete eine nie geprüfte Konsistenz (R1-F-1).
+func TestCrossConsistencyVakuumBeideSichtenLeer(t *testing.T) {
 	fs := crossFS(
 		"| GG-ARCH-006 | GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN |\n",
 		"| GG-AR-COMP-SCHED | GG-ARCH-006 |\n",
@@ -316,8 +314,62 @@ func TestCrossConsistencyNamensraumVorbedingung(t *testing.T) {
 	if err == nil {
 		t.Fatal("Namensraum-Fehlgriff ergab stilles Grün statt Exit 2")
 	}
-	if !strings.Contains(err.Error(), "0 Kanten") {
-		t.Fatalf("Fehlertext benennt die Nullmenge nicht: %v", err)
+	if !strings.Contains(err.Error(), "beide Sichten ergaben 0 Kanten") {
+		t.Fatalf("Fehlertext benennt das Vakuum nicht: %v", err)
+	}
+}
+
+// Vakuum b (DC-FA-XREF-001.a Schritt 5): unter `superset` gatet allein B\F — eine
+// kantenleere Rück-Sicht kann konstruktionsbedingt nie einen Befund melden, egal
+// wie voll die Vorwärts-Sicht ist. Mutations-hart getrennt von Vakuum a: hier ist
+// F NICHT leer, der (a)-Zweig also nachweislich nicht die Ursache.
+func TestCrossConsistencyVakuumRueckSichtLeerUnterSuperset(t *testing.T) {
+	fs := crossFS(
+		"| GG-ARCH-006 | GG-AR-COMP-CORE |\n",
+		"| GG-AR-COMP-CORE | kein Bezug gepflegt |\n",
+	)
+	cfg := crossCfg()
+	cfg.Mode = model.TraceCrossModeSuperset
+	_, err := crossConsistency(fs, cfg, ggReqPat)
+	if err == nil {
+		t.Fatal("superset mit kantenleerer Rück-Sicht ergab stilles Grün statt Exit 2")
+	}
+	if !strings.Contains(err.Error(), "Rück-Sicht ergab 0 Kanten") {
+		t.Fatalf("Fehlertext benennt die leere Rück-Sicht nicht: %v", err)
+	}
+	// Gegenprobe: unter `equal` ist derselbe Stand KEIN Vakuum — F\B gatet und
+	// meldet laut. Ohne diese Zeile wäre der mode-Zweig oben nicht belegt.
+	got, err := crossConsistency(fs, crossCfg(), ggReqPat)
+	if err != nil {
+		t.Fatalf("equal mit leerer Rück-Sicht darf kein Fehler sein: %v", err)
+	}
+	if len(got) != 1 || got[0].Direction != CrossDirForwardOnly {
+		t.Fatalf("equal-Gegenprobe: %+v", got)
+	}
+}
+
+// KEIN Vakuum (DC-FA-XREF-001 Boundary): eine einseitig leere VORWÄRTS-Sicht ist
+// ein wohldefiniertes Ergebnis, kein Fehler — der Diff läuft über keys(F) ∪ keys(B).
+// Das ist der Bootstrap-Zustand (unrestrukturierte RTM, gepflegte Rück-Kanten), den
+// ADR-0038 Entscheidung 3 dem Konsumenten aufträgt und Entscheidung 7 als
+// Generator-Eingang braucht; ein symmetrischer Guard würgte ihn ab (R2-F-1).
+func TestCrossConsistencyLeereVorwaertsSichtIstKeinVakuum(t *testing.T) {
+	fs := crossFS(
+		// Noch Prosa statt konkreter IDs — genau die Vorarbeit, die aussteht.
+		"| GG-ARCH-006 | alle Scheduler-Komponenten (siehe Architektur) |\n",
+		"| GG-AR-COMP-SCHED | GG-ARCH-006 |\n| GG-AR-P-005 | GG-ARCH-006 |\n",
+	)
+	got, err := crossConsistency(fs, crossCfg(), ggReqPat)
+	if err != nil {
+		t.Fatalf("leere Vorwärts-Sicht darf kein Exit 2 sein (Bootstrap-Zustand): %v", err)
+	}
+	if len(got) != 2 {
+		t.Fatalf("erwartete 2 laute B\\F-Befunde, got %+v", got)
+	}
+	for _, f := range got {
+		if f.Direction != CrossDirBackwardOnly {
+			t.Fatalf("unerwartete Richtung: %+v", f)
+		}
 	}
 }
 
@@ -328,17 +380,25 @@ func TestCrossConsistencyNamensraumVorbedingung(t *testing.T) {
 func TestCrossConsistencyBackwardIDHeaderFehlt(t *testing.T) {
 	fs := coretest.NewMemFS(map[string]string{
 		"docs/traceability.md": fwdDoc("| GG-ARCH-006 | GG-AR-COMP-CORE |\n"),
-		// Relevante Tabelle (Bezug), aber ohne den konfigurierten ID-Header „Kennung".
-		"spec/architecture.md": "# A\n\n## 5 Ports\n\n| Port-ID | Bezug |\n|---|---|\n" +
+		// ZWEI Bezug-Tabellen mit heterogenen ID-Headern (der Realfall aus ADR-0038).
+		// Tabelle 1 trägt „Kennung" und deckt die Vorwärts-Sicht; Tabelle 2 trägt ihn
+		// nicht. Solange die Relevanz an der ID-Spalte hing, verschwand Tabelle 2 samt
+		// ihrer Kante still — B blieb nicht-leer (Tabelle 1), also griff auch kein
+		// Vakuitäts-Guard, und `superset` meldete 0 Differenzen/Exit 0, obwohl die
+		// echte Kante GG-AR-P-005 → GG-ARCH-006 keinen RTM-Eintrag hat.
+		"spec/architecture.md": "# A\n\n## 4 Komponenten\n\n| Kennung | Bezug |\n|---|---|\n" +
+			"| GG-AR-COMP-CORE | GG-ARCH-006 |\n\n" +
+			"## 5 Ports\n\n| Port-ID | Bezug |\n|---|---|\n" +
 			"| GG-AR-P-005 | GG-ARCH-006 |\n",
 	})
 	cfg := crossCfg()
 	cfg.Backward.ArtifactIDColumn = "Kennung"
+	cfg.Mode = model.TraceCrossModeSuperset
 	_, err := crossConsistency(fs, cfg, ggReqPat)
 	if err == nil {
-		t.Fatal("relevante Bezug-Tabelle ohne ID-Header wurde still übersprungen")
+		t.Fatal("relevante Bezug-Tabelle ohne ID-Header wurde still übersprungen (Kante verloren, Exit 0)")
 	}
-	if !strings.Contains(err.Error(), "Kennung") {
+	if !strings.Contains(err.Error(), "Kennung") || !strings.Contains(err.Error(), "0-mal") {
 		t.Fatalf("Fehlertext benennt den fehlenden Header nicht: %v", err)
 	}
 }

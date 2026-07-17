@@ -74,11 +74,19 @@ func crossConsistency(fsys driven.Filesystem, cc *model.TraceCrossConsistency, r
 	if cc == nil {
 		return nil, nil
 	}
-	fwdSrc, err := loadCrossSource(fsys, crossForwardField, cc.Forward.File, cc.Forward.Sections, cc.Forward.ExcludeSections)
+	fwdContent, err := readCrossFile(fsys, crossForwardField, cc.Forward.File)
 	if err != nil {
 		return nil, err
 	}
-	bwdSrc, err := loadCrossSource(fsys, crossBackwardField, cc.Backward.File, cc.Backward.Sections, nil)
+	bwdContent, err := readCrossFile(fsys, crossBackwardField, cc.Backward.File)
+	if err != nil {
+		return nil, err
+	}
+	fwdSrc, err := spanCrossSource(crossForwardField, cc.Forward.File, fwdContent, cc.Forward.Sections, cc.Forward.ExcludeSections)
+	if err != nil {
+		return nil, err
+	}
+	bwdSrc, err := spanCrossSource(crossBackwardField, cc.Backward.File, bwdContent, cc.Backward.Sections, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -96,6 +104,9 @@ func crossConsistency(fsys driven.Filesystem, cc *model.TraceCrossConsistency, r
 	}
 	bwd, err := backwardEdges(bwdTables, cc.Backward, cc.Forward.DesignPattern)
 	if err != nil {
+		return nil, err
+	}
+	if err := crossVacuity(fwd, bwd, cc.Mode); err != nil {
 		return nil, err
 	}
 	return diffViews(fwd, bwd, cc), nil
@@ -117,17 +128,20 @@ type boundTable struct {
 	secondary int
 }
 
-// loadCrossSource liest eine Sicht-Quelle und spannt sie auf ihre Abschnitte.
-// Fail-closed: eine fehlende Datei ist Exit 2 — eine stillschweigend leere Sicht
-// meldete sonst jede Kante der Gegenseite als Differenz.
-func loadCrossSource(fsys driven.Filesystem, field, file string, sections, exclude []string) (crossSource, error) {
+// readCrossFile liest eine Sicht-Quelle (Stufe „Quellen lesen"). Fail-closed:
+// eine fehlende Datei ist Exit 2 — eine stillschweigend leere Sicht meldete sonst
+// jede Kante der Gegenseite als Differenz.
+func readCrossFile(fsys driven.Filesystem, field, file string) ([]byte, error) {
 	if !pathExists(fsys, file) {
-		return crossSource{}, fmt.Errorf("%s.file: Datei %q fehlt", field, file)
+		return nil, fmt.Errorf("%s.file: Datei %q fehlt", field, file)
 	}
-	content, err := fsys.ReadFile(file)
-	if err != nil {
-		return crossSource{}, err
-	}
+	return fsys.ReadFile(file)
+}
+
+// spanCrossSource spannt eine gelesene Quelle auf ihre Abschnitte (eigene Stufe
+// NACH dem Lesen beider Quellen — sonst verdeckte ein Vorwärts-Sektionsfehler die
+// fehlende Rückwärts-Datei, die eine Stufe früher liegt).
+func spanCrossSource(field, file string, content []byte, sections, exclude []string) (crossSource, error) {
 	if err := checkCrossSections(field, content, sections, exclude); err != nil {
 		return crossSource{}, err
 	}
@@ -228,8 +242,7 @@ func forwardEdges(tables []boundTable, fc model.TraceCrossForward, reqPat *regex
 			}
 		}
 	}
-	return view, crossNullGuard(crossForwardField, view, fc.File,
-		"req-column/design-column die Rollen treffen und design-pattern den Artefakt-Namensraum")
+	return view, nil
 }
 
 // backwardEdges extrahiert die **invertierten** Kanten der Rück-Sicht: je
@@ -253,21 +266,36 @@ func backwardEdges(tables []boundTable, bc model.TraceCrossBackward, designPat *
 			}
 		}
 	}
-	return view, crossNullGuard(crossBackwardField, view, bc.File,
-		"artifact-id-column/edge-column die Rollen treffen und design-pattern/req-pattern die Namensräume")
+	return view, nil
 }
 
-// crossNullGuard mechanisiert die **Namensraum-Vorbedingung** (DC-FA-XREF-001.a
-// Schritt 3): gebundene Tabellen, aus denen keine einzige Kante fällt, bedeuten,
-// dass die Muster am Inhalt vorbeigreifen — dann wäre der Mengen-Diff „inhärent
-// leer und bedeutungslos", und ein `0 Differenz(en)`/Exit 0 behauptete eine nie
-// geprüfte Konsistenz. Dieselbe Nullmengen-Lehre wie ADR-0037 (fail-closed statt
-// irreführender Nullmenge).
-func crossNullGuard(field string, view crossView, file, hint string) error {
-	if len(view) > 0 {
-		return nil
+// crossVacuity prüft, ob der Abgleich überhaupt etwas vergleicht
+// (DC-FA-XREF-001.a Schritt 5). Ein Abgleich ohne eine einzige Kante ist **kein
+// bestandener** Abgleich: die Muster greifen am Inhalt vorbei, und ein
+// `0 Differenz(en)`/Exit 0 behauptete eine nie geprüfte Konsistenz.
+//
+// Vakuum ist genau zweierlei:
+//   - **beide** Sichten kantenleer — typischer Anlass ist ein `design-pattern`,
+//     das kompiliert, aber am Artefakt-Namensraum vorbeigreift; weil es zwischen
+//     den Sichten geteilt ist (Schritt 3), räumt es beide zugleich leer;
+//   - die **Rück**-Sicht kantenleer unter `mode: superset` — dort gatet allein
+//     `B \ F`, also kann konstruktionsbedingt nie ein Befund entstehen.
+//
+// **Nicht** vakuum ist eine einseitig leere Sicht mit nicht-leerer Gegenseite:
+// der Diff läuft über `keys(F) ∪ keys(B)` und ist dafür wohldefiniert. Eine noch
+// unrestrukturierte Vorwärts-Sicht bei gepflegten Rück-Kanten ist der erwartete
+// Bootstrap-Zustand (ADR-0038 Entscheidungen 3/7) — sie meldet `B \ F` laut. Ein
+// symmetrisch je Sicht feuernder Guard würgte sie mit einer Config-Fehldiagnose ab.
+func crossVacuity(fwd, bwd crossView, mode string) error {
+	if len(fwd) == 0 && len(bwd) == 0 {
+		return fmt.Errorf("trace.cross-consistency: beide Sichten ergaben 0 Kanten — der Abgleich verglich nichts; "+
+			"prüfe, ob %s.design-pattern den Artefakt-Namensraum beider Sichten trifft", crossForwardField)
 	}
-	return fmt.Errorf("%s: die gebundenen Tabellen in %q ergaben 0 Kanten — prüfe, dass %s", field, file, hint)
+	if len(bwd) == 0 && mode == model.TraceCrossModeSuperset {
+		return fmt.Errorf("trace.cross-consistency: die Rück-Sicht ergab 0 Kanten und mode: superset gatet allein "+
+			"B \\ F — der Abgleich könnte nie eine Differenz melden; prüfe %s.edge-column/req-pattern", crossBackwardField)
+	}
+	return nil
 }
 
 // crossBadRow macht einen Zellenzahl-Bruch in einer relevanten Tabelle
