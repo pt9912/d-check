@@ -6,6 +6,31 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.44.1] — 2026-07-17
+
+### Fixed
+
+- **Verlinkte Range-/Enum-Fortsetzungen expandieren wieder** (`trace.coverage`,
+  `trace.cross-consistency`): Der geteilte Range-Parser überspringt hinter einer
+  Kennung **genau ein** Markdown-Link-Suffix und liest die Fortsetzung dahinter.
+  Bis v0.44.0 lieferte `` [`GG-UI-001`](…)..003 `` nur `GG-UI-001`, während das
+  unverlinkte `GG-UI-001..003` korrekt expandierte — die Range-Zusage kollidierte
+  strukturell mit d-checks eigener Linkpflicht (`ids` mit `link-policy: always`).
+  Der Defekt bestand in `trace.coverage` **seit v0.41.0** und erzeugte dort
+  **falsche Waisen**, die unter `--require-complete` fälschlich gateten
+  ([ADR-0039](docs/plan/adr/0039-link-transparente-range-fortsetzung.md)).
+
+  **Wirkung auf bestehende Läufe:** Wer verlinkte Ranges führt, sieht **weniger**
+  Waisen bzw. Differenzen — ein fälschlich roter Lauf wird grün. Kein Konsument
+  verliert Deckung, kein Befund entsteht neu. Wer keine verlinkten Ranges nutzt,
+  ist nicht betroffen (byte-identisch).
+
+  Bewusst eng gefasst: übersprungen wird **nur** ein Link-Suffix — nicht
+  Whitespace, Emphasis, ein zweites Suffix oder Text zwischen `)` und der
+  Fortsetzung. Jede weitere Toleranz würde die Autor-Absicht raten. Die
+  Fail-closed-Fälle (`AAA>BBB`, abweichende Ziffern-Breite) gelten unverändert
+  auch hinter einem Link.
+
 ## [0.44.0] — 2026-07-17
 
 ### Added
