@@ -796,13 +796,16 @@ Eine ID-Regex allein migriert das Format nicht; für native Tabellen müssen
 `format: table`, `table.id-column`, genau eine von `table.text-column` oder
 `table.text-columns` und optional `table.modality-column` konfiguriert sein.
 
-**Zwei Traceability-Sichten gegeneinander prüfen
-(`trace.cross-consistency`).** Führen Sie Anforderung→Design in **zwei**
-Sichten — einer kuratierten RTM-Tabelle (Anforderung → Design-Artefakte) und
-Rück-Kanten am Design selbst (je Artefakt eine `Bezug`-Spalte) —, dann driften
-die beiden auseinander, ohne dass ein Modul es bemerkt: `matrix` prüft die
-Richtung, `trace.coverage` die Abdeckung, `ids` die Existenz. Keines vergleicht
-die konkreten **Mengen**. Der opt-in Block tut genau das:
+**Prüfen, ob Ihre RTM-Tabelle noch zum Design passt
+(`trace.cross-consistency`).** *Ausgangslage:* Sie pflegen Anforderung→Design an
+**zwei** Orten — einer kuratierten RTM-Tabelle (je Anforderung die
+Design-Artefakte) und am Design selbst (je Artefakt eine `Bezug`-Spalte mit
+seinen Anforderungen). Beide sollen dasselbe sagen. Nach ein paar Monaten sagen
+sie es nicht mehr, und niemandem fällt es auf. *Ziel:* die Stellen finden, an
+denen die beiden auseinanderlaufen.
+
+**Schritt 1 — die beiden Sichten benennen.** Sagen Sie d-check, wo sie stehen und
+woran es Anforderungen und Artefakte erkennt:
 
 ```yaml
 trace:
@@ -822,6 +825,15 @@ trace:
     exclude-req: '^GG-SPEC-'
 ```
 
+Die `Bezug`-Spalte allein macht eine Tabelle zur Rück-Sicht; die Artefakt-ID
+nimmt d-check aus deren **erster** Spalte, weil die je Tabelle anders heißt
+(`Komponente`, `Port-ID`, `Kennung`). `exclude-req` blendet Anforderungen aus,
+auf die Rück-Kanten zeigen, die aber keine eigene RTM-Zeile haben (etwa eine
+Spezifikations-Zwischenschicht).
+
+**Schritt 2 — laufen lassen.** Als Gate mit `--require-complete`, sonst nur
+`--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
+
 ```text
 $ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
     --trace --require-complete
@@ -837,19 +849,27 @@ $ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
 d-check: 2 Kreuzverweis-Differenz(en) zwischen Vorwärts- und Rück-Sicht (--require-complete)
 ```
 
-Die `GG-SPEC-042`-Rück-Kante der Mittelschicht fehlt in der Ausgabe — sie fällt
-per `exclude-req` heraus. Genau dafür ist das Ventil da.
+**Schritt 3 — die Befunde abarbeiten.** Jede Zeile nennt die Datei und Zeile, an
+der Sie ansetzen, und die Richtung sagt Ihnen, **welche** Seite Sie anfassen:
 
-Die RTM darüber bleibt unverändert — der Abgleich ist eine **eigene** Ausgabe,
-keine zusätzliche Spalte. `--trace` allein bleibt advisory (Exit 0); erst
-`--require-complete` macht Differenzen zum Gate (Exit 1).
+- *„in RTM, ohne Rück-Kante"* — Ihre Tabelle behauptet ein Artefakt, das die
+  Anforderung nicht (mehr) nennt. Meist ist die Tabelle veraltet.
+- *„Rück-Kante, ohne RTM-Eintrag"* — das Design nennt die Anforderung, Ihre
+  Tabelle kennt das Artefakt nicht. Meist fehlt die Tabellen-Zeile.
 
-Zwei Dinge, die in der Praxis zählen: Die Rück-Kanten sind die **Quelle der
-Wahrheit** (sie stehen dort, wo das Design gepflegt wird) — die RTM-Tabelle ist
-der Spiegel, der driftet. Und solange Ihre RTM-Tabelle noch Prosa oder
-Familien-Wildcards statt konkreter IDs enthält, meldet der Lauf schlicht **alle**
-Rück-Kanten als „ohne RTM-Eintrag": Das ist kein Fehler, sondern die Arbeitsliste
-für die Restrukturierung. Details und die vollständige Fehlerliste in §5.
+Im Zweifel gewinnt die **Rück-Kante**: sie steht dort, wo das Design gepflegt
+wird, und wird beim Ändern mitgeführt. Die RTM-Tabelle ist der Spiegel — sie
+driftet. Die `GG-SPEC-042`-Rück-Kante taucht übrigens nicht auf: sie fällt per
+`exclude-req` heraus.
+
+Die RTM oberhalb bleibt unverändert; der Abgleich ist eine **eigene** Ausgabe,
+keine zusätzliche Spalte.
+
+**Wenn Ihre Tabelle noch Prosa enthält.** Steht dort „alle Scheduler-Komponenten
+(siehe Architektur)" statt konkreter IDs, meldet der Lauf schlicht *alle*
+Rück-Kanten als „ohne RTM-Eintrag". Das ist kein Fehler, sondern Ihre
+Arbeitsliste: Sie können die Tabelle daran entlang auf konkrete IDs umbauen.
+Die vollständige Feld- und Fehlerliste steht in §5.
 
 ### 4.13 Ein Makefile-Fragment einbinden (`--print-mk`)
 
