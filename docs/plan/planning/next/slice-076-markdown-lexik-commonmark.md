@@ -1,6 +1,6 @@
 # Slice slice-076: Markdown-Lexik an CommonMark/GFM angleichen (Trennzeile + Fence-Infozeile)
 
-**Status:** open (Eingang, auf Wellen-Einplanung wartend).
+**Status:** next (Backlog, auf Aufnahme in eine Welle wartend).
 
 **Bezug:** **Defekt-Fix**, **kein Change Request**: das Lastenheft sagt weder, was
 eine Trennzeile ist, noch was einen Fence öffnet — beides ist
@@ -44,7 +44,7 @@ Kurz:
   `~~~` gilt die Regel nicht (CommonMark-Asymmetrie, keine d-check-Eigenheit).
 - **Die Grenze ist das Gemessene.** Keine weiteren CommonMark-Angleichungen auf
   Verdacht — das ist die Lehre aus
-  [slice-074](slice-074-kommentar-suffix-tabellenzeilen.md) §2: fünf Fassungen,
+  [slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md) §2: fünf Fassungen,
   die eine Regel knapp neben dem belegten Problem platzierten.
 - **Kein Parser** — gemessen, nicht behauptet ([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) Entscheidung 4).
 
@@ -72,7 +72,7 @@ Kurz:
   ließ `make test` grün). Das ist die R3-F-2-Lehre.
 - [ ] **Differential-Gegenprobe:** der goldmark-Spike über die 522 Realdateien
   fällt von 8 auf 2 Abweichungen; die zwei Reste sind Policy
-  ([slice-077](slice-077-stiller-tabellen-uebersprung.md)), nicht Grammatik.
+  ([slice-077](../open/slice-077-stiller-tabellen-uebersprung.md)), nicht Grammatik.
 - [ ] **Nutzerdoku:** Handbuch — die Trennzeilen- und Fence-Regel stehen dort als
   Nutzer-Vertrag; CHANGELOG mit dem Release-Prep. **Die Minor-Ansage gehört in
   die Release-Notiz:** ein grüner Konsumentenlauf kann danach rot werden.
@@ -105,7 +105,7 @@ Kurz:
 ## 5. Trigger
 
 Nutzer-Frage „Brauchen wir einen besseren Markdown-Parser?" (2026-07-17), gestellt
-während der Rücknahme von [slice-074](slice-074-kommentar-suffix-tabellenzeilen.md).
+während der Rücknahme von [slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md).
 Der daraufhin gefahrene Differential-Spike (goldmark v1.8.4 gegen 522 reale
 Dateien, 490 Tabellen) lieferte **8 Abweichungen, alle in dieselbe Richtung**:
 d-check sieht Tabellen nicht, die jeder Renderer zeigt. Die Antwort auf die Frage

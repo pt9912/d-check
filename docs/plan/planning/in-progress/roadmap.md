@@ -53,7 +53,11 @@ null, von keinem Gate bemerkt.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
+**Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:**
+[`slice-076`](../next/slice-076-markdown-lexik-commonmark.md) —
+Markdown-Lexik an CommonMark/GFM angleichen
+([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) Proposed;
+Defekt-Fix, kein CR, aber **SemVer-Minor** — d-check findet danach **mehr**).
 
 **Im Eingang (`open/`), auf Wellen-Einplanung wartend:**
 [`slice-074`](../open/slice-074-kommentar-suffix-tabellenzeilen.md) —
@@ -65,16 +69,6 @@ Fassungen dieselbe Klasse belegt — zuletzt R3-F-1, ein Stilles-Grün-Pfad
 ausgeliefert (Exit 2 auf einer Zeile, die jeder Renderer normal darstellt);
 die Rücknahme ist die ehrliche Zwischenlage, nicht die Lösung. Vorbedingung
 für den Realdatenbeleg von slice-071.
-
-Ferner [`slice-076`](../open/slice-076-markdown-lexik-commonmark.md) —
-Markdown-Lexik an CommonMark/GFM angleichen
-([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) Proposed;
-Defekt-Fix, kein CR, aber **SemVer-Minor** — d-check findet danach **mehr**).
-Zwei ausgelieferte, **stille** Abweichungen: die Trennzelle verlangt drei
-Bindestriche statt einem (GFM), und eine `` ``` ``-Zeile mit Backtick in der
-Infozeile öffnet fälschlich einen Fence und blendet **alle** Module bis zum
-Dateiende. Belegt per Differential gegen goldmark v1.8.4 über 522 reale Dateien:
-490 Tabellen, 8 Abweichungen, alle „d-check ist blind".
 
 Ferner [`slice-077`](../open/slice-077-stiller-tabellen-uebersprung.md) —
 stiller Tabellen-Übersprung: eine **irrelevante** Tabelle gleicher Breite
