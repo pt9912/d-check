@@ -6,6 +6,40 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.44.0] — 2026-07-17
+
+### Added
+
+- **Kreuzverweis-Konsistenz zweier Traceability-Sichten** (`trace.cross-consistency`,
+  opt-in): Der `--trace`-Lauf vergleicht zusätzlich eine **Vorwärts**-RTM-Tabelle
+  (Anforderung → Design-Artefaktmenge) gegen die **Rückwärts**-`Bezug`-Kanten
+  (Design → Anforderung, die Quelle der Wahrheit) und meldet je Anforderung beide
+  Mengendifferenzen mit Richtungslabel und `Datei:Zeile`. Modi `equal` (beide
+  Richtungen gaten) und `superset` (nur „Rück-Kante ohne RTM-Eintrag"); Ventil
+  `exclude-req` für Ableitungssprünge in Mittelschichten; `artifact-id-column: first`
+  nimmt die erste Spalte, wenn die ID-Header über die Tabellen heterogen sind.
+  Beide Sichten laufen über den vorhandenen header-gebundenen Tabellen-Reader und
+  die range-aware Span-Semantik — kein neuer Parser.
+- Der Abgleich ist **advisory** (`--trace` bleibt Exit 0) und gatet allein über das
+  globale `--require-complete` (≥ 1 Differenz ⇒ Exit 1) — kein block-lokaler
+  Schalter. `--print-config` führt den neuen Block.
+- **Fail-closed** (Exit 2): fehlendes `forward`/`backward`, unbekannter `mode`,
+  nicht kompilierbares Regex, leeres Pflichtfeld, fehlende Sicht-Quelle, keine
+  Tabelle mit den konfigurierten Headern, mehrfacher Rollen-Header, Sektionsname
+  ohne Heading-Treffer, Zellenzahl-Bruch — sowie ein **vakuumer Abgleich**: greifen
+  die Muster am Inhalt vorbei oder verschluckt `exclude-req` jede Anforderung, kann
+  der Lauf konstruktionsbedingt nie eine Differenz melden; ein `0 Differenz(en)`
+  behauptete dann eine nie geprüfte Konsistenz.
+
+### Unchanged
+
+- Ohne `trace.cross-consistency`-Block ist die RTM in allen drei Formaten
+  **byte-identisch** (Markdown, `--json`, `--yaml`); es wird nichts geschrieben und
+  kein Netz berührt. Eine einseitig leere **Vorwärts**-Sicht bei gepflegten
+  Rück-Kanten ist **kein** Fehler, sondern meldet jede Rück-Kante laut — der
+  erwartete Zustand, solange die RTM-Tabelle noch nicht auf konkrete IDs
+  restrukturiert ist.
+
 ## [0.43.1] — 2026-07-15
 
 ### Fixed

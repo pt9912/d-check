@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.29 · **Software-Version:** [v0.43.1](../../version.md#v0.43.1) ·
-**Stand:** 2026-07-14 · **Autor:** pt9912
+**Handbuch-Version:** 1.30 · **Software-Version:** [v0.44.0](../../version.md#v0.44.0) ·
+**Stand:** 2026-07-17 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -63,7 +63,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.43.1
+docker pull ghcr.io/pt9912/d-check:v0.44.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -71,7 +71,7 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.43.1` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.44.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -100,7 +100,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -146,7 +146,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -165,7 +165,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.43.1
+  ghcr.io/pt9912/d-check:v0.44.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -184,7 +184,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.43.1 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.44.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -203,7 +203,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -229,7 +229,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -238,7 +238,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -250,7 +250,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -270,7 +270,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
   --enable ids --disable anchors
 ```
 
@@ -291,7 +291,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
   --enable ids
 ```
 
@@ -312,7 +312,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
   --enable matrix
 ```
 
@@ -379,7 +379,7 @@ verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
   --enable external
 ```
 
@@ -399,7 +399,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
   --enable ids --doctor
 ```
 
@@ -427,7 +427,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
   --enable ids --doctor --json
 ```
 
@@ -475,7 +475,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -511,7 +511,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
     --enable ids --repair | git apply
   ```
 
@@ -528,7 +528,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -548,7 +548,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -633,7 +633,7 @@ in einzeiligen Backtick-Code-Spans bleiben Teil derselben Zelle.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.43.1 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -794,6 +794,61 @@ Eine ID-Regex allein migriert das Format nicht; für native Tabellen müssen
 `format: table`, `table.id-column`, genau eine von `table.text-column` oder
 `table.text-columns` und optional `table.modality-column` konfiguriert sein.
 
+**Zwei Traceability-Sichten gegeneinander prüfen
+(`trace.cross-consistency`).** Führen Sie Anforderung→Design in **zwei**
+Sichten — einer kuratierten RTM-Tabelle (Anforderung → Design-Artefakte) und
+Rück-Kanten am Design selbst (je Artefakt eine `Bezug`-Spalte) —, dann driften
+die beiden auseinander, ohne dass ein Modul es bemerkt: `matrix` prüft die
+Richtung, `trace.coverage` die Abdeckung, `ids` die Existenz. Keines vergleicht
+die konkreten **Mengen**. Der opt-in Block tut genau das:
+
+```yaml
+trace:
+  requirements:
+    id-pattern: 'GG-[A-Z]+-\d{3}'
+  cross-consistency:
+    forward:
+      file: docs/traceability.md
+      sections: ["27.1 Anforderung zu Design"]
+      req-column: Anforderung
+      design-column: Design-Artefakte
+      design-pattern: 'GG-AR-[A-Z0-9-]+'
+    backward:
+      file: spec/architecture.md
+      edge-column: Bezug
+      req-pattern: 'GG-[A-Z]+-\d{3}'
+    exclude-req: '^GG-SPEC-'
+```
+
+```text
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.0 \
+    --trace --require-complete
+…
+## Kreuzverweis-Konsistenz
+
+| Anforderung | Artefakt | Richtung | Quelle |
+|---|---|---|---|
+| GG-ARCH-006 | GG-AR-COMP-CORE | in RTM, ohne Rück-Kante | docs/traceability.md:7 |
+| GG-ARCH-006 | GG-AR-COMP-SCHED | Rück-Kante, ohne RTM-Eintrag | spec/architecture.md:7 |
+
+2 Differenz(en).
+d-check: 2 Kreuzverweis-Differenz(en) zwischen Vorwärts- und Rück-Sicht (--require-complete)
+```
+
+Die `GG-SPEC-042`-Rück-Kante der Mittelschicht fehlt in der Ausgabe — sie fällt
+per `exclude-req` heraus. Genau dafür ist das Ventil da.
+
+Die RTM darüber bleibt unverändert — der Abgleich ist eine **eigene** Ausgabe,
+keine zusätzliche Spalte. `--trace` allein bleibt advisory (Exit 0); erst
+`--require-complete` macht Differenzen zum Gate (Exit 1).
+
+Zwei Dinge, die in der Praxis zählen: Die Rück-Kanten sind die **Quelle der
+Wahrheit** (sie stehen dort, wo das Design gepflegt wird) — die RTM-Tabelle ist
+der Spiegel, der driftet. Und solange Ihre RTM-Tabelle noch Prosa oder
+Familien-Wildcards statt konkreter IDs enthält, meldet der Lauf schlicht **alle**
+Rück-Kanten als „ohne RTM-Eintrag": Das ist kein Fehler, sondern die Arbeitsliste
+für die Restrukturierung. Details und die vollständige Fehlerliste in §5.
+
 ### 4.13 Ein Makefile-Fragment einbinden (`--print-mk`)
 
 **Ziel:** d-check als `doc-check`-Schritt ins eigene Makefile einbinden, ohne
@@ -803,7 +858,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.43.1 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.44.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -816,7 +871,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.43.1
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.44.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -1196,6 +1251,53 @@ ASCII — ein konfiguriertes Umlaut-Rand-Keyword träfe nicht); kein Treffer ⇒
 `modality` byte-identisch (keine Spalte, kein Feld, `--require-complete` gatet
 alle Waisen).
 
+Der opt-in **`trace.cross-consistency`**-Block vergleicht **zwei unabhängig
+gepflegte Sichten derselben Anforderung→Design-Relation** (siehe §4.12): die
+**Vorwärts**-Sicht (eine RTM-Tabelle: je Anforderung die Design-Artefaktmenge)
+gegen die **Rückwärts**-Kanten (je Design-Artefakt seine Anforderungen — dort
+authort, wo das Design lebt, und damit die **Quelle der Wahrheit**). Gemeldet
+werden je Anforderung die beiden Mengendifferenzen mit Richtungslabel und
+`Datei:Zeile`. Beide Sichten sind kuratierte Markdown-Tabellen und werden über
+denselben header-gebundenen Reader gelesen wie `requirements.format: table`.
+
+- **`forward`** (Pflicht): `file`, `req-column`, `design-column`,
+  `design-pattern` (extrahiert die Artefakt-IDs aus der Design-Zelle); optional
+  `sections`/`exclude-sections` (Span-Semantik wie `trace.coverage`) und
+  `ranges` (Default true, expandiert `<FAM>-AAA..BBB` in der ID-Spalte).
+- **`backward`** (Pflicht): `file`, `edge-column` (z. B. `Bezug` — sie **allein**
+  macht eine Tabelle relevant), `req-pattern` (erkennt die Anforderungs-IDs in
+  der Kanten-Zelle); `artifact-id-column` ist der Sentinel `first` (Default:
+  erste Spalte — für über die Tabellen **heterogene** ID-Header wie
+  `Kennung`/`Port-ID`/`Komponente`) **oder** ein Header-Name, der dann je
+  relevanter Tabelle genau einmal vorkommen muss; optional `sections`, `ranges`.
+- **`mode`**: `equal` (Default; beide Differenzen gaten) oder `superset` (nur
+  „Rück-Kante ohne RTM-Eintrag").
+- **`exclude-req`**: Regex für **Ableitungssprünge** — Mittelschicht-IDs, die
+  Rück-Kanten nennen, ohne eine eigene RTM-Zeile zu haben. Ein benanntes Ventil
+  mit eigener Drift-Gefahr (wie `matrix.exclude-sections`), kein gelöstes Problem.
+
+**Namensraum:** die Artefakt-IDs beider Sichten werden bewusst mit **demselben**
+`forward.design-pattern` erkannt — nur so ist der Mengen-Diff bedeutungsvoll.
+
+Der Abgleich ist **advisory**: `--trace` bleibt Exit 0 und die RTM unverändert
+(keine zusätzliche Spalte — die Differenzen erscheinen als eigener Abschnitt
+darunter). Den Exit-Code ändert allein das globale `--require-complete`
+(≥ 1 Differenz ⇒ Exit 1); einen block-lokalen Schalter gibt es nicht.
+
+**Fail-closed (Exit 2):** fehlendes `forward`/`backward`, unbekannter `mode`,
+nicht kompilierbares Regex, leeres Pflichtfeld, fehlende Sicht-Datei, ein
+Sektionsname ohne Heading-Treffer, keine Tabelle mit den konfigurierten Headern,
+ein mehrfach vorkommender Rollen-Header, eine relevante Zeile mit falscher
+Zellenzahl — sowie ein **vakuumer Abgleich**: greifen die Muster am Inhalt vorbei
+(beide Sichten kantenleer) oder verschluckt `exclude-req` jede Anforderung, dann
+könnte der Lauf konstruktionsbedingt nie eine Differenz melden, und ein
+`0 Differenz(en)` behauptete eine nie geprüfte Konsistenz. Dasselbe gilt für eine
+kantenleere Rück-Sicht unter `mode: superset`. **Nicht** fail-closed ist eine
+einseitig leere **Vorwärts**-Sicht bei gepflegten Rück-Kanten: das ist der
+erwartete Zustand, solange die RTM-Tabelle noch nicht auf konkrete IDs
+restrukturiert ist — sie meldet dann jede Rück-Kante laut. Ohne den Block ist die
+RTM byte-identisch.
+
 ## 6. Regelmodule
 
 | Modul       | Standard      | Prüft                                                                                    | Grund-Codes                                                 |
@@ -1335,3 +1437,5 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.26             | v0.42.0          | 2026-07-11 | Modalitäts-Klassifikation `trace.requirements.modality` (§4.12/§5): aus konfigurierbaren Modalverb-Stichwörtern (DE+EN-Defaults, opt-in) klassifiziert die RTM jede Anforderung als MUSS/SOLLTE/KANN in einer **eigenen Modalitäts-Spalte** (längster Treffer, Wortgrenze, Markup-normalisiert); optional gatet `require-levels`, welche Stufen einen Waisen zum Exit-1-Fehler machen (Default: nur MUSS). Fail-closed bei leerem Level/Stichwort, reserviertem `unknown`, Stichwort in zwei Stufen, ungültigem `require-levels` ⇒ Exit 2; ohne Block byte-identisch                |
 | 1.27             | v0.42.0          | 2026-07-14 | Trace-Präzisierung (§4.12/§5): Requirement-Definition nur als ATX-Heading mit ID im ersten Token; Tabellen-/Listen-/Fließtextgrenze, Body-only-Modalität, exakte Waisen- und Referenzscan-Semantik, Warnung vor leerer RTM mit Exit 0 sowie Brownfield-Migration für tabellarische Lastenhefte dokumentiert                |
 | 1.28             | v0.43.1          | 2026-07-14 | Native Trace-Tabellenquellen (§4.12/§5): `trace.requirements.format: table` bindet ID-, alternative Text- und optionale Modalitätsspalten über exakte Header-Namen; Pipe-Escaping, deterministische Duplikatpolitiken und gemeinsames RTM-Modell. Nichtleer explizite Quelle oder Tabellenmodus endet bei fehlender Quelle, ungültiger Tabellenstruktur oder null Anforderungen fail-closed mit Exit 2; unkonfigurierter Heading-Default bleibt kompatibel                |
+| 1.29             | v0.43.1          | 2026-07-15 | Keine inhaltliche Änderung — Software-Version auf v0.43.1 nachgezogen (die Zeile 1.28 wurde dabei von v0.43.0 auf v0.43.1 umgebogen). Zeile nachgetragen: der Kopf trug 1.29 seit dem v0.43.1-Release-Prep ohne eigenen Historien-Eintrag (Prosa-Currency-Lücke, kein Gate erfasst sie — siehe [releasing.md](releasing.md) §Release-Prep)                                        |
+| 1.30             | v0.44.0          | 2026-07-17 | Kreuzverweis-Konsistenz `trace.cross-consistency` (§4.12/§5): der `--trace`-Lauf vergleicht die Vorwärts-RTM-Tabelle (Anforderung → Design) gegen die Rückwärts-`Bezug`-Kanten (Design → Anforderung) und meldet je Anforderung beide Mengendifferenzen mit Richtung und `Datei:Zeile`; Modi `equal`/`superset`, `exclude-req`-Ventil für Ableitungssprünge, `artifact-id-column: first` für heterogene ID-Header. Advisory unter `--trace`, gatend allein über `--require-complete`; fail-closed inkl. vakuumem Abgleich; ohne Block RTM byte-identisch |

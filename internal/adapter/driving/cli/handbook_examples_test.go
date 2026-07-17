@@ -107,6 +107,21 @@ func handbookExamples() []handbookExample {
 		write(t, root, ".d-check.yml", "trace:\n  requirements:\n    source: spec/lastenheft.md\n    id-pattern: 'F-[0-9]+'\n")
 		write(t, root, "spec/lastenheft.md", "| ID | Modalität | Anforderung |\n| --- | --- | --- |\n| F-1 | Muss | Das Repository enthält alles. |\n")
 	}
+	crossConsistency := func(t *testing.T, root string) {
+		write(t, root, ".d-check.yml", "trace:\n  requirements:\n    id-pattern: 'GG-[A-Z]+-\\d{3}'\n"+
+			"  cross-consistency:\n    forward:\n      file: docs/traceability.md\n"+
+			"      sections: [\"27.1 Anforderung zu Design\"]\n      req-column: Anforderung\n"+
+			"      design-column: Design-Artefakte\n      design-pattern: 'GG-AR-[A-Z0-9-]+'\n"+
+			"    backward:\n      file: spec/architecture.md\n      edge-column: Bezug\n"+
+			"      req-pattern: 'GG-[A-Z]+-\\d{3}'\n    exclude-req: '^GG-SPEC-'\n")
+		write(t, root, "spec/lastenheft.md", "### GG-ARCH-006\nDer Scheduler MUSS entkoppelt sein.\n")
+		write(t, root, "docs/plan/planning/slice-071-x.md", "# slice\nBezug: GG-ARCH-006\n")
+		write(t, root, "docs/traceability.md", "# Traceability\n\n## 27.1 Anforderung zu Design\n\n"+
+			"| Anforderung | Design-Artefakte |\n|---|---|\n| GG-ARCH-006 | GG-AR-COMP-CORE |\n")
+		write(t, root, "spec/architecture.md", "# Architektur\n\n## 4 Komponenten\n\n"+
+			"| Komponente | Bezug |\n|---|---|\n| GG-AR-COMP-SCHED | GG-ARCH-006 |\n"+
+			"| GG-AR-COMP-MID | GG-SPEC-042 |\n")
+	}
 	return []handbookExample{
 		{
 			name:       "§3/§4.1 sauberes Repo (Summary, Exit 0)",
@@ -160,6 +175,25 @@ func handbookExamples() []handbookExample {
 			wantExit:   2,
 			fixture:    tableOnlyRequirements,
 			formTokens: []string{"d-check: error:", "ergab 0 Anforderungen"},
+		},
+		{
+			// slice-071: der Abgleich erscheint als EIGENER Abschnitt unter der RTM
+			// (keine RTM-Spalte) und gatet über das globale --require-complete. Die
+			// Form-Anker koppeln beide Richtungslabels + die stderr-Zählzeile.
+			name:       "§4.12 --trace --require-complete (Kreuzverweis-Differenzen)",
+			outputInfo: "text",
+			outputDisc: "## Kreuzverweis-Konsistenz",
+			flags:      []string{"--trace", "--require-complete"},
+			wantFlags:  []string{"--trace", "--require-complete"},
+			wantExit:   1,
+			fixture:    crossConsistency,
+			formTokens: []string{
+				"## Kreuzverweis-Konsistenz",
+				"in RTM, ohne Rück-Kante",
+				"Rück-Kante, ohne RTM-Eintrag",
+				"Differenz(en).",
+				"Kreuzverweis-Differenz(en) zwischen Vorwärts- und Rück-Sicht",
+			},
 		},
 		{
 			name:       "§4.11 --json (Befundliste)",
