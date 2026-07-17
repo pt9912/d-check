@@ -66,6 +66,24 @@ ausgeliefert (Exit 2 auf einer Zeile, die jeder Renderer normal darstellt);
 die Rücknahme ist die ehrliche Zwischenlage, nicht die Lösung. Vorbedingung
 für den Realdatenbeleg von slice-071.
 
+Ferner [`slice-076`](../open/slice-076-markdown-lexik-commonmark.md) —
+Markdown-Lexik an CommonMark/GFM angleichen
+([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) Proposed;
+Defekt-Fix, kein CR, aber **SemVer-Minor** — d-check findet danach **mehr**).
+Zwei ausgelieferte, **stille** Abweichungen: die Trennzelle verlangt drei
+Bindestriche statt einem (GFM), und eine `` ``` ``-Zeile mit Backtick in der
+Infozeile öffnet fälschlich einen Fence und blendet **alle** Module bis zum
+Dateiende. Belegt per Differential gegen goldmark v1.8.4 über 522 reale Dateien:
+490 Tabellen, 8 Abweichungen, alle „d-check ist blind".
+
+Ferner [`slice-077`](../open/slice-077-stiller-tabellen-uebersprung.md) —
+stiller Tabellen-Übersprung: eine **irrelevante** Tabelle gleicher Breite
+verschluckt ohne Leerzeile die folgende **relevante**; deren Anforderungen
+verschwinden lautlos (`0 Waise(n)`/Exit 0 bei zwei echten Waisen, gemessen gegen
+das ausgelieferte v0.45.1, **ohne** jeden Marker). **Bewusst ohne ADR erfasst —
+die tragende Regel ist offen**, und die naheliegende ist bereits widerlegt. Von
+den offenen Tabellen-Defekten der einzige, der still Waisen verschweigt.
+
 Ferner slice-075 —
 Komma-Kurzform fail-closed
 ([ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) Proposed; **Change

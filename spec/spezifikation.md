@@ -368,7 +368,8 @@ Ablauf formatunabhängig.
    `modalityText` = Body bis zur nächsten gleich-/höherrangigen Überschrift.
 3. **Tabellen-Lexik.** Außerhalb von Fenced-Code beginnt eine Tabelle mit einer
    Headerzeile und der unmittelbar folgenden Trennzeile. Jede Trennzelle matcht
-   `^:?-{3,}:?$`; führende/abschließende Pipes sind optional. Ein `\|` und eine
+   `^:?-+:?$` — **ein** Bindestrich genügt (GFM); führende/abschließende Pipes
+   sind optional. Ein `\|` und eine
    Pipe in einem auf derselben Zeile korrekt geschlossenen Backtick-Code-Span
    teilen keine Zelle. Zellen werden getrimmt; `\|` wird danach zu `|`.
    Mehrzeilige Zellen/Fences innerhalb einer Zelle, HTML-Tabellen und
@@ -740,6 +741,14 @@ nicht.
 1. **Fences:** Zeilen, deren erste Nicht-Leerzeichen-Folge mit
    ` ``` ` oder `~~~` beginnt, schalten den Fence-Zustand um;
    Zeilen im Fence-Zustand werden von allen Modulen ignoriert.
+   **Infozeilen-Regel (CommonMark):** eine ` ``` `-Zeile, deren Rest
+   einen **Backtick** enthält, ist **kein** Fence-Öffner, sondern
+   Fließtext — sie schaltet nichts um. Ohne die Regel öffnet ein Satz
+   **über** einen Fence (```` ```yaml-Fence (`datei.md`) — … ````) einen
+   Fence-Zustand, der bis zum nächsten Öffner oder zum Dateiende reicht,
+   und blendet **alle** Module für diesen Bereich: Befunde verschwinden
+   lautlos (Exit 1 ⇒ Exit 0). Für `~~~`-Öffner gilt die Regel **nicht**
+   (CommonMark erlaubt dort Backticks in der Infozeile).
 2. **Inline-Code:** Backtick-Spans werden durch Leerzeichen gleicher
    Länge ersetzt (positionserhaltend — angrenzender Text kann nicht
    zu Schein-Vorkommen verschmelzen); die öffnende Backtick-Folge
@@ -1877,6 +1886,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung | Verweis |
 |---|---|---|
+| 2026-07-17 | **Markdown-Lexik an CommonMark/GFM angeglichen**, zwei Regeln: §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritt 3 — Trennzelle `^:?-{3,}:?$` → `^:?-+:?$` (GFM verlangt **einen** Bindestrich, wir verlangten drei; jede reale Tabelle mit `\| -- \|` war für d-check keine Tabelle). §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 1 — **Infozeilen-Regel**: eine ` ``` `-Zeile mit Backtick im Rest ist kein Fence-Öffner (CommonMark), sondern Fließtext; ohne sie blendet ein Satz **über** einen Fence **alle** Module bis zum Dateiende (Exit 1 ⇒ Exit 0, gemessen). Beides **still** und **ausgeliefert**; belegt per Differential-Spike gegen goldmark v1.8.4 über 522 reale Dateien (490 Tabellen ⇒ 8 Abweichungen, alle „d-check ist blind"). **Defekt-Fix, kein CR** (das Lastenheft sagt weder, was eine Trennzeile ist, noch was einen Fence öffnet), aber **SemVer-Minor**: d-check findet danach **mehr**. Begründung in [ADR-0042](../docs/plan/adr/0042-markdown-lexik-folgt-commonmark.md) | slice-076 |
 | 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 um die **Komma-Kurzform** ergänzt: Kennung + Komma + Ziffern ⇒ Exit 2 mit Hinweis auf die zugesagten Notationen, statt stillem Drop oder geratener Expansion. Komma vor einer vollständigen Kennung bleibt unberührt. Lastenheft-CR 0.46.0; Begründung in der begleitenden ADR | slice-075 |
 | 2026-07-17 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) Schritt 2 + §2-Schema um **`forward.req-pattern`** ergänzt (Default `trace.requirements.id-pattern`, symmetrisch zu `backward.req-pattern`). Die Vorwärts-Sicht las ihre IDs bis dahin **still** über das RTM-Muster — die Kopplung war nirgends ausgesprochen. Festgehalten: die **Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge** (das Muster entscheidet, nicht die RTM-Mitgliedschaft). Lastenheft-CR 0.45.0; Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) (Entscheidung 9) | slice-071 |
 | 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 (Range-Parser) um **Link-Transparenz** geschärft: die Fortsetzung `..NNN`/`/NNN` darf **genau einmal** durch ein Markdown-Link-Suffix `](…)` unterbrochen sein, dahinter gilt wieder „unmittelbar“; weitergehendes Peeling (Whitespace, Emphasis, zweites Suffix) bleibt ausgeschlossen. Wirkt über den geteilten Parser zugleich auf §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). **Defekt-Fix, kein CR:** das Lastenheft verspricht die Expansion unqualifiziert — die Verengung „unmittelbar“ stand allein hier und kollidierte strukturell mit der Linkpflicht ([`DC-FA-ID-001`](lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)); betroffen war `trace.coverage` seit v0.41.0 (verlinkte Range ⇒ falsche Waisen). Begründung in [ADR-0039](../docs/plan/adr/0039-link-transparente-range-fortsetzung.md) | slice-073 |
