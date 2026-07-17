@@ -6,6 +6,36 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.45.0] — 2026-07-17
+
+### Added
+
+- **`trace.cross-consistency.forward.req-pattern`** (RE2, Default
+  `trace.requirements.id-pattern`) — symmetrisch zum vorhandenen
+  `backward.req-pattern`. Er erkennt die Anforderungs-IDs der Vorwärts-ID-Spalte
+  und trennt damit den **Vergleichs-Scope vom RTM-Scope**: welche Anforderungen
+  der Abgleich vergleicht, entscheidet das Muster — **nicht**, ob eine Anforderung
+  in der RTM steht. `--print-config` führt den Schlüssel samt Warnung.
+
+### Fixed
+
+- **Kein Falschbefund mehr bei bewusst gescopter RTM.** Bis v0.44.1 las die
+  Vorwärts-Sicht ihre IDs **still** über `trace.requirements.id-pattern`, während
+  die Rück-Sicht ihr eigenes Muster nutzte — die Kopplung stand weder im Vertrag
+  noch in der Config-Oberfläche. Schließt ein Repo eine Familie bewusst aus der
+  RTM aus (etwa Architektur-Meta, das keine Anforderung ist), war `F(R)` für sie
+  leer: **jede** Rück-Kante wurde als „Rück-Kante, ohne RTM-Eintrag" gemeldet, und
+  die eigentliche `F \ B`-Differenz **verschwand**. Der Lauf sah aus wie ein
+  Treffer, war aber ein Nebeneffekt der leeren Sicht. Wer bisher keine gescopte RTM
+  fährt, ist nicht betroffen (byte-identisch).
+
+### Changed
+
+- `DC-FA-XREF-001` (Lastenheft 0.45.0) hält nun ausdrücklich fest: **die
+  Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge**, und der
+  Default-Rückfall auf `requirements.id-pattern` ist eine sichtbare
+  Konfigurationsentscheidung, keine Ableitung.
+
 ## [0.44.1] — 2026-07-17
 
 ### Fixed

@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.31 · **Software-Version:** [v0.44.1](../../version.md#v0.44.1) ·
+**Handbuch-Version:** 1.32 · **Software-Version:** [v0.45.0](../../version.md#v0.45.0) ·
 **Stand:** 2026-07-17 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -63,7 +63,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.44.1
+docker pull ghcr.io/pt9912/d-check:v0.45.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -71,7 +71,7 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.44.1` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.45.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -100,7 +100,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -146,7 +146,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -165,7 +165,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.44.1
+  ghcr.io/pt9912/d-check:v0.45.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -184,7 +184,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.44.1 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.45.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -203,7 +203,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -229,7 +229,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -238,7 +238,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -250,7 +250,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -270,7 +270,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
   --enable ids --disable anchors
 ```
 
@@ -291,7 +291,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
   --enable ids
 ```
 
@@ -312,7 +312,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
   --enable matrix
 ```
 
@@ -379,7 +379,7 @@ verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
   --enable external
 ```
 
@@ -399,7 +399,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
   --enable ids --doctor
 ```
 
@@ -427,7 +427,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
   --enable ids --doctor --json
 ```
 
@@ -475,7 +475,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -511,7 +511,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
     --enable ids --repair | git apply
   ```
 
@@ -528,7 +528,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -548,7 +548,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -633,7 +633,7 @@ in einzeiligen Backtick-Code-Spans bleiben Teil derselben Zelle.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -835,7 +835,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.44.1 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.45.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -880,7 +880,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.44.1 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.45.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -893,7 +893,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.44.1
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.45.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -1298,6 +1298,8 @@ denselben header-gebundenen Reader gelesen wie `requirements.format: table`.
 
 - **`forward`** (Pflicht): `file`, `req-column`, `design-column`,
   `design-pattern` (extrahiert die Artefakt-IDs aus der Design-Zelle); optional
+  `req-pattern` (erkennt die Anforderungs-IDs der `req-column` — Default
+  `requirements.id-pattern`, siehe **Scope-Falle** unten),
   `sections`/`exclude-sections` (Span-Semantik wie `trace.coverage`) und
   `ranges` (Default true, expandiert `<FAM>-AAA..BBB` in der ID-Spalte).
 - **`backward`** (Pflicht): `file`, `edge-column` (z. B. `Bezug` — sie **allein**
@@ -1314,6 +1316,18 @@ denselben header-gebundenen Reader gelesen wie `requirements.format: table`.
 
 **Namensraum:** die Artefakt-IDs beider Sichten werden bewusst mit **demselben**
 `forward.design-pattern` erkannt — nur so ist der Mengen-Diff bedeutungsvoll.
+
+**Scope-Falle: der Vergleich ist nicht die RTM.** Welche Anforderungen verglichen
+werden, entscheiden `forward.req-pattern` und `backward.req-pattern` — **nicht**,
+ob eine Anforderung in Ihrer RTM steht. Beide fallen per Default auf
+`requirements.id-pattern` zurück. Das ist bequem, solange beide Mengen
+zusammenfallen — und eine Falle, sobald Sie Ihre RTM **bewusst scopen**:
+Schließt `requirements.id-pattern` etwa Architektur-Meta aus (weil es keine
+Anforderung ist), findet die Vorwärts-Sicht dort **nichts**, und **jede**
+Rück-Kante dieser Familie wird als „Rück-Kante, ohne RTM-Eintrag" gemeldet —
+während die echte Differenz in der Gegenrichtung *verschwindet*. Das sieht wie ein
+Treffer aus und ist keiner. **Gegenmittel:** `forward.req-pattern` explizit auf die
+Familien setzen, die verglichen werden sollen; die RTM bleibt davon unberührt.
 
 Der Abgleich ist **advisory**: `--trace` bleibt Exit 0 und die RTM unverändert
 (keine zusätzliche Spalte — die Differenzen erscheinen als eigener Abschnitt
@@ -1476,3 +1490,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.29             | v0.43.1          | 2026-07-15 | Keine inhaltliche Änderung — Software-Version auf v0.43.1 nachgezogen (die Zeile 1.28 wurde dabei von v0.43.0 auf v0.43.1 umgebogen). Zeile nachgetragen: der Kopf trug 1.29 seit dem v0.43.1-Release-Prep ohne eigenen Historien-Eintrag (Prosa-Currency-Lücke, kein Gate erfasst sie — siehe [releasing.md](releasing.md) §Release-Prep)                                        |
 | 1.30             | v0.44.0          | 2026-07-17 | Kreuzverweis-Konsistenz `trace.cross-consistency` (§4.12/§5): der `--trace`-Lauf vergleicht die Vorwärts-RTM-Tabelle (Anforderung → Design) gegen die Rückwärts-`Bezug`-Kanten (Design → Anforderung) und meldet je Anforderung beide Mengendifferenzen mit Richtung und `Datei:Zeile`; Modi `equal`/`superset`, `exclude-req`-Ventil für Ableitungssprünge, `artifact-id-column: first` für heterogene ID-Header. Advisory unter `--trace`, gatend allein über `--require-complete`; fail-closed inkl. vakuumem Abgleich; ohne Block RTM byte-identisch |
 | 1.31             | v0.44.1          | 2026-07-17 | Range-Notation unter Linkpflicht (§5): eine verlinkte Range/Enum-Fortsetzung (`` [`GG-QA-001`](…)..006 ``) wird wie die unverlinkte gelesen — d-check überspringt genau ein Link-Suffix. Bis v0.44.0 expandierte sie gar nicht und erzeugte in `trace.coverage` falsche Waisen; die eng gefasste Grenze (kein Whitespace/Emphasis/zweites Suffix) ist dokumentiert                          |
+| 1.32             | v0.45.0          | 2026-07-17 | Scope-Trennung des Kreuzverweis-Abgleichs (§5): `forward.req-pattern` (Default `requirements.id-pattern`) erkennt die Anforderungs-IDs der Vorwärts-Sicht — welche Anforderungen verglichen werden, entscheidet das Muster, nicht die RTM-Mitgliedschaft. Die bis v0.44.1 stille Kopplung ist als **Scope-Falle** dokumentiert: bei bewusst gescopter RTM meldete sie jede Rück-Kante als Falschbefund, während die echte Gegenrichtung verschwand                                                    |
