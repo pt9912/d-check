@@ -317,9 +317,10 @@ func TestCrossConsistencyVakuumBeideSichtenLeer(t *testing.T) {
 	if !strings.Contains(err.Error(), "beide Sichten ergaben 0 Kanten") {
 		t.Fatalf("Fehlertext benennt das Vakuum nicht: %v", err)
 	}
-	// Ohne gesetztes Ventil darf die Diagnose es auch nicht erwähnen.
+	// Hier greifen die Muster wirklich vorbei (schon vor jedem Ausschluss) — die
+	// Diagnose zeigt dorthin und nicht auf ein Ventil.
 	if strings.Contains(err.Error(), "exclude-req") {
-		t.Fatalf("Diagnose nennt ein gar nicht gesetztes Ventil: %v", err)
+		t.Fatalf("Diagnose verdächtigt ein Ventil statt der Muster: %v", err)
 	}
 	// Der Hint muss auf DIESE Ursache zeigen (design-pattern), nicht auf die der
 	// anderen Vakuum-Art — sonst wären die Hints vertauschbar, ohne dass ein Test
@@ -457,10 +458,15 @@ func TestCrossConsistencyVakuumDurchUebergriffigesVentil(t *testing.T) {
 	if !strings.Contains(err.Error(), "beide Sichten ergaben 0 Kanten") {
 		t.Fatalf("Fehlertext benennt das Vakuum nicht: %v", err)
 	}
-	// Die Diagnose muss das Ventil nennen — pauschal in die Muster-Config zu
-	// schicken wäre hier eine Fehldiagnose (die Muster sind korrekt).
-	if !strings.Contains(err.Error(), "exclude-req") {
+	// Die Diagnose muss das Ventil benennen — und die Muster NICHT: sie sind hier
+	// nachweislich korrekt (vor dem Ausschluss lagen Kanten vor). Eine Meldung, die
+	// trotzdem in die Muster-Config schickt, ist eine Fehldiagnose
+	// (DC-FA-XREF-001: „die Meldung benennt das Ventil, nicht die korrekten Muster").
+	if !strings.Contains(err.Error(), "exclude-req hat jede Anforderung") {
 		t.Fatalf("Fehldiagnose: Meldung nennt das übergriffige Ventil nicht: %v", err)
+	}
+	if strings.Contains(err.Error(), "design-pattern") {
+		t.Fatalf("Fehldiagnose: Meldung verdächtigt die korrekten Muster: %v", err)
 	}
 	// Gegenprobe: ein eng gefasstes Ventil lässt den Drift stehen und meldet ihn.
 	cfg.ExcludeReq = regexp.MustCompile(`^GG-SPEC-`)

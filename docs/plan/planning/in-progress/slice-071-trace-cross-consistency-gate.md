@@ -6,7 +6,8 @@
 
 **Bezug:** neuer Lastenheft-Change-Request
 [`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)
-(Lastenheft 0.44.0), Mit-Änderung
+(Lastenheft 0.44.2 — 0.44.0 initial, 0.44.1/0.44.2 als
+Review-getriebene Vakuitäts-Schärfungen), Mit-Änderung
 [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
 und Gate über
 [`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code);
@@ -53,8 +54,11 @@ Reader-Reuse und byte-identischer RTM für Nicht-Konsumenten.
   ([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)),
   kein block-lokaler Schalter.
 - **Fail-closed / byte-identisch:** ungültiges Regex, fehlende Spalte, ID-Header
-  nicht genau einmal, unbekannter `mode` ⇒ Exit 2; ohne `trace.cross-consistency`-
-  Block ist die RTM byte-identisch
+  nicht genau einmal, unbekannter `mode` ⇒ Exit 2; ebenso ein **vakuumer Abgleich**
+  (beide Sichten kantenleer, oder Rück-Sicht kantenleer unter `superset`, oder
+  `exclude-req` verschluckt alles) — nachgezogen als Lastenheft 0.44.1/0.44.2 nach
+  den Review-Runden R1–R4; ohne `trace.cross-consistency`-Block ist die RTM
+  byte-identisch
   ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus)), read-only
   ([`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 
@@ -91,11 +95,16 @@ Reader-Reuse und byte-identischer RTM für Nicht-Konsumenten.
   grün. Der Lauf gegen das **echte** grid-gym-Repo steht aus — er hängt an der in
   §4 benannten Konsumenten-Vorarbeit (§27.1 auf konkrete IDs restrukturieren) und
   ist erst danach aussagekräftig.
-- [ ] **Nutzerdoku:** Handbuch/Changelog/Operations gepflegt.
-- [ ] **Release:** Versionsregister/Release-Prep, Tag und GHCR samt
-  Digest-Backfill.
-- [ ] **Qualität:** unabhängiger, kontext-getrennter Closure-Review; `make gates`
-  und `make ci` grün.
+- [x] **Nutzerdoku:** Handbuch 1.30 (§4.12 Aufgabe mit **am Image verifizierter**
+  Ausgabe + E2E-Verankerung im Beispiel-Harness, §5 Config), CHANGELOG 0.44.0,
+  `operations.md` (`--trace` + die zweite `--require-complete`-Gate-Ursache).
+- [ ] **Release:** Versionsregister/Release-Prep **erledigt** (v0.44.0, `make ci`
+  grün); Tag, GHCR-Push und Digest-Backfill stehen aus.
+- [x] **Qualität:** vier unabhängige, kontext-getrennte Review-Runden (R1 REJECT →
+  R4 ohne Code-Vorbehalt) plus unabhängiger Closure-Review
+  ([`2026-07-17-slice-071-closure-independent.md`](../../../reviews/2026-07-17-slice-071-closure-independent.md),
+  ACCEPT-WITH-NITS, Tag freigegeben; die Nits sind eingearbeitet); `make gates` und
+  `make ci` grün.
 
 ## 4. Risiken / offene Designpunkte
 

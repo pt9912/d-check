@@ -106,8 +106,13 @@ func crossConsistency(fsys driven.Filesystem, cc *model.TraceCrossConsistency, r
 	if err != nil {
 		return nil, err
 	}
+	// Kanten VOR dem Ausschluss merken: nur so ist unterscheidbar, ob die Muster
+	// am Inhalt vorbeigreifen oder ob das Ventil alles verschluckt hat — sonst
+	// bliebe die Vakuitäts-Meldung eine Ursachen-Vermutung (DC-FA-XREF-001:
+	// „die Meldung benennt das Ventil, nicht die korrekten Muster").
+	rawFwd, rawBwd := len(fwd), len(bwd)
 	fwd, bwd = excludeReqs(fwd, cc.ExcludeReq), excludeReqs(bwd, cc.ExcludeReq)
-	if err := crossVacuity(fwd, bwd, cc); err != nil {
+	if err := crossVacuity(fwd, bwd, cc, rawFwd, rawBwd); err != nil {
 		return nil, err
 	}
 	return diffViews(fwd, bwd, cc.Mode), nil
@@ -305,28 +310,39 @@ func excludeReqs(view crossView, exclude *regexp.Regexp) crossView {
 // unrestrukturierte Vorwärts-Sicht bei gepflegten Rück-Kanten ist der erwartete
 // Bootstrap-Zustand (ADR-0038 Entscheidungen 3/7) — sie meldet `B \ F` laut. Ein
 // symmetrisch je Sicht feuernder Guard würgte sie mit einer Config-Fehldiagnose ab.
-func crossVacuity(fwd, bwd crossView, cc *model.TraceCrossConsistency) error {
+func crossVacuity(fwd, bwd crossView, cc *model.TraceCrossConsistency, rawFwd, rawBwd int) error {
 	if len(fwd) == 0 && len(bwd) == 0 {
 		return fmt.Errorf("trace.cross-consistency: beide Sichten ergaben 0 Kanten — der Abgleich verglich nichts; %s",
-			vacuityHint(cc, crossForwardField+".design-pattern den Artefakt-Namensraum beider Sichten trifft"))
+			vacuityHint(cc, rawFwd+rawBwd, rawFwd > 0 && rawBwd > 0,
+				crossForwardField+".design-pattern den Artefakt-Namensraum beider Sichten trifft"))
 	}
 	if len(bwd) == 0 && cc.Mode == model.TraceCrossModeSuperset {
 		return fmt.Errorf("trace.cross-consistency: die Rück-Sicht ergab 0 Kanten und mode: superset gatet allein "+
 			"B \\ F — der Abgleich könnte nie eine Differenz melden; %s",
-			vacuityHint(cc, crossBackwardField+".edge-column/req-pattern die Rück-Kanten treffen"))
+			vacuityHint(cc, rawBwd, rawBwd > 0,
+				crossBackwardField+".edge-column/req-pattern die Rück-Kanten treffen"))
 	}
 	return nil
 }
 
-// vacuityHint benennt die möglichen Ursachen — und nennt das Ventil nur, wenn es
-// überhaupt gesetzt ist. Eine Meldung, die pauschal in die Muster-Config schickt,
-// wäre bei einem übergriffigen `exclude-req` eine Fehldiagnose (dieselbe Klasse,
-// die den symmetrischen Guard aus dem Erst-Entwurf disqualifizierte).
-func vacuityHint(cc *model.TraceCrossConsistency, patternHint string) string {
-	if cc.ExcludeReq != nil {
-		return "prüfe, ob " + patternHint + " — und ob exclude-req nicht alle Anforderungen verschluckt"
+// vacuityHint benennt die **erkannte** Ursache statt beider Verdächtiger
+// (DC-FA-XREF-001: „die Meldung benennt das Ventil, nicht die korrekten Muster").
+// rawEdges ist die Kantenzahl der betroffenen Sicht(en) VOR dem Ausschluss,
+// valveAlone sagt, ob das Ventil die **alleinige** Ursache ist (alle betroffenen
+// Sichten trugen vorher Kanten — die Muster sind dann nachweislich korrekt, und
+// sie zu verdächtigen wäre dieselbe Fehldiagnose-Klasse, die den symmetrischen
+// Guard des Erst-Entwurfs disqualifizierte). Ohne gesetztes Ventil kommt es nie
+// als Ursache in Frage.
+func vacuityHint(cc *model.TraceCrossConsistency, rawEdges int, valveAlone bool, patternHint string) string {
+	valve := cc.ExcludeReq != nil && rawEdges > 0
+	switch {
+	case valve && valveAlone:
+		return "exclude-req hat jede Anforderung verschluckt — der Abgleich könnte nie eine Differenz melden"
+	case valve:
+		return "prüfe, ob " + patternHint + " — zudem hat exclude-req die verbliebenen Anforderungen verschluckt"
+	default:
+		return "prüfe, ob " + patternHint
 	}
-	return "prüfe, ob " + patternHint
 }
 
 // crossBadRow macht einen Zellenzahl-Bruch in einer relevanten Tabelle

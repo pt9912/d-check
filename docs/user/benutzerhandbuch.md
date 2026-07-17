@@ -656,7 +656,9 @@ Eine ADR-Referenz allein verhindert den Waisenstatus nicht:
 (Lastenheft/ADRs/Planning) — keine Code-Prüfung. Mit `--trace --json` bzw.
 `--trace --yaml` kommt dieselbe Matrix maschinenlesbar (`requirements` mit
 `id`/`title`/`adrs`/`slices`, konditional `coverage` und `modality`, sowie
-`orphan`; auf Matrix-Ebene `total`/`orphans`). Standardmäßig ist `--trace`
+`orphan`; auf Matrix-Ebene `total`/`orphans` und — bei aktivem
+`trace.cross-consistency` **mit** Differenzen — `crossConsistency` mit
+`requirement`/`artifact`/`direction`/`file`/`line`). Standardmäßig ist `--trace`
 **advisory** (Exit 0, auch bei Waisen). Für ein **Gate** ergänzen Sie
 `--require-complete`: Ohne aktive `modality` gatet jede Waise; mit aktiver
 `modality` gaten nur Waisen der in `require-levels` gelisteten Stufen. Mindestens

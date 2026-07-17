@@ -19,7 +19,7 @@ package cli_test
 //      nicht auf wörtliche Datei-Zahlen/Pfade (sonst Wartungsfalle).
 //
 // Beispiel-Auswahl (DoD „E2E-verankert vs. begründet ausgenommen"):
-//   VERANKERT (8): §3/§4.1 sauberes Repo (Summary, Exit 0) · §3/§4.1 kaputter
+//   VERANKERT (9): §3/§4.1 sauberes Repo (Summary, Exit 0) · §3/§4.1 kaputter
 //     Link (Befund-Zeilen-Schema + Exit 1) · §4.9 --doctor (Prosa-Diagnose) ·
 //     §4.9 --doctor --json · §4.11 --json · §4.11 --yaml · §4.12 --trace
 //     (RTM) · §4.12 --trace --require-complete (tabellarische Quelle,
