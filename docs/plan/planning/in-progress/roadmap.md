@@ -8,17 +8,21 @@
 
 ## Aktuelle Welle
 
-**Welle-ID:** welle-60-trace-cross-consistency
+**Keine aktive Welle.** welle-60-trace-cross-consistency ist **nicht
+abgeschlossen**, hat aber gerade **keinen Slice in Arbeit**: slice-073 ist fertig
+(`done/`, v0.45.1), der WIP-Slot ist frei (Modul 5, WIP-Limit = 1), und der
+nächste Slice ist noch nicht eingeplant. Sobald ein Slice nach `in-progress/`
+wandert, wird dieser Marker durch die Welle-Beschreibung ersetzt (planning-Gate:
+`hasActive == hasSlices`). **Nächster Zug:** slice-075 einplanen
+(`open`→`next`→`in-progress`, Vorrang — verfälscht produktiv verdrahtetes
+`trace.coverage`).
 
-**Slices** (WIP-Limit = 1, Modul 5 — **genau einer in Arbeit**): **derzeit keiner
-in Arbeit; der WIP-Slot ist frei.** Nächster Zug: slice-075 einplanen
-(`open`→`next`→`in-progress`, Vorrang, s. u.).
-[`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) —
-link-transparente Range-Fortsetzung — ist **abgeschlossen** (`done/`, v0.45.1;
-R2 ACCEPT-WITH-NITS, R2-F-1 durch einen Cross-Test geschlossen). ·
-[`slice-076`](../next/slice-076-markdown-lexik-commonmark.md) in `next/` — wartet
+**Stand von welle-60** (pausiert, nicht abgeschlossen):
+[`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md)
+**abgeschlossen** (`done/`, v0.45.1; R2 ACCEPT-WITH-NITS). ·
+[`slice-076`](../next/slice-076-markdown-lexik-commonmark.md) in `next/`, wartet
 auf den WIP-Slot. · [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md)
-in `open/` — **blockiert** (Realdatenbeleg hängt an slice-074);
+in `open/`, **blockiert** (Realdatenbeleg hängt an slice-074);
 [`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in),
 Code und Reviews liegen vor, v0.44.0/v0.45.0 sind getaggt.
 
@@ -30,7 +34,7 @@ Code und Reviews liegen vor, v0.44.0/v0.45.0 sind getaggt.
 einer Architektur-Anforderung und ihre `Bezug`-Rück-Kanten hatten Schnittmenge
 null, von keinem Gate bemerkt.
 
-**Closure-Kriterien:**
+**Closure-Kriterien von welle-60:**
 
 - Beide Richtungsdifferenzen, `superset`, range-aware Expansion und das
   `exclude-req`-Ventil sind als Akzeptanztests verriegelt; der Default ohne
