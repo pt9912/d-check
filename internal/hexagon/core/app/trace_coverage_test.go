@@ -92,3 +92,54 @@ func contains(s []string, v string) bool {
 	}
 	return false
 }
+
+// slice-073 (ADR-0039): Link-Transparenz. Steht die Kennung unter Linkpflicht
+// (DC-FA-ID-001), folgt ihre Fortsetzung nicht mehr unmittelbar — genau EIN
+// Link-Suffix darf dazwischen stehen. Ohne diese Regel bricht die
+// unqualifizierte Range-Zusage des Lastenhefts dort, wo d-checks eigene
+// Linkpflicht greift.
+func TestExpandRangeLinkTransparent(t *testing.T) {
+	tests := []struct {
+		name string
+		rest string
+		want []string
+	}{
+		// Positiv: die belegte Realform (Code-Span im Linktext) und ohne Span.
+		{"range hinter Link mit Code-Span", "`](../spec/x.md)..003",
+			[]string{"GG-QA-001", "GG-QA-002", "GG-QA-003"}},
+		{"range hinter Link ohne Code-Span", "](../spec/x.md)..003",
+			[]string{"GG-QA-001", "GG-QA-002", "GG-QA-003"}},
+		{"enum hinter Link", "`](x.md)/002/003", []string{"GG-QA-002", "GG-QA-003"}},
+		{"unverlinkt bleibt unverändert", "..003",
+			[]string{"GG-QA-001", "GG-QA-002", "GG-QA-003"}},
+
+		// Negativ — gegen das Raten (ADR-0039: genau eines, sonst nichts).
+		{"zwei Link-Suffixe", "`](a.md)](b.md)..003", nil},
+		{"Zeichen zwischen ) und ..", "`](a.md)x..003", nil},
+		{"Whitespace zwischen ) und ..", "`](a.md) ..003", nil},
+		{"Link ohne Fortsetzung", "`](a.md)", nil},
+		{"Klammer in der URL bricht das Suffix", "`](a(1).md)..003", nil},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := expandRange("trace.coverage", "GG-QA-001", tc.rest, ggPat)
+			if err != nil {
+				t.Fatalf("unerwarteter Fehler: %v", err)
+			}
+			if !equalStrings(got, tc.want) {
+				t.Fatalf("expandRange(GG-QA-001, %q) = %v, want %v", tc.rest, got, tc.want)
+			}
+		})
+	}
+}
+
+// slice-073: die Fail-closed-Fälle gelten auch hinter einem Link — sonst
+// entkäme eine ungültige Range der Prüfung, sobald sie verlinkt ist.
+func TestExpandRangeLinkTransparentFailClosed(t *testing.T) {
+	if _, err := expandRange("trace.coverage", "GG-RT-009", "`](x.md)..003", ggPat); err == nil {
+		t.Fatal("AAA>BBB hinter einem Link muss fail-closed bleiben")
+	}
+	if _, err := expandRange("trace.coverage", "GG-QA-001", "`](x.md)..0010", ggPat); err == nil {
+		t.Fatal("Breiten-Mismatch hinter einem Link muss fail-closed bleiben")
+	}
+}

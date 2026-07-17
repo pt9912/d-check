@@ -1,10 +1,11 @@
 # Slice slice-073: Link-transparente Range-Fortsetzung (ausgelieferter Coverage-Defekt)
 
-**Status:** open (Backlog; noch keiner Welle zugeordnet).
+**Status:** in-progress (welle-60-trace-cross-consistency).
 
-**Welle:** keine; Kandidat für welle-60 — der Fix sitzt im **geteilten** Parser und
-ist damit Voraussetzung des Realdatenbelegs von
-[`slice-071`](../in-progress/slice-071-trace-cross-consistency-gate.md), nicht eine Parallelbaustelle.
+**Welle:** aktiv (welle-60), **vorrangig** vor der Rest-Arbeit von
+[`slice-071`](slice-071-trace-cross-consistency-gate.md) — der Fix sitzt im
+**geteilten** Parser und ist damit Voraussetzung von dessen Realdatenbeleg, nicht
+eine Parallelbaustelle.
 
 **Bezug:** **Defekt-Fix**, **kein Change Request**: das Lastenheft verspricht die
 Range-Expansion unqualifiziert
@@ -57,19 +58,20 @@ nutzt, verliert die Expansion still. Der Slice macht den Parser link-transparent
 - [x] **ADR + Index:** [ADR-0039](../../adr/0039-link-transparente-range-fortsetzung.md)
   (Regel, Alternativen, Verhaltensänderung für Bestandskonsumenten), Status
   Proposed, im Index.
-- [ ] **Implementierung:** der geteilte Range-Parser überspringt höchstens **ein**
+- [x] **Implementierung:** der geteilte Range-Parser überspringt höchstens **ein**
   Link-Suffix; unverlinkte Ranges, Enum-Notation und die Fail-closed-Fälle
   (`AAA>BBB`, Breiten-Mismatch) bleiben unverändert.
-- [ ] **Tests (positiv):** identische Quelle, einmal `GG-UI-001..003`, einmal
+- [x] **Tests (positiv):** identische Quelle, einmal `GG-UI-001..003`, einmal
   `` [`GG-UI-001`](…)..003 `` ⇒ **gleiches** Ergebnis — je einmal für
   `trace.coverage` (die ausgelieferte Regression: 2 Waisen ⇒ 0) und für
   `trace.cross-consistency` (2 Differenzen ⇒ 0). Enum-Form `` [`ID`](…)/004/005 ``
   ebenso.
-- [ ] **Tests (negativ, gegen das Raten):** zwei Link-Suffixe hintereinander, ein
+- [x] **Tests (negativ, gegen das Raten):** zwei Link-Suffixe hintereinander, ein
   Zeichen zwischen `)` und `..`, Whitespace davor ⇒ **keine** Expansion. Ohne diese
   Tests wäre „genau eins" eine Behauptung.
-- [ ] **Mutations-Härte:** die Suffix-Überspringung einzeln herausmutiert kippt
-  genau einen Test; die „genau eins"-Grenze ebenso.
+- [x] **Mutations-Härte:** verifiziert — die Suffix-Überspringung entfernt kippt
+  `range hinter Link mit Code-Span`, die „genau eins"-Grenze aufgehoben kippt
+  `zwei Link-Suffixe`.
 - [ ] **Nutzerdoku:** Handbuch (§5 `trace.coverage`/`cross-consistency`:
   Range-Notation unter Linkpflicht) + CHANGELOG (als **Fixed**, mit dem Hinweis,
   dass ausgelieferte Läufe grüner werden können).

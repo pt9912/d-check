@@ -365,7 +365,28 @@ var (
 	trailingDigits = regexp.MustCompile(`\d+$`)
 	rangeSuffix    = regexp.MustCompile(`^\.\.(\d+)`)
 	enumSuffix     = regexp.MustCompile(`^(?:/\d+)+`)
+	// linkSuffix erkennt ein Markdown-Link-Suffix unmittelbar hinter der Kennung:
+	// optionales schließendes Code-Span-Backtick, `]`, geklammertes Ziel
+	// (DC-FA-COV-001.a Link-Transparenz, ADR-0039). Das Ziel endet an der ERSTEN
+	// `)` — enthält eine URL selbst eine Klammer, greift die Regel nicht und es
+	// wird nicht expandiert. Das ist die sichere Richtung: lieber keine Expansion
+	// als eine geratene.
+	linkSuffix = regexp.MustCompile("^`?\\]\\([^)]*\\)")
 )
+
+// skipLinkSuffix überspringt **höchstens ein** Markdown-Link-Suffix hinter einer
+// Kennung (DC-FA-COV-001.a Link-Transparenz, ADR-0039). Steht die Kennung unter
+// Linkpflicht (DC-FA-ID-001), folgt ihre Range-/Enum-Fortsetzung nicht mehr
+// unmittelbar, sondern erst hinter `](…)` — ohne dieses Überspringen bräche die
+// unqualifizierte Range-Zusage des Lastenhefts genau dort, wo d-checks eigene
+// Linkpflicht greift. Bewusst NUR eines und sonst nichts (kein Whitespace, keine
+// Emphasis, kein zweites Suffix): jede weitere Toleranz rät die Autor-Absicht.
+func skipLinkSuffix(rest string) string {
+	if m := linkSuffix.FindString(rest); m != "" {
+		return rest[len(m):]
+	}
+	return rest
+}
 
 // coverageRefs scannt die trace.coverage-Quellen (DC-FA-COV-001) und liefert je
 // Anforderungs-Kennung die abdeckenden Labels (dedupliziert, sortiert).
@@ -492,6 +513,7 @@ func expandRange(field, id, rest string, reqPat *regexp.Regexp) ([]string, error
 	}
 	fam, startStr := id[:d[0]], id[d[0]:]
 	width := len(startStr)
+	rest = skipLinkSuffix(rest)
 	if rm := rangeSuffix.FindStringSubmatch(rest); rm != nil {
 		endStr := rm[1]
 		if len(endStr) != width {
