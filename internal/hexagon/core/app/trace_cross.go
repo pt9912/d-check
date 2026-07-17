@@ -61,16 +61,18 @@ func (v crossView) add(req, artifact string, e crossEdge) {
 }
 
 // crossConsistency führt den opt-in Kreuzverweis-Abgleich aus (DC-FA-XREF-001.a):
-// cc nil ⇒ kein Abgleich (RTM byte-identisch, DC-QA-02). reqPat ist das
-// `trace.requirements.id-pattern` — es erkennt die Anforderungen der
-// Vorwärts-ID-Spalte, während die Rück-Sicht ihr eigenes `req-pattern` für die
-// Kanten-Zelle mitbringt (freier Prosa-Text statt kuratierter ID-Spalte).
+// cc nil ⇒ kein Abgleich (RTM byte-identisch, DC-QA-02). defaultReqPat ist das
+// `trace.requirements.id-pattern` — der **Default** beider Sicht-Muster, wenn sie
+// nicht gesetzt sind. Welche Anforderungen verglichen werden, entscheiden allein
+// `forward.req-pattern`/`backward.req-pattern`, **nicht** die RTM-Mitgliedschaft:
+// die Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge. Still
+// gekoppelt war das ein Falschbefund, der wie echter Drift aussah.
 //
 // Die Phasen folgen der Fehlerpräzedenz des Vertrags und sind bewusst **über
 // beide Sichten** gestaffelt, nicht je Sicht durchlaufen: Quellen lesen →
 // Header-Bindung → Range-Expansion → Diff. Der erste Fehler beendet den Lauf.
 // Reiner Lese-Pfad (DC-QA-03).
-func crossConsistency(fsys driven.Filesystem, cc *model.TraceCrossConsistency, reqPat *regexp.Regexp) ([]CrossFinding, error) {
+func crossConsistency(fsys driven.Filesystem, cc *model.TraceCrossConsistency, defaultReqPat *regexp.Regexp) ([]CrossFinding, error) {
 	if cc == nil {
 		return nil, nil
 	}
@@ -98,7 +100,7 @@ func crossConsistency(fsys driven.Filesystem, cc *model.TraceCrossConsistency, r
 	if err != nil {
 		return nil, err
 	}
-	fwd, err := forwardEdges(fwdTables, cc.Forward, reqPat)
+	fwd, err := forwardEdges(fwdTables, cc.Forward, crossReqPattern(cc.Forward.ReqPattern, defaultReqPat))
 	if err != nil {
 		return nil, err
 	}
@@ -229,6 +231,16 @@ func backwardIDColumn(t mdTable, bc model.TraceCrossBackward) (int, error) {
 			crossBackwardField, t.line, bc.ArtifactIDColumn, count)
 	}
 	return idx, nil
+}
+
+// crossReqPattern löst ein Sicht-Muster auf: gesetzt gewinnt, sonst das
+// RTM-Muster (DC-FA-XREF-001 — der Default ist eine bewusste Kopplung, keine
+// Ableitung; er ist über den Schlüssel überschreibbar und dadurch sichtbar).
+func crossReqPattern(set, fallback *regexp.Regexp) *regexp.Regexp {
+	if set != nil {
+		return set
+	}
+	return fallback
 }
 
 // forwardEdges extrahiert die Kanten der Vorwärts-Sicht (Range-Phase): je

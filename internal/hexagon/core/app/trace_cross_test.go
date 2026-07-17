@@ -517,3 +517,63 @@ func TestCrossConsistencyBackwardIDHeaderDoppelt(t *testing.T) {
 		t.Fatalf("Fehlertext benennt die Mehrfach-Bindung nicht: %v", err)
 	}
 }
+
+// slice-071/Defekt 1 (DC-FA-XREF-001): die Vergleichs-Schlüsselmenge ist NICHT die
+// RTM-Anforderungsmenge. Scopt ein Repo seine RTM bewusst (Architektur-Meta ist
+// keine Anforderung), holt forward.req-pattern die Familie in den Abgleich zurück
+// — ohne es verschwindet die F\B-Richtung, und der verbleibende Befund sieht wie
+// ein Treffer aus, ist aber ein Nebeneffekt von F = ∅.
+func TestCrossConsistencyForwardReqPattern(t *testing.T) {
+	fs := crossFS(
+		"| GG-ARCH-007 | GG-AR-COMP-CORE |\n",
+		"| GG-AR-P-006 | GG-ARCH-007 |\n",
+	)
+	// Die RTM scopt ARCH bewusst aus.
+	rtmPat := regexp.MustCompile(`GG-(SIM|UI)-\d{3}`)
+
+	// Ohne forward.req-pattern: F ist leer, nur die Rück-Kante feuert.
+	got, err := crossConsistency(fs, crossCfg(), rtmPat)
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if len(got) != 1 || got[0].Direction != CrossDirBackwardOnly {
+		t.Fatalf("Vorbedingung des Tests trifft nicht zu: %+v", got)
+	}
+
+	// Mit forward.req-pattern: beide Richtungen erscheinen — der echte Drift.
+	cfg := crossCfg()
+	cfg.Forward.ReqPattern = regexp.MustCompile(`GG-[A-Z]+-\d{3}`)
+	got2, err := crossConsistency(fs, cfg, rtmPat)
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if len(got2) != 2 {
+		t.Fatalf("erwartete beide Richtungen, got %+v", got2)
+	}
+	if got2[0].Artifact != "GG-AR-COMP-CORE" || got2[0].Direction != CrossDirForwardOnly {
+		t.Fatalf("die F\\B-Richtung fehlt — genau der Defekt: %+v", got2)
+	}
+	if got2[1].Artifact != "GG-AR-P-006" || got2[1].Direction != CrossDirBackwardOnly {
+		t.Fatalf("B\\F-Richtung falsch: %+v", got2)
+	}
+}
+
+// Der Default hält die Abwärtskompatibilität: ohne forward.req-pattern gilt das
+// RTM-Muster (DC-FA-XREF-001) — sonst wäre der neue Schlüssel ein Breaking Change.
+func TestCrossConsistencyForwardReqPatternDefault(t *testing.T) {
+	fs := crossFS(
+		"| GG-ARCH-006 | GG-AR-COMP-CORE |\n",
+		"| GG-AR-COMP-CORE | GG-ARCH-006 |\n",
+	)
+	cfg := crossCfg()
+	if cfg.Forward.ReqPattern != nil {
+		t.Fatal("Testvorbedingung: ReqPattern muss ungesetzt sein")
+	}
+	got, err := crossConsistency(fs, cfg, ggReqPat)
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if len(got) != 0 {
+		t.Fatalf("Default-Fallback auf das RTM-Muster greift nicht: %+v", got)
+	}
+}

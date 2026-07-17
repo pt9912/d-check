@@ -415,7 +415,13 @@ type TraceCrossForward struct {
 	ReqColumn       string
 	DesignColumn    string
 	DesignPattern   *regexp.Regexp
-	Ranges          bool
+	// ReqPattern erkennt die Anforderungs-IDs in der ReqColumn-Zelle — symmetrisch
+	// zu TraceCrossBackward.ReqPattern. nil ⇒ Default `requirements.id-pattern`
+	// (aufgelöst im app-Kern). Eigenständig, nicht abgeleitet: welche Anforderungen
+	// der Abgleich vergleicht, entscheidet das Muster — **nicht** die
+	// RTM-Mitgliedschaft (DC-FA-XREF-001).
+	ReqPattern *regexp.Regexp
+	Ranges     bool
 }
 
 // TraceCrossBackward beschreibt die Rück-Kanten-Sicht (DC-FA-XREF-001): File ist

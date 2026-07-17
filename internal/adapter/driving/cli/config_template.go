@@ -185,6 +185,9 @@ modules: [links, anchors]
 #   #     req-column: Anforderung                 # header-gebunden; je relevanter Tabelle genau einmal
 #   #     design-column: Design-Artefakte         # header-gebunden
 #   #     design-pattern: 'GG-AR-[A-Z-]+\d*'      # extrahiert die Artefakt-IDs; GETEILT mit backward (gemeinsamer Namensraum!)
+#   #     req-pattern: 'GG-[A-Z]+-\d{3}'          # erkennt die Anforderungs-IDs der req-column; Default: requirements.id-pattern
+#   #                                             # ACHTUNG: der Vergleichs-Scope ist NICHT die RTM-Anforderungsmenge — scopt Ihre
+#   #                                             # RTM eine Familie aus, setzen Sie ihn hier explizit, sonst ist die Vorwärts-Sicht leer
 #   #     ranges: true                            # GG-SIM-001..009 der ID-Spalte expandieren
 #   #   backward:                                 # Rück-Kanten: Design -> Anforderung (Quelle der Wahrheit)
 #   #     file: spec/architecture.md

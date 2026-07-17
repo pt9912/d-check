@@ -212,6 +212,7 @@ type rawCrossForward struct {
 	ReqColumn       string   `yaml:"req-column"`
 	DesignColumn    string   `yaml:"design-column"`
 	DesignPattern   string   `yaml:"design-pattern"`
+	ReqPattern      string   `yaml:"req-pattern"`
 	Ranges          *bool    `yaml:"ranges"`
 }
 
@@ -497,10 +498,15 @@ func applyCrossForward(raw *rawCrossForward) (model.TraceCrossForward, error) {
 	if err != nil {
 		return out, err
 	}
+	// Leer ⇒ nil ⇒ Default `requirements.id-pattern` im Kern (DC-FA-XREF-001).
+	reqPat, err := compileTracePattern("trace.cross-consistency.forward.req-pattern", raw.ReqPattern, false)
+	if err != nil {
+		return out, err
+	}
 	return model.TraceCrossForward{
 		File: raw.File, Sections: raw.Sections, ExcludeSections: raw.ExcludeSections,
 		ReqColumn: raw.ReqColumn, DesignColumn: raw.DesignColumn,
-		DesignPattern: designPat, Ranges: crossRanges(raw.Ranges),
+		DesignPattern: designPat, ReqPattern: reqPat, Ranges: crossRanges(raw.Ranges),
 	}, nil
 }
 
