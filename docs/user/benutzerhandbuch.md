@@ -626,9 +626,7 @@ muss mindestens einmal in der Quelle vorkommen.
 `table.modality-column` ist optional. Die ID-Zelle muss als Ganzes auf
 `id-pattern` passen. Header fehlen/doppelt, eine doppelte erkannte ID unter der
 Default-Politik `duplicate-ids: error` oder eine fehlerhafte
-Tabellenzeilenbreite ergeben Exit 2 — Ausnahme ist eine abschließende
-`<!-- d-check:ignore … -->`-Zelle in einer Datenzeile (§5). Für historische
-Mehrfachdefinitionen sind
+Tabellenzeilenbreite ergeben Exit 2. Für historische Mehrfachdefinitionen sind
 `first` und `last` explizite, deterministische Overrides. Escaped Pipes (`\|`) und Pipes
 in einzeiligen Backtick-Code-Spans bleiben Teil derselben Zelle.
 
@@ -1224,28 +1222,6 @@ erste, `last` die letzte Definition. Nur eine vollständig auf
 `id-pattern` passende ID-Zelle definiert eine Anforderung. Escaped Pipes und
 Pipes in einzeiligen, passend begrenzten Code-Spans bleiben Bestandteil der
 Zelle; Tabellen in Code-Fences und mehrzeilige Zellen werden nicht gelesen.
-
-**Der Ignore-Marker in einer Tabellenzeile.** Wollen Sie eine Tabellenzeile per
-`<!-- d-check:ignore (Grund) -->` (§7) ausnehmen, steht der Marker hinter der
-letzten Pipe — in einer Zelle wäre er Zellinhalt und damit Teil des Titels. Er
-**ist** dort eine Zelle (so auch in GFM), und d-check behandelt ihn je nach
-Zeilenart:
-
-- In einer **Datenzeile** wird **genau eine** überzählige Zelle toleriert, wenn
-  sie ganzzellig ein HTML-Kommentar ist. Die Zeile wird gelesen wie ohne Marker.
-- Im **Header** ist der Marker eine **Spalte**: die Trennzeile braucht dann eine
-  Spalte mehr (`|---|---|---|`) — das ist die Form, die auch jeder
-  Markdown-Renderer erwartet. Die Extra-Spalte bindet an keine Rolle.
-
-Alles andere bleibt Exit 2: zwei überzählige Zellen, eine überzählige
-Nicht-Kommentar-Zelle, eine fehlende Zelle. (Bis v0.45.1 brach **jede**
-Tabellenzeile mit Marker den Reader — die eigene Konvention machte ihn blind.)
-
-Eine Grenze, die Sie kennen sollten: Trägt ein **Header** den Marker, aber die
-Trennzeile hat die Spalte **nicht**, ist das für d-check wie für jeden Renderer
-keine gültige Tabelle — sie wird übersprungen, und zwar **ohne Meldung**. Lassen
-Sie zwischen zwei Tabellen eine Leerzeile und halten Sie Header und Trennzeile
-gleich breit; dann kann Ihnen das nicht passieren.
 
 Eine **nichtleer explizite** `requirements.source` oder `format: table`
 aktiviert den Nullmengen-Guard: Fehlt die Quelldatei oder werden darin null
