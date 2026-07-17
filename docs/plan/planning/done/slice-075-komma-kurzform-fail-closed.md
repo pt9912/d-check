@@ -73,8 +73,10 @@ zugesagten Notationen — statt stillem Drop **oder** geratener Expansion.
 - [ ] **Release:** v0.46.0 (Minor), Release-Prep **erledigt** (CHANGELOG,
   version.md, ghcr-Tag-Pins nachgezogen); Tag + GHCR-Push + Digest-Backfill
   stehen aus (Nutzer).
-- [ ] **Qualität:** `make gates`/`make ci` grün (erreicht); unabhängiger,
-  kontext-getrennter Review **vor** dem Release steht aus.
+- [x] **Qualität:** `make gates`/`make ci` grün; **kontext-getrennter R1**
+  ([`2026-07-17-slice-075-implementation-r1.md`](../../../reviews/2026-07-17-slice-075-implementation-r1.md),
+  ACCEPT-WITH-NITS, frischer Subagent gegen das gebaute Image) — dazu ein
+  Session-Kontext-Vorlauf; alle Nits beider Runden adressiert.
 
 ## 4. Risiken / offene Punkte
 
@@ -109,7 +111,7 @@ Spezifikation stehen vor der Implementierung.
 
 **Abgeschlossen 2026-07-17**, welle-60. **Release v0.46.0: Release-Prep fertig
 (CHANGELOG, version.md, ghcr-Tag-Pins, Handbuch), Tag + GHCR-Push +
-Digest-Backfill stehen als Nutzer-Schritt aus.** ADR-0041 mit der Closure auf
+Digest-Backfill stehen als Nutzer-Schritt aus.** [ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) mit der Closure auf
 `Accepted` (Folge-Commit).
 
 **Commit-Kette:** `0edee0a` (Einplanung `open`→`next`→`in-progress`, Welle
@@ -143,6 +145,6 @@ v0.45.1, F-2 buchstaben-suffigierte Kennung) — beide adressiert.
   Widerspruch, den kein Gate fängt. Release-Prep-Checkliste: neben ghcr-Pins auch
   den Kopf-Klartext + Handbuch-Version-Nummer ziehen.
 - **Drei schmale „unmittelbar"-Rest-Grenzen** (Zeilenumbruch, Vor-Komma-Whitespace,
-  buchstaben-suffigierte Kennung) sind in ADR-0041 §Konsequenzen bewusst offen
+  buchstaben-suffigierte Kennung) sind in [ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) §Konsequenzen bewusst offen
   gelassen und dokumentiert — der lexikalische ID-Leser trifft laufend auf
   Prosa-Realität (§4, gemeinsames Risiko mit slice-073/074).
