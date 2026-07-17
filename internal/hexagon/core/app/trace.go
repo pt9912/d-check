@@ -518,25 +518,14 @@ func expandRange(field, id, rest string, reqPat *regexp.Regexp) ([]string, error
 		return nil, nil // Kennung endet nicht auf Ziffern → keine Range
 	}
 	fam, startStr := id[:d[0]], id[d[0]:]
-	width := len(startStr)
 	rest = skipLinkSuffix(rest)
 	var out []string
 	if rm := rangeSuffix.FindStringSubmatch(rest); rm != nil {
-		endStr := rm[1]
-		if len(endStr) != width {
-			return nil, fmt.Errorf("%s: Range %s..%s mit abweichender Ziffern-Breite", field, id, endStr)
+		expanded, err := expandNumericRange(field, id, fam, startStr, rm[1], reqPat)
+		if err != nil {
+			return nil, err
 		}
-		start, _ := strconv.Atoi(startStr)
-		end, _ := strconv.Atoi(endStr)
-		if start > end {
-			return nil, fmt.Errorf("%s: Range %s..%s mit AAA>BBB", field, id, endStr)
-		}
-		for i := start; i <= end; i++ {
-			if cand := fmt.Sprintf("%s%0*d", fam, width, i); reqPat.FindString(cand) == cand {
-				out = append(out, cand)
-			}
-		}
-		rest = rest[len(rm[0]):]
+		out, rest = expanded, rest[len(rm[0]):]
 	} else if em := enumSuffix.FindString(rest); em != "" {
 		for _, part := range strings.Split(strings.TrimPrefix(em, "/"), "/") {
 			if cand := fam + part; reqPat.FindString(cand) == cand {
@@ -556,6 +545,28 @@ func expandRange(field, id, rest string, reqPat *regexp.Regexp) ([]string, error
 	// die konsumierte Notation vorgeschoben wurde.
 	if commaShortform.MatchString(rest) {
 		return nil, fmt.Errorf("%s: Komma-Kurzform hinter %s ist keine zugesagte Notation — nutze %s..BBB oder %s/BBB", field, id, id, id)
+	}
+	return out, nil
+}
+
+// expandNumericRange expandiert `..BBB` breiten-erhaltend inklusiv ab startStr
+// der Familie fam; jede Kandidaten-ID wird gegen reqPat geprüft. Fail-closed:
+// abweichende Ziffern-Breite oder AAA>BBB ⇒ Fehler (DC-FA-COV-001).
+func expandNumericRange(field, id, fam, startStr, endStr string, reqPat *regexp.Regexp) ([]string, error) {
+	width := len(startStr)
+	if len(endStr) != width {
+		return nil, fmt.Errorf("%s: Range %s..%s mit abweichender Ziffern-Breite", field, id, endStr)
+	}
+	start, _ := strconv.Atoi(startStr)
+	end, _ := strconv.Atoi(endStr)
+	if start > end {
+		return nil, fmt.Errorf("%s: Range %s..%s mit AAA>BBB", field, id, endStr)
+	}
+	var out []string
+	for i := start; i <= end; i++ {
+		if cand := fmt.Sprintf("%s%0*d", fam, width, i); reqPat.FindString(cand) == cand {
+			out = append(out, cand)
+		}
 	}
 	return out, nil
 }
