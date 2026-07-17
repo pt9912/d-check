@@ -55,7 +55,7 @@ zugesagten Notationen — statt stillem Drop **oder** geratener Expansion.
   Positionen** (nackte Kennung, hinter Range, hinter Enum), nach der
   Link-Transparenz. **Schärfung gegenüber der Erst-Formulierung:** der reale
   grid-gym-Fall ist `GG-SCN-001..005, 007, 008` (Range + Komma-Schwanz), nicht
-  `GG-SCN-001, 007` — die enge Fassung hätte ihn verfehlt (§2.1 / ADR-0041
+  `GG-SCN-001, 007` — die enge Fassung hätte ihn verfehlt (§2.1 / [ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md)
   Geschichte). Range-Expansion in `expandNumericRange` ausgelagert (nestif).
 - [x] **Tests (positiv/negativ):** `TestExpandRangeCommaShortform` (table-driven,
   inkl. `..005, 007` / `/003, 007` / `..005, GG-QA-007` als Gegenprobe),
