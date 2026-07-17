@@ -98,7 +98,8 @@ Zurückgesetzt — die Implementierung ist zurückgenommen. Der Doc-Teil trägt:
   v1.8.4 gegen 522 reale Dateien): auf `fx-s` und `fx-p` stimmt goldmark **exakt**
   mit dem heutigen Reader überein. Die Grenze ist **Policy**, nicht Grammatik — GFM
   gibt uns dort recht. Für `fx-913` verwirft goldmark die überzählige Zelle
-  stillschweigend und nähme uns den Guard aus ADR-0037. Der Spike fand allerdings
+  stillschweigend und nähme uns den Guard aus
+  [ADR-0037](../../adr/0037-trace-tabellenquellen-nullmengen-guard.md). Der Spike fand allerdings
   **zwei echte Grammatik-Defekte** an anderer Stelle ⇒ slice-076.
 - **Dogfood-Lücke:** d-check nutzt in den eigenen Doku-Tabellen keinen
   Trailing-Marker und konnte den Defekt an sich selbst nicht bemerken — dieselbe

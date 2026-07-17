@@ -6,8 +6,7 @@ hat an ihr einen Stilles-Grün-Pfad belegt (F-1), und ihre zentrale Zusage („d
 Toleranz greift **nie** über eine Tabellengrenze") ebenso widerlegt wie die
 Mutations-Zusage aus Entscheidung 3 (F-2). Der Kontext (§Kontext) gilt
 unverändert — der Defekt besteht. Was fehlt, ist eine tragende Regel. Bis dahin
-ist der Reader byte-identisch v0.45.1; Details in
-[slice-074](../planning/open/slice-074-kommentar-suffix-tabellenzeilen.md) §2.
+ist der Reader byte-identisch v0.45.1; Verlauf und Anlass in `## Geschichte`.
 **Datum:** 2026-07-17
 **Autor:** pt9912
 **Schärft:** [`DC-FA-REQ-001.a`](../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
