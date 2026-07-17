@@ -363,11 +363,15 @@ func traceRefs(fsys driven.Filesystem, dir string, fileShape *regexp.Regexp, pre
 // enumSuffix `/BBB/CCC`. commaShortform erkennt die **nicht** zugesagte
 // Komma-Kurzform `<FAM>-AAA, BBB` (Komma, dann unmittelbar Ziffern) — sie ist
 // fail-closed statt still verschluckt oder geraten (DC-FA-COV-001.a, ADR-0041).
+// `[ \t]` statt `\s`: „unmittelbar" ist **inline** — ein `\n` zwischen Komma und
+// Ziffer sind zwei unabhängige Prosa-Zeilen (der `text` einer Coverage-Quelle
+// reicht über Zeilengrenzen), kein Komma-Schwanz. Sonst wäre der bewusst
+// akzeptierte Prosa-Zahl-Falsch-Rot zeilenübergreifend (slice-075-Review-Nit).
 var (
 	trailingDigits = regexp.MustCompile(`\d+$`)
 	rangeSuffix    = regexp.MustCompile(`^\.\.(\d+)`)
 	enumSuffix     = regexp.MustCompile(`^(?:/\d+)+`)
-	commaShortform = regexp.MustCompile(`^,\s*\d`)
+	commaShortform = regexp.MustCompile(`^,[ \t]*\d`)
 )
 
 // skipLinkSuffix überspringt **höchstens ein** Markdown-Link-Suffix hinter einer

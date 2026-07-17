@@ -84,6 +84,18 @@ dass seine Notation nicht gelesen wurde.
   Bewusst in Kauf genommen: laut und behebbar sticht still und unbemerkt. Wer die
   Kurzform nutzt, muss seine Quellen anfassen — **das ist der Punkt**, nicht der
   Preis.
+- **Scope-Grenzen von „unmittelbar" (bewusst, Review-Nits slice-075):**
+  - **Inline, kein Zeilenumbruch.** Der Whitespace zwischen Komma und Ziffer ist
+    `[ \t]`, **nicht** `\s` — ein `\n` trennt zwei unabhängige Prosa-Zeilen (der
+    `text` einer Coverage-Quelle reicht über Zeilengrenzen). Sonst würde eine Zeile,
+    die auf `…, ` endet, mit einer ziffern-beginnenden Folgezeile fälschlich als
+    Kurzform gewertet.
+  - **Whitespace *vor* dem Komma bleibt out of scope.** `GG-QA-001 , 007`
+    (Leerzeichen vor dem Komma) ist nicht „unmittelbar" und feuert **nicht** — die
+    `007` fällt dort weiter still. Bewusst nicht gefangen: die Regel bindet strikt
+    an „Komma direkt hinter der Fundstelle/Notation", grid-gyms Realform trägt kein
+    Vor-Komma-Leerzeichen, und ein Ausweiten (`^[ \t]*,`) brächte neue Falsch-Rot-
+    Fälle ohne Realdaten-Bedarf. Ein schmaler Rest derselben Klasse, offen gelassen.
 - **Verhaltensänderung für Bestandskonsumenten:** eine Quelle mit Komma-Kurzform
   oder Prosa-Zahl hinter einer Kennung läuft künftig auf Exit 2. Das ist ein
   **Vertrags-Zuwachs** (neues Akzeptanzkriterium), daher Lastenheft-CR 0.46.0 und

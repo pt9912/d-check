@@ -163,6 +163,8 @@ func TestExpandRangeCommaShortform(t *testing.T) {
 	}{
 		{"Komma-Kurzform", ", 007", true},
 		{"Komma-Kurzform ohne Space", ",007", true},
+		{"Komma-Kurzform mit Tab (inline)", ",\t007", true},
+		{"Komma dann Newline dann Ziffer (zwei Zeilen)", ",\n2026 kommt", false},
 		{"Prosa-Zahl hinter Kennung", ", 2026 geplant", true},
 		{"verlinkte Komma-Kurzform", "`](x.md), 007", true},
 		{"Komma-Schwanz hinter Range", "..005, 007", true},
