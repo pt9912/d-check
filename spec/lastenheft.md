@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.45.0
+**Version:** 0.46.0
 
 **Status:** Draft
 
@@ -558,7 +558,12 @@ leere `files`-Liste, ein `files`-Pfad außerhalb der Repo-Wurzel (führendes `/`
 oder `..`), eine **fehlende** `files`-Datei (`files` sind **explizit** benannt —
 Fehlen ist Fehler, nicht Skip wie bei `adrs.dir`/`slices.dir`), leeres `label`,
 ein **Sektionsname ohne Heading-Treffer** (Tippfehler-/Kurzform-Guard), oder eine
-Range mit `AAA>BBB` bzw. abweichender Ziffern-Breite. Ein Sektionsname ist der
+Range mit `AAA>BBB` bzw. abweichender Ziffern-Breite; eine **Komma-Kurzform**
+(`<FAM>-AAA, BBB` — eine Kennung unmittelbar gefolgt von Komma und Ziffern) ist
+**keine** zugesagte Notation und daher ebenfalls Exit 2: d-check kann eine
+gemeinte Kurzform nicht von einer Zahl im Fließtext unterscheiden, und beides zu
+raten wäre schlimmer als beides abzulehnen. Ein Komma vor einer **vollständigen**
+Kennung (`<FAM>-AAA, <FAM>-BBB`) ist unberührt — das ist keine Kurzform. Ein Sektionsname ist der
 **volle Heading-Klartext** (exakt wie `matrix.exclude-sections`, z. B.
 `"27.1.1 Anforderungen ohne Design-Artefakt"`, nicht die Kurzform). `trace.coverage`
 führt **kein** eigenes Regex (nutzt `requirements.id-pattern`). **Strikt opt-in:** ohne
@@ -572,6 +577,14 @@ führt **kein** eigenes Regex (nutzt `requirements.id-pattern`). **Strikt opt-in
 - **Sektionen (Blacklist):** Given eine Quelle mit `exclude-sections: ["27.1.1 Anforderungen ohne Design-Artefakt"]`, deren §27.1.1 sonst nicht gedeckte IDs listet, when `d-check --trace` läuft, then werden die **nur** in §27.1.1 genannten IDs **nicht** als Coverage gewertet.
 - **Keine ADR-Kontamination:** Given `trace.coverage` mit `files`, when `d-check --trace` läuft, then werden ADR-/Slice-Dateien **nicht** als Coverage gezählt (nur die gelisteten `files`), und die Coverage-Labels stehen in ihrer **eigenen** Spalte (keine Kollision mit Slice-Namen).
 - **Negative (Config/Range):** Given eine fehlende `files`-Datei **oder** eine ungültige Range `GG-RT-009..003` (`AAA>BBB`), when `d-check --trace` läuft, then Exit-Code 2 (Konfigurationsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) mit erklärender Meldung.
+- **Negative (Komma-Kurzform):** Given eine Zelle `GG-SCN-001, 007`, when
+  `d-check --trace` mit `ranges: true` läuft, then Exit 2 mit erklärender Meldung
+  (Verweis auf die zugesagten Notationen `/` und `..`) — **nicht** ein stiller
+  Drop von `007` und **nicht** eine geratene Expansion.
+- **Boundary (Komma vor voller Kennung):** Given eine Zelle
+  `GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN`, when der Lauf läuft, then werden **beide**
+  Kennungen gelesen, kein Fehler — die Kurzform-Regel greift nur bei Komma **plus
+  Ziffern**.
 - **Modul-aus:** Given **kein** `trace.coverage`, when `d-check --trace` läuft, then ist die RTM byte-identisch zur Fassung vor dieser Anforderung ([`DC-QA-02`](#dc-qa-02--determinismus)) — keine Coverage-Spalte, kein `coverage`-Feld — und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 
 **Out-of-Scope:** Parsen **semantischer Design-Mappings** (z. B. `GG-AR-*`-Architektur-Kennungen) — Coverage ist reine **ID-Präsenz** in der Quelle; ein **Erfüllungs-/Status-Urteil** (Coverage ≠ „erfüllt", nur „in kuratierter Quelle referenziert"; kein `✓`); **Auto-Generierung** oder Schreiben der Coverage-Datei; `dir`+`file-pattern`-Ableitung für Coverage-Quellen (bewusst nur explizite `files`, gegen ADR-Kontamination); range-/enum-Erkennung außerhalb `trace.coverage` (eine spätere `commits`/`ids`-Range wäre eigener CR); fam-qualifizierte Range-Enden (`<FAM>-AAA..<FAM>-BBB` — nur die Kurzform `..BBB`).
@@ -1967,6 +1980,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.46.0 | 2026-07-17 | Change Request (Auftraggeber): die **Komma-Kurzform** `<FAM>-AAA, BBB` wird **fail-closed** (Exit 2) statt still verschluckt — betrifft `DC-FA-COV-001` und, über den geteilten Reader, `DC-FA-XREF-001`. Zugesagt waren nur `..`-Range und `/`-Aufzählung; die Kurzform war nie Vertrag, ihr **stiller Drop** aber auch nicht: `GG-SCN-001, 007` deckte nur `GG-SCN-001` und erzeugte eine falsche Waise. Verworfen: (a) Komma-Enum unterstützen — d-check kann eine gemeinte Kurzform nicht von einer Zahl im Fließtext unterscheiden (`GG-QA-001, 007 Sekunden`), das wäre Raten; (b) Status quo — der stille Drop ist die schlechteste Option. Gewählt: die **Gestalt** triggert (Kennung + Komma + Ziffern), der Inhalt ist keine unterstützte Notation ⇒ Exit 2 mit Hinweis — dieselbe Logik wie bei `AAA>BBB`. Ein Komma vor einer **vollständigen** Kennung (`GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN`) bleibt unberührt. Neues Negative- und Boundary-Kriterium; Schritt 3 in `DC-FA-COV-001.a`; Begründung in der begleitenden ADR. Anlass: Konsumenten-Report grid-gym gegen v0.45.1 — reale §27.1-Zeilen `GG-SCN-001, 007` ließen das produktiv verdrahtete `trace.coverage` das Mapping nicht zählen | slice-075 |
 | 0.45.0 | 2026-07-17 | Change Request (Auftraggeber): `DC-FA-XREF-001` um **`forward.req-pattern`** erweitert (RE2, Default `requirements.id-pattern`) — symmetrisch zum vorhandenen `backward.req-pattern`, ein Denkmodell statt zwei. Bis dahin las die Vorwärts-Sicht ihre Anforderungs-IDs **still** über `requirements.id-pattern`, die Rück-Sicht über ihr eigenes Muster; die Kopplung stand weder im Vertrag noch in der Config-Oberfläche. Folge bei einer bewusst gescopten RTM (Architektur-Meta ausgeschlossen): die Vorwärts-Sicht ist leer, **jede** Rück-Kante wird als „ohne RTM-Eintrag“ gemeldet, und die eigentliche `F \ B`-Drift verschwindet — ein Falschbefund, der wie echter Drift aussieht. Neu festgehalten: **die Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge** (belegt: eine ID, die das Muster trifft, aber keine RTM-Zeile hat, wird verglichen). Neues Boundary-Kriterium (RTM-Scope ≠ Vergleichs-Scope); Schema-Zeile + Algorithmus-Schritt 2 in `DC-FA-XREF-001.a`; Begründung in der begleitenden ADR. Anlass: Realdaten-Lauf des Konsumenten grid-gym gegen v0.44.0 (Defekt 1 von zweien), belegt durch Umschalten **nur** dieses Musters bei identischen Dateien | slice-071 |
 | 0.44.2 | 2026-07-17 | Change Request (Auftraggeber): die Vakuitäts-Stufe aus 0.44.1 von einer **Ursachen-** auf eine **Wirkungs**-Fassung gezogen. 0.44.1 band Vakuum an die Muster-Ursache („Given ein `design-pattern`, das … vorbeigreift“); ein **übergriffiges `exclude-req`** — fehlerfreie Muster, aber ein Ventil, das jede Anforderung verschluckt — schaltete das Gate bei realem Drift ebenso still ab, war aber von keinem Akzeptanzkriterium gedeckt. Vakuität wird daher **nach** dem Ausschluss gemessen (das Ventil ist selbst eine kuratierte, drift-fähige Kante), und geprüft wird die **Wirkung** — ob der Abgleich konstruktionsbedingt überhaupt einen Befund liefern könnte — statt einer Ursachenliste, die bei der nächsten unbekannten Ursache erneut risse. Neues Negative-Kriterium (Ventil, samt ventil-benennender Meldung); Ausschluss-Stufe in der Fehlerpräzedenz von `DC-FA-XREF-001.a`; Begründung in der begleitenden ADR. Anlass: unabhängiges Closure-Review zu `slice-071` — R3 reproduzierte `exclude-req: '.'` mit `0 Differenz(en)`/Exit 0 bei echtem Drift, R4 wies die AK-Lücke nach | slice-071 |
 | 0.44.1 | 2026-07-17 | Change Request (Auftraggeber): `DC-FA-XREF-001` um eine **Vakuitäts-Stufe** geschärft — ein Abgleich, aus dem keine Kante fällt, ist **kein bestandener** Abgleich, sondern Exit 2. Vakuum ist definiert als **beide** Sichten kantenleer (typischer Anlass: ein `design-pattern`, das kompiliert, aber am Artefakt-Namensraum vorbeigreift — die Namensraum-Kongruenz war bis dahin nur als Vorbedingung *beschrieben*, nicht mechanisiert) **oder** die Rück-Sicht kantenleer unter `mode: superset` (dann kann `B \ F` konstruktionsbedingt nie einen Befund liefern). Abgegrenzt: eine **einseitig** leere Vorwärts-Sicht bleibt ein wohldefiniertes Ergebnis (Diff über `keys(F) ∪ keys(B)`) und meldet `B \ F` laut — der erwartete Bootstrap-Zustand vor der Restrukturierung der Vorwärts-Sicht, den ein Guard sonst mit einer Config-Fehldiagnose abwürgte. Neues Negative- und Boundary-Kriterium; Vakuitäts-Stufe in der Fehlerpräzedenz von `DC-FA-XREF-001.a` der Spezifikation; Begründung + Abgrenzung zum Nullmengen-Guard der Tabellenquellen in der begleitenden ADR. Anlass: unabhängiges Closure-Review zu `slice-071` — R1 reproduzierte das stille Grün, R2 wies den ersten, symmetrisch je Sicht feuernden Fix als vertragswidrig nach | slice-071 |

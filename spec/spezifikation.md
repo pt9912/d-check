@@ -538,6 +538,15 @@ um eine dritte Referenzklasse. Verrechnung (deterministisch,
    - `/<Ziffern>`-Folgen folgen (`<FAM>-AAA/BBB/CCC`): je `<FAM>-<Ziffern>`;
    jede expandierte ID wird gegen `id-pattern` geprüft und bei Nicht-Treffer
    **verworfen**.
+   **Komma-Kurzform ⇒ Exit 2.** Folgt der Fundstelle (nach der Link-Transparenz,
+   s. u.) ein Komma und **unmittelbar darauf Ziffern** (`<FAM>-AAA, BBB`), ist das
+   eine Aufzählungs-**Gestalt** ohne zugesagte Notation: **Exit 2** mit Hinweis auf
+   `/` und `..`. Weder still verschlucken (die Kurzform verschwände und erzeugte
+   eine falsche Waise) noch expandieren (`GG-QA-001, 007 Sekunden` wäre eine
+   geratene Absicht) — dieselbe Logik wie bei `AAA>BBB`: die Gestalt triggert, der
+   Inhalt ist ungültig. Ein Komma vor einer **vollständigen** Kennung
+   (`<FAM>-AAA, <FAM>-BBB`) ist **keine** Kurzform und unberührt; beide Kennungen
+   werden regulär gefunden.
 
    **Link-Transparenz.** Steht die Kennung unter Linkpflicht
    ([`DC-FA-ID-001`](lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)),
@@ -1876,6 +1885,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung | Verweis |
 |---|---|---|
+| 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 um die **Komma-Kurzform** ergänzt: Kennung + Komma + Ziffern ⇒ Exit 2 mit Hinweis auf die zugesagten Notationen, statt stillem Drop oder geratener Expansion. Komma vor einer vollständigen Kennung bleibt unberührt. Lastenheft-CR 0.46.0; Begründung in der begleitenden ADR | slice-075 |
 | 2026-07-17 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritt 3 um das **Kommentar-Suffix** geschärft: ein abschließender HTML-Kommentar, der die ganze letzte Zelle ausmacht, ist ein Zeilen-Suffix und zählt nicht als Zelle. Ohne die Regel machte d-checks **eigene** Direktiven-Konvention (`<!-- d-check:ignore (…) -->`, die außerhalb einer Zelle stehen muss) die Zeile für d-checks **eigenen** Tabellen-Reader unlesbar — Exit 2 auf einer Zeile, die jeder Markdown-Renderer normal darstellt (GFM ignoriert überzählige Zellen). Wirkt über den geteilten Reader auf `trace.requirements.format: table` (ausgeliefert seit v0.43.0) und §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). Defekt-Fix, kein CR (das Lastenheft definiert keine Zellenzahl). Begründung in [ADR-0040](../docs/plan/adr/0040-kommentar-suffix-in-tabellenzeilen.md) | slice-074 |
 | 2026-07-17 | §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) Schritt 2 + §2-Schema um **`forward.req-pattern`** ergänzt (Default `trace.requirements.id-pattern`, symmetrisch zu `backward.req-pattern`). Die Vorwärts-Sicht las ihre IDs bis dahin **still** über das RTM-Muster — die Kopplung war nirgends ausgesprochen. Festgehalten: die **Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge** (das Muster entscheidet, nicht die RTM-Mitgliedschaft). Lastenheft-CR 0.45.0; Begründung in [ADR-0038](../docs/plan/adr/0038-trace-cross-consistency.md) (Entscheidung 9) | slice-071 |
 | 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 (Range-Parser) um **Link-Transparenz** geschärft: die Fortsetzung `..NNN`/`/NNN` darf **genau einmal** durch ein Markdown-Link-Suffix `](…)` unterbrochen sein, dahinter gilt wieder „unmittelbar“; weitergehendes Peeling (Whitespace, Emphasis, zweites Suffix) bleibt ausgeschlossen. Wirkt über den geteilten Parser zugleich auf §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). **Defekt-Fix, kein CR:** das Lastenheft verspricht die Expansion unqualifiziert — die Verengung „unmittelbar“ stand allein hier und kollidierte strukturell mit der Linkpflicht ([`DC-FA-ID-001`](lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)); betroffen war `trace.coverage` seit v0.41.0 (verlinkte Range ⇒ falsche Waisen). Begründung in [ADR-0039](../docs/plan/adr/0039-link-transparente-range-fortsetzung.md) | slice-073 |

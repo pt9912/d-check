@@ -61,7 +61,14 @@ null, von keinem Gate bemerkt.
 
 **Im Backlog (`next/`), auf Aufnahme in eine Welle wartend:** derzeit keiner.
 
-**Im Eingang (`open/`), auf Wellen-Einplanung wartend:** slice-072 — Handbuch-
+**Im Eingang (`open/`), auf Wellen-Einplanung wartend:** slice-075 —
+Komma-Kurzform fail-closed
+([ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) Proposed; **Change
+Request**, Lastenheft 0.46.0, SemVer-Minor). `GG-SCN-001, 007` deckte nur die
+erste Kennung — still. Die Kurzform war nie zugesagt; der Defekt ist das fehlende
+Signal, nicht die fehlende Unterstützung.
+
+Ferner slice-072 — Handbuch-
 Aufgabenorientierung der §4-Kapitel gegen den
 [Benutzerhandbuch-Standard](../../../user/benutzerhandbuch-standard.md) §2
 (sieben Audit-Befunde; rein redaktionell — kein Change Request, kein ADR, kein
