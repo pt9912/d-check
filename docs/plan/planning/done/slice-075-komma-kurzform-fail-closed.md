@@ -1,12 +1,13 @@
 # Slice slice-075: Komma-Kurzform fail-closed statt still verschluckt
 
-**Status:** in-progress (welle-60-trace-cross-consistency, 2026-07-17).
+**Status:** **done** (2026-07-17, welle-60-trace-cross-consistency). Code fertig,
+zweifach reviewt (ACCEPT-WITH-NITS), `make gates` grün. **Release v0.46.0:
+Release-Prep erledigt, Tag + GHCR-Push + Digest-Backfill stehen aus (Nutzer).**
 
-**Welle:** aktiv (welle-60), **vorrangig** in Arbeit genommen: der Auftraggeber
-(grid-gym) meldet den stillen Komma-Enum-Drop als **produktiv verdrahtetes**
-`trace.coverage`-Problem — aktiv falsche Ergebnisse bei einem realen Konsumenten,
-der einzige offene Punkt, der still falsche Zahlen liefert und dabei verdrahtet
-ist.
+**Welle:** welle-60 — **vorrangig** in Arbeit genommen, weil der Auftraggeber
+(grid-gym) den stillen Komma-Drop als **produktiv verdrahtetes**
+`trace.coverage`-Problem meldete (aktiv falsche Ergebnisse bei einem realen
+Konsumenten).
 
 **Bezug:** **Change Request** (neue fail-closed-Klasse = neues Akzeptanzkriterium):
 [`DC-FA-COV-001`](../../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
@@ -104,7 +105,44 @@ fail-closed statt Notations-Ausbau.
 GF (Repo-Default): Der Vertrag führt, der Code folgt — Lastenheft-CR und
 Spezifikation stehen vor der Implementierung.
 
-## 7. Closure-Notiz (nach `done/`)
+## 7. Closure-Notiz
 
-_Ausstehend — wird bei Abschluss mit Commit-Hash, Review-Verdikt und Lerneintrag
-gefüllt._
+**Abgeschlossen 2026-07-17**, welle-60. **Release v0.46.0: Release-Prep fertig
+(CHANGELOG, version.md, ghcr-Tag-Pins, Handbuch), Tag + GHCR-Push +
+Digest-Backfill stehen als Nutzer-Schritt aus.** ADR-0041 mit der Closure auf
+`Accepted` (Folge-Commit).
+
+**Commit-Kette:** `0edee0a` (Einplanung `open`→`next`→`in-progress`, Welle
+reaktiviert) · `a30318c` (doc-first Spec/ADR-Schärfung auf alle drei Positionen)
+· `319b0f2` (feat) · `9a6062b` (Release-Prep v0.46.0) · `85261fd` (refactor:
+`expandNumericRange`, nestif) · `250f270`-Vorlauf (R1-Nit-Fixes: `[ \t]` inline,
+Scope-Grenzen) · `a54f442` (R1-Nits Handbuch-Kopf + dritte Scope-Grenze).
+
+**Review-Verlauf:** Session-Kontext-Review (ACCEPT-WITH-NITS, 2 Nits: `\s`→`[ \t]`
+inline, Vor-Komma-Whitespace) → **kontext-getrennter R1** (frischer Subagent gegen
+das gebaute Image, **ACCEPT-WITH-NITS**): 0 HIGH/0 MEDIUM, empirisch bestätigt
+(realer grid-gym-Fall, beide Scope-Grenzen, beide Konsumenten, Mutationen). Der R1
+fand **zwei weitere Nits, die das Session-Review übersah** (F-1 Handbuch-Kopf-Text
+v0.45.1, F-2 buchstaben-suffigierte Kennung) — beide adressiert.
+
+**Lerneintrag (reusable):**
+- **Der Realdatenbeleg VOR dem Abschluss deckte eine Spec-Reduktions-Falle auf.**
+  Die doc-first-Spec/ADR nannte die reduzierte Repro `GG-SCN-001, 007`; der echte
+  grid-gym-Auslöser ist `GG-SCN-001..005, 007, 008` (Range + Komma-Schwanz). Der
+  enge Erst-Fix ließ `007, 008` **still** fallen (gemessen). Immer gegen die
+  **echte** Konsumenten-Quelle erden, nicht gegen das ADR-Beispiel — sonst löst
+  ein Slice seinen eigenen Trigger nicht.
+- **Kontext-getrennt schlägt Session-Kontext, auch bei sorgfältigem Selbst-Review.**
+  Mein Session-Review war gründlich (2 echte Nits), übersah aber zwei weitere,
+  weil ich den Code selbst schrieb und den Release-Prep selbst machte. Der blinde
+  Subagent fand den Handbuch-Kopf-Widerspruch (mein eigener Release-Prep-Fehler)
+  und die dritte Rest-Klasse. „Unabhängig" heißt Kontext-Trennung (Modul 8).
+- **Der `versions`-Gate fängt nur ghcr-Pins, nicht freien Versions-Klartext.** Der
+  Handbuch-Kopf (`Software-Version: v0.45.1`) blieb beim Release-Prep stehen,
+  während der Anker daneben schon auf `#v0.46.0` zeigte — ein sichtbarer
+  Widerspruch, den kein Gate fängt. Release-Prep-Checkliste: neben ghcr-Pins auch
+  den Kopf-Klartext + Handbuch-Version-Nummer ziehen.
+- **Drei schmale „unmittelbar"-Rest-Grenzen** (Zeilenumbruch, Vor-Komma-Whitespace,
+  buchstaben-suffigierte Kennung) sind in ADR-0041 §Konsequenzen bewusst offen
+  gelassen und dokumentiert — der lexikalische ID-Leser trifft laufend auf
+  Prosa-Realität (§4, gemeinsames Risiko mit slice-073/074).
