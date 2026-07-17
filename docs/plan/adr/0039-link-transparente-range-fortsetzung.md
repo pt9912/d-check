@@ -1,6 +1,6 @@
 # ADR-0039 — Link-transparente Range-/Enum-Fortsetzung im geteilten Range-Parser
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-17
 **Autor:** pt9912
 **Schärft:** [`DC-FA-COV-001.a`](../../../spec/spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage), [`DC-FA-XREF-001.a`](../../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency)
@@ -115,6 +115,7 @@ Vorkommen ohne Code-Span, null mit einem Zeichen zwischen `)` und der Fortsetzun
 
 ## Geschichte
 
+| 2026-07-17 | **Accepted** mit der Closure von slice-073. Die Entscheidung ist umgesetzt und als v0.45.1 ausgeliefert; der unabhängige R2-Review (ACCEPT-WITH-NITS) hat alle R1-Befunde durch eigene Messung geschlossen, der Rest R2-F-1 (Cross-Test-Lücke) ist in `b8c503a` behoben. Kein Inhalt geändert — nur der Status folgt der Auslieferung nach (Statusdrift vermeiden, vgl. ADR-0037 bei slice-070). |
 | Datum | Ereignis |
 |---|---|
 | 2026-07-17 | Ziel-Abgrenzung auf den **klammer-balancierten** kanonischen Reader (`rules.LinkSuffixEnd`) gezogen; die erste Fassung grenzte per Regex bis zur ersten `)` ab und war damit eine zweite Link-Definition. Anlass: nachgeholter unabhängiger Review zu slice-073 (R1-F-1, HIGH) — bei einer Klammer im Ziel landete der URL-Rest im Range-Parser, `/002/003` expandierte als Enum, und eine Zelle ohne jede Range-Notation versteckte Waisen (Exit 1 → Exit 0). Fitness-Funktion um die kritische Richtung ergänzt. Status weiterhin `Proposed`. |

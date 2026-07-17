@@ -17,7 +17,7 @@ der Spezifikation und ist dort geschärft
 Schritt 3, wirkt über den geteilten Parser zugleich auf
 [`DC-FA-XREF-001.a`](../../../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency)).
 Begründende Entscheidung
-[ADR-0039](../../adr/0039-link-transparente-range-fortsetzung.md) (Proposed).
+[ADR-0039](../../adr/0039-link-transparente-range-fortsetzung.md) (Accepted).
 Mit-betroffen:
 [`DC-FA-ID-001`](../../../../spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)
 (die Linkpflicht ist die Ursache der Kollision). **SemVer-Patch** — die Zusage wird
