@@ -1,6 +1,6 @@
 # ADR-0042 — Markdown-Lexik folgt CommonMark/GFM: Trennzeile und Fence-Infozeile
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-17
 **Autor:** pt9912
 **Schärft:** [`DC-FA-REQ-001.a`](../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) (Trennzeile), [`DC-FA-LINK-001.a`](../../../spec/spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) (Fence)
@@ -145,3 +145,4 @@ skaliert mit genau der Prosa, die Harness-Repos schreiben — Text **über** Fen
 | Datum | Ereignis |
 |---|---|
 | 2026-07-17 | Proposed. Anlass: Differential-Spike goldmark v1.8.4 gegen 522 reale Dateien (490 Tabellen ⇒ 8 Abweichungen, alle „d-check ist blind"), gefahren auf die Frage des Auftraggebers „brauchen wir einen besseren Markdown-Parser?" während der Rücknahme von slice-074. Die Antwort ist zweigeteilt und gemessen: für die **Policy** (slice-074, slice-077) nein — goldmark stimmt dort exakt mit dem heutigen Reader überein; für die **Grammatik** ja — er hat zwei ausgelieferte, stille Familien gefunden, die drei Reviews und fünf Implementierungsanläufe nicht gesehen haben. Dieses ADR nimmt die zwei belegten Regeln und **nicht** den Parser. Umsetzender Slice slice-076 |
+| 2026-07-18 | Accepted. slice-076 umgesetzt, reviewt (ACCEPT-WITH-NITS) und als **v0.47.0** (nicht v0.46.0 — Nummer inzwischen von slice-075 belegt) freigegeben. Regel B lebt nach Review-R-F-1 in **einem** geteilten Prädikat `rules.FenceToggle` über alle drei Fence-Automaten. Der in §Kontext/§Fitness zitierte Realbeleg B (Review-Doku 2026-06-19 Zeile 179) wurde beim Un-Blinden form-gefixt (`spans`-Gate ohne Opt-out, Aussage unverändert) — die belegte Gestalt bleibt in diesem ADR wörtlich erhalten (Review-R-F-3). |
