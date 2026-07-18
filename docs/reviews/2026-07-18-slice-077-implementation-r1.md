@@ -11,7 +11,7 @@ nicht der Autor) · **Lauf:** R1, **vor** Release (SemVer-Minor).
 Schritt 5, [`DC-FA-XREF-001.a`](../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency),
 [ADR-0043](../plan/adr/0043-tabellengrenze-am-relevanten-header.md) (Proposed),
 [ADR-0037](../plan/adr/0037-trace-tabellenquellen-nullmengen-guard.md),
-[slice-077](../plan/planning/in-progress/slice-077-stiller-tabellen-uebersprung.md),
+[slice-077](../plan/planning/done/slice-077-stiller-tabellen-uebersprung.md),
 [Review R3](2026-07-17-slice-074-implementation-r3.md) (F-1 Wiederaufsetz-Punkt,
 F-5 Masken-Blindheit, F-2 Mutations-Härte), [`AGENTS.md`](../../AGENTS.md) §3.
 
@@ -41,7 +41,7 @@ Kern-Fixes.
 
 ### R-F-1 · LOW · `fx-adj` (`TestCLI077_BenachbarteRelevanteTabellen`) behauptet einen Mutations-Pin, der empirisch **nicht** hält — die Grenze lässt sich dort geräuschlos zurückdrehen
 
-**quelle:** [slice-077](../plan/planning/in-progress/slice-077-stiller-tabellen-uebersprung.md)
+**quelle:** [slice-077](../plan/planning/done/slice-077-stiller-tabellen-uebersprung.md)
 §3 DoD („**Mutations-Härte:** jede neue Grenze kippt einen Test — **gemessen, nicht
 zugesagt** (die R3-F-2-Lehre)"); Reviewer-Anker LOW (latente Wartungsfalle);
 [R3-F-2](2026-07-17-slice-074-implementation-r3.md) (dieselbe Klasse: eine Zusage
@@ -69,7 +69,7 @@ Pin-Zusage an genau dieser Stelle ist falsch (dieselbe Bewegung wie R3-F-2).
 
 ### R-F-2 · LOW · Die Prädikat-Durchreichung an den **Vorwärts**-Cross-Pfad (`bindForwardTables`) ist ungetestet — nur der Rückwärts-Pfad wird adversarial gepinnt
 
-**quelle:** [slice-077](../plan/planning/in-progress/slice-077-stiller-tabellen-uebersprung.md)
+**quelle:** [slice-077](../plan/planning/done/slice-077-stiller-tabellen-uebersprung.md)
 §2 („das Relevanz-Prädikat an **beide** Konsumenten durchgereicht … `cross-consistency`
 via `bindCrossColumns`") und §3 DoD (Akzeptanztests „auf **Konsumenten-Ebene**");
 Reviewer-Anker MEDIUM/LOW (Negativtest-Lücke am neuen Vertrag) — hier LOW, weil der

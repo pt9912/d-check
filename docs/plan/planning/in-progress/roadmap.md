@@ -8,15 +8,12 @@
 
 ## Aktuelle Welle
 
-**welle-60-trace-cross-consistency** ist wieder aktiv: in Arbeit ist
-[`slice-077`](slice-077-stiller-tabellen-uebersprung.md) — der stille
-Tabellen-Übersprung (eine irrelevante Tabelle verschluckt die unmittelbar folgende
-relevante). Er ist die **Wurzel** der slice-074-Klasse und der Blocker-Kette für
-slice-071: erst wenn die Tabellengrenze robust ist, ist slice-074s
-Direktiven-Toleranz sicher und slice-071s Realdatenbeleg fahrbar. Ein **gemessener**
-Regel-Kandidat liegt vor (relevant-Header-Grenze — 10 Fixtures inkl. `fx-s`/`fx-t`/`fx-m`
-+ volle Suite grün, gegen das ausgelieferte v0.47.0-Image). **Danach:** slice-074
-als Aufsatz, dann slice-071 entblocken.
+**Keine aktive Welle.** welle-60-trace-cross-consistency ist **nicht
+abgeschlossen**, hat aber gerade **keinen Slice in Arbeit**: slice-077 ist fertig
+und reviewt (`done/`, ACCEPT-WITH-NITS, **v0.48.0-Release ausstehend**) — die
+Wurzel der slice-074-Klasse ist damit robust. Der WIP-Slot ist frei (Modul 5,
+WIP-Limit = 1). **Nächster Zug:** slice-074 (die Direktiven-Toleranz als sicherer
+Aufsatz auf slice-077), dann slice-071 entblocken (Realdatenbeleg).
 
 **Stand von welle-60** (pausiert, nicht abgeschlossen):
 [`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) **done**
