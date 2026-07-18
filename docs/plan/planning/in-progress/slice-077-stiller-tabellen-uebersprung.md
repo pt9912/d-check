@@ -1,17 +1,20 @@
 # Slice slice-077: Stiller Tabellen-Übersprung — eine irrelevante Tabelle verschluckt die nächste
 
-**Status:** open (Eingang, auf Wellen-Einplanung wartend). **Erfasst 2026-07-17
-als Messbefund; die Regel ist bewusst NICHT entschieden.**
+**Status:** in-progress — **welle-60, in Arbeit seit 2026-07-18.** Erfasst
+2026-07-17 als Messbefund mit bewusst offener Regel; die tragende Regel ist jetzt
+**gemessen entschieden** (relevant-Header-Grenze).
 
 **Bezug:** betrifft
 [`DC-FA-REQ-001.a`](../../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
 Schritt 5 und — über den geteilten Reader —
 [`DC-FA-XREF-001.a`](../../../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency).
 Berührt den Guard aus
-[ADR-0037](../../adr/0037-trace-tabellenquellen-nullmengen-guard.md).
-**Kein ADR — bewusst:** die tragende Regel ist offen. Sie wird benannt, wenn sie
-belegt ist, nicht vorher (Lehre aus
-[slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md) §2).
+[ADR-0037](../../adr/0037-trace-tabellenquellen-nullmengen-guard.md). Begründende
+Entscheidung [ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-header.md)
+(Proposed) — die Regel wurde erst **gemessen belegt**, dann benannt (der Bedingung
+aus [slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md) §2 genügend).
+**Defekt-Fix, kein CR** (das Lastenheft definiert keine Tabellengrenze).
+**SemVer-Minor.**
 
 **Autor:** pt9912. **Datum:** 2026-07-17.
 
@@ -53,49 +56,64 @@ Sonderform.
 
 ## 2. Entscheidungen / Regel
 
-**Keine.** Das ist der Punkt dieses Slices.
+**Die Tabellengrenze liegt am *relevanten* Header** — vollständig in
+[ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-header.md). Kurz: eine Zeile,
+die mit ihrer Folgezeile einen gültigen Header + Trennzeile bildet **und** deren
+Header eine konfigurierte Rolle bindet (relevant), beendet die laufende Tabelle —
+auch bei passender Zellenzahl. Ein rollenloser Header beendet **nicht**.
 
-Was **feststeht** (gemessen, 2026-07-17):
+Warum genau **relevant** — das ist der Diskriminator, den die fünf slice-074-Fassungen
+nicht hatten:
 
-- **Der Defekt ist ausgeliefert** und älter als
-  [slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md) — er braucht keinen
-  Ignore-Marker. slice-074s R3-F-1 **verbreitert** dieses Loch, es entsteht dort
-  nicht. v0.45.1s korrektes Verhalten an der Marker-Variante war **Zufall**: die
-  kaputte Zeile setzte den Header-Scan versehentlich neu auf.
-- **Ein GFM-Parser löst es nicht.** goldmark v1.8.4 sieht `fx-s` **exakt** wie
-  der heutige Reader: zwei Tabellen, die zweite mit fünf Datenzeilen. **GFM gibt
-  uns recht** — ohne Leerzeile beginnt keine neue Tabelle. Die Frage ist
-  **Policy**, nicht Grammatik.
-- **Die naheliegende Regel ist widerlegt.** „Eine Tabelle endet, wo eine neue
-  beginnt (`isNewTableHeader` unbedingt)" zerreißt Fixture `fx-t`: eine
-  Datenzeile aus lauter `---` sähe wie Header+Trennzeile aus, die laufende
-  Tabelle endete davor, und ihre Anforderungen verschwänden **lautlos**. v0.45.1
-  liest `fx-t` heute korrekt (3 Anforderungen).
+- **`fx-s` und `fx-t` sind syntaktisch identisch** (`[Textzeile][Trennzeile][Daten…]`);
+  jede rein **strukturelle** Grenze zerreißt `fx-t` (eine `-`-Datenzeile würde zum
+  Header). Das „relevant" trennt sie: in `fx-t` bindet die `-`-Zeile keine Rolle ⇒
+  keine Trennung; in `fx-s` bindet der verschluckte Header die Rollen ⇒ Trennung.
+- **GFM gibt uns recht** (goldmark v1.8.4 sieht `fx-s` wie wir — ohne Leerzeile keine
+  neue Tabelle): die Frage ist **Policy**, nicht Grammatik.
+- **Invariante:** *Ein relevanter Header beendet die laufende Tabelle* ⇒ jede
+  relevante Tabelle wird erkannt, keine Anforderung verschwindet still in einer
+  vorangehenden. Das adressiert den Kern aus
+  [Review R3](../../../reviews/2026-07-17-slice-074-implementation-r3.md) (den
+  Wiederaufsetz-Punkt des Header-Scans) **direkt**, statt Nachbarfälle zu verengen.
 
-Was **offen** ist: die Regel. Kandidaten, alle unbelegt:
+**Gemessen** (Prototyp gegen das ausgelieferte v0.47.0-Image, 2026-07-18) — die
+**erste** Regel, die `fx-s` **und** `fx-t` **und** `fx-m` gleichzeitig besteht:
 
-| Kandidat | Idee | Bekanntes Problem |
+| Fixture | v0.47.0 | mit Regel |
 |---|---|---|
-| Trennzeile im Body ⇒ Exit 2 | eine Trennzeile mitten in einer Tabelle ist ein Dokumentdefekt, **unabhängig von Relevanz** | trifft `fx-t` (heute grün ⇒ dann Exit 2); braucht ein Signal, das auch für **irrelevante** Tabellen greift — `badLine` tut das nicht |
-| Anforderungs-förmige Zeile in irrelevanter Tabelle ⇒ laut | „hier steht etwas, das wie eine Anforderung aussieht, und ich lese es nicht" | heuristisch; `id-pattern` gegen Zellen einer Tabelle, die per Definition nicht gebunden ist |
-| Relevanz-Prüfung pro Zeile statt pro Tabelle | Header-Bindung erneut versuchen, wenn eine Zeile wie ein Header aussieht | das ist `isNewTableHeader` unbedingt ⇒ an `fx-t` widerlegt |
+| `fx-s` (der Defekt) | `total 1` (still) | `total 3` ✓ |
+| `fx-t` (Gegenprobe, Attempt-5-Killer) | `total 2` | `total 2` ✓ (keine Falsch-Trennung) |
+| `fx-m` (slice-074-Aufsatz) | Exit 2 | `total 3` ✓ (mit der Toleranz) |
+| `fx-m3` (echte Verrutschung) | Exit 2 | Exit 2 ✓ (Guard scharf) |
+| volle Suite (slice-070) | grün | grün ✓ |
 
-**Bedingung an jede künftige Regel:** sie muss an `fx-s` **und** `fx-t` **und**
-`fx-m` gleichzeitig bestehen, gegen das ausgelieferte Image gemessen, und per
-Mutation gepinnt sein. Fünf Fassungen in slice-074 haben je einen Zweig geprüft
-und auf die Klasse geschlossen; dreimal war das Ergebnis ein stilles Grün.
+**Bedingung an die Umsetzung** (die R3-F-2-Lehre): jede Grenze **per Mutation
+gepinnt**, gemessen; das Relevanz-Prädikat an **beide** Konsumenten durchgereicht
+(`format: table` via `bindTableColumns`, `cross-consistency` via `bindCrossColumns`).
+Die früheren Kandidaten (`isNewTableHeader` unbedingt, Trennzeile-im-Body,
+Zeilen-Relevanz) sind in [ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-header.md)
+§Verglichene Alternativen als widerlegt protokolliert.
 
 ## 3. Definition of Done
 
 - [x] **Befund erfasst** samt Reproduktion gegen das ausgelieferte Image.
-- [ ] **Tragende Regel** benannt und begründet ⇒ **eigene ADR**.
-- [ ] **Spezifikation:** [`DC-FA-REQ-001.a`](../../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
-  Schritt 5 geschärft.
+- [x] **Tragende Regel** benannt und begründet ⇒
+  [ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-header.md) (Proposed).
+- [x] **Spezifikation:** [`DC-FA-REQ-001.a`](../../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
+  Schritt 5 geschärft (Grenze am relevanten Header) + Historie.
+- [x] **Regel-Kandidat gemessen** (Prototyp, 10 Fixtures + volle Suite grün gegen
+  v0.47.0) — der Schritt, den die fünf slice-074-Fassungen übersprangen.
 - [ ] **Fixtures zuerst, rot:** `fx-s` (der Befund), `fx-t` (die Gegenprobe, die
-  die naheliegende Regel killt), `fx-m` (slice-074s Marker-Variante).
-- [ ] **Mutations-Härte:** jede neue Grenze kippt einen Test — gemessen.
+  die naheliegende Regel killt), `fx-adj`/`fx-t2` als Akzeptanztests auf
+  **Konsumenten-Ebene** (`format: table` **und** `cross-consistency`).
+- [ ] **Implementierung:** relevant-Header-Grenze in `consumeTableRows`; das
+  Relevanz-Prädikat an **beide** Konsumenten durchgereicht.
+- [ ] **Mutations-Härte:** jede neue Grenze kippt einen Test — **gemessen, nicht
+  zugesagt** (die R3-F-2-Lehre).
 - [ ] **Realdatenbeleg** + **unabhängiger, kontext-getrennter Review vor** dem
   Release; `make gates`/`make ci` grün.
+- [ ] **Release** (SemVer-Minor) + CHANGELOG mit Rot-werden-Ansage.
 
 ## 4. Risiken / offene Punkte
 

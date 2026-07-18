@@ -386,12 +386,20 @@ Ablauf formatunabhängig.
    deklarierte Alternative über die gesamte Quelle mindestens einmal gebunden
    werden; ein unbenutzter Name ist ein Tippfehler-/Teilmenge-Guard und Exit 2.
    Mehrere relevante Tabellen werden in Quellreihenfolge zusammengeführt.
-5. **Datenzeilen.** Eine Zeile gehört bis zur ersten Leer-/Nicht-Tabellenzeile
-   zur Tabelle und muss dieselbe Zellenzahl wie der Header tragen; sonst Exit 2.
-   Nur wenn die getrimmte ID-Zelle als Ganzes auf `id-pattern` passt, definiert
-   sie eine Anforderung; andere Datenzeilen werden ignoriert. Titel = Inhalt der
-   in dieser Tabelle gebundenen Textspalte. `modalityText` = Inhalt von
-   `modality-column`, wenn gesetzt, sonst Inhalt derselben Textspalte.
+5. **Datenzeilen und Tabellengrenze.** Eine Zeile gehört bis zur ersten
+   Leer-/Nicht-Tabellenzeile zur Tabelle. **Grenze am relevanten Header:** bildet
+   eine Zeile mit ihrer Folgezeile einen gültigen Header + Trennzeile (Schritt 3)
+   **und** bindet ihr Header eine konfigurierte Rolle (Schritt 4), ist sie der
+   Header einer **neuen** Tabelle und beendet die laufende — auch bei passender
+   Zellenzahl; die neue Tabelle wird ab dieser Zeile erneut erkannt. Ein Header
+   **ohne** gebundene Rolle beendet die laufende Tabelle nicht (er wird als
+   Datenzeile gelesen). Damit wird jede relevante Tabelle erkannt und kann nicht
+   still in einer vorangehenden Tabelle verschwinden. Jede sonstige Datenzeile
+   muss dieselbe Zellenzahl wie der Header tragen; sonst Exit 2. Nur wenn die
+   getrimmte ID-Zelle als Ganzes auf `id-pattern` passt, definiert sie eine
+   Anforderung; andere Datenzeilen werden ignoriert. Titel = Inhalt der in dieser
+   Tabelle gebundenen Textspalte. `modalityText` = Inhalt von `modality-column`,
+   wenn gesetzt, sonst Inhalt derselben Textspalte.
 6. **Duplikate und Nullmenge.** `table.duplicate-ids` ist `error` (Default),
    `first` oder `last`. Bei `first` bleibt die erste Definition, bei `last`
    überschreibt die spätere Titel und `modalityText`; die ID-Reihenfolge bleibt
@@ -1890,6 +1898,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung | Verweis |
 |---|---|---|
+| 2026-07-18 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritt 5 — **Tabellengrenze am relevanten Header** ergänzt: bildet eine Zeile mit ihrer Folgezeile einen gültigen Header + Trennzeile und **bindet ihr Header eine Rolle** (Schritt 4), beendet sie die laufende Tabelle — auch bei passender Zellenzahl. Damit wird jede relevante Tabelle erkannt und kann nicht mehr still in einer vorangehenden (irrelevanten) verschwinden; ein rollenloser Header (z. B. all-dashes) beendet **nicht** (Gegenprobe `fx-t`). Wirkt über den geteilten Reader zugleich auf §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). **Defekt-Fix, kein CR** (das Lastenheft definiert keine Tabellengrenze), aber **SemVer-Minor**: d-check findet danach **mehr**. Belegt gegen das ausgelieferte v0.47.0-Image (`fx-s`: still `1 Waise` statt 3). Begründung in [ADR-0043](../docs/plan/adr/0043-tabellengrenze-am-relevanten-header.md) | slice-077 |
 | 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 — **Komma-Kurzform-Regel geschärft** (bei der Implementierung): sie greift nicht nur direkt hinter der Kennung, sondern **auch hinter einer konsumierten Range/Enum** (`<FAM>-AAA..CCC, DDD`). Anlass: der reale Auslöser in grid-gyms `traceability.md` ist `GG-SCN-001..005, 007, 008` — die enge Erst-Formulierung („folgt der Fundstelle ein Komma") ließ `007, 008` **still** fallen (Exit 0, 3 Waisen, gemessen), obwohl genau dieser stille Drop der Zweck des Slice war. Ein Komma vor einer vollständigen Kennung bleibt auch nach einer Range unberührt. Begründung in [ADR-0041](../docs/plan/adr/0041-komma-kurzform-fail-closed.md) | slice-075 |
 | 2026-07-17 | **Markdown-Lexik an CommonMark/GFM angeglichen**, zwei Regeln: §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritt 3 — Trennzelle `^:?-{3,}:?$` → `^:?-+:?$` (GFM verlangt **einen** Bindestrich, wir verlangten drei; jede reale Tabelle mit `\| -- \|` war für d-check keine Tabelle). §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 1 — **Infozeilen-Regel**: eine ` ``` `-Zeile mit Backtick im Rest ist kein Fence-Öffner (CommonMark), sondern Fließtext; ohne sie blendet ein Satz **über** einen Fence **alle** Module bis zum Dateiende (Exit 1 ⇒ Exit 0, gemessen). Beides **still** und **ausgeliefert**; belegt per Differential-Spike gegen goldmark v1.8.4 über 522 reale Dateien (490 Tabellen ⇒ 8 Abweichungen, alle „d-check ist blind"). **Defekt-Fix, kein CR** (das Lastenheft sagt weder, was eine Trennzeile ist, noch was einen Fence öffnet), aber **SemVer-Minor**: d-check findet danach **mehr**. Begründung in [ADR-0042](../docs/plan/adr/0042-markdown-lexik-folgt-commonmark.md) | slice-076 |
 | 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 um die **Komma-Kurzform** ergänzt: Kennung + Komma + Ziffern ⇒ Exit 2 mit Hinweis auf die zugesagten Notationen, statt stillem Drop oder geratener Expansion. Komma vor einer vollständigen Kennung bleibt unberührt. Lastenheft-CR 0.46.0; Begründung in der begleitenden ADR | slice-075 |
