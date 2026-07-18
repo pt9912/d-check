@@ -1,6 +1,7 @@
 # Slice slice-079: Zitat-Verifikation — `datei:zeile` als gemessenes Property
 
-**Status:** open (Eingang), **entblockt 2026-07-18** — beide Vorfragen entschieden.
+**Status:** in-progress (welle-62), **aktiviert 2026-07-18** — beide Vorfragen
+entschieden.
 **Adopter-Rückfrage empirisch beantwortet:** die `datei:zeile`-Zitate im Adopter-Repo
 `ai-harness-init` stehen **33/33 in Inline-Code**, null in nackter Prosa (gemessen);
 der Adopter hat seinen eigenen Sensor-Slice deshalb selbst blockiert. **⇒
