@@ -2494,6 +2494,31 @@ func TestCLI074_Cross_DirektivenZeileToleriert(t *testing.T) {
 	}
 }
 
+// slice-074 (Review R4-F-1): der exakte R3-F-1-Fall, hart gebunden — eine
+// IRRELEVANTE Tabelle mit einer tolerierten Direktiven-Datenzeile, UNMITTELBAR
+// gefolgt von einer RELEVANTEN. Ohne die Grenze (slice-077) verschluckt die
+// irrelevante Tabelle die relevante **still** (total 0). Mit Toleranz + Grenze
+// wird R-1 gefunden. Dieser Test kippt bei Grenze-aus UND belegt, dass die 5×
+// gescheiterte Silent-Loss-Klasse nicht zurückkommen kann.
+func TestCLI074_ToleranzVerschlucktFolgetabelleNicht(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md",
+		"| Werkzeug | Zweck |\n|---|---|\n| foo | bar | <!-- d-check:ignore -->\n"+
+			"| ID | Anforderung |\n|---|---|\n| R-1 | a |\n")
+	write(t, root, ".d-check.yml", tableConfig("Anforderung"))
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON: %v", err)
+	}
+	if doc.Total != 1 || traceReqIdx(doc, "R-1") < 0 {
+		t.Fatalf("relevante Folgetabelle hinter tolerierter Direktiven-Zeile verschluckt: %+v", doc.Requirements)
+	}
+}
+
 func tableConfig(textColumn string) string {
 	return "trace:\n  requirements:\n    source: spec/reqs.md\n    id-pattern: 'R-[0-9]+'\n    format: table\n    table:\n      id-column: ID\n      text-column: " + textColumn + "\n"
 }

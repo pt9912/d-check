@@ -17,13 +17,14 @@ import (
 // (spec/spezifikation.md §DC-FA-REQ-001.a Schritt 3, ADR-0042).
 var tableDelimiterCell = regexp.MustCompile(`^:?-+:?$`)
 
-// htmlCommentCell (slice-074/ADR-0040): eine Zelle, die ganz aus einem
+// htmlCommentCell (slice-074/ADR-0040): eine Zelle, die ganz aus **einem**
 // HTML-Kommentar besteht — d-checks eigene `<!-- d-check:ignore … -->`-Direktive
-// hinter der letzten Pipe einer Tabellenzeile.
-var htmlCommentCellRe = regexp.MustCompile(`^<!--.*-->$`)
-
+// hinter der letzten Pipe einer Tabellenzeile. Ein inneres `-->` (zwei Kommentare
+// mit Text dazwischen) zählt **nicht** als ganzzelliger Kommentar (Review R4-F-2).
 func htmlCommentCell(cell string) bool {
-	return htmlCommentCellRe.MatchString(strings.TrimSpace(cell))
+	c := strings.TrimSpace(cell)
+	return len(c) >= 7 && strings.HasPrefix(c, "<!--") && strings.HasSuffix(c, "-->") &&
+		!strings.Contains(c[4:len(c)-3], "-->")
 }
 
 // traceTableRequirements extrahiert Anforderungen aus allen relevanten
