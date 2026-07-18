@@ -1,11 +1,16 @@
 # Slice slice-079: Zitat-Verifikation — `datei:zeile` als gemessenes Property
 
-**Status:** open (Eingang). **Vorfrage 2 (Lastenheft-Verortung) aufgelöst** (§4,
-Auftraggeber 2026-07-18: gemeinsames Kürzel-Kriterium mit
-[slice-078](../done/slice-078-ignore-refs-quell-skopus.md)); **offen bleiben
-Vorfrage 1 (Zuschnitt) und die Adopter-Rückfrage** (Inline-Code vs. Prosa). Der
-CR-Kern („neues Modul `citations`") ist durch die Erdung in §2.2 **in Frage
-gestellt**.
+**Status:** open (Eingang), **entblockt 2026-07-18** — beide Vorfragen entschieden.
+**Adopter-Rückfrage empirisch beantwortet:** die `datei:zeile`-Zitate im Adopter-Repo
+`ai-harness-init` stehen **33/33 in Inline-Code**, null in nackter Prosa (gemessen);
+der Adopter hat seinen eigenen Sensor-Slice deshalb selbst blockiert. **⇒
+`codepaths`-Erweiterung**, kein Prosa-Scanning. **Vorfrage 1 (Zuschnitt) entschieden
+(Auftraggeber):** alle drei Stufen jetzt, **Form (c)** — Stufe 1/2 als Erweiterung von
+[`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
+Stufe 3 (`verbatim`) als **eigenes Modul** (setzt auf `codepaths`' Detektion auf, wie
+`anchors` auf `links`). **Vorfrage 2** war bereits aufgelöst (gemeinsames
+Kürzel-Kriterium mit
+[slice-078](../done/slice-078-ignore-refs-quell-skopus.md)).
 
 **Bezug:** **Change Request** eines Adopters (`ai-harness-init`), eingereicht
 2026-07-17. Berührt
@@ -139,8 +144,12 @@ Der Realdatenbeleg gegen das Adopter-Repo ist daher **nicht optional**.
 ## 3. Definition of Done
 
 - [x] **CR erfasst**, §7 gegen unsere Artefakte beantwortet (§2.2).
-- [ ] **Rückfrage an den Adopter beantwortet:** Inline-Code oder nackte Prosa?
-- [ ] **Vorfragen entschieden** (§4) — Zuschnitt und Lastenheft-Verortung.
+- [x] **Rückfrage an den Adopter beantwortet:** Inline-Code (gemessen: 33/33
+  `datei:zeile`-Zitate in `ai-harness-init` backticked, null Prosa) ⇒
+  `codepaths`-Erweiterung.
+- [x] **Vorfragen entschieden** (§4) — Zuschnitt: alle drei Stufen jetzt, Form (c)
+  (Stufe 1/2 `DC-FA-CODE-001`-Erweiterung, Stufe 3 eigenes Modul); Verortung bereits
+  aufgelöst (Kürzel-Kriterium mit slice-078).
 - [ ] **Lastenheft-CR:** ID nach Schema, drei Akzeptanzkriterien, Out-of-Scope,
   Versions-Bump, Historie
   ([`harness/conventions.md`](../../../../harness/conventions.md#anforderungs-anlege-prozess)).
@@ -157,14 +166,18 @@ Der Realdatenbeleg gegen das Adopter-Repo ist daher **nicht optional**.
 
 ## 4. Risiken / offene Punkte
 
-- **Blockierende Vorfrage 1 — Zuschnitt.** Stufe 1/2 sind eine Erweiterung von
-  [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) (die Zeile wird heute erkannt und verworfen), **kein neues
-  Modul**. Stufe 3 (`verbatim`) ist genuin neu und hängt an einer zweiten
-  Direktive. Drei Formen: **(a)** `codepaths` um eine Zeilen-Verifikation
-  erweitern, Stufe 3 später; **(b)** eigenes Modul `citations`, das `codepaths`'
-  Detektion dupliziert; **(c)** Stufe 1/2 in `codepaths`, Stufe 3 als eigenes
-  Modul. Entscheidung gehört dem Auftraggeber — **weiterhin offen** (hängt an der
-  Adopter-Rückfrage Inline-Code vs. Prosa).
+- **Vorfrage 1 — Zuschnitt: ENTSCHIEDEN (Auftraggeber, 2026-07-18): Form (c), alle
+  drei Stufen jetzt.** Die Adopter-Rückfrage ist empirisch beantwortet (33/33 Zitate
+  in Inline-Code) ⇒ `codepaths`-Erweiterung, kein Prosa-Scanning. **Stufe 1/2** sind
+  eine Erweiterung von
+  [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
+  (die Zeile wird heute erkannt und verworfen), **kein neues Modul**. **Stufe 3**
+  (`verbatim`) ist genuin neu (Inhalts-Verifikation statt Existenz) und wird als
+  **eigenes Modul** gebaut, das `codepaths`' Detektion **aufgreift** (kein
+  Re-Detect — wie `anchors` auf `links` aufsetzt), mit eigener Direktive
+  `d-check:cite` (durch slice-074 entblockt). — _Verworfen: (a) Stufe 3 später
+  (Auftraggeber will alle drei jetzt); (b) eigenes Modul, das die Detektion
+  **dupliziert** (§2.2)._
 - **Vorfrage 2 — Lastenheft-Verortung: AUFGELÖST (Auftraggeber, 2026-07-18)** über ein
   **gemeinsames Kürzel-Kriterium** mit
   [slice-078](../done/slice-078-ignore-refs-quell-skopus.md):
