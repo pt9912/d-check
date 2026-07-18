@@ -17,7 +17,7 @@ Schritt 5, [`DC-FA-XREF-001.a`](../../spec/spezifikation.md#dc-fa-xref-001a--kre
 [ADR-0040](../plan/adr/0040-kommentar-suffix-in-tabellenzeilen.md),
 [ADR-0043](../plan/adr/0043-tabellengrenze-am-relevanten-header.md),
 [ADR-0037](../plan/adr/0037-trace-tabellenquellen-nullmengen-guard.md),
-[slice-074](../plan/planning/in-progress/slice-074-kommentar-suffix-tabellenzeilen.md),
+[slice-074](../plan/planning/done/slice-074-kommentar-suffix-tabellenzeilen.md),
 [R3](2026-07-17-slice-074-implementation-r3.md), [`AGENTS.md`](../../AGENTS.md) §3.
 
 **Verifikations-Basis:** `make test` (Baseline **grün**) und `make build`
@@ -44,7 +44,7 @@ Negativbefunde). Die beiden Findings unten sind Nits, kein BLOCK.
 
 ### F-1 · LOW · Der historisch fünfmal gescheiterte Kombinationsfall (tolerierte Direktiven-Datenzeile *unmittelbar vor* einer relevanten Folgetabelle) ist nur **transitiv** gepinnt — kein lokaler Regressionstest in der `TestCLI074_*`-Suite
 
-**quelle:** [slice-074](../plan/planning/in-progress/slice-074-kommentar-suffix-tabellenzeilen.md)
+**quelle:** [slice-074](../plan/planning/done/slice-074-kommentar-suffix-tabellenzeilen.md)
 §3 DoD („Mutations-Härte … gemessen, nicht zugesagt" — die R3-F-2-Lehre);
 [ADR-0040](../plan/adr/0040-kommentar-suffix-in-tabellenzeilen.md) Fitness-Funktion
 („Folgt der laufenden Tabelle **ohne Leerzeile** eine **relevante** Folgetabelle,

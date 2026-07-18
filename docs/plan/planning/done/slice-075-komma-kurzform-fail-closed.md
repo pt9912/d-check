@@ -18,7 +18,7 @@ Algorithmus in
 Schritt 3; begründende Entscheidung
 [ADR-0041](../../adr/0041-komma-kurzform-fail-closed.md) (Accepted).
 **SemVer-Minor** — Vertrags-Zuwachs, anders als die Defekt-Fixes
-[slice-073](../done/slice-073-link-transparente-range-fortsetzung.md)/[slice-074](../in-progress/slice-074-kommentar-suffix-tabellenzeilen.md).
+[slice-073](../done/slice-073-link-transparente-range-fortsetzung.md)/[slice-074](../done/slice-074-kommentar-suffix-tabellenzeilen.md).
 
 **Autor:** pt9912. **Datum:** 2026-07-17.
 
@@ -91,7 +91,7 @@ zugesagten Notationen — statt stillem Drop **oder** geratener Expansion.
   Jede einzeln begründet, aber das Muster ist ein Signal: der lexikalische
   ID-Leser trifft laufend auf Markdown-/Prosa-Realität. Offener Punkt — gemeinsam
   mit dem gleichlautenden Risiko in
-  [slice-074](../in-progress/slice-074-kommentar-suffix-tabellenzeilen.md) §4: ab
+  [slice-074](../done/slice-074-kommentar-suffix-tabellenzeilen.md) §4: ab
   wann ist das die falsche Abstraktion?
 
 ## 5. Trigger

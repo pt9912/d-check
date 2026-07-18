@@ -8,14 +8,14 @@
 
 ## Aktuelle Welle
 
-**welle-60-trace-cross-consistency** ist wieder aktiv: in Arbeit ist
-[`slice-074`](slice-074-kommentar-suffix-tabellenzeilen.md) — die
-Direktiven-Toleranz (`<!-- d-check:ignore -->` hinter der letzten Pipe einer
-Tabellenzeile). Jetzt ein **sicherer Aufsatz** auf slice-077: dessen
-Tabellengrenze schützt die Folgetabelle, sodass das Tolerieren einer
-Kommentar-Datenzeile keinen stillen Übersprung mehr erzeugt (R3-F-1 ist zu). Die
-Toleranz-Regel ist bereits gemessen (Spike: fx-m/fx-mreq/fx-o/fx-2x). **Danach:**
-slice-071 entblocken (Realdatenbeleg grid-gym `architecture.md:913`).
+**Keine aktive Welle.** welle-60-trace-cross-consistency ist **nicht
+abgeschlossen**, hat aber gerade **keinen Slice in Arbeit**: slice-074 ist fertig
+und reviewt (`done/`, R4 ACCEPT-WITH-NITS, **v0.48.1-Release ausstehend**). Damit ist
+die **Blocker-Kette aufgelöst** — slice-071 ist jetzt **entblockt** (sein
+Realdatenbeleg gegen grid-gyms `architecture.md:913` läuft mit der Direktiven-Toleranz
+durch, statt mit „913 hat 4 statt 3 Zellen" abzubrechen). Der WIP-Slot ist frei
+(Modul 5, WIP-Limit = 1). **Nächster Zug:** slice-071 wieder aufnehmen (`open/`) und
+den Realdatenbeleg gegen das echte grid-gym-Repo fahren.
 
 **Stand von welle-60** (pausiert, nicht abgeschlossen):
 [`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) **done**

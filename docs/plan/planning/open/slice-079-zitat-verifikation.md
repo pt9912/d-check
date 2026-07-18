@@ -115,7 +115,7 @@ strenger als die adoptierte Lehre.
 **Zitat-Syntax `d-check:cite`?** **Zurückstellen.** d-checks bestehende
 Direktiven-Konvention (`d-check:ignore`) blendet in einer Tabellenzeile den
 eigenen Tabellen-Reader; der Defekt ist **ausgeliefert und nach fünf Anläufen
-ungelöst** ([slice-074](../in-progress/slice-074-kommentar-suffix-tabellenzeilen.md)). Eine
+ungelöst** ([slice-074](../done/slice-074-kommentar-suffix-tabellenzeilen.md)). Eine
 **zweite** Direktive einzuführen, während die Platzierungsregeln der ersten offen
 sind, vergrößert eine ungelöste Klasse. Stufe 3 hängt daran — Stufe 1/2 nicht.
 

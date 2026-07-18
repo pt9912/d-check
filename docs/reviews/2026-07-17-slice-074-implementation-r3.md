@@ -13,7 +13,7 @@ Diff `990dc68..HEAD`.
 Schritte 3/5, [`DC-FA-XREF-001.a`](../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency),
 [ADR-0040](../plan/adr/0040-kommentar-suffix-in-tabellenzeilen.md),
 [ADR-0037](../plan/adr/0037-trace-tabellenquellen-nullmengen-guard.md),
-[slice-074](../plan/planning/in-progress/slice-074-kommentar-suffix-tabellenzeilen.md),
+[slice-074](../plan/planning/done/slice-074-kommentar-suffix-tabellenzeilen.md),
 [`AGENTS.md`](../../AGENTS.md) §3.
 
 **Verifikations-Basis:** `make build` (HEAD, Image `sha256:2f77484826…`) gegen das
@@ -240,7 +240,7 @@ DoD-Diskussion und ist so nicht haltbar.
 keine Zelle'. Das ist **falsch**"); Source Precedence
 ([`AGENTS.md`](../../AGENTS.md) §3).
 
-**pfad:** `docs/plan/planning/in-progress/slice-074-kommentar-suffix-tabellenzeilen.md:30`,
+**pfad:** `docs/plan/planning/done/slice-074-kommentar-suffix-tabellenzeilen.md:30`,
 `:38`, `:64` (auch der Titel `:1`).
 
 **befund:** Die DoD-Zeile „**Implementierung:** **nicht** im Splitter … Grenze am
@@ -260,7 +260,7 @@ geschlossen. Unverändert stehen geblieben sind:
 Kein Gate greift (Prosa). Die Verwechslungsgefahr ist real: die DoD ist der
 Wortlaut, gegen den die Verifikation abhakt.
 
-**verifizierbar:** ja — `grep -n "Suffix" docs/plan/planning/in-progress/slice-074-kommentar-suffix-tabellenzeilen.md`
+**verifizierbar:** ja — `grep -n "Suffix" docs/plan/planning/done/slice-074-kommentar-suffix-tabellenzeilen.md`
 gegen `grep -n "ist eine Zelle\|nicht entfernt" spec/spezifikation.md`.
 
 ---

@@ -57,7 +57,7 @@ Kurz:
   `~~~` gilt die Regel nicht (CommonMark-Asymmetrie, keine d-check-Eigenheit).
 - **Die Grenze ist das Gemessene.** Keine weiteren CommonMark-Angleichungen auf
   Verdacht — das ist die Lehre aus
-  [slice-074](../in-progress/slice-074-kommentar-suffix-tabellenzeilen.md) §2: fünf Fassungen,
+  [slice-074](../done/slice-074-kommentar-suffix-tabellenzeilen.md) §2: fünf Fassungen,
   die eine Regel knapp neben dem belegten Problem platzierten.
 - **Kein Parser** — gemessen, nicht behauptet ([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) Entscheidung 4).
 
@@ -129,7 +129,7 @@ Kurz:
 ## 5. Trigger
 
 Nutzer-Frage „Brauchen wir einen besseren Markdown-Parser?" (2026-07-17), gestellt
-während der Rücknahme von [slice-074](../in-progress/slice-074-kommentar-suffix-tabellenzeilen.md).
+während der Rücknahme von [slice-074](../done/slice-074-kommentar-suffix-tabellenzeilen.md).
 Der daraufhin gefahrene Differential-Spike (goldmark v1.8.4 gegen 522 reale
 Dateien, 490 Tabellen) lieferte **8 Abweichungen, alle in dieselbe Richtung**:
 d-check sieht Tabellen nicht, die jeder Renderer zeigt. Die Antwort auf die Frage
