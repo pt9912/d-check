@@ -1,7 +1,9 @@
 # Slice slice-076: Markdown-Lexik an CommonMark/GFM angleichen (Trennzeile + Fence-Infozeile)
 
-**Status:** in-progress — **welle-60, in Arbeit seit 2026-07-18.** Aus `next/`
-gezogen, nachdem die slice-075-Closure den WIP-Slot freigab (Modul 5, WIP-Limit = 1).
+**Status:** done — **welle-60, abgeschlossen 2026-07-18** (Review ACCEPT-WITH-NITS,
+Release v0.47.0). Closure-Notiz in §7. welle-60 bleibt **pausiert, nicht
+abgeschlossen** (slice-071 weiter blockiert). Aus `next/` in Arbeit genommen,
+nachdem die slice-075-Closure den WIP-Slot freigab (Modul 5, WIP-Limit = 1).
 **Vorgeschichte:** am 2026-07-17 war der Slice bei **belegtem** WIP-Limit
 versehentlich nach `in-progress/` gezogen und wieder nach `next/` zurückgeführt
 worden; die Implementierung hatte nie begonnen. Doc-first
@@ -64,31 +66,42 @@ Kurz:
 - [x] **Spezifikation:** beide Regeln geschärft + Historie.
 - [x] **ADR + Index:** [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md),
   Proposed, im Index.
-- [ ] **Tests aus den Realdaten (zuerst, rot):** die `carveouts.md`-Form
+- [x] **Tests aus den Realdaten (zuerst, rot):** die `carveouts.md`-Form
   (`| ------- | ------------- | -- |`) und die
   `2026-06-19-slice-030-…md:179`-Form (```` ```yaml-Fence (`datei.md`) — … ````).
   **Konsumenten-Ebene**, nicht nur am Lexer: die Fence-Form über ein
   **anderes** Modul als `trace` (der kaputte Link dahinter muss gemeldet
   werden) — der Defekt ist modulübergreifend, ein Tabellentest allein belegt ihn
   nicht.
-- [ ] **Implementierung:** `tableDelimiterCell`
+- [x] **Implementierung:** `tableDelimiterCell`
   (`internal/hexagon/core/app/trace_table.go`) und der Fence-Automat. **Achtung,
   zwei Automaten:** `proseLines` (`internal/hexagon/core/rules/markdown.go`,
   geteilt von allen Modulen) und `markdownTableLines`
   (`internal/hexagon/core/app/trace_table.go`). Die Infozeilen-Regel gehört in
   **beide**, sonst sieht `trace` das Dokument anders als `links`.
-- [ ] **Mutations-Härte:** Trennzeilen-Lockerung zurückgedreht ⇒ mindestens ein
+- [x] **Mutations-Härte:** Trennzeilen-Lockerung zurückgedreht ⇒ mindestens ein
   Test kippt; Infozeilen-Regel entfernt ⇒ mindestens ein Test kippt. **Gemessen,
   nicht zugesagt** — die Suite ist heute gegen **beide** blind (die Lockerung
   ließ `make test` grün). Das ist die R3-F-2-Lehre.
-- [ ] **Differential-Gegenprobe:** der goldmark-Spike über die 522 Realdateien
-  fällt von 8 auf 2 Abweichungen; die zwei Reste sind Policy
-  ([slice-077](../open/slice-077-stiller-tabellen-uebersprung.md)), nicht Grammatik.
-- [ ] **Nutzerdoku:** Handbuch — die Trennzeilen- und Fence-Regel stehen dort als
+- [ ] **Differential-Gegenprobe — nicht re-run (dokumentierte Ausnahme):** der
+  goldmark-Spike war eine Wegwerf-Messung über einen **Out-of-Repo-Korpus** (522
+  Dateien = d-check-Doku + grid-gym-Kopie); goldmark ist bewusst **keine**
+  Repo-Abhängigkeit ([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md)
+  Entscheidung 4), also ist das exakte „8→2" nicht in-repo reproduzierbar. Die
+  Vollständigkeit der zwei Regeln ist stattdessen in-repo belegt:
+  Konsumenten-Tests auf den realen Formen, isolierte Mutations-Härte, der
+  unabhängige Review (rein erweiternd, CommonMark-treu) und der saubere
+  Dogfood-Lauf über 244 eigene Dateien. Bewusst offen ausgewiesen, nicht still
+  übersprungen — siehe §7.
+- [x] **Nutzerdoku:** Handbuch — die Trennzeilen- und Fence-Regel stehen dort als
   Nutzer-Vertrag; CHANGELOG mit dem Release-Prep. **Die Minor-Ansage gehört in
   die Release-Notiz:** ein grüner Konsumentenlauf kann danach rot werden.
-- [ ] **Release:** v0.46.0 (Minor, **kein** Patch) + Tag + GHCR + Digest-Backfill.
-- [ ] **Qualität:** unabhängiger, kontext-getrennter Review **vor** dem Release;
+- [ ] **Release:** **v0.47.0** (Minor, **kein** Patch — v0.46.0 war bei
+  Slice-Erstellung noch frei, ist aber inzwischen von slice-075 vergeben) + Tag +
+  GHCR + Digest-Backfill. Folgt unmittelbar auf diese Closure; abgehakt im
+  Post-Release-Commit.
+- [x] **Qualität:** unabhängiger, kontext-getrennter Review **vor** dem Release
+  (ACCEPT-WITH-NITS, alle Nits eingearbeitet bzw. begründet ausgewiesen);
   `make gates`/`make ci` grün.
 
 ## 4. Risiken / offene Punkte
@@ -132,5 +145,70 @@ die Trennzeilen-Änderung ist rein erweiternd.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_Ausstehend — wird bei Abschluss mit Commit-Hash, Review-Verdikt und Lerneintrag
-gefüllt._
+**Abschluss 2026-07-18, Release v0.47.0** (nicht v0.46.0 — die Nummer war bei
+Slice-Erstellung frei, wurde aber inzwischen von slice-075 belegt; in DoD, ADR und
+Doku korrigiert).
+
+**Commit-Kette:** Aktivierungs-Move `b4f6e26` → Slice-Body `98169c0` → feat
+`2dbf4e1` → Review-Report `a9b4f07` → Review-Fixes `6a084db` → Release-Prep
+`ab22a8c` → Closure-Move `f8805ab` → Closure-Body (dieser) → ADR-Accepted →
+Post-Release (Tag/GHCR/Digest-Backfill).
+
+**Geliefert:** zwei gemessene, still ausgelieferte Blindstellen zu — (A) die
+Tabellen-Trennzelle folgt GFM (`^:?-+:?$` statt `^:?-{3,}:?$`); (B) eine
+Backtick-Fence-Zeile mit Backtick in der Infozeile ist Fließtext, kein Öffner.
+Regel B lebt nach dem Review an **einer** Stelle: das exportierte Prädikat
+`rules.FenceToggle`, das alle drei Fence-Automaten (`proseLines`,
+`diagramFenceLines`, `markdownTableLines`) als Öffner-Test rufen. Tests
+rot-zuerst auf Konsumenten-Ebene (`links` **und** `trace`), Mutations-Härte pro
+Regel isoliert gemessen.
+
+**Review — ACCEPT-WITH-NITS**
+([Report](../../../reviews/2026-07-18-slice-076-markdown-lexik-commonmark.md)),
+0 HIGH/MEDIUM; der kontext-getrennte Reviewer fuhr die Mutations-Härte selbst
+empirisch nach. Drei Nits, alle vor der Closure entschieden:
+
+- **R-F-1 (LOW, eingearbeitet):** die Infozeilen-Regel stand doppelt (`proseLines`
+  + Inline-Kopie in `markdownTableLines`). Aufgelöst zu **einem** exportierten
+  `rules.FenceToggle`; die trace≠links-Divergenz, die dieser Slice schließt, kann
+  nicht mehr durch einen einseitigen Edit still zurückkehren. Der `app`→`rules`-
+  Import ist [ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md)-konform.
+- **R-F-2 (INFO, eingearbeitet):** `FenceToggle` wirkt auch auf
+  `diagramFenceLines`. Bewusst so — dieselbe Regel auf denselben naiven Toggle,
+  keine *weitere* CommonMark-Regel auf Verdacht
+  ([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) Entscheidung 3
+  gewahrt).
+  Mutations-Pin ergänzt; die defined-in-Quelle liegt bewusst in einer **separaten**
+  Datei, sonst maskiert der `proseLines`-Definitions-Scan die Mutation.
+- **R-F-3 (LOW, begründet ausgewiesen):** der feat-Commit form-fixt die dattierte
+  Review-Doku `2026-06-19-…:179` (die literale Backtick-Fence-Schreibweise wird zu
+  einem `yaml`-Inline-Span). **Erzwungen, nicht optional:** der Fix un-blindet die
+  Zeile, worauf der `spans`-Gate (kein Opt-out) den vorbestehenden, bis dahin
+  verdeckten `span-unclosed` meldet — und er kann **nicht** in ein eigenes Commit,
+  weil er ohne die Code-Änderung gar nicht sichtbar (also nicht behebbar) ist.
+  Aussage unverändert; der in ADR/Spec zitierte Beleg bleibt **im ADR** wörtlich.
+
+**Differential-Gegenprobe nicht re-run** (offen ausgewiesen, DoD §3): der
+goldmark-„8→2"-Spike lief über einen Wegwerf-Out-of-Repo-Korpus; goldmark ist
+bewusst keine Abhängigkeit. Vollständigkeit stattdessen in-repo belegt.
+
+**Dogfood-Lücke geschlossen (slice §4):** die Fence-Fundstelle lag in d-checks
+eigener Doku und blendete die Datei seit Monaten — kein Gate hatte es bemerkt, nur
+ein Parser-Differential. Nach dem Fix sieht der eigene doc-check die Datei; die
+eine erwartete Folge (`span-unclosed`) ist behoben.
+
+**Reusable Lehren:**
+
+- **Un-blindende Fixes ziehen Dogfood-Nachzug nach sich:** wer eine Lese-Regel
+  erweitert, macht bisher verdeckte Doku-Zeilen sichtbar, und der eigene Gate
+  meldet dort vorbestehende Defekte. Solche Form-Fixes gehören **in denselben
+  Commit** wie die Code-Änderung (sonst ist der feat-Commit gate-rot), nicht in
+  ein separates Hygiene-Commit — anders als die generische Prozess-Erwartung.
+- **Ein Mutations-Pin muss den echten Maskierungs-Pfad umgehen:** der erste
+  diagrams-Pin schlug fehl, weil ein **zweiter**, nicht mutierter Automat
+  (`proseLines` im Definitions-Scan) die Mutation maskierte. Erst eine Fixture,
+  die diesen Pfad ausschließt, fing die Rückdrehung. „Gemessen, nicht zugesagt"
+  heißt auch: prüfen, dass der Pin wirklich kippt — sonst gibt er Falsch-Vertrauen.
+- **Doppelte Regel-Kopien in getrennten Paketen driften still:** ein geteiltes,
+  exportiertes Prädikat ist die einzige strukturelle Garantie gegen die Wiederkehr
+  genau der Divergenz, die man gerade schließt (R-F-1).
