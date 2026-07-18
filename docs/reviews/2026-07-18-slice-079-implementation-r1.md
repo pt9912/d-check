@@ -206,3 +206,25 @@ Auftraggeber, dass ein Absturz-auf-Vertipper in einem nutzerlosen opt-in-Modul d
 Release nicht aufhält, ist ein Ship-with-Fast-Follow eine **vertretbare, aber
 begründungspflichtige** Abweichung, die als Risiko in den Slice gehört. F-2/F-3 sind
 nicht blockierend und mit dem Fix bzw. nach Wahl nachziehbar.
+
+## Nachtrag (Gegenprüfung nach dem Fix) — VERDIKT: ACCEPT
+
+Der BLOCK ist ausgeräumt. Fix-Commit `7b69a56`: 1-basierte Untergrenze
+`von < 1 || von > bis ⇒ citation-inverted-range` in **beiden** Schwestern
+(`citationForDirective` vor der `lines[from-1:to]`-Indizierung + `checkCodepathLineRange`),
+Spec `DC-FA-CODE-001.a` Schritt 6 + `DC-FA-CITE-001.a` Schritt 3 nachgezogen, F-2
+(toter `resolvable`-Zweig) entfernt. Empirisch gegen das frisch gebaute Image
+bestätigt:
+
+- **F-1 behoben:** `<!-- d-check:cite docs/src.md:0-3 -->` liefert `citation-inverted-range`
+  (Exit 1) statt Panic; ebenso `:0`; die Schwester `codepaths.check-lines` mit
+  `datei:0-2` liefert nun `citation-inverted-range` statt stillem Grün — beide Fehlmodi
+  kohärent geschlossen. Korrektes Zitat (von≥1) bleibt grün, keine Regression.
+- **Regressions-Pins haben Zähne:** Mutation `from < 1 ||` entfernt ⇒ der citations-Pin
+  `von-null` kippt **mit dem ursprünglichen `panic: slice bounds out of range [-1:]`**,
+  der codepaths-Pin fängt das stille Grün wieder ein.
+- **`make gates` grün** (256 Dateien, 0 Befunde); F-2-Zweig war nachweislich tot, Fix
+  harmlos; keine neuen Befunde, §4/AllReasons/reasonTexts-Lockstep + Byte-Identität
+  unberührt.
+
+F-3 (INFO) bleibt als dokumentierte Fail-closed-Semantik bestehen (unverändert).
