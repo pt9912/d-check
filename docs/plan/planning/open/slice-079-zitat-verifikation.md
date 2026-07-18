@@ -148,7 +148,7 @@ Der Realdatenbeleg gegen das Adopter-Repo ist daher **nicht optional**.
   `datei:zeile`-Zitate in `ai-harness-init` backticked, null Prosa) ⇒
   `codepaths`-Erweiterung.
 - [x] **Vorfragen entschieden** (§4) — Zuschnitt: alle drei Stufen jetzt, Form (c)
-  (Stufe 1/2 `DC-FA-CODE-001`-Erweiterung, Stufe 3 eigenes Modul); Verortung bereits
+  (Stufe 1/2 `codepaths`-Erweiterung, Stufe 3 eigenes Modul); Verortung bereits
   aufgelöst (Kürzel-Kriterium mit slice-078).
 - [ ] **Lastenheft-CR:** ID nach Schema, drei Akzeptanzkriterien, Out-of-Scope,
   Versions-Bump, Historie
