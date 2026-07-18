@@ -2,7 +2,7 @@
 
 **Status:** open (Eingang). **Vorfrage 2 (Lastenheft-Verortung) aufgelöst** (§4,
 Auftraggeber 2026-07-18: gemeinsames Kürzel-Kriterium mit
-[slice-078](../in-progress/slice-078-ignore-refs-quell-skopus.md)); **offen bleiben
+[slice-078](../done/slice-078-ignore-refs-quell-skopus.md)); **offen bleiben
 Vorfrage 1 (Zuschnitt) und die Adopter-Rückfrage** (Inline-Code vs. Prosa). Der
 CR-Kern („neues Modul `citations`") ist durch die Erdung in §2.2 **in Frage
 gestellt**.
@@ -167,7 +167,7 @@ Der Realdatenbeleg gegen das Adopter-Repo ist daher **nicht optional**.
   Adopter-Rückfrage Inline-Code vs. Prosa).
 - **Vorfrage 2 — Lastenheft-Verortung: AUFGELÖST (Auftraggeber, 2026-07-18)** über ein
   **gemeinsames Kürzel-Kriterium** mit
-  [slice-078](../in-progress/slice-078-ignore-refs-quell-skopus.md):
+  [slice-078](../done/slice-078-ignore-refs-quell-skopus.md):
   **querschnittlich (mehrere Module teilen die Fähigkeit) → neues Bereichskürzel;
   Einzelmodul-Erweiterung → bestehende Anforderung ändern**
   ([`MR-002`](../../../../harness/conventions.md#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung)).

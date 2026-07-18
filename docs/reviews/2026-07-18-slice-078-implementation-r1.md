@@ -1,7 +1,7 @@
 # Review R1 — slice-078: Geteiltes Referenz-Ventil `ignore-refs` mit Quell-Skopus
 
 **Datum:** 2026-07-18 · **Reviewer:** unabhängig, kontext-getrennt ·
-**Gegenstand:** [`slice-078`](../plan/planning/in-progress/slice-078-ignore-refs-quell-skopus.md)
+**Gegenstand:** [`slice-078`](../plan/planning/done/slice-078-ignore-refs-quell-skopus.md)
 (Commit-Range `5223f55..HEAD` auf `main`, Tip `8f9535d`). **Typ:** Pre-Release-Review
 (ein `BLOCK` verhindert das Tag `v0.49.0`).
 
@@ -77,7 +77,7 @@ garantiert. Nice-to-fix-Pin, keine Verhaltenslücke.
 
 ### F-4 (LOW/INFO · Maintainability) — DoD-Häkchen „Nutzerdoku" nicht nachgezogen
 
-**Pfad:** `docs/plan/planning/in-progress/slice-078-ignore-refs-quell-skopus.md:200`
+**Pfad:** `docs/plan/planning/done/slice-078-ignore-refs-quell-skopus.md:200`
 
 **Befund:** Das DoD-Item „Nutzerdoku (Handbuch §5/§6 Ventil-Achsen) + CHANGELOG" ist
 inhaltlich erledigt (Release-Prep-Commit `8f9535d`: Handbuch §5 vier-Achsen-Erklärung,

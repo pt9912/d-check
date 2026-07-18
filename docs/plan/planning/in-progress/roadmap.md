@@ -8,37 +8,26 @@
 
 ## Aktuelle Welle
 
-**Aktive Welle: welle-61-referenz-ventil-quell-skopus.** slice-078 ist in Arbeit
-(`in-progress/`): das Referenz-Ventil `ignore-refs` bekommt einen **Quell-Skopus**
-(`in:`) plus `refs`/`keep`-Felder (ignorieren, wenn `refs` matcht ∧ `keep` nicht) und
-wandert von modul-lokal (`codepaths`) zu **querschnittlich** für
-`links`/`anchors`/`codepaths`. Trigger: Konsumenten-CR `ai-harness-course` — die
-Ziel-Repo-Platzhalter in Template-Verzeichnissen erzwingen heute das ganze
-Verzeichnis in `scan.ignore` und machen damit auch die **echten** Verweise blind,
-deren Auflösung beim Release unveränderlich eingefroren wird.
+**Keine aktive Welle.** welle-61-referenz-ventil-quell-skopus ist **abgeschlossen**:
+[`slice-078`](../done/slice-078-ignore-refs-quell-skopus.md) ist geschlossen
+(`done/`) — das Referenz-Ventil `ignore-refs` ist jetzt **querschnittlich**
+(`links`/`anchors`/`codepaths`) mit Quell-Skopus `in:` und Zwei-Feld-Semantik
+(`refs ∧ ¬keep`), `codepaths.ignore-refs` bleibt Alias.
+[`DC-FA-REF-001`](../../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)
+/ [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md) `Accepted`;
+Realdatenbeleg gegen `ai-harness-course` erbracht (Baseline 42 → Ventil 0 Befunde,
+nicht durch Wegschauen), Review R1 ACCEPT-WITH-NITS, **v0.49.0 veröffentlicht**.
+`in-progress/` ist leer, der WIP-Slot frei.
 
-**§4-Vorfrage entschieden (Auftraggeber, 2026-07-18):** das Ventil wohnt als
-**neues, geteiltes Bereichskürzel** — das Ziel-Achsen-Pendant zum bestehenden
-[`DC-FA-SCAN-001`](../../../../spec/lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln)
-der Quell-Achse; `links`/`anchors`/`codepaths` verweisen darauf,
-`codepaths.ignore-refs` bleibt **Alias** (kein Config-Bruch), die Ventil-Spezifikation
-steht **einmal**.
-[`MR-002`](../../../../harness/conventions.md#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung)
-deckt die Deklaration des neuen Kürzels. Doc-first: Lastenheft → ADR → Spezifikation
-führen, Code folgt.
-
-**Vorgänger:** welle-60-trace-cross-consistency **abgeschlossen** (alle
-Closure-Kriterien erfüllt) —
+**Vorgänger:** welle-60-trace-cross-consistency **abgeschlossen** —
 [`slice-071`](../done/slice-071-trace-cross-consistency-gate.md) (Kreuzverweis-
-Konsistenz, Realdatenbeleg erbracht,
-[ADR-0038](../../adr/0038-trace-cross-consistency.md) `Accepted`, v0.44.0/v0.45.0),
+Konsistenz, [ADR-0038](../../adr/0038-trace-cross-consistency.md) `Accepted`,
+v0.44.0/v0.45.0),
 [`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) (v0.45.1),
 [`slice-075`](../done/slice-075-komma-kurzform-fail-closed.md) (v0.46.0),
-[`slice-076`](../done/slice-076-markdown-lexik-commonmark.md) (v0.47.0); die
-Wurzel-/Aufsatz-Kette
+[`slice-076`](../done/slice-076-markdown-lexik-commonmark.md) (v0.47.0);
 [`slice-077`](../done/slice-077-stiller-tabellen-uebersprung.md) (v0.48.0) →
-[`slice-074`](../done/slice-074-kommentar-suffix-tabellenzeilen.md) (v0.48.1) löste
-die Tabellen-Reader-Klasse.
+[`slice-074`](../done/slice-074-kommentar-suffix-tabellenzeilen.md) (v0.48.1).
 
 ## Nächste Wellen
 
@@ -70,3 +59,4 @@ Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
 | 2026-07-17 | slice-074 aus welle-60 zurückgestellt (`in-progress/` → `open/`), Implementierung zurückgenommen; slice-076 in welle-60 nachgenommen | Drei unabhängige Reviews belegten an fünf aufeinanderfolgenden Fassungen dieselbe Klasse, zuletzt einen Stilles-Grün-Pfad (R3-F-1). Der Realdatenbeleg für slice-071 ist damit weiter blockiert — offen ausgewiesen statt still weitergeschoben. slice-076 kam aus dem Spike, den die Rücknahme ausgelöst hat |
 | 2026-07-18 | slice-071 wieder aufgenommen (`open/`→`in-progress/`), welle-60 wieder aktiv | Blocker aufgelöst: die Direktiven-Toleranz aus slice-074 (v0.48.1) lässt den `17. Testarchitektur`-Abschnitt durchlaufen, statt an `architecture.md:913` abzubrechen. WIP-Slot frei (Modul 5), daher `open→next→in-progress` in einem Zug. Der von [ADR-0038](../../adr/0038-trace-cross-consistency.md) Entscheidung 7 geforderte Realdatenbeleg gegen grid-gym ist damit fahrbar |
 | 2026-07-18 | **welle-61-referenz-ventil-quell-skopus eröffnet**; slice-078 `open`→`in-progress` (WIP-Slot frei nach welle-60-Abschluss) | §4-Vorfrage vom Auftraggeber entschieden: das erweiterte `ignore-refs`-Ventil (Quell-Skopus `in:`, `refs`/`keep`) wohnt als **neues geteiltes Bereichskürzel** (Ziel-Achsen-Pendant zu [`DC-FA-SCAN-001`](../../../../spec/lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln)), nicht als Änderung dreier Anforderungen — vermeidet die Verdreifachung der Ventil-Spezifikation, `codepaths.ignore-refs` bleibt Alias. Konsumenten-CR `ai-harness-course` |
+| 2026-07-18 | **welle-61 abgeschlossen**; slice-078 `in-progress`→`done`, **v0.49.0 veröffentlicht** | Vollständige Kette umgesetzt: Lastenheft [`DC-FA-REF-001`](../../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus) + Spec + [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md) `Accepted`, Code über `links`/`anchors`/`codepaths` + Alias (Mutations-gepinnt), Realdatenbeleg gegen `ai-harness-course` (Baseline 42 → Ventil 0, nicht durch Wegschauen), Review R1 ACCEPT-WITH-NITS (Nits eingearbeitet). WIP-Slot wieder frei |
