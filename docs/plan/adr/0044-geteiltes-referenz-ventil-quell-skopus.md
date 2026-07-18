@@ -1,6 +1,6 @@
 # ADR-0044 — Geteiltes Referenz-Ventil `ignore-refs`: Quell-Skopus, Zwei-Feld-Semantik, Alias
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-18
 **Autor:** pt9912
 **Schärft:** [`DC-FA-REF-001.a`](../../../spec/spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs)
@@ -134,3 +134,4 @@ Es fehlt „Referenz auf **Y** nicht prüfen, **wenn sie in X steht**" — das
 | Datum | Ereignis |
 |---|---|
 | 2026-07-18 | Proposed. Change Request Konsument `ai-harness-course` (2026-07-17), Design nach zwei Rückfragen verfeinert (zwei Felder statt `!`-Negation; `in:`-Skopus statt vierter Achse). §4-Verortungs-Vorfrage vom Auftraggeber entschieden (neues geteiltes Kürzel), gemeinsames Kürzel-Kriterium mit slice-079. Umsetzender Slice slice-078. |
+| 2026-07-18 | **Accepted.** Code über `links`/`anchors`/`codepaths` + Alias umgesetzt (Semantik deckungsgleich mit dieser ADR), keep/in/Wiring per Mutation gepinnt; Realdatenbeleg gegen `ai-harness-course` erbracht (Baseline 42 → Ventil 0 Befunde, zwei injizierte Tippfehler beider Klassen gefangen — nicht durch Wegschauen); unabhängiger Review R1 ACCEPT-WITH-NITS (Nits eingearbeitet). Als v0.49.0 veröffentlicht (slice-078). |
