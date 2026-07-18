@@ -189,9 +189,14 @@ ignoriert, **nichts** Reales blind, Gate grün.
   - ungültiges `in`/`refs`/`keep`-Glob ⇒ Exit 2 (fail-closed) — `TestRefs_UngueltigesGlobExit2`.
   — `keep`/`in`/querschnittliches Wiring per **Mutation gepinnt** (je genau der
   zuständige Test kippt); `make gates`/`make ci` grün.
-- [ ] **Realdatenbeleg** gegen das Konsumenten-Repo: 0 Findings bei **63
-  tatsächlich geprüften** Verweisen — nicht durch Wegschauen (38 ignoriert, davon
-  0 real existierend).
+- [x] **Realdatenbeleg** gegen das Konsumenten-Repo `ai-harness-course`
+  (read-only-Kopie): mit dem geteilten Ventil **0 Findings** (158 Dateien) — die 42
+  Baseline-Befunde (37 target-missing + 5 codepath-missing, **exakt die CR-Messung**)
+  sind still. **Nicht durch Wegschauen:** zwei in echte Ziele injizierte Tippfehler
+  (ein gekeepter `.template.md`-Verweis, ein Kurs-Verweis) werden beide als ERROR
+  gefangen, kein Platzhalter kommt hinzu; das ausgelieferte v0.48.0-Image nimmt die
+  Ventil-Config gar nicht erst an (Top-Level `ignore-refs` unbekannt ⇒ Exit 2). Beleg:
+  [`2026-07-18-slice-078-realdatenbeleg-ai-harness-course`](../../../reviews/2026-07-18-slice-078-realdatenbeleg-ai-harness-course.md).
 - [ ] **Nutzerdoku** (Handbuch §5/§6 Ventil-Achsen) + CHANGELOG mit dem
   Release-Prep.
 - [ ] **Qualität:** unabhängiger, kontext-getrennter Review **vor** dem Release;
