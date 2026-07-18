@@ -157,18 +157,20 @@ ignoriert, **nichts** Reales blind, Gate grün.
 - [x] **CR erfasst** samt Messungen und den zwei Korrekturen (§2.1).
 - [x] **Vorfrage entschieden** (§4, Auftraggeber 2026-07-18): Option (a) — neues
   geteiltes Bereichskürzel, nicht Änderung der drei bestehenden Anforderungen.
-- [x] **Lastenheft-CR:** `DC-FA-REF-001` nach Schema (Bereich `REF` deklariert),
-  6 Akzeptanzkriterien (Happy/Boundary-`keep`/Negative-Tippfehler/Skopus-Isolation/
-  Alias/Regression), Out-of-Scope, Version 0.46.0→0.47.0, Historie-Zeile;
-  `DC-FA-CODE-001` refaktoriert (Zeiger + Alias), `DC-FA-LINK-001`/`DC-FA-ANCH-001`
-  angebunden.
+- [x] **Lastenheft-CR:** [`DC-FA-REF-001`](../../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)
+  nach Schema (Bereich `REF` deklariert), 6 Akzeptanzkriterien
+  (Happy/Boundary-`keep`/Negative-Tippfehler/Skopus-Isolation/Alias/Regression),
+  Out-of-Scope, Version 0.46.0→0.47.0, Historie-Zeile; das modul-lokale
+  `codepaths.ignore-refs` zum Zeiger + Alias refaktoriert, die Module
+  `links`/`anchors`/`codepaths` an das Ventil angebunden.
 - [x] **ADR:** [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md)
   (Proposed) — Zwei-Feld-Semantik gegen `!`-Negation/gitignore-Ordnung, `keep`
   konstitutiv, `in:` als Skopus (keine 4. Achse), Alias-Pfad + Deprecation-Frage,
   Wirkung (Existenz/Escape/Anker, Symlink bleibt).
-- [x] **Spezifikation-`.a`:** `DC-FA-REF-001.a` — Match-Prädikat, Wirkung,
-  Alias-Semantik, Achsen-Präzedenz gegen `scan.ignore`/Zeilen-Marker, leeres `refs`
-  inert; §2-Schema-Keys (`ignore-refs[].in`/`refs`/`keep`).
+- [x] **Spezifikation-`.a`:** [`DC-FA-REF-001.a`](../../../../spec/spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs)
+  — Match-Prädikat, Wirkung, Alias-Semantik, Achsen-Präzedenz gegen
+  `scan.ignore`/Zeilen-Marker, leeres `refs` inert; §2-Schema-Keys
+  (`ignore-refs[].in`/`refs`/`keep`).
 - [ ] **Tests, aus den Abnahmekriterien des CR:**
   - ohne den Key verhält sich d-check unverändert (Regression);
   - **`keep` wirkt** — die 24 im Template-Baum real auflösenden Verweise bleiben
