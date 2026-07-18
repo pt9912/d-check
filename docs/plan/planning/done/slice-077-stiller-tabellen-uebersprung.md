@@ -1,8 +1,10 @@
 # Slice slice-077: Stiller Tabellen-Übersprung — eine irrelevante Tabelle verschluckt die nächste
 
-**Status:** in-progress — **welle-60, in Arbeit seit 2026-07-18.** Erfasst
-2026-07-17 als Messbefund mit bewusst offener Regel; die tragende Regel ist jetzt
-**gemessen entschieden** (relevant-Header-Grenze).
+**Status:** done — **welle-60, abgeschlossen 2026-07-18** (Review R1
+ACCEPT-WITH-NITS, alle drei Nits eingearbeitet, Release v0.48.0). Closure-Notiz in
+§7. welle-60 bleibt **pausiert** (slice-074/071 offen). Erfasst 2026-07-17 als
+Messbefund mit bewusst offener Regel; die Regel ist gemessen entschieden
+(relevant-Header-Grenze).
 
 **Bezug:** betrifft
 [`DC-FA-REQ-001.a`](../../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
@@ -104,16 +106,21 @@ Zeilen-Relevanz) sind in [ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-
   Schritt 5 geschärft (Grenze am relevanten Header) + Historie.
 - [x] **Regel-Kandidat gemessen** (Prototyp, 10 Fixtures + volle Suite grün gegen
   v0.47.0) — der Schritt, den die fünf slice-074-Fassungen übersprangen.
-- [ ] **Fixtures zuerst, rot:** `fx-s` (der Befund), `fx-t` (die Gegenprobe, die
-  die naheliegende Regel killt), `fx-adj`/`fx-t2` als Akzeptanztests auf
-  **Konsumenten-Ebene** (`format: table` **und** `cross-consistency`).
-- [ ] **Implementierung:** relevant-Header-Grenze in `consumeTableRows`; das
-  Relevanz-Prädikat an **beide** Konsumenten durchgereicht.
-- [ ] **Mutations-Härte:** jede neue Grenze kippt einen Test — **gemessen, nicht
-  zugesagt** (die R3-F-2-Lehre).
-- [ ] **Realdatenbeleg** + **unabhängiger, kontext-getrennter Review vor** dem
-  Release; `make gates`/`make ci` grün.
-- [ ] **Release** (SemVer-Minor) + CHANGELOG mit Rot-werden-Ansage.
+- [x] **Fixtures zuerst, rot:** `fx-s` (der Befund, rot→grün), `fx-t` (all-dashes-
+  Gegenprobe, no-regress), `fx-adj` (breitensensitiv, echter Pin), `fxdup`
+  (fail-closed), plus ein cross-Pin — auf **Konsumenten-Ebene** (`format: table`
+  **und** `cross-consistency`).
+- [x] **Implementierung:** relevant-Header-Grenze in `consumeTableRows`; das
+  Relevanz-Prädikat an **beide** Konsumenten durchgereicht (fail-closed auf den
+  Bind-Fehler, Review R-F-3).
+- [x] **Mutations-Härte:** **gemessen** — Grenze aus ⇒ `fx-s`/`fx-adj`/`fxdup`/cross
+  kippen, `fx-t` bleibt grün; fail-open ⇒ nur `fxdup` kippt (die R3-F-2-Lehre,
+  diesmal empirisch nachgefahren, auch vom Reviewer).
+- [x] **Realdatenbeleg** (grid-gym read-only, kein Regress) + **unabhängiger,
+  kontext-getrennter Review vor** dem Release (R1 ACCEPT-WITH-NITS);
+  `make gates`/`make ci` grün.
+- [ ] **Release** (SemVer-Minor, **v0.48.0**) + CHANGELOG mit Rot-werden-Ansage.
+  Abgehakt im Post-Release-Commit.
 
 ## 4. Risiken / offene Punkte
 
@@ -151,4 +158,55 @@ Schritt 5 und in eine ADR — der Code ist die letzte Station, nicht die erste.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+**Abschluss 2026-07-18, Release v0.48.0.** slice-077 ist die **Wurzel** der
+slice-074-Klasse: erst die robuste Tabellengrenze macht die Direktiven-Toleranz
+(slice-074) sicher und slice-071s Realdatenbeleg fahrbar.
+
+**Commit-Kette:** Aktivierung `af25012`/`a05b2f9` → Doc-first `69fcddc` → feat
+`3ea0090` → Review-Report `43f0005` → Review-Fixes `99bbad8` → Release-Prep
+`0751ba3` → Closure-Move `30b75d4` → Closure-Body (dieser) → ADR-Accepted →
+Post-Release (Tag/GHCR/Digest-Backfill).
+
+**Geliefert:** die Tabellengrenze am **relevanten** Header (`consumeTableRows`,
+Prädikat durchgereicht an `format: table` via `bindTableColumns` und
+cross-consistency forward/backward via `bindCrossColumns`). Ein Header, der eine
+Rolle bindet, beendet die laufende Tabelle — jede relevante Tabelle wird erkannt.
+
+**Der Durchbruch (gemessen):** das „relevant" bricht die syntaktische
+`fx-s`≡`fx-t`-Mehrdeutigkeit — die **erste** Regel, die `fx-s` **und** `fx-t`
+gleichzeitig besteht. Fünf rein strukturelle Fassungen scheiterten genau hier. Der
+Weg war **messen zuerst** (Prototyp gegen das ausgelieferte v0.47.0-Image, 10
+Fixtures + volle Suite) **vor** dem ersten Produktivcode — der Schritt, den die fünf
+Fassungen übersprangen.
+
+**Review R1 ACCEPT-WITH-NITS**
+([Report](../../../reviews/2026-07-18-slice-077-implementation-r1.md)), 0
+HIGH/MEDIUM. Der kontext-getrennte Reviewer belegte den Kern-Fix empirisch gegen die
+Images (`fx-s` Elter `total 1` → HEAD `total 3`) und fuhr die Mutations-Härte selbst
+nach. Drei LOW, alle eingearbeitet:
+
+- **R-F-1:** `fx-adj` war grenzenblind (behauptete einen Pin, der nicht hielt — die
+  R3-F-2-Klasse in genau diesem Slice). Neu mit **unterschiedlicher Breite** ⇒
+  echter, gemessener Pin.
+- **R-F-2:** die Vorwärts-Cross-Durchreichung war ungetestet. Die Cross-Fixture trägt
+  nun in **beiden** Sichten eine irrelevante Vor-Tabelle ⇒ beide Cross-Pfade gepinnt.
+- **R-F-3:** ein mehrdeutig-relevanter Header (doppelte Rollen-Spalte) wurde hinter
+  einer irrelevanten Tabelle **still** verschluckt (fail-open). Das Prädikat feuert
+  jetzt **fail-closed auf den Bind-Fehler** ⇒ Exit 2 statt still (`fxdup`-Pin).
+
+**Reusable Lehren:**
+
+- **Bei einer mehrfach gescheiterten Klasse zuerst messen, dann proponieren.** Fünf
+  Fassungen schlossen je aus einem geprüften Zweig auf die Klasse; der gemessene
+  Prototyp über 10 Fixtures fand die erste Regel, die alle besteht. „Gemessen, nicht
+  behauptet" gilt auch für die **Regel-Wahl**, nicht nur die Mutations-Härte.
+- **Der Diskriminator lag nicht in der Struktur, sondern in der Semantik.** `fx-s`
+  und `fx-t` sind syntaktisch identisch; erst die **Rollen-Bindung** (config-getragen)
+  trennt sie. Wer eine strukturelle Mehrdeutigkeit rein strukturell lösen will,
+  bekommt die nächste Fassung.
+- **Ein Mutations-Pin, der grenzenblind ist, ist keiner** (R-F-1) — der Test muss bei
+  genau dieser Breite/Config kippen, sonst pinnt er eine grenzenunabhängige
+  Eigenschaft. Empirisch gegenfahren, nicht dem Kommentar glauben.
+- **Fail-open an einer Bind-Fehler-Kante ist ein stiller Pfad** (R-F-3): ein Prädikat,
+  das einen Fehler als „nicht relevant" wertet, verschluckt genau die Tabellen, die
+  laut sein sollten. Fail-closed auf den Fehler.
