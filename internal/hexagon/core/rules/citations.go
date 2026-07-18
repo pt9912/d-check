@@ -93,15 +93,14 @@ func citationForDirective(fsys driven.Filesystem, file string, prose []proseLine
 		return nil, fmt.Errorf("%s:%d: d-check:cite ohne folgendes Zitat (>-Block oder inline „…\"/\"…\") — DC-FA-CITE-001.a Schritt 2, fail-closed", file, pl.no)
 	}
 	// Schritt 3: Pfad auflösen; Repo-Escape und Zitat-Fäule sind Befunde.
-	rel, escaped, resolvable := resolveCitePath(file, pathRaw)
-	if !resolvable {
-		return nil, fmt.Errorf("%s:%d: d-check:cite-Pfad %q nicht auflösbar — fail-closed", file, pl.no, pathRaw)
-	}
+	rel, escaped := resolveCitePath(file, pathRaw)
 	if escaped {
 		return finding(model.ReasonRepoEscape, "d-check:cite-Ziel verlässt die Repository-Wurzel"), nil
 	}
-	if from > to {
-		return finding(ReasonCitationInvertedRange, "d-check:cite-Bereich invertiert (von > bis)"), nil
+	// Ungültiger Bereich (1-basiert): von < 1 oder von > bis. Fängt auch
+	// die Untergrenze ab, bevor citationSpan mit von-1 indiziert.
+	if from < 1 || from > to {
+		return finding(ReasonCitationInvertedRange, "d-check:cite-Bereich ungültig (von < 1 oder von > bis)"), nil
 	}
 	span, ok := citationSpan(fsys, rel, from, to)
 	if !ok {
@@ -139,13 +138,13 @@ func citationSpan(fsys driven.Filesystem, rel string, from, to int) (string, boo
 
 // resolveCitePath löst den Direktiven-Pfad auf: Datei-relativ bei
 // `./`/`../`, sonst Wurzel-relativ (DC-FA-CITE-001.a Schritt 1/3, wie
-// DC-FA-CODE-001.a). ok=false nur bei einem hier nicht auflösbaren Pfad.
-func resolveCitePath(file, p string) (rel string, escaped, ok bool) {
+// DC-FA-CODE-001.a).
+func resolveCitePath(file, p string) (rel string, escaped bool) {
 	if strings.HasPrefix(p, "./") || strings.HasPrefix(p, "../") {
-		return ResolveTarget(file, p)
+		rel, escaped, _ = ResolveTarget(file, p)
+		return rel, escaped
 	}
-	rel, escaped = ResolveConfigPath(p)
-	return rel, escaped, true
+	return ResolveConfigPath(p)
 }
 
 // citationQuote liefert den Zitattext, der der Direktive (prose[i]) folgt.

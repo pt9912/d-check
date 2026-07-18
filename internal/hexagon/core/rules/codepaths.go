@@ -276,8 +276,8 @@ func checkCodepathLineRange(fsys driven.Filesystem, file string, line int, value
 			Target: target, Reason: reason, Message: msg,
 		}}
 	}
-	if from > to {
-		return mk(ReasonCitationInvertedRange, "Zeilen-Referenz invertiert (von > bis)")
+	if from < 1 || from > to {
+		return mk(ReasonCitationInvertedRange, "Zeilen-Referenz ungültig (von < 1 oder von > bis)")
 	}
 	content, err := fsys.ReadFile(rel)
 	if err != nil {

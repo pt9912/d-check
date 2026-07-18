@@ -79,6 +79,7 @@ func TestCitationsZitatFaeule(t *testing.T) {
 	}{
 		{"out-of-range", "docs/src.md:2-9", "docs/src.md:2-9 citation-out-of-range"},
 		{"inverted", "docs/src.md:3-1", "docs/src.md:3-1 citation-inverted-range"},
+		{"von-null (F-1: Befund statt Absturz)", "docs/src.md:0-3", "docs/src.md:0-3 citation-inverted-range"},
 		{"escape", "../../etc/passwd:1-1", "../../etc/passwd:1-1 repo-escape"},
 	}
 	for _, c := range cases {

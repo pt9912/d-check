@@ -1124,7 +1124,8 @@ byte-identisch.
 6. **Zeilen-Check (nur bei `check-lines`):** trägt der Wert einen in
    Schritt 3 gemerkten Zeilen-Bereich und existiert das aufgelöste,
    nicht-ignorierte Ziel (Schritt 5 lieferte keinen `codepath-missing`),
-   wird der Bereich geprüft: `von > bis` ⇒ `citation-inverted-range`; sonst
+   wird der Bereich geprüft: `von < 1` oder `von > bis` ⇒ `citation-inverted-range`
+   (die Zeilennummern sind 1-basiert); sonst
    hat die Zieldatei weniger als `bis` Zeilen ⇒ `citation-out-of-range`. Ohne
    `check-lines` entfällt der Schritt (byte-identisch); ein fehlendes Ziel
    bleibt `codepath-missing` (der Zeilen-Check setzt Existenz voraus, nicht
@@ -1158,7 +1159,8 @@ Module).
    `repo-escape` (Exit 1, dieselbe Sicherheits-Prüfung wie `codepaths`/`links`).
    Danach die **Zitat-Fäule** (Befund, **nicht** fail-closed — kohärent zum
    Zeilen-Check aus [DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code)
-   Schritt 6): `von > bis` ⇒ `citation-inverted-range`; sonst fehlt die Zieldatei oder
+   Schritt 6): `von < 1` oder `von > bis` ⇒ `citation-inverted-range` (die Zeilennummern
+   sind 1-basiert); sonst fehlt die Zieldatei oder
    hat sie weniger als `bis` Zeilen ⇒ `citation-out-of-range` (kein Vergleich, da die
    Spanne nicht existiert).
 4. **Normalisierung.** Quell-Spanne (Zeilen `von`–`bis` verbunden) und Zitattext

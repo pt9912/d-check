@@ -40,6 +40,7 @@ func TestCodepathsCheckLines(t *testing.T) {
 		{"hinter Datei-Ende", "Siehe `docs/target.md:9`.\n", []string{"docs/target.md:9-9 citation-out-of-range"}},
 		{"Bereich zu weit", "Siehe `docs/target.md:2-9`.\n", []string{"docs/target.md:2-9 citation-out-of-range"}},
 		{"invertiert", "Siehe `docs/target.md:3-1`.\n", []string{"docs/target.md:3-1 citation-inverted-range"}},
+		{"von null (F-1)", "Siehe `docs/target.md:0-2`.\n", []string{"docs/target.md:0-2 citation-inverted-range"}},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
