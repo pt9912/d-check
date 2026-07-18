@@ -1,12 +1,12 @@
 # Slice slice-076: Markdown-Lexik an CommonMark/GFM angleichen (Trennzeile + Fence-Infozeile)
 
-**Status:** next — **in welle-60 eingeplant, wartet auf den WIP-Slot.**
-**`in-progress` → `next` am 2026-07-17, Korrektur:** der Slice wurde bei
-**belegtem WIP-Limit** nach `in-progress/` gezogen. Modul 5: „WIP-Limit pro
-Implementer = 1 ist eine harte Größe, kein Vorschlag" — und `next→in-progress`
-trägt ausdrücklich die Bedingung „WIP-Limit frei". Die war nicht erfüllt; die
-Implementierung hat nie begonnen. Nichts geht verloren: Doc-first ([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md),
-Spezifikation) ist fertig und bleibt.
+**Status:** in-progress — **welle-60, in Arbeit seit 2026-07-18.** Aus `next/`
+gezogen, nachdem die slice-075-Closure den WIP-Slot freigab (Modul 5, WIP-Limit = 1).
+**Vorgeschichte:** am 2026-07-17 war der Slice bei **belegtem** WIP-Limit
+versehentlich nach `in-progress/` gezogen und wieder nach `next/` zurückgeführt
+worden; die Implementierung hatte nie begonnen. Doc-first
+([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md), Spezifikation) lag
+fertig vor; offen war nur die Implementierung.
 
 **Welle:** welle-60-trace-cross-consistency. Blockiert niemanden und wird von
 niemandem blockiert — der Defekt trifft denselben geteilten Reader und dieselbe
