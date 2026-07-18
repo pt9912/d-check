@@ -79,7 +79,7 @@ Zurückgesetzt — die Implementierung ist zurückgenommen. Der Doc-Teil trägt:
   Exit 2. Sie blockiert den von
   [ADR-0038](../../adr/0038-trace-cross-consistency.md) Entscheidung 7 geforderten
   Realdatenbeleg von
-  [`slice-071`](slice-071-trace-cross-consistency-gate.md).
+  [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md).
 - **Der stille Pfad ist älter als dieser Slice und braucht keinen Marker.** Belegt
   am **ausgelieferten** v0.45.1 (Fixture `fx-s`, 2026-07-17): eine irrelevante
   Tabelle gleicher Breite, ohne Leerzeile gefolgt von einer relevanten, verschluckt
