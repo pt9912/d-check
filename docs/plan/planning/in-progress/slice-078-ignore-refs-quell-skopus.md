@@ -1,7 +1,11 @@
 # Slice slice-078: `ignore-refs` mit Quell-Skopus (`in:`) — Referenz-Ventil über beide Achsen
 
-**Status:** open (Eingang). **Blockierende Vorfrage offen** (§4) — die Regel steht,
-die Lastenheft-Verortung nicht.
+**Status:** in-progress (welle-61). **§4-Vorfrage entschieden** (Auftraggeber,
+2026-07-18): Option (a) — das Ventil wird als **neues geteiltes Bereichskürzel** in
+Lastenheft §3 deklariert (Ziel-Achsen-Pendant zu
+[`DC-FA-SCAN-001`](../../../../spec/lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln)),
+`codepaths.ignore-refs` bleibt Alias. Doc-first: Lastenheft → ADR → Spezifikation
+führen, Code folgt.
 
 **Bezug:** **Change Request** eines Konsumenten (`ai-harness-course`), eingereicht
 2026-07-17, Design nach zwei Rückfragen verfeinert (§2.1). Betrifft das Ventil
@@ -151,7 +155,8 @@ ignoriert, **nichts** Reales blind, Gate grün.
 ## 3. Definition of Done
 
 - [x] **CR erfasst** samt Messungen und den zwei Korrekturen (§2.1).
-- [ ] **Vorfrage entschieden** (§4) — Lastenheft-Verortung.
+- [x] **Vorfrage entschieden** (§4, Auftraggeber 2026-07-18): Option (a) — neues
+  geteiltes Bereichskürzel, nicht Änderung der drei bestehenden Anforderungen.
 - [ ] **Lastenheft-CR:** ID nach Schema, **drei** Akzeptanzkriterien
   (Happy/Boundary/Negative), Out-of-Scope-Liste, Versions-Bump, Historie-Zeile
   ([`harness/conventions.md`](../../../../harness/conventions.md#anforderungs-anlege-prozess)).
@@ -180,15 +185,19 @@ ignoriert, **nichts** Reales blind, Gate grün.
 
 ## 4. Risiken / offene Punkte
 
-- **Blockierende Vorfrage — wo die Anforderung wohnt.** `ignore-refs` steht heute
-  **in** [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) und ist modul-lokal. Der CR verlangt es für drei Module.
-  Zwei Formen stehen zur Wahl, und die Entscheidung gehört dem Auftraggeber:
-  **(a)** ein **neues Bereichskürzel** in Lastenheft §3 (geteiltes Referenz-Ventil
-  als eigene Anforderung, auf die `links`/`anchors`/`codepaths` verweisen) — die
-  Deklaration eines neuen Kürzels ist in der Schema-Konvention vorgesehen
-  ([`MR-002`](../../../../harness/conventions.md#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung));
-  **(b)** **Änderung der drei bestehenden** Anforderungen. **Kein ADR und keine
-  Lastenheft-Zeile, bevor das entschieden ist.**
+- **Vorfrage ENTSCHIEDEN (Auftraggeber, 2026-07-18): Option (a).** Das Ventil wird als
+  **neues geteiltes Bereichskürzel** in Lastenheft §3 deklariert — das
+  Ziel-Achsen-Pendant zu
+  [`DC-FA-SCAN-001`](../../../../spec/lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln)
+  der Quell-Achse; `links`/`anchors`/`codepaths` verweisen darauf,
+  `codepaths.ignore-refs` bleibt Alias (kein Config-Bruch). Damit entfällt die
+  Verdreifachung der Ventil-Spezifikation (Option b). Die konkrete Kennung vergibt
+  der Lastenheft-CR nach
+  [`MR-002`](../../../../harness/conventions.md#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung).
+  _Ursprüngliche Vorfrage (zur Nachvollziehbarkeit):_ `ignore-refs` steht heute **in**
+  [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
+  und ist modul-lokal, der CR verlangt es für drei Module — **(a)** neues Kürzel vs.
+  **(b)** Änderung der drei bestehenden Anforderungen.
 - **Config-Fläche.** Auch wenn es das Kreuzprodukt der zwei vorhandenen Achsen ist
   und keine dritte: die Fläche wächst (`scan.ignore`, Zeilen-Marker,
   `*-exempt-paths`, `ignore-refs` + `in:`/`keep`). Die Handbuch-Doku muss die
