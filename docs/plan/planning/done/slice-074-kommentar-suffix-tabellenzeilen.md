@@ -1,10 +1,12 @@
 # Slice slice-074: Direktiven-Zelle in Tabellenzeilen (Reader vs. eigene Direktive)
 
-**Status:** in-progress — **welle-60, in Arbeit seit 2026-07-18.** Wieder
-aufgenommen, nachdem **slice-077** (die Wurzel-Grenze, released v0.48.0) die Klasse
-**strukturell geschlossen** hat: die Toleranz ist jetzt ein **sicherer Aufsatz**.
-Zuvor 2026-07-17 aus `in-progress/` zurückgestellt (`05e1889`, `806051f`) nach fünf
-Fehlschlägen derselben Klasse — richtig so, denn die Wurzel fehlte.
+**Status:** done — **welle-60, abgeschlossen 2026-07-18** (Review R4
+ACCEPT-WITH-NITS, Release v0.48.1). Closure-Notiz in §7. welle-60 bleibt
+**pausiert** — aber die **Blocker-Kette ist aufgelöst, slice-071 ist entblockt**.
+Wieder aufgenommen, nachdem **slice-077** (die Wurzel-Grenze, released v0.48.0) die
+Klasse strukturell geschlossen hat; zuvor 2026-07-17 aus `in-progress/`
+zurückgestellt (`05e1889`, `806051f`) nach fünf Fehlschlägen — richtig so, denn die
+Wurzel fehlte.
 
 **Welle:** welle-60-trace-cross-consistency (Aufsatz auf slice-077; entblockt danach
 slice-071s Realdatenbeleg).
@@ -85,14 +87,15 @@ und die Toleranz wird ein sicherer Aufsatz.
 - [x] **Spezifikation:** §[`DC-FA-REQ-001.a`](../../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
   Schritt 5 um die Direktiven-Toleranz ergänzt + Historie.
 - [x] **Regel-Kandidat gemessen** (Spike 2026-07-18: fx-m/fx-mreq/fx-o/fx-2x).
-- [ ] **Fixtures zuerst, rot:** die tolerierte Direktiven-Datenzeile auf
+- [x] **Fixtures zuerst, rot:** die tolerierte Direktiven-Datenzeile auf
   **Konsumenten-Ebene** (`format: table` **und** `cross-consistency`), plus fx-2x
   (Guard scharf) und fx-o (Panic-Pfad, Datei-Ende ohne Newline).
-- [ ] **Implementierung:** `htmlCommentCell` + Toleranz in `consumeTableRows`
+- [x] **Implementierung:** `htmlCommentCell` + Toleranz in `consumeTableRows`
   (`len(cells)==len(header)+1`).
-- [ ] **Mutations-Härte:** Toleranz entfernt ⇒ mindestens ein Test kippt —
+- [x] **Mutations-Härte:** Toleranz entfernt ⇒ mindestens ein Test kippt —
   **gemessen, nicht zugesagt** (die R3-F-2-Lehre).
-- [ ] **Realdatenbeleg:** grid-gym `architecture.md:913` läuft durch (statt Exit 2).
+- [x] **Realdatenbeleg:** grid-gym `architecture.md:913` läuft durch (statt Exit 2) —
+  gegen v0.48.0 belegt (`913 hat 4 statt 3 Zellen` ist weg). Entblockt slice-071.
 - [ ] **Release** (SemVer-Patch, **v0.48.1**) + CHANGELOG; **unabhängiger,
   kontext-getrennter Review vor** dem Release; `make gates`/`make ci` grün.
 
@@ -148,6 +151,54 @@ durch die Akzeptanztests aus
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_Ausstehend — der Slice ist nicht abgeschlossen, sondern zurückgestellt. Die
-Rücknahme ist in `05e1889` (Code/Spec) und `806051f` (Handbuch) dokumentiert;
-Anlass, Verlauf und die fünf Fehlschläge stehen in §2 und in den drei Reviews._
+**Abschluss 2026-07-18, Release v0.48.1** (SemVer-Patch, rot→grün). Der Aufsatz sitzt,
+**weil die Wurzel zuerst gelöst wurde** (slice-077, die Tabellengrenze) — die Lehre aus
+fünf Fehlschlägen.
+
+**Commit-Kette:** Aktivierung `f6e5189` → Doc-first `e944be0` ([ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md) wieder
+aufgenommen) → feat `b0d1a4f` → Review-Report `1540170` → Review-Fixes `d38e650` →
+Release-Prep `58bc0b4` → Closure-Move `011385d` → Closure-Body (dieser) → ADR-Accepted →
+Post-Release.
+
+**Geliefert:** die Direktiven-Toleranz in `consumeTableRows` — genau eine überzählige,
+ganzzellige HTML-Kommentar-Zelle (`htmlCommentCell`, `len==header+1`) wird auf
+Header-Breite gelesen; über den geteilten Reader auf `format: table` **und** cross.
+**Sicher, weil slice-077/[ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-header.md) die Tabellengrenze bereits zieht** — der fünffach
+reproduzierte stille Übersprung (R3-F-1) ist strukturell unmöglich, nicht durch eine
+eigene Lookahead-Grenze (die fünfmal danebenlag).
+
+**Warum diesmal, nach fünf Fehlschlägen:** R1–R3 waren richtig — jede eigene Grenze der
+Toleranz entfernte den `badLine`-Wiederaufsetz-Punkt und verschluckte die Folgetabelle.
+Die Lösung war nicht der sechste Anlauf am selben Zweig, sondern **die Wurzel zuerst**.
+Danach ist die Toleranz ein schmaler, sicherer Aufsatz.
+
+**Review R4 ACCEPT-WITH-NITS**
+([Report](../../../reviews/2026-07-18-slice-074-implementation-r4.md)), 0 HIGH/MEDIUM.
+Der kontext-getrennte Reviewer baute den exakten R3-F-1-Fall gegen das Image nach (kein
+stiller Übersprung) und belegte SemVer-Patch (byte-identisch zu v0.48.0 außer der
+N+1-Zeile). Zwei Nits eingearbeitet:
+
+- **R4-F-1 (LOW):** der historisch fragile Kombinationsfall war nur **transitiv**
+  gepinnt. `TestCLI074_ToleranzVerschlucktFolgetabelleNicht` bindet ihn jetzt **hart**
+  (irrelevante Tabelle + tolerierte Direktiven-Zeile + relevante Folgetabelle: kippt bei
+  Grenze-aus, total 0 statt 1). Kein Einzel-Mutation öffnet den stillen Pfad wieder.
+- **R4-F-2 (INFO):** `htmlCommentCell` verlangt jetzt **einen** ganzzelligen Kommentar
+  (kein inneres `-->`) — deckt sich mit der ADR-Prosa.
+
+**Realdatenbeleg:** grid-gym `architecture.md:913` (die Direktiven-`Bezug`-Zeile) läuft
+mit der Toleranz durch — v0.48.0 bricht mit `913 hat 4 statt 3 Zellen`/Exit 2 ab, HEAD
+nicht. **Damit ist slice-071 entblockt** (der von [ADR-0038](../../adr/0038-trace-cross-consistency.md) Entscheidung 7 geforderte
+Realdatenbeleg ist fahrbar).
+
+**Reusable Lehren:**
+
+- **Erst die Wurzel, dann der Aufsatz.** Fünf Fassungen scheiterten, weil sie die
+  Toleranz mit einer eigenen Grenzen-Logik lösen wollten, während die eigentliche Wurzel
+  (die Tabellengrenze) offen war. Die richtige Reihenfolge (Wurzel-Slice zuerst) machte
+  den Aufsatz zu einem schmalen, sicheren Diff — nach fünf Fehlschlägen am selben Zweig.
+- **Ein transitiv gepinnter Fall ist nicht hart gebunden** (R4-F-1): schließt die
+  **Kombination** zweier Features eine Klasse, braucht die Klasse einen **eigenen** Test,
+  der bei jeder der beiden Mutationen kippt — sonst öffnet ein Refactor sie still wieder.
+- **Eine Regex ist oft schwächer als die Prosa** (R4-F-2): `^<!--.*-->$` (greedy)
+  akzeptiert zwei Kommentare mit Text dazwischen; „ganzzellig ein Kommentar" verlangt
+  ausdrücklich kein inneres `-->`.
