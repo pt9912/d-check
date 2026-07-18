@@ -59,6 +59,15 @@ type rawCodepaths struct {
 	IgnoreRefs  []string  `yaml:"ignore-refs"`
 }
 
+// rawIgnoreRef traegt einen Eintrag des geteilten Referenz-Ventils
+// ignore-refs (DC-FA-REF-001): in (Quell-Skopus), refs (Ziel-Globs),
+// keep (Ausnahmen).
+type rawIgnoreRef struct {
+	In   string   `yaml:"in"`
+	Refs []string `yaml:"refs"`
+	Keep []string `yaml:"keep"`
+}
+
 // rawDiagrams trägt scope, fences und die Muster des Moduls diagrams
 // (DC-FA-DIAG-001).
 type rawDiagrams struct {
@@ -267,7 +276,8 @@ type raw struct {
 		Roots  []string `yaml:"roots"`
 		Ignore []string `yaml:"ignore"`
 	} `yaml:"scan"`
-	Modules   []string      `yaml:"modules"`
+	IgnoreRefs []rawIgnoreRef `yaml:"ignore-refs"`
+	Modules    []string       `yaml:"modules"`
 	Links     *rawScopeOnly `yaml:"links"`
 	Anchors   *rawScopeOnly `yaml:"anchors"`
 	Spans     *rawScopeOnly `yaml:"spans"`
@@ -323,6 +333,9 @@ func Decode(content []byte) (model.Config, error) {
 // fester Reihenfolge an und liefert den ersten Fehler (Exit 2). Ausgelagert aus
 // Decode, damit dessen gocyclo-Komplexität unter der Schwelle bleibt.
 func applyModules(r *raw, cfg *model.Config) error {
+	if err := applyIgnoreRefs(r, cfg); err != nil {
+		return err
+	}
 	if err := applyIDs(r.IDs, cfg); err != nil {
 		return err
 	}
@@ -936,6 +949,64 @@ func applyCodepaths(r *raw, cfg *model.Config) error {
 		Roots:       r.Codepaths.Roots,
 		ExemptPaths: r.Codepaths.ExemptPaths,
 		IgnoreRefs:  r.Codepaths.IgnoreRefs,
+	}
+	return nil
+}
+
+// applyIgnoreRefs validiert das geteilte Referenz-Ventil ignore-refs
+// (DC-FA-REF-001): jedes in/refs/keep-Glob muss segmentweise ein gültiges
+// path.Match-Muster sein — dieselbe Rand-Disziplin wie tracked.exempt-targets,
+// sonst schluckte der Kern den ErrBadPattern und das Ventil wäre still
+// wirkungslos. Leeres in = repo-weit (erlaubt); leere refs/keep-Elemente sind
+// ein Fehler. Ein leeres refs (Liste) macht den Eintrag inert.
+func applyIgnoreRefs(r *raw, cfg *model.Config) error {
+	if len(r.IgnoreRefs) == 0 {
+		return nil
+	}
+	out := make([]model.IgnoreRef, 0, len(r.IgnoreRefs))
+	for _, e := range r.IgnoreRefs {
+		if err := validIgnoreRefEntry(e); err != nil {
+			return err
+		}
+		out = append(out, model.IgnoreRef{In: e.In, Refs: e.Refs, Keep: e.Keep})
+	}
+	cfg.IgnoreRefs = out
+	return nil
+}
+
+// validIgnoreRefEntry validiert einen ignore-refs-Eintrag: leeres in =
+// repo-weit (erlaubt), leere refs/keep-Elemente sind ein Fehler; jedes
+// nichtleere Glob wird segmentweise geprüft.
+func validIgnoreRefEntry(e rawIgnoreRef) error {
+	if e.In != "" {
+		if err := validRefGlob(e.In); err != nil {
+			return err
+		}
+	}
+	for _, list := range [][]string{e.Refs, e.Keep} {
+		for _, g := range list {
+			if g == "" {
+				return fmt.Errorf("%s: ignore-refs enthält ein leeres refs/keep-Glob", FileName)
+			}
+			if err := validRefGlob(g); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// validRefGlob prüft segmentweise (wie die Laufzeit matchGlob), dass ein
+// ignore-refs-Glob ein gültiges path.Match-Muster ist — sonst schluckte der
+// Kern den ErrBadPattern und das Ventil wäre still wirkungslos.
+func validRefGlob(g string) error {
+	for _, seg := range strings.Split(g, "/") {
+		if seg == "**" {
+			continue
+		}
+		if _, err := path.Match(seg, "probe"); err != nil {
+			return fmt.Errorf("%s: ignore-refs-Glob %q ist ungültig (Segment %q): %v", FileName, g, seg, err)
+		}
 	}
 	return nil
 }

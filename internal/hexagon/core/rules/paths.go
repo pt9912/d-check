@@ -4,6 +4,8 @@ import (
 	"net/url"
 	"path"
 	"strings"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 )
 
 // ResolveTarget löst ein Linkziel relativ zur enthaltenden Datei auf:
@@ -123,6 +125,24 @@ func matchSegs(pat, segs []string) bool {
 func ignored(rel string, ignore []string) bool {
 	for _, pat := range ignore {
 		if matchGlob(pat, rel) {
+			return true
+		}
+	}
+	return false
+}
+
+// refIgnored prüft das geteilte Referenz-Ventil `ignore-refs`
+// (DC-FA-REF-001): eine Referenz aus der Quelldatei `file` auf das
+// aufgelöste Ziel `rel` wird ignoriert, wenn mindestens ein Eintrag
+// greift — Quell-Skopus (In leer oder matcht `file`) UND ein Refs-Glob
+// matcht `rel` UND kein Keep-Glob desselben Eintrags matcht `rel`
+// (Keep gewinnt reihenfolge-unabhängig). Einträge wirken additiv.
+func refIgnored(entries []model.IgnoreRef, file, rel string) bool {
+	for _, e := range entries {
+		if e.In != "" && !matchGlob(e.In, file) {
+			continue
+		}
+		if ignored(rel, e.Refs) && !ignored(rel, e.Keep) {
 			return true
 		}
 	}

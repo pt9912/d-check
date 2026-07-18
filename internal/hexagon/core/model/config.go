@@ -31,6 +31,9 @@ type Config struct {
 	// Roots: nil = Default-Wurzeln; sonst explizit (müssen existieren).
 	Roots  []string
 	Ignore []string
+	// IgnoreRefs: geteiltes Referenz-Ventil (DC-FA-REF-001), honoriert
+	// von links/anchors/codepaths; nil = kein Eintrag (byte-identisch).
+	IgnoreRefs []IgnoreRef
 	// Modules: nil = DefaultModules.
 	Modules []string
 	// IDPatterns: bereits kompilierte Kennungs-Muster (Modul ids).
@@ -66,6 +69,20 @@ type Config struct {
 	// ist der Modulname, nil-Eintrag/fehlender Schlüssel = globaler
 	// Scope.
 	Scopes map[string]*ScopeConfig
+}
+
+// IgnoreRef ist ein Eintrag des geteilten Referenz-Ventils `ignore-refs`
+// (DC-FA-REF-001; Ziel-Achsen-Pendant zu scan.ignore). Ein Ziel wird
+// ignoriert, wenn Refs matcht UND Keep nicht (Keep reihenfolge-unabhängig).
+type IgnoreRef struct {
+	// In: optionaler Glob (Syntax wie scan.ignore) auf die Quelldatei
+	// (die Datei, in der die Referenz steht); "" = repo-weit.
+	In string
+	// Refs: Globs auf den aufgelösten Ziel-Pfad; leer = Eintrag inert.
+	Refs []string
+	// Keep: Globs; Ausnahmen — ein von Refs getroffenes Ziel bleibt
+	// geprüft, wenn ein Keep-Glob es trifft (Keep gewinnt unbedingt).
+	Keep []string
 }
 
 // ScopeConfig ersetzt für genau ein Modul den globalen Scan-Scope

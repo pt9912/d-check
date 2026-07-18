@@ -22,13 +22,20 @@ const ignoreMarker = "d-check:ignore"
 // (spec/spezifikation.md §DC-FA-CODE-001.a). Arbeitet auf den rohen
 // Prosa-Zeilen, weil die Vorverarbeitung Inline-Code für die übrigen
 // Module gerade entfernt; teilt den Slug-Cache mit anchors.
-func CheckCodepaths(fsys driven.Filesystem, file string, content []byte, cfg model.CodepathsConfig, slugCache map[string]map[string]bool) []model.Finding {
+func CheckCodepaths(fsys driven.Filesystem, file string, content []byte, cfg model.CodepathsConfig, slugCache map[string]map[string]bool, ignoreRefs []model.IgnoreRef) []model.Finding {
 	var findings []model.Finding
 	// exempt-paths: ganze Datei von der codepaths-Prüfung ausnehmen
 	// (datei-weit, Glob wie scan.ignore; Vorbild ids-Ventil). Wirkt
 	// unabhängig von cfg.Roots (§DC-FA-CODE-001.a).
 	if ignored(file, cfg.ExemptPaths) {
 		return nil
+	}
+	// Geteiltes Referenz-Ventil: Top-Level ignore-refs (DC-FA-REF-001)
+	// plus der modul-lokale Alias codepaths.ignore-refs (ohne in/keep,
+	// skopiert auf codepaths — byte-identisch zur bisherigen Fassung).
+	refs := ignoreRefs
+	if len(cfg.IgnoreRefs) > 0 {
+		refs = append(append([]model.IgnoreRef(nil), ignoreRefs...), model.IgnoreRef{Refs: cfg.IgnoreRefs})
 	}
 	prose := proseLines(content)
 	spans := inlineSpansByLine(prose)
@@ -55,7 +62,7 @@ func CheckCodepaths(fsys driven.Filesystem, file string, content []byte, cfg mod
 				continue
 			}
 			findings = append(findings,
-				checkCodepathTarget(fsys, file, pl.no, value, rootRel, cfg.IgnoreRefs, slugCache)...)
+				checkCodepathTarget(fsys, file, pl.no, value, rootRel, refs, slugCache)...)
 		}
 	}
 	return findings
@@ -123,7 +130,7 @@ func classifyCodepath(v string, roots []string) (rootRel, ok bool) {
 // den Anker (§DC-FA-CODE-001.a Schritt 5). Ein aufgelöster Pfad, der
 // ein ignore-refs-Glob matcht, wird vor allen Prüfungen übersprungen
 // (referenz-weites Tombstone-Ventil, ADR-0025).
-func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value string, rootRel bool, ignoreRefs []string, slugCache map[string]map[string]bool) []model.Finding {
+func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value string, rootRel bool, refs []model.IgnoreRef, slugCache map[string]map[string]bool) []model.Finding {
 	pathPart, frag := value, ""
 	if idx := strings.IndexByte(value, '#'); idx != -1 {
 		pathPart, frag = value[:idx], value[idx+1:]
@@ -145,7 +152,7 @@ func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value st
 			return nil
 		}
 	}
-	if ignored(rel, ignoreRefs) {
+	if refIgnored(refs, file, rel) {
 		return nil
 	}
 	if escaped {

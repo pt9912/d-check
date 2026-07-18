@@ -186,10 +186,10 @@ func (st *runState) checkFile(file string) error {
 	}
 	lines := PreprocessMarkdown(content)
 	if st.applies("links", file) {
-		st.findings = append(st.findings, CheckLinks(st.fsys, file, lines)...)
+		st.findings = append(st.findings, CheckLinks(st.fsys, file, lines, st.cfg.IgnoreRefs)...)
 	}
 	if st.applies("anchors", file) {
-		st.findings = append(st.findings, CheckAnchors(st.fsys, file, content, lines, st.slugCache)...)
+		st.findings = append(st.findings, CheckAnchors(st.fsys, file, content, lines, st.slugCache, st.cfg.IgnoreRefs)...)
 	}
 	if st.applies("ids", file) {
 		st.findings = append(st.findings, CheckIDs(file, content, lines, st.cfg.IDPatterns)...)
@@ -198,7 +198,7 @@ func (st *runState) checkFile(file string) error {
 		st.findings = append(st.findings, CheckMatrix(st.fsys, file, content, lines, st.cfg.Matrix, st.statusCache)...)
 	}
 	if st.applies("codepaths", file) {
-		st.findings = append(st.findings, CheckCodepaths(st.fsys, file, content, st.cfg.Codepaths, st.slugCache)...)
+		st.findings = append(st.findings, CheckCodepaths(st.fsys, file, content, st.cfg.Codepaths, st.slugCache, st.cfg.IgnoreRefs)...)
 	}
 	if st.applies("hostpaths", file) {
 		st.findings = append(st.findings, CheckHostpaths(file, content, st.cfg.Hostpaths)...)

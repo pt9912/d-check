@@ -203,11 +203,16 @@ func resolveAnchorRef(fsys driven.Filesystem, file string, ref LinkRef) (anchorR
 
 // CheckAnchors ist das Regelmodul `anchors` (DC-FA-ANCH-001): Links
 // mit Fragment werden gegen die Heading-Slugs der Zieldatei geprüft.
-func CheckAnchors(fsys driven.Filesystem, file string, content []byte, lines []Line, cache map[string]map[string]bool) []model.Finding {
+func CheckAnchors(fsys driven.Filesystem, file string, content []byte, lines []Line, cache map[string]map[string]bool, ignoreRefs []model.IgnoreRef) []model.Finding {
 	var findings []model.Finding
 	for _, ref := range ExtractLinks(lines) {
 		a, ok := resolveAnchorRef(fsys, file, ref)
 		if !ok {
+			continue
+		}
+		// Geteiltes Referenz-Ventil (DC-FA-REF-001): ist das Ziel
+		// ignoriert, entfällt die Anker-Prüfung.
+		if refIgnored(ignoreRefs, file, a.rel) {
 			continue
 		}
 		slugs := slugsFor(fsys, cache, a, content)

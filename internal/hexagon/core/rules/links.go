@@ -12,7 +12,7 @@ import (
 // liegen und symlink-frei sein. Fragment-Teile gemischter Ziele
 // ignoriert das Modul (Aufgabe von `anchors`); reine Anker-Ziele und
 // externe Schemata werden übersprungen.
-func CheckLinks(fsys driven.Filesystem, file string, lines []Line) []model.Finding {
+func CheckLinks(fsys driven.Filesystem, file string, lines []Line, ignoreRefs []model.IgnoreRef) []model.Finding {
 	var findings []model.Finding
 	for _, ref := range ExtractLinks(lines) {
 		target := ref.Target
@@ -33,6 +33,12 @@ func CheckLinks(fsys driven.Filesystem, file string, lines []Line) []model.Findi
 				})
 				continue
 			}
+		}
+		// Geteiltes Referenz-Ventil (DC-FA-REF-001): ein ignoriertes Ziel
+		// wird nicht escape-/existenz-geprüft; die Symlink-Prüfung (oben,
+		// Vorrang) bleibt unberührt.
+		if refIgnored(ignoreRefs, file, rel) {
+			continue
 		}
 		if escaped {
 			findings = append(findings, model.Finding{
