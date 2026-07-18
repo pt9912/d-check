@@ -21,7 +21,7 @@ irrelevante Tabelle verschluckt die relevante samt Header, Trennzeile und
 Datenzeilen; `extractTable` meldet für die irrelevante nichts, und die
 Anforderungen der zweiten existieren nicht — **kein Gate sagt es**.
 
-Belegt gegen das **ausgelieferte** `ghcr.io/pt9912/d-check:v0.47.0`, Fixture `fx-s`,
+Belegt gegen das **ausgelieferte** v0.47.0-Image, Fixture `fx-s`,
 **ohne jeden Marker** — eine relevante Tabelle, Leerzeile, dann eine irrelevante
 gleicher Breite, unmittelbar gefolgt von einer relevanten:
 

@@ -6,6 +6,29 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.48.0] — 2026-07-18
+
+### Changed
+
+- **Tabellengrenze am relevanten Header** (`trace.requirements.format: table` und
+  `trace.cross-consistency`): eine irrelevante Tabelle (ihr Header bindet keine
+  konfigurierte Rolle) verschluckt die unmittelbar folgende **relevante** Tabelle
+  nicht mehr **still**. Ein Header, der eine Rolle bindet, beendet die laufende
+  Tabelle — damit wird jede relevante Tabelle erkannt, und ihre Anforderungen bzw.
+  Rück-Kanten können nicht mehr lautlos in einer vorangehenden verschwinden. Ein
+  rollenloser Header (z. B. eine `| - | - |`-Datenzeile) beendet **nicht** — die
+  Gegenprobe, an der fünf rein strukturelle Fassungen scheiterten.
+
+  **Wirkung auf bestehende Läufe:** d-check **findet mehr** — eine bisher
+  verschluckte relevante Tabelle liefert nun Anforderungen (neue Waisen möglich);
+  ein mehrdeutig-relevanter Header (doppelte Rollen-Spalte) hinter einer
+  irrelevanten Tabelle bricht jetzt laut mit **Exit 2** ab, statt still verschluckt
+  zu werden. Ein heute grüner Konsumentenlauf kann danach rot sein — laut und in
+  der sicheren Richtung. **Defekt-Fix, kein Lastenheft-Change** (die Regel ist
+  Spezifikations-Sache), aber SemVer-**Minor**
+  ([ADR-0043](docs/plan/adr/0043-tabellengrenze-am-relevanten-header.md),
+  Spezifikation §DC-FA-REQ-001.a Schritt 5).
+
 ## [0.47.0] — 2026-07-18
 
 ### Changed
