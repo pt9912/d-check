@@ -96,10 +96,10 @@ Kurz:
 - [x] **Nutzerdoku:** Handbuch — die Trennzeilen- und Fence-Regel stehen dort als
   Nutzer-Vertrag; CHANGELOG mit dem Release-Prep. **Die Minor-Ansage gehört in
   die Release-Notiz:** ein grüner Konsumentenlauf kann danach rot werden.
-- [ ] **Release:** **v0.47.0** (Minor, **kein** Patch — v0.46.0 war bei
+- [x] **Release:** **v0.47.0** (Minor, **kein** Patch — v0.46.0 war bei
   Slice-Erstellung noch frei, ist aber inzwischen von slice-075 vergeben) + Tag +
-  GHCR + Digest-Backfill. Folgt unmittelbar auf diese Closure; abgehakt im
-  Post-Release-Commit.
+  GHCR (Digest `sha256:ad42432d…423eed`) + Digest-Backfill (Handbuch §4).
+  Release-Run 29632470921 grün.
 - [x] **Qualität:** unabhängiger, kontext-getrennter Review **vor** dem Release
   (ACCEPT-WITH-NITS, alle Nits eingearbeitet bzw. begründet ausgewiesen);
   `make gates`/`make ci` grün.

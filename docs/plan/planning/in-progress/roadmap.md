@@ -10,7 +10,7 @@
 
 **Keine aktive Welle.** welle-60-trace-cross-consistency ist **nicht
 abgeschlossen**, hat aber gerade **keinen Slice in Arbeit**: slice-076 ist fertig
-und reviewt (`done/`, ACCEPT-WITH-NITS, **v0.47.0-Release ausstehend**), der
+und reviewt (`done/`, ACCEPT-WITH-NITS, **v0.47.0 veröffentlicht**), der
 WIP-Slot ist frei (Modul 5, WIP-Limit = 1). **Nächster Zug:** slice-071 entblocken
 (hängt an slice-074).
 
@@ -20,7 +20,7 @@ WIP-Slot ist frei (Modul 5, WIP-Limit = 1). **Nächster Zug:** slice-071 entbloc
 [`slice-075`](../done/slice-075-komma-kurzform-fail-closed.md) **done**
 (Komma-Kurzform fail-closed, R1 ACCEPT-WITH-NITS, **v0.46.0 veröffentlicht**). ·
 [`slice-076`](../done/slice-076-markdown-lexik-commonmark.md) **done**
-(Markdown-Lexik CommonMark/GFM, ACCEPT-WITH-NITS, v0.47.0-Release ausstehend). ·
+(Markdown-Lexik CommonMark/GFM, ACCEPT-WITH-NITS, **v0.47.0 veröffentlicht**). ·
 [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md)
 in `open/`, **blockiert** (Realdatenbeleg hängt an slice-074);
 [`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in),
@@ -46,8 +46,8 @@ null, von keinem Gate bemerkt.
 - **[erfüllt]** Eine verlinkte Range expandiert wie die unverlinkte (slice-073);
   der ausgelieferte `trace.coverage`-Falschbefund ist weg und als Patch (v0.44.1,
   klammer-balanciert nachgebessert in v0.45.1) veröffentlicht. slice-073 in `done/`.
-- Die zwei Lexik-Regeln aus slice-076 sind per Mutation gepinnt und als Minor
-  veröffentlicht.
+- **[erfüllt]** Die zwei Lexik-Regeln aus slice-076 sind per Mutation gepinnt und
+  als Minor (v0.47.0) veröffentlicht. slice-076 in `done/`.
 - [ADR-0038](../../adr/0038-trace-cross-consistency.md),
   [ADR-0039](../../adr/0039-link-transparente-range-fortsetzung.md) und
   [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) sind `Accepted`;
