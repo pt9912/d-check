@@ -1,9 +1,10 @@
 package rules
 
 import (
-	"github.com/pt9912/d-check/internal/hexagon/core/model"
+	"fmt"
 	"strings"
 
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
@@ -56,13 +57,13 @@ func CheckCodepaths(fsys driven.Filesystem, file string, content []byte, cfg mod
 			if sp.start > 0 && pl.raw[sp.start-1] == '[' && sp.end < len(pl.raw) && pl.raw[sp.end] == ']' {
 				continue
 			}
-			value := normalizeCodepath(pl.raw[sp.valStart:sp.valEnd])
+			value, from, to, hasRange := codepathValueAndRange(pl.raw[sp.valStart:sp.valEnd], cfg.CheckLines)
 			rootRel, ok := classifyCodepath(value, cfg.Roots)
 			if !ok {
 				continue
 			}
 			findings = append(findings,
-				checkCodepathTarget(fsys, file, pl.no, value, rootRel, refs, slugCache)...)
+				checkCodepathTarget(fsys, file, pl.no, value, rootRel, hasRange, from, to, refs, slugCache)...)
 		}
 	}
 	return findings
@@ -85,6 +86,20 @@ func normalizeCodepath(v string) string {
 	}
 }
 
+// codepathValueAndRange normalisiert den Span-Wert und trennt bei aktivem
+// check-lines eine Zeilen-Referenz (`:<von>`/`:<von>-<bis>`) ab, die für
+// den Zeilen-Check (Schritt 6) gemerkt wird. Ohne check-lines oder ohne
+// Bereich bleibt value die reine normalizeCodepath-Ausgabe (byte-identisch;
+// §DC-FA-CODE-001.a Schritt 3).
+func codepathValueAndRange(raw string, checkLines bool) (value string, from, to int, hasRange bool) {
+	if checkLines {
+		if p, f, t, has := splitCitationRange(normalizeCodepathBase(raw)); has {
+			return p, f, t, true
+		}
+	}
+	return normalizeCodepath(raw), 0, 0, false
+}
+
 // trimLineSuffix trennt ein Zeilen-Suffix `:NNN` ab — die etablierte
 // Datei:Zeile-Konvention (z. B. `spec/lastenheft.md:290`) referenziert
 // die Datei, nicht einen Pfad mit Doppelpunkt.
@@ -99,6 +114,76 @@ func trimLineSuffix(v string) string {
 		}
 	}
 	return v[:i]
+}
+
+// normalizeCodepathBase entfernt Whitespace, umschließende
+// Anführungszeichen und schließende Satzzeichen iterativ — wie
+// normalizeCodepath, aber OHNE das Zeilen-Suffix abzutrennen (das löst
+// splitCitationRange bei aktivem check-lines separat, um den Bereich zu
+// erhalten; §DC-FA-CODE-001.a Schritt 3).
+func normalizeCodepathBase(v string) string {
+	for {
+		w := strings.TrimSpace(v)
+		w = strings.TrimRight(w, ".,;:")
+		w = strings.Trim(w, `"'`)
+		if w == v {
+			return v
+		}
+		v = w
+	}
+}
+
+// splitCitationRange trennt ein Zeilen-Suffix `:<von>` oder
+// `:<von>-<bis>` (beide Teile rein numerisch) vom Pfad ab. base = Pfad
+// ohne Suffix; ohne `-` ist to == from; has=false, wenn kein solches
+// Suffix vorliegt (§DC-FA-CODE-001.a Schritt 3).
+func splitCitationRange(v string) (base string, from, to int, has bool) {
+	i := strings.LastIndexByte(v, ':')
+	if i <= 0 || i == len(v)-1 {
+		return v, 0, 0, false
+	}
+	suffix := v[i+1:]
+	fromStr, toStr := suffix, suffix
+	if d := strings.IndexByte(suffix, '-'); d >= 0 {
+		fromStr, toStr = suffix[:d], suffix[d+1:]
+	}
+	f, ok1 := allDigits(fromStr)
+	t, ok2 := allDigits(toStr)
+	if !ok1 || !ok2 {
+		return v, 0, 0, false
+	}
+	return v[:i], f, t, true
+}
+
+// allDigits parst einen nicht-leeren rein numerischen String; ok=false
+// sonst (leer oder mit Nicht-Ziffern).
+func allDigits(s string) (int, bool) {
+	if s == "" {
+		return 0, false
+	}
+	n := 0
+	for _, r := range s {
+		if r < '0' || r > '9' {
+			return 0, false
+		}
+		n = n*10 + int(r-'0')
+	}
+	return n, true
+}
+
+// countLines zählt die Zeilen eines Datei-Inhalts; ein finaler
+// Zeilenumbruch zählt nicht als eigene Zeile (geteilt vom codepaths-
+// Zeilen-Check und citations).
+func countLines(content []byte) int {
+	s := string(content)
+	if s == "" {
+		return 0
+	}
+	n := strings.Count(s, "\n")
+	if !strings.HasSuffix(s, "\n") {
+		n++
+	}
+	return n
 }
 
 // classifyCodepath entscheidet konservativ, ob value ein expliziter
@@ -130,7 +215,7 @@ func classifyCodepath(v string, roots []string) (rootRel, ok bool) {
 // den Anker (§DC-FA-CODE-001.a Schritt 5). Ein aufgelöster Pfad, der
 // ein ignore-refs-Glob matcht, wird vor allen Prüfungen übersprungen
 // (referenz-weites Tombstone-Ventil, ADR-0025).
-func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value string, rootRel bool, refs []model.IgnoreRef, slugCache map[string]map[string]bool) []model.Finding {
+func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value string, rootRel, hasRange bool, from, to int, refs []model.IgnoreRef, slugCache map[string]map[string]bool) []model.Finding {
 	pathPart, frag := value, ""
 	if idx := strings.IndexByte(value, '#'); idx != -1 {
 		pathPart, frag = value[:idx], value[idx+1:]
@@ -162,6 +247,13 @@ func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value st
 	if err != nil || kind == driven.KindMissing {
 		return finding(ReasonCodepathMissing, "Ziel des Inline-Code-Pfads existiert nicht")
 	}
+	// Zeilen-Check (§DC-FA-CODE-001.a Schritt 6, nur bei check-lines):
+	// das Ziel existiert bereits — jetzt den gemerkten Bereich prüfen.
+	if hasRange {
+		if fs := checkCodepathLineRange(fsys, file, line, value, rel, from, to); fs != nil {
+			return fs
+		}
+	}
 	if frag == "" || !strings.HasSuffix(rel, ".md") {
 		return nil
 	}
@@ -170,6 +262,31 @@ func checkCodepathTarget(fsys driven.Filesystem, file string, line int, value st
 		return nil // nicht lesbar → schweigen; Anker ok → kein Befund
 	}
 	return finding(ReasonAnchorMissing, "Anker entspricht keinem Heading-Slug und keinem HTML-Anker der Zieldatei")
+}
+
+// checkCodepathLineRange prüft den gemerkten Zeilen-Bereich gegen das
+// bereits als existierend bestätigte Ziel (§DC-FA-CODE-001.a Schritt 6):
+// `von > bis` ⇒ citation-inverted-range; hat die Datei weniger als `bis`
+// Zeilen ⇒ citation-out-of-range. Der Befund-target trägt den Bereich.
+func checkCodepathLineRange(fsys driven.Filesystem, file string, line int, value, rel string, from, to int) []model.Finding {
+	target := fmt.Sprintf("%s:%d-%d", value, from, to)
+	mk := func(reason, msg string) []model.Finding {
+		return []model.Finding{{
+			File: file, Line: line, Rule: "codepaths",
+			Target: target, Reason: reason, Message: msg,
+		}}
+	}
+	if from > to {
+		return mk(ReasonCitationInvertedRange, "Zeilen-Referenz invertiert (von > bis)")
+	}
+	content, err := fsys.ReadFile(rel)
+	if err != nil {
+		return mk(ReasonCitationOutOfRange, "Zeilen-Referenz hinter dem Datei-Ende")
+	}
+	if to > countLines(content) {
+		return mk(ReasonCitationOutOfRange, "Zeilen-Referenz hinter dem Datei-Ende")
+	}
+	return nil
 }
 
 // codepathSlugs liest die gültige Anker-Menge der Zieldatei über

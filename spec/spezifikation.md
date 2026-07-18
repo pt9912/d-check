@@ -1995,6 +1995,9 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `external-status` | external | HTTP-Status ≥ 400 oder Transportfehler (DNS/Verbindung) |
 | `external-timeout` | external | Timeout überschritten |
 | `codepath-missing` | codepaths | Ziel eines Inline-Code-Pfads existiert nicht |
+| `citation-out-of-range` | codepaths, citations | Zeilen-Referenz (`datei:<von>-<bis>`) hinter dem Datei-Ende — oder (bei `citations`) die Zieldatei fehlt; nur bei `codepaths.check-lines` bzw. `d-check:cite` |
+| `citation-inverted-range` | codepaths, citations | Zeilen-Referenz invertiert (`<von> > <bis>`) |
+| `citation-mismatch` | citations | per `d-check:cite` markiertes Zitat ist kein zusammenhängender Teilstring der whitespace-normalisierten Quell-Spanne (Zitat-Fäule) |
 | `hostpath-forbidden` | hostpaths | host-lokaler absoluter Pfad (Maschinen-Layout-Leak) in Prosa oder Inline-Code |
 | `diagram-id-undefined` | diagrams | Kennung in einem geöffneten Diagramm-Fence ohne Definition in ihrer `defined-in`-Quelle |
 | `span-unclosed` | spans | ungeschlossene Code-Span-Öffnung klebt an Nicht-Whitespace (Absatz-Parität gekippt) |

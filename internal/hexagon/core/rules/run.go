@@ -200,6 +200,31 @@ func (st *runState) checkFile(file string) error {
 	if st.applies("codepaths", file) {
 		st.findings = append(st.findings, CheckCodepaths(st.fsys, file, content, st.cfg.Codepaths, st.slugCache, st.cfg.IgnoreRefs)...)
 	}
+	if err := st.appendCitationFindings(file, content); err != nil {
+		return err
+	}
+	st.appendTailFindings(file, content, lines)
+	return nil
+}
+
+// appendCitationFindings führt das Modul citations aus; eine strukturell
+// unbrauchbare d-check:cite-Direktive ist fail-closed → error (Aufrufer
+// mappt auf Exit 2, DC-FA-CITE-001.a).
+func (st *runState) appendCitationFindings(file string, content []byte) error {
+	if !st.applies("citations", file) {
+		return nil
+	}
+	cf, err := CheckCitations(st.fsys, file, content)
+	if err != nil {
+		return err
+	}
+	st.findings = append(st.findings, cf...)
+	return nil
+}
+
+// appendTailFindings führt die restlichen inhalts-basierten Module aus
+// (keines meldet fail-closed); ausgelagert, damit checkFile flach bleibt.
+func (st *runState) appendTailFindings(file string, content []byte, lines []Line) {
 	if st.applies("hostpaths", file) {
 		st.findings = append(st.findings, CheckHostpaths(file, content, st.cfg.Hostpaths)...)
 	}
@@ -224,7 +249,6 @@ func (st *runState) checkFile(file string) error {
 	if st.applies("external", file) {
 		st.extRefs = append(st.extRefs, CollectExternalURLs(file, lines)...)
 	}
-	return nil
 }
 
 // discoverScopes ermittelt pro aktivem Modul die Datei-Menge seines

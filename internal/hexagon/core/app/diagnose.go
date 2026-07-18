@@ -78,6 +78,8 @@ func AllReasons() []string {
 		model.ReasonCoreDrift, model.ReasonCoreDriftVCS, model.ReasonCommitUntraceable,
 		model.ReasonPlanningDrift, model.ReasonTargetUntracked,
 		rules.ReasonGatePhantom, rules.ReasonGateUndocumented,
+		rules.ReasonCitationOutOfRange, rules.ReasonCitationInvertedRange,
+		rules.ReasonCitationMismatch,
 	}
 }
 
@@ -112,6 +114,9 @@ func reasonTexts() map[string]string {
 		model.ReasonTargetUntracked:    "Linkziel nicht im git-Index getrackt (fehlt auf jedem frischen Klon)",
 		rules.ReasonGatePhantom:        "In der Doku als `make X` behauptetes Target ohne Makefile-Regel (halluziniertes Gate)",
 		rules.ReasonGateUndocumented:   "Makefile-Regel ohne Deklaration in der Autoritäts-Doku (undokumentiertes Gate)",
+		rules.ReasonCitationOutOfRange:    "Zeilen-Referenz hinter dem Datei-Ende (oder Zieldatei fehlt)",
+		rules.ReasonCitationInvertedRange: "Zeilen-Referenz invertiert (von > bis)",
+		rules.ReasonCitationMismatch:      "Ausgezeichnetes Zitat ist kein Teilstring der normalisierten Quell-Spanne (Zitat-Fäule)",
 	}
 }
 

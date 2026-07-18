@@ -57,6 +57,7 @@ type rawCodepaths struct {
 	Roots       []string  `yaml:"roots"`
 	ExemptPaths []string  `yaml:"exempt-paths"`
 	IgnoreRefs  []string  `yaml:"ignore-refs"`
+	CheckLines  bool      `yaml:"check-lines"`
 }
 
 // rawIgnoreRef traegt einen Eintrag des geteilten Referenz-Ventils
@@ -299,6 +300,8 @@ type raw struct {
 	Tracked   *rawTracked   `yaml:"tracked"`
 	Targets   *rawTargets   `yaml:"targets"`
 	Trace     *rawTrace     `yaml:"trace"`
+	// Citations ist parameterlos (direktiven-getrieben) — nur scope.
+	Citations *rawScopeOnly `yaml:"citations"`
 }
 
 // Decode parst und validiert den Datei-Inhalt vollständig — Syntax
@@ -949,6 +952,7 @@ func applyCodepaths(r *raw, cfg *model.Config) error {
 		Roots:       r.Codepaths.Roots,
 		ExemptPaths: r.Codepaths.ExemptPaths,
 		IgnoreRefs:  r.Codepaths.IgnoreRefs,
+		CheckLines:  r.Codepaths.CheckLines,
 	}
 	return nil
 }
@@ -1115,6 +1119,7 @@ func applyScopes(r *raw, cfg *model.Config) error {
 		{"vcs", scopeOfVcs(r.Vcs)},
 		{"commits", scopeOfCommits(r.Commits)},
 		{"tracked", scopeOfTracked(r.Tracked)},
+		{"citations", scopeOf(r.Citations)},
 	}
 	for _, sc := range scopes {
 		if sc.scope == nil {

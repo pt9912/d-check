@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -44,6 +44,10 @@ type Config struct {
 	External ExternalConfig
 	// Codepaths: Präfixe des Moduls codepaths.
 	Codepaths CodepathsConfig
+	// Citations: das Modul citations ist direktiven-getrieben und
+	// parameterlos (DC-FA-CITE-001) — die Struktur trägt nur den
+	// Scope-Platzhalter, damit Enable/Scope wie bei jedem Modul greifen.
+	Citations CitationsConfig
 	// Hostpaths: Parameter des Moduls hostpaths.
 	Hostpaths HostpathsConfig
 	// Diagrams: Parameter des Moduls diagrams (DC-FA-DIAG-001).
@@ -201,7 +205,17 @@ type CodepathsConfig struct {
 	// (datei-/zeilen-unabhängig), Tombstone-Register bewusst entfernter
 	// Artefakte (spec/spezifikation.md §DC-FA-CODE-001.a; ADR-0025).
 	IgnoreRefs []string
+	// CheckLines: Zeilen-Referenz (`datei:<von>-<bis>`) eines
+	// Inline-Code-Pfads verifizieren statt sie zu verwerfen
+	// (opt-in; Default aus ⇒ byte-identisch, DC-FA-CODE-001.a Schritt 6).
+	CheckLines bool
 }
+
+// CitationsConfig sind die Parameter des Moduls citations
+// (DC-FA-CITE-001) — direktiven-getrieben und parameterlos; die Struktur
+// existiert, damit das Modul über die gemeinsame Config-/Scope-Maschinerie
+// enable-/skopierbar ist (Vorbild: das parameterlose Modul spans).
+type CitationsConfig struct{}
 
 // HostpathsConfig sind die Parameter des Moduls hostpaths
 // (DC-FA-HOST-001); Prefixes nil = Default-Liste.
