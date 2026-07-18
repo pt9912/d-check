@@ -75,7 +75,12 @@ kehrt dieser stille Pfad bei jeder Toleranz-Fassung zurück (Review R3-F-1).
 
 4. **Der Guard bleibt scharf.** Eine echt verrutschte Zeile (falsche Zellenzahl,
    kein neuer relevanter Header) bleibt Exit 2 ([ADR-0037](0037-trace-tabellenquellen-nullmengen-guard.md)).
-   Die Grenze **ergänzt** die `badLine`-Regel, sie ersetzt sie nicht.
+   Die Grenze **ergänzt** die `badLine`-Regel, sie ersetzt sie nicht. Das
+   Grenz-Prädikat feuert zudem **fail-closed auf den Bind-Fehler:** ein Header,
+   dessen Rollen-Spalten mehrdeutig sind (z. B. eine doppelte Rollen-Spalte),
+   bindet nicht sauber, beendet die laufende Tabelle aber dennoch — sonst würde
+   eine Tabelle, die standalone Exit 2 wäre, hinter einer irrelevanten still
+   verschluckt.
 
 5. **Config-abhängig und deterministisch.** „Relevant" ist durch die konfigurierten
    Header-Namen definiert — dieselbe Wahrheit, die die Extraktion ohnehin leitet.

@@ -2314,13 +2314,16 @@ func TestCLI077_AllDashesKeineFalschtrennung(t *testing.T) {
 	}
 }
 
-// slice-077 (fx-adj): zwei unmittelbar benachbarte RELEVANTE Tabellen (ohne
-// Leerzeile) werden beide erkannt — der relevante Header der zweiten beendet die
-// erste. Mutations-Pin: ohne die Grenze kippt dieser Test auf Total 1.
+// slice-077 (fx-adj, Review R-F-1): zwei unmittelbar benachbarte RELEVANTE
+// Tabellen UNTERSCHIEDLICHER Breite (2 vs. 3 Spalten) — der relevante Header der
+// zweiten beendet die erste, BEVOR deren abweichende Breite als badLine zählt.
+// Mutations-Pin: ohne die Grenze konsumiert Tabelle 1 den 3-spaltigen Header als
+// Datenzeile und bricht mit „hat 3 statt 2 Zellen" ab (Exit 2) — der Test kippt.
 func TestCLI077_BenachbarteRelevanteTabellen(t *testing.T) {
 	root := t.TempDir()
 	write(t, root, "spec/reqs.md",
-		"| ID | Anforderung |\n|---|---|\n| R-1 | a |\n| ID | Anforderung |\n|---|---|\n| R-2 | b |\n")
+		"| ID | Anforderung |\n|---|---|\n| R-1 | a |\n"+
+			"| ID | Anforderung | Notiz |\n|---|---|---|\n| R-2 | b | ok |\n")
 	write(t, root, ".d-check.yml", tableConfig("Anforderung"))
 	code, stdout, stderr := run(t, "--trace", "--json", root)
 	if code != 0 {
@@ -2335,6 +2338,24 @@ func TestCLI077_BenachbarteRelevanteTabellen(t *testing.T) {
 	}
 }
 
+// slice-077 (Review R-F-3, fail-closed): ein Header mit DOPPELTER Rollen-Spalte
+// (`| ID | ID | … |`) bindet mehrdeutig — standalone Exit 2. Hinter einer
+// irrelevanten Tabelle gleicher Breite darf er NICHT still verschluckt werden:
+// das Grenz-Prädikat feuert fail-closed auf den Bind-Fehler ⇒ die Tabelle wird
+// eigenständig ⇒ Exit 2. Mutations-Pin für `ok || err != nil`.
+func TestCLI077_MehrdeutigerHeaderNichtVerschluckt(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md",
+		"| ID | Anforderung |\n|---|---|\n| R-1 | a |\n\n"+
+			"| Werkzeug | Zweck | Stand |\n|---|---|---|\n| foo | bar | baz |\n"+
+			"| ID | ID | Anforderung |\n|---|---|---|\n| R-2 | x | b |\n")
+	write(t, root, ".d-check.yml", tableConfig("Anforderung"))
+	code, _, stderr := run(t, "--trace", root)
+	if code != 2 || !strings.Contains(stderr, "mehrfach") {
+		t.Fatalf("mehrdeutiger Header hinter irrelevanter Tabelle nicht laut: Exit=%d stderr=%q", code, stderr)
+	}
+}
+
 // slice-077 (DC-FA-XREF-001.a, cross-consistency-Pfad): die relevant-Header-Grenze
 // wirkt über den geteilten Reader auch in der Rück-Sicht. Eine irrelevante Tabelle
 // (kein edge-column) unmittelbar vor der relevanten Rück-Sicht-Tabelle darf sie
@@ -2344,8 +2365,12 @@ func TestCLI077_BenachbarteRelevanteTabellen(t *testing.T) {
 func TestCLI077_Cross_RuecksichtNichtVerschluckt(t *testing.T) {
 	root := t.TempDir()
 	write(t, root, "spec/lastenheft.md", "### GG-ARCH-006\nDer Scheduler MUSS entkoppelt sein.\n")
+	// Beide Sichten tragen eine irrelevante Tabelle UNMITTELBAR vor der relevanten
+	// — so pinnt der Test die Prädikat-Durchreichung an BEIDE Cross-Pfade
+	// (forward via bindForwardTables, backward via bindBackwardTables; Review R-F-2).
 	write(t, root, "docs/traceability.md",
-		"# Traceability\n\n| Anforderung | Design |\n|---|---|\n| GG-ARCH-006 | GG-AR-C-1 |\n")
+		"# Traceability\n\n| Notiz | Text |\n|---|---|\n| a | b |\n"+
+			"| Anforderung | Design |\n|---|---|\n| GG-ARCH-006 | GG-AR-C-1 |\n")
 	write(t, root, "spec/architecture.md",
 		"# Arch\n\n| Werkzeug | Zweck |\n|---|---|\n| foo | bar |\n"+
 			"| Komponente | Bezug |\n|---|---|\n| GG-AR-C-1 | GG-ARCH-006 |\n")

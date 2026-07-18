@@ -160,8 +160,9 @@ func spanCrossSource(field, file string, content []byte, sections, exclude []str
 func bindForwardTables(src crossSource, fc model.TraceCrossForward) ([]boundTable, error) {
 	var out []boundTable
 	isRelevant := func(header []string) bool {
+		// fail-closed auf den Bind-Fehler (Review R-F-3, wie format:table).
 		_, ok, err := bindCrossColumns(header, fc.ReqColumn, fc.DesignColumn)
-		return err == nil && ok
+		return ok || err != nil
 	}
 	for _, t := range markdownTables(src.content, src.mask, isRelevant) {
 		idx, relevant, err := bindCrossColumns(t.header, fc.ReqColumn, fc.DesignColumn)
@@ -191,8 +192,9 @@ func bindForwardTables(src crossSource, fc model.TraceCrossForward) ([]boundTabl
 func bindBackwardTables(src crossSource, bc model.TraceCrossBackward) ([]boundTable, error) {
 	var out []boundTable
 	isRelevant := func(header []string) bool {
+		// fail-closed auf den Bind-Fehler (Review R-F-3, wie format:table).
 		_, ok, err := bindCrossColumns(header, bc.EdgeColumn)
-		return err == nil && ok
+		return ok || err != nil
 	}
 	for _, t := range markdownTables(src.content, src.mask, isRelevant) {
 		idx, relevant, err := bindCrossColumns(t.header, bc.EdgeColumn)

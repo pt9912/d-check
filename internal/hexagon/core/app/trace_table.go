@@ -32,8 +32,12 @@ func traceTableRequirements(fsys driven.Filesystem, source string, reqPat *regex
 	}
 
 	isRelevant := func(header []string) bool {
+		// fail-closed: ein Header, der eine Rolle bindet (ok) ODER die Rolle
+		// mehrdeutig trägt (err, z. B. doppelte Rollen-Spalte), beendet die
+		// laufende Tabelle. Sonst würde eine Tabelle, die standalone Exit 2 wäre,
+		// hinter einer irrelevanten still verschluckt (Review R-F-3).
 		_, ok, err := bindTableColumns(header, cfg)
-		return err == nil && ok
+		return ok || err != nil
 	}
 	for _, t := range markdownTables(content, nil, isRelevant) {
 		if err := extractTable(t, source, reqPat, cfg, &extracted); err != nil {
