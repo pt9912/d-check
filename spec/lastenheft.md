@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.47.0
+**Version:** 0.48.0
 
 **Status:** Draft
 
@@ -53,7 +53,8 @@ statt per Code-Kopie.
 > `MOD` (Modalitäts-Klassifikation der Anforderungen), `REQ`
 > (Anforderungsquellen der RTM), `XREF` (Kreuzverweis-Konsistenz zweier
 > Traceability-Sichten), `REF` (geteiltes Referenz-Ventil `ignore-refs`,
-> Ziel-Achse zu `SCAN`), `CONF` (Konfiguration), `DIST`
+> Ziel-Achse zu `SCAN`), `CITE` (Verbatim-Zitat-Verifikation, Modul
+> `citations`), `CONF` (Konfiguration), `DIST`
 > (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
@@ -84,7 +85,7 @@ verweist für das Konfigurations-Format auf
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
 `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -1255,6 +1256,16 @@ das **bestimmte Ziel-Pfade** referenz-weit von der Existenz-/Anker-Prüfung ausn
 Ventil-Achsen dieses Moduls: Zeile (`d-check:ignore`), Datei (`exempt-paths`), Ziel
 (`ignore-refs`).
 
+Optional verifiziert `codepaths` bei aktivem `check-lines` (Default aus,
+byte-identisch) zusätzlich die **Zeilen-Referenz** eines Pfads: trägt der Wert ein
+`:<von>`- oder `:<von>-<bis>`-Suffix (`datei:zeile`-Konvention, sonst wie bisher
+abgetrennt und verworfen), muss die Zieldatei existieren und mindestens `<bis>`
+Zeilen haben — sonst `citation-out-of-range` — und `<von> ≤ <bis>` erfüllen — sonst
+`citation-inverted-range`. Das fängt **Zitat-Fäule** nach einem Tag-Bump (die Zeile
+zeigt hinter das Datei-Ende) und invertierte/vertippte Bereiche. Der Zeilen-Check
+setzt die bestehende Existenz-Prüfung voraus (fehlende Datei bleibt
+`codepath-missing`).
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given ein Inline-Code-Span `` `docs/plan/adr/` `` auf ein existierendes Verzeichnis und das konfigurierte Präfix `docs/`, when das Modul `codepaths` läuft, then kein Befund.
@@ -1262,8 +1273,41 @@ Ventil-Achsen dieses Moduls: Zeile (`d-check:ignore`), Datei (`exempt-paths`), Z
 - **Negative:** Given ein Inline-Code-Span `` `../fehlt.md` ``, dessen Ziel nicht existiert (oder die Repository-Wurzel verlässt), when das Modul läuft, then ein Befund mit Datei, Zeile, Ziel und Grund, Exit-Code 1.
 - **Ventil (exempt-paths):** Given ein Inline-Code-Span mit nicht existierendem Pfad in einer Datei, die ein `codepaths.exempt-paths`-Glob matcht, when das Modul läuft, then kein Befund — und ohne gesetztes `exempt-paths` ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 - **Ventil (ignore-refs):** Given ein Inline-Code-Span auf einen nicht existierenden Pfad, der ein `codepaths.ignore-refs`-Glob matcht, when das Modul läuft, then **kein** Befund — referenz-weit, auch in einer sonst geprüften Datei; ein nicht von `ignore-refs` gedeckter fehlender Pfad bleibt `codepath-missing`, und ohne gesetztes `ignore-refs` ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
+- **Zeilen-Check (out-of-range):** Given `check-lines: true` und ein Inline-Code-Span `` `docs/a.md:999` `` auf eine existierende Datei mit weniger als 999 Zeilen, when das Modul läuft, then ein Befund `citation-out-of-range`; ohne `check-lines` (Default) ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
+- **Zeilen-Check (inverted):** Given `check-lines: true` und ein Span `` `docs/a.md:20-10` `` (`von > bis`), when das Modul läuft, then ein Befund `citation-inverted-range`.
 
-**Out-of-Scope:** Pfad-Erkennung im Fließtext ohne Inline-Code; Pfade in Fenced-Code-Blöcken; Opt-out-Marker für andere Module; semantische Prüfung, ob der referenzierte Pfad inhaltlich passt; Zeilen-Granularität von `exempt-paths` (datei-weit wie `ids`; für Zeilen der `d-check:ignore`-Marker).
+**Out-of-Scope:** Pfad-Erkennung im Fließtext ohne Inline-Code; Pfade in Fenced-Code-Blöcken; Opt-out-Marker für andere Module; semantische Prüfung, ob der referenzierte **Inhalt** an der Zeile passt (das prüft das Modul `citations`, [`DC-FA-CITE-001`](#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in)); Zeilen-Granularität von `exempt-paths` (datei-weit wie `ids`; für Zeilen der `d-check:ignore`-Marker).
+
+---
+
+### DC-FA-CITE-001 — Verbatim-Zitat-Verifikation (Modul `citations`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `citations` wird ein per Direktive
+`d-check:cite` ausgezeichneter **Zitatblock** zeichengenau gegen die von ihm
+zitierte Quell-Spanne geprüft — die Zusage „wortgleich" wird von einer Behauptung zu
+einem **gemessenen Property**. Die Direktive ist ein HTML-Kommentar
+`<!-- d-check:cite <pfad>:<von>-<bis> -->` unmittelbar vor einem Markdown-Zitatblock
+(zusammenhängende `>`-Zeilen); das Modul liest die Zeilen `<von>`–`<bis>` der
+Zieldatei und vergleicht sie **zeichengenau** (nach Abtrennen der `> `-Markierung des
+Zitatblocks) mit dem Quelltext. Weicht der Zitattext ab (paraphrasiert, gekürzt,
+gedriftet), entsteht `citation-mismatch` (Datei, Zeile, Ziel, Grund). Das Modul
+greift die `datei:zeile`-Erkennung von
+[`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
+auf (kein zweiter Detektor), ist strikt opt-in, hermetisch (nur Datei-Lesen, kein
+git/Netz — [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit))
+und default-aus **byte-identisch** ([`DC-QA-02`](#dc-qa-02--determinismus)).
+**Fail-closed:** fehlende Zieldatei, Spanne über das Datei-Ende hinaus oder
+ungültiger Bereich (`von > bis`) ⇒ Exit 2 — kein stiller Nicht-Vergleich. `d-check`
+kennt damit **zwei** Direktiven (`d-check:ignore`, `d-check:cite`); die
+Platzierungsregeln folgen der bestehenden `d-check:ignore`-Konvention.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given eine Direktive `<!-- d-check:cite a.md:3-4 -->` vor einem Zitatblock, dessen Text die Zeilen 3–4 von `a.md` zeichengenau wiedergibt, when das Modul `citations` läuft, then kein Befund.
+- **Negative:** Given denselben Aufbau, aber der Zitatblock weicht in mindestens einem Zeichen ab (paraphrasiert oder gekürzt), when das Modul läuft, then ein Befund `citation-mismatch` mit Datei, Zeile, Ziel, Exit-Code 1.
+- **Boundary (fail-closed):** Given eine `d-check:cite`-Direktive, deren Spanne die Zieldatei überschreitet oder deren Bereich ungültig ist (`von > bis`), when das Modul läuft, then Exit-Code 2 (fail-closed) — kein stiller Nicht-Vergleich; ohne `citations`-Modul ist jeder Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
+
+**Out-of-Scope:** Zitatblöcke ohne `d-check:cite`-Direktive (das Modul prüft nur ausgezeichnete Blöcke — kein Prosa-Scanning); Normalisierung von Whitespace/Formatierung (der Vergleich ist zeichengenau); freie Zahlen und Prosa-Quantoren mit externer Grundwahrheit („42 Dateien im ZIP", „fast alle") — bleiben Review-Territorium.
 
 ---
 
@@ -2035,7 +2079,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Begriff | Bedeutung im Lastenheft |
 |---|---|
 | Befund | Eine einzelne festgestellte Regelverletzung mit Datei, Zeile, Ziel und Grund. |
-| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`). |
+| Regelmodul | Benannte, einzeln aktivierbare Prüf-Einheit (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`). |
 | Scan-Wurzel | Verzeichnis, unterhalb dessen Markdown-Dateien gesucht werden; zugleich Bezugspunkt der Pfadauflösung. |
 | Anker | Fragment-Teil eines Links (`#…`), das auf ein Heading der Zieldatei zeigt (GitHub-Slug-Verfahren). |
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
@@ -2049,6 +2093,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.48.0 | 2026-07-18 | Change Request (Adopter `ai-harness-init`): **Zitat-Verifikation** von `datei:zeile`-Zitaten, zwei Teile. (1) `DC-FA-CODE-001`-Erweiterung — opt-in `codepaths.check-lines` prüft die Zeilen-Referenz eines Inline-Code-Pfads (`datei:<von>-<bis>`): Ziel existiert **und** hat ≥ `bis` Zeilen (sonst `citation-out-of-range`) **und** `von ≤ bis` (sonst `citation-inverted-range`); Default aus **byte-identisch** (die Zeile wurde bisher erkannt und verworfen). (2) Neue Anforderung `DC-FA-CITE-001` — 18. Regelmodul `citations` (opt-in): ein per Direktive `d-check:cite` ausgezeichneter Zitatblock wird **zeichengenau** gegen die zitierte Quell-Spanne geprüft (`citation-mismatch`), greift die `codepaths`-`datei:zeile`-Erkennung auf (kein zweiter Detektor), hermetisch, fail-closed. Bereich `CITE` in §3, `citations` in `DC-FA-CLI-002` + Glossar; `DC-FA-CODE-001.a`-Erweiterung + `DC-FA-CITE-001.a` + Grund-Codes in der Spezifikation; Begründung (Erweiterung vs. eigenes Modul, `verbatim`/Direktiven-Design) in begleitender ADR. Zweite Direktive `d-check:cite` (durch `slice-074` entblockt). §4-Vorfragen entschieden: Adopter-Rückfrage empirisch (33/33 Zitate in Inline-Code ⇒ `codepaths`-Erweiterung, kein Prosa-Scanning), Zuschnitt Form (c). Anlass: die committet-vendored Baseline erzeugt Zeilen-Zitate, die beim nächsten Tag-Bump still verfaulen | slice-079 |
 | 0.47.0 | 2026-07-18 | Change Request (Konsument `ai-harness-course`): neue Anforderung `DC-FA-REF-001` — **geteiltes Referenz-Ventil** `ignore-refs` mit **Quell-Skopus** (`in:`) und Zwei-Feld-Semantik (`refs ∧ ¬keep`; `keep` gewinnt unbedingt und reihenfolge-unabhängig, **nicht** gitignore-Last-Match). Das bisher **modul-lokal** in `DC-FA-CODE-001` wohnende `ignore-refs` wird zur **querschnittlichen** Anforderung: `links`/`anchors`/`codepaths` verweisen darauf; `codepaths.ignore-refs` bleibt **Alias** (kein Config-Bruch). Ziel-Achsen-Pendant zu `scan.ignore` (`DC-FA-SCAN-001`, Quell-Achse — jene entfernt Dateien, dieses Ziele). Bereich `REF` in §3; `DC-FA-CODE-001`/`DC-FA-LINK-001`/`DC-FA-ANCH-001` an das Ventil angebunden. §4-Vorfrage vom Auftraggeber entschieden (Option a: neues geteiltes Kürzel statt Änderung dreier Anforderungen; **gemeinsames Kriterium** mit `slice-079`: querschnittlich → neues Kürzel, Einzelmodul → bestehende Anforderung ändern). `DC-FA-REF-001.a` + Schema-Keys (`ignore-refs[].in`/`refs`/`keep`) + Alias-Semantik in der Spezifikation, Begründung (Zwei-Feld vs. `!`-Negation, Alias-Pfad) in begleitender ADR, Implementierung/Realdatenbeleg/Release folgen in `slice-078`. Anlass: Template-Verzeichnisse mit Ziel-Repo-Platzhaltern zwingen heute das ganze Verzeichnis in `scan.ignore` und machen damit auch die **echten** Verweise blind, deren Auflösung beim Release unveränderlich eingefroren wird | slice-078 |
 | 0.46.0 | 2026-07-17 | Change Request (Auftraggeber): die **Komma-Kurzform** `<FAM>-AAA, BBB` wird **fail-closed** (Exit 2) statt still verschluckt — betrifft `DC-FA-COV-001` und, über den geteilten Reader, `DC-FA-XREF-001`. Zugesagt waren nur `..`-Range und `/`-Aufzählung; die Kurzform war nie Vertrag, ihr **stiller Drop** aber auch nicht: `GG-SCN-001, 007` deckte nur `GG-SCN-001` und erzeugte eine falsche Waise. Verworfen: (a) Komma-Enum unterstützen — d-check kann eine gemeinte Kurzform nicht von einer Zahl im Fließtext unterscheiden (`GG-QA-001, 007 Sekunden`), das wäre Raten; (b) Status quo — der stille Drop ist die schlechteste Option. Gewählt: die **Gestalt** triggert (Kennung + Komma + Ziffern), der Inhalt ist keine unterstützte Notation ⇒ Exit 2 mit Hinweis — dieselbe Logik wie bei `AAA>BBB`. Ein Komma vor einer **vollständigen** Kennung (`GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN`) bleibt unberührt. Neues Negative- und Boundary-Kriterium; Schritt 3 in `DC-FA-COV-001.a`; Begründung in der begleitenden ADR. Anlass: Konsumenten-Report grid-gym gegen v0.45.1 — reale §27.1-Zeilen `GG-SCN-001, 007` ließen das produktiv verdrahtete `trace.coverage` das Mapping nicht zählen | slice-075 |
 | 0.45.0 | 2026-07-17 | Change Request (Auftraggeber): `DC-FA-XREF-001` um **`forward.req-pattern`** erweitert (RE2, Default `requirements.id-pattern`) — symmetrisch zum vorhandenen `backward.req-pattern`, ein Denkmodell statt zwei. Bis dahin las die Vorwärts-Sicht ihre Anforderungs-IDs **still** über `requirements.id-pattern`, die Rück-Sicht über ihr eigenes Muster; die Kopplung stand weder im Vertrag noch in der Config-Oberfläche. Folge bei einer bewusst gescopten RTM (Architektur-Meta ausgeschlossen): die Vorwärts-Sicht ist leer, **jede** Rück-Kante wird als „ohne RTM-Eintrag“ gemeldet, und die eigentliche `F \ B`-Drift verschwindet — ein Falschbefund, der wie echter Drift aussieht. Neu festgehalten: **die Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge** (belegt: eine ID, die das Muster trifft, aber keine RTM-Zeile hat, wird verglichen). Neues Boundary-Kriterium (RTM-Scope ≠ Vergleichs-Scope); Schema-Zeile + Algorithmus-Schritt 2 in `DC-FA-XREF-001.a`; Begründung in der begleitenden ADR. Anlass: Realdaten-Lauf des Konsumenten grid-gym gegen v0.44.0 (Defekt 1 von zweien), belegt durch Umschalten **nur** dieses Musters bei identischen Dateien | slice-071 |
