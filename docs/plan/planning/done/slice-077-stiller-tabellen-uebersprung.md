@@ -119,8 +119,9 @@ Zeilen-Relevanz) sind in [ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-
 - [x] **Realdatenbeleg** (grid-gym read-only, kein Regress) + **unabhängiger,
   kontext-getrennter Review vor** dem Release (R1 ACCEPT-WITH-NITS);
   `make gates`/`make ci` grün.
-- [ ] **Release** (SemVer-Minor, **v0.48.0**) + CHANGELOG mit Rot-werden-Ansage.
-  Abgehakt im Post-Release-Commit.
+- [x] **Release** (SemVer-Minor, **v0.48.0**) + CHANGELOG mit Rot-werden-Ansage;
+  Tag + GHCR (Digest `sha256:644b0c71…25d9`) + Digest-Backfill (Handbuch §4).
+  Release-Run 29635549944 grün.
 
 ## 4. Risiken / offene Punkte
 

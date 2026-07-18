@@ -10,7 +10,7 @@
 
 **Keine aktive Welle.** welle-60-trace-cross-consistency ist **nicht
 abgeschlossen**, hat aber gerade **keinen Slice in Arbeit**: slice-077 ist fertig
-und reviewt (`done/`, ACCEPT-WITH-NITS, **v0.48.0-Release ausstehend**) — die
+und reviewt (`done/`, ACCEPT-WITH-NITS, **v0.48.0 veröffentlicht**) — die
 Wurzel der slice-074-Klasse ist damit robust. Der WIP-Slot ist frei (Modul 5,
 WIP-Limit = 1). **Nächster Zug:** slice-074 (die Direktiven-Toleranz als sicherer
 Aufsatz auf slice-077), dann slice-071 entblocken (Realdatenbeleg).
