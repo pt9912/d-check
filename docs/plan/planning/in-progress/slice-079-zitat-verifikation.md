@@ -151,12 +151,23 @@ Der Realdatenbeleg gegen das Adopter-Repo ist daher **nicht optional**.
 - [x] **Vorfragen entschieden** (§4) — Zuschnitt: alle drei Stufen jetzt, Form (c)
   (Stufe 1/2 `codepaths`-Erweiterung, Stufe 3 eigenes Modul); Verortung bereits
   aufgelöst (Kürzel-Kriterium mit slice-078).
-- [ ] **Lastenheft-CR:** ID nach Schema, drei Akzeptanzkriterien, Out-of-Scope,
-  Versions-Bump, Historie
-  ([`harness/conventions.md`](../../../../harness/conventions.md#anforderungs-anlege-prozess)).
-- [ ] **ADR** (Modul-Pflicht) — insbesondere: Erweiterung vs. eigenes Modul.
-- [ ] **Spezifikation-`.a`:** Auflösung, Präzedenz gegenüber `exempt-paths` und
-  Zeilen-Marker, Verhalten bei `<von> > <bis>` und Datei-Ende.
+- [x] **Lastenheft-CR:** das Modul `codepaths` erweitert (opt-in
+  `codepaths.check-lines`, 2 neue AKs;
+  [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in))
+  **+** neue Anforderung
+  [`DC-FA-CITE-001`](../../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in)
+  (18. Modul `citations`, Bereich `CITE` in §3, 3 AKs); `citations` in Modul-Liste +
+  Glossar, Version 0.47.0→0.48.0, Historie.
+- [x] **ADR:** [ADR-0045](../../adr/0045-zitat-verifikation-codepaths-erweiterung-und-citations-modul.md)
+  (Proposed) — Erweiterung vs. eigenes Modul begründet (Existenz/Bereich → `codepaths`,
+  Inhalt → eigenes Modul wie `anchors`↔`links`), `d-check:cite`-Direktive,
+  zeichengenau, fail-closed, nur ausgezeichnete Blöcke.
+- [x] **Spezifikation-`.a`:**
+  [`DC-FA-CODE-001.a`](../../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code)
+  Schritt 3/6 (Zeilen-Check) + neue
+  [`DC-FA-CITE-001.a`](../../../../spec/spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations)
+  (Direktive → Zitatblock → zeichengenauer Vergleich) + §2-Schema
+  (`codepaths.check-lines`). Grund-Codes (§4) folgen mit der Implementierung (Lockstep).
 - [ ] **Tests:** Zitat auf zu kurze Datei ⇒ Befund · invertierter Bereich ⇒ Befund
   · `exempt-paths` greift · **Negativ: ein korrektes Zitat bleibt grün nach einem
   Tag-Bump, der die Datei nicht anfasst** (kein Fehlalarm durch Nachbar-Drift).
