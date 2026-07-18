@@ -5,7 +5,7 @@ Spezifikation, [ADR-0038](../../adr/0038-trace-cross-consistency.md) und vier Re
 v0.44.0/v0.45.0 sind getaggt. **Offen ist allein der Realdatenbeleg**, und der
 ist blockiert: der Lauf gegen grid-gyms `spec/architecture.md` bricht an Zeile 913
 mit Exit 2 ab, weil dort d-checks eigene Ignore-Direktive in einer Tabellenzeile
-steht — [slice-074](slice-074-kommentar-suffix-tabellenzeilen.md), dessen
+steht — [slice-074](../in-progress/slice-074-kommentar-suffix-tabellenzeilen.md), dessen
 Implementierung am selben Tag zurückgenommen wurde und dessen tragende Regel offen
 ist.
 

@@ -14,7 +14,7 @@ Berührt den Guard aus
 [ADR-0037](../../adr/0037-trace-tabellenquellen-nullmengen-guard.md). Begründende
 Entscheidung [ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-header.md)
 (Proposed) — die Regel wurde erst **gemessen belegt**, dann benannt (der Bedingung
-aus [slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md) §2 genügend).
+aus [slice-074](../in-progress/slice-074-kommentar-suffix-tabellenzeilen.md) §2 genügend).
 **Defekt-Fix, kein CR** (das Lastenheft definiert keine Tabellengrenze).
 **SemVer-Minor.**
 
@@ -143,7 +143,7 @@ Zeilen-Relevanz) sind in [ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-
 ## 5. Trigger
 
 Isolierungs-Messung während der Rücknahme von
-[slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md) (2026-07-17): auf die
+[slice-074](../in-progress/slice-074-kommentar-suffix-tabellenzeilen.md) (2026-07-17): auf die
 Frage, ob R3-F-1 die Klasse **einführt** oder eine bestehende **verbreitert**,
 wurde `fx-s` ohne Marker gegen v0.45.1 gefahren — und das ausgelieferte Image
 verschwieg zwei echte Waisen. Der Befund war in drei unabhängigen Reviews und

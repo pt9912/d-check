@@ -8,12 +8,14 @@
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-60-trace-cross-consistency ist **nicht
-abgeschlossen**, hat aber gerade **keinen Slice in Arbeit**: slice-077 ist fertig
-und reviewt (`done/`, ACCEPT-WITH-NITS, **v0.48.0 veröffentlicht**) — die
-Wurzel der slice-074-Klasse ist damit robust. Der WIP-Slot ist frei (Modul 5,
-WIP-Limit = 1). **Nächster Zug:** slice-074 (die Direktiven-Toleranz als sicherer
-Aufsatz auf slice-077), dann slice-071 entblocken (Realdatenbeleg).
+**welle-60-trace-cross-consistency** ist wieder aktiv: in Arbeit ist
+[`slice-074`](slice-074-kommentar-suffix-tabellenzeilen.md) — die
+Direktiven-Toleranz (`<!-- d-check:ignore -->` hinter der letzten Pipe einer
+Tabellenzeile). Jetzt ein **sicherer Aufsatz** auf slice-077: dessen
+Tabellengrenze schützt die Folgetabelle, sodass das Tolerieren einer
+Kommentar-Datenzeile keinen stillen Übersprung mehr erzeugt (R3-F-1 ist zu). Die
+Toleranz-Regel ist bereits gemessen (Spike: fx-m/fx-mreq/fx-o/fx-2x). **Danach:**
+slice-071 entblocken (Realdatenbeleg grid-gym `architecture.md:913`).
 
 **Stand von welle-60** (pausiert, nicht abgeschlossen):
 [`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) **done**
@@ -61,8 +63,6 @@ null, von keinem Gate bemerkt.
 
 **Im Eingang (`open/`), auf Wellen-Einplanung wartend:**
 [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md) (blockiert) ·
-[`slice-074`](../open/slice-074-kommentar-suffix-tabellenzeilen.md)
-(zurückgestellt, Implementierung zurückgenommen) ·
 [`slice-078`](../open/slice-078-ignore-refs-quell-skopus.md) · [`slice-079`](../open/slice-079-zitat-verifikation.md) ·
 [`slice-072`](../open/slice-072-handbuch-aufgabenorientierung.md).
 
