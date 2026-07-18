@@ -11,7 +11,7 @@ der Adopter hat seinen eigenen Sensor-Slice deshalb selbst blockiert. **⇒
 Stufe 3 (`verbatim`) als **eigenes Modul** (setzt auf `codepaths`' Detektion auf, wie
 `anchors` auf `links`). **Vorfrage 2** war bereits aufgelöst (gemeinsames
 Kürzel-Kriterium mit
-[slice-078](../done/slice-078-ignore-refs-quell-skopus.md)).
+slice-078).
 
 **Bezug:** **Change Request** eines Adopters (`ai-harness-init`), eingereicht
 2026-07-17. Berührt
@@ -140,7 +140,7 @@ sie jetzt eingeplant (§4). Stufe 1/2 hingen nie daran.
 
 Kein Gegenargument, aber eine **Warnung**: wir können das Gate an uns selbst kaum
 erproben. Genau diese Dogfood-Lücke hat 2026-07-17 dreimal zugeschlagen
-(slice-073 §4, slice-074 §4, [slice-076](../done/slice-076-markdown-lexik-commonmark.md) §4).
+(slice-073 §4, slice-074 §4, slice-076 §4).
 Der Realdatenbeleg gegen das Adopter-Repo ist daher **nicht optional**.
 
 ## 3. Definition of Done
@@ -193,7 +193,7 @@ Der Realdatenbeleg gegen das Adopter-Repo ist daher **nicht optional**.
   **dupliziert** (§2.2)._
 - **Vorfrage 2 — Lastenheft-Verortung: AUFGELÖST (Auftraggeber, 2026-07-18)** über ein
   **gemeinsames Kürzel-Kriterium** mit
-  [slice-078](../done/slice-078-ignore-refs-quell-skopus.md):
+  slice-078:
   **querschnittlich (mehrere Module teilen die Fähigkeit) → neues Bereichskürzel;
   Einzelmodul-Erweiterung → bestehende Anforderung ändern**
   ([`MR-002`](../../../../harness/conventions.md#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung)).
