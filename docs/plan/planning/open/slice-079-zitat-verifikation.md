@@ -1,7 +1,11 @@
 # Slice slice-079: Zitat-Verifikation — `datei:zeile` als gemessenes Property
 
-**Status:** open (Eingang). **Zwei blockierende Vorfragen offen** (§4); der CR-Kern
-(„neues Modul `citations`") ist durch die Erdung in §2.2 **in Frage gestellt**.
+**Status:** open (Eingang). **Vorfrage 2 (Lastenheft-Verortung) aufgelöst** (§4,
+Auftraggeber 2026-07-18: gemeinsames Kürzel-Kriterium mit
+[slice-078](../in-progress/slice-078-ignore-refs-quell-skopus.md)); **offen bleiben
+Vorfrage 1 (Zuschnitt) und die Adopter-Rückfrage** (Inline-Code vs. Prosa). Der
+CR-Kern („neues Modul `citations`") ist durch die Erdung in §2.2 **in Frage
+gestellt**.
 
 **Bezug:** **Change Request** eines Adopters (`ai-harness-init`), eingereicht
 2026-07-17. Berührt
@@ -159,13 +163,22 @@ Der Realdatenbeleg gegen das Adopter-Repo ist daher **nicht optional**.
   Direktive. Drei Formen: **(a)** `codepaths` um eine Zeilen-Verifikation
   erweitern, Stufe 3 später; **(b)** eigenes Modul `citations`, das `codepaths`'
   Detektion dupliziert; **(c)** Stufe 1/2 in `codepaths`, Stufe 3 als eigenes
-  Modul. Entscheidung gehört dem Auftraggeber.
-- **Blockierende Vorfrage 2 — Lastenheft-Verortung.** Bei (a): Änderung von
-  [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in). Bei (b)/(c): **neues Bereichskürzel** in Lastenheft §3
+  Modul. Entscheidung gehört dem Auftraggeber — **weiterhin offen** (hängt an der
+  Adopter-Rückfrage Inline-Code vs. Prosa).
+- **Vorfrage 2 — Lastenheft-Verortung: AUFGELÖST (Auftraggeber, 2026-07-18)** über ein
+  **gemeinsames Kürzel-Kriterium** mit
+  [slice-078](../in-progress/slice-078-ignore-refs-quell-skopus.md):
+  **querschnittlich (mehrere Module teilen die Fähigkeit) → neues Bereichskürzel;
+  Einzelmodul-Erweiterung → bestehende Anforderung ändern**
   ([`MR-002`](../../../../harness/conventions.md#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung)).
-  **Dieselbe strukturelle Frage stellt
-  [slice-078](../in-progress/slice-078-ignore-refs-quell-skopus.md) §4** — beide sollten
-  zusammen entschieden werden, sonst driften zwei Antworten auseinander.
+  Anwendung hier: Stufe 1/2 (`datei:zeile`-Verifikation) sind eine
+  Einzelmodul-Erweiterung von `codepaths` (die Zeile wird dort schon erkannt und
+  verworfen, §2.2) → **Änderung von
+  [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)**,
+  **kein** neues Kürzel; Stufe 3 (`verbatim`) bleibt separat (eigene Direktive,
+  zurückgestellt). So driften 078 (querschnittlich → neues Kürzel) und 079
+  (Einzelmodul → bestehende Anforderung) **nicht** — ein Prinzip, zwei
+  situationsgerechte Ergebnisse.
 - **Zweite Direktive bei ungelöster erster.** Siehe §2.2. Stufe 3 sollte warten,
   bis slice-074 eine tragende Regel hat.
 - **Dogfood-Lücke.** Reichweite bei uns: 7 Referenzen. Wir können den Sensor an
