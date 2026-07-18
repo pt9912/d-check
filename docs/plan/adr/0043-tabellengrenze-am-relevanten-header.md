@@ -1,6 +1,6 @@
 # ADR-0043 — Tabellengrenze am relevanten Header: der stille Tabellen-Übersprung
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-18
 **Autor:** pt9912
 **Schärft:** [`DC-FA-REQ-001.a`](../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) (Schritt 5, Datenzeilen/Tabellengrenze)
@@ -143,3 +143,4 @@ kehrt dieser stille Pfad bei jeder Toleranz-Fassung zurück (Review R3-F-1).
 | Datum | Ereignis |
 |---|---|
 | 2026-07-18 | Proposed. Anlass: die Isolierungs-Messung `fx-s` während der Rücknahme von slice-074 (2026-07-17) zeigte den stillen Waisen-Verlust im ausgelieferten Image, ohne Marker. Nach fünf gescheiterten slice-074-Fassungen (alle rein strukturell, dreimal stilles Grün) wurde der relevant-Header-Diskriminator als Kandidat **gemessen** (Prototyp gegen v0.47.0, 10 Fixtures inkl. `fx-s`/`fx-t`/`fx-m` + volle Suite grün) — die erste Regel, die `fx-s` **und** `fx-t` gleichzeitig besteht. Umsetzender Slice slice-077; slice-074 setzt darauf auf, slice-071s Realdatenbeleg wird damit fahrbar. |
+| 2026-07-18 | Accepted. slice-077 umgesetzt, reviewt (R1 ACCEPT-WITH-NITS, 0 HIGH/MEDIUM) und als **v0.48.0** freigegeben. Alle drei LOW-Nits eingearbeitet: R-F-1 (fx-adj zu einem echten, breitensensitiven Mutations-Pin gemacht), R-F-2 (Vorwärts-Cross-Durchreichung gepinnt), R-F-3 (das Grenz-Prädikat feuert **fail-closed auf den Bind-Fehler** — ein mehrdeutig-relevanter Header wird nicht mehr still verschluckt, sondern Exit 2; in §Entscheidung 4 aufgenommen). |
