@@ -164,7 +164,7 @@ Der Realdatenbeleg gegen das Adopter-Repo ist daher **nicht optional**.
   [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in). Bei (b)/(c): **neues Bereichskürzel** in Lastenheft §3
   ([`MR-002`](../../../../harness/conventions.md#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung)).
   **Dieselbe strukturelle Frage stellt
-  [slice-078](slice-078-ignore-refs-quell-skopus.md) §4** — beide sollten
+  [slice-078](../in-progress/slice-078-ignore-refs-quell-skopus.md) §4** — beide sollten
   zusammen entschieden werden, sonst driften zwei Antworten auseinander.
 - **Zweite Direktive bei ungelöster erster.** Siehe §2.2. Stufe 3 sollte warten,
   bis slice-074 eine tragende Regel hat.
