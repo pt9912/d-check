@@ -6,6 +6,23 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.48.1] — 2026-07-18
+
+### Fixed
+
+- **Direktiven-Toleranz in Tabellenzeilen** (`trace.requirements.format: table`,
+  `trace.cross-consistency`): d-checks eigene Ignore-Direktive
+  `<!-- d-check:ignore … -->` hinter der letzten Pipe einer Tabellenzeile brach den
+  header-gebundenen Reader mit **Exit 2** ab — die eigene Konvention machte den
+  eigenen Reader blind. Eine Datenzeile mit **genau einer** überzähligen,
+  ganzzelligen HTML-Kommentar-Zelle wird jetzt auf Header-Breite gelesen; zwei
+  überzählige Zellen oder eine Nicht-Kommentar-Zelle bleiben Exit 2. Sicher auf der
+  Tabellengrenze aus v0.48.0 — eine relevante Folgetabelle wird nicht verschluckt
+  (der zuvor fünffach reproduzierte stille Übersprung ist strukturell zu). Richtung
+  **rot→grün** (ein spuriorer Abbruch wird lesbar): kein grüner Lauf wird rot, daher
+  SemVer-**Patch** ([ADR-0040](docs/plan/adr/0040-kommentar-suffix-in-tabellenzeilen.md),
+  Spezifikation §DC-FA-REQ-001.a Schritt 5).
+
 ## [0.48.0] — 2026-07-18
 
 ### Changed
