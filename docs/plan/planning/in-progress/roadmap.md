@@ -10,7 +10,7 @@
 
 **Keine aktive Welle.** welle-60-trace-cross-consistency ist **nicht
 abgeschlossen**, hat aber gerade **keinen Slice in Arbeit**: slice-074 ist fertig
-und reviewt (`done/`, R4 ACCEPT-WITH-NITS, **v0.48.1-Release ausstehend**). Damit ist
+und reviewt (`done/`, R4 ACCEPT-WITH-NITS, **v0.48.1 veröffentlicht**). Damit ist
 die **Blocker-Kette aufgelöst** — slice-071 ist jetzt **entblockt** (sein
 Realdatenbeleg gegen grid-gyms `architecture.md:913` läuft mit der Direktiven-Toleranz
 durch, statt mit „913 hat 4 statt 3 Zellen" abzubrechen). Der WIP-Slot ist frei

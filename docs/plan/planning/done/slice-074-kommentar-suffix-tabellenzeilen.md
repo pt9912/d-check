@@ -96,8 +96,10 @@ und die Toleranz wird ein sicherer Aufsatz.
   **gemessen, nicht zugesagt** (die R3-F-2-Lehre).
 - [x] **Realdatenbeleg:** grid-gym `architecture.md:913` läuft durch (statt Exit 2) —
   gegen v0.48.0 belegt (`913 hat 4 statt 3 Zellen` ist weg). Entblockt slice-071.
-- [ ] **Release** (SemVer-Patch, **v0.48.1**) + CHANGELOG; **unabhängiger,
-  kontext-getrennter Review vor** dem Release; `make gates`/`make ci` grün.
+- [x] **Release** (SemVer-Patch, **v0.48.1**) + CHANGELOG; **unabhängiger,
+  kontext-getrennter Review vor** dem Release; `make gates`/`make ci` grün. Tag +
+  GHCR (Digest `sha256:83da2da6…5871`) + Digest-Backfill (Handbuch §4). Release-Run
+  29637267248 grün.
 
 ## 4. Risiken / offene Punkte
 
