@@ -35,7 +35,9 @@ Getrackt-Status-Konsistenz:
   `<!-- d-check:status-provenance -->` deklariert
 - `external` — Erreichbarkeit externer URLs, strikt opt-in
   ([`DC-FA-EXT-001`](spec/lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in))
-- `codepaths` — explizite Pfade in Inline-Code, opt-in
+- `codepaths` — explizite Pfade in Inline-Code, opt-in; das opt-in `check-lines`
+  verifiziert `datei:<von>-<bis>`-Zeilen-Referenzen (`citation-out-of-range`,
+  `citation-inverted-range`)
   ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in))
 - `spans` — Markdown-Span-Artefakte (ungeschlossene Code-Spans,
   verschachtelte Links), opt-in
@@ -85,6 +87,11 @@ Getrackt-Status-Konsistenz:
   Autoritäts-Doku (`gate-undocumented`); **hermetisch** (kein git, kein
   Makefile-Ausführen), fail-closed, opt-in
   ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in))
+- `citations` — Verbatim-Zitat-Verifikation: die Direktive
+  `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (ein
+  `>`-Blockquote oder inline `„…"`/`"…"`); der whitespace-normalisierte Zitattext muss
+  ein zusammenhängender Teilstring der Quell-Spanne sein (`citation-mismatch`), opt-in
+  ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
@@ -160,7 +167,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

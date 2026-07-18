@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.38 · **Software-Version:** [v0.49.0](../../version.md#v0.49.0) ·
+**Handbuch-Version:** 1.39 · **Software-Version:** [v0.50.0](../../version.md#v0.50.0) ·
 **Stand:** 2026-07-18 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -63,7 +63,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.49.0
+docker pull ghcr.io/pt9912/d-check:v0.50.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -100,7 +100,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -155,7 +155,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -174,7 +174,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.49.0
+  ghcr.io/pt9912/d-check:v0.50.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -193,7 +193,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.49.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.50.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -212,7 +212,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -238,7 +238,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -247,7 +247,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -259,7 +259,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -279,7 +279,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
   --enable ids --disable anchors
 ```
 
@@ -300,7 +300,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
   --enable ids
 ```
 
@@ -321,7 +321,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
   --enable matrix
 ```
 
@@ -388,7 +388,7 @@ verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
   --enable external
 ```
 
@@ -408,7 +408,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
   --enable ids --doctor
 ```
 
@@ -436,7 +436,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
   --enable ids --doctor --json
 ```
 
@@ -484,7 +484,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -520,7 +520,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
     --enable ids --repair | git apply
   ```
 
@@ -537,7 +537,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -557,7 +557,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -661,7 +661,7 @@ ab — die eigene Konvention machte den eigenen Reader blind.)
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -874,7 +874,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -919,7 +919,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.49.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.50.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -932,7 +932,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.49.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.50.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -1131,6 +1131,36 @@ Sie den Pfad also so ein, wie er von der Repo-Wurzel aus lautet. Die Symlink-Abl
 bleibt unberührt. Der frühere modul-lokale Schlüssel `codepaths.ignore-refs` bleibt als
 **Alias** gültig (kein Config-Bruch): er wirkt wie ein `ignore-refs`-Eintrag ohne
 `in`/`keep`, skopiert auf `codepaths`.
+
+### Zitat-Verifikation: `codepaths.check-lines` und das Modul `citations`
+
+Zwei opt-in-Fähigkeiten prüfen `datei:zeile`-**Zitate**, die sonst still ins Leere
+zeigen können (etwa nach einem Tag-Bump einer committet-vendored Baseline).
+
+`codepaths.check-lines` (bool, Default `false`) verifiziert die **Zeilen-Referenz**
+eines Inline-Code-Pfads: trägt `` `datei:<von>-<bis>` `` (oder `` `datei:<zeile>` ``)
+einen Bereich, muss das Ziel existieren und mindestens `<bis>` Zeilen haben (sonst
+`citation-out-of-range`), und `<von>` darf nicht größer als `<bis>` sein (sonst
+`citation-inverted-range`). Ohne den Schalter wird das Zeilen-Suffix wie bisher
+abgetrennt und verworfen — **byte-identisch** zum bisherigen Verhalten.
+
+Das Modul `citations` (opt-in, `--enable citations`) prüft **wortgleiche Zitate**. Die
+Direktive `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat — die
+nächste nicht-leere Zeile als `>`-Blockquote **oder** den nächsten inline-Zitat-Span
+(`„…"` bzw. `"…"`) im selben Absatz. Quell-Spanne und Zitattext werden
+**whitespace-normalisiert** (jeder Umbruch-/Leerraum-Lauf zu einem Leerzeichen); das
+Zitat muss ein zusammenhängender **Teilstring** der Quelle sein, sonst
+`citation-mismatch`. So besteht ein re-wrapped, mitten in der Zeile beginnendes Zitat,
+während jede echte Wort-Abweichung bricht. Zitate unter 16 Zeichen bleiben ungeprüft
+(ein sehr kurzer Teilstring träfe zufällig). Ein Repo-Escape des Ziels ist ein Befund;
+eine **malformte** Direktive oder ein **fehlendes** Zitat ist fail-closed (Exit 2) —
+eine kaputte Direktive ist ein Autoren-Fehler, kein Schweigen.
+
+```yaml
+codepaths:
+  check-lines: true       # datei:<von>-<bis>-Zeilen-Referenzen verifizieren
+# citations wird über --enable citations bzw. modules: [..., citations] aktiviert
+```
 
 Das Modul `vcs` vergleicht den **Core** einer immutablen Datei über zwei
 git-Stände — es braucht daher eine **Commit-Range** und ist nie ein Default-Modul.
@@ -1430,7 +1460,8 @@ RTM byte-identisch.
 | `anchors`   | aktiv         | Heading-Anker (GitHub-Slugs), inkl. Inline-HTML-Anker                                    | `anchor-missing`                                            |
 | `ids`       | opt-in        | Linkpflicht für Kennungen im Fließtext                                                   | `id-unlinked`                                               |
 | `matrix`    | opt-in        | erlaubte Referenzrichtung und -status zwischen Dokumentklassen                           | `matrix-forbidden`, `matrix-inactive`                       |
-| `codepaths` | opt-in        | explizite Pfade in Inline-Code existieren                                                | `codepath-missing`                                          |
+| `codepaths` | opt-in        | explizite Pfade in Inline-Code existieren; opt-in `check-lines`: `datei:<von>-<bis>`-Zeilen-Referenzen verifizieren | `codepath-missing`, `citation-out-of-range`, `citation-inverted-range` |
+| `citations` | opt-in        | wortgleiche Zitate: `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (`>`-Block oder inline `„…"`/`"…"`), das ein whitespace-normalisierter **Teilstring** der Quell-Spanne sein muss; fail-closed bei malformter Direktive | `citation-mismatch`, `citation-out-of-range`, `citation-inverted-range` |
 | `spans`     | opt-in        | ungeschlossene Code-Spans, verschachtelte Links                                          | `span-unclosed`, `span-nested-link`                         |
 | `hostpaths` | opt-in        | host-lokale absolute Pfade (Maschinen-Layout-Leak)                                       | `hostpath-forbidden`                                        |
 | `diagrams`  | opt-in        | Kennungen in Diagramm-Fences (Default `mermaid`) existieren in ihrer `defined-in`-Quelle | `diagram-id-undefined`                                      |
@@ -1571,3 +1602,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.36             | v0.48.0          | 2026-07-18 | Tabellengrenze am relevanten Header (§4.12): eine irrelevante Tabelle verschluckt die unmittelbar folgende **relevante** nicht mehr still — ein Header, der eine konfigurierte Rolle bindet, beendet die laufende Tabelle. d-check findet danach **mehr** (SemVer-Minor, ein grüner Konsumentenlauf kann rot werden)                                                                                       |
 | 1.37             | v0.48.1          | 2026-07-18 | Direktiven-Toleranz in Tabellenzeilen (§4.12): eine Datenzeile mit genau einer überzähligen, ganzzelligen HTML-Kommentar-Zelle (`<!-- d-check:ignore … -->` hinter der letzten Pipe) wird auf Header-Breite gelesen, statt fail-closed mit Exit 2 abzubrechen. Zwei Extra-Zellen oder Nicht-Kommentar bleiben Exit 2. Patch (rot→grün)                                                                                       |
 | 1.38             | v0.49.0          | 2026-07-18 | Geteiltes Referenz-Ventil `ignore-refs` (§5): das bisher modul-lokale `codepaths.ignore-refs` wird zur **querschnittlichen** Top-Level-Fähigkeit, die `links`/`anchors`/`codepaths` gemeinsam honorieren. Neue Felder je Eintrag: `in` (Quell-Skopus, Glob auf die Quelldatei), `refs` (aufgelöste Ziele) und `keep` (Ausnahmen, reihenfolge-unabhängig). Ziel-Achsen-Pendant zu `scan.ignore`; löst die Template-Verzeichnis-Falle. `codepaths.ignore-refs` bleibt Alias (kein Config-Bruch), ohne Block byte-identisch; ungültiges Glob ⇒ Exit 2. Die vier Ventil-Achsen sind jetzt gegeneinander erklärt                                                                    |
+| 1.39             | v0.50.0          | 2026-07-18 | Zitat-Verifikation (§5/§6): opt-in `codepaths.check-lines` verifiziert `datei:<von>-<bis>`-Zeilen-Referenzen (`citation-out-of-range`/`citation-inverted-range`), Default aus byte-identisch. Neues 18. Modul `citations` (opt-in): die Direktive `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (`>`-Block oder inline `„…"`/`"…"`), das ein whitespace-normalisierter Teilstring der Quell-Spanne sein muss (`citation-mismatch`); Mindestlänge 16 Zeichen, malformte Direktive fail-closed. d-check findet danach **mehr** (SemVer-Minor)                                                                    |

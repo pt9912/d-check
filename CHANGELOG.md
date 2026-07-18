@@ -6,6 +6,25 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.50.0] — 2026-07-18
+
+### Added
+
+- **Zitat-Verifikation** (`DC-FA-CODE-001`/`DC-FA-CITE-001`, §5/§6): d-check prüft
+  `datei:zeile`-**Zitate**, die bisher still ins Leere zeigen konnten.
+  - `codepaths.check-lines` (opt-in): verifiziert die Zeilen-Referenz eines
+    Inline-Code-Pfads (`datei:<von>-<bis>`) — existierendes Ziel mit ≥ `bis` Zeilen
+    (sonst `citation-out-of-range`) und `von ≤ bis` (sonst `citation-inverted-range`).
+    Default aus **byte-identisch** (das Zeilen-Suffix wird wie bisher verworfen).
+  - Neues, direktiven-getriebenes **18. Modul `citations`** (opt-in): die Direktive
+    `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat
+    (`>`-Blockquote **oder** inline `„…"`/`"…"`); Quell-Spanne und Zitattext werden
+    whitespace-normalisiert, das Zitat muss ein zusammenhängender **Teilstring** der
+    Quelle sein (sonst `citation-mismatch`). So besteht ein re-wrapped inline-Zitat,
+    jede echte Wort-Abweichung bricht. Mindestlänge 16 Zeichen (schwache
+    Kurz-Teilstring-Diskriminierung ausgenommen); Repo-Escape des Ziels ist ein
+    Befund; eine malformte Direktive bzw. ein fehlendes Zitat ist fail-closed (Exit 2).
+
 ## [0.49.0] — 2026-07-18
 
 ### Added

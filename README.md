@@ -36,7 +36,9 @@ planning-lifecycle and tracked-status consistency:
   `<!-- d-check:status-provenance -->`
 - `external` — reachability of external URLs, strictly opt-in
   ([`DC-FA-EXT-001`](spec/lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in))
-- `codepaths` — explicit paths in inline code, opt-in
+- `codepaths` — explicit paths in inline code, opt-in; the opt-in `check-lines`
+  verifies `file:<from>-<to>` line references (`citation-out-of-range`,
+  `citation-inverted-range`)
   ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in))
 - `spans` — Markdown span artifacts (unclosed code spans,
   nested links), opt-in
@@ -85,6 +87,11 @@ planning-lifecycle and tracked-status consistency:
   Makefile rule without an entry in the authority doc (`gate-undocumented`);
   **hermetic** (no git, no Makefile execution), fail-closed, opt-in
   ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in))
+- `citations` — verbatim quote verification: the directive
+  `<!-- d-check:cite <path>:<from>-<to> -->` marks the following quote (a `>`-blockquote
+  or inline `„…"`/`"…"`); the whitespace-normalized quote must be a contiguous substring
+  of the source span (`citation-mismatch`), opt-in
+  ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 
 Every finding names file, line, target and reason; exit codes:
 `0` clean, `1` findings, `2` environment or configuration error.
@@ -159,7 +166,7 @@ Distributed as a container image via GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to
