@@ -1,11 +1,13 @@
 # Slice slice-074: Direktiven-Zelle in Tabellenzeilen (Reader vs. eigene Direktive)
 
-**Status:** open — **aus `in-progress/` zurückgestellt (2026-07-17), Implementierung
-zurückgenommen** (`05e1889`, `806051f`). Der Reader steht wieder byte-identisch auf
-v0.45.1. Der Defekt ist **unverändert offen und ausgeliefert**.
+**Status:** in-progress — **welle-60, in Arbeit seit 2026-07-18.** Wieder
+aufgenommen, nachdem **slice-077** (die Wurzel-Grenze, released v0.48.0) die Klasse
+**strukturell geschlossen** hat: die Toleranz ist jetzt ein **sicherer Aufsatz**.
+Zuvor 2026-07-17 aus `in-progress/` zurückgestellt (`05e1889`, `806051f`) nach fünf
+Fehlschlägen derselben Klasse — richtig so, denn die Wurzel fehlte.
 
-**Welle:** keine. Wartet auf erneute Einplanung, **nachdem die Klasse verstanden
-ist** — nicht auf den sechsten Anlauf.
+**Welle:** welle-60-trace-cross-consistency (Aufsatz auf slice-077; entblockt danach
+slice-071s Realdatenbeleg).
 
 **Bezug:** **Defekt-Fix**, **kein Change Request**: das Lastenheft definiert keine
 Zellenzahl — „was eine Zelle ist" ist Spezifikations-Sache
@@ -13,8 +15,9 @@ Zellenzahl — „was eine Zelle ist" ist Spezifikations-Sache
 wirkt über den geteilten Reader zugleich auf
 [`DC-FA-XREF-001.a`](../../../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency)).
 Begründende Entscheidung
-[ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md) — bleibt
-`Proposed`: die Frage ist gestellt, nicht beantwortet. **SemVer-Patch.**
+[ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md) (wieder aufgenommen,
+sicher auf [ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-header.md)).
+**SemVer-Patch** (rot→grün: ein spurioser Exit 2 wird lesbar).
 
 **Autor:** pt9912. **Datum:** 2026-07-17.
 
@@ -34,8 +37,23 @@ diese Zeile lesbar machen, **ohne** den Zellenzahl-Guard aufzuweichen
 
 ## 2. Entscheidungen / Regel
 
-**Es gibt keine tragende Regel — das ist der Stand.** Fünf Fassungen haben dieselbe
-Klasse fünfmal knapp verfehlt; drei davon erzeugten ein **stilles Grün**:
+**Die tragende Regel steht jetzt** — vollständig in
+[ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md) (wieder aufgenommen).
+Kurz: eine Datenzeile mit **genau einer** überzähligen, ganzzelligen
+HTML-Kommentar-Zelle (`<!-- … -->` hinter der letzten Pipe) wird auf Header-Breite
+gelesen. Zwei überzählige Zellen oder eine Nicht-Kommentar-Zelle bleiben Exit 2.
+
+**Warum sie jetzt trägt und fünfmal nicht:** der strukturelle Kern
+([R3](../../../reviews/2026-07-17-slice-074-implementation-r3.md) F-1) ist, dass das
+Tolerieren den `badLine`-**Wiederaufsetz-Punkt** entfernt und so die Folgetabelle
+verschluckt. Jede der fünf Fassungen versuchte eine **eigene** Lookahead-Grenze —
+und lag knapp daneben. **slice-077/[ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-header.md)
+zieht die Tabellengrenze jetzt am relevanten Header:** eine relevante Folgetabelle
+beendet die laufende, unabhängig von der Toleranz. Die Toleranz braucht **keine
+eigene Grenze mehr**; der stille Übersprung ist strukturell unmöglich. Die Lehre:
+**erst die Wurzel, dann der Aufsatz** — nicht der sechste Anlauf am selben Zweig.
+
+**Die fünf gescheiterten Fassungen** (als Beleg, warum die Reihenfolge zählt):
 
 | Fassung | Ansatz | Wie sie fiel |
 |---|---|---|
@@ -49,28 +67,34 @@ Klasse fünfmal knapp verfehlt; drei davon erzeugten ein **stilles Grün**:
 ([R3](../../../reviews/2026-07-17-slice-074-implementation-r3.md) F-1): In v0.45.1
 setzt **jede** `badLine` den Header-Scan neu auf. **Die Toleranz entfernt genau
 diesen Wiederaufsetz-Punkt.** Jede bisherige Fassung fragte „ist *diese* Zeile ein
-Header?" statt „verschlucke ich durch das Tolerieren einen *nachfolgenden*?". Wer
-die Invariante direkt adressiert, schließt die Klasse; wer weiter Nachbarfälle
-verengt, bekommt R4.
+Header?" statt „verschlucke ich durch das Tolerieren einen *nachfolgenden*?".
+**slice-077 hat die Invariante direkt adressiert** (die Tabellengrenze am relevanten
+Header) — an der Wurzel, nicht als Nachbarfall-Verengung. Damit ist die Klasse zu,
+und die Toleranz wird ein sicherer Aufsatz.
 
 ## 3. Definition of Done
 
-Zurückgesetzt — die Implementierung ist zurückgenommen. Der Doc-Teil trägt:
-
-- [x] **ADR + Index:** [ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md),
-  `Proposed`, im Index. Prämisse zweimal korrigiert, Historie vollständig.
+- [x] **ADR + Index:** [ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md)
+  wieder aufgenommen (sicher auf [ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-header.md)),
+  Index nachgezogen, Historie vollständig.
 - [x] **Reviews als Beleg:** [R1](../../../reviews/2026-07-17-slice-074-implementation-r1.md),
   [R2](../../../reviews/2026-07-17-slice-074-implementation-r2.md),
-  [R3](../../../reviews/2026-07-17-slice-074-implementation-r3.md) — sie sind das
-  Wertvollste am Slice.
-- [ ] **Tragende Regel:** benannt, die den Wiederaufsetz-Punkt **nicht** entfernt.
-- [ ] **Spezifikation:** Schritte 3/5 — erst wenn die Regel steht (die Fassung von
-  `1210842`/`e8b66ec` ist mit zurückgenommen).
-- [ ] **Mutations-Härte:** **jede** neue Grenze kippt einen Test. Die Zusage aus
-  `670ebaf` war für beide Grenzen falsch (R3-F-2) — der Sensor war blind an genau
-  der Stelle, an der die Klasse zuletzt zuschlug.
-- [ ] **Realdatenbeleg:** grid-gym `architecture.md:913`.
-- [ ] **Release** + **unabhängiger, kontext-getrennter Review vor** dem Release.
+  [R3](../../../reviews/2026-07-17-slice-074-implementation-r3.md) — die Klassen-Analyse.
+- [x] **Tragende Regel:** benannt (Ein-Kommentar-Zellen-Nachsicht), die den
+  Wiederaufsetz-Punkt **nicht** entfernt — weil slice-077 die Grenze zieht.
+- [x] **Spezifikation:** §[`DC-FA-REQ-001.a`](../../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
+  Schritt 5 um die Direktiven-Toleranz ergänzt + Historie.
+- [x] **Regel-Kandidat gemessen** (Spike 2026-07-18: fx-m/fx-mreq/fx-o/fx-2x).
+- [ ] **Fixtures zuerst, rot:** die tolerierte Direktiven-Datenzeile auf
+  **Konsumenten-Ebene** (`format: table` **und** `cross-consistency`), plus fx-2x
+  (Guard scharf) und fx-o (Panic-Pfad, Datei-Ende ohne Newline).
+- [ ] **Implementierung:** `htmlCommentCell` + Toleranz in `consumeTableRows`
+  (`len(cells)==len(header)+1`).
+- [ ] **Mutations-Härte:** Toleranz entfernt ⇒ mindestens ein Test kippt —
+  **gemessen, nicht zugesagt** (die R3-F-2-Lehre).
+- [ ] **Realdatenbeleg:** grid-gym `architecture.md:913` läuft durch (statt Exit 2).
+- [ ] **Release** (SemVer-Patch, **v0.48.1**) + CHANGELOG; **unabhängiger,
+  kontext-getrennter Review vor** dem Release; `make gates`/`make ci` grün.
 
 ## 4. Risiken / offene Punkte
 

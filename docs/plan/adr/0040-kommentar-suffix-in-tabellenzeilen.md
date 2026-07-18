@@ -1,12 +1,16 @@
 # ADR-0040 — Direktiven-Zelle in Tabellenzeilen: Header GFM-streng, Datenzeilen verengt nachsichtig
 
-**Status:** Proposed — **Entscheid ausgesetzt, Implementierung zurückgenommen**
-(2026-07-17). Die unten getroffene Entscheidung ist **falsifiziert**: Review R3
-hat an ihr einen Stilles-Grün-Pfad belegt (F-1), und ihre zentrale Zusage („die
-Toleranz greift **nie** über eine Tabellengrenze") ebenso widerlegt wie die
-Mutations-Zusage aus Entscheidung 3 (F-2). Der Kontext (§Kontext) gilt
-unverändert — der Defekt besteht. Was fehlt, ist eine tragende Regel. Bis dahin
-ist der Reader byte-identisch v0.45.1; Verlauf und Anlass in `## Geschichte`.
+**Status:** Proposed — **wieder aufgenommen 2026-07-18, jetzt sicher auf
+[ADR-0043](0043-tabellengrenze-am-relevanten-header.md).** Die 2026-07-17 ausgesetzte
+Fassung scheiterte fünfmal, weil das Lesbarmachen einer Direktiven-Datenzeile den
+`badLine`-Wiederaufsetz-Punkt entfernte und so die Folgetabelle **still**
+verschluckte (R3-F-1), und weil jede eigene Lookahead-Grenze knapp danebenlag. Diese
+Klasse ist mit **[ADR-0043](0043-tabellengrenze-am-relevanten-header.md)**
+(die Grenze am relevanten Header, released v0.48.0) **strukturell geschlossen:** eine
+relevante Folgetabelle beendet die laufende, unabhängig von der Toleranz. Die Toleranz
+ist damit ein **sicherer Aufsatz** — ihre eigene, falsifizierte Grenzen-Logik
+(Entscheidung 3 alt) entfällt; es bleibt genau die Ein-Kommentar-Zellen-Nachsicht.
+Verlauf in `## Geschichte`.
 **Datum:** 2026-07-17
 **Autor:** pt9912
 **Schärft:** [`DC-FA-REQ-001.a`](../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
@@ -80,23 +84,22 @@ Achse. Es gab keine durchgehende Regel.
    **reiner** Splitter und entfernt nichts.
 
 3. **Nichts wird gestrippt, nur toleriert** — keine Zeilenart verliert Zellen, und
-   die Nachsicht ist auf eine Kommentar-Zelle in einer Datenzeile begrenzt.
-   **Die Toleranz endet am nächsten Tabellen-Header.** Eine Zeile, der eine
-   passende Trennzeile folgt, ist der Header einer **neuen** Tabelle und keine
-   tolerierbare Datenzeile der laufenden. Ohne diese Grenze fräße die Toleranz
-   einen Direktiven-Header der Folgetabelle (N+1 mit Kommentar-Zelle sieht wie eine
-   tolerierbare Datenzeile aus) und dessen Anforderungen verschwänden **lautlos**
-   (Review R2-F-1: Exit 2 ⇒ Exit 0).
-   *Zur Reichweite, ehrlich:* Die erste Neufassung behauptete, der stille
-   Übersprung sei „strukturell unmöglich". Das war eine **Universal-Zusage ohne
-   Beweis** — R2 hat sie an genau diesem Pfad falsifiziert. Die Zusage lautet jetzt
-   enger und prüfbar: **keine Zeilenart verliert Zellen, und die Toleranz greift
-   nie über eine Tabellengrenze**; beide Grenzen sind per Mutation gepinnt.
+   die Nachsicht ist auf eine Kommentar-Zelle in einer Datenzeile begrenzt. **Die
+   Tabellengrenze ist nicht mehr Sache dieser Regel:** sie liegt in
+   [ADR-0043](0043-tabellengrenze-am-relevanten-header.md) (die Grenze am
+   relevanten Header). Eine relevante Folgetabelle beendet die laufende, **bevor**
+   deren Toleranz greifen könnte — der stille Übersprung (R2-F-1/R3-F-1: eine
+   tolerierte Datenzeile verschluckt die Folgetabelle) ist damit **strukturell
+   unmöglich**, nicht durch eine eigene Lookahead-Grenze (die fünfmal scheiterte),
+   sondern weil der geteilte Reader die Grenze schon zieht. Das war die Lehre: die
+   Wurzel (Tabellengrenze) zuerst lösen, dann die Toleranz als Aufsatz.
 
 4. **Kein Lastenheft-Change-Request.** Das Lastenheft definiert die Zellenzahl
    nicht; „was eine Zelle ist" ist Spezifikations-Sache (Rang 2, fortschreibbar).
-   SemVer-**Patch**: gegenüber v0.45.1 wird **keine** Zeile anders gelesen, die
-   heute gelesen wird — es kommt nur die N+1-Datenzeile mit Direktive hinzu.
+   SemVer-**Patch**: gegenüber v0.48.0 wird **keine** heute gelesene Zeile anders
+   gelesen — es kommt nur die N+1-Direktiven-Datenzeile hinzu, die zuvor **Exit 2**
+   war. Die Richtung ist rot→grün (ein spurioser Abbruch wird zum lesbaren Wert),
+   kein grüner Lauf wird rot; daher Patch, nicht Minor.
 
 ### Verglichene Alternativen
 
@@ -120,9 +123,11 @@ Achse. Es gab keine durchgehende Regel.
   lesbar — keine Regression gegenüber v0.45.1.
 - Eine echt verrutschte Zeile (Zelle zu viel/zu wenig, **kein** Kommentar) bleibt
   Exit 2 — der Guard ist nicht aufgeweicht.
-- Folgt der laufenden Tabelle **ohne Leerzeile** eine neue mit Direktiven-Header,
-  wird deren Header **nicht** als Datenzeile toleriert; das Verhalten ist
-  byte-identisch zu v0.45.1 (laut, nicht still).
+- Folgt der laufenden Tabelle **ohne Leerzeile** eine **relevante** Folgetabelle,
+  wird deren Header **nicht** als tolerierte Datenzeile verschluckt — die Grenze aus
+  [ADR-0043](0043-tabellengrenze-am-relevanten-header.md) beendet die laufende
+  Tabelle zuerst. Gemessen (`fx-m`: `total 3`, die tolerierte Direktiven-Datenzeile
+  **und** die Folgetabelle werden gelesen).
 - Der Realdatenlauf gegen grid-gyms `spec/architecture.md` läuft durch, statt an
   Zeile 913 (einer **Daten**zeile) abzubrechen.
 
@@ -150,6 +155,7 @@ Achse. Es gab keine durchgehende Regel.
 
 | Datum | Ereignis |
 |---|---|
+| 2026-07-18 | **Wieder aufgenommen** (Status weiterhin `Proposed`), nachdem die **Wurzel-Klasse** mit slice-077/[ADR-0043](0043-tabellengrenze-am-relevanten-header.md) (Grenze am relevanten Header, released v0.48.0) **strukturell geschlossen** ist. Die falsifizierte Entscheidung 3 (eigene Lookahead-Grenze, die fünfmal danebenlag) **entfällt**: die Tabellengrenze zieht jetzt der geteilte Reader über den relevanten Header, eine relevante Folgetabelle beendet die laufende **vor** jeder Toleranz — der stille Übersprung ist damit strukturell unmöglich statt behauptet. Es bleibt genau die Ein-Kommentar-Zellen-Nachsicht in Datenzeilen, gemessen (Spike 2026-07-18: `fx-m` `total 3` mit tolerierter Direktiven-Datenzeile + Folgetabelle, `fx-mreq` die tolerierte Zeile IST die Anforderung, `fx-o` kein Panic am Datei-Ende ohne Trailing-Newline, `fx-2x` zwei überzählige Zellen bleiben Exit 2). SemVer-**Patch** (rot→grün: ein spuriorer Exit 2 wird lesbar). Umsetzender Slice slice-074, jetzt als **Aufsatz** auf slice-077 statt Einzelkämpfer |
 | 2026-07-17 | **Entscheid ausgesetzt, Implementierung zurückgenommen** (`05e1889`, `806051f`); slice-074 `in-progress/` → `open/`. Anlass: Review R3 (BLOCK) — F-1 (HIGH) belegt gegen das **ausgelieferte** v0.45.1 einen Stilles-Grün-Pfad in **beiden** Konsumenten: eine tolerierte Direktiven-**Datenzeile** entfernt den Wiederaufsetz-Punkt des Header-Scans und verschluckt die **gesamte** Folgetabelle (Exit 1 ⇒ Exit 0). Damit sind die in der vorigen Zeile **neu** gegebene Zusage („die Toleranz greift nie über eine Tabellengrenze") und die SemVer-Begründung („keine Zeile wird anders gelesen") falsifiziert. F-2 (MEDIUM): die Zusage „beide Grenzen sind per Mutation gepinnt" war für beide Grenzen aus `670ebaf` **falsch** — Rückdrehen und Panic-Guard-Entfernen lassen die Suite grün. **Fünfte Wiederholung derselben Klasse** in dieser Code-Region; ein sechster Vorschlag (`isNewTableHeader` unbedingt) wurde vor dem Code an Fixture `fx-t` widerlegt. Konsequenz: nicht der sechste Anlauf, sondern Rücknahme — ein Gate-Werkzeug trägt keinen bekannten stillen Pfad auf `main`, auch ungetaggt nicht. Nachträglich belegt (`fx-s`, gegen v0.45.1): der stille Pfad ist **älter** als dieser Slice und braucht **keinen** Marker ⇒ eigener Defekt. Spike goldmark v1.8.4 (522 reale Dateien): ein echter GFM-Parser schließt diese Klasse **nicht** — er stimmt auf `fx-s`/`fx-p` exakt mit dem heutigen Reader überein; die Achse ist Policy, nicht Grammatik. Die Alternativen-Tabelle bleibt insoweit gültig, ihre Begründung „schließt die Klasse nicht" ist jetzt **gemessen** statt behauptet |
 | 2026-07-17 | Toleranz um die **Tabellengrenze** verengt (`isNewTableHeader`) und die Reichweiten-Zusage korrigiert. Anlass: Review R2 (BLOCK) — die Neufassung behauptete „stiller Übersprung strukturell unmöglich"; R2 falsifizierte das: die Toleranz fraß den Direktiven-Header einer unmittelbar folgenden Tabelle, deren Anforderungen verschwanden lautlos (Exit 2 ⇒ Exit 0). Der angebotene Ausweg „ehrliche Reichweiten-Angabe statt Code-Verengung" wurde **verworfen**: eine Zusage zu entschärfen, damit ein stiller Verlust hineinpasst, ist die Bewegung, gegen die dieses Werkzeug gebaut ist. Verhalten jetzt byte-identisch zu v0.45.1 an allen geprüften Achsen. |
 | 2026-07-17 | **Prämisse verworfen und Entscheid neu gefasst**, Status weiterhin `Proposed`. Anlass: unabhängiger Review VOR dem Release (BLOCK, HIGH). Die erste Fassung („Kommentar ist ein Suffix, keine Zelle") war sachlich falsch — in GFM ist er eine Zelle, N+1 gegen N+1-Trennzeile ist die einzige renderbare Header-Form. Sie strippte deshalb im Splitter, wandte damit eine Body-Regel auf den Header an, ließ dessen Zellenzahl unter die Trennzeile fallen und übersprang die Tabelle **wortlos**: echte Waisen verschwanden, Exit 1 wurde Exit 0 — der eigene Satz „Kein Lauf wird stiller" war widerlegt. Neu: Header GFM-streng (unberührt), Datenzeilen verengt nachsichtig, Regel dort wo der Header-Kontext bekannt ist. Kein Strippen, nur Tolerieren — der stille Übersprung ist damit strukturell unmöglich statt behoben. |
