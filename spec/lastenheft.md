@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.46.0
+**Version:** 0.47.0
 
 **Status:** Draft
 
@@ -52,7 +52,8 @@ statt per Code-Kopie.
 > Doku ↔ Build-Targets), `COV` (kuratierte Coverage-Quellen der RTM),
 > `MOD` (Modalitäts-Klassifikation der Anforderungen), `REQ`
 > (Anforderungsquellen der RTM), `XREF` (Kreuzverweis-Konsistenz zweier
-> Traceability-Sichten), `CONF` (Konfiguration), `DIST`
+> Traceability-Sichten), `REF` (geteiltes Referenz-Ventil `ignore-refs`,
+> Ziel-Achse zu `SCAN`), `CONF` (Konfiguration), `DIST`
 > (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
@@ -856,6 +857,72 @@ Scan-Wurzeln müssen existieren; nur die Default-Wurzeln sind optional.
 
 ---
 
+### DC-FA-REF-001 — Geteiltes Referenz-Ventil (`ignore-refs` mit Quell-Skopus)
+
+**Beschreibung:** Ein optionales, geteiltes Ventil nimmt **bestimmte
+Referenz-Ziele** von der Existenz- und Anker-Prüfung der Module `links`
+([`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)),
+`anchors`
+([`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors)) und
+`codepaths`
+([`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in))
+aus — **referenz-weit**, unabhängig davon, in welcher Datei/Zeile die Referenz
+steht. Es ist das **Ziel-Achsen-Pendant** zu `scan.ignore`
+([`DC-FA-SCAN-001`](#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln),
+Quell-Achse): jenes entfernt ganze Dateien vom Scan, dieses einzelne Ziele von der
+Prüfung. Die Deklaration steht als Top-Level-Liste `ignore-refs`; jeder Eintrag
+trägt drei Felder:
+
+- **`refs`** (Glob-Liste, Pflicht): Muster auf den **aufgelösten Ziel-Pfad**, so
+  wie das jeweilige Modul heute auflöst (der Befund-`target` ist der aufgelöste
+  Pfad, gleiche Ventil-Parität wie bei den `exempt-*`-Ventilen). Ein leeres oder
+  fehlendes `refs` macht den Eintrag inert (nichts wird ignoriert).
+- **`keep`** (Glob-Liste, optional): Ausnahmen. **Ein Ziel wird genau dann
+  ignoriert, wenn `refs` matcht UND `keep` nicht** (`refs ∧ ¬keep`). `keep` gewinnt
+  **unbedingt und reihenfolge-unabhängig** — bewusst **nicht** gitignore-Last-Match.
+- **`in`** (Glob, optional): **Quell-Skopus** — Muster auf den Pfad der
+  **Quelldatei** (der Datei, in der die Referenz vorkommt). Gesetzt, gilt der
+  Eintrag **nur** für Referenzen in passenden Dateien; ohne `in` gilt er repo-weit.
+
+Das Ventil ist ein **Register bewusst behandelter Referenzen** — etwa
+Template-Platzhalter, die auf Ziel-Repo-Positionen zeigen (im Quell-Repo nicht
+auflösbar), oder historische/immutable Doku, die einen entfernten Pfad zitiert.
+Bewusster Akt **mit Gate**: ohne passenden Eintrag meldet ein fehlendes Ziel weiter
+(nichts dangelt still); das Ventil unterdrückt **nur** die Existenz-/Anker-Prüfung
+des genannten Ziels, keine anderen Befunde (Symlink-Ablehnung, Repo-Escape u. Ä.
+bleiben). Zwei Felder statt `!`-Negations-Syntax: gemessen braucht kein realer Fall
+die Re-Ignore-Alternierung, die eine Ordnungssemantik böte — der Verzicht kauft
+Reihenfolge-Unabhängigkeit in einer YAML-Liste.
+
+**Alias (kein Config-Bruch):** die bestehende modul-lokale Liste
+`codepaths.ignore-refs`
+([`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in))
+bleibt als **Alias** gültig — sie wirkt wie ein `ignore-refs`-Eintrag ohne
+`in`/`keep`, skopiert auf `codepaths`-Ziele; bestehende Konfigurationen laufen
+unverändert.
+
+**Achsen-Abgrenzung:** `ignore-refs` (Ziel) ist orthogonal zu `scan.ignore`
+(Quelldatei, ganze Datei) und zum Zeilen-Marker `d-check:ignore` (Zeile, nur
+`codepaths`). Keine Achse überschreibt eine andere; ein Ziel, das `scan.ignore`
+bereits vom Scan entfernt, erreicht `ignore-refs` gar nicht.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given eine Referenz auf ein nicht existierendes Ziel in einer Datei, die ein `in`-Glob matcht, und das aufgelöste Ziel matcht `refs`, aber nicht `keep`, when ein Ventil-tragendes Modul (`links`/`anchors`/`codepaths`) läuft, then kein Befund.
+- **Boundary (`keep` gewinnt):** Given denselben `refs`-Match, aber das aufgelöste Ziel matcht zusätzlich ein `keep`-Glob (ein real auflösender Verweis im selben Baum), when das Modul läuft, then wird die Referenz **geprüft** — `keep` hebt die Ausnahme reihenfolge-unabhängig auf (ist das Ziel real, kein Befund; ist es verfälscht, ein Befund).
+- **Negative (Tippfehler):** Given ein verfälschter Pfad in einer `in`-passenden Datei, dessen aufgelöstes Ziel **nicht** `refs` matcht (oder von `keep` zurückgeholt wird), when das Modul läuft, then ein Befund mit Datei, Zeile, Ziel und Grund, Exit-Code 1 — eine „ignoriere, was nicht auflöst"-Heuristik bestünde diesen Test nicht, deshalb Muster statt Heuristik.
+- **Ventil (Skopus-Isolation):** Given ein `ignore-refs`-Eintrag mit `in`-Glob, when eine Referenz auf **dasselbe** Ziel-Muster in einer Datei **außerhalb** des `in`-Globs vorkommt, then bleibt sie voll geprüft.
+- **Ventil (Alias):** Given eine bestehende `codepaths.ignore-refs`-Liste ohne Top-Level-`ignore-refs`, when `codepaths` läuft, then verhält es sich byte-identisch zur Fassung vor dieser Anforderung ([`DC-QA-02`](#dc-qa-02--determinismus)).
+- **Regression (default-aus):** Given weder Top-Level-`ignore-refs` noch `codepaths.ignore-refs`, when die Module laufen, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
+
+**Out-of-Scope:** Negations-Syntax (`!`-Globs) als zweiter Glob-Dialekt;
+gitignore-Last-Match-Ordnung (`keep` ist reihenfolge-unabhängig);
+Re-Ignore-Alternierung (`ignore`→`keep`→`ignore` — zwei Felder können das bewusst
+nicht, gemessen kein Bedarf); Zeilen-Granularität (dafür der `d-check:ignore`-Marker
+in `codepaths`); semantische Prüfung, ob das ignorierte Ziel inhaltlich passt.
+
+---
+
 ### DC-FA-LINK-001 — Lokale Link- und Bildreferenzen (Modul `links`)
 
 **Beschreibung:** Markdown-Links `[text](ziel)` und Bildreferenzen
@@ -874,7 +941,9 @@ geprüft (explizite Pfade in Inline-Code prüft das opt-in-Modul
 `codepaths`,
 [`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in));
 HTML-Kommentare werden nicht gesondert behandelt (Links darin gelten
-als Fließtext).
+als Fließtext). Das geteilte Referenz-Ventil `ignore-refs`
+([`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus))
+nimmt bestimmte Ziel-Pfade referenz-weit von der Existenz-Prüfung aus.
 
 **Akzeptanzkriterien:**
 
@@ -924,6 +993,9 @@ einen Heading-Slug **oder** einen Inline-HTML-Anker der Zieldatei trifft.
 Existiert die Zieldatei nicht, wird die Anker-Prüfung für diesen Link
 übersprungen — der Befund kommt vom Modul `links`
 ([`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)).
+Das geteilte Referenz-Ventil `ignore-refs`
+([`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus))
+nimmt bestimmte Ziele referenz-weit von der Anker-Prüfung aus.
 
 **Akzeptanzkriterien:**
 
@@ -1174,17 +1246,14 @@ von der `codepaths`-Prüfung aus — datei-weit, unabhängig von den
 Wurzel-Präfixen; dasselbe Datei-Ventil wie bei
 [`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids),
 komplementär zum zeilenweisen `d-check:ignore`-Marker (typischer Fall:
-Review-Reports, die naturgemäß `Datei:Zeile`/Pfade zitieren). Schließlich nimmt
-eine optionale `ignore-refs`-Glob-Liste **bestimmte Ziel-Pfade** von der
-Existenz-Prüfung aus — **referenz-weit**, egal in welcher Datei/Zeile der Pfad als
-Inline-Code-Verweis vorkommt. Sie ist ein Register **bewusst entfernter/historischer
-Artefakte** (Tombstones): immutable/historische Doku (z. B. eine `Accepted`-ADR, die
-nicht editierbar ist) darf einen entfernten Pfad weiter zitieren, ohne dass er
-existieren muss. Bewusster Akt **mit Gate** — ohne Eintrag meldet ein gelöschter,
-noch zitierter Pfad weiter `codepath-missing` (nichts dangelt still); `ignore-refs`
-unterdrückt **nur** die Existenz-/Anker-Prüfung des genannten Pfads, keine anderen
-Befunde. Die drei Ventile decken drei Achsen ab: Zeile (`d-check:ignore`), Datei
-(`exempt-paths`), Ziel-Pfad (`ignore-refs`).
+Review-Reports, die naturgemäß `Datei:Zeile`/Pfade zitieren). Schließlich gilt für
+`codepaths` das **geteilte Referenz-Ventil** `ignore-refs`
+([`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)),
+das **bestimmte Ziel-Pfade** referenz-weit von der Existenz-/Anker-Prüfung ausnimmt
+(Register bewusst entfernter/historischer Artefakte); die frühere modul-lokale Liste
+`codepaths.ignore-refs` bleibt als **Alias** gültig (kein Config-Bruch). Die drei
+Ventil-Achsen dieses Moduls: Zeile (`d-check:ignore`), Datei (`exempt-paths`), Ziel
+(`ignore-refs`).
 
 **Akzeptanzkriterien:**
 
@@ -1980,6 +2049,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.47.0 | 2026-07-18 | Change Request (Konsument `ai-harness-course`): neue Anforderung `DC-FA-REF-001` — **geteiltes Referenz-Ventil** `ignore-refs` mit **Quell-Skopus** (`in:`) und Zwei-Feld-Semantik (`refs ∧ ¬keep`; `keep` gewinnt unbedingt und reihenfolge-unabhängig, **nicht** gitignore-Last-Match). Das bisher **modul-lokal** in `DC-FA-CODE-001` wohnende `ignore-refs` wird zur **querschnittlichen** Anforderung: `links`/`anchors`/`codepaths` verweisen darauf; `codepaths.ignore-refs` bleibt **Alias** (kein Config-Bruch). Ziel-Achsen-Pendant zu `scan.ignore` (`DC-FA-SCAN-001`, Quell-Achse — jene entfernt Dateien, dieses Ziele). Bereich `REF` in §3; `DC-FA-CODE-001`/`DC-FA-LINK-001`/`DC-FA-ANCH-001` an das Ventil angebunden. §4-Vorfrage vom Auftraggeber entschieden (Option a: neues geteiltes Kürzel statt Änderung dreier Anforderungen; **gemeinsames Kriterium** mit `slice-079`: querschnittlich → neues Kürzel, Einzelmodul → bestehende Anforderung ändern). `DC-FA-REF-001.a` + Schema-Keys (`ignore-refs[].in`/`refs`/`keep`) + Alias-Semantik in der Spezifikation, Begründung (Zwei-Feld vs. `!`-Negation, Alias-Pfad) in begleitender ADR, Implementierung/Realdatenbeleg/Release folgen in `slice-078`. Anlass: Template-Verzeichnisse mit Ziel-Repo-Platzhaltern zwingen heute das ganze Verzeichnis in `scan.ignore` und machen damit auch die **echten** Verweise blind, deren Auflösung beim Release unveränderlich eingefroren wird | slice-078 |
 | 0.46.0 | 2026-07-17 | Change Request (Auftraggeber): die **Komma-Kurzform** `<FAM>-AAA, BBB` wird **fail-closed** (Exit 2) statt still verschluckt — betrifft `DC-FA-COV-001` und, über den geteilten Reader, `DC-FA-XREF-001`. Zugesagt waren nur `..`-Range und `/`-Aufzählung; die Kurzform war nie Vertrag, ihr **stiller Drop** aber auch nicht: `GG-SCN-001, 007` deckte nur `GG-SCN-001` und erzeugte eine falsche Waise. Verworfen: (a) Komma-Enum unterstützen — d-check kann eine gemeinte Kurzform nicht von einer Zahl im Fließtext unterscheiden (`GG-QA-001, 007 Sekunden`), das wäre Raten; (b) Status quo — der stille Drop ist die schlechteste Option. Gewählt: die **Gestalt** triggert (Kennung + Komma + Ziffern), der Inhalt ist keine unterstützte Notation ⇒ Exit 2 mit Hinweis — dieselbe Logik wie bei `AAA>BBB`. Ein Komma vor einer **vollständigen** Kennung (`GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN`) bleibt unberührt. Neues Negative- und Boundary-Kriterium; Schritt 3 in `DC-FA-COV-001.a`; Begründung in der begleitenden ADR. Anlass: Konsumenten-Report grid-gym gegen v0.45.1 — reale §27.1-Zeilen `GG-SCN-001, 007` ließen das produktiv verdrahtete `trace.coverage` das Mapping nicht zählen | slice-075 |
 | 0.45.0 | 2026-07-17 | Change Request (Auftraggeber): `DC-FA-XREF-001` um **`forward.req-pattern`** erweitert (RE2, Default `requirements.id-pattern`) — symmetrisch zum vorhandenen `backward.req-pattern`, ein Denkmodell statt zwei. Bis dahin las die Vorwärts-Sicht ihre Anforderungs-IDs **still** über `requirements.id-pattern`, die Rück-Sicht über ihr eigenes Muster; die Kopplung stand weder im Vertrag noch in der Config-Oberfläche. Folge bei einer bewusst gescopten RTM (Architektur-Meta ausgeschlossen): die Vorwärts-Sicht ist leer, **jede** Rück-Kante wird als „ohne RTM-Eintrag“ gemeldet, und die eigentliche `F \ B`-Drift verschwindet — ein Falschbefund, der wie echter Drift aussieht. Neu festgehalten: **die Vergleichs-Schlüsselmenge ist nicht die RTM-Anforderungsmenge** (belegt: eine ID, die das Muster trifft, aber keine RTM-Zeile hat, wird verglichen). Neues Boundary-Kriterium (RTM-Scope ≠ Vergleichs-Scope); Schema-Zeile + Algorithmus-Schritt 2 in `DC-FA-XREF-001.a`; Begründung in der begleitenden ADR. Anlass: Realdaten-Lauf des Konsumenten grid-gym gegen v0.44.0 (Defekt 1 von zweien), belegt durch Umschalten **nur** dieses Musters bei identischen Dateien | slice-071 |
 | 0.44.2 | 2026-07-17 | Change Request (Auftraggeber): die Vakuitäts-Stufe aus 0.44.1 von einer **Ursachen-** auf eine **Wirkungs**-Fassung gezogen. 0.44.1 band Vakuum an die Muster-Ursache („Given ein `design-pattern`, das … vorbeigreift“); ein **übergriffiges `exclude-req`** — fehlerfreie Muster, aber ein Ventil, das jede Anforderung verschluckt — schaltete das Gate bei realem Drift ebenso still ab, war aber von keinem Akzeptanzkriterium gedeckt. Vakuität wird daher **nach** dem Ausschluss gemessen (das Ventil ist selbst eine kuratierte, drift-fähige Kante), und geprüft wird die **Wirkung** — ob der Abgleich konstruktionsbedingt überhaupt einen Befund liefern könnte — statt einer Ursachenliste, die bei der nächsten unbekannten Ursache erneut risse. Neues Negative-Kriterium (Ventil, samt ventil-benennender Meldung); Ausschluss-Stufe in der Fehlerpräzedenz von `DC-FA-XREF-001.a`; Begründung in der begleitenden ADR. Anlass: unabhängiges Closure-Review zu `slice-071` — R3 reproduzierte `exclude-req: '.'` mit `0 Differenz(en)`/Exit 0 bei echtem Drift, R4 wies die AK-Lücke nach | slice-071 |
