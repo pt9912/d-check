@@ -2267,6 +2267,115 @@ func TestCLI076_FenceInfozeileVerdecktTabelleNicht(t *testing.T) {
 	}
 }
 
+// slice-077 (DC-FA-REQ-001.a Schritt 5, fx-s): eine irrelevante Tabelle
+// (Werkzeug/Zweck/Stand) verschluckt heute die unmittelbar folgende relevante
+// (ID/Anforderung/Notiz) samt Anforderungen. Die Grenze am relevanten Header
+// beendet die irrelevante Tabelle, sobald der relevante Header beginnt — R-2/R-3
+// werden gefunden. Mutations-Pin: ohne die Grenze kippt dieser Test auf Total 1.
+func TestCLI077_StillerUebersprungGrenze(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md",
+		"| ID | Anforderung | Notiz |\n|---|---|---|\n| R-1 | Alpha | ok |\n\n"+
+			"| Werkzeug | Zweck | Stand |\n|---|---|---|\n| foo | bar | baz |\n"+
+			"| ID | Anforderung | Notiz |\n|---|---|---|\n| R-2 | Beta | ok |\n| R-3 | Gamma | ok |\n")
+	write(t, root, ".d-check.yml", tableConfig("Anforderung"))
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON: %v", err)
+	}
+	if doc.Total != 3 {
+		t.Fatalf("relevante Folgetabelle verschluckt (Grenze fehlt): %+v", doc.Requirements)
+	}
+}
+
+// slice-077 (fx-t, die Gegenprobe): eine all-dashes-Datenzeile `| - | - |` bindet
+// keine Rolle und ist damit KEIN relevanter Header — sie trennt nicht. R-1/R-2
+// bleiben eine Tabelle (byte-identisch zu v0.47.0). Das ist der Fall, an dem jede
+// rein strukturelle Grenze scheiterte.
+func TestCLI077_AllDashesKeineFalschtrennung(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md",
+		"| ID | Anforderung |\n|---|---|\n| R-1 | a |\n| - | - |\n| R-2 | b |\n")
+	write(t, root, ".d-check.yml", tableConfig("Anforderung"))
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON: %v", err)
+	}
+	if doc.Total != 2 {
+		t.Fatalf("all-dashes-Zeile fälschlich als Grenze gewertet: %+v", doc.Requirements)
+	}
+}
+
+// slice-077 (fx-adj): zwei unmittelbar benachbarte RELEVANTE Tabellen (ohne
+// Leerzeile) werden beide erkannt — der relevante Header der zweiten beendet die
+// erste. Mutations-Pin: ohne die Grenze kippt dieser Test auf Total 1.
+func TestCLI077_BenachbarteRelevanteTabellen(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md",
+		"| ID | Anforderung |\n|---|---|\n| R-1 | a |\n| ID | Anforderung |\n|---|---|\n| R-2 | b |\n")
+	write(t, root, ".d-check.yml", tableConfig("Anforderung"))
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON: %v", err)
+	}
+	if doc.Total != 2 {
+		t.Fatalf("zweite benachbarte relevante Tabelle verschluckt: %+v", doc.Requirements)
+	}
+}
+
+// slice-077 (DC-FA-XREF-001.a, cross-consistency-Pfad): die relevant-Header-Grenze
+// wirkt über den geteilten Reader auch in der Rück-Sicht. Eine irrelevante Tabelle
+// (kein edge-column) unmittelbar vor der relevanten Rück-Sicht-Tabelle darf sie
+// nicht verschlucken — sonst fände bindBackwardTables keine Tabelle (Exit 2). Mit
+// der Grenze wird die Rück-Kante gelesen und deckt sich mit der Vorwärts-Sicht
+// (0 Differenzen). Mutations-Pin für die Prädikat-Durchreichung an den Cross-Pfad.
+func TestCLI077_Cross_RuecksichtNichtVerschluckt(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "### GG-ARCH-006\nDer Scheduler MUSS entkoppelt sein.\n")
+	write(t, root, "docs/traceability.md",
+		"# Traceability\n\n| Anforderung | Design |\n|---|---|\n| GG-ARCH-006 | GG-AR-C-1 |\n")
+	write(t, root, "spec/architecture.md",
+		"# Arch\n\n| Werkzeug | Zweck |\n|---|---|\n| foo | bar |\n"+
+			"| Komponente | Bezug |\n|---|---|\n| GG-AR-C-1 | GG-ARCH-006 |\n")
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z]+-\d{3}'
+  cross-consistency:
+    forward:
+      file: docs/traceability.md
+      req-column: Anforderung
+      design-column: Design
+      design-pattern: 'GG-AR-[A-Z0-9-]+'
+    backward:
+      file: spec/architecture.md
+      edge-column: Bezug
+      req-pattern: 'GG-[A-Z]+-\d{3}'
+`)
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d (Rück-Sicht verschluckt ⇒ keine Tabelle ⇒ Exit 2), stderr = %q", code, stderr)
+	}
+	var d crossDoc
+	if err := json.Unmarshal([]byte(stdout), &d); err != nil {
+		t.Fatalf("JSON: %v\n%s", err, stdout)
+	}
+	if len(d.CrossConsistency) != 0 {
+		t.Fatalf("Vorwärts GG-AR-C-1 == Rückwärts, erwartete 0 Differenzen: %+v", d.CrossConsistency)
+	}
+}
+
 func tableConfig(textColumn string) string {
 	return "trace:\n  requirements:\n    source: spec/reqs.md\n    id-pattern: 'R-[0-9]+'\n    format: table\n    table:\n      id-column: ID\n      text-column: " + textColumn + "\n"
 }

@@ -31,7 +31,11 @@ func traceTableRequirements(fsys driven.Filesystem, source string, reqPat *regex
 		usedTextHeaders: map[string]bool{},
 	}
 
-	for _, t := range markdownTables(content, nil) {
+	isRelevant := func(header []string) bool {
+		_, ok, err := bindTableColumns(header, cfg)
+		return err == nil && ok
+	}
+	for _, t := range markdownTables(content, nil, isRelevant) {
 		if err := extractTable(t, source, reqPat, cfg, &extracted); err != nil {
 			return nil, nil, nil, err
 		}
@@ -124,8 +128,11 @@ type mdTable struct {
 // markdownTables liefert alle Pipe-Tabellen von content in Dokument-Reihenfolge.
 // mask (nil ⇒ ganze Datei) blendet Zeilen außerhalb der gewählten Abschnitte aus
 // — eine ausgeblendete Zeile beendet die laufende Tabelle wie Fließtext, und die
-// Zeilennummern bleiben die der Original-Datei (rules.SectionMask).
-func markdownTables(content []byte, mask []bool) []mdTable {
+// Zeilennummern bleiben die der Original-Datei (rules.SectionMask). isRelevantHeader
+// (nil ⇒ inaktiv) meldet, ob eine Headerzeile eine konfigurierte Rolle bindet — der
+// Konsument reicht sein Relevanz-Prädikat durch, damit ein relevanter Header die
+// laufende Tabelle beendet (DC-FA-REQ-001.a Schritt 5, ADR-0043).
+func markdownTables(content []byte, mask []bool, isRelevantHeader func([]string) bool) []mdTable {
 	lines := markdownTableLines(content)
 	var out []mdTable
 	for i := 0; i+1 < len(lines); i++ {
@@ -137,7 +144,7 @@ func markdownTables(content []byte, mask []bool) []mdTable {
 			continue
 		}
 		t := mdTable{header: header, line: lines[i].no}
-		next := consumeTableRows(lines, i+2, mask, &t)
+		next := consumeTableRows(lines, i+2, mask, &t, isRelevantHeader)
 		out = append(out, t)
 		i = next - 1
 	}
@@ -146,10 +153,21 @@ func markdownTables(content []byte, mask []bool) []mdTable {
 
 // consumeTableRows sammelt die Datenzeilen ab start und liefert den Index der
 // ersten Zeile, die nicht mehr zur Tabelle gehört.
-func consumeTableRows(lines []markdownTableLine, start int, mask []bool, t *mdTable) int {
+func consumeTableRows(lines []markdownTableLine, start int, mask []bool, t *mdTable, isRelevantHeader func([]string) bool) int {
 	for j := start; j < len(lines); j++ {
 		if !lines[j].prose || !maskAllows(mask, lines[j].no) {
 			return j
+		}
+		// Grenze am relevanten Header (DC-FA-REQ-001.a Schritt 5, ADR-0043):
+		// bildet diese Zeile mit ihrer Folgezeile einen gültigen Header + Trennzeile
+		// und bindet ihr Header eine Rolle, ist sie der Header einer NEUEN Tabelle
+		// und beendet die laufende — der Re-Scan (markdownTables, i = next-1) erkennt
+		// sie ab hier. Ein rollenloser Header (z. B. all-dashes) beendet nicht. So
+		// verschwindet keine relevante Tabelle mehr still in einer vorangehenden.
+		if isRelevantHeader != nil && j+1 < len(lines) && maskAllows(mask, lines[j+1].no) {
+			if hdr, ok := tableHeaderAt(lines, j); ok && isRelevantHeader(hdr) {
+				return j
+			}
 		}
 		cells, row := splitPipeTableLine(lines[j].text)
 		if !row {

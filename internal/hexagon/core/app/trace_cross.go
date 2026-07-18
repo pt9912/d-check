@@ -159,7 +159,11 @@ func spanCrossSource(field, file string, content []byte, sections, exclude []str
 // bindForwardTables bindet die Vorwärts-Rollen an ihre Spalten (Header-Phase).
 func bindForwardTables(src crossSource, fc model.TraceCrossForward) ([]boundTable, error) {
 	var out []boundTable
-	for _, t := range markdownTables(src.content, src.mask) {
+	isRelevant := func(header []string) bool {
+		_, ok, err := bindCrossColumns(header, fc.ReqColumn, fc.DesignColumn)
+		return err == nil && ok
+	}
+	for _, t := range markdownTables(src.content, src.mask, isRelevant) {
 		idx, relevant, err := bindCrossColumns(t.header, fc.ReqColumn, fc.DesignColumn)
 		if err != nil {
 			return nil, fmt.Errorf("%s: Tabelle ab Zeile %d: %w", crossForwardField, t.line, err)
@@ -186,7 +190,11 @@ func bindForwardTables(src crossSource, fc model.TraceCrossForward) ([]boundTabl
 // stilles Überspringen, sonst verschwänden ihre Rück-Kanten lautlos.
 func bindBackwardTables(src crossSource, bc model.TraceCrossBackward) ([]boundTable, error) {
 	var out []boundTable
-	for _, t := range markdownTables(src.content, src.mask) {
+	isRelevant := func(header []string) bool {
+		_, ok, err := bindCrossColumns(header, bc.EdgeColumn)
+		return err == nil && ok
+	}
+	for _, t := range markdownTables(src.content, src.mask, isRelevant) {
 		idx, relevant, err := bindCrossColumns(t.header, bc.EdgeColumn)
 		if err != nil {
 			return nil, fmt.Errorf("%s: Tabelle ab Zeile %d: %w", crossBackwardField, t.line, err)
