@@ -68,6 +68,35 @@ func TestRefsKeepGewinnt(t *testing.T) {
 	}
 }
 
+// DC-FA-REF-001 — der Anker bleibt scharf: ein per `keep` zurückgeholtes,
+// reales Ziel behält die Anker-Prüfung (ein toter Anker feuert), während der
+// Platzhalter still ist. Verriegelt, dass das Ventil Anker nicht pauschal
+// unterdrückt — der Kern des CR (umbenannte Überschrift → toter Anker im
+// ausgelieferten Artefakt).
+func TestRefsAnkerBleibtScharf(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/tpl/a.md":    "Platzhalter: [p](weg.md) — real, toter Anker: [k](real.md#gibt-es-nicht)\n",
+		"docs/tpl/real.md": "# Titel\n",
+	})
+	cfg := model.Config{IgnoreRefs: []model.IgnoreRef{{
+		In:   "docs/tpl/**",
+		Refs: []string{"docs/tpl/**"},
+		Keep: []string{"docs/tpl/real.md"},
+	}}}
+	res, err := Run(m, nil, cfg, []string{"links", "anchors"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, fmt.Sprintf("%s %s %s", f.Rule, f.Target, f.Reason))
+	}
+	want := []string{"anchors real.md#gibt-es-nicht anchor-missing"}
+	if fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("Anker-Test: Befunde = %v\nwant %v (Platzhalter ignoriert, kept-Ziel behält Anker-Prüfung)", got, want)
+	}
+}
+
 // DC-FA-REF-001 — der Quell-Skopus `in` isoliert: dasselbe Ziel-Muster
 // bleibt in einer Datei AUSSERHALB des in-Globs voll geprüft. Beide
 // Dateien referenzieren dasselbe aufgelöste Ziel (ziel/fehlt.md); nur

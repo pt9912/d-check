@@ -171,17 +171,24 @@ ignoriert, **nichts** Reales blind, Gate grün.
   — Match-Prädikat, Wirkung, Alias-Semantik, Achsen-Präzedenz gegen
   `scan.ignore`/Zeilen-Marker, leeres `refs` inert; §2-Schema-Keys
   (`ignore-refs[].in`/`refs`/`keep`).
-- [ ] **Tests, aus den Abnahmekriterien des CR:**
-  - ohne den Key verhält sich d-check unverändert (Regression);
-  - **`keep` wirkt** — die 24 im Template-Baum real auflösenden Verweise bleiben
-    scharf. **Ohne `keep`-Support ist der CR nicht abgenommen**;
-  - **Tippfehler-Test (die eigentliche Regression):** ein verfälschter Pfad in
-    einer Template-Datei ⇒ **ERROR**. Eine „ignoriere, was nicht auflöst"-
-    Heuristik besteht diesen Test **nicht** — deshalb Muster statt Heuristik;
-  - **Anker-Test:** ein verfälschter Anker ⇒ ERROR;
+- [x] **Tests, aus den Abnahmekriterien des CR:** (`refs_test.go` im Modul +
+  `cli_refs_test.go` als E2E)
+  - ohne den Key verhält sich d-check unverändert (Regression) — `TestRefs_DefaultAusByteIdentisch`;
+  - **`keep` wirkt** — die real auflösenden Verweise bleiben scharf —
+    `TestRefsKeepGewinnt` + `TestRefs_KeepUndTippfehlerEndToEnd`;
+  - **Tippfehler-Test:** ein verfälschter Pfad in einer Template-Datei ⇒ **ERROR**
+    (Muster statt Heuristik) — dieselben Tests;
+  - **Anker-Test:** ein verfälschter Anker eines gekeepten Ziels ⇒ ERROR —
+    `TestRefsAnkerBleibtScharf`;
   - **Skopus wirkt nur im Quell-Glob:** dieselben Ziel-Muster bleiben außerhalb
-    voll geprüft;
-  - `codepaths.ignore-refs` als Alias bleibt grün (kein Config-Bruch).
+    voll geprüft — `TestRefsSkopusIsolation`;
+  - **querschnittlich** links+anchors (das konnte der modul-lokale Alias nie) —
+    `TestRefsGeteiltesVentilLinksUndAnchors`;
+  - `codepaths.ignore-refs` als Alias bleibt grün — `TestRefsAliasKoexistenz` +
+    bestehende `TestCodepathsIgnoreRefs*` unverändert;
+  - ungültiges `in`/`refs`/`keep`-Glob ⇒ Exit 2 (fail-closed) — `TestRefs_UngueltigesGlobExit2`.
+  — `keep`/`in`/querschnittliches Wiring per **Mutation gepinnt** (je genau der
+  zuständige Test kippt); `make gates`/`make ci` grün.
 - [ ] **Realdatenbeleg** gegen das Konsumenten-Repo: 0 Findings bei **63
   tatsächlich geprüften** Verweisen — nicht durch Wegschauen (38 ignoriert, davon
   0 real existierend).
