@@ -53,23 +53,37 @@ zeichengenau gegen die Quell-Spanne geprüft).
      (`d-check:cite` markiert den zu prüfenden Zitatblock), nicht scan-getrieben wie
      `codepaths`' Inline-Code-Suche.
 
-   Dieselbe Trennung wie `anchors` ↔ `links`: `anchors` greift die Ziel-Auflösung von
-   `links` auf, prüft aber eine **andere** Eigenschaft und ist ein eigenes Modul.
-   `citations` greift `codepaths`' `datei:zeile`-Erkennung auf (**kein** zweiter
-   Detektor — genau die Duplikation, die ein re-detektierendes Modul brächte, wird so
-   vermieden) und bekommt als **neues Modul** ein eigenes Bereichskürzel (`CITE`) und
-   diese ADR (d-check-Konvention: jedes Modul eine ADR).
+   Dieselbe Modul-Grenze wie `anchors` ↔ `links`: `anchors` hat eine **eigene**
+   Erkennung (Links mit Fragment), teilt aber die **Pfad-Auflösung** von `links` und
+   prüft eine **andere** Eigenschaft. `citations` hat ebenso eine **eigene** Erkennung
+   (es parst die `d-check:cite`-Direktive — ein eigener Detektor) und teilt die
+   **Pfad-/Zeilen-Auflösung**; es re-implementiert **nicht** die
+   Inline-Code-Pfad-Detektion von `codepaths`. Als **neues Modul** bekommt es ein
+   eigenes Bereichskürzel (`CITE`) und diese ADR (d-check-Konvention: jedes Modul eine
+   ADR).
 
-3. **`d-check:cite`-Direktive.** Eine **zweite** Direktive neben `d-check:ignore`:
-   ein HTML-Kommentar `<!-- d-check:cite <pfad>:<von>-<bis> -->` unmittelbar vor einem
-   `>`-Zitatblock. Die Platzierungs-/Zeilen-Regeln der Direktiven-Klasse sind mit
-   [ADR-0040](0040-kommentar-suffix-in-tabellenzeilen.md) gefestigt (der
-   Tabellenzeilen-Fall der ersten Direktive war fünfmal gescheitert und ist jetzt
-   gelöst) — die Voraussetzung dafür, überhaupt eine zweite Direktive einzuführen.
+3. **`d-check:cite`-Direktive markiert inline- oder Block-Zitate.** Eine **zweite**
+   Direktive neben `d-check:ignore`: `<!-- d-check:cite <pfad>:<von>-<bis> -->`
+   unmittelbar vor dem zu prüfenden Zitat — einem `>`-Blockquote **oder** dem folgenden
+   inline-Zitat-Span (`„…"` / `"…"`). Die realen Adopter-Zitate sind **inline**, nicht
+   `>`-Blöcke — ein reiner Block-Bezug träfe sie nicht. Die Platzierungs-/Zeilen-Regeln
+   der Direktiven-Klasse sind mit
+   [ADR-0040](0040-kommentar-suffix-in-tabellenzeilen.md) gefestigt — die Voraussetzung
+   dafür, überhaupt eine zweite Direktive einzuführen.
 
-4. **Zeichengenauer Vergleich, keine Normalisierung.** Der Wert des Features ist,
-   „wortgleich" von einer **Zusage** zu einem **gemessenen Property** zu machen; jede
-   Whitespace-/Formatierungs-Normalisierung würde genau das aufweichen.
+4. **Vergleich: whitespace-normalisierter Teilstring, nicht zeilenweise-exakt.**
+   „wortgleich" soll von einer **Zusage** zu einem **gemessenen Property** werden —
+   aber die realen Zitate sind **inline** und beim Verfassen **umgebrochen** (andere
+   Spalten als die Quelle), beginnen und enden **mitten in einer Zeile**. Ein
+   zeilenweise zeichengenauer Vergleich gegen die vollen Quell-Zeilen träfe genau das
+   **korrekte** Zitat nicht (belegt am einen realen „wortgleich"-Zitat des Adopters).
+   Daher: Quell-Spanne und Zitattext werden **whitespace-normalisiert** (Läufe aus
+   Leerzeichen/Zeilenumbruch → ein Leerzeichen, getrimmt), und das normalisierte Zitat
+   muss ein **zusammenhängender Teilstring** der normalisierten Quelle sein. So bleibt
+   der Vergleich **zeichengenau auf dem Nicht-Whitespace-Inhalt**, tolerant nur
+   gegenüber Umbruch/Whitespace: jede echte Wort-Abweichung bricht den Teilstring
+   (`citation-mismatch`), Re-Wrapping nicht. Gemessen am realen Zitat: korrekt = grün,
+   ein gedriftetes Wort = rot.
 
 5. **Fail-closed.** Fehlende Zieldatei, Spanne über das Datei-Ende oder ungültiger
    Bereich ⇒ Exit 2 — kein stiller Nicht-Vergleich; eine kaputte `d-check:cite`-
@@ -83,7 +97,7 @@ zeichengenau gegen die Quell-Spanne geprüft).
 
 | Option | Pro | Contra |
 |---|---|---|
-| **1/2 in `codepaths`, 3 eigenes Modul `citations`** (gewählt) | Existenz/Bereich bei `codepaths`, Inhalt separat (wie `anchors`↔`links`); reused Detektion; ein Kürzel-Kriterium konsistent | zwei Config-Flächen; zweite Direktive |
+| **1/2 in `codepaths`, 3 eigenes Modul `citations`** (gewählt) | Existenz/Bereich bei `codepaths`, Inhalt separat (wie `anchors`↔`links`); teilt Pfad-/Zeilen-Auflösung; ein Kürzel-Kriterium konsistent | zwei Config-Flächen; zweite Direktive; Stufe-3-Substrat (Direktiven) muss der Adopter erst schaffen |
 | Alle drei in `codepaths` | ein Modul | `verbatim` ist Inhalts- statt Existenz-Prüfung + direktiven-getrieben — Scope-Bruch für „Pfade existieren" |
 | Eigenes Modul für alle drei, mit eigener Detektion | klare Grenze | **dupliziert** `codepaths`' `datei:zeile`-Detektion, `roots`, Ventile |
 | Prosa-Scanning statt Direktive | fängt Zitate ohne Markup | 33/33 sind Inline-Code; Prosa-Scan ist deutlich fehleranfälliger |
@@ -92,8 +106,9 @@ zeichengenau gegen die Quell-Spanne geprüft).
 **Fitness-Funktion:**
 
 - Ein `datei:zeile`-Zitat hinter dem Datei-Ende ⇒ `citation-out-of-range`; ein
-  invertierter Bereich ⇒ `citation-inverted-range`; ein per `d-check:cite` markierter,
-  vom Quelltext abweichender Zitatblock ⇒ `citation-mismatch`.
+  invertierter Bereich ⇒ `citation-inverted-range`; ein per `d-check:cite` markiertes
+  Zitat (inline oder Block), dessen normalisierter Text **kein** Teilstring der
+  normalisierten Quell-Spanne ist ⇒ `citation-mismatch`.
 - Ein korrektes Zitat bleibt **grün** nach einem Tag-Bump, der die zitierte Datei
   nicht anfasst (kein Fehlalarm durch Nachbar-Drift).
 - Ohne `check-lines` bzw. ohne aktives `citations`-Modul jeder Befundsatz
@@ -105,8 +120,8 @@ zeichengenau gegen die Quell-Spanne geprüft).
 ## Konsequenzen
 
 - **Positiv:** ein bislang ungefangener Drift-Typ (Zitat-Fäule) wird beim Verfassen
-  rot; „wortgleich" ist gemessen; `citations` reused `codepaths`' Detektion; opt-in
-  und byte-identisch für Nicht-Nutzer.
+  rot; „wortgleich" ist gemessen; `citations` teilt die Pfad-/Zeilen-Auflösung von
+  `codepaths`/`links`; opt-in und byte-identisch für Nicht-Nutzer.
 - **Negativ / Kosten:** die Config-Fläche wächst (`codepaths.check-lines` + neues
   Modul); die zweite Direktive `d-check:cite` vergrößert die Direktiven-Platzierungs-
   Klasse (durch ADR-0040 beherrschbar); die Dogfood-Reichweite ist gering — der
@@ -119,3 +134,4 @@ zeichengenau gegen die Quell-Spanne geprüft).
 | Datum | Ereignis |
 |---|---|
 | 2026-07-18 | Proposed. Change Request Adopter `ai-harness-init` (2026-07-17). §4-Vorfragen entschieden: Adopter-Rückfrage empirisch (33/33 Zitate in Inline-Code ⇒ `codepaths`-Erweiterung); Zuschnitt Form (c) vom Auftraggeber. Umsetzender Slice slice-079. |
+| 2026-07-18 | **Doc-first-Design-Review R1** (BLOCK scoped auf Stufe 3) eingearbeitet, Status weiterhin `Proposed`: das Verbatim-Modell von „zeilenweise zeichengenau gegen `>`-Blöcke" auf **whitespace-normalisierten Teilstring** (inline/re-wrapped/Teilzeilen-tolerant) umgestellt und am **realen** Adopter-Zitat validiert (korrekt = grün, ein gedriftetes Wort = rot); die Direktive markiert nun inline **oder** Block-Zitate; das Reuse-Argument (F-5) auf „eigener Detektor, geteilte Pfad-Auflösung" korrigiert. Stufe 1/2 waren geerdet. Offen ausgewiesen: das Stufe-3-Substrat (Direktiven) muss der Adopter erst schaffen. |

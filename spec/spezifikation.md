@@ -1095,11 +1095,13 @@ byte-identisch.
    ausgenommen — deren Ziel prüft das Modul `links`, der Text ist
    Beschriftung.
 3. Span-Wert normalisieren (iterativ bis stabil): Whitespace trimmen,
-   ein Zeilen-Suffix `:<von>` bzw. `:<von>-<bis>` abtrennen
-   (Datei:Zeile-Konvention) — bei aktivem `check-lines` wird der Bereich
-   (`<von>`, `<bis>`; ohne `-` ist `<bis> = <von>`) für Schritt 6 **gemerkt**,
-   sonst wie bisher verworfen; umschließende einfache/doppelte
-   Anführungszeichen und schließende Satzzeichen (`.,;:`) entfernen.
+   umschließende einfache/doppelte Anführungszeichen und schließende Satzzeichen
+   (`.,;:`) entfernen. **Zeilen-Suffix:** ohne `check-lines` wird — wie bisher — nur
+   ein einzelnes `:<zahl>` abgetrennt; ein Bereich `:<von>-<bis>` bleibt dabei
+   **unberührt** (byte-identisch zum heutigen Verhalten). Bei aktivem `check-lines`
+   werden `:<von>` **und** `:<von>-<bis>` als Zeilen-Referenz erkannt, vom Pfad
+   abgetrennt und der Bereich (`<von>`, `<bis>`; ohne `-` ist `<bis> = <von>`) für
+   Schritt 6 **gemerkt**.
 4. Konservative Pfad-Erkennung — **kein** Pfad ist ein Wert, der leer
    ist, Whitespace oder Platzhalter-/Glob-Zeichen (`{}<>|*?=`)
    enthält, Ellipsen/Pfeile (`…`, `->`, `→`) enthält, mit `//` oder
@@ -1130,30 +1132,40 @@ byte-identisch.
 
 ### DC-FA-CITE-001.a — Verbatim-Zitat-Verifikation (`citations`)
 
-Das Modul `citations` prüft **nur** per Direktive ausgezeichnete Zitatblöcke —
-kein Prosa- oder Voll-Scan. Arbeitet auf den rohen Zeilen (fence-aware wie die
-übrigen Module).
+Das Modul `citations` prüft **nur** per Direktive ausgezeichnete Zitate — kein
+Prosa- oder Voll-Scan. Arbeitet auf den rohen Zeilen (fence-aware wie die übrigen
+Module).
 
 **Schritte:**
 
 1. Zeilen mit dem Marker `<!-- d-check:cite <pfad>:<von>-<bis> -->` finden
    (HTML-Kommentar; `<pfad>` Datei-/Wurzel-relativ wie in
    [DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code), `<von>`/`<bis>`
-   Zeilennummern, `<bis>` optional = `<von>`). Fehlt die Direktive, prüft das
-   Modul nichts.
-2. Der **Zitatblock** ist die zusammenhängende Folge von `>`-Blockquote-Zeilen
-   **unmittelbar nach** der Direktive (eine Leer- oder Nicht-`>`-Zeile beendet
-   ihn). Fehlt ein Zitatblock, ⇒ fail-closed (Exit 2).
-3. Auflösung von `<pfad>` wie im Modul `links`; fehlt die Zieldatei, verlässt
-   sie die Wurzel oder ist der Bereich ungültig (`von > bis`, `bis` über das
-   Datei-Ende hinaus) ⇒ **fail-closed** (Exit 2) — kein stiller Nicht-Vergleich.
-4. Die Zeilen `von`–`bis` der Zieldatei bilden den **Quelltext**. Der
-   **Zitattext** ist der Zitatblock nach Abtrennen der `> `-Markierung je Zeile
-   (führendes `> ` bzw. `>` ohne Leerzeichen).
-5. **Zeichengenauer Vergleich** (Zeile für Zeile, keine Whitespace-/
-   Formatierungs-Normalisierung): weicht Quelltext von Zitattext ab ⇒ Befund
-   `citation-mismatch` (Datei = prüfende Datei, Zeile = Direktiven-Zeile,
-   `target` = `<pfad>:<von>-<bis>`, Grund). Sonst kein Befund.
+   **1-basierte** Zeilennummern, `<bis>` optional = `<von>`). Fehlt die Direktive,
+   prüft das Modul nichts. Ein **malformter** Span (nicht-numerisch, fehlend) ⇒
+   **fail-closed** (Exit 2).
+2. Der **Zitattext** ist das der Direktive **unmittelbar folgende** Zitat: entweder
+   ein `>`-Blockquote (zusammenhängende `>`-Zeilen, jeweils nach Abtrennen von `> `
+   bzw. `>` ohne Leerzeichen; eine Leer- oder Nicht-`>`-Zeile beendet ihn) **oder**,
+   wenn keine `>`-Zeile folgt, der nächste inline-Zitat-Span, begrenzt durch ein
+   Anführungs-Paar `„…"` oder `"…"`. Fehlt beides ⇒ **fail-closed** (Exit 2) — die
+   Direktive ist unbrauchbar (Autoren-Fehler, kein Schweigen).
+3. Auflösung von `<pfad>` wie im Modul `links`; verlässt das Ziel die Wurzel ⇒
+   fail-closed (Exit 2). Danach die **Zitat-Fäule** (Befund, **nicht** fail-closed —
+   kohärent zum Zeilen-Check aus [DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code)
+   Schritt 6): `von > bis` ⇒ `citation-inverted-range`; sonst fehlt die Zieldatei oder
+   hat sie weniger als `bis` Zeilen ⇒ `citation-out-of-range` (kein Vergleich, da die
+   Spanne nicht existiert).
+4. **Normalisierung.** Quell-Spanne (Zeilen `von`–`bis` verbunden) und Zitattext
+   werden je **whitespace-normalisiert**: jeder Lauf aus Leerzeichen/Tab/Zeilenumbruch
+   wird zu **einem** Leerzeichen, führend/schließend getrimmt. Sonst **keine**
+   Normalisierung (Markdown-Auszeichnung, Satzzeichen, Groß-/Kleinschreibung bleiben).
+5. **Teilstring-Vergleich.** Ist der normalisierte Zitattext ein **zusammenhängender
+   Teilstring** der normalisierten Quell-Spanne ⇒ kein Befund; sonst `citation-mismatch`
+   (Datei = prüfende Datei, Zeile = Direktiven-Zeile, `target` = `<pfad>:<von>-<bis>`).
+   So bleibt der Vergleich **zeichengenau auf dem Inhalt**, tolerant nur gegenüber
+   Umbruch/Whitespace — ein inline, re-wrapped, mitten in der Zeile beginnendes/endendes
+   Zitat besteht; jede echte Wort-Abweichung bricht den Teilstring.
 
 Hermetisch (nur Datei-Lesen über den Filesystem-Port, kein git/Netz —
 [`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));

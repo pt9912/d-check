@@ -1258,13 +1258,14 @@ Ventil-Achsen dieses Moduls: Zeile (`d-check:ignore`), Datei (`exempt-paths`), Z
 
 Optional verifiziert `codepaths` bei aktivem `check-lines` (Default aus,
 byte-identisch) zusätzlich die **Zeilen-Referenz** eines Pfads: trägt der Wert ein
-`:<von>`- oder `:<von>-<bis>`-Suffix (`datei:zeile`-Konvention, sonst wie bisher
-abgetrennt und verworfen), muss die Zieldatei existieren und mindestens `<bis>`
-Zeilen haben — sonst `citation-out-of-range` — und `<von> ≤ <bis>` erfüllen — sonst
-`citation-inverted-range`. Das fängt **Zitat-Fäule** nach einem Tag-Bump (die Zeile
-zeigt hinter das Datei-Ende) und invertierte/vertippte Bereiche. Der Zeilen-Check
-setzt die bestehende Existenz-Prüfung voraus (fehlende Datei bleibt
-`codepath-missing`).
+`:<von>`- oder `:<von>-<bis>`-Suffix (`datei:zeile`-Konvention), muss die Zieldatei
+existieren und mindestens `<bis>` Zeilen haben — sonst `citation-out-of-range` — und
+`<von> ≤ <bis>` erfüllen — sonst `citation-inverted-range`. Das fängt **Zitat-Fäule**
+nach einem Tag-Bump (die Zeile zeigt hinter das Datei-Ende) und invertierte/vertippte
+Bereiche. Ohne `check-lines` bleibt das Verhalten unverändert: wie bisher wird nur ein
+einzelnes `:<zahl>` abgetrennt (ein Bereich `:<von>-<bis>` bleibt dabei unberührt) —
+byte-identisch. Der Zeilen-Check setzt die bestehende Existenz-Prüfung voraus (fehlende
+Datei bleibt `codepath-missing`).
 
 **Akzeptanzkriterien:**
 
@@ -1283,31 +1284,39 @@ setzt die bestehende Existenz-Prüfung voraus (fehlende Datei bleibt
 ### DC-FA-CITE-001 — Verbatim-Zitat-Verifikation (Modul `citations`, opt-in)
 
 **Beschreibung:** Bei explizit aktiviertem Modul `citations` wird ein per Direktive
-`d-check:cite` ausgezeichneter **Zitatblock** zeichengenau gegen die von ihm
-zitierte Quell-Spanne geprüft — die Zusage „wortgleich" wird von einer Behauptung zu
-einem **gemessenen Property**. Die Direktive ist ein HTML-Kommentar
-`<!-- d-check:cite <pfad>:<von>-<bis> -->` unmittelbar vor einem Markdown-Zitatblock
-(zusammenhängende `>`-Zeilen); das Modul liest die Zeilen `<von>`–`<bis>` der
-Zieldatei und vergleicht sie **zeichengenau** (nach Abtrennen der `> `-Markierung des
-Zitatblocks) mit dem Quelltext. Weicht der Zitattext ab (paraphrasiert, gekürzt,
-gedriftet), entsteht `citation-mismatch` (Datei, Zeile, Ziel, Grund). Das Modul
-greift die `datei:zeile`-Erkennung von
-[`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
-auf (kein zweiter Detektor), ist strikt opt-in, hermetisch (nur Datei-Lesen, kein
-git/Netz — [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit))
-und default-aus **byte-identisch** ([`DC-QA-02`](#dc-qa-02--determinismus)).
-**Fail-closed:** fehlende Zieldatei, Spanne über das Datei-Ende hinaus oder
-ungültiger Bereich (`von > bis`) ⇒ Exit 2 — kein stiller Nicht-Vergleich. `d-check`
-kennt damit **zwei** Direktiven (`d-check:ignore`, `d-check:cite`); die
-Platzierungsregeln folgen der bestehenden `d-check:ignore`-Konvention.
+`d-check:cite` ausgezeichnetes **Zitat** gegen die von ihm zitierte Quell-Spanne
+geprüft — die Zusage „wortgleich" wird von einer Behauptung zu einem **gemessenen
+Property**. Die Direktive ist ein HTML-Kommentar
+`<!-- d-check:cite <pfad>:<von>-<bis> -->` unmittelbar vor dem Zitat: einem
+`>`-Blockquote **oder** dem folgenden inline-Zitat-Span (`„…"` / `"…"`) — die realen
+Zitate stehen **inline** und beim Verfassen umgebrochen, nicht als `>`-Blöcke. Das
+Modul liest die Zeilen `<von>`–`<bis>` der Zieldatei und vergleicht sie mit dem
+Zitattext **whitespace-normalisiert** (Läufe aus Leerzeichen/Umbruch → ein
+Leerzeichen): der normalisierte Zitattext muss ein **zusammenhängender Teilstring**
+der normalisierten Quell-Spanne sein. So bleibt der Vergleich zeichengenau auf dem
+**Inhalt** (Markdown-Auszeichnung, Satzzeichen, Groß-/Kleinschreibung zählen),
+tolerant nur gegenüber Umbruch — ein mitten in der Zeile beginnendes/endendes,
+re-wrapptes Zitat besteht, jede echte Wort-Abweichung bricht (`citation-mismatch`).
+Das Modul hat eine **eigene** Erkennung (es parst die Direktive) und teilt die
+Pfad-/Zeilen-Auflösung von `codepaths`/`links`
+([`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in));
+strikt opt-in, hermetisch (nur Datei-Lesen, kein git/Netz —
+[`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)) und
+default-aus **byte-identisch** ([`DC-QA-02`](#dc-qa-02--determinismus)).
+**Zitat-Fäule** (Zieldatei fehlt bzw. Spanne über das Datei-Ende ⇒
+`citation-out-of-range`; `von > bis` ⇒ `citation-inverted-range`) ist ein **Befund**
+(kohärent zum `codepaths`-Zeilen-Check), Exit 1. **Fail-closed** (Exit 2) nur bei
+strukturell **unbrauchbarer** Direktive (malformter Span, kein folgendes Zitat) oder
+Repo-Escape. `d-check` kennt damit **zwei** Direktiven; die Platzierungsregeln folgen
+der bestehenden `d-check:ignore`-Konvention.
 
 **Akzeptanzkriterien:**
 
-- **Happy Path:** Given eine Direktive `<!-- d-check:cite a.md:3-4 -->` vor einem Zitatblock, dessen Text die Zeilen 3–4 von `a.md` zeichengenau wiedergibt, when das Modul `citations` läuft, then kein Befund.
-- **Negative:** Given denselben Aufbau, aber der Zitatblock weicht in mindestens einem Zeichen ab (paraphrasiert oder gekürzt), when das Modul läuft, then ein Befund `citation-mismatch` mit Datei, Zeile, Ziel, Exit-Code 1.
-- **Boundary (fail-closed):** Given eine `d-check:cite`-Direktive, deren Spanne die Zieldatei überschreitet oder deren Bereich ungültig ist (`von > bis`), when das Modul läuft, then Exit-Code 2 (fail-closed) — kein stiller Nicht-Vergleich; ohne `citations`-Modul ist jeder Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
+- **Happy Path:** Given eine Direktive `<!-- d-check:cite a.md:3-4 -->` vor einem Zitat, dessen whitespace-normalisierter Text ein Teilstring der normalisierten Zeilen 3–4 von `a.md` ist — auch wenn das Zitat mitten in Zeile 3 beginnt, in Zeile 4 endet oder anders umbricht, when das Modul `citations` läuft, then kein Befund.
+- **Negative:** Given denselben Aufbau, aber der Zitattext weicht in mindestens einem Wort/Zeichen ab (nicht nur Whitespace), when das Modul läuft, then ein Befund `citation-mismatch` (Datei, Zeile, Ziel), Exit-Code 1.
+- **Boundary (Zitat-Fäule = Befund, nicht fail-closed):** Given eine `d-check:cite`-Direktive, deren Spanne die Zieldatei überschreitet (Zitat-Fäule nach einem Tag-Bump), when das Modul läuft, then ein Befund `citation-out-of-range`, Exit-Code 1 — **kohärent** zum `codepaths`-Zeilen-Check, **nicht** Exit 2; ein ungültiger Bereich (`von > bis`) ⇒ `citation-inverted-range`. Fail-closed (Exit 2) bleibt der malformten Direktive bzw. dem fehlenden folgenden Zitat vorbehalten; ohne `citations`-Modul ist jeder Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 
-**Out-of-Scope:** Zitatblöcke ohne `d-check:cite`-Direktive (das Modul prüft nur ausgezeichnete Blöcke — kein Prosa-Scanning); Normalisierung von Whitespace/Formatierung (der Vergleich ist zeichengenau); freie Zahlen und Prosa-Quantoren mit externer Grundwahrheit („42 Dateien im ZIP", „fast alle") — bleiben Review-Territorium.
+**Out-of-Scope:** Zitate ohne `d-check:cite`-Direktive (das Modul prüft nur ausgezeichnete Zitate — kein Prosa-Scanning); Normalisierung über Whitespace/Umbruch hinaus (Markdown-Auszeichnung, Satzzeichen, Groß-/Kleinschreibung zählen); freie Zahlen und Prosa-Quantoren mit externer Grundwahrheit („42 Dateien im ZIP", „fast alle") — bleiben Review-Territorium.
 
 ---
 

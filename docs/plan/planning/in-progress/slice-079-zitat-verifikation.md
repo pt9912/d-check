@@ -122,12 +122,13 @@ verifiziert"; jedes Modul trägt seine eigene `DC-FA-*`. Siehe §4.
 [ADR-0030](../../adr/0030-tracked-referenz-ziele.md) `tracked`). d-check hält das
 strenger als die adoptierte Lehre.
 
-**Zitat-Syntax `d-check:cite`?** **Zurückstellen.** d-checks bestehende
-Direktiven-Konvention (`d-check:ignore`) blendet in einer Tabellenzeile den
-eigenen Tabellen-Reader; der Defekt ist **ausgeliefert und nach fünf Anläufen
-ungelöst** ([slice-074](../done/slice-074-kommentar-suffix-tabellenzeilen.md)). Eine
-**zweite** Direktive einzuführen, während die Platzierungsregeln der ersten offen
-sind, vergrößert eine ungelöste Klasse. Stufe 3 hängt daran — Stufe 1/2 nicht.
+**Zitat-Syntax `d-check:cite`?** **Zunächst zurückgestellt — inzwischen entblockt.**
+d-checks Direktiven-Konvention (`d-check:ignore`) blendete in einer Tabellenzeile den
+eigenen Tabellen-Reader; solange die Platzierungsregeln der ersten Direktive offen
+waren, hätte eine **zweite** eine ungelöste Klasse vergrößert. Diese Regel ist mit
+slice-074 (ausgeliefert v0.48.1) inzwischen **gefestigt** — genau die Voraussetzung,
+die zweite Direktive einzuführen. Stufe 3 ist damit entblockt; der Auftraggeber hat
+sie jetzt eingeplant (§4). Stufe 1/2 hingen nie daran.
 
 **Dogfood-Reichweite bei uns — nahe null:**
 
@@ -204,8 +205,9 @@ Der Realdatenbeleg gegen das Adopter-Repo ist daher **nicht optional**.
   zurückgestellt). So driften 078 (querschnittlich → neues Kürzel) und 079
   (Einzelmodul → bestehende Anforderung) **nicht** — ein Prinzip, zwei
   situationsgerechte Ergebnisse.
-- **Zweite Direktive bei ungelöster erster.** Siehe §2.2. Stufe 3 sollte warten,
-  bis slice-074 eine tragende Regel hat.
+- **Zweite Direktive — inzwischen entblockt.** Siehe §2.2: die Platzierungsregeln der
+  ersten Direktive sind mit slice-074 (v0.48.1) gefestigt; Stufe 3 wartete darauf und
+  ist jetzt frei. Der Auftraggeber hat alle drei Stufen eingeplant (Form c).
 - **Dogfood-Lücke.** Reichweite bei uns: 7 Referenzen. Wir können den Sensor an
   uns selbst nicht erproben.
 - **Der Vorschlag fängt zwei von sechs Belegzeilen** — das steht so im CR, und es
