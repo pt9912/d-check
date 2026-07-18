@@ -1,7 +1,7 @@
 # Slice slice-071: Trace-Kreuzverweis-Konsistenz-Gate (Vorwärts-RTM ↔ Rück-Kanten)
 
-**Status:** in-progress — **am 2026-07-18 wieder aufgenommen**
-(`open`→`in-progress`, Blocker aufgelöst). Code, Spezifikation,
+**Status:** done — **abgeschlossen am 2026-07-18**
+(`open`→`in-progress`→`done`, Blocker slice-074 aufgelöst). Code, Spezifikation,
 [ADR-0038](../../adr/0038-trace-cross-consistency.md) und vier Review-Runden plus
 Closure-Review liegen vor; v0.44.0/v0.45.0 sind getaggt und veröffentlicht. Der
 letzte offene DoD-Punkt — der Realdatenbeleg gegen grid-gym — ist **erbracht**
@@ -160,5 +160,35 @@ Kompatibilitätsbaseline und bleiben durch byte-identische Tests geschützt.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_Ausstehend — wird bei Abschluss mit Commit-Hash, Review-Verdikt und Lerneintrag
-gefüllt._
+**Abgeschlossen 2026-07-18.** Lifecycle `open`→`in-progress`→`done`
+(`open→next→in-progress` in einem Zug, WIP-Slot frei, Blocker slice-074 aufgelöst).
+Closure-Kette: Reaktivierung → Realdatenbeleg + Evidence → ADR-Accepted →
+Closure-Move → Closure-Body.
+
+**Realdatenbeleg (der letzte offene DoD-Punkt):** mit d-check v0.48.1 gegen die
+realen grid-gym-Quellen erbracht — die dokumentierte 161-Differenzen-Messung
+reproduziert, der reale §27.1-↔-`Bezug`-Drift wird richtungsgelabelt geflaggt
+(`GG-ARCH-005`/`GG-SIM-009`, Schnittmenge null), das `exclude-req`-Ventil greift
+(0 Befunde), das konsistente 1:N läuft grün. Der bis v0.48.0 an `architecture.md:913`
+abbrechende `17. Testarchitektur`-Abschnitt läuft mit der Direktiven-Toleranz aus
+slice-074 durch (Vorher/Nachher belegt). Beleg:
+[`2026-07-18-slice-071-realdatenbeleg-grid-gym`](../../../reviews/2026-07-18-slice-071-realdatenbeleg-grid-gym.md).
+
+**Review-Verdikt:** vier Implementierungs-Runden (R1 REJECT → R4 ohne Code-Vorbehalt)
+plus unabhängiger Closure-Review (ACCEPT-WITH-NITS, Nits eingearbeitet); Code als
+v0.44.0/v0.45.0 veröffentlicht, [ADR-0038](../../adr/0038-trace-cross-consistency.md)
+`Accepted`.
+
+**Lerneintrag (benannte Lücke):** der Realdatenbeleg eines Gates hängt am **ganzen
+Reader-Stack**, nicht nur an der Gate-Logik. Zweimal blockierte tooling-fremder Drift
+den Lauf gegen reale Konsumenten-Daten: (1) der Tabellen-Reader brach an einer
+ganzzelligen Ignore-Direktive ab (erst gelöst über slice-077 + slice-074),
+(2) slice-075s Komma-fail-closed (v0.46.0, **nach** der ursprünglichen
+v0.45.1-Messung) lehnt die `GG-SCN`-Notation des Konsumenten ab. Konsequenz: einen
+Realdatenbeleg **früh** und auf **aktuellem** Tooling fahren, nicht nur gegen
+synthetische Fixtures — sonst verstecken sich Reader-Regressionen hinter grünen
+Unit-Tests, und ein „fertiges" Feature ist auf echten Daten nicht fahrbar. Zweite
+Lehre (bestätigt Entscheidung 7 der begründenden ADR): ein Mengen-Konsistenz-Gate
+über eine **kuratierte** Vorwärts-Map ist ein **Einmal-Messinstrument**, kein
+Dauergate — der Konsument verdrahtet es bewusst nicht (`mode: equal` bliebe für immer
+rot), der Ziel-Zustand ist der Generator.
