@@ -4,7 +4,7 @@
 **Review-Art:** unabhängiger Fix-Review (kontext-getrennt; adversarial, nicht
 bestätigend)
 **Gegenstand:**
-[`slice-071`](../plan/planning/open/slice-071-trace-cross-consistency-gate.md) —
+[`slice-071`](../plan/planning/in-progress/slice-071-trace-cross-consistency-gate.md) —
 Fix-Commit `d11398f` (Einarbeitung der R1-Befunde F-1…F-4); Gesamt-Diff des Slice
 `6c4ccf5..HEAD`
 **Vor-Review:** [R1](2026-07-17-slice-071-implementation-r1.md) (Verdikt REJECT)
@@ -94,7 +94,7 @@ Details als Finding R2-F-1.
   [`DC-FA-XREF-001`](../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)
   (§fail-closed-Enumeration, §Akzeptanzkriterium „Superset-Modus");
   [ADR-0038](../plan/adr/0038-trace-cross-consistency.md) Entscheidung 3 + 7;
-  [`slice-071`](../plan/planning/open/slice-071-trace-cross-consistency-gate.md) §4
+  [`slice-071`](../plan/planning/in-progress/slice-071-trace-cross-consistency-gate.md) §4
 - **pfad:** `internal/hexagon/core/app/trace_cross.go:230-233` (`forwardEdges`
   ruft `crossNullGuard` unbedingt), `:254-257` (`backwardEdges` dito), `:259-270`
   (`crossNullGuard`)
@@ -103,7 +103,7 @@ Details als Finding R2-F-1.
   gepflegten Rück-Kanten Exit 2, obwohl Schritt 5 diesen Zustand über
   `keys(F) ∪ keys(B)` definiert und `|B|` `B\F`-Befunde vorschreibt. Betroffen
   ist genau der Bootstrap-Zustand, den
-  [`slice-071`](../plan/planning/open/slice-071-trace-cross-consistency-gate.md)
+  [`slice-071`](../plan/planning/in-progress/slice-071-trace-cross-consistency-gate.md)
   §4 als Konsumenten-Vorarbeit benennt („die Vorwärts-Sicht (§27.1) muss auf
   konkrete IDs restrukturiert werden (Wildcards/Prosa raus), bevor das Gate grün
   wird") — dort ist die Befundliste die Migrations-Checkliste und laut
@@ -304,7 +304,7 @@ verlangen — schließt den Defekt, nimmt aber den vertraglich definierten Fall
 `F = ∅ ∧ B ≠ ∅` mit, in dem der Abgleich sein **wertvollstes** Ergebnis liefern
 würde: die vollständige Liste der Kanten, die die RTM verschweigt. Genau dieser
 Zustand ist der dokumentierte Einstiegspunkt des Konsumenten
-([`slice-071`](../plan/planning/open/slice-071-trace-cross-consistency-gate.md)
+([`slice-071`](../plan/planning/in-progress/slice-071-trace-cross-consistency-gate.md)
 §4) und der Input des in
 [ADR-0038](../plan/adr/0038-trace-cross-consistency.md) Entscheidung 7
 vorgesehenen Generators. Verschärfend ist nicht der Exit-Code allein, sondern die

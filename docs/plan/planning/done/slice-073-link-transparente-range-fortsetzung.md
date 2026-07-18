@@ -5,7 +5,7 @@ als v0.45.1; R2 ACCEPT-WITH-NITS, R2-F-1 geschlossen.
 
 **Welle:** welle-60 — der Fix sitzt im **geteilten** Parser und ist damit
 Voraussetzung des Realdatenbelegs von
-[`slice-071`](../open/slice-071-trace-cross-consistency-gate.md), nicht eine
+[`slice-071`](../in-progress/slice-071-trace-cross-consistency-gate.md), nicht eine
 Parallelbaustelle.
 
 **Bezug:** **Defekt-Fix**, **kein Change Request**: das Lastenheft verspricht die
