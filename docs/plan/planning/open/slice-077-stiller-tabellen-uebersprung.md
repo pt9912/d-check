@@ -101,7 +101,7 @@ und auf die Klasse geschlossen; dreimal war das Ergebnis ein stilles Grün.
 
 - **Der Defekt bleibt bis dahin ausgeliefert.** Er ist von den drei offenen
   Tabellen-Defekten der einzige, der heute **still Waisen verschweigt** —
-  slice-074 ist laut (Exit 2), [slice-076](../in-progress/slice-076-markdown-lexik-commonmark.md)
+  slice-074 ist laut (Exit 2), [slice-076](../done/slice-076-markdown-lexik-commonmark.md)
   ist Blindheit ohne Falschaussage. Dieser hier sagt „0 Waise(n)", während zwei
   existieren.
 - **Praxis-Häufigkeit unbekannt.** In den 522 gemessenen Realdateien kam die
