@@ -11,7 +11,7 @@ Berührt den Guard aus
 [ADR-0037](../../adr/0037-trace-tabellenquellen-nullmengen-guard.md).
 **Kein ADR — bewusst:** die tragende Regel ist offen. Sie wird benannt, wenn sie
 belegt ist, nicht vorher (Lehre aus
-[slice-074](slice-074-kommentar-suffix-tabellenzeilen.md) §2).
+[slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md) §2).
 
 **Autor:** pt9912. **Datum:** 2026-07-17.
 
@@ -58,7 +58,7 @@ Sonderform.
 Was **feststeht** (gemessen, 2026-07-17):
 
 - **Der Defekt ist ausgeliefert** und älter als
-  [slice-074](slice-074-kommentar-suffix-tabellenzeilen.md) — er braucht keinen
+  [slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md) — er braucht keinen
   Ignore-Marker. slice-074s R3-F-1 **verbreitert** dieses Loch, es entsteht dort
   nicht. v0.45.1s korrektes Verhalten an der Marker-Variante war **Zufall**: die
   kaputte Zeile setzte den Header-Scan versehentlich neu auf.
@@ -117,7 +117,7 @@ und auf die Klasse geschlossen; dreimal war das Ergebnis ein stilles Grün.
 ## 5. Trigger
 
 Isolierungs-Messung während der Rücknahme von
-[slice-074](slice-074-kommentar-suffix-tabellenzeilen.md) (2026-07-17): auf die
+[slice-074](../open/slice-074-kommentar-suffix-tabellenzeilen.md) (2026-07-17): auf die
 Frage, ob R3-F-1 die Klasse **einführt** oder eine bestehende **verbreitert**,
 wurde `fx-s` ohne Marker gegen v0.45.1 gefahren — und das ausgelieferte Image
 verschwieg zwei echte Waisen. Der Befund war in drei unabhängigen Reviews und
