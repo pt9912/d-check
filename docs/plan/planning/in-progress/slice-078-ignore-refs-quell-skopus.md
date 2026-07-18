@@ -230,9 +230,9 @@ ignoriert, **nichts** Reales blind, Gate grün.
   vermeidet den Bruch, verdoppelt aber die Config-Oberfläche dauerhaft. Ob der
   Alias eine Deprecation-Frist bekommt, ist Teil der ADR — nicht dieses Slices.
 - **Der Konsument ist heute blind, nicht rot.** Die 63 Verweise sind intakt; das
-  Gate fehlt, es schlägt nicht fehl. Dringlichkeit daher niedriger als
-  [slice-075](../done/slice-075-komma-kurzform-fail-closed.md) (verfälscht produktiv
-  verdrahtete Zahlen) — aber die Blindheit wird beim Release **eingefroren**, und
+  Gate fehlt, es schlägt nicht fehl. Dringlichkeit daher niedriger als bei
+  slice-075 (verfälscht produktiv verdrahtete `trace.coverage`-Zahlen) — aber die
+  Blindheit wird beim Release **eingefroren**, und
   das ist der Grund, warum sie nicht beliebig warten kann.
 - **Glob-Syntax trägt:** `matchGlob` löst `**` segmentweise auf
   (`internal/hexagon/core/rules/paths.go`) — die vorgeschlagenen Muster
