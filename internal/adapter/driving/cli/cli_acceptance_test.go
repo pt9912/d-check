@@ -2401,6 +2401,99 @@ func TestCLI077_Cross_RuecksichtNichtVerschluckt(t *testing.T) {
 	}
 }
 
+// slice-074 (DC-FA-REQ-001.a Schritt 5, Direktiven-Toleranz): eine Datenzeile mit
+// genau einer überzähligen, ganzzelligen HTML-Kommentar-Zelle (`<!-- … -->` hinter
+// der letzten Pipe) wird auf Header-Breite gelesen — die tolerierte Zeile IST
+// selbst die Anforderung (R-2). Mutations-Pin: ohne die Toleranz bricht die 4.
+// Zelle mit Exit 2 ab (der Realfall grid-gym architecture.md:913).
+func TestCLI074_DirektivenDatenzeileToleriert(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md",
+		"| ID | Anforderung | Notiz |\n|---|---|---|\n| R-1 | Alpha | ok |\n"+
+			"| R-2 | Beta | ok | <!-- d-check:ignore (geplant) -->\n| R-3 | Gamma | ok |\n")
+	write(t, root, ".d-check.yml", tableConfig("Anforderung"))
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON: %v", err)
+	}
+	if doc.Total != 3 || traceReqIdx(doc, "R-2") < 0 {
+		t.Fatalf("tolerierte Direktiven-Datenzeile nicht gelesen: %+v", doc.Requirements)
+	}
+}
+
+// slice-074 (Guard scharf): zwei überzählige Zellen (nur eine ist Kommentar)
+// bleiben Exit 2 — die Toleranz gilt für genau eine ganzzellige Kommentar-Zelle.
+func TestCLI074_ZweiExtraZellenBleibtExit2(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md",
+		"| ID | Anforderung |\n|---|---|\n| R-1 | Alpha |\n| R-2 | Beta | extra | <!-- d-check:ignore -->\n")
+	write(t, root, ".d-check.yml", tableConfig("Anforderung"))
+	code, _, stderr := run(t, "--trace", root)
+	if code != 2 || !strings.Contains(stderr, "statt 2 Zellen") {
+		t.Fatalf("zwei überzählige Zellen nicht laut: Exit=%d stderr=%q", code, stderr)
+	}
+}
+
+// slice-074 (Panic-Pfad, R3 M-4): eine tolerierte Kommentar-Datenzeile als LETZTE
+// Zeile ohne Trailing-Newline darf nicht paniken.
+func TestCLI074_KommentarLetzteZeileKeinPanic(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md",
+		"| ID | Anforderung |\n|---|---|\n| R-1 | a |\n| R-2 | b | <!-- d-check:ignore -->")
+	write(t, root, ".d-check.yml", tableConfig("Anforderung"))
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d (Panic?), stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	_ = json.Unmarshal([]byte(stdout), &doc)
+	if doc.Total != 2 {
+		t.Fatalf("letzte Kommentar-Zeile ohne Newline nicht gelesen: %+v", doc.Requirements)
+	}
+}
+
+// slice-074 (cross-consistency-Pfad): die Toleranz wirkt über den geteilten Reader
+// auch in der Rück-Sicht. Eine Bezug-Zeile mit Direktiven-Marker wird gelesen; die
+// Rück-Kante deckt sich mit der Vorwärts-Sicht (0 Differenzen). Mutations-Pin:
+// ohne die Toleranz bräche die Rück-Sicht mit Exit 2 ab.
+func TestCLI074_Cross_DirektivenZeileToleriert(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/lastenheft.md", "### GG-ARCH-006\nDer Scheduler MUSS entkoppelt sein.\n")
+	write(t, root, "docs/traceability.md",
+		"# Traceability\n\n| Anforderung | Design |\n|---|---|\n| GG-ARCH-006 | GG-AR-C-1 |\n")
+	write(t, root, "spec/architecture.md",
+		"# Arch\n\n| Komponente | Bezug |\n|---|---|\n| GG-AR-C-1 | GG-ARCH-006 | <!-- d-check:ignore (geplant) -->\n")
+	write(t, root, ".d-check.yml", `trace:
+  requirements:
+    id-pattern: 'GG-[A-Z]+-\d{3}'
+  cross-consistency:
+    forward:
+      file: docs/traceability.md
+      req-column: Anforderung
+      design-column: Design
+      design-pattern: 'GG-AR-[A-Z0-9-]+'
+    backward:
+      file: spec/architecture.md
+      edge-column: Bezug
+      req-pattern: 'GG-[A-Z]+-\d{3}'
+`)
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d (Bezug-Zeile mit Marker ⇒ Exit 2 ohne Toleranz), stderr = %q", code, stderr)
+	}
+	var d crossDoc
+	if err := json.Unmarshal([]byte(stdout), &d); err != nil {
+		t.Fatalf("JSON: %v\n%s", err, stdout)
+	}
+	if len(d.CrossConsistency) != 0 {
+		t.Fatalf("erwartete 0 Differenzen: %+v", d.CrossConsistency)
+	}
+}
+
 func tableConfig(textColumn string) string {
 	return "trace:\n  requirements:\n    source: spec/reqs.md\n    id-pattern: 'R-[0-9]+'\n    format: table\n    table:\n      id-column: ID\n      text-column: " + textColumn + "\n"
 }

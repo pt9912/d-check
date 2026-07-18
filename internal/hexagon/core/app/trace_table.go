@@ -17,6 +17,15 @@ import (
 // (spec/spezifikation.md §DC-FA-REQ-001.a Schritt 3, ADR-0042).
 var tableDelimiterCell = regexp.MustCompile(`^:?-+:?$`)
 
+// htmlCommentCell (slice-074/ADR-0040): eine Zelle, die ganz aus einem
+// HTML-Kommentar besteht — d-checks eigene `<!-- d-check:ignore … -->`-Direktive
+// hinter der letzten Pipe einer Tabellenzeile.
+var htmlCommentCellRe = regexp.MustCompile(`^<!--.*-->$`)
+
+func htmlCommentCell(cell string) bool {
+	return htmlCommentCellRe.MatchString(strings.TrimSpace(cell))
+}
+
 // traceTableRequirements extrahiert Anforderungen aus allen relevanten
 // Markdown-Pipe-Tabellen der Quelle (DC-FA-REQ-001). Relevanz entsteht allein
 // durch die exakt konfigurierten Header-Namen; Positionen werden nie geraten.
@@ -178,6 +187,14 @@ func consumeTableRows(lines []markdownTableLine, start int, mask []bool, t *mdTa
 			return j
 		}
 		if len(cells) != len(t.header) {
+			// Direktiven-Toleranz (slice-074/ADR-0040): genau eine überzählige,
+			// ganzzellige HTML-Kommentar-Zelle in einer Datenzeile wird ignoriert
+			// (GFM-nachsichtig für Body). Sicher, weil die Tabellengrenze (ADR-0043)
+			// die Folgetabelle bereits schützt — kein stiller Übersprung.
+			if len(cells) == len(t.header)+1 && htmlCommentCell(cells[len(cells)-1]) {
+				t.rows = append(t.rows, mdTableRow{cells: cells[:len(t.header)], line: lines[j].no})
+				continue
+			}
 			t.badLine, t.badCells = lines[j].no, len(cells)
 			return j
 		}
