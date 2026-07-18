@@ -1306,9 +1306,10 @@ default-aus **byte-identisch** ([`DC-QA-02`](#dc-qa-02--determinismus)).
 **Zitat-Fäule** (Zieldatei fehlt bzw. Spanne über das Datei-Ende ⇒
 `citation-out-of-range`; `von > bis` ⇒ `citation-inverted-range`) ist ein **Befund**
 (kohärent zum `codepaths`-Zeilen-Check), Exit 1. **Fail-closed** (Exit 2) nur bei
-strukturell **unbrauchbarer** Direktive (malformter Span, kein folgendes Zitat) oder
-Repo-Escape. `d-check` kennt damit **zwei** Direktiven; die Platzierungsregeln folgen
-der bestehenden `d-check:ignore`-Konvention.
+strukturell **unbrauchbarer** Direktive (malformter Span, kein folgendes Zitat); ein
+Repo-Escape des Ziels ist wie bei `codepaths`/`links` ein Befund. `d-check` kennt
+damit **zwei** Direktiven; die Platzierungsregeln folgen der bestehenden
+`d-check:ignore`-Konvention.
 
 **Akzeptanzkriterien:**
 
@@ -1316,7 +1317,7 @@ der bestehenden `d-check:ignore`-Konvention.
 - **Negative:** Given denselben Aufbau, aber der Zitattext weicht in mindestens einem Wort/Zeichen ab (nicht nur Whitespace), when das Modul läuft, then ein Befund `citation-mismatch` (Datei, Zeile, Ziel), Exit-Code 1.
 - **Boundary (Zitat-Fäule = Befund, nicht fail-closed):** Given eine `d-check:cite`-Direktive, deren Spanne die Zieldatei überschreitet (Zitat-Fäule nach einem Tag-Bump), when das Modul läuft, then ein Befund `citation-out-of-range`, Exit-Code 1 — **kohärent** zum `codepaths`-Zeilen-Check, **nicht** Exit 2; ein ungültiger Bereich (`von > bis`) ⇒ `citation-inverted-range`. Fail-closed (Exit 2) bleibt der malformten Direktive bzw. dem fehlenden folgenden Zitat vorbehalten; ohne `citations`-Modul ist jeder Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 
-**Out-of-Scope:** Zitate ohne `d-check:cite`-Direktive (das Modul prüft nur ausgezeichnete Zitate — kein Prosa-Scanning); Normalisierung über Whitespace/Umbruch hinaus (Markdown-Auszeichnung, Satzzeichen, Groß-/Kleinschreibung zählen); freie Zahlen und Prosa-Quantoren mit externer Grundwahrheit („42 Dateien im ZIP", „fast alle") — bleiben Review-Territorium.
+**Out-of-Scope:** Zitate ohne `d-check:cite`-Direktive (das Modul prüft nur ausgezeichnete Zitate — kein Prosa-Scanning); sehr kurze Zitate (< 16 Zeichen normalisiert) — zu schwache Teilstring-Diskriminierung, ungeprüft; Normalisierung über Whitespace/Umbruch hinaus (Markdown-Auszeichnung, Satzzeichen, Groß-/Kleinschreibung zählen); freie Zahlen und Prosa-Quantoren mit externer Grundwahrheit („42 Dateien im ZIP", „fast alle") — bleiben Review-Territorium.
 
 ---
 

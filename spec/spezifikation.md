@@ -1144,15 +1144,20 @@ Module).
    **1-basierte** Zeilennummern, `<bis>` optional = `<von>`). Fehlt die Direktive,
    prüft das Modul nichts. Ein **malformter** Span (nicht-numerisch, fehlend) ⇒
    **fail-closed** (Exit 2).
-2. Der **Zitattext** ist das der Direktive **unmittelbar folgende** Zitat: entweder
-   ein `>`-Blockquote (zusammenhängende `>`-Zeilen, jeweils nach Abtrennen von `> `
-   bzw. `>` ohne Leerzeichen; eine Leer- oder Nicht-`>`-Zeile beendet ihn) **oder**,
-   wenn keine `>`-Zeile folgt, der nächste inline-Zitat-Span, begrenzt durch ein
-   Anführungs-Paar `„…"` oder `"…"`. Fehlt beides ⇒ **fail-closed** (Exit 2) — die
-   Direktive ist unbrauchbar (Autoren-Fehler, kein Schweigen).
-3. Auflösung von `<pfad>` wie im Modul `links`; verlässt das Ziel die Wurzel ⇒
-   fail-closed (Exit 2). Danach die **Zitat-Fäule** (Befund, **nicht** fail-closed —
-   kohärent zum Zeilen-Check aus [DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code)
+2. Der **Zitattext** ist das der Direktive folgende Zitat. Ist die **nächste
+   nicht-leere Zeile** ein `>`-Blockquote, gilt dieser Block (zusammenhängende
+   `>`-Zeilen, jeweils nach Abtrennen von `> ` bzw. `>` ohne Leerzeichen; eine Leer-
+   oder Nicht-`>`-Zeile beendet ihn). Andernfalls der **nächste inline-Zitat-Span im
+   selben Absatz** nach der Direktive — er darf Prosa vor sich haben und über mehrere
+   Zeilen laufen, begrenzt durch ein Anführungs-Paar: `„` öffnet + `"` schließt, oder
+   das erste `"` öffnet + das nächste `"` schließt. Findet sich weder ein `>`-Block
+   (als nächste nicht-leere Zeile) noch ein schließendes Anführungspaar im Absatz ⇒
+   **fail-closed** (Exit 2) — die Direktive ist unbrauchbar (Autoren-Fehler, kein
+   Schweigen).
+3. Auflösung von `<pfad>` wie im Modul `links`; verlässt das Ziel die Wurzel ⇒ Befund
+   `repo-escape` (Exit 1, dieselbe Sicherheits-Prüfung wie `codepaths`/`links`).
+   Danach die **Zitat-Fäule** (Befund, **nicht** fail-closed — kohärent zum
+   Zeilen-Check aus [DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code)
    Schritt 6): `von > bis` ⇒ `citation-inverted-range`; sonst fehlt die Zieldatei oder
    hat sie weniger als `bis` Zeilen ⇒ `citation-out-of-range` (kein Vergleich, da die
    Spanne nicht existiert).
@@ -1160,6 +1165,9 @@ Module).
    werden je **whitespace-normalisiert**: jeder Lauf aus Leerzeichen/Tab/Zeilenumbruch
    wird zu **einem** Leerzeichen, führend/schließend getrimmt. Sonst **keine**
    Normalisierung (Markdown-Auszeichnung, Satzzeichen, Groß-/Kleinschreibung bleiben).
+   **Mindestlänge:** ist der normalisierte Zitattext kürzer als **16 Zeichen**, wird
+   er **nicht** geprüft (kein Befund) — ein sehr kurzer Teilstring träfe zufällig
+   (schwache Diskriminierung); dokumentierter Trade-off, keine Falsch-Rot-Gefahr.
 5. **Teilstring-Vergleich.** Ist der normalisierte Zitattext ein **zusammenhängender
    Teilstring** der normalisierten Quell-Spanne ⇒ kein Befund; sonst `citation-mismatch`
    (Datei = prüfende Datei, Zeile = Direktiven-Zeile, `target` = `<pfad>:<von>-<bis>`).
