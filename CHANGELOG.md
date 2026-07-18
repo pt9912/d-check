@@ -6,6 +6,25 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.49.0] — 2026-07-18
+
+### Added
+
+- **Geteiltes Referenz-Ventil `ignore-refs` mit Quell-Skopus** (`DC-FA-REF-001`, §5):
+  das bisher modul-lokale `codepaths.ignore-refs` wird zur **querschnittlichen**
+  Top-Level-Fähigkeit, die `links`, `anchors` und `codepaths` gemeinsam honorieren.
+  Neue Felder je Eintrag: `in` (Glob auf die **Quelldatei** — Quell-Skopus), `refs`
+  (Globs auf das **aufgelöste Ziel**) und `keep` (Ausnahmen; ein von `refs`
+  getroffenes Ziel bleibt geprüft, wenn `keep` es trifft — **reihenfolge-unabhängig**,
+  kein gitignore-Last-Match). Das Ziel-Achsen-Pendant zu `scan.ignore`: es löst die
+  **Template-Verzeichnis-Falle** — Ziel-Repo-Platzhalter, die im Quell-Repo massenhaft
+  `target-missing` erzeugen, ohne die echten (Kurs-/Template-internen) Verweise blind
+  zu machen. Der modul-lokale Schlüssel `codepaths.ignore-refs` bleibt als **Alias**
+  gültig (kein Config-Bruch); ohne Block ist der Befundsatz byte-identisch. Ungültige
+  `in`/`refs`/`keep`-Globs ⇒ Exit 2 (fail-closed). Die vier Ventil-Achsen (`scan.ignore`
+  · `d-check:ignore` · `exempt-paths` · `ignore-refs`) sind im Handbuch gegeneinander
+  erklärt.
+
 ## [0.48.1] — 2026-07-18
 
 ### Fixed

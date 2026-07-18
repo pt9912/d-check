@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.37 · **Software-Version:** [v0.48.1](../../version.md#v0.48.1) ·
+**Handbuch-Version:** 1.38 · **Software-Version:** [v0.49.0](../../version.md#v0.49.0) ·
 **Stand:** 2026-07-18 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -63,7 +63,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.48.1
+docker pull ghcr.io/pt9912/d-check:v0.49.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -100,7 +100,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -155,7 +155,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -174,7 +174,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.48.1
+  ghcr.io/pt9912/d-check:v0.49.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -193,7 +193,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.48.1 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.49.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -212,7 +212,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -238,7 +238,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -247,7 +247,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -259,7 +259,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -279,7 +279,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
   --enable ids --disable anchors
 ```
 
@@ -300,7 +300,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
   --enable ids
 ```
 
@@ -321,7 +321,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
   --enable matrix
 ```
 
@@ -388,7 +388,7 @@ verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
   --enable external
 ```
 
@@ -408,7 +408,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
   --enable ids --doctor
 ```
 
@@ -436,7 +436,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
   --enable ids --doctor --json
 ```
 
@@ -484,7 +484,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -520,7 +520,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
     --enable ids --repair | git apply
   ```
 
@@ -537,7 +537,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -557,7 +557,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -661,7 +661,7 @@ ab — die eigene Konvention machte den eigenen Reader blind.)
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -874,7 +874,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.48.1 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.49.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -919,7 +919,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.48.1 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.49.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -932,7 +932,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.48.1
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.49.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -1029,7 +1029,7 @@ matrix:
 codepaths:
   roots: [docs, spec]          # Pfade in Inline-Code prüfen
   exempt-paths: ["docs/reviews/**"] # Dateien ganz ausnehmen (Glob, wie ids)
-  ignore-refs: ["tools/altes-skript.sh"] # Ziel-Pfade nie existenz-prüfen (referenz-weit)
+  ignore-refs: ["tools/altes-skript.sh"] # Alias des geteilten ignore-refs (nur codepaths)
 hostpaths:
   prefixes: [home, Users]       # Verzeichnisnamen OHNE / (führender /… ⇒ Exit 2)
 external:
@@ -1082,21 +1082,55 @@ trace:                         # konfigurierbare RTM-Quellen (KEIN Modul; steuer
       # exclude-sections: ["27.1.1 Anforderungen ohne Design-Artefakt"]  # Blacklist (voller Heading-Text)
 ```
 
-Das Modul `codepaths` kennt **drei** Ventil-Achsen, um einen Pfad von der
-Existenz-Prüfung auszunehmen: den zeilenweisen Marker `d-check:ignore` (eine
-einzelne Zeile), `exempt-paths` (ganze **Dateien**, Glob) und `ignore-refs`
-(bestimmte **Ziel-Pfade**, Glob — **referenz-weit**, also datei- und
-zeilen-unabhängig). `ignore-refs` ist als **Tombstone-Register** gedacht: Wird
-eine Datei refaktoriert oder gelöscht, die unveränderliche oder historische Doku
-(z. B. akzeptierte ADRs) noch in Inline-Code zitiert, dangelt der eingefrorene
-Verweis sonst als `codepath-missing` — nicht behebbar, ohne die immutable Doku zu
-editieren. Ein Eintrag in `ignore-refs` erklärt den Pfad als bewusst entfernt; er
-unterdrückt **nur** diesen einen Pfad (alle übrigen Verweise der Datei bleiben
-geprüft). Bewusster Akt **mit Gate**: vergessen Sie den Eintrag beim Löschen,
-meldet `codepath-missing` weiter — nichts verschwindet still. Das Glob matcht den
-**aufgelösten, Wurzel-relativen** Ziel-Pfad — nicht die rohe `./`- oder
-`../`-Schreibweise, die der Befund unter `Target` zeigt. Tragen Sie den Pfad also so
-ein, wie er von der Repo-Wurzel aus lautet.
+d-check kennt **vier** Ventil-Achsen, um eine Referenz von der Prüfung auszunehmen.
+Sie greifen an unterschiedlichen Stellen und ergänzen sich — vom gröbsten zum
+feinsten Schnitt:
+
+- **`scan.ignore`** (Quelle, ganze Datei): eine Datei wird gar nicht erst gescannt,
+  ihre Referenzen erreichen **kein** Modul. Der gröbste Schnitt.
+- **`exempt-paths`** (ganze Datei, je Modul): nimmt **ganze Dateien** von der Prüfung
+  **eines** Moduls aus (`ids`, `matrix`, `codepaths`) — der Rest wird weiter gescannt.
+- **`d-check:ignore`** (eine Zeile, nur `codepaths`): der HTML-Kommentar-Marker nimmt
+  **eine einzelne Zeile** von der `codepaths`-Prüfung aus.
+- **`ignore-refs`** (Ziel, querschnittlich): nimmt bestimmte **aufgelöste
+  Ziel-Pfade** von der Existenz-/Anker-Prüfung aus — **referenz-weit** (datei- und
+  zeilen-unabhängig) und geteilt von `links`, `anchors` und `codepaths`.
+
+`ignore-refs` ist das **Ziel-Achsen-Pendant** zu `scan.ignore` (Quell-Achse): jenes
+entfernt eine ganze Datei vom Scan, dieses ein einzelnes **Ziel** von der Prüfung —
+gleich, in welcher Datei die Referenz steht. Es steht als **Top-Level-Liste**; jeder
+Eintrag trägt drei Felder:
+
+```yaml
+ignore-refs:
+  - in: "lab/templates/**"                    # nur Referenzen AUS diesen Dateien (optional; ohne in = repo-weit)
+    refs: ["lab/templates/**"]                # diese aufgelösten Ziele ignorieren (Template-Platzhalter)
+    keep: ["lab/templates/**/*.template.md"]  # aber diese echten Verweise scharf lassen
+```
+
+- **`refs`** (Pflicht): Globs auf den **aufgelösten** Ziel-Pfad. Leer/fehlend ⇒ der
+  Eintrag ignoriert nichts.
+- **`keep`** (optional): Ausnahmen — ein von `refs` getroffenes Ziel bleibt geprüft,
+  wenn ein `keep`-Glob es trifft. `keep` gewinnt **reihenfolge-unabhängig**.
+- **`in`** (optional): Quell-Skopus — ein Glob auf die **Quelldatei**. Gesetzt, gilt
+  der Eintrag nur für Referenzen in passenden Dateien.
+
+Zwei typische Fälle. Ein **Template-Verzeichnis**, dessen Platzhalter-Pfade erst im
+Ziel-Repo auflösen: `in` skopiert auf die Templates, `refs` ignoriert die Platzhalter,
+`keep` hält die echten (Kurs-/Template-internen) Verweise scharf — so wird das ganze
+Verzeichnis geprüft, ohne die Platzhalter-Fehlalarme. Oder ein **Tombstone**: ein
+bewusst entfernter Pfad, den immutable/historische Doku (z. B. eine akzeptierte ADR)
+noch zitiert und der sonst als `codepath-missing` dangelte, ohne dass man die immutable
+Doku editieren dürfte.
+
+Bewusster Akt **mit Gate**: ohne passenden Eintrag meldet ein fehlendes Ziel weiter
+(`target-missing`/`codepath-missing`/`anchor-missing`) — nichts verschwindet still.
+Die Globs matchen den **aufgelösten, Wurzel-relativen** Pfad (bzw. die Quelldatei),
+nicht die rohe `./`-/`../`-Schreibweise, die der Befund unter `Target` zeigt; tragen
+Sie den Pfad also so ein, wie er von der Repo-Wurzel aus lautet. Die Symlink-Ablehnung
+bleibt unberührt. Der frühere modul-lokale Schlüssel `codepaths.ignore-refs` bleibt als
+**Alias** gültig (kein Config-Bruch): er wirkt wie ein `ignore-refs`-Eintrag ohne
+`in`/`keep`, skopiert auf `codepaths`.
 
 Das Modul `vcs` vergleicht den **Core** einer immutablen Datei über zwei
 git-Stände — es braucht daher eine **Commit-Range** und ist nie ein Default-Modul.
@@ -1536,3 +1570,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.35             | v0.47.0          | 2026-07-18 | Markdown-Lexik an CommonMark/GFM angeglichen (Grundkonzepte, §4.12): eine Tabellen-Trennzeile braucht nur **einen** Bindestrich (`\| - \|`), und eine Backtick-Fence-Zeile mit Backtick in der Infozeile ist Fließtext, kein Block-Öffner — d-check findet danach **mehr** (SemVer-Minor, ein grüner Konsumentenlauf kann rot werden)                                                                                       |
 | 1.36             | v0.48.0          | 2026-07-18 | Tabellengrenze am relevanten Header (§4.12): eine irrelevante Tabelle verschluckt die unmittelbar folgende **relevante** nicht mehr still — ein Header, der eine konfigurierte Rolle bindet, beendet die laufende Tabelle. d-check findet danach **mehr** (SemVer-Minor, ein grüner Konsumentenlauf kann rot werden)                                                                                       |
 | 1.37             | v0.48.1          | 2026-07-18 | Direktiven-Toleranz in Tabellenzeilen (§4.12): eine Datenzeile mit genau einer überzähligen, ganzzelligen HTML-Kommentar-Zelle (`<!-- d-check:ignore … -->` hinter der letzten Pipe) wird auf Header-Breite gelesen, statt fail-closed mit Exit 2 abzubrechen. Zwei Extra-Zellen oder Nicht-Kommentar bleiben Exit 2. Patch (rot→grün)                                                                                       |
+| 1.38             | v0.49.0          | 2026-07-18 | Geteiltes Referenz-Ventil `ignore-refs` (§5): das bisher modul-lokale `codepaths.ignore-refs` wird zur **querschnittlichen** Top-Level-Fähigkeit, die `links`/`anchors`/`codepaths` gemeinsam honorieren. Neue Felder je Eintrag: `in` (Quell-Skopus, Glob auf die Quelldatei), `refs` (aufgelöste Ziele) und `keep` (Ausnahmen, reihenfolge-unabhängig). Ziel-Achsen-Pendant zu `scan.ignore`; löst die Template-Verzeichnis-Falle. `codepaths.ignore-refs` bleibt Alias (kein Config-Bruch), ohne Block byte-identisch; ungültiges Glob ⇒ Exit 2. Die vier Ventil-Achsen sind jetzt gegeneinander erklärt                                                                    |
