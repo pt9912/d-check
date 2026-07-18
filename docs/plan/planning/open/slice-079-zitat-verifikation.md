@@ -129,7 +129,7 @@ sind, vergrößert eine ungelöste Klasse. Stufe 3 hängt daran — Stufe 1/2 ni
 
 Kein Gegenargument, aber eine **Warnung**: wir können das Gate an uns selbst kaum
 erproben. Genau diese Dogfood-Lücke hat 2026-07-17 dreimal zugeschlagen
-(slice-073 §4, slice-074 §4, [slice-076](../next/slice-076-markdown-lexik-commonmark.md) §4).
+(slice-073 §4, slice-074 §4, [slice-076](../in-progress/slice-076-markdown-lexik-commonmark.md) §4).
 Der Realdatenbeleg gegen das Adopter-Repo ist daher **nicht optional**.
 
 ## 3. Definition of Done

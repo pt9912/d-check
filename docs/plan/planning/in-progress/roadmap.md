@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-17.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-18.
 
 **Form:** folgt [Kurs-Modul 6](../../../../.harness/baseline/v1.4.0/regelwerk/modul-06-roadmap.md).
 
@@ -8,19 +8,21 @@
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-60-trace-cross-consistency ist **nicht
-abgeschlossen**, hat aber gerade **keinen Slice in Arbeit**: slice-075 ist fertig
-und reviewt (`done/`, **v0.46.0 veröffentlicht**), der WIP-Slot ist frei (Modul 5,
-WIP-Limit = 1). **Nächster Zug:** slice-076 aus `next/` in Arbeit nehmen, oder
-slice-071 entblocken (hängt an slice-074).
+**welle-60-trace-cross-consistency** ist wieder aktiv: in Arbeit ist
+[`slice-076`](slice-076-markdown-lexik-commonmark.md) — d-checks Markdown-Lexik an
+CommonMark/GFM angleichen (Trennzelle `-+` statt `-{3,}`, Fence-Infozeilen-Regel).
+Aus `next/` in Arbeit genommen, nachdem der WIP-Slot mit der slice-075-Closure frei
+wurde (Modul 5, WIP-Limit = 1); die doc-first-Arbeit
+([ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md), Spezifikation) lag
+fertig vor. **Danach:** slice-071 entblocken (hängt an slice-074).
 
 **Stand von welle-60** (pausiert, nicht abgeschlossen):
 [`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) **done**
 (v0.45.1, R2 ACCEPT-WITH-NITS). ·
 [`slice-075`](../done/slice-075-komma-kurzform-fail-closed.md) **done**
 (Komma-Kurzform fail-closed, R1 ACCEPT-WITH-NITS, **v0.46.0 veröffentlicht**). ·
-[`slice-076`](../next/slice-076-markdown-lexik-commonmark.md) in `next/`, wartet
-auf den WIP-Slot. · [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md)
+[`slice-076`](slice-076-markdown-lexik-commonmark.md) **in Arbeit** (Markdown-Lexik
+CommonMark/GFM). · [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md)
 in `open/`, **blockiert** (Realdatenbeleg hängt an slice-074);
 [`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in),
 Code und Reviews liegen vor, v0.44.0/v0.45.0 sind getaggt.
@@ -55,8 +57,7 @@ null, von keinem Gate bemerkt.
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`), in welle-60 eingeplant, auf den WIP-Slot wartend:**
-[`slice-076`](../next/slice-076-markdown-lexik-commonmark.md).
+**Im Backlog (`next/`):** leer — slice-076 ist in Arbeit (siehe §Aktuelle Welle).
 
 **Im Eingang (`open/`), auf Wellen-Einplanung wartend:**
 [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md) (blockiert) ·
