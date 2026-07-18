@@ -91,6 +91,31 @@ func TestPreprocessMarkdown_FenceUnterbrichtAbsatz(t *testing.T) {
 	}
 }
 
+// slice-076 (DC-FA-LINK-001.a Schritt 1): eine ```-Zeile mit Backtick in der
+// Infozeile ist KEIN Fence-Öffner (CommonMark), sondern Fließtext — sie schaltet
+// den Fence-Zustand nicht um; ein echter ```-Öffner dahinter verdeckt weiterhin.
+// Für ~~~ gilt die Regel nicht (CommonMark-Asymmetrie).
+func TestPreprocessMarkdown_FenceInfozeileMitBacktickIstFliesstext(t *testing.T) {
+	content := "```yaml-Fence (`x.md`) — Satz.\n[nach](ziel.md)\n```echt\nverdeckt\n```\nnach-echtem-Fence"
+	lines := PreprocessMarkdown([]byte(content))
+	var nums []int
+	for _, l := range lines {
+		nums = append(nums, l.No)
+	}
+	// Zeile 1 (Infozeile mit Backtick) + Zeile 2 (Prosa dahinter) bleiben sichtbar;
+	// Zeile 3 ```echt öffnet einen echten Fence, Zeile 4 wird verdeckt, Zeile 5
+	// schließt; Zeile 6 ist wieder sichtbar.
+	want := []int{1, 2, 6}
+	if !reflect.DeepEqual(nums, want) {
+		t.Fatalf("Zeilennummern = %v, want %v", nums, want)
+	}
+	// ~~~ mit Backtick in der Infozeile bleibt ein Öffner (Regel gilt nur für ```).
+	tilde := PreprocessMarkdown([]byte("~~~info (`x`)\nverdeckt\n~~~\nsichtbar"))
+	if len(tilde) != 1 || tilde[0].No != 4 {
+		t.Fatalf("~~~-Infozeile fälschlich als Fließtext behandelt: %+v", tilde)
+	}
+}
+
 func TestExtractLinks(t *testing.T) {
 	lines := []Line{
 		{No: 3, Text: "[a](x.md) und ![bild](img.png) und [b](y.md \"Titel\")"},

@@ -18,6 +18,28 @@ type proseLine struct {
 	raw string
 }
 
+// fenceToggle meldet, ob die links-getrimmte Zeile den Fenced-Code-Zustand
+// umschaltet. Eine mit ``` oder ~~~ beginnende Zeile schaltet um — außer die
+// CommonMark-Infozeilen-Regel greift: eine **Backtick**-Fence, deren Infozeile
+// (der Rest hinter der öffnenden Backtick-Folge) einen Backtick enthält, ist
+// kein Öffner, sondern Fließtext (spec/spezifikation.md §DC-FA-LINK-001.a
+// Schritt 1). Für ~~~ gilt die Regel nicht (CommonMark-Asymmetrie: dort sind
+// Backticks in der Infozeile erlaubt). Der gemeinsame Öffner-Test der beiden
+// naiven Fence-Automaten proseLines und diagramFenceLines.
+func fenceToggle(trimmed string) bool {
+	if strings.HasPrefix(trimmed, "~~~") {
+		return true
+	}
+	if !strings.HasPrefix(trimmed, "```") {
+		return false
+	}
+	run := 0
+	for run < len(trimmed) && trimmed[run] == '`' {
+		run++
+	}
+	return strings.IndexByte(trimmed[run:], '`') == -1
+}
+
 // proseLines liefert alle Zeilen außerhalb von Fenced-Code-Blöcken;
 // Fence-Zeilen selbst entfallen (spec/spezifikation.md
 // §DC-FA-LINK-001.a Schritt 1).
@@ -26,7 +48,7 @@ func proseLines(content []byte) []proseLine {
 	inFence := false
 	for i, raw := range strings.Split(string(content), "\n") {
 		trimmed := strings.TrimLeft(raw, " \t")
-		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
+		if fenceToggle(trimmed) {
 			inFence = !inFence
 			continue
 		}
@@ -65,7 +87,7 @@ func diagramFenceLines(content []byte, langs map[string]bool) []proseLine {
 	inFence, open := false, false
 	for i, raw := range strings.Split(string(content), "\n") {
 		trimmed := strings.TrimLeft(raw, " \t")
-		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
+		if fenceToggle(trimmed) {
 			if inFence {
 				inFence, open = false, false
 			} else {

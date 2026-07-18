@@ -2204,6 +2204,69 @@ func TestCLI070_TraceTable_DuplikatPolicies(t *testing.T) {
 	}
 }
 
+// slice-076 (DC-FA-REQ-001.a Schritt 3): eine GFM-Trennzeile mit ein bzw. zwei
+// Bindestrichen (`| - | -- |`, die reale carveouts.md-Form) macht die Tabelle zur
+// Tabelle — ihre Anforderung erscheint in der RTM. Mutations-Pin: mit dem alten
+// `-{3,}` wäre `| - | -- |` keine Trennzeile, die Tabelle verschwände und der
+// strikte Tabellenmodus bräche mit Exit 2 ab.
+func TestCLI076_TrennzeileEinBindestrich(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md", "| ID | Text |\n| - | -- |\n| R-1 | MUSS gelten |\n")
+	write(t, root, ".d-check.yml", tableConfig("Text"))
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON: %v", err)
+	}
+	if doc.Total != 1 || doc.Requirements[0].Title != "MUSS gelten" {
+		t.Fatalf("Ein-/Zwei-Bindestrich-Trennzeile nicht erkannt: %+v", doc.Requirements)
+	}
+}
+
+// slice-076 (DC-FA-LINK-001.a Schritt 1, geteilte Vorverarbeitung/`proseLines`):
+// eine ```-Zeile mit Backtick in der Infozeile ist Fließtext (CommonMark), KEIN
+// Fence-Öffner. Ein kaputter Link dahinter wird vom links-Modul gemeldet
+// (Exit 1). Mutations-Pin: ohne die Regel öffnet die Zeile einen Fence bis zum
+// Dateiende und verschluckt den Befund still (Exit 0). Belegt am realen Satz aus
+// docs/reviews/2026-06-19-…:179.
+func TestCLI076_FenceInfozeileVerdecktLinkNicht(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "docs/a.md", "Muster stehen in einem\n```yaml-Fence (`spezifikation.md:1`) — exempt.\n\n[kaputt](fehlt.md)\n")
+	code, stdout, _ := run(t, "--disable", "anchors", root)
+	if code != 1 {
+		t.Fatalf("Exit = %d, want 1 (Befund hinter Infozeile darf nicht verschluckt werden)", code)
+	}
+	if !strings.Contains(stdout, "docs/a.md:4\tfehlt.md\ttarget-missing") {
+		t.Fatalf("Befund-Zeile fehlt: %q", stdout)
+	}
+}
+
+// slice-076 (DC-FA-LINK-001.a Schritt 1, Tabellen-Reader/`markdownTableLines`):
+// dieselbe Infozeilen-Regel muss auch im Tabellen-Automaten gelten, sonst sieht
+// `trace` das Dokument anders als `links`. Eine ```-Infozeile mit Backtick ÜBER
+// einer Tabelle verdeckt sie NICHT. Mutations-Pin: ohne die Regel öffnet die
+// Zeile dort einen Fence, die Tabelle verschwindet und der strikte Tabellenmodus
+// bricht mit Exit 2 ab.
+func TestCLI076_FenceInfozeileVerdecktTabelleNicht(t *testing.T) {
+	root := t.TempDir()
+	write(t, root, "spec/reqs.md", "```yaml-Fence (`spezifikation.md:1`) — exempt.\n\n| ID | Text |\n|---|---|\n| R-1 | MUSS gelten |\n")
+	write(t, root, ".d-check.yml", tableConfig("Text"))
+	code, stdout, stderr := run(t, "--trace", "--json", root)
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	var doc traceDoc
+	if err := json.Unmarshal([]byte(stdout), &doc); err != nil {
+		t.Fatalf("JSON: %v", err)
+	}
+	if doc.Total != 1 {
+		t.Fatalf("Tabelle hinter Infozeile verdeckt: %+v", doc.Requirements)
+	}
+}
+
 func tableConfig(textColumn string) string {
 	return "trace:\n  requirements:\n    source: spec/reqs.md\n    id-pattern: 'R-[0-9]+'\n    format: table\n    table:\n      id-column: ID\n      text-column: " + textColumn + "\n"
 }

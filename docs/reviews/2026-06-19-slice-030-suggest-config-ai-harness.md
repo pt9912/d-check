@@ -176,7 +176,7 @@ Keine.
   abwärts-Link. Keine neue MR-006-Bedingung.
 - **codepaths/ids-Sauberkeit der neuen Doku/Spec:** Die kanonischen Regex-
   Muster und Pfade der Vorlage stehen in der Spezifikation in einem
-  ```yaml-Fence (`spezifikation.md:145-180`) — vom `ids`/`codepaths`-Scan
+  `yaml`-Fence (`spezifikation.md:145-180`) — vom `ids`/`codepaths`-Scan
   exempt. In der Prosa erscheinen IDs nur als verlinkte Backtick-Spans
   (`[`DC-FA-CONF-001`](…)`) oder als Regex in Inline-Code (`CO-\d{3}` —
   kein linkpflichtiges Präfix); keine bare `DC-`/`MR-`/`ADR-`/`slice-`-ID

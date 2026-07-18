@@ -10,7 +10,11 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
-var tableDelimiterCell = regexp.MustCompile(`^:?-{3,}:?$`)
+// tableDelimiterCell folgt GFM: eine Trennzelle braucht **einen** Bindestrich
+// (`^:?-+:?$`), optionale Doppelpunkte bleiben. Rein erweiternd gegenüber dem
+// früheren `-{3,}` — jede bisher erkannte Trennzeile bleibt erkannt
+// (spec/spezifikation.md §DC-FA-REQ-001.a Schritt 3, ADR-0042).
+var tableDelimiterCell = regexp.MustCompile(`^:?-+:?$`)
 
 // traceTableRequirements extrahiert Anforderungen aus allen relevanten
 // Markdown-Pipe-Tabellen der Quelle (DC-FA-REQ-001). Relevanz entsteht allein
@@ -283,10 +287,15 @@ func markdownTableLines(content []byte) []markdownTableLine {
 		trimmed := strings.TrimLeft(raw, " \t")
 		if char, run := fenceMarker(trimmed); run >= 3 {
 			if fenceLen == 0 {
-				fenceChar, fenceLen = char, run
-				continue
-			}
-			if char == fenceChar && run >= fenceLen && strings.TrimSpace(trimmed[run:]) == "" {
+				// Infozeilen-Regel (CommonMark, DC-FA-LINK-001.a Schritt 1):
+				// eine Backtick-Fence, deren Infozeile einen Backtick enthält,
+				// ist kein Öffner, sondern Fließtext — sie fällt auf die
+				// Prosa-Zuweisung durch. Für ~~~ gilt die Regel nicht.
+				if char != '`' || strings.IndexByte(trimmed[run:], '`') == -1 {
+					fenceChar, fenceLen = char, run
+					continue
+				}
+			} else if char == fenceChar && run >= fenceLen && strings.TrimSpace(trimmed[run:]) == "" {
 				fenceChar, fenceLen = 0, 0
 				continue
 			}
