@@ -6,6 +6,34 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.47.0] — 2026-07-18
+
+### Changed
+
+- **Markdown-Lexik an CommonMark/GFM angeglichen** — zwei belegte, still
+  ausgelieferte Blindstellen geschlossen (Differential-Spike gegen goldmark
+  v1.8.4 über 522 reale Dateien: 8 Abweichungen, alle „d-check sieht eine
+  Tabelle nicht, die jeder Renderer zeigt"):
+  - **Trennzelle folgt GFM:** eine Tabellen-Trennzeile braucht nur **einen**
+    Bindestrich (`| - |`), nicht drei. Jede reale Tabelle mit `| -- |` war zuvor
+    für d-check keine Tabelle — ihre Anforderungen, Links und IDs existierten
+    nicht.
+  - **Fence-Infozeilen-Regel (CommonMark):** öffnet eine Backtick-Fence-Zeile
+    ihren Block mit einer Infozeile, die selbst noch einen Backtick enthält, ist
+    sie kein Fence-Öffner, sondern Fließtext. Zuvor blendete ein erklärender Satz
+    *über* einem Codeblock den **gesamten Rest der Datei für alle Module** aus —
+    ein kaputter Link dahinter verschwand lautlos (Exit 1 ⇒ Exit 0, gemessen).
+    Für `~~~`-Blöcke gilt die Regel nicht.
+
+  **Wirkung auf bestehende Läufe:** d-check **findet mehr** — bisher unsichtbare
+  Tabellen liefern Anforderungen (neue Waisen möglich), bisher unsichtbare Prosa
+  liefert Links und IDs (neue Befunde möglich). Ein heute grüner Konsumentenlauf
+  kann danach rot sein — laut, nicht still, und in der sicheren Richtung. Beide
+  Regeln sind per Mutation gepinnt. **Defekt-Fix, kein Lastenheft-Change** (die
+  Regeln sind Spezifikations-Sache), aber SemVer-**Minor**, weil d-check danach
+  mehr findet ([ADR-0042](docs/plan/adr/0042-markdown-lexik-folgt-commonmark.md),
+  Spezifikation §DC-FA-REQ-001.a Schritt 3 / §DC-FA-LINK-001.a Schritt 1).
+
 ## [0.46.0] — 2026-07-17
 
 ### Added
