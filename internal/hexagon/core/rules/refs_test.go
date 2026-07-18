@@ -97,6 +97,35 @@ func TestRefsAnkerBleibtScharf(t *testing.T) {
 	}
 }
 
+// DC-FA-REF-001 — das TOP-LEVEL-Ventil (nicht nur der Alias
+// `codepaths.ignore-refs`) erreicht auch `codepaths`. Pinnt die Kombination in
+// CheckCodepaths (`refs := ignoreRefs` + Alias-Anhang): die Mutation `refs := nil`
+// ließ sonst die ganze Suite grün (Review R1-F-1).
+func TestRefsGeteiltesVentilCodepaths(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/tpl/a.md": "Inline-Pfad-Platzhalter: `docs/tpl/weg.py`.\n",
+	})
+	cfg := model.Config{
+		Codepaths:  model.CodepathsConfig{Roots: []string{"docs"}},
+		IgnoreRefs: []model.IgnoreRef{{In: "docs/tpl/**", Refs: []string{"docs/tpl/**"}}},
+	}
+	res, err := Run(m, nil, cfg, []string{"codepaths"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("Top-Level ignore-refs muss codepaths erreichen: %d Befunde, want 0", len(res.Findings))
+	}
+	// Gegenprobe: ohne Top-Level-Ventil fällt der codepath-missing.
+	res2, err := Run(m, nil, model.Config{Codepaths: model.CodepathsConfig{Roots: []string{"docs"}}}, []string{"codepaths"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res2.Findings) != 1 {
+		t.Fatalf("Gegenprobe ohne Ventil: want 1 codepath-missing, got %d", len(res2.Findings))
+	}
+}
+
 // DC-FA-REF-001 — der Quell-Skopus `in` isoliert: dasselbe Ziel-Muster
 // bleibt in einer Datei AUSSERHALB des in-Globs voll geprüft. Beide
 // Dateien referenzieren dasselbe aufgelöste Ziel (ziel/fehlt.md); nur

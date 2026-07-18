@@ -2,6 +2,8 @@ package cli_test
 
 import (
 	"bytes"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -62,6 +64,26 @@ func TestRefs_UngueltigesGlobExit2(t *testing.T) {
 		if code != 2 || !strings.Contains(stderr.String(), "ignore-refs") {
 			t.Fatalf("YAML %q: Exit = %d, stderr = %q, want 2 + ignore-refs-Hinweis", yaml, code, stderr.String())
 		}
+	}
+}
+
+// DC-FA-REF-001 / ADR-0044 Entsch. 7 — die Symlink-Ablehnung
+// (DC-FA-LINK-002) bleibt unberührt: ein Symlink-Ziel, das ein ignore-refs-Glob
+// matcht, erzeugt weiter einen `symlink`-Befund, weil das Ventil NACH der
+// Symlink-Prüfung greift. Pinnt die Reihenfolge in links.go.
+func TestRefs_SymlinkBleibtTrotzVentil(t *testing.T) {
+	dir := t.TempDir()
+	write(t, dir, "docs/real.md", "# Real\n")
+	write(t, dir, "docs/a.md", "[x](slink.md)\n")
+	if err := os.Symlink("real.md", filepath.Join(dir, "docs", "slink.md")); err != nil {
+		t.Skip("Symlink nicht unterstützt: " + err.Error())
+	}
+	write(t, dir, ".d-check.yml", "ignore-refs:\n  - refs: [\"docs/slink.md\"]\n")
+
+	var stdout, stderr bytes.Buffer
+	code := cli.Run([]string{"--enable", "links", dir}, &stdout, &stderr)
+	if code != 1 || !strings.Contains(stdout.String(), "symlink") {
+		t.Fatalf("Symlink trotz ignore-refs: Exit = %d, want 1 + symlink-Befund\nstdout=%s\nstderr=%s", code, stdout.String(), stderr.String())
 	}
 }
 

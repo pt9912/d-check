@@ -197,10 +197,15 @@ ignoriert, **nichts** Reales blind, Gate grün.
   gefangen, kein Platzhalter kommt hinzu; das ausgelieferte v0.48.0-Image nimmt die
   Ventil-Config gar nicht erst an (Top-Level `ignore-refs` unbekannt ⇒ Exit 2). Beleg:
   [`2026-07-18-slice-078-realdatenbeleg-ai-harness-course`](../../../reviews/2026-07-18-slice-078-realdatenbeleg-ai-harness-course.md).
-- [ ] **Nutzerdoku** (Handbuch §5/§6 Ventil-Achsen) + CHANGELOG mit dem
-  Release-Prep.
-- [ ] **Qualität:** unabhängiger, kontext-getrennter Review **vor** dem Release;
-  `make gates`/`make ci` grün.
+- [x] **Nutzerdoku** (Handbuch §5 — die vier Ventil-Achsen gegeneinander erklärt,
+  `in`/`refs`/`keep` + Alias + Config-Beispiel) + CHANGELOG `[0.49.0]`; Release-Prep
+  `8f9535d` (§11-Zeile 1.38, Header, version.md + 7 ghcr-Pins auf v0.49.0).
+- [x] **Qualität:** unabhängiger, kontext-getrennter Review **vor** dem Release
+  ([`2026-07-18-slice-078-implementation-r1`](../../../reviews/2026-07-18-slice-078-implementation-r1.md),
+  **ACCEPT-WITH-NITS**, kein BLOCK/HIGH); die umsetzbaren Nits (R1-F-1 codepaths-
+  Top-Level-Pin, R1-F-3 Symlink-Test, R1-F-4 Doc-Drift) eingearbeitet, F-2 (Alias-Glob
+  fail-open) als vorbestehend/byte-identitäts-gedeckelt notiert. `make gates`/`make ci`
+  grün.
 
 ## 4. Risiken / offene Punkte
 
