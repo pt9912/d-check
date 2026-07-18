@@ -1095,9 +1095,11 @@ byte-identisch.
    ausgenommen — deren Ziel prüft das Modul `links`, der Text ist
    Beschriftung.
 3. Span-Wert normalisieren (iterativ bis stabil): Whitespace trimmen,
-   ein Zeilen-Suffix `:NNN` abtrennen (Datei:Zeile-Konvention),
-   umschließende einfache/doppelte Anführungszeichen und schließende
-   Satzzeichen (`.,;:`) entfernen.
+   ein Zeilen-Suffix `:<von>` bzw. `:<von>-<bis>` abtrennen
+   (Datei:Zeile-Konvention) — bei aktivem `check-lines` wird der Bereich
+   (`<von>`, `<bis>`; ohne `-` ist `<bis> = <von>`) für Schritt 6 **gemerkt**,
+   sonst wie bisher verworfen; umschließende einfache/doppelte
+   Anführungszeichen und schließende Satzzeichen (`.,;:`) entfernen.
 4. Konservative Pfad-Erkennung — **kein** Pfad ist ein Wert, der leer
    ist, Whitespace oder Platzhalter-/Glob-Zeichen (`{}<>|*?=`)
    enthält, Ellipsen/Pfeile (`…`, `->`, `→`) enthält, mit `//` oder
@@ -1117,6 +1119,46 @@ byte-identisch.
    [DC-FA-ANCH-001.b](#dc-fa-anch-001b--inline-html-anker);
    Treffer fehlt → `anchor-missing`). Nicht lesbare Ziele: das Modul
    schweigt zum Anker (Existenz wurde bereits geprüft).
+6. **Zeilen-Check (nur bei `check-lines`):** trägt der Wert einen in
+   Schritt 3 gemerkten Zeilen-Bereich und existiert das aufgelöste,
+   nicht-ignorierte Ziel (Schritt 5 lieferte keinen `codepath-missing`),
+   wird der Bereich geprüft: `von > bis` ⇒ `citation-inverted-range`; sonst
+   hat die Zieldatei weniger als `bis` Zeilen ⇒ `citation-out-of-range`. Ohne
+   `check-lines` entfällt der Schritt (byte-identisch); ein fehlendes Ziel
+   bleibt `codepath-missing` (der Zeilen-Check setzt Existenz voraus, nicht
+   umgekehrt). Der Wert ohne Zeilen-Bereich ist unverändert.
+
+### DC-FA-CITE-001.a — Verbatim-Zitat-Verifikation (`citations`)
+
+Das Modul `citations` prüft **nur** per Direktive ausgezeichnete Zitatblöcke —
+kein Prosa- oder Voll-Scan. Arbeitet auf den rohen Zeilen (fence-aware wie die
+übrigen Module).
+
+**Schritte:**
+
+1. Zeilen mit dem Marker `<!-- d-check:cite <pfad>:<von>-<bis> -->` finden
+   (HTML-Kommentar; `<pfad>` Datei-/Wurzel-relativ wie in
+   [DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code), `<von>`/`<bis>`
+   Zeilennummern, `<bis>` optional = `<von>`). Fehlt die Direktive, prüft das
+   Modul nichts.
+2. Der **Zitatblock** ist die zusammenhängende Folge von `>`-Blockquote-Zeilen
+   **unmittelbar nach** der Direktive (eine Leer- oder Nicht-`>`-Zeile beendet
+   ihn). Fehlt ein Zitatblock, ⇒ fail-closed (Exit 2).
+3. Auflösung von `<pfad>` wie im Modul `links`; fehlt die Zieldatei, verlässt
+   sie die Wurzel oder ist der Bereich ungültig (`von > bis`, `bis` über das
+   Datei-Ende hinaus) ⇒ **fail-closed** (Exit 2) — kein stiller Nicht-Vergleich.
+4. Die Zeilen `von`–`bis` der Zieldatei bilden den **Quelltext**. Der
+   **Zitattext** ist der Zitatblock nach Abtrennen der `> `-Markierung je Zeile
+   (führendes `> ` bzw. `>` ohne Leerzeichen).
+5. **Zeichengenauer Vergleich** (Zeile für Zeile, keine Whitespace-/
+   Formatierungs-Normalisierung): weicht Quelltext von Zitattext ab ⇒ Befund
+   `citation-mismatch` (Datei = prüfende Datei, Zeile = Direktiven-Zeile,
+   `target` = `<pfad>:<von>-<bis>`, Grund). Sonst kein Befund.
+
+Hermetisch (nur Datei-Lesen über den Filesystem-Port, kein git/Netz —
+[`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));
+strikt opt-in, ohne aktives `citations`-Modul byte-identisch
+([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
 
 ### DC-FA-SPAN-001.a — Span-Artefakt-Erkennung
 
@@ -1834,6 +1876,7 @@ Exit 2 ohne Prüfung
 | `codepaths.roots` | string[] | leer | Präfixe relativ zur Repo-Wurzel: nicht leer, nicht absolut, kein `..` (Exit 2); `./`/`../` werden immer erkannt |
 | `codepaths.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `codepaths`-Prüfung — datei-weit, unabhängig von `roots` |
 | `codepaths.ignore-refs` | string[] | leer | **Alias** des geteilten `ignore-refs` ([`DC-FA-REF-001`](lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)), skopiert auf `codepaths` (wie ein Eintrag ohne `in`/`keep`): aufgelöste Ziel-Pfade, die matchen, werden weder existenz-, escape- noch anker-geprüft (kein `codepath-missing`/`repo-escape`/`anchor-missing`) — **referenz-weit**; byte-identisch zur bisherigen Fassung |
+| `codepaths.check-lines` | bool | `false` | Zeilen-Referenz eines Inline-Code-Pfads (`datei:<von>-<bis>`) verifizieren: existierendes Ziel mit ≥ `<bis>` Zeilen (sonst `citation-out-of-range`) und `<von> ≤ <bis>` (sonst `citation-inverted-range`). Default aus ⇒ das Suffix wird wie bisher abgetrennt und verworfen (byte-identisch, [`DC-FA-CODE-001.a`](#dc-fa-code-001a--pfade-in-inline-code) Schritt 6) |
 | `versions.pin-pattern` | string | — | Regex; muss kompilieren und darf den Leerstring nicht matchen (Exit 2); die gefundene Version steht in Capture-Gruppe 1, sonst zählt der ganze Treffer |
 | `versions.current-from` | string | `version.md#aktuell` | `datei#anker` oder `datei`; die Datei muss existieren und innerhalb der Repo-Wurzel liegen, der adressierte Span muss eine Version (`v?\d+\.\d+\.\d+`) tragen (sonst Exit 2) |
 | `versions.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `versions`-Prüfung — datei-weit; die `current-from`-Datei ist stets ausgenommen |
@@ -1968,6 +2011,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung | Verweis |
 |---|---|---|
+| 2026-07-18 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Schritt 3/6 + neue §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) + §2-Schema (`codepaths.check-lines`) — **Zitat-Verifikation** in zwei Teilen: (1) opt-in `codepaths.check-lines` verifiziert die Zeilen-Referenz eines `datei:<von>-<bis>`-Pfads (Ziel existiert + ≥ `<bis>` Zeilen ⇒ sonst `citation-out-of-range`; `<von> ≤ <bis>` ⇒ sonst `citation-inverted-range`), das Suffix wurde bisher abgetrennt und verworfen, default-aus **byte-identisch**. (2) neues Modul `citations`: die Direktive `<!-- d-check:cite <pfad>:<von>-<bis> -->` vor einem `>`-Zitatblock ⇒ **zeichengenauer** Vergleich der Zeilen `<von>`–`<bis>` gegen den Zitatblock (`citation-mismatch`), hermetisch, fail-closed (fehlende Datei/Spanne/ungültiger Bereich ⇒ Exit 2), greift die `codepaths`-`datei:zeile`-Erkennung auf. Grund-Codes (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Erweiterung vs. eigenes Modul, `verbatim`/Direktiven-Design) in begleitender ADR | slice-079 |
 | 2026-07-18 | §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) — neues **geteiltes Referenz-Ventil** `ignore-refs` mit **Quell-Skopus** (`in`) und Zwei-Feld-Semantik (`refs ∧ ¬keep`; `keep` reihenfolge-unabhängig, kein gitignore-Last-Match), honoriert von `links`/`anchors`/`codepaths`. §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Referenz-Ventil **und** Schritt 5 auf das geteilte Ventil umgestellt; die modul-lokale Liste `codepaths.ignore-refs` bleibt **Alias** (byte-identisch). §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) und §[`DC-FA-ANCH-001.a`](spezifikation.md#dc-fa-anch-001a--github-slug-algorithmus) honorieren es (Existenz-/Escape-/Anker-Prüfung übersprungen, Symlink-Prüfung bleibt). §2-Schema: Top-Level `ignore-refs[].in`/`refs`/`keep` + `codepaths.ignore-refs` als Alias annotiert. **CR** (Konsument `ai-harness-course`); Begründung (Zwei-Feld vs. `!`-Negation, Alias-Pfad) in der begleitenden ADR | slice-078 |
 | 2026-07-18 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritt 5 — **Direktiven-Toleranz** ergänzt: eine Datenzeile mit **genau einer** überzähligen, ganzzelligen HTML-Kommentar-Zelle (`<!-- … -->` hinter der letzten Pipe) wird auf Header-Breite gelesen (GFM-nachsichtig für Body); d-checks eigene `<!-- d-check:ignore … -->`-Konvention in einer Tabellenzeile bricht den Reader nicht mehr ab. Zwei überzählige Zellen oder eine Nicht-Kommentar-Zelle bleiben Exit 2. **Sicherer Aufsatz** auf der Tabellengrenze (Schritt 5, slice-077): eine relevante Folgetabelle wird nicht mehr verschluckt — der zuvor fünffach reproduzierte stille Übersprung ist strukturell zu. Wirkt über den geteilten Reader zugleich auf §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). **Defekt-Fix (rot→grün: ein spurioser Exit 2 wird lesbar), kein CR; SemVer-Patch.** Begründung in [ADR-0040](../docs/plan/adr/0040-kommentar-suffix-in-tabellenzeilen.md) | slice-074 |
 | 2026-07-18 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritt 5 — **Tabellengrenze am relevanten Header** ergänzt: bildet eine Zeile mit ihrer Folgezeile einen gültigen Header + Trennzeile und **bindet ihr Header eine Rolle** (Schritt 4), beendet sie die laufende Tabelle — auch bei passender Zellenzahl. Damit wird jede relevante Tabelle erkannt und kann nicht mehr still in einer vorangehenden (irrelevanten) verschwinden; ein rollenloser Header (z. B. all-dashes) beendet **nicht** (Gegenprobe `fx-t`). Wirkt über den geteilten Reader zugleich auf §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). **Defekt-Fix, kein CR** (das Lastenheft definiert keine Tabellengrenze), aber **SemVer-Minor**: d-check findet danach **mehr**. Belegt gegen das ausgelieferte v0.47.0-Image (`fx-s`: still `1 Waise` statt 3). Begründung in [ADR-0043](../docs/plan/adr/0043-tabellengrenze-am-relevanten-header.md) | slice-077 |
