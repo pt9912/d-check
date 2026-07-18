@@ -1,6 +1,6 @@
 # Spezifikation — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-17.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-18.
 
 **Bezug zum Lastenheft:** Diese Spezifikation präzisiert die in
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
@@ -754,6 +754,55 @@ Waisen) — die Durchsetzung ist strikt opt-in und ändert den
 [`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)-Vertrag
 nicht.
 
+### DC-FA-REF-001.a — Geteiltes Referenz-Ventil (`ignore-refs`)
+
+Anwendbar in `links`
+([DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)),
+`anchors` ([DC-FA-ANCH-001.a](#dc-fa-anch-001a--github-slug-algorithmus)) und
+`codepaths` ([DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code)). Betrachtet
+werden je Referenz die **Quelldatei** `S` (Wurzel-relativ) und der im jeweiligen
+Modul **aufgelöste** Ziel-Pfad `T` (der Befund-`target`; Fragmente sind bereits
+abgetrennt).
+
+**Match-Prädikat.** Die Referenz wird vom Ventil **ignoriert**, wenn **mindestens
+ein** `ignore-refs`-Eintrag `E` erfüllt:
+
+```text
+(E.in fehlt  ∨  match(E.in, S))  ∧  match(E.refs, T)  ∧  ¬match(E.keep, T)
+```
+
+— der Quell-Skopus trifft (oder ist offen), ein `refs`-Glob trifft das aufgelöste
+Ziel, und **kein** `keep`-Glob **desselben Eintrags** trifft es. `keep` gewinnt
+innerhalb seines Eintrags **unbedingt und reihenfolge-unabhängig** (kein
+gitignore-Last-Match). Alle Globs matchen wie `scan.ignore` (`matchGlob`,
+segmentweises `**`), gegen den **aufgelösten** Pfad bzw. die Quelldatei. Mehrere
+Einträge wirken additiv (Union der Ignorier-Prädikate).
+
+**Wirkung.** Ignoriert → das Modul überspringt für dieses Ziel die **Existenz**-, die
+**Repo-Escape**- und (bei Markdown-Zielen) die **Anker**-Prüfung (kein
+`target-missing`/`codepath-missing`/`repo-escape`/`anchor-missing`) — dieselbe
+Unterdrückung, die das modul-lokale `codepaths.ignore-refs` bisher leistete, jetzt
+geteilt. Die **Symlink-Ablehnung**
+([`DC-FA-LINK-002`](lastenheft.md#dc-fa-link-002--symlink-ablehnung), Vorrang, greift
+nur an existierenden Symlink-Zielen) bleibt unberührt; andere Module ebenso. Ein
+Eintrag mit leerer/fehlender `refs`-Liste ist inert. Ohne jeden `ignore-refs`-Eintrag
+ist der Befundsatz byte-identisch
+([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
+
+**Alias `codepaths.ignore-refs`.** Die modul-lokale Liste wird wie ein
+`ignore-refs`-Eintrag ohne `in`/`keep` behandelt, dessen `refs` die Liste ist,
+angewandt **nur** in `codepaths` — die Fassung vor dieser Anforderung
+([DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code)) bleibt damit
+byte-identisch. Top-Level-`ignore-refs` und Alias wirken additiv.
+
+**Achsen-Präzedenz.** `scan.ignore` (Quell-Achse) entfernt ganze Dateien **vor** jeder
+Modul-Prüfung; deren Referenzen erreichen das Ventil nie. Der Zeilen-Marker
+`d-check:ignore` (nur `codepaths`, Schritt 1) wirkt **vor** der Pfad-Erkennung.
+`ignore-refs` (Ziel-Achse) wirkt **bei der Auflösung** des Ziels. Die drei Achsen sind
+orthogonal; keine überschreibt eine andere.
+
+---
+
 ### DC-FA-LINK-001.a — Markdown-Vorverarbeitung und Link-Extraktion
 
 1. **Fences:** Zeilen, deren erste Nicht-Leerzeichen-Folge mit
@@ -797,6 +846,11 @@ nicht.
    Symlink ⇒ Befund `symlink`, unabhängig vom Symlink-Ziel; Vorrang
    vor `repo-escape`, genau ein Befund pro Linkziel.
 
+Vor `target-missing`/`repo-escape` greift das geteilte Referenz-Ventil
+([DC-FA-REF-001.a](#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs)): ein
+aufgelöstes Ziel, das ein `ignore-refs`-Eintrag ignoriert, wird übersprungen; die
+Symlink-Prüfung bleibt.
+
 ### DC-FA-ANCH-001.a — GitHub-Slug-Algorithmus
 
 **Eingabe:** Heading-Text (ATX, `#`–`######`). **Schritte:**
@@ -818,6 +872,9 @@ Fortschreibung dieser Datei genügt, falls Bedarf entsteht. Existiert
 die Zieldatei eines `ziel.md#anker`-Links nicht, schweigt `anchors`
 (Befund kommt von `links`,
 [`DC-FA-ANCH-001`](lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors)).
+Das geteilte Referenz-Ventil
+([DC-FA-REF-001.a](#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs)) überspringt
+die Anker-Prüfung eines Ziels, das ein `ignore-refs`-Eintrag ignoriert.
 
 ### DC-FA-ANCH-001.b — Inline-HTML-Anker
 
@@ -1011,14 +1068,17 @@ Repo-Wurzel), werden **ganz** übersprungen — datei-weit, unabhängig von
 zeilenweisen `d-check:ignore` (Schritt 1). Ohne gesetztes `exempt-paths`
 byte-identisch.
 
-**Referenz-Ventil (`ignore-refs`):** Ein in Schritt 5 Wurzel-relativ aufgelöster
-Ziel-Pfad, der ein Glob aus `codepaths.ignore-refs` matcht (Syntax wie `scan.ignore`),
-wird **nicht** existenz-, escape- oder anker-geprüft (kein `codepath-missing`,
-`repo-escape` oder `anchor-missing`) — **referenz-weit**, unabhängig von Datei
-und Zeile (anders als das datei-weite `exempt-paths` und das zeilenweise
-`d-check:ignore`). Register bewusst entfernter/historischer Artefakte (Tombstones),
-deren Pfad immutable/historische Doku noch zitiert; es unterdrückt nur die Prüfung
-*dieses* Pfads, keine anderen Befunde. Ohne gesetztes `ignore-refs` byte-identisch.
+**Referenz-Ventil (`ignore-refs`):** `codepaths` honoriert das **geteilte
+Referenz-Ventil** [DC-FA-REF-001.a](#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs):
+ein in Schritt 5 aufgelöster Ziel-Pfad, den ein `ignore-refs`-Eintrag ignoriert
+(Quell-Skopus `in` ∧ `refs` ∧ ¬`keep`), wird **nicht** existenz-, escape- oder
+anker-geprüft (kein `codepath-missing`, `repo-escape` oder `anchor-missing`) —
+**referenz-weit**, unabhängig von Datei und Zeile (anders als das datei-weite
+`exempt-paths` und das zeilenweise `d-check:ignore`). Es unterdrückt nur die Prüfung
+*dieses* Pfads, keine anderen Befunde. Die modul-lokale Liste `codepaths.ignore-refs`
+bleibt als **Alias** gültig (wie ein Eintrag ohne `in`/`keep`, skopiert auf
+`codepaths`) — byte-identisch zur bisherigen Fassung. Ohne jeden Eintrag
+byte-identisch.
 
 **Schritte:**
 
@@ -1046,10 +1106,10 @@ deren Pfad immutable/historische Doku noch zitiert; es unterdrückt nur die Prü
    konfigurierten Präfixe aus `codepaths.roots` (Wurzel-relativ;
    Vergleich gegen `präfix/`).
 5. Auflösung wie im Modul `links` (inkl. RFC-3986-Dekodierung):
-   Fragment abtrennen; matcht der Wurzel-relative Pfad ein
-   `codepaths.ignore-refs`-Glob, wird er übersprungen (kein Befund, s. o.
-   Referenz-Ventil); sonst: Escape → `repo-escape`; fehlendes Ziel →
-   `codepath-missing`. Trägt der Wert ein Fragment und ist das Ziel
+   Fragment abtrennen; ignoriert das geteilte Referenz-Ventil (`ignore-refs`
+   inkl. Alias `codepaths.ignore-refs`) den aufgelösten Pfad, wird er übersprungen
+   (kein Befund, s. o. Referenz-Ventil); sonst: Escape → `repo-escape`; fehlendes
+   Ziel → `codepath-missing`. Trägt der Wert ein Fragment und ist das Ziel
    eine Markdown-Datei, wird der Anker gegen die gültige Anker-Menge
    der Zieldatei geprüft (Heading-Slugs und Inline-HTML-Anker; Verfahren
    und Cache wie
@@ -1746,6 +1806,10 @@ Exit 2 ohne Prüfung
 |---|---|---|---|
 | `scan.roots` | string[] | `DEFAULT_SCAN_ROOTS` | alle hier deklarierten Wurzeln müssen existieren und innerhalb der Repo-Wurzel liegen (Exit 2); nur die Default-Wurzeln (kein `scan.roots` gesetzt) sind optional; `"."` steht für die gesamte Repo-Wurzel (rekursiv; die `SKIP_DIRS` aus [§3](#3-defaults-und-konstanten) gelten immer und sind nicht konfigurierbar) |
 | `scan.ignore` | string[] | leer | Glob-Syntax; Muster prunen auch den Verzeichnis-Abstieg — ein vollständig ignorierter Teilbaum (`pfad/**` oder direkt matchendes Muster) wird nicht betreten, unlesbare ignorierte Verzeichnisse sind dadurch kein Laufzeitfehler |
+| `ignore-refs` | object[] | leer | Geteiltes Referenz-Ventil ([`DC-FA-REF-001`](lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)), honoriert von `links`/`anchors`/`codepaths`; jeder Eintrag `{in?, refs, keep?}`. Ohne Einträge byte-identisch |
+| `ignore-refs[].in` | string | — (offen) | optionaler Glob (wie `scan.ignore`) auf die **Quelldatei** (die Datei, in der die Referenz steht); ungesetzt = repo-weit |
+| `ignore-refs[].refs` | string[] | leer | Glob-Liste auf den **aufgelösten Ziel-Pfad**; leer/fehlend = Eintrag inert (ignoriert nichts) |
+| `ignore-refs[].keep` | string[] | leer | Glob-Liste; Ausnahmen — ein Ziel wird nur ignoriert, wenn `refs` matcht **und** `keep` **nicht** (`keep` gewinnt reihenfolge-unabhängig, kein gitignore-Last-Match) |
 | `modules` | string[] | `DEFAULT_MODULES` | nur gültige Modulnamen |
 | `<modul>.scope.roots` | string[] | — (globaler Scope) | Pflicht, wenn `scope` gesetzt ist; Constraints wie `scan.roots` (Existenz, kein Repo-Escape, `"."` = Repo-Wurzel, leere Liste = nichts) |
 | `<modul>.scope.ignore` | string[] | leer | wie `scan.ignore` (Glob, Abstiegs-Pruning) |
@@ -1769,7 +1833,7 @@ Exit 2 ohne Prüfung
 | `external.parallel` | integer | 4 | 1–16 |
 | `codepaths.roots` | string[] | leer | Präfixe relativ zur Repo-Wurzel: nicht leer, nicht absolut, kein `..` (Exit 2); `./`/`../` werden immer erkannt |
 | `codepaths.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `codepaths`-Prüfung — datei-weit, unabhängig von `roots` |
-| `codepaths.ignore-refs` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden weder existenz-, escape- noch anker-geprüft (kein `codepath-missing`/`repo-escape`/`anchor-missing`) — **referenz-weit** (Datei-/Zeilen-unabhängig), Tombstone-Register bewusst entfernter Artefakte; ohne Eintrag byte-identisch |
+| `codepaths.ignore-refs` | string[] | leer | **Alias** des geteilten `ignore-refs` ([`DC-FA-REF-001`](lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)), skopiert auf `codepaths` (wie ein Eintrag ohne `in`/`keep`): aufgelöste Ziel-Pfade, die matchen, werden weder existenz-, escape- noch anker-geprüft (kein `codepath-missing`/`repo-escape`/`anchor-missing`) — **referenz-weit**; byte-identisch zur bisherigen Fassung |
 | `versions.pin-pattern` | string | — | Regex; muss kompilieren und darf den Leerstring nicht matchen (Exit 2); die gefundene Version steht in Capture-Gruppe 1, sonst zählt der ganze Treffer |
 | `versions.current-from` | string | `version.md#aktuell` | `datei#anker` oder `datei`; die Datei muss existieren und innerhalb der Repo-Wurzel liegen, der adressierte Span muss eine Version (`v?\d+\.\d+\.\d+`) tragen (sonst Exit 2) |
 | `versions.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `versions`-Prüfung — datei-weit; die `current-from`-Datei ist stets ausgenommen |
@@ -1904,6 +1968,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung | Verweis |
 |---|---|---|
+| 2026-07-18 | §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) — neues **geteiltes Referenz-Ventil** `ignore-refs` mit **Quell-Skopus** (`in`) und Zwei-Feld-Semantik (`refs ∧ ¬keep`; `keep` reihenfolge-unabhängig, kein gitignore-Last-Match), honoriert von `links`/`anchors`/`codepaths`. §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Referenz-Ventil **und** Schritt 5 auf das geteilte Ventil umgestellt; die modul-lokale Liste `codepaths.ignore-refs` bleibt **Alias** (byte-identisch). §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) und §[`DC-FA-ANCH-001.a`](spezifikation.md#dc-fa-anch-001a--github-slug-algorithmus) honorieren es (Existenz-/Escape-/Anker-Prüfung übersprungen, Symlink-Prüfung bleibt). §2-Schema: Top-Level `ignore-refs[].in`/`refs`/`keep` + `codepaths.ignore-refs` als Alias annotiert. **CR** (Konsument `ai-harness-course`); Begründung (Zwei-Feld vs. `!`-Negation, Alias-Pfad) in der begleitenden ADR | slice-078 |
 | 2026-07-18 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritt 5 — **Direktiven-Toleranz** ergänzt: eine Datenzeile mit **genau einer** überzähligen, ganzzelligen HTML-Kommentar-Zelle (`<!-- … -->` hinter der letzten Pipe) wird auf Header-Breite gelesen (GFM-nachsichtig für Body); d-checks eigene `<!-- d-check:ignore … -->`-Konvention in einer Tabellenzeile bricht den Reader nicht mehr ab. Zwei überzählige Zellen oder eine Nicht-Kommentar-Zelle bleiben Exit 2. **Sicherer Aufsatz** auf der Tabellengrenze (Schritt 5, slice-077): eine relevante Folgetabelle wird nicht mehr verschluckt — der zuvor fünffach reproduzierte stille Übersprung ist strukturell zu. Wirkt über den geteilten Reader zugleich auf §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). **Defekt-Fix (rot→grün: ein spurioser Exit 2 wird lesbar), kein CR; SemVer-Patch.** Begründung in [ADR-0040](../docs/plan/adr/0040-kommentar-suffix-in-tabellenzeilen.md) | slice-074 |
 | 2026-07-18 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritt 5 — **Tabellengrenze am relevanten Header** ergänzt: bildet eine Zeile mit ihrer Folgezeile einen gültigen Header + Trennzeile und **bindet ihr Header eine Rolle** (Schritt 4), beendet sie die laufende Tabelle — auch bei passender Zellenzahl. Damit wird jede relevante Tabelle erkannt und kann nicht mehr still in einer vorangehenden (irrelevanten) verschwinden; ein rollenloser Header (z. B. all-dashes) beendet **nicht** (Gegenprobe `fx-t`). Wirkt über den geteilten Reader zugleich auf §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). **Defekt-Fix, kein CR** (das Lastenheft definiert keine Tabellengrenze), aber **SemVer-Minor**: d-check findet danach **mehr**. Belegt gegen das ausgelieferte v0.47.0-Image (`fx-s`: still `1 Waise` statt 3). Begründung in [ADR-0043](../docs/plan/adr/0043-tabellengrenze-am-relevanten-header.md) | slice-077 |
 | 2026-07-17 | §[`DC-FA-COV-001.a`](spezifikation.md#dc-fa-cov-001a--kuratierte-coverage-quellen-tracecoverage) Schritt 3 — **Komma-Kurzform-Regel geschärft** (bei der Implementierung): sie greift nicht nur direkt hinter der Kennung, sondern **auch hinter einer konsumierten Range/Enum** (`<FAM>-AAA..CCC, DDD`). Anlass: der reale Auslöser in grid-gyms `traceability.md` ist `GG-SCN-001..005, 007, 008` — die enge Erst-Formulierung („folgt der Fundstelle ein Komma") ließ `007, 008` **still** fallen (Exit 0, 3 Waisen, gemessen), obwohl genau dieser stille Drop der Zweck des Slice war. Ein Komma vor einer vollständigen Kennung bleibt auch nach einer Range unberührt. Begründung in [ADR-0041](../docs/plan/adr/0041-komma-kurzform-fail-closed.md) | slice-075 |
