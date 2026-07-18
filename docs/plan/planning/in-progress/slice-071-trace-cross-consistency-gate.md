@@ -1,13 +1,14 @@
 # Slice slice-071: Trace-Kreuzverweis-Konsistenz-Gate (Vorwärts-RTM ↔ Rück-Kanten)
 
-**Status:** open — **`in-progress` → `open` am 2026-07-17 (Blocker)**. Code,
-Spezifikation, [ADR-0038](../../adr/0038-trace-cross-consistency.md) und vier Review-Runden plus Closure-Review liegen vor;
-v0.44.0/v0.45.0 sind getaggt. **Offen ist allein der Realdatenbeleg**, und der
-ist blockiert: der Lauf gegen grid-gyms `spec/architecture.md` bricht an Zeile 913
-mit Exit 2 ab, weil dort d-checks eigene Ignore-Direktive in einer Tabellenzeile
-steht — [slice-074](../done/slice-074-kommentar-suffix-tabellenzeilen.md), dessen
-Implementierung am selben Tag zurückgenommen wurde und dessen tragende Regel offen
-ist.
+**Status:** in-progress — **am 2026-07-18 wieder aufgenommen**
+(`open`→`in-progress`, Blocker aufgelöst). Code, Spezifikation,
+[ADR-0038](../../adr/0038-trace-cross-consistency.md) und vier Review-Runden plus
+Closure-Review liegen vor; v0.44.0/v0.45.0 sind getaggt und veröffentlicht. Der
+letzte offene DoD-Punkt — der Realdatenbeleg gegen grid-gym — ist **erbracht**
+(d-check v0.48.1): der `17. Testarchitektur`-Abschnitt, der bis v0.48.0 an
+`spec/architecture.md:913` an d-checks eigener Ignore-Direktive in einer
+Tabellenzeile abbrach (Exit 2), läuft mit der Direktiven-Toleranz aus slice-074
+([ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md)) durch.
 
 **Welle:** welle-60-trace-cross-consistency — **inhaltlich weiter Teil der Welle**,
 aber nicht in Arbeit. Modul 5: `in-progress→open` ist der Übergang für „Blocker,
@@ -96,20 +97,26 @@ Reader-Reuse und byte-identischer RTM für Nicht-Konsumenten.
 - [x] **Tests:** konsistentes 1:N grün, beide Richtungsdifferenzen, range-aware,
   superset, Ableitungssprung-Ausschluss, fail-closed-Config, byte-identischer
   Default.
-- [ ] **Realdatenbeleg grid-gym:** der reale §27.1-↔-`Bezug`-Drift wird geflaggt,
-  die nach `spezifikation.md` verschobenen Familien nicht (Ventil greift); ein
-  konsistentes 1:N läuft grün. — **Teilstand:** die Drift-*Gestalt* des Triggers
-  (`F = {COMP-CORE, COMP-DOMAIN}` vs. `B = {P-005, P-009, COMP-SCHED}`,
-  Schnittmenge null, plus Mittelschicht-Kante) ist als CLI-Akzeptanztest
-  reproduziert und wird geflaggt; das Ventil greift, das konsistente 1:N läuft
-  grün. Der Lauf gegen das **echte** grid-gym-Repo steht aus — er hängt an der in
-  §4 benannten Konsumenten-Vorarbeit (§27.1 auf konkrete IDs restrukturieren) und
-  ist erst danach aussagekräftig.
+- [x] **Realdatenbeleg grid-gym:** erbracht mit d-check **v0.48.1** gegen die realen
+  grid-gym-Quellen (§27.1-Vorwärts-Sicht gegen die `Bezug`-Rück-Kanten der
+  Architektur). Der reale §27.1-↔-`Bezug`-Drift wird geflaggt —
+  `GG-ARCH-005` (§27.1 nennt `COMP-CORE`/`COMP-DOMAIN`, Rück-Kanten
+  `COMP-SCHED`/`P-005`/`P-009`, Schnittmenge null) und `GG-SIM-009`, beide Richtungen
+  gelabelt; die per `exclude-req` ausgeschlossenen Familien nicht (Ventil greift,
+  0 Befunde); das konsistente 1:N läuft grün. Die dokumentierte Messung
+  (161 Differenzen) reproduziert. Der bis dahin blockierende `17. Testarchitektur`-
+  Abschnitt läuft durch — bis v0.48.0 brach er an `architecture.md:913` mit „913 hat
+  4 statt 3 Zellen" ab; die Direktiven-Toleranz aus slice-074 ist der entblockende
+  Mechanismus (Vorher/Nachher belegt). Beleg:
+  [`2026-07-18-slice-071-realdatenbeleg-grid-gym`](../../../reviews/2026-07-18-slice-071-realdatenbeleg-grid-gym.md).
 - [x] **Nutzerdoku:** Handbuch 1.30 (§4.12 Aufgabe mit **am Image verifizierter**
   Ausgabe + E2E-Verankerung im Beispiel-Harness, §5 Config), CHANGELOG 0.44.0,
   `operations.md` (`--trace` + die zweite `--require-complete`-Gate-Ursache).
-- [ ] **Release:** Versionsregister/Release-Prep **erledigt** (v0.44.0, `make ci`
-  grün); Tag, GHCR-Push und Digest-Backfill stehen aus.
+- [x] **Release:** v0.44.0 (Kern) + v0.45.0 (Scope-Trennung `forward.req-pattern`)
+  getaggt, auf GHCR gepusht und als GitHub-Release veröffentlicht (2026-07-17); der
+  Digest-Backfill erfolgte zum jeweiligen Release, der Handbuch-§4-Pin ist seither
+  weitergezogen. Der Realdatenbeleg selbst ist Verifikation (kein Code) und braucht
+  kein eigenes Release.
 - [x] **Qualität:** vier unabhängige, kontext-getrennte Review-Runden (R1 REJECT →
   R4 ohne Code-Vorbehalt) plus unabhängiger Closure-Review
   ([`2026-07-17-slice-071-closure-independent.md`](../../../reviews/2026-07-17-slice-071-closure-independent.md),
