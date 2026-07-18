@@ -51,6 +51,29 @@ func TestDiagramsUndefinedID(t *testing.T) {
 	}
 }
 
+// slice-076 (Review R-F-2): der geteilte FenceToggle wirkt auch auf
+// diagramFenceLines — die dritte Aufrufstelle. Eine mermaid-Öffner-Zeile mit
+// Backtick in der Infozeile ist nach CommonMark kein Fence-Öffner; ihr Inhalt
+// bleibt Prosa und wird NICHT als Diagramm gelesen (0 Befunde). Ohne die Regel
+// an dieser Stelle öffnete die Zeile einen mermaid-Fence, ARC-99 würde gelesen
+// und — weil die defined-in-Quelle es nicht kennt — als diagram-id-undefined
+// gemeldet. Die defined-in-Quelle ist bewusst eine **separate** Datei: läge das
+// Diagramm in derselben Datei, „rettete" der proseLines-basierte Definitions-Scan
+// (nicht mutiert) das ARC-99 als Prosa-Definition und maskierte die Mutation.
+func TestDiagramsInfozeileMitBacktickKeinFence(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"spec/diag.md": "```mermaid `x`\nC[\"ARC-99\"]\n```\n",
+		"spec/defs.md": "ARC-01 ist definiert.\n",
+	})
+	res, err := Run(m, nil, diagramsCfg("spec/defs.md"), []string{"diagrams"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("Infozeile mit Backtick fälschlich als mermaid-Fence gelesen: %+v", res.Findings)
+	}
+}
+
 // DC-FA-DIAG-001 Happy: alle Kennungen im Diagramm in defined-in definiert
 // → kein Befund.
 func TestDiagramsAllDefined(t *testing.T) {

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
+	"github.com/pt9912/d-check/internal/hexagon/core/rules"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
@@ -287,11 +288,12 @@ func markdownTableLines(content []byte) []markdownTableLine {
 		trimmed := strings.TrimLeft(raw, " \t")
 		if char, run := fenceMarker(trimmed); run >= 3 {
 			if fenceLen == 0 {
-				// Infozeilen-Regel (CommonMark, DC-FA-LINK-001.a Schritt 1):
-				// eine Backtick-Fence, deren Infozeile einen Backtick enthält,
-				// ist kein Öffner, sondern Fließtext — sie fällt auf die
-				// Prosa-Zuweisung durch. Für ~~~ gilt die Regel nicht.
-				if char != '`' || strings.IndexByte(trimmed[run:], '`') == -1 {
+				// Öffner-Entscheidung inkl. CommonMark-Infozeilen-Regel über das
+				// GETEILTE Prädikat rules.FenceToggle — dieselbe Definition wie in
+				// proseLines, damit trace und links dasselbe Dokument sehen
+				// (Review R-F-1). Nur der längenabgeglichene Schluss (unten) bleibt
+				// lokal (ADR-0042: naiver-Toggle-vs-strikter-Schluss bewusst offen).
+				if rules.FenceToggle(trimmed) {
 					fenceChar, fenceLen = char, run
 					continue
 				}
