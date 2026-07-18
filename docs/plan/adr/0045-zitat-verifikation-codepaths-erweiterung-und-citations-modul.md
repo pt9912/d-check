@@ -1,6 +1,6 @@
 # ADR-0045 — Zitat-Verifikation: `codepaths`-Zeilen-Check erweitern, `verbatim` als eigenes Modul `citations`
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-18
 **Autor:** pt9912
 **Schärft:** [`DC-FA-CITE-001.a`](../../../spec/spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations)
@@ -135,3 +135,4 @@ zeichengenau gegen die Quell-Spanne geprüft).
 |---|---|
 | 2026-07-18 | Proposed. Change Request Adopter `ai-harness-init` (2026-07-17). §4-Vorfragen entschieden: Adopter-Rückfrage empirisch (33/33 Zitate in Inline-Code ⇒ `codepaths`-Erweiterung); Zuschnitt Form (c) vom Auftraggeber. Umsetzender Slice slice-079. |
 | 2026-07-18 | **Doc-first-Design-Review R1** (BLOCK scoped auf Stufe 3) eingearbeitet, Status weiterhin `Proposed`: das Verbatim-Modell von „zeilenweise zeichengenau gegen `>`-Blöcke" auf **whitespace-normalisierten Teilstring** (inline/re-wrapped/Teilzeilen-tolerant) umgestellt und am **realen** Adopter-Zitat validiert (korrekt = grün, ein gedriftetes Wort = rot); die Direktive markiert nun inline **oder** Block-Zitate; das Reuse-Argument (F-5) auf „eigener Detektor, geteilte Pfad-Auflösung" korrigiert. Stufe 1/2 waren geerdet. Offen ausgewiesen: das Stufe-3-Substrat (Direktiven) muss der Adopter erst schaffen. |
+| 2026-07-18 | **Accepted.** Umgesetzt in slice-079 (**v0.50.0**): opt-in `codepaths.check-lines` (Grund-Codes `citation-out-of-range`/`citation-inverted-range`) + neues 18. Modul `citations` (`citation-mismatch`, `d-check:cite`-Direktive, whitespace-normalisierter Teilstring, Mindestlänge 16, fail-closed). **Pre-Release-Review R1** (unabhängig, kontext-getrennt): BLOCK auf F-1 (unkontrollierter Absturz bei `von=0`, `lines[-1:]`) ⇒ gefixt (1-basierte Untergrenze `von < 1 ⇒ citation-inverted-range` in **beiden** Schwestern, regressions-gepinnt + mutations-belegt), Gegenprüfung ACCEPT. **Realdatenbeleg** gegen `ai-harness-init` erbracht (korrektes re-wrapped inline-Zitat grün, ein gedriftetes Wort `citation-mismatch`; Baseline 0 Direktiven belegt den Substrat-Caveat). |
