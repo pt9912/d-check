@@ -1,6 +1,6 @@
 # ADR-0038 — Kreuzverweis-Konsistenz zweier Traceability-Sichten als `trace`-Unterfähigkeit
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-16
 **Autor:** pt9912
 **Schärft:** [`DC-FA-XREF-001.a`](../../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency)
@@ -209,3 +209,4 @@ read-only — sie passt in das `--trace`/`--require-complete`-Idiom
 | 2026-07-17 | Entscheidung 8 (Vakuität) nachgetragen, Status weiterhin `Proposed`. Anlass: unabhängiges Closure-Review zu slice-071 — R1 reproduzierte, dass die nur *beschriebene* Namensraum-Vorbedingung ein stilles Grün zuließ (HIGH); R2 wies den ersten, symmetrisch je Sicht feuernden Fix als vertragswidrig nach (er brach den Bootstrap-Zustand aus Entscheidung 3). Vertrag nachgezogen als Lastenheft-CR 0.44.1 ([`DC-FA-XREF-001`](../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)) + [`DC-FA-XREF-001.a`](../../../spec/spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency) Schritt 5. |
 | 2026-07-17 | Entscheidung 9 (Vergleichs-Schlüsselmenge ≠ RTM-Anforderungsmenge) nachgetragen: `forward.req-pattern` macht die bis dahin stille Kopplung an `requirements.id-pattern` sichtbar und überschreibbar. Status weiterhin `Proposed`. Anlass: Realdaten-Lauf des Konsumenten grid-gym gegen v0.44.0 (Defekt 1) — bei gescopter RTM verschwand die `F \ B`-Drift, und der verbleibende Befund sah wie ein Treffer aus. Vertrag nachgezogen als Lastenheft-CR 0.45.0. |
 | 2026-07-17 | Entscheidung 8 auf die **Wirkungs-Fassung** gezogen (Messung nach dem `exclude-req`-Ausschluss) + Entscheidung 5 um den geguardeten Totalfall annotiert; Status weiterhin `Proposed`. Anlass: Review R3 reproduzierte, dass `exclude-req: '.'` das Gate bei realem Drift still abschaltete — dieselbe Silent-Green-Klasse, andere Ursache. Vertrag nachgezogen als Lastenheft-CR 0.44.2. |
+| 2026-07-18 | **Accepted.** Der von Entscheidung 7 geforderte Realdatenbeleg gegen grid-gyms reale Quellen ist erbracht (slice-071, d-check v0.48.1): der §27.1-↔-`Bezug`-Drift wird geflaggt (`GG-ARCH-005`/`GG-SIM-009`, Schnittmenge null, beide Richtungen gelabelt), das `exclude-req`-Ventil greift (0 Befunde), das konsistente 1:N läuft grün, die dokumentierte 161-Differenzen-Messung reproduziert. Der zuvor an `architecture.md:913` blockierende `17. Testarchitektur`-Abschnitt läuft mit der Direktiven-Toleranz aus slice-074 durch — die Fitness-Funktion ist damit erfüllt. |
