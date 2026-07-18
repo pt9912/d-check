@@ -8,26 +8,28 @@
 
 ## Aktuelle Welle
 
-**Aktive Welle: welle-60-trace-cross-consistency.** slice-071 ist **wieder
-aufgenommen** (`in-progress/`): der Blocker (slice-074) ist mit **v0.48.1** aufgelöst,
-der WIP-Slot war frei (Modul 5, WIP-Limit = 1, `open→next→in-progress` in einem Zug),
-und der letzte offene DoD-Punkt wird jetzt erbracht — der von
+**Keine aktive Welle.** welle-60-trace-cross-consistency ist **abgeschlossen**:
+slice-071 ist geschlossen (`done/`) — der letzte offene DoD-Punkt, der von
 [ADR-0038](../../adr/0038-trace-cross-consistency.md) Entscheidung 7 geforderte
-**Realdatenbeleg** gegen grid-gyms reale §27.1-↔-`Bezug`-Quellen. Mit der
-Direktiven-Toleranz aus slice-074 läuft der `17. Testarchitektur`-Abschnitt durch,
-statt an `architecture.md:913` mit „913 hat 4 statt 3 Zellen" abzubrechen.
+**Realdatenbeleg** gegen grid-gyms reale §27.1-↔-`Bezug`-Quellen, ist **erbracht**
+(d-check v0.48.1): der Drift wird geflaggt (`GG-ARCH-005`/`GG-SIM-009`), das
+`exclude-req`-Ventil greift (0 Befunde), das konsistente 1:N läuft grün, die
+dokumentierte 161-Differenzen-Messung reproduziert; der zuvor an
+`architecture.md:913` blockierende `17. Testarchitektur`-Abschnitt läuft mit der
+Direktiven-Toleranz aus slice-074 durch. Die begründende ADR ist `Accepted`.
+`in-progress/` ist leer, der WIP-Slot frei.
 
-**Stand von welle-60** (pausiert, nicht abgeschlossen):
+**Stand von welle-60** (abgeschlossen):
 [`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) **done**
 (v0.45.1, R2 ACCEPT-WITH-NITS). ·
 [`slice-075`](../done/slice-075-komma-kurzform-fail-closed.md) **done**
 (Komma-Kurzform fail-closed, R1 ACCEPT-WITH-NITS, **v0.46.0 veröffentlicht**). ·
 [`slice-076`](../done/slice-076-markdown-lexik-commonmark.md) **done**
 (Markdown-Lexik CommonMark/GFM, ACCEPT-WITH-NITS, **v0.47.0 veröffentlicht**). ·
-[`slice-071`](../in-progress/slice-071-trace-cross-consistency-gate.md)
-in `in-progress/`, **Realdatenbeleg läuft** (Blocker slice-074 aufgelöst);
-[`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in),
-Code und Reviews liegen vor, v0.44.0/v0.45.0 sind getaggt.
+[`slice-071`](../done/slice-071-trace-cross-consistency-gate.md) **done**
+(Realdatenbeleg erbracht, [ADR-0038](../../adr/0038-trace-cross-consistency.md)
+`Accepted`, R1–R4 + Closure-Review; **v0.44.0/v0.45.0 veröffentlicht**),
+[`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in).
 
 **Vorgänger-Trigger:** welle-59-trace-tabellenquellen abgeschlossen
 ([`slice-070`](../done/slice-070-trace-tabellenquellen-nullmengen-guard.md) in
@@ -39,23 +41,28 @@ null, von keinem Gate bemerkt.
 
 **Closure-Kriterien von welle-60:**
 
-- Beide Richtungsdifferenzen, `superset`, range-aware Expansion und das
+- **[erfüllt]** Beide Richtungsdifferenzen, `superset`, range-aware Expansion und das
   `exclude-req`-Ventil sind als Akzeptanztests verriegelt; der Default ohne
-  `trace.cross-consistency`-Block ist byte-identisch belegt.
-- Der reale grid-gym-Drift wird geflaggt, die Mittelschicht-Familien nicht.
-  **Offen:** der von [ADR-0038](../../adr/0038-trace-cross-consistency.md)
-  Entscheidung 7 geforderte Realdatenbeleg bricht an grid-gyms
-  `architecture.md:913` weiter mit Exit 2 ab — er hängt an slice-074.
+  `trace.cross-consistency`-Block ist byte-identisch belegt (slice-071).
+- **[erfüllt]** Der reale grid-gym-Drift wird geflaggt (`GG-ARCH-005`/`GG-SIM-009`),
+  die per `exclude-req` ausgeschlossenen Familien nicht. Der von
+  [ADR-0038](../../adr/0038-trace-cross-consistency.md) Entscheidung 7 geforderte
+  Realdatenbeleg ist erbracht (slice-071, d-check v0.48.1); der zuvor an grid-gyms
+  `architecture.md:913` mit Exit 2 abbrechende `17. Testarchitektur`-Abschnitt läuft
+  mit der Direktiven-Toleranz aus slice-074 durch.
 - **[erfüllt]** Eine verlinkte Range expandiert wie die unverlinkte (slice-073);
   der ausgelieferte `trace.coverage`-Falschbefund ist weg und als Patch (v0.44.1,
   klammer-balanciert nachgebessert in v0.45.1) veröffentlicht. slice-073 in `done/`.
 - **[erfüllt]** Die zwei Lexik-Regeln aus slice-076 sind per Mutation gepinnt und
   als Minor (v0.47.0) veröffentlicht. slice-076 in `done/`.
-- [ADR-0038](../../adr/0038-trace-cross-consistency.md),
+- **[erfüllt]** [ADR-0038](../../adr/0038-trace-cross-consistency.md),
   [ADR-0039](../../adr/0039-link-transparente-range-fortsetzung.md) und
   [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) sind `Accepted`;
   unabhängiger, kontext-getrennter Closure-Review liegt vor.
-- `make gates` und `make ci` grün, Release samt GHCR-Digest-Backfill dokumentiert.
+- **[erfüllt]** `make gates` und `make ci` grün, Release samt GHCR-Digest-Backfill
+  dokumentiert.
+
+**welle-60 ist damit vollständig abgeschlossen** — alle Closure-Kriterien erfüllt.
 
 ## Nächste Wellen
 

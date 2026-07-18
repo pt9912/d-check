@@ -4,7 +4,7 @@
 **Review-Art:** unabhängiger Vertrags- und Fix-Review (kontext-getrennt;
 adversarial, nicht bestätigend)
 **Gegenstand:**
-[`slice-071`](../plan/planning/in-progress/slice-071-trace-cross-consistency-gate.md) —
+[`slice-071`](../plan/planning/done/slice-071-trace-cross-consistency-gate.md) —
 `1665714` (doc-first: Lastenheft 0.44.1, `DC-FA-XREF-001.a` Schritt 5,
 ADR-0038 Entscheidung 8) + `9027514` (Code folgt dem Vertrag);
 Gesamt-Diff `6c4ccf5..HEAD`
