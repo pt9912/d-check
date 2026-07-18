@@ -1,6 +1,6 @@
 # Slice slice-079: Zitat-Verifikation — `datei:zeile` als gemessenes Property
 
-**Status:** in-progress (welle-62), **aktiviert 2026-07-18** — beide Vorfragen
+**Status:** done (welle-62), **abgeschlossen 2026-07-18 (v0.50.0)** — beide Vorfragen
 entschieden.
 **Adopter-Rückfrage empirisch beantwortet:** die `datei:zeile`-Zitate im Adopter-Repo
 `ai-harness-init` stehen **33/33 in Inline-Code**, null in nackter Prosa (gemessen);
@@ -169,12 +169,12 @@ Der Realdatenbeleg gegen das Adopter-Repo ist daher **nicht optional**.
   [`DC-FA-CITE-001.a`](../../../../spec/spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations)
   (Direktive → Zitatblock → zeichengenauer Vergleich) + §2-Schema
   (`codepaths.check-lines`). Grund-Codes (§4) folgen mit der Implementierung (Lockstep).
-- [ ] **Tests:** Zitat auf zu kurze Datei ⇒ Befund · invertierter Bereich ⇒ Befund
+- [x] **Tests:** Zitat auf zu kurze Datei ⇒ Befund · invertierter Bereich ⇒ Befund
   · `exempt-paths` greift · **Negativ: ein korrektes Zitat bleibt grün nach einem
   Tag-Bump, der die Datei nicht anfasst** (kein Fehlalarm durch Nachbar-Drift).
-- [ ] **Realdatenbeleg gegen das Adopter-Repo** — **nicht optional** (§2.2:
+- [x] **Realdatenbeleg gegen das Adopter-Repo** — **nicht optional** (§2.2:
   Dogfood-Reichweite 7).
-- [ ] **Qualität:** unabhängiger, kontext-getrennter Review **vor** dem Release;
+- [x] **Qualität:** unabhängiger, kontext-getrennter Review **vor** dem Release;
   `make gates`/`make ci` grün.
 
 ## 4. Risiken / offene Punkte
@@ -236,4 +236,34 @@ hält an §4 an, statt Code zu schreiben.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+**Abgeschlossen 2026-07-18, v0.50.0** (Digest `sha256:9b80ce1d…4364`, Release-Run
+29657717169). Umgesetzt genau nach dem entschiedenen Zuschnitt:
+
+- **Stufe 1/2 — `codepaths.check-lines`** (opt-in, [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)-Erweiterung):
+  `codepathValueAndRange`/`splitCitationRange` merken den Bereich statt ihn zu
+  verwerfen, `checkCodepathLineRange` verifiziert (`citation-out-of-range`/
+  `citation-inverted-range`). Default aus **byte-identisch**.
+- **Stufe 3 — Modul `citations`** (opt-in, 18. Modul, [`DC-FA-CITE-001`](../../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in)): `d-check:cite`
+  → folgendes Zitat (`>`-Block oder inline `„…"`/`"…"`) → whitespace-normalisierter
+  **Teilstring** der Quell-Spanne (`citation-mismatch`); Mindestlänge 16; Repo-Escape
+  Befund; malformte Direktive/fehlendes Zitat fail-closed. Grund-Codes §4 im Lockstep
+  mit `AllReasons()`/`reasonTexts()`.
+- **Zwei Design-Reviews** (R1 BLOCK auf Stufe 3 → whitespace-normalisiertes
+  Teilstring-Modell, am **realen** Zitat gemessen; R2 ACCEPT-WITH-NITS) **plus
+  Pre-Release-Review R1**: BLOCK auf **F-1** — unkontrollierter Absturz bei `von=0`
+  (`lines[-1:]`) ⇒ gefixt (1-basierte Untergrenze in **beiden** Schwestern,
+  regressions-gepinnt + mutations-belegt: ohne den Fix reproduziert der Test den Panic),
+  Gegenprüfung ACCEPT.
+- **Realdatenbeleg** gegen `ai-harness-init`
+  (`docs/reviews/2026-07-18-slice-079-realdatenbeleg-ai-harness-init.md`): korrektes
+  re-wrapped inline-Zitat grün, ein gedriftetes Wort `citation-mismatch`; `check-lines`
+  an echten `datei:zeile`-Refs 0 Befunde, Drift `citation-out-of-range`. Die Baseline
+  0 Direktiven belegt den ehrlichen **Substrat-Caveat**: der Adopter muss die
+  Direktiven erst setzen — das Modell trägt, die produktive Adoption ist Adopter-Sache.
+
+**Lerneintrag:** Ein kontext-getrennter Pre-Release-Review ist keine Formalie — er fand
+einen echten Absturz (`von=0`), den die eigenen Tests nicht abdeckten. „Ein grüner Test
+beweist keine Härte": erst der Mutations-Pin (Panic reproduziert **ohne** die Untergrenze)
+macht den Fix belastbar. Und: dieselbe out-of-contract-Eingabe (`datei:0`) hatte in den
+zwei Schwestern **zwei** Fehlmodi (Absturz vs. stilles Grün) — Schwester-Prüfungen
+brauchen **kohärente** Grenzbehandlung, nicht nur je für sich korrekte.
