@@ -8,11 +8,15 @@
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-60-trace-cross-consistency ist **nicht
-abgeschlossen**, hat aber gerade **keinen Slice in Arbeit**: slice-076 ist fertig
-und reviewt (`done/`, ACCEPT-WITH-NITS, **v0.47.0 veröffentlicht**), der
-WIP-Slot ist frei (Modul 5, WIP-Limit = 1). **Nächster Zug:** slice-071 entblocken
-(hängt an slice-074).
+**welle-60-trace-cross-consistency** ist wieder aktiv: in Arbeit ist
+[`slice-077`](slice-077-stiller-tabellen-uebersprung.md) — der stille
+Tabellen-Übersprung (eine irrelevante Tabelle verschluckt die unmittelbar folgende
+relevante). Er ist die **Wurzel** der slice-074-Klasse und der Blocker-Kette für
+slice-071: erst wenn die Tabellengrenze robust ist, ist slice-074s
+Direktiven-Toleranz sicher und slice-071s Realdatenbeleg fahrbar. Ein **gemessener**
+Regel-Kandidat liegt vor (relevant-Header-Grenze — 10 Fixtures inkl. `fx-s`/`fx-t`/`fx-m`
++ volle Suite grün, gegen das ausgelieferte v0.47.0-Image). **Danach:** slice-074
+als Aufsatz, dann slice-071 entblocken.
 
 **Stand von welle-60** (pausiert, nicht abgeschlossen):
 [`slice-073`](../done/slice-073-link-transparente-range-fortsetzung.md) **done**
@@ -62,7 +66,6 @@ null, von keinem Gate bemerkt.
 [`slice-071`](../open/slice-071-trace-cross-consistency-gate.md) (blockiert) ·
 [`slice-074`](../open/slice-074-kommentar-suffix-tabellenzeilen.md)
 (zurückgestellt, Implementierung zurückgenommen) ·
-[`slice-077`](../open/slice-077-stiller-tabellen-uebersprung.md) ·
 [`slice-078`](../open/slice-078-ignore-refs-quell-skopus.md) · [`slice-079`](../open/slice-079-zitat-verifikation.md) ·
 [`slice-072`](../open/slice-072-handbuch-aufgabenorientierung.md).
 
