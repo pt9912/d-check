@@ -1,11 +1,12 @@
 # Slice slice-078: `ignore-refs` mit Quell-Skopus (`in:`) — Referenz-Ventil über beide Achsen
 
-**Status:** in-progress (welle-61). **§4-Vorfrage entschieden** (Auftraggeber,
-2026-07-18): Option (a) — das Ventil wird als **neues geteiltes Bereichskürzel** in
-Lastenheft §3 deklariert (Ziel-Achsen-Pendant zu
-[`DC-FA-SCAN-001`](../../../../spec/lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln)),
-`codepaths.ignore-refs` bleibt Alias. Doc-first: Lastenheft → ADR → Spezifikation
-führen, Code folgt.
+**Status:** done — **abgeschlossen am 2026-07-18** (`open`→`in-progress`→`done`,
+welle-61), veröffentlicht als **v0.49.0**. Vollständige Kette: Lastenheft
+[`DC-FA-REF-001`](../../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus),
+Spezifikation `.a`,
+[ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md) `Accepted`, Code
+über `links`/`anchors`/`codepaths` + Alias, Realdatenbeleg gegen `ai-harness-course`,
+unabhängiger Review R1 ACCEPT-WITH-NITS.
 
 **Bezug:** **Change Request** eines Konsumenten (`ai-harness-course`), eingereicht
 2026-07-17, Design nach zwei Rückfragen verfeinert (§2.1). Betrifft das Ventil
@@ -255,4 +256,34 @@ Code zu schreiben.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+**Abgeschlossen 2026-07-18, veröffentlicht als v0.49.0** (Digest
+`sha256:02da0b51…0db70`, Release-Run 29649603725; Handbuch-§4.1-Backfill).
+Lifecycle `open`→`in-progress`→`done`. Kette: §4-Entscheidung (Auftraggeber: neues
+geteiltes Kürzel, gemeinsames Kriterium mit slice-079) → doc-first (Lastenheft
+[`DC-FA-REF-001`](../../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus),
+Spezifikation `.a`,
+[ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md)) → Code
+(querschnittlich + Alias, `keep`/`in`/Wiring per Mutation gepinnt) → Realdatenbeleg →
+Review → Release.
+
+**Realdatenbeleg**
+([Beleg](../../../reviews/2026-07-18-slice-078-realdatenbeleg-ai-harness-course.md)):
+gegen `ai-harness-course` Baseline 42 Befunde → mit dem Ventil 0; zwei injizierte
+Tippfehler beider Klassen gefangen (nicht durch Wegschauen); das ausgelieferte Image
+nimmt die Ventil-Config gar nicht erst an (Feature neu).
+
+**Review**
+([R1](../../../reviews/2026-07-18-slice-078-implementation-r1.md)): unabhängig,
+kontext-getrennt, **ACCEPT-WITH-NITS** (kein BLOCK/HIGH); R1-F-1 (codepaths-Top-Level-
+Pin), R1-F-3 (Symlink-Test), R1-F-4 (Doc-Drift) eingearbeitet, R1-F-2 (Alias-Glob
+fail-open) als vorbestehend/byte-identitäts-gedeckelt notiert.
+
+**Lerneintrag (geschärfte Regel):** ein Config-Ventil ist erst gepinnt, wenn **jede
+Verdrahtungs-Kante** einen Mutations-Test hat, der kippt. Der Review fand, dass das
+querschnittliche Wiring für `codepaths` (Top-Level, nicht Alias) von keinem Test
+gepinnt war (`refs := nil` blieb grün), obwohl die DoD es zusagte — die
+Alias-Koexistenz-Tests deckten es nicht ab. Konsequenz: je Modul-Verdrahtung ein
+eigener Kipp-Test, nicht nur ein „Ventil wirkt"-Test. Zweite Lehre: **`keep` ist
+konstitutiv** — ohne das reihenfolge-unabhängige Zurückhol-Feld blieben auf realen
+Daten 24 prüfbare Verweise blind; ein Ignorier-Ventil tauscht sonst nur eine
+Blindstelle gegen eine andere.
