@@ -1,6 +1,6 @@
 # ADR-0046 — Netz-Modul `sources`: Upstream-Content-Drift externer Quellen (zweite Netz-Tür)
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-07-19
 **Autor:** pt9912
 **Bezug:** [`DC-FA-SRC-001`](../../../spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz) (opt-in Modul `sources`); Modul-/Paket-Fundament [ADR-0005](0005-modul-layout-hexagon-ordner.md), [ADR-0012](0012-kern-paketschnitt-model-rules-app.md); Vorläufer als Harness-Tooling [`MR-022`](../../../harness/conventions.md#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019) (`fetch-baseline-cache.sh --check-latest`).
@@ -122,3 +122,4 @@ Netz-Port (wie `external`, als Post-Pass nach dem Datei-Scan), hasht, vergleicht
 ## Geschichte
 
 - 2026-07-19: Proposed (doc-first, `slice-080`).
+- 2026-07-19: Accepted (Closure `slice-080`, Release **v0.51.0**).
