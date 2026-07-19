@@ -120,3 +120,42 @@ func TestCheck_UngueltigeURL(t *testing.T) {
 		t.Fatalf("res = %+v (Parse-Fehler erwartet)", res)
 	}
 }
+
+// DC-FA-SRC-001.a Schritt 3 Happy: Fetch liefert Status und die rohen
+// Antwort-Bytes der finalen (Redirect-gefolgten) Antwort.
+func TestFetch_ErreichbarMitBody(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/final", func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte("inhalt-bytes"))
+	})
+	mux.HandleFunc("/start", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/final", http.StatusFound)
+	})
+	srv := httptest.NewServer(mux)
+	defer srv.Close()
+	res := adapter().Fetch(srv.URL + "/start")
+	if res.Status != 200 || string(res.Body) != "inhalt-bytes" || res.TooLarge || res.TransportError != "" {
+		t.Fatalf("res = %+v", res)
+	}
+}
+
+// DC-FA-SRC-001.a Schritt 3: HTTP-Status ≥ 400 wird als Status geliefert (der
+// Kern mappt auf source-unreachable).
+func TestFetch_Status404(t *testing.T) {
+	srv := httptest.NewServer(http.NotFoundHandler())
+	defer srv.Close()
+	if res := adapter().Fetch(srv.URL); res.Status != 404 {
+		t.Fatalf("res = %+v", res)
+	}
+}
+
+// Transportfehler (Verbindung verweigert) → TransportError, Status 0.
+func TestFetch_Transportfehler(t *testing.T) {
+	srv := httptest.NewServer(http.NotFoundHandler())
+	url := srv.URL
+	srv.Close()
+	res := adapter().Fetch(url)
+	if res.TransportError == "" || res.Status != 0 {
+		t.Fatalf("res = %+v (TransportError erwartet)", res)
+	}
+}

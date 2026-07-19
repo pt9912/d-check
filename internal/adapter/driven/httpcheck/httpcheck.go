@@ -26,23 +26,29 @@ const maxFetchBytes = 64 << 20
 // errTooManyRedirects markiert eine Redirect-Kette über REDIRECT_MAX.
 var errTooManyRedirects = errors.New("zu viele Redirects")
 
-// Adapter implementiert driven.HTTPChecker über net/http.
+// Adapter implementiert driven.HTTPChecker über net/http. maxBody ist das
+// Body-Limit von Fetch (Default maxFetchBytes) — als Feld (nicht Paket-Global),
+// damit ein White-Box-Test es klein übersteuern kann, ohne echte 64 MiB.
 type Adapter struct {
-	client *http.Client
+	client  *http.Client
+	maxBody int64
 }
 
 // New erzeugt einen Adapter mit dem gegebenen Gesamt-Timeout pro
 // Prüfung (DC-FA-EXT-001: konfigurierbar, Default 10 s).
 func New(timeout time.Duration) *Adapter {
-	return &Adapter{client: &http.Client{
-		Timeout: timeout,
-		CheckRedirect: func(_ *http.Request, via []*http.Request) error {
-			if len(via) > redirectMax {
-				return errTooManyRedirects
-			}
-			return nil
+	return &Adapter{
+		client: &http.Client{
+			Timeout: timeout,
+			CheckRedirect: func(_ *http.Request, via []*http.Request) error {
+				if len(via) > redirectMax {
+					return errTooManyRedirects
+				}
+				return nil
+			},
 		},
-	}}
+		maxBody: maxFetchBytes,
+	}
 }
 
 // Check prüft die Erreichbarkeit: HEAD, bei 405/501 Fallback auf GET
@@ -91,11 +97,11 @@ func (a *Adapter) Fetch(url string) driven.FetchResult {
 		}
 	}
 	defer func() { _ = resp.Body.Close() }()
-	body, err := io.ReadAll(io.LimitReader(resp.Body, maxFetchBytes+1))
+	body, err := io.ReadAll(io.LimitReader(resp.Body, a.maxBody+1))
 	if err != nil {
 		return driven.FetchResult{Status: resp.StatusCode, TransportError: err.Error()}
 	}
-	if int64(len(body)) > maxFetchBytes {
+	if int64(len(body)) > a.maxBody {
 		return driven.FetchResult{Status: resp.StatusCode, TooLarge: true}
 	}
 	return driven.FetchResult{Status: resp.StatusCode, Body: body}

@@ -281,14 +281,87 @@ func TestSourcesCaseInsensitiv(t *testing.T) {
 	}
 }
 
-// DC-FA-SRC-001 fail-closed: eine malformte source-pin-Direktive (kein
-// sha256:<hex>) an einem http(s)-Link ⇒ Exit-2-Pfad (Run gibt error).
-func TestSourcesMalformierterMarkerFailClosed(t *testing.T) {
+// DC-FA-SRC-001 fail-closed (R2-C-2): ein sha256:-Pin-Versuch mit
+// abgeschnittenem Hash (Länge ≠ 64) ist malform ⇒ Exit-2-Pfad (Run gibt error),
+// KEIN Falsch-source-drift — konsistent zur Config-Fläche desselben sha256-Felds.
+// panicChecker belegt zugleich: der Fehler fällt VOR jedem Netzzugriff.
+func TestSourcesAbgeschnittenerMarkerHashFailClosed(t *testing.T) {
 	m := coretest.NewMemFS(map[string]string{
-		"docs/quelle.md": "[x](https://example.test/f) <!-- source-pin: kein-hash -->\n",
+		"docs/quelle.md": "[x](https://example.test/f) <!-- source-pin: sha256:abc123 -->\n",
 	})
-	if _, err := Run(m, panicChecker{t}, model.Config{}, []string{"sources"}); err == nil {
-		t.Fatal("malformte source-pin-Direktive: error (Exit 2) erwartet")
+	res, err := Run(m, panicChecker{t}, model.Config{}, []string{"sources"})
+	if err == nil {
+		t.Fatal("abgeschnittener Marker-Hash: error (Exit 2) erwartet")
+	}
+	if got := sourceFindings(res.Findings); len(got) != 0 {
+		t.Fatalf("kein Falsch-source-drift erwartet, got %+v", got)
+	}
+}
+
+// DC-FA-SRC-001 Grenze (R2-C-2): eine source-pin-Direktive OHNE sha256:-Präfix
+// ist kein Pin-Versuch ⇒ inert (still: kein Befund, kein Exit 2, kein Netz).
+func TestSourcesMarkerOhneSha256Inert(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/quelle.md": "[x](https://example.test/f) <!-- source-pin: TODO -->\n",
+	})
+	res, err := Run(m, panicChecker{t}, model.Config{}, []string{"sources"})
+	if err != nil {
+		t.Fatalf("Direktive ohne sha256:-Präfix darf nicht fail-closed sein: %v", err)
+	}
+	if got := sourceFindings(res.Findings); len(got) != 0 {
+		t.Fatalf("inert erwartet, got %+v", got)
+	}
+}
+
+// DC-FA-SRC-001 (R2-C-4): Golden-Anker gegen einen UNABHÄNGIG (per coreutils
+// sha256sum, nicht per Produktionsfunktion) berechneten Manifest-Hash eines
+// winzigen, hartkodierten Zip — zwei Dateien, eine im Unterordner (voller Pfad).
+// Einträge bewusst nicht pfad-sortiert eingelagert (erzwingt die Sortierung).
+func TestSourcesZipManifestGolden(t *testing.T) {
+	// Extern berechnet: h1=sha256("hello\n"), h2=sha256("world\n");
+	// Manifest (nach Pfad sortiert) "<h1>  hello.txt\n<h2>  unterordner/world.md\n";
+	// golden = sha256(Manifest).
+	const golden = "a7af8f8ec3a8d496507b57eda60f21f8e4eeb745578e07e6c00d13bf6a741d28"
+	files := map[string]string{"hello.txt": "hello\n", "unterordner/world.md": "world\n"}
+	zipC := buildZip(t, []string{"unterordner/world.md", "hello.txt"}, files)
+	srv := sourcesServer(t, zipC, nil)
+	cfg := model.Config{Sources: model.SourcesConfig{Pins: []model.SourcePin{
+		{URL: srv.URL + "/zip-a", Sha256: golden, Unpack: "zip", Line: 2},
+	}}}
+	res, err := Run(coretest.NewMemFS(nil), realChecker(), cfg, []string{"sources"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := sourceFindings(res.Findings); len(got) != 0 {
+		t.Fatalf("Golden-Manifest weicht ab (Produktions-Manifest ≠ externer Anker): %+v", got)
+	}
+}
+
+// DC-FA-SRC-001 Boundary (R2-C-3): eine überschrittene Eintragsgrenze ⇒
+// zipManifestHash liefert ok=false — der Aufrufer mappt das auf
+// source-unreachable (die false→unreachable-Kette prüft
+// TestSourcesUnreachableNichtDrift). White-Box mit kleiner Grenze, statt ein
+// echtes 10 000-Einträge-Zip zu bauen.
+func TestSourcesZipEntryLimit(t *testing.T) {
+	files := map[string]string{"a": "1", "b": "2", "c": "3"}
+	zipC := buildZip(t, []string{"a", "b", "c"}, files)
+	if _, ok := zipManifestHashLimited(zipC, 2, maxUnpackBytes); ok {
+		t.Fatal("Eintragsgrenze (3 > 2) muss ok=false liefern")
+	}
+	// Gegenprobe: unter der regulären Grenze ist dasselbe Zip gültig.
+	if _, ok := zipManifestHash(zipC); !ok {
+		t.Fatal("dasselbe Zip unter der regulären Grenze muss gültig sein")
+	}
+}
+
+// DC-FA-SRC-001 Boundary (R2-C-3): eine überschrittene entpackte Gesamtgröße ⇒
+// zipManifestHash liefert ok=false (→ source-unreachable). White-Box mit
+// kleinem Byte-Budget.
+func TestSourcesZipUnpackByteLimit(t *testing.T) {
+	files := map[string]string{"big.txt": "mehr als vier bytes"}
+	zipC := buildZip(t, []string{"big.txt"}, files)
+	if _, ok := zipManifestHashLimited(zipC, maxZipEntries, 4); ok {
+		t.Fatal("Entpack-Größe (19 > 4 Byte) muss ok=false liefern")
 	}
 }
 

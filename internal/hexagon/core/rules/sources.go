@@ -26,19 +26,28 @@ const (
 const sourcesConfigFile = ".d-check.yml"
 
 // Entpack-/Zip-Bomben-Grenzen des Content-Manifests (DC-FA-SRC-001.a Schritt 4).
+// zipManifestHash reicht sie an zipManifestHashLimited durch; White-Box-
+// Grenzwert-Tests rufen letzteres mit kleinen Werten (kein 256-MiB-/10 000-Zip).
 const (
 	maxUnpackBytes int64 = 256 << 20 // ≤ 256 MiB entpackte Gesamtgröße
 	maxZipEntries        = 10000     // ≤ 10 000 Datei-Einträge
 )
 
 // sourcePinRE erkennt eine `source-pin`-Direktive und liefert ihren Körper
-// (Gruppe 1) — der loose Detektor: ein Körper ohne gültiges `sha256:<hex>`
-// ist eine malformte Direktive (fail-closed, DC-FA-SRC-001.a Schritt 2).
+// (Gruppe 1) — der loose Detektor.
 var sourcePinRE = regexp.MustCompile(`<!--\s*source-pin\s*:\s*(.*?)\s*-->`)
 
-// sourcePinBodyRE parst den wohlgeformten Direktiven-Körper: optionales
-// Schlüsselwort `zip` (Archiv) + `sha256:<hex>` (DC-FA-SRC-001.a Schritt 1).
-var sourcePinBodyRE = regexp.MustCompile(`^(?:(zip)\s+)?sha256:([0-9a-fA-F]+)$`)
+// sourcePinValidRE parst den wohlgeformten Direktiven-Körper: optionales
+// Schlüsselwort `zip` (Archiv) + `sha256:` mit GENAU 64 Hex-Zeichen — parallel
+// zur Config-Fläche `sources[].sha256` (DC-FA-SRC-001.a Schritt 1).
+var sourcePinValidRE = regexp.MustCompile(`^(?:(zip)\s+)?sha256:([0-9a-fA-F]{64})$`)
+
+// sourcePinAttemptRE erkennt einen `sha256:`-Pin-Versuch (optional `zip`) — ein
+// Körper mit diesem Präfix, der NICHT wohlgeformt ist (Hash-Länge ≠ 64), ist
+// eine malformte Direktive ⇒ Exit 2 (fail-closed; ein abgeschnittener Paste darf
+// keinen Falsch-source-drift erzeugen). Ohne `sha256:`-Präfix ist der Körper kein
+// Pin-Versuch und die Direktive inert (still) — DC-FA-SRC-001.a Schritt 2.
+var sourcePinAttemptRE = regexp.MustCompile(`^(?:zip\s+)?sha256:`)
 
 // SourceRef ist ein aufgelöster Quell-Pin (Marker oder Config): file/line für
 // den Befund, url das http(s)-Ziel, sha256 der (kleingeschriebene) Pin-Hash,
@@ -52,11 +61,11 @@ type SourceRef struct {
 }
 
 // CollectSourcePins sammelt die Marker-Pins einer Datei — nur bei aktivem
-// Modul sources (der Aufrufer prüft applies). Ein wohlgeformter Marker bindet
-// an den unmittelbar links stehenden http(s)-Link derselben Zeile; an einem
-// repo-internen/Nicht-http(s)-Link oder ohne vorausgehenden Link ist er inert.
-// Eine malformte Direktive (kein `sha256:<hex>`) ⇒ error (Aufrufer mappt auf
-// Exit 2, fail-closed — DC-FA-SRC-001.a Schritt 2).
+// Modul sources (der Aufrufer prüft applies). Ein wohlgeformter Marker (genau
+// 64 Hex) bindet an den unmittelbar links stehenden http(s)-Link derselben
+// Zeile; an einem repo-internen/Nicht-http(s)-Link oder ohne vorausgehenden
+// Link ist er inert. Ein `sha256:`-Pin-Versuch mit Hash-Länge ≠ 64 ⇒ error
+// (Aufrufer mappt auf Exit 2, fail-closed — DC-FA-SRC-001.a Schritt 2).
 func CollectSourcePins(file string, lines []Line, content []byte) ([]SourceRef, error) {
 	rawLines := strings.Split(string(content), "\n")
 	var refs []SourceRef
@@ -85,10 +94,13 @@ func sourcePinsOnLine(file string, ln Line, raw string) ([]SourceRef, error) {
 	links := nonImageLinkEnds(ln.Text)
 	var refs []SourceRef
 	for _, m := range markers {
-		zipKind, hash, ok := parseSourcePinBody(ln.Text[m[2]:m[3]])
-		if !ok {
-			return nil, fmt.Errorf("%s:%d: malformte source-pin-Direktive (kein sha256:<hex>): %q",
+		zipKind, hash, kind := classifySourcePinBody(ln.Text[m[2]:m[3]])
+		switch kind {
+		case pinMalformed:
+			return nil, fmt.Errorf("%s:%d: malformte source-pin-Direktive (sha256 nicht genau 64 Hex-Zeichen): %q",
 				file, ln.No, strings.TrimSpace(ln.Text[m[0]:m[1]]))
+		case pinInert:
+			continue // kein sha256:-Pin-Versuch — still (kein Befund, kein Exit 2)
 		}
 		target, bound := nearestLink(links, m[0], raw)
 		if !bound || !hasHTTPScheme(target) {
@@ -96,20 +108,33 @@ func sourcePinsOnLine(file string, ln Line, raw string) ([]SourceRef, error) {
 		}
 		refs = append(refs, SourceRef{
 			file: file, line: ln.No, url: stripFragment(target),
-			sha256: strings.ToLower(hash), zip: zipKind,
+			sha256: hash, zip: zipKind,
 		})
 	}
 	return refs, nil
 }
 
-// parseSourcePinBody prüft den wohlgeformten Körper (optional `zip` + gültiger
-// sha256:<hex>); ok=false ⇒ malformt.
-func parseSourcePinBody(body string) (zipKind bool, hash string, ok bool) {
-	m := sourcePinBodyRE.FindStringSubmatch(strings.TrimSpace(body))
-	if m == nil {
-		return false, "", false
+// sourcePinKind klassifiziert einen Direktiven-Körper.
+type sourcePinKind int
+
+const (
+	pinValid     sourcePinKind = iota // genau 64 Hex ⇒ Pin
+	pinMalformed                      // sha256:-Präfix, aber Hash-Länge ≠ 64 ⇒ Exit 2
+	pinInert                          // kein sha256:-Präfix ⇒ still (kein Pin-Versuch)
+)
+
+// classifySourcePinBody dreiteilt den Körper (hash kleingeschrieben bei
+// pinValid): wohlgeformt (64 Hex) → pinValid; `sha256:`-Präfix aber ungültig →
+// pinMalformed (Exit 2); sonst → pinInert.
+func classifySourcePinBody(body string) (zipKind bool, hash string, kind sourcePinKind) {
+	b := strings.TrimSpace(body)
+	if m := sourcePinValidRE.FindStringSubmatch(b); m != nil {
+		return m[1] != "", strings.ToLower(m[2]), pinValid
 	}
-	return m[1] != "", m[2], true
+	if sourcePinAttemptRE.MatchString(b) {
+		return false, "", pinMalformed
+	}
+	return false, "", pinInert
 }
 
 // linkEnd ist das schließende `)` und Ziel eines Nicht-Bild-Links.
@@ -287,15 +312,22 @@ type zipEntry struct {
 }
 
 // zipManifestHash errechnet den byte-genauen Content-Manifest-Hash eines Zip
-// (DC-FA-SRC-001.a Schritt 4): je regulärer Datei-Eintrag `<hex>  <pfad>\n`,
-// nach `<pfad>` (sekundär `<hex>`) byteweise sortiert, davon der sha256. ok=false
-// bei ungültigem Zip oder überschrittenem Entpack-Limit.
+// (DC-FA-SRC-001.a Schritt 4) unter den Produktions-Grenzen.
 func zipManifestHash(body []byte) (string, bool) {
+	return zipManifestHashLimited(body, maxZipEntries, maxUnpackBytes)
+}
+
+// zipManifestHashLimited ist die parametrisierte Form (Grenzen als Argumente,
+// damit White-Box-Tests sie klein setzen): je regulärer Datei-Eintrag
+// `<hex>  <pfad>\n`, nach `<pfad>` (sekundär `<hex>`) byteweise sortiert, davon
+// der sha256. ok=false bei ungültigem Zip oder überschrittenem Entpack-Limit
+// (Eintragszahl > maxEntries oder Gesamtgröße > maxBytes).
+func zipManifestHashLimited(body []byte, maxEntries int, maxBytes int64) (string, bool) {
 	zr, err := zip.NewReader(bytes.NewReader(body), int64(len(body)))
 	if err != nil {
 		return "", false
 	}
-	entries, ok := zipEntries(zr)
+	entries, ok := zipEntries(zr, maxEntries, maxBytes)
 	if !ok {
 		return "", false
 	}
@@ -318,16 +350,16 @@ func zipManifestHash(body []byte) (string, bool) {
 
 // zipEntries hasht die regulären Datei-Einträge unter den Ressourcen-Grenzen
 // (Verzeichnis-Einträge — Name endet auf `/` — ausgenommen).
-func zipEntries(zr *zip.Reader) ([]zipEntry, bool) {
+func zipEntries(zr *zip.Reader, maxEntries int, maxBytes int64) ([]zipEntry, bool) {
 	var entries []zipEntry
-	remaining := maxUnpackBytes
+	remaining := maxBytes
 	count := 0
 	for _, f := range zr.File {
 		if strings.HasSuffix(f.Name, "/") {
 			continue
 		}
 		count++
-		if count > maxZipEntries {
+		if count > maxEntries {
 			return nil, false
 		}
 		sum, n, ok := hashZipFile(f, remaining)
