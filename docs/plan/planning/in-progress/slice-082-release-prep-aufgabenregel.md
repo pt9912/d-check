@@ -24,9 +24,12 @@ Prozess-/Nutzer-Dokumentation). Betrifft ausschließlich `docs/user/releasing.md
 
 slice-072 hat §4 des Benutzerhandbuchs **redaktionell** aufgeräumt (den
 ~330-Zeilen-§4.12-Monolithen in aufgabenorientierte §4.12–§4.16 aufgetrennt),
-aber die **Ursache** nicht beseitigt: §4.12 wuchs über die Slices 074–081, weil
-**jeder** Feature-Slice seine neue Fähigkeit im Release-Prep an die bestehende
-§4.12-Aufgabe **anhängte**, statt eine eigene Aufgabe zu schreiben. Ohne eine
+aber die **Ursache** nicht beseitigt: §4.12 wuchs über mehrere Feature-Slices —
+slice-072 §4 nennt 066/067/068/070/071, das frische §4-Audit die Post-Audit-Slices
+074–077 (die die Blöcke N-1…N-4 anhängten) — weil jeder seine neue Fähigkeit im
+Release-Prep an die bestehende §4.12-Aufgabe **anhängte**, statt eine eigene
+Aufgabe zu schreiben. Vermeidbar ist das Antipattern durchaus (slice-081 schrieb
+z. B. eine **eigene** §5-Aufgabensektion), nur nicht abgesichert. Ohne eine
 Regel am Release-Prep-Punkt erodiert §4 nach dem nächsten Feature erneut.
 
 Der Slice ergänzt die Release-Prep-Checkliste um genau diese Disziplin: **ein
@@ -45,9 +48,15 @@ neuer §4-Abschnitt für ein neues Feature ist eine eigene Aufgabe
   ist die **billigste dauerhafte** Sicherung (Checkliste am richtigen
   Bindepunkt), keine harte Garantie; das wird in der Regel ausdrücklich benannt,
   nicht kaschiert — konsistent mit dem übrigen Punkt 4 („kein Gate erzwingt sie").
-- **Verweisen, nicht duplizieren.** Die Regel nennt das Kriterium
-  (Benutzerhandbuch-Standard §2/§5) und die Präzedenz (slice-072: §4.12 wuchs auf
-  ~330 Zeilen / 8 Themen), statt die Standard-Prosa zu wiederholen.
+- **Warum als Inline-Fakt, nicht als Artefakt-Verweis.** Die Regel nennt das
+  Kriterium (Benutzerhandbuch-Standard §5 als **maßgebliche** Schablone;
+  „Ziel/Vorgehen/Ergebnis" nur als Merkhilfe, nicht als eigene Schablone) und
+  begründet sich mit dem **Inline-Fakt** „§4.12 war auf ~330 Zeilen / 8 Themen
+  gewachsen" — **kein** Link auf ein `done/`-Planning-Artefakt. Das hält den Stil
+  des Punkt 4 (der Drift mit Inline-Fakten belegt — „die Modul-Liste blieb von
+  v0.25 bis v0.37 bei acht" — statt mit Slice-Verweisen) und vermeidet eine
+  ids-Linkpflicht-Kopplung an ein `done/`-Artefakt plus einen Zeitpunkt-Anker in
+  einem vorwärtsgerichteten Betriebsdokument.
 - **Kein Scope-Kriechen.** Ein heuristisches Gate (z. B. §4-Abschnitt über N
   Zeilen / M Themen) ist ausdrücklich **nicht** Gegenstand — subjektiv, laut,
   falsch-positiv-anfällig; verworfen zugunsten der Checklisten-Disziplin.
@@ -55,8 +64,9 @@ neuer §4-Abschnitt für ein neues Feature ist eine eigene Aufgabe
 ## 3. Definition of Done
 
 - [ ] `releasing.md` §Release-Prep Punkt 4 trägt die §4-Aufgabendisziplin-Regel
-  (neuer §4-Abschnitt = eigene Aufgabe mit Ziel/Vorgehen/Ergebnis, keine
-  Anhängung), mit Kriterium-Verweis (Standard §2/§5) und slice-072-Präzedenz.
+  (neuer §4-Abschnitt = eigene Aufgabe nach Benutzerhandbuch-Standard §5, keine
+  Anhängung), begründet mit dem **Inline-Fakt** (§4.12 war auf ~330 Zeilen /
+  8 Themen gewachsen) — **ohne** Verweis auf ein `done/`-Planning-Artefakt.
 - [ ] Die Regel benennt ausdrücklich, dass **kein Gate** sie erzwingt (wie die
   übrige Prosa-Currency-Liste dort).
 - [ ] Kein Verhaltens-/Vertragsdelta; kein Release; `make gates` grün
