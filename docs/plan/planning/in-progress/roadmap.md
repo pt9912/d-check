@@ -8,11 +8,11 @@
 
 ## Aktuelle Welle
 
-**welle-64-dpin-ergonomie** — `pins`/dpin benutzbar machen.
-[`slice-081`](slice-081-pins-hash-ergonomie.md) (der `link-stale`-Befund emittiert den
-**vollen** errechneten `sha256` statt `shortHash` → „einmal laufen, Hash in den
-`<!-- dpin: … -->`-Marker kopieren"; nur die nicht stabilitätsgarantierte Befund-`message`,
-kein Vertragsdelta, kein ADR). Patch-Release.
+**Keine aktive Welle.** welle-64-dpin-ergonomie **abgeschlossen** —
+[`slice-081`](../done/slice-081-pins-hash-ergonomie.md) (der `link-stale`-Befund emittiert
+den **vollen** errechneten `sha256` statt `shortHash` → dpin „einmal laufen, Hash
+kopieren"-benutzbar; nur die nicht stabilitätsgarantierte Befund-`message`, kein
+Vertragsdelta, kein ADR, **v0.51.1**).
 
 **Vorgänger:** welle-63-sources
 ([`slice-080`](../done/slice-080-sources-modul.md) — 19. Modul `sources`,
@@ -60,3 +60,4 @@ Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
 | 2026-07-19 | **welle-63-sources eröffnet**; slice-080 in `in-progress/` angelegt (WIP-Slot frei nach welle-62) | §4-Vorfragen (Nutzer) entschieden: Pin-Deklaration **beides** (Marker + Config), Quelltypen **Einzeldatei + Archiv** (`unpack: zip`); der `pins`/dpin-Hash-Ergonomie-Fix bleibt separat ([`slice-072`](../open/slice-072-handbuch-aufgabenorientierung.md)). Anlass: Nutzer-Frage „Drift gegen Upstream in d-check einbauen" — produktisiert `check_regelwerk_drift.py` als reusables Modul [`DC-FA-SRC-001`](../../../../spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz), erweitert [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) um eine zweite Netz-Tür |
 | 2026-07-19 | **welle-63 abgeschlossen**; slice-080 `in-progress`→`done`, **v0.51.0 veröffentlicht** | Vollständige Kette: [`DC-FA-SRC-001`](../../../../spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz) + [ADR-0046](../../adr/0046-sources-upstream-content-drift.md) `Accepted` + Spec-Algorithmus-Sektion + 19. Modul `sources` (Marker+Config, Einzeldatei+Archiv, byte-genaues Content-Manifest). Doppel-Review: R1-doc BLOCK auf Manifest-Kern → ACCEPT, R2-code ACCEPT-WITH-NITS (Marker-Hash-64/Limits/Golden). Realdatenbeleg gegen echtes `lab-regelwerk.zip`, Config-Surface-Doku. Digest `sha256:9197fcf0…1d98`. WIP-Slot wieder frei |
 | 2026-07-19 | **welle-64-dpin-ergonomie eröffnet**; slice-081 in `in-progress/` angelegt (WIP-Slot frei nach welle-63) | Nutzer-Entscheid: der in slice-079/080 als „separat" ausgewiesene `pins`/dpin-Ergonomie-Retrofit (voller Ist-Hash im `link-stale`-Befund) wird **eigener** Kleinst-Slice — NICHT in slice-072 (reine §4-Doku, kein Release) quergeschnitten. Nur die nicht stabilitätsgarantierte Befund-`message`, kein Vertragsdelta/ADR; Patch v0.51.1 |
+| 2026-07-19 | **welle-64 abgeschlossen**; slice-081 `in-progress`→`done`, **v0.51.1 veröffentlicht** | dpin-Ergonomie: `pins.go` emittiert den vollen Ist-Hash im `link-stale`-Befund (mutations-echter Test); neue Handbuch-Aufgaben-Sektion §5 „Link-Inhalt pinnen". Patch (nur nicht stabilitätsgarantierte Befund-`message`, kein Vertragsdelta/ADR). Digest `sha256:fede3d02…d03c`. WIP-Slot wieder frei |
