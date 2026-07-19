@@ -224,14 +224,8 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.51.1 \
 d-check liest dabei nur, es schreibt nichts.
 
 **Harness-Vorlage (`ai-harness` / `ai-harness-init`):** Für ein Repo nach
-dem ai-harness-course-Standard liefern zwei reservierte Quellen ein
-fertiges Gerüst — ohne die Quellen einzeln aufzulisten. Es enthält die
-kanonischen `ids`-Muster, die `matrix`-Referenzrichtung und das **fixe
-Standard-Modulset** (`links`, `anchors`, `ids`, `matrix`, `codepaths`, `spans`,
-`hostpaths`) samt einem **repo-bewussten `planning`-Block** (aktiv, sobald die
-Roadmap existiert). Situative Module ohne ableitbare Konfiguration bleiben aus —
-`vcs`/`commits` (die eine Commit-Range brauchen) liefert `--print-mk` als
-Makefile-Target, den Rest listet `--print-config`. Welche Quelle, hängt von Ihrer
+dem ai-harness-course-Standard liefern zwei reservierte Quellen ein fertiges
+Gerüst — ohne die Quellen einzeln aufzulisten. Welche Sie nehmen, hängt von Ihrer
 Ausgangslage ab:
 
 - **Frisches Repo → `ai-harness-init`** (Voll-Kanon, alle Blöcke aktiv).
@@ -254,6 +248,13 @@ Ausgangslage ab:
 
 Beide sind beratend und kombinierbar mit echten Quellen (z. B. `ai-harness`
 zusätzlich zu `spec/lastenheft.md`).
+
+Das Gerüst enthält die kanonischen `ids`-Muster, die `matrix`-Referenzrichtung
+und das **fixe Standard-Modulset** (`links`, `anchors`, `ids`, `matrix`,
+`codepaths`, `spans`, `hostpaths`) samt einem **repo-bewussten `planning`-Block**
+(aktiv, sobald die Roadmap existiert). Situative Module ohne ableitbare
+Konfiguration bleiben aus — `vcs`/`commits` (die eine Commit-Range brauchen)
+liefert `--print-mk` als Makefile-Target, den Rest listet `--print-config`.
 
 **Kennungs-Präfix (`--id-prefix`):** Das Anforderungs-`ids`-Muster ist
 projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
@@ -1018,7 +1019,7 @@ bleibt unberührt. Der frühere modul-lokale Schlüssel `codepaths.ignore-refs` 
 **Alias** gültig (kein Config-Bruch): er wirkt wie ein `ignore-refs`-Eintrag ohne
 `in`/`keep`, skopiert auf `codepaths`.
 
-### Zitat-Verifikation: `codepaths.check-lines` und das Modul `citations`
+### Zitate und Zeilen-Referenzen gegen ihre Quelle prüfen (`codepaths.check-lines` / Modul `citations`)
 
 Zwei opt-in-Fähigkeiten prüfen `datei:zeile`-**Zitate**, die sonst still ins Leere
 zeigen können (etwa nach einem Tag-Bump einer committet-vendored Baseline).
