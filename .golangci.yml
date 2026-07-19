@@ -19,7 +19,7 @@ linters:
     - staticcheck
     - unused
 
-    # SOLID-nahe Linter (ADR-0006, u-boot-Parität ohne depguard)
+    # SOLID-nahe Linter
     - containedctx
     - contextcheck
     - cyclop
