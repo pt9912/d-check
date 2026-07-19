@@ -1998,9 +1998,10 @@ prüft aber **Inhalt** (Hash), nicht bloße Erreichbarkeit.
 **Zwei Deklarations-Flächen (beide gültig):**
 
 - **Marker** am externen Link: `[text](https://…) <!-- source-pin: sha256:<hex> -->`
-  bindet an den unmittelbar vorausgehenden Link derselben Zeile (wie `pins`),
-  sonst inert. Für Archiv-Ziele trägt der Marker das explizite Schlüsselwort
-  `archive`: `<!-- source-pin: archive sha256:<hex> -->`.
+  bindet an den unmittelbar vorausgehenden `http(s)`-Link derselben Zeile (wie
+  `pins`), sonst inert. Für Archiv-Ziele trägt der Marker das explizite
+  Schlüsselwort `zip` (parallel zu `unpack: zip`):
+  `<!-- source-pin: zip sha256:<hex> -->`.
 - **Config** in `.d-check.yml`: ein Top-Level-Block `sources:` mit Einträgen
   `{url, sha256, unpack: none|zip}`.
 
@@ -2010,9 +2011,12 @@ prüft aber **Inhalt** (Hash), nicht bloße Erreichbarkeit.
   Antwort-Bytes**.
 - **Archiv (`unpack: zip`):** Hash über ein **Content-Manifest**, nicht über die
   Zip-Roh-Bytes (die durch Recompression/Framing instabil sind): je enthaltene
-  Datei `sha256(inhalt)`, die Zeilen `LC_ALL=C`-sortiert konkateniert, davon der
-  `sha256`. Damit ist der Pin **invariant gegen die Zip-Eintrags-Reihenfolge**
-  und spiegelt exakt das committet-vendored `SHA256SUMS`-Muster.
+  Datei ihr Inhalts-`sha256`, die Zeilen **nach dem normalisierten Pfad**
+  sortiert konkateniert, davon der `sha256` (byte-genaue Kanonisierung in der
+  Spezifikation). Damit ist der Pin **invariant gegen die
+  Zip-Eintrags-Reihenfolge**; konzeptionell wie das committet-vendored
+  `SHA256SUMS`-Muster, aber eigenständig kanonisiert (kein byte-identischer
+  `sha256sum`-Abzug).
 
 **Nur externe http(s)-Ziele, kein Doppelbefund:** `sources` prüft ausschließlich
 absolute `http`/`https`-URLs; repo-interne Ziele bleiben Domäne von
@@ -2028,9 +2032,14 @@ Default-Modul und — neben `external` — die einzige Netz-Tür
 ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)); ohne
 aktives `sources` ist der Befundsatz byte-identisch
 ([`DC-QA-02`](#dc-qa-02--determinismus)) und **keine** Netzverbindung wird
-geöffnet. **fail-closed:** eine malformte Direktive (kein `sha256:<hex>`) oder
-ein ungültiger Config-Eintrag (fehlende `url`/`sha256`, unbekanntes `unpack`)
-⇒ **Exit 2** mit Hinweis auf stderr — kein stilles Grün.
+geöffnet. Der `sha256` wird **case-insensitiv** geführt. Der Fetch ist
+**größenbegrenzt** (Body- und Entpack-Obergrenze, Zip-Bomben-Schutz); jede nicht
+materialisierbare Antwort — Netzfehler, HTTP-Status ≥ 400, Timeout,
+überschrittenes Limit **oder** ein unter `unpack: zip` ungültiges Zip — ⇒
+`source-unreachable` (getrennt von `source-drift`). **fail-closed:** eine
+malformte Direktive (kein `sha256:<hex>`) oder ein ungültiger Config-Eintrag
+(fehlende `url`/`sha256`, unbekanntes `unpack`) ⇒ **Exit 2** mit Hinweis auf
+stderr — kein stilles Grün.
 `source-drift`/`source-unreachable` liefern keinen `--repair`-Hunk
 ([`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)) — ein Re-Pin ist eine
 menschliche Entscheidung.
@@ -2041,7 +2050,9 @@ menschliche Entscheidung.
 - **Boundary (Archiv-Determinismus):** Given ein gepinntes Archiv, dessen Zip-Einträge upstream **umsortiert**, inhaltlich aber identisch sind, when `d-check --enable sources` läuft, then **kein** `source-drift` — der Manifest-Hash ist eintrags-reihenfolge-invariant.
 - **Boundary (Modul-aus / netzlos):** Given **kein** aktives `sources`, when `d-check` in einer netzlosen, read-only Umgebung läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird **keine** Netzverbindung geöffnet ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 - **Negative (Drift):** Given `sources` aktiv und ein gepinntes Ziel, dessen Inhalt sich seit dem Pinnen geändert hat, when `d-check --enable sources` läuft, then genau ein Befund `source-drift` (Datei/Zeile bzw. Config-Eintrag, URL, **vollständiger** errechneter `sha256`), Exit 1.
-- **Boundary (unerreichbar ≠ Drift):** Given `sources` aktiv und ein gepinntes Ziel, das nicht erreichbar ist (Netzfehler, HTTP-Status ≥ 400, Timeout), when `d-check --enable sources` läuft, then ein Befund `source-unreachable` (nicht `source-drift`), Exit 1.
+- **Boundary (unerreichbar ≠ Drift):** Given `sources` aktiv und ein gepinntes Ziel, das nicht materialisierbar ist (Netzfehler, HTTP-Status ≥ 400, Timeout, Größenlimit **oder** unter `unpack: zip` kein gültiges Zip), when `d-check --enable sources` läuft, then ein Befund `source-unreachable` (nicht `source-drift`), Exit 1.
+- **Boundary (kein Doppelbefund / repo-intern):** Given `sources` aktiv und ein `source-pin`-Marker an einem **repo-internen** Link, when `d-check --enable sources` läuft, then **kein** `sources`-Befund — repo-interne Ziele bleiben `pins`/`links`-Domäne.
+- **Boundary (Marker-Bindung):** Given `sources` aktiv und ein `source-pin`-Marker **ohne** unmittelbar vorausgehenden `http(s)`-Link auf derselben Zeile, when `d-check --enable sources` läuft, then ist der Marker **inert** (kein Befund).
 - **fail-closed (malform):** Given `sources` aktiv und eine malformte `source-pin`-Direktive (kein `sha256:<hex>`) oder ein ungültiger `sources`-Config-Eintrag (unbekanntes `unpack`), when `d-check` läuft, then **Exit 2** mit Hinweis auf stderr — kein stilles Grün.
 
 **Out-of-Scope:** Currency/„neuerer Tag verfügbar" (bleibt der Bash-Helfer
@@ -2177,7 +2188,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
-| 0.49.0 | 2026-07-19 | Neue Anforderung `DC-FA-SRC-001` — **19. Regelmodul `sources`** (opt-in, **Netz**): Upstream-Content-Drift externer Quellen. Ein auf einen `sha256` gepinnter externer Verweis (per Marker `<!-- source-pin: sha256:… -->` am externen Link **oder** per Config-Block `sources:`) wird geholt, gehasht und verglichen; Abweichung → `source-drift` (mit **vollem Ist-Hash** zum Re-Pinnen), Fetch-Fehler → `source-unreachable`. Zwei Quelltypen: Einzeldatei (Roh-Byte-Hash) und Archiv (`unpack: zip` → `LC_ALL=C`-sortierter **Content-Manifest**-Hash, Zip-Framing-invariant — Go-Port des `SHA256SUMS`-Musters). Content-Hash-Geschwister von `pins` (in-repo) und `external` (Netz-Erreichbarkeit); produktisiert das Kurs-Beispiel `check_regelwerk_drift.py`. **Erweitert `DC-QA-03`** um eine zweite Netz-Tür (`external` **und** `sources`; nie im netzlosen Default-Lauf, Netzlos-Modullisten-Test um `sources` ergänzt). Bereich `SRC` in §3, `sources` in `DC-FA-CLI-002` + Glossar; `DC-FA-SRC-001.a` + Grund-Codes `source-drift`/`source-unreachable` (§4) in der Spezifikation; Begründung (Netz-Modul-Design, DC-QA-03-Amendment, Manifest-Hash, Marker + Config) in begleitender ADR. Implementierung/Realdatenbeleg/Release folgen in `slice-080`. Anlass: Nutzer-Frage „Drift gegen Upstream in d-check einbauen" — der Bash-Helfer `fetch-baseline-cache.sh --check-latest` deckt d-checks eigene Baseline, das Modul macht es reusable für jeden Adopter (u. a. `ai-harness-course`, dessen `check_regelwerk_drift.py` genau darauf DEFERRED ist) | slice-080 |
+| 0.49.0 | 2026-07-19 | Neue Anforderung `DC-FA-SRC-001` — **19. Regelmodul `sources`** (opt-in, **Netz**): Upstream-Content-Drift externer Quellen. Ein auf einen `sha256` gepinnter externer Verweis (per Marker `<!-- source-pin: sha256:… -->` am externen Link **oder** per Config-Block `sources:`) wird geholt, gehasht und verglichen; Abweichung → `source-drift` (mit **vollem Ist-Hash** zum Re-Pinnen), Fetch-Fehler → `source-unreachable`. Zwei Quelltypen: Einzeldatei (Roh-Byte-Hash) und Archiv (`unpack: zip` → pfad-sortierter, byte-genau definierter **Content-Manifest**-Hash, Zip-Reihenfolge-invariant; konzeptionell wie `SHA256SUMS`). Content-Hash-Geschwister von `pins` (in-repo) und `external` (Netz-Erreichbarkeit); produktisiert das Kurs-Beispiel `check_regelwerk_drift.py`. **Erweitert `DC-QA-03`** um eine zweite Netz-Tür (`external` **und** `sources`; nie im netzlosen Default-Lauf, Netzlos-Modullisten-Test um `sources` ergänzt). Bereich `SRC` in §3, `sources` in `DC-FA-CLI-002` + Glossar; `DC-FA-SRC-001.a` + Grund-Codes `source-drift`/`source-unreachable` (§4) in der Spezifikation; Begründung (Netz-Modul-Design, DC-QA-03-Amendment, Manifest-Hash, Marker + Config) in begleitender ADR. Implementierung/Realdatenbeleg/Release folgen in `slice-080`. Anlass: Nutzer-Frage „Drift gegen Upstream in d-check einbauen" — der Bash-Helfer `fetch-baseline-cache.sh --check-latest` deckt d-checks eigene Baseline, das Modul macht es reusable für jeden Adopter (u. a. `ai-harness-course`, dessen `check_regelwerk_drift.py` genau darauf DEFERRED ist) | slice-080 |
 | 0.48.0 | 2026-07-18 | Change Request (Adopter `ai-harness-init`): **Zitat-Verifikation** von `datei:zeile`-Zitaten, zwei Teile. (1) `DC-FA-CODE-001`-Erweiterung — opt-in `codepaths.check-lines` prüft die Zeilen-Referenz eines Inline-Code-Pfads (`datei:<von>-<bis>`): Ziel existiert **und** hat ≥ `bis` Zeilen (sonst `citation-out-of-range`) **und** `von ≤ bis` (sonst `citation-inverted-range`); Default aus **byte-identisch** (die Zeile wurde bisher erkannt und verworfen). (2) Neue Anforderung `DC-FA-CITE-001` — 18. Regelmodul `citations` (opt-in): ein per Direktive `d-check:cite` ausgezeichneter Zitatblock wird **zeichengenau** gegen die zitierte Quell-Spanne geprüft (`citation-mismatch`), greift die `codepaths`-`datei:zeile`-Erkennung auf (kein zweiter Detektor), hermetisch, fail-closed. Bereich `CITE` in §3, `citations` in `DC-FA-CLI-002` + Glossar; `DC-FA-CODE-001.a`-Erweiterung + `DC-FA-CITE-001.a` + Grund-Codes in der Spezifikation; Begründung (Erweiterung vs. eigenes Modul, `verbatim`/Direktiven-Design) in begleitender ADR. Zweite Direktive `d-check:cite` (durch `slice-074` entblockt). §4-Vorfragen entschieden: Adopter-Rückfrage empirisch (33/33 Zitate in Inline-Code ⇒ `codepaths`-Erweiterung, kein Prosa-Scanning), Zuschnitt Form (c). Anlass: die committet-vendored Baseline erzeugt Zeilen-Zitate, die beim nächsten Tag-Bump still verfaulen | slice-079 |
 | 0.47.0 | 2026-07-18 | Change Request (Konsument `ai-harness-course`): neue Anforderung `DC-FA-REF-001` — **geteiltes Referenz-Ventil** `ignore-refs` mit **Quell-Skopus** (`in:`) und Zwei-Feld-Semantik (`refs ∧ ¬keep`; `keep` gewinnt unbedingt und reihenfolge-unabhängig, **nicht** gitignore-Last-Match). Das bisher **modul-lokal** in `DC-FA-CODE-001` wohnende `ignore-refs` wird zur **querschnittlichen** Anforderung: `links`/`anchors`/`codepaths` verweisen darauf; `codepaths.ignore-refs` bleibt **Alias** (kein Config-Bruch). Ziel-Achsen-Pendant zu `scan.ignore` (`DC-FA-SCAN-001`, Quell-Achse — jene entfernt Dateien, dieses Ziele). Bereich `REF` in §3; `DC-FA-CODE-001`/`DC-FA-LINK-001`/`DC-FA-ANCH-001` an das Ventil angebunden. §4-Vorfrage vom Auftraggeber entschieden (Option a: neues geteiltes Kürzel statt Änderung dreier Anforderungen; **gemeinsames Kriterium** mit `slice-079`: querschnittlich → neues Kürzel, Einzelmodul → bestehende Anforderung ändern). `DC-FA-REF-001.a` + Schema-Keys (`ignore-refs[].in`/`refs`/`keep`) + Alias-Semantik in der Spezifikation, Begründung (Zwei-Feld vs. `!`-Negation, Alias-Pfad) in begleitender ADR, Implementierung/Realdatenbeleg/Release folgen in `slice-078`. Anlass: Template-Verzeichnisse mit Ziel-Repo-Platzhaltern zwingen heute das ganze Verzeichnis in `scan.ignore` und machen damit auch die **echten** Verweise blind, deren Auflösung beim Release unveränderlich eingefroren wird | slice-078 |
 | 0.46.0 | 2026-07-17 | Change Request (Auftraggeber): die **Komma-Kurzform** `<FAM>-AAA, BBB` wird **fail-closed** (Exit 2) statt still verschluckt — betrifft `DC-FA-COV-001` und, über den geteilten Reader, `DC-FA-XREF-001`. Zugesagt waren nur `..`-Range und `/`-Aufzählung; die Kurzform war nie Vertrag, ihr **stiller Drop** aber auch nicht: `GG-SCN-001, 007` deckte nur `GG-SCN-001` und erzeugte eine falsche Waise. Verworfen: (a) Komma-Enum unterstützen — d-check kann eine gemeinte Kurzform nicht von einer Zahl im Fließtext unterscheiden (`GG-QA-001, 007 Sekunden`), das wäre Raten; (b) Status quo — der stille Drop ist die schlechteste Option. Gewählt: die **Gestalt** triggert (Kennung + Komma + Ziffern), der Inhalt ist keine unterstützte Notation ⇒ Exit 2 mit Hinweis — dieselbe Logik wie bei `AAA>BBB`. Ein Komma vor einer **vollständigen** Kennung (`GG-AR-COMP-CORE, GG-AR-COMP-DOMAIN`) bleibt unberührt. Neues Negative- und Boundary-Kriterium; Schritt 3 in `DC-FA-COV-001.a`; Begründung in der begleitenden ADR. Anlass: Konsumenten-Report grid-gym gegen v0.45.1 — reale §27.1-Zeilen `GG-SCN-001, 007` ließen das produktiv verdrahtete `trace.coverage` das Mapping nicht zählen | slice-075 |

@@ -39,20 +39,33 @@ Netz-Port (wie `external`, als Post-Pass nach dem Datei-Scan), hasht, vergleicht
   bedienen: der in-Doc-Verweis auf eine externe Quelle vs. die zentrale
   Pin-Liste ohne Doku-Anker.
 - **Zwei Quelltypen — Einzeldatei *und* Archiv.** Einzeldatei: `sha256` der
-  Roh-Bytes. Archiv (`unpack: zip`): `sha256` eines **Content-Manifests**, nicht
-  der Zip-Roh-Bytes. Begründung: Zip-Framing/Recompression ist instabil; der
-  Adopter pinnt **Inhalt** (die enthaltenen Dateien), nicht Zip-Bytes. Das
-  Manifest ist `LC_ALL=C`-sortiert → **reihenfolge-invariant** (deterministisch,
-  [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)); es ist der
-  Go-Port des committet-vendored `SHA256SUMS`-Musters
-  ([`MR-019`](../../../harness/conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)).
-- **`archive` ist ein explizites Schlüsselwort**, kein Ableiten aus der
-  `.zip`-Endung — robust, keine Magie.
+  Roh-Bytes. Archiv (`unpack: zip`): `sha256` eines **byte-genau definierten
+  Content-Manifests**, nicht der Zip-Roh-Bytes. Begründung: Zip-Framing/
+  Recompression ist instabil; der Adopter pinnt **Inhalt** (die enthaltenen
+  Dateien), nicht Zip-Bytes. Das Manifest ist **nach dem normalisierten Pfad**
+  sortiert (nicht nach der ganzen Hash-Zeile) → **reihenfolge-invariant** und
+  vollständig determiniert
+  ([`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)). Es folgt
+  **konzeptionell** dem committet-vendored `SHA256SUMS`-Muster
+  ([`MR-019`](../../../harness/conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)),
+  ist aber **eigenständig** kanonisiert (Pfad-Sortierung + -Normalisierung) und
+  **nicht** byte-identisch zur unsortierten `sha256sum`-Ausgabe — die byte-genaue
+  Form legt die Spezifikation fest.
+- **Das Archiv-Keyword ist explizit** (Marker `zip`, parallel zum Config-Wert
+  `unpack: zip`) — kein Ableiten aus der `.zip`-Endung; beide
+  Deklarations-Flächen nennen denselben Format-Namen (erweiterbar auf
+  `tar`/`gz`).
 - **`source-drift` emittiert den vollen Ist-`sha256`.** Damit ist Pinnen „einmal
   laufen, gemeldeten Hash kopieren" — die dpin-Ergonomie-Sackgasse (kein Weg an
   den vollen Pin-Hash) tritt für dieses Modul gar nicht erst auf.
 - **`source-unreachable` ist von `source-drift` getrennt** — unerreichbar ≠
   gedriftet (ehrliche Diagnose, keine Falsch-Drift bei Netzfehler).
+- **Robustheit als Vertrag.** Der Fetch ist **größenbegrenzt** (Body ≤ 64 MiB;
+  beim Entpacken Gesamtgröße ≤ 256 MiB, ≤ 10 000 Einträge — Zip-Bomben-Schutz),
+  folgt Redirects wie `external` (bis fünf, Inhalt der finalen Antwort) und
+  behandelt eine 2xx-Antwort, die **kein gültiges Zip** ist, wie „unerreichbar"
+  (`source-unreachable`). Der `sha256` wird case-insensitiv verglichen und stets
+  in Kleinbuchstaben emittiert.
 - **Amendment der Netz-Sparsamkeit.** Netz jetzt in `external` **und** `sources` — beide
   opt-in, nie im netzlosen Default-Lauf. Der getippte Netzlos-Modullisten-Test
   führt `sources` als zweite Netz-Ausnahme; ein netzloser Lauf mit aktivem

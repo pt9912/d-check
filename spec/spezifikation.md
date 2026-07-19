@@ -1730,27 +1730,60 @@ repo-internes Ziel (`pins`). **Post-Pass** nach dem Datei-Scan (wie `external`)
    vorausgehenden externen Link derselben Zeile (wie `pins`; ohne vorausgehenden
    Link inert), und (b) die **Config**-Einträge `sources[]`. Beide ergeben je
    einen Pin `{url, sha256, unpack ∈ {none, zip}}`.
-2. **fail-closed.** Eine malformte Direktive (`source-pin` ohne `sha256:<hex>`)
-   oder ein ungültiger Config-Eintrag (fehlende `url`/`sha256`, `url` nicht
-   `http(s)`, `sha256` ≠ 64 Hex, unbekanntes `unpack`) ⇒ **Exit 2** mit
-   stderr-Hinweis (kein stilles Grün). Ein Marker-Ziel, das nicht `http(s)` ist,
-   ist **kein** `sources`-Kandidat (repo-intern → `pins`/`links`, kein
-   Doppelbefund).
-3. **Fetch.** Je Pin wird die `url` über den Netz-Port geholt (GET;
-   Timeout/Parallelität wie `external`). Fetch-Fehler (Netzfehler, HTTP-Status
-   ≥ 400, Timeout) ⇒ Grund-Code `source-unreachable` (Befund: `target` = URL);
-   **kein** Hash-Schritt für diesen Pin.
-4. **Hash.** `unpack: none` (Default): `sha256` über die **rohen
-   Antwort-Bytes**. `unpack: zip`: die Antwort wird als Zip gelesen (nur reguläre
-   Datei-Einträge; Verzeichnis-Einträge ignoriert); je Eintrag `sha256(inhalt)`,
-   die Zeilen `"<hex>  <name>\n"` **`LC_ALL=C`-sortiert** konkateniert, davon der
-   `sha256` — **reihenfolge-invariant**, byte-Muster-gleich zu
-   `sha256sum regelwerk/*.md` (committet-vendored `SHA256SUMS`).
-5. **Vergleich.** Ist-Hash = Pin ⇒ kein Befund. Ist-Hash ≠ Pin ⇒ Grund-Code
-   `source-drift`. Befund: `file`/`line` = Marker-Datei/-Zeile bzw. (Config-Pin)
-   die `.d-check.yml`-Herkunft, `target` = URL, `message` führt den
-   **vollständigen** Ist-`sha256` (Re-Pin-Vorlage). **Diagnose-only** (kein
-   `--repair`-Hunk — ein Re-Pin ist eine menschliche Entscheidung).
+2. **fail-closed / Skopus.** Eine malformte Direktive (`source-pin` ohne
+   `sha256:<hex>`) oder ein ungültiger Config-Eintrag (fehlende `url`/`sha256`,
+   `url` nicht `http(s)`, `sha256` nicht genau 64 Hex-Zeichen, unbekanntes
+   `unpack`) ⇒ **Exit 2** mit stderr-Hinweis (kein stilles Grün). Der `sha256`
+   wird **case-insensitiv** geführt (Pin und errechneter Hash zu Kleinbuchstaben
+   normalisiert). Ein **wohlgeformter** `source-pin` an einem repo-internen oder
+   Nicht-`http(s)`-Link ist **inert** (kein Befund, kein `sources`-Kandidat —
+   repo-interne Ziele sind `pins`/`links`-Domäne, kein Doppelbefund); die
+   Direktive ist dort bewusst wirkungslos (mehrdeutig mit `pins`), **nicht**
+   fail-closed.
+3. **Fetch (begrenzt).** Je Pin wird die `url` über den Netz-Port geholt (GET;
+   Timeout/Parallelität wie `external`; Redirects werden wie `external` bis zu
+   **fünf** verfolgt, gehasht wird der Inhalt der **finalen** Antwort). Der Body
+   wird nur bis zu einer festen Obergrenze gelesen (**≤ 64 MiB**). **Jeder** der
+   folgenden Fälle ⇒ Grund-Code `source-unreachable` (Befund: `target` = URL,
+   `message` benennt die Ursache), **ohne** Hash-Schritt: Netzfehler,
+   HTTP-Status ≥ 400, Timeout, mehr als fünf Redirects, überschrittenes
+   Body-Limit **oder** (bei `unpack: zip`) eine 2xx-Antwort, die **kein gültiges
+   Zip** ist (Nicht-Zip / HTML-Fehlerseite / abgeschnittenes Archiv).
+   „Unerreichbar" umfasst damit jede Lage, in der sich **kein** vergleichbarer
+   Inhalt materialisieren lässt — bewusst getrennt von `source-drift` (Inhalt
+   da, aber ≠ Pin).
+4. **Hash (byte-genaues Content-Manifest).** `unpack: none` (Default): `sha256`
+   über die **rohen Antwort-Bytes**, als Kleinbuchstaben-Hex. `unpack: zip`: die
+   Antwort wird als Zip gelesen; **nur reguläre Datei-Einträge**
+   (Verzeichnis-Einträge — Name endet auf `/` — ausgenommen).
+   Zip-Bomben-/Ressourcen-Schutz: die **entpackte Gesamtgröße** ist auf
+   **≤ 256 MiB** und die **Eintragszahl** auf **≤ 10 000** begrenzt;
+   Überschreitung ⇒ `source-unreachable`. Das kanonische **Content-Manifest**
+   ist byte-genau definiert:
+   - je Datei-Eintrag eine Zeile `<hex>` + **zwei Leerzeichen** + `<pfad>`, wobei
+     `<hex>` der `sha256` des **Eintrags-Inhalts** in Kleinbuchstaben-Hex ist und
+     `<pfad>` der **volle Zip-interne Pfad** normalisiert (Backslashes → `/`,
+     führendes `./` und `/` entfernt; **kein** Basisname — verschachtelte
+     Verzeichnisse bleiben im Pfad, daher keine Basisnamen-Kollision);
+   - die Zeilen **aufsteigend nach `<pfad>`** sortiert (byteweise, `LC_ALL=C` —
+     **nicht** nach der ganzen Zeile), je mit `\n` terminiert und konkateniert;
+   - der Archiv-Hash ist der `sha256` dieser Manifest-Bytes (Kleinbuchstaben-Hex).
+
+   Damit ist der Hash **reihenfolge-invariant** gegen die
+   Zip-Eintrags-Reihenfolge und vollständig determiniert
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)). Er folgt
+   **konzeptionell** dem committet-vendored `SHA256SUMS`-Muster (Per-Datei-Hash-
+   Manifest), ist aber durch die Pfad-Sortierung und -Normalisierung
+   **eigenständig** kanonisiert — **nicht** byte-identisch zur unsortierten
+   `sha256sum <glob>`-Ausgabe.
+5. **Vergleich.** Ist-Hash und Pin werden **case-insensitiv** (beide
+   Kleinbuchstaben) verglichen. Gleich ⇒ kein Befund. Ungleich ⇒ Grund-Code
+   `source-drift`; `message` führt den **vollständigen** Ist-`sha256` in
+   Kleinbuchstaben (Re-Pin-Vorlage, schreibweisen-stabil). Befund-`file`/`line`:
+   für einen **Marker-Pin** die Marker-Datei und -Zeile; für einen **Config-Pin**
+   `file` = `.d-check.yml` und `line` = die Zeile des `url`-Feldes des Eintrags
+   (die YAML-Dekodierung führt sie; sonst `1`); `target` = URL. **Diagnose-only**
+   (kein `--repair`-Hunk — ein Re-Pin ist eine menschliche Entscheidung).
 6. **Determinismus/Read-only.** Identische Antwort-Bytes ⇒ identischer
    Hash/Befund ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)); das
    geprüfte Repository wird nie geschrieben, Netz nur zu den explizit gepinnten
@@ -1950,7 +1983,7 @@ Exit 2 ohne Prüfung
 | `external.timeout-seconds` | integer | 10 | 1–300 |
 | `external.parallel` | integer | 4 | 1–16 |
 | `sources[].url` | string | — | Pflicht; absolute `http`/`https`-URL (sonst Exit 2) |
-| `sources[].sha256` | string | — | Pflicht; genau 64 Hex-Zeichen (sonst Exit 2) |
+| `sources[].sha256` | string | — | Pflicht; genau 64 Hex-Zeichen, **case-insensitiv** verglichen (sonst Exit 2) |
 | `sources[].unpack` | string | `none` | nur `none` oder `zip` (Exit 2); `zip` hasht das `LC_ALL=C`-sortierte Content-Manifest statt der Roh-Bytes |
 | `codepaths.roots` | string[] | leer | Präfixe relativ zur Repo-Wurzel: nicht leer, nicht absolut, kein `..` (Exit 2); `./`/`../` werden immer erkannt |
 | `codepaths.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `codepaths`-Prüfung — datei-weit, unabhängig von `roots` |

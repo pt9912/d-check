@@ -22,12 +22,14 @@ schon ab; dieses Modul macht es allgemein.
 
 ## 2. Entscheidungen
 
-- **Zwei Deklarations-Flächen (beide):** Marker `<!-- source-pin: [archive] sha256:<hex> -->`
-  am externen Link (dpin-Stil, per-Referenz) **und** Config-Block `sources: [{url, sha256, unpack}]`.
+- **Zwei Deklarations-Flächen (beide):** Marker `<!-- source-pin: [zip] sha256:<hex> -->`
+  am externen `http(s)`-Link (dpin-Stil, per-Referenz) **und** Config-Block `sources: [{url, sha256, unpack}]`.
 - **Zwei Quelltypen (beide):** Einzeldatei (Roh-Byte-`sha256`) und Archiv
-  (`unpack: zip` → `sha256` eines `LC_ALL=C`-sortierten **Content-Manifests**, nicht der
-  Zip-Roh-Bytes → reihenfolge-invariant; Go-Port des `SHA256SUMS`-Musters).
-- **`archive` als explizites Keyword** (kein Ableiten aus der `.zip`-Endung).
+  (`unpack: zip` → `sha256` eines **pfad-sortierten**, byte-genau definierten
+  **Content-Manifests**, nicht der Zip-Roh-Bytes → reihenfolge-invariant;
+  konzeptionell wie `SHA256SUMS`, eigenständig kanonisiert).
+- **Archiv-Keyword explizit `zip`** (parallel zu `unpack: zip`; kein Ableiten aus der `.zip`-Endung).
+- **Robustheit:** größenbegrenzter Fetch (Body ≤ 64 MiB, Entpack ≤ 256 MiB/≤ 10 000 Einträge, Zip-Bomben-Schutz), Redirects wie `external` (bis fünf), `sha256` case-insensitiv; Nicht-Zip-2xx → `source-unreachable`.
 - **`source-drift` emittiert den vollen Ist-`sha256`** (Re-Pin-Vorlage) — schließt die
   dpin-Ergonomie-Sackgasse für dieses Modul nativ.
 - **`source-unreachable` getrennt von `source-drift`** (unerreichbar ≠ gedriftet).
@@ -56,8 +58,10 @@ schon ab; dieses Modul macht es allgemein.
 - **Doku-Currency-Falle:** viele „einzige Netzwerk-Tür"-Behauptungen (Lastenheft,
   `operations.md`, `config_template.go`, README EN/DE, Benutzerhandbuch) — der
   `versions`-Gate fängt sie **nicht**, manuell nachziehen.
-- **Archiv-Hash-Vertrag:** Content-Manifest (sortiert), nicht Zip-Roh-Bytes — der
-  Reorder-Determinismus-Test ist der Beleg; Verzeichnis-Einträge des Zip ignorieren.
+- **Archiv-Hash-Vertrag:** Content-Manifest (pfad-sortiert, Pfad-normalisiert),
+  nicht Zip-Roh-Bytes — der Reorder-Determinismus-Test ist der Beleg;
+  Verzeichnis-Einträge des Zip ignorieren.
+- **R1-doc-Review** ([Report](../../../reviews/2026-07-19-slice-080-sources-doc-first-r1.md), gegen `b36dc58`): **BLOCK** auf F-1/F-2 (Manifest-Kanonisierung widersprüchlich/unterbestimmt) → in [`DC-FA-SRC-001.a`](../../../../spec/spezifikation.md#dc-fa-src-001a--upstream-content-drift-externer-quellen-sources) byte-genau nachgezogen (pfad-sortiert, Pfad-Normalisierung, keine `sha256sum`-Byte-Parität); MEDIUMs F-3…F-6 (Case-Norm, Nicht-Zip → `source-unreachable`, Größen-/Zip-Bomben-Limit, Boundary-AKs) + LOW/INFO F-7…F-10 (Config-Pin-`line`, Keyword `archive`→`zip`, inerter Marker dokumentiert, Redirect-Politik) eingearbeitet. Gegenprobe (R1-Nachtrag) ausstehend.
 
 ## 5. Trigger
 
