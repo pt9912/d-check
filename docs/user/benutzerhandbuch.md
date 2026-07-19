@@ -330,14 +330,11 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.51.1 \
 `matrix-forbidden`, Referenzen auf Dokumente mit verbotenem Status (etwa
 abgelöst) als `matrix-inactive`.
 
-**Richtung innerhalb einer Klasse (`order`/`direction`).** Trägt eine Klasse
-zusätzlich `order` (eine Liste von Pfad-Globs, **autoritativste Schicht
-zuerst**) und `direction: no-downward`, prüft d-check auch *klasseninterne*
-Referenzen: der Rang einer Datei ist der erste passende `order`-Glob; ein
-Verweis von einer höher- auf eine niederrangige Datei (auch über mehrere
-Stufen) erscheint als `matrix-downward`. Dateien ohne `order`-Treffer sind
-rangfrei und werden nicht geprüft. So lässt sich z. B. erzwingen, dass das
-Lastenheft nie „abwärts" auf Spezifikation oder Architektur verweist:
+**Auch *innerhalb* einer Klasse eine Rangfolge erzwingen (`order`/`direction`).**
+Manchmal sollen selbst Dokumente **derselben** Klasse nicht „abwärts" verweisen —
+etwa das Lastenheft nicht auf Spezifikation oder Architektur, obwohl alle drei
+die Klasse `spec` sind. Geben Sie der Klasse dazu eine Rangfolge `order`
+(Pfad-Globs, **autoritativste Schicht zuerst**) und `direction: no-downward`:
 
 ```yaml
 matrix:
@@ -348,21 +345,22 @@ matrix:
       direction: no-downward
 ```
 
-`order` und `direction` gehören zusammen — eines ohne das andere (oder ein
-unbekannter `direction`-Wert) ist ein Konfigurationsfehler (Exit 2), damit eine
+d-check prüft dann auch klasseninterne Referenzen: der Rang einer Datei ist ihr
+erster passender `order`-Glob; ein Verweis von einer höher- auf eine
+niederrangige Datei (auch über mehrere Stufen) erscheint als `matrix-downward`
+(Dateien ohne `order`-Treffer sind rangfrei und werden nicht geprüft). `order`
+und `direction` gehören zusammen — eines ohne das andere (oder ein unbekannter
+`direction`-Wert) ist ein Konfigurationsfehler (Exit 2), damit eine
 Richtungsregel nie still wirkungslos ist. Ohne beide Felder verhält sich
 `matrix` unverändert.
 
-**Token-Referenzen (`token`) und Provenance-Marker.** `matrix` sieht
-standardmäßig nur **Markdown-Links**. Eine Referenz kann aber auch als **bare
-ID-Token** im Fließtext stehen (eine Slice-Kennung in einem ADR-Körper). Trägt
-eine Klasse ein `token`-Regex, prüft `matrix` auch solche Token: ein Token im
-Körper eines Dokuments einer anderen Klasse ist eine Referenz, auf die dieselbe
-Regel greift — eine verbotene Kante meldet `matrix-forbidden` (Token in
-Markdown-Links und Fenced-Code zählen nicht). Eine **erlaubte Ausnahme**
-deklarieren Sie mit dem Marker `<!-- d-check:status-provenance -->` auf derselben
-Zeile (etwa „verifiziert in slice-042" als Verifikations-Zeiger, keine
-Entscheidungsgrundlage):
+**Auch bare ID-Tokens im Fließtext als Referenz prüfen (`token`).** Eine Referenz
+muss kein Markdown-Link sein — eine Slice-Kennung, die **roh** im Text eines ADR
+steht, ist ebenso eine Referenz, die `matrix` standardmäßig aber nicht sieht.
+Damit solche Tokens erfasst werden, geben Sie der Klasse ein `token`-Regex; für
+eine **erlaubte** Ausnahme (etwa „verifiziert in slice-042" als reinen
+Verifikations-Zeiger, keine Entscheidungsgrundlage) setzen Sie den Marker
+`<!-- d-check:status-provenance -->` auf dieselbe Zeile:
 
 ```yaml
 matrix:
@@ -376,10 +374,13 @@ matrix:
   exempt-paths: ["docs/plan/adr/0001-*.md"]      # Alt-Dateien ganz ausnehmen
 ```
 
-`exempt-paths` (Globs) nimmt **ganze Dateien** von der `matrix`-Prüfung aus —
-nützlich, um unveränderliche Bestandsdokumente zu grandfathern. Ein nicht
-kompilierbares `token`-Regex ist ein Konfigurationsfehler (Exit 2); ohne `token`
-verhält sich `matrix` unverändert.
+`matrix` behandelt dann ein solches Token im Körper eines Dokuments einer
+anderen Klasse als Referenz, auf die dieselbe Regel greift (Token in
+Markdown-Links und Fenced-Code zählen nicht) — eine verbotene Kante meldet
+`matrix-forbidden`. `exempt-paths` (Globs) nimmt **ganze Dateien** von der
+`matrix`-Prüfung aus — nützlich, um unveränderliche Bestandsdokumente zu
+grandfathern. Ein nicht kompilierbares `token`-Regex ist ein
+Konfigurationsfehler (Exit 2); ohne `token` verhält sich `matrix` unverändert.
 
 ### 4.8 Externe Links prüfen (Modul `external`)
 
