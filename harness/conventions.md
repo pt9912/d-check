@@ -700,27 +700,39 @@ die kanonische Quelle (Source Precedence, siehe
   (neuer Modus `--check-latest`), [`AGENTS.md`](../AGENTS.md) §1; Nachtrag zu
   [`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)
 - **Adaption:** `fetch-baseline-cache.sh` erhält einen dritten Modus
-  `--check-latest`: er vergleicht den in [§Baseline](#baseline) gepinnten Tag
-  gegen das **neueste stabile** Upstream-Release
-  (`https://api.github.com/repos/pt9912/ai-harness-course/releases/latest` —
-  GitHub liefert dort Prereleases/Drafts nicht, was der Re-Adopt-Semantik
-  entspricht). Ausgang: gepinnt == latest → `exit 0` (aktuell); latest neuer
-  (`sort -V`) → `exit 3` (**Signal**, kein Fehler — Nudge zum Re-Adopt); latest
-  nicht neuer (Pin voraus) → `exit 0` (nichts zu tun); Netz/API/Rate-Limit nicht
-  erreichbar → **SKIP, `exit 0`**. Der Modus ist bewusst **kein Gate**
+  `--check-latest` mit **zwei** Upstream-Prüfungen (beide Netz, informativ):
+  **(A) Currency** — der in [§Baseline](#baseline) gepinnte Tag gegen das
+  **neueste stabile** Release
+  (`https://api.github.com/repos/pt9912/ai-harness-course/releases/latest`;
+  GitHub blendet dort Prereleases/Drafts aus, passend zur Re-Adopt-Semantik).
+  **(B) Content-Drift am gepinnten Tag** — das Skript lädt `lab-regelwerk.zip`
+  des **gepinnten** Tags und vergleicht dessen Bytes (dasselbe
+  `sha256sum regelwerk/*.md`-Manifest) gegen das committete
+  `.harness/baseline/<tag>/SHA256SUMS`; eine Abweichung heißt, der Tag wurde
+  **verschoben** oder das Asset neu hochgeladen. Ausgang (schlimmster Fall):
+  aktuell & authentisch → `exit 0`; neuerer Tag (`sort -V`) → `exit 3`
+  (**Signal**, kein Fehler); Content-Drift am gepinnten Tag → `exit 4`
+  (**Provenienz-Alarm**); nicht erreichbare Teile (Netz/API/Rate-Limit,
+  fehlendes Werkzeug/Manifest) → **SKIP** je Teil (`exit 0`, sofern der andere
+  Teil nicht `3`/`4` meldet). Der Modus ist bewusst **kein Gate**
   (`--network`-abhängig wie das Re-Vendoring) und bewusst **nicht fail-closed**
   (Gegenstück zu `--verify`, das netzlose Integrität prüft und sehr wohl
   fail-closed ist): ein nicht erreichbares Upstream darf keinen Lauf blockieren.
 - **Begründung:** Übernommen aus dem Kurs-Beispiel
   `lab/example/tools/check_regelwerk_drift.py` (inhaltsbasierter Drift-Sensor der
-  adoptierten Form-Quelle), auf d-checks Tag-Pin-Modell übersetzt: d-check pinnt
-  einen **immutablen** Release-Tag und vendored ihn hash-verifiziert (`--verify`,
-  [`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)),
-  weshalb Byte-Drift gegen denselben Tag nicht auftreten kann; die offene Frage
-  ist **Currency** (ist der Pin veraltet?), nicht Integrität. `--verify`
-  beantwortete sie nicht — ein grüner Integritäts-Check verdeckte, dass der Pin
-  längst hinter Upstream liegen könnte (stiller toter Winkel). `--check-latest`
-  macht genau diese Staleness sichtbar, **ohne** den Grundsatz aus
+  adoptierten Form-Quelle), auf d-checks Tag-Pin-Modell übersetzt. d-check pinnt
+  einen Release-Tag und vendored ihn hash-verifiziert (`--verify`,
+  [`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017));
+  `--verify` prüft aber nur die **vendorten** Bytes gegen ihr **eigenes**
+  Manifest — nie gegen Upstream. Es blieben zwei tote Winkel, die
+  `--check-latest` schließt: **Currency** (Teil A — liegt der Pin hinter
+  Upstream? Ein grüner Integritäts-Check verdeckte das) und **Authentizität des
+  gepinnten Tags** (Teil B — d-check *setzt* auf Tag-Immutabilität, aber »Tag
+  verschoben / Asset neu« bemerkt `--verify` nicht). Teil B **verifiziert** genau
+  die Immutabilitäts-Annahme aus
+  [`MR-011`](#mr-011--baseline-auf-release-tag-gepinnt) (prüfen statt vertrauen)
+  und ist der Content-Hash-Drift-Kern des Kurs-Beispiels, auf den gepinnten Tag
+  angewandt. Beides **ohne** den Grundsatz aus
   [`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)
   zu unterlaufen (»Re-Vendor + neues Manifest sind ein bewusster Akt am
   Baseline-Pin-Bump, kein laufender Drift«): der Modus **automatisiert nichts**,

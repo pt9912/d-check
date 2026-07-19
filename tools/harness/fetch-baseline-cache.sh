@@ -16,16 +16,23 @@
 #              (Release-Download) — Anlass: Baseline-Pin-Bump.
 #   --verify   nur Integritätsprüfung des committeten Regelwerks gegen
 #              SHA256SUMS. Offline, kein Netz — für CI/Audit/frischen Checkout.
-#   --check-latest  Currency-Audit (Netz, informativ): vergleicht den in
-#              §Baseline gepinnten Tag gegen das neueste STABILE Upstream-Release
-#              (GitHub-API /releases/latest — Prereleases/Drafts ausgeschlossen).
-#              Aktuell -> exit 0; neuer Release verfügbar -> exit 3 (Signal,
-#              KEIN Fehler); Pin voraus -> exit 0; Netz/API/Rate-Limit nicht
-#              erreichbar -> SKIP, exit 0 (kein fail-closed — KEIN Gate, anders
-#              als das netzlose fail-closed --verify). Nudge zum bewussten
-#              Re-Adopt (MR-019/MR-022), nie automatischer Bump. Übernommen aus
-#              dem Kurs-Beispiel check_regelwerk_drift.py, auf d-checks
-#              Tag-Pin-Modell übersetzt.
+#   --check-latest  Upstream-Audit (Netz, informativ, KEIN Gate, KEIN
+#              fail-closed — anders als das netzlose fail-closed --verify).
+#              Zwei Prüfungen gegen Upstream:
+#              (A) Currency: gepinnter Tag vs. neuestes STABILES Release
+#                  (GitHub-API /releases/latest; Prereleases/Drafts raus).
+#              (B) Content-Drift am GEPINNTEN Tag: lädt dessen lab-regelwerk.zip
+#                  und vergleicht die Bytes (sha256sum regelwerk/*.md) gegen das
+#                  committete SHA256SUMS — fällt auf, wenn der Tag verschoben /
+#                  das Asset neu hochgeladen wurde (VERIFIZIERT die
+#                  Tag-Immutabilität aus MR-011, statt ihr nur zu vertrauen).
+#              Exit (schlimmster Fall): 0 = aktuell & authentisch; 3 = neuerer
+#              Tag verfügbar (Signal); 4 = Content-Drift am gepinnten Tag
+#              (Provenienz!). Nicht erreichbare Teile (Netz/API/Werkzeug/Manifest)
+#              -> SKIP je Teil (exit 0, sofern der andere Teil nicht 3/4 meldet).
+#              Nudge zum bewussten Re-Adopt (MR-019/MR-022), nie automatischer
+#              Bump. Übernommen aus dem Kurs-Beispiel check_regelwerk_drift.py
+#              (Content-Hash-Drift), auf d-checks Tag-Pin-Modell übersetzt.
 #
 # Tag-Quelle: ohne Argument die §Baseline-Stand-Zeile in
 # harness/conventions.md (Single Source of Truth — kein Drift; der nächste
@@ -68,36 +75,69 @@ verify() {
 }
 
 check_latest() {
-  # Currency-Audit: gepinnter §Baseline-Tag vs. neuestes STABILES Upstream-
-  # Release. Informativ, KEIN Gate — deshalb kein fail-closed: bei Netz-/API-
-  # Ausfall SKIP statt Block. Signalisiert nur den bewussten Re-Adopt
-  # (MR-019/MR-022); automatisiert nichts.
+  # Upstream-Audit: (A) Currency (neuerer Tag?) und (B) Content-Drift am
+  # gepinnten Tag (Bytes des Release-Assets vs. committetes SHA256SUMS — Tag
+  # verschoben/Asset neu?). Beides Netz, informativ, KEIN Gate, KEIN fail-closed
+  # (Netz-/Werkzeug-Ausfall -> SKIP je Teil). (B) VERIFIZIERT die
+  # Tag-Immutabilität (MR-011); automatisiert nichts (MR-019/MR-022).
+  # Läuft unter deaktiviertem errexit (Dispatch: set +e), daher kein `|| true`.
   command -v curl >/dev/null 2>&1 \
     || { echo "fetch-baseline-cache: 'curl' nicht gefunden (Host-Werkzeug)" >&2; exit 1; }
+
+  # --- (A) Currency: neuestes stabiles Release ---
   local api="https://api.github.com/repos/${repo}/releases/latest"
-  local latest
+  local latest currency="skip"
   latest="$(curl -fsSL -H 'Accept: application/vnd.github+json' "$api" 2>/dev/null \
     | grep -oE '"tag_name"[[:space:]]*:[[:space:]]*"v[0-9]+\.[0-9]+\.[0-9]+"' \
-    | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
-  if [ -z "$latest" ]; then
-    # Netz/API nicht erreichbar oder kein stabiles Release parsebar -> weich.
-    echo "fetch-baseline-cache: check-latest SKIP — neuestes Release nicht ermittelbar (Netz/API/Rate-Limit). Gepinnt: ${tag}."
-    return 0
+    | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | head -1)"
+  if [ -n "$latest" ]; then
+    if [ "$latest" = "$tag" ]; then
+      currency="current"
+    else
+      local newest; newest="$(printf '%s\n%s\n' "$tag" "$latest" | sort -V | tail -1)"
+      [ "$newest" = "$latest" ] && currency="newer" || currency="ahead"
+    fi
   fi
-  if [ "$latest" = "$tag" ]; then
-    echo "fetch-baseline-cache: check-latest OK — Baseline aktuell (gepinnt == latest == ${tag})."
-    return 0
+
+  # --- (B) Content-Drift am gepinnten Tag (verifiziert Tag-Immutabilität) ---
+  local authenticity="skip" note=""
+  if ! command -v unzip >/dev/null 2>&1 || ! command -v sha256sum >/dev/null 2>&1; then
+    note="unzip/sha256sum fehlt (Host-Werkzeug)"
+  elif [ ! -f "$sums" ]; then
+    note="kein vendored Manifest ${sums}"
+  else
+    local td; td="$(mktemp -d)"
+    local url="https://github.com/${repo}/releases/download/${tag}/lab-regelwerk.zip"
+    if curl -fsSL -o "${td}/lab-regelwerk.zip" "$url" 2>/dev/null \
+       && unzip -oq "${td}/lab-regelwerk.zip" -d "${td}/regelwerk" 2>/dev/null; then
+      local up ve
+      up="$( { cd "$td" && sha256sum regelwerk/*.md 2>/dev/null; } | LC_ALL=C sort )"
+      ve="$( LC_ALL=C sort < "$sums" )"
+      [ "$up" = "$ve" ] && authenticity="ok" || authenticity="drift"
+    else
+      note="Asset ${tag}/lab-regelwerk.zip nicht ladbar (Netz/API)"
+    fi
+    rm -rf "$td"
   fi
-  local newest
-  newest="$(printf '%s\n%s\n' "$tag" "$latest" | sort -V | tail -1)"
-  if [ "$newest" = "$latest" ]; then
-    echo "fetch-baseline-cache: check-latest — NEUER RELEASE ${latest} verfügbar (gepinnt ${tag})." >&2
-    echo "  -> Re-Adopt erwägen: fetch-baseline-cache.sh ${latest} (re-vendor), §Baseline-Stand+Pin bumpen, Adaptionen prüfen (MR-019/MR-020/MR-021)." >&2
-    return 3
-  fi
-  # latest ist nicht neuer als der Pin (Prereleases sind ausgeschlossen; Pin ggf. voraus).
-  echo "fetch-baseline-cache: check-latest — latest ${latest} ist nicht neuer als gepinnt ${tag} (Pin voraus?); nichts zu tun."
-  return 0
+
+  # --- Ausgabe beider Teile; Exit = schlimmster Fall (4 > 3 > 0) ---
+  local rc=0
+  case "$currency" in
+    current) echo "fetch-baseline-cache: check-latest OK (Currency) — Baseline aktuell (gepinnt == latest == ${tag})." ;;
+    newer)   echo "fetch-baseline-cache: check-latest — NEUER RELEASE ${latest} verfügbar (gepinnt ${tag})." >&2
+             echo "  -> Re-Adopt erwägen: fetch-baseline-cache.sh ${latest} (re-vendor), §Baseline-Stand+Pin bumpen, Adaptionen prüfen (MR-019/MR-020/MR-021)." >&2
+             rc=3 ;;
+    ahead)   echo "fetch-baseline-cache: check-latest (Currency) — latest ${latest} ist nicht neuer als gepinnt ${tag} (Pin voraus?); nichts zu tun." ;;
+    skip)    echo "fetch-baseline-cache: check-latest SKIP (Currency) — neuestes Release nicht ermittelbar (Netz/API/Rate-Limit). Gepinnt: ${tag}." ;;
+  esac
+  case "$authenticity" in
+    ok)    echo "fetch-baseline-cache: check-latest OK (Content) — gepinnter Tag ${tag} upstream unverändert (Bytes == vendored SHA256SUMS)." ;;
+    drift) echo "fetch-baseline-cache: check-latest — UPSTREAM-CONTENT-DRIFT: die Bytes von ${tag}/lab-regelwerk.zip weichen vom vendored SHA256SUMS ab (Tag verschoben / Asset neu?)." >&2
+           echo "  -> Provenienz prüfen: das gepinnte Release-Asset hat sich geändert. NICHT blind re-vendoren; upstream verifizieren (MR-011-Immutabilität verletzt)." >&2
+           rc=4 ;;
+    skip)  echo "fetch-baseline-cache: check-latest SKIP (Content) — ${note}. Gepinnt: ${tag}." ;;
+  esac
+  return $rc
 }
 
 if [ "$mode" = "verify" ]; then
