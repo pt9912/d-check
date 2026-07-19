@@ -55,32 +55,24 @@ dort korrekt. Sie werden nur dort angefasst, wo §4-Inhalt zu ihnen wandert.
 
 ## 3. Definition of Done
 
-- [ ] **B-3 (HIGH):** §4.12 „Unterstützte Definitionssyntax" (~50 Zeilen
-  Grammatik-/Feldreferenz **vor** dem „Vorgehen") gekürzt; die Tabellen-Binding-
-  Regeln leben nur noch in §5, §4 verweist. Duplikat zu §5 aufgelöst.
-- [ ] **B-1/B-2 (MEDIUM–HIGH):** §4.7 `order`/`direction` und `token` auf
-  Ziel-Titel + Lesersituation umgestellt (heute: „Trägt eine Klasse zusätzlich
-  `order` …, prüft d-check auch …" bzw. „`matrix` sieht standardmäßig nur
-  Markdown-Links").
-- [ ] **B-6 (MEDIUM, strukturell):** §4.12 (heute ~300 Zeilen = 20 % des
-  Handbuchs, mindestens fünf Aufgaben in einer) aufgetrennt — RTM erzeugen/gaten
-  bleibt §4.12, Coverage/Modalität/Kreuzverweis werden eigene §4.x mit eigener
-  Ziel/Vorgehen/Ergebnis-Klammer. Doppelte WAISE-Definition entfernt.
-- [ ] **B-4 (MEDIUM):** §4.12 Modalität als Aufgabe („Nur MUSS-Anforderungen
-  gaten, SOLLTE/KANN advisory lassen"); Klassifikations-Mechanik und
-  Fail-closed-Liste nach §5.
-- [ ] **B-7 (MEDIUM):** §4.4 öffnet mit der Entscheidungsfrage (frisches vs.
-  bestehendes Repo) statt mit elf Zeilen Fähigkeits-Inventar.
-- [ ] **B-5 (MEDIUM):** §4.12-Versionsgrenze („Bis v0.42.0 …, ab v0.43.1 …") als
-  Fehlerbild nach §7, Versionsaussage nach §11.
-- [ ] **B-8 (LOW):** Flag-/Schlüssel-Titel auf Ziel-Titel (§4.5, §4.11, §4.4
-  `--id-prefix`, §4.12 `trace`/`trace.coverage`) — nur im Zug der ohnehin
-  berührten Abschnitte.
-- [ ] **Kein Regress:** beide Handbuch-Harnesse grün (Config-Beispiele,
-  E2E-Ausgabeblöcke); Handbuch-Version + §11-Zeile nachgezogen; `make gates` grün.
-- [ ] **Gegenprobe:** ein Abschnitt-für-Abschnitt-Audit gegen den Standard meldet
-  für §4 keine offenen HIGH/MEDIUM-Befunde mehr — und benennt ausdrücklich, was
-  bewusst Referenz bleibt.
+**Frisches §4-Audit (2026-07-19, [Report](../../../reviews/2026-07-19-slice-072-paragraph4-audit.md)):**
+die B-Items sind gegen das *aktuelle* §4 re-validiert (dieser Plan war vom
+2026-07-17, §4 wuchs seither). Ergebnis: **B-8 bereits erledigt**, **B-7
+niedrig/teilweise**, **B-1…B-6 offen** (B-3/B-6 schlimmer geworden), plus
+**N-1…N-4** (neue Funktions-Referenzen, die die Post-Audit-Slices 074–077 an
+§4.12 anhängten — exakt die in §4 genannte Ursache). Zeilen unten = Stand
+2026-07-19.
+
+- [ ] **B-1/B-2 (§4.7 `matrix`, Z. 333–382):** `order`/`direction` und `token` auf Ziel-Titel + Lesersituation umstellen (heute produkt-innensichtig: „Trägt eine Klasse `order` …" / „`matrix` sieht standardmäßig nur Markdown-Links").
+- [ ] **B-3 (§4.12 „Unterstützte Definitionssyntax", Z. 595–662 **vor** dem „Vorgehen" Z. 664 — HIGH, auf ~67 Z. gewachsen):** Grammatik-/Feldreferenz kürzen; die Tabellen-Binding-Regeln leben nur noch in §5 (Z. 1395–1408), §4 verweist. **Inkl. N-1 „Tabellengrenze" (Z. 648–653) + N-2 „Direktiven-Marker" (Z. 655–662)** — Referenz-Prosa nach §5/§7.
+- [ ] **B-4 (§4.12 Modalität, Z. 776–805):** als Aufgabe formulieren („Nur MUSS-Anforderungen gaten, SOLLTE/KANN advisory"); Klassifikations-Mechanik + Fail-closed-Liste nach §5 (Z. 1454–1473).
+- [ ] **B-5 (§4.12-Versionsgrenze — proliferiert):** der „Bis v0.42.0 …"-Block (Z. 699–718) als Fehlerbild nach §7, Versionsaussage nach §11; **plus die ≥5 verstreuten inline „Bis vX/Ab vX"-Notizen (Z. 618, 645–646, 652–653, 661–662, 774, 807) + N-3 „Zugesagte Range-Notationen" (Z. 765–774) + N-4** — Versions-/Kompatibilitäts-Prosa raus aus der Aufgabe.
+- [ ] **B-6 (§4.12 strukturell, Z. 585–915 ≈ 330 Z., ~8 Themen — HIGH):** auftrennen — RTM erzeugen/gaten bleibt §4.12, Coverage/Modalität/Kreuzverweis werden eigene §4.x mit eigener Ziel/Vorgehen/Ergebnis-Klammer; doppelte WAISE-Definition (Z. 589–591 / 671–673) entfernen. **Korrektur zum Alt-Audit:** die „Kreuzverweis-Konsistenz"-H2 (Z. 883) und „F-1" (Z. 601) sind **Fence-Beispielausgaben**, keine echten promovierten Überschriften — der strukturelle Kern gilt dennoch.
+- [x] **B-8 (bereits erledigt):** die §4.x-Titel folgen schon dem Muster „Ziel + Schlüssel in Klammern" (§4.5/§4.11/…) — keine Arbeit nötig.
+- [ ] **B-7 (§4.4-Öffnung, niedrig/teilweise):** der Ziel/Voraussetzung-Rahmen ist gut (war schon zur Audit-Zeit so); nur die Fähigkeits-Inventar-Passage **vor** der Entscheidungsfrage (frisches vs. bestehendes Repo) noch straffen — kleine Severity.
+- [ ] **Beobachtungen (Ermessen):** N-5 (die neuen Module `citations`/`sources` haben keine eigene §4-Aufgabe — ggf. je eine schlanke Aufgabe), N-6 (leichte §4.9/§4.11-Überlappung bei `--json`/`--yaml`).
+- [ ] **Kein Regress:** beide Handbuch-Test-Harnesse (`docexamples_test`/`handbook_examples_test`) grün; kein Ausgabeblock/Config-Beispiel verliert Anker/Form-Token; Handbuch-Version + §11-Zeile nachgezogen; `make gates` grün.
+- [ ] **Abschluss-Gegenprobe:** ein erneutes §4-Audit gegen den Standard meldet keine offenen HIGH/MEDIUM mehr — und benennt ausdrücklich, was bewusst Referenz bleibt (§5/§6, die §4.9-Vergleichstabelle, §4.10 „Was `--repair` behebt", der §4.12-Kreuzverweis-Block Z. 841–914 als Vorbild).
 
 ## 4. Risiken / offene Punkte
 
