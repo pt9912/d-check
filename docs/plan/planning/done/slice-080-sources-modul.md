@@ -1,6 +1,6 @@
 # Slice slice-080: Modul `sources` — Upstream-Content-Drift externer Quellen
 
-**Status:** In Arbeit (doc-first abgeschlossen; Code offen)
+**Status:** Done (Release **v0.51.0**, 2026-07-19)
 **Welle:** welle-63-sources (Trigger: WIP-Slot frei nach welle-62-Abschluss, v0.50.0)
 **Bezug:** [`DC-FA-SRC-001`](../../../../spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz), [ADR-0046](../../adr/0046-sources-upstream-content-drift.md), [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) (Amendment); Vorläufer als Harness-Tooling [`MR-022`](../../../../harness/conventions.md#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019)
 **Autor:** pt9912
@@ -41,11 +41,11 @@ schon ab; dieses Modul macht es allgemein.
 
 ## 3. Definition of Done
 
-- [x] **Spec/Doc (doc-first):** [`DC-FA-SRC-001`](../../../../spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz) (Lastenheft 0.49.0) + Bereich `SRC` §3 + [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Erweiterung + §7 + `sources` in der Regelmodul-Auswahl + Glossar; [ADR-0046](../../adr/0046-sources-upstream-content-drift.md) (`Proposed`); Spezifikation [`DC-FA-SRC-001.a`](../../../../spec/spezifikation.md#dc-fa-src-001a--upstream-content-drift-externer-quellen-sources) + §2-Schema (`sources[]`).
-- [ ] **Code:** `rules/sources.go` (`CheckSources`, Netz-Post-Pass wie `external`) — Marker-Parser + Config-`sources[]`; `model.validModules()` + `SourcesConfig`; `configyaml` (raw/`applySources`/`scopeOfSources`); CLI `httpChecker()` deckt `sources`; `run.go` sammelt Pins + ruft nach dem Scan; `archive/zip`-Manifest-Hash; voller Ist-Hash im Befund; fail-closed. Grund-Codes `source-drift`/`source-unreachable` (§4) + `AllReasons()`/`reasonTexts()` (Lockstep). Netzlos-Test `forbiddenInNetless()` += `sources` (+ Regressionsfall).
-- [ ] **Tests:** die sechs Akzeptanzkriterien (Happy · Archiv-Determinismus · Modul-aus/netzlos · Negative-Drift · unreachable ≠ Drift · fail-closed) als Go-Tests gegen einen `httptest`-Server (kein echtes Netz im Unit-Test); Guards mutations-verifiziert (u. a. Manifest-Sortierung entfernt ⇒ Reorder-Test kippt).
-- [ ] **Config-Surface:** `--print-config`-Template (`sources`-Block + „einzige Netz-Tür"→zwei), `--print-mk` (automatisch über `ValidModules()`); Handbuch §6-Zeile + Config-Beispiel + §11 (Handbuch-Version 1.40) + `operations.md` + README EN/DE (die „einzige Netzwerk-Tür"-Stellen revidieren); `CHANGELOG.md`.
-- [ ] **Belege:** `make ci`/`make fullbuild` **grün**; Realdatenbeleg (`--enable sources` gegen eine echte gepinnte Quelle: unverändert grün, ein-Byte-Drift → `source-drift`); zwei unabhängige Reviews (R1 doc + R2 code), alle Befunde eingearbeitet; release-prep; Closure Move+Roadmap-Flip; [ADR-0046](../../adr/0046-sources-upstream-content-drift.md) → `Accepted`; Release **v0.51.0** + Digest-Backfill.
+- [x] **Spec/Doc (doc-first):** [`DC-FA-SRC-001`](../../../../spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz) (Lastenheft 0.49.0) + Bereich `SRC` §3 + [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Erweiterung + §7 + `sources` in der Regelmodul-Auswahl + Glossar; [ADR-0046](../../adr/0046-sources-upstream-content-drift.md) (`Accepted`); Spezifikation [`DC-FA-SRC-001.a`](../../../../spec/spezifikation.md#dc-fa-src-001a--upstream-content-drift-externer-quellen-sources) + §2-Schema (`sources[]`).
+- [x] **Code:** `rules/sources.go` (`CheckSources`, Netz-Post-Pass wie `external`) — Marker-Parser + Config-`sources[]`; `model.validModules()` + `SourcesConfig`; `configyaml` (raw/`applySources`; **kein** `sources.scope` — bare Liste, dok. Scope-Ausnahme); CLI `httpChecker()` deckt `sources`; `run.go` sammelt Pins + ruft nach dem Scan; `archive/zip`-Manifest-Hash; voller Ist-Hash im Befund; fail-closed. Grund-Codes `source-drift`/`source-unreachable` (§4) + `AllReasons()`/`reasonTexts()` (Lockstep). Netzlos-Test `forbiddenInNetless()` += `sources` (+ Regressionsfall).
+- [x] **Tests:** die sechs Akzeptanzkriterien (Happy · Archiv-Determinismus · Modul-aus/netzlos · Negative-Drift · unreachable ≠ Drift · fail-closed) als Go-Tests gegen einen `httptest`-Server (kein echtes Netz im Unit-Test); Guards mutations-verifiziert (u. a. Manifest-Sortierung entfernt ⇒ Reorder-Test kippt).
+- [x] **Config-Surface:** `--print-config`-Template (`sources`-Block + „einzige Netz-Tür"→zwei), `--print-mk` (automatisch über `ValidModules()`); Handbuch §6-Zeile + Config-Beispiel + §11 (Handbuch-Version 1.40) + `operations.md` + README EN/DE (die „einzige Netzwerk-Tür"-Stellen revidieren); `CHANGELOG.md`.
+- [x] **Belege:** `make ci`/`make fullbuild` **grün**; Realdatenbeleg (`--enable sources` gegen eine echte gepinnte Quelle: unverändert grün, ein-Byte-Drift → `source-drift`); zwei unabhängige Reviews (R1 doc + R2 code), alle Befunde eingearbeitet; release-prep; Closure Move+Roadmap-Flip; [ADR-0046](../../adr/0046-sources-upstream-content-drift.md) → `Accepted`; Release **v0.51.0** + Digest-Backfill.
 
 ## 4. Risiken / offene Punkte
 
@@ -76,4 +76,58 @@ GF (Produkt-Code + Spec; „Doc führt, Code folgt"). Keine BF-Sub-Area.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-*(bei Closure gefüllt: Umsetzung, Belege, Lerneintrag.)*
+**Umsetzung.** 19. Regelmodul `sources` (opt-in, **Netz**): pinnt eine externe
+`http(s)`-Quelle auf einen `sha256` (Marker `<!-- source-pin: [zip] sha256:… -->`
+am Link **oder** Config-Block `sources:`), holt sie als Netz-Post-Pass (geteilter
+HTTP-Client wie `external`, Redirects ≤ 5, Body ≤ 64 MiB), hasht und vergleicht
+case-insensitiv → `source-drift` (Meldung mit **vollem** Ist-Hash) bzw.
+`source-unreachable`. Archiv (`unpack: zip`): byte-genaues, pfad-sortiertes
+Content-Manifest (Basisname-frei, Verzeichnis-Einträge raus, Limits
+256 MiB / 10 000). **Zweite Netz-Tür** — amendiert
+[`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
+(`forbiddenInNetless` führt `sources`). Doc-first:
+[`DC-FA-SRC-001`](../../../../spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz)
+(Lastenheft 0.49.0) + [ADR-0046](../../adr/0046-sources-upstream-content-drift.md)
+(`Accepted`) + Spezifikation `.a`/§2/§4 gingen dem Code voraus.
+
+**Belege.**
+- `make ci` **grün** (doc-check 261/0, lint, test, arch-check via a-check, Coverage
+  **94,2 %**, semgrep 0, gate-consistency, planning-check; image-test nativ ==
+  Container); `make completeness-check` **grün** (46 Anforderungen / **0 Waisen**).
+- **AK-Tests** gegen `httptest` (Happy · Archiv-Reorder-Invarianz **mutations-echt
+  gegen ein unabhängiges Manifest-Orakel** · Modul-aus/netzlos · Drift mit vollem
+  Hash · unreachable ≠ Drift · fail-closed · Marker-Bindung/inert · Case ·
+  verschachteltes Zip · Golden-Hash unabhängig via `sha256sum`).
+- **Realdatenbeleg** ([Report](../../../reviews/2026-07-19-slice-080-sources-realdatenbeleg.md))
+  gegen das echte `lab-regelwerk.zip` des Kurses (Archiv-Pfad, mit Netz): Dummy-Pin
+  → `source-drift` mit vollem Ist-Hash, korrekter Pin → grün, GROSS-Pin → grün, ein
+  Byte anders → `source-drift`.
+- **Zwei unabhängige Reviews**
+  ([R1-doc](../../../reviews/2026-07-19-slice-080-sources-doc-first-r1.md) /
+  [R2-code](../../../reviews/2026-07-19-slice-080-sources-code-r2.md)): R1-doc
+  **BLOCK** auf den Manifest-Kern (widersprüchliche Sortierung, undefinierte
+  Pfad-Form) → byte-genau nachgezogen → Gegenprobe **ACCEPT-WITH-NITS**; R2-code
+  **ACCEPT-WITH-NITS** (Marker-Hash-64-Validierung, Limit-Tests, Golden-Anker) —
+  **alle Befunde eingearbeitet**.
+- Release **v0.51.0** auf GHCR (Pipeline-Run 29679753205 grün), Digest-Pin
+  `ghcr.io/pt9912/d-check@sha256:9197fcf0b6dd029637ba80088fff1f7a858287a0a0af13517f360d1437fc1d98`.
+
+**Steering-Loop.** Klassifikation gemäß
+[`grundlagen-klassifikation.md` §Steering Loop](../../../../.harness/baseline/v1.4.0/regelwerk/grundlagen-klassifikation.md#steering-loop):
+Feedforward (doc-first-Vertrag + ADR) → Bau → Feedback (Doppel-Review +
+Realdatenbeleg + Gates) → Release.
+
+**Lerneintrag.**
+1. **Der Doppel-Review trug messbar:** R1-doc fing den Manifest-Widerspruch
+   (zeilen- vs. pfad-sortiert; „byte-gleich zu unsortiertem `sha256sum`") **vor**
+   dem Code, R2-code die Marker-Hash-Divergenz (die Config erzwang 64 Hex, der
+   Marker nicht → Falsch-`source-drift`) **nach** dem Code — beides wären sonst
+   Bugs geworden. Design-Review-first *und* Code-Review-after zahlen sich getrennt
+   aus.
+2. **Ein Marker-Keyword-Rename ist ein Multi-Datei-Abgleich** (Lastenheft +
+   normative Spec + ADR-Entscheidung + ADR-Beispiel + Slice): der halbe Rename
+   (`archive`→`zip`, F-11) blieb in Spec-Schritt-1 + ADR-Beispiel stehen und wäre
+   ein Falsch-Befund gewesen — die **Gegenprobe** desselben Reviewers fing genau das.
+3. **Ein zweites Netz-Modul amendiert den Netz-Sparsamkeits-Kernvertrag:** der getippte
+   Netzlos-Test (`forbiddenInNetless`) führt die Netz-Ausnahmen explizit; die
+   §4-Grund-Codes kommen mit dem Code (AllReasons-↔-§4-Lockstep), nicht im doc-first.
