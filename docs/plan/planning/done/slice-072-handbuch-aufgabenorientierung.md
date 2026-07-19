@@ -1,6 +1,6 @@
 # Slice slice-072: Handbuch — Aufgabenorientierung der §4-Kapitel
 
-**Status:** In Arbeit (welle-65).
+**Status:** Done (welle-65, abgeschlossen 2026-07-19).
 
 **Welle:** welle-65-handbuch-aufgaben (Trigger: WIP-Slot frei nach welle-64; Nutzer-Aufnahme 2026-07-19).
 
@@ -118,5 +118,47 @@ zweimal gelebt; der Slice zieht den Rest nach.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_Ausstehend — wird bei Abschluss mit Commit-Hash, Review-Verdikt und Lerneintrag
-gefüllt._
+**Abgeschlossen 2026-07-19** (welle-65, reine Doku — kein Release/ADR, Handbuch-Version 1.42).
+
+**Umsetzung.** §4 des Benutzerhandbuchs auf Aufgabenorientierung nachgezogen
+(Benutzerhandbuch-Standard §2/§5). Kern: der ~330-Zeilen-§4.12-`--trace`-Monolith
+in vier aufgabenorientierte Sektionen aufgetrennt — §4.12 RTM · §4.13 Coverage
+(`trace.coverage`) · §4.14 Modalität (`trace.requirements.modality`) · §4.15
+Kreuzverweis (`trace.cross-consistency`); `--print-mk` → §4.16. Tabellen-Grammatik,
+Tabellengrenze, Direktiven-Marker, Komma-Kurzform und Migration → §5; das
+„0 Anforderungen"-Fehlerbild → §7; verstreute „Bis vX/Ab vX"-Prosa raus aus §4
+(§11 führt die Historie); doppelte WAISE-Definition entfernt. §4.7 (`order`/
+`direction`/`token`) lesersituations-orientiert (B-1/B-2); §4.4 Entscheidung vor
+Modul-Inventar (B-7); `citations`-§5-Titel auf Task-Form, Parität zu `pins`/
+`sources` (N-5); §4.9/§4.11-Overlap accept-by-design (N-6).
+
+**Commit-Kette (10).** `0442d3d` (B-1/B-2) · `c17c34b` (Cluster B-3…B-6 + N-1…N-4)
+· `f6bb802` (Cluster-Review) · `0cc66cf` (DoD B-3…B-6) · `790299f` (Version 1.42)
+· `7cf1ba9` (B-7 + N-5) · `58cd2c0` (Gegenprobe) · `53bb6fe` (DoD-Rest) ·
+Closure-Move + dieser Body-Commit.
+
+**Review-Verdikte.** Zwei unabhängige, kontext-getrennte, adversariale
+Reviewer-Subagenten: der Cluster-Review des §4.12-Umbaus =
+[**ACCEPT**](../../../reviews/2026-07-19-slice-072-paragraph4-cluster-review.md)
+(F-1 §11-Verweise und F-2 Bestandsinvariante-Satz eingearbeitet, F-3
+accept-by-design); die Abschluss-Gegenprobe des gesamten §4 =
+[**BESTANDEN**](../../../reviews/2026-07-19-slice-072-paragraph4-gegenprobe.md)
+(12 der 14 Ursprungsbefunde erledigt, 2 bewusst Referenz, 0 offen; 2 neue INFO,
+kein HIGH/MEDIUM).
+
+**Kein Regress.** Beide Handbuch-Test-Harnesse (`docexamples_test`/
+`handbook_examples_test`) durchgängig grün — alle 11 vom Trace-Parsergrenzen-Test
+verlangten Teilstrings erhalten, die drei verankerten Ausgabeblöcke intakt, kein
+Config-Beispiel/Ausgabeblock verlor Anker/Form-Token. `make gates` grün (265/0).
+
+**Lerneintrag.** (1) „Bewusst separat" braucht ehrliche Attribution: die
+Chunk-Grenze war Auftraggeber-Wahl, aber „§11 einfrieren / keine Version" waren
+Autoren-Calls — die Umnummerierung brach die `--print-mk`-§-Verweise selbst, das
+ist kein frozen-Altbestand, sondern zu fixen. (2) Subagent-Review-Reports tragen
+`span-unclosed`, wenn sie inline Triple-Backtick-Fence-Typen in Prosa nennen
+(doc-check scannt `docs/reviews/`) → im Reviewer-Prompt Single-Backtick vorgeben.
+(3) Die eigentliche Ursache (§4.12 erodierte, weil jeder Folge-Slice seine
+Fähigkeit anhängte statt eine Aufgabe zu schreiben) bleibt **strukturell offen** —
+der in §4 notierte Designpunkt (Release-Prep-Regel „neuer Handbuch-Abschnitt =
+eigene Aufgabe mit Ziel/Vorgehen/Ergebnis") ist bewusst **nicht** umgesetzt und
+ein Kandidat für einen Folge-Slice.
