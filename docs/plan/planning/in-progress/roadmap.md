@@ -8,13 +8,16 @@
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-63-sources **abgeschlossen** —
-[`slice-080`](../done/slice-080-sources-modul.md) (neues **19. Modul `sources`**, opt-in
-**Netz**: Upstream-Content-Drift externer Quellen — `source-pin`-Marker/Config `sources:`,
-Einzeldatei + Archiv `unpack: zip`, Grund-Codes `source-drift`/`source-unreachable`;
-[ADR-0046](../../adr/0046-sources-upstream-content-drift.md) `Accepted`, **v0.51.0**).
+**welle-64-dpin-ergonomie** — `pins`/dpin benutzbar machen.
+[`slice-081`](slice-081-pins-hash-ergonomie.md) (der `link-stale`-Befund emittiert den
+**vollen** errechneten `sha256` statt `shortHash` → „einmal laufen, Hash in den
+`<!-- dpin: … -->`-Marker kopieren"; nur die nicht stabilitätsgarantierte Befund-`message`,
+kein Vertragsdelta, kein ADR). Patch-Release.
 
-**Vorgänger:** welle-62-zitat-verifikation
+**Vorgänger:** welle-63-sources
+([`slice-080`](../done/slice-080-sources-modul.md) — 19. Modul `sources`,
+[ADR-0046](../../adr/0046-sources-upstream-content-drift.md) `Accepted`, **v0.51.0**).
+Davor welle-62-zitat-verifikation
 ([`slice-079`](../done/slice-079-zitat-verifikation.md) — 18. Modul `citations`,
 [ADR-0045](../../adr/0045-zitat-verifikation-codepaths-erweiterung-und-citations-modul.md)
 `Accepted`, **v0.50.0**). Davor welle-61-referenz-ventil-quell-skopus
@@ -56,3 +59,4 @@ Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
 | 2026-07-18 | **welle-62 abgeschlossen**; slice-079 `in-progress`→`done`, **v0.50.0 veröffentlicht** | Vollständige Kette: [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)-Erweiterung (`check-lines`) + neues [`DC-FA-CITE-001`](../../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in) (18. Modul `citations`) + Spec + [ADR-0045](../../adr/0045-zitat-verifikation-codepaths-erweiterung-und-citations-modul.md) `Accepted`; opt-in `codepaths.check-lines` (`citation-out-of-range`/`citation-inverted-range`) + Modul `citations` (`d-check:cite`, whitespace-normalisierter Teilstring, `citation-mismatch`), mutations-gepinnt; Realdatenbeleg gegen `ai-harness-init` (korrekt grün, Drift rot, Baseline 0 Direktiven belegt den Substrat-Caveat); Pre-Release-Review R1 BLOCK auf F-1 (Absturz bei `von=0`) → gefixt (1-basierte Untergrenze in beiden Schwestern) → ACCEPT. WIP-Slot wieder frei |
 | 2026-07-19 | **welle-63-sources eröffnet**; slice-080 in `in-progress/` angelegt (WIP-Slot frei nach welle-62) | §4-Vorfragen (Nutzer) entschieden: Pin-Deklaration **beides** (Marker + Config), Quelltypen **Einzeldatei + Archiv** (`unpack: zip`); der `pins`/dpin-Hash-Ergonomie-Fix bleibt separat ([`slice-072`](../open/slice-072-handbuch-aufgabenorientierung.md)). Anlass: Nutzer-Frage „Drift gegen Upstream in d-check einbauen" — produktisiert `check_regelwerk_drift.py` als reusables Modul [`DC-FA-SRC-001`](../../../../spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz), erweitert [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) um eine zweite Netz-Tür |
 | 2026-07-19 | **welle-63 abgeschlossen**; slice-080 `in-progress`→`done`, **v0.51.0 veröffentlicht** | Vollständige Kette: [`DC-FA-SRC-001`](../../../../spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz) + [ADR-0046](../../adr/0046-sources-upstream-content-drift.md) `Accepted` + Spec-Algorithmus-Sektion + 19. Modul `sources` (Marker+Config, Einzeldatei+Archiv, byte-genaues Content-Manifest). Doppel-Review: R1-doc BLOCK auf Manifest-Kern → ACCEPT, R2-code ACCEPT-WITH-NITS (Marker-Hash-64/Limits/Golden). Realdatenbeleg gegen echtes `lab-regelwerk.zip`, Config-Surface-Doku. Digest `sha256:9197fcf0…1d98`. WIP-Slot wieder frei |
+| 2026-07-19 | **welle-64-dpin-ergonomie eröffnet**; slice-081 in `in-progress/` angelegt (WIP-Slot frei nach welle-63) | Nutzer-Entscheid: der in slice-079/080 als „separat" ausgewiesene `pins`/dpin-Ergonomie-Retrofit (voller Ist-Hash im `link-stale`-Befund) wird **eigener** Kleinst-Slice — NICHT in slice-072 (reine §4-Doku, kein Release) quergeschnitten. Nur die nicht stabilitätsgarantierte Befund-`message`, kein Vertragsdelta/ADR; Patch v0.51.1 |

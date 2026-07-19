@@ -2,6 +2,7 @@ package rules
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
@@ -65,6 +66,29 @@ func TestPinsStale(t *testing.T) {
 	}
 	if len(res.Findings) != 1 || res.Findings[0].Rule != "pins" || res.Findings[0].Reason != model.ReasonLinkStale {
 		t.Fatalf("inhaltliche Drift → 1× link-stale, got %v", res.Findings)
+	}
+}
+
+// slice-081 (dpin-Ergonomie): der link-stale-Befund trägt den VOLLEN errechneten
+// Ist-Hash (Re-Pin-Vorlage), nicht nur shortHash — sonst ist dpin nicht adoptierbar.
+// Mutations-echt: mit shortHash(got) enthält die Message den vollen Hash NICHT.
+func TestPinsStaleMessageFullHash(t *testing.T) {
+	orig := map[string]string{"spec/z.md": "## A\n\nAlter Inhalt.\n"}
+	h := pinHashOf(t, orig, "spec/z.md", "a")
+	fix := map[string]string{
+		"spec/z.md": "## A\n\nNeuer, geänderter Inhalt.\n",
+		"docs/s.md": "[A](../spec/z.md#a) <!-- dpin: sha256:" + h + " -->\n",
+	}
+	fullGot := pinHashOf(t, fix, "spec/z.md", "a") // voller Ist-Hash des gedrifteten Spans
+	res, err := Run(coretest.NewMemFS(fix), nil, model.Config{}, []string{"pins"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 {
+		t.Fatalf("Drift → 1 Befund, got %v", res.Findings)
+	}
+	if !strings.Contains(res.Findings[0].Message, fullGot) {
+		t.Fatalf("link-stale-Message muss den vollen Ist-Hash %q tragen (Re-Pin-Vorlage), got %q", fullGot, res.Findings[0].Message)
 	}
 }
 

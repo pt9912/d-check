@@ -117,7 +117,7 @@ func pinFinding(fsys driven.Filesystem, file string, line int, target, want stri
 	return model.Finding{
 		File: file, Line: line, Rule: "pins",
 		Target: target, Reason: model.ReasonLinkStale,
-		Message: "Ziel-Span gedriftet: erwartet sha256:" + shortHash(want) + ", errechnet sha256:" + shortHash(got),
+		Message: "Ziel-Span gedriftet: erwartet sha256:" + shortHash(want) + ", errechnet sha256:" + got + " (voller Ist-Hash zum Re-Pinnen)",
 	}, true
 }
 
