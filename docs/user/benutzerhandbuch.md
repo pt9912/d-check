@@ -586,10 +586,9 @@ siehe Abschnitt 4.9).
 ### 4.12 Anforderungs-Abdeckung prüfen — Traceability-Matrix (`--trace`)
 
 **Ziel:** sehen, welche Anforderung von welchen Architekturentscheidungen
-(ADRs), Umsetzungs-Slices und kuratierten Coverage-Quellen referenziert wird.
-`WAISE` bedeutet dabei nicht „ohne jede Referenz", sondern: weder ein Slice noch
-eine konfigurierte Coverage-Quelle deckt die Anforderung ab; eine ADR allein
-verhindert den Waisenstatus nicht.
+(ADRs), Umsetzungs-Slices und kuratierten Coverage-Quellen referenziert wird —
+und welche Anforderung niemand abdeckt (`WAISE`; die genaue Bedeutung steht
+unten im Ergebnis).
 **Voraussetzung:** ein Repo nach Harness-Konvention (Anforderungen im
 Lastenheft, ADRs unter `docs/plan/adr/`, Slices unter `docs/plan/planning/`).
 
@@ -616,51 +615,9 @@ Formatkonfiguration keine Anforderung:
 | F-1 | Muss       | Das Repository enthält alle Hauptbestandteile. |
 ```
 
-Ab v0.43.1 liest `trace.requirements.format: table` solche Markdown-Pipe-
-Tabellen nativ. Die Spalten werden über ihre exakten Header-Namen gebunden:
-
-```yaml
-trace:
-  requirements:
-    source: spec/lastenheft.md
-    id-pattern: 'F-[0-9]+'
-    format: table
-    table:
-      id-column: ID
-      text-column: Anforderung
-      modality-column: Modalität   # optional; sonst wird die Textspalte klassifiziert
-      duplicate-ids: error         # Default; alternativ first oder last
-    modality: {}                     # optional: MUSS/SOLLTE/KANN sichtbar machen
-```
-
-`table.id-column` und genau eine von `table.text-column` oder
-`table.text-columns` sind Pflicht; jeder darin deklarierte alternative Header
-muss mindestens einmal in der Quelle vorkommen.
-`table.modality-column` ist optional. Die ID-Zelle muss als Ganzes auf
-`id-pattern` passen. Header fehlen/doppelt, eine doppelte erkannte ID unter der
-Default-Politik `duplicate-ids: error` oder eine fehlerhafte
-Tabellenzeilenbreite ergeben Exit 2. Für historische Mehrfachdefinitionen sind
-`first` und `last` explizite, deterministische Overrides. Escaped Pipes (`\|`) und Pipes
-in einzeiligen Backtick-Code-Spans bleiben Teil derselben Zelle. Die Trennzeile
-folgt GFM: **ein** Bindestrich je Zelle genügt (`| - |`, `| :-: |`); optionale
-Doppelpunkte für die Ausrichtung bleiben erlaubt. (Bis v0.46.0 verlangte d-check
-drei Bindestriche — eine reale Tabelle mit `| -- |` war dadurch keine Tabelle.)
-
-**Tabellengrenze:** Folgen zwei Tabellen ohne Leerzeile aufeinander, beendet der
-Beginn der **zweiten** die erste, sofern ihr Header eine konfigurierte Rolle bindet
-— beide werden erkannt. So verschluckt eine irrelevante Tabelle (Header ohne
-gebundene Rolle) die unmittelbar folgende relevante nicht mehr. Ein Header ohne
-gebundene Rolle (etwa eine reine `| - | - |`-Zeile) beendet nicht. (Bis v0.47.0
-verschwand eine so verschluckte relevante Tabelle samt Anforderungen **still**.)
-
-**Direktiven-Marker in einer Tabellenzeile:** Steht d-checks eigene Ignore-Direktive
-`<!-- d-check:ignore … -->` hinter der letzten Pipe einer Datenzeile, wird diese
-Zeile normal gelesen — die überzählige Kommentar-Zelle zählt nicht als Spalte. So
-markieren Sie eine Tabellenzeile für ein **anderes** Modul (z. B. einen geplanten,
-noch nicht existierenden Link), ohne dass der Tabellen-Reader abbricht. Genau **eine**
-ganzzellige Kommentar-Zelle wird toleriert; zwei überzählige Zellen oder eine
-Nicht-Kommentar-Zelle bleiben Exit 2. (Bis v0.48.0 brach eine solche Zeile mit Exit 2
-ab — die eigene Konvention machte den eigenen Reader blind.)
+Ein tabellarisches Lastenheft (`format: table` mit Spalten-Bindung) und die
+Sonderfälle der Tabellen-Grammatik (Tabellengrenze, Direktiven-Marker in einer
+Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5.
 
 **Vorgehen:**
 
@@ -697,53 +654,24 @@ Eine ADR-Referenz allein verhindert den Waisenstatus nicht:
 eine so gatende Waise ergibt Exit 1 (die Matrix bleibt unverändert auf stdout).
 Ohne `--trace` ist `--require-complete` ein Nutzungsfehler (Exit 2).
 
-> **Versionsgrenze:** Bis v0.42.0 war eine leere RTM kein
-> Konfigurationsfehler. Ab v0.43.1 gilt: Ist `requirements.source` mit einem
-> nichtleeren Wert explizit konfiguriert oder `format: table` aktiv und werden
-> null Anforderungen erkannt, endet `--trace` ebenso wie
-> `--trace --require-complete` fail-closed mit Exit 2:
+**Andere Repo-Konvention / tabellarisches Lastenheft.** Folgt Ihr Repo einer
+anderen Kennungs-/Dateikonvention oder pflegt es ein tabellarisches Lastenheft,
+passen Sie die Quell-Achsen (`trace.requirements`, `format: table`, `table.*`,
+je Referenzklasse `adrs`/`slices`) in `.d-check.yml` an. Alle Felder,
+Migrationswege und Fehlerbilder stehen in §5.
 
-```bash
-# DCHECK_IMAGE auf v0.43.1 oder neuer pinnen.
-docker run --rm -v "$PWD:/repo:ro" "$DCHECK_IMAGE" --trace --require-complete
-```
+### 4.13 Abdeckung aus einer kuratierten Matrix mitzählen (`trace.coverage`)
 
-```text
-d-check: error: trace.requirements: Quelle "spec/lastenheft.md" im Format headings ergab 0 Anforderungen
-```
+**Ausgangslage:** Die Abdeckung mancher Anforderungen liegt nicht in ADRs oder
+Slices, sondern in einer **kuratierten Matrix** (z. B. einer ausgelagerten
+Traceability-Datei). Der Referenz-Scan kennt sie nicht und zählt diese
+Anforderungen fälschlich als Waisen.
+**Ziel:** die kuratierte Deckung als eigene Dimension mitzählen, damit nur
+wirklich ungedeckte Anforderungen als Waise erscheinen.
 
-`source: ""` gilt weiterhin wie ein abwesender Wert und fällt auf die
-Defaultquelle zurück. Ohne explizite Quelle und im Defaultformat bleibt ein
-erwartet leerer Bestand kompatibel: leere Matrix, Exit 0. Für eine zusätzliche
-Bestandsinvariante kann ein Konsument die erkannte Gesamtzahl weiterhin gegen
-seine erwartete Zahl plausibilisieren.
-
-**Andere Repo-Konvention (`trace`-Block).** Standardmäßig erkennt `--trace`
-Anforderungen der Gestalt `<PREFIX>-FA-…`/`-QA-…` und Slice-Dateien
-`slice-NNN-….md`. Weicht Ihr Repo davon ab, überschreiben Sie die Quell-Achsen
-in `.d-check.yml` (jedes Feld optional; ohne `trace`-Block bleibt die Ausgabe
-byte-identisch):
-
-```yaml
-trace:
-  requirements:
-    id-pattern: 'GG-[A-Z][A-Z0-9]*-\d{3}'   # Ihre Anforderungs-Kennung
-  slices:
-    file-pattern: '^(\d+)-.*\.md$'          # z. B. Slices NNN-titel.md
-```
-
-Damit lassen sich Quellpfad, Kennungsgestalt, Definitionsformat und ADR-/Slice-
-Dateinamen an eine andere Repo-Konvention anpassen (Details und alle Felder in
-§5). Ohne `format: table` bleibt die oben beschriebene Heading-Syntax aktiv. Ein
-Muster ohne Capture-Gruppe in `file-pattern` ist ein Konfigurationsfehler
-(Exit 2).
-
-**Kuratierte Coverage-Quellen (`trace.coverage`).** Liegt die Abdeckung mancher
-Anforderungen nicht in ADRs/Slices, sondern in einer **kuratierten Matrix** (z. B.
-einer ausgelagerten Traceability-Datei), zählt der Referenz-Scan sie fälschlich
-als Waisen. Der opt-in `trace.coverage`-Block liest solche Dateien als **eigene
-Coverage-Dimension** (separate Spalte) ein — **range-aware** (`GG-QA-001..006`
-deckt alle sechs) und **abschnitts-gescopt**:
+**Vorgehen:** den opt-in `trace.coverage`-Block auf die kuratierte(n) Datei(en)
+richten — er liest sie als **eigene Coverage-Spalte** ein (range-aware,
+abschnitts-gescopt):
 
 ```yaml
 trace:
@@ -756,31 +684,24 @@ trace:
       exclude-sections: ["27.1.1 Anforderungen ohne Design-Artefakt"]  # voller Heading-Text!
 ```
 
-Eine Anforderung ist dann **Waise** nur ohne Slice **und** ohne Coverage; mit
-`--require-complete` bricht das Gate entsprechend. **Wichtig:** ein Sektionsname
-ist der **volle Heading-Klartext** (nicht die Kurzform `27.1.1`) — ein Name ohne
-Treffer, eine fehlende `files`-Datei oder eine ungültige Range (`AAA>BBB`) sind
-Konfigurationsfehler (Exit 2). Ohne `trace.coverage` bleibt die RTM
-byte-identisch (keine Coverage-Spalte). Alle Felder in §5.
+**Ergebnis:** eine zusätzliche **Coverage**-Spalte in der RTM. Eine Anforderung
+ist jetzt nur noch **Waise**, wenn sie **weder** ein Slice **noch** eine
+Coverage-Quelle deckt; `--require-complete` gatet entsprechend. Ohne
+`trace.coverage` bleibt die RTM byte-identisch. Die Felder, die zugesagten
+Range-/Aufzählungs-Notationen und die Fehlerbilder (fehlende `files`-Datei,
+leeres `label`, Sektion ohne Treffer, ungültige Range) stehen in §5.
 
-**Zugesagte Range-/Aufzählungs-Notationen (`ranges: true`).** Genau zwei Formen
-expandieren: die Range `<FAM>-AAA..BBB` (breiten-erhaltend inklusiv) und die
-Aufzählung `<FAM>-AAA/BBB/CCC`. Eine **Komma-Kurzform** ist **nicht** zugesagt:
-`GG-SCN-001, 007` — Komma und unmittelbar Ziffern — ist ein
-Konfigurationsfehler (**Exit 2** mit Hinweis auf `..` und `/`), statt `007` still
-fallen zu lassen. Das gilt auch **hinter** einer Range oder Aufzählung:
-`GG-SCN-001..005, 007, 008` bricht ebenso ab — schreiben Sie stattdessen
-`GG-SCN-001..005`, `GG-SCN-007`, `GG-SCN-008` (volle Kennungen; ein Komma **vor**
-einer vollständigen Kennung ist erlaubt) oder die Aufzählung
-`GG-SCN-001/002/003/004/005/007/008`. Ab v0.46.0.
+### 4.14 Nur MUSS-Anforderungen als Gate erzwingen (`trace.requirements.modality`)
 
-**Modalität (`trace.requirements.modality`).** Tragen Ihre Anforderungen
-RFC-2119-Modalität (MUSS/SOLLTE/KANN) im Text, klassifiziert der opt-in
-`modality`-Block jede Anforderung anhand **konfigurierbarer Modal-Verb-
-Schlüsselwörter** (mit DE+EN-Defaults) und zeigt die Stufe in einer eigenen
-**Modality**-Spalte. `--require-complete` bricht dann **nur** bei Waisen der
-`require-levels`-Stufen (Default `[must]`) — SOLLTE/KANN/`unknown` bleiben
-advisory:
+**Ausgangslage:** Ihre Anforderungen tragen RFC-2119-Modalität (MUSS/SOLLTE/KANN)
+im Text, aber nicht jede unerfüllte Anforderung soll ein Gate brechen — eine
+offene KANN-Anforderung ist kein Release-Blocker.
+**Ziel:** nur Waisen der Stufe **MUSS** zum Fehler machen, SOLLTE/KANN advisory
+lassen.
+
+**Vorgehen:** den opt-in `modality`-Block aktivieren — er klassifiziert jede
+Anforderung (DE+EN-Modalverb-Defaults) und zeigt die Stufe in einer eigenen
+**Modality**-Spalte:
 
 ```yaml
 trace:
@@ -789,63 +710,24 @@ trace:
     modality: {}          # {} = Built-in DE+EN-Defaults; require-levels [must]
 ```
 
-Schon die Schreibweise `modality: {}` **aktiviert** die Klassifikation mit den
-Built-in-Defaults. Klassifiziert wird über den ersten Modal-Verb-Treffer im
-Body **unterhalb der erkannten Requirement-Überschrift bis zur nächsten gleich-
-oder höherrangigen Überschrift** (längster Treffer zuerst: `MUSS NICHT`=may vor
-`MUSS`=must, `DARF NICHT`=must; Body wird whitespace-/emphasis-normalisiert).
-Die Requirement-Überschrift selbst wird nicht ausgewertet. Im Tabellenformat
-liefert eine konfigurierte `table.modality-column` stattdessen ausschließlich
-deren Zelleninhalt; ohne diese Spalte wird die jeweils gebundene Textspalte klassifiziert.
-Ohne Treffer ⇒ Stufe `unknown` (sichtbar, advisory bei
-Default). **Wichtig:** ein `unknown` unter `require-levels: [must]` gatet
-**nicht** — ein echtes MUSS mit unaufgeführtem Verb entkäme so dem Gate;
-Gegenmittel: die Spalte prüfen und ggf. `levels` ergänzen oder strikt
-`require-levels: [must, unknown]`. Fail-closed (Exit 2): leeres Keyword,
-gleiches Keyword in zwei Stufen, `unknown` als Stufen-Name, ungültiges
-`require-levels`. Ohne `modality` byte-identisch (keine Spalte). Details in §5.
+**Ergebnis:** eine eigene **Modality**-Spalte, und `--require-complete` bricht
+**nur** bei Waisen der `require-levels`-Stufen (Default `[must]`) —
+SOLLTE/KANN/`unknown` bleiben advisory. Ohne `modality` bleibt die RTM
+byte-identisch. **Wichtig:** ein `unknown` unter `require-levels: [must]` gatet
+**nicht** — ein echtes MUSS mit unaufgeführtem Verb entkäme so dem Gate; prüfen
+Sie die Spalte und ergänzen ggf. `levels` oder setzen strikt
+`require-levels: [must, unknown]`. Die Klassifikations-Mechanik (Trefferwahl,
+Body- vs. Tabellenspalten-Quelle), die Keyword-Konfiguration und die weiteren
+Fail-closed-Fälle stehen in §5.
 
-**Tabellenbasiertes Lastenheft migrieren.** Ab v0.43.1 ist die native
-Tabellenquelle der direkte Weg: `format: table` setzen und die vorhandenen
-ID-/Text-/Modalitätsheader wie oben binden. Verwendet ein Lastenheft mehrere
-Text-Header für dieselbe Rolle, werden sie explizit gelistet; historische
-Mehrfachdefinitionen brauchen eine bewusste Duplikatpolitik:
+### 4.15 Prüfen, ob Ihre RTM-Tabelle noch zum Design passt (`trace.cross-consistency`)
 
-```yaml
-trace:
-  requirements:
-    source: spec/lastenheft.md
-    id-pattern: '(F|NF|MVP|AK|RAK)-[0-9]+'
-    format: table
-    table:
-      id-column: Kennung
-      text-columns: [Anforderung, Akzeptanzkriterium]
-      modality-column: Prioritaet
-      duplicate-ids: last
-```
-
-Zwei Alternativen bleiben für
-Tabellen außerhalb der unterstützten Pipe-Tabellen-Grammatik:
-
-1. Die Tabelle in Heading-plus-Body-Abschnitte wie im ersten Beispiel dieses
-   Kapitels überführen. ID und Titel stehen in der Überschrift, der normative
-   Text samt Modalverb im Body.
-2. Aus der Tabelle deterministisch ein separates Heading-plus-Body-Dokument
-   erzeugen und dieses als `trace.requirements.source` konfigurieren. Damit die
-   Projektion nicht unbemerkt driftet, muss ein eigener Konsistenzsensor die
-   erzeugten IDs und Texte gegen die autoritative Tabelle prüfen.
-
-Eine ID-Regex allein migriert das Format nicht; für native Tabellen müssen
-`format: table`, `table.id-column`, genau eine von `table.text-column` oder
-`table.text-columns` und optional `table.modality-column` konfiguriert sein.
-
-**Prüfen, ob Ihre RTM-Tabelle noch zum Design passt
-(`trace.cross-consistency`).** *Ausgangslage:* Sie pflegen Anforderung→Design an
-**zwei** Orten — einer kuratierten RTM-Tabelle (je Anforderung die
-Design-Artefakte) und am Design selbst (je Artefakt eine `Bezug`-Spalte mit
-seinen Anforderungen). Beide sollen dasselbe sagen. Nach ein paar Monaten sagen
-sie es nicht mehr, und niemandem fällt es auf. *Ziel:* die Stellen finden, an
-denen die beiden auseinanderlaufen.
+**Ausgangslage:** Sie pflegen Anforderung→Design an **zwei** Orten — einer
+kuratierten RTM-Tabelle (je Anforderung die Design-Artefakte) und am Design
+selbst (je Artefakt eine `Bezug`-Spalte mit seinen Anforderungen). Beide sollen
+dasselbe sagen. Nach ein paar Monaten sagen sie es nicht mehr, und niemandem
+fällt es auf.
+**Ziel:** die Stellen finden, an denen die beiden auseinanderlaufen.
 
 **Schritt 1 — die beiden Sichten benennen.** Sagen Sie d-check, wo sie stehen und
 woran es Anforderungen und Artefakte erkennt:
@@ -914,7 +796,7 @@ Rück-Kanten als „ohne RTM-Eintrag". Das ist kein Fehler, sondern Ihre
 Arbeitsliste: Sie können die Tabelle daran entlang auf konkrete IDs umbauen.
 Die vollständige Feld- und Fehlerliste steht in §5.
 
-### 4.13 Ein Makefile-Fragment einbinden (`--print-mk`)
+### 4.16 Ein Makefile-Fragment einbinden (`--print-mk`)
 
 **Ziel:** d-check als `doc-check`-Schritt ins eigene Makefile einbinden, ohne
 ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
@@ -1408,11 +1290,51 @@ erste, `last` die letzte Definition. Nur eine vollständig auf
 Pipes in einzeiligen, passend begrenzten Code-Spans bleiben Bestandteil der
 Zelle; Tabellen in Code-Fences und mehrzeilige Zellen werden nicht gelesen.
 
+Ein tabellarisches Lastenheft binden Sie mit `format: table` und den vorhandenen
+ID-/Text-/Modalitätsheadern:
+
+```yaml
+trace:
+  requirements:
+    source: spec/lastenheft.md
+    id-pattern: 'F-[0-9]+'
+    format: table
+    table:
+      id-column: ID
+      text-column: Anforderung
+      modality-column: Modalität   # optional; sonst wird die Textspalte klassifiziert
+      duplicate-ids: error         # Default; alternativ first oder last
+```
+
+Verwendet ein Lastenheft mehrere Text-Header für dieselbe Rolle, listen Sie sie
+in `table.text-columns` explizit; historische Mehrfachdefinitionen brauchen eine
+bewusste `duplicate-ids`-Politik (`duplicate-ids: error` ist der Default,
+`first`/`last` sind die deterministischen Overrides). Eine ID-Regex allein migriert das Format
+nicht; für native Tabellen müssen `format: table`, `table.id-column`, genau eine
+von `table.text-column` oder `table.text-columns` und optional
+`table.modality-column` konfiguriert sein. Für Tabellen außerhalb dieser
+Pipe-Grammatik überführen Sie die Zeilen in Heading-plus-Body-Abschnitte (ID und
+Titel in der Überschrift, der normative Text samt Modalverb im Body) oder
+erzeugen daraus deterministisch ein separates Heading-Dokument, dessen Drift ein
+eigener Konsistenzsensor gegen die autoritative Tabelle absichert.
+
+Zur Tabellen-Grammatik im Detail: die Trennzeile folgt GFM — **ein** Bindestrich
+je Zelle genügt (`| - |`, `| :-: |`), Doppelpunkte für die Ausrichtung bleiben
+erlaubt. Folgen zwei Tabellen ohne Leerzeile aufeinander, beendet der Beginn der
+**zweiten** die erste, sofern deren Header eine konfigurierte Rolle bindet —
+beide werden erkannt; ein Header ohne gebundene Rolle beendet nicht. Steht
+d-checks eigene Ignore-Direktive `<!-- d-check:ignore … -->` hinter der letzten
+Pipe einer Datenzeile, zählt die überzählige Kommentar-Zelle nicht als Spalte;
+genau **eine** ganzzellige Kommentar-Zelle wird toleriert, zwei oder eine
+Nicht-Kommentar-Zelle bleiben Exit 2.
+
 Eine **nichtleer explizite** `requirements.source` oder `format: table`
 aktiviert den Nullmengen-Guard: Fehlt die Quelldatei oder werden darin null
 Anforderungen erkannt, endet `--trace` mit Exit 2 vor jeder RTM-Ausgabe.
 `source: ""` gilt dagegen wie ein abwesendes Feld und hält den bisherigen
-Default-Fallback einschließlich leerer RTM/Exit 0 kompatibel.
+Default-Fallback einschließlich leerer RTM/Exit 0 kompatibel. Für eine
+zusätzliche Bestandsinvariante kann ein Konsument die erkannte Gesamtzahl gegen
+seine erwartete Zahl plausibilisieren.
 
 Der ADR-/Slice-Referenzscan läuft rekursiv über die gefundenen Dateien unter
 dem jeweiligen `dir`. `file-pattern` wird gegen den **Basisdateinamen** und
@@ -1424,7 +1346,7 @@ dedupliziert und deterministisch sortiert.
 
 Zusätzlich liest der opt-in **`trace.coverage`**-Block (eine **Liste** benannter
 Quellen) **kuratierte Matrizen** als **eigene Coverage-Dimension** ein — für
-Anforderungen, deren Abdeckung weder in ADRs noch Slices liegt (siehe §4.12). Je
+Anforderungen, deren Abdeckung weder in ADRs noch Slices liegt (siehe §4.13). Je
 Quelle: `files` (explizite Pfade — keine `dir`/`file-pattern`, gegen
 ADR-Kontamination), `label` (Owner-Kennung in der eigenen Coverage-Spalte),
 `ranges` (Default true; expandiert `<FAM>-AAA..BBB` und `<FAM>-AAA/BBB/CCC`
@@ -1452,8 +1374,14 @@ unproblematisch: das Ziel wird klammer-balanciert abgegrenzt, genau wie bei
 gleichermaßen für `trace.cross-consistency`. (Bis v0.44.0 expandierte eine
 verlinkte Range gar nicht — das erzeugte in `trace.coverage` falsche Waisen.)
 
+Genau zwei Expansionsformen sind zugesagt: die Range `<FAM>-AAA..BBB` und die
+Aufzählung `<FAM>-AAA/BBB/CCC`. Eine **Komma-Kurzform** (`GG-SCN-001, 007`, auch
+hinter einer Range wie `GG-SCN-001..005, 007`) ist **nicht** zugesagt und bricht
+mit Exit 2 ab, statt `007` still fallen zu lassen; ein Komma **vor** einer
+vollständigen Kennung ist erlaubt.
+
 Der opt-in **`trace.requirements.modality`**-Block klassifiziert jede Anforderung
-nach RFC-2119-Stufe (siehe §4.12). `levels` (Map Stufe → Modal-Verb-Keywords;
+nach RFC-2119-Stufe (siehe §4.14). `levels` (Map Stufe → Modal-Verb-Keywords;
 leer/`{}` ⇒ Built-in DE+EN-Defaults inkl. `DARF NICHT`→must, `MUSS NICHT`→may)
 und `require-levels` (welche Stufen `--require-complete` gaten, Default `[must]`).
 Ein gesetztes `levels` **ersetzt** die Defaults vollständig (kein Merge): wer
@@ -1474,7 +1402,7 @@ ASCII — ein konfiguriertes Umlaut-Rand-Keyword träfe nicht); kein Treffer ⇒
 alle Waisen).
 
 Der opt-in **`trace.cross-consistency`**-Block vergleicht **zwei unabhängig
-gepflegte Sichten derselben Anforderung→Design-Relation** (siehe §4.12): die
+gepflegte Sichten derselben Anforderung→Design-Relation** (siehe §4.15): die
 **Vorwärts**-Sicht (eine RTM-Tabelle: je Anforderung die Design-Artefaktmenge)
 gegen die **Rückwärts**-Kanten (je Design-Artefakt seine Anforderungen — dort
 authort, wo das Design lebt, und damit die **Quelle der Wahrheit**). Gemeldet
@@ -1599,6 +1527,23 @@ Lösung: `-v "$PWD:/repo:ro"` ergänzen.
 Ursache: Tippfehler oder unbekannter Schlüssel in `.d-check.yml`.
 Lösung: gegen das Gerüst aus `--print-config` abgleichen.
 
+**„… ergab 0 Anforderungen" — die konfigurierte RTM-Quelle ist leer.**
+Ursache: `trace.requirements.source` ist explizit (nichtleer) gesetzt oder
+`format: table` aktiv, aber d-check erkennt null Anforderungen. `--trace` endet
+dann fail-closed mit Exit 2, statt eine leere Matrix zu behaupten:
+
+```bash
+# DCHECK_IMAGE auf v0.43.1 oder neuer pinnen.
+docker run --rm -v "$PWD:/repo:ro" "$DCHECK_IMAGE" --trace --require-complete
+```
+
+```text
+d-check: error: trace.requirements: Quelle "spec/lastenheft.md" im Format headings ergab 0 Anforderungen
+```
+
+Lösung: Quelldatei, `format` und `id-pattern` prüfen. `source: ""` gilt wie ein
+abwesendes Feld und fällt auf die Default-Quelle zurück (leere Matrix, Exit 0).
+
 ## 8. FAQ
 
 **Verändert d-check meine Dateien?**
@@ -1650,12 +1595,12 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.1              | v0.17.0          | 2026-06-19 | `--doctor --json`: maschinenlesbare Diagnose ergänzt (§4.9), Gegenüberstellung der drei Ausgaben                                                                                        |
 | 1.2              | v0.18.0          | 2026-06-19 | `--suggest-config ai-harness`/`ai-harness-init`: Harness-Vorlage in zwei Modi ergänzt (§4.4)                                                                                            |
 | 1.3              | v0.19.0          | 2026-06-20 | YAML-Ausgabe `--yaml` (auch `--doctor --yaml`): maschinenlesbare Ausgabe um YAML erweitert (§4.11)                                                                                      |
-| 1.4              | v0.22.0          | 2026-06-22 | `--id-prefix` für `--suggest-config` (§4.4); Traceability-Matrix `--trace` (§4.12); Makefile-Fragment `--print-mk` (§4.13); `:latest` = neueste **stabile** Version (§2)                |
+| 1.4              | v0.22.0          | 2026-06-22 | `--id-prefix` für `--suggest-config` (§4.4); Traceability-Matrix `--trace` (§4.12); Makefile-Fragment `--print-mk` (§4.16); `:latest` = neueste **stabile** Version (§2)                |
 | 1.5              | v0.23.0          | 2026-06-22 | Modul `codepaths`: Datei-Ventil `exempt-paths` ergänzt (§5 Weitere Module) — ganze Dateien von der Inline-Code-Pfad-Prüfung ausnehmen, wie `ids`                                        |
-| 1.6              | v0.24.0          | 2026-06-23 | `--print-mk`-Fragment um `doc-trace`/`doc-complete`-Targets + `TRACE_FLAGS` erweitert (§4.13); opt-in `--trace --require-complete` (Vollständigkeits-Gate, Waise ⇒ Exit 1, §4.12)       |
+| 1.6              | v0.24.0          | 2026-06-23 | `--print-mk`-Fragment um `doc-trace`/`doc-complete`-Targets + `TRACE_FLAGS` erweitert (§4.16); opt-in `--trace --require-complete` (Vollständigkeits-Gate, Waise ⇒ Exit 1, §4.12)       |
 | 1.7              | v0.25.0          | 2026-06-23 | Modul `diagrams` (opt-in): Kennungs-Existenz in Diagramm-Fences (§5 Weitere Module) — `mermaid`-Diagramme auf undefinierte Kennungen prüfen (Befund `diagram-id-undefined`)             |
 | 1.8              | v0.26.0          | 2026-06-23 | `--suggest-config ai-harness[-init]`: Kommentar-Hinweis auf die nicht aktivierten situativen opt-in-Module (`external`/`spans`/`hostpaths`/`diagrams`) mit Verweis auf `--print-config` |
-| 1.9              | v0.27.0          | 2026-06-23 | `--print-mk`-Fragment (§4.13) um `doc-doctor`/`doc-repair`/`doc-help`-Targets + `DCHECK_DIGEST` (Digest-Override, sticht den Tag) erweitert; alle Targets `##`-annotiert                |
+| 1.9              | v0.27.0          | 2026-06-23 | `--print-mk`-Fragment (§4.16) um `doc-doctor`/`doc-repair`/`doc-help`-Targets + `DCHECK_DIGEST` (Digest-Override, sticht den Tag) erweitert; alle Targets `##`-annotiert                |
 | 1.10             | v0.28.0          | 2026-06-24 | Modul `versions` (opt-in): Versions-Pin-Konsistenz (§5 Weitere Module, §6) — gepinnte `ghcr`-Image-Verweise müssen die aktuelle Version (aus `version.md#aktuell`) tragen, auch in Fences; Befund `version-stale`                |
 | 1.11             | v0.29.0          | 2026-06-24 | Modul `pins` (opt-in): Content-Pin gegen inhaltlichen Drift (§6) — ein Link mit `<!-- dpin: sha256:… -->` wird gegen den Hash seines (whitespace-normalisierten, rohen) Ziel-Spans geprüft; Drift → `link-stale`                |
 | 1.12             | v0.30.0          | 2026-06-28 | Modul `matrix`: klasseninterne Verweisrichtung (§4.7) — eine Klasse mit `order` (Glob-Rang, autoritativste Schicht zuerst) + `direction: no-downward` meldet klasseninterne Abwärtsverweise als `matrix-downward`                |
@@ -1665,25 +1610,25 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.16             | v0.34.0          | 2026-06-29 | Modul `codepaths`: Referenz-Ventil `ignore-refs` (§5/§6) — bestimmte **aufgelöste Ziel-Pfade** referenz-weit (datei-/zeilen-unabhängig) von der Existenz-/Escape-/Anker-Prüfung ausnehmen, als Tombstone-Register bewusst entfernter Artefakte; löst die Frozen-Doc-Refactoring-Falle. Dritte Ventil-Achse neben `d-check:ignore` (Zeile) und `exempt-paths` (Datei)                |
 | 1.17             | v0.35.0          | 2026-07-01 | Neues opt-in-Modul `commits` (14., §5/§6): Traceability-Kennung (`id-patterns`) in jeder Commit-Message über eine Range (`--range`) bzw. der Pending-Message (`--commit-msg`, commit-msg-Hook via stdin); Befund `commit-untraceable`, `exempt-pattern` nimmt Merge/Revert-Betreffe aus — reine-Go-git im read-only `.git` (distroless bleibt, fail-closed, diagnose-only); löst die Skript-Mechanik des `trace-check`-Gates ab. `--print-mk`-Target `doc-commits` verteilt die Range-Prüfung an Konsumenten                |
 | 1.18             | v0.36.0          | 2026-07-01 | Neues opt-in-Modul `planning` (15., §5/§6): Roadmap-↔-in-progress-Lifecycle-Konsistenz — der Ruhe-Marker steht im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` im Verzeichnis liegt (`planning-drift`); **hermetisch** (nur Roadmap + Verzeichnis-Listing, kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, diagnose-only. Löst die Skript-Mechanik des `planning-check`-Gates ab (letztes Familien-Skript). `--print-mk`-Target `doc-planning` (hermetisch, ohne Range) verteilt die Prüfung                |
-| 1.19             | v0.37.0          | 2026-07-03 | Neues opt-in-Modul `tracked` (16., §5/§6): Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (`target-untracked` — untracked/gitignoriertes Ziel fehlt auf jedem frischen Klon); Index-Wahrheit (gestagt = getrackt), kein Doppelbefund, Ventil `exempt-targets` (aufgelöster Zielpfad, segmentweise validiert), fail-closed ohne `.git`, **ohne** Commit-Range. `--print-mk`-Target `doc-tracked` (zehn Targets, §4.13) verteilt die Prüfung                |
+| 1.19             | v0.37.0          | 2026-07-03 | Neues opt-in-Modul `tracked` (16., §5/§6): Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (`target-untracked` — untracked/gitignoriertes Ziel fehlt auf jedem frischen Klon); Index-Wahrheit (gestagt = getrackt), kein Doppelbefund, Ventil `exempt-targets` (aufgelöster Zielpfad, segmentweise validiert), fail-closed ohne `.git`, **ohne** Commit-Range. `--print-mk`-Target `doc-tracked` (zehn Targets, §4.16) verteilt die Prüfung                |
 | 1.20             | v0.37.1          | 2026-07-04 | Fix: `--doctor` zeigt für die sieben seit v0.25 hinzugekommenen Grund-Codes (`diagram-id-undefined`, `version-stale`, `link-stale`, `core-drift`, `core-drift-vcs`, `commit-untraceable`, `planning-drift`) den Klartext statt des rohen Codes — auch als `reasonText` in `--doctor --json`/`--yaml`; die Klartext-Liste ist testseitig beidseitig gegen die Grund-Code-Tabelle der Spezifikation verriegelt (fail-closed)                |
 | 1.21             | v0.37.1          | 2026-07-04 | Anleitung „Das Versions-Register `version.md` aufbauen" (§5) — Aufbau (`## Aktuell`/`## Verlauf`), die `<a id="vX.Y.Z">`-Anker-Mechanik samt Anker-Wanderung beim Release und ein kopierbares Muster zum Nachbau in eigenen Repos                |
-| 1.22             | v0.38.0          | 2026-07-05 | Neues opt-in-Modul `targets` (17., §5/§6): Deklarations-Konsistenz Doku ↔ Build-Targets — jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`gate-phantom`), jede Regel steht in der Autoritäts-Doku (`gate-undocumented`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed. Löst den Doku-↔-Makefile-Kern des `gate-consistency.sh`-Meta-Gates ab; `--print-mk`-Target `doc-targets` (elf Targets, §4.13) verteilt die Prüfung                |
+| 1.22             | v0.38.0          | 2026-07-05 | Neues opt-in-Modul `targets` (17., §5/§6): Deklarations-Konsistenz Doku ↔ Build-Targets — jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`gate-phantom`), jede Regel steht in der Autoritäts-Doku (`gate-undocumented`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed. Löst den Doku-↔-Makefile-Kern des `gate-consistency.sh`-Meta-Gates ab; `--print-mk`-Target `doc-targets` (elf Targets, §4.16) verteilt die Prüfung                |
 | 1.23             | v0.39.0          | 2026-07-06 | `--suggest-config ai-harness[-init]` (§4.4): Vorlage an die **gelebte** Konvention angeglichen — `spans`/`hostpaths` ins fixe Standard-Modulset, repo-bewusster `planning`-Block; `vcs`/`commits` (Commit-Range) via `--print-mk`, `versions`/`targets` bewusst vertagt; kanonische Vorlage der Spezifikation deckt die emittierte Ausgabe 1:1                |
 | 1.24             | v0.40.0          | 2026-07-11 | Requirements Traceability Matrix (`--trace`, §4.12) über einen opt-in `trace`-Block quell-/kennungs-konfigurierbar (§5): Anforderungs-Quelldatei + Kennungs-Regex sowie je Referenzklasse Verzeichnis + Dateimuster + Owner-Präfix; Default = Konvention ⇒ byte-identisch, fail-closed bei ungültiger Regex / Muster ohne Capture-Gruppe. Passt diese Quellachsen an abweichende Repo-Konventionen an; die Heading-basierte Definitionssyntax bleibt bestehen                |
-| 1.25             | v0.41.0          | 2026-07-11 | Kuratierte Coverage-Quellen `trace.coverage` (§4.12/§5): eine Liste benannter `files` liest Deckungs-Matrizen als **eigene Coverage-Spalte** ein — `ranges` (`GG-QA-001..006` → alle sechs, `/`-Aufzählung), `sections`/`exclude-sections` (voller Heading-Text). Waise = ohne Slice **und** ohne Coverage; fail-closed (fehlende Datei / leeres label / Sektion ohne Treffer / ungültige Range ⇒ Exit 2); ohne Block byte-identisch                |
-| 1.26             | v0.42.0          | 2026-07-11 | Modalitäts-Klassifikation `trace.requirements.modality` (§4.12/§5): aus konfigurierbaren Modalverb-Stichwörtern (DE+EN-Defaults, opt-in) klassifiziert die RTM jede Anforderung als MUSS/SOLLTE/KANN in einer **eigenen Modalitäts-Spalte** (längster Treffer, Wortgrenze, Markup-normalisiert); optional gatet `require-levels`, welche Stufen einen Waisen zum Exit-1-Fehler machen (Default: nur MUSS). Fail-closed bei leerem Level/Stichwort, reserviertem `unknown`, Stichwort in zwei Stufen, ungültigem `require-levels` ⇒ Exit 2; ohne Block byte-identisch                |
+| 1.25             | v0.41.0          | 2026-07-11 | Kuratierte Coverage-Quellen `trace.coverage` (§4.13/§5): eine Liste benannter `files` liest Deckungs-Matrizen als **eigene Coverage-Spalte** ein — `ranges` (`GG-QA-001..006` → alle sechs, `/`-Aufzählung), `sections`/`exclude-sections` (voller Heading-Text). Waise = ohne Slice **und** ohne Coverage; fail-closed (fehlende Datei / leeres label / Sektion ohne Treffer / ungültige Range ⇒ Exit 2); ohne Block byte-identisch                |
+| 1.26             | v0.42.0          | 2026-07-11 | Modalitäts-Klassifikation `trace.requirements.modality` (§4.14/§5): aus konfigurierbaren Modalverb-Stichwörtern (DE+EN-Defaults, opt-in) klassifiziert die RTM jede Anforderung als MUSS/SOLLTE/KANN in einer **eigenen Modalitäts-Spalte** (längster Treffer, Wortgrenze, Markup-normalisiert); optional gatet `require-levels`, welche Stufen einen Waisen zum Exit-1-Fehler machen (Default: nur MUSS). Fail-closed bei leerem Level/Stichwort, reserviertem `unknown`, Stichwort in zwei Stufen, ungültigem `require-levels` ⇒ Exit 2; ohne Block byte-identisch                |
 | 1.27             | v0.42.0          | 2026-07-14 | Trace-Präzisierung (§4.12/§5): Requirement-Definition nur als ATX-Heading mit ID im ersten Token; Tabellen-/Listen-/Fließtextgrenze, Body-only-Modalität, exakte Waisen- und Referenzscan-Semantik, Warnung vor leerer RTM mit Exit 0 sowie Brownfield-Migration für tabellarische Lastenhefte dokumentiert                |
 | 1.28             | v0.43.1          | 2026-07-14 | Native Trace-Tabellenquellen (§4.12/§5): `trace.requirements.format: table` bindet ID-, alternative Text- und optionale Modalitätsspalten über exakte Header-Namen; Pipe-Escaping, deterministische Duplikatpolitiken und gemeinsames RTM-Modell. Nichtleer explizite Quelle oder Tabellenmodus endet bei fehlender Quelle, ungültiger Tabellenstruktur oder null Anforderungen fail-closed mit Exit 2; unkonfigurierter Heading-Default bleibt kompatibel                |
 | 1.29             | v0.43.1          | 2026-07-15 | Keine inhaltliche Änderung — Software-Version auf v0.43.1 nachgezogen (die Zeile 1.28 wurde dabei von v0.43.0 auf v0.43.1 umgebogen). Zeile nachgetragen: der Kopf trug 1.29 seit dem v0.43.1-Release-Prep ohne eigenen Historien-Eintrag (Prosa-Currency-Lücke, kein Gate erfasst sie — siehe [releasing.md](releasing.md) §Release-Prep)                                        |
-| 1.30             | v0.44.0          | 2026-07-17 | Kreuzverweis-Konsistenz `trace.cross-consistency` (§4.12/§5): der `--trace`-Lauf vergleicht die Vorwärts-RTM-Tabelle (Anforderung → Design) gegen die Rückwärts-`Bezug`-Kanten (Design → Anforderung) und meldet je Anforderung beide Mengendifferenzen mit Richtung und `Datei:Zeile`; Modi `equal`/`superset`, `exclude-req`-Ventil für Ableitungssprünge, `artifact-id-column: first` für heterogene ID-Header. Advisory unter `--trace`, gatend allein über `--require-complete`; fail-closed inkl. vakuumem Abgleich; ohne Block RTM byte-identisch |
+| 1.30             | v0.44.0          | 2026-07-17 | Kreuzverweis-Konsistenz `trace.cross-consistency` (§4.15/§5): der `--trace`-Lauf vergleicht die Vorwärts-RTM-Tabelle (Anforderung → Design) gegen die Rückwärts-`Bezug`-Kanten (Design → Anforderung) und meldet je Anforderung beide Mengendifferenzen mit Richtung und `Datei:Zeile`; Modi `equal`/`superset`, `exclude-req`-Ventil für Ableitungssprünge, `artifact-id-column: first` für heterogene ID-Header. Advisory unter `--trace`, gatend allein über `--require-complete`; fail-closed inkl. vakuumem Abgleich; ohne Block RTM byte-identisch |
 | 1.31             | v0.44.1          | 2026-07-17 | Range-Notation unter Linkpflicht (§5): eine verlinkte Range/Enum-Fortsetzung (`` [`GG-QA-001`](…)..006 ``) wird wie die unverlinkte gelesen — d-check überspringt genau ein Link-Suffix. Bis v0.44.0 expandierte sie gar nicht und erzeugte in `trace.coverage` falsche Waisen; die eng gefasste Grenze (kein Whitespace/Emphasis/zweites Suffix) ist dokumentiert                          |
 | 1.32             | v0.45.0          | 2026-07-17 | Scope-Trennung des Kreuzverweis-Abgleichs (§5): `forward.req-pattern` (Default `requirements.id-pattern`) erkennt die Anforderungs-IDs der Vorwärts-Sicht — welche Anforderungen verglichen werden, entscheidet das Muster, nicht die RTM-Mitgliedschaft. Die bis v0.44.1 stille Kopplung ist als **Scope-Falle** dokumentiert: bei bewusst gescopter RTM meldete sie jede Rück-Kante als Falschbefund, während die echte Gegenrichtung verschwand                                                    |
 | 1.33             | v0.45.1          | 2026-07-17 | Richtigstellung zur Range-Notation unter Linkpflicht (§5): Klammern **im Linkziel** sind unproblematisch — das Ziel wird klammer-balanciert abgegrenzt wie bei `links`/`ids`. Die Fassung 1.31 behauptete das Gegenteil; tatsächlich expandierte v0.44.1/v0.45.0 dort Pfadsegmente als Enum und versteckte Waisen                                                                                             |
 | 1.34             | v0.46.0          | 2026-07-17 | Komma-Kurzform in Coverage-Quellen dokumentiert (§5): `GG-SCN-001, 007` — und `GG-SCN-001..005, 007, 008` (hinter einer Range) — ist keine zugesagte Notation und bricht mit Exit 2 ab, statt `007` still fallen zu lassen. Zugesagt bleiben nur `..BBB` und `/BBB`; ein Komma **vor** einer vollständigen Kennung ist erlaubt                                                                                       |
-| 1.35             | v0.47.0          | 2026-07-18 | Markdown-Lexik an CommonMark/GFM angeglichen (Grundkonzepte, §4.12): eine Tabellen-Trennzeile braucht nur **einen** Bindestrich (`\| - \|`), und eine Backtick-Fence-Zeile mit Backtick in der Infozeile ist Fließtext, kein Block-Öffner — d-check findet danach **mehr** (SemVer-Minor, ein grüner Konsumentenlauf kann rot werden)                                                                                       |
-| 1.36             | v0.48.0          | 2026-07-18 | Tabellengrenze am relevanten Header (§4.12): eine irrelevante Tabelle verschluckt die unmittelbar folgende **relevante** nicht mehr still — ein Header, der eine konfigurierte Rolle bindet, beendet die laufende Tabelle. d-check findet danach **mehr** (SemVer-Minor, ein grüner Konsumentenlauf kann rot werden)                                                                                       |
-| 1.37             | v0.48.1          | 2026-07-18 | Direktiven-Toleranz in Tabellenzeilen (§4.12): eine Datenzeile mit genau einer überzähligen, ganzzelligen HTML-Kommentar-Zelle (`<!-- d-check:ignore … -->` hinter der letzten Pipe) wird auf Header-Breite gelesen, statt fail-closed mit Exit 2 abzubrechen. Zwei Extra-Zellen oder Nicht-Kommentar bleiben Exit 2. Patch (rot→grün)                                                                                       |
+| 1.35             | v0.47.0          | 2026-07-18 | Markdown-Lexik an CommonMark/GFM angeglichen (Grundkonzepte, §5): eine Tabellen-Trennzeile braucht nur **einen** Bindestrich (`\| - \|`), und eine Backtick-Fence-Zeile mit Backtick in der Infozeile ist Fließtext, kein Block-Öffner — d-check findet danach **mehr** (SemVer-Minor, ein grüner Konsumentenlauf kann rot werden)                                                                                       |
+| 1.36             | v0.48.0          | 2026-07-18 | Tabellengrenze am relevanten Header (§5): eine irrelevante Tabelle verschluckt die unmittelbar folgende **relevante** nicht mehr still — ein Header, der eine konfigurierte Rolle bindet, beendet die laufende Tabelle. d-check findet danach **mehr** (SemVer-Minor, ein grüner Konsumentenlauf kann rot werden)                                                                                       |
+| 1.37             | v0.48.1          | 2026-07-18 | Direktiven-Toleranz in Tabellenzeilen (§5): eine Datenzeile mit genau einer überzähligen, ganzzelligen HTML-Kommentar-Zelle (`<!-- d-check:ignore … -->` hinter der letzten Pipe) wird auf Header-Breite gelesen, statt fail-closed mit Exit 2 abzubrechen. Zwei Extra-Zellen oder Nicht-Kommentar bleiben Exit 2. Patch (rot→grün)                                                                                       |
 | 1.38             | v0.49.0          | 2026-07-18 | Geteiltes Referenz-Ventil `ignore-refs` (§5): das bisher modul-lokale `codepaths.ignore-refs` wird zur **querschnittlichen** Top-Level-Fähigkeit, die `links`/`anchors`/`codepaths` gemeinsam honorieren. Neue Felder je Eintrag: `in` (Quell-Skopus, Glob auf die Quelldatei), `refs` (aufgelöste Ziele) und `keep` (Ausnahmen, reihenfolge-unabhängig). Ziel-Achsen-Pendant zu `scan.ignore`; löst die Template-Verzeichnis-Falle. `codepaths.ignore-refs` bleibt Alias (kein Config-Bruch), ohne Block byte-identisch; ungültiges Glob ⇒ Exit 2. Die vier Ventil-Achsen sind jetzt gegeneinander erklärt                                                                    |
 | 1.39             | v0.50.0          | 2026-07-18 | Zitat-Verifikation (§5/§6): opt-in `codepaths.check-lines` verifiziert `datei:<von>-<bis>`-Zeilen-Referenzen (`citation-out-of-range`/`citation-inverted-range`), Default aus byte-identisch. Neues 18. Modul `citations` (opt-in): die Direktive `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (`>`-Block oder inline `„…"`/`"…"`), das ein whitespace-normalisierter Teilstring der Quell-Spanne sein muss (`citation-mismatch`); Mindestlänge 16 Zeichen, malformte Direktive fail-closed. d-check findet danach **mehr** (SemVer-Minor)                                                                    |
 | 1.40             | v0.51.0          | 2026-07-19 | Neues opt-in-Modul `sources` (19., **Netz**, §5/§6): Content-Pin externer Quellen gegen Upstream-Drift — eine auf einen `sha256` gepinnte `http(s)`-Quelle (Marker `<!-- source-pin: [zip] sha256:… -->` am Link **oder** Config-Block `sources:`) wird geholt, gehasht und verglichen; Abweichung → `source-drift` (Meldung mit vollem Ist-Hash zum Re-Pinnen), Netzfehler/HTTP ≥ 400/Timeout/Größenlimit/kein gültiges Zip → `source-unreachable`. Einzeldatei (Roh-Byte-Hash) oder Archiv (`unpack: zip`, reihenfolge-invariantes Content-Manifest). **Zweite Netz-Tür** neben `external` (beide opt-in, nie im Default-Lauf); malformte Direktive/ungültige Config fail-closed (Exit 2), ohne aktives `sources` byte-identisch                |
