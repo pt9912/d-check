@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.39 · **Software-Version:** [v0.50.0](../../version.md#v0.50.0) ·
+**Handbuch-Version:** 1.40 · **Software-Version:** [v0.50.0](../../version.md#v0.50.0) ·
 **Stand:** 2026-07-18 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -35,8 +35,9 @@ Doku-Hygiene. Ein Werkzeug für die gesamte Doku-Prüfung: ein Image, ein
 Update-Pfad, repo-spezifisches Verhalten per Konfiguration (`.d-check.yml`).
 
 d-check ist ein **Lese-Werkzeug**: Es verändert das geprüfte Repository
-nie und macht außer im optionalen Modul `external` keine
-Netzwerkzugriffe. Gleiche Eingabe liefert immer dieselbe Ausgabe.
+nie und macht außer in den optionalen Modulen `external` und `sources`
+(beide opt-in, nie im Default-Lauf) keine Netzwerkzugriffe. Gleiche
+Eingabe liefert immer dieselbe Ausgabe.
 
 ### Zielgruppe
 
@@ -180,8 +181,8 @@ docker run --rm --network none -v "$PWD:/repo:ro" \
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
 die CI bricht bei kaputten Referenzen ab.
 
-**Hinweise:** `--network none` ist sinnvoll, solange das Modul `external`
-nicht aktiv ist (d-check braucht dann kein Netz). Pinnen Sie für
+**Hinweise:** `--network none` ist sinnvoll, solange kein Netz-Modul
+(`external` oder `sources`) aktiv ist (d-check braucht dann kein Netz). Pinnen Sie für
 reproduzierbare Läufe auf den Image-Digest (siehe
 [Abschnitt 2](#2-installation-und-zugriff)).
 
@@ -396,8 +397,10 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.50.0 \
 Zeitüberschreitungen als `external-timeout`, zu viele Weiterleitungen als
 `external-redirects`.
 
-**Hinweise:** Das ist das **einzige** Modul, das Netzwerkverbindungen
-öffnet. Ohne Aktivierung bleibt d-check vollständig netzlos.
+**Hinweise:** `external` und `sources` sind die **einzigen** Module, die
+Netzwerkverbindungen öffnen (beide opt-in, nie im Default-Lauf; siehe
+[Abschnitt 5](#5-konfiguration) zum Content-Pin `sources`). Ohne eines davon
+bleibt d-check vollständig netzlos.
 
 ### 4.9 Befunde verstehen — Diagnose-Modus (`--doctor`)
 
@@ -993,7 +996,7 @@ scan:
 ### Module wählen
 
 ```yaml
-modules: [links, anchors, ids, matrix]
+modules: [links, anchors, ids, matrix]  # Netz-Module external/sources separat zuschalten
 ```
 
 ### Kennungs-Muster (Modul `ids`)
@@ -1231,6 +1234,49 @@ read-only-Mount) verteilt die Prüfung:
 
 ```bash
 make doc-tracked
+```
+
+### Externe Quellen auf ihren Inhalt pinnen (Modul `sources`)
+
+Das Modul `sources` (opt-in, **Netz**) ist die **zweite** Netz-Tür neben `external`
+und prüft **Inhalt** statt bloßer Erreichbarkeit: eine auf einen `sha256` gepinnte
+externe `http(s)`-Quelle wird geholt, gehasht und mit dem Pin verglichen. Weicht
+der Hash ab, meldet es `source-drift` — die Meldung führt den **vollen errechneten
+`sha256`** mit, sodass ein Re-Pin „einmal laufen, gemeldeten Hash kopieren" ist. Ist
+die Quelle nicht materialisierbar (Netzfehler, HTTP-Status ≥ 400, Timeout,
+Größenlimit **oder** unter `unpack: zip` kein gültiges Zip), meldet es
+`source-unreachable` (getrennt von `source-drift`).
+
+Der Pin wird auf **zwei** Wegen deklariert:
+
+- **Marker** am Link — `[text](https://…) <!-- source-pin: sha256:<hex> -->` bindet
+  an den unmittelbar vorausgehenden `http(s)`-Link derselben Zeile; für ein
+  Archiv-Ziel trägt der Marker zusätzlich das Schlüsselwort `zip`
+  (`<!-- source-pin: zip sha256:<hex> -->`).
+- **Config** — ein Top-Level-Block `sources:` mit Einträgen
+  `{url, sha256, unpack: none|zip}`.
+
+Zwei Quelltypen: eine **Einzeldatei** (`unpack: none`, Default) wird über ihre rohen
+Antwort-Bytes gehasht; ein **Archiv** (`unpack: zip`) über ein pfad-sortiertes
+**Content-Manifest** — damit ist der Pin invariant gegen die Zip-Eintrags-Reihenfolge.
+`sources` prüft **nur** absolute `http`/`https`-Ziele; repo-interne Verweise bleiben
+Domäne von `links`/`pins` (kein Doppelbefund). Es gibt **kein** `sources.scope`: die
+Marker greifen über den globalen Scan-Bereich (`scan.roots`/`scan.ignore`). Der
+`sha256` wird case-insensitiv geführt; der Fetch ist größenbegrenzt (Body- und
+Entpack-Obergrenze, Zip-Bomben-Schutz, begrenzte Redirects). Wie `external` öffnet
+`sources` nur bei ausdrücklicher Aktivierung Netz und ist nie Default-Modul; ohne
+aktives `sources` ist der Befundsatz byte-identisch. Eine malformte Direktive (kein
+`sha256:<hex>`) oder ein ungültiger Config-Eintrag (fehlende `url`/`sha256`,
+unbekanntes `unpack`) bricht fail-closed mit Exit 2 ab.
+
+```yaml
+sources:                                     # opt-in; NETZZUGRIFF, zweite Netz-Tür neben external
+  - url: https://example.org/regelwerk.md    # Einzeldatei: Hash der Roh-Bytes
+    sha256: 0000000000000000000000000000000000000000000000000000000000000000
+  - url: https://example.org/bundle.zip      # Archiv: Hash des Content-Manifests
+    sha256: 0000000000000000000000000000000000000000000000000000000000000000
+    unpack: zip                              # none (Default) | zip
+# aktiviert über --enable sources bzw. modules: [..., sources]
 ```
 
 ### Das Versions-Register `version.md` aufbauen (für Modul `versions`)
@@ -1474,6 +1520,7 @@ RTM byte-identisch.
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
 | `targets`   | opt-in        | Deklarations-Konsistenz Doku ↔ Build-Targets: jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`makefiles`), und jede Regel steht in der Autoritäts-Doku (`authority`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed bei fehlender Datei | `gate-phantom`, `gate-undocumented`                         |
 | `external`  | opt-in (Netz) | Erreichbarkeit externer Links                                                            | `external-status`, `external-timeout`, `external-redirects` |
+| `sources`   | opt-in (Netz) | Content-Pin externer Quellen gegen Upstream-Drift: eine auf `sha256` gepinnte `http(s)`-Quelle (Marker `<!-- source-pin: [zip] sha256:… -->` am Link **oder** Config-Block `sources:`; Einzeldatei oder Archiv `unpack: zip`) wird geholt, gehasht, verglichen — Meldung mit vollem Ist-Hash; **zweite** Netz-Tür neben `external`, nie im Default | `source-drift`, `source-unreachable`                        |
 
 ## 7. Fehlerbehebung
 
@@ -1523,8 +1570,8 @@ Nein. d-check ist ein Lese-Werkzeug; selbst `--repair` gibt nur einen
 Patch aus.
 
 **Braucht d-check Netzwerk?**
-Nein — außer das Modul `external` ist aktiv. Sonst läuft es vollständig
-netzlos (`--network none`).
+Nein — außer eines der Netz-Module `external` oder `sources` ist aktiv (beide
+opt-in). Sonst läuft es vollständig netzlos (`--network none`).
 
 **Warum meldet d-check nichts in meinem `README`?**
 Ohne Konfiguration werden `docs/`, `spec/` und Wurzel-`*.md` geprüft.
@@ -1551,9 +1598,9 @@ Ja. Gleiche Eingabe liefert byte-identische Ausgabe (stabile Sortierung).
 
 - **Quellcode, Issues, Releases:** <https://github.com/pt9912/d-check>
 - **Lizenz:** Code unter MIT, Texte unter CC BY 4.0.
-- **Sicherheit:** d-check schreibt nie ins Repository und öffnet außer im
-  Modul `external` keine Netzwerkverbindungen; übergeben Sie keine
-  Geheimnisse als Argumente.
+- **Sicherheit:** d-check schreibt nie ins Repository und öffnet außer in
+  den Modulen `external` und `sources` keine Netzwerkverbindungen; übergeben
+  Sie keine Geheimnisse als Argumente.
 
 ## 11. Änderungshistorie
 
@@ -1603,3 +1650,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.37             | v0.48.1          | 2026-07-18 | Direktiven-Toleranz in Tabellenzeilen (§4.12): eine Datenzeile mit genau einer überzähligen, ganzzelligen HTML-Kommentar-Zelle (`<!-- d-check:ignore … -->` hinter der letzten Pipe) wird auf Header-Breite gelesen, statt fail-closed mit Exit 2 abzubrechen. Zwei Extra-Zellen oder Nicht-Kommentar bleiben Exit 2. Patch (rot→grün)                                                                                       |
 | 1.38             | v0.49.0          | 2026-07-18 | Geteiltes Referenz-Ventil `ignore-refs` (§5): das bisher modul-lokale `codepaths.ignore-refs` wird zur **querschnittlichen** Top-Level-Fähigkeit, die `links`/`anchors`/`codepaths` gemeinsam honorieren. Neue Felder je Eintrag: `in` (Quell-Skopus, Glob auf die Quelldatei), `refs` (aufgelöste Ziele) und `keep` (Ausnahmen, reihenfolge-unabhängig). Ziel-Achsen-Pendant zu `scan.ignore`; löst die Template-Verzeichnis-Falle. `codepaths.ignore-refs` bleibt Alias (kein Config-Bruch), ohne Block byte-identisch; ungültiges Glob ⇒ Exit 2. Die vier Ventil-Achsen sind jetzt gegeneinander erklärt                                                                    |
 | 1.39             | v0.50.0          | 2026-07-18 | Zitat-Verifikation (§5/§6): opt-in `codepaths.check-lines` verifiziert `datei:<von>-<bis>`-Zeilen-Referenzen (`citation-out-of-range`/`citation-inverted-range`), Default aus byte-identisch. Neues 18. Modul `citations` (opt-in): die Direktive `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (`>`-Block oder inline `„…"`/`"…"`), das ein whitespace-normalisierter Teilstring der Quell-Spanne sein muss (`citation-mismatch`); Mindestlänge 16 Zeichen, malformte Direktive fail-closed. d-check findet danach **mehr** (SemVer-Minor)                                                                    |
+| 1.40             | v0.51.0          | 2026-07-19 | Neues opt-in-Modul `sources` (19., **Netz**, §5/§6): Content-Pin externer Quellen gegen Upstream-Drift — eine auf einen `sha256` gepinnte `http(s)`-Quelle (Marker `<!-- source-pin: [zip] sha256:… -->` am Link **oder** Config-Block `sources:`) wird geholt, gehasht und verglichen; Abweichung → `source-drift` (Meldung mit vollem Ist-Hash zum Re-Pinnen), Netzfehler/HTTP ≥ 400/Timeout/Größenlimit/kein gültiges Zip → `source-unreachable`. Einzeldatei (Roh-Byte-Hash) oder Archiv (`unpack: zip`, reihenfolge-invariantes Content-Manifest). **Zweite Netz-Tür** neben `external` (beide opt-in, nie im Default-Lauf); malformte Direktive/ungültige Config fail-closed (Exit 2), ohne aktives `sources` byte-identisch                |

@@ -36,6 +36,13 @@ planning-lifecycle and tracked-status consistency:
   `<!-- d-check:status-provenance -->`
 - `external` — reachability of external URLs, strictly opt-in
   ([`DC-FA-EXT-001`](spec/lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in))
+- `sources` — content pin of external sources against upstream drift, opt-in and
+  — besides `external` — the **second** network door: a source pinned to a
+  `sha256` (via the marker `<!-- source-pin: … -->` on its `http(s)` link or the
+  config block `sources:`) is fetched, hashed and compared (`source-drift` with
+  the full actual hash, `source-unreachable` on a network failure); single file
+  or archive (`unpack: zip`)
+  ([`DC-FA-SRC-001`](spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz))
 - `codepaths` — explicit paths in inline code, opt-in; the opt-in `check-lines`
   verifies `file:<from>-<to>` line references (`citation-out-of-range`,
   `citation-inverted-range`)
@@ -144,8 +151,8 @@ spec, and both are measured, not asserted:
   hash comparison
   ([`DC-QA-02`](spec/lastenheft.md#dc-qa-02--determinismus)).
 - **Side-effect-free and network-free:** never writes into the checked
-  repository, opens no network connections except in the opt-in module
-  `external` — measured in the gate run with a read-only mount
+  repository, opens no network connections except in the opt-in modules
+  `external` and `sources` — measured in the gate run with a read-only mount
   and `--network none`
   ([`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 - **No silent defaults:** every invalid `.d-check.yml` aborts
@@ -182,7 +189,7 @@ Optional in the repo root; without a file the default modules
 ```yaml
 scan:
   roots: ["."]                  # entire repo root
-modules: [links, anchors, ids]  # external stays strictly opt-in
+modules: [links, anchors, ids]  # external + sources stay strictly opt-in (network)
 ids:
   patterns:
     - regex: 'ADR-\d{4}'

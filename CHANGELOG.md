@@ -6,6 +6,34 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.51.0] — 2026-07-19
+
+### Added
+
+- slice-080 — neues opt-in Regelmodul `sources` (19. Modul, **Netz**,
+  `DC-FA-SRC-001`, [ADR-0046](docs/plan/adr/0046-sources-upstream-content-drift.md)):
+  Upstream-Content-Drift externer Quellen. Eine auf einen `sha256` **gepinnte
+  externe `http(s)`-Quelle** — per Marker `<!-- source-pin: [zip] sha256:… -->` am
+  unmittelbar vorausgehenden Link **oder** per Config-Block `sources:` mit Einträgen
+  `{url, sha256, unpack: none|zip}` — wird geholt, gehasht und verglichen. Abweichung
+  → `source-drift` (die Meldung führt den **vollen Ist-`sha256`** als Re-Pin-Vorlage);
+  Netzfehler, HTTP-Status ≥ 400, Timeout, Größenlimit **oder** kein gültiges Zip →
+  `source-unreachable` (getrennt von `source-drift`). Zwei Quelltypen: Einzeldatei
+  (Hash der rohen Antwort-Bytes) und Archiv (`unpack: zip` bzw. Marker-Keyword `zip`
+  → pfad-sortiertes, gegen die Zip-Eintrags-Reihenfolge invariantes Content-Manifest).
+  `sources` prüft nur absolute `http`/`https`-Ziele (kein Doppelbefund; repo-intern
+  bleibt `pins`/`links`-Domäne); Content-Hash-Geschwister von `pins` (in-repo) und
+  `external` (Netz-Erreichbarkeit).
+- **Zweite Netz-Tür.** Neben `external` ist `sources` das einzige weitere Netz-Modul;
+  beide sind strikt opt-in und nie im Default-Lauf — `DC-QA-03` (Seiteneffektfreiheit
+  und Netz-Sparsamkeit) ist um `sources` erweitert. Der `sha256` wird case-insensitiv
+  geführt; der Fetch ist größenbegrenzt (Body ≤ 64 MiB, Entpack ≤ 256 MiB bzw.
+  ≤ 10 000 Einträge, Zip-Bomben-Schutz, Redirects ≤ 5); diagnose-only, kein
+  `--repair`-Hunk. Ohne aktives `sources` ist der Befundsatz byte-identisch. Eine
+  malformte Direktive (kein `sha256:<hex>`) oder ein ungültiger Config-Eintrag
+  (fehlende `url`/`sha256`, unbekanntes `unpack`) bricht fail-closed mit Exit 2 ab
+  (`DC-FA-SRC-001`, ADR-0046).
+
 ## [0.50.0] — 2026-07-18
 
 ### Added

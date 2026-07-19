@@ -20,7 +20,7 @@ CLI-Optionen werden als Container-Argumente angehängt.
 
 | Option | Wirkung |
 |---|---|
-| `--enable <modul>` / `--disable <modul>` | Regelmodule zu-/abschalten (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`); CLI schlägt Konfiguration ([`DC-FA-CLI-002`](../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)) |
+| `--enable <modul>` / `--disable <modul>` | Regelmodule zu-/abschalten (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`); CLI schlägt Konfiguration ([`DC-FA-CLI-002`](../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)) |
 | `--json` | maschinenlesbare Gesamt-Ausgabe ([Schema](../../spec/spezifikation.md)) |
 | `--yaml` | wie `--json`, aber als YAML — gleiche Struktur (`findings`/`summary`/`exitCode`), nur Serialisierung; `--json` und `--yaml` schließen sich aus ([`DC-FA-CLI-004`](../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate)) |
 | `--doctor` | erklärende, nach Datei gruppierte Diagnose auf stdout statt der Befund-Zeilen, mit Fix-Kandidaten wo eindeutig (v1: `id-unlinked` → Definitions-Link) — **liest, schreibt nichts**; mit `--json` oder `--yaml` kombinierbar (maschinenlesbare Diagnose: `findings` zusätzlich mit `reasonText`/`fixCandidate`), nicht mit `--repair` ([`DC-FA-CLI-007`](../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)) |
@@ -35,8 +35,9 @@ CLI-Optionen werden als Container-Argumente angehängt.
 | `--staged` | Modul `vcs`: staged-Diff (lokaler `pre-commit`-Hook) statt `--range` ([`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)) |
 | `--commit-msg <datei\|->` | Modul `commits`: genau **eine** Commit-Message aus Datei oder stdin (`-`) auf eine Traceability-Kennung prüfen (`commit-msg`-Hook) ([`DC-FA-COMMITS-001`](../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)) |
 
-Default-Module ohne Konfiguration: `links` + `anchors`. Das Modul
-`external` ist strikt opt-in (einzige Netzwerk-Tür).
+Default-Module ohne Konfiguration: `links` + `anchors`. Die Module
+`external` und `sources` sind strikt opt-in (die einzigen Netzwerk-Türen,
+beide nie im Default-Lauf).
 
 ## Exit-Codes
 

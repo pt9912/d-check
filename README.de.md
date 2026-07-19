@@ -35,6 +35,13 @@ Getrackt-Status-Konsistenz:
   `<!-- d-check:status-provenance -->` deklariert
 - `external` — Erreichbarkeit externer URLs, strikt opt-in
   ([`DC-FA-EXT-001`](spec/lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in))
+- `sources` — Content-Pin externer Quellen gegen Upstream-Drift, opt-in und —
+  neben `external` — die **zweite** Netz-Tür: eine per Marker
+  `<!-- source-pin: … -->` am `http(s)`-Link oder per Config-Block `sources:` auf
+  einen `sha256` gepinnte Quelle wird geholt, gehasht und verglichen
+  (`source-drift` mit vollem Ist-Hash, `source-unreachable` bei Netzfehler);
+  Einzeldatei oder Archiv (`unpack: zip`)
+  ([`DC-FA-SRC-001`](spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz))
 - `codepaths` — explizite Pfade in Inline-Code, opt-in; das opt-in `check-lines`
   verifiziert `datei:<von>-<bis>`-Zeilen-Referenzen (`citation-out-of-range`,
   `citation-inverted-range`)
@@ -145,8 +152,8 @@ Lastenhefts, und beide werden gemessen, nicht behauptet:
   Hash-Vergleich
   ([`DC-QA-02`](spec/lastenheft.md#dc-qa-02--determinismus)).
 - **Seiteneffektfrei und netzlos:** schreibt nie in das geprüfte
-  Repository, öffnet außer im opt-in-Modul `external` keine
-  Netzwerkverbindungen — gemessen im Gate-Lauf mit read-only-Mount
+  Repository, öffnet außer in den opt-in-Modulen `external` und `sources`
+  keine Netzwerkverbindungen — gemessen im Gate-Lauf mit read-only-Mount
   und `--network none`
   ([`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 - **Keine stillen Defaults:** Jede ungültige `.d-check.yml` bricht
@@ -183,7 +190,7 @@ Optional in der Repo-Wurzel; ohne Datei laufen die Default-Module
 ```yaml
 scan:
   roots: ["."]                  # gesamte Repo-Wurzel
-modules: [links, anchors, ids]  # external bleibt strikt opt-in
+modules: [links, anchors, ids]  # external + sources bleiben strikt opt-in (Netz)
 ids:
   patterns:
     - regex: 'ADR-\d{4}'
