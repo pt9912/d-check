@@ -1731,7 +1731,11 @@ repo-internes Ziel (`pins`). **Post-Pass** nach dem Datei-Scan (wie `external`)
    links** stehenden `http(s)`-Link derselben Zeile — bei mehreren Links den
    nächstgelegenen; ohne vorausgehenden `http(s)`-Link inert. Und (b) die
    **Config**-Einträge `sources[]`. Beide ergeben je einen Pin
-   `{url, sha256, unpack ∈ {none, zip}}`.
+   `{url, sha256, unpack ∈ {none, zip}}`. `sources` akzeptiert **keinen**
+   `sources.scope` (die Config-Fläche ist eine bare Liste); die Marker-Sammlung
+   nutzt den **globalen** Scan-Scope — bewusste Ausnahme zu
+   [`DC-FA-CONF-002`](lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope)
+   (`sources.scope` ⇒ Exit 2, unbekannter Schlüssel).
 2. **fail-closed / Skopus.** Eine malformte Direktive (`source-pin` ohne
    `sha256:<hex>`) oder ein ungültiger Config-Eintrag (fehlende `url`/`sha256`,
    `url` nicht `http(s)`, `sha256` nicht genau 64 Hex-Zeichen, unbekanntes

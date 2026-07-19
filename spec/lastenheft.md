@@ -2062,7 +2062,11 @@ Nicht-`http`/`https`-Schemata (`file:`, `git:`, …); Authentifizierung,
 Custom-Header oder Credentials; repo-interne Ziele (Domäne `links`/`pins`);
 Verzeichnis-/Listing-Ziele ohne Archiv-Bundle; andere Archiv-Formate als `zip`
 (spätere Anforderung); ein Auto-Fix/Re-Pin (`--repair`); die Hash-Emission des
-Bestandsmoduls `pins`/`dpin` (separater Kleinst-Change am Bestandsmodul).
+Bestandsmoduls `pins`/`dpin` (separater Kleinst-Change am Bestandsmodul); ein
+modul-lokaler `sources.scope` (die Config-Fläche ist eine bare Liste `sources[]`
+— `source-pin`-Marker werden über den **globalen** Scan-Scope gesammelt;
+`sources.scope` ⇒ Exit 2 als unbekannter Schlüssel, bewusste Ausnahme zu
+[`DC-FA-CONF-002`](#dc-fa-conf-002--modul-lokaler-scan-scope)).
 
 ---
 
