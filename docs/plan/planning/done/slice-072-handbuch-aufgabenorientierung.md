@@ -160,5 +160,7 @@ ist kein frozen-Altbestand, sondern zu fixen. (2) Subagent-Review-Reports tragen
 (3) Die eigentliche Ursache (§4.12 erodierte, weil jeder Folge-Slice seine
 Fähigkeit anhängte statt eine Aufgabe zu schreiben) bleibt **strukturell offen** —
 der in §4 notierte Designpunkt (Release-Prep-Regel „neuer Handbuch-Abschnitt =
-eigene Aufgabe mit Ziel/Vorgehen/Ergebnis") ist bewusst **nicht** umgesetzt und
-ein Kandidat für einen Folge-Slice.
+eigene Aufgabe mit Ziel/Vorgehen/Ergebnis") war **kein DoD-Punkt** dieses Slice
+(nur eine §4-Risiko-Notiz) und blieb daher offen — er ist als eigener Folge-Slice
+[slice-082](../in-progress/slice-082-release-prep-aufgabenregel.md) (welle-66)
+aufgenommen, die Entscheidung über die konkrete Umsetzung dort.
