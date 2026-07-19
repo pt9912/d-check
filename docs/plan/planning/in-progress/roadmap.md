@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-18.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-19.
 
 **Form:** folgt [Kurs-Modul 6](../../../../.harness/baseline/v1.4.0/regelwerk/modul-06-roadmap.md).
 
@@ -8,20 +8,21 @@
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-62-zitat-verifikation **abgeschlossen** —
-[`slice-079`](../done/slice-079-zitat-verifikation.md) (opt-in `codepaths.check-lines`
-für `datei:zeile`-Zeilen-Referenzen + neues 18. Modul `citations` für wortgleiche
-Zitate via `d-check:cite`-Direktive, [ADR-0045](../../adr/0045-zitat-verifikation-codepaths-erweiterung-und-citations-modul.md)
-`Accepted`, **v0.50.0**).
+**welle-63-sources** — Upstream-Content-Drift externer Quellen.
+[`slice-080`](slice-080-sources-modul.md) (neues **19. Modul `sources`**, opt-in **Netz**:
+externe Quelle auf `sha256` gepinnt via Marker `source-pin` **oder** Config `sources:`,
+geholt/gehasht/verglichen → `source-drift`/`source-unreachable`; Einzeldatei + Archiv
+(`unpack: zip`, Content-Manifest); [ADR-0046](../../adr/0046-sources-upstream-content-drift.md)
+`Proposed`, [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
+um eine zweite Netz-Tür erweitert). **Doc-first abgeschlossen; Code offen.**
 
-**Vorgänger:** welle-61-referenz-ventil-quell-skopus
-([`slice-078`](../done/slice-078-ignore-refs-quell-skopus.md) — geteiltes
-`ignore-refs`-Ventil, [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md)
-`Accepted`, **v0.49.0**). Davor welle-60-trace-cross-consistency
-([`slice-071`](../done/slice-071-trace-cross-consistency-gate.md)/073/075/076, v0.44–v0.47)
-und die Tabellen-Reader-Kette
-[`slice-077`](../done/slice-077-stiller-tabellen-uebersprung.md) (v0.48.0) →
-[`slice-074`](../done/slice-074-kommentar-suffix-tabellenzeilen.md) (v0.48.1).
+**Vorgänger:** welle-62-zitat-verifikation
+([`slice-079`](../done/slice-079-zitat-verifikation.md) — opt-in `codepaths.check-lines`
++ 18. Modul `citations`, [ADR-0045](../../adr/0045-zitat-verifikation-codepaths-erweiterung-und-citations-modul.md)
+`Accepted`, **v0.50.0**). Davor welle-61-referenz-ventil-quell-skopus
+([`slice-078`](../done/slice-078-ignore-refs-quell-skopus.md), **v0.49.0**) und die
+welle-60-Kette ([`slice-071`](../done/slice-071-trace-cross-consistency-gate.md)/073/075/076,
+v0.44–v0.47).
 
 ## Nächste Wellen
 
@@ -55,3 +56,4 @@ Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
 | 2026-07-18 | **welle-61 abgeschlossen**; slice-078 `in-progress`→`done`, **v0.49.0 veröffentlicht** | Vollständige Kette umgesetzt: Lastenheft [`DC-FA-REF-001`](../../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus) + Spec + [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md) `Accepted`, Code über `links`/`anchors`/`codepaths` + Alias (Mutations-gepinnt), Realdatenbeleg gegen `ai-harness-course` (Baseline 42 → Ventil 0, nicht durch Wegschauen), Review R1 ACCEPT-WITH-NITS (Nits eingearbeitet). WIP-Slot wieder frei |
 | 2026-07-18 | **welle-62-zitat-verifikation eröffnet**; slice-079 `open`→`in-progress` (WIP-Slot frei nach welle-61) | Beide §4-Vorfragen entschieden: Adopter-Rückfrage **empirisch** (33/33 `datei:zeile`-Zitate in `ai-harness-init` in Inline-Code, null Prosa) ⇒ `codepaths`-Erweiterung; Zuschnitt Form (c) (Auftraggeber): Stufe 1/2 als Erweiterung von [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in), Stufe 3 (`verbatim`) als eigenes Modul mit Direktive `d-check:cite` (durch slice-074 entblockt). Adopter-CR `ai-harness-init` |
 | 2026-07-18 | **welle-62 abgeschlossen**; slice-079 `in-progress`→`done`, **v0.50.0 veröffentlicht** | Vollständige Kette: [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)-Erweiterung (`check-lines`) + neues [`DC-FA-CITE-001`](../../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in) (18. Modul `citations`) + Spec + [ADR-0045](../../adr/0045-zitat-verifikation-codepaths-erweiterung-und-citations-modul.md) `Accepted`; opt-in `codepaths.check-lines` (`citation-out-of-range`/`citation-inverted-range`) + Modul `citations` (`d-check:cite`, whitespace-normalisierter Teilstring, `citation-mismatch`), mutations-gepinnt; Realdatenbeleg gegen `ai-harness-init` (korrekt grün, Drift rot, Baseline 0 Direktiven belegt den Substrat-Caveat); Pre-Release-Review R1 BLOCK auf F-1 (Absturz bei `von=0`) → gefixt (1-basierte Untergrenze in beiden Schwestern) → ACCEPT. WIP-Slot wieder frei |
+| 2026-07-19 | **welle-63-sources eröffnet**; slice-080 in `in-progress/` angelegt (WIP-Slot frei nach welle-62) | §4-Vorfragen (Nutzer) entschieden: Pin-Deklaration **beides** (Marker + Config), Quelltypen **Einzeldatei + Archiv** (`unpack: zip`); der `pins`/dpin-Hash-Ergonomie-Fix bleibt separat ([`slice-072`](../open/slice-072-handbuch-aufgabenorientierung.md)). Anlass: Nutzer-Frage „Drift gegen Upstream in d-check einbauen" — produktisiert `check_regelwerk_drift.py` als reusables Modul [`DC-FA-SRC-001`](../../../../spec/lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz), erweitert [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) um eine zweite Netz-Tür |

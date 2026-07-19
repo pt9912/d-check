@@ -1,6 +1,6 @@
 # Spezifikation — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-18.
+**Status:** Aktiv. **Letzte Änderung:** 2026-07-19.
 
 **Bezug zum Lastenheft:** Diese Spezifikation präzisiert die in
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
@@ -1713,6 +1713,54 @@ scannt, sondern **deklarierte** Dateien liest:
    abgelöste `tools/gate-consistency.sh`, aber ohne dessen `sort -u`-Namens-
    Deduplizierung (fundstellen-präzise statt namens-eindeutig).
 
+### DC-FA-SRC-001.a — Upstream-Content-Drift externer Quellen (`sources`)
+
+Das Modul `sources`
+([`DC-FA-SRC-001`](lastenheft.md#dc-fa-src-001--upstream-content-drift-externer-quellen-modul-sources-opt-in-netz))
+ist opt-in und — neben `external` — die einzige Netz-Tür
+([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+Es prüft den **Inhalt** einer auf einen `sha256` gepinnten externen Quelle
+(Content-Hash), nicht bloße Erreichbarkeit (`external`) und nicht ein
+repo-internes Ziel (`pins`). **Post-Pass** nach dem Datei-Scan (wie `external`)
+über die eingesammelten Pins:
+
+1. **Aktivierung/Sammeln.** Nur bei explizit aktiviertem `sources`. Beim Scan
+   werden zwei Pin-Quellen gesammelt: (a) **Marker**
+   `<!-- source-pin: [archive] sha256:<hex> -->`, gebunden an den unmittelbar
+   vorausgehenden externen Link derselben Zeile (wie `pins`; ohne vorausgehenden
+   Link inert), und (b) die **Config**-Einträge `sources[]`. Beide ergeben je
+   einen Pin `{url, sha256, unpack ∈ {none, zip}}`.
+2. **fail-closed.** Eine malformte Direktive (`source-pin` ohne `sha256:<hex>`)
+   oder ein ungültiger Config-Eintrag (fehlende `url`/`sha256`, `url` nicht
+   `http(s)`, `sha256` ≠ 64 Hex, unbekanntes `unpack`) ⇒ **Exit 2** mit
+   stderr-Hinweis (kein stilles Grün). Ein Marker-Ziel, das nicht `http(s)` ist,
+   ist **kein** `sources`-Kandidat (repo-intern → `pins`/`links`, kein
+   Doppelbefund).
+3. **Fetch.** Je Pin wird die `url` über den Netz-Port geholt (GET;
+   Timeout/Parallelität wie `external`). Fetch-Fehler (Netzfehler, HTTP-Status
+   ≥ 400, Timeout) ⇒ Grund-Code `source-unreachable` (Befund: `target` = URL);
+   **kein** Hash-Schritt für diesen Pin.
+4. **Hash.** `unpack: none` (Default): `sha256` über die **rohen
+   Antwort-Bytes**. `unpack: zip`: die Antwort wird als Zip gelesen (nur reguläre
+   Datei-Einträge; Verzeichnis-Einträge ignoriert); je Eintrag `sha256(inhalt)`,
+   die Zeilen `"<hex>  <name>\n"` **`LC_ALL=C`-sortiert** konkateniert, davon der
+   `sha256` — **reihenfolge-invariant**, byte-Muster-gleich zu
+   `sha256sum regelwerk/*.md` (committet-vendored `SHA256SUMS`).
+5. **Vergleich.** Ist-Hash = Pin ⇒ kein Befund. Ist-Hash ≠ Pin ⇒ Grund-Code
+   `source-drift`. Befund: `file`/`line` = Marker-Datei/-Zeile bzw. (Config-Pin)
+   die `.d-check.yml`-Herkunft, `target` = URL, `message` führt den
+   **vollständigen** Ist-`sha256` (Re-Pin-Vorlage). **Diagnose-only** (kein
+   `--repair`-Hunk — ein Re-Pin ist eine menschliche Entscheidung).
+6. **Determinismus/Read-only.** Identische Antwort-Bytes ⇒ identischer
+   Hash/Befund ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)); das
+   geprüfte Repository wird nie geschrieben, Netz nur zu den explizit gepinnten
+   `url` ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
+   — die zweite, wie `external` opt-in netz-öffnende Ausnahme).
+
+Die Grund-Codes `source-drift`/`source-unreachable` landen mit der
+Modul-Implementierung in [§4](#4-grund--und-fehler-codes)
+(AllReasons-↔-§4-Lockstep).
+
 ## 2. Datenstrukturen und Schemas
 
 ### Befund
@@ -1860,6 +1908,12 @@ external:
 codepaths:
   roots: [docs, tools]           # Präfixe für Wurzel-relative Inline-Code-Pfade
   exempt-paths: [CHANGELOG.md, "docs/reviews/**"]   # Dateien ganz ohne codepath-Prüfung (datei-weit)
+sources:                         # Netz, opt-in; Upstream-Content-Drift externer Quellen
+  - url: https://example.org/regelwerk.md   # Einzeldatei: Hash der Roh-Bytes
+    sha256: <64-hex>
+  - url: https://example.org/bundle.zip     # Archiv: Hash des Content-Manifests
+    sha256: <64-hex>
+    unpack: zip
 ```
 
 Jede Verletzung eines Constraints der folgenden Tabelle führt zu
@@ -1895,6 +1949,9 @@ Exit 2 ohne Prüfung
 | `matrix.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `matrix`-Prüfung — Grandfathering immutabler Dokumente ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)) |
 | `external.timeout-seconds` | integer | 10 | 1–300 |
 | `external.parallel` | integer | 4 | 1–16 |
+| `sources[].url` | string | — | Pflicht; absolute `http`/`https`-URL (sonst Exit 2) |
+| `sources[].sha256` | string | — | Pflicht; genau 64 Hex-Zeichen (sonst Exit 2) |
+| `sources[].unpack` | string | `none` | nur `none` oder `zip` (Exit 2); `zip` hasht das `LC_ALL=C`-sortierte Content-Manifest statt der Roh-Bytes |
 | `codepaths.roots` | string[] | leer | Präfixe relativ zur Repo-Wurzel: nicht leer, nicht absolut, kein `..` (Exit 2); `./`/`../` werden immer erkannt |
 | `codepaths.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `codepaths`-Prüfung — datei-weit, unabhängig von `roots` |
 | `codepaths.ignore-refs` | string[] | leer | **Alias** des geteilten `ignore-refs` ([`DC-FA-REF-001`](lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)), skopiert auf `codepaths` (wie ein Eintrag ohne `in`/`keep`): aufgelöste Ziel-Pfade, die matchen, werden weder existenz-, escape- noch anker-geprüft (kein `codepath-missing`/`repo-escape`/`anchor-missing`) — **referenz-weit**; byte-identisch zur bisherigen Fassung |
@@ -2036,6 +2093,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung | Verweis |
 |---|---|---|
+| 2026-07-19 | Neue §[`DC-FA-SRC-001.a`](spezifikation.md#dc-fa-src-001a--upstream-content-drift-externer-quellen-sources) + §2-Schema (`sources[]`: `url`/`sha256`/`unpack`) — **Upstream-Content-Drift** (Modul `sources`, opt-in, **Netz**): eine auf `sha256` gepinnte externe Quelle (Marker `source-pin` am Link **oder** Config `sources:`) wird geholt, gehasht, verglichen; Abweichung → `source-drift` (voller Ist-Hash), Fetch-Fehler → `source-unreachable`. Einzeldatei (Roh-Byte-Hash) oder Archiv (`unpack: zip` → `LC_ALL=C`-sortiertes, reihenfolge-invariantes Content-Manifest). Post-Pass wie `external`; zweite Netz-Tür ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)). Grund-Codes `source-drift`/`source-unreachable` (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Netz-Modul-Design, Amendment der Netz-Sparsamkeit, Manifest-Hash, Marker + Config) in begleitender ADR | slice-080 |
 | 2026-07-18 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Schritt 3/6 + neue §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) + §2-Schema (`codepaths.check-lines`) — **Zitat-Verifikation** in zwei Teilen: (1) opt-in `codepaths.check-lines` verifiziert die Zeilen-Referenz eines `datei:<von>-<bis>`-Pfads (Ziel existiert + ≥ `<bis>` Zeilen ⇒ sonst `citation-out-of-range`; `<von> ≤ <bis>` ⇒ sonst `citation-inverted-range`), das Suffix wurde bisher abgetrennt und verworfen, default-aus **byte-identisch**. (2) neues Modul `citations`: die Direktive `<!-- d-check:cite <pfad>:<von>-<bis> -->` vor einem `>`-Zitatblock ⇒ **zeichengenauer** Vergleich der Zeilen `<von>`–`<bis>` gegen den Zitatblock (`citation-mismatch`), hermetisch, fail-closed (fehlende Datei/Spanne/ungültiger Bereich ⇒ Exit 2), greift die `codepaths`-`datei:zeile`-Erkennung auf. Grund-Codes (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Erweiterung vs. eigenes Modul, `verbatim`/Direktiven-Design) in begleitender ADR | slice-079 |
 | 2026-07-18 | §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) — neues **geteiltes Referenz-Ventil** `ignore-refs` mit **Quell-Skopus** (`in`) und Zwei-Feld-Semantik (`refs ∧ ¬keep`; `keep` reihenfolge-unabhängig, kein gitignore-Last-Match), honoriert von `links`/`anchors`/`codepaths`. §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Referenz-Ventil **und** Schritt 5 auf das geteilte Ventil umgestellt; die modul-lokale Liste `codepaths.ignore-refs` bleibt **Alias** (byte-identisch). §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) und §[`DC-FA-ANCH-001.a`](spezifikation.md#dc-fa-anch-001a--github-slug-algorithmus) honorieren es (Existenz-/Escape-/Anker-Prüfung übersprungen, Symlink-Prüfung bleibt). §2-Schema: Top-Level `ignore-refs[].in`/`refs`/`keep` + `codepaths.ignore-refs` als Alias annotiert. **CR** (Konsument `ai-harness-course`); Begründung (Zwei-Feld vs. `!`-Negation, Alias-Pfad) in der begleitenden ADR | slice-078 |
 | 2026-07-18 | §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) Schritt 5 — **Direktiven-Toleranz** ergänzt: eine Datenzeile mit **genau einer** überzähligen, ganzzelligen HTML-Kommentar-Zelle (`<!-- … -->` hinter der letzten Pipe) wird auf Header-Breite gelesen (GFM-nachsichtig für Body); d-checks eigene `<!-- d-check:ignore … -->`-Konvention in einer Tabellenzeile bricht den Reader nicht mehr ab. Zwei überzählige Zellen oder eine Nicht-Kommentar-Zelle bleiben Exit 2. **Sicherer Aufsatz** auf der Tabellengrenze (Schritt 5, slice-077): eine relevante Folgetabelle wird nicht mehr verschluckt — der zuvor fünffach reproduzierte stille Übersprung ist strukturell zu. Wirkt über den geteilten Reader zugleich auf §[`DC-FA-XREF-001.a`](spezifikation.md#dc-fa-xref-001a--kreuzverweis-konsistenz-cross-consistency). **Defekt-Fix (rot→grün: ein spurioser Exit 2 wird lesbar), kein CR; SemVer-Patch.** Begründung in [ADR-0040](../docs/plan/adr/0040-kommentar-suffix-in-tabellenzeilen.md) | slice-074 |
