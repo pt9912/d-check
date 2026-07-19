@@ -693,6 +693,43 @@ die kanonische Quelle (Source Precedence, siehe
 - **Auflösungs-Trigger:** permanent, solange in-repo-Verweise auf das vendored
   Regelwerk bestehen.
 
+### MR-022 — Baseline-Currency-Audit-Modus (Nachtrag zu MR-019)
+
+- **Datum:** 2026-07-19
+- **Geltungsbereich:** [`tools/harness/fetch-baseline-cache.sh`](../tools/harness/fetch-baseline-cache.sh)
+  (neuer Modus `--check-latest`), [`AGENTS.md`](../AGENTS.md) §1; Nachtrag zu
+  [`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)
+- **Adaption:** `fetch-baseline-cache.sh` erhält einen dritten Modus
+  `--check-latest`: er vergleicht den in [§Baseline](#baseline) gepinnten Tag
+  gegen das **neueste stabile** Upstream-Release
+  (`https://api.github.com/repos/pt9912/ai-harness-course/releases/latest` —
+  GitHub liefert dort Prereleases/Drafts nicht, was der Re-Adopt-Semantik
+  entspricht). Ausgang: gepinnt == latest → `exit 0` (aktuell); latest neuer
+  (`sort -V`) → `exit 3` (**Signal**, kein Fehler — Nudge zum Re-Adopt); latest
+  nicht neuer (Pin voraus) → `exit 0` (nichts zu tun); Netz/API/Rate-Limit nicht
+  erreichbar → **SKIP, `exit 0`**. Der Modus ist bewusst **kein Gate**
+  (`--network`-abhängig wie das Re-Vendoring) und bewusst **nicht fail-closed**
+  (Gegenstück zu `--verify`, das netzlose Integrität prüft und sehr wohl
+  fail-closed ist): ein nicht erreichbares Upstream darf keinen Lauf blockieren.
+- **Begründung:** Übernommen aus dem Kurs-Beispiel
+  `lab/example/tools/check_regelwerk_drift.py` (inhaltsbasierter Drift-Sensor der
+  adoptierten Form-Quelle), auf d-checks Tag-Pin-Modell übersetzt: d-check pinnt
+  einen **immutablen** Release-Tag und vendored ihn hash-verifiziert (`--verify`,
+  [`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)),
+  weshalb Byte-Drift gegen denselben Tag nicht auftreten kann; die offene Frage
+  ist **Currency** (ist der Pin veraltet?), nicht Integrität. `--verify`
+  beantwortete sie nicht — ein grüner Integritäts-Check verdeckte, dass der Pin
+  längst hinter Upstream liegen könnte (stiller toter Winkel). `--check-latest`
+  macht genau diese Staleness sichtbar, **ohne** den Grundsatz aus
+  [`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)
+  zu unterlaufen (»Re-Vendor + neues Manifest sind ein bewusster Akt am
+  Baseline-Pin-Bump, kein laufender Drift«): der Modus **automatisiert nichts**,
+  er meldet nur — der Re-Adopt bleibt der bewusste manuelle Akt
+  ([`MR-020`](#mr-020--baseline-template-propagation-per-drift-audit-template-frei-bestätigt) /
+  [`MR-021`](#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden)).
+- **Auflösungs-Trigger:** permanent, solange die Baseline extern gepinnt und
+  lokal vendored wird.
+
 ## Anforderungs-Anlege-Prozess
 
 Neue oder geänderte `DC-*`-Anforderungen entstehen **nur** in

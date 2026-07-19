@@ -21,7 +21,9 @@ das nach Modulen und Grundlagen-Abschnitten aufgeteilte Regelwerk liegt
 entpackt unter `.harness/baseline/<tag>/regelwerk/` (die dortige `README.md`
 ist der Index), samt `.harness/baseline/<tag>/SHA256SUMS`-Integritätsmanifest —
 **netzlos auf jedem Checkout präsent**, offline materialisier-/verifizierbar
-per `tools/harness/fetch-baseline-cache.sh` (`--verify`; Tag aus §Baseline;
+per `tools/harness/fetch-baseline-cache.sh` (`--verify` offline-Integrität;
+`--check-latest` = Currency-Audit ggü. Upstream, informativ/kein Gate,
+[`MR-022`](harness/conventions.md#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019); Tag aus §Baseline;
 Quelle ist das derivative Release-Bundle
 [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.4.0/lab-regelwerk.zip);
 Pfadschema/Provenance siehe
