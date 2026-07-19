@@ -2108,6 +2108,8 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
 | `gate-undocumented` | targets | Makefile-Regel (nicht in `targets.exempt-targets`) ohne Deklaration als `make X` in der `targets.authority`-Doku (undokumentiertes Gate) |
+| `source-drift` | sources | gepinnte externe Quelle (Marker `source-pin` oder Config `sources[]`) inhaltlich gedriftet — Content-Hash der Roh-Bytes bzw. des `unpack: zip`-Content-Manifests weicht vom hinterlegten `sha256` ab; die Meldung trägt den vollen Ist-`sha256` (Re-Pin-Vorlage) |
+| `source-unreachable` | sources | gepinnte externe Quelle nicht materialisierbar (Netzfehler, HTTP-Status ≥ 400, Timeout, > `REDIRECT_MAX` Redirects, Body-/Entpack-Limit oder unter `unpack: zip` kein gültiges Zip) — bewusst getrennt von `source-drift` |
 
 Nutzungs-/Umgebungsfehler (Exit 2) melden auf stderr mit Präfix
 `d-check: error:`; Konfigurationsfehler nennen Datei und Zeile.

@@ -499,11 +499,12 @@ func Run(args []string, stdout, stderr io.Writer) int {
 	return render(res, opts, cfg, fsys, stdout, stderr)
 }
 
-// httpChecker verdrahtet den HTTP-Adapter nur, wenn das Modul external aktiv
-// ist (DC-QA-03: ohne Aktivierung keine Netzwerk-Tür; nil ist im Kern No-op).
+// httpChecker verdrahtet den HTTP-Adapter nur, wenn ein Netz-Modul aktiv ist
+// (external oder sources — DC-QA-03: ohne Aktivierung keine Netzwerk-Tür; nil
+// ist im Kern No-op). Beide teilen Client und Timeout (external.timeout-seconds).
 func httpChecker(modules []string, cfg model.Config) driven.HTTPChecker {
 	for _, m := range modules {
-		if m == "external" {
+		if m == "external" || m == "sources" {
 			return httpcheck.New(time.Duration(cfg.External.EffectiveTimeoutSeconds()) * time.Second)
 		}
 	}

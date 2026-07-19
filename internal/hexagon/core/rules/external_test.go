@@ -29,6 +29,15 @@ func (f *fakeChecker) Check(url string) driven.HTTPResult {
 	return f.results[url]
 }
 
+// Fetch erfüllt den erweiterten Port (Modul sources); von den external-Tests
+// ungenutzt (sie rufen nur Check).
+func (f *fakeChecker) Fetch(url string) driven.FetchResult {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.calls[url]++
+	return driven.FetchResult{}
+}
+
 // panicChecker schlägt fehl, sobald er aufgerufen wird — Beleg der
 // Opt-in-Garantie (DC-FA-EXT-001 Boundary / DC-QA-03).
 type panicChecker struct{ t *testing.T }
@@ -36,6 +45,11 @@ type panicChecker struct{ t *testing.T }
 func (p panicChecker) Check(url string) driven.HTTPResult {
 	p.t.Fatalf("Netzwerkzugriff ohne aktiviertes Modul external: %s", url)
 	return driven.HTTPResult{}
+}
+
+func (p panicChecker) Fetch(url string) driven.FetchResult {
+	p.t.Fatalf("Netzwerkzugriff (Fetch) ohne aktiviertes Netz-Modul: %s", url)
+	return driven.FetchResult{}
 }
 
 // DC-FA-EXT-001 Happy/Negative über Run: Status < 400 ok; 404 →

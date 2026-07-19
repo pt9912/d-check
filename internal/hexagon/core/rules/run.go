@@ -100,10 +100,7 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 		}
 	}
 	res.Findings = st.findings
-	if active["external"] {
-		res.Findings = append(res.Findings,
-			CheckExternal(httpc, st.extRefs, cfg.External.EffectiveParallel())...)
-	}
+	res.Findings = append(res.Findings, st.netFindings(httpc)...)
 	// Post-Pässe (vcs/commits über den VCS-Port, planning hermetisch über fsys):
 	// arbeiten NACH dem Datei-Scan auf git-Historie bzw. Roadmap-Layout, nicht auf
 	// den gescannten Dateien. Ein Port-Fehler (fehlendes .git/Range) ist fail-closed.
@@ -114,6 +111,20 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 	res.Findings = append(res.Findings, post...)
 	res.Findings = model.SortFindings(res.Findings)
 	return res, nil
+}
+
+// netFindings führt die Netz-Post-Pässe aus (geteilter httpc, DC-QA-03; beide
+// strikt opt-in): external prüft Erreichbarkeit über die gesammelten Refs,
+// sources holt/hasht/vergleicht die Marker- + Config-Pins (DC-FA-SRC-001.a).
+func (st *runState) netFindings(httpc driven.HTTPChecker) []model.Finding {
+	var out []model.Finding
+	if st.active["external"] {
+		out = append(out, CheckExternal(httpc, st.extRefs, st.cfg.External.EffectiveParallel())...)
+	}
+	if st.active["sources"] {
+		out = append(out, CheckSources(httpc, st.srcRefs, st.cfg.Sources)...)
+	}
+	return out
 }
 
 // runPostPasses führt die nicht-datei-scannenden Module aus: vcs/commits (git-Diff
@@ -161,6 +172,7 @@ type runState struct {
 	diagCache   map[string]map[string]bool
 	spanCache   map[string]string
 	extRefs     []ExternalRef
+	srcRefs     []SourceRef
 	findings    []model.Finding
 	// versionsCurrent/versionsFromFile: am Lauf-Start aufgelöste aktuelle
 	// Version + ihr Datei-Pfad (Modul versions, DC-FA-VER-001).
@@ -203,7 +215,25 @@ func (st *runState) checkFile(file string) error {
 	if err := st.appendCitationFindings(file, content); err != nil {
 		return err
 	}
+	if err := st.appendSourceRefs(file, content, lines); err != nil {
+		return err
+	}
 	st.appendTailFindings(file, content, lines)
+	return nil
+}
+
+// appendSourceRefs sammelt die Marker-Pins des Moduls sources; eine malformte
+// source-pin-Direktive ist fail-closed → error (Aufrufer mappt auf Exit 2,
+// DC-FA-SRC-001.a Schritt 2). Config-Pins verarbeitet der Post-Pass separat.
+func (st *runState) appendSourceRefs(file string, content []byte, lines []Line) error {
+	if !st.applies("sources", file) {
+		return nil
+	}
+	refs, err := CollectSourcePins(file, lines, content)
+	if err != nil {
+		return err
+	}
+	st.srcRefs = append(st.srcRefs, refs...)
 	return nil
 }
 

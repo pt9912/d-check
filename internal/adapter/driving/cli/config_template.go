@@ -18,8 +18,9 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, external
-# (external ist die einzige Netzwerk-Tür — strikt opt-in; vcs und commits sind
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, external, sources
+# (external und sources sind die einzigen Netzwerk-Türen — beide strikt opt-in
+#  (external prüft http(s)-Erreichbarkeit, sources Upstream-Content-Drift); vcs und commits sind
 #  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in; tracked ist
 #  git-basiert und braucht nur .git (Index, ohne Range) — strikt opt-in; planning
 #  und targets sind hermetisch (Roadmap-↔-in-progress- bzw. Doku-↔-Makefile-
@@ -141,6 +142,18 @@ modules: [links, anchors]
 # external:
 #   timeout-seconds: 10
 #   parallel: 4
+
+# --- sources: Upstream-Content-Drift externer Quellen — NETZZUGRIFF, opt-in ---
+#   (zweite Netz-Tür neben external. Holt eine auf sha256 gepinnte http(s)-Quelle,
+#    hasht sie und meldet source-drift (voller Ist-Hash) bzw. source-unreachable.
+#    Pin per Marker am Link — [text](URL) <!-- source-pin: [zip] sha256:… --> — ODER
+#    per Liste hier. unpack: zip hasht das Content-Manifest statt der Roh-Bytes.)
+# sources:
+#   - url: https://example.org/regelwerk.md   # Einzeldatei: Hash der Roh-Bytes
+#     sha256: 0000000000000000000000000000000000000000000000000000000000000000
+#   - url: https://example.org/bundle.zip     # Archiv: Hash des Content-Manifests
+#     sha256: 0000000000000000000000000000000000000000000000000000000000000000
+#     unpack: zip
 
 # --- trace: konfigurierbare Quellen der Requirements Traceability Matrix (--trace) ---
 #   (KEIN Modul — steuert nur --trace / --require-complete. Jedes Feld optional;

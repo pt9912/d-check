@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -66,6 +66,9 @@ type Config struct {
 	Tracked TrackedConfig
 	// Targets: Parameter des Moduls targets (DC-FA-TGT-001).
 	Targets TargetsConfig
+	// Sources: die Config-Pins des Moduls sources (DC-FA-SRC-001); leer ⇒
+	// nur Marker-Pins (bzw. gar keine) werden geprüft (byte-identisch).
+	Sources SourcesConfig
 	// Trace: konfigurierbare Quellen der RTM (DC-FA-CLI-009); Nullwert =
 	// Konventions-Default (byte-identisch).
 	Trace TraceConfig
@@ -370,6 +373,29 @@ type TargetsConfig struct {
 	Authority     string
 	ExemptTargets []string
 }
+
+// SourcePin ist ein Config-Pin des Moduls sources (DC-FA-SRC-001): eine auf
+// Sha256 gepinnte externe http(s)-Quelle. Unpack ist "none" (Roh-Byte-Hash)
+// oder "zip" (Content-Manifest-Hash). Sha256 wird case-insensitiv geführt
+// (im Config-Adapter zu Kleinbuchstaben normalisiert). Line ist die Zeile des
+// url-Feldes in .d-check.yml für den Befund (Fallback 1).
+type SourcePin struct {
+	URL    string
+	Sha256 string
+	Unpack string
+	Line   int
+}
+
+// SourcesConfig sind die Config-Pins des Moduls sources (DC-FA-SRC-001).
+// Die Marker-Pins am Link werden separat beim Scan gesammelt; ohne aktives
+// sources ist der Befundsatz byte-identisch (DC-QA-02) und es wird keine
+// Netzverbindung geöffnet (DC-QA-03 — zweite Netz-Tür neben external).
+type SourcesConfig struct {
+	Pins []SourcePin
+}
+
+// SourceUnpackZip ist der unpack-Wert für Archiv-Ziele (DC-FA-SRC-001).
+const SourceUnpackZip = "zip"
 
 // TraceConfig sind die konfigurierbaren Quellen der Requirements Traceability
 // Matrix (DC-FA-CLI-009/DC-FA-REQ-001): Source ist die Anforderungs-Quelldatei;

@@ -461,3 +461,55 @@ func TestDecode_MatrixTokenFailClosed(t *testing.T) {
 		}
 	}
 }
+
+// DC-FA-SRC-001 Happy: gültige sources[]-Pins werden übernommen; sha256 wird
+// case-insensitiv zu Kleinbuchstaben normalisiert, unpack-Default ist none, und
+// die Befund-Zeile ist die yaml-Node-Zeile des url-Feldes.
+func TestDecode_SourcesHappy(t *testing.T) {
+	const hex64 = "ABCDEF0123456789abcdef0123456789ABCDEF0123456789abcdef0123456789"
+	cfg, err := configyaml.Decode([]byte("modules: [links]\n" +
+		"sources:\n" +
+		"  - url: https://example.org/regelwerk.md\n" +
+		"    sha256: " + hex64 + "\n" +
+		"  - url: http://example.org/bundle.zip\n" +
+		"    sha256: " + strings.ToLower(hex64) + "\n" +
+		"    unpack: zip\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(cfg.Sources.Pins) != 2 {
+		t.Fatalf("Pins = %+v", cfg.Sources.Pins)
+	}
+	p0 := cfg.Sources.Pins[0]
+	if p0.URL != "https://example.org/regelwerk.md" || p0.Unpack != "none" || p0.Sha256 != strings.ToLower(hex64) {
+		t.Fatalf("Pin[0] = %+v (Default unpack none, sha256 kleingeschrieben erwartet)", p0)
+	}
+	if p0.Line != 3 { // url-Feld-Zeile im obigen Dokument (1: modules, 2: sources, 3: url)
+		t.Fatalf("Pin[0].Line = %d, erwartet 3", p0.Line)
+	}
+	if cfg.Sources.Pins[1].Unpack != "zip" {
+		t.Fatalf("Pin[1].unpack = %q, erwartet zip", cfg.Sources.Pins[1].Unpack)
+	}
+}
+
+// DC-FA-SRC-001 fail-closed: jeder ungültige sources[]-Eintrag ⇒ Exit 2
+// (fehlende/nicht-http(s)-url, sha256-Länge ≠ 64, unbekanntes unpack).
+func TestDecode_SourcesFailClosed(t *testing.T) {
+	const hex64 = "0000000000000000000000000000000000000000000000000000000000000000"
+	cases := map[string]string{
+		"url fehlt":       "sources:\n  - sha256: " + hex64 + "\n",
+		"url nicht http":  "sources:\n  - url: ftp://example.org/x\n    sha256: " + hex64 + "\n",
+		"url repo-intern": "sources:\n  - url: docs/x.md\n    sha256: " + hex64 + "\n",
+		"sha256 zu kurz":  "sources:\n  - url: https://example.org/x\n    sha256: abcdef\n",
+		"sha256 fehlt":    "sources:\n  - url: https://example.org/x\n",
+		"unpack unbekannt": "sources:\n  - url: https://example.org/x\n    sha256: " + hex64 +
+			"\n    unpack: foo\n",
+	}
+	for name, in := range cases {
+		t.Run(name, func(t *testing.T) {
+			if _, err := configyaml.Decode([]byte(in)); err == nil {
+				t.Fatalf("%s: Konfigurationsfehler (Exit 2) erwartet", name)
+			}
+		})
+	}
+}

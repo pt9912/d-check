@@ -80,6 +80,7 @@ func AllReasons() []string {
 		rules.ReasonGatePhantom, rules.ReasonGateUndocumented,
 		rules.ReasonCitationOutOfRange, rules.ReasonCitationInvertedRange,
 		rules.ReasonCitationMismatch,
+		rules.ReasonSourceDrift, rules.ReasonSourceUnreachable,
 	}
 }
 
@@ -117,6 +118,8 @@ func reasonTexts() map[string]string {
 		rules.ReasonCitationOutOfRange:    "Zeilen-Referenz hinter dem Datei-Ende (oder Zieldatei fehlt)",
 		rules.ReasonCitationInvertedRange: "Zeilen-Referenz invertiert (von > bis)",
 		rules.ReasonCitationMismatch:      "Ausgezeichnetes Zitat ist kein Teilstring der normalisierten Quell-Spanne (Zitat-Fäule)",
+		rules.ReasonSourceDrift:           "Gepinnte externe Quelle inhaltlich gedriftet (Content-Hash weicht vom hinterlegten sha256-Pin ab)",
+		rules.ReasonSourceUnreachable:     "Gepinnte externe Quelle nicht materialisierbar (Netzfehler, HTTP ≥ 400, Timeout, Größenlimit oder unter unpack: zip kein gültiges Zip)",
 	}
 }
 

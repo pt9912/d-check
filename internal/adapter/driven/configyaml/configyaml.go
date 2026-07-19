@@ -8,6 +8,7 @@ package configyaml
 
 import (
 	"bytes"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -186,6 +187,14 @@ type rawExternal struct {
 	Parallel       *int      `yaml:"parallel"`
 }
 
+// rawSource ist ein Config-Pin des Moduls sources (DC-FA-SRC-001): url als
+// yaml.Node, damit die Befund-Zeile (Node-Zeile des url-Feldes) erhalten bleibt.
+type rawSource struct {
+	URL    yaml.Node `yaml:"url"`
+	Sha256 string    `yaml:"sha256"`
+	Unpack string    `yaml:"unpack"`
+}
+
 // rawTrace bildet den opt-in trace-Block ab (DC-FA-CLI-009): konfigurierbare
 // RTM-Quellen. Jeder Unter-Block/jedes Feld ist optional; abwesend ⇒ Default im
 // Kern (byte-identisch, DC-QA-02).
@@ -299,7 +308,10 @@ type raw struct {
 	Planning  *rawPlanning  `yaml:"planning"`
 	Tracked   *rawTracked   `yaml:"tracked"`
 	Targets   *rawTargets   `yaml:"targets"`
-	Trace     *rawTrace     `yaml:"trace"`
+	// Sources ist eine bare Liste `sources[]` (spec/spezifikation.md §2;
+	// KEIN Map mit scope — das Modul nutzt den globalen Scan-Scope).
+	Sources []rawSource `yaml:"sources"`
+	Trace   *rawTrace   `yaml:"trace"`
 	// Citations ist parameterlos (direktiven-getrieben) — nur scope.
 	Citations *rawScopeOnly `yaml:"citations"`
 }
@@ -361,6 +373,12 @@ func applyModules(r *raw, cfg *model.Config) error {
 		return err
 	}
 	applyImmutable(r, cfg)
+	return applyRemainingModules(r, cfg)
+}
+
+// applyRemainingModules setzt die Modul-Validierung fort (ausgelagert, damit
+// applyModules unter der gocyclo-Schwelle bleibt).
+func applyRemainingModules(r *raw, cfg *model.Config) error {
 	if err := applyVCS(r, cfg); err != nil {
 		return err
 	}
@@ -374,6 +392,9 @@ func applyModules(r *raw, cfg *model.Config) error {
 		return err
 	}
 	if err := applyTargets(r, cfg); err != nil {
+		return err
+	}
+	if err := applySources(r, cfg); err != nil {
 		return err
 	}
 	if err := applyTrace(r, cfg); err != nil {
@@ -933,6 +954,71 @@ func applyTargets(r *raw, cfg *model.Config) error {
 		Authority: t.Authority, ExemptTargets: t.ExemptTargets,
 	}
 	return nil
+}
+
+// applySources validiert die Config-Pins des Moduls sources (DC-FA-SRC-001):
+// jeder Eintrag braucht eine absolute http(s)-url und genau 64 Hex-`sha256`;
+// `unpack` ist `none` (Default) oder `zip`. Jede Verletzung ⇒ Exit 2 (fail-closed).
+// `sha256` wird case-insensitiv geführt (zu Kleinbuchstaben normalisiert). Die
+// Befund-Zeile ist die yaml-Node-Zeile des url-Feldes (Fallback 1).
+func applySources(r *raw, cfg *model.Config) error {
+	if len(r.Sources) == 0 {
+		return nil
+	}
+	pins := make([]model.SourcePin, 0, len(r.Sources))
+	for i, s := range r.Sources {
+		pin, err := validateSource(i, s)
+		if err != nil {
+			return err
+		}
+		pins = append(pins, pin)
+	}
+	cfg.Sources = model.SourcesConfig{Pins: pins}
+	return nil
+}
+
+// validateSource prüft einen einzelnen sources[]-Eintrag (fail-closed).
+func validateSource(i int, s rawSource) (model.SourcePin, error) {
+	url := strings.TrimSpace(s.URL.Value)
+	switch {
+	case url == "":
+		return model.SourcePin{}, fmt.Errorf("%s: sources[%d].url fehlt", FileName, i)
+	case !isHTTPURL(url):
+		return model.SourcePin{}, fmt.Errorf("%s: sources[%d].url %q ist keine absolute http(s)-URL", FileName, i, url)
+	}
+	sum := strings.TrimSpace(s.Sha256)
+	if !is64Hex(sum) {
+		return model.SourcePin{}, fmt.Errorf("%s: sources[%d].sha256 muss genau 64 Hex-Zeichen sein", FileName, i)
+	}
+	unpack := s.Unpack
+	if unpack == "" {
+		unpack = "none"
+	}
+	if unpack != "none" && unpack != model.SourceUnpackZip {
+		return model.SourcePin{}, fmt.Errorf("%s: sources[%d].unpack %q ungültig (nur none oder zip)", FileName, i, unpack)
+	}
+	line := s.URL.Line
+	if line <= 0 {
+		line = 1
+	}
+	return model.SourcePin{URL: url, Sha256: strings.ToLower(sum), Unpack: unpack, Line: line}, nil
+}
+
+// isHTTPURL prüft case-insensitiv auf ein absolutes http(s)-Schema (wie das
+// Modul external — sources holt nur http/https, spec/spezifikation.md §2).
+func isHTTPURL(u string) bool {
+	return (len(u) >= 7 && strings.EqualFold(u[:7], "http://")) ||
+		(len(u) >= 8 && strings.EqualFold(u[:8], "https://"))
+}
+
+// is64Hex prüft, ob s genau 64 Hex-Zeichen (Groß/Klein) ist (DC-FA-SRC-001
+// sha256). encoding/hex akzeptiert beide Schreibweisen und gerade Längen.
+func is64Hex(s string) bool {
+	if len(s) != 64 {
+		return false
+	}
+	_, err := hex.DecodeString(s)
+	return err == nil
 }
 
 // applyCodepaths validiert die codepaths-Präfixe (DC-FA-CODE-001).

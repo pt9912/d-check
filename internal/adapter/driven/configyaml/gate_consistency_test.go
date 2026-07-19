@@ -24,9 +24,10 @@ func netlessDocModules() []string {
 }
 
 // forbiddenInNetless: Module, die die Netzlos-/Baum-Scan-Beweisaussage brechen —
-// external (Netzzugriff) und vcs (braucht eine Commit-Range, kein Baum-Scan).
+// external und sources (beide Netzzugriff) und vcs (braucht eine Commit-Range,
+// kein Baum-Scan).
 func forbiddenInNetless() []string {
-	return []string{"external", "vcs"}
+	return []string{"external", "sources", "vcs"}
 }
 
 // assertNetlessModules kapselt die Invariante, damit Live-Prüfung und
@@ -82,6 +83,7 @@ func TestQA03_NetlessModuleList_Guards(t *testing.T) {
 		{"links fehlt", full[1:], true},
 		{"versions fehlt", full[:len(full)-1], true},
 		{"external gesetzt", append(append([]string(nil), full...), "external"), true},
+		{"sources gesetzt", append(append([]string(nil), full...), "sources"), true},
 		{"vcs gesetzt", append(append([]string(nil), full...), "vcs"), true},
 	}
 	for _, tc := range cases {
