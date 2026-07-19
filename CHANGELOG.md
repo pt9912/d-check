@@ -6,6 +6,18 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.51.1] — 2026-07-19
+
+### Changed
+
+- slice-081 — Modul `pins` (dpin): der `link-stale`-Befund führt den errechneten
+  Ziel-Span-Hash jetzt **vollständig** (64 Hex) statt gekürzt (`shortHash`), damit
+  ein Content-Pin praktisch anlegbar ist („einmal `--enable pins` laufen,
+  gemeldeten Hash in den `<!-- dpin: sha256:… -->`-Marker kopieren"). Neue
+  Handbuch-Aufgaben-Sektion §5 „Einen repo-internen Link-Inhalt gegen Drift
+  pinnen". Nur die (nicht stabilitätsgarantierte) Befund-Meldung — kein
+  Verhaltens-, Grund-Code- oder Vertragsdelta (`DC-FA-PIN-001` unverändert).
+
 ## [0.51.0] — 2026-07-19
 
 ### Added

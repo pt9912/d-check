@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.40 · **Software-Version:** [v0.51.0](../../version.md#v0.51.0) ·
+**Handbuch-Version:** 1.41 · **Software-Version:** [v0.51.0](../../version.md#v0.51.0) ·
 **Stand:** 2026-07-18 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -1236,6 +1236,41 @@ read-only-Mount) verteilt die Prüfung:
 make doc-tracked
 ```
 
+### Einen repo-internen Link-Inhalt gegen Drift pinnen (Modul `pins`)
+
+Das Modul `pins` (opt-in) friert den **Inhalt** eines Link-Ziels **innerhalb des
+Repos** auf einen `sha256` ein: ändert sich der Ziel-Span (die verlinkte Datei
+bzw. die Heading-Section) nach dem Verlinken, meldet es `link-stale`. So bleibt
+eine Referenz, deren Aussage vom zitierten Inhalt abhängt, an genau diesen Inhalt
+gebunden. (Das Netz-Gegenstück für **externe** Quellen ist `sources`, s. u.)
+
+Der Pin steht als HTML-Kommentar-Marker **unmittelbar hinter dem Link** derselben
+Zeile; gehasht wird der whitespace-normalisierte **rohe** Ziel-Span (ganze Datei
+ohne Anker, sonst die Heading-Section inkl. Fenced-Code) — reine Reflow-/Umbruch-
+Änderungen absorbiert die Normalisierung.
+
+**Einen Pin anlegen — „einmal laufen, Hash kopieren".** Sie kennen den `sha256`
+des Ziel-Spans zunächst nicht. Setzen Sie den Marker mit einem Platzhalter-Hash
+unmittelbar hinter den Link:
+
+```markdown
+[Abschnitt](../spec/ziel.md#abschnitt) <!-- dpin: sha256:0000000000000000000000000000000000000000000000000000000000000000 -->
+```
+
+Dann in zwei Läufen:
+
+1. `d-check --enable pins` laufen lassen. Der `link-stale`-Befund führt in seiner
+   Meldung den **vollen** errechneten Hash: `errechnet sha256:<hex> (voller
+   Ist-Hash zum Re-Pinnen)`.
+2. Diesen `<hex>` in den Marker kopieren und erneut laufen lassen → **kein
+   Befund**: der Pin ist gesetzt.
+
+Danach schlägt jede inhaltliche Drift des Ziel-Spans als `link-stale` an, bis Sie
+bewusst neu pinnen (denselben Weg). `pins` ist strikt opt-in und **netzlos** und
+prüft nur repo-interne, auflösbare Ziele (ein struktureller Fehler bleibt
+`links`/`anchors`, kein Doppelbefund); ohne aktives `pins` ist der Befundsatz
+byte-identisch.
+
 ### Externe Quellen auf ihren Inhalt pinnen (Modul `sources`)
 
 Das Modul `sources` (opt-in, **Netz**) ist die **zweite** Netz-Tür neben `external`
@@ -1651,3 +1686,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.38             | v0.49.0          | 2026-07-18 | Geteiltes Referenz-Ventil `ignore-refs` (§5): das bisher modul-lokale `codepaths.ignore-refs` wird zur **querschnittlichen** Top-Level-Fähigkeit, die `links`/`anchors`/`codepaths` gemeinsam honorieren. Neue Felder je Eintrag: `in` (Quell-Skopus, Glob auf die Quelldatei), `refs` (aufgelöste Ziele) und `keep` (Ausnahmen, reihenfolge-unabhängig). Ziel-Achsen-Pendant zu `scan.ignore`; löst die Template-Verzeichnis-Falle. `codepaths.ignore-refs` bleibt Alias (kein Config-Bruch), ohne Block byte-identisch; ungültiges Glob ⇒ Exit 2. Die vier Ventil-Achsen sind jetzt gegeneinander erklärt                                                                    |
 | 1.39             | v0.50.0          | 2026-07-18 | Zitat-Verifikation (§5/§6): opt-in `codepaths.check-lines` verifiziert `datei:<von>-<bis>`-Zeilen-Referenzen (`citation-out-of-range`/`citation-inverted-range`), Default aus byte-identisch. Neues 18. Modul `citations` (opt-in): die Direktive `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (`>`-Block oder inline `„…"`/`"…"`), das ein whitespace-normalisierter Teilstring der Quell-Spanne sein muss (`citation-mismatch`); Mindestlänge 16 Zeichen, malformte Direktive fail-closed. d-check findet danach **mehr** (SemVer-Minor)                                                                    |
 | 1.40             | v0.51.0          | 2026-07-19 | Neues opt-in-Modul `sources` (19., **Netz**, §5/§6): Content-Pin externer Quellen gegen Upstream-Drift — eine auf einen `sha256` gepinnte `http(s)`-Quelle (Marker `<!-- source-pin: [zip] sha256:… -->` am Link **oder** Config-Block `sources:`) wird geholt, gehasht und verglichen; Abweichung → `source-drift` (Meldung mit vollem Ist-Hash zum Re-Pinnen), Netzfehler/HTTP ≥ 400/Timeout/Größenlimit/kein gültiges Zip → `source-unreachable`. Einzeldatei (Roh-Byte-Hash) oder Archiv (`unpack: zip`, reihenfolge-invariantes Content-Manifest). **Zweite Netz-Tür** neben `external` (beide opt-in, nie im Default-Lauf); malformte Direktive/ungültige Config fail-closed (Exit 2), ohne aktives `sources` byte-identisch                |
+| 1.41             | v0.51.1          | 2026-07-19 | dpin-Ergonomie (§5, Modul `pins`): der `link-stale`-Befund führt jetzt den **vollen** errechneten `sha256` (statt nur `shortHash`) — damit ist dpin „einmal laufen, gemeldeten Hash in den `<!-- dpin: … -->`-Marker kopieren"-benutzbar. Neue Aufgaben-Sektion §5 „Einen repo-internen Link-Inhalt gegen Drift pinnen". Nur die nicht stabilitätsgarantierte Befund-Meldung, kein Verhaltens-/Grund-Code-Delta                |
