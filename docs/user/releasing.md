@@ -41,7 +41,13 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
      Versionsverlauf-Zeile (§11; die neue Zeile **chronologisch unter die
      letzte**, nicht oben anfügen), ggf. neue Feature-Abschnitte (§5/§6) und das
      **bare-Tag-Beispiel** in §Versionen und Tags (`:vX.Y.Z` **ohne** `ghcr`-Präfix
-     ⇒ vom `versions`-Gate nicht erfasst, driftet still).
+     ⇒ vom `versions`-Gate nicht erfasst, driftet still). **Braucht das Feature
+     eine §4-Aufgabe, schreibe eine eigene** — nach dem
+     [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md) §5
+     (Ausgangslage/Ziel/Vorgehen/Ergebnis) — und **hänge sie nicht an eine
+     bestehende §4-Aufgabe an**. Kein Gate erzwingt Aufgabenorientierung; genau
+     durch Anhängen wuchs §4.12 auf ~330 Zeilen / 8 Themen, bis es aufgetrennt
+     werden musste.
    - **README — beide Sprachfassungen synchron halten:** `README.de.md` (Deutsch,
      **kanonische Quelle — zuerst ändern**) und danach `README.md` (Englisch,
      nachübersetzen). Bei einem neuen Modul in **jeder** Fassung: (a) die
