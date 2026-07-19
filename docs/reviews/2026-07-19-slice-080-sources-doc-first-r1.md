@@ -85,3 +85,59 @@
 Die Anforderung ist gut motiviert, sauber stratifiziert und im Netz-/Grund-Code-Design konsistent mit `external`/`pins`; das `DC-QA-03`-Amendment ist im doc-first-Stratum vollständig vollzogen. **Blockierend** ist jedoch der Kern des einzig wirklich neuen Mechanismus — das **Content-Manifest**: F-2 lässt die den Hash bestimmende `<name>`-Form offen (zwei konforme Implementierungen können bei gleichem Inhalt verschieden hashen), und F-1 stellt zwei **unvereinbare** Manifest-Eigenschaften nebeneinander (zeilen-sortiert/reorder-invariant **vs.** byte-gleich zum unsortierten `sha256sum regelwerk/*.md`/vendored `SHA256SUMS`), belegt durch den Vorläufer, der die Vorlage unsortiert schreibt und erst beim Vergleich beidseitig sortiert. Der Algorithmus ist an genau dem Punkt, der die Produkt-Ausgabe definiert, **nicht ohne Interpretationslücke** codierbar — die AK „Archiv-Determinismus" prüft nur Reorder-Invarianz und würde die Divergenz nicht fangen.
 
 Vor Code sind zusätzlich zu klären (MEDIUM): die `sha256`-Case-Normalisierung (F-3, Falsch-Drift-Risiko), der Ausgang bei nicht-parsebarer Archiv-Antwort (F-4), ein Größen-/Dekompressions-Limit (F-5, Sicherheit) und die fehlenden Boundary-AKs für „kein Doppelbefund"/Marker-Bindung (F-6). F-7/F-8 sind vor der Umsetzung mitzuerledigen, F-9/F-10 sind festzuhalten. Der „beides × beides"-Zuschnitt selbst ist im ADR real begründet (je ein Nutzungsmuster) und **nicht** überdimensioniert — die Kosten liegen nicht im Scope, sondern in der noch offenen byte-genauen Kanonisierung.
+
+## Gegenprobe (R1-Nachtrag)
+
+| Feld | Wert |
+|---|---|
+| **Gegenstand** | Nachprüfung der Einarbeitung von F-1…F-10, unabhängig gegen die Dateien auf Platte (frisch gelesen, nicht aus dem Gedächtnis) |
+| **Commit** | `4e9404a` |
+| **Datum** | 2026-07-19 |
+| **Methode** | `spec/spezifikation.md` `DC-FA-SRC-001.a` Schritt 2-5 + §2-Schema, `spec/lastenheft.md` `DC-FA-SRC-001` + §7, `docs/plan/adr/0046-sources-upstream-content-drift.md`, `slice-080-sources-modul.md` zeilenweise gegengelesen |
+
+### Befund-Status
+
+- **F-1 (Manifest-Sortier-/Parität-Widerspruch) — GESCHLOSSEN.** `spec/spezifikation.md:1758-1778` (Schritt 4) sortiert jetzt **nach `<pfad>`** (byteweise, `LC_ALL=C`, ausdrücklich „**nicht** nach der ganzen Zeile") und streicht die falsche Byte-Parität: „folgt **konzeptionell** dem … `SHA256SUMS`-Muster … **nicht** byte-identisch zur unsortierten `sha256sum <glob>`-Ausgabe". Lastenheft (`:2010-2017`) und ADR (`:47-52`) tragen exakt dieselbe Aussage (pfad-sortiert, eigenständig kanonisiert, keine `sha256sum`-Byte-Parität). Der Sortier-nach-Zeile-vs-Parität-Widerspruch ist aufgelöst; lastenheft ↔ spec ↔ ADR konsistent.
+- **F-2 (`<name>`-/`<pfad>`-Form undefiniert) — GESCHLOSSEN.** `spec/spezifikation.md:1763-1770`: `<pfad>` = **voller Zip-interner Pfad** normalisiert (Backslashes → `/`, führendes `./` und `/` entfernt, ausdrücklich **kein** Basisname → „verschachtelte Verzeichnisse bleiben im Pfad, daher keine Basisnamen-Kollision"); Verzeichnis-Einträge (Name endet auf `/`) raus; zwei Leerzeichen zwischen `<hex>` und `<pfad>`; je Zeile `\n`-terminiert. Der hash-bestimmende Punkt ist jetzt eindeutig; zwei konforme Implementierungen müssen denselben Manifest-Hash liefern.
+- **F-3 (`sha256`-Case) — GESCHLOSSEN.** Schritt 2 („`sha256` **case-insensitiv** … beide zu Kleinbuchstaben normalisiert"), Schritt 5 (Vergleich case-insensitiv, Ist-Hash in Kleinbuchstaben als „schreibweisen-stabile" Re-Pin-Vorlage), §2-Constraint `spec/spezifikation.md:1986` („**case-insensitiv** verglichen") und Lastenheft („`sha256` wird **case-insensitiv** geführt"). Der Falsch-Drift durch Großschreibung ist ausgeschlossen.
+- **F-4 (2xx-kein-Zip) — GESCHLOSSEN.** Schritt 3 nennt explizit „(bei `unpack: zip`) eine 2xx-Antwort, die **kein gültiges Zip** ist (Nicht-Zip / HTML-Fehlerseite / abgeschnittenes Archiv)" als `source-unreachable`; die Boundary-AK im Lastenheft ist entsprechend erweitert. Der zuvor offene Ausgang ist definiert.
+- **F-5 (Größen-/Zip-Bomben-Limit) — GESCHLOSSEN.** Schritt 3 (Body **≤ 64 MiB**, > fünf Redirects) und Schritt 4 (Entpack-Gesamtgröße **≤ 256 MiB**, Eintragszahl **≤ 10 000**) → `source-unreachable`; deckungsgleich in ADR `:63-67` und Lastenheft. Die Verteidigungslinie steht im Vertrag.
+- **F-6 (Boundary-AKs) — WEITGEHEND GESCHLOSSEN (Rest-Nit).** Lastenheft trägt neu „**Boundary (kein Doppelbefund / repo-intern)**" und „**Boundary (Marker-Bindung)**". Rest siehe F-12: die Marker-Bindungs-AK prüft nur den „kein vorausgehender `http(s)`-Link → inert"-Fall, nicht die Disambiguierung bei **mehreren** Links je Zeile (die pins-AK prüft beide).
+- **F-7 (Config-Pin `line`) — GESCHLOSSEN.** Schritt 5: `file` = `.d-check.yml`, `line` = „die Zeile des `url`-Feldes des Eintrags (die YAML-Dekodierung führt sie; sonst `1`)". Zeilenwahl und Fallback sind deterministisch festgelegt.
+- **F-8 (Marker-Keyword `archive`→`zip`) — NICHT GESCHLOSSEN, mit neuer Inkonsistenz — siehe F-11.**
+- **F-9 (inerter Marker dokumentiert) — GESCHLOSSEN.** Schritt 2: „Ein **wohlgeformter** `source-pin` an einem repo-internen oder Nicht-`http(s)`-Link ist **inert** … die Direktive ist dort bewusst wirkungslos … **nicht** fail-closed." Die Ergonomie-Falle ist explizit.
+- **F-10 (Redirect-Politik) — GESCHLOSSEN.** Schritt 3: „Redirects werden wie `external` bis zu **fünf** verfolgt, gehasht wird der Inhalt der **finalen** Antwort"; > fünf → `source-unreachable`.
+
+### Neue / offene Findings
+
+#### F-11 · MEDIUM · Konsistenz Lastenheft ↔ Spec (normative Direktiven-Syntax) · Regression aus dem F-8-Fix
+- **pfad:** `spec/spezifikation.md:1729` (Schritt 1) · `docs/plan/adr/0046-sources-upstream-content-drift.md:36` — beide vs. `spec/lastenheft.md:2003-2004`, `docs/plan/adr/0046-…:53-56`, `slice-080-sources-modul.md:25`
+- **befund:** Der F-8-Fix (Marker-Keyword `archive` → `zip`) ist nur teilweise propagiert. Lastenheft (`:2003-2004`: `<!-- source-pin: zip sha256:<hex> -->`), Slice (`:25`: `[zip]`) und die ADR-**Entscheidung** (`:53-56`: „das Archiv-Keyword ist explizit (Marker `zip`, parallel zum Config-Wert `unpack: zip`)") nennen `zip`. Aber die **normative** Spec `DC-FA-SRC-001.a` Schritt 1 (`:1729`) zeigt weiterhin `<!-- source-pin: [archive] sha256:<hex> -->`, und der ADR-**Marker-Beispiel-Punkt** (`:36`) ebenso — die ADR widerspricht damit **sich selbst** (`:36` `archive` vs `:53-56` `zip`). Der Marker-Parser wird aus Spec §.a Schritt 1 gebaut: er akzeptiert `archive`, während ein Nutzer laut Lastenheft `zip` schreibt — der Archiv-Pin würde als schlüsselwort-los (Einzeldatei-Hash eines Zip) gelesen und liefe auf Falsch-`source-drift`/`source-unreachable`.
+- **verifizierbar:** ja — ein Marker-Parser-Test mit `source-pin: zip …` gegen die Spec-§.a-Fassung schlägt fehl (Keyword nicht erkannt); der Widerspruch ist ein direkter Datei-Diff `spec/lastenheft.md:2004` vs `spec/spezifikation.md:1729`.
+
+#### F-12 · INFO · Akzeptanzkriterien-Restlücke (Marker-Bindung bei mehreren Links je Zeile) · `DC-FA-SRC-001`
+- **pfad:** `spec/lastenheft.md` (AK „Boundary (Marker-Bindung)") · Vergleich `spec/lastenheft.md:1548` (pins-AK)
+- **befund:** Die neue Marker-Bindungs-AK deckt nur „kein vorausgehender `http(s)`-Link → inert". Der von `spec/spezifikation.md:1727-1731` zugesicherte „wie `pins`"-Fall — mehrere Links je Zeile, jeder Marker bindet an den ihm **unmittelbar** vorausgehenden Link — hat weiterhin kein Kriterium (die pins-AK `:1548` prüft genau diese Disambiguierung). Eine Fehl-Bindung an den falschen Link auf einer Mehrfach-Link-Zeile bliebe ungetestet.
+- **verifizierbar:** ja — der fehlende Boundary-Test wäre genau der, der eine Bindungs-Regression fangen würde.
+
+#### F-13 · INFO · Manifest-Tie-Break bei doppeltem Zip-Eintrags-Pfad · `DC-QA-02`
+- **pfad:** `spec/spezifikation.md:1766-1768` (Schritt 4, Sortierung „nach `<pfad>`")
+- **befund:** Das Zip-Format erlaubt **zwei** Einträge mit identischem Namen. Bei identischem normalisiertem `<pfad>` und unterschiedlichem Inhalt ist die Sortierung „aufsteigend nach `<pfad>`" **kein** totaler Ordnungsschlüssel (Tie) — die Reihenfolge der beiden Zeilen und damit der Manifest-Hash wären unbestimmt. Pathologischer Rand, aber gegen die Determinismus-Zusage; ein sekundärer Tie-Break (z. B. nach `<hex>`) würde ihn schließen.
+- **verifizierbar:** ja — ein Zip mit zwei gleichnamigen Einträgen zeigt den nicht determinierten Tie.
+
+### Kategorie-Summary (Nachtrag)
+
+| Kategorie | Anzahl | IDs |
+|---|---|---|
+| HIGH | 0 | — |
+| MEDIUM | 1 | F-11 |
+| LOW | 0 | — |
+| INFO | 2 | F-12, F-13 |
+
+Geschlossen aus dem Erst-Report: F-1, F-2, F-3, F-4, F-5, F-6 (Rest F-12), F-7, F-9, F-10.
+
+### Gesamt-Verdikt (Nachtrag) — ACCEPT-WITH-NITS
+
+Der ursprüngliche BLOCK ist **aufgehoben**: F-1/F-2 sind am Kern — dem byte-genauen Content-Manifest — sauber gelöst (Pfad-Sortierung statt Ganz-Zeilen-Sortierung, voller normalisierter Zip-Pfad statt undefiniertem `<name>`, korrigierte konzeptionell-statt-byte-Parität), und lastenheft ↔ spec ↔ ADR sind dazu konsistent. Die MEDIUMs F-3/F-4/F-5 und LOW/INFO F-7/F-9/F-10 tragen real und deckungsgleich über die Straten; F-6 ist bis auf eine AK-Restlücke geschlossen.
+
+**Vor Code zu beheben (der eine echte Nit, F-11):** Der Keyword-Rename `archive` → `zip` ist unvollständig propagiert — die **normative** Spec `DC-FA-SRC-001.a` Schritt 1 (`spec/spezifikation.md:1729`) und der ADR-Marker-Beispiel-Punkt (`docs/plan/adr/0046-…:36`) tragen noch `[archive]`, während Lastenheft, Slice und die ADR-Entscheidung `zip` sagen; die ADR ist dadurch in sich widersprüchlich. Das ist kein Design-Offenpunkt (der Zielwert ist eindeutig `zip`), sondern ein mechanischer Zwei-Datei-Abgleich — aber ein echter Lastenheft-↔-Spec-Widerspruch an der Nutzer-Direktive, der den Marker-Parser falsch erden würde; er muss vor der Implementierung des Marker-Parsers geschlossen werden. F-12/F-13 sind mitzunehmen (AK-Restlücke, Tie-Break), blockieren nicht. Kein neuer BLOCK.

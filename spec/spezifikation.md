@@ -1726,10 +1726,12 @@ repo-internes Ziel (`pins`). **Post-Pass** nach dem Datei-Scan (wie `external`)
 
 1. **Aktivierung/Sammeln.** Nur bei explizit aktiviertem `sources`. Beim Scan
    werden zwei Pin-Quellen gesammelt: (a) **Marker**
-   `<!-- source-pin: [archive] sha256:<hex> -->`, gebunden an den unmittelbar
-   vorausgehenden externen Link derselben Zeile (wie `pins`; ohne vorausgehenden
-   Link inert), und (b) die **Config**-Einträge `sources[]`. Beide ergeben je
-   einen Pin `{url, sha256, unpack ∈ {none, zip}}`.
+   `<!-- source-pin: [zip] sha256:<hex> -->` (das optionale Schlüsselwort `zip`
+   markiert ein Archiv, parallel zu `unpack: zip`), gebunden an den **unmittelbar
+   links** stehenden `http(s)`-Link derselben Zeile — bei mehreren Links den
+   nächstgelegenen; ohne vorausgehenden `http(s)`-Link inert. Und (b) die
+   **Config**-Einträge `sources[]`. Beide ergeben je einen Pin
+   `{url, sha256, unpack ∈ {none, zip}}`.
 2. **fail-closed / Skopus.** Eine malformte Direktive (`source-pin` ohne
    `sha256:<hex>`) oder ein ungültiger Config-Eintrag (fehlende `url`/`sha256`,
    `url` nicht `http(s)`, `sha256` nicht genau 64 Hex-Zeichen, unbekanntes
@@ -1766,7 +1768,9 @@ repo-internes Ziel (`pins`). **Post-Pass** nach dem Datei-Scan (wie `external`)
      führendes `./` und `/` entfernt; **kein** Basisname — verschachtelte
      Verzeichnisse bleiben im Pfad, daher keine Basisnamen-Kollision);
    - die Zeilen **aufsteigend nach `<pfad>`** sortiert (byteweise, `LC_ALL=C` —
-     **nicht** nach der ganzen Zeile), je mit `\n` terminiert und konkateniert;
+     **nicht** nach der ganzen Zeile; bei identischem `<pfad>` — Zip erlaubt
+     Duplikate — sekundär nach `<hex>`, ein stabiler eindeutiger Tie-Break), je
+     mit `\n` terminiert und konkateniert;
    - der Archiv-Hash ist der `sha256` dieser Manifest-Bytes (Kleinbuchstaben-Hex).
 
    Damit ist der Hash **reihenfolge-invariant** gegen die

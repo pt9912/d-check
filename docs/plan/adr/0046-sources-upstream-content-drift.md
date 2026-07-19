@@ -33,7 +33,7 @@ Netz-Port (wie `external`, als Post-Pass nach dem Datei-Scan), hasht, vergleicht
 → `source-drift` bzw. `source-unreachable`.
 
 - **Zwei Deklarations-Flächen — Marker *und* Config.** Marker
-  `<!-- source-pin: [archive] sha256:<hex> -->` (dpin-Stil, per-Referenz,
+  `<!-- source-pin: [zip] sha256:<hex> -->` (dpin-Stil, per-Referenz,
   scope-treu, d-check-nativ) **und** ein Config-Block `sources: [{url, sha256,
   unpack}]` (zentral, URL+Hash sauber). Beide, weil beide reale Nutzungsmuster
   bedienen: der in-Doc-Verweis auf eine externe Quelle vs. die zentrale
@@ -81,8 +81,8 @@ Netz-Port (wie `external`, als Post-Pass nach dem Datei-Scan), hasht, vergleicht
   beider Flächen.
 - **Zip-Roh-Byte-Hash statt Content-Manifest.** Bräche bei Recompression und
   Eintrags-Umsortierung; prüfte Framing statt Inhalt. Verworfen.
-- **`archive` aus der `.zip`-Endung ableiten.** Fragile Magie. Verworfen
-  zugunsten des expliziten Keywords.
+- **Das Format aus der `.zip`-Endung ableiten** statt eines expliziten
+  `zip`-Keywords. Fragile Magie. Verworfen.
 - **Currency (neuerer Tag) ins Modul ziehen.** Braucht die Release-API, keinen
   Content-Hash; bleibt im Bash-Helfer
   ([`MR-022`](../../../harness/conventions.md#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019)).
