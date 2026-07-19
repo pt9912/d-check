@@ -162,5 +162,5 @@ Fähigkeit anhängte statt eine Aufgabe zu schreiben) bleibt **strukturell offen
 der in §4 notierte Designpunkt (Release-Prep-Regel „neuer Handbuch-Abschnitt =
 eigene Aufgabe mit Ziel/Vorgehen/Ergebnis") war **kein DoD-Punkt** dieses Slice
 (nur eine §4-Risiko-Notiz) und blieb daher offen — er ist als eigener Folge-Slice
-[slice-082](../in-progress/slice-082-release-prep-aufgabenregel.md) (welle-66)
+[slice-082](../done/slice-082-release-prep-aufgabenregel.md) (welle-66)
 aufgenommen, die Entscheidung über die konkrete Umsetzung dort.

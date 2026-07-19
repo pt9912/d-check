@@ -8,12 +8,12 @@
 
 ## Aktuelle Welle
 
-**welle-66-release-prep-aufgabenregel** — die Release-Prep-Checkliste
-([`releasing.md`](../../../user/releasing.md) §Release-Prep) um die
-§4-Aufgabendisziplin härten, damit das Benutzerhandbuch §4 nicht nach dem
-nächsten Feature erneut erodiert (Prozess-Nachfolge zu slice-072).
-[`slice-082`](slice-082-release-prep-aufgabenregel.md) (reine Prozess-Doku, kein
-Release/ADR).
+**Keine aktive Welle.** welle-66-release-prep-aufgabenregel **abgeschlossen** —
+[`slice-082`](../done/slice-082-release-prep-aufgabenregel.md) (Release-Prep-Regel
+in [`releasing.md`](../../../user/releasing.md) §Release-Prep: ein neuer
+Handbuch-§4-Abschnitt für ein Feature ist eine eigene Aufgabe, keine Anhängung —
+schließt den strukturellen §4-Erosions-Bindepunkt aus slice-072; reine
+Prozess-Doku, kein Release/ADR).
 
 **Vorgänger:** welle-65-handbuch-aufgaben
 ([`slice-072`](../done/slice-072-handbuch-aufgabenorientierung.md) — §4 des
@@ -69,3 +69,4 @@ Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
 | 2026-07-19 | **welle-65-handbuch-aufgaben eröffnet**; slice-072 `open`→`in-progress` (WIP-Slot frei nach welle-64) | Der lange als Backlog geführte §4-Aufgabenorientierungs-Slice wird aufgenommen — nachdem der dpin-Ergonomie-Fix (fälschlich zunächst hierher geroutet, vom Auftraggeber korrigiert) als eigener slice-081 erledigt ist, ist slice-072 wieder **reine §4-Doku** (B-1…B-8, kein Release/ADR). No-Regress via die Handbuch-Test-Harnesse (`docexamples_test`/`handbook_examples_test`) in `make gates` |
 | 2026-07-19 | **welle-65 abgeschlossen**; slice-072 `in-progress`→`done` | §4 des Benutzerhandbuchs aufgabenorientiert nachgezogen (Benutzerhandbuch-Standard §2/§5): der §4.12-`--trace`-Monolith in §4.12–§4.16 aufgetrennt (RTM/Coverage/Modalität/Kreuzverweis, `--print-mk`→§4.16), Grammatik-/Modalitäts-Referenz→§5, „0 Anforderungen"-Fehlerbild→§7, Versions-Prosa→§11, doppelte WAISE-Definition raus; §4.4-Straffung, `citations`-§5-Titel auf Task-Form; Handbuch 1.42. Zwei unabhängige Reviews: Cluster-Review ACCEPT, Abschluss-Gegenprobe BESTANDEN (12 erledigt/2 bewusst-Ref/0 offen). Reine Doku, kein Release/ADR; `make gates` grün (265/0). WIP-Slot wieder frei |
 | 2026-07-19 | **welle-66-release-prep-aufgabenregel eröffnet**; slice-082 in `in-progress/` angelegt (WIP-Slot frei nach welle-65) | slice-072 räumte §4 redaktionell auf, beseitigte aber nicht die **Ursache** (jeder Feature-Slice hängte seine Fähigkeit an §4.12 an, statt eine Aufgabe zu schreiben). Auftraggeber-Entscheid: die billigste dauerhafte Sicherung — eine Release-Prep-Regel „neuer §4-Abschnitt = eigene Aufgabe" — als eigener Folge-Slice, nicht in slice-072 quergeschnitten. Reine Prozess-Doku, kein Release/ADR |
+| 2026-07-19 | **welle-66 abgeschlossen**; slice-082 `in-progress`→`done` | Release-Prep-Regel in releasing.md §Release-Prep Punkt 4: ein neuer Handbuch-§4-Abschnitt für ein Feature ist eine **eigene** Aufgabe (nach Benutzerhandbuch-Standard §5), keine Anhängung — schließt den strukturellen §4-Erosions-Bindepunkt, den slice-072 nur redaktionell umging. Ehrlich unenforced (kein Gate), begründet mit Inline-Fakt (§4.12 wuchs auf ~330 Zeilen/8 Themen). Plan-Review ACCEPT-WITH-NITS eingearbeitet (Faktenfehler + Inline-Fakt-Altitude). Reine Prozess-Doku, kein Release/ADR; `make gates` grün (266/0). WIP-Slot wieder frei |
