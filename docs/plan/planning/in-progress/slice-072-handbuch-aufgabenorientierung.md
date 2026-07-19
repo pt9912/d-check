@@ -1,8 +1,8 @@
 # Slice slice-072: Handbuch — Aufgabenorientierung der §4-Kapitel
 
-**Status:** open (Backlog; noch keiner Welle zugeordnet).
+**Status:** In Arbeit (welle-65).
 
-**Welle:** keine; wartet auf Aufnahme in eine Welle (Roadmap §Nächste Wellen).
+**Welle:** welle-65-handbuch-aufgaben (Trigger: WIP-Slot frei nach welle-64; Nutzer-Aufnahme 2026-07-19).
 
 **Bezug:** Redaktionelle Korrektur des
 [Benutzerhandbuchs](../../../user/benutzerhandbuch.md) gegen den

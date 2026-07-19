@@ -36,7 +36,7 @@ schon ab; dieses Modul macht es allgemein.
 - **Amendment der Netz-Sparsamkeit:** Netz jetzt in `external` **und** `sources` (beide opt-in, nie
   Default); der getippte Netzlos-Modullisten-Test führt `sources` als zweite Netz-Ausnahme.
 - **Abgrenzung:** Currency/„neuerer Tag" bleibt im Bash-Helfer `--check-latest`; der
-  `pins`/dpin-Hash-Ergonomie-Fix bleibt **separat** ([`slice-072`](../open/slice-072-handbuch-aufgabenorientierung.md)) — dieser Slice schneidet nicht quer.
+  `pins`/dpin-Hash-Ergonomie-Fix bleibt **separat** ([`slice-072`](../in-progress/slice-072-handbuch-aufgabenorientierung.md)) — dieser Slice schneidet nicht quer.
 - Begründung/Alternativen in [ADR-0046](../../adr/0046-sources-upstream-content-drift.md).
 
 ## 3. Definition of Done
