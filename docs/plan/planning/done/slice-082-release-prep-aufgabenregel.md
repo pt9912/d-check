@@ -1,6 +1,6 @@
 # Slice slice-082: Release-Prep-Regel — neuer Handbuch-§4-Abschnitt ist eine eigene Aufgabe
 
-**Status:** In Arbeit (welle-66).
+**Status:** Done (welle-66, abgeschlossen 2026-07-19).
 
 **Welle:** welle-66-release-prep-aufgabenregel (Trigger: slice-072-Closure — die
 strukturelle Ursache der §4-Erosion blieb nach der redaktionellen Bereinigung
@@ -100,5 +100,37 @@ gelebten Stil des bestehenden Punkt 4.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_Ausstehend — wird bei Abschluss mit Commit-Hash, Review-Verdikt und Lerneintrag
-gefüllt._
+**Abgeschlossen 2026-07-19** (welle-66, reine Prozess-Doku — kein Release/ADR/CR).
+
+**Umsetzung.** `releasing.md` §Release-Prep Punkt 4 (Prosa-Currency) trägt jetzt
+die §4-Aufgabendisziplin: ein neuer Handbuch-§4-Abschnitt für ein Feature ist
+eine **eigene** Aufgabe (nach Benutzerhandbuch-Standard §5), keine Anhängung an
+eine bestehende Aufgabe — begründet mit dem Inline-Fakt „§4.12 wuchs auf ~330
+Zeilen / 8 Themen", ehrlich „kein Gate erzwingt sie" (Ton des Punkt 4). Schließt
+den strukturellen Erosions-Bindepunkt, den
+[slice-072](slice-072-handbuch-aufgabenorientierung.md) nur redaktionell umging.
+
+**Commits (4).** `c6d3418` (welle-66 eröffnet: Plan + Roadmap-Flip) · `c3bf39f`
+(Plan-Review-Nits) · `9b4dc16` (Umsetzung `releasing.md`) · Closure-Move + dieser
+Body-Commit.
+
+**Review-Verdikt.** Plan-Review = **ACCEPT-WITH-NITS**, beide Nits eingearbeitet:
+① Faktenfehler in §1 (die Erosions-Range stand als „074–081"; korrekt sind die
+von slice-072 §4 / Audit genannten 066/067/068/070/071 + 074–077 — 078–081
+hängten **nicht** an, slice-081 schrieb sogar eine eigene §5-Aufgabe); ② Altitude
+— die Regel begründet sich mit einem **Inline-Fakt** statt einem
+`done/`-Slice-Link (Stil des Punkt 4, spart ids-Linkpflicht + Zeitpunkt-Anker).
+Notiz: Standard §5 ist die maßgebliche Schablone, „Ziel/Vorgehen/Ergebnis" nur
+Merkhilfe.
+
+**Kein Regress.** `make gates` grün (266/0); kein Verhaltens-/Vertragsdelta, kein
+Release.
+
+**Lerneintrag.** (1) Die Regel ist **ehrlich unenforced** — kein Gate erzwingt
+Aufgabenorientierung (Erkenntnis-, keine Laufzeit-Eigenschaft); die
+Release-Prep-Checkliste am realen Anhäng-Bindepunkt ist die billigste dauerhafte
+Sicherung, keine harte Garantie, und benennt das selbst. (2) Der Plan-Review fing
+einen echten Faktenfehler in der Motivations-Prosa **vor** der Umsetzung — die
+tragende Kausal-Behauptung war mit einem Positiv-Gegenbeispiel (slice-081)
+widerlegbar; Lehre: Kausal-Ranges gegen die zitierte Präzedenz querlesen, nicht
+aus dem Gedächtnis setzen.
