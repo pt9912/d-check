@@ -35,7 +35,16 @@ v0.44–v0.47).
 
 **Im Backlog (`next/`):** leer.
 
-**Im Eingang (`open/`), auf Wellen-Einplanung wartend:** leer.
+**Im Eingang (`open/`), auf Wellen-Einplanung wartend:**
+[`slice-083`](../open/slice-083-regelwerk-v500-migration-analyse.md) — Delta-Analyse
+der Baseline-Migration `v1.4.0` → `v5.0.0` mit Etappen-Vorschlag A–D (Vendoring ·
+Modul-Delta lesen · Adaptions-Bereinigung · Form-Konformität). **Analyse zur
+Abnahme**, keine Umsetzung: offen sind der Etappen-Schnitt, der Umgang mit drei
+historischen Verweisen auf den vendorten Alt-Stand und die Form-Frage, ob neue
+Artefakte ab sofort der Baseline-Vorlage folgen. Auslöser: Auftraggeber-Vorgabe
+2026-07-25 (neubasiert 2026-08-01 auf `v5.0.0`, zwei weitere Majors über v3.5.2) —
+vollständige Migration nach `v5.0.0`, der Baseline-Default sticht die repo-lokale
+Adaption.
 
 **Kandidat (noch kein Slice, auf Freigabe wartend):** der **RTM-Generator** (RTM
 aus den Rückwärts-`Bezug`-Kanten erzeugen; von
