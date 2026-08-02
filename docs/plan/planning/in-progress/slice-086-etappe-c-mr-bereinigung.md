@@ -74,13 +74,25 @@ die 11 D-Findings) ist Etappe D.
    `Ersetzt-Baseline-Regel` auf `grundlagen-durchsetzungsschicht`. **Entscheid:**
    (a) alle als **Adaptionen** mit `Ersetzt-Baseline-Regel` führen (empfohlen,
    quell-belegt), oder (b) die Rest-Kandidaten als Forks behalten.
+   → **Entschieden 2026-08-02: (a)** — alle als Adaptionen, **keine Forks**; jeder
+   Eintrag benennt eine `Ersetzt-Baseline-Regel`.
 2. **Nummern-Kollision** (Vorgehen 6, §2.4). Eine `MR`-Nummer ist in der Baseline
    anders belegt als in d-checks aufgelöster Vorgänger-Adaption. **Entscheid:**
    eigene Nummern behalten (Provenienz) oder an die Baseline angleichen.
+   → **Entschieden 2026-08-02: eigene Nummern behalten (Provenienz)** —
+   [`MR-003`](../../../../harness/conventions.md#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh)
+   bleibt der historische Bootstrap-Sensor, das Vendoring bleibt
+   [`MR-023`](../../../../harness/conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)
+   (die Nummern tragen die 173 Links; die Baseline-Nummer ist ein
+   Vorlagen-Beispiel, keine Regel).
 3. **Historie-Provenance-Spec-Bereinigung** (Vorgehen 7 / C-3). Die ADR-/Slice-
    Verweise aus den Spec-§7-Historien entfernen **berührt die kanonische Spec**.
    **Entscheid:** jetzt bereinigen (Baseline-Default sticht) — und ob der interne
    Slice-Bezug nach v5.0.0-Verfahren in die Slice-Closure-Notiz wandert.
+   → **Entschieden 2026-08-02: jetzt bereinigen** — die `matrix.exclude-sections`-
+   Ausnahme für die `spec-straten`-Klasse zurücknehmen, die ADR-/Slice-Verweise aus
+   `spec/spezifikation.md` §7 + `spec/lastenheft.md` §7 entfernen; der externe CR
+   bleibt in der Prosa, der interne Slice-Bezug wandert in die Slice-Closure-Notiz.
 
 ## 4. Definition of Done
 
