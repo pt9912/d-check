@@ -8,12 +8,12 @@
 
 ## Aktuelle Welle
 
-**welle-67-baseline-v500-migration** — die adoptierte Baseline von `v1.4.0` auf
-`v5.0.0` migrieren (abgenommene Analyse
-[`slice-083`](../done/slice-083-regelwerk-v500-migration-analyse.md); Etappen A–D
-je ein Slice). **Etappe A (Vendoring)** =
-[`slice-084`](slice-084-etappe-a-vendoring.md). Reine Harness-/Konventions-Änderung,
-kein Release/ADR.
+**Keine aktive Welle.** welle-67-baseline-v500-migration **läuft** — **Etappe A
+(Vendoring)** abgeschlossen
+([`slice-084`](../done/slice-084-etappe-a-vendoring.md): Baseline-Pin `v1.4.0` →
+`v5.0.0`, beide Bäume committet vendored, Alt-Stand entfernt; unabhängig reviewt,
+abnahmereif). **Etappe B (Modul-Delta lesen)** folgt als nächster Slice. Reine
+Harness-/Konventions-Änderung, kein Release/ADR.
 
 **Vorgänger:** welle-66-release-prep-aufgabenregel
 ([`slice-082`](../done/slice-082-release-prep-aufgabenregel.md) — Release-Prep-Regel
@@ -76,3 +76,4 @@ Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
 | 2026-07-19 | **welle-66-release-prep-aufgabenregel eröffnet**; slice-082 in `in-progress/` angelegt (WIP-Slot frei nach welle-65) | slice-072 räumte §4 redaktionell auf, beseitigte aber nicht die **Ursache** (jeder Feature-Slice hängte seine Fähigkeit an §4.12 an, statt eine Aufgabe zu schreiben). Auftraggeber-Entscheid: die billigste dauerhafte Sicherung — eine Release-Prep-Regel „neuer §4-Abschnitt = eigene Aufgabe" — als eigener Folge-Slice, nicht in slice-072 quergeschnitten. Reine Prozess-Doku, kein Release/ADR |
 | 2026-07-19 | **welle-66 abgeschlossen**; slice-082 `in-progress`→`done` | Release-Prep-Regel in releasing.md §Release-Prep Punkt 4: ein neuer Handbuch-§4-Abschnitt für ein Feature ist eine **eigene** Aufgabe (nach Benutzerhandbuch-Standard §5), keine Anhängung — schließt den strukturellen §4-Erosions-Bindepunkt, den slice-072 nur redaktionell umging. Ehrlich unenforced (kein Gate), begründet mit Inline-Fakt (§4.12 wuchs auf ~330 Zeilen/8 Themen). Plan-Review ACCEPT-WITH-NITS eingearbeitet (Faktenfehler + Inline-Fakt-Altitude). Reine Prozess-Doku, kein Release/ADR; `make gates` grün (266/0). WIP-Slot wieder frei |
 | 2026-08-01 | **welle-67-baseline-v500-migration eröffnet**; slice-084 in `in-progress/` angelegt (WIP-Slot frei nach welle-66) | Abnahme der v5.0.0-Migrations-Analyse (slice-083, nach **drei** Frischkontext-Reviews abnahmereif): die adoptierte Baseline springt `v1.4.0` → `v5.0.0` (zwei Majors — Asset-Umbenennung/3-Straten/8×8-Matrix + grundlagen-Split/konventionen-Entfall). Umsetzung in vier Etappen A–D, **je ein Slice**; Etappe A = Vendoring (slice-084). Reine Harness-/Konventions-Änderung, kein Release/ADR |
+| 2026-08-02 | **welle-67 Etappe A abgeschlossen**; slice-084 `in-progress`→`done` (WIP-Slot frei) | Vendoring auf `v5.0.0`: Skript aufs self-contained Bundle gehoben + beide Bäume vendored; atomare Umschaltung (Pin + 7 Live-Pointer + entfallene Quellzeiger umgeschrieben + Tombstone der 3 eingefrorenen Verweise via geteiltem `ignore-refs`), v1.4.0 entfernt, die Vendoring-/Pin-Hebungs-Adaption im Konventionsspeicher deklariert. Unabhängiger Frischkontext-Review **abnahmereif** (LOW 2/INFO 1, Nits eingearbeitet; LOW-1 Under-Copy-md-Filter + LOW-2a interne `<tag>`-Prosa-Drift → Etappe C). `make gates` grün (271/0) |
