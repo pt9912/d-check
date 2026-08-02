@@ -25,10 +25,10 @@ aufgelöste Einträge → `conventions/done/` (Zustand = Verzeichnis-Position), 
 neuen Pflichtfelder je Eintrag, **Forks reklassifiziert** (nach dem in slice-085
 §3.4 korrigierten Kriterium), entwertete Adaptionen gestrichen/verschmolzen, die
 **173** `conventions.md#mr-…`-Links via **Voll-Slug-Anker-Kompatibilitäts-Block**
-erhalten, die Referenzrichtung gegen die **8×8-Matrix** gestellt und die
-**Historie-Provenance** (C-3) in den Spec-Straten bereinigt. **Nur die
-Konventions-Identität** — die Form-Struktur (Roadmap/Wellen/Artefakte/AGENTS.md,
-die 11 D-Findings) ist Etappe D.
+erhalten und den d-check-`matrix`-Scope gegen die **8×8-Matrix** als bewusste
+Grenze deklariert (C-4). **Nur die Konventions-Identität** — die Form-Struktur
+(die 11 D-Findings) ist Etappe D; die **Historie-Provenance-Enforcement (C-3)** ist
+als Code-Feature in einen **Folge-Produkt-Slice** herausgeschnitten (§3).
 
 ## 2. Vorgehen (slice-083 §2.7 Etappe C, gefüttert durch die C-Findings)
 
@@ -56,11 +56,12 @@ die 11 D-Findings) ist Etappe D.
 6. **Nummern-Kollision** (§2.4) — **Abnahme-Punkt (§3.1)**.
 7. **Prosa entpinnen + Referenzrichtung** — die interne `v1.4.0`-Prosa (slice-084
    LOW-2a: `<tag>=v1.4.0` in den Alt-Einträgen) auf `v5.0.0` ziehen; die
-   Referenzrichtung gegen die **8×8-Matrix** stellen (C-4: Scope-Entscheid) und die
-   **Historie-Provenance-Ausnahme** (C-3) für die `spec-straten`-Klasse aus
-   `.d-check.yml` `matrix.exclude-sections` zurücknehmen **+** die ADR-/Slice-Verweise
-   aus `spec/spezifikation.md` §7 und `spec/lastenheft.md` §7 entfernen —
-   **Abnahme-Punkt (§3.1, berührt kanonische Spec)**.
+   Referenzrichtung gegen die **8×8-Matrix** stellen und den d-check-`matrix`-Scope
+   (Spec-Decke + markierte ADR→Slice-Kante) als **bewusste Grenze** in der
+   Referenzrichtungs-Adaption deklarieren (C-4; die Planungs-Kanten ADR→{Carveout,
+   Welle,Roadmap}/Slice→Roadmap bleiben unbewacht, dokumentiert). **Die
+   Historie-Provenance-Enforcement (C-3) ist herausgeschnitten** (§3 Abnahme-Punkt
+   3 → Folge-Produkt-Slice).
 8. **Gate** — `make gates` + `make adr-check` grün; die neuen `conventions/`-Dateien
    erfüllen die `ids`-Linkpflicht; **keine** `Accepted`-ADR inhaltlich berührt (die
    173 Links via Anker-Block, die eingefrorene ADR-Alt-Pfad-Fundstelle via den
@@ -89,10 +90,14 @@ die 11 D-Findings) ist Etappe D.
    Verweise aus den Spec-§7-Historien entfernen **berührt die kanonische Spec**.
    **Entscheid:** jetzt bereinigen (Baseline-Default sticht) — und ob der interne
    Slice-Bezug nach v5.0.0-Verfahren in die Slice-Closure-Notiz wandert.
-   → **Entschieden 2026-08-02: jetzt bereinigen** — die `matrix.exclude-sections`-
-   Ausnahme für die `spec-straten`-Klasse zurücknehmen, die ADR-/Slice-Verweise aus
-   `spec/spezifikation.md` §7 + `spec/lastenheft.md` §7 entfernen; der externe CR
-   bleibt in der Prosa, der interne Slice-Bezug wandert in die Slice-Closure-Notiz.
+   → **Revidiert 2026-08-02 (nach Messung): in einen Folge-Produkt-Slice
+   herausgeschnitten.** Die Messung (`exclude-sections` testweise entfernt) zeigte:
+   `matrix.exclude-sections` ist **global**, nicht pro Klasse — global entfernen
+   bräche **65 Befunde in `Accepted`-immutablen ADRs** (0022–0046, deren
+   `Geschichte` Slices als marker-lose Provenance nennt). C-3 braucht ein
+   **d-check-Code-Feature** (per-Klasse/-Pfad exclude-sections) **+** die gekoppelte
+   Spec-§7-Bereinigung → eigener Produkt-Slice (CR + ADR + Slice am `matrix`-Modul),
+   **nicht** diese Doc-Migrations-Etappe C. Die anderen zwei Entscheide bleiben.
 
 ## 4. Definition of Done
 
@@ -101,8 +106,9 @@ die 11 D-Findings) ist Etappe D.
   `harness/conventions/MR-<NNN>-<titel>.md`, aufgelöste unter `conventions/done/`.
 - [ ] Neue Pflichtfelder je Eintrag; Forks reklassifiziert (Abnahme-Punkt 1);
   entwertete gestrichen/verschmolzen; Nummern-Kollision aufgelöst (Abnahme-Punkt 2).
-- [ ] Referenzrichtung gegen die 8×8-Matrix gestellt; Historie-Provenance-Ausnahme
-  zurückgenommen + Spec-§7 bereinigt (Abnahme-Punkt 3).
+- [ ] Referenzrichtung gegen die 8×8-Matrix gestellt; d-check-`matrix`-Scope als
+  bewusste Grenze deklariert (C-4). (C-3-Enforcement herausgeschnitten →
+  Folge-Produkt-Slice, Abnahme-Punkt 3.)
 - [ ] Die 173 `conventions.md#mr-…`-Links lösen auf (Anker-Block); **keine**
   `Accepted`-ADR inhaltlich berührt.
 - [ ] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
