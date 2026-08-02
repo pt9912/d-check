@@ -204,11 +204,18 @@ erst nach Prüfung des Flotten-Stands (Etappe B) sicher.
   *aufgelösten* — Adaption, und ein aufgelöster Eintrag liest sich wie ein
   geltender. **d-check trifft das hart:** die 23 Einträge (die Adoptions-Erklärung
   + 22 Adaptionen/Forks) liegen heute inline als Prosa in **einer** `conventions.md`.
-  **Anker-Kaskade (Review-F-2):** der Split verlagert die `### MR-NNN`-Anker aus
-  `conventions.md` — **173** bestehende `conventions.md#mr-NNN`-Links in **57** Dateien
-  (12 in Accepted-**immutablen** ADRs) würden brechen. **Gegenmittel** (Etappe C): die
-  Index-Tabelle behält je Adaption einen `<a id="mr-NNN">`-Anker, sodass die Links
-  **ohne Retarget** auflösen — insbesondere **ohne** die 12 immutablen ADRs anzufassen.
+  **Anker-Kaskade (Review-F-2/N-1):** der Split verlagert die `### MR-…`-Heading-Anker
+  aus `conventions.md` — **173** `conventions.md#mr-…`-Links in **57** Dateien würden
+  brechen; **12** liegen in Accepted-**immutablen** ADRs (nicht editierbar), und
+  **zehn** dieser ADR-Links zeigen auf **nicht-aktive** MRs (aufgelöst/entfällt/
+  verschmilzt), deren Anker aus dem Index verschwinden. Die Links sind **Voll-Slug**
+  (`#mr-NNN--voller-titel-slug`, nicht kurz `#mr-NNN`). **Gegenmittel** (Etappe C):
+  `conventions.md` behält je **von immutabler/eingefrorener Doku referenziertem** MR
+  einen **Voll-Slug-`<a id>`-Anker** — **auch für die aufgelösten** — in einem eigenen
+  **Anker-Kompatibilitäts-Block** (unabhängig vom aktiv-/`done/`-Schnitt), sodass alle
+  173 Links **ohne Retarget und ohne ADR-Edit** auflösen. Das ist eine d-check-
+  **migrationsspezifische** Maßnahme (ein frisches v5.0.0-Repo hat keine Alt-Links) und
+  wird als eigener `MR`-Eintrag deklariert.
   **Nebeneffekt:** erst die Einzeldatei-Form macht
   die Append-only-Disziplin *pinbar* — d-checks `immutable`/`vcs`-Module können dann
   je Eintrag gegen Core-Drift wachen, was eine Sammeldatei nicht kann.
@@ -389,10 +396,17 @@ dass B–D belegbar gegen die Quelle arbeiten.
    Adaption**); in `conventions.md`
    bleibt der **Index** (Adoptions-Erklärung + eine Zeile je aktiver Adaption);
    aufgelöste Einträge per `git mv` nach `conventions/done/` (Zustand =
-   Verzeichnis-Position). **Anker-Erhalt (Review-F-2):** jede Index-Zeile trägt
-   einen `<a id="mr-NNN">`-Anker, damit die **173** bestehenden
-   `conventions.md#mr-NNN`-Links (57 Dateien, 12 immutable ADRs) **ohne Retarget**
-   auflösen — kein Editieren der Accepted-ADRs.
+   Verzeichnis-Position). **Anker-Erhalt (Review-F-2/N-1):** `conventions.md` behält
+   je referenziertem MR einen **Voll-Slug**-`<a id="mr-NNN--voller-titel-slug">`-Anker
+   — für **alle** von immutabler/eingefrorener Doku verlinkten MRs, **auch die
+   aufgelösten/entfallenen** (zehn der zwölf immutablen ADRs zeigen auf nicht-aktive
+   MRs; **plus** die nur von eingefrorenen **Review-Reports** referenzierten wie
+   `mr-015`/`mr-016` — das **Inventar** ist repo-weit über **alle** eingefrorene Doku:
+   ADRs, `done/`-Slices **und** `docs/reviews/`, das `anchors` ebenfalls prüft, nicht
+   nur die ADRs), als eigener **Anker-Kompatibilitäts-Block** **unabhängig** vom aktiv-/`done/`-
+   Schnitt der Index-Zeilen — damit Schritt 5 (Streichen/Verschieben) die Anker nicht
+   mitnimmt. So lösen die **173** `#mr-…`-Voll-Slug-Links **ohne Retarget, ohne
+   ADR-Edit** auf; der Block wird als eigener `MR` deklariert (migrationsspezifisch).
 3. **Neue Pflichtfelder** je Eintrag (§2.3): `Ersetzt-Baseline-Regel` (genau **eine**
    v5.0.0-Regel, Anker-Link in den vendored Baum), `Status: Accepted`, und für
    Ablösungen `Löst auf` + `Ausgelöst durch Baseline-Stand` bzw. `(schärft …)` im Titel.
@@ -411,9 +425,11 @@ dass B–D belegbar gegen die Quelle arbeiten.
 8. **Gate** — `make gates` + `make adr-check` grün; die neuen `conventions/`-Dateien
    erfüllen die `ids`-Linkpflicht (jeder `MR`-Verweis verlinkt) und sind — sobald
    `Accepted` — je Datei gegen Core-Drift **pinbar**. Keine `Accepted`-ADR wird
-   inhaltlich berührt: die 173 `#mr-NNN`-Links bleiben via **Index-Anker** gültig
-   (Schritt 2), die eingefrorene ADR-Fundstelle via **Tombstone** aus A6 — genau
-   die zwei Mechaniken, ohne die C8s Zusage nicht erreichbar wäre.
+   inhaltlich berührt: die 173 `#mr-…`-Voll-Slug-Links bleiben via den
+   **Anker-Kompatibilitäts-Block** gültig (Schritt 2 — auch für die aufgelösten,
+   von immutabler Doku referenzierten MRs), die eingefrorene ADR-Fundstelle auf den
+   Alt-Regelwerk-Pfad via **Tombstone** aus A6 — die zwei Mechaniken, ohne die C8s
+   Zusage nicht erreichbar wäre.
 
 #### Etappe D — Form-Konformität (die Struktur).
 
