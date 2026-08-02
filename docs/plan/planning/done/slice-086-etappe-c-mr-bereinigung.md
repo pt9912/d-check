@@ -1,6 +1,6 @@
 # Slice slice-086: Regelwerk-Migration Etappe C — MR-Bereinigung + Datei-Migration
 
-**Status:** In Arbeit (welle-67).
+**Status:** Done (welle-67, Etappe C abgeschlossen 2026-08-02).
 
 **Welle:** welle-67-baseline-v500-migration (dritte Umsetzungs-Etappe, nach
 [slice-085](../done/slice-085-etappe-b-modul-delta.md)).
@@ -101,17 +101,26 @@ als Code-Feature in einen **Folge-Produkt-Slice** herausgeschnitten (§3).
 
 ## 4. Definition of Done
 
-- [ ] `conventions.md` = Index (Adoptions-Erklärung + Zeile je aktiver Adaption) +
-  Anker-Kompatibilitäts-Block; je Adaption eine Datei
-  `harness/conventions/MR-<NNN>-<titel>.md`, aufgelöste unter `conventions/done/`.
-- [ ] Neue Pflichtfelder je Eintrag; Forks reklassifiziert (Abnahme-Punkt 1);
-  entwertete gestrichen/verschmolzen; Nummern-Kollision aufgelöst (Abnahme-Punkt 2).
-- [ ] Referenzrichtung gegen die 8×8-Matrix gestellt; d-check-`matrix`-Scope als
-  bewusste Grenze deklariert (C-4). (C-3-Enforcement herausgeschnitten →
+- [x] `conventions.md` = Index (Adoptions-**Pointer** + Zeile je aktiver Adaption);
+  je Adaption eine Datei `harness/conventions/MR-<NNN>-<titel>.md`, aufgelöste unter
+  `conventions/done/`. **Form-Delta ggü. Plan:** die Voll-Slug-Anker sind in die
+  Index-Zeilen **gefaltet** (kein Sonderblock, §8); vollständiger Template-Abgleich
+  gegen `conventions.template.md` (Purpose · Baseline · Adoptierte-Pointer ·
+  Adaptions-Block: Inline-Baseline-Aussage + `### Aktive`/`### Aufgelöste` ·
+  Zusatzklassen · Modus).
+- [x] Neue Pflichtfelder je Eintrag (`Ersetzt-Baseline-Regel`/`Aufgelöst durch`,
+  `Status: Accepted`); Forks reklassifiziert → **keine** (Abnahme-Punkt 1a);
+  entwertetes `§Anforderungs-Anlege-Prozess`-Duplikat **gelöscht** (Baseline-Deckung
+  `modul-03-spec`, §8); Nummern-Kollision: eigene Nummern behalten (Abnahme-Punkt 2).
+- [x] Referenzrichtung gegen die 8×8-Matrix gestellt; d-check-`matrix`-Scope als
+  bewusste Grenze in der Referenzrichtungs-Adaption deklariert (C-4). (C-3-Enforcement
+  herausgeschnitten →
   Folge-Produkt-Slice, Abnahme-Punkt 3.)
-- [ ] Die 173 `conventions.md#mr-…`-Links lösen auf (Anker-Block); **keine**
-  `Accepted`-ADR inhaltlich berührt.
-- [ ] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
+- [x] Die `conventions.md#mr-…`-Links lösen auf (gefaltete Index-Anker; **188**
+  statt der geplanten 173 gemessen); **keine** `Accepted`-ADR inhaltlich berührt
+  (verifiziert über den vollen slice-086-Bereich).
+- [x] `make gates` + `make adr-check` grün; umfangreicher Nutzer-Live-Template-
+  Abgleich **+** unabhängiger Frischkontext-Review (abnahmereif, 4 LOW eingearbeitet).
 
 ## 5. Risiken / offene Punkte
 
@@ -135,4 +144,58 @@ ohne Brownfield-Spec.
 
 ## 8. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Umgesetzt: `harness/conventions.md` von der Inline-Sammeldatei (895 Zeilen) auf die
+v5.0.0-**Default-Form** (Index + Datei je Adaption) gehoben — **8 aktive** Einträge
+unter `harness/conventions/`, **15 aufgelöste** unter `harness/conventions/done/`,
+jeder mit den neuen Pflichtfeldern (`Ersetzt-Baseline-Regel` bzw. `Aufgelöst durch`,
+`Status: Accepted`). Der Index folgt jetzt vollständig `conventions.template.md`:
+Purpose · Baseline · **Adoptierte als Pointer** (keine Wiederholung) · Adaptions-Block
+(Inline-Baseline-Aussage + `### Aktive`/`### Aufgelöste`-Tabellen) · Zusatzklassen ·
+Modus.
+
+**Design-Evolution ggü. dem Plan (Vorgehen 2), getrieben durch den Nutzer-Live-Review:**
+
+- **Anker gefaltet statt Sonderblock.** Der geplante separate
+  „Anker-Kompatibilitäts-Block" entfiel; die Voll-Slug-`<a id>`-Anker liegen **in den
+  Index-Zeilen** (aktiv wie aufgelöst). `anchors` prüft nur `anchor-missing` (kein
+  Duplikat-Check), also tragen die Zeilen-Anker die Links ohne Sonderabschnitt —
+  schlanker und ohne redundante Struktur.
+- **§Anforderungs-Anlege-Prozess gelöscht statt migriert.** Der Block duplizierte die
+  Baseline (`modul-03-spec`: Akzeptanzkriterien-Trias, CR-Verfahren, „ADR schärft
+  Spec, nicht Lastenheft") — nach dem „keine Wiederholung"-Prinzip **entfernt**; die
+  vier eingefrorenen Verweise darauf auf [`AGENTS.md`
+  §5](../../../../AGENTS.md#5-dokumentations-regeln) retargetet (Etappe-A-Muster:
+  eingefrorene Doku via Retarget/Tombstone, nicht editieren).
+- **`ids`-target auf `harness/conventions/` gezogen** — die MR-Nennungen in den nun
+  ausgelagerten Dateien erfüllen die Linkpflicht „im target".
+
+**Zahlen-Korrektur:** der Plan nannte **173** `conventions.md#mr-…`-Links; gemessen
+sind es **188** (12 immutable ADRs) — alle erhalten, **keine `Accepted`-ADR**
+inhaltlich berührt (über den vollen slice-086-Bereich verifiziert).
+
+**Abnahme-Punkte:** (1a) alle Adaptionen, **keine Forks**; (2) eigene Nummern behalten
+(Provenienz); (3) **revidiert** — die Historie-Provenance-Spec-Bereinigung (C-3) ist
+in einen **Folge-Produkt-Slice** herausgeschnitten: die Messung zeigte
+`matrix.exclude-sections` **global** (nicht pro Klasse), globales Entfernen bräche 65
+Befunde in immutablen ADRs → braucht ein d-check-**Code-Feature** (per-Klasse/-Pfad-
+`exclude-sections`) **+** die gekoppelte Spec-§7-Bereinigung (CR + ADR + Slice am
+`matrix`-Modul). Der C-4-Scope (Spec-Decke + markierte ADR→Slice-Kante, nicht die
+volle 8×8-Matrix) ist in der Referenzrichtungs-Adaption deklariert.
+
+**Reviews:** ein **umfangreicher Nutzer-Live-Template-Abgleich** fing mehrere
+Template-Abweichungen des ersten Wurfs (Purpose-Wortlaut nicht übernommen · §Adoptierte
+forensisch statt Pointer · Anker-Block redundant · §Anforderungs-Duplikat · eine
+Fehlklassifikation aktiv/aufgelöst) — alle geheilt; danach **unabhängiger
+Frischkontext-Review** (`docs/reviews/2026-08-02-slice-086-etappe-c-review.md`):
+abnahmereif, HIGH 0 / MEDIUM 0 / LOW 4 / INFO 2, die 4 LOW eingearbeitet. `make gates`
++ `make adr-check` grün.
+
+**Lehre:** `conventions.md` gegen `conventions.template.md` **abgleichen** ist
+Pflichtteil einer Baseline-Hebung — nicht nur der MR-Datei-Split. Die Template-Form
+(Pointer statt Wiederholung, `###`-Subsektionen, keine Baseline-Duplikate) ist Prüfstoff
+für sich.
+
+**Anschluss:** **Etappe D** (Form-Konformität: Roadmap-5-Abschnitte,
+Welle-Closure-Artefakte, `observations.md`, `AGENTS.md`↔Template,
+Review-Report-Kopffelder, reviewer.md-Currency) offen; der C-3-Folge-Produkt-Slice
+separat.
