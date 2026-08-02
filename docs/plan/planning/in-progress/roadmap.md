@@ -9,10 +9,18 @@
 ## Aktuelle Welle
 
 **welle-67-baseline-v500-migration** — **Etappe D (Form-Konformität), als Mini-Welle
-geschnitten** = [`slice-088`](slice-088-etappe-d1-doc-form.md) (Doc-Form:
-Roadmap-Abschnitte [D-1], AGENTS.md [D-11], ADR-Trigger-Konvention [D-8]), gefolgt von
-slice-089 (Review-Infrastruktur D-6/D-7/D-10), slice-090 (Wellen-Lifecycle +
-Beobachtungs-Register D-2/D-3/D-4/D-9) und slice-091 (Slice-`Status:`-Feld D-5).
+geschnitten** = [`slice-088`](slice-088-etappe-d1-doc-form.md) (**Planning-Layer-Form**:
+Wellendokument + Beobachtungs-Register + Roadmap-Abschnitte + Slice-Vorprüfungen +
+Carveout-Audit, D-1/D-2/D-3/D-4/D-9), gefolgt von slice-089 (Doc-Form: AGENTS.md +
+ADR-Trigger, D-8/D-11), slice-090 (Review-Infrastruktur D-6/D-7/D-10) und slice-091
+(Slice-`Status:`-Feld D-5).
+
+- **Slice-IDs:** 088–091 (Etappe D). **Start-Trigger:**
+  [`slice-087`](../done/slice-087-spec-historie-referenzrichtung.md) in `done/`.
+  **Closure-Kriterien:** alle Etappe-D-Slices in `done/` **und** `make gates` +
+  `make adr-check` grün. Welle-Details:
+  [Wellendokument](../welle-67-baseline-v500-migration.md).
+
 Etappen A–C + C-3-Nachzug abgeschlossen
 ([`slice-084`](../done/slice-084-etappe-a-vendoring.md),
 [`slice-085`](../done/slice-085-etappe-b-modul-delta.md),
@@ -90,3 +98,4 @@ Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
 | 2026-08-02 | **welle-67 slice-087 eröffnet** (Spec-§7-Referenzrichtung, C-3-Nachzug) | Die aus slice-086 §3 Abnahme-Punkt 3 herausgeschnittene C-3-Konformität — **korrigiert:** kein Code-Feature nötig (die Heading-Namen `Geschichte` [46 ADRs] und `7. Historie` [2 Spec-Straten] trennen ADR-/Spec-Provenance schon selektiv), sondern `matrix.exclude-sections` auf `Geschichte` verengen + Spec §7 beider Straten ent-tokenisieren + begleitende ADR (Supersede-Verfeinerung der matrix-Referenzrichtung ggü. der v1.4.0-Historie-Ausnahme). Reine Harness-/Spec-Konformität, kein Release |
 | 2026-08-02 | **welle-67 slice-087 abgeschlossen**; `in-progress`→`done` (WIP-Slot frei) | Spec-§7-Referenzrichtung v5.0.0-konform: `spec/spezifikation.md` §7 + `spec/lastenheft.md` §7 entkoppelt (Verweis-Spalte entfernt; slice-Token + neun adr-Abwärtslinks aus der Änderungs-Prosa raus, §7 bleibt lesbare Chronik), `matrix.exclude-sections` von `[Historie, "7. Historie", Geschichte]` auf `[Geschichte]` verengt (nur die immutable ADR-Geschichte bleibt exempt; §7 ab jetzt fail-closed geprüft, live verifiziert). Begleitende ADR Accepted (Supersede-Verfeinerung; die referenzierte immutable ADR byte-identisch). Korrigierte die slice-086-Annahme „braucht ein Code-Feature". Unabhängiger Review abnahmereif (ein LOW/ein INFO eingearbeitet). `make gates` + `make adr-check` grün, kein Release |
 | 2026-08-02 | **welle-67 Etappe D eröffnet als Mini-Welle**; slice-088 in `in-progress/` | Etappe D (Form-Konformität, 11 D-Findings aus slice-085 §3) in vier thematische Slices geschnitten (Nutzer-Entscheid): slice-088 Doc-Form (D-1 Roadmap-Abschnitte / D-8 ADR-Trigger / D-11 AGENTS.md), slice-089 Review-Infrastruktur (D-6/D-7/D-10), slice-090 Wellen-Lifecycle + Beobachtungs-Register (D-2/D-3/D-4/D-9), slice-091 Slice-Status-Feld (D-5). slice-088 trägt die mechanische Doc-Form + den Abnahme-Punkt D-1 (Ruhe-Marker ↔ Template). Reine Harness-/Prozess-Doku |
+| 2026-08-02 | **Etappe D neu geordnet**: slice-088 auf **Planning-Layer-Form** umgewidmet (D-1/D-2/D-3/D-4/D-9 statt Doc-Form); Doc-Form (D-8/D-11) → slice-089 | Auslöser: welle-67 lief ohne ihr Baseline-Wellendokument (Nutzer-Hinweis) — Roadmap-Form (D-1), Wellen-Lifecycle (D-2) und Beobachtungs-Register (D-3) sind EIN kohärenter Planning-Layer und gehören zuerst; die laufende Welle wird konform dokumentiert (`welle-67-baseline-v500-migration.md` flach angelegt, `observations.md` als stehendes Register mit `— keine —`). Review-Infrastruktur (D-6/D-7/D-10) → slice-090, Slice-Status (D-5) → slice-091 |
