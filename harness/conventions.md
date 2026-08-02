@@ -3,19 +3,23 @@
 ## Purpose
 
 Diese Datei deklariert die *repo-lokalen* Strukturregeln dieses Repos
-gegenüber der adoptierten Harnesskonvention (Baseline):
+gegenüber der adoptierten Harnesskonvention (Baseline). Sie ist der
+Default-Ort für:
 
 - **Adaptionen** ggü. der Baseline (mit Begründung und Auflösungs-Trigger).
-- **ID-Schema-Deklaration** — welches Präfix-Schema dieses Repo nutzt
-  ([`MR-008`](#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage)).
-- **Zusatzklassen-Deklarationen** für die Sensors-Bindung.
+- **ID-Schema-Deklaration** — welches Präfix-Schema dieses Repo nutzt.
+  Der Baseline-Default wird als Teil der [`MR-000`](#mr-000--baseline-aussage)-Aussage
+  festgehalten; ein abweichendes Präfix oder Schema ist ein eigener `MR`-Eintrag.
+- **Zusatzklassen-Deklarationen** für repo-spezifische
+  Bindung-Klassen in der Sensors-Tabelle, die über die vier kanonischen
+  hinausgehen (ADR, Carveout, Schwelle, Reproduzierbarkeit).
 - **Modus-Deklarationen** pro Sub-Area (Greenfield / Brownfield /
   Hybrid) inklusive Konvergenz-Auftrag bei BF.
 
-Bei Konflikt zwischen dieser Datei und einer kanonischen Quelle gilt
-die kanonische Quelle (Source Precedence, siehe
-[`README.md`](README.md)). Diese Datei ist konformitätsbringend für
-*Form*-Fragen, nicht autoritativ über Inhalt.
+Bei Konflikt zwischen dieser Datei und einer kanonischen Quelle gilt die
+kanonische Quelle (Source Precedence, [`harness/README.md`](README.md#source-precedence)).
+Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
+über Inhalt.
 
 ## Baseline
 
