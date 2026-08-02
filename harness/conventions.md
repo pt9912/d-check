@@ -818,6 +818,43 @@ die kanonische Quelle (Source Precedence, siehe
   der internen, noch auf `v1.4.0` lautenden Beispieltexte (`aktueller <tag> =
   v1.4.0` in MR-017/019, `…/v1.4.0/…` in MR-021).
 
+## Anker-Kompatibilität (Baseline-Migration v5.0.0)
+
+<!--
+Migrationsspezifischer Kompatibilitäts-Block (welle-67, Etappe C): Mit dem Umzug
+der Adaptionen aus dem Inline-Adaptions-Block in Einzeldateien verlassen die
+MR-Heading-Anker diese Datei. 188 conventions.md-Voll-Slug-Links in 57 Dateien
+(darunter 12 immutable ADRs und done-Slices) wuerden brechen. Dieser Block haelt
+je referenziertem MR — auch den aufgeloesten — einen Voll-Slug-Anker, sodass alle
+Links ohne Retarget und ohne ADR-Edit aufloesen. Ein frisches v5.0.0-Repo braucht
+ihn nicht.
+-->
+
+<a id="mr-000--baseline-aussage"></a>
+<a id="mr-001--source-precedence-mit-eigener-spezifikations-schicht"></a>
+<a id="mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung"></a>
+<a id="mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh"></a>
+<a id="mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild"></a>
+<a id="mr-005--härtung-ggü-b-cad-inhaltsbasierter-gate-nachweis-sub-shell-prüfung"></a>
+<a id="mr-006--referenzrichtung-spec-straten-verweisen-nie-abwärts-auf-adrs"></a>
+<a id="mr-007--auflösung-von-mr-003-doc-check-als-dogfooding"></a>
+<a id="mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage"></a>
+<a id="mr-009--source-precedence-ohne-docsuser-rang"></a>
+<a id="mr-010--auflösung-von-mr-009-docsuser-rang-eingefügt"></a>
+<a id="mr-011--baseline-auf-release-tag-gepinnt"></a>
+<a id="mr-012--baseline-pin-hebung-nachtrag-zu-mr-011"></a>
+<a id="mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise"></a>
+<a id="mr-014--slice-adr-doc-struktur-repo-haus-stil-ggü-baseline-template"></a>
+<a id="mr-015--auflösung-der-mr-012-pointer-drift-agentsmd-routet-spiegelt-nicht-mehr"></a>
+<a id="mr-016--baseline-pin-hebung-zweiter-nachtrag-zu-mr-011"></a>
+<a id="mr-017--lokale-baseline-lese-form-cache-aus-dem-selbst-scan-ausgenommen"></a>
+<a id="mr-018--d-check-verkörpert-als-producer-self-hoster-keine-templates"></a>
+<a id="mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017"></a>
+<a id="mr-020--baseline-template-propagation-per-drift-audit-template-frei-bestätigt"></a>
+<a id="mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden"></a>
+<a id="mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019"></a>
+<a id="mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout"></a>
+
 ## Anforderungs-Anlege-Prozess
 
 Neue oder geänderte `DC-*`-Anforderungen entstehen **nur** in
