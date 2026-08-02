@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-19.
+**Status:** Aktiv. **Letzte Änderung:** 2026-08-02.
 
 **Form:** folgt [Kurs-Modul 6](../../../../.harness/baseline/v5.0.0/regelwerk/modul-06-roadmap.md).
 
@@ -29,24 +29,6 @@ Etappen A–C + C-3-Nachzug abgeschlossen
 Migrations-Abschnitt der welle-67** — danach schließt sie. Reine Harness-/Prozess-Doku,
 kein Release.
 
-**Vorgänger:** welle-66-release-prep-aufgabenregel
-([`slice-082`](../done/slice-082-release-prep-aufgabenregel.md) — Release-Prep-Regel
-„neuer Handbuch-§4-Abschnitt = eigene Aufgabe", reine Prozess-Doku). Davor
-welle-65-handbuch-aufgaben
-([`slice-072`](../done/slice-072-handbuch-aufgabenorientierung.md) — §4 des
-Benutzerhandbuchs aufgabenorientiert (§4.12-Monolith in §4.12–§4.16 aufgetrennt),
-**Handbuch 1.42**, reine Doku). Davor welle-64-dpin-ergonomie
-([`slice-081`](../done/slice-081-pins-hash-ergonomie.md) — `pins`/dpin voller Ist-Hash im
-`link-stale`-Befund, **v0.51.1**). Davor welle-63-sources
-([`slice-080`](../done/slice-080-sources-modul.md) — 19. Modul `sources`,
-[ADR-0046](../../adr/0046-sources-upstream-content-drift.md) `Accepted`, **v0.51.0**).
-Davor welle-62-zitat-verifikation
-([`slice-079`](../done/slice-079-zitat-verifikation.md) — 18. Modul `citations`,
-[ADR-0045](../../adr/0045-zitat-verifikation-codepaths-erweiterung-und-citations-modul.md)
-`Accepted`, **v0.50.0**). Davor welle-61-referenz-ventil-quell-skopus
-([`slice-078`](../done/slice-078-ignore-refs-quell-skopus.md), **v0.49.0**) und die
-welle-60-Kette ([`slice-071`](../done/slice-071-trace-cross-consistency-gate.md)/073/075/076,
-v0.44–v0.47).
 
 ## Nächste Wellen
 
@@ -68,6 +50,49 @@ Platzhaltern auf stdout ausgibt (Familie `--print-config`/`--print-mk`/
 (`DC-FA-CLI-*` im Lastenheft) + Slice + Spezifikation-`.a`, **kein** ADR (additive
 CLI-Ausgabe). Anlass: Nutzer-Frage 2026-07-04 zum Nachbau von `version.md` in
 Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
+
+## Meilensteine
+
+Extern beobachtbare Zustände, **orthogonal** zur Welle: die Welle endet durch
+Closure-Kriterien (intern), der Meilenstein durch externe Bestätigung. d-check liefert
+**kontinuierlich** — jeder Modul-Release ist ein eigener extern-beobachtbarer Zustand
+(GHCR-Tag + Handbuch-Version) **neben** der jeweiligen Welle, nicht ein gebündelter
+Roadmap-Meilenstein. Die Release-Versionen je Welle stehen im Closure-Log unten.
+
+| Meilenstein | Welle(n) | Trigger | Status |
+|---|---|---|---|
+| — keine offenen — | | | |
+
+## Abhängigkeitsgraph
+
+Die Abhängigkeit einer geplanten Welle steht als beobachtbare Bedingung in der
+`Trigger`-Spalte (§Nächste Wellen) **und** als gerichtete Kante hier. d-checks Wellen
+sind weitgehend **unabhängig** (nach Kapazität sequenziert, nicht durch eine
+Vorgängerin blockiert); derzeit gibt es **keine** geplante Folge-Welle → keine
+Phantom-Welle.
+
+```mermaid
+flowchart LR
+    W67["welle-67 - baseline-v500-migration (laeuft)"]
+```
+
+## Abgeschlossene Wellen
+
+Das Closure-Log (ruhender Audit-Bestand). **Vor welle-60** liefen die Wellen vor der
+Lifecycle-Adoption; ihre Belege liegen in den Slice-`done/`-Dateien und in git. Ab
+welle-60 sind minimale, retroaktiv nachgezogene Ergebnis-Notizen verlinkt (slice-088);
+welle-67 wandert bei ihrer Closure hierher.
+
+| Welle | Abschluss | Closure-Notiz |
+|---|---|---|
+| welle-66-release-prep-aufgabenregel | 2026-07-19 | [`welle-66-results.md`](../done/welle-66-results.md) |
+| welle-65-handbuch-aufgaben | 2026-07-19 | [`welle-65-results.md`](../done/welle-65-results.md) |
+| welle-64-dpin-ergonomie | 2026-07-19 | [`welle-64-results.md`](../done/welle-64-results.md) |
+| welle-63-sources | 2026-07-19 | [`welle-63-results.md`](../done/welle-63-results.md) |
+| welle-62-zitat-verifikation | 2026-07-18 | [`welle-62-results.md`](../done/welle-62-results.md) |
+| welle-61-referenz-ventil-quell-skopus | 2026-07-18 | [`welle-61-results.md`](../done/welle-61-results.md) |
+| welle-60 (Kette slice-071/073/075/076) | 2026-07-17 | [`welle-60-results.md`](../done/welle-60-results.md) |
+
 
 ## Historische Trigger-Verschiebungen
 
