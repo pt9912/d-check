@@ -814,7 +814,9 @@ die kanonische Quelle (Source Precedence, siehe
   eigene Etappen.
 - **Auflösungs-Trigger:** die Konventionsspeicher-Migration (spätere Etappe)
   fasst diese MR in die Datei-je-MR-Form und gleicht die
-  MR-017/018/019/022-Prosa vollständig auf das v5.0.0-Layout an.
+  MR-017/018/019/021/022-Prosa vollständig auf das v5.0.0-Layout an — inklusive
+  der internen, noch auf `v1.4.0` lautenden Beispieltexte (`aktueller <tag> =
+  v1.4.0` in MR-017/019, `…/v1.4.0/…` in MR-021).
 
 ## Anforderungs-Anlege-Prozess
 

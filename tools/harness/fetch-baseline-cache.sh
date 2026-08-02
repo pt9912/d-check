@@ -152,7 +152,7 @@ check_latest() {
     local td; td="$(mktemp -d)"
     local url="https://github.com/${repo}/releases/download/${tag}/lab-regelwerk.zip"
     if curl -fsSL -o "${td}/lab-regelwerk.zip" "$url" 2>/dev/null \
-       && src_n=0 extract_both_trees "${td}/lab-regelwerk.zip" "${td}/vendored" 2>/dev/null; then
+       && extract_both_trees "${td}/lab-regelwerk.zip" "${td}/vendored" 2>/dev/null; then
       local up ve
       up="$( { cd "${td}/vendored" && find regelwerk templates -type f | LC_ALL=C sort | xargs sha256sum; } 2>/dev/null | LC_ALL=C sort )"
       ve="$( LC_ALL=C sort < "$sums" )"
