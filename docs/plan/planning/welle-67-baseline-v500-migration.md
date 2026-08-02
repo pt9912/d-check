@@ -63,8 +63,11 @@ und `make gates` + `make adr-check` grün sind — bei erhaltener 188-Link-Integ
 - **Kein Produkt-Release, kein neues Produkt-Feature.** Reine Harness-/Spec-/
   Konventions-Konformität (die einzige Ausnahme wäre gewesen ein C-3-Code-Feature —
   entfiel, weil die Heading-Namen bereits selektiv trennen; siehe slice-087).
-- **Kein retroaktives Wellen-Lifecycle für frühere Wellen** (welle-01…welle-66): dieses
-  Wellendokument ist der Neu-Anfang der Lifecycle-Adoption, kein Backfill.
+- **Kein retroaktives Wellen-*Plandokument* für frühere Wellen** (welle-01…welle-66):
+  dieses Wellendokument ist der Neu-Anfang der Lifecycle-Adoption. Für die im Roadmap-
+  Closure-Log geführten Alt-Wellen (welle-60…66) werden in slice-088 **minimale,
+  retroaktiv markierte** `done/welle-NN-results.md` nachgezogen, damit das
+  `## Abgeschlossene Wellen`-Log auflöst (Nutzer-Entscheid) — kein volles Plandokument.
 - **Kein Umbau des `planning`-Moduls** (der Ruhe-Marker bleibt als deklarierte
   Adaption; ein Produkt-Code-Umbau wäre ein eigener Change).
 
