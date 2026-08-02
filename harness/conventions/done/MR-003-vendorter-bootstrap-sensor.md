@@ -1,6 +1,7 @@
 # MR-003 — Vendorter Bootstrap-Sensor `tools/verify-doc-refs.sh`
 
 - **Status:** Accepted
+- **Aufgelöst durch:** MR-007 (doc-check als Dogfooding)
 - **Datum:** 2026-06-10
 - **Geltungsbereich:** `tools/verify-doc-refs.sh` (gelöscht mit slice-004, siehe [`MR-007`](../../conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)), `make doc-check` <!-- d-check:ignore (historisch: gelöscht) -->
 - **Adaption:** Bis `d-check` sich selbst prüfen kann, läuft

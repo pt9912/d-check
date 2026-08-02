@@ -1,6 +1,7 @@
 # MR-011 — Baseline auf Release-Tag gepinnt
 
 - **Status:** Accepted
+- **Aufgelöst durch:** MR-012 (Pin-Hebung)
 - **Datum:** 2026-06-18
 - **Geltungsbereich:** [§Baseline](../../conventions.md#baseline), [§Adoptierte
   Konventions-Quellen](../../conventions.md#adoptierte-konventions-quellen)

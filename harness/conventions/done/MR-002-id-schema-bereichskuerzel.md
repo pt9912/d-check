@@ -1,6 +1,7 @@
 # MR-002 — ID-Schema mit Bereichskürzeln ab initialer Fassung
 
 - **Status:** Accepted
+- **Aufgelöst durch:** Baseline-Stand v5.0.0 (ID-Schema-Deklaration ist Baseline-Default, MR-000)
 - **Datum:** 2026-06-10
 - **Geltungsbereich:** [`spec/lastenheft.md`](../../../spec/lastenheft.md), alle Traceability-Verweise
 - **Adaption:** Funktionale Anforderungen verwenden von Beginn an

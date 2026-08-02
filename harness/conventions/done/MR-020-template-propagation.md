@@ -1,6 +1,7 @@
 # MR-020 — Baseline-Template-Propagation per Drift-Audit (template-frei bestätigt)
 
 - **Status:** Accepted
+- **Aufgelöst durch:** Baseline-Stand v5.0.0 (Template-Schichtung ist Baseline-Default)
 - **Datum:** 2026-06-26
 - **Geltungsbereich:** [`docs/plan/planning/README.md`](../../../docs/plan/planning/README.md)
   (§Lifecycle, Closure-Notiz §7), der Templates-Staging-Cache

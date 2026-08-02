@@ -1,6 +1,7 @@
 # MR-022 — Baseline-Currency-Audit-Modus (Nachtrag zu MR-019)
 
 - **Status:** Accepted
+- **Aufgelöst durch:** Baseline-Stand v5.0.0 (Freshness-Audit ist Baseline-Default, Modul 2)
 - **Datum:** 2026-07-19
 - **Geltungsbereich:** [`tools/harness/fetch-baseline-cache.sh`](../../../tools/harness/fetch-baseline-cache.sh)
   (neuer Modus `--check-latest`), [`AGENTS.md`](../../../AGENTS.md) §1; Nachtrag zu

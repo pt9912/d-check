@@ -78,41 +78,72 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
 
 ## Adaptions-Block
 
-**Adoptions-Erklärung ([MR-000](#mr-000--baseline-aussage)):** keine inhaltlichen Adaptionen gegenüber dem
-Baseline-Default für Verzeichniskonvention, Lifecycle-Regeln und
-Carveout-Disziplin; jede spätere Abweichung wird als `MR-<NNN>` nachgetragen.
+Regeln dieser Sektion: Diese Datei trägt den **Index**, nicht die Einträge. Jede
+Adaption ist eine eigene Datei unter `harness/conventions/`, kopiert aus der
+vendored Vorlage `harness/conventions/MR-<NNN>-titel.template.md`; ist ihr
+Auflösungs-Trigger eingetreten, wandert sie per `git mv` nach `conventions/done/`.
+Der **Zustand ist die Verzeichnis-Position**, kein Status-Feld — was hier steht,
+liest **jeder** Agentenlauf, aufgelöste Adaptionen gehören nicht in diesen Pfad
+([Baseline-Regelwerk §Konventionsspeicher](../.harness/baseline/v5.0.0/regelwerk/grundlagen-harness-dateien.md#harnessconventionsmd-als-konventionsspeicher)).
+Die Voll-Slug-Anker aller Einträge (auch der aufgelösten) hält der
+[Anker-Kompatibilitäts-Block](#anker-kompatibilität-baseline-migration-v500) unten
+— **Migrations-Schuld**, damit die in-repo-Verweise auf `conventions.md#mr-…` ohne
+Retarget auflösen.
 
-Jede Adaption liegt als **eigene Datei** unter `harness/conventions/` (aktiv)
-bzw. `harness/conventions/done/` (aufgelöst — der **Zustand ist die
-Verzeichnis-Position**, kein Status-Feld). Die Voll-Slug-Anker aller Einträge
-(auch der aufgelösten) hält der **Anker-Kompatibilitäts-Block** unten, damit die
-in-repo-Verweise auf `conventions.md#mr-…` ohne Retarget auflösen.
+### MR-000 — Baseline-Aussage
 
-| Adaption | Zustand |
+Bleibt hier: keine Adaption, sondern die Adoptions-Erklärung — sie gilt für jeden Lauf.
+
+- **Status:** Accepted
+- **Datum:** 2026-06-10
+- **Geltungsbereich:** gesamtes Repo
+- **Ersetzt-Baseline-Regel:** — *(keine; dieser Eintrag ist die Adoptions-Erklärung,
+  keine Adaption)*
+- **Adaption:** *keine inhaltlichen Adaptionen ggü. Baseline-Default für
+  Verzeichniskonvention, Lifecycle-Regeln, Carveout-Disziplin, ID-Schema
+  (`DC-FA-*`, `DC-QA-*`, `ADR-NNNN`, `CO-NNN`, `slice-NNN`, `MR-NNN`; Präfix `DC`).*
+- **Begründung:** Initial-Setzung. Spätere Adaptionen werden als `MR-<NNN>` nachgetragen.
+- **Auflösungs-Trigger:** permanent.
+
+### Aktive Adaptionen
+
+Eine Zeile je Datei in `harness/conventions/`; Geltungsbereich und
+Ersetzt-Baseline-Regel stehen hier, damit ein Agent ohne Öffnen entscheiden kann,
+ob der Eintrag ihn betrifft.
+
+| MR | Titel | Geltungsbereich | Ersetzt-Baseline-Regel |
+|---|---|---|---|
+| [MR-004](conventions/MR-004-gate-nachweis-mechanik.md) | Gate-Nachweis-Mechanik + `.claude`-Hooks | `tools/harness/`, `.claude/`, `make record-gates` | `grundlagen-durchsetzungsschicht` §Drei Bindepunkte |
+| [MR-005](conventions/MR-005-haertung-gate-nachweis.md) | Härtung: Content-Hash + Sub-Shell-Guard | `working-tree-hash.sh`, `.claude/hooks/` | `grundlagen-durchsetzungsschicht` §Vier Design-Eigenschaften |
+| [MR-006](conventions/MR-006-referenzrichtung-matrix.md) | Referenzrichtung/Matrix (+ C-4-Scope-Grenze) | `spec/`-Straten, `matrix`-Config | `grundlagen-referenz-richtung` §SDP |
+| [MR-007](conventions/MR-007-aufloesung-mr-003.md) | doc-check als Dogfooding | `make doc-check`, `.d-check.yml` | `modul-13` §Hard Rule (Doku-Disziplin) |
+| [MR-013](conventions/MR-013-lifecycle-move-buendelung.md) | Lifecycle-Move-Commit bündelt Verweise | Slice-Lifecycle, `make planning-check` | `modul-05` §Lifecycle als State Machine |
+| [MR-015](conventions/MR-015-agents-md-routet.md) | AGENTS.md routet (spiegelt nicht) | `AGENTS.md` §1 | `grundlagen-harness-dateien` §Template-Schichtung |
+| [MR-021](conventions/MR-021-vendored-verweise-pin-gebunden.md) | vendored-Verweise pin-gebunden | Live-Links auf die vendored Baseline | `grundlagen-harness-dateien` §Verzeichniskonvention |
+| [MR-023](conventions/MR-023-baseline-v500.md) | Baseline-Pin `v5.0.0` + self-contained Bundle | §Baseline, `fetch-baseline-cache.sh` | `grundlagen-harness-dateien` §Template-Schichtung |
+
+### Aufgelöste Adaptionen
+
+Eine Zeile je Datei in `conventions/done/` — nur ID und Nachfolger, damit die Kette
+auffindbar bleibt, ohne gelesen zu werden.
+
+| MR | aufgelöst durch |
 |---|---|
-| [MR-001 — Source Precedence mit eigener Spezifikations-Schicht](conventions/done/MR-001-eigene-spec-schicht.md) | aufgelöst |
-| [MR-002 — ID-Schema mit Bereichskürzeln ab initialer Fassung](conventions/done/MR-002-id-schema-bereichskuerzel.md) | aufgelöst |
-| [MR-003 — Vendorter Bootstrap-Sensor tools/verify-doc-refs.sh](conventions/done/MR-003-vendorter-bootstrap-sensor.md) | aufgelöst |
-| [MR-004 — Gate-Nachweis-Mechanik und .claude-Hooks nach b-cad-Vorbild](conventions/MR-004-gate-nachweis-mechanik.md) | aktiv |
-| [MR-005 — Härtung ggü. b-cad: inhaltsbasierter Gate-Nachweis, Sub-Shell-Prüfung](conventions/MR-005-haertung-gate-nachweis.md) | aktiv |
-| [MR-006 — Referenzrichtung: Spec-Straten verweisen nie abwärts auf ADRs](conventions/MR-006-referenzrichtung-matrix.md) | aktiv |
-| [MR-007 — Auflösung von MR-003: doc-check als Dogfooding](conventions/done/MR-007-aufloesung-mr-003.md) | aufgelöst |
-| [MR-008 — ID-Schema-Deklaration (Nachtrag zur Baseline-Aussage)](conventions/done/MR-008-id-schema-deklaration.md) | aufgelöst |
-| [MR-009 — Source Precedence ohne docs/user-Rang](conventions/done/MR-009-source-precedence-ohne-docs-user.md) | aufgelöst |
-| [MR-010 — Auflösung von MR-009: docs/user-Rang eingefügt](conventions/done/MR-010-aufloesung-mr-009.md) | aufgelöst |
-| [MR-011 — Baseline auf Release-Tag gepinnt](conventions/done/MR-011-baseline-pin-release-tag.md) | aufgelöst |
-| [MR-012 — Baseline-Pin-Hebung (Nachtrag zu MR-011)](conventions/done/MR-012-baseline-pin-hebung.md) | aufgelöst |
-| [MR-013 — Lifecycle-Move-Commit bündelt gekoppelte Verweise](conventions/MR-013-lifecycle-move-buendelung.md) | aktiv |
-| [MR-014 — Slice-/ADR-Doc-Struktur: Repo-Haus-Stil ggü. Baseline-Template](conventions/done/MR-014-slice-adr-haus-stil.md) | aufgelöst |
-| [MR-015 — Auflösung der MR-012-Pointer-Drift: AGENTS.md routet, spiegelt nicht mehr](conventions/MR-015-agents-md-routet.md) | aktiv |
-| [MR-016 — Baseline-Pin-Hebung (zweiter Nachtrag zu MR-011)](conventions/done/MR-016-baseline-pin-hebung-2.md) | aufgelöst |
-| [MR-017 — Lokale Baseline-Lese-Form (Cache) aus dem Selbst-Scan ausgenommen](conventions/done/MR-017-cache-selbst-scan.md) | aufgelöst |
-| [MR-018 — d-check verkörpert als Producer-/Self-Hoster keine Templates](conventions/done/MR-018-keine-templates.md) | aufgelöst |
-| [MR-019 — Regelwerk-Lese-Form committet statt gecacht (Nachtrag zu MR-017)](conventions/done/MR-019-regelwerk-vendored.md) | aufgelöst |
-| [MR-020 — Baseline-Template-Propagation per Drift-Audit (template-frei bestätigt)](conventions/done/MR-020-template-propagation.md) | aufgelöst |
-| [MR-021 — In-Repo-Verweise auf das vendored Regelwerk sind pin-gebunden](conventions/MR-021-vendored-verweise-pin-gebunden.md) | aktiv |
-| [MR-022 — Baseline-Currency-Audit-Modus (Nachtrag zu MR-019)](conventions/done/MR-022-currency-audit.md) | aufgelöst |
-| [MR-023 — Baseline-Pin-Hebung auf v5.0.0 samt self-contained Bundle-Layout](conventions/MR-023-baseline-v500.md) | aktiv |
+| [MR-001](conventions/done/MR-001-eigene-spec-schicht.md) | Baseline-Stand `v4.0.0` (drei Spec-Straten Default) |
+| [MR-002](conventions/done/MR-002-id-schema-bereichskuerzel.md) | Baseline-Stand `v5.0.0` (ID-Schema = Default) |
+| [MR-003](conventions/done/MR-003-vendorter-bootstrap-sensor.md) | [MR-007](conventions/MR-007-aufloesung-mr-003.md) |
+| [MR-008](conventions/done/MR-008-id-schema-deklaration.md) | Baseline-Stand `v5.0.0` (ID-Schema = Default) |
+| [MR-009](conventions/done/MR-009-source-precedence-ohne-docs-user.md) | [MR-010](conventions/done/MR-010-aufloesung-mr-009.md) |
+| [MR-010](conventions/done/MR-010-aufloesung-mr-009.md) | Baseline-Stand `v5.0.0` (docs/user-Rang Baseline-konform) |
+| [MR-011](conventions/done/MR-011-baseline-pin-release-tag.md) | [MR-012](conventions/done/MR-012-baseline-pin-hebung.md) |
+| [MR-012](conventions/done/MR-012-baseline-pin-hebung.md) | [MR-016](conventions/done/MR-016-baseline-pin-hebung-2.md) |
+| [MR-014](conventions/done/MR-014-slice-adr-haus-stil.md) | Baseline-Stand `v4.0.0` (Doc-Form ist Baseline-Wahl) |
+| [MR-016](conventions/done/MR-016-baseline-pin-hebung-2.md) | [MR-023](conventions/MR-023-baseline-v500.md) |
+| [MR-017](conventions/done/MR-017-cache-selbst-scan.md) | [MR-019](conventions/done/MR-019-regelwerk-vendored.md) |
+| [MR-018](conventions/done/MR-018-keine-templates.md) | Baseline-Stand `v5.0.0` (Bundle vendored beide Bäume) |
+| [MR-019](conventions/done/MR-019-regelwerk-vendored.md) | Baseline-Stand `v5.0.0` (Vendoring = Default) |
+| [MR-020](conventions/done/MR-020-template-propagation.md) | Baseline-Stand `v5.0.0` (Template-Schichtung = Default) |
+| [MR-022](conventions/done/MR-022-currency-audit.md) | Baseline-Stand `v5.0.0` (Freshness-Audit = Default) |
 
 ## Anker-Kompatibilität (Baseline-Migration v5.0.0)
 

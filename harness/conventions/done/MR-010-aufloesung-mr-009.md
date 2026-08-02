@@ -1,6 +1,7 @@
 # MR-010 — Auflösung von MR-009: `docs/user`-Rang eingefügt
 
 - **Status:** Accepted
+- **Aufgelöst durch:** Baseline-Stand v5.0.0 (die 9-Rang-Default-Liste inkl. docs/user ist Baseline-konform)
 - **Datum:** 2026-06-11
 - **Geltungsbereich:** [`harness/README.md` §Source precedence](../../README.md#source-precedence),
   [`AGENTS.md` §2](../../../AGENTS.md#2-kanonische-quellen-source-precedence),

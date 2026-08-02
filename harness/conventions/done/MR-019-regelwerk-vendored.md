@@ -1,6 +1,7 @@
 # MR-019 — Regelwerk-Lese-Form committet statt gecacht (Nachtrag zu MR-017)
 
 - **Status:** Accepted
+- **Aufgelöst durch:** Baseline-Stand v5.0.0 (Vendoring beider Bäume ist Baseline-Default)
 - **Datum:** 2026-06-26
 - **Geltungsbereich:** [§Adoptierte Konventions-Quellen](../../conventions.md#adoptierte-konventions-quellen)
   (Lokale Lese-Form), [`.d-check.yml`](../../../.d-check.yml) `scan.ignore`, das Skript

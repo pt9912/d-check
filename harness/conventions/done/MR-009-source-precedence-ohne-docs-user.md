@@ -1,6 +1,7 @@
 # MR-009 — Source Precedence ohne `docs/user`-Rang
 
 - **Status:** Accepted
+- **Aufgelöst durch:** MR-010 (docs/user-Rang wieder eingefügt)
 - **Datum:** 2026-06-11
 - **Geltungsbereich:** [`harness/README.md` §Source precedence](../../README.md#source-precedence),
   [`AGENTS.md` §2](../../../AGENTS.md#2-kanonische-quellen-source-precedence)

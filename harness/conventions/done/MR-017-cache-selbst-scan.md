@@ -1,6 +1,7 @@
 # MR-017 — Lokale Baseline-Lese-Form (Cache) aus dem Selbst-Scan ausgenommen
 
 - **Status:** Accepted
+- **Aufgelöst durch:** MR-019 (Regelwerk committet vendored statt gecacht)
 - **Datum:** 2026-06-25
 - **Geltungsbereich:** [`.d-check.yml`](../../../.d-check.yml) `scan.ignore`,
   das Materialisierungs-Skript `tools/harness/fetch-baseline-cache.sh`,

@@ -1,6 +1,7 @@
 # MR-018 — d-check verkörpert als Producer-/Self-Hoster keine Templates
 
 - **Status:** Accepted
+- **Aufgelöst durch:** Baseline-Stand v5.0.0 (self-contained Bundle vendored beide Bäume)
 - **Datum:** 2026-06-25
 - **Geltungsbereich:** [`AGENTS.md`](../../../AGENTS.md) §1,
   [§Adoptierte Konventions-Quellen](../../conventions.md#adoptierte-konventions-quellen), der

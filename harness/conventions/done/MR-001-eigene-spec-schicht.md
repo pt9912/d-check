@@ -1,6 +1,7 @@
 # MR-001 — Source Precedence mit eigener Spezifikations-Schicht
 
 - **Status:** Accepted
+- **Aufgelöst durch:** Baseline-Stand v4.0.0 (drei Spec-Straten sind Default)
 - **Datum:** 2026-06-10
 - **Geltungsbereich:** [`harness/README.md` §Source precedence](../../README.md#source-precedence)
 - **Adaption:** Die Source-Precedence-Tabelle führt

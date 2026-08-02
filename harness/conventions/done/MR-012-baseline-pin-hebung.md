@@ -1,6 +1,7 @@
 # MR-012 — Baseline-Pin-Hebung (Nachtrag zu MR-011)
 
 - **Status:** Accepted
+- **Aufgelöst durch:** MR-016 (Pin-Hebung)
 - **Datum:** 2026-06-18
 - **Geltungsbereich:** [§Baseline](../../conventions.md#baseline), [§Adoptierte
   Konventions-Quellen](../../conventions.md#adoptierte-konventions-quellen),

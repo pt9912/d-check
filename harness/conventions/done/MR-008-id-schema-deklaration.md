@@ -1,6 +1,7 @@
 # MR-008 — ID-Schema-Deklaration (Nachtrag zur Baseline-Aussage)
 
 - **Status:** Accepted
+- **Aufgelöst durch:** Baseline-Stand v5.0.0 (ID-Schema-Deklaration ist Baseline-Default, MR-000)
 - **Datum:** 2026-06-11
 - **Geltungsbereich:** gesamtes Repo (alle Artefakt-IDs und
   Traceability-Verweise)
