@@ -494,8 +494,8 @@ gate-belegte Schritt; B ist der Fixpunkt, an dem der unabhängige Review sitzt.
   ausgegeben.
 - [x] **Jeder Migrationsschritt** je Etappe A–D präzise beschrieben (§2.7 Detail):
   A vollständig spezifiziert, B–D als präzise Prozedur mit Inhalt je Fund.
-- [ ] **Abnahme:** Etappen-Schnitt A–D (§2.7) und der Umgang mit den drei
-  historischen Verweisen (§2.2) durch den Maintainer.
+- [x] **Abnahme:** Etappen-Schnitt A–D (§2.7) und der Umgang mit den drei
+  historischen Verweisen (§2.2) durch den Maintainer — **erteilt 2026-08-01** (nach R1/R2/R3).
 
 ## 4. Risiken / offene Punkte
 
@@ -535,5 +535,30 @@ sich zu begründen.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_(beim Abschluss: abgenommener Schnitt, Entscheid zu den historischen Verweisen,
-Verweise auf die Umsetzungs-Slices.)_
+**Abgenommen 2026-08-01** (Maintainer). Reine Analyse — kein Code/Spec/Harness-Delta,
+kein CR/ADR/Release.
+
+**Review-Kette.** Drei unabhängige Frischkontext-Reviews: R1 (nicht abnahmereif, 2
+MEDIUM) → geheilt; R2 (bestätigt F-1/LOW/INFO/AGENTS, fand aber N-1 = Fehler im
+F-2-Fix) → geheilt (Voll-Slug-Anker-Kompatibilitäts-Block für **alle** von
+eingefrorener Doku referenzierten MRs); R3 (eng auf N-1, am Anker-Engine-Code
+belegt) = **abnahmereif**, ein LOW (F-R3-1, Inventar repo-weit) eingearbeitet. Drei
+Review-Reports unter `docs/reviews/`.
+
+**Abgenommener Schnitt.** Vier Etappen A (Vendoring) → B (Modul-Delta lesen) → C
+(MR-Bereinigung + Datei-Migration) → D (Form-Konformität), **je ein Slice**;
+Umsetzung ab welle-67 (Etappe A = slice-084).
+
+**Entscheid historische Verweise.** Die drei eingefrorenen Regelwerk-Pfad-Verweise
+(§2.2 #4: eine immutable ADR + zwei `done/`-Slices) auf den entfallenden
+v1.4.0-Alt-Pfad → gescoptes `ignore-refs`/Tombstone (Etappe A6). Die 173
+`conventions.md#mr-…`-Anker-Links (57 Dateien, 12 immutable ADRs, inkl.
+Review-Report-referenzierte) → Voll-Slug-Anker-Kompatibilitäts-Block (Etappe C),
+**kein ADR-Edit**.
+
+**Commit-Kette.** `3677681` (Analyse) · `404a576` (R1) · `42bd3fe` (N-1/F-R3-1-Fix)
+· `c94c44d` (R2/R3) · Abnahme-Move + dieser Body-Commit.
+
+**Lerneintrag.** Der Wert des Frischkontext-Zwangs (§4): R2 fand einen echten Fehler
+*im Fix* von R1, R3 prüfte den Fix von R2 — jede Runde härtete den kritischen
+`conventions.md`-Anker-Mechanismus, den ein Ein-Pass-Review nicht erreicht hätte.
