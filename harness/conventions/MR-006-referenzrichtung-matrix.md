@@ -13,7 +13,13 @@
   Planning-Artefakte**; Traceability läuft ausschließlich über die
   `Schärft:`-Felder der ADRs (aufwärts). Die spätere
   matrix-Selbstkonfiguration kodiert das als
-  `{from: spec-strata, to: adr/slice, allow: false}`.
+  `{from: spec-strata, to: adr/slice, allow: false}`. **Scope-Grenze gegen die
+  v5.0.0-8×8-Matrix (C-4):** d-checks `matrix` bewacht die **Spec-Decke** (alle
+  drei Spec-Straten, seit `v4.0.0` Baseline-Default) und die markierte
+  **ADR→Slice**-Kante; die weiteren ❌-Kanten der 8×8-Matrix —
+  **ADR→Carveout/Welle/Roadmap** und **Slice→Roadmap** — sind **bewusst
+  unbewacht** (d-check modelliert Carveout/Welle/Roadmap nicht als
+  `matrix`-Klassen; eine Erweiterung wäre ein eigener Change).
 - **Begründung:** Stable Dependencies — die Lösungsbeschreibung muss
   Entscheidungs-Revisionen (Supersede) überleben, ohne selbst
   angefasst zu werden; die Richtung der Begründung ist ADR → Spec,
