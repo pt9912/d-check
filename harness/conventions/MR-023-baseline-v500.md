@@ -63,8 +63,6 @@
   (`slice-083`) begründet. Die Konventionsspeicher-Restrukturierung (Index +
   Datei je MR mit neuen Pflichtfeldern) und die Form-Konformität folgen als
   eigene Etappen.
-- **Auflösungs-Trigger:** die Konventionsspeicher-Migration (spätere Etappe)
-  fasst diese MR in die Datei-je-MR-Form und gleicht die Prosa der Cache-/
-  Vendoring-/Pin-Einträge vollständig auf das v5.0.0-Layout an — inklusive der
-  internen, noch auf `v1.4.0` lautenden Beispieltexte (`aktueller <tag> = v1.4.0`
-  in den Cache-/Vendoring-Einträgen, `…/v1.4.0/…` in der Pin-Bindungs-Adaption).
+- **Auflösungs-Trigger:** permanent, solange die Baseline extern gepinnt und
+  self-contained (beide Bäume) vendored wird. *(Die Überführung in die
+  Datei-je-MR-Form des Konventionsspeichers ist mit Etappe C ausgeführt.)*

@@ -1,7 +1,7 @@
 # MR-014 — Slice-/ADR-Doc-Struktur: Repo-Haus-Stil ggü. Baseline-Template
 
 - **Status:** Accepted
-- **Aufgelöst durch:** Baseline-Stand v4.0.0 (Doc-Form ist Baseline-Wahl, ADR-Alternativen-Tabelle wurde Default)
+- **Aufgelöst durch:** Baseline-Konformität (Form ist Baseline-Wahl; ADR-Alternativen-Tabelle seit `v1.4.0` Default)
 - **Datum:** 2026-06-22
 - **Geltungsbereich:** Slice-Dateien unter `docs/plan/planning/` und
   ADR-Dateien unter `docs/plan/adr/` (Doc-**Struktur**, nicht Inhalt)

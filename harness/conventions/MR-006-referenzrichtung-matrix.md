@@ -25,8 +25,9 @@
   angefasst zu werden; die Richtung der Begründung ist ADR → Spec,
   nie umgekehrt. Konsistent mit u-boots Checker („view spec may not
   link down").
-- **Auflösungs-Trigger:** sobald das Kurs-Template-Set korrigiert
-  ist, wird dieser Eintrag zur reinen Baseline-Konformität (bleibt
-  als Provenienz stehen). *(Eingetreten mit Baseline `v1.3.0`;
-  Spec-Straten-Vorlagen korrigiert — siehe
-  [`MR-012`](../conventions.md#mr-012--baseline-pin-hebung-nachtrag-zu-mr-011).)*
+- **Auflösungs-Trigger:** permanent, solange d-check die Referenz-Richtung via
+  `matrix`-Modul mechanisiert und dabei die **C-4-Scope-Grenze** trägt (nur
+  Spec-Decke + markierte ADR→Slice-Kante, nicht die volle 8×8-Matrix). *Die
+  ursprüngliche Adaption — das Vorziehen der Spec-Decke-Regel vor die Kurs-Quelle —
+  ist eingetreten (Spec-Straten-Vorlagen seit `v1.3.0` korrigiert, Spec-Decke seit
+  `v4.0.0` Baseline-Default) und bleibt als Provenienz.*
