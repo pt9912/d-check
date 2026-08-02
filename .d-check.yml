@@ -15,6 +15,21 @@ scan:
   ignore: [".harness/baseline/**", ".harness/cache/**"]
 modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions]
 
+# Geteiltes Referenz-Ventil (DC-FA-REF-001): Ziel-Achsen-Pendant zu scan.ignore
+# (jenes entfernt Quell-Dateien, dieses Ziel-Referenzen), honoriert von
+# links/anchors/codepaths. Tombstone der Baseline-Migration v1.4.0 -> v5.0.0
+# (slice-084 / MR-023): drei EINGEFRORENE Verweise (immutable ADR-0022 + done/-
+# Slices 080/081) zitieren den entfernten .harness/baseline/v1.4.0/-Pfad als
+# Historie — quell-skopiert (in) von der Existenzpruefung ausgenommen, ohne die
+# eingefrorene Doku zu editieren. Die live-Fundstellen sind auf v5.0.0 retargetet.
+ignore-refs:
+  - in: docs/plan/adr/0022-matrix-token-richtung-provenance-marker.md
+    refs: [".harness/baseline/v1.4.0/**"]
+  - in: docs/plan/planning/done/slice-080-sources-modul.md
+    refs: [".harness/baseline/v1.4.0/**"]
+  - in: docs/plan/planning/done/slice-081-pins-hash-ergonomie.md
+    refs: [".harness/baseline/v1.4.0/**"]
+
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.
 # Dogfooding der Link-Politik (slice-018): link-policy: always macht

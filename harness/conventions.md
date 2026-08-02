@@ -20,39 +20,46 @@ die kanonische Quelle (Source Precedence, siehe
 ## Baseline
 
 - **Konvention:** AI-Harness-Kurs
-- **Stand:** [`v1.4.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v1.4.0)
-  (Release-Tag, gepinnt 2026-06-25; ursprünglich unversioniert adoptiert
+- **Stand:** [`v5.0.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v5.0.0)
+  (Release-Tag, gepinnt 2026-08-01; ursprünglich unversioniert adoptiert
   als „Template-Set 2026-06", nachgezogen mit
   [`MR-011`](#mr-011--baseline-auf-release-tag-gepinnt), von v1.2.1 auf
   v1.3.0 gehoben mit [`MR-012`](#mr-012--baseline-pin-hebung-nachtrag-zu-mr-011),
   von v1.3.0 auf v1.4.0 mit
-  [`MR-016`](#mr-016--baseline-pin-hebung-zweiter-nachtrag-zu-mr-011))
+  [`MR-016`](#mr-016--baseline-pin-hebung-zweiter-nachtrag-zu-mr-011), von v1.4.0
+  auf v5.0.0 (zwei weitere Majors) mit
+  [`MR-023`](#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout))
 - **Datum der Adoption:** 2026-06-10
 
 ## Adoptierte Konventions-Quellen
 
 - **Extern (Lehrmaterial):**
-  [`ai-harness-course@v1.4.0`](https://github.com/pt9912/ai-harness-course/tree/v1.4.0)
-  (Templates: `lab/templates/`, Konventionen:
-  `kurs/de/grundlagen/konventionen.md`).
-- **Extern (Agenten-Destillat):**
-  [`agents-regelwerk.md`](https://raw.githubusercontent.com/pt9912/ai-harness-course/v1.4.0/kurs/de/agents-regelwerk.md)
-  — operatives Regelwerk für Code-Agenten ohne Didaktik; derivativ,
-  bei Konflikt gilt das Lehrmaterial. Lese-Form: das nach Modulen und
-  Grundlagen-Abschnitten aufgeteilte Release-Bundle
-  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.4.0/lab-regelwerk.zip)
-  lädt einen Abschnitt, ohne das ganze Regelwerk im Kontext zu halten.
-- **Lokale Lese-Form:** das **Regelwerk** ist **committet vendored** unter
-  `.harness/baseline/<tag>/regelwerk/` (aktuell [`v1.4.0`](../.harness/baseline/v1.4.0/regelwerk/); entpacktes `lab-regelwerk.zip`) samt
-  `.harness/baseline/<tag>/SHA256SUMS`-Integritätsmanifest — netzlos auf jedem
-  Checkout präsent ([`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)
-  löst die Cache-Form von
-  [`MR-017`](#mr-017--lokale-baseline-lese-form-cache-aus-dem-selbst-scan-ausgenommen)
-  ab). Das **Template**-Set bleibt gitignorierter, ephemerer Cache unter
-  `.harness/cache/<tag>/templates/` — nur Adoptions-/Drift-Audit-Staging, nicht
-  Autorenquelle
-  ([`MR-018`](#mr-018--d-check-verkörpert-als-producer-self-hoster-keine-templates)).
-  Beide aus dem Selbst-Scan ausgenommen; materialisiert per
+  [`ai-harness-course@v5.0.0`](https://github.com/pt9912/ai-harness-course/tree/v5.0.0)
+  (Templates: `lab/templates/`, Konventionen: die nach Themen aufgeteilten
+  `kurs/de/grundlagen/grundlagen-*.md` — die frühere Sammeldatei
+  `konventionen.md` entfällt seit dem Regelwerk-Umbau).
+- **Extern (Regelwerk):** das operative Betriebsregelwerk für Code-Agenten (ohne
+  Didaktik) ist seit dem Kurs-Umbau **kein** separates `agents-regelwerk.md` mehr,
+  sondern das nach Modulen und Grundlagen aufgeteilte Regelwerk selbst,
+  ausgeliefert als self-contained Release-Bundle
+  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v5.0.0/lab-regelwerk.zip)
+  (ein Asset, **beide** Bäume). Derivativ, bei Konflikt gilt das Lehrmaterial;
+  pro Session lädt man **einen** Abschnitt, ohne das ganze Regelwerk im Kontext
+  zu halten
+  ([`MR-023`](#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)).
+- **Lokale Lese-Form:** **beide** Bäume sind seit `v5.0.0` **committet vendored**
+  unter `.harness/baseline/<tag>/{regelwerk,templates}/` (aktuell
+  [`v5.0.0`](../.harness/baseline/v5.0.0/regelwerk/); entpacktes, self-contained
+  `lab-regelwerk.zip`) samt `.harness/baseline/<tag>/SHA256SUMS`-Manifest über
+  beide Bäume — netzlos auf jedem Checkout präsent
+  ([`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)
+  vendored das Regelwerk; mit dem self-contained Bundle
+  [`MR-023`](#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)
+  sind auch die **Templates** vendored statt ephemerer Cache — die Neufassung der
+  Cache-Einträge
+  [`MR-017`](#mr-017--lokale-baseline-lese-form-cache-aus-dem-selbst-scan-ausgenommen)/[`MR-018`](#mr-018--d-check-verkörpert-als-producer-self-hoster-keine-templates)
+  folgt in der Konventionsspeicher-Etappe). Aus dem Selbst-Scan ausgenommen;
+  materialisiert per
   [`tools/harness/fetch-baseline-cache.sh`](../tools/harness/fetch-baseline-cache.sh).
 - **Konventions-Vorbilder (Implementierung):**
   [`u-boot`](https://github.com/pt9912/u-boot) — Hexagon-Ordnerkonvention
@@ -741,6 +748,73 @@ die kanonische Quelle (Source Precedence, siehe
   [`MR-021`](#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden)).
 - **Auflösungs-Trigger:** permanent, solange die Baseline extern gepinnt und
   lokal vendored wird.
+
+### MR-023 — Baseline-Pin-Hebung auf v5.0.0 samt self-contained Bundle-Layout
+
+- **Datum:** 2026-08-01
+- **Geltungsbereich:** [§Baseline](#baseline), [§Adoptierte
+  Konventions-Quellen](#adoptierte-konventions-quellen), das
+  Materialisierungs-Skript
+  [`tools/harness/fetch-baseline-cache.sh`](../tools/harness/fetch-baseline-cache.sh),
+  die pin-gebundenen Verweise
+  ([`MR-021`](#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden))
+  in [`AGENTS.md`](../AGENTS.md), [`harness/README.md`](README.md),
+  [`.harness/skills/reviewer.md`](../.harness/skills/reviewer.md) und den
+  Planning-Docs; Nachträge zu
+  [`MR-017`](#mr-017--lokale-baseline-lese-form-cache-aus-dem-selbst-scan-ausgenommen),
+  [`MR-018`](#mr-018--d-check-verkörpert-als-producer-self-hoster-keine-templates),
+  [`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017),
+  [`MR-022`](#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019)
+- **Adaption:** Der Baseline-Pin ist von `v1.4.0` auf **`v5.0.0`** gehoben — der
+  von [`MR-011`](#mr-011--baseline-auf-release-tag-gepinnt) vorgesehene Nachtrag,
+  hier über **zwei weitere Major-Sprünge** (`v4.0.0`, `v5.0.0`). Anders als
+  [`MR-016`](#mr-016--baseline-pin-hebung-zweiter-nachtrag-zu-mr-011) (reine
+  Template-Pflege, Regelwerk unverändert) ist dies eine **inhaltliche Migration**:
+  das Regelwerk ist umstrukturiert (Grundlagen 3→8 Dateien, Module umbenannt) und
+  das Release-Asset-Layout hat sich geändert. Diese MR deckt **Etappe A**
+  (Vendoring + Pin/Pointer):
+  - **Self-contained Bundle (beide Bäume vendored).** Das Release liefert seit
+    `v5.0.0` **ein** Asset `lab-regelwerk.zip` mit **beiden** Bäumen
+    (`regelwerk/` + `templates/`); `lab-templates.zip` entfällt. Beide werden
+    jetzt **committet vendored** unter
+    `.harness/baseline/<tag>/{regelwerk,templates}/`. Das hebt den Cache-Zweig
+    aus
+    [`MR-017`](#mr-017--lokale-baseline-lese-form-cache-aus-dem-selbst-scan-ausgenommen)/[`MR-018`](#mr-018--d-check-verkörpert-als-producer-self-hoster-keine-templates)
+    auf (Templates nicht länger ephemerer `.harness/cache/`-Stand); die
+    **vollständige Neufassung** der MR-017/018/019-Einträge auf diese Form ist
+    Teil der späteren Konventionsspeicher-Etappe.
+  - **Skript aufs Bundle gehoben.** `fetch-baseline-cache.sh` entpackt das Bundle
+    **tolerant** (Regelwerk am `modul-00`-Marker, Templates als Geschwister),
+    prüft eine **Under-Copy-Barriere** (Quelle == vendored) und schreibt das
+    `SHA256SUMS`-Manifest über den **tatsächlichen** Bestand **beider** Bäume.
+    Der `--check-latest`-Currency-Teil liest jetzt die Release-**Liste** (statt
+    `/releases/latest`), der Content-Drift-Teil vergleicht **beide** Bäume; die
+    Wortlaut-Angleichung der
+    [`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)/[`MR-022`](#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019)-Prosa
+    folgt in der Konventionsspeicher-Etappe.
+  - **Entfallene Quellzeiger umgeschrieben.** `agents-regelwerk.md` (im Kurs
+    zurückgezogen) und die Kurs-`grundlagen/konventionen.md` (in acht
+    `grundlagen-*`-Dateien aufgeteilt) werden **nicht** auf tote Ziele
+    retargetet, sondern umgeschrieben: die committet vendorte `regelwerk/` (mit
+    `README.md` als Index) **ist** die Agenten-Lese-Form; die §Referenz-Richtung
+    liegt jetzt in `grundlagen-referenz-richtung.md`.
+  - **Eingefrorene Historie via Tombstone.** Drei immutable/`done/`-Verweise auf
+    den entfernten `v1.4.0`-Pfad
+    ([`ADR-0022`](../docs/plan/adr/0022-matrix-token-richtung-provenance-marker.md),
+    `slice-080`, `slice-081`) werden über das geteilte Referenz-Ventil
+    `ignore-refs`
+    ([`DC-FA-REF-001`](../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus))
+    referenz-weit von der Existenz-Prüfung ausgenommen — kein Editieren
+    eingefrorener Doku.
+- **Begründung:** Auftraggeber-Vorgabe (2026-07-25): vollständige Migration nach
+  `v5.0.0`, der Baseline-Default sticht die repo-lokale Adaption. Etappen-Schnitt
+  und Umgang mit den historischen Verweisen sind in der abgenommenen Analyse
+  (`slice-083`) begründet. Die Konventionsspeicher-Restrukturierung (Index +
+  Datei je MR mit neuen Pflichtfeldern) und die Form-Konformität folgen als
+  eigene Etappen.
+- **Auflösungs-Trigger:** die Konventionsspeicher-Migration (spätere Etappe)
+  fasst diese MR in die Datei-je-MR-Form und gleicht die
+  MR-017/018/019/022-Prosa vollständig auf das v5.0.0-Layout an.
 
 ## Anforderungs-Anlege-Prozess
 

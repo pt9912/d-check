@@ -36,7 +36,7 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   `<!-- d-check:status-provenance -->`, prüfe, ob die Deklaration **ehrlich** ist —
   *zeigt* sie, wo verifiziert/entstanden (Provenance, ok), oder *begründet* sie
   eine Entscheidung (getarnte Entscheidungsgrundlage → Finding)? Regelwerk:
-  [§Referenz-Richtung (SDP)](../baseline/v1.4.0/regelwerk/grundlagen-konventionen.md#referenz-richtung-sdp-wer-darf-wen-referenzieren).
+  [§Referenz-Richtung (SDP)](../baseline/v5.0.0/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren).
 - **LOW** (nice-to-fix): Doku-Drift (Prosa-Modullisten, veraltete
   Beispiele); latente Wartungsfalle (hart verdrahteter Wert, der erst
   bei künftigem Edit zündet); Ketten-Duplikate in Make-Targets.

@@ -2,7 +2,7 @@
 
 **Status:** Aktiv. **Letzte Änderung:** 2026-07-19.
 
-**Form:** folgt [Kurs-Modul 6](../../../../.harness/baseline/v1.4.0/regelwerk/modul-06-roadmap.md).
+**Form:** folgt [Kurs-Modul 6](../../../../.harness/baseline/v5.0.0/regelwerk/modul-06-roadmap.md).
 
 ---
 

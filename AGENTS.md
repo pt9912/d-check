@@ -25,7 +25,7 @@ per `tools/harness/fetch-baseline-cache.sh` (`--verify` offline-Integrität;
 `--check-latest` = Currency- + Content-Drift-Audit ggü. Upstream, informativ/kein Gate,
 [`MR-022`](harness/conventions.md#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019); Tag aus §Baseline;
 Quelle ist das derivative Release-Bundle
-[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v1.4.0/lab-regelwerk.zip);
+[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v5.0.0/lab-regelwerk.zip);
 Pfadschema/Provenance siehe
 [`harness/conventions.md`](harness/conventions.md) §Adoptierte Konventions-Quellen,
 [`MR-019`](harness/conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)).
