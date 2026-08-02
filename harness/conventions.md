@@ -39,42 +39,18 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
 
 - **Extern (Lehrmaterial):**
   [`ai-harness-course@v5.0.0`](https://github.com/pt9912/ai-harness-course/tree/v5.0.0)
-  (Templates: `lab/templates/`, Konventionen: die nach Themen aufgeteilten
-  `kurs/de/grundlagen/grundlagen-*.md` — die frühere Sammeldatei
-  `konventionen.md` entfällt seit dem Regelwerk-Umbau).
-- **Extern (Regelwerk):** das operative Betriebsregelwerk für Code-Agenten (ohne
-  Didaktik) ist seit dem Kurs-Umbau **kein** separates `agents-regelwerk.md` mehr,
-  sondern das nach Modulen und Grundlagen aufgeteilte Regelwerk selbst,
-  ausgeliefert als self-contained Release-Bundle
+  (`kurs/de/` — Konventionen in `grundlagen/`, Templates in `lab/templates/`).
+  Kanonische Quelle; bei Konflikt maßgeblich.
+- **Vendored Baseline (Regelwerk + Templates):** aus dem self-contained
+  Release-Asset
   [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v5.0.0/lab-regelwerk.zip)
-  (ein Asset, **beide** Bäume). Derivativ, bei Konflikt gilt das Lehrmaterial;
-  pro Session lädt man **einen** Abschnitt, ohne das ganze Regelwerk im Kontext
-  zu halten
-  ([`MR-023`](#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)).
-- **Lokale Lese-Form:** **beide** Bäume sind seit `v5.0.0` **committet vendored**
-  unter `.harness/baseline/<tag>/{regelwerk,templates}/` (aktuell
-  [`v5.0.0`](../.harness/baseline/v5.0.0/regelwerk/); entpacktes, self-contained
-  `lab-regelwerk.zip`) samt `.harness/baseline/<tag>/SHA256SUMS`-Manifest über
-  beide Bäume — netzlos auf jedem Checkout präsent
-  ([`MR-019`](#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)
-  vendored das Regelwerk; mit dem self-contained Bundle
-  [`MR-023`](#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)
-  sind auch die **Templates** vendored statt ephemerer Cache — die Neufassung der
-  Cache-Einträge
-  [`MR-017`](#mr-017--lokale-baseline-lese-form-cache-aus-dem-selbst-scan-ausgenommen)/[`MR-018`](#mr-018--d-check-verkörpert-als-producer-self-hoster-keine-templates)
-  folgt in der Konventionsspeicher-Etappe). Aus dem Selbst-Scan ausgenommen;
-  materialisiert per
-  [`tools/harness/fetch-baseline-cache.sh`](../tools/harness/fetch-baseline-cache.sh).
-- **Konventions-Vorbilder (Implementierung):**
-  [`u-boot`](https://github.com/pt9912/u-boot) — Hexagon-Ordnerkonvention
-  ([ADR-0005](../docs/plan/adr/0005-modul-layout-hexagon-ordner.md)),
-  Dockerfile-/Makefile-Muster, Pin-Politik;
-  [`b-cad`](https://github.com/pt9912/b-cad) — Gate-Nachweis- und
-  Hook-Mechanik ([`MR-004`](#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild)/[`MR-005`](#mr-005--härtung-ggü-b-cad-inhaltsbasierter-gate-nachweis-sub-shell-prüfung));
-  [`d-migrate`](https://github.com/pt9912/d-migrate) — Ursprung des
-  vendorten Bootstrap-Sensors ([`MR-003`](#mr-003--vendorter-bootstrap-sensor-toolsverify-doc-refssh), aufgelöst).
-- **In-Repo (verkörperte Form):** `AGENTS.md`, `harness/README.md`,
-  Verzeichniskonvention `spec/` + `docs/plan/` + `harness/`.
+  entpackt nach [`.harness/baseline/v5.0.0/`](../.harness/baseline/v5.0.0/regelwerk/)
+  (`{regelwerk,templates}/` + `SHA256SUMS`) — der **netzlose** Lesepfad,
+  materialisiert/verifiziert per
+  [`fetch-baseline-cache.sh`](../tools/harness/fetch-baseline-cache.sh).
+- **In-Repo (verkörperte Form):** die eigenen Artefakte dieses Repos (`AGENTS.md`,
+  `harness/README.md`, ADRs, Slices, dieser Konventionsspeicher) — kopiert und
+  ausgefüllt aus den vendored `templates/` (Referenz-/Ziel-Form).
 
 ## Adaptions-Block
 
