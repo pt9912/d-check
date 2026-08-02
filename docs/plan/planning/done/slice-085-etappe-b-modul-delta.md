@@ -139,12 +139,12 @@ Revocation, `observations.md`/Wellen-Closure) sind **d-check-first** — kein
 
 ## 5. Definition of Done
 
-- [ ] Alle 8 `grundlagen-*` + 17 Module gegen `v5.0.0` gegengelesen (Priorität §2.1).
-- [ ] Finding-Liste im Schema vollständig; die slice-083-§2.3-Zugänge gegen die
+- [x] Alle 8 `grundlagen-*` + 17 Module gegen `v5.0.0` gegengelesen (Priorität §2.1).
+- [x] Finding-Liste im Schema vollständig; die slice-083-§2.3-Zugänge gegen die
   Quelle bestätigt/korrigiert und um Text-Deltas ergänzt; je Finding die Handlung
   (C oder D) zugeordnet.
-- [ ] Flotten-Stand erhoben (überträgt a-checks Analyse noch?).
-- [ ] `make gates` grün; unabhängiger Frischkontext-Review.
+- [x] Flotten-Stand erhoben (überträgt a-checks Analyse noch?).
+- [x] `make gates` grün; unabhängiger Frischkontext-Review.
 
 ## 6. Risiken / offene Punkte
 
@@ -166,4 +166,35 @@ kein Brownfield-Spec-Bezug.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+**Abgeschlossen 2026-08-02.** Etappe B der Baseline-Migration `v1.4.0` → `v5.0.0`
+(Modul-Delta lesen). Reine Lese-/Analyse-Etappe — kein Code/Config-Delta.
+
+**Ergebnis.** Drei parallele Frischkontext-Leser (grundlagen · Prozess-Module ·
+Spec/Review) haben die 25 vendorten v5.0.0-Dateien gegen den d-check-Ist
+gegengelesen. §3: **19 Findings** (8 → Etappe C, 11 → Etappe D), je am Quelltext
+belegt. Kern C-3/§3.3: die **Historie-Provenance-Ausnahme ist revoziert** (doppelt
+belegt) → `spec/spezifikation.md`+`spec/lastenheft.md` §7 + `matrix.exclude-sections`
+nicht-konform (Abnahme-Punkt). Zwei Korrekturen an der abgenommenen §2.4 (§3.4):
+die Guard-Härtungs-Adaptionen sind **keine** Forks, die Fork-Definition ist enger
+(pauschale Nichtanwendbarkeit); das `Status`-Feld ist template-, nicht
+grundlagen-gedeckt. §4: Flotten-Stand — die Flotte steht auf `v3.5.2`, die
+v4/v5-Deltas sind **d-check-first**.
+
+**Review.** Unabhängiger Frischkontext-Review (Reports unter `docs/reviews/`):
+nicht abnahmereif, 3 MEDIUM/1 LOW — die drei MEDIUM waren Synthese-Fehler
+(Slice/MR-Status-Verwechslung, ADR-Trigger-Ist falsch, AGENTS.md-Angleich fehlte),
+alle am Quelltext verifiziert + gefixt. Bestätigende Kurz-Re-Review: **abnahmereif**,
+keine Regression.
+
+**Übergabe an Etappe C/D.** Die Finding-Liste ist die verbindliche Grundlage: C
+zieht die 8 C-Findings (Source-Precedence-/Spec-Decke-Adaptionen zu Provenienz,
+Historie-Provenance, Matrix-Scope, conventions-Index + Datei-je-Eintrag,
+Pflichtfeld-Ergänzung, Guard-Grenz-Zeile, Template-Freiheit-Entfall, korrigierte
+Fork-Reklassifikation), D die 11 D-Findings (Roadmap fünf Abschnitte,
+Welle-Closure, `observations.md`, Slice-Form, Review-Report-Kopffelder,
+closure-note-reviewer, ADR-Trigger, Carveout-Audit, reviewer.md-Kopf,
+AGENTS.md↔Template).
+
+**Nächster Schritt.** Etappe C (MR-Bereinigung + Datei-Migration) als eigener
+Slice — mit den Abnahme-Punkten (Fork-Ort, Nummern-Kollision, Historie-Provenance-
+Spec-Bereinigung).
