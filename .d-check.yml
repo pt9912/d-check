@@ -43,7 +43,7 @@ ids:
       link-policy: always
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
     - regex: 'MR-\d{3}'
-      target: harness/conventions.md
+      target: harness/conventions/
       link-policy: always
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
     - regex: 'DC-(FA-[A-Z]+|QA)-\d+'
