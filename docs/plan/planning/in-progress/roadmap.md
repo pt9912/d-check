@@ -8,14 +8,17 @@
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-66-release-prep-aufgabenregel **abgeschlossen** —
-[`slice-082`](../done/slice-082-release-prep-aufgabenregel.md) (Release-Prep-Regel
-in [`releasing.md`](../../../user/releasing.md) §Release-Prep: ein neuer
-Handbuch-§4-Abschnitt für ein Feature ist eine eigene Aufgabe, keine Anhängung —
-schließt den strukturellen §4-Erosions-Bindepunkt aus slice-072; reine
-Prozess-Doku, kein Release/ADR).
+**welle-67-baseline-v500-migration** — die adoptierte Baseline von `v1.4.0` auf
+`v5.0.0` migrieren (abgenommene Analyse
+[`slice-083`](../done/slice-083-regelwerk-v500-migration-analyse.md); Etappen A–D
+je ein Slice). **Etappe A (Vendoring)** =
+[`slice-084`](slice-084-etappe-a-vendoring.md). Reine Harness-/Konventions-Änderung,
+kein Release/ADR.
 
-**Vorgänger:** welle-65-handbuch-aufgaben
+**Vorgänger:** welle-66-release-prep-aufgabenregel
+([`slice-082`](../done/slice-082-release-prep-aufgabenregel.md) — Release-Prep-Regel
+„neuer Handbuch-§4-Abschnitt = eigene Aufgabe", reine Prozess-Doku). Davor
+welle-65-handbuch-aufgaben
 ([`slice-072`](../done/slice-072-handbuch-aufgabenorientierung.md) — §4 des
 Benutzerhandbuchs aufgabenorientiert (§4.12-Monolith in §4.12–§4.16 aufgetrennt),
 **Handbuch 1.42**, reine Doku). Davor welle-64-dpin-ergonomie
@@ -72,3 +75,4 @@ Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
 | 2026-07-19 | **welle-65 abgeschlossen**; slice-072 `in-progress`→`done` | §4 des Benutzerhandbuchs aufgabenorientiert nachgezogen (Benutzerhandbuch-Standard §2/§5): der §4.12-`--trace`-Monolith in §4.12–§4.16 aufgetrennt (RTM/Coverage/Modalität/Kreuzverweis, `--print-mk`→§4.16), Grammatik-/Modalitäts-Referenz→§5, „0 Anforderungen"-Fehlerbild→§7, Versions-Prosa→§11, doppelte WAISE-Definition raus; §4.4-Straffung, `citations`-§5-Titel auf Task-Form; Handbuch 1.42. Zwei unabhängige Reviews: Cluster-Review ACCEPT, Abschluss-Gegenprobe BESTANDEN (12 erledigt/2 bewusst-Ref/0 offen). Reine Doku, kein Release/ADR; `make gates` grün (265/0). WIP-Slot wieder frei |
 | 2026-07-19 | **welle-66-release-prep-aufgabenregel eröffnet**; slice-082 in `in-progress/` angelegt (WIP-Slot frei nach welle-65) | slice-072 räumte §4 redaktionell auf, beseitigte aber nicht die **Ursache** (jeder Feature-Slice hängte seine Fähigkeit an §4.12 an, statt eine Aufgabe zu schreiben). Auftraggeber-Entscheid: die billigste dauerhafte Sicherung — eine Release-Prep-Regel „neuer §4-Abschnitt = eigene Aufgabe" — als eigener Folge-Slice, nicht in slice-072 quergeschnitten. Reine Prozess-Doku, kein Release/ADR |
 | 2026-07-19 | **welle-66 abgeschlossen**; slice-082 `in-progress`→`done` | Release-Prep-Regel in releasing.md §Release-Prep Punkt 4: ein neuer Handbuch-§4-Abschnitt für ein Feature ist eine **eigene** Aufgabe (nach Benutzerhandbuch-Standard §5), keine Anhängung — schließt den strukturellen §4-Erosions-Bindepunkt, den slice-072 nur redaktionell umging. Ehrlich unenforced (kein Gate), begründet mit Inline-Fakt (§4.12 wuchs auf ~330 Zeilen/8 Themen). Plan-Review ACCEPT-WITH-NITS eingearbeitet (Faktenfehler + Inline-Fakt-Altitude). Reine Prozess-Doku, kein Release/ADR; `make gates` grün (266/0). WIP-Slot wieder frei |
+| 2026-08-01 | **welle-67-baseline-v500-migration eröffnet**; slice-084 in `in-progress/` angelegt (WIP-Slot frei nach welle-66) | Abnahme der v5.0.0-Migrations-Analyse (slice-083, nach **drei** Frischkontext-Reviews abnahmereif): die adoptierte Baseline springt `v1.4.0` → `v5.0.0` (zwei Majors — Asset-Umbenennung/3-Straten/8×8-Matrix + grundlagen-Split/konventionen-Entfall). Umsetzung in vier Etappen A–D, **je ein Slice**; Etappe A = Vendoring (slice-084). Reine Harness-/Konventions-Änderung, kein Release/ADR |
