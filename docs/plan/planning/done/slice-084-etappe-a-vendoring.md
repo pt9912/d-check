@@ -57,16 +57,16 @@ Kern-Entscheide dieses Slice:
 
 ## 3. Definition of Done
 
-- [ ] `fetch-baseline-cache.sh` entpackt das v5.0.0-Bundle korrekt (beide Bäume,
+- [x] `fetch-baseline-cache.sh` entpackt das v5.0.0-Bundle korrekt (beide Bäume,
   Manifest über tatsächlichen Bestand, Under-Copy-Barriere); `--verify` grün.
-- [ ] `.harness/baseline/v5.0.0/` mit `regelwerk/` + `templates/` + `SHA256SUMS`
+- [x] `.harness/baseline/v5.0.0/` mit `regelwerk/` + `templates/` + `SHA256SUMS`
   vendored; `.harness/baseline/v1.4.0/` entfernt.
-- [ ] `§Baseline`-Stand + die sechs Live-Fundstellen auf `v5.0.0`; entfallene
+- [x] `§Baseline`-Stand + die sechs Live-Fundstellen auf `v5.0.0`; entfallene
   Quellzeiger umgeschrieben; Reviewer-Skill retargetet.
-- [ ] Historische Verweise per `ignore-refs`/Tombstone abgefangen (kein
+- [x] Historische Verweise per `ignore-refs`/Tombstone abgefangen (kein
   eingefrorenes Doc editiert).
-- [ ] Vendoring-`MR` deklariert (Index-Eintrag + Begründung + `Ersetzt-Baseline-Regel`).
-- [ ] `make gates` grün; unabhängiger Frischkontext-Review (slice-083 §4: für die
+- [x] Vendoring-`MR` deklariert (Index-Eintrag + Begründung + `Ersetzt-Baseline-Regel`).
+- [x] `make gates` grün; unabhängiger Frischkontext-Review (slice-083 §4: für die
   inhaltlichen Etappen Pflicht).
 
 ## 4. Risiken / offene Punkte
@@ -92,4 +92,33 @@ Brownfield-Spec.
 
 ## 7. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+**Abgeschlossen 2026-08-02.** Etappe A der Baseline-Migration `v1.4.0` → `v5.0.0`
+(Vendoring + Pin/Pointer). Reine Harness-/Konventions-Änderung, kein Release/ADR.
+
+**Umgesetzt.** Das Skript `fetch-baseline-cache.sh` ist aufs self-contained
+v5.0.0-Bundle gehoben (tolerantes Entpacken, Under-Copy-Barriere, Manifest über
+beide Bäume; `--check-latest` Currency via Release-Liste + Content-Drift über
+beide Bäume); `v5.0.0` vendored (`regelwerk/` 26 + `templates/` 24 + `SHA256SUMS`
+50), `v1.4.0` entfernt. Atomare Umschaltung: §Baseline-Pin auf `v5.0.0`, sieben
+Live-Pfad-Links retargetet, die zwei entfallenen Quellzeiger
+(`agents-regelwerk.md` im Kurs abgelöst, Kurs-`konventionen.md` in acht
+`grundlagen-*` gesplittet) umgeschrieben statt retargetet, Reviewer-Skill auf
+`grundlagen-referenz-richtung.md`, die Vendoring-/Pin-Hebungs-Adaption im
+Konventionsspeicher deklariert. Drei eingefrorene Verweise (eine immutable ADR +
+zwei `done/`-Slices) auf den entfernten `v1.4.0`-Pfad via geteiltem
+`ignore-refs`-Ventil quell-skopiert getombstoned.
+
+**Review.** Unabhängiger Frischkontext-Review (Report unter `docs/reviews/`):
+**abnahmereif**, HIGH 0 / MEDIUM 0 / LOW 2 / INFO 1; Per-Commit-Grün + Atomizität
+per Detached-Worktree empirisch bestätigt, Tombstone load-bearing, kein stilles
+Grün im Skript-Pfad. LOW-2b + INFO eingearbeitet.
+
+**Nach Etappe C übergeben (im Konventionsspeicher-Eintrag getrackt):**
+- LOW-1: die Under-Copy-Barriere filtert den Regelwerk-Baum auf `*.md` (heute
+  inert — das v5.0.0-Regelwerk ist rein Markdown; ein künftiger
+  Nicht-Markdown-Bump bliebe ungeprüft).
+- LOW-2a: die MR-Prosa führt intern noch `<tag> = v1.4.0`- und
+  `…/v1.4.0/…`-Beispiele (interne Drift, kein Gate-Bruch — die Prosa-Angleichung
+  ist die Konventionsspeicher-Etappe).
+
+**Nächster Schritt.** Etappe B (Modul-Delta lesen) als eigener Slice.
