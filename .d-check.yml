@@ -80,8 +80,11 @@ matrix:
     - {from: adr, to: slice, allow: false}
   status:
     forbidden: [superseded, deprecated]
-  # exakter Heading-Vergleich: die Spec-Straten nummerieren ("7. Historie")
-  exclude-sections: [Historie, "7. Historie", Geschichte]
+  # exakter Heading-Vergleich. Nur die immutable ADR-Geschichte bleibt
+  # provenance-exempt; die Spec-Straten-"7. Historie" ist NICHT mehr ausgenommen
+  # (v5.0.0/ADR-0047: die Referenz-Richtung gilt auch in der Historie — die §7-Chronik
+  # ist entkoppelt/token-frei, die Verweis-Spalte entfernt).
+  exclude-sections: [Geschichte]
   # Grandfathering (DC-FA-MTX-003): die vor Einführung Accepted-ADRs (0001–0021)
   # sind immutabel und nennen Slices als legitime Verifikations-Zeiger im Körper
   # — sie werden ganz übersprungen; neue ADRs ab 0022 tragen den Marker.
