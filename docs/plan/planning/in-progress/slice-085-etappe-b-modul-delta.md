@@ -42,10 +42,10 @@ die **Quelle** bestätigt (oder korrigiert) und um am Text gefundene Deltas erg�
 Drei Frischkontext-Leser (grundlagen · Prozess-Module 02/05/06/07 · Spec/Review
 03-spec/04-adrs/10/11/13) haben die 25 v5.0.0-Dateien gegen den d-check-Ist
 gegengelesen; jeder Treffer ist am Quelltext belegt (Reports als Rückgabe im
-Slice-Bogen). **18 Findings**, dedupliziert und nach Ziel-Etappe geordnet; zwei
+Slice-Bogen). **19 Findings** (8 → Etappe C, 11 → Etappe D), dedupliziert und nach Ziel-Etappe geordnet; zwei
 Funde **korrigieren die abgenommene Analyse** (§3.4). Die niedrig-priorisierten
 Module (00/01/08/09/12/14/15/16) sind spot-gecheckt: keine neue Pflicht über die
-Liste hinaus.
+Liste hinaus — **außer** dem AGENTS.md-Angleich (`modul-09` §AGENTS.md-Regeln → D-11).
 
 ### 3.1 → Etappe C (Adaptions-/Konventionsspeicher-Bereinigung)
 
@@ -56,8 +56,8 @@ Liste hinaus.
 | C-3 | `grundlagen-referenz-richtung` §Prüfung: Spec-Check „ganzes Dokument, **ohne** ausgenommene Sektion" | die Historie-Ausnahme über Spec-Straten ist **verboten** (§3.3) | `.d-check.yml` `matrix.exclude-sections` (für `spec-straten` zu weit) + [`MR-012`](../../../../harness/conventions.md#mr-012--baseline-pin-hebung-nachtrag-zu-mr-011)-Begründung („legitime Provenance") |
 | C-4 | `grundlagen-referenz-richtung` 8×8-Matrix | d-checks Kodierung deckt Spec-Decke + ADR→Slice, ist aber **zu eng**: ADR→{Carveout,Welle,Roadmap}, Slice→Roadmap unbewacht | `.d-check.yml` `matrix` → Scope erweitern **oder** Grenze deklarieren |
 | C-5 | `grundlagen-harness-dateien` §Konventionsspeicher | `conventions.md` = **Index + Datei je MR**, Zustand = Verzeichnis-Position | der ganze §Adaptions-Block (24 Inline-Einträge) → Datei-Split (Etappe-C-Kern) |
-| C-6 | `grundlagen-harness-dateien` Pflichtgliederung | neue Pflichtfelder je Eintrag: **`Ersetzt-Baseline-Regel`**, `Löst auf`/`Ausgelöst durch Baseline-Stand`, `(schärft …)` im Titel | jeder `### MR-…`-Eintrag → Felder ergänzen (Status-Feld siehe §3.4) |
-| C-7 | `grundlagen-durchsetzungsschicht` §Guard-Härtung: „Grenz-Zeile mitziehen" | jeder Wächter-MR muss nennen, was der Guard **nicht** kann (`python -c`, `env`, Wrapper) | [`MR-005`](../../../../harness/conventions.md#mr-005--härtung-ggü-b-cad-inhaltsbasierter-gate-nachweis-sub-shell-prüfung) → Grenz-Zeile ergänzen |
+| C-6 | `grundlagen-harness-dateien` Pflichtgliederung + MR-Template (Z. 13/21) | neue Pflichtfelder je Eintrag: **`Ersetzt-Baseline-Regel`**, **`Status: Accepted`** (Template Z. 21), `Löst auf`/`Ausgelöst durch Baseline-Stand`, `(schärft …)` im Titel | jeder `### MR-…`-Eintrag → Felder **ergänzen** (das `Status: Accepted` ist die Akzeptanz-Achse, **kein** Lifecycle-Zustand — vgl. D-5/§3.4) |
+| C-7 | `modul-13-quality-gates` §Guard-Härtung (Z. 189, kanonisch; auch `grundlagen-durchsetzungsschicht`): „Grenz-Zeile wird mitgezogen" | jeder Wächter-MR muss nennen, was der Guard **nicht** kann (`python -c`, `env`, Wrapper) | [`MR-005`](../../../../harness/conventions.md#mr-005--härtung-ggü-b-cad-inhaltsbasierter-gate-nachweis-sub-shell-prüfung) → Grenz-Zeile ergänzen |
 | C-8 | `grundlagen-harness-dateien` §Template-Schichtung (kein Producer-Ausnahme-Abschnitt) | die Baseline-Brücke von „keine Templates verkörpert" entfällt | [`MR-018`](../../../../harness/conventions.md#mr-018--d-check-verkörpert-als-producer-self-hoster-keine-templates) + [`MR-020`](../../../../harness/conventions.md#mr-020--baseline-template-propagation-per-drift-audit-template-frei-bestätigt) → Entfall/Reklassifikation, co-located Vorlagen |
 
 ### 3.2 → Etappe D (Form-Konformität / Artefakte)
@@ -68,12 +68,13 @@ Liste hinaus.
 | D-2 | `modul-06` §Wellen-Closure (5 Schritte) + `modul-05` | Welle-Plandatei + Closure-Notiz (`done/welle-NN-results.md`) + Wave-Self-Close-Commit | d-check führt Wellen nur in der Roadmap; `welle.template.md`/`welle-results.template.md` vendored ungenutzt |
 | D-3 | `modul-06` §Beobachtungs-Register + `grundlagen-traceability` §Anker-Paarung | `observations.md` + `BEO-NNN` + Pflichtfeld `liegt in <Zielort>` in Welle-/Slice-§7 | fehlt komplett (`observations.template.md` vendored ungenutzt) |
 | D-4 | `modul-05` §Zwei Schritte vor der Modus-Begründung | Slice-§ trägt „Vorgelagert — Sub-Area prüfen / offene Beobachtungen sichten" | d-check-Slice-§6 ohne die zwei Vorprüfungen (hängt an D-3) |
-| D-5 | `modul-05` §Lifecycle: „Zustand = Verzeichnis, **kein** Status-Feld" | Slice- **und** MR-`Status:`-Feld ist eine zweite Zustandsquelle | Slice-Header-Konvention ([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise) / [`MR-014`](../../../../harness/conventions.md#mr-014--slice-adr-doc-struktur-repo-haus-stil-ggü-baseline-template)) + jeder MR-Eintrag |
+| D-5 | `modul-05` §Lifecycle: „**Lifecycle**-Zustand = Verzeichnis, kein Status-Feld" | d-checks **Slice**-`Status:`-Feld dupliziert die Verzeichnis-Position (Lifecycle) | Slice-Header-Konvention ([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise) / [`MR-014`](../../../../harness/conventions.md#mr-014--slice-adr-doc-struktur-repo-haus-stil-ggü-baseline-template)) → Slice-`Status:` entfernen. **NB:** das MR-`Status: Accepted` ist eine **andere Achse** (Akzeptanz, template-vorgeschrieben) → C-6, **nicht** entfernen |
 | D-6 | `modul-10` §Report-Gerüst + `review-report.template` | Kopffelder **Review-Art / Skill-Version / Modell-ID** + Finding-`klasse` + Finding-Klassen-Zeile | `.harness/skills/reviewer.md` §Output-Schema/§Ablage; Reports uneinheitlich (erst ab 2026-08-01 geführt) |
 | D-7 | `modul-10`/`modul-11` §closure-note-reviewer | Schwester-Skill **über** einem Closure-Note-Struktur-Gate | `.harness/skills/` (nur `reviewer.md`); `AGENTS.md` §4 kennt kein `verify-closure-notes` → an ein Gate gekoppelt |
-| D-8 | `modul-04` §Re-Evaluierungs-Trigger | jede ADR trägt Trigger (oder „permanent"), im Welle-Closure-Trigger-Audit geprüft | d-check-ADR-Kopf ohne Trigger-Feld (kein Template-Zwang → gering) |
+| D-8 | `modul-04` §Re-Evaluierungs-Trigger (Template-Sektion **Pflicht**) | jede ADR trägt Trigger (oder „permanent"), im Welle-Closure-Trigger-Audit geprüft | d-check führt die Body-Sektion `## Re-Evaluierungs-Trigger` bereits in **27/46** ADRs (Haus-Stil neuer ADRs) → **nahe konform**; Delta nur das konsequente Nachziehen + der Welle-Closure-Trigger-Audit (D-9); die älteren ohne Sektion sind **immutable** (grandfathered) |
 | D-9 | `modul-07` §Carveout-Audit-Slice | pro Welle-Closure ein Audit-Slice **vor** `done/` | fehlt (an D-2 gekoppelt; heute latent — 0 aktive Carveouts) |
 | D-10 | `grundlagen-referenz-richtung` (Baseline-Kopf-Currency) | der Skill-Kopf zitiert noch die retirete `grundlagen-konventionen.md` + „Kurs-Welle 18 §8" | `.harness/skills/reviewer.md` Z. 4–6 (Z. 39 ist bereits korrekt — Kopf hinkt nach; **vom Auftraggeber vorab bemerkt**) |
+| D-11 | `modul-09-implementierung` §AGENTS.md-Regeln (Kanon) | **AGENTS.md gegen `AGENTS.template.md` angleichen**: §1-Inhalt driftet — der Kanon-Zeiger auf Modul 9 fehlt, `{regelwerk,templates}`-Layout, und die **retirete `lab-templates.zip`/`.harness/cache`-Templates-Cache-Prosa** (vom Auftraggeber vorab bemerkt; in der Vendoring-Adaption als Deferral vermerkt) | `AGENTS.md` §1; slice-083 §2.7-D3 |
 
 ### 3.3 Der schärfste Fund — Historie-Provenance revoziert (C-3, DOPPELT belegt)
 
