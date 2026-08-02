@@ -157,29 +157,8 @@ ihn nicht.
 <a id="mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden"></a>
 <a id="mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019"></a>
 <a id="mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout"></a>
-
-## Anforderungs-Anlege-Prozess
-
-Neue oder geänderte `DC-*`-Anforderungen entstehen **nur** in
-[`spec/lastenheft.md`](../spec/lastenheft.md) (vertraglich,
-Change-Request-Charakter — Baseline-Regel der Spec-Stratifizierung;
-Rang-Struktur dieses Repos: [`MR-001`](#mr-001--source-precedence-mit-eigener-spezifikations-schicht)).
-Pflicht-Bausteine pro Anforderung:
-
-- **ID gemäß Schema-Konvention** im Lastenheft §3
-  (`DC-FA-<BEREICH>-<NNN>`, siehe
-  [`MR-002`](#mr-002--id-schema-mit-bereichskürzeln-ab-initialer-fassung));
-  ein neues Bereichskürzel wird dort in der Schema-Konvention
-  deklariert. Nichtfunktionale Anforderungen: `DC-QA-<NN>`.
-- **Drei Akzeptanzkriterien** (Happy/Boundary/Negative im
-  Given/When/Then-Stil) plus explizite **Out-of-Scope**-Liste.
-- **Versions-Bump + Historie-Zeile** im Lastenheft (§7).
-- **Schärfungs-Richtung:** ADRs dürfen die Spezifikation schärfen,
-  nie das Lastenheft (siehe [`MR-001`](#mr-001--source-precedence-mit-eigener-spezifikations-schicht)-Begründung); wer das Lastenheft
-  ändern will, ändert es direkt — als Change Request, nicht per ADR.
-- **Beleg-Pflicht:** Test, Gate, Demo oder ADR folgt mit dem
-  umsetzenden Slice
-  ([`harness/README.md` §Traceability rules](README.md#traceability-rules)).
+<!-- Retiriert (welle-67, Etappe C): §Anforderungs-Anlege-Prozess — der Inhalt war Baseline-Duplikat (grundlagen/modul-03-spec); eingefrorene Verweise lösen über diesen Anker auf. -->
+<a id="anforderungs-anlege-prozess"></a>
 
 ## Zusatzklassen-Deklaration für Sensors-Bindung
 
