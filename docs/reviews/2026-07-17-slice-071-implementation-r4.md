@@ -23,7 +23,7 @@ Slice gesamt `6c4ccf5..HEAD`
   Schritte 1–7 + §Fehlerpräzedenz (geändert),
   [ADR-0038](../plan/adr/0038-trace-cross-consistency.md) Entscheidungen 5 + 8
   (**unverändert** durch `815a2a7`)
-- [`harness/conventions.md` §Anforderungs-Anlege-Prozess](../../harness/conventions.md#anforderungs-anlege-prozess),
+- [`AGENTS.md` §5 (Anforderungs-Anlege-Prozess)](../../AGENTS.md#5-dokumentations-regeln),
   [`MR-001`](../../harness/conventions.md#mr-001--source-precedence-mit-eigener-spezifikations-schicht),
   [`AGENTS.md`](../../AGENTS.md) §3.4/§3.5/§3.6
 - Prüfgegenstand: `internal/hexagon/core/app/trace_cross.go`,
@@ -70,7 +70,7 @@ Diagnose-Regression.
 - **quelle:** [`DC-FA-XREF-001`](../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)
   (§Vakuum-Absatz, §Ableitungssprung-Absatz, AK „Negative (Vakuum,
   fail-closed)");
-  [`harness/conventions.md` §Anforderungs-Anlege-Prozess](../../harness/conventions.md#anforderungs-anlege-prozess)
+  [`AGENTS.md` §5 (Anforderungs-Anlege-Prozess)](../../AGENTS.md#5-dokumentations-regeln)
   („Drei Akzeptanzkriterien … **Versions-Bump + Historie-Zeile**" als
   Pflicht-Bausteine bei **geänderten** `DC-*`-Anforderungen);
   [`MR-001`](../../harness/conventions.md#mr-001--source-precedence-mit-eigener-spezifikations-schicht)

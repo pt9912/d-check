@@ -70,7 +70,7 @@ Konvention angleichen und die Norm die Ausgabe 1:1 decken lassen.
   `links, anchors, ids, matrix, codepaths, spans, hostpaths` + repo-bewusster
   `planning`-Block; K1–K4 + geschlossene Aktiv-Menge benannt; `versions`/`targets`
   als vertagt vermerkt. **Versions-Bump + Historie-Zeile** (v0.39.0). Anlege-/
-  Änderungs-Prozess nach [`harness/conventions.md` §Anforderungs-Anlege-Prozess](../../../../harness/conventions.md#anforderungs-anlege-prozess).
+  Änderungs-Prozess nach [`AGENTS.md` §5 (Anforderungs-Anlege-Prozess)](../../../../AGENTS.md#5-dokumentations-regeln).
 - [ ] **Spezifikation** [§`DC-FA-CLI-006.a`](../../../../spec/spezifikation.md#dc-fa-cli-006a--konfigurations-vorschlag):
   fixes Modulset in Prosa + kanonischer YAML-Vorlage aktualisiert (spans/hostpaths
   in `modules`, `planning`-Block, `codepaths`-Block, „Weitere opt-in-Module"-

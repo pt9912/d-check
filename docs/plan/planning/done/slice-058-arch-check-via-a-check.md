@@ -9,7 +9,7 @@ released und liefert Image + `a-check.mk` + `.a-check.yml`).
 **Bezug:** [ADR-0029](../../adr/0029-arch-check-via-a-check.md) (Supersedes die
 Fitness-Function-Mechanik von [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md)/[ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md);
 Regeln R1–R6 bleiben). **Bewusst kein Lastenheft-CR:** das d-check-Produkt ändert sich
-nicht — der [Anforderungs-Anlege-Prozess](../../../../harness/conventions.md#anforderungs-anlege-prozess)
+nicht — der [Anforderungs-Anlege-Prozess](../../../../AGENTS.md#5-dokumentations-regeln)
 greift nur für `DC-*`-Anforderungen, Gate-Mechanik ist ADR-Domäne (Präzedenz
 [slice-039](../done/slice-039-pr-ci-traceability-gate.md)/[slice-055](../done/slice-055-completeness-rueckbau.md));
 die [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Bindung
