@@ -1,6 +1,6 @@
 # ADR-0047 — matrix: Spec-Straten-Historie nicht mehr provenance-exempt (v5.0.0-Referenz-Richtung)
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-08-02
 **Autor:** pt9912
 **Bezug:** [`DC-FA-MTX-001`](../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
@@ -81,3 +81,4 @@ Historie-Ausnahme.
 | Datum | Ereignis |
 | --- | --- |
 | 2026-08-02 | Entwurf (slice-087, welle-67 „C-3-Nachzug"): Korrektur der slice-086-Annahme (kein per-Klasse-Code-Feature nötig — die Heading-Namen `Geschichte`/`7. Historie` trennen ADR- und Spec-Provenance schon selektiv). Status Proposed. |
+| 2026-08-02 | **Accepted.** Umgesetzt in slice-087: Spec-§7 beider Straten entkoppelt (Verweis-Spalte + slice-Token + neun adr-Abwärtslinks entfernt), `matrix.exclude-sections` auf `[Geschichte]` verengt; Enforcement live verifiziert (injiziertes `slice-999` → `matrix-forbidden`, nach Revert grün). Unabhängiger Frischkontext-Review abnahmereif (ein LOW, ein INFO eingearbeitet); die verfeinerte immutable ADR byte-identisch. |
