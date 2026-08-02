@@ -8,14 +8,14 @@
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-67-baseline-v500-migration **läuft** — **Etappe B
-(Modul-Delta lesen)** abgeschlossen
-([`slice-085`](../done/slice-085-etappe-b-modul-delta.md): 19 Findings, 8 →
-Etappe C / 11 → Etappe D, u. a. die Historie-Provenance-Revocation; unabhängig
-reviewt + Kurz-Re-Review, abnahmereif). **Etappe C (`MR-*`-Bereinigung +
-Datei-Migration)** folgt als nächster Slice — der identitäts-berührende Schnitt
-mit Abnahme-Punkten. Etappe A abgeschlossen
-([`slice-084`](../done/slice-084-etappe-a-vendoring.md)). Reine
+**welle-67-baseline-v500-migration** — **Etappe C (`MR-*`-Bereinigung +
+Datei-Migration)** = [`slice-086`](slice-086-etappe-c-mr-bereinigung.md): der
+identitäts-berührende Schnitt — `conventions.md` auf **Index + Datei je MR** heben,
+**Anker-Kompatibilitäts-Block** für die 173 Links, neue Pflichtfelder, Forks
+reklassifiziert (korrigiert), Historie-Provenance bereinigt (drei
+**Abnahme-Punkte**). Etappen A/B abgeschlossen
+([`slice-084`](../done/slice-084-etappe-a-vendoring.md),
+[`slice-085`](../done/slice-085-etappe-b-modul-delta.md)). Reine
 Harness-/Konventions-Änderung, kein Release/ADR.
 
 **Vorgänger:** welle-66-release-prep-aufgabenregel
@@ -82,3 +82,4 @@ Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
 | 2026-08-02 | **welle-67 Etappe A abgeschlossen**; slice-084 `in-progress`→`done` (WIP-Slot frei) | Vendoring auf `v5.0.0`: Skript aufs self-contained Bundle gehoben + beide Bäume vendored; atomare Umschaltung (Pin + 7 Live-Pointer + entfallene Quellzeiger umgeschrieben + Tombstone der 3 eingefrorenen Verweise via geteiltem `ignore-refs`), v1.4.0 entfernt, die Vendoring-/Pin-Hebungs-Adaption im Konventionsspeicher deklariert. Unabhängiger Frischkontext-Review **abnahmereif** (LOW 2/INFO 1, Nits eingearbeitet; LOW-1 Under-Copy-md-Filter + LOW-2a interne `<tag>`-Prosa-Drift → Etappe C). `make gates` grün (271/0) |
 | 2026-08-02 | **welle-67 Etappe B eröffnet**; slice-085 in `in-progress/` angelegt | Nach Etappe A (Vendoring) liest Etappe B das vendorte v5.0.0-Regelwerk (8 grundlagen + 17 Module) gegen den d-check-Ist und sammelt die Regel-Deltas als Finding-Liste (Schema {Quelle, Regel-Delta, Adaption/Artefakt, Handlung→C/D}); bestimmt den Umfang von Etappe C + D. Reine Lese-/Analyse-Etappe, kein Code/Release/ADR |
 | 2026-08-02 | **welle-67 Etappe B abgeschlossen**; slice-085 `in-progress`→`done` (WIP-Slot frei) | Drei Frischkontext-Leser gegen den v5.0.0-Ist → **19 Findings** (8 C / 11 D). Kern: Historie-Provenance-Ausnahme revoziert (C-3, doppelt belegt — `spec/spezifikation.md`+`spec/lastenheft.md` §7 + `matrix.exclude-sections` nicht-konform, Abnahme-Punkt); zwei Korrekturen an der abgenommenen §2.4 (die Guard-Härtungs-Adaptionen sind keine Forks; das `Status`-Feld ist nur template-, nicht grundlagen-gedeckt). Unabhängiger Review + bestätigende Kurz-Re-Review **abnahmereif** (3 MEDIUM/1 LOW eingearbeitet). Flotten-Stand: Flotte auf v3.5.2 → v4/v5-Deltas d-check-first. `make gates` grün |
+| 2026-08-02 | **welle-67 Etappe C eröffnet**; slice-086 in `in-progress/` angelegt (WIP-Slot frei nach Etappe B) | Die slice-085-Finding-Liste macht Etappe C verbindlich: `conventions.md` auf die v5.0.0-Default-Form (Index + Datei je MR), Anker-Kompatibilitäts-Block für 173 Links, neue Pflichtfelder, korrigierte Fork-Reklassifikation, Entfall/Verschmelzung, 8×8-Matrix + Historie-Provenance-Bereinigung. **Drei Abnahme-Punkte** (Fork-Klassifikation · Nummern-Kollision · Spec-§7-Bereinigung). Reine Harness-/Konventions-Änderung |
