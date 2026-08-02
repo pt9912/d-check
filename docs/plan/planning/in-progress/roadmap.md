@@ -8,17 +8,17 @@
 
 ## Aktuelle Welle
 
-**welle-67-baseline-v500-migration** — **Spec-§7-Referenzrichtung (C-3-Nachzug)** =
-[`slice-087`](slice-087-spec-historie-referenzrichtung.md): die aus
-[`slice-086`](../done/slice-086-etappe-c-mr-bereinigung.md) §3 (Abnahme-Punkt 3)
-herausgeschnittene **C-3-Konformität**, korrigiert auf **Doc + Konfig** (kein
-Code-Feature — die Heading-Namen `Geschichte` vs. `7. Historie` trennen ADR- und
-Spec-Provenance sauber): `matrix.exclude-sections` auf `Geschichte` verengt, Spec §7
-in beiden Straten **ent-tokenisiert**, begleitende ADR. Etappen A–C abgeschlossen
+**Keine aktive Welle.** welle-67-baseline-v500-migration **läuft** — die
+**Spec-§7-Referenzrichtung (C-3-Nachzug)** ist abgeschlossen
+([`slice-087`](../done/slice-087-spec-historie-referenzrichtung.md): §7 beider
+Spec-Straten entkoppelt [Verweis-Spalte + Abwärts-Token/Links raus],
+`matrix.exclude-sections` auf `Geschichte` verengt, begleitende ADR Accepted;
+Enforcement live verifiziert, unabhängig reviewt/abnahmereif). **Etappe D
+(Form-Konformität)** ist der letzte offene Migrations-Slice. Etappen A–C abgeschlossen
 ([`slice-084`](../done/slice-084-etappe-a-vendoring.md),
 [`slice-085`](../done/slice-085-etappe-b-modul-delta.md),
-[`slice-086`](../done/slice-086-etappe-c-mr-bereinigung.md)). Danach **Etappe D
-(Form-Konformität)**. Reine Harness-/Spec-Konformität, kein Release.
+[`slice-086`](../done/slice-086-etappe-c-mr-bereinigung.md)). Reine
+Harness-/Spec-Konformität, kein Release.
 
 **Vorgänger:** welle-66-release-prep-aufgabenregel
 ([`slice-082`](../done/slice-082-release-prep-aufgabenregel.md) — Release-Prep-Regel
@@ -87,3 +87,4 @@ Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
 | 2026-08-02 | **welle-67 Etappe C eröffnet**; slice-086 in `in-progress/` angelegt (WIP-Slot frei nach Etappe B) | Die slice-085-Finding-Liste macht Etappe C verbindlich: `conventions.md` auf die v5.0.0-Default-Form (Index + Datei je MR), Anker-Kompatibilitäts-Block für 173 Links, neue Pflichtfelder, korrigierte Fork-Reklassifikation, Entfall/Verschmelzung, 8×8-Matrix + Historie-Provenance-Bereinigung. **Drei Abnahme-Punkte** (Fork-Klassifikation · Nummern-Kollision · Spec-§7-Bereinigung). Reine Harness-/Konventions-Änderung |
 | 2026-08-02 | **welle-67 Etappe C abgeschlossen**; slice-086 `in-progress`→`done` (WIP-Slot frei) | `conventions.md` auf die v5.0.0-Template-Form (Index + Datei je MR; Inline-Baseline-Aussage + `### Aktive`/`### Aufgelöste`-Tabellen): 8 aktive + 15 aufgelöste Einträge, Voll-Slug-Anker in die Index-Zeilen gefaltet (kein Sonderabschnitt), die **188** `conventions.md#mr-`-Links (12 immutable ADRs) erhalten **ohne ADR-Edit**, `ids`-target → `harness/conventions/`, §Anforderungs-Duplikat gelöscht (Verweise auf AGENTS.md §5 retargetet), C-3 herausgeschnitten / C-4 deklariert. Umfangreicher Nutzer-Live-Review (Template-Konformität) + unabhängiger Review **abnahmereif** (4 LOW eingearbeitet). `make gates` + `adr-check` grün |
 | 2026-08-02 | **welle-67 slice-087 eröffnet** (Spec-§7-Referenzrichtung, C-3-Nachzug) | Die aus slice-086 §3 Abnahme-Punkt 3 herausgeschnittene C-3-Konformität — **korrigiert:** kein Code-Feature nötig (die Heading-Namen `Geschichte` [46 ADRs] und `7. Historie` [2 Spec-Straten] trennen ADR-/Spec-Provenance schon selektiv), sondern `matrix.exclude-sections` auf `Geschichte` verengen + Spec §7 beider Straten ent-tokenisieren + begleitende ADR (Supersede-Verfeinerung der matrix-Referenzrichtung ggü. der v1.4.0-Historie-Ausnahme). Reine Harness-/Spec-Konformität, kein Release |
+| 2026-08-02 | **welle-67 slice-087 abgeschlossen**; `in-progress`→`done` (WIP-Slot frei) | Spec-§7-Referenzrichtung v5.0.0-konform: `spec/spezifikation.md` §7 + `spec/lastenheft.md` §7 entkoppelt (Verweis-Spalte entfernt; slice-Token + neun adr-Abwärtslinks aus der Änderungs-Prosa raus, §7 bleibt lesbare Chronik), `matrix.exclude-sections` von `[Historie, "7. Historie", Geschichte]` auf `[Geschichte]` verengt (nur die immutable ADR-Geschichte bleibt exempt; §7 ab jetzt fail-closed geprüft, live verifiziert). Begleitende ADR Accepted (Supersede-Verfeinerung; die referenzierte immutable ADR byte-identisch). Korrigierte die slice-086-Annahme „braucht ein Code-Feature". Unabhängiger Review abnahmereif (ein LOW/ein INFO eingearbeitet). `make gates` + `make adr-check` grün, kein Release |
