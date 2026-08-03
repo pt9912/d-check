@@ -8,14 +8,14 @@
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-67-baseline-v500-migration **läuft** — **Etappe D
-(Form-Konformität, Mini-Welle)**: Planning-Layer, Doc-Form und **Review-Infrastruktur**
-abgeschlossen ([`slice-088`](../done/slice-088-etappe-d1-doc-form.md),
+**welle-67-baseline-v500-migration** — **Etappe D (Form-Konformität, Mini-Welle),
+letzter Slice** = [`slice-091`](slice-091-slice-status-feld-entfernen.md)
+(**Slice-`Status:`-Feld entfernen** [D-5]: Lifecycle = Verzeichnis, kein Status-Feld).
+Planning-Layer, Doc-Form und Review-Infrastruktur abgeschlossen
+([`slice-088`](../done/slice-088-etappe-d1-doc-form.md),
 [`slice-089`](../done/slice-089-doc-form-agents.md),
-[`slice-090`](../done/slice-090-review-infrastruktur.md): reviewer.md-Currency +
-Report-Kopffelder; das Closure-Note-Gate [D-7] → Folge-Produkt-Slice, unabhängig
-reviewt/abnahmereif). **Letzter** Slice: **slice-091** (Slice-`Status:`-Feld D-5) —
-danach schließt welle-67.
+[`slice-090`](../done/slice-090-review-infrastruktur.md)). **Danach schließt welle-67**
+(Wellen-Closure-Prozedur).
 
 - **Welle-Details / Closure-Kriterien:**
   [Wellendokument](../welle-67-baseline-v500-migration.md) (alle Etappe-D-Slices in
@@ -141,3 +141,4 @@ nicht als Anspruch auf Wellen-Status.
 | 2026-08-02 | **welle-67 slice-089 abgeschlossen** (Doc-Form); `in-progress`→`done` (WIP-Slot frei) | Etappe D-2: AGENTS.md an v5.0.0 angeglichen — §1-Currency (stale Templates-Cache-Prosa raus, `{regelwerk,templates}`-vendored + `modul-09`-Kanon-Zeiger rein, D-11), ADR-Re-Evaluierungs-Trigger-Konvention §5 (D-8; 20 immutable ADRs grandfathered), Slice-Vorprüfungen §5 (D-4). Unabhängiger Review abnahmereif (0 HIGH/MEDIUM/INFO, 1 LOW §5-vs-§6-Drift geheilt). `make gates` + `make adr-check` grün, keine ADR/Spec/Code berührt. Nächst: slice-090 (Review-Infrastruktur D-6/D-7/D-10) |
 | 2026-08-02 | **welle-67 slice-090 eröffnet** (Review-Infrastruktur); slice-089→`done`, slice-090 `in-progress` | Etappe D-3: `reviewer.md`-Kopf-Currency (retirete `grundlagen-konventionen.md`/„Kurs-Welle 18" → v5.0.0, D-10) + Report-Kopffelder Review-Art/Skill/Modell-ID + Finding-`klasse` abgestimmt auf `review-report.template.md` (D-6). **D-7** (`closure-note-reviewer`-Skill + `verify-closure-notes`-Gate) fehlt in d-check komplett (kein Skript/Target/Skill, die Closure-Note-Pflicht-ADR ohne Entsprechung) → From-Scratch-Code-Adoption, als Abnahme-Punkt (Folge-Produkt-Slice empfohlen) |
 | 2026-08-02 | **welle-67 slice-090 abgeschlossen** (Review-Infrastruktur); `in-progress`→`done` (WIP-Slot frei) | Etappe D-3: `reviewer.md`-Kopf-Currency (D-10) + §Output-/Report-Schema um Finding-`klasse` + Kopf-Metadaten Review-Art/Skill/Modell-ID (D-6, abgestimmt auf `review-report.template.md`). **D-7** (Closure-Note-Gate + Skill) als Folge-Produkt-Slice herausgeschnitten (Nutzer-Entscheid; §Nächste-Wellen-Kandidat). Unabhängiger Review abnahmereif (0 HIGH/MEDIUM/LOW, 1 INFO = Baseline-interne 5-vs-6-Feld-Drift, upstream). `make gates` + `make adr-check` grün. **Letzter** Etappe-D-Slice: slice-091 (Slice-`Status:`-Feld D-5) |
+| 2026-08-02 | **welle-67 slice-091 eröffnet** (letzter Etappe-D-Slice); slice-090→`done`, slice-091 `in-progress` | Etappe D-4 (D-5): das `**Status:**`-Feld aus den Slice-Dateien entfernen — Lifecycle-Zustand = Verzeichnis (Baseline `slice.template.md` führt einen `**Lifecycle:**`-Hinweis statt Status). 90 `done/`-Slices betroffen; kein Gate/Skript liest Slice-Status. Abnahme-Punkt: retrofit-all vs. template-forward. Danach welle-67-Closure |
