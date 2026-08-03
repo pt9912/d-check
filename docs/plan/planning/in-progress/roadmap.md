@@ -20,18 +20,7 @@ den drei Pflicht-Bestandteilen (Slice-IDs · Trigger · Closure-Kriterien); das
 **Start:** 2026-08-03
 **Geplantes Ende:** 2026-08-05 (Schätzung, korrigierbar)
 
-**Closure-Trigger:** siehe [Wellendokument](../welle-68-planning-roadmap-harness.md) —
-alle Slices (092–093) in `done/`, `make gates` grün **und** das neue
-`verify-closure-notes`-Gate grün (repo-weit).
-
-**Slices:** [`slice-092`](../done/slice-092-roadmap-aktuelle-welle-template-form.md)
-(Template-Struktur-Felder, **done**) · [`slice-093`](slice-093-closure-note-gate.md)
-(Closure-Note-Reviewer + `verify-closure-notes`-Gate, D-7 — **aktiv**).
-
-*(d-check-Adaption, Konventionsspeicher: diese Struktur-Feld-Form gilt, **solange eine
-Welle läuft**; im **wellenlosen** Zustand trägt der Abschnitt stattdessen den vom
-`planning`-Modul erzwungenen Ruhe-Marker. Die v5.0.0-Migration [welle-67] ist
-abgeschlossen — Closure-Log in §Abgeschlossene Wellen.)*
+**Closure-Trigger:** siehe [Wellendokument](../welle-68-planning-roadmap-harness.md).
 
 
 ## Nächste Wellen
