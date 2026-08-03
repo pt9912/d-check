@@ -1,6 +1,6 @@
 # Slice slice-088: Regelwerk-Migration Etappe D — Planning-Layer-Form (Wellen-Lifecycle · Roadmap · Beobachtungs-Register)
 
-**Status:** In Arbeit (welle-67).
+**Status:** Done (welle-67, Planning-Layer abgeschlossen 2026-08-02).
 
 **Welle:** welle-67-baseline-v500-migration (Etappe D, erster von vier
 „Mini-Welle"-Slices, nach
@@ -81,12 +81,12 @@ Welle-Closure-Schritt verankert (D-9). Keine neuen Produkt-Features, kein Releas
 
 ## 4. Definition of Done
 
-- [ ] `welle-67-baseline-v500-migration.md` flach angelegt, template-konform, §7 ausstehend.
-- [ ] `observations.md` als stehende Datei angelegt (`— keine —`, template-konform).
-- [ ] `roadmap.md` führt die Baseline-Abschnitte; Closure-Bestand in `## Abgeschlossene Wellen`.
-- [ ] Slice-Form trägt die zwei Vorprüfungen (D-4); welle-67-Closure-Trigger nennt den Audit (D-9).
-- [ ] `## Aktuelle Welle`-Form-Entscheid (Abnahme-Punkt 1) umgesetzt (Adaptions-Eintrag).
-- [ ] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
+- [x] `welle-67-baseline-v500-migration.md` flach angelegt, template-konform, §7 ausstehend.
+- [x] `observations.md` als stehende Datei angelegt (`— keine —`, template-konform).
+- [x] `roadmap.md` führt die Baseline-Abschnitte; Closure-Bestand in `## Abgeschlossene Wellen`.
+- [x] Slice-Form trägt die zwei Vorprüfungen (D-4); welle-67-Closure-Trigger nennt den Audit (D-9).
+- [x] `## Aktuelle Welle`-Form-Entscheid (Abnahme-Punkt 1) umgesetzt (Adaptions-Eintrag).
+- [x] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
 
 ## 5. Risiken / offene Punkte
 
@@ -117,4 +117,42 @@ Brownfield-Spec.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Umgesetzt: die d-check-**Planning-Schicht** ist auf die v5.0.0-Baseline-Form gehoben.
+
+- **D-2 Wellendokument:** `welle-67-baseline-v500-migration.md` flach angelegt — die
+  **laufende** Welle nachträglich konform dokumentiert (Ziel · Start-Trigger slice-083 ·
+  Closure-Trigger · Slices 084–091 **ohne** Status-Spalte · Out-of-Scope · §7 ausstehend
+  bis Closure/Ruheort-Regel). Zustand = Verzeichnis, `git mv` → `done/` bei Welle-Closure.
+- **D-3 Beobachtungs-Register:** `observations.md` als **stehende** Datei (`— keine —`;
+  die verkörperten Lehren stehen in `AGENTS.md`/Gates/Konventionen).
+- **D-1 Roadmap:** **sechs** Baseline-Abschnitte (Aktuelle Welle · Nächste Wellen ·
+  Meilensteine · Abhängigkeitsgraph · Abgeschlossene Wellen · Historische
+  Trigger-Verschiebungen); die „Vorgänger"-Prosa ins Closure-Log migriert; für
+  welle-60…66 je eine minimale, **retroaktiv markierte** Ergebnis-Notiz (Nutzer-Entscheid)
+  — mit **Reklassifikations-Vorbehalt** (61…66 waren überwiegend wellenlose
+  Einzel-Slice-Arbeit).
+- **Abnahme-Punkt 1 (Ruhe-Marker ↔ Template):** als **deklarierte Adaption** behalten —
+  ein neuer Konventionsspeicher-Eintrag hält die Ruhe-Marker-/Prosa-Form fest
+  (Feld-Details im Wellendokument, wellenloser Zustand explizit, gate-erzwungen vom
+  `planning`-Modul); **kein** Modul-Umbau.
+- **D-4:** die zwei Vorprüfungen sind in diesem Slice modelliert (§7); die
+  AGENTS-Konventions-Verankerung koppelt an slice-089. **D-9:** der Trigger-Audit ist im
+  welle-67-Closure-Trigger benannt (0 aktive Carveouts, latent).
+
+**Design-Wendung:** der Slice wurde von „Doc-Form" auf **„Planning-Layer-Form"
+umgewidmet** (Nutzer-Hinweis), nachdem sich zeigte, dass welle-67 **ohne** ihr
+Baseline-Wellendokument lief — Roadmap-Form + Wellen-Lifecycle + Register sind **ein**
+kohärenter Planning-Layer und gehören zuerst.
+
+**Review:** unabhängiger Frischkontext-Review
+(`docs/reviews/2026-08-02-slice-088-planning-layer-review.md`): **abnahmereif**, HIGH 0 /
+MEDIUM 0 / LOW 0 / INFO 1 (Alt-Wellen-Reklassifikation → im Closure-Log-Vorbehalt
+benannt). `make gates` + `make adr-check` grün, **keine** ADR/Spec/Code berührt.
+
+**Lehre:** Scratchpad-/tmp-Skripte sind **session-flüchtig** — vorbereitete
+Transformationen in der Session ausführen, nicht als „Plan für morgen" liegenlassen
+(Nutzer fing es). Und: D-1/D-2/D-3 sind **ein** Planning-Layer, nicht trennen.
+
+**Anschluss:** **slice-089** (Doc-Form: AGENTS.md D-11 + ADR-Trigger D-8), dann slice-090
+(Review-Infrastruktur D-6/D-7/D-10) und slice-091 (Slice-`Status:`-Feld D-5). Danach
+schließt welle-67.
