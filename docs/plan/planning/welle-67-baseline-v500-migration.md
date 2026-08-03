@@ -46,7 +46,7 @@ und `make gates` + `make adr-check` grün sind — bei erhaltener 188-Link-Integ
 | [slice-085](done/slice-085-etappe-b-modul-delta.md) | Etappe B — Modul-Delta (18 Findings, 8→C / 11→D) | Migrations-Schnitt §2.7 B |
 | [slice-086](done/slice-086-etappe-c-mr-bereinigung.md) | Etappe C — Konventionsspeicher (Index + Datei je MR) | Migrations-Schnitt §2.7 C |
 | [slice-087](done/slice-087-spec-historie-referenzrichtung.md) | C-3-Nachzug — Spec-§7-Referenzrichtung entkoppelt | Finding C-3 |
-| [slice-088](in-progress/slice-088-etappe-d1-doc-form.md) | Etappe D — Planning-Layer-Form (Roadmap · Welle · Register) | Findings D-1/D-2/D-3/D-4/D-9 |
+| [slice-088](done/slice-088-etappe-d1-doc-form.md) | Etappe D — Planning-Layer-Form (Roadmap · Welle · Register) | Findings D-1/D-2/D-3/D-4/D-9 |
 | slice-089 | Etappe D — Doc-Form (AGENTS.md · ADR-Trigger) | Findings D-8/D-11 |
 | slice-090 | Etappe D — Review-Infrastruktur | Findings D-6/D-7/D-10 |
 | slice-091 | Etappe D — Slice-`Status:`-Feld entfernen | Finding D-5 |
