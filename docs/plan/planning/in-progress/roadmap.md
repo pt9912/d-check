@@ -39,12 +39,6 @@ und geschätzter Aufwand (S/M/L, kein Termin).
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Welle ≠ Meilenstein ≠ Release.
 
-Extern beobachtbare Zustände, **orthogonal** zur Welle: die Welle endet durch
-Closure-Kriterien (intern), der Meilenstein durch externe Bestätigung. d-check liefert
-**kontinuierlich** — jeder Modul-Release ist ein eigener extern-beobachtbarer Zustand
-(GHCR-Tag + Handbuch-Version) **neben** der jeweiligen Welle, nicht ein gebündelter
-Roadmap-Meilenstein. Die Release-Versionen je Welle stehen im Closure-Log unten.
-
 | Meilenstein | Welle(n) | Trigger | Status |
 |---|---|---|---|
 | — keine offenen — | | | |
@@ -52,33 +46,21 @@ Roadmap-Meilenstein. Die Release-Versionen je Welle stehen im Closure-Log unten.
 ## Abhängigkeitsgraph
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
-§Roadmap-Struktur — die Abhängigkeit einer geplanten Welle steht als beobachtbare
-Bedingung in der `Trigger`-Spalte (§Nächste Wellen) **und** als gerichtete Kante hier;
-eine Welle, die ohne fertige Vorgängerin nicht starten kann, ist eine Phantom-Welle.
-d-checks Wellen sind weitgehend **unabhängig** (nach Kapazität sequenziert, nicht durch
-eine Vorgängerin blockiert); derzeit gibt es **keine** geplante Folge-Welle.
+§Roadmap-Struktur: fünf Abschnitte, Bullet *Nächste Wellen* — die Abhängigkeit steht als
+beobachtbare Bedingung in der `Trigger`-Spalte **und** als gerichtete Kante hier; eine
+Welle, die ohne fertige Vorgängerin nicht starten kann, ist eine Phantom-Welle.
 
 ```mermaid
 flowchart LR
-    W67["welle-67 - baseline-v500-migration (abgeschlossen)"]
+    W68["welle-68 - planning-roadmap-harness (laeuft)"]
     N["keine geplante Folge-Welle"]
-    W67 -.-> N
+    W68 -.-> N
 ```
 
 ## Abgeschlossene Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
-§Roadmap-Struktur — das Closure-Log: welche Welle wann geschlossen wurde, mit Zeiger auf
-ihre Ergebnis-Notiz im Ruheort `done/`.
-
-Das Closure-Log (ruhender Audit-Bestand). **Vor welle-60** liefen die Wellen vor der
-Lifecycle-Adoption; ihre Belege liegen in den Slice-`done/`-Dateien und in git. Ab
-welle-60 sind minimale, retroaktiv nachgezogene Ergebnis-Notizen verlinkt (slice-088);
-welle-67 wandert bei ihrer Closure hierher. **Reklassifikations-Vorbehalt:** welle-61…66
-waren überwiegend **Einzel-Slice**-Arbeit (65/66 reine Doku ohne Release), die
-`modul-06` §Wann Arbeit eine Welle braucht als **wellenlos** führen würde (Beleg im
-Slice-`done/`, nicht im Roadmap-Log); sie stehen hier als **pragmatischer** Log-Bestand,
-nicht als Anspruch auf Wellen-Status.
+§Roadmap-Struktur: fünf Abschnitte.
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
@@ -95,8 +77,9 @@ nicht als Anspruch auf Wellen-Status.
 ## Historische Trigger-Verschiebungen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
-§Roadmap-Struktur — das Drift-Log: jede Umplanung mit Datum, Änderung, Grund. Leer heißt
-starre Roadmap, jede Zeile voll heißt treibende.
+§Roadmap-Struktur: fünf Abschnitte, Bullet *Historische Trigger-Verschiebungen* — das
+Drift-Log: jede Umplanung mit Datum, Änderung, Grund. Leer heißt starre Roadmap, jede
+Zeile voll heißt treibende.
 
 | Datum | Was wurde geändert? | Warum? |
 |---|---|---|
