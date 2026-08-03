@@ -81,7 +81,11 @@ flowchart LR
 Das Closure-Log (ruhender Audit-Bestand). **Vor welle-60** liefen die Wellen vor der
 Lifecycle-Adoption; ihre Belege liegen in den Slice-`done/`-Dateien und in git. Ab
 welle-60 sind minimale, retroaktiv nachgezogene Ergebnis-Notizen verlinkt (slice-088);
-welle-67 wandert bei ihrer Closure hierher.
+welle-67 wandert bei ihrer Closure hierher. **Reklassifikations-Vorbehalt:** welle-61…66
+waren überwiegend **Einzel-Slice**-Arbeit (65/66 reine Doku ohne Release), die
+`modul-06` §Wann Arbeit eine Welle braucht als **wellenlos** führen würde (Beleg im
+Slice-`done/`, nicht im Roadmap-Log); sie stehen hier als **pragmatischer** Log-Bestand,
+nicht als Anspruch auf Wellen-Status.
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
