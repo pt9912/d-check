@@ -1,6 +1,6 @@
 # Slice slice-090: Regelwerk-Migration Etappe D — Review-Infrastruktur (reviewer.md-Currency · Report-Kopffelder)
 
-**Status:** In Arbeit (welle-67).
+**Status:** Done (welle-67, Review-Infrastruktur abgeschlossen 2026-08-02).
 
 **Welle:** welle-67-baseline-v500-migration (Etappe D, dritter „Mini-Welle"-Slice, nach
 [slice-089](../done/slice-089-doc-form-agents.md)).
@@ -64,12 +64,12 @@ ist eine From-Scratch-**Code**-Adoption → Abnahme-Punkt (§3).
 
 ## 4. Definition of Done
 
-- [ ] `reviewer.md`-Kopf v5.0.0-konform (D-10: `grundlagen-referenz-richtung`, `modul-10`;
+- [x] `reviewer.md`-Kopf v5.0.0-konform (D-10: `grundlagen-referenz-richtung`, `modul-10`;
   Version/Datum gebumpt).
-- [ ] `reviewer.md` §Output-Schema trägt `klasse`; §Ablage nennt die Kopf-Metadaten
+- [x] `reviewer.md` §Output-Schema trägt `klasse`; §Ablage nennt die Kopf-Metadaten
   (Review-Art/Skill-Version/Modell-ID) abgestimmt auf `review-report.template.md` (D-6).
-- [ ] D-7-Entscheid (Abnahme-Punkt 1) festgehalten.
-- [ ] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
+- [x] D-7-Entscheid (Abnahme-Punkt 1) festgehalten.
+- [x] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
 
 ## 5. Risiken / offene Punkte
 
@@ -94,4 +94,33 @@ greenfield-Currency-/Form-Angleich an die adoptierte Baseline.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Umgesetzt: die d-check-Review-Infrastruktur ist an die v5.0.0-Baseline-Form angeglichen.
+
+- **D-10 `reviewer.md`-Kopf-Currency:** die retirete `grundlagen-konventionen.md` →
+  `grundlagen-referenz-richtung.md`, „Agents-Digest Kurs-Welle 18 §8" →
+  `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill; Version 1.2.0 → 1.3.0.
+- **D-6 Output-/Report-Schema:** Finding-Feld `klasse` (stabile Fehlermuster-Bezeichnung)
+  ergänzt; §Ablage präzisiert die Report-Kopf-Metadaten (Review-Art · Gegenstand ·
+  Skill @ Version · Modell-ID · Datum · Eingangs-Kontext), abgestimmt auf die vendored
+  `review-report.template.md`. **Abwärtskompatibel** (Feld ergänzt, nicht umbenannt).
+- **D-7 (herausgeschnitten):** der `closure-note-reviewer`-Skill + das
+  `verify-closure-notes`-Gate fehlen in d-check komplett → als **Folge-Produkt-Slice**
+  (Code + ADR, analog C-3) herausgeschnitten (Nutzer-Entscheid); in der Roadmap
+  §Nächste Wellen als Kandidat vermerkt.
+
+**Review:** unabhängiger Frischkontext-Review
+(`docs/reviews/2026-08-02-slice-090-review-infrastruktur-review.md`): **abnahmereif**,
+HIGH 0 / MEDIUM 0 / LOW 0 / INFO 1. `make gates` + `make adr-check` grün, **keine**
+ADR/Spec/Code berührt. (Der Report ist zugleich der erste, der die **neue** Kopf-Metadaten-
+Form + das `klasse`-Feld dogfoodet.)
+
+**Beobachtung (Review-INFO, Baseline-intern, in slice-090 nicht lösbar):** der
+Output-Schema-Abschnitt von `modul-10-review-harness.md` in der **vendored** Baseline
+listet **fünf** Finding-Felder, während `review-report.template.md` (und das angeglichene
+`reviewer.md`) **sechs** führen (`klasse`). Die Drift liegt **upstream** in der Baseline;
+ein späterer Pflege-Lauf, der `reviewer.md` an der hinkenden Modul-Zeile „korrigiert",
+würde sie reaktivieren. **Für den nächsten Baseline-Bump-Drift-Audit vermerkt** (nur dort
+auffangbar).
+
+**Anschluss:** **slice-091** (Slice-`Status:`-Feld entfernen, D-5) ist der **letzte**
+Etappe-D-Slice — danach schließt welle-67.
