@@ -8,13 +8,13 @@
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-67-baseline-v500-migration **läuft** — **Etappe D
-(Form-Konformität, Mini-Welle)**: der **Planning-Layer**
-([`slice-088`](../done/slice-088-etappe-d1-doc-form.md)) und die **Doc-Form**
-([`slice-089`](../done/slice-089-doc-form-agents.md): AGENTS.md-Currency +
-ADR-Re-Evaluierungs-Trigger-Konvention + Slice-Vorprüfungen; unabhängig reviewt,
-abnahmereif) sind abgeschlossen. Nächster Slice: **slice-090** (Review-Infrastruktur
-D-6/D-7/D-10), dann slice-091 (Slice-`Status:`-Feld D-5).
+**welle-67-baseline-v500-migration** — **Etappe D (Form-Konformität, Mini-Welle)** =
+[`slice-090`](slice-090-review-infrastruktur.md) (**Review-Infrastruktur**:
+reviewer.md-Kopf-Currency [D-10], Report-Kopffelder + Finding-`klasse` [D-6]; das
+Closure-Note-Gate [D-7] als Abnahme-Punkt, da From-Scratch-Code-Adoption). Planning-Layer
++ Doc-Form abgeschlossen ([`slice-088`](../done/slice-088-etappe-d1-doc-form.md),
+[`slice-089`](../done/slice-089-doc-form-agents.md)); danach slice-091
+(Slice-`Status:`-Feld D-5).
 
 - **Welle-Details / Closure-Kriterien:**
   [Wellendokument](../welle-67-baseline-v500-migration.md) (alle Etappe-D-Slices in
@@ -130,3 +130,4 @@ nicht als Anspruch auf Wellen-Status.
 | 2026-08-02 | **welle-67 slice-088 abgeschlossen** (Planning-Layer); `in-progress`→`done` (WIP-Slot frei) | Etappe D-1: welle-67-Wellendokument (D-2) + `observations.md` (D-3) + Roadmap auf 6 Baseline-Abschnitte inkl. welle-60..66-results-Backfill (D-1) + Slice-Vorprüfungen modelliert (D-4) + Trigger-Audit im Wellendokument (D-9) + Ruhe-Marker-Adaption im Konventionsspeicher (Abnahme-Punkt 1). Unabhängiger Review abnahmereif (0 HIGH/MEDIUM/LOW, 1 INFO geheilt). `make gates` + `make adr-check` grün. Nächst: slice-089 (Doc-Form D-8/D-11) |
 | 2026-08-02 | **welle-67 slice-089 eröffnet** (Doc-Form); slice-088→`done`, slice-089 `in-progress` | Etappe D-2: AGENTS.md an v5.0.0 angleichen — §1-Currency (stale `.harness/cache`/`lab-templates.zip`/„keine-Templates"-Prosa raus, `{regelwerk,templates}`-vendored-Layout + `modul-09`-Kanon-Zeiger rein, D-11), ADR-Re-Evaluierungs-Trigger-Konvention in §5 (D-8; 20 immutable ADRs grandfathered), Slice-Vorprüfungen in §5 (D-4, aus slice-088 delegiert). AGENTS = Source-Precedence-Anker, review-pflichtig |
 | 2026-08-02 | **welle-67 slice-089 abgeschlossen** (Doc-Form); `in-progress`→`done` (WIP-Slot frei) | Etappe D-2: AGENTS.md an v5.0.0 angeglichen — §1-Currency (stale Templates-Cache-Prosa raus, `{regelwerk,templates}`-vendored + `modul-09`-Kanon-Zeiger rein, D-11), ADR-Re-Evaluierungs-Trigger-Konvention §5 (D-8; 20 immutable ADRs grandfathered), Slice-Vorprüfungen §5 (D-4). Unabhängiger Review abnahmereif (0 HIGH/MEDIUM/INFO, 1 LOW §5-vs-§6-Drift geheilt). `make gates` + `make adr-check` grün, keine ADR/Spec/Code berührt. Nächst: slice-090 (Review-Infrastruktur D-6/D-7/D-10) |
+| 2026-08-02 | **welle-67 slice-090 eröffnet** (Review-Infrastruktur); slice-089→`done`, slice-090 `in-progress` | Etappe D-3: `reviewer.md`-Kopf-Currency (retirete `grundlagen-konventionen.md`/„Kurs-Welle 18" → v5.0.0, D-10) + Report-Kopffelder Review-Art/Skill/Modell-ID + Finding-`klasse` abgestimmt auf `review-report.template.md` (D-6). **D-7** (`closure-note-reviewer`-Skill + `verify-closure-notes`-Gate) fehlt in d-check komplett (kein Skript/Target/Skill, die Closure-Note-Pflicht-ADR ohne Entsprechung) → From-Scratch-Code-Adoption, als Abnahme-Punkt (Folge-Produkt-Slice empfohlen) |
