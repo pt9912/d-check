@@ -53,7 +53,10 @@ Welle-Closure-Schritt verankert (D-9). Keine neuen Produkt-Features, kein Releas
 4. **D-4 Slice-Vorprüfungen.** Die zwei Vorprüfungen (`modul-05` §Zwei Schritte vor der
    Modus-Begründung / `modul-06` Sichtungs-Schritt) in die Slice-Form aufnehmen:
    „**Vorgelagert** — Sub-Area prüfen · offene Beobachtungen sichten" **vor** der
-   §Sub-Area-Modus-Begründung; für slice-088 selbst nachgezogen.
+   §Sub-Area-Modus-Begründung; für slice-088 selbst nachgezogen (§7). Die
+   Konventions-Verankerung für **alle** künftigen Slices (`AGENTS.md`
+   §Slice-Anlege-Prozess) zieht slice-089 (D-11, AGENTS-Angleich) mit — hier nur das
+   gelebte Modell.
 5. **D-9 Carveout-/Trigger-Audit.** Den Welle-Closure-Trigger-Audit
    (Carveout · bootstrap-aware Gate · ADR-Re-Eval, `modul-06` Closure-Schritt 2) im
    welle-67-Closure-Trigger verankern; 0 aktive Carveouts → **latent**, aber benannt.
