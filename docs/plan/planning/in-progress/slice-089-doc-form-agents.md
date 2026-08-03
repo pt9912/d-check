@@ -41,10 +41,11 @@ Konvention verankern (D-8) und die zwei **Slice-Vorprüfungen** als Konvention a
    retrofit-bar — das Trigger-Feld liegt im ADR-Core, `adr-check` schlägt bei nachträglicher
    Ergänzung an); der Welle-Closure-Trigger-Audit (slice-088-Wellendokument §3 / D-9)
    prüft die Trigger.
-3. **D-4 Slice-Vorprüfungen.** In §6 (Minimal Agent Workflow) die zwei Vorprüfungen als
-   Slice-Plan-Schritt verankern: **vor** der Sub-Area-Modus-Begründung „Sub-Area prüfen ·
-   offene Beobachtungen sichten" (`observations.md`) — Zeiger auf die Baseline-Slice-Form,
-   nicht Duplikat der Regel.
+3. **D-4 Slice-Vorprüfungen.** In §5 (Dokumentations-Regeln) als Slice-Plan-Form-Regel
+   verankern: jeder Slice-Plan trägt **vor** der Sub-Area-Modus-Begründung „Sub-Area
+   prüfen · offene Beobachtungen sichten" (`observations.md`) — Zeiger auf die
+   Baseline-Slice-Form, nicht Duplikat der Regel. (§5 trägt bereits die
+   Slice-Lifecycle-/Roadmap-Regeln; §6 bleibt der Implementierungs-Workflow.)
 4. **Gate.** `make gates` + `make adr-check` grün (**keine** `Accepted`-ADR berührt);
    unabhängiger Frischkontext-Review.
 
@@ -62,7 +63,7 @@ Konvention verankern (D-8) und die zwei **Slice-Vorprüfungen** als Konvention a
   **keine** stale Cache-/`lab-templates.zip`-/„keine-Templates"-Prosa).
 - [ ] `AGENTS.md` §5 trägt die ADR-Re-Evaluierungs-Trigger-Konvention (D-8);
   immutable-Grandfathering benannt.
-- [ ] `AGENTS.md` §6 trägt die Slice-Vorprüfungen (D-4).
+- [ ] `AGENTS.md` §5 trägt die Slice-Vorprüfungen-Form-Regel (D-4).
 - [ ] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
 
 ## 5. Risiken / offene Punkte
