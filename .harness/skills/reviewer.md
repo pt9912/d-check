@@ -1,9 +1,9 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.2.0 · **Datum:** 2026-06-28 ·
-**Baseline:** Agents-Digest Kurs-Welle 18 §8 (Output-Schema,
+**Version:** 1.3.0 · **Datum:** 2026-08-02 ·
+**Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
-`grundlagen-konventionen.md` §Referenz-Richtung — seit
+`grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
 [`DC-FA-MTX-003`](../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)
 (token-mechanisiert) auf Marker-Ehrlichkeit abgespeckt.
 
@@ -68,7 +68,8 @@ nur melden). Streit über eine Kategorisierung ⇒ Regel hier schärfen.
 `MR-*`-ID, Hard-Rule-Name oder „Maintainability") · `pfad`
 (`Datei:Zeile`) · `befund` (1–2 Sätze, beobachtbar, ohne
 Lösungsvorschlag) · `verifizierbar` (ja/nein — welcher Gate-Lauf
-würde den Befund bestätigen?).
+würde den Befund bestätigen?) · `klasse` (stabile Kurz-Bezeichnung des
+Fehlermusters, über Reviews hinweg wiederauffindbar).
 
 ## Negativbefunde (Pflicht)
 
@@ -77,8 +78,11 @@ ist „keine Findings" nicht von „nicht geprüft" unterscheidbar.
 
 ## Ablage
 
-Ein Report pro Lauf unter `docs/reviews/<YYYY-MM-DD>-<gegenstand>.md`
-(Struktur: Kopf-Metadaten · Findings · Negativbefunde ·
-Kategorie-Summary · Verdikt). Nie überschreiben — Folgeläufe bekommen
+Ein Report pro Lauf unter `docs/reviews/<YYYY-MM-DD>-<gegenstand>.md`.
+**Kopf-Metadaten** (Ziel-Form `review-report.template.md`): **Review-Art**
+(Plan/Design/Code — *wogegen* geprüft wird) · **Gegenstand** (Slice-ID/Diff-Range/
+Commit) · **Skill** (`reviewer.md` @ Version/Commit) · **Modell-ID** · Datum ·
+Eingangs-Kontext (die Verträge, gegen die geprüft wurde). Danach: Findings ·
+Negativbefunde · Kategorie-Summary · Verdikt. Nie überschreiben — Folgeläufe bekommen
 eine neue Datei. Verdikt: HIGH und MEDIUM blockieren typischerweise;
 Abweichungen werden im Report begründet.
