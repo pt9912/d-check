@@ -76,14 +76,21 @@ Freigabe des aus slice-090 herausgeschnittenen D-7 als welle-68-Slice.
 
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
-- **Sub-Area prüfen:** berührt *Produkt-Code* (neues Modul/Gate) + *Spec* + *Harness/Skills*
-  — nicht rein GF; Brownfield-Produkt-Sub-Area (Go-Code + Spec).
+- **Sub-Area prüfen:** berührt mehrere Sub-Areas — Produkt-Code (`internal/`,
+  `planning`-Modul), Spec (`spec/`) und Harness/Skills (`.harness/skills/`). **Alle unter
+  dem Repo-Default GF** (`harness/conventions.md` §Modus: `*` = Greenfield). **Kein
+  Brownfield:** der Code entsteht **spec-first**, wird nicht rückdokumentiert.
 - **Offene Beobachtungen sichten:** `observations.md` = `— keine —`; nichts zu berücksichtigen.
 
 ## 8. Sub-Area-Modus-Begründung
 
-**Produkt-Sub-Area** (Go-Code + Spec + Gate): CR-getrieben, ADR-gedeckt, test- und
-release-pflichtig — nicht der GF-Doc-Modus der übrigen Migrations-Slices.
+**GF (Greenfield, Repo-Default)** — „Spec führt, Code folgt: wir versprechen X, dann
+liefern wir X". slice-093 ist ein **Produkt-Feature** (neues Gate: Go-Code + Spec +
+Release), aber der **Modus** ist GF wie bei jedem d-check-Slice: der Change Request +
+die Schärfung der `planning`-Anforderung + die ADR schreiben die **Zusage**, die
+Go-Implementierung **liefert** sie. Der Unterschied zu den Doc-only-Migrations-Slices ist der **Scope**
+(Produkt-Code + Release statt reiner Doc/Harness), **nicht** der Modus — Brownfield wäre
+nur die Inventur bestehenden undokumentierten Codes, was hier nicht vorliegt.
 
 ## 9. Closure-Notiz (nach `done/`)
 
