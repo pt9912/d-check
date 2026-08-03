@@ -45,21 +45,6 @@ und geschätzter Aufwand (S/M/L, kein Termin).
 |---|---|---|---|
 | — keine geplante Welle — | | | |
 
-**d-check-Extension — Feature-Kandidaten (kein Slice, keine geplante Welle):** d-check
-läuft überwiegend **wellenlos** (Einzel-Slices nach Bedarf); `next/` und `open/` sind
-derzeit leer. Statt geplanter Wellen führt es hier freigabe-offene Kandidaten:
-
-- **RTM-Generator** — RTM aus den Rückwärts-`Bezug`-Kanten erzeugen; von
-  [ADR-0038](../../adr/0038-trace-cross-consistency.md) Entscheidung 7 als spätere CR
-  sequenziert (slice-071 ist sein Korrektheits-Harness). Auftraggeber-Nachreichung
-  2026-07-17: zusätzlich Artefakt-Titel + Kanten-Anmerkung. Freigabe und Scope offen.
-- **`--print-version-md`-Scaffold** — gibt ein `version.md`-Skelett auf stdout aus
-  (Familie `--print-config`/`--print-mk`/`--suggest-config`; read-only, deterministisch).
-  Produkt-Feature ⇒ Change Request (`DC-FA-CLI-*` im Lastenheft) + Slice + Spezifikation-`.a`,
-  **kein** ADR. Anlass: Nutzer-Frage 2026-07-04 (Nachbau von `version.md` in Fremd-Repos).
-*(Der D-7-Kandidat — Closure-Note-Reviewer + `verify-closure-notes`-Gate — ist in die
-**aktuelle** welle-68 eingeplant, siehe §Aktuelle Welle, und steht daher nicht mehr hier.)*
-
 ## Meilensteine
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
