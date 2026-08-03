@@ -45,11 +45,11 @@ Modul-Umbau) ist die Vorgabe._
 
 ## 4. Definition of Done
 
-- [ ] `## Aktuelle Welle` trägt die Template-Struktur-Felder (Welle-ID/Start/Geplantes
+- [x] `## Aktuelle Welle` trägt die Template-Struktur-Felder (Welle-ID/Start/Geplantes
   Ende/Closure-Trigger + Slices), **ohne** Ruhe-Marker-Zeichenfolge, während welle-68 läuft.
-- [ ] Der Konventionsspeicher-Eintrag zur `## Aktuelle Welle`-Form ist auf die zwei
+- [x] Der Konventionsspeicher-Eintrag zur `## Aktuelle Welle`-Form ist auf die zwei
   Zustände verfeinert (aktive = Felder, wellenlos = Ruhe-Marker; kein Modul-Umbau).
-- [ ] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
+- [x] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
 
 ## 5. Risiken / offene Punkte
 
@@ -76,4 +76,23 @@ greenfield-Angleich an die Template-Form.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Umgesetzt: `## Aktuelle Welle` erreicht die **Template-Struktur-Feld-Form** — solange eine
+Welle läuft, trägt der Abschnitt Welle-ID · Start · Geplantes Ende · Closure-Trigger + die
+Slice-Liste (aktuell welle-68); `planning-check` ist grün (`hasActive == hasSlices`, keine
+Ruhe-Marker-Zeichenfolge im Block). **Kein `planning`-Modul-Umbau** — der Nutzer-Wunsch
+„Template strikt" ist erfüllt, weil eine **aktive** Welle die Felder gate-konform trägt.
+
+- Die Konventionsspeicher-Adaption ist auf **zwei Zustände** verfeinert: aktive Welle →
+  Template-Struktur-Felder (template-konform); wellenlos → Ruhe-Marker (gate-erzwungen, die
+  **einzige** verbleibende Abweichung). Die frühere Prosa-Form ist abgelöst.
+- Der Ruhe-Marker greift wieder, sobald `in-progress/` leer ist — deshalb wurde slice-092
+  **kombiniert mit dem Öffnen von slice-093** geschlossen, damit die Struktur-Felder halten
+  (die aktive Welle nicht slice-los wird).
+
+**Review:** unabhängiger Frischkontext-Review
+(`docs/reviews/2026-08-03-slice-092-aktuelle-welle-template-form-review.md`): **abnahmereif**,
+HIGH 0 / MEDIUM 0 / LOW 0 / INFO 1 (Datum-Feld-Provenienz, won't-fix). `make gates` +
+`make adr-check` grün, **keine** ADR/Spec/Code berührt.
+
+**Anschluss:** **slice-093** (D-7: Closure-Note-Reviewer-Skill + `verify-closure-notes`-Gate)
+— der letzte welle-68-Slice, **Produkt-Code** (CR + eigene ADR + Tests + Release).
