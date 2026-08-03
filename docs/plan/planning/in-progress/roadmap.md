@@ -12,12 +12,14 @@ Treiber.
 ## Aktuelle Welle
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
-§Roadmap-Struktur — *Aktuelle Welle* ist **die laufende Welle** mit den drei
-Pflicht-Bestandteilen (Slice-IDs · Trigger · Closure-Kriterien); das *Geplante Ende* ist
-Schätzung, kein Closure-Kriterium. **d-check-Adaption** (Konventionsspeicher): der
-**wellenlose** Zustand steht hier explizit als Ruhe-Marker „Keine aktive Welle" (vom
-`planning`-Modul erzwungen), und die Struktur-Felder (Welle-ID/Start/Geplantes Ende)
-liegen im Wellendokument statt hier.
+§Roadmap-Struktur: fünf Abschnitte — *Aktuelle Welle* ist **die laufende**, mit
+den drei Pflicht-Bestandteilen (Slice-IDs · Trigger · Closure-Kriterien); das
+*Geplante Ende* ist Schätzung, kein Closure-Kriterium.
+
+**d-check-Adaption** (Konventionsspeicher-Eintrag): der **wellenlose** Zustand steht hier
+explizit als Ruhe-Marker „Keine aktive Welle" (vom `planning`-Modul erzwungen); die
+Struktur-Felder (Welle-ID · Start · Geplantes Ende · Closure-Trigger) trägt das
+**Wellendokument** der jeweils laufenden Welle, nicht dieser Abschnitt.
 
 **Keine aktive Welle.** Die v5.0.0-Baseline-Migration
 (**welle-67-baseline-v500-migration**) ist **abgeschlossen** — alle acht Slices
@@ -30,8 +32,9 @@ Freigabe wartend) stehen in §Nächste Wellen.
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
-§Roadmap-Struktur — die geordnete Vorschau geplanter **Wellen**: je Zeile Welle, Trigger
-(beobachtbare Bedingung), wichtigste Slices, geschätzter Aufwand (S/M/L, kein Termin).
+§Roadmap-Struktur: fünf Abschnitte, Bullet *Nächste Wellen* — die geordnete
+Vorschau: je Zeile Welle, Trigger als beobachtbare Bedingung, wichtigste Slices
+und geschätzter Aufwand (S/M/L, kein Termin).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
