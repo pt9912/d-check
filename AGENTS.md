@@ -7,6 +7,10 @@ Dokumentation ändert. Sie verweist auf die kanonischen Quellen und
 formuliert die Hard Rules, die der Implementation-Agent immer
 einhalten muss.
 
+Diese Datei trägt **Hard Rules und Pointer** auf die kanonischen Quellen und
+**dupliziert deren Inhalt nicht** — sonst entsteht Drift (Kanon:
+[`modul-09-implementierung.md` §AGENTS.md-Regeln](.harness/baseline/v5.0.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)).
+
 **Bei Konflikt zwischen dieser Datei und einer kanonischen Quelle gilt
 die kanonische Quelle** (Source Precedence — siehe
 [`harness/README.md`](harness/README.md)).
@@ -31,19 +35,16 @@ Pfadschema/Provenance siehe
 [`MR-019`](harness/conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)).
 Pro Session **nur den benötigten Abschnitt** lesen, bevor der Workflow (§6)
 startet — nicht das gesamte Regelwerk im Kontext halten.
-**Templates** werden dagegen nicht aus dem Cache
-autoriert: d-check ist Producer-/Self-Hoster und verkörpert **keine**
-co-located `*.template.md` — wiederkehrende Artefakte (ADR, Slice, …) entstehen
-nativ im Haus-Stil aus dem gelebten Bestand, Singleton-Skelette sind beim
-Bootstrap einmalig gefüllt. Dasselbe Skript entpackt `lab-templates.zip` nach
-`.harness/cache/<tag>/templates/` **nur als Adoptions-/Drift-Audit-Staging,
-nicht als Autorenquelle**
-([`MR-018`](harness/conventions.md#mr-018--d-check-verkörpert-als-producer-self-hoster-keine-templates)).
-Das Bundle ist derivativ; bei Konflikt sticht die
-Quelldatei das Bundle, über ihr die kanonischen Quellen (Source
-Precedence). Den Link auf die Quelldatei und den adoptierten Stand führt
-[`harness/conventions.md`](harness/conventions.md) (§Adoptierte
-Konventions-Quellen bzw. §Baseline).
+Die **Skelett-Vorlagen** der Baseline liegen aus demselben self-contained Bundle
+**committet vendored** unter `.harness/baseline/<tag>/templates/` (parallel zum
+`.harness/baseline/<tag>/regelwerk/`-Baum, netzlos) und tragen zwei Rollen: als
+**Referenz-Form**, auf die das Regelwerk als „Ziel-Form" verweist, und als **Vorlage**
+beim Anlegen neuer Artefakte (ADR, Slice, Welle, …). d-checks gelebte Slice-/ADR-Struktur
+folgt dabei einer **Haus-Stil-Form** — in Etappe C als baseline-konforme Form-Wahl
+aufgelöst, nicht als Fork. Das Bundle ist derivativ; bei Konflikt sticht die Quelldatei
+das Bundle, über ihr die kanonischen Quellen (Source Precedence). Stand/Provenance führt
+[`harness/conventions.md`](harness/conventions.md) (§Adoptierte Konventions-Quellen bzw.
+§Baseline).
 
 ## 2. Kanonische Quellen (Source Precedence)
 
@@ -183,8 +184,17 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   ([`modul-03-spec`](.harness/baseline/v5.0.0/regelwerk/modul-03-spec.md)); das
   repo-spezifische ID-Schema steht in `spec/lastenheft.md` §3.
 - Neue ADRs müssen den ADR-Index aktualisieren.
+- Neue ADRs tragen die Sektion `## Re-Evaluierungs-Trigger` (oder „permanent");
+  die vor Einführung `Accepted`-ADRs sind immutable und **grandfathered** (das
+  Trigger-Feld liegt im ADR-Core, nachträgliches Ergänzen bräche `make adr-check`).
+  Der Welle-Closure-Trigger-Audit (Baseline-Regelwerk Modul 6) bestätigt oder
+  revidiert sie (Folge-ADR mit `supersedes`).
 - Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der Architektur-Spec.
 - Slice-Lifecycle (`open → next → in-progress → done`) ist reine Datei-Bewegung (`git mv`, siehe §3.3).
+- Jeder Slice-Plan trägt **vor** der Sub-Area-Modus-Begründung die zwei
+  **Vorprüfungen** (Sub-Area prüfen · offene Beobachtungen im Register
+  `observations.md` sichten) — Baseline-Regelwerk Modul 5/6, unabhängig vom
+  Sub-Area-Modus.
 - `CHANGELOG.md` wird bei nutzersichtbaren Änderungen gepflegt.
 
 ## 6. Minimal Agent Workflow
