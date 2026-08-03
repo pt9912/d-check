@@ -24,7 +24,7 @@ und `make gates` + `make adr-check` grün sind — bei erhaltener 188-Link-Integ
 
 ## 2. Trigger (Welle startet)
 
-- [slice-083](done/slice-083-regelwerk-v500-migration-analyse.md) (v5.0.0-Migrations-
+- [slice-083](slice-083-regelwerk-v500-migration-analyse.md) (v5.0.0-Migrations-
   Analyse, §2.7-Etappen-Schnitt) **abgenommen** — der Start-Trigger liegt **vor** der
   Welle, ist kein Ergebnis dieser Welle.
 
@@ -42,14 +42,14 @@ und `make gates` + `make adr-check` grün sind — bei erhaltener 188-Link-Integ
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [slice-084](done/slice-084-etappe-a-vendoring.md) | Etappe A — Vendoring (self-contained v5.0.0-Bundle, Pin/Pointer/Tombstone) | Migrations-Schnitt §2.7 A |
-| [slice-085](done/slice-085-etappe-b-modul-delta.md) | Etappe B — Modul-Delta (18 Findings, 8→C / 11→D) | Migrations-Schnitt §2.7 B |
-| [slice-086](done/slice-086-etappe-c-mr-bereinigung.md) | Etappe C — Konventionsspeicher (Index + Datei je MR) | Migrations-Schnitt §2.7 C |
-| [slice-087](done/slice-087-spec-historie-referenzrichtung.md) | C-3-Nachzug — Spec-§7-Referenzrichtung entkoppelt | Finding C-3 |
-| [slice-088](done/slice-088-etappe-d1-doc-form.md) | Etappe D — Planning-Layer-Form (Roadmap · Welle · Register) | Findings D-1/D-2/D-3/D-4/D-9 |
-| [slice-089](done/slice-089-doc-form-agents.md) | Etappe D — Doc-Form (AGENTS.md · ADR-Trigger · Slice-Vorprüfungen) | Findings D-8/D-11/D-4 |
-| [slice-090](done/slice-090-review-infrastruktur.md) | Etappe D — Review-Infrastruktur (D-7 → Folge-Produkt-Slice) | Findings D-6/D-10 (D-7 herausgeschnitten) |
-| [slice-091](done/slice-091-slice-status-feld-entfernen.md) | Etappe D — Slice-`Status:`-Feld entfernen (template-forward) | Finding D-5 |
+| [slice-084](slice-084-etappe-a-vendoring.md) | Etappe A — Vendoring (self-contained v5.0.0-Bundle, Pin/Pointer/Tombstone) | Migrations-Schnitt §2.7 A |
+| [slice-085](slice-085-etappe-b-modul-delta.md) | Etappe B — Modul-Delta (18 Findings, 8→C / 11→D) | Migrations-Schnitt §2.7 B |
+| [slice-086](slice-086-etappe-c-mr-bereinigung.md) | Etappe C — Konventionsspeicher (Index + Datei je MR) | Migrations-Schnitt §2.7 C |
+| [slice-087](slice-087-spec-historie-referenzrichtung.md) | C-3-Nachzug — Spec-§7-Referenzrichtung entkoppelt | Finding C-3 |
+| [slice-088](slice-088-etappe-d1-doc-form.md) | Etappe D — Planning-Layer-Form (Roadmap · Welle · Register) | Findings D-1/D-2/D-3/D-4/D-9 |
+| [slice-089](slice-089-doc-form-agents.md) | Etappe D — Doc-Form (AGENTS.md · ADR-Trigger · Slice-Vorprüfungen) | Findings D-8/D-11/D-4 |
+| [slice-090](slice-090-review-infrastruktur.md) | Etappe D — Review-Infrastruktur (D-7 → Folge-Produkt-Slice) | Findings D-6/D-10 (D-7 herausgeschnitten) |
+| [slice-091](slice-091-slice-status-feld-entfernen.md) | Etappe D — Slice-`Status:`-Feld entfernen (template-forward) | Finding D-5 |
 
 ## 5. Abhängigkeiten
 
@@ -73,6 +73,11 @@ und `make gates` + `make adr-check` grün sind — bei erhaltener 188-Link-Integ
 
 ## 7. Closure-Notiz
 
-_Ausstehend (wird bei der Welle-Closure gefüllt; die Pointer auf `welle-67-results.md`
-und das Beobachtungs-Register werden dann so geschrieben, wie sie vom Ruheort `done/`
-auflösen — Ruheort-Regel)._
+Welle **abgeschlossen 2026-08-03** — die Baseline-Migration `v1.4.0` → `v5.0.0` ist
+komplett (alle acht Slices 084–091 in `done/`, `make gates` + `make adr-check` grün,
+Trigger-Audit durchlaufen: 0 aktive Carveouts, keine Gate-Reifestufe offen, die neue
+C-3-ADR ohne fälligen Re-Evaluierungs-Trigger).
+
+**Ergebnis:** [`welle-67-results.md`](welle-67-results.md) (Geschwister im Ruheort `done/`).
+**Zähler:** [`../observations.md`](../observations.md) (das Beobachtungs-Register, eine
+Ebene über dem Ruheort).

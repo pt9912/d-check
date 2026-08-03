@@ -1,64 +1,64 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-08-02.
+**Status:** Aktiv. **Letzte Änderung:** 2026-08-03.
 
-**Form:** folgt [Kurs-Modul 6](../../../../.harness/baseline/v5.0.0/regelwerk/modul-06-roadmap.md).
+**Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine Reihenfolge von
+Terminen (siehe [Baseline-Regelwerk `modul-06-roadmap.md`](../../../../.harness/baseline/v5.0.0/regelwerk/modul-06-roadmap.md)).
+Termine erscheinen — falls überhaupt — als Konsequenz der Wellen-Schätzung, nie als
+Treiber.
 
 ---
 
 ## Aktuelle Welle
 
-**Keine aktive Welle.** welle-67-baseline-v500-migration — **alle Slices abgeschlossen**
-(Etappe A–D: [`slice-084`](../done/slice-084-etappe-a-vendoring.md) …
-[`slice-091`](../done/slice-091-slice-status-feld-entfernen.md); D-5 als
-**template-forward** umgesetzt, unabhängig reviewt/abnahmereif). Die
-**Welle-Closure-Prozedur** (Trigger-Audit → `welle-67-results.md` → Wellendokument
-`git mv` → `done/` → Wave-Self-Close-Commit → Roadmap fortschreiben) folgt als nächster
-Schritt; danach ist die **v5.0.0-Migration komplett**.
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
+§Roadmap-Struktur — *Aktuelle Welle* ist **die laufende Welle** mit den drei
+Pflicht-Bestandteilen (Slice-IDs · Trigger · Closure-Kriterien); das *Geplante Ende* ist
+Schätzung, kein Closure-Kriterium. **d-check-Adaption** (Konventionsspeicher): der
+**wellenlose** Zustand steht hier explizit als Ruhe-Marker „Keine aktive Welle" (vom
+`planning`-Modul erzwungen), und die Struktur-Felder (Welle-ID/Start/Geplantes Ende)
+liegen im Wellendokument statt hier.
 
-- **Welle-Details / Closure-Kriterien:**
-  [Wellendokument](../welle-67-baseline-v500-migration.md) (alle Etappe-D-Slices in
-  `done/` + `make gates` / `make adr-check` grün + Trigger-Audit).
-
-Etappen A–C + C-3-Nachzug abgeschlossen
-([`slice-084`](../done/slice-084-etappe-a-vendoring.md),
-[`slice-085`](../done/slice-085-etappe-b-modul-delta.md),
-[`slice-086`](../done/slice-086-etappe-c-mr-bereinigung.md),
-[`slice-087`](../done/slice-087-spec-historie-referenzrichtung.md)). **Letzter
-Migrations-Abschnitt der welle-67** — danach schließt sie. Reine Harness-/Prozess-Doku,
-kein Release.
+**Keine aktive Welle.** Die v5.0.0-Baseline-Migration
+(**welle-67-baseline-v500-migration**) ist **abgeschlossen** — alle acht Slices
+(084–091) liegen in `done/`, das
+[Wellendokument](../done/welle-67-baseline-v500-migration.md) ist nach `done/` gewandert
+(Closure-Log unten in §Abgeschlossene Wellen). Offene Kandidaten (kein Slice, auf
+Freigabe wartend) stehen in §Nächste Wellen.
 
 
 ## Nächste Wellen
 
-**Im Backlog (`next/`):** leer.
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
+§Roadmap-Struktur — die geordnete Vorschau geplanter **Wellen**: je Zeile Welle, Trigger
+(beobachtbare Bedingung), wichtigste Slices, geschätzter Aufwand (S/M/L, kein Termin).
 
-**Im Eingang (`open/`), auf Wellen-Einplanung wartend:** leer
-([`slice-083`](../done/slice-083-regelwerk-v500-migration-analyse.md) am 2026-08-01
-abgenommen → `done/`; die Umsetzung der Etappen A–D läuft ab welle-67).
+| Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
+|---|---|---|---|
+| — keine geplante Welle — | | | |
 
-**Kandidat (noch kein Slice, auf Freigabe wartend):** der **RTM-Generator** (RTM
-aus den Rückwärts-`Bezug`-Kanten erzeugen; von
-[ADR-0038](../../adr/0038-trace-cross-consistency.md) Entscheidung 7 als spätere
-CR sequenziert, slice-071 ist sein Korrektheits-Harness). Auftraggeber-Nachreichung
-2026-07-17: zusätzlich Artefakt-Titel + Kanten-Anmerkung. Freigabe und Scope offen.
+**d-check-Extension — Feature-Kandidaten (kein Slice, keine geplante Welle):** d-check
+läuft überwiegend **wellenlos** (Einzel-Slices nach Bedarf); `next/` und `open/` sind
+derzeit leer. Statt geplanter Wellen führt es hier freigabe-offene Kandidaten:
 
-Ferner ein `--print-version-md`-Scaffold, das ein `version.md`-Skelett mit
-Platzhaltern auf stdout ausgibt (Familie `--print-config`/`--print-mk`/
-`--suggest-config`; read-only, deterministisch). Produkt-Feature ⇒ Change Request
-(`DC-FA-CLI-*` im Lastenheft) + Slice + Spezifikation-`.a`, **kein** ADR (additive
-CLI-Ausgabe). Anlass: Nutzer-Frage 2026-07-04 zum Nachbau von `version.md` in
-Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
-
-Ferner der **Closure-Note-Reviewer + `verify-closure-notes`-Gate** (Etappe-D-Finding
-D-7, aus slice-090 herausgeschnitten): das *strukturelle* Gate (Heading/Satzzahl/
-Floskel-Liste — `check_closure_notes.py` oder als `planning`/`targets`-Modul-Fähigkeit
-mechanisiert) plus der *inferentielle* `closure-note-reviewer.md`-Skill darüber
-(Inhalt vs. Floskel). Produkt-/Harness-Feature ⇒ **eigene ADR** (neues Gate) + Slice;
-die Ziel-Formen (`closure-note-reviewer.template.md`, `review-report.template.md`) sind
-vendored. Freigabe und Scope offen.
+- **RTM-Generator** — RTM aus den Rückwärts-`Bezug`-Kanten erzeugen; von
+  [ADR-0038](../../adr/0038-trace-cross-consistency.md) Entscheidung 7 als spätere CR
+  sequenziert (slice-071 ist sein Korrektheits-Harness). Auftraggeber-Nachreichung
+  2026-07-17: zusätzlich Artefakt-Titel + Kanten-Anmerkung. Freigabe und Scope offen.
+- **`--print-version-md`-Scaffold** — gibt ein `version.md`-Skelett auf stdout aus
+  (Familie `--print-config`/`--print-mk`/`--suggest-config`; read-only, deterministisch).
+  Produkt-Feature ⇒ Change Request (`DC-FA-CLI-*` im Lastenheft) + Slice + Spezifikation-`.a`,
+  **kein** ADR. Anlass: Nutzer-Frage 2026-07-04 (Nachbau von `version.md` in Fremd-Repos).
+- **Closure-Note-Reviewer + `verify-closure-notes`-Gate** (Etappe-D-Finding D-7, aus
+  slice-090 herausgeschnitten) — das *strukturelle* Gate (Heading/Satzzahl/Floskel-Liste,
+  `check_closure_notes.py` oder als `planning`/`targets`-Modul-Fähigkeit mechanisiert) plus
+  der *inferentielle* `closure-note-reviewer.md`-Skill darüber. Produkt-/Harness-Feature ⇒
+  **eigene ADR** (neues Gate) + Slice; Ziel-Formen vendored. Freigabe und Scope offen.
 
 ## Meilensteine
+
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
+§Welle ≠ Meilenstein ≠ Release.
 
 Extern beobachtbare Zustände, **orthogonal** zur Welle: die Welle endet durch
 Closure-Kriterien (intern), der Meilenstein durch externe Bestätigung. d-check liefert
@@ -72,18 +72,25 @@ Roadmap-Meilenstein. Die Release-Versionen je Welle stehen im Closure-Log unten.
 
 ## Abhängigkeitsgraph
 
-Die Abhängigkeit einer geplanten Welle steht als beobachtbare Bedingung in der
-`Trigger`-Spalte (§Nächste Wellen) **und** als gerichtete Kante hier. d-checks Wellen
-sind weitgehend **unabhängig** (nach Kapazität sequenziert, nicht durch eine
-Vorgängerin blockiert); derzeit gibt es **keine** geplante Folge-Welle → keine
-Phantom-Welle.
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
+§Roadmap-Struktur — die Abhängigkeit einer geplanten Welle steht als beobachtbare
+Bedingung in der `Trigger`-Spalte (§Nächste Wellen) **und** als gerichtete Kante hier;
+eine Welle, die ohne fertige Vorgängerin nicht starten kann, ist eine Phantom-Welle.
+d-checks Wellen sind weitgehend **unabhängig** (nach Kapazität sequenziert, nicht durch
+eine Vorgängerin blockiert); derzeit gibt es **keine** geplante Folge-Welle.
 
 ```mermaid
 flowchart LR
-    W67["welle-67 - baseline-v500-migration (laeuft)"]
+    W67["welle-67 - baseline-v500-migration (abgeschlossen)"]
+    N["keine geplante Folge-Welle"]
+    W67 -.-> N
 ```
 
 ## Abgeschlossene Wellen
+
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
+§Roadmap-Struktur — das Closure-Log: welche Welle wann geschlossen wurde, mit Zeiger auf
+ihre Ergebnis-Notiz im Ruheort `done/`.
 
 Das Closure-Log (ruhender Audit-Bestand). **Vor welle-60** liefen die Wellen vor der
 Lifecycle-Adoption; ihre Belege liegen in den Slice-`done/`-Dateien und in git. Ab
@@ -96,6 +103,7 @@ nicht als Anspruch auf Wellen-Status.
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
+| welle-67-baseline-v500-migration | 2026-08-03 | [`welle-67-results.md`](../done/welle-67-results.md) |
 | welle-66-release-prep-aufgabenregel | 2026-07-19 | [`welle-66-results.md`](../done/welle-66-results.md) |
 | welle-65-handbuch-aufgaben | 2026-07-19 | [`welle-65-results.md`](../done/welle-65-results.md) |
 | welle-64-dpin-ergonomie | 2026-07-19 | [`welle-64-results.md`](../done/welle-64-results.md) |
@@ -106,6 +114,10 @@ nicht als Anspruch auf Wellen-Status.
 
 
 ## Historische Trigger-Verschiebungen
+
+Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
+§Roadmap-Struktur — das Drift-Log: jede Umplanung mit Datum, Änderung, Grund. Leer heißt
+starre Roadmap, jede Zeile voll heißt treibende.
 
 | Datum | Was wurde geändert? | Warum? |
 |---|---|---|
@@ -142,3 +154,4 @@ nicht als Anspruch auf Wellen-Status.
 | 2026-08-02 | **welle-67 slice-090 abgeschlossen** (Review-Infrastruktur); `in-progress`→`done` (WIP-Slot frei) | Etappe D-3: `reviewer.md`-Kopf-Currency (D-10) + §Output-/Report-Schema um Finding-`klasse` + Kopf-Metadaten Review-Art/Skill/Modell-ID (D-6, abgestimmt auf `review-report.template.md`). **D-7** (Closure-Note-Gate + Skill) als Folge-Produkt-Slice herausgeschnitten (Nutzer-Entscheid; §Nächste-Wellen-Kandidat). Unabhängiger Review abnahmereif (0 HIGH/MEDIUM/LOW, 1 INFO = Baseline-interne 5-vs-6-Feld-Drift, upstream). `make gates` + `make adr-check` grün. **Letzter** Etappe-D-Slice: slice-091 (Slice-`Status:`-Feld D-5) |
 | 2026-08-02 | **welle-67 slice-091 eröffnet** (letzter Etappe-D-Slice); slice-090→`done`, slice-091 `in-progress` | Etappe D-4 (D-5): das `**Status:**`-Feld aus den Slice-Dateien entfernen — Lifecycle-Zustand = Verzeichnis (Baseline `slice.template.md` führt einen `**Lifecycle:**`-Hinweis statt Status). 90 `done/`-Slices betroffen; kein Gate/Skript liest Slice-Status. Abnahme-Punkt: retrofit-all vs. template-forward. Danach welle-67-Closure |
 | 2026-08-02 | **welle-67 slice-091 abgeschlossen** (D-5, letzter Etappe-D-Slice); `in-progress`→`done` (WIP-Slot frei) | Slice-`Status:`-Feld go-forward abgeschafft (**template-forward**, Nutzer-Entscheid: kein Retrofit der 90 `done/`-Slices; `**Lifecycle:**`-Hinweis wie Baseline-`slice.template.md`; AGENTS §5 + §3.3 + Lifecycle-Move-Adaption nachgezogen). Unabhängiger Review + bestätigende Re-Review abnahmereif (1 MEDIUM AGENTS-§3.3-Spiegel geheilt). `make gates` + `make adr-check` grün. **Alle welle-67-Slices (084–091) in `done/`** → Welle-Closure folgt |
+| 2026-08-03 | **welle-67 geschlossen** (Wave-Self-Close) — Baseline-Migration `v1.4.0`→`v5.0.0` **komplett** | Wellen-Closure-Prozedur (modul-06) durchlaufen: Trigger geprüft (alle 8 Slices in `done/`, `make gates`+`make adr-check` grün), Trigger-Audit (0 aktive Carveouts, keine offene Gate-Reifestufe, C-3-ADR ohne fälligen Re-Eval-Trigger), `welle-67-results.md` geschrieben, Wellendokument per `git mv` nach `done/`. welle-67 aus §Aktuelle Welle → §Abgeschlossene Wellen; §Aktuelle Welle auf Ruhe (keine Folge-Welle). Baseline-Pin `v5.0.0`, beide Bäume vendored |
