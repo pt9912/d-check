@@ -57,6 +57,10 @@ ist eine From-Scratch-**Code**-Adoption → Abnahme-Punkt (§3).
    in slice-090 mit-adoptieren (größer, verlässt den Doc-Form-Rahmen); (c) als deklarierte
    Adaption führen (d-check reviewt Closure-Notes über den allgemeinen `reviewer.md` bei
    jeder Slice-Closure — kein dediziertes Gate).
+   → **Entschieden 2026-08-02: (a)** — D-7 als eigener **Folge-Produkt-Slice** (Code +
+   ADR, ggf. Modul-Fähigkeit statt Skript), analog zum C-3-Vorgehen; in der Roadmap
+   §Nächste Wellen als Kandidat vermerkt. slice-090 bleibt **Doc-Form** und schließt mit
+   D-6/D-10.
 
 ## 4. Definition of Done
 

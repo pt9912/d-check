@@ -50,6 +50,14 @@ Platzhaltern auf stdout ausgibt (Familie `--print-config`/`--print-mk`/
 CLI-Ausgabe). Anlass: Nutzer-Frage 2026-07-04 zum Nachbau von `version.md` in
 Fremd-Repos (der Aufbau selbst ist seit Handbuch 1.21 dokumentiert).
 
+Ferner der **Closure-Note-Reviewer + `verify-closure-notes`-Gate** (Etappe-D-Finding
+D-7, aus slice-090 herausgeschnitten): das *strukturelle* Gate (Heading/Satzzahl/
+Floskel-Liste — `check_closure_notes.py` oder als `planning`/`targets`-Modul-Fähigkeit
+mechanisiert) plus der *inferentielle* `closure-note-reviewer.md`-Skill darüber
+(Inhalt vs. Floskel). Produkt-/Harness-Feature ⇒ **eigene ADR** (neues Gate) + Slice;
+die Ziel-Formen (`closure-note-reviewer.template.md`, `review-report.template.md`) sind
+vendored. Freigabe und Scope offen.
+
 ## Meilensteine
 
 Extern beobachtbare Zustände, **orthogonal** zur Welle: die Welle endet durch
