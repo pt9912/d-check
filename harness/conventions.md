@@ -97,6 +97,7 @@ ob der Eintrag ihn betrifft.
 | [MR-015](conventions/MR-015-agents-md-routet.md) <a id="mr-015--auflösung-der-mr-012-pointer-drift-agentsmd-routet-spiegelt-nicht-mehr"></a>      | AGENTS.md routet (spiegelt nicht)             | `AGENTS.md` §1                                    | `grundlagen-harness-dateien` §Template-Schichtung            |
 | [MR-021](conventions/MR-021-vendored-verweise-pin-gebunden.md) <a id="mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden"></a> | vendored-Verweise pin-gebunden                | Live-Links auf die vendored Baseline              | `grundlagen-harness-dateien` §Verzeichniskonvention          |
 | [MR-023](conventions/MR-023-baseline-v500.md) <a id="mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout"></a>                 | Baseline-Pin `v5.0.0` + self-contained Bundle | §Baseline, `fetch-baseline-cache.sh`              | `grundlagen-harness-dateien` §Template-Schichtung            |
+| [MR-024](conventions/MR-024-aktuelle-welle-ruhe-marker-form.md) <a id="mr-024--aktuelle-welle-ruhe-marker-prosa-form-statt-template-struktur-felder"></a> | Aktuelle-Welle-Form (Ruhe-Marker + Prosa) | `roadmap.md` §Aktuelle Welle, `planning`-Modul | `modul-06` §Roadmap-Struktur (Aktuelle Welle) |
 
 ### Aufgelöste Adaptionen
 

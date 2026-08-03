@@ -67,9 +67,11 @@ Welle-Closure-Schritt verankert (D-9). Keine neuen Produkt-Features, kein Releas
    laufende Welle; d-checks `planning`-Modul
    ([`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
    **erzwingt** den „Keine aktive Welle"-Ruhe-Marker in genau diesem Abschnitt.
-   → **Default:** Ruhe-Marker als **deklarierte Adaption** (neuer Eintrag im
-   Konventionsspeicher) behalten — die Mechanisierung ist d-check-Identität; die
-   Aktive-Welle-Prosa nennt weiter Slice-IDs · Trigger · Closure-Kriterien.
+   → **Umgesetzt 2026-08-02:** Ruhe-Marker + Prosa-Form als **deklarierte Adaption**
+   behalten — ein neuer Eintrag im Konventionsspeicher hält fest: die drei
+   Pflicht-Bestandteile stehen in Prosa (Feld-Details im Wellendokument), der wellenlose
+   Zustand explizit über den Ruhe-Marker („Keine aktive Welle."), gate-erzwungen vom
+   `planning`-Modul. Die Mechanisierung ist d-check-Identität — kein Umbau des Moduls.
 2. **Register-Start (D-3):** leer (`— keine —`) vs. retroaktives Backfill.
    → **Default:** leer starten (Baseline: „damit fängt jedes Repo an"; die
    wiederkehrenden Lehren sind bereits verkörpert).
