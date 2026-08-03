@@ -12,7 +12,7 @@ zwei `Status:`-Achsen unberührt).
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- [slice-091](../plan/planning/in-progress/slice-091-slice-status-feld-entfernen.md) (Plan)
+- [slice-091](../plan/planning/done/slice-091-slice-status-feld-entfernen.md) (Plan)
 - Baseline: [`modul-05-planning-harness.md` §Lifecycle als State Machine](../../.harness/baseline/v5.0.0/regelwerk/modul-05-planning-harness.md#lifecycle-als-state-machine)
   und die Vorlage [`slice.template.md`](../../.harness/baseline/v5.0.0/templates/docs/plan/planning/slice.template.md)
 - [`AGENTS.md`](../../AGENTS.md) (Hard Rules §3.3, §3.5, §5)

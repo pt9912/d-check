@@ -49,7 +49,7 @@ und `make gates` + `make adr-check` grün sind — bei erhaltener 188-Link-Integ
 | [slice-088](done/slice-088-etappe-d1-doc-form.md) | Etappe D — Planning-Layer-Form (Roadmap · Welle · Register) | Findings D-1/D-2/D-3/D-4/D-9 |
 | [slice-089](done/slice-089-doc-form-agents.md) | Etappe D — Doc-Form (AGENTS.md · ADR-Trigger · Slice-Vorprüfungen) | Findings D-8/D-11/D-4 |
 | [slice-090](done/slice-090-review-infrastruktur.md) | Etappe D — Review-Infrastruktur (D-7 → Folge-Produkt-Slice) | Findings D-6/D-10 (D-7 herausgeschnitten) |
-| slice-091 | Etappe D — Slice-`Status:`-Feld entfernen | Finding D-5 |
+| [slice-091](done/slice-091-slice-status-feld-entfernen.md) | Etappe D — Slice-`Status:`-Feld entfernen (template-forward) | Finding D-5 |
 
 ## 5. Abhängigkeiten
 
