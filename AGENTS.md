@@ -191,6 +191,9 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   revidiert sie (Folge-ADR mit `supersedes`).
 - Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der Architektur-Spec.
 - Slice-Lifecycle (`open → next → in-progress → done`) ist reine Datei-Bewegung (`git mv`, siehe §3.3).
+- Slice-Pläne tragen **kein** `**Status:**`-Feld — der Lifecycle-Zustand **ist** die
+  Verzeichnis-Position; neue Slices führen stattdessen den `**Lifecycle:**`-Hinweis
+  (Baseline-`slice.template.md`). Alt-Slices in `done/` behalten ihr historisches Feld.
 - Jeder Slice-Plan trägt **vor** der Sub-Area-Modus-Begründung die zwei
   **Vorprüfungen** (Sub-Area prüfen · offene Beobachtungen im Register
   `observations.md` sichten) — Baseline-Regelwerk Modul 5/6, unabhängig vom

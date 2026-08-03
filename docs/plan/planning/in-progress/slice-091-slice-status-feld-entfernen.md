@@ -34,10 +34,10 @@ template-vorgeschrieben, C-6) und der ADR-`**Status:**` (immutable). Betrifft nu
 1. **Umfang messen + Abnahme-Punkt (§3).** **90** Slice-Dateien tragen `**Status:**`
    (alle in `done/`); die Formate variieren (ein-/mehrzeilig, mit Datum/Welle-Prosa).
    Kein Gate/Skript liest das Slice-Status-Feld (nur ADR-Status in Go-Tests) → gate-sicher.
-2. **Feld entfernen.** Je Slice-Datei den `**Status:**`-**Absatz** (die Zeile + etwaige
-   Folgezeilen bis zur nächsten Leerzeile) tilgen — robust per Skript, danach Diff-Sicht.
-   Neue Slices tragen stattdessen den `**Lifecycle:**`-Hinweis (Ziel-Form; dieser Slice
-   modelliert ihn).
+2. **Ziel-Form etablieren (template-forward, Abnahme-Punkt 1).** slice-091 **modelliert**
+   die Ziel-Form: **kein** `**Status:**`-Feld, stattdessen der `**Lifecycle:**`-Hinweis.
+   Die 90 `done/`-Slices behalten ihr Feld (ruhende Audit-Records, kein Massen-Touch);
+   **künftige** Slices tragen kein Status-Feld mehr.
 3. **Konvention nachziehen.** Die Erwähnung der „Status-Zeile" im Move-Commit-Eintrag
    des Konventionsspeichers (die Lifecycle-Move-Adaption) auf „Body = DoD-Haken +
    Closure-Notiz" umschreiben (das Feld existiert nicht mehr). Prüfen, ob `AGENTS.md` §5
@@ -50,14 +50,16 @@ template-vorgeschrieben, C-6) und der ADR-`**Status:**` (immutable). Betrifft nu
 1. **Retrofit-Umfang (D-5).** Das Feld aus **allen 90** `done/`-Slices entfernen
    (uniform, großer mechanischer Touch auf ruhende Audit-Records) **vs.** nur
    template-forward (neue Slices ohne Feld; die 90 behalten ihres → gemischter Bestand).
-   → **Default/Empfehlung: retrofit-all** — die Baseline-Regel „kein Status-Feld" ist
-   eindeutig, das Feld ist überall reine Lifecycle-Duplikation; die Datum/Welle-Info
-   liegt in §Closure-Notiz + git.
+   → **Entschieden 2026-08-02: template-forward-only.** Neue Slices ohne Status-Feld
+   (slice-091 modelliert es); die 90 `done/`-Slices behalten ihres — ruhende
+   Audit-Records ohne Churn. Die Konvention wird go-forward verankert (AGENTS §5,
+   Lifecycle-Move-Adaption). *(Ein späterer sauberer Retrofit bleibt möglich, ist aber
+   bewusst nicht Teil dieses Slice.)*
 
 ## 4. Definition of Done
 
-- [ ] Kein `docs/plan/planning/**/slice-*.md` trägt mehr ein `**Status:**`-Feld
-  (gemäß Abnahme-Punkt 1).
+- [ ] slice-091 + die go-forward-Konvention ohne `**Status:**`-Feld (`**Lifecycle:**`-
+  Hinweis); die 90 `done/`-Slices unangetastet (template-forward, Abnahme-Punkt 1).
 - [ ] Die „Status-Zeile"-Erwähnung im Lifecycle-Move-Konventionseintrag nachgezogen;
   `AGENTS.md` §5 geprüft.
 - [ ] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.

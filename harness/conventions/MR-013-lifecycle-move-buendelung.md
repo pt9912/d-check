@@ -19,8 +19,9 @@
   Adaption: der `git mv`-Commit dieses Moves trägt **zusätzlich** (a) den
   Roadmap-Flip §Aktuelle Welle und (b) alle Pfad-Verweise auf den Slice
   (Roadmap, `AGENTS.md` §4, `harness/README.md` §Sensors) von
-  `in-progress/` nach `done/`. Der **Slice-Body** (Status-Zeile,
-  Closure-Notiz) bleibt im zweiten Commit; weil die Slice-Datei im
+  `in-progress/` nach `done/`. Der **Slice-Body** (DoD-Haken +
+  Closure-Notiz; neue Slices ohne Status-Zeile [slice-091/D-5], historische
+  `done/`-Slices behalten ihre) bleibt im zweiten Commit; weil die Slice-Datei im
   Move-Commit unverändert ist, hält die Rename-Detection (`R100`) und damit
   die `git log --follow`-Begründung des Baseline-§3.3.
 - **Begründung:** Sichtbar 2026-06-21 — die PR-/Push-CI prüft den Push-Tip,
