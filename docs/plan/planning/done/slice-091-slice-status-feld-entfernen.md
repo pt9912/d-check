@@ -58,11 +58,11 @@ template-vorgeschrieben, C-6) und der ADR-`**Status:**` (immutable). Betrifft nu
 
 ## 4. Definition of Done
 
-- [ ] slice-091 + die go-forward-Konvention ohne `**Status:**`-Feld (`**Lifecycle:**`-
+- [x] slice-091 + die go-forward-Konvention ohne `**Status:**`-Feld (`**Lifecycle:**`-
   Hinweis); die 90 `done/`-Slices unangetastet (template-forward, Abnahme-Punkt 1).
-- [ ] Die „Status-Zeile"-Erwähnung im Lifecycle-Move-Konventionseintrag nachgezogen;
+- [x] Die „Status-Zeile"-Erwähnung im Lifecycle-Move-Konventionseintrag nachgezogen;
   `AGENTS.md` §5 geprüft.
-- [ ] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
+- [x] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
 
 ## 5. Risiken / offene Punkte
 
@@ -90,4 +90,35 @@ GF (Repo-Default): Doc/Prozess führt. Berührt die Slice-Header-Konvention
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Umgesetzt: das Slice-`**Status:**`-Feld ist **go-forward abgeschafft** — der
+Lifecycle-Zustand **ist** die Verzeichnis-Position.
+
+- **slice-091 modelliert die Ziel-Form:** kein `**Status:**`-Feld, stattdessen der
+  `**Lifecycle:**`-Hinweis (wie die Baseline-`slice.template.md`). Dieser Slice ist
+  zugleich der erste, dessen Closure **ohne** Status-Flip abläuft (Body-Commit = nur
+  DoD-Haken + diese Notiz).
+- **Nutzer-Entscheid: template-forward-only** — **kein** Retrofit der 90 `done/`-Slices
+  (ruhende Audit-Records ohne Churn); nur neue Slices ohne Feld. *(Ein späterer sauberer
+  Retrofit bleibt möglich, bewusst nicht Teil dieses Slice.)*
+- **Konvention verankert:** `AGENTS.md` §5 (neue Slices ohne `**Status:**`, dafür der
+  `**Lifecycle:**`-Hinweis; Alt-Slices behalten ihres), `AGENTS.md` §3.3 (Move-Commit-Body
+  = DoD + Closure-Notiz; historische Slices auch die Status-Zeile) und die
+  Lifecycle-Move-Adaption im Konventionsspeicher nachgezogen.
+- Die **zwei anderen `Status:`-Achsen** bleiben unberührt: das MR-`Status: Accepted`
+  (Akzeptanz, template-vorgeschrieben) und der ADR-`**Status:**` (immutable). Kein
+  Gate/Skript liest das Slice-Status-Feld.
+
+**Review:** unabhängiger Frischkontext-Review
+(`docs/reviews/2026-08-02-slice-091-status-feld-review.md`) → **1 MEDIUM** (F-1: die
+`AGENTS.md` §3.3-„Status-Zeile"-Spiegel-Stelle war beim ersten Wurf nicht mitgezogen) →
+geheilt; **bestätigende Re-Review abnahmereif**. `make gates` + `make adr-check` grün,
+**keine** ADR/Spec/Code berührt.
+
+**Lehre:** eine Konventions-Erwähnung („Status-Zeile") steht oft an **mehreren
+gekoppelten Stellen** (Lifecycle-Move-Adaption + `AGENTS.md` §5 **und** §3.3) — beim
+Nachziehen **alle Spiegel** finden, nicht nur die Kanonisch-Quelle.
+
+**Anschluss:** **Etappe D ist vollständig** — alle welle-67-Slices (084–091) liegen in
+`done/`. Es folgt die **Welle-Closure-Prozedur** (Trigger-Audit → `welle-67-results.md`
+→ Wellendokument `git mv` → `done/` → Wave-Self-Close-Commit → Roadmap fortschreiben);
+danach ist die Baseline-Migration `v1.4.0` → `v5.0.0` **komplett**.
