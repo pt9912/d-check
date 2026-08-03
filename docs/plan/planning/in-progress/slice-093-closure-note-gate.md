@@ -43,14 +43,16 @@ nicht fängt (Inhalt vs. Floskel — semantisch, Reviewer-Sache).
 
 ## 3. Abnahme-Punkte
 
-1. **Gate-Bauform + Modul-Schnitt.** (a) Neues Go-Regelmodul (z.B. `closure-notes`) —
-   konsequent zu d-checks „Skript → Modul"-Identität, dogfood-bar, verteilbar; vs. (b)
-   Erweiterung des `planning`-Moduls (schon planning-nah); vs. (c) ein
-   `check_closure_notes.py`-Skript wie im Template (widerspricht der „keine `tools/*.sh`"-
-   Linie). **Empfehlung: (a)** neues Go-Modul. **Offen:** die exakte Struktur-Prüf-Semantik
-   (Satzzahl-Schwelle, Floskel-Liste, Pflicht-Inhalte-Trias aus `modul-11`) und ob der
-   Reviewer-Skill an ein separates Struktur-Gate **oder** nur an den allgemeinen
-   `reviewer.md` koppelt.
+1. **Gate-Bauform + Modul-Schnitt.** (a) Neues Go-Regelmodul; (b) Erweiterung des
+   `planning`-Moduls; (c) `check_closure_notes.py`-Skript wie im Template.
+   → **Entschieden 2026-08-03: (b)** — das **`planning`-Modul** um eine
+   **Closure-Note-Struktur-Fähigkeit** erweitern (Nutzer-Entscheid): schärft
+   [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+   + eigene ADR; **kein** neues Modul. **Offen (im Slice zu entwerfen):** die exakte
+   Struktur-Semantik (Heading-Pflicht · Mindest-Satzzahl außerhalb Code-Blöcken ·
+   Floskel-Liste), der Grund-Code, das Config-Feld, ob `make verify-closure-notes` ein
+   eigenes Target ist, und ob der `closure-note-reviewer.md`-Skill an das Struktur-Gate
+   **oder** an den allgemeinen `reviewer.md` koppelt.
 
 ## 4. Definition of Done
 
