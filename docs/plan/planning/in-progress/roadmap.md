@@ -8,12 +8,13 @@
 
 ## Aktuelle Welle
 
-**welle-67-baseline-v500-migration** — **Etappe D (Form-Konformität, Mini-Welle)** =
-[`slice-089`](slice-089-doc-form-agents.md) (**Doc-Form**: AGENTS.md-Currency [D-11],
-ADR-Re-Evaluierungs-Trigger-Konvention [D-8], Slice-Vorprüfungen [D-4]). Der
-Planning-Layer ([`slice-088`](../done/slice-088-etappe-d1-doc-form.md)) ist
-abgeschlossen; danach slice-090 (Review-Infrastruktur D-6/D-7/D-10) und slice-091
-(Slice-`Status:`-Feld D-5).
+**Keine aktive Welle.** welle-67-baseline-v500-migration **läuft** — **Etappe D
+(Form-Konformität, Mini-Welle)**: der **Planning-Layer**
+([`slice-088`](../done/slice-088-etappe-d1-doc-form.md)) und die **Doc-Form**
+([`slice-089`](../done/slice-089-doc-form-agents.md): AGENTS.md-Currency +
+ADR-Re-Evaluierungs-Trigger-Konvention + Slice-Vorprüfungen; unabhängig reviewt,
+abnahmereif) sind abgeschlossen. Nächster Slice: **slice-090** (Review-Infrastruktur
+D-6/D-7/D-10), dann slice-091 (Slice-`Status:`-Feld D-5).
 
 - **Welle-Details / Closure-Kriterien:**
   [Wellendokument](../welle-67-baseline-v500-migration.md) (alle Etappe-D-Slices in
@@ -128,3 +129,4 @@ nicht als Anspruch auf Wellen-Status.
 | 2026-08-02 | **Etappe D neu geordnet**: slice-088 auf **Planning-Layer-Form** umgewidmet (D-1/D-2/D-3/D-4/D-9 statt Doc-Form); Doc-Form (D-8/D-11) → slice-089 | Auslöser: welle-67 lief ohne ihr Baseline-Wellendokument (Nutzer-Hinweis) — Roadmap-Form (D-1), Wellen-Lifecycle (D-2) und Beobachtungs-Register (D-3) sind EIN kohärenter Planning-Layer und gehören zuerst; die laufende Welle wird konform dokumentiert (`welle-67-baseline-v500-migration.md` flach angelegt, `observations.md` als stehendes Register mit `— keine —`). Review-Infrastruktur (D-6/D-7/D-10) → slice-090, Slice-Status (D-5) → slice-091 |
 | 2026-08-02 | **welle-67 slice-088 abgeschlossen** (Planning-Layer); `in-progress`→`done` (WIP-Slot frei) | Etappe D-1: welle-67-Wellendokument (D-2) + `observations.md` (D-3) + Roadmap auf 6 Baseline-Abschnitte inkl. welle-60..66-results-Backfill (D-1) + Slice-Vorprüfungen modelliert (D-4) + Trigger-Audit im Wellendokument (D-9) + Ruhe-Marker-Adaption im Konventionsspeicher (Abnahme-Punkt 1). Unabhängiger Review abnahmereif (0 HIGH/MEDIUM/LOW, 1 INFO geheilt). `make gates` + `make adr-check` grün. Nächst: slice-089 (Doc-Form D-8/D-11) |
 | 2026-08-02 | **welle-67 slice-089 eröffnet** (Doc-Form); slice-088→`done`, slice-089 `in-progress` | Etappe D-2: AGENTS.md an v5.0.0 angleichen — §1-Currency (stale `.harness/cache`/`lab-templates.zip`/„keine-Templates"-Prosa raus, `{regelwerk,templates}`-vendored-Layout + `modul-09`-Kanon-Zeiger rein, D-11), ADR-Re-Evaluierungs-Trigger-Konvention in §5 (D-8; 20 immutable ADRs grandfathered), Slice-Vorprüfungen in §5 (D-4, aus slice-088 delegiert). AGENTS = Source-Precedence-Anker, review-pflichtig |
+| 2026-08-02 | **welle-67 slice-089 abgeschlossen** (Doc-Form); `in-progress`→`done` (WIP-Slot frei) | Etappe D-2: AGENTS.md an v5.0.0 angeglichen — §1-Currency (stale Templates-Cache-Prosa raus, `{regelwerk,templates}`-vendored + `modul-09`-Kanon-Zeiger rein, D-11), ADR-Re-Evaluierungs-Trigger-Konvention §5 (D-8; 20 immutable ADRs grandfathered), Slice-Vorprüfungen §5 (D-4). Unabhängiger Review abnahmereif (0 HIGH/MEDIUM/INFO, 1 LOW §5-vs-§6-Drift geheilt). `make gates` + `make adr-check` grün, keine ADR/Spec/Code berührt. Nächst: slice-090 (Review-Infrastruktur D-6/D-7/D-10) |
