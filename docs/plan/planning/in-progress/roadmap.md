@@ -16,17 +16,22 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 den drei Pflicht-Bestandteilen (Slice-IDs · Trigger · Closure-Kriterien); das
 *Geplante Ende* ist Schätzung, kein Closure-Kriterium.
 
-**d-check-Adaption** (Konventionsspeicher-Eintrag): der **wellenlose** Zustand steht hier
-explizit als Ruhe-Marker „Keine aktive Welle" (vom `planning`-Modul erzwungen); die
-Struktur-Felder (Welle-ID · Start · Geplantes Ende · Closure-Trigger) trägt das
-**Wellendokument** der jeweils laufenden Welle, nicht dieser Abschnitt.
+**Welle-ID:** welle-68-planning-roadmap-harness
+**Start:** 2026-08-03
+**Geplantes Ende:** 2026-08-05 (Schätzung, korrigierbar)
 
-**Keine aktive Welle.** Die v5.0.0-Baseline-Migration
-(**welle-67-baseline-v500-migration**) ist **abgeschlossen** — alle acht Slices
-(084–091) liegen in `done/`, das
-[Wellendokument](../done/welle-67-baseline-v500-migration.md) ist nach `done/` gewandert
-(Closure-Log unten in §Abgeschlossene Wellen). Offene Kandidaten (kein Slice, auf
-Freigabe wartend) stehen in §Nächste Wellen.
+**Closure-Trigger:** siehe [Wellendokument](../welle-68-planning-roadmap-harness.md) —
+alle Slices (092–093) in `done/`, `make gates` grün **und** das neue
+`verify-closure-notes`-Gate grün (repo-weit).
+
+**Slices:** [`slice-092`](slice-092-roadmap-aktuelle-welle-template-form.md)
+(`## Aktuelle Welle` auf die Template-Struktur-Felder) · slice-093 (Closure-Note-Reviewer
++ `verify-closure-notes`-Gate, D-7).
+
+*(d-check-Adaption, Konventionsspeicher: diese Struktur-Feld-Form gilt, **solange eine
+Welle läuft**; im **wellenlosen** Zustand trägt der Abschnitt stattdessen den vom
+`planning`-Modul erzwungenen Ruhe-Marker. Die v5.0.0-Migration [welle-67] ist
+abgeschlossen — Closure-Log in §Abgeschlossene Wellen.)*
 
 
 ## Nächste Wellen
@@ -52,11 +57,8 @@ derzeit leer. Statt geplanter Wellen führt es hier freigabe-offene Kandidaten:
   (Familie `--print-config`/`--print-mk`/`--suggest-config`; read-only, deterministisch).
   Produkt-Feature ⇒ Change Request (`DC-FA-CLI-*` im Lastenheft) + Slice + Spezifikation-`.a`,
   **kein** ADR. Anlass: Nutzer-Frage 2026-07-04 (Nachbau von `version.md` in Fremd-Repos).
-- **Closure-Note-Reviewer + `verify-closure-notes`-Gate** (Etappe-D-Finding D-7, aus
-  slice-090 herausgeschnitten) — das *strukturelle* Gate (Heading/Satzzahl/Floskel-Liste,
-  `check_closure_notes.py` oder als `planning`/`targets`-Modul-Fähigkeit mechanisiert) plus
-  der *inferentielle* `closure-note-reviewer.md`-Skill darüber. Produkt-/Harness-Feature ⇒
-  **eigene ADR** (neues Gate) + Slice; Ziel-Formen vendored. Freigabe und Scope offen.
+*(Der D-7-Kandidat — Closure-Note-Reviewer + `verify-closure-notes`-Gate — ist in die
+**aktuelle** welle-68 eingeplant, siehe §Aktuelle Welle, und steht daher nicht mehr hier.)*
 
 ## Meilensteine
 
@@ -158,3 +160,4 @@ starre Roadmap, jede Zeile voll heißt treibende.
 | 2026-08-02 | **welle-67 slice-091 eröffnet** (letzter Etappe-D-Slice); slice-090→`done`, slice-091 `in-progress` | Etappe D-4 (D-5): das `**Status:**`-Feld aus den Slice-Dateien entfernen — Lifecycle-Zustand = Verzeichnis (Baseline `slice.template.md` führt einen `**Lifecycle:**`-Hinweis statt Status). 90 `done/`-Slices betroffen; kein Gate/Skript liest Slice-Status. Abnahme-Punkt: retrofit-all vs. template-forward. Danach welle-67-Closure |
 | 2026-08-02 | **welle-67 slice-091 abgeschlossen** (D-5, letzter Etappe-D-Slice); `in-progress`→`done` (WIP-Slot frei) | Slice-`Status:`-Feld go-forward abgeschafft (**template-forward**, Nutzer-Entscheid: kein Retrofit der 90 `done/`-Slices; `**Lifecycle:**`-Hinweis wie Baseline-`slice.template.md`; AGENTS §5 + §3.3 + Lifecycle-Move-Adaption nachgezogen). Unabhängiger Review + bestätigende Re-Review abnahmereif (1 MEDIUM AGENTS-§3.3-Spiegel geheilt). `make gates` + `make adr-check` grün. **Alle welle-67-Slices (084–091) in `done/`** → Welle-Closure folgt |
 | 2026-08-03 | **welle-67 geschlossen** (Wave-Self-Close) — Baseline-Migration `v1.4.0`→`v5.0.0` **komplett** | Wellen-Closure-Prozedur (modul-06) durchlaufen: Trigger geprüft (alle 8 Slices in `done/`, `make gates`+`make adr-check` grün), Trigger-Audit (0 aktive Carveouts, keine offene Gate-Reifestufe, C-3-ADR ohne fälligen Re-Eval-Trigger), `welle-67-results.md` geschrieben, Wellendokument per `git mv` nach `done/`. welle-67 aus §Aktuelle Welle → §Abgeschlossene Wellen; §Aktuelle Welle auf Ruhe (keine Folge-Welle). Baseline-Pin `v5.0.0`, beide Bäume vendored |
+| 2026-08-03 | **welle-68-planning-roadmap-harness eröffnet**; slice-092 in `in-progress/` | Nutzer-Entscheid nach der v5.0.0-Migration: Planning-/Harness-Welle. Ziel: `## Aktuelle Welle` auf die Template-Struktur-Felder (aktive-Welle-Form, slice-092) + Closure-Note-Reviewer-Skill & `verify-closure-notes`-Gate (D-7, slice-093). **Erkenntnis:** eine aktive Welle trägt die Struktur-Felder ohne Ruhe-Marker (`planning-check` grün) → **kein** `planning`-Modul-Umbau. §Aktuelle Welle damit template-konform. RTM-Generator/`--print-version-md` bleiben §Nächste-Wellen-Kandidaten |
