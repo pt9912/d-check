@@ -101,8 +101,8 @@ Wenn eine Datei verschoben **und** der Inhalt umgeschrieben wird:
 (Roadmap, §4, `harness/README.md` §Sensors) von `in-progress/` nach
 `done/`. Sonst ist der Commit gate-rot: `make planning-check` koppelt
 in-progress-Stand und Roadmap atomar, und die alten Verweise laufen ins
-Leere (`target-missing`). Nur der **Slice-Body** (Status-Zeile,
-Closure-Notiz) bleibt Commit 2 — die Slice-Datei selbst ist im Move-Commit
+Leere (`target-missing`). Nur der **Slice-Body** (DoD-Haken + Closure-Notiz;
+historische Slices auch die Status-Zeile) bleibt Commit 2 — die Slice-Datei selbst ist im Move-Commit
 unverändert, also hält die Rename-Detection. Kanonisch:
 [`MR-013`](harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise).
 
