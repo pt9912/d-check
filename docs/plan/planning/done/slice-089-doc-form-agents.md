@@ -1,6 +1,6 @@
 # Slice slice-089: Regelwerk-Migration Etappe D — Doc-Form (AGENTS.md-Currency · ADR-Trigger · Slice-Vorprüfungen)
 
-**Status:** In Arbeit (welle-67).
+**Status:** Done (welle-67, Doc-Form abgeschlossen 2026-08-02).
 
 **Welle:** welle-67-baseline-v500-migration (Etappe D, zweiter „Mini-Welle"-Slice, nach
 [slice-088](../done/slice-088-etappe-d1-doc-form.md)).
@@ -59,12 +59,12 @@ Konvention verankern (D-8) und die zwei **Slice-Vorprüfungen** als Konvention a
 
 ## 4. Definition of Done
 
-- [ ] `AGENTS.md` §1 v5.0.0-konform (`modul-09`-Kanon-Zeiger, `{regelwerk,templates}`,
+- [x] `AGENTS.md` §1 v5.0.0-konform (`modul-09`-Kanon-Zeiger, `{regelwerk,templates}`,
   **keine** stale Cache-/`lab-templates.zip`-/„keine-Templates"-Prosa).
-- [ ] `AGENTS.md` §5 trägt die ADR-Re-Evaluierungs-Trigger-Konvention (D-8);
+- [x] `AGENTS.md` §5 trägt die ADR-Re-Evaluierungs-Trigger-Konvention (D-8);
   immutable-Grandfathering benannt.
-- [ ] `AGENTS.md` §5 trägt die Slice-Vorprüfungen-Form-Regel (D-4).
-- [ ] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
+- [x] `AGENTS.md` §5 trägt die Slice-Vorprüfungen-Form-Regel (D-4).
+- [x] `make gates` + `make adr-check` grün; unabhängiger Frischkontext-Review.
 
 ## 5. Risiken / offene Punkte
 
@@ -90,4 +90,31 @@ greenfield-Currency-Angleich an die adoptierte Baseline, ohne Brownfield-Spec.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Umgesetzt: `AGENTS.md` (der Source-Precedence-Anker) ist an die v5.0.0-Baseline-Form
+angeglichen.
+
+- **D-11 §1-Currency:** die von Etappe A/C überholte Templates-Cache-Prosa entfernt
+  (Producer-/Self-Hoster „verkörpert keine Templates", `lab-templates.zip`, der
+  entfallene Cache-Zweig, der aufgelöste Verweis auf die frühere Templates-Adaption) und
+  durch die v5.0.0-Realität
+  ersetzt: **beide** Bäume `{regelwerk,templates}` committet vendored, Templates als
+  **Referenz-/Kopiervorlage**, die gelebte **Haus-Stil-Form** (in Etappe C als
+  baseline-konform aufgelöst) benannt; **Kanon-Zeiger** auf `modul-09` ergänzt.
+- **D-8 §5:** neue ADRs tragen `## Re-Evaluierungs-Trigger` (oder „permanent"); die **20**
+  `Accepted`-ADRs ohne Sektion sind immutable/**grandfathered** (das Feld liegt im
+  ADR-Core → `make adr-check` bräche bei Nachtrag); der Welle-Closure-Trigger-Audit
+  bestätigt/revidiert sie.
+- **D-4 §5:** jeder Slice-Plan trägt vor der Modus-Begründung die zwei Vorprüfungen
+  (Sub-Area · offene Beobachtungen im Register sichten) — die aus slice-088 delegierte
+  Verankerung; in **§5** (nicht §6 — der sachlich richtige Ort neben den Slice-Lifecycle-/
+  Roadmap-Regeln; Review-LOW F-1).
+
+**Review:** unabhängiger Frischkontext-Review
+(`docs/reviews/2026-08-02-slice-089-agents-doc-form-review.md`): **abnahmereif**, HIGH 0 /
+MEDIUM 0 / LOW 1 / INFO 0 (F-1: §5-vs-§6-Drift in den Planungs-Texten → auf §5 gezogen).
+Verifiziert: 0 stale Begriffe in `AGENTS.md`, beide Bäume vendored, `modul-09`-Anker löst,
+routet-nicht-spiegelt gewahrt, „20 grandfathered" exakt, die entfernte
+Templates-Adaptions-Fundstelle ohne Kollateral. `make gates` + `make adr-check` grün, **keine** ADR/Spec/Code berührt.
+
+**Anschluss:** **slice-090** (Review-Infrastruktur D-6/D-7/D-10), dann slice-091
+(Slice-`Status:`-Feld D-5). Danach schließt welle-67.
