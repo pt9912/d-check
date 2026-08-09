@@ -48,15 +48,48 @@ nicht fängt (Inhalt vs. Floskel — semantisch, Reviewer-Sache).
    → **Entschieden 2026-08-03: (b)** — das **`planning`-Modul** um eine
    **Closure-Note-Struktur-Fähigkeit** erweitern (Nutzer-Entscheid): schärft
    [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
-   + eigene ADR; **kein** neues Modul. **Offen (im Slice zu entwerfen):** die exakte
-   Struktur-Semantik (Heading-Pflicht · Mindest-Satzzahl außerhalb Code-Blöcken ·
-   Floskel-Liste), der Grund-Code, das Config-Feld, ob `make verify-closure-notes` ein
-   eigenes Target ist, und ob der `closure-note-reviewer.md`-Skill an das Struktur-Gate
-   **oder** an den allgemeinen `reviewer.md` koppelt.
+   + eigene ADR; **kein** neues Modul.
+
+2. **Struktur-Semantik, Bindepunkt, Schwelle.** → **Entschieden 2026-08-09**
+   (Nutzer-Entscheide, festgehalten in
+   [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md)):
+
+   - **Bindepunkt:** baseline-treu **getrennt** — die Closure-Prüfung hängt an der
+     Closure, nicht am inneren Loop. Da die Konfiguration konventionell aus **einer**
+     Datei kommt, verlangt das eine Herkunfts-Umschaltung: die **neue** Anforderung
+     [`DC-FA-CLI-012`](../../../../spec/lastenheft.md#dc-fa-cli-012--konfigurations-pfad-überschreiben)
+     (`--config <datei>`) erlaubt zwei disjunkte Prüf-Profile im selben Repo.
+   - **Struktur-Semantik:** `planning.closure.dir` (opt-in **innerhalb** des opt-in
+     Moduls) · `heading-pattern` (RE2, Default deckt alle gemessenen Bestands-Formen)
+     · `min-sentences` außerhalb Fenced-Code · `boilerplate` (literale Teilstrings,
+     case-insensitiv).
+   - **Grund-Codes:** **drei** statt einem — fehlender Abschnitt, zu dünn, Floskel
+     (drei verschiedene Reparaturen; Vorbild ist die Zwei-Richtungs-Meldung des
+     `targets`-Moduls).
+   - **Floskel-Liste:** per Default **leer** — sie entscheidet über rot/grün und wäre
+     sprach-gebunden falsch; d-check deklariert seine eigenen Phrasen in der
+     Selbstkonfiguration.
+   - **Schwelle:** `min-sentences` **4** (statt der Baseline-2). Belegt am eigenen
+     Bestand: 92/92 abgeschlossene Slices tragen einen Abschnitt, das Minimum an
+     Satzende-Zeichen außerhalb Code-Blöcken ist **5** ⇒ **kein Retrofit**; der
+     Platzhalter eines offenen Slice zählt **1** ⇒ das Gate hat Zähne.
+   - **Skill-Kopplung:** eigener `closure-note-reviewer.md` als Schwester des
+     allgemeinen `reviewer.md` (Baseline-Default), der ausdrücklich **nicht**
+     doppelt meldet, was die Struktur schon abdeckt.
+
+   **Offen (Implementierungs-Entscheid, kein Vertragsdelta):** wie das
+   `verify-closure-notes`-Target die zweite Profil-Datei benennt und wo sie liegt.
 
 ## 4. Definition of Done
 
-- [ ] Design-Entscheid (Abnahme-Punkt 1) festgehalten; CR + `DC-FA-*` + ADR angelegt.
+- [x] Design-Entscheid (Abnahme-Punkte 1 + 2) festgehalten; CR + `DC-FA-*` + ADR angelegt
+  (Lastenheft 0.50.0: [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+  geschärft + [`DC-FA-CLI-012`](../../../../spec/lastenheft.md#dc-fa-cli-012--konfigurations-pfad-überschreiben)
+  neu; Spezifikation: C1–C5 in
+  §[`DC-FA-PLAN-001.a`](../../../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
+  + §[`DC-FA-CLI-012.a`](../../../../spec/spezifikation.md#dc-fa-cli-012a--konfigurations-pfad---config)
+  + §2-Schema;
+  [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md) `Proposed`).
 - [ ] `make verify-closure-notes`-Gate implementiert (Struktur) + `closure-note-reviewer.md`-
   Skill (Inferenz); Tests fail-closed.
 - [ ] Release (Tag + GHCR + Digest-Backfill).
@@ -67,8 +100,15 @@ nicht fängt (Inhalt vs. Floskel — semantisch, Reviewer-Sache).
 - **Produkt-Code + Release** — grösster Slice der welle-68; der volle Release-Flow ist Teil.
 - **Struktur-vs-Inferenz-Grenze** sauber ziehen (das Gate prüft Struktur, der Skill
   Inhalt) — sonst Doppelbefund oder Lücke.
-- **Dogfood:** d-check muss sein eigenes `verify-closure-notes` über die eigenen
-  `done/`-Closure-Notizen grün bekommen (ggf. Nachbesserung bestehender Notizen).
+- **Dogfood:** d-check muss sein eigenes `verify-closure-notes` über den eigenen
+  Bestand grün bekommen. **Vorab gemessen (2026-08-09), Risiko entschärft:** 92/92
+  abgeschlossene Slices tragen einen Closure-Notiz-Abschnitt, das Minimum an
+  Satzende-Zeichen außerhalb Code-Blöcken ist 5 — bei Schwelle 4 ist **keine**
+  Nachbesserung bestehender Notizen nötig. Verbleibendes Restrisiko: die
+  Heading-Form variiert (Nummer + Suffix), das Default-Muster muss alle Varianten
+  decken; die Messung deckt genau das ab.
+- **Zweite Profil-Datei = zweite Pflegestelle:** die Netzlos-Modullisten-Integrität
+  muss beide Konfigurationen abdecken, sonst entsteht eine ungeprüfte zweite Tür.
 
 ## 6. Trigger
 
