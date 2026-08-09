@@ -90,8 +90,11 @@ nicht fängt (Inhalt vs. Floskel — semantisch, Reviewer-Sache).
   + §[`DC-FA-CLI-012.a`](../../../../spec/spezifikation.md#dc-fa-cli-012a--konfigurations-pfad---config)
   + §2-Schema;
   [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md) `Proposed`).
-- [ ] `make verify-closure-notes`-Gate implementiert (Struktur) + `closure-note-reviewer.md`-
-  Skill (Inferenz); Tests fail-closed.
+- [x] `make verify-closure-notes`-Gate implementiert (Struktur) + `closure-note-reviewer.md`-
+  Skill (Inferenz); Tests fail-closed. Gate über ein **eigenes** Profil
+  (`--config`, Closure-Bindepunkt in `fullbuild`, nicht in `gates`);
+  Mutations-Gegenprobe am echten Bestand: alle drei Grund-Codes feuern, ohne
+  Mutation 299 Dateien / 0 Befunde (kein Retrofit nötig).
 - [ ] Release (Tag + GHCR + Digest-Backfill).
 - [ ] `make gates` + `make verify-closure-notes` grün; unabhängiger Frischkontext-Review.
 

@@ -6,6 +6,40 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-093 — **Closure-Note-Struktur** als zweite Fähigkeit des Moduls
+  `planning` (`DC-FA-PLAN-001`,
+  [ADR-0048](docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md)):
+  opt-in über `planning.closure.dir` prüft d-check je abgeschlossenem Slice den
+  Closure-Notiz-Abschnitt — vorhanden (`closure-note-missing`), genug
+  Satzende-Zeichen **außerhalb** der Fenced-Code-Blöcke
+  (`closure-note-thin`, Schwelle `planning.closure.min-sentences`, Default 4),
+  keine der literalen `planning.closure.boilerplate`-Phrasen
+  (`closure-note-boilerplate`, Liste **leer** per Default). Der Abschnitt ist der
+  erste Treffer auf `planning.closure.heading-pattern` (Default
+  `^#{2,3} .*Closure-Notiz`) bis zur nächsten gleich-/höherrangigen Überschrift.
+  Hermetisch, diagnose-only, fail-closed bei fehlendem Verzeichnis, ungültigem
+  Muster, `min-sentences` < 1 und leerem Floskel-Eintrag. **Kein neues Modul**;
+  ohne `closure.dir` wird keine Slice-Datei geöffnet und der Befundsatz ist
+  byte-identisch. Zugesagt ist **Struktur, nicht Bedeutung** — die semantische
+  Schicht ist der neue Skill `.harness/skills/closure-note-reviewer.md`.
+- slice-093 — neue CLI-Option **`--config <datei>`** (`DC-FA-CLI-012`): sie
+  ersetzt für den Lauf die konventionelle `.d-check.yml` der Scan-Wurzel durch
+  die genannte Datei (Pfad relativ zur Wurzel, muss **innerhalb** liegen).
+  Gleiche strikte Validierung; fehlende Datei, Verzeichnis oder ein Pfad
+  außerhalb der Wurzel ⇒ **Exit 2 ohne Rückfall** auf Defaults oder auf die
+  konventionelle Datei. Sie **ersetzt**, sie ergänzt nicht — damit fährt ein Repo
+  zwei disjunkte Prüf-Profile (Inner-Loop vs. Closure), ohne die Modulwahl auf
+  der Kommandozeile nachzubauen. Ohne die Option unverändert byte-identisch.
+
+### Fixed
+
+- Befunde, die die Konfiguration als Herkunft nennen (Config-Pins des Moduls
+  `sources`), tragen jetzt die **tatsächlich geladene** Datei statt hart
+  `.d-check.yml` — unter `--config` zeigte die Meldung sonst auf eine Datei, die
+  der Lauf nie gelesen hat.
+
 ## [0.51.1] — 2026-07-19
 
 ### Changed
