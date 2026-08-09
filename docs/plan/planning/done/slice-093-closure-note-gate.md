@@ -145,4 +145,53 @@ nur die Inventur bestehenden undokumentierten Codes, was hier nicht vorliegt.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Umgesetzt und als **v0.52.0** veröffentlicht: das Modul `planning` trägt eine
+zweite Fähigkeit (Closure-Note-Struktur, drei Grund-Codes, opt-in über
+`closure.dir`), dazu die neue Option `--config` und der inferentielle
+Schwester-Skill. Der Bestand blieb ohne Retrofit grün — die Vorab-Messung (92/92
+Notizen, Minimum 5 Satzende-Zeichen) hat die Schwelle 4 getragen, statt sie zu
+raten.
+
+- **Lernsignal — eigene Lexik statt geteilter Parser war der teuerste Fehler.**
+  Der Code-Review fand einen stillen Grün-Pfad **im Gate selbst**: die
+  Abschnitts-Grenze zählte nackte `#`, weil ich sie neu geschrieben habe, statt
+  den vorhandenen `parseATXHeading` zu nutzen. Eine Zeile wie `#1 war ein Thema`
+  galt damit als H1 und schnitt die Notiz ab — eine Floskel dahinter blieb
+  unsichtbar. Die Regel daraus ist allgemein: **wer Markdown-Lexik im zweiten
+  Anlauf implementiert, baut eine Abweichung**, und in einem Gate ist jede
+  Abweichung ein Kandidat für stilles Grün.
+- **Architektur-Beobachtung — eine Config-Lokalität hat die CLI-Oberfläche
+  erzwungen.** Der Modul-Schnitt (Fähigkeit *im* `planning`-Modul statt neues
+  Modul) war richtig, hatte aber eine nicht offensichtliche Folge: weil die
+  Konfiguration konventionell aus **einer** Datei kommt, läuft alles, was im
+  Modul wohnt, dort mit, wo das Modul läuft — also in `gates`. Der gewünschte
+  Closure-Bindepunkt war damit nur über eine **neue öffentliche
+  CLI-Anforderung** erreichbar. Merke: die Frage „wo wohnt die Fähigkeit?" und
+  die Frage „wann läuft sie?" sind über die Config-Lokalität gekoppelt, nicht
+  unabhängig.
+- **Fail-closed ist eine Zusage, die man zweimal treffen muss.** Drei der
+  Review-Befunde waren derselbe Fehler an verschiedenen Stellen: ein leerer
+  `--config`-Wert fiel still zurück, die Wurzel-Grenze war nur lexikalisch (ein
+  Verzeichnis-Symlink entkam), und ein kandidatenfreies Closure-Verzeichnis
+  meldete Erfolg. Jedes Mal war der *Vertrag* streng und die *Kante* offen.
+- **Zwei Fixes waren von keinem Test gehalten** — ihr Rückbau blieb grün. Ein
+  Test, der bei zurückgebauter Logik grün bleibt, belegt nichts; dasselbe galt
+  für den Determinismus-Test, der nur die Sortierung des Test-Doubles maß.
+
+**Review:** zwei unabhängige Frischkontext-Reviews mit getrennten Linsen
+([Vertrag](../../../reviews/2026-08-09-slice-093-vertrag-review.md),
+[Code](../../../reviews/2026-08-09-slice-093-code-review.md)), beide
+**blockierend** — 1 HIGH / 10 MEDIUM / 6 LOW / 3 INFO, alle eingearbeitet. Eine
+Reviewer-Aussage wurde begründet zurückgewiesen statt übernommen (nicht alle
+Config-Meldungen tragen den Datei-Präfix; die ohne nennen gar keine Datei).
+`make ci` grün, Digest `sha256:412a6fd3…662c`, das gepinnte Release-Image gegen
+dieses Repo gegengeprüft.
+
+**Anschluss:** [BEO-001](../observations.md) im Beobachtungs-Register — Datei-
+Register driften unbemerkt gegen ihre Autoritäts-Tabelle (gefunden am fehlenden
+ADR-Index-Eintrag während dieses Slice, bewusst nicht hier hineingezogen).
+Vorschlag dort: ein kleines opt-in-Modul für die Richtung „Artefakt ⇒
+registriert". Danach steht die welle-68-Closure an.
+
+**Selbsttest:** diese Notiz ist die erste, die das in diesem Slice gebaute Gate
+prüft.
