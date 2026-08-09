@@ -119,14 +119,21 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
       §[`DC-FA-SPAN-001.a`](../../../../spec/spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung)
       Schritt 3) samt
       [ADR-0050](../../adr/0050-fence-unclosed-in-spans.md) `Proposed`.
-- [x] Der oben belegte Fall meldet; Test mutations-echt. **Zwei** Mutationen
-      geprüft: die Öffnungszeile um 1 verschoben ⇒ rot, **und** den Aufruf aus
-      `CheckSpans` entfernt ⇒ zunächst **grün**. Der zweite Rückbau blieb
-      unbemerkt, weil die Tests die Funktion direkt riefen; ein
-      Verdrahtungs-Test über die Modul-Oberfläche fängt ihn jetzt. End-to-End
-      gegen das gebaute Image: `done/slice-001-x.md:7 ``` fence-unclosed`
-      neben dem `closure-note-thin` — der Wächter macht sichtbar, was die
-      Prüfung unsichtbar gemacht hatte.
+- [x] Der oben belegte Fall meldet; Test mutations-echt. End-to-End gegen das
+      gebaute Image: `done/slice-001-x.md:7` mit `fence-unclosed` neben dem
+      `closure-note-thin` — der Wächter macht sichtbar, was die Prüfung
+      unsichtbar gemacht hatte.
+- [x] **Unabhängiger Code-Review** (Frischkontext) — merge-blockierend mit
+      2 HIGH, 3 MEDIUM, 2 LOW; alle nachvollzogen und behoben bzw. bewusst
+      dokumentiert, siehe §6.
+- [x] **Mutations-Gegenprobe, zweiter Anlauf.** Sechs Rückbauten, alle rot.
+      Der erste Anlauf war methodisch kaputt: er setzte nach jeder Mutation
+      per `git checkout` zurück — also auf HEAD statt auf den Arbeitsstand,
+      wodurch die folgenden Ersetzungen ins Leere griffen und aus dem falschen
+      Grund rot wurden. Über eine Dateikopie wiederholt, fiel ein echter
+      Testfehler auf: die naive Lesart konnte ersatzlos entfallen, ohne dass
+      ein Test rot wurde — in allen Fällen waren **beide** Lesarten
+      gleichzeitig offen. Der Fall, in dem nur die Parität kippt, fehlte.
 - [ ] `make gates` + `make verify-closure-notes` grün; Release als **Minor**
       (d-check findet danach mehr).
 
@@ -140,11 +147,29 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
   Messung entschärft ihn (null Vorkommen im Ökosystem), hebt ihn aber nicht auf.
 - **Wer nur `planning` aktiviert, sieht den Befund nicht** — und, beim
   End-to-End-Beleg **geschärft**: auch mit aktivem `spans` nur, wenn die Datei im
-  **Scan-Scope** liegt. Die Closure-Fähigkeit ist ein Post-Pass über ein selbst
-  benanntes Verzeichnis und sieht Dateien, die `scan.roots` nicht erfasst.
-  — **Ausgang: eingetreten und benannt** — die Grenze steht jetzt in der
-  Anforderung und in [ADR-0050](../../adr/0050-fence-unclosed-in-spans.md),
-  nicht nur im Slice.
+  **Scan-Scope** liegt. Der Review hat die Grenze ein zweites Mal geweitet: neben
+  Post-Pässen über selbst benannte Verzeichnisse fallen auch **Zieldateien**
+  außerhalb der Scan-Wurzeln heraus, aus denen Module lesen (`matrix` den Status,
+  `anchors` die Slugs, `diagrams` und `versions` ihre deklarierten Quellen).
+  — **Ausgang: eingetreten und benannt** — die Grenze steht in der Anforderung
+  und in [ADR-0050](../../adr/0050-fence-unclosed-in-spans.md), nicht nur im
+  Slice. Sie zu **schließen** ist eigene Arbeit und nicht Teil dieses Slice.
+- **Der Wächter bewachte nur eine von zwei Lesarten** (Review, HIGH). d-check
+  trägt zwei Schluss-Regeln; die Umsetzung wertete nur den naiven Toggle aus,
+  sodass der Tabellen-Leser unbewacht blieb — belegt an einem
+  Vollständigkeits-Gate, das Exit 0 über eine ungedeckte Anforderung hinter
+  einem offenen Fence meldete. — **Ausgang: behoben.** Beide Lesarten werden
+  ausgewertet, und die strenge ist aus ihrem Konsumenten herausgezogen und
+  geteilt, damit keine zweite Kopie danebenliegt.
+- **Der Wächter trimmte anders als das Bewachte** (Review, HIGH): `TrimSpace`
+  unicode-weit gegen `TrimLeft` auf Space/Tab. Eine mit U+00A0 eingerückte
+  Fence-Zeile kippte damit **nur** die Parität des Wächters und machte ihn blind
+  für den echten offenen Fence dahinter — null Befunde, Exit 0.
+  — **Ausgang: behoben**, Trimmung identisch, Testfall vorhanden.
+- **Die gemeldete Zeile ist nicht immer die Reparaturstelle** (Review, LOW).
+  Kippt nur die Parität, ist grundsätzlich nicht bestimmbar, welche von mehreren
+  gleich langen Öffnungen fehlt. — **Ausgang: nicht behebbar, benannt.**
+  Anforderung, Spezifikation und ADR nennen sie jetzt **Fundstelle**.
 
 ## 7. Trigger
 

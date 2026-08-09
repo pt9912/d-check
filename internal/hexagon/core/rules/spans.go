@@ -19,40 +19,78 @@ func CheckSpans(file string, content []byte, lines []Line) []model.Finding {
 	return findings
 }
 
-// checkUnclosedFence meldet eine Fence-Öffnung ohne Schluss bis zum
-// **Datei**-Ende (§DC-FA-SPAN-001.a Schritt 3, ADR-0050). Bewusst
-// dateiweit statt absatzweise: ein Fence *ist* eine Absatzgrenze, absatzweise
-// gemessen wäre er per Definition nie ungeschlossen.
-//
-// Gemeldet wird der **Zustand**, nicht die Paarung — der längenabgeglichene
-// CommonMark-Schluss bleibt offen (ADR-0042), weil er diesen Fall nicht löst:
-// ein nie geschlossener Fence ist unter jeder Paarungsregel offen. Deshalb
-// läuft hier derselbe FenceToggle wie in der Vorverarbeitung; nur sein
-// Endzustand wird ausgewertet.
-//
-// Genau EIN Befund je Datei, an der zuletzt öffnenden Zeile: hinter einem
-// offenen Fence gibt es keine zweite Öffnung, die sich ohne Raten melden ließe.
+// checkUnclosedFence meldet dateiweit eine Fence-Öffnung, die bis zum
+// Dateiende keinen Schluss findet (§DC-FA-SPAN-001.a Schritt 3). Geführt
+// werden beide Schluss-Lesarten des Produkts — der naive Toggle und der
+// längenabgeglichene CommonMark-Schluss; ein Befund entsteht, sobald eine von
+// beiden am Dateiende offen steht. Genau ein Befund je Datei, an der
+// Öffnungszeile der strengen Lesart, sonst an der letzten öffnend gewerteten
+// Zeile. Ziel ist die getrimmte Fence-Zeile, auf 30 Runen gekappt.
 func checkUnclosedFence(file string, content []byte) []model.Finding {
-	inFence := false
-	openLine, openText := 0, ""
+	var naive, strict fenceReading
 	for i, raw := range splitLines(content) {
-		trimmed := strings.TrimSpace(raw)
-		if !FenceToggle(trimmed) {
-			continue
-		}
-		if inFence {
-			inFence = false
-			continue
-		}
-		inFence, openLine, openText = true, i+1, trimmed
+		// Dieselbe Trimmung wie proseLines (markdown.go) — Space und Tab,
+		// nicht unicode-weit.
+		trimmed := strings.TrimLeft(raw, " \t")
+		naive.stepNaive(trimmed, i+1)
+		strict.stepStrict(trimmed, i+1)
 	}
-	if !inFence {
+	open := &strict
+	if !open.open {
+		open = &naive
+	}
+	if !open.open {
 		return nil
 	}
 	return []model.Finding{{
-		File: file, Line: openLine, Rule: "spans",
-		Target: clipRunes(openText, 30), Reason: model.ReasonFenceUnclosed,
+		File: file, Line: open.line, Rule: "spans",
+		Target: clipRunes(strings.TrimRight(open.text, " \t"), 30),
+		Reason: model.ReasonFenceUnclosed,
 	}}
+}
+
+// fenceReading ist der Zustand einer Fence-Lesart über die Datei: ob ein Block
+// offen ist und, wenn ja, mit welchem Zeichen, welcher Länge und ab welcher
+// Zeile er geöffnet wurde.
+type fenceReading struct {
+	open   bool
+	char   byte
+	length int
+	line   int
+	text   string
+}
+
+// stepNaive verarbeitet eine Zeile in der Lesart von proseLines: jede
+// Fence-Zeile kippt den Zustand.
+func (r *fenceReading) stepNaive(trimmed string, no int) {
+	if !FenceToggle(trimmed) {
+		return
+	}
+	if r.open {
+		r.open = false
+		return
+	}
+	r.open, r.line, r.text = true, no, trimmed
+}
+
+// stepStrict verarbeitet eine Zeile in der Lesart des Tabellen-Readers:
+// geschlossen wird nur zeichen- und längenabgeglichen (FenceCloses), jede
+// andere Fence-Zeile innerhalb eines offenen Blocks ist Inhalt.
+func (r *fenceReading) stepStrict(trimmed string, no int) {
+	if _, run := FenceRun(trimmed); run < 3 {
+		return
+	}
+	if r.open {
+		if FenceCloses(trimmed, r.char, r.length) {
+			r.open = false
+		}
+		return
+	}
+	if !FenceToggle(trimmed) {
+		return
+	}
+	r.char, r.length = FenceRun(trimmed)
+	r.open, r.line, r.text = true, no, trimmed
 }
 
 // clipRunes kappt auf höchstens n Runen — nicht Bytes, damit ein Umlaut in der

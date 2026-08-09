@@ -20,7 +20,7 @@ var tableDelimiterCell = regexp.MustCompile(`^:?-+:?$`)
 // htmlCommentCell (slice-074/ADR-0040): eine Zelle, die ganz aus **einem**
 // HTML-Kommentar besteht — d-checks eigene `<!-- d-check:ignore … -->`-Direktive
 // hinter der letzten Pipe einer Tabellenzeile. Ein inneres `-->` (zwei Kommentare
-// mit Text dazwischen) zählt **nicht** als ganzzelliger Kommentar (Review R4-F-2).
+// mit Text dazwischen) zählt **nicht** als ganzzelliger Kommentar.
 func htmlCommentCell(cell string) bool {
 	c := strings.TrimSpace(cell)
 	return len(c) >= 7 && strings.HasPrefix(c, "<!--") && strings.HasSuffix(c, "-->") &&
@@ -45,7 +45,7 @@ func traceTableRequirements(fsys driven.Filesystem, source string, reqPat *regex
 		// fail-closed: ein Header, der eine Rolle bindet (ok) ODER die Rolle
 		// mehrdeutig trägt (err, z. B. doppelte Rollen-Spalte), beendet die
 		// laufende Tabelle. Sonst würde eine Tabelle, die standalone Exit 2 wäre,
-		// hinter einer irrelevanten still verschluckt (Review R-F-3).
+		// hinter einer irrelevanten still verschluckt.
 		_, ok, err := bindTableColumns(header, cfg)
 		return ok || err != nil
 	}
@@ -326,18 +326,19 @@ func markdownTableLines(content []byte) []markdownTableLine {
 	for i, raw := range rawLines {
 		out[i] = markdownTableLine{no: i + 1, text: raw}
 		trimmed := strings.TrimLeft(raw, " \t")
-		if char, run := fenceMarker(trimmed); run >= 3 {
+		if char, run := rules.FenceRun(trimmed); run >= 3 {
 			if fenceLen == 0 {
 				// Öffner-Entscheidung inkl. CommonMark-Infozeilen-Regel über das
 				// GETEILTE Prädikat rules.FenceToggle — dieselbe Definition wie in
-				// proseLines, damit trace und links dasselbe Dokument sehen
-				// (Review R-F-1). Nur der längenabgeglichene Schluss (unten) bleibt
-				// lokal (ADR-0042: naiver-Toggle-vs-strikter-Schluss bewusst offen).
+				// proseLines, damit trace und links dasselbe Dokument sehen.
+				// Auch der längenabgeglichene Schluss ist geteilt
+				// (rules.FenceCloses) — die strenge Lesart, die der
+				// Fence-Wächter aus DC-FA-SPAN-001 mit auswertet.
 				if rules.FenceToggle(trimmed) {
 					fenceChar, fenceLen = char, run
 					continue
 				}
-			} else if char == fenceChar && run >= fenceLen && strings.TrimSpace(trimmed[run:]) == "" {
+			} else if rules.FenceCloses(trimmed, fenceChar, fenceLen) {
 				fenceChar, fenceLen = 0, 0
 				continue
 			}
@@ -345,18 +346,6 @@ func markdownTableLines(content []byte) []markdownTableLine {
 		out[i].prose = fenceLen == 0
 	}
 	return out
-}
-
-func fenceMarker(line string) (byte, int) {
-	if line == "" || line[0] != '`' && line[0] != '~' {
-		return 0, 0
-	}
-	char := line[0]
-	i := 0
-	for i < len(line) && line[i] == char {
-		i++
-	}
-	return char, i
 }
 
 // splitPipeTableLine teilt an unescaped Pipes außerhalb korrekt geschlossener

@@ -94,10 +94,9 @@ func TestSpansMehrzeiligGeschlossen(t *testing.T) {
 	}
 }
 
-// fence-unclosed (§DC-FA-SPAN-001.a Schritt 3, ADR-0050): die Block-Ebene von
-// span-unclosed. Der Befund ist der Wächter vor einem AUSGELIEFERTEN stillen
-// Grün-Pfad — hinter einem offenen Fence übersprang jede Vorverarbeitung den
-// Rest, und Module meldeten grün, ohne geprüft zu haben.
+// fence-unclosed (§DC-FA-SPAN-001.a Schritt 3): die Block-Ebene von
+// span-unclosed. Geprüft werden beide Schluss-Lesarten, die Wahl der gemeldeten
+// Zeile und die Fälle, die kein Befund sind.
 func TestFenceUnclosed(t *testing.T) {
 	cases := []struct {
 		name    string
@@ -114,6 +113,26 @@ func TestFenceUnclosed(t *testing.T) {
 		// Die Infozeilen-Regel aus ADR-0042 gilt weiter: eine ```-Zeile mit
 		// Backtick im Rest ist KEIN Öffner, also auch kein offener Fence.
 		{"Backtick in der Infozeile ist kein Öffner", "# T\n\n``` `x` ```\n\nProsa.\n", 0},
+		// Space/Tab-Einrückung ist für proseLines kein Hindernis, also
+		// zählt die Zeile auch hier als Fence.
+		{"eingerückter Fence offen", "# T\n\n  ```\ncode\n", 3},
+		// Unicode-Whitespace ist für proseLines keine Einrückung und darf
+		// deshalb auch hier keine sein; gemeldet wird der echte Öffner in
+		// Zeile 7.
+		{"U+00A0 vor der Fence ist kein Toggle", "a\n\n\u00a0```\n\nb\n\n```yaml\nx\n", 7},
+		// Naiver Toggle balanciert, CommonMark-Schluss offen: ein ```-Block
+		// wird von ~~~ nicht geschlossen (und umgekehrt), ein ````-Block
+		// nicht von einer kürzeren Folge.
+		{"Tilde schließt keinen Backtick-Block", "# T\n\n```\nx\n~~~\n\nProsa.\n", 3},
+		{"Backtick schließt keinen Tilde-Block", "# T\n\n~~~\nx\n```\n\nProsa.\n", 3},
+		{"kürzerer Schluss schließt nicht", "# T\n\n````\nx\n```\n\nProsa.\n", 3},
+		// Legale Verschachtelung: der äußere ````-Block zeigt einen
+		// ```-Block; unter der strengen Lesart ist alles geschlossen.
+		{"legale Verschachtelung bleibt grün", "````markdown\n```yaml\nx\n```\n````\n\nProsa.\n", 0},
+		// Umgekehrte Richtung: der ````-Block zeigt EINE ```-Zeile. Für die
+		// strenge Lesart ist er geschlossen, für den naiven Toggle bleibt die
+		// Parität gekippt — und die Vorverarbeitung überspringt den Rest.
+		{"nur die naive Lesart kippt", "````markdown\n```\n````\n\nProsa.\n", 3},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -131,16 +150,14 @@ func TestFenceUnclosed(t *testing.T) {
 				t.Errorf("Grund = %q, want %q", got[0].Reason, model.ReasonFenceUnclosed)
 			}
 			if got[0].Line != tc.wantLine {
-				t.Errorf("Zeile = %d, want %d (die ÖFFNUNGS-Zeile, dort liegt die Reparatur)",
-					got[0].Line, tc.wantLine)
+				t.Errorf("Zeile = %d, want %d", got[0].Line, tc.wantLine)
 			}
 		})
 	}
 }
 
-// Der belegte Reproduktionsfall aus dem Review: eine Floskel HINTER einem
-// offenen Fence war für die Closure-Note-Struktur unsichtbar. Der Fence-Befund
-// macht den Zustand sichtbar, der sie unsichtbar gemacht hat.
+// Der Reproduktionsfall, der die Klasse ausgelöst hat: ein offener Fence im
+// Closure-Notiz-Abschnitt eines abgeschlossenen Slice.
 func TestFenceUnclosedDeckDenReviewFall(t *testing.T) {
 	content := "# S\n\n## 6. Closure-Notiz\n\nEins. Zwei.\n\n```\nunbalanciert\n\nalles gut\n"
 	got := checkUnclosedFence("done/slice-001-x.md", []byte(content))
@@ -149,9 +166,35 @@ func TestFenceUnclosedDeckDenReviewFall(t *testing.T) {
 	}
 }
 
-// Verdrahtungs-Test: die Mutations-Gegenprobe zeigte, dass ein Test, der
-// checkUnclosedFence DIREKT ruft, das Entfernen des Aufrufs aus CheckSpans
-// nicht bemerkt. Dieser Test geht deshalb über die Modul-Oberfläche.
+// Das Befund-Ziel nach §DC-FA-SPAN-001.a Schritt 3: die getrimmte
+// Öffnungszeile, gekappt auf 30 Runen.
+func TestFenceUnclosedZiel(t *testing.T) {
+	cases := []struct{ name, line, want string }{
+		{"kurze Zeile unverändert", "```yaml", "```yaml"},
+		{"eingerückt: links getrimmt", "    ```yaml", "```yaml"},
+		{"Trailing-Whitespace weg", "```yaml   ", "```yaml"},
+		// Runen, nicht Bytes — Umlaute werden nicht mitten im Zeichen
+		// abgeschnitten.
+		{"auf 30 Runen gekappt", "```jsonc-mit-ähnlich-länglicher-Infozeile", "```jsonc-mit-ähnlich-längliche"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := checkUnclosedFence("d.md", []byte("# T\n\n"+tc.line+"\ncode\n"))
+			if len(got) != 1 {
+				t.Fatalf("erwartet genau einen Befund, got %+v", got)
+			}
+			if got[0].Target != tc.want {
+				t.Errorf("Ziel = %q, want %q", got[0].Target, tc.want)
+			}
+			if n := len([]rune(got[0].Target)); n > 30 {
+				t.Errorf("Ziel = %d Runen, want ≤ 30", n)
+			}
+		})
+	}
+}
+
+// Verdrahtung: der Befund muss über die Modul-Oberfläche CheckSpans
+// herauskommen, nicht nur aus checkUnclosedFence direkt.
 func TestCheckSpansVerdrahtetFenceUnclosed(t *testing.T) {
 	content := []byte("# T\n\n```\ncode\n")
 	got := CheckSpans("d.md", content, PreprocessMarkdown(content))

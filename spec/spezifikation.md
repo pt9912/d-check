@@ -1250,21 +1250,35 @@ strikt opt-in, ohne aktives `citations`-Modul byte-identisch
    Paket-READMEs mit Shields-Badges). Das gemeldete Ziel ist der
    Treffer, gekappt auf 40 Zeichen.
 
-3. **`fence-unclosed`:** dateiweit, **nicht** absatzweise. Über die
-   Zeilen der Datei läuft derselbe Fence-Automat wie in der
-   Vorverarbeitung (`FenceToggle`); steht er am **Dateiende** noch
-   „innerhalb", entsteht **ein** Befund an der Zeile der zuletzt
-   öffnenden Fence-Zeile. Das gemeldete Ziel ist diese Zeile,
-   gekappt auf 30 Zeichen.
-   **Bewusst nicht gelöst:** die Paarung selbst. Ein
-   längenabgeglichener Schluss nach CommonMark bliebe hier wirkungslos
-   — ein Fence, der **gar nicht** geschlossen wird, ist unter jeder
-   Paarungsregel offen; die Grenze aus
-   [`DC-FA-LINK-001.a`](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
-   Schritt 1 bleibt unverändert. Gemeldet wird der **Zustand**, nicht
-   die Paarung.
-   Genau **ein** Befund je Datei: ein offener Fence hat keine zweite
-   Öffnung hinter sich, die noch gemeldet werden könnte.
+3. **`fence-unclosed`:** dateiweit, **nicht** absatzweise. Jede Zeile
+   wird — mit derselben Trimmung wie die Vorverarbeitung (Space und Tab,
+   **nicht** unicode-weit) — durch **beide** Schluss-Lesarten geführt,
+   die das Produkt kennt:
+   - **naiv:** jede Fence-Zeile (`FenceToggle`) kippt den Zustand. Das
+     ist die Lesart der Vorverarbeitung
+     ([§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+     Schritt 1) und damit aller Module, die auf ihr aufsetzen.
+   - **streng:** geschlossen wird nur zeichen- und längenabgeglichen
+     (gleiches Fence-Zeichen, mindestens gleiche Länge, dahinter nur
+     Whitespace); jede andere Fence-Zeile innerhalb eines offenen Blocks
+     ist Inhalt. Das ist die Lesart des Tabellen-Lesers aus
+     [§DC-FA-REQ-001.a](#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen).
+
+   Steht **mindestens eine** der beiden am Dateiende noch „innerhalb",
+   entsteht **ein** Befund — denn genau dann überspringt mindestens ein
+   Modul den Rest der Datei. Ist die strenge Lesart offen, steht der
+   Befund an **ihrer** Öffnungszeile; kippt nur die Parität der naiven,
+   steht er an der zuletzt öffnend gewerteten Zeile (welche Öffnung
+   fehlt, ist dann nicht bestimmbar — mehrere gleich lange Öffner sind
+   ununterscheidbar). Das gemeldete Ziel ist diese Zeile, links- und
+   rechtsbündig getrimmt und auf 30 **Runen** gekappt.
+
+   **Bewusst nicht gelöst:** die Paarung selbst. Welche der beiden
+   Lesarten die richtige ist, bleibt offen — die Vorverarbeitung nach
+   [§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+   Schritt 1 ändert sich **nicht**. Gemeldet wird der **Zustand**: dass
+   eine Lesart offen endet, unabhängig davon, welche recht hat.
+   Genau **ein** Befund je Datei.
 
 Die drei Prüfungen kennen keinen Opt-out-Marker; das Modul akzeptiert
 den generischen Schlüssel `spans.scope`
@@ -2373,6 +2387,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-09 | §[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung) Schritt 3 nach unabhängigem Code-Review überarbeitet: der Algorithmus führt jede Zeile durch **beide** Schluss-Lesarten des Produkts (naiver Toggle und längenabgeglichener CommonMark-Schluss) und meldet, sobald **eine** von beiden am Dateiende offen steht — vorher nur die naive, wodurch der Tabellen-Leser aus §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) unbewacht blieb. Die Trimmung ist auf Space/Tab festgeschrieben (identisch zur Vorverarbeitung, nicht unicode-weit); die Zeilenwahl ist präzisiert (Öffnungszeile der strengen Lesart, sonst letzte öffnend gewertete Zeile — unter reiner Paritätskippung ist die fehlende Öffnung nicht bestimmbar); die Kappung zählt **Runen** |
 | 2026-08-09 | §[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung) um eine **dritte** Artefakt-Klasse erweitert: `fence-unclosed` — eine Fence-Öffnung ohne Schluss bis zum **Dateiende**. Dateiweit statt absatzweise (ein Fence *ist* eine Absatzgrenze), Befund an der Öffnungszeile, genau einer je Datei. Anlass ist ein belegter **stiller Grün-Pfad**: hinter einem offenen Fence überspringt jede Vorverarbeitung den Rest, und ein Gate meldet grün, ohne geprüft zu haben. **Bewusst nicht** mitgelöst wird die Fence-**Paarung** (längenabgeglichener CommonMark-Schluss) — sie ist auf dem gemessenen Bestand wirkungslos und löst den Fall ohnehin nicht, weil ein nie geschlossener Fence unter jeder Paarungsregel offen bleibt. Grund-Code (§4) folgt mit der Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Modul-Wahl, Reichweite, Nicht-Lösung der Paarung) in begleitender ADR |
 | 2026-08-09 | Neue §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) + §2-Schema (`structure[]`) — **Struktur-Invarianten innerhalb eines Dokuments** (Modul `structure`, opt-in, hermetisch, Post-Pass): je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom globalen Scan-Scope, daher kein `<modul>.scope`), ein Abschnitts-Typ (`section` Klartext **oder** `section-pattern` RE2) und ein **Kardinalitäts-Modus** `sections`: `one` (Default; mehrere Treffer ⇒ `section-ambiguous` und Abbruch für diese Datei) oder `each` (jeder Treffer wird geprüft — für **wiederkehrende** Abschnitte). Null Kandidaten ⇒ `section-missing`, auch wenn erst `exempt-paths` die Menge geleert hat. Nach Fence-Bereinigung sechs Bedingungen mit **je eigenem** Grund-Code (`section-empty`/`-thin`/`-oversized`/`-forbidden`/`-pattern-missing`/`-marker-missing`), weil die Befund-Deduplikation zwei Verletzungen desselben Abschnitts sonst zusammenfallen ließe. Marken sind **Auszeichnungs-Marken** am Zeilen-Anfang nach optionalem **Listen-Marker**; `require-pattern` ist das Spiegelbild von `forbid-pattern` und deckt Aussagen **innerhalb** einer Auszeichnung. §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C3 um dieselbe Mehrdeutigkeits-Härte ergänzt (`closure-note-ambiguous`) und als **Preset** im Modus `one` ausgewiesen — beide teilen Abschnitts-Findung, Kardinalitäts-Behandlung, Bereinigung und Zählung; eine Änderung an nur einer Stelle ist ein Spezifikations-Bug. Grund-Codes (§4) folgen mit der Implementierung (AllReasons-↔-§4-Lockstep). Begründung in begleitender ADR |
 | 2026-08-09 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) um die **Closure-Note-Struktur** (Schritte C1–C5) erweitert + neue §[`DC-FA-CLI-012.a`](spezifikation.md#dc-fa-cli-012a--konfigurations-pfad---config) + §2-Schema (`planning.closure.dir`/`heading-pattern`/`min-sentences`/`boilerplate`). Die Closure-Fähigkeit ist opt-in **innerhalb** des opt-in Moduls (leere `dir` ⇒ keine Slice-Datei wird geöffnet, byte-identisch): erster auf `heading-pattern` passender Abschnitt (bis zur nächsten gleich-/höherrangigen Überschrift), Fenced-Code entfernt, Satzende-Zeichen gezählt (< `min-sentences` ⇒ `closure-note-thin`), Rest case-insensitiv gegen die literalen `boilerplate`-Teilstrings (⇒ `closure-note-boilerplate`); kein passender Abschnitt bzw. fehlendes gesetztes Verzeichnis ⇒ `closure-note-missing`. Leeres Closure-Verzeichnis ist befundfrei, `min-sentences` < 1 und leerer Floskel-Eintrag ⇒ Exit 2; diagnose-only. `--config <datei>` verschiebt **nur die Herkunft** der Konfiguration (Wurzel-Constraint + Existenz fail-closed, ersetzt statt ergänzt, Validierung und Semantik unverändert, Befund-Provenance nennt die geladene Datei) — es trennt die Prüf-Profile zweier Bindepunkte, ohne die Modulwahl auf der Kommandozeile nachzubauen. Grund-Codes `closure-note-missing`/`closure-note-thin`/`closure-note-boilerplate` in §4 (im Lockstep mit der Implementierung ergänzt). Begründung (Modul-Schnitt statt neues Modul, Bindepunkt-Trennung, Struktur-vs-Bedeutung-Grenze, Schwellenwahl) in begleitender ADR |

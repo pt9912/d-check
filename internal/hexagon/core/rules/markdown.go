@@ -27,9 +27,7 @@ type proseLine struct {
 // Backticks in der Infozeile erlaubt). Der **einzige** Öffner-Test aller
 // Fence-Automaten: proseLines und diagramFenceLines (dieses Paket) sowie der
 // Tabellen-Reader markdownTableLines (Paket app) rufen ihn — so lebt die
-// Infozeilen-Regel an genau einer Stelle und trace sieht dasselbe wie links
-// (Review R-F-1). Der längenabgeglichene Fence-Schluss bleibt hingegen lokal je
-// Automat (ADR-0042: naiver-Toggle-vs-strikter-Schluss bewusst offen).
+// Infozeilen-Regel an genau einer Stelle und trace sieht dasselbe wie links.
 func FenceToggle(trimmed string) bool {
 	if strings.HasPrefix(trimmed, "~~~") {
 		return true
@@ -42,6 +40,35 @@ func FenceToggle(trimmed string) bool {
 		run++
 	}
 	return strings.IndexByte(trimmed[run:], '`') == -1
+}
+
+// FenceRun liefert Fence-Zeichen und Länge der führenden Markierung einer
+// links-getrimmten Zeile (0, 0 wenn keine). Ab drei Zeichen ist es eine
+// Fence-Markierung.
+func FenceRun(trimmed string) (byte, int) {
+	if trimmed == "" || trimmed[0] != '`' && trimmed[0] != '~' {
+		return 0, 0
+	}
+	char := trimmed[0]
+	i := 0
+	for i < len(trimmed) && trimmed[i] == char {
+		i++
+	}
+	return char, i
+}
+
+// FenceCloses meldet, ob die links-getrimmte Zeile einen mit (char, length)
+// geöffneten Block nach CommonMark schließt: gleiches Zeichen, mindestens
+// gleiche Länge, hinter der Markierung nur Whitespace. Die strenge der beiden
+// Schluss-Lesarten — ein ```-Block wird von einer ~~~-Zeile nicht geschlossen,
+// ein ````-Block nicht von ```. Geteilt vom Tabellen-Reader (Paket app) und vom
+// Fence-Wächter (spans.go).
+func FenceCloses(trimmed string, char byte, length int) bool {
+	ch, run := FenceRun(trimmed)
+	if ch != char || run < length {
+		return false
+	}
+	return strings.TrimSpace(trimmed[run:]) == ""
 }
 
 // proseLines liefert alle Zeilen außerhalb von Fenced-Code-Blöcken;

@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.52.0
+**Version:** 0.52.1
 
 **Status:** Draft
 
@@ -1397,20 +1397,40 @@ GitHub nachweislich anders rendert, als der Quelltext nahelegt:
    legales Markdown und kein Treffer.
 3. **Unbalancierter Fenced-Code-Block** (`fence-unclosed`): eine
    Fence-Öffnung, die bis zum **Dateiende** keinen Schluss findet.
-   Alles dahinter gilt für jede Vorverarbeitung als Code und wird von
-   **allen** Modulen übersprungen — der Autor schaltet damit unbemerkt
-   die Prüfung des Restdokuments ab. Es ist dieselbe Aussage wie
-   Klasse 1, eine Ebene höher: eine Öffnung ohne Schluss, die alles
-   Folgende umdeutet. **Reichweite ist die Datei, nicht der Absatz**
-   (ein Fence kennt keine Absatzgrenze — er *ist* eine); der Befund
-   steht an der **Öffnungszeile**, denn dort liegt die Reparatur.
-   **Grenze:** wie jede `spans`-Klasse greift die Prüfung nur auf Dateien im
-   Scan-Scope. Module, die ihre Eingabe selbst benennen (Post-Pässe über
-   deklarierte Verzeichnisse), können Dateien lesen, die `spans` nie sieht —
-   dort bleibt ein offener Fence unentdeckt.
+   Alles dahinter gilt der Vorverarbeitung als Code und wird
+   übersprungen — der Autor schaltet damit unbemerkt die Prüfung des
+   Restdokuments ab. Es ist dieselbe Aussage wie Klasse 1, eine Ebene
+   höher: eine Öffnung ohne Schluss, die alles Folgende umdeutet.
+   **Reichweite ist die Datei, nicht der Absatz** (ein Fence kennt
+   keine Absatzgrenze — er *ist* eine).
 
-Der Befund nennt Datei, Zeile (Opener- bzw. Muster-Zeile), die
-betroffene Backtick-Folge bzw. das Muster und den Grund. Es gilt die
+   Was ein *Schluss* ist, liest d-check an zwei Stellen verschieden:
+   der naive Toggle zählt jede Fence-Zeile, der CommonMark-Schluss
+   verlangt gleiches Zeichen und mindestens gleiche Länge; welche die
+   richtige ist, bleibt bewusst offen. Der Befund wertet
+   **beide** aus und meldet, sobald **eine** von beiden am Dateiende
+   offen steht — denn genau dann überspringt mindestens ein Modul den
+   Rest. Nur eine auszuwerten hieße, die andere unbewacht zu lassen.
+
+   Der Befund steht an der Öffnungszeile, wenn der CommonMark-Schluss
+   sie kennt. Kippt dagegen nur die **Parität** des naiven Toggles, ist
+   die schuldige Öffnung nicht bestimmbar — mehrere gleich lange Öffner
+   sind ununterscheidbar; dann zeigt der Befund auf die letzte öffnend
+   gewertete Zeile. Das ist eine **Fundstelle**, nicht zwingend die
+   Reparaturstelle.
+
+   **Grenze:** die Prüfung greift nur auf Dateien im Scan-Scope. Zwei
+   Klassen von Dateien liegen systematisch daneben — Module, die ihre
+   Eingabe selbst benennen (Post-Pässe über deklarierte Verzeichnisse),
+   und **Zieldateien** außerhalb der Scan-Wurzeln, aus denen Module
+   lesen (`matrix` den Status, `anchors` die Slugs, `diagrams` die
+   `defined-in`-Quelle, `versions` die `current-from`-Quelle). In beiden
+   Fällen bleibt ein offener Fence unentdeckt.
+
+Der Befund nennt Datei, Zeile (Opener- bzw. Muster-Zeile), den Grund
+und als Ziel je nach Klasse die betroffene Backtick-Folge (Klasse 1),
+das Muster (Klasse 2) oder die getrimmte Fence-Zeile samt Infozeile
+(Klasse 3). Es gilt die
 allgemeine Opt-out-Regel unverändert: deterministische Befunde werden
 behoben, nicht unterdrückt — der Zeilen-Marker `d-check:ignore`
 bleibt auf das Modul `codepaths` beschränkt
@@ -1422,7 +1442,9 @@ bleibt auf das Modul `codepaths` beschränkt
 - **Boundary:** Given eine alleinstehende literale Backtick-Folge (beidseitig Whitespace), when das Modul läuft, then kein Befund.
 - **Negative:** Given ein Listenpunkt, dessen öffnende Backtick-Folge unmittelbar vor Nicht-Whitespace steht und im Absatz ungeschlossen bleibt, when das Modul läuft, then ein Befund `span-unclosed` mit Datei, Zeile und Grund, Exit-Code 1.
 - **Negative (unbalancierter Fence):** Given eine Datei, deren Fence-Öffnung bis zum **Dateiende** keinen Schluss findet, when das Modul läuft, then ein Befund `fence-unclosed` an der **Öffnungszeile**, Exit-Code 1 — unabhängig davon, ob dahinter noch Inhalt steht.
-- **Boundary (balanciert):** Given eine Datei mit beliebig vielen, jeweils geschlossenen Fences, when das Modul läuft, then **kein** `fence-unclosed`.
+- **Negative (nur eine Lesart offen):** Given eine Datei, in der eine Backtick-Fence von einer Tilden-Zeile „geschlossen“ wird — für den naiven Toggle balanciert, für den CommonMark-Schluss offen —, when das Modul läuft, then ein Befund `fence-unclosed`, Exit-Code 1.
+- **Boundary (balanciert):** Given eine Datei mit beliebig vielen, jeweils **unter beiden Lesarten** geschlossenen Fences — einschließlich einer legalen Verschachtelung, in der ein längerer Fence einen kürzeren zeigt —, when das Modul läuft, then **kein** `fence-unclosed`.
+- **Boundary (Einrückung):** Given eine Fence-Zeile, die mit Unicode-Whitespace statt Space/Tab eingerückt ist, when das Modul läuft, then zählt sie **nicht** als Fence — dieselbe Trimmung wie die Vorverarbeitung, sonst bewachte der Befund einen anderen Automaten als den bewachten.
 
 **Out-of-Scope:** Emphasis-/Bold-Artefakte (`*`, `_`); Syntaxfehler in Fenced-Code-Blöcken; Reference-Style-Definitionen; automatische Korrektur; ein Opt-out-Marker für dieses Modul.
 
@@ -2476,6 +2498,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.52.1 | 2026-08-09 | Korrektur nach unabhängigem Code-Review, noch vor dem Release der 0.52.0: `DC-FA-SPAN-001` Klasse 3 sagte eine **Reichweite** zu, die die Umsetzung nicht hielt („jede Vorverarbeitung“, „alle Module“). d-check trägt **zwei** Schluss-Lesarten — den naiven Toggle und den längenabgeglichenen CommonMark-Schluss —, und der Wächter wertete nur die erste aus: ein von `~~~` „geschlossener“ Backtick-Block war für ihn balanciert, für den Tabellen-Leser bis Dateiende offen (belegt: ein Vollständigkeits-Gate meldete Exit 0 über eine ungedeckte Anforderung hinter dem Fence). Der Befund wertet jetzt **beide** aus und meldet, sobald eine von beiden offen endet. Zusätzlich: die Trimmung folgt exakt der Vorverarbeitung (Space/Tab, nicht unicode-weit — eine mit U+00A0 eingerückte Fence-Zeile schaltete sonst NUR den Wächter um und machte ihn blind für den echten offenen Fence dahinter); die gemeldete Zeile heißt ehrlich **Fundstelle**, weil unter reiner Paritätskippung nicht bestimmbar ist, welche Öffnung fehlt; der Sammelsatz nennt das Ziel je Klasse; die **Grenze** deckt neben Post-Pässen jetzt auch **Zieldateien** außerhalb der Scan-Wurzeln, aus denen Module lesen |
 | 0.52.0 | 2026-08-09 | Change Request (eigener Review-Befund): `DC-FA-SPAN-001` um eine **dritte** Artefakt-Klasse erweitert — `fence-unclosed`, eine Fence-Öffnung ohne Schluss bis zum **Dateiende**. Anlass ist ein **ausgelieferter stiller Grün-Pfad**: hinter einem offenen Fence überspringt jede Vorverarbeitung den Rest des Dokuments, und ein Gate meldet grün, ohne geprüft zu haben (reproduziert gegen das veröffentlichte Image). **Gemeldet wird der Zustand, nicht die Paarung:** der längenabgeglichene CommonMark-Schluss bleibt ausdrücklich offen — er löst den Fall nicht (ein nie geschlossener Fence bleibt unter jeder Paarungsregel offen) und wäre auf dem gemessenen Bestand wirkungslos (776 Dateien in drei Repos: null unbalancierte Fences, null gemischte Fence-Längen, null `~~~`). Reichweite ist die **Datei**, nicht der Absatz (ein Fence *ist* eine Absatzgrenze), der Befund steht an der **Öffnungszeile** (dort liegt die Reparatur), genau einer je Datei; kein neuer Config-Schlüssel — `spans` ist als Ganzes opt-in. Einordnung als **Erweiterung** statt neues Kürzel nach dem Kriterium „dieselbe Frageform, eine Ebene höher". Algorithmus (Schritt 3) in der Spezifikation; Begründung (Modul-Wahl, Reichweite, ausdrückliche Nicht-Lösung der Paarung) in begleitender ADR; Implementierung und Release folgen separat |
 | 0.51.0 | 2026-08-09 | Change Request (Schwester-Repo `a-check`): neue Anforderung `DC-FA-STRUCT-001` — **20. Regelmodul `structure`** (opt-in, hermetisch, Post-Pass): Struktur-Invarianten **innerhalb** eines Dokuments. Eine **Liste** von Regeln bindet je eine Dokumentklasse (`files`-Glob über Wurzel-relative Pfade, unabhängig vom globalen Scan-Scope) an einen Abschnitts-Typ (`section` Klartext **oder** `section-pattern` RE2) und an Bedingungen in ihm. **`sections`** entscheidet die Kardinalität: `one` (Default — genau einer erwartet, mehrere ⇒ `section-ambiguous` und keine Messung) oder `each` (**jeder** Treffer wird geprüft — für Klassen mit **wiederkehrenden** Abschnitten wie Anforderungen; ohne diesen Modus bliebe jede neu hinzukommende Anforderung ungeprüft). Bedingungen mit je **eigenem** Grund-Code, weil jede eine andere Reparatur verlangt: `non-empty`→`section-empty`, `min-sentences`→`section-thin`, `max-tasks` (Task-Items **im Abschnitt**, nicht dateiweit)→`section-oversized`, `forbid-pattern`→`section-forbidden`, `require-pattern`→`section-pattern-missing`, `require-all`→`section-marker-missing`; ein Sammel-Code schiede aus, weil die Befund-Deduplikation zwei Verletzungen desselben Abschnitts zusammenfallen ließe und die Unterscheidung im nicht stabil zugesagten Meldungstext läge. **Marken sind Auszeichnungs-Marken:** hervorgehobener Textlauf am Zeilen-Anfang nach optionalem **Listen-Marker** — gemessen an den beiden Repos, die den Antrag tragen (108× Listen-Item, 44× bare, dazu qualifizierte Formen). `require-pattern` ist das Spiegelbild von `forbid-pattern` und deckt zugesagte Aussagen **innerhalb** einer Auszeichnung; eine Marken-Alternative wird dadurch überflüssig. Fence-treu, opt-in, diagnose-only, fail-closed am Config-Rand **und** bei Leerlauf (null Kandidaten, auch nach `exempt-paths`). **Mit-Modifikation `DC-FA-PLAN-001`:** die Closure-Fähigkeit wird als **Preset** derselben Semantik im Modus `one` ausgewiesen (nicht superseded — ihre Grund-Codes sind stabil zugesagt) und additiv um `closure-note-ambiguous` ergänzt, das die bis dahin stille Übernahme des ersten Treffers beendet; ein Akzeptanzkriterium beider Anforderungen hält die Semantiken zusammen. §1 benennt die Form-Frage als eigene Kategorie (sie lief mit `spans`/`hostpaths` längst mit, war aber nie ausgesprochen), Bereich `STRUCT` in §3, `structure` in `DC-FA-CLI-002`. Ausdrücklich Out-of-Scope: Aussagen über den **Ort** eines Dokuments, eine **Stichtags**-Mechanik und **namentliche** Ausnahmen innerhalb einer Datei — alle drei hießen, die Kennungs-Konvention des Adopters zu interpretieren, und d-check führt keinen zweiten Regel-Interpreter. Algorithmen und Schema-Schlüssel in der Spezifikation; Begründung (Modul-Schnitt, Nicht-Supersede wegen Code-Stabilität, Kardinalitäts-Modus, gemessene Marken-Form, Modul-Grenze) in begleitender ADR; Implementierung, Paritäts-Beleg und Release folgen separat. Anlass: ein Adopter hat 480 Zeilen Shell in drei Prüfskripten vermessen — 11 Prüfungen, davon 2 gedeckt, 3 nach Kalibrierung, 4 ungedeckt, 2 außerhalb |
 | 0.50.0 | 2026-08-09 | Change Request (Auftraggeber): der **Closure-Note-Qualitäts-Nachlauf** wird mechanisiert, in zwei Teilen. (1) `DC-FA-PLAN-001` geschärft — das Modul `planning` bekommt eine **zweite Fähigkeit**, opt-in über `planning.closure.dir`: für jeden Slice im Closure-Verzeichnis wird der Closure-Notiz-Abschnitt (erste Überschrift auf `heading-pattern`, Default `^#{2,3} .*Closure-Notiz`) **strukturell** geprüft — Abschnitt vorhanden (`closure-note-missing`), mindestens `min-sentences` Satzende-Zeichen **außerhalb Fenced-Code** (Default 4, `closure-note-thin`), keine der literalen `boilerplate`-Phrasen (`closure-note-boilerplate`, Liste per Default **leer** — der Vertrag bringt keine sprach-spezifischen Phrasen mit). Ohne den Schlüssel inert und byte-identisch; fail-closed bei fehlendem Verzeichnis bzw. ungültigem Muster; diagnose-only. Zugesagt ist **Struktur, nicht Bedeutung** — die Floskel-*Semantik* bleibt ausdrücklich unzugesagt und einem inferentiellen Nachlauf überlassen. (2) Neue Anforderung `DC-FA-CLI-012` — `--config <datei>` überschreibt pro Lauf den konventionellen Konfigurations-Pfad (innerhalb der Scan-Wurzel, gleiche strikte Validierung, **kein** stiller Rückfall, ersetzt statt ergänzt). Sie ist die Voraussetzung dafür, dass die Closure-Prüfung an einem **eigenen** Bindepunkt hängt statt im inneren Loop mitzulaufen: ein Repo fährt zwei disjunkte Prüf-Profile, ohne die Modulwahl auf der Kommandozeile nachzubauen. `DC-FA-CONF-001` notiert den Pfad entsprechend als Konvention statt Zwang. Bereiche `PLAN`/`CLI` bestehen, kein neues Modul. Algorithmen, Grund-Codes und Schema-Schlüssel in der Spezifikation; Begründung (Modul-Schnitt statt neues Modul, Bindepunkt-Trennung, Struktur-vs-Bedeutung-Grenze, Schwellenwahl) in begleitender ADR; Implementierung, Realdatenbeleg und Release folgen separat. Anlass: die Baseline vendored beide Ziel-Formen (Struktur-Gate + inferentieller Reviewer-Skill), d-check hatte **keine** von beiden — und die eigene Closure-Note-Pflicht stand ohne jede maschinelle Entsprechung |

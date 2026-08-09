@@ -45,10 +45,21 @@ haben:
 
 ## Entscheidung
 
-1. **Gemeldet wird der Zustand, nicht die Paarung.** Neuer Grund-Code
-   `fence-unclosed`: eine Fence-Öffnung, die bis zum Dateiende keinen Schluss
-   findet. Die Paarungsregel selbst (längenabgeglichener CommonMark-Schluss)
-   bleibt **unverändert**.
+1. **Gemeldet wird der Zustand, nicht die Paarung — und zwar in beiden
+   Lesarten.** Neuer Grund-Code `fence-unclosed`: eine Fence-Öffnung, die bis
+   zum Dateiende keinen Schluss findet. Die Paarungsregel selbst bleibt
+   **unverändert**.
+
+   Das Produkt trägt zwei Schluss-Lesarten: den naiven Toggle (Vorverarbeitung
+   und alles, was auf ihr aufsetzt) und den längenabgeglichenen
+   CommonMark-Schluss (Tabellen-Leser). Der Wächter wertet **beide** aus und
+   meldet, sobald **eine** von beiden am Dateiende offen steht — genau dann
+   überspringt mindestens ein Modul den Rest. Nur eine auszuwerten hieße, die
+   andere unbewacht zu lassen: ein Backtick-Block, den eine Tilden-Zeile
+   „schließt“, ist für den naiven Toggle balanciert und für den
+   Tabellen-Leser bis Dateiende offen.
+   Damit diese Lesart nicht als Kopie neben ihrem Konsumenten liegt, ist der
+   längenabgeglichene Schluss zu einem geteilten Prädikat geworden.
    Das ist keine Bequemlichkeit, sondern folgt aus der Messung und aus einer
    Beobachtung, die beim ersten Zuschnitt fehlte: **ein strengerer Schluss löst
    diesen Fall gar nicht.** Er korrigiert *Fehlpaarungen* — ein Fence, der
@@ -68,12 +79,18 @@ haben:
    Kürzel, sondern eine **Erweiterung der bestehenden Anforderung**: dasselbe
    Modul, dieselbe Frage, andere Ebene.
 
-3. **Reichweite ist die Datei, nicht der Absatz — und der Befund steht an der
-   Öffnungszeile.** `span-unclosed` misst absatzweise; für einen Fence ist das
-   nicht übertragbar, weil er selbst eine Absatzgrenze **ist**. Die Öffnungszeile
-   ist der Ort der Reparatur, also der Ort des Befundes. **Genau ein** Befund je
-   Datei: hinter einem offenen Fence kann keine zweite Öffnung mehr gemeldet
-   werden, ohne zu raten.
+3. **Reichweite ist die Datei, nicht der Absatz.** `span-unclosed` misst
+   absatzweise; für einen Fence ist das nicht übertragbar, weil er selbst eine
+   Absatzgrenze **ist**. **Genau ein** Befund je Datei: hinter einem offenen
+   Fence kann keine zweite Öffnung mehr gemeldet werden, ohne zu raten.
+
+   Die gemeldete Zeile ist die Öffnung, **soweit sie bestimmbar ist**: die
+   strenge Lesart kennt die tatsächlich offene Öffnung und hat deshalb Vorrang.
+   Kippt dagegen nur die Parität des naiven Toggles, ist die schuldige Öffnung
+   grundsätzlich nicht bestimmbar — mehrere gleich lange Öffner sind
+   ununterscheidbar. Dann zeigt der Befund auf die letzte öffnend gewertete
+   Zeile. Das ist eine **Fundstelle**, nicht zwingend die Reparaturstelle, und
+   diese Ehrlichkeit ist der Preis dafür, den Zustand überhaupt zu melden.
 
 4. **Kein neuer Config-Schlüssel.** `spans` ist opt-in und trägt seine beiden
    bestehenden Klassen ohne Schalter; eine dritte bekommt keinen. Wer sie nicht
@@ -105,15 +122,20 @@ haben:
 - **Die von [ADR-0042](0042-markdown-lexik-folgt-commonmark.md) offen gelassene
   Grenze bleibt offen** — bewusst, und jetzt mit einem Wächter davor: nicht die
   Paarung wird streng, sondern der ungepaarte Zustand wird laut.
-- **Jedes Modul profitiert**, weil die Lexik geteilt ist: der Befund entsteht
-  einmal in `spans`, die stille Verkürzung betraf aber alle.
+- **Jedes Modul profitiert**, weil beide Lesarten geteilt sind: der Befund
+  entsteht einmal in `spans`, die stille Verkürzung betraf aber alle. Die
+  strenge Lesart wurde dafür aus dem Tabellen-Leser herausgezogen — der Wächter
+  bewacht damit **die** Lesart seines Konsumenten und nicht eine zweite Kopie,
+  die davon abdriften kann.
 - **Die Zusage der Closure-Note-Struktur wird eingelöst**, ohne sie zu ändern:
   ihr Silent-Grün-Pfad wird von einem anderen Modul aufgedeckt. Die Grenze ist
   dabei **schärfer als zunächst notiert**, gemessen beim End-to-End-Beleg: der
   Wächter greift nur, wenn `spans` aktiv ist **und** die Datei im **Scan-Scope**
-  liegt. Die Closure-Fähigkeit ist ein Post-Pass über ein selbst benanntes
-  Verzeichnis und sieht Dateien, die kein `scan.roots` erfasst — dort bleibt der
-  offene Fence unentdeckt. Beides gehört in die Release-Notiz, nicht in eine
+  liegt. Zwei Klassen fallen dadurch systematisch heraus: Post-Pässe über selbst
+  benannte Verzeichnisse (die Closure-Fähigkeit) und **Zieldateien** außerhalb
+  der Scan-Wurzeln, aus denen Module lesen — `matrix` den Status, `anchors` die
+  Slugs, `diagrams` und `versions` ihre deklarierten Quellen. In beiden bleibt
+  ein offener Fence unentdeckt. Das gehört in die Release-Notiz, nicht in eine
   stille Annahme.
 - **Der Bestand bleibt grün** (776 Dateien, null Vorkommen). Der Wert liegt
   vollständig in der Zukunft; das ist bei einem latenten Defekt der Normalfall
@@ -123,9 +145,16 @@ haben:
 
 - **Der belegte Reproduktionsfall meldet**, und der Test ist mutations-echt: der
   Rückbau des Fixes macht ihn wieder grün.
-- **Balanciert bleibt grün:** eine Datei mit vielen, jeweils geschlossenen
-  Fences — auch verschiedener Länge — erzeugt keinen Befund.
-- **Genau ein Befund je Datei**, an der Öffnungszeile.
+- **Balanciert bleibt grün:** eine Datei mit vielen, unter **beiden** Lesarten
+  geschlossenen Fences erzeugt keinen Befund — einschließlich einer legalen
+  Verschachtelung, in der ein längerer Fence einen kürzeren zeigt.
+- **Eine kippende Lesart genügt:** ein Backtick-Block, den eine Tilden-Zeile
+  „schließt“, meldet trotz balancierten Toggles; ein vier Zeichen langer
+  Block, der eine dreizeichige Fence-Zeile zeigt, meldet trotz schließender
+  strenger Lesart.
+- **Genau ein Befund je Datei.**
+- **Der Wächter trimmt wie das Bewachte:** eine mit Unicode-Whitespace
+  eingerückte Fence-Zeile zählt für keinen von beiden.
 - **Der eigene Bestand bleibt bei null** — jede Abweichung ist ein echter Fund,
   kein Rauschen.
 
@@ -143,3 +172,9 @@ haben:
 ## Geschichte
 
 - 2026-08-09: Proposed (doc-first, `slice-101`).
+- 2026-08-09: nach unabhängigem Code-Review überarbeitet — Entscheidung 1 wertet
+  **beide** Schluss-Lesarten aus (vorher nur den naiven Toggle, wodurch der
+  Tabellen-Leser unbewacht blieb), Entscheidung 3 nennt die gemeldete Zeile
+  ehrlich eine Fundstelle, die Fitness Function ist um die Fälle ergänzt, an
+  denen die vorherige Fassung nachweislich scheiterte, und die Grenze deckt
+  jetzt auch die Ziel-Achse.
