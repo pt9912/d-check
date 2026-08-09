@@ -74,7 +74,8 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
 
 ## 4. Abnahme-Punkte
 
-1. **Wie weit geht der Fix?** Die Messung hat die drei Kandidaten neu geordnet:
+1. **Wie weit geht der Fix?** → **Entschieden 2026-08-09: (c)** — der neue
+   Grund-Code. Die Messung hat die drei Kandidaten neu geordnet:
    - **(a) nur die Closure-/Struktur-Bedingungen** behandeln den offenen Fence
      lokal — deckt den belegten Fall, lässt die Klasse aber in jedem anderen
      Modul stehen.
@@ -86,9 +87,16 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
    - **(c) ein eigener Grund-Code für den unbalancierten Fence** — macht den
      stillen Zustand laut. Deckt den belegten Fall direkt und kostet auf dem
      gemessenen Bestand nichts.
-   **Vorschlag: (c).** (b) ist nach der Messung nicht die Wurzel dieses Befundes,
-   sondern eine verwandte, folgenlose Frage.
-2. **Wo wohnt der neue Befund?** Nicht im `planning`-Modul: der offene Fence ist
+   (b) ist nach der Messung **nicht** die Wurzel dieses Befundes, sondern eine
+   verwandte, folgenlose Frage — und die von
+   [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) offen gelassene
+   Grenze bleibt bewusst offen, jetzt mit einem Wächter davor.
+2. **Wo wohnt der neue Befund?** → **Entschieden 2026-08-09: im Modul `spans`**,
+   als Erweiterung von
+   [`DC-FA-SPAN-001`](../../../../spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)
+   — dieselbe Frageform, eine Ebene höher, also kein neues Kürzel
+   ([ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md)-Kriterium).
+   Nicht im `planning`-Modul: der offene Fence ist
    kein Planning-Thema, sondern ein **Markdown-Artefakt**. Das Modul `spans`
    sagt genau das zu — „ungeschlossene Code-Spans … kippen die Backtick-Parität
    des restlichen Absatzes". Ein unbalancierter **Fence** ist dieselbe Aussage
@@ -98,18 +106,22 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
    (dieselbe Frageform, ein Modul) gegen einen Befund im `planning`-Modul
    (näher am Fundort, aber falsch einsortiert). Kriterium ist das aus
    [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md).
-3. **Absatz oder Datei?** `span-unclosed` misst je **Absatz**; ein Fence hat
-   keine Absatzgrenze — seine Reichweite ist das Dateiende. Die Zusage muss
-   sagen, worauf sich „ungeschlossen" bezieht, sonst ist der Befund nicht
-   lokalisierbar.
+3. **Absatz oder Datei?** → **Entschieden 2026-08-09: Datei**, Befund an der
+   **Öffnungszeile**, genau einer je Datei. `span-unclosed` misst je Absatz; für
+   einen Fence ist das nicht übertragbar, weil er selbst eine Absatzgrenze
+   **ist** — absatzweise gemessen wäre er per Definition nie ungeschlossen. Die
+   Öffnungszeile ist der Ort der Reparatur, also der Ort des Befundes.
 
 ## 5. Definition of Done
 
 - [x] **Bestandsmessung** (§3): 776 Dateien über drei Repos, null Vorkommen —
       der Defekt ist latent, und Variante (b) ist empirisch als folgenlos
       belegt.
-- [ ] Abnahme-Punkte 1–3 entschieden; Vertragsanpassung (Lastenheft/
-      Spezifikation) und ggf. ADR.
+- [x] Abnahme-Punkte 1–3 entschieden; Vertragsanpassung geliefert (Lastenheft
+      0.52.0: dritte Artefakt-Klasse + zwei Akzeptanzkriterien; Spezifikation
+      §[`DC-FA-SPAN-001.a`](../../../../spec/spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung)
+      Schritt 3) samt
+      [ADR-0050](../../adr/0050-fence-unclosed-in-spans.md) `Proposed`.
 - [ ] Der oben belegte Fall meldet; Test mutations-echt (Rückbau des Fixes macht
       ihn wieder grün).
 - [ ] `make gates` + `make verify-closure-notes` grün; Release als **Minor**
@@ -121,8 +133,12 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
   null betroffene Dateien; die Änderung wäre auf dem realen Bestand wirkungslos
   und löst den belegten Fall ohnehin nicht.
 - **Der Defekt ist ausgeliefert.** Bis zum Fix ist die Zusage der
-  Closure-Note-Struktur schwächer als dokumentiert. — **Ausgang:** offen; zu
-  entscheiden, ob das in die Release-Notiz von v0.52.0 nachgetragen wird.
+  Closure-Note-Struktur schwächer als dokumentiert. — **Ausgang:** offen; die
+  Messung entschärft ihn (null Vorkommen im Ökosystem), hebt ihn aber nicht auf.
+- **Wer nur `planning` aktiviert, sieht den Befund nicht.** Der Wächter wohnt in
+  `spans`; die Closure-Struktur bleibt für sich genommen so schwach wie zuvor.
+  — **Ausgang:** offen; gehört als Grenze in die Release-Notiz, nicht in eine
+  stille Annahme.
 
 ## 7. Trigger
 
