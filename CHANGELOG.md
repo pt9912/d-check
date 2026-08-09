@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.52.0] — 2026-08-09
+
 ### Added
 
 - slice-093 — **Closure-Note-Struktur** als zweite Fähigkeit des Moduls

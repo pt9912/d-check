@@ -79,10 +79,14 @@ planning-lifecycle and tracked-status consistency:
   `DC-`/`ADR-`/`MR-`/`slice-` ID (`commit-untraceable`), shares the VCS port with
   `vcs`, opt-in
   ([`DC-FA-COMMITS-001`](spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in))
-- `planning` — roadmap-↔-in-progress lifecycle consistency: the idle marker sits
+- `planning` — lifecycle consistency, both sides. **Entry:** the idle marker sits
   in the `## Aktuelle Welle` block exactly when no `slice-*` is in the directory
-  (`planning-drift`); hermetic (no git), fail-closed on a missing/ambiguous
-  heading, opt-in
+  (`planning-drift`). **Exit** (additionally opt-in via `closure.dir`): the
+  **structure** of closure notes on completed work items — section present,
+  enough sentence terminators outside code blocks, no declared boilerplate
+  phrase (`closure-note-missing`/`-thin`/`-boilerplate`). Checks structure, not
+  meaning. Hermetic (no git), fail-closed on a missing/ambiguous heading, a
+  missing closure directory and on zero candidates, opt-in
   ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
 - `tracked` — tracked status of resolvable, **existing** link/image targets
   against the git **index** (`target-untracked`: an untracked/gitignored
@@ -173,7 +177,7 @@ Distributed as a container image via GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.51.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

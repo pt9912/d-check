@@ -78,10 +78,15 @@ Getrackt-Status-Konsistenz:
   `DC-`/`ADR-`/`MR-`/`slice-`-ID (`commit-untraceable`), teilt den VCS-Port mit `vcs`,
   opt-in
   ([`DC-FA-COMMITS-001`](spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in))
-- `planning` — Roadmap-↔-in-progress-Lifecycle-Konsistenz: der Ruhe-Marker steht im
-  `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` im Verzeichnis liegt
-  (`planning-drift`); hermetisch (kein git), fail-closed bei fehlender/mehrdeutiger
-  Überschrift, opt-in
+- `planning` — Lifecycle-Konsistenz, beide Seiten. **Eintritt:** der Ruhe-Marker
+  steht im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` im
+  Verzeichnis liegt (`planning-drift`). **Austritt** (zusätzlich opt-in über
+  `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete —
+  Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine
+  deklarierte Floskel (`closure-note-missing`/`-thin`/`-boilerplate`). Prüft
+  Struktur, nicht Bedeutung. Hermetisch (kein git), fail-closed bei
+  fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null
+  Kandidaten, opt-in
   ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
 - `tracked` — Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele
   gegen den git-**Index** (`target-untracked`: ein untracktes/gitignoriertes
@@ -174,7 +179,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.51.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
