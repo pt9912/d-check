@@ -57,4 +57,11 @@ mechanisiert — ein `verify-closure-notes`-Gate (Struktur) plus der inferentiel
 
 ## 7. Closure-Notiz
 
-_Ausstehend (wird bei der Welle-Closure gefüllt; die Pointer lösen vom Ruheort `done/` auf)._
+Geschlossen am 2026-08-09. Die Ergebnis-Notiz der Welle steht — der Baseline-Form
+folgend — in einer **eigenen** Datei neben dieser:
+[`welle-68-results.md`](welle-68-results.md). Sie trägt, was geliefert wurde, was
+funktioniert hat, was anders lief, den Lese-Schritt am Beobachtungs-Register und
+die Verifikation.
+
+Diese Plan-Datei hält nur noch fest, **dass** die Welle geschlossen ist; ihr
+Zustand ist die Verzeichnis-Position.
