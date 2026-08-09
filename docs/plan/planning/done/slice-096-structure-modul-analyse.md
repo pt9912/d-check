@@ -304,4 +304,62 @@ ersetzt.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Geliefert: der Schnitt für ein 20. Regelmodul `structure`, der Change Request
+(Lastenheft 0.51.0), die Algorithmus-Sektion, [ADR-0049](../../adr/0049-structure-modul-schnitt-und-preset.md)
+`Accepted` und zwei Folge-Slices. Alle fünf Abnahme-Punkte sind entschieden und
+begründet, die Abdeckung ist je Prüfung gemessen statt gelesen.
+
+- **Lernsignal — drei Reviews, und der teuerste Befund war, dass der Vertrag
+  seine eigene Begründung nicht ausdrücken konnte.** Der Modul-Schnitt wurde an
+  **einer** Messzeile entschieden (die Pflicht-Bausteine einer Anforderung); der
+  Vertrag sagte dann „genau ein Abschnitt je Regel" und machte Mehrfachtreffer
+  zum Abbruch — Anforderungen sind aber **wiederkehrende** Abschnitte *einer*
+  Datei. Die Lehre ist allgemein: **wer eine Entscheidung an einem Beispiel
+  festmacht, muss das Beispiel danach gegen den fertigen Vertrag halten.** Ich
+  hatte es gegen die *Absicht* gehalten.
+- **Zweites Lernsignal — zweimal die Form angenommen statt gemessen.** Die
+  Marken-Verankerung war in zwei aufeinanderfolgenden Fassungen falsch, beide
+  Male aus demselben Grund. Erst die Messung (108 Listen-Item, 44 bare, dazu
+  qualifizierte) zeigte, dass meine Fassung **jede** Anforderung des eigenen
+  Lastenhefts rot gemeldet hätte. Bei der Schwelle und der Floskel-Liste hatte
+  ich in slice-093 gemessen; hier nicht — **der Reflex ist nicht stabil, er
+  braucht die Regel.**
+- **Architektur-Beobachtung: eine Zusage kann eine andere unerreichbar machen.**
+  Ich habe die Nicht-Stabilität der Befund-`message` als Grund benutzt, den
+  Supersede *auszuschließen* — und im selben Dokument dieselbe `message` zum
+  *Träger* der Unterscheidung zwischen sechs Bedingungen gemacht. Dazu kam, dass
+  die Befund-Deduplikation über (Datei, Zeile, Regel, Ziel, Grund) zwei
+  Verletzungen ohnehin zusammenfallen ließe. **Wer eine Eigenschaft als Argument
+  benutzt, darf sie zwei Absätze später nicht als Werkzeug verwenden.**
+- **Der Nicht-Supersede war der richtige Ausgang, aber aus dem Grund, den ein
+  Blick in den eigenen Vertrag lieferte** — nicht aus Geschmack: Grund-Codes sind
+  „stabil, maschinenlesbar" zugesagt. Die erste Fassung dieses Slice hatte den
+  Supersede noch als Formsache behandelt.
+
+**Reviews:** drei unabhängige Frischkontext-Läufe —
+[Vertrag](../../../reviews/2026-08-09-slice-096-vertrag-review.md) und
+[Umsetzbarkeit](../../../reviews/2026-08-09-slice-096-umsetzbarkeit-review.md)
+(zusammen 4 HIGH / 19 MEDIUM), danach eine
+[bestätigende Re-Review](../../../reviews/2026-08-09-slice-096-re-review.md)
+(14 geheilt / 12 teilweise / 5 offen, dazu 12 neue Befunde). Alle eingearbeitet.
+Dass [ADR-0049](../../adr/0049-structure-modul-schnitt-und-preset.md) bis zuletzt
+`Proposed` war, hat zwei Korrekturrunden überhaupt erst möglich gemacht —
+`Accepted` hätte vier Fehler eingefroren.
+
+**Beobachtungs-Register:** [BEO-002](../observations.md) auf 2× erhöht, Beleg
+ergänzt. Die Beobachtung ist **in diesem Slice** zweimal eingetreten (nach der
+Mehrdeutigkeits-Härtung blieb „erster Treffer" an drei Stellen stehen; nach der
+großen Überarbeitung referierten Spezifikations-Historie, ADR-Index,
+ADR-Konsequenzen und das Entscheidungs-Protokoll weiter die verworfene Fassung)
+— der Zähler zählt sie als **einen** Beleg, weil die Beleg-Form Slice-Kennungen
+verlangt. Die Klasse ist damit dichter, als die Zahl zeigt.
+
+**Anschluss:** [slice-099](../open/slice-099-structure-modul.md) (Implementierung)
+und [slice-101](../open/slice-101-fence-unbalanciert.md) — Letzterer ist der beim
+Review gefundene **ausgelieferte** stille Grün-Pfad im Fence-Automaten und läuft
+**vor** 099, damit das neue Modul ihn nicht erbt.
+
+**Risiken aus §5:** Contract-Churn **entfallen** (es wird nichts superseded);
+Sammelbecken-Grenze **eingetreten und begrenzt** (die Dateinamen-Konvention war
+der Kandidat, sie ist Nicht-Ziel); Fremd-Repo-Fixtures **weiter offen**, in die
+DoD von [slice-099](../open/slice-099-structure-modul.md) übernommen.
