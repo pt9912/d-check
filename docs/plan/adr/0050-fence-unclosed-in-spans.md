@@ -108,9 +108,13 @@ haben:
 - **Jedes Modul profitiert**, weil die Lexik geteilt ist: der Befund entsteht
   einmal in `spans`, die stille Verkürzung betraf aber alle.
 - **Die Zusage der Closure-Note-Struktur wird eingelöst**, ohne sie zu ändern:
-  ihr Silent-Grün-Pfad wird von einem anderen Modul aufgedeckt. Wer nur
-  `planning` aktiviert, sieht ihn **nicht** — das ist eine bewusste Grenze und
-  gehört in die Release-Notiz.
+  ihr Silent-Grün-Pfad wird von einem anderen Modul aufgedeckt. Die Grenze ist
+  dabei **schärfer als zunächst notiert**, gemessen beim End-to-End-Beleg: der
+  Wächter greift nur, wenn `spans` aktiv ist **und** die Datei im **Scan-Scope**
+  liegt. Die Closure-Fähigkeit ist ein Post-Pass über ein selbst benanntes
+  Verzeichnis und sieht Dateien, die kein `scan.roots` erfasst — dort bleibt der
+  offene Fence unentdeckt. Beides gehört in die Release-Notiz, nicht in eine
+  stille Annahme.
 - **Der Bestand bleibt grün** (776 Dateien, null Vorkommen). Der Wert liegt
   vollständig in der Zukunft; das ist bei einem latenten Defekt der Normalfall
   und kein Argument gegen ihn.

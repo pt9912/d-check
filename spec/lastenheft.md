@@ -1404,6 +1404,10 @@ GitHub nachweislich anders rendert, als der Quelltext nahelegt:
    Folgende umdeutet. **Reichweite ist die Datei, nicht der Absatz**
    (ein Fence kennt keine Absatzgrenze — er *ist* eine); der Befund
    steht an der **Öffnungszeile**, denn dort liegt die Reparatur.
+   **Grenze:** wie jede `spans`-Klasse greift die Prüfung nur auf Dateien im
+   Scan-Scope. Module, die ihre Eingabe selbst benennen (Post-Pässe über
+   deklarierte Verzeichnisse), können Dateien lesen, die `spans` nie sieht —
+   dort bleibt ein offener Fence unentdeckt.
 
 Der Befund nennt Datei, Zeile (Opener- bzw. Muster-Zeile), die
 betroffene Backtick-Folge bzw. das Muster und den Grund. Es gilt die

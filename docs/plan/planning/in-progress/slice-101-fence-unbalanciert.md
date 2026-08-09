@@ -101,11 +101,8 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
    sagt genau das zu — „ungeschlossene Code-Spans … kippen die Backtick-Parität
    des restlichen Absatzes". Ein unbalancierter **Fence** ist dieselbe Aussage
    eine Ebene höher: eine Öffnung ohne Schluss, die alles Folgende umdeutet.
-   Zu entscheiden: Erweiterung von
-   [`DC-FA-SPAN-001`](../../../../spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)
-   (dieselbe Frageform, ein Modul) gegen einen Befund im `planning`-Modul
-   (näher am Fundort, aber falsch einsortiert). Kriterium ist das aus
-   [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md).
+   Ein Befund im `planning`-Modul wäre näher am Fundort, aber falsch
+   einsortiert — der nächste Konsument derselben Lexik fände ihn dort nicht.
 3. **Absatz oder Datei?** → **Entschieden 2026-08-09: Datei**, Befund an der
    **Öffnungszeile**, genau einer je Datei. `span-unclosed` misst je Absatz; für
    einen Fence ist das nicht übertragbar, weil er selbst eine Absatzgrenze
@@ -122,8 +119,14 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
       §[`DC-FA-SPAN-001.a`](../../../../spec/spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung)
       Schritt 3) samt
       [ADR-0050](../../adr/0050-fence-unclosed-in-spans.md) `Proposed`.
-- [ ] Der oben belegte Fall meldet; Test mutations-echt (Rückbau des Fixes macht
-      ihn wieder grün).
+- [x] Der oben belegte Fall meldet; Test mutations-echt. **Zwei** Mutationen
+      geprüft: die Öffnungszeile um 1 verschoben ⇒ rot, **und** den Aufruf aus
+      `CheckSpans` entfernt ⇒ zunächst **grün**. Der zweite Rückbau blieb
+      unbemerkt, weil die Tests die Funktion direkt riefen; ein
+      Verdrahtungs-Test über die Modul-Oberfläche fängt ihn jetzt. End-to-End
+      gegen das gebaute Image: `done/slice-001-x.md:7 ``` fence-unclosed`
+      neben dem `closure-note-thin` — der Wächter macht sichtbar, was die
+      Prüfung unsichtbar gemacht hatte.
 - [ ] `make gates` + `make verify-closure-notes` grün; Release als **Minor**
       (d-check findet danach mehr).
 
@@ -135,10 +138,13 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
 - **Der Defekt ist ausgeliefert.** Bis zum Fix ist die Zusage der
   Closure-Note-Struktur schwächer als dokumentiert. — **Ausgang:** offen; die
   Messung entschärft ihn (null Vorkommen im Ökosystem), hebt ihn aber nicht auf.
-- **Wer nur `planning` aktiviert, sieht den Befund nicht.** Der Wächter wohnt in
-  `spans`; die Closure-Struktur bleibt für sich genommen so schwach wie zuvor.
-  — **Ausgang:** offen; gehört als Grenze in die Release-Notiz, nicht in eine
-  stille Annahme.
+- **Wer nur `planning` aktiviert, sieht den Befund nicht** — und, beim
+  End-to-End-Beleg **geschärft**: auch mit aktivem `spans` nur, wenn die Datei im
+  **Scan-Scope** liegt. Die Closure-Fähigkeit ist ein Post-Pass über ein selbst
+  benanntes Verzeichnis und sieht Dateien, die `scan.roots` nicht erfasst.
+  — **Ausgang: eingetreten und benannt** — die Grenze steht jetzt in der
+  Anforderung und in [ADR-0050](../../adr/0050-fence-unclosed-in-spans.md),
+  nicht nur im Slice.
 
 ## 7. Trigger
 

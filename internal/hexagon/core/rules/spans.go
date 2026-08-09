@@ -14,8 +14,55 @@ import (
 func CheckSpans(file string, content []byte, lines []Line) []model.Finding {
 	var findings []model.Finding
 	findings = append(findings, checkUnclosedSpans(file, content)...)
+	findings = append(findings, checkUnclosedFence(file, content)...)
 	findings = append(findings, checkNestedLinks(file, lines)...)
 	return findings
+}
+
+// checkUnclosedFence meldet eine Fence-Öffnung ohne Schluss bis zum
+// **Datei**-Ende (§DC-FA-SPAN-001.a Schritt 3, ADR-0050). Bewusst
+// dateiweit statt absatzweise: ein Fence *ist* eine Absatzgrenze, absatzweise
+// gemessen wäre er per Definition nie ungeschlossen.
+//
+// Gemeldet wird der **Zustand**, nicht die Paarung — der längenabgeglichene
+// CommonMark-Schluss bleibt offen (ADR-0042), weil er diesen Fall nicht löst:
+// ein nie geschlossener Fence ist unter jeder Paarungsregel offen. Deshalb
+// läuft hier derselbe FenceToggle wie in der Vorverarbeitung; nur sein
+// Endzustand wird ausgewertet.
+//
+// Genau EIN Befund je Datei, an der zuletzt öffnenden Zeile: hinter einem
+// offenen Fence gibt es keine zweite Öffnung, die sich ohne Raten melden ließe.
+func checkUnclosedFence(file string, content []byte) []model.Finding {
+	inFence := false
+	openLine, openText := 0, ""
+	for i, raw := range splitLines(content) {
+		trimmed := strings.TrimSpace(raw)
+		if !FenceToggle(trimmed) {
+			continue
+		}
+		if inFence {
+			inFence = false
+			continue
+		}
+		inFence, openLine, openText = true, i+1, trimmed
+	}
+	if !inFence {
+		return nil
+	}
+	return []model.Finding{{
+		File: file, Line: openLine, Rule: "spans",
+		Target: clipRunes(openText, 30), Reason: model.ReasonFenceUnclosed,
+	}}
+}
+
+// clipRunes kappt auf höchstens n Runen — nicht Bytes, damit ein Umlaut in der
+// Infozeile das Ziel nicht mitten im Zeichen abschneidet.
+func clipRunes(s string, n int) string {
+	r := []rune(s)
+	if len(r) <= n {
+		return s
+	}
+	return string(r[:n])
 }
 
 // checkUnclosedSpans arbeitet absatzweise (gleiche Absatz-Semantik

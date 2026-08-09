@@ -13,6 +13,11 @@ const (
 	ReasonSymlink        = "symlink"
 	ReasonIDUnlinked     = "id-unlinked"
 	ReasonSpanUnclosed   = "span-unclosed"
+	// ReasonFenceUnclosed ist die Block-Ebene von ReasonSpanUnclosed: eine
+	// Fence-Öffnung ohne Schluss bis zum DATEI-Ende (nicht Absatz-Ende — ein
+	// Fence *ist* eine Absatzgrenze). Alles dahinter gilt jeder
+	// Vorverarbeitung als Code und wird von allen Modulen übersprungen.
+	ReasonFenceUnclosed  = "fence-unclosed"
 	ReasonSpanNestedLink = "span-nested-link"
 	ReasonHostpathForbidden = "hostpath-forbidden"
 	ReasonDiagramIDUndefined = "diagram-id-undefined"

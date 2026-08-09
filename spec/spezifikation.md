@@ -2334,6 +2334,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `hostpath-forbidden` | hostpaths | host-lokaler absoluter Pfad (Maschinen-Layout-Leak) in Prosa oder Inline-Code |
 | `diagram-id-undefined` | diagrams | Kennung in einem geöffneten Diagramm-Fence ohne Definition in ihrer `defined-in`-Quelle |
 | `span-unclosed` | spans | ungeschlossene Code-Span-Öffnung klebt an Nicht-Whitespace (Absatz-Parität gekippt) |
+| `fence-unclosed` | spans | Fenced-Code-Block ohne Schluss bis zum **Dateiende** (nicht Absatz-Ende — ein Fence *ist* eine Absatzgrenze); alles dahinter gilt jeder Vorverarbeitung als Code und wird von **allen** Modulen übersprungen. Befund an der Öffnungszeile, genau einer je Datei |
 | `span-nested-link` | spans | Link-Syntax im Linktext eines weiteren Links (rendert zerrissen) |
 | `external-redirects` | external | mehr als `REDIRECT_MAX` Redirects |
 | `version-stale` | versions | Versions-Pin weicht von der aktuellen Version (`versions.current-from`) ab |
