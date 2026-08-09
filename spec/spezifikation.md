@@ -1683,7 +1683,12 @@ liefert (und umgekehrt):
   Länge 1–6, gefolgt von Whitespace; `#1 war ein Thema` ist damit Fließtext,
   **keine** H1), und (c) deren getrimmte Fassung auf
   `planning.closure.heading-pattern` passt. Kein Treffer ⇒
-  `closure-note-missing` (`line` = 1). Sonst reicht der Abschnitt von der Zeile
+  `closure-note-missing` (`line` = 1). **Mehr als ein Treffer ⇒
+  `closure-note-ambiguous`** (`line` = Zeile des **zweiten**) und Abbruch für
+  diese Datei: ohne eindeutigen Abschnitt sagt eine Satzzahl nichts, und ein
+  zweiter, stehengebliebener Abschnitt ist der typische Rest einer Vorlage.
+  Dieselbe Härte trägt der Aktiv-Status-Guard (Schritt 3) längst; die Asymmetrie
+  war ein Versäumnis. Sonst reicht der Abschnitt von der Zeile
   **nach** der Überschrift bis zur nächsten **echten** Überschrift gleicher oder
   höherer Ebene bzw. bis zum Dateiende. Die Ebene ist die Länge der `#`-Folge.
   Dass beide Grenzen dieselbe Heading-Lexik nutzen, ist konstitutiv: eine
@@ -1710,6 +1715,68 @@ Die Fähigkeit prüft **Struktur**, nicht Bedeutung: ob eine formal ausreichende
 Notiz inhaltlich trägt, ist semantisch und ausdrücklich nicht zugesagt
 ([`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 §Out-of-Scope).
+
+### DC-FA-STRUCT-001.a — Struktur-Invarianten innerhalb eines Dokuments (`structure`)
+
+Das opt-in Modul `structure`
+([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in))
+prüft **hermetisch** je Regel eine Dokumentklasse. Es ist ein **Post-Pass** wie
+`planning`: es scannt nicht den Markdown-Baum, sondern die von den Regel-Globs
+getroffenen Dateien.
+
+1. **Inert/Config.** Leere Regel-Liste ⇒ Modul inert (kein Befund, keine Datei
+   geöffnet). **Exit 2** vor dem Lauf bei: Regel ohne `files`; weder `section`
+   noch `section-pattern` gesetzt **oder** beide; nicht kompilierendes
+   `section-pattern`/`forbid-pattern`; `min-sentences` < 1; `max-tasks` < 0;
+   leerer Eintrag in `require-all`/`require-any`/`exempt-paths`.
+2. **Kandidaten.** Je Regel die Dateien, deren Wurzel-relativer Pfad auf
+   `files` matcht, abzüglich `exempt-paths`; stabil sortiert
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
+   **Null Kandidaten ⇒ `section-missing`** mit `file` = dem Glob: eine Regel,
+   die auf nichts zeigt, läuft leer und darf nicht Erfolg melden (dieselbe
+   Nullmengen-Logik wie bei den Anforderungsquellen der RTM).
+3. **Abschnitt bestimmen.** Gesucht werden alle Zeilen, die (a) **außerhalb**
+   eines Fenced-Code-Blocks liegen, (b) **echte ATX-Überschriften** nach der
+   Lexik aus [`DC-FA-ANCH-001.a`](#dc-fa-anch-001a--github-slug-algorithmus)
+   sind, und (c) auf `section` (Klartext-Vergleich der getrimmten
+   Überschriften-Zeile) bzw. `section-pattern` (RE2) passen.
+   **0 Treffer ⇒ `section-missing`** (`line` = 1). **> 1 Treffer ⇒
+   `section-ambiguous`** (`line` = Zeile des **zweiten** Treffers) und **Abbruch
+   für diese Datei** — ohne eindeutigen Abschnitt wird nicht gemessen. Sonst
+   reicht der Abschnitt von der Zeile **nach** der Überschrift bis zur nächsten
+   echten Überschrift gleicher oder höherer Ebene bzw. bis zum Dateiende.
+4. **Bereinigen.** Aus dem Abschnitt werden die Fenced-Code-Blöcke entfernt
+   (`FenceToggle`-Lexik wie im übrigen Scanner). Alle folgenden Bedingungen
+   arbeiten auf **diesem** Text — sonst zählte ein Beispielblock als Inhalt.
+5. **Bedingungen prüfen**, jede optional, jede Verletzung ⇒ **ein**
+   `section-constraint` (die `message` nennt die verletzte Bedingung samt Ist-
+   und Soll-Wert; mehrere verletzte Bedingungen ⇒ mehrere Befunde):
+   - `non-empty`: der bereinigte Text enthält mindestens ein
+     Nicht-Whitespace-Zeichen.
+   - `min-sentences`: Zahl der Satzende-Zeichen (`.`, `!`, `?`) ≥ Schwelle.
+   - `max-tasks`: Zahl der Task-Items (Listen-Zeile mit `[ ]` oder `[x]`) im
+     Abschnitt ≤ Schwelle. **Abschnitts-treu**, nicht dateiweit — das ist der
+     Punkt, an dem zeilenbasierte Nachbauten scheitern.
+   - `forbid-pattern` (RE2): **kein** Treffer im bereinigten Text.
+   - `require-all` / `require-any`: je Marke `M` gilt sie als vorhanden, wenn
+     eine Zeile des bereinigten Textes — nach führendem Whitespace — mit der
+     **hervorgehobenen** Marke beginnt (`**M**` oder `**M:**`).
+     `require-all` verlangt jede, `require-any` mindestens eine. Ein Vorkommen
+     von `M` im Fließtext genügt **nicht**: die Zusage ist eine Gliederungs-Marke,
+     kein Wort.
+6. **Befund-Form.** `file` = die geprüfte Datei (bzw. der Glob in Schritt 2),
+   `rule` = `structure`, `target` = der `files`-Glob der Regel, `line` wie oben.
+   **Diagnose-only** (kein `--repair`-Hunk).
+7. **Determinismus/Read-only.** Identischer Arbeitsbaum ⇒ identischer, stabil
+   sortierter Befundsatz ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus));
+   nur lesend, netzlos ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+   Ohne aktives `structure` ist der Befundsatz byte-identisch.
+
+**Die Closure-Note-Struktur ist ein Preset dieser Schritte.** Die Schritte C3–C5
+von [`DC-FA-PLAN-001.a`](#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
+sind dieselbe Mechanik mit fester Bedingungs-Auswahl und eigenen Grund-Codes;
+beide Fähigkeiten teilen Abschnitts-Bestimmung, Bereinigung und Zählung. Eine
+Änderung an einer der beiden Stellen ohne die andere ist ein Spezifikations-Bug.
 
 ### DC-FA-TRK-001.a — Getrackt-Status auflösbarer Referenz-Ziele (`tracked`)
 
@@ -2121,6 +2188,16 @@ Exit 2 ohne Prüfung
 | `planning.closure.heading-pattern` | string | `^#{2,3} .*Closure-Notiz` | RE2 gegen die **getrimmte** Überschriften-Zeile; der **erste** Treffer eröffnet den geprüften Abschnitt (bis zur nächsten Überschrift gleicher oder höherer Ebene). Kein Treffer ⇒ `closure-note-missing`; ein nicht kompilierendes Muster ⇒ Exit 2 |
 | `planning.closure.min-sentences` | int | `4` | Mindestzahl der Satzende-Zeichen (`.`, `!`, `?`) im Abschnitt **nach** Entfernen der Fenced-Code-Blöcke; darunter ⇒ `closure-note-thin`. Wert < 1 ⇒ Exit 2 (eine Schwelle von 0 wäre ein stilles Grün) |
 | `planning.closure.boilerplate` | string[] | leer | literale Floskel-Teilstrings, **case-insensitiv** gegen den bereinigten Abschnitts-Text geprüft; ein Treffer ⇒ `closure-note-boilerplate`. Bewusst **leer** per Default — der Vertrag bringt keine sprach-spezifischen Phrasen mit; ein leerer Eintrag ⇒ Exit 2 (er träfe jeden Text) |
+| `structure[].files` | string | — | Glob (Pfad, wie `scan.ignore`) der Dokumentklasse; Pflicht je Regel. Trifft er keine Datei ⇒ `section-missing` auf dem Glob (eine leer laufende Regel meldet nicht Erfolg) ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)) |
+| `structure[].section` | string | leer | Heading-**Klartext** (getrimmter Zeilen-Vergleich). Genau eines von `section`/`section-pattern` ist Pflicht — beide oder keines ⇒ Exit 2 |
+| `structure[].section-pattern` | string | leer | RE2 gegen die getrimmte Überschriften-Zeile; Alternative zu `section` |
+| `structure[].non-empty` | bool | `false` | der bereinigte Abschnitts-Text muss mindestens ein Nicht-Whitespace-Zeichen tragen |
+| `structure[].min-sentences` | int | `0` (aus) | Mindestzahl der Satzende-Zeichen außerhalb Fenced-Code; explizit < 1 ⇒ Exit 2 |
+| `structure[].max-tasks` | int | leer (aus) | Obergrenze der Task-Items (`- [ ]`/`- [x]`) **im Abschnitt**, nicht dateiweit; < 0 ⇒ Exit 2 |
+| `structure[].forbid-pattern` | string | leer | RE2; ein Treffer im bereinigten Abschnitts-Text ⇒ `section-constraint` |
+| `structure[].require-all` | string[] | leer | benannte Marken, die **alle** als hervorgehobene Zeilen-Anfänge (`**M:**`) vorkommen müssen; leerer Eintrag ⇒ Exit 2 |
+| `structure[].require-any` | string[] | leer | benannte Marken, von denen **mindestens eine** vorkommen muss; leerer Eintrag ⇒ Exit 2 |
+| `structure[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`) über die Quell-Pfade; Treffer werden von **dieser** Regel nicht geprüft |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien, aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
@@ -2248,6 +2325,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-09 | Neue §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) + §2-Schema (`structure[]`: `files`/`section`/`section-pattern`/`non-empty`/`min-sentences`/`max-tasks`/`forbid-pattern`/`require-all`/`require-any`/`exempt-paths`) — **Struktur-Invarianten innerhalb eines Dokuments** (Modul `structure`, opt-in, hermetisch, Post-Pass wie `planning`): je Regel eine Dokumentklasse, **genau ein** Abschnitt (echte ATX-Überschrift außerhalb Fenced-Code), Bereinigung um Fenced-Code, dann die Bedingungen. Grund-Codes `section-missing` (kein Treffer **oder** Regel ohne Kandidaten), `section-ambiguous` (mehr als ein Treffer ⇒ Abbruch für die Datei, es wird nicht gemessen) und `section-constraint` (je verletzter Bedingung einer, mit Ist/Soll in der Meldung). Marken sind **zeilenverankert und hervorgehoben** (`**M:**`), kein Fließtext-Vorkommen; `require-all` fordert jede, `require-any` mindestens eine. §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C3 um dieselbe Mehrdeutigkeits-Härte ergänzt (`closure-note-ambiguous`) und als **Preset** dieser Schritte ausgewiesen — beide teilen Abschnitts-Bestimmung, Bereinigung und Zählung; eine Änderung an nur einer Stelle ist ein Spezifikations-Bug. Grund-Codes (§4) folgen mit der Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Modul-Schnitt, Nicht-Supersede wegen Code-Stabilität, Modul-Grenze) in begleitender ADR |
 | 2026-08-09 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) um die **Closure-Note-Struktur** (Schritte C1–C5) erweitert + neue §[`DC-FA-CLI-012.a`](spezifikation.md#dc-fa-cli-012a--konfigurations-pfad---config) + §2-Schema (`planning.closure.dir`/`heading-pattern`/`min-sentences`/`boilerplate`). Die Closure-Fähigkeit ist opt-in **innerhalb** des opt-in Moduls (leere `dir` ⇒ keine Slice-Datei wird geöffnet, byte-identisch): erster auf `heading-pattern` passender Abschnitt (bis zur nächsten gleich-/höherrangigen Überschrift), Fenced-Code entfernt, Satzende-Zeichen gezählt (< `min-sentences` ⇒ `closure-note-thin`), Rest case-insensitiv gegen die literalen `boilerplate`-Teilstrings (⇒ `closure-note-boilerplate`); kein passender Abschnitt bzw. fehlendes gesetztes Verzeichnis ⇒ `closure-note-missing`. Leeres Closure-Verzeichnis ist befundfrei, `min-sentences` < 1 und leerer Floskel-Eintrag ⇒ Exit 2; diagnose-only. `--config <datei>` verschiebt **nur die Herkunft** der Konfiguration (Wurzel-Constraint + Existenz fail-closed, ersetzt statt ergänzt, Validierung und Semantik unverändert, Befund-Provenance nennt die geladene Datei) — es trennt die Prüf-Profile zweier Bindepunkte, ohne die Modulwahl auf der Kommandozeile nachzubauen. Grund-Codes `closure-note-missing`/`closure-note-thin`/`closure-note-boilerplate` in §4 (im Lockstep mit der Implementierung ergänzt). Begründung (Modul-Schnitt statt neues Modul, Bindepunkt-Trennung, Struktur-vs-Bedeutung-Grenze, Schwellenwahl) in begleitender ADR |
 | 2026-07-19 | Neue §[`DC-FA-SRC-001.a`](spezifikation.md#dc-fa-src-001a--upstream-content-drift-externer-quellen-sources) + §2-Schema (`sources[]`: `url`/`sha256`/`unpack`) — **Upstream-Content-Drift** (Modul `sources`, opt-in, **Netz**): eine auf `sha256` gepinnte externe Quelle (Marker `source-pin` am Link **oder** Config `sources:`) wird geholt, gehasht, verglichen; Abweichung → `source-drift` (voller Ist-Hash), Fetch-Fehler → `source-unreachable`. Einzeldatei (Roh-Byte-Hash) oder Archiv (`unpack: zip` → `LC_ALL=C`-sortiertes, reihenfolge-invariantes Content-Manifest). Post-Pass wie `external`; zweite Netz-Tür ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)). Grund-Codes `source-drift`/`source-unreachable` (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Netz-Modul-Design, Amendment der Netz-Sparsamkeit, Manifest-Hash, Marker + Config) in begleitender ADR |
 | 2026-07-18 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Schritt 3/6 + neue §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) + §2-Schema (`codepaths.check-lines`) — **Zitat-Verifikation** in zwei Teilen: (1) opt-in `codepaths.check-lines` verifiziert die Zeilen-Referenz eines `datei:<von>-<bis>`-Pfads (Ziel existiert + ≥ `<bis>` Zeilen ⇒ sonst `citation-out-of-range`; `<von> ≤ <bis>` ⇒ sonst `citation-inverted-range`), das Suffix wurde bisher abgetrennt und verworfen, default-aus **byte-identisch**. (2) neues Modul `citations`: die Direktive `<!-- d-check:cite <pfad>:<von>-<bis> -->` vor einem `>`-Zitatblock ⇒ **zeichengenauer** Vergleich der Zeilen `<von>`–`<bis>` gegen den Zitatblock (`citation-mismatch`), hermetisch, fail-closed (fehlende Datei/Spanne/ungültiger Bereich ⇒ Exit 2), greift die `codepaths`-`datei:zeile`-Erkennung auf. Grund-Codes (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Erweiterung vs. eigenes Modul, `verbatim`/Direktiven-Design) in begleitender ADR |

@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.50.0
+**Version:** 0.51.0
 
 **Status:** Draft
 
@@ -14,7 +14,13 @@
 Repositories auf kaputte Referenzen prüft: lokale Links und
 Bildreferenzen, Heading-Anker, Linkpflicht für Anforderungs- und
 Entscheidungs-Kennungen sowie Referenzrichtungs-Regeln zwischen
-Dokumentklassen (Referenzmatrix). Es konsolidiert dreizehn funktional
+Dokumentklassen (Referenzmatrix). **Und ob ein Dokument selbst richtig
+gebaut ist:** ob es die Abschnitte trägt, die seine Klasse verlangt, und ob
+diese Abschnitte die zugesagten Bausteine enthalten. Beide Fragen sind
+Gegenstand des Tools — die erste („zeigt dieses Dokument korrekt auf
+andere?") war es von Beginn an, die zweite („ist dieses Dokument selbst
+richtig gebaut?") wird mit dem Modul `structure` ausdrücklich
+aufgenommen. Es konsolidiert dreizehn funktional
 überlappende Einzeltools (`check_refs.py`, `docs-check.js`,
 `verify-doc-refs.sh`), die heute als Kopien in den
 Schwester-Repositories des Entwicklungs-Workspace gepflegt werden.
@@ -55,7 +61,8 @@ statt per Code-Kopie.
 > Traceability-Sichten), `REF` (geteiltes Referenz-Ventil `ignore-refs`,
 > Ziel-Achse zu `SCAN`), `CITE` (Verbatim-Zitat-Verifikation, Modul
 > `citations`), `SRC` (Upstream-Content-Drift externer Quellen, Modul
-> `sources`), `CONF` (Konfiguration), `DIST`
+> `sources`), `STRUCT` (Struktur-Invarianten
+> innerhalb eines Dokuments, Modul `structure`), `CONF` (Konfiguration), `DIST`
 > (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
@@ -86,7 +93,7 @@ verweist für das Konfigurations-Format auf
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
 `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -1883,7 +1890,19 @@ Geprüft wird **ausschließlich** `planning.closure.dir` (per Konvention das
 Verzeichnis der abgeschlossenen Slices) — ein Slice in Arbeit trägt noch keine
 Closure-Pflicht. Als Abschnitts-Überschrift zählt nur eine **echte
 ATX-Überschrift außerhalb von Fenced-Code**; eine Fließtext-Zeile, die bloß mit
-`#` beginnt, eröffnet und beendet keinen Abschnitt.
+`#` beginnt, eröffnet und beendet keinen Abschnitt. Kommt die Überschrift
+**mehrfach** vor, ist der Abschnitt mehrdeutig ⇒ `closure-note-ambiguous`, und
+es wird **nicht** gemessen: ohne eindeutigen Abschnitt sagt eine Satzzahl
+nichts, und ein zweiter, stehengebliebener Abschnitt ist der typische Rest einer
+Vorlage. Dieselbe Härte gilt in dieser Anforderung längst für den
+Aktiv-Status-Abschnitt; die Asymmetrie war ein Versäumnis.
+
+**Diese Fähigkeit ist ein Preset der allgemeinen Struktur-Semantik**
+([`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)):
+gleiche Abschnitts-Bestimmung, gleiche Fence-Behandlung, gleiche Zählung. Sie
+behält ihre eigenen Grund-Codes — die sind stabil zugesagt — und bleibt damit
+für bestehende Konsumenten unverändert; verändert werden darf nur beides
+zugleich.
 
 **fail-closed** in zwei Stufen. Zur **Laufzeit** (`closure-note-missing`, Exit 1):
 ein gesetztes, aber fehlendes oder unlesbares `planning.closure.dir` — **und
@@ -1919,6 +1938,7 @@ bereits abdeckt.
 - **fail-closed (kein Kandidat):** Given ein existierendes `planning.closure.dir` **ohne** eine einzige Datei nach `planning.slice-glob`, when `d-check --enable planning` läuft, then `closure-note-missing` mit einem Hinweis auf das Leerlaufen, Exit 1 — ein leer laufendes Gate meldet nicht Erfolg.
 - **fail-closed (Config-Rand):** Given ein `planning.closure.dir` außerhalb der Repo-Wurzel, ein nicht kompilierendes `heading-pattern`, ein explizit gesetztes `min-sentences` < 1 **oder** einen leeren `boilerplate`-Eintrag, when `d-check` startet, then Exit 2 vor dem Lauf; ein **abwesendes** `min-sentences` ist dagegen der Default (kein Fehler).
 - **Boundary (Rauten-Fließtext):** Given eine Closure-Notiz, die eine Zeile wie `#1 war ein Thema` enthält, when `d-check --enable planning` läuft, then gilt diese Zeile **nicht** als Überschrift — der Abschnitt reicht über sie hinaus und eine dahinter stehende Floskel wird gefunden.
+- **Negative (mehrdeutig):** Given einen Slice mit **zwei** auf `heading-pattern` passenden Überschriften, when `d-check --enable planning` läuft, then `closure-note-ambiguous` mit der Zeile der **zweiten**, Exit 1 — und **kein** `closure-note-thin`/`-boilerplate` (ohne eindeutigen Abschnitt wird nicht gemessen).
 
 **Out-of-Scope:** eine git-/VCS-basierte Lifecycle-Prüfung (rein hermetisch, nur
 Arbeitsbaum); mehr als eine Roadmap bzw. ein Slice- oder Closure-Verzeichnis pro
@@ -1931,6 +1951,96 @@ ausschließlich die opt-in Closure-Fähigkeit, und auch sie nur im
 Closure-Verzeichnis und nur strukturell: die **inhaltliche** Bewertung einer
 Closure-Notiz (trägt sie Lernsignal, Folge-Slice oder Architektur-Beobachtung?)
 ist semantisch und ausdrücklich **nicht** zugesagt.
+
+---
+
+### DC-FA-STRUCT-001 — Struktur-Invarianten innerhalb eines Dokuments (Modul `structure`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `structure` prüft d-check, ob
+Dokumente einer **Klasse** die Abschnitte tragen, die ihre Klasse verlangt, und
+ob diese Abschnitte die zugesagten Bausteine enthalten. Es ist das erste Modul,
+das **keine Referenz**-Invariante prüft (§1): nicht „zeigt dieses Dokument
+korrekt auf andere?", sondern „ist dieses Dokument selbst richtig gebaut?".
+
+Konfiguriert wird eine **Liste** von Regeln. Jede Regel bindet eine
+Dokumentklasse (`files`, Glob wie
+[`DC-FA-SCAN-001`](#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln)) an
+**genau einen** Abschnitt und an Bedingungen in ihm:
+
+- **Abschnitt bestimmen** — `section` (Heading-Klartext, exakt) **oder**
+  `section-pattern` (RE2 auf die getrimmte Überschriften-Zeile); genau eines von
+  beiden ist Pflicht. Als Überschrift zählt nur eine **echte ATX-Überschrift
+  außerhalb von Fenced-Code**; der Abschnitt reicht bis zur nächsten Überschrift
+  gleicher oder höherer Ebene. Kein Treffer ⇒ `section-missing`; **mehr als
+  einer** ⇒ `section-ambiguous` (die Mehrdeutigkeit ist ein eigener Befund, kein
+  „nimm den ersten" — ein zweiter, stehengebliebener Abschnitt ist der typische
+  Rest einer Vorlage).
+- **Bedingungen im Abschnitt** — jede optional, jede **fence-treu** (der
+  Abschnitts-Text wird vor der Prüfung um Fenced-Code bereinigt):
+  `non-empty` (bool) · `min-sentences` (int ≥ 1, Satzende-Zeichen) ·
+  `max-tasks` (int ≥ 0, Task-Items `- [ ]`/`- [x]` **im Abschnitt**, nicht
+  dateiweit) · `forbid-pattern` (RE2, ein Treffer verletzt) ·
+  `require-all` und `require-any` (Listen **benannter Marken**). Verletzung ⇒
+  `section-constraint`; die Meldung nennt die verletzte Bedingung.
+
+**Benannte Marken sind zeilenverankert und ausgezeichnet:** ein Eintrag `Boundary`
+in `require-all` verlangt eine Zeile, die mit der **hervorgehobenen** Marke
+beginnt (`**Boundary:**`), nicht ein Vorkommen irgendwo im Fließtext. Ein
+Teilstring-Vergleich erzeugte hier ein Falsch-Grün, das schwerer wiegt als ein
+Falsch-Rot. `require-all` verlangt **jede** genannte Marke, `require-any`
+**mindestens eine** — zwei Formen, weil beide real gebraucht werden (eine
+Anforderung muss *alle* Akzeptanz-Bausteine tragen; ein Lerneintrag genügt mit
+*einer* von mehreren zulässigen Formen).
+
+**Verhältnis zur Closure-Note-Struktur.** Die zweite Fähigkeit des Moduls
+`planning` ([`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
+ist ein **Preset** derselben Struktur-Semantik: gleiche Abschnitts-Bestimmung,
+gleiche Fence-Behandlung, gleiche Zählung. Sie bleibt bestehen und behält ihre
+Grund-Codes — die sind stabil zugesagt (§4 der Spezifikation) und werden nicht
+gegen `section-*` getauscht. Doppelt ist damit nur die
+**Konfigurations-Oberfläche**, nicht die Mechanik.
+
+**Strikt opt-in, hermetisch, diagnose-only:** `structure` ist nie Default-Modul;
+ohne aktives `structure` bzw. ohne Regeln ist der Befundsatz byte-identisch
+([`DC-QA-02`](#dc-qa-02--determinismus)). Es liest nur den read-only-Arbeitsbaum
+(kein git, kein Netz,
+[`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)) und
+liefert keinen `--repair`-Hunk (die Korrektur ist Autoren-Arbeit).
+**fail-closed** (Exit 2): eine Regel ohne `files`; weder `section` noch
+`section-pattern` gesetzt oder beide; ein nicht kompilierendes Muster; ein
+`min-sentences` < 1 oder `max-tasks` < 0; ein leerer Eintrag in
+`require-all`/`require-any`. Ein Glob **ohne** passende Datei ⇒
+`section-missing` auf dem Glob — eine Regel, die auf nichts zeigt, läuft leer
+und darf nicht Erfolg melden. Ventil: `exempt-paths` je Regel (Glob wie
+`scan.ignore`).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `structure` aktiv mit einer Regel, deren Dokumente den geforderten Abschnitt samt erfüllter Bedingungen tragen, when `d-check --enable structure` läuft, then kein Befund, Exit 0.
+- **Boundary (Modul-aus):** Given **kein** aktives `structure` (oder eine leere Regel-Liste), when `d-check` läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)) und keine Datei wird zusätzlich gelesen.
+- **Negative (Abschnitt fehlt):** Given ein Dokument der Klasse **ohne** passende Überschrift, when `d-check --enable structure` läuft, then `section-missing` (Datei, Zeile 1), Exit 1.
+- **Negative (mehrdeutig):** Given ein Dokument mit **zwei** passenden Überschriften, when `d-check --enable structure` läuft, then `section-ambiguous` mit der Zeile der **zweiten** Überschrift, Exit 1 — und **kein** `section-constraint` (ohne eindeutigen Abschnitt wird nicht gemessen).
+- **Negative (Bedingung verletzt):** Given einen Abschnitt, der `non-empty`, `min-sentences`, `max-tasks`, `forbid-pattern`, `require-all` oder `require-any` verletzt, when `d-check --enable structure` läuft, then `section-constraint` mit der verletzten Bedingung in der Meldung, Exit 1.
+- **Boundary (fence-treu):** Given einen Abschnitt, dessen Sätze, Task-Items oder Marken **ausschließlich** in einem Fenced-Code-Block stehen, when `d-check --enable structure` läuft, then zählen sie nicht — die Bedingung gilt als verletzt.
+- **Boundary (Marke zeilenverankert):** Given einen Abschnitt, der eine `require-all`-Marke nur als Fließtext-Wort enthält (nicht als hervorgehobene Marke am Zeilenanfang), when `d-check --enable structure` läuft, then `section-constraint` — die Marke gilt als fehlend.
+- **`require-any`:** Given einen Abschnitt, der **genau eine** der in `require-any` genannten Marken trägt, when `d-check --enable structure` läuft, then kein Befund; trägt er **keine**, dann `section-constraint`.
+- **Ventil:** Given ein Dokument, dessen Pfad einem `exempt-paths`-Glob der Regel entspricht, when `d-check --enable structure` läuft, then kein Befund für dieses Dokument.
+- **fail-closed (Regel leer):** Given eine Regel, deren `files`-Glob **keine** Datei trifft, when `d-check --enable structure` läuft, then `section-missing` auf dem Glob, Exit 1 — eine leer laufende Regel meldet nicht Erfolg.
+- **fail-closed (Config-Rand):** Given eine Regel ohne `files`, mit beiden oder keinem Abschnitts-Schlüssel, mit nicht kompilierendem Muster, mit `min-sentences` < 1, `max-tasks` < 0 oder einem leeren Marken-Eintrag, when `d-check` startet, then Exit 2 vor dem Lauf.
+
+**Out-of-Scope:** Aussagen über den **Ort** eines Dokuments — Dateinamens-,
+Verzeichnis- oder Nummerierungs-Konventionen sind keine Struktur *innerhalb*
+eines Dokuments und ausdrücklich **nicht** Gegenstand dieses Moduls (die Grenze
+hält es davon ab, zum Sammelbecken zu werden). Ebenso: eine **Stichtags**-Regel
+(„erst ab Kennung N") — sie zu lernen hieße, die Kennungs-Konvention des
+Adopters zu interpretieren, und d-check führt keinen zweiten Regel-Interpreter
+(dieselbe Grenze wie die Index-Wahrheit in
+[`DC-FA-TRK-001`](#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in));
+Pfad-Ausnahmen deckt `exempt-paths`. Ebenso: die **Bedeutung** des Inhalts —
+geprüft wird Form, nicht ob ein vorhandener Abschnitt inhaltlich trägt.
+Verschachtelte Regeln (Bedingung an einen Unter-Abschnitt eines Abschnitts) und
+mehr als ein Abschnitt pro Regel; wer zwei Abschnitte prüfen will, schreibt zwei
+Regeln.
 
 ---
 
@@ -2297,6 +2407,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.51.0 | 2026-08-09 | Change Request (Schwester-Repo `a-check`): neue Anforderung `DC-FA-STRUCT-001` — **20. Regelmodul `structure`** (opt-in, hermetisch): Struktur-Invarianten **innerhalb** eines Dokuments. Eine **Liste** von Regeln bindet je eine Dokumentklasse (`files`-Glob) an **genau einen** Abschnitt (`section` Klartext **oder** `section-pattern` RE2) und an Bedingungen in ihm: `non-empty` · `min-sentences` · `max-tasks` (Task-Items **im Abschnitt**, nicht dateiweit) · `forbid-pattern` · `require-all`/`require-any` (benannte, **zeilenverankert hervorgehobene** Marken). Grund-Codes `section-missing` (kein Treffer **oder** Regel ohne passende Datei — eine leer laufende Regel meldet nicht Erfolg), `section-ambiguous` (mehr als ein Treffer; ohne eindeutigen Abschnitt wird nicht gemessen) und `section-constraint`. Fence-treu, opt-in, diagnose-only, fail-closed am Config-Rand; Ventil `exempt-paths` je Regel. **Erstes Modul ohne Referenz-Invariante** — §1 nimmt die zweite Frage („ist dieses Dokument selbst richtig gebaut?") ausdrücklich auf, Bereich `STRUCT` in §3, `structure` in `DC-FA-CLI-002`. **Mit-Modifikation `DC-FA-PLAN-001`:** die Closure-Fähigkeit wird als **Preset** derselben Semantik ausgewiesen (nicht superseded — ihre Grund-Codes sind stabil zugesagt und bleiben) und additiv um `closure-note-ambiguous` ergänzt, das die bis dahin stille Übernahme des ersten Treffers beendet. Zwei Marken-Formen statt einer, weil beide real gebraucht werden (alle Akzeptanz-Bausteine vs. eine von mehreren zulässigen Lerneintrag-Formen). Ausdrücklich Out-of-Scope: Aussagen über den **Ort** eines Dokuments (Dateinamens-/Nummerierungs-Konventionen) und eine **Stichtags**-Mechanik — beides hieße, die Kennungs-Konvention des Adopters zu interpretieren, und d-check führt keinen zweiten Regel-Interpreter. Algorithmen und Schema-Schlüssel in der Spezifikation; Begründung (Modul-Schnitt am Kriterium „querschnittlich über Dokumentklassen", Nicht-Supersede wegen der Code-Stabilität, Modul-Grenze) in begleitender ADR; Implementierung, Paritäts-Beleg und Release folgen separat. Anlass: ein Adopter hat 480 Zeilen Shell in drei Prüfskripten vermessen — 11 Prüfungen, davon 2 gedeckt, 2 nach Kalibrierung, 6 ungedeckt |
 | 0.50.0 | 2026-08-09 | Change Request (Auftraggeber): der **Closure-Note-Qualitäts-Nachlauf** wird mechanisiert, in zwei Teilen. (1) `DC-FA-PLAN-001` geschärft — das Modul `planning` bekommt eine **zweite Fähigkeit**, opt-in über `planning.closure.dir`: für jeden Slice im Closure-Verzeichnis wird der Closure-Notiz-Abschnitt (erste Überschrift auf `heading-pattern`, Default `^#{2,3} .*Closure-Notiz`) **strukturell** geprüft — Abschnitt vorhanden (`closure-note-missing`), mindestens `min-sentences` Satzende-Zeichen **außerhalb Fenced-Code** (Default 4, `closure-note-thin`), keine der literalen `boilerplate`-Phrasen (`closure-note-boilerplate`, Liste per Default **leer** — der Vertrag bringt keine sprach-spezifischen Phrasen mit). Ohne den Schlüssel inert und byte-identisch; fail-closed bei fehlendem Verzeichnis bzw. ungültigem Muster; diagnose-only. Zugesagt ist **Struktur, nicht Bedeutung** — die Floskel-*Semantik* bleibt ausdrücklich unzugesagt und einem inferentiellen Nachlauf überlassen. (2) Neue Anforderung `DC-FA-CLI-012` — `--config <datei>` überschreibt pro Lauf den konventionellen Konfigurations-Pfad (innerhalb der Scan-Wurzel, gleiche strikte Validierung, **kein** stiller Rückfall, ersetzt statt ergänzt). Sie ist die Voraussetzung dafür, dass die Closure-Prüfung an einem **eigenen** Bindepunkt hängt statt im inneren Loop mitzulaufen: ein Repo fährt zwei disjunkte Prüf-Profile, ohne die Modulwahl auf der Kommandozeile nachzubauen. `DC-FA-CONF-001` notiert den Pfad entsprechend als Konvention statt Zwang. Bereiche `PLAN`/`CLI` bestehen, kein neues Modul. Algorithmen, Grund-Codes und Schema-Schlüssel in der Spezifikation; Begründung (Modul-Schnitt statt neues Modul, Bindepunkt-Trennung, Struktur-vs-Bedeutung-Grenze, Schwellenwahl) in begleitender ADR; Implementierung, Realdatenbeleg und Release folgen separat. Anlass: die Baseline vendored beide Ziel-Formen (Struktur-Gate + inferentieller Reviewer-Skill), d-check hatte **keine** von beiden — und die eigene Closure-Note-Pflicht stand ohne jede maschinelle Entsprechung |
 | 0.49.0 | 2026-07-19 | Neue Anforderung `DC-FA-SRC-001` — **19. Regelmodul `sources`** (opt-in, **Netz**): Upstream-Content-Drift externer Quellen. Ein auf einen `sha256` gepinnter externer Verweis (per Marker `<!-- source-pin: sha256:… -->` am externen Link **oder** per Config-Block `sources:`) wird geholt, gehasht und verglichen; Abweichung → `source-drift` (mit **vollem Ist-Hash** zum Re-Pinnen), Fetch-Fehler → `source-unreachable`. Zwei Quelltypen: Einzeldatei (Roh-Byte-Hash) und Archiv (`unpack: zip` → pfad-sortierter, byte-genau definierter **Content-Manifest**-Hash, Zip-Reihenfolge-invariant; konzeptionell wie `SHA256SUMS`). Content-Hash-Geschwister von `pins` (in-repo) und `external` (Netz-Erreichbarkeit); produktisiert das Kurs-Beispiel `check_regelwerk_drift.py`. **Erweitert `DC-QA-03`** um eine zweite Netz-Tür (`external` **und** `sources`; nie im netzlosen Default-Lauf, Netzlos-Modullisten-Test um `sources` ergänzt). Bereich `SRC` in §3, `sources` in `DC-FA-CLI-002` + Glossar; `DC-FA-SRC-001.a` + Grund-Codes `source-drift`/`source-unreachable` (§4) in der Spezifikation; Begründung (Netz-Modul-Design, DC-QA-03-Amendment, Manifest-Hash, Marker + Config) in begleitender ADR. Implementierung/Realdatenbeleg/Release folgen separat. Anlass: Nutzer-Frage „Drift gegen Upstream in d-check einbauen" — der Bash-Helfer `fetch-baseline-cache.sh --check-latest` deckt d-checks eigene Baseline, das Modul macht es reusable für jeden Adopter (u. a. `ai-harness-course`, dessen `check_regelwerk_drift.py` genau darauf DEFERRED ist) |
 | 0.48.0 | 2026-07-18 | Change Request (Adopter `ai-harness-init`): **Zitat-Verifikation** von `datei:zeile`-Zitaten, zwei Teile. (1) `DC-FA-CODE-001`-Erweiterung — opt-in `codepaths.check-lines` prüft die Zeilen-Referenz eines Inline-Code-Pfads (`datei:<von>-<bis>`): Ziel existiert **und** hat ≥ `bis` Zeilen (sonst `citation-out-of-range`) **und** `von ≤ bis` (sonst `citation-inverted-range`); Default aus **byte-identisch** (die Zeile wurde bisher erkannt und verworfen). (2) Neue Anforderung `DC-FA-CITE-001` — 18. Regelmodul `citations` (opt-in): ein per Direktive `d-check:cite` ausgezeichneter Zitatblock wird **zeichengenau** gegen die zitierte Quell-Spanne geprüft (`citation-mismatch`), greift die `codepaths`-`datei:zeile`-Erkennung auf (kein zweiter Detektor), hermetisch, fail-closed. Bereich `CITE` in §3, `citations` in `DC-FA-CLI-002` + Glossar; `DC-FA-CODE-001.a`-Erweiterung + `DC-FA-CITE-001.a` + Grund-Codes in der Spezifikation; Begründung (Erweiterung vs. eigenes Modul, `verbatim`/Direktiven-Design) in begleitender ADR. Zweite Direktive `d-check:cite`. §4-Vorfragen entschieden: Adopter-Rückfrage empirisch (33/33 Zitate in Inline-Code ⇒ `codepaths`-Erweiterung, kein Prosa-Scanning), Zuschnitt Form (c). Anlass: die committet-vendored Baseline erzeugt Zeilen-Zitate, die beim nächsten Tag-Bump still verfaulen |

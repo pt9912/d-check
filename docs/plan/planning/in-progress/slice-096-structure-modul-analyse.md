@@ -205,22 +205,42 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
 
 ## 4. Definition of Done
 
-- [ ] Abnahme-Punkte 1–5 entschieden und begründet; Change Request in
+- [x] Abnahme-Punkte 1–5 entschieden und begründet; Change Request in
       [`spec/lastenheft.md`](../../../../spec/lastenheft.md) formuliert
       (Bereichskürzel, Akzeptanzkriterien-Trio je Grund-Code) + begleitende ADR
       mit dem Supersede-/Alias-Pfad.
-- [ ] **Abdeckungs-Messung** je beantragter Prüfung: gedeckt / gedeckt nach
+- [x] **Abdeckungs-Messung** je beantragter Prüfung: gedeckt / gedeckt nach
       Kalibrierung / nicht gedeckt — mit Beleg, nicht per Lektüre. Die
       Paritäts-Fixtures liegen im Antragsteller-Repo vor und werden beigezogen.
-- [ ] Folge-Slices geschnitten (Implementierung, Paritäts-Beleg, Ablösung des
-      Alias) und als Dateien in `open/` angelegt — genannt ohne angelegt wäre
-      dieselbe Klasse wie ein halluziniertes Gate. **Dazu gehört die
-      Entscheidung über die drei bereits liegenden Slices**
-      ([094](../open/slice-094-closure-zaehl-paritaet.md),
-      [097](../open/slice-097-closure-glob-entkopplung.md),
-      [098](../open/slice-098-closure-note-placeholder.md)): gehen sie im `structure`-Schnitt
-      auf, bleiben sie eigenständig, oder ändert sich ihr Zuschnitt? Sie stehen
-      bis dahin ohne Wellen-Zuordnung.
+- [x] Folge-Slices geschnitten und als Dateien in `open/` angelegt:
+      [slice-099](../open/slice-099-structure-modul-kern.md) (Kern —
+      Abschnitts-Bestimmung, Bereinigung, drei `section-*`-Codes plus additiv
+      `closure-note-ambiguous`) und
+      [slice-100](../open/slice-100-structure-marken-und-zaehlung.md) (Marken
+      und abschnitts-treue Zählung). **Kein Alias-Slice** — es wird nichts
+      abgelöst (Abnahme-Punkt 2).
+
+      **Entscheidung über die drei bereits liegenden Slices:** alle drei
+      **bleiben eigenständig**, keiner geht im Modul auf. Der Grund ist derselbe
+      wie in Abnahme-Punkt 2 — `structure` ersetzt die Closure-Fähigkeit nicht,
+      es steht daneben, also bleiben auch ihre Schärfungen dort, wo sie wirken.
+      - [slice-094](../open/slice-094-closure-zaehl-paritaet.md) (Zähl-Parität)
+        wirkt nach der Preset-Kopplung auf **beide** Oberflächen und wird damit
+        wichtiger, nicht überflüssig. Seine verengte Paritäts-Zusage kann
+        zurückgenommen werden, sobald `closure-note-ambiguous` aus
+        [slice-099](../open/slice-099-structure-modul-kern.md) liegt.
+      - [slice-097](../open/slice-097-closure-glob-entkopplung.md)
+        (`closure.glob`) betrifft die Kandidaten-Menge **der Closure-Fähigkeit**;
+        `structure` hat mit seinem eigenen Datei-Glob einen anderen Weg und löst
+        das dort nicht mit.
+      - [slice-098](../open/slice-098-closure-note-placeholder.md)
+        (Platzhalter-Erkennung) bleibt an der Closure-Fähigkeit. Die allgemeine
+        Entsprechung ist `forbid-pattern`, das **ohne** die drei
+        Falsch-Positiv-Ausschlüsse auskommt — wer ein Muster selbst schreibt,
+        verantwortet es. Genau die gehärtete Erkennung ist der Wert des Presets.
+
+      **Wellen-Zuordnung:** 099 und 100 gehören zu dieser Welle; 094/097/098
+      bilden die Folge-Welle, deren Zuschnitt damit entschieden ist.
 
 ## 5. Risiken / offene Punkte
 
