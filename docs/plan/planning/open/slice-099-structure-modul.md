@@ -58,14 +58,13 @@ ablehnt, ist kein lieferbarer Zwischenstand.
 - [ ] **Neun** neue Grund-Codes im Lockstep mit `AllReasons()` und Spezifikation
       §4; jedes Akzeptanzkriterium als Test, insbesondere die drei Marken-Formen,
       `sections: each` und „Mehrdeutigkeit schlägt Messung".
-- [ ] CLI-Enumerationen nachgezogen; `make gates` grün; **Paritäts-Beleg** gegen
-      die beigezogenen Adopter-Fixtures; Release als **Minor** (neues Modul +
-      additiver Code — ein Repo mit zwei Closure-Abschnitten wird danach rot,
-      das gehört in die Release-Notiz); CLI-Enumerationen inklusive der
-      Target-Liste in
+- [ ] CLI-Enumerationen nachgezogen — einschließlich der Target-Liste in
       [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
-      deren Out-of-Scope-Zeile die Zahl der Targets festschreibt und daher
-      mitzuändern ist.
+      deren Out-of-Scope-Zeile die **Zahl** der Targets festschreibt und daher
+      mitzuändern ist. `make gates` grün; **Paritäts-Beleg** gegen die
+      beigezogenen Adopter-Fixtures; Release als **Minor** (neues Modul +
+      additiver Code — ein Repo mit zwei Closure-Abschnitten wird danach rot,
+      das gehört in die Release-Notiz).
 
 ## 5. Risiken / offene Punkte
 
@@ -82,15 +81,17 @@ ablehnt, ist kein lieferbarer Zwischenstand.
 - **Die Fence-Lexik trägt einen bekannten Defekt**
   ([slice-101](slice-101-fence-unbalanciert.md)): ein ungeschlossener Fence
   verschluckt still den Rest. `structure` erbt ihn über die geteilte Mechanik.
-  — **Ausgang:** offen; die Reihenfolge ist zu entscheiden (erst der Fix, dann
-  das Modul — sonst wird ein neuer Grund-Code mit einem bekannten stillen
-  Grün-Pfad ausgeliefert).
+  — **Ausgang: entschieden.** Der Fix läuft zuerst; §6 macht ihn zur **bindenden**
+  Start-Bedingung, nicht zur Empfehlung.
 
 ## 6. Trigger
 
 **Start** (`next` → `in-progress`): [slice-096](../in-progress/slice-096-structure-modul-analyse.md)
-in `done/`; WIP-Slot frei. Vorzugsweise **nach**
-[slice-101](slice-101-fence-unbalanciert.md) — siehe Risiko oben.
+in `done/` **und** [slice-101](slice-101-fence-unbalanciert.md) in `done/`;
+WIP-Slot frei. Die zweite Bedingung ist **bindend**, nicht bevorzugt: liefe
+dieser Slice zuerst, erbte das neue Modul über die geteilte Mechanik einen
+**bekannten** stillen Grün-Pfad — und läge damit ab Release als zugesagte
+Fähigkeit vor, die ihre Zusage an einer bekannten Stelle nicht hält.
 
 **Rückführungen:** `in-progress` → `next`, falls das Herausziehen der
 gemeinsamen Mechanik einen eigenen Refactor-Slice verlangt.
@@ -99,10 +100,14 @@ gemeinsamen Mechanik einen eigenen Refactor-Slice verlangt.
 
 - **Sub-Area prüfen:** Produkt-Code (`internal/`) und Spec (`spec/`), beide unter
   dem Repo-Default GF (`harness/conventions.md` §Modus: `*`).
-- **Offene Beobachtungen sichten:** das Register führt **BEO-001**; andere Klasse
-  (Referenz zwischen Dokumenten statt Form innerhalb eines), in
+- **Offene Beobachtungen sichten:** das Register führt **BEO-001** (andere
+  Klasse — Referenz zwischen Dokumenten statt Form innerhalb eines; in
   [slice-096](../in-progress/slice-096-structure-modul-analyse.md) ausdrücklich
-  als Nicht-Ziel festgehalten.
+  als Nicht-Ziel festgehalten) und **BEO-002** (Semantik-Änderungen werden nur im
+  Dokumentkörper nachgezogen). BEO-002 **betrifft diesen Slice unmittelbar**: er
+  ändert die Grund-Code-Menge und damit gleich mehrere Spiegel — `AllReasons()`,
+  Doctor-Klartexte, Spezifikation §4, drei CLI-Enumerationen und die
+  Handbuch-Modulliste. Sie gehören vor dem Editieren aufgelistet.
 
 ## 8. Sub-Area-Modus-Begründung
 

@@ -35,8 +35,10 @@ Repo-Eigenheit aus, nicht wie fehlende Werkzeug-Fähigkeit. **Kein Gate kann
 melden, dass ein anderes Gate hätte existieren können.**
 
 Eigene Messung (2026-08-09) gegen die drei einschlägigen Skripte des Adopters
-(480 Zeilen Shell): sie tragen **elf** Prüfungen — 2 heute gedeckt, 2 nach
-Kalibrierung, **5 ungedeckt**, 1 außerhalb, 1 als Ventil ausdrückbar.
+(480 Zeilen Shell): sie tragen **elf** Prüfungen — 2 heute gedeckt, 3 nach
+Kalibrierung, **4 ungedeckt** und 2 außerhalb der Modul-Grenze. Die
+Guard-Aussagen des Moduls (Leerlauf, Mehrdeutigkeit) sind darin nicht
+enthalten — sie kommen mit dem Vertrag hinzu, nicht aus den Skripten.
 
 Erschwerend: d-check hat **am selben Tag** mit
 [ADR-0048](0048-closure-note-struktur-im-planning-modul.md) eine

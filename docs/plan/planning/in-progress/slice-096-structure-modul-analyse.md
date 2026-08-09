@@ -64,7 +64,7 @@ Aussage. Die drei Skripte tragen zusammen **elf** Prüfungen (Stand 2026-08-09,
 | 1 | Closure-Abschnitt vorhanden | Slice-Plan | **gedeckt** | `closure-note-missing`, gegen 76 Adopter-Slices grün gefahren |
 | 2 | **genau einer**, nicht mehrere | Slice-Plan | **nicht gedeckt** → Abnahme-Punkt 3 schließt die Lücke | d-check liest laut Spezifikation den **ersten** Treffer |
 | 3 | Abschnitt nicht leer | Slice-Plan | **gedeckt** | Sonderfall von `min-sentences` (≥ 1) |
-| 4 | kein Template-Platzhalter | Slice-Plan | **nicht gedeckt** | vier Platzhalter-Sätze passieren alle drei Codes; eigener Antrag |
+| 4 | kein Template-Platzhalter | Slice-Plan | **nach Kalibrierung** | das vermessene Skript prüft **fünf literale Phrasen** — die deckt die Floskel-Liste heute ab. Der weitergehende Fall (beliebige `<platzhalter>`) stammt aus einem **anderen** Antrag und ist hier nicht Beleg |
 | 5 | keine Floskel | Slice-Plan | **nach Kalibrierung** | Teilstring statt zeilen-verankert ⇒ nur eindeutige Phrasen aufnehmbar |
 | 6 | Mindest-Satzzahl | Slice-Plan | **nach Kalibrierung** | Inline-Code und Satzende-Form weichen ab; eigener Antrag |
 | 7 | Obergrenze der DoD-Punkte **im Abschnitt** | Slice-Plan | **nicht gedeckt** | keine Zähl-Fähigkeit über Abschnitts-Elemente |
@@ -73,7 +73,7 @@ Aussage. Die drei Skripte tragen zusammen **elf** Prüfungen (Stand 2026-08-09,
 | 10 | vier fette Pflicht-Marken je Anforderung | Anforderung | **nicht gedeckt** | `**Happy Path:**` u. a. **am Zeilenanfang**, nicht als Teilstring |
 | 11 | Stichtags-/Namens-Ausnahme | beide | **außerhalb** | die Pfad-Ausnahme deckt sie **nicht**: der gelebte Fall ist eine Zahlen-Schwelle bzw. eine Kennungs-Liste *innerhalb* einer Datei ⇒ Nicht-Ziel (Abnahme-Punkt 5) |
 
-**2 gedeckt · 2 nach Kalibrierung · 5 nicht gedeckt · 2 außerhalb** (Summe 11).
+**2 gedeckt · 3 nach Kalibrierung · 4 nicht gedeckt · 2 außerhalb** (Summe 11).
 Die Guard-Aussagen des Moduls (Leerlauf, Mehrdeutigkeit) sind in dieser Zählung
 **nicht** enthalten — sie stammen nicht aus den vermessenen Skripten, sondern
 kommen mit dem Vertrag hinzu.

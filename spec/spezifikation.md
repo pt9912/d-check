@@ -1736,10 +1736,14 @@ getroffenen Dateien.
 2. **Kandidaten.** Die `files`-Globs werden gegen **Wurzel-relative Pfade über
    den gesamten Baum** ausgewertet — **unabhängig** von `scan.roots`/`scan.ignore`
    (die `SKIP_DIRS` gelten weiterhin). Eine Regel benennt ihre Dateien selbst;
-   `structure` kennt deshalb **kein** `<modul>.scope`. Abgezogen wird
+   `structure` kennt deshalb **kein** `<modul>.scope`. Kandidaten sind **nur
+   Markdown-Dateien** (Endungs-Menge des Scanners). Abgezogen wird
    `exempt-paths`. Die verbleibenden Dateien werden stabil sortiert geprüft
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
-   **Null Kandidaten ⇒ `section-missing`** (`file` = der Glob, `line` = 1) —
+   **Null Kandidaten ⇒ `section-missing`** (`file` = der Glob, `line` = 1,
+   `target` = die **Regel-Identität** aus `files` und Abschnitts-Selektor, damit
+   zwei leer laufende Regeln über derselben Dateimenge nicht unter der
+   Befund-Deduplikation zusammenfallen; identische Identität ⇒ Exit 2) —
    **auch dann, wenn erst `exempt-paths` die Menge geleert hat**: sonst schaltete
    ein Ventil die Regel still ab (dieselbe Nullmengen-Logik wie bei den
    Anforderungsquellen der RTM).
@@ -1785,8 +1789,11 @@ getroffenen Dateien.
    Abschnitts-Text; `^`/`$` binden dort an Text-, nicht an Zeilen-Grenzen (wer
    Zeilen meint, schreibt `(?m)`).
 7. **Befund-Form.** `file` = die geprüfte Datei (bzw. der Glob in Schritt 2),
-   `rule` = `structure`, `target` = der `files`-Glob der Regel, `line` = Zeile der
-   Abschnitts-Überschrift (bzw. 1). **Diagnose-only** (kein `--repair`-Hunk).
+   `rule` = `structure`, `target` = die **Regel-Identität** (`files`-Glob und
+   Abschnitts-Selektor), `line` = Zeile der Abschnitts-Überschrift (bzw. 1).
+   Die Identität im `target` ist konstitutiv: die Deduplikation vergleicht
+   (Datei, Zeile, Regel, Ziel, Grund), und ohne sie verlöre man je Datei den
+   Befund der zweiten Regel. **Diagnose-only** (kein `--repair`-Hunk).
 8. **Determinismus/Read-only.** Identischer Arbeitsbaum ⇒ identischer, stabil
    sortierter Befundsatz; nur lesend, netzlos
    ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
