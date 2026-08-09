@@ -1,6 +1,6 @@
 # Spezifikation — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-07-19.
+**Status:** Aktiv. **Letzte Änderung:** 2026-08-09.
 
 **Bezug zum Lastenheft:** Diese Spezifikation präzisiert die in
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
@@ -753,6 +753,45 @@ Der Default-`--trace` ohne dieses Flag bleibt **advisory** (Exit 0 auch bei
 Waisen) — die Durchsetzung ist strikt opt-in und ändert den
 [`DC-FA-CLI-009`](lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)-Vertrag
 nicht.
+
+### DC-FA-CLI-012.a — Konfigurations-Pfad (`--config`)
+
+`--config <datei>`
+([`DC-FA-CLI-012`](lastenheft.md#dc-fa-cli-012--konfigurations-pfad-überschreiben))
+verschiebt **ausschließlich die Herkunft** der Konfiguration; Format, Validierung
+und Fehlerverhalten sind die von
+[`DC-FA-CONF-001`](lastenheft.md#dc-fa-conf-001--konfigurationsdatei). Der Ablauf
+setzt vor Schritt „Konfiguration laden" von
+[`DC-FA-CLI-001.a`](#dc-fa-cli-001a--ablauf-eines-prüflaufs) an:
+
+1. **Auflösen.** Ohne `--config` bleibt die Quelle der konventionelle Dateiname in
+   der Scan-Wurzel; die Auflösung ist unverändert und der Befundsatz
+   byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)). Mit
+   `--config` wird der Wert **relativ zur Scan-Wurzel** aufgelöst (ein absoluter
+   Pfad wird auf die Wurzel bezogen geprüft).
+2. **Wurzel-Constraint (fail-closed).** Liegt der aufgelöste Pfad — nach
+   Auflösung von `..`-Segmenten — **außerhalb** der Scan-Wurzel, ⇒ **Exit 2**.
+   Begründung: der Lauf ist auf den read-only-Mount beschränkt; eine Datei
+   außerhalb wäre im Container ohnehin unerreichbar, und ein stiller Fehlschlag
+   dort wäre ein Silent-Grün. Dieselbe Constraint wie bei `scan.roots` und
+   `planning.roadmap`.
+3. **Existenz (fail-closed).** Existiert die Datei nicht oder ist sie unlesbar ⇒
+   **Exit 2** mit Hinweis auf stderr. Es gibt **keinen** Rückfall — weder auf die
+   Defaults noch auf eine vorhandene konventionelle Datei. Ein vertipptes Profil
+   darf nicht unbemerkt einen anderen Prüfumfang fahren.
+4. **Ersetzen, nicht ergänzen.** Die angegebene Datei ist die **einzige** Quelle:
+   eine konventionelle Datei in der Scan-Wurzel wird nicht gelesen und nicht
+   zusammengeführt. Es gibt keine Vererbung über Verzeichnisebenen
+   ([`DC-FA-CONF-001`](lastenheft.md#dc-fa-conf-001--konfigurationsdatei)
+   §Out-of-Scope bleibt gültig).
+5. **Validierung unverändert.** Der Inhalt durchläuft dieselbe strikte
+   Schema-/Inhalts-Validierung; jeder Konfigurationsfehler ⇒ Exit 2 mit
+   Zeilenangabe. Module, Defaults und Grund-Codes verhalten sich identisch — der
+   Schalter ist eine **Herkunfts**-, keine Semantik-Änderung.
+6. **Provenance in Befunden.** Wo ein Befund heute die Konfigurationsdatei als
+   Herkunft benennt, benennt er die **tatsächlich geladene** Datei — nicht den
+   konventionellen Namen (sonst zeigte die Meldung auf eine Datei, die der Lauf
+   nie gelesen hat).
 
 ### DC-FA-REF-001.a — Geteiltes Referenz-Ventil (`ignore-refs`)
 
@@ -1609,6 +1648,50 @@ Listing ihres Verzeichnisses prüft:
    Schreiben ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
    Ohne `planning` ist der Befundsatz byte-identisch.
 
+**Closure-Note-Struktur** (zweite Fähigkeit desselben Moduls, opt-in **innerhalb**
+des opt-in Moduls). Sie läuft unabhängig von den Schritten 1–5 — die
+Aktiv-Status-Prüfung bleibt unberührt, auch wenn die Closure-Prüfung Befunde
+liefert (und umgekehrt):
+
+- **C1. Inert/Config.** Leere `planning.closure.dir` ⇒ Fähigkeit inert: **keine**
+  Slice-Datei wird geöffnet, der Befundsatz ist byte-identisch zum Stand ohne die
+  Fähigkeit. Ein nicht kompilierendes `heading-pattern`, ein `min-sentences` < 1
+  oder ein leerer `boilerplate`-Eintrag ⇒ Exit 2 (Config-Fehler, vor dem Lauf).
+- **C2. Kandidaten.** Das Listing von `planning.closure.dir` wird nach Dateien
+  gefiltert, deren Basisname `planning.slice-glob` matcht (dasselbe Glob wie
+  Schritt 2 — ein Slice ist ein Slice, gleich in welchem Lifecycle-Verzeichnis).
+  Fehlt das gesetzte Verzeichnis oder ist es unlesbar ⇒ `closure-note-missing`
+  mit `file` = `planning.closure.dir` (fail-closed, kein stilles Grün); ein
+  **leeres** Verzeichnis ist dagegen befundfrei (kein abgeschlossener Slice ist
+  kein Fehler). Die Kandidaten werden in stabiler Namens-Reihenfolge geprüft.
+- **C3. Abschnitt bestimmen.** Je Kandidat wird die **erste** Zeile gesucht, deren
+  getrimmte Fassung auf `planning.closure.heading-pattern` passt. Kein Treffer ⇒
+  `closure-note-missing` (`line` = 1). Sonst reicht der Abschnitt von der Zeile
+  **nach** der Überschrift bis zur nächsten Überschrift **gleicher oder höherer**
+  Ebene (die Ebene ist die Zahl der führenden `#` der Treffer-Zeile) bzw. bis zum
+  Dateiende.
+- **C4. Bereinigen und messen.** Aus dem Abschnitt werden die Fenced-Code-Blöcke
+  entfernt (Fence-Lexik wie im übrigen Scanner, vgl.
+  [`DC-FA-SPAN-001.a`](#dc-fa-span-001a--span-artefakt-erkennung)); im Rest werden
+  die Satzende-Zeichen `.`, `!`, `?` gezählt. Zahl < `min-sentences` ⇒
+  `closure-note-thin`. Anschließend wird derselbe bereinigte Text
+  **case-insensitiv** gegen jeden `planning.closure.boilerplate`-Teilstring
+  geprüft; ein Treffer ⇒ `closure-note-boilerplate` (der **erste** Treffer
+  benennt die Meldung).
+- **C5. Befund-Form.** `file` = die Slice-Datei (bzw. das Verzeichnis bei C2),
+  `line` = Zeile der Abschnitts-Überschrift (bzw. 1), `rule` = `planning`,
+  `target` = `planning.closure.dir`, `message` = Klartext der verletzten
+  Bedingung (fehlender Abschnitt · Ist-/Soll-Satzzahl · getroffene Floskel).
+  **Diagnose-only** (kein `--repair`-Hunk): eine Closure-Notiz schreibt der Autor.
+  Ein Kandidat kann `closure-note-thin` **und** `closure-note-boilerplate`
+  tragen (verschiedene Bedingungen), aber `closure-note-missing` schließt beide
+  aus — ohne Abschnitt gibt es nichts zu messen.
+
+Die Fähigkeit prüft **Struktur**, nicht Bedeutung: ob eine formal ausreichende
+Notiz inhaltlich trägt, ist semantisch und ausdrücklich nicht zugesagt
+([`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+§Out-of-Scope).
+
 ### DC-FA-TRK-001.a — Getrackt-Status auflösbarer Referenz-Ziele (`tracked`)
 
 Opt-in-Prüfung **je gescannter Quell-Datei** ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)):
@@ -2012,6 +2095,10 @@ Exit 2 ohne Prüfung
 | `planning.heading` | string | `## Aktuelle Welle` | die kanonische H2-Überschrift des Aktiv-Status-Abschnitts (exakter, getrimmter Zeilen-Vergleich); fehlt sie ⇒ `planning-drift` (fail-closed) |
 | `planning.marker` | string | `Keine aktive Welle` | literaler Ruhe-Marker-Teilstring; nur im `planning.heading`-Block gesucht; vorhanden ⇒ ruhende Welle |
 | `planning.slice-glob` | string | `slice-*.md` | Glob (`path.Match` auf den Basisnamen) der Slice-Dateien im Roadmap-Verzeichnis; ≥1 Treffer ⇒ aktive-Welle-erwartet; ein explizit gesetztes Muster muss ein gültiges `path.Match`-Glob sein (sonst Exit 2 — verhindert ein fail-open Silent-Grün) |
+| `planning.closure.dir` | string | leer | `verzeichnis` (Wurzel-relativ, innerhalb der Repo-Wurzel); das Verzeichnis der abgeschlossenen Slices, deren Closure-Notiz **strukturell** geprüft wird. Leer ⇒ Closure-Fähigkeit inert (keine Slice-Datei wird gelesen, Befundsatz byte-identisch); gesetzt, aber fehlend/unlesbar ⇒ `closure-note-missing` auf dem Verzeichnis (fail-closed) ([`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
+| `planning.closure.heading-pattern` | string | `^#{2,3} .*Closure-Notiz` | RE2 gegen die **getrimmte** Überschriften-Zeile; der **erste** Treffer eröffnet den geprüften Abschnitt (bis zur nächsten Überschrift gleicher oder höherer Ebene). Kein Treffer ⇒ `closure-note-missing`; ein nicht kompilierendes Muster ⇒ Exit 2 |
+| `planning.closure.min-sentences` | int | `4` | Mindestzahl der Satzende-Zeichen (`.`, `!`, `?`) im Abschnitt **nach** Entfernen der Fenced-Code-Blöcke; darunter ⇒ `closure-note-thin`. Wert < 1 ⇒ Exit 2 (eine Schwelle von 0 wäre ein stilles Grün) |
+| `planning.closure.boilerplate` | string[] | leer | literale Floskel-Teilstrings, **case-insensitiv** gegen den bereinigten Abschnitts-Text geprüft; ein Treffer ⇒ `closure-note-boilerplate`. Bewusst **leer** per Default — der Vertrag bringt keine sprach-spezifischen Phrasen mit; ein leerer Eintrag ⇒ Exit 2 (er träfe jeden Text) |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien, aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
@@ -2136,6 +2223,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-09 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) um die **Closure-Note-Struktur** (Schritte C1–C5) erweitert + neue §[`DC-FA-CLI-012.a`](spezifikation.md#dc-fa-cli-012a--konfigurations-pfad---config) + §2-Schema (`planning.closure.dir`/`heading-pattern`/`min-sentences`/`boilerplate`). Die Closure-Fähigkeit ist opt-in **innerhalb** des opt-in Moduls (leere `dir` ⇒ keine Slice-Datei wird geöffnet, byte-identisch): erster auf `heading-pattern` passender Abschnitt (bis zur nächsten gleich-/höherrangigen Überschrift), Fenced-Code entfernt, Satzende-Zeichen gezählt (< `min-sentences` ⇒ `closure-note-thin`), Rest case-insensitiv gegen die literalen `boilerplate`-Teilstrings (⇒ `closure-note-boilerplate`); kein passender Abschnitt bzw. fehlendes gesetztes Verzeichnis ⇒ `closure-note-missing`. Leeres Closure-Verzeichnis ist befundfrei, `min-sentences` < 1 und leerer Floskel-Eintrag ⇒ Exit 2; diagnose-only. `--config <datei>` verschiebt **nur die Herkunft** der Konfiguration (Wurzel-Constraint + Existenz fail-closed, ersetzt statt ergänzt, Validierung und Semantik unverändert, Befund-Provenance nennt die geladene Datei) — es trennt die Prüf-Profile zweier Bindepunkte, ohne die Modulwahl auf der Kommandozeile nachzubauen. Grund-Codes `closure-note-missing`/`closure-note-thin`/`closure-note-boilerplate` (§4) folgen mit der Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Modul-Schnitt statt neues Modul, Bindepunkt-Trennung, Struktur-vs-Bedeutung-Grenze, Schwellenwahl) in begleitender ADR |
 | 2026-07-19 | Neue §[`DC-FA-SRC-001.a`](spezifikation.md#dc-fa-src-001a--upstream-content-drift-externer-quellen-sources) + §2-Schema (`sources[]`: `url`/`sha256`/`unpack`) — **Upstream-Content-Drift** (Modul `sources`, opt-in, **Netz**): eine auf `sha256` gepinnte externe Quelle (Marker `source-pin` am Link **oder** Config `sources:`) wird geholt, gehasht, verglichen; Abweichung → `source-drift` (voller Ist-Hash), Fetch-Fehler → `source-unreachable`. Einzeldatei (Roh-Byte-Hash) oder Archiv (`unpack: zip` → `LC_ALL=C`-sortiertes, reihenfolge-invariantes Content-Manifest). Post-Pass wie `external`; zweite Netz-Tür ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)). Grund-Codes `source-drift`/`source-unreachable` (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Netz-Modul-Design, Amendment der Netz-Sparsamkeit, Manifest-Hash, Marker + Config) in begleitender ADR |
 | 2026-07-18 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Schritt 3/6 + neue §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) + §2-Schema (`codepaths.check-lines`) — **Zitat-Verifikation** in zwei Teilen: (1) opt-in `codepaths.check-lines` verifiziert die Zeilen-Referenz eines `datei:<von>-<bis>`-Pfads (Ziel existiert + ≥ `<bis>` Zeilen ⇒ sonst `citation-out-of-range`; `<von> ≤ <bis>` ⇒ sonst `citation-inverted-range`), das Suffix wurde bisher abgetrennt und verworfen, default-aus **byte-identisch**. (2) neues Modul `citations`: die Direktive `<!-- d-check:cite <pfad>:<von>-<bis> -->` vor einem `>`-Zitatblock ⇒ **zeichengenauer** Vergleich der Zeilen `<von>`–`<bis>` gegen den Zitatblock (`citation-mismatch`), hermetisch, fail-closed (fehlende Datei/Spanne/ungültiger Bereich ⇒ Exit 2), greift die `codepaths`-`datei:zeile`-Erkennung auf. Grund-Codes (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Erweiterung vs. eigenes Modul, `verbatim`/Direktiven-Design) in begleitender ADR |
 | 2026-07-18 | §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) — neues **geteiltes Referenz-Ventil** `ignore-refs` mit **Quell-Skopus** (`in`) und Zwei-Feld-Semantik (`refs ∧ ¬keep`; `keep` reihenfolge-unabhängig, kein gitignore-Last-Match), honoriert von `links`/`anchors`/`codepaths`. §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Referenz-Ventil **und** Schritt 5 auf das geteilte Ventil umgestellt; die modul-lokale Liste `codepaths.ignore-refs` bleibt **Alias** (byte-identisch). §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) und §[`DC-FA-ANCH-001.a`](spezifikation.md#dc-fa-anch-001a--github-slug-algorithmus) honorieren es (Existenz-/Escape-/Anker-Prüfung übersprungen, Symlink-Prüfung bleibt). §2-Schema: Top-Level `ignore-refs[].in`/`refs`/`keep` + `codepaths.ignore-refs` als Alias annotiert. **CR** (Konsument `ai-harness-course`); Begründung (Zwei-Feld vs. `!`-Negation, Alias-Pfad) in der begleitenden ADR |

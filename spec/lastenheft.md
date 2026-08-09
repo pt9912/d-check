@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.49.0
+**Version:** 0.50.0
 
 **Status:** Draft
 
@@ -520,6 +520,44 @@ RTM-Parsing-Logik zu kopieren.
 - **Negative:** Given `d-check --require-complete` ohne `--trace`, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)), keine RTM.
 
 **Out-of-Scope:** Ändern des Default-`--trace`-Exit-Codes (bleibt advisory Exit 0, [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)); Bewertung des Slice-**Status** (done vs. in-progress — eine von ≥1 Slice beanspruchte Anforderung zählt als abgedeckt, unabhängig vom Fortschritt); Erzwingung anderer RTM-Eigenschaften als Waisenfreiheit (Slice **oder** Coverage genügt; eine bloße ADR-Referenz ohne Slice/Coverage deckt weiterhin **nicht** ab); Schreiben eines Reports.
+
+---
+
+### DC-FA-CLI-012 — Konfigurations-Pfad überschreiben
+
+**Beschreibung:** Die Option `--config <datei>` ersetzt für **diesen** Lauf die
+konventionelle Konfigurations-Quelle — die `.d-check.yml` in der Scan-Wurzel
+([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei)) — durch die angegebene
+Datei. Der Pfad wird relativ zur Scan-Wurzel aufgelöst und muss **innerhalb** der
+Scan-Wurzel liegen; damit bleibt die Datei im read-only-Mount lesbar und der Lauf
+hermetisch (dieselbe Wurzel-Constraint wie `scan.roots` und `planning.roadmap`).
+Die Datei durchläuft **exakt** dieselbe strikte Validierung wie eine
+konventionelle `.d-check.yml` (Syntax **und** Inhalt, jeder Fehler Exit 2). Fehlt
+sie, ist das ein **Nutzungsfehler** (Exit 2,
+[`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) — es gibt **keinen** stillen
+Rückfall auf Defaults und **keinen** auf die konventionelle Datei; ein getipptes
+Profil darf nicht unbemerkt zu einem anderen Prüfumfang führen. Die angegebene
+Datei **ersetzt**, sie ergänzt nicht.
+
+Der Zweck ist die saubere Trennung von **Prüf-Profilen** an unterschiedlichen
+Bindepunkten desselben Repos: ein Profil für den inneren Loop und ein zweites,
+enger gefasstes für einen Abschluss-Bindepunkt (Wellen-/Release-Closure) — ohne
+die Modul- und Parameterwahl über die Kommandozeile nachzubauen und ohne beide
+Profile in einer Datei zu vermischen. Ohne `--config` ist das Verhalten
+unverändert und byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given eine gültige alternative Konfigurationsdatei innerhalb der Scan-Wurzel, when `d-check --config <datei>` läuft, then gilt ausschließlich deren Inhalt, eine vorhandene `.d-check.yml` der Scan-Wurzel wird **nicht** gelesen, und der Exit-Code folgt der Befundlage.
+- **Boundary (ohne Flag):** Given **kein** `--config`, when `d-check` läuft, then unverändertes Verhalten (`.d-check.yml` aus der Scan-Wurzel) und byte-identischer Befundsatz ([`DC-QA-02`](#dc-qa-02--determinismus)).
+- **Negative (fehlt):** Given einen `--config`-Pfad, der nicht existiert, when `d-check` läuft, then Exit-Code 2 mit Hinweis auf stderr — **kein** Rückfall auf Defaults oder auf die konventionelle Datei.
+- **Negative (außerhalb der Wurzel):** Given einen `--config`-Pfad außerhalb der Scan-Wurzel, when `d-check` läuft, then Exit-Code 2.
+- **Negative (ungültig):** Given eine `--config`-Datei mit ungültigem Schema, when `d-check` läuft, then Exit-Code 2 mit Zeilenangabe, wie bei einer ungültigen `.d-check.yml` ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei)).
+
+**Out-of-Scope:** Zusammenführen oder Vererben mehrerer Konfigurationsdateien (die
+angegebene Datei ersetzt vollständig); mehrere `--config`-Angaben in einem Lauf;
+Konfigurationen außerhalb der Scan-Wurzel (der read-only-Mount ist die Grenze);
+Profil-Namen oder eine Profil-Registry innerhalb einer Datei.
 
 ---
 
@@ -1816,19 +1854,66 @@ Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)). Leere
 (die Korrektur ist eine Roadmap-/Lifecycle-Entscheidung; vgl.
 [`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)).
 
+**Closure-Note-Struktur (zweite Fähigkeit, `planning.closure`).** Dieselbe
+Lifecycle-Invariante hat eine zweite Seite: ein Slice, der den Lifecycle
+**verlässt**, trägt eine Closure-Notiz. `planning` prüft deren **Struktur** —
+aber **nur**, wenn `planning.closure.dir` gesetzt ist (opt-in **innerhalb** des
+opt-in Moduls; ohne den Schlüssel ist die Fähigkeit inert und der Befundsatz
+byte-identisch, [`DC-QA-02`](#dc-qa-02--determinismus)). Geprüft wird jede Datei
+in `planning.closure.dir`, deren Basisname `planning.slice-glob` matcht; in ihr
+der **erste** Abschnitt, dessen Überschrift auf `planning.closure.heading-pattern`
+passt (RE2, Default `^#{2,3} .*Closure-Notiz`), reichend bis zur nächsten
+Überschrift gleicher oder höherer Ebene. Drei Struktur-Bedingungen:
+
+- **Abschnitt vorhanden** — keine passende Überschrift ⇒ `closure-note-missing`.
+- **Substanz** — im Abschnitt stehen, **nach Entfernen der Fenced-Code-Blöcke**,
+  weniger als `planning.closure.min-sentences` Satzende-Zeichen (`.`, `!`, `?`;
+  Default 4) ⇒ `closure-note-thin`. Ein zurückgelassener Platzhalter fällt damit auf.
+- **Floskel** — der bereinigte Abschnitts-Text enthält (case-insensitiv) einen der
+  literalen Teilstrings aus `planning.closure.boilerplate` ⇒
+  `closure-note-boilerplate`. Die Liste ist **per Default leer**: der Vertrag
+  bringt keine sprach-spezifischen Phrasen mit, das Repo deklariert seine eigenen.
+
+Geprüft wird **ausschließlich** `planning.closure.dir` (per Konvention das
+Verzeichnis der abgeschlossenen Slices) — ein Slice in Arbeit trägt noch keine
+Closure-Pflicht. **fail-closed:** ein gesetztes, aber fehlendes oder unlesbares
+`planning.closure.dir` ⇒ `closure-note-missing` auf dem Verzeichnis (kein stilles
+Grün); ein ungültiges `heading-pattern` oder ein `min-sentences` < 1 ⇒ Exit 2.
+Die Fähigkeit bleibt **hermetisch** (Arbeitsbaum, kein git, kein Netz) und
+**diagnose-only** — kein `--repair`-Hunk, denn eine Closure-Notiz schreibt der
+Autor, nicht das Werkzeug.
+
+Zugesagt ist **Struktur, nicht Bedeutung**: ob eine formal ausreichende Notiz
+inhaltlich Substanz trägt oder eine Floskel ist, ist semantisch und bleibt einem
+inferentiellen Nachlauf überlassen. d-check verspricht hier keine
+Bedeutungs-Erkennung — und meldet umgekehrt nichts doppelt, was die Struktur
+bereits abdeckt.
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given `planning` aktiv mit gesetzter `planning.roadmap`, einer Roadmap mit dem kanonischen `## Aktuelle Welle`-Abschnitt **ohne** den Ruhe-Marker und ≥1 `slice-*` im Verzeichnis, when `d-check --enable planning` läuft, then kein Befund, Exit 0 (ebenso konsistent: Ruhe-Marker vorhanden **und** kein Slice).
 - **Boundary (Modul-aus):** Given **kein** aktives `planning`, when `d-check` in einer netzlosen, read-only Umgebung läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)) und nichts wird geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 - **Negative:** Given `planning` aktiv und eine Drift (Slice im Verzeichnis, aber die Roadmap trägt den Ruhe-Marker; oder kein Slice, aber die Roadmap benennt eine aktive Welle), when `d-check --enable planning` läuft, then ein Befund `planning-drift`, Exit 1.
 - **fail-closed (Heading/Datei fehlt):** Given `planning` aktiv und eine Roadmap **ohne** die kanonische `planning.heading`-Überschrift (bzw. eine fehlende `planning.roadmap`-Datei), when `d-check --enable planning` läuft, then `planning-drift`, Exit 1 — kein stilles Grün.
+- **Happy Path (Closure-Struktur):** Given `planning` aktiv mit gesetztem `planning.closure.dir` und Slices, deren Closure-Notiz-Abschnitt mindestens `min-sentences` Satzende-Zeichen außerhalb von Fenced-Code-Blöcken trägt, when `d-check --enable planning` läuft, then kein Befund, Exit 0.
+- **Boundary (Closure-Fähigkeit aus):** Given `planning` aktiv **ohne** `planning.closure.dir`, when `d-check --enable planning` läuft, then ist der Befundsatz byte-identisch zur Aktiv-Status-Prüfung allein ([`DC-QA-02`](#dc-qa-02--determinismus)) — die Closure-Fähigkeit ist inert und liest keine Slice-Datei.
+- **Negative (Platzhalter/dünn):** Given ein Slice im Closure-Verzeichnis, dessen Closure-Notiz-Abschnitt weniger als `min-sentences` Satzende-Zeichen außerhalb von Code-Blöcken trägt, when `d-check --enable planning` läuft, then ein Befund `closure-note-thin` (Datei, Zeile der Abschnitts-Überschrift), Exit 1.
+- **Negative (Abschnitt fehlt):** Given ein Slice im Closure-Verzeichnis **ohne** eine auf `heading-pattern` passende Überschrift, when `d-check --enable planning` läuft, then ein Befund `closure-note-missing`, Exit 1.
+- **Negative (Floskel):** Given einen konfigurierten `planning.closure.boilerplate`-Eintrag, dessen literaler Teilstring case-insensitiv im bereinigten Abschnitts-Text vorkommt, when `d-check --enable planning` läuft, then ein Befund `closure-note-boilerplate`, Exit 1.
+- **Boundary (Code-Block zählt nicht):** Given eine Closure-Notiz, deren Satzende-Zeichen überwiegend in einem Fenced-Code-Block stehen, when `d-check --enable planning` läuft, then zählen nur die Zeichen außerhalb des Blocks — bleibt die Zahl unter der Schwelle, dann `closure-note-thin`.
+- **fail-closed (Closure-Verzeichnis/Regex):** Given `planning.closure.dir` gesetzt, aber fehlend oder unlesbar, when `d-check --enable planning` läuft, then `closure-note-missing`, Exit 1; given ein ungültiges `heading-pattern` oder `min-sentences` < 1, then Exit 2.
 
 **Out-of-Scope:** eine git-/VCS-basierte Lifecycle-Prüfung (rein hermetisch, nur
-Arbeitsbaum); mehr als eine Roadmap bzw. ein Slice-Verzeichnis pro Lauf; das Prüfen
-des Slice-**Inhalts** (nur Datei-Existenz, wie `codepaths`); die Roadmap-Prosa
-jenseits des Aktiv-Status-Markers; ein `--repair`-Hunk; das Erzwingen der
-Lifecycle-Move-Commit-Bündelung selbst ([`MR-013`](../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)
-bleibt Commit-Zeit-Disziplin).
+Arbeitsbaum); mehr als eine Roadmap bzw. ein Slice- oder Closure-Verzeichnis pro
+Lauf; die Roadmap-Prosa jenseits des Aktiv-Status-Markers; ein `--repair`-Hunk; das
+Erzwingen der Lifecycle-Move-Commit-Bündelung selbst
+([`MR-013`](../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)
+bleibt Commit-Zeit-Disziplin). Für die Aktiv-Status-Invariante zählt weiterhin nur
+die **Existenz** der Slice-Dateien, nicht ihr Inhalt — Slice-Inhalt liest
+ausschließlich die opt-in Closure-Fähigkeit, und auch sie nur im
+Closure-Verzeichnis und nur strukturell: die **inhaltliche** Bewertung einer
+Closure-Notiz (trägt sie Lernsignal, Folge-Slice oder Architektur-Beobachtung?)
+ist semantisch und ausdrücklich **nicht** zugesagt.
 
 ---
 
@@ -2076,7 +2161,10 @@ modul-lokaler `sources.scope` (die Config-Fläche ist eine bare Liste `sources[]
 Repository-Wurzel deklariert: Scan-Wurzeln, Ignorier-Muster, aktive
 Module, Kennungs-Muster (für `ids`), Dokumentklassen und
 Referenzregeln (für `matrix`) sowie Modul-Parameter (z. B. Timeout für
-`external`). Ohne Konfigurationsdatei gelten die in den jeweiligen
+`external`). Der Datei**pfad** ist Konvention, nicht Zwang: er lässt sich pro
+Lauf überschreiben ([`DC-FA-CLI-012`](#dc-fa-cli-012--konfigurations-pfad-überschreiben)) —
+Format, Validierung und Fehlerverhalten bleiben davon unberührt.
+Ohne Konfigurationsdatei gelten die in den jeweiligen
 Anforderungen definierten Defaults; eine vorhandene Datei wird beim
 Start vollständig validiert — Syntax **und** Inhalt (z. B. ungültige
 Regexe, unbekannte Modulnamen). Jeder Konfigurationsfehler führt zu
@@ -2192,6 +2280,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.50.0 | 2026-08-09 | Change Request (Auftraggeber): der **Closure-Note-Qualitäts-Nachlauf** wird mechanisiert, in zwei Teilen. (1) `DC-FA-PLAN-001` geschärft — das Modul `planning` bekommt eine **zweite Fähigkeit**, opt-in über `planning.closure.dir`: für jeden Slice im Closure-Verzeichnis wird der Closure-Notiz-Abschnitt (erste Überschrift auf `heading-pattern`, Default `^#{2,3} .*Closure-Notiz`) **strukturell** geprüft — Abschnitt vorhanden (`closure-note-missing`), mindestens `min-sentences` Satzende-Zeichen **außerhalb Fenced-Code** (Default 4, `closure-note-thin`), keine der literalen `boilerplate`-Phrasen (`closure-note-boilerplate`, Liste per Default **leer** — der Vertrag bringt keine sprach-spezifischen Phrasen mit). Ohne den Schlüssel inert und byte-identisch; fail-closed bei fehlendem Verzeichnis bzw. ungültigem Muster; diagnose-only. Zugesagt ist **Struktur, nicht Bedeutung** — die Floskel-*Semantik* bleibt ausdrücklich unzugesagt und einem inferentiellen Nachlauf überlassen. (2) Neue Anforderung `DC-FA-CLI-012` — `--config <datei>` überschreibt pro Lauf den konventionellen Konfigurations-Pfad (innerhalb der Scan-Wurzel, gleiche strikte Validierung, **kein** stiller Rückfall, ersetzt statt ergänzt). Sie ist die Voraussetzung dafür, dass die Closure-Prüfung an einem **eigenen** Bindepunkt hängt statt im inneren Loop mitzulaufen: ein Repo fährt zwei disjunkte Prüf-Profile, ohne die Modulwahl auf der Kommandozeile nachzubauen. `DC-FA-CONF-001` notiert den Pfad entsprechend als Konvention statt Zwang. Bereiche `PLAN`/`CLI` bestehen, kein neues Modul. Algorithmen, Grund-Codes und Schema-Schlüssel in der Spezifikation; Begründung (Modul-Schnitt statt neues Modul, Bindepunkt-Trennung, Struktur-vs-Bedeutung-Grenze, Schwellenwahl) in begleitender ADR; Implementierung, Realdatenbeleg und Release folgen separat. Anlass: die Baseline vendored beide Ziel-Formen (Struktur-Gate + inferentieller Reviewer-Skill), d-check hatte **keine** von beiden — und die eigene Closure-Note-Pflicht stand ohne jede maschinelle Entsprechung |
 | 0.49.0 | 2026-07-19 | Neue Anforderung `DC-FA-SRC-001` — **19. Regelmodul `sources`** (opt-in, **Netz**): Upstream-Content-Drift externer Quellen. Ein auf einen `sha256` gepinnter externer Verweis (per Marker `<!-- source-pin: sha256:… -->` am externen Link **oder** per Config-Block `sources:`) wird geholt, gehasht und verglichen; Abweichung → `source-drift` (mit **vollem Ist-Hash** zum Re-Pinnen), Fetch-Fehler → `source-unreachable`. Zwei Quelltypen: Einzeldatei (Roh-Byte-Hash) und Archiv (`unpack: zip` → pfad-sortierter, byte-genau definierter **Content-Manifest**-Hash, Zip-Reihenfolge-invariant; konzeptionell wie `SHA256SUMS`). Content-Hash-Geschwister von `pins` (in-repo) und `external` (Netz-Erreichbarkeit); produktisiert das Kurs-Beispiel `check_regelwerk_drift.py`. **Erweitert `DC-QA-03`** um eine zweite Netz-Tür (`external` **und** `sources`; nie im netzlosen Default-Lauf, Netzlos-Modullisten-Test um `sources` ergänzt). Bereich `SRC` in §3, `sources` in `DC-FA-CLI-002` + Glossar; `DC-FA-SRC-001.a` + Grund-Codes `source-drift`/`source-unreachable` (§4) in der Spezifikation; Begründung (Netz-Modul-Design, DC-QA-03-Amendment, Manifest-Hash, Marker + Config) in begleitender ADR. Implementierung/Realdatenbeleg/Release folgen separat. Anlass: Nutzer-Frage „Drift gegen Upstream in d-check einbauen" — der Bash-Helfer `fetch-baseline-cache.sh --check-latest` deckt d-checks eigene Baseline, das Modul macht es reusable für jeden Adopter (u. a. `ai-harness-course`, dessen `check_regelwerk_drift.py` genau darauf DEFERRED ist) |
 | 0.48.0 | 2026-07-18 | Change Request (Adopter `ai-harness-init`): **Zitat-Verifikation** von `datei:zeile`-Zitaten, zwei Teile. (1) `DC-FA-CODE-001`-Erweiterung — opt-in `codepaths.check-lines` prüft die Zeilen-Referenz eines Inline-Code-Pfads (`datei:<von>-<bis>`): Ziel existiert **und** hat ≥ `bis` Zeilen (sonst `citation-out-of-range`) **und** `von ≤ bis` (sonst `citation-inverted-range`); Default aus **byte-identisch** (die Zeile wurde bisher erkannt und verworfen). (2) Neue Anforderung `DC-FA-CITE-001` — 18. Regelmodul `citations` (opt-in): ein per Direktive `d-check:cite` ausgezeichneter Zitatblock wird **zeichengenau** gegen die zitierte Quell-Spanne geprüft (`citation-mismatch`), greift die `codepaths`-`datei:zeile`-Erkennung auf (kein zweiter Detektor), hermetisch, fail-closed. Bereich `CITE` in §3, `citations` in `DC-FA-CLI-002` + Glossar; `DC-FA-CODE-001.a`-Erweiterung + `DC-FA-CITE-001.a` + Grund-Codes in der Spezifikation; Begründung (Erweiterung vs. eigenes Modul, `verbatim`/Direktiven-Design) in begleitender ADR. Zweite Direktive `d-check:cite`. §4-Vorfragen entschieden: Adopter-Rückfrage empirisch (33/33 Zitate in Inline-Code ⇒ `codepaths`-Erweiterung, kein Prosa-Scanning), Zuschnitt Form (c). Anlass: die committet-vendored Baseline erzeugt Zeilen-Zitate, die beim nächsten Tag-Bump still verfaulen |
 | 0.47.0 | 2026-07-18 | Change Request (Konsument `ai-harness-course`): neue Anforderung `DC-FA-REF-001` — **geteiltes Referenz-Ventil** `ignore-refs` mit **Quell-Skopus** (`in:`) und Zwei-Feld-Semantik (`refs ∧ ¬keep`; `keep` gewinnt unbedingt und reihenfolge-unabhängig, **nicht** gitignore-Last-Match). Das bisher **modul-lokal** in `DC-FA-CODE-001` wohnende `ignore-refs` wird zur **querschnittlichen** Anforderung: `links`/`anchors`/`codepaths` verweisen darauf; `codepaths.ignore-refs` bleibt **Alias** (kein Config-Bruch). Ziel-Achsen-Pendant zu `scan.ignore` (`DC-FA-SCAN-001`, Quell-Achse — jene entfernt Dateien, dieses Ziele). Bereich `REF` in §3; `DC-FA-CODE-001`/`DC-FA-LINK-001`/`DC-FA-ANCH-001` an das Ventil angebunden. §4-Vorfrage vom Auftraggeber entschieden (Option a: neues geteiltes Kürzel statt Änderung dreier Anforderungen; **gemeinsames Kriterium**: querschnittlich → neues Kürzel, Einzelmodul → bestehende Anforderung ändern). `DC-FA-REF-001.a` + Schema-Keys (`ignore-refs[].in`/`refs`/`keep`) + Alias-Semantik in der Spezifikation, Begründung (Zwei-Feld vs. `!`-Negation, Alias-Pfad) in begleitender ADR, Implementierung/Realdatenbeleg/Release folgen separat. Anlass: Template-Verzeichnisse mit Ziel-Repo-Platzhaltern zwingen heute das ganze Verzeichnis in `scan.ignore` und machen damit auch die **echten** Verweise blind, deren Auflösung beim Release unveränderlich eingefroren wird |
