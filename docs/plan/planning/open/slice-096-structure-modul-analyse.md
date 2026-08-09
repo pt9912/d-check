@@ -4,12 +4,19 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** Welle folgt — anders als
-[slice-094](slice-094-closure-zaehl-paritaet.md) und
-[slice-095](slice-095-links-resolve-from.md) trägt dieser Strang eine
+**Welle:** eigene Welle, bei Freigabe zu eröffnen — dieser Strang trägt eine
 Closure-Bedingung **jenseits** seiner DoD: die Analyse allein löst kein
-Adopter-Skript ab. Umsetzung, Paritäts-Beleg und der Supersede-Pfad sind Folge-
-Slices; die Welle wird bei Freigabe eröffnet.
+Adopter-Skript ab. Umsetzung, Paritäts-Beleg und der Ablöse-Pfad sind
+Folge-Slices.
+
+**Dieser Slice läuft ZUERST** (Auftraggeber-Entscheid 2026-08-09, nach dem
+Backlog-Schnitt-Review): [slice-094](slice-094-closure-zaehl-paritaet.md),
+[slice-097](slice-097-closure-glob-entkopplung.md) und
+[slice-098](slice-098-closure-note-placeholder.md) schärfen alle dieselbe
+Fähigkeit, die hier neu geschnitten wird. Sie zuerst einzeln auszuliefern hieße,
+dreimal eine Semantik zu versprechen, die dieser Slice gerade neu definiert —
+und sie danach zu migrieren. Die ursprüngliche Reihenfolge (094 zuerst) ist
+damit **umgekehrt**.
 
 **Bezug:** **Change Request** aus dem Schwester-Repo a-check (CR 1 seiner
 Werkzeug-Abdeckungs-Analyse). Berührt
@@ -53,23 +60,38 @@ Task-Zählung und die benannten Pflicht-Bausteine.
    Kriterium ist das aus
    [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md):
    querschnittlich über Dokumentklassen ⇒ eigenes Kürzel.
-2. **Ablöse-Pfad für `planning.closure`.** Vorschlag nach demselben
-   Präzedenzfall: `structure` wird die Wahrheit, die bestehende Anforderung wird
-   per ADR **superseded**, und der Config-Schlüssel bleibt **Alias** — kein
-   Adopter muss seine Datei anfassen. Zu entscheiden ist, ob der Alias
-   dauerhaft bleibt oder einen Auflösungs-Trigger bekommt.
-3. **Semantik der zwei fehlenden Bausteine.** Abschnitts-treue Task-Zählung
+2. **Ablöse-Pfad für die Closure-Fähigkeit.** **Präzisierung nach dem
+   Schnitt-Review (F-4):** superseded werden kann **nicht** die Anforderung
+   [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+   — sie trägt **auch** die Aktiv-Status-Invariante (Roadmap ↔ in-progress), die
+   `structure` nicht abdeckt und die bleibt. Wandern kann nur die **zweite
+   Fähigkeit**. Der Ablöse-Pfad ist also ein Teil-Supersede, kein voller.
+   Und die Analogie zu
+   [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md) trägt
+   nur halb: dort war der Alias **byte-identisch** (gleiche Grund-Codes), hier
+   stünden `closure-note-*` gegen `section-*`. **Zu entscheiden:** bleiben die
+   drei bestehenden Grund-Codes erhalten (dann emittiert `structure` sie für
+   Closure-Regeln), oder werden sie durch `section-*` ersetzt (dann ist es ein
+   Befund-Bruch, den ein Alias nicht abfängt)?
+3. **Kardinalität mehrerer Closure-Abschnitte.** Das abzulösende
+   Konsumenten-Skript prüft, wie **viele** Closure-Abschnitte ein Dokument trägt,
+   und meldet Mehrdeutigkeit; die heutige Fähigkeit liest laut Spezifikation nur
+   den **ersten** Treffer. Die Aktiv-Status-Prüfung desselben Moduls ist an
+   dieser Stelle bereits fail-closed (mehrfache kanonische Überschrift ⇒
+   Befund) — die Asymmetrie ist unbeabsichtigt. **Zu entscheiden:** deckt
+   `structure` die Kardinalität ab, oder wird sie als Nicht-Ziel benannt?
+4. **Semantik der zwei fehlenden Bausteine.** Abschnitts-treue Task-Zählung
    (Obergrenze innerhalb eines Abschnitts) und benannte Pflicht-Bausteine
    (Happy/Boundary/Negative als hervorgehobene Marken) — beides muss
    fence-treu und abschnitts-treu definiert werden, sonst wiederholt d-check den
    Fehler der abgelösten Skripte.
-4. **Grandfathering.** Der Antrag verweist auf `exempt-paths`; zu prüfen, ob das
+5. **Grandfathering.** Der Antrag verweist auf `exempt-paths`; zu prüfen, ob das
    für eine Stichtags-Regel („erst ab Slice N") ausreicht oder ob die
    Abschnitts-Regel selbst einen Skopus braucht.
 
 ## 4. Definition of Done
 
-- [ ] Abnahme-Punkte 1–4 entschieden und begründet; Change Request in
+- [ ] Abnahme-Punkte 1–5 entschieden und begründet; Change Request in
       [`spec/lastenheft.md`](../../../../spec/lastenheft.md) formuliert
       (Bereichskürzel, Akzeptanzkriterien-Trio je Grund-Code) + begleitende ADR
       mit dem Supersede-/Alias-Pfad.
@@ -78,7 +100,13 @@ Task-Zählung und die benannten Pflicht-Bausteine.
       Paritäts-Fixtures liegen im Antragsteller-Repo vor und werden beigezogen.
 - [ ] Folge-Slices geschnitten (Implementierung, Paritäts-Beleg, Ablösung des
       Alias) und als Dateien in `open/` angelegt — genannt ohne angelegt wäre
-      dieselbe Klasse wie ein halluziniertes Gate.
+      dieselbe Klasse wie ein halluziniertes Gate. **Dazu gehört die
+      Entscheidung über die drei bereits liegenden Slices**
+      ([094](slice-094-closure-zaehl-paritaet.md),
+      [097](slice-097-closure-glob-entkopplung.md),
+      [098](slice-098-closure-note-placeholder.md)): gehen sie im `structure`-Schnitt
+      auf, bleiben sie eigenständig, oder ändert sich ihr Zuschnitt? Sie stehen
+      bis dahin ohne Wellen-Zuordnung.
 
 ## 5. Risiken / offene Punkte
 
@@ -94,10 +122,13 @@ Task-Zählung und die benannten Pflicht-Bausteine.
 
 ## 6. Trigger
 
-**Start** (`next` → `in-progress`): Freigabe **und**
-[slice-094](slice-094-closure-zaehl-paritaet.md) in `done/` — die Zähl-Parität
-ist Voraussetzung dafür, dass die Abdeckungs-Messung dieses Slice eine stabile
-Grundlage hat (sonst misst sie gegen eine Semantik, die sich gleich ändert).
+**Start** (`next` → `in-progress`): Freigabe. **Keine Vorbedingung** — dieser
+Slice ist der erste des Strangs. Die frühere Fassung hängte ihn an
+[slice-094](slice-094-closure-zaehl-paritaet.md) („erst die Zähl-Parität, dann
+messen"); der Schnitt-Review hat gezeigt, dass das die Reihenfolge verkehrt: 094
+sagt Deckungsgleichheit einer Semantik zu, die **dieser** Slice gerade neu
+definiert, und weil ausgeliefert wird, was zuerst fertig ist, wäre der Vertrag
+dann schon draußen (F-3).
 
 **Rückführungen:** `in-progress` → `open`, falls die Messung ergibt, dass der
 Antrag mehrere unabhängige Module beschreibt statt eines.

@@ -28,7 +28,8 @@ und geschätzter Aufwand (S/M/L, kein Termin).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| — keine geplante Welle — | | | |
+| welle-69-structure-schnitt | Freigabe des Change Requests „Struktur-Invarianten über Dokumentklassen" (Schwester-Repo a-check) | [slice-096](../open/slice-096-structure-modul-analyse.md) — Analyse, Modul-Schnitt, Ablöse-Pfad der Closure-Fähigkeit | M |
+| Folge-Welle (Zuschnitt offen) | welle-69 in `done/` — ihr Schnitt entscheidet, ob die drei liegenden Closure-Slices eigenständig bleiben oder aufgehen | [slice-094](../open/slice-094-closure-zaehl-paritaet.md), [slice-097](../open/slice-097-closure-glob-entkopplung.md), [slice-098](../open/slice-098-closure-note-placeholder.md) | L |
 
 ## Meilensteine
 
@@ -49,8 +50,12 @@ Welle, die ohne fertige Vorgängerin nicht starten kann, ist eine Phantom-Welle.
 ```mermaid
 flowchart LR
     W68["welle-68 - planning-roadmap-harness (geschlossen)"]
-    N["keine geplante Folge-Welle"]
-    W68 -.-> N
+    W69["welle-69 - structure-Schnitt (geplant)"]
+    WF["Folge-Welle - Closure-Slices, Zuschnitt offen"]
+    S95["slice-095 - links.resolve-from (wellenlos, unabhaengig)"]
+    W68 --> W69
+    W69 --> WF
+    W68 -.-> S95
 ```
 
 ## Abgeschlossene Wellen

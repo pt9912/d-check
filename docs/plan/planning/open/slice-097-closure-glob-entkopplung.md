@@ -4,11 +4,14 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** Welle folgt, gemeinsam mit
-[slice-098](slice-098-closure-note-placeholder.md) — der Konsument kann sein
-letztes handgeschriebenes Prüfskript **erst dann** zurückziehen, wenn **beide**
-Slices liegen. Das ist eine Closure-Bedingung jenseits der beiden Slice-DoDs und
-damit genau der Fall, für den es eine Welle gibt.
+**Welle:** gemeinsam mit [slice-098](slice-098-closure-note-placeholder.md) —
+der Konsument kann sein letztes handgeschriebenes Prüfskript **erst dann**
+zurückziehen, wenn **beide** Slices liegen. Das ist eine Closure-Bedingung
+jenseits der beiden Slice-DoDs und damit genau der Fall, für den es eine Welle
+gibt. **Die Zuordnung ist offen bis zum Abschluss von**
+[slice-096](slice-096-structure-modul-analyse.md) — dessen Schnitt entscheidet,
+ob dieser Slice eigenständig bleibt oder im `structure`-Modul aufgeht
+(Auftraggeber-Entscheid 2026-08-09).
 
 **Bezug:** [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 (Closure-Fähigkeit, Spezifikation Schritt C2),
@@ -59,7 +62,12 @@ Kopplung.
    **9** `welle-*-results.md`, jede mit einer Closure-Notiz; sie sind heute
    unsichtbar. Weitet man den Glob, greift sofort der nächste Unterschied: ihre
    Notiz-Überschrift ist eine **H1** (`# Welle NN — … — Closure-Notiz`), das
-   Default-`heading-pattern` verlangt H2/H3 ⇒ neun `closure-note-missing`.
+   Default-`heading-pattern` verlangt H2/H3 ⇒ **9** `closure-note-missing`
+   (nachgemessen 2026-08-09). Die Wellen-**Plan**-Dateien sind nicht darunter —
+   ihre Notiz ist H2. Ein zehnter Befund der Messung, ein `planning-drift`,
+   entsteht **nur** beim Weiten von `slice-glob`; mit dem hier beantragten
+   eigenen Schlüssel bleibt die Roadmap-Invariante unberührt, und genau das ist
+   der Punkt.
    Zu entscheiden: Muster auf `^#{1,3}` weiten, die Wellen-Notizen umbauen, oder
    den eigenen Glob bewusst eng lassen. **Der Slice liefert den Schlüssel; die
    eigene Konfiguration ist eine getrennte Entscheidung.**
@@ -75,6 +83,10 @@ Kopplung.
       Kandidaten unter dem gesetzten Glob ⇒ Befund.
 - [ ] `make gates` + `make verify-closure-notes` grün; Abnahme-Punkt 2 beantwortet
       und die eigene Konfiguration entsprechend gesetzt.
+- [ ] **Release** (Minor: neuer Config-Schlüssel), Digest-Backfill. Ohne
+      veröffentlichte Version erreicht die Welle ihren Zweck nicht — der
+      Konsument kann sein Skript erst gegen ein Release zurückziehen
+      (Schnitt-Review F-6).
 
 ## 5. Risiken / offene Punkte
 
@@ -87,9 +99,9 @@ Kopplung.
 
 ## 6. Trigger
 
-**Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei. Unabhängig von
-[slice-094](slice-094-closure-zaehl-paritaet.md) umsetzbar, sinnvoll aber
-**danach** — sonst ändert sich die Zähl-Semantik unter den neuen Tests weg.
+**Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei — **und**
+[slice-096](slice-096-structure-modul-analyse.md) in `done/`, weil dessen
+Schnitt über den Zuschnitt dieses Slice mitentscheidet.
 
 **Rückführungen:** `in-progress` → `open`, falls Abnahme-Punkt 2 eine
 Bestands-Sanierung nach sich zieht, die eigenständig geschnitten gehört.

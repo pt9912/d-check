@@ -4,8 +4,11 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** ohne Welle — der Slice ist einzeln lieferbar und trägt keine
-Closure-Bedingung, die von seiner DoD verschieden wäre.
+**Welle:** **offen bis zum Abschluss von**
+[slice-096](slice-096-structure-modul-analyse.md) — dessen Schnitt entscheidet,
+ob dieser Slice eigenständig bleibt, im `structure`-Modul aufgeht oder anders
+zugeschnitten wird (Auftraggeber-Entscheid 2026-08-09 nach dem
+Backlog-Schnitt-Review). Er läuft **nicht** vorher.
 
 **Bezug:** [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 (Closure-Note-Struktur, Schritt C4),
@@ -45,6 +48,21 @@ dieselbe Einordnung wie bei den Markdown-Lexik-Angleichungen
 Tabellengrenze ([ADR-0043](../../adr/0043-tabellengrenze-am-relevanten-header.md)):
 ein grüner Konsumentenlauf kann danach rot werden.
 
+**Die Änderung wirkt in ZWEI Richtungen — das war in der ersten Fassung nicht
+gesehen (Schnitt-Review F-1).** Die Substanz-Zählung und die Floskel-Prüfung
+lesen **denselben** bereinigten Abschnittstext. Wer Inline-Code entfernt,
+verschärft nicht nur die Zählung, sondern **lockert** zugleich die
+Floskel-Prüfung: eine Phrase in Backticks wird danach nicht mehr gefunden.
+Empirisch belegt — heute rot, danach grün.
+
+Sachlich ist das die **bessere** Semantik (eine *zitierte* Floskel ist keine
+benutzte; die heutige Fassung meldet jede Notiz, die über Floskeln *schreibt*).
+Aber es ist eine Lockerung einer Prüfregel, und
+[`AGENTS.md` §3.6](../../../../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)
+macht die ADR-pflichtig. **Auftraggeber-Entscheid 2026-08-09: ADR-Variante** —
+die Lockerung wird bewusst angenommen und begründet, statt zwei getrennte
+bereinigte Texte zu führen.
+
 ## 3. Abnahme-Punkte
 
 1. **Reicht die Angleichung, oder braucht die Zählung ein Config-Ventil?** Der
@@ -59,12 +77,22 @@ ein grüner Konsumentenlauf kann danach rot werden.
 ## 4. Definition of Done
 
 - [ ] Zählung angeglichen (Inline-Spans entfernt, Satzende nur vor
-      Whitespace/Zeilenende); Spezifikation Schritt C4 und das Akzeptanzkriterium
-      nachgezogen.
-- [ ] **Paritäts-Mutations-Beleg** gegen die a-check-Fixtures: jede Fixture, die
-      das Adopter-Skript rot macht, macht auch das Modul rot — und umgekehrt.
+      Whitespace/Zeilenende); Spezifikation Schritt C4 und die
+      Akzeptanzkriterien **beider** betroffener Grund-Codes nachgezogen —
+      `closure-note-thin` (schärfer) **und** `closure-note-boilerplate`
+      (lockerer), samt **ADR** für die Lockerung
+      ([`AGENTS.md` §3.6](../../../../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)).
+- [ ] **Paritäts-Beleg der Zähl-Semantik** gegen die Adopter-Fixtures: jede
+      Fixture, die das Adopter-Skript **wegen der Satzzählung** rot macht, macht
+      auch das Modul rot — und umgekehrt. **Bewusst verengt (Schnitt-Review
+      F-2):** eine Parität *in beide Richtungen über alle Prüfungen* ist nicht
+      erreichbar, weil das Adopter-Skript zusätzlich die **Anzahl** der
+      Closure-Abschnitte prüft und d-check laut Spezifikation nur den ersten
+      liest. Diese Lücke ist ein Abnahme-Punkt von
+      [slice-096](slice-096-structure-modul-analyse.md), nicht dieses Slice.
 - [ ] `make gates` + `make verify-closure-notes` grün; Release als **Minor**
-      (Handbuch-§11-Zeile mit dem „findet mehr"-Hinweis).
+      (Handbuch-§11-Zeile mit dem „findet mehr"-Hinweis **und** dem Hinweis auf
+      die gelockerte Floskel-Prüfung).
 
 ## 5. Risiken / offene Punkte
 
@@ -74,13 +102,22 @@ ein grüner Konsumentenlauf kann danach rot werden.
 - **Konsumenten-Bruch:** ein grüner Lauf kann rot werden. Das ist der zugesagte
   Minor-Charakter, keine Überraschung — gehört aber in die Release-Notiz.
   — **Ausgang:** offen bis zur Release-Prep.
+- **Die Gegenrichtung ist ein stiller Verlust:** ein Repo, das eine Floskel in
+  Backticks stehen hat, verliert einen bestehenden Befund, ohne es zu merken.
+  — **Ausgang:** offen; die ADR muss die Klasse benennen, damit sie im
+  Release-Text auftaucht.
+- **Fremd-Repo-Abhängigkeit:** die Paritäts-Fixtures liegen nicht in diesem
+  Repo (Schnitt-Review F-7). — **Ausgang:** offen; sie werden **beigezogen**,
+  nicht nachgebaut — ist das beim Start nicht möglich, wird der Paritäts-Beleg
+  durch eigene Fixtures ersetzt und die Zusage entsprechend verengt.
 
 ## 6. Trigger
 
-**Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei. Der Slice ist
-Voraussetzung dafür, dass a-check sein `verify-closure-notes`-Skript
-**paritätstreu** ablösen kann — er steht deshalb vor
-[slice-096](slice-096-structure-modul-analyse.md).
+**Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei — **und**
+[slice-096](slice-096-structure-modul-analyse.md) in `done/`. Die frühere
+Fassung stellte diesen Slice davor; das ist nach dem Schnitt-Review umgekehrt
+(F-3): er sagt Deckungsgleichheit einer Semantik zu, die slice-096 gerade neu
+schneidet.
 
 **Rückführungen:** `in-progress` → `next`, falls die Vorab-Messung zeigt, dass
 die Angleichung eine Bestands-Sanierung nach sich zieht (dann ist das ein
