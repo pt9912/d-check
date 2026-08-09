@@ -16,7 +16,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 den drei Pflicht-Bestandteilen (Slice-IDs · Trigger · Closure-Kriterien); das
 *Geplante Ende* ist Schätzung, kein Closure-Kriterium.
 
-Keine aktive Welle.
+**Welle-ID:** welle-69-structure-schnitt
+**Start:** 2026-08-09
+**Geplantes Ende:** 2026-08-12 (Schätzung, korrigierbar)
+
+**Closure-Trigger:** siehe [Wellendokument](../welle-69-structure-schnitt.md).
 
 
 ## Nächste Wellen
@@ -28,7 +32,6 @@ und geschätzter Aufwand (S/M/L, kein Termin).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| welle-69-structure-schnitt | Freigabe des Change Requests „Struktur-Invarianten über Dokumentklassen" (Schwester-Repo a-check) | [slice-096](../open/slice-096-structure-modul-analyse.md) — Analyse, Modul-Schnitt, Ablöse-Pfad der Closure-Fähigkeit | M |
 | Folge-Welle (Zuschnitt offen) | welle-69 in `done/` — ihr Schnitt entscheidet, ob die drei liegenden Closure-Slices eigenständig bleiben oder aufgehen | [slice-094](../open/slice-094-closure-zaehl-paritaet.md), [slice-097](../open/slice-097-closure-glob-entkopplung.md), [slice-098](../open/slice-098-closure-note-placeholder.md) | L |
 
 ## Meilensteine
@@ -50,7 +53,7 @@ Welle, die ohne fertige Vorgängerin nicht starten kann, ist eine Phantom-Welle.
 ```mermaid
 flowchart LR
     W68["welle-68 - planning-roadmap-harness (geschlossen)"]
-    W69["welle-69 - structure-Schnitt (geplant)"]
+    W69["welle-69 - structure-Schnitt (laeuft)"]
     WF["Folge-Welle - Closure-Slices, Zuschnitt offen"]
     S95["slice-095 - links.resolve-from (wellenlos, unabhaengig)"]
     W68 --> W69
@@ -120,5 +123,6 @@ Zeile voll heißt treibende.
 | 2026-08-02 | **welle-67 slice-091 abgeschlossen** (D-5, letzter Etappe-D-Slice); `in-progress`→`done` (WIP-Slot frei) | Slice-`Status:`-Feld go-forward abgeschafft (**template-forward**, Nutzer-Entscheid: kein Retrofit der 90 `done/`-Slices; `**Lifecycle:**`-Hinweis wie Baseline-`slice.template.md`; AGENTS §5 + §3.3 + Lifecycle-Move-Adaption nachgezogen). Unabhängiger Review + bestätigende Re-Review abnahmereif (1 MEDIUM AGENTS-§3.3-Spiegel geheilt). `make gates` + `make adr-check` grün. **Alle welle-67-Slices (084–091) in `done/`** → Welle-Closure folgt |
 | 2026-08-03 | **welle-67 geschlossen** (Wave-Self-Close) — Baseline-Migration `v1.4.0`→`v5.0.0` **komplett** | Wellen-Closure-Prozedur (modul-06) durchlaufen: Trigger geprüft (alle 8 Slices in `done/`, `make gates`+`make adr-check` grün), Trigger-Audit (0 aktive Carveouts, keine offene Gate-Reifestufe, C-3-ADR ohne fälligen Re-Eval-Trigger), `welle-67-results.md` geschrieben, Wellendokument per `git mv` nach `done/`. welle-67 aus §Aktuelle Welle → §Abgeschlossene Wellen; §Aktuelle Welle auf Ruhe (keine Folge-Welle). Baseline-Pin `v5.0.0`, beide Bäume vendored |
 | 2026-08-03 | **welle-68-planning-roadmap-harness eröffnet**; slice-092 in `in-progress/` | Nutzer-Entscheid nach der v5.0.0-Migration: Planning-/Harness-Welle. Ziel: `## Aktuelle Welle` auf die Template-Struktur-Felder (aktive-Welle-Form, slice-092) + Closure-Note-Reviewer-Skill & `verify-closure-notes`-Gate (D-7, slice-093). **Erkenntnis:** eine aktive Welle trägt die Struktur-Felder ohne Ruhe-Marker (`planning-check` grün) → **kein** `planning`-Modul-Umbau. §Aktuelle Welle damit template-konform. RTM-Generator/`--print-version-md` bleiben §Nächste-Wellen-Kandidaten |
+| 2026-08-09 | **welle-69-structure-schnitt eröffnet**; [slice-096](slice-096-structure-modul-analyse.md) `open`→`in-progress` (WIP-Slot war frei) | Freigabe des Change Requests „Struktur-Invarianten über Dokumentklassen" aus dem Schwester-Repo a-check. Der Übergang läuft `open`→`next`→`in-progress` **in einem Zug** — dieselbe Form wie bei slice-078, weil beide Bedingungen zugleich erfüllt waren (Freigabe **und** freier WIP-Slot). **Reihenfolge gegenüber dem ersten Entwurf umgekehrt:** slice-096 stand ursprünglich hinter slice-094; der Backlog-Schnitt-Review zeigte, dass 094 Deckungsgleichheit einer Semantik zusagt, die 096 gerade neu schneidet — und ausgeliefert wird, was zuerst fertig ist. Die drei Closure-Slices (094/097/098) hängen jetzt an 096 und stehen bis zu dessen Abschluss **ohne** Wellen-Zuordnung |
 | 2026-08-09 | **welle-68 geschlossen** — der Planning-/Roadmap-Harness ist vollendet; §Aktuelle Welle auf Ruhe | Wellen-Closure-Prozedur durchlaufen: Trigger geprüft (beide Slices in `done/`, `make fullbuild` grün, Image-Hash `sha256:c42dfc4b…2b11`), Trigger-Audit über alle drei Artefaktklassen (0 offene Carveouts, keine stehengebliebene Gate-Reifestufe, kein eingetretener ADR-Re-Evaluierungs-Trigger), `welle-68-results.md` geschrieben, Wellendokument per `git mv` nach `done/`. **Der Scope wuchs unterwegs:** slice-093 lieferte neben der Closure-Note-Struktur eine ungeplante zweite Anforderung (`--config`), weil die Config-Lokalität den gewünschten Closure-Bindepunkt sonst nicht zuließ; das geplante Ende (2026-08-05) verstrich, ohne ein Closure-Kriterium zu berühren. Release **v0.52.0**. Ein nebenbei gefundener Registrierungs-Rückstand blieb bewusst draußen und steht als `BEO-001` im Beobachtungs-Register |
 | 2026-08-03 | **welle-68 slice-092 abgeschlossen** + **slice-093 eröffnet** (kombiniert, damit `in-progress/` nicht leert und die §Aktuelle-Welle-Struktur-Felder halten) | slice-092: §Aktuelle Welle template-konform (Struktur-Felder, aktive Welle, kein planning-Modul-Umbau) + die Aktuelle-Welle-Adaption im Konventionsspeicher verfeinert; unabhängig reviewt/abnahmereif. slice-093 = **D-7** (Closure-Note-Reviewer-Skill + `verify-closure-notes`-Gate) — **Produkt-Code** (CR + eigene ADR + Spec + Tests + Release), Design-Abnahme-Punkt offen |

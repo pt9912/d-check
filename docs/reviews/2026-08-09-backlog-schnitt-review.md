@@ -11,7 +11,7 @@ und die referenzierten ADRs.
 **Gegenstand:** die fünf Slices in `docs/plan/planning/open/` —
 [slice-094](../plan/planning/open/slice-094-closure-zaehl-paritaet.md),
 [slice-095](../plan/planning/open/slice-095-links-resolve-from.md),
-[slice-096](../plan/planning/open/slice-096-structure-modul-analyse.md),
+[slice-096](../plan/planning/in-progress/slice-096-structure-modul-analyse.md),
 [slice-097](../plan/planning/open/slice-097-closure-glob-entkopplung.md),
 [slice-098](../plan/planning/open/slice-098-closure-note-placeholder.md);
 Arbeitsbaum bei HEAD `e03afea`, Working-Tree sauber.
@@ -99,7 +99,7 @@ Host-`go`, das Repo nicht verändert):
   Datei aus gutem erstem und zurückgelassenem zweitem Closure-Abschnitt
   reproduziert: `0 Befund(e)`, Exit 0. slice-094 ändert nur die Zählung, der
   Fall bleibt danach grün. Weder slice-094 noch
-  [slice-096](../plan/planning/open/slice-096-structure-modul-analyse.md) §2
+  [slice-096](../plan/planning/in-progress/slice-096-structure-modul-analyse.md) §2
   („Nicht gedeckt sind die abschnitts-treue Task-Zählung und die benannten
   Pflicht-Bausteine") führen die Kardinalität als Lücke.
 - `verifizierbar`: ja — die genannte Zwei-Abschnitts-Fixture gegen `--enable
@@ -115,7 +115,7 @@ Host-`go`, das Repo nicht verändert):
   (§3 Abnahme-Punkt 3), `:119` (§8) gegen
   `docs/plan/planning/open/slice-094-closure-zaehl-paritaet.md:64` (DoD-Punkt 2)
 - `befund`:
-  [slice-096](../plan/planning/open/slice-096-structure-modul-analyse.md)
+  [slice-096](../plan/planning/in-progress/slice-096-structure-modul-analyse.md)
   verlangt, die fehlenden Bausteine „fence-treu und abschnitts-treu" **neu** zu
   definieren, „sonst wiederholt d-check den Fehler der abgelösten Skripte", und
   begründet den GF-Modus damit, dass die Fremd-Skripte „nicht rückdokumentiert,
@@ -217,7 +217,7 @@ Host-`go`, das Repo nicht verändert):
   beistellbares Artefakt mit eigener Kennung. Die einzige Rückführung des Slice
   (`in-progress` → `next`) ist auf den Fall „Bestands-Sanierung" formuliert und
   greift für eine ausbleibende Fixture-Beistellung nicht.
-  [slice-096](../plan/planning/open/slice-096-structure-modul-analyse.md) §5
+  [slice-096](../plan/planning/in-progress/slice-096-structure-modul-analyse.md) §5
   führt für dieselbe Menge genau dieses Risiko („Fremd-Repo-Abhängigkeit …
   beizuziehen, nicht nachzubauen").
 - `verifizierbar`: nein

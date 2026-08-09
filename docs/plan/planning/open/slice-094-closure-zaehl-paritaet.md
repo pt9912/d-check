@@ -5,7 +5,7 @@
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
 **Welle:** **offen bis zum Abschluss von**
-[slice-096](slice-096-structure-modul-analyse.md) — dessen Schnitt entscheidet,
+[slice-096](../in-progress/slice-096-structure-modul-analyse.md) — dessen Schnitt entscheidet,
 ob dieser Slice eigenständig bleibt, im `structure`-Modul aufgeht oder anders
 zugeschnitten wird (Auftraggeber-Entscheid 2026-08-09 nach dem
 Backlog-Schnitt-Review). Er läuft **nicht** vorher.
@@ -89,7 +89,7 @@ bereinigte Texte zu führen.
       erreichbar, weil das Adopter-Skript zusätzlich die **Anzahl** der
       Closure-Abschnitte prüft und d-check laut Spezifikation nur den ersten
       liest. Diese Lücke ist ein Abnahme-Punkt von
-      [slice-096](slice-096-structure-modul-analyse.md), nicht dieses Slice.
+      [slice-096](../in-progress/slice-096-structure-modul-analyse.md), nicht dieses Slice.
 - [ ] `make gates` + `make verify-closure-notes` grün; Release als **Minor**
       (Handbuch-§11-Zeile mit dem „findet mehr"-Hinweis **und** dem Hinweis auf
       die gelockerte Floskel-Prüfung).
@@ -114,7 +114,7 @@ bereinigte Texte zu führen.
 ## 6. Trigger
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei — **und**
-[slice-096](slice-096-structure-modul-analyse.md) in `done/`. Die frühere
+[slice-096](../in-progress/slice-096-structure-modul-analyse.md) in `done/`. Die frühere
 Fassung stellte diesen Slice davor; das ist nach dem Schnitt-Review umgekehrt
 (F-3): er sagt Deckungsgleichheit einer Semantik zu, die slice-096 gerade neu
 schneidet.

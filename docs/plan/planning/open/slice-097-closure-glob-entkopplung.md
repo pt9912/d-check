@@ -9,7 +9,7 @@ der Konsument kann sein letztes handgeschriebenes Prüfskript **erst dann**
 zurückziehen, wenn **beide** Slices liegen. Das ist eine Closure-Bedingung
 jenseits der beiden Slice-DoDs und damit genau der Fall, für den es eine Welle
 gibt. **Die Zuordnung ist offen bis zum Abschluss von**
-[slice-096](slice-096-structure-modul-analyse.md) — dessen Schnitt entscheidet,
+[slice-096](../in-progress/slice-096-structure-modul-analyse.md) — dessen Schnitt entscheidet,
 ob dieser Slice eigenständig bleibt oder im `structure`-Modul aufgeht
 (Auftraggeber-Entscheid 2026-08-09).
 
@@ -100,7 +100,7 @@ Kopplung.
 ## 6. Trigger
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei — **und**
-[slice-096](slice-096-structure-modul-analyse.md) in `done/`, weil dessen
+[slice-096](../in-progress/slice-096-structure-modul-analyse.md) in `done/`, weil dessen
 Schnitt über den Zuschnitt dieses Slice mitentscheidet.
 
 **Rückführungen:** `in-progress` → `open`, falls Abnahme-Punkt 2 eine
