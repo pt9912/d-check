@@ -1,0 +1,136 @@
+# Slice slice-102: Wellen-Lifecycle-Invariante — Roadmap-Abschnitte gegen Wellen-Dateien
+
+**Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
+`in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
+(Baseline-Regelwerk `modul-05-planning-harness.md`).
+
+**Welle:** bei Start zu eröffnen (ein Slice in Arbeit verlangt eine benannte
+aktive Welle — die Zwei-Zustands-Kopplung aus
+[`MR-024`](../../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform)).
+
+**Bezug:** [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+(dritte Fähigkeit desselben Moduls),
+[ADR-0028](../../adr/0028-planning-lifecycle-modul.md) (das Modul und sein
+hermetischer Schnitt). **Anlass:** Auftraggeber-Beobachtung, dass die
+Wellen-Dateien ihren Zustand genauso über das Verzeichnis tragen wie die Slices
+— und damit gegen die Roadmap prüfbar sind.
+
+**Autor:** pt9912. **Datum:** 2026-08-09.
+
+---
+
+## 1. Ziel
+
+Das Modul `planning` prüft heute die **Slice**-Ebene (Ruhe-Marker ⟺ kein
+`slice-*` in `in-progress/`). Dieser Slice zieht dieselbe Invariante eine Ebene
+höher: die **Wellen**-Abschnitte der Roadmap gegen die Wellen-Dateien.
+
+## 2. Warum das eine echte Invariante ist — und der Beleg
+
+Eine Wellen-Datei trägt ihren Zustand im **Ort**, exakt wie ein Slice. Das
+Baseline-Wellen-Template sagt es wörtlich: geplante Wellen bekommen **noch keine
+Datei**, sie stehen in der Roadmap unter *Nächste Wellen* „und nirgends sonst —
+**zwei Positionen, nicht drei**". Damit sind vier Aussagen maschinell
+entscheidbar:
+
+| # | Aussage |
+|---|---|
+| 1 | §Aktuelle Welle nennt eine Welle-ID ⟺ **genau eine** flache Wellen-Datei existiert, und beide tragen dieselbe Kennung |
+| 2 | §Aktuelle Welle trägt den Ruhe-Marker ⟺ **keine** flache Wellen-Datei |
+| 3 | Jede Zeile in §Nächste Wellen nennt eine Welle **ohne** Datei — weder flach noch im Ruheort |
+| 4 | Jede Zeile in §Abgeschlossene Wellen nennt eine Welle **mit** Datei im Ruheort |
+
+**Der Beleg stammt aus dem eigenen Repo, aus zwei aufeinanderfolgenden
+Wellen-Closures — beide Male mit grünen Gates.** Bei der Closure von welle-68
+wie von welle-69 stand über mehrere Commits hinweg der **Ruhe-Marker** in
+§Aktuelle Welle, während die flache Wellen-Datei noch danebenlag: die Roadmap
+behauptete „keine laufende Welle", das Verzeichnis sagte „eine läuft". Das ist
+Aussage 2, verletzt, zweimal, unbemerkt.
+
+Beide Male fiel es erst auf, als der Auftraggeber nachfragte — nicht durch ein
+Gate. Genau die Klasse, für die dieses Modul gebaut wurde: eine Aussage in der
+Roadmap, die das Verzeichnis widerlegt.
+
+## 3. Abnahme-Punkte
+
+1. **Alle vier Aussagen oder nur die ersten zwei?** Aussagen 1 und 2 sind das
+   direkte Wellen-Pendant zur bestehenden Slice-Invariante. Aussagen 3 und 4
+   brauchen zusätzlich das **Parsen von Tabellenzeilen** und eine
+   Kennungs-Extraktion — mehr Vertragsfläche und die Frage, woran eine Zeile
+   ihre Welle-ID trägt. Zu entscheiden, ob 3/4 in denselben Slice gehören.
+2. **Woran erkennt das Modul eine Wellen-Datei?** Vorschlag: ein Glob analog
+   `planning.slice-glob` (etwa `planning.wave-glob`, Default `welle-*.md`) plus
+   das Verzeichnis, in dem flache Wellen liegen. **Achtung — dieselbe Falle wie
+   bei der Closure-Fähigkeit:** die Ergebnis-Notizen (`welle-*-results.md`)
+   liegen im Ruheort und matchen dasselbe Muster; Plan-Datei und Ergebnis-Notiz
+   müssen unterscheidbar bleiben.
+3. **Ein Grund-Code oder mehrere?** Die vier Aussagen haben verschiedene
+   Reparaturen (Roadmap nachziehen · Datei verschieben · Vorschau-Zeile
+   entfernen · Ergebnis-Notiz nachtragen). Nach der in
+   [ADR-0049](../../adr/0049-structure-modul-schnitt-und-preset.md)
+   festgehaltenen Begründung spricht das für Trennung — und die
+   Befund-Deduplikation über (Datei, Zeile, Regel, Ziel, Grund) verlangt sie
+   sogar, wenn zwei Verletzungen dieselbe Roadmap-Zeile treffen.
+4. **Verhältnis zur bestehenden Fähigkeit.** Beide lesen denselben
+   `planning.heading`-Abschnitt und denselben Marker. Die Slice-Invariante prüft
+   `hasActive == hasSlices`, die Wellen-Invariante `hasActive == hasWave` —
+   zusammen ergibt das eine Dreier-Kopplung. Zu prüfen, ob sie sich widersprechen
+   können und was dann gilt.
+
+## 4. Definition of Done
+
+- [ ] Abnahme-Punkte entschieden; Change Request an
+      [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+      (dritte Fähigkeit) + Algorithmus + Schema + begleitende ADR, falls die
+      Dreier-Kopplung eine eigene Entscheidung braucht.
+- [ ] Implementierung + Tests je Aussage, fail-closed; **Realdatenbeleg**: die
+      beiden belegten Fenster aus den Closures von welle-68 und welle-69 wären
+      rot gewesen.
+- [ ] `make gates` grün; Release als **Minor** (opt-in, ohne die neuen
+      Schlüssel byte-identisch — d-check findet danach mehr).
+
+## 5. Risiken / offene Punkte
+
+- **Der Move-Commit wird enger.** Wellen-Closure heißt heute: Roadmap ändern
+  **und** Datei verschieben. Mit der Invariante müssen beide im **selben**
+  Commit liegen — dieselbe Bündelung, die
+  [`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)
+  für Slices schon vorschreibt. — **Ausgang:** offen; vermutlich eine Ergänzung
+  der Adaption statt eines neuen Mechanismus.
+- **Plan-Datei vs. Ergebnis-Notiz** teilen den Namensraum (Abnahme-Punkt 2).
+  — **Ausgang:** offen; ohne saubere Trennung entstehen Falschbefunde im Ruheort.
+- **Aussagen 3/4 brauchen Tabellen-Parsing**, das dieses Modul bisher nicht
+  kennt. — **Ausgang:** offen bis Abnahme-Punkt 1; ein eigener Slice ist die
+  Rückfallebene.
+
+## 6. Trigger
+
+**Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei. Unabhängig von den
+`structure`- und Closure-Strängen.
+
+**Rückführungen:** `in-progress` → `next`, falls Abnahme-Punkt 1 die Aussagen 3/4
+als eigenen Slice ausweist.
+
+## 7. Vorgelagert (vor der Modus-Begründung)
+
+- **Sub-Area prüfen:** Produkt-Code (`internal/`) und Spec (`spec/`), beide unter
+  dem Repo-Default GF (`harness/conventions.md` §Modus: `*`).
+- **Offene Beobachtungen sichten:** das Register führt **BEO-001** und
+  **BEO-002**. **BEO-001 ist verwandt und muss abgegrenzt werden:** dort geht es
+  um „existiert eine Datei, die niemand registriert?" (Artefakt ⇒ Register),
+  hier um „stimmt die Roadmap-Aussage mit dem Verzeichnis überein?" (Aussage ⇔
+  Zustand). Aussage 4 dieses Slice berührt BEO-001 allerdings unmittelbar — wer
+  sie baut, sollte prüfen, ob das Register-Gate damit teilweise erledigt ist.
+  **BEO-002** betrifft ihn ebenfalls: eine dritte Fähigkeit im selben Modul
+  berührt Modul-Doku, Handbuch-§6, Config-Schema und drei CLI-Enumerationen.
+
+## 8. Sub-Area-Modus-Begründung
+
+**GF (Greenfield, Repo-Default)** — Change Request und Algorithmus zuerst, der
+Go-Code liefert sie. Kein Brownfield: es wird kein undokumentierter Bestand
+inventarisiert, sondern eine bislang nur konventionell geltende Invariante
+mechanisiert.
+
+## 9. Closure-Notiz (nach `done/`)
+
+_Ausstehend._
