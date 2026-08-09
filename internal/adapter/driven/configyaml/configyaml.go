@@ -118,10 +118,25 @@ type rawVCS struct {
 // marker/slice-glob. **Keine** scope — planning ist ein Post-Pass ohne Datei-Scan
 // (ein `planning.scope` wäre wirkungslos; der strikte Decoder lehnt es ab).
 type rawPlanning struct {
-	Roadmap   string `yaml:"roadmap"`
-	Heading   string `yaml:"heading"`
-	Marker    string `yaml:"marker"`
-	SliceGlob string `yaml:"slice-glob"`
+	Roadmap   string       `yaml:"roadmap"`
+	Heading   string       `yaml:"heading"`
+	Marker    string       `yaml:"marker"`
+	SliceGlob string       `yaml:"slice-glob"`
+	Closure   *rawClosure  `yaml:"closure"`
+}
+
+// rawClosure trägt die zweite planning-Fähigkeit (DC-FA-PLAN-001
+// §Closure-Note-Struktur): dir ist der Aktivierungs-Schalter (leer/abwesend ⇒
+// inert), heading-pattern/min-sentences/boilerplate sind optional mit
+// Konventions-Defaults im Kern.
+// MinSentences ist ein Zeiger, damit ein ABWESENDER Schlüssel (Default 4) von
+// einem explizit gesetzten `0` unterscheidbar bleibt — Letzteres ist eine
+// Null-Schwelle und damit ein stilles Grün, das der Vertrag mit Exit 2 ablehnt.
+type rawClosure struct {
+	Dir            string   `yaml:"dir"`
+	HeadingPattern string   `yaml:"heading-pattern"`
+	MinSentences   *int     `yaml:"min-sentences"`
+	Boilerplate    []string `yaml:"boilerplate"`
 }
 
 // rawTracked trägt scope und die Parameter des Moduls tracked
@@ -896,10 +911,57 @@ func applyPlanning(r *raw, cfg *model.Config) error {
 			return fmt.Errorf("%s: planning.slice-glob %q ist kein gültiges Glob: %v", FileName, p.SliceGlob, err)
 		}
 	}
+	closure, err := applyClosure(p.Closure)
+	if err != nil {
+		return err
+	}
 	cfg.Planning = model.PlanningConfig{
 		Roadmap: p.Roadmap, Heading: p.Heading, Marker: p.Marker, SliceGlob: p.SliceGlob,
+		Closure: closure,
 	}
 	return nil
+}
+
+// applyClosure validiert die Closure-Note-Struktur-Parameter (DC-FA-PLAN-001).
+// Dieselbe Config-Rand-Disziplin wie bei planning.slice-glob: was der Kern nur
+// schlucken könnte, bricht hier laut ab (Exit 2) — ein nicht kompilierendes
+// Muster, eine Null-/Negativ-Schwelle und ein leerer Floskel-Eintrag sind
+// jeweils ein stilles Grün, wenn man sie durchlässt.
+func applyClosure(c *rawClosure) (model.ClosureConfig, error) {
+	if c == nil {
+		return model.ClosureConfig{}, nil
+	}
+	if strings.HasPrefix(c.Dir, "/") || strings.Contains(c.Dir, "..") {
+		return model.ClosureConfig{}, fmt.Errorf(
+			"%s: planning.closure.dir %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')", FileName, c.Dir)
+	}
+	if c.HeadingPattern != "" {
+		if _, err := regexp.Compile(c.HeadingPattern); err != nil {
+			return model.ClosureConfig{}, fmt.Errorf(
+				"%s: planning.closure.heading-pattern %q ist kein gültiges Regex: %v", FileName, c.HeadingPattern, err)
+		}
+	}
+	// Nur ein EXPLIZIT gesetzter Wert wird geprüft; abwesend ⇒ Kern-Default (4).
+	// 0 wäre „jede Notiz genügt", negativ ist sinnlos — beides ist ein stilles
+	// Grün am Config-Rand und bricht daher laut ab.
+	minSentences := 0
+	if c.MinSentences != nil {
+		if *c.MinSentences < 1 {
+			return model.ClosureConfig{}, fmt.Errorf(
+				"%s: planning.closure.min-sentences %d muss >= 1 sein", FileName, *c.MinSentences)
+		}
+		minSentences = *c.MinSentences
+	}
+	for _, b := range c.Boilerplate {
+		if strings.TrimSpace(b) == "" {
+			return model.ClosureConfig{}, fmt.Errorf(
+				"%s: planning.closure.boilerplate enthält einen leeren Eintrag (träfe jeden Text)", FileName)
+		}
+	}
+	return model.ClosureConfig{
+		Dir: c.Dir, HeadingPattern: c.HeadingPattern,
+		MinSentences: minSentences, Boilerplate: c.Boilerplate,
+	}, nil
 }
 
 // applyTracked validiert die Parameter des Moduls tracked (DC-FA-TRK-001):

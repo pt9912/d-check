@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency planning-check bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
+.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -165,7 +165,7 @@ gates: doc-check lint test arch-check coverage-gate semgrep gate-consistency pla
 ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (DC-FA-DIST-001).
 	@echo "[ci] gates + image-test green"
 
-fullbuild: ci bench completeness-check ## volle Closure: ci + bench + completeness-check; schließt mit dem Image-Hash (Reproduzierbarkeits-Bindung).
+fullbuild: ci bench completeness-check verify-closure-notes ## volle Closure: ci + bench + completeness-check + verify-closure-notes; schließt mit dem Image-Hash (Reproduzierbarkeits-Bindung).
 	@docker image inspect $(IMAGE):latest --format '[fullbuild] green — image-hash {{.Id}}'
 
 # Requirements-Completeness-Gate (Policy slice-042/ADR-0017; Mechanik seit
@@ -177,6 +177,14 @@ fullbuild: ci bench completeness-check ## volle Closure: ci + bench + completene
 # ist die Gate-/Closure-Rolle (d-check isst sein eigenes verteiltes Futter).
 completeness-check: build ## Requirements-Completeness via in-Produkt-Flag (--trace --require-complete, Waise⇒Exit1); Closure-Gate (in fullbuild, NICHT gates/ci). ADR-0026 (löst ADR-0017-Skript ab).
 	$(DCHECK_RUN) $(COMPLETE_FLAGS)
+
+# Zweiter Closure-Bindepunkt neben completeness-check: die STRUKTUR der
+# Closure-Notizen im done/-Bestand (Modul planning, DC-FA-PLAN-001). Fährt ein
+# eigenes Prüf-Profil über --config (DC-FA-CLI-012) — stünde der closure-Block
+# in der konventionellen .d-check.yml, liefe er in `gates` mit, und eine
+# Closure-Frage gehört nicht in den Inner-Loop (ADR-0048).
+verify-closure-notes: build ## Closure-Note-Struktur des done/-Bestands (Modul planning via eigenes --config-Profil); Closure-Gate (in fullbuild, NICHT gates/ci). ADR-0048.
+	$(DCHECK_RUN) --config .d-check.closure.yml --enable planning
 
 # ---- traceability ------------------------------------------------------------
 

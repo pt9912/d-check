@@ -68,6 +68,39 @@ func TestQA03_NetlessModuleList_Live(t *testing.T) {
 	}
 }
 
+// TestQA03_ClosureProfil_KeineZweiteNetzTuer prüft das ZWEITE Prüf-Profil
+// (.d-check.closure.yml, gefahren von `make verify-closure-notes` über --config,
+// DC-FA-CLI-012/ADR-0048). Es trägt bewusst NICHT den vollen Netzlos-Doku-Satz —
+// es ist ein fokussiertes Profil, das nur `planning` per Kommandozeile
+// dazuschaltet. Die Invariante, die hier zählt, ist die andere Hälfte: eine
+// zweite Config-Datei darf keine zweite **Netz-Tür** aufmachen. Ohne diesen Test
+// bliebe genau das ungeprüft (ADR-0048 §Konsequenzen).
+func TestQA03_ClosureProfil_KeineZweiteNetzTuer(t *testing.T) {
+	raw, err := os.ReadFile("../../../../.d-check.closure.yml")
+	if err != nil {
+		t.Fatalf(".d-check.closure.yml nicht lesbar (fail-closed): %v", err)
+	}
+	cfg, err := configyaml.Decode(raw)
+	if err != nil {
+		t.Fatalf(".d-check.closure.yml dekodiert nicht (fail-closed): %v", err)
+	}
+	set := map[string]bool{}
+	for _, m := range cfg.Modules {
+		set[m] = true
+	}
+	for _, m := range forbiddenInNetless() {
+		if set[m] {
+			t.Errorf("Closure-Profil aktiviert %q — eine zweite Config darf keine zweite Netz-/Range-Tür sein (DC-QA-03)", m)
+		}
+	}
+	// Und es muss die Fähigkeit tatsächlich scharf schalten — ein Profil ohne
+	// closure.dir wäre ein stilles Grün: `make verify-closure-notes` liefe
+	// erfolgreich, ohne irgendetwas zu prüfen.
+	if cfg.Planning.Closure.Dir == "" {
+		t.Error("Closure-Profil ohne planning.closure.dir — das Gate liefe leer (stilles Grün)")
+	}
+}
+
 // TestQA03_NetlessModuleList_Guards verriegelt den Guard gegen die historischen
 // Fehlermodi: ein fehlendes Netzlos-Modul und ein gesetztes Netz-/Range-Modul
 // müssen die Invariante rot machen, der intakte Satz nicht. Synthetische

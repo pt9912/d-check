@@ -66,6 +66,13 @@ type Config struct {
 	Tracked TrackedConfig
 	// Targets: Parameter des Moduls targets (DC-FA-TGT-001).
 	Targets TargetsConfig
+	// ConfigFile: der Wurzel-relative Pfad der TATSÄCHLICH geladenen
+	// Konfigurationsdatei — konventionell `.d-check.yml`, mit `--config`
+	// (DC-FA-CLI-012) die dort genannte. Befunde, die die Konfiguration als
+	// Herkunft nennen, müssen diesen Pfad tragen; sonst zeigte die Meldung auf
+	// eine Datei, die der Lauf nie gelesen hat. Leer ⇒ es wurde keine
+	// Konfiguration geladen (reiner Default-Lauf).
+	ConfigFile string
 	// Sources: die Config-Pins des Moduls sources (DC-FA-SRC-001); leer ⇒
 	// nur Marker-Pins (bzw. gar keine) werden geprüft (byte-identisch).
 	Sources SourcesConfig
@@ -324,6 +331,40 @@ type PlanningConfig struct {
 	Heading   string
 	Marker    string
 	SliceGlob string
+	Closure   ClosureConfig
+}
+
+// ClosureConfig sind die Parameter der zweiten planning-Fähigkeit
+// (DC-FA-PLAN-001 §Closure-Note-Struktur): die strukturelle Prüfung der
+// Closure-Notizen abgeschlossener Slices. Dir ist der Aktivierungs-Schalter —
+// leer ⇒ Fähigkeit inert, es wird KEINE Slice-Datei geöffnet (byte-identisch,
+// DC-QA-02). Geprüft wird Struktur, nicht Bedeutung; die Floskel-Semantik
+// bleibt dem inferentiellen Nachlauf überlassen.
+type ClosureConfig struct {
+	Dir            string
+	HeadingPattern string
+	MinSentences   int
+	Boilerplate    []string
+}
+
+// EffectiveHeadingPattern liefert das RE2-Muster der Closure-Notiz-Überschrift
+// (Default deckt die gelebten Formen: H2/H3, beliebige Nummer, beliebiges Suffix).
+func (c ClosureConfig) EffectiveHeadingPattern() string {
+	if c.HeadingPattern == "" {
+		return `^#{2,3} .*Closure-Notiz`
+	}
+	return c.HeadingPattern
+}
+
+// EffectiveMinSentences liefert die Mindestzahl der Satzende-Zeichen außerhalb
+// der Fenced-Code-Blöcke (Default 4). Die Null steht für „nicht gesetzt", nicht
+// für „Schwelle 0" — eine Null-Schwelle wäre ein stilles Grün und lehnt der
+// Config-Decoder ab (Exit 2).
+func (c ClosureConfig) EffectiveMinSentences() int {
+	if c.MinSentences == 0 {
+		return 4
+	}
+	return c.MinSentences
 }
 
 // EffectiveHeading liefert die kanonische H2-Überschrift (Default `## Aktuelle Welle`).

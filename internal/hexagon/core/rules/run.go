@@ -122,7 +122,7 @@ func (st *runState) netFindings(httpc driven.HTTPChecker) []model.Finding {
 		out = append(out, CheckExternal(httpc, st.extRefs, st.cfg.External.EffectiveParallel())...)
 	}
 	if st.active["sources"] {
-		out = append(out, CheckSources(httpc, st.srcRefs, st.cfg.Sources)...)
+		out = append(out, CheckSources(httpc, st.srcRefs, st.cfg.Sources, st.cfg.ConfigFile)...)
 	}
 	return out
 }
@@ -149,6 +149,7 @@ func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, vcsBase, vcsHead stri
 	}
 	if active["planning"] {
 		out = append(out, CheckPlanning(fsys, cfg.Planning)...)
+		out = append(out, CheckPlanningClosure(fsys, cfg.Planning)...)
 	}
 	if active["targets"] {
 		tf, err := CheckTargets(fsys, cfg.Targets)

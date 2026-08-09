@@ -23,6 +23,13 @@ const (
 	ReasonCommitUntraceable  = "commit-untraceable"
 	ReasonPlanningDrift      = "planning-drift"
 	ReasonTargetUntracked    = "target-untracked"
+	// Die drei Closure-Note-Struktur-Codes des Moduls planning
+	// (DC-FA-PLAN-001 §Closure-Note-Struktur). Drei statt einem, weil sie drei
+	// verschiedene Reparaturen verlangen: Abschnitt schreiben, Substanz
+	// ergänzen, Floskel ersetzen.
+	ReasonClosureNoteMissing     = "closure-note-missing"
+	ReasonClosureNoteThin        = "closure-note-thin"
+	ReasonClosureNoteBoilerplate = "closure-note-boilerplate"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

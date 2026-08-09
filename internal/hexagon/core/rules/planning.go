@@ -2,6 +2,9 @@ package rules
 
 import (
 	"path"
+	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
@@ -52,6 +55,169 @@ func CheckPlanning(fsys driven.Filesystem, cfg model.PlanningConfig) []model.Fin
 			" — die Roadmap muss den Ruhe-Marker „" + cfg.EffectiveMarker() + "“ tragen"
 	}
 	return planningDrift(cfg.Roadmap, headingNo, sliceDir, msg)
+}
+
+// CheckPlanningClosure ist die zweite planning-Fähigkeit (DC-FA-PLAN-001
+// §Closure-Note-Struktur, Spez-Schritte C1–C5): sie prüft die **Struktur** der
+// Closure-Notizen abgeschlossener Slices. Opt-in **innerhalb** des opt-in
+// Moduls — ohne cfg.Closure.Dir wird keine Slice-Datei geöffnet und der
+// Befundsatz ist byte-identisch. Läuft unabhängig von der Aktiv-Status-Prüfung:
+// beide können nebeneinander Befunde liefern.
+//
+// Geprüft wird Struktur, nicht Bedeutung — ob eine formal ausreichende Notiz
+// inhaltlich trägt, ist semantisch und ausdrücklich nicht zugesagt.
+func CheckPlanningClosure(fsys driven.Filesystem, cfg model.PlanningConfig) []model.Finding {
+	dir := cfg.Closure.Dir
+	if dir == "" || fsys == nil {
+		return nil // C1: inert — keine Slice-Datei wird geöffnet
+	}
+	// Das Muster ist am Config-Rand bereits auf Kompilierbarkeit geprüft
+	// (Exit 2); hier ist ein Fehler nicht mehr erreichbar, wird aber
+	// fail-closed behandelt statt ignoriert.
+	re, err := regexp.Compile(cfg.Closure.EffectiveHeadingPattern())
+	if err != nil {
+		return closureFinding(dir, 1, dir, model.ReasonClosureNoteMissing,
+			"heading-pattern "+cfg.Closure.EffectiveHeadingPattern()+" ist kein gültiges Regex (fail-closed)")
+	}
+	entries, err := fsys.List(dir)
+	if err != nil {
+		// C2 fail-closed: gesetztes, aber fehlendes/unlesbares Verzeichnis ist
+		// kein stilles Grün — sonst schaltete ein Tippfehler im Pfad die ganze
+		// Prüfung ab.
+		return closureFinding(dir, 1, dir, model.ReasonClosureNoteMissing,
+			"Closure-Verzeichnis "+dir+" fehlt oder ist unlesbar (fail-closed)")
+	}
+	names := make([]string, 0, len(entries))
+	for _, e := range entries {
+		if ok, _ := path.Match(cfg.EffectiveSliceGlob(), e.Name); ok {
+			names = append(names, e.Name)
+		}
+	}
+	sort.Strings(names) // stabile Reihenfolge (DC-QA-02)
+	var out []model.Finding
+	for _, name := range names {
+		out = append(out, checkClosureNote(fsys, cfg, dir, name, re)...)
+	}
+	return out
+}
+
+// checkClosureNote prüft eine einzelne Slice-Datei (Spez-Schritte C3–C5).
+func checkClosureNote(
+	fsys driven.Filesystem, cfg model.PlanningConfig, dir, name string, re *regexp.Regexp,
+) []model.Finding {
+	file := path.Join(dir, name)
+	content, err := fsys.ReadFile(file)
+	if err != nil {
+		return closureFinding(file, 1, dir, model.ReasonClosureNoteMissing,
+			"Slice-Datei "+file+" ist unlesbar (fail-closed)")
+	}
+	lines := splitLines(content)
+	headingNo, level := closureHeadingLine(lines, re)
+	if headingNo == 0 {
+		// C3: kein passender Abschnitt — missing schließt thin/boilerplate aus,
+		// ohne Abschnitt gibt es nichts zu messen.
+		return closureFinding(file, 1, dir, model.ReasonClosureNoteMissing,
+			"kein Closure-Notiz-Abschnitt (keine Überschrift passt auf "+
+				cfg.Closure.EffectiveHeadingPattern()+")")
+	}
+	body := closureSectionProse(lines, headingNo, level)
+	var out []model.Finding
+	// C4a: Substanz — Satzende-Zeichen außerhalb der Fenced-Code-Blöcke.
+	want := cfg.Closure.EffectiveMinSentences()
+	if got := countSentenceEnds(body); got < want {
+		out = append(out, closureFinding(file, headingNo, dir, model.ReasonClosureNoteThin,
+			"Closure-Notiz trägt "+strconv.Itoa(got)+" Satzende-Zeichen außerhalb von Code-Blöcken, "+
+				"verlangt sind "+strconv.Itoa(want))...)
+	}
+	// C4b: Floskel — literaler Teilstring, case-insensitiv; der erste Treffer
+	// benennt die Meldung.
+	lower := strings.ToLower(body)
+	for _, phrase := range cfg.Closure.Boilerplate {
+		if strings.Contains(lower, strings.ToLower(phrase)) {
+			out = append(out, closureFinding(file, headingNo, dir, model.ReasonClosureNoteBoilerplate,
+				"Closure-Notiz enthält die Floskel „"+phrase+"“")...)
+			break
+		}
+	}
+	return out
+}
+
+// closureHeadingLine liefert die 1-basierte Zeilennummer der **ersten**
+// Überschrift, deren getrimmte Fassung auf das Muster passt, samt ihrer Ebene
+// (Zahl der führenden '#'). 0 ⇒ kein Treffer. Fenced-Code wird übersprungen —
+// eine '#'-Zeile in einem Beispielblock ist keine Überschrift.
+func closureHeadingLine(lines []string, re *regexp.Regexp) (lineNo, level int) {
+	inFence := false
+	for i, raw := range lines {
+		trimmed := strings.TrimSpace(raw)
+		if FenceToggle(trimmed) {
+			inFence = !inFence
+			continue
+		}
+		if inFence || !strings.HasPrefix(trimmed, "#") {
+			continue
+		}
+		if re.MatchString(trimmed) {
+			return i + 1, headingLevel(trimmed)
+		}
+	}
+	return 0, 0
+}
+
+// closureSectionProse liefert den Abschnitts-Text ab der Zeile **nach** der
+// Überschrift bis zur nächsten Überschrift **gleicher oder höherer** Ebene
+// (exklusive) bzw. bis zum Dateiende — bereinigt um die Fenced-Code-Blöcke
+// (Spez-Schritt C4). Eine tiefere Überschrift gehört noch zum Abschnitt.
+func closureSectionProse(lines []string, headingNo, level int) string {
+	var b strings.Builder
+	inFence := false
+	for i := headingNo; i < len(lines); i++ {
+		trimmed := strings.TrimSpace(lines[i])
+		if FenceToggle(trimmed) {
+			inFence = !inFence
+			continue // Fence-Zeilen selbst zählen nicht
+		}
+		if inFence {
+			continue
+		}
+		if strings.HasPrefix(trimmed, "#") && headingLevel(trimmed) <= level {
+			break
+		}
+		b.WriteString(lines[i])
+		b.WriteByte('\n')
+	}
+	return b.String()
+}
+
+// headingLevel zählt die führenden '#' einer getrimmten Zeile.
+func headingLevel(trimmed string) int {
+	n := 0
+	for n < len(trimmed) && trimmed[n] == '#' {
+		n++
+	}
+	return n
+}
+
+// countSentenceEnds zählt die Satzende-Zeichen '.', '!' und '?' im bereits
+// bereinigten Text. Bewusst simpel: die Prüfung ist eine Substanz-Untergrenze,
+// keine Sprachanalyse — ein Abkürzungspunkt zählt mit, und das ist billiger und
+// ehrlicher als eine Heuristik, die manchmal danebenliegt.
+func countSentenceEnds(s string) int {
+	n := 0
+	for i := 0; i < len(s); i++ {
+		if s[i] == '.' || s[i] == '!' || s[i] == '?' {
+			n++
+		}
+	}
+	return n
+}
+
+// closureFinding baut einen Closure-Note-Befund (Spez-Schritt C5).
+func closureFinding(file string, line int, dir, reason, msg string) []model.Finding {
+	return []model.Finding{{
+		File: file, Line: line, Rule: "planning", Target: dir,
+		Reason: reason, Message: msg,
+	}}
 }
 
 // planningDrift baut den (einzelnen) planning-drift-Befund.

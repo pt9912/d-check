@@ -188,11 +188,13 @@ func stripFragment(u string) string {
 // checker == nil (Modul nicht verdrahtet) ist No-op (DC-QA-03). Die Findung ist
 // deterministisch aus der Pin-Liste (DC-QA-02); je (url, unpack) wird genau
 // einmal geholt.
-func CheckSources(checker driven.HTTPChecker, markerRefs []SourceRef, cfg model.SourcesConfig) []model.Finding {
+func CheckSources(
+	checker driven.HTTPChecker, markerRefs []SourceRef, cfg model.SourcesConfig, configFile string,
+) []model.Finding {
 	if checker == nil {
 		return nil
 	}
-	refs := allSourceRefs(markerRefs, cfg)
+	refs := allSourceRefs(markerRefs, cfg, configFile)
 	if len(refs) == 0 {
 		return nil
 	}
@@ -206,14 +208,19 @@ func CheckSources(checker driven.HTTPChecker, markerRefs []SourceRef, cfg model.
 	return findings
 }
 
-// allSourceRefs vereint Marker-Pins und Config-Pins (Config-Befunde tragen
-// .d-check.yml + die url-Feld-Zeile).
-func allSourceRefs(markerRefs []SourceRef, cfg model.SourcesConfig) []SourceRef {
+// allSourceRefs vereint Marker-Pins und Config-Pins. Config-Befunde tragen die
+// **tatsächlich geladene** Konfigurationsdatei + die url-Feld-Zeile; unter
+// --config (DC-FA-CLI-012) ist das nicht der konventionelle Name, und eine
+// Meldung, die auf eine ungelesene Datei zeigt, wäre schlicht falsch.
+func allSourceRefs(markerRefs []SourceRef, cfg model.SourcesConfig, configFile string) []SourceRef {
+	if configFile == "" {
+		configFile = sourcesConfigFile
+	}
 	refs := make([]SourceRef, 0, len(markerRefs)+len(cfg.Pins))
 	refs = append(refs, markerRefs...)
 	for _, p := range cfg.Pins {
 		refs = append(refs, SourceRef{
-			file: sourcesConfigFile, line: p.Line, url: p.URL,
+			file: configFile, line: p.Line, url: p.URL,
 			sha256: strings.ToLower(p.Sha256), zip: p.Unpack == model.SourceUnpackZip,
 		})
 	}

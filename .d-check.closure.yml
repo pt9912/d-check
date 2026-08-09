@@ -1,0 +1,45 @@
+# .d-check.closure.yml — das Prüf-Profil des **Closure-Bindepunkts**
+# (DC-FA-CLI-012, ADR-0048). Gefahren von `make verify-closure-notes`, NICHT
+# von `make gates`.
+#
+# Warum eine zweite Datei statt eines Blocks in .d-check.yml: die
+# Closure-Note-Struktur wohnt im Modul `planning` — stünde sie in der
+# konventionellen Config, liefe sie überall mit, wo `--enable planning` läuft,
+# also im inneren Loop (`make planning-check` ist Teil von `gates`). Eine
+# Closure-Frage gehört aber an die Closure, nicht in den Inner-Loop; die
+# Trennung ist ohne eine zweite Herkunft nicht machbar (ADR-0048 Entscheidung 7,
+# dieselbe Bindepunkt-Trennung wie bei `completeness-check`/ADR-0026).
+#
+# `modules: []` = leere Menge; das Profil aktiviert ausschließlich, was die
+# Kommandozeile per `--enable planning` dazuschaltet. Kein Netz-Modul
+# (`external`/`sources`) — die zweite Config ist keine zweite Netz-Tür
+# (DC-QA-03; ein Go-Test verriegelt genau das).
+modules: []
+
+planning:
+  # Die Roadmap-Datei ist auch hier Pflicht: sie trägt den Aktiv-Status und ihr
+  # Verzeichnis ist das Slice-Verzeichnis. Der Closure-Lauf prüft damit
+  # zusätzlich die Lifecycle-Invariante — dieselbe Aussage wie in `gates`,
+  # doppelt gefahren schadet nicht (hermetisch, deterministisch).
+  roadmap: docs/plan/planning/in-progress/roadmap.md
+  closure:
+    # Der Ruheort der abgeschlossenen Slices. Nur hier wird Slice-INHALT
+    # gelesen; in-progress-Slices tragen noch keine Closure-Pflicht.
+    dir: docs/plan/planning/done
+    # heading-pattern und min-sentences bleiben auf den Kern-Defaults
+    # (`^#{2,3} .*Closure-Notiz` und 4). Gemessen am eigenen Bestand: 92/92
+    # Slices tragen einen Abschnitt, das Minimum liegt bei 5 Satzende-Zeichen
+    # außerhalb Code — die Schwelle ist ein Boden, keine Decke.
+    #
+    # Die Floskel-Liste ist im Produkt bewusst LEER (sie entscheidet über
+    # rot/grün und wäre sprach-gebunden falsch, ADR-0048 Entscheidung 5); hier
+    # steht d-checks eigenes Vokabular. Aufgenommen wird nur, was im Bestand
+    # NULL Treffer hat — „Fertig." (6 Treffer) und „läuft jetzt" (3) sind
+    # bewusst NICHT dabei: als Teilstring erzeugten sie Falschbefunde in
+    # Notizen, die sehr wohl Substanz tragen.
+    boilerplate:
+      - "wie geplant umgesetzt"
+      - "war ganz okay"
+      - "erfolgreich abgeschlossen"
+      - "nichts Besonderes"
+      - "alles gut"

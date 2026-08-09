@@ -379,7 +379,7 @@ func TestSourcesFetchFehlerklassen(t *testing.T) {
 	for _, u := range []string{"http://x/timeout", "http://x/redirects", "http://x/transport", "http://x/toolarge"} {
 		refs = append(refs, SourceRef{file: "docs/a.md", line: 1, url: u, sha256: strings.Repeat("0", 64)})
 	}
-	got := CheckSources(stub, refs, model.SourcesConfig{})
+	got := CheckSources(stub, refs, model.SourcesConfig{}, "")
 	if len(got) != 4 {
 		t.Fatalf("erwartet 4 Befunde, got %+v", got)
 	}
@@ -403,7 +403,7 @@ func (s stubFetcher) Fetch(url string) driven.FetchResult { return s.fetch[url] 
 
 // CheckSources ist No-op ohne Checker (DC-QA-03: nil = keine Netz-Tür).
 func TestSourcesNilCheckerNoop(t *testing.T) {
-	got := CheckSources(nil, []SourceRef{{url: "http://x/a", sha256: "x"}}, model.SourcesConfig{})
+	got := CheckSources(nil, []SourceRef{{url: "http://x/a", sha256: "x"}}, model.SourcesConfig{}, "")
 	if got != nil {
 		t.Fatalf("nil-Checker muss No-op sein, got %+v", got)
 	}

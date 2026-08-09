@@ -241,6 +241,54 @@ func TestDecode_PlanningFehler(t *testing.T) {
 	}
 }
 
+// TestDecode_ClosureFehler deckt den Config-Rand der Closure-Fähigkeit ab
+// (DC-FA-PLAN-001): was der Kern nur schlucken könnte, bricht hier laut ab —
+// jeder dieser Werte wäre sonst ein stilles Grün.
+func TestDecode_ClosureFehler(t *testing.T) {
+	for name, bad := range map[string]string{
+		"dir absolut":         "planning:\n  closure:\n    dir: /abs/done\n",
+		"dir mit ..":          "planning:\n  closure:\n    dir: ../raus\n",
+		"heading-pattern RE2": "planning:\n  closure:\n    dir: done\n    heading-pattern: '^(['\n",
+		"min-sentences 0":     "planning:\n  closure:\n    dir: done\n    min-sentences: 0\n",
+		"min-sentences neg":   "planning:\n  closure:\n    dir: done\n    min-sentences: -1\n",
+		"leere Floskel":       "planning:\n  closure:\n    dir: done\n    boilerplate: ['']\n",
+		"Floskel nur Space":   "planning:\n  closure:\n    dir: done\n    boilerplate: ['   ']\n",
+	} {
+		if _, err := configyaml.Decode([]byte(bad)); err == nil {
+			t.Errorf("%s: ungültige closure-Config akzeptiert: %q", name, bad)
+		}
+	}
+}
+
+// TestDecode_ClosureHappy: gültige Werte werden durchgereicht, und ein
+// ABWESENDES min-sentences bleibt vom explizit gesetzten unterscheidbar (der
+// Kern-Default greift nur im ersten Fall).
+func TestDecode_ClosureHappy(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"planning:\n  roadmap: r.md\n  closure:\n    dir: docs/done\n    boilerplate: ['Fertig.']\n"))
+	if err != nil {
+		t.Fatalf("gültige closure-Config abgelehnt: %v", err)
+	}
+	c := cfg.Planning.Closure
+	if c.Dir != "docs/done" || len(c.Boilerplate) != 1 {
+		t.Fatalf("closure-Config nicht durchgereicht: %+v", c)
+	}
+	if got := c.EffectiveMinSentences(); got != 4 {
+		t.Errorf("Default min-sentences = %d, want 4", got)
+	}
+	if got := c.EffectiveHeadingPattern(); got == "" {
+		t.Error("Default heading-pattern darf nicht leer sein")
+	}
+	explicit, err := configyaml.Decode([]byte(
+		"planning:\n  roadmap: r.md\n  closure:\n    dir: d\n    min-sentences: 2\n"))
+	if err != nil {
+		t.Fatalf("explizites min-sentences abgelehnt: %v", err)
+	}
+	if got := explicit.Planning.Closure.EffectiveMinSentences(); got != 2 {
+		t.Errorf("explizites min-sentences = %d, want 2", got)
+	}
+}
+
 // TestDecode_PlanningHappy: eine gültige planning-Config wird übernommen, die
 // Defaults greifen.
 func TestDecode_PlanningHappy(t *testing.T) {

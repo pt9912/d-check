@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"time"
@@ -61,6 +62,7 @@ type options struct {
 	vcsRange        string
 	vcsStaged       bool
 	commitMsg       string
+	configPath      string
 }
 
 // reorderArgs erlaubt Optionen auch NACH dem Pfad-Argument — nötig
@@ -76,6 +78,7 @@ func reorderArgs(args []string) ([]string, error) {
 		"-id-prefix": true, "--id-prefix": true,
 		"-range": true, "--range": true,
 		"-commit-msg": true, "--commit-msg": true,
+		"-config": true, "--config": true,
 	}
 	var flagArgs, positionals []string
 	for i := 0; i < len(args); i++ {
@@ -286,6 +289,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	commitMsg := flags.String("commit-msg", "", "Modul commits: eine Commit-Message aus <datei> (oder - für stdin) auf eine Traceability-Kennung prüfen (commit-msg-Hook; DC-FA-COMMITS-001)")
 	suggestConfig := flags.String("suggest-config", "", "Config aus Autoritäts-Quellen (kommagetrennt) vorschlagen und beenden")
 	idPrefix := flags.String("id-prefix", "", "Kennungs-Präfix für --suggest-config ai-harness[-init] (z. B. AC); ohne Angabe Platzhalter <PREFIX>")
+	configPath := flags.String("config", "", "Konfigurationsdatei statt der konventionellen "+configyaml.FileName+" der Scan-Wurzel (Pfad relativ zur Wurzel; ersetzt, ergänzt nicht; fehlt sie ⇒ Exit 2)")
 	flags.Var(&enable, "enable", "Regelmodul aktivieren (wiederholbar)")
 	flags.Var(&disable, "disable", "Regelmodul deaktivieren (wiederholbar)")
 	flags.Usage = func() { writeUsage(flags) }
@@ -311,7 +315,8 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 		repair: *repairOut || *repairBroadOut, repairBroad: *repairBroadOut,
 		enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig,
 		idPrefix: *idPrefix, trace: *traceOut, printMK: *printMK, requireComplete: *requireComplete,
-		vcsRange: *vcsRange, vcsStaged: *vcsStaged, commitMsg: *commitMsg}
+		vcsRange: *vcsRange, vcsStaged: *vcsStaged, commitMsg: *commitMsg,
+		configPath: *configPath}
 	if flags.NArg() == 1 {
 		opts.root = flags.Arg(0)
 	}
@@ -353,22 +358,89 @@ func openRoot(root string, stderr io.Writer) (*fsadapter.Adapter, bool) {
 // loadConfig beschafft den Config-Inhalt über den Filesystem-Adapter
 // und lässt ihn vom Config-Adapter dekodieren/validieren
 // (spec/architecture.md §2).
-func loadConfig(fsys *fsadapter.Adapter, stderr io.Writer) (model.Config, bool) {
+// Ein per --config gesetzter Pfad (DC-FA-CLI-012) **ersetzt** die
+// konventionelle Datei: er wird relativ zur Scan-Wurzel aufgelöst, muss
+// innerhalb der Wurzel liegen und existieren — beides fail-closed (Exit 2),
+// ohne Rückfall auf Defaults oder auf die konventionelle Datei. Ein
+// vertipptes Profil darf nicht unbemerkt einen anderen Prüfumfang fahren.
+func loadConfig(fsys *fsadapter.Adapter, configPath string, stderr io.Writer) (model.Config, bool) {
 	var content []byte
-	if kind, err := fsys.Kind(configyaml.FileName); err == nil && kind == driven.KindFile {
-		read, err := fsys.ReadFile(configyaml.FileName)
-		if err != nil {
-			fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+	switch {
+	case configPath != "":
+		read, ok := readConfigOverride(fsys, configPath, stderr)
+		if !ok {
 			return model.Config{}, false
 		}
 		content = read
+	default:
+		if kind, err := fsys.Kind(configyaml.FileName); err == nil && kind == driven.KindFile {
+			read, err := fsys.ReadFile(configyaml.FileName)
+			if err != nil {
+				fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+				return model.Config{}, false
+			}
+			content = read
+		}
 	}
 	cfg, err := configyaml.Decode(content)
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return model.Config{}, false
 	}
+	if len(content) > 0 {
+		cfg.ConfigFile = configyaml.FileName
+		if configPath != "" {
+			cfg.ConfigFile = normalizeConfigPath(fsys, configPath)
+		}
+	}
 	return cfg, true
+}
+
+// readConfigOverride liest die per --config genannte Datei (DC-FA-CLI-012):
+// Auflösung relativ zur Scan-Wurzel, Wurzel-Constraint und Existenz jeweils
+// fail-closed. Kein Rückfall — weder auf Defaults noch auf die konventionelle
+// Datei.
+func readConfigOverride(fsys *fsadapter.Adapter, configPath string, stderr io.Writer) ([]byte, bool) {
+	rel := normalizeConfigPath(fsys, configPath)
+	if rel == "" {
+		fmt.Fprintf(stderr,
+			"d-check: error: --config %s liegt außerhalb der Scan-Wurzel\n", configPath)
+		return nil, false
+	}
+	kind, err := fsys.Kind(rel)
+	if err != nil || kind != driven.KindFile {
+		fmt.Fprintf(stderr,
+			"d-check: error: --config %s nicht gefunden oder keine Datei (kein Rückfall auf %s)\n",
+			configPath, configyaml.FileName)
+		return nil, false
+	}
+	content, err := fsys.ReadFile(rel)
+	if err != nil {
+		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+		return nil, false
+	}
+	return content, true
+}
+
+// normalizeConfigPath bildet den --config-Wert auf einen Wurzel-relativen,
+// '/'-getrennten Pfad ab. Ein absoluter Pfad wird auf die Wurzel bezogen; was
+// nach Auflösung der `..`-Segmente außerhalb liegt, liefert "" (der Aufrufer
+// bricht ab). Die Wurzel ist die Grenze, weil der Lauf im read-only-Mount
+// stattfindet — eine Datei außerhalb wäre dort ohnehin unerreichbar.
+func normalizeConfigPath(fsys *fsadapter.Adapter, configPath string) string {
+	p := filepath.FromSlash(configPath)
+	if filepath.IsAbs(p) {
+		relToRoot, err := filepath.Rel(fsys.Root, p)
+		if err != nil {
+			return ""
+		}
+		p = relToRoot
+	}
+	clean := path.Clean(filepath.ToSlash(p))
+	if clean == ".." || strings.HasPrefix(clean, "../") || clean == "." {
+		return ""
+	}
+	return clean
 }
 
 // render gibt das Ergebnis aus und liefert den Exit-Code
@@ -457,7 +529,7 @@ func Run(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprint(stdout, out)
 		return 0
 	}
-	cfg, ok := loadConfig(fsys, stderr)
+	cfg, ok := loadConfig(fsys, opts.configPath, stderr)
 	if !ok {
 		return 2
 	}
