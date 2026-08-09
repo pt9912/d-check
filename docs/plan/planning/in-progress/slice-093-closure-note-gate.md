@@ -121,6 +121,10 @@ Freigabe des aus slice-090 herausgeschnittenen D-7 als welle-68-Slice.
   dem Repo-Default GF** (`harness/conventions.md` §Modus: `*` = Greenfield). **Kein
   Brownfield:** der Code entsteht **spec-first**, wird nicht rückdokumentiert.
 - **Offene Beobachtungen sichten:** `observations.md` = `— keine —`; nichts zu berücksichtigen.
+  *Nachtrag 2026-08-09:* während dieses Slice ist **BEO-001** entstanden (Datei-Register
+  ↔ Autoritäts-Tabelle driften unbemerkt, gefunden am fehlenden ADR-Index-Eintrag). Sie ist
+  im [Register](../observations.md) eingetragen und **bewusst nicht** in diesen Scope
+  gezogen — WIP-Limit, und slice-093 trägt bereits Produkt-Code + Release.
 
 ## 8. Sub-Area-Modus-Begründung
 
