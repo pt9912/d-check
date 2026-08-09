@@ -45,38 +45,86 @@ strikter-Schluss bewusst offen"). Was damals eine vertretbare Grenze war, ist mi
 einer Bedingung, die **innerhalb** eines Abschnitts misst, zu einem Silent-Grün
 geworden.
 
-## 3. Abnahme-Punkte
+## 3. Bestandsmessung (Abnahme-Punkt 2, erledigt)
 
-1. **Wie weit geht der Fix?** (a) Nur die Closure-/Struktur-Bedingungen behandeln
-   einen unbalancierten Fence als „bis Abschnitts-Ende offen" und melden ihn;
-   (b) der geteilte Fence-Automat bekommt den längenabgeglichenen Schluss aus
-   CommonMark, was **alle** Module berührt; (c) ein eigener Grund-Code für den
-   unbalancierten Fence. Zu entscheiden — (b) ist die Wurzel, aber auch die
-   Änderung mit der größten Reichweite.
-2. **Bestandsmessung vor der Wahl:** wie viele Dateien im eigenen Repo und in den
-   Adopter-Repos tragen unbalancierte Fences? Die Zahl entscheidet mit, ob (b)
-   ein Minor oder ein Aufräum-Projekt ist.
+Gemessen am 2026-08-09 mit d-checks **eigener** `FenceToggle`-Lexik über drei
+Repos — das eigene und die zwei, die die offenen Change Requests gestellt haben:
 
-## 4. Definition of Done
+| Repo | Markdown-Dateien | ungerade Fence-Zahl | gemischte Fence-Längen | `~~~`-Fences |
+|---|---|---|---|---|
+| d-check | 347 | 0 | 0 | 0 |
+| a-check | 184 | 0 | 0 | 0 |
+| ai-harness-course | 245 | 0 | 0 | 0 |
+| **Summe** | **776** | **0** | **0** | **0** |
 
-- [ ] Abnahme-Punkte 1–2 entschieden, mit Messung belegt; Vertragsanpassung
-      (Lastenheft/Spezifikation) und ggf. ADR.
+Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
+
+1. **Der Defekt ist latent, nicht aktiv.** Kein einziges Dokument im Ökosystem
+   löst ihn heute aus. Der Reproduktionsfall in §2 ist konstruiert — was ihn
+   nicht harmloser macht, aber anders einordnet.
+2. **Die befürchtete Reichweite von Variante (b) ist empirisch widerlegt.** Der
+   längenabgeglichene CommonMark-Schluss hätte auf diesen 776 Dateien **null**
+   Wirkung: es gibt weder gemischte Fence-Längen noch `~~~`-Fences, also auch
+   keine Fehlpaarung, die er korrigieren könnte. Er wäre kein Aufräum-Projekt —
+   er wäre ein No-op mit Vertragsfläche.
+3. **Das eigentliche Risiko ist nicht der Bestand, sondern der nächste Autor.**
+   Wer künftig einen Fence nicht schließt, schaltet still die Prüfung des
+   restlichen Abschnitts ab. Gesucht ist also keine bessere Paarung, sondern
+   dass der unbalancierte Zustand **überhaupt gemeldet** wird.
+
+## 4. Abnahme-Punkte
+
+1. **Wie weit geht der Fix?** Die Messung hat die drei Kandidaten neu geordnet:
+   - **(a) nur die Closure-/Struktur-Bedingungen** behandeln den offenen Fence
+     lokal — deckt den belegten Fall, lässt die Klasse aber in jedem anderen
+     Modul stehen.
+   - **(b) längenabgeglichener Fence-Schluss im geteilten Automaten** — die
+     Wurzel nach CommonMark, aber laut Messung ohne jede Wirkung auf den
+     realen Bestand. Löst zudem **nicht** den belegten Fall: ein Fence, der
+     **gar nicht** geschlossen wird, bleibt auch mit strengerer Paarungsregel
+     offen.
+   - **(c) ein eigener Grund-Code für den unbalancierten Fence** — macht den
+     stillen Zustand laut. Deckt den belegten Fall direkt und kostet auf dem
+     gemessenen Bestand nichts.
+   **Vorschlag: (c).** (b) ist nach der Messung nicht die Wurzel dieses Befundes,
+   sondern eine verwandte, folgenlose Frage.
+2. **Wo wohnt der neue Befund?** Nicht im `planning`-Modul: der offene Fence ist
+   kein Planning-Thema, sondern ein **Markdown-Artefakt**. Das Modul `spans`
+   sagt genau das zu — „ungeschlossene Code-Spans … kippen die Backtick-Parität
+   des restlichen Absatzes". Ein unbalancierter **Fence** ist dieselbe Aussage
+   eine Ebene höher: eine Öffnung ohne Schluss, die alles Folgende umdeutet.
+   Zu entscheiden: Erweiterung von
+   [`DC-FA-SPAN-001`](../../../../spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)
+   (dieselbe Frageform, ein Modul) gegen einen Befund im `planning`-Modul
+   (näher am Fundort, aber falsch einsortiert). Kriterium ist das aus
+   [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md).
+3. **Absatz oder Datei?** `span-unclosed` misst je **Absatz**; ein Fence hat
+   keine Absatzgrenze — seine Reichweite ist das Dateiende. Die Zusage muss
+   sagen, worauf sich „ungeschlossen" bezieht, sonst ist der Befund nicht
+   lokalisierbar.
+
+## 5. Definition of Done
+
+- [x] **Bestandsmessung** (§3): 776 Dateien über drei Repos, null Vorkommen —
+      der Defekt ist latent, und Variante (b) ist empirisch als folgenlos
+      belegt.
+- [ ] Abnahme-Punkte 1–3 entschieden; Vertragsanpassung (Lastenheft/
+      Spezifikation) und ggf. ADR.
 - [ ] Der oben belegte Fall meldet; Test mutations-echt (Rückbau des Fixes macht
       ihn wieder grün).
 - [ ] `make gates` + `make verify-closure-notes` grün; Release als **Minor**
       (d-check findet danach mehr).
 
-## 5. Risiken / offene Punkte
+## 6. Risiken / offene Punkte
 
-- **Reichweite:** Variante (b) ändert die Lexik für alle Module — dieselbe Klasse
-  wie [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md), wo ein
-  Differential-Spike gegen einen echten Parser die Grundlage war. — **Ausgang:**
-  offen bis Abnahme-Punkt 1.
+- **Reichweite von Variante (b).** — **Ausgang: entfallen.** Die Messung zeigt
+  null betroffene Dateien; die Änderung wäre auf dem realen Bestand wirkungslos
+  und löst den belegten Fall ohnehin nicht.
 - **Der Defekt ist ausgeliefert.** Bis zum Fix ist die Zusage der
   Closure-Note-Struktur schwächer als dokumentiert. — **Ausgang:** offen; zu
   entscheiden, ob das in die Release-Notiz von v0.52.0 nachgetragen wird.
 
-## 6. Trigger
+## 7. Trigger
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei. **Vor**
 [slice-099](../open/slice-099-structure-modul.md) sinnvoll — sonst erbt das neue Modul
@@ -85,7 +133,7 @@ den bekannten stillen Grün-Pfad über die geteilte Mechanik.
 **Rückführungen:** `in-progress` → `open`, falls die Bestandsmessung zeigt, dass
 Variante (b) eine eigene Sanierung nach sich zieht.
 
-## 7. Vorgelagert (vor der Modus-Begründung)
+## 8. Vorgelagert (vor der Modus-Begründung)
 
 - **Sub-Area prüfen:** Produkt-Code (`internal/`) und Spec (`spec/`), beide unter
   dem Repo-Default GF (`harness/conventions.md` §Modus: `*`).
@@ -94,13 +142,13 @@ Variante (b) eine eigene Sanierung nach sich zieht.
   bewusst offen gelassene Lexik-Grenze wird zum Silent-Grün, sobald ein neues
   Modul innerhalb der Grenze misst" — bei der Closure dieses Slice zu prüfen.
 
-## 8. Sub-Area-Modus-Begründung
+## 9. Sub-Area-Modus-Begründung
 
 **GF (Greenfield, Repo-Default)** — die Korrektur wird zuerst als Zusage
 formuliert (welches Verhalten gilt bei unbalanciertem Fence?), dann geliefert.
 Kein Brownfield: es wird kein undokumentierter Bestand inventarisiert, sondern
 eine dokumentierte Grenze neu bewertet.
 
-## 9. Closure-Notiz (nach `done/`)
+## 10. Closure-Notiz (nach `done/`)
 
 _Ausstehend._
