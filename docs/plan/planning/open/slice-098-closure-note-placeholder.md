@@ -8,7 +8,7 @@
 erst mit **beiden** ist die Closure-Fähigkeit eine Obermenge des
 Konsumenten-Skripts; einzeln bringt jede Deckung, löst den Faden aber nicht auf.
 **Die Zuordnung ist offen bis zum Abschluss von**
-[slice-096](../in-progress/slice-096-structure-modul-analyse.md) — dessen Schnitt entscheidet,
+[slice-096](../done/slice-096-structure-modul-analyse.md) — dessen Schnitt entscheidet,
 ob die Erkennung hier oder im `structure`-Modul wohnt (Auftraggeber-Entscheid
 2026-08-09).
 
@@ -104,7 +104,7 @@ gegenseitig verdecken. Für den Vertrag ist das folgenlos (gemeldet wird der
 ## 6. Trigger
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei — **und**
-[slice-096](../in-progress/slice-096-structure-modul-analyse.md) in `done/`. Von
+[slice-096](../done/slice-096-structure-modul-analyse.md) in `done/`. Von
 [slice-097](slice-097-closure-glob-entkopplung.md) unabhängig: die gemeinsame
 Abnahmebedingung des Konsumenten verlangt beide, aber keine Reihenfolge.
 

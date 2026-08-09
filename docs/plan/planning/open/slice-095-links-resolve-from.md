@@ -92,7 +92,7 @@ Nachbarn.
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei. Unabhängig von
 [slice-094](slice-094-closure-zaehl-paritaet.md) und
-[slice-096](../in-progress/slice-096-structure-modul-analyse.md) umsetzbar.
+[slice-096](../done/slice-096-structure-modul-analyse.md) umsetzbar.
 
 **Rückführungen:** `in-progress` → `open`, falls die Laufzeit-Messung ein
 Carveout nötig macht.

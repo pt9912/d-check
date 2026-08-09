@@ -30,10 +30,11 @@ ignore-refs:
   # den Beleg (Re-Review-Befund). Das Ventil hält den Report unangetastet und
   # das Gate ehrlich; `codepaths.exempt-paths` nimmt docs/reviews aus demselben
   # Grund bereits aus.
-  - in: "docs/reviews/2026-08-09-slice-096-*-review.md"
+  - in: "docs/reviews/2026-08-09-*.md"
     refs:
       - "docs/plan/planning/open/slice-099-structure-modul-kern.md"
       - "docs/plan/planning/open/slice-100-structure-marken-und-zaehlung.md"
+      - "docs/plan/planning/in-progress/slice-096-structure-modul-analyse.md"
   - in: docs/plan/adr/0022-matrix-token-richtung-provenance-marker.md
     refs: [".harness/baseline/v1.4.0/**"]
   - in: docs/plan/planning/done/slice-080-sources-modul.md

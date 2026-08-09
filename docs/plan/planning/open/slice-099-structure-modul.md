@@ -5,7 +5,7 @@
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
 **Welle:** [welle-69-structure-schnitt](../welle-69-structure-schnitt.md) —
-Folge-Slice aus [slice-096](../in-progress/slice-096-structure-modul-analyse.md).
+Folge-Slice aus [slice-096](../done/slice-096-structure-modul-analyse.md).
 
 **Bezug:** [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in),
 [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
@@ -86,7 +86,7 @@ ablehnt, ist kein lieferbarer Zwischenstand.
 
 ## 6. Trigger
 
-**Start** (`next` → `in-progress`): [slice-096](../in-progress/slice-096-structure-modul-analyse.md)
+**Start** (`next` → `in-progress`): [slice-096](../done/slice-096-structure-modul-analyse.md)
 in `done/` **und** [slice-101](slice-101-fence-unbalanciert.md) in `done/`;
 WIP-Slot frei. Die zweite Bedingung ist **bindend**, nicht bevorzugt: liefe
 dieser Slice zuerst, erbte das neue Modul über die geteilte Mechanik einen
@@ -102,7 +102,7 @@ gemeinsamen Mechanik einen eigenen Refactor-Slice verlangt.
   dem Repo-Default GF (`harness/conventions.md` §Modus: `*`).
 - **Offene Beobachtungen sichten:** das Register führt **BEO-001** (andere
   Klasse — Referenz zwischen Dokumenten statt Form innerhalb eines; in
-  [slice-096](../in-progress/slice-096-structure-modul-analyse.md) ausdrücklich
+  [slice-096](../done/slice-096-structure-modul-analyse.md) ausdrücklich
   als Nicht-Ziel festgehalten) und **BEO-002** (Semantik-Änderungen werden nur im
   Dokumentkörper nachgezogen). BEO-002 **betrifft diesen Slice unmittelbar**: er
   ändert die Grund-Code-Menge und damit gleich mehrere Spiegel — `AllReasons()`,
