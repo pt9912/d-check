@@ -160,12 +160,43 @@ func TestClosureNurSliceGlobKandidaten(t *testing.T) {
 	}
 }
 
-// Ein leeres Closure-Verzeichnis ist befundfrei (kein abgeschlossener Slice ist
-// kein Fehler) — Gegenstück zum fail-closed Fall darunter.
-func TestClosureLeeresVerzeichnisBefundfrei(t *testing.T) {
-	files := map[string]string{closureDir + "/.keep": ""}
+// fail-closed: ein Closure-Verzeichnis OHNE Kandidaten ist kein „nichts zu tun",
+// sondern ein leer laufendes Gate. `closure.dir` zu setzen ist die Behauptung,
+// dass dort Notizen liegen; stimmt sie nicht mehr (Bestand umgezogen), wäre
+// stilles Grün die schlechteste Antwort (R1-F-5).
+func TestClosureOhneKandidatenFailClosed(t *testing.T) {
+	files := map[string]string{closureDir + "/.keep": "", closureDir + "/README.md": "# Index\n"}
+	f := CheckPlanningClosure(coretest.NewMemFS(files), closureCfg())
+	if len(f) != 1 || f[0].Reason != model.ReasonClosureNoteMissing {
+		t.Fatalf("kandidatenfreies Closure-Verzeichnis muss fail-closed melden, got %+v", f)
+	}
+	if !strings.Contains(f[0].Message, "leer") {
+		t.Errorf("Meldung muss das Leerlaufen benennen, got %q", f[0].Message)
+	}
+}
+
+// Gegenprobe zu F-1 (HIGH): eine Zeile wie `#1 …` ist Fließtext, keine H1 — sie
+// darf den Abschnitt NICHT vorzeitig beenden. Vor dem Fix schnitt sie den Rest
+// weg und ein Floskel-Treffer dahinter blieb unsichtbar (stilles Grün).
+func TestClosureRautenTextBeendetAbschnittNicht(t *testing.T) {
+	note := "## 7. Closure-Notiz\n\nEin Satz. Zwei. Drei. Vier.\n\n#1 war ein Thema\n\nalles gut\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": "# Slice\n\n" + note}
+	cfg := closureCfg()
+	cfg.Closure.Boilerplate = []string{"alles gut"}
+	f := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
+	if len(f) != 1 || f[0].Reason != model.ReasonClosureNoteBoilerplate {
+		t.Fatalf("`#1 …` ist keine Überschrift ⇒ Floskel dahinter muss gefunden werden, got %+v", f)
+	}
+}
+
+// Und die Gegenrichtung: `#1 …` ist auch als Abschnitts-ERÖFFNER keine
+// Überschrift (sonst matchte ein Muster darauf).
+func TestClosureRautenTextIstKeinAbschnittsAnfang(t *testing.T) {
+	files := map[string]string{
+		closureDir + "/slice-001-a.md": "# Slice\n\n#1 Closure-Notiz ist hier nicht\n\n## 7. Closure-Notiz\n\nEin Satz. Zwei. Drei. Vier.\n",
+	}
 	if f := CheckPlanningClosure(coretest.NewMemFS(files), closureCfg()); f != nil {
-		t.Fatalf("leeres Closure-Verzeichnis muss befundfrei sein, got %+v", f)
+		t.Fatalf("`#1 …` darf den Abschnitt nicht eröffnen, got %+v", f)
 	}
 }
 
@@ -195,24 +226,44 @@ func TestClosureThinUndBoilerplateNebeneinander(t *testing.T) {
 	}
 }
 
-// Determinismus: identischer Baum ⇒ identische Reihenfolge (DC-QA-02).
+// reverseListFS liefert Verzeichnis-Einträge in UMGEKEHRTER Reihenfolge. Ohne
+// so ein Double wäre der Determinismus-Test tautologisch: MemFS sortiert selbst,
+// und das Entfernen der Sortierung im Kern bliebe grün (R2-F-7).
+type reverseListFS struct{ driven.Filesystem }
+
+func (r reverseListFS) List(dir string) ([]driven.DirEntry, error) {
+	entries, err := r.Filesystem.List(dir)
+	if err != nil {
+		return nil, err
+	}
+	for i, j := 0, len(entries)-1; i < j; i, j = i+1, j-1 {
+		entries[i], entries[j] = entries[j], entries[i]
+	}
+	return entries, nil
+}
+
+// Determinismus (DC-QA-02): die Befund-Reihenfolge hängt an der Sortierung im
+// Kern, nicht an der Laune des Dateisystems — belegt mit einem Port, der
+// absichtlich verkehrt herum liefert.
 func TestClosureDeterministischeReihenfolge(t *testing.T) {
 	files := map[string]string{
 		closureDir + "/slice-003-c.md": "# S\n\n## 7. Closure-Notiz\n\nx.\n",
 		closureDir + "/slice-001-a.md": "# S\n\n## 7. Closure-Notiz\n\nx.\n",
 		closureDir + "/slice-002-b.md": "# S\n\n## 7. Closure-Notiz\n\nx.\n",
 	}
-	first := CheckPlanningClosure(coretest.NewMemFS(files), closureCfg())
-	for i := 0; i < 5; i++ {
-		again := CheckPlanningClosure(coretest.NewMemFS(files), closureCfg())
-		for j := range first {
-			if first[j].File != again[j].File {
-				t.Fatalf("Reihenfolge nicht stabil: %s vs %s", first[j].File, again[j].File)
-			}
-		}
+	got := CheckPlanningClosure(reverseListFS{coretest.NewMemFS(files)}, closureCfg())
+	want := []string{
+		closureDir + "/slice-001-a.md",
+		closureDir + "/slice-002-b.md",
+		closureDir + "/slice-003-c.md",
 	}
-	if len(first) != 3 || first[0].File != closureDir+"/slice-001-a.md" {
-		t.Fatalf("erwartet drei Befunde, nach Namen sortiert, got %+v", first)
+	if len(got) != len(want) {
+		t.Fatalf("erwartet %d Befunde, got %+v", len(want), got)
+	}
+	for i := range want {
+		if got[i].File != want[i] {
+			t.Fatalf("Befund %d = %s, want %s (Kern muss sortieren, nicht der Port)", i, got[i].File, want[i])
+		}
 	}
 }
 

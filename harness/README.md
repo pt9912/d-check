@@ -108,6 +108,11 @@ keine aspirativen Texte. Aber ihre Kraft ist real begrenzt:
   ([`stop-require-gates.sh`](../.claude/hooks/stop-require-gates.sh)) ist
   Claude-spezifisch und gibt frische, cleane Klone ohne lokalen Gate-State
   frei — dafür ist die CI das Netz.
+- Dasselbe gilt für das zweite Closure-Gate `verify-closure-notes`
+  (Closure-Note-Struktur,
+  [ADR-0048](../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md)):
+  es hängt an `make fullbuild`, nicht an `gates`/`ci`, und prüft **Struktur, nicht
+  Bedeutung** — eine grüne Ausgabe sagt „Form erfüllt", nicht „Notizen sind gut".
 - Das **Closure-Gate** `completeness-check` (Requirements-Waisen,
   [ADR-0017](../docs/plan/adr/0017-requirements-completeness-gate.md)) hängt an
   `make fullbuild`, **nicht** an `gates`/`ci`/[`release.yml`](../.github/workflows/release.yml)

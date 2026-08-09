@@ -112,12 +112,28 @@ Eine Messung gegen den eigenen Bestand (2026-08-09) rahmt den Entwurf:
    still auf Defaults zurück — ein vertipptes Profil darf keinen anderen
    Prüfumfang fahren.
 
+8. **Fail-closed auch bei null Kandidaten — und geteilte Heading-Lexik.** Zwei
+   Nachschärfungen aus dem Review, beide gegen dieselbe Klasse (stilles Grün):
+   (a) Ein existierendes, aber **kandidatenfreies** Closure-Verzeichnis meldet
+   `closure-note-missing` statt zu schweigen. Den Schlüssel zu setzen **ist** die
+   Behauptung, dass dort Notizen liegen; zieht der Bestand in Unterordner um,
+   liefe das Gate sonst fortan leer und grün — dieselbe Nullmengen-Logik, die
+   [ADR-0037](0037-trace-tabellenquellen-nullmengen-guard.md) für die
+   RTM-Anforderungsquellen gezogen hat. Ein Repo ohne abgeschlossene Slices setzt
+   den Schlüssel schlicht noch nicht.
+   (b) Was als Überschrift zählt, entscheidet der **geteilte** ATX-Parser des
+   Pakets (derselbe, den `anchors`/`matrix` nutzen) — nicht eine eigene
+   `#`-Zählung. Eine Zeile wie `#1 war ein Thema` ist Fließtext; die eigene
+   Heuristik hätte sie als H1 gelesen, den Abschnitt dort abgeschnitten und alles
+   dahinter unsichtbar gemacht. Dieselbe Lexik an beiden Abschnitts-Grenzen ist
+   damit konstitutiv, nicht kosmetisch.
+
 ## Verglichene Alternativen
 
 | Alternative | Warum verworfen |
 |---|---|
 | Neues Regelmodul `closure` | Verdoppelt die Slice-Verzeichnis-/`slice-glob`-Achse; die Invariante ist dieselbe wie in `planning`, nur die andere Lifecycle-Seite |
-Ein `check_closure_notes.py`-Skript wie im Baseline-Template | Ein kopiertes Skript ist genau die Form, die d-check ablöst ([ADR-0028](0028-planning-lifecycle-modul.md)); nicht verteilbar, nicht dogfood-fähig, kein Konsumenten-Nutzen |
+| Ein `check_closure_notes.py`-Skript wie im Baseline-Template | Ein kopiertes Skript ist genau die Form, die d-check ablöst ([ADR-0028](0028-planning-lifecycle-modul.md)); nicht verteilbar, nicht dogfood-fähig, kein Konsumenten-Nutzen |
 | Closure-Prüfung in `gates` mitlaufen lassen (ohne `--config`) | Billiger, aber vermischt Inner-Loop und Closure; die Baseline trennt beide ausdrücklich, und d-check hat die Trennung mit `completeness-check` schon etabliert |
 | Ein Sammel-Grund-Code `closure-note-drift` | Drei verschiedene Reparaturen unter einer Meldung; `targets` zeigt den Gegenentwurf |
 | Deutsche Floskel-Defaults ausliefern | Entscheidet über rot/grün und wäre in fremdsprachigen Adopter-Repos wirkungslos oder falsch-positiv |
@@ -175,3 +191,7 @@ Ein `check_closure_notes.py`-Skript wie im Baseline-Template | Ein kopiertes Skr
 ## Geschichte
 
 - 2026-08-09: Proposed (doc-first, `slice-093`).
+- 2026-08-09: Entscheidung 8 nach zwei unabhängigen Frischkontext-Reviews
+  ergänzt (Nullmengen-Guard + geteilte Heading-Lexik); die Wurzel-Grenze von
+  `--config` wurde von lexikalisch auf symlink-fest nachgezogen und ein leerer
+  Flag-Wert als Nutzungsfehler ausgewiesen.

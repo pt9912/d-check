@@ -1655,21 +1655,40 @@ liefert (und umgekehrt):
 
 - **C1. Inert/Config.** Leere `planning.closure.dir` ⇒ Fähigkeit inert: **keine**
   Slice-Datei wird geöffnet, der Befundsatz ist byte-identisch zum Stand ohne die
-  Fähigkeit. Ein nicht kompilierendes `heading-pattern`, ein `min-sentences` < 1
-  oder ein leerer `boilerplate`-Eintrag ⇒ Exit 2 (Config-Fehler, vor dem Lauf).
+  Fähigkeit. **Exit 2** (Config-Fehler, vor dem Lauf) bei: `dir` absolut oder mit
+  `..`-Segment; nicht kompilierendes `heading-pattern`; explizit gesetztes
+  `min-sentences` < 1; leerer (oder nur aus Whitespace bestehender)
+  `boilerplate`-Eintrag. Ein **abwesendes** `min-sentences` ist kein Fehler,
+  sondern der Default — die Unterscheidung „nicht gesetzt" vs. „auf 0 gesetzt"
+  ist Teil der Zusage, sonst wäre die Null-Schwelle unerreichbar prüfbar.
 - **C2. Kandidaten.** Das Listing von `planning.closure.dir` wird nach Dateien
   gefiltert, deren Basisname `planning.slice-glob` matcht (dasselbe Glob wie
   Schritt 2 — ein Slice ist ein Slice, gleich in welchem Lifecycle-Verzeichnis).
   Fehlt das gesetzte Verzeichnis oder ist es unlesbar ⇒ `closure-note-missing`
-  mit `file` = `planning.closure.dir` (fail-closed, kein stilles Grün); ein
-  **leeres** Verzeichnis ist dagegen befundfrei (kein abgeschlossener Slice ist
-  kein Fehler). Die Kandidaten werden in stabiler Namens-Reihenfolge geprüft.
-- **C3. Abschnitt bestimmen.** Je Kandidat wird die **erste** Zeile gesucht, deren
-  getrimmte Fassung auf `planning.closure.heading-pattern` passt. Kein Treffer ⇒
+  mit `file` = `planning.closure.dir` (fail-closed, kein stilles Grün).
+  **Ebenso fail-closed: null Kandidaten.** `planning.closure.dir` zu setzen
+  **ist** die Behauptung, dass dort Closure-Notizen liegen; findet der Lauf
+  keine, stimmt die Behauptung nicht mehr (typischer Auslöser: der Bestand
+  wandert in Unterordner) und das Gate liefe fortan leer und grün — dieselbe
+  Nullmengen-Logik wie bei den Anforderungsquellen der RTM
+  ([`DC-FA-REQ-001`](lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)).
+  Ein Repo ohne abgeschlossene Slices setzt den Schlüssel schlicht noch nicht.
+  Die Kandidaten werden in stabiler Namens-Reihenfolge geprüft — die Sortierung
+  liegt im Kern, nicht beim Dateisystem.
+- **C3. Abschnitt bestimmen.** Je Kandidat wird die **erste** Zeile gesucht, die
+  (a) **außerhalb** eines Fenced-Code-Blocks liegt — eine `#`-Zeile in einem
+  Beispielblock ist keine Überschrift —, (b) eine **echte ATX-Überschrift** nach
+  derselben Lexik ist wie in
+  [`DC-FA-ANCH-001.a`](#dc-fa-anch-001a--github-slug-algorithmus) (`#`-Folge der
+  Länge 1–6, gefolgt von Whitespace; `#1 war ein Thema` ist damit Fließtext,
+  **keine** H1), und (c) deren getrimmte Fassung auf
+  `planning.closure.heading-pattern` passt. Kein Treffer ⇒
   `closure-note-missing` (`line` = 1). Sonst reicht der Abschnitt von der Zeile
-  **nach** der Überschrift bis zur nächsten Überschrift **gleicher oder höherer**
-  Ebene (die Ebene ist die Zahl der führenden `#` der Treffer-Zeile) bzw. bis zum
-  Dateiende.
+  **nach** der Überschrift bis zur nächsten **echten** Überschrift gleicher oder
+  höherer Ebene bzw. bis zum Dateiende. Die Ebene ist die Länge der `#`-Folge.
+  Dass beide Grenzen dieselbe Heading-Lexik nutzen, ist konstitutiv: eine
+  eigene `#`-Heuristik beendete den Abschnitt an Fließtext-Zeilen und
+  verstünde alles dahinter als „nicht Teil der Notiz" — ein stilles Grün.
 - **C4. Bereinigen und messen.** Aus dem Abschnitt werden die Fenced-Code-Blöcke
   entfernt (Fence-Lexik wie im übrigen Scanner, vgl.
   [`DC-FA-SPAN-001.a`](#dc-fa-span-001a--span-artefakt-erkennung)); im Rest werden
@@ -1872,7 +1891,10 @@ repo-internes Ziel (`pins`). **Post-Pass** nach dem Datei-Scan (wie `external`)
    `source-drift`; `message` führt den **vollständigen** Ist-`sha256` in
    Kleinbuchstaben (Re-Pin-Vorlage, schreibweisen-stabil). Befund-`file`/`line`:
    für einen **Marker-Pin** die Marker-Datei und -Zeile; für einen **Config-Pin**
-   `file` = `.d-check.yml` und `line` = die Zeile des `url`-Feldes des Eintrags
+   `file` = die **tatsächlich geladene** Konfigurationsdatei (konventionell
+   `.d-check.yml`, unter `--config` die dort genannte —
+   [`DC-FA-CLI-012.a`](#dc-fa-cli-012a--konfigurations-pfad---config) Schritt 6)
+   und `line` = die Zeile des `url`-Feldes des Eintrags
    (die YAML-Dekodierung führt sie; sonst `1`); `target` = URL. **Diagnose-only**
    (kein `--repair`-Hunk — ein Re-Pin ist eine menschliche Entscheidung).
 6. **Determinismus/Read-only.** Identische Antwort-Bytes ⇒ identischer
@@ -2226,7 +2248,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
-| 2026-08-09 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) um die **Closure-Note-Struktur** (Schritte C1–C5) erweitert + neue §[`DC-FA-CLI-012.a`](spezifikation.md#dc-fa-cli-012a--konfigurations-pfad---config) + §2-Schema (`planning.closure.dir`/`heading-pattern`/`min-sentences`/`boilerplate`). Die Closure-Fähigkeit ist opt-in **innerhalb** des opt-in Moduls (leere `dir` ⇒ keine Slice-Datei wird geöffnet, byte-identisch): erster auf `heading-pattern` passender Abschnitt (bis zur nächsten gleich-/höherrangigen Überschrift), Fenced-Code entfernt, Satzende-Zeichen gezählt (< `min-sentences` ⇒ `closure-note-thin`), Rest case-insensitiv gegen die literalen `boilerplate`-Teilstrings (⇒ `closure-note-boilerplate`); kein passender Abschnitt bzw. fehlendes gesetztes Verzeichnis ⇒ `closure-note-missing`. Leeres Closure-Verzeichnis ist befundfrei, `min-sentences` < 1 und leerer Floskel-Eintrag ⇒ Exit 2; diagnose-only. `--config <datei>` verschiebt **nur die Herkunft** der Konfiguration (Wurzel-Constraint + Existenz fail-closed, ersetzt statt ergänzt, Validierung und Semantik unverändert, Befund-Provenance nennt die geladene Datei) — es trennt die Prüf-Profile zweier Bindepunkte, ohne die Modulwahl auf der Kommandozeile nachzubauen. Grund-Codes `closure-note-missing`/`closure-note-thin`/`closure-note-boilerplate` (§4) folgen mit der Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Modul-Schnitt statt neues Modul, Bindepunkt-Trennung, Struktur-vs-Bedeutung-Grenze, Schwellenwahl) in begleitender ADR |
+| 2026-08-09 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) um die **Closure-Note-Struktur** (Schritte C1–C5) erweitert + neue §[`DC-FA-CLI-012.a`](spezifikation.md#dc-fa-cli-012a--konfigurations-pfad---config) + §2-Schema (`planning.closure.dir`/`heading-pattern`/`min-sentences`/`boilerplate`). Die Closure-Fähigkeit ist opt-in **innerhalb** des opt-in Moduls (leere `dir` ⇒ keine Slice-Datei wird geöffnet, byte-identisch): erster auf `heading-pattern` passender Abschnitt (bis zur nächsten gleich-/höherrangigen Überschrift), Fenced-Code entfernt, Satzende-Zeichen gezählt (< `min-sentences` ⇒ `closure-note-thin`), Rest case-insensitiv gegen die literalen `boilerplate`-Teilstrings (⇒ `closure-note-boilerplate`); kein passender Abschnitt bzw. fehlendes gesetztes Verzeichnis ⇒ `closure-note-missing`. Leeres Closure-Verzeichnis ist befundfrei, `min-sentences` < 1 und leerer Floskel-Eintrag ⇒ Exit 2; diagnose-only. `--config <datei>` verschiebt **nur die Herkunft** der Konfiguration (Wurzel-Constraint + Existenz fail-closed, ersetzt statt ergänzt, Validierung und Semantik unverändert, Befund-Provenance nennt die geladene Datei) — es trennt die Prüf-Profile zweier Bindepunkte, ohne die Modulwahl auf der Kommandozeile nachzubauen. Grund-Codes `closure-note-missing`/`closure-note-thin`/`closure-note-boilerplate` in §4 (im Lockstep mit der Implementierung ergänzt). Begründung (Modul-Schnitt statt neues Modul, Bindepunkt-Trennung, Struktur-vs-Bedeutung-Grenze, Schwellenwahl) in begleitender ADR |
 | 2026-07-19 | Neue §[`DC-FA-SRC-001.a`](spezifikation.md#dc-fa-src-001a--upstream-content-drift-externer-quellen-sources) + §2-Schema (`sources[]`: `url`/`sha256`/`unpack`) — **Upstream-Content-Drift** (Modul `sources`, opt-in, **Netz**): eine auf `sha256` gepinnte externe Quelle (Marker `source-pin` am Link **oder** Config `sources:`) wird geholt, gehasht, verglichen; Abweichung → `source-drift` (voller Ist-Hash), Fetch-Fehler → `source-unreachable`. Einzeldatei (Roh-Byte-Hash) oder Archiv (`unpack: zip` → `LC_ALL=C`-sortiertes, reihenfolge-invariantes Content-Manifest). Post-Pass wie `external`; zweite Netz-Tür ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)). Grund-Codes `source-drift`/`source-unreachable` (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Netz-Modul-Design, Amendment der Netz-Sparsamkeit, Manifest-Hash, Marker + Config) in begleitender ADR |
 | 2026-07-18 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Schritt 3/6 + neue §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) + §2-Schema (`codepaths.check-lines`) — **Zitat-Verifikation** in zwei Teilen: (1) opt-in `codepaths.check-lines` verifiziert die Zeilen-Referenz eines `datei:<von>-<bis>`-Pfads (Ziel existiert + ≥ `<bis>` Zeilen ⇒ sonst `citation-out-of-range`; `<von> ≤ <bis>` ⇒ sonst `citation-inverted-range`), das Suffix wurde bisher abgetrennt und verworfen, default-aus **byte-identisch**. (2) neues Modul `citations`: die Direktive `<!-- d-check:cite <pfad>:<von>-<bis> -->` vor einem `>`-Zitatblock ⇒ **zeichengenauer** Vergleich der Zeilen `<von>`–`<bis>` gegen den Zitatblock (`citation-mismatch`), hermetisch, fail-closed (fehlende Datei/Spanne/ungültiger Bereich ⇒ Exit 2), greift die `codepaths`-`datei:zeile`-Erkennung auf. Grund-Codes (§4) folgen mit der Modul-Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Erweiterung vs. eigenes Modul, `verbatim`/Direktiven-Design) in begleitender ADR |
 | 2026-07-18 | §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) — neues **geteiltes Referenz-Ventil** `ignore-refs` mit **Quell-Skopus** (`in`) und Zwei-Feld-Semantik (`refs ∧ ¬keep`; `keep` reihenfolge-unabhängig, kein gitignore-Last-Match), honoriert von `links`/`anchors`/`codepaths`. §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Referenz-Ventil **und** Schritt 5 auf das geteilte Ventil umgestellt; die modul-lokale Liste `codepaths.ignore-refs` bleibt **Alias** (byte-identisch). §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) und §[`DC-FA-ANCH-001.a`](spezifikation.md#dc-fa-anch-001a--github-slug-algorithmus) honorieren es (Existenz-/Escape-/Anker-Prüfung übersprungen, Symlink-Prüfung bleibt). §2-Schema: Top-Level `ignore-refs[].in`/`refs`/`keep` + `codepaths.ignore-refs` als Alias annotiert. **CR** (Konsument `ai-harness-course`); Begründung (Zwei-Feld vs. `!`-Negation, Alias-Pfad) in der begleitenden ADR |

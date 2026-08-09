@@ -72,15 +72,84 @@ func TestConfigPath_FehltFailClosed(t *testing.T) {
 }
 
 // fail-closed: ein Pfad außerhalb der Scan-Wurzel ⇒ Exit 2 (der read-only-Mount
-// ist die Grenze).
+// ist die Grenze). **Mutations-echt:** die Datei außerhalb existiert und ist
+// gültiges YAML — der Exit 2 kann also nur aus der Wurzel-Constraint kommen,
+// nicht aus „fehlt" oder „kaputt" (R2-F-6).
 func TestConfigPath_AusserhalbDerWurzel(t *testing.T) {
-	dir := t.TempDir()
+	parent := t.TempDir()
+	dir := filepath.Join(parent, "repo")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
 	configPathRepo(t, dir)
+	mustWrite(t, filepath.Join(parent, "raus.yml"), "modules: [links]\n")
 	for _, bad := range []string{"../raus.yml", "../../etc/passwd"} {
 		var so, se bytes.Buffer
 		if code := cli.Run([]string{"--config", bad, dir}, &so, &se); code != 2 {
 			t.Errorf("--config %q: Exit = %d, want 2\nstderr=%s", bad, code, se.String())
 		}
+	}
+}
+
+// fail-closed: ein Verzeichnis-**Symlink** im Pfad macht die lexikalische
+// Wurzel-Constraint wertlos — das reale Ziel liegt beliebig woanders. Die
+// Datei am Symlink-Ziel ist bewusst gültig, damit nur die Constraint greift.
+func TestConfigPath_SymlinkEscape(t *testing.T) {
+	parent := t.TempDir()
+	dir := filepath.Join(parent, "repo")
+	if err := os.MkdirAll(dir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	configPathRepo(t, dir)
+	outside := filepath.Join(parent, "outside")
+	if err := os.MkdirAll(outside, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	mustWrite(t, filepath.Join(outside, "profil.yml"), "modules: [links]\n")
+	if err := os.Symlink(outside, filepath.Join(dir, "esc")); err != nil {
+		t.Skipf("Symlinks nicht verfügbar: %v", err)
+	}
+	var so, se bytes.Buffer
+	if code := cli.Run([]string{"--config", "esc/profil.yml", dir}, &so, &se); code != 2 {
+		t.Fatalf("Symlink-Escape muss Exit 2 liefern, got %d\nstderr=%s", code, se.String())
+	}
+	if !strings.Contains(se.String(), "Symlink") {
+		t.Errorf("stderr muss den Symlink benennen, got %s", se.String())
+	}
+}
+
+// fail-closed: ein LEERER --config-Wert ist kein „Flag abwesend" — er darf nicht
+// still auf die konventionelle Datei zurückfallen (typischer Auslöser: eine
+// nicht expandierte Make-/CI-Variable). Ohne den Guard liefe hier ein grüner
+// Lauf mit dem FALSCHEN Profil (R1-F-2/R2-F-2).
+func TestConfigPath_LeererWertFailClosed(t *testing.T) {
+	dir := t.TempDir()
+	configPathRepo(t, dir)
+	var so, se bytes.Buffer
+	if code := cli.Run([]string{"--config", "", dir}, &so, &se); code != 2 {
+		t.Fatalf("leerer --config-Wert muss Exit 2 liefern, got %d\nstdout=%s\nstderr=%s",
+			code, so.String(), se.String())
+	}
+}
+
+// Provenance: eine Config-Fehlermeldung nennt die TATSÄCHLICH geladene Datei,
+// nicht die konventionelle — sonst zeigte sie auf eine ungelesene Datei
+// (R2-F-3; dieselbe Ehrlichkeit wie bei den Config-Pin-Befunden).
+func TestConfigPath_FehlermeldungNenntGeladeneDatei(t *testing.T) {
+	dir := t.TempDir()
+	configPathRepo(t, dir)
+	// Eine Meldung, die den Datei-Präfix TRÄGT (nicht jede tut das: „unbekanntes
+	// Modul" nennt gar keine Datei und lügt damit auch nicht).
+	mustWrite(t, filepath.Join(dir, "kaputt.yml"), "planning:\n  closure:\n    min-sentences: 0\n")
+	var so, se bytes.Buffer
+	if code := cli.Run([]string{"--config", "kaputt.yml", dir}, &so, &se); code != 2 {
+		t.Fatalf("Exit = %d, want 2\nstderr=%s", code, se.String())
+	}
+	if !strings.Contains(se.String(), "kaputt.yml") {
+		t.Errorf("Meldung muss die geladene Datei nennen, got %s", se.String())
+	}
+	if strings.Contains(se.String(), ".d-check.yml") {
+		t.Errorf("Meldung darf nicht die ungelesene konventionelle Datei nennen, got %s", se.String())
 	}
 }
 

@@ -123,6 +123,11 @@ modules: [links, anchors]
 #   # heading: "## Aktuelle Welle"      # kanonische H2 (Default); fehlt sie ⇒ planning-drift (fail-closed)
 #   # marker: "Keine aktive Welle"      # literaler Ruhe-Marker (Default)
 #   # slice-glob: "slice-*.md"          # Basisnamen-Glob der Slice-Dateien (Default)
+#   # closure:                          # zweite Fähigkeit: Struktur der Closure-Notizen (opt-in im opt-in)
+#   #   dir: docs/plan/planning/done    # Aktivierungs-Schalter; leer ⇒ inert (keine Slice-Datei wird geöffnet)
+#   #   heading-pattern: '^#{2,3} .*Closure-Notiz'  # RE2 (Default); kein Treffer ⇒ closure-note-missing
+#   #   min-sentences: 4                # Satzende-Zeichen AUSSERHALB Fenced-Code (Default); < 1 ⇒ Exit 2
+#   #   boilerplate: []                 # literale Floskeln, case-insensitiv; Default LEER (keine Sprach-Annahme)
 
 # --- tracked: Getrackt-Status aufgelöster Link-/Bild-Ziele — git-Index (ohne Range), opt-in ---
 #   (--enable tracked; fail-closed ohne lesbares .git. Ein existierendes, aber

@@ -21,8 +21,27 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// FileName ist der feste Name der Konfigurationsdatei.
+// FileName ist der konventionelle Name der Konfigurationsdatei.
 const FileName = ".d-check.yml"
+
+// RetargetFileName schreibt den Datei-Präfix einer Decoder-Fehlermeldung auf die
+// tatsächlich geladene Datei um. Alle Meldungen dieses Pakets beginnen mit
+// `FileName + ":"`, weil der Decoder kein I/O macht und den Pfad nicht kennt
+// (spec/architecture.md §2). Wird die Konfiguration per --config aus einer
+// anderen Datei gelesen (DC-FA-CLI-012), zeigte die Meldung sonst auf eine
+// Datei, die der Lauf nie gelesen hat — dieselbe Provenance-Ehrlichkeit, die
+// die Config-Pin-Befunde des Moduls sources tragen. Nur das erste Vorkommen
+// wird ersetzt: der Präfix, nicht ein zufällig zitierter Dateiname im Rest.
+func RetargetFileName(err error, name string) error {
+	if err == nil || name == "" || name == FileName {
+		return err
+	}
+	msg := err.Error()
+	if !strings.HasPrefix(msg, FileName+":") {
+		return err
+	}
+	return errors.New(name + strings.TrimPrefix(msg, FileName))
+}
 
 type rawIDPattern struct {
 	Regex       string   `yaml:"regex"`

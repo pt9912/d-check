@@ -93,6 +93,17 @@ func CheckPlanningClosure(fsys driven.Filesystem, cfg model.PlanningConfig) []mo
 			names = append(names, e.Name)
 		}
 	}
+	// C2 fail-closed, zweite Hälfte: `closure.dir` ist der Aktivierungs-Schalter —
+	// ihn zu setzen IST die Behauptung, dass dort Closure-Notizen liegen. Null
+	// Kandidaten heißt also nicht „nichts zu tun", sondern „die Behauptung stimmt
+	// nicht mehr" (typischer Auslöser: der Bestand wandert in Unterordner, das
+	// Gate liefe fortan leer und grün). Dieselbe Logik wie der Nullmengen-Guard
+	// der RTM-Anforderungsquellen — R1-F-5.
+	if len(names) == 0 {
+		return closureFinding(dir, 1, dir, model.ReasonClosureNoteMissing,
+			"Closure-Verzeichnis "+dir+" enthält keine Datei nach "+cfg.EffectiveSliceGlob()+
+				" — das Gate liefe leer (fail-closed; ist der Bestand umgezogen?)")
+	}
 	sort.Strings(names) // stabile Reihenfolge (DC-QA-02)
 	var out []model.Finding
 	for _, name := range names {
@@ -143,22 +154,30 @@ func checkClosureNote(
 }
 
 // closureHeadingLine liefert die 1-basierte Zeilennummer der **ersten**
-// Überschrift, deren getrimmte Fassung auf das Muster passt, samt ihrer Ebene
-// (Zahl der führenden '#'). 0 ⇒ kein Treffer. Fenced-Code wird übersprungen —
-// eine '#'-Zeile in einem Beispielblock ist keine Überschrift.
+// Überschrift, deren getrimmte Fassung auf das Muster passt, samt ihrer Ebene.
+// 0 ⇒ kein Treffer. Fenced-Code wird übersprungen — eine '#'-Zeile in einem
+// Beispielblock ist keine Überschrift.
+//
+// Was als Überschrift zählt, entscheidet der **geteilte** ATX-Parser (derselbe,
+// den `anchors`/`matrix` nutzen), nicht eine eigene '#'-Zählung: `#1 war ein
+// Thema` ist Fließtext, keine H1. Eine eigene Heuristik hier hätte solche
+// Zeilen als Überschrift gelesen und den Abschnitt vorzeitig beendet — R1-F-1.
 func closureHeadingLine(lines []string, re *regexp.Regexp) (lineNo, level int) {
 	inFence := false
 	for i, raw := range lines {
-		trimmed := strings.TrimSpace(raw)
-		if FenceToggle(trimmed) {
+		if FenceToggle(strings.TrimSpace(raw)) {
 			inFence = !inFence
 			continue
 		}
-		if inFence || !strings.HasPrefix(trimmed, "#") {
+		if inFence {
 			continue
 		}
-		if re.MatchString(trimmed) {
-			return i + 1, headingLevel(trimmed)
+		lvl, _, ok := parseATXHeading(raw)
+		if !ok {
+			continue
+		}
+		if re.MatchString(strings.TrimSpace(raw)) {
+			return i + 1, lvl
 		}
 	}
 	return 0, 0
@@ -180,22 +199,15 @@ func closureSectionProse(lines []string, headingNo, level int) string {
 		if inFence {
 			continue
 		}
-		if strings.HasPrefix(trimmed, "#") && headingLevel(trimmed) <= level {
+		// Abschnitts-Ende nur an einer ECHTEN ATX-Überschrift (geteilter Parser)
+		// gleicher oder höherer Ebene — `#1 war ein Thema` beendet nichts.
+		if lvl, _, ok := parseATXHeading(lines[i]); ok && lvl <= level {
 			break
 		}
 		b.WriteString(lines[i])
 		b.WriteByte('\n')
 	}
 	return b.String()
-}
-
-// headingLevel zählt die führenden '#' einer getrimmten Zeile.
-func headingLevel(trimmed string) int {
-	n := 0
-	for n < len(trimmed) && trimmed[n] == '#' {
-		n++
-	}
-	return n
 }
 
 // countSentenceEnds zählt die Satzende-Zeichen '.', '!' und '?' im bereits

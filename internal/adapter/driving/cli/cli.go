@@ -99,6 +99,19 @@ func reorderArgs(args []string) ([]string, error) {
 	return append(flagArgs, positionals...), nil
 }
 
+// flagWasSet meldet, ob ein Flag auf der Kommandozeile EXPLIZIT gesetzt wurde —
+// die Unterscheidung, die der Wert allein nicht trägt (ein gesetztes `--config ""`
+// sieht aus wie ein abwesendes Flag).
+func flagWasSet(flags *flag.FlagSet, name string) bool {
+	set := false
+	flags.Visit(func(f *flag.Flag) {
+		if f.Name == name {
+			set = true
+		}
+	})
+	return set
+}
+
 // writeUsage gibt die Hilfe aus (DC-FA-CLI-001.a): Kurzbeschreibung,
 // Synopsis mit dem Pfad-Argument, Flag-Liste und ein Konfigurations-
 // Hinweis, der auf --print-config/--suggest-config verweist (das
@@ -311,6 +324,16 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 		fmt.Fprintln(stderr, "d-check: error: höchstens ein Pfad-Argument")
 		return options{}, 2, true
 	}
+	// Ein LEERER --config-Wert ist vom abwesenden Flag nicht am Wert
+	// unterscheidbar (beides ""), wäre aber ein stiller Rückfall auf die
+	// konventionelle Datei — genau das, was DC-FA-CLI-012 verbietet. Realer
+	// Auslöser: eine nicht expandierte Make-/CI-Variable. Also am
+	// gesetzt-Zustand unterscheiden, nicht am Wert (R2-F-2).
+	if flagWasSet(flags, "config") && *configPath == "" {
+		fmt.Fprintln(stderr, "d-check: error: --config braucht einen Pfad (leerer Wert — kein Rückfall auf "+
+			configyaml.FileName+")")
+		return options{}, 2, true
+	}
 	opts := options{root: ".", json: *jsonOut, yaml: *yamlOut, doctor: *doctorOut,
 		repair: *repairOut || *repairBroadOut, repairBroad: *repairBroadOut,
 		enable: enable, disable: disable, printConfig: *printConfig, suggestConfig: *suggestConfig,
@@ -382,16 +405,18 @@ func loadConfig(fsys *fsadapter.Adapter, configPath string, stderr io.Writer) (m
 			content = read
 		}
 	}
+	loaded := configyaml.FileName
+	if configPath != "" {
+		loaded = normalizeConfigPath(fsys, configPath)
+	}
 	cfg, err := configyaml.Decode(content)
 	if err != nil {
-		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
+		// Die Meldung muss die geladene Datei nennen, nicht die konventionelle.
+		fmt.Fprintf(stderr, "d-check: error: %v\n", configyaml.RetargetFileName(err, loaded))
 		return model.Config{}, false
 	}
 	if len(content) > 0 {
-		cfg.ConfigFile = configyaml.FileName
-		if configPath != "" {
-			cfg.ConfigFile = normalizeConfigPath(fsys, configPath)
-		}
+		cfg.ConfigFile = loaded
 	}
 	return cfg, true
 }
@@ -407,6 +432,16 @@ func readConfigOverride(fsys *fsadapter.Adapter, configPath string, stderr io.Wr
 			"d-check: error: --config %s liegt außerhalb der Scan-Wurzel\n", configPath)
 		return nil, false
 	}
+	// Die lexikalische Prüfung oben hält nur `..` und absolute Pfade. Ein
+	// Verzeichnis-**Symlink** entkäme ihr (`esc/etc/passwd` mit `esc -> /`), denn
+	// Kind lstatet nur die letzte Komponente. Also segmentweise prüfen — dieselbe
+	// Alias-Disziplin wie bei den Link-Zielen (R2-F-4).
+	if seg, ok := firstSymlinkSegment(fsys, rel); ok {
+		fmt.Fprintf(stderr,
+			"d-check: error: --config %s führt über den Symlink %s aus der Scan-Wurzel heraus\n",
+			configPath, seg)
+		return nil, false
+	}
 	kind, err := fsys.Kind(rel)
 	if err != nil || kind != driven.KindFile {
 		fmt.Fprintf(stderr,
@@ -420,6 +455,20 @@ func readConfigOverride(fsys *fsadapter.Adapter, configPath string, stderr io.Wr
 		return nil, false
 	}
 	return content, true
+}
+
+// firstSymlinkSegment prüft jedes Pfad-Präfix von rel (inklusive rel selbst) auf
+// Symlink und liefert das erste gefundene. Ein Symlink irgendwo im Pfad macht die
+// Wurzel-Constraint wertlos, weil das reale Ziel beliebig woanders liegen kann.
+func firstSymlinkSegment(fsys *fsadapter.Adapter, rel string) (string, bool) {
+	segs := strings.Split(rel, "/")
+	for i := range segs {
+		prefix := strings.Join(segs[:i+1], "/")
+		if kind, err := fsys.Kind(prefix); err == nil && kind == driven.KindSymlink {
+			return prefix, true
+		}
+	}
+	return "", false
 }
 
 // normalizeConfigPath bildet den --config-Wert auf einen Wurzel-relativen,

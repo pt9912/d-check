@@ -551,7 +551,12 @@ unverändert und byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 - **Happy Path:** Given eine gültige alternative Konfigurationsdatei innerhalb der Scan-Wurzel, when `d-check --config <datei>` läuft, then gilt ausschließlich deren Inhalt, eine vorhandene `.d-check.yml` der Scan-Wurzel wird **nicht** gelesen, und der Exit-Code folgt der Befundlage.
 - **Boundary (ohne Flag):** Given **kein** `--config`, when `d-check` läuft, then unverändertes Verhalten (`.d-check.yml` aus der Scan-Wurzel) und byte-identischer Befundsatz ([`DC-QA-02`](#dc-qa-02--determinismus)).
 - **Negative (fehlt):** Given einen `--config`-Pfad, der nicht existiert, when `d-check` läuft, then Exit-Code 2 mit Hinweis auf stderr — **kein** Rückfall auf Defaults oder auf die konventionelle Datei.
-- **Negative (außerhalb der Wurzel):** Given einen `--config`-Pfad außerhalb der Scan-Wurzel, when `d-check` läuft, then Exit-Code 2.
+- **Negative (leerer Wert):** Given `--config` **mit leerem Wert** (typischer Auslöser: eine nicht expandierte Make-/CI-Variable), when `d-check` läuft, then Exit-Code 2 — ein gesetztes Flag ohne Pfad ist ein Nutzungsfehler und **kein** stiller Rückfall auf die konventionelle Datei.
+- **Negative (außerhalb der Wurzel):** Given einen `--config`-Pfad außerhalb der Scan-Wurzel, when `d-check` läuft, then Exit-Code 2 — auch dann, wenn die Datei dort existiert und gültig ist.
+- **Negative (Symlink-Ausbruch):** Given einen `--config`-Pfad, der über einen **Verzeichnis-Symlink** aus der Scan-Wurzel herausführt, when `d-check` läuft, then Exit-Code 2 mit Nennung des Symlinks — die Wurzel-Grenze ist nicht nur lexikalisch.
+- **Negative (kein Datei-Ziel):** Given einen `--config`-Pfad, der auf ein Verzeichnis zeigt, when `d-check` läuft, then Exit-Code 2.
+- **Boundary (absolut innerhalb):** Given einen **absoluten** `--config`-Pfad, der innerhalb der Scan-Wurzel liegt, when `d-check` läuft, then wird er auf die Wurzel bezogen aufgelöst und gilt.
+- **Provenance:** Given eine `--config`-Datei mit einem Konfigurationsfehler, dessen Meldung die Datei benennt, when `d-check` läuft, then nennt die Meldung die **tatsächlich geladene** Datei, nicht die konventionelle.
 - **Negative (ungültig):** Given eine `--config`-Datei mit ungültigem Schema, when `d-check` läuft, then Exit-Code 2 mit Zeilenangabe, wie bei einer ungültigen `.d-check.yml` ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei)).
 
 **Out-of-Scope:** Zusammenführen oder Vererben mehrerer Konfigurationsdateien (die
@@ -1876,9 +1881,18 @@ passt (RE2, Default `^#{2,3} .*Closure-Notiz`), reichend bis zur nächsten
 
 Geprüft wird **ausschließlich** `planning.closure.dir` (per Konvention das
 Verzeichnis der abgeschlossenen Slices) — ein Slice in Arbeit trägt noch keine
-Closure-Pflicht. **fail-closed:** ein gesetztes, aber fehlendes oder unlesbares
-`planning.closure.dir` ⇒ `closure-note-missing` auf dem Verzeichnis (kein stilles
-Grün); ein ungültiges `heading-pattern` oder ein `min-sentences` < 1 ⇒ Exit 2.
+Closure-Pflicht. Als Abschnitts-Überschrift zählt nur eine **echte
+ATX-Überschrift außerhalb von Fenced-Code**; eine Fließtext-Zeile, die bloß mit
+`#` beginnt, eröffnet und beendet keinen Abschnitt.
+
+**fail-closed** in zwei Stufen. Zur **Laufzeit** (`closure-note-missing`, Exit 1):
+ein gesetztes, aber fehlendes oder unlesbares `planning.closure.dir` — **und
+ebenso ein Verzeichnis ohne einen einzigen Kandidaten.** Den Schlüssel zu setzen
+**ist** die Behauptung, dass dort Closure-Notizen liegen; findet der Lauf keine,
+liefe das Gate fortan leer und grün. Am **Config-Rand** (Exit 2): ein `dir`
+außerhalb der Repo-Wurzel (absolut oder mit `..`), ein nicht kompilierendes
+`heading-pattern`, ein **explizit** gesetztes `min-sentences` < 1 und ein leerer
+`boilerplate`-Eintrag.
 Die Fähigkeit bleibt **hermetisch** (Arbeitsbaum, kein git, kein Netz) und
 **diagnose-only** — kein `--repair`-Hunk, denn eine Closure-Notiz schreibt der
 Autor, nicht das Werkzeug.
@@ -1901,7 +1915,10 @@ bereits abdeckt.
 - **Negative (Abschnitt fehlt):** Given ein Slice im Closure-Verzeichnis **ohne** eine auf `heading-pattern` passende Überschrift, when `d-check --enable planning` läuft, then ein Befund `closure-note-missing`, Exit 1.
 - **Negative (Floskel):** Given einen konfigurierten `planning.closure.boilerplate`-Eintrag, dessen literaler Teilstring case-insensitiv im bereinigten Abschnitts-Text vorkommt, when `d-check --enable planning` läuft, then ein Befund `closure-note-boilerplate`, Exit 1.
 - **Boundary (Code-Block zählt nicht):** Given eine Closure-Notiz, deren Satzende-Zeichen überwiegend in einem Fenced-Code-Block stehen, when `d-check --enable planning` läuft, then zählen nur die Zeichen außerhalb des Blocks — bleibt die Zahl unter der Schwelle, dann `closure-note-thin`.
-- **fail-closed (Closure-Verzeichnis/Regex):** Given `planning.closure.dir` gesetzt, aber fehlend oder unlesbar, when `d-check --enable planning` läuft, then `closure-note-missing`, Exit 1; given ein ungültiges `heading-pattern` oder `min-sentences` < 1, then Exit 2.
+- **fail-closed (Closure-Verzeichnis):** Given `planning.closure.dir` gesetzt, aber fehlend oder unlesbar, when `d-check --enable planning` läuft, then `closure-note-missing`, Exit 1.
+- **fail-closed (kein Kandidat):** Given ein existierendes `planning.closure.dir` **ohne** eine einzige Datei nach `planning.slice-glob`, when `d-check --enable planning` läuft, then `closure-note-missing` mit einem Hinweis auf das Leerlaufen, Exit 1 — ein leer laufendes Gate meldet nicht Erfolg.
+- **fail-closed (Config-Rand):** Given ein `planning.closure.dir` außerhalb der Repo-Wurzel, ein nicht kompilierendes `heading-pattern`, ein explizit gesetztes `min-sentences` < 1 **oder** einen leeren `boilerplate`-Eintrag, when `d-check` startet, then Exit 2 vor dem Lauf; ein **abwesendes** `min-sentences` ist dagegen der Default (kein Fehler).
+- **Boundary (Rauten-Fließtext):** Given eine Closure-Notiz, die eine Zeile wie `#1 war ein Thema` enthält, when `d-check --enable planning` läuft, then gilt diese Zeile **nicht** als Überschrift — der Abschnitt reicht über sie hinaus und eine dahinter stehende Floskel wird gefunden.
 
 **Out-of-Scope:** eine git-/VCS-basierte Lifecycle-Prüfung (rein hermetisch, nur
 Arbeitsbaum); mehr als eine Roadmap bzw. ein Slice- oder Closure-Verzeichnis pro
