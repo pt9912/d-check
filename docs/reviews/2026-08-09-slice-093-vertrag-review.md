@@ -6,7 +6,7 @@ Begründung ↔ Harness-Deklarationen. Die Go-Implementierung prüft ein zweiter
 Reviewer parallel; sie wird hier nur als **Beleg** herangezogen, wo eine
 Vertragsaussage sonst nicht falsifizierbar wäre.
 
-**Gegenstand:** [slice-093](../plan/planning/in-progress/slice-093-closure-note-gate.md),
+**Gegenstand:** [slice-093](../plan/planning/done/slice-093-closure-note-gate.md),
 Commit-Range `18489ee..ae4cc09` (sechs Commits)
 
 **Skill:** [`.harness/skills/reviewer.md`](../../.harness/skills/reviewer.md) @ 1.3.0 ·
@@ -15,7 +15,7 @@ Commit-Range `18489ee..ae4cc09` (sechs Commits)
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde — ohne diese Liste
 ist der Lauf nicht reproduzierbar):
 
-- [slice-093](../plan/planning/in-progress/slice-093-closure-note-gate.md) (Slice-Plan, Abnahme-Punkte 1 + 2)
+- [slice-093](../plan/planning/done/slice-093-closure-note-gate.md) (Slice-Plan, Abnahme-Punkte 1 + 2)
 - [ADR-0048](../plan/adr/0048-closure-note-struktur-im-planning-modul.md) sowie der [ADR-Index](../plan/adr/README.md)
 - [`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) (geschärft),
   [`DC-FA-CLI-012`](../../spec/lastenheft.md#dc-fa-cli-012--konfigurations-pfad-überschreiben) (neu),

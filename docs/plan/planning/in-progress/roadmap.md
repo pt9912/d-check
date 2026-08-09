@@ -16,11 +16,8 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 den drei Pflicht-Bestandteilen (Slice-IDs · Trigger · Closure-Kriterien); das
 *Geplante Ende* ist Schätzung, kein Closure-Kriterium.
 
-**Welle-ID:** welle-68-planning-roadmap-harness
-**Start:** 2026-08-03
-**Geplantes Ende:** 2026-08-05 (Schätzung, korrigierbar)
-
-**Closure-Trigger:** siehe [Wellendokument](../welle-68-planning-roadmap-harness.md).
+Keine aktive Welle — welle-68-planning-roadmap-harness hat alle Slices in
+`done/`; die Wellen-Closure folgt.
 
 
 ## Nächste Wellen
