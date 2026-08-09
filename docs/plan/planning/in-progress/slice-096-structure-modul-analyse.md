@@ -62,7 +62,7 @@ Aussage. Die drei Skripte tragen zusammen **elf** Prüfungen (Stand 2026-08-09,
 | # | Prüfung | Dokumentklasse | Aussage | Beleg |
 |---|---|---|---|---|
 | 1 | Closure-Abschnitt vorhanden | Slice-Plan | **gedeckt** | `closure-note-missing`, gegen 76 Adopter-Slices grün gefahren |
-| 2 | **genau einer**, nicht mehrere | Slice-Plan | **nicht gedeckt** | d-check liest laut Spezifikation den **ersten** Treffer; Abnahme-Punkt 3 |
+| 2 | **genau einer**, nicht mehrere | Slice-Plan | **nicht gedeckt** → Abnahme-Punkt 3 schließt die Lücke | d-check liest laut Spezifikation den **ersten** Treffer |
 | 3 | Abschnitt nicht leer | Slice-Plan | **gedeckt** | Sonderfall von `min-sentences` (≥ 1) |
 | 4 | kein Template-Platzhalter | Slice-Plan | **nicht gedeckt** | vier Platzhalter-Sätze passieren alle drei Codes; eigener Antrag |
 | 5 | keine Floskel | Slice-Plan | **nach Kalibrierung** | Teilstring statt zeilen-verankert ⇒ nur eindeutige Phrasen aufnehmbar |
@@ -113,34 +113,95 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
    nie ausgesprochene Satz „d-check prüft, ob ein Dokument korrekt auf andere
    zeigt" eine benannte Erweiterung: **und ob es selbst richtig gebaut ist.**
    Das gehört in die Einleitung des Lastenhefts, nicht nur in die Modul-Liste.
-2. **Ablöse-Pfad für die Closure-Fähigkeit.** **Präzisierung nach dem
-   Schnitt-Review (F-4):** superseded werden kann **nicht** die Anforderung
-   [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
-   — sie trägt **auch** die Aktiv-Status-Invariante (Roadmap ↔ in-progress), die
-   `structure` nicht abdeckt und die bleibt. Wandern kann nur die **zweite
-   Fähigkeit**. Der Ablöse-Pfad ist also ein Teil-Supersede, kein voller.
-   Und die Analogie zu
-   [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md) trägt
-   nur halb: dort war der Alias **byte-identisch** (gleiche Grund-Codes), hier
-   stünden `closure-note-*` gegen `section-*`. **Zu entscheiden:** bleiben die
-   drei bestehenden Grund-Codes erhalten (dann emittiert `structure` sie für
-   Closure-Regeln), oder werden sie durch `section-*` ersetzt (dann ist es ein
-   Befund-Bruch, den ein Alias nicht abfängt)?
-3. **Kardinalität mehrerer Closure-Abschnitte.** Das abzulösende
-   Konsumenten-Skript prüft, wie **viele** Closure-Abschnitte ein Dokument trägt,
-   und meldet Mehrdeutigkeit; die heutige Fähigkeit liest laut Spezifikation nur
-   den **ersten** Treffer. Die Aktiv-Status-Prüfung desselben Moduls ist an
-   dieser Stelle bereits fail-closed (mehrfache kanonische Überschrift ⇒
-   Befund) — die Asymmetrie ist unbeabsichtigt. **Zu entscheiden:** deckt
-   `structure` die Kardinalität ab, oder wird sie als Nicht-Ziel benannt?
-4. **Semantik der zwei fehlenden Bausteine.** Abschnitts-treue Task-Zählung
-   (Obergrenze innerhalb eines Abschnitts) und benannte Pflicht-Bausteine
-   (Happy/Boundary/Negative als hervorgehobene Marken) — beides muss
-   fence-treu und abschnitts-treu definiert werden, sonst wiederholt d-check den
-   Fehler der abgelösten Skripte.
-5. **Grandfathering.** Der Antrag verweist auf `exempt-paths`; zu prüfen, ob das
-   für eine Stichtags-Regel („erst ab Slice N") ausreicht oder ob die
-   Abschnitts-Regel selbst einen Skopus braucht.
+2. **Ablöse-Pfad für die Closure-Fähigkeit.** → **Entschieden 2026-08-09: es
+   wird nichts superseded, und kein Grund-Code wird ersetzt.**
+
+   Die Frage war falsch gestellt, und ein Blick in den eigenen Vertrag klärt
+   sie: die Spezifikation führt die Grund-Codes als **„stabil,
+   maschinenlesbar"** (§4), im Unterschied zur `message`, die ausdrücklich
+   *nicht* stabilitätsgarantiert ist. `closure-note-*` gegen `section-*`
+   auszutauschen wäre damit kein Alias-Problem, sondern der **Bruch einer
+   zugesagten Fläche** — jede Konsumenten-CI, die auf den Code filtert, bricht.
+   Das ist keine Abwägung, das ist ausgeschlossen.
+
+   **Der Pfad ist deshalb umgekehrt zur ersten Annahme:**
+   - `structure` entsteht **neben** der Closure-Fähigkeit und führt seine
+     eigenen Codes.
+   - [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+     bleibt unverändert bestehen — samt Aktiv-Status-Invariante **und** ihren
+     drei Codes. Auch [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md)
+     wird **nicht** superseded.
+   - Was zusammengeführt wird, ist die **Semantik**: die Closure-Fähigkeit wird
+     in der Spezifikation als **Preset** über denselben Struktur-Regeln
+     definiert (gleiche Abschnitts-Bestimmung, gleiche Fence-Behandlung, gleiche
+     Zählung). Damit können die beiden nicht auseinanderlaufen, ohne dass ein
+     Test es merkt — die Doppelung liegt allein in der **Config-Oberfläche**,
+     nicht in der Mechanik.
+
+   Das ist dieselbe Form wie bei
+   [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md), aber
+   aus dem umgekehrten Grund: dort blieb der alte Schlüssel Alias, **weil** die
+   Codes gleich waren; hier bleibt die alte Anforderung ganz stehen, **weil** die
+   Codes verschieden sind. Der Preis ist zwei Config-Wege für verwandte Fragen —
+   der Gegenwert ist ein Konsumenten-Vertrag, der hält.
+
+3. **Kardinalität mehrerer Abschnitte.** → **Entschieden 2026-08-09: ja, mit
+   eigenem Grund-Code — in beiden Oberflächen.**
+
+   Das Adopter-Skript meldet Mehrdeutigkeit (Messzeile 2), und die
+   Aktiv-Status-Prüfung **desselben Moduls** ist an genau dieser Stelle längst
+   fail-closed: eine mehrfach vorkommende kanonische Überschrift ist dort ein
+   Befund, kein „nimm die erste". Dass die Closure-Fähigkeit still den ersten
+   Treffer nimmt, war keine Entscheidung, sondern ein Versäumnis — und ein
+   stiller: ein zweiter, stehengebliebener Abschnitt ist der **typische**
+   Platzhalter-Fall.
+
+   `structure` bekommt `section-ambiguous`, die Closure-Fähigkeit additiv
+   `closure-note-ambiguous`. Ein eigener Code, kein Sammelbefund, nach der
+   Begründung aus [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md):
+   drei Codes für drei Reparaturen — hier ist die Reparatur „den überzähligen
+   Abschnitt entfernen", nicht „den fehlenden schreiben" und nicht „Substanz
+   ergänzen". Additiv ⇒ SemVer-Minor, kein Bruch.
+
+   **Folge für [slice-094](../open/slice-094-closure-zaehl-paritaet.md):** die
+   dort bewusst verengte Paritäts-Zusage kann wieder auf volle Deckung gehen,
+   sobald dieser Code liegt.
+
+4. **Semantik der fehlenden Bausteine.** → **Entschieden 2026-08-09 — und die
+   Messung hat einen Baustein mehr ergeben, als der Antrag nennt.**
+
+   - **Zählung im Abschnitt** (`max-tasks`): gezählt werden Task-Items
+     (`- [ ]`/`- [x]`) **innerhalb** des Abschnitts, nach derselben
+     Fence-Bereinigung wie die Satzzählung. Genau daran ist die Skript-Variante
+     gescheitert: sie zählte dateiweit und musste den Abschnitts-Schnitt selbst
+     nachbauen.
+   - **Benannte Marken:** der Antrag nennt `require-strong` als eine Liste, die
+     **vollständig** vorkommen muss (Messzeile 10). Messzeile 8 verlangt aber
+     das Gegenteil: **eine von drei** Lerneintrag-Formen genügt. Eine Liste
+     deckt beide Fälle nicht ab — der Vertrag braucht **zwei** Formen
+     („alle von" und „mindestens eine von"), sonst bleibt Zeile 8 ungedeckt und
+     der Konsument behält ein Skript für einen einzigen Fall.
+   - **Die Marke ist zeilenverankert und ausgezeichnet**, nicht Teilstring: das
+     Skript prüft `**Name:**` **am Zeilenanfang**. Ein `Boundary` mitten in
+     einem Satz erfüllt die Zusage nicht. Steht das nicht im Vertrag, entsteht
+     ein Falsch-Grün, das schwerer wiegt als ein Falsch-Rot.
+
+5. **Grandfathering.** → **Entschieden 2026-08-09: `exempt-paths` je Regel — und
+   ausdrücklich keine Stichtags-Mechanik.**
+
+   Der Antrag verweist auf die bestehende Ausnahme-Mechanik, und die reicht für
+   Pfad-Ausnahmen. Sie reicht **nicht** sauber für den gelebten Fall des
+   Adopters („erst ab Slice 52"): eine Zahlen-Schwelle im **Dateinamen** ist als
+   Glob nur umständlich und fehleranfällig ausdrückbar.
+
+   Trotzdem **kein** eigener Mechanismus. Eine Stichtags-Regel zu lernen hieße,
+   die Kennungs-Konvention des Adopters zu interpretieren — d-check müsste aus
+   einem Dateinamen eine Ordnung lesen. Das ist dieselbe Grenze, die
+   [`DC-FA-TRK-001`](../../../../spec/lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)
+   schon einmal gezogen hat (Index-Wahrheit statt eines zweiten
+   `gitignore`-Interpreters): **kein zweiter Regel-Interpreter im Werkzeug.**
+   Die Grenze gehört benannt, damit der nächste Antrag sie nicht neu verhandeln
+   muss.
 
 ## 4. Definition of Done
 
@@ -165,7 +226,11 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
 
 - **Contract-Churn bei Adoptern:** `planning.closure` ist seit v0.52.0
   ausgeliefert. Ein Supersede ohne Alias wäre ein Bruch nach wenigen Tagen.
-  — **Ausgang:** offen bis Abnahme-Punkt 2.
+  — **Ausgang: entfallen.** Abnahme-Punkt 2 hat ergeben, dass gar nicht
+  superseded wird: die Grund-Codes sind laut Spezifikation §4 stabilitäts-
+  garantiert, also bleibt die bestehende Anforderung samt Codes stehen und wird
+  nur semantisch als Preset über die gemeinsamen Struktur-Regeln definiert. Es
+  gibt keinen Umstiegs-Zeitpunkt, an dem etwas brechen könnte.
 - **Der Modul-Schnitt könnte zu breit geraten.** „Struktur-Invarianten" ist eine
   Kategorie, keine Prüfung; ohne scharfe Grenze wächst `structure` zum
   Sammelbecken. — **Ausgang: eingetreten und begrenzt.** Die Messung hat mit
