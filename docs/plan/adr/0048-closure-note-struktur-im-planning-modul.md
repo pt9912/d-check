@@ -1,6 +1,6 @@
 # ADR-0048 — Closure-Note-Struktur als zweite `planning`-Fähigkeit + Konfigurations-Pfad-Flag
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-08-09
 **Autor:** pt9912
 **Bezug:** [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
@@ -195,3 +195,4 @@ Eine Messung gegen den eigenen Bestand (2026-08-09) rahmt den Entwurf:
   ergänzt (Nullmengen-Guard + geteilte Heading-Lexik); die Wurzel-Grenze von
   `--config` wurde von lexikalisch auf symlink-fest nachgezogen und ein leerer
   Flag-Wert als Nutzungsfehler ausgewiesen.
+- 2026-08-09: Accepted (Closure `slice-093`, Release **v0.52.0**).

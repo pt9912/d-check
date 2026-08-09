@@ -39,8 +39,8 @@ mechanisiert — ein `verify-closure-notes`-Gate (Struktur) plus der inferentiel
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [slice-092](done/slice-092-roadmap-aktuelle-welle-template-form.md) | `## Aktuelle Welle` auf die Template-Struktur-Felder (aktive-Welle-Form) + Adaption verfeinern | Roadmap-Template-Konformität |
-| [slice-093](done/slice-093-closure-note-gate.md) | Closure-Note-Reviewer-Skill + `verify-closure-notes`-Gate | Etappe-D-Finding D-7 |
+| [slice-092](slice-092-roadmap-aktuelle-welle-template-form.md) | `## Aktuelle Welle` auf die Template-Struktur-Felder (aktive-Welle-Form) + Adaption verfeinern | Roadmap-Template-Konformität |
+| [slice-093](slice-093-closure-note-gate.md) | Closure-Note-Reviewer-Skill + `verify-closure-notes`-Gate | Etappe-D-Finding D-7 |
 
 ## 5. Abhängigkeiten
 
