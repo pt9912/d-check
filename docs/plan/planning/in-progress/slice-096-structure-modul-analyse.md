@@ -4,10 +4,10 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** eigene Welle, bei Freigabe zu eröffnen — dieser Strang trägt eine
-Closure-Bedingung **jenseits** seiner DoD: die Analyse allein löst kein
-Adopter-Skript ab. Umsetzung, Paritäts-Beleg und der Ablöse-Pfad sind
-Folge-Slices.
+**Welle:** [welle-69-structure-schnitt](../welle-69-structure-schnitt.md),
+eröffnet am 2026-08-09 — dieser Strang trägt eine Closure-Bedingung **jenseits**
+seiner DoD: die Analyse allein löst kein Adopter-Skript ab. Umsetzung,
+Paritäts-Beleg und der Ablöse-Pfad sind Folge-Slices.
 
 **Dieser Slice läuft ZUERST** (Auftraggeber-Entscheid 2026-08-09, nach dem
 Backlog-Schnitt-Review): [slice-094](../open/slice-094-closure-zaehl-paritaet.md),

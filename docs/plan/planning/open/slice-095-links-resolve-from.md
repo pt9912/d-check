@@ -41,8 +41,17 @@ ist die Klasse **zweimal** eingetreten:
 2. Das Wellendokument verwies auf `done/slice-09….md`; als es selbst nach
    `done/` wanderte, brachen seine eigenen Zeiger.
 
-Beide wurden von Hand nachgezogen, weil `doc-check` sie **nach** dem Move
-meldete. Genau das soll vorher auffallen.
+Und ein drittes Mal, im selben Maßstab: die Eröffnung von
+[welle-69](../welle-69-structure-schnitt.md) am 2026-08-09 verschob **einen**
+Slice von `open/` nach `in-progress/` — und brach damit **19 Links** auf einen
+Schlag. Betroffen waren die vier Nachbar-Slices in `open/` (präfixlose
+Geschwister-Verweise), ein Review-Report und der verschobene Slice selbst, dessen
+Verweise auf die zurückgebliebenen Geschwister nun ins Leere zeigten.
+
+Alle drei Male wurden die Verweise von Hand nachgezogen, weil `doc-check` sie
+**nach** dem Move meldete. Genau das soll vorher auffallen — und die 19 zeigen,
+dass die Klasse nicht mit der Repo-Größe skaliert, sondern mit der Zahl der
+Nachbarn.
 
 ## 3. Abnahme-Punkte
 
