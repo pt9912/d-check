@@ -221,7 +221,7 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
 - [x] Folge-Slices geschnitten und als Dateien in `open/` angelegt:
       [slice-099](../open/slice-099-structure-modul.md) (Implementierung, in
       **einem** Slice — die zunächst geplante Aufteilung scheiterte an der
-      Release-Grenze) und [slice-101](../open/slice-101-fence-unbalanciert.md)
+      Release-Grenze) und [slice-101](../in-progress/slice-101-fence-unbalanciert.md)
       (der beim Review gefundene **ausgelieferte** Silent-Grün-Pfad im
       Fence-Automaten, unabhängig von diesem Antrag). **Kein Alias-Slice** — es
       wird nichts abgelöst (Abnahme-Punkt 2).
@@ -355,7 +355,7 @@ ADR-Konsequenzen und das Entscheidungs-Protokoll weiter die verworfene Fassung)
 verlangt. Die Klasse ist damit dichter, als die Zahl zeigt.
 
 **Anschluss:** [slice-099](../open/slice-099-structure-modul.md) (Implementierung)
-und [slice-101](../open/slice-101-fence-unbalanciert.md) — Letzterer ist der beim
+und [slice-101](../in-progress/slice-101-fence-unbalanciert.md) — Letzterer ist der beim
 Review gefundene **ausgelieferte** stille Grün-Pfad im Fence-Automaten und läuft
 **vor** 099, damit das neue Modul ihn nicht erbt.
 

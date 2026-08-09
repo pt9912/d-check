@@ -16,7 +16,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 den drei Pflicht-Bestandteilen (Slice-IDs · Trigger · Closure-Kriterien); das
 *Geplante Ende* ist Schätzung, kein Closure-Kriterium.
 
-Keine aktive Welle.
+**Welle-ID:** welle-70-fence-lexik
+**Start:** 2026-08-09
+**Geplantes Ende:** 2026-08-10 (Schätzung, korrigierbar)
+
+**Closure-Trigger:** siehe [Wellendokument](../welle-70-fence-lexik.md).
 
 
 ## Nächste Wellen
@@ -28,7 +32,7 @@ und geschätzter Aufwand (S/M/L, kein Termin).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| structure-Umsetzung | Freigabe; die Reihenfolge ist bindend — [slice-101](../open/slice-101-fence-unbalanciert.md) vor [slice-099](../open/slice-099-structure-modul.md), sonst erbt das neue Modul einen bekannten stillen Grün-Pfad | [slice-101](../open/slice-101-fence-unbalanciert.md), [slice-099](../open/slice-099-structure-modul.md) | L |
+| structure-Umsetzung | welle-70 in `done/` — der Fence-Defekt ist behoben, sonst erbt das neue Modul einen bekannten stillen Grün-Pfad | [slice-099](../open/slice-099-structure-modul.md) | L |
 | Closure-Fähigkeit nachschärfen | Freigabe; unabhängig von der Umsetzungs-Welle — der Zuschnitt ist mit welle-69 entschieden (alle drei bleiben eigenständig) | [slice-094](../open/slice-094-closure-zaehl-paritaet.md), [slice-097](../open/slice-097-closure-glob-entkopplung.md), [slice-098](../open/slice-098-closure-note-placeholder.md) | M |
 
 ## Meilensteine
@@ -51,13 +55,15 @@ Welle, die ohne fertige Vorgängerin nicht starten kann, ist eine Phantom-Welle.
 flowchart LR
     W68["welle-68 - planning-roadmap-harness (geschlossen)"]
     W69["welle-69 - structure-Schnitt (geschlossen)"]
-    WU["structure-Umsetzung (geplant) - 101 vor 099"]
+    W70["welle-70 - Fence-Lexik (laeuft)"]
+    WU["structure-Umsetzung (geplant)"]
     WC["Closure-Faehigkeit nachschaerfen (geplant)"]
-    S95["slice-095 - links.resolve-from (wellenlos, unabhaengig)"]
+    S95["slice-095 - links.resolve-from (unabhaengig)"]
     W68 --> W69
-    W69 --> WU
+    W69 --> W70
+    W70 --> WU
     W69 --> WC
-    W68 -.-> S95
+    W69 -.-> S95
 ```
 
 ## Abgeschlossene Wellen
@@ -88,6 +94,7 @@ Zeile voll heißt treibende.
 
 | Datum | Was wurde geändert? | Warum? |
 |---|---|---|
+| 2026-08-09 | **welle-70-fence-lexik eröffnet**; [slice-101](slice-101-fence-unbalanciert.md) `open`→`in-progress` | Der beim slice-096-Review gefundene **ausgelieferte** stille Grün-Pfad im Fence-Automaten wird vorgezogen: er ist bindende Vorbedingung der structure-Umsetzung, und er betrifft ein Gate, das seit v0.52.0 im Feld ist. **Nebenbefund beim Eröffnen:** drei Slice-Köpfe trugen „ohne Welle" — unter der Zwei-Zustands-Kopplung aus [`MR-024`](../../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform) ist das für einen Slice **in Arbeit** nicht einlösbar (`planning-check` verlangt bei belegtem `in-progress/` eine benannte Welle). Die Köpfe sind korrigiert; ob die Kopplung so bleiben soll, gehört bei der Closure ins Beobachtungs-Register |
 | 2026-06-11 | slice-012-Trigger: „slice-011 done" → „slice-011 **und** slice-013 done" | Der [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Vergleichslauf gegen das erweiterte `docs-check.js` zeigte die Inline-Code-Pfad-Prüfung als Konsolidierungs-Lücke; Change Request [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) (Lastenheft 0.3.0) als slice-013 eingeschoben |
 | 2026-07-17 | **WIP-Limit wiederhergestellt:** slice-071 `in-progress`→`open` (Blocker), slice-076 `in-progress`→`next`; welle-60 führt nur noch slice-073 in Arbeit. Reihenfolge danach: slice-073 zu Ende (vier offene R1-Befunde + bestätigender Review) → Closure → slice-075 | `in-progress/` trug **drei** Slices gleichzeitig; Modul 5: „WIP-Limit pro Implementer = 1 ist eine harte Größe, kein Vorschlag" und `next→in-progress` verlangt „WIP-Limit frei". Bei slice-076 wurde die Bedingung beim Einplanen schlicht nicht geprüft (`6d60094`); slice-071 war bereits blockiert und hätte nach Modul 5 längst zurückgeführt gehört — beides still, bis der Auftraggeber die Regel einforderte. slice-075 erhält Vorrang vor slice-076, weil er produktiv verdrahtetes `trace.coverage` **verfälscht** (Auftraggeber-Meldung grid-gym), während slice-076 Blindheit ohne Falschaussage ist |
 | 2026-07-17 | slice-074 aus welle-60 zurückgestellt (`in-progress/` → `open/`), Implementierung zurückgenommen; slice-076 in welle-60 nachgenommen | Drei unabhängige Reviews belegten an fünf aufeinanderfolgenden Fassungen dieselbe Klasse, zuletzt einen Stilles-Grün-Pfad (R3-F-1). Der Realdatenbeleg für slice-071 ist damit weiter blockiert — offen ausgewiesen statt still weitergeschoben. slice-076 kam aus dem Spike, den die Rücknahme ausgelöst hat |

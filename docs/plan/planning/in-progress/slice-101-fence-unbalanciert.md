@@ -4,7 +4,11 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** ohne Welle — einzeln lieferbar, keine Closure-Bedingung jenseits der DoD.
+**Welle:** [welle-70-fence-lexik](../welle-70-fence-lexik.md), eröffnet am
+2026-08-09. Die Welle bündelt nur diesen Slice — nicht wegen eines Mehr
+gegenüber der DoD, sondern weil `make planning-check` einen Slice in Arbeit ohne
+benannte aktive Welle nicht zulässt (die Zwei-Zustands-Kopplung aus
+[`MR-024`](../../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform)).
 
 **Bezug:** [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 (Closure-Note-Struktur), [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md)
@@ -75,7 +79,7 @@ geworden.
 ## 6. Trigger
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei. **Vor**
-[slice-099](slice-099-structure-modul.md) sinnvoll — sonst erbt das neue Modul
+[slice-099](../open/slice-099-structure-modul.md) sinnvoll — sonst erbt das neue Modul
 den bekannten stillen Grün-Pfad über die geteilte Mechanik.
 
 **Rückführungen:** `in-progress` → `open`, falls die Bestandsmessung zeigt, dass

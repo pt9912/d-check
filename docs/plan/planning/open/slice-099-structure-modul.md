@@ -82,7 +82,7 @@ ablehnt, ist kein lieferbarer Zwischenstand.
 - **Die Paritäts-Fixtures liegen im Adopter-Repo**, nicht hier. — **Ausgang:**
   offen; beizuziehen, nicht nachzubauen.
 - **Die Fence-Lexik trägt einen bekannten Defekt**
-  ([slice-101](slice-101-fence-unbalanciert.md)): ein ungeschlossener Fence
+  ([slice-101](../in-progress/slice-101-fence-unbalanciert.md)): ein ungeschlossener Fence
   verschluckt still den Rest. `structure` erbt ihn über die geteilte Mechanik.
   — **Ausgang: entschieden.** Der Fix läuft zuerst; §6 macht ihn zur **bindenden**
   Start-Bedingung, nicht zur Empfehlung.
@@ -90,7 +90,7 @@ ablehnt, ist kein lieferbarer Zwischenstand.
 ## 6. Trigger
 
 **Start** (`next` → `in-progress`): [slice-096](../done/slice-096-structure-modul-analyse.md)
-in `done/` **und** [slice-101](slice-101-fence-unbalanciert.md) in `done/`;
+in `done/` **und** [slice-101](../in-progress/slice-101-fence-unbalanciert.md) in `done/`;
 WIP-Slot frei. Die zweite Bedingung ist **bindend**, nicht bevorzugt: liefe
 dieser Slice zuerst, erbte das neue Modul über die geteilte Mechanik einen
 **bekannten** stillen Grün-Pfad — und läge damit ab Release als zugesagte

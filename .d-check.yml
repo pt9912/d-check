@@ -36,6 +36,7 @@ ignore-refs:
       - "docs/plan/planning/open/slice-100-structure-marken-und-zaehlung.md"
       - "docs/plan/planning/in-progress/slice-096-structure-modul-analyse.md"
       - "docs/plan/planning/welle-69-structure-schnitt.md"
+      - "docs/plan/planning/open/slice-101-fence-unbalanciert.md"
   - in: docs/plan/adr/0022-matrix-token-richtung-provenance-marker.md
     refs: [".harness/baseline/v1.4.0/**"]
   - in: docs/plan/planning/done/slice-080-sources-modul.md

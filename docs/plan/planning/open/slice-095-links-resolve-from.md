@@ -4,7 +4,11 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** ohne Welle — einzeln lieferbar, keine Closure-Bedingung jenseits der DoD.
+**Welle:** bei Start zu eröffnen. Ein Slice „ohne Welle" ist in diesem Repo
+nicht einlösbar: `make planning-check` koppelt Ruhe-Marker und `in-progress/`
+atomar ([`MR-024`](../../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform)),
+ein Slice in Arbeit verlangt also eine benannte Welle — auch wenn er inhaltlich
+keine bräuchte.
 
 **Bezug:** [`DC-FA-LINK-001`](../../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)
 (Erweiterung, kein neues Modul);
