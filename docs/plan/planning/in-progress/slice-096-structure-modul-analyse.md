@@ -53,13 +53,66 @@ positiv formulierte Ausschluss-Alternative, und die Floskel-Prüfung ist dort
 zeilen-verankert, hier Teilstring. Nicht gedeckt sind die abschnitts-treue
 Task-Zählung und die benannten Pflicht-Bausteine.
 
+### Die Messung, je Prüfung eine Aussage
+
+Nicht je Skript, sondern je **Prüfung** — ein Skript ist eine Datei, keine
+Aussage. Die drei Skripte tragen zusammen **elf** Prüfungen (Stand 2026-08-09,
+480 Zeilen Shell):
+
+| # | Prüfung | Dokumentklasse | Aussage | Beleg |
+|---|---|---|---|---|
+| 1 | Closure-Abschnitt vorhanden | Slice-Plan | **gedeckt** | `closure-note-missing`, gegen 76 Adopter-Slices grün gefahren |
+| 2 | **genau einer**, nicht mehrere | Slice-Plan | **nicht gedeckt** | d-check liest laut Spezifikation den **ersten** Treffer; Abnahme-Punkt 3 |
+| 3 | Abschnitt nicht leer | Slice-Plan | **gedeckt** | Sonderfall von `min-sentences` (≥ 1) |
+| 4 | kein Template-Platzhalter | Slice-Plan | **nicht gedeckt** | vier Platzhalter-Sätze passieren alle drei Codes; eigener Antrag |
+| 5 | keine Floskel | Slice-Plan | **nach Kalibrierung** | Teilstring statt zeilen-verankert ⇒ nur eindeutige Phrasen aufnehmbar |
+| 6 | Mindest-Satzzahl | Slice-Plan | **nach Kalibrierung** | Inline-Code und Satzende-Form weichen ab; eigener Antrag |
+| 7 | Obergrenze der DoD-Punkte **im Abschnitt** | Slice-Plan | **nicht gedeckt** | keine Zähl-Fähigkeit über Abschnitts-Elemente |
+| 8 | Lerneintrag nennt **eine von drei** Formen | Slice-Plan | **nicht gedeckt** | Alternation über benannte Marken |
+| 9 | Dateiname gibt die Slice-Nummer her | Slice-Plan | **außerhalb** | siehe Abnahme-Punkt 1 — keine Struktur **innerhalb** eines Dokuments |
+| 10 | vier fette Pflicht-Marken je Anforderung | Anforderung | **nicht gedeckt** | `**Happy Path:**` u. a. **am Zeilenanfang**, nicht als Teilstring |
+| 11 | Stichtags-Ausnahme | beide | **Ventil** | über die bestehende Ausnahme-Mechanik ausdrückbar; Abnahme-Punkt 5 |
+
+**2 gedeckt · 2 nach Kalibrierung · 6 nicht gedeckt · 1 außerhalb · 1 Ventil.**
+
+Die Zeile, die den Schnitt entscheidet, ist **10**: sie betrifft eine **andere
+Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
+
 ## 3. Abnahme-Punkte
 
-1. **Modul-Schnitt.** Neues Modul `structure` (Liste von Regeln über
-   Datei-Globs) — gegen die Alternative, `planning.closure` weiter auszubauen.
-   Kriterium ist das aus
-   [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md):
-   querschnittlich über Dokumentklassen ⇒ eigenes Kürzel.
+1. **Modul-Schnitt.** → **Entschieden 2026-08-09: neues Modul `structure`**,
+   eigenes Bereichskürzel `STRUCT`, als **Liste** von Regeln über Datei-Globs.
+
+   **Das Kriterium ist entschieden, nicht gewählt.**
+   [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md) hat es
+   festgelegt: querschnittlich ⇒ neues Kürzel, Einzelmodul ⇒ bestehende
+   Anforderung ändern. Zeile 10 der Messung entscheidet die Frage: die
+   Pflicht-Marken einer **Anforderung** in
+   [`spec/lastenheft.md`](../../../../spec/lastenheft.md) sind dieselbe
+   Frageform wie die Substanz einer Closure-Notiz, aber eine **andere
+   Dokumentklasse**. Sie unter einem Schlüssel namens `planning.closure`
+   abzulegen, wäre eine Lüge über den Gegenstand — `planning` prüft den
+   Planning-Lifecycle, nicht das Lastenheft.
+
+   **Die Alternative ist geprüft und verworfen:** `planning.closure` um einen
+   Datei-Glob zu erweitern, würde technisch reichen (Abnahme-Punkt von
+   [slice-097](../open/slice-097-closure-glob-entkopplung.md) liefert den
+   Kandidaten-Filter ohnehin). Sie scheitert am Namen, nicht an der Technik —
+   und ein Modul, dessen Name über seinen Gegenstand täuscht, ist genau die
+   Sorte Harness-Lüge, die dieses Repo mechanisch bekämpft.
+
+   **Die Grenze des Moduls, aus Zeile 9 gewonnen** (und damit die Antwort auf
+   das Sammelbecken-Risiko in §5): `structure` prüft die Form **innerhalb** eines
+   Dokuments. Eine Konvention über den **Dateinamen** ist keine solche Form,
+   auch wenn sie im selben Adopter-Skript steht — sie ist eine Aussage über das
+   Verzeichnis, nicht über den Text. Das ist ein **Nicht-Ziel** und gehört
+   ausdrücklich in den Vertrag, nicht in ein späteres „passt schon irgendwie".
+
+   **Konsequenz für die Modul-Liste:** `structure` wäre das 20. Regelmodul, und
+   das erste, das keine **Referenz**-Invariante prüft. Damit erhält der bisher
+   nie ausgesprochene Satz „d-check prüft, ob ein Dokument korrekt auf andere
+   zeigt" eine benannte Erweiterung: **und ob es selbst richtig gebaut ist.**
+   Das gehört in die Einleitung des Lastenhefts, nicht nur in die Modul-Liste.
 2. **Ablöse-Pfad für die Closure-Fähigkeit.** **Präzisierung nach dem
    Schnitt-Review (F-4):** superseded werden kann **nicht** die Anforderung
    [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
@@ -115,8 +168,11 @@ Task-Zählung und die benannten Pflicht-Bausteine.
   — **Ausgang:** offen bis Abnahme-Punkt 2.
 - **Der Modul-Schnitt könnte zu breit geraten.** „Struktur-Invarianten" ist eine
   Kategorie, keine Prüfung; ohne scharfe Grenze wächst `structure` zum
-  Sammelbecken. — **Ausgang:** offen; die Grenze gehört in die ADR, nicht in die
-  Implementierung.
+  Sammelbecken. — **Ausgang: eingetreten und begrenzt.** Die Messung hat mit
+  Zeile 9 (Dateinamen-Konvention) sofort einen Kandidaten geliefert, der im
+  selben Adopter-Skript steht und **nicht** hineingehört. Die Grenze ist als
+  Nicht-Ziel in Abnahme-Punkt 1 formuliert: Form **innerhalb** eines Dokuments,
+  nicht Aussagen über seinen Ort. Sie gehört so in den Vertrag.
 - **Fremd-Repo-Abhängigkeit:** die Paritäts-Fixtures liegen nicht hier.
   — **Ausgang:** offen; beizuziehen, nicht nachzubauen.
 
