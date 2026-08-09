@@ -38,9 +38,9 @@ Dokument selbst richtig gebaut?".
 
 - Alle Slices dieser Welle liegen in `done/`.
 - **Das Mehr gegenüber der Slice-DoD:** die drei bereits liegenden
-  Closure-Slices ([slice-094](open/slice-094-closure-zaehl-paritaet.md),
-  [slice-097](open/slice-097-closure-glob-entkopplung.md),
-  [slice-098](open/slice-098-closure-note-placeholder.md)) haben eine
+  Closure-Slices ([slice-094](../open/slice-094-closure-zaehl-paritaet.md),
+  [slice-097](../open/slice-097-closure-glob-entkopplung.md),
+  [slice-098](../open/slice-098-closure-note-placeholder.md)) haben eine
   **Entscheidung** — eigenständig, aufgegangen oder neu zugeschnitten — und, wo
   sie bestehen bleiben, eine Wellen-Zuordnung. Solange das offen ist, ist der
   Schnitt nicht fertig, auch wenn der Slice-Plan abgehakt ist.
@@ -53,19 +53,19 @@ Dokument selbst richtig gebaut?".
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [slice-096](done/slice-096-structure-modul-analyse.md) | Modul `structure` — Analyse, Modul-Schnitt und Ablöse-Pfad | [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), [ADR-0048](../adr/0048-closure-note-struktur-im-planning-modul.md) |
-| [slice-099](open/slice-099-structure-modul.md) | Modul `structure` — Implementierung | geschnitten aus slice-096 |
+| [slice-096](slice-096-structure-modul-analyse.md) | Modul `structure` — Analyse, Modul-Schnitt und Ablöse-Pfad | [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md) |
 
-Der Folge-Slice ist aus slice-096 entstanden. Ein Alias-/Ablöse-Slice entfällt,
-weil nichts superseded wird; die zunächst geplante Aufteilung in Kern und
-Marken/Zählung ist an der Release-Grenze gescheitert (das veröffentlichte Schema
-führt alle Schlüssel, die Dekodierung ist strikt) und wurde zusammengeführt.
+**Genau ein Slice** — die Implementierung ist nach §6 ausdrücklich
+**Out-of-Scope** dieser Welle. Die aus slice-096 geschnittenen Folge-Slices
+stehen deshalb **nicht** hier, sondern derivativ in der Ergebnis-Notiz: sie in
+§4 zu führen hieße, den eigenen Closure-Trigger („alle Slices dieser Welle in
+`done/`") unerfüllbar zu machen.
 
 ## 5. Abhängigkeiten
 
 - **Blockiert:** die Folge-Welle mit den Closure-Slices — deren Zuschnitt ist ein
   Ergebnis dieser Welle, nicht ihre Voraussetzung.
-- **Wird blockiert von:** nichts. [slice-095](open/slice-095-links-resolve-from.md)
+- **Wird blockiert von:** nichts. [slice-095](../open/slice-095-links-resolve-from.md)
   (`links.resolve-from`) läuft unabhängig daneben und gehört nicht hierher.
 
 ## 6. Out-of-Scope für diese Welle
@@ -87,4 +87,4 @@ _Ausstehend._ Wird bei der Wellen-Closure gefüllt — samt der beiden Zeiger
 auflösen und nicht vom heutigen flachen Schreibort. Sie hier vorwegzunehmen
 hieße, auf eine noch nicht existierende Datei zu zeigen; genau diese
 Positionsabhängigkeit ist der Gegenstand von
-[slice-095](open/slice-095-links-resolve-from.md).
+[slice-095](../open/slice-095-links-resolve-from.md).

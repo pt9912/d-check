@@ -4,8 +4,11 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** [welle-69-structure-schnitt](../welle-69-structure-schnitt.md) —
-Folge-Slice aus [slice-096](../done/slice-096-structure-modul-analyse.md).
+**Welle:** noch keiner Welle zugeordnet — **nicht** welle-69: deren
+Out-of-Scope schließt die Implementierung ausdrücklich aus, und sie ist mit
+[slice-096](../done/slice-096-structure-modul-analyse.md) geschlossen. Dieser
+Slice ist ihr **derivatives** Ergebnis und bekommt seine Welle bei der
+Eröffnung der Umsetzungs-Welle.
 
 **Bezug:** [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in),
 [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
