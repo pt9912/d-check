@@ -22,8 +22,8 @@ CR `structure` + ADR + Folge-Slices), Slice
 - [ADR-0049](../plan/adr/0049-structure-modul-schnitt-und-preset.md),
   [ADR-0048](../plan/adr/0048-closure-note-struktur-im-planning-modul.md),
   [ADR-0042](../plan/adr/0042-markdown-lexik-folgt-commonmark.md)
-- Folge-Slices [slice-099](../plan/planning/open/slice-099-structure-modul-kern.md)
-  und [slice-100](../plan/planning/open/slice-100-structure-marken-und-zaehlung.md)
+- Folge-Slices [slice-099](../plan/planning/open/slice-099-structure-modul.md)
+  und [slice-100](../plan/planning/open/slice-099-structure-modul.md)
 - Bestehender Code: `internal/hexagon/core/rules/planning.go`,
   `internal/hexagon/core/rules/markdown.go`,
   `internal/hexagon/core/model/finding.go`,
@@ -107,7 +107,7 @@ mit `docker run --rm --network none -v <fixture>:/repo:ro d-check:latest`
   Marken in Tabellenzellen (die Zeile beginnt mit einem Pipe-Zeichen) und
   Marken in eingerückten Unterlisten.
 - `verifizierbar`: ja — der Paritäts-Beleg aus
-  [slice-100](../plan/planning/open/slice-100-structure-marken-und-zaehlung.md)
+  [slice-100](../plan/planning/open/slice-099-structure-modul.md)
   §3 gegen eine Anforderungsdatei dieses Repos schlägt fehl, solange die
   Verankerung Listen-Marker nicht kennt.
 - `klasse`: Zeilenanker ignoriert Listen-Marker
@@ -199,12 +199,12 @@ mit `docker run --rm --network none -v <fixture>:/repo:ro d-check:latest`
 
 - `kategorie`: MEDIUM
 - `quelle`: [`DC-FA-CONF-001`](../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei);
-  [slice-099](../plan/planning/open/slice-099-structure-modul-kern.md) §1
+  [slice-099](../plan/planning/open/slice-099-structure-modul.md) §1
 - `pfad`: `spec/spezifikation.md:2195` gegen
   `internal/adapter/driven/configyaml/configyaml.go:1400`
 - `befund`: Die Schema-Tabelle führt seit diesem Commit `structure[].max-tasks`,
   `require-all` und `require-any`; geliefert werden sie erst mit
-  [slice-100](../plan/planning/open/slice-100-structure-marken-und-zaehlung.md).
+  [slice-100](../plan/planning/open/slice-099-structure-modul.md).
   Die Konfiguration wird mit `KnownFields(true)` dekodiert — ein Schlüssel, den
   die Struktur nicht kennt, ist Exit 2. Ein Release nach dem Kern-Slice weist
   damit eine **spezifikationskonforme** Konfiguration mit Exit 2 ab; der
@@ -411,7 +411,7 @@ mit `docker run --rm --network none -v <fixture>:/repo:ro d-check:latest`
 - geprüft, ohne Befund: **`section-constraint` als Sammel-Code, Begründungs-Ebene.**
   Der Widerspruch zur Drei-Codes-Begründung aus
   [ADR-0048](../plan/adr/0048-closure-note-struktur-im-planning-modul.md) ist
-  in [slice-099](../plan/planning/open/slice-099-structure-modul-kern.md) §4
+  in [slice-099](../plan/planning/open/slice-099-structure-modul.md) §4
   als offener Punkt benannt und damit nicht still. Bewertbar ist er erst mit
   F-2: die Bündelung ist nicht nur eine Konsumenten-Frage, sondern schlägt in
   der Befund-Menge durch.
@@ -458,7 +458,7 @@ diese Entscheidungen nicht als Test schreibbar.
 **Übergabe:** Findings gehen an den Implementer; die Rückkante Review → Plan
 ist hier die Regel, nicht die Ausnahme — F-4, F-6, F-7 und F-9 sind
 Vertragsentscheidungen, keine Codefragen, und gehören vor
-[slice-099](../plan/planning/open/slice-099-structure-modul-kern.md) in die
+[slice-099](../plan/planning/open/slice-099-structure-modul.md) in die
 Spezifikation. Die Finding-Klassen gehen zusätzlich in die Slice-Closure §7
 und von dort in den Zähler. Dieser Report ist ein **Lauf-Beleg** und ersetzt
 keine Verifikation.

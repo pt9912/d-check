@@ -54,11 +54,12 @@ Dokument selbst richtig gebaut?".
 | Slice | Titel | Bezug |
 |---|---|---|
 | [slice-096](in-progress/slice-096-structure-modul-analyse.md) | Modul `structure` — Analyse, Modul-Schnitt und Ablöse-Pfad | [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), [ADR-0048](../adr/0048-closure-note-struktur-im-planning-modul.md) |
-| [slice-099](open/slice-099-structure-modul-kern.md) | Modul `structure` — Kern (Abschnitt, Bereinigung, drei Grund-Codes) | geschnitten aus slice-096 |
-| [slice-100](open/slice-100-structure-marken-und-zaehlung.md) | Modul `structure` — Marken und abschnitts-treue Zählung | geschnitten aus slice-096 |
+| [slice-099](open/slice-099-structure-modul.md) | Modul `structure` — Implementierung | geschnitten aus slice-096 |
 
-Die beiden Folge-Slices sind aus slice-096 entstanden; ein Alias-/Ablöse-Slice
-entfällt, weil nichts superseded wird.
+Der Folge-Slice ist aus slice-096 entstanden. Ein Alias-/Ablöse-Slice entfällt,
+weil nichts superseded wird; die zunächst geplante Aufteilung in Kern und
+Marken/Zählung ist an der Release-Grenze gescheitert (das veröffentlichte Schema
+führt alle Schlüssel, die Dekodierung ist strikt) und wurde zusammengeführt.
 
 ## 5. Abhängigkeiten
 

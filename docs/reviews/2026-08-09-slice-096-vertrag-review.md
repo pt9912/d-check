@@ -20,8 +20,8 @@ ist der Lauf nicht reproduzierbar):
 
 - [slice-096](../plan/planning/in-progress/slice-096-structure-modul-analyse.md)
   (Slice-Plan, Messung §2 + Abnahme-Punkte 1–5 + DoD),
-  [slice-099](../plan/planning/open/slice-099-structure-modul-kern.md),
-  [slice-100](../plan/planning/open/slice-100-structure-marken-und-zaehlung.md),
+  [slice-099](../plan/planning/open/slice-099-structure-modul.md),
+  [slice-100](../plan/planning/open/slice-099-structure-modul.md),
   [slice-094](../plan/planning/open/slice-094-closure-zaehl-paritaet.md),
   [slice-097](../plan/planning/open/slice-097-closure-glob-entkopplung.md),
   [slice-098](../plan/planning/open/slice-098-closure-note-placeholder.md)
@@ -77,7 +77,7 @@ ist der Lauf nicht reproduzierbar):
   automatisch unter die Regel").
 - `verifizierbar`: nein am Gate (der Code existiert noch nicht) — ja am Vertrag:
   die beiden Zusagen stehen im selben Dokument und schließen einander aus; nach
-  [slice-100](../plan/planning/open/slice-100-structure-marken-und-zaehlung.md)
+  [slice-100](../plan/planning/open/slice-099-structure-modul.md)
   wäre der Nachweis eine `structure`-Regel mit Anforderungs-`section-pattern`
   gegen [`spec/lastenheft.md`](../../spec/lastenheft.md), die `section-ambiguous`
   statt `section-constraint` liefert.
@@ -102,7 +102,7 @@ ist der Lauf nicht reproduzierbar):
   `Lerneintrag`, prüft die Regel die Alternation über die drei Formen gar nicht
   mehr (Falsch-Grün).
 - `verifizierbar`: ja — Paritäts-Beleg aus dem DoD von
-  [slice-100](../plan/planning/open/slice-100-structure-marken-und-zaehlung.md)
+  [slice-100](../plan/planning/open/slice-099-structure-modul.md)
   gegen die beigezogenen Adopter-Fixtures; er kann unter dieser Marken-Semantik
   nicht grün werden.
 - `klasse`: „Marken-Verankerung passt nicht zur belegten Alt-Form"
@@ -205,7 +205,7 @@ ist der Lauf nicht reproduzierbar):
   [`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
   prüft die Kopplung. Sie existiert als Fitness Function in der ADR und als
   DoD-Punkt in
-  [slice-099](../plan/planning/open/slice-099-structure-modul-kern.md) — beides
+  [slice-099](../plan/planning/open/slice-099-structure-modul.md) — beides
   Schichten, die keine Abnahme binden. Driften die beiden Oberflächen, fällt kein
   Kriterium.
 - `verifizierbar`: ja — die Kriterienliste beider Anforderungen enthält keinen
@@ -251,7 +251,7 @@ ist der Lauf nicht reproduzierbar):
   Konsumenten, der wie beschrieben auf `reason` filtert, ist „Abschnitt zu dünn"
   von „verbotenes Muster getroffen" nicht unterscheidbar. Die Konsequenzen-Liste
   der ADR benennt das nicht; registriert ist es nur als offener Punkt in
-  [slice-099](../plan/planning/open/slice-099-structure-modul-kern.md) §4 — einer
+  [slice-099](../plan/planning/open/slice-099-structure-modul.md) §4 — einer
   Schicht, die keine Entscheidung bindet.
 - `verifizierbar`: ja — Befund-Schema §2 der Spezifikation (`message` … nicht
   stabilitätsgarantiert) gegen das Akzeptanzkriterium „Negative (Bedingung

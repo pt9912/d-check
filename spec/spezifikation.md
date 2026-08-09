@@ -1725,58 +1725,81 @@ prüft **hermetisch** je Regel eine Dokumentklasse. Es ist ein **Post-Pass** wie
 getroffenen Dateien.
 
 1. **Inert/Config.** Leere Regel-Liste ⇒ Modul inert (kein Befund, keine Datei
-   geöffnet). **Exit 2** vor dem Lauf bei: Regel ohne `files`; weder `section`
-   noch `section-pattern` gesetzt **oder** beide; nicht kompilierendes
-   `section-pattern`/`forbid-pattern`; `min-sentences` < 1; `max-tasks` < 0;
-   leerer Eintrag in `require-all`/`require-any`/`exempt-paths`.
-2. **Kandidaten.** Je Regel die Dateien, deren Wurzel-relativer Pfad auf
-   `files` matcht, abzüglich `exempt-paths`; stabil sortiert
+   geöffnet). **Exit 2** vor dem Lauf bei: Regel ohne `files`; ungültiges Glob in
+   `files`/`exempt-paths`; weder `section` noch `section-pattern` gesetzt **oder**
+   beide; `sections` weder `one` noch `each`; nicht kompilierendes
+   `section-pattern`/`forbid-pattern`/`require-pattern`; **explizit** gesetztes
+   `min-sentences` < 1 oder `max-tasks` < 0; leerer Eintrag in `require-all`.
+   Ein **abwesender** Zahlen-Schlüssel ist kein Fehler, sondern „Bedingung
+   aus" — die Unterscheidung „nicht gesetzt" vs. „auf 0 gesetzt" ist Teil der
+   Zusage, sonst wäre die Null-Schwelle unerreichbar prüfbar.
+2. **Kandidaten.** Die `files`-Globs werden gegen **Wurzel-relative Pfade über
+   den gesamten Baum** ausgewertet — **unabhängig** von `scan.roots`/`scan.ignore`
+   (die `SKIP_DIRS` gelten weiterhin). Eine Regel benennt ihre Dateien selbst;
+   `structure` kennt deshalb **kein** `<modul>.scope`. Abgezogen wird
+   `exempt-paths`. Die verbleibenden Dateien werden stabil sortiert geprüft
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
-   **Null Kandidaten ⇒ `section-missing`** mit `file` = dem Glob: eine Regel,
-   die auf nichts zeigt, läuft leer und darf nicht Erfolg melden (dieselbe
-   Nullmengen-Logik wie bei den Anforderungsquellen der RTM).
-3. **Abschnitt bestimmen.** Gesucht werden alle Zeilen, die (a) **außerhalb**
-   eines Fenced-Code-Blocks liegen, (b) **echte ATX-Überschriften** nach der
-   Lexik aus [`DC-FA-ANCH-001.a`](#dc-fa-anch-001a--github-slug-algorithmus)
-   sind, und (c) auf `section` (Klartext-Vergleich der getrimmten
-   Überschriften-Zeile) bzw. `section-pattern` (RE2) passen.
-   **0 Treffer ⇒ `section-missing`** (`line` = 1). **> 1 Treffer ⇒
-   `section-ambiguous`** (`line` = Zeile des **zweiten** Treffers) und **Abbruch
-   für diese Datei** — ohne eindeutigen Abschnitt wird nicht gemessen. Sonst
-   reicht der Abschnitt von der Zeile **nach** der Überschrift bis zur nächsten
-   echten Überschrift gleicher oder höherer Ebene bzw. bis zum Dateiende.
-4. **Bereinigen.** Aus dem Abschnitt werden die Fenced-Code-Blöcke entfernt
-   (`FenceToggle`-Lexik wie im übrigen Scanner). Alle folgenden Bedingungen
-   arbeiten auf **diesem** Text — sonst zählte ein Beispielblock als Inhalt.
-5. **Bedingungen prüfen**, jede optional, jede Verletzung ⇒ **ein**
-   `section-constraint` (die `message` nennt die verletzte Bedingung samt Ist-
-   und Soll-Wert; mehrere verletzte Bedingungen ⇒ mehrere Befunde):
-   - `non-empty`: der bereinigte Text enthält mindestens ein
-     Nicht-Whitespace-Zeichen.
-   - `min-sentences`: Zahl der Satzende-Zeichen (`.`, `!`, `?`) ≥ Schwelle.
-   - `max-tasks`: Zahl der Task-Items (Listen-Zeile mit `[ ]` oder `[x]`) im
-     Abschnitt ≤ Schwelle. **Abschnitts-treu**, nicht dateiweit — das ist der
-     Punkt, an dem zeilenbasierte Nachbauten scheitern.
-   - `forbid-pattern` (RE2): **kein** Treffer im bereinigten Text.
-   - `require-all` / `require-any`: je Marke `M` gilt sie als vorhanden, wenn
-     eine Zeile des bereinigten Textes — nach führendem Whitespace — mit der
-     **hervorgehobenen** Marke beginnt (`**M**` oder `**M:**`).
-     `require-all` verlangt jede, `require-any` mindestens eine. Ein Vorkommen
-     von `M` im Fließtext genügt **nicht**: die Zusage ist eine Gliederungs-Marke,
-     kein Wort.
-6. **Befund-Form.** `file` = die geprüfte Datei (bzw. der Glob in Schritt 2),
-   `rule` = `structure`, `target` = der `files`-Glob der Regel, `line` wie oben.
-   **Diagnose-only** (kein `--repair`-Hunk).
-7. **Determinismus/Read-only.** Identischer Arbeitsbaum ⇒ identischer, stabil
-   sortierter Befundsatz ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus));
-   nur lesend, netzlos ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+   **Null Kandidaten ⇒ `section-missing`** (`file` = der Glob, `line` = 1) —
+   **auch dann, wenn erst `exempt-paths` die Menge geleert hat**: sonst schaltete
+   ein Ventil die Regel still ab (dieselbe Nullmengen-Logik wie bei den
+   Anforderungsquellen der RTM).
+3. **Abschnitte finden.** Gesucht werden alle Zeilen, die (a) **außerhalb** eines
+   Fenced-Code-Blocks liegen, (b) **echte ATX-Überschriften** nach der Lexik aus
+   [`DC-FA-ANCH-001.a`](#dc-fa-anch-001a--github-slug-algorithmus) sind und
+   (c) passen: bei `section` ist der Vergleichsgegenstand die **getrimmte
+   Überschriften-Zeile einschließlich der `#`-Folge**, exakt; bei
+   `section-pattern` dieselbe Zeile gegen RE2.
+4. **Kardinalität** — `sections` entscheidet, wie viele Treffer erwartet werden:
+   - **`one`** (Default): 0 ⇒ `section-missing` (`line` = 1); > 1 ⇒
+     `section-ambiguous` (`line` = **zweiter** Treffer) und **Abbruch für diese
+     Datei**, keine Bedingungs-Prüfung. Der Abbruch gilt der **Datei innerhalb
+     dieser Regel** — andere Regeln und andere Dateien bleiben unberührt.
+   - **`each`**: 0 ⇒ `section-missing` (`line` = 1); sonst wird **jeder** Treffer
+     einzeln nach Schritt 5–6 geprüft. Mehrfachtreffer sind kein Befund.
+5. **Bereinigen.** Je Abschnitt (Zeile **nach** der Überschrift bis zur nächsten
+   echten Überschrift gleicher oder höherer Ebene bzw. Dateiende) werden die
+   Fenced-Code-Blöcke entfernt (`FenceToggle`-Lexik wie im übrigen Scanner). Alle
+   Bedingungen arbeiten auf **diesem** Text.
+6. **Bedingungen prüfen**, jede optional, jede mit **eigenem** Grund-Code, damit
+   zwei Verletzungen desselben Abschnitts nicht unter der Befund-Deduplikation
+   (Datei, Zeile, Regel, Ziel, Grund) zusammenfallen:
+
+   | Bedingung | erfüllt, wenn | sonst |
+   |---|---|---|
+   | `non-empty` | der bereinigte Text mindestens ein Nicht-Whitespace-Zeichen trägt | `section-empty` |
+   | `min-sentences` | die Zahl der Satzende-Zeichen (`.`, `!`, `?`) ≥ Schwelle ist | `section-thin` |
+   | `max-tasks` | die Zahl der **Task-Items** ≤ Schwelle ist | `section-oversized` |
+   | `forbid-pattern` | das Muster **nicht** matcht | `section-forbidden` |
+   | `require-pattern` | das Muster matcht | `section-pattern-missing` |
+   | `require-all` | **jede** Marke vorhanden ist | `section-marker-missing` |
+
+   **Task-Item** ist eine Zeile, die — nach optionalem Whitespace — mit einem
+   Listen-Marker (`-`, `*`, `+` oder `<ziffern>.`), Whitespace und `[ ]` bzw.
+   `[x]`/`[X]` beginnt.
+   **Marke `M` vorhanden** heißt: eine Zeile beginnt — nach optionalem
+   Listen-Marker und Whitespace — mit einem **hervorgehobenen Textlauf**
+   (`**…**`), dessen Inhalt mit `M` anfängt und dort **endet oder mit einem
+   nicht-alphanumerischen Zeichen weitergeht**. Damit gelten `- **M:**`,
+   `**M:**` und `- **M (Zusatz):**` als Treffer, `M` im Fließtext nicht.
+   `forbid-pattern`/`require-pattern` matchen gegen den **gesamten** bereinigten
+   Abschnitts-Text; `^`/`$` binden dort an Text-, nicht an Zeilen-Grenzen (wer
+   Zeilen meint, schreibt `(?m)`).
+7. **Befund-Form.** `file` = die geprüfte Datei (bzw. der Glob in Schritt 2),
+   `rule` = `structure`, `target` = der `files`-Glob der Regel, `line` = Zeile der
+   Abschnitts-Überschrift (bzw. 1). **Diagnose-only** (kein `--repair`-Hunk).
+8. **Determinismus/Read-only.** Identischer Arbeitsbaum ⇒ identischer, stabil
+   sortierter Befundsatz; nur lesend, netzlos
+   ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
    Ohne aktives `structure` ist der Befundsatz byte-identisch.
 
-**Die Closure-Note-Struktur ist ein Preset dieser Schritte.** Die Schritte C3–C5
-von [`DC-FA-PLAN-001.a`](#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
+**Die Closure-Note-Struktur ist ein Preset dieser Schritte im Modus `one`.** Die
+Schritte C3–C5 von
+[`DC-FA-PLAN-001.a`](#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
 sind dieselbe Mechanik mit fester Bedingungs-Auswahl und eigenen Grund-Codes;
-beide Fähigkeiten teilen Abschnitts-Bestimmung, Bereinigung und Zählung. Eine
-Änderung an einer der beiden Stellen ohne die andere ist ein Spezifikations-Bug.
+beide teilen Abschnitts-Findung, Kardinalitäts-Behandlung, Bereinigung und
+Zählung. Eine Änderung an einer der beiden Stellen ohne die andere ist ein
+Spezifikations-Bug; ein Akzeptanzkriterium beider Anforderungen hält sie
+zusammen.
 
 ### DC-FA-TRK-001.a — Getrackt-Status auflösbarer Referenz-Ziele (`tracked`)
 
@@ -2185,19 +2208,20 @@ Exit 2 ohne Prüfung
 | `planning.marker` | string | `Keine aktive Welle` | literaler Ruhe-Marker-Teilstring; nur im `planning.heading`-Block gesucht; vorhanden ⇒ ruhende Welle |
 | `planning.slice-glob` | string | `slice-*.md` | Glob (`path.Match` auf den Basisnamen) der Slice-Dateien im Roadmap-Verzeichnis; ≥1 Treffer ⇒ aktive-Welle-erwartet; ein explizit gesetztes Muster muss ein gültiges `path.Match`-Glob sein (sonst Exit 2 — verhindert ein fail-open Silent-Grün) |
 | `planning.closure.dir` | string | leer | `verzeichnis` (Wurzel-relativ, innerhalb der Repo-Wurzel); das Verzeichnis der abgeschlossenen Slices, deren Closure-Notiz **strukturell** geprüft wird. Leer ⇒ Closure-Fähigkeit inert (keine Slice-Datei wird gelesen, Befundsatz byte-identisch); gesetzt, aber fehlend/unlesbar ⇒ `closure-note-missing` auf dem Verzeichnis (fail-closed) ([`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
-| `planning.closure.heading-pattern` | string | `^#{2,3} .*Closure-Notiz` | RE2 gegen die **getrimmte** Überschriften-Zeile; der **erste** Treffer eröffnet den geprüften Abschnitt (bis zur nächsten Überschrift gleicher oder höherer Ebene). Kein Treffer ⇒ `closure-note-missing`; ein nicht kompilierendes Muster ⇒ Exit 2 |
+| `planning.closure.heading-pattern` | string | `^#{2,3} .*Closure-Notiz` | RE2 gegen die **getrimmte** Überschriften-Zeile; **genau ein** Treffer eröffnet den geprüften Abschnitt (mehrere ⇒ `closure-note-ambiguous`) (bis zur nächsten Überschrift gleicher oder höherer Ebene). Kein Treffer ⇒ `closure-note-missing`; ein nicht kompilierendes Muster ⇒ Exit 2 |
 | `planning.closure.min-sentences` | int | `4` | Mindestzahl der Satzende-Zeichen (`.`, `!`, `?`) im Abschnitt **nach** Entfernen der Fenced-Code-Blöcke; darunter ⇒ `closure-note-thin`. Wert < 1 ⇒ Exit 2 (eine Schwelle von 0 wäre ein stilles Grün) |
 | `planning.closure.boilerplate` | string[] | leer | literale Floskel-Teilstrings, **case-insensitiv** gegen den bereinigten Abschnitts-Text geprüft; ein Treffer ⇒ `closure-note-boilerplate`. Bewusst **leer** per Default — der Vertrag bringt keine sprach-spezifischen Phrasen mit; ein leerer Eintrag ⇒ Exit 2 (er träfe jeden Text) |
-| `structure[].files` | string | — | Glob (Pfad, wie `scan.ignore`) der Dokumentklasse; Pflicht je Regel. Trifft er keine Datei ⇒ `section-missing` auf dem Glob (eine leer laufende Regel meldet nicht Erfolg) ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)) |
-| `structure[].section` | string | leer | Heading-**Klartext** (getrimmter Zeilen-Vergleich). Genau eines von `section`/`section-pattern` ist Pflicht — beide oder keines ⇒ Exit 2 |
-| `structure[].section-pattern` | string | leer | RE2 gegen die getrimmte Überschriften-Zeile; Alternative zu `section` |
-| `structure[].non-empty` | bool | `false` | der bereinigte Abschnitts-Text muss mindestens ein Nicht-Whitespace-Zeichen tragen |
-| `structure[].min-sentences` | int | `0` (aus) | Mindestzahl der Satzende-Zeichen außerhalb Fenced-Code; explizit < 1 ⇒ Exit 2 |
-| `structure[].max-tasks` | int | leer (aus) | Obergrenze der Task-Items (`- [ ]`/`- [x]`) **im Abschnitt**, nicht dateiweit; < 0 ⇒ Exit 2 |
-| `structure[].forbid-pattern` | string | leer | RE2; ein Treffer im bereinigten Abschnitts-Text ⇒ `section-constraint` |
-| `structure[].require-all` | string[] | leer | benannte Marken, die **alle** als hervorgehobene Zeilen-Anfänge (`**M:**`) vorkommen müssen; leerer Eintrag ⇒ Exit 2 |
-| `structure[].require-any` | string[] | leer | benannte Marken, von denen **mindestens eine** vorkommen muss; leerer Eintrag ⇒ Exit 2 |
-| `structure[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`) über die Quell-Pfade; Treffer werden von **dieser** Regel nicht geprüft |
+| `structure[].files` | string | — | Glob (Pfad, wie `scan.ignore`) über **Wurzel-relative** Pfade des gesamten Baums, unabhängig von `scan.roots`/`scan.ignore`; Pflicht je Regel. Null Kandidaten — auch nach Abzug von `exempt-paths` — ⇒ `section-missing` auf dem Glob ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)) |
+| `structure[].section` | string | leer | Heading-**Klartext**, exakter Vergleich der getrimmten Überschriften-Zeile **einschließlich `#`-Folge**. Genau eines von `section`/`section-pattern` ist Pflicht — beide oder keines ⇒ Exit 2 |
+| `structure[].section-pattern` | string | leer | RE2 gegen dieselbe getrimmte Zeile; Alternative zu `section` |
+| `structure[].sections` | string | `one` | `one` = genau ein Treffer erwartet (0 ⇒ `section-missing`, > 1 ⇒ `section-ambiguous` + Abbruch für diese Datei); `each` = jeder Treffer wird geprüft (für **wiederkehrende** Abschnitte, 0 ⇒ `section-missing`). Anderer Wert ⇒ Exit 2 |
+| `structure[].non-empty` | bool | `false` | der bereinigte Abschnitts-Text muss mindestens ein Nicht-Whitespace-Zeichen tragen ⇒ sonst `section-empty` |
+| `structure[].min-sentences` | int | abwesend (aus) | Mindestzahl der Satzende-Zeichen außerhalb Fenced-Code ⇒ sonst `section-thin`; **explizit** < 1 ⇒ Exit 2 |
+| `structure[].max-tasks` | int | abwesend (aus) | Obergrenze der Task-Items **im Abschnitt**, nicht dateiweit ⇒ sonst `section-oversized`; **explizit** < 0 ⇒ Exit 2 |
+| `structure[].forbid-pattern` | string | leer | RE2 gegen den **gesamten** bereinigten Abschnitts-Text; Treffer ⇒ `section-forbidden` |
+| `structure[].require-pattern` | string | leer | RE2, Spiegelbild von `forbid-pattern`; **kein** Treffer ⇒ `section-pattern-missing`. Deckt zugesagte Aussagen, die **innerhalb** einer Auszeichnung stehen und deshalb keine Marke sind |
+| `structure[].require-all` | string[] | leer | benannte Marken, die **alle** vorkommen müssen — als hervorgehobener Textlauf am Zeilen-Anfang nach optionalem **Listen-Marker** (`- **M:**`, `**M:**`, `- **M (Zusatz):**`) ⇒ sonst `section-marker-missing`; leerer Eintrag ⇒ Exit 2 |
+| `structure[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`) über die Quell-Pfade; Treffer werden von **dieser** Regel nicht geprüft — hebeln den Leerlauf-Befund aber nicht aus |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien, aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |

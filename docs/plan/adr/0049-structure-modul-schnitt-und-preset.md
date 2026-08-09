@@ -23,10 +23,11 @@ und die Preset-Kopplung in
 Ein Adopter hat seine vier handgeschriebenen Prüfskripte gegen d-checks Modulsatz
 vermessen und dabei eine Grenze benannt, die nie ausgesprochen war: der Modulsatz
 deckt **Referenz**-Invarianten lückenlos ab (Ziel existiert, Kennung verlinkt,
-Richtung erlaubt, Target deklariert, Core unverändert) — aber **keine einzige
-Aussage über die Form eines Dokuments selbst**. Die Module sind entlang „zeigt
-dieses Dokument korrekt auf andere?" gewachsen, nie entlang „ist dieses Dokument
-selbst richtig gebaut?".
+Richtung erlaubt, Target deklariert, Core unverändert), Aussagen über die **Form**
+eines Dokuments dagegen nur als Einzelfälle — `spans` und `hostpaths` prüfen den
+Text selbst, aber niemand hat das je als eigene Frage benannt. Die Module wuchsen
+entlang „zeigt dieses Dokument korrekt auf andere?"; was daneben entstand, sah
+wie Sonderfall aus statt wie eine zweite Kategorie.
 
 Die Ursache, warum das erst jetzt auffiel, ist selbst ein Befund: jeder Adopter
 füllt die Lücke lokal mit einem Skript, und ein lokales Skript sieht wie
@@ -35,9 +36,9 @@ melden, dass ein anderes Gate hätte existieren können.**
 
 Eigene Messung (2026-08-09) gegen die drei einschlägigen Skripte des Adopters
 (480 Zeilen Shell): sie tragen **elf** Prüfungen — 2 heute gedeckt, 2 nach
-Kalibrierung, **6 ungedeckt**, 1 außerhalb, 1 als Ventil ausdrückbar.
+Kalibrierung, **5 ungedeckt**, 1 außerhalb, 1 als Ventil ausdrückbar.
 
-Erschwerend: d-check hat wenige Tage zuvor mit
+Erschwerend: d-check hat **am selben Tag** mit
 [ADR-0048](0048-closure-note-struktur-im-planning-modul.md) eine
 planning-lokale Closure-Note-Struktur ausgeliefert (v0.52.0), die der
 **Spezialfall** genau dieser Abstraktion ist.
@@ -92,15 +93,24 @@ planning-lokale Closure-Note-Struktur ausgeliefert (v0.52.0), die der
    [ADR-0048](0048-closure-note-struktur-im-planning-modul.md): die Reparatur ist
    „den überzähligen Abschnitt entfernen", nicht „den fehlenden schreiben".
 
-5. **Zwei Marken-Formen, nicht eine — und zeilenverankert.** Der Antrag nennt
-   eine Liste, die vollständig vorkommen muss. Die Messung zeigt beide Bedarfe:
-   eine Anforderung muss **alle** Akzeptanz-Bausteine tragen, ein Lerneintrag
-   genügt mit **einer** von mehreren zulässigen Formen. Eine Liste deckt das
-   nicht ab, also `require-all` **und** `require-any`.
-   Und die Marke ist eine **hervorgehobene Zeilen-Anfangs-Marke**, kein
-   Teilstring: ein `Boundary` mitten im Satz erfüllt die Zusage nicht. Ein
-   Teilstring-Vergleich erzeugte ein Falsch-Grün — teurer als ein Falsch-Rot,
-   weil es unbemerkt bleibt.
+5. **Marken-Form gemessen statt angenommen — und `require-pattern` statt einer
+   Marken-Alternative.** Die erste Fassung dieser Entscheidung war zweimal falsch,
+   beide Male aus demselben Grund: die Form wurde angenommen.
+   Gemessen an den beiden Repos, die den Antrag tragen: die Akzeptanz-Marken
+   stehen zu 108 als **Listen-Item** (`- **M:**`), zu 44 bare (`**M:**`) und
+   mehrfach **qualifiziert** (`- **M (Zusatz):**`). Eine Verankerung „nach
+   führendem Whitespace" hätte die Listen-Form ausgeschlossen und damit **jede**
+   Anforderung des eigenen Lastenhefts rot gemeldet; ein strikter
+   `**M:**`-Vergleich hätte zusätzlich die qualifizierten verfehlt. Die Zusage
+   lautet deshalb: hervorgehobener Textlauf am Zeilen-Anfang **nach optionalem
+   Listen-Marker**, dessen Inhalt mit der Marke beginnt und dort endet oder
+   nicht-alphanumerisch weitergeht.
+   Der zweite Bedarf („eine von mehreren zulässigen Formen") ist **keine**
+   Marken-Frage: gemessen stehen 37 von 61 Lerneintrag-Formen **innerhalb** des
+   Textlaufs, nicht an seinem Anfang. Eine Marken-Alternative hätte sie nicht
+   gefunden. Statt sie zu verbiegen, bekommt der Vertrag `require-pattern` als
+   **Spiegelbild** von `forbid-pattern` — ein Mechanismus, kein Sonderfall.
+   `require-any` entfällt ersatzlos.
 
 6. **Keine Stichtags-Mechanik; Pfad-Ausnahmen genügen.** Der gelebte
    Grandfathering-Fall des Adopters ist eine Zahlen-Schwelle im Dateinamen. Sie
@@ -112,6 +122,36 @@ planning-lokale Closure-Note-Struktur ausgeliefert (v0.52.0), die der
    den Pfad-Fall; die Grenze gehört benannt, damit der nächste Antrag sie nicht
    neu verhandelt.
 
+7. **Ein Kardinalitäts-Modus je Regel (`one` / `each`) — nachgetragen, weil die
+   erste Fassung ihre eigene Begründung nicht ausdrücken konnte.** Der
+   Modul-Schnitt (Entscheidung 1) wurde an **einer** Messzeile entschieden: den
+   Pflicht-Bausteinen einer Anforderung. Anforderungen sind aber
+   **wiederkehrende** Abschnitte *einer* Datei — und die erste Fassung sagte
+   „genau ein Abschnitt je Regel" und machte Mehrfachtreffer zum Abbruch. Damit
+   war ausgerechnet der Fall unprüfbar, der das Modul rechtfertigt.
+   Der sanktionierte Ausweg („dann schreib zwei Regeln") ist schlimmer als die
+   Lücke: er lässt jede **neu hinzukommende** Anforderung ungeprüft, und zwar
+   **still**. Also: `one` (Default, genau einer erwartet — die Closure-Notiz und
+   jeder einmalige Abschnitt) und `each` (jeder Treffer wird geprüft — für
+   wiederkehrende Klassen). Mehrdeutigkeit aus Entscheidung 4 ist damit eine
+   Eigenschaft des Modus `one`, kein Absolutum.
+
+8. **Je Bedingung ein Grund-Code, kein Sammel-Code.** Die erste Fassung führte
+   `section-constraint` für sechs Bedingungen und schob die Unterscheidung in die
+   Meldung. Das ist aus zwei Gründen falsch: die Meldung ist laut Spezifikation
+   **nicht** stabil zugesagt (dieselbe Eigenschaft, die in Entscheidung 3 den
+   Supersede ausschließt — man kann sie nicht einmal als Grund heranziehen und
+   dann als Träger benutzen), und die Befund-Deduplikation vergleicht (Datei,
+   Zeile, Regel, Ziel, Grund): zwei verletzte Bedingungen desselben Abschnitts
+   fielen zu **einem** Befund zusammen. Die Zusage „mehrere Bedingungen ⇒ mehrere
+   Befunde" wäre unerreichbar gewesen.
+
+9. **Die Modul-Grenze deckt auch namentliche Ausnahmen ab.** Der Adopter nimmt
+   einzelne Anforderungen **namentlich** von der Form-Pflicht aus. Das ist keine
+   Pfad-Frage und wäre eine zweite Kennungs-Semantik im Werkzeug — dieselbe
+   Grenze wie in Entscheidung 6. Ausdrückbar bleibt die Pfad-Ausnahme; alles
+   andere gehört in die Autoritäts-Doku des Adopters, nicht in d-checks Config.
+
 ## Verglichene Alternativen
 
 | Alternative | Warum verworfen |
@@ -120,7 +160,11 @@ planning-lokale Closure-Note-Struktur ausgeliefert (v0.52.0), die der
 | Alte Anforderung superseden, Schlüssel als Alias | Bräche die stabil zugesagten Grund-Codes — ausgeschlossen, nicht abgewogen |
 | `structure` emittiert je nach Config-Pfad mal `section-*`, mal `closure-note-*` | Ein Modul mit zwei Code-Familien je nach Herkunft der Konfiguration; die Meldung wäre nicht mehr aus dem Modul erklärbar |
 | Mehrdeutigkeit als `section-constraint` mitführen | Andere Reparatur, andere Klasse; Sammelbefunde waren schon bei den drei Closure-Codes die verworfene Bauform |
-| `require-strong` als einzelne Liste (wie beantragt) | Deckt „mindestens eine von" nicht ab; der Adopter behielte ein Skript für genau einen Fall |
+| `require-strong` als einzelne Liste (wie beantragt) | Deckt den zweiten gemessenen Bedarf nicht ab — und der ist gar keine Marken-Frage, sondern eine Muster-Frage (`require-pattern`) |
+| Marken „nach führendem Whitespace" verankern (erste Fassung) | Gemessen widerlegt: schließt die Listen-Form aus und meldete jede Anforderung des eigenen Lastenhefts rot |
+| `require-any` als Marken-Alternative | Die zu findenden Formen stehen *innerhalb* des Textlaufs; eine Marken-Alternative fände sie nicht |
+| Ein Abschnitt je Regel, Mehrfachtreffer immer Fehler (erste Fassung) | Macht die Dokumentklasse, die den Modul-Schnitt begründet hat, unprüfbar; der Ausweg „zwei Regeln" lässt jede neue Anforderung ungeprüft |
+| Sammel-Code `section-constraint` für alle Bedingungen | Die Befund-Deduplikation vergleicht (Datei, Zeile, Regel, Ziel, Grund) — zwei verletzte Bedingungen fielen zu einem Befund zusammen, und die Unterscheidung läge im nicht stabil zugesagten Meldungstext |
 | Marken als Teilstring prüfen | Falsch-Grün: ein Wort im Fließtext erfüllte eine Gliederungs-Zusage |
 | Stichtags-Schwelle als eigener Mechanismus | Zweiter Regel-Interpreter im Werkzeug; dieselbe Grenze, die `tracked` schon gezogen hat |
 
@@ -170,3 +214,11 @@ planning-lokale Closure-Note-Struktur ausgeliefert (v0.52.0), die der
 ## Geschichte
 
 - 2026-08-09: Proposed (doc-first, `slice-096`).
+- 2026-08-09: nach zwei unabhängigen Frischkontext-Reviews revidiert, **bevor**
+  der Status wechselt: Entscheidungen 7–9 nachgetragen (Kardinalitäts-Modus, ein
+  Grund-Code je Bedingung, namentliche Ausnahmen als Nicht-Ziel), Entscheidung 5
+  nach einer Messung neu gefasst (`require-pattern` statt einer
+  Marken-Alternative; Listen-Marker und Qualifier gehören zur Marken-Form), die
+  Kontext-Aussage zu `spans`/`hostpaths` korrigiert und die Zeitangabe zum
+  Vorläufer richtiggestellt. Dass der Entwurf noch `Proposed` war, hat die
+  Korrektur überhaupt möglich gemacht.

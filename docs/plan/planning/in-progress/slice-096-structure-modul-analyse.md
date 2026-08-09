@@ -73,7 +73,7 @@ Aussage. Die drei Skripte tragen zusammen **elf** Prüfungen (Stand 2026-08-09,
 | 10 | vier fette Pflicht-Marken je Anforderung | Anforderung | **nicht gedeckt** | `**Happy Path:**` u. a. **am Zeilenanfang**, nicht als Teilstring |
 | 11 | Stichtags-Ausnahme | beide | **Ventil** | über die bestehende Ausnahme-Mechanik ausdrückbar; Abnahme-Punkt 5 |
 
-**2 gedeckt · 2 nach Kalibrierung · 6 nicht gedeckt · 1 außerhalb · 1 Ventil.**
+**2 gedeckt · 2 nach Kalibrierung · 5 nicht gedeckt · 1 außerhalb · 1 Ventil** (Summe 11).
 
 Die Zeile, die den Schnitt entscheidet, ist **10**: sie betrifft eine **andere
 Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
@@ -213,12 +213,12 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
       Kalibrierung / nicht gedeckt — mit Beleg, nicht per Lektüre. Die
       Paritäts-Fixtures liegen im Antragsteller-Repo vor und werden beigezogen.
 - [x] Folge-Slices geschnitten und als Dateien in `open/` angelegt:
-      [slice-099](../open/slice-099-structure-modul-kern.md) (Kern —
-      Abschnitts-Bestimmung, Bereinigung, drei `section-*`-Codes plus additiv
-      `closure-note-ambiguous`) und
-      [slice-100](../open/slice-100-structure-marken-und-zaehlung.md) (Marken
-      und abschnitts-treue Zählung). **Kein Alias-Slice** — es wird nichts
-      abgelöst (Abnahme-Punkt 2).
+      [slice-099](../open/slice-099-structure-modul.md) (Implementierung, in
+      **einem** Slice — die zunächst geplante Aufteilung scheiterte an der
+      Release-Grenze) und [slice-101](../open/slice-101-fence-unbalanciert.md)
+      (der beim Review gefundene **ausgelieferte** Silent-Grün-Pfad im
+      Fence-Automaten, unabhängig von diesem Antrag). **Kein Alias-Slice** — es
+      wird nichts abgelöst (Abnahme-Punkt 2).
 
       **Entscheidung über die drei bereits liegenden Slices:** alle drei
       **bleiben eigenständig**, keiner geht im Modul auf. Der Grund ist derselbe
@@ -228,7 +228,7 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
         wirkt nach der Preset-Kopplung auf **beide** Oberflächen und wird damit
         wichtiger, nicht überflüssig. Seine verengte Paritäts-Zusage kann
         zurückgenommen werden, sobald `closure-note-ambiguous` aus
-        [slice-099](../open/slice-099-structure-modul-kern.md) liegt.
+        [slice-099](../open/slice-099-structure-modul.md) liegt.
       - [slice-097](../open/slice-097-closure-glob-entkopplung.md)
         (`closure.glob`) betrifft die Kandidaten-Menge **der Closure-Fähigkeit**;
         `structure` hat mit seinem eigenen Datei-Glob einen anderen Weg und löst
