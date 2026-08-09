@@ -68,12 +68,15 @@ Aussage. Die drei Skripte tragen zusammen **elf** Prüfungen (Stand 2026-08-09,
 | 5 | keine Floskel | Slice-Plan | **nach Kalibrierung** | Teilstring statt zeilen-verankert ⇒ nur eindeutige Phrasen aufnehmbar |
 | 6 | Mindest-Satzzahl | Slice-Plan | **nach Kalibrierung** | Inline-Code und Satzende-Form weichen ab; eigener Antrag |
 | 7 | Obergrenze der DoD-Punkte **im Abschnitt** | Slice-Plan | **nicht gedeckt** | keine Zähl-Fähigkeit über Abschnitts-Elemente |
-| 8 | Lerneintrag nennt **eine von drei** Formen | Slice-Plan | **nicht gedeckt** | Alternation über benannte Marken |
+| 8 | Lerneintrag nennt **eine von drei** Formen | Slice-Plan | **nicht gedeckt** | **keine** Marken-Frage: die Formen stehen mehrheitlich *innerhalb* des Textlaufs ⇒ `require-pattern` |
 | 9 | Dateiname gibt die Slice-Nummer her | Slice-Plan | **außerhalb** | siehe Abnahme-Punkt 1 — keine Struktur **innerhalb** eines Dokuments |
 | 10 | vier fette Pflicht-Marken je Anforderung | Anforderung | **nicht gedeckt** | `**Happy Path:**` u. a. **am Zeilenanfang**, nicht als Teilstring |
-| 11 | Stichtags-Ausnahme | beide | **Ventil** | über die bestehende Ausnahme-Mechanik ausdrückbar; Abnahme-Punkt 5 |
+| 11 | Stichtags-/Namens-Ausnahme | beide | **außerhalb** | die Pfad-Ausnahme deckt sie **nicht**: der gelebte Fall ist eine Zahlen-Schwelle bzw. eine Kennungs-Liste *innerhalb* einer Datei ⇒ Nicht-Ziel (Abnahme-Punkt 5) |
 
-**2 gedeckt · 2 nach Kalibrierung · 5 nicht gedeckt · 1 außerhalb · 1 Ventil** (Summe 11).
+**2 gedeckt · 2 nach Kalibrierung · 5 nicht gedeckt · 2 außerhalb** (Summe 11).
+Die Guard-Aussagen des Moduls (Leerlauf, Mehrdeutigkeit) sind in dieser Zählung
+**nicht** enthalten — sie stammen nicht aus den vermessenen Skripten, sondern
+kommen mit dem Vertrag hinzu.
 
 Die Zeile, die den Schnitt entscheidet, ist **10**: sie betrifft eine **andere
 Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
@@ -175,16 +178,19 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
      Fence-Bereinigung wie die Satzzählung. Genau daran ist die Skript-Variante
      gescheitert: sie zählte dateiweit und musste den Abschnitts-Schnitt selbst
      nachbauen.
-   - **Benannte Marken:** der Antrag nennt `require-strong` als eine Liste, die
-     **vollständig** vorkommen muss (Messzeile 10). Messzeile 8 verlangt aber
-     das Gegenteil: **eine von drei** Lerneintrag-Formen genügt. Eine Liste
-     deckt beide Fälle nicht ab — der Vertrag braucht **zwei** Formen
-     („alle von" und „mindestens eine von"), sonst bleibt Zeile 8 ungedeckt und
-     der Konsument behält ein Skript für einen einzigen Fall.
-   - **Die Marke ist zeilenverankert und ausgezeichnet**, nicht Teilstring: das
-     Skript prüft `**Name:**` **am Zeilenanfang**. Ein `Boundary` mitten in
-     einem Satz erfüllt die Zusage nicht. Steht das nicht im Vertrag, entsteht
-     ein Falsch-Grün, das schwerer wiegt als ein Falsch-Rot.
+   - **Benannte Marken — nach dem Review neu gefasst, weil ich die Form
+     angenommen statt gemessen hatte.** Gemessen an beiden Repos: die Marke steht
+     als **Listen-Item** (`- **M:**`, 108×), bare (`**M:**`, 44×) und
+     **qualifiziert** (`- **M (Zusatz):**`). Meine erste Fassung („nach führendem
+     Whitespace") hätte die Listen-Form ausgeschlossen und damit **jede**
+     Anforderung des eigenen Lastenhefts rot gemeldet. Die Zusage lautet jetzt:
+     hervorgehobener Textlauf am Zeilen-Anfang **nach optionalem Listen-Marker**.
+     Ein `Boundary` im Fließtext genügt weiterhin nicht.
+   - **Messzeile 8 ist gar keine Marken-Frage.** Die gesuchten Lerneintrag-Formen
+     stehen mehrheitlich **innerhalb** des Textlaufs, nicht an seinem Anfang —
+     eine Marken-Alternative hätte sie nicht gefunden. Der Vertrag bekommt
+     stattdessen `require-pattern` als Spiegelbild von `forbid-pattern`; die
+     zunächst geplante Form „mindestens eine von" **entfällt ersatzlos**.
 
 5. **Grandfathering.** → **Entschieden 2026-08-09: `exempt-paths` je Regel — und
    ausdrücklich keine Stichtags-Mechanik.**
@@ -279,10 +285,12 @@ Antrag mehrere unabhängige Module beschreibt statt eines.
 - **Sub-Area prüfen:** Analyse berührt `spec/` und `docs/plan/`; die Folge-Slices
   zusätzlich `internal/`. Alle unter dem Repo-Default GF
   (`harness/conventions.md` §Modus: `*`).
-- **Offene Beobachtungen sichten:** das Register führt **BEO-001**
-  (Datei-Register driften unbemerkt gegen ihre Autoritäts-Tabelle). **Bewusst
-  festgehalten, weil die Verwechslung naheliegt:** `structure` deckt BEO-001
-  **nicht** ab. Dort geht es um eine Referenz **zwischen** Dokumenten (existiert
+- **Offene Beobachtungen sichten:** das Register führt **BEO-001** und — seit
+  der Re-Review dieses Slice — **BEO-002** (eine Semantik-Änderung wird nur im
+  Dokumentkörper nachgezogen, ihre Ränder bleiben stehen). BEO-002 ist in genau
+  diesem Slice zweimal eingetreten und dort geheilt; die Belege werden bei seiner
+  Closure ergänzt. **Zu BEO-001 bewusst festgehalten, weil die Verwechslung
+  naheliegt:** `structure` deckt es **nicht** ab. Dort geht es um eine Referenz **zwischen** Dokumenten (existiert
   eine Datei, die niemand registriert?), hier um die Form **innerhalb** eines
   Dokuments. Wer BEO-001 in diesem Slice erledigt glaubt, lässt die Lücke offen.
 

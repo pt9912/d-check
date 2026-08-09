@@ -38,9 +38,12 @@ ablehnt, ist kein lieferbarer Zwischenstand.
    Abschnitts-Findung, Kardinalitäts-Behandlung, Fence-Bereinigung. Die
    Spezifikation weist die Closure-Fähigkeit als Preset aus — zwei Kopien
    könnten driften, ohne dass ein Test es merkt.
-2. **Grund-Codes im Lockstep:** die sechs `section-*` plus
-   `closure-note-ambiguous` gehören mit `AllReasons()`, den Doctor-Klartexten und
-   der Spezifikations-§4-Tabelle in **denselben** Commit.
+2. **Grund-Codes im Lockstep — es sind neun, nicht sieben:** die sechs
+   Bedingungs-Codes (`section-empty`/`-thin`/`-oversized`/`-forbidden`/
+   `-pattern-missing`/`-marker-missing`) **plus** die zwei Struktur-Codes
+   (`section-missing`, `section-ambiguous`) **plus** `closure-note-ambiguous`.
+   Alle neun gehören mit `AllReasons()`, den Doctor-Klartexten und der
+   Spezifikations-§4-Tabelle in **denselben** Commit.
 3. **CLI-Mit-Modifikation**, die jedes bisherige Modul mitgebracht hat:
    `--print-config`-Gerüst, `--suggest-config`-Vorlage und die
    `--print-mk`-Target-Liste.
@@ -52,13 +55,17 @@ ablehnt, ist kein lieferbarer Zwischenstand.
       Abschnitts-Mechanik **geteilt** mit der Closure-Fähigkeit — belegt durch
       den Preset-Kopplungs-Test (dieselbe Eingabe, beide Oberflächen, gleiche
       Befund-Zeilen).
-- [ ] Sieben neue Grund-Codes im Lockstep mit `AllReasons()` und Spezifikation
+- [ ] **Neun** neue Grund-Codes im Lockstep mit `AllReasons()` und Spezifikation
       §4; jedes Akzeptanzkriterium als Test, insbesondere die drei Marken-Formen,
       `sections: each` und „Mehrdeutigkeit schlägt Messung".
 - [ ] CLI-Enumerationen nachgezogen; `make gates` grün; **Paritäts-Beleg** gegen
       die beigezogenen Adopter-Fixtures; Release als **Minor** (neues Modul +
       additiver Code — ein Repo mit zwei Closure-Abschnitten wird danach rot,
-      das gehört in die Release-Notiz).
+      das gehört in die Release-Notiz); CLI-Enumerationen inklusive der
+      Target-Liste in
+      [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
+      deren Out-of-Scope-Zeile die Zahl der Targets festschreibt und daher
+      mitzuändern ist.
 
 ## 5. Risiken / offene Punkte
 

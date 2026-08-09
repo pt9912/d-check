@@ -159,7 +159,7 @@ planning-lokale Closure-Note-Struktur ausgeliefert (v0.52.0), die der
 | `planning.closure` um einen Datei-Glob erweitern | Reicht technisch, täuscht aber über den Gegenstand: `planning` prüft den Planning-Lifecycle, nicht das Lastenheft |
 | Alte Anforderung superseden, Schlüssel als Alias | Bräche die stabil zugesagten Grund-Codes — ausgeschlossen, nicht abgewogen |
 | `structure` emittiert je nach Config-Pfad mal `section-*`, mal `closure-note-*` | Ein Modul mit zwei Code-Familien je nach Herkunft der Konfiguration; die Meldung wäre nicht mehr aus dem Modul erklärbar |
-| Mehrdeutigkeit als `section-constraint` mitführen | Andere Reparatur, andere Klasse; Sammelbefunde waren schon bei den drei Closure-Codes die verworfene Bauform |
+| Mehrdeutigkeit unter einem Sammel-Befund mitführen | Andere Reparatur, andere Klasse; Sammelbefunde waren schon bei den drei Closure-Codes die verworfene Bauform — und die Deduplikation ließe sie ohnehin zusammenfallen (Entscheidung 8) |
 | `require-strong` als einzelne Liste (wie beantragt) | Deckt den zweiten gemessenen Bedarf nicht ab — und der ist gar keine Marken-Frage, sondern eine Muster-Frage (`require-pattern`) |
 | Marken „nach führendem Whitespace" verankern (erste Fassung) | Gemessen widerlegt: schließt die Listen-Form aus und meldete jede Anforderung des eigenen Lastenhefts rot |
 | `require-any` als Marken-Alternative | Die zu findenden Formen stehen *innerhalb* des Textlaufs; eine Marken-Alternative fände sie nicht |
@@ -170,10 +170,10 @@ planning-lokale Closure-Note-Struktur ausgeliefert (v0.52.0), die der
 
 ## Konsequenzen
 
-- **Die Identität des Werkzeugs wächst**, und zwar erklärt: `structure` ist das
-  erste Modul ohne Referenz-Invariante. §1 des Lastenhefts nimmt die zweite
-  Frage ausdrücklich auf. Ohne diesen Satz wäre die Erweiterung still — genau
-  die Klasse, die den Antrag ausgelöst hat.
+- **Die Identität des Werkzeugs wird ausgesprochen**, nicht erweitert: die
+  Form-Frage lief mit `spans`/`hostpaths` längst mit, aber als Einzelfall. §1 des
+  Lastenhefts benennt sie jetzt als eigene Kategorie. Ohne diesen Satz bliebe sie
+  implizit — genau die Klasse, die den Antrag ausgelöst hat.
 - **Zwei Config-Wege für verwandte Fragen.** Der Preis der Code-Stabilität. Die
   Spezifikation koppelt sie, damit sie nicht driften: eine Änderung an einer der
   beiden Stellen ohne die andere ist ein Spezifikations-Bug.
@@ -193,7 +193,13 @@ planning-lokale Closure-Note-Struktur ausgeliefert (v0.52.0), die der
 - **Mehrdeutigkeit schlägt Messung:** ein Dokument mit zwei passenden
   Abschnitten und einem zu dünnen ersten meldet **nur** den Mehrdeutigkeits-Code.
 - **Marken-Verankerung:** ein Dokument, das eine Marke nur als Fließtext-Wort
-  trägt, meldet die Bedingung als verletzt.
+  trägt, meldet die Bedingung als verletzt — und eines, das sie als Listen-Item
+  oder qualifiziert trägt, meldet **nicht** (die drei gemessenen Formen).
+- **Kardinalität:** eine Datei mit drei passenden Abschnitten meldet unter `each`
+  nur für den verletzenden, unter `one` `section-ambiguous` und sonst nichts.
+- **Ein Code je Bedingung:** ein Abschnitt, der zwei Bedingungen zugleich
+  verletzt, erzeugt **zwei** Befunde — fielen sie unter der Deduplikation
+  zusammen, wäre die Trennung wirkungslos.
 - **Leerlauf:** eine Regel, deren Glob keine Datei trifft, meldet — statt grün zu
   sein.
 - **Byte-Identität:** ohne aktives `structure` bzw. ohne Regeln ist der
