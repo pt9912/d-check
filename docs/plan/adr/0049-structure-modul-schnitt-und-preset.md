@@ -1,6 +1,6 @@
 # ADR-0049 — Modul `structure`: Schnitt, Grenze und Preset-Kopplung statt Supersede
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-08-09
 **Autor:** pt9912
 **Bezug:** [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
@@ -230,3 +230,8 @@ planning-lokale Closure-Note-Struktur ausgeliefert (v0.52.0), die der
   Kontext-Aussage zu `spans`/`hostpaths` korrigiert und die Zeitangabe zum
   Vorläufer richtiggestellt. Dass der Entwurf noch `Proposed` war, hat die
   Korrektur überhaupt möglich gemacht.
+- 2026-08-09: nach einer bestätigenden Re-Review ein zweites Mal nachgezogen —
+  Regel-Identität im Befund-`target` (sonst fielen zwei leer laufende Regeln
+  unter der Deduplikation zusammen), Kandidaten auf Markdown eingegrenzt, die
+  Universalitäts-Zusage zum modul-lokalen Scan-Scope korrigiert.
+- 2026-08-09: Accepted (Closure `slice-096`).
