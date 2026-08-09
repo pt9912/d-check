@@ -95,8 +95,12 @@ nicht fängt (Inhalt vs. Floskel — semantisch, Reviewer-Sache).
   (`--config`, Closure-Bindepunkt in `fullbuild`, nicht in `gates`);
   Mutations-Gegenprobe am echten Bestand: alle drei Grund-Codes feuern, ohne
   Mutation 299 Dateien / 0 Befunde (kein Retrofit nötig).
-- [ ] Release (Tag + GHCR + Digest-Backfill).
-- [ ] `make gates` + `make verify-closure-notes` grün; unabhängiger Frischkontext-Review.
+- [x] Release (Tag + GHCR + Digest-Backfill). **v0.52.0** veröffentlicht
+  (Pipeline-Lauf grün, Digest `sha256:412a6fd3…662c`); das gepinnte Release-Image
+  gegen dieses Repo gegengeprüft.
+- [x] `make gates` + `make verify-closure-notes` grün; unabhängiger Frischkontext-Review.
+  **Zwei** Reviews mit getrennten Linsen (Vertrag + Code), beide blockierend —
+  1 HIGH / 10 MEDIUM / 6 LOW / 3 INFO, alle eingearbeitet.
 
 ## 5. Risiken / offene Punkte
 
