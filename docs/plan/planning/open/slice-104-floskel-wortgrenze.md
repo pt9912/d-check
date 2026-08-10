@@ -62,7 +62,7 @@ diesen Fall mit.
 
 1. **RE2-Portierung.** Der Vorschlag nennt Lookbehind und Lookahead; Go kennt
    sie nicht. Dieselbe Lage wie bei der Platzhalter-Erkennung in
-   [slice-098](../in-progress/slice-098-closure-note-placeholder.md), und
+   [slice-098](../done/slice-098-closure-note-placeholder.md), und
    dieselbe Technik: das Grenzzeichen **konsumieren** statt hineinzuschauen.
    Zu entscheiden ist, ob das über eine gebaute Regex je Phrase läuft
    (`regexp.QuoteMeta` + Zeichenklassen) oder über eine Index-Suche mit

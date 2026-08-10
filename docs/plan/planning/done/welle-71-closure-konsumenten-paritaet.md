@@ -25,7 +25,7 @@ was ein einzelner Slice zusagen kann.
 ## 2. Trigger (Welle startet)
 
 Freigabe des Auftraggebers (2026-08-10) und ein freier WIP-Slot. Beide
-Slice-Trigger sind erfüllt: [slice-096](done/slice-096-structure-modul-analyse.md)
+Slice-Trigger sind erfüllt: [slice-096](slice-096-structure-modul-analyse.md)
 liegt in `done/`, und dessen Schnitt hat entschieden, dass beide Slices
 **eigenständig** bleiben (nicht im `structure`-Modul aufgehen) — der Vorbehalt in
 den Slice-Köpfen ist damit aufgelöst.
@@ -42,8 +42,8 @@ den Slice-Köpfen ist damit aufgelöst.
 
 | Slice | Rolle |
 |---|---|
-| [slice-097](done/slice-097-closure-glob-entkopplung.md) | Eigener Kandidaten-Filter `planning.closure.glob` — die Fähigkeit bekommt ihre **Grundmenge** zurück, die sie heute mit `planning.slice-glob` teilt |
-| [slice-098](in-progress/slice-098-closure-note-placeholder.md) | Neuer opt-in-Grund-Code `closure-note-placeholder` — unausgefüllte Template-Rümpfe |
+| [slice-097](slice-097-closure-glob-entkopplung.md) | Eigener Kandidaten-Filter `planning.closure.glob` — die Fähigkeit bekommt ihre **Grundmenge** zurück, die sie heute mit `planning.slice-glob` teilt |
+| [slice-098](slice-098-closure-note-placeholder.md) | Neuer opt-in-Grund-Code `closure-note-placeholder` — unausgefüllte Template-Rümpfe |
 
 **Reihenfolge:** zuerst slice-097. Beide Slices halten fest, dass keine
 Reihenfolge nötig ist; der Kandidaten-Filter bestimmt aber die Menge, auf der die
@@ -52,15 +52,15 @@ aussagekräftiger. WIP-Limit 1, also ohnehin nacheinander.
 
 ## 5. Abhängigkeiten
 
-- Beide hängen an [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
-  und [ADR-0048](../adr/0048-closure-note-struktur-im-planning-modul.md); ob [ADR-0048](../adr/0048-closure-note-struktur-im-planning-modul.md)
+- Beide hängen an [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+  und [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md); ob [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md)
   verfeinert oder eine Folge-ADR nötig wird, entscheidet sich je Slice.
-- Keine Abhängigkeit zu [slice-094](open/slice-094-closure-zaehl-paritaet.md) —
+- Keine Abhängigkeit zu [slice-094](../open/slice-094-closure-zaehl-paritaet.md) —
   siehe Out-of-Scope.
 
 ## 6. Out-of-Scope für diese Welle
 
-- **[slice-094](open/slice-094-closure-zaehl-paritaet.md) (Zähl-Parität) bleibt
+- **[slice-094](../open/slice-094-closure-zaehl-paritaet.md) (Zähl-Parität) bleibt
   draußen**, obwohl die Roadmap alle drei zusammen geplant hatte. Der Grund ist
   die **Risiko-Klasse**, nicht der Umfang: 097 und 098 sind rein **additiv**
   (neuer Config-Schlüssel mit rückwärtskompatiblem Default; opt-in-Grund-Code mit
@@ -70,7 +70,7 @@ aussagekräftiger. WIP-Limit 1, also ohnehin nacheinander.
   die in welle-70 eine eigene konsumentensichtbare Zeile gekostet hat, und sie
   verdient eine eigene Welle mit eigener Bestandsmessung — nicht ein Mitfahren
   im Windschatten zweier additiver Slices.
-- Die `structure`-Umsetzung ([slice-099](open/slice-099-structure-modul.md)) —
+- Die `structure`-Umsetzung ([slice-099](../open/slice-099-structure-modul.md)) —
   eigene Welle, Trigger eingetreten, Freigabe offen.
 
 ## 7. Closure-Notiz

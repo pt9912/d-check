@@ -106,7 +106,7 @@ Planning-Lifecycle existieren.
   Moduls samt Preset-Kopplung und neun Grund-Codes.
 - [slice-094](../open/slice-094-closure-zaehl-paritaet.md),
   [slice-097](../done/slice-097-closure-glob-entkopplung.md),
-  [slice-098](../in-progress/slice-098-closure-note-placeholder.md) — bleiben
+  [slice-098](../done/slice-098-closure-note-placeholder.md) — bleiben
   eigenständig, Zuschnitt durch diese Welle entschieden.
 
 ## Verifikation

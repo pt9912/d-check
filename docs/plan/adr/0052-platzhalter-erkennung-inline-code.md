@@ -1,6 +1,6 @@
 # ADR-0052 — Platzhalter-Erkennung: Inline-Code ist keine Prosa, Nachfilter sind Code
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-08-10
 **Autor:** pt9912
 **Bezug:** [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
@@ -135,3 +135,4 @@ unglaubwürdiges Gate wird abgeschaltet.
   Whitespace** sein (die Zusage zu den Vergleichszeichen hielt nur für die
   Schreibweise mit Leerzeichen, gemessen), ein Winkelklammer-Linkziel ist ein
   dritter Nachfilter, und die beiden offenen Grenzen sind benannt.
+- 2026-08-10: Accepted (Closure `slice-098`, Release **v0.55.0**).

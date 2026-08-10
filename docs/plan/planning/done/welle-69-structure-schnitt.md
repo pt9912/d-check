@@ -40,7 +40,7 @@ Dokument selbst richtig gebaut?".
 - **Das Mehr gegenüber der Slice-DoD:** die drei bereits liegenden
   Closure-Slices ([slice-094](../open/slice-094-closure-zaehl-paritaet.md),
   [slice-097](../done/slice-097-closure-glob-entkopplung.md),
-  [slice-098](../in-progress/slice-098-closure-note-placeholder.md)) haben eine
+  [slice-098](../done/slice-098-closure-note-placeholder.md)) haben eine
   **Entscheidung** — eigenständig, aufgegangen oder neu zugeschnitten — und, wo
   sie bestehen bleiben, eine Wellen-Zuordnung. Solange das offen ist, ist der
   Schnitt nicht fertig, auch wenn der Slice-Plan abgehakt ist.
