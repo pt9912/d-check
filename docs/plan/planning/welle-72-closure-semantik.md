@@ -42,8 +42,8 @@ liegt in `done/` und hat den Zuschnitt entschieden — beide bleiben eigenständ
 
 | Slice | Rolle | Richtung |
 |---|---|---|
-| [slice-094](in-progress/slice-094-closure-zaehl-paritaet.md) | Zähl-Parität: Inline-Code zählt nicht, Satzende nur vor Whitespace | **beide** |
-| [slice-104](open/slice-104-floskel-wortgrenze.md) | Floskel-Vergleich an der Wortgrenze statt als Teilstring | findet **weniger** |
+| [slice-094](done/slice-094-closure-zaehl-paritaet.md) | Zähl-Parität: Inline-Code zählt nicht, Satzende nur vor Whitespace | **beide** |
+| [slice-104](in-progress/slice-104-floskel-wortgrenze.md) | Floskel-Vergleich an der Wortgrenze statt als Teilstring | findet **weniger** |
 
 **Reihenfolge: slice-094 zuerst.** Es trägt die ADR, die den Rahmen setzt
 (eine Prüfregel wird bewusst gelockert,

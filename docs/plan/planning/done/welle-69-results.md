@@ -104,7 +104,7 @@ Planning-Lifecycle existieren.
   Grün-Pfad im Fence-Automaten; **bindende** Vorbedingung für 099.
 - [slice-099](../open/slice-099-structure-modul.md) — die Implementierung des
   Moduls samt Preset-Kopplung und neun Grund-Codes.
-- [slice-094](../in-progress/slice-094-closure-zaehl-paritaet.md),
+- [slice-094](../done/slice-094-closure-zaehl-paritaet.md),
   [slice-097](../done/slice-097-closure-glob-entkopplung.md),
   [slice-098](../done/slice-098-closure-note-placeholder.md) — bleiben
   eigenständig, Zuschnitt durch diese Welle entschieden.

@@ -111,7 +111,7 @@ diesen Fall mit.
 **Start** (`open` → `next` → `in-progress`): Freigabe; WIP-Slot frei.
 
 **Welle:** [welle-72-closure-semantik](../welle-72-closure-semantik.md), gemeinsam
-mit [slice-094](../in-progress/slice-094-closure-zaehl-paritaet.md); dort **nach**
+mit [slice-094](../done/slice-094-closure-zaehl-paritaet.md); dort **nach**
 094, das die ADR für die Lockerung trägt. Beide ändern die
 **Semantik eines ausgelieferten Gates** statt etwas hinzuzufügen, beide brauchen
 eine eigene Bestandsmessung und eine konsumentensichtbare Release-Notiz. Sie

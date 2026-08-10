@@ -55,12 +55,12 @@ aussagekräftiger. WIP-Limit 1, also ohnehin nacheinander.
 - Beide hängen an [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
   und [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md); ob [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md)
   verfeinert oder eine Folge-ADR nötig wird, entscheidet sich je Slice.
-- Keine Abhängigkeit zu [slice-094](../in-progress/slice-094-closure-zaehl-paritaet.md) —
+- Keine Abhängigkeit zu [slice-094](../done/slice-094-closure-zaehl-paritaet.md) —
   siehe Out-of-Scope.
 
 ## 6. Out-of-Scope für diese Welle
 
-- **[slice-094](../in-progress/slice-094-closure-zaehl-paritaet.md) (Zähl-Parität) bleibt
+- **[slice-094](../done/slice-094-closure-zaehl-paritaet.md) (Zähl-Parität) bleibt
   draußen**, obwohl die Roadmap alle drei zusammen geplant hatte. Der Grund ist
   die **Risiko-Klasse**, nicht der Umfang: 097 und 098 sind rein **additiv**
   (neuer Config-Schlüssel mit rückwärtskompatiblem Default; opt-in-Grund-Code mit

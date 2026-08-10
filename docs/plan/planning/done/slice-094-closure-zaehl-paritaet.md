@@ -5,7 +5,7 @@
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
 **Welle:** [welle-72-closure-semantik](../welle-72-closure-semantik.md), gemeinsam mit
-[slice-104](../open/slice-104-floskel-wortgrenze.md). **Zuordnung entschieden** mit der
+[slice-104](../in-progress/slice-104-floskel-wortgrenze.md). **Zuordnung entschieden** mit der
 welle-69-Closure (2026-08-09): der Slice bleibt **eigenständig**. Die Welle klammert
 beide, weil sie die Semantik eines **ausgelieferten** Gates ändern und **beide** die
 Floskel-Prüfung lockern — das gehört in **eine** Release-Notiz.
@@ -137,9 +137,13 @@ bereinigte Texte zu führen.
       **nicht erreichbar** — der Abschnittstext endet immer auf einem
       Zeilenumbruch. Die Zusage gilt trotzdem der Funktion, also prüft sie jetzt
       ein direkter Tabellen-Test.
-- [ ] `make gates` + `make verify-closure-notes` grün; Release als **Minor**
-      (Handbuch-§11-Zeile mit dem „findet mehr"-Hinweis **und** dem Hinweis auf
-      die gelockerte Floskel-Prüfung).
+- [x] `make gates` + `make verify-closure-notes` grün.
+- [ ] **Release als Minor** — **Wellen-Trigger, nicht Slice-Trigger.**
+      [welle-72](../welle-72-closure-semantik.md) trägt beide Änderungen in
+      **einem** Release mit **einer** Notiz; zwei aufeinanderfolgende Releases
+      würden einem Konsumenten seine Gate-Semantik in zwei Schritten
+      verschieben. Die Notiz muss den „findet mehr"-Hinweis (`closure-note-thin`)
+      **und** den Hinweis auf die gelockerte Floskel-Prüfung tragen.
 
 ## 5. Risiken / offene Punkte
 
@@ -194,4 +198,54 @@ dokumentierte Zusage präzisiert.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Geliefert ist die Zähl-Parität: der Closure-Abschnitt wird **einmal** bereinigt
+(Fences **und** Inline-Code), alle Bedingungen lesen diesen einen Text, und ein
+Satzende zählt nur vor Whitespace oder Zeilenende
+([`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
+Lastenheft 0.55.0, Spezifikation Schritt C4,
+[ADR-0053](../../adr/0053-eine-bereinigung-fuer-alle-closure-bedingungen.md)).
+
+**Der Kern war nicht die Zählung, sondern dass es eine Bereinigung gibt.** Die
+ursprüngliche Aufgabe klang nach zwei Detail-Regeln. Umgesetzt ist eine
+Struktur-Entscheidung: vier Bedingungen, ein bereinigter Text. Die Alternative —
+zwei getrennte Texte, einer je Richtung — hätte die Lockerung der Floskel-Prüfung
+vermieden und dafür zwei Semantiken für denselben Abschnitt eingeführt. Genau die
+Klasse, die das Register als **BEO-003** führt.
+
+**Die Lockerung ist angenommen, nicht umgangen.** Eine *zitierte* Floskel ist
+keine benutzte; die alte Fassung meldete jede Notiz, die **über** Floskeln
+schreibt — diese Repo-Dokumentation eingeschlossen. Sie ist trotzdem eine
+Lockerung, [`AGENTS.md` §3.6](../../../../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)
+macht sie ADR-pflichtig, und die ADR benennt sie samt der Richtung, die
+stillschweigend verschwindet, wenn man sie nicht hinschreibt.
+
+**Die Messung hat einen Abnahme-Punkt erzeugt, den der Slice nicht hatte.** Von
+4066 Satzende-Zeichen im eigenen Bestand tragen rund 2400 keinen Satz — Punkte
+aus Link-Pfaden und Versionsnummern. Aber 170 sind echt und fallen mit weg:
+`**Umsetzung.**`, ein fett gesetztes Satzende. Sie erklären den Abfall des
+Minimums von 7 auf 5 fast vollständig. Entschieden wurde **für** die strengere
+Regel — Parität ist der Zweck, die Richtung ist die sichere, und eine
+Ausnahmeliste für `*`, `_`, `` ` ``, `)` wäre eine dritte Semantik, die weder
+der Adopter noch CommonMark definiert.
+
+**Der Paritäts-Beleg fiel stärker aus als die DoD verlangte.** Statt Fixtures
+wurde der **reale** Bestand des Adopters beigezogen und gegen dessen **echte**
+Shell-Pipeline gerechnet: 84 von 84 Notizen, identische Satzzahlen, an der
+Adopter-Schwelle symmetrisch. Zwei Zwischenstände waren rot und **beide lagen an
+meiner Test-Konfiguration** — erst ein zu enges Überschriften-Muster (7 Dateien
+fehlten), dann ein zu weites, das auch `## 5. Closure-Trigger` traf. Die Lehre
+steht im Slice: **die Parität hängt am `heading-pattern`, nicht an der Zählung.**
+Nebenbefund fürs Handbuch: die Ausschluss-Bedingung des Adopters ist in RE2
+ausdrückbar, obwohl RE2 keinen Lookahead kennt.
+
+**Zwei Rückbauten blieben grün und haben Arbeit erzeugt.** Der Tab als
+Whitespace war ungetestet; und der Zeilenende-Zweig ist über die
+Modul-Oberfläche **gar nicht erreichbar**, weil der Abschnittstext immer auf
+einem Zeilenumbruch endet. Kein toter Code — die Zusage gilt der Funktion —,
+aber über das Modul nicht prüfbar. Ein direkter Tabellen-Test hält sie jetzt.
+Beim Schreiben waren zwei meiner eigenen Erwartungen falsch; der Code hatte
+recht.
+
+**Offen und bewusst an die Welle abgegeben:** das Release. Es trägt beide
+Änderungen dieser Welle in **einer** Notiz — zwei aufeinanderfolgende Releases
+würden einem Konsumenten seine Gate-Semantik in zwei Schritten verschieben.
