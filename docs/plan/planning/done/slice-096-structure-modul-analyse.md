@@ -11,7 +11,7 @@ Paritäts-Beleg und der Ablöse-Pfad sind Folge-Slices.
 
 **Dieser Slice läuft ZUERST** (Auftraggeber-Entscheid 2026-08-09, nach dem
 Backlog-Schnitt-Review): [slice-094](../open/slice-094-closure-zaehl-paritaet.md),
-[slice-097](../open/slice-097-closure-glob-entkopplung.md) und
+[slice-097](../in-progress/slice-097-closure-glob-entkopplung.md) und
 [slice-098](../open/slice-098-closure-note-placeholder.md) schärfen alle dieselbe
 Fähigkeit, die hier neu geschnitten wird. Sie zuerst einzeln auszuliefern hieße,
 dreimal eine Semantik zu versprechen, die dieser Slice gerade neu definiert —
@@ -99,7 +99,7 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
 
    **Die Alternative ist geprüft und verworfen:** `planning.closure` um einen
    Datei-Glob zu erweitern, würde technisch reichen (Abnahme-Punkt von
-   [slice-097](../open/slice-097-closure-glob-entkopplung.md) liefert den
+   [slice-097](../in-progress/slice-097-closure-glob-entkopplung.md) liefert den
    Kandidaten-Filter ohnehin). Sie scheitert am Namen, nicht an der Technik —
    und ein Modul, dessen Name über seinen Gegenstand täuscht, ist genau die
    Sorte Harness-Lüge, die dieses Repo mechanisch bekämpft.
@@ -235,7 +235,7 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
         wichtiger, nicht überflüssig. Seine verengte Paritäts-Zusage kann
         zurückgenommen werden, sobald `closure-note-ambiguous` aus
         [slice-099](../open/slice-099-structure-modul.md) liegt.
-      - [slice-097](../open/slice-097-closure-glob-entkopplung.md)
+      - [slice-097](../in-progress/slice-097-closure-glob-entkopplung.md)
         (`closure.glob`) betrifft die Kandidaten-Menge **der Closure-Fähigkeit**;
         `structure` hat mit seinem eigenen Datei-Glob einen anderen Weg und löst
         das dort nicht mit.

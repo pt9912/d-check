@@ -4,14 +4,12 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** gemeinsam mit [slice-098](slice-098-closure-note-placeholder.md) —
+**Welle:** gemeinsam mit [slice-098](../open/slice-098-closure-note-placeholder.md) —
 der Konsument kann sein letztes handgeschriebenes Prüfskript **erst dann**
 zurückziehen, wenn **beide** Slices liegen. Das ist eine Closure-Bedingung
 jenseits der beiden Slice-DoDs und damit genau der Fall, für den es eine Welle
-gibt. **Die Zuordnung ist offen bis zum Abschluss von**
-[slice-096](../done/slice-096-structure-modul-analyse.md) — dessen Schnitt entscheidet,
-ob dieser Slice eigenständig bleibt oder im `structure`-Modul aufgeht
-(Auftraggeber-Entscheid 2026-08-09).
+gibt. **Zuordnung entschieden** mit der welle-69-Closure (2026-08-09): der Slice
+bleibt **eigenständig** und geht nicht im `structure`-Modul auf.
 
 **Bezug:** [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 (Closure-Fähigkeit, Spezifikation Schritt C2),

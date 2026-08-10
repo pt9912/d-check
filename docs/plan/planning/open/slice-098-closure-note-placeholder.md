@@ -4,13 +4,11 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** gemeinsam mit [slice-097](slice-097-closure-glob-entkopplung.md) —
+**Welle:** gemeinsam mit [slice-097](../in-progress/slice-097-closure-glob-entkopplung.md) —
 erst mit **beiden** ist die Closure-Fähigkeit eine Obermenge des
 Konsumenten-Skripts; einzeln bringt jede Deckung, löst den Faden aber nicht auf.
-**Die Zuordnung ist offen bis zum Abschluss von**
-[slice-096](../done/slice-096-structure-modul-analyse.md) — dessen Schnitt entscheidet,
-ob die Erkennung hier oder im `structure`-Modul wohnt (Auftraggeber-Entscheid
-2026-08-09).
+**Zuordnung entschieden** mit der welle-69-Closure (2026-08-09): der Slice
+bleibt **eigenständig** und geht nicht im `structure`-Modul auf.
 
 **Bezug:** [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 (neuer Grund-Code in der C-Kette),
@@ -105,7 +103,7 @@ gegenseitig verdecken. Für den Vertrag ist das folgenlos (gemeldet wird der
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei — **und**
 [slice-096](../done/slice-096-structure-modul-analyse.md) in `done/`. Von
-[slice-097](slice-097-closure-glob-entkopplung.md) unabhängig: die gemeinsame
+[slice-097](../in-progress/slice-097-closure-glob-entkopplung.md) unabhängig: die gemeinsame
 Abnahmebedingung des Konsumenten verlangt beide, aber keine Reihenfolge.
 
 **Rückführungen:** `in-progress` → `open`, falls die Messung am eigenen Bestand
