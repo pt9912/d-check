@@ -240,4 +240,57 @@ eine dokumentierte Grenze neu bewertet.
 
 ## 10. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Geliefert ist der Grund-Code `fence-unclosed` als dritte Artefakt-Klasse des
+Moduls `spans`, ausgeliefert mit **v0.53.0**
+(Digest `sha256:0cbe2d54…9424`, Pipeline-Lauf 31362555433). Der belegte
+Reproduktionsfall meldet: die Floskel hinter einem offenen Fence, die in
+v0.52.0 still durchlief, erzeugt jetzt einen Befund an der Öffnungszeile.
+
+**Die Bestandsmessung hat die Entscheidung gedreht.** Vor der Messung stand der
+längenabgeglichene CommonMark-Schluss als „die Wurzel" im Plan. 776 Dateien über
+drei Repos zeigten null unbalancierte Fences, null gemischte Fence-Längen, null
+Tilde-Fences — er wäre wirkungslos gewesen. Und beim Aufschreiben fiel auf, dass
+er den belegten Fall **gar nicht löst**: er korrigiert Fehlpaarungen, aber ein
+Fence, der nie geschlossen wird, bleibt unter jeder Paarungsregel offen. Ich
+hatte ihn als Wurzel dieses Befundes bezeichnet; er war die Wurzel eines anderen.
+
+**Drei Review-Runden, und jede fand dieselbe Klasse an einer neuen Stelle.**
+Das ist die eigentliche Lehre dieses Slice. Runde eins: der Wächter wertete nur
+eine der zwei Schluss-Lesarten des Produkts aus, sodass der Tabellen-Leser
+unbewacht blieb — belegt an einem Vollständigkeits-Gate mit Exit 0 über einer
+ungedeckten Anforderung. Runde zwei: dieselbe Trim-Divergenz stand unverändert
+im Modul `planning`, also genau dort, wo der Anlassfall gemessen wird; ich hatte
+die Instanz geheilt, nicht die Klasse. Runde drei: die Invariante war an drei von
+fünf Konsumenten nicht assertiert und ließ sich einzeln zurückdrehen, ohne dass
+ein Test rot wurde.
+
+Erst danach war die Fence-Lexik als Klasse geschlossen — ein geteiltes
+Trimm-Prädikat, beide Schluss-Lesarten geteilt und ausgewertet, je Konsument eine
+eigene Assertion gegen Wieder-Divergenz.
+
+**Die Mutations-Gegenprobe war beim ersten Anlauf selbst kaputt.** Sie setzte
+nach jeder Mutation per `git checkout` zurück — also auf HEAD statt auf den
+Arbeitsstand. Die folgenden Ersetzungen griffen ins Leere und wurden aus dem
+falschen Grund rot; nebenbei war die Implementierung im Arbeitsbaum gelöscht.
+Über eine Dateikopie wiederholt, mit Abbruch bei nicht greifender Ersetzung,
+förderte sie sofort einen echten Testfehler zutage. Sechs Rückbauten am Ende,
+alle rot.
+
+**Zwei Dinge wurden ehrlicher statt repariert.** Die gemeldete Zeile heißt
+**Fundstelle**: welche von mehreren Öffnungen fehlt, ist grundsätzlich nicht
+entscheidbar. Und die Grenze wuchs über drei Runden von „wer nur `planning`
+aktiviert" über die Ziel-Achse bis zu `pins`, wo die Folge **still** ist — ein
+offener Fence verdeckt die Überschrift, der Anker wird unauflösbar, und die
+Drift-Prüfung entfällt kommentarlos. Sie zu schließen ist eigene Arbeit.
+
+**Bewusst nicht hier erledigt:** dieselbe Klasse in **anderen** Lexiken —
+`citations` bildet Absätze selbst, `headingSection` beantwortet die Anker-Frage
+roh, `vcs` rechnet auf git-Blobs, die kein scannendes Modul sieht. Eigene
+Verträge, eigener Slice: [slice-103](../open/slice-103-geteilte-lexik-raender.md),
+mit Bestandsmessung als erstem Abnahme-Punkt — die Lehre dieses Slice.
+
+**Fürs Register:** die Klasse „eine geteilte Lexik driftet an den Rändern, weil
+jeder Konsument sie selbst vorbereitet" ist als **BEO-003** eingetragen. Der
+`vcs`-Befund aus Runde drei ist zugleich die **dritte** Wiederholung von
+„Modul-Grenze nur auf der Quell-Achse gedacht" (**BEO-004**) — damit ist die
+Verkörperungs-Schwelle erreicht.
