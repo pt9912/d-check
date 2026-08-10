@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.54.0
+**Version:** 0.54.1
 
 **Status:** Draft
 
@@ -1927,7 +1927,9 @@ werden nicht gemessen (siehe unten). Drei Struktur-Bedingungen:
 - **Abschnitt vorhanden** — keine passende Überschrift ⇒ `closure-note-missing`.
 - **Substanz** — im Abschnitt stehen, **nach Entfernen der Fenced-Code-Blöcke**,
   weniger als `planning.closure.min-sentences` Satzende-Zeichen (`.`, `!`, `?`;
-  Default 4) ⇒ `closure-note-thin`. Ein zurückgelassener Platzhalter fällt damit auf.
+  Default 4) ⇒ `closure-note-thin`. Ein **kurzer** Platzhalter fällt damit auf;
+  ein vollständiger Vorlagen-Rumpf nicht — er erreicht die Schwelle, dafür gibt
+  es die vierte Bedingung.
 - **Floskel** — der bereinigte Abschnitts-Text enthält (case-insensitiv) einen der
   literalen Teilstrings aus `planning.closure.boilerplate` ⇒
   `closure-note-boilerplate`. Die Liste ist **per Default leer**: der Vertrag
@@ -1970,9 +1972,19 @@ Drei Einschränkungen halten die Erkennung eng:
 3. **HTML-Tags fallen raus** — ist das erste Token des Inneren ein bekannter
    Tag-Name, ist es Markup.
 
-Vergleichs- und Größer-Zeichen der Messwert-Prosa (`p95 < 1 s`, `Recall > 0,9`)
-sind bereits durch die Form ausgeschlossen: auf `<` folgt dort Whitespace.
-Generics (`vector<float>`) ebenso, weil ihnen ein Wortzeichen vorausgeht.
+Zusätzlich muss das Innere **frei von Whitespace** sein — ein Platzhalter ist ein
+Feldname, kein Satz. Das trägt die Messwert-Prosa: `p95 < 1 s` scheidet über das
+erste Zeichen aus, die enge Form `<1 s und der Recall >0,9` über das Whitespace
+im Inneren. Generics (`vector<float>`) scheiden aus, weil ihnen ein Wortzeichen
+vorausgeht; ein Winkelklammer-**Linkziel** (`](<ziel>)`) an der öffnenden
+Klammer als Vorzeichen.
+
+**Zwei Grenzen sind benannt, nicht geschlossen.** Ein **eingerückter**
+Code-Block (vier Leerzeichen) ist in d-check **nirgends** modelliert — weder
+hier noch in `links`, `ids` oder `codepaths`; ein Platzhalter darin meldet.
+Und eine ungerade Backtick-Zahl im Absatz verschiebt die Inline-Code-Paarung,
+wie überall sonst auch. Beides sind Eigenschaften der geteilten Lexik; sie hier
+allein zu reparieren hieße, eine sechste Sicht auf denselben Text zu bauen.
 
 Gemeldet wird **der erste** Treffer je Kandidat, wie bei der Floskel — mehrere
 Platzhalter derselben Notiz sind dieselbe Reparatur. **Die Zählung der Substanz
@@ -2565,6 +2577,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.54.1 | 2026-08-10 | Nachzug nach unabhängigem Review, vor dem Release der 0.54.0: die Zusage „Vergleichszeichen sind durch die Form ausgeschlossen“ hielt nur für die Schreibweise **mit** Leerzeichen — `Die Latenz blieb <1 s und der Recall >0,9` meldete. Das Innere eines Platzhalters muss jetzt **frei von Whitespace** sein (ein Feldname, kein Satz); das erledigt zugleich HTML-Tags mit Attributen. Neu ausgeschlossen: das Winkelklammer-**Linkziel** `](<ziel>)`. Der Substanz-Bullet behauptete weiter, ein zurückgelassener Platzhalter falle der Zählung auf — er tut es nur, wenn er kurz ist; ein vollständiger Vorlagen-Rumpf erreicht die Schwelle, und genau deshalb gibt es die vierte Bedingung. Zwei Grenzen sind jetzt **benannt**: der eingerückte Code-Block (in d-check nirgends modelliert) und die ungerade Backtick-Parität im Absatz |
 | 0.54.0 | 2026-08-10 | Change Request (Konsument `ai-harness-course`, CR 2): [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) bekommt eine **vierte**, opt-in Struktur-Bedingung — `closure-note-placeholder` (Schalter `planning.closure.placeholder`, Default `false`) meldet den unausgefüllten Rumpf einer Vorlage. Anlass: ein Template-Rumpf ist syntaktisch vollständig und passiert alle drei bestehenden Bedingungen (gemessen gegen v0.52.0: 0 Befunde). Erkannt wird die Auszeichnungs-Form; drei Einschränkungen halten sie eng, davon die tragende: **Inline-Code zählt nicht** — am eigenen Bestand gemessen (96 Closure-Notizen) liegen **alle zwölf** Treffer in Inline-Code und **null** außerhalb, ohne die Einschränkung wäre jeder ein Falsch-Positiv. Autolinks/Adressen und HTML-Tags fallen per Nachfilter raus; Vergleichszeichen und Generics bereits durch die Form. Erster Treffer je Kandidat, wie bei der Floskel. **Die Substanz-Zählung bleibt unberührt** — ihre Angleichung an dieselbe engere Sicht ist eine eigene Frage, weil sie eine ausgelieferte Schwelle bewegt |
 | 0.53.1 | 2026-08-10 | Nachzug nach unabhängigem Review: das Akzeptanzkriterium zur Nullmengen-Härte stand **zweimal** in der Anforderung — die ältere Fassung nannte weiter `planning.slice-glob` und war gegen die Umsetzung falsifizierbar (Closure-Verzeichnis nur mit Wellen-Dateien plus gesetztem `closure.glob` ⇒ das Kriterium verlangt einen Befund, der Lauf meldet Exit 0). Beide zu **einem** Kriterium über den **effektiven** Filter zusammengezogen |
 | 0.53.0 | 2026-08-10 | Change Request (Konsument `ai-harness-course`, CR 1): [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) bekommt mit `planning.closure.glob` einen **eigenen** Kandidaten-Filter für die Closure-Fähigkeit; Default ist ein **Verweis** auf `planning.slice-glob`, nicht ein wiederholtes Literal — ohne den Schlüssel ist der Befundsatz byte-identisch. Anlass: die beiden Fähigkeiten stellen verschiedene Fragen mit verschiedenen Grundmengen („liegt hier noch Arbeit?“ gegen „ist jedes abgeschlossene Paket dokumentiert?“) und teilten sich einen Schlüssel, solange beide zufällig dasselbe trafen. Wer die Menge weitet, verbiegt die jeweils andere — im Grenzfall zählt die Roadmap-Datei selbst als Slice und der Ruhe-Marker meldet dauerhaft falsch-rot (gemessen gegen v0.52.0). Ein **explizit** leerer oder ungültiger Glob bricht am Config-Rand mit Exit 2 ab statt still auf den Default zurückzufallen |

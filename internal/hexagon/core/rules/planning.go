@@ -215,23 +215,36 @@ func closureSectionEnd(lines []string, headingNo, level int) int {
 
 // placeholderRE erkennt die Auszeichnungs-Form eines Vorlagen-Platzhalters
 // (§DC-FA-PLAN-001.a Schritt C4b): eine öffnende Winkelklammer ohne
-// vorausgehendes Wortzeichen und ohne Schrägstrich, deren erstes Inneres kein
-// Whitespace, `!` oder `/` ist. Das Vorzeichen wird KONSUMIERT statt
-// hineingeschaut — RE2 kennt keine Lookarounds.
-var placeholderRE = regexp.MustCompile(`(^|[^\w/])<([^\s!/][^<>]{0,79})>`)
+// vorausgehendes Wortzeichen und ohne Schrägstrich, deren Inneres mit einem
+// anderen Zeichen als `!` oder `/` beginnt und KEIN Whitespace enthält. Das
+// Vorzeichen wird KONSUMIERT statt hineingeschaut — RE2 kennt keine
+// Lookarounds.
+var placeholderRE = regexp.MustCompile(`(^|[^\w/])<([^\s!/<>][^\s<>]{0,79})>`)
 
 // htmlTagNames sind die Tag-Namen, die der Nachfilter aus C4b verwirft. Als
 // Liste statt als Regex-Alternation: eine Liste liest und pflegt sich.
 func htmlTagNames() map[string]bool {
-	return map[string]bool{
-		"a": true, "b": true, "i": true, "p": true, "br": true, "hr": true,
-		"em": true, "strong": true, "code": true, "pre": true, "div": true,
-		"span": true, "ul": true, "ol": true, "li": true, "h1": true, "h2": true,
-		"h3": true, "h4": true, "h5": true, "h6": true, "td": true, "tr": true,
-		"th": true, "img": true, "sup": true, "sub": true, "table": true,
-		"thead": true, "tbody": true, "kbd": true, "blockquote": true,
-		"details": true, "summary": true, "figure": true, "figcaption": true,
+	names := []string{
+		"a", "abbr", "address", "area", "article", "aside", "audio",
+		"b", "base", "bdi", "bdo", "blockquote", "body", "br", "button",
+		"canvas", "caption", "cite", "code", "col", "colgroup",
+		"data", "datalist", "dd", "del", "details", "dfn", "dialog", "div", "dl", "dt",
+		"em", "embed", "fieldset", "figcaption", "figure", "footer", "form",
+		"h1", "h2", "h3", "h4", "h5", "h6", "head", "header", "hgroup", "hr", "html",
+		"i", "iframe", "img", "input", "ins", "kbd", "label", "legend", "li", "link",
+		"main", "map", "mark", "menu", "meta", "meter", "nav", "noscript",
+		"object", "ol", "optgroup", "option", "output",
+		"p", "param", "picture", "pre", "progress", "q",
+		"rp", "rt", "ruby", "s", "samp", "script", "section", "select", "slot",
+		"small", "source", "span", "strong", "style", "sub", "summary", "sup", "svg",
+		"table", "tbody", "td", "template", "textarea", "tfoot", "th", "thead",
+		"time", "title", "tr", "track", "u", "ul", "var", "video", "wbr",
 	}
+	out := make(map[string]bool, len(names))
+	for _, n := range names {
+		out[n] = true
+	}
+	return out
 }
 
 // placeholderRejected meldet, ob ein Treffer von den Nachfiltern verworfen wird.
@@ -269,6 +282,12 @@ func checkClosurePlaceholder(
 				break
 			}
 			inner := rest[loc[4]:loc[5]]
+			// Winkelklammer-Linkziel `](<ziel>)` ist Markdown-Syntax, keine
+			// Vorlage — erkennbar an der oeffnenden Klammer als Vorzeichen.
+			if rest[loc[2]:loc[3]] == "(" {
+				rest = rest[loc[1]:]
+				continue
+			}
 			if placeholderRejected(inner) {
 				rest = rest[loc[1]:]
 				continue
@@ -283,8 +302,12 @@ func checkClosurePlaceholder(
 
 func closureSectionProse(lines []string, headingNo, level int) string {
 	var b strings.Builder
+	end := closureSectionEnd(lines, headingNo, level)
 	inFence := false
 	for i := headingNo; i < len(lines); i++ {
+		if end != 0 && i+1 >= end {
+			break
+		}
 		trimmed := TrimFenceIndent(lines[i])
 		if FenceToggle(trimmed) {
 			inFence = !inFence
@@ -292,11 +315,6 @@ func closureSectionProse(lines []string, headingNo, level int) string {
 		}
 		if inFence {
 			continue
-		}
-		// Abschnitts-Ende nur an einer ECHTEN ATX-Überschrift (geteilter Parser)
-		// gleicher oder höherer Ebene — `#1 war ein Thema` beendet nichts.
-		if lvl, _, ok := parseATXHeading(lines[i]); ok && lvl <= level {
-			break
 		}
 		b.WriteString(lines[i])
 		b.WriteByte('\n')

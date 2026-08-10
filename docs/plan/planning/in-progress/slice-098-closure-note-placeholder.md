@@ -90,6 +90,21 @@ gegenseitig verdecken. Für den Vertrag ist das folgenlos (gemeldet wird der
       sind gleich. Der Kommentar behauptete ein Problem, das nicht besteht, und
       ist korrigiert; die Zusage, dass eine Verwerfung die Suche nicht beendet,
       ist stattdessen direkt bewacht.
+- [x] **Unabhängiger Review** (Frischkontext) — 0 HIGH, 5 MEDIUM, 5 LOW, 2 INFO;
+      merge-blockierend. Byte-Identität, Abschnitts-Grenze und SemVer-Einordnung
+      **belegt** (Alt-Image gegen HEAD, Klartext/`--json`/`--doctor`). Der
+      schwerste Befund traf eine Zusage, die ich selbst geschrieben hatte:
+      „Vergleichszeichen sind durch die Form ausgeschlossen" hielt nur für die
+      Schreibweise **mit** Leerzeichen — `<1 s und der Recall >0,9` meldete.
+      Behoben durch Verengung (Inneres frei von Whitespace), was zugleich
+      HTML-Tags mit Attributen erledigt; dazu ein dritter Nachfilter für
+      Winkelklammer-Linkziele. Ferner: §C5 der Spezifikation war auf der Fassung
+      **vor** C4b stehengeblieben und widersprach ihr, der Substanz-Bullet des
+      Lastenhefts behauptete weiter, ein Platzhalter falle der Zählung auf, und
+      **33 von 35** Einträgen der HTML-Tag-Liste ließen sich löschen, ohne dass
+      ein Test rot wurde (jetzt über die Liste iteriert). Zwei Grenzen sind
+      **benannt statt geschlossen**: der eingerückte Code-Block und die ungerade
+      Backtick-Parität — beides Eigenschaften der geteilten Lexik.
 - [x] `make gates` + `make verify-closure-notes` grün. **Der eigene Bestand ist
       gemessen und die Erkennung scharfgeschaltet** (`placeholder: true` in
       `.d-check.closure.yml`): 0 Befunde über 96 Closure-Notizen. End-to-End

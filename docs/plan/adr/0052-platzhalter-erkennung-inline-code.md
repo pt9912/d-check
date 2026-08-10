@@ -82,6 +82,8 @@ unglaubwürdiges Gate wird abgeschaltet.
 | Naive Form (`<` … `>`) | 24 Treffer auf dem eigenen Bestand, **null** davon echt |
 | Inline-Code mitzählen | Zwölf Falsch-Positive auf dem eigenen Bestand — das Gate wäre am ersten Tag unglaubwürdig |
 | Nachfilter in die Regex | Unlesbar und unprüfbar; die HTML-Tag-Liste würde zur Alternation, die niemand pflegt |
+| Whitespace im Inneren zulassen (`<mein feld>`) | Die Messwert-Prosa `<1 s und der Recall >0,9` wird dann zum Treffer — gemessen. Ein Platzhalter ist ein **Feldname**; mehrwortige Formen sind ein Re-Evaluierungs-Trigger, keine Erweiterung des Musters |
+| Eingerückte Code-Blöcke hier behandeln | d-check modelliert sie **nirgends**; eine sechste Sicht auf denselben Text zu bauen wäre genau die Klasse, gegen die diese ADR argumentiert. Als Grenze benannt |
 | Ein Befund je Platzhalter | Dieselbe Reparatur, mehrfach gemeldet; die Floskel-Bedingung hat dieselbe Frage bereits entschieden |
 | Default `true` | Winkelklammern sind schreibkultur-abhängig; ein Adopter bekäme beim Update Befunde, die er nicht bestellt hat |
 | Zugleich die Substanz-Zählung verengen | Bewegt eine **ausgelieferte** Schwelle in beide Richtungen — eigene Entscheidung, eigene Messung, eigener Slice |
@@ -95,6 +97,10 @@ unglaubwürdiges Gate wird abgeschaltet.
   Inline-Code, die Platzhalter-Suche nicht. Das ist dokumentiert und begründet,
   aber es ist eine Naht — wer sie später zusammenführt, muss beide Richtungen
   messen.
+- **Zwei Grenzen sind benannt, nicht geschlossen:** der eingerückte Code-Block
+  (vier Leerzeichen — in d-check nirgends modelliert) und die ungerade
+  Backtick-Parität im Absatz. Beide sind Eigenschaften der geteilten Lexik und
+  gehören dorthin, nicht in diese Bedingung.
 - **Die Erkennung ist eine Portierung, kein Import.** Sie trägt eigene Tests je
   Falsch-Positiv-Klasse; die Vorlage des Konsumenten bleibt Vorlage.
 
@@ -102,9 +108,13 @@ unglaubwürdiges Gate wird abgeschaltet.
 
 - **Der Template-Rumpf meldet** — genau ein Befund, an der Zeile des ersten
   Treffers.
-- **Technische Prosa bleibt grün:** Vergleichszeichen, Generics, Autolink,
-  Adresse, HTML-Tag und in Inline-Code gezeigte Meta-Syntax, **einzeln** geprüft,
-  nicht als Sammel-Fixture.
+- **Technische Prosa bleibt grün:** Vergleichszeichen in **beiden**
+  Schreibweisen (mit und ohne Leerzeichen), Tabellenzellen, Generics, Autolink,
+  Adresse, HTML-Tag mit und ohne Attribut, Linkziel in Winkelklammern und in
+  Inline-Code gezeigte Meta-Syntax, **einzeln** geprüft, nicht als
+  Sammel-Fixture.
+- **Jeder Eintrag der HTML-Tag-Liste wirkt** — über die Liste iteriert, nicht
+  stichprobenartig.
 - **Ohne den Schalter byte-identischer Befundsatz.**
 - **Der eigene Bestand bleibt bei null** — jede Abweichung ist ein echter Fund.
 
@@ -121,3 +131,7 @@ unglaubwürdiges Gate wird abgeschaltet.
 ## Geschichte
 
 - 2026-08-10: Proposed (doc-first, `slice-098`).
+- 2026-08-10: nach unabhängigem Review verengt — das Innere muss **frei von
+  Whitespace** sein (die Zusage zu den Vergleichszeichen hielt nur für die
+  Schreibweise mit Leerzeichen, gemessen), ein Winkelklammer-Linkziel ist ein
+  dritter Nachfilter, und die beiden offenen Grenzen sind benannt.

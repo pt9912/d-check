@@ -1755,16 +1755,20 @@ liefert (und umgekehrt):
   Schritt 2). Auf dem Ergebnis wird der **erste** Treffer gesucht:
   eine öffnende Winkelklammer, der **kein** Wortzeichen und **kein** Schrägstrich
   vorausgeht (Zeilenanfang zählt), deren erstes inneres Zeichen **nicht**
-  Whitespace, `!` oder `/` ist, bis zur nächsten schließenden Klammer **derselben
-  Zeile**. Zwei **Nachfilter** verwerfen einen Treffer — sie sind Code, nicht Teil
+  Whitespace, `!` oder `/` ist und deren Inneres **kein Whitespace enthält** (ein
+  Feldname, kein Satz), bis zur nächsten schließenden Klammer **derselben
+  Zeile**. Drei **Nachfilter** verwerfen einen Treffer — sie sind Code, nicht Teil
   des Musters, weil sie in ein Muster gepresst unlesbar und unprüfbar würden:
   - das Innere enthält `://` oder `@` (Autolink, Adresse);
-  - das **erste Token** des Inneren (bis Whitespace oder `/`, kleingeschrieben)
-    ist ein bekannter HTML-Tag-Name.
+  - das Innere bis zum ersten `/`, kleingeschrieben, ist ein bekannter
+    HTML-Tag-Name;
+  - das konsumierte Vorzeichen ist eine öffnende runde Klammer — dann ist es ein
+    Markdown-Linkziel (`](<ziel>)`), nicht eine Vorlage.
 
   Bleibt ein Treffer übrig ⇒ **ein** Befund `closure-note-placeholder` je
-  Kandidat, mit der Zeile des Treffers und dem Treffer als Ziel (auf 40 Runen
-  gekappt). Mehrere Platzhalter derselben Notiz sind dieselbe Reparatur.
+  Kandidat, an der **Zeile des Treffers**; der Treffer selbst steht in der
+  `message` (auf 40 Runen gekappt), `target` bleibt wie bei allen
+  Closure-Befunden das Verzeichnis (C5). Mehrere Platzhalter derselben Notiz sind dieselbe Reparatur.
   **Die Zählung aus C4 bleibt unberührt** — sie sieht Inline-Code weiterhin; die
   engere Sicht gilt nur hier. Konsumierte Vorzeichen zweier benachbarter
   Platzhalter können sich überlappen; für den Vertrag ist das folgenlos, weil nur
@@ -1775,13 +1779,17 @@ liefert (und umgekehrt):
   Portierung mit eigener Testlast, keine Übernahme.
 
 - **C5. Befund-Form.** `file` = die Slice-Datei (bzw. das Verzeichnis bei C2),
-  `line` = Zeile der Abschnitts-Überschrift (bzw. 1), `rule` = `planning`,
-  `target` = `planning.closure.dir`, `message` = Klartext der verletzten
-  Bedingung (fehlender Abschnitt · Ist-/Soll-Satzzahl · getroffene Floskel).
+  `rule` = `planning`, `target` = `planning.closure.dir`, `message` = Klartext
+  der verletzten Bedingung (fehlender Abschnitt · Ist-/Soll-Satzzahl ·
+  getroffene Floskel · getroffener Platzhalter).
+  `line` = Zeile der Abschnitts-Überschrift (bzw. 1) — **außer** bei C4b: dort
+  die Zeile des **Treffers**, weil dort die Reparatur liegt und der Abschnitt
+  mehrzeilig ist.
   **Diagnose-only** (kein `--repair`-Hunk): eine Closure-Notiz schreibt der Autor.
-  Ein Kandidat kann `closure-note-thin` **und** `closure-note-boilerplate`
-  tragen (verschiedene Bedingungen), aber `closure-note-missing` schließt beide
-  aus — ohne Abschnitt gibt es nichts zu messen.
+  Ein Kandidat kann `closure-note-thin`, `closure-note-boilerplate` und
+  `closure-note-placeholder` **nebeneinander** tragen (verschiedene
+  Bedingungen), aber `closure-note-missing` schließt alle drei aus — ohne
+  Abschnitt gibt es nichts zu messen.
 
 Die Fähigkeit prüft **Struktur**, nicht Bedeutung: ob eine formal ausreichende
 Notiz inhaltlich trägt, ist semantisch und ausdrücklich nicht zugesagt
@@ -2434,6 +2442,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 |---|---|
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2: YAML-`null` bei `closure.glob` ausdrücklich als **abwesend** ausgewiesen (nicht als leer — die Exit-2-Zusage gilt dem explizit leeren String); §4-Zeile zu `closure-note-missing` nennt den geprüften Gegenstand jetzt „Kandidat“ statt „Slice“ samt effektivem Filter, weil die Kandidaten-Menge seit `planning.closure.glob` nicht mehr aus Slice-Dateien bestehen muss |
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2 + §2-Schema (`planning.closure.glob`): die Closure-Fähigkeit bekommt einen **eigenen** Kandidaten-Filter, dessen Default ein **Verweis** auf `planning.slice-glob` ist (nicht ein kopiertes Literal — ein zweites Muster wäre eine zweite Pflegestelle). Anlass: die beiden Fähigkeiten zählen verschiedene Mengen („noch in Arbeit“ gegen „abgeschlossen“) und teilten sich einen Schlüssel; wer die eine weitet, verbiegt die andere. Ein **explizit** leerer oder ungültiger Glob ⇒ Exit 2 statt stillem Rückfall auf den Default. Kein neuer Grund-Code |
+| 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) nach unabhängigem Review nachgezogen: **C5 war auf der Fassung vor C4b stehengeblieben** und widersprach ihr (Zeilen-Angabe, Kombinierbarkeit) — C5 nennt jetzt die C4b-Ausnahme („Zeile des Treffers“) und alle drei kombinierbaren Bedingungen; C4b sagt umgekehrt, dass der Treffer in der `message` steht und `target` das Verzeichnis bleibt. Fachlich verengt: das Innere eines Platzhalters muss **frei von Whitespace** sein, und ein Winkelklammer-Linkziel ist ein dritter Nachfilter |
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) um Schritt **C4b** + §2-Schema (`planning.closure.placeholder`) erweitert: opt-in Erkennung unausgefüllter Vorlagen-Platzhalter. Auf dem C4-Abschnittstext werden zusätzlich die **Inline-Code-Spans geleert** — am eigenen Bestand gemessen liegen alle zwölf Treffer dort und keiner außerhalb, ohne die Einschränkung wäre jeder ein Falsch-Positiv. Zwei Nachfilter (Autolink/Adresse, HTML-Tag) sind ausdrücklich **Code**, nicht Teil des Musters. Erster Treffer je Kandidat; die Zählung aus C4 bleibt unberührt. Die Konsumenten-Vorlage nutzt Lookarounds und ist in RE2 nicht ausdrückbar — portiert durch Konsumieren des Vorzeichens. Grund-Code (§4) folgt mit der Implementierung (AllReasons-↔-§4-Lockstep) |
 | 2026-08-10 | §4-Grund-Code-Zeile zu `fence-unclosed` nachgezogen: sie trug weiter die mit Lastenheft 0.52.1 widerrufene Reichweite („von **allen** Modulen übersprungen. Befund an der Öffnungszeile") und widersprach damit der Anforderung — ein Lauf widerlegte sie in derselben Ausgabe. Jetzt „mindestens eine Lesart endet offen" und **Fundstelle** statt Reparaturstelle. Der `--doctor`-Klartext desselben Grund-Codes ist mitgezogen |
 | 2026-08-10 | §[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung) Schritt 3 nach bestätigender Re-Review nachgezogen: die Trimmung ist als **geteiltes** Prädikat festgeschrieben (das Modul `planning` trimmte weiter unicode-weit und trug den Anlassfall des Slice unverändert weiter), das Befund-Ziel verliert auch das CR einer CRLF-Zeile, und die Fundstellen-Klausel gilt für **beide** Lesarten — auch die strenge zeigt daneben, wenn eine längere Fence-Zeile eine kürzere Öffnung geschlossen hat |

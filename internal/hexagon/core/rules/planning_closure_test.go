@@ -428,7 +428,11 @@ func TestClosurePlaceholderFalschPositivKlassen(t *testing.T) {
 		"Generic":                 "Der Puffer ist ein vector<float> geblieben.",
 		"Autolink":                "Quelle: <https://example.org/a> geprüft.",
 		"Mail-Adresse":            "Kontakt war <a@example.org> im Team.",
-		"HTML-Tag":                "Der Anker <a id=\"x\"></a> steht im Register.",
+		"HTML-Tag mit Attribut":  "Der Anker <a id=\"x\"></a> steht im Register.",
+		"Vergleich ohne Leerzeichen": "Die Latenz blieb <1 s und der Recall >0,9 im Median.",
+		"Tabellenzelle":           "| Wert | <1 s | >0,9 |",
+		"Winkelklammer-Linkziel":  "Siehe [dort](<docs/x.md>) im Register.",
+		"Nicht-ASCII davor":       "Ergebnis — <2 s und >1 GB blieben stabil.",
 		"HTML-Tag selbstschliessend": "Ein <br/> trennt die Zeilen.",
 		"Inline-Code zeigt Syntax": "Die Vorlage nennt `<PREFIX>` und `<a id>` als Muster.",
 		"Kommentar":               "Der Marker <!-- d-check:ignore --> bleibt stehen.",
@@ -492,6 +496,50 @@ func TestClosurePlaceholderNurImAbschnitt(t *testing.T) {
 	files := map[string]string{closureDir + "/slice-001-a.md": body}
 	if f := CheckPlanningClosure(coretest.NewMemFS(files), placeholderCfg()); f != nil {
 		t.Fatalf("ausserhalb des Abschnitts darf nichts melden: %+v", f)
+	}
+}
+
+// Jeder Eintrag der HTML-Tag-Liste muss WIRKEN: ohne diesen Test liessen sich
+// fast alle streichen, ohne dass etwas rot wird (Review-Befund).
+func TestClosurePlaceholderHtmlListeVollstaendigWirksam(t *testing.T) {
+	for tag := range htmlTagNames() {
+		t.Run(tag, func(t *testing.T) {
+			note := "## 7. Closure-Notiz\n\nEins. Zwei. Drei. Vier.\n\nDer <" + tag + "> blieb stehen.\n"
+			files := map[string]string{closureDir + "/slice-001-a.md": note}
+			if f := CheckPlanningClosure(coretest.NewMemFS(files), placeholderCfg()); f != nil {
+				t.Fatalf("<%s> ist ein HTML-Tag und darf nicht melden: %+v", tag, f)
+			}
+		})
+	}
+}
+
+// Das gemeldete Ziel ist der Treffer, auf 40 Runen gekappt, und die
+// Tag-Erkennung ist case-insensitiv.
+func TestClosurePlaceholderZielUndSchreibweise(t *testing.T) {
+	lang := "<" + strings.Repeat("f", 60) + ">"
+	note := "## 7. Closure-Notiz\n\nEins. Zwei. Drei. Vier.\n\nOffen: " + lang + ".\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": note}
+	f := CheckPlanningClosure(coretest.NewMemFS(files), placeholderCfg())
+	if len(f) != 1 {
+		t.Fatalf("erwartet genau einen Befund, got %+v", f)
+	}
+	if n := len([]rune(f[0].Message)); !strings.Contains(f[0].Message, "<"+strings.Repeat("f", 39)) || n > 200 {
+		t.Errorf("Kappung auf 40 Runen nicht wirksam: %q", f[0].Message)
+	}
+	note = "## 7. Closure-Notiz\n\nEins. Zwei. Drei. Vier.\n\nDer <SECTION> blieb stehen.\n"
+	files = map[string]string{closureDir + "/slice-001-a.md": note}
+	if f := CheckPlanningClosure(coretest.NewMemFS(files), placeholderCfg()); f != nil {
+		t.Fatalf("Tag-Erkennung muss case-insensitiv sein: %+v", f)
+	}
+}
+
+// Der Schraegstrich im Vorzeichen: ein Pfad-Fragment eroeffnet keinen
+// Platzhalter.
+func TestClosurePlaceholderSchraegstrichDavor(t *testing.T) {
+	note := "## 7. Closure-Notiz\n\nEins. Zwei. Drei. Vier.\n\nDer Pfad a/<b> bleibt Pfad.\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": note}
+	if f := CheckPlanningClosure(coretest.NewMemFS(files), placeholderCfg()); f != nil {
+		t.Fatalf("Schraegstrich davor darf nicht melden: %+v", f)
 	}
 }
 
