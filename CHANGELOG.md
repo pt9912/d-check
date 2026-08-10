@@ -6,6 +6,47 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.53.0] — 2026-08-10
+
+### Added
+
+- slice-101 — **`fence-unclosed`** als dritte Artefakt-Klasse des Moduls `spans`
+  (`DC-FA-SPAN-001`,
+  [ADR-0050](docs/plan/adr/0050-fence-unclosed-in-spans.md)): eine Fence-Öffnung
+  ohne Schluss bis zum **Dateiende**. Anlass war ein **ausgelieferter stiller
+  Grün-Pfad** — hinter einem offenen Fence übersprang die Vorverarbeitung den
+  Rest, und Gates meldeten grün, ohne geprüft zu haben (reproduziert gegen das
+  veröffentlichte Image v0.52.0). Ausgewertet werden **beide** Schluss-Lesarten
+  des Produkts (naiver Toggle und längenabgeglichener CommonMark-Schluss); ein
+  Befund entsteht, sobald **eine** von beiden am Dateiende offen endet — genau
+  dann überspringt mindestens ein Modul den Rest. Dateiweit statt absatzweise
+  (ein Fence *ist* eine Absatzgrenze), genau **ein** Befund je Datei, an der
+  Öffnungszeile — eine **Fundstelle**, nicht zwingend die Reparaturstelle: welche
+  von mehreren Öffnungen fehlt, ist grundsätzlich nicht entscheidbar. Kein neuer
+  Config-Schlüssel; `spans` ist als Ganzes opt-in. Die Fence-**Paarung** selbst
+  bleibt unverändert ([ADR-0042](docs/plan/adr/0042-markdown-lexik-folgt-commonmark.md))
+  — sie löst den Fall nicht: ein nie geschlossener Fence ist unter jeder
+  Paarungsregel offen.
+  **Grenze:** die Prüfung greift nur auf Dateien im Scan-Scope. Post-Pässe über
+  selbst benannte Verzeichnisse und Zieldateien außerhalb der Scan-Wurzeln, aus
+  denen Module lesen (`matrix`, `anchors`, `codepaths`, `diagrams`, `versions`,
+  `pins`), bleiben unerfasst; bei `pins` ist die Folge still. Der eingerückte
+  Code-Block ist in keiner Lesart modelliert.
+
+### Changed
+
+- slice-101 — die Fence-Lexik trimmt an **allen** fünf Konsumenten identisch
+  (Space und Tab, nicht unicode-weit). Das betrifft auch das mit 0.52.0
+  ausgelieferte Closure-Gate des Moduls `planning`: hinter einer mit
+  Unicode-Whitespace eingerückten Fence-Zeile verstummen `closure-note-thin` und
+  `closure-note-missing`, während `closure-note-boilerplate` neu meldet.
+  Fachlich war das immer die zugesagte Lexik (Spezifikation Schritt C4);
+  gemessen wurde bis dahin eine andere. **Wer hier Befunde verliert, verliert
+  Fehlmessungen.**
+- slice-101 — der `--doctor`-Klartext zu `fence-unclosed` nennt die geltende
+  Reichweite („mindestens ein Modul überspringt alles dahinter" statt „jedes
+  Modul"). Nur Meldungstext, kein Grund-Code- oder Verhaltens-Delta.
+
 ## [0.52.0] — 2026-08-09
 
 ### Added

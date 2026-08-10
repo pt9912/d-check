@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.43 · **Software-Version:** [v0.52.0](../../version.md#v0.52.0) ·
-**Stand:** 2026-08-09 · **Autor:** pt9912
+**Handbuch-Version:** 1.44 · **Software-Version:** [v0.53.0](../../version.md#v0.53.0) ·
+**Stand:** 2026-08-10 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.52.0
+docker pull ghcr.io/pt9912/d-check:v0.53.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -101,7 +101,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -156,7 +156,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -175,7 +175,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.52.0
+  ghcr.io/pt9912/d-check:v0.53.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -194,7 +194,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.52.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.53.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -213,7 +213,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -233,7 +233,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -242,7 +242,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -261,7 +261,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -281,7 +281,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
   --enable ids --disable anchors
 ```
 
@@ -302,7 +302,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
   --enable ids
 ```
 
@@ -323,7 +323,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
   --enable matrix
 ```
 
@@ -391,7 +391,7 @@ Konfigurationsfehler (Exit 2); ohne `token` verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
   --enable external
 ```
 
@@ -413,7 +413,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
   --enable ids --doctor
 ```
 
@@ -441,7 +441,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
   --enable ids --doctor --json
 ```
 
@@ -489,7 +489,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -505,7 +505,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
 | `id-unlinked`                                                                                                                                                                                                                 | nackte Kennung → Markdown-Link auf ihre Definition; nur **nackte Prosa**-Vorkommen (Inline-Code oder bereits verlinkt bleiben unangetastet)                                     | konservativ (`--repair`) |
 | `target-missing`                                                                                                                                                                                                              | Link → **verschobene** Markdown-Datei gleichen, im Repo **eindeutigen** Namens; **keine** Umbenennung (anderer Name), keine Nicht-Markdown-Ziele, mehrdeutige Namen → kein Edit | breit (`--repair-broad`) |
-| `anchor-missing`, `repo-escape`, `symlink`, `codepath-missing`, `matrix-inactive`, `matrix-forbidden`, `external-status`, `external-timeout`, `external-redirects`, `span-unclosed`, `span-nested-link`, `hostpath-forbidden` | — kein Auto-Fix, von Hand beheben                                                                                                                                               | —                        |
+| `anchor-missing`, `repo-escape`, `symlink`, `codepath-missing`, `matrix-inactive`, `matrix-forbidden`, `external-status`, `external-timeout`, `external-redirects`, `span-unclosed`, `span-nested-link`, `fence-unclosed`, `hostpath-forbidden` | — kein Auto-Fix, von Hand beheben                                                                                                                                               | —                        |
 
 **Hinweise:**
 
@@ -525,7 +525,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
     --enable ids --repair | git apply
   ```
 
@@ -542,7 +542,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -562,7 +562,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -623,7 +623,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -761,7 +761,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -806,7 +806,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.52.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.53.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -819,7 +819,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.52.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.53.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -880,7 +880,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.52.0 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.53.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -1566,7 +1566,7 @@ RTM byte-identisch.
 | `matrix`    | opt-in        | erlaubte Referenzrichtung und -status zwischen Dokumentklassen                           | `matrix-forbidden`, `matrix-inactive`                       |
 | `codepaths` | opt-in        | explizite Pfade in Inline-Code existieren; opt-in `check-lines`: `datei:<von>-<bis>`-Zeilen-Referenzen verifizieren | `codepath-missing`, `citation-out-of-range`, `citation-inverted-range` |
 | `citations` | opt-in        | wortgleiche Zitate: `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (`>`-Block oder inline `„…"`/`"…"`), das ein whitespace-normalisierter **Teilstring** der Quell-Spanne sein muss; fail-closed bei malformter Direktive | `citation-mismatch`, `citation-out-of-range`, `citation-inverted-range` |
-| `spans`     | opt-in        | ungeschlossene Code-Spans, verschachtelte Links                                          | `span-unclosed`, `span-nested-link`                         |
+| `spans`     | opt-in        | ungeschlossene Code-Spans, verschachtelte Links, unbalancierte Fences                    | `span-unclosed`, `span-nested-link`, `fence-unclosed`       |
 | `hostpaths` | opt-in        | host-lokale absolute Pfade (Maschinen-Layout-Leak)                                       | `hostpath-forbidden`                                        |
 | `diagrams`  | opt-in        | Kennungen in Diagramm-Fences (Default `mermaid`) existieren in ihrer `defined-in`-Quelle | `diagram-id-undefined`                                      |
 | `versions`  | opt-in        | gepinnte `ghcr`-Image-Verweise tragen die aktuelle Version (aus `version.md#aktuell`), auch in Fences | `version-stale`                                             |
@@ -1609,6 +1609,27 @@ verbundenen) Heading-Slug anpassen.
 Ursache: nackte Kennung im Fließtext.
 Lösung: als Markdown-Link ausführen; `--repair` erzeugt den Fix
 automatisch.
+
+**`fence-unclosed` — Code-Block ohne Schluss bis zum Dateiende.**
+Ursache: eine mit ``` oder ~~~ geöffnete Zeile findet keinen passenden
+Schluss. Das ist mehr als ein Schönheitsfehler: **alles dahinter gilt als
+Code**, und die Prüfungen, die darauf aufsetzen, überspringen es. Ein
+kaputter Link hinter einem offenen Block wird nicht gemeldet — die Datei
+sieht sauber aus, obwohl sie nicht geprüft wurde.
+
+Lösung: den Block schließen. **Die gemeldete Zeile ist eine Fundstelle,
+nicht zwingend die Reparaturstelle** — welche von mehreren Öffnungen den
+Schluss vermissen lässt, ist grundsätzlich nicht entscheidbar. Sind alle
+Blöcke gleich lang, zeigt der Befund auf die letzte Zeile, an der die
+Zählung kippte; die fehlende Klammer kann davor liegen. Praktisch: ab der
+gemeldeten Zeile rückwärts lesen, bis die Paare aufgehen.
+
+Zwei Fälle sehen aus wie ein Fehlalarm und sind keiner: ein
+Backtick-Block, den eine Tilden-Zeile „schließt" (verschiedene Zeichen
+schließen einander nicht), und ein längerer Block, der eine kürzere
+Fence-Zeile zeigt (die Zählung kippt, auch wenn CommonMark den Block für
+geschlossen hält). In beiden Fällen liest mindestens eine Prüfung den
+Rest der Datei als Code — der Befund ist berechtigt.
 
 ### Häufige Fehler (Exit-Code 2)
 
@@ -1729,3 +1750,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.41             | v0.51.1          | 2026-07-19 | dpin-Ergonomie (§5, Modul `pins`): der `link-stale`-Befund führt jetzt den **vollen** errechneten `sha256` (statt nur `shortHash`) — damit ist dpin „einmal laufen, gemeldeten Hash in den `<!-- dpin: … -->`-Marker kopieren"-benutzbar. Neue Aufgaben-Sektion §5 „Einen repo-internen Link-Inhalt gegen Drift pinnen". Nur die nicht stabilitätsgarantierte Befund-Meldung, kein Verhaltens-/Grund-Code-Delta                |
 | 1.42             | v0.51.1          | 2026-07-19 | §4 aufgabenorientiert nachgezogen (Benutzerhandbuch-Standard §2/§5): §4.7 (`order`/`direction`/`token`) auf die Lesersituation; der §4.12-`--trace`-Monolith in §4.12 RTM · §4.13 Coverage (`trace.coverage`) · §4.14 Modalität (`trace.requirements.modality`) · §4.15 Kreuzverweis (`trace.cross-consistency`) aufgetrennt, `--print-mk` → §4.16. Tabellen-Grammatik/Modalitäts-Mechanik → §5, „0 Anforderungen"-Fehlerbild → §7, verstreute Versions-Prosa entfernt (§11 führt die Historie), doppelte WAISE-Definition raus. Rein redaktionell, kein Verhaltens-/Grund-Code-Delta; beide Handbuch-Harnesse grün                |
 | 1.43             | v0.52.0          | 2026-08-09 | **Closure-Notizen auf Substanz prüfen** — neue Aufgabe §4.17 (Modul `planning`, zweite Fähigkeit): opt-in über `closure.dir` wird je abgeschlossenem Paket der erste `heading-pattern`-Abschnitt strukturell geprüft — vorhanden (`closure-note-missing`), genug Satzende-Zeichen **außerhalb** von Code-Blöcken (`closure-note-thin`, `min-sentences` Default 4), keine deklarierte Floskel (`closure-note-boilerplate`, Liste Default leer). Fail-closed auch bei **null Kandidaten**; ohne `closure.dir` inert. Zugesagt ist **Struktur, nicht Bedeutung**. Dazu die neue Option **`--config <datei>`** (§5): sie ersetzt für den Lauf die konventionelle `.d-check.yml` (innerhalb der Scan-Wurzel, ersetzt statt ergänzt) und trennt damit Prüf-Profile — fehlende Datei, Verzeichnis-Ziel, Symlink-Ausbruch und **leerer Wert** brechen mit Exit 2 ab, kein stiller Rückfall. §5 und §6 nachgezogen |
+| 1.44             | v0.53.0          | 2026-08-10 | **Unbalancierte Code-Blöcke melden** — dritte Artefakt-Klasse des Moduls `spans` (§6/§7): eine Fence-Öffnung ohne Schluss bis zum **Dateiende** meldet `fence-unclosed`. Anlass war ein stiller Grün-Pfad — hinter einem offenen Block übersprang d-check den Rest der Datei und meldete grün, ohne geprüft zu haben. Ausgewertet werden **beide** Schluss-Lesarten; ein Befund entsteht, sobald eine von beiden offen endet. Genau einer je Datei, an der Öffnungszeile — eine **Fundstelle**, nicht zwingend die Reparaturstelle. Kein neuer Schalter (`spans` ist als Ganzes opt-in). **Beachten:** die Fence-Erkennung trimmt jetzt überall gleich; am Closure-Gate des Moduls `planning` können dadurch Befunde wegfallen, die auf der abweichenden Trimmung beruhten |
