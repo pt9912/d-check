@@ -38,7 +38,7 @@ Dokument selbst richtig gebaut?".
 
 - Alle Slices dieser Welle liegen in `done/`.
 - **Das Mehr gegenüber der Slice-DoD:** die drei bereits liegenden
-  Closure-Slices ([slice-094](../open/slice-094-closure-zaehl-paritaet.md),
+  Closure-Slices ([slice-094](../in-progress/slice-094-closure-zaehl-paritaet.md),
   [slice-097](../done/slice-097-closure-glob-entkopplung.md),
   [slice-098](../done/slice-098-closure-note-placeholder.md)) haben eine
   **Entscheidung** — eigenständig, aufgegangen oder neu zugeschnitten — und, wo

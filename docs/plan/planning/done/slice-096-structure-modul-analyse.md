@@ -10,7 +10,7 @@ seiner DoD: die Analyse allein löst kein Adopter-Skript ab. Umsetzung,
 Paritäts-Beleg und der Ablöse-Pfad sind Folge-Slices.
 
 **Dieser Slice läuft ZUERST** (Auftraggeber-Entscheid 2026-08-09, nach dem
-Backlog-Schnitt-Review): [slice-094](../open/slice-094-closure-zaehl-paritaet.md),
+Backlog-Schnitt-Review): [slice-094](../in-progress/slice-094-closure-zaehl-paritaet.md),
 [slice-097](../done/slice-097-closure-glob-entkopplung.md) und
 [slice-098](../done/slice-098-closure-note-placeholder.md) schärfen alle dieselbe
 Fähigkeit, die hier neu geschnitten wird. Sie zuerst einzeln auszuliefern hieße,
@@ -166,7 +166,7 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
    Abschnitt entfernen", nicht „den fehlenden schreiben" und nicht „Substanz
    ergänzen". Additiv ⇒ SemVer-Minor, kein Bruch.
 
-   **Folge für [slice-094](../open/slice-094-closure-zaehl-paritaet.md):** die
+   **Folge für [slice-094](../in-progress/slice-094-closure-zaehl-paritaet.md):** die
    dort bewusst verengte Paritäts-Zusage kann wieder auf volle Deckung gehen,
    sobald dieser Code liegt.
 
@@ -230,7 +230,7 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
       **bleiben eigenständig**, keiner geht im Modul auf. Der Grund ist derselbe
       wie in Abnahme-Punkt 2 — `structure` ersetzt die Closure-Fähigkeit nicht,
       es steht daneben, also bleiben auch ihre Schärfungen dort, wo sie wirken.
-      - [slice-094](../open/slice-094-closure-zaehl-paritaet.md) (Zähl-Parität)
+      - [slice-094](../in-progress/slice-094-closure-zaehl-paritaet.md) (Zähl-Parität)
         wirkt nach der Preset-Kopplung auf **beide** Oberflächen und wird damit
         wichtiger, nicht überflüssig. Seine verengte Paritäts-Zusage kann
         zurückgenommen werden, sobald `closure-note-ambiguous` aus
@@ -271,7 +271,7 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
 
 **Start** (`next` → `in-progress`): Freigabe. **Keine Vorbedingung** — dieser
 Slice ist der erste des Strangs. Die frühere Fassung hängte ihn an
-[slice-094](../open/slice-094-closure-zaehl-paritaet.md) („erst die Zähl-Parität, dann
+[slice-094](../in-progress/slice-094-closure-zaehl-paritaet.md) („erst die Zähl-Parität, dann
 messen"); der Schnitt-Review hat gezeigt, dass das die Reihenfolge verkehrt: 094
 sagt Deckungsgleichheit einer Semantik zu, die **dieser** Slice gerade neu
 definiert, und weil ausgeliefert wird, was zuerst fertig ist, wäre der Vertrag

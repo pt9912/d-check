@@ -110,8 +110,9 @@ diesen Fall mit.
 
 **Start** (`open` → `next` → `in-progress`): Freigabe; WIP-Slot frei.
 
-**Wellen-Kandidat:** gemeinsam mit
-[slice-094](../open/slice-094-closure-zaehl-paritaet.md). Beide ändern die
+**Welle:** [welle-72-closure-semantik](../welle-72-closure-semantik.md), gemeinsam
+mit [slice-094](../in-progress/slice-094-closure-zaehl-paritaet.md); dort **nach**
+094, das die ADR für die Lockerung trägt. Beide ändern die
 **Semantik eines ausgelieferten Gates** statt etwas hinzuzufügen, beide brauchen
 eine eigene Bestandsmessung und eine konsumentensichtbare Release-Notiz. Sie
 zusammen zu schneiden bündelt genau eine Risiko-Klasse — dieselbe Begründung,

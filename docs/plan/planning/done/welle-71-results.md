@@ -86,7 +86,7 @@ Der Lese-Schritt dieser Welle: das Register führt **BEO-001** (1×),
 
 ## Folge-Slices
 
-- [slice-094](../open/slice-094-closure-zaehl-paritaet.md) und
+- [slice-094](../in-progress/slice-094-closure-zaehl-paritaet.md) und
   [slice-104](../open/slice-104-floskel-wortgrenze.md) — beide ändern die
   Semantik des **ausgelieferten** Closure-Gates und sind als gemeinsame
   Folge-Welle vorgemerkt.

@@ -4,11 +4,11 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** **offen bis zum Abschluss von**
-[slice-096](../done/slice-096-structure-modul-analyse.md) — dessen Schnitt entscheidet,
-ob dieser Slice eigenständig bleibt, im `structure`-Modul aufgeht oder anders
-zugeschnitten wird (Auftraggeber-Entscheid 2026-08-09 nach dem
-Backlog-Schnitt-Review). Er läuft **nicht** vorher.
+**Welle:** [welle-72-closure-semantik](../welle-72-closure-semantik.md), gemeinsam mit
+[slice-104](../open/slice-104-floskel-wortgrenze.md). **Zuordnung entschieden** mit der
+welle-69-Closure (2026-08-09): der Slice bleibt **eigenständig**. Die Welle klammert
+beide, weil sie die Semantik eines **ausgelieferten** Gates ändern und **beide** die
+Floskel-Prüfung lockern — das gehört in **eine** Release-Notiz.
 
 **Bezug:** [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 (Closure-Note-Struktur, Schritt C4),

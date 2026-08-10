@@ -223,4 +223,4 @@ in der ADR — wer sie nicht kennt, hält den ersten Befund für einen Fehlalarm
 **Ausdrücklich nicht mitgeändert:** die Substanz-Zählung sieht Inline-Code
 weiterhin. Sie zu verengen bewegt eine ausgelieferte Schwelle in beide
 Richtungen und ist eine eigene Entscheidung mit eigener Messung
-([slice-094](../open/slice-094-closure-zaehl-paritaet.md)).
+([slice-094](../in-progress/slice-094-closure-zaehl-paritaet.md)).
