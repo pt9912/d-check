@@ -62,7 +62,14 @@ planning:
     # NULL Treffer hat — „Fertig." (6 Treffer) und „läuft jetzt" (3) sind
     # bewusst NICHT dabei: als Teilstring erzeugten sie Falschbefunde in
     # Notizen, die sehr wohl Substanz tragen.
+    # Seit dem Wortgrenzen-Vergleich sind KURZE Phrasen brauchbar. Vor der
+    # Aufnahme gemessen, wie immer — je Kandidat ein Lauf gegen den eigenen
+    # Bestand: fertig 0, n/a 0 (aufgenommen); ok 1, erledigt 1, „laeuft“ 11
+    # (nicht aufgenommen, die Treffer sind echte Prosa). Wortgrenzen machen
+    # kurze Phrasen brauchbar, nicht automatisch sicher.
     boilerplate:
+      - "fertig"
+      - "n/a"
       - "wie geplant umgesetzt"
       - "war ganz okay"
       - "erfolgreich abgeschlossen"

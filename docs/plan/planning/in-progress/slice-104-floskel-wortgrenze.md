@@ -85,17 +85,36 @@ diesen Fall mit.
 
 ## 4. Definition of Done
 
-- [ ] Vertragsanpassung in Lastenheft und Spezifikation (C4a-Floskel-Schritt);
-      ADR nur, falls Abnahme-Punkt 2 eine eigene Entscheidung braucht.
-- [ ] Tests: (1) kurze Phrase trifft das eigenständige Wort und **nicht** das
-      Wort, in dem sie steckt; (2) mehrwortige Phrasen verhaltensgleich;
-      (3) Satzzeichen, Anführungszeichen, Bindestrich und Zeilenrand als Grenze;
-      (4) Groß-/Kleinschreibung unverändert case-insensitiv.
-- [ ] Mutations-Gegenprobe über eine **Dateikopie**, nicht über `git checkout`.
-- [ ] `make gates` + `make verify-closure-notes` grün; die eigene Liste nach
-      Messung ergänzt.
-- [ ] **Release** samt Release-Notiz, die die Richtung „findet weniger“
-      ausdrücklich nennt.
+- [x] Vertragsanpassung in Lastenheft (0.56.0) und Spezifikation (Schritt C4).
+      **Keine eigene ADR:** Abnahme-Punkt 2 hat keine eigene Entscheidung
+      erzeugt — die ASCII-Grenze folgt der Messung, und den Rahmen für die
+      Lockerung derselben Prüfung setzt bereits
+      [ADR-0053](../../adr/0053-eine-bereinigung-fuer-alle-closure-bedingungen.md)
+      aus demselben Wellen-Zug.
+- [x] Alle vier Test-Zusagen erfüllt, dazu ein direkter Test auf die
+      Grenz-Funktion für die Ränder, die über das Modul schwer zu stellen sind
+      (leere Phrase, Treffer am Textrand, mehrere Vorkommen, `okok`).
+- [x] Mutations-Gegenprobe über eine Dateikopie: **sieben** Rückbauten, alle rot
+      (zurück auf Teilstring; nur eine der beiden Grenzen geprüft, je einzeln;
+      Ziffern bzw. Unterstrich als Nicht-Wortzeichen; Weitersuche nach einem
+      verworfenen Treffer; Textrand als Wortzeichen).
+- [x] `make gates` + `make verify-closure-notes` grün; die eigene Liste **nach
+      Messung** ergänzt. Je Kandidat ein Lauf gegen den eigenen Bestand:
+
+      | Phrase | Treffer | aufgenommen |
+      |---|---|---|
+      | `fertig` | 0 | **ja** |
+      | `n/a` | 0 | **ja** |
+      | `erledigt` | 1 | nein — der Treffer ist echte Prosa |
+      | `ok` | 1 | nein — „image-test ok“ ist substanzhaltig |
+      | `läuft` | 11 | nein |
+
+      Damit sind genau die zwei Phrasen aufgenommen, die als Teilstring
+      **verworfen werden mussten**. Die Messung bestätigt auch die Warnung aus
+      §2: Wortgrenzen machen kurze Phrasen brauchbar, nicht automatisch sicher.
+- [ ] **Release** — **Wellen-Trigger**, gemeinsam mit
+      [slice-094](../done/slice-094-closure-zaehl-paritaet.md): **eine** Notiz für
+      beide Änderungen, mit **jeder** Richtung einzeln.
 
 ## 5. Risiken / offene Punkte
 

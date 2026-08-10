@@ -144,7 +144,7 @@ func checkClosureNote(
 	// benennt die Meldung.
 	lower := strings.ToLower(body)
 	for _, phrase := range cfg.Closure.Boilerplate {
-		if strings.Contains(lower, strings.ToLower(phrase)) {
+		if containsWord(lower, strings.ToLower(phrase)) {
 			out = append(out, closureFinding(file, headingNo, dir, model.ReasonClosureNoteBoilerplate,
 				"Closure-Notiz enthält die Floskel „"+phrase+"“")...)
 			break
@@ -259,6 +259,40 @@ func placeholderRejected(inner string) bool {
 		first = first[:i]
 	}
 	return htmlTagNames()[strings.ToLower(first)]
+}
+
+// containsWord meldet, ob phrase in s als eigenständiger Wortlaut vorkommt:
+// unmittelbar davor und dahinter steht kein Wortzeichen (§DC-FA-PLAN-001.a
+// Schritt C4). Index-Suche mit Nachbar-Prüfung statt einer Regex je Phrase —
+// das kommt ohne Kompilierung aus und braucht keine Maskierung der Phrase.
+// Beide Argumente sind bereits kleingeschrieben.
+func containsWord(s, phrase string) bool {
+	if phrase == "" {
+		return false
+	}
+	for i := 0; ; {
+		j := strings.Index(s[i:], phrase)
+		if j == -1 {
+			return false
+		}
+		start := i + j
+		end := start + len(phrase)
+		if !isWordByte(s, start-1) && !isWordByte(s, end) {
+			return true
+		}
+		i = start + 1
+	}
+}
+
+// isWordByte meldet, ob an Position i ein ASCII-Wortzeichen steht; außerhalb
+// des Strings ist die Antwort nein (Zeilen- und Textränder sind Grenzen).
+func isWordByte(s string, i int) bool {
+	if i < 0 || i >= len(s) {
+		return false
+	}
+	c := s[i]
+	return c == '_' || ('0' <= c && c <= '9') ||
+		('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')
 }
 
 // checkClosurePlaceholder sucht den ERSTEN Platzhalter im Abschnitt

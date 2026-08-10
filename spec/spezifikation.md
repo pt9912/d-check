@@ -1753,9 +1753,16 @@ liefert (und umgekehrt):
   Link-Pfad mit; gemessen am eigenen Bestand sind das mehr als die Hälfte aller
   Vorkommen. Zahl < `min-sentences` ⇒ `closure-note-thin`.
 
-  Anschließend wird **derselbe** bereinigte Text **case-insensitiv** gegen jeden
-  `planning.closure.boilerplate`-Teilstring geprüft; ein Treffer ⇒
+  Anschließend wird **derselbe** bereinigte Text **case-insensitiv** gegen jede
+  `planning.closure.boilerplate`-Phrase geprüft — an **Wortgrenzen**: unmittelbar
+  vor und hinter dem Treffer darf kein Wortzeichen (`0-9A-Za-z_`) stehen,
+  Zeilenanfang und -ende zählen als Grenze. Ein Treffer ⇒
   `closure-note-boilerplate` (der **erste** Treffer benennt die Meldung).
+
+  Als Wortzeichen gilt die **ASCII**-Menge; Umlaute, Anführungszeichen und
+  Bindestriche sind damit Grenzen. Für die gelebten Formen ist das richtig
+  (`„Ok“`, `Ok.`, `Ok—`), und eine Unicode-Buchstaben-Prüfung wäre eine
+  eigene Semantik ohne gemessenen Anlass.
 
   **Die gemeinsame Bereinigung wirkt in zwei Richtungen.** Sie **verschärft** die
   Zählung und **lockert** zugleich die Floskel-Prüfung: eine Phrase in Backticks
@@ -2457,6 +2464,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 |---|---|
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2: YAML-`null` bei `closure.glob` ausdrücklich als **abwesend** ausgewiesen (nicht als leer — die Exit-2-Zusage gilt dem explizit leeren String); §4-Zeile zu `closure-note-missing` nennt den geprüften Gegenstand jetzt „Kandidat“ statt „Slice“ samt effektivem Filter, weil die Kandidaten-Menge seit `planning.closure.glob` nicht mehr aus Slice-Dateien bestehen muss |
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2 + §2-Schema (`planning.closure.glob`): die Closure-Fähigkeit bekommt einen **eigenen** Kandidaten-Filter, dessen Default ein **Verweis** auf `planning.slice-glob` ist (nicht ein kopiertes Literal — ein zweites Muster wäre eine zweite Pflegestelle). Anlass: die beiden Fähigkeiten zählen verschiedene Mengen („noch in Arbeit“ gegen „abgeschlossen“) und teilten sich einen Schlüssel; wer die eine weitet, verbiegt die andere. Ein **explizit** leerer oder ungültiger Glob ⇒ Exit 2 statt stillem Rückfall auf den Default. Kein neuer Grund-Code |
+| 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt **C4**: die Floskel-Prüfung vergleicht an **Wortgrenzen** statt als Teilstring (Wortzeichen = ASCII `0-9A-Za-z_`, Zeilenränder sind Grenzen). Anlass: kurze Phrasen waren unbrauchbar — `ok` traf auch in *dokumentiert* und *Protokoll*; am eigenen Bestand 68 Treffer, davon einer echt. Mehrwortige Phrasen sind verhaltensgleich. Kein neuer Grund-Code |
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt **C4** angeglichen (Parität zum abzulösenden Adopter-Skript): der Abschnitt wird **einmal** bereinigt — Fences **und** Inline-Code-Spans —, und alle Bedingungen lesen diesen einen Text; ein Satzende zählt nur vor **Whitespace oder Zeilenende**. Gemessen am eigenen Bestand tragen mehr als die Hälfte aller Satzende-Vorkommen keinen Satz (Link-Pfade, Versionsnummern). Die Änderung wirkt in **zwei** Richtungen: `closure-note-thin` wird **schärfer**, `closure-note-boilerplate` **lockerer** (eine zitierte Floskel in Backticks trifft nicht mehr) — die Lockerung ist begleitend per ADR entschieden. C4b liest damit denselben Text und leert Inline-Code nicht mehr selbst |
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) nach unabhängigem Review nachgezogen: **C5 war auf der Fassung vor C4b stehengeblieben** und widersprach ihr (Zeilen-Angabe, Kombinierbarkeit) — C5 nennt jetzt die C4b-Ausnahme („Zeile des Treffers“) und alle drei kombinierbaren Bedingungen; C4b sagt umgekehrt, dass der Treffer in der `message` steht und `target` das Verzeichnis bleibt. Fachlich verengt: das Innere eines Platzhalters muss **frei von Whitespace** sein, und ein Winkelklammer-Linkziel ist ein dritter Nachfilter |
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) um Schritt **C4b** + §2-Schema (`planning.closure.placeholder`) erweitert: opt-in Erkennung unausgefüllter Vorlagen-Platzhalter. Auf dem C4-Abschnittstext werden zusätzlich die **Inline-Code-Spans geleert** — am eigenen Bestand gemessen liegen alle zwölf Treffer dort und keiner außerhalb, ohne die Einschränkung wäre jeder ein Falsch-Positiv. Zwei Nachfilter (Autolink/Adresse, HTML-Tag) sind ausdrücklich **Code**, nicht Teil des Musters. Erster Treffer je Kandidat; die Zählung aus C4 bleibt unberührt. Die Konsumenten-Vorlage nutzt Lookarounds und ist in RE2 nicht ausdrückbar — portiert durch Konsumieren des Vorzeichens. Grund-Code (§4) folgt mit der Implementierung (AllReasons-↔-§4-Lockstep) |

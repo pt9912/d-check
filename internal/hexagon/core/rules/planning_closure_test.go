@@ -621,3 +621,77 @@ func TestCountSentenceEnds(t *testing.T) {
 	}
 }
 
+// Floskel-Vergleich an der Wortgrenze (slice-104): kurze Phrasen sollen
+// brauchbar sein. Als Teilstring traf `ok` auch in "dokumentiert".
+func TestClosureFloskelAnWortgrenze(t *testing.T) {
+	cfg := closureCfg()
+	cfg.Closure.Boilerplate = []string{"ok"}
+	cases := map[string]struct {
+		satz string
+		want bool // erwartet ein closure-note-boilerplate
+	}{
+		"eigenstaendig":            {"Der Stand ist ok heute.", true},
+		"mit Punkt":                {"Der Stand ist ok. Weiter.", true},
+		"in Anfuehrungszeichen":    {"Der Stand ist „ok“ gewesen.", true},
+		"mit Bindestrich":          {"Ein ok-Ergebnis lag vor.", true},
+		"am Zeilenanfang":          {"ok war der Stand.", true},
+		"in dokumentiert":          {"Der Ablauf ist dokumentiert worden.", false},
+		"in Protokoll":             {"Das Protokoll liegt vor.", false},
+		"mit Ziffer verbunden":     {"Der Wert ok2 wurde gemessen.", false},
+		"mit Unterstrich":          {"Die Variable ok_flag stand auf wahr.", false},
+	}
+	for name, tc := range cases {
+		t.Run(name, func(t *testing.T) {
+			note := "## 7. Closure-Notiz\n\n" + tc.satz + " Zwei. Drei. Vier. Fuenf.\n"
+			files := map[string]string{closureDir + "/slice-001-a.md": "# Slice\n\n" + note}
+			f := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
+			got := len(f) == 1 && f[0].Reason == model.ReasonClosureNoteBoilerplate
+			if got != tc.want {
+				t.Fatalf("erwartet Treffer=%v, got %+v", tc.want, f)
+			}
+		})
+	}
+}
+
+// Mehrwortige Phrasen sind verhaltensgleich zur Teilstring-Fassung — das ist
+// die Zusage, mit der die Aenderung fuer bestehende Listen folgenlos bleibt.
+func TestClosureFloskelMehrwortigUnveraendert(t *testing.T) {
+	cfg := closureCfg()
+	cfg.Closure.Boilerplate = []string{"alles gut"}
+	for satz, want := range map[string]bool{
+		"Es lief alles gut durch.":        true,
+		"Es lief alles gutartig durch.":   false,
+		"Es lief nicht alles gut.":        true,
+	} {
+		note := "## 7. Closure-Notiz\n\n" + satz + " Zwei. Drei. Vier. Fuenf.\n"
+		files := map[string]string{closureDir + "/slice-001-a.md": "# Slice\n\n" + note}
+		f := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
+		if (len(f) == 1) != want {
+			t.Errorf("%q: erwartet Treffer=%v, got %+v", satz, want, f)
+		}
+	}
+}
+
+// containsWord direkt: die Randfaelle, die ueber das Modul schwer zu stellen
+// sind (leere Phrase, Treffer am Textrand, mehrere Vorkommen).
+func TestContainsWord(t *testing.T) {
+	cases := []struct {
+		s, phrase string
+		want      bool
+	}{
+		{"ok", "ok", true},
+		{"dokumentiert", "ok", false},
+		{"dokumentiert und ok", "ok", true},
+		{"ok und dokumentiert", "ok", true},
+		{"okok", "ok", false},
+		{"", "ok", false},
+		{"ok", "", false},
+		{"a ok b", "ok", true},
+	}
+	for _, tc := range cases {
+		if got := containsWord(tc.s, tc.phrase); got != tc.want {
+			t.Errorf("containsWord(%q, %q) = %v, want %v", tc.s, tc.phrase, got, tc.want)
+		}
+	}
+}
+
