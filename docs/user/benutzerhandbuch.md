@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.45 · **Software-Version:** [v0.54.0](../../version.md#v0.54.0) ·
+**Handbuch-Version:** 1.46 · **Software-Version:** [v0.55.0](../../version.md#v0.55.0) ·
 **Stand:** 2026-08-10 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.54.0
+docker pull ghcr.io/pt9912/d-check:v0.55.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -101,7 +101,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -156,7 +156,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -175,7 +175,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.54.0
+  ghcr.io/pt9912/d-check:v0.55.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -194,7 +194,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.54.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.55.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -213,7 +213,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -233,7 +233,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -242,7 +242,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -261,7 +261,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -281,7 +281,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
   --enable ids --disable anchors
 ```
 
@@ -302,7 +302,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
   --enable ids
 ```
 
@@ -323,7 +323,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
   --enable matrix
 ```
 
@@ -391,7 +391,7 @@ Konfigurationsfehler (Exit 2); ohne `token` verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
   --enable external
 ```
 
@@ -413,7 +413,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
   --enable ids --doctor
 ```
 
@@ -441,7 +441,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
   --enable ids --doctor --json
 ```
 
@@ -489,7 +489,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -505,7 +505,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
 | `id-unlinked`                                                                                                                                                                                                                 | nackte Kennung → Markdown-Link auf ihre Definition; nur **nackte Prosa**-Vorkommen (Inline-Code oder bereits verlinkt bleiben unangetastet)                                     | konservativ (`--repair`) |
 | `target-missing`                                                                                                                                                                                                              | Link → **verschobene** Markdown-Datei gleichen, im Repo **eindeutigen** Namens; **keine** Umbenennung (anderer Name), keine Nicht-Markdown-Ziele, mehrdeutige Namen → kein Edit | breit (`--repair-broad`) |
-| `anchor-missing`, `repo-escape`, `symlink`, `codepath-missing`, `matrix-inactive`, `matrix-forbidden`, `external-status`, `external-timeout`, `external-redirects`, `span-unclosed`, `span-nested-link`, `fence-unclosed`, `hostpath-forbidden` | — kein Auto-Fix, von Hand beheben                                                                                                                                               | —                        |
+| `anchor-missing`, `repo-escape`, `symlink`, `codepath-missing`, `matrix-inactive`, `matrix-forbidden`, `external-status`, `external-timeout`, `external-redirects`, `span-unclosed`, `span-nested-link`, `fence-unclosed`, `closure-note-placeholder`, `hostpath-forbidden` | — kein Auto-Fix, von Hand beheben                                                                                                                                               | —                        |
 
 **Hinweise:**
 
@@ -525,7 +525,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
     --enable ids --repair | git apply
   ```
 
@@ -542,7 +542,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -562,7 +562,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -623,7 +623,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -761,7 +761,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -806,7 +806,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.54.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.55.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -819,7 +819,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.54.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.55.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -880,7 +880,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.54.0 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.55.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -898,6 +898,25 @@ Drei Grund-Codes, weil sie drei verschiedene Reparaturen verlangen:
 `closure-note-missing` (Abschnitt schreiben), `closure-note-thin` (Substanz
 ergänzen — Satzende-Zeichen **außerhalb** von Code-Blöcken, Schwelle
 `min-sentences`, Default 4) und `closure-note-boilerplate` (Floskel ersetzen).
+
+Eine **vierte** Bedingung ist per Default aus und wird mit
+`placeholder: true` zugeschaltet: `closure-note-placeholder` meldet den
+**unausgefüllten Rumpf** einer Vorlage. Sie schließt eine Lücke, die die anderen
+drei nicht sehen — `Ergebnis: <ergebnis>. Belege: <belege>.` ist syntaktisch
+vollständig, erreicht die Schwelle und enthält keine Floskel.
+
+Erkannt wird die Auszeichnungs-Form: eine öffnende Winkelklammer ohne
+vorausgehendes Wortzeichen, deren Inneres **kein Whitespace** enthält — ein
+Platzhalter ist ein Feldname, kein Satz. Damit bleibt technische Prosa grün:
+Vergleichszeichen (`p95 < 1 s` ebenso wie die enge Form), Generics,
+Winkelklammer-Linkziele, Autolinks, Adressen und HTML-Tags. **Inline-Code zählt
+nicht** — dort wird Syntax gezeigt (`` `<PREFIX>` ``), und genau dort steht sie
+absichtlich. Gemeldet wird der **erste** Treffer je Notiz, an seiner Zeile.
+
+**Zwei Grenzen sollten Sie kennen:** ein mit vier Leerzeichen **eingerückter**
+Code-Block ist in d-check nirgends modelliert — ein Platzhalter darin meldet.
+Und eine ungerade Backtick-Zahl im Absatz verschiebt die Inline-Code-Paarung,
+hier wie überall. Beides sind Eigenschaften der Markdown-Vorverarbeitung.
 
 **Hinweise:** Das eigene Profil ist kein Zufall — der `closure`-Block gehört
 **nicht** in Ihre reguläre `.d-check.yml`, sonst prüft jeder gewöhnliche Lauf
@@ -1172,6 +1191,7 @@ planning:
     heading-pattern: '^#{2,3} .*Closure-Notiz'  # RE2, Default
     min-sentences: 4                   # Satzende-Zeichen außerhalb Code, Default
     boilerplate: []                    # literale Floskeln, case-insensitiv; Default leer
+    # placeholder: true                # unausgefüllte Vorlagen-Platzhalter melden; Default AUS
 ```
 
 `min-sentences` < 1, ein **explizit** leerer oder ungültiger `glob` und ein
@@ -1588,7 +1608,7 @@ RTM byte-identisch.
 | `immutable` | opt-in        | Immutabilitäts-Pin (`<!-- immutable: … -->`): normalisierter **Core** einer Datei (ohne Marker-Zeile + `exclude-sections`) unverändert seit dem Pinnen; hermetisch (kein git) | `core-drift`                                                |
 | `vcs`       | opt-in (git)  | git-Diff-Immutabilität: **Core** einer immutablen Datei (`immutable-when`) unverändert über eine Commit-Range (`--range`/`--staged`); liest `.git` read-only (kein git-Binary, kein Netz) | `core-drift-vcs`                                            |
 | `commits`   | opt-in (git)  | Traceability-Kennung (`id-patterns`) in jeder Commit-Message einer Range (`--range`) bzw. der Pending-Message (`--commit-msg`); liest `.git` read-only (kein git-Binary, kein Netz) | `commit-untraceable`                                        |
-| `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate` |
+| `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder` |
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
 | `targets`   | opt-in        | Deklarations-Konsistenz Doku ↔ Build-Targets: jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`makefiles`), und jede Regel steht in der Autoritäts-Doku (`authority`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed bei fehlender Datei | `gate-phantom`, `gate-undocumented`                         |
 | `external`  | opt-in (Netz) | Erreichbarkeit externer Links                                                            | `external-status`, `external-timeout`, `external-redirects` |
@@ -1766,3 +1786,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.43             | v0.52.0          | 2026-08-09 | **Closure-Notizen auf Substanz prüfen** — neue Aufgabe §4.17 (Modul `planning`, zweite Fähigkeit): opt-in über `closure.dir` wird je abgeschlossenem Paket der erste `heading-pattern`-Abschnitt strukturell geprüft — vorhanden (`closure-note-missing`), genug Satzende-Zeichen **außerhalb** von Code-Blöcken (`closure-note-thin`, `min-sentences` Default 4), keine deklarierte Floskel (`closure-note-boilerplate`, Liste Default leer). Fail-closed auch bei **null Kandidaten**; ohne `closure.dir` inert. Zugesagt ist **Struktur, nicht Bedeutung**. Dazu die neue Option **`--config <datei>`** (§5): sie ersetzt für den Lauf die konventionelle `.d-check.yml` (innerhalb der Scan-Wurzel, ersetzt statt ergänzt) und trennt damit Prüf-Profile — fehlende Datei, Verzeichnis-Ziel, Symlink-Ausbruch und **leerer Wert** brechen mit Exit 2 ab, kein stiller Rückfall. §5 und §6 nachgezogen |
 | 1.44             | v0.53.0          | 2026-08-10 | **Unbalancierte Code-Blöcke melden** — dritte Artefakt-Klasse des Moduls `spans` (§6/§7): eine Fence-Öffnung ohne Schluss bis zum **Dateiende** meldet `fence-unclosed`. Anlass war ein stiller Grün-Pfad — hinter einem offenen Block übersprang d-check den Rest der Datei und meldete grün, ohne geprüft zu haben. Ausgewertet werden **beide** Schluss-Lesarten; ein Befund entsteht, sobald eine von beiden offen endet. Genau einer je Datei, an der Öffnungszeile — eine **Fundstelle**, nicht zwingend die Reparaturstelle. Kein neuer Schalter (`spans` ist als Ganzes opt-in). **Beachten:** die Fence-Erkennung trimmt jetzt überall gleich; am Closure-Gate des Moduls `planning` können dadurch Befunde wegfallen, die auf der abweichenden Trimmung beruhten |
 | 1.45             | v0.54.0          | 2026-08-10 | **Eigener Kandidaten-Filter für Closure-Notizen** — neuer Schlüssel `planning.closure.glob` (§5): er entscheidet, welche Dateien im Ruheort auf ihre Notiz geprüft werden, getrennt von `slice-glob`. Weglassen ⇒ es gilt `slice-glob` (**Verweis**, kein kopierter Wert). Nötig wurde er, weil die beiden `planning`-Fähigkeiten verschiedene Fragen stellen und sich einen Knopf teilten: wer ihn weitet, verbiegt die jeweils andere — im Grenzfall zählt die Roadmap-Datei selbst als „Arbeit in Arbeit“. Explizit leerer/ungültiger Glob ⇒ Exit 2, geprüft auch bei inerter Fähigkeit. **Beachten:** zwei Meldungstexte haben sich geändert (der Glob steht in der Nullmengen-Meldung jetzt in Anführungszeichen, und der `--doctor`-Klartext sagt „Kandidat“ statt „Slice“); der Befundsatz selbst ist unverändert |
+| 1.46             | v0.55.0          | 2026-08-10 | **Unausgefüllte Vorlagen-Platzhalter melden** — vierte, per Default **ausgeschaltete** Bedingung der Closure-Note-Struktur (§4.17/§5): `placeholder: true` meldet `closure-note-placeholder`, wenn eine Notiz noch einen Rumpf wie „Ergebnis: Feld-in-Winkelklammern“ trägt. Die drei bestehenden Bedingungen sehen ihn nicht: er ist syntaktisch vollständig. Erkannt wird die Auszeichnungs-Form, deren Inneres **kein Whitespace** enthält; **Inline-Code zählt nicht**, und Autolinks/Adressen, HTML-Tags sowie Winkelklammer-Linkziele sind ausgenommen. Erster Treffer je Notiz, an seiner Zeile. Zwei Grenzen sind benannt: eingerückte Code-Blöcke und ungerade Backtick-Parität |

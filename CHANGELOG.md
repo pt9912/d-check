@@ -6,6 +6,30 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.55.0] — 2026-08-10
+
+### Added
+
+- slice-098 — **`closure-note-placeholder`** als vierte, **opt-in** Bedingung der
+  Closure-Note-Struktur (`DC-FA-PLAN-001`,
+  [ADR-0052](docs/plan/adr/0052-platzhalter-erkennung-inline-code.md)):
+  `planning.closure.placeholder: true` meldet den **unausgefüllten Rumpf** einer
+  Vorlage. Anlass: ein Template-Rumpf ist syntaktisch vollständig und passiert
+  alle drei bestehenden Bedingungen — Abschnitt vorhanden, Schwelle erreicht,
+  keine Floskel. Erkannt wird die Auszeichnungs-Form (öffnende Winkelklammer
+  ohne vorausgehendes Wortzeichen, Inneres **ohne Whitespace** — ein Feldname,
+  kein Satz). Drei Nachfilter im Code statt im Muster: Autolink/Adresse,
+  HTML-Tag-Namen und Markdown-Linkziele in Winkelklammern. **Inline-Code zählt
+  nicht** — dort wird Syntax gezeigt; am eigenen Bestand gemessen liegen alle
+  zwölf Treffer dort und keiner außerhalb. Gemeldet wird der **erste** Treffer je
+  Kandidat, an seiner Zeile. Ohne den Schalter ist der Befundsatz
+  byte-identisch.
+  **Zwei Grenzen sind benannt:** ein **eingerückter** Code-Block (vier
+  Leerzeichen) ist in d-check nirgends modelliert, und eine ungerade
+  Backtick-Zahl im Absatz verschiebt die Inline-Code-Paarung — beides
+  Eigenschaften der geteilten Markdown-Lexik, nicht dieser Bedingung.
+  **Nicht** mit geändert: die Substanz-Zählung sieht Inline-Code weiterhin.
+
 ## [0.54.0] — 2026-08-10
 
 ### Added
