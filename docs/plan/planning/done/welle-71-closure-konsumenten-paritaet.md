@@ -75,4 +75,15 @@ aussagekräftiger. WIP-Limit 1, also ohnehin nacheinander.
 
 ## 7. Closure-Notiz
 
-_Ausstehend._
+Geschlossen am 2026-08-10. Die Ergebnis-Notiz der Welle steht — der Baseline-Form
+folgend — in einer **eigenen** Datei neben dieser:
+[`welle-71-results.md`](welle-71-results.md). Sie trägt, was geliefert wurde, was
+funktioniert hat, was anders lief, den Lese-Schritt am Beobachtungs-Register und
+die Verifikation.
+
+Das Wellen-Ziel jenseits der beiden Slice-DoDs ist erreicht: mit **v0.54.0** und
+**v0.55.0** deckt die Closure-Fähigkeit beide Lücken, um derentwillen der
+Konsument sein handgeschriebenes Prüfskript noch fuhr.
+
+Diese Plan-Datei hält nur noch fest, **dass** die Welle geschlossen ist; ihr
+Zustand ist die Verzeichnis-Position.

@@ -170,4 +170,57 @@ Bestand — sie wird portiert und neu belegt, nicht übernommen.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Geliefert ist der Grund-Code `closure-note-placeholder` als vierte, **opt-in**
+Bedingung der Closure-Note-Struktur, ausgeliefert mit **v0.55.0**
+([`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
+Lastenheft 0.54.1, [ADR-0052](../../adr/0052-platzhalter-erkennung-inline-code.md)
+`Accepted`). Der eigene Bestand ist gemessen und die Bedingung scharfgeschaltet:
+96 Closure-Notizen, null Befunde.
+
+**Die Messung hat die Erkennung entschieden, nicht bloß bestätigt.** Drei
+Fassungen über denselben Bestand: naiv 24 Treffer, portiert 12, portiert ohne
+Inline-Code **null** — und **keiner** der 24 war ein echter Platzhalter. Alle
+zwölf Treffer der portierten Fassung lagen in Inline-Code. Daraus wurde die
+tragende Entscheidung: Inline-Code ist keine Prosa, weil dort Syntax **gezeigt**
+wird. Ohne sie wäre das Gate am ersten Tag unglaubwürdig gewesen.
+
+**Eine Messung belegt, was da ist, nicht was möglich ist.** Das war die
+teuerste Lehre dieses Slice. Ich hatte in den Vertrag geschrieben,
+Vergleichszeichen seien „bereits durch die Form ausgeschlossen“ — und das
+stimmte nur für `p95 < 1 s` mit Leerzeichen. Der Review fand die enge
+Schreibweise: `Die Latenz blieb <1 s und der Recall >0,9` meldete, weil der
+Treffer vom ersten Winkel bis zum späteren spannt. Mein eigener Bestand kennt
+diese Form nicht, also hat meine Messung sie nicht gefunden.
+
+Geheilt wurde durch **Verengung** statt durch einen weiteren Nachfilter: das
+Innere muss frei von Whitespace sein — ein Platzhalter ist ein *Feldname*, kein
+Satz. Das erledigt zugleich HTML-Tags mit Attributen und macht die
+Nachfilter-Last kleiner statt größer. Mehrwortige Formen sind damit ein
+Re-Evaluierungs-Trigger, keine Erweiterung des Musters.
+
+**Zwei Zusagen waren praktisch unbewacht.** Von 35 Einträgen der HTML-Tag-Liste
+ließen sich **33** löschen, ohne dass ein Test rot wurde; dabei fiel auf, dass
+`<section>` gar nicht darin stand und meldete. Jetzt iteriert ein Test über die
+Liste. Und `closureSectionEnd` war eine **Kopie** der Grenz-Logik aus
+`closureSectionProse` — genau die Klasse, die der Slice-Plan selbst als
+einschlägig erklärt hatte. Jetzt ruft letztere erstere: eine Grenze, eine
+Implementierung.
+
+**Ein Test hat einen echten Defekt gefunden.** `FindAllStringSubmatch` ist
+nicht-überlappend: ein vom Nachfilter verworfener Treffer beendete die Suche für
+die restliche Zeile. Ersetzt durch eine Schleife auf dem Reststring. Von den
+acht Rückbauten blieb außerdem einer grün, der sich als **äquivalenter Mutant**
+herausstellte — kein Testfehler, sondern ein Kommentar, der ein Problem
+behauptete, das nicht besteht.
+
+**Zwei Grenzen sind benannt statt geschlossen:** ein mit vier Leerzeichen
+eingerückter Code-Block ist in d-check **nirgends** modelliert, und eine
+ungerade Backtick-Zahl im Absatz verschiebt die Inline-Code-Paarung. Beides sind
+Eigenschaften der geteilten Lexik; sie hier allein zu reparieren hieße, eine
+sechste Sicht auf denselben Text zu bauen. Sie stehen im **Handbuch**, nicht nur
+in der ADR — wer sie nicht kennt, hält den ersten Befund für einen Fehlalarm.
+
+**Ausdrücklich nicht mitgeändert:** die Substanz-Zählung sieht Inline-Code
+weiterhin. Sie zu verengen bewegt eine ausgelieferte Schwelle in beide
+Richtungen und ist eine eigene Entscheidung mit eigener Messung
+([slice-094](../open/slice-094-closure-zaehl-paritaet.md)).
