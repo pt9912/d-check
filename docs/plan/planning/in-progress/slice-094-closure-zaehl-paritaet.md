@@ -102,11 +102,11 @@ bereinigte Texte zu führen.
 
 ## 4. Definition of Done
 
-- [ ] Zählung angeglichen (Inline-Spans entfernt, Satzende nur vor
-      Whitespace/Zeilenende); Spezifikation Schritt C4 und die
-      Akzeptanzkriterien **beider** betroffener Grund-Codes nachgezogen —
-      `closure-note-thin` (schärfer) **und** `closure-note-boilerplate`
-      (lockerer), samt **ADR** für die Lockerung
+- [x] Vertrag geliefert: Lastenheft 0.55.0 (Substanz- und Floskel-Bullet, drei
+      neue Akzeptanzkriterien), Spezifikation Schritt **C4** (eine Bereinigung
+      für alle Bedingungen, Satzende nur vor Whitespace/Zeilenende) und
+      [ADR-0053](../../adr/0053-eine-bereinigung-fuer-alle-closure-bedingungen.md)
+      `Proposed` für die Lockerung
       ([`AGENTS.md` §3.6](../../../../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)).
 - [ ] **Paritäts-Beleg der Zähl-Semantik** gegen die Adopter-Fixtures: jede
       Fixture, die das Adopter-Skript **wegen der Satzzählung** rot macht, macht
