@@ -598,6 +598,8 @@ func TestDecode_ClosureRandGiltAuchOhneDir(t *testing.T) {
 		"glob leer, kein dir":      "planning:\n  closure:\n    glob: ''\n",
 		"glob ungültig, kein dir":  "planning:\n  closure:\n    glob: '[a-'\n",
 		"min-sentences 0, kein dir": "planning:\n  closure:\n    min-sentences: 0\n",
+		"heading-pattern kaputt, kein dir": "planning:\n  closure:\n    heading-pattern: '^(['\n",
+		"leere Floskel, kein dir":         "planning:\n  closure:\n    boilerplate: ['']\n",
 	} {
 		if _, err := configyaml.Decode([]byte(bad)); err == nil {
 			t.Errorf("%s: kaputter closure-Schlüssel bei inerter Fähigkeit akzeptiert: %q", name, bad)

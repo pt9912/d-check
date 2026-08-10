@@ -45,7 +45,7 @@ bleiben 11 `welle-*-results.md` und 4 Wellen-Plan-Dokumente:
 
 | Variante | Befunde | geprüfte Dokumente |
 |---|---|---|
-| heute (Filter erbt `slice-glob`) | 0 | 96 |
+| heute (Filter erbt `slice-glob`) | 0 | 95 |
 | Filter `*.md` | 12 | +15 |
 | Filter `*.md` **und** `heading-pattern` auf `^#{1,3}` | **0** | **+15** |
 
@@ -107,8 +107,18 @@ der Schlüssel überhaupt existierte.
    ([`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)),
    dessen Frage auf ganze Dokumente zielt.
 
-6. **SemVer: Minor.** Neuer Config-Schlüssel, rein additiv; ohne ihn ist der
-   Befundsatz byte-identisch. Ein Adopter merkt beim Update nichts.
+6. **SemVer: Minor.** Neuer Config-Schlüssel, rein additiv. Ohne ihn ist der
+   **Befundsatz** byte-identisch — das Tupel aus Datei, Zeile, Regel, Ziel und
+   Grund, auf das sich [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)
+   bezieht und das die Textausgabe zeigt.
+
+   **Nicht** byte-identisch sind zwei Begleit-Texte, die auch ohne den Schlüssel
+   erreichbar sind: die `message` der Nullmengen-Meldung (der Glob steht jetzt in
+   Anführungszeichen, sichtbar in `--json`) und der `--doctor`-Klartext zu
+   `closure-note-missing` (er sagt „Kandidat" statt „Slice", weil die
+   Kandidaten-Menge nicht mehr aus Slice-Dateien bestehen muss). Beide sind
+   ausdrücklich **nicht** stabilitätsgarantiert; beide gehören trotzdem in die
+   Release-Notiz, weil ein Konsument, der auf Text greppt, sie sieht.
 
 ## Verglichene Alternativen
 
@@ -121,7 +131,7 @@ der Schlüssel überhaupt existierte.
 | Closure-Verzeichnis rekursiv statt per Glob | Andere Achse (Tiefe statt Namensform) und eine viel größere Zusage; der CR verlangt sie nicht |
 | Eigenen Bestand mitweiten (`glob: "*.md"` + Muster `^#{1,3}`) | Gemessenes **Falsch-Negativ**: bei den Ergebnisnotizen wird der Dokument-Titel zur Abschnitts-Überschrift, der gemessene Abschnitt zur ganzen Datei — unausgefüllte Platzhalter bleiben grün, und die Floskel-Prüfung läuft über beliebigen Text |
 | Die Ergebnisnotizen um eine H2-`Closure-Notiz` ergänzen | Struktur erfinden, um ein Werkzeug zufriedenzustellen: die Datei **ist** die Notiz, ein Abschnitt gleichen Namens darin wäre eine Selbstverdopplung |
-| Glob, der Slices und Wellen-**Plan**-Dokumente trifft, Ergebnisnotizen aber nicht | `path.Match` kennt keine Suffix-Negation; jedes Muster, das `welle-70-fence-lexik.md` trifft, trifft auch `welle-70-results.md` |
+| Glob, der Slices und Wellen-**Plan**-Dokumente trifft, Ergebnisnotizen aber nicht | Konstruierbar (`path.Match` kennt die Zeichenklasse `[^…]`), aber **fragil**: das naheliegende `*-*-[^r]*.md` trifft alle vier Plan-Dokumente und keine der elf Ergebnisnotizen — und verliert dabei still **2 von 95** Slices, deren drittes Namenssegment mit `r` beginnt. Ein Filter, den ein künftiger Dateiname lautlos aushebelt, ist die falsche Antwort auf ein Silent-Grün-Problem |
 
 ## Konsequenzen
 
@@ -139,7 +149,9 @@ der Schlüssel überhaupt existierte.
 
 ## Fitness Function
 
-- **Ohne den Schlüssel byte-identisch** zum Stand vor dieser Änderung.
+- **Ohne den Schlüssel byte-identischer Befundsatz** (Datei, Zeile, Regel, Ziel,
+  Grund) zum Stand vor dieser Änderung; die beiden geänderten Begleit-Texte
+  (Nullmengen-`message`, `--doctor`-Klartext) sind benannt, nicht übersehen.
 - **`closure.glob` weiten berührt die Roadmap-Invariante nicht** — belegt an
   einem Lauf mit geweitetem `closure.glob` und unverändertem `slice-glob`.
 - **Explizit leerer Glob bricht mit Exit 2 ab**, nicht mit dem Default.
@@ -168,3 +180,7 @@ der Schlüssel überhaupt existierte.
   Überschriften-Muster bei den Ergebnisnotizen den Dokument-Titel trifft und
   damit ein Falsch-Negativ baut; die Bestandszahlen sind auf die gemessenen
   95/110 korrigiert.
+- 2026-08-10: nach bestätigender Re-Review präzisiert — die Byte-Identitäts-Zusage
+  gilt dem **Befundsatz**, nicht den Begleit-Texten; die Alternativen-Begründung
+  zur Suffix-Negation war sachlich falsch (`path.Match` kennt `[^…]`) und ist
+  durch die gemessene Fragilität ersetzt.

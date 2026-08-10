@@ -44,8 +44,9 @@ planning:
     #
     # `min-sentences` und `heading-pattern` bleiben auf den Kern-Defaults
     # (`^#{2,3} .*Closure-Notiz` und 4). Gemessen am eigenen Bestand: 95/95
-    # Slices tragen einen Abschnitt, das Minimum liegt bei 5 Satzende-Zeichen
-    # außerhalb Code — die Schwelle ist ein Boden, keine Decke.
+    # Slices tragen einen Abschnitt, und das Minimum liegt bei 7 Satzende-Zeichen
+    # außerhalb Code (mit dem Produkt gemessen: bei 8 wird der erste Slice rot)
+    # — die Schwelle ist ein Boden, keine Decke.
     #
     # Die Floskel-Liste ist im Produkt bewusst LEER (sie entscheidet über
     # rot/grün und wäre sprach-gebunden falsch, ADR-0048 Entscheidung 5); hier

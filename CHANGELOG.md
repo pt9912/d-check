@@ -6,6 +6,33 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-097 — **`planning.closure.glob`** als eigener Kandidaten-Filter der
+  Closure-Fähigkeit (`DC-FA-PLAN-001`,
+  [ADR-0051](docs/plan/adr/0051-eigener-kandidaten-filter-closure.md)). Der
+  Default ist ein **Verweis** auf `planning.slice-glob`, kein kopiertes Literal:
+  ohne den Schlüssel ist der **Befundsatz** byte-identisch, und es gibt genau ein
+  Muster zu pflegen. Anlass: die beiden `planning`-Fähigkeiten stellen
+  verschiedene Fragen („liegt hier noch Arbeit?" gegen „ist jedes abgeschlossene
+  Paket dokumentiert?") mit verschiedenen Grundmengen und teilten sich einen
+  Schlüssel, solange beide zufällig dasselbe trafen; wer die eine Menge weitet,
+  verbiegt die andere — im Grenzfall matcht die Roadmap-Datei selbst und der
+  Ruhe-Marker meldet dauerhaft falsch-rot. Ein **explizit** leerer oder
+  ungültiger Glob bricht mit Exit 2 ab statt still auf den Default
+  zurückzufallen; ein YAML-`null` gilt als abwesend. Kein neuer Grund-Code — es
+  ändert sich die Kandidaten-Menge, nicht die Aussage über einen Kandidaten.
+
+### Changed
+
+- slice-097 — zwei **Begleit-Texte** haben sich geändert; beide sind auch **ohne**
+  den neuen Schlüssel erreichbar und ausdrücklich nicht stabilitätsgarantiert,
+  aber wer auf Text greppt, sieht sie: die `message` der Nullmengen-Meldung führt
+  den Glob jetzt in Anführungszeichen (sichtbar in `--json`), und der
+  `--doctor`-Klartext zu `closure-note-missing` sagt **„Kandidat" statt „Slice"**
+  — die Kandidaten-Menge muss seit diesem Release nicht mehr aus Slice-Dateien
+  bestehen. Der Befundsatz (Datei, Zeile, Regel, Ziel, Grund) ist unverändert.
+
 ## [0.53.0] — 2026-08-10
 
 ### Added

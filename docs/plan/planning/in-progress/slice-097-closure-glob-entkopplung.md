@@ -143,6 +143,29 @@ Kopplung.
       Nullmengen-Meldung gequotet) und ein **sechster** Rückbau, den die Tests
       nicht fingen: den Config-Rand an `closure.dir` zu koppeln blieb grün,
       obwohl er auch bei inerter Fähigkeit greift.
+- [x] **Bestätigende Re-Review** (Frischkontext) — beide Erst-MEDIUM als geheilt
+      bestätigt; blockierend war, was die Heilung neu aufmachte: die
+      Byte-Identitäts-Zusage. `strconv.Quote` in der Nullmengen-`message` und der
+      geänderte `--doctor`-Klartext liegen auf Pfaden, die **ohne** den neuen
+      Schlüssel erreichbar sind. Präzisiert statt zurückgenommen: die Zusage gilt
+      dem **Befundsatz** (Datei, Zeile, Regel, Ziel, Grund), nicht den
+      Begleit-Texten — beide sind laut Spezifikation nicht
+      stabilitätsgarantiert, gehören aber in die Release-Notiz und stehen jetzt
+      dort. Dazu fünf Ränder, zwei davon **gegen** den Reviewer nachgemessen und
+      zwei **für** ihn:
+      - Das Satzende-Minimum steht als **7** in der Config, nicht als 5 — mit dem
+        Produkt gemessen (bei `min-sentences: 8` wird der erste Slice rot). Meine
+        eigene Nachrechnung sagte 5 und war falsch.
+      - Die Alternativen-Begründung „`path.Match` kennt keine Suffix-Negation"
+        war **sachlich falsch** (`[^…]` existiert). Der Reviewer hat ein
+        funktionierendes Muster gezeigt; die Nachmessung zeigt aber, dass es
+        still **2 von 95** Slices verliert, deren drittes Namenssegment mit `r`
+        beginnt. Die Zeile nennt jetzt diesen Grund statt eines falschen.
+      - Bestandszahl in der ADR-Tabelle (96 → 95), §4-Zeile um den Leerlauf-Fall
+        ergänzt, `--print-config`-Vorlage bildet den Verweis-Default nicht mehr
+        als Literal ab.
+      - **Siebter** Rückbau: auch `heading-pattern` und `boilerplate` greifen bei
+        inerter Fähigkeit; das war ungetestet. Jetzt rot.
 - [ ] **Release** (Minor: neuer Config-Schlüssel), Digest-Backfill. Ohne
       veröffentlichte Version erreicht die Welle ihren Zweck nicht — der
       Konsument kann sein Skript erst gegen ein Release zurückziehen
