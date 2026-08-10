@@ -65,14 +65,40 @@ bereinigte Texte zu führen.
 
 ## 3. Abnahme-Punkte
 
-1. **Reicht die Angleichung, oder braucht die Zählung ein Config-Ventil?** Der
-   Vorschlag ist **ohne** Ventil: eine feste, an CommonMark orientierte Zählung
+1. **Reicht die Angleichung, oder braucht die Zählung ein Config-Ventil?** →
+   **Entschieden 2026-08-10: ohne Ventil.** eine feste, an CommonMark orientierte Zählung
    (Inline-Spans sind Code, kein Fließtext) statt eines Schalters, den niemand
    bewusst setzt. Ein Ventil wäre eine zweite Semantik für dieselbe Frage.
-2. **Wird der Bestand rot?** Vorab zu messen — dieselbe Disziplin wie bei der
-   Schwellen-Wahl in [slice-093](../done/slice-093-closure-note-gate.md). Wird
-   er es, ist das ein Befund über die Notizen, kein Grund, die Zählung
-   aufzuweichen.
+2. **Wird der Bestand rot?** → **Gemessen 2026-08-10 mit dem Produkt: nein.**
+   Die Schwelle wird von beiden Seiten hochgedreht, bis der erste Slice rot wird:
+
+   | | Minimum im Bestand | bei unserer Schwelle 4 |
+   |---|---|---|
+   | v0.55.0 | 7 | grün (Abstand 3) |
+   | nach der Angleichung | **5** | **grün** (Abstand 1) |
+
+   Keine Sanierung nötig. Der **Abstand zur Schwelle schrumpft aber von 3 auf 1**
+   — das ist die Wirkung, nicht ein Nebeneffekt, und gehört in die Release-Notiz.
+
+3. **Neu aufgetaucht: was folgt einem Satzende?** Die Regel „nur vor
+   Whitespace oder Zeilenende“ trifft eine Klasse, die der Slice nicht
+   vorhergesehen hatte. Gemessen über die 97 eigenen Notizen, **nach**
+   Inline-Code-Bereinigung, 4066 Satzende-Zeichen:
+
+   | folgt darauf | Vorkommen | Bewertung |
+   |---|---|---|
+   | Whitespace / Zeilenende | 1320 | echte Sätze |
+   | `.`, `/`, `m`, Ziffern | ~2400 | **Link-Pfade und Versionen** — nie Sätze; sie nicht mehr zu zählen ist der Kern der Angleichung |
+   | `*` | **170** | `**Umsetzung.**` — ein **fett gesetztes** Satzende, also ein echter Satz, der nicht mehr zählt |
+
+   Die 170 erklären den Abfall des Minimums von 7 auf 5 fast vollständig.
+   **Entschieden: Whitespace-Regel wie spezifiziert, ohne Ausnahme für
+   schließende Auszeichnung.** Gründe: es ist die zugesagte **Parität** (der
+   ganze Zweck des Slice); die Richtung ist die sichere (zählt weniger ⇒ Gate
+   strenger); und eine Ausnahmeliste für `*`, `_`, `` ` ``, `)`, `"` wäre eine
+   **dritte** Semantik, die weder der Adopter noch CommonMark definiert. Der
+   Preis ist benannt: ein Repo, das viele Sätze fett schließt und knapp über der
+   Schwelle liegt, wird rot — genau der zugesagte Minor-Charakter.
 
 ## 4. Definition of Done
 
@@ -96,18 +122,23 @@ bereinigte Texte zu führen.
 
 ## 5. Risiken / offene Punkte
 
-- **Der eigene Bestand könnte rot werden** (Notizen, deren Sätze knapp über der
-  Schwelle liegen und Inline-Code enthalten). — **Ausgang:** offen bis zur
-  Vorab-Messung in Abnahme-Punkt 2.
+- **Der eigene Bestand könnte rot werden.** — **Ausgang: gemessen, wird er
+  nicht.** Minimum fällt von 7 auf 5, unsere Schwelle ist 4. Der Abstand
+  schrumpft aber von 3 auf 1 — die nächste dünne Notiz fällt eher auf, und das
+  ist gewollt.
 - **Konsumenten-Bruch:** ein grüner Lauf kann rot werden. Das ist der zugesagte
   Minor-Charakter, keine Überraschung — gehört aber in die Release-Notiz.
   — **Ausgang:** offen bis zur Release-Prep.
 - **Die Gegenrichtung ist ein stiller Verlust:** ein Repo, das eine Floskel in
   Backticks stehen hat, verliert einen bestehenden Befund, ohne es zu merken.
-  — **Ausgang:** offen; die ADR muss die Klasse benennen, damit sie im
-  Release-Text auftaucht.
+  — **Ausgang: belegt und angenommen.** In **beide** Richtungen am Lauf
+  nachgestellt: dieselbe Notiz mit einer Floskel in Backticks meldet mit der
+  alten Fassung `closure-note-boilerplate` und mit der neuen **nicht**. Ein Test
+  hält beide Seiten fest (zitierte Floskel trifft nicht, benutzte trifft weiter);
+  die ADR benennt die Klasse für den Release-Text.
 - **Fremd-Repo-Abhängigkeit:** die Paritäts-Fixtures liegen nicht in diesem
-  Repo (Schnitt-Review F-7). — **Ausgang:** offen; sie werden **beigezogen**,
+  Repo (Schnitt-Review F-7). — **Ausgang:** offen; das Repo `a-check` liegt beim
+  Wellen-Start vor (87 abgeschlossene Slices). Sie werden **beigezogen**,
   nicht nachgebaut — ist das beim Start nicht möglich, wird der Paritäts-Beleg
   durch eigene Fixtures ersetzt und die Zusage entsprechend verengt.
 
