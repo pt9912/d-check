@@ -116,7 +116,7 @@ func reasonTexts() map[string]string {
 		model.ReasonCoreDriftVCS:       "Core einer immutablen Datei über die Commit-Range geändert, gelöscht/umbenannt oder mit unzulässigem Status-Übergang",
 		model.ReasonCommitUntraceable:  "Commit-Message ohne Traceability-Kennung",
 		model.ReasonPlanningDrift:      "Roadmap-Aktiv-Status und Slice-Bestand inkonsistent (oder Roadmap/Überschrift fehlt bzw. mehrdeutig — fail-closed)",
-		model.ReasonClosureNoteMissing:     "Abgeschlossener Slice ohne Closure-Notiz-Abschnitt (oder Closure-Verzeichnis fehlt — fail-closed)",
+		model.ReasonClosureNoteMissing:     "Abgeschlossener Kandidat ohne Closure-Notiz-Abschnitt (oder Closure-Verzeichnis fehlt bzw. ist leer — fail-closed)",
 		model.ReasonClosureNoteThin:        "Closure-Notiz unter der Substanz-Untergrenze (zu wenige Sätze außerhalb von Code-Blöcken)",
 		model.ReasonClosureNoteBoilerplate: "Closure-Notiz enthält eine als Floskel deklarierte Wendung",
 		model.ReasonTargetUntracked:        "Linkziel nicht im git-Index getrackt (fehlt auf jedem frischen Klon)",

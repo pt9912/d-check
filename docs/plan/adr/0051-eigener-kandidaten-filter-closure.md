@@ -40,8 +40,8 @@ dauerhaft „eine Datei liegt da“ und verlangt, dass der Ruhe-Marker **nie**
 gesetzt wird — falsch genau dann, wenn die Welle wirklich ruht.
 
 **Bestandsmessung am eigenen Repo (2026-08-10).** Im Closure-Verzeichnis liegen
-110 Markdown-Dateien, von denen der heutige Filter 96 sieht. Ungesehen bleiben
-11 `welle-*-results.md` und 4 Wellen-Plan-Dokumente:
+**110** Markdown-Dateien, von denen der heutige Filter **95** sieht. Ungesehen
+bleiben 11 `welle-*-results.md` und 4 Wellen-Plan-Dokumente:
 
 | Variante | Befunde | geprüfte Dokumente |
 |---|---|---|
@@ -84,12 +84,28 @@ der Schlüssel überhaupt existierte.
    einschließlich der Nullmengen-Härte: kein Kandidat unter dem gesetzten Glob ⇒
    `closure-note-missing` auf dem Verzeichnis.
 
-5. **Der eigene Bestand wird mitgeweitet** — `closure.glob: "*.md"` **und**
-   `heading-pattern` auf `^#{1,3}`. Gemessen null Befunde bei 15 zusätzlich
-   geprüften Dokumenten. Das ist die bessere Antwort als „eng lassen“: die
-   Wellen-Ergebnisnotizen sind Closure-Notizen im vollen Sinn, und sie ungeprüft
-   zu lassen wäre genau die Grenze, die das Register als **BEO-004** führt —
-   eine Prüfung, die an Dokumenten vorbeisieht, die sie meint.
+5. **Der eigene Bestand bleibt beim geerbten Filter.** Die naheliegende Antwort
+   auf die Messung wäre gewesen, `closure.glob` auf `*.md` und das
+   `heading-pattern` auf `^#{1,3}` zu setzen — null Befunde bei 15 zusätzlich
+   erfassten Dokumenten. Ein Review hat gemessen, dass das ein **Falsch-Negativ**
+   baut: bei den Ergebnisnotizen ist die auf das geweitete Muster passende
+   Überschrift der Dokument-**Titel**, der gemessene Abschnitt also die ganze
+   Datei. Ein Dokument mit drei unausgefüllten `_Ausstehend._`-Abschnitten bleibt
+   damit grün, während derselbe Platzhalter unter H2 `closure-note-thin` meldet;
+   zugleich liefe die Floskel-Prüfung über beliebigen Dateitext.
+
+   Die Wurzel ist eine **Artefakt-Verwechslung**: eine Wellen-Ergebnisnotiz
+   *enthält* keine Closure-Notiz, sie **ist** eine. Sie zu prüfen heißt, ihre
+   Abschnitts-Struktur zu prüfen — die Zusage des Moduls `structure`, nicht die
+   dieser Fähigkeit. Der Kandidaten-Filter kann eine Datei in die Menge holen,
+   aber nicht die Frage ändern, die an sie gestellt wird.
+
+   Der Wert der Messung bleibt: sie hat einen **realen** Rückstand gefunden (ein
+   geschlossenes Wellendokument mit unausgefüllter Notiz), bevor der Schlüssel
+   existierte. Der ist behoben. Die Abdeckung der Wellen-Dokumente bleibt offen und
+   gehört zum Modul `structure`
+   ([`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)),
+   dessen Frage auf ganze Dokumente zielt.
 
 6. **SemVer: Minor.** Neuer Config-Schlüssel, rein additiv; ohne ihn ist der
    Befundsatz byte-identisch. Ein Adopter merkt beim Update nichts.
@@ -103,7 +119,9 @@ der Schlüssel überhaupt existierte.
 | Explizit leerer Glob fällt auf den Default zurück | Übergeht stillschweigend eine gesetzte Aussage — dieselbe Klasse stiller Grün-Pfade, gegen die die Nullmengen-Härte gebaut wurde |
 | Eigener Grund-Code für „Kandidat durch Glob ausgeschlossen“ | Es gibt nichts zu melden: ein nicht gematchter Kandidat ist keine Verletzung, sondern nicht Gegenstand |
 | Closure-Verzeichnis rekursiv statt per Glob | Andere Achse (Tiefe statt Namensform) und eine viel größere Zusage; der CR verlangt sie nicht |
-| Eigenen Bestand eng lassen (Schlüssel nur ausliefern) | Ließe 15 echte Closure-Notizen dauerhaft ungeprüft — und die Messung hat in genau diesen 15 einen realen Rückstand gefunden |
+| Eigenen Bestand mitweiten (`glob: "*.md"` + Muster `^#{1,3}`) | Gemessenes **Falsch-Negativ**: bei den Ergebnisnotizen wird der Dokument-Titel zur Abschnitts-Überschrift, der gemessene Abschnitt zur ganzen Datei — unausgefüllte Platzhalter bleiben grün, und die Floskel-Prüfung läuft über beliebigen Text |
+| Die Ergebnisnotizen um eine H2-`Closure-Notiz` ergänzen | Struktur erfinden, um ein Werkzeug zufriedenzustellen: die Datei **ist** die Notiz, ein Abschnitt gleichen Namens darin wäre eine Selbstverdopplung |
+| Glob, der Slices und Wellen-**Plan**-Dokumente trifft, Ergebnisnotizen aber nicht | `path.Match` kennt keine Suffix-Negation; jedes Muster, das `welle-70-fence-lexik.md` trifft, trifft auch `welle-70-results.md` |
 
 ## Konsequenzen
 
@@ -114,8 +132,10 @@ der Schlüssel überhaupt existierte.
   gegen ein zweites Modul weiterhin allein.
 - **Zwei Globs laden zu Drift ein.** Der Verweis-Default ist die Gegenmaßnahme:
   wer nichts trennt, pflegt nur ein Muster. Wer trennt, tut es absichtlich.
-- **Der eigene Lauf prüft 15 Dokumente mehr** und bleibt grün. Jede künftige
-  Abweichung dort ist ein echter Fund.
+- **Der eigene Lauf bleibt bei 95 Kandidaten.** Die 15 Wellen-Dokumente bleiben
+  ungeprüft — bewusst, mit benannter Nachfolge (Modul `structure`), nicht als
+  übersehene Lücke. Das ist die Grenze, die das Beobachtungs-Register
+  als **BEO-004** führt: sie ist hier benannt statt geschlossen.
 
 ## Fitness Function
 
@@ -123,7 +143,8 @@ der Schlüssel überhaupt existierte.
 - **`closure.glob` weiten berührt die Roadmap-Invariante nicht** — belegt an
   einem Lauf mit geweitetem `closure.glob` und unverändertem `slice-glob`.
 - **Explizit leerer Glob bricht mit Exit 2 ab**, nicht mit dem Default.
-- **Der eigene Bestand bleibt bei null**, jetzt über 111 statt 96 Dokumente.
+- **Der eigene Bestand bleibt bei null** über unverändert 95 Kandidaten — der
+  Schlüssel ändert die Zusage, nicht den eigenen Lauf.
 
 ## Re-Evaluierungs-Trigger
 
@@ -135,7 +156,15 @@ der Schlüssel überhaupt existierte.
   mit Warnung neu abzuwägen.
 - Wenn das Closure-Verzeichnis in Unterordner wächst, wird die Tiefen-Frage
   akut, die diese Entscheidung ausdrücklich offen lässt.
+- Wenn das Modul `structure` die Wellen-Dokumente abdeckt, ist Entscheidung 5
+  erledigt — dann prüft die richtige Frage die richtigen Dateien, und der
+  Kandidaten-Filter muss dafür nicht mehr herhalten.
 
 ## Geschichte
 
 - 2026-08-10: Proposed (doc-first, `slice-097`).
+- 2026-08-10: Entscheidung 5 nach unabhängigem Review **umgekehrt** — der eigene
+  Bestand wird *nicht* mitgeweitet. Der Review hat gemessen, dass das geweitete
+  Überschriften-Muster bei den Ergebnisnotizen den Dokument-Titel trifft und
+  damit ein Falsch-Negativ baut; die Bestandszahlen sind auf die gemessenen
+  95/110 korrigiert.

@@ -589,3 +589,19 @@ func TestDecode_ClosureGlobDefaultIstVerweis(t *testing.T) {
 	}
 }
 
+// Der Config-Rand greift auch bei INERTER Fähigkeit: ohne closure.dir wird
+// nichts geprüft, aber ein kaputter Schlüssel ist trotzdem ein
+// Konfigurationsfehler. Wer die Validierung an dir koppelt, baut ein stilles
+// Grün für den Tag, an dem dir gesetzt wird (Review-Befund: sechster Rückbau).
+func TestDecode_ClosureRandGiltAuchOhneDir(t *testing.T) {
+	for name, bad := range map[string]string{
+		"glob leer, kein dir":      "planning:\n  closure:\n    glob: ''\n",
+		"glob ungültig, kein dir":  "planning:\n  closure:\n    glob: '[a-'\n",
+		"min-sentences 0, kein dir": "planning:\n  closure:\n    min-sentences: 0\n",
+	} {
+		if _, err := configyaml.Decode([]byte(bad)); err == nil {
+			t.Errorf("%s: kaputter closure-Schlüssel bei inerter Fähigkeit akzeptiert: %q", name, bad)
+		}
+	}
+}
+

@@ -66,27 +66,51 @@ Kopplung.
    entsteht **nur** beim Weiten von `slice-glob`; mit dem hier beantragten
    eigenen Schlüssel bleibt die Roadmap-Invariante unberührt, und genau das ist
    der Punkt.
-   **Entschieden 2026-08-10 — und zwar anders, als die drei Kandidaten es
-   anlegten.** Gemessen wurde eine **vierte** Variante, die erst mit dem neuen
+   **Entschieden 2026-08-10, in zwei Schritten — der zweite hat den ersten
+   umgekehrt.**
+
+   Gemessen wurde zunächst eine **vierte** Variante, die erst mit dem neuen
    Schlüssel möglich ist: `closure.glob: "*.md"` **und** `heading-pattern` auf
    `^#{1,3}`.
 
    | Variante | Befunde | geprüfte Dokumente |
    |---|---|---|
-   | heute (Filter erbt `slice-glob`) | 0 | 96 |
+   | heute (Filter erbt `slice-glob`) | 0 | 95 |
    | Filter `*.md` | 12 | +15 |
-   | Filter `*.md` **und** Muster `^#{1,3}` | **0** | **+15** |
+   | Filter `*.md` **und** Muster `^#{1,3}` | 0 | +15 |
 
    Elf der zwölf sind kein fehlender Abschnitt, sondern eine **H1** gegen ein
    Muster, das H2/H3 verlangt. Der zwölfte war **echt**: ein geschlossenes
    Wellendokument trug in `done/` noch „_Ausstehend._". Ein zweites entging dem
    Befund nur, weil sein „_Ausstehend._" wortreich genug für die Satz-Schwelle
-   war. Beide sind gefüllt.
+   war. **Beide sind gefüllt** — der Wert der Messung steht unabhängig davon,
+   wie die Konfigurations-Frage ausgeht.
 
-   „Eng lassen" wäre damit genau die Grenze, die das Register als **BEO-004**
-   führt — eine Prüfung, die an Dokumenten vorbeisieht, die sie meint. Die
-   Zahlen sind seit der Slice-Anlage gewachsen (9 → 11 `results`-Dateien): der
-   Bestand wächst weiter, die Lücke also auch.
+   Die dritte Zeile sah nach der besten Antwort aus. Ein unabhängiger Review hat
+   gemessen, dass sie ein **Falsch-Negativ** baut: bei den Ergebnisnotizen ist
+   die auf `^#{1,3} .*Closure-Notiz` passende Überschrift der Dokument-**Titel**,
+   der gemessene Abschnitt also die ganze Datei.
+
+   | Fixture | Ergebnis |
+   |---|---|
+   | drei `_Ausstehend._`-Abschnitte unter H1-Titel | **kein Befund** |
+   | derselbe Platzhalter unter H2 | `closure-note-thin` |
+
+   Damit hätte die Weitung genau die Defekt-Klasse unsichtbar gemacht, für die
+   das Gate gebaut ist — und dieselbe, die die Messung eine Stunde zuvor gefunden
+   hatte. Zugleich liefe die Floskel-Prüfung über beliebigen Dateitext.
+
+   **Endstand: der eigene Bestand bleibt beim geerbten Filter.** Die Wurzel ist
+   eine Artefakt-Verwechslung: eine Wellen-Ergebnisnotiz *enthält* keine
+   Closure-Notiz, sie **ist** eine. Sie zu prüfen heißt, ihre Abschnitts-Struktur
+   zu prüfen — die Zusage des Moduls `structure`
+   ([slice-099](../open/slice-099-structure-modul.md)), nicht die dieser
+   Fähigkeit. Ein Kandidaten-Filter kann eine Datei in die Menge holen, aber
+   nicht die Frage ändern, die an sie gestellt wird.
+
+   Die 15 Wellen-Dokumente bleiben damit ungeprüft — **benannt**, nicht
+   übersehen. Das ist die Grenze, die das Register als **BEO-004** führt, und sie
+   ist hier bewusst offen statt falsch geschlossen.
 
 ## 4. Definition of Done
 
@@ -103,9 +127,22 @@ Kopplung.
       Glob-Validierung entfernt; Wert nicht durchgereicht. End-to-End gegen das
       gebaute Image: eigener Lauf 326 Dateien / 0 Befunde, expliziter leerer
       Glob bricht mit **Exit 2** und einer Meldung ab, die den Schlüssel nennt.
-- [x] `make gates` grün; Abnahme-Punkt 2 beantwortet und `.d-check.closure.yml`
-      entsprechend gesetzt — der eigene Lauf prüft jetzt **111 statt 96**
-      Dokumente und bleibt bei null Befunden.
+- [x] `make gates` grün; Abnahme-Punkt 2 beantwortet. `.d-check.closure.yml`
+      bleibt beim geerbten Filter — die Weitung war der erste Anlauf und ist nach
+      dem Review zurückgenommen (§3, Abnahme-Punkt 2).
+- [x] **Unabhängiger Review** (Frischkontext) — 0 HIGH, 2 MEDIUM, 6 LOW, 1 INFO;
+      merge-blockierend. Byte-Identität, Entkopplung, Config-Rand und
+      SemVer-Einordnung sind **belegt** (Alt-Image gegen HEAD-Image auf
+      identischem Baum, je byte-gleich auf stdout und stderr). Blockierend waren
+      zwei Ränder: das Falsch-Negativ der eigenen Konfiguration und ein
+      **doppeltes** Akzeptanzkriterium zur Nullmengen-Härte, dessen ältere
+      Fassung noch `planning.slice-glob` nannte und gegen die Umsetzung
+      falsifizierbar war. Beide behoben, dazu die LOW-Ränder (Bestandszahlen
+      95/110 statt 96/111, YAML-`null` als abwesend ausgewiesen, §4-Zeile und
+      `--doctor`-Klartext sagen „Kandidat" statt „Slice", Glob in der
+      Nullmengen-Meldung gequotet) und ein **sechster** Rückbau, den die Tests
+      nicht fingen: den Config-Rand an `closure.dir` zu koppeln blieb grün,
+      obwohl er auch bei inerter Fähigkeit greift.
 - [ ] **Release** (Minor: neuer Config-Schlüssel), Digest-Backfill. Ohne
       veröffentlichte Version erreicht die Welle ihren Zweck nicht — der
       Konsument kann sein Skript erst gegen ein Release zurückziehen

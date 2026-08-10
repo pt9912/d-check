@@ -1701,7 +1701,8 @@ liefert (und umgekehrt):
   Mengen trennt, gibt es genau ein zu pflegendes Muster, und der Befundsatz ist
   byte-identisch zum Stand ohne den Schlüssel). Ist er **explizit** leer oder
   kein gültiges `path.Match`-Muster ⇒ Exit 2; ein Rückfall auf den Default wäre
-  ein stilles Übergehen einer gesetzten Aussage.
+  ein stilles Übergehen einer gesetzten Aussage. Ein YAML-`null` (`glob:` ohne
+  Wert) gilt als **abwesend**, nicht als leer — wie bei `min-sentences`.
   Die beiden Filter sind getrennt, weil die beiden Fähigkeiten verschiedene
   Grundmengen haben: Schritt 2 zählt, was **noch in Arbeit** ist, C2 prüft, was
   **abgeschlossen** ist — Letzteres kann auch Wellen- oder Etappen-Dokumente
@@ -2372,7 +2373,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `core-drift-vcs` | vcs | Core einer immutablen Datei (BASE erfüllt `vcs.immutable-when`) hat sich über die Commit-Range geändert, ihr Status-Übergang ist unzulässig (`vcs.head-allow`), oder die immutable Datei wurde gelöscht/umbenannt |
 | `commit-untraceable` | commits | bereinigte Commit-Message trägt keine Kennung nach `commits.id-patterns` und ist nicht per `commits.exempt-pattern` (Betreff) ausgenommen |
 | `planning-drift` | planning | Roadmap-Aktiv-Status (`planning.marker` im `planning.heading`-Block) und Präsenz von `planning.slice-glob`-Slices sind inkonsistent (`hasActive ≠ hasSlices`), oder die kanonische Überschrift fehlt/ist mehrdeutig bzw. die Roadmap-Datei fehlt (fail-closed) |
-| `closure-note-missing` | planning | Slice im `planning.closure.dir` **ohne** einen auf `planning.closure.heading-pattern` passenden Abschnitt — oder das gesetzte `planning.closure.dir` selbst fehlt/ist unlesbar (fail-closed); schließt `closure-note-thin`/`-boilerplate` aus (ohne Abschnitt gibt es nichts zu messen) |
+| `closure-note-missing` | planning | Kandidat im `planning.closure.dir` (Filter: `planning.closure.glob`, sonst `planning.slice-glob`) **ohne** einen auf `planning.closure.heading-pattern` passenden Abschnitt — oder das gesetzte `planning.closure.dir` selbst fehlt/ist unlesbar (fail-closed); schließt `closure-note-thin`/`-boilerplate` aus (ohne Abschnitt gibt es nichts zu messen) |
 | `closure-note-thin` | planning | Closure-Notiz-Abschnitt trägt weniger als `planning.closure.min-sentences` Satzende-Zeichen **außerhalb** der Fenced-Code-Blöcke (Platzhalter, Einzeiler) |
 | `closure-note-boilerplate` | planning | bereinigter Closure-Notiz-Text enthält (case-insensitiv) einen literalen Teilstring aus `planning.closure.boilerplate`; der erste Treffer benennt die Meldung |
 | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
@@ -2402,6 +2403,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2: YAML-`null` bei `closure.glob` ausdrücklich als **abwesend** ausgewiesen (nicht als leer — die Exit-2-Zusage gilt dem explizit leeren String); §4-Zeile zu `closure-note-missing` nennt den geprüften Gegenstand jetzt „Kandidat“ statt „Slice“ samt effektivem Filter, weil die Kandidaten-Menge seit `planning.closure.glob` nicht mehr aus Slice-Dateien bestehen muss |
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2 + §2-Schema (`planning.closure.glob`): die Closure-Fähigkeit bekommt einen **eigenen** Kandidaten-Filter, dessen Default ein **Verweis** auf `planning.slice-glob` ist (nicht ein kopiertes Literal — ein zweites Muster wäre eine zweite Pflegestelle). Anlass: die beiden Fähigkeiten zählen verschiedene Mengen („noch in Arbeit“ gegen „abgeschlossen“) und teilten sich einen Schlüssel; wer die eine weitet, verbiegt die andere. Ein **explizit** leerer oder ungültiger Glob ⇒ Exit 2 statt stillem Rückfall auf den Default. Kein neuer Grund-Code |
 | 2026-08-10 | §4-Grund-Code-Zeile zu `fence-unclosed` nachgezogen: sie trug weiter die mit Lastenheft 0.52.1 widerrufene Reichweite („von **allen** Modulen übersprungen. Befund an der Öffnungszeile") und widersprach damit der Anforderung — ein Lauf widerlegte sie in derselben Ausgabe. Jetzt „mindestens eine Lesart endet offen" und **Fundstelle** statt Reparaturstelle. Der `--doctor`-Klartext desselben Grund-Codes ist mitgezogen |
 | 2026-08-10 | §[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung) Schritt 3 nach bestätigender Re-Review nachgezogen: die Trimmung ist als **geteiltes** Prädikat festgeschrieben (das Modul `planning` trimmte weiter unicode-weit und trug den Anlassfall des Slice unverändert weiter), das Befund-Ziel verliert auch das CR einer CRLF-Zeile, und die Fundstellen-Klausel gilt für **beide** Lesarten — auch die strenge zeigt daneben, wenn eine längere Fence-Zeile eine kürzere Öffnung geschlossen hat |

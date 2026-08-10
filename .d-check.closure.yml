@@ -26,21 +26,26 @@ planning:
     # Der Ruheort der abgeschlossenen Slices. Nur hier wird Slice-INHALT
     # gelesen; in-progress-Slices tragen noch keine Closure-Pflicht.
     dir: docs/plan/planning/done
-    # Der EIGENE Kandidaten-Filter (ADR-0051). Ohne ihn erbt die Fähigkeit
-    # `slice-glob` und sieht nur `slice-*.md` — die 11 `welle-*-results.md` und
-    # die 4 Wellen-Plan-Dokumente in `done/` blieben ungeprüft, obwohl ihre
-    # Closure-Notiz genau dieselbe Zusage trägt. Gemessen: eine davon trug noch
-    # einen unausgefüllten Rumpf, ohne dass ein Gate es sah. `slice-glob` zu
-    # weiten wäre der falsche Knopf — die Roadmap-Datei liegt selbst in
-    # `in-progress/` und machte die Lifecycle-Invariante dauerhaft falsch-rot.
-    glob: "*.md"
-    # H1 zugelassen, weil die Wellen-Ergebnisnotizen ihre Closure-Notiz als
-    # Dokument-Titel führen (`# Welle NN — … — Closure-Notiz`), Slices dagegen
-    # als Abschnitt. Beide Formen sind gelebt; das Muster deckt jetzt beide.
-    # min-sentences bleibt auf dem Kern-Default 4. Gemessen am eigenen Bestand:
-    # 111/111 Dokumente tragen einen Abschnitt, das Minimum liegt bei 5
-    # Satzende-Zeichen außerhalb Code — die Schwelle ist ein Boden, keine Decke.
-    heading-pattern: '^#{1,3} .*Closure-Notiz'
+    # `closure.glob` bleibt UNGESETZT — die Fähigkeit erbt `slice-glob` und
+    # prüft nur `slice-*.md`. Das war eine Entscheidung gegen den ersten
+    # Anlauf: dort stand hier `glob: "*.md"` samt `heading-pattern` auf
+    # `^#{1,3}`, um die 11 `welle-*-results.md` und die 4 Wellen-Plan-Dokumente
+    # mitzuprüfen. Ein Review hat gemessen, dass das ein FALSCH-NEGATIV baut:
+    # bei den Ergebnisnotizen ist die passende Überschrift der Dokument-TITEL,
+    # der gemessene Abschnitt also die ganze Datei — ein Dokument mit drei
+    # unausgefüllten `_Ausstehend._`-Abschnitten bleibt grün, derselbe
+    # Platzhalter unter H2 meldet `closure-note-thin`. Zugleich liefe die
+    # Floskel-Prüfung über beliebigen Dateitext.
+    #
+    # Die Wurzel ist eine Artefakt-Verwechslung: eine Wellen-Ergebnisnotiz
+    # ENTHÄLT keine Closure-Notiz, sie IST eine. Sie zu prüfen heißt, ihre
+    # Abschnitts-Struktur zu prüfen — das ist die Zusage des Moduls `structure`
+    # (slice-099), nicht die dieser Fähigkeit.
+    #
+    # `min-sentences` und `heading-pattern` bleiben auf den Kern-Defaults
+    # (`^#{2,3} .*Closure-Notiz` und 4). Gemessen am eigenen Bestand: 95/95
+    # Slices tragen einen Abschnitt, das Minimum liegt bei 5 Satzende-Zeichen
+    # außerhalb Code — die Schwelle ist ein Boden, keine Decke.
     #
     # Die Floskel-Liste ist im Produkt bewusst LEER (sie entscheidet über
     # rot/grün und wäre sprach-gebunden falsch, ADR-0048 Entscheidung 5); hier

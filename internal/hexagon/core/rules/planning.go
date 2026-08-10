@@ -101,7 +101,7 @@ func CheckPlanningClosure(fsys driven.Filesystem, cfg model.PlanningConfig) []mo
 	// der RTM-Anforderungsquellen — R1-F-5.
 	if len(names) == 0 {
 		return closureFinding(dir, 1, dir, model.ReasonClosureNoteMissing,
-			"Closure-Verzeichnis "+dir+" enthält keine Datei nach "+cfg.EffectiveClosureGlob()+
+			"Closure-Verzeichnis "+dir+" enthält keine Datei nach "+strconv.Quote(cfg.EffectiveClosureGlob())+
 				" — das Gate liefe leer (fail-closed; ist der Bestand umgezogen?)")
 	}
 	sort.Strings(names) // stabile Reihenfolge (DC-QA-02)
