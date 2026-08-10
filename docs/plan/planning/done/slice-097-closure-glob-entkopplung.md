@@ -220,4 +220,67 @@ schreiben die Zusage, der Go-Code liefert sie.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Geliefert ist `planning.closure.glob` als eigener Kandidaten-Filter der
+Closure-Fähigkeit, ausgeliefert mit **v0.54.0**
+([`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
+Lastenheft 0.53.1, [ADR-0051](../../adr/0051-eigener-kandidaten-filter-closure.md)
+`Accepted`). Der Default ist ein **Verweis** auf `planning.slice-glob`: ohne den
+Schlüssel bleibt der Befundsatz byte-identisch, und es gibt genau ein Muster zu
+pflegen.
+
+**Der Anlass war ein Entwurfsfehler, nicht eine fehlende Fähigkeit.**
+[ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md) hatte gegen
+ein zweites Modul argumentiert, es hätte „dieselbe Config-Achse … ein zweites Mal
+deklariert". Die Achse war nie dieselbe: die eine Fähigkeit zählt, was **noch in
+Arbeit** ist, die andere prüft, was **abgeschlossen** ist. Solange beide zufällig
+dasselbe trafen, fiel es nicht auf. Das Ergebnis jener Entscheidung trägt
+weiterhin — es ruht auf der geteilten Lifecycle-**Invariante**, nicht auf der
+Config-Achse.
+
+**Die Bestandsmessung hat einen realen Rückstand gefunden, bevor der Schlüssel
+existierte.** Im Ruheort liegen 110 Markdown-Dateien, gesehen wurden 95. Von den
+15 ungesehenen trug eine — ein von mir eine Stunde zuvor geschlossenes
+Wellendokument — in ihrer Closure-Notiz noch „_Ausstehend._"; eine zweite entging
+dem Befund nur, weil ihr Platzhalter wortreich genug für die Satz-Schwelle war.
+Beide sind gefüllt. Der Wert der Messung steht unabhängig davon, wie die
+Konfigurations-Frage ausging.
+
+**Und sie ging anders aus, als ich zuerst entschied.** Ich hatte den eigenen
+Bestand mitgeweitet — Glob auf `*.md`, Überschriften-Muster auf `^#{1,3}`, null
+Befunde bei 15 zusätzlich erfassten Dokumenten. Der Review hat gemessen, dass das
+ein **Falsch-Negativ** baut: bei den Ergebnisnotizen ist die passende Überschrift
+der Dokument-**Titel**, der gemessene Abschnitt also die ganze Datei. Ein
+Dokument mit drei unausgefüllten Abschnitten bleibt damit grün, während derselbe
+Platzhalter unter H2 meldet. Die Weitung hätte genau die Defekt-Klasse unsichtbar
+gemacht, für die das Gate gebaut ist — und dieselbe, die die Messung eben gefunden
+hatte.
+
+Die Wurzel war eine **Artefakt-Verwechslung**: eine Wellen-Ergebnisnotiz enthält
+keine Closure-Notiz, sie **ist** eine. Ein Kandidaten-Filter kann eine Datei in
+die Menge holen, aber nicht die Frage ändern, die an sie gestellt wird. Die 15
+Wellen-Dokumente bleiben ungeprüft — **benannt**, nicht übersehen; ihre Abdeckung
+gehört zum Modul `structure`.
+
+**Zwei Review-Runden, sieben Rückbauten.** Die zweite Runde blockierte auf dem,
+was die erste Heilung neu aufmachte: `strconv.Quote` und der geänderte
+`--doctor`-Klartext liegen auf Pfaden, die man auch **ohne** den neuen Schlüssel
+erreicht, und die ADR sagte pauschal „byte-identisch". Präzisiert statt
+zurückgenommen — die Zusage gilt dem **Befundsatz**, die beiden Begleit-Texte
+stehen in der Release-Notiz. Zurücknehmen wäre falsch gewesen: der Klartext
+*muss* „Kandidat" sagen, seit die Kandidaten-Menge nicht mehr aus Slice-Dateien
+bestehen muss.
+
+**Zwei Ränder habe ich gegen den Reviewer nachgemessen — beide gingen an ihn.**
+Das Satzende-Minimum steht als **7** in der Config, nicht als 5: meine eigene
+Nachrechnung war falsch, weil ihre Fence-Behandlung vom Produkt abwich; mit dem
+Produkt gemessen (Schwelle hochdrehen, bis etwas rot wird) sind es 7. Und meine
+Begründung „`path.Match` kennt keine Suffix-Negation" war schlicht falsch —
+`[^…]` steht im eigenen Handbuch. Sein Gegenbeispiel funktioniert, verliert aber
+still **2 von 95** Slices; die Alternativen-Zeile nennt jetzt diesen Grund statt
+eines erfundenen.
+
+**Fürs Register:** die Sichtung in §7 nannte bei Slice-Beginn nur BEO-001, das
+Register führte da schon vier Einträge. **BEO-003** war die Warnung, die den
+Literal-Default verhindert hat; **BEO-004** die Frage, die Abnahme-Punkt 2
+beantwortet hat — und deren Antwort am Ende lautete: die Grenze bleibt offen,
+aber sie ist benannt.
