@@ -150,6 +150,12 @@ func checkClosureNote(
 			break
 		}
 	}
+	// C4b: Platzhalter — opt-in; ohne den Schalter entfällt der Schritt und der
+	// Befundsatz ist byte-identisch.
+	if cfg.Closure.Placeholder {
+		out = append(out, checkClosurePlaceholder(
+			file, dir, content, headingNo, closureSectionEnd(lines, headingNo, level))...)
+	}
 	return out
 }
 
@@ -187,6 +193,94 @@ func closureHeadingLine(lines []string, re *regexp.Regexp) (lineNo, level int) {
 // Überschrift bis zur nächsten Überschrift **gleicher oder höherer** Ebene
 // (exklusive) bzw. bis zum Dateiende — bereinigt um die Fenced-Code-Blöcke
 // (Spez-Schritt C4). Eine tiefere Überschrift gehört noch zum Abschnitt.
+// closureSectionEnd liefert die 1-basierte Zeilennummer der Überschrift, die den
+// Abschnitt beendet (0 ⇒ Dateiende): die nächste echte ATX-Überschrift gleicher
+// oder höherer Ebene außerhalb von Fenced-Code.
+func closureSectionEnd(lines []string, headingNo, level int) int {
+	inFence := false
+	for i := headingNo; i < len(lines); i++ {
+		if FenceToggle(TrimFenceIndent(lines[i])) {
+			inFence = !inFence
+			continue
+		}
+		if inFence {
+			continue
+		}
+		if lvl, _, ok := parseATXHeading(lines[i]); ok && lvl <= level {
+			return i + 1
+		}
+	}
+	return 0
+}
+
+// placeholderRE erkennt die Auszeichnungs-Form eines Vorlagen-Platzhalters
+// (§DC-FA-PLAN-001.a Schritt C4b): eine öffnende Winkelklammer ohne
+// vorausgehendes Wortzeichen und ohne Schrägstrich, deren erstes Inneres kein
+// Whitespace, `!` oder `/` ist. Das Vorzeichen wird KONSUMIERT statt
+// hineingeschaut — RE2 kennt keine Lookarounds.
+var placeholderRE = regexp.MustCompile(`(^|[^\w/])<([^\s!/][^<>]{0,79})>`)
+
+// htmlTagNames sind die Tag-Namen, die der Nachfilter aus C4b verwirft. Als
+// Liste statt als Regex-Alternation: eine Liste liest und pflegt sich.
+func htmlTagNames() map[string]bool {
+	return map[string]bool{
+		"a": true, "b": true, "i": true, "p": true, "br": true, "hr": true,
+		"em": true, "strong": true, "code": true, "pre": true, "div": true,
+		"span": true, "ul": true, "ol": true, "li": true, "h1": true, "h2": true,
+		"h3": true, "h4": true, "h5": true, "h6": true, "td": true, "tr": true,
+		"th": true, "img": true, "sup": true, "sub": true, "table": true,
+		"thead": true, "tbody": true, "kbd": true, "blockquote": true,
+		"details": true, "summary": true, "figure": true, "figcaption": true,
+	}
+}
+
+// placeholderRejected meldet, ob ein Treffer von den Nachfiltern verworfen wird.
+// Nachfilter sind bewusst Code und nicht Teil des Musters (ADR-0052): in die
+// Regex gepresst wären sie unlesbar und einzeln unprüfbar.
+func placeholderRejected(inner string) bool {
+	if strings.Contains(inner, "://") || strings.Contains(inner, "@") {
+		return true
+	}
+	first := inner
+	if i := strings.IndexAny(first, " \t/"); i != -1 {
+		first = first[:i]
+	}
+	return htmlTagNames()[strings.ToLower(first)]
+}
+
+// checkClosurePlaceholder sucht den ERSTEN Platzhalter im Abschnitt
+// (§DC-FA-PLAN-001.a Schritt C4b). Gearbeitet wird auf den vorverarbeiteten
+// Zeilen: Fences sind entfernt und Inline-Code-Spans positionserhaltend
+// geleert — dieselbe geteilte Lexik wie überall, kein Nachbau.
+func checkClosurePlaceholder(
+	file, dir string, content []byte, headingNo, endNo int,
+) []model.Finding {
+	for _, ln := range PreprocessMarkdown(content) {
+		if ln.No <= headingNo || (endNo != 0 && ln.No >= endNo) {
+			continue
+		}
+		// Schleife statt FindAll, weil ein vom Nachfilter verworfener Treffer die
+		// Suche nicht beenden darf. Weitergesucht wird auf dem Reststring; dessen
+		// Anfang erfüllt die Vorzeichen-Bedingung über die ^-Alternative, sodass
+		// ein unmittelbar folgender Platzhalter sichtbar bleibt.
+		for rest := ln.Text; rest != ""; {
+			loc := placeholderRE.FindStringSubmatchIndex(rest)
+			if loc == nil {
+				break
+			}
+			inner := rest[loc[4]:loc[5]]
+			if placeholderRejected(inner) {
+				rest = rest[loc[1]:]
+				continue
+			}
+			hit := "<" + inner + ">"
+			return closureFinding(file, ln.No, dir, model.ReasonClosureNotePlaceholder,
+				"Closure-Notiz trägt einen unausgefüllten Platzhalter "+clipRunes(hit, 40))
+		}
+	}
+	return nil
+}
+
 func closureSectionProse(lines []string, headingNo, level int) string {
 	var b strings.Builder
 	inFence := false

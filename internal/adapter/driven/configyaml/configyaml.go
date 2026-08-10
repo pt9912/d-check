@@ -158,6 +158,7 @@ type rawClosure struct {
 	HeadingPattern string   `yaml:"heading-pattern"`
 	MinSentences   *int     `yaml:"min-sentences"`
 	Boilerplate    []string `yaml:"boilerplate"`
+	Placeholder    bool     `yaml:"placeholder"`
 }
 
 // rawTracked trägt scope und die Parameter des Moduls tracked
@@ -997,6 +998,7 @@ func applyClosure(c *rawClosure) (model.ClosureConfig, error) {
 	return model.ClosureConfig{
 		Dir: c.Dir, Glob: glob, HeadingPattern: c.HeadingPattern,
 		MinSentences: minSentences, Boilerplate: c.Boilerplate,
+		Placeholder: c.Placeholder,
 	}, nil
 }
 

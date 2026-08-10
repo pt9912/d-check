@@ -346,6 +346,7 @@ type ClosureConfig struct {
 	HeadingPattern string
 	MinSentences   int
 	Boilerplate    []string
+	Placeholder    bool
 }
 
 // EffectiveHeadingPattern liefert das RE2-Muster der Closure-Notiz-Überschrift

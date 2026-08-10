@@ -71,33 +71,51 @@ gegenseitig verdecken. Für den Vertrag ist das folgenlos (gemeldet wird der
 
 ## 4. Definition of Done
 
-- [ ] Grund-Code + `planning.closure.placeholder` in Lastenheft, Spezifikation
-      (C-Kette, Nachfilter benannt) und Config-Schema; begleitende ADR nur, falls
-      die Erkennungs-Grenze eine eigene Entscheidung braucht.
-- [ ] Akzeptanzkriterien des CR als Tests: (1) ohne den Schlüssel
-      byte-identisch; (2) die vier Platzhalter-Sätze ⇒ **genau ein** Befund
-      (erster Treffer); (3) eine Notiz mit `p95 < 1 s`, `Recall > 0,9`,
-      `vector<float>`, einem Autolink und einem HTML-Tag ⇒ **kein** Befund;
-      (4) kombinierbar mit `closure-note-thin`.
-- [ ] `make gates` + `make verify-closure-notes` grün; die drei
-      Falsch-Positiv-Klassen einzeln als Test, nicht als Sammel-Fixture.
+- [x] Grund-Code + `planning.closure.placeholder` in Lastenheft (0.54.0),
+      Spezifikation (Schritt **C4b**, Nachfilter ausdrücklich als Code benannt)
+      und Config-Schema. **ADR nötig** —
+      [ADR-0052](../../adr/0052-platzhalter-erkennung-inline-code.md) `Proposed`:
+      die Erkennungs-Grenze trägt zwei eigene Entscheidungen (Inline-Code ist
+      keine Prosa; die Substanz-Zählung bleibt bewusst unberührt).
+- [x] Alle vier Akzeptanzkriterien als Tests, die drei Falsch-Positiv-Klassen
+      **einzeln** (neun Unterfälle: Vergleichszeichen, Generic, Autolink,
+      Mail-Adresse, HTML-Tag mit Attribut, selbstschließendes Tag, in
+      Inline-Code gezeigte Meta-Syntax, HTML-Kommentar, schließendes Tag).
+      Dazu Randformen (Ein-Zeichen-Platzhalter, verworfener Treffer direkt vor
+      einem echten) und die Abschnitts-Grenze.
+      **Acht Rückbauten geprüft.** Zwei blieben zunächst grün und haben Arbeit
+      erzeugt: der Config-Schalter war ungetestet (jetzt rot), und der
+      „Überlappungs-Fix" stellte sich als **äquivalenter Mutant** heraus — durch
+      das Re-Slicing greift die `^`-Alternative am neuen Anfang, beide Varianten
+      sind gleich. Der Kommentar behauptete ein Problem, das nicht besteht, und
+      ist korrigiert; die Zusage, dass eine Verwerfung die Suche nicht beendet,
+      ist stattdessen direkt bewacht.
+- [x] `make gates` + `make verify-closure-notes` grün. **Der eigene Bestand ist
+      gemessen und die Erkennung scharfgeschaltet** (`placeholder: true` in
+      `.d-check.closure.yml`): 0 Befunde über 96 Closure-Notizen. End-to-End
+      gegen das gebaute Image: der Template-Rumpf meldet an der Zeile seines
+      ersten Treffers, ohne den Schalter verschwindet der Befund.
 - [ ] **Release** (Minor: neuer Grund-Code), Digest-Backfill. Ohne
       veröffentlichte Version erreicht die Welle ihren Zweck nicht
       (Schnitt-Review F-6).
 
 ## 5. Risiken / offene Punkte
 
-- **Die RE2-Portierung könnte die erprobte Semantik verfehlen** — die Vorlage ist
-  gegen reale Falsch-Positive gehärtet, die portierte Fassung ist es zunächst
-  nicht. — **Ausgang:** offen; die drei Klassen werden einzeln getestet, nicht
-  gebündelt.
+- **Die RE2-Portierung könnte die erprobte Semantik verfehlen.** — **Ausgang:
+  belegt.** Neun Falsch-Positiv-Unterfälle einzeln getestet, dazu die Messung am
+  eigenen Bestand. Die Portierung ersetzt beide Lookarounds durch Konsumieren
+  bzw. eine Zeichenklasse; die Nachfilter liegen im Code, nicht im Muster.
 - **Winkelklammern sind in technischer Prosa häufig.** Ein Falsch-Positiv in
   einer Closure-Notiz ist teurer als ein übersehener Platzhalter, weil es das
-  Gate unglaubwürdig macht. — **Ausgang:** offen; Default `false` ist die
-  Absicherung, bis der eigene Bestand gemessen ist.
-- **Der eigene Bestand ist ungemessen.** Vor dem Scharfschalten in der eigenen
-  Konfiguration zu prüfen — dieselbe Disziplin wie bei der Floskel-Liste in
-  [slice-093](../done/slice-093-closure-note-gate.md). — **Ausgang:** offen.
+  Gate unglaubwürdig macht. — **Ausgang: entschärft.** Alle zwölf Treffer der
+  portierten Fassung lagen in Inline-Code; die Einschränkung darauf bringt den
+  eigenen Bestand auf null. Default `false` bleibt trotzdem — die Form ist
+  schreibkultur-abhängig.
+- **Der eigene Bestand ist ungemessen.** — **Ausgang: gemessen, dann
+  scharfgeschaltet.** Drei Fassungen über die 96 Closure-Notizen: naiv 24
+  Treffer, portiert 12, portiert ohne Inline-Code **0** — und **keiner** der 24
+  war ein echter Platzhalter. Die Messung hat die Erkennung entschieden, nicht
+  bloß bestätigt.
 
 ## 6. Trigger
 

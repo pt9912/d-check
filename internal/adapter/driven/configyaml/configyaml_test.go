@@ -607,3 +607,24 @@ func TestDecode_ClosureRandGiltAuchOhneDir(t *testing.T) {
 	}
 }
 
+// Der Platzhalter-Schalter muss bis in den Kern durchgereicht werden — sonst
+// bliebe die vierte Bedingung dauerhaft aus, ohne dass es auffiele.
+func TestDecode_ClosurePlaceholderDurchgereicht(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"planning:\n  roadmap: r.md\n  closure:\n    dir: docs/done\n    placeholder: true\n"))
+	if err != nil {
+		t.Fatalf("gültige Config abgelehnt: %v", err)
+	}
+	if !cfg.Planning.Closure.Placeholder {
+		t.Error("placeholder: true kam nicht im Kern an")
+	}
+	cfg, err = configyaml.Decode([]byte(
+		"planning:\n  roadmap: r.md\n  closure:\n    dir: docs/done\n"))
+	if err != nil {
+		t.Fatalf("gültige Config abgelehnt: %v", err)
+	}
+	if cfg.Planning.Closure.Placeholder {
+		t.Error("ohne den Schlüssel muss die Bedingung aus sein")
+	}
+}
+

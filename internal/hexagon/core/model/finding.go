@@ -35,6 +35,11 @@ const (
 	ReasonClosureNoteMissing     = "closure-note-missing"
 	ReasonClosureNoteThin        = "closure-note-thin"
 	ReasonClosureNoteBoilerplate = "closure-note-boilerplate"
+	// ReasonClosureNotePlaceholder ist die vierte, OPT-IN Struktur-Bedingung
+	// (DC-FA-PLAN-001, Schalter planning.closure.placeholder): der unausgefuellte
+	// Rumpf einer Vorlage. Er passiert die drei anderen Bedingungen, weil er
+	// syntaktisch vollstaendig ist.
+	ReasonClosureNotePlaceholder = "closure-note-placeholder"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

@@ -386,3 +386,112 @@ func TestClosureGlobNullKandidatenFailClosed(t *testing.T) {
 	}
 }
 
+// placeholderCfg: Closure-Fähigkeit mit aktiver vierter Bedingung.
+func placeholderCfg() model.PlanningConfig {
+	c := closureCfg()
+	c.Closure.Placeholder = true
+	return c
+}
+
+// Ohne den Schalter ist der Befundsatz byte-identisch — der Template-Rumpf
+// passiert alle drei bestehenden Bedingungen.
+func TestClosurePlaceholderAusIstByteIdentisch(t *testing.T) {
+	note := "## 7. Closure-Notiz\n\nErgebnis: <ergebnis>. Belege: <belege>. Offen: <offen>. Ende: <ende>.\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": note}
+	if f := CheckPlanningClosure(coretest.NewMemFS(files), closureCfg()); f != nil {
+		t.Fatalf("ohne Schalter erwartet befundfrei, got %+v", f)
+	}
+}
+
+// Der Template-Rumpf meldet GENAU EINEN Befund — den ersten Treffer, an seiner
+// Zeile. Mehrere Platzhalter derselben Notiz sind dieselbe Reparatur.
+func TestClosurePlaceholderErsterTreffer(t *testing.T) {
+	note := "## 7. Closure-Notiz\n\nEins. Zwei. Drei. Vier.\n\nErgebnis: <ergebnis>. Belege: <belege>.\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": note}
+	f := CheckPlanningClosure(coretest.NewMemFS(files), placeholderCfg())
+	if len(f) != 1 || f[0].Reason != model.ReasonClosureNotePlaceholder {
+		t.Fatalf("erwartet genau ein placeholder, got %+v", f)
+	}
+	if f[0].Line != 5 {
+		t.Errorf("Zeile = %d, want 5 (die Zeile des ersten Treffers)", f[0].Line)
+	}
+	if !strings.Contains(f[0].Message, "<ergebnis>") {
+		t.Errorf("die Meldung nennt den Treffer nicht: %q", f[0].Message)
+	}
+}
+
+// Die Falsch-Positiv-Klassen EINZELN, nicht als Sammel-Fixture: jede muss für
+// sich grün sein, sonst verdeckt eine die andere.
+func TestClosurePlaceholderFalschPositivKlassen(t *testing.T) {
+	cases := map[string]string{
+		"Vergleichszeichen":       "p95 < 1 s und Recall > 0,9 gemessen.",
+		"Generic":                 "Der Puffer ist ein vector<float> geblieben.",
+		"Autolink":                "Quelle: <https://example.org/a> geprüft.",
+		"Mail-Adresse":            "Kontakt war <a@example.org> im Team.",
+		"HTML-Tag":                "Der Anker <a id=\"x\"></a> steht im Register.",
+		"HTML-Tag selbstschliessend": "Ein <br/> trennt die Zeilen.",
+		"Inline-Code zeigt Syntax": "Die Vorlage nennt `<PREFIX>` und `<a id>` als Muster.",
+		"Kommentar":               "Der Marker <!-- d-check:ignore --> bleibt stehen.",
+		"schliessendes Tag":       "Das </div> gehört zum Markup.",
+	}
+	for name, satz := range cases {
+		t.Run(name, func(t *testing.T) {
+			note := "## 7. Closure-Notiz\n\nEins. Zwei. Drei. Vier.\n\n" + satz + "\n"
+			files := map[string]string{closureDir + "/slice-001-a.md": note}
+			if f := CheckPlanningClosure(coretest.NewMemFS(files), placeholderCfg()); f != nil {
+				t.Fatalf("Falsch-Positiv: %+v", f)
+			}
+		})
+	}
+}
+
+// Kombinierbar: eine duenne Notiz MIT Platzhalter meldet beides.
+func TestClosurePlaceholderNebenThin(t *testing.T) {
+	note := "## 7. Closure-Notiz\n\nErgebnis: <ergebnis>.\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": note}
+	got := reasonsOf(CheckPlanningClosure(coretest.NewMemFS(files), placeholderCfg()))
+	if len(got) != 2 {
+		t.Fatalf("erwartet thin UND placeholder, got %v", got)
+	}
+}
+
+// Ein Fenced-Code-Block im Abschnitt zaehlt nicht — die Vorverarbeitung
+// entfernt ihn, also kann er keinen Platzhalter beisteuern.
+func TestClosurePlaceholderFenceZaehltNicht(t *testing.T) {
+	note := "## 7. Closure-Notiz\n\nEins. Zwei. Drei. Vier.\n\n```text\nErgebnis: <ergebnis>.\n```\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": note}
+	if f := CheckPlanningClosure(coretest.NewMemFS(files), placeholderCfg()); f != nil {
+		t.Fatalf("Fence-Inhalt darf nicht zaehlen: %+v", f)
+	}
+}
+
+// Der Ein-Zeichen-Fall und zwei benachbarte Platzhalter (deren konsumierte
+// Vorzeichen sich ueberlappen) — gemeldet wird der erste.
+func TestClosurePlaceholderRandformen(t *testing.T) {
+	for name, satz := range map[string]string{
+		"ein Zeichen": "Offen: <x>.",
+		// Der erste Treffer wird vom HTML-Nachfilter verworfen; sein konsumiertes
+		// Vorzeichen darf den direkt folgenden echten Platzhalter nicht verdecken.
+		"verworfener Treffer verdeckt den naechsten nicht": "Offen: <a><ergebnis>.",
+	} {
+		t.Run(name, func(t *testing.T) {
+			note := "## 7. Closure-Notiz\n\nEins. Zwei. Drei. Vier.\n\n" + satz + "\n"
+			files := map[string]string{closureDir + "/slice-001-a.md": note}
+			f := CheckPlanningClosure(coretest.NewMemFS(files), placeholderCfg())
+			if len(f) != 1 || f[0].Reason != model.ReasonClosureNotePlaceholder {
+				t.Fatalf("erwartet genau ein placeholder, got %+v", f)
+			}
+		})
+	}
+}
+
+// Ein Platzhalter AUSSERHALB des Abschnitts (davor wie danach) zaehlt nicht.
+func TestClosurePlaceholderNurImAbschnitt(t *testing.T) {
+	body := "# Slice\n\nDavor: <vorher>.\n\n## 7. Closure-Notiz\n\nEins. Zwei. Drei. Vier.\n\n" +
+		"## 8. Danach\n\nDanach: <nachher>.\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": body}
+	if f := CheckPlanningClosure(coretest.NewMemFS(files), placeholderCfg()); f != nil {
+		t.Fatalf("ausserhalb des Abschnitts darf nichts melden: %+v", f)
+	}
+}
+

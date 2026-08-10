@@ -48,6 +48,14 @@ planning:
     # außerhalb Code (mit dem Produkt gemessen: bei 8 wird der erste Slice rot)
     # — die Schwelle ist ein Boden, keine Decke.
     #
+    # Vierte Bedingung, opt-in (ADR-0052): der unausgefuellte Rumpf einer
+    # Vorlage. Er passiert die drei anderen, weil er syntaktisch vollstaendig
+    # ist. Vor dem Scharfschalten am eigenen Bestand gemessen — 96
+    # Closure-Notizen, **null** Treffer: die Erkennung ignoriert Inline-Code,
+    # und genau dort steht d-checks gezeigte Meta-Syntax (`<PREFIX>`, `<a id>`,
+    # `<datei>`). Ohne diese Einschraenkung waeren es zwoelf Falsch-Positive.
+    placeholder: true
+    #
     # Die Floskel-Liste ist im Produkt bewusst LEER (sie entscheidet über
     # rot/grün und wäre sprach-gebunden falsch, ADR-0048 Entscheidung 5); hier
     # steht d-checks eigenes Vokabular. Aufgenommen wird nur, was im Bestand

@@ -129,6 +129,7 @@ modules: [links, anchors]
 #   #   heading-pattern: '^#{2,3} .*Closure-Notiz'  # RE2 (Default); kein Treffer ⇒ closure-note-missing
 #   #   min-sentences: 4                # Satzende-Zeichen AUSSERHALB Fenced-Code (Default); < 1 ⇒ Exit 2
 #   #   boilerplate: []                 # literale Floskeln, case-insensitiv; Default LEER (keine Sprach-Annahme)
+#   #   placeholder: false              # unausgefuellte Vorlagen-Platzhalter (<feld>); Default AUS, ignoriert Inline-Code
 
 # --- tracked: Getrackt-Status aufgelöster Link-/Bild-Ziele — git-Index (ohne Range), opt-in ---
 #   (--enable tracked; fail-closed ohne lesbares .git. Ein existierendes, aber
