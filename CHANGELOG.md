@@ -6,6 +6,48 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.56.0] — 2026-08-10
+
+### Changed
+
+**Diese Version ändert die Semantik eines ausgelieferten Gates in drei
+Richtungen.** Wer `planning.closure` nutzt, sollte alle drei lesen; ohne
+`closure.dir` ist nichts davon aktiv.
+
+- slice-094 — **`closure-note-thin` findet mehr.** Der Closure-Abschnitt wird
+  jetzt **einmal** bereinigt (Fenced-Code **und** Inline-Code), und ein
+  Satzende-Zeichen zählt nur, wenn ihm Whitespace oder das Zeilenende folgt
+  (`DC-FA-PLAN-001`,
+  [ADR-0053](docs/plan/adr/0053-eine-bereinigung-fuer-alle-closure-bedingungen.md)).
+  Anlass ist die **Parität** zum handgeschriebenen Prüfskript, das dieses Modul
+  ablösen soll: eine Notiz, die dessen Sensor als zu dünn meldete, lief bei
+  d-check durch. Gemessen an einem realen Bestand tragen mehr als die Hälfte
+  aller Satzende-Vorkommen keinen Satz — Punkte aus Link-Pfaden und
+  Versionsnummern. **Ein grüner Lauf kann rot werden.** Belegt: über die 84
+  Closure-Notizen des Schwester-Repos zählen Skript und Modul identisch.
+- slice-094 — **`closure-note-boilerplate` findet weniger.** Beide Bedingungen
+  lesen denselben bereinigten Text; eine Floskel **in Backticks** trifft damit
+  nicht mehr. Das ist beabsichtigt — eine *zitierte* Floskel ist keine benutzte
+  —, aber es ist eine **Lockerung**: wer eine Floskel zitiert stehen hat,
+  verliert einen bestehenden Befund. Sie reicht weiter als der Wortlaut nahelegt:
+  geleert wird **jeder** Inline-Code-Span nach CommonMark-Paarung, auch ein
+  unbeabsichtigter aus zwei einzelnen Backticks im selben Absatz.
+- slice-104 — **`closure-note-boilerplate` vergleicht an Wortgrenzen** statt als
+  Teilstring. Kurze Phrasen waren sonst unbrauchbar: `ok` traf auch in
+  *dokumentiert* und *Protokoll* (gemessen: 68 Treffer, davon einer echt).
+  Mehrwortige Phrasen sind verhaltensgleich; kurze werden erst dadurch
+  benutzbar. Als Wortzeichen gilt die **ASCII**-Menge — ein Umlaut ist keines,
+  eine Phrase mit angrenzendem Umlaut gilt also als grenzständig und trifft.
+  **Auch das findet weniger.**
+
+### Fixed
+
+- slice-104 — **CRLF:** die Satzzählung akzeptierte das `\r` vor dem
+  Zeilenumbruch nicht. In einer CRLF-Arbeitskopie zählte damit kein
+  zeilenschließendes Satzende, und eine Notiz mit vier sauberen Sätzen meldete
+  `closure-note-thin`. Nur in dieser Version relevant, weil die Zählung vorher
+  jedes `.` nahm.
+
 ## [0.55.0] — 2026-08-10
 
 ### Added
