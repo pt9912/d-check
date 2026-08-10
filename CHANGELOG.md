@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.54.0] — 2026-08-10
+
 ### Added
 
 - slice-097 — **`planning.closure.glob`** als eigener Kandidaten-Filter der
