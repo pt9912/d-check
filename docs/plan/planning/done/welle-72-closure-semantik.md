@@ -27,7 +27,7 @@ jeweils ein Stück verschieben.
 ## 2. Trigger (Welle startet)
 
 Freigabe des Auftraggebers (2026-08-10) und ein freier WIP-Slot. Beide
-Slice-Trigger sind erfüllt: [slice-096](done/slice-096-structure-modul-analyse.md)
+Slice-Trigger sind erfüllt: [slice-096](slice-096-structure-modul-analyse.md)
 liegt in `done/` und hat den Zuschnitt entschieden — beide bleiben eigenständig.
 
 ## 3. Closure-Trigger (Welle schließt)
@@ -42,12 +42,12 @@ liegt in `done/` und hat den Zuschnitt entschieden — beide bleiben eigenständ
 
 | Slice | Rolle | Richtung |
 |---|---|---|
-| [slice-094](done/slice-094-closure-zaehl-paritaet.md) | Zähl-Parität: Inline-Code zählt nicht, Satzende nur vor Whitespace | **beide** |
-| [slice-104](in-progress/slice-104-floskel-wortgrenze.md) | Floskel-Vergleich an der Wortgrenze statt als Teilstring | findet **weniger** |
+| [slice-094](slice-094-closure-zaehl-paritaet.md) | Zähl-Parität: Inline-Code zählt nicht, Satzende nur vor Whitespace | **beide** |
+| [slice-104](slice-104-floskel-wortgrenze.md) | Floskel-Vergleich an der Wortgrenze statt als Teilstring | findet **weniger** |
 
 **Reihenfolge: slice-094 zuerst.** Es trägt die ADR, die den Rahmen setzt
 (eine Prüfregel wird bewusst gelockert,
-[`AGENTS.md` §3.6](../../../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)).
+[`AGENTS.md` §3.6](../../../../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)).
 slice-104 ist danach die zweite, kleinere Lockerung **derselben** Prüfung und
 kann sich auf den gesetzten Rahmen beziehen.
 
@@ -71,8 +71,8 @@ daneben und muss in derselben Notiz erscheinen.
 
 ## 6. Abhängigkeiten
 
-- Beide hängen an [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
-  Schritt C4 und an [ADR-0048](../adr/0048-closure-note-struktur-im-planning-modul.md).
+- Beide hängen an [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+  Schritt C4 und an [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md).
 - **Paritäts-Fixtures:** slice-094 will sie aus dem Schwester-Repo `a-check`
   **beiziehen**, nicht nachbauen. Beim Wellen-Start geprüft: das Repo liegt vor
   (87 abgeschlossene Slices). Ist es beim Slice-Start nicht nutzbar, verengt sich
@@ -86,7 +86,7 @@ daneben und muss in derselben Notiz erscheinen.
 - **Eine Sanierung des eigenen Bestands**, falls die Vorab-Messung Notizen rot
   macht. Das wäre ein Befund über die Notizen und ein eigener Slice — kein Grund,
   die Zählung aufzuweichen.
-- **Das Modul `structure`** ([slice-099](open/slice-099-structure-modul.md)) —
+- **Das Modul `structure`** ([slice-099](../open/slice-099-structure-modul.md)) —
   eigene Welle.
 
 ## 8. Closure-Notiz

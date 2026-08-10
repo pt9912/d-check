@@ -1,6 +1,6 @@
 # ADR-0053 — Eine Bereinigung für alle Closure-Bedingungen: die Floskel-Prüfung wird dabei bewusst gelockert
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-08-10
 **Autor:** pt9912
 **Bezug:** [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
@@ -135,3 +135,4 @@ Satzende wie `**Umsetzung.**`.
   als „eine zitierte Floskel" (jeder Inline-Code-Span nach CommonMark-Paarung,
   auch ein unbeabsichtigter), und die Paritäts-Zusage ist auf den **gemessenen**
   Bestand skopiert statt universell formuliert.
+- 2026-08-10: Accepted (Closure `slice-094`/`slice-104`, Release **v0.56.0**).

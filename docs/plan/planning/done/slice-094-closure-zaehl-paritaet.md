@@ -4,8 +4,8 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** [welle-72-closure-semantik](../welle-72-closure-semantik.md), gemeinsam mit
-[slice-104](../in-progress/slice-104-floskel-wortgrenze.md). **Zuordnung entschieden** mit der
+**Welle:** [welle-72-closure-semantik](../done/welle-72-closure-semantik.md), gemeinsam mit
+[slice-104](../done/slice-104-floskel-wortgrenze.md). **Zuordnung entschieden** mit der
 welle-69-Closure (2026-08-09): der Slice bleibt **eigenständig**. Die Welle klammert
 beide, weil sie die Semantik eines **ausgelieferten** Gates ändern und **beide** die
 Floskel-Prüfung lockern — das gehört in **eine** Release-Notiz.
@@ -139,7 +139,7 @@ bereinigte Texte zu führen.
       ein direkter Tabellen-Test.
 - [x] `make gates` + `make verify-closure-notes` grün.
 - [ ] **Release als Minor** — **Wellen-Trigger, nicht Slice-Trigger.**
-      [welle-72](../welle-72-closure-semantik.md) trägt beide Änderungen in
+      [welle-72](../done/welle-72-closure-semantik.md) trägt beide Änderungen in
       **einem** Release mit **einer** Notiz; zwei aufeinanderfolgende Releases
       würden einem Konsumenten seine Gate-Semantik in zwei Schritten
       verschieben. Die Notiz muss den „findet mehr"-Hinweis (`closure-note-thin`)
