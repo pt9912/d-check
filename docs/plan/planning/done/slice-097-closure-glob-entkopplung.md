@@ -4,7 +4,7 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** gemeinsam mit [slice-098](../open/slice-098-closure-note-placeholder.md) —
+**Welle:** gemeinsam mit [slice-098](../in-progress/slice-098-closure-note-placeholder.md) —
 der Konsument kann sein letztes handgeschriebenes Prüfskript **erst dann**
 zurückziehen, wenn **beide** Slices liegen. Das ist eine Closure-Bedingung
 jenseits der beiden Slice-DoDs und damit genau der Fall, für den es eine Welle

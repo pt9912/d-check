@@ -42,8 +42,8 @@ den Slice-Köpfen ist damit aufgelöst.
 
 | Slice | Rolle |
 |---|---|
-| [slice-097](in-progress/slice-097-closure-glob-entkopplung.md) | Eigener Kandidaten-Filter `planning.closure.glob` — die Fähigkeit bekommt ihre **Grundmenge** zurück, die sie heute mit `planning.slice-glob` teilt |
-| [slice-098](open/slice-098-closure-note-placeholder.md) | Neuer opt-in-Grund-Code `closure-note-placeholder` — unausgefüllte Template-Rümpfe |
+| [slice-097](done/slice-097-closure-glob-entkopplung.md) | Eigener Kandidaten-Filter `planning.closure.glob` — die Fähigkeit bekommt ihre **Grundmenge** zurück, die sie heute mit `planning.slice-glob` teilt |
+| [slice-098](in-progress/slice-098-closure-note-placeholder.md) | Neuer opt-in-Grund-Code `closure-note-placeholder` — unausgefüllte Template-Rümpfe |
 
 **Reihenfolge:** zuerst slice-097. Beide Slices halten fest, dass keine
 Reihenfolge nötig ist; der Kandidaten-Filter bestimmt aber die Menge, auf der die

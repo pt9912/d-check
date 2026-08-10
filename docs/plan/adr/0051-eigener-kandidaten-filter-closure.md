@@ -1,6 +1,6 @@
 # ADR-0051 — Eigener Kandidaten-Filter für die Closure-Fähigkeit, Default als Verweis
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-08-10
 **Autor:** pt9912
 **Bezug:** [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
@@ -184,3 +184,4 @@ der Schlüssel überhaupt existierte.
   gilt dem **Befundsatz**, nicht den Begleit-Texten; die Alternativen-Begründung
   zur Suffix-Negation war sachlich falsch (`path.Match` kennt `[^…]`) und ist
   durch die gemessene Fragilität ersetzt.
+- 2026-08-10: Accepted (Closure `slice-097`, Release **v0.54.0**).
