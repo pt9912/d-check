@@ -80,7 +80,9 @@ func TestClosureThinPlatzhalter(t *testing.T) {
 		t.Errorf("target muss das Closure-Verzeichnis sein, got %q", f[0].Target)
 	}
 	// Die Meldung nennt Ist und Soll — sonst weiß der Autor nicht, wie weit er fehlt.
-	if !strings.Contains(f[0].Message, "1") || !strings.Contains(f[0].Message, "4") {
+	// Ist = 0: der Punkt in `_Ausstehend._` steht vor einem Auszeichnungs-Zeichen,
+	// nicht vor Whitespace, und zählt seit der Zähl-Angleichung nicht mehr.
+	if !strings.Contains(f[0].Message, "0") || !strings.Contains(f[0].Message, "4") {
 		t.Errorf("Meldung muss Ist- und Soll-Zahl nennen, got %q", f[0].Message)
 	}
 }
@@ -540,6 +542,82 @@ func TestClosurePlaceholderSchraegstrichDavor(t *testing.T) {
 	files := map[string]string{closureDir + "/slice-001-a.md": note}
 	if f := CheckPlanningClosure(coretest.NewMemFS(files), placeholderCfg()); f != nil {
 		t.Fatalf("Schraegstrich davor darf nicht melden: %+v", f)
+	}
+}
+
+// Zähl-Angleichung (slice-094): Inline-Code zählt nicht mit, und ein
+// Satzende-Zeichen zählt nur vor Whitespace oder Zeilenende.
+func TestClosureZaehlungInlineCodeUndSatzendeForm(t *testing.T) {
+	cases := []struct {
+		name string
+		note string
+		want int // erwartete Befundzahl bei Schwelle 4
+	}{
+		{"Inline-Code zaehlt nicht",
+			"## 7. Closure-Notiz\n\nSiehe `a.md` und `b.md` sowie `c.md` und `d.md`.\n", 1},
+		{"vier echte Saetze genuegen",
+			"## 7. Closure-Notiz\n\nEins. Zwei. Drei. Vier.\n", 0},
+		{"Satzende vor Ziffer zaehlt nicht",
+			"## 7. Closure-Notiz\n\nVersion 0.1.2 und 3.4.5 und 6.7.8 und 9.10.11 sind da.\n", 1},
+		{"Satzende vor Auszeichnung zaehlt nicht",
+			"## 7. Closure-Notiz\n\n**Eins.** **Zwei.** **Drei.** **Vier.**\n", 1},
+		{"Satzende am Zeilenende zaehlt",
+			"## 7. Closure-Notiz\n\nEins.\nZwei.\nDrei.\nVier.\n", 0},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			files := map[string]string{closureDir + "/slice-001-a.md": "# Slice\n\n" + tc.note}
+			f := CheckPlanningClosure(coretest.NewMemFS(files), closureCfg())
+			if len(f) != tc.want {
+				t.Fatalf("erwartet %d Befund(e), got %+v", tc.want, f)
+			}
+		})
+	}
+}
+
+// Die Gegenrichtung derselben Aenderung: die Floskel-Pruefung liest DENSELBEN
+// bereinigten Text und wird dadurch GELOCKERT — eine Phrase in Backticks wird
+// nicht mehr gefunden. Bewusst angenommen (ADR), darum hier festgehalten.
+func TestClosureFloskelInInlineCodeTrifftNichtMehr(t *testing.T) {
+	cfg := closureCfg()
+	cfg.Closure.Boilerplate = []string{"alles gut"}
+	inCode := "## 7. Closure-Notiz\n\nDie Floskel `alles gut` steht hier nur als Zitat. Zwei. Drei. Vier.\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": "# Slice\n\n" + inCode}
+	if f := CheckPlanningClosure(coretest.NewMemFS(files), cfg); f != nil {
+		t.Fatalf("zitierte Floskel darf nicht mehr treffen, got %+v", f)
+	}
+	inProsa := "## 7. Closure-Notiz\n\nDie Umsetzung lief alles gut durch. Zwei. Drei. Vier.\n"
+	files = map[string]string{closureDir + "/slice-001-a.md": "# Slice\n\n" + inProsa}
+	f := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
+	if len(f) != 1 || f[0].Reason != model.ReasonClosureNoteBoilerplate {
+		t.Fatalf("benutzte Floskel muss weiter treffen, got %+v", f)
+	}
+}
+
+// countSentenceEnds direkt: der Zeilenende-Fall ist ueber die Modul-Oberflaeche
+// nicht erreichbar, weil der Abschnittstext immer auf \n endet. Die Zusage
+// gilt trotzdem der Funktion, also wird sie hier gepruefet.
+func TestCountSentenceEnds(t *testing.T) {
+	cases := map[string]struct {
+		in   string
+		want int
+	}{
+		"vor Leerzeichen":     {"Eins. Zwei. Drei.", 3},
+		"am String-Ende":      {"Eins.", 1},
+		"vor Tab":             {"Eins.\tZwei.\tDrei.", 3},
+		"vor Zeilenumbruch":   {"Eins.\nZwei.\n", 2},
+		"vor Ziffer":          {"Version 0.55.0 ist da.", 1},
+		"vor Auszeichnung":    {"**Eins.** **Zwei.**", 0},
+		"vor Klammer":         {"Fertig.) Weiter.", 1},
+		"Ausrufe und Frage":   {"Was? Ja! Klar.", 3},
+		"leer":                {"", 0},
+	}
+	for name, tc := range cases {
+		t.Run(name, func(t *testing.T) {
+			if got := countSentenceEnds(tc.in); got != tc.want {
+				t.Errorf("countSentenceEnds(%q) = %d, want %d", tc.in, got, tc.want)
+			}
+		})
 	}
 }
 

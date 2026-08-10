@@ -108,14 +108,35 @@ bereinigte Texte zu führen.
       [ADR-0053](../../adr/0053-eine-bereinigung-fuer-alle-closure-bedingungen.md)
       `Proposed` für die Lockerung
       ([`AGENTS.md` §3.6](../../../../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)).
-- [ ] **Paritäts-Beleg der Zähl-Semantik** gegen die Adopter-Fixtures: jede
-      Fixture, die das Adopter-Skript **wegen der Satzzählung** rot macht, macht
-      auch das Modul rot — und umgekehrt. **Bewusst verengt (Schnitt-Review
+- [x] **Paritäts-Beleg der Zähl-Semantik** gegen den **realen** Bestand des
+      Adopters, nicht gegen Fixtures: **84 von 84** Closure-Notizen ergeben
+      **identische** Satzzahlen, und an der Adopter-Schwelle 2 sind beide
+      Seiten symmetrisch (0 rot / 0 rot). Gefahren wurde Zahl gegen Zahl —
+      d-check mit `min-sentences: 999`, damit **jede** Notiz ihre gezählte Zahl
+      meldet, gegen die Shell-Pipeline des Adopters, Zeile für Zeile.
+
+      **Zwei Zwischenstände waren rot und beide lagen an meiner
+      Test-Konfiguration, nicht am Modul.** Erst fehlten 7 Dateien, weil sie
+      `## N. Closure` ohne „-Notiz“ schreiben. Dann wichen 3 ab, weil mein
+      geweitetes Muster auch `## 5. Closure-Trigger` traf — den der Adopter
+      ausdrücklich ausschließt. Beides zeigt dieselbe Sache: **die Parität hängt
+      am `heading-pattern`, nicht an der Zählung.**
+
+      Nebenbefund, der in die Doku gehört: die Ausschluss-Bedingung des Adopters
+      (`Closure`, aber nicht `Closure-Trigger`) ist in **RE2 ausdrückbar**, obwohl
+      RE2 keinen Lookahead kennt — `^## .*[Cc]losure([^-]|-Notiz|$)`. Ein
+      Adopter, der migriert, braucht dafür keinen Workaround. **Bewusst verengt (Schnitt-Review
       F-2):** eine Parität *in beide Richtungen über alle Prüfungen* ist nicht
       erreichbar, weil das Adopter-Skript zusätzlich die **Anzahl** der
       Closure-Abschnitte prüft und d-check laut Spezifikation nur den ersten
       liest. Diese Lücke ist ein Abnahme-Punkt von
       [slice-096](../done/slice-096-structure-modul-analyse.md), nicht dieses Slice.
+- [x] Implementierung samt **fünf** geprüften Rückbauten (alle rot). Zwei blieben
+      zunächst grün und haben Arbeit erzeugt: der **Tab** als Whitespace war
+      ungetestet, und der Zeilenende-Zweig ist über die Modul-Oberfläche gar
+      **nicht erreichbar** — der Abschnittstext endet immer auf einem
+      Zeilenumbruch. Die Zusage gilt trotzdem der Funktion, also prüft sie jetzt
+      ein direkter Tabellen-Test.
 - [ ] `make gates` + `make verify-closure-notes` grün; Release als **Minor**
       (Handbuch-§11-Zeile mit dem „findet mehr"-Hinweis **und** dem Hinweis auf
       die gelockerte Floskel-Prüfung).
@@ -137,9 +158,10 @@ bereinigte Texte zu führen.
   hält beide Seiten fest (zitierte Floskel trifft nicht, benutzte trifft weiter);
   die ADR benennt die Klasse für den Release-Text.
 - **Fremd-Repo-Abhängigkeit:** die Paritäts-Fixtures liegen nicht in diesem
-  Repo (Schnitt-Review F-7). — **Ausgang:** offen; das Repo `a-check` liegt beim
-  Wellen-Start vor (87 abgeschlossene Slices). Sie werden **beigezogen**,
-  nicht nachgebaut — ist das beim Start nicht möglich, wird der Paritäts-Beleg
+  Repo (Schnitt-Review F-7). — **Ausgang: erledigt, und besser als geplant.**
+  Statt Fixtures wurde der **reale** Bestand beigezogen (84 Closure-Notizen) und
+  gegen die **echte** Shell-Pipeline des Adopters gerechnet — nicht gegen eine
+  Nacherzählung von ihr — ist das beim Start nicht möglich, wird der Paritäts-Beleg
   durch eigene Fixtures ersetzt und die Zusage entsprechend verengt.
 
 ## 6. Trigger

@@ -131,7 +131,7 @@ func checkClosureNote(
 			"kein Closure-Notiz-Abschnitt (keine Überschrift passt auf "+
 				cfg.Closure.EffectiveHeadingPattern()+")")
 	}
-	body := closureSectionProse(lines, headingNo, level)
+	body := closureSectionProse(content, lines, headingNo, level)
 	var out []model.Finding
 	// C4a: Substanz — Satzende-Zeichen außerhalb der Fenced-Code-Blöcke.
 	want := cfg.Closure.EffectiveMinSentences()
@@ -300,23 +300,14 @@ func checkClosurePlaceholder(
 	return nil
 }
 
-func closureSectionProse(lines []string, headingNo, level int) string {
-	var b strings.Builder
+func closureSectionProse(content []byte, lines []string, headingNo, level int) string {
 	end := closureSectionEnd(lines, headingNo, level)
-	inFence := false
-	for i := headingNo; i < len(lines); i++ {
-		if end != 0 && i+1 >= end {
-			break
-		}
-		trimmed := TrimFenceIndent(lines[i])
-		if FenceToggle(trimmed) {
-			inFence = !inFence
-			continue // Fence-Zeilen selbst zählen nicht
-		}
-		if inFence {
+	var b strings.Builder
+	for _, ln := range PreprocessMarkdown(content) {
+		if ln.No <= headingNo || (end != 0 && ln.No >= end) {
 			continue
 		}
-		b.WriteString(lines[i])
+		b.WriteString(ln.Text)
 		b.WriteByte('\n')
 	}
 	return b.String()
@@ -329,9 +320,13 @@ func closureSectionProse(lines []string, headingNo, level int) string {
 func countSentenceEnds(s string) int {
 	n := 0
 	for i := 0; i < len(s); i++ {
-		if s[i] == '.' || s[i] == '!' || s[i] == '?' {
-			n++
+		if s[i] != '.' && s[i] != '!' && s[i] != '?' {
+			continue
 		}
+		if i+1 < len(s) && s[i+1] != ' ' && s[i+1] != '\t' && s[i+1] != '\n' {
+			continue
+		}
+		n++
 	}
 	return n
 }
