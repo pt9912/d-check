@@ -148,11 +148,13 @@ type rawPlanning struct {
 // §Closure-Note-Struktur): dir ist der Aktivierungs-Schalter (leer/abwesend ⇒
 // inert), heading-pattern/min-sentences/boilerplate sind optional mit
 // Konventions-Defaults im Kern.
-// MinSentences ist ein Zeiger, damit ein ABWESENDER Schlüssel (Default 4) von
-// einem explizit gesetzten `0` unterscheidbar bleibt — Letzteres ist eine
-// Null-Schwelle und damit ein stilles Grün, das der Vertrag mit Exit 2 ablehnt.
+// MinSentences und Glob sind Zeiger, damit ein ABWESENDER Schlüssel von einem
+// explizit gesetzten Wert unterscheidbar bleibt: abwesend heißt Kern-Default
+// (4 bzw. der Verweis auf slice-glob), explizit `0` bzw. `""` wäre eine
+// Null-Aussage und damit ein stilles Grün, das der Vertrag mit Exit 2 ablehnt.
 type rawClosure struct {
 	Dir            string   `yaml:"dir"`
+	Glob           *string  `yaml:"glob"`
 	HeadingPattern string   `yaml:"heading-pattern"`
 	MinSentences   *int     `yaml:"min-sentences"`
 	Boilerplate    []string `yaml:"boilerplate"`
@@ -960,6 +962,21 @@ func applyClosure(c *rawClosure) (model.ClosureConfig, error) {
 				"%s: planning.closure.heading-pattern %q ist kein gültiges Regex: %v", FileName, c.HeadingPattern, err)
 		}
 	}
+	// Ein EXPLIZIT gesetzter Glob muss etwas treffen können; abwesend ⇒ Verweis
+	// auf slice-glob im Kern. Leer oder ungültig bräche die Aussage, die das
+	// Setzen des Schlüssels darstellt (§DC-FA-PLAN-001.a Schritt C2).
+	glob := ""
+	if c.Glob != nil {
+		if *c.Glob == "" {
+			return model.ClosureConfig{}, fmt.Errorf(
+				"%s: planning.closure.glob ist leer — kein Kandidat könnte matchen (weglassen ⇒ planning.slice-glob)", FileName)
+		}
+		if _, err := path.Match(*c.Glob, "probe"); err != nil {
+			return model.ClosureConfig{}, fmt.Errorf(
+				"%s: planning.closure.glob %q ist kein gültiges Glob: %v", FileName, *c.Glob, err)
+		}
+		glob = *c.Glob
+	}
 	// Nur ein EXPLIZIT gesetzter Wert wird geprüft; abwesend ⇒ Kern-Default (4).
 	// 0 wäre „jede Notiz genügt", negativ ist sinnlos — beides ist ein stilles
 	// Grün am Config-Rand und bricht daher laut ab.
@@ -978,7 +995,7 @@ func applyClosure(c *rawClosure) (model.ClosureConfig, error) {
 		}
 	}
 	return model.ClosureConfig{
-		Dir: c.Dir, HeadingPattern: c.HeadingPattern,
+		Dir: c.Dir, Glob: glob, HeadingPattern: c.HeadingPattern,
 		MinSentences: minSentences, Boilerplate: c.Boilerplate,
 	}, nil
 }

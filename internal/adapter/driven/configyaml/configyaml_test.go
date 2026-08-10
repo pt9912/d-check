@@ -251,6 +251,8 @@ func TestDecode_ClosureFehler(t *testing.T) {
 		"heading-pattern RE2": "planning:\n  closure:\n    dir: done\n    heading-pattern: '^(['\n",
 		"min-sentences 0":     "planning:\n  closure:\n    dir: done\n    min-sentences: 0\n",
 		"min-sentences neg":   "planning:\n  closure:\n    dir: done\n    min-sentences: -1\n",
+		"glob leer":           "planning:\n  closure:\n    dir: done\n    glob: ''\n",
+		"glob ungültig":       "planning:\n  closure:\n    dir: done\n    glob: '[a-'\n",
 		"leere Floskel":       "planning:\n  closure:\n    dir: done\n    boilerplate: ['']\n",
 		"Floskel nur Space":   "planning:\n  closure:\n    dir: done\n    boilerplate: ['   ']\n",
 	} {
@@ -561,3 +563,29 @@ func TestDecode_SourcesFailClosed(t *testing.T) {
 		})
 	}
 }
+
+// Der Default von closure.glob ist ein VERWEIS auf slice-glob, kein kopiertes
+// Literal: abwesend ⇒ es gilt slice-glob, gesetzt ⇒ es gilt der eigene Wert.
+// Beides über die Kern-Methode, damit der Verweis nicht nur im Adapter lebt.
+func TestDecode_ClosureGlobDefaultIstVerweis(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"planning:\n  roadmap: r.md\n  slice-glob: 'paket-*.md'\n  closure:\n    dir: docs/done\n"))
+	if err != nil {
+		t.Fatalf("gültige Config abgelehnt: %v", err)
+	}
+	if got := cfg.Planning.EffectiveClosureGlob(); got != "paket-*.md" {
+		t.Errorf("ohne closure.glob = %q, want den slice-glob 'paket-*.md'", got)
+	}
+	cfg, err = configyaml.Decode([]byte(
+		"planning:\n  roadmap: r.md\n  slice-glob: 'paket-*.md'\n  closure:\n    dir: docs/done\n    glob: '*.md'\n"))
+	if err != nil {
+		t.Fatalf("gültige Config abgelehnt: %v", err)
+	}
+	if got := cfg.Planning.EffectiveClosureGlob(); got != "*.md" {
+		t.Errorf("mit closure.glob = %q, want '*.md'", got)
+	}
+	if got := cfg.Planning.EffectiveSliceGlob(); got != "paket-*.md" {
+		t.Errorf("slice-glob wurde mitgezogen: %q", got)
+	}
+}
+

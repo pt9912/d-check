@@ -342,6 +342,7 @@ type PlanningConfig struct {
 // bleibt dem inferentiellen Nachlauf überlassen.
 type ClosureConfig struct {
 	Dir            string
+	Glob           string
 	HeadingPattern string
 	MinSentences   int
 	Boilerplate    []string
@@ -381,6 +382,17 @@ func (p PlanningConfig) EffectiveMarker() string {
 		return "Keine aktive Welle"
 	}
 	return p.Marker
+}
+
+// EffectiveClosureGlob liefert das Basisnamen-Glob der Closure-Kandidaten
+// (§DC-FA-PLAN-001.a Schritt C2). Nicht gesetzt ⇒ EffectiveSliceGlob: der
+// Default ist ein Verweis, kein kopiertes Literal — es gibt genau ein Muster zu
+// pflegen, solange niemand die beiden Grundmengen trennt.
+func (p PlanningConfig) EffectiveClosureGlob() string {
+	if p.Closure.Glob == "" {
+		return p.EffectiveSliceGlob()
+	}
+	return p.Closure.Glob
 }
 
 // EffectiveSliceGlob liefert das Slice-Basisnamen-Glob (Default `slice-*.md`).

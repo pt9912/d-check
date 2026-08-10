@@ -325,3 +325,64 @@ func TestClosureUnabhaengigVonAktivStatus(t *testing.T) {
 		t.Fatalf("Closure muss unabhängig melden, got %+v", closure)
 	}
 }
+
+// Ohne closure.glob ist der Befundsatz byte-identisch zu einem Lauf, der
+// ausdrücklich den slice-glob als Kandidaten-Filter setzt — der Default ist ein
+// Verweis, kein zweites Muster.
+func TestClosureGlobDefaultByteIdentisch(t *testing.T) {
+	files := map[string]string{
+		closureDir + "/slice-001-a.md": "# Slice\n\n" + richNote,
+		closureDir + "/welle-01-x.md":  "# Welle\n\nOhne Notiz.\n",
+	}
+	ohne := CheckPlanningClosure(coretest.NewMemFS(files), closureCfg())
+	cfg := closureCfg()
+	cfg.Closure.Glob = cfg.EffectiveSliceGlob()
+	mit := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
+	if len(ohne) != len(mit) {
+		t.Fatalf("Befundsatz weicht ab: ohne=%+v mit=%+v", ohne, mit)
+	}
+	for i := range ohne {
+		if ohne[i] != mit[i] {
+			t.Fatalf("Befund %d weicht ab: %+v vs %+v", i, ohne[i], mit[i])
+		}
+	}
+	if len(ohne) != 0 {
+		t.Fatalf("die welle-Datei darf unter dem Slice-Glob nicht gesehen werden: %+v", ohne)
+	}
+}
+
+// Der eigene Glob weitet die Kandidaten-Menge der Closure-Fähigkeit, OHNE die
+// Grundmenge der Lifecycle-Invariante zu berühren — das ist der ganze Zweck der
+// Entkopplung (ADR-0051).
+func TestClosureGlobWeitetNurDieEigeneMenge(t *testing.T) {
+	files := map[string]string{
+		closureDir + "/slice-001-a.md": "# Slice\n\n" + richNote,
+		closureDir + "/welle-01-x.md":  "# Welle\n\nOhne Notiz.\n",
+	}
+	cfg := closureCfg()
+	cfg.Closure.Glob = "*.md"
+	f := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
+	if len(f) != 1 || f[0].Reason != model.ReasonClosureNoteMissing ||
+		f[0].File != closureDir+"/welle-01-x.md" {
+		t.Fatalf("erwartet genau ein missing auf der welle-Datei, got %+v", f)
+	}
+	if cfg.EffectiveSliceGlob() != "slice-*.md" {
+		t.Fatalf("der Slice-Glob wurde mitgezogen: %q", cfg.EffectiveSliceGlob())
+	}
+}
+
+// Null Kandidaten unter dem GESETZTEN Glob ist fail-closed wie unter dem
+// geerbten: den Filter zu setzen ist die Behauptung, dass er etwas trifft.
+func TestClosureGlobNullKandidatenFailClosed(t *testing.T) {
+	files := map[string]string{closureDir + "/slice-001-a.md": "# Slice\n\n" + richNote}
+	cfg := closureCfg()
+	cfg.Closure.Glob = "paket-*.md"
+	f := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
+	if len(f) != 1 || f[0].Reason != model.ReasonClosureNoteMissing || f[0].File != closureDir {
+		t.Fatalf("erwartet fail-closed auf dem Verzeichnis, got %+v", f)
+	}
+	if !strings.Contains(f[0].Message, "paket-*.md") {
+		t.Errorf("die Meldung nennt den gesetzten Glob nicht: %q", f[0].Message)
+	}
+}
+

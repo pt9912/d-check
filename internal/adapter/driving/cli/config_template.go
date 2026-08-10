@@ -125,6 +125,7 @@ modules: [links, anchors]
 #   # slice-glob: "slice-*.md"          # Basisnamen-Glob der Slice-Dateien (Default)
 #   # closure:                          # zweite Fähigkeit: Struktur der Closure-Notizen (opt-in im opt-in)
 #   #   dir: docs/plan/planning/done    # Aktivierungs-Schalter; leer ⇒ inert (keine Slice-Datei wird geöffnet)
+#   #   glob: 'slice-*.md'              # EIGENER Kandidaten-Filter; weglassen ⇒ slice-glob. Explizit leer ⇒ Exit 2
 #   #   heading-pattern: '^#{2,3} .*Closure-Notiz'  # RE2 (Default); kein Treffer ⇒ closure-note-missing
 #   #   min-sentences: 4                # Satzende-Zeichen AUSSERHALB Fenced-Code (Default); < 1 ⇒ Exit 2
 #   #   boilerplate: []                 # literale Floskeln, case-insensitiv; Default LEER (keine Sprach-Annahme)

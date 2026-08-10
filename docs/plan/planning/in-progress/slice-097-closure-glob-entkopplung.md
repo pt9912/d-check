@@ -66,21 +66,46 @@ Kopplung.
    entsteht **nur** beim Weiten von `slice-glob`; mit dem hier beantragten
    eigenen Schlüssel bleibt die Roadmap-Invariante unberührt, und genau das ist
    der Punkt.
-   Zu entscheiden: Muster auf `^#{1,3}` weiten, die Wellen-Notizen umbauen, oder
-   den eigenen Glob bewusst eng lassen. **Der Slice liefert den Schlüssel; die
-   eigene Konfiguration ist eine getrennte Entscheidung.**
+   **Entschieden 2026-08-10 — und zwar anders, als die drei Kandidaten es
+   anlegten.** Gemessen wurde eine **vierte** Variante, die erst mit dem neuen
+   Schlüssel möglich ist: `closure.glob: "*.md"` **und** `heading-pattern` auf
+   `^#{1,3}`.
+
+   | Variante | Befunde | geprüfte Dokumente |
+   |---|---|---|
+   | heute (Filter erbt `slice-glob`) | 0 | 96 |
+   | Filter `*.md` | 12 | +15 |
+   | Filter `*.md` **und** Muster `^#{1,3}` | **0** | **+15** |
+
+   Elf der zwölf sind kein fehlender Abschnitt, sondern eine **H1** gegen ein
+   Muster, das H2/H3 verlangt. Der zwölfte war **echt**: ein geschlossenes
+   Wellendokument trug in `done/` noch „_Ausstehend._". Ein zweites entging dem
+   Befund nur, weil sein „_Ausstehend._" wortreich genug für die Satz-Schwelle
+   war. Beide sind gefüllt.
+
+   „Eng lassen" wäre damit genau die Grenze, die das Register als **BEO-004**
+   führt — eine Prüfung, die an Dokumenten vorbeisieht, die sie meint. Die
+   Zahlen sind seit der Slice-Anlage gewachsen (9 → 11 `results`-Dateien): der
+   Bestand wächst weiter, die Lücke also auch.
 
 ## 4. Definition of Done
 
-- [ ] `planning.closure.glob` in Lastenheft, Spezifikation (Schritt C2) und
-      Config-Schema; Default = `planning.slice-glob`.
-- [ ] Akzeptanzkriterien des CR als Tests: (1) ohne Schlüssel byte-identisch;
-      (2) `closure.glob: "*.md"` bei unverändertem `slice-glob` prüft alle
-      Markdown-Dateien im Closure-Verzeichnis, **ohne** die Roadmap-Invariante zu
-      berühren; (3) fail-closed unverändert — leerer Glob ⇒ Exit 2, null
-      Kandidaten unter dem gesetzten Glob ⇒ Befund.
-- [ ] `make gates` + `make verify-closure-notes` grün; Abnahme-Punkt 2 beantwortet
-      und die eigene Konfiguration entsprechend gesetzt.
+- [x] `planning.closure.glob` in Lastenheft (0.53.0), Spezifikation (Schritt C2)
+      und Config-Schema; Default = **Verweis** auf `planning.slice-glob`, kein
+      kopiertes Literal. Begründung in
+      [ADR-0051](../../adr/0051-eigener-kandidaten-filter-closure.md) `Proposed`;
+      [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md) §Geschichte
+      um den Verfeinerungs-Zeiger ergänzt (ihr Rumpf ist `Accepted` und damit
+      immutabel).
+- [x] Akzeptanzkriterien des CR als Tests, alle drei plus der Default-Verweis.
+      **Fünf** Rückbauten geprüft, alle rot: Filter zurück auf `slice-glob`;
+      Default als Literal statt Verweis; leerer Glob fällt still zurück;
+      Glob-Validierung entfernt; Wert nicht durchgereicht. End-to-End gegen das
+      gebaute Image: eigener Lauf 326 Dateien / 0 Befunde, expliziter leerer
+      Glob bricht mit **Exit 2** und einer Meldung ab, die den Schlüssel nennt.
+- [x] `make gates` grün; Abnahme-Punkt 2 beantwortet und `.d-check.closure.yml`
+      entsprechend gesetzt — der eigene Lauf prüft jetzt **111 statt 96**
+      Dokumente und bleibt bei null Befunden.
 - [ ] **Release** (Minor: neuer Config-Schlüssel), Digest-Backfill. Ohne
       veröffentlichte Version erreicht die Welle ihren Zweck nicht — der
       Konsument kann sein Skript erst gegen ein Release zurückziehen
@@ -89,11 +114,17 @@ Kopplung.
 ## 5. Risiken / offene Punkte
 
 - **Neun eigene Befunde bei geweitetem Glob** (siehe Abnahme-Punkt 2).
-  — **Ausgang:** offen; die Entscheidung gehört in diesen Slice, die etwaige
-  Sanierung der Wellen-Notizen nicht.
+  — **Ausgang: entfallen.** Es waren inzwischen zwölf, aber elf davon lösen sich
+  mit dem Überschriften-Muster auf; der zwölfte war ein echter Rückstand und ist
+  behoben. Eine Sanierung der Wellen-Notizen war nicht nötig.
 - **Zwei Globs, die fast immer gleich sind,** laden zu Drift ein (einer wird
-  gepflegt, der andere nicht). — **Ausgang:** offen; der Default-Verweis statt
-  eines Literals ist die Gegenmaßnahme, die geprüft werden muss.
+  gepflegt, der andere nicht). — **Ausgang: adressiert und geprüft.** Der Default
+  ist ein **Verweis**, kein Literal: wer nichts trennt, pflegt genau ein Muster.
+  Die Gegenprobe „Default als Literal statt Verweis" ist rot — die Eigenschaft
+  ist testgehalten, nicht bloß zugesagt. Es bleibt der Restrisiko-Fall, dass
+  jemand `slice-glob` ändert und die Closure-Menge unbeabsichtigt mitwandert;
+  das steht als Re-Evaluierungs-Trigger in
+  [ADR-0051](../../adr/0051-eigener-kandidaten-filter-closure.md).
 
 ## 6. Trigger
 
@@ -108,10 +139,19 @@ Bestands-Sanierung nach sich zieht, die eigenständig geschnitten gehört.
 
 - **Sub-Area prüfen:** Produkt-Code (`internal/`) und Spec (`spec/`), beide unter
   dem Repo-Default GF (`harness/conventions.md` §Modus: `*`).
-- **Offene Beobachtungen sichten:** das Register führt **BEO-001**
-  (Datei-Register driften unbemerkt gegen ihre Autoritäts-Tabelle). Andere
-  Klasse — hier geht es um die Kandidaten-Menge **einer** Prüfung, dort um
-  Referenzen zwischen Dokumenten. Nichts zu berücksichtigen.
+- **Offene Beobachtungen sichten** (bei Slice-Beginn erneut gelesen — das
+  Register führt inzwischen **vier** Einträge, nicht mehr nur BEO-001):
+  - **BEO-001** (Datei-Register driften gegen ihre Autoritäts-Tabelle): andere
+    Klasse, nichts zu berücksichtigen.
+  - **BEO-003** (geteilte Lexik driftet an den Rändern, weil jeder Konsument sie
+    selbst vorbereitet): **einschlägig als Warnung**. Ein kopierter
+    Literal-Default wäre genau diese Klasse gewesen — deshalb der Verweis.
+  - **BEO-004** (Modul-Grenze nur auf der Quell-Achse gedacht): **einschlägig
+    als Frage.** Die Closure-Fähigkeit ist ein Post-Pass über ein selbst
+    benanntes Verzeichnis; dieser Slice ändert genau, welche Dateien darin sie
+    liest. Die Register-Frage „welche Eingaben liest dieses Modul, die es nicht
+    scannt?" hat Abnahme-Punkt 2 beantwortet — und dabei 15 übersehene
+    Dokumente gefunden.
 
 ## 8. Sub-Area-Modus-Begründung
 
