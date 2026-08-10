@@ -106,7 +106,7 @@ func reasonTexts() map[string]string {
 		rules.ReasonExternalTimeout:    "Externer Link: Zeitüberschreitung",
 		rules.ReasonExternalRedirects:  "Externer Link: zu viele Redirects",
 		model.ReasonSpanUnclosed:       "Ungeschlossene Code-Span-Öffnung (klebt an Nicht-Whitespace)",
-		model.ReasonFenceUnclosed:      "Fenced-Code-Block ohne Schluss bis zum Dateiende — alles dahinter wird von jedem Modul übersprungen",
+		model.ReasonFenceUnclosed:      "Fenced-Code-Block ohne Schluss bis zum Dateiende — mindestens ein Modul überspringt alles dahinter",
 		model.ReasonSpanNestedLink:     "Verschachtelte Link-Syntax im Linktext (rendert zerrissen)",
 		model.ReasonHostpathForbidden:  "Host-lokaler absoluter Pfad (Maschinen-Layout-Leak)",
 		model.ReasonDiagramIDUndefined: "Kennung im Diagramm-Fence ohne Definition in ihrer defined-in-Quelle",

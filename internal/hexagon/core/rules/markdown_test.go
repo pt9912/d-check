@@ -150,3 +150,30 @@ func TestExtractLinks_Kanten(t *testing.T) {
 		t.Fatalf("refs = %+v\nwant  %+v", refs, want)
 	}
 }
+
+// Die Invariante aus TrimFenceIndent — Space und Tab, nicht unicode-weit —
+// gilt fuer JEDEN Konsumenten der Fence-Lexik, nicht nur fuer den Waechter aus
+// dem Modul spans. Ohne Assertion je Konsument liesse sich einer davon
+// zurueckdrehen, ohne dass ein Test rot wird; der Silent-Gruen-Pfad waere
+// wieder offen, waehrend fence-unclosed schweigt.
+func TestProseLinesUnicodeWhitespaceIstKeineFenceEinrueckung(t *testing.T) {
+	content := []byte("a\n\n\u00a0```\n\nsichtbar\n")
+	lines := PreprocessMarkdown(content)
+	for _, ln := range lines {
+		if ln.No == 5 && strings.Contains(ln.Text, "sichtbar") {
+			return
+		}
+	}
+	t.Fatalf("U+00A0 hat die Fence-Paritaet gekippt, Zeile 5 verschwand: %+v", lines)
+}
+
+func TestDiagramFenceLinesUnicodeWhitespaceIstKeineFenceEinrueckung(t *testing.T) {
+	// Die U+00A0-Zeile darf den mermaid-Fence nicht vorzeitig oeffnen — sonst
+	// gaelte sein Inhalt als Prosa und der echte Diagramm-Inhalt als ausserhalb.
+	content := []byte("\u00a0```\n\n```mermaid\nA --> B\n```\n")
+	got := diagramFenceLines(content, map[string]bool{"mermaid": true})
+	if len(got) != 1 || got[0].raw != "A --> B" {
+		t.Fatalf("Diagramm-Inhalt nicht erkannt: %+v", got)
+	}
+}
+

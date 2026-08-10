@@ -98,7 +98,10 @@ haben:
    Closure-Struktur ohne Ventil auskommt.
 
 5. **SemVer: Minor.** d-check findet danach mehr; ein grüner Konsumentenlauf kann
-   rot werden — dieselbe Einordnung wie
+   rot werden. An **einer** Stelle findet es auch weniger: weil die Fence-Lexik
+   des Closure-Gates auf das geteilte Prädikat umgestellt ist, verstummen dort
+   Befunde, die auf einer abweichenden Trimmung beruhten. Beides ist Minor —
+   dieselbe Einordnung wie
    [ADR-0042](0042-markdown-lexik-folgt-commonmark.md) und
    [ADR-0043](0043-tabellengrenze-am-relevanten-header.md). Laut Messung ist die
    erwartete Fallzahl im Ökosystem **null**, aber die Zusage ändert sich, und
@@ -113,7 +116,7 @@ haben:
 | Befund im Modul `planning` | Falsch einsortiert: ein Markdown-Artefakt in einem Planning-Lifecycle-Modul; der nächste Konsument der Lexik fände es dort nicht |
 | Neues Modul für Fence-Artefakte | Nicht querschnittlich im Sinne von [ADR-0044](0044-geteiltes-referenz-ventil-quell-skopus.md) — es ist genau die Frage, die `spans` schon stellt |
 | Absatzweise Erkennung wie `span-unclosed` | Ein Fence *ist* eine Absatzgrenze; absatzweise gemessen wäre er per Definition nie ungeschlossen |
-| Befund an der letzten Zeile der Datei | Der Ort der Reparatur ist die Öffnung, nicht das Ende — ein Befund am Dateiende zeigt auf eine Zeile, die niemand ändern muss |
+| Befund an der letzten Zeile der Datei | Die Öffnung ist der **nähere** Ort, auch wenn sie nicht immer die Reparaturstelle trifft (Entscheidung 3); das Dateiende trifft sie nie und trägt keine Information über den Fence |
 | Opt-in-Schalter je Artefakt-Klasse | Eine Oberfläche, die niemand bewusst setzt; `spans` ist bereits als Ganzes opt-in |
 
 ## Konsequenzen
@@ -179,10 +182,15 @@ haben:
   ehrlich eine Fundstelle, die Fitness Function ist um die Fälle ergänzt, an
   denen die vorherige Fassung nachweislich scheiterte, und die Grenze deckt
   jetzt auch die Ziel-Achse.
-- 2026-08-09: nach bestätigender Re-Review nachgezogen — die Trimmung ist zu
+- 2026-08-10: nach bestätigender Re-Review nachgezogen — die Trimmung ist zu
   einem geteilten Prädikat geworden (das Modul `planning` trimmte weiter
   unicode-weit und trug den Anlassfall des Slice unverändert), das CR einer
   CRLF-Zeile fällt aus dem Befund-Ziel, der Vorrang der strengen Lesart hat eine
   Assertion, die Fundstellen-Klausel gilt für **beide** Lesarten statt nur für
   die Parität, und die Grenze nennt `pins`, `codepaths` und den eingerückten
   Code-Block.
+- 2026-08-10: dritte Review-Runde — die Fence-Lexik ist als Klasse geschlossen
+  (alle fünf Konsumenten speisen sich aus einem Trimmer, jeder mit eigener
+  Assertion gegen Wieder-Divergenz). Entscheidung 5 nennt jetzt beide
+  Richtungen der SemVer-Wirkung; die Alternativen-Tabelle begründet nicht mehr
+  mit der von Entscheidung 3 widerrufenen Aussage.

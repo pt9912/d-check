@@ -107,7 +107,9 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
    **Öffnungszeile**, genau einer je Datei. `span-unclosed` misst je Absatz; für
    einen Fence ist das nicht übertragbar, weil er selbst eine Absatzgrenze
    **ist** — absatzweise gemessen wäre er per Definition nie ungeschlossen. Die
-   Öffnungszeile ist der Ort der Reparatur, also der Ort des Befundes.
+   Öffnungszeile ist der **nächstgelegene** Ort; dass sie nicht immer die
+   Reparaturstelle trifft, hat erst die Umsetzung gezeigt (§6) — die Entscheidung
+   für die Öffnungszeile bleibt davon unberührt, ihre Begründung ist korrigiert.
 
 ## 5. Definition of Done
 
@@ -130,6 +132,15 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
       4 MEDIUM, 1 INFO. Der Kern war echt geheilt, die Heilung hörte aber an
       derselben Stelle zu früh auf wie die Erstfassung. Alle nachgezogen,
       siehe §6.
+- [x] **Dritte Review-Runde** (Frischkontext) — Leitfrage war nicht „sind die
+      Befunde abgehakt", sondern „ist die **Klasse** geschlossen". Antwort: für
+      die Fence-Lexik **ja**, belegt über alle Aufrufstellen im Repo; die
+      Invariante war aber an drei von fünf Konsumenten nicht assertiert (HIGH)
+      und ließ sich einzeln zurückdrehen, ohne dass ein Test rot wurde. Jetzt
+      hat jeder Konsument seine eigene. Zwei Befunde in **anderen** Lexiken
+      (`citations`-Absatzbildung, `headingSection`) und einer auf der
+      git-Revisions-Achse (`vcs`) gehören ausdrücklich **nicht** in diesen
+      Slice — eigener Vertrag, eigener Folge-Slice.
 - [x] **Mutations-Gegenprobe, zweiter Anlauf.** Sechs Rückbauten, alle rot.
       Der erste Anlauf war methodisch kaputt: er setzte nach jeder Mutation
       per `git checkout` zurück — also auf HEAD statt auf den Arbeitsstand,

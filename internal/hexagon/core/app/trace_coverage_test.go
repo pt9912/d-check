@@ -272,3 +272,16 @@ func TestCoverageRefsLinkTransparent(t *testing.T) {
 		})
 	}
 }
+
+// Der Tabellen-Leser ist der dritte Konsument der Fence-Lexik. Auch er muss
+// wie proseLines trimmen (Space und Tab, nicht unicode-weit): eine mit U+00A0
+// eingerueckte Zeile darf seinen Fence-Zustand nicht kippen, sonst gilt die
+// folgende Anforderungstabelle als Code und verschwindet aus der Abdeckung —
+// waehrend fence-unclosed schweigt, weil die Zeile fuer ihn kein Toggle ist.
+func TestMarkdownTableLinesUnicodeWhitespaceIstKeineFenceEinrueckung(t *testing.T) {
+	content := []byte("\u00a0```\n\n| ID | Titel |\n|---|---|\n")
+	lines := markdownTableLines(content)
+	if len(lines) < 3 || !lines[2].prose {
+		t.Fatalf("U+00A0 hat den Fence-Zustand gekippt, Tabellenzeile gilt als Code: %+v", lines)
+	}
+}
