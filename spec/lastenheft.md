@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.52.3
+**Version:** 0.53.0
 
 **Status:** Draft
 
@@ -1917,7 +1917,8 @@ Lifecycle-Invariante hat eine zweite Seite: ein Slice, der den Lifecycle
 aber **nur**, wenn `planning.closure.dir` gesetzt ist (opt-in **innerhalb** des
 opt-in Moduls; ohne den Schlüssel ist die Fähigkeit inert und der Befundsatz
 byte-identisch, [`DC-QA-02`](#dc-qa-02--determinismus)). Geprüft wird jede Datei
-in `planning.closure.dir`, deren Basisname `planning.slice-glob` matcht; in ihr
+in `planning.closure.dir`, deren Basisname `planning.closure.glob` matcht — ein
+**eigener** Kandidaten-Filter, dessen Default `planning.slice-glob` ist; in ihr
 **genau ein** Abschnitt, dessen Überschrift auf `planning.closure.heading-pattern`
 passt (RE2, Default `^#{2,3} .*Closure-Notiz`), reichend bis zur nächsten
 Überschrift gleicher oder höherer Ebene — mehrere Treffer sind mehrdeutig und
@@ -1931,6 +1932,18 @@ werden nicht gemessen (siehe unten). Drei Struktur-Bedingungen:
   literalen Teilstrings aus `planning.closure.boilerplate` ⇒
   `closure-note-boilerplate`. Die Liste ist **per Default leer**: der Vertrag
   bringt keine sprach-spezifischen Phrasen mit, das Repo deklariert seine eigenen.
+
+**Warum ein eigener Filter.** Die beiden Fähigkeiten stellen **verschiedene**
+Fragen und haben deshalb verschiedene Grundmengen: die Lifecycle-Invariante fragt
+„liegt hier noch Arbeit?" und meint Slice-Dateien im Roadmap-Verzeichnis; die
+Closure-Struktur fragt „ist jedes abgeschlossene Paket dokumentiert?" und kann
+auch Wellen- oder Etappen-Dokumente meinen. Sie teilten sich einen Schlüssel,
+solange beide zufällig dasselbe trafen; wer die eine Menge weitet, verbiegt die
+andere — im Grenzfall so, dass die Roadmap-Datei selbst als Slice zählt und der
+Ruhe-Marker dauerhaft falsch-rot meldet. Der Default als **Verweis** (nicht als
+wiederholtes Literal) hält beide Mengen zusammen, solange niemand sie trennt:
+ohne den Schlüssel ist der Befundsatz byte-identisch, und es gibt kein zweites
+Muster, das gepflegt werden müsste.
 
 Geprüft wird **ausschließlich** `planning.closure.dir` (per Konvention das
 Verzeichnis der abgeschlossenen Slices) — ein Slice in Arbeit trägt noch keine
@@ -1956,8 +1969,12 @@ ebenso ein Verzeichnis ohne einen einzigen Kandidaten.** Den Schlüssel zu setze
 **ist** die Behauptung, dass dort Closure-Notizen liegen; findet der Lauf keine,
 liefe das Gate fortan leer und grün. Am **Config-Rand** (Exit 2): ein `dir`
 außerhalb der Repo-Wurzel (absolut oder mit `..`), ein nicht kompilierendes
-`heading-pattern`, ein **explizit** gesetztes `min-sentences` < 1 und ein leerer
-`boilerplate`-Eintrag.
+`heading-pattern`, ein **explizit** gesetztes `min-sentences` < 1, ein
+**explizit** gesetzter leerer oder ungültiger `closure.glob` und ein leerer
+`boilerplate`-Eintrag. Ein explizit leerer Glob bricht ab, statt still auf den
+Default zurückzufallen: den Schlüssel zu setzen ist eine Aussage, und eine
+Aussage, die nichts trifft, ist ein Konfigurationsfehler — dieselbe Begründung
+wie bei `min-sentences`.
 Die Fähigkeit bleibt **hermetisch** (Arbeitsbaum, kein git, kein Netz) und
 **diagnose-only** — kein `--repair`-Hunk, denn eine Closure-Notiz schreibt der
 Autor, nicht das Werkzeug.
@@ -1980,6 +1997,10 @@ bereits abdeckt.
 - **Negative (Abschnitt fehlt):** Given ein Slice im Closure-Verzeichnis **ohne** eine auf `heading-pattern` passende Überschrift, when `d-check --enable planning` läuft, then ein Befund `closure-note-missing`, Exit 1.
 - **Negative (Floskel):** Given einen konfigurierten `planning.closure.boilerplate`-Eintrag, dessen literaler Teilstring case-insensitiv im bereinigten Abschnitts-Text vorkommt, when `d-check --enable planning` läuft, then ein Befund `closure-note-boilerplate`, Exit 1.
 - **Boundary (Code-Block zählt nicht):** Given eine Closure-Notiz, deren Satzende-Zeichen überwiegend in einem Fenced-Code-Block stehen, when `d-check --enable planning` läuft, then zählen nur die Zeichen außerhalb des Blocks — bleibt die Zahl unter der Schwelle, dann `closure-note-thin`.
+- **Boundary (eigener Kandidaten-Filter, Default):** Given `planning.closure.dir` gesetzt und **kein** `planning.closure.glob`, when `d-check --enable planning` läuft, then ist der Befundsatz byte-identisch zu einem Lauf, der `planning.slice-glob` als Kandidaten-Filter verwendet.
+- **Happy Path (Filter entkoppelt):** Given `planning.closure.glob: "*.md"` bei unverändertem `planning.slice-glob`, when `d-check --enable planning` läuft, then werden **alle** Markdown-Dateien im Closure-Verzeichnis auf ihre Notiz geprüft, **ohne** dass sich die Aussage der Lifecycle-Invariante ändert.
+- **fail-closed (leerer Glob):** Given `planning.closure.glob` **explizit** auf den leeren String gesetzt, when `d-check` startet, then Abbruch mit Exit-Code 2 und einer Meldung, die den Schlüssel nennt.
+- **fail-closed (null Kandidaten unter dem eigenen Glob):** Given ein Closure-Verzeichnis, in dem **keine** Datei den gesetzten `planning.closure.glob` matcht, when `d-check --enable planning` läuft, then ein Befund `closure-note-missing` auf das Verzeichnis, Exit-Code 1.
 - **fail-closed (Closure-Verzeichnis):** Given `planning.closure.dir` gesetzt, aber fehlend oder unlesbar, when `d-check --enable planning` läuft, then `closure-note-missing`, Exit 1.
 - **fail-closed (kein Kandidat):** Given ein existierendes `planning.closure.dir` **ohne** eine einzige Datei nach `planning.slice-glob`, when `d-check --enable planning` läuft, then `closure-note-missing` mit einem Hinweis auf das Leerlaufen, Exit 1 — ein leer laufendes Gate meldet nicht Erfolg.
 - **fail-closed (Config-Rand):** Given ein `planning.closure.dir` außerhalb der Repo-Wurzel, ein nicht kompilierendes `heading-pattern`, ein explizit gesetztes `min-sentences` < 1 **oder** einen leeren `boilerplate`-Eintrag, when `d-check` startet, then Exit 2 vor dem Lauf; ein **abwesendes** `min-sentences` ist dagegen der Default (kein Fehler).
@@ -2505,6 +2526,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.53.0 | 2026-08-10 | Change Request (Konsument `ai-harness-course`, CR 1): [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) bekommt mit `planning.closure.glob` einen **eigenen** Kandidaten-Filter für die Closure-Fähigkeit; Default ist ein **Verweis** auf `planning.slice-glob`, nicht ein wiederholtes Literal — ohne den Schlüssel ist der Befundsatz byte-identisch. Anlass: die beiden Fähigkeiten stellen verschiedene Fragen mit verschiedenen Grundmengen („liegt hier noch Arbeit?“ gegen „ist jedes abgeschlossene Paket dokumentiert?“) und teilten sich einen Schlüssel, solange beide zufällig dasselbe trafen. Wer die Menge weitet, verbiegt die jeweils andere — im Grenzfall zählt die Roadmap-Datei selbst als Slice und der Ruhe-Marker meldet dauerhaft falsch-rot (gemessen gegen v0.52.0). Ein **explizit** leerer oder ungültiger Glob bricht am Config-Rand mit Exit 2 ab statt still auf den Default zurückzufallen |
 | 0.52.3 | 2026-08-10 | Nachzug nach dritter Review-Runde. **Konsumenten-relevant:** die Heilung der Fence-Trimmung hat auch das mit 0.52.0 ausgelieferte Closure-Gate ([`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) geändert — die Richtung ist **nicht nur** „findet mehr": hinter einer mit Unicode-Whitespace eingerückten Fence-Zeile verstummen `closure-note-thin` und `closure-note-missing`, während `closure-note-boilerplate` neu meldet. Fachlich war das immer die zugesagte Lexik (Spezifikation Schritt C4: Fence-Lexik wie im übrigen Scanner); gemessen wurde bis dahin eine andere. Wer nach dem Update an einem Closure-Gate Befunde **verliert**, verliert Fehlmessungen. Ferner: die §4-Grund-Code-Zeile und der `--doctor`-Klartext trugen weiter die mit 0.52.1 widerrufene Reichweite („von **allen** Modulen übersprungen") und sind nachgezogen |
 | 0.52.2 | 2026-08-10 | Nachzug nach bestätigender Re-Review: die **Grenze** von `DC-FA-SPAN-001` Klasse 3 nennt jetzt auch `codepaths` und `pins` — bei `pins` ist die Folge **still** (ein offener Fence verdeckt die Überschrift, der Anker wird unauflösbar, die Drift-Prüfung entfällt kommentarlos statt zu melden) — sowie den eingerückten Code-Block, der in keiner Lesart modelliert ist. Die Fundstellen-Klausel war zu eng an die Paritätskippung gebunden: auch die strenge Lesart zeigt daneben, wenn eine längere Fence-Zeile eine kürzere Öffnung geschlossen hat. Das Befund-Ziel verliert zusätzlich das CR einer CRLF-Zeile |
 | 0.52.1 | 2026-08-09 | Korrektur nach unabhängigem Code-Review, noch vor dem Release der 0.52.0: `DC-FA-SPAN-001` Klasse 3 sagte eine **Reichweite** zu, die die Umsetzung nicht hielt („jede Vorverarbeitung“, „alle Module“). d-check trägt **zwei** Schluss-Lesarten — den naiven Toggle und den längenabgeglichenen CommonMark-Schluss —, und der Wächter wertete nur die erste aus: ein von `~~~` „geschlossener“ Backtick-Block war für ihn balanciert, für den Tabellen-Leser bis Dateiende offen (belegt: ein Vollständigkeits-Gate meldete Exit 0 über eine ungedeckte Anforderung hinter dem Fence). Der Befund wertet jetzt **beide** aus und meldet, sobald eine von beiden offen endet. Zusätzlich: die Trimmung folgt exakt der Vorverarbeitung (Space/Tab, nicht unicode-weit — eine mit U+00A0 eingerückte Fence-Zeile schaltete sonst NUR den Wächter um und machte ihn blind für den echten offenen Fence dahinter); die gemeldete Zeile heißt ehrlich **Fundstelle**, weil unter reiner Paritätskippung nicht bestimmbar ist, welche Öffnung fehlt; der Sammelsatz nennt das Ziel je Klasse; die **Grenze** deckt neben Post-Pässen jetzt auch **Zieldateien** außerhalb der Scan-Wurzeln, aus denen Module lesen |

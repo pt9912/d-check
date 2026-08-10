@@ -1695,8 +1695,19 @@ liefert (und umgekehrt):
   sondern der Default — die Unterscheidung „nicht gesetzt" vs. „auf 0 gesetzt"
   ist Teil der Zusage, sonst wäre die Null-Schwelle unerreichbar prüfbar.
 - **C2. Kandidaten.** Das Listing von `planning.closure.dir` wird nach Dateien
-  gefiltert, deren Basisname `planning.slice-glob` matcht (dasselbe Glob wie
-  Schritt 2 — ein Slice ist ein Slice, gleich in welchem Lifecycle-Verzeichnis).
+  gefiltert, deren Basisname `planning.closure.glob` matcht — ein **eigener**
+  Filter dieser Fähigkeit. Ist er nicht gesetzt, gilt `planning.slice-glob`
+  (Default als **Verweis**, nicht als kopiertes Literal: solange niemand die
+  Mengen trennt, gibt es genau ein zu pflegendes Muster, und der Befundsatz ist
+  byte-identisch zum Stand ohne den Schlüssel). Ist er **explizit** leer oder
+  kein gültiges `path.Match`-Muster ⇒ Exit 2; ein Rückfall auf den Default wäre
+  ein stilles Übergehen einer gesetzten Aussage.
+  Die beiden Filter sind getrennt, weil die beiden Fähigkeiten verschiedene
+  Grundmengen haben: Schritt 2 zählt, was **noch in Arbeit** ist, C2 prüft, was
+  **abgeschlossen** ist — Letzteres kann auch Wellen- oder Etappen-Dokumente
+  umfassen. Ein gemeinsames Muster koppelt beide so, dass ein Weiten der einen
+  Menge die andere verbiegt (im Grenzfall matcht die Roadmap-Datei selbst und
+  der Ruhe-Marker ist dauerhaft falsch-rot).
   Fehlt das gesetzte Verzeichnis oder ist es unlesbar ⇒ `closure-note-missing`
   mit `file` = `planning.closure.dir` (fail-closed, kein stilles Grün).
   **Ebenso fail-closed: null Kandidaten.** `planning.closure.dir` zu setzen
@@ -2248,6 +2259,7 @@ Exit 2 ohne Prüfung
 | `planning.marker` | string | `Keine aktive Welle` | literaler Ruhe-Marker-Teilstring; nur im `planning.heading`-Block gesucht; vorhanden ⇒ ruhende Welle |
 | `planning.slice-glob` | string | `slice-*.md` | Glob (`path.Match` auf den Basisnamen) der Slice-Dateien im Roadmap-Verzeichnis; ≥1 Treffer ⇒ aktive-Welle-erwartet; ein explizit gesetztes Muster muss ein gültiges `path.Match`-Glob sein (sonst Exit 2 — verhindert ein fail-open Silent-Grün) |
 | `planning.closure.dir` | string | leer | `verzeichnis` (Wurzel-relativ, innerhalb der Repo-Wurzel); das Verzeichnis der abgeschlossenen Slices, deren Closure-Notiz **strukturell** geprüft wird. Leer ⇒ Closure-Fähigkeit inert (keine Slice-Datei wird gelesen, Befundsatz byte-identisch); gesetzt, aber fehlend/unlesbar ⇒ `closure-note-missing` auf dem Verzeichnis (fail-closed) ([`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
+| `planning.closure.glob` | string | Wert von `planning.slice-glob` | Basisnamen-Glob (`path.Match`) der Kandidaten **dieser** Fähigkeit — getrennt von `planning.slice-glob`, weil die Lifecycle-Invariante „noch in Arbeit“ und die Closure-Struktur „abgeschlossen“ zählt. Nicht gesetzt ⇒ Default-Verweis (Befundsatz byte-identisch); **explizit** leer oder kein gültiges Glob ⇒ Exit 2; kein Kandidat unter dem gesetzten Glob ⇒ `closure-note-missing` auf dem Verzeichnis (fail-closed) |
 | `planning.closure.heading-pattern` | string | `^#{2,3} .*Closure-Notiz` | RE2 gegen die **getrimmte** Überschriften-Zeile; **genau ein** Treffer eröffnet den geprüften Abschnitt (mehrere ⇒ `closure-note-ambiguous`) (bis zur nächsten Überschrift gleicher oder höherer Ebene). Kein Treffer ⇒ `closure-note-missing`; ein nicht kompilierendes Muster ⇒ Exit 2 |
 | `planning.closure.min-sentences` | int | `4` | Mindestzahl der Satzende-Zeichen (`.`, `!`, `?`) im Abschnitt **nach** Entfernen der Fenced-Code-Blöcke; darunter ⇒ `closure-note-thin`. Wert < 1 ⇒ Exit 2 (eine Schwelle von 0 wäre ein stilles Grün) |
 | `planning.closure.boilerplate` | string[] | leer | literale Floskel-Teilstrings, **case-insensitiv** gegen den bereinigten Abschnitts-Text geprüft; ein Treffer ⇒ `closure-note-boilerplate`. Bewusst **leer** per Default — der Vertrag bringt keine sprach-spezifischen Phrasen mit; ein leerer Eintrag ⇒ Exit 2 (er träfe jeden Text) |
@@ -2390,6 +2402,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2 + §2-Schema (`planning.closure.glob`): die Closure-Fähigkeit bekommt einen **eigenen** Kandidaten-Filter, dessen Default ein **Verweis** auf `planning.slice-glob` ist (nicht ein kopiertes Literal — ein zweites Muster wäre eine zweite Pflegestelle). Anlass: die beiden Fähigkeiten zählen verschiedene Mengen („noch in Arbeit“ gegen „abgeschlossen“) und teilten sich einen Schlüssel; wer die eine weitet, verbiegt die andere. Ein **explizit** leerer oder ungültiger Glob ⇒ Exit 2 statt stillem Rückfall auf den Default. Kein neuer Grund-Code |
 | 2026-08-10 | §4-Grund-Code-Zeile zu `fence-unclosed` nachgezogen: sie trug weiter die mit Lastenheft 0.52.1 widerrufene Reichweite („von **allen** Modulen übersprungen. Befund an der Öffnungszeile") und widersprach damit der Anforderung — ein Lauf widerlegte sie in derselben Ausgabe. Jetzt „mindestens eine Lesart endet offen" und **Fundstelle** statt Reparaturstelle. Der `--doctor`-Klartext desselben Grund-Codes ist mitgezogen |
 | 2026-08-10 | §[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung) Schritt 3 nach bestätigender Re-Review nachgezogen: die Trimmung ist als **geteiltes** Prädikat festgeschrieben (das Modul `planning` trimmte weiter unicode-weit und trug den Anlassfall des Slice unverändert weiter), das Befund-Ziel verliert auch das CR einer CRLF-Zeile, und die Fundstellen-Klausel gilt für **beide** Lesarten — auch die strenge zeigt daneben, wenn eine längere Fence-Zeile eine kürzere Öffnung geschlossen hat |
 | 2026-08-09 | §[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung) Schritt 3 nach unabhängigem Code-Review überarbeitet: der Algorithmus führt jede Zeile durch **beide** Schluss-Lesarten des Produkts (naiver Toggle und längenabgeglichener CommonMark-Schluss) und meldet, sobald **eine** von beiden am Dateiende offen steht — vorher nur die naive, wodurch der Tabellen-Leser aus §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) unbewacht blieb. Die Trimmung ist auf Space/Tab festgeschrieben (identisch zur Vorverarbeitung, nicht unicode-weit); die Zeilenwahl ist präzisiert (Öffnungszeile der strengen Lesart, sonst letzte öffnend gewertete Zeile — unter reiner Paritätskippung ist die fehlende Öffnung nicht bestimmbar); die Kappung zählt **Runen** |

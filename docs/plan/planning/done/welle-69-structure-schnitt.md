@@ -82,9 +82,15 @@ stehen deshalb **nicht** hier, sondern derivativ in der Ergebnis-Notiz: sie in
 
 ## 7. Closure-Notiz
 
-_Ausstehend._ Wird bei der Wellen-Closure gefüllt — samt der beiden Zeiger
-(Ergebnis-Notiz, Beobachtungs-Register), die dann vom **Ruheort** `done/`
-auflösen und nicht vom heutigen flachen Schreibort. Sie hier vorwegzunehmen
-hieße, auf eine noch nicht existierende Datei zu zeigen; genau diese
-Positionsabhängigkeit ist der Gegenstand von
-[slice-095](../open/slice-095-links-resolve-from.md).
+Geschlossen am 2026-08-09. Die Ergebnis-Notiz der Welle steht — der Baseline-Form
+folgend — in einer **eigenen** Datei neben dieser: [`welle-69-results.md`](welle-69-results.md). Sie
+trägt, was geliefert wurde, was funktioniert hat, was anders lief, den
+Lese-Schritt am Beobachtungs-Register und die Verifikation.
+
+Der Trigger-Audit dieser Welle hat einen eingetretenen
+Re-Evaluierungs-Trigger von [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md)
+festgestellt; er ist ohne Supersede als Verfeinerung in
+[ADR-0049](../../adr/0049-structure-modul-schnitt-und-preset.md) beantwortet.
+
+Diese Plan-Datei hält nur noch fest, **dass** die Welle geschlossen ist; ihr
+Zustand ist die Verzeichnis-Position.

@@ -196,3 +196,9 @@ Eine Messung gegen den eigenen Bestand (2026-08-09) rahmt den Entwurf:
   `--config` wurde von lexikalisch auf symlink-fest nachgezogen und ein leerer
   Flag-Wert als Nutzungsfehler ausgewiesen.
 - 2026-08-09: Accepted (Closure `slice-093`, Release **v0.52.0**).
+- 2026-08-10: **verfeinert** durch [ADR-0051](0051-eigener-kandidaten-filter-closure.md)
+  (`slice-097`): die Annahme in Entscheidung 1, beide Fähigkeiten teilten eine
+  Config-Achse, trägt nicht — sie zählen verschiedene Grundmengen und bekommen
+  getrennte Kandidaten-Filter. Das **Ergebnis** von Entscheidung 1 (kein zweites
+  Modul) bleibt: es ruht auf der geteilten Lifecycle-Invariante, nicht auf der
+  geteilten Config-Achse. Kein Supersede.

@@ -66,5 +66,13 @@ Closure ins Beobachtungs-Register, nicht in diese Welle.
 
 ## 7. Closure-Notiz
 
-_Ausstehend._ Wird bei der Wellen-Closure gefüllt — samt der beiden Zeiger, die
-dann vom Ruheort `done/` auflösen.
+Geschlossen am 2026-08-10. Die Ergebnis-Notiz der Welle steht — der Baseline-Form
+folgend — in einer **eigenen** Datei neben dieser: [`welle-70-results.md`](welle-70-results.md). Sie
+trägt, was geliefert wurde, was funktioniert hat, was anders lief, den
+Lese-Schritt am Beobachtungs-Register und die Verifikation.
+
+Zwei neue Register-Einträge sind dabei entstanden: **BEO-003** und
+**BEO-004**, letzterer bei Zähler 3 und damit an der Verkörperungs-Schwelle.
+
+Diese Plan-Datei hält nur noch fest, **dass** die Welle geschlossen ist; ihr
+Zustand ist die Verzeichnis-Position.
