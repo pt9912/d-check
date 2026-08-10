@@ -1747,6 +1747,33 @@ liefert (und umgekehrt):
   **case-insensitiv** gegen jeden `planning.closure.boilerplate`-Teilstring
   geprüft; ein Treffer ⇒ `closure-note-boilerplate` (der **erste** Treffer
   benennt die Meldung).
+- **C4b. Platzhalter** (nur bei `planning.closure.placeholder: true`; sonst
+  entfällt der Schritt vollständig und der Befundsatz ist byte-identisch). Auf dem
+  Abschnitts-Text aus C4 werden zusätzlich die **Inline-Code-Spans geleert**
+  (positionserhaltend, gleiche Paarungsregel wie
+  [§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+  Schritt 2). Auf dem Ergebnis wird der **erste** Treffer gesucht:
+  eine öffnende Winkelklammer, der **kein** Wortzeichen und **kein** Schrägstrich
+  vorausgeht (Zeilenanfang zählt), deren erstes inneres Zeichen **nicht**
+  Whitespace, `!` oder `/` ist, bis zur nächsten schließenden Klammer **derselben
+  Zeile**. Zwei **Nachfilter** verwerfen einen Treffer — sie sind Code, nicht Teil
+  des Musters, weil sie in ein Muster gepresst unlesbar und unprüfbar würden:
+  - das Innere enthält `://` oder `@` (Autolink, Adresse);
+  - das **erste Token** des Inneren (bis Whitespace oder `/`, kleingeschrieben)
+    ist ein bekannter HTML-Tag-Name.
+
+  Bleibt ein Treffer übrig ⇒ **ein** Befund `closure-note-placeholder` je
+  Kandidat, mit der Zeile des Treffers und dem Treffer als Ziel (auf 40 Runen
+  gekappt). Mehrere Platzhalter derselben Notiz sind dieselbe Reparatur.
+  **Die Zählung aus C4 bleibt unberührt** — sie sieht Inline-Code weiterhin; die
+  engere Sicht gilt nur hier. Konsumierte Vorzeichen zweier benachbarter
+  Platzhalter können sich überlappen; für den Vertrag ist das folgenlos, weil nur
+  der erste Treffer gemeldet wird.
+  Die Vorlage des Konsumenten nutzt Lookbehind und Lookahead und ist damit in RE2
+  **nicht** ausdrückbar; beide sind feste Zeichen-Prüfungen und hier durch
+  **Konsumieren** des Vorzeichens bzw. eine Zeichenklasse ersetzt — eine
+  Portierung mit eigener Testlast, keine Übernahme.
+
 - **C5. Befund-Form.** `file` = die Slice-Datei (bzw. das Verzeichnis bei C2),
   `line` = Zeile der Abschnitts-Überschrift (bzw. 1), `rule` = `planning`,
   `target` = `planning.closure.dir`, `message` = Klartext der verletzten
@@ -2263,6 +2290,7 @@ Exit 2 ohne Prüfung
 | `planning.closure.glob` | string | Wert von `planning.slice-glob` | Basisnamen-Glob (`path.Match`) der Kandidaten **dieser** Fähigkeit — getrennt von `planning.slice-glob`, weil die Lifecycle-Invariante „noch in Arbeit“ und die Closure-Struktur „abgeschlossen“ zählt. Nicht gesetzt ⇒ Default-Verweis (Befundsatz byte-identisch); **explizit** leer oder kein gültiges Glob ⇒ Exit 2; kein Kandidat unter dem gesetzten Glob ⇒ `closure-note-missing` auf dem Verzeichnis (fail-closed) |
 | `planning.closure.heading-pattern` | string | `^#{2,3} .*Closure-Notiz` | RE2 gegen die **getrimmte** Überschriften-Zeile; **genau ein** Treffer eröffnet den geprüften Abschnitt (mehrere ⇒ `closure-note-ambiguous`) (bis zur nächsten Überschrift gleicher oder höherer Ebene). Kein Treffer ⇒ `closure-note-missing`; ein nicht kompilierendes Muster ⇒ Exit 2 |
 | `planning.closure.min-sentences` | int | `4` | Mindestzahl der Satzende-Zeichen (`.`, `!`, `?`) im Abschnitt **nach** Entfernen der Fenced-Code-Blöcke; darunter ⇒ `closure-note-thin`. Wert < 1 ⇒ Exit 2 (eine Schwelle von 0 wäre ein stilles Grün) |
+| `planning.closure.placeholder` | bool | `false` | schaltet die vierte Struktur-Bedingung frei: der unausgefüllte Rumpf einer Vorlage ⇒ `closure-note-placeholder`. Aus ⇒ Schritt C4b entfällt, Befundsatz byte-identisch. Die Erkennung ignoriert **Inline-Code** und verwirft Autolinks/Adressen sowie HTML-Tags per Nachfilter |
 | `planning.closure.boilerplate` | string[] | leer | literale Floskel-Teilstrings, **case-insensitiv** gegen den bereinigten Abschnitts-Text geprüft; ein Treffer ⇒ `closure-note-boilerplate`. Bewusst **leer** per Default — der Vertrag bringt keine sprach-spezifischen Phrasen mit; ein leerer Eintrag ⇒ Exit 2 (er träfe jeden Text) |
 | `structure[].files` | string | — | Glob (Pfad, wie `scan.ignore`) über **Wurzel-relative** Pfade des gesamten Baums, unabhängig von `scan.roots`/`scan.ignore`; Pflicht je Regel. Null Kandidaten — auch nach Abzug von `exempt-paths` — ⇒ `section-missing` auf dem Glob ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)) |
 | `structure[].section` | string | leer | Heading-**Klartext**, exakter Vergleich der getrimmten Überschriften-Zeile **einschließlich `#`-Folge**. Genau eines von `section`/`section-pattern` ist Pflicht — beide oder keines ⇒ Exit 2 |
@@ -2405,6 +2433,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 |---|---|
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2: YAML-`null` bei `closure.glob` ausdrücklich als **abwesend** ausgewiesen (nicht als leer — die Exit-2-Zusage gilt dem explizit leeren String); §4-Zeile zu `closure-note-missing` nennt den geprüften Gegenstand jetzt „Kandidat“ statt „Slice“ samt effektivem Filter, weil die Kandidaten-Menge seit `planning.closure.glob` nicht mehr aus Slice-Dateien bestehen muss |
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2 + §2-Schema (`planning.closure.glob`): die Closure-Fähigkeit bekommt einen **eigenen** Kandidaten-Filter, dessen Default ein **Verweis** auf `planning.slice-glob` ist (nicht ein kopiertes Literal — ein zweites Muster wäre eine zweite Pflegestelle). Anlass: die beiden Fähigkeiten zählen verschiedene Mengen („noch in Arbeit“ gegen „abgeschlossen“) und teilten sich einen Schlüssel; wer die eine weitet, verbiegt die andere. Ein **explizit** leerer oder ungültiger Glob ⇒ Exit 2 statt stillem Rückfall auf den Default. Kein neuer Grund-Code |
+| 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) um Schritt **C4b** + §2-Schema (`planning.closure.placeholder`) erweitert: opt-in Erkennung unausgefüllter Vorlagen-Platzhalter. Auf dem C4-Abschnittstext werden zusätzlich die **Inline-Code-Spans geleert** — am eigenen Bestand gemessen liegen alle zwölf Treffer dort und keiner außerhalb, ohne die Einschränkung wäre jeder ein Falsch-Positiv. Zwei Nachfilter (Autolink/Adresse, HTML-Tag) sind ausdrücklich **Code**, nicht Teil des Musters. Erster Treffer je Kandidat; die Zählung aus C4 bleibt unberührt. Die Konsumenten-Vorlage nutzt Lookarounds und ist in RE2 nicht ausdrückbar — portiert durch Konsumieren des Vorzeichens. Grund-Code (§4) folgt mit der Implementierung (AllReasons-↔-§4-Lockstep) |
 | 2026-08-10 | §4-Grund-Code-Zeile zu `fence-unclosed` nachgezogen: sie trug weiter die mit Lastenheft 0.52.1 widerrufene Reichweite („von **allen** Modulen übersprungen. Befund an der Öffnungszeile") und widersprach damit der Anforderung — ein Lauf widerlegte sie in derselben Ausgabe. Jetzt „mindestens eine Lesart endet offen" und **Fundstelle** statt Reparaturstelle. Der `--doctor`-Klartext desselben Grund-Codes ist mitgezogen |
 | 2026-08-10 | §[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung) Schritt 3 nach bestätigender Re-Review nachgezogen: die Trimmung ist als **geteiltes** Prädikat festgeschrieben (das Modul `planning` trimmte weiter unicode-weit und trug den Anlassfall des Slice unverändert weiter), das Befund-Ziel verliert auch das CR einer CRLF-Zeile, und die Fundstellen-Klausel gilt für **beide** Lesarten — auch die strenge zeigt daneben, wenn eine längere Fence-Zeile eine kürzere Öffnung geschlossen hat |
 | 2026-08-09 | §[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung) Schritt 3 nach unabhängigem Code-Review überarbeitet: der Algorithmus führt jede Zeile durch **beide** Schluss-Lesarten des Produkts (naiver Toggle und längenabgeglichener CommonMark-Schluss) und meldet, sobald **eine** von beiden am Dateiende offen steht — vorher nur die naive, wodurch der Tabellen-Leser aus §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) unbewacht blieb. Die Trimmung ist auf Space/Tab festgeschrieben (identisch zur Vorverarbeitung, nicht unicode-weit); die Zeilenwahl ist präzisiert (Öffnungszeile der strengen Lesart, sonst letzte öffnend gewertete Zeile — unter reiner Paritätskippung ist die fehlende Öffnung nicht bestimmbar); die Kappung zählt **Runen** |

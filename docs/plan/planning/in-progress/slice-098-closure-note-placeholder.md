@@ -114,10 +114,19 @@ ist.
 
 - **Sub-Area prüfen:** Produkt-Code (`internal/`) und Spec (`spec/`), beide unter
   dem Repo-Default GF (`harness/conventions.md` §Modus: `*`).
-- **Offene Beobachtungen sichten:** das Register führt **BEO-001**
-  (Datei-Register driften unbemerkt gegen ihre Autoritäts-Tabelle). Andere
-  Klasse — hier geht es um den Inhalt **eines** Abschnitts. Nichts zu
-  berücksichtigen.
+- **Offene Beobachtungen sichten** (bei Slice-Beginn erneut gelesen — das
+  Register führt inzwischen **vier** Einträge, nicht mehr nur BEO-001):
+  - **BEO-001** (Datei-Register driften gegen ihre Autoritäts-Tabelle): andere
+    Klasse, nichts zu berücksichtigen.
+  - **BEO-002** (Semantik-Änderung nur im Körper, Ränder bleiben stehen):
+    einschlägig als **Arbeitsregel** — der neue Grund-Code hat Ränder in §4, im
+    `--doctor`-Klartext, im Handbuch und in der `print-config`-Vorlage.
+  - **BEO-003** (geteilte Lexik driftet an den Rändern): **einschlägig.** Die
+    Inline-Code-Paarung ist geteilte Lexik; diese Bedingung wird sie benutzen,
+    nicht nachbauen.
+  - **BEO-004** (Modul-Grenze nur auf der Quell-Achse): hier ohne Wirkung — die
+    Bedingung liest keine zusätzliche Eingabe, sie sieht denselben Abschnitt
+    enger.
 
 ## 8. Sub-Area-Modus-Begründung
 

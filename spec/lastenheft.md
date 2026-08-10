@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.53.1
+**Version:** 0.54.0
 
 **Status:** Draft
 
@@ -1945,6 +1945,41 @@ wiederholtes Literal) hält beide Mengen zusammen, solange niemand sie trennt:
 ohne den Schlüssel ist der Befundsatz byte-identisch, und es gibt kein zweites
 Muster, das gepflegt werden müsste.
 
+**Vierte Bedingung, opt-in: unausgefüllte Platzhalter** (`closure-note-placeholder`,
+Schalter `planning.closure.placeholder`, bool, Default `false`). Ein
+Template-Rumpf ist syntaktisch vollständig und passiert die drei Bedingungen
+oben: `Ergebnis: <ergebnis>. Belege: <belege>. Offen: <offen>.` hat einen
+Abschnitt, genug Satzende-Zeichen und keine deklarierte Floskel — und bleibt
+grün. Erkannt wird deshalb die **Auszeichnungs-Form** des Platzhalters: eine
+öffnende Winkelklammer, der kein Wortzeichen und kein Schrägstrich vorausgeht,
+deren erstes Inneres kein Whitespace, `!` oder `/` ist, bis zur nächsten
+schließenden Klammer **derselben Zeile**.
+
+**Winkelklammern sind in technischer Prosa häufig**, und ein Falsch-Positiv ist
+hier teurer als ein übersehener Platzhalter — es macht das Gate unglaubwürdig.
+Drei Einschränkungen halten die Erkennung eng:
+
+1. **Inline-Code zählt nicht.** Backtick-Spans werden vor der Suche geleert.
+   Meta-Syntax wird in Inline-Code **gezeigt** (`<PREFIX>`, `<a id>`,
+   `<datei>`) — dort steht sie absichtlich; Platzhalter stehen in der Prosa.
+   Gemessen am eigenen Bestand (96 Closure-Notizen): **12** Treffer, **alle
+   zwölf** in Inline-Code, **null** außerhalb. Ohne diese Einschränkung wären
+   alle zwölf Falsch-Positive.
+2. **Autolinks und Adressen fallen raus** — enthält das Innere `://` oder `@`,
+   ist es kein Platzhalter.
+3. **HTML-Tags fallen raus** — ist das erste Token des Inneren ein bekannter
+   Tag-Name, ist es Markup.
+
+Vergleichs- und Größer-Zeichen der Messwert-Prosa (`p95 < 1 s`, `Recall > 0,9`)
+sind bereits durch die Form ausgeschlossen: auf `<` folgt dort Whitespace.
+Generics (`vector<float>`) ebenso, weil ihnen ein Wortzeichen vorausgeht.
+
+Gemeldet wird **der erste** Treffer je Kandidat, wie bei der Floskel — mehrere
+Platzhalter derselben Notiz sind dieselbe Reparatur. **Die Zählung der Substanz
+bleibt unberührt:** sie zählt Satzende-Zeichen weiterhin einschließlich
+Inline-Code; diese Bedingung führt ihre eigene, engere Sicht. Die Angleichung
+beider ist eine eigene Frage.
+
 Geprüft wird **ausschließlich** `planning.closure.dir` (per Konvention das
 Verzeichnis der abgeschlossenen Slices) — ein Slice in Arbeit trägt noch keine
 Closure-Pflicht. Als Abschnitts-Überschrift zählt nur eine **echte
@@ -1971,7 +2006,8 @@ liefe das Gate fortan leer und grün. Am **Config-Rand** (Exit 2): ein `dir`
 außerhalb der Repo-Wurzel (absolut oder mit `..`), ein nicht kompilierendes
 `heading-pattern`, ein **explizit** gesetztes `min-sentences` < 1, ein
 **explizit** gesetzter leerer oder ungültiger `closure.glob` und ein leerer
-`boilerplate`-Eintrag. Ein explizit leerer Glob bricht ab, statt still auf den
+`boilerplate`-Eintrag. `placeholder` kennt keinen ungültigen Wert — ein Bool ist
+gesetzt oder nicht. Ein explizit leerer Glob bricht ab, statt still auf den
 Default zurückzufallen: den Schlüssel zu setzen ist eine Aussage, und eine
 Aussage, die nichts trifft, ist ein Konfigurationsfehler — dieselbe Begründung
 wie bei `min-sentences`.
@@ -2000,6 +2036,10 @@ bereits abdeckt.
 - **Boundary (eigener Kandidaten-Filter, Default):** Given `planning.closure.dir` gesetzt und **kein** `planning.closure.glob`, when `d-check --enable planning` läuft, then ist der Befundsatz byte-identisch zu einem Lauf, der `planning.slice-glob` als Kandidaten-Filter verwendet.
 - **Happy Path (Filter entkoppelt):** Given `planning.closure.glob: "*.md"` bei unverändertem `planning.slice-glob`, when `d-check --enable planning` läuft, then werden **alle** Markdown-Dateien im Closure-Verzeichnis auf ihre Notiz geprüft, **ohne** dass sich die Aussage der Lifecycle-Invariante ändert.
 - **fail-closed (leerer Glob):** Given `planning.closure.glob` **explizit** auf den leeren String gesetzt, when `d-check` startet, then Abbruch mit Exit-Code 2 und einer Meldung, die den Schlüssel nennt.
+- **Boundary (Platzhalter-Erkennung aus):** Given `planning.closure.placeholder` nicht gesetzt oder `false`, when das Modul läuft, then ist der Befundsatz byte-identisch zu einem Lauf ohne diese Bedingung.
+- **Negative (Template-Rumpf):** Given eine Closure-Notiz mit vier Platzhalter-Sätzen und aktivem Schalter, when das Modul läuft, then **genau ein** Befund `closure-note-placeholder` (erster Treffer), Exit-Code 1.
+- **Boundary (technische Prosa):** Given eine Closure-Notiz mit `p95 < 1 s`, `Recall > 0,9`, einem Generic, einem Autolink, einer Mail-Adresse, einem HTML-Tag und einer in **Inline-Code** gezeigten Meta-Syntax, when das Modul mit aktivem Schalter läuft, then **kein** Befund.
+- **Boundary (kombinierbar):** Given eine Notiz, die zugleich unter der Substanz-Schwelle liegt und einen Platzhalter trägt, when das Modul läuft, then **beide** Befunde.
 - **fail-closed (kein Kandidat):** Given ein existierendes `planning.closure.dir`, in dem **keine** Datei den **effektiven** Kandidaten-Filter matcht (gesetzter `planning.closure.glob`, sonst `planning.slice-glob`), when `d-check --enable planning` läuft, then ein Befund `closure-note-missing` auf das Verzeichnis, Exit-Code 1.
 - **fail-closed (Closure-Verzeichnis):** Given `planning.closure.dir` gesetzt, aber fehlend oder unlesbar, when `d-check --enable planning` läuft, then `closure-note-missing`, Exit 1.
 - **fail-closed (Config-Rand):** Given ein `planning.closure.dir` außerhalb der Repo-Wurzel, ein nicht kompilierendes `heading-pattern`, ein explizit gesetztes `min-sentences` < 1 **oder** einen leeren `boilerplate`-Eintrag, when `d-check` startet, then Exit 2 vor dem Lauf; ein **abwesendes** `min-sentences` ist dagegen der Default (kein Fehler).
@@ -2525,6 +2565,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.54.0 | 2026-08-10 | Change Request (Konsument `ai-harness-course`, CR 2): [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) bekommt eine **vierte**, opt-in Struktur-Bedingung — `closure-note-placeholder` (Schalter `planning.closure.placeholder`, Default `false`) meldet den unausgefüllten Rumpf einer Vorlage. Anlass: ein Template-Rumpf ist syntaktisch vollständig und passiert alle drei bestehenden Bedingungen (gemessen gegen v0.52.0: 0 Befunde). Erkannt wird die Auszeichnungs-Form; drei Einschränkungen halten sie eng, davon die tragende: **Inline-Code zählt nicht** — am eigenen Bestand gemessen (96 Closure-Notizen) liegen **alle zwölf** Treffer in Inline-Code und **null** außerhalb, ohne die Einschränkung wäre jeder ein Falsch-Positiv. Autolinks/Adressen und HTML-Tags fallen per Nachfilter raus; Vergleichszeichen und Generics bereits durch die Form. Erster Treffer je Kandidat, wie bei der Floskel. **Die Substanz-Zählung bleibt unberührt** — ihre Angleichung an dieselbe engere Sicht ist eine eigene Frage, weil sie eine ausgelieferte Schwelle bewegt |
 | 0.53.1 | 2026-08-10 | Nachzug nach unabhängigem Review: das Akzeptanzkriterium zur Nullmengen-Härte stand **zweimal** in der Anforderung — die ältere Fassung nannte weiter `planning.slice-glob` und war gegen die Umsetzung falsifizierbar (Closure-Verzeichnis nur mit Wellen-Dateien plus gesetztem `closure.glob` ⇒ das Kriterium verlangt einen Befund, der Lauf meldet Exit 0). Beide zu **einem** Kriterium über den **effektiven** Filter zusammengezogen |
 | 0.53.0 | 2026-08-10 | Change Request (Konsument `ai-harness-course`, CR 1): [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) bekommt mit `planning.closure.glob` einen **eigenen** Kandidaten-Filter für die Closure-Fähigkeit; Default ist ein **Verweis** auf `planning.slice-glob`, nicht ein wiederholtes Literal — ohne den Schlüssel ist der Befundsatz byte-identisch. Anlass: die beiden Fähigkeiten stellen verschiedene Fragen mit verschiedenen Grundmengen („liegt hier noch Arbeit?“ gegen „ist jedes abgeschlossene Paket dokumentiert?“) und teilten sich einen Schlüssel, solange beide zufällig dasselbe trafen. Wer die Menge weitet, verbiegt die jeweils andere — im Grenzfall zählt die Roadmap-Datei selbst als Slice und der Ruhe-Marker meldet dauerhaft falsch-rot (gemessen gegen v0.52.0). Ein **explizit** leerer oder ungültiger Glob bricht am Config-Rand mit Exit 2 ab statt still auf den Default zurückzufallen |
 | 0.52.3 | 2026-08-10 | Nachzug nach dritter Review-Runde. **Konsumenten-relevant:** die Heilung der Fence-Trimmung hat auch das mit 0.52.0 ausgelieferte Closure-Gate ([`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) geändert — die Richtung ist **nicht nur** „findet mehr": hinter einer mit Unicode-Whitespace eingerückten Fence-Zeile verstummen `closure-note-thin` und `closure-note-missing`, während `closure-note-boilerplate` neu meldet. Fachlich war das immer die zugesagte Lexik (Spezifikation Schritt C4: Fence-Lexik wie im übrigen Scanner); gemessen wurde bis dahin eine andere. Wer nach dem Update an einem Closure-Gate Befunde **verliert**, verliert Fehlmessungen. Ferner: die §4-Grund-Code-Zeile und der `--doctor`-Klartext trugen weiter die mit 0.52.1 widerrufene Reichweite („von **allen** Modulen übersprungen") und sind nachgezogen |
