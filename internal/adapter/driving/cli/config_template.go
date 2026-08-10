@@ -127,8 +127,8 @@ modules: [links, anchors]
 #   #   dir: docs/plan/planning/done    # Aktivierungs-Schalter; leer ⇒ inert (keine Slice-Datei wird geöffnet)
 #   #   glob: '*.md'                    # EIGENER Kandidaten-Filter; WEGLASSEN ⇒ es gilt slice-glob (Verweis, kein Literal)
 #   #   heading-pattern: '^#{2,3} .*Closure-Notiz'  # RE2 (Default); kein Treffer ⇒ closure-note-missing
-#   #   min-sentences: 4                # Satzende-Zeichen AUSSERHALB Fenced-Code (Default); < 1 ⇒ Exit 2
-#   #   boilerplate: []                 # literale Floskeln, case-insensitiv; Default LEER (keine Sprach-Annahme)
+#   #   min-sentences: 4                # Satzenden ausserhalb Fenced- UND Inline-Code, nur vor Whitespace; < 1 ⇒ Exit 2
+#   #   boilerplate: []                 # Floskeln, case-insensitiv an WORTGRENZEN; Default LEER (keine Sprach-Annahme)
 #   #   placeholder: false              # unausgefuellte Vorlagen-Platzhalter (<feld>); Default AUS, ignoriert Inline-Code
 
 # --- tracked: Getrackt-Status aufgelöster Link-/Bild-Ziele — git-Index (ohne Range), opt-in ---

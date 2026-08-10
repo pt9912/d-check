@@ -112,6 +112,11 @@ diesen Fall mit.
       Damit sind genau die zwei Phrasen aufgenommen, die als Teilstring
       **verworfen werden mussten**. Die Messung bestätigt auch die Warnung aus
       §2: Wortgrenzen machen kurze Phrasen brauchbar, nicht automatisch sicher.
+- [x] **Unabhängiger Review über beide Wellen-Slices** (Frischkontext) —
+      1 HIGH, 4 MEDIUM, 4 LOW, 1 INFO; merge-blockierend. Der Paritäts-Beleg
+      (84/84), der Abfall 7 → 5 und die 170 fett gesetzten Satzenden sind mit
+      **eigener** Methode nachgemessen und bestätigt; die Richtung ist monoton
+      (kein Wert steigt). Alle Befunde geheilt, siehe §5.
 - [ ] **Release** — **Wellen-Trigger**, gemeinsam mit
       [slice-094](../done/slice-094-closure-zaehl-paritaet.md): **eine** Notiz für
       beide Änderungen, mit **jeder** Richtung einzeln.
@@ -122,8 +127,19 @@ diesen Fall mit.
   beiden Slices ist das nicht additiv. Die Richtung ist zwar die harmlosere
   (weniger Falsch-Positive), aber ein Konsument, dessen Notiz heute rot ist,
   bekommt sie ohne Zutun grün. — **Ausgang:** offen; Abnahme-Punkt 3.
-- **Die ASCII-Grenze von RE2** könnte in einem anderssprachigen Repo anders
-  wirken als hier gemessen. — **Ausgang:** offen; Abnahme-Punkt 2.
+- **Die ASCII-Grenze** könnte in einem anderssprachigen Repo anders wirken als
+  hier gemessen. — **Ausgang: benannt, nicht geschlossen.** Der Vertrag nennt
+  sie jetzt in **beiden** Richtungen: ein Umlaut ist kein Wortzeichen, eine
+  Phrase mit angrenzendem Umlaut gilt damit als grenzständig und **trifft**. Am
+  eigenen Bestand kommt der Fall nicht vor.
+- **CRLF war der schwerste Befund des Reviews** (HIGH) und im eigenen Repo
+  unsichtbar: `countSentenceEnds` akzeptierte nur Space, Tab und Zeilenumbruch,
+  nicht das `\r` davor. In einer CRLF-Arbeitskopie zählte damit **kein**
+  zeilenschließendes Satzende — eine Notiz mit vier sauberen Sätzen meldete
+  `closure-note-thin`, dieselbe mit LF blieb grün. Das Adopter-Skript zählt `\r`
+  als Whitespace, die Parität wäre also auch gebrochen gewesen.
+  — **Ausgang: behoben**, mit Testfall über Modul und Funktion. **Zweite
+  CRLF-Regression an einem Tag** — die erste steckte in slice-101.
 
 ## 6. Trigger
 

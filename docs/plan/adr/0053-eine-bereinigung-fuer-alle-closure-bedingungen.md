@@ -50,6 +50,17 @@ Satzende wie `**Umsetzung.**`.
    Sachlich ist die neue Semantik die bessere; sie ist trotzdem eine Lockerung
    und darum hier begründet.
 
+   **Die Lockerung ist breiter als „eine Phrase in Backticks“**, und das
+   gehört dazugesagt: geleert wird jeder **Inline-Code-Span** nach der
+   CommonMark-Paarung. Zwei einzelne Backticks im selben Absatz bilden einen
+   Span — auch wenn der Autor keinen gemeint hat —, und der Text dazwischen
+   verschwindet aus **allen** Bedingungen. Eine benutzte Floskel kann so
+   ungesehen bleiben. Das ist keine neue Eigenschaft dieser Entscheidung, sondern
+   die geteilte Inline-Code-Lexik, der `links`, `ids` und `codepaths` längst
+   folgen; sie hier zu umgehen hieße, eine eigene Paarung zu bauen. Wer eine
+   Floskel im Fließtext hat, aber ungerade Backticks im selben Absatz, verliert
+   den Befund — die Ursache ist dann die Backtick-Parität, nicht die Floskel-Liste.
+
 3. **Ein Satzende zählt nur vor Whitespace oder Zeilenende — ohne Ausnahme für
    schließende Auszeichnung.** Die Messung zeigt, dass diese Regel 170 echte,
    fett gesetzte Satzenden mitverliert. Sie bleibt trotzdem: es ist die zugesagte
@@ -94,8 +105,13 @@ Satzende wie `**Umsetzung.**`.
 
 ## Fitness Function
 
-- **Parität in der Zähl-Semantik:** eine Fixture, die das Adopter-Skript wegen
-  der Satzzählung rot macht, macht auch das Modul rot.
+- **Parität in der Zähl-Semantik am realen Bestand:** über die 84 Closure-Notizen
+  des Adopter-Repos zählen Skript und Modul **identisch**, und an der
+  Adopter-Schwelle sind beide Seiten symmetrisch. Das ist die Zusage, die belegt
+  ist — eine Parität über **alle** denkbaren Eingaben ist es nicht: die
+  Inline-Code-Entfernung des Skripts ist eine einfache Ersetzung einzelner
+  Backticks, die des Moduls die CommonMark-Paarung. Für doppelte Backticks und
+  ungerade Parität divergieren sie; im gemessenen Bestand kommt das nicht vor.
 - **Beide Richtungen sind testgehalten:** die zitierte Floskel trifft **nicht**,
   dieselbe Phrase im Fließtext trifft **weiter**.
 - **Der eigene Bestand bleibt bei null** bei unverändertem `min-sentences: 4`.
@@ -115,3 +131,7 @@ Satzende wie `**Umsetzung.**`.
 ## Geschichte
 
 - 2026-08-10: Proposed (doc-first, `slice-094`).
+- 2026-08-10: nach unabhängigem Review präzisiert — die Lockerung ist **breiter**
+  als „eine zitierte Floskel" (jeder Inline-Code-Span nach CommonMark-Paarung,
+  auch ein unbeabsichtigter), und die Paritäts-Zusage ist auf den **gemessenen**
+  Bestand skopiert statt universell formuliert.

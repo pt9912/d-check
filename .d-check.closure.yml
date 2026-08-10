@@ -44,9 +44,11 @@ planning:
     #
     # `min-sentences` und `heading-pattern` bleiben auf den Kern-Defaults
     # (`^#{2,3} .*Closure-Notiz` und 4). Gemessen am eigenen Bestand: 95/95
-    # Slices tragen einen Abschnitt, und das Minimum liegt bei 7 Satzende-Zeichen
-    # außerhalb Code (mit dem Produkt gemessen: bei 8 wird der erste Slice rot)
-    # — die Schwelle ist ein Boden, keine Decke.
+    # Slices tragen einen Abschnitt. Nach der Zaehl-Angleichung (slice-094) liegt
+    # das Minimum bei 5 Satzende-Zeichen (mit dem Produkt gemessen: bei 6 wird
+    # der erste Slice rot) — vorher waren es 7. Der Abstand zur Schwelle 4 ist
+    # damit 1 statt 3; das ist die gewollte Wirkung, die Schwelle bleibt ein
+    # Boden, keine Decke.
     #
     # Vierte Bedingung, opt-in (ADR-0052): der unausgefuellte Rumpf einer
     # Vorlage. Er passiert die drei anderen, weil er syntaktisch vollstaendig

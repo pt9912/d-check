@@ -357,7 +357,10 @@ func countSentenceEnds(s string) int {
 		if s[i] != '.' && s[i] != '!' && s[i] != '?' {
 			continue
 		}
-		if i+1 < len(s) && s[i+1] != ' ' && s[i+1] != '\t' && s[i+1] != '\n' {
+		// \r gehoert dazu: bei CRLF steht es zwischen Satzende und Zeilenumbruch,
+		// und ohne diesen Fall zaehlte in einer CRLF-Arbeitskopie kein einziges
+		// zeilenschliessendes Satzende.
+		if i+1 < len(s) && s[i+1] != ' ' && s[i+1] != '\t' && s[i+1] != '\n' && s[i+1] != '\r' {
 			continue
 		}
 		n++

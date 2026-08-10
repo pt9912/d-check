@@ -606,6 +606,9 @@ func TestCountSentenceEnds(t *testing.T) {
 		"am String-Ende":      {"Eins.", 1},
 		"vor Tab":             {"Eins.\tZwei.\tDrei.", 3},
 		"vor Zeilenumbruch":   {"Eins.\nZwei.\n", 2},
+		// CRLF: zwischen Satzende und Umbruch steht \r. Ohne diesen Fall zaehlte
+		// in einer CRLF-Arbeitskopie kein zeilenschliessendes Satzende.
+		"vor CRLF":            {"Eins.\r\nZwei.\r\nDrei.\r\n", 3},
 		"vor Ziffer":          {"Version 0.55.0 ist da.", 1},
 		"vor Auszeichnung":    {"**Eins.** **Zwei.**", 0},
 		"vor Klammer":         {"Fertig.) Weiter.", 1},
@@ -687,11 +690,30 @@ func TestContainsWord(t *testing.T) {
 		{"", "ok", false},
 		{"ok", "", false},
 		{"a ok b", "ok", true},
+		// Ueberlappende Vorkommen: der erste Treffer wird an der Wortgrenze
+		// verworfen, der zweite beginnt INNERHALB des ersten.
+		{"xa-a-a y", "a-a", true},
+		// Grossbuchstaben: ueber das Modul unerreichbar (dort ist alles
+		// kleingeschrieben), aber die Funktion sagt es allgemein zu.
+		// Der NACHBAR ist der Grossbuchstabe — nur so wird der A-Z-Zweig der
+		// Wortzeichen-Pruefung ueberhaupt erreicht.
+		{"a -okY b", "ok", false},
+		{"a Xok- b", "ok", false},
 	}
 	for _, tc := range cases {
 		if got := containsWord(tc.s, tc.phrase); got != tc.want {
 			t.Errorf("containsWord(%q, %q) = %v, want %v", tc.s, tc.phrase, got, tc.want)
 		}
+	}
+}
+
+// Eine CRLF-Arbeitskopie darf die Zaehlung nicht kippen — der Rest des Produkts
+// traegt CRLF, und das Adopter-Skript zaehlt \r als Whitespace.
+func TestClosureZaehlungMitCRLF(t *testing.T) {
+	note := "# S\r\n\r\n## 7. Closure-Notiz\r\n\r\nEins.\r\nZwei.\r\nDrei.\r\nVier.\r\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": note}
+	if f := CheckPlanningClosure(coretest.NewMemFS(files), closureCfg()); f != nil {
+		t.Fatalf("CRLF darf die Zaehlung nicht kippen, got %+v", f)
 	}
 }
 

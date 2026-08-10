@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.56.0
+**Version:** 0.56.1
 
 **Status:** Draft
 
@@ -1938,7 +1938,12 @@ werden nicht gemessen (siehe unten). Drei Struktur-Bedingungen:
   (case-insensitiv) eine der Phrasen aus `planning.closure.boilerplate` **als
   eigenständigen Wortlaut** ⇒ `closure-note-boilerplate`. Vor und hinter dem
   Treffer darf kein Wortzeichen stehen; Satzzeichen, Anführungszeichen,
-  Bindestrich und Zeilenrand sind Grenzen.
+  Bindestrich und Zeilenrand sind Grenzen. Als Wortzeichen gilt die
+  **ASCII**-Menge (`0-9A-Za-z_`); ein Umlaut zählt damit **nicht** als
+  Wortzeichen. Für die gelebten Formen ist das richtig (`„Ok“`, `Ok.`,
+  `Ok—`), es heißt aber auch: eine Phrase, an die unmittelbar ein Umlaut grenzt,
+  gilt als grenzständig und **trifft**. Am eigenen Bestand gemessen kommt der
+  Fall nicht vor.
 
   **Warum nicht als Teilstring:** kurze Phrasen wären sonst unbrauchbar — und
   kurze Phrasen sind genau die, für die die Bedingung gedacht ist. Eine Notiz,
@@ -2003,10 +2008,9 @@ wie überall sonst auch. Beides sind Eigenschaften der geteilten Lexik; sie hier
 allein zu reparieren hieße, eine sechste Sicht auf denselben Text zu bauen.
 
 Gemeldet wird **der erste** Treffer je Kandidat, wie bei der Floskel — mehrere
-Platzhalter derselben Notiz sind dieselbe Reparatur. **Die Zählung der Substanz
-bleibt unberührt:** sie zählt Satzende-Zeichen weiterhin einschließlich
-Inline-Code; diese Bedingung führt ihre eigene, engere Sicht. Die Angleichung
-beider ist eine eigene Frage.
+Platzhalter derselben Notiz sind dieselbe Reparatur. Diese Bedingung liest
+denselben **einmal bereinigten** Abschnitt wie die drei anderen; eine eigene,
+engere Sicht führt sie nicht mehr.
 
 Geprüft wird **ausschließlich** `planning.closure.dir` (per Konvention das
 Verzeichnis der abgeschlossenen Slices) — ein Slice in Arbeit trägt noch keine
@@ -2059,7 +2063,7 @@ bereits abdeckt.
 - **Boundary (Closure-Fähigkeit aus):** Given `planning` aktiv **ohne** `planning.closure.dir`, when `d-check --enable planning` läuft, then ist der Befundsatz byte-identisch zur Aktiv-Status-Prüfung allein ([`DC-QA-02`](#dc-qa-02--determinismus)) — die Closure-Fähigkeit ist inert und liest keine Slice-Datei.
 - **Negative (Platzhalter/dünn):** Given ein Slice im Closure-Verzeichnis, dessen Closure-Notiz-Abschnitt weniger als `min-sentences` Satzende-Zeichen außerhalb von Code-Blöcken trägt, when `d-check --enable planning` läuft, then ein Befund `closure-note-thin` (Datei, Zeile der Abschnitts-Überschrift), Exit 1.
 - **Negative (Abschnitt fehlt):** Given ein Slice im Closure-Verzeichnis **ohne** eine auf `heading-pattern` passende Überschrift, when `d-check --enable planning` läuft, then ein Befund `closure-note-missing`, Exit 1.
-- **Negative (Floskel):** Given einen konfigurierten `planning.closure.boilerplate`-Eintrag, dessen literaler Teilstring case-insensitiv im bereinigten Abschnitts-Text vorkommt, when `d-check --enable planning` läuft, then ein Befund `closure-note-boilerplate`, Exit 1.
+- **Negative (Floskel):** Given einen konfigurierten `planning.closure.boilerplate`-Eintrag, dessen Phrase case-insensitiv und **an Wortgrenzen** im bereinigten Abschnitts-Text vorkommt, when `d-check --enable planning` läuft, then ein Befund `closure-note-boilerplate`, Exit-Code 1.
 - **Boundary (Code-Block zählt nicht):** Given eine Closure-Notiz, deren Satzende-Zeichen überwiegend in einem Fenced-Code-Block stehen, when `d-check --enable planning` läuft, then zählen nur die Zeichen außerhalb des Blocks — bleibt die Zahl unter der Schwelle, dann `closure-note-thin`.
 - **Boundary (eigener Kandidaten-Filter, Default):** Given `planning.closure.dir` gesetzt und **kein** `planning.closure.glob`, when `d-check --enable planning` läuft, then ist der Befundsatz byte-identisch zu einem Lauf, der `planning.slice-glob` als Kandidaten-Filter verwendet.
 - **Happy Path (Filter entkoppelt):** Given `planning.closure.glob: "*.md"` bei unverändertem `planning.slice-glob`, when `d-check --enable planning` läuft, then werden **alle** Markdown-Dateien im Closure-Verzeichnis auf ihre Notiz geprüft, **ohne** dass sich die Aussage der Lifecycle-Invariante ändert.
@@ -2598,6 +2602,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.56.1 | 2026-08-10 | Nachzug nach unabhängigem Review, vor dem Release: drei Vertragsflächen standen noch auf der Fassung **vor** der Zähl-Angleichung und waren gegen die Umsetzung falsifizierbar — die Aussage, die Zählung sehe Inline-Code weiterhin (sie tut es nicht mehr), und das Akzeptanzkriterium zur Floskel, das einen **Teilstring**-Treffer verlangte (der Lauf meldet nichts). Ferner stand die ASCII-Wortgrenze nur in ihrer günstigen Richtung; sie steht jetzt in beiden: ein Umlaut ist **kein** Wortzeichen, eine Phrase mit angrenzendem Umlaut gilt damit als grenzständig und trifft |
 | 0.56.0 | 2026-08-10 | Change Request des Auftraggebers: die Floskel-Bedingung von [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) vergleicht an **Wortgrenzen** statt als Teilstring. Anlass: kurze Phrasen waren unbrauchbar, und kurze Phrasen sind genau die, für die die Bedingung gedacht ist — eine Notiz, die nur „Ok.“ sagt, ist der Kern-Fall. Am eigenen Bestand gemessen (97 Notizen): `ok` fällt von **68** Treffern auf **1**, `n/a` von 2 auf 0, `fertig` von 3 auf 0; mehrwortige Phrasen sind verhaltensgleich, und die fünf **konfigurierten** Phrasen ändern sich nicht. Die Änderung **findet weniger** — ein roter Konsumentenlauf kann grün werden; sie gehört damit in dieselbe Release-Notiz wie die Lockerung aus 0.55.0. Wortgrenzen machen kurze Phrasen brauchbar, nicht automatisch sicher: der eine verbleibende `ok`-Treffer ist echt |
 | 0.55.0 | 2026-08-10 | Change Request (Parität zum abzulösenden Adopter-Skript des Schwester-Repos): die **Substanz-Zählung** von [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) ist angeglichen — der Abschnitt wird **einmal** bereinigt (Fences **und** Inline-Code), und ein Satzende zählt nur vor **Whitespace oder Zeilenende**. Anlass: eine Notiz, die der Adopter-Sensor als zu dünn meldet, lief bei d-check durch. Gemessen am eigenen Bestand tragen **mehr als die Hälfte** aller Satzende-Vorkommen keinen Satz (Link-Pfade, Versionsnummern); das Minimum fällt von 7 auf 5, bei Schwelle 4 bleibt der Bestand grün. **Die Änderung wirkt in zwei Richtungen:** `closure-note-thin` wird **schärfer** (ein grüner Konsumentenlauf kann rot werden), `closure-note-boilerplate` **lockerer** — eine Floskel in Backticks trifft nicht mehr, weil beide Bedingungen denselben Text lesen. Die Lockerung ist begleitend per ADR entschieden ([`AGENTS.md` §3.6](../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)) und gehört in die Release-Notiz: wer eine Floskel zitiert stehen hat, verliert einen bestehenden Befund |
 | 0.54.1 | 2026-08-10 | Nachzug nach unabhängigem Review, vor dem Release der 0.54.0: die Zusage „Vergleichszeichen sind durch die Form ausgeschlossen“ hielt nur für die Schreibweise **mit** Leerzeichen — `Die Latenz blieb <1 s und der Recall >0,9` meldete. Das Innere eines Platzhalters muss jetzt **frei von Whitespace** sein (ein Feldname, kein Satz); das erledigt zugleich HTML-Tags mit Attributen. Neu ausgeschlossen: das Winkelklammer-**Linkziel** `](<ziel>)`. Der Substanz-Bullet behauptete weiter, ein zurückgelassener Platzhalter falle der Zählung auf — er tut es nur, wenn er kurz ist; ein vollständiger Vorlagen-Rumpf erreicht die Schwelle, und genau deshalb gibt es die vierte Bedingung. Zwei Grenzen sind jetzt **benannt**: der eingerückte Code-Block (in d-check nirgends modelliert) und die ungerade Backtick-Parität im Absatz |
