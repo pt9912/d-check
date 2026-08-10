@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-08-03.
+**Status:** Aktiv. **Letzte Änderung:** 2026-08-10.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine Reihenfolge von
 Terminen (siehe [Baseline-Regelwerk `modul-06-roadmap.md`](../../../../.harness/baseline/v5.0.0/regelwerk/modul-06-roadmap.md)).
@@ -16,12 +16,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 den drei Pflicht-Bestandteilen (Slice-IDs · Trigger · Closure-Kriterien); das
 *Geplante Ende* ist Schätzung, kein Closure-Kriterium.
 
-**Welle-ID:** welle-70-fence-lexik
-**Start:** 2026-08-09
-**Geplantes Ende:** 2026-08-10 (Schätzung, korrigierbar)
-
-**Closure-Trigger:** siehe [Wellendokument](../welle-70-fence-lexik.md).
-
+Keine aktive Welle.
 
 ## Nächste Wellen
 
@@ -32,7 +27,8 @@ und geschätzter Aufwand (S/M/L, kein Termin).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| structure-Umsetzung | welle-70 in `done/` — der Fence-Defekt ist behoben, sonst erbt das neue Modul einen bekannten stillen Grün-Pfad | [slice-099](../open/slice-099-structure-modul.md) | L |
+| structure-Umsetzung | **Trigger eingetreten** (welle-70 in `done/`, Release v0.53.0) — Freigabe offen | [slice-099](../open/slice-099-structure-modul.md) | L |
+| Geteilte Lexik an den Rändern | Freigabe; nach welle-70 geschnitten — dieselbe Klasse in anderen Lexiken (`citations`-Absatzbildung, Anker-Auflösung, git-Revisionen) | [slice-103](../open/slice-103-geteilte-lexik-raender.md) | M |
 | Closure-Fähigkeit nachschärfen | Freigabe; unabhängig von der Umsetzungs-Welle — der Zuschnitt ist mit welle-69 entschieden (alle drei bleiben eigenständig) | [slice-094](../open/slice-094-closure-zaehl-paritaet.md), [slice-097](../open/slice-097-closure-glob-entkopplung.md), [slice-098](../open/slice-098-closure-note-placeholder.md) | M |
 
 ## Meilensteine
@@ -94,7 +90,7 @@ Zeile voll heißt treibende.
 
 | Datum | Was wurde geändert? | Warum? |
 |---|---|---|
-| 2026-08-09 | **welle-70-fence-lexik eröffnet**; [slice-101](slice-101-fence-unbalanciert.md) `open`→`in-progress` | Der beim slice-096-Review gefundene **ausgelieferte** stille Grün-Pfad im Fence-Automaten wird vorgezogen: er ist bindende Vorbedingung der structure-Umsetzung, und er betrifft ein Gate, das seit v0.52.0 im Feld ist. **Nebenbefund beim Eröffnen:** drei Slice-Köpfe trugen „ohne Welle" — unter der Zwei-Zustands-Kopplung aus [`MR-024`](../../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform) ist das für einen Slice **in Arbeit** nicht einlösbar (`planning-check` verlangt bei belegtem `in-progress/` eine benannte Welle). Die Köpfe sind korrigiert; ob die Kopplung so bleiben soll, gehört bei der Closure ins Beobachtungs-Register |
+| 2026-08-09 | **welle-70-fence-lexik eröffnet**; [slice-101](../done/slice-101-fence-unbalanciert.md) `open`→`in-progress` | Der beim slice-096-Review gefundene **ausgelieferte** stille Grün-Pfad im Fence-Automaten wird vorgezogen: er ist bindende Vorbedingung der structure-Umsetzung, und er betrifft ein Gate, das seit v0.52.0 im Feld ist. **Nebenbefund beim Eröffnen:** drei Slice-Köpfe trugen „ohne Welle" — unter der Zwei-Zustands-Kopplung aus [`MR-024`](../../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform) ist das für einen Slice **in Arbeit** nicht einlösbar (`planning-check` verlangt bei belegtem `in-progress/` eine benannte Welle). Die Köpfe sind korrigiert; ob die Kopplung so bleiben soll, gehört bei der Closure ins Beobachtungs-Register |
 | 2026-06-11 | slice-012-Trigger: „slice-011 done" → „slice-011 **und** slice-013 done" | Der [`DC-QA-04`](../../../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools)-Vergleichslauf gegen das erweiterte `docs-check.js` zeigte die Inline-Code-Pfad-Prüfung als Konsolidierungs-Lücke; Change Request [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) (Lastenheft 0.3.0) als slice-013 eingeschoben |
 | 2026-07-17 | **WIP-Limit wiederhergestellt:** slice-071 `in-progress`→`open` (Blocker), slice-076 `in-progress`→`next`; welle-60 führt nur noch slice-073 in Arbeit. Reihenfolge danach: slice-073 zu Ende (vier offene R1-Befunde + bestätigender Review) → Closure → slice-075 | `in-progress/` trug **drei** Slices gleichzeitig; Modul 5: „WIP-Limit pro Implementer = 1 ist eine harte Größe, kein Vorschlag" und `next→in-progress` verlangt „WIP-Limit frei". Bei slice-076 wurde die Bedingung beim Einplanen schlicht nicht geprüft (`6d60094`); slice-071 war bereits blockiert und hätte nach Modul 5 längst zurückgeführt gehört — beides still, bis der Auftraggeber die Regel einforderte. slice-075 erhält Vorrang vor slice-076, weil er produktiv verdrahtetes `trace.coverage` **verfälscht** (Auftraggeber-Meldung grid-gym), während slice-076 Blindheit ohne Falschaussage ist |
 | 2026-07-17 | slice-074 aus welle-60 zurückgestellt (`in-progress/` → `open/`), Implementierung zurückgenommen; slice-076 in welle-60 nachgenommen | Drei unabhängige Reviews belegten an fünf aufeinanderfolgenden Fassungen dieselbe Klasse, zuletzt einen Stilles-Grün-Pfad (R3-F-1). Der Realdatenbeleg für slice-071 ist damit weiter blockiert — offen ausgewiesen statt still weitergeschoben. slice-076 kam aus dem Spike, den die Rücknahme ausgelöst hat |

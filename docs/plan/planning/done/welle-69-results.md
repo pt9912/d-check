@@ -25,7 +25,7 @@ funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
   mit, war aber nie ausgesprochen — genau die Klasse, die den Antrag ausgelöst hat.
 - **Zwei Folge-Slices geschnitten und angelegt:**
   [slice-099](../open/slice-099-structure-modul.md) (Implementierung) und
-  [slice-101](../in-progress/slice-101-fence-unbalanciert.md).
+  [slice-101](../done/slice-101-fence-unbalanciert.md).
 - **Die drei liegenden Closure-Slices haben ihre Entscheidung:** alle drei
   bleiben eigenständig — das war das *Mehr* dieser Welle gegenüber der Slice-DoD.
 
@@ -100,7 +100,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 das Original ist die Slice-Datei. Jeder genannte Folge-Slice muss als Datei im
 Planning-Lifecycle existieren.
 
-- [slice-101](../in-progress/slice-101-fence-unbalanciert.md) — der ausgelieferte stille
+- [slice-101](../done/slice-101-fence-unbalanciert.md) — der ausgelieferte stille
   Grün-Pfad im Fence-Automaten; **bindende** Vorbedingung für 099.
 - [slice-099](../open/slice-099-structure-modul.md) — die Implementierung des
   Moduls samt Preset-Kopplung und neun Grund-Codes.

@@ -20,7 +20,7 @@ Bedingungen der Closure-Note-Struktur laufen darüber grün.
 
 **Zur Ehrlichkeit über diese Welle:** sie bündelt **einen** Slice, und der Grund
 ist *nicht* ein Mehr gegenüber seiner Definition of Done. Der Grund ist eine
-repo-eigene Kopplung: [`MR-024`](../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform)
+repo-eigene Kopplung: [`MR-024`](../../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform)
 kennt genau zwei Zustände — laufende Welle mit Struktur-Feldern oder Ruhe-Marker
 —, und `make planning-check` erzwingt „kein `slice-*` in `in-progress/` ⟺
 Marker". Ein Slice in Arbeit **ohne** benannte Welle ist damit nicht
@@ -31,14 +31,14 @@ Closure ins Beobachtungs-Register, nicht in diese Welle.
 
 ## 2. Trigger (Welle startet)
 
-- [slice-096](done/slice-096-structure-modul-analyse.md) ist geschlossen; der
+- [slice-096](slice-096-structure-modul-analyse.md) ist geschlossen; der
   Defekt ist dort als eigener Slice ausgewiesen und **bindende** Vorbedingung
   für die Umsetzungs-Welle.
 - Kein WIP-Konflikt: `in-progress/` trug beim Start keinen Slice.
 
 ## 3. Closure-Trigger (Welle schließt)
 
-- [slice-101](in-progress/slice-101-fence-unbalanciert.md) liegt in `done/`.
+- [slice-101](slice-101-fence-unbalanciert.md) liegt in `done/`.
 - Der belegte Reproduktionsfall meldet; der Test ist mutations-echt.
 - `make gates` + `make verify-closure-notes` grün; Trigger-Audit durchlaufen.
 - Closure-Notiz `done/welle-70-results.md` geschrieben.
@@ -47,7 +47,7 @@ Closure ins Beobachtungs-Register, nicht in diese Welle.
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [slice-101](in-progress/slice-101-fence-unbalanciert.md) | Unbalancierter Fence verschluckt still den Rest des Abschnitts | [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), [ADR-0042](../adr/0042-markdown-lexik-folgt-commonmark.md) |
+| [slice-101](slice-101-fence-unbalanciert.md) | Unbalancierter Fence verschluckt still den Rest des Abschnitts | [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) |
 
 ## 5. Abhängigkeiten
 
@@ -58,7 +58,7 @@ Closure ins Beobachtungs-Register, nicht in diese Welle.
 ## 6. Out-of-Scope für diese Welle
 
 - **Das Modul `structure`** — eigener Strang, eigene Welle.
-- **Eine allgemeine Markdown-Parser-Ablösung.** [ADR-0042](../adr/0042-markdown-lexik-folgt-commonmark.md)
+- **Eine allgemeine Markdown-Parser-Ablösung.** [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md)
   hat gemessen, dass ein echter Parser die Policy-Klasse nicht löst; diese Welle
   ändert die Fence-Lexik gezielt, nicht das Verfahren.
 - **Sanierung des Bestands**, falls die Messung unbalancierte Fences findet —

@@ -4,7 +4,7 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** [welle-70-fence-lexik](../welle-70-fence-lexik.md), eröffnet am
+**Welle:** [welle-70-fence-lexik](../done/welle-70-fence-lexik.md), eröffnet am
 2026-08-09. Die Welle bündelt nur diesen Slice — nicht wegen eines Mehr
 gegenüber der DoD, sondern weil `make planning-check` einen Slice in Arbeit ohne
 benannte aktive Welle nicht zulässt (die Zwei-Zustands-Kopplung aus
