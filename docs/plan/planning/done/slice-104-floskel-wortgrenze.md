@@ -168,4 +168,49 @@ mit der slice-094 aus welle-71 herausgehalten wurde.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Geliefert ist der Wortgrenzen-Vergleich der Floskel-Bedingung, ausgeliefert mit
+**v0.56.0** gemeinsam mit [slice-094](slice-094-closure-zaehl-paritaet.md)
+([`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
+Lastenheft 0.56.1). Kein neuer Grund-Code — es ändert sich, was ein Treffer
+**ist**.
+
+**Der Change Request war schon beim Anlegen gemessen, und die Zahlen waren
+deutlicher als seine Behauptung.** Über 97 eigene Closure-Notizen fällt `ok` von
+**68** Teilstring-Treffern auf **1**; 67 waren Falsch-Positive. Mehrwortige
+Phrasen sind verhaltensgleich, und die fünf damals konfigurierten ändern sich
+nicht — für den eigenen Lauf war die Änderung byte-identisch.
+
+**Der eigentliche Gewinn ist ein anderer als der CR nannte.** Er wollte kurze
+Phrasen brauchbar machen; geliefert ist, dass genau die Phrasen aufgenommen
+werden konnten, die [slice-093](slice-093-closure-note-gate.md) als Teilstring
+**verwerfen musste**: `fertig` (3 → 0 Treffer) und `n/a` (2 → 0). Vor der
+Aufnahme wurde jeder Kandidat einzeln gemessen — `ok`, `erledigt` und `läuft`
+sind draußen geblieben, weil ihre verbleibenden Treffer echte Prosa sind.
+
+**Keine eigene ADR, und das war eine Entscheidung.** Abnahme-Punkt 2 hat keine
+eigene Frage erzeugt: die ASCII-Grenze folgt der Messung, und den Rahmen für die
+Lockerung **derselben** Prüfung setzt bereits
+[ADR-0053](../../adr/0053-eine-bereinigung-fuer-alle-closure-bedingungen.md) aus
+demselben Wellen-Zug. Eine zweite ADR hätte dieselbe Frage ein zweites Mal
+entschieden.
+
+**Der Review fand einen Fehler, den dieses Repo strukturell nicht finden
+kann.** Die Satzzählung akzeptierte das `\r` vor dem Zeilenumbruch nicht: in
+einer CRLF-Arbeitskopie zählte kein zeilenschließendes Satzende, eine Notiz mit
+vier sauberen Sätzen meldete `closure-note-thin`. Der eigene Bestand ist
+LF-only — kein Gate sieht diese Klasse je. **Zweite CRLF-Regression an einem
+Tag**, die erste steckte in slice-101; beide Male gefunden von einer
+konstruierten Gegenprobe, nie vom Korpus.
+
+**Zwei Zusagen waren breiter als belegt.** Die Lockerung betrifft nicht nur
+„eine zitierte Floskel“, sondern **jeden** Inline-Code-Span nach
+CommonMark-Paarung — auch einen unbeabsichtigten aus zwei einzelnen Backticks im
+selben Absatz. Und die Paritäts-Zusage galt universell, belegt ist sie am
+gemessenen Bestand: die Inline-Code-Entfernung des Adopter-Skripts ist eine
+einfache Backtick-Ersetzung, die des Moduls die CommonMark-Paarung. Beide
+Zusagen sind jetzt so formuliert, wie sie belegt sind.
+
+**Zwei Rückbauten blieben grün.** Die Weitersuche verlor **überlappende**
+Vorkommen, und der Großbuchstaben-Zweig der Wortzeichen-Prüfung war über das
+Modul unerreichbar. Mein erster Testfall für den zweiten diskriminierte nicht —
+er fand die Phrase gar nicht erst; der **Nachbar** muss der Großbuchstabe sein.

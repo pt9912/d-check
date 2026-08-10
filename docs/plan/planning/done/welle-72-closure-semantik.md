@@ -91,4 +91,11 @@ daneben und muss in derselben Notiz erscheinen.
 
 ## 8. Closure-Notiz
 
-_Ausstehend._
+Geschlossen am 2026-08-10. Die Ergebnis-Notiz steht — der Baseline-Form folgend —
+in einer **eigenen** Datei daneben: [`welle-72-results.md`](welle-72-results.md).
+
+Das Wellen-Ziel jenseits beider Slice-DoDs ist eingelöst: **ein** Release
+(**v0.56.0**) mit **einer** Notiz, die alle drei Richtungen einzeln nennt.
+
+Diese Plan-Datei hält nur noch fest, **dass** die Welle geschlossen ist; ihr
+Zustand ist die Verzeichnis-Position.
