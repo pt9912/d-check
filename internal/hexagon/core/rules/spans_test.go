@@ -133,6 +133,10 @@ func TestFenceUnclosed(t *testing.T) {
 		// strenge Lesart ist er geschlossen, für den naiven Toggle bleibt die
 		// Parität gekippt — und die Vorverarbeitung überspringt den Rest.
 		{"nur die naive Lesart kippt", "````markdown\n```\n````\n\nProsa.\n", 3},
+		// Beide offen, an verschiedenen Zeilen: die strenge Lesart kennt die
+		// tatsaechlich offene Oeffnung (Z. 1) und hat Vorrang vor der Parität
+		// des naiven Toggles (Z. 5).
+		{"strenge Lesart hat Vorrang", "````\nx\n```\ny\n```\nz\n", 1},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -190,6 +194,22 @@ func TestFenceUnclosedZiel(t *testing.T) {
 				t.Errorf("Ziel = %d Runen, want ≤ 30", n)
 			}
 		})
+	}
+}
+
+// CRLF: splitLines trennt nur an \n, das CR bleibt an der Zeile haengen. Es
+// darf nicht ins Befund-Ziel gelangen — im Terminal ueberschriebe es die
+// Befundzeile, in --json steht es als rohes Steuerzeichen.
+func TestFenceUnclosedZielOhneCR(t *testing.T) {
+	got := checkUnclosedFence("d.md", []byte("# T\r\n\r\n```yaml\r\ncode\r\n"))
+	if len(got) != 1 {
+		t.Fatalf("erwartet genau einen Befund, got %+v", got)
+	}
+	if got[0].Target != "```yaml" {
+		t.Errorf("Ziel = %q, want %q", got[0].Target, "```yaml")
+	}
+	if strings.ContainsAny(got[0].Target, "\r\n") {
+		t.Errorf("Ziel traegt ein Steuerzeichen: %q", got[0].Target)
 	}
 }
 

@@ -84,13 +84,12 @@ haben:
    Absatzgrenze **ist**. **Genau ein** Befund je Datei: hinter einem offenen
    Fence kann keine zweite Öffnung mehr gemeldet werden, ohne zu raten.
 
-   Die gemeldete Zeile ist die Öffnung, **soweit sie bestimmbar ist**: die
-   strenge Lesart kennt die tatsächlich offene Öffnung und hat deshalb Vorrang.
-   Kippt dagegen nur die Parität des naiven Toggles, ist die schuldige Öffnung
-   grundsätzlich nicht bestimmbar — mehrere gleich lange Öffner sind
-   ununterscheidbar. Dann zeigt der Befund auf die letzte öffnend gewertete
-   Zeile. Das ist eine **Fundstelle**, nicht zwingend die Reparaturstelle, und
-   diese Ehrlichkeit ist der Preis dafür, den Zustand überhaupt zu melden.
+   Die gemeldete Zeile ist eine **Fundstelle**, keine Reparaturstelle: die
+   strenge Lesart hat Vorrang, weil sie eine tatsächlich offene Öffnung kennt,
+   aber welche Öffnung *fehlt*, ist grundsätzlich nicht entscheidbar. Gleich
+   lange Öffner sind ununterscheidbar, und auch die strenge Lesart zeigt
+   daneben, wenn eine längere Fence-Zeile eine kürzere Öffnung geschlossen hat.
+   Diese Ehrlichkeit ist der Preis dafür, den Zustand überhaupt zu melden.
 
 4. **Kein neuer Config-Schlüssel.** `spans` ist opt-in und trägt seine beiden
    bestehenden Klassen ohne Schalter; eine dritte bekommt keinen. Wer sie nicht
@@ -131,12 +130,14 @@ haben:
   ihr Silent-Grün-Pfad wird von einem anderen Modul aufgedeckt. Die Grenze ist
   dabei **schärfer als zunächst notiert**, gemessen beim End-to-End-Beleg: der
   Wächter greift nur, wenn `spans` aktiv ist **und** die Datei im **Scan-Scope**
-  liegt. Zwei Klassen fallen dadurch systematisch heraus: Post-Pässe über selbst
-  benannte Verzeichnisse (die Closure-Fähigkeit) und **Zieldateien** außerhalb
-  der Scan-Wurzeln, aus denen Module lesen — `matrix` den Status, `anchors` die
-  Slugs, `diagrams` und `versions` ihre deklarierten Quellen. In beiden bleibt
-  ein offener Fence unentdeckt. Das gehört in die Release-Notiz, nicht in eine
-  stille Annahme.
+  liegt. Zwei Klassen fallen dadurch heraus: Post-Pässe über selbst benannte
+  Verzeichnisse und **Zieldateien** außerhalb der Scan-Wurzeln, aus denen Module
+  lesen — `matrix` den Status, `anchors` und `codepaths` die Slugs, `diagrams`
+  und `versions` ihre Quellen, `pins` die gehashte Heading-Section. Bei `pins`
+  ist die Folge **still**: ein offener Fence verdeckt die Überschrift, der Anker
+  wird unauflösbar, und die Drift-Prüfung entfällt kommentarlos. Ebenfalls
+  außerhalb liegt der eingerückte Code-Block — er ist in keiner Lesart
+  modelliert. Das gehört in die Release-Notiz, nicht in eine stille Annahme.
 - **Der Bestand bleibt grün** (776 Dateien, null Vorkommen). Der Wert liegt
   vollständig in der Zukunft; das ist bei einem latenten Defekt der Normalfall
   und kein Argument gegen ihn.
@@ -178,3 +179,10 @@ haben:
   ehrlich eine Fundstelle, die Fitness Function ist um die Fälle ergänzt, an
   denen die vorherige Fassung nachweislich scheiterte, und die Grenze deckt
   jetzt auch die Ziel-Achse.
+- 2026-08-09: nach bestätigender Re-Review nachgezogen — die Trimmung ist zu
+  einem geteilten Prädikat geworden (das Modul `planning` trimmte weiter
+  unicode-weit und trug den Anlassfall des Slice unverändert), das CR einer
+  CRLF-Zeile fällt aus dem Befund-Ziel, der Vorrang der strengen Lesart hat eine
+  Assertion, die Fundstellen-Klausel gilt für **beide** Lesarten statt nur für
+  die Parität, und die Grenze nennt `pins`, `codepaths` und den eingerückten
+  Code-Block.

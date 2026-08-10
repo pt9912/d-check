@@ -121,6 +121,33 @@ func TestClosureCodeBlockZaehltNicht(t *testing.T) {
 	}
 }
 
+// Die Fence-Erkennung trimmt nur Space und Tab, nicht unicode-weit — identisch
+// zur Vorverarbeitung (TrimFenceIndent). Sonst kippt eine mit U+00A0
+// eingerückte Zeile die Fence-Parität NUR hier, und alles dahinter faellt aus
+// der Messung: die Floskel waere unsichtbar, und weil dieselbe Zeile fuer das
+// Modul spans kein Toggle ist, meldete auch dessen fence-unclosed nicht.
+func TestClosureUnicodeWhitespaceIstKeineFenceEinrueckung(t *testing.T) {
+	note := "## 7. Closure-Notiz\n\nEins. Zwei. Drei. Vier.\n\n\u00a0```\n\nwie besprochen umgesetzt.\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": note}
+	cfg := closureCfg()
+	cfg.Closure.Boilerplate = []string{"wie besprochen"}
+	f := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
+	if len(f) != 1 || f[0].Reason != model.ReasonClosureNoteBoilerplate {
+		t.Fatalf("U+00A0 darf die Fence-Paritaet nicht kippen ⇒ boilerplate erwartet, got %+v", f)
+	}
+}
+
+// Dieselbe Trimmung gilt bei der Suche NACH der Ueberschrift: eine U+00A0-Zeile
+// VOR ihr duerfte sie nicht in einen Fence-Zustand ziehen — sonst faende die
+// Messung gar keinen Abschnitt und meldete missing statt zu messen.
+func TestClosureUnicodeWhitespaceVorDerUeberschrift(t *testing.T) {
+	body := "# Slice\n\n\u00a0```\n\n## 7. Closure-Notiz\n\nEins. Zwei. Drei. Vier.\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": body}
+	if f := CheckPlanningClosure(coretest.NewMemFS(files), closureCfg()); f != nil {
+		t.Fatalf("U+00A0 vor der Ueberschrift darf sie nicht verdecken, got %+v", f)
+	}
+}
+
 // Boundary: eine '#'-Zeile IM Fence ist keine Überschrift — sonst würde ein
 // Beispielblock den geprüften Abschnitt eröffnen.
 func TestClosureHeadingImFenceZaehltNicht(t *testing.T) {

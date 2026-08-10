@@ -325,7 +325,7 @@ func markdownTableLines(content []byte) []markdownTableLine {
 	fenceLen := 0
 	for i, raw := range rawLines {
 		out[i] = markdownTableLine{no: i + 1, text: raw}
-		trimmed := strings.TrimLeft(raw, " \t")
+		trimmed := rules.TrimFenceIndent(raw)
 		if char, run := rules.FenceRun(trimmed); run >= 3 {
 			if fenceLen == 0 {
 				// Öffner-Entscheidung inkl. CommonMark-Infozeilen-Regel über das

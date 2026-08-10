@@ -42,6 +42,14 @@ func FenceToggle(trimmed string) bool {
 	return strings.IndexByte(trimmed[run:], '`') == -1
 }
 
+// TrimFenceIndent entfernt die für die Fence-Erkennung unerhebliche Einrückung:
+// Space und Tab, nicht unicode-weit. Der einzige Trimmer vor FenceToggle,
+// FenceRun und FenceCloses — jeder Konsument, der selbst trimmt, kann eine
+// Zeile als Fence werten, die für die Vorverarbeitung keine ist.
+func TrimFenceIndent(raw string) string {
+	return strings.TrimLeft(raw, " \t")
+}
+
 // FenceRun liefert Fence-Zeichen und Länge der führenden Markierung einer
 // links-getrimmten Zeile (0, 0 wenn keine). Ab drei Zeichen ist es eine
 // Fence-Markierung.
@@ -78,7 +86,7 @@ func proseLines(content []byte) []proseLine {
 	var out []proseLine
 	inFence := false
 	for i, raw := range strings.Split(string(content), "\n") {
-		trimmed := strings.TrimLeft(raw, " \t")
+		trimmed := TrimFenceIndent(raw)
 		if FenceToggle(trimmed) {
 			inFence = !inFence
 			continue
@@ -117,7 +125,7 @@ func diagramFenceLines(content []byte, langs map[string]bool) []proseLine {
 	var out []proseLine
 	inFence, open := false, false
 	for i, raw := range strings.Split(string(content), "\n") {
-		trimmed := strings.TrimLeft(raw, " \t")
+		trimmed := TrimFenceIndent(raw)
 		if FenceToggle(trimmed) {
 			if inFence {
 				inFence, open = false, false

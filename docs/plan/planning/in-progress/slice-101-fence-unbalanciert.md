@@ -126,6 +126,10 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
 - [x] **Unabhängiger Code-Review** (Frischkontext) — merge-blockierend mit
       2 HIGH, 3 MEDIUM, 2 LOW; alle nachvollzogen und behoben bzw. bewusst
       dokumentiert, siehe §6.
+- [x] **Bestätigende Re-Review** (Frischkontext) — erneut blockierend: 1 HIGH,
+      4 MEDIUM, 1 INFO. Der Kern war echt geheilt, die Heilung hörte aber an
+      derselben Stelle zu früh auf wie die Erstfassung. Alle nachgezogen,
+      siehe §6.
 - [x] **Mutations-Gegenprobe, zweiter Anlauf.** Sechs Rückbauten, alle rot.
       Der erste Anlauf war methodisch kaputt: er setzte nach jeder Mutation
       per `git checkout` zurück — also auf HEAD statt auf den Arbeitsstand,
@@ -165,11 +169,35 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
   unicode-weit gegen `TrimLeft` auf Space/Tab. Eine mit U+00A0 eingerückte
   Fence-Zeile kippte damit **nur** die Parität des Wächters und machte ihn blind
   für den echten offenen Fence dahinter — null Befunde, Exit 0.
-  — **Ausgang: behoben**, Trimmung identisch, Testfall vorhanden.
+  — **Ausgang: behoben — aber erst im zweiten Anlauf.** Die Re-Review fand
+  dieselbe Divergenz im Modul `planning` (HIGH): dort trimmten **beide**
+  Fence-Stellen weiter unicode-weit, sodass der Anlassfall dieses Slice
+  unverändert reproduzierbar blieb — Floskel hinter einer U+00A0-eingerückten
+  Fence-Zeile, `planning` still grün **und** `spans` still grün. Ich hatte die
+  Instanz geheilt, nicht die Klasse. Jetzt trägt die Trimmung ein geteiltes
+  Prädikat, das alle vier Konsumenten rufen; beide `planning`-Stellen haben
+  eine eigene Assertion.
+- **Die Heilung selbst brachte eine Regression** (Re-Review, MEDIUM): das
+  ersetzte `TrimSpace` hatte das CR einer CRLF-Zeile mit entfernt, `TrimRight`
+  auf Space/Tab nicht — das rohe CR landete im Befund-Ziel und überschrieb im
+  Terminal die Befundzeile. Der Erst-Report hatte CRLF ausdrücklich als in
+  Ordnung geprüft; die Eigenschaft ging beim Heilen verloren.
+  — **Ausgang: behoben**, mit Assertion.
+- **Zusagen ohne Assertion** (Re-Review, MEDIUM): der Vorrang der strengen
+  Lesart ließ sich tauschen, ohne dass ein Test rot wurde.
+  — **Ausgang: behoben.**
 - **Die gemeldete Zeile ist nicht immer die Reparaturstelle** (Review, LOW).
-  Kippt nur die Parität, ist grundsätzlich nicht bestimmbar, welche von mehreren
-  gleich langen Öffnungen fehlt. — **Ausgang: nicht behebbar, benannt.**
-  Anforderung, Spezifikation und ADR nennen sie jetzt **Fundstelle**.
+  Grundsätzlich nicht bestimmbar, welche von mehreren Öffnungen fehlt.
+  — **Ausgang: nicht behebbar, benannt.** Anforderung, Spezifikation und ADR
+  nennen sie **Fundstelle**. Die Re-Review zeigte, dass die erste Fassung dieser
+  Klausel zu eng war: sie band die Einschränkung an die Paritätskippung, aber
+  auch die strenge Lesart zeigt daneben, sobald eine längere Fence-Zeile eine
+  kürzere Öffnung geschlossen hat. Jetzt gilt sie für beide.
+- **Die Grenzen-Aufzählung war unvollständig** (Re-Review, MEDIUM): `codepaths`
+  und `pins` fehlten. Bei `pins` ist die Richtung **still** — ein offener Fence
+  verdeckt die Überschrift, der Anker wird unauflösbar, und die Drift-Prüfung
+  entfällt kommentarlos statt zu melden. — **Ausgang: benannt**, samt dem
+  eingerückten Code-Block, der in keiner Lesart modelliert ist.
 
 ## 7. Trigger
 
@@ -185,9 +213,12 @@ Variante (b) eine eigene Sanierung nach sich zieht.
 - **Sub-Area prüfen:** Produkt-Code (`internal/`) und Spec (`spec/`), beide unter
   dem Repo-Default GF (`harness/conventions.md` §Modus: `*`).
 - **Offene Beobachtungen sichten:** das Register führt **BEO-001**; andere
-  Klasse, nichts zu berücksichtigen. **Kandidat für einen neuen Eintrag:** „eine
-  bewusst offen gelassene Lexik-Grenze wird zum Silent-Grün, sobald ein neues
-  Modul innerhalb der Grenze misst" — bei der Closure dieses Slice zu prüfen.
+  Klasse, nichts zu berücksichtigen. **Kandidat für einen neuen Eintrag,** von
+  den beiden Reviews geschärft: „eine geteilte Lexik driftet an den Rändern,
+  weil jeder Konsument sie selbst vorbereitet". Nicht die Lexik-Grenze war das
+  Problem, sondern dass vier Stellen dieselbe Zeile verschieden trimmten und
+  drei Automaten dieselbe Frage verschieden beantworteten — jede für sich
+  vertretbar, zusammen ein stiller Grün-Pfad. Bei der Closure einzutragen.
 
 ## 9. Sub-Area-Modus-Begründung
 

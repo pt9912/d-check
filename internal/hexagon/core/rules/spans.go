@@ -29,9 +29,7 @@ func CheckSpans(file string, content []byte, lines []Line) []model.Finding {
 func checkUnclosedFence(file string, content []byte) []model.Finding {
 	var naive, strict fenceReading
 	for i, raw := range splitLines(content) {
-		// Dieselbe Trimmung wie proseLines (markdown.go) — Space und Tab,
-		// nicht unicode-weit.
-		trimmed := strings.TrimLeft(raw, " \t")
+		trimmed := TrimFenceIndent(raw)
 		naive.stepNaive(trimmed, i+1)
 		strict.stepStrict(trimmed, i+1)
 	}
@@ -44,7 +42,9 @@ func checkUnclosedFence(file string, content []byte) []model.Finding {
 	}
 	return []model.Finding{{
 		File: file, Line: open.line, Rule: "spans",
-		Target: clipRunes(strings.TrimRight(open.text, " \t"), 30),
+		// Auch das CR einer CRLF-Zeile: splitLines trennt nur an \n, und ein
+		// rohes CR im Ziel ueberschreibt im Terminal die Befundzeile.
+		Target: clipRunes(strings.TrimRight(open.text, " \t\r"), 30),
 		Reason: model.ReasonFenceUnclosed,
 	}}
 }

@@ -165,7 +165,7 @@ func checkClosureNote(
 func closureHeadingLine(lines []string, re *regexp.Regexp) (lineNo, level int) {
 	inFence := false
 	for i, raw := range lines {
-		if FenceToggle(strings.TrimSpace(raw)) {
+		if FenceToggle(TrimFenceIndent(raw)) {
 			inFence = !inFence
 			continue
 		}
@@ -191,7 +191,7 @@ func closureSectionProse(lines []string, headingNo, level int) string {
 	var b strings.Builder
 	inFence := false
 	for i := headingNo; i < len(lines); i++ {
-		trimmed := strings.TrimSpace(lines[i])
+		trimmed := TrimFenceIndent(lines[i])
 		if FenceToggle(trimmed) {
 			inFence = !inFence
 			continue // Fence-Zeilen selbst zählen nicht

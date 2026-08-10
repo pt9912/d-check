@@ -1264,14 +1264,17 @@ strikt opt-in, ohne aktives `citations`-Modul byte-identisch
      ist Inhalt. Das ist die Lesart des Tabellen-Lesers aus
      [§DC-FA-REQ-001.a](#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen).
 
-   Steht **mindestens eine** der beiden am Dateiende noch „innerhalb",
-   entsteht **ein** Befund — denn genau dann überspringt mindestens ein
-   Modul den Rest der Datei. Ist die strenge Lesart offen, steht der
-   Befund an **ihrer** Öffnungszeile; kippt nur die Parität der naiven,
-   steht er an der zuletzt öffnend gewerteten Zeile (welche Öffnung
-   fehlt, ist dann nicht bestimmbar — mehrere gleich lange Öffner sind
-   ununterscheidbar). Das gemeldete Ziel ist diese Zeile, links- und
-   rechtsbündig getrimmt und auf 30 **Runen** gekappt.
+   Steht **mindestens eine** der beiden am Dateiende noch innerhalb eines
+   Blocks, entsteht **ein** Befund — denn genau dann überspringt mindestens
+   ein Modul den Rest der Datei. Ist die strenge Lesart offen, steht der
+   Befund an **ihrer** Öffnungszeile, sonst an der zuletzt öffnend
+   gewerteten. Beides ist eine **Fundstelle**: welche Öffnung fehlt, ist
+   grundsätzlich nicht entscheidbar — gleich lange Öffner sind
+   ununterscheidbar, und auch die strenge Lesart zeigt daneben, wenn eine
+   längere Fence-Zeile eine kürzere Öffnung geschlossen hat und erst eine
+   spätere Öffnung offen bleibt. Das gemeldete Ziel ist diese Zeile, links
+   wie rechts getrimmt (Space, Tab und das CR einer CRLF-Zeile) und auf
+   30 **Runen** gekappt.
 
    **Bewusst nicht gelöst:** die Paarung selbst. Welche der beiden
    Lesarten die richtige ist, bleibt offen — die Vorverarbeitung nach
@@ -2387,6 +2390,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-09 | §[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung) Schritt 3 nach bestätigender Re-Review nachgezogen: die Trimmung ist als **geteiltes** Prädikat festgeschrieben (das Modul `planning` trimmte weiter unicode-weit und trug den Anlassfall des Slice unverändert weiter), das Befund-Ziel verliert auch das CR einer CRLF-Zeile, und die Fundstellen-Klausel gilt für **beide** Lesarten — auch die strenge zeigt daneben, wenn eine längere Fence-Zeile eine kürzere Öffnung geschlossen hat |
 | 2026-08-09 | §[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung) Schritt 3 nach unabhängigem Code-Review überarbeitet: der Algorithmus führt jede Zeile durch **beide** Schluss-Lesarten des Produkts (naiver Toggle und längenabgeglichener CommonMark-Schluss) und meldet, sobald **eine** von beiden am Dateiende offen steht — vorher nur die naive, wodurch der Tabellen-Leser aus §[`DC-FA-REQ-001.a`](spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) unbewacht blieb. Die Trimmung ist auf Space/Tab festgeschrieben (identisch zur Vorverarbeitung, nicht unicode-weit); die Zeilenwahl ist präzisiert (Öffnungszeile der strengen Lesart, sonst letzte öffnend gewertete Zeile — unter reiner Paritätskippung ist die fehlende Öffnung nicht bestimmbar); die Kappung zählt **Runen** |
 | 2026-08-09 | §[`DC-FA-SPAN-001.a`](spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung) um eine **dritte** Artefakt-Klasse erweitert: `fence-unclosed` — eine Fence-Öffnung ohne Schluss bis zum **Dateiende**. Dateiweit statt absatzweise (ein Fence *ist* eine Absatzgrenze), Befund an der Öffnungszeile, genau einer je Datei. Anlass ist ein belegter **stiller Grün-Pfad**: hinter einem offenen Fence überspringt jede Vorverarbeitung den Rest, und ein Gate meldet grün, ohne geprüft zu haben. **Bewusst nicht** mitgelöst wird die Fence-**Paarung** (längenabgeglichener CommonMark-Schluss) — sie ist auf dem gemessenen Bestand wirkungslos und löst den Fall ohnehin nicht, weil ein nie geschlossener Fence unter jeder Paarungsregel offen bleibt. Grund-Code (§4) folgt mit der Implementierung (AllReasons-↔-§4-Lockstep). Begründung (Modul-Wahl, Reichweite, Nicht-Lösung der Paarung) in begleitender ADR |
 | 2026-08-09 | Neue §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) + §2-Schema (`structure[]`) — **Struktur-Invarianten innerhalb eines Dokuments** (Modul `structure`, opt-in, hermetisch, Post-Pass): je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom globalen Scan-Scope, daher kein `<modul>.scope`), ein Abschnitts-Typ (`section` Klartext **oder** `section-pattern` RE2) und ein **Kardinalitäts-Modus** `sections`: `one` (Default; mehrere Treffer ⇒ `section-ambiguous` und Abbruch für diese Datei) oder `each` (jeder Treffer wird geprüft — für **wiederkehrende** Abschnitte). Null Kandidaten ⇒ `section-missing`, auch wenn erst `exempt-paths` die Menge geleert hat. Nach Fence-Bereinigung sechs Bedingungen mit **je eigenem** Grund-Code (`section-empty`/`-thin`/`-oversized`/`-forbidden`/`-pattern-missing`/`-marker-missing`), weil die Befund-Deduplikation zwei Verletzungen desselben Abschnitts sonst zusammenfallen ließe. Marken sind **Auszeichnungs-Marken** am Zeilen-Anfang nach optionalem **Listen-Marker**; `require-pattern` ist das Spiegelbild von `forbid-pattern` und deckt Aussagen **innerhalb** einer Auszeichnung. §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C3 um dieselbe Mehrdeutigkeits-Härte ergänzt (`closure-note-ambiguous`) und als **Preset** im Modus `one` ausgewiesen — beide teilen Abschnitts-Findung, Kardinalitäts-Behandlung, Bereinigung und Zählung; eine Änderung an nur einer Stelle ist ein Spezifikations-Bug. Grund-Codes (§4) folgen mit der Implementierung (AllReasons-↔-§4-Lockstep). Begründung in begleitender ADR |
