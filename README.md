@@ -193,9 +193,11 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.57.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to
-moving tags — details, options and exit codes:
-[`docs/user/operations.md`](docs/user/operations.md) and
-[`docs/user/releasing.md`](docs/user/releasing.md).
+moving tags. The task-oriented entry point — from the first check to every
+single module — is the [user handbook](docs/user/benutzerhandbuch.md) (German);
+the terse invocation reference with options and exit codes is
+[`docs/user/operations.md`](docs/user/operations.md), the release and
+digest-pin path [`docs/user/releasing.md`](docs/user/releasing.md).
 
 ## Configuration (`.d-check.yml`)
 
@@ -225,6 +227,7 @@ silent defaults
 
 | Document | Contents |
 |---|---|
+| [`docs/user/benutzerhandbuch.md`](docs/user/benutzerhandbuch.md) | **User handbook** (German): task-oriented, every rule module with example configuration |
 | [`docs/user/operations.md`](docs/user/operations.md) | Invocation reference: options, exit codes, configuration |
 | [`docs/user/releasing.md`](docs/user/releasing.md) | Release process, digest-pin consumption |
 | [`spec/lastenheft.md`](spec/lastenheft.md) | Requirements (`DC-FA-*`, `DC-QA-*`), acceptance criteria |

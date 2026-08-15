@@ -195,9 +195,12 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.57.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
-bewegliche Tags — Details, Optionen und Exit-Codes:
-[`docs/user/operations.md`](docs/user/operations.md) und
-[`docs/user/releasing.md`](docs/user/releasing.md).
+bewegliche Tags. Der aufgabenorientierte Einstieg — von der ersten Prüfung bis
+zu jedem einzelnen Modul — ist das
+[Benutzerhandbuch](docs/user/benutzerhandbuch.md); die knappe Aufruf-Referenz
+mit Optionen und Exit-Codes steht in
+[`docs/user/operations.md`](docs/user/operations.md), der Release- und
+Digest-Pin-Weg in [`docs/user/releasing.md`](docs/user/releasing.md).
 
 ## Konfiguration (`.d-check.yml`)
 
@@ -227,6 +230,7 @@ stillschweigenden Defaults
 
 | Dokument | Inhalt |
 |---|---|
+| [`docs/user/benutzerhandbuch.md`](docs/user/benutzerhandbuch.md) | **Benutzerhandbuch**: aufgabenorientiert, jedes Regelmodul mit Beispiel-Konfiguration |
 | [`docs/user/operations.md`](docs/user/operations.md) | Aufruf-Referenz: Optionen, Exit-Codes, Konfiguration |
 | [`docs/user/releasing.md`](docs/user/releasing.md) | Release-Prozess, Digest-Pin-Konsum |
 | [`spec/lastenheft.md`](spec/lastenheft.md) | Anforderungen (`DC-FA-*`, `DC-QA-*`), Akzeptanzkriterien |
