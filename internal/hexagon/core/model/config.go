@@ -10,7 +10,7 @@ import (
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -62,6 +62,7 @@ type Config struct {
 	Commits CommitsConfig
 	// Planning: Parameter des Moduls planning (DC-FA-PLAN-001).
 	Planning PlanningConfig
+	Structure []StructureRule
 	// Tracked: Parameter des Moduls tracked (DC-FA-TRK-001).
 	Tracked TrackedConfig
 	// Targets: Parameter des Moduls targets (DC-FA-TGT-001).
@@ -332,6 +333,44 @@ type PlanningConfig struct {
 	Marker    string
 	SliceGlob string
 	Closure   ClosureConfig
+}
+
+// StructureRule ist eine Regel des Moduls structure (DC-FA-STRUCT-001): eine
+// Dokumentklasse über eigene Globs, ein Abschnitts-Selektor und die optionalen
+// Bedingungen. MinSentences/MaxTasks sind Zeiger, damit ein ABWESENDER
+// Schlüssel (Bedingung aus) von einem explizit gesetzten Wert unterscheidbar
+// bleibt — sonst wäre die Null-Schwelle unerreichbar prüfbar.
+type StructureRule struct {
+	Files          string
+	Section        string
+	SectionPattern string
+	Sections       string
+	NonEmpty       bool
+	MinSentences   *int
+	MaxTasks       *int
+	ForbidPattern  string
+	RequirePattern string
+	RequireAll     []string
+	ExemptPaths    []string
+}
+
+// Identity ist die Regel-Identität aus Glob und Abschnitts-Selektor. Sie steht
+// im Befund-Ziel, weil die Deduplikation (Datei, Zeile, Regel, Ziel, Grund)
+// sonst je Datei den Befund der zweiten Regel verlöre.
+func (r StructureRule) Identity() string {
+	sel := r.Section
+	if sel == "" {
+		sel = r.SectionPattern
+	}
+	return r.Files + " :: " + sel
+}
+
+// EffectiveSections liefert den Kardinalitäts-Modus (Default `one`).
+func (r StructureRule) EffectiveSections() string {
+	if r.Sections == "" {
+		return "one"
+	}
+	return r.Sections
 }
 
 // ClosureConfig sind die Parameter der zweiten planning-Fähigkeit

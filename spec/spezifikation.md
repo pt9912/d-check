@@ -2435,6 +2435,15 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `closure-note-thin` | planning | Closure-Notiz-Abschnitt trägt weniger als `planning.closure.min-sentences` Satzende-Zeichen **außerhalb** der Fenced-Code-Blöcke (Platzhalter, Einzeiler) |
 | `closure-note-boilerplate` | planning | bereinigter Closure-Notiz-Text enthält (case-insensitiv, an Wortgrenzen) eine literale Phrasg aus `planning.closure.boilerplate`; der erste Treffer benennt die Meldung |
 | `closure-note-placeholder` | planning | Closure-Notiz-Abschnitt trägt einen unausgefüllten Vorlagen-Platzhalter in Auszeichnungs-Form (opt-in über `planning.closure.placeholder`); Inline-Code, Autolinks/Adressen und HTML-Tags sind ausgenommen, gemeldet wird der **erste** Treffer je Kandidat |
+| `closure-note-ambiguous` | planning | mehrere auf `planning.closure.heading-pattern` passende Überschriften — ohne eindeutigen Abschnitt wird **nicht** gemessen (schließt `-thin`/`-boilerplate`/`-placeholder` aus); `line` = **zweiter** Treffer |
+| `section-missing` | structure | kein Abschnitt passt auf den Selektor der Regel — **oder** die Regel trifft keine Datei (auch nach Abzug von `exempt-paths`, fail-closed); `file` = Datei bzw. Glob, `line` = 1 |
+| `section-ambiguous` | structure | Abschnitt kommt mehrfach vor, obwohl `sections: one` genau einen erwartet; Abbruch für **diese** Datei in **dieser** Regel, `line` = zweiter Treffer |
+| `section-empty` | structure | bereinigter Abschnitts-Text ohne ein einziges Nicht-Whitespace-Zeichen (`non-empty`) |
+| `section-thin` | structure | weniger Satzende-Zeichen als `min-sentences` verlangt |
+| `section-oversized` | structure | mehr Task-Items als `max-tasks` erlaubt (Zählung **im Abschnitt**, nicht dateiweit) |
+| `section-forbidden` | structure | `forbid-pattern` trifft den bereinigten Abschnitts-Text |
+| `section-pattern-missing` | structure | `require-pattern` trifft **nicht** — das Spiegelbild von `section-forbidden` |
+| `section-marker-missing` | structure | eine Marke aus `require-all` fehlt (Auszeichnungs-Marke am Zeilen-Anfang, nach optionalem Listen-Marker) |
 | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
 | `gate-undocumented` | targets | Makefile-Regel (nicht in `targets.exempt-targets`) ohne Deklaration als `make X` in der `targets.authority`-Doku (undokumentiertes Gate) |

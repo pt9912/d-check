@@ -151,6 +151,9 @@ func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, vcsBase, vcsHead stri
 		out = append(out, CheckPlanning(fsys, cfg.Planning)...)
 		out = append(out, CheckPlanningClosure(fsys, cfg.Planning)...)
 	}
+	if active["structure"] {
+		out = append(out, CheckStructure(fsys, cfg.Structure)...)
+	}
 	if active["targets"] {
 		tf, err := CheckTargets(fsys, cfg.Targets)
 		if err != nil {

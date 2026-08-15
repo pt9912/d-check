@@ -161,6 +161,108 @@ type rawClosure struct {
 	Placeholder    bool     `yaml:"placeholder"`
 }
 
+// rawStructure ist eine Regel des Moduls structure (DC-FA-STRUCT-001).
+// MinSentences/MaxTasks sind Zeiger, damit ein ABWESENDER Schlüssel
+// (Bedingung aus) von einem explizit gesetzten Wert unterscheidbar bleibt.
+type rawStructure struct {
+	Files          string   `yaml:"files"`
+	Section        string   `yaml:"section"`
+	SectionPattern string   `yaml:"section-pattern"`
+	Sections       string   `yaml:"sections"`
+	NonEmpty       bool     `yaml:"non-empty"`
+	MinSentences   *int     `yaml:"min-sentences"`
+	MaxTasks       *int     `yaml:"max-tasks"`
+	ForbidPattern  string   `yaml:"forbid-pattern"`
+	RequirePattern string   `yaml:"require-pattern"`
+	RequireAll     []string `yaml:"require-all"`
+	ExemptPaths    []string `yaml:"exempt-paths"`
+}
+
+// applyStructure validiert die Regel-Liste am Config-Rand (§DC-FA-STRUCT-001.a
+// Schritt 1): was der Kern nur schlucken könnte, bricht hier laut ab. Eine
+// doppelte Regel-Identität ist ebenfalls Exit 2 — sonst fielen zwei leer
+// laufende Regeln unter der Befund-Deduplikation zusammen.
+func applyStructure(rs []rawStructure) ([]model.StructureRule, error) {
+	out := make([]model.StructureRule, 0, len(rs))
+	seen := map[string]bool{}
+	for i, r := range rs {
+		rule, err := applyStructureRule(i, r)
+		if err != nil {
+			return nil, err
+		}
+		if seen[rule.Identity()] {
+			return nil, fmt.Errorf("%s: structure[%d]: Regel-Identität %q kommt doppelt vor", FileName, i, rule.Identity())
+		}
+		seen[rule.Identity()] = true
+		out = append(out, rule)
+	}
+	return out, nil
+}
+
+// structureBedingungsFehler prüft die Bedingungs-Parameter einer Regel und
+// liefert die Fehlermeldung (leer ⇒ gültig). Ausgelagert, damit
+// applyStructureRule unter der gocyclo-Schwelle bleibt.
+func structureBedingungsFehler(r rawStructure) string {
+	for name, pat := range map[string]string{
+		"section-pattern": r.SectionPattern, "forbid-pattern": r.ForbidPattern,
+		"require-pattern": r.RequirePattern,
+	} {
+		if pat == "" {
+			continue
+		}
+		if _, err := regexp.Compile(pat); err != nil {
+			return fmt.Sprintf("%s %q ist kein gültiges Regex: %v", name, pat, err)
+		}
+	}
+	if r.MinSentences != nil && *r.MinSentences < 1 {
+		return fmt.Sprintf("min-sentences %d muss >= 1 sein", *r.MinSentences)
+	}
+	if r.MaxTasks != nil && *r.MaxTasks < 0 {
+		return fmt.Sprintf("max-tasks %d muss >= 0 sein", *r.MaxTasks)
+	}
+	for _, m := range r.RequireAll {
+		if strings.TrimSpace(m) == "" {
+			return "require-all enthält einen leeren Eintrag"
+		}
+	}
+	return ""
+}
+
+func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
+	fail := func(f string, a ...any) (model.StructureRule, error) {
+		return model.StructureRule{}, fmt.Errorf("%s: structure[%d]: "+f, append([]any{FileName, i}, a...)...)
+	}
+	if r.Files == "" {
+		return fail("files ist Pflicht")
+	}
+	if _, err := path.Match(r.Files, "probe"); err != nil {
+		return fail("files %q ist kein gültiges Glob: %v", r.Files, err)
+	}
+	for _, g := range r.ExemptPaths {
+		if _, err := path.Match(g, "probe"); err != nil {
+			return fail("exempt-paths %q ist kein gültiges Glob: %v", g, err)
+		}
+	}
+	if (r.Section == "") == (r.SectionPattern == "") {
+		return fail("genau eines von section oder section-pattern ist Pflicht")
+	}
+	switch r.Sections {
+	case "", "one", "each":
+	default:
+		return fail("sections %q muss one oder each sein", r.Sections)
+	}
+	if msg := structureBedingungsFehler(r); msg != "" {
+		return fail("%s", msg)
+	}
+	return model.StructureRule{
+		Files: r.Files, Section: r.Section, SectionPattern: r.SectionPattern,
+		Sections: r.Sections, NonEmpty: r.NonEmpty, MinSentences: r.MinSentences,
+		MaxTasks: r.MaxTasks, ForbidPattern: r.ForbidPattern,
+		RequirePattern: r.RequirePattern, RequireAll: r.RequireAll,
+		ExemptPaths: r.ExemptPaths,
+	}, nil
+}
+
 // rawTracked trägt scope und die Parameter des Moduls tracked
 // (DC-FA-TRK-001): exempt-targets (Globs über aufgelöste Ziel-Pfade,
 // referenz-weit — absichtlich untrackte Ziele). scope gilt für die
@@ -344,6 +446,7 @@ type raw struct {
 	Commits   *rawCommits   `yaml:"commits"`
 	Planning  *rawPlanning  `yaml:"planning"`
 	Tracked   *rawTracked   `yaml:"tracked"`
+	Structure []rawStructure `yaml:"structure"`
 	Targets   *rawTargets   `yaml:"targets"`
 	// Sources ist eine bare Liste `sources[]` (spec/spezifikation.md §2;
 	// KEIN Map mit scope — das Modul nutzt den globalen Scan-Scope).
@@ -422,6 +525,11 @@ func applyRemainingModules(r *raw, cfg *model.Config) error {
 	if err := applyCommits(r, cfg); err != nil {
 		return err
 	}
+	st, serr := applyStructure(r.Structure)
+	if serr != nil {
+		return serr
+	}
+	cfg.Structure = st
 	if err := applyPlanning(r, cfg); err != nil {
 		return err
 	}

@@ -1,0 +1,215 @@
+package rules
+
+import (
+	"strings"
+	"testing"
+
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
+)
+
+func ptr(n int) *int { return &n }
+
+// Happy Path: eine Regel, deren Abschnitt alle Bedingungen erfuellt.
+func TestStructureHappyPath(t *testing.T) {
+	files := map[string]string{
+		"docs/a.md": "# T\n\n## Ergebnis\n\n- **Beleg:** vorhanden.\nEins. Zwei.\n",
+	}
+	r := model.StructureRule{
+		Files: "docs/*.md", Section: "## Ergebnis", NonEmpty: true,
+		MinSentences: ptr(2), RequireAll: []string{"Beleg"},
+	}
+	if f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r}); f != nil {
+		t.Fatalf("erwartet befundfrei, got %+v", f)
+	}
+}
+
+// Ohne Regeln ist das Modul inert — keine Datei wird geoeffnet.
+func TestStructureInertOhneRegeln(t *testing.T) {
+	if f := CheckStructure(coretest.NewMemFS(map[string]string{"a.md": "x"}), nil); f != nil {
+		t.Fatalf("ohne Regeln erwartet inert, got %+v", f)
+	}
+}
+
+// Nullmengen-Haerte: eine Regel zu setzen IST die Behauptung, dass sie Dateien
+// trifft — auch dann, wenn erst exempt-paths die Menge geleert hat.
+func TestStructureNullmengeFailClosed(t *testing.T) {
+	files := map[string]string{"docs/a.md": "# T\n\n## E\n\nx.\n"}
+	for name, r := range map[string]model.StructureRule{
+		"Glob trifft nichts": {Files: "andere/*.md", Section: "## E"},
+		"exempt leert":       {Files: "docs/*.md", Section: "## E", ExemptPaths: []string{"docs/**"}},
+	} {
+		t.Run(name, func(t *testing.T) {
+			f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})
+			if len(f) != 1 || f[0].Reason != model.ReasonSectionMissing {
+				t.Fatalf("erwartet section-missing, got %+v", f)
+			}
+		})
+	}
+}
+
+// Kardinalitaet: one bricht bei mehreren Treffern ab, each prueft jeden.
+func TestStructureKardinalitaet(t *testing.T) {
+	body := "# T\n\n## E\n\n\n\n## E\n\n\n"
+	files := map[string]string{"docs/a.md": body}
+	one := model.StructureRule{Files: "docs/*.md", Section: "## E", NonEmpty: true}
+	f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{one})
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionAmbiguous {
+		t.Fatalf("sections one ⇒ ambiguous erwartet, got %+v", f)
+	}
+	if f[0].Line != 7 {
+		t.Errorf("Zeile = %d, want 7 (der ZWEITE Treffer)", f[0].Line)
+	}
+	each := one
+	each.Sections = "each"
+	f = CheckStructure(coretest.NewMemFS(files), []model.StructureRule{each})
+	if len(f) != 2 {
+		t.Fatalf("sections each ⇒ jeder Treffer geprueft, got %+v", f)
+	}
+	for _, x := range f {
+		if x.Reason != model.ReasonSectionEmpty {
+			t.Errorf("erwartet section-empty, got %+v", x)
+		}
+	}
+}
+
+// Die sechs Bedingungen, jede mit EIGENEM Grund-Code — sonst fielen zwei
+// Verletzungen desselben Abschnitts unter der Deduplikation zusammen.
+func TestStructureSechsBedingungen(t *testing.T) {
+	cases := []struct {
+		name string
+		body string
+		rule model.StructureRule
+		want string
+	}{
+		{"non-empty", "# T\n\n## E\n\n \n", model.StructureRule{NonEmpty: true}, model.ReasonSectionEmpty},
+		{"min-sentences", "# T\n\n## E\n\nNur eins.\n", model.StructureRule{MinSentences: ptr(3)}, model.ReasonSectionThin},
+		{"max-tasks", "# T\n\n## E\n\n- [ ] a\n- [x] b\n", model.StructureRule{MaxTasks: ptr(1)}, model.ReasonSectionOversized},
+		{"forbid-pattern", "# T\n\n## E\n\nTODO offen.\n", model.StructureRule{ForbidPattern: `TODO`}, model.ReasonSectionForbidden},
+		{"require-pattern", "# T\n\n## E\n\nnichts.\n", model.StructureRule{RequirePattern: `Beleg`}, model.ReasonSectionPatternMissing},
+		{"require-all", "# T\n\n## E\n\nnichts.\n", model.StructureRule{RequireAll: []string{"Beleg"}}, model.ReasonSectionMarkerMissing},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			r := tc.rule
+			r.Files, r.Section = "docs/*.md", "## E"
+			f := CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": tc.body}), []model.StructureRule{r})
+			if len(f) != 1 || f[0].Reason != tc.want {
+				t.Fatalf("erwartet %s, got %+v", tc.want, f)
+			}
+		})
+	}
+}
+
+// Zwei Verletzungen desselben Abschnitts muessen NEBENEINANDER stehen.
+func TestStructureZweiBefundeAmselbenAbschnitt(t *testing.T) {
+	r := model.StructureRule{
+		Files: "docs/*.md", Section: "## E", MinSentences: ptr(5), RequirePattern: `Beleg`,
+	}
+	f := CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": "# T\n\n## E\n\nEins.\n"}), []model.StructureRule{r})
+	if len(f) != 2 {
+		t.Fatalf("erwartet zwei Befunde mit eigenen Grund-Codes, got %+v", f)
+	}
+}
+
+// Die Marken-Formen: `- **M:**`, `**M:**` und `- **M (Zusatz):**` treffen,
+// `M` im Fliesstext nicht, und `**Marker**` nicht auf `M`.
+func TestStructureMarkenFormen(t *testing.T) {
+	cases := map[string]bool{
+		"- **Beleg:** da":        true,
+		"**Beleg:** da":          true,
+		"- **Beleg (Lauf):** da": true,
+		"1. **Beleg:** da":       true,
+		"Der Beleg steht da":     false,
+		"- **Belegschaft:** da":  false,
+		"Text **Beleg:** mitten": false,
+	}
+	for zeile, want := range cases {
+		t.Run(zeile, func(t *testing.T) {
+			body := "# T\n\n## E\n\n" + zeile + "\n"
+			r := model.StructureRule{Files: "docs/*.md", Section: "## E", RequireAll: []string{"Beleg"}}
+			f := CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": body}), []model.StructureRule{r})
+			if (len(f) == 0) != want {
+				t.Fatalf("Marke erkannt=%v erwartet, got %+v", want, f)
+			}
+		})
+	}
+}
+
+// Die Regel-Identitaet steht im Ziel: ohne sie verloere man je Datei den
+// Befund der zweiten Regel unter der Deduplikation.
+func TestStructureIdentitaetImZiel(t *testing.T) {
+	files := map[string]string{"docs/a.md": "# T\n\n## E\n\n \n"}
+	r1 := model.StructureRule{Files: "docs/*.md", Section: "## E", NonEmpty: true}
+	r2 := model.StructureRule{Files: "docs/**", Section: "## E", NonEmpty: true}
+	f := model.SortFindings(CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r1, r2}))
+	if len(f) != 2 {
+		t.Fatalf("zwei Regeln ⇒ zwei Befunde, got %+v", f)
+	}
+	if f[0].Target == f[1].Target {
+		t.Errorf("die Regel-Identitaeten muessen sich unterscheiden: %q", f[0].Target)
+	}
+}
+
+// section-pattern statt section, und der Vergleich schliesst die #-Folge ein.
+func TestStructureSelektorFormen(t *testing.T) {
+	body := "# T\n\n### E\n\n \n"
+	klartext := model.StructureRule{Files: "docs/*.md", Section: "## E", NonEmpty: true}
+	f := CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": body}), []model.StructureRule{klartext})
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionMissing {
+		t.Fatalf("die #-Folge gehoert zum Vergleich ⇒ missing erwartet, got %+v", f)
+	}
+	muster := model.StructureRule{Files: "docs/*.md", SectionPattern: `^#{2,3} E$`, NonEmpty: true}
+	f = CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": body}), []model.StructureRule{muster})
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionEmpty {
+		t.Fatalf("section-pattern trifft ⇒ empty erwartet, got %+v", f)
+	}
+}
+
+// PRESET-KOPPLUNG: dieselbe Eingabe, beide Oberflaechen, gleiche
+// Abschnitts-Grenze. Zwei Kopien der Mechanik koennten driften, ohne dass ein
+// Test es merkt — dieser Test ist der Beleg, dass es eine ist.
+func TestStructurePresetKopplungMitClosure(t *testing.T) {
+	body := "# S\n\n## 7. Closure-Notiz\n\nEins `code` zwei.\n\n### Tiefer\n\nDrei.\n\n## 8. Danach\n\nVier. Fuenf. Sechs.\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": body}
+	cfg := closureCfg()
+	cfg.Closure.MinSentences = 9
+	viaClosure := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
+	if len(viaClosure) != 1 || viaClosure[0].Reason != model.ReasonClosureNoteThin {
+		t.Fatalf("Closure-Pfad: thin erwartet, got %+v", viaClosure)
+	}
+	r := model.StructureRule{
+		Files: "**/slice-001-a.md", SectionPattern: `^#{2,3} .*Closure-Notiz`, MinSentences: ptr(9),
+	}
+	viaStructure := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})
+	if len(viaStructure) != 1 || viaStructure[0].Reason != model.ReasonSectionThin {
+		t.Fatalf("structure-Pfad: thin erwartet, got %+v", viaStructure)
+	}
+	if viaClosure[0].Line != viaStructure[0].Line {
+		t.Errorf("beide Oberflaechen muessen dieselbe Zeile melden: %d vs %d",
+			viaClosure[0].Line, viaStructure[0].Line)
+	}
+	// Die Zaehl-Aussage muss identisch sein — sie steht in beiden Meldungen.
+	cn := strings.SplitN(viaClosure[0].Message, "trägt ", 2)[1]
+	sn := strings.SplitN(viaStructure[0].Message, "trägt ", 2)[1]
+	if strings.Fields(cn)[0] != strings.Fields(sn)[0] {
+		t.Errorf("beide Oberflaechen muessen dieselbe Satzzahl messen: %q vs %q", cn, sn)
+	}
+}
+
+// Ein Task-Item braucht den LISTEN-MARKER. Eine Kastenklammer im Fliesstext
+// ist keins — ohne diesen Fall bliebe der Rueckbau auf ein blosses `[ ]`
+// unbemerkt.
+func TestStructureTaskItemBrauchtListenMarker(t *testing.T) {
+	body := "# T\n\n## E\n\nDer Zustand [x] wurde geprueft und [ ] blieb offen.\n\n- [ ] echt\n"
+	r := model.StructureRule{Files: "docs/*.md", Section: "## E", MaxTasks: ptr(1)}
+	if f := CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": body}), []model.StructureRule{r}); f != nil {
+		t.Fatalf("nur EIN echtes Task-Item ⇒ befundfrei bei max-tasks 1, got %+v", f)
+	}
+	r.MaxTasks = ptr(0)
+	f := CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": body}), []model.StructureRule{r})
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionOversized {
+		t.Fatalf("das eine echte Task-Item muss zaehlen, got %+v", f)
+	}
+}
+

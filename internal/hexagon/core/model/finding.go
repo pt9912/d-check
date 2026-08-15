@@ -40,6 +40,22 @@ const (
 	// Rumpf einer Vorlage. Er passiert die drei anderen Bedingungen, weil er
 	// syntaktisch vollstaendig ist.
 	ReasonClosureNotePlaceholder = "closure-note-placeholder"
+	// ReasonClosureNoteAmbiguous: mehrere passende Ueberschriften — ohne
+	// eindeutigen Abschnitt sagt eine Satzzahl nichts, und ein zweiter Abschnitt
+	// ist der typische Rest einer Vorlage.
+	ReasonClosureNoteAmbiguous = "closure-note-ambiguous"
+	// Die acht Grund-Codes des Moduls structure (DC-FA-STRUCT-001). Zwei
+	// Struktur-Codes fuer die Abschnitts-Findung und sechs Bedingungs-Codes —
+	// je eigener Code, weil die Befund-Deduplikation zwei Verletzungen
+	// desselben Abschnitts sonst zusammenfallen liesse.
+	ReasonSectionMissing        = "section-missing"
+	ReasonSectionAmbiguous      = "section-ambiguous"
+	ReasonSectionEmpty          = "section-empty"
+	ReasonSectionThin           = "section-thin"
+	ReasonSectionOversized      = "section-oversized"
+	ReasonSectionForbidden      = "section-forbidden"
+	ReasonSectionPatternMissing = "section-pattern-missing"
+	ReasonSectionMarkerMissing  = "section-marker-missing"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und
