@@ -98,6 +98,7 @@ ob der Eintrag ihn betrifft.
 | [MR-021](conventions/MR-021-vendored-verweise-pin-gebunden.md) <a id="mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden"></a> | vendored-Verweise pin-gebunden                | Live-Links auf die vendored Baseline              | `grundlagen-harness-dateien` §Verzeichniskonvention          |
 | [MR-023](conventions/MR-023-baseline-v500.md) <a id="mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout"></a>                 | Baseline-Pin `v5.0.0` + self-contained Bundle | §Baseline, `fetch-baseline-cache.sh`              | `grundlagen-harness-dateien` §Template-Schichtung            |
 | [MR-024](conventions/MR-024-aktuelle-welle-ruhe-marker-form.md) <a id="mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform"></a> | Aktuelle-Welle-Form (aktiv = Template-Felder; wellenlos = Ruhe-Marker) | `roadmap.md` §Aktuelle Welle, `planning`-Modul | `modul-06` §Roadmap-Struktur (Aktuelle Welle) |
+| [MR-025](conventions/MR-025-spiegel-vor-dem-editieren.md) <a id="mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten"></a> | Semantik-Änderung: Spiegel **vor** dem Editieren auflisten | jede Änderung an einer zugesagten Semantik (Grund-Code, Algorithmus-Schritt, Config-Schlüssel, Schwelle, Erkennungs-Form) | `modul-10` §Review-Arten |
 
 ### Aufgelöste Adaptionen
 

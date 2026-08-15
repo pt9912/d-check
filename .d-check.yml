@@ -33,6 +33,7 @@ ignore-refs:
   - in: "docs/reviews/2026-08-09-*.md"
     refs:
       - "docs/plan/planning/open/slice-099-structure-modul-kern.md"
+      - "docs/plan/planning/open/slice-099-structure-modul.md"
       - "docs/plan/planning/open/slice-100-structure-marken-und-zaehlung.md"
       - "docs/plan/planning/in-progress/slice-096-structure-modul-analyse.md"
       - "docs/plan/planning/welle-69-structure-schnitt.md"

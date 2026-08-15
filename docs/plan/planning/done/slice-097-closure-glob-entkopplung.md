@@ -104,7 +104,7 @@ Kopplung.
    eine Artefakt-Verwechslung: eine Wellen-Ergebnisnotiz *enthält* keine
    Closure-Notiz, sie **ist** eine. Sie zu prüfen heißt, ihre Abschnitts-Struktur
    zu prüfen — die Zusage des Moduls `structure`
-   ([slice-099](../open/slice-099-structure-modul.md)), nicht die dieser
+   ([slice-099](../in-progress/slice-099-structure-modul.md)), nicht die dieser
    Fähigkeit. Ein Kandidaten-Filter kann eine Datei in die Menge holen, aber
    nicht die Frage ändern, die an sie gestellt wird.
 

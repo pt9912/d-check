@@ -70,7 +70,7 @@ aussagekräftiger. WIP-Limit 1, also ohnehin nacheinander.
   die in welle-70 eine eigene konsumentensichtbare Zeile gekostet hat, und sie
   verdient eine eigene Welle mit eigener Bestandsmessung — nicht ein Mitfahren
   im Windschatten zweier additiver Slices.
-- Die `structure`-Umsetzung ([slice-099](../open/slice-099-structure-modul.md)) —
+- Die `structure`-Umsetzung ([slice-099](../in-progress/slice-099-structure-modul.md)) —
   eigene Welle, Trigger eingetreten, Freigabe offen.
 
 ## 7. Closure-Notiz
