@@ -1,8 +1,8 @@
-# Re-Review-Report: slice-099 (Modul `structure`) — 2026-08-10
+# Re-Review-Report: slice-099 (Modul `structure`) — 2026-08-15
 
 **Review-Art:** **Re-Review** (Code) — bestätigend geprüft wird, ob die
 Befunde des ersten Laufs
-([Erst-Report](2026-08-10-slice-099-structure-review.md): 1 HIGH, 7 MEDIUM,
+([Erst-Report](2026-08-15-slice-099-structure-review.md): 1 HIGH, 7 MEDIUM,
 3 LOW, 2 INFO) echt geheilt sind und ob die Heilung Neues aufgemacht hat.
 Gemessen wird gegen Lastenheft, Spezifikation,
 [ADR-0049](../plan/adr/0049-structure-modul-schnitt-und-preset.md), den
@@ -14,7 +14,7 @@ Die DoD-Abhakung ist ausdrücklich **nicht** Gegenstand.
 Gesamt-Slice `64c62cb..HEAD`.
 
 **Skill:** `.harness/skills/reviewer.md` @ 1.3.0 ·
-**Modell:** `claude-opus-5[1m]` · **Datum:** 2026-08-10
+**Modell:** `claude-opus-5[1m]` · **Datum:** 2026-08-15
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 

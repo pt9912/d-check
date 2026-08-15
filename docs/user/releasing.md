@@ -57,6 +57,13 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
      Nicht-Referenz-Modul (Content-Drift/Immutabilität/Versions/Traceability/Planning)
      neu ist. d-check prüft `links`/`anchors`/`ids`/`versions` in beiden READMEs, aber
      **nicht** die inhaltliche DE↔EN-Synchronität der Prosa.
+   - **Das Datum kommt aus dem Kalender, nicht aus der Zeile darüber.** Ein
+     Release trägt fünf Datumsstempel (`version.md` §Aktuell **und** §Verlauf,
+     `CHANGELOG`-Überschrift, Handbuch-Kopf **und** §11-Zeile, die Historien von
+     Lastenheft und Spezifikation) — und wer sie schreibt, schreibt sie von der
+     Vorgängerzeile ab. Zieht sich eine Welle über mehr als einen Tag, datiert
+     das Release damit auf den Tag ihres Beginns. Kein Gate sieht das;
+     `git log -1 --date=short --format=%ad` ist das Orakel.
    - **Operations-Referenz** ([`operations.md`](operations.md)) — bei einem
      neuen Modul die Modul-Enumeration der `--enable`/`--disable`-Zeile, bei
      einer neuen CLI-Option die Optionen-Tabelle ergänzen. Kein Gate prüft

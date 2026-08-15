@@ -6,7 +6,7 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
-## [0.57.0] — 2026-08-10
+## [0.57.0] — 2026-08-15
 
 ### Added
 

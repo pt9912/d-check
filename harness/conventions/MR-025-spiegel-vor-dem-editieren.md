@@ -4,7 +4,7 @@
 - **Ergänzt-Baseline-Regel:** [`modul-10-review-harness.md`](../../.harness/baseline/v5.0.0/regelwerk/modul-10-review-harness.md)
   (Review-Arten) — die Baseline kennt die Review-Arten, aber keine Vorab-Auflistung
   der Stellen, die eine Semantik spiegeln.
-- **Datum:** 2026-08-10
+- **Datum:** 2026-08-15
 - **Geltungsbereich:** jede Änderung an einer zugesagten Semantik — Grund-Code,
   Algorithmus-Schritt, Config-Schlüssel, Schwellenwert, Erkennungs-Form.
 - **Adaption:** **Vor** dem Editieren wird die Liste der Spiegel dieser Semantik

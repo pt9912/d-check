@@ -1,4 +1,4 @@
-# Review-Report: slice-099 (Modul `structure`, das 20. Regelmodul) — 2026-08-10
+# Review-Report: slice-099 (Modul `structure`, das 20. Regelmodul) — 2026-08-15
 
 **Review-Art:** Code — geprüft wird der Diff gegen Lastenheft, Spezifikation,
 [ADR-0049](../plan/adr/0049-structure-modul-schnitt-und-preset.md), den
@@ -13,7 +13,7 @@ CLI-Spiegel und Selbst-Aktivierung (`e93d6a9`), Release-Prep v0.57.0
 (`59a73a2`).
 
 **Skill:** `.harness/skills/reviewer.md` @ 1.3.0 ·
-**Modell:** `claude-opus-5[1m]` · **Datum:** 2026-08-10
+**Modell:** `claude-opus-5[1m]` · **Datum:** 2026-08-15
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 

@@ -113,6 +113,20 @@ Repo abgeleitet. Drei der vier Lücken hätte ein `grep` nach dem vorigen
 Modul-Namen gefunden. Diese Erfahrung gehört in
 [`MR-025`](../../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten).
 
+**Ein sechster Spiegel derselben Bauart, gefunden erst vor dem Tag: das Datum.**
+Die Welle läuft über zwei Kalendertage; jeder Datumsstempel dieses Slice — das
+Wellendokument, die Roadmap-Zeile,
+[`MR-025`](../../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten),
+die Review-Reports samt Dateinamen,
+`CHANGELOG`, `version.md`, der Handbuch-Kopf und die §11-Zeile, die Historien
+von Lastenheft und Spezifikation — trug den Tag des **vorigen** Releases, weil
+er von der Zeile darüber abgeschrieben war. Der Fall ist die Spiegel-Klasse in
+Reinform, nur ohne Fachbezug: eine Angabe, die an zwölf Stellen wiederholt und
+an keiner geprüft wird. Nachgezogen als eigener Punkt der
+[Release-Prep-Checkliste](../../../user/releasing.md#release-prep-vor-dem-tag);
+die Spezifikations-Historie war zusätzlich falsch **einsortiert** (dritte statt
+erste Zeile) — die Fehldatierung hatte sie plausibel aussehen lassen.
+
 ## 4. Definition of Done
 
 - [x] Modul vollständig (beide `sections`-Modi, alle sechs Bedingungen,
@@ -197,7 +211,7 @@ gemeinsamen Mechanik einen eigenen Refactor-Slice verlangt.
 - **Sub-Area prüfen:** Produkt-Code (`internal/`) und Spec (`spec/`), beide unter
   dem Repo-Default GF (`harness/conventions.md` §Modus: `*`).
 - **Offene Beobachtungen sichten** (bei Slice-Beginn erneut gelesen — das
-  Register führt inzwischen **vier** Einträge): **BEO-002** ist seit 2026-08-10
+  Register führt inzwischen **vier** Einträge): **BEO-002** ist seit 2026-08-15
   **verkörpert** als [`MR-025`](../../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten);
   die Spiegel-Liste steht in §3a und ist damit erledigt, statt eine Warnung zu
   bleiben. **BEO-003** (geteilte Lexik driftet an den Rändern) ist **einschlägig

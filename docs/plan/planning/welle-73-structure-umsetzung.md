@@ -8,7 +8,7 @@ kein Status-Feld.
 **Zielmeilenstein:** kein Meilenstein-Bezug (Modul-Umsetzung nach vorliegendem
 Vertrag).
 
-**Verantwortlich:** pt9912. **Datum:** 2026-08-10.
+**Verantwortlich:** pt9912. **Datum:** 2026-08-15.
 
 ---
 
@@ -31,7 +31,7 @@ zum ersten Mal wirken, nicht an ihm zum vierten Mal fehlen.
 
 ## 2. Trigger (Welle startet)
 
-Freigabe des Auftraggebers (2026-08-10), WIP-Slot frei, und die **bindende**
+Freigabe des Auftraggebers (2026-08-15), WIP-Slot frei, und die **bindende**
 Start-Bedingung des Slice ist erfüllt: [slice-096](done/slice-096-structure-modul-analyse.md)
 **und** [slice-101](done/slice-101-fence-unbalanciert.md) liegen in `done/`. Die
 zweite war nicht Vorliebe, sondern Bedingung — sonst erbte das neue Modul über
