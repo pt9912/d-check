@@ -22,7 +22,19 @@ func CheckStructure(fsys driven.Filesystem, rules []model.StructureRule) []model
 	}
 	all, err := structureTree(fsys)
 	if err != nil {
-		return nil
+		// fail-closed wie jede andere Randbedingung des Moduls: ohne Dateibaum
+		// ist keine Regel messbar, und ein leerer Befundsatz wäre von "alles
+		// erfüllt" nicht zu unterscheiden. Je Regel ein Befund, damit die
+		// Identität der unmessbaren Behauptung erhalten bleibt.
+		out := make([]model.Finding, 0, len(rules))
+		for _, r := range rules {
+			out = append(out, model.Finding{
+				File: r.Files, Line: 1, Rule: "structure", Target: r.Identity(),
+				Reason:  model.ReasonSectionMissing,
+				Message: "Dateibaum nicht lesbar (" + err.Error() + ") — Regel nicht messbar (fail-closed)",
+			})
+		}
+		return out
 	}
 	var out []model.Finding
 	for _, r := range rules {
@@ -100,13 +112,12 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 		return []model.Finding{structureFinding(r, file, heads[1].Line, model.ReasonSectionAmbiguous,
 			"Abschnitt kommt mehrfach vor, erwartet ist genau einer (sections: one)")}
 	}
+	// In `one` ist nach der Kardinalitäts-Prüfung genau ein Treffer übrig,
+	// `each` misst jeden.
 	var out []model.Finding
 	for _, h := range heads {
 		body := SectionProse(content, lines, h.Line, h.Level)
 		out = append(out, structureConditions(r, file, h.Line, body)...)
-		if r.EffectiveSections() == "one" {
-			break
-		}
 	}
 	return out
 }

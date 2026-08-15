@@ -15,7 +15,7 @@ mit eigener Anforderung im [Lastenheft](spec/lastenheft.md) — vom **Referenz-N
 (Links, Anker, ID-Linkpflicht, Referenzmatrix) über Markdown-Hygiene (Span-Artefakte,
 Host-Pfad-Leaks), Content-Drift und Immutabilität (Content-/Core-Pins, git-Diff) bis
 zu Versions-Pin-, Commit-Traceability-, Planning-Lifecycle- und
-Getrackt-Status-Konsistenz bis zu Struktur-Invarianten **innerhalb** eines
+Getrackt-Status-Konsistenz, bis hin zu Struktur-Invarianten **innerhalb** eines
 Dokuments:
 
 - `links` — lokale Link- und Bildreferenzen: Ziel existiert, kein

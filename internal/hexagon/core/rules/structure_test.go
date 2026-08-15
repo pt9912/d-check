@@ -280,6 +280,28 @@ func TestStructureUnlesbareDateiFailClosed(t *testing.T) {
 	}
 }
 
+// Ist schon der Dateibaum nicht lesbar, meldet jede Regel — ein leerer
+// Befundsatz waere von "alle Regeln erfuellt" nicht zu unterscheiden.
+func TestStructureUnlesbarerBaumFailClosed(t *testing.T) {
+	fs := listErrFS{coretest.NewMemFS(map[string]string{"docs/a.md": "# T\n"})}
+	rules := []model.StructureRule{
+		{Files: "docs/*.md", Section: "## E", NonEmpty: true},
+		{Files: "spec/*.md", Section: "## F", NonEmpty: true},
+	}
+	f := CheckStructure(fs, rules)
+	if len(f) != len(rules) {
+		t.Fatalf("erwartet je Regel einen Befund, got %+v", f)
+	}
+	for _, fi := range f {
+		if fi.Reason != model.ReasonSectionMissing || !strings.Contains(fi.Message, "fail-closed") {
+			t.Errorf("erwartet fail-closed-Befund, got %+v", fi)
+		}
+	}
+	if f[0].Target == f[1].Target {
+		t.Errorf("die Regel-Identitaet muss erhalten bleiben: %q", f[0].Target)
+	}
+}
+
 // Nummerierte Listen sind ebenfalls Task-Item-Traeger — ohne diesen Fall liesse
 // sich der Ziffern-Zweig aus dem Muster entfernen, ohne dass ein Test rot wird.
 func TestStructureTaskItemNummerierteListe(t *testing.T) {

@@ -6,6 +6,26 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Fixed
+
+- slice-099 (Closure) — **Modul `structure`, unlesbarer Dateibaum:** scheiterte
+  der Baum-Aufbau, meldete das Modul **nichts** — ununterscheidbar von „alle
+  Regeln erfüllt", und das als einziger stiller Pfad eines Moduls, dessen
+  sämtliche anderen Randbedingungen fail-closed melden. Jetzt meldet **jede**
+  Regel `section-missing` mit ihrer Identität. Der Zweig ist über die CLI heute
+  nicht erreichbar (der Scanner öffnet die Wurzel vorher); er wird es, sobald
+  ein Filesystem-Port Teil-Lesefehler durchreicht.
+
+### Documentation
+
+- slice-099 (Closure) — vier Vertragsflächen nachgezogen: die **Symlink-Grenze**
+  gilt ausdrücklich auch für **Datei**-Symlinks (bisher stand nur der
+  Verzeichnis-Symlink in §1), der Wort-Begriff der **Marke** ist als
+  unicode-weit ausgewiesen und gegen die ASCII-Wortgrenze der Floskel
+  abgegrenzt, die Schema-Zeile zu `structure[].min-sentences` trägt die
+  Zähl-Semantik (Inline-Code geleert, Satzende nur vor Whitespace/Zeilenende),
+  und die Modul-Tabelle des Handbuchs führt `closure-note-ambiguous`.
+
 ## [0.57.0] — 2026-08-15
 
 ### Added

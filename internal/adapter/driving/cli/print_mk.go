@@ -19,14 +19,13 @@ import (
 var version = "0.0.0-dev"
 
 // makefileFragment erzeugt das d-check.mk: version-gepinnter, per
-// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus elf
+// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus zwölf
 // `##`-annotierte Targets (doc-check/doc-trace/doc-complete/doc-doctor/
 // doc-repair/doc-immutable/doc-commits/doc-planning/doc-tracked/doc-targets/
-// doc-structure/
-// doc-help) und die TRACE_FLAGS-Variable. Das Template hat genau SECHS fmt-Verben
-// — das %s der Version + je ein %s der vcs-/commits-/planning-/tracked-/targets-
-// Disable-Flags; sonst KEIN '%' (sed statt awk-printf im doc-help-Recipe), sonst
-// bräche fmt.Sprintf. Deterministisch (hängt nur an der eingebetteten Version +
+// doc-structure/doc-help) und die TRACE_FLAGS-Variable. Das Template hat genau
+// SIEBEN fmt-Verben — das %s der Version + je ein %s der vcs-/commits-/
+// planning-/tracked-/targets-/structure-Disable-Flags; sonst KEIN '%' (sed
+// statt awk-printf im doc-help-Recipe), sonst bräche fmt.Sprintf. Deterministisch (hängt nur an der eingebetteten Version +
 // dem Modulsatz), read-only.
 func makefileFragment() string {
 	return fmt.Sprintf(mkTemplate, version, disableAllExcept("vcs"), disableAllExcept("commits"), disableAllExcept("planning"), disableAllExcept("tracked"), disableAllExcept("targets"), disableAllExcept("structure"))

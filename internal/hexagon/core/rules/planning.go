@@ -166,19 +166,16 @@ func checkClosureNote(
 	return out
 }
 
-// closureHeadingLine liefert die 1-basierte Zeilennummer der **ersten**
-// Überschrift, deren getrimmte Fassung auf das Muster passt, samt ihrer Ebene.
-// 0 ⇒ kein Treffer. Fenced-Code wird übersprungen — eine '#'-Zeile in einem
-// Beispielblock ist keine Überschrift.
-//
-// Was als Überschrift zählt, entscheidet der **geteilte** ATX-Parser (derselbe,
-// den `anchors`/`matrix` nutzen), nicht eine eigene '#'-Zählung: `#1 war ein
-// Thema` ist Fließtext, keine H1. Eine eigene Heuristik hier hätte solche
-// Zeilen als Überschrift gelesen und den Abschnitt vorzeitig beendet — R1-F-1.
-// closureHeadingLine liefert die Abschnitts-Überschrift der Closure-Notiz.
-// ambiguousAt ist die Zeile des ZWEITEN Treffers (0 ⇒ eindeutig): mehrere
-// passende Überschriften machen den Abschnitt mehrdeutig, und ohne eindeutigen
+// closureHeadingLine liefert die Abschnitts-Überschrift der Closure-Notiz: die
+// 1-basierte Zeilennummer der **ersten** Überschrift, deren getrimmte Fassung
+// auf das Muster passt, samt ihrer Ebene (0 ⇒ kein Treffer), und in ambiguousAt
+// die Zeile des **zweiten** Treffers (0 ⇒ eindeutig) — ohne eindeutigen
 // Abschnitt sagt eine Messung nichts (§DC-FA-PLAN-001.a Schritt C3).
+//
+// Fenced-Code wird übersprungen (eine '#'-Zeile in einem Beispielblock ist
+// keine Überschrift), und was als Überschrift zählt, entscheidet der
+// **geteilte** ATX-Parser (derselbe, den `anchors`/`matrix` nutzen), nicht eine
+// eigene '#'-Zählung: `#1 war ein Thema` ist Fließtext, keine H1.
 func closureHeadingLine(lines []string, re *regexp.Regexp) (lineNo, level, ambiguousAt int) {
 	heads := FindSectionHeads(lines, func(raw string) bool {
 		return re.MatchString(strings.TrimSpace(raw))
