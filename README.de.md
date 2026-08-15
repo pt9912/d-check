@@ -15,7 +15,8 @@ mit eigener Anforderung im [Lastenheft](spec/lastenheft.md) — vom **Referenz-N
 (Links, Anker, ID-Linkpflicht, Referenzmatrix) über Markdown-Hygiene (Span-Artefakte,
 Host-Pfad-Leaks), Content-Drift und Immutabilität (Content-/Core-Pins, git-Diff) bis
 zu Versions-Pin-, Commit-Traceability-, Planning-Lifecycle- und
-Getrackt-Status-Konsistenz:
+Getrackt-Status-Konsistenz bis zu Struktur-Invarianten **innerhalb** eines
+Dokuments:
 
 - `links` — lokale Link- und Bildreferenzen: Ziel existiert, kein
   Repo-Escape ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
@@ -104,6 +105,17 @@ Getrackt-Status-Konsistenz:
   `>`-Blockquote oder inline `„…"`/`"…"`); der whitespace-normalisierte Zitattext muss
   ein zusammenhängender Teilstring der Quell-Spanne sein (`citation-mismatch`), opt-in
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
+- `structure` — Struktur-Invarianten **innerhalb** eines Dokuments: je Regel eine
+  Dokumentklasse über **eigene** Globs, ein Abschnitt (Klartext oder RE2) und bis
+  zu sechs Bedingungen mit je eigenem Grund-Code — nicht leer (`section-empty`),
+  Mindest-Sätze (`section-thin`), Task-Obergrenze (`section-oversized`),
+  verbotenes bzw. gefordertes Muster (`section-forbidden`,
+  `section-pattern-missing`) und geforderte Marken (`section-marker-missing`);
+  fehlt der Abschnitt oder trifft die Regel keine Datei ⇒ `section-missing`,
+  mehrfach vorhanden bei `sections: one` ⇒ `section-ambiguous`. **Hermetisch**,
+  opt-in; die Closure-Note-Struktur des Moduls `planning` ist ein **Preset**
+  derselben Semantik
+  ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
@@ -179,7 +191,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.56.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.57.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

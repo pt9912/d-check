@@ -6,6 +6,37 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.57.0] — 2026-08-10
+
+### Added
+
+- slice-099 — **Modul `structure`**, das 20. Regelmodul (`DC-FA-STRUCT-001`,
+  [ADR-0049](docs/plan/adr/0049-structure-modul-schnitt-und-preset.md)):
+  Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine
+  Dokumentklasse über **eigene** Globs (unabhängig von `scan.roots`/`scan.ignore`
+  — deshalb kein `<modul>.scope`), ein Abschnitt (Klartext **oder** RE2) und bis
+  zu sechs Bedingungen mit **je eigenem** Grund-Code: `section-empty`,
+  `section-thin`, `section-oversized`, `section-forbidden`,
+  `section-pattern-missing`, `section-marker-missing`. Dazu zwei Struktur-Codes:
+  `section-missing` (kein passender Abschnitt — **oder** die Regel trifft keine
+  Datei, auch nach Abzug von `exempt-paths`) und `section-ambiguous` (mehrere
+  Treffer bei `sections: one`). `sections: each` prüft jeden Treffer einzeln.
+  Hermetisch, diagnose-only, opt-in; ohne Regeln wird keine Datei geöffnet.
+- slice-099 — **`closure-note-ambiguous`**: mehrere Closure-Notiz-Überschriften
+  in einem Dokument. Die Spezifikation sagte die Härte seit v0.51.0 zu, ohne dass
+  sie implementiert war — ohne eindeutigen Abschnitt wird jetzt **nicht**
+  gemessen, statt still den ersten zu nehmen.
+- slice-099 — **zwölftes `--print-mk`-Target `doc-structure`**
+  (`DC-FA-CLI-010`, 11 → 12).
+
+### Changed
+
+- slice-099 — die **Abschnitts-Mechanik ist geteilt**: die Closure-Note-Struktur
+  des Moduls `planning` ist ein **Preset** derselben Semantik und nutzt dieselbe
+  Abschnitts-Findung, Kardinalitäts-Behandlung und Bereinigung. Für Konsumenten
+  ändert sich daran nichts — ein Kopplungs-Test fährt dieselbe Eingabe durch
+  beide Oberflächen und vergleicht Zeile **und** gemessene Zahl.
+
 ## [0.56.0] — 2026-08-10
 
 ### Changed

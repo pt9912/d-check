@@ -16,7 +16,8 @@ enabled individually, with its own requirement in the
 from the **reference network** (links, anchors, ID link obligations, reference
 matrix) through Markdown hygiene (span artifacts, host-path leaks), content drift
 and immutability (content/core pins, git diff) to version-pin, commit-traceability,
-planning-lifecycle and tracked-status consistency:
+planning-lifecycle and tracked-status consistency, up to structure invariants
+**within** a document:
 
 - `links` — local link and image references: target exists, no
   repo escape ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
@@ -103,6 +104,17 @@ planning-lifecycle and tracked-status consistency:
   or inline `„…"`/`"…"`); the whitespace-normalized quote must be a contiguous substring
   of the source span (`citation-mismatch`), opt-in
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
+- `structure` — structure invariants **within** a document: each rule defines a
+  document class via **its own** globs, a section (literal or RE2) and up to six
+  conditions, each with its own reason code — non-empty (`section-empty`),
+  minimum sentences (`section-thin`), task ceiling (`section-oversized`),
+  forbidden and required patterns (`section-forbidden`,
+  `section-pattern-missing`) and required markers (`section-marker-missing`);
+  a missing section — or a rule matching no file — yields `section-missing`,
+  several matches under `sections: one` yield `section-ambiguous`. **Hermetic**,
+  opt-in; the closure-note structure of module `planning` is a **preset** of the
+  same semantics
+  ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in))
 
 Every finding names file, line, target and reason; exit codes:
 `0` clean, `1` findings, `2` environment or configuration error.
@@ -177,7 +189,7 @@ Distributed as a container image via GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.56.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.57.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to
