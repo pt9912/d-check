@@ -123,7 +123,14 @@ func checkClosureNote(
 			"Slice-Datei "+file+" ist unlesbar (fail-closed)")
 	}
 	lines := splitLines(content)
-	headingNo, level := closureHeadingLine(lines, re)
+	headingNo, level, ambiguousAt := closureHeadingLine(lines, re)
+	if ambiguousAt != 0 {
+		// Mehrdeutig ⇒ NICHT messen: ein zweiter Abschnitt ist der typische Rest
+		// einer Vorlage, und eine Satzzahl über den falschen sagt nichts.
+		return closureFinding(file, ambiguousAt, dir, model.ReasonClosureNoteAmbiguous,
+			"mehrere Abschnitte passen auf "+cfg.Closure.EffectiveHeadingPattern()+
+				" — ohne eindeutigen Abschnitt wird nicht gemessen")
+	}
 	if headingNo == 0 {
 		// C3: kein passender Abschnitt — missing schließt thin/boilerplate aus,
 		// ohne Abschnitt gibt es nichts zu messen.
@@ -168,14 +175,21 @@ func checkClosureNote(
 // den `anchors`/`matrix` nutzen), nicht eine eigene '#'-Zählung: `#1 war ein
 // Thema` ist Fließtext, keine H1. Eine eigene Heuristik hier hätte solche
 // Zeilen als Überschrift gelesen und den Abschnitt vorzeitig beendet — R1-F-1.
-func closureHeadingLine(lines []string, re *regexp.Regexp) (lineNo, level int) {
+// closureHeadingLine liefert die Abschnitts-Überschrift der Closure-Notiz.
+// ambiguousAt ist die Zeile des ZWEITEN Treffers (0 ⇒ eindeutig): mehrere
+// passende Überschriften machen den Abschnitt mehrdeutig, und ohne eindeutigen
+// Abschnitt sagt eine Messung nichts (§DC-FA-PLAN-001.a Schritt C3).
+func closureHeadingLine(lines []string, re *regexp.Regexp) (lineNo, level, ambiguousAt int) {
 	heads := FindSectionHeads(lines, func(raw string) bool {
 		return re.MatchString(strings.TrimSpace(raw))
 	})
 	if len(heads) == 0 {
-		return 0, 0
+		return 0, 0, 0
 	}
-	return heads[0].Line, heads[0].Level
+	if len(heads) > 1 {
+		return heads[0].Line, heads[0].Level, heads[1].Line
+	}
+	return heads[0].Line, heads[0].Level, 0
 }
 
 

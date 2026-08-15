@@ -5,6 +5,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
@@ -194,14 +196,19 @@ func hasMarker(body, m string) bool {
 			continue
 		}
 		rest := sub[1][len(m):]
-		if rest == "" || !isAlnumByte(rest[0]) {
+		if rest == "" || !isWordRune(rest) {
 			return true
 		}
 	}
 	return false
 }
 
-func isAlnumByte(c byte) bool {
-	return ('0' <= c && c <= '9') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z')
+// isWordRune meldet, ob s mit einem Buchstaben oder einer Ziffer beginnt —
+// unicode-weit. Anders als bei der Floskel-Wortgrenze ist hier die ASCII-Menge
+// falsch: `**Ergebnisüberblick:**` setzt die Marke `Ergebnis` fort, und ein
+// Umlaut ist genauso Wort-Fortsetzung wie ein `s`.
+func isWordRune(s string) bool {
+	r, _ := utf8.DecodeRuneInString(s)
+	return unicode.IsLetter(r) || unicode.IsDigit(r)
 }
 

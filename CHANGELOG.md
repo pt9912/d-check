@@ -25,7 +25,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 - slice-099 — **`closure-note-ambiguous`**: mehrere Closure-Notiz-Überschriften
   in einem Dokument. Die Spezifikation sagte die Härte seit v0.51.0 zu, ohne dass
   sie implementiert war — ohne eindeutigen Abschnitt wird jetzt **nicht**
-  gemessen, statt still den ersten zu nehmen.
+  gemessen, statt still den ersten zu nehmen. **Verhaltensänderung für
+  Konsumenten:** ein Dokument mit zwei passenden Überschriften meldete bisher
+  `closure-note-thin`/`-boilerplate`/`-placeholder` über den **ersten**
+  Abschnitt; jetzt meldet es `closure-note-ambiguous` an der Zeile des
+  **zweiten** und wird nicht gemessen.
 - slice-099 — **zwölftes `--print-mk`-Target `doc-structure`**
   (`DC-FA-CLI-010`, 11 → 12).
 

@@ -79,6 +79,30 @@ Nicht auf der Liste, weil unberührt: `.d-check.yml` (das eigene Repo aktiviert
 `structure` erst nach eigener Messung), `.d-check.closure.yml`, die
 Referenzmatrix.
 
+### 3b. Bilanz der Spiegel-Liste — was sie **nicht** enthielt
+
+Ein unabhängiger Review hat die Liste aus §3a gegen die Wirklichkeit geprüft.
+Sie hat gewirkt (die **Zahl** der Targets in der Out-of-Scope-Zeile, der Intro-Satz beider READMEs
+und `operations.md` standen darauf und wären sonst vergessen worden) — aber sie
+war **selbst lückenhaft**, und das gehört in die erste Anwendung ihrer Regel:
+
+| fehlender Spiegel | Folge |
+|---|---|
+| `Makefile` | das Closure-Gate musste ein zweites Modul aktivieren — nicht gelistet |
+| `validModules()` | ein neues Modul muss in die Modul-Registry, sonst lehnt die CLI `--enable structure` ab |
+| **Akzeptanzkriterien** derselben Anforderung [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) | ich hatte Beschreibung **und** Out-of-Scope nachgezogen, die Kriterien nicht — dieselbe Stelle war in 0.37.1 schon einmal als Selbstwiderspruch saniert worden |
+| [`DC-FA-CLI-006`](../../../../spec/lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) + `--suggest-config` | die Enumeration der nicht aktivierten situativen Module |
+
+Falsch **eingetragen** war außerdem eine Zeile: `.d-check.closure.yml` stand
+ausdrücklich als „unberührt“ auf der Liste und wurde am Ende um 37 Zeilen
+erweitert.
+
+**Die Lehre ist nicht „die Regel taugt nicht“, sondern „die Liste ist
+selbst ein Artefakt“:** sie war aus dem Gedächtnis geschrieben, nicht aus dem
+Repo abgeleitet. Drei der vier Lücken hätte ein `grep` nach dem vorigen
+Modul-Namen gefunden. Diese Erfahrung gehört in
+[`MR-025`](../../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten).
+
 ## 4. Definition of Done
 
 - [x] Modul vollständig (beide `sections`-Modi, alle sechs Bedingungen,

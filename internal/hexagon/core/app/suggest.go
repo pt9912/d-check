@@ -402,7 +402,7 @@ func renderHarness(fsys driven.Filesystem, extra []suggestedPattern, repoAware b
 	// (kein .d-check.yml-Material) und gehen über --print-mk; versions/targets sind
 	// repo-spezifisch (pin-pattern/authority) und bewusst vertagt.
 	b.WriteString("# Weitere opt-in-Module sind situativ und hier nicht vorab aktiviert:\n")
-	b.WriteString("# external, diagrams, versions, pins, immutable, tracked, targets — Voll-Schema: d-check --print-config.\n")
+	b.WriteString("# external, diagrams, versions, pins, immutable, tracked, targets, structure — Voll-Schema: d-check --print-config.\n")
 	b.WriteString("# vcs/commits brauchen eine Commit-Range und werden als Makefile-Target verteilt: d-check --print-mk.\n\n")
 	b.WriteString(renderHarnessIDs(fsys, extra, repoAware, reqPrefix))
 	b.WriteString("\n")

@@ -25,6 +25,16 @@
 
   Nicht jede Änderung berührt jeden Spiegel — aber **welche** sie berührt, wird
   entschieden, bevor der erste Editor aufgeht, nicht danach.
+
+  **Die Liste wird aus dem Repo abgeleitet, nicht aus dem Gedächtnis.** Bei einem
+  neuen Modul, einem neuen Grund-Code oder einem neuen Target ist der billigste
+  vollständige Ableiter ein `grep` nach dem **vorigen** Vertreter derselben Art
+  (etwa dem zuletzt hinzugefügten Modulnamen) über den ganzen Baum. Bei der
+  ersten Anwendung dieser Regel („slice-099“) fehlten vier Spiegel —
+  `Makefile`, die Modul-Registry im Kern und zwei Anforderungs-Abschnitte —,
+  und drei davon hätte genau dieses `grep` gefunden. Eine aus dem Kopf
+  geschriebene Liste ist besser als keine, aber sie ist selbst ein Artefakt mit
+  Lücken.
 - **Begründung:** Die Klasse ist **dreimal** eingetreten
   ([`BEO-002`](../../docs/plan/planning/observations.md)) und **kein einziges Mal
   von einem Gate** gefunden worden — jedes Mal von einem Menschen oder einem

@@ -1864,8 +1864,14 @@ getroffenen Dateien.
      einzeln nach Schritt 5–6 geprüft. Mehrfachtreffer sind kein Befund.
 5. **Bereinigen.** Je Abschnitt (Zeile **nach** der Überschrift bis zur nächsten
    echten Überschrift gleicher oder höherer Ebene bzw. Dateiende) werden die
-   Fenced-Code-Blöcke entfernt (`FenceToggle`-Lexik wie im übrigen Scanner). Alle
-   Bedingungen arbeiten auf **diesem** Text.
+   Fenced-Code-Blöcke entfernt **und die Inline-Code-Spans geleert** — dieselbe
+   Vorverarbeitung wie im übrigen Scanner
+   ([`DC-FA-LINK-001.a`](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+   Schritte 1–2) und dieselbe wie beim Preset-Partner
+   ([`DC-FA-PLAN-001.a`](#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
+   Schritt C4). Alle Bedingungen arbeiten auf **diesem** Text. Die Folge gehört
+   dazugesagt: ein `forbid-pattern`, das auf ein Wort in Backticks zielt, trifft
+   **nicht** — Inline-Code ist Code, kein Fließtext.
 6. **Bedingungen prüfen**, jede optional, jede mit **eigenem** Grund-Code, damit
    zwei Verletzungen desselben Abschnitts nicht unter der Befund-Deduplikation
    (Datei, Zeile, Regel, Ziel, Grund) zusammenfallen:
@@ -1873,7 +1879,7 @@ getroffenen Dateien.
    | Bedingung | erfüllt, wenn | sonst |
    |---|---|---|
    | `non-empty` | der bereinigte Text mindestens ein Nicht-Whitespace-Zeichen trägt | `section-empty` |
-   | `min-sentences` | die Zahl der Satzende-Zeichen (`.`, `!`, `?`) ≥ Schwelle ist | `section-thin` |
+   | `min-sentences` | die Zahl der Satzende-Zeichen (`.`, `!`, `?`) ≥ Schwelle ist — gezählt wird nur, was **vor Whitespace oder Zeilenende** steht, wie beim Preset-Partner | `section-thin` |
    | `max-tasks` | die Zahl der **Task-Items** ≤ Schwelle ist | `section-oversized` |
    | `forbid-pattern` | das Muster **nicht** matcht | `section-forbidden` |
    | `require-pattern` | das Muster matcht | `section-pattern-missing` |
@@ -2473,6 +2479,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 |---|---|
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2: YAML-`null` bei `closure.glob` ausdrücklich als **abwesend** ausgewiesen (nicht als leer — die Exit-2-Zusage gilt dem explizit leeren String); §4-Zeile zu `closure-note-missing` nennt den geprüften Gegenstand jetzt „Kandidat“ statt „Slice“ samt effektivem Filter, weil die Kandidaten-Menge seit `planning.closure.glob` nicht mehr aus Slice-Dateien bestehen muss |
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2 + §2-Schema (`planning.closure.glob`): die Closure-Fähigkeit bekommt einen **eigenen** Kandidaten-Filter, dessen Default ein **Verweis** auf `planning.slice-glob` ist (nicht ein kopiertes Literal — ein zweites Muster wäre eine zweite Pflegestelle). Anlass: die beiden Fähigkeiten zählen verschiedene Mengen („noch in Arbeit“ gegen „abgeschlossen“) und teilten sich einen Schlüssel; wer die eine weitet, verbiegt die andere. Ein **explizit** leerer oder ungültiger Glob ⇒ Exit 2 statt stillem Rückfall auf den Default. Kein neuer Grund-Code |
+| 2026-08-10 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritte 5 und 6 an die **geteilte** Mechanik angeglichen: die Bereinigung leert auch die Inline-Code-Spans, und ein Satzende zählt nur vor Whitespace oder Zeilenende — beides stand seit Lastenheft 0.55.0 für den Preset-Partner im Vertrag, für `structure` nirgends. Die Folge ist ausdrücklich benannt: ein `forbid-pattern` auf ein Wort in Backticks trifft **nicht** |
 | 2026-08-10 | §2-Schema und §4-Grund-Code-Zeile zu `closure-note-boilerplate` nachgezogen (Wortgrenzen statt Teilstring) sowie Schritt C4b: er sagte „die Zählung aus C4 bleibt unberührt, sie sieht Inline-Code weiterhin“ — seit der Zähl-Angleichung falsch, beide lesen denselben einmal bereinigten Text |
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt **C4**: die Floskel-Prüfung vergleicht an **Wortgrenzen** statt als Teilstring (Wortzeichen = ASCII `0-9A-Za-z_`, Zeilenränder sind Grenzen). Anlass: kurze Phrasen waren unbrauchbar — `ok` traf auch in *dokumentiert* und *Protokoll*; am eigenen Bestand 68 Treffer, davon einer echt. Mehrwortige Phrasen sind verhaltensgleich. Kein neuer Grund-Code |
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt **C4** angeglichen (Parität zum abzulösenden Adopter-Skript): der Abschnitt wird **einmal** bereinigt — Fences **und** Inline-Code-Spans —, und alle Bedingungen lesen diesen einen Text; ein Satzende zählt nur vor **Whitespace oder Zeilenende**. Gemessen am eigenen Bestand tragen mehr als die Hälfte aller Satzende-Vorkommen keinen Satz (Link-Pfade, Versionsnummern). Die Änderung wirkt in **zwei** Richtungen: `closure-note-thin` wird **schärfer**, `closure-note-boilerplate` **lockerer** (eine zitierte Floskel in Backticks trifft nicht mehr) — die Lockerung ist begleitend per ADR entschieden. C4b liest damit denselben Text und leert Inline-Code nicht mehr selbst |

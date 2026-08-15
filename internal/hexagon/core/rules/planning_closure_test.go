@@ -754,20 +754,32 @@ func TestSectionEndUndProse(t *testing.T) {
 	}
 }
 
-// Bei mehreren passenden Ueberschriften gilt heute der ERSTE Treffer. Die
-// Spezifikation sagt fuer diesen Fall bereits closure-note-ambiguous zu; bis
-// der Grund-Code existiert, ist wenigstens die geltende Auswahl bewacht --
-// sonst bliebe ein Rueckbau auf "letzter Treffer" unbemerkt.
-func TestClosureErsterTrefferBeiMehrerenUeberschriften(t *testing.T) {
+// Mehrere passende Ueberschriften machen den Abschnitt MEHRDEUTIG: gemeldet
+// wird der ZWEITE Treffer, und es wird NICHT gemessen — thin/boilerplate/
+// placeholder sind ausgeschlossen, weil eine Zahl ueber den falschen Abschnitt
+// nichts sagt.
+func TestClosureMehrdeutigWirdNichtGemessen(t *testing.T) {
 	body := "# Slice\n\n## 7. Closure-Notiz\n\n_Ausstehend._\n\n" +
 		"## 8. Closure-Notiz\n\nEins. Zwei. Drei. Vier. Fuenf.\n"
 	files := map[string]string{closureDir + "/slice-001-a.md": body}
+	cfg := placeholderCfg()
+	cfg.Closure.Boilerplate = []string{"ausstehend"}
+	f := CheckPlanningClosure(coretest.NewMemFS(files), cfg)
+	if len(f) != 1 || f[0].Reason != model.ReasonClosureNoteAmbiguous {
+		t.Fatalf("erwartet GENAU EIN closure-note-ambiguous, got %+v", f)
+	}
+	if f[0].Line != 7 {
+		t.Errorf("Zeile = %d, want 7 (der ZWEITE Treffer)", f[0].Line)
+	}
+}
+
+// Genau eine Ueberschrift bleibt eindeutig und wird gemessen.
+func TestClosureEineUeberschriftWirdGemessen(t *testing.T) {
+	body := "# Slice\n\n## 7. Closure-Notiz\n\n_Ausstehend._\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": body}
 	f := CheckPlanningClosure(coretest.NewMemFS(files), closureCfg())
 	if len(f) != 1 || f[0].Reason != model.ReasonClosureNoteThin {
-		t.Fatalf("der ERSTE Abschnitt wird gemessen ⇒ thin erwartet, got %+v", f)
-	}
-	if f[0].Line != 3 {
-		t.Errorf("Zeile = %d, want 3 (die erste Ueberschrift)", f[0].Line)
+		t.Fatalf("eindeutiger Abschnitt ⇒ gemessen, got %+v", f)
 	}
 }
 

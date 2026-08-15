@@ -1,12 +1,21 @@
 package rules
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
+	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
+
+// readErrFS ist ein Filesystem, dessen ReadFile immer scheitert — MemFS kann
+// "vorhanden, aber unlesbar" nicht ausdruecken, und genau die Unterscheidung
+// traegt den fail-closed-Vertrag.
+type readErrFS struct{ driven.Filesystem }
+
+func (readErrFS) ReadFile(string) ([]byte, error) { return nil, errors.New("unlesbar") }
 
 func ptr(n int) *int { return &n }
 
@@ -210,6 +219,64 @@ func TestStructureTaskItemBrauchtListenMarker(t *testing.T) {
 	f := CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": body}), []model.StructureRule{r})
 	if len(f) != 1 || f[0].Reason != model.ReasonSectionOversized {
 		t.Fatalf("das eine echte Task-Item muss zaehlen, got %+v", f)
+	}
+}
+
+// Die Schwelle an ihrem RAND: genau erreicht ist erfuellt, eins darunter nicht.
+func TestStructureMinSentencesAmRand(t *testing.T) {
+	r := model.StructureRule{Files: "docs/*.md", Section: "## E", MinSentences: ptr(3)}
+	for body, want := range map[string]int{
+		"# T\n\n## E\n\nEins. Zwei. Drei.\n": 0,
+		"# T\n\n## E\n\nEins. Zwei.\n":       1,
+	} {
+		f := CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": body}), []model.StructureRule{r})
+		if len(f) != want {
+			t.Errorf("%q: erwartet %d Befund(e), got %+v", body, want, f)
+		}
+	}
+}
+
+// Die Marken-Grenze ist UNICODE-weit, nicht ASCII: eine Ziffer und ein Umlaut
+// setzen die Marke gleichermassen fort.
+func TestStructureMarkenGrenzeUnicode(t *testing.T) {
+	for zeile, erfuellt := range map[string]bool{
+		"- **Beleg:** da":            true,
+		"- **Beleg2:** da":           false,
+		"- **Belegüberblick:** da":   false,
+		"- **Beleg (Lauf):** da":     true,
+		"- **Beleg-Nachweis:** da":   true,
+	} {
+		body := "# T\n\n## E\n\n" + zeile + "\n"
+		r := model.StructureRule{Files: "docs/*.md", Section: "## E", RequireAll: []string{"Beleg"}}
+		f := CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": body}), []model.StructureRule{r})
+		if (len(f) == 0) != erfuellt {
+			t.Errorf("%q: Marke erfuellt=%v erwartet, got %+v", zeile, erfuellt, f)
+		}
+	}
+}
+
+// Eine Ueberschrift mit nachlaufendem Whitespace muss ein auf `$` verankertes
+// section-pattern weiter treffen — der Vergleich laeuft auf der GETRIMMTEN Zeile.
+func TestStructureUeberschriftGetrimmt(t *testing.T) {
+	body := "# T\n\n## E   \n\n \n"
+	r := model.StructureRule{Files: "docs/*.md", SectionPattern: `^## E$`, NonEmpty: true}
+	f := CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": body}), []model.StructureRule{r})
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionEmpty {
+		t.Fatalf("nachlaufender Whitespace darf den Selektor nicht kippen, got %+v", f)
+	}
+}
+
+// Eine vorhandene, aber unlesbare Kandidaten-Datei ist FAIL-CLOSED: sie still
+// zu ueberspringen waere genau der Gruen-Pfad, den die Anforderung ausschliesst.
+func TestStructureUnlesbareDateiFailClosed(t *testing.T) {
+	fs := readErrFS{coretest.NewMemFS(map[string]string{"docs/a.md": "# T\n\n## E\n\nx.\n"})}
+	r := model.StructureRule{Files: "docs/*.md", Section: "## E", NonEmpty: true}
+	f := CheckStructure(fs, []model.StructureRule{r})
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionMissing {
+		t.Fatalf("unlesbare Datei muss fail-closed melden, got %+v", f)
+	}
+	if !strings.Contains(f[0].Message, "unlesbar") {
+		t.Errorf("die Meldung muss die Ursache nennen: %q", f[0].Message)
 	}
 }
 
