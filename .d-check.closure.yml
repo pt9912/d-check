@@ -77,3 +77,40 @@ planning:
       - "erfolgreich abgeschlossen"
       - "nichts Besonderes"
       - "alles gut"
+
+# Modul structure (DC-FA-STRUCT-001, ADR-0049): Struktur-Invarianten INNERHALB
+# der Dokumente, die den Lifecycle verlassen haben. Sie gehoeren an denselben
+# Bindepunkt wie die Closure-Notiz-Struktur — eine Frage an den Ruheort, nicht
+# an den inneren Loop.
+#
+# Jede Regel ist VOR der Aufnahme am eigenen Bestand gemessen worden; nur was
+# null Befunde hatte, steht hier. Ausdruecklich NICHT aufgenommen:
+#
+#   DoD ohne offene Tasks              32 Befunde — und die sind BERECHTIGT:
+#                                      ein abgeschlossener Slice darf eine
+#                                      offene Box tragen, wenn die WELLE sie
+#                                      einloest (slice-094 tut das). Die Regel
+#                                      waere am ersten Tag falsch gewesen.
+#   ADR: Fitness Function              15   aeltere ADRs kennen den Abschnitt
+#   ADR: Re-Evaluierungs-Trigger       20   noch nicht — Sanierung waere ein
+#   ADR: Verglichene Alternativen      14   eigener Slice, keine Nebenwirkung
+#   Wellen-Results: Steering-Loop       7   dieses hier
+structure:
+  # Jeder abgeschlossene Slice traegt eine nicht-leere Closure-Notiz. Das
+  # DOPPELT die Aussage des planning-Gates bewusst nicht: dort geht es um
+  # Substanz (Satzzahl, Floskel, Platzhalter), hier nur um die Existenz des
+  # Abschnitts ueber denselben geteilten Mechanismus — der Preset-Beleg im
+  # eigenen Lauf.
+  - files: "docs/plan/planning/done/slice-*.md"
+    section-pattern: '^#{2,3} .*Closure-Notiz'
+    non-empty: true
+
+  # Jeder abgeschlossene Slice traegt eine Definition of Done.
+  - files: "docs/plan/planning/done/slice-*.md"
+    section-pattern: '^## [0-9]+\. Definition of Done'
+    non-empty: true
+
+  # Jede Wellen-Ergebnisnotiz beantwortet die erste Pflichtfrage.
+  - files: "docs/plan/planning/done/welle-*-results.md"
+    section-pattern: '^## Was wurde geliefert'
+    non-empty: true

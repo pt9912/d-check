@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.56.1
+**Version:** 0.57.0
 
 **Status:** Draft
 
@@ -443,7 +443,7 @@ Release-Version** des laufenden Binaries (das Binary kennt seine Version,
 nicht seinen eigenen Digest; für strikte Reproduzierbarkeit überschreibt der
 Konsument `DCHECK_IMAGE` mit einem `@sha256:`-Digest aus den Release-Notes,
 konsistent mit der Konsum-Pin-Politik aus
-[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie elf
+[`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image)) — sowie zwölf
 `##`-annotierte Targets: `doc-check` (Doku-Gate), `doc-trace` (advisory RTM,
 [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)), `doc-complete`
 (Vollständigkeits-Gate,
@@ -470,6 +470,10 @@ via Modul `tracked`,
 (Deklarations-Konsistenz Doku ↔ Build-Targets via Modul `targets`,
 [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
 — `--enable targets` mit auf `targets` fokussierter `--disable`-Liste,
+**hermetisch** ohne `RANGE`/`STAGED`), `doc-structure` (Struktur-Invarianten
+**innerhalb** eines Dokuments via Modul `structure`,
+[`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
+— `--enable structure` mit auf `structure` fokussierter `--disable`-Liste,
 **hermetisch** ohne `RANGE`/`STAGED`) und `doc-help` (listet die
 `doc-*`-Targets), jeweils `docker run --network none -v "$PWD:/repo:ro"`. Dazu die
 Variablen `TRACE_FLAGS` (Flags der RTM-Targets) und `DCHECK_DIGEST` (ein
@@ -487,7 +491,7 @@ eingebetteten Version. Reiht sich in die read-only-Generatoren
 - **Boundary:** Given das Fragment wird per `d-check --print-mk > d-check.mk` umgeleitet und in ein Makefile `include`-t, when `make doc-check` (bzw. `doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`/`doc-planning`/`doc-tracked`/`doc-targets`) läuft, then ruft das Target das gepinnte Image (bzw. den per `DCHECK_IMAGE`/`DCHECK_DIGEST` gesetzten Override) im passenden Modus (`doc-trace` → `--trace`, `doc-complete` → `--trace --require-complete`, `doc-doctor` → `--doctor`, `doc-repair` → `--repair` mit unterdrücktem Recipe-Echo, `doc-immutable` → `--enable vcs` + Fokus-`--disable` mit `--range $(RANGE)` bzw. `--staged`, `doc-commits` → `--enable commits` + Fokus-`--disable` mit `--range $(RANGE)`, `doc-planning` → `--enable planning` + Fokus-`--disable`, **hermetisch ohne Range**, `doc-tracked` → `--enable tracked` + Fokus-`--disable`, ohne Range, `doc-targets` → `--enable targets` + Fokus-`--disable`, **hermetisch ohne Range**); d-check selbst schreibt dabei nichts.
 - **Negative:** Given `d-check --print-mk` mit einem unbekannten Flag, when aufgerufen, then Exit-Code 2 (Nutzungsfehler, [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)).
 
-**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits der gelisteten elf (`doc-check`/`doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`/`doc-planning`/`doc-tracked`/`doc-targets`/`doc-help` — Konsumenten komponieren weitere `gates` selbst); ein `help`-Target (Namens-Kollision mit dem Konsumenten — daher namespaced `doc-help`); Nicht-`@sha256:`-Digest-Formen in `DCHECK_DIGEST`; die Exit-Code-Semantik der RTM-Targets selbst (in [`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) bzw. [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix) festgelegt); Nicht-Make-Build-Systeme.
+**Out-of-Scope:** Schreiben der `d-check.mk` (immer stdout); Einbetten des eigenen Image-**Digests** ins Binary (Henne-Ei — der Digest hasht das Binary selbst; der Konsument pinnt per `DCHECK_IMAGE`-Override); weitere Targets jenseits der gelisteten zwölf (`doc-check`/`doc-trace`/`doc-complete`/`doc-doctor`/`doc-repair`/`doc-immutable`/`doc-commits`/`doc-planning`/`doc-tracked`/`doc-targets`/`doc-structure`/`doc-help` — Konsumenten komponieren weitere `gates` selbst); ein `help`-Target (Namens-Kollision mit dem Konsumenten — daher namespaced `doc-help`); Nicht-`@sha256:`-Digest-Formen in `DCHECK_DIGEST`; die Exit-Code-Semantik der RTM-Targets selbst (in [`DC-FA-CLI-011`](#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) bzw. [`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix) festgelegt); Nicht-Make-Build-Systeme.
 
 ---
 
@@ -2602,6 +2606,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.57.0 | 2026-08-10 | Umsetzung von [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) — das **20. Regelmodul** `structure` liegt vor, samt der von [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) seit 0.51.0 zugesagten, aber nicht implementierten Mehrdeutigkeits-Härte (`closure-note-ambiguous`). Die Abschnitts-Mechanik ist **geteilt**, nicht kopiert: die Closure-Fähigkeit ist ein Preset derselben Semantik, und ein Kopplungs-Test fährt dieselbe Eingabe durch beide Oberflächen. Neun neue Grund-Codes. **`DC-FA-CLI-010`-Erweiterung (11 → 12 Targets):** `--print-mk` trägt ein `doc-structure`-Target |
 | 0.56.1 | 2026-08-10 | Nachzug nach unabhängigem Review, vor dem Release: drei Vertragsflächen standen noch auf der Fassung **vor** der Zähl-Angleichung und waren gegen die Umsetzung falsifizierbar — die Aussage, die Zählung sehe Inline-Code weiterhin (sie tut es nicht mehr), und das Akzeptanzkriterium zur Floskel, das einen **Teilstring**-Treffer verlangte (der Lauf meldet nichts). Ferner stand die ASCII-Wortgrenze nur in ihrer günstigen Richtung; sie steht jetzt in beiden: ein Umlaut ist **kein** Wortzeichen, eine Phrase mit angrenzendem Umlaut gilt damit als grenzständig und trifft |
 | 0.56.0 | 2026-08-10 | Change Request des Auftraggebers: die Floskel-Bedingung von [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) vergleicht an **Wortgrenzen** statt als Teilstring. Anlass: kurze Phrasen waren unbrauchbar, und kurze Phrasen sind genau die, für die die Bedingung gedacht ist — eine Notiz, die nur „Ok.“ sagt, ist der Kern-Fall. Am eigenen Bestand gemessen (97 Notizen): `ok` fällt von **68** Treffern auf **1**, `n/a` von 2 auf 0, `fertig` von 3 auf 0; mehrwortige Phrasen sind verhaltensgleich, und die fünf **konfigurierten** Phrasen ändern sich nicht. Die Änderung **findet weniger** — ein roter Konsumentenlauf kann grün werden; sie gehört damit in dieselbe Release-Notiz wie die Lockerung aus 0.55.0. Wortgrenzen machen kurze Phrasen brauchbar, nicht automatisch sicher: der eine verbleibende `ok`-Treffer ist echt |
 | 0.55.0 | 2026-08-10 | Change Request (Parität zum abzulösenden Adopter-Skript des Schwester-Repos): die **Substanz-Zählung** von [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) ist angeglichen — der Abschnitt wird **einmal** bereinigt (Fences **und** Inline-Code), und ein Satzende zählt nur vor **Whitespace oder Zeilenende**. Anlass: eine Notiz, die der Adopter-Sensor als zu dünn meldet, lief bei d-check durch. Gemessen am eigenen Bestand tragen **mehr als die Hälfte** aller Satzende-Vorkommen keinen Satz (Link-Pfade, Versionsnummern); das Minimum fällt von 7 auf 5, bei Schwelle 4 bleibt der Bestand grün. **Die Änderung wirkt in zwei Richtungen:** `closure-note-thin` wird **schärfer** (ein grüner Konsumentenlauf kann rot werden), `closure-note-boilerplate` **lockerer** — eine Floskel in Backticks trifft nicht mehr, weil beide Bedingungen denselben Text lesen. Die Lockerung ist begleitend per ADR entschieden ([`AGENTS.md` §3.6](../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)) und gehört in die Release-Notiz: wer eine Floskel zitiert stehen hat, verliert einen bestehenden Befund |

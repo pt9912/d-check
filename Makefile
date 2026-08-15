@@ -183,8 +183,8 @@ completeness-check: build ## Requirements-Completeness via in-Produkt-Flag (--tr
 # eigenes Prüf-Profil über --config (DC-FA-CLI-012) — stünde der closure-Block
 # in der konventionellen .d-check.yml, liefe er in `gates` mit, und eine
 # Closure-Frage gehört nicht in den Inner-Loop (ADR-0048).
-verify-closure-notes: build ## Closure-Note-Struktur des done/-Bestands (Modul planning via eigenes --config-Profil); Closure-Gate (in fullbuild, NICHT gates/ci). ADR-0048.
-	$(DCHECK_RUN) --config .d-check.closure.yml --enable planning
+verify-closure-notes: build ## Struktur des done/-Bestands: Closure-Notizen (Modul planning) UND Abschnitts-Invarianten (Modul structure), via eigenes --config-Profil; Closure-Gate (in fullbuild, NICHT gates/ci). ADR-0048/ADR-0049.
+	$(DCHECK_RUN) --config .d-check.closure.yml --enable planning --enable structure
 
 # ---- traceability ------------------------------------------------------------
 

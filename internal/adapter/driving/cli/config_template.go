@@ -137,6 +137,24 @@ modules: [links, anchors]
 # tracked:
 #   exempt-targets: []   # Globs über den AUFGELÖSTEN Zielpfad — absichtlich untrackte Ziele (referenz-weit)
 
+# --- structure: Struktur-Invarianten INNERHALB eines Dokuments — hermetisch, opt-in ---
+#   (--enable structure; Post-Pass. Jede Regel benennt ihre Dateien SELBST über
+#    eigene Globs — unabhängig von scan.roots/scan.ignore, daher kein scope.
+#    Leere Liste ⇒ Modul inert. Null Kandidaten ⇒ section-missing, auch wenn erst
+#    exempt-paths die Menge geleert hat.)
+# structure:
+#   - files: "docs/plan/planning/done/slice-*.md"   # Pflicht; Glob über Wurzel-relative Pfade
+#     section: "## 9. Closure-Notiz"                # Klartext, EXAKT inkl. #-Folge …
+#     # section-pattern: '^#{2,3} .*Closure'        # … oder RE2; genau eines von beiden
+#     # sections: one                               # one (Default) | each
+#     non-empty: true                               # sonst section-empty
+#     # min-sentences: 4                            # sonst section-thin; abwesend = Bedingung aus
+#     # max-tasks: 0                                # sonst section-oversized (Task-Items IM Abschnitt)
+#     # forbid-pattern: 'TODO'                      # Treffer ⇒ section-forbidden
+#     # require-pattern: 'Beleg'                    # kein Treffer ⇒ section-pattern-missing
+#     # require-all: ["Beleg", "Lernsignal"]        # fehlende Marke ⇒ section-marker-missing
+#     # exempt-paths: []                            # Globs; Treffer werden von DIESER Regel nicht geprüft
+
 # --- targets: Deklarations-Konsistenz Doku ↔ Build-Targets — hermetisch (kein git), opt-in ---
 #   (Aufruf über das make-Target gate-consistency bzw. --enable targets. NICHT in modules: oben.)
 # targets:

@@ -81,21 +81,52 @@ Referenzmatrix.
 
 ## 4. Definition of Done
 
-- [ ] Modul vollständig (beide `sections`-Modi, alle sechs Bedingungen,
+- [x] Modul vollständig (beide `sections`-Modi, alle sechs Bedingungen,
       Kandidaten-Menge, fail-closed Ränder inkl. Leerlauf trotz `exempt-paths`);
       Abschnitts-Mechanik **geteilt** mit der Closure-Fähigkeit — belegt durch
       den Preset-Kopplungs-Test (dieselbe Eingabe, beide Oberflächen, gleiche
       Befund-Zeilen).
-- [ ] **Neun** neue Grund-Codes im Lockstep mit `AllReasons()` und Spezifikation
+- [x] **Neun** neue Grund-Codes im Lockstep mit `AllReasons()` und Spezifikation
       §4; jedes Akzeptanzkriterium als Test, insbesondere die drei Marken-Formen,
       `sections: each` und „Mehrdeutigkeit schlägt Messung".
-- [ ] CLI-Enumerationen nachgezogen — einschließlich der Target-Liste in
+- [x] CLI-Enumerationen nachgezogen — einschließlich der Target-Liste in
       [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
       deren Out-of-Scope-Zeile die **Zahl** der Targets festschreibt und daher
       mitzuändern ist. `make gates` grün; **Paritäts-Beleg** gegen die
       beigezogenen Adopter-Fixtures; Release als **Minor** (neues Modul +
       additiver Code — ein Repo mit zwei Closure-Abschnitten wird danach rot,
       das gehört in die Release-Notiz).
+
+## 4a. Messung: welche Regeln aktivieren wir selbst?
+
+Vor der Aufnahme in die eigene Konfiguration gemessen, je Kandidat ein Lauf —
+dieselbe Disziplin wie bei der Floskel-Liste und der Platzhalter-Erkennung.
+
+| Kandidaten-Regel | Befunde | aufgenommen |
+|---|---|---|
+| slice-Closure-Notiz nicht leer | **0** | **ja** |
+| slice-Definition-of-Done vorhanden | **0** | **ja** |
+| Wellen-Ergebnisnotiz: „Was wurde geliefert?“ | **0** | **ja** |
+| slice-DoD **ohne offene Tasks** | 32 | **nein** |
+| ADR: „Fitness Function“ | 15 | nein |
+| ADR: „Re-Evaluierungs-Trigger“ | 20 | nein |
+| ADR: „Verglichene Alternativen“ | 14 | nein |
+| Wellen-Ergebnisnotiz: „Steering-Loop-Einträge“ | 7 | nein |
+
+**Die 32 sind das lehrreiche Nein.** Sie sehen aus wie ein Bestandsschaden, sind
+aber keiner: ein abgeschlossener Slice **darf** eine offene Box tragen, wenn die
+**Welle** sie einlöst — [slice-094](../done/slice-094-closure-zaehl-paritaet.md)
+tut genau das, mit ausdrücklicher Begründung in seiner DoD. Die Regel wäre am
+ersten Tag falsch gewesen; ohne Messung hätte ich sie aktiviert.
+
+Die vier ADR-/Wellen-Regeln melden **echte** Lücken: ältere Dokumente kennen die
+Abschnitte noch nicht. Sie zu sanieren ist eigene Arbeit, kein Nebeneffekt dieses
+Slice — die Regeln bleiben deshalb draußen, **benannt** statt vergessen.
+
+**Bindepunkt:** die drei aufgenommenen Regeln laufen über das
+**Closure-Profil**, nicht im inneren Loop. Sie fragen nach dem Ruheort, und das
+ist dieselbe Begründung, mit der [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md)
+die Closure-Note-Struktur dorthin gelegt hat.
 
 ## 5. Risiken / offene Punkte
 
