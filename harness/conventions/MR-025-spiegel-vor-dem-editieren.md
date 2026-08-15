@@ -35,6 +35,15 @@
   und drei davon hätte genau dieses `grep` gefunden. Eine aus dem Kopf
   geschriebene Liste ist besser als keine, aber sie ist selbst ein Artefakt mit
   Lücken.
+
+  **Der Spiegel ist die Stelle, nicht die Datei.** Eine bestätigende Re-Review
+  desselben Slice fand eine **fünfte** Lücke, die der Datei-`grep` nicht gefunden
+  hätte: die Modul-Enumeration in der emittierten Config-Vorlage lag in genau der
+  Datei, die ohnehin bearbeitet wurde — sie stand deshalb nicht auf der Liste und
+  blieb doch stehen. Wo eine Aufzählung eine Menge spiegelt, gehört sie an ihre
+  Quelle **gebunden** (ein Test gegen die Registry), nicht in die Liste
+  geschrieben. Die Liste ist der Notbehelf für alles, was sich nicht binden
+  lässt.
 - **Begründung:** Die Klasse ist **dreimal** eingetreten
   ([`BEO-002`](../../docs/plan/planning/observations.md)) und **kein einziges Mal
   von einem Gate** gefunden worden — jedes Mal von einem Menschen oder einem

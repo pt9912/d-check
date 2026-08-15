@@ -97,6 +97,16 @@ Falsch **eingetragen** war außerdem eine Zeile: `.d-check.closure.yml` stand
 ausdrücklich als „unberührt“ auf der Liste und wurde am Ende um 37 Zeilen
 erweitert.
 
+**Eine bestätigende Re-Review fand eine fünfte Lücke** — und die ist die
+interessanteste: die Modul-Enumeration der emittierten `--print-config`-Vorlage
+lag in **genau der Datei**, die ohnehin bearbeitet wurde. Sie stand deshalb nicht
+auf der Liste und blieb doch stehen; sie war sogar schon vorher veraltet
+(`citations` fehlte seit seiner Einführung). Der Datei-`grep` hätte sie nicht
+gefunden. Die Antwort ist kein längerer Listeneintrag, sondern eine **Bindung**:
+ein Test vergleicht die Zeile jetzt gegen die Modul-Registry. Wo eine Aufzählung
+eine Menge spiegelt, gehört sie an ihre Quelle gebunden — die Liste ist der
+Notbehelf für alles, was sich nicht binden lässt.
+
 **Die Lehre ist nicht „die Regel taugt nicht“, sondern „die Liste ist
 selbst ein Artefakt“:** sie war aus dem Gedächtnis geschrieben, nicht aus dem
 Repo abgeleitet. Drei der vier Lücken hätte ein `grep` nach dem vorigen

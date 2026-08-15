@@ -20,6 +20,7 @@ import (
 
 	configyaml "github.com/pt9912/d-check/internal/adapter/driven/configyaml"
 	"github.com/pt9912/d-check/internal/adapter/driving/cli"
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 )
 
 func write(t *testing.T, root, rel, content string) {
@@ -835,7 +836,11 @@ func TestCLI005_KeinRepoZugriff(t *testing.T) {
 func TestCLI053_PrintConfig_VollesModulset(t *testing.T) {
 	_, stdout, _ := run(t, "--print-config")
 	for _, want := range []string{
-		"versions, pins, immutable, vcs, commits, planning, tracked, targets, external", // vollständige Verfügbar-Liste
+		// Die VOLLSTAENDIGKEIT der Verfuegbar-Liste bindet TestVerfuegbarZeileDecktAlleModule
+		// gegen die Modul-Registry — ein Teilstring kann ein Fehlen nicht sehen.
+		// Hier bleibt nur die Existenz der Zeile und der Block je Modul.
+		"# Verfügbar: links, anchors,",
+		"# --- structure:",
 		"# --- immutable:",
 		"# --- vcs:",
 		"# --- commits:",
@@ -2968,3 +2973,37 @@ func TestCLI071_Cross_FailClosed(t *testing.T) {
 		t.Fatalf("stderr benennt die fehlende Datei nicht:\n%s", stderr)
 	}
 }
+
+// Die "Verfuegbar"-Zeile der print-config-Ausgabe ist an die Modul-Registry
+// gebunden, nicht an eine von Hand gepflegte Liste: sie war ZWEIMAL veraltet
+// (citations seit seiner Einfuehrung, structure seit slice-099), weil die
+// uebrigen Akzeptanztests auf Teilstrings pruefen und ein FEHLEN nicht sehen.
+func TestPrintConfigVerfuegbarDecktRegistry(t *testing.T) {
+	_, stdout, _ := run(t, "--print-config")
+	var zeile string
+	for _, l := range strings.Split(stdout, "\n") {
+		if strings.HasPrefix(l, "# Verfügbar:") {
+			zeile = l
+			break
+		}
+	}
+	if zeile == "" {
+		t.Fatal("die Verfuegbar-Zeile fehlt in der Ausgabe")
+	}
+	genannt := map[string]bool{}
+	for _, m := range strings.Split(strings.TrimPrefix(zeile, "# Verfügbar:"), ",") {
+		if m = strings.TrimSpace(m); m != "" {
+			genannt[m] = true
+		}
+	}
+	for _, m := range model.ValidModules() {
+		if !genannt[m] {
+			t.Errorf("Modul %q fehlt in der Verfuegbar-Zeile", m)
+		}
+	}
+	if len(genannt) != len(model.ValidModules()) {
+		t.Errorf("Verfuegbar-Zeile nennt %d Eintraege, die Registry kennt %d",
+			len(genannt), len(model.ValidModules()))
+	}
+}
+

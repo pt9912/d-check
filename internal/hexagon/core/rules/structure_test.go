@@ -280,3 +280,25 @@ func TestStructureUnlesbareDateiFailClosed(t *testing.T) {
 	}
 }
 
+// Nummerierte Listen sind ebenfalls Task-Item-Traeger — ohne diesen Fall liesse
+// sich der Ziffern-Zweig aus dem Muster entfernen, ohne dass ein Test rot wird.
+func TestStructureTaskItemNummerierteListe(t *testing.T) {
+	body := "# T\n\n## E\n\n1. [ ] eins\n2. [x] zwei\n"
+	r := model.StructureRule{Files: "docs/*.md", Section: "## E", MaxTasks: ptr(1)}
+	f := CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": body}), []model.StructureRule{r})
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionOversized {
+		t.Fatalf("nummerierte Task-Items muessen zaehlen, got %+v", f)
+	}
+}
+
+// Die Marke muss am ANFANG des ausgezeichneten Laufs stehen, nicht irgendwo
+// darin: `**Zwischenbeleg:**` erfuellt `Beleg` NICHT.
+func TestStructureMarkeNurAlsPraefix(t *testing.T) {
+	body := "# T\n\n## E\n\n- **Zwischenbeleg:** da\n"
+	r := model.StructureRule{Files: "docs/*.md", Section: "## E", RequireAll: []string{"Beleg"}}
+	f := CheckStructure(coretest.NewMemFS(map[string]string{"docs/a.md": body}), []model.StructureRule{r})
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionMarkerMissing {
+		t.Fatalf("die Marke steht nicht am Anfang ⇒ fehlend erwartet, got %+v", f)
+	}
+}
+

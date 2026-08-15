@@ -29,7 +29,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Konsumenten:** ein Dokument mit zwei passenden Überschriften meldete bisher
   `closure-note-thin`/`-boilerplate`/`-placeholder` über den **ersten**
   Abschnitt; jetzt meldet es `closure-note-ambiguous` an der Zeile des
-  **zweiten** und wird nicht gemessen.
+  **zweiten** und wird nicht gemessen. **Die Richtung schließt „vorher grün,
+  jetzt rot" ein:** war der erste Abschnitt substanzhaltig, meldete der Lauf
+  bisher **nichts** — jetzt meldet er die Mehrdeutigkeit. Wer zwei passende
+  Überschriften in einem Dokument führt (etwa einen stehengebliebenen
+  Vorlagen-Abschnitt), bekommt beim Update einen neuen Befund.
 - slice-099 — **zwölftes `--print-mk`-Target `doc-structure`**
   (`DC-FA-CLI-010`, 11 → 12).
 

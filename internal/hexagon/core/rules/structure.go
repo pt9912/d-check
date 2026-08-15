@@ -192,10 +192,15 @@ var markerRE = regexp.MustCompile(`^[ \t]*(?:(?:[-*+]|[0-9]+\.)[ \t]+)?\*\*([^*]
 func hasMarker(body, m string) bool {
 	for _, l := range strings.Split(body, "\n") {
 		sub := markerRE.FindStringSubmatch(l)
-		if sub == nil || !strings.HasPrefix(sub[1], m) {
+		if sub == nil {
 			continue
 		}
-		rest := sub[1][len(m):]
+		// CutPrefix statt HasPrefix+Slice: eine Operation, damit Prüfung und
+		// Schnitt nicht auseinanderlaufen können.
+		rest, ok := strings.CutPrefix(sub[1], m)
+		if !ok {
+			continue
+		}
 		if rest == "" || !isWordRune(rest) {
 			return true
 		}

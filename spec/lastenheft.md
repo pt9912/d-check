@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.57.1
+**Version:** 0.57.2
 
 **Status:** Draft
 
@@ -238,7 +238,9 @@ zu. **Alle übrigen** Module bleiben inaktiv: `external` (Netz, K4), `diagrams`
 (nicht ableitbare `patterns`/`defined-in`, K2), `versions`/`targets`
 (repo-spezifische `pin-pattern`/`authority`, K2 — bewusst vertagt),
 `pins`/`immutable` (pro-Marker, nichts zu deklarieren), `tracked` (fail-closed
-ohne `.git`); `vcs`/`commits` brauchen eine Commit-Range (K3) und werden als
+ohne `.git`), `citations` (pro-Marker wie `pins`), `structure` (die Regel-Liste
+ist repo-spezifisch und nicht ableitbar, K2 — jede Regel benennt ihre
+Dokumentklasse selbst), `sources` (Netz, K4); `vcs`/`commits` brauchen eine Commit-Range (K3) und werden als
 Makefile-Target über [`--print-mk`](#dc-fa-cli-010--makefile-fragment-ausgeben)
 verteilt statt ins statische `modules` aufgenommen. Die Vorlage nennt die nicht
 aktivierten Module in einem Kommentar mit Verweis auf
@@ -2606,6 +2608,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.57.2 | 2026-08-10 | Nachzug nach bestätigender Re-Review: die Aufnahme-Klausel von [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) nennt sich eine „geschlossene Menge“, klassifizierte aber drei Module gar nicht — `citations`, `sources` und das neue `structure`. Das Akzeptanzkriterium derselben Anforderung tat es; die Klausel jetzt auch |
 | 0.57.1 | 2026-08-10 | Nachzug nach unabhängigem Review, vor dem Release: die **Akzeptanzkriterien** von [`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben) führten weiter elf Targets ohne `doc-structure` — Beschreibung und Out-of-Scope waren nachgezogen, die Kriterien nicht. Dieselbe Stelle war schon in 0.37.1 als Selbstwiderspruch saniert worden. Ferner nennt [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) `structure` jetzt in der Enumeration der nicht aktivierten situativen Module |
 | 0.57.0 | 2026-08-10 | Umsetzung von [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) — das **20. Regelmodul** `structure` liegt vor, samt der von [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) seit 0.51.0 zugesagten, aber nicht implementierten Mehrdeutigkeits-Härte (`closure-note-ambiguous`). Die Abschnitts-Mechanik ist **geteilt**, nicht kopiert: die Closure-Fähigkeit ist ein Preset derselben Semantik, und ein Kopplungs-Test fährt dieselbe Eingabe durch beide Oberflächen. Neun neue Grund-Codes. **`DC-FA-CLI-010`-Erweiterung (11 → 12 Targets):** `--print-mk` trägt ein `doc-structure`-Target |
 | 0.56.1 | 2026-08-10 | Nachzug nach unabhängigem Review, vor dem Release: drei Vertragsflächen standen noch auf der Fassung **vor** der Zähl-Angleichung und waren gegen die Umsetzung falsifizierbar — die Aussage, die Zählung sehe Inline-Code weiterhin (sie tut es nicht mehr), und das Akzeptanzkriterium zur Floskel, das einen **Teilstring**-Treffer verlangte (der Lauf meldet nichts). Ferner stand die ASCII-Wortgrenze nur in ihrer günstigen Richtung; sie steht jetzt in beiden: ein Umlaut ist **kein** Wortzeichen, eine Phrase mit angrenzendem Umlaut gilt damit als grenzständig und trifft |
