@@ -86,7 +86,7 @@ daneben und muss in derselben Notiz erscheinen.
 - **Eine Sanierung des eigenen Bestands**, falls die Vorab-Messung Notizen rot
   macht. Das wäre ein Befund über die Notizen und ein eigener Slice — kein Grund,
   die Zählung aufzuweichen.
-- **Das Modul `structure`** ([slice-099](../in-progress/slice-099-structure-modul.md)) —
+- **Das Modul `structure`** ([slice-099](slice-099-structure-modul.md)) —
   eigene Welle.
 
 ## 8. Closure-Notiz

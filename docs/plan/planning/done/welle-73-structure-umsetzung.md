@@ -24,7 +24,7 @@ sie ist **dreimal** eingetreten und kein einziges Mal von einem Gate gefunden
 worden — jedes Mal von einem Review. Die Schwelle war erreicht; sie hier ein
 viertes Mal zu zählen wäre die falsche Antwort gewesen.
 
-**Verkörpert ist sie mit [`MR-025`](../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten)**
+**Verkörpert ist sie mit [`MR-025`](../../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten)**
 — vor dem Editieren einer zugesagten Semantik wird die Liste ihrer Spiegel
 aufgeschrieben. Die Regel steht **vor** dem Slice, nicht danach: sie soll an ihm
 zum ersten Mal wirken, nicht an ihm zum vierten Mal fehlen.
@@ -32,15 +32,15 @@ zum ersten Mal wirken, nicht an ihm zum vierten Mal fehlen.
 ## 2. Trigger (Welle startet)
 
 Freigabe des Auftraggebers (2026-08-15), WIP-Slot frei, und die **bindende**
-Start-Bedingung des Slice ist erfüllt: [slice-096](done/slice-096-structure-modul-analyse.md)
-**und** [slice-101](done/slice-101-fence-unbalanciert.md) liegen in `done/`. Die
+Start-Bedingung des Slice ist erfüllt: [slice-096](slice-096-structure-modul-analyse.md)
+**und** [slice-101](slice-101-fence-unbalanciert.md) liegen in `done/`. Die
 zweite war nicht Vorliebe, sondern Bedingung — sonst erbte das neue Modul über
 die geteilte Mechanik einen **bekannten** stillen Grün-Pfad.
 
 ## 3. Closure-Trigger (Welle schließt)
 
-- [slice-099](in-progress/slice-099-structure-modul.md) liegt in `done/`.
-- **[`MR-025`](../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten) hat an diesem Slice gewirkt:** die Spiegel-Liste steht im Slice,
+- [slice-099](slice-099-structure-modul.md) liegt in `done/`.
+- **[`MR-025`](../../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten) hat an diesem Slice gewirkt:** die Spiegel-Liste steht im Slice,
   **bevor** die Grund-Codes geändert wurden, und ist am Ende abgehakt.
 - Release als **Minor**, Digest-Backfill.
 - `make fullbuild` grün.
@@ -49,7 +49,7 @@ die geteilte Mechanik einen **bekannten** stillen Grün-Pfad.
 
 | Slice | Rolle |
 |---|---|
-| [slice-099](in-progress/slice-099-structure-modul.md) | Modul `structure` vollständig + Preset-Kopplung der Closure-Fähigkeit samt `closure-note-ambiguous` |
+| [slice-099](slice-099-structure-modul.md) | Modul `structure` vollständig + Preset-Kopplung der Closure-Fähigkeit samt `closure-note-ambiguous` |
 
 Ein Slice, und das ist Absicht: der Umsetzbarkeits-Review hat den früheren
 Zwei-Slice-Schnitt an der **Release-Grenze** verworfen — ein Modul, das die
@@ -58,8 +58,8 @@ lieferbarer Zwischenstand.
 
 ## 5. Abhängigkeiten
 
-- [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
-  und [ADR-0049](../adr/0049-structure-modul-schnitt-und-preset.md) liegen
+- [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
+  und [ADR-0049](../../adr/0049-structure-modul-schnitt-und-preset.md) liegen
   vollständig vor — dieser Zug erfindet nichts, er liefert.
 - **Paritäts-Fixtures** aus dem Schwester-Repo: beizuziehen, nicht nachzubauen.
   Beim Wellen-Start geprüft, das Repo liegt vor.
@@ -72,8 +72,8 @@ lieferbarer Zwischenstand.
 - **Ein Gate für die Spiegel-Konsistenz.** Die Regel ist eine für Menschen;
   sie durch ein Modul zu ersetzen wäre ein eigener Slice — und der
   Auflösungs-Trigger der Regel sagt genau das.
-- [slice-103](open/slice-103-geteilte-lexik-raender.md) und
-  [slice-095](open/slice-095-links-resolve-from.md).
+- [slice-103](../open/slice-103-geteilte-lexik-raender.md) und
+  [slice-095](../open/slice-095-links-resolve-from.md).
 
 ## 7. Closure-Notiz
 

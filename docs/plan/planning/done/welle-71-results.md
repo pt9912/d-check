@@ -90,7 +90,7 @@ Der Lese-Schritt dieser Welle: das Register führt **BEO-001** (1×),
   [slice-104](../done/slice-104-floskel-wortgrenze.md) — beide ändern die
   Semantik des **ausgelieferten** Closure-Gates und sind als gemeinsame
   Folge-Welle vorgemerkt.
-- [slice-099](../in-progress/slice-099-structure-modul.md) — die Abdeckung der
+- [slice-099](slice-099-structure-modul.md) — die Abdeckung der
   Wellen-Dokumente, die 097 ausdrücklich **nicht** über den Kandidaten-Filter
   gelöst hat.
 

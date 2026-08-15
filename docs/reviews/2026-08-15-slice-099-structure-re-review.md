@@ -18,9 +18,9 @@ Gesamt-Slice `64c62cb..HEAD`.
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- [slice-099](../plan/planning/in-progress/slice-099-structure-modul.md),
+- [slice-099](../plan/planning/done/slice-099-structure-modul.md),
   besonders §3a (Spiegel-Liste) und **§3b** (die Bilanz),
-  [welle-73](../plan/planning/welle-73-structure-umsetzung.md)
+  [welle-73](../plan/planning/done/welle-73-structure-umsetzung.md)
 - [`MR-025`](../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten)
   in der **nach** dem Erst-Review geschärften Fassung
 - [`DC-FA-STRUCT-001`](../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
@@ -77,7 +77,7 @@ Der Arbeitsbaum ist unverändert (`git status --short` leer, Beleg am Ende).
   Kommentare, damit sie sichtbar sind");
   [`MR-025`](../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten)
   Spiegel „Emittierte Vorlage";
-  [slice-099](../plan/planning/in-progress/slice-099-structure-modul.md) §3a
+  [slice-099](../plan/planning/done/slice-099-structure-modul.md) §3a
   Zeile `--print-config`-Vorlage und §3b
 - `pfad`: `internal/adapter/driving/cli/config_template.go:21`
 - `befund`: Die Verfügbar-Zeile der erzeugten Vorlage nennt 18 Module und ist

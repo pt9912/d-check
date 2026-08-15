@@ -17,9 +17,9 @@ CLI-Spiegel und Selbst-Aktivierung (`e93d6a9`), Release-Prep v0.57.0
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- [slice-099](../plan/planning/in-progress/slice-099-structure-modul.md),
+- [slice-099](../plan/planning/done/slice-099-structure-modul.md),
   besonders §3a (Spiegel-Liste) und §4a (Messung)
-- [welle-73](../plan/planning/welle-73-structure-umsetzung.md) und
+- [welle-73](../plan/planning/done/welle-73-structure-umsetzung.md) und
   [`MR-025`](../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten)
 - [`DC-FA-STRUCT-001`](../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
   und [`DC-FA-STRUCT-001.a`](../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
@@ -83,7 +83,7 @@ Arbeitsbaum ist unverändert (Beleg am Ende).
 - `kategorie`: MEDIUM
 - `quelle`: [ADR-0049](../plan/adr/0049-structure-modul-schnitt-und-preset.md)
   §Konsequenzen („Ein Repo mit zwei Closure-Abschnitten wird danach rot … Das
-  gehört in die Release-Notiz"), [slice-099](../plan/planning/in-progress/slice-099-structure-modul.md)
+  gehört in die Release-Notiz"), [slice-099](../plan/planning/done/slice-099-structure-modul.md)
   §4 DoD
 - `pfad`: `CHANGELOG.md:25-28`, `spec/lastenheft.md:2609`,
   `docs/user/benutzerhandbuch.md:1841`
@@ -190,7 +190,7 @@ Arbeitsbaum ist unverändert (Beleg am Ende).
   §Aufnahme ins Modulset („**Alle übrigen** Module bleiben inaktiv: …"; „Die
   Vorlage nennt die nicht aktivierten Module in einem Kommentar … Auffindbarkeit
   ohne stilles Aktivieren eines inerten Moduls");
-  [slice-099](../plan/planning/in-progress/slice-099-structure-modul.md) §3a
+  [slice-099](../plan/planning/done/slice-099-structure-modul.md) §3a
   Zeile `--suggest-config`
 - `pfad`: `spec/lastenheft.md` §`DC-FA-CLI-006` (Aufnahme-Absatz) und
   `internal/adapter/driving/cli` (erzeugte Vorlage, Kommentarzeile
@@ -243,7 +243,7 @@ Arbeitsbaum ist unverändert (Beleg am Ende).
 
 - `kategorie`: MEDIUM
 - `quelle`: [`MR-025`](../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten)
-  §Adaption; [slice-099](../plan/planning/in-progress/slice-099-structure-modul.md)
+  §Adaption; [slice-099](../plan/planning/done/slice-099-structure-modul.md)
   §3a
 - `pfad`: `docs/plan/planning/in-progress/slice-099-structure-modul.md:78-80`
   gegen `.d-check.closure.yml` und `Makefile:186-187`
@@ -290,7 +290,7 @@ Arbeitsbaum ist unverändert (Beleg am Ende).
 - `kategorie`: LOW
 - `quelle`: [`MR-025`](../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten)
   Spiegel „Nutzer-Doku: Modul-Tabelle";
-  [slice-099](../plan/planning/in-progress/slice-099-structure-modul.md) §3a
+  [slice-099](../plan/planning/done/slice-099-structure-modul.md) §3a
   Zeile Benutzerhandbuch
 - `pfad`: `docs/user/benutzerhandbuch.md:1660`
 - `befund`: Die Zeile behauptet in der Prosa „fail-closed bei

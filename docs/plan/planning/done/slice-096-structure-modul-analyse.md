@@ -219,7 +219,7 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
       Kalibrierung / nicht gedeckt — mit Beleg, nicht per Lektüre. Die
       Paritäts-Fixtures liegen im Antragsteller-Repo vor und werden beigezogen.
 - [x] Folge-Slices geschnitten und als Dateien in `open/` angelegt:
-      [slice-099](../in-progress/slice-099-structure-modul.md) (Implementierung, in
+      [slice-099](slice-099-structure-modul.md) (Implementierung, in
       **einem** Slice — die zunächst geplante Aufteilung scheiterte an der
       Release-Grenze) und [slice-101](../done/slice-101-fence-unbalanciert.md)
       (der beim Review gefundene **ausgelieferte** Silent-Grün-Pfad im
@@ -234,7 +234,7 @@ Dokumentklasse** (Anforderungen, nicht Slice-Pläne) und dieselbe Frageform.
         wirkt nach der Preset-Kopplung auf **beide** Oberflächen und wird damit
         wichtiger, nicht überflüssig. Seine verengte Paritäts-Zusage kann
         zurückgenommen werden, sobald `closure-note-ambiguous` aus
-        [slice-099](../in-progress/slice-099-structure-modul.md) liegt.
+        [slice-099](slice-099-structure-modul.md) liegt.
       - [slice-097](../done/slice-097-closure-glob-entkopplung.md)
         (`closure.glob`) betrifft die Kandidaten-Menge **der Closure-Fähigkeit**;
         `structure` hat mit seinem eigenen Datei-Glob einen anderen Weg und löst
@@ -354,7 +354,7 @@ ADR-Konsequenzen und das Entscheidungs-Protokoll weiter die verworfene Fassung)
 — der Zähler zählt sie als **einen** Beleg, weil die Beleg-Form Slice-Kennungen
 verlangt. Die Klasse ist damit dichter, als die Zahl zeigt.
 
-**Anschluss:** [slice-099](../in-progress/slice-099-structure-modul.md) (Implementierung)
+**Anschluss:** [slice-099](slice-099-structure-modul.md) (Implementierung)
 und [slice-101](../done/slice-101-fence-unbalanciert.md) — Letzterer ist der beim
 Review gefundene **ausgelieferte** stille Grün-Pfad im Fence-Automaten und läuft
 **vor** 099, damit das neue Modul ihn nicht erbt.
@@ -362,4 +362,4 @@ Review gefundene **ausgelieferte** stille Grün-Pfad im Fence-Automaten und läu
 **Risiken aus §5:** Contract-Churn **entfallen** (es wird nichts superseded);
 Sammelbecken-Grenze **eingetreten und begrenzt** (die Dateinamen-Konvention war
 der Kandidat, sie ist Nicht-Ziel); Fremd-Repo-Fixtures **weiter offen**, in die
-DoD von [slice-099](../in-progress/slice-099-structure-modul.md) übernommen.
+DoD von [slice-099](slice-099-structure-modul.md) übernommen.
