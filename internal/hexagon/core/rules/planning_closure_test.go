@@ -717,3 +717,57 @@ func TestClosureZaehlungMitCRLF(t *testing.T) {
 	}
 }
 
+// Die Abschnitts-Mechanik ist GETEILT, nicht kopiert (Preset-Kopplung). Diese
+// Tests binden die geteilten Funktionen direkt, damit ein Rueckbau auf eine
+// eigene Kopie in einem der Konsumenten auffaellt.
+func TestFindSectionHeads(t *testing.T) {
+	lines := splitLines([]byte(
+		"# T\n\n## A\n\n```\n## Im Fence\n```\n\n### A\n\n#1 kein Heading\n\n## A\n"))
+	match := func(raw string) bool { return strings.Contains(raw, "A") }
+	got := FindSectionHeads(lines, match)
+	if len(got) != 3 {
+		t.Fatalf("erwartet 3 Treffer (Fence und Rauten-Text zaehlen nicht), got %+v", got)
+	}
+	if got[0].Line != 3 || got[0].Level != 2 {
+		t.Errorf("erster Treffer = %+v, want Zeile 3 Ebene 2", got[0])
+	}
+	if got[1].Level != 3 {
+		t.Errorf("zweiter Treffer muss Ebene 3 sein, got %+v", got[1])
+	}
+}
+
+func TestSectionEndUndProse(t *testing.T) {
+	content := []byte("# T\n\n## A\n\nEins `code` zwei.\n\n### Tiefer\n\nDrei.\n\n## B\n\nVier.\n")
+	lines := splitLines(content)
+	if end := SectionEnd(lines, 3, 2); end != 11 {
+		t.Errorf("SectionEnd = %d, want 11 (die naechste gleich-/hoeherrangige Ueberschrift)", end)
+	}
+	body := SectionProse(content, lines, 3, 2)
+	if !strings.Contains(body, "Drei.") {
+		t.Error("eine TIEFERE Ueberschrift gehoert noch zum Abschnitt")
+	}
+	if strings.Contains(body, "Vier.") {
+		t.Error("der naechste gleichrangige Abschnitt gehoert nicht dazu")
+	}
+	if strings.Contains(body, "code") {
+		t.Error("Inline-Code muss geleert sein")
+	}
+}
+
+// Bei mehreren passenden Ueberschriften gilt heute der ERSTE Treffer. Die
+// Spezifikation sagt fuer diesen Fall bereits closure-note-ambiguous zu; bis
+// der Grund-Code existiert, ist wenigstens die geltende Auswahl bewacht --
+// sonst bliebe ein Rueckbau auf "letzter Treffer" unbemerkt.
+func TestClosureErsterTrefferBeiMehrerenUeberschriften(t *testing.T) {
+	body := "# Slice\n\n## 7. Closure-Notiz\n\n_Ausstehend._\n\n" +
+		"## 8. Closure-Notiz\n\nEins. Zwei. Drei. Vier. Fuenf.\n"
+	files := map[string]string{closureDir + "/slice-001-a.md": body}
+	f := CheckPlanningClosure(coretest.NewMemFS(files), closureCfg())
+	if len(f) != 1 || f[0].Reason != model.ReasonClosureNoteThin {
+		t.Fatalf("der ERSTE Abschnitt wird gemessen ⇒ thin erwartet, got %+v", f)
+	}
+	if f[0].Line != 3 {
+		t.Errorf("Zeile = %d, want 3 (die erste Ueberschrift)", f[0].Line)
+	}
+}
+

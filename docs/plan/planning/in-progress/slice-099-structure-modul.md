@@ -51,6 +51,34 @@ ablehnt, ist kein lieferbarer Zwischenstand.
    `--print-config`-Gerüst, `--suggest-config`-Vorlage und die
    `--print-mk`-Target-Liste.
 
+## 3a. Spiegel dieser Semantik-Änderung ([`MR-025`](../../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten))
+
+**Vor** dem ersten Editor aufgeschrieben, wie die Regel es verlangt. Dieser Slice
+ändert die Grund-Code-Menge um **neun** Einträge und ist damit der Slice mit den
+meisten Spiegeln bisher.
+
+| Spiegel | berührt? | was genau |
+|---|---|---|
+| Anforderung [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) | **nein** | liegt seit welle-69 vollständig vor — dieser Slice erfindet nichts |
+| Anforderung [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) | **ja** | die Mehrdeutigkeits-Härte (`closure-note-ambiguous`) ist zugesagt, aber **nicht** implementiert |
+| Algorithmus [`DC-FA-STRUCT-001.a`](../../../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) | **nein** | acht Schritte liegen vor |
+| Algorithmus [`DC-FA-PLAN-001.a`](../../../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) | **ja** | Schritt C3 — die Mehrdeutigkeit |
+| §2-Config-Schema | **nein** | `structure[]` steht vollständig |
+| §4-Grund-Code-Tabelle | **ja, neun Zeilen** | sechs Bedingungen + `section-missing` + `section-ambiguous` + `closure-note-ambiguous` |
+| `AllReasons()` / `reasonTexts()` | **ja, neun** | im **selben** Commit wie §4 (Lockstep) |
+| `--print-config`-Vorlage | **ja** | `structure`-Gerüst |
+| `--suggest-config`-Vorlage | **ja** | Aufnahme prüfen — situatives opt-in |
+| `--print-mk`-Target-Liste | **ja** | **und** die **Zahl** in der Out-of-Scope-Zeile von [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) |
+| Benutzerhandbuch | **ja** | Modul-Tabelle (Zahl **und** Zeile), §5-Config, §11-Zeile, ggf. §4-Aufgabe |
+| README (beide Sprachen) | **ja** | Status-Zeile (Zahl · Enumeration · „zuletzt das Modul X“) **und** Modul-Liste; DE zuerst |
+| `operations.md` | **ja** | Modul-Enumeration der `--enable`/`--disable`-Zeile |
+| `AGENTS.md` / `harness/README.md` | **nur falls** ein Gate-Target dazukommt | Gate-Beschreibungen |
+| [ADR-0049](../../adr/0049-structure-modul-schnitt-und-preset.md) | **ja** | Status auf `Accepted` bei der Closure |
+
+Nicht auf der Liste, weil unberührt: `.d-check.yml` (das eigene Repo aktiviert
+`structure` erst nach eigener Messung), `.d-check.closure.yml`, die
+Referenzmatrix.
+
 ## 4. Definition of Done
 
 - [ ] Modul vollständig (beide `sections`-Modi, alle sechs Bedingungen,
@@ -103,7 +131,16 @@ gemeinsamen Mechanik einen eigenen Refactor-Slice verlangt.
 
 - **Sub-Area prüfen:** Produkt-Code (`internal/`) und Spec (`spec/`), beide unter
   dem Repo-Default GF (`harness/conventions.md` §Modus: `*`).
-- **Offene Beobachtungen sichten:** das Register führt **BEO-001** (andere
+- **Offene Beobachtungen sichten** (bei Slice-Beginn erneut gelesen — das
+  Register führt inzwischen **vier** Einträge): **BEO-002** ist seit 2026-08-10
+  **verkörpert** als [`MR-025`](../../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten);
+  die Spiegel-Liste steht in §3a und ist damit erledigt, statt eine Warnung zu
+  bleiben. **BEO-003** (geteilte Lexik driftet an den Rändern) ist **einschlägig
+  als Auftrag**: Schritt 1 des Vorgehens zieht die Abschnitts-Mechanik heraus,
+  statt sie zu kopieren — und braucht je Konsument eine Assertion, nicht nur ein
+  geteiltes Prädikat. **BEO-004** (Modul-Grenze nur auf der Quell-Achse) ist
+  einschlägig als **Frage**: `structure` benennt seine Eingabe selbst und ist
+  damit genau die Klasse. Ferner **BEO-001** (andere
   Klasse — Referenz zwischen Dokumenten statt Form innerhalb eines; in
   [slice-096](../done/slice-096-structure-modul-analyse.md) ausdrücklich
   als Nicht-Ziel festgehalten) und **BEO-002** (Semantik-Änderungen werden nur im

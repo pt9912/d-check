@@ -131,7 +131,7 @@ func checkClosureNote(
 			"kein Closure-Notiz-Abschnitt (keine Überschrift passt auf "+
 				cfg.Closure.EffectiveHeadingPattern()+")")
 	}
-	body := closureSectionProse(content, lines, headingNo, level)
+	body := SectionProse(content, lines, headingNo, level)
 	var out []model.Finding
 	// C4a: Substanz — Satzende-Zeichen außerhalb der Fenced-Code-Blöcke.
 	want := cfg.Closure.EffectiveMinSentences()
@@ -154,7 +154,7 @@ func checkClosureNote(
 	// Befundsatz ist byte-identisch.
 	if cfg.Closure.Placeholder {
 		out = append(out, checkClosurePlaceholder(
-			file, dir, content, headingNo, closureSectionEnd(lines, headingNo, level))...)
+			file, dir, content, headingNo, SectionEnd(lines, headingNo, level))...)
 	}
 	return out
 }
@@ -169,49 +169,15 @@ func checkClosureNote(
 // Thema` ist Fließtext, keine H1. Eine eigene Heuristik hier hätte solche
 // Zeilen als Überschrift gelesen und den Abschnitt vorzeitig beendet — R1-F-1.
 func closureHeadingLine(lines []string, re *regexp.Regexp) (lineNo, level int) {
-	inFence := false
-	for i, raw := range lines {
-		if FenceToggle(TrimFenceIndent(raw)) {
-			inFence = !inFence
-			continue
-		}
-		if inFence {
-			continue
-		}
-		lvl, _, ok := parseATXHeading(raw)
-		if !ok {
-			continue
-		}
-		if re.MatchString(strings.TrimSpace(raw)) {
-			return i + 1, lvl
-		}
+	heads := FindSectionHeads(lines, func(raw string) bool {
+		return re.MatchString(strings.TrimSpace(raw))
+	})
+	if len(heads) == 0 {
+		return 0, 0
 	}
-	return 0, 0
+	return heads[0].Line, heads[0].Level
 }
 
-// closureSectionProse liefert den Abschnitts-Text ab der Zeile **nach** der
-// Überschrift bis zur nächsten Überschrift **gleicher oder höherer** Ebene
-// (exklusive) bzw. bis zum Dateiende — bereinigt um die Fenced-Code-Blöcke
-// (Spez-Schritt C4). Eine tiefere Überschrift gehört noch zum Abschnitt.
-// closureSectionEnd liefert die 1-basierte Zeilennummer der Überschrift, die den
-// Abschnitt beendet (0 ⇒ Dateiende): die nächste echte ATX-Überschrift gleicher
-// oder höherer Ebene außerhalb von Fenced-Code.
-func closureSectionEnd(lines []string, headingNo, level int) int {
-	inFence := false
-	for i := headingNo; i < len(lines); i++ {
-		if FenceToggle(TrimFenceIndent(lines[i])) {
-			inFence = !inFence
-			continue
-		}
-		if inFence {
-			continue
-		}
-		if lvl, _, ok := parseATXHeading(lines[i]); ok && lvl <= level {
-			return i + 1
-		}
-	}
-	return 0
-}
 
 // placeholderRE erkennt die Auszeichnungs-Form eines Vorlagen-Platzhalters
 // (§DC-FA-PLAN-001.a Schritt C4b): eine öffnende Winkelklammer ohne
@@ -334,18 +300,6 @@ func checkClosurePlaceholder(
 	return nil
 }
 
-func closureSectionProse(content []byte, lines []string, headingNo, level int) string {
-	end := closureSectionEnd(lines, headingNo, level)
-	var b strings.Builder
-	for _, ln := range PreprocessMarkdown(content) {
-		if ln.No <= headingNo || (end != 0 && ln.No >= end) {
-			continue
-		}
-		b.WriteString(ln.Text)
-		b.WriteByte('\n')
-	}
-	return b.String()
-}
 
 // countSentenceEnds zählt die Satzende-Zeichen '.', '!' und '?' im bereits
 // bereinigten Text. Bewusst simpel: die Prüfung ist eine Substanz-Untergrenze,
