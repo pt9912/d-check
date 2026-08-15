@@ -77,4 +77,10 @@ lieferbarer Zwischenstand.
 
 ## 7. Closure-Notiz
 
-_Ausstehend._
+Geschlossen am 2026-08-15 mit **v0.57.0**. Alle vier Closure-Trigger sind
+erfüllt: [slice-099](slice-099-structure-modul.md) liegt in `done/`, die
+Spiegel-Regel hat an ihm gewirkt und ist mit Bilanz abgehakt, das Release samt
+Digest-Backfill ist draußen, und `make fullbuild` ist grün.
+
+Die vollständige Notiz — geliefert, gelernt, Register-Lese-Schritt und
+Trigger-Audit — steht in [`welle-73-results.md`](welle-73-results.md).

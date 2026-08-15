@@ -235,4 +235,40 @@ bereits; dieser Slice liefert, was sie versprechen.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+**Geliefert:** das Modul `structure` als 20. Regelmodul, mit neun neuen
+Grund-Codes und einer Abschnitts-Mechanik, die es sich mit der Closure-Fähigkeit
+des Moduls `planning` **teilt** statt sie zu kopieren. Dazu die seit Lastenheft
+0.51.0 zugesagte, aber nie erzeugte Mehrdeutigkeits-Härte
+(`closure-note-ambiguous`), ein zwölftes `--print-mk`-Target und drei
+selbst aktivierte Regeln. Ausgeliefert als **v0.57.0**.
+
+**Was den Slice geprägt hat, war nicht die Umsetzung, sondern ihre Ränder.**
+Die Anforderung, der Algorithmus und die ADR lagen seit welle-69 vollständig
+vor; der Code folgte ihnen ohne Überraschung. Teuer waren die Stellen, an denen
+dieselbe Aussage ein zweites Mal steht: die Spiegel-Liste aus §3a hat gewirkt
+und war zugleich selbst lückenhaft, und die fünfte Lücke lag in genau der Datei,
+die ohnehin bearbeitet wurde. Die Antwort darauf ist keine längere Liste,
+sondern eine Bindung an die Quelle — die Modul-Enumeration der Config-Vorlage
+hängt jetzt an der Registry, und ein Test vergleicht beide Richtungen.
+
+**Der schwerste Befund war ein Grund-Code, den es nur auf dem Papier gab.**
+`closure-note-ambiguous` stand vollständig in Anforderung, Algorithmus,
+§4-Tabelle und `--doctor`-Klartext und wurde von keiner Zeile Code erzeugt; der
+Lockstep-Test zwischen `AllReasons()` und §4 kann das nicht sehen, weil er
+**Katalog-Abdeckung** prüft und nicht **Erreichbarkeit**. Verschärfend: mein
+eigener Test hat das alte Verhalten mit der Begründung „bis der Grund-Code
+existiert“ festgeschrieben, während der Code im selben Diff entstand. Die
+Re-Review hat die Klasse danach methodisch ausgeschlossen — alle 44 Konstanten
+gegen ihre Emissionsstelle, kein zweiter toter Code.
+
+**Zwei Entscheidungen sind bewusst gegenläufig ausgefallen.** Die Wortgrenze der
+**Marke** ist unicode-weit, die der **Floskel** bleibt ASCII: ein Feldname in
+einer Auszeichnung und eine konfigurierte Phrase im Fließtext sind verschiedene
+Gegenstände, auch wenn beide „Wortgrenze“ heißen. Beide Begriffe stehen
+jetzt nebeneinander im Vertrag, statt dass einer den anderen erklärt.
+
+**Offen bleibt nichts aus der Definition of Done.** Was der Slice nicht
+beantwortet, ist ausdrücklich Wellen-Out-of-Scope: die konfigurierbare
+Marken-Syntax und ein Gate für die Spiegel-Konsistenz. Die Register-Bewegungen
+dieses Slice stehen in der
+[Wellen-Ergebnisnotiz](welle-73-results.md).

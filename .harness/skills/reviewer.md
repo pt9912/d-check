@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.3.0 · **Datum:** 2026-08-02 ·
+**Version:** 1.4.0 · **Datum:** 2026-08-15 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -37,6 +37,16 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   *zeigt* sie, wo verifiziert/entstanden (Provenance, ok), oder *begründet* sie
   eine Entscheidung (getarnte Entscheidungsgrundlage → Finding)? Regelwerk:
   [§Referenz-Richtung (SDP)](../baseline/v5.0.0/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren).
+  **Modul-Grenze auf der Ziel-Achse.** Ein Modul gibt seine Zusagen über das,
+  was es **scannt** — und liest dabei Eingaben, die es nie scannt: Zieldateien
+  außerhalb der Scan-Wurzeln, selbst benannte Verzeichnisse eines Post-Passes,
+  git-Revisionen. In diesen Eingaben gilt keine der Zusagen, und die Folge kann
+  **still** sein (ein verdecktes Heading macht einen Anker unauflösbar, die
+  Prüfung entfällt kommentarlos). Frage an jeden Modul-Diff: **welche Eingaben
+  liest dieses Modul, die es nicht scannt — und gilt dort dieselbe Zusage?**
+  Belegt in drei Review-Runden desselben Slice (Beobachtungs-Register
+  **BEO-004**), jedes Mal an einer neuen Achse; die Aufzählung von Hand hat
+  dreimal nicht gehalten, darum steht die Frage hier statt einer Liste.
 - **LOW** (nice-to-fix): Doku-Drift (Prosa-Modullisten, veraltete
   Beispiele); latente Wartungsfalle (hart verdrahteter Wert, der erst
   bei künftigem Edit zündet); Ketten-Duplikate in Make-Targets.
