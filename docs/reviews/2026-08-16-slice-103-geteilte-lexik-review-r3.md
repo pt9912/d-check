@@ -55,9 +55,9 @@ Arbeitsbaum-Stand `4546a62`.
   die [Re-Review](2026-08-16-slice-103-geteilte-lexik-re-review.md) (N-1…N-10) —
   hier als **Negativ-Liste**: was dort steht, gilt als bearbeitet, gesucht wurde
   das, was dort **nicht** steht
-- Der [Slice-Plan](../plan/planning/in-progress/slice-103-geteilte-lexik-raender.md)
+- Der [Slice-Plan](../plan/planning/done/slice-103-geteilte-lexik-raender.md)
   (§4 Abnahme-Punkte, §4a Messung und Klassen-Abschluss, §5 Definition of Done),
-  das [Wellendokument](../plan/planning/welle-74-geteilte-lexik-raender.md) und
+  das [Wellendokument](../plan/planning/done/welle-74-geteilte-lexik-raender.md) und
   die Register-Zelle **BEO-003** in
   [observations.md](../plan/planning/observations.md)
 
@@ -267,7 +267,7 @@ Mutation liefert dieselbe Image-ID wie der erste Build vor dem ersten Eingriff.
   Pipe ist … in Parität zu `grep -E '^\|'`") gegen die fence-bewusste
   Tabellen-Lexik in `internal/hexagon/core/app/trace_table.go`;
   [ADR-0054](../plan/adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)
-  Entscheidung 1; das [Wellendokument](../plan/planning/welle-74-geteilte-lexik-raender.md)
+  Entscheidung 1; das [Wellendokument](../plan/planning/done/welle-74-geteilte-lexik-raender.md)
   §6 („Die Tabellen-Lexik … ist damit selbst ein geteilter Rand — aber ein
   **neuer**, nicht ein driftender"); Reviewer-Skill §MEDIUM (Konsistenz-Lücke
   zwischen Modulen derselben Eingabe-Klasse)

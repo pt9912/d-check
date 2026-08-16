@@ -42,9 +42,9 @@ Arbeitsbaum-Stand `346a223`.
 - [`MR-025`](../../harness/conventions/MR-025-spiegel-vor-dem-editieren.md)
   (Spiegel-Tabelle), [`AGENTS.md`](../../AGENTS.md) §3 Hard Rules,
   [`CLAUDE.md`](../../CLAUDE.md)
-- Der [Slice-Plan](../plan/planning/in-progress/slice-103-geteilte-lexik-raender.md)
+- Der [Slice-Plan](../plan/planning/done/slice-103-geteilte-lexik-raender.md)
   (§4 Abnahme-Punkte, §4a Messung und Klassen-Abschluss) und das
-  [Wellendokument](../plan/planning/welle-74-geteilte-lexik-raender.md) (§3
+  [Wellendokument](../plan/planning/done/welle-74-geteilte-lexik-raender.md) (§3
   Closure-Trigger)
 
 **Läufe dieses Reviews.** Alle Fixtures liegen in einem Scratch-Verzeichnis
@@ -176,7 +176,7 @@ Mutation liefert dieselbe Image-ID wie der erste Build vor dem ersten Eingriff.
   mehr"); §[`DC-FA-PLAN-001.a`](../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
   Schritt C3 („**außerhalb** eines Fenced-Code-Blocks — eine Raute-Zeile in einem
   Beispielblock ist keine Überschrift") gegen Schritt 3/4 derselben Datei;
-  §4a des [Slice-Plans](../plan/planning/in-progress/slice-103-geteilte-lexik-raender.md)
+  §4a des [Slice-Plans](../plan/planning/done/slice-103-geteilte-lexik-raender.md)
   („**Übrig bleiben genau zwei** Stellen, die eine Lexik-Frage **roh**
   beantworten"); Reviewer-Skill §MEDIUM (Konsistenz-Lücke zwischen Modulen
   derselben Eingabe-Klasse)
@@ -199,7 +199,7 @@ Mutation liefert dieselbe Image-ID wie der erste Build vor dem ersten Eingriff.
   „die Klasse ist geschlossen" damit nicht trägt. Nach dem Wortlaut von
   [ADR-0054](../plan/adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md) ist das
   der erste Re-Evaluierungs-Trigger, und für den Closure-Trigger des
-  [Wellendokuments](../plan/planning/welle-74-geteilte-lexik-raender.md) („BEO-003
+  [Wellendokuments](../plan/planning/done/welle-74-geteilte-lexik-raender.md) („BEO-003
   ist entschieden — geschlossen oder auf 3") ist es der Anlass, den der Zähler
   bisher nicht hatte.
 - `verifizierbar`: ja — zwei Fixtures außerhalb des Repos, je mit

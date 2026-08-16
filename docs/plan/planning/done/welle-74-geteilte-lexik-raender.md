@@ -14,16 +14,16 @@ Modulen).
 
 ## 1. Welle-Ziel
 
-Die Klasse schließen, die [slice-101](done/slice-101-fence-unbalanciert.md) für
+Die Klasse schließen, die [slice-101](slice-101-fence-unbalanciert.md) für
 die **Fence**-Lexik geschlossen hat, dort aber ausdrücklich nur für sie:
 *eine geteilte Lexik driftet an den Rändern, weil jeder Konsument sie selbst
-vorbereitet.* [slice-103](in-progress/slice-103-geteilte-lexik-raender.md) trägt
+vorbereitet.* [slice-103](slice-103-geteilte-lexik-raender.md) trägt
 die drei Befunde, die in slice-101 nicht hingehörten.
 
 **Das Mehr gegenüber der Slice-DoD ist eine Entscheidung, keine Lieferung.**
 Das Beobachtungs-Register führt die Klasse als **BEO-003** mit Zähler **2**
-([slice-101](done/slice-101-fence-unbalanciert.md),
-[slice-099](done/slice-099-structure-modul.md)). Diese Welle bringt sie
+([slice-101](slice-101-fence-unbalanciert.md),
+[slice-099](slice-099-structure-modul.md)). Diese Welle bringt sie
 entweder zum Abschluss — oder auf **3**, und dann verlangt die Register-Regel
 die Verkörperung statt eines weiteren Zählschritts. Diese Welle entscheidet das
 ausdrücklich, statt es der nächsten zu überlassen: **BEO-002** und **BEO-004**
@@ -39,11 +39,11 @@ einem Lauf, Fall 3 ist eine **benannte Grenze** ohne heutigen Schaden.
 
 Freigabe des Auftraggebers (2026-08-16), WIP-Slot frei (welle-73 geschlossen,
 `in-progress/` trägt nur die Roadmap), und die Start-Bedingung des Slice ist
-erfüllt: [slice-101](done/slice-101-fence-unbalanciert.md) liegt in `done/`.
+erfüllt: [slice-101](slice-101-fence-unbalanciert.md) liegt in `done/`.
 
 ## 3. Closure-Trigger (Welle schließt)
 
-- [slice-103](in-progress/slice-103-geteilte-lexik-raender.md) liegt in `done/`
+- [slice-103](slice-103-geteilte-lexik-raender.md) liegt in `done/`
   — oder seine nach Abnahme-Punkt 2 abgespaltenen Folge-Slices sind geschnitten
   und der verbleibende Teil liegt in `done/`.
 - **Die Bestandsmessung liegt vor, bevor der Schnitt entschieden wird.** In
@@ -58,7 +58,7 @@ erfüllt: [slice-101](done/slice-101-fence-unbalanciert.md) liegt in `done/`.
 
 | Slice | Rolle |
 |---|---|
-| [slice-103](in-progress/slice-103-geteilte-lexik-raender.md) | Die drei Lexik-Befunde: `citations`-Absatzbildung, Anker-Auflösung in `headingSection`, git-Revisionen in `vcs` |
+| [slice-103](slice-103-geteilte-lexik-raender.md) | Die drei Lexik-Befunde: `citations`-Absatzbildung, Anker-Auflösung in `headingSection`, git-Revisionen in `vcs` |
 
 Ob es bei einem Slice bleibt, entscheidet Abnahme-Punkt 2 **nach** der Messung.
 Die Welle ist so geschnitten, dass eine Abspaltung sie nicht sprengt: ein
@@ -68,10 +68,10 @@ er dieselbe Klasse trägt.
 ## 5. Abhängigkeiten
 
 - Die drei Verträge liegen vor:
-  [`DC-FA-CITE-001`](../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in),
-  [`DC-FA-VER-001`](../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) mit
-  [`DC-FA-PIN-001`](../../../spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in),
-  [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in).
+  [`DC-FA-CITE-001`](../../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in),
+  [`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) mit
+  [`DC-FA-PIN-001`](../../../../spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in),
+  [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in).
   Diese Welle ändert Antworten, sie erfindet keine Fähigkeit.
 - **Die drei Repos für die Bestandsmessung** müssen vorliegen (dieselbe Methode
   wie in slice-101: der reale Bestand, nicht Fixtures).
@@ -79,7 +79,7 @@ er dieselbe Klasse trägt.
 ## 6. Out-of-Scope für diese Welle
 
 - **Die Tabellen-Lexik.** Sie fehlt zwei anderen Kandidaten
-  ([slice-102](open/slice-102-wellen-lifecycle-invariante.md) Aussagen 3/4 und
+  ([slice-102](../open/slice-102-wellen-lifecycle-invariante.md) Aussagen 3/4 und
   der Ordnungs-Bedingung aus **BEO-005**) und gehört in die Welle ihrer beiden
   Konsumenten. — **Die Begründung dafür war falsch:** dieser Punkt nannte sie
   einen „neuen, nicht driftenden“ Rand. Die dritte Review-Runde hat gezeigt, dass
@@ -89,7 +89,7 @@ er dieselbe Klasse trägt.
   zu einer adressierbaren Tabellen-Lexik (Spalten, Typen, Ordnung).
 - **Die git-Achse für scannende Module erreichbar machen.** Fall 3 ist LOW;
   möglich, dass die richtige Lieferung eine benannte Grenze ist und kein Umbau.
-- [slice-095](open/slice-095-links-resolve-from.md).
+- [slice-095](../open/slice-095-links-resolve-from.md).
 
 ## 7. Closure-Notiz
 

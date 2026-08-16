@@ -62,7 +62,7 @@ zurückfließt.
 
 - **Bestandsmessung vor Varianten-Entscheid** hat sich zum zweiten Mal getragen
   (nach slice-096). Als erster Abnahme-Punkt in
-  [slice-103](../in-progress/slice-103-geteilte-lexik-raender.md) übernommen.
+  [slice-103](slice-103-geteilte-lexik-raender.md) übernommen.
 - **Mutations-Gegenprobe über eine Dateikopie**, nie über `git checkout`, und mit
   Abbruch, wenn die Ersetzung nicht greift. Ebenfalls in slice-103 als
   DoD-Punkt.
@@ -78,7 +78,7 @@ zurückfließt.
 
 ## Folge-Slices
 
-- [slice-103](../in-progress/slice-103-geteilte-lexik-raender.md) — dieselbe Klasse in
+- [slice-103](slice-103-geteilte-lexik-raender.md) — dieselbe Klasse in
   anderen Lexiken (`citations`-Absatzbildung, Anker-Auflösung, git-Revisionen).
   Aus der dritten Review-Runde geschnitten, ausdrücklich **nicht** in dieser
   Welle erledigt: eigene Verträge, eigene Module.
