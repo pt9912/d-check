@@ -102,7 +102,7 @@ verkörpert) und neu **BEO-005**.
 - **BEO-003** ist **eingetreten**: dieselbe geteilte Mechanik trägt zwei
   Wort-Begriffe (Marke unicode-weit, Floskel ASCII), und nur einer stand im
   Vertrag. Zähler auf 2; die Klasse ist damit über zwei Slices belegt und
-  [slice-103](../open/slice-103-geteilte-lexik-raender.md) bleibt geschnitten.
+  [slice-103](../in-progress/slice-103-geteilte-lexik-raender.md) bleibt geschnitten.
 - **BEO-004** stand seit welle-70 bei 3 und ist in dieser Closure **verkörpert**
   worden — nicht in der vorgeschlagenen Form (ein Slice-Template gibt es in
   diesem Repo nicht, [`MR-018`](../../../../harness/conventions.md#mr-018--d-check-verkörpert-als-producer-self-hoster-keine-templates)), sondern als Anker im Reviewer-Skill: dort ist
@@ -111,7 +111,7 @@ verkörpert) und neu **BEO-005**.
 
 ## Folge-Slices
 
-- [slice-103](../open/slice-103-geteilte-lexik-raender.md) — dieselbe
+- [slice-103](../in-progress/slice-103-geteilte-lexik-raender.md) — dieselbe
   Drift-Klasse in anderen Lexiken; durch BEO-003 zum zweiten Mal belegt.
 - [slice-095](../open/slice-095-links-resolve-from.md) und
   [slice-102](../open/slice-102-wellen-lifecycle-invariante.md) liegen

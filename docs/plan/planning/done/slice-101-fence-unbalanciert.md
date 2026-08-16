@@ -286,7 +286,7 @@ Drift-Prüfung entfällt kommentarlos. Sie zu schließen ist eigene Arbeit.
 **Bewusst nicht hier erledigt:** dieselbe Klasse in **anderen** Lexiken —
 `citations` bildet Absätze selbst, `headingSection` beantwortet die Anker-Frage
 roh, `vcs` rechnet auf git-Blobs, die kein scannendes Modul sieht. Eigene
-Verträge, eigener Slice: [slice-103](../open/slice-103-geteilte-lexik-raender.md),
+Verträge, eigener Slice: [slice-103](../in-progress/slice-103-geteilte-lexik-raender.md),
 mit Bestandsmessung als erstem Abnahme-Punkt — die Lehre dieses Slice.
 
 **Fürs Register:** die Klasse „eine geteilte Lexik driftet an den Rändern, weil

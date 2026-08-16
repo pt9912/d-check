@@ -86,7 +86,7 @@ Der Lese-Schritt dieser Welle: das Register führt **BEO-001** (1×),
 
 - [slice-099](slice-099-structure-modul.md) — das Modul `structure`;
   Trigger seit welle-70 eingetreten.
-- [slice-103](../open/slice-103-geteilte-lexik-raender.md) — dieselbe
+- [slice-103](../in-progress/slice-103-geteilte-lexik-raender.md) — dieselbe
   Drift-Klasse in anderen Lexiken.
 
 ## Verifikation

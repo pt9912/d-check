@@ -72,7 +72,7 @@ lieferbarer Zwischenstand.
 - **Ein Gate für die Spiegel-Konsistenz.** Die Regel ist eine für Menschen;
   sie durch ein Modul zu ersetzen wäre ein eigener Slice — und der
   Auflösungs-Trigger der Regel sagt genau das.
-- [slice-103](../open/slice-103-geteilte-lexik-raender.md) und
+- [slice-103](../in-progress/slice-103-geteilte-lexik-raender.md) und
   [slice-095](../open/slice-095-links-resolve-from.md).
 
 ## 7. Closure-Notiz
