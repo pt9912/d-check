@@ -888,6 +888,24 @@ orthogonal; keine überschreibt eine andere.
    Symlink ⇒ Befund `symlink`, unabhängig vom Symlink-Ziel; Vorrang
    vor `repo-escape`, genau ein Befund pro Linkziel.
 
+6. **Ortsfeste Verweise (`links.resolve-from`, opt-in).** Je konfigurierter
+   **Gruppe** (wandernde Verzeichnisse `dirs`, optional ortsfeste `fixed-dirs`):
+   für jede gescannte Datei, deren Verzeichnis in `dirs` liegt, wird jedes
+   relative Ziel (dieselbe Extraktion und Dekodierung wie Schritte 3–4)
+   zusätzlich von **jedem** Ort der Gruppe (`dirs` ∪ `fixed-dirs`) aufgelöst.
+   Löst es von mindestens einem Ort **nicht** auf ein existierendes Ziel auf,
+   **oder** lösen zwei Orte auf **verschiedene** Ziele ⇒ Grund-Code
+   `link-position-dependent`, ein Befund je Referenz an ihrer Zeile; die
+   Meldung nennt den ersten nicht auflösenden Ort bzw. die divergierenden
+   Ziele. Dateien in `fixed-dirs` sind **keine** Quellen (ihre Verweise prüft
+   nur Schritt 4). Das Ventil `ignore-refs` gilt wie in Schritt 4 (ein dort
+   ausgenommenes Ziel wird auch hier übersprungen); Anker-Fragmente bleiben
+   außen vor. Ohne den Block entfällt der Schritt und der Befundsatz ist
+   byte-identisch. **Exit 2** am Config-Rand bei: leerem `dirs` (< 2 Orte —
+   eine Gruppe aus einem Ort prüft nichts), einem Verzeichnis absolut oder mit
+   `..`-Segment, oder einem Ort, der in **mehreren** Gruppen als `dirs`-Mitglied
+   auftritt (die Zuordnung einer Quelle wäre mehrdeutig).
+
 Vor `target-missing`/`repo-escape` greift das geteilte Referenz-Ventil
 ([DC-FA-REF-001.a](#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs)): ein
 aufgelöstes Ziel, das ein `ignore-refs`-Eintrag ignoriert, wird übersprungen; die
@@ -2385,6 +2403,7 @@ Exit 2 ohne Prüfung
 
 | Schlüssel | Typ | Default | Constraint |
 |---|---|---|---|
+| `links.resolve-from` | list | leer | Gruppen ortsfester Verweise; je Gruppe `dirs` (string[], **wandernde** Geschwister-Verzeichnisse, Wurzel-relativ — deren Dateien sind Quellen; mindestens 2, sonst Exit 2) und optional `fixed-dirs` (string[], ortsfeste Orte: hypothetische Ziele, deren Dateien keine Quellen sind). Ein Verzeichnis darf nur in **einer** Gruppe `dirs`-Mitglied sein (Exit 2). Ohne den Block byte-identisch |
 | `scan.roots` | string[] | `DEFAULT_SCAN_ROOTS` | alle hier deklarierten Wurzeln müssen existieren und innerhalb der Repo-Wurzel liegen (Exit 2); nur die Default-Wurzeln (kein `scan.roots` gesetzt) sind optional; `"."` steht für die gesamte Repo-Wurzel (rekursiv; die `SKIP_DIRS` aus [§3](#3-defaults-und-konstanten) gelten immer und sind nicht konfigurierbar) |
 | `scan.ignore` | string[] | leer | Glob-Syntax; Muster prunen auch den Verzeichnis-Abstieg — ein vollständig ignorierter Teilbaum (`pfad/**` oder direkt matchendes Muster) wird nicht betreten, unlesbare ignorierte Verzeichnisse sind dadurch kein Laufzeitfehler |
 | `ignore-refs` | object[] | leer | Geteiltes Referenz-Ventil ([`DC-FA-REF-001`](lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)), honoriert von `links`/`anchors`/`codepaths`; jeder Eintrag `{in?, refs, keep?}`. Ohne Einträge byte-identisch |
@@ -2599,6 +2618,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-16 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) um Schritt **6** + §2-Schema (`links.resolve-from`) erweitert: **ortsfeste Verweise** — je Gruppe wandernder Geschwister-Verzeichnisse wird jedes relative Ziel zusätzlich von jedem Ort der Gruppe aufgelöst; nicht überall auflösbar **oder** nicht überall dasselbe Ziel ⇒ `link-position-dependent`. Dateien in `fixed-dirs` sind keine Quellen (die Bestandsmessung zeigt sonst 108 Falsch-Positive auf Ruheort-Dokumenten). Grund-Code (§4) folgt mit der Implementierung (AllReasons-↔-§4-Lockstep). Begründung in begleitender ADR |
 | 2026-08-16 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) um die Schritte **W1–W5** + §2-Schema (`planning.waves.*`) erweitert: die Lifecycle-Invariante eine Ebene höher, die **Wellen**-Abschnitte der Roadmap gegen die Wellen-Dateien. W3 liest den Aktiv-Status **aus Schritt 4**, statt ihn neu zu bestimmen. Zwei Festlegungen kommen aus der Bestandsmessung: das Artefakt einer geschlossenen Welle ist die **Ergebnisnotiz** (gegen das Plan-Dokument geprüft meldet die Aussage 19-mal über zwei Bäume), und die Vorschau-Aussage liest die **erste Spalte** und überspringt Zeilen ohne Kennung (geplante Wellen tragen Namen; die Trigger-Spalte darf andere Wellen nennen). Tabellenzeilen nach derselben Lexik wie §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) — deren **zweiter** Konsument. Vier Grund-Codes folgen mit der Implementierung. Begründung in begleitender ADR |
 | 2026-08-16 | Nachzug nach **dritter** Review-Runde: drei weitere Module beantworteten eine Lexik-Frage roh. §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) — `immutable-when` und die Kopf-Status-Zeile gelten nur **außerhalb** von Fenced-Code (vorher: eine Datei, die ihren Kopf als Beispiel zeigt, galt als immutabel bzw. verschob die gestrippte Zeile ⇒ **stilles Grün** im Immutabilitäts-Gate). §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt 4 — die Block-Grenze ist die **geteilte** Abschnitts-Grenze statt eines rohen `## `-Präfix-Vergleichs (eingerückte H2, tab-getrennte H2, H1). §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) — Tabellenzeilen zählen nur außerhalb von Fenced-Code |
 | 2026-08-16 | Nachzug nach bestätigender Re-Review: §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) Schritt 2 sagt jetzt **beides** — Leerzeilen trennen **nicht** (die Direktive paart mit dem nächsten nicht-leeren Kandidaten), ein Fenced-Block trennt in beiden Zweigen; die Vorfassung erklärte die Fence-Regel mit einem Vergleich, den ein Lauf widerlegt. Ferner: §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) Schritt 1 und §[`DC-FA-PIN-001.a`](spezifikation.md#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins) Schritt 2 sagen die Anker-Antwort jetzt **ganz** zu (Duplikat-Slug, Prozent-Dekodierung, Groß-/Kleinschreibung), nicht nur ihre Fence-Hälfte, und §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritte 3 und 4 binden den Aktiv-Status-Guard an dieselbe Zeilen-Menge (zwei belegte Falsch-Rot) |
