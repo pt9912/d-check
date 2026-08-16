@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.58.0] — 2026-08-16
+
 ### Fixed
 
 - slice-103 — **Geteilte Lexik: drei Konsumenten beantworteten eine Lexik-Frage
