@@ -38,9 +38,10 @@ unabhängig.
 - [slice-095](slice-095-links-resolve-from.md) liegt in `done/`.
 - **Der Realdatenbeleg liegt vor:** die **Slice-Hälfte** des historischen
   19-Link-Bruchs wäre mit aktivem `resolve-from` **vor** dem Move rot gewesen
-  (retro gemessen, mit dem Produkt); die Ziel-Wanderungs-Hälfte (Review-Reports,
-  Wellendokument) ist als **Grenze** in der ADR benannt — sie ist eine andere
-  Frage, keine offene Lücke.
+  (retro gemessen, mit dem Produkt); der Rest ist als **Grenze** in der ADR
+  benannt — die Review-Reports als Ziel-Wanderung, das Wellendokument als
+  Datei außerhalb jeder `dirs`-Gruppe (Wellen liegen flach, nicht im
+  Lifecycle) — eine andere Frage, keine offene Lücke.
 - **Die Laufzeit-Zusage ist gemessen**, nicht behauptet
   ([`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)) — die
   Rückführung des Slice hängt daran.
