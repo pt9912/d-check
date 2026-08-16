@@ -56,16 +56,82 @@ gegen Wieder-Divergenz. Die drei Befunde hier zeigen dieselbe Bauform in
    Ökosystem lösen die drei Fälle heute aus? Die Fence-Messung dort drehte die
    Entscheidung (776 Dateien, null Vorkommen ⇒ latent statt aktiv); ohne Zahl
    ist die Reichweite jeder Variante Spekulation.
+   — **Ausgang:** gemessen (§4a). **Alle drei Fälle sind latent**, null
+   Vorkommen über drei Repos. Die Reparatur ändert damit für keinen heutigen
+   Konsumenten ein Ergebnis; die Richtung ist trotzdem zu nennen, weil sie
+   **findet mehr** lautet.
 2. **Ein Slice oder drei?** Die Klasse ist gemeinsam, die Verträge sind es
    nicht. Zu entscheiden nach der Messung.
+   — **Ausgang: ein Slice.** Die Messung nimmt den Grund für einen Schnitt
+   weg: kein Fall ist dringlicher als die anderen, keiner erreicht heute einen
+   Konsumenten, und die beiden Reparaturen sind **je eine Zeile Lexik** plus
+   ihre Assertionen. Fall 3 liefert **keinen** Code, sondern eine benannte
+   Grenze (Abnahme-Punkt 3).
 3. **Reparieren oder melden?** slice-101 hat den Zustand gemeldet statt die
    Paarung zu reparieren. Ob das hier trägt, ist offen: bei `citations` und
    `headingSection` geht es um eine **falsche Antwort**, nicht um einen
    unentscheidbaren Zustand.
-4. **Die dritte Wiederholung.** „Modul-Grenze nur auf der Quell-Achse" hat mit
+   — **Ausgang: reparieren (Fall 1 und 2), benennen (Fall 3).** Die
+   Unterscheidung ist nicht Aufwand, sondern **Erreichbarkeit**: Fall 1 und 2
+   sind Fragen, die das Produkt an einer anderen Stelle bereits **richtig**
+   beantwortet — dort ist die Reparatur die Übernahme der vorhandenen Antwort.
+   Fall 3 dagegen betrifft eine Eingabe, die kein scannendes Modul je sieht
+   (git-Blob); dort gibt es keine vorhandene Antwort zu übernehmen, sondern nur
+   einen neuen Mechanismus zu bauen — für einen Fall, der in **152**
+   Revisions-Blobs nie eingetreten ist.
+4. **Die dritte Wiederholung.** „Modul-Grenze nur auf der Quell-Achse“ hat mit
    R-7 die Schwelle des Beobachtungs-Registers erreicht. Zu entscheiden ist,
    welche Form sie verkörpert — die Register-Regel sagt: verkörpern statt
    weiterzählen.
+   — **Ausgang: erledigt, außerhalb dieses Slice.** Die Klasse steht als
+   **BEO-004** im Register und ist in der welle-73-Closure verkörpert worden —
+   als MEDIUM-Anker im Reviewer-Skill („welche Eingaben liest dieses Modul, die
+   es nicht scannt?“). Damit **gehört Fall 3 gar nicht zu BEO-003:** er ist
+   keine geteilte Lexik, die driftet, sondern eine unerreichbare Eingabe-Achse.
+   Die Vermischung stand im Slice-Text und löst sich hier auf.
+
+## 4a. Messung: wie oft treten die drei Fälle im Bestand auf?
+
+Methode wie in slice-101: der **reale** Bestand dreier Repos (`d-check`,
+`a-check`, `ai-harness-course`), und wo eine Aussage vom Fence-Verhalten
+abhängt, entscheidet **das Produkt**, nicht eine Nachrechnung.
+
+| Fall | Grundmenge | Vorkommen |
+|---|---|---|
+| 1 — Fence zwischen Direktive und Zitat | 18 `d-check:cite`-Direktiven (alle in `d-check`) | **0** |
+| 2 — HTML-Anker **innerhalb** eines Fence | 94 HTML-Anker, davon 93 außerhalb | **1** (`vX.Y.Z`, ein Formbeispiel im Handbuch) — und **kein** Konsument fragt ihn: `versions.current-from` zeigt auf einen Überschriften-Anker, die drei `dpin`-Fragmente auf Slugs |
+| 3 — unbalancierter Fence in einer immutablen Revision | 53 ADR-Pfade, **152** deduplizierte Revisions-Blobs | **0** |
+
+**Fall 3 ist der Beleg für die Methode.** Eine naive Paritätszählung meldete
+**zwei** verdächtige Blobs; beide liegen in
+[ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md), der die
+Fence-Lexik selbst dokumentiert und dafür **geschachtelte** Beispiel-Fences
+zeigt. Das Produkt über dieselben Blobs gefahren (`--enable spans`): **0
+Befunde** — eine Öffnung wird nur von einer mindestens gleich langen Folge
+geschlossen. Die Nachrechnung irrte, nicht der Bestand.
+
+### Ist die Klasse damit geschlossen?
+
+Die Leitfrage aus slice-101 lautet nicht „sind die Befunde abgehakt“, sondern
+„ist die Klasse geschlossen“. Dafür sind **alle** Stellen aufgezählt worden, die
+eine Lexik-Frage beantworten:
+
+- **Fence-Erkennung:** nur in `markdown.go` (die Lexik selbst) und in
+  `trace_table.go`, und dort über die geteilten Prädikate `TrimFenceIndent` /
+  `FenceRun` / `FenceCloses`. Keine zweite Implementierung.
+- **Rohe Zeilen-Spaltung** an 22 Stellen — die überwiegende Mehrheit schneidet
+  nur nach Zeilennummer und holt die **Antwort** aus der geteilten Lexik
+  (`matrix.SelectSections`/`SectionMask`/`HeadingSections` etwa aus
+  `extractHeadingLines`). Vertraglich roh lesen `versions` (Pins auch in Fences,
+  [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md)), `pins`
+  ([ADR-0020](../../adr/0020-content-pin-fence-ausnahme.md)) und `immutable` —
+  das ist keine Drift, sondern die zugesagte Antwort.
+- **Übrig bleiben genau zwei** Stellen, die eine Lexik-Frage **roh**
+  beantworten: die Absatzbildung in `citations` und der HTML-Anker-Zweig in
+  `headingSection`. Beide sind Fall 1 und 2.
+
+Damit ist die Klasse nach dieser Reparatur **geschlossen**, soweit sie
+aufzählbar ist — und die Aufzählung ist der Beleg, nicht die Behauptung.
 
 ## 5. Definition of Done
 
