@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.59.0] — 2026-08-16
+
 ### Added
 
 - slice-102 — **Wellen-Invariante: die Roadmap-Aussage gegen das Verzeichnis**

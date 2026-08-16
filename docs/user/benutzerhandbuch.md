@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.49 · **Software-Version:** [v0.58.0](../../version.md#v0.58.0) ·
+**Handbuch-Version:** 1.50 · **Software-Version:** [v0.59.0](../../version.md#v0.59.0) ·
 **Stand:** 2026-08-16 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.58.0
+docker pull ghcr.io/pt9912/d-check:v0.59.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -101,7 +101,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -156,7 +156,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -175,7 +175,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.58.0
+  ghcr.io/pt9912/d-check:v0.59.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -194,7 +194,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.58.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.59.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -213,7 +213,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -233,7 +233,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -242,7 +242,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -261,7 +261,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -281,7 +281,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
   --enable ids --disable anchors
 ```
 
@@ -302,7 +302,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
   --enable ids
 ```
 
@@ -323,7 +323,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
   --enable matrix
 ```
 
@@ -391,7 +391,7 @@ Konfigurationsfehler (Exit 2); ohne `token` verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
   --enable external
 ```
 
@@ -413,7 +413,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
   --enable ids --doctor
 ```
 
@@ -441,7 +441,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
   --enable ids --doctor --json
 ```
 
@@ -489,7 +489,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -525,7 +525,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
     --enable ids --repair | git apply
   ```
 
@@ -542,7 +542,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -562,7 +562,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -623,7 +623,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -761,7 +761,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -806,7 +806,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.58.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.59.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -819,7 +819,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.58.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.59.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -880,7 +880,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.58.0 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -1192,7 +1192,21 @@ von Code-Blöcken:** eine Roadmap, die ihren eigenen Abschnitt als Beispiel zeig
 gilt nicht als mehrdeutig, und eine Raute-Zeile in einem Beispiel-Block beendet
 den Aktiv-Block nicht. Wo der Block endet, entscheidet dieselbe
 Abschnitts-Mechanik wie bei den Closure-Notizen — auch eine **eingerückte** H2
-und eine **H1** beenden ihn. Nur `roadmap` ist Pflicht;
+und eine **H1** beenden ihn.
+
+**Dritte Fähigkeit, opt-in über `waves.dir`: die Wellen-Register gegen die
+Wellen-Dateien.** Dieselbe Invariante eine Ebene höher — vier Aussagen, vier
+Grund-Codes: der Aktiv-Status-Abschnitt nennt eine Welle genau dann, wenn
+**genau ein** flaches Wellendokument liegt (`wave-drift`); eine Vorschau-Zeile
+nennt keine Welle, die schon eine Datei hat (`wave-preview-exists`); jede Zeile
+des Abschluss-Registers hat ihre **Ergebnisnotiz** (`wave-results-missing`) —
+und jede Ergebnisnotiz ihre Zeile (`wave-unregistered`). Gelesen wird die
+**erste Spalte** der Registerzeilen; Zeilen ohne Kennung sind erlaubt (geplante
+Wellen tragen Namen), und die Trigger-Spalte darf andere Wellen nennen.
+Fail-closed über `wave-drift`: ein unlesbares Wellen-Verzeichnis und eine
+fehlende Register-Überschrift. **Setzen Sie beim Einführen den
+konsument-gerechten `marker`** — ein fremder Ruhe-Marker erzeugt sonst einen
+Artefakt-Befund; und rechnen Sie mit echten Rückständen, das ist der Zweck. Nur `roadmap` ist Pflicht;
 `heading`/`marker`/`slice-glob` sind für abweichende Layouts überschreibbar:
 
 ```yaml
@@ -1683,7 +1697,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `immutable` | opt-in        | Immutabilitäts-Pin (`<!-- immutable: … -->`): normalisierter **Core** einer Datei (ohne Marker-Zeile + `exclude-sections`) unverändert seit dem Pinnen; hermetisch (kein git) | `core-drift`                                                |
 | `vcs`       | opt-in (git)  | git-Diff-Immutabilität: **Core** einer immutablen Datei (`immutable-when`) unverändert über eine Commit-Range (`--range`/`--staged`); liest `.git` read-only (kein git-Binary, kein Netz). `immutable-when` und die Kopf-Status-Zeile gelten nur **außerhalb von Code-Blöcken** — eine Datei, die ihren eigenen Kopf als Beispiel zeigt, wird dadurch nicht immutabel | `core-drift-vcs`                                            |
 | `commits`   | opt-in (git)  | Traceability-Kennung (`id-patterns`) in jeder Commit-Message einer Range (`--range`) bzw. der Pending-Message (`--commit-msg`); liest `.git` read-only (kein git-Binary, kein Netz) | `commit-untraceable`                                        |
-| `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten. Überschriften und Marker zählen nur **außerhalb von Code-Blöcken**; die Block-Grenze ist die geteilte Abschnittsgrenze | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder`, `closure-note-ambiguous` |
+| `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten. Überschriften und Marker zählen nur **außerhalb von Code-Blöcken**; die Block-Grenze ist die geteilte Abschnittsgrenze. **Dritte Fähigkeit** (opt-in über `waves.dir`): die Wellen-Register der Roadmap gegen die Wellen-Dateien — Plan-Dokument flach ⟺ aktive Welle, Vorschau ohne Datei, Abschluss-Register ⟺ Ergebnisnotizen (beidseitig) | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder`, `closure-note-ambiguous`, `wave-drift`, `wave-preview-exists`, `wave-results-missing`, `wave-unregistered` |
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
 | `targets`   | opt-in        | Deklarations-Konsistenz Doku ↔ Build-Targets: jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`makefiles`), und jede Regel steht in der Autoritäts-Doku (`authority`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed bei fehlender Datei. Tabellenzeilen zählen nur **außerhalb von Code-Blöcken** — ein Beispiel-Block dokumentiert kein Target | `gate-phantom`, `gate-undocumented`                         |
 | `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu sechs Bedingungen mit je eigenem Grund-Code. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing` |
@@ -1866,3 +1880,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.47             | v0.56.0          | 2026-08-10 | **Was als Satz und als Floskel zählt** (§4.17): der Closure-Abschnitt wird **einmal** bereinigt (Code-Blöcke **und** Inline-Code), ein Satzende zählt nur vor Leerzeichen oder Zeilenende, und Floskeln werden an **Wortgrenzen** verglichen. **Drei Richtungen:** `closure-note-thin` findet **mehr** (Punkte aus Pfaden und Versionen sind keine Sätze mehr — ein grüner Lauf kann rot werden), `closure-note-boilerplate` findet **weniger** (Floskel in Backticks trifft nicht mehr; kurze Phrasen dafür überhaupt erst benutzbar). Anlass ist die Parität zu einem abzulösenden Prüfskript, belegt über 84 fremde Closure-Notizen. Behoben: bei CRLF zählte kein zeilenschließendes Satzende |
 | 1.48             | v0.57.0          | 2026-08-15 | **Struktur-Invarianten prüfen** — neues opt-in-Modul `structure` (20., §5/§6): je Regel eine Dokumentklasse über **eigene** Globs, ein Abschnitt (Klartext oder RE2) und bis zu sechs Bedingungen mit je eigenem Grund-Code (leer · zu dünn · zu viele Task-Items · verbotenes bzw. gefordertes Muster · fehlende Marke). Fehlender Abschnitt und Mehrdeutigkeit sind eigene Codes; eine Regel, die **keine** Datei trifft, meldet ebenfalls — auch wenn erst `exempt-paths` die Menge geleert hat. Die Closure-Note-Struktur des Moduls `planning` ist ein **Preset** derselben Semantik und teilt die Mechanik. Dazu `closure-note-ambiguous` (mehrere Closure-Überschriften) und ein zwölftes `--print-mk`-Target `doc-structure` |
 | 1.49             | v0.58.0          | 2026-08-16 | **Geteilte Lexik: fünf Module beantworten ihre Lexik-Fragen jetzt gleich** (§5/§6). Wer fragt „ist das eine Überschrift / ein Anker / derselbe Absatz“, bekommt überall dieselbe Antwort: `citations` trennt am **Code-Block** (Leerzeilen trennen weiterhin nicht) und bricht dann fail-closed ab; `versions`/`pins` lösen Anker so auf wie `anchors` — Duplikat-Slug, Prozent-Dekodierung, case-sensitiv, nur außerhalb von Code; `planning` zählt Überschriften und den Ruhe-Marker nur außerhalb von Fences und beendet den Aktiv-Block an der geteilten Abschnittsgrenze; `vcs` liest Status-Zeile und `immutable-when` nicht mehr aus einem Code-Beispiel; `targets` wertet nur Tabellenzeilen außerhalb von Fences. **Beachten — die Änderung wirkt in beide Richtungen:** sie findet **mehr** (fail-closed statt Zufalls-Paarung, zwei geschlossene stille Grün-Pfade in Gates) und **weniger** (ein Anker im Fence oder anders geschrieben löst nicht mehr auf, bei `pins` ohne Ausgabe; zwei `planning`-Falsch-Rot entfallen). Die Aufzählung ist offen. Am eigenen Bestand ist kein Fall betroffen. Dazu eine benannte Grenze: die Abschnitts-Maske von `vcs` läuft auf git-Blobs, die kein Wächter scannt |
+| 1.50             | v0.59.0          | 2026-08-16 | **Wellen-Register gegen Wellen-Dateien** — dritte Fähigkeit des Moduls `planning` (§5/§6, opt-in über `planning.waves.dir`): die Lifecycle-Invariante eine Ebene höher, vier Aussagen mit je eigenem Grund-Code (`wave-drift` · `wave-preview-exists` · `wave-results-missing` · `wave-unregistered`). Das verpflichtende Artefakt einer geschlossenen Welle ist die **Ergebnisnotiz** — gemessen, nicht gesetzt: gegen das Plan-Dokument geprüft meldete die Aussage 19-mal über zwei reale Bäume. Die Vorschau-Aussage liest die **erste Spalte** und überspringt Zeilen ohne Kennung; Kopf- und Trennzeile zählen strukturell nicht. Fail-closed: unlesbare Wellen-Verzeichnisse und fehlende Register-Überschriften (je eigenes Befund-Ziel gegen die Deduplikation). **Beachten:** beim Einführen den konsument-gerechten `marker` setzen und mit echten Rückständen rechnen (im Schwester-Repo: elf) |

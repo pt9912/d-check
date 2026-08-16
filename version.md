@@ -19,7 +19,7 @@
 
 ## Aktuell
 
-Aktuelle Version: [`v0.58.0`](#v0.58.0) — 2026-08-16.
+Aktuelle Version: [`v0.59.0`](#v0.59.0) — 2026-08-16.
 
 Aus anderen Dokumenten stabil referenzierbar als `version.md#aktuell`
 (zeigt immer hierher, nie auf eine feste Nummer). Pro Release sind genau
@@ -32,7 +32,8 @@ vergessenen Bump nicht) — der einzige Bump-Punkt, analog zum README-Versions-P
 
 | Version                        | Datum      | Release                                                               |
 | ------------------------------ | ---------- | --------------------------------------------------------------------- |
-| `v0.58.0` <a id="v0.58.0"></a> | 2026-08-16 | [Tag v0.58.0](https://github.com/pt9912/d-check/releases/tag/v0.58.0) |
+| `v0.59.0` <a id="v0.59.0"></a> | 2026-08-16 | [Tag v0.59.0](https://github.com/pt9912/d-check/releases/tag/v0.59.0) |
+| `v0.58.0` | 2026-08-16 | [Tag v0.58.0](https://github.com/pt9912/d-check/releases/tag/v0.58.0) |
 | `v0.57.0` | 2026-08-15 | [Tag v0.57.0](https://github.com/pt9912/d-check/releases/tag/v0.57.0) |
 | `v0.56.0` | 2026-08-10 | [Tag v0.56.0](https://github.com/pt9912/d-check/releases/tag/v0.56.0) |
 | `v0.55.0` | 2026-08-10 | [Tag v0.55.0](https://github.com/pt9912/d-check/releases/tag/v0.55.0) |
