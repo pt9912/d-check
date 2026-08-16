@@ -16,18 +16,26 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   zugesagten fail-closed-Abbruch. Die Anker-Auflösung von `versions.current-from`
   und `pins` erkannte HTML-Anker **auch innerhalb** von Fences, während `anchors`
   denselben Anker im selben Lauf für nicht existent hielt. Beides folgt jetzt der
-  geteilten Antwort. **Die Änderung findet mehr:** eine bisher grüne Direktive
-  hinter einem Code-Block bricht fail-closed ab (Exit 2), ein Anker in einem
-  Code-Beispiel löst nicht mehr auf. Am eigenen Bestand gemessen ist **kein**
-  heutiger Fall betroffen (0 von 18 Direktiven, 0 wirksame Anker). Der rohe
-  Ziel-Span von `pins` und die Fence-Ausnahme von `versions` bleiben unberührt —
-  das sind andere **Fragen**, keine anderen **Antworten**.
+  geteilten Antwort. **Die Änderung wirkt in beide Richtungen.** Sie **findet
+  mehr**: eine bisher grüne Direktive hinter einem Code-Block bricht fail-closed
+  ab (Exit 2), und eine Zeichenfolge, die nur wie ein Anker aussieht — in
+  Inline-Code, als `data-id`, als `name` an einem beliebigen Element oder ganz
+  ohne Tag —, löst nicht mehr auf. Sie **findet weniger** an zwei Stellen: ein von
+  einem Fenced-Block unterbrochenes `>`-Zitat wird gekürzt gelesen und meldet sein
+  `citation-mismatch` nicht mehr, und ein `dpin`, dessen Ziel-Anker nur in einem
+  Fence steht, verliert seinen Drift-Schutz **kommentarlos** (`pins` schweigt zu
+  unauflösbaren Zielen). Am eigenen Bestand gemessen ist **kein** heutiger Fall
+  betroffen. Der rohe Ziel-Span von `pins` und die Fence-Ausnahme von `versions`
+  bleiben unberührt — das sind andere **Fragen**, keine anderen **Antworten**.
 - slice-103 — **Benannte Grenze statt zweitem Wächter:** die Abschnitts-Maske
   des Moduls `vcs` wird auf git-Blobs gerechnet, die kein scannendes Modul sieht;
   ein unbalancierter Fence in einer Revision verschiebt sie, und für bereits
-  existierende Commits ist die Sicht rückwirkend blind. Gemessen: **0 von 152**
-  immutablen Revisions-Blobs. Die Grenze steht jetzt im Vertrag statt in einem
-  Review-Report.
+  existierende Commits ist die Sicht rückwirkend blind. **Die gefährliche
+  Richtung ist das stille Grün:** liegt die Öffnung im ausgenommenen Abschnitt,
+  läuft die Ausnahme bis zum Dateiende und eine reale Core-Änderung passiert mit
+  Exit 0 ohne Ausgabe. Gemessen: **0 von 152** immutablen Revisions-Blobs. Die
+  Grenze steht jetzt im Vertrag statt in einem Review-Report, mit einem Trigger,
+  der sich beobachten lässt (`fence-unclosed` in einer `vcs.paths`-Datei).
 
 - slice-099 (Closure) — **Modul `structure`, unlesbarer Dateibaum:** scheiterte
   der Baum-Aufbau, meldete das Modul **nichts** — ununterscheidbar von „alle

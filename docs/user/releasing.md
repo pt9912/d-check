@@ -64,6 +64,13 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
      Vorgängerzeile ab. Zieht sich eine Welle über mehr als einen Tag, datiert
      das Release damit auf den Tag ihres Beginns. Kein Gate sieht das;
      `git log -1 --date=short --format=%ad` ist das Orakel.
+   - **Eine GEÄNDERTE Zusage zählt wie ein neues Feature.** Die Punkte oben
+     lesen sich, als gehe es nur um Zuwachs (neues Modul, neue Option, neuer
+     Abschnitt). Ändert ein Release die **Bedeutung** einer bestehenden Zusage,
+     steht sie nicht in einem neuen Abschnitt, sondern mitten im alten — im
+     Handbuch dort, wo das Modul beschrieben ist, und in derselben Zeile beider
+     READMEs. Genau diese Stellen liest ein Konsument, dessen bisher grüner Lauf
+     nach dem Update rot wird.
    - **Operations-Referenz** ([`operations.md`](operations.md)) — bei einem
      neuen Modul die Modul-Enumeration der `--enable`/`--disable`-Zeile, bei
      einer neuen CLI-Option die Optionen-Tabelle ergänzen. Kein Gate prüft

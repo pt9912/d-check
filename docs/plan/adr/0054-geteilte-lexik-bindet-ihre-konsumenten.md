@@ -51,7 +51,13 @@ auf git-Blobs, die kein scannender Wächter je sieht.
    Anker", „ist das derselbe Absatz", bekommt die geteilte Antwort.
 
 3. **Die git-Revisions-Achse bleibt eine benannte Grenze, kein Mechanismus.**
-   Für Fall 3 wird **kein** Code geliefert: die Grenze wird im Vertrag benannt.
+   Für Fall 3 wird **kein** Code geliefert: die Grenze wird im Vertrag benannt —
+   und zwar in **beiden** Ausprägungen. Die gefährliche ist nicht die verschobene
+   Maske (Falsch-Rot), sondern das **stille Grün**: liegt die Fence-Öffnung
+   innerhalb des ausgenommenen Abschnitts, läuft die Ausnahme bis zum Dateiende,
+   und eine reale Core-Änderung einer `Accepted`-ADR passiert das Gate mit Exit 0
+   ohne Ausgabe. Weil an `vcs` selbst nichts zu beobachten ist, hängt der
+   Trigger an der Arbeitsbaum-Fassung (unten).
    Begründung ist die Erreichbarkeit, nicht der Aufwand — bei den ersten beiden
    Fällen gibt es eine vorhandene richtige Antwort zu übernehmen, hier gäbe es
    nur einen neuen Wächter zu bauen, für einen Fall, der in 152 Revisions-Blobs
@@ -80,10 +86,16 @@ auf git-Blobs, die kein scannender Wächter je sieht.
 
 ## Konsequenzen
 
-- `citations` und die Anker-Auflösung finden nach dieser Änderung **mehr**: eine
-  bisher grüne Direktive hinter einem Fenced-Block bricht fail-closed ab, ein
-  HTML-Anker in einem Fence löst nicht mehr auf. Gemessen betrifft das heute
-  **keinen** Konsumenten; die Richtung gehört trotzdem in die Release-Notiz.
+- Die Änderung wirkt in **beide** Richtungen, und die zweite ist die
+  unangenehmere. **Mehr:** eine bisher grüne Direktive hinter einem Fenced-Block
+  bricht fail-closed ab; ein Anker, der keiner ist, löst nicht mehr auf.
+  **Weniger:** ein von einem Fence unterbrochenes Blockquote wird gekürzt gelesen
+  und meldet sein `citation-mismatch` nicht mehr, und ein `dpin`, dessen Ziel-Anker
+  nur im Fence steht, verliert seinen Drift-Schutz **kommentarlos** — das Modul
+  schweigt zu unauflösbaren Zielen, das ist seine zugesagte Semantik und hier ihre
+  unangenehme Folge. Gemessen betrifft beides heute **keinen** Konsumenten; die
+  erste Fassung dieser Entscheidung behauptete „und weniger an keiner Stelle“,
+  und das war als universelle Aussage falsch.
 - Die drei gescopten Roh-Lesungen bleiben unberührt. Wer den Unterschied nicht
   mitliest, hält Entscheidung 1 für einen Widerspruch zu ADR-0019/0020 — deshalb
   steht er als Entscheidung 2 hier und nicht in einer Fußnote.
@@ -95,10 +107,13 @@ auf git-Blobs, die kein scannender Wächter je sieht.
 
 - Ein Fall der Klasse tritt **im Bestand** ein (statt latent zu bleiben) — dann
   ist die Latenz-Begründung dieser Entscheidung verbraucht.
-- Ein unbalancierter Fence in einer immutablen Revision wird beobachtet, oder das
-  Immutabilitäts-Gate wird auf eine Klasse ausgeweitet, in der Revisionen
-  routinemäßig unfertige Dokumente tragen — dann ist Entscheidung 3 neu zu
-  stellen.
+- **Beobachtbar gemachter Trigger für Entscheidung 3:** das Modul `spans` meldet
+  ein `fence-unclosed` in einer Datei, die `vcs.paths` trifft. Dann ist der stille
+  Pfad im Arbeitsbaum entstanden und über die Historie erreichbar geworden — an
+  `vcs` selbst wäre nichts zu sehen gewesen, weil die stille Richtung per
+  Konstruktion keine Ausgabe erzeugt. Ebenso, wenn das Immutabilitäts-Gate auf
+  eine Klasse ausgeweitet wird, in der Revisionen routinemäßig unfertige
+  Dokumente tragen.
 - Eine **vierte** Stelle beantwortet eine Lexik-Frage selbst. Dann genügt die
   Aufzählung als Beleg nicht mehr, und die Frage ist, ob ein Gate die Klasse
   prüfen kann statt eines Reviews.

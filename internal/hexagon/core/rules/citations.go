@@ -187,7 +187,7 @@ func fencedBlockWithin(prose []proseLine, i, j int) bool {
 func citationBlockquote(prose []proseLine, j int) string {
 	var b []string
 	for k := j; k < len(prose); k++ {
-		if k > j && fencedBlockBetween(prose[k-1].no, prose[k].no) {
+		if fencedBlockBetween(prose[k-1].no, prose[k].no) {
 			break
 		}
 		t := strings.TrimLeft(prose[k].raw, " \t")
@@ -207,7 +207,7 @@ func citationParagraph(prose []proseLine, j int) string {
 		if strings.TrimSpace(prose[k].raw) == "" {
 			break
 		}
-		if k > j && fencedBlockBetween(prose[k-1].no, prose[k].no) {
+		if fencedBlockBetween(prose[k-1].no, prose[k].no) {
 			break
 		}
 		para = append(para, prose[k].raw)

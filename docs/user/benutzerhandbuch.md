@@ -1139,7 +1139,10 @@ abgetrennt und verworfen — **byte-identisch** zum bisherigen Verhalten.
 Das Modul `citations` (opt-in, `--enable citations`) prüft **wortgleiche Zitate**. Die
 Direktive `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat — die
 nächste nicht-leere Zeile als `>`-Blockquote **oder** den nächsten inline-Zitat-Span
-(`„…"` bzw. `"…"`) im selben Absatz. Quell-Spanne und Zitattext werden
+(`„…"` bzw. `"…"`) im selben Absatz. **Ein Code-Block dazwischen trennt** — er ist
+eine Absatzgrenze wie eine Leerzeile, und dann folgt der Direktive kein Zitat
+(fail-closed, Exit 2, siehe unten). Dasselbe gilt innerhalb eines `>`-Blocks: ein
+Code-Block beendet ihn. Quell-Spanne und Zitattext werden
 **whitespace-normalisiert** (jeder Umbruch-/Leerraum-Lauf zu einem Leerzeichen); das
 Zitat muss ein zusammenhängender **Teilstring** der Quelle sein, sonst
 `citation-mismatch`. So besteht ein re-wrapped, mitten in der Zeile beginnendes Zitat,
@@ -1656,7 +1659,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `ids`       | opt-in        | Linkpflicht für Kennungen im Fließtext                                                   | `id-unlinked`                                               |
 | `matrix`    | opt-in        | erlaubte Referenzrichtung und -status zwischen Dokumentklassen                           | `matrix-forbidden`, `matrix-inactive`                       |
 | `codepaths` | opt-in        | explizite Pfade in Inline-Code existieren; opt-in `check-lines`: `datei:<von>-<bis>`-Zeilen-Referenzen verifizieren | `codepath-missing`, `citation-out-of-range`, `citation-inverted-range` |
-| `citations` | opt-in        | wortgleiche Zitate: `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (`>`-Block oder inline `„…"`/`"…"`), das ein whitespace-normalisierter **Teilstring** der Quell-Spanne sein muss; fail-closed bei malformter Direktive | `citation-mismatch`, `citation-out-of-range`, `citation-inverted-range` |
+| `citations` | opt-in        | wortgleiche Zitate: `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat **im selben Absatz** (`>`-Block oder inline `„…"`/`"…"`; ein Code-Block dazwischen trennt), das ein whitespace-normalisierter **Teilstring** der Quell-Spanne sein muss; fail-closed bei malformter Direktive | `citation-mismatch`, `citation-out-of-range`, `citation-inverted-range` |
 | `spans`     | opt-in        | ungeschlossene Code-Spans, verschachtelte Links, unbalancierte Fences                    | `span-unclosed`, `span-nested-link`, `fence-unclosed`       |
 | `hostpaths` | opt-in        | host-lokale absolute Pfade (Maschinen-Layout-Leak)                                       | `hostpath-forbidden`                                        |
 | `diagrams`  | opt-in        | Kennungen in Diagramm-Fences (Default `mermaid`) existieren in ihrer `defined-in`-Quelle | `diagram-id-undefined`                                      |

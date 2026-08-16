@@ -223,3 +223,34 @@ func TestCitationsFenceTrenntVomBlockquote(t *testing.T) {
 		t.Fatal("Fence vor dem Blockquote: fail-closed (Exit 2) erwartet")
 	}
 }
+
+// Die Fence-Grenze wirkt auch INNERHALB der Sammler, nicht nur vor ihnen.
+// (a) Absatz-Sammler: der Fence durchschneidet den Absatz zwischen Prosa und
+// Zitat — das Zitat gehoert dann nicht mehr dazu, also fail-closed.
+func TestCitationsFenceImAbsatzTrennt(t *testing.T) {
+	block := "```\nBeispiel\n```\n"
+	m := coretest.NewMemFS(map[string]string{
+		"docs/src.md": citeSrc,
+		"docs/citing.md": "<!-- d-check:cite docs/src.md:2-2 -->\n" +
+			"Prosa ohne Zitat direkt nach der Direktive\n" + block +
+			"Text davor: „Die zweite Zeile traegt das Zitat\" steht hier.\n",
+	})
+	if _, err := Run(m, nil, model.Config{}, []string{"citations"}); err == nil {
+		t.Fatal("Fence im Absatz: fail-closed (Exit 2) erwartet")
+	}
+}
+
+// (b) Blockquote-Sammler: der Fence beendet den `>`-Block. Ohne die Grenze
+// liest das Modul beide Haelften als EIN Zitat und meldet citation-mismatch.
+func TestCitationsFenceImBlockquoteBeendetDenBlock(t *testing.T) {
+	block := "```\nBeispiel\n```\n"
+	m := coretest.NewMemFS(map[string]string{
+		"docs/src.md": citeSrc,
+		"docs/citing.md": "<!-- d-check:cite docs/src.md:2-2 -->\n" +
+			"> Die zweite Zeile traegt das Zitat hier drin\n" + block +
+			"> und noch ein Nachsatz der nicht in der Quelle steht\n",
+	})
+	if got := citeFindings(t, m); len(got) != 0 {
+		t.Fatalf("Fence beendet den Blockquote → 0 Befunde, got %v", got)
+	}
+}

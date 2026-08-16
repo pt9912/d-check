@@ -101,8 +101,9 @@ Dokuments:
   Makefile-Ausführen), fail-closed, opt-in
   ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in))
 - `citations` — Verbatim-Zitat-Verifikation: die Direktive
-  `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (ein
-  `>`-Blockquote oder inline `„…"`/`"…"`); der whitespace-normalisierte Zitattext muss
+  `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat **im
+  selben Absatz** (ein `>`-Blockquote oder inline `„…"`/`"…"`; ein Code-Block
+  dazwischen trennt); der whitespace-normalisierte Zitattext muss
   ein zusammenhängender Teilstring der Quell-Spanne sein (`citation-mismatch`), opt-in
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — Struktur-Invarianten **innerhalb** eines Dokuments: je Regel eine

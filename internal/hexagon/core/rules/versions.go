@@ -136,27 +136,21 @@ func slugSection(lines []string, headings []headingLine, anchor string) (string,
 }
 
 // htmlAnchorSection liefert den Span ab der Zeile eines Inline-HTML-Ankers
-// (id=/name=) bis zur nächsten Überschrift. Gezählt wird der Anker nur
-// außerhalb von Fences (DC-FA-ANCH-001.b); der Span selbst bleibt roh.
+// bis zur nächsten Überschrift. Welche Zeichenfolge ein Anker IST, entscheidet
+// die geteilte Erkennung (htmlAnchorLines, DC-FA-ANCH-001.b) — nicht eine
+// eigene Regex: sonst gäbe derselbe Lauf zwei Antworten auf dieselbe Frage.
+// Der zurückgegebene Span bleibt roh, einschließlich Fenced-Code.
 func htmlAnchorSection(content []byte, lines []string, headings []headingLine, anchor string) (string, bool) {
-	htmlRE := regexp.MustCompile(`(?i)(?:id|name)\s*=\s*["']` + regexp.QuoteMeta(anchor) + `["']`)
-	prose := make(map[int]bool)
-	for _, pl := range proseLines(content) {
-		prose[pl.no] = true
+	start, ok := htmlAnchorLines(content)[anchor]
+	if !ok {
+		return "", false
 	}
-	for i, raw := range lines {
-		if !prose[i+1] || !htmlRE.MatchString(raw) {
-			continue
+	end := len(lines)
+	for _, h2 := range headings {
+		if h2.line > start {
+			end = h2.line - 1
+			break
 		}
-		start := i + 1
-		end := len(lines)
-		for _, h2 := range headings {
-			if h2.line > start {
-				end = h2.line - 1
-				break
-			}
-		}
-		return strings.Join(lines[start-1:end], "\n"), true
 	}
-	return "", false
+	return strings.Join(lines[start-1:end], "\n"), true
 }

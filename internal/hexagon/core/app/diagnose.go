@@ -101,7 +101,7 @@ func reasonTexts() map[string]string {
 		model.ReasonTargetMissing:      "Linkziel existiert nicht",
 		model.ReasonRepoEscape:         "Aufgelöstes Ziel verlässt die Repository-Wurzel",
 		model.ReasonSymlink:            "Ziel ist oder enthält einen Symlink",
-		rules.ReasonAnchorMissing:      "Anker entspricht keinem Heading-Slug",
+		rules.ReasonAnchorMissing:      "Anker entspricht keinem Heading-Slug und keinem HTML-Anker der Zieldatei",
 		model.ReasonIDUnlinked:         "Kennung im Fließtext ohne Markdown-Link auf ihre Definition",
 		rules.ReasonCodepathMissing:    "Ziel eines Inline-Code-Pfads existiert nicht",
 		rules.ReasonMatrixInactive:     "Referenz auf ein Dokument mit verbotenem Status (z. B. superseded)",

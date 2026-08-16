@@ -112,24 +112,40 @@ var (
 	htmlAttrNameRE = regexp.MustCompile(`(?i)(?:^|\s)name\s*=\s*(?:"([^"]*)"|'([^']*)')`)
 )
 
-// htmlAnchors liefert die Inline-HTML-Anker einer Datei (DC-FA-ANCH-001.b):
-// id-Werte an beliebigen Elementen und name-Werte an <a>-Elementen,
-// wörtlich. Erkennung auf den vorverarbeiteten Zeilen — Fenced-Code-
-// Blöcke und Inline-Code-Spans sind dort entfernt (GitHub rendert HTML
-// in Code-Auszeichnung nicht als Sprungziel).
-func htmlAnchors(content []byte) map[string]bool {
-	set := map[string]bool{}
+// htmlAnchorLines liefert je Inline-HTML-Anker die 1-basierte Zeile seines
+// ersten Vorkommens (DC-FA-ANCH-001.b): id-Werte an beliebigen Elementen und
+// name-Werte an <a>-Elementen, wörtlich. Erkennung auf den vorverarbeiteten
+// Zeilen — Fenced-Code-Blöcke und Inline-Code-Spans sind dort entfernt (GitHub
+// rendert HTML in Code-Auszeichnung nicht als Sprungziel).
+//
+// Dies ist die EINE Anker-Erkennung des Produkts; htmlAnchors ist ihre
+// Namens-Sicht, headingSection ihre Zeilen-Sicht.
+func htmlAnchorLines(content []byte) map[string]int {
+	out := map[string]int{}
+	add := func(v string, no int) {
+		if v == "" {
+			return
+		}
+		if _, seen := out[v]; !seen {
+			out[v] = no
+		}
+	}
 	for _, ln := range PreprocessMarkdown(content) {
 		for _, tag := range htmlTagRE.FindAllStringSubmatch(ln.Text, -1) {
-			if v := attrValue(htmlAttrIDRE, tag[2]); v != "" {
-				set[v] = true
-			}
+			add(attrValue(htmlAttrIDRE, tag[2]), ln.No)
 			if strings.EqualFold(tag[1], "a") {
-				if v := attrValue(htmlAttrNameRE, tag[2]); v != "" {
-					set[v] = true
-				}
+				add(attrValue(htmlAttrNameRE, tag[2]), ln.No)
 			}
 		}
+	}
+	return out
+}
+
+// htmlAnchors liefert dieselben Anker als Namens-Menge.
+func htmlAnchors(content []byte) map[string]bool {
+	set := map[string]bool{}
+	for a := range htmlAnchorLines(content) {
+		set[a] = true
 	}
 	return set
 }

@@ -1187,20 +1187,21 @@ Module).
    **1-basierte** Zeilennummern, `<bis>` optional = `<von>`). Fehlt die Direktive,
    prüft das Modul nichts. Ein **malformter** Span (nicht-numerisch, fehlend) ⇒
    **fail-closed** (Exit 2).
-2. Der **Zitattext** ist das der Direktive folgende Zitat. Ist die **nächste
-   nicht-leere Zeile** ein `>`-Blockquote, gilt dieser Block (zusammenhängende
-   `>`-Zeilen, jeweils nach Abtrennen von `> ` bzw. `>` ohne Leerzeichen; eine Leer-
-   oder Nicht-`>`-Zeile beendet ihn). Andernfalls der **nächste inline-Zitat-Span im
-   selben Absatz** nach der Direktive — **Absatz** im Sinne von
-   [DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
-   Schritt 2, also begrenzt durch eine Leerzeile **und** durch einen
-   Fenced-Block. Ein Fenced-Block zwischen Direktive und Zitat **trennt**: es
-   folgt dann kein Zitat, und der Fall unten greift — er darf Prosa vor sich haben und über mehrere
-   Zeilen laufen, begrenzt durch ein Anführungs-Paar: `„` öffnet + `"` schließt, oder
-   das erste `"` öffnet + das nächste `"` schließt. Findet sich weder ein `>`-Block
-   (als nächste nicht-leere Zeile) noch ein schließendes Anführungspaar im Absatz ⇒
-   **fail-closed** (Exit 2) — die Direktive ist unbrauchbar (Autoren-Fehler, kein
-   Schweigen).
+2. Der **Zitattext** ist das der Direktive folgende Zitat. **Ein Fenced-Block
+   zwischen Direktive und Kandidat trennt in beiden Zweigen** — er ist eine
+   Absatzgrenze wie eine Leerzeile
+   ([DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+   Schritt 2); liegt einer dazwischen, folgt der Direktive **kein** Zitat und der
+   fail-closed-Fall unten greift. Ist die **nächste nicht-leere Zeile** ein
+   `>`-Blockquote, gilt dieser Block (zusammenhängende `>`-Zeilen, jeweils nach
+   Abtrennen von `> ` bzw. `>` ohne Leerzeichen; eine Leer-, eine Nicht-`>`-Zeile
+   **oder ein Fenced-Block** beendet ihn). Andernfalls der **nächste
+   inline-Zitat-Span im selben Absatz** nach der Direktive — er darf Prosa vor
+   sich haben und über mehrere Zeilen laufen, begrenzt durch ein
+   Anführungs-Paar: `„` öffnet + `"` schließt, oder das erste `"` öffnet + das
+   nächste `"` schließt. Findet sich weder ein `>`-Block (als nächste nicht-leere
+   Zeile) noch ein schließendes Anführungspaar im Absatz ⇒ **fail-closed**
+   (Exit 2) — die Direktive ist unbrauchbar (Autoren-Fehler, kein Schweigen).
 3. Auflösung von `<pfad>` wie im Modul `links`; verlässt das Ziel die Wurzel ⇒ Befund
    `repo-escape` (Exit 1, dieselbe Sicherheits-Prüfung wie `codepaths`/`links`).
    Danach die **Zitat-Fäule** (Befund, **nicht** fail-closed — kohärent zum
@@ -2441,7 +2442,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `target-missing` | links | Linkziel existiert nicht |
 | `repo-escape` | links, codepaths | aufgelöstes Ziel verlässt die Repo-Wurzel |
 | `symlink` | links | Ziel ist/enthält Symlink (Vorrang vor `repo-escape`) |
-| `anchor-missing` | anchors, codepaths | Anker entspricht keinem Heading-Slug |
+| `anchor-missing` | anchors, codepaths | Anker entspricht keinem Heading-Slug und keinem HTML-Anker der Zieldatei |
 | `id-unlinked` | ids | Kennung im Fließtext ohne Markdown-Link |
 | `matrix-forbidden` | matrix | Referenz zwischen Klassen nicht erlaubt (**Link** oder, bei gesetztem `matrix.classes[].token`, **bare ID-Token** im Körper; Token-Form via `<!-- d-check:status-provenance -->` deklarierbar) |
 | `matrix-inactive` | matrix | Referenz auf Dokument mit verbotenem Status |

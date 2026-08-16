@@ -98,7 +98,7 @@ abhängt, entscheidet **das Produkt**, nicht eine Nachrechnung.
 
 | Fall | Grundmenge | Vorkommen |
 |---|---|---|
-| 1 — Fence zwischen Direktive und Zitat | 18 `d-check:cite`-Direktiven (alle in `d-check`) | **0** |
+| 1 — Fence zwischen Direktive und Zitat | 18 Marker-Vorkommen (alle in `d-check`) | **0** — und die Grundmenge ist schwächer, als die Zahl aussieht: **keines** der 18 ist eine produktive Direktive, alle stehen in Inline-Code oder Prosa (Handbuch, READMEs, Spec, Reports). Das Ergebnis „null betroffene Fälle“ steht, die Zahl 18 belegt es nicht |
 | 2 — HTML-Anker **innerhalb** eines Fence | 94 HTML-Anker, davon 93 außerhalb | **1** (`vX.Y.Z`, ein Formbeispiel im Handbuch) — und **kein** Konsument fragt ihn: `versions.current-from` zeigt auf einen Überschriften-Anker, die drei `dpin`-Fragmente auf Slugs |
 | 3 — unbalancierter Fence in einer immutablen Revision | 53 ADR-Pfade, **152** deduplizierte Revisions-Blobs | **0** |
 
@@ -116,9 +116,14 @@ Die Leitfrage aus slice-101 lautet nicht „sind die Befunde abgehakt“, sonder
 „ist die Klasse geschlossen“. Dafür sind **alle** Stellen aufgezählt worden, die
 eine Lexik-Frage beantworten:
 
-- **Fence-Erkennung:** nur in `markdown.go` (die Lexik selbst) und in
-  `trace_table.go`, und dort über die geteilten Prädikate `TrimFenceIndent` /
-  `FenceRun` / `FenceCloses`. Keine zweite Implementierung.
+- **Fence-Erkennung:** **vier** Dateien führen eine eigene Fence-Zustands-Schleife
+  — `markdown.go` (die Lexik selbst), `trace_table.go`, `sections.go` (zweimal,
+  für Abschnitts-Kopf und -Ende, konsumiert von `planning` und `structure`) und
+  `spans.go` (der Wächter). Alle vier speisen sich aus denselben geteilten
+  Prädikaten `TrimFenceIndent` / `FenceRun` / `FenceCloses`, die **Antwort**
+  stimmt also überein. Die erste Fassung dieser Aufzählung nannte zwei von vier
+  — sie war als Beleg für „die Klasse ist geschlossen" gedacht und hätte einem
+  Leser `sections.go` verschwiegen.
 - **Rohe Zeilen-Spaltung** an 22 Stellen — die überwiegende Mehrheit schneidet
   nur nach Zeilennummer und holt die **Antwort** aus der geteilten Lexik
   (`matrix.SelectSections`/`SectionMask`/`HeadingSections` etwa aus
@@ -129,6 +134,14 @@ eine Lexik-Frage beantworten:
 - **Übrig bleiben genau zwei** Stellen, die eine Lexik-Frage **roh**
   beantworten: die Absatzbildung in `citations` und der HTML-Anker-Zweig in
   `headingSection`. Beide sind Fall 1 und 2.
+- **Der erste Anlauf hat die zweite nur halb repariert** (unabhängiger Review):
+  übernommen war die **Zeilen-Menge**, nicht die **Erkennung** — vier
+  Zeichenfolgen galten weiter für `versions`/`pins` als Anker und für `anchors`
+  nicht (Anker in Inline-Code, `data-id`, `name` an beliebigem Element,
+  anker-förmige Prosa ohne Tag). Gemessen trug die reparierte Achse **1**
+  Vorkommen, die stehengebliebene **40**. Die Lehre gehört zur Klasse: eine
+  geteilte Antwort ist nicht halb übernehmbar, und „dieselbe Grundmenge“ ist
+  noch keine „dieselbe Antwort“.
 
 Damit ist die Klasse nach dieser Reparatur **geschlossen**, soweit sie
 aufzählbar ist — und die Aufzählung ist der Beleg, nicht die Behauptung.

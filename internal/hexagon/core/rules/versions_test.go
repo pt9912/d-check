@@ -205,3 +205,42 @@ func TestVersionsCurrentFromAnkerAusserhalbFence(t *testing.T) {
 		t.Fatalf("passender Pin → 0 Befunde, got %v", res.Findings)
 	}
 }
+
+// DC-FA-VER-001 / DC-FA-ANCH-001.b: die Anker-Frage hat EINE Antwort. Vier
+// Zeichenfolgen, die wie ein Anker aussehen und keiner sind — fuer anchors
+// waren sie nie welche, fuer current-from bis zur Vereinheitlichung schon.
+// Erwartet ist jedes Mal der fail-closed-Abbruch.
+func TestVersionsCurrentFromAnkerParitaet(t *testing.T) {
+	faelle := map[string]string{
+		"Inline-Code":     "# V\n\nBeispiel: `<a id=\"aktuell\"></a>` v0.27.0\n",
+		"data-id":         "# V\n\n<span data-id=\"aktuell\"></span> v0.27.0\n",
+		"ohne Tag":        "# V\n\nid=\"aktuell\" v0.27.0\n",
+		"name an area":    "# V\n\n<area name=\"aktuell\"> v0.27.0\n",
+	}
+	for name, version := range faelle {
+		t.Run(name, func(t *testing.T) {
+			m := coretest.NewMemFS(map[string]string{
+				"version.md":  version,
+				"docs/use.md": "ghcr.io/pt9912/d-check:v0.27.0\n",
+			})
+			if _, err := Run(m, nil, versionsCfg(), []string{"versions"}); err == nil {
+				t.Fatalf("%s ist kein Anker → fail-closed (Exit 2) erwartet", name)
+			}
+		})
+	}
+}
+
+// Gegenprobe zur Paritaet: das echte <a id=...> loest auf.
+func TestVersionsCurrentFromEchterHTMLAnker(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"version.md":  "# V\n\n<a id=\"aktuell\"></a> v0.27.0\n",
+		"docs/use.md": "ghcr.io/pt9912/d-check:v0.27.0\n",
+	})
+	res, err := Run(m, nil, versionsCfg(), []string{"versions"})
+	if err != nil {
+		t.Fatalf("echter HTML-Anker muss aufloesen: %v", err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("passender Pin → 0 Befunde, got %v", res.Findings)
+	}
+}

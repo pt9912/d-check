@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.58.0
+**Version:** 0.58.1
 
 **Status:** Draft
 
@@ -1347,7 +1347,10 @@ geprüft — die Zusage „wortgleich" wird von einer Behauptung zu einem **geme
 Property**. Die Direktive ist ein HTML-Kommentar
 `<!-- d-check:cite <pfad>:<von>-<bis> -->` unmittelbar vor dem Zitat: einem
 `>`-Blockquote **oder** dem folgenden inline-Zitat-Span (`„…"` / `"…"`) — die realen
-Zitate stehen **inline** und beim Verfassen umgebrochen, nicht als `>`-Blöcke. Das
+Zitate stehen **inline** und beim Verfassen umgebrochen, nicht als `>`-Blöcke.
+**Unmittelbar heißt: im selben Absatz.** Ein **Fenced-Block** zwischen Direktive
+und Zitat trennt genauso wie eine Leerzeile — dann folgt der Direktive kein
+Zitat, und das ist der fail-closed-Fall, keine Paarung über den Block hinweg. Das
 Modul liest die Zeilen `<von>`–`<bis>` der Zieldatei und vergleicht sie mit dem
 Zitattext **whitespace-normalisiert** (Läufe aus Leerzeichen/Umbruch → ein
 Leerzeichen): der normalisierte Zitattext muss ein **zusammenhängender Teilstring**
@@ -1557,7 +1560,13 @@ Anders als die übrigen Module liest `versions` die Pins **auch innerhalb von
 Fenced-Code-Blöcken** — Versions-Pins leben fast ausschließlich in
 Kommando-Beispielen. Das ist eine bewusste, auf das `pin-pattern` gescopte
 Ausnahme von der Fence-Opazität der Vorverarbeitung (kein Sprach-Parser, reiner
-Muster-Scan). Zwei Ventile wie bei
+Muster-Scan). **Sie gilt dem Pin, nicht dem Anker:** welcher Span
+`versions.current-from` adressiert, entscheidet dieselbe Anker-Erkennung wie in
+[`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors) —
+ein Heading-Slug oder ein Inline-HTML-Anker, beide **außerhalb** von Fenced-Code
+und Inline-Code. Sonst gäbe derselbe Lauf zwei Antworten auf dieselbe Frage.
+Der adressierte Span selbst wird danach **roh** gelesen, einschließlich seiner
+Fences. Zwei Ventile wie bei
 [`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids): die
 Glob-Liste `exempt-paths` (historische Pins in Planning-`done/`-Slices,
 `CHANGELOG.md` und der Lastenheft-Historie bleiben unberührt) und der
@@ -1617,7 +1626,11 @@ mehreren Links je Zeile bindet jeder Marker an den ihm direkt vorausgehenden Lin
 
 d-check löst das Linkziel auf, bestimmt den **Ziel-Span** — die ganze Ziel-Datei
 (Link ohne Anker) oder die **Heading-Section** des Ankers (Überschrift bis zur
-nächsten gleich-/höherrangigen) —, normalisiert ihn **whitespace-/reflow-invariant**
+nächsten gleich-/höherrangigen) — **welcher Anker das ist**, entscheidet dieselbe
+Erkennung wie in
+[`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors)
+(Heading-Slug oder Inline-HTML-Anker, beide außerhalb von Fenced- und
+Inline-Code) —, normalisiert ihn **whitespace-/reflow-invariant**
 (Whitespace-Folgen → ein Leerzeichen, Zeilenenden vereinheitlicht,
 führende/abschließende Leerzeilen entfernt), bildet den SHA-256 und vergleicht mit
 dem Pin. Abweichung → Befund `link-stale`. Der Span wird **roh** gehasht — inkl.
@@ -1798,7 +1811,15 @@ kein scannendes Modul je sieht. Die Maske selbst folgt der geteilten
 Überschriften-Lexik; ein **unbalancierter Fence in einer Revision** verschiebt
 sie dort trotzdem, und kein Wächter meldet das, weil die Wächter den
 **Arbeitsbaum** scannen. Für jeden bereits existierenden Commit ist diese Sicht
-rückwirkend blind. Gemessen wurde die Klasse über den eigenen Bestand — **null**
+rückwirkend blind. **Die gefährliche Ausprägung ist nicht das Falsch-Rot,
+sondern das stille Grün:** liegt die Öffnung **innerhalb** des ausgenommenen
+Abschnitts, findet die Maske keine folgende Überschrift mehr, die Ausnahme läuft
+bis zum **Dateiende**, und eine reale Core-Änderung passiert das Gate mit
+**Exit 0 und ohne Ausgabe**. Beobachtbar ist das **nicht** an `vcs` selbst,
+sondern nur an der Arbeitsbaum-Fassung: meldet das Modul `spans` ein
+`fence-unclosed` in einer Datei, die `vcs.paths` trifft, ist der stille Pfad
+erreichbar geworden — das ist der Trigger, an dem diese Grenze neu zu bewerten
+ist. Gemessen wurde die Klasse über den eigenen Bestand — **null**
 von 152 immutablen Revisions-Blobs —, und der Vertrag benennt sie hier, statt
 einen zweiten Wächter auf einer dritten Eingabe-Achse zu fordern (Begründung in
 begleitender ADR).
@@ -2619,7 +2640,8 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
-| 0.58.0 | 2026-08-16 | Drei Konsumenten der geteilten Lexik: [`DC-FA-CITE-001`](#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in) trennt am **Fenced-Block** wie am Leerzeile-Absatz — ein Code-Block zwischen Direktive und Zitat führt in den zugesagten fail-closed-Abbruch statt in eine Zufalls-Paarung; [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) und [`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in) erkennen **beide Anker-Formen nur außerhalb von Fences**, während ihr roher Span unberührt bleibt (die gescopten Roh-Lesungen sind eine andere **Frage**, keine andere **Antwort**). [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) bekommt die **benannte Grenze** der Revisions-Achse statt eines zweiten Wächters. **Die Änderung findet mehr** — ein grüner Konsumentenlauf kann fail-closed werden; am eigenen Bestand gemessen ist heute **kein** Fall betroffen (0 von 18 Direktiven, 0 wirksame Anker, 0 von 152 Revisions-Blobs). Begründung in begleitender ADR |
+| 0.58.1 | 2026-08-16 | Nachzug nach unabhängigem Review, vor dem Release. **Zwei blockierende Befunde:** (1) die Anker-Erkennung war nur zur **Fence-Hälfte** vereinheitlicht — `versions`/`pins` behielten ihre eigene Regex und hielten vier Zeichenfolgen für Anker, die [`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors) nie als solche gelesen hat (Anker in Inline-Code, `data-id`, `name` an beliebigem Element, anker-förmige Prosa ohne Tag); gemessen trug die reparierte Achse **1** Vorkommen, die stehengebliebene **40**. Jetzt **eine** Erkennung für alle drei Module. (2) Die Richtungs-Zusage „findet mehr, und weniger an keiner Stelle“ war **falsch** — zwei Fälle verlieren einen Befund, einer davon still. Beide Richtungen stehen jetzt in Anforderung, ADR und Release-Notiz. Ferner: die Zusagen stehen jetzt in den **Anforderungen** selbst statt nur in Algorithmus und ADR (der Widerspruch zur Fence-Ausnahme von `versions` entstand genau dort), der Fenced-Block ist als **Blockquote-Terminator** benannt, und die `vcs`-Grenze beschreibt die **stille** Richtung samt eines beobachtbaren Re-Evaluierungs-Triggers |
+| 0.58.0 | 2026-08-16 | Drei Konsumenten der geteilten Lexik: [`DC-FA-CITE-001`](#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in) trennt am **Fenced-Block** wie am Leerzeile-Absatz — ein Code-Block zwischen Direktive und Zitat führt in den zugesagten fail-closed-Abbruch statt in eine Zufalls-Paarung; [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) und [`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in) erkennen **beide Anker-Formen nur außerhalb von Fences**, während ihr roher Span unberührt bleibt (die gescopten Roh-Lesungen sind eine andere **Frage**, keine andere **Antwort**). [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) bekommt die **benannte Grenze** der Revisions-Achse statt eines zweiten Wächters. **Die Änderung wirkt in beide Richtungen:** sie **findet mehr** (ein grüner Konsumentenlauf kann fail-closed werden, wo ein Fenced-Block trennt) und **findet weniger** an zwei konstruierbaren Stellen — ein von einem Fence unterbrochenes Blockquote meldet kein `citation-mismatch` mehr, und ein `dpin` auf einen Anker im Fence verliert seinen Drift-Schutz **kommentarlos** (das Modul schweigt zu unauflösbaren Zielen). Am eigenen Bestand gemessen ist heute **kein** Fall betroffen (0 wirksame Anker, 0 von 152 Revisions-Blobs). Begründung in begleitender ADR |
 | 0.57.2 | 2026-08-15 | Nachzug nach bestätigender Re-Review: die Aufnahme-Klausel von [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) nennt sich eine „geschlossene Menge“, klassifizierte aber drei Module gar nicht — `citations`, `sources` und das neue `structure`. Das Akzeptanzkriterium derselben Anforderung tat es; die Klausel jetzt auch |
 | 0.57.1 | 2026-08-15 | Nachzug nach unabhängigem Review, vor dem Release: die **Akzeptanzkriterien** von [`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben) führten weiter elf Targets ohne `doc-structure` — Beschreibung und Out-of-Scope waren nachgezogen, die Kriterien nicht. Dieselbe Stelle war schon in 0.37.1 als Selbstwiderspruch saniert worden. Ferner nennt [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) `structure` jetzt in der Enumeration der nicht aktivierten situativen Module |
 | 0.57.0 | 2026-08-15 | Umsetzung von [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) — das **20. Regelmodul** `structure` liegt vor, samt der von [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) seit 0.51.0 zugesagten, aber nicht implementierten Mehrdeutigkeits-Härte (`closure-note-ambiguous`). Die Abschnitts-Mechanik ist **geteilt**, nicht kopiert: die Closure-Fähigkeit ist ein Preset derselben Semantik, und ein Kopplungs-Test fährt dieselbe Eingabe durch beide Oberflächen. Neun neue Grund-Codes. **`DC-FA-CLI-010`-Erweiterung (11 → 12 Targets):** `--print-mk` trägt ein `doc-structure`-Target |
