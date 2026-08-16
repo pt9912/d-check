@@ -151,9 +151,17 @@ die ihren eigenen Abschnitt in einem Beispiel-Block zeigt, galt als mehrdeutig,
 und eine Raute-Zeile in einem Beispiel-Block beendete den Aktiv-Block vorzeitig.
 Beide sind repariert.
 
-**Damit ist nicht die Klasse geschlossen, sondern die Aufzählung als Methode
-widerlegt.** Zweimal hintereinander hat eine Liste, die „vollständig“ hieß, eine
-Stelle nicht gekannt — und beide Male fand ein Review sie in Minuten. Die
+**Eine dritte Runde hat drei weitere Module gefunden**, die in keinem
+Vorgänger-Report vorkamen: `vcs` (Status-Zeile und Immutabilitäts-Entscheidung
+roh — **stilles Grün im Immutabilitäts-Gate**), `planning` ein zweites Mal (die
+H2-Grenze war ein roher Präfix-Vergleich, obwohl derselbe Commit die
+Fence-Hälfte gerade geheilt hatte) und `targets` (Tabellenzeilen roh). Damit ist
+auch die Out-of-Scope-Begründung dieser Welle widerlegt: die Tabellen-Lexik ist
+**kein neuer** Rand, sie driftet bereits.
+
+**Die Aufzählung ist als Methode endgültig widerlegt.** Dreimal hintereinander
+hat eine Liste, die „vollständig“ hieß, Stellen nicht gekannt — und jedes Mal
+fand ein Review sie in Minuten. Die
 Antwort ist deshalb kein dritter Listen-Anlauf, sondern ein **Kopplungs-Test**:
 `TestAnkerFrageHatEineAntwort` fährt zehn Anker-Schreibweisen durch **beide**
 Konsumenten und schlägt fehl, sobald sie verschieden antworten. Er prüft nicht,
@@ -171,10 +179,13 @@ Das ist die Verkörperung von **BEO-003** (Zähler 3).
       zwei an `citations`, je eine an `versions` und `pins`, und der **bestehende**
       Absatz-Test hängt am selben Prädikat — das ist der Beleg, dass die Lexik
       wirklich geteilt ist und nicht nur gleich aussieht.
-- [x] `make gates` grün (372/0); **SemVer: Minor** — die Änderung **findet
+- [x] `make gates` grün (375/0); **SemVer: Minor** — die Änderung **findet
       mehr** (fail-closed statt Zufalls-Paarung, Anker im Fence löst nicht mehr
-      auf) und **weniger** an keiner Stelle; ohne die drei Konsumenten-Fälle ist
-      der Befundsatz byte-identisch, am eigenen Bestand belegt.
+      auf) **und weniger** an mehreren — die Aufzählung der Richtungen steht in
+      Release-Notiz und ADR und ist ausdrücklich **offen** formuliert, weil sie
+      in drei Review-Runden dreimal unvollständig war. Am eigenen Bestand ist
+      **kein** Fall betroffen; ohne die reparierten Konsumenten-Fälle ist der
+      Befundsatz byte-identisch.
 
 ## 6. Risiken / offene Punkte
 

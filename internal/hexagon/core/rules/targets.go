@@ -151,9 +151,10 @@ func extractDocTargets(fsys driven.Filesystem, file string) ([]targetRef, error)
 		return nil, fmt.Errorf("das Modul targets kann die Doku-Datei %q nicht lesen (DC-FA-TGT-001, fail-closed): %w", file, err)
 	}
 	var out []targetRef
+	prose := proseLineSet(content)
 	for i, line := range splitLines(content) {
-		if !strings.HasPrefix(line, "|") {
-			continue
+		if !prose[i+1] || !strings.HasPrefix(line, "|") {
+			continue // ein Tabellen-Beispiel im Fence dokumentiert kein Target
 		}
 		for _, m := range docTargetRe.FindAllStringSubmatch(line, -1) {
 			out = append(out, targetRef{name: m[1], file: file, line: i + 1})

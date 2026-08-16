@@ -375,12 +375,20 @@ func planningHeadingLine(lines []string, prose map[int]bool, heading string) (fi
 // nächsten `## `-H2 (exklusive). So verfälscht ein erklärender Verweis anderswo
 // den Status nicht.
 func planningBlockHasMarker(lines []string, prose map[int]bool, headingNo int, marker string) bool {
-	for i := headingNo; i < len(lines); i++ {
+	// Wo der Block endet, entscheidet die geteilte Abschnitts-Mechanik — nicht
+	// ein roher Präfix-Vergleich: eine eingerückte oder tab-getrennte H2 ist
+	// eine Überschrift, eine H1 beendet einen H2-Abschnitt ebenfalls.
+	level, _, ok := parseATXHeading(lines[headingNo-1])
+	if !ok {
+		level = 2
+	}
+	end := SectionEnd(lines, headingNo, level)
+	if end == 0 || end > len(lines)+1 {
+		end = len(lines) + 1
+	}
+	for i := headingNo; i < end-1; i++ {
 		if !prose[i+1] {
 			continue // Fence-Inneres beendet den Block nicht und trägt keinen Marker
-		}
-		if strings.HasPrefix(lines[i], "## ") {
-			return false // nächste H2 erreicht
 		}
 		if strings.Contains(lines[i], marker) {
 			return true

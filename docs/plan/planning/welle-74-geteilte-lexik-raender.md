@@ -80,9 +80,13 @@ er dieselbe Klasse trägt.
 
 - **Die Tabellen-Lexik.** Sie fehlt zwei anderen Kandidaten
   ([slice-102](open/slice-102-wellen-lifecycle-invariante.md) Aussagen 3/4 und
-  der Ordnungs-Bedingung aus **BEO-005**) und ist damit selbst ein geteilter
-  Rand — aber ein **neuer**, nicht ein driftender. Sie gehört in die Welle ihrer
-  beiden Konsumenten, nicht hierher.
+  der Ordnungs-Bedingung aus **BEO-005**) und gehört in die Welle ihrer beiden
+  Konsumenten. — **Die Begründung dafür war falsch:** dieser Punkt nannte sie
+  einen „neuen, nicht driftenden“ Rand. Die dritte Review-Runde hat gezeigt, dass
+  `targets` Tabellenzeilen **roh** liest und ein Beispiel im Code-Block dadurch
+  ein Target als dokumentiert gelten ließ — die Lexik driftet bereits. Der
+  Defekt ist in diesem Slice repariert; **out-of-scope bleibt nur der Ausbau**
+  zu einer adressierbaren Tabellen-Lexik (Spalten, Typen, Ordnung).
 - **Die git-Achse für scannende Module erreichbar machen.** Fall 3 ist LOW;
   möglich, dass die richtige Lieferung eine benannte Grenze ist und kein Umbau.
 - [slice-095](open/slice-095-links-resolve-from.md).

@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
@@ -13,10 +14,14 @@ import (
 // derselben Frage bei DERSELBEN Eingabe DASSELBE antworten — die Kopplung ist
 // beobachtbar statt behauptet.
 //
-// Die Frage hier: "ist das ein Anker?" Konsumenten: anchors (Befund
-// anchor-missing) und versions (current-from, fail-closed). Ein Fall, in dem
-// anchors den Anker kennt und current-from nicht — oder umgekehrt — ist die
-// Klasse, dreimal eingetreten.
+// Die Frage hier: "ist das ein Anker?" Konsumenten sind ALLE DREI, die sie
+// stellen: anchors (Befund anchor-missing), versions (current-from,
+// fail-closed) und pins (aufloesbarer Ziel-Span). Ein Fall, in dem einer den
+// Anker kennt und ein anderer nicht, ist die Klasse — dreimal eingetreten.
+//
+// Der Test misst die AUFLOESBARKEIT des Ankers, nicht den Zuschnitt des
+// adressierten Spans; letzterer ist je Modul vertraglich verschieden
+// (ADR-0019/ADR-0020) und gehoert in die Modul-Tests.
 
 // ankerFall ist eine Anker-Schreibweise samt der Zieldatei, die sie enthaelt.
 type ankerFall struct {
@@ -76,18 +81,43 @@ func versionsKenntAnker(t *testing.T, ziel, anker string) bool {
 	return err == nil
 }
 
-// Die Kopplung selbst: fuer jede Schreibweise muessen beide Module dieselbe
-// Antwort geben. Weicht eine ab, ist die Lexik an ihrem Rand gedriftet.
+// pinsKenntAnker fragt das Modul pins: es hasht den Ziel-Span nur, wenn es den
+// Anker aufloest — sonst schweigt es (kein Ersatz-Befund). Der Pin traegt einen
+// absichtlich falschen Hash: kommt link-stale, war der Anker aufloesbar.
+func pinsKenntAnker(t *testing.T, ziel, anker string) bool {
+	t.Helper()
+	m := coretest.NewMemFS(map[string]string{
+		"docs/ziel.md": ziel,
+		"docs/src.md": "Siehe [Ziel](ziel.md#" + anker + ") <!-- dpin: sha256:" +
+			strings.Repeat("a", 64) + " -->.\n",
+	})
+	res, err := Run(m, nil, model.Config{}, []string{"pins"})
+	if err != nil {
+		t.Fatalf("pins-Lauf unerwartet fehlgeschlagen: %v", err)
+	}
+	for _, f := range res.Findings {
+		if f.Reason == model.ReasonLinkStale {
+			return true
+		}
+	}
+	return false
+}
+
+// Die Kopplung selbst: fuer jede Schreibweise muessen ALLE Konsumenten dieselbe
+// Antwort geben. Weicht einer ab, ist die Lexik an ihrem Rand gedriftet.
 func TestAnkerFrageHatEineAntwort(t *testing.T) {
 	for _, f := range ankerFaelle() {
 		t.Run(f.name, func(t *testing.T) {
-			a := anchorsKenntAnker(t, f.ziel, f.anker)
-			v := versionsKenntAnker(t, f.ziel, f.anker)
-			if a != v {
-				t.Fatalf("zwei Antworten auf dieselbe Frage: anchors=%v, versions=%v", a, v)
+			antworten := map[string]bool{
+				"anchors":  anchorsKenntAnker(t, f.ziel, f.anker),
+				"versions": versionsKenntAnker(t, f.ziel, f.anker),
+				"pins":     pinsKenntAnker(t, f.ziel, f.anker),
 			}
-			if a != f.gueltig {
-				t.Fatalf("gemeinsame Antwort %v, erwartet %v", a, f.gueltig)
+			for modul, antwort := range antworten {
+				if antwort != f.gueltig {
+					t.Fatalf("%s antwortet %v, gemeinsam erwartet %v (Antworten: %v)",
+						modul, antwort, f.gueltig, antworten)
+				}
 			}
 		})
 	}

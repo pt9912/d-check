@@ -94,9 +94,15 @@ auf git-Blobs, die kein scannender Wächter je sieht.
   und meldet sein `citation-mismatch` nicht mehr, und ein `dpin`, dessen Ziel-Anker
   nur im Fence steht, verliert seinen Drift-Schutz **kommentarlos** — das Modul
   schweigt zu unauflösbaren Zielen, das ist seine zugesagte Semantik und hier ihre
-  unangenehme Folge. Gemessen betrifft beides heute **keinen** Konsumenten; die
-  erste Fassung dieser Entscheidung behauptete „und weniger an keiner Stelle“,
-  und das war als universelle Aussage falsch.
+  unangenehme Folge. Weiter: die Anker-Auflösung ist **case-sensitiv**
+  geworden (bei `pins` wieder still), ein `-1`-Anker adressiert bei
+  konkurrierenden Kennungen einen **anderen Span**, `planning` findet an
+  konstruierbaren Stellen auch **mehr**, und `vcs` hält eine `Proposed`-Datei
+  mit `Accepted`-Beispiel nicht mehr für immutabel. **Diese Aufzählung ist
+  offen** — sie nennt die gemessenen Richtungen, nicht alle möglichen. Die
+  erste Fassung dieser Entscheidung behauptete „und weniger an keiner Stelle“;
+  das war als universelle Aussage falsch und ist in drei Review-Runden dreimal
+  unvollständig geblieben.
 - Die drei gescopten Roh-Lesungen bleiben unberührt. Wer den Unterschied nicht
   mitliest, hält Entscheidung 1 für einen Widerspruch zu ADR-0019/0020 — deshalb
   steht er als Entscheidung 2 hier und nicht in einer Fußnote.

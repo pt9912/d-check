@@ -1581,7 +1581,10 @@ abdeckt:
    Pfad-Stabilitäts-Prüfung; Hinzufügung (A) → frei (eine neue Datei ist noch
    nicht immutabel — wie eine frisch reifende ADR).
 3. **Immutabilitäts-Bedingung.** Geprüft wird nur, wenn die **BASE**-Version die
-   Bedingung `vcs.immutable-when` erfüllt (Zeilen-Regex, erstes Vorkommen — z. B.
+   Bedingung `vcs.immutable-when` erfüllt (Zeilen-Regex, erstes Vorkommen
+   **außerhalb** von Fenced-Code — eine Datei, die ihren eigenen Kopf als
+   Beispiel zeigt, wird dadurch nicht immutabel; dieselbe Zeilen-Menge gilt für
+   die Kopf-Status-Zeile aus Schritt 4 und für `matrix.statusOf` — z. B.
    `^\*\*Status:\*\* Accepted`). Trägt BASE die Bedingung nicht (z. B.
    `Proposed`), ist die Datei frei (auch ihre `Proposed → Accepted`-Reifung — das
    automatische Grandfathering des abgelösten Skripts).
@@ -1696,7 +1699,11 @@ Listing ihres Verzeichnisses prüft:
    sie beenden den Block nicht und tragen keinen Marker — eine Raute-Zeile in einem
    Beispiel-Block beendete den Aktiv-Block sonst vorzeitig und verlöre den
    Ruhe-Marker dahinter. Der Aktiv-Status-Block reicht von der `planning.heading`-Zeile bis
-   zur nächsten `## `-H2 (exklusive). Trägt er den `planning.marker` (Default „Keine
+   zur nächsten Überschrift **gleicher oder höherer Ordnung** — bestimmt über
+   dieselbe Abschnitts-Mechanik wie die Closure-Fähigkeit desselben Moduls, nicht
+   über einen rohen `## `-Präfix-Vergleich: eine eingerückte oder tab-getrennte
+   H2 ist eine Überschrift, und eine H1 beendet einen H2-Abschnitt ebenfalls
+   (exklusive). Trägt er den `planning.marker` (Default „Keine
    aktive Welle", literaler Teilstring), ist die Welle **ruhend** (`hasActive` =
    false); sonst **aktiv**. Der Marker wird **nur** in diesem Block gesucht (ein
    erklärender Verweis anderswo verfälscht den Status nicht).
@@ -2034,7 +2041,8 @@ scannt, sondern **deklarierte** Dateien liest:
    Zeilen-Heuristik, in Parität zum abgelösten `tools/gate-consistency.sh`.
 3. **Dokumentierte-Target-Menge (Tabellen-Scoping).** Aus jeder Doku-Datei
    werden ` `make X` `-Tokens (`X` = `[a-z][a-z0-9_-]*`, in Parität zum Skript)
-   **ausschließlich aus Tabellenzeilen** extrahiert — eine Tabellenzeile ist eine
+   **ausschließlich aus Tabellenzeilen außerhalb von Fenced-Code** extrahiert
+   (ein Beispiel-Block, der eine Ziel-Tabelle zeigt, dokumentiert nichts) — eine Tabellenzeile ist eine
    Zeile, deren **erstes Zeichen** ein Pipe `|` ist (**Spalte 0**, in Parität zu
    `grep -E '^\|'`; **Einrückung zählt nicht**). Prosa-Erwähnungen (z. B.
    „Richtig: ` `make gates` `") zählen **nicht**, sonst entstünden aus
@@ -2518,6 +2526,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-16 | Nachzug nach **dritter** Review-Runde: drei weitere Module beantworteten eine Lexik-Frage roh. §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) — `immutable-when` und die Kopf-Status-Zeile gelten nur **außerhalb** von Fenced-Code (vorher: eine Datei, die ihren Kopf als Beispiel zeigt, galt als immutabel bzw. verschob die gestrippte Zeile ⇒ **stilles Grün** im Immutabilitäts-Gate). §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt 4 — die Block-Grenze ist die **geteilte** Abschnitts-Grenze statt eines rohen `## `-Präfix-Vergleichs (eingerückte H2, tab-getrennte H2, H1). §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) — Tabellenzeilen zählen nur außerhalb von Fenced-Code |
 | 2026-08-16 | Nachzug nach bestätigender Re-Review: §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) Schritt 2 sagt jetzt **beides** — Leerzeilen trennen **nicht** (die Direktive paart mit dem nächsten nicht-leeren Kandidaten), ein Fenced-Block trennt in beiden Zweigen; die Vorfassung erklärte die Fence-Regel mit einem Vergleich, den ein Lauf widerlegt. Ferner: §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) Schritt 1 und §[`DC-FA-PIN-001.a`](spezifikation.md#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins) Schritt 2 sagen die Anker-Antwort jetzt **ganz** zu (Duplikat-Slug, Prozent-Dekodierung, Groß-/Kleinschreibung), nicht nur ihre Fence-Hälfte, und §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritte 3 und 4 binden den Aktiv-Status-Guard an dieselbe Zeilen-Menge (zwei belegte Falsch-Rot) |
 | 2026-08-16 | Drei Konsumenten der geteilten Lexik nachgezogen (Begründung in begleitender ADR): §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) Schritt 2 nennt den **Absatz** ausdrücklich als den geteilten (Leerzeile **und** Fenced-Block begrenzen) — ein Fenced-Block zwischen Direktive und Zitat trennt und führt in den fail-closed-Fall; §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) Schritt 1 und §[`DC-FA-PIN-001.a`](spezifikation.md#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins) Schritt 2 sagen, dass **beide Anker-Formen nur außerhalb von Fences** erkannt werden (§[`DC-FA-ANCH-001.b`](spezifikation.md#dc-fa-anch-001b--inline-html-anker)), der adressierte bzw. gehashte **Span** aber roh bleibt. Beide Zusagen standen dem Kopfsatz „fence-aware wie die übrigen Module“ nach schon zu; gemessen wurde eine andere Antwort |
 | 2026-08-15 | Nachzug aus der Closure des Struktur-Moduls, vier Vertragsflächen: §1 sagt die Symlink-Grenze jetzt für **beide** Formen (auch eine nur über einen **Datei**-Symlink erreichbare Markdown-Datei ist keine Kandidatin — bisher stand dort nur der Verzeichnis-Symlink), §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 2 zeigt darauf und sagt zusätzlich den **unlesbaren Dateibaum** fail-closed zu (je Regel ein Befund statt eines leeren Befundsatzes), Schritt 6 nennt den Wort-Begriff der **Marke** ausdrücklich unicode-weit und grenzt ihn gegen die ASCII-Wortgrenze der Floskel aus Schritt C4 ab (dieselbe geteilte Mechanik, zwei Wort-Begriffe — ein Umlaut setzt hier ein Wort fort, dort beendet er eines), und die §2-Schema-Zeile zu `structure[].min-sentences` trägt die Zähl-Semantik aus Schritt 6 („Inline-Code geleert“, „nur vor Whitespace oder Zeilenende“) statt der überholten Kurzfassung |

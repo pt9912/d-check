@@ -20,12 +20,17 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   mehr**: eine bisher grüne Direktive hinter einem Code-Block bricht fail-closed
   ab (Exit 2), und eine Zeichenfolge, die nur wie ein Anker aussieht — in
   Inline-Code, als `data-id`, als `name` an einem beliebigen Element oder ganz
-  ohne Tag —, löst nicht mehr auf. Sie **findet weniger** an zwei Stellen: ein von
-  einem Fenced-Block unterbrochenes `>`-Zitat wird gekürzt gelesen und meldet sein
-  `citation-mismatch` nicht mehr, und ein `dpin`, dessen Ziel-Anker nur in einem
+  ohne Tag —, löst nicht mehr auf. Sie **findet weniger**, unter anderem hier: ein
+  von einem Fenced-Block unterbrochenes `>`-Zitat wird gekürzt gelesen und meldet
+  sein `citation-mismatch` nicht mehr; ein `dpin`, dessen Ziel-Anker nur in einem
   Fence steht, verliert seinen Drift-Schutz **kommentarlos** (`pins` schweigt zu
-  unauflösbaren Zielen). Am eigenen Bestand gemessen ist **kein** heutiger Fall
-  betroffen. Der rohe Ziel-Span von `pins` und die Fence-Ausnahme von `versions`
+  unauflösbaren Zielen); ein **anders geschriebener** Anker trifft nicht mehr, weil
+  die Auflösung jetzt case-sensitiv ist wie in `anchors` (`#aktuell` findet
+  `id="Aktuell"` nicht mehr — bei `versions` als Exit 2, bei `pins` wieder still);
+  und ein `-1`-Anker adressiert bei konkurrierenden Kennungen einen **anderen
+  Span**. **Diese Aufzählung ist offen** — sie nennt die gemessenen Fälle, nicht
+  alle möglichen; in drei Review-Runden ist sie dreimal unvollständig gewesen. Am
+  eigenen Bestand gemessen ist **kein** heutiger Fall betroffen. Der rohe Ziel-Span von `pins` und die Fence-Ausnahme von `versions`
   bleiben unberührt — das sind andere **Fragen**, keine anderen **Antworten**.
 - slice-103 — **Die Anker-Frage hat jetzt EINE Antwort, auch in der
   Slug-Hälfte:** `versions.current-from` und `pins` lösen Duplikat-Slugs
@@ -37,7 +42,23 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   einem Beispiel-Block zeigt, galt als „Überschrift mehrfach vorhanden“, und eine
   Raute-Zeile in einem Beispiel-Block beendete den Aktiv-Block vorzeitig. Beides
   meldete `planning-drift`, wo nichts driftete. **Findet weniger** — und zwar
-  Fehlmessungen.
+  Fehlmessungen. In der Gegenrichtung **findet es mehr**: der Aktiv-Block endet
+  jetzt an der geteilten Abschnittsgrenze statt an einer rohen `## `-Prüfung —
+  eine eingerückte H2, eine tab-getrennte H2 und eine H1 beenden ihn ebenfalls,
+  ein Ruhe-Marker dahinter zählt nicht mehr zum Block, und `planning-drift`
+  entfiel dort bisher **still**.
+- slice-103 — **Modul `vcs`: der Immutabilitäts-Kopf wird nicht mehr aus einem
+  Code-Beispiel gelesen.** Status-Zeile und `immutable-when` liefen über die
+  **rohen** Zeilen, während die Abschnitts-Maske derselben Funktion
+  fence-bewusst ist. Eine Datei, die ihren eigenen Kopf als Beispiel zeigt —
+  Vorlagen und Konventionsdateien tun das —, galt dadurch als immutabel oder
+  verschob die gestrippte Status-Zeile, und eine reale Core-Änderung passierte
+  das Gate **mit Exit 0 und ohne Ausgabe**. **Findet mehr**, und schließt ein
+  stilles Grün in einem Gate. Gemessen: 0 von 54 eigenen ADRs betroffen.
+- slice-103 — **Modul `targets`: eine Tabellenzeile im Code-Block dokumentiert
+  nichts mehr.** Ein Doku-Beispiel, das eine Ziel-Tabelle zeigt, ließ ein
+  undokumentiertes Target als dokumentiert gelten; `gate-undocumented` entfiel
+  still. **Findet mehr.**
 - slice-103 — **Benannte Grenze statt zweitem Wächter:** die Abschnitts-Maske
   des Moduls `vcs` wird auf git-Blobs gerechnet, die kein scannendes Modul sieht;
   ein unbalancierter Fence in einer Revision verschiebt sie, und für bereits

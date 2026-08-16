@@ -60,11 +60,14 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   ([`DC-FA-DIAG-001`](spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in))
 - `versions` — version-pin consistency: pinned `ghcr` image references must
   carry the current version (from `version.md#aktuell`), also reads
-  fenced code, opt-in
+  fenced code, opt-in; the **anchor** of `current-from` follows the same answer
+  as in `anchors`, not the fence exception
   ([`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
 - `pins` — content pin against content drift: a link with
   `<!-- dpin: … -->` is checked against the hash of its target span (finding
-  `link-stale` on drift), opt-in per link
+  `link-stale` on drift), opt-in per link; **which anchor addresses the span is
+  decided by the same answer as in `anchors`** (duplicate slug, percent
+  decoding, case-sensitive, outside code only)
   ([`DC-FA-PIN-001`](spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in))
 - `immutable` — immutability pin against core drift: a file with
   `<!-- immutable: … -->` is checked against the hash of its normalized **core**

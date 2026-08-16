@@ -59,11 +59,14 @@ Dokuments:
   ([`DC-FA-DIAG-001`](spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in))
 - `versions` — Versions-Pin-Konsistenz: gepinnte `ghcr`-Image-Verweise müssen
   die aktuelle Version (aus `version.md#aktuell`) tragen, liest auch
-  Fenced-Code, opt-in
+  Fenced-Code, opt-in; der **Anker** von `current-from` folgt dabei derselben
+  Antwort wie in `anchors`, nicht der Fence-Ausnahme
   ([`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
 - `pins` — Content-Pin gegen inhaltlichen Drift: ein Link mit
   `<!-- dpin: … -->` wird gegen den Hash seines Ziel-Spans geprüft (Befund
-  `link-stale` bei Drift), opt-in pro Link
+  `link-stale` bei Drift), opt-in pro Link; **welcher Anker den Span adressiert,
+  entscheidet dieselbe Antwort wie in `anchors`** (Duplikat-Slug,
+  Prozent-Dekodierung, case-sensitiv, nur außerhalb von Code)
   ([`DC-FA-PIN-001`](spec/lastenheft.md#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in))
 - `immutable` — Immutabilitäts-Pin gegen Core-Drift: eine Datei mit
   `<!-- immutable: … -->` wird gegen den Hash ihres normalisierten **Core**

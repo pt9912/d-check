@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.58.2
+**Version:** 0.58.3
 
 **Status:** Draft
 
@@ -1563,7 +1563,16 @@ Anders als die übrigen Module liest `versions` die Pins **auch innerhalb von
 Fenced-Code-Blöcken** — Versions-Pins leben fast ausschließlich in
 Kommando-Beispielen. Das ist eine bewusste, auf das `pin-pattern` gescopte
 Ausnahme von der Fence-Opazität der Vorverarbeitung (kein Sprach-Parser, reiner
-Muster-Scan). **Sie gilt dem Pin, nicht dem Anker:** welcher Span
+Muster-Scan). **Grenze der Anker-Menge:** die geteilte Anker-Erkennung ist
+**permissiv** — sie liest HTML-Tags auf allen Prosa-Zeilen, also auch in einer
+HTML-**Kommentar**-Zeile und in einem **eingerückten** Code-Block (den die
+Vorverarbeitung nicht kennt). Für [`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors)
+ist eine zu große Anker-Menge folgenlos (das Modul schweigt), für `versions`
+**nicht**: der adressierte Span beginnt beim **ersten** Vorkommen, und die
+„aktuelle Version“ kann dadurch aus einem auskommentierten Beispiel stammen —
+ein Falsch-Rot. Die Verengung ist eine eigene Entscheidung mit eigener Messung
+und hier ausdrücklich **nicht** getroffen. **Die Fence-Ausnahme gilt dem Pin,
+nicht dem Anker:** welcher Span
 `versions.current-from` adressiert, entscheidet dieselbe Anker-Erkennung wie in
 [`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors) —
 ein Heading-Slug oder ein Inline-HTML-Anker, beide **außerhalb** von Fenced-Code
@@ -2645,6 +2654,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.58.3 | 2026-08-16 | Nachzug nach **dritter** Review-Runde. **Die Klasse war nicht geschlossen:** drei Module, die in keinem der beiden Vorgänger-Reports vorkamen, beantworteten eine Lexik-Frage roh — [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) las `immutable-when` und die Kopf-Status-Zeile über **alle** Zeilen (eine Datei, die ihren Kopf als Beispiel zeigt, galt als immutabel bzw. verschob die gestrippte Zeile ⇒ **stilles Grün** im Immutabilitäts-Gate), [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) beendete den Aktiv-Block an einem rohen `## `-Präfix (eingerückte H2, tab-getrennte H2 und H1 wurden übersehen, `planning-drift` entfiel **still**), und [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) las Tabellenzeilen roh (ein Beispiel-Block ließ ein undokumentiertes Target als dokumentiert gelten). Alle drei repariert, alle drei mit einer Gegenprobe bewacht. **Die Richtungs-Aufzählung ist jetzt ausdrücklich offen** — in drei Runden war sie dreimal unvollständig; ferner trägt die Anker-Menge ihre **Grenze** jetzt in der Anforderung, nicht nur in der ADR |
 | 0.58.2 | 2026-08-16 | Nachzug nach **bestätigender Re-Review**, vor dem Release — beide blockierenden Befunde der Vorrunde waren nur **teilweise** geheilt, und zwar in derselben Bauform wie zuvor. (1) Die Anker-Vereinheitlichung galt nur der **HTML**-Hälfte; die **Slug**-Hälfte divergierte weiter (Duplikat-Slug `#alt-1`, prozent-kodiertes Fragment `#a%20b`) — jetzt eine Antwort für alle drei Module, mit Akzeptanzkriterien bei [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) und [`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in). (2) Die Richtungs-Aufzählung war erneut **geschlossen** formuliert und übersah eine dritte, bei `pins` stille Stelle: die Auflösung ist jetzt case-sensitiv. Sie ist jetzt offen formuliert. **Ferner:** die Absatz-Zusage aus 0.58.1 war gegen einen Lauf **falsch** — eine Leerzeile trennt gerade nicht, die Direktive paart über Leerzeilen hinweg; das Modul `planning` beantwortete „ist das eine Überschrift“ zweimal roh und meldete dadurch zwei **Falsch-Rot**; und die permissive Anker-Menge ist bei ihrem neuen Konsumenten `versions` **nicht** folgenlos (Anker in HTML-Kommentar oder eingerücktem Block ⇒ Falsch-Rot) — als Grenze benannt, nicht mitgenommen |
 | 0.58.1 | 2026-08-16 | Nachzug nach unabhängigem Review, vor dem Release. **Zwei blockierende Befunde:** (1) die Anker-Erkennung war nur zur **Fence-Hälfte** vereinheitlicht — `versions`/`pins` behielten ihre eigene Regex und hielten vier Zeichenfolgen für Anker, die [`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors) nie als solche gelesen hat (Anker in Inline-Code, `data-id`, `name` an beliebigem Element, anker-förmige Prosa ohne Tag); gemessen trug die reparierte Achse **1** Vorkommen, die stehengebliebene **40**. Jetzt **eine** Erkennung für alle drei Module. (2) Die Richtungs-Zusage „findet mehr, und weniger an keiner Stelle“ war **falsch** — zwei Fälle verlieren einen Befund, einer davon still. Beide Richtungen stehen jetzt in Anforderung, ADR und Release-Notiz. Ferner: die Zusagen stehen jetzt in den **Anforderungen** selbst statt nur in Algorithmus und ADR (der Widerspruch zur Fence-Ausnahme von `versions` entstand genau dort), der Fenced-Block ist als **Blockquote-Terminator** benannt, und die `vcs`-Grenze beschreibt die **stille** Richtung samt eines beobachtbaren Re-Evaluierungs-Triggers |
 | 0.58.0 | 2026-08-16 | Drei Konsumenten der geteilten Lexik: [`DC-FA-CITE-001`](#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in) trennt am **Fenced-Block** wie am Leerzeile-Absatz — ein Code-Block zwischen Direktive und Zitat führt in den zugesagten fail-closed-Abbruch statt in eine Zufalls-Paarung; [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) und [`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in) erkennen **beide Anker-Formen nur außerhalb von Fences**, während ihr roher Span unberührt bleibt (die gescopten Roh-Lesungen sind eine andere **Frage**, keine andere **Antwort**). [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) bekommt die **benannte Grenze** der Revisions-Achse statt eines zweiten Wächters. **Die Änderung wirkt in beide Richtungen:** sie **findet mehr** (ein grüner Konsumentenlauf kann fail-closed werden, wo ein Fenced-Block trennt) und **findet weniger** an zwei konstruierbaren Stellen — ein von einem Fence unterbrochenes Blockquote meldet kein `citation-mismatch` mehr, und ein `dpin` auf einen Anker im Fence verliert seinen Drift-Schutz **kommentarlos** (das Modul schweigt zu unauflösbaren Zielen). Am eigenen Bestand gemessen ist heute **kein** Fall betroffen (0 wirksame Anker, 0 von 152 Revisions-Blobs). Begründung in begleitender ADR |

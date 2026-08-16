@@ -194,3 +194,26 @@ func TestCheckTargetsDirectionDecoupling(t *testing.T) {
 		t.Fatalf("nur Richtung 1 erwartet (ghost phantom), bekam %+v", f)
 	}
 }
+
+// DC-FA-TGT-001: eine Tabellenzeile IM Fence dokumentiert nichts. Ein
+// Beispiel-Block, der eine Doku-Tabelle zeigt, liess sonst ein undokumentiertes
+// Target als dokumentiert gelten — gate-undocumented entfiel STILL.
+func TestTargetsTabellenzeileImFenceDokumentiertNicht(t *testing.T) {
+	doc := "# Doc\n\nSo sieht eine Ziel-Tabelle aus:\n\n" +
+		"```markdown\n| Target | Zweck |\n|---|---|\n| `make geist` | Beispiel |\n```\n\n" +
+		"| Target | Zweck |\n|---|---|\n| `make build` | x |\n"
+	files := map[string]string{
+		tgtMakefile: "build:\n\techo\n\ngeist:\n\techo\n",
+		tgtDoc:      doc,
+	}
+	got := mustCheck(t, files, tgtCfg())
+	var undoc int
+	for _, f := range got {
+		if f.Reason == ReasonGateUndocumented {
+			undoc++
+		}
+	}
+	if undoc != 1 {
+		t.Fatalf("die Makefile-Regel geist ist NICHT dokumentiert (nur im Fence) → 1 gate-undocumented, got %d (%+v)", undoc, got)
+	}
+}

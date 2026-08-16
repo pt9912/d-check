@@ -136,3 +136,26 @@ func TestPlanningRautenzeileImFenceBeendetDenBlockNicht(t *testing.T) {
 		t.Fatalf("Raute-Zeile im Fence darf den Block nicht beenden, got %+v", f)
 	}
 }
+
+// DC-FA-PLAN-001: wo der Aktiv-Block endet, entscheidet die geteilte
+// Abschnitts-Mechanik. Ein roher "## "-Praefix-Vergleich uebersieht die
+// eingerueckte H2 und die H1 — der Ruhe-Marker dahinter zaehlte dann faelschlich
+// zum Block, und planning-drift entfiel STILL.
+func TestPlanningBlockEndetAnGeteilterAbschnittsgrenze(t *testing.T) {
+	faelle := map[string]string{
+		"eingerueckte H2": "welle-x in Arbeit.\n\n  ## Naechste\n\nKeine aktive Welle.",
+		"H1":              "welle-x in Arbeit.\n\n# Anhang\n\nKeine aktive Welle.",
+	}
+	for name, block := range faelle {
+		t.Run(name, func(t *testing.T) {
+			m := coretest.NewMemFS(map[string]string{
+				planRoadmap: roadmapText("## Aktuelle Welle", block),
+				planSlice:   "# Slice\n",
+			})
+			// Slice liegt vor UND der Block benennt eine aktive Welle ⇒ konsistent.
+			if f := CheckPlanning(m, planCfg()); f != nil {
+				t.Fatalf("%s: Marker hinter der Abschnittsgrenze darf nicht zaehlen, got %+v", name, f)
+			}
+		})
+	}
+}

@@ -262,3 +262,25 @@ func TestVCSDispatch(t *testing.T) {
 		t.Fatal("fail-closed über RunWithVCS erwartet")
 	}
 }
+
+// DC-FA-VCS-001: eine Kopfzeile IM Code-Block ist keine. Eine Vorlagen- oder
+// Konventionsdatei zeigt ihren eigenen Kopf als Beispiel — vorher galt sie
+// dadurch als immutabel bzw. verschob die gestrippte Status-Zeile, und eine
+// echte Core-Aenderung passierte das Gate mit Exit 0 ohne Ausgabe.
+func TestVCSStatusImFenceZaehltNicht(t *testing.T) {
+	beispiel := "# ADR-0099 — Vorlage\n\n**Status:** Proposed\n\n" +
+		"```markdown\n**Status:** Accepted\n```\n\n## Entscheidung\n\n"
+	base := []byte(beispiel + "Tue A.\n")
+	head := []byte(beispiel + "Tue B.\n")
+	fv := &fakeVCS{
+		changes: []driven.VCSChange{{Status: driven.VCSModified, Path: adrPath}},
+		files:   refs(base, head),
+	}
+	got, err := CheckVCS(fv, adrConfig(), "BASE", "HEAD")
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if len(got) != 0 {
+		t.Fatalf("Proposed-Datei mit Accepted-Beispiel im Fence ist nicht immutabel → 0 Befunde, got %+v", got)
+	}
+}

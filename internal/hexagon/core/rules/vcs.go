@@ -85,7 +85,7 @@ func vcsModified(vcs driven.VCS, cfg model.VCSConfig, base, head, path string) (
 	if !ok {
 		return nil, nil
 	}
-	line := vcsHeadStatusLineNo(splitLines(headContent), cfg.StatusLine)
+	line := vcsHeadStatusLineNo(headContent, splitLines(headContent), cfg.StatusLine)
 	if line == 0 {
 		line = 1
 	}
@@ -114,7 +114,11 @@ func baseImmutable(content []byte, when *regexp.Regexp) bool {
 	if when == nil {
 		return false
 	}
-	for _, ln := range splitLines(content) {
+	prose := proseLineSet(content)
+	for i, ln := range splitLines(content) {
+		if !prose[i+1] {
+			continue // ein Accepted-Beispiel im Code-Block macht nichts immutabel
+		}
 		if when.MatchString(ln) {
 			return true
 		}
@@ -129,7 +133,7 @@ func baseImmutable(content []byte, when *regexp.Regexp) bool {
 func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string) string {
 	excluded := excludedRanges(content, excludeSections)
 	lines := splitLines(content)
-	strip := vcsHeadStatusLineNo(lines, statusLine)
+	strip := vcsHeadStatusLineNo(content, lines, statusLine)
 	var b strings.Builder
 	for i, raw := range lines {
 		no := i + 1
@@ -146,12 +150,16 @@ func vcsCore(content []byte, statusLine *regexp.Regexp, excludeSections []string
 // Zeile: das erste statusLine-Vorkommen **vor** der ersten `## `-H2; 0 ohne
 // Treffer (oder ohne statusLine). Eine gleichlautende Zeile im Körper (nach der
 // ersten H2) bleibt damit Teil des Core (DC-FA-VCS-001.a Schritt 4).
-func vcsHeadStatusLineNo(lines []string, statusLine *regexp.Regexp) int {
+func vcsHeadStatusLineNo(content []byte, lines []string, statusLine *regexp.Regexp) int {
 	if statusLine == nil {
 		return 0
 	}
+	prose := proseLineSet(content)
 	for i, raw := range lines {
-		if strings.HasPrefix(raw, "## ") {
+		if !prose[i+1] {
+			continue // Fence-Inneres: ein Beispiel-Kopf ist kein Status
+		}
+		if level, _, ok := parseATXHeading(raw); ok && level >= 2 {
 			return 0
 		}
 		if statusLine.MatchString(raw) {
@@ -165,7 +173,7 @@ func vcsHeadStatusLineNo(lines []string, statusLine *regexp.Regexp) int {
 // Übergangs-Prüfung); "" ohne Treffer.
 func metaStatusLine(content []byte, statusLine *regexp.Regexp) string {
 	lines := splitLines(content)
-	no := vcsHeadStatusLineNo(lines, statusLine)
+	no := vcsHeadStatusLineNo(content, lines, statusLine)
 	if no == 0 {
 		return ""
 	}
