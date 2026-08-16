@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.59.1
+**Version:** 0.60.1
 
 **Status:** Draft
 
@@ -1005,6 +1005,32 @@ HTML-Kommentare werden nicht gesondert behandelt (Links darin gelten
 als Fließtext). Das geteilte Referenz-Ventil `ignore-refs`
 ([`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus))
 nimmt bestimmte Ziel-Pfade referenz-weit von der Existenz-Prüfung aus.
+
+**Ortsfeste Verweise (opt-in, `links.resolve-from`).** Wo Dateien per `git mv`
+zwischen Geschwister-Verzeichnissen **wandern** (der Planning-Lifecycle ist der
+Anlassfall), muss ein relativer Verweis von **jedem** Ort der Gruppe auflösen —
+nicht nur vom Ist-Ort: der Lifecycle-Wechsel ist eine Bewegung ohne
+Inhaltsänderung, und ein präfixloser Nachbar-Verweis bricht mit ihr. Eine
+Gruppe benennt ihre **wandernden** Verzeichnisse (`dirs`, deren unmittelbare
+Dateien Quellen sind — Unterverzeichnisse wandern nicht als Einheit mit) und
+optional **ortsfeste** (`fixed-dirs`, etwa den Ruheort: hypothetische Ziele der
+Wanderung, deren eigene Dateien am Endzustand sind — sonst wären am gemessenen
+Bestand 108 Befunde Falsch-Positive). **Positionsabhängig** ist ein Verweis,
+der von mindestens einem Ort der Gruppe **nicht** auflöst **oder** von
+verschiedenen Orten auf **verschiedene** Ziele; beide Fälle melden den eigenen
+Grund-Code `link-position-dependent` (nicht `target-missing`: am Ist-Ort ist
+nichts kaputt, die Reparatur ist das Präfixieren des Pfads). **Vorbedingung ist
+der saubere Ist-Ort** — löst das Ziel schon dort nicht auf, melden die
+bestehenden Prüfungen, und diese schweigt (kein Doppelbefund). **Zwei Grenzen
+sind benannt:** die **Ziel**-Wanderung (Quelle ortsfest, Ziel wandert — etwa
+der Review-Report auf einen `in-progress/`-Slice) prüft diese Fähigkeit nicht,
+sie prüft hypothetische Quell-Orte; und ein **einzelner** fehlender Gruppen-Ort
+ist von einem legitim geleerten Verzeichnis nicht unterscheidbar (git überträgt
+leere Verzeichnisse nicht) — fail-closed meldet erst, wenn **kein** `dirs`-Ort
+der Gruppe existiert oder ein Ort als **Datei** existiert. Anker bleiben außen
+vor; Ziel-Menge, Vorverarbeitung, Dekodierung und Ventile sind die der
+bestehenden Prüfung. Ohne den Block ist der Befundsatz byte-identisch
+([`DC-QA-02`](#dc-qa-02--determinismus)). Begründung in begleitender ADR.
 
 **Akzeptanzkriterien:**
 
@@ -2706,6 +2732,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.60.1 | 2026-08-16 | Nachzug nach unabhängigem Review **und** einem CI-Realfund, vor dem Release. **Review:** die fail-closed-Klasse zum dritten Mal (ein `resolve-from`-Verzeichnis mit Tippfehler schaltete die Quellen-Rolle still ab), die Ist-Ort-Vorbedingung stand nur im Code, der Ventil-Wortlaut von [`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus) widersprach der neuen Wirkung aktiv, und „zeichengenau“ war ein Überclaim — die Retro-19 überlappen den realen Bruch nur zu 15/19; die übrigen vier waren **Ziel**-Wanderungen, jetzt als Grenze benannt. **CI-Realfund:** der erste fail-closed-Zuschnitt meldete auf jedem frischen Klon das legitim **geleerte** `open/`-Verzeichnis — git überträgt leere Verzeichnisse nicht, ein einzelner fehlender Ort ist von einem Tippfehler nicht unterscheidbar. Jetzt meldet fail-closed, wenn **kein** `dirs`-Ort existiert oder ein Ort als Datei existiert; die Rest-Grenze ist benannt. **Und die Beschreibung selbst fehlte:** ein abbrechender Batch-Editor hatte beim 0.60.0-Schnitt nur Historie und Akzeptanzkriterien geschrieben — der Anforderungs-Text ist mit dieser Version nachgeliefert |
 | 0.60.0 | 2026-08-16 | [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) um **ortsfeste Verweise** erweitert (`links.resolve-from`, opt-in; Change Request des Konsumenten a-check, Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium (Einzelmodul-Frage ⇒ bestehende Anforderung ändern)): wo Dateien zwischen Geschwister-Verzeichnissen wandern, muss ein relativer Verweis von **jedem** Ort der Gruppe auflösen — und überall auf **dasselbe** Ziel. Eigener Grund-Code `link-position-dependent` (die Reparatur ist Präfixieren, nicht Ziel-Anlegen). **Zwei Festlegungen aus der Bestandsmessung:** Quellen sind nur die **wandernden** Verzeichnisse (`dirs`) — über alle vier Lifecycle-Orte gerechnet wären heute 108 Befunde Falsch-Positive auf ortsfesten Ruheort-Dokumenten (mit der Einschränkung: 0 von 79); und der **Retro-Beleg** reproduziert den historischen 19-Link-Bruch der welle-69-Eröffnung zeichengenau. Begründung in begleitender ADR |
 | 0.59.1 | 2026-08-16 | Nachzug nach unabhängigem Review, vor dem Release. **Der blockierende Befund traf die Motivations-Richtung des Slice selbst:** ein unlesbares `waves.dir` schaltete die Fähigkeit im Ruhe-Zustand **still** ab — mit einem Pfad-Tippfehler wäre genau die zweimal real eingetretene Aussage-2-Verletzung dauerhaft unsichtbar gewesen; jetzt fail-closed über `wave-drift`, ebenso eine **fehlende Register-Überschrift** (die Aktivierung ist die Behauptung, dass die Roadmap beide Register führt). Ferner: die Wellen-Kennung ist ans **literale Glob-Präfix** gebunden statt an ein hartes „welle-“ (beide Globs müssen dasselbe Präfix tragen, Exit 2 sonst), explizit leere `waves`-Schlüssel brechen mit Exit 2 statt still auf den Default zu fallen (Zeiger-Disziplin wie bei `closure.glob`), und das `target` von `wave-unregistered` ist die **Ergebnisnotiz** statt der Kennung (Ventil-Parität). **Und eine eigene Messaussage war falsch:** der zwölfte Befund des Schwester-Repo-Laufs war ein Artefakt des Default-Markers der Probe-Konfiguration, keine Bestands-Verletzung — die elf fehlenden Ergebnisnotizen sind robust |
 | 0.59.0 | 2026-08-16 | [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) bekommt eine **dritte Fähigkeit**: die Lifecycle-Invariante eine Ebene höher, die **Wellen**-Abschnitte der Roadmap gegen die Wellen-Dateien (`planning.waves`, opt-in innerhalb des opt-in Moduls; vier Aussagen, vier Grund-Codes). **Zwei Entwurfsannahmen hat die Bestandsmessung über drei Planungs-Bäume widerlegt:** das verpflichtende Artefakt einer geschlossenen Welle ist die **Ergebnisnotiz**, nicht das Plan-Dokument (gegen dieses geprüft meldet die Aussage 19-mal, weil ältere Wellen vor der Wellendokument-Konvention geschlossen wurden), und die Vorschau-Aussage greift nur auf der **Welle-Spalte** und nur bei Kennungen (zwei der drei Bäume schreiben dort Namen; die Trigger-Spalte darf andere Wellen nennen). Dazu die Gegenrichtung „Ergebnisnotiz ohne Register-Zeile“, die im eigenen Bestand **dreimal eingetreten** war. Begründung in begleitender ADR |

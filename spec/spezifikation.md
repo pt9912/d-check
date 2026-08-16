@@ -904,11 +904,15 @@ orthogonal; keine überschreibt eine andere.
    Config-Reihenfolge) bzw. die divergierenden Ziele (sortiert). Quellen sind
    nur Dateien **unmittelbar** in einem `dirs`-Verzeichnis — Unterverzeichnisse
    wandern nicht als Einheit mit und sind ausgenommen. Dateien in `fixed-dirs`
-   sind **keine** Quellen (ihre Verweise prüft nur Schritt 4). **Jeder Ort
-   jeder Gruppe muss im Baum existieren** — ein Tippfehler im Verzeichnis
-   schaltete die Quellen-Rolle sonst still ab, und der Fehlzustand wäre von
-   Konsistenz nicht unterscheidbar; gemeldet wird je fehlendem Ort einmal je
-   Lauf, über denselben Grund-Code mit dem Verzeichnis als Ziel (fail-closed).
+   sind **keine** Quellen (ihre Verweise prüft nur Schritt 4). **Mindestens ein
+   `dirs`-Ort jeder Gruppe muss im Baum existieren** — existiert keiner, zeigt
+   die Gruppe sicher ins Leere (Tippfehler im Stamm-Pfad); ebenso ist ein Ort,
+   der als **Datei** existiert, sicher falsch. Beides meldet einmal je Lauf
+   über denselben Grund-Code mit dem Ort als Ziel (fail-closed). Ein
+   **einzelner** fehlender Ort meldet bewusst **nicht**: git überträgt leere
+   Verzeichnisse nicht — ein legitim geleertes Lifecycle-Verzeichnis fehlt auf
+   jedem frischen Klon und wäre von einem Tippfehler nicht unterscheidbar
+   (benannte Grenze).
    Das Ventil `ignore-refs` gilt wie in Schritt 4 (ein dort ausgenommenes Ziel
    wird auch hier übersprungen); Anker-Fragmente bleiben außen vor. Ohne den
    Block entfällt der Schritt und der Befundsatz ist byte-identisch. **Exit 2** am Config-Rand bei: leerem `dirs` (< 2 Orte —

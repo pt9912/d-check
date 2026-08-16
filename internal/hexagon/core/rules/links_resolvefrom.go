@@ -9,25 +9,42 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
-// CheckResolveFromDirs prüft einmal je Lauf, dass jeder Ort jeder Gruppe im
-// Baum existiert (fail-closed): ein Tippfehler in einem dirs-Eintrag schaltete
-// die Quellen-Rolle sonst still ab — der Fehlzustand wäre von Konsistenz nicht
-// unterscheidbar, dieselbe Klasse wie das unlesbare waves.dir.
+// CheckResolveFromDirs prüft einmal je Lauf die Gruppen-Orte (fail-closed):
+// existiert KEIN dirs-Ort einer Gruppe, zeigt sie sicher ins Leere (Tippfehler
+// im Stamm-Pfad), und ein Ort, der als DATEI existiert, ist sicher falsch.
+// Ein EINZELNER fehlender Ort meldet bewusst nicht: git überträgt leere
+// Verzeichnisse nicht — ein legitim geleertes Lifecycle-Verzeichnis fehlt auf
+// jedem frischen Klon und wäre von einem Tippfehler nicht unterscheidbar
+// (benannte Grenze im Vertrag).
 func CheckResolveFromDirs(fsys driven.Filesystem, groups []model.ResolveFromGroup) []model.Finding {
 	var out []model.Finding
 	for _, g := range groups {
-		for _, d := range append(append([]string{}, g.Dirs...), g.FixedDirs...) {
-			if kind, err := fsys.Kind(d); err != nil || kind != driven.KindDir {
-				out = append(out, model.Finding{
-					File: d, Line: 1, Rule: "links", Target: d,
-					Reason: model.ReasonLinkPositionDependent,
-					Message: "resolve-from-Verzeichnis " + d + " existiert nicht — " +
-						"die Gruppe prüft dort keine Quelle, der Zustand sähe sonst wie Konsistenz aus (fail-closed)",
-				})
+		existiert := 0
+		for _, d := range g.Dirs {
+			kind, err := fsys.Kind(d)
+			if err == nil && kind == driven.KindDir {
+				existiert++
 			}
+			if err == nil && kind == driven.KindFile {
+				out = append(out, resolveDirFinding(d,
+					"resolve-from-Ort "+d+" existiert als Datei, nicht als Verzeichnis (fail-closed)"))
+			}
+		}
+		if existiert == 0 {
+			out = append(out, resolveDirFinding(g.Dirs[0],
+				"kein dirs-Verzeichnis der resolve-from-Gruppe existiert ("+strings.Join(g.Dirs, ", ")+
+					") — die Gruppe prüft keine einzige Quelle (fail-closed)"))
 		}
 	}
 	return out
+}
+
+// resolveDirFinding ist die Befund-Form der Gruppen-Ort-Prüfung.
+func resolveDirFinding(target, msg string) model.Finding {
+	return model.Finding{
+		File: target, Line: 1, Rule: "links", Target: target,
+		Reason: model.ReasonLinkPositionDependent, Message: msg,
+	}
 }
 
 // CheckResolveFrom prüft ortsfeste Verweise (DC-FA-LINK-001 §Ortsfeste

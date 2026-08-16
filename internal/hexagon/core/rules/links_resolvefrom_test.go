@@ -241,15 +241,15 @@ func TestResolveFromKeinDoppelbefundBeiTargetMissing(t *testing.T) {
 	}
 }
 
-// F-1: ein dirs-Eintrag mit Tippfehler ist fail-closed — die Quellen-Rolle
-// schaltete sonst still ab, und der Fehlzustand saehe wie Konsistenz aus.
-func TestResolveFromTippfehlerVerzeichnisFailClosed(t *testing.T) {
+// F-1 (nach CI-Realfund justiert): eine Gruppe, deren SAEMTLICHE dirs-Orte
+// fehlen, zeigt sicher ins Leere und meldet fail-closed. Ein EINZELNER
+// fehlender Ort ist von einem legitim geleerten Verzeichnis nicht
+// unterscheidbar (git uebertraegt leere Verzeichnisse nicht) und meldet nicht.
+func TestResolveFromGruppeOhneExistentenOrtFailClosed(t *testing.T) {
 	cfg := model.Config{Roots: []string{"."}, ResolveFrom: []model.ResolveFromGroup{{
-		Dirs: []string{"plan/open", "plan/in-progres"}, // Tippfehler
+		Dirs: []string{"plan/opne", "plan/in-progres"}, // beide Tippfehler
 	}}}
-	files := map[string]string{
-		"plan/open/slice-1.md": "# S1\n",
-	}
+	files := map[string]string{"plan/open/slice-1.md": "# S1\n"}
 	res, err := Run(coretest.NewMemFS(files), nil, cfg, []string{"links"})
 	if err != nil {
 		t.Fatalf("unerwarteter Fehler: %v", err)
@@ -260,8 +260,29 @@ func TestResolveFromTippfehlerVerzeichnisFailClosed(t *testing.T) {
 			got = append(got, f)
 		}
 	}
-	if len(got) != 1 || got[0].Target != "plan/in-progres" {
-		t.Fatalf("nicht existentes Gruppen-Verzeichnis muss fail-closed melden, got %+v", got)
+	if len(got) != 1 {
+		t.Fatalf("Gruppe ohne existenten Ort muss fail-closed melden, got %+v", got)
+	}
+}
+
+// Der CI-Realfall: ein einzelnes, legitim geleertes Lifecycle-Verzeichnis
+// fehlt auf dem frischen Klon — kein Befund (benannte Grenze).
+func TestResolveFromEinzelnerLeererOrtIstGruen(t *testing.T) {
+	files := map[string]string{
+		"plan/open/slice-1.md":       "# S1\n",
+		"plan/in-progress/.basis.md": "# B\n",
+		"plan/done/.basis.md":        "# B\n",
+		// plan/next fehlt: geleert, auf dem Klon nicht vorhanden.
+	}
+	cfg := model.Config{Roots: []string{"."}, ResolveFrom: rfGroup()}
+	res, err := Run(coretest.NewMemFS(files), nil, cfg, []string{"links"})
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	for _, f := range res.Findings {
+		if f.Reason == model.ReasonLinkPositionDependent {
+			t.Fatalf("einzelner leerer Ort darf nicht melden, got %+v", f)
+		}
 	}
 }
 
