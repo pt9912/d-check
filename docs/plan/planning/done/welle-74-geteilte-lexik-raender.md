@@ -79,7 +79,7 @@ er dieselbe Klasse trägt.
 ## 6. Out-of-Scope für diese Welle
 
 - **Die Tabellen-Lexik.** Sie fehlt zwei anderen Kandidaten
-  ([slice-102](../in-progress/slice-102-wellen-lifecycle-invariante.md) Aussagen 3/4 und
+  ([slice-102](../done/slice-102-wellen-lifecycle-invariante.md) Aussagen 3/4 und
   der Ordnungs-Bedingung aus **BEO-005**) und gehört in die Welle ihrer beiden
   Konsumenten. — **Die Begründung dafür war falsch:** dieser Punkt nannte sie
   einen „neuen, nicht driftenden“ Rand. Die dritte Review-Runde hat gezeigt, dass

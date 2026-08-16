@@ -211,4 +211,29 @@ mechanisiert.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+**Geliefert:** die Wellen-Invariante als dritte Fähigkeit des Moduls `planning`
+— vier Aussagen, vier Grund-Codes, opt-in über `planning.waves.dir`, im eigenen
+Baum scharfgeschaltet und als **v0.59.0** ausgeliefert. Der Aktiv-Status wird
+einmal bestimmt und die Tabellenzeilen-Erkennung ist ein geteiltes Prädikat —
+beide Anschlüsse standen vor der ersten Zeile Code im Vertrag.
+
+**Die Messung hat den Entwurf getragen, nicht begleitet.** Beide zentralen
+Festlegungen — Ergebnisnotiz statt Plan-Dokument als Artefakt, erste Spalte
+statt Zeilen-Scan — kamen aus der Bestandsmessung über drei Planungs-Bäume,
+bevor Code existierte; gegen die naive Fassung hätte die eine Aussage 19-mal
+falsch gemeldet und die andere am eigenen Repo sofort.
+
+**Zwei Review-Runden, beide blockierend, beide an der eigenen Arbeit.** Der
+Erst-HIGH traf die Motivations-Richtung des Slice selbst: ein unlesbares
+`waves.dir` schaltete die Fähigkeit im Ruhe-Zustand still ab — der Fehler sah
+wie Konsistenz aus. Die Re-Review wandte die Vier-Codes-Begründung der eigenen
+ADR gegen die Heilung: der `wave-drift`-Sammelcode kollabierte in der
+Deduplikation, bis die Ziele die Bedeutungen trennten. Und eine eigene
+Messaussage fiel: der zwölfte Schwester-Repo-Befund war ein Marker-Artefakt der
+Probe-Konfiguration — die Probe-Config ist Teil der Messung.
+
+**Bewusst offen:** die doppelte Roadmap-Lesung (Ineffizienz ohne
+Divergenz-Risiko, seit die Fähigkeit bei unlesbarer Roadmap schweigt) und der
+Ausbau der Tabellen-Lexik zu einem adressierbaren Modell. Die
+Register-Bewegungen — darunter die **Streichung von BEO-001** — stehen in der
+[Wellen-Ergebnisnotiz](welle-75-results.md).

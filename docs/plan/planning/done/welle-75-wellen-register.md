@@ -16,7 +16,7 @@ bestehenden Moduls).
 
 Die Lifecycle-Invariante, die das Modul `planning` heute auf der **Slice**-Ebene
 prüft, eine Ebene höher ziehen: die **Wellen**-Abschnitte der Roadmap gegen die
-Wellen-Dateien. [slice-102](in-progress/slice-102-wellen-lifecycle-invariante.md)
+Wellen-Dateien. [slice-102](slice-102-wellen-lifecycle-invariante.md)
 trägt die vier Aussagen.
 
 **Das Mehr gegenüber der Slice-DoD ist ein Beleg, den es vorher nicht gab.**
@@ -43,7 +43,7 @@ er ist von den `structure`- und Closure-Strängen unabhängig.
 
 ## 3. Closure-Trigger (Welle schließt)
 
-- [slice-102](in-progress/slice-102-wellen-lifecycle-invariante.md) liegt in
+- [slice-102](slice-102-wellen-lifecycle-invariante.md) liegt in
   `done/`.
 - **Die Bestandsmessung liegt vor, bevor eine Aussage scharfgeschaltet wird** —
   je Aussage die Zahl der heutigen Verletzungen über die drei Repos. Eine
@@ -57,7 +57,7 @@ er ist von den `structure`- und Closure-Strängen unabhängig.
 
 | Slice | Rolle |
 |---|---|
-| [slice-102](in-progress/slice-102-wellen-lifecycle-invariante.md) | Die vier Aussagen der Wellen-Invariante plus die gemessene Gegenrichtung von Aussage 4 |
+| [slice-102](slice-102-wellen-lifecycle-invariante.md) | Die vier Aussagen der Wellen-Invariante plus die gemessene Gegenrichtung von Aussage 4 |
 
 **Ein Slice, alle vier Aussagen** — entschieden beim Wellen-Schnitt statt in
 Abnahme-Punkt 1. Der Grund ist eine Änderung der Lage: die Aussagen 3 und 4
@@ -68,14 +68,14 @@ den Neubau, gegen den Abnahme-Punkt 1 ursprünglich abgewogen hat.
 
 ## 5. Abhängigkeiten
 
-- [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
-  und [ADR-0028](../adr/0028-planning-lifecycle-modul.md) liegen vor; diese
+- [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+  und [ADR-0028](../../adr/0028-planning-lifecycle-modul.md) liegen vor; diese
   Welle erweitert eine Anforderung, sie erfindet keine.
 - Die **Tabellenzeilen-Lexik** aus
-  [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
+  [`DC-FA-TGT-001`](../../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
   ist der einzige bestehende Leser von Tabellenzeilen. Was hier entsteht, ist
   ihr **zweiter Konsument** — und nach
-  [ADR-0054](../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)
+  [ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)
   Entscheidung 4 heißt das: geteilte Antwort, und je Konsument eine Assertion.
 - Der eigene Bestand ist die Messgrundlage; die Roadmap dieses Repos ist
   zugleich Prüfling und Beispiel.
@@ -89,8 +89,14 @@ den Neubau, gegen den Abnahme-Punkt 1 ursprünglich abgewogen hat.
   verdient einen **Kopplungs-Test** statt Einzel-Assertionen.
 - **Der Ausbau der Tabellen-Lexik zu einem adressierbaren Modell** (Spalten nach
   Kopfzeile, Typen, Ordnung). Hier entsteht nur, was die vier Aussagen brauchen.
-- [slice-095](open/slice-095-links-resolve-from.md).
+- [slice-095](../open/slice-095-links-resolve-from.md).
 
 ## 7. Closure-Notiz
 
-_Ausstehend._
+Geschlossen am 2026-08-16 mit **v0.59.0**. Alle fünf Closure-Trigger sind
+erfüllt: [slice-102](slice-102-wellen-lifecycle-invariante.md) liegt in `done/`,
+die Bestandsmessung lag vor jeder Scharfschaltung, **BEO-001 ist entschieden**
+(gestrichen — die eingetretene Instanz ist mechanisiert, der Rest benannt), das
+Release samt Digest-Backfill ist draußen, und `make fullbuild` ist grün.
+
+Die vollständige Notiz steht in [`welle-75-results.md`](welle-75-results.md).

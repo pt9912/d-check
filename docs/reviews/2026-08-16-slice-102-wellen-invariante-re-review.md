@@ -28,9 +28,9 @@ der Heilungs-Commit `d3e3501`; Arbeitsbaum-Stand `d3e3501` (= HEAD, clean).
   [`MR-025`](../../harness/conventions/MR-025-spiegel-vor-dem-editieren.md),
   [`AGENTS.md`](../../AGENTS.md) §3, [`CLAUDE.md`](../../CLAUDE.md)
 - Der Slice-Plan
-  [slice-102](../plan/planning/in-progress/slice-102-wellen-lifecycle-invariante.md)
+  [slice-102](../plan/planning/done/slice-102-wellen-lifecycle-invariante.md)
   (§3, §3a samt F-8-Korrektur) und das Wellendokument
-  [welle-75](../plan/planning/welle-75-wellen-register.md)
+  [welle-75](../plan/planning/done/welle-75-wellen-register.md)
 
 **Läufe dieses Re-Reviews.** Das Image wurde aus dem HEAD-Stand frisch gebaut;
 Baseline `make test` grün (Exit 0). **Sechs Mutationsläufe**, jeder über eine
@@ -132,7 +132,7 @@ Probe-Config in den read-only-Mount scheitert am Mountpoint — deshalb Kopie).
 - `quelle`: Slice-Plan §3a (Messung) · eigene Nachmessung (lesende Kopie des
   Schwester-Baums: 11 Befunde, **kein** `wave-drift` mit konsument-gerechtem
   Marker)
-- `pfad`: [slice-102 §3a](../plan/planning/in-progress/slice-102-wellen-lifecycle-invariante.md)
+- `pfad`: [slice-102 §3a](../plan/planning/done/slice-102-wellen-lifecycle-invariante.md)
   Zeile 123 (Tabellenzeile zu Aussage 1+2) · `.d-check.yml:188`
 - `befund`: Die Heilung hat den §3a-**Schlussabsatz**, die ADR-Konsequenzen,
   den CHANGELOG und die Lastenheft-Historie korrigiert — die **Messtabelle**
