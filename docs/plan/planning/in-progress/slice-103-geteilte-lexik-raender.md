@@ -143,8 +143,23 @@ eine Lexik-Frage beantworten:
   geteilte Antwort ist nicht halb übernehmbar, und „dieselbe Grundmenge“ ist
   noch keine „dieselbe Antwort“.
 
-Damit ist die Klasse nach dieser Reparatur **geschlossen**, soweit sie
-aufzählbar ist — und die Aufzählung ist der Beleg, nicht die Behauptung.
+**Die Aufzählung hat ein zweites Mal nicht getragen.** Die bestätigende
+Re-Review fand zwei weitere Stellen, beide im Modul `planning`: der
+Aktiv-Status-Guard zählt die kanonische Überschrift **roh** und liest den
+Ruhe-Marker **roh**. Die Folge war zweimal ein **Falsch-Rot** — eine Roadmap,
+die ihren eigenen Abschnitt in einem Beispiel-Block zeigt, galt als mehrdeutig,
+und eine Raute-Zeile in einem Beispiel-Block beendete den Aktiv-Block vorzeitig.
+Beide sind repariert.
+
+**Damit ist nicht die Klasse geschlossen, sondern die Aufzählung als Methode
+widerlegt.** Zweimal hintereinander hat eine Liste, die „vollständig“ hieß, eine
+Stelle nicht gekannt — und beide Male fand ein Review sie in Minuten. Die
+Antwort ist deshalb kein dritter Listen-Anlauf, sondern ein **Kopplungs-Test**:
+`TestAnkerFrageHatEineAntwort` fährt zehn Anker-Schreibweisen durch **beide**
+Konsumenten und schlägt fehl, sobald sie verschieden antworten. Er prüft nicht,
+ob eine bestimmte Funktion aufgerufen wird, sondern ob die Antworten
+übereinstimmen — eine Liste kann eine Stelle vergessen, eine Kopplung nicht.
+Das ist die Verkörperung von **BEO-003** (Zähler 3).
 
 ## 5. Definition of Done
 

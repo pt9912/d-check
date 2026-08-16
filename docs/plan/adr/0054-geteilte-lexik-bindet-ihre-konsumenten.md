@@ -19,7 +19,8 @@ Trimm-Prädikat, beide Schluss-Lesarten, je Konsument eine Assertion. Drei
 Befunde derselben Review-Runde betrafen **andere** Lexiken und wurden bewusst
 nicht dort behandelt.
 Sie sind gemessen worden, und die Messung ist eindeutig — **alle drei sind
-latent**: null von 18 `d-check:cite`-Direktiven, ein HTML-Anker in einem Fence
+latent**: null betroffene `d-check:cite`-Direktiven (von 18 Marker-Vorkommen ist
+keines eine produktive Direktive), ein HTML-Anker in einem Fence
 (ein Formbeispiel, das kein Konsument nachschlägt), null von 152 immutablen
 Revisions-Blobs.
 

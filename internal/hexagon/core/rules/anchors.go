@@ -78,23 +78,44 @@ func Slugify(heading string) string {
 	return b.String()
 }
 
-// HeadingSlugs liefert die Slug-Menge einer Datei inkl.
-// Duplikat-Suffixen `-1`, `-2`, … in Dokumentreihenfolge
-// (Slug-Schritt 5).
-func HeadingSlugs(content []byte) map[string]bool {
+// headingSlugsOrdered liefert je Überschrift ihren **effektiven** Slug in
+// Dokumentreihenfolge, inklusive Duplikat-Suffix `-1`, `-2`, … (Slug-Schritt 5).
+// Dies ist die EINE Slug-Antwort des Produkts; HeadingSlugs ist ihre
+// Mengen-Sicht, slugSection ihre Zeilen-Sicht.
+func headingSlugsOrdered(headings []string) []string {
 	counts := map[string]int{}
-	set := map[string]bool{}
-	for _, h := range ExtractHeadings(content) {
+	out := make([]string, 0, len(headings))
+	for _, h := range headings {
 		base := Slugify(h)
 		n := counts[base]
 		counts[base]++
-		s := base
 		if n > 0 {
-			s = fmt.Sprintf("%s-%d", base, n)
+			out = append(out, fmt.Sprintf("%s-%d", base, n))
+			continue
 		}
+		out = append(out, base)
+	}
+	return out
+}
+
+// HeadingSlugs liefert dieselben Slugs als Menge.
+func HeadingSlugs(content []byte) map[string]bool {
+	set := map[string]bool{}
+	for _, s := range headingSlugsOrdered(ExtractHeadings(content)) {
 		set[s] = true
 	}
 	return set
+}
+
+// DecodeFragment macht aus einem Link-Fragment die Zeichenkette, gegen die
+// verglichen wird: prozent-kodierte Sequenzen werden aufgelöst (`#a%20b`
+// adressiert den Anker `a b`). Dieselbe Auflösung für jeden Konsumenten —
+// sonst trifft derselbe Anker im selben Lauf einmal und einmal nicht.
+func DecodeFragment(frag string) string {
+	if dec, err := url.PathUnescape(frag); err == nil {
+		return dec
+	}
+	return frag
 }
 
 var (
@@ -197,10 +218,7 @@ func resolveAnchorRef(fsys driven.Filesystem, file string, ref LinkRef) (anchorR
 	if idx == -1 || idx+1 >= len(t) {
 		return anchorRef{}, false
 	}
-	frag := t[idx+1:]
-	if dec, err := url.PathUnescape(frag); err == nil {
-		frag = dec
-	}
+	frag := DecodeFragment(t[idx+1:])
 	out := anchorRef{line: ref.Line, target: t, frag: frag}
 	if idx == 0 {
 		out.rel, out.own = file, true

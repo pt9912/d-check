@@ -100,7 +100,7 @@ func pinFinding(fsys driven.Filesystem, file string, line int, target, want stri
 	}
 	pathPart, anchor := target, ""
 	if i := strings.IndexByte(target, '#'); i != -1 {
-		pathPart, anchor = target[:i], target[i+1:]
+		pathPart, anchor = target[:i], DecodeFragment(target[i+1:])
 	}
 	rel := file // pathPart == "" → Same-file-Anker
 	if pathPart != "" {

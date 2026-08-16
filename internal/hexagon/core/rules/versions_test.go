@@ -244,3 +244,40 @@ func TestVersionsCurrentFromEchterHTMLAnker(t *testing.T) {
 		t.Fatalf("passender Pin → 0 Befunde, got %v", res.Findings)
 	}
 }
+
+// DC-FA-VER-001 / DC-FA-ANCH-001: der Duplikat-Slug ist Teil der Anker-Antwort.
+// Ohne den Zaehler loest #alt-1 nicht auf, waehrend anchors ihn fuer gueltig
+// haelt — dieselbe Datei, dieselbe Frage, zwei Antworten.
+func TestVersionsCurrentFromDuplikatSlug(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"version.md":  "# V\n\n## Alt\n\nv0.1.0\n\n## Alt\n\nv0.27.0\n",
+		"docs/use.md": "ghcr.io/pt9912/d-check:v0.27.0\n",
+	})
+	cfg := versionsCfg()
+	cfg.Versions.CurrentFrom = "version.md#alt-1"
+	res, err := Run(m, nil, cfg, []string{"versions"})
+	if err != nil {
+		t.Fatalf("Duplikat-Slug muss aufloesen: %v", err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("zweiter Alt-Abschnitt traegt v0.27.0 → 0 Befunde, got %v", res.Findings)
+	}
+}
+
+// Prozent-kodierte Fragmente adressieren den dekodierten Anker — anchors
+// dekodiert seit jeher, current-from bis zur Vereinheitlichung nicht.
+func TestVersionsCurrentFromKodiertesFragment(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"version.md":  "# V\n\n<a id=\"a b\"></a> v0.27.0\n",
+		"docs/use.md": "ghcr.io/pt9912/d-check:v0.27.0\n",
+	})
+	cfg := versionsCfg()
+	cfg.Versions.CurrentFrom = "version.md#a%20b"
+	res, err := Run(m, nil, cfg, []string{"versions"})
+	if err != nil {
+		t.Fatalf("kodiertes Fragment muss aufloesen: %v", err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("passender Pin → 0 Befunde, got %v", res.Findings)
+	}
+}

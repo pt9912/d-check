@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.58.1
+**Version:** 0.58.2
 
 **Status:** Draft
 
@@ -1348,9 +1348,11 @@ Property**. Die Direktive ist ein HTML-Kommentar
 `<!-- d-check:cite <pfad>:<von>-<bis> -->` unmittelbar vor dem Zitat: einem
 `>`-Blockquote **oder** dem folgenden inline-Zitat-Span (`„…"` / `"…"`) — die realen
 Zitate stehen **inline** und beim Verfassen umgebrochen, nicht als `>`-Blöcke.
-**Unmittelbar heißt: im selben Absatz.** Ein **Fenced-Block** zwischen Direktive
-und Zitat trennt genauso wie eine Leerzeile — dann folgt der Direktive kein
-Zitat, und das ist der fail-closed-Fall, keine Paarung über den Block hinweg. Das
+**Was „unmittelbar" heißt, ist genau bestimmt:** Leerzeilen trennen **nicht** —
+die Direktive paart mit dem nächsten nicht-leeren Kandidaten, auch über mehrere
+Leerzeilen hinweg. Ein **Fenced-Block** dagegen trennt: liegt einer zwischen
+Direktive und Kandidat, folgt der Direktive kein Zitat, und das ist der
+fail-closed-Fall, keine Paarung über den Block hinweg. Das
 Modul liest die Zeilen `<von>`–`<bis>` der Zieldatei und vergleicht sie mit dem
 Zitattext **whitespace-normalisiert** (Läufe aus Leerzeichen/Umbruch → ein
 Leerzeichen): der normalisierte Zitattext muss ein **zusammenhängender Teilstring**
@@ -1376,6 +1378,7 @@ damit **zwei** Direktiven; die Platzierungsregeln folgen der bestehenden
 
 - **Happy Path:** Given eine Direktive `<!-- d-check:cite a.md:3-4 -->` vor einem Zitat, dessen whitespace-normalisierter Text ein Teilstring der normalisierten Zeilen 3–4 von `a.md` ist — auch wenn das Zitat mitten in Zeile 3 beginnt, in Zeile 4 endet oder anders umbricht, when das Modul `citations` läuft, then kein Befund.
 - **Negative:** Given denselben Aufbau, aber der Zitattext weicht in mindestens einem Wort/Zeichen ab (nicht nur Whitespace), when das Modul läuft, then ein Befund `citation-mismatch` (Datei, Zeile, Ziel), Exit-Code 1.
+- **Boundary (Fenced-Block trennt):** Given eine `d-check:cite`-Direktive, zwischen der und dem Zitat ein **Fenced-Block** liegt, when das Modul läuft, then **kein** Zitat gilt als gefunden und der Lauf bricht **fail-closed** ab (Exit 2) — dieselbe Datei **ohne** den Block paart normal. Leerzeilen dazwischen trennen dagegen **nicht**.
 - **Boundary (Zitat-Fäule = Befund, nicht fail-closed):** Given eine `d-check:cite`-Direktive, deren Spanne die Zieldatei überschreitet (Zitat-Fäule nach einem Tag-Bump), when das Modul läuft, then ein Befund `citation-out-of-range`, Exit-Code 1 — **kohärent** zum `codepaths`-Zeilen-Check, **nicht** Exit 2; ein ungültiger Bereich (`von > bis`) ⇒ `citation-inverted-range`. Fail-closed (Exit 2) bleibt der malformten Direktive bzw. dem fehlenden folgenden Zitat vorbehalten; ohne `citations`-Modul ist jeder Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 
 **Out-of-Scope:** Zitate ohne `d-check:cite`-Direktive (das Modul prüft nur ausgezeichnete Zitate — kein Prosa-Scanning); sehr kurze Zitate (< 16 Zeichen normalisiert) — zu schwache Teilstring-Diskriminierung, ungeprüft; Normalisierung über Whitespace/Umbruch hinaus (Markdown-Auszeichnung, Satzzeichen, Groß-/Kleinschreibung zählen); freie Zahlen und Prosa-Quantoren mit externer Grundwahrheit („42 Dateien im ZIP", „fast alle") — bleiben Review-Territorium.
@@ -1595,6 +1598,7 @@ Version, deterministisch ableitbar) folgt als eigener Change Request an
   `exempt-paths` und ohne `d-check:ignore`, when `d-check` läuft, then ein
   Befund `version-stale` (Datei:Zeile, gefunden `v0.26.0`, erwartet `v0.27.0`),
   Exit 1.
+- **Boundary (eine Anker-Antwort):** Given eine `current-from`-Adresse, deren Anker ein **Duplikat-Slug** (`#alt-1`), ein **prozent-kodiertes** Fragment (`#a%20b`) oder ein Inline-HTML-Anker ist, when `versions` und `anchors` im **selben** Lauf aktiv sind, then lösen beide denselben Anker gleich auf — was `anchors` für gültig hält, löst `current-from` auf, und was `anchors` nicht kennt (Anker in Fenced-/Inline-Code, `data-id`, `name` an einem Nicht-`a`-Element, anker-förmige Prosa ohne Tag), führt hier zum fail-closed-Abbruch statt zu einer stillen Auflösung.
 - **Boundary (Ventile):** Given ein Pin `…:v0.1.0` in einer `exempt-paths`-Datei
   (z. B. ein Planning-`done/`-Slice) und ein zweiter Pin auf einer Zeile mit
   `d-check:ignore`, when `d-check` läuft, then kein Befund für beide.
@@ -1660,6 +1664,7 @@ ableitbarer Fix; ein `--bless` wäre eine spätere, eigene Anforderung (berührt
 - **Boundary (Reflow):** Given korrekter Pin und eine **nur**-Whitespace/Umbruch-Änderung am Ziel-Span (Wort-Inhalt identisch), when `d-check` läuft, then **kein** Befund (die Normalisierung absorbiert Reflow).
 - **Negative:** Given Pin und eine **inhaltliche** Änderung am Ziel-Span, when `d-check` läuft, then ein Befund `link-stale` (Datei:Zeile des Links, erwarteter vs. errechneter Hash gekürzt), Exit 1.
 - **Boundary (Marker-Bindung):** Given `[a](a.md) <!-- dpin: sha256:<Ha> --> [b](b.md) <!-- dpin: sha256:<Hb> -->` (zwei Links, je ein unmittelbar — nur Whitespace — folgender Marker in Normsyntax) und zusätzlich einen Marker allein auf der Folgezeile, when `d-check` läuft, then prüft `pins` **beide** Links (der Pin nach `a` bindet an `a`, der nach `b` an `b`); der Folgezeilen-Marker folgt keinem Link unmittelbar und ist inert (kein Befund daraus).
+- **Boundary (eine Anker-Antwort):** Given ein `dpin`-Link, dessen Fragment ein **Duplikat-Slug**, ein **prozent-kodiertes** Fragment oder ein Inline-HTML-Anker ist, when `pins` und `anchors` im selben Lauf aktiv sind, then bestimmen beide denselben Anker gleich; ein Anker, den `anchors` nicht kennt, macht das Ziel **unauflösbar** — `pins` schweigt dann (kein Ersatz-Befund), und der Drift-Schutz entfällt sichtbar über `anchor-missing` statt still.
 - **Boundary (Ziel weg):** Given ein gepinnter Link mit fehlender Ziel-Datei oder fehlendem Anker, when `d-check --enable pins` (auch ohne `links`/`anchors`) läuft, then **kein** `link-stale`; mit aktivem `links`/`anchors` erscheint `target-missing`/`anchor-missing` **einmal** (kein Doppelbefund durch `pins`).
 - **Modul-aus:** Given **kein** aktives `pins`, when `d-check` läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 
@@ -2640,6 +2645,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.58.2 | 2026-08-16 | Nachzug nach **bestätigender Re-Review**, vor dem Release — beide blockierenden Befunde der Vorrunde waren nur **teilweise** geheilt, und zwar in derselben Bauform wie zuvor. (1) Die Anker-Vereinheitlichung galt nur der **HTML**-Hälfte; die **Slug**-Hälfte divergierte weiter (Duplikat-Slug `#alt-1`, prozent-kodiertes Fragment `#a%20b`) — jetzt eine Antwort für alle drei Module, mit Akzeptanzkriterien bei [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) und [`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in). (2) Die Richtungs-Aufzählung war erneut **geschlossen** formuliert und übersah eine dritte, bei `pins` stille Stelle: die Auflösung ist jetzt case-sensitiv. Sie ist jetzt offen formuliert. **Ferner:** die Absatz-Zusage aus 0.58.1 war gegen einen Lauf **falsch** — eine Leerzeile trennt gerade nicht, die Direktive paart über Leerzeilen hinweg; das Modul `planning` beantwortete „ist das eine Überschrift“ zweimal roh und meldete dadurch zwei **Falsch-Rot**; und die permissive Anker-Menge ist bei ihrem neuen Konsumenten `versions` **nicht** folgenlos (Anker in HTML-Kommentar oder eingerücktem Block ⇒ Falsch-Rot) — als Grenze benannt, nicht mitgenommen |
 | 0.58.1 | 2026-08-16 | Nachzug nach unabhängigem Review, vor dem Release. **Zwei blockierende Befunde:** (1) die Anker-Erkennung war nur zur **Fence-Hälfte** vereinheitlicht — `versions`/`pins` behielten ihre eigene Regex und hielten vier Zeichenfolgen für Anker, die [`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors) nie als solche gelesen hat (Anker in Inline-Code, `data-id`, `name` an beliebigem Element, anker-förmige Prosa ohne Tag); gemessen trug die reparierte Achse **1** Vorkommen, die stehengebliebene **40**. Jetzt **eine** Erkennung für alle drei Module. (2) Die Richtungs-Zusage „findet mehr, und weniger an keiner Stelle“ war **falsch** — zwei Fälle verlieren einen Befund, einer davon still. Beide Richtungen stehen jetzt in Anforderung, ADR und Release-Notiz. Ferner: die Zusagen stehen jetzt in den **Anforderungen** selbst statt nur in Algorithmus und ADR (der Widerspruch zur Fence-Ausnahme von `versions` entstand genau dort), der Fenced-Block ist als **Blockquote-Terminator** benannt, und die `vcs`-Grenze beschreibt die **stille** Richtung samt eines beobachtbaren Re-Evaluierungs-Triggers |
 | 0.58.0 | 2026-08-16 | Drei Konsumenten der geteilten Lexik: [`DC-FA-CITE-001`](#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in) trennt am **Fenced-Block** wie am Leerzeile-Absatz — ein Code-Block zwischen Direktive und Zitat führt in den zugesagten fail-closed-Abbruch statt in eine Zufalls-Paarung; [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) und [`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in) erkennen **beide Anker-Formen nur außerhalb von Fences**, während ihr roher Span unberührt bleibt (die gescopten Roh-Lesungen sind eine andere **Frage**, keine andere **Antwort**). [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) bekommt die **benannte Grenze** der Revisions-Achse statt eines zweiten Wächters. **Die Änderung wirkt in beide Richtungen:** sie **findet mehr** (ein grüner Konsumentenlauf kann fail-closed werden, wo ein Fenced-Block trennt) und **findet weniger** an zwei konstruierbaren Stellen — ein von einem Fence unterbrochenes Blockquote meldet kein `citation-mismatch` mehr, und ein `dpin` auf einen Anker im Fence verliert seinen Drift-Schutz **kommentarlos** (das Modul schweigt zu unauflösbaren Zielen). Am eigenen Bestand gemessen ist heute **kein** Fall betroffen (0 wirksame Anker, 0 von 152 Revisions-Blobs). Begründung in begleitender ADR |
 | 0.57.2 | 2026-08-15 | Nachzug nach bestätigender Re-Review: die Aufnahme-Klausel von [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) nennt sich eine „geschlossene Menge“, klassifizierte aber drei Module gar nicht — `citations`, `sources` und das neue `structure`. Das Akzeptanzkriterium derselben Anforderung tat es; die Klausel jetzt auch |

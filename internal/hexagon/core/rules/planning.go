@@ -30,7 +30,8 @@ func CheckPlanning(fsys driven.Filesystem, cfg model.PlanningConfig) []model.Fin
 			"Roadmap-Datei "+cfg.Roadmap+" fehlt oder ist unlesbar (fail-closed)")
 	}
 	lines := splitLines(content)
-	headingNo, headingCount := planningHeadingLine(lines, cfg.EffectiveHeading())
+	prose := proseLineSet(content)
+	headingNo, headingCount := planningHeadingLine(lines, prose, cfg.EffectiveHeading())
 	if headingCount == 0 {
 		return planningDrift(cfg.Roadmap, 1, sliceDir,
 			"kanonische Überschrift „"+cfg.EffectiveHeading()+"“ fehlt in "+cfg.Roadmap+
@@ -41,7 +42,7 @@ func CheckPlanning(fsys driven.Filesystem, cfg model.PlanningConfig) []model.Fin
 			"kanonische Überschrift „"+cfg.EffectiveHeading()+"“ kommt mehrfach in "+cfg.Roadmap+
 				" vor — Aktiv-Status mehrdeutig (fail-closed)")
 	}
-	hasActive := !planningBlockHasMarker(lines, headingNo, cfg.EffectiveMarker())
+	hasActive := !planningBlockHasMarker(lines, prose, headingNo, cfg.EffectiveMarker())
 	hasSlices := planningHasSlices(fsys, sliceDir, cfg.EffectiveSliceGlob())
 	if hasActive == hasSlices {
 		return nil
@@ -354,8 +355,11 @@ func planningDrift(roadmap string, line int, sliceDir, msg string) []model.Findi
 // keine führenden Zeichen, nur nachlaufender Whitespace) **und** die Anzahl der
 // Vorkommen. count == 0 ⇒ fehlt (fail-closed); count > 1 ⇒ mehrdeutig (fail-closed —
 // bei zwei Blöcken wäre der geprüfte Ausschnitt sonst uneindeutig, ein Silent-Grün-Risiko).
-func planningHeadingLine(lines []string, heading string) (first, count int) {
+func planningHeadingLine(lines []string, prose map[int]bool, heading string) (first, count int) {
 	for i, raw := range lines {
+		if !prose[i+1] {
+			continue // Fence-Inneres: eine Beispiel-Überschrift ist keine
+		}
 		if strings.TrimRight(raw, " \t\r") == heading {
 			count++
 			if first == 0 {
@@ -370,8 +374,11 @@ func planningHeadingLine(lines []string, heading string) (first, count int) {
 // Aktiv-Status-Block: ab der Zeile **nach** der Überschrift (headingNo) bis zur
 // nächsten `## `-H2 (exklusive). So verfälscht ein erklärender Verweis anderswo
 // den Status nicht.
-func planningBlockHasMarker(lines []string, headingNo int, marker string) bool {
+func planningBlockHasMarker(lines []string, prose map[int]bool, headingNo int, marker string) bool {
 	for i := headingNo; i < len(lines); i++ {
+		if !prose[i+1] {
+			continue // Fence-Inneres beendet den Block nicht und trägt keinen Marker
+		}
 		if strings.HasPrefix(lines[i], "## ") {
 			return false // nächste H2 erreicht
 		}

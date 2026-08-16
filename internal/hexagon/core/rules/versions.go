@@ -69,7 +69,7 @@ func pinVersion(raw string, m []int) string {
 func resolveCurrentVersion(fsys driven.Filesystem, currentFrom string) (version, fromFile string, err error) {
 	filePart, anchor := currentFrom, ""
 	if i := strings.IndexByte(currentFrom, '#'); i != -1 {
-		filePart, anchor = currentFrom[:i], currentFrom[i+1:]
+		filePart, anchor = currentFrom[:i], DecodeFragment(currentFrom[i+1:])
 	}
 	rel, escaped := ResolveConfigPath(filePart)
 	if escaped {
@@ -119,8 +119,13 @@ func headingSection(content []byte, anchor string) (string, bool) {
 // anchor passt: von seiner Zeile bis zur nächsten gleich-/höherrangigen
 // Überschrift.
 func slugSection(lines []string, headings []headingLine, anchor string) (string, bool) {
+	texts := make([]string, len(headings))
+	for i, h := range headings {
+		texts[i] = h.text
+	}
+	slugs := headingSlugsOrdered(texts)
 	for idx, h := range headings {
-		if Slugify(h.text) != anchor {
+		if slugs[idx] != anchor {
 			continue
 		}
 		end := len(lines)

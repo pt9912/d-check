@@ -160,6 +160,18 @@ func PreprocessMarkdown(content []byte) []Line {
 	return out
 }
 
+// proseLineSet liefert die 1-basierten Zeilennummern **außerhalb** von
+// Fenced-Code — die Menge, auf der jede Lexik-Frage beantwortet wird. Wer eine
+// Zeile roh liest, um eine Frage wie „ist das eine Überschrift" zu beantworten,
+// beantwortet sie anders als der Rest des Produkts.
+func proseLineSet(content []byte) map[int]bool {
+	out := make(map[int]bool)
+	for _, pl := range proseLines(content) {
+		out[pl.no] = true
+	}
+	return out
+}
+
 // fencedBlockBetween meldet, ob zwischen zwei aufeinanderfolgenden Prosa-Zeilen
 // ein Fenced-Block lag: proseLines lässt dessen Zeilen aus, die Nummerierung ist
 // dort also nicht zusammenhängend. Das ist die Absatzgrenze aus

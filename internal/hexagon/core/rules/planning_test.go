@@ -110,3 +110,29 @@ func TestCheckPlanningCustomConfig(t *testing.T) {
 		t.Fatalf("custom idle+wave-Slice ⇒ drift erwartet, bekam %+v", f)
 	}
 }
+
+// DC-FA-PLAN-001: eine Ueberschrift IM Fence ist keine. Eine Roadmap, die ihren
+// eigenen Abschnitt in einem Beispiel-Block zeigt, galt sonst als "mehrfach
+// vorhanden" und meldete planning-drift — ein Falsch-Rot.
+func TestPlanningUeberschriftImFenceZaehltNicht(t *testing.T) {
+	block := "```markdown\n## Aktuelle Welle\nBeispiel\n```\n\nKeine aktive Welle."
+	m := coretest.NewMemFS(map[string]string{
+		planRoadmap: roadmapText("## Aktuelle Welle", block),
+	})
+	if f := CheckPlanning(m, planCfg()); f != nil {
+		t.Fatalf("Beispiel-Ueberschrift im Fence darf nicht zaehlen, got %+v", f)
+	}
+}
+
+// Dieselbe Achse, andere Wirkung: eine Raute-Zeile IM Fence beendete den
+// Aktiv-Block vorzeitig, der Ruhe-Marker dahinter ging verloren — ebenfalls
+// Falsch-Rot.
+func TestPlanningRautenzeileImFenceBeendetDenBlockNicht(t *testing.T) {
+	block := "```sh\n## nur ein Kommentar im Beispiel\n```\n\nKeine aktive Welle."
+	m := coretest.NewMemFS(map[string]string{
+		planRoadmap: roadmapText("## Aktuelle Welle", block),
+	})
+	if f := CheckPlanning(m, planCfg()); f != nil {
+		t.Fatalf("Raute-Zeile im Fence darf den Block nicht beenden, got %+v", f)
+	}
+}

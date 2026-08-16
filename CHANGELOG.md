@@ -27,6 +27,17 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   unauflösbaren Zielen). Am eigenen Bestand gemessen ist **kein** heutiger Fall
   betroffen. Der rohe Ziel-Span von `pins` und die Fence-Ausnahme von `versions`
   bleiben unberührt — das sind andere **Fragen**, keine anderen **Antworten**.
+- slice-103 — **Die Anker-Frage hat jetzt EINE Antwort, auch in der
+  Slug-Hälfte:** `versions.current-from` und `pins` lösen Duplikat-Slugs
+  (`#alt-1`) und prozent-kodierte Fragmente (`#a%20b`) jetzt so auf wie
+  `anchors` — vorher brach derselbe Lauf mit Exit 2 ab, während `anchors`
+  denselben Anker für gültig hielt. **Findet mehr.**
+- slice-103 — **Modul `planning`: zwei Falsch-Rot weniger.** Der
+  Aktiv-Status-Guard las Rohzeilen: eine Roadmap, die ihren eigenen Abschnitt in
+  einem Beispiel-Block zeigt, galt als „Überschrift mehrfach vorhanden“, und eine
+  Raute-Zeile in einem Beispiel-Block beendete den Aktiv-Block vorzeitig. Beides
+  meldete `planning-drift`, wo nichts driftete. **Findet weniger** — und zwar
+  Fehlmessungen.
 - slice-103 — **Benannte Grenze statt zweitem Wächter:** die Abschnitts-Maske
   des Moduls `vcs` wird auf git-Blobs gerechnet, die kein scannendes Modul sieht;
   ein unbalancierter Fence in einer Revision verschiebt sie, und für bereits

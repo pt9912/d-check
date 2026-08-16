@@ -100,9 +100,9 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   **hermetic** (no git, no Makefile execution), fail-closed, opt-in
   ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in))
 - `citations` — verbatim quote verification: the directive
-  `<!-- d-check:cite <path>:<from>-<to> -->` marks the following quote **in the same
-  paragraph** (a `>`-blockquote or inline `„…"`/`"…"`; a fenced block in between
-  separates); the whitespace-normalized quote must be a contiguous substring
+  `<!-- d-check:cite <path>:<from>-<to> -->` marks the following quote (a `>`-blockquote or
+  inline `„…"`/`"…"`; blank lines in between are harmless, a fenced block in
+  between separates); the whitespace-normalized quote must be a contiguous substring
   of the source span (`citation-mismatch`), opt-in
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — structure invariants **within** a document: each rule defines a

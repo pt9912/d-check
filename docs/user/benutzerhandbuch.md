@@ -1139,10 +1139,10 @@ abgetrennt und verworfen — **byte-identisch** zum bisherigen Verhalten.
 Das Modul `citations` (opt-in, `--enable citations`) prüft **wortgleiche Zitate**. Die
 Direktive `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat — die
 nächste nicht-leere Zeile als `>`-Blockquote **oder** den nächsten inline-Zitat-Span
-(`„…"` bzw. `"…"`) im selben Absatz. **Ein Code-Block dazwischen trennt** — er ist
-eine Absatzgrenze wie eine Leerzeile, und dann folgt der Direktive kein Zitat
-(fail-closed, Exit 2, siehe unten). Dasselbe gilt innerhalb eines `>`-Blocks: ein
-Code-Block beendet ihn. Quell-Spanne und Zitattext werden
+(`„…"` bzw. `"…"`). Leerzeilen dazwischen sind unschädlich — gesucht wird der
+nächste nicht-leere Kandidat. **Ein Code-Block dazwischen trennt dagegen:** dann
+folgt der Direktive kein Zitat (fail-closed, Exit 2, siehe unten). Dasselbe gilt
+innerhalb eines `>`-Blocks — ein Code-Block beendet ihn. Quell-Spanne und Zitattext werden
 **whitespace-normalisiert** (jeder Umbruch-/Leerraum-Lauf zu einem Leerzeichen); das
 Zitat muss ein zusammenhängender **Teilstring** der Quelle sein, sonst
 `citation-mismatch`. So besteht ein re-wrapped, mitten in der Zeile beginnendes Zitat,
@@ -1278,6 +1278,13 @@ Zeile; gehasht wird der whitespace-normalisierte **rohe** Ziel-Span (ganze Datei
 ohne Anker, sonst die Heading-Section inkl. Fenced-Code) — reine Reflow-/Umbruch-
 Änderungen absorbiert die Normalisierung.
 
+**Welcher Anker gemeint ist, entscheidet dieselbe Antwort wie im Modul
+`anchors`:** Heading-Slug samt Duplikat-Zähler (`#alt-1`), prozent-kodierte
+Fragmente (`#a%20b`) und Inline-HTML-Anker — jeweils **außerhalb** von
+Fenced- und Inline-Code, und **case-sensitiv**. Was `anchors` nicht als Anker
+kennt, macht das Ziel unauflösbar; `pins` schweigt dann, und der fehlende Anker
+erscheint als `anchor-missing` statt als stiller Verlust des Drift-Schutzes.
+
 **Einen Pin anlegen — „einmal laufen, Hash kopieren".** Sie kennen den `sha256`
 des Ziel-Spans zunächst nicht. Setzen Sie den Marker mit einem Platzhalter-Hash
 unmittelbar hinter den Link:
@@ -1354,7 +1361,10 @@ Abschnitte und eine Anker-Mechanik:
 - **`## Aktuell`** — eine Zeile, die die aktuelle Version nennt. Der
   Heading-Slug `#aktuell` ist der **stabile** Verweispunkt
   (`current-from: version.md#aktuell`); er zeigt immer auf die jeweils aktuelle
-  Version, nie auf eine feste Nummer.
+  Version, nie auf eine feste Nummer. Welcher Anker das ist, entscheidet
+  dieselbe Antwort wie im Modul `anchors` — inklusive Duplikat-Zähler,
+  Prozent-Dekodierung und **Groß-/Kleinschreibung**; ein Anker in einem
+  Code-Block ist keiner, und `current-from` bricht dann fail-closed ab.
 - **`## Verlauf`** — eine Tabelle mit einer Zeile pro Release (Version, Datum,
   Release-Link).
 - **Der explizite HTML-Anker `<a id="vX.Y.Z"></a>`** — nur die **aktuelle**
@@ -1659,7 +1669,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `ids`       | opt-in        | Linkpflicht für Kennungen im Fließtext                                                   | `id-unlinked`                                               |
 | `matrix`    | opt-in        | erlaubte Referenzrichtung und -status zwischen Dokumentklassen                           | `matrix-forbidden`, `matrix-inactive`                       |
 | `codepaths` | opt-in        | explizite Pfade in Inline-Code existieren; opt-in `check-lines`: `datei:<von>-<bis>`-Zeilen-Referenzen verifizieren | `codepath-missing`, `citation-out-of-range`, `citation-inverted-range` |
-| `citations` | opt-in        | wortgleiche Zitate: `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat **im selben Absatz** (`>`-Block oder inline `„…"`/`"…"`; ein Code-Block dazwischen trennt), das ein whitespace-normalisierter **Teilstring** der Quell-Spanne sein muss; fail-closed bei malformter Direktive | `citation-mismatch`, `citation-out-of-range`, `citation-inverted-range` |
+| `citations` | opt-in        | wortgleiche Zitate: `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (`>`-Block oder inline `„…"`/`"…"`; Leerzeilen dazwischen sind unschädlich, ein Code-Block dazwischen trennt), das ein whitespace-normalisierter **Teilstring** der Quell-Spanne sein muss; fail-closed bei malformter Direktive | `citation-mismatch`, `citation-out-of-range`, `citation-inverted-range` |
 | `spans`     | opt-in        | ungeschlossene Code-Spans, verschachtelte Links, unbalancierte Fences                    | `span-unclosed`, `span-nested-link`, `fence-unclosed`       |
 | `hostpaths` | opt-in        | host-lokale absolute Pfade (Maschinen-Layout-Leak)                                       | `hostpath-forbidden`                                        |
 | `diagrams`  | opt-in        | Kennungen in Diagramm-Fences (Default `mermaid`) existieren in ihrer `defined-in`-Quelle | `diagram-id-undefined`                                      |
