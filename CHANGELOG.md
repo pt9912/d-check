@@ -28,7 +28,9 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   Vorschau-Aussage liest die **erste Spalte** und überspringt Zeilen ohne
   Kennung: geplante Wellen tragen Namen, und die Trigger-Spalte darf andere
   Wellen nennen. **Beim Einführen mit Rückständen rechnen** — im eigenen Baum
-  0 Befunde, im Schwester-Repo 12.
+  0 Befunde, im Schwester-Repo elf echte (fehlende Ergebnisnotizen); ein
+  konsument-gerechter `planning.marker` gehört zur Einführung dazu, sonst
+  kommt ein Artefakt-Befund hinzu.
 
 ## [0.58.0] — 2026-08-16
 

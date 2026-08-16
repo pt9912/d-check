@@ -23,8 +23,10 @@ func CheckPlanningWaves(fsys driven.Filesystem, cfg model.PlanningConfig) []mode
 	}
 	content, err := fsys.ReadFile(cfg.Roadmap)
 	if err != nil {
-		return waveFinding(cfg.Roadmap, 1, w.Dir, model.ReasonWaveDrift,
-			"Roadmap-Datei "+cfg.Roadmap+" fehlt oder ist unlesbar (fail-closed)")
+		// Die unlesbare Roadmap meldet die Slice-Invariante bereits fail-closed;
+		// hier kein Doppelbefund — dieselbe Disziplin wie beim unbestimmbaren
+		// Aktiv-Status.
+		return nil
 	}
 	sliceDir := path.Dir(cfg.Roadmap)
 	headingNo, hasActive, fail := planningActiveStatus(content, cfg, sliceDir)
@@ -33,19 +35,36 @@ func CheckPlanningWaves(fsys driven.Filesystem, cfg model.PlanningConfig) []mode
 		// meldet ihn die Slice-Invariante bereits — hier kein Doppelbefund.
 		return nil
 	}
-	flach, ruhe := waveSets(fsys, w)
+	flach, ruhe, dirErrs := waveSets(fsys, w)
+	if len(dirErrs) > 0 {
+		// Ein Tippfehler im Pfad schaltete die Faehigkeit sonst still ab —
+		// im Ruhe-Zustand waere die leere Menge konsistent und kein Befund
+		// entstuende (dieselbe Disziplin wie closure.dir, C2).
+		var out []model.Finding
+		for _, d := range dirErrs {
+			out = append(out, waveFinding(cfg.Roadmap, headingNo, d, model.ReasonWaveDrift,
+				"Wellen-Verzeichnis "+d+" fehlt oder ist unlesbar (fail-closed)")...)
+		}
+		return out
+	}
 	out := waveDrift(cfg, w, headingNo, hasActive, flach)
 	return append(out, waveRegisters(cfg, w, content, flach, ruhe)...)
 }
 
-// waveSets liefert die beiden Wellen-Mengen als Kennungs-Mengen (W2): die
-// **flachen** Plan-Dokumente aus waves.dir (glob abzüglich results-glob) und
-// die **Ergebnisnotizen** aus dem Ruheort. Ein unlesbares Verzeichnis liefert
-// eine leere Menge — der daraus folgende Befund ist fail-closed, nicht still.
-func waveSets(fsys driven.Filesystem, w model.WavesConfig) (flach, ruhe map[string]bool) {
+// waveSets liefert die beiden Wellen-Mengen (W2): die **flachen**
+// Plan-Dokumente aus waves.dir (glob abzüglich results-glob) als
+// Kennungs-Menge und die **Ergebnisnotizen** aus dem Ruheort als
+// Kennung→Pfad (der Pfad wird das Befund-`target` der Gegenrichtung).
+// Unlesbare Verzeichnisse kommen als dirErrs zurück — der Aufrufer meldet sie
+// fail-closed.
+func waveSets(fsys driven.Filesystem, w model.WavesConfig) (flach map[string]bool, ruhe map[string]string, dirErrs []string) {
 	prefix := wavePrefix(w.EffectiveGlob())
 	flach = map[string]bool{}
-	for _, name := range dirNames(fsys, w.Dir) {
+	names, err := dirNames(fsys, w.Dir)
+	if err != nil {
+		dirErrs = append(dirErrs, w.Dir)
+	}
+	for _, name := range names {
 		if !matchBase(w.EffectiveGlob(), name) || matchBase(w.EffectiveResultsGlob(), name) {
 			continue
 		}
@@ -53,16 +72,20 @@ func waveSets(fsys driven.Filesystem, w model.WavesConfig) (flach, ruhe map[stri
 			flach[id] = true
 		}
 	}
-	ruhe = map[string]bool{}
-	for _, name := range dirNames(fsys, w.EffectiveDoneDir()) {
+	ruhe = map[string]string{}
+	names, err = dirNames(fsys, w.EffectiveDoneDir())
+	if err != nil && w.EffectiveDoneDir() != w.Dir {
+		dirErrs = append(dirErrs, w.EffectiveDoneDir())
+	}
+	for _, name := range names {
 		if !matchBase(w.EffectiveResultsGlob(), name) {
 			continue
 		}
 		if id := waveID(prefix, name); id != "" {
-			ruhe[id] = true
+			ruhe[id] = path.Join(w.EffectiveDoneDir(), name)
 		}
 	}
-	return flach, ruhe
+	return flach, ruhe, dirErrs
 }
 
 // waveDrift ist W3: der Aktiv-Status gegen die Zahl der flachen Wellendokumente.
@@ -88,46 +111,58 @@ func waveDrift(
 }
 
 // waveRegisters ist W4/W5: die drei Register-Aussagen über Vorschau und
-// Abschluss-Register.
+// Abschluss-Register. Eine fehlende Register-Überschrift ist fail-closed —
+// die Fähigkeit zu aktivieren IST die Behauptung, dass die Roadmap beide
+// Register führt; sonst schaltete ein Tippfehler in der Überschrift alle drei
+// Aussagen wortlos ab (dieselbe Disziplin wie der Heading-Guard der
+// Slice-Invariante).
 func waveRegisters(
-	cfg model.PlanningConfig, w model.WavesConfig, content []byte, flach, ruhe map[string]bool,
+	cfg model.PlanningConfig, w model.WavesConfig, content []byte, flach map[string]bool, ruhe map[string]string,
 ) []model.Finding {
 	lines := splitLines(content)
 	prose := proseLineSet(content)
 	prefix := wavePrefix(w.EffectiveGlob())
 	var out []model.Finding
 
-	for _, r := range waveTableRows(lines, prose, w.EffectiveNextHeading(), prefix) {
-		if flach[r.id] || ruhe[r.id] {
+	nextNo, rowsNext := waveRegisterRows(lines, prose, w.EffectiveNextHeading(), prefix)
+	if nextNo == 0 {
+		out = append(out, waveFinding(cfg.Roadmap, 1, w.Dir, model.ReasonWaveDrift,
+			"Register-Überschrift „"+w.EffectiveNextHeading()+"“ fehlt in "+cfg.Roadmap+
+				" — die Vorschau-Aussage ist nicht prüfbar (fail-closed)")...)
+	}
+	for _, r := range rowsNext {
+		if flach[r.id] || ruhe[r.id] != "" {
 			out = append(out, waveFinding(cfg.Roadmap, r.line, r.id, model.ReasonWavePreviewExists,
 				"Vorschau-Zeile nennt "+r.id+", für die bereits eine Datei existiert — "+
 					"eine geplante Welle steht in der Vorschau und nirgends sonst")...)
 		}
 	}
 
-	closedNo, rowsClosed := waveClosedRows(lines, prose, w.EffectiveClosedHeading(), prefix)
+	closedNo, rowsClosed := waveRegisterRows(lines, prose, w.EffectiveClosedHeading(), prefix)
+	if closedNo == 0 {
+		return append(out, waveFinding(cfg.Roadmap, 1, w.EffectiveDoneDir(), model.ReasonWaveDrift,
+			"Register-Überschrift „"+w.EffectiveClosedHeading()+"“ fehlt in "+cfg.Roadmap+
+				" — die Abschluss-Aussagen sind nicht prüfbar (fail-closed)")...)
+	}
 	registriert := map[string]bool{}
 	for _, r := range rowsClosed {
 		registriert[r.id] = true
-		if !ruhe[r.id] {
+		if ruhe[r.id] == "" {
 			out = append(out, waveFinding(cfg.Roadmap, r.line, r.id, model.ReasonWaveResultsMissing,
 				"Abschluss-Register nennt "+r.id+", aber in "+w.EffectiveDoneDir()+
 					" liegt keine Ergebnisnotiz nach "+strconv.Quote(w.EffectiveResultsGlob()))...)
 		}
 	}
-	if closedNo != 0 {
-		var fehlend []string
-		for id := range ruhe {
-			if !registriert[id] {
-				fehlend = append(fehlend, id)
-			}
+	var fehlend []string
+	for id := range ruhe {
+		if !registriert[id] {
+			fehlend = append(fehlend, id)
 		}
-		sort.Strings(fehlend) // DC-QA-02
-		for _, id := range fehlend {
-			out = append(out, waveFinding(cfg.Roadmap, closedNo, id, model.ReasonWaveUnregistered,
-				"Ergebnisnotiz zu "+id+" liegt in "+w.EffectiveDoneDir()+
-					", das Abschluss-Register nennt sie nicht")...)
-		}
+	}
+	sort.Strings(fehlend) // DC-QA-02
+	for _, id := range fehlend {
+		out = append(out, waveFinding(cfg.Roadmap, closedNo, ruhe[id], model.ReasonWaveUnregistered,
+			"Ergebnisnotiz "+ruhe[id]+" liegt im Ruheort, das Abschluss-Register nennt sie nicht")...)
 	}
 	return out
 }
@@ -139,21 +174,12 @@ type waveRow struct {
 	id   string
 }
 
-// waveTableRows liefert die Registerzeilen unter der gegebenen Überschrift:
-// Tabellenzeilen außerhalb von Fenced-Code (dieselbe Lexik wie targets), gelesen
-// wird die erste Spalte. Zeilen ohne Kennung werden übersprungen — eine geplante
-// Welle trägt einen Namen, und die Trigger-Spalte darf andere Wellen nennen.
-func waveTableRows(lines []string, prose map[int]bool, heading, prefix string) []waveRow {
-	no, _ := planningHeadingLine(lines, prose, heading)
-	if no == 0 {
-		return nil
-	}
-	return waveRowsFrom(lines, prose, no, prefix)
-}
-
-// waveClosedRows liefert zusätzlich die Zeile der Überschrift — sie trägt die
-// Befunde der Gegenrichtung (Ergebnisnotiz ohne Registerzeile).
-func waveClosedRows(lines []string, prose map[int]bool, heading, prefix string) (int, []waveRow) {
+// waveRegisterRows liefert die Zeile der Register-Überschrift (0 ⇒ fehlt,
+// fail-closed beim Aufrufer) und die Registerzeilen darunter: Tabellenzeilen
+// nach der geteilten Lexik, gelesen wird die erste Spalte. Zeilen ohne Kennung
+// werden übersprungen — eine geplante Welle trägt einen Namen, und die
+// Trigger-Spalte darf andere Wellen nennen.
+func waveRegisterRows(lines []string, prose map[int]bool, heading, prefix string) (int, []waveRow) {
 	no, _ := planningHeadingLine(lines, prose, heading)
 	if no == 0 {
 		return 0, nil
@@ -175,7 +201,7 @@ func waveRowsFrom(lines []string, prose map[int]bool, headingNo int, prefix stri
 	idRE := regexp.MustCompile(regexp.QuoteMeta(prefix) + `\d+`)
 	var out []waveRow
 	for i := headingNo; i < end-1; i++ {
-		if !prose[i+1] || !strings.HasPrefix(lines[i], "|") {
+		if !tableRowLine(lines, prose, i) {
 			continue
 		}
 		cells := strings.Split(strings.Trim(lines[i], "|"), "|")
@@ -189,13 +215,15 @@ func waveRowsFrom(lines []string, prose map[int]bool, headingNo int, prefix stri
 	return out
 }
 
-// wavePrefix liefert das Kennungs-Präfix aus dem Plan-Glob (der Teil vor dem
-// ersten Platzhalter) — daran hängen Datei-Zuordnung und Zeilen-Erkennung.
+// wavePrefix liefert das Kennungs-Präfix eines Globs: der literale Teil vor
+// dem ersten Platzhalter. Daran hängen Datei-Zuordnung und Zeilen-Erkennung;
+// dass er nicht leer ist und results-glob dasselbe Präfix trägt, stellt der
+// Config-Rand sicher (Exit 2, Spez-Schritt W1).
 func wavePrefix(glob string) string {
-	if i := strings.IndexAny(glob, "*?["); i > 0 {
+	if i := strings.IndexAny(glob, "*?["); i >= 0 {
 		return glob[:i]
 	}
-	return "welle-"
+	return glob
 }
 
 // waveID liefert die Kennung eines Basisnamens: Präfix plus die unmittelbar
@@ -215,19 +243,19 @@ func waveID(prefix, name string) string {
 	return prefix + rest[:n]
 }
 
-// dirNames liefert die Basisnamen eines Verzeichnisses; ein unlesbares
-// Verzeichnis liefert nichts (der Folgebefund ist fail-closed).
-func dirNames(fsys driven.Filesystem, dir string) []string {
+// dirNames liefert die Basisnamen eines Verzeichnisses, stabil sortiert
+// (DC-QA-02); der Fehler eines unlesbaren Verzeichnisses geht an den Aufrufer.
+func dirNames(fsys driven.Filesystem, dir string) ([]string, error) {
 	entries, err := fsys.List(dir)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	out := make([]string, 0, len(entries))
 	for _, e := range entries {
 		out = append(out, e.Name)
 	}
-	sort.Strings(out) // DC-QA-02
-	return out
+	sort.Strings(out)
+	return out, nil
 }
 
 // matchBase prüft einen Basisnamen gegen einen Glob (path.Match, wie überall).

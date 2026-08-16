@@ -172,6 +172,14 @@ func proseLineSet(content []byte) map[int]bool {
 	return out
 }
 
+// tableRowLine meldet, ob lines[i] (0-basiert) eine Tabellenzeile ist: sie
+// beginnt mit `|` und liegt außerhalb von Fenced-Code. Dies ist die EINE
+// Tabellenzeilen-Antwort des Produkts (targets, planning.waves) — ein
+// Beispiel-Block, der eine Tabelle zeigt, deklariert nichts.
+func tableRowLine(lines []string, prose map[int]bool, i int) bool {
+	return prose[i+1] && strings.HasPrefix(lines[i], "|")
+}
+
 // fencedBlockBetween meldet, ob zwischen zwei aufeinanderfolgenden Prosa-Zeilen
 // ein Fenced-Block lag: proseLines lässt dessen Zeilen aus, die Nummerierung ist
 // dort also nicht zusammenhängend. Das ist die Absatzgrenze aus

@@ -84,9 +84,11 @@ Register, obwohl alle drei Ergebnisnotizen im Ruheort lagen (Beobachtungs-Regist
   Closure-Fähigkeit): ohne den Aktivierungs-Schlüssel wird kein Wellen-Dokument
   geöffnet und der Befundsatz ist byte-identisch.
 - **Sie findet beim ersten Lauf echte Rückstände** — im Schwester-Repo elf
-  fehlende Ergebnisnotizen und eine Roadmap, die eine aktive Welle ohne
-  Wellendokument nennt. Das ist der Zweck, aber es macht die Einführung dort zu
-  einem eigenen Schritt.
+  fehlende Ergebnisnotizen (robust, mit konsument-gerechtem Marker
+  nachgemessen). Das ist der Zweck, aber es macht die Einführung dort zu einem
+  eigenen Schritt — samt konsument-gerechtem Ruhe-Marker: der erste Probe-Lauf
+  meldete einen **zwölften** Befund, der ein Artefakt des Default-Markers war,
+  nicht des Bestands.
 - Die Tabellenzeilen-Lexik bekommt ihren **zweiten** Konsumenten. Nach
   [ADR-0054](0054-geteilte-lexik-bindet-ihre-konsumenten.md) Entscheidung 4 heißt
   das: geteilte Antwort, und je Konsument eine Assertion. Beim **dritten**

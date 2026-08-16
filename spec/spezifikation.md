@@ -1724,15 +1724,27 @@ dazu **denselben** Aktiv-Status wie Schritt 4 — sie bestimmt ihn nicht neu:
 - **W1. Inert/Config.** Leere `planning.waves.dir` ⇒ Fähigkeit inert: **kein**
   Wellendokument wird geöffnet, der Befundsatz ist byte-identisch. **Exit 2**
   (Config-Fehler, vor dem Lauf) bei: `dir`/`done-dir` absolut oder mit
-  `..`-Segment; ungültigem `glob`/`results-glob`; leerem `next-heading`/
-  `closed-heading`. `done-dir` ohne Wert ⇒ `<dir>/done`.
+  `..`-Segment; **explizit** leerem oder ungültigem `glob`/`results-glob`;
+  **explizit** leerem `next-heading`/`closed-heading` (ein abwesender Schlüssel
+  liefert den Konventions-Default — die Unterscheidung ist Teil der Zusage,
+  sonst wäre die Null-Aussage unerreichbar prüfbar); einem `glob`, der mit
+  einem **Platzhalter beginnt** (die Wellen-Kennung braucht ein literales
+  Präfix), und einem `results-glob`, der **nicht** mit dem Kennungs-Präfix des
+  `glob` beginnt — sonst laufen Datei-Zuordnung und Zeilen-Erkennung
+  auseinander. `done-dir` ohne Wert ⇒ `<dir>/done`.
 - **W2. Wellen-Mengen.** Aus dem Listing von `dir` (nicht rekursiv) die
   **flachen** Wellendokumente: Basisnamen nach `glob` (Default `welle-*.md`)
   **abzüglich** `results-glob` (Default `welle-*-results.md`) — die
   Ergebnisnotiz ist kein Plan-Dokument. Aus dem Listing von `done-dir` die
-  **Ergebnisnotizen** nach `results-glob`. Kennung ist jeweils das
-  Zahlen-Präfix `welle-<n>` des Basisnamens; zwei Dateien mit demselben Präfix
-  zählen als **eine** Welle.
+  **Ergebnisnotizen** nach `results-glob`. Die Kennung ist das **literale
+  Glob-Präfix plus die unmittelbar folgende Ziffernfolge** (beim Default
+  `welle-<n>`); zwei Dateien mit derselben Kennung zählen als **eine** Welle.
+  **Ein unlesbares `dir` oder `done-dir` ist fail-closed** ⇒ `wave-drift` mit
+  dem Verzeichnis als Ziel — im Ruhe-Zustand wäre die leere Menge konsistent,
+  und ein Tippfehler im Pfad schaltete die Fähigkeit sonst dauerhaft und
+  wortlos ab (dieselbe Disziplin wie `closure.dir`, C2). Eine unlesbare
+  Roadmap meldet bereits die Aktiv-Status-Prüfung (fail-closed); die
+  Wellen-Fähigkeit schweigt dann — kein Doppelbefund.
 - **W3. Aktiv-Status gegen flaches Dokument.** `hasActive` aus Schritt 4
   (dieselbe Größe, dieselbe Quelle). `hasActive` ⇔ **genau ein** flaches
   Wellendokument. Sonst ⇒ `wave-drift`, Befund an der `planning.heading`-Zeile,
@@ -1745,9 +1757,14 @@ dazu **denselben** Aktiv-Status wie Schritt 4 — sie bestimmt ihn nicht neu:
   **außerhalb** von Fenced-Code mit `|` beginnen (dieselbe Lexik wie
   [`DC-FA-TGT-001.a`](#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)),
   ohne Kopf- und Trennzeile. Gelesen wird die **erste Spalte**; enthält sie
-  keine Kennung `welle-<n>`, wird die Zeile **übersprungen** (eine geplante
-  Welle trägt einen Namen, noch keine Kennung — und die Trigger-Spalte darf
-  andere Wellen nennen).
+  keine Kennung (Präfix + Ziffernfolge), wird die Zeile **übersprungen** (eine
+  geplante Welle trägt einen Namen, noch keine Kennung — und die
+  Trigger-Spalte darf andere Wellen nennen). **Fehlt eine der beiden
+  Register-Überschriften, ist das fail-closed** ⇒ `wave-drift` — die
+  Aktivierung der Fähigkeit ist die Behauptung, dass die Roadmap beide
+  Register führt; sonst schaltete ein Tippfehler in der Überschrift die
+  Register-Aussagen wortlos ab (dieselbe Disziplin wie der Heading-Guard aus
+  Schritt 3).
 - **W5. Die drei Register-Aussagen.** (a) Eine Kennung in der Vorschau, zu der
   eine Datei existiert (flach **oder** im Ruheort) ⇒ `wave-preview-exists`,
   Befund an der Zeile. (b) Eine Kennung im Abschluss-Register **ohne**
@@ -1757,8 +1774,8 @@ dazu **denselben** Aktiv-Status wie Schritt 4 — sie bestimmt ihn nicht neu:
   sind unabhängig und können nebeneinander melden; die Grund-Codes sind
   getrennt, weil (a) und (b) dieselbe Zeile treffen können und die
   Deduplikation über (Datei, Zeile, Regel, Ziel, Grund) sie sonst
-  zusammenfallen ließe. Grund-Codes (§4) folgen mit der Implementierung
-  (AllReasons-↔-§4-Lockstep).
+  zusammenfallen ließe. Das `target` der Gegenrichtung ist die
+  **Ergebnisnotiz** (Datei-Pfad, Ventil-Parität wie in den übrigen Modulen).
 
 **Closure-Note-Struktur** (zweite Fähigkeit desselben Moduls, opt-in **innerhalb**
 des opt-in Moduls). Sie läuft unabhängig von den Schritten 1–5 — die
@@ -2540,7 +2557,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `closure-note-boilerplate` | planning | bereinigter Closure-Notiz-Text enthält (case-insensitiv, an Wortgrenzen) eine literale Phrasg aus `planning.closure.boilerplate`; der erste Treffer benennt die Meldung |
 | `closure-note-placeholder` | planning | Closure-Notiz-Abschnitt trägt einen unausgefüllten Vorlagen-Platzhalter in Auszeichnungs-Form (opt-in über `planning.closure.placeholder`); Inline-Code, Autolinks/Adressen und HTML-Tags sind ausgenommen, gemeldet wird der **erste** Treffer je Kandidat |
 | `closure-note-ambiguous` | planning | mehrere auf `planning.closure.heading-pattern` passende Überschriften — ohne eindeutigen Abschnitt wird **nicht** gemessen (schließt `-thin`/`-boilerplate`/`-placeholder` aus); `line` = **zweiter** Treffer |
-| `wave-drift` | planning | Aktiv-Status der Roadmap (`planning.heading`-Block) und Präsenz eines **flachen** Wellendokuments (`planning.waves.glob` abzüglich `results-glob`) widersprechen sich — Roadmap nennt eine Welle ohne Dokument, oder ein Dokument liegt neben dem Ruhe-Marker; auch bei **mehr als einem** flachen Dokument |
+| `wave-drift` | planning | Aktiv-Status der Roadmap (`planning.heading`-Block) und Präsenz eines **flachen** Wellendokuments (`planning.waves.glob` abzüglich `results-glob`) widersprechen sich; auch bei **mehr als einem** flachen Dokument. Fail-closed über denselben Code: unlesbares `waves.dir`/`done-dir` und fehlende Register-Überschrift |
 | `wave-preview-exists` | planning | eine Zeile des Vorschau-Registers (`planning.waves.next-heading`) nennt in ihrer **ersten Spalte** eine Welle, für die bereits eine Datei existiert (flach oder im Ruheort) — die geplante Welle hätte drei Positionen statt zwei |
 | `wave-results-missing` | planning | eine Zeile des Abschluss-Registers (`planning.waves.closed-heading`) nennt eine Welle **ohne** Ergebnisnotiz (`planning.waves.results-glob`) im Ruheort |
 | `wave-unregistered` | planning | eine **Ergebnisnotiz** im Ruheort hat **keine** Zeile im Abschluss-Register — die Richtung „Artefakt ⇒ Register" |

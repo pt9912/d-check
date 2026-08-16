@@ -145,11 +145,15 @@ vorführt).
    eine Kennung trägt — dann aber scharf: das ist der Fall, vor dem die Baseline
    warnt („zwei Positionen, nicht drei“).
 
-**Und ein Befund über den eigenen Bestand hinaus:** `a-check` verletzt Aussage 1
-heute (aktive Welle in der Roadmap, kein Wellendokument) und Aussage 4 elffach.
-Die Fähigkeit ist damit für diesen Konsumenten nicht „nice to have“, sondern
-findet beim ersten Lauf echte Rückstände — sie muss opt-in bleiben und ihre
-Einführung dort ein eigener Schritt sein.
+**Und ein Befund über den eigenen Bestand hinaus:** `a-check` verletzt Aussage 4
+**elffach** (elf Register-Zeilen ohne Ergebnisnotiz — robust, mit
+konsument-gerechtem Marker nachgemessen). Der **zwölfte** Befund des ersten
+Probe-Laufs war dagegen ein **Artefakt der Probe-Konfiguration**: `a-check`
+schreibt seinen Ruhe-Marker als „**Keine.**“, der Default-Marker matcht nicht,
+und der Block galt fälschlich als aktiv (Review F-8 — die Messung hatte den
+eigenen Konfigurations-Fehler als Bestands-Befund gelesen). Die Fähigkeit
+findet dort also elf echte Rückstände; sie bleibt opt-in, und ihre Einführung
+dort ist ein eigener Schritt samt konsument-gerechtem Marker.
 
 ## 4. Definition of Done
 

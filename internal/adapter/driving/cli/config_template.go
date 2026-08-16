@@ -130,6 +130,13 @@ modules: [links, anchors]
 #   #   min-sentences: 4                # Satzenden ausserhalb Fenced- UND Inline-Code, nur vor Whitespace; < 1 ⇒ Exit 2
 #   #   boilerplate: []                 # Floskeln, case-insensitiv an WORTGRENZEN; Default LEER (keine Sprach-Annahme)
 #   #   placeholder: false              # unausgefuellte Vorlagen-Platzhalter (<feld>); Default AUS, ignoriert Inline-Code
+#   # waves:                            # dritte Fähigkeit: Wellen-Register gegen die Wellen-Dateien (opt-in im opt-in)
+#   #   dir: docs/plan/planning         # Aktivierungs-Schalter; leer ⇒ inert (kein Wellendokument wird geöffnet)
+#   #   done-dir: docs/plan/planning/done  # Ruheort der Ergebnisnotizen (Default: <dir>/done)
+#   #   glob: 'welle-*.md'              # Plan-Dokumente (Default); braucht ein literales Kennungs-Präfix
+#   #   results-glob: 'welle-*-results.md'  # Ergebnisnotizen (Default); wird vom glob ABGEZOGEN
+#   #   next-heading: "## Nächste Wellen"        # Vorschau-Register (Default); fehlt sie ⇒ wave-drift (fail-closed)
+#   #   closed-heading: "## Abgeschlossene Wellen"  # Abschluss-Register (Default); fehlt sie ⇒ wave-drift (fail-closed)
 
 # --- tracked: Getrackt-Status aufgelöster Link-/Bild-Ziele — git-Index (ohne Range), opt-in ---
 #   (--enable tracked; fail-closed ohne lesbares .git. Ein existierendes, aber

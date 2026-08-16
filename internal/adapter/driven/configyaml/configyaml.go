@@ -148,13 +148,16 @@ type rawPlanning struct {
 // rawWaves trägt die dritte planning-Fähigkeit (DC-FA-PLAN-001
 // §Wellen-Invariante): dir ist der Aktivierungs-Schalter (leer/abwesend ⇒
 // inert), alles Weitere hat Konventions-Defaults im Kern.
+// Die vier optionalen Felder sind Zeiger, damit ein ABWESENDER Schlüssel von
+// einem explizit gesetzten unterscheidbar bleibt: abwesend heißt Kern-Default,
+// explizit leer ist eine Null-Aussage und bricht mit Exit 2 ab (W1).
 type rawWaves struct {
-	Dir           string `yaml:"dir"`
-	DoneDir       string `yaml:"done-dir"`
-	Glob          string `yaml:"glob"`
-	ResultsGlob   string `yaml:"results-glob"`
-	NextHeading   string `yaml:"next-heading"`
-	ClosedHeading string `yaml:"closed-heading"`
+	Dir           string  `yaml:"dir"`
+	DoneDir       string  `yaml:"done-dir"`
+	Glob          *string `yaml:"glob"`
+	ResultsGlob   *string `yaml:"results-glob"`
+	NextHeading   *string `yaml:"next-heading"`
+	ClosedHeading *string `yaml:"closed-heading"`
 }
 
 // rawClosure trägt die zweite planning-Fähigkeit (DC-FA-PLAN-001
@@ -1084,27 +1087,86 @@ func applyWaves(w *rawWaves) (model.WavesConfig, error) {
 				FileName, name, dir)
 		}
 	}
-	for name, glob := range map[string]string{"glob": w.Glob, "results-glob": w.ResultsGlob} {
-		if glob == "" {
-			continue // abwesend ⇒ Kern-Default
-		}
-		if _, err := path.Match(glob, "probe"); err != nil {
-			return model.WavesConfig{}, fmt.Errorf(
-				"%s: planning.waves.%s %q ist kein gültiges Glob: %v", FileName, name, glob, err)
-		}
+	glob, err := wavesGlob(w.Glob, "glob")
+	if err != nil {
+		return model.WavesConfig{}, err
 	}
-	// Ein EXPLIZIT leerer Überschriften-Schlüssel träfe jede Zeile bzw. keine —
-	// beides ist eine Null-Aussage. Weglassen liefert den Konventions-Default.
-	for name, h := range map[string]string{"next-heading": w.NextHeading, "closed-heading": w.ClosedHeading} {
-		if h != "" && strings.TrimSpace(h) == "" {
-			return model.WavesConfig{}, fmt.Errorf(
-				"%s: planning.waves.%s besteht nur aus Whitespace", FileName, name)
-		}
+	resultsGlob, err := wavesGlob(w.ResultsGlob, "results-glob")
+	if err != nil {
+		return model.WavesConfig{}, err
+	}
+	// An der Kennung hängt jede Zuordnung: beide Globs müssen mit demselben
+	// nicht-leeren literalen Präfix beginnen — sonst laufen Datei-Zuordnung und
+	// Zeilen-Erkennung auseinander (falsches wave-drift bei führendem
+	// Platzhalter, unerreichbares wave-unregistered bei fremdem
+	// results-Präfix).
+	pfx := globPrefix(effectiveOr(glob, "welle-*.md"))
+	if pfx == "" {
+		return model.WavesConfig{}, fmt.Errorf(
+			"%s: planning.waves.glob %q beginnt mit einem Platzhalter — die Wellen-Kennung braucht ein literales Präfix", FileName, *w.Glob)
+	}
+	if rp := globPrefix(effectiveOr(resultsGlob, "welle-*-results.md")); !strings.HasPrefix(rp, pfx) {
+		return model.WavesConfig{}, fmt.Errorf(
+			"%s: planning.waves.results-glob %q trägt nicht das Kennungs-Präfix %q von planning.waves.glob", FileName, rp, pfx)
+	}
+	next, err := wavesHeading(w.NextHeading, "next-heading")
+	if err != nil {
+		return model.WavesConfig{}, err
+	}
+	closed, err := wavesHeading(w.ClosedHeading, "closed-heading")
+	if err != nil {
+		return model.WavesConfig{}, err
 	}
 	return model.WavesConfig{
-		Dir: w.Dir, DoneDir: w.DoneDir, Glob: w.Glob, ResultsGlob: w.ResultsGlob,
-		NextHeading: w.NextHeading, ClosedHeading: w.ClosedHeading,
+		Dir: w.Dir, DoneDir: w.DoneDir, Glob: glob, ResultsGlob: resultsGlob,
+		NextHeading: next, ClosedHeading: closed,
 	}, nil
+}
+
+// wavesGlob prüft einen explizit gesetzten Glob: leer ist eine Null-Aussage
+// (Exit 2), ungültig bricht ab; abwesend liefert "" (Kern-Default).
+func wavesGlob(g *string, name string) (string, error) {
+	if g == nil {
+		return "", nil
+	}
+	if *g == "" {
+		return "", fmt.Errorf(
+			"%s: planning.waves.%s ist leer — kein Basisname könnte matchen (weglassen ⇒ Default)", FileName, name)
+	}
+	if _, err := path.Match(*g, "probe"); err != nil {
+		return "", fmt.Errorf("%s: planning.waves.%s %q ist kein gültiges Glob: %v", FileName, name, *g, err)
+	}
+	return *g, nil
+}
+
+// wavesHeading prüft eine explizit gesetzte Register-Überschrift: leer oder
+// nur Whitespace ist eine Null-Aussage (Exit 2); abwesend liefert "".
+func wavesHeading(h *string, name string) (string, error) {
+	if h == nil {
+		return "", nil
+	}
+	if strings.TrimSpace(*h) == "" {
+		return "", fmt.Errorf(
+			"%s: planning.waves.%s ist leer — keine Zeile könnte die Register-Überschrift sein (weglassen ⇒ Default)", FileName, name)
+	}
+	return *h, nil
+}
+
+// globPrefix liefert den literalen Teil eines Globs vor dem ersten
+// Platzhalter.
+func globPrefix(glob string) string {
+	if i := strings.IndexAny(glob, "*?["); i >= 0 {
+		return glob[:i]
+	}
+	return glob
+}
+
+// effectiveOr liefert den gesetzten Wert oder den Default.
+func effectiveOr(v, def string) string {
+	if v == "" {
+		return def
+	}
+	return v
 }
 
 // applyClosure validiert die Closure-Note-Struktur-Parameter (DC-FA-PLAN-001).
