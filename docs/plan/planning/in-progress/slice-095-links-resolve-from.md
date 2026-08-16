@@ -65,13 +65,48 @@ Nachbarn.
    gehört das in
    [`DC-FA-LINK-001`](../../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links):
    dieselbe Prüfung mit erweiterter Quellort-Menge, keine neue Frage.
-   **Zu bestätigen.**
+   — **Bestätigt** (beim Wellen-Start; begleitende ADR trägt den Entscheid).
 2. **Befund-Form.** Ein eigener Grund-Code (Vorschlag `link-position-dependent`)
    statt `target-missing` — die Reparatur ist eine andere (Pfad präfixieren, nicht
    Ziel anlegen), und am Ist-Ort ist nichts kaputt.
+   — **Bestätigt**, mit einer Schärfung aus der Messung: positionsabhängig ist
+   ein Verweis auch dann, wenn er von jedem Ort auflöst, aber auf
+   **verschiedene** Ziele — er meint dann je nach Ort etwas anderes. Beide
+   Fehlarten tragen denselben Code; die Meldung nennt den Ort bzw. die Ziele.
 3. **Zählt das Bild-Ziel mit, und was ist mit Ankern?** Vorschlag: dieselbe
    Ziel-Menge wie die bestehende Auflösung, Anker bleiben außen vor (die
    Anker-Prüfung hängt am Ziel-Dokument, nicht am Quellort).
+   — **Bestätigt.**
+
+## 3a. Messung: Quell-Menge, Bestand und der Retro-Beleg
+
+Näherungs-Messung über den eigenen Planungs-Baum (Entwurfs-Entscheidung; die
+finale Zahl liefert das Produkt nach der Implementierung):
+
+| Quell-Menge | relative Verweise | positionsabhängig |
+|---|---|---|
+| alle vier Lifecycle-Verzeichnisse | 1875 | **108** — die Spitzenreiter sind Wellendokumente und Slices in `done/` |
+| nur die **wandernden** (`open/`, `next/`, `in-progress/`) | 79 | **0** |
+
+**Zwei Entscheide folgen daraus:**
+
+1. **Quellen sind nur die wandernden Verzeichnisse.** Eine Datei in `done/` ist
+   am Endzustand ihres Lifecycles — sie wandert nie wieder, ihre Verweise müssen
+   nur vom Ist-Ort auflösen. Ohne diese Einschränkung wären 108 der Befunde
+   Falsch-Positive auf ortsfesten Dokumenten.
+2. **Der Bestand ist heute grün — und das ist das Ergebnis, nicht die
+   Ausgangslage.** Die Null ist von einer Woche Hand-Nachzügen gekauft: allein
+   heute wurden bei drei Lifecycle-Moves 10, 15 und 14 Verweise nachgezogen,
+   jedes Mal **nach** dem Move gemeldet. Der Wert der Fähigkeit ist Prävention;
+   der Beleg dafür ist retro.
+
+**Der Retro-Beleg reproduziert den historischen Schaden zeichengenau.** Dieselbe
+Messung gegen den Stand **vor** der welle-69-Eröffnung (den Commit vor dem
+19-Link-Bruch aus §2): 76 relative Verweise in wandernden Dateien, davon
+**19 positionsabhängig** — exakt die Zahl des realen Bruchs, mit der erwarteten
+Verteilung (der verschobene Slice trug 7, die vier zurückbleibenden Geschwister
+den Rest — darunter dieser Slice selbst mit 2). Die Fähigkeit hätte den Bruch
+**vor** dem Move gemeldet.
 
 ## 4. Definition of Done
 
