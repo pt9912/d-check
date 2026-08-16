@@ -1717,6 +1717,49 @@ Listing ihres Verzeichnisses prüft:
    Schreiben ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
    Ohne `planning` ist der Befundsatz byte-identisch.
 
+**Wellen-Invariante** (dritte Fähigkeit desselben Moduls, opt-in **innerhalb**
+des opt-in Moduls). Sie prüft dieselbe Invariante eine Ebene höher und liest
+dazu **denselben** Aktiv-Status wie Schritt 4 — sie bestimmt ihn nicht neu:
+
+- **W1. Inert/Config.** Leere `planning.waves.dir` ⇒ Fähigkeit inert: **kein**
+  Wellendokument wird geöffnet, der Befundsatz ist byte-identisch. **Exit 2**
+  (Config-Fehler, vor dem Lauf) bei: `dir`/`done-dir` absolut oder mit
+  `..`-Segment; ungültigem `glob`/`results-glob`; leerem `next-heading`/
+  `closed-heading`. `done-dir` ohne Wert ⇒ `<dir>/done`.
+- **W2. Wellen-Mengen.** Aus dem Listing von `dir` (nicht rekursiv) die
+  **flachen** Wellendokumente: Basisnamen nach `glob` (Default `welle-*.md`)
+  **abzüglich** `results-glob` (Default `welle-*-results.md`) — die
+  Ergebnisnotiz ist kein Plan-Dokument. Aus dem Listing von `done-dir` die
+  **Ergebnisnotizen** nach `results-glob`. Kennung ist jeweils das
+  Zahlen-Präfix `welle-<n>` des Basisnamens; zwei Dateien mit demselben Präfix
+  zählen als **eine** Welle.
+- **W3. Aktiv-Status gegen flaches Dokument.** `hasActive` aus Schritt 4
+  (dieselbe Größe, dieselbe Quelle). `hasActive` ⇔ **genau ein** flaches
+  Wellendokument. Sonst ⇒ `wave-drift`, Befund an der `planning.heading`-Zeile,
+  `target` = `dir`; die Meldung nennt beide Richtungen (Roadmap nennt eine Welle
+  ohne Dokument / Dokument liegt, aber die Roadmap trägt den Ruhe-Marker) und
+  bei mehr als einem Dokument deren Zahl.
+- **W4. Register-Tabellen.** In der Roadmap werden die Abschnitte
+  `next-heading` (Default `## Nächste Wellen`) und `closed-heading` (Default
+  `## Abgeschlossene Wellen`) gelesen. Tabellenzeilen sind Zeilen, die
+  **außerhalb** von Fenced-Code mit `|` beginnen (dieselbe Lexik wie
+  [`DC-FA-TGT-001.a`](#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets)),
+  ohne Kopf- und Trennzeile. Gelesen wird die **erste Spalte**; enthält sie
+  keine Kennung `welle-<n>`, wird die Zeile **übersprungen** (eine geplante
+  Welle trägt einen Namen, noch keine Kennung — und die Trigger-Spalte darf
+  andere Wellen nennen).
+- **W5. Die drei Register-Aussagen.** (a) Eine Kennung in der Vorschau, zu der
+  eine Datei existiert (flach **oder** im Ruheort) ⇒ `wave-preview-exists`,
+  Befund an der Zeile. (b) Eine Kennung im Abschluss-Register **ohne**
+  Ergebnisnotiz ⇒ `wave-results-missing`, Befund an der Zeile. (c) Eine
+  Ergebnisnotiz **ohne** Kennung im Abschluss-Register ⇒ `wave-unregistered`,
+  Befund an der `closed-heading`-Zeile mit der Notiz als `target`. Alle drei
+  sind unabhängig und können nebeneinander melden; die Grund-Codes sind
+  getrennt, weil (a) und (b) dieselbe Zeile treffen können und die
+  Deduplikation über (Datei, Zeile, Regel, Ziel, Grund) sie sonst
+  zusammenfallen ließe. Grund-Codes (§4) folgen mit der Implementierung
+  (AllReasons-↔-§4-Lockstep).
+
 **Closure-Note-Struktur** (zweite Fähigkeit desselben Moduls, opt-in **innerhalb**
 des opt-in Moduls). Sie läuft unabhängig von den Schritten 1–5 — die
 Aktiv-Status-Prüfung bleibt unberührt, auch wenn die Closure-Prüfung Befunde
@@ -2371,6 +2414,12 @@ Exit 2 ohne Prüfung
 | `planning.heading` | string | `## Aktuelle Welle` | die kanonische H2-Überschrift des Aktiv-Status-Abschnitts (exakter, getrimmter Zeilen-Vergleich); fehlt sie ⇒ `planning-drift` (fail-closed) |
 | `planning.marker` | string | `Keine aktive Welle` | literaler Ruhe-Marker-Teilstring; nur im `planning.heading`-Block gesucht; vorhanden ⇒ ruhende Welle |
 | `planning.slice-glob` | string | `slice-*.md` | Glob (`path.Match` auf den Basisnamen) der Slice-Dateien im Roadmap-Verzeichnis; ≥1 Treffer ⇒ aktive-Welle-erwartet; ein explizit gesetztes Muster muss ein gültiges `path.Match`-Glob sein (sonst Exit 2 — verhindert ein fail-open Silent-Grün) |
+| `planning.waves.dir` | string | leer | `verzeichnis` (Wurzel-relativ, innerhalb der Repo-Wurzel); Ort der **flachen** Wellendokumente. Gesetzt ⇒ dritte Fähigkeit aktiv; leer ⇒ inert (kein Wellendokument wird geöffnet) |
+| `planning.waves.done-dir` | string | `<dir>/done` | Ruheort der Ergebnisnotizen |
+| `planning.waves.glob` | string | `welle-*.md` | Basisnamen-Glob (`path.Match`) der **Plan**-Dokumente; `results-glob` wird davon **abgezogen** |
+| `planning.waves.results-glob` | string | `welle-*-results.md` | Basisnamen-Glob der **Ergebnisnotizen** — das verpflichtende Artefakt einer geschlossenen Welle |
+| `planning.waves.next-heading` | string | `## Nächste Wellen` | H2 des Vorschau-Registers (exakter, getrimmter Zeilen-Vergleich) |
+| `planning.waves.closed-heading` | string | `## Abgeschlossene Wellen` | H2 des Abschluss-Registers |
 | `planning.closure.dir` | string | leer | `verzeichnis` (Wurzel-relativ, innerhalb der Repo-Wurzel); das Verzeichnis der abgeschlossenen Slices, deren Closure-Notiz **strukturell** geprüft wird. Leer ⇒ Closure-Fähigkeit inert (keine Slice-Datei wird gelesen, Befundsatz byte-identisch); gesetzt, aber fehlend/unlesbar ⇒ `closure-note-missing` auf dem Verzeichnis (fail-closed) ([`DC-FA-PLAN-001`](lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
 | `planning.closure.glob` | string | Wert von `planning.slice-glob` | Basisnamen-Glob (`path.Match`) der Kandidaten **dieser** Fähigkeit — getrennt von `planning.slice-glob`, weil die Lifecycle-Invariante „noch in Arbeit“ und die Closure-Struktur „abgeschlossen“ zählt. Nicht gesetzt ⇒ Default-Verweis (Befundsatz byte-identisch); **explizit** leer oder kein gültiges Glob ⇒ Exit 2; kein Kandidat unter dem gesetzten Glob ⇒ `closure-note-missing` auf dem Verzeichnis (fail-closed) |
 | `planning.closure.heading-pattern` | string | `^#{2,3} .*Closure-Notiz` | RE2 gegen die **getrimmte** Überschriften-Zeile; **genau ein** Treffer eröffnet den geprüften Abschnitt (mehrere ⇒ `closure-note-ambiguous`) (bis zur nächsten Überschrift gleicher oder höherer Ebene). Kein Treffer ⇒ `closure-note-missing`; ein nicht kompilierendes Muster ⇒ Exit 2 |
@@ -2526,6 +2575,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-16 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) um die Schritte **W1–W5** + §2-Schema (`planning.waves.*`) erweitert: die Lifecycle-Invariante eine Ebene höher, die **Wellen**-Abschnitte der Roadmap gegen die Wellen-Dateien. W3 liest den Aktiv-Status **aus Schritt 4**, statt ihn neu zu bestimmen. Zwei Festlegungen kommen aus der Bestandsmessung: das Artefakt einer geschlossenen Welle ist die **Ergebnisnotiz** (gegen das Plan-Dokument geprüft meldet die Aussage 19-mal über zwei Bäume), und die Vorschau-Aussage liest die **erste Spalte** und überspringt Zeilen ohne Kennung (geplante Wellen tragen Namen; die Trigger-Spalte darf andere Wellen nennen). Tabellenzeilen nach derselben Lexik wie §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) — deren **zweiter** Konsument. Vier Grund-Codes folgen mit der Implementierung. Begründung in begleitender ADR |
 | 2026-08-16 | Nachzug nach **dritter** Review-Runde: drei weitere Module beantworteten eine Lexik-Frage roh. §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) — `immutable-when` und die Kopf-Status-Zeile gelten nur **außerhalb** von Fenced-Code (vorher: eine Datei, die ihren Kopf als Beispiel zeigt, galt als immutabel bzw. verschob die gestrippte Zeile ⇒ **stilles Grün** im Immutabilitäts-Gate). §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt 4 — die Block-Grenze ist die **geteilte** Abschnitts-Grenze statt eines rohen `## `-Präfix-Vergleichs (eingerückte H2, tab-getrennte H2, H1). §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) — Tabellenzeilen zählen nur außerhalb von Fenced-Code |
 | 2026-08-16 | Nachzug nach bestätigender Re-Review: §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) Schritt 2 sagt jetzt **beides** — Leerzeilen trennen **nicht** (die Direktive paart mit dem nächsten nicht-leeren Kandidaten), ein Fenced-Block trennt in beiden Zweigen; die Vorfassung erklärte die Fence-Regel mit einem Vergleich, den ein Lauf widerlegt. Ferner: §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) Schritt 1 und §[`DC-FA-PIN-001.a`](spezifikation.md#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins) Schritt 2 sagen die Anker-Antwort jetzt **ganz** zu (Duplikat-Slug, Prozent-Dekodierung, Groß-/Kleinschreibung), nicht nur ihre Fence-Hälfte, und §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritte 3 und 4 binden den Aktiv-Status-Guard an dieselbe Zeilen-Menge (zwei belegte Falsch-Rot) |
 | 2026-08-16 | Drei Konsumenten der geteilten Lexik nachgezogen (Begründung in begleitender ADR): §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) Schritt 2 nennt den **Absatz** ausdrücklich als den geteilten (Leerzeile **und** Fenced-Block begrenzen) — ein Fenced-Block zwischen Direktive und Zitat trennt und führt in den fail-closed-Fall; §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) Schritt 1 und §[`DC-FA-PIN-001.a`](spezifikation.md#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins) Schritt 2 sagen, dass **beide Anker-Formen nur außerhalb von Fences** erkannt werden (§[`DC-FA-ANCH-001.b`](spezifikation.md#dc-fa-anch-001b--inline-html-anker)), der adressierte bzw. gehashte **Span** aber roh bleibt. Beide Zusagen standen dem Kopfsatz „fence-aware wie die übrigen Module“ nach schon zu; gemessen wurde eine andere Antwort |

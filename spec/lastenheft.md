@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.58.3
+**Version:** 0.59.0
 
 **Status:** Draft
 
@@ -2105,8 +2105,52 @@ inferentiellen Nachlauf überlassen. d-check verspricht hier keine
 Bedeutungs-Erkennung — und meldet umgekehrt nichts doppelt, was die Struktur
 bereits abdeckt.
 
+**Wellen-Invariante (dritte Fähigkeit, `planning.waves`).** Dieselbe
+Lifecycle-Invariante **eine Ebene höher**: nicht der Slice, sondern die **Welle**
+trägt ihren Zustand im Ort. Ein laufendes Wellendokument liegt **flach** im
+Wellen-Verzeichnis, ein geschlossenes im Ruheort; eine **geplante** Welle hat
+noch **keine** Datei und steht nur in der Vorschau. Damit sind vier Aussagen
+maschinell entscheidbar, und die Fähigkeit prüft sie gegen die Roadmap:
+
+| # | Aussage | Grund-Code | Reparatur |
+|---|---|---|---|
+| 1/2 | der Aktiv-Status-Abschnitt nennt eine Welle ⟺ **genau ein** flaches Wellendokument existiert (Ruhe-Marker ⟺ **keines**) | `wave-drift` | Roadmap nachziehen **oder** Datei verschieben |
+| 3 | eine Zeile der **Vorschau** nennt eine Welle **ohne** Datei — flach wie im Ruheort | `wave-preview-exists` | Vorschau-Zeile entfernen (die Welle läuft oder ist geschlossen) |
+| 4 | eine Zeile des **Abschluss-Registers** nennt eine Welle **mit Ergebnisnotiz** im Ruheort | `wave-results-missing` | Ergebnisnotiz nachtragen |
+| 4′ | jede **Ergebnisnotiz** im Ruheort hat ihre Zeile im Abschluss-Register | `wave-unregistered` | Register-Zeile nachtragen |
+
+**Das verpflichtende Artefakt einer geschlossenen Welle ist die Ergebnisnotiz,
+nicht das Plan-Dokument** — und das ist gemessen, nicht gesetzt: gegen das
+Plan-Dokument geprüft meldet Aussage 4 über zwei reale Planungs-Bäume **19-mal**,
+weil ältere Wellen geschlossen wurden, bevor es das flache Wellendokument als
+Konvention gab. Die Notiz dagegen verlangt die Closure-Prozedur und liegt über
+den ganzen Bestand vor. Plan-Dokument (`planning.waves.glob`) und Ergebnisnotiz
+(`planning.waves.results-glob`) sind deshalb **zwei Rollen**; die zweite Menge
+wird von der ersten abgezogen.
+
+**Die Vorschau-Aussage greift nur auf der Welle-Spalte und nur bei Kennungen.**
+Eine geplante Welle trägt in der gelebten Praxis noch keine Kennung — sie bekommt
+sie bei der Eröffnung —, und die **Trigger**-Spalte einer Vorschau-Zeile darf
+andere Wellen nennen. Geprüft wird darum die **erste Spalte** der Tabellenzeile,
+und nur, wenn dort eine Kennung steht. Verglichen wird über das Zahlen-Präfix
+`welle-<n>`: die Zeile trägt die volle Kennung, die Notiz den kurzen Namen.
+
+**Vier Reparaturen, vier Grund-Codes.** Die Trennung ist erzwungen: zwei dieser
+Verletzungen können **dieselbe** Roadmap-Zeile treffen, und die
+Befund-Deduplikation über (Datei, Zeile, Regel, Ziel, Grund) ließe sie sonst
+zusammenfallen. Der Aktiv-Status wird **nicht** ein zweites Mal bestimmt — die
+Fähigkeit liest denselben `planning.heading`-Block wie die Slice-Invariante; sind
+beide verletzt, entstehen zwei Befunde mit verschiedenen Codes, keine
+Widersprüche. **Opt-in innerhalb** des opt-in Moduls: ohne `planning.waves.dir`
+wird kein Wellendokument geöffnet und der Befundsatz ist byte-identisch.
+
 **Akzeptanzkriterien:**
 
+- **Wellen-Happy-Path:** Given `planning.waves.dir` gesetzt, eine Roadmap, deren Aktiv-Status-Abschnitt eine Welle nennt, **genau ein** flaches Wellendokument, eine Vorschau ohne Kennungen und ein Abschluss-Register, dessen Zeilen und Ergebnisnotizen sich **beidseitig** decken, when `d-check --enable planning` läuft, then **kein** Befund.
+- **Wellen-Negative (vier Richtungen):** Given je eine Verletzung — Roadmap nennt eine Welle ohne flaches Dokument · eine Vorschau-Zeile nennt eine Welle, die bereits eine Datei hat · eine Abschluss-Zeile ohne Ergebnisnotiz · eine Ergebnisnotiz ohne Abschluss-Zeile —, when das Modul läuft, then je **ein** Befund mit dem zugehörigen Grund-Code (`wave-drift` · `wave-preview-exists` · `wave-results-missing` · `wave-unregistered`), Exit-Code 1.
+- **Wellen-Boundary (Rollen-Trennung):** Given ein Ruheort, in dem Plan-Dokumente **und** Ergebnisnotizen demselben `waves.glob` genügen, when das Modul läuft, then zählt eine Ergebnisnotiz **nicht** als Plan-Dokument (`results-glob` wird abgezogen) — und eine Abschluss-Zeile, deren Welle nur ein Plan-Dokument, aber keine Notiz hat, meldet `wave-results-missing`.
+- **Wellen-Boundary (Namens-Vorschau):** Given eine Vorschau-Zeile, deren erste Spalte einen **Namen** statt einer Kennung trägt, während ihre Trigger-Spalte eine laufende Welle nennt, when das Modul läuft, then **kein** Befund — geprüft wird die erste Spalte, nicht die Zeile.
+- **Modul-aus (dritte Fähigkeit):** Given **kein** `planning.waves.dir`, when `d-check --enable planning` läuft, then wird kein Wellendokument geöffnet und der Befundsatz ist byte-identisch zum Lauf ohne die Fähigkeit ([`DC-QA-02`](#dc-qa-02--determinismus)).
 - **Happy Path:** Given `planning` aktiv mit gesetzter `planning.roadmap`, einer Roadmap mit dem kanonischen `## Aktuelle Welle`-Abschnitt **ohne** den Ruhe-Marker und ≥1 `slice-*` im Verzeichnis, when `d-check --enable planning` läuft, then kein Befund, Exit 0 (ebenso konsistent: Ruhe-Marker vorhanden **und** kein Slice).
 - **Boundary (Modul-aus):** Given **kein** aktives `planning`, when `d-check` in einer netzlosen, read-only Umgebung läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)) und nichts wird geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 - **Negative:** Given `planning` aktiv und eine Drift (Slice im Verzeichnis, aber die Roadmap trägt den Ruhe-Marker; oder kein Slice, aber die Roadmap benennt eine aktive Welle), when `d-check --enable planning` läuft, then ein Befund `planning-drift`, Exit 1.
@@ -2654,6 +2698,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.59.0 | 2026-08-16 | [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) bekommt eine **dritte Fähigkeit**: die Lifecycle-Invariante eine Ebene höher, die **Wellen**-Abschnitte der Roadmap gegen die Wellen-Dateien (`planning.waves`, opt-in innerhalb des opt-in Moduls; vier Aussagen, vier Grund-Codes). **Zwei Entwurfsannahmen hat die Bestandsmessung über drei Planungs-Bäume widerlegt:** das verpflichtende Artefakt einer geschlossenen Welle ist die **Ergebnisnotiz**, nicht das Plan-Dokument (gegen dieses geprüft meldet die Aussage 19-mal, weil ältere Wellen vor der Wellendokument-Konvention geschlossen wurden), und die Vorschau-Aussage greift nur auf der **Welle-Spalte** und nur bei Kennungen (zwei der drei Bäume schreiben dort Namen; die Trigger-Spalte darf andere Wellen nennen). Dazu die Gegenrichtung „Ergebnisnotiz ohne Register-Zeile“, die im eigenen Bestand **dreimal eingetreten** war. Begründung in begleitender ADR |
 | 0.58.3 | 2026-08-16 | Nachzug nach **dritter** Review-Runde. **Die Klasse war nicht geschlossen:** drei Module, die in keinem der beiden Vorgänger-Reports vorkamen, beantworteten eine Lexik-Frage roh — [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) las `immutable-when` und die Kopf-Status-Zeile über **alle** Zeilen (eine Datei, die ihren Kopf als Beispiel zeigt, galt als immutabel bzw. verschob die gestrippte Zeile ⇒ **stilles Grün** im Immutabilitäts-Gate), [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) beendete den Aktiv-Block an einem rohen `## `-Präfix (eingerückte H2, tab-getrennte H2 und H1 wurden übersehen, `planning-drift` entfiel **still**), und [`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in) las Tabellenzeilen roh (ein Beispiel-Block ließ ein undokumentiertes Target als dokumentiert gelten). Alle drei repariert, alle drei mit einer Gegenprobe bewacht. **Die Richtungs-Aufzählung ist jetzt ausdrücklich offen** — in drei Runden war sie dreimal unvollständig; ferner trägt die Anker-Menge ihre **Grenze** jetzt in der Anforderung, nicht nur in der ADR |
 | 0.58.2 | 2026-08-16 | Nachzug nach **bestätigender Re-Review**, vor dem Release — beide blockierenden Befunde der Vorrunde waren nur **teilweise** geheilt, und zwar in derselben Bauform wie zuvor. (1) Die Anker-Vereinheitlichung galt nur der **HTML**-Hälfte; die **Slug**-Hälfte divergierte weiter (Duplikat-Slug `#alt-1`, prozent-kodiertes Fragment `#a%20b`) — jetzt eine Antwort für alle drei Module, mit Akzeptanzkriterien bei [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) und [`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in). (2) Die Richtungs-Aufzählung war erneut **geschlossen** formuliert und übersah eine dritte, bei `pins` stille Stelle: die Auflösung ist jetzt case-sensitiv. Sie ist jetzt offen formuliert. **Ferner:** die Absatz-Zusage aus 0.58.1 war gegen einen Lauf **falsch** — eine Leerzeile trennt gerade nicht, die Direktive paart über Leerzeilen hinweg; das Modul `planning` beantwortete „ist das eine Überschrift“ zweimal roh und meldete dadurch zwei **Falsch-Rot**; und die permissive Anker-Menge ist bei ihrem neuen Konsumenten `versions` **nicht** folgenlos (Anker in HTML-Kommentar oder eingerücktem Block ⇒ Falsch-Rot) — als Grenze benannt, nicht mitgenommen |
 | 0.58.1 | 2026-08-16 | Nachzug nach unabhängigem Review, vor dem Release. **Zwei blockierende Befunde:** (1) die Anker-Erkennung war nur zur **Fence-Hälfte** vereinheitlicht — `versions`/`pins` behielten ihre eigene Regex und hielten vier Zeichenfolgen für Anker, die [`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors) nie als solche gelesen hat (Anker in Inline-Code, `data-id`, `name` an beliebigem Element, anker-förmige Prosa ohne Tag); gemessen trug die reparierte Achse **1** Vorkommen, die stehengebliebene **40**. Jetzt **eine** Erkennung für alle drei Module. (2) Die Richtungs-Zusage „findet mehr, und weniger an keiner Stelle“ war **falsch** — zwei Fälle verlieren einen Befund, einer davon still. Beide Richtungen stehen jetzt in Anforderung, ADR und Release-Notiz. Ferner: die Zusagen stehen jetzt in den **Anforderungen** selbst statt nur in Algorithmus und ADR (der Widerspruch zur Fence-Ausnahme von `versions` entstand genau dort), der Fenced-Block ist als **Blockquote-Terminator** benannt, und die `vcs`-Grenze beschreibt die **stille** Richtung samt eines beobachtbaren Re-Evaluierungs-Triggers |
