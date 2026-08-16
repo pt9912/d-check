@@ -20,7 +20,10 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
 **within** a document:
 
 - `links` — local link and image references: target exists, no
-  repo escape ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
+  repo escape; opt-in `resolve-from`: files in **moving** lifecycle
+  directories must resolve every relative target from every location of
+  their group — reported **before** the `git mv`
+  ([`DC-FA-LINK-001`](spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links))
 - `anchors` — heading anchors (GitHub slug procedure) and inline HTML anchors
   (`<a name>`, `id=`)
   ([`DC-FA-ANCH-001`](spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors))
@@ -197,7 +200,7 @@ Distributed as a container image via GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.59.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

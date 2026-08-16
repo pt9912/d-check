@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.60.0] — 2026-08-16
+
 ### Added
 
 - slice-095 — **Ortsfeste Verweise** (`links.resolve-from`, opt-in;
