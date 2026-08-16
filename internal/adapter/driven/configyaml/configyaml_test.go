@@ -291,6 +291,59 @@ func TestDecode_ClosureHappy(t *testing.T) {
 	}
 }
 
+// TestDecode_WavesFehler deckt den Config-Rand der Wellen-Invariante ab
+// (DC-FA-PLAN-001 §Wellen-Invariante, W1): dieselbe Disziplin wie bei der
+// Closure-Fähigkeit — jeder dieser Werte wäre sonst ein stilles Grün oder
+// eine auseinanderlaufende Kennungs-Zuordnung.
+func TestDecode_WavesFehler(t *testing.T) {
+	for name, bad := range map[string]string{
+		"dir absolut":              "planning:\n  waves:\n    dir: /abs/wellen\n",
+		"dir mit ..":               "planning:\n  waves:\n    dir: ../raus\n",
+		"done-dir mit ..":          "planning:\n  waves:\n    dir: w\n    done-dir: ../raus\n",
+		"glob leer":                "planning:\n  waves:\n    dir: w\n    glob: ''\n",
+		"glob ungültig":            "planning:\n  waves:\n    dir: w\n    glob: '[a-'\n",
+		"glob ohne Präfix":         "planning:\n  waves:\n    dir: w\n    glob: '*.md'\n",
+		"results-glob leer":        "planning:\n  waves:\n    dir: w\n    results-glob: ''\n",
+		"results-glob fremd":       "planning:\n  waves:\n    dir: w\n    results-glob: 'ergebnis-*.md'\n",
+		"fremder glob, Default-results": "planning:\n  waves:\n    dir: w\n    glob: 'wave-*.md'\n",
+		"next-heading leer":        "planning:\n  waves:\n    dir: w\n    next-heading: ''\n",
+		"closed-heading leer":      "planning:\n  waves:\n    dir: w\n    closed-heading: ''\n",
+	} {
+		if _, err := configyaml.Decode([]byte(bad)); err == nil {
+			t.Errorf("%s: ungültige waves-Config akzeptiert: %q", name, bad)
+		}
+	}
+}
+
+// TestDecode_WavesHappy: gültige Werte werden durchgereicht, abwesende
+// Schlüssel liefern die Konventions-Defaults, und ein fremdes Präfix ist mit
+// PASSENDEM results-glob erlaubt.
+func TestDecode_WavesHappy(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"planning:\n  roadmap: r.md\n  waves:\n    dir: docs/plan/planning\n"))
+	if err != nil {
+		t.Fatalf("gültige waves-Config abgelehnt: %v", err)
+	}
+	w := cfg.Planning.Waves
+	if w.Dir != "docs/plan/planning" {
+		t.Fatalf("waves.dir nicht durchgereicht: %+v", w)
+	}
+	if got := w.EffectiveDoneDir(); got != "docs/plan/planning/done" {
+		t.Errorf("Default done-dir = %q, want dir/done", got)
+	}
+	if w.EffectiveGlob() != "welle-*.md" || w.EffectiveResultsGlob() != "welle-*-results.md" {
+		t.Errorf("Glob-Defaults nicht wie zugesagt: %q / %q", w.EffectiveGlob(), w.EffectiveResultsGlob())
+	}
+	fremd, err := configyaml.Decode([]byte(
+		"planning:\n  roadmap: r.md\n  waves:\n    dir: w\n    glob: 'wave-*.md'\n    results-glob: 'wave-*-results.md'\n"))
+	if err != nil {
+		t.Fatalf("fremdes Präfix mit passendem results-glob abgelehnt: %v", err)
+	}
+	if fremd.Planning.Waves.Glob != "wave-*.md" {
+		t.Fatalf("waves.glob nicht durchgereicht: %+v", fremd.Planning.Waves)
+	}
+}
+
 // TestDecode_PlanningHappy: eine gültige planning-Config wird übernommen, die
 // Defaults greifen.
 func TestDecode_PlanningHappy(t *testing.T) {

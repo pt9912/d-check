@@ -276,3 +276,37 @@ func TestWavesFremdesPraefix(t *testing.T) {
 		t.Fatalf("wave-Praefix-Konsument konsistent → 0 Befunde, got %v", got)
 	}
 }
+
+// N-1: wave-drift traegt drei Bedeutungen — die Befund-Ziele muessen sie
+// trennen, sonst kollabiert die Deduplikation zwei Reparaturen zu einer.
+// Der harte Fall: done-dir == dir und BEIDE Register-Ueberschriften fehlen.
+func TestWavesDedupTrenntDieDriftBedeutungen(t *testing.T) {
+	cfg := planCfg()
+	cfg.Waves = model.WavesConfig{Dir: wavesDir, DoneDir: wavesDir}
+	files := map[string]string{
+		planRoadmap:                  "# Roadmap\n\n## Aktuelle Welle\n\nwelle-9-neu in Arbeit.\n",
+		wavesDir + "/welle-9-neu.md": "# Welle 9\n",
+	}
+	fs := CheckPlanningWaves(coretest.NewMemFS(files), cfg)
+	got := model.SortFindings(fs)
+	if len(got) != 2 {
+		t.Fatalf("beide fehlenden Register-Ueberschriften muessen einzeln melden, got %+v", got)
+	}
+	if got[0].Target == got[1].Target {
+		t.Fatalf("die Ziele muessen die Bedeutungen trennen: %q", got[0].Target)
+	}
+}
+
+// F-14: Kopf- und Trennzeile deklarieren keine Welle, auch wenn eine Kennung
+// darin steht (W4: "ohne Kopf- und Trennzeile").
+func TestWavesKopfzeileMitKennungZaehltNicht(t *testing.T) {
+	files := map[string]string{
+		planRoadmap: "# Roadmap\n\n## Aktuelle Welle\n\nwelle-9-neu in Arbeit.\n\n" +
+			"## Nächste Wellen\n\n| Welle | Trigger |\n|---|---|\n\n" +
+			"## Abgeschlossene Wellen\n\n| Welle (z. B. welle-1) | Abschluss |\n|---|---|\n",
+		wavesDir + "/welle-9-neu.md": "# Welle 9\n",
+	}
+	if got := wavesFindings(t, files, wavesCfg()); got != nil {
+		t.Fatalf("Kennung in der Kopfzeile darf nicht zaehlen, got %v", got)
+	}
+}

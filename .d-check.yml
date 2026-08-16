@@ -185,8 +185,9 @@ planning:
   roadmap: docs/plan/planning/in-progress/roadmap.md
   # Dritte Faehigkeit (DC-FA-PLAN-001 §Wellen-Invariante, ADR-0055): dieselbe
   # Lifecycle-Invariante eine Ebene hoeher. Vor dem Scharfschalten am eigenen
-  # Bestand gemessen -- 0 Befunde; im Schwester-Repo dagegen 12, darunter elf
-  # fehlende Ergebnisnotizen. Die Gegenrichtung (Notiz ohne Registerzeile) ist
+  # Bestand gemessen -- 0 Befunde; im Schwester-Repo elf fehlende
+  # Ergebnisnotizen (robust; ein zwoelfter Probe-Befund war ein Artefakt des
+  # Default-Markers). Die Gegenrichtung (Notiz ohne Registerzeile) ist
   # hier im August dreimal eingetreten und wurde von Hand gefunden.
   # Alle uebrigen Schluessel stehen auf den Konventions-Defaults.
   waves:

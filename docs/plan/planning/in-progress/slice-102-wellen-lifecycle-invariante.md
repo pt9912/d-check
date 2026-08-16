@@ -120,7 +120,7 @@ vorführt).
 
 | Aussage | Messung |
 |---|---|
-| 1 + 2 (aktive Welle ⟺ genau eine flache Datei) | heute in allen drei Bäumen konsistent; `d-check` 1 flache Datei bei aktiver Welle, `a-check` 0 bei aktiver Welle — **letzteres ist eine Verletzung**, die Roadmap nennt eine Welle ohne Wellendokument |
+| 1 + 2 (aktive Welle ⟺ genau eine flache Datei) | heute in allen drei Bäumen konsistent — auch in `a-check`: dessen scheinbare Verletzung war ein **Artefakt des Default-Markers** der Probe-Konfiguration („**Keine.**“ statt „Keine aktive Welle“, Review F-8); mit konsument-gerechtem Marker gilt der Block als ruhend, und keine flache Datei liegt |
 | 3 (Vorschau-Zeile ohne Datei) | **nicht messbar wie formuliert** — siehe unten |
 | 4 (Abschluss-Zeile mit Datei) | gegen das **Plan-Dokument**: 19 Verletzungen über zwei Bäume. Gegen die **Ergebnisnotiz**: `d-check` 15/15 sauber, Kurs-Beispiel 1/1 sauber, `a-check` 11 Zeilen ohne Notiz |
 | 4-Gegenrichtung (Datei ohne Zeile) | heute überall grün — in der welle-73-Closure **dreimal verletzt** und dort geheilt (**BEO-001**) |

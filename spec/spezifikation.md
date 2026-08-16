@@ -1760,11 +1760,14 @@ dazu **denselben** Aktiv-Status wie Schritt 4 — sie bestimmt ihn nicht neu:
   keine Kennung (Präfix + Ziffernfolge), wird die Zeile **übersprungen** (eine
   geplante Welle trägt einen Namen, noch keine Kennung — und die
   Trigger-Spalte darf andere Wellen nennen). **Fehlt eine der beiden
-  Register-Überschriften, ist das fail-closed** ⇒ `wave-drift` — die
-  Aktivierung der Fähigkeit ist die Behauptung, dass die Roadmap beide
-  Register führt; sonst schaltete ein Tippfehler in der Überschrift die
-  Register-Aussagen wortlos ab (dieselbe Disziplin wie der Heading-Guard aus
-  Schritt 3).
+  Register-Überschriften, ist das fail-closed** ⇒ `wave-drift` mit der
+  **fehlenden Überschrift als Ziel** — die Aktivierung der Fähigkeit ist die
+  Behauptung, dass die Roadmap beide Register führt; sonst schaltete ein
+  Tippfehler in der Überschrift die Register-Aussagen wortlos ab (dieselbe
+  Disziplin wie der Heading-Guard aus Schritt 3). Die Ziele der drei
+  `wave-drift`-Bedeutungen sind bewusst verschieden (Verzeichnis · fehlende
+  Überschrift), damit die Befund-Deduplikation über (Datei, Zeile, Regel, Ziel,
+  Grund) nie zwei Reparaturen zu einem Befund zusammenfallen lässt.
 - **W5. Die drei Register-Aussagen.** (a) Eine Kennung in der Vorschau, zu der
   eine Datei existiert (flach **oder** im Ruheort) ⇒ `wave-preview-exists`,
   Befund an der Zeile. (b) Eine Kennung im Abschluss-Register **ohne**

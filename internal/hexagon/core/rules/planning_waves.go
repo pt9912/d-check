@@ -124,9 +124,13 @@ func waveRegisters(
 	prefix := wavePrefix(w.EffectiveGlob())
 	var out []model.Finding
 
+	// Das Befund-Ziel ist je Bedeutung eindeutig (die fehlende Überschrift bzw.
+	// das Verzeichnis) — die Deduplikation über (Datei, Zeile, Regel, Ziel,
+	// Grund) ließe zwei wave-drift-Befunde desselben Tupels sonst
+	// zusammenfallen, und eine der beiden Reparaturen verschwände.
 	nextNo, rowsNext := waveRegisterRows(lines, prose, w.EffectiveNextHeading(), prefix)
 	if nextNo == 0 {
-		out = append(out, waveFinding(cfg.Roadmap, 1, w.Dir, model.ReasonWaveDrift,
+		out = append(out, waveFinding(cfg.Roadmap, 1, w.EffectiveNextHeading(), model.ReasonWaveDrift,
 			"Register-Überschrift „"+w.EffectiveNextHeading()+"“ fehlt in "+cfg.Roadmap+
 				" — die Vorschau-Aussage ist nicht prüfbar (fail-closed)")...)
 	}
@@ -140,7 +144,7 @@ func waveRegisters(
 
 	closedNo, rowsClosed := waveRegisterRows(lines, prose, w.EffectiveClosedHeading(), prefix)
 	if closedNo == 0 {
-		return append(out, waveFinding(cfg.Roadmap, 1, w.EffectiveDoneDir(), model.ReasonWaveDrift,
+		return append(out, waveFinding(cfg.Roadmap, 1, w.EffectiveClosedHeading(), model.ReasonWaveDrift,
 			"Register-Überschrift „"+w.EffectiveClosedHeading()+"“ fehlt in "+cfg.Roadmap+
 				" — die Abschluss-Aussagen sind nicht prüfbar (fail-closed)")...)
 	}
@@ -201,7 +205,7 @@ func waveRowsFrom(lines []string, prose map[int]bool, headingNo int, prefix stri
 	idRE := regexp.MustCompile(regexp.QuoteMeta(prefix) + `\d+`)
 	var out []waveRow
 	for i := headingNo; i < end-1; i++ {
-		if !tableRowLine(lines, prose, i) {
+		if !tableRowLine(lines, prose, i) || tableHeaderOrSeparator(lines, prose, i) {
 			continue
 		}
 		cells := strings.Split(strings.Trim(lines[i], "|"), "|")
@@ -213,6 +217,36 @@ func waveRowsFrom(lines []string, prose map[int]bool, headingNo int, prefix stri
 		}
 	}
 	return out
+}
+
+// tableHeaderOrSeparator meldet, ob lines[i] (0-basiert) die Trennzeile einer
+// GFM-Tabelle ist oder deren Kopfzeile (die Tabellenzeile unmittelbar vor
+// einer Trennzeile) — beide deklarieren keine Welle, auch wenn eine Kennung
+// darin steht.
+func tableHeaderOrSeparator(lines []string, prose map[int]bool, i int) bool {
+	if tableSeparatorRow(lines[i]) {
+		return true
+	}
+	return i+1 < len(lines) && tableRowLine(lines, prose, i+1) && tableSeparatorRow(lines[i+1])
+}
+
+// tableSeparatorRow meldet die GFM-Trennzeile: nur Pipes, Bindestriche,
+// Doppelpunkte und Whitespace.
+func tableSeparatorRow(line string) bool {
+	if !strings.HasPrefix(line, "|") {
+		return false
+	}
+	seen := false
+	for _, r := range line {
+		switch r {
+		case '|', ':', ' ', '\t':
+		case '-':
+			seen = true
+		default:
+			return false
+		}
+	}
+	return seen
 }
 
 // wavePrefix liefert das Kennungs-Präfix eines Globs: der literale Teil vor
