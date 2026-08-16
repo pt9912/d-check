@@ -93,4 +93,11 @@ er dieselbe Klasse trägt.
 
 ## 7. Closure-Notiz
 
-_Ausstehend._
+Geschlossen am 2026-08-16 mit **v0.58.0**. Alle fünf Closure-Trigger sind
+erfüllt: [slice-103](slice-103-geteilte-lexik-raender.md) liegt in `done/`, die
+Bestandsmessung lag **vor** dem Schnitt-Entscheid, **BEO-003 ist entschieden**
+(auf 3 und als Kopplungs-Test verkörpert), das Release samt Digest-Backfill ist
+draußen, und `make fullbuild` ist grün.
+
+Die vollständige Notiz — geliefert, gelernt, Register-Lese-Schritt und
+Trigger-Audit — steht in [`welle-74-results.md`](welle-74-results.md).

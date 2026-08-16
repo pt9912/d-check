@@ -214,4 +214,35 @@ WIP-Slot frei ist. Keine Kopplung an einen Release.
 
 ## 10. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+**Geliefert:** sechs Module beantworten ihre Lexik-Fragen jetzt gleich —
+`citations` (Absatzgrenze), `versions` und `pins` (Anker-Auflösung vollständig:
+Fence, Inline-Code, Tag-Kontext, Duplikat-Slug, Prozent-Dekodierung,
+Groß-/Kleinschreibung), `planning` (Überschrift, Marker, Block-Grenze), `vcs`
+(Status-Zeile, `immutable-when`) und `targets` (Tabellenzeilen). Ausgeliefert als
+**v0.58.0**. Für die git-Revisions-Achse liefert der Slice bewusst **keinen**
+Code, sondern eine benannte Grenze mit beobachtbarem Trigger.
+
+**Der Slice hat dreimal geglaubt, am Ende zu sein.** Nach der Messung standen
+zwei betroffene Stellen fest, nach dem ersten Review vier, nach dem zweiten
+sechs — und jede Zwischenbilanz war als vollständig formuliert. Zwei der zuletzt
+gefundenen trugen ein **stilles Grün in einem Gate**: eine reale Core-Änderung
+einer `Accepted`-ADR passierte das Immutabilitäts-Gate ohne Ausgabe, und
+`planning-drift` entfiel, wenn der Aktiv-Block an einer eingerückten H2 endete.
+
+**Die teuerste Lehre ist methodisch.** Eine Aufzählung belegt keinen
+Klassen-Abschluss: dreimal hat eine Liste, die „vollständig“ hieß, Stellen nicht
+gekannt, und jedes Mal fand ein Review sie in Minuten. Was trägt, ist eine
+**Kopplung** — ein Test, der alle Konsumenten derselben Frage dieselbe Eingabe
+beantworten lässt — oder eine **erschöpfende Prüfung mit Negativbefund je
+Kandidat**. Beides liegt jetzt vor: `TestAnkerFrageHatEineAntwort` und die
+Modul-für-Modul-Liste der dritten Review-Runde.
+
+**Auch die Reparatur war zweimal halb.** Die Anker-Frage wurde erst zur
+Fence-Hälfte vereinheitlicht, dann zur HTML-Hälfte, und erst im dritten Anlauf
+auch in der Slug-Hälfte. Eine geteilte Antwort ist nicht halb übernehmbar, und
+„dieselbe Grundmenge“ ist noch keine „dieselbe Antwort“.
+
+**Offen bleibt benannt:** die Klasse ist dort nicht mechanisch geschlossen, wo
+noch kein Kopplungs-Test existiert — die Absatz-, Überschriften- und
+Tabellen-Achse tragen bis heute nur Einzel-Assertionen. Die Register-Bewegungen
+stehen in der [Wellen-Ergebnisnotiz](welle-74-results.md).

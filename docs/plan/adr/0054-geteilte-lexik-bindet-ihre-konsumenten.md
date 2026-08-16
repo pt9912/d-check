@@ -1,6 +1,6 @@
 # ADR-0054 — Geteilte Lexik bindet ihre Konsumenten; die Revisions-Achse bleibt eine benannte Grenze
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-08-16
 **Autor:** pt9912
 **Bezug:** [`DC-FA-CITE-001`](../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in),
@@ -128,3 +128,8 @@ auf git-Blobs, die kein scannender Wächter je sieht.
 ## Geschichte
 
 - 2026-08-16: Proposed (`slice-103`, nach der Bestandsmessung).
+- 2026-08-16: Accepted (Closure `slice-103`). Zwischen beiden Zeilen liegen drei
+  unabhängige Review-Runden; Entscheidung 1 hat dabei zweimal nur halb
+  gegriffen, Entscheidung 3 ist unverändert geblieben, und der dritte
+  Re-Evaluierungs-Trigger ist **eingetreten** und in derselben Welle beantwortet
+  worden — mit einer Kopplung statt einer weiteren Aufzählung.
