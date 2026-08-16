@@ -1,6 +1,6 @@
 # ADR-0056 — `links.resolve-from`: nur wandernde Quellorte, und Ziel-Identität gehört zur Auflösbarkeit
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-08-16
 **Autor:** pt9912
 **Bezug:** [`DC-FA-LINK-001`](../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)
@@ -111,3 +111,7 @@ wandern. Eingeschränkt auf die wandernden Verzeichnisse: 0 von 79.
 ## Geschichte
 
 - 2026-08-16: Proposed (`slice-095`, nach der Bestandsmessung samt Retro-Beleg).
+- 2026-08-16: Accepted (Closure `welle-76`; Release v0.60.0, zwei Review-Runden,
+  fail-closed-Zusage nach CI-Realfund an der git-Realität justiert — der
+  Kern-Entscheid „nur wandernde Quellorte, Ziel-Identität gehört zur
+  Auflösbarkeit" ist unverändert umgesetzt).

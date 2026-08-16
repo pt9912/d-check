@@ -73,7 +73,7 @@ lieferbarer Zwischenstand.
   sie durch ein Modul zu ersetzen wäre ein eigener Slice — und der
   Auflösungs-Trigger der Regel sagt genau das.
 - [slice-103](slice-103-geteilte-lexik-raender.md) und
-  [slice-095](../in-progress/slice-095-links-resolve-from.md).
+  [slice-095](slice-095-links-resolve-from.md).
 
 ## 7. Closure-Notiz
 

@@ -37,10 +37,10 @@ Implementierung `cd79619`); Arbeitsbaum-Stand `cd79619` (= HEAD).
   (die Invariante, die hier maschinell wird),
   [`AGENTS.md`](../../AGENTS.md) §3 Hard Rules, [`CLAUDE.md`](../../CLAUDE.md)
 - Der Slice-Plan
-  [slice-095](../plan/planning/in-progress/slice-095-links-resolve-from.md)
+  [slice-095](../plan/planning/done/slice-095-links-resolve-from.md)
   (§2 dreifacher Anlass, §3 Abnahme-Punkte, §3a Messung samt Retro-Beleg) und
   das Wellendokument
-  [welle-76](../plan/planning/welle-76-ortsfeste-verweise.md)
+  [welle-76](../plan/planning/done/welle-76-ortsfeste-verweise.md)
 
 **Läufe dieses Reviews.** Alle Fixtures, Probe-Configs und Mutations-Kopien in
 einem Scratch-Verzeichnis außerhalb des Repos (danach gelöscht); keine

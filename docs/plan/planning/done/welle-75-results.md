@@ -101,8 +101,8 @@ verkörpert), **BEO-005** (1×).
 
 ## Folge-Slices
 
-- [slice-095](../in-progress/slice-095-links-resolve-from.md) lag bei dieser
-  Closure unverändert in `open/` (inzwischen in Arbeit — der Link zeigt auf
+- [slice-095](slice-095-links-resolve-from.md) lag bei dieser
+  Closure unverändert in `open/` (inzwischen umgesetzt — der Link zeigt auf
   seinen heutigen Ort, die Aussage gilt dem Closure-Zeitpunkt); die
   Chronologie-Ordnung (**BEO-005**) steht als geplante Welle in der Vorschau.
 - **Kein** Folge-Slice aus den Reviews: F-13 (doppelte Roadmap-Lesung) ist eine

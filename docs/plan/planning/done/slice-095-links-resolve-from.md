@@ -115,24 +115,30 @@ zieht die Move-Regel im selben Commit nach. Die Grenze steht in der ADR.
 
 ## 4. Definition of Done
 
-- [ ] [`DC-FA-LINK-001`](../../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)
+- [x] [`DC-FA-LINK-001`](../../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)
       um `resolve-from` erweitert (Akzeptanzkriterien inkl. „ohne Block
-      byte-identisch"), Algorithmus und Grund-Code in der Spezifikation,
-      begleitende ADR.
+      byte-identisch"; Lastenheft 0.60.2), Algorithmus als Schritt 6 der
+      Spezifikation, begleitende
+      [ADR-0056](../../adr/0056-resolve-from-wandernde-quellorte.md).
 - [x] Implementierung + Tests; **Realdatenbeleg im eigenen Repo**: die
       **Quellort-Hälfte** der belegten Fälle wäre vor dem Move rot gewesen
       (Retro-Lauf mit dem Produkt: 19 Befunde am Vor-welle-69-Stand); die
       Ziel-Wanderungs-Hälfte ist als Grenze in der ADR benannt.
-- [ ] `make gates` grün; Release als Minor (d-check findet danach mehr).
+- [x] `make gates` grün; Release **v0.60.0** als Minor (Digest
+      `sha256:5892a87b…d3f9`), Fähigkeit im eigenen Baum scharf in `make gates`.
 
 ## 5. Risiken / offene Punkte
 
 - **Falsch-Positive bei absichtlich ortsgebundenen Verweisen** (ein Slice, der
-  bewusst auf seinen eigenen Ruheort zeigt). — **Ausgang:** offen; das
-  bestehende Ventil `ignore-refs` ist der Kandidat, bevor ein neues erfunden wird.
+  bewusst auf seinen eigenen Ruheort zeigt). — **Ausgang:** das bestehende
+  Ventil `ignore-refs` trägt den Fall (dieselbe Wirkung wie in Schritt 4,
+  getestet); kein neues Ventil. Erweist es sich als zu grob, ist das ein
+  benannter Re-Evaluierungs-Trigger der ADR.
 - **Kombinatorik:** vier Quellorte × alle Verweise erhöht die Prüf-Menge.
-  — **Ausgang:** offen; zu messen, ob die Laufzeit-Zusage
-  ([`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)) berührt wird.
+  — **Ausgang:** gemessen, nicht behauptet: die Laufzeit des vollen Laufs liegt
+  im Rauschen der Vorversion
+  ([`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance) unberührt);
+  kein Carveout nötig, keine Rückführung.
 
 ## 6. Trigger
 
@@ -160,4 +166,22 @@ die Implementierung liefert sie; spec-first wie jeder d-check-Slice.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+Geliefert am 2026-08-16 mit Release **v0.60.0**. `links.resolve-from` prüft
+Dateien in wandernden Lifecycle-Verzeichnissen gegen jeden Ort ihrer Gruppe;
+beide Fehlarten (nicht überall auflösbar, nicht überall dasselbe Ziel) tragen
+den neuen Grund-Code `link-position-dependent`. Alle drei Abnahme-Punkte sind
+mit ihren notierten Ausgängen umgesetzt; die Messung aus §3a hat den Zuschnitt
+getragen (nur `dirs`-Dateien sind Quellen — sonst 108 Falsch-Positive) und der
+Retro-Beleg lief mit dem Produkt (19 Befunde am Vor-welle-69-Stand, die
+Quellort-Hälfte des realen Bruchs). Zwei unabhängige Review-Runden: die erste
+blockierend (15 Befunde, darunter die Ist-Ort-Vorbedingung gegen Doppelbefunde
+und der stille Quellen-Ausfall bei Tippfehler-Orten), die zweite APPROVE mit
+Text-Auflagen (geheilt vor dem Release, Lastenheft 0.60.2). Dazu ein
+**CI-Realfund**: der erste fail-closed-Zuschnitt meldete auf jedem frischen
+Klon das legitim geleerte `open/` — git überträgt leere Verzeichnisse nicht;
+die Zusage ist an dieser Realität justiert und die Rest-Grenze im Vertrag
+benannt. Drei Grenzen sind ausdrücklich Vertrag, nicht Lücke: Ziel-Wanderung
+([ADR-0056](../../adr/0056-resolve-from-wandernde-quellorte.md) Entscheidung 6), Scan-Bereichs-Kopplung der Gruppen-Orte und der
+einzelne fehlende Ort. Diese Closure selbst war der erste Anwendungsfall: die
+Fähigkeit lief scharf, während ihr eigener Slice nach `done/` wanderte.
+Wellen-Kontext in [welle-76-results.md](welle-76-results.md).

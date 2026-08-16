@@ -16,7 +16,7 @@ Moduls auf Konsumenten-CR).
 
 Die Invariante der Lifecycle-Move-Regel maschinell machen: ein relativer
 Verweis in einer Slice-Datei muss aus **jedem** Lifecycle-Verzeichnis auflösen,
-nicht nur vom Ist-Ort. [slice-095](in-progress/slice-095-links-resolve-from.md)
+nicht nur vom Ist-Ort. [slice-095](slice-095-links-resolve-from.md)
 liefert `links.resolve-from` — dieselbe Prüfung mit erweiterter
 Quellort-Menge, ohne den Schlüssel byte-identisch.
 
@@ -35,14 +35,14 @@ unabhängig.
 
 ## 3. Closure-Trigger (Welle schließt)
 
-- [slice-095](in-progress/slice-095-links-resolve-from.md) liegt in `done/`.
+- [slice-095](slice-095-links-resolve-from.md) liegt in `done/`.
 - **Der Realdatenbeleg liegt vor:** die **Slice-Hälfte** des historischen
   19-Link-Bruchs wäre mit aktivem `resolve-from` **vor** dem Move rot gewesen
   (retro gemessen, mit dem Produkt); die Ziel-Wanderungs-Hälfte (Review-Reports,
   Wellendokument) ist als **Grenze** in der ADR benannt — sie ist eine andere
   Frage, keine offene Lücke.
 - **Die Laufzeit-Zusage ist gemessen**, nicht behauptet
-  ([`DC-QA-01`](../../../spec/lastenheft.md#dc-qa-01--performance)) — die
+  ([`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)) — die
   Rückführung des Slice hängt daran.
 - Release als **Minor** (opt-in; ohne den Schlüssel byte-identisch), die
   Richtung in der Notiz **offen** formuliert.
@@ -52,13 +52,13 @@ unabhängig.
 
 | Slice | Rolle |
 |---|---|
-| [slice-095](in-progress/slice-095-links-resolve-from.md) | `links.resolve-from`: hypothetische Quellorte, eigener Grund-Code, Ventil-Anschluss |
+| [slice-095](slice-095-links-resolve-from.md) | `links.resolve-from`: hypothetische Quellorte, eigener Grund-Code, Ventil-Anschluss |
 
 ## 5. Abhängigkeiten
 
-- [`DC-FA-LINK-001`](../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)
+- [`DC-FA-LINK-001`](../../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)
   und die Auflösungs-Mechanik liegen vor; erweitert wird eine bestehende
-  Anforderung ([ADR-0044](../adr/0044-geteiltes-referenz-ventil-quell-skopus.md)-Kriterium).
+  Anforderung ([ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md)-Kriterium).
 - Das bestehende Ventil `ignore-refs` ist der Kandidat für absichtlich
   ortsgebundene Verweise — bevor ein neues erfunden wird.
 
@@ -73,4 +73,17 @@ unabhängig.
 
 ## 7. Closure-Notiz
 
-_Ausstehend._
+Geschlossen am 2026-08-16. Alle Closure-Trigger erfüllt:
+[slice-095](slice-095-links-resolve-from.md) liegt in `done/` (Release
+**v0.60.0**, Digest `sha256:5892a87b…d3f9`), der Realdatenbeleg lief mit dem
+Produkt (19 Befunde am Vor-welle-69-Stand — die Quellort-Hälfte des realen
+Bruchs; die Ziel-Wanderungs-Hälfte als Grenze in
+[ADR-0056](../../adr/0056-resolve-from-wandernde-quellorte.md) Entscheidung 6),
+die Laufzeit-Zusage ist gemessen (im Rauschen,
+[`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)) und das
+Release als Minor geschnitten — opt-in, ohne den Schlüssel byte-identisch, die
+Wirkungs-Richtung in Handbuch und CHANGELOG offen formuliert. Die Invariante
+der Move-Regel ist damit maschinell: der nächste präfixlose Nachbar-Verweis
+wird **vor** dem `git mv` gemeldet, und diese Closure war ihr erster Lauf unter
+scharfer Prüfung. Was wirkte und was anders lief:
+[welle-76-results.md](welle-76-results.md).

@@ -45,9 +45,9 @@ Arbeitsbaum-Stand `3eaf512` (= HEAD, clean).
   [`MR-013`](../../harness/conventions/MR-013-lifecycle-move-buendelung.md),
   [`AGENTS.md`](../../AGENTS.md) §3, [`CLAUDE.md`](../../CLAUDE.md)
 - Der Slice-Plan
-  [slice-095](../plan/planning/in-progress/slice-095-links-resolve-from.md)
+  [slice-095](../plan/planning/done/slice-095-links-resolve-from.md)
   (§3a inkl. der korrigierten Überclaim-Passage) und das Wellendokument
-  [welle-76](../plan/planning/welle-76-ortsfeste-verweise.md)
+  [welle-76](../plan/planning/done/welle-76-ortsfeste-verweise.md)
   (Closure-Trigger)
 
 **Läufe dieses Re-Reviews.** Baseline `make test` grün (Exit 0); das Image aus

@@ -89,7 +89,7 @@ den Neubau, gegen den Abnahme-Punkt 1 ursprünglich abgewogen hat.
   verdient einen **Kopplungs-Test** statt Einzel-Assertionen.
 - **Der Ausbau der Tabellen-Lexik zu einem adressierbaren Modell** (Spalten nach
   Kopfzeile, Typen, Ordnung). Hier entsteht nur, was die vier Aussagen brauchen.
-- [slice-095](../in-progress/slice-095-links-resolve-from.md).
+- [slice-095](slice-095-links-resolve-from.md).
 
 ## 7. Closure-Notiz
 
