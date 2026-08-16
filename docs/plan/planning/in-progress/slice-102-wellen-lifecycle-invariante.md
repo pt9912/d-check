@@ -77,6 +77,45 @@ Roadmap, die das Verzeichnis widerlegt.
    zusammen ergibt das eine Dreier-Kopplung. Zu prüfen, ob sie sich widersprechen
    können und was dann gilt.
 
+## 3a. Messung: was der Bestand zu den vier Aussagen sagt
+
+Methode wie in den Vorgänger-Slices: der **reale** Bestand dreier Planungs-Bäume
+(`d-check`, `a-check` und das Beispiel-Repo des Kurses, das die Baseline-Form
+vorführt).
+
+| Aussage | Messung |
+|---|---|
+| 1 + 2 (aktive Welle ⟺ genau eine flache Datei) | heute in allen drei Bäumen konsistent; `d-check` 1 flache Datei bei aktiver Welle, `a-check` 0 bei aktiver Welle — **letzteres ist eine Verletzung**, die Roadmap nennt eine Welle ohne Wellendokument |
+| 3 (Vorschau-Zeile ohne Datei) | **nicht messbar wie formuliert** — siehe unten |
+| 4 (Abschluss-Zeile mit Datei) | gegen das **Plan-Dokument**: 19 Verletzungen über zwei Bäume. Gegen die **Ergebnisnotiz**: `d-check` 15/15 sauber, Kurs-Beispiel 1/1 sauber, `a-check` 11 Zeilen ohne Notiz |
+| 4-Gegenrichtung (Datei ohne Zeile) | heute überall grün — in der welle-73-Closure **dreimal verletzt** und dort geheilt (**BEO-001**) |
+
+**Zwei Entwurfsannahmen sind damit widerlegt:**
+
+1. **Aussage 4 meint die Ergebnisnotiz, nicht das Plan-Dokument.** Gegen das
+   Plan-Dokument gemessen meldet sie 19-mal — und jedes Mal zu Unrecht: die
+   älteren Wellen sind geschlossen worden, als es die Konvention des flachen
+   Wellendokuments noch nicht gab. Das **verpflichtende** Artefakt einer
+   geschlossenen Welle ist die Ergebnisnotiz; sie verlangt die
+   Closure-Prozedur, und nur sie ist über den ganzen Bestand vorhanden.
+2. **Aussage 3 braucht eine Spalten-Adresse und greift nur bei ID-Zeilen.** Zwei
+   der drei Bäume schreiben in §Nächste Wellen **Namen** („Chronologie-Ordnung in
+   Tabellen“), das Baseline-Beispiel schreibt **Kennungen**
+   (`welle-3-skalierung`). Eine geplante Welle hat in der gelebten Praxis dieses
+   Repos noch **keine** Kennung — sie bekommt sie bei der Eröffnung. Ein
+   Token-Scan über die ganze Zeile ist zudem sofort falsch: die Trigger-Spalte
+   einer Vorschau-Zeile **darf** andere Wellen nennen, und genau das tut die
+   eigene Roadmap seit heute (die Zeile zur Chronologie-Ordnung nennt
+   `welle-75` als Trigger). Die Aussage greift also nur, wenn die **Welle-Spalte**
+   eine Kennung trägt — dann aber scharf: das ist der Fall, vor dem die Baseline
+   warnt („zwei Positionen, nicht drei“).
+
+**Und ein Befund über den eigenen Bestand hinaus:** `a-check` verletzt Aussage 1
+heute (aktive Welle in der Roadmap, kein Wellendokument) und Aussage 4 elffach.
+Die Fähigkeit ist damit für diesen Konsumenten nicht „nice to have“, sondern
+findet beim ersten Lauf echte Rückstände — sie muss opt-in bleiben und ihre
+Einführung dort ein eigener Schritt sein.
+
 ## 4. Definition of Done
 
 - [ ] Abnahme-Punkte entschieden; Change Request an
