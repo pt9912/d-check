@@ -6,6 +6,26 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-095 — **Ortsfeste Verweise** (`links.resolve-from`, opt-in;
+  `DC-FA-LINK-001` §Ortsfeste Verweise,
+  [ADR-0056](docs/plan/adr/0056-resolve-from-wandernde-quellorte.md); Change
+  Request des Konsumenten a-check). Wo Dateien per `git mv` zwischen
+  Geschwister-Verzeichnissen **wandern** — der Planning-Lifecycle ist der
+  Anlassfall —, muss ein relativer Verweis von **jedem** Ort der Gruppe
+  auflösen, und überall auf **dasselbe** Ziel. Sonst
+  `link-position-dependent`: die Reparatur ist das **Präfixieren des Pfads**,
+  nicht das Anlegen des Ziels — am Ist-Ort ist nichts kaputt. Dateien in
+  `fixed-dirs` (etwa dem Ruheort) sind hypothetische Ziele, aber keine
+  Quellen; ein Ziel, das schon am Ist-Ort fehlt, meldet weiter nur
+  `target-missing` (kein Doppelbefund). Ohne den Block byte-identisch.
+  **Der Beleg lief mit dem Produkt:** der heutige Bestand ist grün (die Null
+  ist von einer Woche Hand-Nachzügen gekauft — allein am Vortag 10, 15 und 14
+  nachgezogene Verweise je Move), und der Retro-Lauf gegen den Stand vor der
+  welle-69-Eröffnung meldet exakt die **19** des realen Bruchs, mit
+  identischer Verteilung. Laufzeit unverändert (im Rauschen, `DC-QA-01`).
+
 ## [0.59.0] — 2026-08-16
 
 ### Added

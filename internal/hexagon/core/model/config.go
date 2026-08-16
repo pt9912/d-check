@@ -8,6 +8,16 @@ import (
 	"strings"
 )
 
+// ResolveFromGroup ist eine Gruppe ortsfester Verweise (DC-FA-LINK-001
+// §Ortsfeste Verweise, Schritt 6): Dateien in den WANDERNDEN Verzeichnissen
+// (Dirs) sind Quellen, deren relative Ziele von jedem Ort der Gruppe
+// (Dirs ∪ FixedDirs) auflösen müssen — und überall auf dasselbe Ziel.
+// Dateien in FixedDirs sind am Endzustand und keine Quellen.
+type ResolveFromGroup struct {
+	Dirs      []string
+	FixedDirs []string
+}
+
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
@@ -35,6 +45,9 @@ type Config struct {
 	// IgnoreRefs: geteiltes Referenz-Ventil (DC-FA-REF-001), honoriert
 	// von links/anchors/codepaths; nil = kein Eintrag (byte-identisch).
 	IgnoreRefs []IgnoreRef
+	// ResolveFrom: Gruppen ortsfester Verweise (DC-FA-LINK-001 Schritt 6);
+	// nil = kein Eintrag (byte-identisch).
+	ResolveFrom []ResolveFromGroup
 	// Modules: nil = DefaultModules.
 	Modules []string
 	// IDPatterns: bereits kompilierte Kennungs-Muster (Modul ids).

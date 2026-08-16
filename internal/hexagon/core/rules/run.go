@@ -204,6 +204,7 @@ func (st *runState) checkFile(file string) error {
 	lines := PreprocessMarkdown(content)
 	if st.applies("links", file) {
 		st.findings = append(st.findings, CheckLinks(st.fsys, file, lines, st.cfg.IgnoreRefs)...)
+		st.findings = append(st.findings, CheckResolveFrom(st.fsys, file, lines, st.cfg.ResolveFrom, st.cfg.IgnoreRefs)...)
 	}
 	if st.applies("anchors", file) {
 		st.findings = append(st.findings, CheckAnchors(st.fsys, file, content, lines, st.slugCache, st.cfg.IgnoreRefs)...)

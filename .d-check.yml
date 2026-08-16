@@ -22,6 +22,22 @@ modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions]
 # Slices 080/081) zitieren den entfernten .harness/baseline/v1.4.0/-Pfad als
 # Historie — quell-skopiert (in) von der Existenzpruefung ausgenommen, ohne die
 # eingefrorene Doku zu editieren. Die live-Fundstellen sind auf v5.0.0 retargetet.
+# Ortsfeste Verweise (DC-FA-LINK-001 §Ortsfeste Verweise, ADR-0056): eine
+# Datei in einem wandernden Lifecycle-Verzeichnis muss jedes relative Ziel von
+# JEDEM Ort der Gruppe aufloesen -- und ueberall auf dasselbe. Vor dem
+# Scharfschalten gemessen: heutiger Bestand 0; retro gegen den Stand vor der
+# welle-69-Eroeffnung meldet das Produkt exakt die 19 des realen Bruchs. Der
+# Ruheort ist fixed (seine Dateien wandern nie wieder -- sonst 108
+# Falsch-Positive).
+links:
+  resolve-from:
+    - dirs:
+        - docs/plan/planning/open
+        - docs/plan/planning/next
+        - docs/plan/planning/in-progress
+      fixed-dirs:
+        - docs/plan/planning/done
+
 ignore-refs:
   # Review-Reports sind LAUF-BELEGE: sie halten fest, was zur Review-Zeit galt.
   # Als slice-099/100 nach dem Review zu einem Slice zusammengeführt wurden,

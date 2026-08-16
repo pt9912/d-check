@@ -64,9 +64,23 @@ type rawScope struct {
 }
 
 // rawScopeOnly traegt Module, die ausser scope keine eigenen
-// Konfigurations-Schluessel haben (links, anchors).
+// Konfigurations-Schluessel haben (anchors, spans, pins).
 type rawScopeOnly struct {
 	Scope *rawScope `yaml:"scope"`
+}
+
+// rawLinks traegt scope und die resolve-from-Gruppen (DC-FA-LINK-001
+// §Ortsfeste Verweise).
+type rawLinks struct {
+	Scope       *rawScope         `yaml:"scope"`
+	ResolveFrom []rawResolveGroup `yaml:"resolve-from"`
+}
+
+// rawResolveGroup ist eine Gruppe ortsfester Verweise: dirs sind die
+// wandernden Verzeichnisse (Quellen), fixed-dirs die ortsfesten Ziele.
+type rawResolveGroup struct {
+	Dirs      []string `yaml:"dirs"`
+	FixedDirs []string `yaml:"fixed-dirs"`
 }
 
 // rawCodepaths traegt scope, roots und das exempt-paths-Ventil
@@ -443,7 +457,7 @@ type raw struct {
 	} `yaml:"scan"`
 	IgnoreRefs []rawIgnoreRef `yaml:"ignore-refs"`
 	Modules    []string       `yaml:"modules"`
-	Links     *rawScopeOnly `yaml:"links"`
+	Links     *rawLinks     `yaml:"links"`
 	Anchors   *rawScopeOnly `yaml:"anchors"`
 	Spans     *rawScopeOnly `yaml:"spans"`
 	Pins      *rawScopeOnly `yaml:"pins"`
@@ -500,11 +514,50 @@ func Decode(content []byte) (model.Config, error) {
 	return cfg, nil
 }
 
+// applyResolveFrom validiert die resolve-from-Gruppen (DC-FA-LINK-001
+// §Ortsfeste Verweise, Schritt 6). Config-Rand-Disziplin: eine Gruppe aus
+// weniger als zwei wandernden Orten prüft nichts, ein absoluter oder
+// `..`-Pfad verlässt die Wurzel, und ein Verzeichnis in mehreren Gruppen
+// machte die Quellen-Zuordnung mehrdeutig — alles Exit 2 statt stillem Grün.
+func applyResolveFrom(l *rawLinks, cfg *model.Config) error {
+	if l == nil || len(l.ResolveFrom) == 0 {
+		return nil
+	}
+	gesehen := map[string]bool{}
+	for i, g := range l.ResolveFrom {
+		if len(g.Dirs) < 2 {
+			return fmt.Errorf(
+				"%s: links.resolve-from[%d].dirs braucht mindestens zwei wandernde Verzeichnisse (eine Gruppe aus einem Ort prüft nichts)", FileName, i)
+		}
+		for _, d := range append(append([]string{}, g.Dirs...), g.FixedDirs...) {
+			if d == "" || strings.HasPrefix(d, "/") || strings.Contains(d, "..") {
+				return fmt.Errorf(
+					"%s: links.resolve-from[%d]: Verzeichnis %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..', nicht leer)", FileName, i, d)
+			}
+		}
+		for _, d := range g.Dirs {
+			c := path.Clean(d)
+			if gesehen[c] {
+				return fmt.Errorf(
+					"%s: links.resolve-from: Verzeichnis %q ist dirs-Mitglied mehrerer Gruppen — die Quellen-Zuordnung wäre mehrdeutig", FileName, d)
+			}
+			gesehen[c] = true
+		}
+		cfg.ResolveFrom = append(cfg.ResolveFrom, model.ResolveFromGroup{
+			Dirs: g.Dirs, FixedDirs: g.FixedDirs,
+		})
+	}
+	return nil
+}
+
 // applyModules wendet die modul-spezifischen Validierungen/Kompilierungen in
 // fester Reihenfolge an und liefert den ersten Fehler (Exit 2). Ausgelagert aus
 // Decode, damit dessen gocyclo-Komplexität unter der Schwelle bleibt.
 func applyModules(r *raw, cfg *model.Config) error {
 	if err := applyIgnoreRefs(r, cfg); err != nil {
+		return err
+	}
+	if err := applyResolveFrom(r.Links, cfg); err != nil {
 		return err
 	}
 	if err := applyIDs(r.IDs, cfg); err != nil {
@@ -1515,7 +1568,7 @@ func applyScopes(r *raw, cfg *model.Config) error {
 		module string
 		scope  *rawScope
 	}{
-		{"links", scopeOf(r.Links)},
+		{"links", scopeOfLinks(r.Links)},
 		{"anchors", scopeOf(r.Anchors)},
 		{"spans", scopeOf(r.Spans)},
 		{"hostpaths", scopeOfHostpaths(r.Hostpaths)},
@@ -1549,6 +1602,13 @@ func applyScopes(r *raw, cfg *model.Config) error {
 
 // scopeOf-Helfer: nil-sichere Extraktion des scope-Schluessels der
 // jeweiligen Modul-Sektion.
+func scopeOfLinks(v *rawLinks) *rawScope {
+	if v == nil {
+		return nil
+	}
+	return v.Scope
+}
+
 func scopeOf(v *rawScopeOnly) *rawScope {
 	if v == nil {
 		return nil
