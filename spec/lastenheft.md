@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.57.2
+**Version:** 0.58.0
 
 **Status:** Draft
 
@@ -1792,6 +1792,17 @@ menschliche Entscheidung, kein eindeutig ableitbarer Fix; vgl.
 - **Negative:** Given `vcs` aktiv und eine Range, in der der Körper einer immutablen Datei **außerhalb** der ausgenommenen Abschnitte geändert (oder die Datei gelöscht/umbenannt) wird, when `d-check --enable vcs --range <base>..<head>` läuft, then ein Befund `core-drift-vcs` (Datei, Grund), Exit 1.
 - **fail-closed (git-Eingabe fehlt):** Given `vcs` aktiv, aber **kein** lesbares `.git` oder eine **fehlende/unauflösbare** Range (leere Basis, fehlender `..`-Separator), when `d-check --enable vcs` läuft, then **Exit 2** mit Hinweis auf stderr — kein stilles Grün (kein Exit 0) und kein Befund-Exit (kein Exit 1).
 
+**Grenze (benannt, nicht mechanisiert):** Die Abschnitts-Maske von
+`vcs.exclude-sections` wird auf **git-Blobs** gerechnet — auf einer Eingabe, die
+kein scannendes Modul je sieht. Die Maske selbst folgt der geteilten
+Überschriften-Lexik; ein **unbalancierter Fence in einer Revision** verschiebt
+sie dort trotzdem, und kein Wächter meldet das, weil die Wächter den
+**Arbeitsbaum** scannen. Für jeden bereits existierenden Commit ist diese Sicht
+rückwirkend blind. Gemessen wurde die Klasse über den eigenen Bestand — **null**
+von 152 immutablen Revisions-Blobs —, und der Vertrag benennt sie hier, statt
+einen zweiten Wächter auf einer dritten Eingabe-Achse zu fordern (Begründung in
+begleitender ADR).
+
 **Out-of-Scope:** die hermetische Pin-Form — das ist
 [`DC-FA-IMM-001`](#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in),
 die im Arbeitsbaum entscheidbare Schwester-Hälfte (`vcs` ist die
@@ -2608,6 +2619,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.58.0 | 2026-08-16 | Drei Konsumenten der geteilten Lexik: [`DC-FA-CITE-001`](#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in) trennt am **Fenced-Block** wie am Leerzeile-Absatz — ein Code-Block zwischen Direktive und Zitat führt in den zugesagten fail-closed-Abbruch statt in eine Zufalls-Paarung; [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) und [`DC-FA-PIN-001`](#dc-fa-pin-001--content-pin-gegen-inhaltlichen-drift-modul-pins-opt-in) erkennen **beide Anker-Formen nur außerhalb von Fences**, während ihr roher Span unberührt bleibt (die gescopten Roh-Lesungen sind eine andere **Frage**, keine andere **Antwort**). [`DC-FA-VCS-001`](#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) bekommt die **benannte Grenze** der Revisions-Achse statt eines zweiten Wächters. **Die Änderung findet mehr** — ein grüner Konsumentenlauf kann fail-closed werden; am eigenen Bestand gemessen ist heute **kein** Fall betroffen (0 von 18 Direktiven, 0 wirksame Anker, 0 von 152 Revisions-Blobs). Begründung in begleitender ADR |
 | 0.57.2 | 2026-08-15 | Nachzug nach bestätigender Re-Review: die Aufnahme-Klausel von [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) nennt sich eine „geschlossene Menge“, klassifizierte aber drei Module gar nicht — `citations`, `sources` und das neue `structure`. Das Akzeptanzkriterium derselben Anforderung tat es; die Klausel jetzt auch |
 | 0.57.1 | 2026-08-15 | Nachzug nach unabhängigem Review, vor dem Release: die **Akzeptanzkriterien** von [`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben) führten weiter elf Targets ohne `doc-structure` — Beschreibung und Out-of-Scope waren nachgezogen, die Kriterien nicht. Dieselbe Stelle war schon in 0.37.1 als Selbstwiderspruch saniert worden. Ferner nennt [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten) `structure` jetzt in der Enumeration der nicht aktivierten situativen Module |
 | 0.57.0 | 2026-08-15 | Umsetzung von [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) — das **20. Regelmodul** `structure` liegt vor, samt der von [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) seit 0.51.0 zugesagten, aber nicht implementierten Mehrdeutigkeits-Härte (`closure-note-ambiguous`). Die Abschnitts-Mechanik ist **geteilt**, nicht kopiert: die Closure-Fähigkeit ist ein Preset derselben Semantik, und ein Kopplungs-Test fährt dieselbe Eingabe durch beide Oberflächen. Neun neue Grund-Codes. **`DC-FA-CLI-010`-Erweiterung (11 → 12 Targets):** `--print-mk` trägt ein `doc-structure`-Target |

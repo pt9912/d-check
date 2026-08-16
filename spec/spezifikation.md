@@ -1191,7 +1191,11 @@ Module).
    nicht-leere Zeile** ein `>`-Blockquote, gilt dieser Block (zusammenhängende
    `>`-Zeilen, jeweils nach Abtrennen von `> ` bzw. `>` ohne Leerzeichen; eine Leer-
    oder Nicht-`>`-Zeile beendet ihn). Andernfalls der **nächste inline-Zitat-Span im
-   selben Absatz** nach der Direktive — er darf Prosa vor sich haben und über mehrere
+   selben Absatz** nach der Direktive — **Absatz** im Sinne von
+   [DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+   Schritt 2, also begrenzt durch eine Leerzeile **und** durch einen
+   Fenced-Block. Ein Fenced-Block zwischen Direktive und Zitat **trennt**: es
+   folgt dann kein Zitat, und der Fall unten greift — er darf Prosa vor sich haben und über mehrere
    Zeilen laufen, begrenzt durch ein Anführungs-Paar: `„` öffnet + `"` schließt, oder
    das erste `"` öffnet + das nächste `"` schließt. Findet sich weder ein `>`-Block
    (als nächste nicht-leere Zeile) noch ein schließendes Anführungspaar im Absatz ⇒
@@ -1422,7 +1426,11 @@ die Fences für alle übrigen Module entfernt:
    Datei links vom `#`, Anker rechts. Der adressierte Span ist die
    Heading-Section des Ankers (Heading bis zur nächsten gleich-/höherrangigen
    Überschrift; bei einem HTML-Anker ab dessen Zeile) bzw. die ganze Datei ohne
-   Anker. Aus dem Span wird das **erste** Vorkommen eines Versions-Teilmusters
+   Anker. **Beide Anker-Formen werden erkannt wie in
+   [DC-FA-ANCH-001.b](#dc-fa-anch-001b--inline-html-anker), also nur außerhalb
+   von Fences** — ein Anker in einem Code-Beispiel löst nicht auf, sonst gäbe
+   derselbe Lauf zwei Antworten auf dieselbe Frage. Der adressierte **Span**
+   bleibt davon unberührt und wird roh gelesen (Schritt 2). Aus dem Span wird das **erste** Vorkommen eines Versions-Teilmusters
    `v?\d+\.\d+\.\d+` als *erwartete* Version extrahiert. Existiert die Datei
    nicht, löst der Anker nicht auf, oder trägt der Span keine erkennbare Version
    ⇒ **Exit 2** ohne Prüfung (fail-closed, analog zur Target-Validierung von
@@ -1470,7 +1478,11 @@ die Fences sonst entfernt:
    prüfenden Datei, repo-intern). Ohne Anker (oder leerem Anker `datei#`): ganze
    Ziel-Datei. Mit Anker: die
    Heading-Section (Heading mit passendem Slug bis zur nächsten gleich-/
-   höherrangigen Überschrift; HTML-Anker ab dessen Zeile). Lässt sich Datei/Anker
+   höherrangigen Überschrift; HTML-Anker ab dessen Zeile). **Erkannt werden
+   beide Anker-Formen nur außerhalb von Fences**
+   ([DC-FA-ANCH-001.b](#dc-fa-anch-001b--inline-html-anker)); der **gehashte
+   Span** bleibt der rohe, einschließlich Fenced-Code — das ist die gescopte
+   Ausnahme dieses Moduls und keine Lexik-Abweichung. Lässt sich Datei/Anker
    nicht auflösen oder liegt das Ziel außerhalb der **Repo-Wurzel** (repo-escape)
    ⇒ **kein** `pins`-Befund (struktureller Befund bleibt `links`/`anchors`; auch im
    pins-only-Lauf kein Ersatz-Befund, kein Doppelbefund). Ein repo-internes Ziel
@@ -2492,6 +2504,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-16 | Drei Konsumenten der geteilten Lexik nachgezogen (Begründung in begleitender ADR): §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) Schritt 2 nennt den **Absatz** ausdrücklich als den geteilten (Leerzeile **und** Fenced-Block begrenzen) — ein Fenced-Block zwischen Direktive und Zitat trennt und führt in den fail-closed-Fall; §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) Schritt 1 und §[`DC-FA-PIN-001.a`](spezifikation.md#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins) Schritt 2 sagen, dass **beide Anker-Formen nur außerhalb von Fences** erkannt werden (§[`DC-FA-ANCH-001.b`](spezifikation.md#dc-fa-anch-001b--inline-html-anker)), der adressierte bzw. gehashte **Span** aber roh bleibt. Beide Zusagen standen dem Kopfsatz „fence-aware wie die übrigen Module“ nach schon zu; gemessen wurde eine andere Antwort |
 | 2026-08-15 | Nachzug aus der Closure des Struktur-Moduls, vier Vertragsflächen: §1 sagt die Symlink-Grenze jetzt für **beide** Formen (auch eine nur über einen **Datei**-Symlink erreichbare Markdown-Datei ist keine Kandidatin — bisher stand dort nur der Verzeichnis-Symlink), §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 2 zeigt darauf und sagt zusätzlich den **unlesbaren Dateibaum** fail-closed zu (je Regel ein Befund statt eines leeren Befundsatzes), Schritt 6 nennt den Wort-Begriff der **Marke** ausdrücklich unicode-weit und grenzt ihn gegen die ASCII-Wortgrenze der Floskel aus Schritt C4 ab (dieselbe geteilte Mechanik, zwei Wort-Begriffe — ein Umlaut setzt hier ein Wort fort, dort beendet er eines), und die §2-Schema-Zeile zu `structure[].min-sentences` trägt die Zähl-Semantik aus Schritt 6 („Inline-Code geleert“, „nur vor Whitespace oder Zeilenende“) statt der überholten Kurzfassung |
 | 2026-08-15 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritte 5 und 6 an die **geteilte** Mechanik angeglichen: die Bereinigung leert auch die Inline-Code-Spans, und ein Satzende zählt nur vor Whitespace oder Zeilenende — beides stand seit Lastenheft 0.55.0 für den Preset-Partner im Vertrag, für `structure` nirgends. Die Folge ist ausdrücklich benannt: ein `forbid-pattern` auf ein Wort in Backticks trifft **nicht** |
 | 2026-08-10 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C2: YAML-`null` bei `closure.glob` ausdrücklich als **abwesend** ausgewiesen (nicht als leer — die Exit-2-Zusage gilt dem explizit leeren String); §4-Zeile zu `closure-note-missing` nennt den geprüften Gegenstand jetzt „Kandidat“ statt „Slice“ samt effektivem Filter, weil die Kandidaten-Menge seit `planning.closure.glob` nicht mehr aus Slice-Dateien bestehen muss |
