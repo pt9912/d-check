@@ -29,20 +29,10 @@ func CheckPlanning(fsys driven.Filesystem, cfg model.PlanningConfig) []model.Fin
 		return planningDrift(cfg.Roadmap, 1, sliceDir,
 			"Roadmap-Datei "+cfg.Roadmap+" fehlt oder ist unlesbar (fail-closed)")
 	}
-	lines := splitLines(content)
-	prose := proseLineSet(content)
-	headingNo, headingCount := planningHeadingLine(lines, prose, cfg.EffectiveHeading())
-	if headingCount == 0 {
-		return planningDrift(cfg.Roadmap, 1, sliceDir,
-			"kanonische Überschrift „"+cfg.EffectiveHeading()+"“ fehlt in "+cfg.Roadmap+
-				" — Aktiv-Status nicht bestimmbar (fail-closed)")
+	headingNo, hasActive, fail := planningActiveStatus(content, cfg, sliceDir)
+	if fail != nil {
+		return fail
 	}
-	if headingCount > 1 {
-		return planningDrift(cfg.Roadmap, headingNo, sliceDir,
-			"kanonische Überschrift „"+cfg.EffectiveHeading()+"“ kommt mehrfach in "+cfg.Roadmap+
-				" vor — Aktiv-Status mehrdeutig (fail-closed)")
-	}
-	hasActive := !planningBlockHasMarker(lines, prose, headingNo, cfg.EffectiveMarker())
 	hasSlices := planningHasSlices(fsys, sliceDir, cfg.EffectiveSliceGlob())
 	if hasActive == hasSlices {
 		return nil
@@ -56,6 +46,30 @@ func CheckPlanning(fsys driven.Filesystem, cfg model.PlanningConfig) []model.Fin
 			" — die Roadmap muss den Ruhe-Marker „" + cfg.EffectiveMarker() + "“ tragen"
 	}
 	return planningDrift(cfg.Roadmap, headingNo, sliceDir, msg)
+}
+
+// planningActiveStatus bestimmt den Aktiv-Status EINMAL: Zeile der kanonischen
+// Überschrift und ob ihr Block den Ruhe-Marker trägt. Jede Fähigkeit, die den
+// Status braucht, ruft diese Stelle auf — eine zweite Antwort auf dieselbe
+// Frage wäre ein Defekt (ADR-0054). Ist der Status nicht bestimmbar (Überschrift
+// fehlt oder mehrfach), liefert fail den fail-closed-Befund.
+func planningActiveStatus(
+	content []byte, cfg model.PlanningConfig, sliceDir string,
+) (headingNo int, hasActive bool, fail []model.Finding) {
+	lines := splitLines(content)
+	prose := proseLineSet(content)
+	no, count := planningHeadingLine(lines, prose, cfg.EffectiveHeading())
+	if count == 0 {
+		return 0, false, planningDrift(cfg.Roadmap, 1, sliceDir,
+			"kanonische Überschrift „"+cfg.EffectiveHeading()+"“ fehlt in "+cfg.Roadmap+
+				" — Aktiv-Status nicht bestimmbar (fail-closed)")
+	}
+	if count > 1 {
+		return 0, false, planningDrift(cfg.Roadmap, no, sliceDir,
+			"kanonische Überschrift „"+cfg.EffectiveHeading()+"“ kommt mehrfach in "+cfg.Roadmap+
+				" vor — Aktiv-Status mehrdeutig (fail-closed)")
+	}
+	return no, !planningBlockHasMarker(lines, prose, no, cfg.EffectiveMarker()), nil
 }
 
 // CheckPlanningClosure ist die zweite planning-Fähigkeit (DC-FA-PLAN-001

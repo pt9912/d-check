@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"path"
 	"regexp"
 	"sort"
 	"strings"
@@ -333,6 +334,68 @@ type PlanningConfig struct {
 	Marker    string
 	SliceGlob string
 	Closure   ClosureConfig
+	Waves     WavesConfig
+}
+
+// WavesConfig ist die dritte planning-Fähigkeit (DC-FA-PLAN-001
+// §Wellen-Invariante, Spez-Schritte W1–W5): dieselbe Lifecycle-Invariante eine
+// Ebene höher — die Wellen-Abschnitte der Roadmap gegen die Wellen-Dateien.
+// Opt-in INNERHALB des opt-in Moduls: ohne Dir wird kein Wellendokument
+// geöffnet und der Befundsatz ist byte-identisch (DC-QA-02).
+//
+// Plan-Dokument und Ergebnisnotiz sind zwei ROLLEN: die Aktiv-Status-Aussage
+// fragt nach dem Plan-Dokument, die Abschluss-Aussage nach der Notiz. Gegen das
+// Plan-Dokument gemessen meldete die Abschluss-Aussage über zwei reale
+// Planungs-Bäume 19-mal falsch (ADR-0055).
+type WavesConfig struct {
+	Dir           string
+	DoneDir       string
+	Glob          string
+	ResultsGlob   string
+	NextHeading   string
+	ClosedHeading string
+}
+
+// EffectiveDoneDir liefert den Ruheort der Ergebnisnotizen (Default: `done`
+// unterhalb von Dir).
+func (w WavesConfig) EffectiveDoneDir() string {
+	if w.DoneDir == "" {
+		return path.Join(w.Dir, "done")
+	}
+	return w.DoneDir
+}
+
+// EffectiveGlob liefert den Basisnamen-Glob der Plan-Dokumente.
+func (w WavesConfig) EffectiveGlob() string {
+	if w.Glob == "" {
+		return "welle-*.md"
+	}
+	return w.Glob
+}
+
+// EffectiveResultsGlob liefert den Basisnamen-Glob der Ergebnisnotizen; diese
+// Menge wird von den Plan-Dokumenten ABGEZOGEN.
+func (w WavesConfig) EffectiveResultsGlob() string {
+	if w.ResultsGlob == "" {
+		return "welle-*-results.md"
+	}
+	return w.ResultsGlob
+}
+
+// EffectiveNextHeading liefert die H2 des Vorschau-Registers.
+func (w WavesConfig) EffectiveNextHeading() string {
+	if w.NextHeading == "" {
+		return "## Nächste Wellen"
+	}
+	return w.NextHeading
+}
+
+// EffectiveClosedHeading liefert die H2 des Abschluss-Registers.
+func (w WavesConfig) EffectiveClosedHeading() string {
+	if w.ClosedHeading == "" {
+		return "## Abgeschlossene Wellen"
+	}
+	return w.ClosedHeading
 }
 
 // StructureRule ist eine Regel des Moduls structure (DC-FA-STRUCT-001): eine

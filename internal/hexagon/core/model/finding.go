@@ -48,6 +48,10 @@ const (
 	// Struktur-Codes fuer die Abschnitts-Findung und sechs Bedingungs-Codes —
 	// je eigener Code, weil die Befund-Deduplikation zwei Verletzungen
 	// desselben Abschnitts sonst zusammenfallen liesse.
+	ReasonWaveDrift             = "wave-drift"
+	ReasonWavePreviewExists     = "wave-preview-exists"
+	ReasonWaveResultsMissing    = "wave-results-missing"
+	ReasonWaveUnregistered      = "wave-unregistered"
 	ReasonSectionMissing        = "section-missing"
 	ReasonSectionAmbiguous      = "section-ambiguous"
 	ReasonSectionEmpty          = "section-empty"

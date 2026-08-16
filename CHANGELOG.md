@@ -6,6 +6,30 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-102 — **Wellen-Invariante: die Roadmap-Aussage gegen das Verzeichnis**
+  (`DC-FA-PLAN-001` §Wellen-Invariante,
+  [ADR-0055](docs/plan/adr/0055-wellen-invariante-artefakt-und-grund-codes.md)).
+  Dieselbe Lifecycle-Invariante, die `planning` auf der Slice-Ebene prüft, eine
+  Ebene höher: der Aktiv-Status-Abschnitt nennt eine Welle genau dann, wenn
+  **genau ein** flaches Wellendokument existiert (`wave-drift`); eine
+  Vorschau-Zeile nennt keine Welle, die schon eine Datei hat
+  (`wave-preview-exists`); jede Zeile des Abschluss-Registers hat ihre
+  **Ergebnisnotiz** (`wave-results-missing`) — **und jede Ergebnisnotiz ihre
+  Zeile** (`wave-unregistered`). Vier Grund-Codes für vier Reparaturen.
+  **Opt-in innerhalb** des opt-in Moduls über `planning.waves.dir`; ohne den
+  Schlüssel wird kein Wellendokument geöffnet und der Befundsatz ist
+  byte-identisch.
+  **Zwei Festlegungen sind gemessen, nicht gesetzt:** das verpflichtende
+  Artefakt einer geschlossenen Welle ist die **Ergebnisnotiz** — gegen das
+  Plan-Dokument geprüft meldet die Aussage über zwei reale Planungs-Bäume
+  19-mal, weil ältere Wellen vor dieser Konvention geschlossen wurden. Und die
+  Vorschau-Aussage liest die **erste Spalte** und überspringt Zeilen ohne
+  Kennung: geplante Wellen tragen Namen, und die Trigger-Spalte darf andere
+  Wellen nennen. **Beim Einführen mit Rückständen rechnen** — im eigenen Baum
+  0 Befunde, im Schwester-Repo 12.
+
 ## [0.58.0] — 2026-08-16
 
 ### Fixed

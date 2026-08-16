@@ -142,6 +142,19 @@ type rawPlanning struct {
 	Marker    string       `yaml:"marker"`
 	SliceGlob string       `yaml:"slice-glob"`
 	Closure   *rawClosure  `yaml:"closure"`
+	Waves     *rawWaves    `yaml:"waves"`
+}
+
+// rawWaves trägt die dritte planning-Fähigkeit (DC-FA-PLAN-001
+// §Wellen-Invariante): dir ist der Aktivierungs-Schalter (leer/abwesend ⇒
+// inert), alles Weitere hat Konventions-Defaults im Kern.
+type rawWaves struct {
+	Dir           string `yaml:"dir"`
+	DoneDir       string `yaml:"done-dir"`
+	Glob          string `yaml:"glob"`
+	ResultsGlob   string `yaml:"results-glob"`
+	NextHeading   string `yaml:"next-heading"`
+	ClosedHeading string `yaml:"closed-heading"`
 }
 
 // rawClosure trägt die zweite planning-Fähigkeit (DC-FA-PLAN-001
@@ -1045,11 +1058,53 @@ func applyPlanning(r *raw, cfg *model.Config) error {
 	if err != nil {
 		return err
 	}
+	waves, err := applyWaves(p.Waves)
+	if err != nil {
+		return err
+	}
 	cfg.Planning = model.PlanningConfig{
 		Roadmap: p.Roadmap, Heading: p.Heading, Marker: p.Marker, SliceGlob: p.SliceGlob,
-		Closure: closure,
+		Closure: closure, Waves: waves,
 	}
 	return nil
+}
+
+// applyWaves validiert die Wellen-Invariante-Parameter (DC-FA-PLAN-001,
+// Spez-Schritt W1). Dieselbe Config-Rand-Disziplin: ein Pfad, der die Wurzel
+// verlässt, ein ungültiges Glob und eine leere Register-Überschrift sind
+// jeweils ein stilles Grün, wenn man sie durchlässt.
+func applyWaves(w *rawWaves) (model.WavesConfig, error) {
+	if w == nil {
+		return model.WavesConfig{}, nil
+	}
+	for name, dir := range map[string]string{"dir": w.Dir, "done-dir": w.DoneDir} {
+		if strings.HasPrefix(dir, "/") || strings.Contains(dir, "..") {
+			return model.WavesConfig{}, fmt.Errorf(
+				"%s: planning.waves.%s %q muss relativ zur Repo-Wurzel liegen (kein '/', kein '..')",
+				FileName, name, dir)
+		}
+	}
+	for name, glob := range map[string]string{"glob": w.Glob, "results-glob": w.ResultsGlob} {
+		if glob == "" {
+			continue // abwesend ⇒ Kern-Default
+		}
+		if _, err := path.Match(glob, "probe"); err != nil {
+			return model.WavesConfig{}, fmt.Errorf(
+				"%s: planning.waves.%s %q ist kein gültiges Glob: %v", FileName, name, glob, err)
+		}
+	}
+	// Ein EXPLIZIT leerer Überschriften-Schlüssel träfe jede Zeile bzw. keine —
+	// beides ist eine Null-Aussage. Weglassen liefert den Konventions-Default.
+	for name, h := range map[string]string{"next-heading": w.NextHeading, "closed-heading": w.ClosedHeading} {
+		if h != "" && strings.TrimSpace(h) == "" {
+			return model.WavesConfig{}, fmt.Errorf(
+				"%s: planning.waves.%s besteht nur aus Whitespace", FileName, name)
+		}
+	}
+	return model.WavesConfig{
+		Dir: w.Dir, DoneDir: w.DoneDir, Glob: w.Glob, ResultsGlob: w.ResultsGlob,
+		NextHeading: w.NextHeading, ClosedHeading: w.ClosedHeading,
+	}, nil
 }
 
 // applyClosure validiert die Closure-Note-Struktur-Parameter (DC-FA-PLAN-001).
