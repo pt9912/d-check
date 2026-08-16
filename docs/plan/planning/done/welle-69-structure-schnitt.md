@@ -65,7 +65,7 @@ stehen deshalb **nicht** hier, sondern derivativ in der Ergebnis-Notiz: sie in
 
 - **Blockiert:** die Folge-Welle mit den Closure-Slices — deren Zuschnitt ist ein
   Ergebnis dieser Welle, nicht ihre Voraussetzung.
-- **Wird blockiert von:** nichts. [slice-095](../open/slice-095-links-resolve-from.md)
+- **Wird blockiert von:** nichts. [slice-095](../in-progress/slice-095-links-resolve-from.md)
   (`links.resolve-from`) läuft unabhängig daneben und gehört nicht hierher.
 
 ## 6. Out-of-Scope für diese Welle

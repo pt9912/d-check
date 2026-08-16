@@ -89,7 +89,7 @@ er dieselbe Klasse trägt.
   zu einer adressierbaren Tabellen-Lexik (Spalten, Typen, Ordnung).
 - **Die git-Achse für scannende Module erreichbar machen.** Fall 3 ist LOW;
   möglich, dass die richtige Lieferung eine benannte Grenze ist und kein Umbau.
-- [slice-095](../open/slice-095-links-resolve-from.md).
+- [slice-095](../in-progress/slice-095-links-resolve-from.md).
 
 ## 7. Closure-Notiz
 

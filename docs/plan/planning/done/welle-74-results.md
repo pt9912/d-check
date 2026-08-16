@@ -99,7 +99,7 @@ Der Lese-Schritt dieser Welle: das Register führt **BEO-001** (2×),
 
 ## Folge-Slices
 
-- [slice-095](../open/slice-095-links-resolve-from.md) und
+- [slice-095](../in-progress/slice-095-links-resolve-from.md) und
   [slice-102](../done/slice-102-wellen-lifecycle-invariante.md) lagen bei
   dieser Closure unverändert in `open/` (slice-102 ist inzwischen in Arbeit —
   der Link zeigt auf seinen heutigen Ort, die Aussage gilt dem Closure-Zeitpunkt).
