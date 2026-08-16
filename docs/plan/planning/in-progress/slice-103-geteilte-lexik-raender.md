@@ -135,12 +135,18 @@ aufzählbar ist — und die Aufzählung ist der Beleg, nicht die Behauptung.
 
 ## 5. Definition of Done
 
-- [ ] Bestandsmessung für alle drei Fälle über die drei Repos.
-- [ ] Abnahme-Punkte 1–4 entschieden, Vertragsanpassung geliefert.
-- [ ] Je Fall ein mutations-echter Test; die Gegenprobe über eine **Dateikopie**,
-      nicht über `git checkout` (die Lehre aus slice-101).
-- [ ] `make gates` grün; SemVer-Einordnung begründet, **beide** Richtungen
-      genannt.
+- [x] Bestandsmessung für alle drei Fälle über die drei Repos (§4a): 0 · 1 · 0.
+- [x] Abnahme-Punkte 1–4 entschieden (§4), Vertragsanpassung geliefert
+      (Lastenheft 0.58.0, Spezifikation, [ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)).
+- [x] Je Fall ein mutations-echter Test; die Gegenprobe über eine **Dateikopie**,
+      nicht über `git checkout`. **Fünf** Assertionen, jede fängt ihren Rückbau:
+      zwei an `citations`, je eine an `versions` und `pins`, und der **bestehende**
+      Absatz-Test hängt am selben Prädikat — das ist der Beleg, dass die Lexik
+      wirklich geteilt ist und nicht nur gleich aussieht.
+- [x] `make gates` grün (372/0); **SemVer: Minor** — die Änderung **findet
+      mehr** (fail-closed statt Zufalls-Paarung, Anker im Fence löst nicht mehr
+      auf) und **weniger** an keiner Stelle; ohne die drei Konsumenten-Fälle ist
+      der Befundsatz byte-identisch, am eigenen Bestand belegt.
 
 ## 6. Risiken / offene Punkte
 

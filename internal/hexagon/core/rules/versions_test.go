@@ -176,3 +176,32 @@ func TestVersionsPinOhneGruppe(t *testing.T) {
 		t.Fatalf("ohne Capture-Gruppe = ganzer Treffer, got %v", res.Findings)
 	}
 }
+
+// DC-FA-VER-001 / DC-FA-ANCH-001.b: ein HTML-Anker INNERHALB eines Fence ist
+// keiner — sonst loeste current-from auf, waehrend anchors denselben Anker im
+// selben Lauf fuer nicht existent haelt. Erwartet ist der fail-closed-Abbruch.
+func TestVersionsCurrentFromAnkerNurImFence(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"version.md": "# Versionen\n\n```html\n<a id=\"aktuell\"></a> v0.27.0\n```\n",
+		"docs/use.md": "ghcr.io/pt9912/d-check:v0.27.0\n",
+	})
+	if _, err := Run(m, nil, versionsCfg(), []string{"versions"}); err == nil {
+		t.Fatal("HTML-Anker nur im Fence: fail-closed (Exit 2) erwartet")
+	}
+}
+
+// Gegenprobe: derselbe Anker AUSSERHALB des Fence loest auf und die Pruefung
+// laeuft — die Ablehnung liegt am Fence, nicht am Anker.
+func TestVersionsCurrentFromAnkerAusserhalbFence(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"version.md": "# Versionen\n\n<a id=\"aktuell\"></a> v0.27.0\n",
+		"docs/use.md": "ghcr.io/pt9912/d-check:v0.27.0\n",
+	})
+	res, err := Run(m, nil, versionsCfg(), []string{"versions"})
+	if err != nil {
+		t.Fatalf("Anker ausserhalb des Fence muss aufloesen: %v", err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("passender Pin → 0 Befunde, got %v", res.Findings)
+	}
+}

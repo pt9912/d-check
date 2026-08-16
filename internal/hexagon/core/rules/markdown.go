@@ -160,6 +160,13 @@ func PreprocessMarkdown(content []byte) []Line {
 	return out
 }
 
+// fencedBlockBetween meldet, ob zwischen zwei aufeinanderfolgenden Prosa-Zeilen
+// ein Fenced-Block lag: proseLines lässt dessen Zeilen aus, die Nummerierung ist
+// dort also nicht zusammenhängend. Das ist die Absatzgrenze aus
+// spec/spezifikation.md §DC-FA-LINK-001.a Schritt 2 — als Prädikat, damit jeder
+// Konsument dieselbe Grenze zieht (§DC-FA-CITE-001.a Schritt 2).
+func fencedBlockBetween(prevNo, curNo int) bool { return curNo != prevNo+1 }
+
 // proseParagraphs gruppiert Prosa-Zeilen zu Absätzen: Leerzeilen und
 // Lücken in der Zeilennummerierung (übersprungene Fences) beenden
 // einen Absatz — über solche Grenzen hinweg existiert kein
@@ -170,7 +177,7 @@ func proseParagraphs(prose []proseLine) [][]proseLine {
 	prevNo := 0
 	for _, pl := range prose {
 		blank := strings.TrimSpace(pl.raw) == ""
-		if len(cur) > 0 && (blank || pl.no != prevNo+1) {
+		if len(cur) > 0 && (blank || fencedBlockBetween(prevNo, pl.no)) {
 			groups = append(groups, cur)
 			cur = nil
 		}

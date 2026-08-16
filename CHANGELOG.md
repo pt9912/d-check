@@ -8,6 +8,27 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Fixed
 
+- slice-103 — **Geteilte Lexik: drei Konsumenten beantworteten eine Lexik-Frage
+  selbst.** `citations` bildete seinen Absatz allein an Leerzeilen — ein
+  Fenced-Block zwischen Direktive und Zitat trennte dort **nicht**, und dieselbe
+  Datei lieferte je nach Trennzeichen zwei entgegengesetzte Ergebnisse: mit
+  Block **Exit 0** (oder ein falsches `citation-mismatch`), ohne Block den
+  zugesagten fail-closed-Abbruch. Die Anker-Auflösung von `versions.current-from`
+  und `pins` erkannte HTML-Anker **auch innerhalb** von Fences, während `anchors`
+  denselben Anker im selben Lauf für nicht existent hielt. Beides folgt jetzt der
+  geteilten Antwort. **Die Änderung findet mehr:** eine bisher grüne Direktive
+  hinter einem Code-Block bricht fail-closed ab (Exit 2), ein Anker in einem
+  Code-Beispiel löst nicht mehr auf. Am eigenen Bestand gemessen ist **kein**
+  heutiger Fall betroffen (0 von 18 Direktiven, 0 wirksame Anker). Der rohe
+  Ziel-Span von `pins` und die Fence-Ausnahme von `versions` bleiben unberührt —
+  das sind andere **Fragen**, keine anderen **Antworten**.
+- slice-103 — **Benannte Grenze statt zweitem Wächter:** die Abschnitts-Maske
+  des Moduls `vcs` wird auf git-Blobs gerechnet, die kein scannendes Modul sieht;
+  ein unbalancierter Fence in einer Revision verschiebt sie, und für bereits
+  existierende Commits ist die Sicht rückwirkend blind. Gemessen: **0 von 152**
+  immutablen Revisions-Blobs. Die Grenze steht jetzt im Vertrag statt in einem
+  Review-Report.
+
 - slice-099 (Closure) — **Modul `structure`, unlesbarer Dateibaum:** scheiterte
   der Baum-Aufbau, meldete das Modul **nichts** — ununterscheidbar von „alle
   Regeln erfüllt", und das als einziger stiller Pfad eines Moduls, dessen

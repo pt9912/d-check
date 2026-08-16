@@ -151,35 +151,68 @@ func resolveCitePath(file, p string) (rel string, escaped bool) {
 // Ist die nächste nicht-leere Zeile ein `>`-Blockquote, gilt dieser Block;
 // sonst der nächste inline-Zitat-Span im selben Absatz (DC-FA-CITE-001.a
 // Schritt 2). ok=false, wenn keines von beidem gefunden wird.
+//
+// Ein Fenced-Block trennt: er begrenzt den Absatz wie eine Leerzeile
+// (fencedBlockBetween, dieselbe Grenze wie proseParagraphs). Liegt einer
+// zwischen Direktive und Kandidat, folgt der Direktive kein Zitat.
 func citationQuote(prose []proseLine, i int) (string, bool) {
 	j := i + 1
 	for j < len(prose) && strings.TrimSpace(prose[j].raw) == "" {
 		j++
 	}
-	if j >= len(prose) {
+	if j >= len(prose) || fencedBlockWithin(prose, i, j) {
 		return "", false
 	}
 	if strings.HasPrefix(strings.TrimLeft(prose[j].raw, " \t"), ">") {
-		var b []string
-		for k := j; k < len(prose); k++ {
-			t := strings.TrimLeft(prose[k].raw, " \t")
-			if !strings.HasPrefix(t, ">") {
-				break
-			}
-			t = strings.TrimPrefix(strings.TrimPrefix(t, ">"), " ")
-			b = append(b, t)
-		}
-		return strings.Join(b, "\n"), true
+		return citationBlockquote(prose, j), true
 	}
-	// inline: den Absatz ab j bis zur nächsten Leerzeile sammeln.
+	return inlineQuoteSpan(citationParagraph(prose, j))
+}
+
+// fencedBlockWithin meldet, ob zwischen prose[i] und prose[j] ein Fenced-Block
+// lag — geprüft wird jeder Schritt, nicht nur der letzte: die Lücke entsteht
+// beim Überspringen der Leerzeilen.
+func fencedBlockWithin(prose []proseLine, i, j int) bool {
+	for k := i + 1; k <= j; k++ {
+		if fencedBlockBetween(prose[k-1].no, prose[k].no) {
+			return true
+		}
+	}
+	return false
+}
+
+// citationBlockquote sammelt die zusammenhängenden `>`-Zeilen ab prose[j],
+// jeweils ohne ihr `> `-Präfix. Eine Leer-, Nicht-`>`- oder Fence-Grenze
+// beendet den Block.
+func citationBlockquote(prose []proseLine, j int) string {
+	var b []string
+	for k := j; k < len(prose); k++ {
+		if k > j && fencedBlockBetween(prose[k-1].no, prose[k].no) {
+			break
+		}
+		t := strings.TrimLeft(prose[k].raw, " \t")
+		if !strings.HasPrefix(t, ">") {
+			break
+		}
+		b = append(b, strings.TrimPrefix(strings.TrimPrefix(t, ">"), " "))
+	}
+	return strings.Join(b, "\n")
+}
+
+// citationParagraph liefert den Absatz ab prose[j] — begrenzt durch eine
+// Leerzeile oder einen Fenced-Block, wie proseParagraphs.
+func citationParagraph(prose []proseLine, j int) string {
 	var para []string
 	for k := j; k < len(prose); k++ {
 		if strings.TrimSpace(prose[k].raw) == "" {
 			break
 		}
+		if k > j && fencedBlockBetween(prose[k-1].no, prose[k].no) {
+			break
+		}
 		para = append(para, prose[k].raw)
 	}
-	return inlineQuoteSpan(strings.Join(para, "\n"))
+	return strings.Join(para, "\n")
 }
 
 // inlineQuoteSpan extrahiert den ersten inline-Zitat-Span aus text:

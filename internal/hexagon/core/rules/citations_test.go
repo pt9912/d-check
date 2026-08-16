@@ -182,3 +182,44 @@ func TestNormalizeWhitespaceEinheit(t *testing.T) {
 		t.Fatal("re-wrapped Teilstring nach Normalisierung nicht gefunden")
 	}
 }
+
+// DC-FA-CITE-001.a Schritt 2: ein Fenced-Block zwischen Direktive und Zitat
+// trennt wie eine Leerzeile den Absatz — der Direktive folgt damit KEIN Zitat,
+// und das ist fail-closed. Ohne die geteilte Absatzgrenze paart das Modul die
+// Direktive mit einem Zitat hinter dem Block und meldet nichts.
+func TestCitationsFenceTrenntDirektiveVomZitat(t *testing.T) {
+	block := "```text\nBeispiel im Code-Block\n```\n"
+	m := coretest.NewMemFS(map[string]string{
+		"docs/src.md":    citeSrc,
+		"docs/citing.md": "<!-- d-check:cite docs/src.md:2-2 -->\n\n" + block + "\nText davor: „Die zweite Zeile traegt das Zitat\" steht hier.\n",
+	})
+	if _, err := Run(m, nil, model.Config{}, []string{"citations"}); err == nil {
+		t.Fatal("Fence zwischen Direktive und Zitat: fail-closed (Exit 2) erwartet, kein Fehler geliefert")
+	}
+}
+
+// Gegenprobe zur Trennung: dieselbe Datei OHNE den Block prueft das Zitat und
+// bleibt befundfrei — die Trennung liegt am Fence, nicht am Zitat.
+func TestCitationsOhneFencePaartNormal(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/src.md":    citeSrc,
+		"docs/citing.md": "<!-- d-check:cite docs/src.md:2-2 -->\n\nText davor: „Die zweite Zeile traegt das Zitat\" steht hier.\n",
+	})
+	if got := citeFindings(t, m); len(got) != 0 {
+		t.Fatalf("ohne Fence: %v, want 0 Befunde", got)
+	}
+}
+
+// Der Blockquote-Zweig traegt dieselbe Grenze: ein Fence zwischen Direktive und
+// `>`-Block trennt ebenso.
+func TestCitationsFenceTrenntVomBlockquote(t *testing.T) {
+	block := "```\nBeispiel\n```\n"
+	m := coretest.NewMemFS(map[string]string{
+		"docs/src.md": citeSrc,
+		"docs/citing.md": "<!-- d-check:cite docs/src.md:2-2 -->\n\n" + block +
+			"\n> Die zweite Zeile traegt das Zitat hier drin\n",
+	})
+	if _, err := Run(m, nil, model.Config{}, []string{"citations"}); err == nil {
+		t.Fatal("Fence vor dem Blockquote: fail-closed (Exit 2) erwartet")
+	}
+}

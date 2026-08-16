@@ -101,34 +101,62 @@ func resolveCurrentVersion(fsys driven.Filesystem, currentFrom string) (version,
 // Heading-Section (Heading-Zeile bis zur nächsten gleich-/höherrangigen
 // Überschrift) eines Headings, dessen GitHub-Slug == anchor; sonst ab der
 // Zeile eines Inline-HTML-Ankers (id=/name=) bis zur nächsten Überschrift.
+//
+// Beide Anker-Formen zählen nur außerhalb von Fences (DC-FA-ANCH-001.b): der
+// Heading-Zweig über den Prosa-Automaten, der HTML-Zweig über dieselbe
+// Zeilen-Menge. Der zurückgegebene SPAN bleibt roh, einschließlich Fenced-Code
+// (ADR-0019/ADR-0020).
 func headingSection(content []byte, anchor string) (string, bool) {
 	lines := strings.Split(string(content), "\n")
 	headings := extractHeadingLines(content)
-	for idx, h := range headings {
-		if Slugify(h.text) == anchor {
-			end := len(lines)
-			for _, h2 := range headings[idx+1:] {
-				if h2.level <= h.level {
-					end = h2.line - 1
-					break
-				}
-			}
-			return strings.Join(lines[h.line-1:end], "\n"), true
-		}
+	if span, ok := slugSection(lines, headings, anchor); ok {
+		return span, true
 	}
-	htmlRE := regexp.MustCompile(`(?i)(?:id|name)\s*=\s*["']` + regexp.QuoteMeta(anchor) + `["']`)
-	for i, raw := range lines {
-		if htmlRE.MatchString(raw) {
-			start := i + 1
-			end := len(lines)
-			for _, h2 := range headings {
-				if h2.line > start {
-					end = h2.line - 1
-					break
-				}
-			}
-			return strings.Join(lines[start-1:end], "\n"), true
+	return htmlAnchorSection(content, lines, headings, anchor)
+}
+
+// slugSection liefert die Heading-Section des Headings, dessen GitHub-Slug auf
+// anchor passt: von seiner Zeile bis zur nächsten gleich-/höherrangigen
+// Überschrift.
+func slugSection(lines []string, headings []headingLine, anchor string) (string, bool) {
+	for idx, h := range headings {
+		if Slugify(h.text) != anchor {
+			continue
 		}
+		end := len(lines)
+		for _, h2 := range headings[idx+1:] {
+			if h2.level <= h.level {
+				end = h2.line - 1
+				break
+			}
+		}
+		return strings.Join(lines[h.line-1:end], "\n"), true
+	}
+	return "", false
+}
+
+// htmlAnchorSection liefert den Span ab der Zeile eines Inline-HTML-Ankers
+// (id=/name=) bis zur nächsten Überschrift. Gezählt wird der Anker nur
+// außerhalb von Fences (DC-FA-ANCH-001.b); der Span selbst bleibt roh.
+func htmlAnchorSection(content []byte, lines []string, headings []headingLine, anchor string) (string, bool) {
+	htmlRE := regexp.MustCompile(`(?i)(?:id|name)\s*=\s*["']` + regexp.QuoteMeta(anchor) + `["']`)
+	prose := make(map[int]bool)
+	for _, pl := range proseLines(content) {
+		prose[pl.no] = true
+	}
+	for i, raw := range lines {
+		if !prose[i+1] || !htmlRE.MatchString(raw) {
+			continue
+		}
+		start := i + 1
+		end := len(lines)
+		for _, h2 := range headings {
+			if h2.line > start {
+				end = h2.line - 1
+				break
+			}
+		}
+		return strings.Join(lines[start-1:end], "\n"), true
 	}
 	return "", false
 }

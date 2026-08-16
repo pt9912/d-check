@@ -243,3 +243,24 @@ func TestPinsAnkerOhneSection(t *testing.T) {
 		t.Fatalf("Anker ohne Section → kein pins-Befund, got %v", res.Findings)
 	}
 }
+
+// DC-FA-PIN-001 / DC-FA-ANCH-001.b: ein HTML-Anker INNERHALB eines Fence ist
+// keiner — der Ziel-Span ist damit unaufloesbar, und pins meldet NICHT (der
+// strukturelle Befund bleibt links/anchors). Zweiter Konsument derselben
+// Anker-Frage wie versions.
+func TestPinsAnkerNurImFenceUnaufloesbar(t *testing.T) {
+	fix := map[string]string{
+		"spec/ziel.md": "# Ziel\n\n```html\n<a id=\"span\"></a> Stabiler Inhalt hier.\n```\n",
+	}
+	fix["docs/src.md"] = "Siehe [Span](../spec/ziel.md#span) <!-- dpin: sha256:" +
+		strings.Repeat("a", 64) + " -->.\n"
+	res, err := Run(coretest.NewMemFS(fix), nil, model.Config{}, []string{"pins"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, f := range res.Findings {
+		if f.Rule == "pins" {
+			t.Fatalf("Anker nur im Fence ist unaufloesbar → kein pins-Befund, got %+v", f)
+		}
+	}
+}
