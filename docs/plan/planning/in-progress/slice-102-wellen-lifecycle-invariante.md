@@ -58,12 +58,26 @@ Roadmap, die das Verzeichnis widerlegt.
    brauchen zusätzlich das **Parsen von Tabellenzeilen** und eine
    Kennungs-Extraktion — mehr Vertragsfläche und die Frage, woran eine Zeile
    ihre Welle-ID trägt. Zu entscheiden, ob 3/4 in denselben Slice gehören.
+   — **Ausgang: alle vier, in einem Slice** (beim Wellen-Schnitt entschieden).
+   Die Abwägung hat sich gedreht, weil die Tabellenzeilen-Lexik seit welle-74
+   **entdriftet** vorliegt: sie zählt nur außerhalb von Fences und braucht hier
+   nur noch eine **Spalten-Adresse**, keinen Neubau.
 2. **Woran erkennt das Modul eine Wellen-Datei?** Vorschlag: ein Glob analog
    `planning.slice-glob` (etwa `planning.wave-glob`, Default `welle-*.md`) plus
    das Verzeichnis, in dem flache Wellen liegen. **Achtung — dieselbe Falle wie
    bei der Closure-Fähigkeit:** die Ergebnis-Notizen (`welle-*-results.md`)
    liegen im Ruheort und matchen dasselbe Muster; Plan-Datei und Ergebnis-Notiz
    müssen unterscheidbar bleiben.
+   — **Ausgang: zwei Globs und zwei Rollen, von der Messung erzwungen.**
+   `waves.glob` (Default `welle-*.md`) benennt das **Plan-Dokument**,
+   `waves.results-glob` (Default `welle-*-results.md`) die **Ergebnisnotiz**;
+   die zweite Menge wird von der ersten **abgezogen**. Und die Rollen sind
+   nicht austauschbar: die Aussagen 1/2 fragen nach dem **Plan-Dokument**
+   (es liegt flach, solange die Welle läuft), die Aussage 4 nach der
+   **Ergebnisnotiz** — gegen das Plan-Dokument gemessen meldet sie 19-mal falsch
+   (§3a). Verglichen wird über das **Zahlen-Präfix** `welle-<n>`: die Zeile trägt
+   die volle Kennung (`welle-74-geteilte-lexik-raender`), die Notiz den kurzen
+   Namen (`welle-74-results.md`).
 3. **Ein Grund-Code oder mehrere?** Die vier Aussagen haben verschiedene
    Reparaturen (Roadmap nachziehen · Datei verschieben · Vorschau-Zeile
    entfernen · Ergebnis-Notiz nachtragen). Nach der in
@@ -71,11 +85,32 @@ Roadmap, die das Verzeichnis widerlegt.
    festgehaltenen Begründung spricht das für Trennung — und die
    Befund-Deduplikation über (Datei, Zeile, Regel, Ziel, Grund) verlangt sie
    sogar, wenn zwei Verletzungen dieselbe Roadmap-Zeile treffen.
+   — **Ausgang: vier Grund-Codes für vier Reparaturen.** `wave-drift`
+   (Aussagen 1+2, das direkte Pendant zu `planning-drift`, beide Richtungen in
+   **einer** Meldung wie dort) · `wave-preview-exists` (Aussage 3: eine
+   Vorschau-Zeile nennt eine Welle, die schon eine Datei hat — „drei Positionen
+   statt zwei“) · `wave-results-missing` (Aussage 4) · `wave-unregistered`
+   (die Gegenrichtung: Ergebnisnotiz im Ruheort ohne Zeile — die Richtung aus
+   **BEO-001**). Die Trennung ist nicht Geschmack: `wave-results-missing` und
+   `wave-preview-exists` können dieselbe Roadmap-Zeile treffen, und die
+   Deduplikation über (Datei, Zeile, Regel, Ziel, Grund) ließe sie sonst
+   zusammenfallen.
 4. **Verhältnis zur bestehenden Fähigkeit.** Beide lesen denselben
    `planning.heading`-Abschnitt und denselben Marker. Die Slice-Invariante prüft
    `hasActive == hasSlices`, die Wellen-Invariante `hasActive == hasWave` —
    zusammen ergibt das eine Dreier-Kopplung. Zu prüfen, ob sie sich widersprechen
    können und was dann gilt.
+   — **Ausgang: sie können sich widersprechen, und beide melden.** `hasActive`
+   ist **eine** Größe, aus **einer** Quelle (dem `planning.heading`-Block); sie
+   wird gegen zwei Verzeichnis-Zustände geprüft, gegen `hasSlices` und gegen
+   `hasWave`. Sind beide verletzt, entstehen zwei Befunde mit **verschiedenen**
+   Grund-Codes und verschiedenen Reparaturen — das ist gewollt, nicht doppelt.
+   Ein Widerspruch **zwischen** den Prüfungen ist ausgeschlossen, weil beide
+   dieselbe linke Seite lesen; die Aussage „die Roadmap sagt aktiv“ kann nicht
+   zugleich wahr und falsch sein. **Und das ist selbst eine Lexik-Frage** nach
+   [ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md): die
+   dritte Fähigkeit ruft dieselbe Aktiv-Status-Bestimmung auf, statt sie ein
+   zweites Mal zu beantworten.
 
 ## 3a. Messung: was der Bestand zu den vier Aussagen sagt
 
