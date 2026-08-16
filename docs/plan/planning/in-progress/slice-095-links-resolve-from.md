@@ -100,13 +100,18 @@ finale Zahl liefert das Produkt nach der Implementierung):
    jedes Mal **nach** dem Move gemeldet. Der Wert der Fähigkeit ist Prävention;
    der Beleg dafür ist retro.
 
-**Der Retro-Beleg reproduziert den historischen Schaden zeichengenau.** Dieselbe
-Messung gegen den Stand **vor** der welle-69-Eröffnung (den Commit vor dem
-19-Link-Bruch aus §2): 76 relative Verweise in wandernden Dateien, davon
-**19 positionsabhängig** — exakt die Zahl des realen Bruchs, mit der erwarteten
-Verteilung (der verschobene Slice trug 7, die vier zurückbleibenden Geschwister
-den Rest — darunter dieser Slice selbst mit 2). Die Fähigkeit hätte den Bruch
-**vor** dem Move gemeldet.
+**Der Retro-Beleg trifft die Slice-Hälfte des historischen Bruchs — und die
+Zahlengleichheit ist Zufall, kein Beweis.** Dieselbe Messung gegen den Stand
+**vor** der welle-69-Eröffnung: 76 relative Verweise in wandernden Dateien,
+davon **19 positionsabhängig** (der später verschobene Slice trug 7, die vier
+zurückbleibenden Geschwister den Rest — dieser Slice selbst 2). Der reale
+19-Link-Bruch setzte sich anders zusammen: 15 dieser Verweise überlappen, die
+übrigen vier des Bruchs waren Links eines **Review-Reports** auf den
+verschobenen Slice — die Quelle ortsfest, das **Ziel** gewandert. **Diese
+Klasse deckt die Fähigkeit strukturell nicht** (sie prüft hypothetische
+Quell-, nicht Ziel-Orte) und deckt sie bewusst nicht: für Review-Reports als
+Lauf-Belege ist `ignore-refs` das etablierte Ventil, und lebende Dokumente
+zieht die Move-Regel im selben Commit nach. Die Grenze steht in der ADR.
 
 ## 4. Definition of Done
 
@@ -114,8 +119,10 @@ den Rest — darunter dieser Slice selbst mit 2). Die Fähigkeit hätte den Bruc
       um `resolve-from` erweitert (Akzeptanzkriterien inkl. „ohne Block
       byte-identisch"), Algorithmus und Grund-Code in der Spezifikation,
       begleitende ADR.
-- [ ] Implementierung + Tests; **Realdatenbeleg im eigenen Repo**: die beiden
-      oben belegten Fälle wären vor dem Move rot gewesen.
+- [x] Implementierung + Tests; **Realdatenbeleg im eigenen Repo**: die
+      **Quellort-Hälfte** der belegten Fälle wäre vor dem Move rot gewesen
+      (Retro-Lauf mit dem Produkt: 19 Befunde am Vor-welle-69-Stand); die
+      Ziel-Wanderungs-Hälfte ist als Grenze in der ADR benannt.
 - [ ] `make gates` grün; Release als Minor (d-check findet danach mehr).
 
 ## 5. Risiken / offene Punkte

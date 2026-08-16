@@ -291,6 +291,37 @@ func TestDecode_ClosureHappy(t *testing.T) {
 	}
 }
 
+// TestDecode_ResolveFromFehler deckt den Config-Rand der ortsfesten Verweise
+// ab (DC-FA-LINK-001 §Ortsfeste Verweise, Schritt 6): jeder dieser Werte wäre
+// sonst ein stilles Grün oder eine mehrdeutige Quellen-Zuordnung.
+func TestDecode_ResolveFromFehler(t *testing.T) {
+	for name, bad := range map[string]string{
+		"nur ein dir":        "links:\n  resolve-from:\n    - dirs: [a]\n",
+		"dirs leer":          "links:\n  resolve-from:\n    - dirs: []\n",
+		"dir absolut":        "links:\n  resolve-from:\n    - dirs: [/a, b]\n",
+		"dir mit ..":         "links:\n  resolve-from:\n    - dirs: [a, ../b]\n",
+		"fixed-dir mit ..":   "links:\n  resolve-from:\n    - dirs: [a, b]\n      fixed-dirs: [../c]\n",
+		"dir leerstring":     "links:\n  resolve-from:\n    - dirs: ['', b]\n",
+		"dir doppelt (zwei Gruppen)": "links:\n  resolve-from:\n    - dirs: [a, b]\n    - dirs: [b, c]\n",
+	} {
+		if _, err := configyaml.Decode([]byte(bad)); err == nil {
+			t.Errorf("%s: ungültige resolve-from-Config akzeptiert: %q", name, bad)
+		}
+	}
+}
+
+// TestDecode_ResolveFromHappy: gültige Gruppen werden durchgereicht.
+func TestDecode_ResolveFromHappy(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"links:\n  resolve-from:\n    - dirs: [plan/open, plan/next]\n      fixed-dirs: [plan/done]\n"))
+	if err != nil {
+		t.Fatalf("gültige resolve-from-Config abgelehnt: %v", err)
+	}
+	if len(cfg.ResolveFrom) != 1 || len(cfg.ResolveFrom[0].Dirs) != 2 || len(cfg.ResolveFrom[0].FixedDirs) != 1 {
+		t.Fatalf("resolve-from nicht durchgereicht: %+v", cfg.ResolveFrom)
+	}
+}
+
 // TestDecode_WavesFehler deckt den Config-Rand der Wellen-Invariante ab
 // (DC-FA-PLAN-001 §Wellen-Invariante, W1): dieselbe Disziplin wie bei der
 // Closure-Fähigkeit — jeder dieser Werte wäre sonst ein stilles Grün oder

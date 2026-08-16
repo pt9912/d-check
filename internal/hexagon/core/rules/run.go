@@ -147,6 +147,9 @@ func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, vcsBase, vcsHead stri
 		}
 		out = append(out, cf...)
 	}
+	if active["links"] {
+		out = append(out, CheckResolveFromDirs(fsys, cfg.ResolveFrom)...)
+	}
 	if active["planning"] {
 		out = append(out, CheckPlanning(fsys, cfg.Planning)...)
 		out = append(out, CheckPlanningClosure(fsys, cfg.Planning)...)

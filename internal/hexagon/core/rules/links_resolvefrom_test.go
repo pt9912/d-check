@@ -17,8 +17,24 @@ func rfGroup() []model.ResolveFromGroup {
 	}}
 }
 
+// rfBase liefert je Gruppen-Verzeichnis eine Platzhalter-Datei — MemFS kennt
+// nur Verzeichnisse mit Inhalt, und der fail-closed-Pass meldet sonst.
+func rfBase() map[string]string {
+	return map[string]string{
+		"plan/open/.basis.md":        "# B\n",
+		"plan/next/.basis.md":        "# B\n",
+		"plan/in-progress/.basis.md": "# B\n",
+		"plan/done/.basis.md":        "# B\n",
+	}
+}
+
 func rfFindings(t *testing.T, files map[string]string) []model.Finding {
 	t.Helper()
+	for k, v := range rfBase() {
+		if _, da := files[k]; !da {
+			files[k] = v
+		}
+	}
 	cfg := model.Config{Roots: []string{"."}, ResolveFrom: rfGroup()}
 	res, err := Run(coretest.NewMemFS(files), nil, cfg, []string{"links"})
 	if err != nil {
@@ -99,8 +115,10 @@ func TestResolveFromFixedDirZaehltAlsOrt(t *testing.T) {
 	files := map[string]string{
 		// ../open/slice-2.md loest von beiden dirs auf — von plan/archiv/tief
 		// aber als plan/archiv/open/slice-2.md, das nicht existiert.
-		"plan/open/slice-1.md": "# S1\n\nSiehe [S2](../open/slice-2.md).\n",
-		"plan/open/slice-2.md": "# S2\n",
+		"plan/open/slice-1.md":        "# S1\n\nSiehe [S2](../open/slice-2.md).\n",
+		"plan/open/slice-2.md":        "# S2\n",
+		"plan/in-progress/.basis.md":  "# B\n",
+		"plan/archiv/tief/.basis.md":  "# B\n",
 	}
 	res, err := Run(coretest.NewMemFS(files), nil, cfg, []string{"links"})
 	if err != nil {
@@ -133,6 +151,11 @@ func TestResolveFromVentil(t *testing.T) {
 	files := map[string]string{
 		"plan/open/slice-1.md": "# S1\n\nSiehe [S2](slice-2.md).\n",
 		"plan/open/slice-2.md": "# S2\n",
+	}
+	for k, v := range rfBase() {
+		if _, da := files[k]; !da {
+			files[k] = v
+		}
 	}
 	cfg := model.Config{Roots: []string{"."}, ResolveFrom: rfGroup(), IgnoreRefs: []model.IgnoreRef{{Refs: []string{"plan/open/slice-2.md"}}}}
 	res, err := Run(coretest.NewMemFS(files), nil, cfg, []string{"links"})
@@ -196,6 +219,9 @@ func TestResolveFromKeinDoppelbefundBeiTargetMissing(t *testing.T) {
 	files := map[string]string{
 		"plan/open/slice-1.md": "# S1\n\nSiehe [T](tippfehler.md).\n",
 	}
+	for k, v := range rfBase() {
+		files[k] = v
+	}
 	cfg := model.Config{Roots: []string{"."}, ResolveFrom: rfGroup()}
 	res, err := Run(coretest.NewMemFS(files), nil, cfg, []string{"links"})
 	if err != nil {
@@ -212,5 +238,103 @@ func TestResolveFromKeinDoppelbefundBeiTargetMissing(t *testing.T) {
 	}
 	if missing != 1 || posdep != 0 {
 		t.Fatalf("fehlendes Ziel → genau ein target-missing, kein position-dependent (got missing=%d posdep=%d)", missing, posdep)
+	}
+}
+
+// F-1: ein dirs-Eintrag mit Tippfehler ist fail-closed — die Quellen-Rolle
+// schaltete sonst still ab, und der Fehlzustand saehe wie Konsistenz aus.
+func TestResolveFromTippfehlerVerzeichnisFailClosed(t *testing.T) {
+	cfg := model.Config{Roots: []string{"."}, ResolveFrom: []model.ResolveFromGroup{{
+		Dirs: []string{"plan/open", "plan/in-progres"}, // Tippfehler
+	}}}
+	files := map[string]string{
+		"plan/open/slice-1.md": "# S1\n",
+	}
+	res, err := Run(coretest.NewMemFS(files), nil, cfg, []string{"links"})
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	var got []model.Finding
+	for _, f := range res.Findings {
+		if f.Reason == model.ReasonLinkPositionDependent {
+			got = append(got, f)
+		}
+	}
+	if len(got) != 1 || got[0].Target != "plan/in-progres" {
+		t.Fatalf("nicht existentes Gruppen-Verzeichnis muss fail-closed melden, got %+v", got)
+	}
+}
+
+// Symlink-Parallele zur Ist-Ort-Vorbedingung: ein Ziel, das am Ist-Ort als
+// symlink gemeldet wird, bekommt keinen zweiten Befund.
+func TestResolveFromKeinDoppelbefundBeiSymlink(t *testing.T) {
+	symFiles := map[string]string{
+		"plan/open/slice-1.md": "# S1\n\nSiehe [Z](ziel.md).\n",
+		"plan/open/ziel.md":    "# Z\n",
+	}
+	for k, v := range rfBase() {
+		symFiles[k] = v
+	}
+	m := coretest.NewMemFS(symFiles)
+	m.AddSymlink("plan/open/ziel.md")
+	cfg := model.Config{Roots: []string{"."}, ResolveFrom: rfGroup()}
+	res, err := Run(m, nil, cfg, []string{"links"})
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	var sym, posdep int
+	for _, f := range res.Findings {
+		switch f.Reason {
+		case model.ReasonSymlink:
+			sym++
+		case model.ReasonLinkPositionDependent:
+			posdep++
+		}
+	}
+	if sym != 1 || posdep != 0 {
+		t.Fatalf("Symlink-Ziel → genau ein symlink-Befund (got sym=%d posdep=%d)", sym, posdep)
+	}
+}
+
+// Ein dirs-Eintrag mit Schluss-Slash trifft dieselbe Quelle — der
+// Clean-Vergleich ist tragend, nicht kosmetisch.
+func TestResolveFromDirMitSchlussSlash(t *testing.T) {
+	cfg := model.Config{Roots: []string{"."}, ResolveFrom: []model.ResolveFromGroup{{
+		Dirs: []string{"plan/open/", "plan/next"},
+	}}}
+	files := map[string]string{
+		"plan/open/slice-1.md": "# S1\n\nSiehe [S2](slice-2.md).\n",
+		"plan/open/slice-2.md": "# S2\n",
+		"plan/next/.basis.md":  "# B\n",
+	}
+	res, err := Run(coretest.NewMemFS(files), nil, cfg, []string{"links"})
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	var got int
+	for _, f := range res.Findings {
+		if f.Reason == model.ReasonLinkPositionDependent && f.File == "plan/open/slice-1.md" {
+			got++
+		}
+	}
+	if got != 1 {
+		t.Fatalf("dir mit Schluss-Slash muss dieselbe Quelle treffen → 1 Befund, got %d", got)
+	}
+}
+
+// Die Divergenz-Meldung ist sortiert — unabhaengig von der Map-Iteration
+// (DC-QA-02: identischer Baum, identische Meldung).
+func TestResolveFromDivergenzMeldungSortiert(t *testing.T) {
+	files := map[string]string{
+		"plan/open/slice-1.md":      "# S1\n\nSiehe [N](notiz.md).\n",
+		"plan/open/notiz.md":        "# A\n",
+		"plan/next/notiz.md":        "# B\n",
+		"plan/in-progress/notiz.md": "# C\n",
+		"plan/done/notiz.md":        "# D\n",
+	}
+	got := rfFindings(t, files)
+	if len(got) != 1 || !strings.Contains(got[0].Message,
+		"plan/done/notiz.md · plan/in-progress/notiz.md · plan/next/notiz.md · plan/open/notiz.md") {
+		t.Fatalf("Divergenz-Meldung muss sortiert alle Ziele nennen, got %+v", got)
 	}
 }

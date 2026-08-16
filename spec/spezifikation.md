@@ -893,15 +893,25 @@ orthogonal; keine überschreibt eine andere.
    für jede gescannte Datei, deren Verzeichnis in `dirs` liegt, wird jedes
    relative Ziel (dieselbe Extraktion und Dekodierung wie Schritte 3–4)
    zusätzlich von **jedem** Ort der Gruppe (`dirs` ∪ `fixed-dirs`) aufgelöst.
-   Löst es von mindestens einem Ort **nicht** auf ein existierendes Ziel auf,
-   **oder** lösen zwei Orte auf **verschiedene** Ziele ⇒ Grund-Code
-   `link-position-dependent`, ein Befund je Referenz an ihrer Zeile; die
-   Meldung nennt den ersten nicht auflösenden Ort bzw. die divergierenden
-   Ziele. Dateien in `fixed-dirs` sind **keine** Quellen (ihre Verweise prüft
-   nur Schritt 4). Das Ventil `ignore-refs` gilt wie in Schritt 4 (ein dort
-   ausgenommenes Ziel wird auch hier übersprungen); Anker-Fragmente bleiben
-   außen vor. Ohne den Block entfällt der Schritt und der Befundsatz ist
-   byte-identisch. **Exit 2** am Config-Rand bei: leerem `dirs` (< 2 Orte —
+   **Vorbedingung ist der saubere Ist-Ort:** löst das Ziel schon am Ist-Ort
+   nicht auf (oder meldet dort `repo-escape`/`symlink`), melden die Schritte
+   4/5 — dieser Schritt schweigt, sonst trüge dieselbe Referenz zwei Befunde.
+   Die Klasse dieses Schritts ist „am Ist-Ort grün“; geprüft werden die
+   **übrigen** Orte. Löst das Ziel von mindestens einem Ort **nicht** auf ein
+   existierendes Ziel auf, **oder** lösen zwei Orte auf **verschiedene** Ziele
+   ⇒ Grund-Code `link-position-dependent`, ein Befund je Referenz an ihrer
+   Zeile; die Meldung nennt den ersten nicht auflösenden Ort (Orte in
+   Config-Reihenfolge) bzw. die divergierenden Ziele (sortiert). Quellen sind
+   nur Dateien **unmittelbar** in einem `dirs`-Verzeichnis — Unterverzeichnisse
+   wandern nicht als Einheit mit und sind ausgenommen. Dateien in `fixed-dirs`
+   sind **keine** Quellen (ihre Verweise prüft nur Schritt 4). **Jeder Ort
+   jeder Gruppe muss im Baum existieren** — ein Tippfehler im Verzeichnis
+   schaltete die Quellen-Rolle sonst still ab, und der Fehlzustand wäre von
+   Konsistenz nicht unterscheidbar; gemeldet wird je fehlendem Ort einmal je
+   Lauf, über denselben Grund-Code mit dem Verzeichnis als Ziel (fail-closed).
+   Das Ventil `ignore-refs` gilt wie in Schritt 4 (ein dort ausgenommenes Ziel
+   wird auch hier übersprungen); Anker-Fragmente bleiben außen vor. Ohne den
+   Block entfällt der Schritt und der Befundsatz ist byte-identisch. **Exit 2** am Config-Rand bei: leerem `dirs` (< 2 Orte —
    eine Gruppe aus einem Ort prüft nichts), einem Verzeichnis absolut oder mit
    `..`-Segment, oder einem Ort, der in **mehreren** Gruppen als `dirs`-Mitglied
    auftritt (die Zuordnung einer Quelle wäre mehrdeutig).
@@ -1131,8 +1141,9 @@ byte-identisch.
 **Referenz-Ventil (`ignore-refs`):** `codepaths` honoriert das **geteilte
 Referenz-Ventil** [DC-FA-REF-001.a](#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs):
 ein in Schritt 5 aufgelöster Ziel-Pfad, den ein `ignore-refs`-Eintrag ignoriert
-(Quell-Skopus `in` ∧ `refs` ∧ ¬`keep`), wird **nicht** existenz-, escape- oder
-anker-geprüft (kein `codepath-missing`, `repo-escape` oder `anchor-missing`) —
+(Quell-Skopus `in` ∧ `refs` ∧ ¬`keep`), wird **nicht** existenz-, escape-, anker- oder
+ortsfestigkeits-geprüft (kein `codepath-missing`, `repo-escape`,
+`anchor-missing` oder `link-position-dependent`) —
 **referenz-weit**, unabhängig von Datei und Zeile (anders als das datei-weite
 `exempt-paths` und das zeilenweise `d-check:ignore`). Es unterdrückt nur die Prüfung
 *dieses* Pfads, keine anderen Befunde. Die modul-lokale Liste `codepaths.ignore-refs`

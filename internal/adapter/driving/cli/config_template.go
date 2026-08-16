@@ -26,6 +26,15 @@ modules: [links, anchors]
 #  und targets sind hermetisch (Roadmap-↔-in-progress- bzw. Doku-↔-Makefile-
 #  Konsistenz, kein git) — strikt opt-in.)
 
+# --- links: ortsfeste Verweise (opt-in innerhalb des aktiven Moduls) ---
+# links:
+#   resolve-from:                  # Gruppen wandernder Geschwister-Verzeichnisse
+#     - dirs:                      # Quellen: Dateien hier muessen von JEDEM Ort der Gruppe aufloesen (>= 2)
+#         - docs/plan/planning/open
+#         - docs/plan/planning/in-progress
+#       fixed-dirs:                # ortsfeste Orte: hypothetische Ziele, deren Dateien keine Quellen sind
+#         - docs/plan/planning/done
+
 # --- ids: Linkpflicht für Kennungen ---
 # ids:
 #   patterns:                      # Reihenfolge = Präzedenz

@@ -947,9 +947,11 @@ Das Ventil ist ein **Register bewusst behandelter Referenzen** — etwa
 Template-Platzhalter, die auf Ziel-Repo-Positionen zeigen (im Quell-Repo nicht
 auflösbar), oder historische/immutable Doku, die einen entfernten Pfad zitiert.
 Bewusster Akt **mit Gate**: ohne passenden Eintrag meldet ein fehlendes Ziel weiter
-(nichts dangelt still); das Ventil unterdrückt **nur** die Existenz-/Anker-Prüfung
-des genannten Ziels, keine anderen Befunde (Symlink-Ablehnung, Repo-Escape u. Ä.
-bleiben). Zwei Felder statt `!`-Negations-Syntax: gemessen braucht kein realer Fall
+(nichts dangelt still); das Ventil unterdrückt **nur** die Auflösungs-Klasse
+des genannten Ziels — Existenz-, Anker- und Ortsfestigkeits-Prüfung
+(`target-missing`/`anchor-missing`/`codepath-missing` und
+`link-position-dependent`) —, keine anderen Befunde (Symlink-Ablehnung,
+Repo-Escape u. Ä. bleiben). Zwei Felder statt `!`-Negations-Syntax: gemessen braucht kein realer Fall
 die Re-Ignore-Alternierung, die eine Ordnungssemantik böte — der Verzicht kauft
 Reihenfolge-Unabhängigkeit in einer YAML-Liste.
 

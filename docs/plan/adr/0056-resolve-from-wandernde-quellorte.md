@@ -21,10 +21,11 @@ erst **nach** dem Move, wenn die Reparatur die Move-Regel verletzt.
 Die Klasse ist nicht hypothetisch. Der historische Maximalfall: **ein**
 `git mv` brach 19 Verweise auf einen Schlag. Und sie wiederholt sich bei jedem
 Move — an einem einzigen Tag wurden bei drei Lifecycle-Moves 10, 15 und 14
-Verweise von Hand nachgezogen. Die Bestandsmessung hat den Maximalfall
-**retro reproduziert**: dieselbe Rechnung gegen den Stand vor dem damaligen
-Move liefert exakt 19, mit der erwarteten Verteilung über Verschobenen und
-zurückbleibende Geschwister.
+Verweise von Hand nachgezogen. Die Bestandsmessung gegen den Stand vor dem
+damaligen Move liefert 19 positionsabhängige Verweise — 15 davon Teil des
+realen Bruchs; dessen übrige vier waren Links eines Review-Reports auf den
+verschobenen Slice (Quelle ortsfest, **Ziel** gewandert), eine Klasse, die
+diese Fähigkeit strukturell nicht deckt. Die Zahlengleichheit ist Zufall.
 
 Dieselbe Messung hat den naiven Zuschnitt widerlegt: über **alle vier**
 Lifecycle-Verzeichnisse gerechnet wären heute 108 Verweise „positionsabhängig" —
@@ -63,6 +64,15 @@ wandern. Eingeschränkt auf die wandernden Verzeichnisse: 0 von 79.
    Auflösung** (Links und Bilder, dieselbe Vorverarbeitung, dieselbe
    Prozent-Dekodierung, dieselben Ventile). Die Anker-Frage hängt am
    Ziel-Dokument, nicht am Quellort.
+
+6. **Die Ziel-Wanderung ist eine benannte Grenze, keine Fähigkeit.** Bricht ein
+   Verweis, weil sein **Ziel** wandert und die Quelle ortsfest ist (der
+   Review-Report, der auf einen `in-progress/`-Slice zeigt), meldet diese
+   Prüfung nichts — sie prüft hypothetische **Quell**-Orte. Bewusst: für
+   Lauf-Belege ist `ignore-refs` das etablierte Ventil, lebende Dokumente
+   zieht die Move-Regel im selben Commit nach, und eine Ziel-Hypothese müsste
+   raten, **wohin** jedes Ziel wandern kann — das ist eine andere, teurere
+   Frage.
 
 ## Alternativen
 

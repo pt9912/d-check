@@ -9,6 +9,27 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
+// CheckResolveFromDirs prüft einmal je Lauf, dass jeder Ort jeder Gruppe im
+// Baum existiert (fail-closed): ein Tippfehler in einem dirs-Eintrag schaltete
+// die Quellen-Rolle sonst still ab — der Fehlzustand wäre von Konsistenz nicht
+// unterscheidbar, dieselbe Klasse wie das unlesbare waves.dir.
+func CheckResolveFromDirs(fsys driven.Filesystem, groups []model.ResolveFromGroup) []model.Finding {
+	var out []model.Finding
+	for _, g := range groups {
+		for _, d := range append(append([]string{}, g.Dirs...), g.FixedDirs...) {
+			if kind, err := fsys.Kind(d); err != nil || kind != driven.KindDir {
+				out = append(out, model.Finding{
+					File: d, Line: 1, Rule: "links", Target: d,
+					Reason: model.ReasonLinkPositionDependent,
+					Message: "resolve-from-Verzeichnis " + d + " existiert nicht — " +
+						"die Gruppe prüft dort keine Quelle, der Zustand sähe sonst wie Konsistenz aus (fail-closed)",
+				})
+			}
+		}
+	}
+	return out
+}
+
 // CheckResolveFrom prüft ortsfeste Verweise (DC-FA-LINK-001 §Ortsfeste
 // Verweise, Schritt 6): eine Datei in einem wandernden Verzeichnis einer
 // resolve-from-Gruppe muss jedes relative Ziel von JEDEM Ort der Gruppe
@@ -62,27 +83,34 @@ func positionDependent(fsys driven.Filesystem, file string, ref LinkRef, orte []
 	if idx := strings.IndexByte(pathPart, '#'); idx != -1 {
 		pathPart = pathPart[:idx]
 	}
-	// Vorbedingung: das Ziel löst vom IST-Ort auf — sonst meldet Schritt 4
-	// bereits target-missing, und ein zweiter Befund derselben Referenz wäre
-	// eine Doppel-Meldung. Die Klasse dieses Schritts ist „am Ist-Ort grün".
+	// Vorbedingung: das Ziel löst vom IST-Ort sauber auf — sonst meldet
+	// Schritt 4/5 bereits (target-missing, repo-escape oder symlink), und ein
+	// zweiter Befund derselben Referenz wäre eine Doppel-Meldung. Die Klasse
+	// dieses Schritts ist „am Ist-Ort grün".
 	istRel, istEscaped, _ := ResolveTarget(file, pathPart)
 	if istKind, err := fsys.Kind(istRel); istEscaped || err != nil || istKind == driven.KindMissing {
+		return nil
+	}
+	if hit, err := symlinkInPath(fsys, istRel); err == nil && hit {
 		return nil
 	}
 	ziele := map[string]bool{}
 	for _, ort := range orte {
 		hypothetisch := path.Join(ort, path.Base(file))
 		rel, escaped, _ := ResolveTarget(hypothetisch, pathPart)
-		kind, err := fsys.Kind(rel)
-		if escaped || err != nil || kind == driven.KindMissing {
-			return &model.Finding{
-				File: file, Line: ref.Line, Rule: "links",
-				Target: ref.Target, Reason: model.ReasonLinkPositionDependent,
-				Message: "Verweis löst von " + ort + " nicht auf — er bricht, sobald die Datei dorthin wandert" +
-					" (Reparatur: Pfad präfixieren, nicht Ziel anlegen)",
+		// escaped zuerst: ein Pfad außerhalb der Wurzel wird nicht abgefragt.
+		if !escaped {
+			if kind, err := fsys.Kind(rel); err == nil && kind != driven.KindMissing {
+				ziele[rel] = true
+				continue
 			}
 		}
-		ziele[rel] = true
+		return &model.Finding{
+			File: file, Line: ref.Line, Rule: "links",
+			Target: ref.Target, Reason: model.ReasonLinkPositionDependent,
+			Message: "Verweis löst von " + ort + " nicht auf — er bricht, sobald die Datei dorthin wandert" +
+				" (Reparatur: Pfad präfixieren, nicht Ziel anlegen)",
+		}
 	}
 	if len(ziele) > 1 {
 		namen := make([]string, 0, len(ziele))
