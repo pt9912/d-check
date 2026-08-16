@@ -26,7 +26,8 @@ modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions]
 # Datei in einem wandernden Lifecycle-Verzeichnis muss jedes relative Ziel von
 # JEDEM Ort der Gruppe aufloesen -- und ueberall auf dasselbe. Vor dem
 # Scharfschalten gemessen: heutiger Bestand 0; retro gegen den Stand vor der
-# welle-69-Eroeffnung meldet das Produkt exakt die 19 des realen Bruchs. Der
+# welle-69-Eroeffnung meldet das Produkt 19 Befunde (15 davon Teil des realen
+# Bruchs; dessen uebrige vier waren Ziel-Wanderungen -- benannte Grenze). Der
 # Ruheort ist fixed (seine Dateien wandern nie wieder -- sonst 108
 # Falsch-Positive).
 links:

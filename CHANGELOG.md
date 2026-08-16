@@ -23,8 +23,10 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   **Der Beleg lief mit dem Produkt:** der heutige Bestand ist grün (die Null
   ist von einer Woche Hand-Nachzügen gekauft — allein am Vortag 10, 15 und 14
   nachgezogene Verweise je Move), und der Retro-Lauf gegen den Stand vor der
-  welle-69-Eröffnung meldet exakt die **19** des realen Bruchs, mit
-  identischer Verteilung. Laufzeit unverändert (im Rauschen, `DC-QA-01`).
+  welle-69-Eröffnung meldet **19** Befunde — 15 davon Teil des realen
+  19-Link-Bruchs; dessen übrige vier waren **Ziel**-Wanderungen
+  (Review-Report auf verschobenen Slice), eine als Grenze benannte Klasse.
+  Laufzeit unverändert (im Rauschen, `DC-QA-01`).
 
 ## [0.59.0] — 2026-08-16
 

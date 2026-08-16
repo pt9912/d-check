@@ -129,7 +129,7 @@ func reasonTexts() map[string]string {
 		model.ReasonClosureNoteBoilerplate: "Closure-Notiz enthält eine als Floskel deklarierte Wendung",
 		model.ReasonClosureNotePlaceholder:  "Closure-Notiz trägt einen unausgefüllten Vorlagen-Platzhalter (opt-in)",
 		model.ReasonClosureNoteAmbiguous:    "Mehrere Closure-Notiz-Überschriften — ohne eindeutigen Abschnitt wird nicht gemessen",
-		model.ReasonLinkPositionDependent: "relativer Verweis löst nicht von jedem Ort seiner resolve-from-Gruppe auf dasselbe Ziel auf — bricht beim nächsten Lifecycle-Move",
+		model.ReasonLinkPositionDependent: "relativer Verweis löst nicht von jedem Ort seiner resolve-from-Gruppe auf dasselbe Ziel auf (bricht beim nächsten Lifecycle-Move) — oder die Gruppe selbst ist nicht prüfbar (kein dirs-Ort existiert / ein Ort ist eine Datei; fail-closed)",
 		model.ReasonWaveDrift:          "Roadmap-Aktiv-Status und flaches Wellendokument widersprechen sich — oder die Invariante ist nicht prüfbar (Wellen-Verzeichnis unlesbar, Register-Überschrift fehlt; fail-closed)",
 		model.ReasonWavePreviewExists:  "Vorschau-Zeile nennt eine Welle, für die bereits eine Datei existiert",
 		model.ReasonWaveResultsMissing: "Abschluss-Register nennt eine Welle ohne Ergebnisnotiz im Ruheort",

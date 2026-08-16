@@ -914,8 +914,12 @@ orthogonal; keine überschreibt eine andere.
    jedem frischen Klon und wäre von einem Tippfehler nicht unterscheidbar
    (benannte Grenze).
    Das Ventil `ignore-refs` gilt wie in Schritt 4 (ein dort ausgenommenes Ziel
-   wird auch hier übersprungen); Anker-Fragmente bleiben außen vor. Ohne den
-   Block entfällt der Schritt und der Befundsatz ist byte-identisch. **Exit 2** am Config-Rand bei: leerem `dirs` (< 2 Orte —
+   wird auch hier übersprungen); Anker-Fragmente bleiben außen vor. **Die
+   Gruppen-Orte müssen im wirksamen Scan-Bereich liegen** (`scan.roots` bzw.
+   `links.scope`): eine Datei, die der Scanner nie liest, ist still keine
+   Quelle — die Prüfung läuft je gescannter Datei, und diese Kopplung ist
+   benannt, nicht geprüft. Ohne den Block entfällt der Schritt und der
+   Befundsatz ist byte-identisch. **Exit 2** am Config-Rand bei: leerem `dirs` (< 2 Orte —
    eine Gruppe aus einem Ort prüft nichts), einem Verzeichnis absolut oder mit
    `..`-Segment, oder einem Ort, der in **mehreren** Gruppen als `dirs`-Mitglied
    auftritt (die Zuordnung einer Quelle wäre mehrdeutig).
@@ -1146,8 +1150,8 @@ byte-identisch.
 Referenz-Ventil** [DC-FA-REF-001.a](#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs):
 ein in Schritt 5 aufgelöster Ziel-Pfad, den ein `ignore-refs`-Eintrag ignoriert
 (Quell-Skopus `in` ∧ `refs` ∧ ¬`keep`), wird **nicht** existenz-, escape-, anker- oder
-ortsfestigkeits-geprüft (kein `codepath-missing`, `repo-escape`,
-`anchor-missing` oder `link-position-dependent`) —
+ortsfestigkeits-geprüft (kein `target-missing`, `codepath-missing`,
+`repo-escape`, `anchor-missing` oder `link-position-dependent`) —
 **referenz-weit**, unabhängig von Datei und Zeile (anders als das datei-weite
 `exempt-paths` und das zeilenweise `d-check:ignore`). Es unterdrückt nur die Prüfung
 *dieses* Pfads, keine anderen Befunde. Die modul-lokale Liste `codepaths.ignore-refs`
@@ -2594,7 +2598,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `closure-note-boilerplate` | planning | bereinigter Closure-Notiz-Text enthält (case-insensitiv, an Wortgrenzen) eine literale Phrasg aus `planning.closure.boilerplate`; der erste Treffer benennt die Meldung |
 | `closure-note-placeholder` | planning | Closure-Notiz-Abschnitt trägt einen unausgefüllten Vorlagen-Platzhalter in Auszeichnungs-Form (opt-in über `planning.closure.placeholder`); Inline-Code, Autolinks/Adressen und HTML-Tags sind ausgenommen, gemeldet wird der **erste** Treffer je Kandidat |
 | `closure-note-ambiguous` | planning | mehrere auf `planning.closure.heading-pattern` passende Überschriften — ohne eindeutigen Abschnitt wird **nicht** gemessen (schließt `-thin`/`-boilerplate`/`-placeholder` aus); `line` = **zweiter** Treffer |
-| `link-position-dependent` | links | relativer Verweis einer Datei in einem `resolve-from`-`dirs`-Verzeichnis löst von mindestens einem Ort der Gruppe nicht auf — oder von verschiedenen Orten auf **verschiedene** Ziele; Reparatur ist das Präfixieren des Pfads |
+| `link-position-dependent` | links | relativer Verweis einer Datei in einem `resolve-from`-`dirs`-Verzeichnis löst von mindestens einem Ort der Gruppe nicht auf — oder von verschiedenen Orten auf **verschiedene** Ziele; Reparatur ist das Präfixieren des Pfads. Fail-closed über denselben Code: eine Gruppe ohne einen einzigen existierenden `dirs`-Ort und ein Ort, der als Datei existiert |
 | `wave-drift` | planning | Aktiv-Status der Roadmap (`planning.heading`-Block) und Präsenz eines **flachen** Wellendokuments (`planning.waves.glob` abzüglich `results-glob`) widersprechen sich; auch bei **mehr als einem** flachen Dokument. Fail-closed über denselben Code: unlesbares `waves.dir`/`done-dir` und fehlende Register-Überschrift |
 | `wave-preview-exists` | planning | eine Zeile des Vorschau-Registers (`planning.waves.next-heading`) nennt in ihrer **ersten Spalte** eine Welle, für die bereits eine Datei existiert (flach oder im Ruheort) — die geplante Welle hätte drei Positionen statt zwei |
 | `wave-results-missing` | planning | eine Zeile des Abschluss-Registers (`planning.waves.closed-heading`) nennt eine Welle **ohne** Ergebnisnotiz (`planning.waves.results-glob`) im Ruheort |
@@ -2634,6 +2638,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-16 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 6 nach unabhängigem Review und einem **CI-Realfund** nachgezogen: die Ist-Ort-Vorbedingung ist normativ (die Klasse ist „am Ist-Ort grün", kein Doppelbefund), die fail-closed-Zusage der Gruppen-Orte ist an der git-Realität justiert (ein **einzelner** fehlender Ort ist von einem legitim geleerten Verzeichnis nicht unterscheidbar — gemeldet wird die Gruppe ohne einen einzigen existierenden Ort und der Ort, der als Datei existiert), die Scan-Bereichs-Kopplung ist benannt, und die Ventil-Wirkung von §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) zählt alle fünf unterdrückten Codes |
 | 2026-08-16 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) um Schritt **6** + §2-Schema (`links.resolve-from`) erweitert: **ortsfeste Verweise** — je Gruppe wandernder Geschwister-Verzeichnisse wird jedes relative Ziel zusätzlich von jedem Ort der Gruppe aufgelöst; nicht überall auflösbar **oder** nicht überall dasselbe Ziel ⇒ `link-position-dependent`. Dateien in `fixed-dirs` sind keine Quellen (die Bestandsmessung zeigt sonst 108 Falsch-Positive auf Ruheort-Dokumenten). Grund-Code (§4) folgt mit der Implementierung (AllReasons-↔-§4-Lockstep). Begründung in begleitender ADR |
 | 2026-08-16 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) um die Schritte **W1–W5** + §2-Schema (`planning.waves.*`) erweitert: die Lifecycle-Invariante eine Ebene höher, die **Wellen**-Abschnitte der Roadmap gegen die Wellen-Dateien. W3 liest den Aktiv-Status **aus Schritt 4**, statt ihn neu zu bestimmen. Zwei Festlegungen kommen aus der Bestandsmessung: das Artefakt einer geschlossenen Welle ist die **Ergebnisnotiz** (gegen das Plan-Dokument geprüft meldet die Aussage 19-mal über zwei Bäume), und die Vorschau-Aussage liest die **erste Spalte** und überspringt Zeilen ohne Kennung (geplante Wellen tragen Namen; die Trigger-Spalte darf andere Wellen nennen). Tabellenzeilen nach derselben Lexik wie §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) — deren **zweiter** Konsument. Vier Grund-Codes folgen mit der Implementierung. Begründung in begleitender ADR |
 | 2026-08-16 | Nachzug nach **dritter** Review-Runde: drei weitere Module beantworteten eine Lexik-Frage roh. §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) — `immutable-when` und die Kopf-Status-Zeile gelten nur **außerhalb** von Fenced-Code (vorher: eine Datei, die ihren Kopf als Beispiel zeigt, galt als immutabel bzw. verschob die gestrippte Zeile ⇒ **stilles Grün** im Immutabilitäts-Gate). §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt 4 — die Block-Grenze ist die **geteilte** Abschnitts-Grenze statt eines rohen `## `-Präfix-Vergleichs (eingerückte H2, tab-getrennte H2, H1). §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) — Tabellenzeilen zählen nur außerhalb von Fenced-Code |

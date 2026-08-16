@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.60.1
+**Version:** 0.60.2
 
 **Status:** Draft
 
@@ -1027,7 +1027,9 @@ der Review-Report auf einen `in-progress/`-Slice) prüft diese Fähigkeit nicht,
 sie prüft hypothetische Quell-Orte; und ein **einzelner** fehlender Gruppen-Ort
 ist von einem legitim geleerten Verzeichnis nicht unterscheidbar (git überträgt
 leere Verzeichnisse nicht) — fail-closed meldet erst, wenn **kein** `dirs`-Ort
-der Gruppe existiert oder ein Ort als **Datei** existiert. Anker bleiben außen
+der Gruppe existiert oder ein Ort als **Datei** existiert. Und die Gruppen-Orte
+müssen im wirksamen **Scan-Bereich** liegen: eine nie gescannte Datei ist still
+keine Quelle. Anker bleiben außen
 vor; Ziel-Menge, Vorverarbeitung, Dekodierung und Ventile sind die der
 bestehenden Prüfung. Ohne den Block ist der Befundsatz byte-identisch
 ([`DC-QA-02`](#dc-qa-02--determinismus)). Begründung in begleitender ADR.
@@ -2732,6 +2734,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.60.2 | 2026-08-16 | Nachzug der bestätigenden Re-Review (Text-Auflagen, keine Verhaltensänderung): die **Scan-Bereichs-Kopplung** ist als Grenze benannt (Gruppen-Orte müssen im wirksamen Scan-Bereich liegen — eine nie gescannte Datei ist still keine Quelle), die Ventil-Aufzählung von [`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus) zählt spezifikationsseitig alle **fünf** unterdrückten Codes, und die letzten beiden Flächen des „zeichengenau"-Überclaims (CHANGELOG, Config-Kommentar) sind auf die 15/19-Aussage gezogen |
 | 0.60.1 | 2026-08-16 | Nachzug nach unabhängigem Review **und** einem CI-Realfund, vor dem Release. **Review:** die fail-closed-Klasse zum dritten Mal (ein `resolve-from`-Verzeichnis mit Tippfehler schaltete die Quellen-Rolle still ab), die Ist-Ort-Vorbedingung stand nur im Code, der Ventil-Wortlaut von [`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus) widersprach der neuen Wirkung aktiv, und „zeichengenau“ war ein Überclaim — die Retro-19 überlappen den realen Bruch nur zu 15/19; die übrigen vier waren **Ziel**-Wanderungen, jetzt als Grenze benannt. **CI-Realfund:** der erste fail-closed-Zuschnitt meldete auf jedem frischen Klon das legitim **geleerte** `open/`-Verzeichnis — git überträgt leere Verzeichnisse nicht, ein einzelner fehlender Ort ist von einem Tippfehler nicht unterscheidbar. Jetzt meldet fail-closed, wenn **kein** `dirs`-Ort existiert oder ein Ort als Datei existiert; die Rest-Grenze ist benannt. **Und die Beschreibung selbst fehlte:** ein abbrechender Batch-Editor hatte beim 0.60.0-Schnitt nur Historie und Akzeptanzkriterien geschrieben — der Anforderungs-Text ist mit dieser Version nachgeliefert |
 | 0.60.0 | 2026-08-16 | [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) um **ortsfeste Verweise** erweitert (`links.resolve-from`, opt-in; Change Request des Konsumenten a-check, Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium (Einzelmodul-Frage ⇒ bestehende Anforderung ändern)): wo Dateien zwischen Geschwister-Verzeichnissen wandern, muss ein relativer Verweis von **jedem** Ort der Gruppe auflösen — und überall auf **dasselbe** Ziel. Eigener Grund-Code `link-position-dependent` (die Reparatur ist Präfixieren, nicht Ziel-Anlegen). **Zwei Festlegungen aus der Bestandsmessung:** Quellen sind nur die **wandernden** Verzeichnisse (`dirs`) — über alle vier Lifecycle-Orte gerechnet wären heute 108 Befunde Falsch-Positive auf ortsfesten Ruheort-Dokumenten (mit der Einschränkung: 0 von 79); und der **Retro-Beleg** reproduziert den historischen 19-Link-Bruch der welle-69-Eröffnung zeichengenau. Begründung in begleitender ADR |
 | 0.59.1 | 2026-08-16 | Nachzug nach unabhängigem Review, vor dem Release. **Der blockierende Befund traf die Motivations-Richtung des Slice selbst:** ein unlesbares `waves.dir` schaltete die Fähigkeit im Ruhe-Zustand **still** ab — mit einem Pfad-Tippfehler wäre genau die zweimal real eingetretene Aussage-2-Verletzung dauerhaft unsichtbar gewesen; jetzt fail-closed über `wave-drift`, ebenso eine **fehlende Register-Überschrift** (die Aktivierung ist die Behauptung, dass die Roadmap beide Register führt). Ferner: die Wellen-Kennung ist ans **literale Glob-Präfix** gebunden statt an ein hartes „welle-“ (beide Globs müssen dasselbe Präfix tragen, Exit 2 sonst), explizit leere `waves`-Schlüssel brechen mit Exit 2 statt still auf den Default zu fallen (Zeiger-Disziplin wie bei `closure.glob`), und das `target` von `wave-unregistered` ist die **Ergebnisnotiz** statt der Kennung (Ventil-Parität). **Und eine eigene Messaussage war falsch:** der zwölfte Befund des Schwester-Repo-Laufs war ein Artefakt des Default-Markers der Probe-Konfiguration, keine Bestands-Verletzung — die elf fehlenden Ergebnisnotizen sind robust |
