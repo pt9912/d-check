@@ -248,6 +248,14 @@ commits:
 # tools/planning-consistency.sh ab (ADR-0028, letztes Familien-Skript des tools/*.sh-Audits).
 planning:
   roadmap: docs/plan/planning/in-progress/roadmap.md
+  # Offene-Wellen-Form (Baseline v5.6.0, slice-108): die Sektion ist
+  # derivativ, der Ruhe-Marker "Nichts in Arbeit" gilt bei leerem
+  # in-progress/. Die Drift-Kopplung der waves-Faehigkeit (Anspruch <=>
+  # genau ein flaches Wellendokument) bleibt im Ein-Wellen-Betrieb wahr;
+  # ein kuenftiger Mehr-Wellen-Betrieb braucht dort einen eigenen
+  # Entscheid (benannte Grenze, kein geloestes Problem).
+  heading: "## Offene Wellen"
+  marker: "Nichts in Arbeit"
   # Dritte Faehigkeit (DC-FA-PLAN-001 §Wellen-Invariante, ADR-0055): dieselbe
   # Lifecycle-Invariante eine Ebene hoeher. Vor dem Scharfschalten am eigenen
   # Bestand gemessen -- 0 Befunde; im Schwester-Repo elf fehlende

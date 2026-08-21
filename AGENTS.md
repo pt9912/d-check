@@ -96,8 +96,9 @@ Wenn eine Datei verschoben **und** der Inhalt umgeschrieben wird:
 50%-Similarity-Schwelle und `git log --follow` wird unzuverlässig.
 
 **Ausnahme Slice-Lifecycle-Move (`in-progress/` → `done/`):** Der
-`git mv`-Commit trägt hier **zusätzlich** den Roadmap-Flip §Aktuelle Welle
-(zurück auf „Keine aktive Welle") und alle Pfad-Verweise auf den Slice
+`git mv`-Commit trägt hier **zusätzlich** den Roadmap-Flip §Offene Wellen
+(zurück auf den Ruhe-Marker „Nichts in Arbeit", sofern kein Slice mehr
+beansprucht ist) und alle Pfad-Verweise auf den Slice
 (Roadmap, §4, `harness/README.md` §Sensors) von `in-progress/` nach
 `done/`. Sonst ist der Commit gate-rot: `make planning-check` koppelt
 in-progress-Stand und Roadmap atomar, und die alten Verweise laufen ins
@@ -141,7 +142,7 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make arch-check`            | Import-Regeln des Hexagon-Schnitts + Kern-Paket-Richtung **via digest-gepinntes a-check-Image** (Schwester-Tool, `a-check.mk` + `.a-check.yml`, netzlos/read-only) ([ADR-0005](docs/plan/adr/0005-modul-layout-hexagon-ordner.md), [ADR-0012](docs/plan/adr/0012-kern-paketschnitt-model-rules-app.md), [ADR-0029](docs/plan/adr/0029-arch-check-via-a-check.md) löst die Skript-/Stage-Mechanik ab)                                                      |
 | `make coverage-gate`         | Coverage-Schwelle über `./internal/...` (Kalibrierungs-Bindung, siehe [`harness/README.md`](harness/README.md) §Sensors)                                                                                                                           |
 | `make gate-consistency`      | Meta-Gate: Deklarations-Konsistenz Doku↔Makefile via Modul `targets` (Image, dogfood; [ADR-0031](docs/plan/adr/0031-targets-deklarations-konsistenz-modul.md); [ADR-0032](docs/plan/adr/0032-gate-consistency-tombstone.md) löst das Rest-Skript voll ab). Die [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modullisten-Integrität prüft jetzt ein getippter Go-Test in `make test`                                                                           |
-| `make planning-check`        | Meta-Gate **via Modul `planning`** (Image, dogfood): Roadmap §Aktuelle Welle ↔ `in-progress/slice-*` (`planning-drift`, hermetisch — kein git, in `gates`) ([ADR-0028](docs/plan/adr/0028-planning-lifecycle-modul.md) löst die Skript-Mechanik von [slice-040](docs/plan/planning/done/slice-040-planning-consistency-gate.md) ab; [`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
+| `make planning-check`        | Meta-Gate **via Modul `planning`** (Image, dogfood): Roadmap §Offene Wellen (Ruhe-Marker) ↔ `in-progress/slice-*` (`planning-drift`, hermetisch — kein git, in `gates`) ([ADR-0028](docs/plan/adr/0028-planning-lifecycle-modul.md) löst die Skript-Mechanik von [slice-040](docs/plan/planning/done/slice-040-planning-consistency-gate.md) ab; [`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
 | `make doc-check`             | Doku-Links, Anker, Kennungs-Linkpflicht, Referenzmatrix + Inline-Code-Pfade via `d-check` selbst (Dogfooding; netzlos — zugleich [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Messmethode)             |
 | `make gates`                 | alle inneren Gates (mandatory vor Handoff)                                                                                                                                                                                                         |
 | `make ci`                    | CI-äquivalenter Lauf: gates + image-test (fährt die Release-Pipeline)                                                                                                                                                                              |

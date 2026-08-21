@@ -17,6 +17,11 @@
 modules: []
 
 planning:
+  # Offene-Wellen-Form wie im Hauptprofil (slice-108) — beide Profile
+  # lesen dieselbe Sektion, eine abweichende Antwort waere die
+  # bekannte Zwei-Antworten-Klasse.
+  heading: "## Offene Wellen"
+  marker: "Nichts in Arbeit"
   # Die Roadmap-Datei ist auch hier Pflicht: sie trägt den Aktiv-Status und ihr
   # Verzeichnis ist das Slice-Verzeichnis. Der Closure-Lauf prüft damit
   # zusätzlich die Lifecycle-Invariante — dieselbe Aussage wie in `gates`,

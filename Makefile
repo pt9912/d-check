@@ -78,7 +78,7 @@ coverage-gate: ## Coverage-Schwelle (Kalibrierungs-Bindung: 93 %, Historie in ha
 gate-consistency: build ## Meta-Gate: Deklarations-Konsistenz Doku↔Makefile via Modul targets (Image, dogfood). ADR-0031/ADR-0032 (Skript voll abgelöst; DC-QA-03-Modulliste jetzt Go-Test in `make test`).
 	$(DCHECK_RUN) --enable targets $(FOCUS_DISABLE)
 
-planning-check: build ## Meta-Gate via Modul planning (Image, dogfood): Roadmap §Aktuelle Welle ↔ in-progress/slice-* (Planning-Drift-Schutz, in gates). ADR-0028 (löst die Skript-Mechanik von slice-040 ab).
+planning-check: build ## Meta-Gate via Modul planning (Image, dogfood): Roadmap §Offene Wellen (Ruhe-Marker) ↔ in-progress/slice-* (Planning-Drift-Schutz, in gates). ADR-0028 (löst die Skript-Mechanik von slice-040 ab).
 	$(DCHECK_RUN) --enable planning $(FOCUS_DISABLE)
 
 bench: build ## DC-QA-01-Benchmark: generiertes Fixture, N=3 Läufe, Median < 5 s (Spez §DC-QA-01.a).

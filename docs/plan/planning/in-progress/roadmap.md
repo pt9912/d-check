@@ -9,18 +9,19 @@ Treiber.
 
 ---
 
-## Aktuelle Welle
+## Offene Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
-§Roadmap-Struktur: fünf Abschnitte — *Aktuelle Welle* ist **die laufende**, mit
-den drei Pflicht-Bestandteilen (Slice-IDs · Trigger · Closure-Kriterien); das
-*Geplante Ende* ist Schätzung, kein Closure-Kriterium.
+§Roadmap-Struktur (v5.6.0): *Offene Wellen* ist **derivativ** — der Zustand
+sind die flachen Welle-Dateien; woran gerade gearbeitet wird, sagt das
+`Welle:`-Feld der Slices in `in-progress/`. Ziel, Trigger und
+Closure-Kriterien stehen in der Welle-Datei, nicht hier; das *Geplante Ende*
+dort ist Schätzung, kein Closure-Kriterium. Ist nichts beansprucht
+(`in-progress/` ohne Slices), trägt der Abschnitt stattdessen den
+deklarierten Ruhe-Marker — eine Redundanz **mit Wächter**
+(`make planning-check` hält ihn gegen das Verzeichnis).
 
-**Welle-ID:** welle-78-baseline-v560-migration
-**Start:** 2026-08-21
-**Geplantes Ende:** 2026-08-23 (Schätzung, korrigierbar)
-
-**Closure-Trigger:** siehe [Wellendokument](../welle-78-baseline-v560-migration.md).
+- [welle-78-baseline-v560-migration](../welle-78-baseline-v560-migration.md)
 
 ## Nächste Wellen
 

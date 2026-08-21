@@ -12,12 +12,12 @@
   trennt reinen Move (Commit 1, `R100`-Rename) vom Inhalt (Commit 2). Seit
   `make planning-check` (slice-040) den Roadmap-Zustand **atomar** an den
   in-progress-Stand koppelt (kein `slice-*` in `…/in-progress/` ⟺ Roadmap
-  §Aktuelle Welle trägt „Keine aktive Welle"), wäre ein *byte*-reiner
+  §Offene Wellen trägt den Ruhe-Marker), wäre ein *byte*-reiner
   Move-Commit beim Lifecycle-Move zwangsläufig gate-rot (leeres
   `in-progress/` bei noch aktiver Roadmap; zusätzlich `target-missing` auf
   jeden Verweis, der den Slice über seinen `in-progress/`-Pfad verlinkt).
   Adaption: der `git mv`-Commit dieses Moves trägt **zusätzlich** (a) den
-  Roadmap-Flip §Aktuelle Welle und (b) alle Pfad-Verweise auf den Slice
+  Roadmap-Flip §Offene Wellen und (b) alle Pfad-Verweise auf den Slice
   (Roadmap, `AGENTS.md` §4, `harness/README.md` §Sensors) von
   `in-progress/` nach `done/`. Der **Slice-Body** (DoD-Haken +
   Closure-Notiz; neue Slices ohne Status-Zeile [slice-091/D-5], historische

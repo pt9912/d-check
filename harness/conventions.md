@@ -99,7 +99,6 @@ ob der Eintrag ihn betrifft.
 | [MR-015](conventions/MR-015-agents-md-routet.md) <a id="mr-015--auflösung-der-mr-012-pointer-drift-agentsmd-routet-spiegelt-nicht-mehr"></a>      | AGENTS.md routet (spiegelt nicht)             | `AGENTS.md` §1                                    | `grundlagen-harness-dateien` §Template-Schichtung            |
 | [MR-021](conventions/MR-021-vendored-verweise-pin-gebunden.md) <a id="mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden"></a> | vendored-Verweise pin-gebunden                | Live-Links auf die vendored Baseline              | `grundlagen-harness-dateien` §Verzeichniskonvention          |
 | [MR-023](conventions/MR-023-baseline-v500.md) <a id="mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout"></a>                 | self-contained Bundle-Layout (vendored; historische Pin-Hebung auf v5.0.0 — den aktuellen Pin trägt der Nachtrag darunter) | §Baseline, `fetch-baseline-cache.sh`              | `grundlagen-harness-dateien` §Template-Schichtung            |
-| [MR-024](conventions/MR-024-aktuelle-welle-ruhe-marker-form.md) <a id="mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform"></a> | Aktuelle-Welle-Form (aktiv = Template-Felder; wellenlos = Ruhe-Marker) | `roadmap.md` §Aktuelle Welle, `planning`-Modul | `modul-06` §Roadmap-Struktur (Aktuelle Welle) |
 | [MR-025](conventions/MR-025-spiegel-vor-dem-editieren.md) <a id="mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten"></a> | Semantik-Änderung: Spiegel **vor** dem Editieren auflisten | jede Änderung an einer zugesagten Semantik (Grund-Code, Algorithmus-Schritt, Config-Schlüssel, Schwelle, Erkennungs-Form) | `modul-10` §Review-Arten |
 | [MR-026](conventions/MR-026-baseline-v560.md) <a id="mr-026--baseline-pin-hebung-auf-v560-dritter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a> | Baseline-Pin-Hebung auf v5.6.0 (Pin-Fortschreibung, Nachtrag) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v5.6.0/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
 
@@ -125,6 +124,7 @@ auffindbar bleibt, ohne gelesen zu werden.
 | [MR-019](conventions/done/MR-019-regelwerk-vendored.md) <a id="mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017"></a>          | Baseline-Stand `v5.0.0` (Vendoring = Default)              |
 | [MR-020](conventions/done/MR-020-template-propagation.md) <a id="mr-020--baseline-template-propagation-per-drift-audit-template-frei-bestätigt"></a> | Baseline-Stand `v5.0.0` (Template-Schichtung = Default)    |
 | [MR-022](conventions/done/MR-022-currency-audit.md) <a id="mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019"></a>                            | Baseline-Stand `v5.0.0` (Freshness-Audit = Default)        |
+| [MR-024](conventions/done/MR-024-aktuelle-welle-ruhe-marker-form.md) <a id="mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform"></a> | Baseline-Stand `v5.6.0` (Offene-Wellen-Form + Ruhe-Marker mit Wächter = Default; adoptiert mit slice-108) |
 
 
 
