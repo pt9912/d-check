@@ -109,23 +109,23 @@ seine Prüf-Profile auf `many` um.
 
 ## 4. Definition of Done
 
-- [ ] CR-Commit (Lastenheft allein: 0.62.0 + §4-Text + Historie-Zeile)
+- [x] CR-Commit (Lastenheft allein: 0.62.0 + §4-Text + Historie-Zeile)
       liegt **vor** der Implementierung in der Historie.
-- [ ] [ADR-0055](../../adr/0055-wellen-invariante-artefakt-und-grund-codes.md)
+- [x] [ADR-0055](../../adr/0055-wellen-invariante-artefakt-und-grund-codes.md)
       per `## Geschichte` fortgeschrieben (Proposed, kein neues
       ADR-Dokument).
-- [ ] [`MR-025`](../../../../harness/conventions.md#mr-025)-Spiegel-Liste
+- [x] [`MR-025`](../../../../harness/conventions.md#mr-025)-Spiegel-Liste
       vor dem ersten Edit dokumentiert und am Ende abgehakt.
-- [ ] Default-Probe: ohne `mode`-Schlüssel Befundsatz byte-identisch
+- [x] Default-Probe: ohne `mode`-Schlüssel Befundsatz byte-identisch
       ([`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus));
       fail-closed-Probe: unbekannter und explizit leerer Modus ⇒ Exit 2 mit
       Schlüssel-Nennung.
-- [ ] Testfälle: beide Bijektions-Richtungen rot mit Kennung als `target`,
+- [x] Testfälle: beide Bijektions-Richtungen rot mit Kennung als `target`,
       die vier team-sim-Zustände nachgebaut, Fence-/Mehrfach-/Null-Proben.
-- [ ] `make fullbuild` grün (Exit explizit); Release v0.62.0 auf GHCR,
+- [x] `make fullbuild` grün (Exit explizit); Release v0.62.0 auf GHCR,
       Digest-Backfill committet; **danach** eigene Profile auf `many`,
       Gate grün am eigenen Bestand.
-- [ ] Unabhängiger Review vor der Closure.
+- [x] Unabhängiger Review vor der Closure.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -182,4 +182,36 @@ spezifizierten Fähigkeit auf formalen Konsumenten-CR; kein Legacy-Import.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*Wird bei der Closure geschrieben (Struktur nach `closure.heading-pattern`).*
+**Geliefert:** `planning.waves.mode: one | many` vollständig auf dem
+CR-Pfad — der CR-Commit landete allein im Lastenheft (0.62.0), die
+[ADR-0055](../../adr/0055-wellen-invariante-artefakt-und-grund-codes.md)-Fortschreibung
+trug die Entscheide, dann Spezifikation (W1/W3/§2/§4), Code
+(`waveBijection` über die geteilte Block-Grenze, Config-Rand fail-closed
+inkl. Inert-Fall), Tests für alle fünf Akzeptanzkriterien samt vier
+nachgezogener Rand-Proben, Release-Prep (Handbuch 1.53 mit dem
+vorgemerkten §6-Schliff), **Release v0.62.0** → Tag → GHCR →
+Digest-Backfill, danach die eigene Profil-Umstellung auf `many` mit
+Messung (Gates und GUARD lokal wie mit dem released Digest-Image grün).
+
+**Review** ([Report](../../../reviews/2026-08-21-slice-111-waves-mode-review.md)):
+APPROVE mit Auflagen — 0 HIGH, 1 MEDIUM (der ADR-Wortlaut behauptete
+eine Ein-Lese-Form, die der Code nicht hat — vor dem Tag korrigiert),
+3 LOW, 1 INFO; alle eingearbeitet. Der stärkste Beleg kam aus dem Review
+selbst: die **byte-identische Live-Gegenprobe** des Default-Pfads gegen
+das gepinnte v0.61.0-Image, grün wie rot.
+
+**Neben dem Plan:** Der Auftraggeber auditierte am selben Tag AGENTS
+§1/§3.3/§3.7/§5 — vier Nachzüge (Nachschlag-Doktrin samt
+Pflicht-Blick-Triggern,
+[`MR-013`](../../../../harness/conventions.md#mr-013)-Muster statt
+Herkunfts-Prosa, Baseline-Feld-Formen für Kommentare, der
+[ADR-0027](../../adr/0027-commits-traceability-modul.md)-Zeiger) und zwei
+Heilungen an den eigenen Slice-Köpfen dieser Welle (Verantwortlich-Feld,
+Vorprüfungen). Und das Register wächst ehrlich: **zweimal behauptete
+eine Commit-Botschaft heute etwas, das der Diff bzw. die Probe nicht
+trug** (eine fehlgeschlagene Image-Probe als Erfolg formuliert und
+gepusht; eine fehlgeschlagene Index-Spiegelung als erledigt formuliert,
+vor dem Push per Amend geheilt) — als BEO-009 im Register, Zähler 2.
+Der Schluss-Zustand dieses Slice ist zugleich sein Produkt-Beweis: die
+Roadmap trägt den Ruhe-Marker **zusätzlich** zum offenen Wellen-Zeiger,
+und das eigene Gate misst das Fenster grün.
