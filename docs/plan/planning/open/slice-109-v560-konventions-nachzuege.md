@@ -23,8 +23,11 @@ Harness-/Konventions-Doku; kein `DC-*`-Produktvertrag berührt.
    (b) der **Verzicht auf Struktur-IDs** ist eine echte Abweichung
    (`modul-03` schreibt `SPEC-*` für die Sektionstypen der Spezifikation
    §2–§6 vor) und wird als eigene Adaption **MR-027** deklariert <!-- d-check:ignore -->
-   (dichte `.a`-Verfeinerungen + `§`-Anker; Begründung: 42 Anforderungen mit
-   je eigener `.a`-Sektion decken die Adressierbarkeit, ein SPEC-Retrofit
+   (dichte `.a`-Verfeinerungen + `§`-Anker; Begründung: von den 44
+   FA-Anforderungen tragen 36 eine eigene Verfeinerungs-Sektion (37
+   Sektionen inkl. einer `.b`) — sie decken die Adressierbarkeit der
+   technischen Verfeinerungen, der Rest adressiert per `§`-Anker; ein
+   SPEC-Retrofit
    über die gewachsene Spezifikation hätte keinen Konsumenten;
    Auflösungs-Trigger: eine ADR kann ihr `Schärft:`-Ziel nicht mehr eindeutig
    per `§`-Anker adressieren).
@@ -36,8 +39,8 @@ Harness-/Konventions-Doku; kein `DC-*`-Produktvertrag berührt.
    (AGENTS §5-Halbsatz; kein Retrofit). **Und die gemessene Rest-Klasse
    räumen** (Review-Befund F-9): nackte Review-Finding-Tokens als
    Herkunfts-Feld — per grep alle Fundstellen (u. a. `cli.go`, `planning.go`,
-   `configyaml.go` sowie die in welle-77/78 selbst geschriebenen in
-   `structure_tableorder.go`/`markdown.go`/`finding.go`) auf eine der drei
+   `configyaml.go` sowie die in welle-77 geschriebenen in
+   `structure_tableorder.go`/`markdown.go`) auf eine der drei
    zugelassenen Formen ziehen oder streichen; Verhalten unverändert.
 3. **C-4 — Kennungs-Anker im MR-Index:** je Index-Zeile zusätzlich
    `<a id="mr-<NNN>">`; die Voll-Slug-Anker bleiben als Migrations-Schuld
