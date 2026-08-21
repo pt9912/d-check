@@ -1,6 +1,10 @@
 # MR-024 — `## Aktuelle Welle`: Ruhe-Marker im wellenlosen Zustand (aktive Welle template-konform)
 
 - **Status:** Accepted
+- **Aufgelöst durch:** Baseline-Stand `v5.6.0` — die Offene-Wellen-Form samt Ruhe-Marker
+  **mit Wächter** ist seit v5.5.0 Baseline-Default; adoptiert mit slice-108
+  (der untenstehende Auflösungs-Trigger ist damit gegenstandslos: die Baseline
+  trägt den Invariant jetzt selbst)
 - **Ersetzt-Baseline-Regel:** [`modul-06-roadmap.md` §Roadmap-Struktur (Aktuelle Welle)](../../../.harness/baseline/v5.6.0/regelwerk/modul-06-roadmap.md#roadmap-struktur-fünf-abschnitte-modul-6)
 - **Datum:** 2026-08-02
 - **Geltungsbereich:** [`roadmap.md` §Aktuelle Welle](../../../docs/plan/planning/in-progress/roadmap.md#offene-wellen),

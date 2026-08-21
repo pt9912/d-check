@@ -52,12 +52,14 @@ Welle, die ohne fertige Vorgängerin nicht starten kann, ist eine Phantom-Welle.
 
 ```mermaid
 flowchart LR
-    W77["welle-77 - Chronologie-Ordnung (geschlossen)"]
     W78["welle-78 - Baseline-Migration v5.6.0 (laeuft)"]
     S106["slice-106 - Etappe A (done)"]
-    S107["slice-107 - Etappe B (in Arbeit)"]
-    W77 --> W78
+    S107["slice-107 - Etappe B (done)"]
+    S108["slice-108 - Etappe C-1 (in Arbeit)"]
+    S109["slice-109 - Etappe C-2..C-6 (open)"]
     S106 --> S107
+    S107 --> S108
+    S108 --> S109
 ```
 
 ## Abgeschlossene Wellen
@@ -96,6 +98,7 @@ Zeile voll heißt treibende.
 
 | Datum | Was wurde geändert? | Warum? |
 |---|---|---|
+| 2026-08-21 | **Roadmap-Form auf §Offene Wellen** (diese Datei selbst): §Aktuelle Welle → §Offene Wellen (derivativ, Ruhe-Marker „Nichts in Arbeit" mit Wächter), beide Prüf-Profile per `planning.heading`/`marker` umgestellt, fünf Spiegel nachgezogen, [`MR-024`](../../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform) aufgelöst; Abhängigkeitsgraph auf den Etappen-Stand gezogen | Etappe C-1 ([slice-108](../in-progress/slice-108-roadmap-offene-wellen.md)): die v5.5.0-Baseline hat die Sektion selbst umgebaut, der Entscheid folgt der Linie „Baseline-Default sticht". Kein Produkt-Verhalten geändert (Config + ein Befunds-Klartext, der die Überschrift jetzt aus der Config nennt statt verdrahtet); Negativ-Probe belegt (Marker bei beanspruchtem Slice ⇒ `planning-drift`). **Benannte Grenze:** der baseline-legitime Zustand „Welle offen, `in-progress/` leer" bleibt `wave-drift`-rot — näher als der Mehr-Wellen-Betrieb, beides ein künftiger eigener Entscheid |
 | 2026-08-21 | **slice-107 abgeschlossen** + **[slice-108](../in-progress/slice-108-roadmap-offene-wellen.md) eröffnet** (kombiniert, damit `in-progress/` nicht leert); [slice-107](../done/slice-107-baseline-v560-delta-audit.md) `in-progress`→`done` | Etappe B geliefert: Stufen-Audit über sechs Stufen, je Regel eine Antwort; zwei Review-Runden (blockierend: der Audit verletzte an vier Stellen die selbst angelegten Maßstäbe → APPROVE mit Auflagen, alle eingearbeitet — u. a. der Struktur-ID-Verzicht als **echte Abweichung** mit eigenem MR statt stiller MR-000-Lüge, gezählte Zahlen statt behaupteter, ehrliche Beleg-Grenzen). Der Start-Trigger von Etappe C-1 ist erfüllt (slice-107 in `done/`); C-1 stellt die Roadmap auf die v5.6.0-Form §Offene Wellen um <!-- d-check:ignore --> |
 | 2026-08-21 | **Etappe C geschnitten** — welle-78 §4 um [slice-108](../in-progress/slice-108-roadmap-offene-wellen.md) (C-1: Roadmap auf §Offene Wellen) und [slice-109](../open/slice-109-v560-konventions-nachzuege.md) (C-2…C-6: ID-Schema-Deklaration, Kommentar-Regel-Träger, Kennungs-Anker, Leseordnung, Bestands-Stichprobe) nachgeführt | Der Stufen-Audit ([slice-107](../done/slice-107-baseline-v560-delta-audit.md) §9) liegt vor: je Regel eine Antwort über sechs Stufen. **Der größte Befund ist die Roadmap-Form selbst** — v5.5.0 ersetzt §Aktuelle Welle durch §Offene Wellen (derivativ, Marker „Nichts in Arbeit"); das Produkt deckt die neue Form per Config, der Entscheid folgt der Auftraggeber-Linie „Baseline-Default sticht". Konform-Belege ohne Handlung je Zeile (u. a. `.a`-Verfeinerung, TA-7/Hauptzweig, Gate-Obermenge-Nachweis), n.-a.-Belege mit Begründung (Reconciliation/BF, Golden-Set/deterministischer Kern, team-sim, Mehr-Schreiber-Teile). **Wiedervorlage slice-090:** die upstream 5-vs-6-Feld-Drift besteht in v5.6.0 fort (modul-10 fünf Felder, Template sechs) — Upstream-Notiz, keine d-check-Handlung |
 | 2026-08-21 | **slice-106 abgeschlossen** + **[slice-107](../done/slice-107-baseline-v560-delta-audit.md) eröffnet** (kombiniert, damit `in-progress/` nicht leert — Präzedenz welle-68/71); [slice-106](../done/slice-106-baseline-v560-vendoring.md) `in-progress`→`done` | Etappe A geliefert: Baseline v5.6.0 vendored (beide Bäume + `SHA256SUMS`, `--verify` 51 Dateien grün), v5.0.0-Baum entfernt, Pin + [`MR-026`](../../../../harness/conventions.md#mr-026--baseline-pin-hebung-auf-v560-dritter-nachtrag-zu-mr-011-nachtrag-zu-mr-023), lebende Verweise pin-gebunden retargetet, fünf eingefrorene Fundstellen getombstoned; `--check-latest` beidseitig OK. **Zwei Realfunde neben dem Plan:** der Content-Drift-Audit des Materialisierungs-Skripts meldete einen **falschen** Upstream-Drift (Absolut-Pfad-Verankerung + `xargs` ohne `-r` hashte stdin — gefixt, manuell 51/51 byte-identisch gegengeprüft), und der Review fand einen unehrlichen **Commit-Schnitt** (die Baum-Löschung steckte still im früher gestagten Index des Skript-Fix-Commits) — die unpushed Kette wurde neu geschnitten, per Worktree-Gegenprobe ist jetzt jedes Glied doc-check-grün. Zwei Review-Runden: blockierend (2 MEDIUM, 3 LOW, 2 INFO) → bestätigend APPROVE. Der Start-Trigger von Etappe B ist erfüllt (slice-106 in `done/`) |

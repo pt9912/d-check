@@ -54,7 +54,7 @@ In dieser Reihenfolge:
 2. [`spec/spezifikation.md`](spec/spezifikation.md) — technisch verbindlich, fortschreibbar.
 3. [`spec/architecture.md`](spec/architecture.md) — Komponenten- und Sequenzsicht.
 4. [`docs/plan/adr/README.md`](docs/plan/adr/README.md) — ADR-Index.
-5. [`docs/plan/planning/in-progress/roadmap.md`](docs/plan/planning/in-progress/roadmap.md) — aktuelle Welle.
+5. [`docs/plan/planning/in-progress/roadmap.md`](docs/plan/planning/in-progress/roadmap.md) — Wellen-Sequenzierung (offene Wellen derivativ).
 6. [`docs/user/`](docs/user/) — Operations, Releasing.
 7. [`README.md`](README.md) — Projekt-Überblick.
 8. **AGENTS.md (diese Datei).**
@@ -98,7 +98,9 @@ Wenn eine Datei verschoben **und** der Inhalt umgeschrieben wird:
 **Ausnahme Slice-Lifecycle-Move (`in-progress/` → `done/`):** Der
 `git mv`-Commit trägt hier **zusätzlich** den Roadmap-Flip §Offene Wellen
 (zurück auf den Ruhe-Marker „Nichts in Arbeit", sofern kein Slice mehr
-beansprucht ist) und alle Pfad-Verweise auf den Slice
+beansprucht ist — dann muss im selben Zug auch das flache Wellendokument
+schließen oder der nächste Slice öffnen, sonst meldet die Wellen-Hälfte
+des Gates) und alle Pfad-Verweise auf den Slice
 (Roadmap, §4, `harness/README.md` §Sensors) von `in-progress/` nach
 `done/`. Sonst ist der Commit gate-rot: `make planning-check` koppelt
 in-progress-Stand und Roadmap atomar, und die alten Verweise laufen ins

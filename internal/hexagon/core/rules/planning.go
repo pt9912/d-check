@@ -39,11 +39,11 @@ func CheckPlanning(fsys driven.Filesystem, cfg model.PlanningConfig) []model.Fin
 	}
 	var msg string
 	if hasSlices {
-		msg = "Slice(s) in " + sliceDir + ", aber die Roadmap §Aktuelle Welle trägt den Ruhe-Marker „" +
-			cfg.EffectiveMarker() + "“ — die Roadmap muss die aktive Welle benennen"
+		msg = "Slice(s) in " + sliceDir + ", aber die Roadmap-Sektion „" + cfg.EffectiveHeading() +
+			"“ trägt den Ruhe-Marker „" + cfg.EffectiveMarker() + "“ — die Sektion muss die Arbeit benennen"
 	} else {
-		msg = "kein Slice in " + sliceDir + ", aber die Roadmap §Aktuelle Welle benennt eine aktive Welle" +
-			" — die Roadmap muss den Ruhe-Marker „" + cfg.EffectiveMarker() + "“ tragen"
+		msg = "kein Slice in " + sliceDir + ", aber die Roadmap-Sektion „" + cfg.EffectiveHeading() +
+			"“ trägt den Ruhe-Marker „" + cfg.EffectiveMarker() + "“ nicht — er gehört dorthin"
 	}
 	return planningDrift(cfg.Roadmap, headingNo, sliceDir, msg)
 }

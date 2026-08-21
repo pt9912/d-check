@@ -15,8 +15,8 @@ Slice-Pläne und Roadmap dieses Repos.
   **Steering-Loop-Eintrag** der Closure-Notiz verweist auf die kanonische
   Definition im vendorten Regelwerk:
   [`grundlagen-klassifikation.md` §Steering Loop](../../../.harness/baseline/v5.6.0/regelwerk/grundlagen-klassifikation.md#steering-loop).
-- Die aktuelle Welle und die Wellen-Reihenfolge stehen in
-  [`in-progress/roadmap.md`](in-progress/roadmap.md).
+- Die offenen Wellen (derivativ: die flachen Welle-Dateien) und die
+  Wellen-Reihenfolge stehen in [`in-progress/roadmap.md`](in-progress/roadmap.md).
 
 ## Carveouts
 

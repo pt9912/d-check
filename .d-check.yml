@@ -243,8 +243,7 @@ commits:
 # Modul planning (DC-FA-PLAN-001, slice-057): Roadmap-↔-in-progress-Lifecycle-
 # Konsistenz — `make planning-check` aktiviert es mit `--enable planning` (NICHT in
 # der modules-Liste oben, daher im Default-doc-check inert). Hermetisch (nur die
-# Roadmap-Datei + Verzeichnis-Listing, kein git, kein Netz); heading/marker/slice-glob
-# per Default (`## Aktuelle Welle` / „Keine aktive Welle" / `slice-*.md`). Löst
+# Roadmap-Datei + Verzeichnis-Listing, kein git, kein Netz); slice-glob per Default; heading/marker unten explizit (Offene-Wellen-Form) (`## Aktuelle Welle` / „Keine aktive Welle" / `slice-*.md`). Löst
 # tools/planning-consistency.sh ab (ADR-0028, letztes Familien-Skript des tools/*.sh-Audits).
 planning:
   roadmap: docs/plan/planning/in-progress/roadmap.md
@@ -252,8 +251,10 @@ planning:
   # derivativ, der Ruhe-Marker "Nichts in Arbeit" gilt bei leerem
   # in-progress/. Die Drift-Kopplung der waves-Faehigkeit (Anspruch <=>
   # genau ein flaches Wellendokument) bleibt im Ein-Wellen-Betrieb wahr;
-  # ein kuenftiger Mehr-Wellen-Betrieb braucht dort einen eigenen
-  # Entscheid (benannte Grenze, kein geloestes Problem).
+  # SCHON der baseline-legitime Zustand "Welle offen, in-progress leer"
+  # ist wave-drift-rot — die Grenze liegt naeher als der Mehr-Wellen-
+  # Betrieb; beides braucht dort einen eigenen Entscheid (benannte
+  # Grenze, kein geloestes Problem).
   heading: "## Offene Wellen"
   marker: "Nichts in Arbeit"
   # Dritte Faehigkeit (DC-FA-PLAN-001 §Wellen-Invariante, ADR-0055): dieselbe
