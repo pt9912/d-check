@@ -90,19 +90,19 @@ den Delta-Audit über die zwei geänderten Regeln.
 
 ## 4. Definition of Done
 
-- [ ] Pin `v5.7.0` vendored (beide Bäume + `SHA256SUMS`), `--verify` offline
+- [x] Pin `v5.7.0` vendored (beide Bäume + `SHA256SUMS`), `--verify` offline
       grün, `--check-latest` ohne Currency-/Content-Drift-Befund.
-- [ ] `v5.6.0`-Baum entfernt; kein **lebender** Verweis nennt
+- [x] `v5.6.0`-Baum entfernt; kein **lebender** Verweis nennt
       `baseline/v5.6.0`, eingefrorene sind quell-skopiert getombstoned
       (`make doc-check` belegt beides).
-- [ ] Pin-Nachtrag Accepted (Index-Zeile + Kennungs-Anker);
+- [x] Pin-Nachtrag Accepted (Index-Zeile + Kennungs-Anker);
       [`MR-026`](../../../../harness/conventions.md#mr-026) in
       `conventions/done/` samt Aufgelöste-Zeile, Links tiefen-korrigiert.
-- [ ] Die Roadmap-Sektionsregel §Offene Wellen trägt die Zwei-Hälften-Lesart
+- [x] Die Roadmap-Sektionsregel §Offene Wellen trägt die Zwei-Hälften-Lesart
       (Marker zusätzlich, paraphrasiert).
-- [ ] Delta-Audit: je geänderter Regel eine Antwort mit Fundstelle.
-- [ ] `make gates` grün (Exit explizit geprüft), GUARD vor jedem Commit.
-- [ ] Unabhängiger Review vor der Closure.
+- [x] Delta-Audit: je geänderter Regel eine Antwort mit Fundstelle.
+- [x] `make gates` grün (Exit explizit geprüft), GUARD vor jedem Commit.
+- [x] Unabhängiger Review vor der Closure.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -165,4 +165,34 @@ Review-Auflage F-2. Der Audit folgt dem Delta, kein Stufen-Ritual.
 
 ## 10. Closure-Notiz (nach `done/`)
 
-*Wird bei der Closure geschrieben (Struktur nach `closure.heading-pattern`).*
+**Geliefert:** die Baseline vollständig auf v5.7.0 — Bundle vendored und
+beidseitig auditiert (`--verify` 51 Dateien offline, `--check-latest`
+Currency **und** Content OK mit dem neuen Pin),
+[`MR-028`](../../../../harness/conventions.md#mr-028) als vierter Nachtrag
+der Pin-Serie mit aufgelöster
+[`MR-026`](../../../../harness/conventions.md#mr-026) (wandernder
+Doppel-Anker hält alle eingefrorenen Verweise am Leben), Verweis-Hebung,
+zwei exakt quell-skopierte Tombstones, die Zwei-Hälften-Prosa der Roadmap
+und der Delta-Audit über fünf Bundle-Dateien (§9).
+
+**Review** ([Report](../../../reviews/2026-08-21-slice-110-baseline-v570-review.md)):
+APPROVE mit Auflagen — 0 HIGH, 1 MEDIUM, 2 LOW, alle vor der Closure
+eingearbeitet. Der MEDIUM-Befund traf die **dritte Spiegel-Klasse** der
+Pin-Hebung: URL- und Ellipsen-Pins überleben das Pfad-grep, zum zweiten
+Mal in Folge (slice-106 F-1/F-3, hier F-1 — eine Zeile war in sich
+widersprüchlich: Baum v5.7.0, Quelle v5.6.0). Antwort auf das
+Steering-Signal des Reviewers: der Hebungs-Zensus steht jetzt als
+Drei-Klassen-Checkliste in der
+[`MR-028`](../../../../harness/conventions.md#mr-028)-Prozedur, und das Register zählt
+die Klasse als BEO-008 (Zähler 2). F-2 machte die Delta-Zählung ehrlich
+(fünf Bundle-Dateien statt drei Regelwerks-Dateien), F-3 deklariert die
+MR-/Wellen-Move-Ausnahme in AGENTS §3.3 statt sie als stille Praxis zu
+leben.
+
+**Neben dem Plan:** während der Umsetzung traf der **formale
+Konsumenten-CR** zu `planning.waves` ein und hat slice-111 **vor** dessen
+Beanspruchung präzisiert — opt-in `mode: one|many` statt Default-Umbau,
+[ADR-0055](../../adr/0055-wellen-invariante-artefakt-und-grund-codes.md)-Fortschreibung
+statt neuer ADR, Landung als reiner Lastenheft-Commit. Der Zuschnitt wurde am offenen Slice nachgezogen, die
+bindende Reihenfolge (erst der vendorte v5.7.0-Baum, dann die ADR, die
+ihn zitiert) hat gehalten.
