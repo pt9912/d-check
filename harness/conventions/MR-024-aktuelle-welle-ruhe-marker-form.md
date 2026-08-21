@@ -1,7 +1,7 @@
 # MR-024 — `## Aktuelle Welle`: Ruhe-Marker im wellenlosen Zustand (aktive Welle template-konform)
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`modul-06-roadmap.md` §Roadmap-Struktur (Aktuelle Welle)](../../.harness/baseline/v5.0.0/regelwerk/modul-06-roadmap.md#roadmap-struktur-fünf-abschnitte-modul-6)
+- **Ersetzt-Baseline-Regel:** [`modul-06-roadmap.md` §Roadmap-Struktur (Aktuelle Welle)](../../.harness/baseline/v5.6.0/regelwerk/modul-06-roadmap.md#roadmap-struktur-fünf-abschnitte-modul-6)
 - **Datum:** 2026-08-02
 - **Geltungsbereich:** [`roadmap.md` §Aktuelle Welle](../../docs/plan/planning/in-progress/roadmap.md#aktuelle-welle),
   `make planning-check`

@@ -73,6 +73,18 @@ ignore-refs:
     refs: [".harness/baseline/v1.4.0/**"]
   - in: docs/plan/planning/done/slice-081-pins-hash-ergonomie.md
     refs: [".harness/baseline/v1.4.0/**"]
+  # Tombstone der Baseline-Migration v5.0.0 -> v5.6.0 (slice-106 / MR-026):
+  # dieselbe Klasse wie oben — EINGEFRORENE Verweise auf den entfernten
+  # v5.0.0-Baum. Die immutablen Accepted-ADRs 0047/0048 und drei
+  # Review-Reports (Lauf-Belege) zitieren ihn als Historie; quell-skopiert
+  # von der Existenzpruefung ausgenommen statt eingefrorene Doku zu
+  # editieren. Die live-Fundstellen sind auf v5.6.0 retargetet (MR-021).
+  - in: docs/plan/adr/0047-matrix-spec-historie-nicht-provenance-exempt.md
+    refs: [".harness/baseline/v5.0.0/**"]
+  - in: docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md
+    refs: [".harness/baseline/v5.0.0/**"]
+  - in: "docs/reviews/2026-08-0[239]-*.md"
+    refs: [".harness/baseline/v5.0.0/**"]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.

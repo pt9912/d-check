@@ -1,7 +1,7 @@
 # MR-006 — Referenzrichtung: Spec-Straten verweisen nie abwärts auf ADRs
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`grundlagen-referenz-richtung.md` §Referenz-Richtung (SDP)](../../.harness/baseline/v5.0.0/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-referenz-richtung.md` §Referenz-Richtung (SDP)](../../.harness/baseline/v5.6.0/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren)
 - **Datum:** 2026-06-10
 - **Geltungsbereich:** `spec/*.md`, [`AGENTS.md` §3.4](../../AGENTS.md#34-architektur-sprach-meilensteinfrei-spec-straten-nie-abwärts)
 - **Adaption:** Das adoptierte Template-Set 2026-06 sah ADR-Verweise

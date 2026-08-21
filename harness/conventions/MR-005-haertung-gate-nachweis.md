@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Datum:** 2026-06-10
-- **Ersetzt-Baseline-Regel:** [`grundlagen-durchsetzungsschicht.md` §Vier Design-Eigenschaften](../../.harness/baseline/v5.0.0/regelwerk/grundlagen-durchsetzungsschicht.md#vier-design-eigenschaften)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-durchsetzungsschicht.md` §Vier Design-Eigenschaften](../../.harness/baseline/v5.6.0/regelwerk/grundlagen-durchsetzungsschicht.md#vier-design-eigenschaften)
 - **Geltungsbereich:** [`tools/harness/working-tree-hash.sh`](../../tools/harness/working-tree-hash.sh), [`.claude/hooks/`](../../.claude/hooks/)
 - **Adaption:** Zwei Abweichungen von der per
   [`MR-004`](../conventions.md#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild)
