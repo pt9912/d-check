@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.51 · **Software-Version:** [v0.60.0](../../version.md#v0.60.0) ·
-**Stand:** 2026-08-16 · **Autor:** pt9912
+**Handbuch-Version:** 1.52 · **Software-Version:** [v0.61.0](../../version.md#v0.61.0) ·
+**Stand:** 2026-08-21 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.60.0
+docker pull ghcr.io/pt9912/d-check:v0.61.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -72,7 +72,7 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.60.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.61.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -101,7 +101,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -156,7 +156,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -175,7 +175,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.60.0
+  ghcr.io/pt9912/d-check:v0.61.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -194,7 +194,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.60.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.61.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -213,7 +213,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -233,7 +233,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -242,7 +242,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -261,7 +261,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -281,7 +281,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
   --enable ids --disable anchors
 ```
 
@@ -302,7 +302,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
   --enable ids
 ```
 
@@ -323,7 +323,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
   --enable matrix
 ```
 
@@ -391,7 +391,7 @@ Konfigurationsfehler (Exit 2); ohne `token` verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
   --enable external
 ```
 
@@ -413,7 +413,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
   --enable ids --doctor
 ```
 
@@ -441,7 +441,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
   --enable ids --doctor --json
 ```
 
@@ -489,7 +489,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -525,7 +525,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
     --enable ids --repair | git apply
   ```
 
@@ -542,7 +542,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -562,7 +562,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -623,7 +623,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -761,7 +761,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -806,7 +806,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.60.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.61.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -819,7 +819,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.60.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.61.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -880,7 +880,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.60.0 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -1694,10 +1694,12 @@ structure:
     # forbid-pattern: 'TODO'
     # require-pattern: 'Beleg'
     # require-all: ["Beleg", "Lernsignal"]
+    # table-order: desc                           # asc|desc: Chronologie-Monotonie der Schlüsselspalte
+    # table-column: 1                             # 1-basierte Schlüsselspalte (Default 1; nur mit table-order)
     # exempt-paths: []
 ```
 
-**Vier Dinge, die überraschen können.** Erstens: eine Regel, die **keine** Datei
+**Fünf Dinge, die überraschen können.** Erstens: eine Regel, die **keine** Datei
 trifft, meldet `section-missing` — auch dann, wenn erst `exempt-paths` die Menge
 geleert hat. Eine Regel zu schreiben ist die Behauptung, dass es die Dateien
 gibt; ein leer laufendes Gate darf nicht Erfolg melden. Zweitens: bei `section`
@@ -1712,6 +1714,19 @@ Wort in Backticks trifft deshalb **nicht**, und `min-sentences` zählt nur
 Satzende-Zeichen **vor Whitespace oder Zeilenende**: die Punkte in einer
 Versionsnummer wie 0.57.0 oder in einem Dateipfad tragen keinen Satz und zählen
 nicht mit.
+
+Fünftens: die **Chronologie-Bedingung** (`table-order: asc|desc`) ist die eine
+Ausnahme von dieser Bereinigung — sie liest die Zellen der Schlüsselspalte
+(`table-column`, 1-basiert) **roh**, weil reale Schlüssel in Release-Registern
+in Inline-Code stehen. Verglichen wird **typisiert** (ISO-Datum `JJJJ-MM-TT`
+oder Punkt-Version wie `1.10`, segmentweise numerisch — `1.10` kommt **nach**
+`1.9`) und **nicht-strikt** monoton je zusammenhängender Tabelle; Kopf- und
+Trennzeile zählen nicht. Eine Zeile, die die Richtung bricht, meldet
+`section-unordered`; eine Zelle ohne typisierbaren Schlüssel — oder mit
+anderem Typ als ihr Vorgänger — meldet `section-cell-untyped` an **genau
+dieser** Zeile, dahinter setzt der Vergleich neu auf. Ein Abschnitt ganz ohne
+Tabellen-Datenzeile meldet den Leerlauf: die Bedingung zu setzen ist die
+Behauptung, dass hier eine chronologische Tabelle steht.
 
 **Messen Sie, bevor Sie eine Regel aktivieren.** In diesem Repo hat genau das
 eine Regel verhindert, die plausibel klang und falsch war: „abgeschlossener
@@ -1739,7 +1754,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `## Aktuelle Welle`-Block genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten. Überschriften und Marker zählen nur **außerhalb von Code-Blöcken**; die Block-Grenze ist die geteilte Abschnittsgrenze. **Dritte Fähigkeit** (opt-in über `waves.dir`): die Wellen-Register der Roadmap gegen die Wellen-Dateien — Plan-Dokument flach ⟺ aktive Welle, Vorschau ohne Datei, Abschluss-Register ⟺ Ergebnisnotizen (beidseitig) | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder`, `closure-note-ambiguous`, `wave-drift`, `wave-preview-exists`, `wave-results-missing`, `wave-unregistered` |
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
 | `targets`   | opt-in        | Deklarations-Konsistenz Doku ↔ Build-Targets: jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`makefiles`), und jede Regel steht in der Autoritäts-Doku (`authority`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed bei fehlender Datei. Tabellenzeilen zählen nur **außerhalb von Code-Blöcken** — ein Beispiel-Block dokumentiert kein Target | `gate-phantom`, `gate-undocumented`                         |
-| `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu sechs Bedingungen mit je eigenem Grund-Code. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing` |
+| `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu sieben Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table-order`/`table-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped` |
 | `external`  | opt-in (Netz) | Erreichbarkeit externer Links                                                            | `external-status`, `external-timeout`, `external-redirects` |
 | `sources`   | opt-in (Netz) | Content-Pin externer Quellen gegen Upstream-Drift: eine auf `sha256` gepinnte `http(s)`-Quelle (Marker `<!-- source-pin: [zip] sha256:… -->` am Link **oder** Config-Block `sources:`; Einzeldatei oder Archiv `unpack: zip`) wird geholt, gehasht, verglichen — Meldung mit vollem Ist-Hash; **zweite** Netz-Tür neben `external`, nie im Default | `source-drift`, `source-unreachable`                        |
 
@@ -1921,3 +1936,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.49             | v0.58.0          | 2026-08-16 | **Geteilte Lexik: fünf Module beantworten ihre Lexik-Fragen jetzt gleich** (§5/§6). Wer fragt „ist das eine Überschrift / ein Anker / derselbe Absatz“, bekommt überall dieselbe Antwort: `citations` trennt am **Code-Block** (Leerzeilen trennen weiterhin nicht) und bricht dann fail-closed ab; `versions`/`pins` lösen Anker so auf wie `anchors` — Duplikat-Slug, Prozent-Dekodierung, case-sensitiv, nur außerhalb von Code; `planning` zählt Überschriften und den Ruhe-Marker nur außerhalb von Fences und beendet den Aktiv-Block an der geteilten Abschnittsgrenze; `vcs` liest Status-Zeile und `immutable-when` nicht mehr aus einem Code-Beispiel; `targets` wertet nur Tabellenzeilen außerhalb von Fences. **Beachten — die Änderung wirkt in beide Richtungen:** sie findet **mehr** (fail-closed statt Zufalls-Paarung, zwei geschlossene stille Grün-Pfade in Gates) und **weniger** (ein Anker im Fence oder anders geschrieben löst nicht mehr auf, bei `pins` ohne Ausgabe; zwei `planning`-Falsch-Rot entfallen). Die Aufzählung ist offen. Am eigenen Bestand ist kein Fall betroffen. Dazu eine benannte Grenze: die Abschnitts-Maske von `vcs` läuft auf git-Blobs, die kein Wächter scannt |
 | 1.50             | v0.59.0          | 2026-08-16 | **Wellen-Register gegen Wellen-Dateien** — dritte Fähigkeit des Moduls `planning` (§5/§6, opt-in über `planning.waves.dir`): die Lifecycle-Invariante eine Ebene höher, vier Aussagen mit je eigenem Grund-Code (`wave-drift` · `wave-preview-exists` · `wave-results-missing` · `wave-unregistered`). Das verpflichtende Artefakt einer geschlossenen Welle ist die **Ergebnisnotiz** — gemessen, nicht gesetzt: gegen das Plan-Dokument geprüft meldete die Aussage 19-mal über zwei reale Bäume. Die Vorschau-Aussage liest die **erste Spalte** und überspringt Zeilen ohne Kennung; Kopf- und Trennzeile zählen strukturell nicht. Fail-closed: unlesbare Wellen-Verzeichnisse und fehlende Register-Überschriften (je eigenes Befund-Ziel gegen die Deduplikation). **Beachten:** beim Einführen den konsument-gerechten `marker` setzen und mit echten Rückständen rechnen (im Schwester-Repo: elf) |
 | 1.51             | v0.60.0          | 2026-08-16 | **Ortsfeste Verweise in Lifecycle-Verzeichnissen** — opt-in `links.resolve-from` (§5/§6): wo Dateien per `git mv` zwischen Geschwister-Verzeichnissen wandern, muss jede Datei eines `dirs`-Verzeichnisses jedes relative Ziel von **jedem** Ort ihrer Gruppe auflösen, und überall auf **dasselbe** Ziel — sonst `link-position-dependent`, gemeldet **vor** dem Move; die Reparatur ist das Präfixieren des Pfads, nicht das Anlegen des Ziels. `fixed-dirs` (etwa der Ruheort) zählen als Orte, prüfen aber nicht; ein am Ist-Ort fehlendes Ziel bleibt allein `target-missing` (kein Doppelbefund); absichtlich ortsgebundene Verweise über das bestehende `ignore-refs`. Fail-closed über denselben Code: eine Gruppe ohne einen einzigen existierenden `dirs`-Ort und ein Ort, der als Datei existiert — ein **einzelner** fehlender Ort meldet bewusst nicht (git überträgt leere Verzeichnisse nicht). Ohne den Block byte-identisch |
+| 1.52             | v0.61.0          | 2026-08-21 | **Chronologische Tabellen auf Richtung prüfen** — siebte Bedingung des Moduls `structure` (§5/§6): `table-order` (`asc`/`desc`) mit `table-column` (1-basiert, Default 1) vergleicht die Schlüsselspalte jeder zusammenhängenden Tabelle des Abschnitts **typisiert** (ISO-Datum, Punkt-Version — `1.10` kommt nach `1.9`; ein zeichenweiser Vergleich meldete korrekt sortierte Tabellen rot) und **nicht-strikt** monoton. Die Zellen werden **roh** gelesen (einzige Ausnahme von der Abschnitts-Bereinigung — Release-Register führen ihre Schlüssel in Inline-Code); Kopf-/Trennzeile zählen nicht. Neue Grund-Codes `section-unordered` (Bruch-Zeile; auch Leerlauf ohne Datenzeile) und `section-cell-untyped` (untypisierbare Zelle/Typ-Mischung — Befund statt stillem Übersprung, Anker-Reset dahinter). Drei neue Exit-2-Config-Ränder. Ohne `table-order` byte-identisch |

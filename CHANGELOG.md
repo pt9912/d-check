@@ -6,6 +6,45 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.61.0] — 2026-08-21
+
+### Added
+
+- slice-105 — **Chronologie-Monotonie** als siebte Bedingung des Moduls
+  `structure` (`table-order`/`table-column`, opt-in je Regel;
+  `DC-FA-STRUCT-001` §Chronologie-Monotonie,
+  [ADR-0057](docs/plan/adr/0057-structure-tabellen-monotonie.md); Anlass
+  BEO-005 aus dem eigenen Beobachtungs-Register). Eine chronologische Tabelle
+  kippt still ihre Richtung — aus „unten anhängen" wird irgendwann „oben
+  einfügen", und danach führt dieselbe Tabelle zwei gegenläufige Blöcke; kein
+  Gate liest Reihenfolge. Jetzt wird die Schlüsselspalte jeder
+  zusammenhängenden Tabelle des Abschnitts **typisiert** verglichen
+  (ISO-Datum, Punkt-Version segmentweise numerisch — ein zeichenweiser
+  Vergleich meldet gemessen drei **korrekt** sortierte Tabellen rot:
+  `0.10.0 → 0.9.0`, `v0.10.0 → v0.9.0`, `1.9 → 1.10`), **nicht-strikt** und
+  in der je Regel konfigurierten Richtung. Zwei neue Grund-Codes:
+  `section-unordered` (die brechende Datenzeile; auch der Leerlauf ohne
+  Datenzeile) und `section-cell-untyped` (untypisierbare Zelle, Zeile mit zu
+  wenigen Zellen, Typ-Mischung — Befund statt stillem Übersprung; der
+  Vergleichs-Anker setzt nach jedem Befund neu auf). Die Schlüsselzellen
+  werden **roh** gelesen — die einzige, vertraglich benannte Ausnahme von der
+  Abschnitts-Bereinigung, weil reale Release-Register ihre Schlüssel in
+  Inline-Code führen. Drei neue fail-closed Config-Ränder (Exit 2). Ohne
+  `table-order` byte-identisch.
+  **Der Beleg lief mit dem Produkt:** der heutige Bestand der sechs eigenen
+  chronologischen Tabellen ist grün; der Retro-Lauf am Stand vor der
+  welle-73-Heilung meldet **27** Befunde — 14 · 6 · 7 über die drei damals
+  gekippten Tabellen, exakt die Skript-Messung des Register-Eintrags.
+
+### Changed
+
+- Die Tabellen-Lexik ist vollständig geteilt: Trennzeilen-/Kopfzeilen-
+  Erkennung und Zell-Splitting wohnen beim gemeinsamen Tabellenzeilen-Prädikat
+  (Konsumenten: `targets`, `planning.waves`, `structure`), gebunden durch
+  einen Kopplungs-Test statt Einzel-Assertionen
+  ([ADR-0054](docs/plan/adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)-Form)
+  — verhaltensgleich für die Bestands-Konsumenten.
+
 ## [0.60.0] — 2026-08-16
 
 ### Added
