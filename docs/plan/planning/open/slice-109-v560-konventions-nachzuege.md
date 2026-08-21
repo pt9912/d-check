@@ -16,16 +16,29 @@ Harness-/Konventions-Doku; kein `DC-*`-Produktvertrag berührt.
 
 ## 1. Ziel — fünf mechanische Angleichungen
 
-1. **C-2 — ID-Schema-Deklaration** (`harness/conventions.md`, [`MR-000`](../../../../harness/conventions.md#mr-000--baseline-aussage)-Aussage):
-   Vergabe deklarieren (dichte Nummern, ein Schreiber — kein Bereichssegment)
-   und den **Verzicht auf Struktur-IDs** (`SPEC-*`/`ARC-*` nicht vergeben;
-   nach innen `§`-Anker, `.a`-Verfeinerungen gelebt) ausdrücklich machen.
+1. **C-2 — ID-Schema-Deklaration in zwei Teilen** (Review-Befund F-4 zum
+   Audit): (a) die **Vergabe** (dichte Nummern, ein Schreiber — kein
+   Bereichssegment) gehört in die
+   [`MR-000`](../../../../harness/conventions.md#mr-000--baseline-aussage)-ID-Schema-Aussage;
+   (b) der **Verzicht auf Struktur-IDs** ist eine echte Abweichung
+   (`modul-03` schreibt `SPEC-*` für die Sektionstypen der Spezifikation
+   §2–§6 vor) und wird als eigene Adaption **MR-027** deklariert <!-- d-check:ignore -->
+   (dichte `.a`-Verfeinerungen + `§`-Anker; Begründung: 42 Anforderungen mit
+   je eigener `.a`-Sektion decken die Adressierbarkeit, ein SPEC-Retrofit
+   über die gewachsene Spezifikation hätte keinen Konsumenten;
+   Auflösungs-Trigger: eine ADR kann ihr `Schärft:`-Ziel nicht mehr eindeutig
+   per `§`-Anker adressieren).
 2. **C-3 — Kommentar-Regel-Träger:** AGENTS-Hard-Rule als Pointer auf
    [Baseline §Was ein Kommentar trägt](../../../../.harness/baseline/v5.6.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte)
    + HIGH-Eintrag „Kommentar trägt keine der fünf Klassen" in `reviewer.md`
    (Version 1.4.0 → 1.5.0; neuer HIGH-Eintrag mit Auflösungs-Trigger oder
    „permanent"). Dazu going-forward: Slice-Köpfe tragen `Verantwortlich:`
-   (AGENTS §5-Halbsatz; kein Retrofit).
+   (AGENTS §5-Halbsatz; kein Retrofit). **Und die gemessene Rest-Klasse
+   räumen** (Review-Befund F-9): nackte Review-Finding-Tokens als
+   Herkunfts-Feld — per grep alle Fundstellen (u. a. `cli.go`, `planning.go`,
+   `configyaml.go` sowie die in welle-77/78 selbst geschriebenen in
+   `structure_tableorder.go`/`markdown.go`/`finding.go`) auf eine der drei
+   zugelassenen Formen ziehen oder streichen; Verhalten unverändert.
 3. **C-4 — Kennungs-Anker im MR-Index:** je Index-Zeile zusätzlich
    `<a id="mr-<NNN>">`; die Voll-Slug-Anker bleiben als Migrations-Schuld
    stehen (Baseline: beim Formwechsel trägt die Zeile den alten Slug
@@ -33,7 +46,9 @@ Harness-/Konventions-Doku; kein `DC-*`-Produktvertrag berührt.
 4. **C-5 — Leseordnung** in `harness/README.md`: drei bis fünf geordnete
    Zeiger (Menschen-Hälfte des Einstiegs; kein Closure-Prüfpunkt).
 5. **C-6 — Bestands-Stichprobe** dieses Bumps: ein delta-freier Abschnitt
-   (`modul-07-carveouts.md`) je Regel gegen die eigene Verkörperung geprüft;
+   (**`modul-14-docker-harness.md`** — per Kurs-Diff verifiziert delta-frei;
+   der erste Kandidat `modul-07` änderte sich in v5.2.0, Review-Befund F-2)
+   je Regel gegen die eigene Verkörperung geprüft;
    Ergebnis hier notiert (Frage je Regel: im Artefakt oder als deklarierte
    Abweichung? Zweimal nein = nie übernommen ⇒ Weg jeder Diskrepanz).
 

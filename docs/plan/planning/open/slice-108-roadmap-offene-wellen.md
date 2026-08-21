@@ -32,6 +32,13 @@ Schritt 5 ohne Beförderung. Baseline-Default sticht die repo-lokale Adaption
 1. Roadmap: §Aktuelle Welle → §Offene Wellen (Zeiger auf das flache
    Wellendokument statt Struktur-Felder; Marker-Text neu), Sektions-Regeln-
    Zitate auf die v5.6.0-Formulierungen; Drift-Log-Eintrag.
+   **Spiegel-Liste der alten Form** (Review-Befund F-3 zum Audit — vor dem
+   Editieren per grep verifizieren, nicht abschreiben): `AGENTS.md` §3.3
+   (Lifecycle-Move-Ausnahme nennt „§Aktuelle Welle"/„Keine aktive Welle")
+   und §4-planning-check-Zeile, `harness/README.md` §Sensors-planning-check-
+   Zeile, der `Makefile`-Kommentar am planning-check-Target,
+   [`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)
+   (Wortlaut der gebündelten Verweise) — plus alles, was der grep noch findet.
 2. `.d-check.yml` (+ `.d-check.closure.yml` prüfen): `planning.heading` auf
    `## Offene Wellen`, `marker` auf `Nichts in Arbeit` — das Produkt deckt
    beides per Config; **kein** Produkt-Code. Vor dem Umstellen messen (ein
@@ -43,6 +50,12 @@ Schritt 5 ohne Beförderung. Baseline-Default sticht die repo-lokale Adaption
    (Anspruch ⇔ genau ein flaches Wellendokument) bleibt im
    Ein-Wellen-Betrieb wahr; die Grenze für künftigen Mehr-Wellen-Betrieb wird
    im Config-Kommentar benannt, nicht gelöst.
+5. **Benannte Grenze — Produkt-Default bleibt:** der `planning.heading`-Default
+   des Produkts ist weiterhin `## Aktuelle Welle`; d-check lebt nach C-1
+   dauerhaft auf Nicht-Default-Config. Eine Default-Änderung wäre ein
+   Konsumenten-Breaking-Change und ist bewusst **nicht** Teil dieses Slice —
+   sie braucht einen eigenen Entscheid (CR/ADR), falls die Baseline-Form sich
+   bei den Konsumenten durchsetzt (Review-Befund F-10).
 
 ## 3. Definition of Done
 
