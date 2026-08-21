@@ -16,7 +16,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 den drei Pflicht-Bestandteilen (Slice-IDs · Trigger · Closure-Kriterien); das
 *Geplante Ende* ist Schätzung, kein Closure-Kriterium.
 
-Keine aktive Welle.
+**Welle-ID:** welle-78-baseline-v560-migration
+**Start:** 2026-08-21
+**Geplantes Ende:** 2026-08-23 (Schätzung, korrigierbar)
+
+**Closure-Trigger:** siehe [Wellendokument](../welle-78-baseline-v560-migration.md).
 
 ## Nächste Wellen
 
@@ -27,7 +31,7 @@ und geschätzter Aufwand (S/M/L, kein Termin).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| Baseline-Migration v5.0.0 → v5.6.0 | Freigabe; nach der Chronologie-Welle (Reihenfolge-Entscheid des Auftraggebers 2026-08-21); der Kurs-Tag v5.6.0 liegt seit 2026-08-16 vor | sechs additive Stufen inkl. Team-Fähigkeit (Slices beim Wellen-Schnitt; Präzedenz welle-67) | M |
+| — keine — | | | |
 
 ## Meilensteine
 
@@ -48,8 +52,11 @@ Welle, die ohne fertige Vorgängerin nicht starten kann, ist eine Phantom-Welle.
 ```mermaid
 flowchart LR
     W77["welle-77 - Chronologie-Ordnung (geschlossen)"]
-    WB["Baseline-Migration v5.6.0 (geplant)"]
-    W77 --> WB
+    W78["welle-78 - Baseline-Migration v5.6.0 (laeuft)"]
+    S106["slice-106 - Etappe A (in Arbeit)"]
+    S107["slice-107 - Etappe B (open)"]
+    W77 --> W78
+    S106 --> S107
 ```
 
 ## Abgeschlossene Wellen
@@ -88,6 +95,7 @@ Zeile voll heißt treibende.
 
 | Datum | Was wurde geändert? | Warum? |
 |---|---|---|
+| 2026-08-21 | **welle-78-baseline-v560-migration eröffnet**; [slice-106](../in-progress/slice-106-baseline-v560-vendoring.md) neu geschnitten und `open`→`in-progress`, [slice-107](../open/slice-107-baseline-v560-delta-audit.md) in `open/`; §Nächste Wellen auf `— keine —` | Freigabe (angekündigt 2026-08-16, Reihenfolge-Entscheid 2026-08-21: nach der Chronologie-Welle); WIP-Slot frei seit der welle-77-Closure, der Kurs-Tag v5.6.0 samt Release-Asset ist verifiziert. Schnitt nach welle-67-Präzedenz in Etappen: **A** Vendoring/Pin/Verweis-Hebung (Bestandsmessung: 29 Dateien außerhalb des vendorten Baums nennen `baseline/v5.0.0` — lebende werden retargetet, eingefrorene getombstoned), **B** Stufen-Audit v5.1.0–v5.6.0 je Regel gegen die Tag-Notizen (größter Gegenstand: die Team-Fähigkeit — bindet sie ein Ein-Operator-Repo oder verlangt sie eine deklarierte Adaption?), **C** Nachzug mit Slices aus dem B-Befund. **Beim Eröffnungs-Sichten:** das Register führt keine unverkörperte Beobachtung; die slice-090-Wiedervorlage (upstream 5-vs-6-Finding-Feld-Drift der Baseline) ist ausdrücklich Teil des B-Audits |
 | 2026-08-21 | **welle-77 geschlossen** — chronologische Tabellen halten ihre Richtung maschinell; [slice-105](../done/slice-105-tabellen-monotonie.md) `in-progress`→`done`, §Aktuelle Welle auf Ruhe | Wellen-Closure-Prozedur (modul-06) durchlaufen: Trigger geprüft (der **eine** Slice in `done/`, der Retro-Beleg lief mit dem **Produkt** — 27 Befunde am Stand vor der welle-73-Heilung, exakt die 14 · 6 · 7 der Skript-Messung aus dem Register-Eintrag, heutiger Bestand null; die naive Gegenprobe als Testfall; der Kopplungs-Test bindet alle drei Tabellen-Lexik-Konsumenten; Release **v0.61.0** samt Digest-Backfill, `make fullbuild` grün, Image-Hash `sha256:1053f729…6db5`), Trigger-Audit über alle drei Artefaktklassen, `welle-77-results.md` geschrieben, Wellendokument per `git mv` nach `done/`. **BEO-005 GESTRICHEN** — die sechs eigenen Bestandstabellen sind mechanisiert (siebte `structure`-Bedingung scharf in `make gates`), der Rest bleibt im Streichungs-Eintrag benannt; das Register führt damit erstmals keine **unverkörperte** Beobachtung mehr (BEO-002/003/004 stehen verkörpert, BEO-001/005 gestrichen). **Zwei Review-Runden:** die erste blockierend (die Typ-Mischung trug zwei Vertragslesarten — gepinnt auf Paar-Lesart mit Anker-Reset; ein „unerreichbarer" Fehlerpfad war erreichbar und degradierte still), die zweite APPROVE ohne Auflagen. **Die Release-Prep dieser Welle war der erste Kunde der eigenen Fähigkeit:** der §11-Eintrag des Handbuchs saß im ersten Anlauf falsch herum — ab jetzt maschinell rot |
 | 2026-08-21 | **welle-77-chronologie-ordnung eröffnet**; [slice-105](../done/slice-105-tabellen-monotonie.md) neu geschnitten und `open`→`in-progress`; §Nächste Wellen führt jetzt die **Baseline-Migration v5.0.0 → v5.6.0** als Vorschau (Reihenfolge-Entscheid des Auftraggebers: erst BEO-005, dann Migration); Abhängigkeitsgraph auf den Ist-Stand gezogen (führte noch die welle-68/69/70-Ära) | Freigabe; WIP-Slot frei seit der welle-76-Closure, der Vorschau-Trigger ist seit 2026-08-16 eingetreten (welle-75 zu — die Tabellen-Lexik bekommt mit der siebten `structure`-Bedingung ihren **dritten** Konsumenten und einen Kopplungs-Test). **BEO-005** bekommt seine im Register vorgezeichnete Form: typisierter Monotonie-Vergleich der Schlüsselspalte als Erweiterung von [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) ([ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md)-Kriterium: Einzelmodul-Frage ⇒ bestehende Anforderung ändern), mit den drei Entscheidungen aus dem Eintrag (rohe Abschnitts-Zeilen · Zell-Adresse via geteilter Lexik · Richtung je Regel + Befund statt stillem Übersprung). **Beim Eröffnungs-Sichten:** BEO-002/003/004 sind verkörpert und wirken im Slice als Regel, Auftrag und Frage (§8 des Slice); unter der Schwelle wartet nichts weiter — das Register führt nur noch BEO-005 offen, und genau das ist der Gegenstand dieser Welle |
 | 2026-08-16 | **welle-76 geschlossen** — die Invariante der Lifecycle-Move-Regel ist maschinell; [slice-095](../done/slice-095-links-resolve-from.md) `in-progress`→`done`, §Aktuelle Welle auf Ruhe | Wellen-Closure-Prozedur (modul-06) durchlaufen: Trigger geprüft (der **eine** Slice in `done/`, der Realdatenbeleg lief mit dem **Produkt** — 19 Befunde am Vor-welle-69-Stand, die Quellort-Hälfte des realen Bruchs, die Ziel-Wanderung als benannte Grenze in [ADR-0056](../../adr/0056-resolve-from-wandernde-quellorte.md) —, die Laufzeit-Zusage gemessen statt behauptet, Release **v0.60.0** samt Digest-Backfill, `make fullbuild` grün, Image-Hash `sha256:59afc1fb…89d4`), Trigger-Audit über alle drei Artefaktklassen, `welle-76-results.md` geschrieben, Wellendokument per `git mv` nach `done/`. **Diese Closure war der erste Lauf der eigenen Fähigkeit:** `links.resolve-from` stand scharf, während ihr Slice wanderte — die Klasse, die in jeder Welle dieser Woche von Hand nachgezogen wurde, meldet ab jetzt **vor** dem Move. **Zwei Review-Runden:** die erste blockierend (Ist-Ort-Vorbedingung gegen Doppelbefunde, stiller Quellen-Ausfall bei Tippfehler-Orten), die zweite APPROVE mit Text-Auflagen — plus ein **CI-Realfund**: der erste fail-closed-Zuschnitt meldete auf jedem frischen Klon das legitim geleerte `open/` (git überträgt leere Verzeichnisse nicht); die Zusage ist an dieser Realität justiert. **BEO-004 hat als Verkörperung gewirkt** (der Reviewer-Anker fand die Abdeckungs-Stille der Gruppen-Orte, jetzt benannte Grenze) |

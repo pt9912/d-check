@@ -11,8 +11,8 @@
 [`MR-021`](../../../../harness/conventions.md#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden)
 (vendored-Verweise pin-gebunden),
 [`MR-022`](../../../../harness/conventions.md#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019)
-(Currency-Audit). Neue Adaption **MR-026** (Pin-Hebung auf v5.6.0) entsteht mit
-diesem Slice. Kein `DC-*`-Bezug — reine Harness-/Adoptions-Arbeit, kein
+(Currency-Audit). Neue Adaption **MR-026** (Pin-Hebung auf <!-- d-check:ignore -->
+v5.6.0) entsteht mit diesem Slice. Kein `DC-*`-Bezug — reine Harness-/Adoptions-Arbeit, kein
 Produkt-Code.
 
 **Autor:** pt9912. **Datum:** 2026-08-21.
@@ -35,10 +35,10 @@ vendored unter `.harness/baseline/v5.6.0/` (beide Bäume
    Tag-Argument — der Pin wird erst im selben Bogen umgestellt), danach
    `--verify` offline gegen das frische `SHA256SUMS`.
 2. **Pin heben:** `harness/conventions.md` §Baseline auf v5.6.0; neue Adaption
-   **MR-026** als Datei `harness/conventions/MR-026-baseline-v560.md`
+   **MR-026** als Datei `harness/conventions/MR-026-baseline-v560.md` <!-- d-check:ignore -->
    (Nachtrag zu [`MR-023`](../../../../harness/conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout),
    dieselbe Bauform) + Index-Zeile.
-3. **Alten Baum entfernen** (`.harness/baseline/v5.0.0/`) — Präzedenz MR-023:
+3. **Alten Baum entfernen** (`.harness/baseline/v5.0.0/`) — Präzedenz [`MR-023`](../../../../harness/conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout):
    **ein** Pin, **eine** netzlose Lese-Form; zwei parallele Bäume wären eine
    zweite Quelle, die altert. Abnahme-Punkt 1 unten.
 4. **Verweise heben** (Bestandsmessung beim Slice-Start: 29 Dateien außerhalb
@@ -48,7 +48,7 @@ vendored unter `.harness/baseline/v5.6.0/` (beide Bäume
      `MR-*`-Dateien, `docs/plan/planning/README.md`, die
      Regeln-dieser-Sektion-Links der Roadmap);
    - **eingefroren** → `ignore-refs`-Tombstones in `.d-check.yml` erweitern
-     (dieselbe Klasse wie die drei v1.4.0-Tombstones aus MR-023): immutable
+     (dieselbe Klasse wie die drei v1.4.0-Tombstones aus [`MR-023`](../../../../harness/conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)): immutable
      `Accepted`-ADRs (mind. 0047/0048), `done/`-Slices, Review-Reports —
      **nicht** editieren, quell-skopiert ausnehmen.
 5. **Gates:** `make doc-check` als engster Sensor (Links/Anker über den
@@ -58,7 +58,7 @@ vendored unter `.harness/baseline/v5.6.0/` (beide Bäume
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Kein Konformitäts-Abgleich** der eigenen Dokumente gegen die neuen Regeln —
-  das ist Etappe B ([slice-107](slice-107-baseline-v560-delta-audit.md), Lesen)
+  das ist Etappe B ([slice-107](../open/slice-107-baseline-v560-delta-audit.md), Lesen)
   und Etappe C (Umsetzen, Slices nach B-Befund).
 - **Keine inhaltliche Übernahme** neuer Regelwerks-Konzepte (Team-Fähigkeit,
   Reconciliation-Register, …) — erst lesen, dann entscheiden.
@@ -68,8 +68,8 @@ vendored unter `.harness/baseline/v5.6.0/` (beide Bäume
 - [ ] `.harness/baseline/v5.6.0/{regelwerk,templates}` + `SHA256SUMS`
       committet; `--verify` offline grün; der v5.0.0-Baum ist entfernt
       (bzw. der Abnahme-Punkt anders entschieden und begründet).
-- [ ] Pin in §Baseline auf v5.6.0; MR-026 als Datei + Index-Zeile
-      (Bauform MR-023).
+- [ ] Pin in §Baseline auf v5.6.0; MR-026 als Datei + Index-Zeile <!-- d-check:ignore -->
+      (Bauform [`MR-023`](../../../../harness/conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)).
 - [ ] Kein lebender Verweis nennt mehr `baseline/v5.0.0`; die eingefrorenen
       sind quell-skopiert getombstoned — `make doc-check` grün belegt beides.
 - [ ] `make gates` grün; unabhängiger Review; **kein Release** (der Harness
@@ -79,7 +79,7 @@ vendored unter `.harness/baseline/v5.6.0/` (beide Bäume
 ## 5. Abnahme-Punkte / Risiken
 
 1. **v5.0.0-Baum entfernen vs. behalten.** Vorschlag: entfernen (Präzedenz
-   MR-023, „was hier steht, liest jeder Agentenlauf"); der Preis sind mehr
+   [`MR-023`](../../../../harness/conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout), „was hier steht, liest jeder Agentenlauf"); der Preis sind mehr
    Tombstones als bei v1.4.0 (die eingefrorene Verweis-Menge ist seither
    gewachsen). Behalten hieße: zwei Regelwerks-Stände netzlos nebeneinander,
    und jeder künftige Leser muss wissen, welcher gilt.
@@ -107,7 +107,7 @@ Anpassungs-Slice braucht.
   und Harness-Doku (Repo-Default GF).
 - **Offene Beobachtungen sichten** (Register-Stand 2026-08-21: keine
   unverkörperte Beobachtung offen; BEO-002/003/004 verkörpert, BEO-001/005
-  gestrichen): **BEO-002/MR-025** wirkt als Regel — die Pin-Hebung ändert
+  gestrichen): **BEO-002**/[`MR-025`](../../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten) wirkt als Regel — die Pin-Hebung ändert
   eine deklarierte Menge (den Baseline-Stand) mit Spiegeln in `AGENTS.md`,
   `harness/README.md`, beiden Konventions-Sektionen und dem
   Materialisierungs-Skript-Kommentar; die Liste steht in §2. Die in

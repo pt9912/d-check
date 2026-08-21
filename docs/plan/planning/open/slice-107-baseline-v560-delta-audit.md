@@ -8,7 +8,7 @@
 
 **Bezug:** Präzedenz slice-085 (das v5.0.0-Modul-Delta-Audit: 18 Findings,
 je mit Zuordnung); Grundlage ist der in
-[slice-106](slice-106-baseline-v560-vendoring.md) vendorte Baum. Kein
+[slice-106](../in-progress/slice-106-baseline-v560-vendoring.md) vendorte Baum. Kein
 `DC-*`-Bezug — Lese-/Planungs-Arbeit.
 
 **Autor:** pt9912. **Datum:** 2026-08-21.
@@ -43,7 +43,7 @@ Die sechs Stufen:
 - Widerspricht eine **bestehende** d-check-Konvention der neuen Regel
   (Adaption nötig — `MR-*` — oder Anpassung)?
 - Ist etwas, das d-check **bereits lebt**, jetzt Baseline-Default (dann ist
-  ggf. eine bestehende Adaption auflösbar — Präzedenz: MR-018/019/020/022
+  ggf. eine bestehende Adaption auflösbar — Präzedenz: [`MR-018`](../../../../harness/conventions.md#mr-018--d-check-verkörpert-als-producer-self-hoster-keine-templates)/019/020/022
   wurden bei v5.0.0 „Baseline-Stand"-aufgelöst)?
 - **Wiedervorlage aus slice-090:** die upstream notierte 5-vs-6-Finding-
   Feld-Drift der Baseline — im v5.6.0-Stand behoben oder weiter offen?
@@ -77,7 +77,7 @@ setzt um, dieser Slice liest und schneidet.
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`):
-[slice-106](slice-106-baseline-v560-vendoring.md) in `done/` (der Audit liest
+[slice-106](../in-progress/slice-106-baseline-v560-vendoring.md) in `done/` (der Audit liest
 den **vendorten** Baum, nicht das Kurs-Repo) **und** WIP-Slot frei.
 
 **Rückführungen:** `in-progress` → `next`, falls das Delta eine Vorfrage
@@ -88,7 +88,7 @@ vs. adaptieren).
 
 - **Sub-Area prüfen:** Harness-/Planungs-Doku, Repo-Default GF.
 - **Offene Beobachtungen sichten** (Register-Stand 2026-08-21: keine
-  unverkörperte offen): **BEO-002/MR-025** ist die Arbeits-Brille des Audits
+  unverkörperte offen): **BEO-002**/[`MR-025`](../../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten) ist die Arbeits-Brille des Audits
   selbst — jede „anzupassen"-Zeile benennt ihre Spiegel gleich mit, statt
   sie Etappe C suchen zu lassen.
 
