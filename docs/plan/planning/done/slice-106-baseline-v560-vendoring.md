@@ -58,7 +58,7 @@ vendored unter `.harness/baseline/v5.6.0/` (beide Bäume
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Kein Konformitäts-Abgleich** der eigenen Dokumente gegen die neuen Regeln —
-  das ist Etappe B ([slice-107](../open/slice-107-baseline-v560-delta-audit.md), Lesen)
+  das ist Etappe B ([slice-107](../in-progress/slice-107-baseline-v560-delta-audit.md), Lesen)
   und Etappe C (Umsetzen, Slices nach B-Befund).
 - **Keine inhaltliche Übernahme** neuer Regelwerks-Konzepte (Team-Fähigkeit,
   Reconciliation-Register, …) — erst lesen, dann entscheiden.

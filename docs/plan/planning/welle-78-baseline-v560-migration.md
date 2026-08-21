@@ -16,9 +16,9 @@ kein Status-Feld.
 Die adoptierte Baseline vollständig von `v5.0.0` auf **`v5.6.0`** heben
 (Kurs-Tag 2026-08-16; sechs additive Stufen, 20 Regelwerks-Dateien,
 +902/−152 Zeilen) — nach der welle-67-Präzedenz in Etappen: **A** Vendoring,
-Pin und Verweis-Hebung ([slice-106](in-progress/slice-106-baseline-v560-vendoring.md)),
+Pin und Verweis-Hebung ([slice-106](done/slice-106-baseline-v560-vendoring.md)),
 **B** Stufen-Audit je Regel gegen die Tag-Notizen
-([slice-107](open/slice-107-baseline-v560-delta-audit.md)), **C** der
+([slice-107](in-progress/slice-107-baseline-v560-delta-audit.md)), **C** der
 Konformitäts-Nachzug — dessen Slices werden aus dem B-Befund geschnitten
 (Roadmap-Drift-Log dokumentiert den Zuwachs). Der größte B-Gegenstand ist die
 **Team-Fähigkeit** (v5.5.0): ob sie ein Ein-Operator-Repo bindet oder eine
@@ -33,8 +33,8 @@ Freigabe des Auftraggebers (angekündigt 2026-08-16, Reihenfolge-Entscheid
 
 ## 3. Closure-Trigger (Welle schließt)
 
-- Alle Etappen-Slices in `done/` — [slice-106](in-progress/slice-106-baseline-v560-vendoring.md),
-  [slice-107](open/slice-107-baseline-v560-delta-audit.md) und die aus dem
+- Alle Etappen-Slices in `done/` — [slice-106](done/slice-106-baseline-v560-vendoring.md),
+  [slice-107](in-progress/slice-107-baseline-v560-delta-audit.md) und die aus dem
   B-Befund geschnittenen Etappe-C-Slices (§4 wird beim B-Abschluss
   nachgeführt).
 - Pin `v5.6.0` vendored, `--verify` offline grün **und** `--check-latest`
@@ -51,8 +51,8 @@ Freigabe des Auftraggebers (angekündigt 2026-08-16, Reihenfolge-Entscheid
 
 | Slice | Rolle |
 |---|---|
-| [slice-106](in-progress/slice-106-baseline-v560-vendoring.md) | Etappe A: Bundle v5.6.0 vendored, Pin + MR-026, Verweis-Hebung, Tombstones | <!-- d-check:ignore -->
-| [slice-107](open/slice-107-baseline-v560-delta-audit.md) | Etappe B: Stufen-Audit v5.1.0–v5.6.0, je Regel eine Antwort; schneidet Etappe C |
+| [slice-106](done/slice-106-baseline-v560-vendoring.md) | Etappe A: Bundle v5.6.0 vendored, Pin + MR-026, Verweis-Hebung, Tombstones | <!-- d-check:ignore -->
+| [slice-107](in-progress/slice-107-baseline-v560-delta-audit.md) | Etappe B: Stufen-Audit v5.1.0–v5.6.0, je Regel eine Antwort; schneidet Etappe C |
 
 *Etappe-C-Slices folgen aus dem B-Befund; die Tabelle wird beim
 B-Abschluss nachgeführt (Drift-Log-Eintrag).*

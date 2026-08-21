@@ -8,7 +8,7 @@
 
 **Bezug:** Präzedenz slice-085 (das v5.0.0-Modul-Delta-Audit: 18 Findings,
 je mit Zuordnung); Grundlage ist der in
-[slice-106](../in-progress/slice-106-baseline-v560-vendoring.md) vendorte Baum. Kein
+[slice-106](../done/slice-106-baseline-v560-vendoring.md) vendorte Baum. Kein
 `DC-*`-Bezug — Lese-/Planungs-Arbeit.
 
 **Autor:** pt9912. **Datum:** 2026-08-21.
@@ -77,7 +77,7 @@ setzt um, dieser Slice liest und schneidet.
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`):
-[slice-106](../in-progress/slice-106-baseline-v560-vendoring.md) in `done/` (der Audit liest
+[slice-106](../done/slice-106-baseline-v560-vendoring.md) in `done/` (der Audit liest
 den **vendorten** Baum, nicht das Kurs-Repo) **und** WIP-Slot frei.
 
 **Rückführungen:** `in-progress` → `next`, falls das Delta eine Vorfrage
