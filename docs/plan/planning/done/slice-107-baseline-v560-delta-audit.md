@@ -174,9 +174,9 @@ keine d-check-Handlung; als Upstream-Notiz an den Kurs weitergegeben.
 
 Zwei Slices aus den sechs „anzupassen"-Findings:
 
-- **[slice-108](../in-progress/slice-108-roadmap-offene-wellen.md)** — C-1: Roadmap
+- **[slice-108](slice-108-roadmap-offene-wellen.md)** — C-1: Roadmap
   auf §Offene Wellen (Form + `planning`-Config + [`MR-024`](../../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform)-Entscheid).
-- **[slice-109](../open/slice-109-v560-konventions-nachzuege.md)** — C-2
+- **[slice-109](../in-progress/slice-109-v560-konventions-nachzuege.md)** — C-2
   (ID-Schema-Deklaration: Vergabe + Struktur-ID-Verzicht), C-3
   (Kommentar-Regel-Träger in AGENTS + `reviewer.md` 1.5.0;
   `Verantwortlich:`-Feld going-forward), C-4 (Kennungs-Anker im MR-Index),
@@ -189,8 +189,8 @@ Zwei Slices aus den sechs „anzupassen"-Findings:
 **Geliefert:** der Stufen-Audit v5.1.0–v5.6.0 als Findings-Register in §9 —
 je Regel eine Antwort mit Fundstelle oder Begründung, sechs
 „anzupassen"-Findings zu zwei Etappe-C-Slices gebündelt
-([slice-108](../in-progress/slice-108-roadmap-offene-wellen.md),
-[slice-109](../open/slice-109-v560-konventions-nachzuege.md)), das
+([slice-108](slice-108-roadmap-offene-wellen.md),
+[slice-109](../in-progress/slice-109-v560-konventions-nachzuege.md)), das
 Wellendokument nachgeführt. Kein Artefakt außer Planungs-Doku berührt.
 
 **Der Audit wurde an seinen eigenen Maßstäben gemessen — und fiel zweimal
@@ -219,4 +219,4 @@ dieses Repo.
 Review-Runden (Aufzählungs-Vollständigkeit, Zahl-ohne-Zählung) sind bereits
 verkörperte bzw. gezählte Klassen (welle-74-Lehre, BEO-006-Nachbarschaft);
 die Fundstellen-Bereinigung der Kommentar-Tokens trägt
-[slice-109](../open/slice-109-v560-konventions-nachzuege.md) C-3.
+[slice-109](../in-progress/slice-109-v560-konventions-nachzuege.md) C-3.

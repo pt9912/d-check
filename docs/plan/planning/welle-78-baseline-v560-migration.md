@@ -53,8 +53,8 @@ Freigabe des Auftraggebers (angekündigt 2026-08-16, Reihenfolge-Entscheid
 |---|---|
 | [slice-106](done/slice-106-baseline-v560-vendoring.md) | Etappe A: Bundle v5.6.0 vendored, Pin + MR-026, Verweis-Hebung, Tombstones | <!-- d-check:ignore -->
 | [slice-107](done/slice-107-baseline-v560-delta-audit.md) | Etappe B: Stufen-Audit v5.1.0–v5.6.0, je Regel eine Antwort; schneidet Etappe C |
-| [slice-108](in-progress/slice-108-roadmap-offene-wellen.md) | Etappe C-1: Roadmap auf §Offene Wellen (Form + `planning`-Config + [`MR-024`](../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform)-Entscheid) |
-| [slice-109](open/slice-109-v560-konventions-nachzuege.md) | Etappe C-2…C-6: ID-Schema-Deklaration, Kommentar-Regel-Träger, Kennungs-Anker, Leseordnung, Bestands-Stichprobe |
+| [slice-108](done/slice-108-roadmap-offene-wellen.md) | Etappe C-1: Roadmap auf §Offene Wellen (Form + `planning`-Config + [`MR-024`](../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform)-Entscheid) |
+| [slice-109](in-progress/slice-109-v560-konventions-nachzuege.md) | Etappe C-2…C-6: ID-Schema-Deklaration, Kommentar-Regel-Träger, Kennungs-Anker, Leseordnung, Bestands-Stichprobe |
 
 *Nachgeführt beim B-Abschluss (Drift-Log-Eintrag), wie bei der Eröffnung
 angekündigt.*

@@ -63,7 +63,7 @@ Harness-/Konventions-Doku; kein `DC-*`-Produktvertrag berührt.
 ## 3. Trigger
 
 **Start** (`open` → `in-progress`):
-[slice-108](../in-progress/slice-108-roadmap-offene-wellen.md) in `done/` (Reihenfolge:
+[slice-108](../done/slice-108-roadmap-offene-wellen.md) in `done/` (Reihenfolge:
 erst die Struktur-Frage, dann die Nachzüge — C-4/C-5 schreiben in Dateien,
 die C-1 nicht berührt, aber der Index-Anker-Punkt soll auf dem End-Layout
 landen) **und** WIP-Slot frei.
