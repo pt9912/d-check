@@ -147,6 +147,18 @@ GUARD-Image-Lauf vor jedem Commit.
 **GF (Greenfield, Repo-Default)** — adoptierte Konvention,
 konventionsgetragene Doku-Hebung; kein Legacy-Import.
 
-## 9. Closure-Notiz (nach `done/`)
+## 9. Delta-Audit v5.6.0 → v5.7.0 (je geänderter Datei eine Antwort)
+
+Das Delta der Stufe umfasst drei Regelwerks-Dateien (`git diff
+v5.6.0..v5.7.0 -- lab/regelwerk/` im Kurs-Repo, nachvollzogen am
+vendorten Baum): der Audit folgt dem Delta, kein Stufen-Ritual.
+
+| Datei / geänderte Regel | Urteil | Beleg |
+|---|---|---|
+| `README.md` (Stand-Zeile „Kurs-Welle 81 · 2026-08-21") | n. a. | reine Stand-Fortschreibung, keine Regel |
+| `modul-06-roadmap.md` §Offene Wellen (Zwei-Hälften-Fassung: Marker **zusätzlich** zur Liste, nur die Marker-Hälfte gewächtert) | **angepasst** (Doku) + Produkt-Folge benannt | die Roadmap-Sektionsregel trägt die v5.7.0-Lesart (dieser Slice, Schritt 4; Marker paraphrasiert); der Produkt-Widerspruch — `wave-drift` hält den Aktiv-Status gegen die Datei-Zahl — geht als Umsetzung des Konsumenten-CR an slice-111 (`planning.waves.mode`) |
+| `modul-10-review-harness.md` §Output-Schema (`klasse` als sechstes Feld) | **konform** | [`reviewer.md`](../../../../.harness/skills/reviewer.md) 1.5.0 führt `kategorie · quelle · pfad · befund · verifizierbar · klasse` seit slice-090 — keine Handlung; die Baseline hat damit die eigene Upstream-Notiz (5-vs-6-Feld-Drift, welle-78-Wiedervorlage) geschlossen |
+
+## 10. Closure-Notiz (nach `done/`)
 
 *Wird bei der Closure geschrieben (Struktur nach `closure.heading-pattern`).*

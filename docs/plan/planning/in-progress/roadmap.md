@@ -12,14 +12,19 @@ Treiber.
 ## Offene Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
-§Roadmap-Struktur (v5.6.0): *Offene Wellen* ist **derivativ** — der Zustand
-sind die flachen Welle-Dateien; woran gerade gearbeitet wird, sagt das
-`Welle:`-Feld der Slices in `in-progress/`. Ziel, Trigger und
-Closure-Kriterien stehen in der Welle-Datei, nicht hier; das *Geplante Ende*
-dort ist Schätzung, kein Closure-Kriterium. Ist nichts beansprucht
-(`in-progress/` ohne Slices), trägt der Abschnitt stattdessen den
-deklarierten Ruhe-Marker — eine Redundanz **mit Wächter**
-(`make planning-check` hält ihn gegen das Verzeichnis).
+§Roadmap-Struktur (v5.7.0): *Offene Wellen* trägt **zwei unabhängige
+Aussagen**. Die **Liste** folgt den Dateien — je offener Welle-Datei ein
+Zeiger; Ziel, Trigger und Closure-Kriterien stehen in der Welle-Datei,
+nicht hier, das *Geplante Ende* dort ist Schätzung, kein Closure-Kriterium,
+und woran gerade gearbeitet wird, sagt das `Welle:`-Feld der Slices in
+`in-progress/`. Der deklarierte **Ruhe-Marker** folgt dem Anspruch — er
+steht genau dann, wenn `in-progress/` keinen Slice trägt, **zusätzlich**
+zur Liste, nicht an ihrer Stelle; beides zugleich ist der Normalfall
+direkt nach der Wellen-Eröffnung. Gewächtert ist die Marker-Hälfte in
+beide Richtungen (`make planning-check` hält ihn gegen das Verzeichnis);
+die Listen-Hälfte ist Ableitung — ihr eigenes Prädikat ist als
+opt-in-Modus beantragt und Gegenstand des Produkt-Slice dieser Welle
+(bis dahin hält `wave-drift` den Aktiv-Status gegen die Datei-Zahl).
 
 - [welle-79-zwei-haelften-ein-waechter](../welle-79-zwei-haelften-ein-waechter.md) —
   Baseline v5.7.0 + Listen-Prädikat für `wave-drift`
