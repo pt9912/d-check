@@ -1,0 +1,50 @@
+# Doku-Referenz-Gate (Adopter-Baseline). Startgerüst: `d-check --print-config`.
+# Ins Repo-Root kopieren. Wächst mit den Artefakten: ids/codepaths erst
+# aktivieren, wenn Targets/roots existieren — sonst Config-Fehler bzw. ein
+# behaupteter, aber leerer Gate (Modul 13).
+scan:
+  roots: ["."]
+  ignore: ["**/*.template.md", ".tmp/**"]
+modules: [links, anchors]
+# ids:
+#   patterns:
+#     - {regex: 'ADR-\d{4}', target: docs/plan/adr/}                    # aktivieren, sobald docs/plan/adr/ existiert
+#     - {regex: '<PREFIX>-[A-Z]{2}-\d{2}', target: spec/lastenheft.md}  # Präfix setzen; aktivieren, sobald spec/lastenheft.md existiert
+# codepaths:
+#   roots: [spec, docs, harness]                                        # aktivieren, sobald diese Verzeichnisse existieren
+#
+# Referenz-Richtung (SDP) mechanisch — aktivieren, sobald spec/ und docs/plan/
+# existieren. Bildet die Referenzmatrix des Regelwerks ab
+# (`grundlagen-referenz-richtung.md` §Referenz-Richtung (SDP)); ohne sie lebt die
+# Regel nur im Briefing, nicht im Gate.
+# matrix:
+#   classes:
+#     - name: spec
+#       paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+#       order: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]  # Vertrag > Technik > Sicht
+#       direction: no-downward                                          # Abwaertslink innerhalb der Spec -> matrix-downward
+#     - name: adr
+#       paths: ["docs/plan/adr/[0-9]*.md"]
+#       token: 'ADR-\d{4}'                                              # auch die blosse Kennung im Fliesstext zaehlt als Referenz
+#     - name: slice
+#       paths: ["docs/plan/planning/**/slice-*.md"]
+#       token: 'slice-\d{3}'
+#   rules:
+#     - {from: spec, to: adr, allow: false}                             # Decken-Regel: kein Spec-Stratum nennt eine ADR …
+#     - {from: spec, to: slice, allow: false}                           # … und keinen Slice
+#     - {from: adr, to: slice, allow: false}                            # Ausnahme je Zeile: <!-- d-check:status-provenance -->
+#   status: {forbidden: [superseded, deprecated]}                       # nur aktive ADRs referenzieren
+# Ohne `exclude-sections`. Welche Abschnitte ausgenommen werden — und ob
+# ueberhaupt —, regelt das Baseline-Regelwerk `grundlagen-referenz-richtung.md`
+# §Referenz-Richtung (SDP); diese Datei bildet die dortige Setzung nur ab.
+#
+# Append-only der Adaptions-Eintraege — aktivieren, sobald harness/conventions/
+# existiert. Braucht git und eine Commit-Range (Target `doc-immutable` aus
+# `d-check --print-mk`); prueft, dass der Core einer akzeptierten MR-Datei
+# ueber die Range unveraendert bleibt. Welche Eintraege unveraenderlich sind
+# und ab wann, regelt das Baseline-Regelwerk `grundlagen-harness-dateien.md`
+# §harness/conventions.md als Konventionsspeicher.
+# vcs:
+#   paths: ["harness/conventions/**/MR-[0-9]*.md"]
+#   immutable-when: '^\*\*Status:\*\* Accepted'
+#   status-line: '^\*\*Status:\*\*'
