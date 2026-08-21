@@ -311,8 +311,7 @@ func TestWavesKopfzeileMitKennungZaehltNicht(t *testing.T) {
 	}
 }
 
-// wavesManyCfg aktiviert die Bijektions-Semantik (mode: many, Lastenheft
-// 0.62.0 — Konsumenten-CR „Bijektion statt Singleton").
+// wavesManyCfg aktiviert die Bijektions-Semantik (mode: many, Lastenheft 0.62.0).
 func wavesManyCfg() model.PlanningConfig {
 	c := wavesCfg()
 	c.Waves.Mode = "many"
@@ -320,7 +319,7 @@ func wavesManyCfg() model.PlanningConfig {
 }
 
 // W3 unter many: zwei gelistete Wellen, zwei Dateien, der Ruhe-Marker steht
-// daneben — kein Befund (§Wellen-Happy-Path many; team-sim s04a/s04c).
+// daneben — kein Befund (Lastenheft §Wellen-Happy-Path many).
 func TestWavesManyBijektionHappyPath(t *testing.T) {
 	files := map[string]string{
 		planRoadmap: wavesRoadmap(
@@ -334,10 +333,10 @@ func TestWavesManyBijektionHappyPath(t *testing.T) {
 	}
 }
 
-// Marker-Orthogonalität (§Wellen-Boundary): Welle offen, nichts beansprucht,
-// Marker ZUSÄTZLICH zum Zeiger — unter many meldet weder wave-drift noch
-// planning-drift; unter one meldet derselbe Zustand wave-drift (die
-// Abgrenzung der beiden Modelle, kein Fehler — s04b vs. s04c).
+// Marker-Orthogonalität (Lastenheft §Wellen-Boundary): Welle offen, nichts
+// beansprucht, Marker ZUSÄTZLICH zum Zeiger — unter many meldet weder
+// wave-drift noch planning-drift; unter one meldet derselbe Zustand
+// wave-drift (die Abgrenzung der beiden Modelle, kein Fehler).
 func TestWavesManyMarkerOrthogonal(t *testing.T) {
 	files := map[string]string{
 		planRoadmap: wavesRoadmap(
@@ -430,5 +429,51 @@ func TestWavesManyFailClosedBleibt(t *testing.T) {
 	}
 	if len(got) == 0 || got[0] != model.ReasonWaveDrift {
 		t.Fatalf("unlesbares Verzeichnis → fail-closed wave-drift, got %v", got)
+	}
+}
+
+// Explizites mode: one verhält sich wie der Default — dieselbe Eingabe,
+// derselbe Befund (die Durchreichung prüft der Config-Rand-Test).
+func TestWavesExplizitesOneBleibtSingleton(t *testing.T) {
+	cfg := wavesCfg()
+	cfg.Waves.Mode = "one"
+	files := map[string]string{
+		planRoadmap: wavesRoadmap(
+			"- [welle-1-basis](../welle-1-basis.md)\n\nKeine aktive Welle.", "", ""),
+		wavesDir + "/welle-1-basis.md": "# Welle 1\n",
+	}
+	got := wavesFindings(t, files, cfg)
+	if len(got) != 1 || got[0] != model.ReasonWaveDrift {
+		t.Fatalf("mode: one = Default-Singleton, got %v", got)
+	}
+}
+
+// Fehlt die kanonische Überschrift, meldet die Slice-Invariante fail-closed —
+// die Wellen-Fähigkeit schweigt auch unter many (kein Doppelbefund; der
+// fail-Pfad liegt vor der Modus-Verzweigung).
+func TestWavesManyUnbestimmbarerAktivStatusSchweigt(t *testing.T) {
+	files := map[string]string{
+		planRoadmap:                    "# Roadmap\n\nOhne kanonische Überschrift.\n",
+		wavesDir + "/welle-1-basis.md": "# Welle 1\n",
+	}
+	if got := wavesFindings(t, files, wavesManyCfg()); got != nil {
+		t.Fatalf("unbestimmbarer Status → Schweigen der Wellen-Fähigkeit, got %v", got)
+	}
+}
+
+// Die Register-Aussagen (W4/W5) greifen unter many unverändert: gefüllte
+// Register bleiben grün, eine Abschluss-Zeile ohne Notiz meldet weiter.
+func TestWavesManyRegisterAussagenUnveraendert(t *testing.T) {
+	files := map[string]string{
+		planRoadmap: wavesRoadmap(
+			"- [welle-9-neu](../welle-9-neu.md)\n",
+			"| Ein geplanter Name | Freigabe |\n",
+			"| welle-8-alt | 2026-01-01 |\n| welle-7-lueck | 2026-01-02 |\n"),
+		wavesDir + "/welle-9-neu.md":          "# Welle 9\n",
+		wavesDir + "/done/welle-8-results.md": "# Ergebnis 8\n",
+	}
+	got := wavesFindings(t, files, wavesManyCfg())
+	if len(got) != 1 || got[0] != model.ReasonWaveResultsMissing {
+		t.Fatalf("Register-Aussagen bleiben unter many scharf (welle-7 ohne Notiz), got %v", got)
 	}
 }

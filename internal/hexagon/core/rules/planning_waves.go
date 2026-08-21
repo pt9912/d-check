@@ -57,8 +57,7 @@ func CheckPlanningWaves(fsys driven.Filesystem, cfg model.PlanningConfig) []mode
 }
 
 // waveBijection ist W3 unter mode: many (DC-FA-PLAN-001 §Wellen-Invariante,
-// Lastenheft 0.62.0 — Konsumenten-CR „Bijektion statt Singleton"): die
-// Kennungs-Menge des planning.heading-Blocks gegen die flachen
+// Lastenheft 0.62.0): die Kennungs-Menge des planning.heading-Blocks gegen die flachen
 // Wellendokumente, beide Richtungen, jede Kardinalität einschließlich null.
 // Der Ruhe-Marker geht NICHT ein — seine Aussage liegt vollständig bei der
 // Slice-Invariante (planning-drift), hasActive wird hier nicht gelesen. Das

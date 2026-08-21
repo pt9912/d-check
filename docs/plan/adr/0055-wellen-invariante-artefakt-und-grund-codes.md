@@ -76,8 +76,10 @@ Register, obwohl alle drei Ergebnisnotizen im Ruheort lagen (Beobachtungs-Regist
    Kennungen gegen die flachen Wellendokumente, beide Richtungen, jede
    Kardinalität einschließlich null; der Marker geht **nicht** ein, seine
    Aussage liegt vollständig bei `planning-drift` (Entscheidung 5 bleibt:
-   der Block wird nicht zweimal bestimmt, die Bestimmung liefert neben dem
-   Bool die Kennungs-Liste). **Erkennungs-Verfahren** wie in den
+   die Aktiv-Status-Bestimmung wird nicht wiederholt; die Kennungs-Liste
+   liest ein **eigener Scan über die geteilte Block-Grenze** — dieselbe
+   Grenze, die auch die Marker-Suche nutzt, als die eine Antwort auf die
+   Block-Frage). **Erkennungs-Verfahren** wie in den
    Registern: literales Glob-Präfix plus Ziffernfolge (`waveID`),
    zeilenweise über die **Prosa-Zeilen** des Blocks — Fence-Inhalte zählen
    nicht, Mehrfachnennung zählt einmal, layout-agnostisch für Tabellen-
@@ -164,4 +166,7 @@ Register, obwohl alle drei Ergebnisnotizen im Ruheort lagen (Beobachtungs-Regist
   die Marker-Hälfte hält beidseitig). Vertrags-Text im Lastenheft 0.62.0;
   Alternativen um Default-Umbau und Zweit-Code ergänzt (beide verworfen),
   Konsequenzen um die Prosa-Messfläche, Trigger um die dritte
-  Kardinalitäts-Semantik.
+  Kardinalitäts-Semantik. **Wortlaut-Korrektur auf Review-Auflage F-1**
+  (vor dem Release): die Kennungs-Liste liest ein eigener Scan über die
+  geteilte Block-Grenze — nicht der Rückgabewert der
+  Aktiv-Status-Bestimmung, wie die Erst-Fassung behauptete.

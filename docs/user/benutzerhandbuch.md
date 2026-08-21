@@ -72,7 +72,7 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.61.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.62.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für

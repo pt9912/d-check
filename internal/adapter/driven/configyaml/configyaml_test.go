@@ -763,3 +763,20 @@ func TestDecode_WavesMode(t *testing.T) {
 		t.Fatalf("Default-Modus = %q, want one", got)
 	}
 }
+
+// Explizites "one" wird durchgereicht, und die mode-Validierung greift auch
+// bei INERTER Fähigkeit (waves ohne dir) — dieselbe Disziplin wie bei den
+// übrigen waves-Schlüsseln.
+func TestDecode_WavesModeRaender(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"planning:\n  roadmap: r.md\n  waves:\n    dir: w\n    mode: one\n"))
+	if err != nil {
+		t.Fatalf("mode: one abgelehnt: %v", err)
+	}
+	if got := cfg.Planning.Waves.EffectiveMode(); got != "one" {
+		t.Fatalf("explizites one nicht durchgereicht: %q", got)
+	}
+	if _, err := configyaml.Decode([]byte("planning:\n  waves:\n    mode: viele\n")); err == nil {
+		t.Fatal("mode-Validierung muss auch ohne dir (inerte Fähigkeit) greifen")
+	}
+}
