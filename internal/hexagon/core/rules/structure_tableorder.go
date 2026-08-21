@@ -56,19 +56,26 @@ func typeTableKey(cell string) (tableKey, bool) {
 		return tableKey{isDate: true, date: tok, tok: tok}, true
 	default:
 		tok := cell[v[0]:v[1]]
-		return tableKey{segs: versionSegments(tok), tok: tok}, true
+		segs := versionSegments(tok)
+		if segs == nil {
+			return tableKey{}, false
+		}
+		return tableKey{segs: segs, tok: tok}, true
 	}
 }
 
 // versionSegments zerlegt eine Punkt-Version in numerische Segmente; das
-// optionale v-Präfix trägt keine Ordnung.
+// optionale v-Präfix trägt keine Ordnung. Ein Segment jenseits des
+// int-Bereichs ist ERREICHBAR (`\d+` ist unbegrenzt) und liefert nil —
+// der Aufrufer behandelt das als untypisierbar, damit ein Zahlen-Monstrum
+// nicht still als kleinstmögliche Version vergleicht (F-2 der Review:
+// Befund statt Übersprung).
 func versionSegments(tok string) []int {
 	parts := strings.Split(strings.TrimPrefix(tok, "v"), ".")
 	out := make([]int, 0, len(parts))
 	for _, p := range parts {
 		n, err := strconv.Atoi(p)
 		if err != nil {
-			// Nach dem Muster nicht erreichbar; fail-safe statt Panik.
 			return nil
 		}
 		out = append(out, n)
@@ -168,10 +175,13 @@ func structureTableRow(
 		return nil, &key, lineNo
 	}
 	if prev.isDate != key.isDate {
+		// Anker-Reset wie bei den beiden anderen Fehlerfaellen (F-1 der
+		// Review): die Misch-Zelle meldet sich selbst, eine gesunde
+		// Folge-Zeile dahinter meldet nicht.
 		f := structureFinding(r, file, lineNo, model.ReasonSectionCellUntyped,
 			"Typ-Mischung in der Schlüsselspalte: "+key.typeName()+" ("+key.tok+
 				") neben "+prev.typeName()+" ("+prev.tok+", Zeile "+strconv.Itoa(prevLine)+")")
-		return &f, &key, lineNo
+		return &f, nil, 0
 	}
 	c := compareTableKeys(key, *prev)
 	if (r.TableOrder == "asc" && c < 0) || (r.TableOrder == "desc" && c > 0) {

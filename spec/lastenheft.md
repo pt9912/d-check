@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.61.0
+**Version:** 0.61.1
 
 **Status:** Draft
 
@@ -2387,7 +2387,7 @@ ein Ventil die Regel still ab.
 - **Chronologie (Bruch):** Given dieselbe Regel und eine Datenzeile, deren Schlüssel größer als der ihrer Vorgänger-Zeile ist, when der Lauf endet, then `section-unordered` mit der Zeile der **brechenden** Datenzeile, Exit 1.
 - **Chronologie (Typ-Pflicht):** Given eine absteigend sortierte Versions-Spalte, in der `0.10.0` über `0.9.0` steht, when der Lauf endet, then **kein** Befund — segmentweise numerisch ist `0.10.0` größer; ein zeichenweiser Vergleich meldete rot.
 - **Chronologie (Roh-Lesung):** Given eine Schlüsselspalte, deren Zellen in Inline-Code stehen — eine davon zusätzlich mit HTML-Anker —, when der Lauf endet, then wird jede Zelle getypt und die Ordnung geprüft; auf dem bereinigten Abschnitts-Text wäre jede Zelle leer.
-- **Chronologie (untypisierbar):** Given eine Datenzeile, deren Schlüsselzelle kein Datums-/Versions-Token trägt (oder zu wenige Zellen hat, oder deren Typ vom Nachbarn abweicht), when der Lauf endet, then `section-cell-untyped` an dieser Zeile — und benachbarte typisierbare Paare werden weiterhin verglichen.
+- **Chronologie (untypisierbar):** Given eine Datenzeile, deren Schlüsselzelle kein Datums-/Versions-Token trägt (oder zu wenige Zellen hat, oder deren Typ vom typisierbaren **Vorgänger** abweicht), when der Lauf endet, then `section-cell-untyped` an **genau dieser** Zeile — der Vergleichs-Anker wird nach jedem Befund zurückgesetzt: eine gesunde Folge-Zeile hinter einer Misch-Zelle meldet **nicht**, und benachbarte typisierbare Paare werden weiterhin verglichen.
 - **Chronologie (Kopf/Fence/Leerlauf):** Given eine Tabelle, deren Kopfzeile ein Wort in der Schlüsselspalte trägt, when der Lauf endet, then zählen Kopf- und Trennzeile nicht als Datenzeilen; Given ein Abschnitt, dessen einzige Tabellenzeilen in einem Fenced-Code-Block stehen oder der gar keine trägt, then `section-unordered` als Leerlauf-Befund an der Abschnitts-Überschrift.
 - **Ventil:** Given ein Dokument, dessen Pfad einem `exempt-paths`-Glob der Regel entspricht, when `d-check --enable structure` läuft, then kein Befund für dieses Dokument.
 - **Preset-Kopplung:** Given dieselbe Datei, einmal über eine `structure`-Regel und einmal über die Closure-Fähigkeit mit gleichwertiger Konfiguration, when beide laufen, then melden sie an **denselben Zeilen** — die Semantiken fallen aus einer Mechanik.
@@ -2411,7 +2411,12 @@ ist ein Change Request, kein konfigurierbares Muster: kein zweiter
 Regel-Interpreter, dieselbe Grenze wie oben); **Ordnungs-Aussagen über
 Tabellen- oder Spalten-Grenzen hinweg** (zwei getrennt sortierte, gegenläufige
 Tabellen im selben Abschnitt bleiben unerkannt — benannte Grenze; der belegte
-Anlassfall ist der Richtungs-Bruch **innerhalb** einer Tabelle).
+Anlassfall ist der Richtungs-Bruch **innerhalb** einer Tabelle); **zwei
+Chronologie-Zusagen über denselben Abschnitt** (die Regel-Identität besteht
+aus Glob und Abschnitts-Selektor und trägt keine Spalte — zwei Regeln
+gleicher Identität mit verschiedenem `table-column` sind ein
+Konfigurations-Duplikat, Exit 2, laut statt still; wer zwei Spalten derselben
+Tabelle monoton zusagen will, stellt einen Change Request gegen diese Grenze).
 
 ---
 
@@ -2783,6 +2788,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.61.1 | 2026-08-21 | Nachzug nach unabhängigem Review, vor dem Release. **Die Typ-Mischungs-Semantik ist auf genau eine Lesart gepinnt** (der MEDIUM-Befund): Paar-Lesart mit Anker-Reset — die Misch-Zelle meldet sich selbst, die gesunde Folge-Zeile dahinter meldet **nicht**; das Akzeptanzkriterium sagt es jetzt ausdrücklich, der Kaskaden-Fall ist als Test gepinnt. Ferner: ein Versions-Segment außerhalb des Zahlbereichs ist **untypisierbar** statt still kleinstmögliche Version (der LOW-Befund), und die Ausdrucks-Grenze **„eine Chronologie-Zusage je Abschnitt"** ist als Out-of-Scope benannt (die Regel-Identität trägt keine Spalte) |
 | 0.61.0 | 2026-08-21 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um die **Chronologie-Monotonie** erweitert (`table-order`/`table-column`, siebte Bedingung; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): die Schlüsselspalte jeder zusammenhängenden Tabelle des Abschnitts wird **typisiert** (geschlossene Menge: ISO-Datum, Punkt-Version — segmentweise numerisch, ein String-Vergleich meldet gemessen drei korrekt sortierte Bestandstabellen rot) und nicht-strikt monoton in der je Regel konfigurierten Richtung verglichen. Zwei neue Grund-Codes: `section-unordered` (Bruch-Zeile; auch Leerlauf ohne Datenzeile) und `section-cell-untyped` (untypisierbare Zelle/Typ-Mischung — Befund statt stillem Übersprung). **Erste benannte Roh-Lese-Ausnahme** von der Abschnitts-Bereinigung: reale Schlüsselspalten stehen in Inline-Code. Drei neue fail-closed Config-Ränder. Begründung in begleitender ADR |
 | 0.60.2 | 2026-08-16 | Nachzug der bestätigenden Re-Review (Text-Auflagen, keine Verhaltensänderung): die **Scan-Bereichs-Kopplung** ist als Grenze benannt (Gruppen-Orte müssen im wirksamen Scan-Bereich liegen — eine nie gescannte Datei ist still keine Quelle), die Ventil-Aufzählung von [`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus) zählt spezifikationsseitig alle **fünf** unterdrückten Codes, und die letzten beiden Flächen des „zeichengenau"-Überclaims (CHANGELOG, Config-Kommentar) sind auf die 15/19-Aussage gezogen |
 | 0.60.1 | 2026-08-16 | Nachzug nach unabhängigem Review **und** einem CI-Realfund, vor dem Release. **Review:** die fail-closed-Klasse zum dritten Mal (ein `resolve-from`-Verzeichnis mit Tippfehler schaltete die Quellen-Rolle still ab), die Ist-Ort-Vorbedingung stand nur im Code, der Ventil-Wortlaut von [`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus) widersprach der neuen Wirkung aktiv, und „zeichengenau“ war ein Überclaim — die Retro-19 überlappen den realen Bruch nur zu 15/19; die übrigen vier waren **Ziel**-Wanderungen, jetzt als Grenze benannt. **CI-Realfund:** der erste fail-closed-Zuschnitt meldete auf jedem frischen Klon das legitim **geleerte** `open/`-Verzeichnis — git überträgt leere Verzeichnisse nicht, ein einzelner fehlender Ort ist von einem Tippfehler nicht unterscheidbar. Jetzt meldet fail-closed, wenn **kein** `dirs`-Ort existiert oder ein Ort als Datei existiert; die Rest-Grenze ist benannt. **Und die Beschreibung selbst fehlte:** ein abbrechender Batch-Editor hatte beim 0.60.0-Schnitt nur Historie und Akzeptanzkriterien geschrieben — der Anforderungs-Text ist mit dieser Version nachgeliefert |

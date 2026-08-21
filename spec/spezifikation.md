@@ -2029,7 +2029,7 @@ getroffenen Dateien.
    | `require-pattern` | das Muster matcht | `section-pattern-missing` |
    | `require-all` | **jede** Marke vorhanden ist | `section-marker-missing` |
    | `table-order` | jede zusammenhängende Tabelle des Abschnitts in der Schlüsselspalte nicht-strikt monoton ist **und** mindestens eine Datenzeile existiert | `section-unordered` |
-   | — (dieselbe Bedingung) | jede Schlüsselzelle typisierbar ist und den Spalten-Typ trägt | `section-cell-untyped` |
+   | — (dieselbe Bedingung) | jede Schlüsselzelle typisierbar ist und den Typ ihres typisierbaren **Vorgängers** fortführt (Paar-Lesart; nach jedem Befund setzt der Vergleich neu auf) | `section-cell-untyped` |
 
    **Task-Item** ist eine Zeile, die — nach optionalem Whitespace — mit einem
    Listen-Marker (`-`, `*`, `+` oder `<ziffern>.`), Whitespace und `[ ]` bzw.
@@ -2065,10 +2065,13 @@ getroffenen Dateien.
      Rand-Pipes). Getypt wird der **erste** Treffer zweier Muster in der rohen
      Zelle: ISO-Datum (`JJJJ-MM-TT`) oder Punkt-Version (optionales `v`,
      mindestens zwei numerische Segmente; Vergleich segmentweise numerisch, bei
-     gleichem Präfix ist die kürzere Segmentfolge kleiner). Kein Treffer, zu
-     wenige Zellen oder ein anderer Typ als beim typisierbaren Vorgänger ⇒
-     `section-cell-untyped` an dieser Zeile; der Vergleich setzt beim nächsten
-     typisierbaren Nachbar-Paar wieder auf.
+     gleichem Präfix ist die kürzere Segmentfolge kleiner; ein Segment
+     außerhalb des Zahlbereichs ist **nicht typisierbar** — Befund statt
+     stillem Kleinst-Vergleich). Kein Treffer, zu wenige Zellen oder ein
+     anderer Typ als beim typisierbaren Vorgänger ⇒ `section-cell-untyped` an
+     dieser Zeile; der Vergleichs-Anker wird nach **jedem** Befund
+     zurückgesetzt und setzt beim nächsten typisierbaren Nachbar-Paar wieder
+     auf — die gesunde Folge-Zeile hinter einer Misch-Zelle meldet **nicht**.
    - **Ordnung prüfen:** benachbarte typisierbare Datenzeilen derselben Tabelle
      müssen **nicht-strikt** monoton in Richtung `table-order` liegen (`asc`:
      Schlüssel ≥ Vorgänger; `desc`: ≤). Jede brechende Zeile ⇒
@@ -2647,7 +2650,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `section-pattern-missing` | structure | `require-pattern` trifft **nicht** — das Spiegelbild von `section-forbidden` |
 | `section-marker-missing` | structure | eine Marke aus `require-all` fehlt (Auszeichnungs-Marke am Zeilen-Anfang, nach optionalem Listen-Marker) |
 | `section-unordered` | structure | eine Datenzeile bricht die nicht-strikte Monotonie der Schlüsselspalte in Richtung `table-order` (`line` = die brechende Zeile) — **oder** der Abschnitt trägt keine Tabellen-Datenzeile (Leerlauf, `line` = Abschnitts-Überschrift) |
-| `section-cell-untyped` | structure | eine Schlüsselzelle der Chronologie-Bedingung ist nicht typisierbar (kein Datums-/Versions-Token, zu wenige Zellen) oder mischt den Typ der Spalte — Befund statt stillem Übersprung |
+| `section-cell-untyped` | structure | eine Schlüsselzelle der Chronologie-Bedingung ist nicht typisierbar (kein Datums-/Versions-Token, zu wenige Zellen, Segment außerhalb des Zahlbereichs) oder weicht vom Typ ihrer typisierbaren **Vorgänger-Zelle** ab — Befund statt stillem Übersprung; genau einer je gemeldeter Zelle |
 | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
 | `gate-undocumented` | targets | Makefile-Regel (nicht in `targets.exempt-targets`) ohne Deklaration als `make X` in der `targets.authority`-Doku (undokumentiertes Gate) |
@@ -2675,6 +2678,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-21 | Nachzug nach unabhängigem Review, vor dem Release: die **Typ-Mischungs-Semantik** der Chronologie-Bedingung stand in §6 zweimal verschieden (Bedingungs-Tabelle „Spalten-Typ" gegen Fließtext „Vorgänger-Typ") — gepinnt auf die **Paar-Lesart mit Anker-Reset** (die Misch-Zelle meldet sich selbst, die gesunde Folge-Zeile dahinter nicht; beide Stellen sagen jetzt dasselbe, der Kaskaden-Fall ist getestet). Ferner ist ein Versions-Segment außerhalb des Zahlbereichs **nicht typisierbar** (Befund statt stillem Kleinst-Vergleich) — §4-Zeile zu `section-cell-untyped` entsprechend |
 | 2026-08-21 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) um die **Chronologie-Monotonie** erweitert (`table-order`/`table-column`, §2-Schema + zwei §4-Codes `section-unordered`/`section-cell-untyped`): Datenzeilen über die **geteilte** Tabellenzeilen-Lexik (dieselbe Antwort wie `targets`/`planning`, Kopf-/Trennzeile deklarieren nichts, je zusammenhängender Tabelle), Schlüssel **typisiert** aus der **rohen** Zelle (ISO-Datum, Punkt-Version segmentweise numerisch; erste benannte Ausnahme von Schritt 5 — die Bereinigung leert Inline-Code, reale Schlüsselspalten stehen dort), Vergleich nicht-strikt in Regel-Richtung; untypisierbare Zelle und Leerlauf sind Befunde, drei neue Exit-2-Ränder in Schritt 1. Begründung in begleitender ADR |
 | 2026-08-16 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 6 nach unabhängigem Review und einem **CI-Realfund** nachgezogen: die Ist-Ort-Vorbedingung ist normativ (die Klasse ist „am Ist-Ort grün", kein Doppelbefund), die fail-closed-Zusage der Gruppen-Orte ist an der git-Realität justiert (ein **einzelner** fehlender Ort ist von einem legitim geleerten Verzeichnis nicht unterscheidbar — gemeldet wird die Gruppe ohne einen einzigen existierenden Ort und der Ort, der als Datei existiert), die Scan-Bereichs-Kopplung ist benannt, und die Ventil-Wirkung von §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) zählt alle fünf unterdrückten Codes |
 | 2026-08-16 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) um Schritt **6** + §2-Schema (`links.resolve-from`) erweitert: **ortsfeste Verweise** — je Gruppe wandernder Geschwister-Verzeichnisse wird jedes relative Ziel zusätzlich von jedem Ort der Gruppe aufgelöst; nicht überall auflösbar **oder** nicht überall dasselbe Ziel ⇒ `link-position-dependent`. Dateien in `fixed-dirs` sind keine Quellen (die Bestandsmessung zeigt sonst 108 Falsch-Positive auf Ruheort-Dokumenten). Grund-Code (§4) folgt mit der Implementierung (AllReasons-↔-§4-Lockstep). Begründung in begleitender ADR |

@@ -114,6 +114,36 @@ func TestTableOrderUntypisierbar(t *testing.T) {
 	}
 }
 
+// F-1-Kaskadenfall (Review): der Anker wird auch nach einer Typ-Mischung
+// zurueckgesetzt — die Misch-Zelle meldet sich selbst, die GESUNDE
+// Folge-Zeile dahinter (die den Spalten-Typ traegt) meldet NICHT. Genau eine
+// Lesart, gepinnt.
+func TestTableOrderTypMischungKaskade(t *testing.T) {
+	body := "| Schluessel |\n|---|\n" +
+		"| 2026-08-16 |\n| v0.60.0 |\n| 2026-08-10 |\n| 2026-08-01 |\n"
+	f := tableOrderFindings(t, body, "desc", nil)
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionCellUntyped {
+		t.Fatalf("genau EIN cell-untyped an der Misch-Zelle erwartet, got %+v", f)
+	}
+	if f[0].Line != 8 {
+		t.Errorf("Line = %d, want 8 (die Misch-Zelle, nicht die gesunde Folge-Zeile)", f[0].Line)
+	}
+}
+
+// F-2 (Review): ein Versions-Segment jenseits des int-Bereichs ist
+// untypisierbar — Befund statt stillem Vergleich als kleinstmoegliche Version.
+func TestTableOrderVersionsSegmentUeberlauf(t *testing.T) {
+	body := "| V |\n|---|\n" +
+		"| 0.10.0 |\n| 12345678901234567890.1 |\n| 0.8.0 |\n"
+	f := tableOrderFindings(t, body, "desc", nil)
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionCellUntyped {
+		t.Fatalf("Ueberlauf-Segment ⇒ genau ein cell-untyped erwartet, got %+v", f)
+	}
+	if f[0].Line != 8 {
+		t.Errorf("Line = %d, want 8 (die Ueberlauf-Zelle)", f[0].Line)
+	}
+}
+
 // Nach einer untypisierbaren Zelle setzt der Vergleich beim naechsten
 // typisierbaren NACHBAR-Paar wieder auf — die kaputte Zelle meldet sich
 // selbst, macht aber nicht die restliche Tabelle unpruefbar.

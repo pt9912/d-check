@@ -110,6 +110,13 @@ func pinsKenntAnker(t *testing.T, ziel, anker string) bool {
 // Chronologie-Bedingung) GLEICH beantwortet werden. Drei Schreibweisen, drei
 // gemeinsame Antworten — eine Zeile im Fence ist ein Beispiel, eine
 // eingerueckte Zeile ist keine Spalte-0-Tabellenzeile.
+//
+// Reichweiten-Notiz (Review F-3): die Kopf-/Trennzeilen-Antwort
+// (tableHeaderOrSeparator) und die Zell-Antwort (tableCells) haben heute je
+// ZWEI Konsumenten (planning.waves, structure) und sind ueber die gemeinsame
+// Funktion gebunden, nicht ueber eine Kopplung. Nach der ADR-0054-Schwelle
+// bekommt jede dieser Fragen ihren Kopplungs-Test mit dem DRITTEN
+// Konsumenten — wer einen hinzufuegt, schreibt ihn hier daneben.
 
 // tabellenFall verpackt die zu pruefende Zeile in ihren Kontext.
 type tabellenFall struct {

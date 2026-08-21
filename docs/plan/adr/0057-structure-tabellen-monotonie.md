@@ -117,10 +117,12 @@ Benutzerhandbuch ist als einzige Bestandstabelle **aufsteigend** sortiert.
    Zellen) oder mischt die Spalte zwei Typen (Datum neben Version —
    unvergleichbar), meldet `section-cell-untyped` an dieser Zeile. Ein stilles
    Auslassen schaltete die Prüfung der restlichen Tabelle wortlos ab — dieselbe
-   fail-closed-Disziplin wie der Leerlauf-Befund des Moduls. Der Vergleich
-   setzt hinter einer untypisierbaren Zelle beim nächsten typisierbaren
-   Nachbar-Paar wieder auf (eine kaputte Zelle macht nicht die ganze Tabelle
-   unprüfbar, sie meldet sich selbst).
+   fail-closed-Disziplin wie der Leerlauf-Befund des Moduls. Der
+   Vergleichs-Anker wird nach **jedem** Befund zurückgesetzt — auch nach
+   einer Typ-Mischung — und setzt beim nächsten typisierbaren Nachbar-Paar
+   wieder auf: eine kaputte Zelle macht nicht die ganze Tabelle unprüfbar,
+   sie meldet sich **selbst**, und die gesunde Folge-Zeile dahinter meldet
+   **nicht** (Paar-Lesart, im Review als einzig verbleibende Lesart gepinnt).
 
 8. **Zwei neue Grund-Codes, kein Sammel-Code.** `section-unordered` (Reparatur:
    die Zeile einsortieren) und `section-cell-untyped` (Reparatur: die
@@ -162,6 +164,21 @@ Benutzerhandbuch ist als einzige Bestandstabelle **aufsteigend** sortiert.
   Module.
 - Der `--doctor`-Klartext und die §4-Tabelle wachsen um zwei Zeilen
   (AllReasons-↔-§4-Lockstep).
+- **Eine Chronologie-Zusage je Abschnitt:** die Regel-Identität besteht aus
+  Glob und Abschnitts-Selektor und trägt keine Spalte — zwei Regeln gleicher
+  Identität mit verschiedenem `table-column` sind ein Konfigurations-Duplikat
+  (Exit 2, laut statt still). Wer zwei Spalten derselben Tabelle monoton
+  zusagen will, stellt einen Change Request gegen diese benannte Grenze; sie
+  still über eine Spalten-erweiterte Identität zu öffnen änderte die
+  Deduplikations-Semantik aller sieben Bedingungen.
+- **Eine zweite Zell-Lesart existiert im Produkt** und bleibt getrennt: der
+  RTM-/trace-Leser zerlegt Tabellenzeilen escape- und backtick-bewusst
+  (andere Vertragsfläche, andere Frage im Sinn von
+  [ADR-0054](0054-geteilte-lexik-bindet-ihre-konsumenten.md) Entscheidung 2).
+  Die Konsequenz gehört benannt: ein Pipe in einem Backtick-Span der
+  Schlüsselspalte verschöbe hier die Spaltenadresse — im heutigen Bestand der
+  sechs aktivierten Tabellen kommt das nicht vor; träte es ein, ist das der
+  Latenz-Fall der geteilten-Lexik-Klasse und nach deren Regeln zu behandeln.
 
 ## Fitness Function
 

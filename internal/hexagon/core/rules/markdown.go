@@ -212,8 +212,13 @@ func tableSeparatorRow(line string) bool {
 }
 
 // tableCells zerlegt eine Tabellenzeile in ihre Zellen: Split an `|` nach
-// Trim der Rand-Pipes — die geteilte Zell-Antwort (planning.waves liest die
-// Kennungs-Spalte, structure die Schlüsselspalte).
+// Trim der Rand-Pipes — die geteilte Zell-Antwort DIESER Vertragsfläche
+// (planning.waves liest die Kennungs-Spalte, structure die Schlüsselspalte;
+// exakt der Vertragstext aus §DC-FA-STRUCT-001.a Schritt 6). Benannte Grenze
+// (Review F-5, ADR-0057 §Konsequenzen): der RTM-/trace-Leser zerlegt
+// escape-/backtick-bewusst — eine ANDERE Frage auf einer anderen
+// Vertragsfläche; ein Pipe in einem Backtick-Span verschiebt hier die
+// Spaltenadresse.
 func tableCells(line string) []string {
 	return strings.Split(strings.Trim(line, "|"), "|")
 }
