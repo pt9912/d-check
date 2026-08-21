@@ -18,8 +18,9 @@
   vorgesehene Fortschreibung, dritter Nachtrag nach
   [`MR-012`](../conventions.md#mr-012--baseline-pin-hebung-nachtrag-zu-mr-011)
   und
-  [`MR-016`](../conventions.md#mr-016--baseline-pin-hebung-zweiter-nachtrag-zu-mr-011).
-  Anders als bei
+  [`MR-016`](../conventions.md#mr-016--baseline-pin-hebung-zweiter-nachtrag-zu-mr-011)
+  (Zählung der Titel-Serie; die v5.0.0-Hebung lief unter dem eigenen Titel
+  des Layout-Eintrags außerhalb dieser Serie). Anders als bei
   [`MR-023`](../conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)
   ändert sich **kein** Layout: dasselbe self-contained Bundle
   (`lab-regelwerk.zip`, beide Bäume, `SHA256SUMS`), dasselbe

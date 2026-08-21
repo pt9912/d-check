@@ -14,7 +14,7 @@
   ist das vendored Regelwerk ein in-repo auflösbares **Link-Ziel** — die
   Live-Doku verweist auf konkrete Regelwerk-Dateien (Lesestoff: Modul-/
   Grundlagen-Verweise) statt nur auf externe Kurs-URLs (die als **Provenienz**
-  bleiben). Diese Links tragen den **konkreten** Pin (`…/v5.0.0/…`), nicht
+  bleiben). Diese Links tragen den **konkreten** Pin (aktuell `…/v5.6.0/…`), nicht
   `<tag>` — sie sind damit **pin-gebunden**. Regel: Der Baseline-Pin-Bump-
   Drift-Audit ([`MR-020`](../conventions.md#mr-020--baseline-template-propagation-per-drift-audit-template-frei-bestätigt))
   (1) entfernt das alte `.harness/baseline/<alt-tag>/` und (2) zieht alle

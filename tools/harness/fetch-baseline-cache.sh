@@ -163,7 +163,11 @@ check_latest() {
       # starten — das hashte stdin und meldete einen falschen Drift.
       up="$( { cd "${td}/vendored" && find regelwerk templates -type f | LC_ALL=C sort | xargs -r sha256sum; } 2>/dev/null | LC_ALL=C sort )"
       ve="$( LC_ALL=C sort < "$sums" )"
-      [ -n "$up" ] && { [ "$up" = "$ve" ] && authenticity="ok" || authenticity="drift"; }
+      if [ -n "$up" ]; then
+        [ "$up" = "$ve" ] && authenticity="ok" || authenticity="drift"
+      else
+        note="Upstream-Extraktion lieferte keine Dateien (Bundle-Layout?)"
+      fi
     else
       note="Asset ${tag}/lab-regelwerk.zip nicht ladbar/entpackbar (Netz/Layout)"
     fi
