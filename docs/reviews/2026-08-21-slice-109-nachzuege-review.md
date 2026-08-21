@@ -10,7 +10,7 @@
   Audit-Reviews, `AGENTS.md` §3, Baseline `.harness/baseline/v5.6.0/regelwerk/`
   (`grundlagen-harness-dateien.md` §Was ein Kommentar trägt,
   `grundlagen-source-precedence.md` §ID-Schema/§Vergabe, `modul-03-spec.md`,
-  `modul-14-docker-harness.md`), Kurs-Repo `/Development/KI/ai-harness-course`
+  `modul-14-docker-harness.md`), Kurs-Repo `dem Kurs-Repo (Schwester-Checkout)`
   (read-only, Tags v5.0.0/v5.6.0). Kein `DC-*`-Produktvertrag berührt; die
   Kommentar-Bereinigung wurde auf Verhaltens-Neutralität geprüft.
 
