@@ -27,7 +27,7 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   Abgrenzung · Rang-Zeiger · Grenze) — Review-Historie, Deliberation über
   Verworfenes oder Herkunfts-Prosa im Kommentar; Herkunft ist nur als
   **ein** auflösbares Feld zulässig
-  ([Baseline §Was ein Kommentar trägt](../baseline/v5.6.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte);
+  ([Baseline §Was ein Kommentar trägt](../baseline/v5.7.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte);
   neuer HIGH-Eintrag seit 1.5.0, Auflösungs-Trigger: permanent).
 - **MEDIUM** (vor Merge zu klären): Spec-Treue-Lücke einer
   Messmethode; Konsistenz-Lücke **zwischen** Modulen derselben
@@ -42,7 +42,7 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   `<!-- d-check:status-provenance -->`, prüfe, ob die Deklaration **ehrlich** ist —
   *zeigt* sie, wo verifiziert/entstanden (Provenance, ok), oder *begründet* sie
   eine Entscheidung (getarnte Entscheidungsgrundlage → Finding)? Regelwerk:
-  [§Referenz-Richtung (SDP)](../baseline/v5.6.0/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren).
+  [§Referenz-Richtung (SDP)](../baseline/v5.7.0/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren).
   **Modul-Grenze auf der Ziel-Achse.** Ein Modul gibt seine Zusagen über das,
   was es **scannt** — und liest dabei Eingaben, die es nie scannt: Zieldateien
   außerhalb der Scan-Wurzeln, selbst benannte Verzeichnisse eines Post-Passes,

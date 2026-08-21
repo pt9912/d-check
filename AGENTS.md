@@ -9,7 +9,7 @@ einhalten muss.
 
 Diese Datei trägt **Hard Rules und Pointer** auf die kanonischen Quellen und
 **dupliziert deren Inhalt nicht** — sonst entsteht Drift (Kanon:
-[`modul-09-implementierung.md` §AGENTS.md-Regeln](.harness/baseline/v5.6.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)).
+[`modul-09-implementierung.md` §AGENTS.md-Regeln](.harness/baseline/v5.7.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)).
 
 **Bei Konflikt zwischen dieser Datei und einer kanonischen Quelle gilt
 die kanonische Quelle** (Source Precedence — siehe
@@ -136,7 +136,7 @@ ADR, kein PR-Kommentar.
 
 Ein Kommentar in Code, Konfiguration oder Skript beantwortet, was der Code
 nicht beantworten kann — **Zusage · Kopplung · Abgrenzung · Rang-Zeiger ·
-Grenze** ([Baseline §Was ein Kommentar trägt](.harness/baseline/v5.6.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte)).
+Grenze** ([Baseline §Was ein Kommentar trägt](.harness/baseline/v5.7.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte)).
 Keine Review-Historie, keine Deliberation über Verworfenes, keine
 Herkunfts-Prosa; Herkunft nur als **ein** auflösbares Feld (`DC-*`, `ADR-*`,
 `seit slice-<NNN>`/`seit welle-<NN>`). Der Reviewer-Skill trägt den
@@ -198,7 +198,7 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   schärfen die Spezifikation, nicht das Lastenheft). Der
   Anlege-Prozess (Akzeptanzkriterien-Trio, Versions-Bump + Historie,
   Beleg-Pflicht) folgt dem Baseline-Regelwerk
-  ([`modul-03-spec`](.harness/baseline/v5.6.0/regelwerk/modul-03-spec.md)); das
+  ([`modul-03-spec`](.harness/baseline/v5.7.0/regelwerk/modul-03-spec.md)); das
   repo-spezifische ID-Schema steht in `spec/lastenheft.md` §3.
 - Neue ADRs müssen den ADR-Index aktualisieren.
 - Neue ADRs tragen die Sektion `## Re-Evaluierungs-Trigger` (oder „permanent");

@@ -1,7 +1,7 @@
 # MR-013 — Lifecycle-Move-Commit bündelt gekoppelte Verweise
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`modul-05-planning-harness.md` §Lifecycle als State Machine](../../.harness/baseline/v5.6.0/regelwerk/modul-05-planning-harness.md#lifecycle-als-state-machine)
+- **Ersetzt-Baseline-Regel:** [`modul-05-planning-harness.md` §Lifecycle als State Machine](../../.harness/baseline/v5.7.0/regelwerk/modul-05-planning-harness.md#lifecycle-als-state-machine)
 - **Datum:** 2026-06-21
 - **Geltungsbereich:** [`AGENTS.md` §3.3](../../AGENTS.md#33-git-mv--inhaltsänderung--zwei-commits),
   der Slice-Lifecycle `docs/plan/planning/in-progress/` → `…/done/`,

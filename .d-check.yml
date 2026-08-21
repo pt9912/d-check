@@ -91,6 +91,17 @@ ignore-refs:
     refs: [".harness/baseline/v5.0.0/**"]
   - in: docs/reviews/2026-08-09-slice-096-vertrag-review.md
     refs: [".harness/baseline/v5.0.0/**"]
+  # Tombstone der Baseline-Migration v5.6.0 -> v5.7.0 (slice-110 / MR-028):
+  # dieselbe Klasse — EINGEFRORENE Markdown-LINKS auf den entfernten
+  # v5.6.0-Baum in der done/-Doku der welle-78 (der Etappe-C-Slice und die
+  # aufgeloeste MR-024; die uebrigen done/-Slices und Reviews nennen den
+  # Pfad nur in Inline-Code). Quell-skopiert ausgenommen statt eingefrorene
+  # Doku zu editieren; die live-Fundstellen sind auf v5.7.0 retargetet
+  # (MR-021).
+  - in: docs/plan/planning/done/slice-109-v560-konventions-nachzuege.md
+    refs: [".harness/baseline/v5.6.0/**"]
+  - in: harness/conventions/done/MR-024-aktuelle-welle-ruhe-marker-form.md
+    refs: [".harness/baseline/v5.6.0/**"]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.

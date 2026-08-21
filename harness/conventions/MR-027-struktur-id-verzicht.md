@@ -1,9 +1,9 @@
 # MR-027 — Struktur-IDs (`SPEC-*`/`ARC-*`) werden nicht vergeben
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../../.harness/baseline/v5.6.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../../.harness/baseline/v5.7.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer)
   (Straten-Tabelle: `SPEC-<NNN>`/`ARC-<NNN>` als Struktur-IDs) und
-  [`modul-03-spec.md`](../../.harness/baseline/v5.6.0/regelwerk/modul-03-spec.md)
+  [`modul-03-spec.md`](../../.harness/baseline/v5.7.0/regelwerk/modul-03-spec.md)
   (Struktur-ID-Vergabe für Sektionstypen der Spezifikation)
 - **Datum:** 2026-08-21
 - **Geltungsbereich:** `spec/spezifikation.md`, `spec/architecture.md`; die

@@ -3,7 +3,7 @@
 **Status:** Aktiv. **Letzte Änderung:** 2026-08-21.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine Reihenfolge von
-Terminen (siehe [Baseline-Regelwerk `modul-06-roadmap.md`](../../../../.harness/baseline/v5.6.0/regelwerk/modul-06-roadmap.md)).
+Terminen (siehe [Baseline-Regelwerk `modul-06-roadmap.md`](../../../../.harness/baseline/v5.7.0/regelwerk/modul-06-roadmap.md)).
 Termine erscheinen — falls überhaupt — als Konsequenz der Wellen-Schätzung, nie als
 Treiber.
 

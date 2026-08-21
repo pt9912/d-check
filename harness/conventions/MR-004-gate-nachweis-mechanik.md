@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Datum:** 2026-06-10
-- **Ersetzt-Baseline-Regel:** [`grundlagen-durchsetzungsschicht.md` §Drei Bindepunkte](../../.harness/baseline/v5.6.0/regelwerk/grundlagen-durchsetzungsschicht.md#drei-bindepunkte)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-durchsetzungsschicht.md` §Drei Bindepunkte](../../.harness/baseline/v5.7.0/regelwerk/grundlagen-durchsetzungsschicht.md#drei-bindepunkte)
 - **Geltungsbereich:** [`tools/harness/`](../../tools/harness/), [`.claude/`](../../.claude/), `make record-gates`
 - **Adaption:** Übernahme der Working-Tree-Hash-Mechanik (`record-gates` als
   letzter `gates`-Prerequisite, Stop-Hook vergleicht den Hash) und der
