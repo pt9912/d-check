@@ -47,8 +47,76 @@ func CheckPlanningWaves(fsys driven.Filesystem, cfg model.PlanningConfig) []mode
 		}
 		return out
 	}
-	out := waveDrift(cfg, w, headingNo, hasActive, flach)
+	var out []model.Finding
+	if w.EffectiveMode() == "many" {
+		out = waveBijection(cfg, w, content, headingNo, flach)
+	} else {
+		out = waveDrift(cfg, w, headingNo, hasActive, flach)
+	}
 	return append(out, waveRegisters(cfg, w, content, flach, ruhe)...)
+}
+
+// waveBijection ist W3 unter mode: many (DC-FA-PLAN-001 §Wellen-Invariante,
+// Lastenheft 0.62.0 — Konsumenten-CR „Bijektion statt Singleton"): die
+// Kennungs-Menge des planning.heading-Blocks gegen die flachen
+// Wellendokumente, beide Richtungen, jede Kardinalität einschließlich null.
+// Der Ruhe-Marker geht NICHT ein — seine Aussage liegt vollständig bei der
+// Slice-Invariante (planning-drift), hasActive wird hier nicht gelesen. Das
+// Befund-target ist die betroffene Kennung: so bleiben zwei Richtungen an
+// derselben Zeile im Dedup-Tupel verschieden (dieselbe Ventil-Parität wie
+// bei den Register-Aussagen), und ein zweiter Grund-Code ist unnötig.
+func waveBijection(
+	cfg model.PlanningConfig, w model.WavesConfig, content []byte, headingNo int, flach map[string]bool,
+) []model.Finding {
+	lines := splitLines(content)
+	prose := proseLineSet(content)
+	ids := planningBlockIDs(lines, prose, headingNo, wavePrefix(w.EffectiveGlob()))
+	var fehltDatei, fehltZeiger []string
+	for id := range ids {
+		if !flach[id] {
+			fehltDatei = append(fehltDatei, id)
+		}
+	}
+	for id := range flach {
+		if !ids[id] {
+			fehltZeiger = append(fehltZeiger, id)
+		}
+	}
+	sort.Strings(fehltDatei) // DC-QA-02
+	sort.Strings(fehltZeiger)
+	var out []model.Finding
+	for _, id := range fehltDatei {
+		out = append(out, waveFinding(cfg.Roadmap, headingNo, id, model.ReasonWaveDrift,
+			"der Abschnitt „"+cfg.EffectiveHeading()+"“ nennt "+id+", aber in "+w.Dir+
+				" liegt kein flaches Wellendokument dieser Kennung")...)
+	}
+	for _, id := range fehltZeiger {
+		out = append(out, waveFinding(cfg.Roadmap, headingNo, id, model.ReasonWaveDrift,
+			"in "+w.Dir+" liegt das flache Wellendokument "+id+", aber der Abschnitt „"+
+				cfg.EffectiveHeading()+"“ nennt es nicht")...)
+	}
+	return out
+}
+
+// planningBlockIDs liest die Wellen-Kennungs-Menge aus den PROSA-Zeilen des
+// Aktiv-Status-Blocks (§DC-FA-PLAN-001.a Schritt W3, mode: many): dieselbe
+// Block-Grenze wie die Marker-Suche, dieselbe Kennungs-Form wie die Register
+// (literales Glob-Präfix + Ziffernfolge). Fence-Inhalte zählen nicht,
+// Mehrfachnennung zählt einmal; die Zeilen-Form (Liste, Tabelle, Absatz) ist
+// gleichgültig — deshalb der Zeilen-Scan statt einer Spalten-Adresse.
+func planningBlockIDs(lines []string, prose map[int]bool, headingNo int, prefix string) map[string]bool {
+	idRE := regexp.MustCompile(regexp.QuoteMeta(prefix) + `\d+`)
+	out := map[string]bool{}
+	end := planningBlockEnd(lines, headingNo)
+	for i := headingNo; i < end-1; i++ {
+		if !prose[i+1] {
+			continue
+		}
+		for _, id := range idRE.FindAllString(lines[i], -1) {
+			out[id] = true
+		}
+	}
+	return out
 }
 
 // waveSets liefert die beiden Wellen-Mengen (W2): die **flachen**
@@ -88,7 +156,9 @@ func waveSets(fsys driven.Filesystem, w model.WavesConfig) (flach map[string]boo
 	return flach, ruhe, dirErrs
 }
 
-// waveDrift ist W3: der Aktiv-Status gegen die Zahl der flachen Wellendokumente.
+// waveDrift ist W3 unter mode: one (Default): der Aktiv-Status gegen die Zahl
+// der flachen Wellendokumente — das unveränderte Singleton-Prädikat; ohne
+// mode-Schlüssel ist der Befundsatz byte-identisch (DC-QA-02).
 func waveDrift(
 	cfg model.PlanningConfig, w model.WavesConfig, headingNo int, hasActive bool, flach map[string]bool,
 ) []model.Finding {

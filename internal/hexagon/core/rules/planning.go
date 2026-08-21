@@ -384,14 +384,14 @@ func planningHeadingLine(lines []string, prose map[int]bool, heading string) (fi
 	return first, count
 }
 
-// planningBlockHasMarker sucht den Ruhe-Marker (literaler Teilstring) NUR im
-// Aktiv-Status-Block: ab der Zeile **nach** der Überschrift (headingNo) bis zur
-// nächsten `## `-H2 (exklusive). So verfälscht ein erklärender Verweis anderswo
-// den Status nicht.
-func planningBlockHasMarker(lines []string, prose map[int]bool, headingNo int, marker string) bool {
-	// Wo der Block endet, entscheidet die geteilte Abschnitts-Mechanik — nicht
-	// ein roher Präfix-Vergleich: eine eingerückte oder tab-getrennte H2 ist
-	// eine Überschrift, eine H1 beendet einen H2-Abschnitt ebenfalls.
+// planningBlockEnd liefert die EINE Block-Grenze des Aktiv-Status-Abschnitts
+// (exklusives Zeilen-Ende): Marker-Suche und Kennungs-Scan (mode: many) lesen
+// denselben Ausschnitt — zwei Grenzen wären zwei Antworten auf dieselbe Frage
+// (ADR-0054). Wo der Block endet, entscheidet die geteilte
+// Abschnitts-Mechanik — nicht ein roher Präfix-Vergleich: eine eingerückte
+// oder tab-getrennte H2 ist eine Überschrift, eine H1 beendet einen
+// H2-Abschnitt ebenfalls.
+func planningBlockEnd(lines []string, headingNo int) int {
 	level, _, ok := parseATXHeading(lines[headingNo-1])
 	if !ok {
 		level = 2
@@ -400,6 +400,14 @@ func planningBlockHasMarker(lines []string, prose map[int]bool, headingNo int, m
 	if end == 0 || end > len(lines)+1 {
 		end = len(lines) + 1
 	}
+	return end
+}
+
+// planningBlockHasMarker sucht den Ruhe-Marker (literaler Teilstring) NUR im
+// Aktiv-Status-Block: ab der Zeile **nach** der Überschrift (headingNo) bis zur
+// Block-Grenze. So verfälscht ein erklärender Verweis anderswo den Status nicht.
+func planningBlockHasMarker(lines []string, prose map[int]bool, headingNo int, marker string) bool {
+	end := planningBlockEnd(lines, headingNo)
 	for i := headingNo; i < end-1; i++ {
 		if !prose[i+1] {
 			continue // Fence-Inneres beendet den Block nicht und trägt keinen Marker

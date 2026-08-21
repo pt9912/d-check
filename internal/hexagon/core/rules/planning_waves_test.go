@@ -310,3 +310,125 @@ func TestWavesKopfzeileMitKennungZaehltNicht(t *testing.T) {
 		t.Fatalf("Kennung in der Kopfzeile darf nicht zaehlen, got %v", got)
 	}
 }
+
+// wavesManyCfg aktiviert die Bijektions-Semantik (mode: many, Lastenheft
+// 0.62.0 — Konsumenten-CR „Bijektion statt Singleton").
+func wavesManyCfg() model.PlanningConfig {
+	c := wavesCfg()
+	c.Waves.Mode = "many"
+	return c
+}
+
+// W3 unter many: zwei gelistete Wellen, zwei Dateien, der Ruhe-Marker steht
+// daneben — kein Befund (§Wellen-Happy-Path many; team-sim s04a/s04c).
+func TestWavesManyBijektionHappyPath(t *testing.T) {
+	files := map[string]string{
+		planRoadmap: wavesRoadmap(
+			"- [welle-1-basis](../welle-1-basis.md)\n- [welle-2-ausbau](../welle-2-ausbau.md)\n\nKeine aktive Welle.",
+			"", ""),
+		wavesDir + "/welle-1-basis.md":  "# Welle 1\n",
+		wavesDir + "/welle-2-ausbau.md": "# Welle 2\n",
+	}
+	if got := wavesFindings(t, files, wavesManyCfg()); got != nil {
+		t.Fatalf("Kennungs-Mengen decken sich (Marker orthogonal) → 0 Befunde, got %v", got)
+	}
+}
+
+// Marker-Orthogonalität (§Wellen-Boundary): Welle offen, nichts beansprucht,
+// Marker ZUSÄTZLICH zum Zeiger — unter many meldet weder wave-drift noch
+// planning-drift; unter one meldet derselbe Zustand wave-drift (die
+// Abgrenzung der beiden Modelle, kein Fehler — s04b vs. s04c).
+func TestWavesManyMarkerOrthogonal(t *testing.T) {
+	files := map[string]string{
+		planRoadmap: wavesRoadmap(
+			"- [welle-1-basis](../welle-1-basis.md)\n\nKeine aktive Welle.", "", ""),
+		wavesDir + "/welle-1-basis.md": "# Welle 1\n",
+	}
+	if got := CheckPlanning(coretest.NewMemFS(files), wavesManyCfg()); got != nil {
+		t.Fatalf("Marker bei leerem Slice-Verzeichnis → kein planning-drift, got %+v", got)
+	}
+	if got := wavesFindings(t, files, wavesManyCfg()); got != nil {
+		t.Fatalf("many: das Eröffnungs-Fenster ist legitim → 0 Befunde, got %v", got)
+	}
+	got := wavesFindings(t, files, wavesCfg())
+	if len(got) != 1 || got[0] != model.ReasonWaveDrift {
+		t.Fatalf("one: derselbe Zustand bleibt wave-drift (Abgrenzung, Default byte-identisch), got %v", got)
+	}
+}
+
+// W3 unter many, beide Richtungen: das Befund-target ist die KENNUNG — zwei
+// Richtungen an derselben Blockzeile bleiben im Dedup-Tupel verschieden
+// (Ventil-Parität wie bei den Register-Aussagen).
+func TestWavesManyBijektionBeideRichtungen(t *testing.T) {
+	files := map[string]string{
+		planRoadmap:                    wavesRoadmap("- welle-3-geist ist offen\n", "", ""),
+		wavesDir + "/welle-4-still.md": "# Welle 4\n",
+	}
+	fnd := CheckPlanningWaves(coretest.NewMemFS(files), wavesManyCfg())
+	if len(fnd) != 2 || fnd[0].Reason != model.ReasonWaveDrift || fnd[1].Reason != model.ReasonWaveDrift {
+		t.Fatalf("Zeiger ohne Datei + Datei ohne Zeiger → 2× wave-drift, got %+v", fnd)
+	}
+	if fnd[0].Target != "welle-3" || fnd[1].Target != "welle-4" {
+		t.Fatalf("target = betroffene Kennung (welle-3, welle-4), got %q, %q",
+			fnd[0].Target, fnd[1].Target)
+	}
+}
+
+// Fence-Inhalte im Block zählen nicht als Zeiger, Mehrfachnennung derselben
+// Kennung zählt einmal (Erkennungs-Verfahren der Register: Prosa-Zeilen).
+func TestWavesManyFenceUndMehrfachnennung(t *testing.T) {
+	aktiv := "- [welle-5-echt](../welle-5-echt.md) — Zweitnennung: welle-5-echt\n\n" +
+		"```\nwelle-6-beispiel\n```\n"
+	files := map[string]string{
+		planRoadmap:                   wavesRoadmap(aktiv, "", ""),
+		wavesDir + "/welle-5-echt.md": "# Welle 5\n",
+	}
+	if got := wavesFindings(t, files, wavesManyCfg()); got != nil {
+		t.Fatalf("Fence zählt nicht, Mehrfachnennung einmal → 0 Befunde, got %v", got)
+	}
+}
+
+// Kardinalität null: leerer Block (nur Marker) und kein flaches Dokument —
+// die leere Menge gleicht der leeren Menge.
+func TestWavesManyNullKardinalitaet(t *testing.T) {
+	files := map[string]string{planRoadmap: wavesRoadmap("Keine aktive Welle.", "", "")}
+	if got := wavesFindings(t, files, wavesManyCfg()); got != nil {
+		t.Fatalf("beidseitig leer → 0 Befunde, got %v", got)
+	}
+}
+
+// Mehr-Wellen-Betrieb bleibt unter one der Mehrfach-Fall, unter many ist er
+// der Normalfall — dieselben Dateien, zwei Modelle.
+func TestWavesManyMehrWellenGegenprobe(t *testing.T) {
+	files := map[string]string{
+		planRoadmap: wavesRoadmap(
+			"- [welle-1-basis](../welle-1-basis.md)\n- [welle-2-ausbau](../welle-2-ausbau.md)\n", "", ""),
+		wavesDir + "/welle-1-basis.md":  "# Welle 1\n",
+		wavesDir + "/welle-2-ausbau.md": "# Welle 2\n",
+	}
+	if got := wavesFindings(t, files, wavesManyCfg()); got != nil {
+		t.Fatalf("many: n Zeiger, n Dateien → 0 Befunde, got %v", got)
+	}
+	got := wavesFindings(t, files, wavesCfg())
+	if len(got) != 1 || got[0] != model.ReasonWaveDrift {
+		t.Fatalf("one: zwei flache Dokumente bleiben wave-drift, got %v", got)
+	}
+}
+
+// fail-closed bleibt modus-unabhängig: ein unlesbares waves.dir meldet auch
+// unter many wave-drift statt still zu grünen (der listErrFS-Doppelgänger
+// trägt die Unterscheidung, die MemFS nicht ausdrücken kann).
+func TestWavesManyFailClosedBleibt(t *testing.T) {
+	fs := listErrFS{coretest.NewMemFS(map[string]string{
+		planRoadmap: wavesRoadmap("Keine aktive Welle.", "", ""),
+	})}
+	cfg := wavesManyCfg()
+	cfg.Waves.Dir = "docs/plan/tippfehler"
+	var got []string
+	for _, f := range CheckPlanningWaves(fs, cfg) {
+		got = append(got, f.Reason)
+	}
+	if len(got) == 0 || got[0] != model.ReasonWaveDrift {
+		t.Fatalf("unlesbares Verzeichnis → fail-closed wave-drift, got %v", got)
+	}
+}

@@ -366,6 +366,8 @@ func TestDecode_WavesFehler(t *testing.T) {
 		"fremder glob, Default-results": "planning:\n  waves:\n    dir: w\n    glob: 'wave-*.md'\n",
 		"next-heading leer":        "planning:\n  waves:\n    dir: w\n    next-heading: ''\n",
 		"closed-heading leer":      "planning:\n  waves:\n    dir: w\n    closed-heading: ''\n",
+		"mode leer":                "planning:\n  waves:\n    dir: w\n    mode: ''\n",
+		"mode fremd":               "planning:\n  waves:\n    dir: w\n    mode: viele\n",
 	} {
 		if _, err := configyaml.Decode([]byte(bad)); err == nil {
 			t.Errorf("%s: ungültige waves-Config akzeptiert: %q", name, bad)
@@ -739,3 +741,25 @@ func TestDecode_ClosurePlaceholderDurchgereicht(t *testing.T) {
 	}
 }
 
+
+// TestDecode_WavesMode (DC-FA-PLAN-001 §Wellen-Invariante, Lastenheft
+// 0.62.0): "many" wird durchgereicht, ein abwesender Schlüssel liefert den
+// Default "one" — die Ungültig-Fälle (leer, fremd) stehen im Fehler-Test.
+func TestDecode_WavesMode(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"planning:\n  roadmap: r.md\n  waves:\n    dir: w\n    mode: many\n"))
+	if err != nil {
+		t.Fatalf("mode: many abgelehnt: %v", err)
+	}
+	if got := cfg.Planning.Waves.EffectiveMode(); got != "many" {
+		t.Fatalf("mode nicht durchgereicht: %q", got)
+	}
+	cfg, err = configyaml.Decode([]byte(
+		"planning:\n  roadmap: r.md\n  waves:\n    dir: w\n"))
+	if err != nil {
+		t.Fatalf("waves ohne mode abgelehnt: %v", err)
+	}
+	if got := cfg.Planning.Waves.EffectiveMode(); got != "one" {
+		t.Fatalf("Default-Modus = %q, want one", got)
+	}
+}

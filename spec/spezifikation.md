@@ -1,6 +1,6 @@
 # Spezifikation — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-08-09.
+**Status:** Aktiv. **Letzte Änderung:** 2026-08-21.
 
 **Bezug zum Lastenheft:** Diese Spezifikation präzisiert die in
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
@@ -1768,7 +1768,9 @@ dazu **denselben** Aktiv-Status wie Schritt 4 — sie bestimmt ihn nicht neu:
   einem **Platzhalter beginnt** (die Wellen-Kennung braucht ein literales
   Präfix), und einem `results-glob`, der **nicht** mit dem Kennungs-Präfix des
   `glob` beginnt — sonst laufen Datei-Zuordnung und Zeilen-Erkennung
-  auseinander. `done-dir` ohne Wert ⇒ `<dir>/done`.
+  auseinander; einem `mode` außerhalb `one`/`many` — **einschließlich** des
+  explizit leeren Strings (dieselbe Zeiger-Disziplin). `done-dir` ohne
+  Wert ⇒ `<dir>/done`; `mode` ohne Wert ⇒ `one`.
 - **W2. Wellen-Mengen.** Aus dem Listing von `dir` (nicht rekursiv) die
   **flachen** Wellendokumente: Basisnamen nach `glob` (Default `welle-*.md`)
   **abzüglich** `results-glob` (Default `welle-*-results.md`) — die
@@ -1782,12 +1784,24 @@ dazu **denselben** Aktiv-Status wie Schritt 4 — sie bestimmt ihn nicht neu:
   wortlos ab (dieselbe Disziplin wie `closure.dir`, C2). Eine unlesbare
   Roadmap meldet bereits die Aktiv-Status-Prüfung (fail-closed); die
   Wellen-Fähigkeit schweigt dann — kein Doppelbefund.
-- **W3. Aktiv-Status gegen flaches Dokument.** `hasActive` aus Schritt 4
-  (dieselbe Größe, dieselbe Quelle). `hasActive` ⇔ **genau ein** flaches
-  Wellendokument. Sonst ⇒ `wave-drift`, Befund an der `planning.heading`-Zeile,
-  `target` = `dir`; die Meldung nennt beide Richtungen (Roadmap nennt eine Welle
-  ohne Dokument / Dokument liegt, aber die Roadmap trägt den Ruhe-Marker) und
-  bei mehr als einem Dokument deren Zahl.
+- **W3. Wellen-Prädikat nach `mode`.** Unter **`one`** (Default):
+  `hasActive` aus Schritt 4 (dieselbe Größe, dieselbe Quelle),
+  `hasActive` ⇔ **genau ein** flaches Wellendokument. Sonst ⇒ `wave-drift`,
+  Befund an der `planning.heading`-Zeile, `target` = `dir`; die Meldung
+  nennt beide Richtungen (Roadmap nennt eine Welle ohne Dokument /
+  Dokument liegt, aber die Roadmap trägt den Ruhe-Marker) und bei mehr als
+  einem Dokument deren Zahl. Unter **`many`**: aus den **Prosa-Zeilen**
+  des `planning.heading`-Blocks (außerhalb von Fenced-Code, dieselbe
+  Block-Grenze wie Schritt 4) wird die **Kennungs-Menge** gelesen —
+  Kennung wie in W2 (literales Glob-Präfix plus Ziffernfolge),
+  Mehrfachnennung zählt einmal, die Form der Zeile (Liste, Tabelle,
+  Absatz) ist gleichgültig. Diese Menge muss der Kennungs-Menge der
+  flachen Wellendokumente gleichen; je Differenz-Element **ein**
+  `wave-drift`, Befund an der `planning.heading`-Zeile, `target` = die
+  betroffene **Kennung** (die Meldung nennt die Richtung: Zeiger ohne
+  Dokument / Dokument ohne Zeiger). Der Ruhe-Marker geht **nicht** ein,
+  `hasActive` wird für W3 nicht gelesen — die Marker-Aussage liegt
+  vollständig bei der Slice-Invariante (Schritt 5).
 - **W4. Register-Tabellen.** In der Roadmap werden die Abschnitte
   `next-heading` (Default `## Nächste Wellen`) und `closed-heading` (Default
   `## Abgeschlossene Wellen`) gelesen. Tabellenzeilen sind Zeilen, die
@@ -2510,6 +2524,7 @@ Exit 2 ohne Prüfung
 | `planning.slice-glob` | string | `slice-*.md` | Glob (`path.Match` auf den Basisnamen) der Slice-Dateien im Roadmap-Verzeichnis; ≥1 Treffer ⇒ aktive-Welle-erwartet; ein explizit gesetztes Muster muss ein gültiges `path.Match`-Glob sein (sonst Exit 2 — verhindert ein fail-open Silent-Grün) |
 | `planning.waves.dir` | string | leer | `verzeichnis` (Wurzel-relativ, innerhalb der Repo-Wurzel); Ort der **flachen** Wellendokumente. Gesetzt ⇒ dritte Fähigkeit aktiv; leer ⇒ inert (kein Wellendokument wird geöffnet) |
 | `planning.waves.done-dir` | string | `<dir>/done` | Ruheort der Ergebnisnotizen |
+| `planning.waves.mode` | string | `one` | Kardinalitäts-Modell der ersten Wellen-Aussage: `one` = Singleton (`hasActive` ⇔ genau ein flaches Dokument), `many` = Kennungs-Mengen-Gleichheit `planning.heading`-Block ⇔ flache Dokumente (beide Richtungen, jede Kardinalität; der Ruhe-Marker geht **nicht** ein). Andere Werte — auch der **explizit leere** String — ⇒ Exit 2 |
 | `planning.waves.glob` | string | `welle-*.md` | Basisnamen-Glob (`path.Match`) der **Plan**-Dokumente; `results-glob` wird davon **abgezogen** |
 | `planning.waves.results-glob` | string | `welle-*-results.md` | Basisnamen-Glob der **Ergebnisnotizen** — das verpflichtende Artefakt einer geschlossenen Welle |
 | `planning.waves.next-heading` | string | `## Nächste Wellen` | H2 des Vorschau-Registers (exakter, getrimmter Zeilen-Vergleich) |
@@ -2637,7 +2652,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `closure-note-placeholder` | planning | Closure-Notiz-Abschnitt trägt einen unausgefüllten Vorlagen-Platzhalter in Auszeichnungs-Form (opt-in über `planning.closure.placeholder`); Inline-Code, Autolinks/Adressen und HTML-Tags sind ausgenommen, gemeldet wird der **erste** Treffer je Kandidat |
 | `closure-note-ambiguous` | planning | mehrere auf `planning.closure.heading-pattern` passende Überschriften — ohne eindeutigen Abschnitt wird **nicht** gemessen (schließt `-thin`/`-boilerplate`/`-placeholder` aus); `line` = **zweiter** Treffer |
 | `link-position-dependent` | links | relativer Verweis einer Datei in einem `resolve-from`-`dirs`-Verzeichnis löst von mindestens einem Ort der Gruppe nicht auf — oder von verschiedenen Orten auf **verschiedene** Ziele; Reparatur ist das Präfixieren des Pfads. Fail-closed über denselben Code: eine Gruppe ohne einen einzigen existierenden `dirs`-Ort und ein Ort, der als Datei existiert |
-| `wave-drift` | planning | Aktiv-Status der Roadmap (`planning.heading`-Block) und Präsenz eines **flachen** Wellendokuments (`planning.waves.glob` abzüglich `results-glob`) widersprechen sich; auch bei **mehr als einem** flachen Dokument. Fail-closed über denselben Code: unlesbares `waves.dir`/`done-dir` und fehlende Register-Überschrift |
+| `wave-drift` | planning | **`mode: one`** (Default): Aktiv-Status der Roadmap (`planning.heading`-Block) und Präsenz eines **flachen** Wellendokuments (`planning.waves.glob` abzüglich `results-glob`) widersprechen sich; auch bei **mehr als einem** flachen Dokument. **`mode: many`**: die Kennungs-Menge des Blocks und die Menge der flachen Wellendokumente differieren — je Differenz-Element ein Befund, `target` = betroffene Kennung, der Ruhe-Marker geht **nicht** ein. Fail-closed über denselben Code (beide Modi): unlesbares `waves.dir`/`done-dir` und fehlende Register-Überschrift |
 | `wave-preview-exists` | planning | eine Zeile des Vorschau-Registers (`planning.waves.next-heading`) nennt in ihrer **ersten Spalte** eine Welle, für die bereits eine Datei existiert (flach oder im Ruheort) — die geplante Welle hätte drei Positionen statt zwei |
 | `wave-results-missing` | planning | eine Zeile des Abschluss-Registers (`planning.waves.closed-heading`) nennt eine Welle **ohne** Ergebnisnotiz (`planning.waves.results-glob`) im Ruheort |
 | `wave-unregistered` | planning | eine **Ergebnisnotiz** im Ruheort hat **keine** Zeile im Abschluss-Register — die Richtung „Artefakt ⇒ Register" |
@@ -2678,6 +2693,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-21 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) **W3 auf zwei Kardinalitäts-Modelle** (`planning.waves.mode: one`\|`many`, Lastenheft 0.62.0 — formaler Konsumenten-CR „Bijektion statt Singleton"): `one` (Default) unverändert; unter `many` Kennungs-Mengen-Gleichheit der **Prosa-Zeilen** des `planning.heading`-Blocks gegen die flachen Wellendokumente (Kennung wie W2, Fences zählen nicht, Mehrfachnennung einmal), je Differenz-Element ein `wave-drift` mit der **Kennung** als `target`; der Ruhe-Marker geht nicht ein (`planning-drift`-Territorium). W1: `mode` außerhalb `one`/`many` inkl. explizit leer ⇒ Exit 2. §2-Schema + §4-Zeile nachgezogen |
 | 2026-08-21 | Nachzug nach unabhängigem Review, vor dem Release: die **Typ-Mischungs-Semantik** der Chronologie-Bedingung stand in §6 zweimal verschieden (Bedingungs-Tabelle „Spalten-Typ" gegen Fließtext „Vorgänger-Typ") — gepinnt auf die **Paar-Lesart mit Anker-Reset** (die Misch-Zelle meldet sich selbst, die gesunde Folge-Zeile dahinter nicht; beide Stellen sagen jetzt dasselbe, der Kaskaden-Fall ist getestet). Ferner ist ein Versions-Segment außerhalb des Zahlbereichs **nicht typisierbar** (Befund statt stillem Kleinst-Vergleich) — §4-Zeile zu `section-cell-untyped` entsprechend |
 | 2026-08-21 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) um die **Chronologie-Monotonie** erweitert (`table-order`/`table-column`, §2-Schema + zwei §4-Codes `section-unordered`/`section-cell-untyped`): Datenzeilen über die **geteilte** Tabellenzeilen-Lexik (dieselbe Antwort wie `targets`/`planning`, Kopf-/Trennzeile deklarieren nichts, je zusammenhängender Tabelle), Schlüssel **typisiert** aus der **rohen** Zelle (ISO-Datum, Punkt-Version segmentweise numerisch; erste benannte Ausnahme von Schritt 5 — die Bereinigung leert Inline-Code, reale Schlüsselspalten stehen dort), Vergleich nicht-strikt in Regel-Richtung; untypisierbare Zelle und Leerlauf sind Befunde, drei neue Exit-2-Ränder in Schritt 1. Begründung in begleitender ADR |
 | 2026-08-16 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 6 nach unabhängigem Review und einem **CI-Realfund** nachgezogen: die Ist-Ort-Vorbedingung ist normativ (die Klasse ist „am Ist-Ort grün", kein Doppelbefund), die fail-closed-Zusage der Gruppen-Orte ist an der git-Realität justiert (ein **einzelner** fehlender Ort ist von einem legitim geleerten Verzeichnis nicht unterscheidbar — gemeldet wird die Gruppe ohne einen einzigen existierenden Ort und der Ort, der als Datei existiert), die Scan-Bereichs-Kopplung ist benannt, und die Ventil-Wirkung von §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) zählt alle fünf unterdrückten Codes |

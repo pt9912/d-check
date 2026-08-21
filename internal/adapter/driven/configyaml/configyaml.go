@@ -172,6 +172,7 @@ type rawWaves struct {
 	ResultsGlob   *string `yaml:"results-glob"`
 	NextHeading   *string `yaml:"next-heading"`
 	ClosedHeading *string `yaml:"closed-heading"`
+	Mode          *string `yaml:"mode"`
 }
 
 // rawClosure trägt die zweite planning-Fähigkeit (DC-FA-PLAN-001
@@ -1191,10 +1192,30 @@ func applyWaves(w *rawWaves) (model.WavesConfig, error) {
 	if err != nil {
 		return model.WavesConfig{}, err
 	}
+	mode, err := wavesMode(w.Mode)
+	if err != nil {
+		return model.WavesConfig{}, err
+	}
 	return model.WavesConfig{
 		Dir: w.Dir, DoneDir: w.DoneDir, Glob: glob, ResultsGlob: resultsGlob,
-		NextHeading: next, ClosedHeading: closed,
+		NextHeading: next, ClosedHeading: closed, Mode: mode,
 	}, nil
+}
+
+// wavesMode prüft das Kardinalitäts-Modell der ersten Wellen-Aussage
+// (Spez-Schritt W1): abwesend ⇒ "" (Kern-Default one); jeder andere Wert als
+// one/many — der explizit leere String eingeschlossen — bricht mit Exit 2 ab,
+// dieselbe Zeiger-Disziplin wie bei den übrigen waves-Schlüsseln.
+func wavesMode(m *string) (string, error) {
+	if m == nil {
+		return "", nil
+	}
+	if *m != "one" && *m != "many" {
+		return "", fmt.Errorf(
+			"%s: planning.waves.mode %q ist ungültig — erlaubt sind \"one\" (Default) und \"many\" (weglassen ⇒ one)",
+			FileName, *m)
+	}
+	return *m, nil
 }
 
 // wavesGlob prüft einen explizit gesetzten Glob: leer ist eine Null-Aussage

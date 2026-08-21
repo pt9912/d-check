@@ -146,6 +146,7 @@ modules: [links, anchors]
 #   #   results-glob: 'welle-*-results.md'  # Ergebnisnotizen (Default); wird vom glob ABGEZOGEN
 #   #   next-heading: "## Nächste Wellen"        # Vorschau-Register (Default); fehlt sie ⇒ wave-drift (fail-closed)
 #   #   closed-heading: "## Abgeschlossene Wellen"  # Abschluss-Register (Default); fehlt sie ⇒ wave-drift (fail-closed)
+#   #   mode: one                       # Kardinalitäts-Modell W3: one = Singleton (Default), many = Kennungs-Bijektion Block ⇔ Dateien (Marker geht nicht ein); andere Werte ⇒ Exit 2
 
 # --- tracked: Getrackt-Status aufgelöster Link-/Bild-Ziele — git-Index (ohne Range), opt-in ---
 #   (--enable tracked; fail-closed ohne lesbares .git. Ein existierendes, aber

@@ -367,6 +367,7 @@ type WavesConfig struct {
 	ResultsGlob   string
 	NextHeading   string
 	ClosedHeading string
+	Mode          string
 }
 
 // EffectiveDoneDir liefert den Ruheort der Ergebnisnotizen (Default: `done`
@@ -409,6 +410,18 @@ func (w WavesConfig) EffectiveClosedHeading() string {
 		return "## Abgeschlossene Wellen"
 	}
 	return w.ClosedHeading
+}
+
+// EffectiveMode liefert das Kardinalitäts-Modell der ersten Wellen-Aussage
+// (§DC-FA-PLAN-001.a Schritt W3, Lastenheft 0.62.0): "one" = Singleton
+// (Default), "many" = Kennungs-Mengen-Bijektion. Dass nur diese beiden Werte
+// ankommen — der explizit leere String eingeschlossen —, stellt der
+// Config-Rand sicher (Exit 2, Schritt W1).
+func (w WavesConfig) EffectiveMode() string {
+	if w.Mode == "" {
+		return "one"
+	}
+	return w.Mode
 }
 
 // StructureRule ist eine Regel des Moduls structure (DC-FA-STRUCT-001): eine
