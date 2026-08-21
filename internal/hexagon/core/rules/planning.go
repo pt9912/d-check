@@ -113,7 +113,7 @@ func CheckPlanningClosure(fsys driven.Filesystem, cfg model.PlanningConfig) []mo
 	// Kandidaten heißt also nicht „nichts zu tun", sondern „die Behauptung stimmt
 	// nicht mehr" (typischer Auslöser: der Bestand wandert in Unterordner, das
 	// Gate liefe fortan leer und grün). Dieselbe Logik wie der Nullmengen-Guard
-	// der RTM-Anforderungsquellen — R1-F-5.
+	// der RTM-Anforderungsquellen.
 	if len(names) == 0 {
 		return closureFinding(dir, 1, dir, model.ReasonClosureNoteMissing,
 			"Closure-Verzeichnis "+dir+" enthält keine Datei nach "+strconv.Quote(cfg.EffectiveClosureGlob())+

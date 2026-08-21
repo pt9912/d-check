@@ -122,7 +122,7 @@ DCHECK_RUN_I = docker run --rm -i --network none -v "$(CURDIR)":/repo:ro $(IMAGE
 
 # Vollständigkeits-Flag-Satz — EINE Quelle, geteilt von `doc-complete`
 # (Konsumenten-/print-mk-Name) und `completeness-check` (Closure-Gate); so können
-# die beiden Recipes nicht still divergieren (slice-055-R2-LOW). DC-FA-CLI-011.
+# die beiden Recipes nicht still divergieren (seit slice-055). DC-FA-CLI-011.
 COMPLETE_FLAGS = --trace --require-complete
 
 # Dogfooding (MR-007, Selbstkonfiguration slice-007): d-check prüft die

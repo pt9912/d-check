@@ -61,7 +61,7 @@ docker run --rm --init --network none \
 status="${PIPESTATUS[0]}"
 set -e
 
-# Schutz gegen stilles Grün (Review R1, HIGH-1): `--error` setzt den
+# Schutz gegen stilles Grün: `--error` setzt den
 # Exit-Code nur BEI Befunden, nicht bei 0 GELADENEN Regeln. Ein
 # regel-leeres oder upstream umbenanntes Subset (z. B. nach Pin-Hebung)
 # ergäbe sonst „0 findings" -> Exit 0 -> grünes Gate ohne Scan. Wir

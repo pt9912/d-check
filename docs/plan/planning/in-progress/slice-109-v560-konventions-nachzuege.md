@@ -55,6 +55,28 @@ Harness-/Konventions-Doku; kein `DC-*`-Produktvertrag berührt.
    Ergebnis hier notiert (Frage je Regel: im Artefakt oder als deklarierte
    Abweichung? Zweimal nein = nie übernommen ⇒ Weg jeder Diskrepanz).
 
+## 1a. Ergebnis der Bestands-Stichprobe (C-6, ausgeführt 2026-08-21)
+
+Abschnitt: **`modul-14-docker-harness.md`** (per Kurs-Diff verifiziert
+delta-frei v5.0.0..v5.6.0). Frage je Regel: *steht sie im ausgefüllten
+Artefakt — oder als deklarierte Abweichung?*
+
+| Regel (modul-14) | Verkörperung |
+|---|---|
+| Base-Image per **Digest** pinnen, nicht per Tag | ✓ `Dockerfile`: `golang@sha256:…` und `distroless@sha256:…` |
+| **Lock-File vor dem Code** in den Build-Kontext (Layer-Cache) | ✓ `Dockerfile` deps-Stage: `COPY go.mod`/`go.su[m]` vor `COPY . .` |
+| **Stages trennen** deps → build → runtime (Distroless/nonroot, nur Artefakte) | ✓ Multi-Stage, Runtime distroless `nonroot`, nur `/d-check` kopiert |
+| **Image-Hash im Build-Output** festhalten | ✓ `make fullbuild` schließt mit dem Image-Hash, `make versions` zeigt die Runtime-Image-ID — als **Echo**, nicht als persistierte Manifest-Datei (die Regel-Vollform zielt aufs Replay-Manifest, hier n. a.) |
+| **Mindestkombination** Lock-File + Image-Hash | ✓ `go.sum` + Image-Hash-Praxis (Wellen-Closures zitieren ihn) |
+| `make gates` im **Host-OS** ist keine valide Gate-Ausführung | ✓ Docker-only-Hard-Rule ([`AGENTS.md` §3.1](../../../../AGENTS.md#31-dockermake-only)) |
+| Replay-Manifest referenziert Lock-Hash **und** Image-Hash | n. a. — kein Replay-/Modell-Kern (deterministisch per [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus); dieselbe Begründung wie im Stufen-Audit) |
+| Devcontainer/Compose-Kriterium | n. a. — Lesart: die Compose-Faustregel setzt einen **Lauf-Vertrag über mehrere Dienste** voraus; d-check ist eine Ein-Container-CLI, weder Devcontainer noch Compose im Repo, keines behauptet |
+
+**Ausgang:** null Widerspruchs-Funde — jede Regel ist verkörpert oder
+begründet nicht anwendbar; die
+[`MR-000`](../../../../harness/conventions.md#mr-000--baseline-aussage)-Aussage
+hält für diesen Abschnitt. Kein Carveout, kein Folge-Slice.
+
 ## 2. Definition of Done
 
 - [ ] Alle fünf Punkte umgesetzt bzw. (C-6) ausgeführt und notiert;

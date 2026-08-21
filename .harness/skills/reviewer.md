@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.4.0 · **Datum:** 2026-08-15 ·
+**Version:** 1.5.0 · **Datum:** 2026-08-21 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -22,7 +22,13 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   falschen Befunden/Exit-Codes; Verstoß gegen
   [ADR-0005](../../docs/plan/adr/0005-modul-layout-hexagon-ordner.md)-Import-Regeln;
   Gate-Suppression ohne ADR; Netzzugriff außerhalb `external`
-  ([`DC-QA-03`](../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+  ([`DC-QA-03`](../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));
+  **Kommentar trägt keine der fünf Klassen** (Zusage · Kopplung ·
+  Abgrenzung · Rang-Zeiger · Grenze) — Review-Historie, Deliberation über
+  Verworfenes oder Herkunfts-Prosa im Kommentar; Herkunft ist nur als
+  **ein** auflösbares Feld zulässig
+  ([Baseline §Was ein Kommentar trägt](../baseline/v5.6.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte);
+  neuer HIGH-Eintrag seit 1.5.0, Auflösungs-Trigger: permanent).
 - **MEDIUM** (vor Merge zu klären): Spec-Treue-Lücke einer
   Messmethode; Konsistenz-Lücke **zwischen** Modulen derselben
   Eingabe-Klasse; Erkennungs-Differenz zur Alt-Tool-Familie

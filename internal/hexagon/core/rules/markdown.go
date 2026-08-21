@@ -215,7 +215,7 @@ func tableSeparatorRow(line string) bool {
 // Trim der Rand-Pipes — die geteilte Zell-Antwort DIESER Vertragsfläche
 // (planning.waves liest die Kennungs-Spalte, structure die Schlüsselspalte;
 // exakt der Vertragstext aus §DC-FA-STRUCT-001.a Schritt 6). Benannte Grenze
-// (Review F-5, ADR-0057 §Konsequenzen): der RTM-/trace-Leser zerlegt
+// (ADR-0057 §Konsequenzen): der RTM-/trace-Leser zerlegt
 // escape-/backtick-bewusst — eine ANDERE Frage auf einer anderen
 // Vertragsfläche; ein Pipe in einem Backtick-Span verschiebt hier die
 // Spaltenadresse.
@@ -444,7 +444,7 @@ func matchBracket(s string, open int, lo, hi byte) (int, bool) {
 // eine Kennung unter Linkpflicht, folgt ihre Range-Fortsetzung erst hinter dem
 // Suffix. Eine eigene, regex-basierte Abgrenzung („bis zur ersten `)`") wäre eine
 // zweite Definition — und riss bei Klammern im Ziel den URL-Rest in den
-// Range-Parser (slice-073 R1-F-1: `](…/Rev(2)/002/003.md)` expandierte `/002/003`
+// Range-Parser (seit slice-073: `](…/Rev(2)/002/003.md)` expandierte `/002/003`
 // als Enum und versteckte damit Waisen).
 func LinkSuffixEnd(s string, i int) int {
 	if i+1 >= len(s) || s[i] != ']' || s[i+1] != '(' {

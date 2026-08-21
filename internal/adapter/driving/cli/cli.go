@@ -69,7 +69,7 @@ type options struct {
 // für das Image-Aufrufmuster aus DC-FA-DIST-001/ADR-0002
 // (ENTRYPOINT ["/d-check","/repo"], Optionen werden angehängt).
 // Ein wertnehmendes Flag ohne Wert ist ein Nutzungsfehler
-// (Review R2/A1: sonst würde das Pfad-Argument als Wert verschluckt).
+// (sonst würde das Pfad-Argument als Wert verschluckt).
 func reorderArgs(args []string) ([]string, error) {
 	valueFlags := map[string]bool{
 		"-enable": true, "--enable": true,
@@ -328,7 +328,7 @@ func parseOptions(args []string, stderr io.Writer) (options, int, bool) {
 	// unterscheidbar (beides ""), wäre aber ein stiller Rückfall auf die
 	// konventionelle Datei — genau das, was DC-FA-CLI-012 verbietet. Realer
 	// Auslöser: eine nicht expandierte Make-/CI-Variable. Also am
-	// gesetzt-Zustand unterscheiden, nicht am Wert (R2-F-2).
+	// gesetzt-Zustand unterscheiden, nicht am Wert.
 	if flagWasSet(flags, "config") && *configPath == "" {
 		fmt.Fprintln(stderr, "d-check: error: --config braucht einen Pfad (leerer Wert — kein Rückfall auf "+
 			configyaml.FileName+")")
@@ -435,7 +435,7 @@ func readConfigOverride(fsys *fsadapter.Adapter, configPath string, stderr io.Wr
 	// Die lexikalische Prüfung oben hält nur `..` und absolute Pfade. Ein
 	// Verzeichnis-**Symlink** entkäme ihr (`esc/etc/passwd` mit `esc -> /`), denn
 	// Kind lstatet nur die letzte Komponente. Also segmentweise prüfen — dieselbe
-	// Alias-Disziplin wie bei den Link-Zielen (R2-F-4).
+	// Alias-Disziplin wie bei den Link-Zielen.
 	if seg, ok := firstSymlinkSegment(fsys, rel); ok {
 		fmt.Fprintf(stderr,
 			"d-check: error: --config %s führt über den Symlink %s aus der Scan-Wurzel heraus\n",

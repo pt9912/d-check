@@ -14,6 +14,24 @@ pro Sub-Area, Zusatzklassen für Sensors-Bindung) sowie Adaptionen ggü.
 der adoptierten Baseline leben in [`conventions.md`](conventions.md).
 Diese Datei dupliziert sie nicht.
 
+## Leseordnung
+
+Die Menschen-Hälfte des Einstiegs (Baseline v5.5.0) — was zuerst, was bei
+Bedarf; die Sektionen darunter sind Referenzfläche zum Nachschlagen.
+Bewusste Auslegung: die Ordnung steht hier **vorn** statt wie im
+Baseline-Skelett am Ende — der Einstieg gehört an den Anfang:
+
+1. [`AGENTS.md`](../AGENTS.md) — Hard Rules und Workflow (jeder Lauf).
+2. [`harness/conventions.md`](conventions.md) — Baseline-Stand und aktive
+   Adaptionen (vor jeder Doku-/Konventions-Änderung).
+3. Der aktive Slice unter
+   [`docs/plan/planning/in-progress/`](../docs/plan/planning/in-progress/)
+   samt [Roadmap](../docs/plan/planning/in-progress/roadmap.md) — woran
+   gerade gearbeitet wird.
+4. Bei Bedarf: das vendorte Regelwerk
+   ([Index](../.harness/baseline/v5.6.0/regelwerk/README.md)) — nur den
+   benötigten Abschnitt.
+
 ## Source precedence
 
 | Rang | Datei                                                                                       | Charakter                                                                                                                 |

@@ -1305,7 +1305,7 @@ func applyClosure(c *rawClosure) (model.ClosureConfig, error) {
 // jedes exempt-targets-Glob muss ein gültiges path.Match-Muster sein — sonst
 // schluckte der Kern den ErrBadPattern und das Ventil wäre still wirkungslos
 // bzw. die Prüfung fail-open (dieselbe Config-Rand-Disziplin wie
-// planning.slice-glob, slice-057-R2-Lehre).
+// planning.slice-glob, seit slice-057).
 func applyTracked(r *raw, cfg *model.Config) error {
 	if r.Tracked == nil {
 		return nil
@@ -1316,7 +1316,7 @@ func applyTracked(r *raw, cfg *model.Config) error {
 		}
 		// Segmentweise validieren — die Laufzeit (matchGlob) matcht je
 		// '/'-Segment; ein nur als Ganzes gültiges Muster wäre still
-		// wirkungslos (R2-LOW-Lehre slice-059).
+		// wirkungslos (seit slice-059).
 		for _, seg := range strings.Split(g, "/") {
 			if seg == "**" {
 				continue
@@ -1717,8 +1717,7 @@ func scopeOfTracked(v *rawTracked) *rawScope {
 	return v.Scope
 }
 
-// decodeStrict dekodiert mit KnownFields; nil-raw bei leerem Dokument
-// (Review R1/B2).
+// decodeStrict dekodiert mit KnownFields; nil-raw bei leerem Dokument.
 func decodeStrict(content []byte) (*raw, error) {
 	var r raw
 	dec := yaml.NewDecoder(bytes.NewReader(content))
@@ -1728,7 +1727,6 @@ func decodeStrict(content []byte) (*raw, error) {
 			return nil, nil
 		}
 		// interne Go-Typnamen aus der yaml-Meldung entfernen
-		// (Review R1/B5).
 		typeLeak := regexp.MustCompile(` in type \S+`)
 		return nil, fmt.Errorf("%s: %s", FileName, typeLeak.ReplaceAllString(err.Error(), ""))
 	}

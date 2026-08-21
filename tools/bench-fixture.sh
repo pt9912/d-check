@@ -55,7 +55,7 @@ done
 
 # Median-Position folgt aus RUNS (bei ungeradem N das mittlere
 # Element) — nie hart verdrahten, sonst misst ein geändertes RUNS
-# still den falschen Wert (Review R1 zu slice-009/010).
+# still den falschen Wert (seit slice-010).
 median=$(printf '%s\n' "${times[@]}" | sort -n | sed -n "$(((RUNS + 1) / 2))p")
 echo "bench: Median ${median} ms (Pass-Kriterium < 5000 ms — DC-QA-01)"
 if [ "$median" -ge 5000 ]; then

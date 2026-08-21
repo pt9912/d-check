@@ -132,6 +132,19 @@ erlaubt bleiben `## Geschichte`-Anhänge + der `**Status:**`-Übergang;
 Jede Schwellen-Senkung (Coverage, Linter-Strenge, Prüfregel) ist ein
 ADR, kein PR-Kommentar.
 
+### 3.7 Kommentare tragen eine der fünf Klassen
+
+Ein Kommentar in Code, Konfiguration oder Skript beantwortet, was der Code
+nicht beantworten kann — **Zusage · Kopplung · Abgrenzung · Rang-Zeiger ·
+Grenze** ([Baseline §Was ein Kommentar trägt](.harness/baseline/v5.6.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte)).
+Keine Review-Historie, keine Deliberation über Verworfenes, keine
+Herkunfts-Prosa; Herkunft nur als **ein** auflösbares Feld (`DC-*`, `ADR-*`,
+`seit slice-<NNN>`/`seit welle-<NN>`). Der Reviewer-Skill trägt den
+HIGH-Anker dazu. **Bestandsgrenze:** die vor Einführung geschriebenen
+Test-Kommentare sind grandfathered — geräumt wird beim nächsten Anfassen
+der Zeile; Neuzugänge fallen überall unter den Anker. *(Hard Rule seit dem
+v5.6.0-Bump; Auflösungs-Trigger: permanent.)*
+
 ## 4. Quality Gates
 
 Nur hier gelistete Targets existieren im Makefile. Halluzinierte
@@ -195,6 +208,9 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   revidiert sie (Folge-ADR mit `supersedes`).
 - Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der Architektur-Spec.
 - Slice-Lifecycle (`open → next → in-progress → done`) ist reine Datei-Bewegung (`git mv`, siehe §3.3).
+- Neue Slice-Köpfe tragen das Feld `**Verantwortlich:**` (Rolleninhaber der
+  Implementer-Rolle, gesetzt bei `open→next`; Deklaration, kein Sensor —
+  Baseline v5.5.0, template-forward, kein Retrofit).
 - Slice-Pläne tragen **kein** `**Status:**`-Feld — der Lifecycle-Zustand **ist** die
   Verzeichnis-Position; neue Slices führen stattdessen den `**Lifecycle:**`-Hinweis
   (Baseline-`slice.template.md`). Alt-Slices in `done/` behalten ihr historisches Feld.

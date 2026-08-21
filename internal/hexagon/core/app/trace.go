@@ -317,7 +317,7 @@ func traceTitle(plain, id string) string {
 	// Optional backtick-umschlossene Kennung am Anfang entfernen — die
 	// Backticks NUR als ID-Wrapper (drei gezielte TrimPrefix), nicht in der
 	// abschließenden Trenner-Klasse: sonst verlöre ein Titel-initialer
-	// Code-Span seinen führenden Backtick (Review R1 LOW-1 / R2 LOW-2).
+	// Code-Span seinen führenden Backtick.
 	p := strings.TrimPrefix(strings.TrimSpace(plain), "`")
 	p = strings.TrimPrefix(p, id)
 	p = strings.TrimPrefix(p, "`")
@@ -386,7 +386,7 @@ var (
 // der kanonische Link-Reader. Eine eigene Regex-Abgrenzung („bis zur ersten `)`")
 // wäre eine zweite Link-Definition und riss bei Klammern im Ziel den URL-Rest in
 // den Range-Parser: `](…/Rev(2)/002/003.md)` expandierte `/002/003` als Enum und
-// versteckte damit Waisen (slice-073 R1-F-1).
+// versteckte damit Waisen (seit slice-073).
 func skipLinkSuffix(rest string) string {
 	i := 0
 	if i < len(rest) && rest[i] == '`' { // schließendes Code-Span-Backtick der ID

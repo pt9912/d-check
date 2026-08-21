@@ -60,7 +60,7 @@ jobs:
             RANGE="$PR_BASE..$HEAD_SHA"
           elif [[ "$PUSH_BEFORE" =~ ^0+$ ]]; then
             # Neuer Branch (kein before-Commit): gegen den Default-Branch
-            # pruefen statt nur HEAD (sonst Silent-Green; Review R1 HIGH-1).
+            # pruefen statt nur HEAD (sonst Silent-Green).
             git fetch --no-tags origin "+refs/heads/$DEFAULT_BRANCH:refs/remotes/origin/$DEFAULT_BRANCH" 2>/dev/null || true
             RANGE="origin/$DEFAULT_BRANCH..$HEAD_SHA"
           else

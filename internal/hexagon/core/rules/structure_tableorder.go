@@ -68,8 +68,8 @@ func typeTableKey(cell string) (tableKey, bool) {
 // optionale v-Präfix trägt keine Ordnung. Ein Segment jenseits des
 // int-Bereichs ist ERREICHBAR (`\d+` ist unbegrenzt) und liefert nil —
 // der Aufrufer behandelt das als untypisierbar, damit ein Zahlen-Monstrum
-// nicht still als kleinstmögliche Version vergleicht (F-2 der Review:
-// Befund statt Übersprung).
+// nicht still als kleinstmögliche Version vergleicht — Befund statt
+// Übersprung.
 func versionSegments(tok string) []int {
 	parts := strings.Split(strings.TrimPrefix(tok, "v"), ".")
 	out := make([]int, 0, len(parts))
@@ -175,8 +175,8 @@ func structureTableRow(
 		return nil, &key, lineNo
 	}
 	if prev.isDate != key.isDate {
-		// Anker-Reset wie bei den beiden anderen Fehlerfaellen (F-1 der
-		// Review): die Misch-Zelle meldet sich selbst, eine gesunde
+		// Anker-Reset wie bei den beiden anderen Fehlerfaellen: die
+		// Misch-Zelle meldet sich selbst, eine gesunde
 		// Folge-Zeile dahinter meldet nicht.
 		f := structureFinding(r, file, lineNo, model.ReasonSectionCellUntyped,
 			"Typ-Mischung in der Schlüsselspalte: "+key.typeName()+" ("+key.tok+
