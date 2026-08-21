@@ -81,16 +81,21 @@ extract_both_trees() {
   src_templates="${archive_root}/templates"
   [ -d "$src_templates" ] \
     || { echo "fetch-baseline-cache: kein templates/-Geschwisterbaum neben regelwerk/ gefunden (das self-contained Bundle liefert beide als Geschwister)" >&2; rm -rf "$stage"; return 1; }
-  rm -rf "${dest}/regelwerk" "${dest}/templates"
-  mkdir -p "${dest}/regelwerk" "${dest}/templates"
+  # Ziel absolut auflösen: ein repo-relatives dest (Vendor-Modus) wird über
+  # $root verankert, weil die Kopier-Subshell das Verzeichnis wechselt; ein
+  # bereits absolutes dest (check-latest: mktemp) bleibt unverändert — sonst
+  # landet die Kopie unter <repo>/<mktemp-Pfad> und der Vergleich läuft leer.
+  local tgt
+  case "$dest" in /*) tgt="$dest" ;; *) tgt="${root}/${dest}" ;; esac
+  rm -rf "${tgt}/regelwerk" "${tgt}/templates"
+  mkdir -p "${tgt}/regelwerk" "${tgt}/templates"
   # Regelwerk-Markdown (README + grundlagen-* + modul-*) REKURSIV, Struktur
   # erhalten (nicht maxdepth-1: ein künftiger Reorg mit Unterverzeichnissen darf
-  # nicht still unter-kopiert werden). Ziel absolut über $root, weil die Subshell
-  # das Verzeichnis wechselt.
+  # nicht still unter-kopiert werden).
   ( cd "$src_regelwerk" && find . -type f -name '*.md' -print0 | while IFS= read -r -d '' f; do
-      d="${root}/${dest}/regelwerk/${f#./}"; mkdir -p "$(dirname "$d")"; cp "$f" "$d"; done )
+      d="${tgt}/regelwerk/${f#./}"; mkdir -p "$(dirname "$d")"; cp "$f" "$d"; done )
   ( cd "$src_templates" && find . -type f -print0 | while IFS= read -r -d '' f; do
-      d="${root}/${dest}/templates/${f#./}"; mkdir -p "$(dirname "$d")"; cp "$f" "$d"; done )
+      d="${tgt}/templates/${f#./}"; mkdir -p "$(dirname "$d")"; cp "$f" "$d"; done )
   src_n="$(( $(find "$src_regelwerk" -type f -name '*.md' | wc -l) + $(find "$src_templates" -type f | wc -l) ))"
   rm -rf "$stage"
 }
@@ -154,7 +159,9 @@ check_latest() {
     if curl -fsSL -o "${td}/lab-regelwerk.zip" "$url" 2>/dev/null \
        && extract_both_trees "${td}/lab-regelwerk.zip" "${td}/vendored" 2>/dev/null; then
       local up ve
-      up="$( { cd "${td}/vendored" && find regelwerk templates -type f | LC_ALL=C sort | xargs sha256sum; } 2>/dev/null | LC_ALL=C sort )"
+      # xargs -r: eine leere Datei-Liste darf sha256sum NICHT ohne Argumente
+      # starten — das hashte stdin und meldete einen falschen Drift.
+      up="$( { cd "${td}/vendored" && find regelwerk templates -type f | LC_ALL=C sort | xargs -r sha256sum; } 2>/dev/null | LC_ALL=C sort )"
       ve="$( LC_ALL=C sort < "$sums" )"
       [ -n "$up" ] && { [ "$up" = "$ve" ] && authenticity="ok" || authenticity="drift"; }
     else
