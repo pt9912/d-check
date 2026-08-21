@@ -12,4 +12,9 @@
 # Das abgeloeste Alt-Skript wurde mit ADR-0025 entfernt (codepaths.ignore-refs).
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
-exec make adr-check STAGED=1
+make adr-check STAGED=1
+# Doku-GUARD (seit welle-79): der volle netzlose doc-check bindet den
+# Commit an einen gruenen Doku-Stand — ein roter Gate-Exit in einer
+# Shell-Kette kann den Commit nicht mehr passieren, weil der Hook selbst
+# ihn traegt (set -e). Kostet einen Image-Cache-Lauf (~Sekunden).
+exec make doc-check
