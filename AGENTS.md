@@ -158,16 +158,21 @@ ADR, kein PR-Kommentar.
 
 ### 3.7 Kommentare tragen eine der fünf Klassen
 
-Ein Kommentar in Code, Konfiguration oder Skript beantwortet, was der Code
-nicht beantworten kann — **Zusage · Kopplung · Abgrenzung · Rang-Zeiger ·
+**Ein Kommentar beschreibt, was da ist** (Baseline-Merksatz). Er
+beantwortet in Code, Konfiguration oder Skript, was der Code nicht
+beantworten kann — **Zusage · Kopplung · Abgrenzung · Rang-Zeiger ·
 Grenze** ([Baseline §Was ein Kommentar trägt](.harness/baseline/v5.7.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte)).
-Keine Review-Historie, keine Deliberation über Verworfenes, keine
-Herkunfts-Prosa; Herkunft nur als **ein** auflösbares Feld (`DC-*`, `ADR-*`,
-`seit slice-<NNN>`/`seit welle-<NN>`). Der Reviewer-Skill trägt den
-HIGH-Anker dazu. **Bestandsgrenze:** die vor Einführung geschriebenen
-Test-Kommentare sind grandfathered — geräumt wird beim nächsten Anfassen
-der Zeile; Neuzugänge fallen überall unter den Anker. *(Hard Rule seit dem
-v5.6.0-Bump; Auflösungs-Trigger: permanent.)*
+Keine Review-Historie und keine Review-Befund-Marker, keine Deliberation
+über Verworfenes, keine Herkunfts-Prosa, keine Slice-Nummern und keine
+Mess-Labels; Herkunft nur als **ein** auflösbares Feld nach dem
+Baseline-Schema (`DC-*` — die Baseline-Form `LH-*` —, `ADR-*`, `MR-*`,
+`seit welle-<NN>`). Der Reviewer-Skill trägt den HIGH-Anker dazu.
+**Bestandsgrenze:** vor der Einführung bzw. vor dieser Schärfung
+geschriebene Kommentare (Test-Kommentare; ältere Config-Kommentare mit
+Slice-Nummer) sind grandfathered — geräumt wird beim nächsten Anfassen
+der Zeile; Neuzugänge fallen überall unter den Anker. *(Hard Rule seit
+dem v5.6.0-Bump, geschärft mit dem v5.7.0-Bump auf die
+Baseline-Feld-Formen; Auflösungs-Trigger: permanent.)*
 
 ## 4. Quality Gates
 
