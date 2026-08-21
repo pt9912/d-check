@@ -79,7 +79,7 @@ hält für diesen Abschnitt. Kein Carveout, kein Folge-Slice.
 
 ## 2. Definition of Done
 
-- [ ] Alle fünf Punkte umgesetzt bzw. (C-6) ausgeführt und notiert;
+- [x] Alle fünf Punkte umgesetzt bzw. (C-6) ausgeführt und notiert;
       `make gates` grün; unabhängiger Review; kein Release (Harness).
 
 ## 3. Trigger
@@ -104,4 +104,31 @@ landen) **und** WIP-Slot frei.
 
 ## 6. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+**Geliefert:** die fünf Nachzüge — Vergabe-Deklaration in der
+[`MR-000`](../../../../harness/conventions.md#mr-000--baseline-aussage)-Aussage, die
+Abweichung [`MR-027`](../../../../harness/conventions.md#mr-027)
+(Struktur-ID-Verzicht) statt einer stillen Lüge, die Kommentar-Regel mit
+beiden Trägern (AGENTS-Hard-Rule §3.7, `reviewer.md` 1.5.0) samt Räumung von
+zwanzig Token-Fundstellen, 27 Kennungs-Anker im MR-Index, die Leseordnung und
+die ausgeführte Bestands-Stichprobe (`modul-14`: null Widerspruchs-Funde).
+
+**Der Review fand die eigene Regel gegen die eigene Räumung:** die erste
+Fassung räumte die 16 Go-Kommentar-Fundstellen und übersah vier in
+Skripten/Config — obwohl die im selben Commit installierte Hard Rule
+„Konfiguration oder Skript" ausdrücklich nennt, und die Botschaft „alle 16"
+behauptete. Wer eine Regel scharfschaltet, läuft ihren Geltungsbereich ab,
+nicht seine Gewohnheits-Teilmenge. Die Test-Kommentar-Altbestände sind als
+Grenze **deklariert** (grandfathered, geräumt beim nächsten Anfassen) statt
+still ausgenommen.
+
+**Zweimal am selben Tag hat eine Pipe den Gate-Exit verschluckt** — als
+Klasse ins Register (BEO-007, Zähler 2): der Gate-Aufruf hinter einer Pipe
+meldet den Exit des letzten Glieds, die Kette läuft weiter, und einmal ging
+ein roter doc-check-Stand bis zum Push durch. Gegenmittel gelebt (Umleitung
+in Datei + expliziter Exit-Check + GUARD-grep); die mechanische Form wartet
+auf 3×. Und der Review-Report selbst trug die bekannte Subagent-Klasse
+(Host-Pfad ⇒ `hostpath-forbidden`) — vom eigenen Gate gefangen.
+
+**Offen bleibt nichts** aus der Definition of Done; die Register-Bewegungen
+(BEO-006 auf 2, BEO-007 neu) stehen in der
+[Wellen-Ergebnisnotiz](welle-78-results.md).
