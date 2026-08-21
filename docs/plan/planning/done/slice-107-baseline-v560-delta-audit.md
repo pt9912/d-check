@@ -55,14 +55,14 @@ setzt um, dieser Slice liest und schneidet.
 
 ## 4. Definition of Done
 
-- [ ] Je Stufe ein Abschnitt mit Findings-Tabelle (Regel · Antwort ·
+- [x] Je Stufe ein Abschnitt mit Findings-Tabelle (Regel · Antwort ·
       Fundstelle/Begründung); **kein** „pauschal konform" ohne je Regel eine
       Zeile (die welle-74-Lehre: eine Aufzählung, die vollständig heißt,
       braucht je Kandidat einen Negativbefund).
-- [ ] Etappe-C-Schnitt: die „anzupassen"-Findings sind zu Slices gebündelt
+- [x] Etappe-C-Schnitt: die „anzupassen"-Findings sind zu Slices gebündelt
       (Dateien in `open/`), die Wellendokument-§4-Tabelle ist nachgeführt
       (Roadmap-Drift-Log-Eintrag).
-- [ ] Unabhängiger Review des Audits (Frischkontext gegen das vendored
+- [x] Unabhängiger Review des Audits (Frischkontext gegen das vendored
       Delta); `make gates` grün (dieser Slice ändert nur Planungs-Doku).
 
 ## 5. Risiken
@@ -186,4 +186,37 @@ Zwei Slices aus den sechs „anzupassen"-Findings:
 
 ## 10. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+**Geliefert:** der Stufen-Audit v5.1.0–v5.6.0 als Findings-Register in §9 —
+je Regel eine Antwort mit Fundstelle oder Begründung, sechs
+„anzupassen"-Findings zu zwei Etappe-C-Slices gebündelt
+([slice-108](../in-progress/slice-108-roadmap-offene-wellen.md),
+[slice-109](../open/slice-109-v560-konventions-nachzuege.md)), das
+Wellendokument nachgeführt. Kein Artefakt außer Planungs-Doku berührt.
+
+**Der Audit wurde an seinen eigenen Maßstäben gemessen — und fiel zweimal
+durch sie.** Der Erst-Review fand fünf fehlende Regel-Zeilen und einen
+überdehnten Rückfallweg: der Struktur-ID-Verzicht war als „zulässig"
+einsortiert, obwohl `modul-03` die `SPEC-*`-Vergabe für genau unsere
+Sektionstypen vorschreibt — die ehrliche Antwort ist der Widerspruchs-Ausgang
+der Baseline selbst (deklarierte Adaption MR-027 statt stiller
+MR-000-Lüge). <!-- d-check:ignore --> Die Re-Review fand danach in der
+**Heilung** dieselbe Klasse im Kleinen: eine behauptete Zahl ohne Zählung
+(„42 Anforderungen" — es sind 44, davon 36 mit Verfeinerungs-Sektion) und
+einen Beleg, der historisch nicht nachvollziehbar war. Die Lehre verdichtet
+sich: **jede Zahl in einem Audit ist eine Messung oder eine Lüge**, und ein
+Beleg, dessen Artefakte im selben Commit entstanden, belegt nichts.
+
+**Was der Audit über die Migration sagt:** das Delta ist additiv und zu
+großen Teilen bereits gelebt (die Kommentar-Regel, der
+Gate-Obermenge-Nachweis, TA-7 — d-check war der Baseline hier voraus, weil
+dieselben Lehren hier zuerst eingetreten sind). Die eine strukturelle
+Bewegung ist die Roadmap-Form (§Offene Wellen); die eine echte Abweichung
+ist der Struktur-ID-Verzicht. Die upstream 5-vs-6-Feld-Drift der Baseline
+besteht in v5.6.0 fort und ist als Notiz an den Kurs adressiert, nicht an
+dieses Repo.
+
+**Register-Schritt:** keine neue Beobachtung — die Befunds-Klassen beider
+Review-Runden (Aufzählungs-Vollständigkeit, Zahl-ohne-Zählung) sind bereits
+verkörperte bzw. gezählte Klassen (welle-74-Lehre, BEO-006-Nachbarschaft);
+die Fundstellen-Bereinigung der Kommentar-Tokens trägt
+[slice-109](../open/slice-109-v560-konventions-nachzuege.md) C-3.
