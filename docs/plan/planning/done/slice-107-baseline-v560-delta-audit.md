@@ -198,8 +198,8 @@ durch sie.** Der Erst-Review fand fünf fehlende Regel-Zeilen und einen
 überdehnten Rückfallweg: der Struktur-ID-Verzicht war als „zulässig"
 einsortiert, obwohl `modul-03` die `SPEC-*`-Vergabe für genau unsere
 Sektionstypen vorschreibt — die ehrliche Antwort ist der Widerspruchs-Ausgang
-der Baseline selbst (deklarierte Adaption MR-027 statt stiller
-MR-000-Lüge). <!-- d-check:ignore --> Die Re-Review fand danach in der
+der Baseline selbst (deklarierte Adaption MR-027 statt <!-- d-check:ignore -->
+stiller [`MR-000`](../../../../harness/conventions.md#mr-000--baseline-aussage)-Lüge). Die Re-Review fand danach in der
 **Heilung** dieselbe Klasse im Kleinen: eine behauptete Zahl ohne Zählung
 („42 Anforderungen" — es sind 44, davon 36 mit Verfeinerungs-Sektion) und
 einen Beleg, der historisch nicht nachvollziehbar war. Die Lehre verdichtet
