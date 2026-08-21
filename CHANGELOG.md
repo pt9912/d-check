@@ -6,6 +6,32 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.62.0] — 2026-08-21
+
+### Added
+
+- slice-111 — **`planning.waves.mode: one | many`** — Kardinalitäts-Modell
+  der ersten Wellen-Aussage als opt-in (`DC-FA-PLAN-001` §Wellen-Invariante,
+  Lastenheft 0.62.0;
+  [ADR-0055](docs/plan/adr/0055-wellen-invariante-artefakt-und-grund-codes.md)
+  Entscheidung 6 — Fortschreibung auf **formalen Konsumenten-CR** von
+  ai-harness-course, „planning.waves: Bijektion statt Singleton", mit
+  team-sim-Messung s04a–s04d). **`one` (Default):** unverändertes
+  Singleton-Prädikat — ohne den Schlüssel ist der Befundsatz
+  **byte-identisch**. **`many`:** `wave-drift` vergleicht **Kennungs-Mengen**
+  statt Marker gegen Anzahl — die im `planning.heading`-Block genannten
+  Wellen-Kennungen (Prosa-Zeilen, Fences zählen nicht, Mehrfachnennung
+  einmal, layout-agnostisch) gegen die flachen Wellendokumente, beide
+  Richtungen, jede Kardinalität; das Befund-`target` ist die betroffene
+  **Kennung**. Der Ruhe-Marker geht **nicht** ein — seine Aussage liegt
+  vollständig bei `planning-drift`. Damit werden drei unter `one` rote,
+  im Offene-Wellen-Modell der Baseline **legitime** Zustände unter `many`
+  grün: das Eröffnungs-Fenster (Welle offen, nichts beansprucht, Marker
+  neben dem Zeiger), der wellenlose Slice und der Mehr-Wellen-Betrieb.
+  fail-closed: unbekannter oder **explizit leerer** Modus ⇒ Exit 2 mit
+  Schlüssel-Nennung; die Verzeichnis-/Überschrift-Wächter melden
+  modus-unabhängig weiter.
+
 ## [0.61.0] — 2026-08-21
 
 ### Added

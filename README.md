@@ -95,7 +95,9 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   meaning. Hermetic (no git), fail-closed on a missing/ambiguous heading, a
   missing closure directory and on zero candidates. **Wave registers**
   (additionally opt-in via `waves.dir`): the roadmap's wave sections against
-  the wave files — active wave ⟺ flat wave document, preview without a file,
+  the wave files — active wave ⟺ flat wave document (`waves.mode: one`,
+  default) **or** identifier bijection active block ⟺ files with the rest
+  marker staying out of it (`waves.mode: many`); preview without a file,
   closed register ⟺ results notes both ways (`wave-drift`,
   `wave-preview-exists`, `wave-results-missing`, `wave-unregistered`), opt-in
   ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
@@ -200,7 +202,7 @@ Distributed as a container image via GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.61.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to
