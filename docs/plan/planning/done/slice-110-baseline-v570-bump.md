@@ -134,6 +134,17 @@ abweicht und das Skript einen eigenen Vorab-Fix braucht.
 
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
+- **Sub-Area prüfen:** Harness-Mechanik (`tools/harness/`, GF via
+  [`MR-004`](../../../../harness/conventions.md#mr-004)) und Harness-Doku
+  (Repo-Default GF) — derselbe Zuschnitt wie bei der Vorgänger-Hebung.
+- **Offene Beobachtungen sichten** (Register-Stand beim Schnitt:
+  BEO-006/BEO-007 bei je 2 mit gelebtem Gegenmittel, nichts an der
+  3×-Schwelle): beide Arbeitsregeln gelten ausdrücklich (§2 Schritt 1);
+  BEO-002 wirkt verkörpert als
+  [`MR-025`](../../../../harness/conventions.md#mr-025) — die Pin-Hebung
+  ändert eine deklarierte Menge mit den in §2 Schritt 3 gezählten
+  Spiegeln.
+
 Slice-ID: slice-110. Betroffene IDs: keine `DC-*` (Harness, kein Produkt);
 [`MR-021`](../../../../harness/conventions.md#mr-021)/[`MR-023`](../../../../harness/conventions.md#mr-023)/[`MR-026`](../../../../harness/conventions.md#mr-026)
 und der neue Pin-Nachtrag. ADRs: keine. Module:

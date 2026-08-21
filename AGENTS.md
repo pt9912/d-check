@@ -210,8 +210,10 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
 
 - Commits/PRs müssen mindestens eine `DC-*`-, `ADR-*`-, `MR-*`- oder
   `slice-*`-ID nennen (maschinell erzwungen: `make trace-check` /
-  `commit-msg`-Hook / PR-CI,
-  [ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md);
+  `commit-msg`-Hook / PR-CI — seit dem Modul `commits` dogfooded über das
+  eigene Image, [ADR-0027](docs/plan/adr/0027-commits-traceability-modul.md);
+  die abgelöste Skript-Mechanik trug
+  [ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md).
   Ausnahme: Merge-/Revert-Commits). Vergeben werden IDs nur beim
   Spec-/ADR-Schreiben nach dem deklarierten Schema
   ([`MR-008`](harness/conventions.md#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage))

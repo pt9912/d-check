@@ -154,6 +154,18 @@ die Kennungs-Erkennung eine über `mode` hinausgehende Config-Fläche braucht
 
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
+- **Sub-Area prüfen:** Produkt-Kern (`internal/hexagon`, GF —
+  Repo-Default) samt Config-Rand (`configyaml`), dazu Spec- und
+  Harness-Doku (GF).
+- **Offene Beobachtungen sichten** (Register-Stand 2026-08-21:
+  BEO-006/BEO-007/BEO-008 offen bei je 2, alle mit gelebtem
+  Gegenmittel): die BEO-006/007-Arbeitsregeln gelten in diesem Slice
+  ausdrücklich (`git status` vor pfad-selektiven Commits; Gate-Exits
+  explizit statt Pipe); BEO-002 wirkt verkörpert als
+  [`MR-025`](../../../../harness/conventions.md#mr-025) — der Slice
+  ändert eine zugesagte Semantik-Fläche, die Spiegel-Liste steht in §2
+  Schritt 3.
+
 Slice-ID: slice-111. Betroffene IDs:
 [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
 [`DC-QA-02`](../../../../spec/lastenheft.md#dc-qa-02--determinismus);
