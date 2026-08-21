@@ -12,7 +12,7 @@ Materialisierungs-Skript),
 [`MR-026`](../../../../harness/conventions.md#mr-026) (der zu ersetzende Pin
 v5.6.0).
 
-**Autor:** pt9912. **Datum:** 2026-08-21.
+**Verantwortlich:** pt9912. **Datum:** 2026-08-21.
 
 ---
 

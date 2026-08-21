@@ -108,9 +108,10 @@ Wenn eine Datei verschoben **und** der Inhalt umgeschrieben wird:
 **Ausnahme Slice-Lifecycle-Move (`in-progress/` → `done/`):** Der
 `git mv`-Commit trägt hier **zusätzlich** den Roadmap-Flip §Offene Wellen
 (zurück auf den Ruhe-Marker „Nichts in Arbeit", sofern kein Slice mehr
-beansprucht ist — dann muss im selben Zug auch das flache Wellendokument
-schließen oder der nächste Slice öffnen, sonst meldet die Wellen-Hälfte
-des Gates) und alle Pfad-Verweise auf den Slice
+beansprucht ist — der Marker steht dann **zusätzlich** zur Zeiger-Liste;
+das flache Wellendokument darf offen bleiben, nur die Bijektion muss
+stimmen: `wave-drift` misst unter `mode: many` Zeiger ⟺ Dateien in beide
+Richtungen) und alle Pfad-Verweise auf den Slice
 (Roadmap, §4, `harness/README.md` §Sensors) von `in-progress/` nach
 `done/`. Sonst ist der Commit gate-rot: `make planning-check` koppelt
 in-progress-Stand und Roadmap atomar, und die alten Verweise laufen ins
@@ -232,8 +233,10 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
 - Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der Architektur-Spec.
 - Slice-Lifecycle (`open → next → in-progress → done`) ist reine Datei-Bewegung (`git mv`, siehe §3.3).
 - Neue Slice-Köpfe tragen das Feld `**Verantwortlich:**` (Rolleninhaber der
-  Implementer-Rolle, gesetzt bei `open→next`; Deklaration, kein Sensor —
-  Baseline v5.5.0, template-forward, kein Retrofit).
+  Implementer-Rolle, gesetzt **spätestens bei der Beanspruchung** — beim
+  Move `open→next` bzw. direkt `open→in-progress`, wie dieses Repo ihn
+  fährt; Deklaration, kein Sensor — Baseline v5.5.0, template-forward,
+  kein Retrofit).
 - Slice-Pläne tragen **kein** `**Status:**`-Feld — der Lifecycle-Zustand **ist** die
   Verzeichnis-Position; neue Slices führen stattdessen den `**Lifecycle:**`-Hinweis
   (Baseline-`slice.template.md`). Alt-Slices in `done/` behalten ihr historisches Feld.

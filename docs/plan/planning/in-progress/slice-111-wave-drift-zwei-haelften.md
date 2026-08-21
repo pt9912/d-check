@@ -18,7 +18,7 @@ der Lastenheft-Commit, keine eigene Datei); Baseline-Regelwerk
 `modul-06-roadmap.md` §Offene Wellen in der v5.7.0-Fassung (vendored durch
 slice-110 — bindende Reihenfolge).
 
-**Autor:** pt9912. **Datum:** 2026-08-21.
+**Verantwortlich:** pt9912. **Datum:** 2026-08-21.
 
 ---
 
