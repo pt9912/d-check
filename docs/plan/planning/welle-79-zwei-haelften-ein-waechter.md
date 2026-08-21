@@ -31,7 +31,7 @@ widerspricht dem Modell, das sie stützen soll. Die Welle liefert den Bump
 benannte eigene Prädikat — als **opt-in `planning.waves.mode: many`** nach
 dem formalen CR des Konsumenten ai-harness-course (2026-08-21), Default
 byte-identisch
-([slice-111](in-progress/slice-111-wave-drift-zwei-haelften.md)).
+([slice-111](done/slice-111-wave-drift-zwei-haelften.md)).
 
 ## 2. Trigger (Welle startet)
 
@@ -45,7 +45,7 @@ war leer).
 
 - Beide Slices in `done/` —
   [slice-110](done/slice-110-baseline-v570-bump.md) und
-  [slice-111](in-progress/slice-111-wave-drift-zwei-haelften.md).
+  [slice-111](done/slice-111-wave-drift-zwei-haelften.md).
 - Pin `v5.7.0` vendored, `--verify` offline grün **und** `--check-latest`
   ohne Currency-/Content-Drift-Befund; kein **lebender** Verweis nennt mehr
   `baseline/v5.6.0`, die eingefrorenen sind quell-skopiert getombstoned
@@ -67,7 +67,7 @@ war leer).
 | Slice | Rolle |
 |---|---|
 | [slice-110](done/slice-110-baseline-v570-bump.md) | Bump: Vendoring v5.7.0, Pin-Nachtrag, Verweis-Hebung + Tombstones, Zwei-Hälften-Prosa der Roadmap, Delta-Audit |
-| [slice-111](in-progress/slice-111-wave-drift-zwei-haelften.md) | Produkt: `planning.waves.mode` (`one`\|`many`) — Kennungs-Bijektion als opt-in nach Konsumenten-CR; CR-Commit + [ADR-0055](../adr/0055-wellen-invariante-artefakt-und-grund-codes.md)-Fortschreibung, Release v0.62.0 |
+| [slice-111](done/slice-111-wave-drift-zwei-haelften.md) | Produkt: `planning.waves.mode` (`one`\|`many`) — Kennungs-Bijektion als opt-in nach Konsumenten-CR; CR-Commit + [ADR-0055](../adr/0055-wellen-invariante-artefakt-und-grund-codes.md)-Fortschreibung, Release v0.62.0 |
 
 ## 5. Abhängigkeiten
 
