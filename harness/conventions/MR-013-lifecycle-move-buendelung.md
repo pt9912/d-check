@@ -5,7 +5,8 @@
 - **Datum:** 2026-06-21
 - **Geltungsbereich:** [`AGENTS.md` §3.3](../../AGENTS.md#33-git-mv--inhaltsänderung--zwei-commits),
   der Slice-Lifecycle `docs/plan/planning/in-progress/` → `…/done/`,
-  `make planning-check`
+  `make planning-check`; die MR-/Wellen-Lifecycle-Moves
+  (`conventions/` → `conventions/done/`, flaches Wellendokument → `done/`)
 - **Adaption:** Erste Adaption einer **Lifecycle-Regel** (Nachtrag zu
   [`MR-000`](../conventions.md#mr-000--baseline-aussage), das „keine Adaptionen … für
   Lifecycle-Regeln" vermerkt; der Baseline-Aussage-Eintrag bleibt unverändert). Das Baseline-§3.3
@@ -24,6 +25,15 @@
   `done/`-Slices behalten ihre) bleibt im zweiten Commit; weil die Slice-Datei im
   Move-Commit unverändert ist, hält die Rename-Detection (`R100`) und damit
   die `git log --follow`-Begründung des Baseline-§3.3.
+  - **Dieselbe Bündelung gilt für MR- und Wellen-Lifecycle-Moves** (seit
+    welle-79): eine nach `conventions/done/` bzw. `done/` wandernde Datei
+    trägt **relative** Verweise, die vom neuen Ort eine Ebene tiefer
+    auflösen müssen — ein byte-reiner Move-Commit wäre `doc-check`-rot.
+    Der Move-Commit trägt deshalb die **Link-Tiefen-Fixes der bewegten
+    Datei selbst** mit; alles Übrige bleibt Commit 2. Drückt der
+    Fix-Umfang den Rename-Score Richtung 50 %, deklariert die
+    Commit-Botschaft den Move ausdrücklich als `git mv` — die Botschaft
+    ersetzt dann, was `git log --follow` nicht mehr sicher zeigt.
 - **Begründung:** Sichtbar 2026-06-21 — die PR-/Push-CI prüft den Push-Tip,
   der ein Zwischen-Commit sein kann; sie lief auf dem reinen Move-Commit von
   slice-040 rot (`target-missing` + `planning-check`). Die

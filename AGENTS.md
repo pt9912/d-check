@@ -124,14 +124,10 @@ unverändert, also hält die Rename-Detection. Kanonisch:
 flaches Wellendokument → `done/`): hier trägt der Move-Commit die
 **Link-Tiefen-Fixes der bewegten Datei selbst** mit — ein reiner Move wäre
 `doc-check`-rot, weil die relativen Verweise vom neuen Ort nicht mehr
-auflösen (gelebte Präzedenz:
-[`MR-024`](harness/conventions.md#mr-024)-Move in slice-108,
-[`MR-026`](harness/conventions.md#mr-026)-Move in slice-110; als
-undeklarierte Praxis vom slice-110-Review benannt, F-3).
-Alles Übrige bleibt Commit 2. Drückt der Fix-Umfang den Rename-Score
-Richtung 50 %, den Move in der Commit-Botschaft ausdrücklich als
-`git mv` deklarieren — die Botschaft ersetzt dann, was `git log --follow`
-nicht mehr sicher zeigt.
+auflösen. Alles Übrige bleibt Commit 2; sinkt der Rename-Score dadurch
+Richtung 50 %, deklariert die Commit-Botschaft den Move ausdrücklich als
+`git mv`. Kanonisch:
+[`MR-013`](harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise).
 
 ### 3.4 Architektur sprach-/meilensteinfrei; Spec-Straten nie abwärts
 
