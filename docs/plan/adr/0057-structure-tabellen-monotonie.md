@@ -1,6 +1,6 @@
 # ADR-0057 — Chronologie-Monotonie als siebte `structure`-Bedingung: typisiert, roh gelesen, geteilte Tabellen-Lexik
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-08-21
 **Autor:** pt9912
 **Schärft:** [`spec/spezifikation.md` §DC-FA-STRUCT-001.a](../../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
@@ -213,3 +213,13 @@ Benutzerhandbuch ist als einzige Bestandstabelle **aufsteigend** sortiert.
 ## Geschichte
 
 - 2026-08-21: Proposed (doc-first, `slice-105`).
+- 2026-08-21: nach unabhängigem Review revidiert, **bevor** der Status
+  wechselt: die Typ-Mischungs-Semantik trug zwei Lesarten (Bedingungs-Tabelle
+  gegen Fließtext) und ist auf die Paar-Lesart mit Anker-Reset gepinnt
+  (Entscheidung 7 geschärft); ein Überlauf-Segment ist untypisierbar statt
+  still kleinste Version; zwei Grenzen in den Konsequenzen nachgetragen (eine
+  Chronologie-Zusage je Abschnitt; die zweite, escape-bewusste Zell-Lesart des
+  trace-Lesers als andere Frage). Die bestätigende Re-Review war APPROVE ohne
+  Auflagen.
+- 2026-08-21: Accepted (Closure `slice-105`, Release v0.61.0; Retro-Beleg mit
+  dem Produkt 27 = 14 · 6 · 7 am Vor-Heilungs-Stand, heutiger Bestand null).

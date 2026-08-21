@@ -133,22 +133,22 @@ aus dem Gedächtnis.
 
 ## 4. Definition of Done
 
-- [ ] Siebte Bedingung vollständig: typisierter Vergleich (Datum/Version),
+- [x] Siebte Bedingung vollständig: typisierter Vergleich (Datum/Version),
       Richtung je Regel, rohe Zell-Lesung (fence-bewusste Zeilen-Auswahl),
       Kopf-/Trennzeilen übersprungen, nicht-strikte Monotonie je Tabelle,
       Befund je Bruch-Zeile, Befund für untypisierbare Zelle/Typ-Mischung,
       fail-closed Config-Ränder (Exit 2).
-- [ ] Tabellen-Lexik geteilt statt verdreifacht: Trennzeilen-/Kopfzeilen-/
+- [x] Tabellen-Lexik geteilt statt verdreifacht: Trennzeilen-/Kopfzeilen-/
       Zell-Antwort an einem Ort, **Kopplungs-Test** über alle drei Konsumenten
       (`targets`, `planning.waves`, `structure`); Befundsatz der beiden
       Bestands-Konsumenten unverändert (Belegt durch bestehende Tests).
-- [ ] **Zwei** neue Grund-Codes im Lockstep (`AllReasons()`, §4,
+- [x] **Zwei** neue Grund-Codes im Lockstep (`AllReasons()`, §4,
       Doctor-Klartexte); jedes neue Akzeptanzkriterium als Test.
-- [ ] **Retro-Beleg mit dem Produkt:** am Stand vor der Heilung
+- [x] **Retro-Beleg mit dem Produkt:** am Stand vor der Heilung
       (welle-73-Ära) melden die drei gekippten Tabellen 14 · 6 · 7
       Verletzungen, am heutigen Stand null; die naive Gegenprobe (String-
       Vergleich rot auf korrekt Sortiertem) ist als Testfall festgehalten.
-- [ ] Selbst-Aktivierung nach Messung (sechs Bestandstabellen, Handbuch
+- [x] Selbst-Aktivierung nach Messung (sechs Bestandstabellen, Handbuch
       aufsteigend); `make gates` grün; unabhängiger Review; Release als
       **Minor** (opt-in; ohne die neuen Schlüssel byte-identisch).
 
@@ -217,4 +217,44 @@ Spezifikation/ADR zuerst), Code folgt.
 
 ## 10. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+**Geliefert:** die Chronologie-Monotonie als siebte `structure`-Bedingung
+(`table-order`/`table-column`, zwei neue Grund-Codes, drei neue
+Exit-2-Ränder), die Tabellen-Lexik vollständig geteilt statt verdreifacht
+(Trennzeilen-/Kopfzeilen-/Zell-Antwort bei `markdown.go`, Kopplungs-Test über
+`targets`/`planning.waves`/`structure`) und die Selbst-Aktivierung auf den
+sechs eigenen Bestandstabellen im Inner-Loop. Ausgeliefert als **v0.61.0**.
+Der Retro-Beleg lief mit dem Produkt und traf die Skript-Messung des
+Register-Eintrags exakt: 27 Befunde am Stand vor der welle-73-Heilung
+(14 · 6 · 7), heute null.
+
+**Der schwerste Befund war eine Zwei-Lesarten-Stelle im frisch geschriebenen
+Vertrag.** Die §6-Bedingungs-Tabelle sagte „Spalten-Typ", der Fließtext
+„Vorgänger-Typ" — bei der Spalte Datum–Version–Datum versprachen beide
+verschiedene Befundbilder, der Code lieferte das eine, und genau der
+divergente Zweig war der ungetestete. Die Lehre ist nicht neu, aber hier in
+Reinform: wer denselben Vertrag zweimal formuliert (Tabelle und Fließtext),
+schreibt zwei Verträge — und der Zeitpunkt, eine Lesart zu pinnen, ist **vor**
+dem ersten Release, solange kein Grund-Code-Nachtrag nötig ist. Gepinnt wurde
+die Paar-Lesart mit Anker-Reset; die gesunde Zeile hinter einer Misch-Zelle
+meldet nicht.
+
+**Ein „unerreichbarer" Fehlerpfad war erreichbar** (`\d+` kennt keine
+int-Grenze): ein Überlauf-Segment verglich still als kleinstmögliche Version —
+der Kommentar behauptete Unerreichbarkeit, der Review widerlegte ihn per
+Konstruktion. In einer Bedingung, deren erklärte Disziplin „Befund statt
+Übersprung" ist, war das der eine stille Rest; jetzt meldet er.
+
+**Die Release-Prep war der erste Kunde der eigenen Fähigkeit:** der
+Handbuch-§11-Eintrag saß im ersten Anlauf falsch herum (oben statt
+chronologisch unten angefügt — exakt die BEO-005-Geste), wurde vor dem Commit
+gedreht und wäre ab diesem Release maschinell rot gewesen. Die
+Release-Prep-Checkliste behält ihren Positionshinweis; das Gate ist jetzt der
+Boden darunter.
+
+**Benannt statt offen:** die geschlossene Typ-Menge, die
+Je-Tabelle-/Ein-Zusage-je-Abschnitt-Grenzen und die zweite (escape-bewusste)
+Zell-Lesart des trace-Lesers stehen als Grenzen in
+[ADR-0057](../../adr/0057-structure-tabellen-monotonie.md) samt
+Re-Evaluierungs-Triggern. Aus der Definition of Done bleibt nichts offen; die
+Register-Bewegung dieses Slice (BEO-005 gestrichen) steht in der
+[Wellen-Ergebnisnotiz](welle-77-results.md).
