@@ -65,14 +65,14 @@ vendored unter `.harness/baseline/v5.6.0/` (beide Bäume
 
 ## 4. Definition of Done
 
-- [ ] `.harness/baseline/v5.6.0/{regelwerk,templates}` + `SHA256SUMS`
+- [x] `.harness/baseline/v5.6.0/{regelwerk,templates}` + `SHA256SUMS`
       committet; `--verify` offline grün; der v5.0.0-Baum ist entfernt
       (bzw. der Abnahme-Punkt anders entschieden und begründet).
-- [ ] Pin in §Baseline auf v5.6.0; MR-026 als Datei + Index-Zeile <!-- d-check:ignore -->
+- [x] Pin in §Baseline auf v5.6.0; MR-026 als Datei + Index-Zeile <!-- d-check:ignore -->
       (Bauform [`MR-023`](../../../../harness/conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)).
-- [ ] Kein lebender Verweis nennt mehr `baseline/v5.0.0`; die eingefrorenen
+- [x] Kein lebender Verweis nennt mehr `baseline/v5.0.0`; die eingefrorenen
       sind quell-skopiert getombstoned — `make doc-check` grün belegt beides.
-- [ ] `make gates` grün; unabhängiger Review; **kein Release** (der Harness
+- [x] `make gates` grün; unabhängiger Review; **kein Release** (der Harness
       ist nicht das Produkt — Präzedenz welle-67: Releases trugen nur die
       Produkt-Slices).
 
@@ -122,4 +122,33 @@ Hebung nach dokumentierter Präzedenz.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-_Ausstehend._
+**Geliefert:** die Baseline vollständig auf v5.6.0 — beide Bäume vendored samt
+`SHA256SUMS` (`--verify` 51 Dateien grün), der v5.0.0-Baum entfernt, der Pin
+samt neuer Adaption [`MR-026`](../../../../harness/conventions.md#mr-026--baseline-pin-hebung-auf-v560-dritter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)
+gehoben, alle lebenden Verweise pin-gebunden retargetet und fünf eingefrorene
+Fundstellen quell-skopiert getombstoned. `--check-latest` bestätigt Currency
+und Content beidseitig. Kein Release — Harness, nicht Produkt.
+
+**Der wertvollste Fund lag neben dem Plan:** der erste v5.6.0-Lauf des
+Currency-Audits meldete einen Upstream-Content-Drift, der keiner war — die
+tolerante Extraktion verankerte auch absolute Ziele über der Repo-Wurzel
+(Müll-Verzeichnisse im Repo, leeres Vergleichsverzeichnis), und `xargs` ohne
+`-r` ließ `sha256sum` stdin hashen. Ein Audit, der bei intaktem Bestand rot
+meldet, erzieht zum Wegklicken; der Fix ist zwei Zeilen, die Gegenprobe war
+der manuelle Byte-Vergleich (51/51 identisch).
+
+**Der schwerste Review-Befund traf den Commit-Schnitt, nicht den Inhalt:**
+`git rm` hatte die Baum-Löschung früh gestagt, und der spätere pfad-selektive
+Commit des Skript-Fixes nahm den gesamten Index still mit — die Botschaft
+beschrieb ein Vierzehntel des Diffs, der Zwischenstand war gate-rot. Die
+unpushed Kette wurde neu geschnitten; die Worktree-Gegenprobe der Re-Review
+belegt jetzt jedes Glied doc-check-grün. Als Klasse ins Beobachtungs-Register
+eingetragen (BEO-006): kein Gate prüft Botschaft-↔-Diff-Deckung.
+
+**Entschieden wie vorgeschlagen:** der Alt-Baum ist entfernt (ein Pin, eine
+netzlose Lese-Form); der Preis waren fünf Tombstones statt drei — und die
+Grenze des Ventils wurde im Review einmal nachjustiert (exakte Pfade statt
+Glob: ein Ventil deckt den deklarierten Bedarf, nicht die bequeme Obermenge).
+Der Konformitäts-Abgleich ist ausdrücklich **nicht** Teil dieses Slice —
+Etappe B ([slice-107](../in-progress/slice-107-baseline-v560-delta-audit.md))
+liest jetzt den vendorten Baum.
