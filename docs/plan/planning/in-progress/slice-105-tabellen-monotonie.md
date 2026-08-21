@@ -94,7 +94,7 @@ Aus dem Register-Eintrag übernommen; die Begründungen trägt die begleitende A
    geteilten Ort (`markdown.go`) heben; `planning.waves` konsumiert sie von
    dort. Kopplungs-Test über alle drei Konsumenten.
 2. **Bedingung implementieren** (Schritt-Erweiterung in
-   §`DC-FA-STRUCT-001.a`): rohe Abschnitts-Zeilen, fence-bewusste
+   [§`DC-FA-STRUCT-001.a`](../../../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)): rohe Abschnitts-Zeilen, fence-bewusste
    Tabellenzeilen-Auswahl, Typisierung, Richtungs-Vergleich, zwei Grund-Codes.
 3. **Grund-Codes im Lockstep:** `AllReasons()`, `--doctor`-Klartexte,
    Spezifikation §4 — im **selben** Commit.
@@ -123,7 +123,7 @@ aus dem Gedächtnis.
 | README (beide Sprachen) | **nein** (Feat) | Modul-Zahl/-Liste unverändert; Versions-Pin ist Release-Prep |
 | `operations.md` | **nein** | Modul-Enumerationen unverändert |
 | `.d-check.yml` | **ja** | Selbst-Aktivierung nach Messung (anders als bei slice-099): `structure` in die `modules`-Liste + Regel-Liste für die sechs Bestandstabellen |
-| DC-QA-03-Modullisten-Go-Test | **prüfen** | `structure` ist hermetisch — die Netzlos-Liste muss die neue `modules`-Zeile tragen |
+| [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modullisten-Go-Test | **prüfen** | `structure` ist hermetisch — die Netzlos-Liste muss die neue `modules`-Zeile tragen |
 | `.d-check.closure.yml` | **prüfen** | ausdrücklich messen statt „unberührt“ behaupten (slice-099-Lehre: genau diese Zeile war falsch) |
 | `AGENTS.md` / `harness/README.md` | **nur falls** sich eine Gate-Beschreibung ändert | `doc-check`-Zeile bleibt; kein neues Target |
 | Lastenheft §7 + Versions-Bump | **ja** | 0.60.2 → 0.61.0 |
