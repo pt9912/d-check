@@ -174,7 +174,7 @@ keine d-check-Handlung; als Upstream-Notiz an den Kurs weitergegeben.
 
 Zwei Slices aus den sechs „anzupassen"-Findings:
 
-- **[slice-108](../open/slice-108-roadmap-offene-wellen.md)** — C-1: Roadmap
+- **[slice-108](../in-progress/slice-108-roadmap-offene-wellen.md)** — C-1: Roadmap
   auf §Offene Wellen (Form + `planning`-Config + [`MR-024`](../../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform)-Entscheid).
 - **[slice-109](../open/slice-109-v560-konventions-nachzuege.md)** — C-2
   (ID-Schema-Deklaration: Vergabe + Struktur-ID-Verzicht), C-3

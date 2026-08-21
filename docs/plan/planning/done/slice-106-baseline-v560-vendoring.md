@@ -58,7 +58,7 @@ vendored unter `.harness/baseline/v5.6.0/` (beide Bäume
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Kein Konformitäts-Abgleich** der eigenen Dokumente gegen die neuen Regeln —
-  das ist Etappe B ([slice-107](../in-progress/slice-107-baseline-v560-delta-audit.md), Lesen)
+  das ist Etappe B ([slice-107](slice-107-baseline-v560-delta-audit.md), Lesen)
   und Etappe C (Umsetzen, Slices nach B-Befund).
 - **Keine inhaltliche Übernahme** neuer Regelwerks-Konzepte (Team-Fähigkeit,
   Reconciliation-Register, …) — erst lesen, dann entscheiden.
@@ -150,5 +150,5 @@ netzlose Lese-Form); der Preis waren fünf Tombstones statt drei — und die
 Grenze des Ventils wurde im Review einmal nachjustiert (exakte Pfade statt
 Glob: ein Ventil deckt den deklarierten Bedarf, nicht die bequeme Obermenge).
 Der Konformitäts-Abgleich ist ausdrücklich **nicht** Teil dieses Slice —
-Etappe B ([slice-107](../in-progress/slice-107-baseline-v560-delta-audit.md))
+Etappe B ([slice-107](slice-107-baseline-v560-delta-audit.md))
 liest jetzt den vendorten Baum.

@@ -7,7 +7,7 @@
 **Welle:** welle-78-baseline-v560-migration.
 
 **Bezug:** Audit-Finding C-1 aus
-[slice-107](../in-progress/slice-107-baseline-v560-delta-audit.md) §9
+[slice-107](../done/slice-107-baseline-v560-delta-audit.md) §9
 (Stufe v5.5.0); betrifft
 [`MR-024`](../../../../harness/conventions.md#mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform)
 und die `planning`-Selbstkonfiguration
@@ -68,7 +68,7 @@ Schritt 5 ohne Beförderung. Baseline-Default sticht die repo-lokale Adaption
 ## 4. Trigger
 
 **Start** (`open` → `in-progress`):
-[slice-107](../in-progress/slice-107-baseline-v560-delta-audit.md) in `done/`
+[slice-107](../done/slice-107-baseline-v560-delta-audit.md) in `done/`
 **und** WIP-Slot frei.
 
 ## 5. Vorgelagert (vor der Modus-Begründung)
