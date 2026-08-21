@@ -22,9 +22,9 @@ steht genau dann, wenn `in-progress/` keinen Slice trägt, **zusätzlich**
 zur Liste, nicht an ihrer Stelle; beides zugleich ist der Normalfall
 direkt nach der Wellen-Eröffnung. Gewächtert ist die Marker-Hälfte in
 beide Richtungen (`make planning-check` hält ihn gegen das Verzeichnis);
-die Listen-Hälfte ist Ableitung — ihr eigenes Prädikat ist als
-opt-in-Modus beantragt und Gegenstand des Produkt-Slice dieser Welle
-(bis dahin hält `wave-drift` den Aktiv-Status gegen die Datei-Zahl).
+die Listen-Hälfte misst `wave-drift` als Kennungs-Bijektion (je offener
+Welle-Datei ein Zeiger, beidseitig; `waves.mode: many`) — diese Prosa
+bleibt deshalb frei von Wellen-Kennungen.
 
 - [welle-79-zwei-haelften-ein-waechter](../welle-79-zwei-haelften-ein-waechter.md) —
   Baseline v5.7.0 + Listen-Prädikat für `wave-drift`

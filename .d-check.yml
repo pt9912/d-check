@@ -258,14 +258,18 @@ commits:
 # tools/planning-consistency.sh ab (ADR-0028, letztes Familien-Skript des tools/*.sh-Audits).
 planning:
   roadmap: docs/plan/planning/in-progress/roadmap.md
-  # Offene-Wellen-Form (Baseline v5.6.0, slice-108): die Sektion ist
-  # derivativ, der Ruhe-Marker "Nichts in Arbeit" gilt bei leerem
-  # in-progress/. Die Drift-Kopplung der waves-Faehigkeit (Anspruch <=>
-  # genau ein flaches Wellendokument) bleibt im Ein-Wellen-Betrieb wahr;
-  # SCHON der baseline-legitime Zustand "Welle offen, in-progress leer"
-  # ist wave-drift-rot — die Grenze liegt naeher als der Mehr-Wellen-
-  # Betrieb; beides braucht dort einen eigenen Entscheid (benannte
-  # Grenze, kein geloestes Problem).
+  # Offene-Wellen-Form (Baseline v5.7.0, slice-108/110): die Sektion traegt
+  # zwei unabhaengige Aussagen — die Liste folgt den Dateien (je offener
+  # Welle ein Zeiger), der Ruhe-Marker "Nichts in Arbeit" folgt dem
+  # Anspruch (leeres in-progress/) und steht ZUSAETZLICH zur Liste. Die
+  # Marker-Haelfte waechtert planning-drift beidseitig; die Listen-Haelfte
+  # misst wave-drift unter mode: many als Kennungs-Bijektion (Zeiger <=>
+  # flache Wellendokumente, DC-FA-PLAN-001 0.62.0). Das Eroeffnungs-
+  # Fenster "Welle offen, in-progress leer" und der Mehr-Wellen-Betrieb
+  # sind damit legitime Zustaende — die frueher hier benannte Grenze ist
+  # aufgeloest. Neue Grenze: die Sektions-PROSA darf keine Wellen-Kennung
+  # nennen (jede zaehlte als Zeiger), so wie sie den Marker-Wortlaut nie
+  # woertlich tragen durfte.
   heading: "## Offene Wellen"
   marker: "Nichts in Arbeit"
   # Dritte Faehigkeit (DC-FA-PLAN-001 §Wellen-Invariante, ADR-0055): dieselbe
@@ -277,6 +281,11 @@ planning:
   # Alle uebrigen Schluessel stehen auf den Konventions-Defaults.
   waves:
     dir: docs/plan/planning
+    # Kennungs-Bijektion statt Singleton (DC-FA-PLAN-001 0.62.0): dieses
+    # Repo faehrt das Offene-Wellen-Modell. Erst nach Release und
+    # Digest-Backfill gesetzt — ein aelterer Pruefer braeche am
+    # unbekannten Schluessel mit Exit 2.
+    mode: many
 
 # Modul targets (DC-FA-TGT-001, slice-063): Deklarations-Konsistenz Doku ↔
 # Build-Targets — `make gate-consistency` aktiviert es mit `--enable targets`
