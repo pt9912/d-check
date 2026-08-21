@@ -65,6 +65,32 @@ Register, obwohl alle drei Ergebnisnotizen im Ruheort lagen (Beobachtungs-Regist
    Wellen-Invariante gleichzeitig verletzt, entstehen **zwei** Befunde mit
    verschiedenen Codes — kein Widerspruch, sondern zwei Reparaturen.
 
+6. **Die erste Aussage kennt zwei Kardinalitäts-Modelle
+   (`planning.waves.mode: one | many`, Fortschreibung 2026-08-21).**
+   `one` (Default) ist das unveränderte Singleton-Prädikat aus
+   Entscheidung 4 — ohne den Schlüssel bleibt der Befundsatz
+   byte-identisch. `many` deckt das Offene-Wellen-Modell des Adopters
+   (Baseline v5.7.0: die Liste folgt den **Dateien**, der Ruhe-Marker
+   folgt dem **Anspruch** und steht zusätzlich): verglichen werden
+   **Kennungs-Mengen** — die im `planning.heading`-Block genannten
+   Kennungen gegen die flachen Wellendokumente, beide Richtungen, jede
+   Kardinalität einschließlich null; der Marker geht **nicht** ein, seine
+   Aussage liegt vollständig bei `planning-drift` (Entscheidung 5 bleibt:
+   der Block wird nicht zweimal bestimmt, die Bestimmung liefert neben dem
+   Bool die Kennungs-Liste). **Erkennungs-Verfahren** wie in den
+   Registern: literales Glob-Präfix plus Ziffernfolge (`waveID`),
+   zeilenweise über die **Prosa-Zeilen** des Blocks — Fence-Inhalte zählen
+   nicht, Mehrfachnennung zählt einmal, layout-agnostisch für Tabellen-
+   wie Listen-Form. **Kein zweiter Grund-Code:** die Reparatur ist
+   dieselbe („Roadmap nachziehen oder Datei verschieben"), und die
+   Dedup-Begründung aus Entscheidung 4 trägt weiter, weil das
+   Befund-`target` unter `many` die **betroffene Kennung** ist — zwei
+   Richtungen an derselben Zeile bleiben im Tupel (Datei, Zeile, Regel,
+   Ziel, Grund) verschieden, wie es die Register-Aussagen praktizieren.
+   **fail-closed:** ein unbekannter oder explizit leerer Modus bricht mit
+   Exit 2 und Schlüssel-Nennung (Zeiger-Disziplin der übrigen
+   `waves`-Schlüssel).
+
 ## Alternativen
 
 - **Nur die Aussagen 1 und 2 liefern** (die Rückfallebene des Slice). Verworfen,
@@ -77,6 +103,18 @@ Register, obwohl alle drei Ergebnisnotizen im Ruheort lagen (Beobachtungs-Regist
 - **Die Abschluss-Aussage gegen Plan-Dokument *und* Notiz prüfen.** Verworfen:
   das erzeugt am gemessenen Bestand 19 Befunde für einen Zustand, den die
   Closure-Prozedur nie verlangt hat.
+- **Das Singleton-Prädikat im Default zur Bijektion umbauen** (statt
+  opt-in-Modus). Verworfen mit der Fortschreibung: bestehende Konsumenten
+  können sich auf die `one`-Strenge verlassen (der Zustand „Welle offen,
+  nichts beansprucht" **soll** dort rot sein), und der CR des Konsumenten
+  beantragt ausdrücklich Default-Treue
+  ([`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus):
+  ohne Schlüssel byte-identisch).
+- **Ein zweiter Grund-Code je Bijektions-Richtung.** Verworfen: die
+  Reparatur-Klasse ist identisch, die Richtungen unterscheidet das
+  `target` (Kennung) — ein zweiter Code widerspräche der eigenen
+  Vier-Codes-Begründung, die Codes an **Reparaturen** bindet, nicht an
+  Richtungen.
 
 ## Konsequenzen
 
@@ -93,6 +131,13 @@ Register, obwohl alle drei Ergebnisnotizen im Ruheort lagen (Beobachtungs-Regist
   [ADR-0054](0054-geteilte-lexik-bindet-ihre-konsumenten.md) Entscheidung 4 heißt
   das: geteilte Antwort, und je Konsument eine Assertion. Beim **dritten**
   Konsumenten wird daraus ein Kopplungs-Test.
+- **Unter `many` wird die Sektions-Prosa des `planning.heading`-Blocks zur
+  Messfläche** (Fortschreibung): jede dort genannte Wellen-Kennung zählt
+  als Zeiger. Ein Adopter, der den Modus setzt, hält seine Sektionsregel
+  kennungsfrei — dieselbe Paraphrase-Disziplin, die für den
+  Marker-Wortlaut bereits gilt. Dieses Repo stellt seine eigenen
+  Prüf-Profile erst **nach** Release und Digest-Backfill auf `many` um
+  (der gepinnte Prüfer muss den Schlüssel kennen, sonst Exit 2).
 
 ## Re-Evaluierungs-Trigger
 
@@ -103,7 +148,20 @@ Register, obwohl alle drei Ergebnisnotizen im Ruheort lagen (Beobachtungs-Regist
   Vorschau-Zeile dann regulär eine Kennung trägt.
 - Eine dritte Stelle liest Tabellenzeilen. Dann ist der Kopplungs-Test fällig,
   nicht eine dritte Einzel-Assertion.
+- Ein Adopter braucht eine **dritte** Kardinalitäts-Semantik oder eine
+  Kennungs-Erkennung jenseits des literalen Glob-Präfixes — dann ist
+  Entscheidung 6 neu zu stellen, nicht still zu erweitern.
 
 ## Geschichte
 
 - 2026-08-16: Proposed (`slice-102`, nach der Bestandsmessung über drei Bäume).
+- 2026-08-21: **Fortgeschrieben** (`slice-111`): Entscheidung 6 —
+  `planning.waves.mode: one | many` auf **formalen Konsumenten-CR**
+  (ai-harness-course, „planning.waves: Bijektion statt Singleton";
+  Anlass: Baseline v5.7.0 „Zwei Hälften, ein Wächter" macht den Marker
+  zur Anspruchs-Aussage **zusätzlich** zur Liste; Messung team-sim
+  s04a–s04d, 11/11 PASS — der Singleton beißt bei zwei offenen Wellen,
+  die Marker-Hälfte hält beidseitig). Vertrags-Text im Lastenheft 0.62.0;
+  Alternativen um Default-Umbau und Zweit-Code ergänzt (beide verworfen),
+  Konsequenzen um die Prosa-Messfläche, Trigger um die dritte
+  Kardinalitäts-Semantik.
