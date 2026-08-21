@@ -27,11 +27,11 @@ ein eigenes Prädikat". Damit ist der seit der slice-108-Closure benannte
 Grenz-Zustand „Welle offen, `in-progress/` leer" Baseline-**Normalfall**,
 und die W3-Kopplung des `planning`-Moduls (Aktiv-Status ⟺ Datei-Zahl)
 widerspricht dem Modell, das sie stützen soll. Die Welle liefert den Bump
-([slice-110](done/slice-110-baseline-v570-bump.md)) und genau das
+([slice-110](slice-110-baseline-v570-bump.md)) und genau das
 benannte eigene Prädikat — als **opt-in `planning.waves.mode: many`** nach
 dem formalen CR des Konsumenten ai-harness-course (2026-08-21), Default
 byte-identisch
-([slice-111](done/slice-111-wave-drift-zwei-haelften.md)).
+([slice-111](slice-111-wave-drift-zwei-haelften.md)).
 
 ## 2. Trigger (Welle startet)
 
@@ -44,8 +44,8 @@ war leer).
 ## 3. Closure-Trigger (Welle schließt)
 
 - Beide Slices in `done/` —
-  [slice-110](done/slice-110-baseline-v570-bump.md) und
-  [slice-111](done/slice-111-wave-drift-zwei-haelften.md).
+  [slice-110](slice-110-baseline-v570-bump.md) und
+  [slice-111](slice-111-wave-drift-zwei-haelften.md).
 - Pin `v5.7.0` vendored, `--verify` offline grün **und** `--check-latest`
   ohne Currency-/Content-Drift-Befund; kein **lebender** Verweis nennt mehr
   `baseline/v5.6.0`, die eingefrorenen sind quell-skopiert getombstoned
@@ -66,8 +66,8 @@ war leer).
 
 | Slice | Rolle |
 |---|---|
-| [slice-110](done/slice-110-baseline-v570-bump.md) | Bump: Vendoring v5.7.0, Pin-Nachtrag, Verweis-Hebung + Tombstones, Zwei-Hälften-Prosa der Roadmap, Delta-Audit |
-| [slice-111](done/slice-111-wave-drift-zwei-haelften.md) | Produkt: `planning.waves.mode` (`one`\|`many`) — Kennungs-Bijektion als opt-in nach Konsumenten-CR; CR-Commit + [ADR-0055](../adr/0055-wellen-invariante-artefakt-und-grund-codes.md)-Fortschreibung, Release v0.62.0 |
+| [slice-110](slice-110-baseline-v570-bump.md) | Bump: Vendoring v5.7.0, Pin-Nachtrag, Verweis-Hebung + Tombstones, Zwei-Hälften-Prosa der Roadmap, Delta-Audit |
+| [slice-111](slice-111-wave-drift-zwei-haelften.md) | Produkt: `planning.waves.mode` (`one`\|`many`) — Kennungs-Bijektion als opt-in nach Konsumenten-CR; CR-Commit + [ADR-0055](../../adr/0055-wellen-invariante-artefakt-und-grund-codes.md)-Fortschreibung, Release v0.62.0 |
 
 ## 5. Abhängigkeiten
 
@@ -77,7 +77,7 @@ war leer).
   Netzlos-Disziplin wie beim welle-78-Stufen-Audit.
 - Das Materialisierungs-Skript
   (`tools/harness/fetch-baseline-cache.sh`,
-  [`MR-023`](../../../harness/conventions.md#mr-023)-Layout) nimmt ein
+  [`MR-023`](../../../../harness/conventions.md#mr-023)-Layout) nimmt ein
   explizites Tag-Argument — der erste Vendor-Lauf braucht den neuen Pin
   nicht.
 
@@ -90,5 +90,5 @@ war leer).
   prüfbar, die Nutzung ist ein eigener Roadmap-Entscheid.
 - **Kein Retrofit** eingefrorener Artefakte (immutable ADRs, `done/`-Slices,
   Review-Reports) — Tombstones statt Umschreiben; die
-  [ADR-0055](../adr/0055-wellen-invariante-artefakt-und-grund-codes.md)-Fortschreibung
+  [ADR-0055](../../adr/0055-wellen-invariante-artefakt-und-grund-codes.md)-Fortschreibung
   ist **kein** Retrofit (Proposed, `## Geschichte`).
