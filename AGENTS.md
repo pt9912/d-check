@@ -33,8 +33,18 @@ Quelle ist das derivative Release-Bundle
 Pfadschema/Provenance siehe
 [`harness/conventions.md`](harness/conventions.md) §Adoptierte Konventions-Quellen,
 [`MR-019`](harness/conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)).
-Pro Session **nur den benötigten Abschnitt** lesen, bevor der Workflow (§6)
-startet — nicht das gesamte Regelwerk im Kontext halten.
+Die **verkörperte Form** (dieses Briefing, die Konventionen, die
+ausgefüllten Artefakte) **führt**; das Regelwerk ist die präsente,
+nachschlagbare **Vertiefung** und wird **pro Entscheidung** nachgeschlagen,
+deren operative Detailtiefe das Briefing nicht trägt — Trigger-Klassen,
+Sub-Area-Qualifikation, Carveout-vs-Reconciliation, Modus-Diagnose. Dabei
+pro Session **nur den benötigten Abschnitt** lesen, bevor der Workflow (§6)
+startet — nicht das gesamte Regelwerk im Kontext halten. **Breiterer
+Pflicht-Blick** bleibt bei: Bootstrap, Änderung an
+[`harness/conventions.md`](harness/conventions.md) (Adaptionen `MR-<NNN>`,
+Source-Precedence, ID-Schema) und dem Drift-Audit gegen die Baseline
+([`modul-02-harness-bootstrap.md` §Freshness-Audit](.harness/baseline/v5.7.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)
+— darunter die **Bestands-Stichprobe, die auch bei aktuellem Pin läuft**).
 Die **Skelett-Vorlagen** der Baseline liegen aus demselben self-contained Bundle
 **committet vendored** unter `.harness/baseline/<tag>/templates/` (parallel zum
 `.harness/baseline/<tag>/regelwerk/`-Baum, netzlos) und tragen zwei Rollen: als
