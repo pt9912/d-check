@@ -241,6 +241,33 @@ func TestDecode_PlanningFehler(t *testing.T) {
 	}
 }
 
+// TestDecode_StructureFehler deckt den Config-Rand des Moduls structure ab —
+// die drei Ränder der Chronologie-Bedingung (ADR-0057: eine halbe Aktivierung
+// ist ein Config-Fehler, kein Zustand) plus zwei Basis-Ränder, die bislang
+// ohne Decode-Test waren.
+func TestDecode_StructureFehler(t *testing.T) {
+	for name, bad := range map[string]string{
+		"table-order unbekannt":       "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table-order: chrono\n",
+		"table-column < 1":            "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table-order: desc\n    table-column: 0\n",
+		"table-column ohne order":     "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table-column: 2\n",
+		"files fehlt":                 "structure:\n  - section: '## H'\n",
+		"beide Selektoren":            "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    section-pattern: 'H'\n",
+	} {
+		if _, err := configyaml.Decode([]byte(bad)); err == nil {
+			t.Fatalf("%s: ungültige structure-Config akzeptiert: %q", name, bad)
+		}
+	}
+	ok := "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table-order: asc\n    table-column: 2\n"
+	cfg, err := configyaml.Decode([]byte(ok))
+	if err != nil {
+		t.Fatalf("gültige Chronologie-Regel abgelehnt: %v", err)
+	}
+	if len(cfg.Structure) != 1 || cfg.Structure[0].TableOrder != "asc" ||
+		cfg.Structure[0].EffectiveTableColumn() != 2 {
+		t.Fatalf("Chronologie-Schlüssel nicht durchgereicht: %+v", cfg.Structure)
+	}
+}
+
 // TestDecode_ClosureFehler deckt den Config-Rand der Closure-Fähigkeit ab
 // (DC-FA-PLAN-001): was der Kern nur schlucken könnte, bricht hier laut ab —
 // jeder dieser Werte wäre sonst ein stilles Grün.

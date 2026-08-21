@@ -169,6 +169,8 @@ modules: [links, anchors]
 #     # forbid-pattern: 'TODO'                      # Treffer ⇒ section-forbidden
 #     # require-pattern: 'Beleg'                    # kein Treffer ⇒ section-pattern-missing
 #     # require-all: ["Beleg", "Lernsignal"]        # fehlende Marke ⇒ section-marker-missing
+#     # table-order: desc                           # asc|desc: Chronologie-Monotonie der Schlüsselspalte (typisiert: ISO-Datum, Punkt-Version; ROHE Zellen) ⇒ sonst section-unordered / section-cell-untyped
+#     # table-column: 1                             # 1-basierte Schlüsselspalte (Default 1); nur mit table-order
 #     # exempt-paths: []                            # Globs; Treffer werden von DIESER Regel nicht geprüft
 
 # --- targets: Deklarations-Konsistenz Doku ↔ Build-Targets — hermetisch (kein git), opt-in ---

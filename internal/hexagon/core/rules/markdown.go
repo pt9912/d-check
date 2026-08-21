@@ -174,10 +174,48 @@ func proseLineSet(content []byte) map[int]bool {
 
 // tableRowLine meldet, ob lines[i] (0-basiert) eine Tabellenzeile ist: sie
 // beginnt mit `|` und liegt außerhalb von Fenced-Code. Dies ist die EINE
-// Tabellenzeilen-Antwort des Produkts (targets, planning.waves) — ein
-// Beispiel-Block, der eine Tabelle zeigt, deklariert nichts.
+// Tabellenzeilen-Antwort des Produkts (targets, planning.waves, structure) —
+// ein Beispiel-Block, der eine Tabelle zeigt, deklariert nichts.
 func tableRowLine(lines []string, prose map[int]bool, i int) bool {
 	return prose[i+1] && strings.HasPrefix(lines[i], "|")
+}
+
+// tableHeaderOrSeparator meldet, ob lines[i] (0-basiert) die Trennzeile einer
+// GFM-Tabelle ist oder deren Kopfzeile (die Tabellenzeile unmittelbar vor
+// einer Trennzeile) — beide deklarieren keine Daten, auch wenn eine Kennung
+// oder ein Schlüssel darin steht. Geteilte Antwort von planning.waves und
+// structure (die Chronologie-Bedingung, ADR-0057).
+func tableHeaderOrSeparator(lines []string, prose map[int]bool, i int) bool {
+	if tableSeparatorRow(lines[i]) {
+		return true
+	}
+	return i+1 < len(lines) && tableRowLine(lines, prose, i+1) && tableSeparatorRow(lines[i+1])
+}
+
+// tableSeparatorRow meldet die GFM-Trennzeile: nur Pipes, Bindestriche,
+// Doppelpunkte und Whitespace.
+func tableSeparatorRow(line string) bool {
+	if !strings.HasPrefix(line, "|") {
+		return false
+	}
+	seen := false
+	for _, r := range line {
+		switch r {
+		case '|', ':', ' ', '\t':
+		case '-':
+			seen = true
+		default:
+			return false
+		}
+	}
+	return seen
+}
+
+// tableCells zerlegt eine Tabellenzeile in ihre Zellen: Split an `|` nach
+// Trim der Rand-Pipes — die geteilte Zell-Antwort (planning.waves liest die
+// Kennungs-Spalte, structure die Schlüsselspalte).
+func tableCells(line string) []string {
+	return strings.Split(strings.Trim(line, "|"), "|")
 }
 
 // fencedBlockBetween meldet, ob zwischen zwei aufeinanderfolgenden Prosa-Zeilen

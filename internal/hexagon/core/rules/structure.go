@@ -114,10 +114,19 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 	}
 	// In `one` ist nach der Kardinalitäts-Prüfung genau ein Treffer übrig,
 	// `each` misst jeden.
+	var prose map[int]bool
+	if r.TableOrder != "" {
+		// Nur die Chronologie-Bedingung braucht die fence-bewusste
+		// Tabellenzeilen-Auswahl auf den ROHEN Zeilen (ADR-0057).
+		prose = proseLineSet(content)
+	}
 	var out []model.Finding
 	for _, h := range heads {
 		body := SectionProse(content, lines, h.Line, h.Level)
 		out = append(out, structureConditions(r, file, h.Line, body)...)
+		if r.TableOrder != "" {
+			out = append(out, structureTableOrder(r, file, lines, prose, h.Line, h.Level)...)
+		}
 	}
 	return out
 }
@@ -133,9 +142,11 @@ func structureMatcher(r model.StructureRule) func(string) bool {
 	return func(raw string) bool { return re.MatchString(strings.TrimSpace(raw)) }
 }
 
-// structureConditions prüft die sechs Bedingungen auf dem bereinigten
+// structureConditions prüft die sechs Prosa-Bedingungen auf dem bereinigten
 // Abschnitts-Text. Jede hat einen eigenen Grund-Code, damit zwei Verletzungen
 // desselben Abschnitts nicht unter der Befund-Deduplikation zusammenfallen.
+// Die siebte Bedingung (Chronologie-Monotonie) liest als einzige die rohen
+// Abschnitts-Zeilen und lebt in structure_tableorder.go (ADR-0057).
 func structureConditions(r model.StructureRule, file string, line int, body string) []model.Finding {
 	var out []model.Finding
 	add := func(reason, msg string) {

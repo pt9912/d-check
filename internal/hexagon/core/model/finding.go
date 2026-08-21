@@ -44,8 +44,8 @@ const (
 	// eindeutigen Abschnitt sagt eine Satzzahl nichts, und ein zweiter Abschnitt
 	// ist der typische Rest einer Vorlage.
 	ReasonClosureNoteAmbiguous = "closure-note-ambiguous"
-	// Die acht Grund-Codes des Moduls structure (DC-FA-STRUCT-001). Zwei
-	// Struktur-Codes fuer die Abschnitts-Findung und sechs Bedingungs-Codes —
+	// Die zehn Grund-Codes des Moduls structure (DC-FA-STRUCT-001). Zwei
+	// Struktur-Codes fuer die Abschnitts-Findung und acht Bedingungs-Codes —
 	// je eigener Code, weil die Befund-Deduplikation zwei Verletzungen
 	// desselben Abschnitts sonst zusammenfallen liesse.
 	ReasonLinkPositionDependent = "link-position-dependent"
@@ -61,6 +61,13 @@ const (
 	ReasonSectionForbidden      = "section-forbidden"
 	ReasonSectionPatternMissing = "section-pattern-missing"
 	ReasonSectionMarkerMissing  = "section-marker-missing"
+	// Chronologie-Monotonie (ADR-0057): section-unordered meldet die
+	// brechende Datenzeile (bzw. den Leerlauf ohne Datenzeile),
+	// section-cell-untyped die untypisierbare Schluesselzelle — Befund statt
+	// stillem Uebersprung, sonst schaltete ein Tippfehler die Pruefung der
+	// restlichen Tabelle wortlos ab.
+	ReasonSectionUnordered   = "section-unordered"
+	ReasonSectionCellUntyped = "section-cell-untyped"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

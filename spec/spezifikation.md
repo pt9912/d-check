@@ -1967,7 +1967,9 @@ getroffenen Dateien.
    `files`/`exempt-paths`; weder `section` noch `section-pattern` gesetzt **oder**
    beide; `sections` weder `one` noch `each`; nicht kompilierendes
    `section-pattern`/`forbid-pattern`/`require-pattern`; **explizit** gesetztes
-   `min-sentences` < 1 oder `max-tasks` < 0; leerer Eintrag in `require-all`.
+   `min-sentences` < 1 oder `max-tasks` < 0; leerer Eintrag in `require-all`;
+   `table-order` außerhalb `asc`/`desc`; **explizit** gesetztes
+   `table-column` < 1; `table-column` ohne `table-order`.
    Ein **abwesender** Zahlen-Schlüssel ist kein Fehler, sondern „Bedingung
    aus" — die Unterscheidung „nicht gesetzt" vs. „auf 0 gesetzt" ist Teil der
    Zusage, sonst wäre die Null-Schwelle unerreichbar prüfbar.
@@ -2008,7 +2010,10 @@ getroffenen Dateien.
    ([`DC-FA-LINK-001.a`](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
    Schritte 1–2) und dieselbe wie beim Preset-Partner
    ([`DC-FA-PLAN-001.a`](#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
-   Schritt C4). Alle Bedingungen arbeiten auf **diesem** Text. Die Folge gehört
+   Schritt C4). Alle Bedingungen arbeiten auf **diesem** Text — mit **einer**
+   benannten Ausnahme: die Chronologie-Bedingung (`table-order`, Schritt 6)
+   liest die **rohen** Abschnitts-Zeilen, weil die Bereinigung Inline-Code
+   leert und reale Schlüsselspalten genau dort stehen. Die Folge gehört
    dazugesagt: ein `forbid-pattern`, das auf ein Wort in Backticks zielt, trifft
    **nicht** — Inline-Code ist Code, kein Fließtext.
 6. **Bedingungen prüfen**, jede optional, jede mit **eigenem** Grund-Code, damit
@@ -2023,6 +2028,8 @@ getroffenen Dateien.
    | `forbid-pattern` | das Muster **nicht** matcht | `section-forbidden` |
    | `require-pattern` | das Muster matcht | `section-pattern-missing` |
    | `require-all` | **jede** Marke vorhanden ist | `section-marker-missing` |
+   | `table-order` | jede zusammenhängende Tabelle des Abschnitts in der Schlüsselspalte nicht-strikt monoton ist **und** mindestens eine Datenzeile existiert | `section-unordered` |
+   | — (dieselbe Bedingung) | jede Schlüsselzelle typisierbar ist und den Spalten-Typ trägt | `section-cell-untyped` |
 
    **Task-Item** ist eine Zeile, die — nach optionalem Whitespace — mit einem
    Listen-Marker (`-`, `*`, `+` oder `<ziffern>.`), Whitespace und `[ ]` bzw.
@@ -2044,6 +2051,32 @@ getroffenen Dateien.
    `forbid-pattern`/`require-pattern` matchen gegen den **gesamten** bereinigten
    Abschnitts-Text; `^`/`$` binden dort an Text-, nicht an Zeilen-Grenzen (wer
    Zeilen meint, schreibt `(?m)`).
+
+   **Chronologie-Monotonie (`table-order`)** — die eine Bedingung, die die
+   **rohen** Abschnitts-Zeilen liest (benannte Ausnahme aus Schritt 5):
+   - **Datenzeilen bestimmen:** Tabellenzeilen sind die Zeilen des Abschnitts,
+     die die geteilte Tabellenzeilen-Lexik bejaht (führendes `|` **außerhalb**
+     von Fenced-Code — dieselbe Antwort wie bei den Modulen `targets` und
+     `planning`); die GFM-**Trennzeile** und die **Kopfzeile** unmittelbar davor
+     deklarieren keine Daten. **Zusammenhängende** Folgen von Tabellenzeilen
+     bilden je eine Tabelle; jede Tabelle wird für sich geprüft.
+   - **Schlüssel typisieren:** je Datenzeile die Zelle `table-column`
+     (1-basiert; Zellen = Split der rohen Zeile an `|` nach Trim der
+     Rand-Pipes). Getypt wird der **erste** Treffer zweier Muster in der rohen
+     Zelle: ISO-Datum (`JJJJ-MM-TT`) oder Punkt-Version (optionales `v`,
+     mindestens zwei numerische Segmente; Vergleich segmentweise numerisch, bei
+     gleichem Präfix ist die kürzere Segmentfolge kleiner). Kein Treffer, zu
+     wenige Zellen oder ein anderer Typ als beim typisierbaren Vorgänger ⇒
+     `section-cell-untyped` an dieser Zeile; der Vergleich setzt beim nächsten
+     typisierbaren Nachbar-Paar wieder auf.
+   - **Ordnung prüfen:** benachbarte typisierbare Datenzeilen derselben Tabelle
+     müssen **nicht-strikt** monoton in Richtung `table-order` liegen (`asc`:
+     Schlüssel ≥ Vorgänger; `desc`: ≤). Jede brechende Zeile ⇒
+     `section-unordered` an ihrer Zeile. **Null Datenzeilen im Abschnitt** ⇒
+     `section-unordered` als Leerlauf-Befund an der Abschnitts-Überschrift —
+     die Bedingung zu setzen ist die Behauptung, dass hier eine chronologische
+     Tabelle steht (dieselbe Doppel-Rolle wie `section-missing` beim
+     Kandidaten-Leerlauf in Schritt 2).
 7. **Befund-Form.** `file` = die geprüfte Datei (bzw. der Glob in Schritt 2),
    `rule` = `structure`, `target` = die **Regel-Identität** (`files`-Glob und
    Abschnitts-Selektor), `line` = Zeile der Abschnitts-Überschrift (bzw. 1).
@@ -2494,6 +2527,8 @@ Exit 2 ohne Prüfung
 | `structure[].forbid-pattern` | string | leer | RE2 gegen den **gesamten** bereinigten Abschnitts-Text; Treffer ⇒ `section-forbidden` |
 | `structure[].require-pattern` | string | leer | RE2, Spiegelbild von `forbid-pattern`; **kein** Treffer ⇒ `section-pattern-missing`. Deckt zugesagte Aussagen, die **innerhalb** einer Auszeichnung stehen und deshalb keine Marke sind |
 | `structure[].require-all` | string[] | leer | benannte Marken, die **alle** vorkommen müssen — als hervorgehobener Textlauf am Zeilen-Anfang nach optionalem **Listen-Marker** (`- **M:**`, `**M:**`, `- **M (Zusatz):**`) ⇒ sonst `section-marker-missing`; leerer Eintrag ⇒ Exit 2 |
+| `structure[].table-order` | string | leer (aus) | `asc` oder `desc` — schaltet die **Chronologie-Monotonie** scharf: die Schlüsselspalte jeder zusammenhängenden Tabelle des Abschnitts wird **typisiert** (ISO-Datum, Punkt-Version; **rohe** Zeilen — benannte Ausnahme von der Bereinigung) und nicht-strikt monoton verglichen ⇒ sonst `section-unordered` (auch Leerlauf ohne Datenzeile) bzw. `section-cell-untyped` (untypisierbare Zelle/Typ-Mischung). Anderer Wert ⇒ Exit 2 |
+| `structure[].table-column` | int | 1 | 1-basierte Schlüsselspalte der Chronologie-Bedingung; **explizit** < 1 ⇒ Exit 2, gesetzt ohne `table-order` ⇒ Exit 2 |
 | `structure[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`) über die Quell-Pfade; Treffer werden von **dieser** Regel nicht geprüft — hebeln den Leerlauf-Befund aber nicht aus |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien, aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
@@ -2611,6 +2646,8 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `section-forbidden` | structure | `forbid-pattern` trifft den bereinigten Abschnitts-Text |
 | `section-pattern-missing` | structure | `require-pattern` trifft **nicht** — das Spiegelbild von `section-forbidden` |
 | `section-marker-missing` | structure | eine Marke aus `require-all` fehlt (Auszeichnungs-Marke am Zeilen-Anfang, nach optionalem Listen-Marker) |
+| `section-unordered` | structure | eine Datenzeile bricht die nicht-strikte Monotonie der Schlüsselspalte in Richtung `table-order` (`line` = die brechende Zeile) — **oder** der Abschnitt trägt keine Tabellen-Datenzeile (Leerlauf, `line` = Abschnitts-Überschrift) |
+| `section-cell-untyped` | structure | eine Schlüsselzelle der Chronologie-Bedingung ist nicht typisierbar (kein Datums-/Versions-Token, zu wenige Zellen) oder mischt den Typ der Spalte — Befund statt stillem Übersprung |
 | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
 | `gate-undocumented` | targets | Makefile-Regel (nicht in `targets.exempt-targets`) ohne Deklaration als `make X` in der `targets.authority`-Doku (undokumentiertes Gate) |
@@ -2638,6 +2675,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-21 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) um die **Chronologie-Monotonie** erweitert (`table-order`/`table-column`, §2-Schema + zwei §4-Codes `section-unordered`/`section-cell-untyped`): Datenzeilen über die **geteilte** Tabellenzeilen-Lexik (dieselbe Antwort wie `targets`/`planning`, Kopf-/Trennzeile deklarieren nichts, je zusammenhängender Tabelle), Schlüssel **typisiert** aus der **rohen** Zelle (ISO-Datum, Punkt-Version segmentweise numerisch; erste benannte Ausnahme von Schritt 5 — die Bereinigung leert Inline-Code, reale Schlüsselspalten stehen dort), Vergleich nicht-strikt in Regel-Richtung; untypisierbare Zelle und Leerlauf sind Befunde, drei neue Exit-2-Ränder in Schritt 1. Begründung in begleitender ADR |
 | 2026-08-16 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) Schritt 6 nach unabhängigem Review und einem **CI-Realfund** nachgezogen: die Ist-Ort-Vorbedingung ist normativ (die Klasse ist „am Ist-Ort grün", kein Doppelbefund), die fail-closed-Zusage der Gruppen-Orte ist an der git-Realität justiert (ein **einzelner** fehlender Ort ist von einem legitim geleerten Verzeichnis nicht unterscheidbar — gemeldet wird die Gruppe ohne einen einzigen existierenden Ort und der Ort, der als Datei existiert), die Scan-Bereichs-Kopplung ist benannt, und die Ventil-Wirkung von §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) zählt alle fünf unterdrückten Codes |
 | 2026-08-16 | §[`DC-FA-LINK-001.a`](spezifikation.md#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion) um Schritt **6** + §2-Schema (`links.resolve-from`) erweitert: **ortsfeste Verweise** — je Gruppe wandernder Geschwister-Verzeichnisse wird jedes relative Ziel zusätzlich von jedem Ort der Gruppe aufgelöst; nicht überall auflösbar **oder** nicht überall dasselbe Ziel ⇒ `link-position-dependent`. Dateien in `fixed-dirs` sind keine Quellen (die Bestandsmessung zeigt sonst 108 Falsch-Positive auf Ruheort-Dokumenten). Grund-Code (§4) folgt mit der Implementierung (AllReasons-↔-§4-Lockstep). Begründung in begleitender ADR |
 | 2026-08-16 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) um die Schritte **W1–W5** + §2-Schema (`planning.waves.*`) erweitert: die Lifecycle-Invariante eine Ebene höher, die **Wellen**-Abschnitte der Roadmap gegen die Wellen-Dateien. W3 liest den Aktiv-Status **aus Schritt 4**, statt ihn neu zu bestimmen. Zwei Festlegungen kommen aus der Bestandsmessung: das Artefakt einer geschlossenen Welle ist die **Ergebnisnotiz** (gegen das Plan-Dokument geprüft meldet die Aussage 19-mal über zwei Bäume), und die Vorschau-Aussage liest die **erste Spalte** und überspringt Zeilen ohne Kennung (geplante Wellen tragen Namen; die Trigger-Spalte darf andere Wellen nennen). Tabellenzeilen nach derselben Lexik wie §[`DC-FA-TGT-001.a`](spezifikation.md#dc-fa-tgt-001a--deklarations-konsistenz-doku-und-build-targets-targets) — deren **zweiter** Konsument. Vier Grund-Codes folgen mit der Implementierung. Begründung in begleitender ADR |

@@ -20,7 +20,7 @@ import (
 // Prüfung rot. Als Funktion (frische Slice je Aufruf) statt Package-Var —
 // gochecknoglobals + kein geteilter Zustand.
 func netlessDocModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "codepaths", "spans", "hostpaths", "versions"}
+	return []string{"links", "anchors", "ids", "matrix", "codepaths", "spans", "hostpaths", "versions", "structure"}
 }
 
 // forbiddenInNetless: Module, die die Netzlos-/Baum-Scan-Beweisaussage brechen —
@@ -114,7 +114,7 @@ func TestQA03_NetlessModuleList_Guards(t *testing.T) {
 	}{
 		{"intakt", full, false},
 		{"links fehlt", full[1:], true},
-		{"versions fehlt", full[:len(full)-1], true},
+		{"structure fehlt", full[:len(full)-1], true},
 		{"external gesetzt", append(append([]string(nil), full...), "external"), true},
 		{"sources gesetzt", append(append([]string(nil), full...), "sources"), true},
 		{"vcs gesetzt", append(append([]string(nil), full...), "vcs"), true},

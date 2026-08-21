@@ -103,6 +103,106 @@ func pinsKenntAnker(t *testing.T, ziel, anker string) bool {
 	return false
 }
 
+// Zweite Kopplung, seit die Chronologie-Bedingung der dritte Konsument ist
+// (ADR-0057, Form aus ADR-0054): die Frage "zaehlt diese Zeile als
+// Tabellenzeile?" muss von targets (gate-phantom aus Doku-Tabellen),
+// planning.waves (Registerzeilen) und structure (Datenzeilen der
+// Chronologie-Bedingung) GLEICH beantwortet werden. Drei Schreibweisen, drei
+// gemeinsame Antworten — eine Zeile im Fence ist ein Beispiel, eine
+// eingerueckte Zeile ist keine Spalte-0-Tabellenzeile.
+
+// tabellenFall verpackt die zu pruefende Zeile in ihren Kontext.
+type tabellenFall struct {
+	name    string
+	wrap    func(row string) string
+	gueltig bool
+}
+
+func tabellenFaelle() []tabellenFall {
+	fence := "```"
+	return []tabellenFall{
+		{"ausserhalb Fence", func(r string) string { return r + "\n" }, true},
+		{"im Fence", func(r string) string { return fence + "\n" + r + "\n" + fence + "\n" }, false},
+		{"eingerueckt", func(r string) string { return "  " + r + "\n" }, false},
+	}
+}
+
+// targetsKenntZeile: ein `make ghost` in der Zeile erzeugt gate-phantom genau
+// dann, wenn die Zeile als Tabellenzeile zaehlt (das Makefile kennt ghost nicht).
+func targetsKenntZeile(t *testing.T, wrap func(string) string) bool {
+	t.Helper()
+	files := map[string]string{
+		"Makefile":  "",
+		"docs/x.md": "# D\n\n" + wrap("| `make ghost` | x |"),
+	}
+	cfg := model.TargetsConfig{
+		Makefiles: []string{"Makefile"}, DocTables: []string{"docs/x.md"}, Authority: "docs/x.md",
+	}
+	f, err := CheckTargets(coretest.NewMemFS(files), cfg)
+	if err != nil {
+		t.Fatalf("targets-Lauf unerwartet fehlgeschlagen: %v", err)
+	}
+	for _, x := range f {
+		if x.Reason == ReasonGatePhantom {
+			return true
+		}
+	}
+	return false
+}
+
+// wavesKenntZeile: eine Registerzeile ohne Ergebnisnotiz erzeugt
+// wave-results-missing genau dann, wenn die Zeile als Tabellenzeile zaehlt.
+func wavesKenntZeile(t *testing.T, wrap func(string) string) bool {
+	t.Helper()
+	roadmap := "# R\n\n## Aktuelle Welle\n\nKeine aktive Welle.\n\n" +
+		"## Nächste Wellen\n\n| Welle | Trigger |\n|---|---|\n\n" +
+		"## Abgeschlossene Wellen\n\n| Welle | Abschluss |\n|---|---|\n" +
+		wrap("| welle-8-alt | 2026-01-01 |")
+	files := map[string]string{planRoadmap: roadmap}
+	for _, f := range CheckPlanningWaves(coretest.NewMemFS(files), wavesCfg()) {
+		if f.Reason == model.ReasonWaveResultsMissing {
+			return true
+		}
+	}
+	return false
+}
+
+// structureKenntZeile: eine untypisierbare Datenzeile erzeugt
+// section-cell-untyped genau dann, wenn die Zeile als Tabellenzeile zaehlt
+// (sonst meldet der Abschnitt den Leerlauf — ein ANDERER Code).
+func structureKenntZeile(t *testing.T, wrap func(string) string) bool {
+	t.Helper()
+	files := map[string]string{
+		"docs/a.md": "# T\n\n## H\n\n" + wrap("| kaputt |"),
+	}
+	r := model.StructureRule{Files: "docs/*.md", Section: "## H", TableOrder: "desc"}
+	for _, f := range CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r}) {
+		if f.Reason == model.ReasonSectionCellUntyped {
+			return true
+		}
+	}
+	return false
+}
+
+// Die Tabellen-Kopplung selbst: alle drei Konsumenten, eine Antwort.
+func TestTabellenzeilenFrageHatEineAntwort(t *testing.T) {
+	for _, c := range tabellenFaelle() {
+		t.Run(c.name, func(t *testing.T) {
+			antworten := map[string]bool{
+				"targets":        targetsKenntZeile(t, c.wrap),
+				"planning.waves": wavesKenntZeile(t, c.wrap),
+				"structure":      structureKenntZeile(t, c.wrap),
+			}
+			for modul, antwort := range antworten {
+				if antwort != c.gueltig {
+					t.Fatalf("%s antwortet %v, gemeinsam erwartet %v (Antworten: %v)",
+						modul, antwort, c.gueltig, antworten)
+				}
+			}
+		})
+	}
+}
+
 // Die Kopplung selbst: fuer jede Schreibweise muessen ALLE Konsumenten dieselbe
 // Antwort geben. Weicht einer ab, ist die Lexik an ihrem Rand gedriftet.
 func TestAnkerFrageHatEineAntwort(t *testing.T) {

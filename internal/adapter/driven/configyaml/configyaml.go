@@ -205,6 +205,8 @@ type rawStructure struct {
 	ForbidPattern  string   `yaml:"forbid-pattern"`
 	RequirePattern string   `yaml:"require-pattern"`
 	RequireAll     []string `yaml:"require-all"`
+	TableOrder     string   `yaml:"table-order"`
+	TableColumn    *int     `yaml:"table-column"`
 	ExemptPaths    []string `yaml:"exempt-paths"`
 }
 
@@ -255,6 +257,24 @@ func structureBedingungsFehler(r rawStructure) string {
 			return "require-all enthält einen leeren Eintrag"
 		}
 	}
+	return structureChronologieFehler(r)
+}
+
+// structureChronologieFehler prüft die drei Config-Ränder der
+// Chronologie-Bedingung (ADR-0057): eine halbe Aktivierung ist ein
+// Config-Fehler, kein Zustand — table-column ohne table-order bricht laut.
+func structureChronologieFehler(r rawStructure) string {
+	switch r.TableOrder {
+	case "", "asc", "desc":
+	default:
+		return fmt.Sprintf("table-order %q muss asc oder desc sein", r.TableOrder)
+	}
+	if r.TableColumn != nil && *r.TableColumn < 1 {
+		return fmt.Sprintf("table-column %d muss >= 1 sein", *r.TableColumn)
+	}
+	if r.TableColumn != nil && r.TableOrder == "" {
+		return "table-column ist ohne table-order wirkungslos (halbe Aktivierung)"
+	}
 	return ""
 }
 
@@ -289,6 +309,7 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 		Sections: r.Sections, NonEmpty: r.NonEmpty, MinSentences: r.MinSentences,
 		MaxTasks: r.MaxTasks, ForbidPattern: r.ForbidPattern,
 		RequirePattern: r.RequirePattern, RequireAll: r.RequireAll,
+		TableOrder: r.TableOrder, TableColumn: r.TableColumn,
 		ExemptPaths: r.ExemptPaths,
 	}, nil
 }

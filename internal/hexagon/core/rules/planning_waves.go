@@ -208,7 +208,7 @@ func waveRowsFrom(lines []string, prose map[int]bool, headingNo int, prefix stri
 		if !tableRowLine(lines, prose, i) || tableHeaderOrSeparator(lines, prose, i) {
 			continue
 		}
-		cells := strings.Split(strings.Trim(lines[i], "|"), "|")
+		cells := tableCells(lines[i])
 		if len(cells) == 0 {
 			continue
 		}
@@ -217,36 +217,6 @@ func waveRowsFrom(lines []string, prose map[int]bool, headingNo int, prefix stri
 		}
 	}
 	return out
-}
-
-// tableHeaderOrSeparator meldet, ob lines[i] (0-basiert) die Trennzeile einer
-// GFM-Tabelle ist oder deren Kopfzeile (die Tabellenzeile unmittelbar vor
-// einer Trennzeile) — beide deklarieren keine Welle, auch wenn eine Kennung
-// darin steht.
-func tableHeaderOrSeparator(lines []string, prose map[int]bool, i int) bool {
-	if tableSeparatorRow(lines[i]) {
-		return true
-	}
-	return i+1 < len(lines) && tableRowLine(lines, prose, i+1) && tableSeparatorRow(lines[i+1])
-}
-
-// tableSeparatorRow meldet die GFM-Trennzeile: nur Pipes, Bindestriche,
-// Doppelpunkte und Whitespace.
-func tableSeparatorRow(line string) bool {
-	if !strings.HasPrefix(line, "|") {
-		return false
-	}
-	seen := false
-	for _, r := range line {
-		switch r {
-		case '|', ':', ' ', '\t':
-		case '-':
-			seen = true
-		default:
-			return false
-		}
-	}
-	return seen
 }
 
 // wavePrefix liefert das Kennungs-Präfix eines Globs: der literale Teil vor

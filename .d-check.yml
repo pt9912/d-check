@@ -13,7 +13,7 @@
 scan:
   roots: ["."]
   ignore: [".harness/baseline/**", ".harness/cache/**"]
-modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions]
+modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions, structure]
 
 # Geteiltes Referenz-Ventil (DC-FA-REF-001): Ziel-Achsen-Pendant zu scan.ignore
 # (jenes entfernt Quell-Dateien, dieses Ziel-Referenzen), honoriert von
@@ -163,6 +163,36 @@ versions:
   # historische Pins (DC-FA-VER-001): done/-Slices, Changelog, Lastenheft-
   # Historie, Review-Reports bleiben unberührt.
   exempt-paths: [CHANGELOG.md, "docs/plan/planning/done/**", spec/lastenheft.md, "docs/reviews/**"]
+
+# Modul structure — Chronologie-Monotonie (DC-FA-STRUCT-001 §Chronologie-
+# Monotonie, ADR-0057, slice-105): die sechs eigenen chronologischen
+# Bestandstabellen. Vor dem Scharfschalten gemessen: heutiger Bestand 0;
+# retro gegen den Stand vor der welle-73-Heilung meldet das Produkt 27
+# Befunde (14 Spezifikation-§7 · 6 Lastenheft-§7 · 7 Roadmap-Drift-Tabelle —
+# exakt die Skript-Messung des Register-Eintrags), die drei übrigen Tabellen
+# null. Richtung je Regel: das Handbuch ist die einzige aufsteigende Tabelle.
+# Inner-Loop-Bindepunkt (doc-check), weil die Zeilen in Feat-/Release-Prep-
+# Commits entstehen — dort soll es rot werden, nicht erst an der Closure.
+structure:
+  - files: spec/lastenheft.md
+    section: "## 7. Historie"
+    table-order: desc          # Spalte 1 = Version (0.61.0 …)
+  - files: spec/spezifikation.md
+    section: "## 7. Historie"
+    table-order: desc          # Spalte 1 = Datum
+  - files: docs/plan/planning/in-progress/roadmap.md
+    section: "## Historische Trigger-Verschiebungen"
+    table-order: desc          # Drift-Log: neue Zeile oben
+  - files: docs/plan/planning/in-progress/roadmap.md
+    section: "## Abgeschlossene Wellen"
+    table-order: desc
+    table-column: 2            # Spalte 1 ist der Wellen-Name, Spalte 2 das Datum
+  - files: version.md
+    section: "## Verlauf"
+    table-order: desc          # Spalte 1 = `vX.Y.Z` in Inline-Code (Roh-Lesung)
+  - files: docs/user/benutzerhandbuch.md
+    section: "## 11. Änderungshistorie"
+    table-order: asc           # die einzige aufsteigende Bestandstabelle (§11: unten anhängen)
 
 # Modul vcs (DC-FA-VCS-001, slice-053): git-Diff-Immutabilität der eigenen
 # Accepted-ADRs über die Commit-Range — `make adr-check` aktiviert es mit

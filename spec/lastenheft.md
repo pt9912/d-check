@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.60.2
+**Version:** 0.61.0
 
 **Status:** Draft
 
@@ -2280,8 +2280,10 @@ Wie viele Treffer erwartet werden, sagt `sections`:
   ist kein Ausweg, sondern ein stiller.
 
 **Bedingungen im Abschnitt**, je Abschnitt geprüft, jede optional, jede
-**fence-treu** (der Abschnitts-Text wird zuvor um Fenced-Code bereinigt) — und
-jede mit **eigenem** Grund-Code, weil jede eine andere Reparatur verlangt:
+**fence-treu** (der Abschnitts-Text wird zuvor um Fenced-Code bereinigt; die
+Chronologie-Bedingung liest als **einzige** die rohen Abschnitts-Zeilen — unten
+benannt) — und jede mit **eigenem** Grund-Code, weil jede eine andere Reparatur
+verlangt:
 
 | Bedingung | verletzt ⇒ | Reparatur |
 |---|---|---|
@@ -2291,6 +2293,8 @@ jede mit **eigenem** Grund-Code, weil jede eine andere Reparatur verlangt:
 | `forbid-pattern` (RE2) | `section-forbidden` | die Wendung ersetzen |
 | `require-pattern` (RE2) | `section-pattern-missing` | die zugesagte Aussage nachtragen |
 | `require-all` (Marken-Liste) | `section-marker-missing` | den fehlenden Baustein ergänzen |
+| `table-order` (`asc`/`desc`; Schlüsselspalte `table-column`, Default 1) | `section-unordered` | die Zeile chronologisch einsortieren (bzw. die zugesagte Tabelle führen) |
+| — dieselbe Bedingung, untypisierbare Schlüsselzelle | `section-cell-untyped` | die Schlüsselzelle bzw. die Spaltenwahl korrigieren |
 
 Ein Sammel-Code schiede aus: die Befund-Deduplikation vergleicht (Datei, Zeile,
 Regel, Ziel, Grund) — zwei verletzte Bedingungen desselben Abschnitts fielen
@@ -2314,6 +2318,37 @@ Form-Angabe im Inneren des Textlaufs, nicht an seinem Anfang). Eine
 Marken-Alternative („eine von dreien") wird dadurch überflüssig und ist
 **nicht** Teil der Zusage.
 
+**Chronologie-Monotonie (`table-order`).** Eine chronologische Tabelle kippt
+still ihre Richtung — wer eine Zeile anfügt, schaut auf die Zeile daneben statt
+auf die Regel, und danach führt dieselbe Tabelle zwei gegenläufige Blöcke; kein
+anderes Gate liest Reihenfolge. Ist `table-order` gesetzt (`asc` oder `desc` —
+die Richtung ist **Regel**-Konfiguration, weil legitime Bestände beide führen),
+prüft d-check jede **zusammenhängende** Tabelle des Abschnitts: die Zellen der
+Schlüsselspalte (`table-column`, 1-basiert, Default 1) werden **typisiert** und
+über benachbarte Datenzeilen **nicht-strikt** monoton verglichen (gleiche
+Schlüssel erlaubt — mehrere Releases an einem Tag sind der Normalfall). Kopf-
+und Trennzeile deklarieren keine Daten. Jede Zeile, die die Richtung bricht ⇒
+`section-unordered` an dieser Zeile; **null Datenzeilen im Abschnitt** ⇒
+derselbe Code als Leerlauf-Befund an der Abschnitts-Überschrift (die Bedingung
+zu setzen **ist** die Behauptung, dass hier eine chronologische Tabelle steht).
+
+Die Typ-Menge ist **geschlossen**: **ISO-Datum** (`JJJJ-MM-TT`) und
+**Punkt-Version** (optionales `v`-Präfix, mindestens zwei numerische Segmente,
+segmentweise numerisch verglichen — `1.10` > `1.9`, `0.60.2` > `0.60.0`; bei
+gleichem Präfix ist die kürzere Segmentfolge kleiner). Der Typ ist Pflicht,
+kein Komfort: ein zeichenweiser Vergleich meldet gemessen drei **korrekt**
+sortierte Bestandstabellen rot. Getypt wird der **erste** Treffer beider Muster
+in der **rohen** Zelle — die Bedingung liest als einzige die rohen
+Abschnitts-Zeilen, weil die Bereinigung Inline-Code leert und reale
+Schlüsselspalten (Release-Register) genau dort stehen; das ist eine
+ausdrückliche, hier benannte Ausnahme. Die **Tabellenzeilen-Auswahl** bleibt
+fence-treu (eine Tabelle in einem Fenced-Code-Block deklariert nichts). Eine
+Zelle ohne typisierbaren Schlüssel, eine Zeile mit zu wenigen Zellen oder eine
+**Typ-Mischung** innerhalb der Spalte ⇒ `section-cell-untyped` an dieser Zeile
+— kein stilles Überspringen, sonst schaltete ein Tippfehler die Prüfung der
+restlichen Tabelle wortlos ab; hinter der gemeldeten Zelle setzt der Vergleich
+beim nächsten typisierbaren Nachbar-Paar wieder auf.
+
 **Verhältnis zur Closure-Note-Struktur.** Die zweite Fähigkeit des Moduls
 `planning` ([`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
 ist ein **Preset** dieser Semantik im Modus `one`: gleiche Abschnitts-Bestimmung,
@@ -2331,7 +2366,9 @@ ungültiges Glob in `files`/`exempt-paths`; weder `section` noch
 `section-pattern` **oder** beide; unbekannter `sections`-Wert; nicht
 kompilierendes `section-pattern`/`forbid-pattern`/`require-pattern`; explizit
 gesetztes `min-sentences` < 1 oder `max-tasks` < 0; leerer Eintrag in
-`require-all`. **`exempt-paths` hebelt den Leerlauf-Befund nicht aus:** bleiben
+`require-all`; `table-order` außerhalb `asc`/`desc`; explizit gesetztes
+`table-column` < 1; `table-column` ohne `table-order` (eine halbe Aktivierung
+ist ein Config-Fehler, kein Zustand). **`exempt-paths` hebelt den Leerlauf-Befund nicht aus:** bleiben
 nach Abzug null Kandidaten, ist das derselbe `section-missing` — sonst schaltete
 ein Ventil die Regel still ab.
 
@@ -2346,6 +2383,12 @@ ein Ventil die Regel still ab.
 - **Boundary (fence-treu):** Given einen Abschnitt, dessen Sätze, Task-Items oder Marken **ausschließlich** in einem Fenced-Code-Block stehen, when `d-check --enable structure` läuft, then zählen sie nicht — die Bedingung gilt als verletzt.
 - **Marken-Formen:** Given einen Abschnitt, der eine `require-all`-Marke als Listen-Item (`- **M:**`), bare (`**M:**`) oder qualifiziert (`- **M (Zusatz):**`) trägt, when `d-check --enable structure` läuft, then gilt sie in **allen drei** Formen als vorhanden; trägt er sie nur als Wort im Fließtext, dann `section-marker-missing`.
 - **`require-pattern`:** Given einen Abschnitt, dessen zugesagte Aussage **innerhalb** einer Auszeichnung steht, when eine `require-pattern`-Regel sie beschreibt, then kein Befund; fehlt sie, dann `section-pattern-missing`.
+- **Chronologie (Happy):** Given eine Regel mit `table-order: desc` und einen Abschnitt, dessen Tabelle in der Schlüsselspalte absteigend sortiert ist — gleiche Schlüssel in Folge eingeschlossen —, when `d-check --enable structure` läuft, then kein Befund.
+- **Chronologie (Bruch):** Given dieselbe Regel und eine Datenzeile, deren Schlüssel größer als der ihrer Vorgänger-Zeile ist, when der Lauf endet, then `section-unordered` mit der Zeile der **brechenden** Datenzeile, Exit 1.
+- **Chronologie (Typ-Pflicht):** Given eine absteigend sortierte Versions-Spalte, in der `0.10.0` über `0.9.0` steht, when der Lauf endet, then **kein** Befund — segmentweise numerisch ist `0.10.0` größer; ein zeichenweiser Vergleich meldete rot.
+- **Chronologie (Roh-Lesung):** Given eine Schlüsselspalte, deren Zellen in Inline-Code stehen — eine davon zusätzlich mit HTML-Anker —, when der Lauf endet, then wird jede Zelle getypt und die Ordnung geprüft; auf dem bereinigten Abschnitts-Text wäre jede Zelle leer.
+- **Chronologie (untypisierbar):** Given eine Datenzeile, deren Schlüsselzelle kein Datums-/Versions-Token trägt (oder zu wenige Zellen hat, oder deren Typ vom Nachbarn abweicht), when der Lauf endet, then `section-cell-untyped` an dieser Zeile — und benachbarte typisierbare Paare werden weiterhin verglichen.
+- **Chronologie (Kopf/Fence/Leerlauf):** Given eine Tabelle, deren Kopfzeile ein Wort in der Schlüsselspalte trägt, when der Lauf endet, then zählen Kopf- und Trennzeile nicht als Datenzeilen; Given ein Abschnitt, dessen einzige Tabellenzeilen in einem Fenced-Code-Block stehen oder der gar keine trägt, then `section-unordered` als Leerlauf-Befund an der Abschnitts-Überschrift.
 - **Ventil:** Given ein Dokument, dessen Pfad einem `exempt-paths`-Glob der Regel entspricht, when `d-check --enable structure` läuft, then kein Befund für dieses Dokument.
 - **Preset-Kopplung:** Given dieselbe Datei, einmal über eine `structure`-Regel und einmal über die Closure-Fähigkeit mit gleichwertiger Konfiguration, when beide laufen, then melden sie an **denselben Zeilen** — die Semantiken fallen aus einer Mechanik.
 - **fail-closed (Leerlauf):** Given eine Regel, deren `files`-Glob keine Datei trifft — auch nach Abzug von `exempt-paths` —, when `d-check --enable structure` läuft, then `section-missing` auf dem Glob, Exit 1.
@@ -2362,7 +2405,13 @@ ausnehmen) — ausdrückbar ist nur die Pfad-Ausnahme, alles andere wäre eine
 zweite Kennungs-Semantik; die **Bedeutung** des Inhalts; verschachtelte Regeln
 und mehr als ein Abschnitts-Typ pro Regel (wer zwei Typen prüfen will, schreibt
 zwei Regeln — das ist hier kein Ausweg, sondern der Normalfall, weil die Typen
-verschieden sind).
+verschieden sind); weitere **Schlüssel-Typen** der Chronologie-Bedingung
+jenseits von ISO-Datum und Punkt-Version (geschlossene Menge — ein dritter Typ
+ist ein Change Request, kein konfigurierbares Muster: kein zweiter
+Regel-Interpreter, dieselbe Grenze wie oben); **Ordnungs-Aussagen über
+Tabellen- oder Spalten-Grenzen hinweg** (zwei getrennt sortierte, gegenläufige
+Tabellen im selben Abschnitt bleiben unerkannt — benannte Grenze; der belegte
+Anlassfall ist der Richtungs-Bruch **innerhalb** einer Tabelle).
 
 ---
 
@@ -2734,6 +2783,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.61.0 | 2026-08-21 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um die **Chronologie-Monotonie** erweitert (`table-order`/`table-column`, siebte Bedingung; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): die Schlüsselspalte jeder zusammenhängenden Tabelle des Abschnitts wird **typisiert** (geschlossene Menge: ISO-Datum, Punkt-Version — segmentweise numerisch, ein String-Vergleich meldet gemessen drei korrekt sortierte Bestandstabellen rot) und nicht-strikt monoton in der je Regel konfigurierten Richtung verglichen. Zwei neue Grund-Codes: `section-unordered` (Bruch-Zeile; auch Leerlauf ohne Datenzeile) und `section-cell-untyped` (untypisierbare Zelle/Typ-Mischung — Befund statt stillem Übersprung). **Erste benannte Roh-Lese-Ausnahme** von der Abschnitts-Bereinigung: reale Schlüsselspalten stehen in Inline-Code. Drei neue fail-closed Config-Ränder. Begründung in begleitender ADR |
 | 0.60.2 | 2026-08-16 | Nachzug der bestätigenden Re-Review (Text-Auflagen, keine Verhaltensänderung): die **Scan-Bereichs-Kopplung** ist als Grenze benannt (Gruppen-Orte müssen im wirksamen Scan-Bereich liegen — eine nie gescannte Datei ist still keine Quelle), die Ventil-Aufzählung von [`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus) zählt spezifikationsseitig alle **fünf** unterdrückten Codes, und die letzten beiden Flächen des „zeichengenau"-Überclaims (CHANGELOG, Config-Kommentar) sind auf die 15/19-Aussage gezogen |
 | 0.60.1 | 2026-08-16 | Nachzug nach unabhängigem Review **und** einem CI-Realfund, vor dem Release. **Review:** die fail-closed-Klasse zum dritten Mal (ein `resolve-from`-Verzeichnis mit Tippfehler schaltete die Quellen-Rolle still ab), die Ist-Ort-Vorbedingung stand nur im Code, der Ventil-Wortlaut von [`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus) widersprach der neuen Wirkung aktiv, und „zeichengenau“ war ein Überclaim — die Retro-19 überlappen den realen Bruch nur zu 15/19; die übrigen vier waren **Ziel**-Wanderungen, jetzt als Grenze benannt. **CI-Realfund:** der erste fail-closed-Zuschnitt meldete auf jedem frischen Klon das legitim **geleerte** `open/`-Verzeichnis — git überträgt leere Verzeichnisse nicht, ein einzelner fehlender Ort ist von einem Tippfehler nicht unterscheidbar. Jetzt meldet fail-closed, wenn **kein** `dirs`-Ort existiert oder ein Ort als Datei existiert; die Rest-Grenze ist benannt. **Und die Beschreibung selbst fehlte:** ein abbrechender Batch-Editor hatte beim 0.60.0-Schnitt nur Historie und Akzeptanzkriterien geschrieben — der Anforderungs-Text ist mit dieser Version nachgeliefert |
 | 0.60.0 | 2026-08-16 | [`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links) um **ortsfeste Verweise** erweitert (`links.resolve-from`, opt-in; Change Request des Konsumenten a-check, Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium (Einzelmodul-Frage ⇒ bestehende Anforderung ändern)): wo Dateien zwischen Geschwister-Verzeichnissen wandern, muss ein relativer Verweis von **jedem** Ort der Gruppe auflösen — und überall auf **dasselbe** Ziel. Eigener Grund-Code `link-position-dependent` (die Reparatur ist Präfixieren, nicht Ziel-Anlegen). **Zwei Festlegungen aus der Bestandsmessung:** Quellen sind nur die **wandernden** Verzeichnisse (`dirs`) — über alle vier Lifecycle-Orte gerechnet wären heute 108 Befunde Falsch-Positive auf ortsfesten Ruheort-Dokumenten (mit der Einschränkung: 0 von 79); und der **Retro-Beleg** reproduziert den historischen 19-Link-Bruch der welle-69-Eröffnung zeichengenau. Begründung in begleitender ADR |

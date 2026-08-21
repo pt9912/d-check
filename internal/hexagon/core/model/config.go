@@ -427,7 +427,22 @@ type StructureRule struct {
 	ForbidPattern  string
 	RequirePattern string
 	RequireAll     []string
-	ExemptPaths    []string
+	// TableOrder (asc/desc) schaltet die Chronologie-Monotonie scharf
+	// (ADR-0057); TableColumn ist die 1-basierte Schluesselspalte — Zeiger,
+	// damit ein abwesender Schluessel (Default 1) von einem explizit
+	// gesetzten unterscheidbar bleibt (Exit-2-Rand: explizit < 1).
+	TableOrder  string
+	TableColumn *int
+	ExemptPaths []string
+}
+
+// EffectiveTableColumn liefert die 1-basierte Schluesselspalte der
+// Chronologie-Bedingung (Default 1).
+func (r StructureRule) EffectiveTableColumn() int {
+	if r.TableColumn == nil {
+		return 1
+	}
+	return *r.TableColumn
 }
 
 // Identity ist die Regel-Identität aus Glob und Abschnitts-Selektor. Sie steht
