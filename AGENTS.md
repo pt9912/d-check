@@ -29,7 +29,7 @@ per `tools/harness/fetch-baseline-cache.sh` (`--verify` offline-Integrität;
 `--check-latest` = Currency- + Content-Drift-Audit ggü. Upstream, informativ/kein Gate,
 [`MR-022`](harness/conventions.md#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019); Tag aus §Baseline;
 Quelle ist das derivative Release-Bundle
-[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v5.6.0/lab-regelwerk.zip);
+[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v5.7.0/lab-regelwerk.zip);
 Pfadschema/Provenance siehe
 [`harness/conventions.md`](harness/conventions.md) §Adoptierte Konventions-Quellen,
 [`MR-019`](harness/conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)).
@@ -108,6 +108,19 @@ Leere (`target-missing`). Nur der **Slice-Body** (DoD-Haken + Closure-Notiz;
 historische Slices auch die Status-Zeile) bleibt Commit 2 — die Slice-Datei selbst ist im Move-Commit
 unverändert, also hält die Rename-Detection. Kanonisch:
 [`MR-013`](harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise).
+
+**Ausnahme MR-/Wellen-Lifecycle-Move** (`conventions/` → `conventions/done/`,
+flaches Wellendokument → `done/`): hier trägt der Move-Commit die
+**Link-Tiefen-Fixes der bewegten Datei selbst** mit — ein reiner Move wäre
+`doc-check`-rot, weil die relativen Verweise vom neuen Ort nicht mehr
+auflösen (gelebte Präzedenz:
+[`MR-024`](harness/conventions.md#mr-024)-Move in slice-108,
+[`MR-026`](harness/conventions.md#mr-026)-Move in slice-110; als
+undeklarierte Praxis vom slice-110-Review benannt, F-3).
+Alles Übrige bleibt Commit 2. Drückt der Fix-Umfang den Rename-Score
+Richtung 50 %, den Move in der Commit-Botschaft ausdrücklich als
+`git mv` deklarieren — die Botschaft ersetzt dann, was `git log --follow`
+nicht mehr sicher zeigt.
 
 ### 3.4 Architektur sprach-/meilensteinfrei; Spec-Straten nie abwärts
 

@@ -22,11 +22,24 @@
   die team-sim-Erweiterungen der Kurs-Welle liegen außerhalb des Bundles),
   dasselbe Materialisierungs-Skript, unverändertes Pfadschema
   `.harness/baseline/<tag>/{regelwerk,templates}/`. Das Delta ist **eine
-  Stufe** (drei Regelwerks-Dateien, +5/−3 Zeilen): `modul-06-roadmap.md`
-  fasst §Offene Wellen als zwei unabhängige Aussagen (Ruhe-Marker
-  **zusätzlich** zur Liste; gewächtert nur die Marker-Hälfte),
-  `modul-10-review-harness.md` führt `klasse` als sechstes Output-Feld,
-  dazu der README-Stand.
+  Stufe**, Bundle-weit **fünf** Dateien: im Regelwerk (+5/−3 Zeilen) fasst
+  `modul-06-roadmap.md` §Offene Wellen als zwei unabhängige Aussagen
+  (Ruhe-Marker **zusätzlich** zur Liste; gewächtert nur die Marker-Hälfte),
+  führt `modul-10-review-harness.md` `klasse` als sechstes Output-Feld,
+  dazu der README-Stand; in den Templates spiegeln
+  `reviewer.template.md` (+3) und `roadmap.template.md` (+15/−3,
+  BEDIENHINWEIS mit Substring-/Fence-Regeln für Sensor-Bauer) **dieselben
+  zwei Regeln** (Vollständigkeit der Zählung: Review-Auflage F-2 —
+  der erste Schnitt nannte nur den Regelwerks-Baum).
+  - **Hebungs-Zensus (Checkliste für den Nachfolger):** die Spiegel einer
+    Pin-Hebung sind **drei Klassen**, nicht eine — (1)
+    `baseline/<tag>`-**Pfad**-Verweise (grep-bar, gate-gedeckt), (2)
+    Release-/Tree-**URLs** mit dem Tag (`releases/tag/`,
+    `releases/download/`, `tree/` — kein Gate deckt sie), (3)
+    **Prosa-/Ellipsen-Pins** (`…/vX.Y.Z/…`, „Stand"-Angaben in
+    MR-Körpern). Die Klassen 2 und 3 sind in zwei aufeinanderfolgenden
+    Hebungen je als Review-Auflage nachgezogen worden (slice-106 F-1/F-3,
+    slice-110 F-1) — das Register zählt die Klasse.
   - **Alter Baum entfernt, Historie via Tombstone.** `.harness/baseline/v5.6.0/`
     ist entfernt (ein Pin, eine netzlose Lese-Form — dieselbe Entscheidung
     wie bei den Vorgänger-Ablösungen). Die **eingefrorenen** Verweise darauf

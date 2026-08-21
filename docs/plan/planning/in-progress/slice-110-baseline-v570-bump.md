@@ -20,7 +20,7 @@ v5.6.0).
 
 Die Baseline von `v5.6.0` auf **`v5.7.0`** heben (Kurs-Welle 81 „Zwei Hälften,
 ein Wächter", Tag 2026-08-21). Das Delta ist klein und vollständig gelesen:
-drei Regelwerks-Dateien, +5/−3 Zeilen — der README-Stand, die
+Bundle-weit fünf Dateien. Im Regelwerk (+5/−3 Zeilen) der README-Stand, die
 **modul-06-Neufassung von §Offene Wellen** (der Ruhe-Marker steht **zusätzlich**
 zur Liste, nicht an ihrer Stelle; gewächtert ist nur die Marker-Hälfte, in
 beide Richtungen; die Liste ist Ableitung ohne Wächter — eine Bijektion
@@ -149,15 +149,19 @@ konventionsgetragene Doku-Hebung; kein Legacy-Import.
 
 ## 9. Delta-Audit v5.6.0 → v5.7.0 (je geänderter Datei eine Antwort)
 
-Das Delta der Stufe umfasst drei Regelwerks-Dateien (`git diff
-v5.6.0..v5.7.0 -- lab/regelwerk/` im Kurs-Repo, nachvollzogen am
-vendorten Baum): der Audit folgt dem Delta, kein Stufen-Ritual.
+Das Delta der Stufe umfasst **fünf Bundle-Dateien**: drei im Regelwerk
+(`git diff v5.6.0..v5.7.0 -- lab/regelwerk/` im Kurs-Repo, nachvollzogen
+am vendorten Baum) und zwei Template-Spiegel derselben Regeln —
+Letztere im ersten Audit-Schnitt unterschlagen, nachgetragen auf
+Review-Auflage F-2. Der Audit folgt dem Delta, kein Stufen-Ritual.
 
 | Datei / geänderte Regel | Urteil | Beleg |
 |---|---|---|
 | `README.md` (Stand-Zeile „Kurs-Welle 81 · 2026-08-21") | n. a. | reine Stand-Fortschreibung, keine Regel |
 | `modul-06-roadmap.md` §Offene Wellen (Zwei-Hälften-Fassung: Marker **zusätzlich** zur Liste, nur die Marker-Hälfte gewächtert) | **angepasst** (Doku) + Produkt-Folge benannt | die Roadmap-Sektionsregel trägt die v5.7.0-Lesart (dieser Slice, Schritt 4; Marker paraphrasiert); der Produkt-Widerspruch — `wave-drift` hält den Aktiv-Status gegen die Datei-Zahl — geht als Umsetzung des Konsumenten-CR an slice-111 (`planning.waves.mode`) |
 | `modul-10-review-harness.md` §Output-Schema (`klasse` als sechstes Feld) | **konform** | [`reviewer.md`](../../../../.harness/skills/reviewer.md) 1.5.0 führt `kategorie · quelle · pfad · befund · verifizierbar · klasse` seit slice-090 — keine Handlung; die Baseline hat damit die eigene Upstream-Notiz (5-vs-6-Feld-Drift, welle-78-Wiedervorlage) geschlossen |
+| `templates/.harness/skills/reviewer.template.md` (+3: `klasse`-Feld) | **konform** | Template-Spiegel der modul-10-Regel — das eigene `reviewer.md` ist konform (Zeile darüber), Templates werden nach [`MR-018`](../../../../harness/conventions.md#mr-018--d-check-verkörpert-als-producer-self-hoster-keine-templates) nicht kopiert |
+| `templates/docs/plan/planning/roadmap.template.md` (+15/−3: §Offene-Wellen-Form + BEDIENHINWEIS Substring-/Fence-Regeln) | **konform** | Template-Spiegel der modul-06-Regel — die eigene Roadmap trägt die Form (Schritt 4); die BEDIENHINWEIS-Regeln sind hier gelebt (Marker-Paraphrase, Fence-Ausnahme in der Prosa-Zeilen-Lexik des Produkts) und in slice-111 §2 als Erkennungs-Regel übernommen |
 
 ## 10. Closure-Notiz (nach `done/`)
 

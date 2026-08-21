@@ -15,8 +15,9 @@ plus die eine Produkt-Anpassung, die sie fällig macht).
 ## 1. Welle-Ziel
 
 Die Baseline von `v5.6.0` auf **`v5.7.0`** heben (Kurs-Welle 81 „Zwei
-Hälften, ein Wächter", Tag 2026-08-21; drei Regelwerks-Dateien, +5/−3
-Zeilen) und die eine Produkt-Konsequenz ziehen. Beide Stufen-Änderungen sind
+Hälften, ein Wächter", Tag 2026-08-21; Bundle-Delta fünf Dateien — drei
+Regelwerks-Dateien +5/−3, zwei Template-Spiegel derselben Regeln) und die
+eine Produkt-Konsequenz ziehen. Beide Stufen-Änderungen sind
 Landungen **eigener Upstream-Notizen**: modul-10 führt `klasse` als sechstes
 Output-Feld (die 5-vs-6-Drift aus der welle-78-Wiedervorlage), und modul-06
 fasst §Offene Wellen als **zwei unabhängige Aussagen** — die Liste folgt den
