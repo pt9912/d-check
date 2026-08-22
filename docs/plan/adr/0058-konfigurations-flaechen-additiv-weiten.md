@@ -103,6 +103,52 @@ Verhalten.
    dieselben Felder, dasselbe `target`. Was die Reihen unterscheidbar macht,
    ist allein die Nachricht — und genau deshalb muss sie vollständig sein.
 
+2. **`structure` prüft Überschriften positiv und je Überschrift
+   (`heading-pattern`/`heading-level`) — nicht als Negation über den
+   Abschnitts-Text.** Auch das ist eine achte Bedingung derselben Anforderung,
+   nach demselben Kriterium
+   ([ADR-0044](0044-geteiltes-referenz-ventil-quell-skopus.md)). Vier
+   Festlegungen:
+
+   - **Die Bedingung liest die Überschriften, nicht den Abschnitts-Text.** Sie
+     ist damit die einzige neben der Chronologie-Bedingung, die vom
+     bereinigten Text abweicht — und die einzige, die dieselbe
+     Heading-Erkennung benutzt, mit der das Modul den Abschnitt findet. Das
+     ist keine Bequemlichkeit, sondern die Reparatur des Anlasses: die
+     abgelöste Negation hatte ihre eigene Lexik nachgebaut (Zeilenanfang,
+     genau ein Leerzeichen), während das Modul beliebigen Weißraum trimmt und
+     Tab akzeptiert. Eine eingerückte Sektion entkam still
+     ([ADR-0054](0054-geteilte-lexik-bindet-ihre-konsumenten.md): wer eine
+     Lexik-Frage selbst beantwortet, ist ein Defekt, keine Variante).
+   - **Geprüft wird der Überschriften-Text, nicht die rohe Zeile.** Sonst
+     müsste jedes Muster die `#`-Folge mitkodieren — und damit die Ebene, die
+     bereits ein eigener Schlüssel ist. Zwei Orte für dieselbe Aussage sind
+     die bekannte Drift-Quelle. Der Abschnitts-**Selektor** vergleicht
+     weiterhin die getrimmte Zeile; er wählt einen Abschnitt, diese Bedingung
+     prüft eine Form.
+   - **Ein Befund je Überschrift, auf ihrer Zeile.** Die übrigen Bedingungen
+     melden am Abschnittskopf, weil ihre Aussage dem Abschnitt gilt; diese
+     gilt einer Überschrift, und die Reparatur steht dort. Das ändert die
+     Befund-**Zahl** gegenüber einer Abschnitts-Bedingung und ist deshalb
+     zugesagt statt stillschweigend. Eigener Grund-Code
+     `section-heading-mismatch` nach dem Kriterium der Bedingungs-Tabelle
+     (andere Reparatur ⇒ eigener Code); ein Sammel-Code fiele zudem mit den
+     übrigen Bedingungen desselben Abschnitts unter die Befund-Deduplikation
+     zusammen.
+   - **Default-Ebene ist Abschnitts-Ebene + 1.** Gemessen am eigenen Bestand
+     macht das heute keinen Unterschied (der betroffene Abschnitt trägt
+     ausschließlich Überschriften einer Ebene); der Unterschied entsteht in
+     der Zukunft. „Alle Ebenen" hieße, dass eine später ergänzte vierte Ebene
+     rückwirkend unter eine Kennungs-Pflicht fiele, die ihr nie zugedacht war
+     — ein Falsch-Positiv mit Verzögerung. Wer sie meint, nennt sie.
+
+   **Zwei Grenzen sind benannt, nicht geschlossen:** ohne Überschrift der
+   geprüften Ebene ist die Bedingung vacuously wahr, und ein `heading-level`
+   flacher als der Abschnitt kann in ihm nicht vorkommen. Beides sind keine
+   Defekte, aber beides kann eine Deckung vortäuschen — deshalb wird die
+   Umstellung des eigenen Profils **vorher rot** gemessen, an genau dem Fall,
+   an dem die abgelöste Negation still war.
+
 ## Konsequenzen
 
 **Positiv.** Die 3×-Form von BEO-008 wird **baubar** — ob das eigene Profil sie
@@ -119,6 +165,17 @@ Absicht.
 **Grenze.** Mehrere Quellen **je Paar** bleiben draußen: die Prüfung vergleicht
 auf Gleichheit, und zwei Quellen hätten keine eindeutige Erwartung. Ebenso
 bleibt es bei Gleichheit statt semantischer Ordnung.
+
+**Positiv (Entscheidung 2).** Die abgelöste Ersatz-Konstruktion verschwindet
+aus dem eigenen Profil — mit ihr eine 240 Zeichen lange, von Hand hergeleitete
+Negation, die niemand ohne Gegenprobe lesen kann. Die Aussage steht jetzt so
+da, wie sie gemeint ist.
+
+**Negativ / Kosten (Entscheidung 2).** Eine achte Bedingung ist eine achte
+Fläche: Vertrag, Schema-Zeile, Grund-Code, Klartext, Vorlage. Und die Bedingung
+weicht als zweite vom bereinigten Abschnitts-Text ab — die Aussage „jede
+Bedingung liest denselben Text" gilt damit für sechs von acht und ist an
+beiden Ausnahmen ausdrücklich benannt.
 
 **Zweite Grenze, gemessen statt vermutet.** Zwei Paare, die auf derselben Zeile
 denselben Pin-Wert treffen, teilen eine Befund-Adresse und ergeben **einen**
@@ -164,3 +221,13 @@ eigene Entscheidung mit eigener Messung.
 - Ein Paar braucht wiederholt **mehrere Quellen** — dann ist die erste Grenze
   gegen die gelebte Praxis zu prüfen; die Antwort wäre eine Semantik für
   „welche der Quellen gilt", keine zweite Liste.
+- Eine **dritte** Bedingung weicht vom bereinigten Abschnitts-Text ab — dann
+  ist nicht die Bedingung die Ausnahme, sondern der Satz „jede Bedingung liest
+  denselben Text"; er braucht dann eine ehrlichere Formulierung seiner
+  Reichweite.
+- Ein Adopter braucht wiederholt **mehrere Ebenen** in einer Regel — dann ist
+  die Ein-Ebenen-Wahl aus Entscheidung 2 gegen die Praxis zu prüfen; die
+  Antwort wäre eine Ebenen-**Menge**, nicht ein zweiter Schlüssel.
+- Die **vacuously wahre** Bedingung trifft real (ein Abschnitt verliert seine
+  Unterabschnitte, ohne dass es jemand merkt) — dann braucht die Bedingung
+  eine Mindest-Zahl, und die Grenze aus Entscheidung 2 ist keine mehr.
