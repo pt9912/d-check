@@ -2,6 +2,12 @@
 
 **Status:** Aktiv. **Letzte Änderung:** 2026-08-22.
 
+Diese Kopfzeile bleibt, wo lebende Register und das Technik-Stratum keine
+tragen: die Sicht führt **keine Historie**, also ist `Letzte Änderung` hier
+ein **Frische-Marker** — die Aussage, wann die Sicht zuletzt gegen den Code
+gehalten wurde — und kein Protokoll. Ein benannter Trigger pflegt sie: jede
+Änderung darüber (Vertrag oder Technik) zieht sie nach.
+
 **Hard Rule:** Diese Datei ist **sprach- und meilensteinfrei**: Sie
 benennt Schichten und Rollen, keine Technologie, und enthält keine
 Wellen, Slices, Commit-Hashes oder Closure-Daten (`AGENTS.md` §3.4).

@@ -1,7 +1,5 @@
 # Beobachtungs-Register
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-08-22 (slice-117-Closure: **BEO-008 auf 3** — Schwelle erreicht, die benannte mechanische Form braucht einen Produkt-CR; die Klasse ist um die Über-Hebung erweitert). Davor 2026-08-22 (welle-80-Closure-Lesung: **BEO-010** neu bei 1 — die Modulliste des Prüf-Profils hat Spiegel außerhalb der Config, keiner davon gate-gedeckt). Davor 2026-08-22 (slice-112-Closure: **BEO-002** erneut eingetreten — verkörpert, nicht weitergezählt; der fehlende Ableiter „grep nach dem alten Wortlaut" ist jetzt in [`MR-025`](../../../harness/conventions.md#mr-025) benannt). Davor 2026-08-21 (slice-111-Closure: **BEO-009** neu bei 2 — eine Commit-Botschaft behauptet eine Probe oder Änderung, die nicht stattfand; **BEO-007 auf 3 und VERKÖRPERT** — der `pre-commit`-Hook trägt jetzt den vollen `doc-check`).
-
 Regeln dieses Registers: Baseline-Regelwerk `modul-06-roadmap.md`
 §Das Beobachtungs-Register — wer schreibt (Slice-Closure), wer liest (Welle-Closure =
 Lese-Schritt bei 3×; Slice-Planung = Sichtungs-Schritt darunter), wann gestrichen wird,
