@@ -243,6 +243,11 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   Move `open→next` bzw. direkt `open→in-progress`, wie dieses Repo ihn
   fährt; Deklaration, kein Sensor — Baseline v5.5.0, template-forward,
   kein Retrofit).
+- Das Slice-Kopf-Feld `**Berührte Spec-Stellen:**` nennt die **Kennung**, wo
+  das Zielelement eine trägt (`SPEC-<NNN>`, `ARC-<NNN>`,
+  `<DC-ID>.<Buchstabe>`), sonst den Abschnitt; `—`, wenn der Slice keine
+  Spec-Stelle berührt. Der Verweis zeigt **aufwärts** — die Spec nennt den
+  Slice nie (§3.4).
 - Slice-Pläne tragen **kein** `**Status:**`-Feld — der Lifecycle-Zustand **ist** die
   Verzeichnis-Position; neue Slices führen stattdessen den `**Lifecycle:**`-Hinweis
   (Baseline-`slice.template.md`). Alt-Slices in `done/` behalten ihr historisches Feld.

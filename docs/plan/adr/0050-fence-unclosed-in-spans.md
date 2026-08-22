@@ -13,7 +13,8 @@ betroffener Konsument der Lexik
 (Closure-Note-Struktur, [ADR-0048](0048-closure-note-struktur-im-planning-modul.md)).
 **Schärft:** die Erweiterung von
 [`spec/spezifikation.md` §DC-FA-SPAN-001.a](../../../spec/spezifikation.md#dc-fa-span-001a--span-artefakt-erkennung)
-um Schritt 3.
+um Schritt 3 und die Grund-Code-Festlegung [`SPEC-030`](../../../spec/spezifikation.md#4-grund--und-fehler-codes)
+(`fence-unclosed`).
 
 ## Kontext
 
@@ -175,6 +176,10 @@ haben:
 
 ## Geschichte
 
+- 2026-08-22: `Schärft:` nennt die Grund-Code-Festlegung jetzt bei ihrer
+  Struktur-Kennung statt nur beim Abschnitt — die Adressierungs-Form der
+  Baseline, erstmals angewandt (der Status bleibt `Proposed`, der Kern
+  unverändert).
 - 2026-08-09: Proposed (doc-first, `slice-101`).
 - 2026-08-09: nach unabhängigem Code-Review überarbeitet — Entscheidung 1 wertet
   **beide** Schluss-Lesarten aus (vorher nur den naiven Toggle, wodurch der

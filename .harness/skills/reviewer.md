@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.5.0 · **Datum:** 2026-08-21 ·
+**Version:** 1.6.0 · **Datum:** 2026-08-22 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -53,6 +53,14 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   Belegt in drei Review-Runden desselben Slice (Beobachtungs-Register
   **BEO-004**), jedes Mal an einer neuen Achse; die Aufzählung von Hand hat
   dreimal nicht gehalten, darum steht die Frage hier statt einer Liste.
+  **Adressierungs-Form eines Neuzugangs.** Trägt das Zielelement eine
+  Struktur-Kennung (`SPEC-*` in der Spezifikation, `ARC-*` in der Sicht) oder
+  eine Verfeinerungs-Kennung, muss ein **neues** `Schärft:`/`Bezug:`-Feld sie
+  nennen — der Link zeigt auf den Abschnitt, der Text trägt die Kennung. Ein
+  neuer Zeiger nur auf „§N" ist ein Finding. **Nicht** zu melden ist die alte
+  Form in `Accepted`-ADRs: sie sind immutabel und bleiben auf ihren
+  `§`-Ankern — zwei Formen, eine Regel
+  ([`MR-000`](../../harness/conventions.md#mr-000--baseline-aussage)).
 - **LOW** (nice-to-fix): Doku-Drift (Prosa-Modullisten, veraltete
   Beispiele); latente Wartungsfalle (hart verdrahteter Wert, der erst
   bei künftigem Edit zündet); Ketten-Duplikate in Make-Targets.
