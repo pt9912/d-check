@@ -152,7 +152,7 @@ erlaubt bleiben `## Geschichte`-Anhänge + der `**Status:**`-Übergang;
 Jede Schwellen-Senkung (Coverage, Linter-Strenge, Prüfregel) ist ein
 ADR, kein PR-Kommentar.
 
-### 3.7 Kommentare tragen eine der fünf Klassen
+### 3.7 Kommentare und Zustandsfelder tragen eine der fünf Klassen
 
 **Ein Kommentar beschreibt, was da ist** (Baseline-Merksatz). Er
 beantwortet in Code, Konfiguration oder Skript, was der Code nicht
@@ -163,12 +163,26 @@ Keine Review-Historie und keine Review-Befund-Marker, keine Deliberation
 Mess-Labels; Herkunft nur als **ein** auflösbares Feld nach dem
 Baseline-Schema (`DC-*` — die Baseline-Form `LH-*` —, `ADR-*`, `MR-*`,
 `seit welle-<NN>`). Der Reviewer-Skill trägt den HIGH-Anker dazu.
+
+**Zustandsfelder ebenso** (seit dem v5.9.0-Bump): eine `Stand`- oder
+`Status`-Zelle in Roadmap, Beobachtungs-Register oder Meilenstein-Tabelle ist
+ein Zustands-Artefakt wie ein Kommentar, nur im Rumpf. Sie nennt **den Zustand
+und den Beleg als auflösbaren Anker**, nicht die Chronik, wie es dazu kam; das
+Drift-Log der Roadmap trägt **nur Umplanungen**, keine Schließungen und keine
+erreichten Meilensteine (die stehen im Closure-Log bzw. in der Status-Spalte).
+Ein lebendes Register trägt **keine** Kopfzeile `Status: Aktiv. Letzte
+Änderung: <Datum>` — sein Zustand ist sein Inhalt, sein Änderungsdatum hält
+`git`; ein Datum, das ein **benannter Trigger** pflegt, ist davon ausgenommen
+(der Frische-Marker der Architektur-Sicht). Kanon:
+[Baseline §Was ein Kommentar trägt](.harness/baseline/v5.9.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
+
 **Bestandsgrenze:** vor der Einführung bzw. vor dieser Schärfung
 geschriebene Kommentare (Test-Kommentare; ältere Config-Kommentare mit
 Slice-Nummer) sind grandfathered — geräumt wird beim nächsten Anfassen
 der Zeile; Neuzugänge fallen überall unter den Anker. *(Hard Rule seit
 dem v5.6.0-Bump, geschärft mit dem v5.7.0-Bump auf die
-Baseline-Feld-Formen; Auflösungs-Trigger: permanent.)*
+Baseline-Feld-Formen und mit dem v5.9.0-Bump auf Zustandsfelder;
+Auflösungs-Trigger: permanent.)*
 
 ## 4. Quality Gates
 

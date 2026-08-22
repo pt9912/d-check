@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.6.0 · **Datum:** 2026-08-22 ·
+**Version:** 1.7.0 · **Datum:** 2026-08-22 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -29,6 +29,19 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   **ein** auflösbares Feld zulässig
   ([Baseline §Was ein Kommentar trägt](../baseline/v5.9.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte);
   neuer HIGH-Eintrag seit 1.5.0, Auflösungs-Trigger: permanent).
+  **Zustandsfeld trägt Chronik.** Eine `Stand`-/`Status`-Zelle (Roadmap,
+  Beobachtungs-Register, Meilenstein-Tabelle) erzählt, **wie** der Zustand
+  entstand, statt Zustand und Beleg als auflösbaren Anker zu nennen; oder ein
+  Drift-Log protokolliert Schließungen und erreichte Meilensteine und wird
+  damit ein zweites Closure-Log. Ebenso: die Kopfzeile eines lebenden
+  Registers (`Status: Aktiv. Letzte Änderung: …`) — *Aktiv* ist kein Zustand,
+  den ein Register je wechselt. **Kein Gate fängt das**; die Prüfung ist ein
+  Urteil, kein `grep`. **Nicht** zu melden: ein Datum, das ein **benannter
+  Trigger** pflegt (der Frische-Marker der Architektur-Sicht, der
+  Wellen-Stand des Regelwerks) — der Unterschied ist der Trigger, nicht die
+  Zeile ([Baseline §Was ein Kommentar trägt](../baseline/v5.9.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte),
+  *Dieselbe Regel für Zustandsfelder*; neuer HIGH-Eintrag seit 1.7.0,
+  Auflösungs-Trigger: permanent).
 - **MEDIUM** (vor Merge zu klären): Spec-Treue-Lücke einer
   Messmethode; Konsistenz-Lücke **zwischen** Modulen derselben
   Eingabe-Klasse; Erkennungs-Differenz zur Alt-Tool-Familie
