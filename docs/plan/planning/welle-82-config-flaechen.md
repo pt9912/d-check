@@ -53,7 +53,7 @@ welle-80 und welle-81 sowie im Beobachtungs-Register belegt.
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [slice-122](open/slice-122-versions-musterliste.md) | `versions`: mehrere Muster-Quellen-Paare statt eines — macht die Beobachtungs-3×-Form baubar | [`DC-FA-VER-001`](../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) |
+| [slice-122](in-progress/slice-122-versions-musterliste.md) | `versions`: mehrere Muster-Quellen-Paare statt eines — macht die Beobachtungs-3×-Form baubar | [`DC-FA-VER-001`](../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) |
 | [slice-123](open/slice-123-structure-heading-muster.md) | `structure`: ein Schlüssel „jede Überschrift des Abschnitts matcht dieses Muster" statt ausgeschriebener Negation | [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) |
 | [slice-124](open/slice-124-diagrams-ventile.md) | `diagrams`: Datei-Ventil, Zeilen-Marker und die fehlenden §2-Schema-Zeilen — Ventil-Parität zu den übrigen Modulen | [`DC-FA-DIAG-001`](../../../spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in) |
 | [slice-125](open/slice-125-release-v0630.md) | Release-Prep über alle drei Erweiterungen und Release `v0.63.0` (Tag, GHCR, Digest-Backfill) | [`DC-FA-DIST-001`](../../../spec/lastenheft.md#dc-fa-dist-001--docker-image) |
