@@ -63,21 +63,28 @@ halten.
 
 ## 4. Definition of Done
 
-- [ ] [ADR-0050](../../adr/0050-fence-unclosed-in-spans.md)/[ADR-0055](../../adr/0055-wellen-invariante-artefakt-und-grund-codes.md) mit Kennungen in `Schärft:`/`Bezug:` + Geschichte-Zeile;
+- [x] [ADR-0050](../../adr/0050-fence-unclosed-in-spans.md)/[ADR-0055](../../adr/0055-wellen-invariante-artefakt-und-grund-codes.md) mit Kennungen in `Schärft:`/`Bezug:` + Geschichte-Zeile;
       `make adr-check` stumm (Probe dokumentiert).
-- [ ] ADR-Index-Kopf mit Beispiel beider Formen; Reviewer-Skill 1.6.0 mit
+- [x] ADR-Index-Kopf mit Beispiel beider Formen; Reviewer-Skill 1.6.0 mit
       Anker.
-- [ ] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
+- [x] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
       gesichtet.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **[ADR-0055](../../adr/0055-wellen-invariante-artefakt-und-grund-codes.md) ist gleichzeitig Gegenstand laufender Fortschreibungen** (zuletzt
   slice-112); ein Nachzug der Felder darf keine Entscheidung umschreiben — nur
-  Adress-Form. — **Ausgang:** *(bei Closure)*
+  Adress-Form. — **Ausgang:** entfallen — der Review hat den Diff gegen die
+  Immutabilitäts-Grenze geprüft: Status-Zeilen unverändert, Nachträge im
+  Geschichte-Anhang, keine Entscheidung umgeschrieben. Der Kern blieb, das
+  Feld kam dazu.
 - **Reviewer-Anker als MEDIUM** könnte Alt-ADR-Zitate in Reviews als Befund
   lesen — der Anker nennt ausdrücklich die Zwei-Formen-Regel. — **Ausgang:**
-  *(bei Closure)*
+  **eingetreten in der Gegenrichtung.** Nicht die Scheinbefund-Seite war offen
+  (die schloss der Anker), sondern die andere: eine ADR, die im selben Slice
+  `Accepted` wird, wäre unter die Ausnahme gefallen. Der Anker sagt jetzt, dass
+  die Form beim **Schreiben** gilt, nicht beim Status-Übergang, und nennt den
+  Skopus wörtlich wie die Konventions-Quelle (Review F-4).
 
 ## 6. Trigger
 
@@ -108,4 +115,47 @@ Artefakten; kein Legacy-Import.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Geliefert:** die Adressierungs-Form ist angewandt, nicht nur deklariert.
+Gemessen zuerst: 57 ADRs, 46 mit `Schärft:`-Feld, 55 `Accepted` und damit
+immutabel, **zwei** `Proposed` — genau die zwei tragen die Form jetzt. Eine
+bekam die Struktur-Kennung neben ihrer Verfeinerungs-Kennung, die andere
+erstmals überhaupt ein `Schärft:`-Feld (es fehlte) mit Algorithmus-Abschnitt,
+vier Grund-Code-Festlegungen und dem Konfigurations-Schema. Dazu die drei
+Regel-Stellen: der ADR-Index zeigt beide Formen an einem Beispiel, der
+Reviewer-Skill (1.6.0) trägt den Anker samt Skopus, und `AGENTS.md` §5 sagt,
+was das Slice-Kopf-Feld nennt.
+
+**Review** ([Report](../../../reviews/2026-08-22-slice-116-adr-neuzugangs-regel-review.md)):
+0 HIGH, 2 MEDIUM, 3 LOW — der strengste Review der Welle, und alle fünf
+Befunde saßen. Eingearbeitet.
+
+**Was ging anders als geplant — dreimal derselbe Kern: die Form, die ich
+einführe, gilt auch für mich.**
+1. Mein Index-**Beispiel** für die neue Form war selbst falsch ausgezeichnet:
+   backslash-escapte Backticks **innerhalb** einer Code-Spanne kennt CommonMark
+   nicht. Kein Gate sah es — die Backtick-Parität war gerade, also schwieg
+   `spans`. Ein Beispiel ist Prosa mit Anspruch: es zeigt eine Form und muss
+   die Form, in der es geschrieben ist, selbst einhalten.
+2. Die **Richtung** der Geschichte liest man am Bestand der Datei, nicht an
+   der Gewohnheit: dieselbe Zeile ging in eine aufsteigende Liste oben hinein
+   und in eine absteigende unten — im selben Commit.
+3. Das erstmals angelegte `Schärft:`-Feld war **unvollständig**: es nannte den
+   Algorithmus und die Grund-Codes, nicht aber das Konfigurations-Schema,
+   obwohl die ADR sieben Schlüssel samt fail-closed-Rändern festlegt. Wer eine
+   Adressierungs-Form einführt, muss zuerst die Menge der adressierten Stellen
+   vollständig kennen — die Spiegel-Klassen stehen in
+   [`MR-025`](../../../../harness/conventions.md#mr-025), das Config-Schema ist
+   eine davon.
+
+- **Steering-Loop-Eintrag:** Reviewer-Skill geschärft: die Adressierungs-Form
+  eines Neuzugangs ist ein MEDIUM-Anker, der `Accepted`-Bestand ausdrücklich
+  ausgenommen — liegt in `.harness/skills/reviewer.md §Repo-spezifische Anker`.
+  Kein Auslöser aus dem Register.
+- **Beobachtungs-Register (`../observations.md`):** keine neue Beobachtung.
+  Die unvollständige Spiegel-Menge ist die verkörperte Klasse BEO-002, hier in
+  ihrer Feld-Form; zitiert statt neu formuliert.
+- **Folge-Slices:** keiner — mit diesem Slice ist die Welle vollständig; es
+  folgt die Wellen-Closure.
+- **Risiken aus §6:** beide mit Ausgang (§5) — eines entfallen, eines in der
+  Gegenrichtung eingetreten und geschlossen.
+- **Drei Paarungen:** Wellen-Slice — die Paarungen prüft die Welle-Closure.
