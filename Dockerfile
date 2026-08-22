@@ -29,7 +29,7 @@
 # ---------------------------------------------------------------------------
 
 ARG GO_VERSION=1.27.0
-ARG GOLANGCI_LINT_VERSION=v2.12.2
+ARG GOLANGCI_LINT_VERSION=v2.13.1
 
 # ---- deps ------------------------------------------------------------------
 FROM golang:${GO_VERSION}@sha256:65b6f280bf050ec5af12716857e8ea8439d694dbba8f31ceeb7630670071f2bb AS deps
@@ -53,7 +53,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o /tmp/d-check ./cmd/d-check
 
 # ---- lint ------------------------------------------------------------------
-FROM golangci/golangci-lint:${GOLANGCI_LINT_VERSION}@sha256:5cceeef04e53efe1470638d4b4b4f5ceefd574955ab3941b2d9a68a8c9ad5240 AS lint
+FROM golangci/golangci-lint:${GOLANGCI_LINT_VERSION}@sha256:d371321370bf2907bd13a8f6f8baff0e0ca7438d76fdf636b281eadf7e2305e3 AS lint
 
 WORKDIR /src
 COPY --from=deps /go/pkg/mod /go/pkg/mod
