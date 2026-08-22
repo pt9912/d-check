@@ -121,24 +121,34 @@ func fenceInfo(trimmed string) string {
 // Genau diese sonst opaken Diagramm-Fences werden gelesen; alle übrigen
 // Fences und der Prosa-Text bleiben außen vor. Derselbe einfache
 // Fence-Automat wie proseLines (Umschalten bei jeder ```/~~~-Zeile).
-func diagramFenceLines(content []byte, langs map[string]bool) []proseLine {
-	var out []proseLine
+func diagramFenceLines(content []byte, langs map[string]bool) []diagramLine {
+	var out []diagramLine
 	inFence, open := false, false
+	fenceOpen := ""
 	for i, raw := range strings.Split(string(content), "\n") {
 		trimmed := TrimFenceIndent(raw)
 		if FenceToggle(trimmed) {
 			if inFence {
-				inFence, open = false, false
+				inFence, open, fenceOpen = false, false, ""
 			} else {
-				inFence, open = true, langs[fenceInfo(trimmed)]
+				inFence, open, fenceOpen = true, langs[fenceInfo(trimmed)], raw
 			}
 			continue
 		}
 		if inFence && open {
-			out = append(out, proseLine{no: i + 1, raw: raw})
+			out = append(out, diagramLine{proseLine: proseLine{no: i + 1, raw: raw}, fenceOpen: fenceOpen})
 		}
 	}
 	return out
+}
+
+// diagramLine ist eine Roh-Zeile innerhalb eines geoeffneten Diagramm-Fence
+// samt der Zeile, die ihn eroeffnet: der Zeilen-Marker wirkt an beiden Orten —
+// auf der Zeile fuer sie selbst, auf der Oeffnungszeile fuer den ganzen Block
+// (spec/spezifikation.md §DC-FA-DIAG-001.a Schritt 5).
+type diagramLine struct {
+	proseLine
+	fenceOpen string
 }
 
 // PreprocessMarkdown wendet Fence- und Inline-Code-Behandlung an.

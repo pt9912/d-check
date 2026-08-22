@@ -88,6 +88,10 @@ modules: [links, anchors]
 #   patterns:                      # wie ids; geprüft wird Existenz in defined-in (nicht Linkpflicht)
 #     - regex: 'ARC-\d{2}'
 #       defined-in: spec/architecture.md
+#   exempt-paths: ["docs/reviews/**"]  # Dateien ganz ohne diagrams-Prüfung (datei-weit)
+#   # Zeilen-Ventil: das TOKEN d-check:ignore auf einer Diagramm-Zeile nimmt sie
+#   # aus, auf der ÖFFNUNGSZEILE des Fence den ganzen Block. In mermaid gehört es
+#   # in einen %%-Kommentar — das Modul sucht das Token, nicht den Kommentar.
 
 # --- versions: Versions-Pin-Konsistenz (alle Pins == aktuelle Version) ---
 # versions:

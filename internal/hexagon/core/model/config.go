@@ -264,6 +264,10 @@ type DiagramPattern struct {
 type DiagramsConfig struct {
 	Fences   []string
 	Patterns []DiagramPattern
+	// ExemptPaths nimmt ganze Dateien aus der Pruefung (datei-weit, Glob wie
+	// scan.ignore) — Ventil-Paritaet zu ids/codepaths; der Zeilen-Marker ist
+	// das zweite Ventil und lebt im Modul.
+	ExemptPaths []string
 }
 
 // EffectiveFences liefert die zu öffnenden Fence-Sprachen (Default

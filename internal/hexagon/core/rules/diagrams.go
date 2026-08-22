@@ -16,8 +16,14 @@ import (
 // Token-Extraktion über Rohtext (kein Mermaid-Parser, DC-QA-03); der
 // Fence-Zustand der übrigen Module bleibt unberührt. defCache cached je
 // (defined-in, Regex) die Token-Menge der Quelle.
+//
+// Zwei Ventile wie ids/codepaths: exempt-paths (datei-weit) und der
+// Zeilen-Marker d-check:ignore. Der Marker ist hier ein TOKEN, kein
+// HTML-Kommentar — in einem mermaid-Fence versteckt ihn die Diagramm-Sprache
+// (%%), nicht Markdown; und er wirkt auf der Oeffnungszeile fuer den ganzen
+// Block, weil die intuitive Platzierung sonst still nichts taete.
 func CheckDiagrams(fsys driven.Filesystem, file string, content []byte, cfg model.DiagramsConfig, defCache map[string]map[string]bool) []model.Finding {
-	if len(cfg.Patterns) == 0 {
+	if len(cfg.Patterns) == 0 || ignored(file, cfg.ExemptPaths) {
 		return nil
 	}
 	langs := map[string]bool{}
@@ -25,8 +31,11 @@ func CheckDiagrams(fsys driven.Filesystem, file string, content []byte, cfg mode
 		langs[strings.ToLower(l)] = true
 	}
 	var findings []model.Finding
-	for _, pl := range diagramFenceLines(content, langs) {
-		findings = append(findings, diagramLineFindings(fsys, file, pl, cfg.Patterns, defCache)...)
+	for _, dl := range diagramFenceLines(content, langs) {
+		if strings.Contains(dl.raw, ignoreMarker) || strings.Contains(dl.fenceOpen, ignoreMarker) {
+			continue // d-check:ignore — die Zeile bzw. (auf der Oeffnungszeile) der ganze Block
+		}
+		findings = append(findings, diagramLineFindings(fsys, file, dl.proseLine, cfg.Patterns, defCache)...)
 	}
 	return findings
 }

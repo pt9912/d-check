@@ -166,11 +166,10 @@ ids:
 # (4) Die Musterbreite ist dreistellig: eine vertippte zwei- oder vierstellige
 # Kennung im Diagramm ist kein Token und faellt still durch.
 diagrams:
-  # Scope auf die Spec-Straten: das Muster gilt sonst repo-weit, und diagrams
-  # kennt WEDER exempt-paths NOCH den Zeilen-Marker d-check:ignore (gemessen).
-  # Ein mermaid-Beispiel mit einer dreistelligen Kennung in einem Report oder
-  # im Handbuch wuerde damit ueber den pre-commit-Hook jeden Commit blockieren.
-  # Grenze 3: Diagramme ausserhalb von spec/ sind dadurch ungewacht.
+  # Scope auf die Spec-Straten: das Muster gilt sonst repo-weit, und ein
+  # mermaid-Beispiel mit einer dreistelligen Kennung ausserhalb der Spec ist
+  # kein Vertragsbruch, sondern ein Beispiel.
+  # Grenze: Diagramme ausserhalb von spec/ sind dadurch ungewacht.
   scope:
     roots: [spec]
   patterns:

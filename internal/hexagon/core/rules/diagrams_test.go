@@ -184,3 +184,86 @@ func TestDiagramsDefinedInValidierung(t *testing.T) {
 		t.Fatal("escapendes defined-in muss Fehler liefern")
 	}
 }
+
+// DC-FA-DIAG-001 Ventil (Datei): eine Datei in exempt-paths wird gar nicht
+// geprueft — datei-weit, unabhaengig vom Scan-Bereich.
+func TestDiagramsVentilDatei(t *testing.T) {
+	fix := diagramFixture()
+	fix["docs/report.md"] = "```mermaid\nflowchart TB\n  X[\"ARC-77\"]\n```\n"
+	cfg := diagramsCfg("spec/arch.md")
+	cfg.Diagrams.ExemptPaths = []string{"docs/**"}
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, cfg, []string{"diagrams"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, f := range res.Findings {
+		if f.File == "docs/report.md" {
+			t.Fatalf("exempt-paths muss die Datei datei-weit ausnehmen, got %+v", res.Findings)
+		}
+	}
+}
+
+// DC-FA-DIAG-001 Ventil (Zeile): der Marker nimmt SEINE Zeile aus — eine
+// Kennung auf einer anderen Zeile desselben Blocks meldet weiter. In Mermaid
+// steht er als %%-Kommentar; das Modul sucht das Token, nicht den Kommentar.
+func TestDiagramsVentilZeile(t *testing.T) {
+	fix := diagramFixture()
+	fix["spec/arch.md"] = "| ARC-01 Foo | x |\n\n```mermaid\n" +
+		"  C[\"ARC-98\"] %% d-check:ignore\n" +
+		"  D[\"ARC-99\"]\n```\n"
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, diagramsCfg("spec/arch.md"), []string{"diagrams"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 || res.Findings[0].Target != "ARC-99" {
+		t.Fatalf("nur die markierte Zeile ist frei, got %+v", res.Findings)
+	}
+}
+
+// DC-FA-DIAG-001 Ventil (ganzer Block): der Marker auf der OEFFNUNGSZEILE
+// nimmt den kompletten Fence aus — genau der Fall, der welle-80 zum Scoping
+// zwang (ein Beispiel-Diagramm mit mehreren erfundenen Kennungen).
+func TestDiagramsVentilBlockUeberOeffnungszeile(t *testing.T) {
+	fix := diagramFixture()
+	fix["spec/arch.md"] = "| ARC-01 Foo | x |\n\n```mermaid <!-- d-check:ignore -->\n" +
+		"  C[\"ARC-97\"]\n  D[\"ARC-98\"]\n  E[\"ARC-99\"]\n```\n"
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, diagramsCfg("spec/arch.md"), []string{"diagrams"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("Marker auf der Oeffnungszeile nimmt den ganzen Block aus, got %+v", res.Findings)
+	}
+}
+
+// DC-FA-DIAG-001: der Marker auf der Oeffnungszeile wirkt nur fuer SEINEN
+// Block — ein zweites Diagramm derselben Datei bleibt geprueft.
+func TestDiagramsVentilBlockNurEigenerFence(t *testing.T) {
+	fix := diagramFixture()
+	fix["spec/arch.md"] = "| ARC-01 Foo | x |\n\n```mermaid <!-- d-check:ignore -->\n" +
+		"  C[\"ARC-97\"]\n```\n\n```mermaid\n  D[\"ARC-96\"]\n```\n"
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, diagramsCfg("spec/arch.md"), []string{"diagrams"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 || res.Findings[0].Target != "ARC-96" {
+		t.Fatalf("nur der markierte Block ist frei, got %+v", res.Findings)
+	}
+}
+
+// DC-FA-DIAG-001 / DC-QA-02: ohne beide Ventile bleibt der Befundsatz, was er
+// war — die Erweiterung ist opt-in.
+func TestDiagramsOhneVentileUnveraendert(t *testing.T) {
+	m := coretest.NewMemFS(diagramFixture())
+	res, err := Run(m, nil, diagramsCfg("spec/arch.md"), []string{"diagrams"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 || res.Findings[0].Target != "ARC-99" {
+		t.Fatalf("ohne Ventile unveraendert ein Befund, got %+v", res.Findings)
+	}
+}

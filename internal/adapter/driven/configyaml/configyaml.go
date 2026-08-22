@@ -103,12 +103,14 @@ type rawIgnoreRef struct {
 	Keep []string `yaml:"keep"`
 }
 
-// rawDiagrams trägt scope, fences und die Muster des Moduls diagrams
-// (DC-FA-DIAG-001).
+// rawDiagrams trägt scope, fences, die Muster und das Datei-Ventil des Moduls
+// diagrams (DC-FA-DIAG-001); das zweite Ventil ist der Zeilen-Marker und lebt
+// im Kern.
 type rawDiagrams struct {
-	Scope    *rawScope           `yaml:"scope"`
-	Fences   []string            `yaml:"fences"`
-	Patterns []rawDiagramPattern `yaml:"patterns"`
+	Scope       *rawScope           `yaml:"scope"`
+	Fences      []string            `yaml:"fences"`
+	Patterns    []rawDiagramPattern `yaml:"patterns"`
+	ExemptPaths []string            `yaml:"exempt-paths"`
 }
 
 type rawDiagramPattern struct {
@@ -1574,7 +1576,8 @@ func applyHostpaths(r *raw, cfg *model.Config) error {
 
 // applyDiagrams validiert und kompiliert die diagrams-Muster
 // (DC-FA-DIAG-001): nicht-leere fences-Einträge, kompilierbarer Regex
-// (nicht den Leerstring matchend) und Pflicht-defined-in.
+// (nicht den Leerstring matchend), Pflicht-defined-in und gültige
+// exempt-paths-Globs.
 func applyDiagrams(r *raw, cfg *model.Config) error {
 	if r.Diagrams == nil {
 		return nil
@@ -1582,6 +1585,11 @@ func applyDiagrams(r *raw, cfg *model.Config) error {
 	for _, f := range r.Diagrams.Fences {
 		if strings.TrimSpace(f) == "" {
 			return fmt.Errorf("%s: diagrams.fences enthält einen leeren Eintrag", FileName)
+		}
+	}
+	for _, g := range r.Diagrams.ExemptPaths {
+		if _, err := path.Match(g, "probe"); err != nil {
+			return fmt.Errorf("%s: diagrams.exempt-paths %q ist kein gültiges Glob: %v", FileName, g, err)
 		}
 	}
 	for i, p := range r.Diagrams.Patterns {
@@ -1598,6 +1606,7 @@ func applyDiagrams(r *raw, cfg *model.Config) error {
 		cfg.Diagrams.Patterns = append(cfg.Diagrams.Patterns, model.DiagramPattern{Regex: re, DefinedIn: p.DefinedIn})
 	}
 	cfg.Diagrams.Fences = r.Diagrams.Fences
+	cfg.Diagrams.ExemptPaths = r.Diagrams.ExemptPaths
 	return nil
 }
 

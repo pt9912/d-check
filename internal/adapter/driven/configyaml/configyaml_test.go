@@ -931,3 +931,27 @@ func TestConfigYAMLStructureMusterfehlerDeterministisch(t *testing.T) {
 		t.Fatalf("die erste geprüfte Fundstelle gewinnt: %s", first)
 	}
 }
+
+// DC-FA-DIAG-001: das Datei-Ventil wird uebernommen; ein ungueltiges Glob
+// bricht laut (Exit 2 vor dem Lauf).
+func TestConfigYAMLDiagramsExemptPaths(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("diagrams:\n" +
+		"  patterns:\n" +
+		"    - regex: 'ARC-[0-9]{3}'\n" +
+		"      defined-in: spec/architecture.md\n" +
+		"  exempt-paths: [\"docs/reviews/**\"]\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(cfg.Diagrams.ExemptPaths) != 1 || cfg.Diagrams.ExemptPaths[0] != "docs/reviews/**" {
+		t.Fatalf("exempt-paths nicht uebernommen: %+v", cfg.Diagrams)
+	}
+	_, err = configyaml.Decode([]byte("diagrams:\n" +
+		"  patterns:\n" +
+		"    - regex: 'ARC-[0-9]{3}'\n" +
+		"      defined-in: spec/architecture.md\n" +
+		"  exempt-paths: [\"docs/[\"]\n"))
+	if err == nil || !strings.Contains(err.Error(), "diagrams.exempt-paths") {
+		t.Fatalf("ungueltiges Glob muss Exit 2 ausloesen, got %v", err)
+	}
+}
