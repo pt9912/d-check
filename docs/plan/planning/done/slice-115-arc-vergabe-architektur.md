@@ -76,26 +76,31 @@ Messung, die die Referenzrichtung schützt: `spec/spezifikation.md` nennt
 
 ## 4. Definition of Done
 
-- [ ] §1 Komponenten-Tabelle + Diagramm-Labels, §2 referenzierend, §3
+- [x] §1 Komponenten-Tabelle + Diagramm-Labels, §2 referenzierend, §3
       fortlaufend (§5 kennungslos nach Vorlage); Zählung gemessen in der
       Closure-Notiz.
-- [ ] `diagrams` opt-in scharf im Vergabe-Commit; Messung rot-vorher /
+- [x] `diagrams` opt-in scharf im Vergabe-Commit; Messung rot-vorher /
       grün-nachher + konstruierte Gegenprobe dokumentiert; [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modul-
       listen-Test grün.
-- [ ] `matrix`-Messung: keine `ARC-*` in der Spezifikation.
-- [ ] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
+- [x] `matrix`-Messung: keine `ARC-*` in der Spezifikation.
+- [x] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
       gesichtet.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Diagramm-Labels mit Kennung** könnten das Flowchart unleserlich machen —
   Form: Kennung als Präfix im Label, Rolle bleibt lesbar. — **Ausgang:**
-  *(bei Closure)*
+  entfallen — die Labels tragen die Kennung als Präfix, die Rolle steht
+  unverändert dahinter; der Review meldete keinen Lesbarkeits-Befund.
 - **`diagrams`-Regex-Härte** (Wortgrenzen) — die konstruierte Gegenprobe ist
-  der Wächter. — **Ausgang:** *(bei Closure)*
+  der Wächter. — **Ausgang:** **eingetreten als benannte Grenze.** Die
+  Wortgrenzen halten, aber die feste Dreistelligkeit lässt eine vertippte
+  zwei- oder vierstellige Kennung im Diagramm still durch (Review F-6);
+  als vierte Grenze im Config-Kommentar benannt.
 - **Doppelte Wahrheit §1-Tabelle vs. §2-Tabelle** (beide nennen die Kennung):
   §1 vergibt, §2 referenziert — so steht es im Template; der Review prüft, dass
-  §2 keine eigene Kennung einführt. — **Ausgang:** *(bei Closure)*
+  §2 keine eigene Kennung einführt. — **Ausgang:** entfallen — der Review hat
+  die Mengengleichheit gemessen: sieben zu sieben, keine Neuvergabe in §2.
 
 ## 6. Trigger
 
@@ -129,4 +134,46 @@ Baseline-Form; kein Legacy-Import.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Geliefert:** elf Kennungen in der Architektur-Sicht — §1 vergibt sieben
+Komponenten in einer neuen Komponenten-Tabelle und trägt sie im Kasten-Label
+des Flowcharts, §2 nennt dieselben sieben in einer neuen ersten Spalte ohne
+Neuvergabe, §3 setzt mit vier externen Berührungspunkten fort. Der Konsument
+ist das Modul `diagrams`, gescopt auf die Spec-Straten und in der
+Netzlos-Modulliste des Gate-Tests verankert: fällt es aus der Config, wird
+`make test` rot. Die Referenz-Richtung ist gemessen — die Spezifikation nennt
+keine Kennung der Sicht.
+
+**Review** ([Report](../../../reviews/2026-08-22-slice-115-arc-vergabe-review.md)):
+APPROVE mit Auflagen — 0 HIGH, 2 MEDIUM, 2 LOW, 2 INFO, sechzehn
+Negativ-Proben. Alle sechs eingearbeitet und je mit dem Produkt belegt.
+
+**Was ging anders als geplant — dreimal:**
+1. **Der Plan wollte auch §5 Fehlermodelle bekennen; die Vorlage nicht.**
+   Struktur-IDs gehören dort an Komponenten und Berührungspunkte, nicht an
+   Fehlerquellen. Die Vorlage sticht den eigenen Plan — die Entscheidung
+   steht jetzt im Slice und im Wellendokument, nicht nur in einer
+   Commit-Botschaft.
+2. **Eine Gegenprobe war grün, wo ich rot erwartet hatte** — und das war der
+   Fund, nicht der Fehler: entfernt man nur die Vergabe-Zeile aus §1, bleibt
+   die Kennung definiert, weil §2 sie nennt. Das Modul liest Token, nicht
+   Struktur; **Nennung und Vergabe sind für es dasselbe**. Der Wächter fängt
+   die verwaiste Kennung im Diagramm, nicht die halbe Löschung in der Sicht.
+3. **Ein neues Modul in der Config hat einen Spiegel im Makefile**, den ich
+   nicht kannte: `FOCUS_DISABLE` wählt für die fokussierten Gates alle
+   Datei-Module ab und spiegelt dafür die Modulliste. Nicht nachgezogen hätte
+   das neue Modul im `pre-commit`-Hook auf ungestagtes WIP über-gefeuert. Der
+   Kommentar sagte es ausdrücklich — gelesen hat ihn der Review.
+
+- **Steering-Loop-Eintrag:** Sensor ergänzt: Kennungen in Diagramm-Fences der
+  Spec-Straten sind an ihre Definitionsquelle gebunden — liegt in
+  `.d-check.yml §diagrams`. Kein Auslöser aus dem Register.
+- **Beobachtungs-Register (`../observations.md`):** keine neue Beobachtung.
+  Die Makefile-Spiegel-Lücke ist die verkörperte Klasse BEO-002 („eine
+  Änderung wird nur im Dokumentkörper nachgezogen, ihre Ränder bleiben
+  stehen"), hier als Ausführungs-Rand statt als Prosa-Rand; zitiert statt neu
+  formuliert, der Zähler bleibt.
+- **Folge-Slices:** [slice-116](../open/slice-116-adr-neuzugangs-regel.md) —
+  sein Trigger (114 und 115 in `done/`) ist mit dieser Closure eingetreten.
+- **Risiken aus §6:** alle mit Ausgang (§5) — eines als benannte Grenze
+  eingetreten, zwei entfallen.
+- **Drei Paarungen:** Wellen-Slice — die Paarungen prüft die Welle-Closure.
