@@ -34,6 +34,8 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 
 - [welle-82-config-flaechen](../welle-82-config-flaechen.md) — drei Konfigurations-Flächen additiv weiten, Release v0.63.0 (Auftraggeber-Freigabe 2026-08-22)
 
+Nichts in Arbeit.
+
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
