@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.64.0
+**Version:** 0.65.0
 
 **Status:** Draft
 
@@ -1574,11 +1574,37 @@ zusätzliche Toolchain. Strikt opt-in (Default aus): ohne `diagrams`-Block ist d
 Befundsatz **byte-identisch** zum Lauf ohne das Modul. Reiht sich in die
 opt-in-Module ([`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl)) ein.
 
+**Ventile — Parität zu den übrigen Modulen.** `diagrams` war das einzige
+Modul, das Befunde an Zeilen hängt und **kein** Ventil trug: weder eine
+Datei-Ausnahme noch den Zeilen-Marker. Wer es aktiviert, konnte ein
+Beispiel-Diagramm mit erfundener Kennung nur loswerden, indem er ganze
+Dateibäume aus dem Scan-Bereich nahm — eine Vermeidung, keine Ausnahme. Es
+trägt deshalb dieselben zwei Ventile wie
+[`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) und
+[`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in):
+die Glob-Liste `diagrams.exempt-paths` (datei-weit) und den Zeilen-Marker
+`d-check:ignore`.
+
+**Der Marker ist ein Token, kein HTML-Kommentar.** Das ist keine Feinheit,
+sondern der Unterschied zwischen Prosa und Fence: in Prosa steht der Marker
+üblicherweise in `<!-- … -->`, in einem `mermaid`-Fence ist das kein Kommentar,
+sondern Diagramm-Text. Das Modul sucht das **Token** auf der Zeile; wie es der
+Autor vor dem Renderer versteckt, ist Sache der Diagramm-Sprache (in Mermaid
+`%% d-check:ignore`). Und er wirkt an **zwei** Orten: auf einer Diagramm-Zeile
+nimmt er **diese Zeile** aus, auf der **Öffnungszeile** des Fence den
+**ganzen** Block. Ohne die zweite Stelle wäre die intuitive Platzierung — der
+Marker am Diagramm-Anfang — wirkungslos, und ein Beispiel-Diagramm bräuchte
+den Marker auf jeder Kennungs-Zeile.
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given `diagrams` aktiv (`fences: [mermaid]`) und ein `mermaid`-Block, dessen Kennungen alle in ihrer `defined-in`-Quelle vorkommen, when `d-check` läuft, then kein Befund, Exit 0; ein read-only gemountetes Repository genügt.
 - **Boundary:** Given ein `mermaid`-Block mit genau einer Kennung ohne Definition in `defined-in`, when das Modul läuft, then genau ein `diagram-id-undefined` (Datei, Zeile im Fence, Kennung), Exit 1; dieselbe Kennung in einem **nicht** gelisteten Fence (z. B. `bash`) oder außerhalb jedes Fence bleibt für dieses Modul unberührt.
 - **Negative:** Given **kein** `diagrams`-Block in der Konfiguration, when `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne das Modul ([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird nichts geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+- **Ventil (Datei):** Given eine Datei, deren Pfad einem `diagrams.exempt-paths`-Glob entspricht und die ein Diagramm mit undefinierter Kennung trägt, when `d-check` läuft, then kein Befund für diese Datei — datei-weit, unabhängig vom Scan-Bereich.
+- **Ventil (Zeile):** Given eine Diagramm-Zeile mit undefinierter Kennung und dem Token `d-check:ignore` (in Mermaid als `%%`-Kommentar), when `d-check` läuft, then kein Befund für **diese** Zeile; eine Kennung auf einer **anderen** Zeile desselben Blocks wird weiter gemeldet.
+- **Ventil (ganzer Block):** Given den Marker auf der **Öffnungszeile** eines Diagramm-Fence, when `d-check` läuft, then bleibt der **ganze** Block ungeprüft — auch mehrere Kennungs-Zeilen.
+- **Ventil (Nicht-Wirkung):** Given weder `exempt-paths` noch einen Marker, when `d-check` läuft, then ist der Befundsatz byte-identisch zur Fassung ohne die Ventile ([`DC-QA-02`](#dc-qa-02--determinismus)); ein ungültiges `exempt-paths`-Glob ⇒ Exit 2 vor dem Lauf.
 
 **Out-of-Scope:** Mermaid-**Syntax**-/Rendering-Validierung (gehört in einen Diagramm-Linter, braucht den Original-Parser); Grammatik-Parsing der Diagramm-Sprache; Link-Policy innerhalb von Fences (technisch unmöglich); Vollständigkeit „jede definierte Kennung erscheint im Diagramm" (separater Folge-Check); Referenzrichtungs-Prüfung von Diagramm-Kennungen (Sache einer späteren `matrix`-Erweiterung); Nicht-Mermaid-Diagrammsprachen in der ersten Fassung.
 
@@ -2914,6 +2940,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.65.0 | 2026-08-22 | [`DC-FA-DIAG-001`](#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in) um die **beiden Ventile** erweitert (`diagrams.exempt-paths` und der Zeilen-Marker `d-check:ignore`, opt-in): das Modul war das einzige, das Befunde an Zeilen hängt und **kein** Ventil trug — ein Beispiel-Diagramm mit erfundener Kennung war nur durch Herausnehmen ganzer Dateibäume aus dem Scan-Bereich loszuwerden, eine Vermeidung statt einer Ausnahme (gemessen in welle-80 am eigenen Profil). **Zwei Festlegungen aus der Fence-Natur:** der Marker ist ein **Token**, kein HTML-Kommentar — wie der Autor ihn vor dem Renderer versteckt, ist Sache der Diagramm-Sprache (Mermaid: `%%`) —, und er wirkt auf einer Diagramm-Zeile für **diese Zeile**, auf der **Öffnungszeile** für den **ganzen** Block; ohne die zweite Stelle wäre die intuitive Platzierung wirkungslos. Kein neuer Grund-Code. Begründung in begleitender ADR |
 | 0.64.0 | 2026-08-22 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um die **Überschriften-Bedingung** erweitert (`headings-match`/`headings-level`, achte Bedingung, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): *jede* Überschrift des Abschnitts genügt einem Muster, **positiv** formuliert und **je Überschrift** gemeldet (eigener Grund-Code `section-heading-mismatch`, Befund auf der Zeile der Überschrift — dort ist die Reparatur). Anlass ist eine gemessene Ersatz-Konstruktion: dieselbe Aussage war nur als ausgeschriebene Präfix-Negation über den Abschnitts-Text formulierbar (RE2 kennt keinen Lookahead), und die sprach die Heading-Lexik des Moduls nicht — eine **eingerückte** Sektion entkam still. Die Bedingung ist als **zweite** nicht auf dem bereinigten Abschnitts-Text definiert, sondern auf den Überschriften selbst, mit **derselben** Erkennung, die den Abschnitt findet. Zwei Grenzen benannt statt zugesagt: ohne Überschrift der geprüften Ebene ist sie wirkungslos, und ein `headings-level` flacher als der Abschnitt kann in ihm nicht vorkommen. **Der Schlüssel heißt bewusst nicht `heading-pattern`:** unter `planning.closure` trägt dieser Name bereits einen **Selektor** („welcher Abschnitt"), hier wäre es eine **Bedingung** („welche Form") — und beide Blöcke leben im selben Profil. Begründung in begleitender ADR |
 | 0.63.1 | 2026-08-22 | Nachzug nach unabhängigem Review, vor dem Release: die Zusage „zwei Paare, zwei Befunde" war **nicht haltbar** — die Befund-Adresse (Datei, Zeile, Regel, `target`, Grund-Code) unterscheidet zwei Befunde an derselben Stelle nicht, und die geteilte Nachrunde verwarf den zweiten samt seiner Erwartung (gemessenes stilles Falsch-Negativ). Jetzt gilt: **eine Befund-Adresse, alle Erwartungen** — die Nachricht nennt jede Erwartung mit ihrer Quelle, in Deklarationsreihenfolge; die **Ausgabe**-Reihenfolge ist die geteilte Sortierung, nicht die Deklarationsreihenfolge (die alte Aussage war als beobachtbare Eigenschaft falsch). Ferner: die Mischform-Erkennung hängt an der **Anwesenheit** des Schlüssels, nicht an seinem Wert (`pin-pattern: ""` neben `patterns` ist eine Mischform), mit der Grenze eines wertlosen Schlüssels; und ab zwei Paaren benennt jede Meldung die Fundstelle, bei genau einem Paar bleibt der Wortlaut byte-identisch |
 | 0.63.0 | 2026-08-22 | [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) um **mehrere Muster-Quellen-Paare** erweitert (`versions.patterns`, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): ein Repo führt mehrere unabhängige Versions-Reihen, das Modul kannte bisher genau **eine**. Anlass ist die Beobachtung BEO-008 bei Zähler 3, deren benannte mechanische Form (Baseline-Tag in URLs und Prosa gegen den §Baseline-Pin, **zusätzlich** zum Image-Pin gegen das Release-Register) mit einem einzigen `pin-pattern` nicht baubar war. Jedes Paar trägt eigene Quelle und eigene Ausnahmen, die Selbst-Ausnahme der Quell-Datei ist **paar-lokal**; die Kurzform bleibt gültig und **ist** die einelementige Liste (ein Auswertungspfad), beide Schreibweisen zugleich sind fail-closed. Kein neuer Grund-Code, keine Änderung an der Befund-Form. Begründung in begleitender ADR |
