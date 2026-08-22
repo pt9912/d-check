@@ -164,7 +164,7 @@ MR-Körper ist jetzt so gefasst, dass beide Lesarten zusammenpassen.
   Versions-Modul trägt genau ein Muster gegen eine Quelle — ein zweiter
   Abgleich bräuchte eine Produkt-Änderung, also einen Change Request. Bis
   dahin trägt die Prozedur.
-- **Folge-Slices:** [slice-118](../open/slice-118-zustandsfeld-regel.md) —
+- **Folge-Slices:** [slice-118](../in-progress/slice-118-zustandsfeld-regel.md) —
   sein Trigger ist mit dieser Closure eingetreten; danach slice-119 und
   slice-120.
 - **Risiken aus §6:** alle mit Ausgang (§5) — zwei eingetreten und gedeckt,
