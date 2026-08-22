@@ -28,9 +28,10 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
   gepinnt mit
   [`MR-029`](#mr-029--baseline-pin-hebung-auf-v590-fünfter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)
   — der jeweils aktuelle Eintrag der Pin-Serie. Die **Kette** der bisherigen
-  Hebungen steht nicht hier: jeder Eintrag nennt seinen Vorgänger im Feld
-  `Löst auf:`, und die aufgelösten liegen in
-  [`conventions/done/`](conventions/done/); der Anfang der Serie ist
+  Hebungen steht nicht hier, sondern in
+  [§Aufgelöste Adaptionen](#aufgelöste-adaptionen): dort trägt jede Zeile ihren
+  Nachfolger, und die Einträge selbst liegen in
+  [`conventions/done/`](conventions/done/). Der Anfang der Serie ist
   [`MR-011`](#mr-011--baseline-auf-release-tag-gepinnt)
 - **Datum der Adoption:** 2026-06-10
 
