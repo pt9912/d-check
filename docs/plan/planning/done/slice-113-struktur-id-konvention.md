@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-80-struktur-ids](../welle-80-struktur-ids.md) (zugeordnet bei
+**Welle:** [welle-80-struktur-ids](welle-80-struktur-ids.md) (zugeordnet bei
 der Eröffnung).
 
 **Bezug:**

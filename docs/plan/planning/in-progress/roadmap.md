@@ -34,8 +34,6 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
-- [welle-80-struktur-ids](../welle-80-struktur-ids.md) — Struktur-IDs nach Baseline, Umkehr von [`MR-027`](../../../../harness/conventions.md#mr-027) (Auftraggeber-Entscheide D1–D4, 2026-08-22)
-
 Nichts in Arbeit.
 
 ## Nächste Wellen
@@ -70,7 +68,8 @@ flowchart LR
     W78["welle-78 - Baseline-Migration v5.6.0 (geschlossen)"]
     W79["welle-79 - Baseline v5.7.0 + Listen-Praedikat (geschlossen)"]
     W78 --> W79
-    W80["welle-80 - Struktur-IDs nach Baseline, Umkehr MR-027 (offen)"]
+    W80["welle-80 - Struktur-IDs nach Baseline, Umkehr MR-027 (geschlossen)"]
+    W79 --> W80
 ```
 
 ## Abgeschlossene Wellen
@@ -80,6 +79,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
+| welle-80-struktur-ids | 2026-08-22 | [`welle-80-results.md`](../done/welle-80-results.md) |
 | welle-79-zwei-haelften-ein-waechter | 2026-08-21 | [`welle-79-results.md`](../done/welle-79-results.md) |
 | welle-78-baseline-v560-migration | 2026-08-21 | [`welle-78-results.md`](../done/welle-78-results.md) |
 | welle-77-chronologie-ordnung | 2026-08-21 | [`welle-77-results.md`](../done/welle-77-results.md) |
