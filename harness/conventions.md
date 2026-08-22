@@ -24,21 +24,14 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
 ## Baseline
 
 - **Konvention:** AI-Harness-Kurs
-- **Stand:** [`v5.9.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v5.9.0)
-  (Release-Tag, gepinnt 2026-08-22; ursprünglich unversioniert adoptiert
-  als „Template-Set 2026-06", nachgezogen mit
-  [`MR-011`](#mr-011--baseline-auf-release-tag-gepinnt), von v1.2.1 auf
-  v1.3.0 gehoben mit [`MR-012`](#mr-012--baseline-pin-hebung-nachtrag-zu-mr-011),
-  von v1.3.0 auf v1.4.0 mit
-  [`MR-016`](#mr-016--baseline-pin-hebung-zweiter-nachtrag-zu-mr-011), von v1.4.0
-  auf v5.0.0 (zwei weitere Majors) mit
-  [`MR-023`](#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout),
-  von v5.0.0 auf v5.6.0 (sechs additive Stufen) mit
-  [`MR-026`](#mr-026--baseline-pin-hebung-auf-v560-dritter-nachtrag-zu-mr-011-nachtrag-zu-mr-023),
-  von v5.6.0 auf v5.7.0 (eine Stufe) mit
-  [`MR-028`](#mr-028--baseline-pin-hebung-auf-v570-vierter-nachtrag-zu-mr-011-nachtrag-zu-mr-023),
-  von v5.7.0 auf v5.9.0 (zwei Stufen) mit
-  [`MR-029`](#mr-029--baseline-pin-hebung-auf-v590-fünfter-nachtrag-zu-mr-011-nachtrag-zu-mr-023))
+- **Stand:** [`v5.9.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v5.9.0),
+  gepinnt mit
+  [`MR-029`](#mr-029--baseline-pin-hebung-auf-v590-fünfter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)
+  — der jeweils aktuelle Eintrag der Pin-Serie. Die **Kette** der bisherigen
+  Hebungen steht nicht hier: jeder Eintrag nennt seinen Vorgänger im Feld
+  `Löst auf:`, und die aufgelösten liegen in
+  [`conventions/done/`](conventions/done/); der Anfang der Serie ist
+  [`MR-011`](#mr-011--baseline-auf-release-tag-gepinnt)
 - **Datum der Adoption:** 2026-06-10
 
 ## Adoptierte Konventions-Quellen
