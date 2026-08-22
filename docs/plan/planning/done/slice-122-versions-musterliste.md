@@ -65,21 +65,50 @@ Kurzform gültig, damit keine bestehende Konfiguration bricht.
 
 ## 4. Definition of Done
 
-- [ ] CR-Commit (Lastenheft allein) liegt **vor** Spezifikation und Code.
-- [ ] Listen-Form implementiert; Kurzform weiter gültig und getestet.
-- [ ] Default-Beweis byte-identisch; fail-closed-Ränder je Paar geprüft.
-- [ ] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
-      gesichtet.
+- [x] CR-Commit (Lastenheft allein) liegt **vor** Spezifikation und Code —
+      Lastenheft 0.63.0 allein, danach ADR, Spezifikation, Implementierung;
+      die Review-Auflagen als eigener Nachzug (0.63.1).
+- [x] Listen-Form implementiert; Kurzform weiter gültig und getestet — die
+      Kurzform wird am Config-Rand in die einelementige Liste übersetzt, der
+      Kern kennt nur die Liste.
+- [x] Default-Beweis byte-identisch; fail-closed-Ränder je Paar geprüft —
+      gegen das gepinnte Vorgänger-Image, grün wie rot, **zweimal** gemessen
+      (nach der Implementierung und erneut, nachdem der Review den
+      Nachrichten-Code geändert hatte).
+- [x] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
+      gesichtet — der Review war **blockierend** (ein HIGH, vier MEDIUM, drei
+      LOW), alle Befunde sind eingearbeitet und im
+      [Report](../../../reviews/2026-08-22-slice-122-versions-musterliste-review.md)
+      belegt.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Zwei Schreibweisen für dieselbe Sache** (Kurzform und Liste) sind eine
   Drift-Quelle — die Kurzform wird intern in eine Ein-Paar-Liste übersetzt,
-  damit es genau **einen** Auswertungspfad gibt. — **Ausgang:** *(bei Closure)*
+  damit es genau **einen** Auswertungspfad gibt. — **Ausgang:** gehalten, aber
+  enger als geplant: die Drift saß nicht im Auswertungspfad, sondern in der
+  **Erkennung** der Schreibweise. Sie fragte Werte ab statt Anwesenheit, und
+  ein leer gelassener Kurzform-Schlüssel schaltete die Prüfung still auf die
+  Liste um (Review F-4). Jetzt Zeiger und Anwesenheit; die Rest-Grenze (ein
+  Schlüssel ohne Wert ist im YAML von einem fehlenden nicht unterscheidbar)
+  ist benannt, nicht geschlossen.
 - **Dedup über mehrere Paare:** zwei Paare können dieselbe Zeile treffen; das
-  Befund-Tupel muss sie unterscheidbar halten. — **Ausgang:** *(bei Closure)*
+  Befund-Tupel muss sie unterscheidbar halten. — **Ausgang:** **nicht
+  gehalten** — das war der HIGH. Das Befund-Tupel kann sie *nicht*
+  unterscheidbar halten: die geteilte Adresse trägt die erwartete Version
+  nicht, und die Nachrunde verwarf den zweiten Befund samt seiner Erwartung.
+  Die Zusage war unerfüllbar, nicht bloß unerfüllt. Geändert ist deshalb die
+  Zusage: **eine Adresse, alle Erwartungen** — die Nachricht nennt jede mit
+  ihrer Quelle. Der Weg über ein Adress-Feld läge in
+  [`SPEC-001`](../../../../spec/spezifikation.md#spec-001--befund) und beträfe
+  jedes Modul; er steht als verworfene Alternative mit Re-Evaluierungs-Trigger
+  in [ADR-0058](../../adr/0058-konfigurations-flaechen-additiv-weiten.md).
 - **Byte-Identität ist die Zusage**, nicht „ungefähr gleich" — sie wird gegen
-  das released Image gemessen. — **Ausgang:** *(bei Closure)*
+  das released Image gemessen. — **Ausgang:** gehalten, und die Messung hat
+  sich bewährt: sie lief ein zweites Mal, nachdem die Review-Einarbeitung den
+  Nachrichten-Code angefasst hatte. Genau dort hätte eine Ein-Paar-Meldung
+  ihren Wortlaut verlieren können; der Wortlaut hängt jetzt an der **Paar-Zahl**
+  statt an der Schreibweise.
 
 ## 6. Trigger
 
@@ -109,4 +138,37 @@ spezifizierten Anforderung.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Geliefert ist die Fläche: `versions` trägt eine Liste von
+Muster-Quellen-Paaren, jedes mit eigener Quelle und eigenen Ausnahmen, und die
+Kurzform **ist** die einelementige Liste. Damit ist die 3×-Form der
+Beobachtung BEO-008 **baubar** — gebaut wird sie nicht, das ist ein eigener
+Entscheid mit eigener Messung (§3, Wellendokument §6).
+
+Die Lehre dieses Slice ist nicht die Erweiterung, sondern was der Review an
+ihr fand: **eine Zusage, die man nicht halten kann, ist schlimmer als eine,
+die man nicht gibt.** Das Akzeptanzkriterium „zwei Paare, zwei Befunde" war
+nicht falsch implementiert, es war unerfüllbar — die geteilte Befund-Adresse
+unterscheidet zwei Befunde an derselben Stelle nicht, und die Nachrunde
+verwarf den zweiten. Wer eine Zusage über die *Anzahl* von Befunden schreibt,
+muss vorher wissen, was die Adresse trägt; ich hatte sie aus der Absicht
+abgeleitet statt aus dem Mechanismus.
+
+Zwei weitere Befunde treffen dieselbe Wurzel: der eingebaute Dedup hatte keine
+beobachtbare Wirkung (die Mutation überlebte die ganze Suite), und die Zusage
+über die Reihenfolge wurde von einem nachgelagerten Sort überschrieben — mein
+Test hatte Werte gewählt, deren Sortierung zufällig der Deklaration entsprach
+und die beiden Ordnungen gar nicht trennen konnte. Beides sind Tests, die
+etwas *bestätigen*, ohne es zu *messen*.
+
+Was gehalten hat, ist die Kern-Zusage der Welle: ohne den neuen Schlüssel ist
+der Befundsatz byte-identisch. Sie ist zweimal gegen das gepinnte
+Vorgänger-Image gemessen — vor und nach der Review-Einarbeitung —, grün wie
+rot, und die Gegenprobe zeigt, dass die Zwei-Paar-Form vorher nicht bloß
+unbenutzt, sondern **nicht baubar** war (`field patterns not found`, Exit 2).
+
+Zwei Arbeitsfehler außerhalb des Produkts gehören in dieselbe Notiz: der
+Beanspruchungs-Commit trug nur den Rename, weil sein `git add` einen gerade
+entfernten Pfad nannte und git deshalb den ganzen Aufruf abbrach — CI meldete
+es als `target-missing`. Und der erste Reparaturversuch war ein `--amend` auf
+einen bereits veröffentlichten Commit; zurückgenommen, der Nachtrag steht als
+eigener Commit, die Kette darauf replayt, Push als Fast-Forward.
