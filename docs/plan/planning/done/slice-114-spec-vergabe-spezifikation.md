@@ -174,8 +174,8 @@ Auflage zurückgenommen.
   verkörpert in welle-74; hier trat sie erstmals **konfigurationsseitig** auf
   (ein Muster in der Config statt ein Prädikat im Code). Zitiert statt neu
   formuliert; der Zähler bleibt bei 3.
-- **Folge-Slices:** [slice-115](../in-progress/slice-115-arc-vergabe-architektur.md)
-  (Trigger eingetreten) und [slice-116](../open/slice-116-adr-neuzugangs-regel.md)
+- **Folge-Slices:** [slice-115](../done/slice-115-arc-vergabe-architektur.md)
+  (geschlossen) und [slice-116](../open/slice-116-adr-neuzugangs-regel.md)
   (wartet auf 115).
 - **Risiken aus §6:** alle mit Ausgang (§5) — eines eingetreten (anders als
   gedacht), zwei entfallen.
