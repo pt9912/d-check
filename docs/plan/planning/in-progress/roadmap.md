@@ -34,6 +34,8 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
+- [welle-81-zustandsfelder](../welle-81-zustandsfelder.md) — Baseline v5.9.0: Zustandsfelder tragen Zustand und Beleg, keine Chronik (Auftraggeber-Anstoß 2026-08-22)
+
 Nichts in Arbeit.
 
 ## Nächste Wellen
@@ -70,6 +72,8 @@ flowchart LR
     W78 --> W79
     W80["welle-80 - Struktur-IDs nach Baseline, Umkehr MR-027 (geschlossen)"]
     W79 --> W80
+    W81["welle-81 - Baseline v5.9.0, Zustandsfelder (offen)"]
+    W80 --> W81
 ```
 
 ## Abgeschlossene Wellen
