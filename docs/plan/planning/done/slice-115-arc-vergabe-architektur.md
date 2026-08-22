@@ -172,7 +172,7 @@ Negativ-Proben. Alle sechs eingearbeitet und je mit dem Produkt belegt.
   Änderung wird nur im Dokumentkörper nachgezogen, ihre Ränder bleiben
   stehen"), hier als Ausführungs-Rand statt als Prosa-Rand; zitiert statt neu
   formuliert, der Zähler bleibt.
-- **Folge-Slices:** [slice-116](../in-progress/slice-116-adr-neuzugangs-regel.md) —
+- **Folge-Slices:** [slice-116](../done/slice-116-adr-neuzugangs-regel.md) —
   sein Trigger (114 und 115 in `done/`) ist mit dieser Closure eingetreten.
 - **Risiken aus §6:** alle mit Ausgang (§5) — eines als benannte Grenze
   eingetreten, zwei entfallen.

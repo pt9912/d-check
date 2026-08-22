@@ -192,7 +192,7 @@ Bindestrich-Präfixe.
 - **Folge-Slices:** [slice-114](../done/slice-114-spec-vergabe-spezifikation.md)
   (Trigger mit dieser Closure eingetreten, inzwischen geschlossen) und
   [slice-115](../done/slice-115-arc-vergabe-architektur.md), inzwischen
-  geschlossen; [slice-116](../in-progress/slice-116-adr-neuzugangs-regel.md) wartet auf
+  geschlossen; [slice-116](../done/slice-116-adr-neuzugangs-regel.md) wartet auf
   beide.
 - **Risiken aus §6:** alle mit Ausgang (§5) — zwei eingetreten und adressiert,
   eines entfallen.
