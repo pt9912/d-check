@@ -1461,7 +1461,18 @@ Das Modul `versions`
 ([`DC-FA-VER-001`](lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
 ist opt-in und arbeitet — wie `diagrams` — **gegenläufig** zur Vorverarbeitung
 ([§DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)),
-die Fences für alle übrigen Module entfernt:
+die Fences für alle übrigen Module entfernt.
+
+Die Konfiguration beschreibt **eine Liste von Paaren** aus Pin-Muster,
+Versions-Quelle und Ausnahmen (`versions.patterns`). Die Kurzform — die drei
+Schlüssel direkt unter `versions` — **ist** die einelementige Liste und wird am
+Config-Rand in sie übersetzt; der Kern kennt nur die Liste, es gibt genau einen
+Auswertungspfad. Sind **beide** Schreibweisen gesetzt ⇒ **Exit 2** ohne Prüfung
+(die Zusammenführung wäre nicht ablesbar, nicht unmöglich — und eine
+Voreinstellung, die man raten muss, ist keine). Ist die Liste **leer**, trägt
+ein Paar kein `pin-pattern` oder löst die Quelle eines Paares nicht auf ⇒
+ebenfalls **Exit 2**; ein unvollständiges Paar schaltet nicht still die
+übrigen scharf. Die Schritte 1 bis 4 gelten **je Paar**:
 
 1. **Aktuelle Version auflösen (`current-from`).** Default `version.md#aktuell`:
    Datei links vom `#`, Anker rechts. Der adressierte Span ist die
@@ -1484,18 +1495,30 @@ die Fences für alle übrigen Module entfernt:
    Roh-Zeilen (1-basiert) — Prosa **und** Fenced-Code (Versions-Pins leben in
    Kommando-Beispielen); die gemeinsame Vorverarbeitung der anderen Module bleibt
    unverändert (keine `spans`-Interaktion). Je Zeile werden die Vorkommen des
-   konfigurierten `versions.pin-pattern` per Regex gesucht (Beispiel
+   `pin-pattern` **des jeweiligen Paares** per Regex gesucht (Beispiel
    `ghcr\.io/[^\s:]+:(v?\d+\.\d+\.\d+)`); die Version steht in Capture-Gruppe 1,
    fehlt eine Gruppe, zählt der ganze Treffer.
 3. **Vergleich.** Weicht die im Pin gefundene Version von der erwarteten ab ⇒
    Grund-Code `version-stale` (Datei, Zeile, `target` = gefundener Pin-Wert;
-   `message` nennt erwartet vs. gefunden). Gleichheit ⇒ kein Befund.
-4. **Ventile.** Wie `ids`/`codepaths`: die Glob-Liste `versions.exempt-paths`
+   `message` nennt erwartet vs. gefunden — sie ist damit die Stelle, an der
+   sich die Reihen unterscheiden). Gleichheit ⇒ kein Befund.
+   **Reihenfolge und Dedup über mehrere Paare:** je Zeile werden die Paare in
+   **Deklarationsreihenfolge** ausgewertet; ein Befund-Tupel, das zwei Paare
+   identisch erzeugen (dieselbe Zeile, derselbe Pin-Wert, dieselbe erwartete
+   Version), erscheint **einmal**. Beides ist festgelegt und nicht der
+   Iterationsreihenfolge überlassen
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
+4. **Ventile.** Wie `ids`/`codepaths`: die Glob-Liste `exempt-paths`
    (datei-weit — historische Pins in Planning-`done/`-Slices, `CHANGELOG.md`,
    Lastenheft-Historie) und der Zeilen-Marker `d-check:ignore` nehmen Vorkommen
    aus (nackt wie in Code, in Fence wie außerhalb). Die `current-from`-Datei ist
    von der Pin-Prüfung **selbst ausgenommen** (ihr Verlauf listet bewusst alle
-   Versionen).
+   Versionen). **Beide Datei-Ventile sind paar-lokal:** `exempt-paths` gilt für
+   das Paar, das sie deklariert, und die Selbst-Ausnahme nur für die Reihe der
+   betroffenen Quell-Datei — sonst machte jede neue Quelle zugleich ein neues
+   blindes Feld auf. Der **Zeilen**-Marker ist dagegen zeilen-weit und nimmt
+   die Zeile allen Paaren aus (er sagt „diese Zeile nicht", nicht „diese Reihe
+   nicht").
 5. **Read-only/Determinismus.** Ohne `versions`-Block ist der Befundsatz
    byte-identisch ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)); es wird
    nichts geschrieben ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
@@ -2511,9 +2534,13 @@ Exit 2 ohne Prüfung
 | `codepaths.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `codepaths`-Prüfung — datei-weit, unabhängig von `roots` |
 | `codepaths.ignore-refs` | string[] | leer | **Alias** des geteilten `ignore-refs` ([`DC-FA-REF-001`](lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)), skopiert auf `codepaths` (wie ein Eintrag ohne `in`/`keep`): aufgelöste Ziel-Pfade, die matchen, werden weder existenz-, escape- noch anker-geprüft (kein `codepath-missing`/`repo-escape`/`anchor-missing`) — **referenz-weit**; byte-identisch zur bisherigen Fassung |
 | `codepaths.check-lines` | bool | `false` | Zeilen-Referenz eines Inline-Code-Pfads (`datei:<von>-<bis>`) verifizieren: existierendes Ziel mit ≥ `<bis>` Zeilen (sonst `citation-out-of-range`) und `<von> ≤ <bis>` (sonst `citation-inverted-range`). Default aus ⇒ das Suffix wird wie bisher abgetrennt und verworfen (byte-identisch, [`DC-FA-CODE-001.a`](#dc-fa-code-001a--pfade-in-inline-code) Schritt 6) |
-| `versions.pin-pattern` | string | — | Regex; muss kompilieren und darf den Leerstring nicht matchen (Exit 2); die gefundene Version steht in Capture-Gruppe 1, sonst zählt der ganze Treffer |
-| `versions.current-from` | string | `version.md#aktuell` | `datei#anker` oder `datei`; die Datei muss existieren und innerhalb der Repo-Wurzel liegen, der adressierte Span muss eine Version (`v?\d+\.\d+\.\d+`) tragen (sonst Exit 2) |
-| `versions.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `versions`-Prüfung — datei-weit; die `current-from`-Datei ist stets ausgenommen |
+| `versions.pin-pattern` | string | — | **Kurzform** (= einelementige `versions.patterns`-Liste). Regex; muss kompilieren und darf den Leerstring nicht matchen (Exit 2); die gefundene Version steht in Capture-Gruppe 1, sonst zählt der ganze Treffer |
+| `versions.current-from` | string | `version.md#aktuell` | Kurzform. `datei#anker` oder `datei`; die Datei muss existieren und innerhalb der Repo-Wurzel liegen, der adressierte Span muss eine Version (`v?\d+\.\d+\.\d+`) tragen (sonst Exit 2) |
+| `versions.exempt-paths` | string[] | leer | Kurzform. Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `versions`-Prüfung — datei-weit; die `current-from`-Datei ist stets ausgenommen |
+| `versions.patterns` | Objekt[] | leer | **Liste** von Muster-Quellen-Paaren; jedes Paar trägt `pin-pattern`, `current-from` und `exempt-paths` mit derselben Bedeutung und denselben Rändern wie die Kurzform. Zusammen mit der Kurzform gesetzt ⇒ Exit 2 (nicht ablesbar, welche Ausnahmen für welches Muster gälten); explizit leere Liste ⇒ Exit 2. Ausnahmen und die Selbst-Ausnahme der Quell-Datei sind **paar-lokal**, der Zeilen-Marker `d-check:ignore` wirkt paar-übergreifend |
+| `versions.patterns[].pin-pattern` | string | — | Pflicht je Paar (fehlt ⇒ Exit 2); Ränder wie `versions.pin-pattern` |
+| `versions.patterns[].current-from` | string | `version.md#aktuell` | Ränder wie `versions.current-from`; jedes Paar löst **seine** Quelle auf, ein nicht auflösendes Paar bricht den Lauf (Exit 2) |
+| `versions.patterns[].exempt-paths` | string[] | leer | Ränder wie `versions.exempt-paths`, aber nur für **dieses** Paar |
 | `immutable.exclude-sections` | string[] | leer | Heading-Titel, deren Abschnitte **nicht** zum gehashten Core zählen (Vergleich gegen den getrimmten Heading-Text ohne Markdown-Auszeichnung, case-sensitiv — wie `matrix.exclude-sections`); für ADRs typisch `[Geschichte]` ([`DC-FA-IMM-001`](lastenheft.md#dc-fa-imm-001--immutabilitäts-pin-gegen-core-drift-modul-immutable-opt-in)) |
 | `vcs.paths` | string[] | leer | Glob-Klasse (wie `scan.ignore`) der zu schützenden Dateien; nur in der Range geänderte Pfade dieser Klasse werden geprüft; leer ⇒ Modul inert ([`DC-FA-VCS-001`](lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)) |
 | `vcs.immutable-when` | string | — | Zeilen-Regex; die **BASE**-Version gilt als immutabel, wenn ihr **erstes** Vorkommen matcht (z. B. `^\*\*Status:\*\* Accepted`); muss kompilieren (sonst Exit 2) |
@@ -2697,6 +2724,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-22 | §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) auf **mehrere Muster-Quellen-Paare** gezogen und die `versions.*`-Zeilen unter [`SPEC-005`](#spec-005--d-checkyml) um `versions.patterns[]` ergänzt ([`DC-FA-VER-001`](lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) 0.63.0, Begründung in begleitender ADR): die Schritte 1–4 gelten **je Paar**, die Kurzform **ist** die einelementige Liste und wird am Config-Rand übersetzt (ein Auswertungspfad), beide Schreibweisen zugleich sowie leere Liste, fehlendes `pin-pattern` und nicht auflösende Quelle eines Paares sind **fail-closed**. Neu ausgesprochen, weil sonst die Iterationsreihenfolge entschiede: Befunde je Zeile in **Deklarationsreihenfolge** der Paare, identische Befund-Tupel **einmal**. Die beiden **Datei**-Ventile sind paar-lokal, der **Zeilen**-Marker ist es nicht — er sagt „diese Zeile nicht", nicht „diese Reihe nicht". Kein neuer Grund-Code |
 | 2026-08-22 | **Struktur-IDs `SPEC-<NNN>` vergeben** (Baseline-Default, [`MR-000`](../harness/conventions.md#mr-000--baseline-aussage)): §2 trägt sie in den fünf Schema-Überschriften, §3/§4/§6 in einer neuen ersten Spalte `Kennung` — fortlaufend je Datei (001–066), Lücken werden nicht nachbelegt; der Link trägt den Abschnitt, der Text die Kennung. Die §2-Anker wandern damit (`#befund` → `#spec-001--befund` usw.); alle zwölf Verweise im Baum sind retargetet. Keine inhaltliche Änderung einer Festlegung |
 | 2026-08-22 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) W3, §2-Schema-Zeile `planning.waves.mode` und §4 `wave-drift`-Zeile: Wortlaut auf die Kennungs-Menge aus W2 gezogen (Lastenheft 0.62.1) — auch das Singleton unter `one` zählt Kennungen, nicht Dateien; zwei flache Dokumente derselben Kennung sind ein Element. Keine Verhaltensänderung; der Beleg ist ein Pinning-Test in beiden Modi |
 | 2026-08-21 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) **W3 auf zwei Kardinalitäts-Modelle** (`planning.waves.mode: one`\|`many`, Lastenheft 0.62.0 — formaler Konsumenten-CR „Bijektion statt Singleton"): `one` (Default) unverändert; unter `many` Kennungs-Mengen-Gleichheit der **Prosa-Zeilen** des `planning.heading`-Blocks gegen die flachen Wellendokumente (Kennung wie W2, Fences zählen nicht, Mehrfachnennung einmal), je Differenz-Element ein `wave-drift` mit der **Kennung** als `target`; der Ruhe-Marker geht nicht ein (`planning-drift`-Territorium). W1: `mode` außerhalb `one`/`many` inkl. explizit leer ⇒ Exit 2. §2-Schema + §4-Zeile nachgezogen |
