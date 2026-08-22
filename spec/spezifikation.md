@@ -255,7 +255,7 @@ ids-Muster iteriert, keine Map-Reihenfolge):
    Diagnose geht auf stdout, die Zusammenfassung (geprüfte Dateien,
    Befundzahl) auf stderr — analog zum Default-Reporter.
 6. **JSON-Rendering** (`--doctor --json`): statt der Prosa wird ein
-   JSON-Dokument wie die [JSON-Ausgabe](#json-ausgabe---json) auf stdout
+   JSON-Dokument wie die [JSON-Ausgabe](#spec-002--json-ausgabe---json) auf stdout
    geschrieben, dessen `findings` je Eintrag zusätzlich `reasonText`
    (der Grund-Klartext aus Schritt 3) und `fixCandidate` tragen — das
    Objekt `{original, replacement, note}` aus Schritt 4 oder explizit
@@ -1010,7 +1010,7 @@ Schritt 3), gilt eine Kennung in mehrzeiligem Linktext als nackt —
 linkpflichtige Kennungen gehören in einzeilige Links. Das deklarierte
 `ids.patterns[].target` (Datei oder Verzeichnis, relativ zur
 Repo-Wurzel) muss existieren und innerhalb der Repo-Wurzel liegen —
-Verletzung ist ein Konfigurationsfehler (Exit 2, [§2](#d-checkyml)).
+Verletzung ist ein Konfigurationsfehler (Exit 2, [§2](#spec-005--d-checkyml)).
 
 **Link-Politik (`ids.patterns[].link-policy`).** Default `prose` = das
 oben beschriebene Verhalten (Inline-Code-Vorkommen sind frei, weil die
@@ -2315,7 +2315,7 @@ Modul-Implementierung in [§4](#4-grund--und-fehler-codes)
 
 ## 2. Datenstrukturen und Schemas
 
-### Befund
+### SPEC-001 — Befund
 
 | Feld | Typ | Bedeutung |
 |---|---|---|
@@ -2335,7 +2335,7 @@ Modul-Implementierung in [§4](#4-grund--und-fehler-codes)
 
 Zusammenfassung auf stderr: `d-check: <N> Datei(en) geprüft, <M> Befund(e)`.
 
-### JSON-Ausgabe (`--json`)
+### SPEC-002 — JSON-Ausgabe (`--json`)
 
 ```json
 {
@@ -2374,9 +2374,9 @@ Zusammenfassung auf stderr: `d-check: <N> Datei(en) geprüft, <M> Befund(e)`.
 Nutzungs-/Umgebungsfehler (Exit 2) erzeugen **kein** JSON-Dokument,
 sondern eine stderr-Meldung (siehe [§4](#4-grund--und-fehler-codes)).
 
-### JSON-Diagnose (`--doctor --json`)
+### SPEC-003 — JSON-Diagnose (`--doctor --json`)
 
-Dasselbe Dokument wie die [JSON-Ausgabe](#json-ausgabe---json) — gleiche
+Dasselbe Dokument wie die [JSON-Ausgabe](#spec-002--json-ausgabe---json) — gleiche
 `summary`/`exitCode` und dieselben Befund-Basisfelder —, aber jeder
 `findings`-Eintrag trägt zusätzlich `reasonText` und `fixCandidate`
 ([`DC-FA-CLI-007`](lastenheft.md#dc-fa-cli-007--diagnose-modus)). Delta
@@ -2403,10 +2403,10 @@ zum `items`-Schema:
 `fixCandidate` ist `null` (nicht weggelassen), wo kein eindeutiger
 Kandidat existiert — das `null` ist die Aussage „kein eindeutiger Fix".
 Das optionale `message`-Feld des Basis-`items`-Schemas der
-[JSON-Ausgabe](#json-ausgabe---json) (nicht stabilitätsgarantiert) bleibt
+[JSON-Ausgabe](#spec-002--json-ausgabe---json) (nicht stabilitätsgarantiert) bleibt
 unverändert Teil jedes Eintrags und kann zusätzlich erscheinen.
 
-### YAML-Ausgabe (`--yaml`)
+### SPEC-004 — YAML-Ausgabe (`--yaml`)
 
 `--yaml` serialisiert **dasselbe Dokument** wie `--json` (knappe Befunde)
 bzw. `--doctor --yaml` dasselbe wie `--doctor --json` (Diagnose mit
@@ -2418,7 +2418,7 @@ fehlender Fix-Kandidat steht auch in YAML explizit als `fixCandidate:
 null`. Deterministisch (feste Feld-Reihenfolge, keine Map) wie die
 JSON-Ausgabe.
 
-### `.d-check.yml`
+### SPEC-005 — `.d-check.yml`
 
 Unbekannte Schlüssel sind Fehler (striktes Decoding). Eine leere oder
 nur kommentierte Datei ist ein YAML-Null-Dokument und wirkt wie keine
@@ -2606,73 +2606,73 @@ und `a`, nicht „alles außer `a`".
 
 ## 3. Defaults und Konstanten
 
-| Name | Wert | Begründung | Bezug |
-|---|---|---|---|
-| `DEFAULT_SCAN_ROOTS` | `docs/`, `spec/` (rekursiv, optional) + `*.md` der Repo-Wurzel | [`DC-FA-SCAN-001`](lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln) | — |
-| `SKIP_DIRS` | `.git`, `node_modules`, `build`, `target`, `dist`, `vendor`, `.venv`, `__pycache__`, `.idea`, `.vscode`, `.gradle` | immer übersprungen | [`DC-FA-SCAN-001`](lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln) |
-| `DEFAULT_MODULES` | `links`, `anchors` | [`DC-FA-CLI-002`](lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) | — |
-| `EXTERNAL_TIMEOUT` | 10 s | [`DC-FA-EXT-001`](lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in) | konfigurierbar |
-| `EXTERNAL_PARALLEL` | 4 | begrenzte Parallelität | konfigurierbar |
-| `REDIRECT_MAX` | 5 | [`DC-FA-EXT-001`](lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in) | fest |
-| Exit-Codes | 0 / 1 / 2 | [`DC-FA-CLI-003`](lastenheft.md#dc-fa-cli-003--exit-codes) | fest |
+| Kennung | Name | Wert | Begründung | Bezug |
+|---|---|---|---|---|
+| `SPEC-006` | `DEFAULT_SCAN_ROOTS` | `docs/`, `spec/` (rekursiv, optional) + `*.md` der Repo-Wurzel | [`DC-FA-SCAN-001`](lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln) | — |
+| `SPEC-007` | `SKIP_DIRS` | `.git`, `node_modules`, `build`, `target`, `dist`, `vendor`, `.venv`, `__pycache__`, `.idea`, `.vscode`, `.gradle` | immer übersprungen | [`DC-FA-SCAN-001`](lastenheft.md#dc-fa-scan-001--datei-auswahl-und-ignorier-regeln) |
+| `SPEC-008` | `DEFAULT_MODULES` | `links`, `anchors` | [`DC-FA-CLI-002`](lastenheft.md#dc-fa-cli-002--regelmodul-auswahl) | — |
+| `SPEC-009` | `EXTERNAL_TIMEOUT` | 10 s | [`DC-FA-EXT-001`](lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in) | konfigurierbar |
+| `SPEC-010` | `EXTERNAL_PARALLEL` | 4 | begrenzte Parallelität | konfigurierbar |
+| `SPEC-011` | `REDIRECT_MAX` | 5 | [`DC-FA-EXT-001`](lastenheft.md#dc-fa-ext-001--externe-links-modul-external-opt-in) | fest |
+| `SPEC-012` | Exit-Codes | 0 / 1 / 2 | [`DC-FA-CLI-003`](lastenheft.md#dc-fa-cli-003--exit-codes) | fest |
 
 ## 4. Grund- und Fehler-Codes
 
 Grund-Codes der Befunde (stabil, maschinenlesbar):
 
-| Code | Modul | Bedingung |
-|---|---|---|
-| `target-missing` | links | Linkziel existiert nicht |
-| `repo-escape` | links, codepaths | aufgelöstes Ziel verlässt die Repo-Wurzel |
-| `symlink` | links | Ziel ist/enthält Symlink (Vorrang vor `repo-escape`) |
-| `anchor-missing` | anchors, codepaths | Anker entspricht keinem Heading-Slug und keinem HTML-Anker der Zieldatei |
-| `id-unlinked` | ids | Kennung im Fließtext ohne Markdown-Link |
-| `matrix-forbidden` | matrix | Referenz zwischen Klassen nicht erlaubt (**Link** oder, bei gesetztem `matrix.classes[].token`, **bare ID-Token** im Körper; Token-Form via `<!-- d-check:status-provenance -->` deklarierbar) |
-| `matrix-inactive` | matrix | Referenz auf Dokument mit verbotenem Status |
-| `matrix-downward` | matrix | klasseninterner Abwärtsverweis gegen die deklarierte Rangordnung (`order`/`direction: no-downward`) |
-| `external-status` | external | HTTP-Status ≥ 400 oder Transportfehler (DNS/Verbindung) |
-| `external-timeout` | external | Timeout überschritten |
-| `codepath-missing` | codepaths | Ziel eines Inline-Code-Pfads existiert nicht |
-| `citation-out-of-range` | codepaths, citations | Zeilen-Referenz (`datei:<von>-<bis>`) hinter dem Datei-Ende — oder (bei `citations`) die Zieldatei fehlt; nur bei `codepaths.check-lines` bzw. `d-check:cite` |
-| `citation-inverted-range` | codepaths, citations | Zeilen-Referenz invertiert (`<von> > <bis>`) |
-| `citation-mismatch` | citations | per `d-check:cite` markiertes Zitat ist kein zusammenhängender Teilstring der whitespace-normalisierten Quell-Spanne (Zitat-Fäule) |
-| `hostpath-forbidden` | hostpaths | host-lokaler absoluter Pfad (Maschinen-Layout-Leak) in Prosa oder Inline-Code |
-| `diagram-id-undefined` | diagrams | Kennung in einem geöffneten Diagramm-Fence ohne Definition in ihrer `defined-in`-Quelle |
-| `span-unclosed` | spans | ungeschlossene Code-Span-Öffnung klebt an Nicht-Whitespace (Absatz-Parität gekippt) |
-| `fence-unclosed` | spans | Fenced-Code-Block ohne Schluss bis zum **Dateiende** (nicht Absatz-Ende — ein Fence *ist* eine Absatzgrenze): mindestens eine der beiden Fence-Lesarten endet offen, und jedes Modul, das ihr folgt, überspringt alles dahinter. Befund an der Öffnungszeile — eine **Fundstelle**, nicht zwingend die Reparaturstelle —, genau einer je Datei |
-| `span-nested-link` | spans | Link-Syntax im Linktext eines weiteren Links (rendert zerrissen) |
-| `external-redirects` | external | mehr als `REDIRECT_MAX` Redirects |
-| `version-stale` | versions | Versions-Pin weicht von der aktuellen Version (`versions.current-from`) ab |
-| `link-stale` | pins | normalisierter Ziel-Span eines gepinnten Links weicht vom hinterlegten `dpin`-Hash ab |
-| `core-drift` | immutable | normalisierter Core einer gepinnten Datei (ohne Marker-Zeile + `exclude-sections`) weicht vom hinterlegten `immutable`-Hash ab |
-| `core-drift-vcs` | vcs | Core einer immutablen Datei (BASE erfüllt `vcs.immutable-when`) hat sich über die Commit-Range geändert, ihr Status-Übergang ist unzulässig (`vcs.head-allow`), oder die immutable Datei wurde gelöscht/umbenannt |
-| `commit-untraceable` | commits | bereinigte Commit-Message trägt keine Kennung nach `commits.id-patterns` und ist nicht per `commits.exempt-pattern` (Betreff) ausgenommen |
-| `planning-drift` | planning | Roadmap-Aktiv-Status (`planning.marker` im `planning.heading`-Block) und Präsenz von `planning.slice-glob`-Slices sind inkonsistent (`hasActive ≠ hasSlices`), oder die kanonische Überschrift fehlt/ist mehrdeutig bzw. die Roadmap-Datei fehlt (fail-closed) |
-| `closure-note-missing` | planning | Kandidat im `planning.closure.dir` (Filter: `planning.closure.glob`, sonst `planning.slice-glob`) **ohne** einen auf `planning.closure.heading-pattern` passenden Abschnitt — oder das gesetzte `planning.closure.dir` fehlt, ist unlesbar oder enthält **keinen** Kandidaten unter dem effektiven Filter (fail-closed); schließt `closure-note-thin`/`-boilerplate` aus (ohne Abschnitt gibt es nichts zu messen) |
-| `closure-note-thin` | planning | Closure-Notiz-Abschnitt trägt weniger als `planning.closure.min-sentences` Satzende-Zeichen **außerhalb** der Fenced-Code-Blöcke (Platzhalter, Einzeiler) |
-| `closure-note-boilerplate` | planning | bereinigter Closure-Notiz-Text enthält (case-insensitiv, an Wortgrenzen) eine literale Phrasg aus `planning.closure.boilerplate`; der erste Treffer benennt die Meldung |
-| `closure-note-placeholder` | planning | Closure-Notiz-Abschnitt trägt einen unausgefüllten Vorlagen-Platzhalter in Auszeichnungs-Form (opt-in über `planning.closure.placeholder`); Inline-Code, Autolinks/Adressen und HTML-Tags sind ausgenommen, gemeldet wird der **erste** Treffer je Kandidat |
-| `closure-note-ambiguous` | planning | mehrere auf `planning.closure.heading-pattern` passende Überschriften — ohne eindeutigen Abschnitt wird **nicht** gemessen (schließt `-thin`/`-boilerplate`/`-placeholder` aus); `line` = **zweiter** Treffer |
-| `link-position-dependent` | links | relativer Verweis einer Datei in einem `resolve-from`-`dirs`-Verzeichnis löst von mindestens einem Ort der Gruppe nicht auf — oder von verschiedenen Orten auf **verschiedene** Ziele; Reparatur ist das Präfixieren des Pfads. Fail-closed über denselben Code: eine Gruppe ohne einen einzigen existierenden `dirs`-Ort und ein Ort, der als Datei existiert |
-| `wave-drift` | planning | **`mode: one`** (Default): Aktiv-Status der Roadmap (`planning.heading`-Block) und Präsenz **genau einer** Wellen-Kennung unter den **flachen** Wellendokumenten (`planning.waves.glob` abzüglich `results-glob`; zwei Dateien derselben Kennung sind ein Element) widersprechen sich; auch bei **mehr als einer** Kennung. **`mode: many`**: die Kennungs-Menge des Blocks und die Kennungs-Menge der flachen Wellendokumente differieren — je Differenz-Element ein Befund, `target` = betroffene Kennung, der Ruhe-Marker geht **nicht** ein. Fail-closed über denselben Code (beide Modi): unlesbares `waves.dir`/`done-dir` und fehlende Register-Überschrift |
-| `wave-preview-exists` | planning | eine Zeile des Vorschau-Registers (`planning.waves.next-heading`) nennt in ihrer **ersten Spalte** eine Welle, für die bereits eine Datei existiert (flach oder im Ruheort) — die geplante Welle hätte drei Positionen statt zwei |
-| `wave-results-missing` | planning | eine Zeile des Abschluss-Registers (`planning.waves.closed-heading`) nennt eine Welle **ohne** Ergebnisnotiz (`planning.waves.results-glob`) im Ruheort |
-| `wave-unregistered` | planning | eine **Ergebnisnotiz** im Ruheort hat **keine** Zeile im Abschluss-Register — die Richtung „Artefakt ⇒ Register" |
-| `section-missing` | structure | kein Abschnitt passt auf den Selektor der Regel — **oder** die Regel trifft keine Datei (auch nach Abzug von `exempt-paths`, fail-closed); `file` = Datei bzw. Glob, `line` = 1 |
-| `section-ambiguous` | structure | Abschnitt kommt mehrfach vor, obwohl `sections: one` genau einen erwartet; Abbruch für **diese** Datei in **dieser** Regel, `line` = zweiter Treffer |
-| `section-empty` | structure | bereinigter Abschnitts-Text ohne ein einziges Nicht-Whitespace-Zeichen (`non-empty`) |
-| `section-thin` | structure | weniger Satzende-Zeichen als `min-sentences` verlangt |
-| `section-oversized` | structure | mehr Task-Items als `max-tasks` erlaubt (Zählung **im Abschnitt**, nicht dateiweit) |
-| `section-forbidden` | structure | `forbid-pattern` trifft den bereinigten Abschnitts-Text |
-| `section-pattern-missing` | structure | `require-pattern` trifft **nicht** — das Spiegelbild von `section-forbidden` |
-| `section-marker-missing` | structure | eine Marke aus `require-all` fehlt (Auszeichnungs-Marke am Zeilen-Anfang, nach optionalem Listen-Marker) |
-| `section-unordered` | structure | eine Datenzeile bricht die nicht-strikte Monotonie der Schlüsselspalte in Richtung `table-order` (`line` = die brechende Zeile) — **oder** der Abschnitt trägt keine Tabellen-Datenzeile (Leerlauf, `line` = Abschnitts-Überschrift) |
-| `section-cell-untyped` | structure | eine Schlüsselzelle der Chronologie-Bedingung ist nicht typisierbar (kein Datums-/Versions-Token, zu wenige Zellen, Segment außerhalb des Zahlbereichs) oder weicht vom Typ ihrer typisierbaren **Vorgänger-Zelle** ab — Befund statt stillem Übersprung; genau einer je gemeldeter Zelle |
-| `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
-| `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
-| `gate-undocumented` | targets | Makefile-Regel (nicht in `targets.exempt-targets`) ohne Deklaration als `make X` in der `targets.authority`-Doku (undokumentiertes Gate) |
-| `source-drift` | sources | gepinnte externe Quelle (Marker `source-pin` oder Config `sources[]`) inhaltlich gedriftet — Content-Hash der Roh-Bytes bzw. des `unpack: zip`-Content-Manifests weicht vom hinterlegten `sha256` ab; die Meldung trägt den vollen Ist-`sha256` (Re-Pin-Vorlage) |
-| `source-unreachable` | sources | gepinnte externe Quelle nicht materialisierbar (Netzfehler, HTTP-Status ≥ 400, Timeout, > `REDIRECT_MAX` Redirects, Body-/Entpack-Limit oder unter `unpack: zip` kein gültiges Zip) — bewusst getrennt von `source-drift` |
+| Kennung | Code | Modul | Bedingung |
+|---|---|---|---|
+| `SPEC-013` | `target-missing` | links | Linkziel existiert nicht |
+| `SPEC-014` | `repo-escape` | links, codepaths | aufgelöstes Ziel verlässt die Repo-Wurzel |
+| `SPEC-015` | `symlink` | links | Ziel ist/enthält Symlink (Vorrang vor `repo-escape`) |
+| `SPEC-016` | `anchor-missing` | anchors, codepaths | Anker entspricht keinem Heading-Slug und keinem HTML-Anker der Zieldatei |
+| `SPEC-017` | `id-unlinked` | ids | Kennung im Fließtext ohne Markdown-Link |
+| `SPEC-018` | `matrix-forbidden` | matrix | Referenz zwischen Klassen nicht erlaubt (**Link** oder, bei gesetztem `matrix.classes[].token`, **bare ID-Token** im Körper; Token-Form via `<!-- d-check:status-provenance -->` deklarierbar) |
+| `SPEC-019` | `matrix-inactive` | matrix | Referenz auf Dokument mit verbotenem Status |
+| `SPEC-020` | `matrix-downward` | matrix | klasseninterner Abwärtsverweis gegen die deklarierte Rangordnung (`order`/`direction: no-downward`) |
+| `SPEC-021` | `external-status` | external | HTTP-Status ≥ 400 oder Transportfehler (DNS/Verbindung) |
+| `SPEC-022` | `external-timeout` | external | Timeout überschritten |
+| `SPEC-023` | `codepath-missing` | codepaths | Ziel eines Inline-Code-Pfads existiert nicht |
+| `SPEC-024` | `citation-out-of-range` | codepaths, citations | Zeilen-Referenz (`datei:<von>-<bis>`) hinter dem Datei-Ende — oder (bei `citations`) die Zieldatei fehlt; nur bei `codepaths.check-lines` bzw. `d-check:cite` |
+| `SPEC-025` | `citation-inverted-range` | codepaths, citations | Zeilen-Referenz invertiert (`<von> > <bis>`) |
+| `SPEC-026` | `citation-mismatch` | citations | per `d-check:cite` markiertes Zitat ist kein zusammenhängender Teilstring der whitespace-normalisierten Quell-Spanne (Zitat-Fäule) |
+| `SPEC-027` | `hostpath-forbidden` | hostpaths | host-lokaler absoluter Pfad (Maschinen-Layout-Leak) in Prosa oder Inline-Code |
+| `SPEC-028` | `diagram-id-undefined` | diagrams | Kennung in einem geöffneten Diagramm-Fence ohne Definition in ihrer `defined-in`-Quelle |
+| `SPEC-029` | `span-unclosed` | spans | ungeschlossene Code-Span-Öffnung klebt an Nicht-Whitespace (Absatz-Parität gekippt) |
+| `SPEC-030` | `fence-unclosed` | spans | Fenced-Code-Block ohne Schluss bis zum **Dateiende** (nicht Absatz-Ende — ein Fence *ist* eine Absatzgrenze): mindestens eine der beiden Fence-Lesarten endet offen, und jedes Modul, das ihr folgt, überspringt alles dahinter. Befund an der Öffnungszeile — eine **Fundstelle**, nicht zwingend die Reparaturstelle —, genau einer je Datei |
+| `SPEC-031` | `span-nested-link` | spans | Link-Syntax im Linktext eines weiteren Links (rendert zerrissen) |
+| `SPEC-032` | `external-redirects` | external | mehr als `REDIRECT_MAX` Redirects |
+| `SPEC-033` | `version-stale` | versions | Versions-Pin weicht von der aktuellen Version (`versions.current-from`) ab |
+| `SPEC-034` | `link-stale` | pins | normalisierter Ziel-Span eines gepinnten Links weicht vom hinterlegten `dpin`-Hash ab |
+| `SPEC-035` | `core-drift` | immutable | normalisierter Core einer gepinnten Datei (ohne Marker-Zeile + `exclude-sections`) weicht vom hinterlegten `immutable`-Hash ab |
+| `SPEC-036` | `core-drift-vcs` | vcs | Core einer immutablen Datei (BASE erfüllt `vcs.immutable-when`) hat sich über die Commit-Range geändert, ihr Status-Übergang ist unzulässig (`vcs.head-allow`), oder die immutable Datei wurde gelöscht/umbenannt |
+| `SPEC-037` | `commit-untraceable` | commits | bereinigte Commit-Message trägt keine Kennung nach `commits.id-patterns` und ist nicht per `commits.exempt-pattern` (Betreff) ausgenommen |
+| `SPEC-038` | `planning-drift` | planning | Roadmap-Aktiv-Status (`planning.marker` im `planning.heading`-Block) und Präsenz von `planning.slice-glob`-Slices sind inkonsistent (`hasActive ≠ hasSlices`), oder die kanonische Überschrift fehlt/ist mehrdeutig bzw. die Roadmap-Datei fehlt (fail-closed) |
+| `SPEC-039` | `closure-note-missing` | planning | Kandidat im `planning.closure.dir` (Filter: `planning.closure.glob`, sonst `planning.slice-glob`) **ohne** einen auf `planning.closure.heading-pattern` passenden Abschnitt — oder das gesetzte `planning.closure.dir` fehlt, ist unlesbar oder enthält **keinen** Kandidaten unter dem effektiven Filter (fail-closed); schließt `closure-note-thin`/`-boilerplate` aus (ohne Abschnitt gibt es nichts zu messen) |
+| `SPEC-040` | `closure-note-thin` | planning | Closure-Notiz-Abschnitt trägt weniger als `planning.closure.min-sentences` Satzende-Zeichen **außerhalb** der Fenced-Code-Blöcke (Platzhalter, Einzeiler) |
+| `SPEC-041` | `closure-note-boilerplate` | planning | bereinigter Closure-Notiz-Text enthält (case-insensitiv, an Wortgrenzen) eine literale Phrasg aus `planning.closure.boilerplate`; der erste Treffer benennt die Meldung |
+| `SPEC-042` | `closure-note-placeholder` | planning | Closure-Notiz-Abschnitt trägt einen unausgefüllten Vorlagen-Platzhalter in Auszeichnungs-Form (opt-in über `planning.closure.placeholder`); Inline-Code, Autolinks/Adressen und HTML-Tags sind ausgenommen, gemeldet wird der **erste** Treffer je Kandidat |
+| `SPEC-043` | `closure-note-ambiguous` | planning | mehrere auf `planning.closure.heading-pattern` passende Überschriften — ohne eindeutigen Abschnitt wird **nicht** gemessen (schließt `-thin`/`-boilerplate`/`-placeholder` aus); `line` = **zweiter** Treffer |
+| `SPEC-044` | `link-position-dependent` | links | relativer Verweis einer Datei in einem `resolve-from`-`dirs`-Verzeichnis löst von mindestens einem Ort der Gruppe nicht auf — oder von verschiedenen Orten auf **verschiedene** Ziele; Reparatur ist das Präfixieren des Pfads. Fail-closed über denselben Code: eine Gruppe ohne einen einzigen existierenden `dirs`-Ort und ein Ort, der als Datei existiert |
+| `SPEC-045` | `wave-drift` | planning | **`mode: one`** (Default): Aktiv-Status der Roadmap (`planning.heading`-Block) und Präsenz **genau einer** Wellen-Kennung unter den **flachen** Wellendokumenten (`planning.waves.glob` abzüglich `results-glob`; zwei Dateien derselben Kennung sind ein Element) widersprechen sich; auch bei **mehr als einer** Kennung. **`mode: many`**: die Kennungs-Menge des Blocks und die Kennungs-Menge der flachen Wellendokumente differieren — je Differenz-Element ein Befund, `target` = betroffene Kennung, der Ruhe-Marker geht **nicht** ein. Fail-closed über denselben Code (beide Modi): unlesbares `waves.dir`/`done-dir` und fehlende Register-Überschrift |
+| `SPEC-046` | `wave-preview-exists` | planning | eine Zeile des Vorschau-Registers (`planning.waves.next-heading`) nennt in ihrer **ersten Spalte** eine Welle, für die bereits eine Datei existiert (flach oder im Ruheort) — die geplante Welle hätte drei Positionen statt zwei |
+| `SPEC-047` | `wave-results-missing` | planning | eine Zeile des Abschluss-Registers (`planning.waves.closed-heading`) nennt eine Welle **ohne** Ergebnisnotiz (`planning.waves.results-glob`) im Ruheort |
+| `SPEC-048` | `wave-unregistered` | planning | eine **Ergebnisnotiz** im Ruheort hat **keine** Zeile im Abschluss-Register — die Richtung „Artefakt ⇒ Register" |
+| `SPEC-049` | `section-missing` | structure | kein Abschnitt passt auf den Selektor der Regel — **oder** die Regel trifft keine Datei (auch nach Abzug von `exempt-paths`, fail-closed); `file` = Datei bzw. Glob, `line` = 1 |
+| `SPEC-050` | `section-ambiguous` | structure | Abschnitt kommt mehrfach vor, obwohl `sections: one` genau einen erwartet; Abbruch für **diese** Datei in **dieser** Regel, `line` = zweiter Treffer |
+| `SPEC-051` | `section-empty` | structure | bereinigter Abschnitts-Text ohne ein einziges Nicht-Whitespace-Zeichen (`non-empty`) |
+| `SPEC-052` | `section-thin` | structure | weniger Satzende-Zeichen als `min-sentences` verlangt |
+| `SPEC-053` | `section-oversized` | structure | mehr Task-Items als `max-tasks` erlaubt (Zählung **im Abschnitt**, nicht dateiweit) |
+| `SPEC-054` | `section-forbidden` | structure | `forbid-pattern` trifft den bereinigten Abschnitts-Text |
+| `SPEC-055` | `section-pattern-missing` | structure | `require-pattern` trifft **nicht** — das Spiegelbild von `section-forbidden` |
+| `SPEC-056` | `section-marker-missing` | structure | eine Marke aus `require-all` fehlt (Auszeichnungs-Marke am Zeilen-Anfang, nach optionalem Listen-Marker) |
+| `SPEC-057` | `section-unordered` | structure | eine Datenzeile bricht die nicht-strikte Monotonie der Schlüsselspalte in Richtung `table-order` (`line` = die brechende Zeile) — **oder** der Abschnitt trägt keine Tabellen-Datenzeile (Leerlauf, `line` = Abschnitts-Überschrift) |
+| `SPEC-058` | `section-cell-untyped` | structure | eine Schlüsselzelle der Chronologie-Bedingung ist nicht typisierbar (kein Datums-/Versions-Token, zu wenige Zellen, Segment außerhalb des Zahlbereichs) oder weicht vom Typ ihrer typisierbaren **Vorgänger-Zelle** ab — Befund statt stillem Übersprung; genau einer je gemeldeter Zelle |
+| `SPEC-059` | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
+| `SPEC-060` | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
+| `SPEC-061` | `gate-undocumented` | targets | Makefile-Regel (nicht in `targets.exempt-targets`) ohne Deklaration als `make X` in der `targets.authority`-Doku (undokumentiertes Gate) |
+| `SPEC-062` | `source-drift` | sources | gepinnte externe Quelle (Marker `source-pin` oder Config `sources[]`) inhaltlich gedriftet — Content-Hash der Roh-Bytes bzw. des `unpack: zip`-Content-Manifests weicht vom hinterlegten `sha256` ab; die Meldung trägt den vollen Ist-`sha256` (Re-Pin-Vorlage) |
+| `SPEC-063` | `source-unreachable` | sources | gepinnte externe Quelle nicht materialisierbar (Netzfehler, HTTP-Status ≥ 400, Timeout, > `REDIRECT_MAX` Redirects, Body-/Entpack-Limit oder unter `unpack: zip` kein gültiges Zip) — bewusst getrennt von `source-drift` |
 
 Nutzungs-/Umgebungsfehler (Exit 2) melden auf stderr mit Präfix
 `d-check: error:`; Konfigurationsfehler nennen Datei und Zeile.
@@ -2685,16 +2685,17 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 ## 6. Externe Verträge
 
-| System | Version/Stand | Vertrag |
-|---|---|---|
-| `gopkg.in/yaml.v3` | gepinnt via `go.sum` | striktes Decoding (`KnownFields`); vollständig im Config-Adapter gekapselt |
-| GitHub Flavored Markdown (Slug-/Anker-Verhalten) | Referenzverhalten, Stand 2026-06 | [§1, DC-FA-ANCH-001.a](#dc-fa-anch-001a--github-slug-algorithmus) |
-| Runtime-Basis-Image distroless/static | Digest-gepinnt | Multi-Stage-Build; nur volle Semver-Tags, kein `latest` |
+| Kennung | System | Version/Stand | Vertrag |
+|---|---|---|---|
+| `SPEC-064` | `gopkg.in/yaml.v3` | gepinnt via `go.sum` | striktes Decoding (`KnownFields`); vollständig im Config-Adapter gekapselt |
+| `SPEC-065` | GitHub Flavored Markdown (Slug-/Anker-Verhalten) | Referenzverhalten, Stand 2026-06 | [§1, DC-FA-ANCH-001.a](#dc-fa-anch-001a--github-slug-algorithmus) |
+| `SPEC-066` | Runtime-Basis-Image distroless/static | Digest-gepinnt | Multi-Stage-Build; nur volle Semver-Tags, kein `latest` |
 
 ## 7. Historie
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-22 | **Struktur-IDs `SPEC-<NNN>` vergeben** (Baseline-Default, [`MR-000`](../harness/conventions.md#mr-000--baseline-aussage)): §2 trägt sie in den fünf Schema-Überschriften, §3/§4/§6 in einer neuen ersten Spalte `Kennung` — fortlaufend je Datei (001–066), Lücken werden nicht nachbelegt; der Link trägt den Abschnitt, der Text die Kennung. Die §2-Anker wandern damit (`#befund` → `#spec-001--befund` usw.); alle zwölf Verweise im Baum sind retargetet. Keine inhaltliche Änderung einer Festlegung |
 | 2026-08-22 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) W3, §2-Schema-Zeile `planning.waves.mode` und §4 `wave-drift`-Zeile: Wortlaut auf die Kennungs-Menge aus W2 gezogen (Lastenheft 0.62.1) — auch das Singleton unter `one` zählt Kennungen, nicht Dateien; zwei flache Dokumente derselben Kennung sind ein Element. Keine Verhaltensänderung; der Beleg ist ein Pinning-Test in beiden Modi |
 | 2026-08-21 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) **W3 auf zwei Kardinalitäts-Modelle** (`planning.waves.mode: one`\|`many`, Lastenheft 0.62.0 — formaler Konsumenten-CR „Bijektion statt Singleton"): `one` (Default) unverändert; unter `many` Kennungs-Mengen-Gleichheit der **Prosa-Zeilen** des `planning.heading`-Blocks gegen die flachen Wellendokumente (Kennung wie W2, Fences zählen nicht, Mehrfachnennung einmal), je Differenz-Element ein `wave-drift` mit der **Kennung** als `target`; der Ruhe-Marker geht nicht ein (`planning-drift`-Territorium). W1: `mode` außerhalb `one`/`many` inkl. explizit leer ⇒ Exit 2. §2-Schema + §4-Zeile nachgezogen |
 | 2026-08-21 | Nachzug nach unabhängigem Review, vor dem Release: die **Typ-Mischungs-Semantik** der Chronologie-Bedingung stand in §6 zweimal verschieden (Bedingungs-Tabelle „Spalten-Typ" gegen Fließtext „Vorgänger-Typ") — gepinnt auf die **Paar-Lesart mit Anker-Reset** (die Misch-Zelle meldet sich selbst, die gesunde Folge-Zeile dahinter nicht; beide Stellen sagen jetzt dasselbe, der Kaskaden-Fall ist getestet). Ferner ist ein Versions-Segment außerhalb des Zahlbereichs **nicht typisierbar** (Befund statt stillem Kleinst-Vergleich) — §4-Zeile zu `section-cell-untyped` entsprechend |
@@ -2749,7 +2750,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 | 2026-06-24 | §[`DC-FA-PIN-001.a`](spezifikation.md#dc-fa-pin-001a--content-pin-gegen-inhaltlichen-drift-pins) + Grund-Code `link-stale` (§4) ergänzt: opt-in Modul `pins` hasst den whitespace-normalisierten **rohen** Ziel-Span (Datei/Heading-Section inkl. Fenced-Code) eines gepinnten Links (`<!-- dpin: sha256:… -->`, gebunden an den unmittelbar vorausgehenden Link derselben Zeile, sonst inert) und meldet `link-stale` bei Drift; nur auflösbare repo-interne Ziele (struktureller Befund bleibt `links`/`anchors`, kein Doppelbefund), Scope-treu (nur Quell-Dateien), diagnose-only; §2-`rule`-Feld zeigt jetzt auf die Modulliste statt einer Enum |
 | 2026-06-24 | §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) + §2-Schema (`versions.pin-pattern`/`versions.current-from`/`versions.exempt-paths`) + Grund-Code `version-stale` ergänzt: opt-in Modul `versions` prüft Versions-Pins gegen die aus `versions.current-from` (Default `version.md#aktuell`) gelesene aktuelle Version; liest Pins **auch in Fences** (gescopte Ausnahme, Muster-Scan ohne Parser), Ventile `exempt-paths`/`d-check:ignore`, fail-closed bei unauflösbarer Quelle, diagnose-only (Auto-Bump-`--repair` als Folge-CR). Default-aus byte-identisch |
 | 2026-06-22 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) + §2-Schema ergänzt: Datei-Ventil `codepaths.exempt-paths` (Glob wie `scan.ignore`) nimmt ganze Dateien von der `codepaths`-Prüfung aus — datei-weit, unabhängig von `codepaths.roots`; Vorbild das gleichnamige ids-Ventil. Abwärtskompatibel: ohne gesetztes `exempt-paths` byte-identisch |
-| 2026-06-19 | §[`DC-FA-CLI-007.a`](spezifikation.md#dc-fa-cli-007a--diagnose-modus) Schritt 6 + [JSON-Diagnose](spezifikation.md#json-diagnose---doctor---json)-Schema (§2) ergänzt: `--doctor --json` rendert dieselbe Diagnose maschinenlesbar — `findings` zusätzlich mit `reasonText` und `fixCandidate` (`{original,replacement,note}` oder explizit `null`), `file`-Gruppierung; nur noch `--repair`+`--json` und `--doctor`+`--repair` sind Nutzungsfehler |
+| 2026-06-19 | §[`DC-FA-CLI-007.a`](spezifikation.md#dc-fa-cli-007a--diagnose-modus) Schritt 6 + [JSON-Diagnose](spezifikation.md#spec-003--json-diagnose---doctor---json)-Schema (§2) ergänzt: `--doctor --json` rendert dieselbe Diagnose maschinenlesbar — `findings` zusätzlich mit `reasonText` und `fixCandidate` (`{original,replacement,note}` oder explizit `null`), `file`-Gruppierung; nur noch `--repair`+`--json` und `--doctor`+`--repair` sind Nutzungsfehler |
 | 2026-06-18 | §[`DC-FA-CLI-008.a`](spezifikation.md#dc-fa-cli-008a--reparatur-patch) ergänzt: Reparatur-Modus `--repair` — unified diff auf stdout (`git apply`-kompatibel), zwei Stufen (`--repair`/`--repair-broad`); konservativ nur eindeutige `id-unlinked`-Fixes auf nackte Prosa-Vorkommen, breit Best-Guess `target-missing` (eindeutiger Basisname) mit review-pflichtig-Marker auf stderr; nicht mit `--json`/`--doctor` kombinierbar; Determinismus über sortierte Edits |
 | 2026-06-18 | §[`DC-FA-CLI-007.a`](spezifikation.md#dc-fa-cli-007a--diagnose-modus) ergänzt: Diagnose-Modus `--doctor` — Lese-Lauf, nach Datei gruppierte Klartext-Diagnose auf stdout (statt Befund-Zeilen), Fix-Kandidat nur für `id-unlinked` (Link auf das ids-`target`); Grund-Klartext-Mapping über alle 14 Grund-Codes mit Vollständigkeits-Prüfung gegen die Reason-Konstanten; `--doctor`+`--json` = Nutzungsfehler (Exit 2); Determinismus über die sortierte Befundliste |
 | 2026-06-17 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 4 ergänzt: Supersede-Lineage-Ausnahme (`allow-supersede-lineage`, `supersede-fields`) nimmt die deklarierte Lineage-Kante von der `matrix-inactive`-Prüfung aus (Match über Linktext bzw. Zielpfad der Referenz); Default aus ⇒ byte-identisch. Schema-Tabelle + Beispiel ergänzt |

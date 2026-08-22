@@ -49,7 +49,7 @@ oder Umgebungsfehler
 ## Konfiguration
 
 Optionale `.d-check.yml` in der Repo-Wurzel; Schema und Defaults in
-der [Spezifikation §`.d-check.yml`](../../spec/spezifikation.md#d-checkyml),
+der [Spezifikation §`.d-check.yml`](../../spec/spezifikation.md#spec-005--d-checkyml),
 Vollvalidierung gemäß
 [`DC-FA-CONF-001`](../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)
 (jeder Konfigurationsfehler → Exit 2). Ein Beispiel im Vollausbau ist

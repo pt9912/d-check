@@ -232,7 +232,7 @@ ids:
 
 Das vollständige Schema mit allen Schlüsseln, Defaults und
 Validierungs-Constraints steht in der
-[Spezifikation §`.d-check.yml`](spec/spezifikation.md#d-checkyml);
+[Spezifikation §`.d-check.yml`](spec/spezifikation.md#spec-005--d-checkyml);
 ein lebendes Beispiel im Vollausbau (inkl. Referenzmatrix) ist die
 [Selbstkonfiguration dieses Repos](.d-check.yml). Jede ungültige
 Konfiguration bricht mit Exit 2 ab — geprüft wird nie mit

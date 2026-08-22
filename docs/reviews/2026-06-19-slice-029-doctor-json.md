@@ -128,7 +128,7 @@ Keine.
 - **Spec-Treue & Referenzrichtung (MR-006):** Die neuen Spec-Stellen
   (§`DC-FA-CLI-007.a` Schritt 6, §2 „JSON-Diagnose") verweisen nur
   aufwärts/seitwärts auf `lastenheft.md`-Anforderungen und auf andere
-  Spec-Abschnitte (`#json-ausgabe---json`,
+  Spec-Abschnitte (`#spec-002--json-ausgabe---json`,
   `#dc-fa-cli-007a--diagnose-modus`), nicht abwärts auf ADRs/Slices im
   bindenden Text. Die Slice-Spalte der Änderungshistorie (`slice-029`,
   Zeile 811) ist ein **unverlinkter Klartext-Label** im selben Muster
@@ -136,8 +136,8 @@ Keine.
   Planning-Artefakte; das ist keiner. Keine neue MR-006-Bedingung.
 - **Anker-/Link-Auflösung:** Alle neuen Querverweise lösen auf —
   Spec-Heading `### JSON-Diagnose (\`--doctor --json\`)` →
-  `#json-diagnose---doctor---json` (referenziert in der Historie);
-  `### JSON-Ausgabe (\`--json\`)` → `#json-ausgabe---json`
+  `#spec-003--json-diagnose---doctor---json` (referenziert in der Historie);
+  `### JSON-Ausgabe (\`--json\`)` → `#spec-002--json-ausgabe---json`
   (Schritt 6 + §2); Handbuch `### 4.11 …` →
   `#411-maschinenlesbare-ausgabe---json` (§4.9-Beispiel);
   `#dc-fa-cli-007a--diagnose-modus`. Kein toter Anker.

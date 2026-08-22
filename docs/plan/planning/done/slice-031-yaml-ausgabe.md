@@ -42,7 +42,7 @@ Nutzungsfehler (Exit 2). Deterministisch, read-only.
   flach (wie die JSON-Promotion); `fixCandidate: null` explizit.
 - [x] **arch-check:** `tools/arch-check.sh` R3 erlaubt yaml.v3 zusätzlich
   in `internal/adapter/driven/report`; Kommentar/Regel-Text nachgezogen.
-- [x] **Spezifikation:** [§2 JSON-Ausgabe](../../../../spec/spezifikation.md#json-ausgabe---json)
+- [x] **Spezifikation:** [§2 JSON-Ausgabe](../../../../spec/spezifikation.md#spec-002--json-ausgabe---json)
   um den YAML-Hinweis (gleiche Struktur, nur Serialisierung) ergänzt.
 - [x] **Tests:** `--yaml` (parsbar, gleiche Struktur wie JSON, Exit 1);
   `--doctor --yaml` (`reasonText`/`fixCandidate`); `--json --yaml` → Exit 2;

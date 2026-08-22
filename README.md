@@ -229,7 +229,7 @@ ids:
 
 The full schema with all keys, defaults and
 validation constraints is in the
-[specification §`.d-check.yml`](spec/spezifikation.md#d-checkyml);
+[specification §`.d-check.yml`](spec/spezifikation.md#spec-005--d-checkyml);
 a living example fully built out (incl. reference matrix) is
 [this repo's self-configuration](.d-check.yml). Every invalid
 configuration aborts with exit 2 — checking never proceeds with

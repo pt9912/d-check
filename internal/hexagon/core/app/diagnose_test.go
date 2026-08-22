@@ -62,10 +62,12 @@ func TestAllReasonsDeckungGegenSpezifikationGrundCodes(t *testing.T) {
 // unlesbare Spec, fehlende oder mehrdeutige Überschrift, eine leere
 // Tabelle und jede Tabellen-Body-Zeile ohne Backtick-Code sind Fehler —
 // kein stilles Grün mit leerer Menge, kein stilles Auslassen einzelner
-// Zeilen (R1-LOW-1). Annahme: alle Tabellenzeilen unter §4 sind
-// Grund-Codes; eine künftige zweite Tabelle (z. B. Fehler-Codes) macht
-// den Test laut rot und verlangt eine bewusste Parser-Anpassung
-// (R1-INFO-1).
+// Zeilen. Annahme: alle Tabellenzeilen unter §4 sind Grund-Codes; eine
+// künftige zweite Tabelle (z. B. Fehler-Codes) macht den Test laut rot
+// und verlangt eine bewusste Parser-Anpassung. Die erste Spalte trägt
+// seit der Struktur-ID-Vergabe die SPEC-Kennung (MR-000): sie wird
+// mitgelesen und auf Eindeutigkeit geprüft — dieselbe Kopplung bindet
+// damit auch die Vergabe an die Tabelle.
 func grundCodesAusSpezifikation(t *testing.T) map[string]bool {
 	t.Helper()
 	raw, err := os.ReadFile(filepath.Join("..", "..", "..", "..", "spec", "spezifikation.md"))
@@ -73,7 +75,7 @@ func grundCodesAusSpezifikation(t *testing.T) map[string]bool {
 		t.Fatalf("Spezifikation nicht lesbar (fail-closed): %v", err)
 	}
 	heading := regexp.MustCompile(`^## \d+\. Grund- und Fehler-Codes$`)
-	row := regexp.MustCompile("^\\|\\s*`([a-z0-9-]+)`\\s*\\|")
+	row := regexp.MustCompile("^\\|\\s*`(SPEC-[0-9]{3})`\\s*\\|\\s*`([a-z0-9-]+)`\\s*\\|")
 	divider := regexp.MustCompile(`^\|[\s:|-]+$`)
 	lines := strings.Split(string(raw), "\n")
 	start := -1
@@ -89,18 +91,23 @@ func grundCodesAusSpezifikation(t *testing.T) map[string]bool {
 		t.Fatal("Grund-Code-Überschrift in der Spezifikation nicht gefunden (fail-closed)")
 	}
 	codes := map[string]bool{}
+	kennungen := map[string]bool{}
 	for _, l := range lines[start+1:] {
 		if strings.HasPrefix(l, "## ") {
 			break
 		}
-		if !strings.HasPrefix(l, "|") || divider.MatchString(l) || strings.HasPrefix(l, "| Code |") {
+		if !strings.HasPrefix(l, "|") || divider.MatchString(l) || strings.HasPrefix(l, "| Kennung |") {
 			continue // keine Tabellenzeile, Trennzeile oder Kopfzeile
 		}
 		m := row.FindStringSubmatch(l)
 		if m == nil {
-			t.Fatalf("§4-Tabellenzeile ohne Backtick-Code (fail-closed): %q", l)
+			t.Fatalf("§4-Tabellenzeile ohne SPEC-Kennung und Backtick-Code (fail-closed): %q", l)
 		}
-		codes[m[1]] = true
+		if kennungen[m[1]] {
+			t.Fatalf("§4-Kennung %s doppelt vergeben (fail-closed)", m[1])
+		}
+		kennungen[m[1]] = true
+		codes[m[2]] = true
 	}
 	if len(codes) == 0 {
 		t.Fatal("keine Grund-Codes in der §4-Tabelle gefunden (fail-closed)")

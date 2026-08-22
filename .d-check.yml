@@ -239,6 +239,17 @@ structure:
     section: "## 11. Änderungshistorie"
     table-order: asc           # die einzige aufsteigende Bestandstabelle (§11: unten anhängen)
 
+  # Struktur-ID-Vergabe im Technik-Stratum (MR-000, seit welle-80): jede
+  # ###-Sektion des Schema-Abschnitts traegt eine SPEC-Kennung — sonst zeigt
+  # eine ADR auf einen Abschnitt statt auf die Festlegung. Grenze: RE2 kennt
+  # keinen Lookahead, die Bedingung ist als ausgeschriebene Praefix-Negation
+  # formuliert (### ohne folgendes SPEC-<drei Ziffern><Leerzeichen>) und
+  # gemessen statt hergeleitet. §3/§4/§6 tragen ihre Kennung in der ersten
+  # Tabellenspalte; fuer §4 bindet ein Go-Test sie an AllReasons().
+  - files: spec/spezifikation.md
+    section: "## 2. Datenstrukturen und Schemas"
+    forbid-pattern: '(?m)^###(?: *$| (?:$|[^S]|S(?:$|[^P]|P(?:$|[^E]|E(?:$|[^C]|C(?:$|[^-]|-(?:$|[^0-9]|[0-9](?:$|[^0-9]|[0-9](?:$|[^0-9]|[0-9](?:$|[^ ]))))))))))'
+
 # Modul vcs (DC-FA-VCS-001, slice-053): git-Diff-Immutabilität der eigenen
 # Accepted-ADRs über die Commit-Range — `make adr-check` aktiviert es mit
 # `--enable vcs` (NICHT in der modules-Liste oben, daher im Default-doc-check
