@@ -34,7 +34,11 @@
   `Makefile`, die Modul-Registry im Kern und zwei Anforderungs-Abschnitte —,
   und drei davon hätte genau dieses `grep` gefunden. Eine aus dem Kopf
   geschriebene Liste ist besser als keine, aber sie ist selbst ein Artefakt mit
-  Lücken.
+  Lücken. Für eine **Wortlaut-Präzisierung** ist der Ableiter das `grep` nach
+  dem **alten Wortlaut** über den ganzen Baum (nicht nach dem Begriff, der neu
+  hineinkommt): bei slice-112 stand die Liste im Slice, war aber erinnert —
+  drei Stellen mit der alten Lesart lagen in drei ohnehin bearbeiteten
+  Dateien und blieben stehen, bis der unabhängige Review sie fand.
 
   **Der Spiegel ist die Stelle, nicht die Datei.** Eine bestätigende Re-Review
   desselben Slice fand eine **fünfte** Lücke, die der Datei-`grep` nicht gefunden

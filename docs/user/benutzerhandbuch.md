@@ -1236,7 +1236,8 @@ und eine **H1** beenden ihn.
 **Dritte Fähigkeit, opt-in über `waves.dir`: die Wellen-Register gegen die
 Wellen-Dateien.** Dieselbe Invariante eine Ebene höher — vier Aussagen, vier
 Grund-Codes: der Aktiv-Status-Abschnitt nennt eine Welle genau dann, wenn
-**genau ein** flaches Wellendokument liegt (`wave-drift`); eine Vorschau-Zeile
+unter den flachen Wellendokumenten **genau eine** Wellen-Kennung liegt
+(`wave-drift`); eine Vorschau-Zeile
 nennt keine Welle, die schon eine Datei hat (`wave-preview-exists`); jede Zeile
 des Abschluss-Registers hat ihre **Ergebnisnotiz** (`wave-results-missing`) —
 und jede Ergebnisnotiz ihre Zeile (`wave-unregistered`). Gelesen wird die
