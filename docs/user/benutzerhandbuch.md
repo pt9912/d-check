@@ -1082,8 +1082,10 @@ feinsten Schnitt:
   ihre Referenzen erreichen **kein** Modul. Der gröbste Schnitt.
 - **`exempt-paths`** (ganze Datei, je Modul): nimmt **ganze Dateien** von der Prüfung
   **eines** Moduls aus (`ids`, `matrix`, `codepaths`) — der Rest wird weiter gescannt.
-- **`d-check:ignore`** (eine Zeile, nur `codepaths`): der HTML-Kommentar-Marker nimmt
-  **eine einzelne Zeile** von der `codepaths`-Prüfung aus.
+- **`d-check:ignore`** (eine Zeile; `codepaths` **und** `ids`): der
+  HTML-Kommentar-Marker nimmt **eine einzelne Zeile** von der Prüfung dieser
+  beiden Module aus — bei `ids` für nackte wie für Inline-Code-Vorkommen,
+  unabhängig von der Link-Politik. `matrix` und `versions` kennen ihn nicht.
 - **`ignore-refs`** (Ziel, querschnittlich): nimmt bestimmte **aufgelöste
   Ziel-Pfade** von der Existenz-/Anker-Prüfung aus — **referenz-weit** (datei- und
   zeilen-unabhängig) und geteilt von `links`, `anchors` und `codepaths`.
