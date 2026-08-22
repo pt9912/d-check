@@ -34,6 +34,8 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
+- [welle-80-struktur-ids](../welle-80-struktur-ids.md) — Struktur-IDs nach Baseline, Umkehr von [`MR-027`](../../../../harness/conventions.md#mr-027) (Auftraggeber-Entscheide D1–D4, 2026-08-22)
+
 Nichts in Arbeit.
 
 ## Nächste Wellen
@@ -45,7 +47,7 @@ und geschätzter Aufwand (S/M/L, kein Termin).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| Struktur-IDs nach Baseline (Umkehr von [`MR-027`](../../../../harness/conventions.md#mr-027)) — `SPEC-<NNN>`/`ARC-<NNN>` fortlaufend je Datei, Link trägt den Abschnitt, Text die Kennung; Accepted-ADRs bleiben auf `§`-Ankern | Freigabe des Wellen-Plans durch den Auftraggeber (Entscheide D1 Retrofit-Umfang · D2 Granularität der §4-Grund-Codes · D3 Gate-Konsument · D4 ADR-Bestand); Inventur-Zahlen am Eröffnungstag frisch gemessen | Vergabe-Regel + Gate-Konsument zuerst (Adaption aufgelöst, `ids`/`structure`) · `SPEC`-Vergabe Spezifikation · `ARC`-Vergabe Architektur (+ `diagrams` opt-in) · ADR-Neuzugangs-Regel + Erstanwendung an den Proposed-ADRs | M |
+| — keine — | | | |
 
 ## Meilensteine
 
@@ -68,6 +70,7 @@ flowchart LR
     W78["welle-78 - Baseline-Migration v5.6.0 (geschlossen)"]
     W79["welle-79 - Baseline v5.7.0 + Listen-Praedikat (geschlossen)"]
     W78 --> W79
+    W80["welle-80 - Struktur-IDs nach Baseline, Umkehr MR-027 (offen)"]
 ```
 
 ## Abgeschlossene Wellen
