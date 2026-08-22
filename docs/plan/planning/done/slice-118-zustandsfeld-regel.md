@@ -56,12 +56,12 @@ Gate fängt das.
 
 ## 4. Definition of Done
 
-- [ ] Briefing-Hard-Rule deckt Zustandsfelder; Geltung, Form und Abgrenzung
+- [x] Briefing-Hard-Rule deckt Zustandsfelder; Geltung, Form und Abgrenzung
       stehen dort, ohne die Baseline zu duplizieren.
-- [ ] Reviewer-Skill trägt den HIGH-Anker samt beider Ausprägungen; Version
+- [x] Reviewer-Skill trägt den HIGH-Anker samt beider Ausprägungen; Version
       und Datum nachgezogen.
-- [ ] Spiegel-Liste abgeleitet und abgehakt.
-- [ ] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
+- [x] Spiegel-Liste abgeleitet und abgehakt.
+- [x] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
       gesichtet.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -69,11 +69,17 @@ Gate fängt das.
 - **Ein HIGH-Anker ohne Gate ist eine Zusage an Menschen** — er muss so
   formuliert sein, dass ein Reviewer ihn ohne Nachschlagen anwenden kann, und
   darf keine Scheinbefunde auf legitime Formen erzeugen (ein Datum, das ein
-  benannter Trigger pflegt, ist kein Chronik-Feld). — **Ausgang:** *(bei
-  Closure)*
+  benannter Trigger pflegt, ist kein Chronik-Feld). — **Ausgang:** entfallen —
+  der Review hat die Ausnahme gegen den Kanon geprüft (beide Beispiele
+  korrekt, eines davon real im Bestand) und im Repo keine Zelle gefunden, die
+  der Anker fälschlich träfe.
 - **Das Briefing routet, es spiegelt nicht:** der Satz muss kurz bleiben und
-  auf die Baseline zeigen, statt sie nachzuerzählen. — **Ausgang:** *(bei
-  Closure)*
+  auf die Baseline zeigen, statt sie nachzuerzählen. — **Ausgang:**
+  **eingetreten, aber anders:** nicht die Länge war das Problem, sondern die
+  **Überschrift** — sie prädizierte die fünf Kommentar-Klassen über
+  Zustandsfelder, die der Kanon ihnen gerade nicht gibt. Geheilt; die
+  Knappheit selbst hat der Review als „knapp, aber nicht überschritten"
+  bestätigt.
 
 ## 6. Trigger
 
@@ -99,4 +105,42 @@ Reviewer-Skill. Gates: `make doc-check` (eng), `make gates`.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Geliefert:** die Regel steht, bevor sie angewandt wird. Das Briefing sagt in
+seiner Rolle, was die Baseline setzt — Zustandsfelder sind Zustands-Artefakte
+mit **eigener** Form, sie erben vom Kommentar die zwei Tests (Adressat,
+Zeitform), nicht die fünf Klassen; das Drift-Log trägt nur Umplanungen; ein
+lebendes Register trägt keine Kopf-Zustandszeile, außer ein **benannter
+Trigger** pflegt das Datum. Der Reviewer-Skill trägt den HIGH-Anker mit beiden
+Ausprägungen und dieser Ausnahme. Kein Sensor — die Baseline benennt Briefing
+und Reviewer ausdrücklich als Träger; kein Bestand wurde angefasst.
+
+**Review** ([Report](../../../reviews/2026-08-22-slice-118-zustandsfeld-regel-review.md)):
+APPROVE mit einer Auflage — 0 HIGH, 1 MEDIUM, 1 LOW, 1 INFO, sechzehn
+Negativbefunde. Alle drei eingearbeitet.
+
+**Was ging anders als geplant:** Die **Überschrift** war die Stelle, an der
+die Regel verrutschte — nicht der Rumpf. „Kommentare **und Zustandsfelder**
+tragen eine der fünf Klassen" behauptet genau das, was der Kanon *nicht* sagt:
+er überträgt die zwei Tests und gibt dem Zustandsfeld eine eigene Form. Eine
+Überschrift ist eine Aussage, und sie stand im Widerspruch zu ihrem eigenen
+Absatz drei Zeilen tiefer. Zweitens hat der Review einen **fünften Treffer**
+gefunden, den die Welle nicht gezählt hatte: der Kanon eröffnet allgemein
+(„ein Feld, das einen Zustand trägt"), meine Aufzählung nannte drei Tabellen —
+und die `Stand`-Zeile des Konventionsspeichers, die die Kette aller
+Pin-Hebungen anhängt, fiel durch das Raster. Eine Aufzählung belegt keinen
+Klassen-Abschluss; sie ist in den Scope des Anwendungs-Slice gewandert.
+
+- **Steering-Loop-Eintrag:** Guide und Sensor geschärft: die Zustandsfeld-Form
+  steht als Hard Rule im Briefing, der HIGH-Anker im Reviewer-Skill — liegt in
+  [`AGENTS.md` §3.7](../../../../AGENTS.md) und
+  [`.harness/skills/reviewer.md` §Repo-spezifische Anker](../../../../.harness/skills/reviewer.md).
+  Auslöser: Baseline-Stand v5.9.0, kein Register-Eintrag.
+- **Beobachtungs-Register (`../observations.md`):** keine neue Beobachtung.
+  Die verrutschte Überschrift ist die verkörperte Klasse BEO-002 („die Ränder
+  bleiben stehen") in ihrer Titel-Form — zitiert, nicht neu formuliert.
+- **Folge-Slices:** [slice-119](../open/slice-119-kopf-zustandsfelder.md) und
+  [slice-120](../open/slice-120-register-und-drift-log.md); der fünfte Treffer
+  ist in slice-120 aufgenommen.
+- **Risiken aus §6:** beide mit Ausgang (§5) — eines entfallen, eines anders
+  eingetreten als erwartet.
+- **Drei Paarungen:** Wellen-Slice — die Paarungen prüft die Welle-Closure.
