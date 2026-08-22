@@ -1,6 +1,6 @@
 # Roadmap
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-08-21.
+**Status:** Aktiv. **Letzte Änderung:** 2026-08-22.
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine Reihenfolge von
 Terminen (siehe [Baseline-Regelwerk `modul-06-roadmap.md`](../../../../.harness/baseline/v5.7.0/regelwerk/modul-06-roadmap.md)).
@@ -25,6 +25,14 @@ beide Richtungen (`make planning-check` hält ihn gegen das Verzeichnis);
 die Listen-Hälfte misst `wave-drift` als Kennungs-Bijektion (je offener
 Welle-Datei ein Zeiger, beidseitig; `waves.mode: many`) — diese Prosa
 bleibt deshalb frei von Wellen-Kennungen.
+
+**Mehr-Wellen-Betrieb ist zugelassen** (Roadmap-Entscheid des Auftraggebers,
+2026-08-22): unabhängige Stränge — etwa eine Baseline-Hebung neben einer
+Produkt-Welle — dürfen gleichzeitig als flache Wellendokumente offen sein; je
+Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
+`Welle:`-Feld des Slices sagt, wohin er gehört. Eröffnet wird weiterhin nur,
+was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
+§Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
 Nichts in Arbeit.
 
