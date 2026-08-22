@@ -45,7 +45,7 @@ und geschätzter Aufwand (S/M/L, kein Termin).
 
 | Welle | Trigger | Wichtigste Slices | Geschätzter Aufwand |
 |---|---|---|---|
-| — keine — | | | |
+| Struktur-IDs nach Baseline (Umkehr von [`MR-027`](../../../../harness/conventions.md#mr-027)) — `SPEC-<NNN>`/`ARC-<NNN>` fortlaufend je Datei, Link trägt den Abschnitt, Text die Kennung; Accepted-ADRs bleiben auf `§`-Ankern | Freigabe des Wellen-Plans durch den Auftraggeber (Entscheide D1 Retrofit-Umfang · D2 Granularität der §4-Grund-Codes · D3 Gate-Konsument · D4 ADR-Bestand); Inventur-Zahlen am Eröffnungstag frisch gemessen | Vergabe-Regel + Gate-Konsument zuerst (Adaption aufgelöst, `ids`/`structure`) · `SPEC`-Vergabe Spezifikation · `ARC`-Vergabe Architektur (+ `diagrams` opt-in) · ADR-Neuzugangs-Regel + Erstanwendung an den Proposed-ADRs | M |
 
 ## Meilensteine
 
