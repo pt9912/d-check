@@ -67,7 +67,7 @@ exempt, der einzige Alt-Bestand sind zweistellige Diagramm-Beispiele in einem
    Commit-Botschaften).
 5. **Spiegel-Liste** ([`MR-025`](../../../../harness/conventions.md#mr-025),
    per `grep` nach dem alten Wortlaut „Struktur-IDs" / „nicht vergeben"):
-   `harness/conventions.md` ([`MR-000`](../../../../harness/conventions.md#mr-000--baseline-aussage), Index), [`harness/conventions/MR-027-struktur-id-verzicht.md`](../../../../harness/conventions/MR-027-struktur-id-verzicht.md),
+   `harness/conventions.md` ([`MR-000`](../../../../harness/conventions.md#mr-000--baseline-aussage), Index), [`harness/conventions/done/MR-027-struktur-id-verzicht.md`](../../../../harness/conventions/done/MR-027-struktur-id-verzicht.md),
    `AGENTS.md` §5, `docs/plan/adr/README.md`, `.d-check.yml`-Kommentar,
    `harness/README.md` (Sensors-Zeile `doc-check` nennt die Kennungs-Linkpflicht
    — prüfen, ob die Muster-Aufzählung dort steht).

@@ -108,7 +108,6 @@ ob der Eintrag ihn betrifft.
 | [MR-021](conventions/MR-021-vendored-verweise-pin-gebunden.md) <a id="mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden"></a><a id="mr-021"></a> | vendored-Verweise pin-gebunden                | Live-Links auf die vendored Baseline              | `grundlagen-harness-dateien` §Verzeichniskonvention          |
 | [MR-023](conventions/MR-023-baseline-v500.md) <a id="mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout"></a><a id="mr-023"></a>                 | self-contained Bundle-Layout (vendored; historische Pin-Hebung auf v5.0.0 — den aktuellen Pin trägt der Nachtrag darunter) | §Baseline, `fetch-baseline-cache.sh`              | `grundlagen-harness-dateien` §Template-Schichtung            |
 | [MR-025](conventions/MR-025-spiegel-vor-dem-editieren.md) <a id="mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten"></a><a id="mr-025"></a> | Semantik-Änderung: Spiegel **vor** dem Editieren auflisten | jede Änderung an einer zugesagten Semantik (Grund-Code, Algorithmus-Schritt, Config-Schlüssel, Schwelle, Erkennungs-Form) | `modul-10` §Review-Arten |
-| [MR-027](conventions/MR-027-struktur-id-verzicht.md) <a id="mr-027--struktur-ids-spec-arc--werden-nicht-vergeben"></a><a id="mr-027"></a> | Struktur-IDs (`SPEC-*`/`ARC-*`) werden nicht vergeben — `.a`-Verfeinerungen + `§`-Anker | `spec/spezifikation.md`, `spec/architecture.md`, ADR-/Slice-Adressierung | `grundlagen-source-precedence` §ID-Schema (Straten-Tabelle), `modul-03` (Struktur-ID-Vergabe) |
 | [MR-028](conventions/MR-028-baseline-v570.md) <a id="mr-028--baseline-pin-hebung-auf-v570-vierter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-028"></a> | Baseline-Pin-Hebung auf v5.7.0 (Pin-Fortschreibung, Nachtrag) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v5.7.0/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
 
 ### Aufgelöste Adaptionen
@@ -135,6 +134,7 @@ auffindbar bleibt, ohne gelesen zu werden.
 | [MR-022](conventions/done/MR-022-currency-audit.md) <a id="mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019"></a><a id="mr-022"></a>                            | Baseline-Stand `v5.0.0` (Freshness-Audit = Default)        |
 | [MR-024](conventions/done/MR-024-aktuelle-welle-ruhe-marker-form.md) <a id="mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform"></a><a id="mr-024"></a> | Baseline-Stand `v5.6.0` (Offene-Wellen-Form + Ruhe-Marker mit Wächter = Default; adoptiert mit slice-108) |
 | [MR-026](conventions/done/MR-026-baseline-v560.md) <a id="mr-026--baseline-pin-hebung-auf-v560-dritter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-026"></a> | [MR-028](conventions/MR-028-baseline-v570.md) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
+| [MR-027](conventions/done/MR-027-struktur-id-verzicht.md) <a id="mr-027--struktur-ids-spec-arc--werden-nicht-vergeben"></a><a id="mr-027"></a> | Baseline-Konformität (Struktur-ID-Vergabe `SPEC-*`/`ARC-*` = Baseline-Default; Auftraggeber-Entscheid 2026-08-22, welle-80 — die Vergabe-Aussage trägt [MR-000](#mr-000--baseline-aussage)) |
 
 
 

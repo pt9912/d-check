@@ -1,9 +1,9 @@
 # MR-027 — Struktur-IDs (`SPEC-*`/`ARC-*`) werden nicht vergeben
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../../.harness/baseline/v5.7.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-source-precedence.md` §ID-Schema als Klammer](../../../.harness/baseline/v5.7.0/regelwerk/grundlagen-source-precedence.md#id-schema-als-klammer)
   (Straten-Tabelle: `SPEC-<NNN>`/`ARC-<NNN>` als Struktur-IDs) und
-  [`modul-03-spec.md`](../../.harness/baseline/v5.7.0/regelwerk/modul-03-spec.md)
+  [`modul-03-spec.md`](../../../.harness/baseline/v5.7.0/regelwerk/modul-03-spec.md)
   (Struktur-ID-Vergabe für Sektionstypen der Spezifikation)
 - **Datum:** 2026-08-21
 - **Geltungsbereich:** `spec/spezifikation.md`, `spec/architecture.md`; die
@@ -16,7 +16,7 @@
   (`spec/architecture.md`) ausschließlich per `§`-Anker. Der Baseline-eigene
   Rückfallweg („ersatzweise der Abschnitt") wird damit zur Regelform erhoben —
   das ist eine **Abweichung**, keine Auslegung, und steht deshalb hier statt
-  still in der [`MR-000`](../conventions.md#mr-000--baseline-aussage)-Aussage
+  still in der [`MR-000`](../../conventions.md#mr-000--baseline-aussage)-Aussage
   (Widerspruchs-Ausgang des Freshness-Audits, v5.4.0).
 - **Begründung:** Die Adressierbarkeit, die `SPEC-*` schaffen soll, ist über
   die dichten `.a`-Verfeinerungen für die technischen Festlegungen bereits
