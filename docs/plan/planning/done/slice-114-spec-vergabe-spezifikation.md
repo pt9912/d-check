@@ -75,25 +75,37 @@ danach null. Zahlen werden gemessen, nicht übernommen.
 
 ## 4. Definition of Done
 
-- [ ] §2/§3/§4/§6 tragen `SPEC-NNN` fortlaufend; Zählung in der Closure-Notiz
+- [x] §2/§3/§4/§6 tragen `SPEC-NNN` fortlaufend; Zählung in der Closure-Notiz
       (gemessen).
-- [ ] `structure`-Regel scharf im Vergabe-Commit; Messung rot-vorher /
+- [x] `structure`-Regel scharf im Vergabe-Commit; Messung rot-vorher /
       grün-nachher dokumentiert.
-- [ ] Alle Verweise auf geänderte §2-Slugs retargetet; `make doc-check` grün.
-- [ ] [ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md)-„§Kern"-Messung in der Closure-Notiz.
-- [ ] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
+- [x] Alle Verweise auf geänderte §2-Slugs retargetet; `make doc-check` grün.
+- [x] [ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md)-„§Kern"-Messung in der Closure-Notiz.
+- [x] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
       gesichtet.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Slug-Wechsel der §2-Überschriften** bricht eingefrorene Verweise (Accepted-
   ADRs, `done/`-Slices) — Ventil `ignore-refs` bzw. Abwägung `<a id>` gegen das
-  Baseline-Verbot. — **Ausgang:** *(bei Closure)*
+  Baseline-Verbot. — **Ausgang:** entfallen — **kein** eingefrorener
+  ADR-Verweis zeigte auf einen §2-Anker (alle ADR-Anker sind
+  `.a`-Verfeinerungen); die Zeilenanker-Frage stellte sich nicht. Alle zwölf
+  Verweise sind retargetet — bis auf den Review-Report, dessen Retarget der
+  Review als Auflage zurückgenommen hat.
 - **`forbid-pattern`-Form** ist ohne Lookahead grob; Falsch-Positiv bei einer
-  Überschrift mit anderem Anfangsbuchstaben. — **Ausgang:** *(bei Closure)*
+  Überschrift mit anderem Anfangsbuchstaben. — **Ausgang:** **eingetreten,
+  anders als gedacht.** Das Risiko war das Falsch-Positiv; der Defekt war das
+  Falsch-**Negativ**: mein Muster verlangte Zeilenanfang und genau ein
+  Leerzeichen, die Heading-Lexik des Moduls trimmt aber führenden Weissraum
+  und nimmt Tab als Trenner — eine eingerückte Sektion entkam still (Review
+  F-1). Geheilt und mit dem Produkt belegt; zwei echte Falsch-Positive fing
+  die eigene Logik-Probe (nacktes `###`, `### SPEC-123` ohne Titel). <!-- d-check:ignore -->
 - **Tabellen-Spalte vorn** verschiebt `table-order`/`table-column`-Regeln?
   (§7-Historie ist nicht betroffen; §3/§4/§6 tragen keine Chronologie-Regel —
-  prüfen.) — **Ausgang:** *(bei Closure)*
+  prüfen.) — **Ausgang:** entfallen — gemessen: keine `table-order`/
+  `table-column`-Regel liegt auf §3/§4/§6, die Spaltenlage der sechs
+  Chronologie-Regeln ist unberührt.
 
 ## 6. Trigger
 
@@ -125,4 +137,54 @@ Baseline-Form; kein Legacy-Import.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Geliefert:** 66 Kennungen, fortlaufend je Datei und in Dokumentreihenfolge —
+§2 fünf Schema-Überschriften (001–005), §3 sieben Defaults (006–012), §4 51
+Grund-Codes (013–063), §6 drei externe Verträge (064–066), letztere drei je in
+einer neuen ersten Spalte `Kennung`. Zwei Konsumenten halten die Vergabe
+lebendig, beide im Vergabe-Commit scharf: die `structure`-Regel auf §2
+(Inner Loop) und der bestehende Lockstep-Test, der jetzt Spalte 2 liest und
+Spalte 1 auf eine eindeutige Kennung prüft — er war für genau diese Anpassung
+fail-closed gebaut und hat sie eingefordert. Die §2-Anker wandern mit den
+Überschriften; elf Verweise sind retargetet.
+
+**Review** ([Report](../../../reviews/2026-08-22-slice-114-spec-vergabe-review.md)):
+APPROVE mit Auflagen — 0 HIGH, 2 MEDIUM, 2 LOW, 2 INFO, vierzehn
+Negativ-Proben. Alle sechs eingearbeitet.
+
+**Was ging anders als geplant — zweimal dieselbe Wurzel:** Ein Wächter, der
+eine Lexik prüft, muss *dieselbe* Lexik sprechen wie das Modul, das er
+benutzt. Mein Muster verlangte Zeilenanfang und genau ein Leerzeichen;
+`parseATXHeading` trimmt beliebigen führenden Weissraum und akzeptiert Tab —
+also entkam eine eingerückte Sektion still, und der Wächter behauptete eine
+Deckung, die er nicht hatte. Gefunden hat das der Review, nicht ich; meine
+eigene Logik-Probe fand danach noch zwei Falsch-Positive derselben Art
+(ein nacktes `###` ist keine Überschrift; `### SPEC-123` ohne Titel trägt <!-- d-check:ignore -->
+sehr wohl eine Kennung). Die zweite Lehre betrifft das Retargeten: ein
+Anker-Rename zieht Verweise nach — aber ein Lauf-Beleg, der ein
+Überschrift→Slug-**Paar zitiert**, dokumentiert den Stand von damals; ihn
+mitzuziehen macht ihn falsch. Der Review hat den Retarget des Reports als
+Auflage zurückgenommen.
+
+- **Steering-Loop-Eintrag:** Sensor ergänzt: der Schema-Abschnitt der
+  Spezifikation ist an die Kennungs-Pflicht gebunden — liegt in
+  `.d-check.yml §structure`. Kein Auslöser aus dem Register.
+- **Beobachtungs-Register (`../observations.md`):** keine neue Beobachtung —
+  die Wächter-Lexik-Divergenz ist die bekannte Klasse BEO-003 („eine geteilte
+  Lexik driftet an den Rändern, weil jeder Konsument sie selbst vorbereitet"),
+  verkörpert in welle-74; hier trat sie erstmals **konfigurationsseitig** auf
+  (ein Muster in der Config statt ein Prädikat im Code). Zitiert statt neu
+  formuliert; der Zähler bleibt bei 3.
+- **Folge-Slices:** [slice-115](../open/slice-115-arc-vergabe-architektur.md)
+  (Trigger eingetreten) und [slice-116](../open/slice-116-adr-neuzugangs-regel.md)
+  (wartet auf 115).
+- **Risiken aus §6:** alle mit Ausgang (§5) — eines eingetreten (anders als
+  gedacht), zwei entfallen.
+- **Drei Paarungen:** Wellen-Slice — die Paarungen prüft die Welle-Closure.
+
+**Messung für den Auflösungs-Trigger der abgelösten Adaption
+(Plan-Schritt 5):** [ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md)
+nennt als `Schärft:`-Ziel „§Kern" — und „Kern" ist in der Architektur-Sicht
+eine **Tabellenzeile ohne Anker**, keine Überschrift. Die ADR zeigt damit auf
+etwas, das nicht eindeutig adressierbar ist; sie bleibt immutabel, die Zeile
+bekommt ihre Kennung mit slice-115. Der Trigger ist damit gemessen, nicht
+behauptet.
