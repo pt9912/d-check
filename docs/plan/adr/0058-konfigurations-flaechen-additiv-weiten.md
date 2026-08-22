@@ -7,7 +7,9 @@
 [`spec/spezifikation.md` §DC-FA-VER-001.a](../../../spec/spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions)
 (Entscheidung 1),
 [`spec/spezifikation.md` §DC-FA-STRUCT-001.a](../../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
-(Entscheidung 2), die Konfigurations-Schema-Zeilen unter
+(Entscheidung 2),
+[`spec/spezifikation.md` §DC-FA-DIAG-001.a](../../../spec/spezifikation.md#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams)
+(Entscheidung 3), die Konfigurations-Schema-Zeilen unter
 [`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml)
 und die Grund-Code-Zeile
 [`SPEC-067`](../../../spec/spezifikation.md#4-grund--und-fehler-codes)
@@ -173,6 +175,39 @@ Verhalten.
    nichts; die Überschriften-Erkennung sieht die Überschrift — wie `anchors`
    auch, das ihr einen Slug gibt.
 
+3. **`diagrams` bekommt beide Ventile — und der Zeilen-Marker wirkt auch auf
+   der Fence-Öffnungszeile.** Dritte Erweiterung nach demselben Kriterium.
+   Drei Festlegungen:
+
+   - **Ventil-Parität ist ein Prinzip, keine Nachrüstung.** Ein Modul, das
+     Befunde an **Zeilen** hängt, braucht ein Zeilen-Ventil — sonst bleibt dem
+     Nutzer nur der Scope, und der ist keine Ausnahme, sondern eine
+     Vermeidung: er nimmt ganze Dateibäume aus der Prüfung, wo eine einzelne
+     Referenz gemeint war. Gemessen am eigenen Profil in welle-80: das Modul
+     musste auf `spec/` gescopt werden, weil ein Beispiel-Diagramm sonst jeden
+     Commit blockiert hätte. Der Unterschied gehört benannt, nicht
+     stillschweigend gelebt.
+   - **Der Marker ist ein Token, kein HTML-Kommentar.** In Prosa steht er in
+     `<!-- … -->`; in einem `mermaid`-Fence ist das kein Kommentar, sondern
+     Diagramm-Text. Das Modul sucht deshalb das **Token** auf der Zeile — wie
+     der Autor es vor dem Renderer versteckt, ist Sache der Diagramm-Sprache
+     (Mermaid: `%%`). Die Alternative — eine sprach-spezifische
+     Kommentar-Erkennung je Fence-Sprache — wäre ein Grammatik-Parser durch
+     die Hintertür und widerspräche der Modul-Grenze („reine Token-Extraktion
+     über Rohtext").
+   - **Der Marker wirkt auf der Öffnungszeile für den ganzen Block.** Ohne
+     diese zweite Stelle wäre die **intuitive** Platzierung — am
+     Diagramm-Anfang — wirkungslos, und der Fall, der die Erweiterung
+     auslöste, bräuchte den Marker auf jeder Kennungs-Zeile. Ein Ventil, das
+     man N-mal setzen muss, benutzt niemand; ein Ventil, dessen naheliegende
+     Platzierung still nichts tut, ist schlimmer als keines. Es bleibt bei
+     **einem** Mechanismus mit zwei Orten, nicht bei zwei Schlüsseln.
+
+   **Nachgetragen wird zugleich eine ältere Lücke:** die Schlüssel des Moduls
+   standen bis hierher **nur** im Algorithmus-Abschnitt, nicht im
+   §2-Konfigurations-Schema — als einziges Modul. Das ist derselbe Vertrag,
+   nur an der Stelle, an der ein Adopter ihn sucht.
+
 ## Konsequenzen
 
 **Positiv.** Die 3×-Form von BEO-008 wird **baubar** — ob das eigene Profil sie
@@ -200,6 +235,16 @@ Fläche: Vertrag, Schema-Zeile, Grund-Code, Klartext, Vorlage. Und die Bedingung
 weicht als zweite vom bereinigten Abschnitts-Text ab — die Aussage „jede
 Bedingung liest denselben Text" gilt damit für sechs von acht und ist an
 beiden Ausnahmen ausdrücklich benannt.
+
+**Positiv (Entscheidung 3).** Wer `diagrams` aktiviert, muss nicht mehr
+zwischen „ganzen Baum ausnehmen" und „Gate abschalten" wählen. Ob das eigene
+Profil danach ohne Scope auskommt, ist **gemessen zu entscheiden** und nicht
+Teil dieser Entscheidung.
+
+**Negativ / Kosten (Entscheidung 3).** Ein Marker, der auf zwei Orten wirkt,
+ist eine Regel mehr, die man lesen muss. Sie steht dafür in Anforderung,
+Algorithmus und Schema — und die Alternative (zwei Schlüssel für Zeile und
+Block) wäre eine Fläche mehr statt einer Regel mehr.
 
 **Zweite Grenze, gemessen statt vermutet.** Zwei Paare, die auf derselben Zeile
 denselben Pin-Wert treffen, teilen eine Befund-Adresse und ergeben **einen**
@@ -252,6 +297,13 @@ eigene Entscheidung mit eigener Messung.
 - Ein Adopter braucht wiederholt **mehrere Ebenen** in einer Regel — dann ist
   die Ein-Ebenen-Wahl aus Entscheidung 2 gegen die Praxis zu prüfen; die
   Antwort wäre eine Ebenen-**Menge**, nicht ein zweiter Schlüssel.
+- Eine Diagramm-Sprache mit **eigener Kommentar-Syntax** wird so verbreitet
+  konfiguriert, dass Nutzer den Marker regelmäßig sichtbar im Diagramm haben —
+  dann ist die Token-Entscheidung aus Entscheidung 3 gegen die Praxis zu
+  prüfen; die Antwort wäre eine Kommentar-Lexik je Sprache, kein Parser.
+- Der **Block**-Ort des Markers wird häufiger gebraucht als der Zeilen-Ort —
+  dann ist zu prüfen, ob der Block-Fall einen eigenen, sichtbareren Ausdruck
+  verdient statt einer zweiten Bedeutung derselben Marke.
 - Die **vacuously wahre** Bedingung trifft real (ein Abschnitt verliert seine
   Unterabschnitte, ohne dass es jemand merkt) — dann braucht die Bedingung
   eine Mindest-Zahl, und die Grenze aus Entscheidung 2 ist keine mehr.
