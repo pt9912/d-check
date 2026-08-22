@@ -135,7 +135,7 @@ nicht geprüft".
   Der erfundene Trigger ist die Klasse, die der neue HIGH-Anker beschreibt —
   er hat beim ersten Lauf gegen den eigenen Text getroffen, was für ihn
   spricht und gegen mich.
-- **Folge-Slices:** [slice-120](../in-progress/slice-120-register-und-drift-log.md) —
+- **Folge-Slices:** [slice-120](../done/slice-120-register-und-drift-log.md) —
   letzter Slice der Welle.
 - **Risiken aus §6:** beide mit Ausgang (§5) — eines entfallen, eines
   eingetreten.

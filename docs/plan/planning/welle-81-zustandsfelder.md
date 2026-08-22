@@ -69,7 +69,7 @@ unverändert (kein Content-Drift). welle-80 ist geschlossen.
 | [slice-117](done/slice-117-baseline-v590-bump.md) | Pin-Hebung auf `v5.9.0`: Bundle vendored, alter Baum entfernt, Nachfolge-Adaption, Drei-Klassen-Zensus der pin-gebundenen Verweise | §Baseline, [`MR-028`](../../../harness/conventions.md#mr-028) |
 | [slice-118](done/slice-118-zustandsfeld-regel.md) | Die Regel verkörpern, bevor sie angewandt wird: Briefing-Hard-Rule auf Zustandsfelder erweitert, Reviewer-Skill mit dem HIGH-Anker | [`MR-000`](../../../harness/conventions.md#mr-000--baseline-aussage), Reviewer-Skill |
 | [slice-119](done/slice-119-kopf-zustandsfelder.md) | Die drei Kopf-Zustandszeilen entfernen; die Sicht behält ihre samt Begründung | Spezifikation, Roadmap, Beobachtungs-Register |
-| [slice-120](in-progress/slice-120-register-und-drift-log.md) | `Stand`-Zellen auf Zustand + Beleg, Drift-Log auf Umplanungen zurückschneiden, Meilenstein-Status-Form | Beobachtungs-Register, Roadmap |
+| [slice-120](done/slice-120-register-und-drift-log.md) | `Stand`-Zellen auf Zustand + Beleg, Drift-Log auf Umplanungen zurückschneiden, Meilenstein-Status-Form | Beobachtungs-Register, Roadmap |
 
 ## 5. Abhängigkeiten
 
