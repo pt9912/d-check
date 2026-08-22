@@ -126,12 +126,12 @@ DCHECK_RUN_I = docker run --rm -i --network none -v "$(CURDIR)":/repo:ro $(IMAGE
 COMPLETE_FLAGS = --trace --require-complete
 
 # Dogfooding (MR-007, Selbstkonfiguration slice-007): d-check prüft die
-# eigene Doku — Module links + anchors + ids + matrix über die gesamte
-# Repo-Wurzel (.d-check.yml, scan.roots ".").
+# eigene Doku — die Modulliste führt die .d-check.yml, der Scan-Bereich ihr
+# scan-Block (Repo-Wurzel).
 # Zugleich die automatisierte DC-QA-03-Messmethode (slice-008):
 # read-only-Mount + --network none — alle Module außer external aktiv,
 # der Lauf beweist Seiteneffektfreiheit und Netzlosigkeit.
-doc-check: build ## Doku-Links, Anker, ID-Linkpflicht + Referenzmatrix via d-check selbst (Dogfooding, DC-FA-LINK/ANCH/ID/MTX; netzlos: DC-QA-03).
+doc-check: build ## Links, Anker, Kennungs-Linkpflicht, Referenzmatrix, Inline-Code-Pfade, Spans, Host-Pfade, Versions-Pins, Abschnitts-Invarianten und Diagramm-Kennungen via d-check selbst (Dogfooding; netzlos: DC-QA-03).
 	$(DCHECK_RUN)
 
 # Dogfooding-Render (kein Gate): die Requirements Traceability Matrix
@@ -209,7 +209,7 @@ trace-check: build ## Traceability-Gate via Modul commits (Image, dogfood): DC-/
 # aber Über-Feuern).
 FOCUS_DISABLE := --disable links --disable anchors --disable ids --disable matrix \
     --disable codepaths --disable spans --disable hostpaths --disable versions \
-    --disable structure
+    --disable structure --disable diagrams
 adr-check: build ## ADR-Immutable-Gate via Modul vcs (Image, dogfood, nur vcs): Accepted-ADRs nicht inhaltlich ändern (RANGE=a..b für CI, STAGED=1 für den Hook, sonst HEAD~1..HEAD). ADR-0024 (löst die Skript-Mechanik von ADR-0016 ab); ADR-0025 entfernt das Alt-Skript.
 	$(DCHECK_RUN) --enable vcs $(FOCUS_DISABLE) $(if $(STAGED),--staged,--range $(if $(RANGE),$(RANGE),HEAD~1..HEAD))
 

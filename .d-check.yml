@@ -141,7 +141,8 @@ ids:
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
 
 # Modul diagrams (DC-FA-DIAG-001, seit welle-80): Kennungen IN Diagramm-Fences
-# gegen ihre Definitionsquelle. Die uebrigen Module sehen Fences nie — eine
+# gegen ihre Definitionsquelle. Die Prosa-Module sehen den Fence-Inhalt nicht
+# (versions und spans lesen ihn ausdruecklich, aber nicht auf Kennungen) — eine
 # Kennung im Diagramm ist fuer sie unsichtbar, und genau dort altert sie stumm,
 # wenn eine Komponente umbenannt oder entfernt wird. Geprueft wird Existenz,
 # nicht Linkpflicht (in einem Fence gibt es keinen Markdown-Link).
@@ -155,7 +156,16 @@ ids:
 # Modul dasselbe: faellt eine Komponente aus der §1-Tabelle, aber bleibt in §2
 # stehen, gilt die Kennung weiter als definiert. Der Wachter faengt die
 # verwaiste Kennung im Diagramm, nicht die halbe Loeschung in der Sicht.
+# (4) Die Musterbreite ist dreistellig: eine vertippte zwei- oder vierstellige
+# Kennung im Diagramm ist kein Token und faellt still durch.
 diagrams:
+  # Scope auf die Spec-Straten: das Muster gilt sonst repo-weit, und diagrams
+  # kennt WEDER exempt-paths NOCH den Zeilen-Marker d-check:ignore (gemessen).
+  # Ein mermaid-Beispiel mit einer dreistelligen Kennung in einem Report oder
+  # im Handbuch wuerde damit ueber den pre-commit-Hook jeden Commit blockieren.
+  # Grenze 3: Diagramme ausserhalb von spec/ sind dadurch ungewacht.
+  scope:
+    roots: [spec]
   patterns:
     - regex: '\bARC-\d{3}\b'
       defined-in: spec/architecture.md

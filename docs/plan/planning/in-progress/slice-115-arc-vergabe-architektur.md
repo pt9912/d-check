@@ -31,7 +31,10 @@ unter dem Komponenten-Diagramm eine **Komponenten-Tabelle** (eine Zeile je
 Kasten — heute sieben Rollen: CLI, CORE, FS, HTTP, VCS, CFG, REP — mit
 Kennung, Rolle, Zweck), die Kasten-Labels im `mermaid`-Fence tragen die
 Kennung mit; §2 Schichten-Tabelle nennt dieselben Kennungen; §3 externe
-Abhängigkeiten und §5 Fehlermodelle setzen die Reihe fort. Der Konsument:
+Abhängigkeiten setzen die Reihe fort; §5 Fehlermodelle bleibt kennungslos —
+die Vorlage vergibt an Komponenten und Berührungspunkte, nicht an
+Fehlerquellen (Korrektur des ersten Schnitts, die Vorlage sticht). Der
+Konsument:
 `diagrams` opt-in (`defined-in: spec/architecture.md`) prüft, dass jede im
 Diagramm genannte Kennung definiert ist — **vorher am Bestand gemessen**, im
 Vergabe-Commit scharf (der `pre-commit`-Hook bindet Commits an Grün). Und eine
@@ -41,12 +44,12 @@ Messung, die die Referenzrichtung schützt: `spec/spezifikation.md` nennt
 
 ## 2. Vorgehen
 
-1. **Inventur:** Kästen des §1-Flowcharts (heute 7), Zeilen §2 (7), §3 (4),
-   §5 (6) — gemessen; Hard Rule §3.4 im Blick (sprach-/meilensteinfrei:
+1. **Inventur:** Kästen des §1-Flowcharts (heute 7), Zeilen §2 (7), §3 (4)
+   — gemessen; Hard Rule §3.4 im Blick (sprach-/meilensteinfrei:
    Kennungen benennen Rollen, keine Pakete).
 2. **Vergabe:** §1 Komponenten-Tabelle `| Kennung | Rolle | Zweck |` mit
    `ARC-NNN` fortlaufend; Diagramm-Labels `ARC-NNN CLI` usw.; §2 erste Spalte nennt die
-   Kennung; §3/§5 setzen fort. Kopf der Datei: ein Satz zur Kennungs-Form
+   Kennung; §3 setzt fort, §5 bleibt kennungslos. Kopf der Datei: ein Satz zur Kennungs-Form
    (Struktur-ID, keine Anforderung — Baseline-Wortlaut).
 3. **Konsument:** `diagrams` in `.d-check.yml` opt-in mit `defined-in:
    spec/architecture.md` und dem `ARC-\d{3}`-Muster (Wortgrenzen — der
@@ -73,8 +76,9 @@ Messung, die die Referenzrichtung schützt: `spec/spezifikation.md` nennt
 
 ## 4. Definition of Done
 
-- [ ] §1 Komponenten-Tabelle + Diagramm-Labels, §2/§3/§5 mit `ARC-NNN`
-      fortlaufend; Zählung gemessen in der Closure-Notiz.
+- [ ] §1 Komponenten-Tabelle + Diagramm-Labels, §2 referenzierend, §3
+      fortlaufend (§5 kennungslos nach Vorlage); Zählung gemessen in der
+      Closure-Notiz.
 - [ ] `diagrams` opt-in scharf im Vergabe-Commit; Messung rot-vorher /
       grün-nachher + konstruierte Gegenprobe dokumentiert; [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modul-
       listen-Test grün.
