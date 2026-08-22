@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.62.1
+**Version:** 0.63.0
 
 **Status:** Draft
 
@@ -1620,6 +1620,22 @@ Glob-Liste `exempt-paths` (historische Pins in Planning-`done/`-Slices,
 `CHANGELOG.md` und der Lastenheft-Historie bleiben unberührt) und der
 Zeilen-Marker `d-check:ignore`.
 
+**Mehrere Muster-Quellen-Paare.** `pin-pattern`, `current-from` und
+`exempt-paths` beschreiben **ein** Paar aus Pin-Muster, Versions-Quelle und
+Ausnahmen. Ein Repo führt aber oft mehrere unabhängige Versions-Reihen — das
+eigene Image gegen das Release-Register, ein fremder Baseline-Tag gegen den Pin
+im Konventionsspeicher. Dafür trägt `versions.patterns` eine **Liste** solcher
+Paare. Jedes Paar wird für sich ausgewertet: eigenes Muster, eigene Quelle (mit
+demselben Default), eigene `exempt-paths` — und **seine** Quell-Datei ist nur
+von **seiner** Prüfung ausgenommen, nicht von der der anderen. Die Kurzform
+(die drei Schlüssel direkt unter `versions`) bleibt gültig und **ist** die
+einelementige Liste; es gibt genau einen Auswertungspfad, nicht zwei. **Beide
+Schreibweisen zugleich sind ein Nutzungsfehler** (Exit 2): welche
+`exempt-paths` dann für welches Muster gälten, wäre nicht ablesbar, und eine
+Voreinstellung, die man raten muss, ist keine. Befunde entstehen in
+**Deklarationsreihenfolge** der Paare; ein Befund-Tupel, das zwei Paare
+identisch erzeugen, erscheint **einmal**.
+
 Strikt opt-in (Default aus): ohne `versions`-Block ist der Befundsatz
 byte-identisch zum Lauf ohne das Modul
 ([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird nichts geschrieben
@@ -1647,6 +1663,36 @@ Version, deterministisch ableitbar) folgt als eigener Change Request an
 - **Boundary (Ventile):** Given ein Pin `…:v0.1.0` in einer `exempt-paths`-Datei
   (z. B. ein Planning-`done/`-Slice) und ein zweiter Pin auf einer Zeile mit
   `d-check:ignore`, when `d-check` läuft, then kein Befund für beide.
+- **Happy Path (zwei Paare):** Given `versions.patterns` mit zwei Paaren —
+  verschiedene Muster, verschiedene `current-from`-Quellen — und alle Pins
+  beider Reihen tragen die je eigene aktuelle Version, when `d-check` läuft,
+  then kein Befund, Exit 0.
+- **Negative (je Paar):** Given einen veralteten Pin der **zweiten** Reihe,
+  während die erste Reihe aktuell ist, when `d-check` läuft, then genau ein
+  Befund `version-stale`, dessen erwartete Version aus der Quelle **des
+  zweiten** Paares stammt.
+- **Boundary (Kurzform ist die Ein-Paar-Liste):** Given dieselbe Konfiguration
+  einmal als Kurzform und einmal als einelementige `versions.patterns`-Liste,
+  when `d-check` je einmal läuft, then sind beide Befundsätze byte-identisch.
+- **Boundary (Mischform):** Given Kurzform **und** `versions.patterns`
+  zugleich, when `d-check` läuft, then Nutzungsfehler (Exit 2,
+  [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) ohne Prüfung — keine der
+  beiden Schreibweisen gewinnt still.
+- **Boundary (Ventile gelten je Paar):** Given eine Datei in den
+  `exempt-paths` des **ersten** Paares, die einen veralteten Pin des
+  **zweiten** trägt, und zusätzlich die `current-from`-Datei des ersten
+  Paares mit einem veralteten Pin des zweiten, when `d-check` läuft, then
+  meldet das zweite Paar beide — Ausnahmen und Selbst-Ausnahme sind
+  paar-lokal, nicht modulweit.
+- **Boundary (dieselbe Zeile, zwei Paare):** Given zwei Paare, die auf
+  derselben Zeile denselben Pin-Wert gegen dieselbe erwartete Version treffen,
+  when `d-check` läuft, then **genau ein** Befund (Dedup über das
+  Befund-Tupel); erwarten sie **verschiedene** Versionen, then zwei Befunde in
+  Deklarationsreihenfolge.
+- **Boundary (fail-closed je Paar):** Given eine leere `versions.patterns`-
+  Liste, ein Paar ohne `pin-pattern` oder ein Paar, dessen `current-from`
+  nicht auflöst, when `d-check` läuft, then Exit 2 ohne Prüfung — ein
+  unvollständiges Paar schaltet nicht still die übrigen scharf.
 - **Modul-aus:** Given **kein** `versions`-Block in der Konfiguration, when
   `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne das
   Modul ([`DC-QA-02`](#dc-qa-02--determinismus)) und es wird nichts geschrieben
@@ -1656,9 +1702,9 @@ Version, deterministisch ableitbar) folgt als eigener Change Request an
 (deterministisch ableitbar, aber Folge-CR an
 [`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch)); Ableiten der aktuellen
 Version aus Git-Tags (außerhalb des read-only gemounteten Baums, bräche
-[`DC-QA-02`](#dc-qa-02--determinismus)); mehrere unabhängige Versions-Reihen pro
-Repo in der ersten Fassung (genau ein `pin-pattern` und ein `current-from`);
-semantische Versions-Ordnung (nur Gleichheit, keine „neuer als"-Prüfung);
+[`DC-QA-02`](#dc-qa-02--determinismus)); **mehrere Quellen je Paar** (ein
+Muster gegen zwei `current-from`-Quellen — die Gleichheits-Prüfung hätte dann
+keine eindeutige Erwartung); semantische Versions-Ordnung (nur Gleichheit, keine „neuer als"-Prüfung);
 Schreiben oder Anlegen des Registers durch das Werkzeug selbst (read-only).
 
 ---
@@ -2814,6 +2860,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.63.0 | 2026-08-22 | [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) um **mehrere Muster-Quellen-Paare** erweitert (`versions.patterns`, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): ein Repo führt mehrere unabhängige Versions-Reihen, das Modul kannte bisher genau **eine**. Anlass ist die Beobachtung BEO-008 bei Zähler 3, deren benannte mechanische Form (Baseline-Tag in URLs und Prosa gegen den §Baseline-Pin, **zusätzlich** zum Image-Pin gegen das Release-Register) mit einem einzigen `pin-pattern` nicht baubar war. Jedes Paar trägt eigene Quelle und eigene Ausnahmen, die Selbst-Ausnahme der Quell-Datei ist **paar-lokal**; die Kurzform bleibt gültig und **ist** die einelementige Liste (ein Auswertungspfad), beide Schreibweisen zugleich sind fail-closed. Kein neuer Grund-Code, keine Änderung an der Befund-Form. Begründung in begleitender ADR |
 | 0.62.1 | 2026-08-22 | Präzisierung ohne Verhaltensänderung (Review-Hinweis zur 0.62.0-Erweiterung): [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) §Wellen-Invariante (Zeile 1/2 und der Absatz „Zwei Kardinalitäts-Modelle") nennt jetzt die Vergleichsgröße des Prädikats in **beiden** Modi — **Kennungen**, nicht Dateien: zwei flache Wellendokumente derselben Kennung sind ein Element (so zählt die Fähigkeit seit 0.59.0, die Spezifikation sagte es in W2 bereits; der Lastenheft-Wortlaut las sich als Datei-Menge). Neues Akzeptanzkriterium **Wellen-Boundary (gleiche Kennung, beide Modi)** pinnt das Ist-Verhalten; ob ein Doppel-Dokument selbst meldepflichtig sein sollte, bleibt ausdrücklich offen (eigener Change Request). Kein Release-Anlass |
 | 0.62.0 | 2026-08-21 | **CR des Konsumenten ai-harness-course** („planning.waves: Bijektion statt Singleton"): [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) §Wellen-Invariante bekommt den opt-in Kardinalitäts-Modus `planning.waves.mode: one`\|`many` (Default `one`; ohne den Schlüssel ist der Befundsatz byte-identisch, [`DC-QA-02`](#dc-qa-02--determinismus)). **Anlass:** die Baseline v5.7.0 des Adopters (Kurs-Welle 81) schärft §Offene Wellen auf zwei unabhängige Aussagen — der Ruhe-Marker folgt dem **Anspruch** und steht **zusätzlich** zur Liste, nicht an ihrer Stelle; damit ist der Marker kein Stellvertreter für „läuft eine Welle" mehr, und die `one`-Kopplung (Marker gegen Datei-Zahl) widerspricht dem Modell, das sie stützen soll. **Messung statt Herleitung:** Replay-Harness des Konsumenten, 11/11 PASS — der Singleton beißt bei zwei gelisteten offenen Wellen (s04b), die Marker-Hälfte hält beidseitig über `planning-drift` (s04c/s04d) und bleibt unberührt. **Unter `many`** vergleicht `wave-drift` **Kennungs-Mengen** (dasselbe Verfahren wie in den Registern: literales Glob-Präfix + Ziffernfolge, zeilenweise über die Prosa-Zeilen des Blocks — Fence-Inhalte zählen nicht, Mehrfachnennung zählt einmal, layout-agnostisch für Tabellen- wie Listen-Form), beide Richtungen, jede Kardinalität einschließlich null; das Befund-`target` ist die betroffene Kennung, **kein** zweiter Grund-Code (die Reparatur ist dieselbe, die Richtungen unterscheidet das `target` wie bei den Register-Aussagen). **Nicht-Ziele (CR §6):** keine Änderung an `planning-drift`, keine Default-Änderung, keine Festlegung, ob der Aktiv-Block Tabelle oder Liste führt. **fail-closed:** unbekannter oder explizit leerer Modus ⇒ Exit 2 mit Schlüssel-Nennung (Zeiger-Disziplin der übrigen `waves`-Schlüssel, 0.59.1). **Schnitt:** Einzelmodul-Frage ⇒ bestehende Anforderung erweitert statt neues Kürzel (Kriterium seit 0.47.0, zuletzt 0.60.0) |
 | 0.61.1 | 2026-08-21 | Nachzug nach unabhängigem Review, vor dem Release. **Die Typ-Mischungs-Semantik ist auf genau eine Lesart gepinnt** (der MEDIUM-Befund): Paar-Lesart mit Anker-Reset — die Misch-Zelle meldet sich selbst, die gesunde Folge-Zeile dahinter meldet **nicht**; das Akzeptanzkriterium sagt es jetzt ausdrücklich, der Kaskaden-Fall ist als Test gepinnt. Ferner: ein Versions-Segment außerhalb des Zahlbereichs ist **untypisierbar** statt still kleinstmögliche Version (der LOW-Befund), und die Ausdrucks-Grenze **„eine Chronologie-Zusage je Abschnitt"** ist als Out-of-Scope benannt (die Regel-Identität trägt keine Spalte) |
