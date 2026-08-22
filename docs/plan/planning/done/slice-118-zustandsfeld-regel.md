@@ -138,7 +138,7 @@ Klassen-Abschluss; sie ist in den Scope des Anwendungs-Slice gewandert.
 - **Beobachtungs-Register (`../observations.md`):** keine neue Beobachtung.
   Die verrutschte Überschrift ist die verkörperte Klasse BEO-002 („die Ränder
   bleiben stehen") in ihrer Titel-Form — zitiert, nicht neu formuliert.
-- **Folge-Slices:** [slice-119](../in-progress/slice-119-kopf-zustandsfelder.md) und
+- **Folge-Slices:** [slice-119](../done/slice-119-kopf-zustandsfelder.md) und
   [slice-120](../open/slice-120-register-und-drift-log.md); der fünfte Treffer
   ist in slice-120 aufgenommen.
 - **Risiken aus §6:** beide mit Ausgang (§5) — eines entfallen, eines anders

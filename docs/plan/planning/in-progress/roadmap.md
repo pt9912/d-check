@@ -34,6 +34,8 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 
 - [welle-81-zustandsfelder](../welle-81-zustandsfelder.md) — Baseline v5.9.0: Zustandsfelder tragen Zustand und Beleg, keine Chronik (Auftraggeber-Anstoß 2026-08-22)
 
+Nichts in Arbeit.
+
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
