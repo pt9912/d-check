@@ -121,10 +121,13 @@ type rawDiagramPattern struct {
 // current-from, exempt-paths) und die Liste unter patterns. Beide zugleich
 // sind ein Nutzungsfehler.
 type rawVersions struct {
-	Scope       *rawScope           `yaml:"scope"`
-	PinPattern  string              `yaml:"pin-pattern"`
-	CurrentFrom string              `yaml:"current-from"`
-	ExemptPaths []string            `yaml:"exempt-paths"`
+	Scope *rawScope `yaml:"scope"`
+	// Zeiger, weil die Mischform an der ANWESENHEIT eines Schlüssels hängt,
+	// nicht an seinem Wert: `pin-pattern: ""` neben patterns ist eine
+	// Mischform, ein fehlender Schlüssel nicht.
+	PinPattern  *string             `yaml:"pin-pattern"`
+	CurrentFrom *string             `yaml:"current-from"`
+	ExemptPaths *[]string           `yaml:"exempt-paths"`
 	Patterns    []rawVersionPattern `yaml:"patterns"`
 }
 
@@ -1591,42 +1594,56 @@ func applyVersions(r *raw, cfg *model.Config) error {
 		return nil
 	}
 	v := r.Versions
-	if v.Patterns == nil {
-		p, err := compileVersionPattern("versions", *shortVersionPattern(v))
-		if err != nil {
-			return err
+	if v.Patterns != nil {
+		if hasShortVersionForm(v) {
+			return fmt.Errorf("%s: versions: Kurzform (pin-pattern/current-from/exempt-paths) und versions.patterns zugleich gesetzt — "+
+				"welche Ausnahmen für welches Muster gälten, wäre nicht ablesbar", FileName)
 		}
-		cfg.Versions = model.VersionsConfig{Patterns: []model.VersionPattern{p}}
+		if len(v.Patterns) == 0 {
+			return fmt.Errorf("%s: versions.patterns ist leer", FileName)
+		}
+		patterns := make([]model.VersionPattern, 0, len(v.Patterns))
+		for i, rp := range v.Patterns {
+			p, err := compileVersionPattern(fmt.Sprintf("versions.patterns[%d]", i), rp)
+			if err != nil {
+				return err
+			}
+			patterns = append(patterns, p)
+		}
+		cfg.Versions = model.VersionsConfig{Patterns: patterns}
 		return nil
 	}
-	if hasShortVersionForm(v) {
-		return fmt.Errorf("%s: versions: Kurzform (pin-pattern/current-from/exempt-paths) und versions.patterns zugleich gesetzt — "+
-			"welche Ausnahmen für welches Muster gälten, wäre nicht ablesbar", FileName)
+	p, err := compileVersionPattern("versions", shortVersionPattern(v))
+	if err != nil {
+		return err
 	}
-	if len(v.Patterns) == 0 {
-		return fmt.Errorf("%s: versions.patterns ist leer", FileName)
-	}
-	patterns := make([]model.VersionPattern, 0, len(v.Patterns))
-	for i, rp := range v.Patterns {
-		p, err := compileVersionPattern(fmt.Sprintf("versions.patterns[%d]", i), rp)
-		if err != nil {
-			return err
-		}
-		patterns = append(patterns, p)
-	}
-	cfg.Versions = model.VersionsConfig{Patterns: patterns}
+	cfg.Versions = model.VersionsConfig{Patterns: []model.VersionPattern{p}}
 	return nil
 }
 
-// hasShortVersionForm meldet, ob einer der drei Kurzform-Schlüssel gesetzt ist
-// (DC-FA-VER-001) — zusammen mit patterns ein Nutzungsfehler.
+// hasShortVersionForm meldet, ob einer der drei Kurzform-Schlüssel ANWESEND
+// ist (DC-FA-VER-001) — zusammen mit patterns ein Nutzungsfehler. Grenze: ein
+// Schlüssel ohne Wert (`pin-pattern:` ohne Muster) ist im YAML von einem
+// fehlenden Schlüssel nicht unterscheidbar und zählt als fehlend.
 func hasShortVersionForm(v *rawVersions) bool {
-	return v.PinPattern != "" || v.CurrentFrom != "" || len(v.ExemptPaths) > 0
+	return v.PinPattern != nil || v.CurrentFrom != nil || v.ExemptPaths != nil
 }
 
-// shortVersionPattern liest die drei Kurzform-Schlüssel als ein Paar.
-func shortVersionPattern(v *rawVersions) *rawVersionPattern {
-	return &rawVersionPattern{PinPattern: v.PinPattern, CurrentFrom: v.CurrentFrom, ExemptPaths: v.ExemptPaths}
+// shortVersionPattern liest die drei Kurzform-Schlüssel als ein Paar; ein
+// fehlender Schlüssel wird zum Leerwert, den compileVersionPattern bzw. der
+// Kern-Default behandelt.
+func shortVersionPattern(v *rawVersions) rawVersionPattern {
+	rp := rawVersionPattern{}
+	if v.PinPattern != nil {
+		rp.PinPattern = *v.PinPattern
+	}
+	if v.CurrentFrom != nil {
+		rp.CurrentFrom = *v.CurrentFrom
+	}
+	if v.ExemptPaths != nil {
+		rp.ExemptPaths = *v.ExemptPaths
+	}
+	return rp
 }
 
 // compileVersionPattern validiert ein Muster-Quellen-Paar: Pflicht-pin-pattern,

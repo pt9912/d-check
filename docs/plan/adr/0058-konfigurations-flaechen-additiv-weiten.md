@@ -76,17 +76,32 @@ Verhalten.
      müsste: gilt die Kurzform als erstes oder als letztes Paar, und wirken
      ihre `exempt-paths` auf die anderen? Eine Voreinstellung, die man raten
      muss, ist keine. Die Kurzform wird intern in die Ein-Paar-Liste übersetzt
-     — es gibt genau **einen** Auswertungspfad, nicht zwei.
-   - **Reihenfolge und Dedup gehören in die Spezifikation, nicht in den
-     Zufall.** Befunde entstehen je Zeile in **Deklarationsreihenfolge** der
-     Paare; ein Befund-Tupel, das zwei Paare identisch erzeugen, erscheint
-     **einmal**. Ohne diese beiden Sätze hinge der Befundsatz an einer
-     Map-Iteration — und [`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)
-     verlangt das Gegenteil.
+     — es gibt genau **einen** Auswertungspfad, nicht zwei. Ob eine
+     Schreibweise gesetzt ist, entscheidet die **Anwesenheit** des Schlüssels,
+     nicht sein Wert: sonst schaltete ein leer gelassener Kurzform-Schlüssel
+     die Prüfung still auf die andere Schreibweise um. Ein Schlüssel **ohne
+     Wert** bleibt im YAML von einem fehlenden ununterscheidbar — als Grenze
+     benannt, nicht als Zusage überdehnt.
+   - **Eine Befund-Adresse, alle Erwartungen.** Die Befund-Adresse (Datei,
+     Zeile, Regel, `target`, Grund-Code) unterscheidet zwei Befunde an
+     derselben Stelle **nicht**, und die geteilte Nachrunde verwirft den
+     zweiten — samt seiner Erwartung. Statt die Adresse zu erweitern (das
+     änderte die Befund-Form aller Module) trägt die **Nachricht** jede
+     Erwartung mit ihrer Quelle, in Deklarationsreihenfolge der Paare. Die
+     **Ausgabe**-Reihenfolge bleibt die der geteilten Sortierung; sie ist
+     bereits deterministisch
+     ([`DC-QA-02`](../../../spec/lastenheft.md#dc-qa-02--determinismus)), und
+     die Deklarationsreihenfolge hat auf sie keine Wirkung.
+   - **Der Wortlaut hängt an der Paar-Zahl, nicht an der Schreibweise.** Bei
+     genau einem Paar nennt jede Meldung den Kurzform-Schlüssel wie bisher, ab
+     zwei Paaren die Fundstelle `versions.patterns[i]`. Damit ist die
+     Byte-Identität bestehender Konfigurationen eine Eigenschaft des Codes und
+     nicht eine Absicht — und ein Adopter mit mehreren Reihen erfährt, welches
+     Paar spricht.
 
-   Die Befund-Form bleibt unberührt: ein Grund-Code (`version-stale`), dieselbe
-   Nachricht, dasselbe `target`. Was die Paare unterscheidbar macht, ist die
-   **erwartete** Version — sie steht bereits in der Nachricht.
+   Die Befund-**Form** bleibt unberührt: ein Grund-Code (`version-stale`),
+   dieselben Felder, dasselbe `target`. Was die Reihen unterscheidbar macht,
+   ist allein die Nachricht — und genau deshalb muss sie vollständig sein.
 
 ## Konsequenzen
 
@@ -105,6 +120,14 @@ Absicht.
 auf Gleichheit, und zwei Quellen hätten keine eindeutige Erwartung. Ebenso
 bleibt es bei Gleichheit statt semantischer Ordnung.
 
+**Zweite Grenze, gemessen statt vermutet.** Zwei Paare, die auf derselben Zeile
+denselben Pin-Wert treffen, teilen eine Befund-Adresse und ergeben **einen**
+Befund. Ein maschineller Konsument, der die Ausgabe nach Regeln filtert, sieht
+dort eine Zeile statt zweier; die zweite Erwartung liest er nur aus der
+Nachricht. Das ist der Preis dafür, die Befund-Form nicht anzufassen — die
+Alternative (ein Adress-Feld für die Quelle) beträfe alle Module und ist eine
+eigene Entscheidung mit eigener Messung.
+
 ## Alternativen
 
 - **Ein zweites Modul** (`versions2` o. ä.) — verworfen: dieselbe Frage,
@@ -119,3 +142,25 @@ bleibt es bei Gleichheit statt semantischer Ordnung.
 - **Kurzform abschaffen und alle Konsumenten migrieren** — verworfen für diese
   Version: ein Breaking Change ohne Gegenwert, wo die Übersetzung eine Zeile
   Code ist.
+- **Die Befund-Adresse um die Quelle erweitern**, damit zwei Paare zwei Befunde
+  ergeben — verworfen für diese Version: das Feld läge in
+  [`SPEC-001`](../../../spec/spezifikation.md#spec-001--befund) und beträfe
+  jedes Modul und jede Ausgabe. Zwei Repo-Module umgehen dieselbe Enge heute
+  über eigene Grund-Codes; ob das die richtige Antwort bleibt, ist eine
+  querschnittliche Frage — siehe Re-Evaluierungs-Trigger.
+
+## Re-Evaluierungs-Trigger
+
+- Ein **dritter** Konsument braucht zwei Befunde an derselben Adresse (heute:
+  die eigenen Grund-Code-Umgehungen in `structure` und `planning`, dazu diese
+  Nachricht) — dann ist die Befund-Adresse selbst zu prüfen, nicht ein
+  weiterer Umweg.
+- Ein Adopter meldet, dass er die **zweite Erwartung** maschinell braucht
+  (Filter über Regel und Ziel statt über die Nachricht) — dann trägt die
+  Grenze aus den Konsequenzen nicht mehr.
+- Die Kurzform ist im Bestand der Konsumenten **nicht mehr in Gebrauch** —
+  dann ist Entscheidung 1 auf die Liste allein zu verengen und der zweite
+  Schreibweg zu entfernen.
+- Ein Paar braucht wiederholt **mehrere Quellen** — dann ist die erste Grenze
+  gegen die gelebte Praxis zu prüfen; die Antwort wäre eine Semantik für
+  „welche der Quellen gilt", keine zweite Liste.

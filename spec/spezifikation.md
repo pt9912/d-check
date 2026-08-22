@@ -1469,7 +1469,11 @@ Schlüssel direkt unter `versions` — **ist** die einelementige Liste und wird 
 Config-Rand in sie übersetzt; der Kern kennt nur die Liste, es gibt genau einen
 Auswertungspfad. Sind **beide** Schreibweisen gesetzt ⇒ **Exit 2** ohne Prüfung
 (die Zusammenführung wäre nicht ablesbar, nicht unmöglich — und eine
-Voreinstellung, die man raten muss, ist keine). Ist die Liste **leer**, trägt
+Voreinstellung, die man raten muss, ist keine). Gesetzt heißt **anwesend**,
+nicht „mit Wert": `pin-pattern: ""`, `exempt-paths: []` und `patterns: []`
+zählen als gesetzt. **Grenze:** ein Schlüssel ohne Wert (`patterns:` ohne
+Liste) ist im YAML von einem fehlenden Schlüssel nicht unterscheidbar und
+zählt als fehlend. Ist die Liste **leer**, trägt
 ein Paar kein `pin-pattern` oder löst die Quelle eines Paares nicht auf ⇒
 ebenfalls **Exit 2**; ein unvollständiges Paar schaltet nicht still die
 übrigen scharf. Die Schritte 1 bis 4 gelten **je Paar**:
@@ -1500,13 +1504,21 @@ ebenfalls **Exit 2**; ein unvollständiges Paar schaltet nicht still die
    fehlt eine Gruppe, zählt der ganze Treffer.
 3. **Vergleich.** Weicht die im Pin gefundene Version von der erwarteten ab ⇒
    Grund-Code `version-stale` (Datei, Zeile, `target` = gefundener Pin-Wert;
-   `message` nennt erwartet vs. gefunden — sie ist damit die Stelle, an der
-   sich die Reihen unterscheiden). Gleichheit ⇒ kein Befund.
-   **Reihenfolge und Dedup über mehrere Paare:** je Zeile werden die Paare in
-   **Deklarationsreihenfolge** ausgewertet; ein Befund-Tupel, das zwei Paare
-   identisch erzeugen (dieselbe Zeile, derselbe Pin-Wert, dieselbe erwartete
-   Version), erscheint **einmal**. Beides ist festgelegt und nicht der
-   Iterationsreihenfolge überlassen
+   `message` nennt erwartet vs. gefunden). Gleichheit ⇒ kein Befund.
+   **Eine Befund-Adresse, alle Erwartungen:** je Zeile entsteht höchstens ein
+   Befund pro gefundenem Pin-Wert. Die Befund-Adresse
+   ([`SPEC-001`](#spec-001--befund) ohne `message`) unterscheidet zwei Befunde
+   an derselben Stelle nicht, und die geteilte Nachrunde
+   ([§DC-QA-02.a](#dc-qa-02a--determinismus-und-sortierung)) verwürfe den zweiten
+   samt seiner Erwartung. Treffen mehrere Paare denselben Wert, nennt die
+   `message` deshalb **jede** Erwartung mit ihrer Quelle, in
+   **Deklarationsreihenfolge** der Paare; dasselbe Paar trägt höchstens eine
+   bei, auch bei mehreren Treffern auf der Zeile. Die **Ausgabe**-Reihenfolge
+   ist die der geteilten Sortierung, nicht die Deklarationsreihenfolge.
+   **Wortlaut:** bei genau einem Paar nennt jede Meldung — Befund wie
+   fail-closed-Abbruch — den Kurzform-Schlüssel `versions.current-from` wie
+   bisher; ab zwei Paaren `versions.patterns[i].current-from`. So bleibt der
+   Befundsatz bestehender Konfigurationen byte-identisch
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
 4. **Ventile.** Wie `ids`/`codepaths`: die Glob-Liste `exempt-paths`
    (datei-weit — historische Pins in Planning-`done/`-Slices, `CHANGELOG.md`,
@@ -2537,7 +2549,7 @@ Exit 2 ohne Prüfung
 | `versions.pin-pattern` | string | — | **Kurzform** (= einelementige `versions.patterns`-Liste). Regex; muss kompilieren und darf den Leerstring nicht matchen (Exit 2); die gefundene Version steht in Capture-Gruppe 1, sonst zählt der ganze Treffer |
 | `versions.current-from` | string | `version.md#aktuell` | Kurzform. `datei#anker` oder `datei`; die Datei muss existieren und innerhalb der Repo-Wurzel liegen, der adressierte Span muss eine Version (`v?\d+\.\d+\.\d+`) tragen (sonst Exit 2) |
 | `versions.exempt-paths` | string[] | leer | Kurzform. Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `versions`-Prüfung — datei-weit; die `current-from`-Datei ist stets ausgenommen |
-| `versions.patterns` | Objekt[] | leer | **Liste** von Muster-Quellen-Paaren; jedes Paar trägt `pin-pattern`, `current-from` und `exempt-paths` mit derselben Bedeutung und denselben Rändern wie die Kurzform. Zusammen mit der Kurzform gesetzt ⇒ Exit 2 (nicht ablesbar, welche Ausnahmen für welches Muster gälten); explizit leere Liste ⇒ Exit 2. Ausnahmen und die Selbst-Ausnahme der Quell-Datei sind **paar-lokal**, der Zeilen-Marker `d-check:ignore` wirkt paar-übergreifend |
+| `versions.patterns` | Objekt[] | — (abwesend ⇒ Kurzform-Pfad) | **Liste** von Muster-Quellen-Paaren; jedes Paar trägt `pin-pattern`, `current-from` und `exempt-paths` mit derselben Bedeutung und denselben Rändern wie die Kurzform. Zusammen mit der Kurzform **anwesend** ⇒ Exit 2 (nicht ablesbar, welche Ausnahmen für welches Muster gälten) — Anwesenheit zählt, nicht der Wert; explizit leere Liste ⇒ Exit 2. Ausnahmen und die Selbst-Ausnahme der Quell-Datei sind **paar-lokal**, der Zeilen-Marker `d-check:ignore` wirkt paar-übergreifend |
 | `versions.patterns[].pin-pattern` | string | — | Pflicht je Paar (fehlt ⇒ Exit 2); Ränder wie `versions.pin-pattern` |
 | `versions.patterns[].current-from` | string | `version.md#aktuell` | Ränder wie `versions.current-from`; jedes Paar löst **seine** Quelle auf, ein nicht auflösendes Paar bricht den Lauf (Exit 2) |
 | `versions.patterns[].exempt-paths` | string[] | leer | Ränder wie `versions.exempt-paths`, aber nur für **dieses** Paar |
@@ -2724,6 +2736,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-22 | Nachzug nach unabhängigem Review, vor dem Release: §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) Schritt 3 sagt jetzt **eine Befund-Adresse, alle Erwartungen** — die Vorfassung versprach zwei Befunde je Paar, die die geteilte Nachrunde ([§DC-QA-02.a](#dc-qa-02a--determinismus-und-sortierung)) nachweislich auf einen zusammenzieht, samt der zweiten Erwartung; und die **Ausgabe**-Reihenfolge ist die der Sortierung, nicht die Deklarationsreihenfolge (die alte Aussage war als beobachtbare Eigenschaft falsch). Der Wortlaut jeder Meldung ist an die Paar-Zahl gebunden (ein Paar ⇒ Kurzform-Schlüssel, byte-identisch; ab zwei ⇒ `versions.patterns[i]`). Schritt 0 und die `versions.patterns`-Schema-Zeile binden die Mischform an die **Anwesenheit** des Schlüssels statt an seinen Wert, mit der benannten Grenze des wertlosen Schlüssels |
 | 2026-08-22 | §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) auf **mehrere Muster-Quellen-Paare** gezogen und die `versions.*`-Zeilen unter [`SPEC-005`](#spec-005--d-checkyml) um `versions.patterns[]` ergänzt ([`DC-FA-VER-001`](lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) 0.63.0, Begründung in begleitender ADR): die Schritte 1–4 gelten **je Paar**, die Kurzform **ist** die einelementige Liste und wird am Config-Rand übersetzt (ein Auswertungspfad), beide Schreibweisen zugleich sowie leere Liste, fehlendes `pin-pattern` und nicht auflösende Quelle eines Paares sind **fail-closed**. Neu ausgesprochen, weil sonst die Iterationsreihenfolge entschiede: Befunde je Zeile in **Deklarationsreihenfolge** der Paare, identische Befund-Tupel **einmal**. Die beiden **Datei**-Ventile sind paar-lokal, der **Zeilen**-Marker ist es nicht — er sagt „diese Zeile nicht", nicht „diese Reihe nicht". Kein neuer Grund-Code |
 | 2026-08-22 | **Struktur-IDs `SPEC-<NNN>` vergeben** (Baseline-Default, [`MR-000`](../harness/conventions.md#mr-000--baseline-aussage)): §2 trägt sie in den fünf Schema-Überschriften, §3/§4/§6 in einer neuen ersten Spalte `Kennung` — fortlaufend je Datei (001–066), Lücken werden nicht nachbelegt; der Link trägt den Abschnitt, der Text die Kennung. Die §2-Anker wandern damit (`#befund` → `#spec-001--befund` usw.); alle zwölf Verweise im Baum sind retargetet. Keine inhaltliche Änderung einer Festlegung |
 | 2026-08-22 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) W3, §2-Schema-Zeile `planning.waves.mode` und §4 `wave-drift`-Zeile: Wortlaut auf die Kennungs-Menge aus W2 gezogen (Lastenheft 0.62.1) — auch das Singleton unter `one` zählt Kennungen, nicht Dateien; zwei flache Dokumente derselben Kennung sind ein Element. Keine Verhaltensänderung; der Beleg ist ein Pinning-Test in beiden Modi |

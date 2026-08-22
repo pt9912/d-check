@@ -14,13 +14,16 @@ import (
 // (spec/spezifikation.md §DC-FA-VER-001.a Schritt 1).
 var versionRE = regexp.MustCompile(`v?\d+\.\d+\.\d+`)
 
-// resolvedVersionPattern ist ein Muster-Quellen-Paar samt der am Lauf-Start
+// ResolvedVersionPattern ist ein Muster-Quellen-Paar samt der am Lauf-Start
 // aufgelösten erwarteten Version und dem Pfad ihrer Quell-Datei
-// (spec/spezifikation.md §DC-FA-VER-001.a).
-type resolvedVersionPattern struct {
-	pattern  model.VersionPattern
-	current  string
-	fromFile string
+// (spec/spezifikation.md §DC-FA-VER-001.a). Index ist die Position in der
+// Konfiguration — sie benennt das Paar in Meldungen, sobald es mehr als eines
+// gibt.
+type ResolvedVersionPattern struct {
+	Pattern  model.VersionPattern
+	Current  string
+	FromFile string
+	Index    int
 }
 
 // CheckVersions ist das Regelmodul `versions` (DC-FA-VER-001): jeder
@@ -30,13 +33,17 @@ type resolvedVersionPattern struct {
 // gescopte Ausnahme von der Fence-Opazität, reiner Muster-Scan über die
 // Rohzeilen (kein Parser).
 //
-// Mehrere Paare werden je Zeile in Deklarationsreihenfolge ausgewertet; ein
-// Befund-Tupel, das zwei Paare identisch erzeugen, entsteht einmal. Die beiden
-// DATEI-Ventile sind paar-lokal — exempt-paths gilt für sein Paar, die
-// Selbst-Ausnahme der Quell-Datei nur für deren eigene Reihe; der
+// Je Zeile entsteht HÖCHSTENS EIN Befund pro Pin-Wert, weil die Befund-Adresse
+// (Datei, Zeile, Regel, Ziel, Grund) zwei Befunde an derselben Stelle nicht
+// unterscheiden kann — die geteilte Nachrunde würde den zweiten verwerfen und
+// mit ihm seine Erwartung. Treffen mehrere Paare denselben Wert, nennt die
+// Nachricht deshalb ALLE Erwartungen in Deklarationsreihenfolge.
+//
+// Die beiden DATEI-Ventile sind paar-lokal — exempt-paths gilt für sein Paar,
+// die Selbst-Ausnahme der Quell-Datei nur für deren eigene Reihe; der
 // ZEILEN-Marker d-check:ignore nimmt die Zeile allen Paaren aus. Ohne Paar
 // wirkungslos (byte-identisch, DC-QA-02).
-func CheckVersions(file string, content []byte, patterns []resolvedVersionPattern) []model.Finding {
+func CheckVersions(file string, content []byte, patterns []ResolvedVersionPattern) []model.Finding {
 	active := applicableVersionPatterns(file, patterns)
 	if len(active) == 0 {
 		return nil
@@ -46,33 +53,85 @@ func CheckVersions(file string, content []byte, patterns []resolvedVersionPatter
 		if strings.Contains(raw, ignoreMarker) {
 			continue // d-check:ignore — Zeile von der versions-Prüfung frei
 		}
-		seen := make(map[string]bool)
-		for _, p := range active {
-			for _, m := range p.pattern.PinPattern.FindAllStringSubmatchIndex(raw, -1) {
-				ver := pinVersion(raw, m)
-				if ver == p.current || seen[ver+"\x00"+p.current] {
-					continue
-				}
-				seen[ver+"\x00"+p.current] = true
-				findings = append(findings, model.Finding{
-					File: file, Line: i + 1, Rule: "versions",
-					Target: ver, Reason: model.ReasonVersionStale,
-					Message: fmt.Sprintf("Versions-Pin trägt %s, erwartet %s (versions.current-from)", ver, p.current),
-				})
-			}
+		for _, st := range staleVersionsOfLine(raw, active) {
+			findings = append(findings, model.Finding{
+				File: file, Line: i + 1, Rule: "versions",
+				Target: st.target, Reason: model.ReasonVersionStale,
+				Message: staleVersionMessage(st, len(patterns) > 1),
+			})
 		}
 	}
 	return findings
+}
+
+// staleVersion ist ein veralteter Pin-Wert einer Zeile samt den Erwartungen
+// aller Paare, die ihn melden — in Deklarationsreihenfolge.
+type staleVersion struct {
+	target string
+	expect []versionExpectation
+}
+
+// versionExpectation ist die erwartete Version eines Paares samt dessen
+// Deklarations-Index.
+type versionExpectation struct {
+	index int
+	want  string
+}
+
+// staleVersionsOfLine gruppiert die veralteten Pin-Werte einer Zeile nach dem
+// gefundenen Wert; die Gruppen stehen in der Reihenfolge ihres ersten
+// Auftretens, die Erwartungen darin in Deklarationsreihenfolge der Paare.
+// Dasselbe Paar trägt zu einem Wert höchstens eine Erwartung bei, auch wenn es
+// ihn mehrfach auf der Zeile trifft.
+func staleVersionsOfLine(raw string, active []ResolvedVersionPattern) []staleVersion {
+	var groups []staleVersion
+	at := make(map[string]int)
+	for _, p := range active {
+		for _, m := range p.Pattern.PinPattern.FindAllStringSubmatchIndex(raw, -1) {
+			ver := pinVersion(raw, m)
+			if ver == p.Current {
+				continue
+			}
+			idx, ok := at[ver]
+			if !ok {
+				at[ver] = len(groups)
+				groups = append(groups, staleVersion{target: ver})
+				idx = len(groups) - 1
+			}
+			g := &groups[idx]
+			if len(g.expect) > 0 && g.expect[len(g.expect)-1].index == p.Index {
+				continue // dasselbe Paar, derselbe Wert, zweiter Treffer
+			}
+			g.expect = append(g.expect, versionExpectation{index: p.Index, want: p.Current})
+		}
+	}
+	return groups
+}
+
+// staleVersionMessage nennt den gefundenen Wert und jede Erwartung mit ihrer
+// Quelle. Die Fundstelle wird nur benannt, wenn es mehr als ein Paar gibt —
+// eine Ein-Paar-Konfiguration (und damit die Kurzform) behält ihren Wortlaut
+// byte-identisch (DC-QA-02).
+func staleVersionMessage(st staleVersion, named bool) string {
+	parts := make([]string, 0, len(st.expect))
+	for _, e := range st.expect {
+		key := "versions.current-from"
+		if named {
+			key = fmt.Sprintf("versions.patterns[%d].current-from", e.index)
+		}
+		parts = append(parts, fmt.Sprintf("%s (%s)", e.want, key))
+	}
+	return fmt.Sprintf("Versions-Pin trägt %s, erwartet %s", st.target, strings.Join(parts, " sowie "))
 }
 
 // applicableVersionPatterns liefert die Paare, deren Datei-Ventile diese Datei
 // nicht ausnehmen: die eigene Quell-Datei eines Paares und dessen exempt-paths
 // schalten nur dieses Paar ab, nicht die übrigen
 // (spec/spezifikation.md §DC-FA-VER-001.a Schritt 4).
-func applicableVersionPatterns(file string, patterns []resolvedVersionPattern) []resolvedVersionPattern {
-	active := make([]resolvedVersionPattern, 0, len(patterns))
+func applicableVersionPatterns(file string, patterns []ResolvedVersionPattern) []ResolvedVersionPattern {
+	active := make([]ResolvedVersionPattern, 0, len(patterns))
 	for _, p := range patterns {
-		if file == p.fromFile || ignored(file, p.pattern.ExemptPaths) {
+		if file == p.FromFile || ignored(file, p.Pattern.ExemptPaths) {
 			continue
 		}
 		active = append(active, p)
@@ -90,39 +149,50 @@ func pinVersion(raw string, m []int) string {
 	return raw[m[0]:m[1]]
 }
 
+// versionSource benennt die Fundstelle eines Paares in Meldungen: bei genau
+// einem Paar den Kurzform-Schlüssel, sonst das Paar mit seinem Index — eine
+// Ein-Paar-Konfiguration behält ihren Wortlaut byte-identisch (DC-QA-02).
+func versionSource(cfg model.VersionsConfig, index int) string {
+	if len(cfg.Patterns) < 2 {
+		return "versions.current-from"
+	}
+	return fmt.Sprintf("versions.patterns[%d].current-from", index)
+}
+
 // resolveCurrentVersion liest die aktuelle Version aus der current-from-Quelle
 // (spec/spezifikation.md §DC-FA-VER-001.a Schritt 1): Datei links vom '#',
 // Anker rechts; der Span ist die Heading-Section des Ankers bzw. die ganze
 // Datei ohne Anker. Fehlt die Datei/der Anker oder trägt der Span keine
-// Version → Fehler (Exit 2, fail-closed). Liefert zusätzlich den aufgelösten
-// Datei-Pfad (Selbst-Ausnahme der current-from-Datei).
-func resolveCurrentVersion(fsys driven.Filesystem, currentFrom string) (version, fromFile string, err error) {
+// Version → Fehler (Exit 2, fail-closed). source benennt die Fundstelle in der
+// Konfiguration. Liefert zusätzlich den aufgelösten Datei-Pfad
+// (Selbst-Ausnahme der current-from-Datei).
+func resolveCurrentVersion(fsys driven.Filesystem, currentFrom, source string) (version, fromFile string, err error) {
 	filePart, anchor := currentFrom, ""
 	if i := strings.IndexByte(currentFrom, '#'); i != -1 {
 		filePart, anchor = currentFrom[:i], DecodeFragment(currentFrom[i+1:])
 	}
 	rel, escaped := ResolveConfigPath(filePart)
 	if escaped {
-		return "", "", fmt.Errorf("versions.current-from verlässt die Repository-Wurzel: %s", currentFrom)
+		return "", "", fmt.Errorf("%s verlässt die Repository-Wurzel: %s", source, currentFrom)
 	}
 	if rel == "" {
-		return "", "", fmt.Errorf("versions.current-from muss eine Datei benennen: %s", currentFrom)
+		return "", "", fmt.Errorf("%s muss eine Datei benennen: %s", source, currentFrom)
 	}
 	content, err := fsys.ReadFile(rel)
 	if err != nil {
-		return "", "", fmt.Errorf("versions.current-from nicht lesbar (%s): %w", currentFrom, err)
+		return "", "", fmt.Errorf("%s nicht lesbar (%s): %w", source, currentFrom, err)
 	}
 	span := string(content)
 	if anchor != "" {
 		s, ok := headingSection(content, anchor)
 		if !ok {
-			return "", "", fmt.Errorf("versions.current-from: Anker #%s nicht auflösbar in %s", anchor, filePart)
+			return "", "", fmt.Errorf("%s: Anker #%s nicht auflösbar in %s", source, anchor, filePart)
 		}
 		span = s
 	}
 	ver := versionRE.FindString(span)
 	if ver == "" {
-		return "", "", fmt.Errorf("versions.current-from: keine Version im adressierten Span von %s", currentFrom)
+		return "", "", fmt.Errorf("%s: keine Version im adressierten Span von %s", source, currentFrom)
 	}
 	return ver, rel, nil
 }

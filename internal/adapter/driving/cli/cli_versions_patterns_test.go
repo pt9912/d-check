@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/pt9912/d-check/internal/adapter/driven/configyaml"
 	"github.com/pt9912/d-check/internal/adapter/driving/cli"
 )
 
@@ -93,5 +94,59 @@ func TestVersionsPatterns_MischformExit2(t *testing.T) {
 	}
 	if !strings.Contains(stderr.String(), "zugleich gesetzt") {
 		t.Fatalf("stderr benennt die Mischform nicht: %s", stderr.String())
+	}
+}
+
+// uncommentBlock nimmt aus der --print-config-Vorlage den Block, dessen
+// Kopfzeile mit header beginnt, und entfernt je Zeile genau ein führendes
+// "#" samt einem Leerzeichen — so, wie ein Nutzer einen Vorlagen-Block
+// einkommentiert.
+func uncommentBlock(t *testing.T, template, header string) string {
+	t.Helper()
+	lines := strings.Split(template, "\n")
+	start := -1
+	for i, l := range lines {
+		if strings.HasPrefix(l, header) {
+			start = i + 1
+			break
+		}
+	}
+	if start < 0 {
+		t.Fatalf("Vorlagen-Block %q nicht gefunden", header)
+	}
+	var out []string
+	for _, l := range lines[start:] {
+		if !strings.HasPrefix(l, "#") {
+			break
+		}
+		l = strings.TrimPrefix(strings.TrimPrefix(l, "#"), " ")
+		out = append(out, l)
+	}
+	return strings.Join(out, "\n") + "\n"
+}
+
+// DC-FA-CLI-005 / DC-FA-VER-001: jeder der beiden versions-Blöcke der Vorlage
+// ist für sich einkommentierbar und wird vom eigenen Parser angenommen —
+// beide zusammen sind der benannte Nutzungsfehler.
+func TestVersionsPatterns_VorlagenBloeckeEinkommentierbar(t *testing.T) {
+	code, template, stderr := run(t, "--print-config")
+	if code != 0 {
+		t.Fatalf("--print-config: Exit = %d, stderr = %q", code, stderr)
+	}
+	kurz := uncommentBlock(t, template, "# --- versions:")
+	liste := uncommentBlock(t, template, "# --- versions, ALTERNATIVE")
+	for name, block := range map[string]string{"kurzform": kurz, "patterns": liste} {
+		if !strings.Contains(block, "versions:") {
+			t.Fatalf("%s: Block ohne versions-Schlüssel:\n%s", name, block)
+		}
+		if _, err := configyaml.Decode([]byte(block)); err != nil {
+			t.Fatalf("%s: eigener Parser lehnt den einkommentierten Block ab: %v\n%s", name, err, block)
+		}
+	}
+	// Beide Blöcke zugleich sind kein gültiger Zustand — hier fängt es schon
+	// das YAML (zwei `versions:`-Schlüssel); die Mischform INNERHALB eines
+	// Blocks fängt der Config-Rand (configyaml-Tests).
+	if _, err := configyaml.Decode([]byte(kurz + liste)); err == nil {
+		t.Fatal("beide Blöcke zugleich müssen abgewiesen werden")
 	}
 }

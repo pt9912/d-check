@@ -50,14 +50,14 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 	// Modul versions: je Paar die aktuelle Version aus seiner current-from-
 	// Quelle auflösen (DC-FA-VER-001.a; fail-closed → Exit 2). Nur wenn aktiv;
 	// ohne Paar bleibt die Liste leer und das Modul wirkungslos.
-	var versionsPatterns []resolvedVersionPattern
+	var versionsPatterns []ResolvedVersionPattern
 	if active["versions"] {
-		for _, p := range cfg.Versions.Patterns {
-			cur, from, verr := resolveCurrentVersion(fsys, p.EffectiveCurrentFrom())
+		for i, p := range cfg.Versions.Patterns {
+			cur, from, verr := resolveCurrentVersion(fsys, p.EffectiveCurrentFrom(), versionSource(cfg.Versions, i))
 			if verr != nil {
 				return res, verr
 			}
-			versionsPatterns = append(versionsPatterns, resolvedVersionPattern{pattern: p, current: cur, fromFile: from})
+			versionsPatterns = append(versionsPatterns, ResolvedVersionPattern{Pattern: p, Current: cur, FromFile: from, Index: i})
 		}
 	}
 
@@ -90,12 +90,12 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 
 	st := &runState{
 		fsys: fsys, cfg: cfg, active: active, inScope: inScope,
-		slugCache:       map[string]map[string]bool{},
-		statusCache:     map[string]*string{},
-		diagCache:       map[string]map[string]bool{},
-		spanCache:       map[string]string{},
+		slugCache:        map[string]map[string]bool{},
+		statusCache:      map[string]*string{},
+		diagCache:        map[string]map[string]bool{},
+		spanCache:        map[string]string{},
 		versionsPatterns: versionsPatterns,
-		tracked:         trackedSet,
+		tracked:          trackedSet,
 	}
 	for _, file := range files {
 		if err := st.checkFile(file); err != nil {
@@ -188,7 +188,7 @@ type runState struct {
 	// versionsPatterns: die Muster-Quellen-Paare samt der am Lauf-Start
 	// aufgelösten erwarteten Version und ihrem Datei-Pfad (Modul versions,
 	// DC-FA-VER-001).
-	versionsPatterns []resolvedVersionPattern
+	versionsPatterns []ResolvedVersionPattern
 	// tracked: die einmal je Lauf geladene git-Index-Menge (Modul tracked,
 	// DC-FA-TRK-001.a Schritt 2); nil, wenn das Modul inaktiv ist.
 	tracked map[string]bool

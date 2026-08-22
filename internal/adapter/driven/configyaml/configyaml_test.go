@@ -841,6 +841,11 @@ func TestConfigYAMLVersionsZweiPaare(t *testing.T) {
 func TestConfigYAMLVersionsFailClosed(t *testing.T) {
 	cases := []struct{ name, yaml, want string }{
 		{"mischform", "versions:\n  pin-pattern: 'a(v1)'\n  patterns:\n    - pin-pattern: 'b(v1)'\n", "zugleich gesetzt"},
+		// Anwesenheit, nicht Wert: ein leerer Kurzform-Schlüssel neben
+		// patterns ist eine Mischform — sonst gewänne die Liste still.
+		{"mischform-leerer-string", "versions:\n  pin-pattern: ''\n  patterns:\n    - pin-pattern: 'b(v1)'\n", "zugleich gesetzt"},
+		{"mischform-leere-liste", "versions:\n  exempt-paths: []\n  patterns:\n    - pin-pattern: 'b(v1)'\n", "zugleich gesetzt"},
+		{"mischform-leere-patterns", "versions:\n  pin-pattern: 'a(v1)'\n  patterns: []\n", "zugleich gesetzt"},
 		{"mischform-nur-exempt", "versions:\n  exempt-paths: [x.md]\n  patterns:\n    - pin-pattern: 'b(v1)'\n", "zugleich gesetzt"},
 		{"leere-liste", "versions:\n  patterns: []\n", "versions.patterns ist leer"},
 		{"paar-ohne-muster", "versions:\n  patterns:\n    - current-from: reg.md\n", "versions.patterns[0].pin-pattern fehlt"},

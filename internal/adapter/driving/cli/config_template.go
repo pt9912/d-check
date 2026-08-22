@@ -94,12 +94,16 @@ modules: [links, anchors]
 #   pin-pattern: 'ghcr\.io/[^\s:]+:(v[0-9]+\.[0-9]+\.[0-9]+)'   # Version in Capture-Gruppe 1
 #   current-from: version.md#aktuell   # Datei#Anker (Span) mit der aktuellen Version
 #   exempt-paths: [CHANGELOG.md, "docs/plan/planning/done/**"]  # historische Pins (datei-weit)
-#   # Mehrere unabhängige Versions-Reihen: patterns statt der Kurzform oben
-#   # (beides zugleich ist ein Nutzungsfehler). Jedes Paar trägt eigene Quelle
-#   # und eigene Ausnahmen; der Zeilen-Marker d-check:ignore gilt allen Paaren.
+
+# --- versions, ALTERNATIVE Schreibweise: mehrere unabhängige Versions-Reihen ---
+# # Entweder der Block oben ODER dieser — beide zugleich sind ein
+# # Nutzungsfehler (Exit 2). Jedes Paar trägt eigene Quelle und eigene
+# # Ausnahmen; der Zeilen-Marker d-check:ignore gilt allen Paaren.
+# versions:
 #   patterns:
 #     - pin-pattern: 'ghcr\.io/[^\s:]+:(v[0-9]+\.[0-9]+\.[0-9]+)'
 #       current-from: version.md#aktuell
+#       exempt-paths: [CHANGELOG.md, "docs/plan/planning/done/**"]
 #     - pin-pattern: 'baseline/(v[0-9]+\.[0-9]+\.[0-9]+)'
 #       current-from: harness/conventions.md#baseline
 

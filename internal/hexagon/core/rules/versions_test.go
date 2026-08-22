@@ -380,7 +380,8 @@ func TestVersionsZeilenMarkerGiltAllenPaaren(t *testing.T) {
 }
 
 // DC-FA-VER-001 Boundary: treffen zwei Paare dieselbe Zeile mit demselben
-// Pin-Wert gegen dieselbe Erwartung, entsteht genau EIN Befund.
+// Pin-Wert gegen dieselbe Erwartung, entsteht genau EIN Befund — und die
+// Erwartung steht darin genau einmal.
 func TestVersionsDedupGleichesTupel(t *testing.T) {
 	fix := versionsFixture()
 	fix["docs/use.md"] = "ghcr.io/pt9912/d-check:v0.26.0\n"
@@ -397,11 +398,63 @@ func TestVersionsDedupGleichesTupel(t *testing.T) {
 	if len(res.Findings) != 1 {
 		t.Fatalf("identisches Befund-Tupel zweier Paare → 1 Befund, got %v", res.Findings)
 	}
+	want := "Versions-Pin trägt v0.26.0, erwartet v0.27.0 (versions.patterns[0].current-from) sowie v0.27.0 (versions.patterns[1].current-from)"
+	if res.Findings[0].Message != want {
+		t.Fatalf("beide Paare nennen ihre Erwartung:\ngot  %q\nwant %q", res.Findings[0].Message, want)
+	}
 }
 
-// DC-FA-VER-001 Boundary: erwarten zwei Paare auf derselben Zeile
-// VERSCHIEDENE Versionen, entstehen zwei Befunde in Deklarationsreihenfolge.
-func TestVersionsZweiBefundeInDeklarationsreihenfolge(t *testing.T) {
+// DC-FA-VER-001: trifft DASSELBE Paar denselben Wert mehrfach auf einer Zeile,
+// steht seine Erwartung trotzdem nur einmal in der Nachricht.
+func TestVersionsGleichesPaarZweiTrefferEineErwartung(t *testing.T) {
+	fix := versionsFixture()
+	fix["docs/use.md"] = "ghcr.io/a/d-check:v0.26.0 ghcr.io/b/d-check:v0.26.0\n"
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, versionsCfg(), []string{"versions"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := "Versions-Pin trägt v0.26.0, erwartet v0.27.0 (versions.current-from)"
+	if len(res.Findings) != 1 || res.Findings[0].Message != want {
+		t.Fatalf("zwei Treffer desselben Paares → eine Erwartung, got %v", res.Findings)
+	}
+}
+
+// DC-FA-VER-001 / DC-QA-02: bei genau EINEM Paar nennt die Nachricht den
+// Kurzform-Schlüssel — der Wortlaut bestehender Konfigurationen bleibt
+// unberührt.
+func TestVersionsEinPaarBehaeltWortlaut(t *testing.T) {
+	fix := versionsFixture()
+	fix["docs/use.md"] = "ghcr.io/pt9912/d-check:v0.26.0\n"
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, versionsCfg(), []string{"versions"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := "Versions-Pin trägt v0.26.0, erwartet v0.27.0 (versions.current-from)"
+	if len(res.Findings) != 1 || res.Findings[0].Message != want {
+		t.Fatalf("Ein-Paar-Wortlaut: got %v", res.Findings)
+	}
+}
+
+// DC-FA-VER-001 fail-closed: bei mehreren Paaren benennt auch die
+// Quellauflösungs-Meldung das betroffene Paar.
+func TestVersionsFehlermeldungNenntDasPaar(t *testing.T) {
+	m := coretest.NewMemFS(zweiReihenFixture())
+	cfg := zweiReihenCfg()
+	cfg.Versions.Patterns[1].CurrentFrom = "pin.md#fehlt"
+	_, err := Run(m, nil, cfg, []string{"versions"})
+	if err == nil {
+		t.Fatal("nicht auflösbare Quelle muss den Lauf brechen")
+	}
+	if !strings.Contains(err.Error(), "versions.patterns[1].current-from") {
+		t.Fatalf("Meldung nennt das Paar nicht: %v", err)
+	}
+}
+
+// DC-FA-VER-001 Boundary: zwei Paare, zwei verschiedene Pin-Werte auf einer
+// Zeile → zwei Befunde, je gegen die eigene Erwartung.
+func TestVersionsZweiWerteZweiBefunde(t *testing.T) {
 	fix := zweiReihenFixture()
 	fix["docs/use.md"] = "ghcr.io/pt9912/d-check:v0.26.0 baseline/v5.7.0\n"
 	m := coretest.NewMemFS(fix)
@@ -415,7 +468,55 @@ func TestVersionsZweiBefundeInDeklarationsreihenfolge(t *testing.T) {
 	}
 	want := []string{"v0.26.0", "v5.7.0"}
 	if fmt.Sprint(got) != fmt.Sprint(want) {
-		t.Fatalf("Reihenfolge = Deklarationsreihenfolge der Paare: got %v, want %v", got, want)
+		t.Fatalf("zwei Werte → zwei Befunde: got %v, want %v", got, want)
+	}
+}
+
+// DC-FA-VER-001 Boundary: treffen zwei Paare auf derselben Zeile DENSELBEN
+// Wert mit VERSCHIEDENEN Erwartungen, entsteht ein Befund, dessen Nachricht
+// beide Erwartungen in Deklarationsreihenfolge nennt. Die Befund-Adresse kann
+// zwei Befunde an derselben Stelle nicht unterscheiden — ohne die Bündelung
+// verschwände die zweite Erwartung still.
+func TestVersionsGleicherWertBeideErwartungen(t *testing.T) {
+	fix := zweiReihenFixture()
+	fix["docs/use.md"] = "werkzeug:v1.0.0\n"
+	cfg := model.Config{Versions: model.VersionsConfig{Patterns: []model.VersionPattern{
+		{PinPattern: regexp.MustCompile(`werkzeug:(v[0-9]+\.[0-9]+\.[0-9]+)`), CurrentFrom: "version.md#aktuell"},
+		{PinPattern: regexp.MustCompile(`erkzeug:(v[0-9]+\.[0-9]+\.[0-9]+)`), CurrentFrom: "pin.md#baseline"},
+	}}}
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, cfg, []string{"versions"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 {
+		t.Fatalf("gleiche Befund-Adresse → 1 Befund, got %v", res.Findings)
+	}
+	want := "Versions-Pin trägt v1.0.0, erwartet v0.27.0 (versions.patterns[0].current-from) sowie v5.9.0 (versions.patterns[1].current-from)"
+	if res.Findings[0].Message != want {
+		t.Fatalf("Nachricht muss beide Erwartungen nennen:\ngot  %q\nwant %q", res.Findings[0].Message, want)
+	}
+}
+
+// DC-FA-VER-001: die Ausgabe-Reihenfolge ist die geteilte Sortierung
+// (Datei, Zeile, Regel, Ziel, Grund) — nicht die Deklarationsreihenfolge der
+// Paare. Hier findet das ZUERST deklarierte Paar den lexikografisch
+// GRÖSSEREN Wert; gemeldet wird der kleinere zuerst.
+func TestVersionsAusgabeFolgtDerSortierung(t *testing.T) {
+	fix := zweiReihenFixture()
+	fix["docs/use.md"] = "ghcr.io/pt9912/d-check:v9.9.9 baseline/v1.1.1\n"
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, zweiReihenCfg(), []string{"versions"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, f.Target)
+	}
+	want := []string{"v1.1.1", "v9.9.9"}
+	if fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("Ausgabe folgt der Sortierung: got %v, want %v", got, want)
 	}
 }
 
