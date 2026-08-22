@@ -72,25 +72,50 @@ als bei jedem anderen Modul.
 
 ## 4. Definition of Done
 
-- [ ] CR-Commit (Lastenheft allein) liegt **vor** Spezifikation und Code.
-- [ ] Beide Ventile implementiert und getestet; §2-Schema trägt **alle**
-      Schlüssel des Moduls.
-- [ ] Default-Beweis byte-identisch; der welle-80-Fall ist als Test gepinnt.
-- [ ] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
-      gesichtet.
+- [x] CR-Commit (Lastenheft allein) liegt **vor** Spezifikation und Code —
+      Lastenheft 0.65.0 allein, danach ADR, dann Spezifikation samt Code.
+- [x] Beide Ventile implementiert und getestet; §2-Schema trägt alle Schlüssel
+      des Moduls — **mit einer Korrektur aus dem Review:** die
+      `scope`-Zeile ist wieder gestrichen, weil die generischen
+      `<modul>.scope.*`-Zeilen sie decken und eine eigene die zweite
+      Pflegestelle wäre. „Alle Schlüssel" heißt also: alle **modul-eigenen**.
+- [x] Default-Beweis byte-identisch — **mit einer benannten Grenze:** nur das
+      Datei-Ventil hängt an einem Schlüssel, der Marker hängt am Inhalt. Für
+      die Marker-Hälfte gilt die Byte-Identität nur für Bäume ohne die
+      Zeichenfolge in einer gelisteten Fence (gemessen: identische Config,
+      Vorgänger zwei Befunde, neuer Stand einer).
+- [x] Der Fall, der zum Scoping zwang, ist als Test gepinnt — ein
+      Beispiel-Diagramm mit **drei** erfundenen Kennungen, freigeschaltet über
+      **eine** Marke auf der Öffnungszeile.
+- [x] `make gates` grün; unabhängiger Review (kein HIGH, sieben MEDIUM, acht
+      LOW, alle eingearbeitet, [Report](../../../reviews/2026-08-22-slice-124-diagrams-ventile-review.md));
+      Closure-Notiz; Register gesichtet.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Ein Ventil in einem Fence ist anders als in Prosa:** der Marker ist ein
   HTML-Kommentar — in einem `mermaid`-Fence ist er kein Kommentar, sondern
   Diagramm-Text. Die Zeilen-Semantik muss das aushalten oder die Grenze
-  benennen. — **Ausgang:** *(bei Closure)*
+  benennen. — **Ausgang:** aufgelöst, und die Auflösung ist die eigentliche
+  Substanz des Slice: der Marker ist ein **Token**, kein HTML-Kommentar; wie
+  er vor dem Renderer versteckt wird, ist Sache der Diagramm-Sprache. Dazu kam
+  ein Ort, den der Plan nicht vorsah — die **Öffnungszeile** für den ganzen
+  Block, weil die intuitive Platzierung sonst still nichts täte. Der Review
+  hat die Kehrseite gefunden: die **schließende** Zeile ist kein Ventil-Ort
+  und war still folgenlos; jetzt mit Negativtest und Halbsatz benannt.
 - **Die §2-Lücke ist älter als dieser Slice** — sie zu schließen ist richtig,
-  vergrößert aber den Diff über den Ventil-Kern hinaus. — **Ausgang:** *(bei
-  Closure)*
+  vergrößert aber den Diff über den Ventil-Kern hinaus. — **Ausgang:** richtig
+  gewesen, und teurer als gedacht: von sechs neu geschriebenen Zeilen waren
+  **drei** falsch (`scope`-Default in beiden Lesarten, `fences: []` fällt
+  entgegen der Präambel auf den Default zurück, `defined-in` sagte „Datei",
+  wo der Rand ein Verzeichnis durchließ). Eine Lücke zu schließen heißt, jede
+  Zeile einzeln gegen den Rand zu messen — nicht plausibel zu formulieren.
+  Die dritte hat Code geändert statt Text.
 - **Parität heißt nicht Gleichheit:** was `codepaths`/`ids` können, muss hier
-  nicht identisch heißen; die Namen folgen dem Bestand. — **Ausgang:** *(bei
-  Closure)*
+  nicht identisch heißen; die Namen folgen dem Bestand. — **Ausgang:**
+  gehalten, aber die Bezugsgröße war falsch: `versions` trägt beide Ventile
+  ebenfalls und ist die nächstliegende Präzedenz — Plan, Anforderung und
+  Algorithmus nannten nur zwei Module. Korrigiert.
 
 ## 6. Trigger
 
@@ -121,4 +146,30 @@ Vertrags-Lücke im eigenen Spec-Stratum.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Geliefert sind beide Ventile und die §2-Schema-Zeilen, die dem Modul als
+einzigem fehlten. Der Zeilen-Marker wirkt an zwei Orten — auf einer
+Diagramm-Zeile für sie, auf der Öffnungszeile für den ganzen Block.
+
+**Die Lehre ist eine Reichweiten-Lehre, und sie ist in dieser Welle die
+dritte.** Ich habe geschrieben, `diagrams` sei das einzige Modul, das Befunde
+an Zeilen hängt und kein Ventil trägt. Drei weitere tun dasselbe
+(`hostpaths`, `pins`, `spans`). In slice-123 war es „als einzige" über eine
+Ausnahme, in slice-122 „zwei Paare, zwei Befunde", hier „das einzige Modul".
+Jedes Mal war die Aussage aus dem **Anlass** abgeleitet statt aus dem
+**Bestand** — und jedes Mal hätte ein `grep` über die Nachbarn genügt. Wer
+eine Eigenschaft für exklusiv erklärt, muss die Menge gezählt haben.
+
+**Zwei Grenzen sind erst durch den Review benannt worden**, beide echt: die
+Ventile wirken **scan-seitig** und nicht auf der Definitionsmenge (eine im
+`defined-in` als illustrativ markierte Kennung definiert weiter), und die
+Marker-Hälfte ist **nicht** opt-in — sie hängt am Zeilen-Inhalt, nicht an
+einem Schlüssel. Die zweite widerlegt eine Zusage des Wellendokuments für die
+Hälfte dieser Erweiterung; sie steht jetzt dort als benannte Grenze.
+
+**Die Messung aus §2.5 sagt weniger, als sie zu sagen schien.** „Ohne Scope,
+446 Dateien, null Befunde" ist eine **Bestandsaufnahme** — heute trägt kein
+Diagramm außerhalb `spec/` ein `ARC-\d{3}`-Token, und das galt vorher genauso.
+Sie kann „die Ventile helfen" nicht von „es hat nie etwas gefeuert" trennen.
+Den Wellen-Closure-Trigger erfüllt die konstruierte Gegenprobe (dieselbe
+Konfiguration mit `exempt-paths` weist das Vorgänger-Image mit Exit 2 zurück),
+nicht diese Zahl. Der Rückbau des Scopes bleibt ein eigener Entscheid.
