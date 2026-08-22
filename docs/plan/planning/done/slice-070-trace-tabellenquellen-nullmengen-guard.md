@@ -2,7 +2,7 @@
 
 **Status:** done
 
-**Welle:** aktiv; Vorgänger
+**Welle:** welle-59-trace-tabellenquellen; Vorgänger
 [`slice-069`](../done/slice-069-trace-handbuch-parsergrenzen.md) ist
 abgeschlossen.
 

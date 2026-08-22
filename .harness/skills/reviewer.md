@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.7.0 · **Datum:** 2026-08-22 ·
+**Version:** 1.8.0 · **Datum:** 2026-08-22 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -39,8 +39,12 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   Urteil, kein `grep`. **Nicht** zu melden: ein Datum, das ein **benannter
   Trigger** pflegt (der Frische-Marker der Architektur-Sicht, der
   Wellen-Stand des Regelwerks) — der Unterschied ist der Trigger, nicht die
-  Zeile —, und das `**Status:**`-Feld einer **`Accepted`**-ADR: es gehört zum
-  immutablen Kern, [`AGENTS.md`](../../AGENTS.md) §3.5 sticht §3.7
+  Zeile —, und die **historischen** `**Status:**`-Felder der `done/`-Slices
+  (benannte Bestands-Ausnahme, [`AGENTS.md`](../../AGENTS.md) §3.7/§5); von
+  ihnen ist nur zu melden, was dem Verzeichnis **widerspricht**. Das
+  `**Status:**`-Feld einer ADR ist dagegen **kein** Sonderfall: `adr-check`
+  nimmt die Kopf-Status-Zeile aus dem Kern-Vergleich, sie darf korrigiert
+  werden — bei einer **neuen** ADR gilt §3.7 ab dem ersten Schreiben
   ([Baseline §Was ein Kommentar trägt](../baseline/v5.9.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte),
   *Dieselbe Regel für Zustandsfelder*; neuer HIGH-Eintrag seit 1.7.0,
   Auflösungs-Trigger: permanent).

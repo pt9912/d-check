@@ -1,6 +1,12 @@
 # Slice slice-078: `ignore-refs` mit Quell-Skopus (`in:`) — Referenz-Ventil über beide Achsen
 
-**Status:** done
+**Status:** done — **abgeschlossen am 2026-07-18** (`open`→`in-progress`→`done`,
+welle-61), veröffentlicht als **v0.49.0**. Vollständige Kette: Lastenheft
+[`DC-FA-REF-001`](../../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus),
+Spezifikation `.a`,
+[ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md) `Accepted`, Code
+über `links`/`anchors`/`codepaths` + Alias, Realdatenbeleg gegen `ai-harness-course`,
+unabhängiger Review R1 ACCEPT-WITH-NITS.
 
 **Bezug:** **Change Request** eines Konsumenten (`ai-harness-course`), eingereicht
 2026-07-17, Design nach zwei Rückfragen verfeinert (§2.1). Betrifft das Ventil

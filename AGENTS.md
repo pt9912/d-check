@@ -179,10 +179,16 @@ erreichten Meilensteine (die stehen im Closure-Log bzw. in der Status-Spalte).
 Ein lebendes Register trägt **keine** Kopfzeile `Status: Aktiv. Letzte
 Änderung: <Datum>` — sein Zustand ist sein Inhalt, sein Änderungsdatum hält
 `git`; ein Datum, das ein **benannter Trigger** pflegt, ist davon ausgenommen
-(der Frische-Marker der Architektur-Sicht). **Vorrang gegenüber §3.5:** das
-`**Status:**`-Feld einer ADR gehört zu ihrem Kern — ist die ADR `Accepted`, ist
-es immutabel, und §3.5 sticht; eine dort stehende Chronik bleibt und wird nicht
-gemeldet. Für **neue** ADRs gilt diese Regel ab dem ersten Schreiben. Kanon:
+(der Frische-Marker der Architektur-Sicht). **Verhältnis zu §3.5:** das
+`**Status:**`-Feld einer ADR ist ein Zustandsfeld wie jedes andere — `adr-check`
+nimmt die Kopf-Status-Zeile ausdrücklich **aus** dem Kern-Vergleich und lässt
+den Übergang zu. Es darf also korrigiert werden, solange der Wert die erlaubte
+Form behält; §3.5 schützt den **Kern**, nicht dieses Feld. **Benannte
+Bestands-Ausnahme:** die historischen `**Status:**`-Felder der `done/`-Slices
+bleiben, wie sie sind — sie sind eingefrorene Lauf-Belege, ihr
+Lifecycle-Zustand ist ohnehin das Verzeichnis, und das Feld hat dort keine
+Funktion (§5). Gemeldet wird von ihnen nur, was dem Verzeichnis
+**widerspricht**. Kanon:
 [Baseline §Was ein Kommentar trägt](.harness/baseline/v5.9.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
 
 **Bestandsgrenze:** vor der Einführung bzw. vor dieser Schärfung

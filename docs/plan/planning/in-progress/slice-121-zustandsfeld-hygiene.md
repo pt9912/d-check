@@ -8,7 +8,9 @@ Closure-Bedingung jenseits der DoD (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht).
 
 **Bezug:** [`AGENTS.md`](../../../../AGENTS.md) §3.5 (ADRs sind nach `Accepted`
-immutabel) und §3.7 (Kommentare und Zustandsfelder), Reviewer-Skill (der
+immutabel) und §3.7 (Kommentare und Zustandsfelder) — die Klärung ihres
+Verhältnisses ist eine **Repo-Aussage über das eigene Gate**, keine
+Baseline-Regel; Reviewer-Skill (der
 HIGH-Anker *Zustandsfeld trägt Chronik*); Baseline-Regelwerk
 `grundlagen-harness-dateien.md` §Was ein Kommentar trägt; die drei Befunde
 stammen aus den Reviews der welle-81
@@ -27,25 +29,29 @@ keine Spec-Zeile).
 
 Drei Zustandsfelder sagen etwas, das nicht stimmt — jedes auf seine Art:
 
-1. **Elf `done/`-Slices behaupten einen falschen Lifecycle-Zustand**, zwei
-   weitere tragen eine Chronik im Feld. Von 119 Slices im Ruheort tragen 90 ein
-   historisches `Status`-Kopffeld; **elf** sagen `open`, `in-progress` oder
-   `In Arbeit`, obwohl die Datei in `done/` liegt, und **zwei** sagen zwar
-   `done`, hängen aber „abgeschlossen am …" an — dieselbe Regel, denn §3.7 gibt
-   Zustandsfeldern keine Bestandsgrenze. Das Briefing erklärt das historische Feld für Alt-Slices — ein Feld,
+1. **Elf `done/`-Slices behaupten einen falschen Lifecycle-Zustand.** Von 119
+   Slices im Ruheort tragen 90 ein historisches `Status`-Kopffeld; **elf** davon
+   beginnen mit `open`, `in-progress` oder `In Arbeit`, obwohl die Datei in
+   `done/` liegt — sie sagen etwas Falsches über die Gegenwart. Die übrigen 79
+   sagen nichts Falsches; **53** von ihnen tragen neben dem Wert eine Chronik,
+   und das ist eine **benannte Bestands-Ausnahme**, keine Nachlässigkeit: sie
+   sind eingefrorene Lauf-Belege, ihr Lifecycle-Zustand ist ohnehin das
+   Verzeichnis, und das Feld hat dort keine Funktion. Das Briefing erklärt das historische Feld für Alt-Slices — ein Feld,
    das dem Verzeichnis **widerspricht**, deckt es nicht. Die zwölf werden auf
-   den wahren Zustand gesetzt; die übrigen 77 bleiben unberührt
-   (Auftraggeber-Entscheid 2026-08-22).
+   den wahren Zustand gesetzt; die übrigen 79 bleiben unberührt
+   (Auftraggeber-Entscheid 2026-08-22: „nur die Widersprüche heilen").
 2. **Das Release-Register trägt einen Anker zu viel.** `version.md` sagt in
    seiner eigenen Regel, der Anker gehöre an **die aktuelle** Version — „sonst
    bleiben veraltete feste Pins auflösbar und die Anker-Kaskade meldet den
    vergessenen Bump nicht". Gemessen tragen **zwei** von 63 Zeilen einen: der
    v0.62.0-Release hat den alten nicht entfernt. Der Vergessens-Detektor ist
    damit für Pins auf die Vorgänger-Version entschärft.
-3. **Zwei Hard Rules kollidieren ohne Vorrangregel.** §3.5 macht eine
-   `Accepted`-ADR immutabel, §3.7 versagt Zustandsfeldern die Bestandsgrenze.
-   Genau eine ADR trägt ein Statusfeld mit Chronik. Ohne Vorrang meldet der
-   Reviewer-Anker sie bei jedem Lauf, und heilen darf man sie nicht.
+3. **Das Verhältnis von §3.5 und §3.7 ist ungeklärt.** §3.5 macht eine
+   `Accepted`-ADR immutabel, §3.7 gilt für Zustandsfelder — und genau eine ADR
+   trägt ein Statusfeld mit Chronik. Geklärt wird es nach der **Maschine**:
+   `adr-check` nimmt die Kopf-Status-Zeile ausdrücklich aus dem Kern-Vergleich
+   und lässt den Übergang zu; das Feld ist also **kein** Sonderfall, §3.5
+   schützt den Kern und nicht diese Zeile.
 
 ## 2. Vorgehen
 
@@ -70,19 +76,21 @@ Drei Zustandsfelder sagen etwas, das nicht stimmt — jedes auf seine Art:
 
 ## 3. Ausdrücklich NICHT in diesem Slice
 
-- **Die 77 übrigen `Status`-Felder bleiben.** Sie widersprechen nichts; das
+- **Die 79 übrigen `Status`-Felder bleiben.** Sie widersprechen nichts; das
   Briefing erklärt sie. Sie zu entfernen hieße, 78 eingefrorene Lauf-Belege
   anzufassen — ausdrücklich verworfen.
-- **Keine ADR wird geheilt.** Die kollidierende Statuszeile bleibt, wie sie
-  ist; dieser Slice schreibt nur die Vorrangregel.
+- **Keine ADR wird geheilt.** Die Statuszeile mit Chronik bleibt, wie sie ist;
+  dieser Slice klärt nur das Verhältnis der beiden Regeln. Dass sie geheilt
+  **werden dürfte** (die Maschine lässt es zu), ist damit gesagt — getan wird
+  es nicht.
 - **Kein Produkt-Code, kein Release.** Die drei Modul-Erweiterungen sind eine
   eigene Welle.
 
 ## 4. Definition of Done
 
 - [ ] Kein `done/`-Slice behauptet mehr einen Zustand, der seinem Verzeichnis
-      widerspricht, und keines trägt Chronik im Feld (gemessen: vorher elf plus
-      zwei, nachher null).
+      widerspricht (gemessen: vorher elf, nachher null). Die Chronik-Felder
+      bleiben — als **benannte** Ausnahme in §3.7, nicht stillschweigend.
 - [ ] `version.md` trägt genau **einen** Anker; Gegenprobe belegt, dass ein
       Pin auf die Vorgänger-Version wieder meldet.
 - [ ] §3.7 trägt die Vorrangregel gegenüber §3.5; der Reviewer-Anker nennt
