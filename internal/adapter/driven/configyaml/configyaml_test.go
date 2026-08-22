@@ -276,7 +276,7 @@ func TestDecode_ClosureFehler(t *testing.T) {
 	for name, bad := range map[string]string{
 		"dir absolut":         "planning:\n  closure:\n    dir: /abs/done\n",
 		"dir mit ..":          "planning:\n  closure:\n    dir: ../raus\n",
-		"heading-pattern RE2": "planning:\n  closure:\n    dir: done\n    heading-pattern: '^(['\n",
+		"heading-pattern RE2": "planning:\n  closure:\n    dir: done\n    headings-match: '^(['\n",
 		"min-sentences 0":     "planning:\n  closure:\n    dir: done\n    min-sentences: 0\n",
 		"min-sentences neg":   "planning:\n  closure:\n    dir: done\n    min-sentences: -1\n",
 		"glob leer":           "planning:\n  closure:\n    dir: done\n    glob: ''\n",
@@ -714,7 +714,7 @@ func TestDecode_ClosureRandGiltAuchOhneDir(t *testing.T) {
 		"glob leer, kein dir":      "planning:\n  closure:\n    glob: ''\n",
 		"glob ungültig, kein dir":  "planning:\n  closure:\n    glob: '[a-'\n",
 		"min-sentences 0, kein dir": "planning:\n  closure:\n    min-sentences: 0\n",
-		"heading-pattern kaputt, kein dir": "planning:\n  closure:\n    heading-pattern: '^(['\n",
+		"heading-pattern kaputt, kein dir": "planning:\n  closure:\n    headings-match: '^(['\n",
 		"leere Floskel, kein dir":         "planning:\n  closure:\n    boilerplate: ['']\n",
 	} {
 		if _, err := configyaml.Decode([]byte(bad)); err == nil {
@@ -871,28 +871,28 @@ func TestConfigYAMLStructureHeadingPattern(t *testing.T) {
 	cfg, err := configyaml.Decode([]byte("structure:\n" +
 		"  - files: 'spec/*.md'\n" +
 		"    section: '## 2. Schema'\n" +
-		"    heading-pattern: '^SPEC-[0-9]{3} '\n" +
-		"    heading-level: 3\n"))
+		"    headings-match: '^SPEC-[0-9]{3} '\n" +
+		"    headings-level: 3\n"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(cfg.Structure) != 1 || cfg.Structure[0].HeadingPattern != `^SPEC-[0-9]{3} ` ||
-		cfg.Structure[0].EffectiveHeadingLevel(2) != 3 {
-		t.Fatalf("heading-pattern/-level nicht uebernommen: %+v", cfg.Structure)
+	if len(cfg.Structure) != 1 || cfg.Structure[0].HeadingsMatch != `^SPEC-[0-9]{3} ` ||
+		cfg.Structure[0].EffectiveHeadingsLevel(2) != 3 {
+		t.Fatalf("headings-match/-level nicht uebernommen: %+v", cfg.Structure)
 	}
 	// Ohne heading-level greift der Default: Abschnitts-Ebene + 1.
 	cfgD, err := configyaml.Decode([]byte("structure:\n" +
 		"  - files: 'spec/*.md'\n" +
 		"    section: '## 2. Schema'\n" +
-		"    heading-pattern: '^SPEC-'\n"))
-	if err != nil || cfgD.Structure[0].EffectiveHeadingLevel(2) != 3 {
+		"    headings-match: '^SPEC-'\n"))
+	if err != nil || cfgD.Structure[0].EffectiveHeadingsLevel(2) != 3 {
 		t.Fatalf("Default-Ebene = Abschnitts-Ebene + 1: %+v (%v)", cfgD.Structure, err)
 	}
 	cases := []struct{ name, yaml, want string }{
-		{"muster-kaputt", "structure:\n  - files: 'a/*.md'\n    section: '## S'\n    heading-pattern: '('\n", "heading-pattern"},
-		{"ebene-zu-gross", "structure:\n  - files: 'a/*.md'\n    section: '## S'\n    heading-pattern: '^X'\n    heading-level: 7\n", "zwischen 1 und 6"},
-		{"ebene-null", "structure:\n  - files: 'a/*.md'\n    section: '## S'\n    heading-pattern: '^X'\n    heading-level: 0\n", "zwischen 1 und 6"},
-		{"halbe-aktivierung", "structure:\n  - files: 'a/*.md'\n    section: '## S'\n    heading-level: 3\n", "wirkungslos"},
+		{"muster-kaputt", "structure:\n  - files: 'a/*.md'\n    section: '## S'\n    headings-match: '('\n", "headings-match"},
+		{"ebene-zu-gross", "structure:\n  - files: 'a/*.md'\n    section: '## S'\n    headings-match: '^X'\n    headings-level: 7\n", "zwischen 1 und 6"},
+		{"ebene-null", "structure:\n  - files: 'a/*.md'\n    section: '## S'\n    headings-match: '^X'\n    headings-level: 0\n", "zwischen 1 und 6"},
+		{"halbe-aktivierung", "structure:\n  - files: 'a/*.md'\n    section: '## S'\n    headings-level: 3\n", "wirkungslos"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -901,5 +901,33 @@ func TestConfigYAMLStructureHeadingPattern(t *testing.T) {
 				t.Fatalf("%s: erwartet Fehler mit %q, got %v", c.name, c.want, err)
 			}
 		})
+	}
+}
+
+// DC-QA-02: bei mehreren ungueltigen Mustern in derselben Regel ist die
+// Exit-2-Meldung deterministisch — die Reihenfolge der Pruefung ist
+// festgelegt, nicht der Iterationsreihenfolge einer Map ueberlassen.
+func TestConfigYAMLStructureMusterfehlerDeterministisch(t *testing.T) {
+	yaml := []byte("structure:\n" +
+		"  - files: 'a/*.md'\n" +
+		"    section: '## S'\n" +
+		"    forbid-pattern: '('\n" +
+		"    headings-match: '['\n")
+	first := ""
+	for i := 0; i < 20; i++ {
+		_, err := configyaml.Decode(yaml)
+		if err == nil {
+			t.Fatal("zwei kaputte Muster muessen Exit 2 ausloesen")
+		}
+		if first == "" {
+			first = err.Error()
+			continue
+		}
+		if err.Error() != first {
+			t.Fatalf("Meldung schwankt:\n%s\n%s", first, err.Error())
+		}
+	}
+	if !strings.Contains(first, "forbid-pattern") {
+		t.Fatalf("die erste geprüfte Fundstelle gewinnt: %s", first)
 	}
 }

@@ -5,8 +5,12 @@
 **Autor:** pt9912
 **Schärft:**
 [`spec/spezifikation.md` §DC-FA-VER-001.a](../../../spec/spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions)
-und die Konfigurations-Schema-Zeilen unter
+(Entscheidung 1),
+[`spec/spezifikation.md` §DC-FA-STRUCT-001.a](../../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)
+(Entscheidung 2), die Konfigurations-Schema-Zeilen unter
 [`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml)
+und die Grund-Code-Zeile
+[`SPEC-067`](../../../spec/spezifikation.md#4-grund--und-fehler-codes)
 **Bezug:**
 [`DC-FA-VER-001`](../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in),
 [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in),
@@ -120,6 +124,18 @@ Verhalten.
      Tab akzeptiert. Eine eingerückte Sektion entkam still
      ([ADR-0054](0054-geteilte-lexik-bindet-ihre-konsumenten.md): wer eine
      Lexik-Frage selbst beantwortet, ist ein Defekt, keine Variante).
+   - **Der Schlüssel heißt `headings-match`, nicht `heading-pattern`.** Unter
+     `planning.closure` trägt `heading-pattern` bereits einen **Selektor**
+     („welche Überschrift eröffnet den geprüften Abschnitt"); hier wäre es
+     eine **Bedingung** („welche Form müssen die Überschriften haben"). Beide
+     Blöcke leben in diesem Repo im **selben** Profil
+     (`.d-check.closure.yml`), und die Spezifikation weist die
+     Closure-Fähigkeit als *Preset derselben Semantik* aus — Namensgleichheit
+     läse sich dort als Bedeutungsgleichheit. Wer den Selektor-Wert
+     (`'^#{2,3} .*Closure-Notiz'`) in eine `structure`-Regel überträgt, prüft
+     ihn gegen den Überschriften-**Text**, der nie ein `#` enthält: jede
+     Unterüberschrift rot, aus einem Grund, den die Meldung nicht erklärt. Der
+     Plural sagt zugleich die Semantik — **alle** Überschriften, nicht eine.
    - **Geprüft wird der Überschriften-Text, nicht die rohe Zeile.** Sonst
      müsste jedes Muster die `#`-Folge mitkodieren — und damit die Ebene, die
      bereits ein eigener Schlüssel ist. Zwei Orte für dieselbe Aussage sind
@@ -142,12 +158,20 @@ Verhalten.
      rückwirkend unter eine Kennungs-Pflicht fiele, die ihr nie zugedacht war
      — ein Falsch-Positiv mit Verzögerung. Wer sie meint, nennt sie.
 
-   **Zwei Grenzen sind benannt, nicht geschlossen:** ohne Überschrift der
-   geprüften Ebene ist die Bedingung vacuously wahr, und ein `heading-level`
-   flacher als der Abschnitt kann in ihm nicht vorkommen. Beides sind keine
+   **Drei Grenzen sind benannt, nicht geschlossen:** ohne Überschrift der
+   geprüften Ebene ist die Bedingung vacuously wahr; ein `headings-level`
+   flacher als der Abschnitt kann in ihm nicht vorkommen; und **zwei Ebenen in
+   einer Regel sind heute nicht bloß unvorgesehen, sondern gesperrt** — eine
+   zweite Regel über demselben Abschnitt teilt dessen Regel-Identität
+   (`files :: Selektor`) und bricht mit Exit 2. Wer zwei Ebenen prüfen will,
+   braucht die Ebenen-**Menge** aus dem Re-Evaluierungs-Trigger, keinen
+   Workaround. Beides sind keine
    Defekte, aber beides kann eine Deckung vortäuschen — deshalb wird die
-   Umstellung des eigenen Profils **vorher rot** gemessen, an genau dem Fall,
-   an dem die abgelöste Negation still war.
+   Umstellung des eigenen Profils an einem Fall gemessen, an dem die abgelöste
+   Negation **still** ist: eine Überschrift innerhalb eines mehrzeiligen
+   Inline-Code-Spans. Die Bereinigung räumt die Zeile leer, die Negation sieht
+   nichts; die Überschriften-Erkennung sieht die Überschrift — wie `anchors`
+   auch, das ihr einen Slug gibt.
 
 ## Konsequenzen
 

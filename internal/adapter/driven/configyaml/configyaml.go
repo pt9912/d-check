@@ -222,8 +222,8 @@ type rawStructure struct {
 	RequireAll     []string `yaml:"require-all"`
 	TableOrder     string   `yaml:"table-order"`
 	TableColumn    *int     `yaml:"table-column"`
-	HeadingPattern string   `yaml:"heading-pattern"`
-	HeadingLevel   *int     `yaml:"heading-level"`
+	HeadingsMatch  string   `yaml:"headings-match"`
+	HeadingsLevel  *int     `yaml:"headings-level"`
 	ExemptPaths    []string `yaml:"exempt-paths"`
 }
 
@@ -252,15 +252,18 @@ func applyStructure(rs []rawStructure) ([]model.StructureRule, error) {
 // liefert die Fehlermeldung (leer ⇒ gültig). Ausgelagert, damit
 // applyStructureRule unter der gocyclo-Schwelle bleibt.
 func structureBedingungsFehler(r rawStructure) string {
-	for name, pat := range map[string]string{
-		"section-pattern": r.SectionPattern, "forbid-pattern": r.ForbidPattern,
-		"require-pattern": r.RequirePattern, "heading-pattern": r.HeadingPattern,
+	// Geordneter Slice statt Map: bei zwei ungueltigen Mustern in derselben
+	// Regel entschiede sonst die Iterationsreihenfolge, welche Meldung der
+	// Nutzer sieht — dieselbe Eingabe muss dieselbe Ausgabe liefern (DC-QA-02).
+	for _, m := range []struct{ name, pat string }{
+		{"section-pattern", r.SectionPattern}, {"forbid-pattern", r.ForbidPattern},
+		{"require-pattern", r.RequirePattern}, {"headings-match", r.HeadingsMatch},
 	} {
-		if pat == "" {
+		if m.pat == "" {
 			continue
 		}
-		if _, err := regexp.Compile(pat); err != nil {
-			return fmt.Sprintf("%s %q ist kein gültiges Regex: %v", name, pat, err)
+		if _, err := regexp.Compile(m.pat); err != nil {
+			return fmt.Sprintf("%s %q ist kein gültiges Regex: %v", m.name, m.pat, err)
 		}
 	}
 	if r.MinSentences != nil && *r.MinSentences < 1 {
@@ -299,11 +302,11 @@ func structureChronologieFehler(r rawStructure) string {
 // Überschriften-Bedingung: eine Ebene außerhalb des ATX-Bereichs, und —
 // analog zu table-column — die halbe Aktivierung.
 func structureUeberschriftFehler(r rawStructure) string {
-	if r.HeadingLevel != nil && (*r.HeadingLevel < 1 || *r.HeadingLevel > 6) {
-		return fmt.Sprintf("heading-level %d muss zwischen 1 und 6 liegen", *r.HeadingLevel)
+	if r.HeadingsLevel != nil && (*r.HeadingsLevel < 1 || *r.HeadingsLevel > 6) {
+		return fmt.Sprintf("headings-level %d muss zwischen 1 und 6 liegen", *r.HeadingsLevel)
 	}
-	if r.HeadingLevel != nil && r.HeadingPattern == "" {
-		return "heading-level ist ohne heading-pattern wirkungslos (halbe Aktivierung)"
+	if r.HeadingsLevel != nil && r.HeadingsMatch == "" {
+		return "headings-level ist ohne headings-match wirkungslos (halbe Aktivierung)"
 	}
 	return ""
 }
@@ -340,7 +343,7 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 		MaxTasks: r.MaxTasks, ForbidPattern: r.ForbidPattern,
 		RequirePattern: r.RequirePattern, RequireAll: r.RequireAll,
 		TableOrder: r.TableOrder, TableColumn: r.TableColumn,
-		HeadingPattern: r.HeadingPattern, HeadingLevel: r.HeadingLevel,
+		HeadingsMatch: r.HeadingsMatch, HeadingsLevel: r.HeadingsLevel,
 		ExemptPaths: r.ExemptPaths,
 	}, nil
 }

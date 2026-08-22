@@ -326,12 +326,11 @@ func TestStructureMarkeNurAlsPraefix(t *testing.T) {
 	}
 }
 
-
 // headingRule: eine Regel, die jede Unterabschnitts-Ueberschrift des
 // Abschnitts auf eine Kennung verpflichtet.
 func headingRule() model.StructureRule {
 	return model.StructureRule{
-		Files: "docs/*.md", Section: "## Schema", HeadingPattern: `^ID-[0-9]{3} `,
+		Files: "docs/*.md", Section: "## Schema", HeadingsMatch: `^ID-[0-9]{3} `,
 	}
 }
 
@@ -399,7 +398,7 @@ func TestStructureHeadingEbene(t *testing.T) {
 	if len(got) != 1 || got[0].Line != 5 {
 		t.Fatalf("Default = Abschnitts-Ebene + 1 (nur die dritte Ebene), got %+v", got)
 	}
-	r.HeadingLevel = ptr(4)
+	r.HeadingsLevel = ptr(4)
 	got = CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})
 	if len(got) != 1 || got[0].Line != 9 {
 		t.Fatalf("heading-level 4 meldet nur die vierte Ebene, got %+v", got)
@@ -422,7 +421,7 @@ func TestStructureHeadingEbeneFlacherAlsAbschnitt(t *testing.T) {
 		"docs/a.md": "# T\n\n## Schema\n\n### ID-001 Gut\n\nx.\n\n## Ohne Kennung\n\ny.\n",
 	}
 	r := headingRule()
-	r.HeadingLevel = ptr(2)
+	r.HeadingsLevel = ptr(2)
 	if f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r}); f != nil {
 		t.Fatalf("flachere Ebene kann im Abschnitt nicht vorkommen, got %+v", f)
 	}
@@ -434,7 +433,7 @@ func TestStructureHeadingModulAus(t *testing.T) {
 		"docs/a.md": "# T\n\n## Schema\n\n### Ohne Kennung\n\nx.\n",
 	}
 	r := headingRule()
-	r.HeadingPattern = ""
+	r.HeadingsMatch = ""
 	if f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r}); f != nil {
 		t.Fatalf("ohne heading-pattern kein Befund erwartet, got %+v", f)
 	}

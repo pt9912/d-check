@@ -2372,9 +2372,10 @@ Wie viele Treffer erwartet werden, sagt `sections`:
   ist kein Ausweg, sondern ein stiller.
 
 **Bedingungen im Abschnitt**, je Abschnitt geprüft, jede optional, jede
-**fence-treu** (der Abschnitts-Text wird zuvor um Fenced-Code bereinigt; die
-Chronologie-Bedingung liest als **einzige** die rohen Abschnitts-Zeilen — unten
-benannt) — und jede mit **eigenem** Grund-Code, weil jede eine andere Reparatur
+**fence-treu** (der Abschnitts-Text wird zuvor um Fenced-Code bereinigt; **zwei**
+Bedingungen lesen einen anderen Text und sind unten je benannt: die
+Chronologie-Bedingung die rohen Abschnitts-Zeilen, die Überschriften-Bedingung
+die Überschriften selbst) — und jede mit **eigenem** Grund-Code, weil jede eine andere Reparatur
 verlangt:
 
 | Bedingung | verletzt ⇒ | Reparatur |
@@ -2387,25 +2388,25 @@ verlangt:
 | `require-all` (Marken-Liste) | `section-marker-missing` | den fehlenden Baustein ergänzen |
 | `table-order` (`asc`/`desc`; Schlüsselspalte `table-column`, Default 1) | `section-unordered` | die Zeile chronologisch einsortieren (bzw. die zugesagte Tabelle führen) |
 | — dieselbe Bedingung, untypisierbare Schlüsselzelle | `section-cell-untyped` | die Schlüsselzelle bzw. die Spaltenwahl korrigieren |
-| `heading-pattern` (RE2; Ebene `heading-level`, Default Abschnitts-Ebene + 1) | `section-heading-mismatch` | die Überschrift in die zugesagte Form bringen |
+| `headings-match` (RE2; Ebene `headings-level`, Default Abschnitts-Ebene + 1) | `section-heading-mismatch` | die Überschrift in die zugesagte Form bringen |
 
 Ein Sammel-Code schiede aus: die Befund-Deduplikation vergleicht (Datei, Zeile,
 Regel, Ziel, Grund) — zwei verletzte Bedingungen desselben Abschnitts fielen
 darunter zu **einem** Befund zusammen, und die Meldung müsste die Unterscheidung
 tragen, die laut §4 der Spezifikation gerade **nicht** stabil zugesagt ist.
 
-**Jede Überschrift des Abschnitts, positiv geprüft.** `heading-pattern` sagt:
+**Jede Überschrift des Abschnitts, positiv geprüft.** `headings-match` sagt:
 *jede* Überschrift **innerhalb** des Abschnitts genügt diesem Muster. Geprüft
 wird der **Überschriften-Text** (ohne die `#`-Folge, getrimmt) jeder
-Überschrift, deren Ebene `heading-level` nennt — Default ist die **Ebene des
+Überschrift, deren Ebene `headings-level` nennt — Default ist die **Ebene des
 Abschnitts + 1**, also seine unmittelbaren Unterabschnitte. Verletzt eine
 Überschrift das Muster ⇒ ein Befund **je Überschrift**, auf **ihrer** Zeile
 (nicht auf der des Abschnitts): die Reparatur ist dort, wo die Überschrift
 steht.
 
-Diese Bedingung ist die einzige, die **nicht** den bereinigten Abschnitts-Text
-liest, sondern die Überschriften selbst — mit **derselben** Erkennung, die den
-Abschnitt findet ([`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors)-Lexik:
+Diese Bedingung ist — neben der Chronologie-Bedingung — die **zweite**, die
+nicht den bereinigten Abschnitts-Text liest: sie liest die Überschriften
+selbst, mit **derselben** Erkennung, die den Abschnitt findet ([`DC-FA-ANCH-001`](#dc-fa-anch-001--heading-anker-validierung-modul-anchors)-Lexik:
 beliebig viel führender Weißraum, Leerzeichen **oder** Tab als Trenner,
 außerhalb von Fenced-Code). Der Anlass ist gemessen: dieselbe Aussage war
 vorher nur als **Negation** über den Abschnitts-Text formulierbar (RE2 kennt
@@ -2416,7 +2417,7 @@ eigene Heading-Lexik nachbaut, behauptet eine Deckung, die sie nicht hat.
 **Grenzen, benannt statt zugesagt:** trägt ein Abschnitt **keine** Überschrift
 der geprüften Ebene, ist die Bedingung wirkungslos (kein Befund) — deshalb
 gehört zu ihrer Einführung dieselbe Messung wie zu jedem Sensor: vorher rot,
-nachher grün. Und ein `heading-level` **flacher als der Abschnitt** kann
+nachher grün. Und ein `headings-level` **flacher als der Abschnitt** kann
 innerhalb des Abschnitts nicht vorkommen (der Abschnitt endet dort); die
 Bedingung ist dann ebenfalls wirkungslos.
 
@@ -2457,10 +2458,10 @@ segmentweise numerisch verglichen — `1.10` > `1.9`, `0.60.2` > `0.60.0`; bei
 gleichem Präfix ist die kürzere Segmentfolge kleiner). Der Typ ist Pflicht,
 kein Komfort: ein zeichenweiser Vergleich meldet gemessen drei **korrekt**
 sortierte Bestandstabellen rot. Getypt wird der **erste** Treffer beider Muster
-in der **rohen** Zelle — die Bedingung liest als einzige die rohen
+in der **rohen** Zelle — die Bedingung liest die rohen
 Abschnitts-Zeilen, weil die Bereinigung Inline-Code leert und reale
-Schlüsselspalten (Release-Register) genau dort stehen; das ist eine
-ausdrückliche, hier benannte Ausnahme. Die **Tabellenzeilen-Auswahl** bleibt
+Schlüsselspalten (Release-Register) genau dort stehen; das ist die **erste** von zwei
+ausdrücklich benannten Ausnahmen (die zweite ist die Überschriften-Bedingung). Die **Tabellenzeilen-Auswahl** bleibt
 fence-treu (eine Tabelle in einem Fenced-Code-Block deklariert nichts). Eine
 Zelle ohne typisierbaren Schlüssel, eine Zeile mit zu wenigen Zellen oder eine
 **Typ-Mischung** innerhalb der Spalte ⇒ `section-cell-untyped` an dieser Zeile
@@ -2512,12 +2513,12 @@ ein Ventil die Regel still ab.
 - **Preset-Kopplung:** Given dieselbe Datei, einmal über eine `structure`-Regel und einmal über die Closure-Fähigkeit mit gleichwertiger Konfiguration, when beide laufen, then melden sie an **denselben Zeilen** — die Semantiken fallen aus einer Mechanik.
 - **fail-closed (Leerlauf):** Given eine Regel, deren `files`-Glob keine Datei trifft — auch nach Abzug von `exempt-paths` —, when `d-check --enable structure` läuft, then `section-missing` auf dem Glob, Exit 1.
 - **fail-closed (Config-Rand):** Given eine Regel mit einem der oben aufgezählten Config-Fehler, when `d-check` startet, then Exit 2 vor dem Lauf.
-- **Überschriften-Muster (Happy Path):** Given eine Regel mit `heading-pattern` und einen Abschnitt, dessen sämtliche Unterabschnitte dem Muster genügen, when `d-check --enable structure` läuft, then kein Befund, Exit 0.
+- **Überschriften-Muster (Happy Path):** Given eine Regel mit `headings-match` und einen Abschnitt, dessen sämtliche Unterabschnitte dem Muster genügen, when `d-check --enable structure` läuft, then kein Befund, Exit 0.
 - **Überschriften-Muster (Negative, je Überschrift):** Given einen Abschnitt mit **zwei** verletzenden Unterabschnitten, when der Lauf endet, then **zwei** Befunde `section-heading-mismatch`, jeder auf der **Zeile seiner** Überschrift, jeder mit dem Überschriften-Text in der Meldung.
 - **Überschriften-Muster (Lexik des Moduls):** Given verletzende Überschriften in den Formen, an denen eine nachgebaute Lexik scheitert — **eingerückt**, mit **Tab** statt Leerzeichen getrennt, und eine gleichlautende Zeile **innerhalb** eines Fenced-Blocks —, when der Lauf endet, then melden die ersten beiden, die dritte nicht.
-- **Überschriften-Muster (Ebene):** Given einen Abschnitt der Ebene 2 mit einer verletzenden Überschrift der Ebene 3 **und** einer der Ebene 4, when die Regel keine `heading-level` nennt, then meldet nur die der Ebene 3 (Default = Abschnitts-Ebene + 1); mit `heading-level: 4` nur die der Ebene 4.
+- **Überschriften-Muster (Ebene):** Given einen Abschnitt der Ebene 2 mit einer verletzenden Überschrift der Ebene 3 **und** einer der Ebene 4, when die Regel keine `headings-level` nennt, then meldet nur die der Ebene 3 (Default = Abschnitts-Ebene + 1); mit `headings-level: 4` nur die der Ebene 4.
 - **Überschriften-Muster (wirkungslos, benannt):** Given einen Abschnitt **ohne** Überschrift der geprüften Ebene, when der Lauf endet, then kein Befund — die Bedingung ist dann vacuously wahr, und genau deshalb wird ihre Einführung vorher rot gemessen.
-- **Überschriften-Muster (Modul-aus):** Given eine Regel **ohne** `heading-pattern`, when `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne den Schlüssel ([`DC-QA-02`](#dc-qa-02--determinismus)); ein nicht kompilierendes Muster ⇒ Exit 2, ein `heading-level` außerhalb 1–6 ⇒ Exit 2.
+- **Überschriften-Muster (Modul-aus):** Given eine Regel **ohne** `headings-match`, when `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne den Schlüssel ([`DC-QA-02`](#dc-qa-02--determinismus)); ein nicht kompilierendes Muster ⇒ Exit 2, ein `headings-level` außerhalb 1–6 ⇒ Exit 2.
 
 **Out-of-Scope:** Aussagen über den **Ort** eines Dokuments (Dateinamens-,
 Verzeichnis- oder Nummerierungs-Konventionen) — keine Struktur *innerhalb* eines
@@ -2913,7 +2914,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
-| 0.64.0 | 2026-08-22 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um die **Überschriften-Bedingung** erweitert (`heading-pattern`/`heading-level`, achte Bedingung, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): *jede* Überschrift des Abschnitts genügt einem Muster, **positiv** formuliert und **je Überschrift** gemeldet (eigener Grund-Code `section-heading-mismatch`, Befund auf der Zeile der Überschrift — dort ist die Reparatur). Anlass ist eine gemessene Ersatz-Konstruktion: dieselbe Aussage war nur als ausgeschriebene Präfix-Negation über den Abschnitts-Text formulierbar (RE2 kennt keinen Lookahead), und die sprach die Heading-Lexik des Moduls nicht — eine **eingerückte** Sektion entkam still. Die Bedingung ist als einzige nicht auf dem bereinigten Abschnitts-Text definiert, sondern auf den Überschriften selbst, mit **derselben** Erkennung, die den Abschnitt findet. Zwei Grenzen benannt statt zugesagt: ohne Überschrift der geprüften Ebene ist sie wirkungslos, und ein `heading-level` flacher als der Abschnitt kann in ihm nicht vorkommen. Begründung in begleitender ADR |
+| 0.64.0 | 2026-08-22 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um die **Überschriften-Bedingung** erweitert (`headings-match`/`headings-level`, achte Bedingung, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): *jede* Überschrift des Abschnitts genügt einem Muster, **positiv** formuliert und **je Überschrift** gemeldet (eigener Grund-Code `section-heading-mismatch`, Befund auf der Zeile der Überschrift — dort ist die Reparatur). Anlass ist eine gemessene Ersatz-Konstruktion: dieselbe Aussage war nur als ausgeschriebene Präfix-Negation über den Abschnitts-Text formulierbar (RE2 kennt keinen Lookahead), und die sprach die Heading-Lexik des Moduls nicht — eine **eingerückte** Sektion entkam still. Die Bedingung ist als **zweite** nicht auf dem bereinigten Abschnitts-Text definiert, sondern auf den Überschriften selbst, mit **derselben** Erkennung, die den Abschnitt findet. Zwei Grenzen benannt statt zugesagt: ohne Überschrift der geprüften Ebene ist sie wirkungslos, und ein `headings-level` flacher als der Abschnitt kann in ihm nicht vorkommen. **Der Schlüssel heißt bewusst nicht `heading-pattern`:** unter `planning.closure` trägt dieser Name bereits einen **Selektor** („welcher Abschnitt"), hier wäre es eine **Bedingung** („welche Form") — und beide Blöcke leben im selben Profil. Begründung in begleitender ADR |
 | 0.63.1 | 2026-08-22 | Nachzug nach unabhängigem Review, vor dem Release: die Zusage „zwei Paare, zwei Befunde" war **nicht haltbar** — die Befund-Adresse (Datei, Zeile, Regel, `target`, Grund-Code) unterscheidet zwei Befunde an derselben Stelle nicht, und die geteilte Nachrunde verwarf den zweiten samt seiner Erwartung (gemessenes stilles Falsch-Negativ). Jetzt gilt: **eine Befund-Adresse, alle Erwartungen** — die Nachricht nennt jede Erwartung mit ihrer Quelle, in Deklarationsreihenfolge; die **Ausgabe**-Reihenfolge ist die geteilte Sortierung, nicht die Deklarationsreihenfolge (die alte Aussage war als beobachtbare Eigenschaft falsch). Ferner: die Mischform-Erkennung hängt an der **Anwesenheit** des Schlüssels, nicht an seinem Wert (`pin-pattern: ""` neben `patterns` ist eine Mischform), mit der Grenze eines wertlosen Schlüssels; und ab zwei Paaren benennt jede Meldung die Fundstelle, bei genau einem Paar bleibt der Wortlaut byte-identisch |
 | 0.63.0 | 2026-08-22 | [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) um **mehrere Muster-Quellen-Paare** erweitert (`versions.patterns`, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): ein Repo führt mehrere unabhängige Versions-Reihen, das Modul kannte bisher genau **eine**. Anlass ist die Beobachtung BEO-008 bei Zähler 3, deren benannte mechanische Form (Baseline-Tag in URLs und Prosa gegen den §Baseline-Pin, **zusätzlich** zum Image-Pin gegen das Release-Register) mit einem einzigen `pin-pattern` nicht baubar war. Jedes Paar trägt eigene Quelle und eigene Ausnahmen, die Selbst-Ausnahme der Quell-Datei ist **paar-lokal**; die Kurzform bleibt gültig und **ist** die einelementige Liste (ein Auswertungspfad), beide Schreibweisen zugleich sind fail-closed. Kein neuer Grund-Code, keine Änderung an der Befund-Form. Begründung in begleitender ADR |
 | 0.62.1 | 2026-08-22 | Präzisierung ohne Verhaltensänderung (Review-Hinweis zur 0.62.0-Erweiterung): [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) §Wellen-Invariante (Zeile 1/2 und der Absatz „Zwei Kardinalitäts-Modelle") nennt jetzt die Vergleichsgröße des Prädikats in **beiden** Modi — **Kennungen**, nicht Dateien: zwei flache Wellendokumente derselben Kennung sind ein Element (so zählt die Fähigkeit seit 0.59.0, die Spezifikation sagte es in W2 bereits; der Lastenheft-Wortlaut las sich als Datei-Menge). Neues Akzeptanzkriterium **Wellen-Boundary (gleiche Kennung, beide Modi)** pinnt das Ist-Verhalten; ob ein Doppel-Dokument selbst meldepflichtig sein sollte, bleibt ausdrücklich offen (eigener Change Request). Kein Release-Anlass |

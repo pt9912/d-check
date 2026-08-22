@@ -2063,10 +2063,12 @@ getroffenen Dateien.
    ([`DC-FA-LINK-001.a`](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
    Schritte 1–2) und dieselbe wie beim Preset-Partner
    ([`DC-FA-PLAN-001.a`](#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
-   Schritt C4). Alle Bedingungen arbeiten auf **diesem** Text — mit **einer**
-   benannten Ausnahme: die Chronologie-Bedingung (`table-order`, Schritt 6)
+   Schritt C4). Alle Bedingungen arbeiten auf **diesem** Text — mit **zwei**
+   benannten Ausnahmen: die Chronologie-Bedingung (`table-order`, Schritt 6)
    liest die **rohen** Abschnitts-Zeilen, weil die Bereinigung Inline-Code
-   leert und reale Schlüsselspalten genau dort stehen. Die Folge gehört
+   leert und reale Schlüsselspalten genau dort stehen; die
+   Überschriften-Bedingung (`headings-match`, Schritt 6) liest die
+   Überschriften selbst. Die Folge gehört
    dazugesagt: ein `forbid-pattern`, das auf ein Wort in Backticks zielt, trifft
    **nicht** — Inline-Code ist Code, kein Fließtext.
 6. **Bedingungen prüfen**, jede optional, jede mit **eigenem** Grund-Code, damit
@@ -2083,22 +2085,22 @@ getroffenen Dateien.
    | `require-all` | **jede** Marke vorhanden ist | `section-marker-missing` |
    | `table-order` | jede zusammenhängende Tabelle des Abschnitts in der Schlüsselspalte nicht-strikt monoton ist **und** mindestens eine Datenzeile existiert | `section-unordered` |
    | — (dieselbe Bedingung) | jede Schlüsselzelle typisierbar ist und den Typ ihres typisierbaren **Vorgängers** fortführt (Paar-Lesart; nach jedem Befund setzt der Vergleich neu auf) | `section-cell-untyped` |
-   | `heading-pattern` | **jede** Überschrift der Ebene `heading-level` **innerhalb** des Abschnitts matcht das Muster (geprüft wird ihr **Text**) | `section-heading-mismatch` je verletzender Überschrift, `line` = ihre Zeile |
+   | `headings-match` | **jede** Überschrift der Ebene `headings-level` **innerhalb** des Abschnitts matcht das Muster (geprüft wird ihr **Text**) | `section-heading-mismatch` je verletzender Überschrift, `line` = ihre Zeile |
 
-   **Überschriften-Bedingung** (`heading-pattern`): sie ist neben `table-order`
+   **Überschriften-Bedingung** (`headings-match`): sie ist neben `table-order`
    die **zweite**, die nicht auf dem bereinigten Abschnitts-Text arbeitet —
    sie liest die Überschriften selbst, mit **derselben** Erkennung, die den
    Abschnitt findet (Schritt 3): ATX, beliebig viel führender Weißraum,
    Leerzeichen **oder** Tab als Trenner, außerhalb von Fenced-Code. Geprüft
    wird der **Überschriften-Text** (ohne `#`-Folge, getrimmt) — nicht die rohe
    Zeile, damit das Muster die Ebene nicht mitkodieren muss; die Ebene ist
-   `heading-level` (Default: Ebene des Abschnitts + 1). Der Bereich sind die
+   `headings-level` (Default: Ebene des Abschnitts + 1). Der Bereich sind die
    Zeilen **zwischen** der Abschnitts-Überschrift und dem Abschnitts-Ende
-   (Schritt 4). Je verletzender Überschrift **ein** Befund auf **ihrer** Zeile
+   (Schritt 5). Je verletzender Überschrift **ein** Befund auf **ihrer** Zeile
    — die übrigen Bedingungen melden am Abschnittskopf, weil ihre Aussage dem
    Abschnitt gilt; diese gilt einer Überschrift. **Grenzen:** trägt der
    Abschnitt keine Überschrift der geprüften Ebene, entsteht kein Befund (die
-   Aussage ist vacuously wahr); ein `heading-level` **flacher** als der
+   Aussage ist vacuously wahr); ein `headings-level` **flacher** als der
    Abschnitt kann in ihm nicht vorkommen, weil der Abschnitt dort endet.
 
    **Task-Item** ist eine Zeile, die — nach optionalem Whitespace — mit einem
@@ -2607,8 +2609,8 @@ Exit 2 ohne Prüfung
 | `structure[].require-all` | string[] | leer | benannte Marken, die **alle** vorkommen müssen — als hervorgehobener Textlauf am Zeilen-Anfang nach optionalem **Listen-Marker** (`- **M:**`, `**M:**`, `- **M (Zusatz):**`) ⇒ sonst `section-marker-missing`; leerer Eintrag ⇒ Exit 2 |
 | `structure[].table-order` | string | leer (aus) | `asc` oder `desc` — schaltet die **Chronologie-Monotonie** scharf: die Schlüsselspalte jeder zusammenhängenden Tabelle des Abschnitts wird **typisiert** (ISO-Datum, Punkt-Version; **rohe** Zeilen — benannte Ausnahme von der Bereinigung) und nicht-strikt monoton verglichen ⇒ sonst `section-unordered` (auch Leerlauf ohne Datenzeile) bzw. `section-cell-untyped` (untypisierbare Zelle/Typ-Mischung). Anderer Wert ⇒ Exit 2 |
 | `structure[].table-column` | int | 1 | 1-basierte Schlüsselspalte der Chronologie-Bedingung; **explizit** < 1 ⇒ Exit 2, gesetzt ohne `table-order` ⇒ Exit 2 |
-| `structure[].heading-pattern` | string | leer (aus) | RE2 gegen den **Text** jeder Überschrift der Ebene `heading-level` **innerhalb** des Abschnitts (ohne `#`-Folge, getrimmt); jede nicht matchende ⇒ `section-heading-mismatch` auf **ihrer** Zeile. Nicht kompilierend ⇒ Exit 2 |
-| `structure[].heading-level` | int | Abschnitts-Ebene + 1 | 1-basierte ATX-Ebene der geprüften Überschriften; außerhalb 1–6 ⇒ Exit 2, gesetzt ohne `heading-pattern` ⇒ Exit 2. Ein Wert **flacher** als der Abschnitt kann in ihm nicht vorkommen — die Bedingung ist dann wirkungslos |
+| `structure[].headings-match` | string | leer (aus) | RE2 gegen den **Text** jeder Überschrift der Ebene `headings-level` **innerhalb** des Abschnitts (ohne `#`-Folge, getrimmt); jede nicht matchende ⇒ `section-heading-mismatch` auf **ihrer** Zeile. Nicht kompilierend ⇒ Exit 2 |
+| `structure[].headings-level` | int | Abschnitts-Ebene + 1 | 1-basierte ATX-Ebene der geprüften Überschriften; außerhalb 1–6 ⇒ Exit 2, gesetzt ohne `headings-match` ⇒ Exit 2. **Nicht** zu verwechseln mit `planning.closure.heading-pattern`: jener ist ein **Selektor** (welcher Abschnitt), dies eine **Bedingung** (welche Form) — beide Blöcke können im selben Profil stehen. Ein Wert **flacher** als der Abschnitt kann in ihm nicht vorkommen — die Bedingung ist dann wirkungslos |
 | `structure[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`) über die Quell-Pfade; Treffer werden von **dieser** Regel nicht geprüft — hebeln den Leerlauf-Befund aber nicht aus |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien, aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
@@ -2728,7 +2730,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-056` | `section-marker-missing` | structure | eine Marke aus `require-all` fehlt (Auszeichnungs-Marke am Zeilen-Anfang, nach optionalem Listen-Marker) |
 | `SPEC-057` | `section-unordered` | structure | eine Datenzeile bricht die nicht-strikte Monotonie der Schlüsselspalte in Richtung `table-order` (`line` = die brechende Zeile) — **oder** der Abschnitt trägt keine Tabellen-Datenzeile (Leerlauf, `line` = Abschnitts-Überschrift) |
 | `SPEC-058` | `section-cell-untyped` | structure | eine Schlüsselzelle der Chronologie-Bedingung ist nicht typisierbar (kein Datums-/Versions-Token, zu wenige Zellen, Segment außerhalb des Zahlbereichs) oder weicht vom Typ ihrer typisierbaren **Vorgänger-Zelle** ab — Befund statt stillem Übersprung; genau einer je gemeldeter Zelle |
-| `SPEC-067` | `section-heading-mismatch` | structure | eine Überschrift **innerhalb** des Abschnitts genügt `heading-pattern` nicht (`line` = die Überschrift, nicht der Abschnittskopf) — geprüft wird ihr Text, auf der Ebene `heading-level` |
+| `SPEC-067` | `section-heading-mismatch` | structure | eine Überschrift **innerhalb** des Abschnitts genügt `headings-match` nicht (`line` = die Überschrift, nicht der Abschnittskopf) — geprüft wird ihr Text, auf der Ebene `headings-level` |
 | `SPEC-059` | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `SPEC-060` | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
 | `SPEC-061` | `gate-undocumented` | targets | Makefile-Regel (nicht in `targets.exempt-targets`) ohne Deklaration als `make X` in der `targets.authority`-Doku (undokumentiertes Gate) |
@@ -2756,7 +2758,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
-| 2026-08-22 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) um die **achte Bedingung** `heading-pattern`/`heading-level` erweitert, §2-Schema um zwei Zeilen, §4 um den Grund-Code [`SPEC-067`](#4-grund--und-fehler-codes) `section-heading-mismatch` ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.64.0, Begründung in begleitender ADR): *jede* Überschrift des Abschnitts genügt einem Muster, **positiv** formuliert, **je Überschrift** gemeldet, auf **ihrer** Zeile. Sie ist als **zweite** Bedingung nicht auf dem bereinigten Abschnitts-Text definiert, sondern auf den Überschriften selbst — mit derselben Erkennung wie Schritt 3, weil der Anlass eine nachgebaute Lexik war (die abgelöste Präfix-Negation ließ eine **eingerückte** Sektion still entkommen). Geprüft wird der Überschriften-**Text**, nicht die rohe Zeile; Default-Ebene ist Abschnitts-Ebene + 1. Zwei Grenzen benannt: ohne Überschrift der geprüften Ebene ist die Bedingung wirkungslos, ebenso bei einer Ebene flacher als der Abschnitt |
+| 2026-08-22 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) um die **achte Bedingung** `headings-match`/`headings-level` erweitert, §2-Schema um zwei Zeilen, §4 um den Grund-Code [`SPEC-067`](#4-grund--und-fehler-codes) `section-heading-mismatch` ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.64.0, Begründung in begleitender ADR): *jede* Überschrift des Abschnitts genügt einem Muster, **positiv** formuliert, **je Überschrift** gemeldet, auf **ihrer** Zeile. Sie ist als **zweite** Bedingung nicht auf dem bereinigten Abschnitts-Text definiert (Schritt 5 nennt seither beide Ausnahmen), sondern auf den Überschriften selbst — mit derselben Erkennung wie Schritt 3, weil der Anlass eine nachgebaute Lexik war (die abgelöste Präfix-Negation ließ eine **eingerückte** Sektion still entkommen). Geprüft wird der Überschriften-**Text**, nicht die rohe Zeile; Default-Ebene ist Abschnitts-Ebene + 1. Zwei Grenzen benannt: ohne Überschrift der geprüften Ebene ist die Bedingung wirkungslos, ebenso bei einer Ebene flacher als der Abschnitt |
 | 2026-08-22 | Nachzug nach unabhängigem Review, vor dem Release: §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) Schritt 3 sagt jetzt **eine Befund-Adresse, alle Erwartungen** — die Vorfassung versprach zwei Befunde je Paar, die die geteilte Nachrunde ([§DC-QA-02.a](#dc-qa-02a--determinismus-und-sortierung)) nachweislich auf einen zusammenzieht, samt der zweiten Erwartung; und die **Ausgabe**-Reihenfolge ist die der Sortierung, nicht die Deklarationsreihenfolge (die alte Aussage war als beobachtbare Eigenschaft falsch). Der Wortlaut jeder Meldung ist an die Paar-Zahl gebunden (ein Paar ⇒ Kurzform-Schlüssel, byte-identisch; ab zwei ⇒ `versions.patterns[i]`). Schritt 0 und die `versions.patterns`-Schema-Zeile binden die Mischform an die **Anwesenheit** des Schlüssels statt an seinen Wert, mit der benannten Grenze des wertlosen Schlüssels |
 | 2026-08-22 | §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) auf **mehrere Muster-Quellen-Paare** gezogen und die `versions.*`-Zeilen unter [`SPEC-005`](#spec-005--d-checkyml) um `versions.patterns[]` ergänzt ([`DC-FA-VER-001`](lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) 0.63.0, Begründung in begleitender ADR): die Schritte 1–4 gelten **je Paar**, die Kurzform **ist** die einelementige Liste und wird am Config-Rand übersetzt (ein Auswertungspfad), beide Schreibweisen zugleich sowie leere Liste, fehlendes `pin-pattern` und nicht auflösende Quelle eines Paares sind **fail-closed**. Neu ausgesprochen, weil sonst die Iterationsreihenfolge entschiede: Befunde je Zeile in **Deklarationsreihenfolge** der Paare, identische Befund-Tupel **einmal**. Die beiden **Datei**-Ventile sind paar-lokal, der **Zeilen**-Marker ist es nicht — er sagt „diese Zeile nicht", nicht „diese Reihe nicht". Kein neuer Grund-Code |
 | 2026-08-22 | **Struktur-IDs `SPEC-<NNN>` vergeben** (Baseline-Default, [`MR-000`](../harness/conventions.md#mr-000--baseline-aussage)): §2 trägt sie in den fünf Schema-Überschriften, §3/§4/§6 in einer neuen ersten Spalte `Kennung` — fortlaufend je Datei (001–066), Lücken werden nicht nachbelegt; der Link trägt den Abschnitt, der Text die Kennung. Die §2-Anker wandern damit (`#befund` → `#spec-001--befund` usw.); alle zwölf Verweise im Baum sind retargetet. Keine inhaltliche Änderung einer Festlegung |

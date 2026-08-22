@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.8.0 · **Datum:** 2026-08-22 ·
+**Version:** 1.9.0 · **Datum:** 2026-08-22 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -48,6 +48,15 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   ([Baseline §Was ein Kommentar trägt](../baseline/v5.9.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte),
   *Dieselbe Regel für Zustandsfelder*; neuer HIGH-Eintrag seit 1.7.0,
   Auflösungs-Trigger: permanent).
+- **MEDIUM** (neu seit 1.9.0, Auflösungs-Trigger: permanent):
+  **Botschaft verallgemeinert über die Messung hinaus.** Eine Commit-Botschaft
+  (oder Closure-Notiz) nennt korrekt gelaufene Proben und zieht daraus einen
+  Schluss, der weiter reicht als die geprüfte Menge — „damit ist X
+  verhaltenserhaltend", nachdem N Formen gemessen wurden. Prüfe den Schluss
+  gegen die Proben-Menge, nicht gegen die Proben: **suche die N+1-te Form.**
+  Das ist die zweite Richtung von `BEO-009`; die erste (behauptete Probe fand
+  nicht statt) bleibt HIGH-nah, diese ist MEDIUM, weil die Messung stimmt und
+  nur ihre Reichweite überdehnt ist. **Kein Gate fängt das.**
 - **MEDIUM** (vor Merge zu klären): Spec-Treue-Lücke einer
   Messmethode; Konsistenz-Lücke **zwischen** Modulen derselben
   Eingabe-Klasse; Erkennungs-Differenz zur Alt-Tool-Familie

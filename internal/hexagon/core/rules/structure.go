@@ -127,7 +127,7 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 		if r.TableOrder != "" {
 			out = append(out, structureTableOrder(r, file, lines, prose, h.Line, h.Level)...)
 		}
-		if r.HeadingPattern != "" {
+		if r.HeadingsMatch != "" {
 			out = append(out, structureHeadings(r, file, lines, h)...)
 		}
 	}
@@ -148,8 +148,10 @@ func structureMatcher(r model.StructureRule) func(string) bool {
 // structureConditions prüft die sechs Prosa-Bedingungen auf dem bereinigten
 // Abschnitts-Text. Jede hat einen eigenen Grund-Code, damit zwei Verletzungen
 // desselben Abschnitts nicht unter der Befund-Deduplikation zusammenfallen.
-// Die siebte Bedingung (Chronologie-Monotonie) liest als einzige die rohen
-// Abschnitts-Zeilen und lebt in structure_tableorder.go (ADR-0057).
+// Zwei Bedingungen lesen einen anderen Text und leben anderswo: die
+// Chronologie-Monotonie auf den rohen Abschnitts-Zeilen
+// (structure_tableorder.go, ADR-0057) und die Überschriften-Bedingung auf den
+// Überschriften selbst (structureHeadings).
 func structureConditions(r model.StructureRule, file string, line int, body string) []model.Finding {
 	var out []model.Finding
 	add := func(reason, msg string) {
@@ -186,20 +188,20 @@ func structureConditions(r model.StructureRule, file string, line int, body stri
 }
 
 // structureHeadings prüft die Überschriften INNERHALB des Abschnitts gegen
-// heading-pattern (§DC-FA-STRUCT-001.a Schritt 6). Als einzige Bedingung neben
-// der Chronologie liest sie nicht den bereinigten Abschnitts-Text, sondern die
-// Überschriften selbst — mit der geteilten Erkennung, nicht mit einer eigenen:
-// eine nachgebaute Heading-Lexik war der Anlass dieser Bedingung. Ein Befund
-// je verletzender Überschrift, auf IHRER Zeile; dort ist die Reparatur.
+// headings-match (§DC-FA-STRUCT-001.a Schritt 6). Sie liest als zweite
+// Bedingung neben der Chronologie nicht den bereinigten Abschnitts-Text,
+// sondern die Überschriften selbst — über die geteilte Erkennung, nicht über
+// ein eigenes Muster. Ein Befund je verletzender Überschrift, auf IHRER
+// Zeile; dort ist die Reparatur.
 func structureHeadings(r model.StructureRule, file string, lines []string, h SectionHead) []model.Finding {
-	re := regexp.MustCompile(r.HeadingPattern)
+	re := regexp.MustCompile(r.HeadingsMatch)
 	var out []model.Finding
-	for _, sh := range SectionHeadings(lines, h.Line, h.Level, r.EffectiveHeadingLevel(h.Level)) {
+	for _, sh := range SectionHeadings(lines, h.Line, h.Level, r.EffectiveHeadingsLevel(h.Level)) {
 		if re.MatchString(sh.Text) {
 			continue
 		}
 		out = append(out, structureFinding(r, file, sh.Line, model.ReasonSectionHeadingMismatch,
-			"Überschrift \""+sh.Text+"\" genügt dem geforderten Muster nicht: "+r.HeadingPattern))
+			"Überschrift \""+sh.Text+"\" genügt dem geforderten Muster nicht: "+r.HeadingsMatch))
 	}
 	return out
 }
