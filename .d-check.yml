@@ -96,12 +96,19 @@ ignore-refs:
   # v5.6.0-Baum in der done/-Doku der welle-78 (der Etappe-C-Slice und die
   # aufgeloeste MR-024; die uebrigen done/-Slices und Reviews nennen den
   # Pfad nur in Inline-Code). Quell-skopiert ausgenommen statt eingefrorene
-  # Doku zu editieren; die live-Fundstellen sind auf v5.7.0 retargetet
+  # Doku zu editieren; die live-Fundstellen sind auf den jeweils aktuellen Pin
+  # retargetet
   # (MR-021).
   - in: docs/plan/planning/done/slice-109-v560-konventions-nachzuege.md
     refs: [".harness/baseline/v5.6.0/**"]
   - in: harness/conventions/done/MR-024-aktuelle-welle-ruhe-marker-form.md
     refs: [".harness/baseline/v5.6.0/**"]
+  # Dieselbe Klasse eine Hebung spaeter (v5.7.0 -> v5.9.0): die aufgeloeste
+  # MR-027 traegt zwei eingefrorene Links auf den entfernten v5.7.0-Baum; die
+  # Review-Reports nennen den Pfad nur in Inline-Code und sind fuer codepaths
+  # ohnehin ausgenommen.
+  - in: harness/conventions/done/MR-027-struktur-id-verzicht.md
+    refs: [".harness/baseline/v5.7.0/**"]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.

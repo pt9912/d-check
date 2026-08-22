@@ -24,8 +24,8 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
 ## Baseline
 
 - **Konvention:** AI-Harness-Kurs
-- **Stand:** [`v5.7.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v5.7.0)
-  (Release-Tag, gepinnt 2026-08-21; ursprünglich unversioniert adoptiert
+- **Stand:** [`v5.9.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v5.9.0)
+  (Release-Tag, gepinnt 2026-08-22; ursprünglich unversioniert adoptiert
   als „Template-Set 2026-06", nachgezogen mit
   [`MR-011`](#mr-011--baseline-auf-release-tag-gepinnt), von v1.2.1 auf
   v1.3.0 gehoben mit [`MR-012`](#mr-012--baseline-pin-hebung-nachtrag-zu-mr-011),
@@ -36,19 +36,21 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
   von v5.0.0 auf v5.6.0 (sechs additive Stufen) mit
   [`MR-026`](#mr-026--baseline-pin-hebung-auf-v560-dritter-nachtrag-zu-mr-011-nachtrag-zu-mr-023),
   von v5.6.0 auf v5.7.0 (eine Stufe) mit
-  [`MR-028`](#mr-028--baseline-pin-hebung-auf-v570-vierter-nachtrag-zu-mr-011-nachtrag-zu-mr-023))
+  [`MR-028`](#mr-028--baseline-pin-hebung-auf-v570-vierter-nachtrag-zu-mr-011-nachtrag-zu-mr-023),
+  von v5.7.0 auf v5.9.0 (zwei Stufen) mit
+  [`MR-029`](#mr-029--baseline-pin-hebung-auf-v590-fünfter-nachtrag-zu-mr-011-nachtrag-zu-mr-023))
 - **Datum der Adoption:** 2026-06-10
 
 ## Adoptierte Konventions-Quellen
 
 - **Extern (Lehrmaterial):**
-  [`ai-harness-course@v5.7.0`](https://github.com/pt9912/ai-harness-course/tree/v5.7.0)
+  [`ai-harness-course@v5.9.0`](https://github.com/pt9912/ai-harness-course/tree/v5.9.0)
   (`kurs/de/` — Konventionen in `grundlagen/`, Templates in `lab/templates/`).
   Kanonische Quelle; bei Konflikt maßgeblich.
 - **Vendored Baseline (Regelwerk + Templates):** aus dem self-contained
   Release-Asset
-  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v5.7.0/lab-regelwerk.zip)
-  entpackt nach [`.harness/baseline/v5.7.0/`](../.harness/baseline/v5.7.0/regelwerk/)
+  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v5.9.0/lab-regelwerk.zip)
+  entpackt nach [`.harness/baseline/v5.9.0/`](../.harness/baseline/v5.9.0/regelwerk/)
   (`{regelwerk,templates}/` + `SHA256SUMS`) — der **netzlose** Lesepfad,
   materialisiert/verifiziert per
   [`fetch-baseline-cache.sh`](../tools/harness/fetch-baseline-cache.sh).
@@ -64,7 +66,7 @@ vendored Vorlage `harness/conventions/MR-<NNN>-titel.template.md`; ist ihr
 Auflösungs-Trigger eingetreten, wandert sie per `git mv` nach `conventions/done/`.
 Der **Zustand ist die Verzeichnis-Position**, kein Status-Feld — was hier steht,
 liest **jeder** Agentenlauf, aufgelöste Adaptionen gehören nicht in diesen Pfad
-([Baseline-Regelwerk §Konventionsspeicher](../.harness/baseline/v5.7.0/regelwerk/grundlagen-harness-dateien.md#harnessconventionsmd-als-konventionsspeicher)).
+([Baseline-Regelwerk §Konventionsspeicher](../.harness/baseline/v5.9.0/regelwerk/grundlagen-harness-dateien.md#harnessconventionsmd-als-konventionsspeicher)).
 Je Index-Zeile steht ein Voll-Slug-`<a id>` — **Migrations-Schuld**, damit die
 eingefrorenen in-repo-Verweise auf `conventions.md#mr-…` (immutable ADRs, `done/`-
 Slices, Reviews) ohne Retarget und ohne ADR-Edit auflösen; ein frisch unter der
@@ -114,6 +116,7 @@ ob der Eintrag ihn betrifft.
 | [MR-021](conventions/MR-021-vendored-verweise-pin-gebunden.md) <a id="mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden"></a><a id="mr-021"></a> | vendored-Verweise pin-gebunden                | Live-Links auf die vendored Baseline              | `grundlagen-harness-dateien` §Verzeichniskonvention          |
 | [MR-023](conventions/MR-023-baseline-v500.md) <a id="mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout"></a><a id="mr-023"></a>                 | self-contained Bundle-Layout (vendored; historische Pin-Hebung auf v5.0.0 — den aktuellen Pin trägt der Nachtrag darunter) | §Baseline, `fetch-baseline-cache.sh`              | `grundlagen-harness-dateien` §Template-Schichtung            |
 | [MR-025](conventions/MR-025-spiegel-vor-dem-editieren.md) <a id="mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten"></a><a id="mr-025"></a> | Semantik-Änderung: Spiegel **vor** dem Editieren auflisten | jede Änderung an einer zugesagten Semantik (Grund-Code, Algorithmus-Schritt, Config-Schlüssel, Schwelle, Erkennungs-Form) | `modul-10` §Review-Arten |
+| [MR-029](conventions/MR-029-baseline-v590.md) <a id="mr-029--baseline-pin-hebung-auf-v590-fünfter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-029"></a> | Baseline-Pin-Hebung auf v5.9.0 (Pin-Fortschreibung, Nachtrag) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v5.9.0/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
 
 ### Aufgelöste Adaptionen
 
