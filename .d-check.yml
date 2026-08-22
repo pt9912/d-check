@@ -13,7 +13,7 @@
 scan:
   roots: ["."]
   ignore: [".harness/baseline/**", ".harness/cache/**"]
-modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions, structure]
+modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions, structure, diagrams]
 
 # Geteiltes Referenz-Ventil (DC-FA-REF-001): Ziel-Achsen-Pendant zu scan.ignore
 # (jenes entfernt Quell-Dateien, dieses Ziel-Referenzen), honoriert von
@@ -139,6 +139,26 @@ ids:
       target: spec/architecture.md
       link-policy: always
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+
+# Modul diagrams (DC-FA-DIAG-001, seit welle-80): Kennungen IN Diagramm-Fences
+# gegen ihre Definitionsquelle. Die uebrigen Module sehen Fences nie — eine
+# Kennung im Diagramm ist fuer sie unsichtbar, und genau dort altert sie stumm,
+# wenn eine Komponente umbenannt oder entfernt wird. Geprueft wird Existenz,
+# nicht Linkpflicht (in einem Fence gibt es keinen Markdown-Link).
+# Definitionsquelle ist die Sicht selbst: §1 vergibt die Kennungen in der
+# Komponenten-Tabelle, das Flowchart traegt sie im Kasten-Label.
+# Grenzen, gemessen statt hergeleitet: (1) das Modul liest kein Mermaid — es
+# findet Token per Regex; ein Diagramm, das eine Komponente ZEIGT, aber keine
+# Kennung nennt, faellt nicht auf, und die Richtung "jede definierte Kennung
+# kommt im Diagramm vor" ist nicht gedeckt. (2) Definiert heisst "Token kommt
+# in der Quelle ausserhalb von Fences vor" — Nennung und Vergabe sind fuer das
+# Modul dasselbe: faellt eine Komponente aus der §1-Tabelle, aber bleibt in §2
+# stehen, gilt die Kennung weiter als definiert. Der Wachter faengt die
+# verwaiste Kennung im Diagramm, nicht die halbe Loeschung in der Sicht.
+diagrams:
+  patterns:
+    - regex: '\bARC-\d{3}\b'
+      defined-in: spec/architecture.md
 
 # Referenzmatrix (DC-FA-MTX-001 zwischen Klassen, -002 innerhalb, -003 als Token):
 # maschinelle Kodierung von MR-006 — Spec-Straten verweisen nie abwärts auf

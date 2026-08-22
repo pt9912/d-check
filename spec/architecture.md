@@ -1,11 +1,17 @@
 # Architektur — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-06-29.
+**Status:** Aktiv. **Letzte Änderung:** 2026-08-22.
 
 **Hard Rule:** Diese Datei ist **sprach- und meilensteinfrei**: Sie
 benennt Schichten und Rollen, keine Technologie, und enthält keine
 Wellen, Slices, Commit-Hashes oder Closure-Daten (`AGENTS.md` §3.4).
 Die zeitliche Schicht lebt in `docs/plan/planning/`.
+
+**Kennungen:** Komponenten und externe Berührungspunkte tragen eine
+**Struktur-ID** `ARC-<NNN>` — fortlaufend je Datei, vergeben in §1 und in §3
+fortgesetzt; §2 nennt dieselben Kennungen und führt keine neuen ein. Eine
+Struktur-ID macht adressierbar; sie ist **keine** Anforderung und trägt keine
+Zusage — Zusagen leben im Lastenheft.
 
 **Bezug:** [`lastenheft.md`](lastenheft.md) und
 [`spezifikation.md`](spezifikation.md) — bei Konflikt gewinnen diese.
@@ -21,13 +27,13 @@ abwärts auf ADRs oder Planning-Artefakte.
 
 ```mermaid
 flowchart TB
-    CLI["CLI — einziger driving Adapter,<br/>Composition Root"]
-    CORE["Kern — Regelmodule, Markdown-Analyse,<br/>Befund-Modell; definiert die Ports"]
-    FS["Filesystem-Adapter"]
-    HTTP["HTTP-Adapter"]
-    VCS["VCS-/git-Adapter"]
-    CFG["Config-Adapter"]
-    REP["Reporter-Adapter"]
+    CLI["ARC-001 CLI — einziger driving Adapter,<br/>Composition Root"]
+    CORE["ARC-002 Kern — Regelmodule, Markdown-Analyse,<br/>Befund-Modell; definiert die Ports"]
+    FS["ARC-003 Filesystem-Adapter"]
+    HTTP["ARC-004 HTTP-Adapter"]
+    VCS["ARC-005 VCS-/git-Adapter"]
+    CFG["ARC-006 Config-Adapter"]
+    REP["ARC-007 Reporter-Adapter"]
 
     CLI -->|"ruft auf, verdrahtet"| CORE
     CLI --> CFG
@@ -38,6 +44,16 @@ flowchart TB
     CFG -.->|"liefert validierte Config"| CORE
     REP -.->|"konsumiert Befundliste"| CORE
 ```
+
+| Kennung | Komponente | Rolle |
+|---|---|---|
+| `ARC-001` | CLI | einziger driving Adapter; Argument-Parsing, Composition Root, Exit-Code |
+| `ARC-002` | Kern | Regelmodule, Markdown-Analyse, Befund-Modell; definiert die Ports |
+| `ARC-003` | Filesystem-Adapter | Datei-Discovery, Lesen, Symlink-Erkennung |
+| `ARC-004` | HTTP-Adapter | Erreichbarkeit externer Verweise |
+| `ARC-005` | VCS-/git-Adapter | rein lesender Zugriff auf die Versionsgeschichte |
+| `ARC-006` | Config-Adapter | Konfiguration dekodieren und validieren |
+| `ARC-007` | Reporter-Adapter | Rendern der Befundliste |
 
 Das CLI ist der **einzige driving Adapter** (kein Server-Modus). Die
 Regelmodule (`links`, `anchors`, `ids`, `matrix`, `external`) sind
@@ -50,15 +66,15 @@ ist intern in drei Pakete mit einbahniger Importrichtung geschnitten —
 
 ## 2. Schichten und Constraints
 
-| Schicht / Rolle | Verantwortlichkeit | Darf nutzen | Darf NICHT nutzen |
-|---|---|---|---|
-| Kern | Markdown-Vorverarbeitung, Link-/Heading-/Kennungs-Extraktion, Slug, Regelmodule, Befund-Modell, deterministische Sortierung, Pfad-/Escape-Regeln; definiert die Ports | reine Standardbibliothek ohne I/O; Port-Interfaces | Dateisystem-, Netzwerk-, Prozess-APIs; Adapter; YAML-Bibliothek |
-| Filesystem-Adapter | Datei-Discovery, Lesen, Symlink-Erkennung (Lstat) | Kern-Ports; Dateisystem-API | andere Adapter; Netzwerk |
-| HTTP-Adapter | HEAD/GET-Erreichbarkeit, Timeout, Redirect-Limit | Kern-Ports; HTTP-Client | andere Adapter; Dateisystem |
-| VCS-/git-Adapter | Lesen der git-Historie aus `.git`: Datei-Inhalt an einem Commit-Ref, geänderte Pfade einer Commit-Range, Commit-Messages einer Range; **rein lesend**, ohne externes git-Binary, ohne Netz (opt-in Module `vcs`, `commits`) | Kern-Ports; git-Objekt-Bibliothek; read-only `.git` | andere Adapter; Netzwerk; Schreiben ins Repository |
-| Config-Adapter | `.d-check.yml` strikt dekodieren, zweistufig validieren — den Datei-Inhalt beschafft das CLI über den Filesystem-Adapter, der die einzige Dateisystem-Tür bleibt | Kern-Typen; YAML-Bibliothek | andere Adapter; Dateisystem; Netzwerk |
-| Reporter-Adapter | Text-/JSON-Rendering auf stdout/stderr | Kern-Typen; Serialisierung | andere Adapter; Netzwerk; Dateizugriffe jenseits stdout/stderr |
-| CLI | Argument-Parsing, Composition Root, Exit-Code | alles oben | — |
+| Kennung | Schicht / Rolle | Verantwortlichkeit | Darf nutzen | Darf NICHT nutzen |
+|---|---|---|---|---|
+| `ARC-002` | Kern | Markdown-Vorverarbeitung, Link-/Heading-/Kennungs-Extraktion, Slug, Regelmodule, Befund-Modell, deterministische Sortierung, Pfad-/Escape-Regeln; definiert die Ports | reine Standardbibliothek ohne I/O; Port-Interfaces | Dateisystem-, Netzwerk-, Prozess-APIs; Adapter; YAML-Bibliothek |
+| `ARC-003` | Filesystem-Adapter | Datei-Discovery, Lesen, Symlink-Erkennung (Lstat) | Kern-Ports; Dateisystem-API | andere Adapter; Netzwerk |
+| `ARC-004` | HTTP-Adapter | HEAD/GET-Erreichbarkeit, Timeout, Redirect-Limit | Kern-Ports; HTTP-Client | andere Adapter; Dateisystem |
+| `ARC-005` | VCS-/git-Adapter | Lesen der git-Historie aus `.git`: Datei-Inhalt an einem Commit-Ref, geänderte Pfade einer Commit-Range, Commit-Messages einer Range; **rein lesend**, ohne externes git-Binary, ohne Netz (opt-in Module `vcs`, `commits`) | Kern-Ports; git-Objekt-Bibliothek; read-only `.git` | andere Adapter; Netzwerk; Schreiben ins Repository |
+| `ARC-006` | Config-Adapter | `.d-check.yml` strikt dekodieren, zweistufig validieren — den Datei-Inhalt beschafft das CLI über den Filesystem-Adapter, der die einzige Dateisystem-Tür bleibt | Kern-Typen; YAML-Bibliothek | andere Adapter; Dateisystem; Netzwerk |
+| `ARC-007` | Reporter-Adapter | Text-/JSON-Rendering auf stdout/stderr | Kern-Typen; Serialisierung | andere Adapter; Netzwerk; Dateizugriffe jenseits stdout/stderr |
+| `ARC-001` | CLI | Argument-Parsing, Composition Root, Exit-Code | alles oben | — |
 
 Diese Tabelle ist die rollenbasierte Quelle der
 `arch-check`-Fitness-Function; ihre sprachkonkrete Übersetzung
@@ -67,12 +83,12 @@ sie aufwärts. Eine Lockerung ist eine neue ADR (`AGENTS.md` §3.6).
 
 ## 3. Externe Abhängigkeiten
 
-| System | Rolle | Substituierbarkeit |
-|---|---|---|
-| YAML-Bibliothek | Decoding im Config-Adapter | hoch — vollständig im Adapter gekapselt |
-| HTTP-Client der Standardbibliothek | Erreichbarkeits-Checks im HTTP-Adapter | hoch — hinter dem HTTP-Port |
-| git-Objekt-Bibliothek (rein in der Implementierungssprache, **kein** externes git-Binary) | Lesen von `.git` im VCS-Adapter (opt-in Module `vcs`, `commits`) | mittel — hinter dem VCS-Port; read-only, netzlos |
-| Minimal-Runtime ohne Shell/Paketmanager | Auslieferung | mittel — CA-Bundle-/Non-root-Annahmen |
+| Kennung | System | Rolle | Substituierbarkeit |
+|---|---|---|---|
+| `ARC-008` | YAML-Bibliothek | Decoding im Config-Adapter | hoch — vollständig im Adapter gekapselt |
+| `ARC-009` | HTTP-Client der Standardbibliothek | Erreichbarkeits-Checks im HTTP-Adapter | hoch — hinter dem HTTP-Port |
+| `ARC-010` | git-Objekt-Bibliothek (rein in der Implementierungssprache, **kein** externes git-Binary) | Lesen von `.git` im VCS-Adapter (opt-in Module `vcs`, `commits`) | mittel — hinter dem VCS-Port; read-only, netzlos |
+| `ARC-011` | Minimal-Runtime ohne Shell/Paketmanager | Auslieferung | mittel — CA-Bundle-/Non-root-Annahmen |
 
 ## 4. Sequenz-Diagramme
 
