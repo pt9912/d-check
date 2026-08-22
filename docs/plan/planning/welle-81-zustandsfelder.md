@@ -30,7 +30,9 @@ eigene Orte: Behauptung und vorgeschlagene Handlung beim Vorhaben selbst, die
 davon ist, hält `git`. Ein Drift-Log, das Schließungen protokolliert, ist ein
 zweites Closure-Log, und zwei Logs driften.
 
-**Vier Treffer im eigenen Bestand, alle gemessen:**
+**Fünf Treffer im eigenen Bestand, alle gemessen** (der fünfte kam im
+slice-118-Review dazu — der Kanon eröffnet allgemein, nicht auf drei Tabellen
+beschränkt):
 
 | Fläche | Ist-Zustand | Ziel-Form |
 |---|---|---|
@@ -39,6 +41,7 @@ zweites Closure-Log, und zwei Logs driften.
 | Kopf der Sicht | dieselbe Zeile in der Architektur | **bleibt** — dort ist sie der bewusste Frische-Marker (die Sicht hat keine Historie) |
 | `Stand`-Zellen des Beobachtungs-Registers | acht Zellen, 169 bis **3 011** Zeichen, überwiegend Chronik | Zustand + Beleg als Anker |
 | Drift-Log der Roadmap | 71 Zeilen, die obersten sind **Schließungen** („welle-79 geschlossen", „slice-111 abgeschlossen") | nur Umplanungen; Schließungen stehen im Closure-Log |
+| `Stand`-Zeile des Konventionsspeichers | Zustand und Beleg plus die Kette **aller** bisherigen Pin-Hebungen | Zustand und Beleg; die Ableitungs-Kette steht in den Einträgen selbst |
 
 ## 2. Trigger (Welle startet)
 

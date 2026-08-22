@@ -51,6 +51,14 @@ Kopie, vor der die Regel warnt.
    Closure-Log. Vorher zählen, nachher zählen, beides notieren.
 4. **Meilenstein-Tabelle** auf die Status-Form ziehen (sie führt derzeit keinen
    offenen Eintrag — die Form gilt trotzdem für den nächsten).
+4a. **Fünfter Treffer, nachgemessen:** die `**Stand:**`-Zeile des
+   Konventionsspeichers (§Baseline) ist ebenfalls ein Zustandsfeld — sie nennt
+   den Zustand und den Beleg, hängt aber die Kette **aller** bisherigen
+   Pin-Hebungen an. Der Kanon eröffnet allgemein („ein Feld, das einen Zustand
+   trägt"), nicht auf die drei genannten Tabellen beschränkt; die Welle hatte
+   vier Treffer gezählt, es sind fünf. Zustand und Beleg bleiben, die Kette
+   wird auf ihren Ort gezogen — die Ableitungs-Kette steht in den
+   MR-Einträgen selbst (`Löst auf:` / `Ausgelöst durch Baseline-Stand:`).
 5. **Gegenprobe:** die Abschnitts-Regeln der Prüf-Config, die auf diesen
    Tabellen liegen (Chronologie-Richtung der Drift- und Closure-Tabelle),
    laufen weiter grün — die Spalten-Lage darf sich nicht verschieben.

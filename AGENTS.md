@@ -152,9 +152,11 @@ erlaubt bleiben `## Geschichte`-Anhänge + der `**Status:**`-Übergang;
 Jede Schwellen-Senkung (Coverage, Linter-Strenge, Prüfregel) ist ein
 ADR, kein PR-Kommentar.
 
-### 3.7 Kommentare und Zustandsfelder tragen eine der fünf Klassen
+### 3.7 Kommentare tragen eine der fünf Klassen
 
-**Ein Kommentar beschreibt, was da ist** (Baseline-Merksatz). Er
+Gilt für Code, Konfiguration und Skripte — und, mit **eigener** Form, für
+Zustandsfelder (unten). **Ein Kommentar beschreibt, was da ist**
+(Baseline-Merksatz). Er
 beantwortet in Code, Konfiguration oder Skript, was der Code nicht
 beantworten kann — **Zusage · Kopplung · Abgrenzung · Rang-Zeiger ·
 Grenze** ([Baseline §Was ein Kommentar trägt](.harness/baseline/v5.9.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte)).
@@ -164,10 +166,14 @@ Mess-Labels; Herkunft nur als **ein** auflösbares Feld nach dem
 Baseline-Schema (`DC-*` — die Baseline-Form `LH-*` —, `ADR-*`, `MR-*`,
 `seit welle-<NN>`). Der Reviewer-Skill trägt den HIGH-Anker dazu.
 
-**Zustandsfelder ebenso** (seit dem v5.9.0-Bump): eine `Stand`- oder
-`Status`-Zelle in Roadmap, Beobachtungs-Register oder Meilenstein-Tabelle ist
-ein Zustands-Artefakt wie ein Kommentar, nur im Rumpf. Sie nennt **den Zustand
-und den Beleg als auflösbaren Anker**, nicht die Chronik, wie es dazu kam; das
+**Zustandsfelder** (seit dem v5.9.0-Bump) sind Zustands-Artefakte wie der
+Kommentar, nur im Rumpf — sie tragen **nicht** dessen fünf Klassen, sondern
+eine **eigene Form**; übertragen sind die **zwei Tests**: Adressat ist, wer
+den Zustand liest, um zu handeln, und die Zeitform ist der Indikativ über das,
+was ist. Ein Feld, das einen Zustand trägt — etwa eine `Stand`- oder
+`Status`-Zelle in Roadmap, Beobachtungs-Register oder Meilenstein-Tabelle —,
+nennt **den Zustand und den Beleg als auflösbaren Anker**, nicht die Chronik,
+wie es dazu kam; das
 Drift-Log der Roadmap trägt **nur Umplanungen**, keine Schließungen und keine
 erreichten Meilensteine (die stehen im Closure-Log bzw. in der Status-Spalte).
 Ein lebendes Register trägt **keine** Kopfzeile `Status: Aktiv. Letzte
@@ -179,7 +185,9 @@ Ein lebendes Register trägt **keine** Kopfzeile `Status: Aktiv. Letzte
 **Bestandsgrenze:** vor der Einführung bzw. vor dieser Schärfung
 geschriebene Kommentare (Test-Kommentare; ältere Config-Kommentare mit
 Slice-Nummer) sind grandfathered — geräumt wird beim nächsten Anfassen
-der Zeile; Neuzugänge fallen überall unter den Anker. *(Hard Rule seit
+der Zeile; Neuzugänge fallen überall unter den Anker. **Für Zustandsfelder
+gibt es keine Bestandsgrenze:** der vorhandene Bestand wird mit dem
+v5.9.0-Bump umgestellt, nicht grandfathered. *(Hard Rule seit
 dem v5.6.0-Bump, geschärft mit dem v5.7.0-Bump auf die
 Baseline-Feld-Formen und mit dem v5.9.0-Bump auf Zustandsfelder;
 Auflösungs-Trigger: permanent.)*
