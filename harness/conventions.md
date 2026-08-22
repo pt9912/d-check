@@ -143,7 +143,7 @@ auffindbar bleibt, ohne gelesen zu werden.
 | [MR-024](conventions/done/MR-024-aktuelle-welle-ruhe-marker-form.md) <a id="mr-024--aktuelle-welle-ruhe-marker-im-wellenlosen-zustand-aktive-welle-template-konform"></a><a id="mr-024"></a> | Baseline-Stand `v5.6.0` (Offene-Wellen-Form + Ruhe-Marker mit Wächter = Default; adoptiert mit slice-108) |
 | [MR-026](conventions/done/MR-026-baseline-v560.md) <a id="mr-026--baseline-pin-hebung-auf-v560-dritter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-026"></a> | [MR-028](conventions/done/MR-028-baseline-v570.md) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
 | [MR-027](conventions/done/MR-027-struktur-id-verzicht.md) <a id="mr-027--struktur-ids-spec-arc--werden-nicht-vergeben"></a><a id="mr-027"></a> | Baseline-Konformität (Struktur-ID-Vergabe `SPEC-*`/`ARC-*` = Baseline-Default; Auftraggeber-Entscheid 2026-08-22, welle-80 — die Vergabe-Aussage trägt [MR-000](#mr-000--baseline-aussage)) |
-| [MR-028](conventions/done/MR-028-baseline-v570.md) <a id="mr-028--baseline-pin-hebung-auf-v570-vierter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-028"></a> | die nächste Pin-Hebung (der eigene Auflösungs-Trigger des Eintrags) |
+| [MR-028](conventions/done/MR-028-baseline-v570.md) <a id="mr-028--baseline-pin-hebung-auf-v570-vierter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-028"></a> | [MR-029](#mr-029) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
 
 
 

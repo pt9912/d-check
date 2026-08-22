@@ -3,10 +3,13 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** [`grundlagen-harness-dateien.md` §Verzeichniskonvention](../../.harness/baseline/v5.9.0/regelwerk/grundlagen-harness-dateien.md#verzeichniskonvention)
 - **Datum:** 2026-06-26
-- **Geltungsbereich:** alle Markdown-Links auf `.harness/baseline/<tag>/…` in der
-  Live-Doku (aktuell [`harness/README.md`](../README.md) §Guides/§Sensors,
-  [`docs/plan/planning/README.md`](../../docs/plan/planning/README.md),
-  [§Adoptierte Konventions-Quellen](../conventions.md#adoptierte-konventions-quellen)); die
+- **Geltungsbereich:** **alle** Markdown-Links auf `.harness/baseline/<tag>/…`
+  in der Live-Doku — das Briefing, [`harness/README.md`](../README.md), dieser
+  Konventionsspeicher samt seiner **aktiven** Eintrags-Dateien, der
+  Reviewer-Skill und die lebenden Planungs-Dokumente. Eine Aufzählung einzelner
+  Dateien stünde hier falsch: sie wächst mit jedem Eintrag und ist beim
+  nächsten Bump veraltet — die Menge bestimmt der Zensus der Bump-Prozedur,
+  nicht diese Zeile. Ebenso erfasst: die
   Baseline-Pin-Bump-Prozedur; Nachtrag zu
   [`MR-019`](../conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)/[`MR-020`](../conventions.md#mr-020--baseline-template-propagation-per-drift-audit-template-frei-bestätigt)
 - **Adaption:** Seit
