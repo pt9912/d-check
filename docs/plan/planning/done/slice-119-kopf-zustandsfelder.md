@@ -55,21 +55,27 @@ hat — und genau das steht künftig auch dort.
 
 ## 4. Definition of Done
 
-- [ ] Die drei Kopfzeilen sind entfernt; die Sicht trägt ihre weiter, mit
+- [x] Die drei Kopfzeilen sind entfernt; die Sicht trägt ihre weiter, mit
       Begründung an Ort und Stelle.
-- [ ] Kein Rest verweist auf die entfernten Zeilen (gemessen, nicht
+- [x] Kein Rest verweist auf die entfernten Zeilen (gemessen, nicht
       angenommen).
-- [ ] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
+- [x] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
       gesichtet.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Eine Abschnitts-Regel könnte die Zeile erwarten** — die Prüf-Config führt
   Regeln über Kopf-Abschnitte; sie werden vor dem Entfernen gelesen. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** entfallen — gemessen: keine Regel, kein Test und keine
+  Autoritäts-Doku hängt an den entfernten Zeilen. Der Review hat es
+  gegengeprüft und zusätzlich belegt, dass **kein Gate** die Zeile in
+  irgendeiner Richtung hält.
 - **Die Sicht-Ausnahme sieht wie eine Inkonsistenz aus**, wenn ihre Begründung
   fehlt; sie steht deshalb in der Datei, nicht nur in dieser Notiz. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** **eingetreten — und die erste Fassung der Begründung war selbst
+  falsch.** Sie behauptete einen benannten Trigger, den der Bestand widerlegt
+  (94 Commits am Vertrag zwischen zwei Marker-Hebungen, der Marker stand
+  still). Jetzt sagt sie, was wahr ist.
 
 ## 6. Trigger
 
@@ -96,4 +102,41 @@ Baseline.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Geliefert:** von vier gemessenen Kopf-Zustandszeilen sind drei ersatzlos
+entfernt — die beiden lebenden Register, weil *Aktiv* kein Zustand ist, den
+ein Register je wechselt, und das Technik-Stratum, weil seine Historie das
+Datum trägt. Die Sicht behält ihre und sagt jetzt an Ort und Stelle, warum:
+sie führt keine Historie, also ist die Zeile ein Frische-Marker. Nebenbei
+tragen beide Spec-Straten die Rollen-Zeile der Vorlage nach, die im Bestand
+fehlte.
+
+**Review** ([Report](../../../reviews/2026-08-22-slice-119-kopf-zustandsfelder-review.md)):
+merge-blockierend — 0 HIGH, 1 MEDIUM, 3 LOW, alle eingearbeitet. Die
+Negativ-Proben belegen die Zusage von der anderen Seite: **kein Gate** hält
+die Zeile in irgendeiner Richtung — auch das Entfernen der Sicht-Zeile bliebe
+grün. Genau deshalb tragen Briefing und Reviewer-Skill die Regel.
+
+**Was ging anders als geplant — die Begründung war selbst ein Chronik-Feld:**
+Ich hatte an die Sicht geschrieben, „ein benannter Trigger pflegt sie: jede
+Änderung darüber zieht sie nach". Der Kanon sagt die **Gegenrichtung**, und
+der Review hat meine Behauptung am Bestand widerlegt: zwischen zwei
+Marker-Hebungen fassten **94 Commits** Lastenheft oder Spezifikation an, der
+Marker stand still. Ich hatte einen Trigger erfunden, den niemand fährt —
+dieselbe Klasse, gegen die der Anker dieser Welle gerichtet ist, in meiner
+eigenen Ausnahme-Begründung. Wer eine Ausnahme schreibt, muss ihren Träger
+benennen können; kann er es nicht, ist es keine Ausnahme, sondern eine
+Behauptung. Jetzt steht dort: die Zeile wird gesetzt, wenn jemand die Sicht
+gegen den Code hält — steht sie still, ist das die ehrliche Aussage „seither
+nicht geprüft".
+
+- **Steering-Loop-Eintrag:** kein neuer Träger — die Regel liegt seit
+  slice-118 im Briefing und im Reviewer-Skill; dieser Slice wendet sie an.
+- **Beobachtungs-Register (`../observations.md`):** keine neue Beobachtung.
+  Der erfundene Trigger ist die Klasse, die der neue HIGH-Anker beschreibt —
+  er hat beim ersten Lauf gegen den eigenen Text getroffen, was für ihn
+  spricht und gegen mich.
+- **Folge-Slices:** [slice-120](../open/slice-120-register-und-drift-log.md) —
+  letzter Slice der Welle.
+- **Risiken aus §6:** beide mit Ausgang (§5) — eines entfallen, eines
+  eingetreten.
+- **Drei Paarungen:** Wellen-Slice — die Paarungen prüft die Welle-Closure.
