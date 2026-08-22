@@ -88,14 +88,14 @@ Drei Zustandsfelder sagen etwas, das nicht stimmt — jedes auf seine Art:
 
 ## 4. Definition of Done
 
-- [ ] Kein `done/`-Slice behauptet mehr einen Zustand, der seinem Verzeichnis
+- [x] Kein `done/`-Slice behauptet mehr einen Zustand, der seinem Verzeichnis
       widerspricht (gemessen: vorher elf, nachher null). Die Chronik-Felder
       bleiben — als **benannte** Ausnahme in §3.7, nicht stillschweigend.
-- [ ] `version.md` trägt genau **einen** Anker; Gegenprobe belegt, dass ein
+- [x] `version.md` trägt genau **einen** Anker; Gegenprobe belegt, dass ein
       Pin auf die Vorgänger-Version wieder meldet.
-- [ ] §3.7 trägt die Vorrangregel gegenüber §3.5; der Reviewer-Anker nennt
+- [x] §3.7 trägt die Vorrangregel gegenüber §3.5; der Reviewer-Anker nennt
       dieselbe Ausnahme.
-- [ ] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
+- [x] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
       gesichtet.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -103,13 +103,21 @@ Drei Zustandsfelder sagen etwas, das nicht stimmt — jedes auf seine Art:
 - **Ein `done/`-Slice ist ein Lauf-Beleg.** Sein Statusfeld zu ändern heißt,
   ein eingefrorenes Dokument anzufassen. Gerechtfertigt ist das nur, weil das
   Feld eine **falsche Gegenwarts-Aussage** macht — nicht, weil es alt ist. Die
-  Grenze steht in §3. — **Ausgang:** *(bei Closure)*
+  Grenze steht in §3. — **Ausgang:** **eingetreten und korrigiert.** Der erste
+  Anlauf fasste zwei Felder mehr an, als die Klasse hergab — geheilt wurde nach
+  Suchstring statt nach Klasse; der Review fand es, die zwei sind zurückgenommen.
 - **Der Anker-Fix schärft einen Detektor:** danach melden Pins auf die
   Vorgänger-Version wieder. Vor dem Entfernen prüfen, ob im Baum ein solcher
-  Pin lebt — sonst wird der Slice selbst rot. — **Ausgang:** *(bei Closure)*
+  Pin lebt — sonst wird der Slice selbst rot. — **Ausgang:** entfallen — kein
+  lebender Verweis hing am entfernten Anker (der einzige feste Pin zeigt auf die
+  aktuelle Version); die Gegenprobe belegt beide Richtungen: vorher stumpf,
+  nachher scharf.
 - **Eine Vorrangregel darf kein Schlupfloch werden:** sie gilt für den
   immutablen Kern einer `Accepted`-ADR, nicht als allgemeine Bestandsgrenze
-  für Zustandsfelder. — **Ausgang:** *(bei Closure)*
+  für Zustandsfelder. — **Ausgang:** **eingetreten, in der schlimmeren Form:**
+  die Regel war nicht zu weit, sondern **falsch** — sie behauptete eine
+  Immutabilität, die das Gate nicht kennt. Neu gefasst nach dem, was die
+  Maschine tut.
 
 ## 6. Trigger
 
@@ -139,4 +147,45 @@ nach einer frisch adoptierten Regel; kein Legacy-Import.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Geliefert:** elf `done/`-Slices behaupten keinen falschen Lifecycle-Zustand
+mehr; das Release-Register trägt wieder genau einen Anker, und die Gegenprobe
+belegt, dass der Vergessens-Detektor damit scharf ist (vorher stumpf); das
+Verhältnis von §3.5 und §3.7 steht — geklärt nach dem, was das Gate tut, nicht
+nach dem, was plausibel klingt.
+
+**Review** ([Report](../../../reviews/2026-08-22-slice-121-zustandsfeld-hygiene-review.md)):
+merge-blockierend — **2 HIGH**, 5 MEDIUM, 3 LOW, 1 INFO; alle eingearbeitet.
+Der strengste Befund-Satz dieser Sitzung.
+
+**Was ging anders als geplant — zweimal habe ich eine Aussage gemacht statt
+gemessen:**
+1. **Geheilt wurde nach Suchstring, nicht nach Klasse.** Zwei Felder trugen
+   zufällig genau den Wortlaut, nach dem ich gesucht hatte; drei
+   gleichbedeutende ohne dieses Wort blieben stehen, und 53 der 90 Felder
+   tragen weiter Chronik — während die DoD „nachher null" behauptete. Die zwei
+   Mitnahmen sind zurückgenommen: der Slice tut, was entschieden war, und die
+   Chronik-Felder stehen jetzt als **benannte** Ausnahme im Briefing statt
+   stillschweigend.
+2. **Die Vorrangregel behauptete eine Immutabilität, die es nicht gibt.** Ich
+   schrieb, das Status-Feld einer `Accepted`-ADR gehöre zum immutablen Kern.
+   Vier Stellen sagen übereinstimmend das Gegenteil — §3.5 selbst, die
+   Sensors-Tabelle, die Prüf-Config (`status-line`/`head-allow`) und der Code,
+   der die Kopf-Status-Zeile aus dem Kern-Vergleich **streicht**. Eine
+   Kollision, die ich lösen wollte, gab es nie; ich hatte sie erfunden. Wer
+   zwei Regeln gegeneinander stellt, muss zuerst die Maschine fragen, welche
+   von beiden überhaupt greift.
+
+- **Steering-Loop-Eintrag:** Guide geschärft: §3.7 trägt jetzt das Verhältnis
+  zu §3.5 **nach der Maschine** und die benannte Bestands-Ausnahme für
+  historische Status-Felder — liegt in [`AGENTS.md`](../../../../AGENTS.md)
+  §3.7; der Reviewer-Skill (1.8.0) nennt dieselbe Ausnahme.
+- **Beobachtungs-Register (`../observations.md`):** keine neue Beobachtung.
+  Beide Fehler sind die verkörperte Klasse BEO-002 — ein Rand, der eine
+  Aussage trägt, die der Bestand nicht deckt.
+- **Folge-Slices:** keiner. **Benannt, ohne Slice:** 53 historische
+  Status-Felder tragen weiter Chronik — bewusst, jetzt als Ausnahme deklariert.
+- **Risiken aus §6:** alle drei mit Ausgang (§5) — zwei eingetreten, eines
+  entfallen.
+- **Drei Paarungen** (wellenloser Slice, hier geprüft): Anker — der
+  Steering-Loop-Eintrag nennt seinen Ort; Folge-Slice — keiner, also keine
+  Datei in `open/`; Register — keine neue Beobachtung, BEO-002 zitiert.
