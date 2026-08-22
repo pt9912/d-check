@@ -72,3 +72,41 @@ func SectionProse(content []byte, lines []string, headingNo, level int) string {
 	}
 	return string(b)
 }
+
+// SectionHeading ist eine Überschrift innerhalb eines Abschnitts: 1-basierte
+// Zeile, ATX-Ebene und der getrimmte Überschriften-Text (ohne `#`-Folge).
+type SectionHeading struct {
+	Line  int
+	Level int
+	Text  string
+}
+
+// SectionHeadings liefert die Überschriften der Ebene level INNERHALB des bei
+// headingNo beginnenden Abschnitts (§DC-FA-STRUCT-001.a Schritt 6) — mit
+// derselben Erkennung, die den Abschnitt findet: echte ATX-Überschriften
+// außerhalb von Fenced-Code, beliebig viel führender Weißraum, Leerzeichen
+// oder Tab als Trenner. Der Bereich endet an SectionEnd; eine Ebene flacher
+// als der Abschnitt kann darin nicht vorkommen.
+func SectionHeadings(lines []string, headingNo, sectionLevel, level int) []SectionHeading {
+	end := SectionEnd(lines, headingNo, sectionLevel)
+	var out []SectionHeading
+	inFence := false
+	for i := headingNo; i < len(lines); i++ {
+		if end != 0 && i+1 >= end {
+			break
+		}
+		if FenceToggle(TrimFenceIndent(lines[i])) {
+			inFence = !inFence
+			continue
+		}
+		if inFence {
+			continue
+		}
+		lvl, text, ok := parseATXHeading(lines[i])
+		if !ok || lvl != level {
+			continue
+		}
+		out = append(out, SectionHeading{Line: i + 1, Level: lvl, Text: text})
+	}
+	return out
+}

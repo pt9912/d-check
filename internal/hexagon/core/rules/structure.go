@@ -127,6 +127,9 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 		if r.TableOrder != "" {
 			out = append(out, structureTableOrder(r, file, lines, prose, h.Line, h.Level)...)
 		}
+		if r.HeadingPattern != "" {
+			out = append(out, structureHeadings(r, file, lines, h)...)
+		}
 	}
 	return out
 }
@@ -178,6 +181,25 @@ func structureConditions(r model.StructureRule, file string, line int, body stri
 			add(model.ReasonSectionMarkerMissing, "geforderte Marke fehlt: "+m)
 			break
 		}
+	}
+	return out
+}
+
+// structureHeadings prüft die Überschriften INNERHALB des Abschnitts gegen
+// heading-pattern (§DC-FA-STRUCT-001.a Schritt 6). Als einzige Bedingung neben
+// der Chronologie liest sie nicht den bereinigten Abschnitts-Text, sondern die
+// Überschriften selbst — mit der geteilten Erkennung, nicht mit einer eigenen:
+// eine nachgebaute Heading-Lexik war der Anlass dieser Bedingung. Ein Befund
+// je verletzender Überschrift, auf IHRER Zeile; dort ist die Reparatur.
+func structureHeadings(r model.StructureRule, file string, lines []string, h SectionHead) []model.Finding {
+	re := regexp.MustCompile(r.HeadingPattern)
+	var out []model.Finding
+	for _, sh := range SectionHeadings(lines, h.Line, h.Level, r.EffectiveHeadingLevel(h.Level)) {
+		if re.MatchString(sh.Text) {
+			continue
+		}
+		out = append(out, structureFinding(r, file, sh.Line, model.ReasonSectionHeadingMismatch,
+			"Überschrift \""+sh.Text+"\" genügt dem geforderten Muster nicht: "+r.HeadingPattern))
 	}
 	return out
 }

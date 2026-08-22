@@ -864,3 +864,42 @@ func TestConfigYAMLVersionsFailClosed(t *testing.T) {
 		})
 	}
 }
+
+// DC-FA-STRUCT-001: die Ueberschriften-Bedingung wird uebernommen; ihre
+// beiden Config-Raender brechen laut.
+func TestConfigYAMLStructureHeadingPattern(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("structure:\n" +
+		"  - files: 'spec/*.md'\n" +
+		"    section: '## 2. Schema'\n" +
+		"    heading-pattern: '^SPEC-[0-9]{3} '\n" +
+		"    heading-level: 3\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(cfg.Structure) != 1 || cfg.Structure[0].HeadingPattern != `^SPEC-[0-9]{3} ` ||
+		cfg.Structure[0].EffectiveHeadingLevel(2) != 3 {
+		t.Fatalf("heading-pattern/-level nicht uebernommen: %+v", cfg.Structure)
+	}
+	// Ohne heading-level greift der Default: Abschnitts-Ebene + 1.
+	cfgD, err := configyaml.Decode([]byte("structure:\n" +
+		"  - files: 'spec/*.md'\n" +
+		"    section: '## 2. Schema'\n" +
+		"    heading-pattern: '^SPEC-'\n"))
+	if err != nil || cfgD.Structure[0].EffectiveHeadingLevel(2) != 3 {
+		t.Fatalf("Default-Ebene = Abschnitts-Ebene + 1: %+v (%v)", cfgD.Structure, err)
+	}
+	cases := []struct{ name, yaml, want string }{
+		{"muster-kaputt", "structure:\n  - files: 'a/*.md'\n    section: '## S'\n    heading-pattern: '('\n", "heading-pattern"},
+		{"ebene-zu-gross", "structure:\n  - files: 'a/*.md'\n    section: '## S'\n    heading-pattern: '^X'\n    heading-level: 7\n", "zwischen 1 und 6"},
+		{"ebene-null", "structure:\n  - files: 'a/*.md'\n    section: '## S'\n    heading-pattern: '^X'\n    heading-level: 0\n", "zwischen 1 und 6"},
+		{"halbe-aktivierung", "structure:\n  - files: 'a/*.md'\n    section: '## S'\n    heading-level: 3\n", "wirkungslos"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			_, err := configyaml.Decode([]byte(c.yaml))
+			if err == nil || !strings.Contains(err.Error(), c.want) {
+				t.Fatalf("%s: erwartet Fehler mit %q, got %v", c.name, c.want, err)
+			}
+		})
+	}
+}

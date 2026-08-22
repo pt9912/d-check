@@ -279,13 +279,12 @@ structure:
 
   # Struktur-ID-Vergabe im Technik-Stratum (MR-000, seit welle-80): jede
   # ###-Sektion des Schema-Abschnitts traegt eine SPEC-Kennung — sonst zeigt
-  # eine ADR auf einen Abschnitt statt auf die Festlegung. Die Heading-Lexik
-  # ist die des Moduls: beliebig viel fuehrender Weissraum, Leerzeichen ODER
-  # Tab als Trenner, ohne Trenner keine Ueberschrift.
-  # Grenze 1: RE2 kennt keinen Lookahead — die Bedingung ist als
-  # ausgeschriebene Praefix-Negation formuliert und gemessen statt
-  # hergeleitet; ein Schluessel "jede Ueberschrift matcht dieses Muster"
-  # waere die klarere Form (CR-Kandidat).
+  # eine ADR auf einen Abschnitt statt auf die Festlegung. Die Bedingung liest
+  # die Ueberschriften mit der Erkennung des Moduls, statt deren Lexik in ein
+  # eigenes Muster auszuschreiben; die abgeloeste Praefix-Negation musste das
+  # und war dabei einmal zu eng. Ebene: Default (Abschnitts-Ebene + 1).
+  # Grenze 1 entfaellt mit dem eigenen Schluessel (RE2 ohne Lookahead zwang
+  # zur Negation).
   # Grenze 2: Tabellen-Kennungen deckt structure nicht — die Bereinigung
   # leert Inline-Code, in dem die Kennungen stehen. Gebunden ist nur §4 (ein
   # Go-Test haelt Spalte 1 gegen AllReasons()); §3 und §6 tragen ihre
@@ -295,7 +294,7 @@ structure:
   # adressierbar, den sie definieren (fachlicher Schluessel statt Struktur-ID).
   - files: spec/spezifikation.md
     section: "## 2. Datenstrukturen und Schemas"
-    forbid-pattern: '(?m)^[ \t]*###(?:[ \t]+$|[ \t]+(?:$|[^S \t]|S(?:$|[^P]|P(?:$|[^E]|E(?:$|[^C]|C(?:$|[^-]|-(?:$|[^0-9]|[0-9](?:$|[^0-9]|[0-9](?:$|[^0-9]|[0-9][^ \t])))))))))'
+    heading-pattern: '^SPEC-[0-9]{3} '
 
 # Modul vcs (DC-FA-VCS-001, slice-053): git-Diff-Immutabilität der eigenen
 # Accepted-ADRs über die Commit-Range — `make adr-check` aktiviert es mit

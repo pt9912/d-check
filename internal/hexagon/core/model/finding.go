@@ -61,6 +61,9 @@ const (
 	ReasonSectionForbidden      = "section-forbidden"
 	ReasonSectionPatternMissing = "section-pattern-missing"
 	ReasonSectionMarkerMissing  = "section-marker-missing"
+	// ReasonSectionHeadingMismatch: eine Ueberschrift INNERHALB des Abschnitts
+	// genuegt heading-pattern nicht; der Befund steht auf ihrer Zeile.
+	ReasonSectionHeadingMismatch = "section-heading-mismatch"
 	// Chronologie-Monotonie (ADR-0057): section-unordered meldet die
 	// brechende Datenzeile (bzw. den Leerlauf ohne Datenzeile),
 	// section-cell-untyped die untypisierbare Schluesselzelle — Befund statt

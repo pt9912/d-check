@@ -184,6 +184,8 @@ modules: [links, anchors]
 #     # require-all: ["Beleg", "Lernsignal"]        # fehlende Marke ⇒ section-marker-missing
 #     # table-order: desc                           # asc|desc: Chronologie-Monotonie der Schlüsselspalte (typisiert: ISO-Datum, Punkt-Version; ROHE Zellen) ⇒ sonst section-unordered / section-cell-untyped
 #     # table-column: 1                             # 1-basierte Schlüsselspalte (Default 1); nur mit table-order
+#     # heading-pattern: '^SPEC-[0-9]{3} '          # JEDE Überschrift IM Abschnitt matcht dieses Muster (geprüft: ihr Text) ⇒ sonst section-heading-mismatch je Überschrift, auf IHRER Zeile
+#     # heading-level: 3                            # geprüfte ATX-Ebene (Default: Abschnitts-Ebene + 1); nur mit heading-pattern
 #     # exempt-paths: []                            # Globs; Treffer werden von DIESER Regel nicht geprüft
 
 # --- targets: Deklarations-Konsistenz Doku ↔ Build-Targets — hermetisch (kein git), opt-in ---

@@ -222,6 +222,8 @@ type rawStructure struct {
 	RequireAll     []string `yaml:"require-all"`
 	TableOrder     string   `yaml:"table-order"`
 	TableColumn    *int     `yaml:"table-column"`
+	HeadingPattern string   `yaml:"heading-pattern"`
+	HeadingLevel   *int     `yaml:"heading-level"`
 	ExemptPaths    []string `yaml:"exempt-paths"`
 }
 
@@ -252,7 +254,7 @@ func applyStructure(rs []rawStructure) ([]model.StructureRule, error) {
 func structureBedingungsFehler(r rawStructure) string {
 	for name, pat := range map[string]string{
 		"section-pattern": r.SectionPattern, "forbid-pattern": r.ForbidPattern,
-		"require-pattern": r.RequirePattern,
+		"require-pattern": r.RequirePattern, "heading-pattern": r.HeadingPattern,
 	} {
 		if pat == "" {
 			continue
@@ -290,6 +292,19 @@ func structureChronologieFehler(r rawStructure) string {
 	if r.TableColumn != nil && r.TableOrder == "" {
 		return "table-column ist ohne table-order wirkungslos (halbe Aktivierung)"
 	}
+	return structureUeberschriftFehler(r)
+}
+
+// structureUeberschriftFehler prüft die beiden Config-Ränder der
+// Überschriften-Bedingung: eine Ebene außerhalb des ATX-Bereichs, und —
+// analog zu table-column — die halbe Aktivierung.
+func structureUeberschriftFehler(r rawStructure) string {
+	if r.HeadingLevel != nil && (*r.HeadingLevel < 1 || *r.HeadingLevel > 6) {
+		return fmt.Sprintf("heading-level %d muss zwischen 1 und 6 liegen", *r.HeadingLevel)
+	}
+	if r.HeadingLevel != nil && r.HeadingPattern == "" {
+		return "heading-level ist ohne heading-pattern wirkungslos (halbe Aktivierung)"
+	}
 	return ""
 }
 
@@ -325,6 +340,7 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 		MaxTasks: r.MaxTasks, ForbidPattern: r.ForbidPattern,
 		RequirePattern: r.RequirePattern, RequireAll: r.RequireAll,
 		TableOrder: r.TableOrder, TableColumn: r.TableColumn,
+		HeadingPattern: r.HeadingPattern, HeadingLevel: r.HeadingLevel,
 		ExemptPaths: r.ExemptPaths,
 	}, nil
 }

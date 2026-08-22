@@ -2,6 +2,8 @@ package rules
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -324,3 +326,129 @@ func TestStructureMarkeNurAlsPraefix(t *testing.T) {
 	}
 }
 
+
+// headingRule: eine Regel, die jede Unterabschnitts-Ueberschrift des
+// Abschnitts auf eine Kennung verpflichtet.
+func headingRule() model.StructureRule {
+	return model.StructureRule{
+		Files: "docs/*.md", Section: "## Schema", HeadingPattern: `^ID-[0-9]{3} `,
+	}
+}
+
+// DC-FA-STRUCT-001 Happy: alle Unterabschnitte genuegen dem Muster.
+func TestStructureHeadingHappyPath(t *testing.T) {
+	files := map[string]string{
+		"docs/a.md": "# T\n\n## Schema\n\n### ID-001 Erster\n\nx.\n\n### ID-002 Zweiter\n\ny.\n",
+	}
+	if f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{headingRule()}); f != nil {
+		t.Fatalf("erwartet befundfrei, got %+v", f)
+	}
+}
+
+// DC-FA-STRUCT-001 Negative: ein Befund JE verletzender Ueberschrift, auf
+// IHRER Zeile — nicht einer am Abschnittskopf.
+func TestStructureHeadingBefundJeUeberschrift(t *testing.T) {
+	files := map[string]string{
+		"docs/a.md": "# T\n\n## Schema\n\n### Ohne Kennung\n\nx.\n\n### ID-002 Zweiter\n\ny.\n\n### Auch ohne\n\nz.\n",
+	}
+	got := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{headingRule()})
+	var lines []int
+	for _, f := range got {
+		if f.Reason != model.ReasonSectionHeadingMismatch {
+			t.Fatalf("unerwarteter Grund-Code: %+v", f)
+		}
+		lines = append(lines, f.Line)
+	}
+	if fmt.Sprint(lines) != fmt.Sprint([]int{5, 13}) {
+		t.Fatalf("Befunde auf den Zeilen der Ueberschriften erwartet, got %+v", got)
+	}
+	if !strings.Contains(got[0].Message, "Ohne Kennung") {
+		t.Fatalf("Meldung nennt die Ueberschrift nicht: %q", got[0].Message)
+	}
+}
+
+// DC-FA-STRUCT-001: die Bedingung benutzt die Heading-Lexik des Moduls —
+// eingerueckt und Tab-getrennt zaehlen, eine gleichlautende Zeile im
+// Fenced-Block nicht.
+func TestStructureHeadingLexikDesModuls(t *testing.T) {
+	files := map[string]string{
+		"docs/a.md": "# T\n\n## Schema\n\n  ### Eingerueckt\n\nx.\n\n###\tTab-getrennt\n\ny.\n\n" +
+			"```md\n### Im Fence\n```\n\n### ID-003 Gut\n\nz.\n",
+	}
+	got := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{headingRule()})
+	var texts []string
+	for _, f := range got {
+		texts = append(texts, strconv.Itoa(f.Line))
+	}
+	if len(got) != 2 {
+		t.Fatalf("eingerueckt + Tab melden, Fence nicht — got %+v", got)
+	}
+	if fmt.Sprint(texts) != fmt.Sprint([]string{"5", "9"}) {
+		t.Fatalf("Zeilen der beiden echten Ueberschriften erwartet, got %+v", got)
+	}
+}
+
+// DC-FA-STRUCT-001: Default-Ebene ist Abschnitts-Ebene + 1; heading-level
+// waehlt eine andere.
+func TestStructureHeadingEbene(t *testing.T) {
+	files := map[string]string{
+		"docs/a.md": "# T\n\n## Schema\n\n### Dritte ohne\n\nx.\n\n#### Vierte ohne\n\ny.\n",
+	}
+	r := headingRule()
+	got := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})
+	if len(got) != 1 || got[0].Line != 5 {
+		t.Fatalf("Default = Abschnitts-Ebene + 1 (nur die dritte Ebene), got %+v", got)
+	}
+	r.HeadingLevel = ptr(4)
+	got = CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})
+	if len(got) != 1 || got[0].Line != 9 {
+		t.Fatalf("heading-level 4 meldet nur die vierte Ebene, got %+v", got)
+	}
+}
+
+// DC-FA-STRUCT-001 Grenze: ohne Ueberschrift der geprueften Ebene ist die
+// Bedingung wirkungslos — benannt, nicht zugesagt.
+func TestStructureHeadingOhneUeberschriftWirkungslos(t *testing.T) {
+	files := map[string]string{"docs/a.md": "# T\n\n## Schema\n\nnur Prosa.\n"}
+	if f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{headingRule()}); f != nil {
+		t.Fatalf("ohne Ueberschrift kein Befund erwartet, got %+v", f)
+	}
+}
+
+// DC-FA-STRUCT-001 Grenze: eine Ebene flacher als der Abschnitt kann in ihm
+// nicht vorkommen — der Abschnitt endet dort.
+func TestStructureHeadingEbeneFlacherAlsAbschnitt(t *testing.T) {
+	files := map[string]string{
+		"docs/a.md": "# T\n\n## Schema\n\n### ID-001 Gut\n\nx.\n\n## Ohne Kennung\n\ny.\n",
+	}
+	r := headingRule()
+	r.HeadingLevel = ptr(2)
+	if f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r}); f != nil {
+		t.Fatalf("flachere Ebene kann im Abschnitt nicht vorkommen, got %+v", f)
+	}
+}
+
+// DC-FA-STRUCT-001 / DC-QA-02: ohne heading-pattern aendert sich nichts.
+func TestStructureHeadingModulAus(t *testing.T) {
+	files := map[string]string{
+		"docs/a.md": "# T\n\n## Schema\n\n### Ohne Kennung\n\nx.\n",
+	}
+	r := headingRule()
+	r.HeadingPattern = ""
+	if f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r}); f != nil {
+		t.Fatalf("ohne heading-pattern kein Befund erwartet, got %+v", f)
+	}
+}
+
+// DC-FA-STRUCT-001: unter sections: each wird JEDER Abschnitt geprueft.
+func TestStructureHeadingSectionsEach(t *testing.T) {
+	files := map[string]string{
+		"docs/a.md": "# T\n\n## Schema\n\n### Ohne A\n\nx.\n\n## Schema\n\n### Ohne B\n\ny.\n",
+	}
+	r := headingRule()
+	r.Sections = "each"
+	got := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})
+	if len(got) != 2 {
+		t.Fatalf("each prueft jeden Abschnitt, got %+v", got)
+	}
+}

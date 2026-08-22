@@ -455,7 +455,22 @@ type StructureRule struct {
 	// gesetzten unterscheidbar bleibt (Exit-2-Rand: explizit < 1).
 	TableOrder  string
 	TableColumn *int
-	ExemptPaths []string
+	// HeadingPattern schaltet die Ueberschriften-Bedingung scharf; HeadingLevel
+	// ist die geprueften ATX-Ebene — Zeiger, damit der Default (Ebene des
+	// Abschnitts + 1) von einem explizit gesetzten Wert unterscheidbar bleibt.
+	HeadingPattern string
+	HeadingLevel   *int
+	ExemptPaths    []string
+}
+
+// EffectiveHeadingLevel liefert die geprueften ATX-Ebene der
+// Ueberschriften-Bedingung: der explizit gesetzte Wert, sonst die Ebene des
+// Abschnitts + 1 (spec/spezifikation.md §DC-FA-STRUCT-001.a Schritt 6).
+func (r StructureRule) EffectiveHeadingLevel(sectionLevel int) int {
+	if r.HeadingLevel != nil {
+		return *r.HeadingLevel
+	}
+	return sectionLevel + 1
 }
 
 // EffectiveTableColumn liefert die 1-basierte Schluesselspalte der
