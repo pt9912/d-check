@@ -62,27 +62,40 @@ schon angewandt.
 
 ## 4. Definition of Done
 
-- [ ] `.harness/baseline/v5.9.0/` vollständig vendored, `--verify` grün,
+- [x] `.harness/baseline/v5.9.0/` vollständig vendored, `--verify` grün,
       Vorgänger-Baum entfernt; `--check-latest` meldet keinen neueren Release.
-- [ ] Nachfolge-Adaption angelegt, Vorgänger in `conventions/done/`, Index-Zeile
+- [x] Nachfolge-Adaption angelegt, Vorgänger in `conventions/done/`, Index-Zeile
       umgezogen (beide Anker mit), §Baseline und §Adoptierte
       Konventions-Quellen auf den neuen Pin.
-- [ ] Drei-Klassen-Zensus durchgeführt und **je Klasse** dokumentiert.
-- [ ] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
+- [x] Drei-Klassen-Zensus durchgeführt und **je Klasse** dokumentiert.
+- [x] `make gates` grün; unabhängiger Review; Closure-Notiz; Register
       gesichtet.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Die Klassen 2 und 3 sind gate-blind** und in zwei aufeinanderfolgenden
   Hebungen je als Review-Auflage nachgezogen worden. Der Zensus ist die
-  Antwort darauf — er wird abgearbeitet, nicht erinnert. — **Ausgang:** *(bei
-  Closure)*
+  Antwort darauf — er wird abgearbeitet, nicht erinnert. — **Ausgang:**
+  **eingetreten, in beiden Richtungen.** Der Zensus hat Klasse 2 und 3 diesmal
+  gefunden (fünf URLs, zwei Prosa-Pins) — und sich dabei selbst gefangen: nach
+  dem URL-Lauf stand ein neues Ziel unter altem Linktext. Der Review fand
+  danach die **Gegenrichtung**, die der Zensus nicht kennt: eine
+  Vergangenheits-Aussage, die der Pfad-`grep` mitgehoben hatte. Beides im
+  Register vermerkt.
 - **Zwei Stufen auf einmal:** das Delta ist gemessen, aber die Zwischenstufe
   wird nie vendored — falls eine Regel in `v5.8.0` entstand und in `v5.9.0`
   wieder verschwand, sieht der Zensus sie nicht. Gegenmittel: der Delta-Diff
-  läuft über **beide** Stufen einzeln. — **Ausgang:** *(bei Closure)*
+  läuft über **beide** Stufen einzeln. — **Ausgang:** entfallen — beide Stufen
+  einzeln diffed; die einzige transiente Zeile war der Zwischen-Stand des
+  Index. Keine Regel entstand und verschwand (vom Review unabhängig
+  nachgemessen).
 - **Eingefrorene Verweise auf den alten Baum** brechen beim Entfernen. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** eingetreten und gedeckt — genau **eine** Datei trägt echte
+  Links (die aufgelöste Struktur-ID-Adaption), quell-skopiert ausgenommen; die
+  Review-Reports nennen den Pfad nur in Inline-Code und sind dort ohnehin
+  frei. Vom Review beidseitig gegengeprüft: ohne das Ventil zwei Befunde, und
+  derselbe tote Pfad in einer anderen Datei bleibt rot — die Ausnahme ist
+  quell-skopiert, nicht global.
 
 ## 6. Trigger
 
@@ -114,4 +127,46 @@ Prozedur; kein Legacy-Import.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Geliefert:** die Baseline steht auf `v5.9.0` — zwei Stufen auf einmal.
+Bundle am Tag vendored (51 Dateien beide Bäume plus Manifest), `--verify`
+offline grün, `--check-latest` meldet den Pin jetzt als neuesten Release und
+den Tag upstream unverändert; der Vorgänger-Baum ist entfernt. Die
+Nachfolge-Adaption trägt das gemessene Delta im Körper, die Vorgängerin ist
+aufgelöst, und die pin-gebundenen Verweise sind nach dem Drei-Klassen-Zensus
+gehoben. Die Regel des Deltas ist **nicht** angewandt — das ist der Rest der
+Welle.
+
+**Review** ([Report](../../../reviews/2026-08-22-slice-117-baseline-v590-review.md)):
+APPROVE mit Auflagen — 0 HIGH, 2 MEDIUM, 4 LOW, alle eingearbeitet. Die
+Negativ-Proben belegen den Kern unabhängig: das Vendoring stimmt gegen das
+Manifest **und** gegen den Kurs-Tag (kein Handanlegen), Klasse 1 ist
+gate-gedeckt, Klasse 2 nachweislich gate-blind, das Referenz-Ventil ist
+quell-skopiert und nicht global.
+
+**Was ging anders als geplant — die Klasse hat eine zweite Richtung:**
+Der Zensus zielt darauf, dass eine Stelle **vergessen** wird. Diesmal ist das
+Gegenteil passiert: der Pfad-`grep` hob eine **Vergangenheits-Aussage** mit,
+und der Tombstone behauptete danach, der *neue* Baum sei entfernt worden —
+eine Aussage, die ihre eigene Begründung im selben Absatz unlesbar machte.
+Ein `grep` kennt keine Zeitform. Der Zensus ist deshalb um die Gegenprobe
+ergänzt: jede gehobene Stelle daraufhin prüfen, ob sie über die **Gegenwart**
+oder über die **Vergangenheit** spricht. Zweitens gingen meine Delta-Zahlen
+nicht auf und teilten nach Baum statt nach Änderungsart — die Zahl im
+MR-Körper ist jetzt so gefasst, dass beide Lesarten zusammenpassen.
+
+- **Steering-Loop-Eintrag:** Prozedur geschärft: der Hebungs-Zensus prüft
+  jede gehobene Stelle auf ihre Zeitform — liegt in
+  [`harness/conventions/MR-029-baseline-v590.md` §Hebungs-Zensus](../../../../harness/conventions/MR-029-baseline-v590.md) und im
+  Register-Eintrag. Auslöser: BEO-008, mit diesem Slice bei 3.
+- **Beobachtungs-Register (`../observations.md`):** **BEO-008 auf 3**
+  (Schwelle erreicht), Beleg ergänzt, die Klasse um die Über-Hebung erweitert.
+  **Die benannte mechanische Form ist heute nicht konfigurierbar:** das
+  Versions-Modul trägt genau ein Muster gegen eine Quelle — ein zweiter
+  Abgleich bräuchte eine Produkt-Änderung, also einen Change Request. Bis
+  dahin trägt die Prozedur.
+- **Folge-Slices:** [slice-118](../open/slice-118-zustandsfeld-regel.md) —
+  sein Trigger ist mit dieser Closure eingetreten; danach slice-119 und
+  slice-120.
+- **Risiken aus §6:** alle mit Ausgang (§5) — zwei eingetreten und gedeckt,
+  eines entfallen.
+- **Drei Paarungen:** Wellen-Slice — die Paarungen prüft die Welle-Closure.
