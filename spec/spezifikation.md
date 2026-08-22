@@ -4,6 +4,10 @@
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
 (`DC-*`-IDs). Bei Konflikt gewinnt das Lastenheft.
 
+**Rolle:** Technik-Stratum — fortschreibbar ohne Change Request; eine ADR darf
+sie schärfen, das Lastenheft nicht. Regeln: Baseline-Regelwerk
+[`modul-03-spec.md` §Ziel-Form: Spezifikation](../.harness/baseline/v5.9.0/regelwerk/modul-03-spec.md#ziel-form-spezifikation).
+
 ---
 
 ## 1. Algorithmen und Datenflüsse

@@ -2,16 +2,20 @@
 
 **Status:** Aktiv. **Letzte Änderung:** 2026-08-22.
 
-Diese Kopfzeile bleibt, wo lebende Register und das Technik-Stratum keine
-tragen: die Sicht führt **keine Historie**, also ist `Letzte Änderung` hier
-ein **Frische-Marker** — die Aussage, wann die Sicht zuletzt gegen den Code
-gehalten wurde — und kein Protokoll. Ein benannter Trigger pflegt sie: jede
-Änderung darüber (Vertrag oder Technik) zieht sie nach.
+**Rolle:** Sicht-Stratum — *keine* eigenen Anforderungen, derivativ. Regeln:
+Baseline-Regelwerk
+[`modul-03-spec.md` §Ziel-Form: Architektur-Sicht](../.harness/baseline/v5.9.0/regelwerk/modul-03-spec.md#ziel-form-architektur-sicht).
 
 **Hard Rule:** Diese Datei ist **sprach- und meilensteinfrei**: Sie
 benennt Schichten und Rollen, keine Technologie, und enthält keine
 Wellen, Slices, Commit-Hashes oder Closure-Daten (`AGENTS.md` §3.4).
-Die zeitliche Schicht lebt in `docs/plan/planning/`.
+Die zeitliche Schicht lebt in `docs/plan/planning/`. Und **keine Historie**:
+`Letzte Änderung` oben ist ein **Frische-Marker** — die Aussage, wann die
+Sicht zuletzt **gegen den Code** gehalten wurde —, kein Protokoll. Deshalb
+bleibt die Zeile hier, wo lebende Register und das Technik-Stratum keine
+tragen. Sie wird gesetzt, wenn jemand die Sicht gegen den Code hält; steht
+sie still, ist das die ehrliche Aussage „seither nicht geprüft" und kein
+Versäumnis einer automatischen Pflege.
 
 **Kennungen:** Komponenten und externe Berührungspunkte tragen eine
 **Struktur-ID** `ARC-<NNN>` — fortlaufend je Datei, vergeben in §1 und in §3

@@ -36,7 +36,7 @@ beschränkt):
 
 | Fläche | Ist-Zustand | Ziel-Form |
 |---|---|---|
-| Kopfzeilen lebender Register | drei Dateien tragen `**Status:** Aktiv. **Letzte Änderung:** …` | ersatzlos weg — der Zustand eines Registers ist sein Inhalt, sein Änderungsdatum hält `git` |
+| Kopfzeilen lebender Register | **zwei** Register tragen `**Status:** Aktiv. **Letzte Änderung:** …` (Roadmap, Beobachtungs-Register) | ersatzlos weg — der Zustand eines Registers ist sein Inhalt, sein Änderungsdatum hält `git` |
 | Kopf des Technik-Stratums | dieselbe Zeile in der Spezifikation | weg — die Historie trägt das Datum, zwei Felder für eines driften |
 | Kopf der Sicht | dieselbe Zeile in der Architektur | **bleibt** — dort ist sie der bewusste Frische-Marker (die Sicht hat keine Historie) |
 | `Stand`-Zellen des Beobachtungs-Registers | acht Zellen, 169 bis **3 011** Zeichen, überwiegend Chronik | Zustand + Beleg als Anker |
