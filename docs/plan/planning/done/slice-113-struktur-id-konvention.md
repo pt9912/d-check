@@ -191,8 +191,8 @@ Bindestrich-Präfixe.
   war leer außer der Pfad-Klasse; die Klasse ist nicht erneut eingetreten.
 - **Folge-Slices:** [slice-114](../done/slice-114-spec-vergabe-spezifikation.md)
   (Trigger mit dieser Closure eingetreten, inzwischen geschlossen) und
-  [slice-115](../open/slice-115-arc-vergabe-architektur.md) als Datei in
-  `open/`; [slice-116](../open/slice-116-adr-neuzugangs-regel.md) wartet auf
+  [slice-115](../in-progress/slice-115-arc-vergabe-architektur.md), inzwischen
+  beansprucht; [slice-116](../open/slice-116-adr-neuzugangs-regel.md) wartet auf
   beide.
 - **Risiken aus §6:** alle mit Ausgang (§5) — zwei eingetreten und adressiert,
   eines entfallen.
