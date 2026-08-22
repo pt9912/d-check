@@ -73,7 +73,9 @@ Register, obwohl alle drei Ergebnisnotizen im Ruheort lagen (Beobachtungs-Regist
    (Baseline v5.7.0: die Liste folgt den **Dateien**, der Ruhe-Marker
    folgt dem **Anspruch** und steht zusätzlich): verglichen werden
    **Kennungs-Mengen** — die im `planning.heading`-Block genannten
-   Kennungen gegen die flachen Wellendokumente, beide Richtungen, jede
+   Kennungen gegen die Kennungs-Menge der flachen Wellendokumente (W2:
+   zwei Dateien derselben Kennung sind ein Element — das gilt ebenso für
+   das Singleton unter `one`), beide Richtungen, jede
    Kardinalität einschließlich null; der Marker geht **nicht** ein, seine
    Aussage liegt vollständig bei `planning-drift` (Entscheidung 5 bleibt:
    die Aktiv-Status-Bestimmung wird nicht wiederholt; die Kennungs-Liste
@@ -170,3 +172,8 @@ Register, obwohl alle drei Ergebnisnotizen im Ruheort lagen (Beobachtungs-Regist
   (vor dem Release): die Kennungs-Liste liest ein eigener Scan über die
   geteilte Block-Grenze — nicht der Rückgabewert der
   Aktiv-Status-Bestimmung, wie die Erst-Fassung behauptete.
+- 2026-08-22: **Präzisiert** (`slice-112`): Entscheidung 6 — die
+  Vergleichsgröße ist in **beiden** Modi die Kennungs-Menge (W2: zwei Dateien
+  derselben Kennung sind ein Element; Lastenheft 0.62.1). Kein
+  Verhaltens-Unterschied, kein Release; der Beleg ist ein Pinning-Test mit
+  zwei gleich-kennigen Dateien.

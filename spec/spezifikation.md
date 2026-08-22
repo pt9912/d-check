@@ -1,6 +1,6 @@
 # Spezifikation — d-check
 
-**Status:** Aktiv. **Letzte Änderung:** 2026-08-21.
+**Status:** Aktiv. **Letzte Änderung:** 2026-08-22.
 
 **Bezug zum Lastenheft:** Diese Spezifikation präzisiert die in
 [`lastenheft.md`](lastenheft.md) formulierten Anforderungen
@@ -1786,11 +1786,13 @@ dazu **denselben** Aktiv-Status wie Schritt 4 — sie bestimmt ihn nicht neu:
   Wellen-Fähigkeit schweigt dann — kein Doppelbefund.
 - **W3. Wellen-Prädikat nach `mode`.** Unter **`one`** (Default):
   `hasActive` aus Schritt 4 (dieselbe Größe, dieselbe Quelle),
-  `hasActive` ⇔ **genau ein** flaches Wellendokument. Sonst ⇒ `wave-drift`,
+  `hasActive` ⇔ **genau eine** Wellen-Kennung unter den flachen
+  Wellendokumenten (Kennungs-Menge aus W2 — zwei Dateien derselben Kennung
+  sind ein Element). Sonst ⇒ `wave-drift`,
   Befund an der `planning.heading`-Zeile, `target` = `dir`; die Meldung
   nennt beide Richtungen (Roadmap nennt eine Welle ohne Dokument /
   Dokument liegt, aber die Roadmap trägt den Ruhe-Marker) und bei mehr als
-  einem Dokument deren Zahl. Unter **`many`**: aus den **Prosa-Zeilen**
+  einer Kennung deren Zahl. Unter **`many`**: aus den **Prosa-Zeilen**
   des `planning.heading`-Blocks (außerhalb von Fenced-Code, dieselbe
   Block-Grenze wie Schritt 4) wird die **Kennungs-Menge** gelesen —
   Kennung wie in W2 (literales Glob-Präfix plus Ziffernfolge),
@@ -2652,7 +2654,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `closure-note-placeholder` | planning | Closure-Notiz-Abschnitt trägt einen unausgefüllten Vorlagen-Platzhalter in Auszeichnungs-Form (opt-in über `planning.closure.placeholder`); Inline-Code, Autolinks/Adressen und HTML-Tags sind ausgenommen, gemeldet wird der **erste** Treffer je Kandidat |
 | `closure-note-ambiguous` | planning | mehrere auf `planning.closure.heading-pattern` passende Überschriften — ohne eindeutigen Abschnitt wird **nicht** gemessen (schließt `-thin`/`-boilerplate`/`-placeholder` aus); `line` = **zweiter** Treffer |
 | `link-position-dependent` | links | relativer Verweis einer Datei in einem `resolve-from`-`dirs`-Verzeichnis löst von mindestens einem Ort der Gruppe nicht auf — oder von verschiedenen Orten auf **verschiedene** Ziele; Reparatur ist das Präfixieren des Pfads. Fail-closed über denselben Code: eine Gruppe ohne einen einzigen existierenden `dirs`-Ort und ein Ort, der als Datei existiert |
-| `wave-drift` | planning | **`mode: one`** (Default): Aktiv-Status der Roadmap (`planning.heading`-Block) und Präsenz eines **flachen** Wellendokuments (`planning.waves.glob` abzüglich `results-glob`) widersprechen sich; auch bei **mehr als einem** flachen Dokument. **`mode: many`**: die Kennungs-Menge des Blocks und die Menge der flachen Wellendokumente differieren — je Differenz-Element ein Befund, `target` = betroffene Kennung, der Ruhe-Marker geht **nicht** ein. Fail-closed über denselben Code (beide Modi): unlesbares `waves.dir`/`done-dir` und fehlende Register-Überschrift |
+| `wave-drift` | planning | **`mode: one`** (Default): Aktiv-Status der Roadmap (`planning.heading`-Block) und Präsenz **genau einer** Wellen-Kennung unter den **flachen** Wellendokumenten (`planning.waves.glob` abzüglich `results-glob`; zwei Dateien derselben Kennung sind ein Element) widersprechen sich; auch bei **mehr als einer** Kennung. **`mode: many`**: die Kennungs-Menge des Blocks und die Kennungs-Menge der flachen Wellendokumente differieren — je Differenz-Element ein Befund, `target` = betroffene Kennung, der Ruhe-Marker geht **nicht** ein. Fail-closed über denselben Code (beide Modi): unlesbares `waves.dir`/`done-dir` und fehlende Register-Überschrift |
 | `wave-preview-exists` | planning | eine Zeile des Vorschau-Registers (`planning.waves.next-heading`) nennt in ihrer **ersten Spalte** eine Welle, für die bereits eine Datei existiert (flach oder im Ruheort) — die geplante Welle hätte drei Positionen statt zwei |
 | `wave-results-missing` | planning | eine Zeile des Abschluss-Registers (`planning.waves.closed-heading`) nennt eine Welle **ohne** Ergebnisnotiz (`planning.waves.results-glob`) im Ruheort |
 | `wave-unregistered` | planning | eine **Ergebnisnotiz** im Ruheort hat **keine** Zeile im Abschluss-Register — die Richtung „Artefakt ⇒ Register" |
@@ -2693,6 +2695,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-22 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) W3 und §4 `wave-drift`-Zeile: Wortlaut auf die Kennungs-Menge aus W2 gezogen (Lastenheft 0.62.1) — auch das Singleton unter `one` zählt Kennungen, nicht Dateien; zwei flache Dokumente derselben Kennung sind ein Element. Keine Verhaltensänderung; der Beleg ist ein Pinning-Test in beiden Modi |
 | 2026-08-21 | §[`DC-FA-PLAN-001.a`](spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) **W3 auf zwei Kardinalitäts-Modelle** (`planning.waves.mode: one`\|`many`, Lastenheft 0.62.0 — formaler Konsumenten-CR „Bijektion statt Singleton"): `one` (Default) unverändert; unter `many` Kennungs-Mengen-Gleichheit der **Prosa-Zeilen** des `planning.heading`-Blocks gegen die flachen Wellendokumente (Kennung wie W2, Fences zählen nicht, Mehrfachnennung einmal), je Differenz-Element ein `wave-drift` mit der **Kennung** als `target`; der Ruhe-Marker geht nicht ein (`planning-drift`-Territorium). W1: `mode` außerhalb `one`/`many` inkl. explizit leer ⇒ Exit 2. §2-Schema + §4-Zeile nachgezogen |
 | 2026-08-21 | Nachzug nach unabhängigem Review, vor dem Release: die **Typ-Mischungs-Semantik** der Chronologie-Bedingung stand in §6 zweimal verschieden (Bedingungs-Tabelle „Spalten-Typ" gegen Fließtext „Vorgänger-Typ") — gepinnt auf die **Paar-Lesart mit Anker-Reset** (die Misch-Zelle meldet sich selbst, die gesunde Folge-Zeile dahinter nicht; beide Stellen sagen jetzt dasselbe, der Kaskaden-Fall ist getestet). Ferner ist ein Versions-Segment außerhalb des Zahlbereichs **nicht typisierbar** (Befund statt stillem Kleinst-Vergleich) — §4-Zeile zu `section-cell-untyped` entsprechend |
 | 2026-08-21 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) um die **Chronologie-Monotonie** erweitert (`table-order`/`table-column`, §2-Schema + zwei §4-Codes `section-unordered`/`section-cell-untyped`): Datenzeilen über die **geteilte** Tabellenzeilen-Lexik (dieselbe Antwort wie `targets`/`planning`, Kopf-/Trennzeile deklarieren nichts, je zusammenhängender Tabelle), Schlüssel **typisiert** aus der **rohen** Zelle (ISO-Datum, Punkt-Version segmentweise numerisch; erste benannte Ausnahme von Schritt 5 — die Bereinigung leert Inline-Code, reale Schlüsselspalten stehen dort), Vergleich nicht-strikt in Regel-Richtung; untypisierbare Zelle und Leerlauf sind Befunde, drei neue Exit-2-Ränder in Schritt 1. Begründung in begleitender ADR |
