@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-81-zustandsfelder](../welle-81-zustandsfelder.md) (zugeordnet
+**Welle:** [welle-81-zustandsfelder](welle-81-zustandsfelder.md) (zugeordnet
 bei der Eröffnung).
 
 **Bezug:** [`MR-028`](../../../../harness/conventions.md#mr-028) (der abzulösende
