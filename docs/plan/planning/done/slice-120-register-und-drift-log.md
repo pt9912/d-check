@@ -75,13 +75,13 @@ Kopie, vor der die Regel warnt.
 
 ## 4. Definition of Done
 
-- [ ] Jede `Stand`-Zelle nennt Zustand und Beleg; keine erzählt eine Chronik.
+- [x] Jede `Stand`-Zelle nennt Zustand und Beleg; keine erzählt eine Chronik.
       Zählerstände und Belege unverändert (gemessen).
-- [ ] Drift-Log trägt nur Umplanungen; Zeilenzahl vorher/nachher dokumentiert,
+- [x] Drift-Log trägt nur Umplanungen; Zeilenzahl vorher/nachher dokumentiert,
       jede entfernte Zeile ist im Closure-Log gedeckt (gemessen, nicht
       angenommen).
-- [ ] Meilenstein-Status-Form übernommen.
-- [ ] `make gates` grün (insbesondere die Chronologie-Regeln auf beiden
+- [x] Meilenstein-Status-Form übernommen.
+- [x] `make gates` grün (insbesondere die Chronologie-Regeln auf beiden
       Tabellen); unabhängiger Review; Closure-Notiz; Register gesichtet.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -89,12 +89,22 @@ Kopie, vor der die Regel warnt.
 - **Beim Kürzen geht Substanz verloren, nicht nur Chronik.** Eine `Stand`-Zelle
   trägt heute auch das *Gegenmittel* und die *3×-Form* — beides ist Zustand
   bzw. vorgeschlagene Handlung und muss bleiben. Der Review prüft je Zeile
-  gegen die Vorfassung. — **Ausgang:** *(bei Closure)*
+  gegen die Vorfassung. — **Ausgang:** **eingetreten.** Der Review hat
+  Substanzverlust gefunden, den ich nicht gesehen hatte: zwei Zellen
+  deklarierten ihre Abweichung von der Beleg-Anzahl-Form („die Klasse ist
+  dichter als der Zähler") — Zustand, nicht Chronik. Zurückgeholt. Alle
+  übrigen Zellen hat er Zeile für Zeile gegen die Vorfassung geprüft; Zähler,
+  Belege und Sub-Area sind byte-identisch.
 - **Eine entfernte Drift-Log-Zeile könnte die einzige Spur sein.** Vor dem
   Entfernen wird je Zeile geprüft, ob das Closure-Log sie deckt. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** entfallen — die Deckung ist mechanisch nachgezählt (jede
+  genannte Welle im Closure-Log, jeder Slice in `done/`), und der Review hat
+  die vier Umplanungs-Verdachtsfälle unter den entfernten Zeilen einzeln
+  gegengeprüft: keine war die einzige Spur.
 - **Die Chronologie-Regeln liegen auf beiden Tabellen** — Spalten-Lage und
-  Richtung dürfen sich nicht ändern. — **Ausgang:** *(bei Closure)*
+  Richtung dürfen sich nicht ändern. — **Ausgang:** entfallen — Spalten-Lage
+  und Richtung unberührt, und die Gegenprobe auf der **zurückgeschnittenen**
+  Tabelle beißt unverändert (zwei vertauschte Zeilen ⇒ zwei Befunde).
 
 ## 6. Trigger
 
@@ -122,4 +132,51 @@ Baseline an eigenen Artefakten.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Geliefert:** die beiden lebenden Register sagen, **was ist**. Acht
+`Stand`-Zellen tragen Zustand, Gegenmittel und — wo noch nicht verkörpert —
+die mechanische Form; die Chronik ist fort (577–3 011 → 326–636 Zeichen), und
+sie ist nirgendwohin kopiert worden: sie steht in `git`, in den
+Closure-Notizen und in den Review-Reports. Das Drift-Log ist von **69 auf 10**
+Zeilen zurückgeschnitten — es führte überwiegend Lifecycle-Protokoll und war
+damit das zweite Closure-Log, vor dem die Regel warnt. Dazu die
+Meilenstein-Status-Form und der fünfte Treffer, den erst der slice-118-Review
+gefunden hat.
+
+**Review** ([Report](../../../reviews/2026-08-22-slice-120-register-und-drift-log-review.md)):
+merge-blockierend — 0 HIGH, 5 MEDIUM, 1 LOW, 2 INFO; die vier blockierenden
+lagen **alle** auf Flächen, die dieser Slice selbst angefasst hat. Eingearbeitet.
+
+**Was ging anders als geplant — dreimal habe ich beim Aufräumen selbst
+gefehlt:**
+1. **Ein Zeiger ins Leere.** Ich ersetzte die Pin-Kette durch den Satz „jeder
+   Eintrag nennt seinen Vorgänger im Feld `Löst auf:`" — dieses Feld gibt es im
+   ganzen Repo **einmal**. Die Kette hätte nach einem Hop geendet. Sie steht in
+   Wahrheit im Index, in der Spalte *aufgelöst durch*. Wer eine Nacherzählung
+   durch einen Verweis ersetzt, muss prüfen, ob das Verwiesene existiert.
+2. **Substanzverlust beim Kürzen.** Zwei Zellen deklarierten, warum ihr Zähler
+   und ihre Beleg-Zahl auseinanderfallen. Das ist Zustand, nicht Chronik — und
+   fiel meinem Rotstift zum Opfer. Beim Kürzen ist die Frage nicht „ist das
+   alt?", sondern „ist das Zustand?".
+3. **Die neue Prosa widersprach ihrer eigenen Tabelle.** Ich schrieb „erreichte
+   Meilensteine bleiben hier stehen" über eine leere Tabelle, aus der drei
+   erreichte vor dieser Regel entfernt worden waren. Eine Regel, die man
+   aufstellt, gilt auch für den Abschnitt, in dem sie steht.
+Und der Trim der drei Wellen-Zeilen war halb: er erfasste Spalte 2 und ließ
+Spalte 3 mit über tausend Zeichen Protokoll stehen — die Botschaft
+überzeichnete den Diff.
+
+- **Steering-Loop-Eintrag:** kein neuer Träger — die Regel liegt seit
+  slice-118 im Briefing und im Reviewer-Skill; dieser Slice wendet sie an, und
+  der HIGH-Anker hat in allen vier blockierenden Befunden gegriffen.
+- **Beobachtungs-Register (`../observations.md`):** keine neue Beobachtung;
+  Zähler und Belege sind unverändert (das war ausdrücklich Nicht-Ziel).
+- **Folge-Slices:** keiner — die Welle ist mit diesem Slice vollständig. Als
+  **benannte Folgepunkte** aus dem Review, ausdrücklich ohne Slice: 90 von 118
+  `done/`-Slices tragen ein historisches `Status`-Kopffeld (elf davon
+  widersprechen ihrem Verzeichnis) — das Briefing erklärt das historische Feld
+  für Alt-Slices, die Widersprüche bleiben offen; dazu ein doppelter Anker in
+  der Versions-Datei und ein ADR-Statusfeld mit Chronik, das mit der
+  Immutabilitäts-Regel kollidiert.
+- **Risiken aus §6:** alle drei mit Ausgang (§5) — eines eingetreten, zwei
+  entfallen.
+- **Drei Paarungen:** Wellen-Slice — die Paarungen prüft die Welle-Closure.
