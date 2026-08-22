@@ -10,7 +10,7 @@
 # ci/fullbuild bauen darauf auf (harness/README.md §Sensors).
 
 IMAGE                 ?= d-check
-GO_VERSION            ?= 1.26.5
+GO_VERSION            ?= 1.27.0
 GOLANGCI_LINT_VERSION ?= v2.12.2
 
 # `--progress=plain` für CI-taugliche BuildKit-Logs (u-boot-Konvention).
