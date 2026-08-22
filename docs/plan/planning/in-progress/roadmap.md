@@ -36,8 +36,6 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 
 - [welle-80-struktur-ids](../welle-80-struktur-ids.md) — Struktur-IDs nach Baseline, Umkehr von [`MR-027`](../../../../harness/conventions.md#mr-027) (Auftraggeber-Entscheide D1–D4, 2026-08-22)
 
-Nichts in Arbeit.
-
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
