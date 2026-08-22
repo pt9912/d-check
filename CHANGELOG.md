@@ -6,6 +6,17 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- slice-112 — **Doku-Präzisierung ohne Verhaltensänderung** (Lastenheft
+  0.62.1, Handbuch 1.54): `DC-FA-PLAN-001` §Wellen-Invariante nennt in
+  **beiden** Modi die **Kennungs-Menge** der flachen Wellendokumente als
+  Vergleichsgröße — zwei Dateien derselben Kennung sind ein Element, auch für
+  das Singleton unter `one` (so zählt die Fähigkeit seit v0.59.0, die
+  Spezifikation W2 sagte es bereits). Neues Akzeptanzkriterium samt
+  Pinning-Test in beiden Modi; Befundsatz und Klartexte unverändert, kein Tag.
+  Ob ein Doppel-Dokument selbst meldepflichtig sein sollte, bleibt offen.
+
 ## [0.62.0] — 2026-08-21
 
 ### Added

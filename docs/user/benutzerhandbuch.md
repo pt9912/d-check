@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.53 · **Software-Version:** [v0.62.0](../../version.md#v0.62.0) ·
-**Stand:** 2026-08-21 · **Autor:** pt9912
+**Handbuch-Version:** 1.54 · **Software-Version:** [v0.62.0](../../version.md#v0.62.0) ·
+**Stand:** 2026-08-22 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -1255,9 +1255,11 @@ Offene-Wellen-Modell: der Aktiv-Abschnitt führt je offener Welle einen
 Zeiger, mehrere sind legitim, und verglichen werden **Kennungs-Mengen** —
 die im `heading`-Block genannten Wellen-Kennungen (Prosa-Zeilen; Fences
 zählen nicht, Mehrfachnennung einmal, ob Liste oder Tabelle ist
-gleichgültig) gegen die flachen Wellendokumente, in beiden Richtungen. Das
-Befund-`target` ist die betroffene Kennung. Der Ruhe-Marker geht **nicht**
-ein — er sagt unter diesem Modell etwas anderes (nichts ist beansprucht)
+gleichgültig) gegen die Kennungs-Menge der flachen Wellendokumente, in
+beiden Richtungen. Vergleichsgröße sind in beiden Modi **Kennungen**, nicht
+Dateien — zwei flache Dokumente derselben Kennung sind ein Element, auch für
+das Singleton unter `one`. Das Befund-`target` ist die betroffene Kennung.
+Der Ruhe-Marker geht **nicht** ein — er sagt unter diesem Modell etwas anderes (nichts ist beansprucht)
 und bleibt Sache von `planning-drift`; der Zustand „Welle eröffnet, noch
 nichts beansprucht" trägt Marker **und** Zeiger und ist unter `many` grün,
 unter `one` absichtlich rot. **Beachten:** unter `many` zählt jede
@@ -1958,3 +1960,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.51             | v0.60.0          | 2026-08-16 | **Ortsfeste Verweise in Lifecycle-Verzeichnissen** — opt-in `links.resolve-from` (§5/§6): wo Dateien per `git mv` zwischen Geschwister-Verzeichnissen wandern, muss jede Datei eines `dirs`-Verzeichnisses jedes relative Ziel von **jedem** Ort ihrer Gruppe auflösen, und überall auf **dasselbe** Ziel — sonst `link-position-dependent`, gemeldet **vor** dem Move; die Reparatur ist das Präfixieren des Pfads, nicht das Anlegen des Ziels. `fixed-dirs` (etwa der Ruheort) zählen als Orte, prüfen aber nicht; ein am Ist-Ort fehlendes Ziel bleibt allein `target-missing` (kein Doppelbefund); absichtlich ortsgebundene Verweise über das bestehende `ignore-refs`. Fail-closed über denselben Code: eine Gruppe ohne einen einzigen existierenden `dirs`-Ort und ein Ort, der als Datei existiert — ein **einzelner** fehlender Ort meldet bewusst nicht (git überträgt leere Verzeichnisse nicht). Ohne den Block byte-identisch |
 | 1.52             | v0.61.0          | 2026-08-21 | **Chronologische Tabellen auf Richtung prüfen** — siebte Bedingung des Moduls `structure` (§5/§6): `table-order` (`asc`/`desc`) mit `table-column` (1-basiert, Default 1) vergleicht die Schlüsselspalte jeder zusammenhängenden Tabelle des Abschnitts **typisiert** (ISO-Datum, Punkt-Version — `1.10` kommt nach `1.9`; ein zeichenweiser Vergleich meldete korrekt sortierte Tabellen rot) und **nicht-strikt** monoton. Die Zellen werden **roh** gelesen (einzige Ausnahme von der Abschnitts-Bereinigung — Release-Register führen ihre Schlüssel in Inline-Code); Kopf-/Trennzeile zählen nicht. Neue Grund-Codes `section-unordered` (Bruch-Zeile; auch Leerlauf ohne Datenzeile) und `section-cell-untyped` (untypisierbare Zelle/Typ-Mischung — Befund statt stillem Übersprung, Anker-Reset dahinter). Drei neue Exit-2-Config-Ränder. Ohne `table-order` byte-identisch |
 | 1.53             | v0.62.0          | 2026-08-21 | **Kennungs-Bijektion für offene Wellen** — `planning.waves.mode: one`\|`many` (§5/§6, Lastenheft 0.62.0 auf **formalen Konsumenten-CR**): unter `many` vergleicht `wave-drift` die im `heading`-Block genannten Wellen-**Kennungen** gegen die flachen Wellendokumente (beide Richtungen, `target` = Kennung, Fences zählen nicht) statt Marker gegen Datei-Zahl — der Ruhe-Marker bleibt Sache von `planning-drift`, und der Zustand „Welle eröffnet, nichts beansprucht" (Marker **und** Zeiger) ist grün. `one` (Default) unverändert, ohne Schlüssel byte-identisch; unbekannter/explizit leerer Modus ⇒ Exit 2. **Beachten:** unter `many` zählt jede Kennung in der Abschnitts-Prosa als Zeiger — erklärenden Text dort kennungsfrei halten. Nebenbei präzisiert: die §6-planning-Zeile nennt den Eintritts-Block jetzt config-treu (`heading`, Default `## Aktuelle Welle`) |
+| 1.54             | v0.62.0          | 2026-08-22 | Doku-Präzisierung ohne Software-Änderung (Lastenheft 0.62.1): die Wellen-Invariante vergleicht in **beiden** Modi Kennungs-Mengen — zwei flache Wellendokumente derselben Kennung sind ein Element, auch für das Singleton unter `one` (§6, Absatz „Zwei Kardinalitäts-Modelle"). Software-Version bleibt v0.62.0 |
