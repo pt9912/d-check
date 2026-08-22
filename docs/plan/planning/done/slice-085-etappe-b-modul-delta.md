@@ -1,6 +1,6 @@
 # Slice slice-085: Regelwerk-Migration Etappe B — Modul-Delta lesen
 
-**Status:** In Arbeit (welle-67).
+**Status:** done
 
 **Welle:** welle-67-baseline-v500-migration (zweite Umsetzungs-Etappe, nach
 [slice-084](../done/slice-084-etappe-a-vendoring.md)).

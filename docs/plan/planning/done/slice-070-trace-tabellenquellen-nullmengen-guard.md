@@ -1,6 +1,6 @@
 # Slice slice-070: Trace-Tabellenquellen und Nullmengen-Guard
 
-**Status:** in-progress (welle-59-trace-tabellenquellen).
+**Status:** done
 
 **Welle:** aktiv; Vorgänger
 [`slice-069`](../done/slice-069-trace-handbuch-parsergrenzen.md) ist

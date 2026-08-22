@@ -27,12 +27,14 @@ keine Spec-Zeile).
 
 Drei Zustandsfelder sagen etwas, das nicht stimmt — jedes auf seine Art:
 
-1. **Zwölf `done/`-Slices behaupten einen falschen Lifecycle-Zustand.** Von 119
-   Slices im Ruheort tragen 90 ein historisches `Status`-Kopffeld; zwölf davon
-   sagen `open`, `in-progress` oder `In Arbeit`, obwohl die Datei in `done/`
-   liegt. Das Briefing erklärt das historische Feld für Alt-Slices — ein Feld,
+1. **Elf `done/`-Slices behaupten einen falschen Lifecycle-Zustand**, zwei
+   weitere tragen eine Chronik im Feld. Von 119 Slices im Ruheort tragen 90 ein
+   historisches `Status`-Kopffeld; **elf** sagen `open`, `in-progress` oder
+   `In Arbeit`, obwohl die Datei in `done/` liegt, und **zwei** sagen zwar
+   `done`, hängen aber „abgeschlossen am …" an — dieselbe Regel, denn §3.7 gibt
+   Zustandsfeldern keine Bestandsgrenze. Das Briefing erklärt das historische Feld für Alt-Slices — ein Feld,
    das dem Verzeichnis **widerspricht**, deckt es nicht. Die zwölf werden auf
-   den wahren Zustand gesetzt; die übrigen 78 bleiben unberührt
+   den wahren Zustand gesetzt; die übrigen 77 bleiben unberührt
    (Auftraggeber-Entscheid 2026-08-22).
 2. **Das Release-Register trägt einen Anker zu viel.** `version.md` sagt in
    seiner eigenen Regel, der Anker gehöre an **die aktuelle** Version — „sonst
@@ -68,7 +70,7 @@ Drei Zustandsfelder sagen etwas, das nicht stimmt — jedes auf seine Art:
 
 ## 3. Ausdrücklich NICHT in diesem Slice
 
-- **Die 78 übrigen `Status`-Felder bleiben.** Sie widersprechen nichts; das
+- **Die 77 übrigen `Status`-Felder bleiben.** Sie widersprechen nichts; das
   Briefing erklärt sie. Sie zu entfernen hieße, 78 eingefrorene Lauf-Belege
   anzufassen — ausdrücklich verworfen.
 - **Keine ADR wird geheilt.** Die kollidierende Statuszeile bleibt, wie sie
@@ -79,7 +81,8 @@ Drei Zustandsfelder sagen etwas, das nicht stimmt — jedes auf seine Art:
 ## 4. Definition of Done
 
 - [ ] Kein `done/`-Slice behauptet mehr einen Zustand, der seinem Verzeichnis
-      widerspricht (gemessen: vorher zwölf, nachher null).
+      widerspricht, und keines trägt Chronik im Feld (gemessen: vorher elf plus
+      zwei, nachher null).
 - [ ] `version.md` trägt genau **einen** Anker; Gegenprobe belegt, dass ein
       Pin auf die Vorgänger-Version wieder meldet.
 - [ ] §3.7 trägt die Vorrangregel gegenüber §3.5; der Reviewer-Anker nennt

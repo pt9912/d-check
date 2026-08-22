@@ -1,8 +1,6 @@
 # Slice slice-083: Regelwerk-Migration v1.4.0 → v5.0.0 — Delta-Analyse und Etappen-Schnitt
 
-**Status:** open — **Analyse zur Abnahme**. Keine Code-, Spec- oder
-Harness-Änderung: reine Ist-Messung plus ein **detaillierter, schrittweiser Etappen-Schnitt** (§2.7 — jeder Migrationsschritt beschrieben). Die Etappen
-gehören **vor** die Umsetzung abgenommen.
+**Status:** done
 
 **Welle:** keiner Welle zugeordnet — die [Roadmap](../in-progress/roadmap.md)
 steht in Ruhe (welle-66 abgeschlossen); die Einplanung ist Teil der Abnahme (§5).

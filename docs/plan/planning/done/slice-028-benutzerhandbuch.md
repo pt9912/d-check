@@ -1,6 +1,6 @@
 # Slice slice-028: Benutzerhandbuch (`docs/user`)
 
-**Status:** open (geplant).
+**Status:** done
 
 **Welle:** welle-17-benutzerhandbuch (Trigger: Auftraggeber — ein
 nutzbares Benutzerhandbuch nach dem mit-getrackten Standard; baut auf dem

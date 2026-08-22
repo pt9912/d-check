@@ -1,6 +1,6 @@
 # Slice slice-084: Regelwerk-Migration Etappe A — Vendoring auf v5.0.0
 
-**Status:** In Arbeit (welle-67).
+**Status:** done
 
 **Welle:** welle-67-baseline-v500-migration (Trigger: Abnahme von slice-083 am
 2026-08-01; erste Umsetzungs-Etappe).

@@ -1,6 +1,6 @@
 # Slice slice-057: Modul `planning` — Planning-Lifecycle-Konsistenz (hermetisch)
 
-**Status:** in-progress (welle-46-planning-modul).
+**Status:** done
 
 **Welle:** welle-46-planning-modul (Trigger: Auftraggeber-`tools/*.sh`-Audit — der
 **letzte** Kandidat, `tools/planning-consistency.sh`; anders als die drei Vorgänger

@@ -179,7 +179,10 @@ erreichten Meilensteine (die stehen im Closure-Log bzw. in der Status-Spalte).
 Ein lebendes Register trägt **keine** Kopfzeile `Status: Aktiv. Letzte
 Änderung: <Datum>` — sein Zustand ist sein Inhalt, sein Änderungsdatum hält
 `git`; ein Datum, das ein **benannter Trigger** pflegt, ist davon ausgenommen
-(der Frische-Marker der Architektur-Sicht). Kanon:
+(der Frische-Marker der Architektur-Sicht). **Vorrang gegenüber §3.5:** das
+`**Status:**`-Feld einer ADR gehört zu ihrem Kern — ist die ADR `Accepted`, ist
+es immutabel, und §3.5 sticht; eine dort stehende Chronik bleibt und wird nicht
+gemeldet. Für **neue** ADRs gilt diese Regel ab dem ersten Schreiben. Kanon:
 [Baseline §Was ein Kommentar trägt](.harness/baseline/v5.9.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
 
 **Bestandsgrenze:** vor der Einführung bzw. vor dieser Schärfung

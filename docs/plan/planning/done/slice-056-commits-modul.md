@@ -1,6 +1,6 @@
 # Slice slice-056: Modul `commits` — Traceability-Kennung in Commit-Messages über eine Commit-Range
 
-**Status:** in-progress (welle-45-commits-modul).
+**Status:** done
 
 **Welle:** welle-45-commits-modul (Trigger: Auftraggeber-Audit „welche `tools/*.sh`
 noch in d-check mechanisieren?" → das **letzte** Gate-Skript der Familie,

@@ -1,6 +1,6 @@
 # Slice slice-025: Diagnose-Modus (`--doctor`)
 
-**Status:** open (geplant).
+**Status:** done
 
 **Welle:** welle-15-doctor-repair (Trigger: Change Request 0.15.0
 akzeptiert; erste Slice der Welle, keine Vorbedingung).

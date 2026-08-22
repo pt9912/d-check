@@ -1,6 +1,6 @@
 # Slice slice-026: Reparatur-Patch (`--repair`)
 
-**Status:** open (geplant).
+**Status:** done
 
 **Welle:** welle-15-doctor-repair (Trigger: slice-025 done — baut auf
 dem dort eingeführten Fix-Kandidaten-Modell auf).

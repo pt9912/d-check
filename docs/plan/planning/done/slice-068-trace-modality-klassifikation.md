@@ -1,10 +1,6 @@
 # Slice slice-068: Modalitäts-Klassifikation der RTM-Anforderungen (`trace.requirements.modality`)
 
-**Status:** in-progress (welle-57-trace-modality-klassifikation). Doc-first-
-Fundament gelegt (Lastenheft-CR, Spezifikation, [ADR-0036](../../adr/0036-trace-modality-klassifikation.md)
-Proposed); Implementierung + Review + Release folgen. Lifecycle `in-progress`→`done`
-mit Roadmap-Flip bei Closure
-([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)).
+**Status:** done
 
 **Welle:** welle-57-trace-modality-klassifikation.
 

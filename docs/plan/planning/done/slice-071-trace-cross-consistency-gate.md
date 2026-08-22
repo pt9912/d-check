@@ -1,14 +1,6 @@
 # Slice slice-071: Trace-Kreuzverweis-Konsistenz-Gate (Vorwärts-RTM ↔ Rück-Kanten)
 
-**Status:** done — **abgeschlossen am 2026-07-18**
-(`open`→`in-progress`→`done`, Blocker slice-074 aufgelöst). Code, Spezifikation,
-[ADR-0038](../../adr/0038-trace-cross-consistency.md) und vier Review-Runden plus
-Closure-Review liegen vor; v0.44.0/v0.45.0 sind getaggt und veröffentlicht. Der
-letzte offene DoD-Punkt — der Realdatenbeleg gegen grid-gym — ist **erbracht**
-(d-check v0.48.1): der `17. Testarchitektur`-Abschnitt, der bis v0.48.0 an
-`spec/architecture.md:913` an d-checks eigener Ignore-Direktive in einer
-Tabellenzeile abbrach (Exit 2), läuft mit der Direktiven-Toleranz aus slice-074
-([ADR-0040](../../adr/0040-kommentar-suffix-in-tabellenzeilen.md)) durch.
+**Status:** done
 
 **Welle:** welle-60-trace-cross-consistency — **inhaltlich weiter Teil der Welle**,
 aber nicht in Arbeit. Modul 5: `in-progress→open` ist der Übergang für „Blocker,

@@ -1,6 +1,6 @@
 # Slice slice-027: image-test deckt `--doctor`/`--repair` ab
 
-**Status:** open (geplant).
+**Status:** done
 
 **Welle:** welle-16-image-test-modi (Trigger: Entscheidung Auftraggeber —
 E2E-Lücke vor Release v0.12.0 schließen; baut auf slice-025/026).
