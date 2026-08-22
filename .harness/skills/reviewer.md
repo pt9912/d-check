@@ -57,8 +57,10 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   Struktur-Kennung (`SPEC-*` in der Spezifikation, `ARC-*` in der Sicht) oder
   eine Verfeinerungs-Kennung, muss ein **neues** `Schärft:`/`Bezug:`-Feld sie
   nennen — der Link zeigt auf den Abschnitt, der Text trägt die Kennung. Ein
-  neuer Zeiger nur auf „§N" ist ein Finding. **Nicht** zu melden ist die alte
-  Form in `Accepted`-ADRs: sie sind immutabel und bleiben auf ihren
+  neuer Zeiger nur auf „§N" ist ein Finding — auch dann, wenn die ADR im
+  selben Slice `Accepted` wird (die Form gilt beim Schreiben, nicht beim
+  Status-Übergang). **Nicht** zu melden ist die alte Form in ADRs, die
+  **vor welle-80** `Accepted` wurden: sie sind immutabel und bleiben auf ihren
   `§`-Ankern — zwei Formen, eine Regel
   ([`MR-000`](../../harness/conventions.md#mr-000--baseline-aussage)).
 - **LOW** (nice-to-fix): Doku-Drift (Prosa-Modullisten, veraltete

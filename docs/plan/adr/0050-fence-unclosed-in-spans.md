@@ -176,10 +176,6 @@ haben:
 
 ## Geschichte
 
-- 2026-08-22: `Schärft:` nennt die Grund-Code-Festlegung jetzt bei ihrer
-  Struktur-Kennung statt nur beim Abschnitt — die Adressierungs-Form der
-  Baseline, erstmals angewandt (der Status bleibt `Proposed`, der Kern
-  unverändert).
 - 2026-08-09: Proposed (doc-first, `slice-101`).
 - 2026-08-09: nach unabhängigem Code-Review überarbeitet — Entscheidung 1 wertet
   **beide** Schluss-Lesarten aus (vorher nur den naiven Toggle, wodurch der
@@ -199,3 +195,7 @@ haben:
   Assertion gegen Wieder-Divergenz). Entscheidung 5 nennt jetzt beide
   Richtungen der SemVer-Wirkung; die Alternativen-Tabelle begründet nicht mehr
   mit der von Entscheidung 3 widerrufenen Aussage.
+- 2026-08-22: `Schärft:` nennt die Grund-Code-Festlegung jetzt bei ihrer
+  Struktur-Kennung statt nur beim Abschnitt — die Adressierungs-Form der
+  Baseline, erstmals angewandt (der Status bleibt `Proposed`, der Kern
+  unverändert).

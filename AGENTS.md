@@ -247,7 +247,9 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   das Zielelement eine trägt (`SPEC-<NNN>`, `ARC-<NNN>`,
   `<DC-ID>.<Buchstabe>`), sonst den Abschnitt; `—`, wenn der Slice keine
   Spec-Stelle berührt. Der Verweis zeigt **aufwärts** — die Spec nennt den
-  Slice nie (§3.4).
+  Slice nie (§3.4). Feld-Form aus der Baseline-`slice.template.md`, die
+  Kennungs-Regel aus
+  [`MR-000`](harness/conventions.md#mr-000--baseline-aussage).
 - Slice-Pläne tragen **kein** `**Status:**`-Feld — der Lifecycle-Zustand **ist** die
   Verzeichnis-Position; neue Slices führen stattdessen den `**Lifecycle:**`-Hinweis
   (Baseline-`slice.template.md`). Alt-Slices in `done/` behalten ihr historisches Feld.

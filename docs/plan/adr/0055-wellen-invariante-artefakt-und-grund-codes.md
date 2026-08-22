@@ -10,8 +10,10 @@ geteilte Lexik [ADR-0054](0054-geteilte-lexik-bindet-ihre-konsumenten.md);
 Tabellenzeilen-Lexik [`DC-FA-TGT-001`](../../../spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)
 **Schärft:** die Wellen-Schritte W1–W5 in
 [`spec/spezifikation.md` §DC-FA-PLAN-001.a](../../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
-und die vier Grund-Code-Festlegungen [`SPEC-045`](../../../spec/spezifikation.md#4-grund--und-fehler-codes), [`SPEC-046`](../../../spec/spezifikation.md#4-grund--und-fehler-codes),
-[`SPEC-047`](../../../spec/spezifikation.md#4-grund--und-fehler-codes) und [`SPEC-048`](../../../spec/spezifikation.md#4-grund--und-fehler-codes).
+die vier Grund-Code-Festlegungen [`SPEC-045`](../../../spec/spezifikation.md#4-grund--und-fehler-codes), [`SPEC-046`](../../../spec/spezifikation.md#4-grund--und-fehler-codes),
+[`SPEC-047`](../../../spec/spezifikation.md#4-grund--und-fehler-codes) und [`SPEC-048`](../../../spec/spezifikation.md#4-grund--und-fehler-codes) sowie das Konfigurations-Schema
+[`SPEC-005`](../../../spec/spezifikation.md#spec-005--d-checkyml) (die `planning.waves.*`-Schlüssel samt
+ihrer fail-closed-Ränder).
 
 ## Kontext
 
@@ -182,6 +184,6 @@ Register, obwohl alle drei Ergebnisnotizen im Ruheort lagen (Beobachtungs-Regist
   Verhaltens-Unterschied, kein Release; der Beleg ist ein Pinning-Test mit
   zwei gleich-kennigen Dateien.
 - 2026-08-22: `Schärft:`-Feld **ergänzt** (es fehlte): die vier Grund-Code-
-  Festlegungen bei ihrer Struktur-Kennung, der Algorithmus-Abschnitt bei
-  seiner Verfeinerungs-Kennung. Adressierungs-Form der Baseline, Kern
+  Festlegungen und das Konfigurations-Schema bei ihrer Struktur-Kennung, der
+  Algorithmus-Abschnitt bei seiner Verfeinerungs-Kennung. Adressierungs-Form der Baseline, Kern
   unverändert, Status bleibt `Proposed`.

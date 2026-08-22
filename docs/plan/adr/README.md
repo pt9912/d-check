@@ -15,10 +15,11 @@ Architecture Decision Records dieses Repos. Konventionen:
   Status `Accepted` vor welle-80 bleiben auf ihren `§`-Ankern (immutabel) —
   zwei Formen, eine Regel
   ([`MR-000`](../../../harness/conventions.md#mr-000--baseline-aussage)).
-  Beispiel beider Formen: neu `**Schärft:** [\`SPEC-<NNN>\`](…#4-grund--und-fehler-codes)`
-  — die Kennung steht im Linktext, das Link-Ziel ist der Abschnitt; alt und
-  unverändert `**Schärft:** \`spec/architecture.md\` §2` — der Abschnitt ohne
-  Kennung, weil die ADR vor der Vergabe `Accepted` wurde.
+  Beide Formen an einem Beispiel: die **neue** nennt die Kennung als Linktext
+  und zeigt damit auf den Abschnitt, in dem die Zeile steht — etwa
+  `SPEC-<NNN>` verlinkt auf `§4. Grund- und Fehler-Codes`. Die **alte** nennt
+  nur den Abschnitt — etwa `spec/architecture.md` `§2` —, weil ihre ADR vor
+  der Vergabe `Accepted` wurde und damit immutabel ist.
 - Neue ADRs werden in der Tabelle unten ergänzt.
 
 | ID | Titel | Status | Datum | Bezug |
