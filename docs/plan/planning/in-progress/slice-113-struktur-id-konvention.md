@@ -57,9 +57,9 @@ exempt, der einzige Alt-Bestand sind zweistellige Diagramm-Beispiele in einem
    `\bSPEC-\d{3}\b` → `spec/spezifikation.md` und `\bARC-\d{3}\b` →
    `spec/architecture.md` (`link-policy: always`, dieselben `exempt-paths`);
    Kommentar in der Config trägt die Zusage (Wortgrenzen — sonst maskiert
-   `ARC-01` ein `ARC-012`, der Präzedenz-Befund des `diagrams`-Reviews).
+   `ARC-01` eine dreistellige Kennung, der Präzedenz-Befund des `diagrams`-Reviews).
    Probe: `make doc-check` grün, und eine konstruierte Datei mit nackter
-   `SPEC-001` ⇒ `id-unlinked` (Gegenprobe, nicht committet).
+   dreistelligen `SPEC`-Kennung ⇒ `id-unlinked` (Gegenprobe, nicht committet).
 4. **ADR-Index-Konvention** (`docs/plan/adr/README.md` Kopf): `Schärft:` nennt
    die Kennung, wo das Zielelement eine trägt, sonst den §-Anker; ADRs mit
    Status `Accepted` vor welle-80 bleiben auf §-Ankern. **AGENTS §5**: ein
@@ -96,7 +96,7 @@ exempt, der einzige Alt-Bestand sind zweistellige Diagramm-Beispiele in einem
 ## 5. Abnahme-Punkte / Risiken
 
 - **Linkpflicht `always` wirkt sofort repo-weit, auch im Inline-Code:** jede
-  nackte `SPEC-014` in Slices, Wellen, Reviews (außer exempt) wird Befund. Das
+  nackte dreistellige `SPEC`-Kennung in Slices, Wellen, Reviews (außer exempt) wird Befund — auch Beispiel-Kennungen in Inline-Code; das Ventil dafür ist der Zeilen-Marker `d-check:ignore`. Das
   ist gewollt (Konsument), muss aber in der Konvention stehen, damit niemand
   es als Fehlalarm liest. — **Ausgang:** *(bei Closure)*
 - **Zwei `<a id>`-Anker an der [`MR-027`](../../../../harness/conventions.md#mr-027)-Index-Zeile** werden von eingefrorenen

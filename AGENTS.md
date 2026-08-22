@@ -219,7 +219,10 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   Spec-/ADR-Schreiben nach dem deklarierten Schema
   ([`MR-008`](harness/conventions.md#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage))
   — nie ad hoc im Commit/PR; Agenten referenzieren IDs, sie erfinden
-  keine.
+  keine. Struktur-IDs (`SPEC-<NNN>`/`ARC-<NNN>`,
+  [`MR-000`](harness/conventions.md#mr-000--baseline-aussage)) entstehen nur
+  beim Schreiben der Spec-Straten — fortlaufend je Datei — und gehören
+  **nicht** in Commit-Botschaften.
 - Neue oder geänderte `DC-*`-Anforderungen entstehen nur in
   [`spec/lastenheft.md`](spec/lastenheft.md) — nie per ADR (ADRs
   schärfen die Spezifikation, nicht das Lastenheft). Der

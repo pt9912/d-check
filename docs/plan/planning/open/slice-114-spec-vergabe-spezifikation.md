@@ -45,7 +45,7 @@ danach null. Zahlen werden gemessen, nicht übernommen.
    **eingefrorener** Verweis (Accepted-ADR) darauf zeigt — dann ist das
    Zeilenanker-Verbot der Baseline gegen die ADR-Immutabilität abzuwägen und
    der Ausgang in der Closure-Notiz festgehalten).
-2. **Vergabe §2:** fünf Überschriften `### SPEC-001 — Befund` … fortlaufend;
+2. **Vergabe §2:** fünf Überschriften `### SPEC-NNN — Befund` … fortlaufend;
    Verweise im Baum retargeten (Handbuch, ADRs **nur** Proposed, Slices
    `done/` über `ignore-refs`-Ventil, falls nötig).
 3. **Vergabe §3/§4/§6:** neue Spalte `Kennung` links, `SPEC-NNN` je Zeile,

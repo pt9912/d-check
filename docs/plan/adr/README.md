@@ -8,7 +8,13 @@ Architecture Decision Records dieses Repos. Konventionen:
   Ablösung nur via neue ADR mit `Supersedes ADR-NNNN` (Status der alten wird
   `Superseded by ADR-NNNN`; vierstellig, wie der Dateiname).
 - Jede ADR deklariert im `**Schärft:**`-Feld aufwärts, welche
-  Spec-Stelle sie verbindlich macht (nie das Lastenheft).
+  Spec-Stelle sie verbindlich macht (nie das Lastenheft) — die **Kennung**,
+  wo das Zielelement eine trägt (`SPEC-<NNN>` in der Spezifikation,
+  `ARC-<NNN>` in der Sicht, `<DC-ID>.<Buchstabe>` bei einer Verfeinerung;
+  Link auf die Überschrift bzw. die Sektion), sonst den `§`-Anker. ADRs mit
+  Status `Accepted` vor welle-80 bleiben auf ihren `§`-Ankern (immutabel) —
+  zwei Formen, eine Regel
+  ([`MR-000`](../../../harness/conventions.md#mr-000--baseline-aussage)).
 - Neue ADRs werden in der Tabelle unten ergänzt.
 
 | ID | Titel | Status | Datum | Bezug |

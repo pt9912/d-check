@@ -85,9 +85,15 @@ Bleibt hier: keine Adaption, sondern die Adoptions-Erklärung — sie gilt für 
   **Vergabe** (deklariert mit dem v5.6.0-Bump, Baseline
   §Vergabe): **dichte, repo-weite Nummern** je Präfix — ein schreibender
   Mensch, kein Bereichssegment; die nächste Nummer liest Verzeichnis **und**
-  offene Welle-Dateien. Struktur-IDs (`SPEC-*`/`ARC-*`) werden **nicht**
-  vergeben — deklarierte Abweichung
-  [`MR-027`](#mr-027).
+  offene Welle-Dateien. **Struktur-IDs** `SPEC-<NNN>` (`spec/spezifikation.md`)
+  und `ARC-<NNN>` (`spec/architecture.md`) werden nach Baseline-Default
+  vergeben (Auftraggeber-Entscheid 2026-08-22, welle-80): **fortlaufend je
+  Datei**, Lücken werden nicht nachbelegt, kein Bereichssegment; der Link
+  trägt den Abschnitt, der Text die Kennung; Struktur-IDs sind keine
+  Anforderungen und gehören nicht in Commit-Botschaften. ADRs mit Status
+  `Accepted` vor welle-80 adressieren weiter per `§`-Anker (immutabel) — zwei
+  Formen, eine Regel. Den vorherigen Verzicht trug die aufgelöste
+  Abweichung [`MR-027`](#mr-027).
 - **Begründung:** Initial-Setzung. Spätere Adaptionen werden als `MR-<NNN>` nachgetragen.
 - **Auflösungs-Trigger:** permanent.
 

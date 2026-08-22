@@ -123,6 +123,20 @@ ids:
       target: spec/lastenheft.md
       link-policy: always
       exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+    # Struktur-IDs der Spec-Straten (Baseline-Default seit welle-80, MR-000):
+    # Wortgrenzen sind Pflicht — ohne sie maskiert ARC-01 ein ARC-012
+    # (Definitions-Maskierung + Fehl-Target). Grenze: \b schuetzt nicht vor
+    # Bindestrich-Praefixen (GG-SPEC-042 matcht) — Beispiel-Kennungen fremder
+    # Projekte tragen den Zeilen-Marker d-check:ignore. Der Link traegt den
+    # Abschnitt, der Text die Kennung; Vorkommen in der Zieldatei selbst sind frei.
+    - regex: '\bSPEC-\d{3}\b'
+      target: spec/spezifikation.md
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+    - regex: '\bARC-\d{3}\b'
+      target: spec/architecture.md
+      link-policy: always
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
 
 # Referenzmatrix (DC-FA-MTX-001 zwischen Klassen, -002 innerhalb, -003 als Token):
 # maschinelle Kodierung von MR-006 — Spec-Straten verweisen nie abwärts auf

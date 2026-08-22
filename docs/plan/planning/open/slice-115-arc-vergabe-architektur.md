@@ -45,14 +45,14 @@ Messung, die die Referenzrichtung schützt: `spec/spezifikation.md` nennt
    §5 (6) — gemessen; Hard Rule §3.4 im Blick (sprach-/meilensteinfrei:
    Kennungen benennen Rollen, keine Pakete).
 2. **Vergabe:** §1 Komponenten-Tabelle `| Kennung | Rolle | Zweck |` mit
-   `ARC-001…`; Diagramm-Labels `ARC-001 CLI` usw.; §2 erste Spalte nennt die
+   `ARC-NNN` fortlaufend; Diagramm-Labels `ARC-NNN CLI` usw.; §2 erste Spalte nennt die
    Kennung; §3/§5 setzen fort. Kopf der Datei: ein Satz zur Kennungs-Form
    (Struktur-ID, keine Anforderung — Baseline-Wortlaut).
 3. **Konsument:** `diagrams` in `.d-check.yml` opt-in mit `defined-in:
    spec/architecture.md` und dem `ARC-\d{3}`-Muster (Wortgrenzen — der
-   Präzedenz-Befund `ARC-\d{2}` vs `ARC-012`); Probe rot-vorher (Diagramm mit
+   Präzedenz-Befund `ARC-\d{2}` gegen eine dreistellige Kennung); Probe rot-vorher (Diagramm mit
    Kennung, Tabelle ohne) / grün-nachher, dazu eine konstruierte Gegenprobe
-   (Tipp-Kennung `ARC-099` im Fence ⇒ Befund).
+   (eine nicht definierte Tipp-Kennung im Fence ⇒ Befund).
 4. **`matrix`-Messung:** `git grep -n 'ARC-' spec/spezifikation.md` ⇒ null;
    in der Closure-Notiz festgehalten.
 5. **Spiegel** ([`MR-025`](../../../../harness/conventions.md#mr-025),

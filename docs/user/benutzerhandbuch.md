@@ -785,7 +785,7 @@ der Sie ansetzen, und die Richtung sagt Ihnen, **welche** Seite Sie anfassen:
 
 Im Zweifel gewinnt die **Rück-Kante**: sie steht dort, wo das Design gepflegt
 wird, und wird beim Ändern mitgeführt. Die RTM-Tabelle ist der Spiegel — sie
-driftet. Die `GG-SPEC-042`-Rück-Kante taucht übrigens nicht auf: sie fällt per
+driftet. Die `GG-SPEC-042`-Rück-Kante taucht übrigens nicht auf: sie fällt per <!-- d-check:ignore -->
 `exclude-req` heraus.
 
 Die RTM oberhalb bleibt unverändert; der Abgleich ist eine **eigene** Ausgabe,
