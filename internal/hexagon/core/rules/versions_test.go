@@ -3,6 +3,7 @@ package rules
 import (
 	"fmt"
 	"regexp"
+	"strings"
 	"testing"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
@@ -21,10 +22,10 @@ func versionsFixture() map[string]string {
 }
 
 func versionsCfg() model.Config {
-	return model.Config{Versions: model.VersionsConfig{
+	return model.Config{Versions: model.VersionsConfig{Patterns: []model.VersionPattern{{
 		PinPattern:  regexp.MustCompile(`ghcr\.io/[^\s:]+:(v[0-9]+\.[0-9]+\.[0-9]+)`),
 		CurrentFrom: "version.md#aktuell",
-	}}
+	}}}}
 }
 
 // DC-FA-VER-001 Happy: alle Pins tragen die aktuelle Version → kein Befund.
@@ -66,7 +67,7 @@ func TestVersionsVentile(t *testing.T) {
 	fix["docs/alt.md"] = "ghcr.io/pt9912/d-check:v0.1.0\n"
 	fix["docs/use.md"] = "ghcr.io/pt9912/d-check:v0.1.0 <!-- d-check:ignore (Beispiel) -->\n"
 	cfg := versionsCfg()
-	cfg.Versions.ExemptPaths = []string{"docs/alt.md"}
+	cfg.Versions.Patterns[0].ExemptPaths = []string{"docs/alt.md"}
 	m := coretest.NewMemFS(fix)
 	res, err := Run(m, nil, cfg, []string{"versions"})
 	if err != nil {
@@ -110,7 +111,7 @@ func TestVersionsCurrentFromSelbstAusgenommen(t *testing.T) {
 func TestVersionsCurrentFromAnkerFehlt(t *testing.T) {
 	m := coretest.NewMemFS(versionsFixture())
 	cfg := versionsCfg()
-	cfg.Versions.CurrentFrom = "version.md#fehlt"
+	cfg.Versions.Patterns[0].CurrentFrom = "version.md#fehlt"
 	if _, err := Run(m, nil, cfg, []string{"versions"}); err == nil {
 		t.Fatal("nicht auflösbarer current-from-Anker muss Fehler liefern")
 	}
@@ -134,7 +135,7 @@ func TestVersionsCurrentFromHTMLAnker(t *testing.T) {
 		"docs/use.md": "ghcr.io/pt9912/d-check:v0.27.0\n",
 	})
 	cfg := versionsCfg()
-	cfg.Versions.CurrentFrom = "version.md#cur"
+	cfg.Versions.Patterns[0].CurrentFrom = "version.md#cur"
 	res, err := Run(m, nil, cfg, []string{"versions"})
 	if err != nil {
 		t.Fatal(err)
@@ -151,7 +152,7 @@ func TestVersionsCurrentFromGanzeDatei(t *testing.T) {
 		"docs/use.md": "ghcr.io/pt9912/d-check:v0.27.0\n",
 	})
 	cfg := versionsCfg()
-	cfg.Versions.CurrentFrom = "reg.md"
+	cfg.Versions.Patterns[0].CurrentFrom = "reg.md"
 	res, err := Run(m, nil, cfg, []string{"versions"})
 	if err != nil {
 		t.Fatal(err)
@@ -166,7 +167,7 @@ func TestVersionsPinOhneGruppe(t *testing.T) {
 	fix := versionsFixture()
 	fix["docs/use.md"] = "tag v0.26.0 irgendwo\n"
 	cfg := versionsCfg()
-	cfg.Versions.PinPattern = regexp.MustCompile(`v[0-9]+\.[0-9]+\.[0-9]+`)
+	cfg.Versions.Patterns[0].PinPattern = regexp.MustCompile(`v[0-9]+\.[0-9]+\.[0-9]+`)
 	m := coretest.NewMemFS(fix)
 	res, err := Run(m, nil, cfg, []string{"versions"})
 	if err != nil {
@@ -254,7 +255,7 @@ func TestVersionsCurrentFromDuplikatSlug(t *testing.T) {
 		"docs/use.md": "ghcr.io/pt9912/d-check:v0.27.0\n",
 	})
 	cfg := versionsCfg()
-	cfg.Versions.CurrentFrom = "version.md#alt-1"
+	cfg.Versions.Patterns[0].CurrentFrom = "version.md#alt-1"
 	res, err := Run(m, nil, cfg, []string{"versions"})
 	if err != nil {
 		t.Fatalf("Duplikat-Slug muss aufloesen: %v", err)
@@ -272,12 +273,160 @@ func TestVersionsCurrentFromKodiertesFragment(t *testing.T) {
 		"docs/use.md": "ghcr.io/pt9912/d-check:v0.27.0\n",
 	})
 	cfg := versionsCfg()
-	cfg.Versions.CurrentFrom = "version.md#a%20b"
+	cfg.Versions.Patterns[0].CurrentFrom = "version.md#a%20b"
 	res, err := Run(m, nil, cfg, []string{"versions"})
 	if err != nil {
 		t.Fatalf("kodiertes Fragment muss aufloesen: %v", err)
 	}
 	if len(res.Findings) != 0 {
 		t.Fatalf("passender Pin → 0 Befunde, got %v", res.Findings)
+	}
+}
+
+// zweiReihenFixture: zwei unabhängige Versions-Reihen — das eigene Release
+// (version.md, v0.27.0) und ein fremder Baseline-Stand (pin.md, v5.9.0).
+func zweiReihenFixture() map[string]string {
+	fix := versionsFixture()
+	fix["pin.md"] = "# Konventionen\n\n## Baseline\n\nGepinnt auf `v5.9.0`.\n"
+	return fix
+}
+
+// zweiReihenCfg: Paar 1 prüft ghcr-Pins gegen version.md#aktuell, Paar 2
+// baseline/<tag>-Pfade gegen pin.md#baseline.
+func zweiReihenCfg() model.Config {
+	return model.Config{Versions: model.VersionsConfig{Patterns: []model.VersionPattern{
+		{
+			PinPattern:  regexp.MustCompile(`ghcr\.io/[^\s:]+:(v[0-9]+\.[0-9]+\.[0-9]+)`),
+			CurrentFrom: "version.md#aktuell",
+		},
+		{
+			PinPattern:  regexp.MustCompile(`baseline/(v[0-9]+\.[0-9]+\.[0-9]+)`),
+			CurrentFrom: "pin.md#baseline",
+		},
+	}}}
+}
+
+// DC-FA-VER-001 Happy Path (zwei Paare): beide Reihen aktuell → kein Befund.
+func TestVersionsZweiPaareHappy(t *testing.T) {
+	fix := zweiReihenFixture()
+	fix["docs/use.md"] = "ghcr.io/pt9912/d-check:v0.27.0 und baseline/v5.9.0\n"
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, zweiReihenCfg(), []string{"versions"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("beide Reihen aktuell → 0 Befunde, got %v", res.Findings)
+	}
+}
+
+// DC-FA-VER-001 Negative (je Paar): nur die zweite Reihe ist veraltet → genau
+// ein Befund, dessen erwartete Version aus der Quelle des ZWEITEN Paares
+// stammt.
+func TestVersionsZweitesPaarMeldet(t *testing.T) {
+	fix := zweiReihenFixture()
+	fix["docs/use.md"] = "ghcr.io/pt9912/d-check:v0.27.0 und baseline/v5.7.0\n"
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, zweiReihenCfg(), []string{"versions"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 || res.Findings[0].Target != "v5.7.0" {
+		t.Fatalf("nur die zweite Reihe veraltet → 1 Befund v5.7.0, got %v", res.Findings)
+	}
+	if !strings.Contains(res.Findings[0].Message, "erwartet v5.9.0") {
+		t.Fatalf("erwartete Version muss aus der Quelle des zweiten Paares stammen: %q", res.Findings[0].Message)
+	}
+}
+
+// DC-FA-VER-001 Boundary: die Datei-Ventile sind paar-lokal — die
+// exempt-paths des ersten Paares schirmen das zweite nicht ab, und die
+// Quell-Datei des ersten Paares wird vom zweiten geprüft.
+func TestVersionsVentilePaarLokal(t *testing.T) {
+	fix := zweiReihenFixture()
+	fix["docs/alt.md"] = "ghcr.io/pt9912/d-check:v0.1.0 und baseline/v5.7.0\n"
+	fix["version.md"] += "\nbaseline/v5.6.0\n"
+	fix["docs/use.md"] = ""
+	cfg := zweiReihenCfg()
+	cfg.Versions.Patterns[0].ExemptPaths = []string{"docs/alt.md"}
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, cfg, []string{"versions"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, fmt.Sprintf("%s:%d %s", f.File, f.Line, f.Target))
+	}
+	want := []string{"docs/alt.md:1 v5.7.0", "version.md:12 v5.6.0"}
+	if fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("Ventile müssen paar-lokal wirken: got %v, want %v", got, want)
+	}
+}
+
+// DC-FA-VER-001 Boundary: der ZEILEN-Marker ist nicht paar-lokal — er nimmt
+// die Zeile allen Paaren aus.
+func TestVersionsZeilenMarkerGiltAllenPaaren(t *testing.T) {
+	fix := zweiReihenFixture()
+	fix["docs/use.md"] = "ghcr.io/pt9912/d-check:v0.1.0 baseline/v5.7.0 <!-- d-check:ignore -->\n"
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, zweiReihenCfg(), []string{"versions"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("d-check:ignore nimmt die Zeile allen Paaren aus, got %v", res.Findings)
+	}
+}
+
+// DC-FA-VER-001 Boundary: treffen zwei Paare dieselbe Zeile mit demselben
+// Pin-Wert gegen dieselbe Erwartung, entsteht genau EIN Befund.
+func TestVersionsDedupGleichesTupel(t *testing.T) {
+	fix := versionsFixture()
+	fix["docs/use.md"] = "ghcr.io/pt9912/d-check:v0.26.0\n"
+	cfg := versionsCfg()
+	cfg.Versions.Patterns = append(cfg.Versions.Patterns, model.VersionPattern{
+		PinPattern:  regexp.MustCompile(`d-check:(v[0-9]+\.[0-9]+\.[0-9]+)`),
+		CurrentFrom: "version.md#aktuell",
+	})
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, cfg, []string{"versions"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 1 {
+		t.Fatalf("identisches Befund-Tupel zweier Paare → 1 Befund, got %v", res.Findings)
+	}
+}
+
+// DC-FA-VER-001 Boundary: erwarten zwei Paare auf derselben Zeile
+// VERSCHIEDENE Versionen, entstehen zwei Befunde in Deklarationsreihenfolge.
+func TestVersionsZweiBefundeInDeklarationsreihenfolge(t *testing.T) {
+	fix := zweiReihenFixture()
+	fix["docs/use.md"] = "ghcr.io/pt9912/d-check:v0.26.0 baseline/v5.7.0\n"
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, zweiReihenCfg(), []string{"versions"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, f.Target)
+	}
+	want := []string{"v0.26.0", "v5.7.0"}
+	if fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("Reihenfolge = Deklarationsreihenfolge der Paare: got %v, want %v", got, want)
+	}
+}
+
+// DC-FA-VER-001 fail-closed: löst die Quelle des ZWEITEN Paares nicht auf,
+// bricht der Lauf — ein unvollständiges Paar schaltet die übrigen nicht still
+// scharf.
+func TestVersionsZweitesPaarQuelleFehltFailClosed(t *testing.T) {
+	m := coretest.NewMemFS(zweiReihenFixture())
+	cfg := zweiReihenCfg()
+	cfg.Versions.Patterns[1].CurrentFrom = "pin.md#fehlt"
+	if _, err := Run(m, nil, cfg, []string{"versions"}); err == nil {
+		t.Fatal("nicht auflösbare Quelle eines Paares muss den Lauf brechen")
 	}
 }

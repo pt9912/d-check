@@ -275,13 +275,12 @@ func (d DiagramsConfig) EffectiveFences() []string {
 	return d.Fences
 }
 
-// VersionsConfig sind die Parameter des Moduls versions (DC-FA-VER-001):
-// PinPattern erkennt einen Versions-Pin (Version in Capture-Gruppe 1, sonst
-// der ganze Treffer), CurrentFrom adressiert den Span mit der aktuellen
-// Version (Default `version.md#aktuell`), ExemptPaths nimmt ganze Dateien aus.
-// Ohne PinPattern ist das Modul wirkungslos (byte-identisch zum Lauf ohne das
-// Modul, DC-QA-02).
-type VersionsConfig struct {
+// VersionPattern ist ein Paar aus Pin-Muster, Versions-Quelle und eigenen
+// Ausnahmen (DC-FA-VER-001): PinPattern erkennt einen Versions-Pin (Version in
+// Capture-Gruppe 1, sonst der ganze Treffer), CurrentFrom adressiert den Span
+// mit der aktuellen Version (Default `version.md#aktuell`), ExemptPaths nimmt
+// ganze Dateien aus — nur für dieses Paar.
+type VersionPattern struct {
 	PinPattern  *regexp.Regexp
 	CurrentFrom string
 	ExemptPaths []string
@@ -289,11 +288,21 @@ type VersionsConfig struct {
 
 // EffectiveCurrentFrom liefert die Quelle der aktuellen Version (Default
 // `version.md#aktuell`, spec/spezifikation.md §DC-FA-VER-001.a).
-func (v VersionsConfig) EffectiveCurrentFrom() string {
+func (v VersionPattern) EffectiveCurrentFrom() string {
 	if v.CurrentFrom == "" {
 		return "version.md#aktuell"
 	}
 	return v.CurrentFrom
+}
+
+// VersionsConfig sind die Parameter des Moduls versions (DC-FA-VER-001): eine
+// Liste von Muster-Quellen-Paaren, die je für sich ausgewertet werden. Die
+// Kurzform der Konfiguration (die drei Schlüssel direkt unter `versions`) IST
+// die einelementige Liste und wird am Config-Rand in sie übersetzt — der Kern
+// kennt nur die Liste, es gibt genau einen Auswertungspfad. Ohne Paar ist das
+// Modul wirkungslos (byte-identisch zum Lauf ohne das Modul, DC-QA-02).
+type VersionsConfig struct {
+	Patterns []VersionPattern
 }
 
 // ImmutableConfig sind die Parameter des Moduls immutable (DC-FA-IMM-001):

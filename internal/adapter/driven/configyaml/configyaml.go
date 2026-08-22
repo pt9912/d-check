@@ -116,13 +116,24 @@ type rawDiagramPattern struct {
 	DefinedIn string `yaml:"defined-in"`
 }
 
-// rawVersions trägt scope, das Pin-Muster, die Quelle der aktuellen Version
-// und das exempt-paths-Ventil des Moduls versions (DC-FA-VER-001).
+// rawVersions trägt scope und die Muster-Quellen-Paare des Moduls versions
+// (DC-FA-VER-001) in beiden Schreibweisen: die Kurzform direkt (pin-pattern,
+// current-from, exempt-paths) und die Liste unter patterns. Beide zugleich
+// sind ein Nutzungsfehler.
 type rawVersions struct {
-	Scope       *rawScope `yaml:"scope"`
-	PinPattern  string    `yaml:"pin-pattern"`
-	CurrentFrom string    `yaml:"current-from"`
-	ExemptPaths []string  `yaml:"exempt-paths"`
+	Scope       *rawScope           `yaml:"scope"`
+	PinPattern  string              `yaml:"pin-pattern"`
+	CurrentFrom string              `yaml:"current-from"`
+	ExemptPaths []string            `yaml:"exempt-paths"`
+	Patterns    []rawVersionPattern `yaml:"patterns"`
+}
+
+// rawVersionPattern ist ein Paar der versions.patterns-Liste: eigenes Muster,
+// eigene Quelle, eigene Ausnahmen (DC-FA-VER-001).
+type rawVersionPattern struct {
+	PinPattern  string   `yaml:"pin-pattern"`
+	CurrentFrom string   `yaml:"current-from"`
+	ExemptPaths []string `yaml:"exempt-paths"`
 }
 
 // rawImmutable trägt scope und exclude-sections des Moduls immutable
@@ -1568,27 +1579,72 @@ func applyDiagrams(r *raw, cfg *model.Config) error {
 	return nil
 }
 
-// applyVersions validiert und kompiliert das versions-Pin-Muster
-// (DC-FA-VER-001): Pflicht-pin-pattern (kompilierbar, nicht den Leerstring
-// matchend); current-from/exempt-paths werden im Kern beim Lauf-Start bzw. je
-// Datei ausgewertet.
+// applyVersions validiert und kompiliert die versions-Muster-Quellen-Paare
+// (DC-FA-VER-001). Die Kurzform IST die einelementige patterns-Liste und wird
+// hier in sie übersetzt — der Kern kennt nur die Liste, es gibt genau einen
+// Auswertungspfad. Beide Schreibweisen zugleich, eine explizit leere Liste
+// oder ein Paar ohne pin-pattern sind Nutzungsfehler (Exit 2);
+// current-from/exempt-paths werden im Kern beim Lauf-Start bzw. je Datei
+// ausgewertet.
 func applyVersions(r *raw, cfg *model.Config) error {
 	if r.Versions == nil {
 		return nil
 	}
 	v := r.Versions
-	if strings.TrimSpace(v.PinPattern) == "" {
-		return fmt.Errorf("%s: versions.pin-pattern fehlt", FileName)
+	if v.Patterns == nil {
+		p, err := compileVersionPattern("versions", *shortVersionPattern(v))
+		if err != nil {
+			return err
+		}
+		cfg.Versions = model.VersionsConfig{Patterns: []model.VersionPattern{p}}
+		return nil
 	}
-	re, err := regexp.Compile(v.PinPattern)
+	if hasShortVersionForm(v) {
+		return fmt.Errorf("%s: versions: Kurzform (pin-pattern/current-from/exempt-paths) und versions.patterns zugleich gesetzt — "+
+			"welche Ausnahmen für welches Muster gälten, wäre nicht ablesbar", FileName)
+	}
+	if len(v.Patterns) == 0 {
+		return fmt.Errorf("%s: versions.patterns ist leer", FileName)
+	}
+	patterns := make([]model.VersionPattern, 0, len(v.Patterns))
+	for i, rp := range v.Patterns {
+		p, err := compileVersionPattern(fmt.Sprintf("versions.patterns[%d]", i), rp)
+		if err != nil {
+			return err
+		}
+		patterns = append(patterns, p)
+	}
+	cfg.Versions = model.VersionsConfig{Patterns: patterns}
+	return nil
+}
+
+// hasShortVersionForm meldet, ob einer der drei Kurzform-Schlüssel gesetzt ist
+// (DC-FA-VER-001) — zusammen mit patterns ein Nutzungsfehler.
+func hasShortVersionForm(v *rawVersions) bool {
+	return v.PinPattern != "" || v.CurrentFrom != "" || len(v.ExemptPaths) > 0
+}
+
+// shortVersionPattern liest die drei Kurzform-Schlüssel als ein Paar.
+func shortVersionPattern(v *rawVersions) *rawVersionPattern {
+	return &rawVersionPattern{PinPattern: v.PinPattern, CurrentFrom: v.CurrentFrom, ExemptPaths: v.ExemptPaths}
+}
+
+// compileVersionPattern validiert ein Muster-Quellen-Paar: Pflicht-pin-pattern,
+// kompilierbar und nicht den Leerstring matchend (DC-FA-VER-001). prefix
+// benennt die Fundstelle in der Konfiguration, damit die Meldung bei einer
+// Liste auf das Paar zeigt.
+func compileVersionPattern(prefix string, rp rawVersionPattern) (model.VersionPattern, error) {
+	if strings.TrimSpace(rp.PinPattern) == "" {
+		return model.VersionPattern{}, fmt.Errorf("%s: %s.pin-pattern fehlt", FileName, prefix)
+	}
+	re, err := regexp.Compile(rp.PinPattern)
 	if err != nil {
-		return fmt.Errorf("%s: versions.pin-pattern: %v", FileName, err)
+		return model.VersionPattern{}, fmt.Errorf("%s: %s.pin-pattern: %v", FileName, prefix, err)
 	}
 	if re.MatchString("") {
-		return fmt.Errorf("%s: versions.pin-pattern matcht den Leerstring", FileName)
+		return model.VersionPattern{}, fmt.Errorf("%s: %s.pin-pattern matcht den Leerstring", FileName, prefix)
 	}
-	cfg.Versions = model.VersionsConfig{PinPattern: re, CurrentFrom: v.CurrentFrom, ExemptPaths: v.ExemptPaths}
-	return nil
+	return model.VersionPattern{PinPattern: re, CurrentFrom: rp.CurrentFrom, ExemptPaths: rp.ExemptPaths}, nil
 }
 
 // applyImmutable übernimmt exclude-sections des Moduls immutable

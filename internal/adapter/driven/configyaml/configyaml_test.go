@@ -1,6 +1,7 @@
 package configyaml_test
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -531,14 +532,16 @@ func TestDecode_Versions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if cfg.Versions.PinPattern == nil ||
-		cfg.Versions.CurrentFrom != "version.md#aktuell" ||
-		len(cfg.Versions.ExemptPaths) != 2 {
+	// Die Kurzform wird in die einelementige Paar-Liste übersetzt.
+	if len(cfg.Versions.Patterns) != 1 ||
+		cfg.Versions.Patterns[0].PinPattern == nil ||
+		cfg.Versions.Patterns[0].CurrentFrom != "version.md#aktuell" ||
+		len(cfg.Versions.Patterns[0].ExemptPaths) != 2 {
 		t.Fatalf("versions nicht übernommen: %+v", cfg.Versions)
 	}
 	// current-from optional → der Kern-Default greift (EffectiveCurrentFrom).
 	cfgD, err := configyaml.Decode([]byte("versions:\n  pin-pattern: 'x:(v\\d+\\.\\d+\\.\\d+)'\n"))
-	if err != nil || cfgD.Versions.EffectiveCurrentFrom() != "version.md#aktuell" {
+	if err != nil || len(cfgD.Versions.Patterns) != 1 || cfgD.Versions.Patterns[0].EffectiveCurrentFrom() != "version.md#aktuell" {
 		t.Fatalf("current-from-Default nicht wirksam: %+v (%v)", cfgD.Versions, err)
 	}
 }
@@ -778,5 +781,81 @@ func TestDecode_WavesModeRaender(t *testing.T) {
 	}
 	if _, err := configyaml.Decode([]byte("planning:\n  waves:\n    mode: viele\n")); err == nil {
 		t.Fatal("mode-Validierung muss auch ohne dir (inerte Fähigkeit) greifen")
+	}
+}
+
+// DC-FA-VER-001: die Kurzform IST die einelementige patterns-Liste — beide
+// Schreibweisen ergeben dieselbe kompilierte Paar-Liste.
+func TestConfigYAMLVersionsKurzformIstEinPaarListe(t *testing.T) {
+	kurz, err := configyaml.Decode([]byte("versions:\n" +
+		"  pin-pattern: 'ghcr:(v[0-9]+)'\n" +
+		"  current-from: reg.md#a\n" +
+		"  exempt-paths: [CHANGELOG.md]\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	liste, err := configyaml.Decode([]byte("versions:\n" +
+		"  patterns:\n" +
+		"    - pin-pattern: 'ghcr:(v[0-9]+)'\n" +
+		"      current-from: reg.md#a\n" +
+		"      exempt-paths: [CHANGELOG.md]\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(kurz.Versions.Patterns) != 1 || len(liste.Versions.Patterns) != 1 {
+		t.Fatalf("je ein Paar erwartet: %+v / %+v", kurz.Versions, liste.Versions)
+	}
+	a, b := kurz.Versions.Patterns[0], liste.Versions.Patterns[0]
+	if a.PinPattern.String() != b.PinPattern.String() ||
+		a.CurrentFrom != b.CurrentFrom ||
+		fmt.Sprint(a.ExemptPaths) != fmt.Sprint(b.ExemptPaths) {
+		t.Fatalf("Kurzform und Ein-Paar-Liste müssen dasselbe Paar ergeben:\n%+v\n%+v", a, b)
+	}
+}
+
+// DC-FA-VER-001: mehrere Paare werden in Deklarationsreihenfolge übernommen.
+func TestConfigYAMLVersionsZweiPaare(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte("versions:\n" +
+		"  patterns:\n" +
+		"    - pin-pattern: 'ghcr:(v[0-9]+)'\n" +
+		"    - pin-pattern: 'baseline/(v[0-9]+)'\n" +
+		"      current-from: pin.md#baseline\n"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(cfg.Versions.Patterns) != 2 ||
+		cfg.Versions.Patterns[0].PinPattern.String() != "ghcr:(v[0-9]+)" ||
+		cfg.Versions.Patterns[1].PinPattern.String() != "baseline/(v[0-9]+)" {
+		t.Fatalf("zwei Paare in Deklarationsreihenfolge erwartet: %+v", cfg.Versions)
+	}
+	// current-from ist je Paar optional; der Default greift paar-lokal.
+	if cfg.Versions.Patterns[0].EffectiveCurrentFrom() != "version.md#aktuell" ||
+		cfg.Versions.Patterns[1].EffectiveCurrentFrom() != "pin.md#baseline" {
+		t.Fatalf("current-from-Default gilt je Paar: %+v", cfg.Versions)
+	}
+}
+
+// DC-FA-VER-001 fail-closed: Kurzform und patterns zugleich, leere Liste und
+// ein Paar ohne pin-pattern sind Nutzungsfehler; die Meldung zeigt auf das
+// Paar.
+func TestConfigYAMLVersionsFailClosed(t *testing.T) {
+	cases := []struct{ name, yaml, want string }{
+		{"mischform", "versions:\n  pin-pattern: 'a(v1)'\n  patterns:\n    - pin-pattern: 'b(v1)'\n", "zugleich gesetzt"},
+		{"mischform-nur-exempt", "versions:\n  exempt-paths: [x.md]\n  patterns:\n    - pin-pattern: 'b(v1)'\n", "zugleich gesetzt"},
+		{"leere-liste", "versions:\n  patterns: []\n", "versions.patterns ist leer"},
+		{"paar-ohne-muster", "versions:\n  patterns:\n    - current-from: reg.md\n", "versions.patterns[0].pin-pattern fehlt"},
+		{"paar-leerstring", "versions:\n  patterns:\n    - pin-pattern: 'x*'\n", "versions.patterns[0].pin-pattern matcht den Leerstring"},
+		{"kurzform-ohne-muster", "versions:\n  current-from: reg.md\n", "versions.pin-pattern fehlt"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			_, err := configyaml.Decode([]byte(c.yaml))
+			if err == nil {
+				t.Fatalf("%s muss Exit 2 auslösen", c.name)
+			}
+			if !strings.Contains(err.Error(), c.want) {
+				t.Fatalf("Meldung nennt %q nicht: %v", c.want, err)
+			}
+		})
 	}
 }

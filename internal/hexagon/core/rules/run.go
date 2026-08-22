@@ -47,15 +47,18 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 	if err := ensureDiagramsDefinedInExist(fsys, cfg.Diagrams); err != nil {
 		return res, err
 	}
-	// Modul versions: aktuelle Version aus current-from auflösen
-	// (DC-FA-VER-001.a; fail-closed → Exit 2). Nur wenn aktiv + konfiguriert.
-	var versionsCurrent, versionsFromFile string
-	if active["versions"] && cfg.Versions.PinPattern != nil {
-		cur, from, verr := resolveCurrentVersion(fsys, cfg.Versions.EffectiveCurrentFrom())
-		if verr != nil {
-			return res, verr
+	// Modul versions: je Paar die aktuelle Version aus seiner current-from-
+	// Quelle auflösen (DC-FA-VER-001.a; fail-closed → Exit 2). Nur wenn aktiv;
+	// ohne Paar bleibt die Liste leer und das Modul wirkungslos.
+	var versionsPatterns []resolvedVersionPattern
+	if active["versions"] {
+		for _, p := range cfg.Versions.Patterns {
+			cur, from, verr := resolveCurrentVersion(fsys, p.EffectiveCurrentFrom())
+			if verr != nil {
+				return res, verr
+			}
+			versionsPatterns = append(versionsPatterns, resolvedVersionPattern{pattern: p, current: cur, fromFile: from})
 		}
-		versionsCurrent, versionsFromFile = cur, from
 	}
 
 	// Modul tracked (DC-FA-TRK-001.a Schritte 1–2): die Index-Menge wird
@@ -91,7 +94,7 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 		statusCache:     map[string]*string{},
 		diagCache:       map[string]map[string]bool{},
 		spanCache:       map[string]string{},
-		versionsCurrent: versionsCurrent, versionsFromFile: versionsFromFile,
+		versionsPatterns: versionsPatterns,
 		tracked:         trackedSet,
 	}
 	for _, file := range files {
@@ -182,10 +185,10 @@ type runState struct {
 	extRefs     []ExternalRef
 	srcRefs     []SourceRef
 	findings    []model.Finding
-	// versionsCurrent/versionsFromFile: am Lauf-Start aufgelöste aktuelle
-	// Version + ihr Datei-Pfad (Modul versions, DC-FA-VER-001).
-	versionsCurrent  string
-	versionsFromFile string
+	// versionsPatterns: die Muster-Quellen-Paare samt der am Lauf-Start
+	// aufgelösten erwarteten Version und ihrem Datei-Pfad (Modul versions,
+	// DC-FA-VER-001).
+	versionsPatterns []resolvedVersionPattern
 	// tracked: die einmal je Lauf geladene git-Index-Menge (Modul tracked,
 	// DC-FA-TRK-001.a Schritt 2); nil, wenn das Modul inaktiv ist.
 	tracked map[string]bool
@@ -274,7 +277,7 @@ func (st *runState) appendTailFindings(file string, content []byte, lines []Line
 		st.findings = append(st.findings, CheckDiagrams(st.fsys, file, content, st.cfg.Diagrams, st.diagCache)...)
 	}
 	if st.applies("versions", file) {
-		st.findings = append(st.findings, CheckVersions(file, content, st.cfg.Versions, st.versionsCurrent, st.versionsFromFile)...)
+		st.findings = append(st.findings, CheckVersions(file, content, st.versionsPatterns)...)
 	}
 	if st.applies("pins", file) {
 		st.findings = append(st.findings, CheckPins(st.fsys, file, lines, content, st.spanCache)...)

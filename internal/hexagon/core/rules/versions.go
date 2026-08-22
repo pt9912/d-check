@@ -14,20 +14,31 @@ import (
 // (spec/spezifikation.md §DC-FA-VER-001.a Schritt 1).
 var versionRE = regexp.MustCompile(`v?\d+\.\d+\.\d+`)
 
+// resolvedVersionPattern ist ein Muster-Quellen-Paar samt der am Lauf-Start
+// aufgelösten erwarteten Version und dem Pfad ihrer Quell-Datei
+// (spec/spezifikation.md §DC-FA-VER-001.a).
+type resolvedVersionPattern struct {
+	pattern  model.VersionPattern
+	current  string
+	fromFile string
+}
+
 // CheckVersions ist das Regelmodul `versions` (DC-FA-VER-001): jeder
-// Versions-Pin (cfg.PinPattern) muss die aktuelle Version (current) tragen,
-// sonst Befund version-stale. Anders als die übrigen Module liest es die Pins
-// AUCH innerhalb von Fenced-Code (Pins leben in Kommando-Beispielen) — eine
+// Versions-Pin muss die aktuelle Version seines Paares tragen, sonst Befund
+// version-stale. Anders als die übrigen Module liest es die Pins AUCH
+// innerhalb von Fenced-Code (Pins leben in Kommando-Beispielen) — eine
 // gescopte Ausnahme von der Fence-Opazität, reiner Muster-Scan über die
-// Rohzeilen (kein Parser). Ventile wie ids/codepaths: exempt-paths (datei-weit)
-// und der Zeilen-Marker d-check:ignore; die current-from-Datei (fromFile) ist
-// selbst ausgenommen (ihr Verlauf listet bewusst alle Versionen). Ohne
-// PinPattern wirkungslos (byte-identisch, DC-QA-02).
-func CheckVersions(file string, content []byte, cfg model.VersionsConfig, current, fromFile string) []model.Finding {
-	if cfg.PinPattern == nil {
-		return nil
-	}
-	if file == fromFile || ignored(file, cfg.ExemptPaths) {
+// Rohzeilen (kein Parser).
+//
+// Mehrere Paare werden je Zeile in Deklarationsreihenfolge ausgewertet; ein
+// Befund-Tupel, das zwei Paare identisch erzeugen, entsteht einmal. Die beiden
+// DATEI-Ventile sind paar-lokal — exempt-paths gilt für sein Paar, die
+// Selbst-Ausnahme der Quell-Datei nur für deren eigene Reihe; der
+// ZEILEN-Marker d-check:ignore nimmt die Zeile allen Paaren aus. Ohne Paar
+// wirkungslos (byte-identisch, DC-QA-02).
+func CheckVersions(file string, content []byte, patterns []resolvedVersionPattern) []model.Finding {
+	active := applicableVersionPatterns(file, patterns)
+	if len(active) == 0 {
 		return nil
 	}
 	var findings []model.Finding
@@ -35,19 +46,38 @@ func CheckVersions(file string, content []byte, cfg model.VersionsConfig, curren
 		if strings.Contains(raw, ignoreMarker) {
 			continue // d-check:ignore — Zeile von der versions-Prüfung frei
 		}
-		for _, m := range cfg.PinPattern.FindAllStringSubmatchIndex(raw, -1) {
-			ver := pinVersion(raw, m)
-			if ver == current {
-				continue
+		seen := make(map[string]bool)
+		for _, p := range active {
+			for _, m := range p.pattern.PinPattern.FindAllStringSubmatchIndex(raw, -1) {
+				ver := pinVersion(raw, m)
+				if ver == p.current || seen[ver+"\x00"+p.current] {
+					continue
+				}
+				seen[ver+"\x00"+p.current] = true
+				findings = append(findings, model.Finding{
+					File: file, Line: i + 1, Rule: "versions",
+					Target: ver, Reason: model.ReasonVersionStale,
+					Message: fmt.Sprintf("Versions-Pin trägt %s, erwartet %s (versions.current-from)", ver, p.current),
+				})
 			}
-			findings = append(findings, model.Finding{
-				File: file, Line: i + 1, Rule: "versions",
-				Target: ver, Reason: model.ReasonVersionStale,
-				Message: fmt.Sprintf("Versions-Pin trägt %s, erwartet %s (versions.current-from)", ver, current),
-			})
 		}
 	}
 	return findings
+}
+
+// applicableVersionPatterns liefert die Paare, deren Datei-Ventile diese Datei
+// nicht ausnehmen: die eigene Quell-Datei eines Paares und dessen exempt-paths
+// schalten nur dieses Paar ab, nicht die übrigen
+// (spec/spezifikation.md §DC-FA-VER-001.a Schritt 4).
+func applicableVersionPatterns(file string, patterns []resolvedVersionPattern) []resolvedVersionPattern {
+	active := make([]resolvedVersionPattern, 0, len(patterns))
+	for _, p := range patterns {
+		if file == p.fromFile || ignored(file, p.pattern.ExemptPaths) {
+			continue
+		}
+		active = append(active, p)
+	}
+	return active
 }
 
 // pinVersion liefert die Version eines Pin-Treffers: Capture-Gruppe 1, falls

@@ -76,7 +76,7 @@ func versionsKenntAnker(t *testing.T, ziel, anker string) bool {
 		"docs/use.md":  "ghcr.io/pt9912/d-check:v0.27.0\n",
 	})
 	cfg := versionsCfg()
-	cfg.Versions.CurrentFrom = "docs/ziel.md#" + anker
+	cfg.Versions.Patterns[0].CurrentFrom = "docs/ziel.md#" + anker
 	_, err := Run(m, nil, cfg, []string{"versions"})
 	return err == nil
 }
