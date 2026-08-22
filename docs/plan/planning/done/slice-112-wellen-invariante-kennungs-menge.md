@@ -95,16 +95,16 @@ gleich-kennigen Dateien in beiden Modi.
 
 ## 4. Definition of Done
 
-- [ ] Lastenheft 0.62.1 (Zeile 1/2 + Akzeptanzkriterium + Historie) liegt
+- [x] Lastenheft 0.62.1 (Zeile 1/2 + Akzeptanzkriterium + Historie) liegt
       als **erster** Commit vor Spezifikation, ADR und Test in der Historie.
-- [ ] Spezifikation (W3, §4, §7, Kopf) und
+- [x] Spezifikation (W3, §4, §7, Kopf) und
       [ADR-0055](../../adr/0055-wellen-invariante-artefakt-und-grund-codes.md)
       (Entscheidung 6 + Geschichte) nachgezogen;
       [`MR-025`](../../../../harness/conventions.md#mr-025)-Liste aus §2
       Schritt 3 abgehakt.
-- [ ] Pinning-Test grün in beiden Modi (`make test`), `make gates` grün.
-- [ ] Handbuch 1.54 + CHANGELOG `[Unreleased]` nachgezogen.
-- [ ] Unabhängiger Review vor der Closure; Closure-Notiz mit
+- [x] Pinning-Test grün in beiden Modi (`make test`), `make gates` grün.
+- [x] Handbuch 1.54 + CHANGELOG `[Unreleased]` nachgezogen.
+- [x] Unabhängiger Review vor der Closure; Closure-Notiz mit
       Lerneintrag; Beobachtungs-Register gesichtet (§7 zitiert den Stand);
       `make fullbuild` grün (Exit explizit).
 
@@ -112,18 +112,29 @@ gleich-kennigen Dateien in beiden Modi.
 
 - **Lesbarkeit der Zeile 1/2:** die Präzisierung darf die Tabellenzeile
   nicht in Prosa ertränken — ein Zusatz-Satz für beide Modi statt je Modus
-  eine Klammer. — **Ausgang:** *(bei Closure)*
+  eine Klammer. — **Ausgang:** entfallen — ein Zusatz-Satz für beide Modi, die
+  Zeile blieb eine Tabellenzeile; der Review meldete keinen Lesbarkeits-Befund.
 - **Der Test pinnt eine Toleranz:** zwei gleich-kennige Dateien sind kein
   Befund. Das ist Ist-Verhalten und als Grenze in §3 benannt; der Test
   trägt die Aussage „Kennung ist die Vergleichsgröße", nicht „Doppel-
-  Dokumente sind erwünscht". — **Ausgang:** *(bei Closure)*
+  Dokumente sind erwünscht". — **Ausgang:** entfallen als Risiko — die Grenze
+  steht in §3 und im Akzeptanzkriterium selbst; ob ein Doppel-Dokument
+  meldepflichtig wird, ist eine Produktfrage (CR-Kandidat), kein Risiko dieses
+  Slice.
 - **Spiegel-Vollständigkeit** (BEO-002 ⇒ [`MR-025`](../../../../harness/conventions.md#mr-025)): die Liste in §2 Schritt 3
-  ist die Antwort; der Review prüft sie gegen den Diff. — **Ausgang:** *(bei
-  Closure)*
+  ist die Antwort; der Review prüft sie gegen den Diff. — **Ausgang:**
+  **eingetreten** — drei Stellen mit der alten Lesart blieben in drei ohnehin
+  bearbeiteten Dateien stehen (Review F-1/F-2, MEDIUM), eingearbeitet; Klasse
+  BEO-002 (verkörpert), Gegenmittel in
+  [`MR-025`](../../../../harness/conventions.md#mr-025) geschärft (Ableiter:
+  `grep` nach dem alten Wortlaut).
 - **Arbeitsregeln aus dem Register:** BEO-006 (`git status` vor
   pfad-selektiven Commits), BEO-009 (Botschaft erst nach der Probe,
   `git diff --stat` gegen jede Botschafts-Zeile), BEO-007-Regel (Gate-Exits
-  bindend). — **Ausgang:** *(bei Closure)*
+  bindend). — **Ausgang:** entfallen — BEO-006/009 traten nicht ein; der
+  `pre-commit`-Hook (BEO-007 verkörpert) fing zweimal Rot vor dem Commit: drei
+  nackte Kennungen im Slice-Dokument, ein als Link geparster Test-Fixture-Pfad
+  im Review-Report.
 
 ## 6. Trigger
 
@@ -164,4 +175,42 @@ Inventur.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Geliefert:** Lastenheft 0.62.1 zuerst (Zeile 1/2, Prosa-Absatz, neues
+Akzeptanzkriterium, Historie), dann die Spiegel — Spezifikation W3/§2-Schema/§4/§7,
+[ADR-0055](../../adr/0055-wellen-invariante-artefakt-und-grund-codes.md)
+Entscheidung 6 + Geschichte (Proposed), Handbuch 1.54 (§6 zweimal, §11, Kopf),
+CHANGELOG `[Unreleased]` — und der Beleg: `TestWavesGleicheKennungZaehltEinmal`
+in beiden Modi, Mutations-Gegenprobe per Dateikopie (Datei- statt
+Kennungs-Schlüssel ⇒ beide Subtests rot, dazu sieben Bestandstests). Kein
+Produktions-Code, kein Release; der wellenlose Slice lief als gemessener
+Zustand durch `planning-check` (Marker raus, Liste leer, Bijektion ∅ ⟺ ∅).
+
+**Review** ([Report](../../../reviews/2026-08-22-slice-112-kennungs-menge-review.md)):
+APPROVE mit Auflagen — 0 HIGH, 2 MEDIUM, 1 LOW, 1 INFO. Die beiden MEDIUM waren
+dieselbe Klasse: drei Stellen mit der alten Lesart in drei Dateien, die der
+Slice ohnehin bearbeitete (Lastenheft-Prosa „Zwei Kardinalitäts-Modelle",
+Spezifikation-§2-Schema-Zeile, Handbuch-§6-Vorsatz) — eingearbeitet. F-3 (LOW)
+bleibt bewusst stehen: die Kurzformen „Kennungs-Bijektion ⟺ Dateien" in
+README/AGENTS sind Gate-Beschreibungen, in denen „Kennungs-" die Vergleichsgröße
+bereits nennt; im gelebten Betrieb ist eine Welle eine Datei. F-4 (INFO)
+trägt §3.
+
+**Was ging anders als geplant:** Die [`MR-025`](../../../../harness/conventions.md#mr-025)-Spiegel-Liste stand im Plan (§2
+Schritt 3) und war trotzdem lückenhaft — sie war erinnert, nicht abgeleitet.
+Der Ableiter für eine Wortlaut-Präzisierung ist das `grep` nach dem **alten**
+Wortlaut über den ganzen Baum; er hätte alle drei Stellen gefunden.
+
+- **Steering-Loop-Eintrag:** Guide geschärft: der Wortlaut-Ableiter steht jetzt
+  ausdrücklich in [`MR-025`](../../../../harness/conventions.md#mr-025)
+  — liegt in [`harness/conventions/MR-025-spiegel-vor-dem-editieren.md` §Adaption](../../../../harness/conventions/MR-025-spiegel-vor-dem-editieren.md).
+  Auslöser: BEO-002 (verkörpert seit slice-099; hier erneut eingetreten, nicht
+  weitergezählt).
+- **Beobachtungs-Register (`../observations.md`):** BEO-002 um das erneute
+  Eintreten ergänzt (Stand-Spalte, Beleg slice-112); keine neue Beobachtung.
+- **Folge-Slices:** keiner — die einzige offene Frage (Doppel-Dokument als
+  eigener Befund) ist eine Produktfrage für einen Change Request, kein Slice.
+- **Risiken aus §6:** alle mit Ausgang (§5) — eines eingetreten, drei entfallen.
+- **Drei Paarungen** (wellenloser Slice, darum hier geprüft): Anker — der
+  Steering-Loop-Eintrag trägt seinen Herkunfts-Anker ([`MR-025`](../../../../harness/conventions.md#mr-025)); Folge-Slice —
+  keiner, also keine Datei in `open/`; Register — BEO-002 zitiert, nicht neu
+  formuliert.
