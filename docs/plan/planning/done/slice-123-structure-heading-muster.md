@@ -67,25 +67,50 @@ muss sie nur einzeln prüfen statt den Abschnittstext als Ganzes.
 
 ## 4. Definition of Done
 
-- [ ] CR-Commit (Lastenheft allein) liegt **vor** Spezifikation und Code.
-- [ ] Der Schlüssel prüft **je Überschrift** mit der Modul-Lexik; Befund nennt
-      die verletzende Zeile.
-- [ ] Das eigene Profil nutzt ihn statt der Negation; die Gegenprobe, an der
-      die Negation still war (eingerückte Sektion), ist jetzt rot.
-- [ ] Default-Beweis byte-identisch; `make gates` grün; unabhängiger Review;
-      Closure-Notiz; Register gesichtet.
+- [x] CR-Commit (Lastenheft allein) liegt **vor** Spezifikation und Code —
+      Lastenheft 0.64.0 allein, danach ADR, dann Spezifikation samt Code; die
+      Review-Auflagen als eigener Nachzug.
+- [x] Der Schlüssel prüft **je Überschrift** mit der Modul-Lexik; Befund nennt
+      die verletzende Zeile — über `SectionHeadings`, das dieselbe Erkennung
+      benutzt wie die Abschnitts-Findung.
+- [x] Das eigene Profil nutzt ihn statt der Negation — **die Gegenprobe ist
+      eine andere als geplant.** Der eingerückte Fall ist seit dem
+      slice-114-Review nicht mehr still (die Negation wurde damals auf die
+      Modul-Lexik korrigiert); die Annahme in §1/§2.5 war überholt. Der Review
+      hat den Fall gefunden, an dem sie **heute** still ist: eine Überschrift
+      innerhalb eines mehrzeiligen Inline-Code-Spans. Gemessen: alte
+      Konstruktion Exit 0, neue Exit 1 auf der Zeile der Überschrift.
+- [x] Default-Beweis byte-identisch; `make gates` grün; unabhängiger Review;
+      Closure-Notiz; Register gesichtet — der Review war **blockierend** (ein
+      HIGH, sechs MEDIUM, vier LOW), alle Befunde eingearbeitet und im
+      [Report](../../../reviews/2026-08-22-slice-123-structure-heading-muster-review.md)
+      belegt.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Welche Überschriften gehören zum Abschnitt?** Die Ebenen-Frage entscheidet
   über Falsch-Positive (eine tiefere Ebene, die nie gemeint war). Sie gehört in
-  die ADR und in den Vertrag, nicht in den Code. — **Ausgang:** *(bei Closure)*
+  die ADR und in den Vertrag, nicht in den Code. — **Ausgang:** entschieden und
+  begründet (Default = Abschnitts-Ebene + 1, `headings-level` wählt eine
+  andere). Der Review hat die Frage **je Abschnitt** statt je Regel
+  nachgemessen — bei einem Selektor, der zwei Ebenen trifft, prüft jeder
+  Abschnitt seine eigene Kind-Ebene. Und er hat eine Grenze gefunden, die der
+  Plan nicht sah: zwei Ebenen in **einer** Regel sind heute nicht bloß
+  unvorgesehen, sondern durch die Regel-Identität **gesperrt** (Exit 2). Steht
+  jetzt als dritte Grenze in der ADR.
 - **Ein Befund je Überschrift statt je Abschnitt** ändert die Befund-Zahl —
   das ist gewollt (die Zeile zeigt, wo es klemmt), muss aber zugesagt sein. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** zugesagt in Anforderung, Algorithmus und §4-Zeile; ein eigener
+  Grund-Code, weil die Reparatur eine andere ist. Getestet mit zwei
+  Verletzungen in einem Abschnitt: zwei Befunde auf **ihren** Zeilen.
 - **Der Umstieg des eigenen Profils ist der eigentliche Beweis:** wenn die neue
-  Bedingung die alte nicht deckt, zeigt es sich hier. — **Ausgang:** *(bei
-  Closure)*
+  Bedingung die alte nicht deckt, zeigt es sich hier. — **Ausgang:** gehalten,
+  und der Beweis ist stärker als geplant. Über **22** konstruierte Formen fand
+  der Review **keinen** Fall, in dem der neue Schlüssel still bleibt und die
+  Negation eine echte Überschrift gemeldet hätte — mit Strukturargument: die
+  Bereinigung ersetzt Zeichen nur durch Leerzeichen, sie kann ein
+  `SPEC-NNN␣`-Präfix nie erzeugen. Der Befundsatz des eigenen Repos ist vor und
+  nach der Umstellung byte-identisch.
 
 ## 6. Trigger
 
@@ -116,4 +141,30 @@ spezifizierten Anforderung; sie löst zugleich eine Ersatz-Konstruktion ab.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Geliefert ist die achte `structure`-Bedingung: *jede* Überschrift des
+Abschnitts genügt einem Muster — positiv, je Überschrift, auf ihrer Zeile, mit
+der Erkennung des Moduls statt einer nachgebauten. Das eigene Profil führt sie
+seither statt der ausgeschriebenen Präfix-Negation.
+
+**Die Lehre steht in der Begründung, nicht im Ergebnis.** Der Plan wollte
+heilen, was schon geheilt war: die Negation war seit dem slice-114-Review nicht
+mehr zu eng. Ich habe acht Formen gemessen, alle identisch, und daraus
+geschlossen, die Umstellung sei „verhaltenserhaltend, nicht heilend". Der
+Review fand die neunte — eine Überschrift in einem mehrzeiligen
+Inline-Code-Span, wo die Bereinigung die Zeile leerräumt und die Negation
+schweigt. **Acht Messungen sind acht Messungen, keine Eigenschaft.** Wer einen
+Schluss zieht, muss die Menge nennen, über die er gilt, oder die N+1-te Form
+suchen.
+
+Der zweite Fund ist ein Name. `heading-pattern` hätte in **einem** Profil zwei
+gegensätzliche Rollen getragen: Selektor unter `planning.closure`, Bedingung
+unter `structure`. Umbenannt zu `headings-match`/`headings-level`, solange
+nichts released ist — danach wäre derselbe Schnitt ein Breaking Change gewesen.
+Das ist der eigentliche Wert des Reviews **vor** dem Release, nicht danach.
+
+Drei Widersprüche derselben Klasse kamen dazu: „als einzige" stand an drei
+Stellen im Lastenheft, wo Spezifikation und ADR „die zweite" sagten; Schritt 5
+der Spezifikation widersprach Schritt 6 desselben Dokuments; zwei
+Code-Kommentare trugen dieselbe überholte Invariante. Wer eine Ausnahme zur
+zweiten macht, muss jede Stelle finden, die „die einzige" sagt — und das ist
+kein `grep` nach dem neuen Wortlaut, sondern nach dem alten.
