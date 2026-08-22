@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.54 · **Software-Version:** [v0.62.0](../../version.md#v0.62.0) ·
+**Handbuch-Version:** 1.55 · **Software-Version:** [v0.62.0](../../version.md#v0.62.0) ·
 **Stand:** 2026-08-22 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -1081,11 +1081,18 @@ feinsten Schnitt:
 - **`scan.ignore`** (Quelle, ganze Datei): eine Datei wird gar nicht erst gescannt,
   ihre Referenzen erreichen **kein** Modul. Der gröbste Schnitt.
 - **`exempt-paths`** (ganze Datei, je Modul): nimmt **ganze Dateien** von der Prüfung
-  **eines** Moduls aus (`ids`, `matrix`, `codepaths`) — der Rest wird weiter gescannt.
-- **`d-check:ignore`** (eine Zeile; `codepaths` **und** `ids`): der
-  HTML-Kommentar-Marker nimmt **eine einzelne Zeile** von der Prüfung dieser
-  beiden Module aus — bei `ids` für nackte wie für Inline-Code-Vorkommen,
-  unabhängig von der Link-Politik. `matrix` und `versions` kennen ihn nicht.
+  **eines** Moduls aus — `ids` (je Muster), `matrix`, `codepaths`, `versions` und
+  `structure` (je Regel); der Rest wird weiter gescannt. Die übrigen Module haben
+  den Schlüssel nicht.
+- **`d-check:ignore`** (eine Zeile): der HTML-Kommentar-Marker nimmt **eine
+  einzelne Zeile** aus — und zwar **nur** für `codepaths` und `ids`; bei `ids`
+  für nackte wie für Inline-Code-Vorkommen, unabhängig von der Link-Politik.
+  **Alle anderen Module kennen ihn nicht.** Achten Sie besonders auf
+  `diagrams`: dieses Modul hat **weder** `exempt-paths` **noch** den
+  Zeilen-Marker. Wer dort eine Datei ausnehmen muss — etwa ein Beispiel-Diagramm
+  mit erfundenen Kennungen in einem Report —, schneidet über den modul-lokalen
+  `diagrams.scope` oder über `scan.ignore`; sonst meldet jede nicht definierte
+  Kennung im Fence.
 - **`ignore-refs`** (Ziel, querschnittlich): nimmt bestimmte **aufgelöste
   Ziel-Pfade** von der Existenz-/Anker-Prüfung aus — **referenz-weit** (datei- und
   zeilen-unabhängig) und geteilt von `links`, `anchors` und `codepaths`.
@@ -1964,3 +1971,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.52             | v0.61.0          | 2026-08-21 | **Chronologische Tabellen auf Richtung prüfen** — siebte Bedingung des Moduls `structure` (§5/§6): `table-order` (`asc`/`desc`) mit `table-column` (1-basiert, Default 1) vergleicht die Schlüsselspalte jeder zusammenhängenden Tabelle des Abschnitts **typisiert** (ISO-Datum, Punkt-Version — `1.10` kommt nach `1.9`; ein zeichenweiser Vergleich meldete korrekt sortierte Tabellen rot) und **nicht-strikt** monoton. Die Zellen werden **roh** gelesen (einzige Ausnahme von der Abschnitts-Bereinigung — Release-Register führen ihre Schlüssel in Inline-Code); Kopf-/Trennzeile zählen nicht. Neue Grund-Codes `section-unordered` (Bruch-Zeile; auch Leerlauf ohne Datenzeile) und `section-cell-untyped` (untypisierbare Zelle/Typ-Mischung — Befund statt stillem Übersprung, Anker-Reset dahinter). Drei neue Exit-2-Config-Ränder. Ohne `table-order` byte-identisch |
 | 1.53             | v0.62.0          | 2026-08-21 | **Kennungs-Bijektion für offene Wellen** — `planning.waves.mode: one`\|`many` (§5/§6, Lastenheft 0.62.0 auf **formalen Konsumenten-CR**): unter `many` vergleicht `wave-drift` die im `heading`-Block genannten Wellen-**Kennungen** gegen die flachen Wellendokumente (beide Richtungen, `target` = Kennung, Fences zählen nicht) statt Marker gegen Datei-Zahl — der Ruhe-Marker bleibt Sache von `planning-drift`, und der Zustand „Welle eröffnet, nichts beansprucht" (Marker **und** Zeiger) ist grün. `one` (Default) unverändert, ohne Schlüssel byte-identisch; unbekannter/explizit leerer Modus ⇒ Exit 2. **Beachten:** unter `many` zählt jede Kennung in der Abschnitts-Prosa als Zeiger — erklärenden Text dort kennungsfrei halten. Nebenbei präzisiert: die §6-planning-Zeile nennt den Eintritts-Block jetzt config-treu (`heading`, Default `## Aktuelle Welle`) |
 | 1.54             | v0.62.0          | 2026-08-22 | Doku-Präzisierung ohne Software-Änderung (Lastenheft 0.62.1): die Wellen-Invariante vergleicht in **beiden** Modi Kennungs-Mengen — zwei flache Wellendokumente derselben Kennung sind ein Element, auch für das Singleton unter `one` (§6, Absatz „Zwei Kardinalitäts-Modelle"). Software-Version bleibt v0.62.0 |
+| 1.55             | v0.62.0          | 2026-08-22 | Doku-Korrektur ohne Software-Änderung (§5 Ventil-Überblick): `exempt-paths` gibt es in **fünf** Modulen (`ids` je Muster, `matrix`, `codepaths`, `versions`, `structure` je Regel) — genannt waren drei; und die Abgrenzung des Zeilen-Markers `d-check:ignore` ist vollständig: er wirkt **nur** für `codepaths` und `ids`, alle übrigen Module kennen ihn nicht. Ausdrücklich benannt ist jetzt `diagrams`, das **weder** Datei- **noch** Zeilen-Ventil hat — dort schneidet nur `diagrams.scope` bzw. `scan.ignore`. Software-Version bleibt v0.62.0 |
