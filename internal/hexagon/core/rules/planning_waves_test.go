@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"maps"
 	"testing"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
@@ -476,4 +477,29 @@ func TestWavesManyRegisterAussagenUnveraendert(t *testing.T) {
 	if len(got) != 1 || got[0] != model.ReasonWaveResultsMissing {
 		t.Fatalf("Register-Aussagen bleiben unter many scharf (welle-7 ohne Notiz), got %v", got)
 	}
+}
+
+// Kennungs-Menge statt Datei-Menge (DC-FA-PLAN-001 §Wellen-Boundary gleiche
+// Kennung): zwei flache Dokumente derselben Kennung sind EIN Element — unter
+// one genügt der genannte Aktiv-Status, unter many ein Zeiger dieser Kennung.
+func TestWavesGleicheKennungZaehltEinmal(t *testing.T) {
+	doppel := map[string]string{
+		wavesDir + "/welle-9-neu.md":      "# Welle 9\n",
+		wavesDir + "/welle-9-nachtrag.md": "# Welle 9, zweites Dokument\n",
+	}
+	t.Run("one", func(t *testing.T) {
+		files := map[string]string{planRoadmap: wavesRoadmap("welle-9-neu in Arbeit.", "", "")}
+		maps.Copy(files, doppel)
+		if got := wavesFindings(t, files, wavesCfg()); got != nil {
+			t.Fatalf("one: zwei Dateien derselben Kennung = genau eine Kennung → 0 Befunde, got %v", got)
+		}
+	})
+	t.Run("many", func(t *testing.T) {
+		files := map[string]string{planRoadmap: wavesRoadmap(
+			"- [welle-9-neu](../welle-9-neu.md)\n\nKeine aktive Welle.", "", "")}
+		maps.Copy(files, doppel)
+		if got := wavesFindings(t, files, wavesManyCfg()); got != nil {
+			t.Fatalf("many: ein Zeiger deckt zwei Dateien derselben Kennung → 0 Befunde, got %v", got)
+		}
+	})
 }
