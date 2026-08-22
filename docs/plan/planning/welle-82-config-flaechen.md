@@ -30,6 +30,13 @@ ist der Befundsatz byte-identisch
 bestehende Konfiguration ändert ihr Verhalten — das ist die Zusage, an der
 jeder der drei Slices gemessen wird.
 
+**Eine benannte Ausnahme, gemessen statt übersehen:** der Zeilen-Marker
+`d-check:ignore` aus der dritten Erweiterung hängt nicht an einem Schlüssel,
+sondern am Zeilen-**Inhalt** — wie in den Modulen, deren Form er übernimmt.
+Eine Diagramm-Zeile, die die Zeichenfolge ohnehin trägt, wird damit ohne jede
+Konfigurations-Änderung stumm. Für diese Hälfte gilt die Zusage deshalb für
+Bäume **ohne** die Zeichenfolge in einer gelisteten Fence.
+
 ## 2. Trigger (Welle startet)
 
 Auftraggeber-Freigabe 2026-08-22 (alle drei Change Requests bestätigt);

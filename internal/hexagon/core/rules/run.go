@@ -397,6 +397,14 @@ func ensureDiagramsDefinedInExist(fsys driven.Filesystem, cfg model.DiagramsConf
 		if kind == driven.KindMissing {
 			return fmt.Errorf("diagrams.patterns[%d].defined-in existiert nicht: %s", i, p.DefinedIn)
 		}
+		// Anders als ein ids-Target darf defined-in KEIN Verzeichnis sein: das
+		// Modul liest die Datei, um die Definitionsmenge zu bilden. Ein
+		// Verzeichnis liefert eine leere Menge — jede Kennung des Diagramms
+		// waere dann "undefiniert", ein Befund-Sturm ohne Hinweis auf die
+		// Ursache. Fail-closed statt still falsch.
+		if kind != driven.KindFile {
+			return fmt.Errorf("diagrams.patterns[%d].defined-in ist keine Datei: %s", i, p.DefinedIn)
+		}
 	}
 	return nil
 }

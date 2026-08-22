@@ -1449,13 +1449,17 @@ die Fences für alle übrigen Module entfernt:
    `ids`). Token ohne Definition ⇒ Grund-Code `diagram-id-undefined` (Datei, Zeile
    im Fence, Kennung). Die Token-Menge je (`defined-in`, Regex) wird gecacht
    (einmaliges Lesen).
-4. **Validierung beim Lauf-Start.** Jede `defined-in`-Datei muss existieren und
-   innerhalb der Repo-Wurzel liegen (sonst Exit 2 ohne Prüfung, analog
-   ids-Targets); jedes `diagrams.exempt-paths`-Glob muss gültig sein (sonst
-   Exit 2). **Link-Policy gilt nicht** (in Fences kein Markdown-Link
+4. **Validierung beim Lauf-Start.** Jede `defined-in`-Quelle muss existieren,
+   innerhalb der Repo-Wurzel liegen und eine **Datei** sein (sonst Exit 2 ohne
+   Prüfung). Das Verzeichnis ist hier — anders als bei einem `ids`-Target —
+   **kein** zulässiger Wert: das Modul liest die Quelle, ein Verzeichnis
+   lieferte die leere Definitionsmenge und damit jede Kennung als undefiniert.
+   Die Gültigkeit der `exempt-paths`-Globs prüft dagegen der **Config-Rand**
+   (Decode-Zeit, segmentweise wie die Laufzeit matcht; leerer Eintrag ⇒ Exit
+   2). **Link-Policy gilt nicht** (in Fences kein Markdown-Link
    möglich). Ohne `diagrams`-Block ist der Befundsatz byte-identisch
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
-5. **Ventile.** Wie `ids`/`codepaths`: die Glob-Liste `diagrams.exempt-paths`
+5. **Ventile.** Wie `ids`/`codepaths`/`versions`: die Glob-Liste `diagrams.exempt-paths`
    (datei-weit, Syntax wie `scan.ignore`) und der Zeilen-Marker
    `d-check:ignore`. Zwei Eigenheiten folgen aus dem Fence und sind
    **festgelegt, nicht abgeleitet**:
@@ -1468,7 +1472,12 @@ die Fences für alle übrigen Module entfernt:
      auf der **Öffnungszeile** des Fence für den **ganzen** Block. Ohne den
      zweiten Ort wäre die intuitive Platzierung still wirkungslos. Die
      Öffnungszeile selbst wird nie auf Kennungen geprüft (Schritt 1); der
-     Marker dort ist ausschließlich Ventil.
+     Marker dort ist ausschließlich Ventil. Die **schließende** Fence-Zeile
+     ist **kein** Ventil-Ort — dort bleibt der Marker folgenlos.
+   - Beide Ventile wirken **scan-seitig**. Die Definitionsmenge aus Schritt 3
+     kennt sie nicht: eine im `defined-in` als illustrativ markierte Kennung
+     definiert weiter. Die Ventile unterdrücken Befunde, sie ändern nicht die
+     Wahrheit über die Definitionsmenge.
 
 ### DC-FA-VER-001.a — Versions-Pin-Konsistenz (`versions`)
 
@@ -2580,12 +2589,11 @@ Exit 2 ohne Prüfung
 | `codepaths.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `codepaths`-Prüfung — datei-weit, unabhängig von `roots` |
 | `codepaths.ignore-refs` | string[] | leer | **Alias** des geteilten `ignore-refs` ([`DC-FA-REF-001`](lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)), skopiert auf `codepaths` (wie ein Eintrag ohne `in`/`keep`): aufgelöste Ziel-Pfade, die matchen, werden weder existenz-, escape- noch anker-geprüft (kein `codepath-missing`/`repo-escape`/`anchor-missing`) — **referenz-weit**; byte-identisch zur bisherigen Fassung |
 | `codepaths.check-lines` | bool | `false` | Zeilen-Referenz eines Inline-Code-Pfads (`datei:<von>-<bis>`) verifizieren: existierendes Ziel mit ≥ `<bis>` Zeilen (sonst `citation-out-of-range`) und `<von> ≤ <bis>` (sonst `citation-inverted-range`). Default aus ⇒ das Suffix wird wie bisher abgetrennt und verworfen (byte-identisch, [`DC-FA-CODE-001.a`](#dc-fa-code-001a--pfade-in-inline-code) Schritt 6) |
-| `diagrams.scope` | Objekt | leer | modul-lokaler Scan-Scope wie bei jedem scannenden Modul ([`DC-FA-CONF-002`](lastenheft.md#dc-fa-conf-002--modul-lokaler-scan-scope)) |
-| `diagrams.fences` | string[] | `[mermaid]` | zu öffnende Fence-Sprachen (Info-String, kleingeschrieben verglichen); leerer Eintrag ⇒ Exit 2. **Nur** diese Fences werden geöffnet |
+| `diagrams.fences` | string[] | `[mermaid]` — **auch bei explizit leerer Liste** (Abweichung von der Präambel: `fences: []` schaltet das Modul nicht ab, sondern lässt den Default gelten) | zu öffnende Fence-Sprachen (Info-String, kleingeschrieben verglichen); leerer **Eintrag** ⇒ Exit 2. **Nur** diese Fences werden geöffnet |
 | `diagrams.patterns` | Objekt[] | leer | Kennungs-Muster; leere Liste ⇒ Modul wirkungslos (byte-identisch) |
 | `diagrams.patterns[].regex` | string | — | Pflicht; RE2, muss kompilieren und darf den Leerstring nicht matchen (Exit 2). Deklarationsreihenfolge = Präzedenz bei überlappenden Vorkommen |
-| `diagrams.patterns[].defined-in` | string | — | Pflicht; Datei, in der die Kennung als Token **außerhalb von Fences** vorkommen muss. Muss existieren und innerhalb der Repo-Wurzel liegen (sonst Exit 2 beim Lauf-Start) |
-| `diagrams.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `diagrams`-Prüfung — datei-weit; ungültiges Glob ⇒ Exit 2 |
+| `diagrams.patterns[].defined-in` | string | — | Pflicht; **Datei** (kein Verzeichnis — Abgrenzung zu `ids.patterns[].target`), in der die Kennung als Token **außerhalb von Fences** vorkommen muss. Muss existieren, innerhalb der Repo-Wurzel liegen und eine Datei sein (sonst Exit 2 beim Lauf-Start) |
+| `diagrams.exempt-paths` | string[] | leer | Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `diagrams`-Prüfung — datei-weit. **Segmentweise** validiert (so matcht die Laufzeit); leerer Eintrag oder ungültiges Segment ⇒ Exit 2 |
 | `versions.pin-pattern` | string | — | **Kurzform** (= einelementige `versions.patterns`-Liste). Regex; muss kompilieren und darf den Leerstring nicht matchen (Exit 2); die gefundene Version steht in Capture-Gruppe 1, sonst zählt der ganze Treffer |
 | `versions.current-from` | string | `version.md#aktuell` | Kurzform. `datei#anker` oder `datei`; die Datei muss existieren und innerhalb der Repo-Wurzel liegen, der adressierte Span muss eine Version (`v?\d+\.\d+\.\d+`) tragen (sonst Exit 2) |
 | `versions.exempt-paths` | string[] | leer | Kurzform. Glob (wie `scan.ignore`, relativ zur Repo-Wurzel); Dateien ganz ohne `versions`-Prüfung — datei-weit; die `current-from`-Datei ist stets ausgenommen |
@@ -2779,7 +2787,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
-| 2026-08-22 | §[`DC-FA-DIAG-001.a`](spezifikation.md#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams) um **Schritt 5 (Ventile)** erweitert und das §2-Schema um **sechs** `diagrams.*`-Zeilen ergänzt ([`DC-FA-DIAG-001`](lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in) 0.65.0, Begründung in begleitender ADR): `exempt-paths` datei-weit und der Zeilen-Marker `d-check:ignore`, der hier ein **Token** ist (die Diagramm-Sprache versteckt ihn, nicht Markdown) und an **zwei Orten** wirkt — auf einer Diagramm-Zeile für sie, auf der **Öffnungszeile** für den ganzen Block. **Die Schema-Lücke ist älter als die Erweiterung:** die Schlüssel des Moduls standen bisher nur im Algorithmus, als einziges Modul; sie sind mit derselben Änderung nachgetragen |
+| 2026-08-22 | §[`DC-FA-DIAG-001.a`](spezifikation.md#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams) um **Schritt 5 (Ventile)** erweitert und das §2-Schema um **sechs** `diagrams.*`-Zeilen ergänzt ([`DC-FA-DIAG-001`](lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in) 0.65.0, Begründung in begleitender ADR): `exempt-paths` datei-weit und der Zeilen-Marker `d-check:ignore`, der hier ein **Token** ist (die Diagramm-Sprache versteckt ihn, nicht Markdown) und an **zwei Orten** wirkt — auf einer Diagramm-Zeile für sie, auf der **Öffnungszeile** für den ganzen Block. Beide Ventile wirken **scan-seitig** — die Definitionsmenge aus Schritt 3 kennt sie nicht —, und die **schließende** Fence-Zeile ist kein Ventil-Ort. Schritt 4 verlangt für `defined-in` jetzt ausdrücklich eine **Datei** (ein Verzeichnis lieferte die leere Definitionsmenge und damit einen Befund-Sturm). **Die Schema-Lücke ist älter als die Erweiterung:** die Schlüssel des Moduls standen bisher nur im Algorithmus, als einziges Modul; sie sind mit derselben Änderung nachgetragen (die generischen `<modul>.scope.*`-Zeilen decken den Scope, eine eigene Zeile wäre eine zweite Pflegestelle) |
 | 2026-08-22 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) um die **achte Bedingung** `headings-match`/`headings-level` erweitert, §2-Schema um zwei Zeilen, §4 um den Grund-Code [`SPEC-067`](#4-grund--und-fehler-codes) `section-heading-mismatch` ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.64.0, Begründung in begleitender ADR): *jede* Überschrift des Abschnitts genügt einem Muster, **positiv** formuliert, **je Überschrift** gemeldet, auf **ihrer** Zeile. Sie ist als **zweite** Bedingung nicht auf dem bereinigten Abschnitts-Text definiert (Schritt 5 nennt seither beide Ausnahmen), sondern auf den Überschriften selbst — mit derselben Erkennung wie Schritt 3, weil der Anlass eine nachgebaute Lexik war (die abgelöste Präfix-Negation ließ eine **eingerückte** Sektion still entkommen). Geprüft wird der Überschriften-**Text**, nicht die rohe Zeile; Default-Ebene ist Abschnitts-Ebene + 1. Zwei Grenzen benannt: ohne Überschrift der geprüften Ebene ist die Bedingung wirkungslos, ebenso bei einer Ebene flacher als der Abschnitt |
 | 2026-08-22 | Nachzug nach unabhängigem Review, vor dem Release: §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) Schritt 3 sagt jetzt **eine Befund-Adresse, alle Erwartungen** — die Vorfassung versprach zwei Befunde je Paar, die die geteilte Nachrunde ([§DC-QA-02.a](#dc-qa-02a--determinismus-und-sortierung)) nachweislich auf einen zusammenzieht, samt der zweiten Erwartung; und die **Ausgabe**-Reihenfolge ist die der Sortierung, nicht die Deklarationsreihenfolge (die alte Aussage war als beobachtbare Eigenschaft falsch). Der Wortlaut jeder Meldung ist an die Paar-Zahl gebunden (ein Paar ⇒ Kurzform-Schlüssel, byte-identisch; ab zwei ⇒ `versions.patterns[i]`). Schritt 0 und die `versions.patterns`-Schema-Zeile binden die Mischform an die **Anwesenheit** des Schlüssels statt an seinen Wert, mit der benannten Grenze des wertlosen Schlüssels |
 | 2026-08-22 | §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) auf **mehrere Muster-Quellen-Paare** gezogen und die `versions.*`-Zeilen unter [`SPEC-005`](#spec-005--d-checkyml) um `versions.patterns[]` ergänzt ([`DC-FA-VER-001`](lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) 0.63.0, Begründung in begleitender ADR): die Schritte 1–4 gelten **je Paar**, die Kurzform **ist** die einelementige Liste und wird am Config-Rand übersetzt (ein Auswertungspfad), beide Schreibweisen zugleich sowie leere Liste, fehlendes `pin-pattern` und nicht auflösende Quelle eines Paares sind **fail-closed**. Neu ausgesprochen, weil sonst die Iterationsreihenfolge entschiede: Befunde je Zeile in **Deklarationsreihenfolge** der Paare, identische Befund-Tupel **einmal**. Die beiden **Datei**-Ventile sind paar-lokal, der **Zeilen**-Marker ist es nicht — er sagt „diese Zeile nicht", nicht „diese Reihe nicht". Kein neuer Grund-Code |

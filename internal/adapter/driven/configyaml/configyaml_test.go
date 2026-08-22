@@ -955,3 +955,26 @@ func TestConfigYAMLDiagramsExemptPaths(t *testing.T) {
 		t.Fatalf("ungueltiges Glob muss Exit 2 ausloesen, got %v", err)
 	}
 }
+
+// DC-FA-DIAG-001: exempt-paths wird SEGMENTWEISE validiert (wie die Laufzeit
+// matcht) und ein leerer Eintrag ist ein Fehler — ein nur als Ganzes gueltiges
+// Muster waere still wirkungslos.
+func TestConfigYAMLDiagramsExemptPathsSegmentweise(t *testing.T) {
+	head := "diagrams:\n  patterns:\n    - regex: 'ARC-[0-9]{3}'\n      defined-in: spec/architecture.md\n"
+	cases := []struct{ name, yaml, want string }{
+		{"segment-kaputt", head + "  exempt-paths: [\"docs/[a/b]*.md\"]\n", "Segment"},
+		{"leerer-eintrag", head + "  exempt-paths: [\"\"]\n", "leeres Glob"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			_, err := configyaml.Decode([]byte(c.yaml))
+			if err == nil || !strings.Contains(err.Error(), c.want) {
+				t.Fatalf("%s: erwartet Fehler mit %q, got %v", c.name, c.want, err)
+			}
+		})
+	}
+	// Doppelstern bleibt gültig.
+	if _, err := configyaml.Decode([]byte(head + "  exempt-paths: [\"docs/**/x.md\"]\n")); err != nil {
+		t.Fatalf("** muss gültig bleiben: %v", err)
+	}
+}

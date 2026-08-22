@@ -1574,6 +1574,26 @@ func applyHostpaths(r *raw, cfg *model.Config) error {
 	return nil
 }
 
+// validateSegmentGlobs prüft eine Glob-Liste SEGMENTWEISE — so, wie die
+// Laufzeit (matchGlob) sie matcht: ein nur als Ganzes gültiges Muster waere
+// still wirkungslos. Ein leerer Eintrag ist ein Fehler, `**` ist zulässig.
+func validateSegmentGlobs(name string, globs []string) error {
+	for _, g := range globs {
+		if g == "" {
+			return fmt.Errorf("%s: %s enthält ein leeres Glob", FileName, name)
+		}
+		for _, seg := range strings.Split(g, "/") {
+			if seg == "**" {
+				continue
+			}
+			if _, err := path.Match(seg, "probe"); err != nil {
+				return fmt.Errorf("%s: %s %q ist kein gültiges Glob (Segment %q): %v", FileName, name, g, seg, err)
+			}
+		}
+	}
+	return nil
+}
+
 // applyDiagrams validiert und kompiliert die diagrams-Muster
 // (DC-FA-DIAG-001): nicht-leere fences-Einträge, kompilierbarer Regex
 // (nicht den Leerstring matchend), Pflicht-defined-in und gültige
@@ -1587,10 +1607,8 @@ func applyDiagrams(r *raw, cfg *model.Config) error {
 			return fmt.Errorf("%s: diagrams.fences enthält einen leeren Eintrag", FileName)
 		}
 	}
-	for _, g := range r.Diagrams.ExemptPaths {
-		if _, err := path.Match(g, "probe"); err != nil {
-			return fmt.Errorf("%s: diagrams.exempt-paths %q ist kein gültiges Glob: %v", FileName, g, err)
-		}
+	if err := validateSegmentGlobs("diagrams.exempt-paths", r.Diagrams.ExemptPaths); err != nil {
+		return err
 	}
 	for i, p := range r.Diagrams.Patterns {
 		re, err := regexp.Compile(p.Regex)

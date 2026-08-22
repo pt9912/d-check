@@ -169,7 +169,7 @@ diagrams:
   # Scope auf die Spec-Straten: das Muster gilt sonst repo-weit, und ein
   # mermaid-Beispiel mit einer dreistelligen Kennung ausserhalb der Spec ist
   # kein Vertragsbruch, sondern ein Beispiel.
-  # Grenze: Diagramme ausserhalb von spec/ sind dadurch ungewacht.
+  # Grenze 3: Diagramme ausserhalb von spec/ sind dadurch ungewacht.
   scope:
     roots: [spec]
   patterns:

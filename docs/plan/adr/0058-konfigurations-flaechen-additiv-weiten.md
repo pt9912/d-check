@@ -180,13 +180,17 @@ Verhalten.
    Drei Festlegungen:
 
    - **Ventil-Parität ist ein Prinzip, keine Nachrüstung.** Ein Modul, das
-     Befunde an **Zeilen** hängt, braucht ein Zeilen-Ventil — sonst bleibt dem
-     Nutzer nur der Scope, und der ist keine Ausnahme, sondern eine
-     Vermeidung: er nimmt ganze Dateibäume aus der Prüfung, wo eine einzelne
-     Referenz gemeint war. Gemessen am eigenen Profil in welle-80: das Modul
-     musste auf `spec/` gescopt werden, weil ein Beispiel-Diagramm sonst jeden
-     Commit blockiert hätte. Der Unterschied gehört benannt, nicht
-     stillschweigend gelebt.
+     **eigene Muster** konfiguriert und Befunde an Zeilen hängt, braucht ein
+     Zeilen-Ventil — sonst bleibt dem Nutzer nur der Scope, und der ist keine
+     Ausnahme, sondern eine Vermeidung: er nimmt ganze Dateibäume aus der
+     Prüfung, wo eine einzelne Referenz gemeint war. Gemessen am eigenen
+     Profil: das Modul musste auf `spec/` gescopt werden, weil ein
+     Beispiel-Diagramm sonst jeden Commit blockiert hätte. **Die Reichweite
+     ist bewusst eng gezogen:** `hostpaths`, `pins` und `spans` hängen Befunde
+     ebenfalls an Zeilen und tragen weiterhin kein Ventil. Sie konfigurieren
+     keine eigenen Muster — ihr Befund folgt aus einer festen Lexik, und ob
+     dieselbe Antwort dort richtig ist, ist eine eigene Frage mit eigener
+     Messung. Als **offene Fläche** benannt, nicht als Zusage überdehnt.
    - **Der Marker ist ein Token, kein HTML-Kommentar.** In Prosa steht er in
      `<!-- … -->`; in einem `mermaid`-Fence ist das kein Kommentar, sondern
      Diagramm-Text. Das Modul sucht deshalb das **Token** auf der Zeile — wie
@@ -240,6 +244,16 @@ beiden Ausnahmen ausdrücklich benannt.
 zwischen „ganzen Baum ausnehmen" und „Gate abschalten" wählen. Ob das eigene
 Profil danach ohne Scope auskommt, ist **gemessen zu entscheiden** und nicht
 Teil dieser Entscheidung.
+
+**Grenze der Additivität (Entscheidung 3).** Nur das Datei-Ventil hängt an
+einem **Schlüssel**; der Zeilen-Marker hängt am **Inhalt** — wie bei
+`ids`/`codepaths`/`versions`. Eine Diagramm-Zeile, die die Zeichenfolge
+ohnehin trägt (etwa ein Knoten-Label, das den Mechanismus dokumentiert), wird
+damit **ohne** Konfigurations-Änderung stumm. Die Byte-Identitäts-Zusage
+dieser Welle gilt für die Marker-Hälfte deshalb nur für Bäume ohne diese
+Zeichenfolge in einer gelisteten Fence. Das ist der Preis dafür, denselben
+Marker zu benutzen statt einen eigenen zu erfinden — und er ist hier benannt,
+statt in der Zusage unterzugehen.
 
 **Negativ / Kosten (Entscheidung 3).** Ein Marker, der auf zwei Orten wirkt,
 ist eine Regel mehr, die man lesen muss. Sie steht dafür in Anforderung,
@@ -301,6 +315,10 @@ eigene Entscheidung mit eigener Messung.
   konfiguriert, dass Nutzer den Marker regelmäßig sichtbar im Diagramm haben —
   dann ist die Token-Entscheidung aus Entscheidung 3 gegen die Praxis zu
   prüfen; die Antwort wäre eine Kommentar-Lexik je Sprache, kein Parser.
+- Ein Modul **ohne** konfigurierbare Muster (`hostpaths`, `pins`, `spans`)
+  braucht wiederholt eine Ausnahme — dann ist die enge Reichweite aus
+  Entscheidung 3 gegen die Praxis zu prüfen; die Antwort wäre dieselbe
+  Ventil-Achse, nicht eine dritte.
 - Der **Block**-Ort des Markers wird häufiger gebraucht als der Zeilen-Ort —
   dann ist zu prüfen, ob der Block-Fall einen eigenen, sichtbareren Ausdruck
   verdient statt einer zweiten Bedeutung derselben Marke.

@@ -223,8 +223,7 @@ func TestDiagramsVentilZeile(t *testing.T) {
 }
 
 // DC-FA-DIAG-001 Ventil (ganzer Block): der Marker auf der OEFFNUNGSZEILE
-// nimmt den kompletten Fence aus — genau der Fall, der welle-80 zum Scoping
-// zwang (ein Beispiel-Diagramm mit mehreren erfundenen Kennungen).
+// nimmt den kompletten Fence aus — auch bei mehreren Kennungs-Zeilen.
 func TestDiagramsVentilBlockUeberOeffnungszeile(t *testing.T) {
 	fix := diagramFixture()
 	fix["spec/arch.md"] = "| ARC-01 Foo | x |\n\n```mermaid <!-- d-check:ignore -->\n" +
@@ -255,15 +254,49 @@ func TestDiagramsVentilBlockNurEigenerFence(t *testing.T) {
 	}
 }
 
-// DC-FA-DIAG-001 / DC-QA-02: ohne beide Ventile bleibt der Befundsatz, was er
-// war — die Erweiterung ist opt-in.
-func TestDiagramsOhneVentileUnveraendert(t *testing.T) {
-	m := coretest.NewMemFS(diagramFixture())
+// DC-FA-DIAG-001: der Marker ist ein exaktes Token — eine Zeichenfolge, die
+// ihm nur nahekommt, schaltet nichts still.
+func TestDiagramsMarkerNurExaktesToken(t *testing.T) {
+	fix := diagramFixture()
+	fix["spec/arch.md"] = "| ARC-01 Foo | x |\n\n```mermaid\n" +
+		"  C[\"ARC-98\"] %% d-check:ignor\n" +
+		"  D[\"ARC-99\"] %% dcheck:ignore\n```\n"
+	m := coretest.NewMemFS(fix)
+	res, err := Run(m, nil, diagramsCfg("spec/arch.md"), []string{"diagrams"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Findings) != 2 {
+		t.Fatalf("nur das exakte Token schaltet still, got %+v", res.Findings)
+	}
+}
+
+// DC-FA-DIAG-001 Grenze: die SCHLIESSENDE Fence-Zeile ist kein Ventil-Ort —
+// dort bleibt der Marker folgenlos. Benannt, damit die Fehlplatzierung nicht
+// still bleibt.
+func TestDiagramsMarkerAufSchlusszeileWirkungslos(t *testing.T) {
+	fix := diagramFixture()
+	fix["spec/arch.md"] = "| ARC-01 Foo | x |\n\n```mermaid\n" +
+		"  C[\"ARC-99\"]\n``` <!-- d-check:ignore -->\n"
+	m := coretest.NewMemFS(fix)
 	res, err := Run(m, nil, diagramsCfg("spec/arch.md"), []string{"diagrams"})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(res.Findings) != 1 || res.Findings[0].Target != "ARC-99" {
-		t.Fatalf("ohne Ventile unveraendert ein Befund, got %+v", res.Findings)
+		t.Fatalf("die Schluss-Zeile ist kein Ventil-Ort, got %+v", res.Findings)
+	}
+}
+
+// DC-FA-DIAG-001 fail-closed: ein VERZEICHNIS als defined-in bricht den Lauf.
+// Anders als ein ids-Target liest diagrams die Datei — ein Verzeichnis
+// lieferte eine leere Definitionsmenge und damit einen Befund-Sturm.
+func TestDiagramsDefinedInVerzeichnisFailClosed(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"spec/arch.md": "| ARC-01 Foo | x |\n",
+		"docs/a.md":    "```mermaid\n  A[\"ARC-01\"]\n```\n",
+	})
+	if _, err := Run(m, nil, diagramsCfg("spec"), []string{"diagrams"}); err == nil {
+		t.Fatal("ein Verzeichnis als defined-in muss den Lauf brechen")
 	}
 }
