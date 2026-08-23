@@ -15,7 +15,7 @@ der geprüften Arbeit.
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
 - Slice-Plan [slice-126](../plan/planning/done/slice-126-handbuch-abschnitts-schnitt.md),
-  Welle [welle-82](../plan/planning/welle-82-config-flaechen.md),
+  Welle [welle-82](../plan/planning/done/welle-82-config-flaechen.md),
   [Roadmap](../plan/planning/in-progress/roadmap.md)
 - [`spec/lastenheft.md`](../../spec/lastenheft.md) — `DC-FA-CITE-001`,
   `DC-FA-CODE-001`, `DC-QA-02`

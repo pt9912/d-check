@@ -1,6 +1,6 @@
 # ADR-0058 — Drei Konfigurations-Flächen additiv weiten, statt Ersatz-Konstruktionen zu pflegen
 
-**Status:** Proposed
+**Status:** Accepted
 **Datum:** 2026-08-22
 **Autor:** pt9912
 **Schärft:**

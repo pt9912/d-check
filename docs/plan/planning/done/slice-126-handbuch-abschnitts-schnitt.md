@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-82-config-flaechen](../welle-82-config-flaechen.md) (zugeordnet
+**Welle:** [welle-82-config-flaechen](welle-82-config-flaechen.md) (zugeordnet
 bei der Eröffnung; die Welle war für ihren Closure noch offen, als der Befund
 entstand).
 

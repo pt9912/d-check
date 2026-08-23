@@ -32,8 +32,6 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
-- [welle-82-config-flaechen](../welle-82-config-flaechen.md) — drei Konfigurations-Flächen additiv weiten, Release v0.63.0 (Auftraggeber-Freigabe 2026-08-22)
-
 Nichts in Arbeit.
 
 ## Nächste Wellen
@@ -77,7 +75,7 @@ flowchart LR
     W80["welle-80 - Struktur-IDs nach Baseline, Umkehr MR-027 (geschlossen)"]
     W79 --> W80
     W81["welle-81 - Baseline v5.9.0, Zustandsfelder (geschlossen)"]
-    W82["welle-82 - Config-Flaechen weiten, Release v0.63.0 (offen)"]
+    W82["welle-82 - Config-Flaechen weiten, Release v0.63.0 (geschlossen)"]
     W81 --> W82
     W80 --> W81
 ```
@@ -89,6 +87,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
+| welle-82-config-flaechen | 2026-08-23 | [`welle-82-results.md`](../done/welle-82-results.md) |
 | welle-81-zustandsfelder | 2026-08-22 | [`welle-81-results.md`](../done/welle-81-results.md) |
 | welle-80-struktur-ids | 2026-08-22 | [`welle-80-results.md`](../done/welle-80-results.md) |
 | welle-79-zwei-haelften-ein-waechter | 2026-08-21 | [`welle-79-results.md`](../done/welle-79-results.md) |

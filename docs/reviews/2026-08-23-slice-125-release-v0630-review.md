@@ -14,7 +14,7 @@ und **gegen den Code**; unabhängiger Reviewer ohne Anteil an der Arbeit.
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
 - Slice-Plan [slice-125](../plan/planning/done/slice-125-release-v0630.md),
-  Welle [welle-82](../plan/planning/welle-82-config-flaechen.md)
+  Welle [welle-82](../plan/planning/done/welle-82-config-flaechen.md)
 - [`spec/lastenheft.md`](../../spec/lastenheft.md) — `DC-FA-DIST-001`, `DC-QA-02`,
   `DC-FA-VER-001` (0.63.0), `DC-FA-STRUCT-001` (0.64.0), `DC-FA-DIAG-001` (0.65.0)
 - [`spec/spezifikation.md`](../../spec/spezifikation.md) — §2-Schema zu
