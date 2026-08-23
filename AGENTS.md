@@ -11,9 +11,16 @@ Diese Datei trägt **Hard Rules und Pointer** auf die kanonischen Quellen und
 **dupliziert deren Inhalt nicht** — sonst entsteht Drift (Kanon:
 [`modul-09-implementierung.md` §AGENTS.md-Regeln](.harness/baseline/v5.11.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)).
 
-**Bei Konflikt zwischen dieser Datei und einer kanonischen Quelle gilt
-die kanonische Quelle** (Source Precedence — siehe
-[`harness/README.md`](harness/README.md)).
+**Bei Konflikt gilt die höherrangige Quelle, und die niedriger rangierte wird
+angepasst** (Source Precedence — siehe
+[`harness/README.md`](harness/README.md)). Das gilt zwischen **dieser Datei**
+und einer kanonischen Quelle ebenso wie zwischen **zwei kanonischen Quellen**.
+**Der Widerspruch gehört benannt**, nicht stillschweigend nach einer Seite
+aufgelöst: Wer ihn nur befolgt, lässt die falsche Stelle stehen. *(Hard Rule
+seit slice-127 — zugezogen aus `CLAUDE.md`, wo sie als einzige Fundstelle
+stand; der Kanon fordert die Anpassung ausdrücklich als universale Hard Rule,
+[`grundlagen-source-precedence.md`](.harness/baseline/v5.11.0/regelwerk/grundlagen-source-precedence.md).
+Auflösungs-Trigger: permanent.)*
 
 Strukturregeln (ID-Schemata, Verzeichniskonvention, Adaptionen ggü.
 Baseline, Modus-Deklarationen pro Sub-Area, Zusatzklassen für
@@ -296,7 +303,14 @@ Pro Slice:
 
 1. [`harness/README.md`](harness/README.md) lesen.
 2. Relevante kanonische Quelle lesen (Source Precedence beachten).
-3. Betroffene Requirement-/ADR-IDs identifizieren.
+3. Betroffene Requirement-/ADR-IDs identifizieren — und **vor der
+   Implementierung benennen**: Slice-ID, betroffene `DC-*`-IDs, ADR-IDs,
+   betroffene Module, auszuführende Gates. *(Verschärfung des kanonischen
+   Schritts, der nur „identifizieren" verlangt; Hard Rule seit slice-127 —
+   zugezogen aus `CLAUDE.md`. Die volle Form buchstabiert das
+   Workflow-Skelett `.claude/commands/implement-slice.md` aus, das sie bis
+   dahin als einzige Quelle trug. Auflösungs-Trigger: die Baseline verlangt
+   die Nennung selbst.)*
 4. Kleinste sinnvolle Änderung planen.
 5. Engsten nützlichen Sensor laufen lassen.
 6. Repo-weiten Gate-Lauf vor Handoff (`make gates`).
