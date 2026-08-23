@@ -263,8 +263,13 @@ Jeder `uses:`-Eintrag in [`.github/workflows/`](.github/workflows) nennt einen
 Das gilt für jeden Workflow gleich und für jeden Neuzugang.
 
 **Begründung:** Supply-Chain-Härtung — ein Tag lässt sich umhängen, ein SHA
-nicht; dieselbe Härtung wie der Docker/make-only-Pfad in §3.1. Kein Gate prüft
-es. *(Auflösungs-Trigger: ein Sensor, der `uses:`-Pins prüft.)*
+nicht; dieselbe Härtung wie der Docker/make-only-Pfad in §3.1.
+
+**Durchgesetzt:** `make workflow-pins` in `make gates`. Er trägt die **Form** —
+voller SHA plus Tag-Kommentar —, nicht die **Gültigkeit**: ob der SHA existiert
+und den Commit bezeichnet, den der Tag-Kommentar behauptet, prüft er nicht.
+*(Auflösungs-Trigger: permanent — die Gültigkeitsfrage ist Netz und gehört zur
+Freshness-Familie.)*
 
 ## 4. Quality Gates
 
@@ -280,6 +285,7 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make gate-consistency`      | Meta-Gate: Deklarations-Konsistenz Doku↔Makefile via Modul `targets` (Image, dogfood; [ADR-0031](docs/plan/adr/0031-targets-deklarations-konsistenz-modul.md); [ADR-0032](docs/plan/adr/0032-gate-consistency-tombstone.md) löst das Rest-Skript voll ab). Die [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modullisten-Integrität prüft jetzt ein getippter Go-Test in `make test`                                                                           |
 | `make planning-check`        | Meta-Gate **via Modul `planning`** (Image, dogfood): Roadmap §Offene Wellen (Ruhe-Marker) ↔ `in-progress/slice-*` (`planning-drift`, hermetisch — kein git, in `gates`) ([ADR-0028](docs/plan/adr/0028-planning-lifecycle-modul.md) löst die frühere Skript-Mechanik ab; [`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
 | `make doc-check`             | Doku-Links, Anker, Kennungs-Linkpflicht, Referenzmatrix, Inline-Code-Pfade, Abschnitts-Invarianten (Modul `structure`) + Kennungen in Diagramm-Fences (Modul `diagrams`) via `d-check` selbst (Dogfooding; netzlos — zugleich [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Messmethode)             |
+| `make workflow-pins`         | Jeder `uses:`-Schlüssel in `.github/workflows/` nennt einen **vollen 40-stelligen Commit-SHA** mit Tag-Kommentar dahinter (`uses-pin-missing` / `uses-pin-untagged`). Geprüft wird die **Form**, nicht die Gültigkeit des SHA — das wäre Netz. Liest nur echte YAML-Schlüssel, nicht die Prosa der Workflow-Köpfe; **fail-closed auch bei leerer Prüfmenge**. Netzlos, **Bestandteil von `gates`** (§3.9)                                                                                              |
 | `make baseline-verify`       | Vendorte Baseline gegen `SHA256SUMS`: `sha256sum -c` (geänderte/gelöschte Datei) **plus Manifest-Deckung** (zusätzlich eingelegte Datei — eine untermengige, in sich konsistente `SHA256SUMS` passierte sonst grün). Netzlos, fail-closed, **Bestandteil von `gates`** ([`MR-011`](harness/conventions.md#mr-011)-Kette)                                                    |
 | `make gates`                 | alle inneren Gates (mandatory vor Handoff)                                                                                                                                                                                                         |
 | `make ci`                    | CI-äquivalenter Lauf: gates + image-test (fährt die Release-Pipeline)                                                                                                                                                                              |

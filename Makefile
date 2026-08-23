@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check baseline-verify baseline-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
+.PHONY: help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -168,6 +168,13 @@ record-gates: ## Nachweis schreiben: Working-Tree-Hash (für den Stop-Hook).
 #                      doc-check berührt, dessen Container-Lauf ihre Messmethode
 #                      ist. Meldet nur; die Pin-Hebung bleibt ein bewusster Akt
 #                      der MR-011-Kette.
+# Wächter zu AGENTS.md §3.9. Er prüft die FORM des Pins (voller Commit-SHA plus
+# Tag-Kommentar), nicht seine Gültigkeit — ob der SHA existiert und zum Tag
+# passt, wäre Netz und gehört zur Freshness-Familie. Netzlos, fail-closed auch
+# bei leerer Prüfmenge, deshalb IN gates.
+workflow-pins: ## uses:-Einträge der Workflows: voller Commit-SHA + Tag-Kommentar (netzlos, in gates). AGENTS.md §3.9.
+	@bash tools/harness/workflow-pins.sh
+
 baseline-verify: ## Vendorte Baseline gegen SHA256SUMS: Integrität + Manifest-Deckung (netzlos, in gates). MR-011-Kette.
 	@bash tools/harness/fetch-baseline-cache.sh --verify
 
@@ -176,8 +183,8 @@ baseline-freshness: ## Upstream-Audit des Baseline-Pins: neuerer Release-Tag (Cu
 
 # record-gates läuft als LETZTER Prerequisite — der Nachweis entsteht
 # nur, wenn alle Gates grün sind (sonst bricht make vorher ab).
-gates: baseline-verify doc-check lint test arch-check coverage-gate semgrep gate-consistency planning-check record-gates ## alle inneren Gates (mandatory vor Handoff).
-	@echo "[gates] baseline-verify + doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency + planning-check green"
+gates: baseline-verify workflow-pins doc-check lint test arch-check coverage-gate semgrep gate-consistency planning-check record-gates ## alle inneren Gates (mandatory vor Handoff).
+	@echo "[gates] baseline-verify + workflow-pins + doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency + planning-check green"
 
 # ci = gates + Image-Integrationstests — das Target, das die
 # Release-Pipeline (slice-011) fährt. fullbuild = volle Closure vor
