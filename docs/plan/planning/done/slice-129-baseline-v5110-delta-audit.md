@@ -72,14 +72,24 @@ dieselbe Zeile wie die drei.
 
 ## 4. Definition of Done
 
-- [ ] Acht Zeilen, eine je Kurs-Welle 87–94, jede mit Antwort **und** Beleg;
-      keine Sammel-Zeile.
-- [ ] Bestands-Stichprobe gefahren und ihr Ergebnis benannt.
-- [ ] Liste der Artefakte außerhalb der Rangliste, die normativen Text tragen —
-      vollständig **belegt**, nicht behauptet (`BEO-011`).
-- [ ] Etappe C geschnitten oder als Folge-Welle ausgewiesen; Drift-Log-Zeile
+- [x] Acht Zeilen, eine je Kurs-Welle 87–94, jede mit Antwort **und** Beleg;
+      keine Sammel-Zeile. Zwei Wellen verlangen Handlung, sechs sind belegt
+      folgenlos — und die **Prämisse** dahinter ist nach Review am Kanon selbst
+      geprüft, nicht vorausgesetzt (§4a).
+- [x] Bestands-Stichprobe gefahren: der Regelwerks-Diff berührt fünf Dateien,
+      vier davon mit Regel-Inhalt; `kurs/de/` und `lab/example/` folgen ihm
+      exakt (unabhängig gegengeprüft).
+- [x] Liste der Artefakte außerhalb der Rangliste — **fünf** Fundorte, davon
+      **zwei erst durch den Review**. Die erste Fassung nannte drei und hatte
+      `Makefile`, `.github/workflows/` und `tools/*.sh` nie durchsucht; die
+      Lücke ist in §4a ausgewiesen statt geheilt.
+- [x] Etappe C geschnitten: [slice-130](../open/slice-130-lastenheft-historie-form.md)
+      und [slice-131](../open/slice-131-reviewer-skill-waisen.md), Drift-Log-Zeile
       gesetzt.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] `make gates` Exit 0 (acht Gates, 461 Dateien, 0 Befunde); unabhängiger
+      Review auf **Sonnet 5**
+      ([Report](../../../reviews/2026-08-23-slice-129-delta-audit-review.md)),
+      Verdikt blockierend, 0 HIGH · 4 MEDIUM · 1 LOW, alle fünf eingearbeitet.
 
 ## 4a. Ergebnis: acht Kurs-Wellen, acht Antworten
 
@@ -166,14 +176,20 @@ schließt einen von **fünf** Fundorten und lässt den größeren offen.
 
 ## 5. Abnahme-Punkte / Risiken
 
-- **Ein Audit über acht Wellen verführt zur Sammel-Antwort.** Je länger die
-  Liste, desto attraktiver „betrifft uns nicht". Genau dagegen steht die
-  Ein-Zeile-je-Welle-Regel. — **Ausgang:** *(bei Closure)*
-- **Die drei Verdachts-Wellen könnten das Audit dominieren** und die fünf
-  übrigen zur Formsache machen. — **Ausgang:** *(bei Closure)*
-- **Die Vollständigkeits-Liste ist selbst eine Vollständigkeits-Aussage** — und
-  damit die Form, die in welle-82 achtmal gekippt ist. Sie braucht denselben
-  zeilenweisen Beleg, den sie einfordert. — **Ausgang:** *(bei Closure)*
+- **Ein Audit über acht Wellen verführt zur Sammel-Antwort.** — **Ausgang:**
+  *nicht eingetreten.* Acht Zeilen, acht Antworten; der Review hat jede
+  einzelne gegengeprüft und keine als Sammel-Antwort beanstandet.
+- **Die drei Verdachts-Wellen könnten das Audit dominieren.** — **Ausgang:**
+  *nicht eingetreten, aber knapp.* Zwei der drei Verdachts-Wellen bestätigten
+  sich (90, 94), die dritte (93) **nicht** — dieses Repo fährt die Form
+  bereits. Dass ein Verdacht sich nicht bestätigt, ist der Beleg dafür, dass
+  die Verdachts-Markierung das Ergebnis nicht vorwegnahm.
+- **Die Vollständigkeits-Liste ist selbst eine Vollständigkeits-Aussage.** —
+  **Ausgang:** **eingetreten.** Die Liste nannte drei Fundorte und hatte drei
+  Verzeichnisse nie durchsucht; der Review fand zwei weitere. Das benannte
+  Risiko war real, und die Vorsorge — es in §7 als zentrale Beobachtung zu
+  führen — hat es nicht verhindert, sondern nur die Erwartung gesetzt, mit der
+  der Review danach suchte.
 
 ## 6. Trigger
 
@@ -204,4 +220,50 @@ die dieselbe Aufgabe über sechs Stufen gelöst hat.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Etappe B ist geliefert: acht Kurs-Wellen, acht Antworten mit Beleg, zwei davon
+mit Handlung — und daraus Etappe C mit zwei Slices. Der Migrations-Bogen der
+Welle ist damit vollständig geschnitten.
+
+**Die Lehre steht in dem, was das Audit über sich selbst herausgefunden hat.**
+Der Slice benannte in §5 und §7 sein zentrales Risiko: eine
+Vollständigkeits-Aussage ist die Form, die in welle-82 achtmal gekippt ist. Er
+hat sie trotzdem produziert und ist trotzdem gekippt — drei Fundorte statt
+fünf, weil drei Verzeichnisse nie durchsucht wurden. **Ein Risiko zu benennen
+verhindert es nicht; es setzt nur die Erwartung, mit der ein zweiter Leser
+danach sucht.** Genau das ist eingetreten, und genau deshalb steht die Lücke
+jetzt **in** §4a statt geheilt zu sein: ein Zensus, der seine eigene
+Unvollständigkeit verschweigt, ist schlechter als einer, der sie ausweist.
+
+**Zwei Prämissen waren ungeprüft, und beide hielten trotzdem.** Erstens: „kein
+Regelwerks-Diff = folgenlos" — das vendorte Regelwerk sagt über sich selbst,
+es trage *keine eigene Normativität*; maßgeblich ist der Kurs. Die Antwort
+stimmt (`kurs/de/` folgt dem Diff exakt), aber ich hatte sie nicht daran
+geprüft. Zweitens: „beide Straten führen drei Spalten" — die Spezifikation
+führt **zwei**, und der Kanon gibt dem Technik-Stratum bewusst keine
+`Verweis`-Spalte. Diese zweite war schlimmer: sie war nicht bloß ungeprüft,
+sondern **falsch**, und [slice-130](../open/slice-130-lastenheft-historie-form.md)
+hätte als geschrieben eine Spalte eingeführt, die der Kanon dort gerade nicht
+vorsieht.
+
+**Ein Befund, den ich gegen den Reviewer korrigieren musste — und er wurde
+dadurch härter.** Gemeldet war, die „Zwei-Quadranten-Regel" existiere im
+gepinnten Baum nicht. Die **Regel** steht sehr wohl dort, wo ich sie zitiert
+hatte; mein `grep` suchte den Bindestrich-Begriff. Aber das Kurs-CHANGELOG
+streicht die **Wortprägung** ausdrücklich als meine, mit Begründung: *„ihre
+Glosse gab die bestehende Regel falsch wieder — sie fordert Verdopplung über
+zwei Quadranten, nicht eine Rang-Position."* Ich hatte sie den ganzen Tag zur
+**Verortung** benutzt. Das ist ein Denkfehler, kein Namensfehler, und er stand
+in drei Artefakten.
+
+**Was das Audit inhaltlich zutage gefördert hat, ist größer als der Nachzug:**
+Dieses Repo fährt **strenger als der Kanon verlangt** — die CR-Pflicht beginnt
+erst ab Lastenheft-Status `Accepted`, unser Lastenheft steht auf `Draft`, und
+wir führen seit Monaten Versions-Bumps und Historie-Zeilen. Das ist eine
+legitime Wahl, aber sie ist undeklariert: ein Leser kann Pflicht nicht von
+Vorsatz unterscheiden. [slice-130](../open/slice-130-lastenheft-historie-form.md) trägt
+sie nach.
+
+**Und die Reihenfolge-Frage aus
+[slice-127](../next/slice-127-claude-md-pointer.md) ist beantwortet:**
+`CLAUDE.md` ist **einer von fünf** Fundorten und der kleinste. Der schwerste
+ist der Reviewer-Skill — die Datei, mit der jeder dieser Reviews geprüft wird.
