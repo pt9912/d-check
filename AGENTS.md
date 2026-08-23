@@ -16,9 +16,7 @@ angepasst** (Source Precedence — siehe
 [`harness/README.md`](harness/README.md)). Das gilt zwischen **dieser Datei**
 und einer kanonischen Quelle ebenso wie zwischen **zwei kanonischen Quellen**.
 **Der Widerspruch gehört benannt**, nicht stillschweigend nach einer Seite
-aufgelöst: Wer ihn nur befolgt, lässt die falsche Stelle stehen. *(Hard Rule seit slice-127;
-Kanon: [`grundlagen-source-precedence.md`](.harness/baseline/v5.11.0/regelwerk/grundlagen-source-precedence.md).
-Auflösungs-Trigger: permanent.)*
+aufgelöst: Wer ihn nur befolgt, lässt die falsche Stelle stehen. *(seit dem v5.11.0-Bump)*
 
 Strukturregeln (ID-Schemata, Verzeichniskonvention, Adaptionen ggü.
 Baseline, Modus-Deklarationen pro Sub-Area, Zusatzklassen für
@@ -84,12 +82,11 @@ Implementierungssprache ist **Go**
 **kein Host-Go und keine Host-Paketmanager** (`go`, `pip`, `npm`,
 `cargo`, `apt`, `brew`, …). Alle Checks laufen über `make`; die
 Go-Toolchain läuft in Docker (Multi-Stage gemäß
-[ADR-0002](docs/plan/adr/0002-distribution-ghcr-image.md), entsteht
-mit slice-003). Der Host braucht nur `git`, GNU `make`, `bash` und
+[ADR-0002](docs/plan/adr/0002-distribution-ghcr-image.md)). Der Host braucht nur `git`, GNU `make`, `bash` und
 Docker.
 
 **Falsch:** `go build ./…`, `go test ./…`, `pip install …`
-**Richtig:** `make gates` (Implementierungs-Gates entstehen mit slice-003)
+**Richtig:** `make gates`
 
 **Begründung:** Toolchain-Reproduzierbarkeit + Supply-Chain-Defense.
 
@@ -97,8 +94,7 @@ Docker.
 
 Inline-Suppressions sind verboten: `//nolint`-Direktiven im Code
 brechen das künftige Suppression-Gate. Ausnahmen leben zentral in
-`.golangci.yml` (exclude-rules) mit Begründung — die Datei entsteht
-mit slice-003.
+`.golangci.yml` (exclude-rules) mit Begründung.
 
 ### 3.3 git mv + Inhaltsänderung = zwei Commits
 
@@ -218,7 +214,7 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make arch-check`            | Import-Regeln des Hexagon-Schnitts + Kern-Paket-Richtung **via digest-gepinntes a-check-Image** (Schwester-Tool, `a-check.mk` + `.a-check.yml`, netzlos/read-only) ([ADR-0005](docs/plan/adr/0005-modul-layout-hexagon-ordner.md), [ADR-0012](docs/plan/adr/0012-kern-paketschnitt-model-rules-app.md), [ADR-0029](docs/plan/adr/0029-arch-check-via-a-check.md) löst die Skript-/Stage-Mechanik ab)                                                      |
 | `make coverage-gate`         | Coverage-Schwelle über `./internal/...` (Kalibrierungs-Bindung, siehe [`harness/README.md`](harness/README.md) §Sensors)                                                                                                                           |
 | `make gate-consistency`      | Meta-Gate: Deklarations-Konsistenz Doku↔Makefile via Modul `targets` (Image, dogfood; [ADR-0031](docs/plan/adr/0031-targets-deklarations-konsistenz-modul.md); [ADR-0032](docs/plan/adr/0032-gate-consistency-tombstone.md) löst das Rest-Skript voll ab). Die [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modullisten-Integrität prüft jetzt ein getippter Go-Test in `make test`                                                                           |
-| `make planning-check`        | Meta-Gate **via Modul `planning`** (Image, dogfood): Roadmap §Offene Wellen (Ruhe-Marker) ↔ `in-progress/slice-*` (`planning-drift`, hermetisch — kein git, in `gates`) ([ADR-0028](docs/plan/adr/0028-planning-lifecycle-modul.md) löst die Skript-Mechanik von [slice-040](docs/plan/planning/done/slice-040-planning-consistency-gate.md) ab; [`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
+| `make planning-check`        | Meta-Gate **via Modul `planning`** (Image, dogfood): Roadmap §Offene Wellen (Ruhe-Marker) ↔ `in-progress/slice-*` (`planning-drift`, hermetisch — kein git, in `gates`) ([ADR-0028](docs/plan/adr/0028-planning-lifecycle-modul.md) löst die frühere Skript-Mechanik ab; [`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
 | `make doc-check`             | Doku-Links, Anker, Kennungs-Linkpflicht, Referenzmatrix, Inline-Code-Pfade, Abschnitts-Invarianten (Modul `structure`) + Kennungen in Diagramm-Fences (Modul `diagrams`) via `d-check` selbst (Dogfooding; netzlos — zugleich [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Messmethode)             |
 | `make gates`                 | alle inneren Gates (mandatory vor Handoff)                                                                                                                                                                                                         |
 | `make ci`                    | CI-äquivalenter Lauf: gates + image-test (fährt die Release-Pipeline)                                                                                                                                                                              |
@@ -303,8 +299,7 @@ Pro Slice:
 2. Relevante kanonische Quelle lesen (Source Precedence beachten).
 3. Betroffene Requirement-/ADR-IDs identifizieren — und **vor der
    Implementierung benennen**: Slice-ID, betroffene `DC-*`-IDs, ADR-IDs,
-   betroffene Module, auszuführende Gates. *(Hard Rule seit slice-127;
-   Auflösungs-Trigger: die Baseline verlangt die Nennung selbst.)*
+   betroffene Module, auszuführende Gates. *(seit dem v5.11.0-Bump)*
 4. Kleinste sinnvolle Änderung planen.
 5. Engsten nützlichen Sensor laufen lassen.
 6. Repo-weiten Gate-Lauf vor Handoff (`make gates`).
