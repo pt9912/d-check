@@ -59,12 +59,17 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   ([`DC-FA-HOST-001`](spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in))
 - `diagrams` — identifier existence in diagram fences (e.g. `mermaid`): every
   identifier found in the diagram must be defined in its `defined-in` source,
-  opt-in
+  opt-in; **both valves** like `ids`/`codepaths` — `exempt-paths` (file-wide)
+  and the line marker, here a **token** rather than an HTML comment, and on the
+  fence's **opening line** for the whole block
   ([`DC-FA-DIAG-001`](spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in))
 - `versions` — version-pin consistency: pinned `ghcr` image references must
   carry the current version (from `version.md#aktuell`), also reads
   fenced code, opt-in; the **anchor** of `current-from` follows the same answer
-  as in `anchors`, not the fence exception
+  as in `anchors`, not the fence exception. `versions.patterns` carries
+  **several** pattern/source pairs (your own release **and** a pinned foreign
+  version) — the short form is the single-element list, and exemptions are
+  per pair
   ([`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
 - `pins` — content pin against content drift: a link with
   `<!-- dpin: … -->` is checked against the hash of its target span (finding
@@ -118,11 +123,15 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   of the source span (`citation-mismatch`), opt-in
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — structure invariants **within** a document: each rule defines a
-  document class via **its own** globs, a section (literal or RE2) and up to six
-  conditions, each with its own reason code — non-empty (`section-empty`),
+  document class via **its own** globs, a section (literal or RE2) and up to
+  eight conditions, each with its own reason code — non-empty (`section-empty`),
   minimum sentences (`section-thin`), task ceiling (`section-oversized`),
   forbidden and required patterns (`section-forbidden`,
-  `section-pattern-missing`) and required markers (`section-marker-missing`);
+  `section-pattern-missing`), required markers (`section-marker-missing`),
+  chronological monotonicity of the key column (`section-unordered`,
+  `section-cell-untyped`) and the shape of **every** heading in the section
+  (`headings-match`/`headings-level` ⇒ `section-heading-mismatch`, reported per
+  heading on its own line);
   a missing section — or a rule matching no file — yields `section-missing`,
   several matches under `sections: one` yield `section-ambiguous`. **Hermetic**,
   opt-in; the closure-note structure of module `planning` is a **preset** of the
@@ -164,10 +173,14 @@ The principle: **report, never repair.** d-check is a purely read-only
 tool ([`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));
 deterministic findings are fixed, not suppressed. An opt-out
 marker exists only where a non-existent target or an illustrative identifier
-can be documented intent (`d-check:ignore`, per line) — it silences
-exclusively the modules `codepaths` and `ids`
+can be documented intent (`d-check:ignore`, per line) — it silences exactly the
+four modules that configure their own patterns and anchor findings to lines:
+`codepaths`, `ids`, `versions` and `diagrams`
 ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
-[`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)).
+[`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids),
+[`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in),
+[`DC-FA-DIAG-001`](spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in));
+all others do not know it.
 
 ## What makes it trustworthy?
 
@@ -202,7 +215,7 @@ Distributed as a container image via GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

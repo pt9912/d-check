@@ -6,7 +6,85 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.63.0] — 2026-08-23
+
+### Added
+
+- slice-122 — **`versions.patterns`: mehrere Muster-Quellen-Paare statt genau
+  eines** (`DC-FA-VER-001`, Lastenheft 0.63.0;
+  [ADR-0058](docs/plan/adr/0058-konfigurations-flaechen-additiv-weiten.md)
+  Entscheidung 1). Ein Repo führt oft mehrere unabhängige Versions-Reihen — das
+  eigene Image gegen das Release-Register **und** einen fremden gepinnten Stand
+  gegen den Konventionsspeicher; mit genau einem `pin-pattern` war das nicht
+  konfigurierbar. **Die Kurzform ist die einelementige Liste:**
+  `pin-pattern`/`current-from`/`exempt-paths` werden am Config-Rand in ein Paar
+  übersetzt, es gibt genau **einen** Auswertungspfad, und ohne den neuen
+  Schlüssel ist der Befundsatz **byte-identisch**. Das **Paar** ist die Einheit
+  — `exempt-paths` und die Selbst-Ausnahme der Quell-Datei gelten **paar-lokal**,
+  der Zeilen-Marker `d-check:ignore` dagegen paar-übergreifend. Kurzform und
+  Liste **zugleich** ⇒ Exit 2 (entschieden an der **Anwesenheit** des
+  Schlüssels, nicht an seinem Wert), ebenso leere Liste, fehlendes
+  `pin-pattern` und eine nicht auflösende Quelle. Weil die Befund-Adresse
+  (Datei, Zeile, Regel, Ziel, Grund) zwei Paare an derselben Stelle **nicht**
+  unterscheidet und die geteilte Nachrunde den zweiten Befund verwürfe, nennt
+  **eine** Meldung alle Erwartungen mit ihrer Quelle, in Deklarationsreihenfolge;
+  der Wortlaut hängt an der Paar-Zahl (ein Paar ⇒ Kurzform-Schlüssel wie bisher,
+  ab zwei ⇒ `versions.patterns[i]`). Kein neuer Grund-Code.
+
+- slice-123 — **`structure.headings-match`/`headings-level`: jede Überschrift
+  des Abschnitts, positiv geprüft** — achte Bedingung des Moduls `structure`
+  (`DC-FA-STRUCT-001`, Lastenheft 0.64.0;
+  [ADR-0058](docs/plan/adr/0058-konfigurations-flaechen-additiv-weiten.md)
+  Entscheidung 2), neuer Grund-Code `section-heading-mismatch`. Dieselbe Aussage
+  war vorher nur als **Negation** über den Abschnitts-Text formulierbar (RE2
+  kennt keinen Lookahead) — und diese Ersatz-Konstruktion hatte einen gemessenen
+  Preis: sie baute die Heading-Lexik des Moduls nach (Zeilenanfang, genau ein
+  Leerzeichen), während das Modul beliebigen Weißraum trimmt und Tab akzeptiert;
+  eine **eingerückte** Sektion entkam still, und der Wächter behauptete eine
+  Deckung, die er nicht hatte. Die Bedingung liest die Überschriften jetzt mit
+  **derselben** Erkennung, mit der das Modul den Abschnitt findet — als **zweite**
+  Bedingung nach `table-order` nicht auf dem bereinigten Abschnitts-Text.
+  Verglichen wird der Überschriften-**Text** (ohne `#`-Folge, getrimmt), gemeldet
+  wird **je** verletzender Überschrift auf **ihrer** Zeile, nicht am
+  Abschnittskopf. `headings-level` wählt genau eine Ebene, Default ist
+  Abschnitts-Ebene + 1. Bewusst **nicht** `heading-pattern` genannt: unter
+  `planning.closure` trägt dieser Name bereits einen **Selektor**, hier wäre es
+  eine **Bedingung** — und beide Blöcke leben in diesem Repo im selben Profil.
+  Nicht kompilierendes Muster oder `headings-level` außerhalb 1–6 ⇒ Exit 2,
+  `headings-level` ohne `headings-match` ⇒ Exit 2. Ohne den Schlüssel
+  byte-identisch. Zwei Grenzen sind benannt statt zugesagt: ohne Überschrift der
+  geprüften Ebene ist die Bedingung wirkungslos wahr, und eine Ebene flacher als
+  der Abschnitt kann in ihm nicht vorkommen.
+
+- slice-124 — **`diagrams` bekommt beide Ventile** (`DC-FA-DIAG-001`,
+  Lastenheft 0.65.0;
+  [ADR-0058](docs/plan/adr/0058-konfigurations-flaechen-additiv-weiten.md)
+  Entscheidung 3): die Glob-Liste `diagrams.exempt-paths` (datei-weit) und den
+  Zeilen-Marker `d-check:ignore`. `diagrams` war das einzige Modul, das Befunde
+  an Zeilen hängt und **kein** Ventil trug — wer es aktivierte, konnte ein
+  Beispiel-Diagramm mit erfundener Kennung nur loswerden, indem er ganze
+  Dateibäume aus dem Scan nahm. Das ist eine Vermeidung, keine Ausnahme.
+  **Der Marker ist hier ein Token, kein HTML-Kommentar:** in einem `mermaid`-Fence
+  ist `<!-- … -->` kein Kommentar, sondern Diagramm-Text; das Modul sucht die
+  Zeichenfolge auf der Zeile, und wie der Autor sie vor dem Renderer versteckt,
+  ist Sache der Diagramm-Sprache (in Mermaid `%%`). Er wirkt an **zwei** Orten:
+  auf einer Diagramm-Zeile nimmt er diese Zeile aus, auf der **Öffnungszeile**
+  des Fence den **ganzen** Block — ohne die zweite Stelle wäre die intuitive
+  Platzierung wirkungslos. Nachgetragen sind zugleich die `diagrams`-Zeilen im
+  §2-Konfigurations-Schema, die dem Modul als einzigem fehlten. Kein neuer
+  Grund-Code. **Reichweite bewusst eng:** `hostpaths`, `pins` und `spans` hängen
+  Befunde ebenfalls an Zeilen und tragen weiterhin kein Ventil — sie
+  konfigurieren keine eigenen Muster.
+
 ### Changed
+
+- slice-125 — **Doku-Korrektur: die Reichweite des Zeilen-Markers war in drei
+  Dokumenten zu eng angegeben.** Benutzerhandbuch (§5 Ventil-Überblick, §6, §8),
+  `docs/user/operations.md` und beide READMEs behaupteten, `d-check:ignore` wirke
+  ausschließlich für `codepaths` und `ids`. Tatsächlich honorieren ihn **vier**
+  Module — `versions` seit v0.30.0, `diagrams` neu seit dieser Version —, und
+  `exempt-paths` gibt es in **sechs** statt in fünf Modulen. Betroffen ist nur
+  die Dokumentation; das Verhalten ist unverändert.
 
 - slice-112 — **Doku-Präzisierung ohne Verhaltensänderung** (Lastenheft
   0.62.1, Handbuch 1.54): `DC-FA-PLAN-001` §Wellen-Invariante nennt in

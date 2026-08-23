@@ -84,7 +84,10 @@ Inline-Code) und unabhängig von der `link-policy`:
   Kennung dort nackt oder in Backticks steht.
 - **`d-check:ignore`** (HTML-Kommentar auf der Zeile, Begründung
   empfohlen): nimmt die ganze Zeile aus — für bewusst illustrative
-  Beispiel-Kennungen. Der Marker wirkt auf `ids` und `codepaths`.
+  Beispiel-Kennungen. Denselben Marker honorieren `codepaths`, `versions`
+  und `diagrams`; in `diagrams` als **Token** statt als HTML-Kommentar (in
+  einem Fence gibt es keine Markdown-Kommentare) und dort auch auf der
+  **Öffnungszeile** für den ganzen Block. Die übrigen Module kennen ihn nicht.
 
 Beide Ventile gelten auch unter der Default-Politik `prose`: eine nackte
 Kennung in einem ausgenommenen Artefakt (etwa einem Review-Report) lässt
@@ -122,8 +125,9 @@ Zielpfad der Referenz. Alle anderen Referenzen auf Y bleiben
 `matrix-inactive`, und die Klassen-Regeln (`matrix-forbidden`) sind
 unberührt. Default aus: ohne das Flag ist der Befundsatz byte-identisch.
 
-**Kein Zeilen-Marker für `matrix`.** Der `d-check:ignore`-Marker wirkt
-ausschließlich auf `ids` und `codepaths` (illustrative Beispiele).
+**Kein Zeilen-Marker für `matrix`.** Der `d-check:ignore`-Marker wirkt nur in
+den Modulen, die eigene Muster konfigurieren und ihre Befunde an Zeilen hängen
+(`ids`, `codepaths`, `versions`, `diagrams` — illustrative Beispiele).
 `matrix`-Befunde werden behoben oder **strukturell** ausgenommen
 (`exclude-sections` für Provenance-/Historie-Sektionen,
 `allow-supersede-lineage` für die Lineage-Kante) — legitime Ausnahmen

@@ -58,12 +58,17 @@ Dokuments:
   ([`DC-FA-HOST-001`](spec/lastenheft.md#dc-fa-host-001--host-lokale-absolute-pfade-modul-hostpaths-opt-in))
 - `diagrams` — Kennungs-Existenz in Diagramm-Fences (z. B. `mermaid`): jede
   im Diagramm gefundene Kennung muss in ihrer `defined-in`-Quelle definiert
-  sein, opt-in
+  sein, opt-in; **beide Ventile** wie `ids`/`codepaths` — `exempt-paths`
+  (datei-weit) und der Zeilen-Marker, hier als **Token** statt HTML-Kommentar
+  und auf der **Öffnungszeile** des Fence für den ganzen Block
   ([`DC-FA-DIAG-001`](spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in))
 - `versions` — Versions-Pin-Konsistenz: gepinnte `ghcr`-Image-Verweise müssen
   die aktuelle Version (aus `version.md#aktuell`) tragen, liest auch
   Fenced-Code, opt-in; der **Anker** von `current-from` folgt dabei derselben
-  Antwort wie in `anchors`, nicht der Fence-Ausnahme
+  Antwort wie in `anchors`, nicht der Fence-Ausnahme. `versions.patterns` trägt
+  **mehrere** Muster-Quellen-Paare (eigenes Release **und** ein fremder
+  gepinnter Stand) — die Kurzform ist die einelementige Liste, Ausnahmen gelten
+  paar-lokal
   ([`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in))
 - `pins` — Content-Pin gegen inhaltlichen Drift: ein Link mit
   `<!-- dpin: … -->` wird gegen den Hash seines Ziel-Spans geprüft (Befund
@@ -120,10 +125,14 @@ Dokuments:
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — Struktur-Invarianten **innerhalb** eines Dokuments: je Regel eine
   Dokumentklasse über **eigene** Globs, ein Abschnitt (Klartext oder RE2) und bis
-  zu sechs Bedingungen mit je eigenem Grund-Code — nicht leer (`section-empty`),
+  zu acht Bedingungen mit je eigenem Grund-Code — nicht leer (`section-empty`),
   Mindest-Sätze (`section-thin`), Task-Obergrenze (`section-oversized`),
   verbotenes bzw. gefordertes Muster (`section-forbidden`,
-  `section-pattern-missing`) und geforderte Marken (`section-marker-missing`);
+  `section-pattern-missing`), geforderte Marken (`section-marker-missing`),
+  Chronologie-Monotonie der Schlüsselspalte (`section-unordered`,
+  `section-cell-untyped`) und die Form **jeder** Überschrift des Abschnitts
+  (`headings-match`/`headings-level` ⇒ `section-heading-mismatch`, gemeldet je
+  Überschrift auf ihrer Zeile);
   fehlt der Abschnitt oder trifft die Regel keine Datei ⇒ `section-missing`,
   mehrfach vorhanden bei `sections: one` ⇒ `section-ambiguous`. **Hermetisch**,
   opt-in; die Closure-Note-Struktur des Moduls `planning` ist ein **Preset**
@@ -166,10 +175,14 @@ Lese-Tool ([`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-ne
 deterministische Befunde werden behoben, nicht unterdrückt. Einen
 Opt-out-Marker gibt es nur dort, wo ein nicht existierendes Ziel oder
 eine illustrative Kennung dokumentierte Absicht sein kann
-(`d-check:ignore`, zeilenweise) — er stellt ausschließlich die Module
-`codepaths` und `ids` still
+(`d-check:ignore`, zeilenweise) — er stellt genau die vier Module still, die
+eigene Muster konfigurieren und ihre Befunde an Zeilen hängen: `codepaths`,
+`ids`, `versions` und `diagrams`
 ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
-[`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids)).
+[`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids),
+[`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in),
+[`DC-FA-DIAG-001`](spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in));
+alle übrigen kennen ihn nicht.
 
 ## Was macht es vertrauenswürdig?
 
@@ -204,7 +217,7 @@ Verteilung als Container-Image über GHCR
 ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.55 · **Software-Version:** [v0.62.0](../../version.md#v0.62.0) ·
-**Stand:** 2026-08-22 · **Autor:** pt9912
+**Handbuch-Version:** 1.56 · **Software-Version:** [v0.63.0](../../version.md#v0.63.0) ·
+**Stand:** 2026-08-23 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.62.0
+docker pull ghcr.io/pt9912/d-check:v0.63.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -72,7 +72,7 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.62.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.63.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -101,7 +101,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -156,7 +156,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -175,7 +175,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.62.0
+  ghcr.io/pt9912/d-check:v0.63.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -194,7 +194,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.62.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.63.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -213,7 +213,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -233,7 +233,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -242,7 +242,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -261,7 +261,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -281,7 +281,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
   --enable ids --disable anchors
 ```
 
@@ -302,7 +302,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
   --enable ids
 ```
 
@@ -323,7 +323,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
   --enable matrix
 ```
 
@@ -391,7 +391,7 @@ Konfigurationsfehler (Exit 2); ohne `token` verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
   --enable external
 ```
 
@@ -413,7 +413,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
   --enable ids --doctor
 ```
 
@@ -441,7 +441,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
   --enable ids --doctor --json
 ```
 
@@ -489,7 +489,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -525,7 +525,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
     --enable ids --repair | git apply
   ```
 
@@ -542,7 +542,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -562,7 +562,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -623,7 +623,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -761,7 +761,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -806,7 +806,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.62.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.63.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -819,7 +819,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.62.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.63.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -880,7 +880,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.62.0 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -1028,12 +1028,22 @@ external:
   timeout-seconds: 10
 diagrams:                      # Kennungen in Diagramm-Fences prüfen
   fences: [mermaid]            # zu öffnende Diagramm-Sprachen (Default mermaid)
+  exempt-paths: ["docs/reviews/**"] # Dateien ganz ausnehmen (Glob, wie ids)
   patterns:
     - regex: 'ARC-\d{2}'
       defined-in: spec/architecture.md  # Token muss hier (außerhalb Fences) vorkommen
 versions:                      # gepinnte Versions-Verweise gegen die aktuelle Version
   pin-pattern: 'ghcr\.io/[^\s:]+:(v\d+\.\d+\.\d+)'  # Version in Capture-Gruppe 1
   current-from: version.md#aktuell  # Datei#Anker (Span) mit der aktuellen Version
+  exempt-paths: [CHANGELOG.md] # historische Pins ausnehmen (Glob)
+  # ODER — mehrere Muster-Quellen-Paare statt eines; NICHT zusammen mit der
+  # Kurzform oben (beides gesetzt ⇒ Exit 2), exempt-paths gilt je Paar:
+  # patterns:
+  #   - pin-pattern: 'ghcr\.io/[^\s:]+:(v\d+\.\d+\.\d+)'
+  #     current-from: version.md#aktuell
+  #     exempt-paths: [CHANGELOG.md]
+  #   - pin-pattern: 'ai-harness-course/tree/(v\d+\.\d+\.\d+)'
+  #     current-from: harness/conventions.md#baseline
 vcs:                           # git-Diff-Immutabilität (opt-in; braucht .git + Range)
   paths: ["docs/plan/adr/[0-9]*.md"]    # geschützte Datei-Klasse (Glob)
   immutable-when: '^\*\*Status:\*\* Accepted'        # BASE immutabel ab dieser Zeile (nur ausserhalb von Code-Bloecken)
@@ -1081,21 +1091,40 @@ feinsten Schnitt:
 - **`scan.ignore`** (Quelle, ganze Datei): eine Datei wird gar nicht erst gescannt,
   ihre Referenzen erreichen **kein** Modul. Der gröbste Schnitt.
 - **`exempt-paths`** (ganze Datei, je Modul): nimmt **ganze Dateien** von der Prüfung
-  **eines** Moduls aus — `ids` (je Muster), `matrix`, `codepaths`, `versions` und
-  `structure` (je Regel); der Rest wird weiter gescannt. Die übrigen Module haben
-  den Schlüssel nicht.
-- **`d-check:ignore`** (eine Zeile): der HTML-Kommentar-Marker nimmt **eine
-  einzelne Zeile** aus — und zwar **nur** für `codepaths` und `ids`; bei `ids`
-  für nackte wie für Inline-Code-Vorkommen, unabhängig von der Link-Politik.
-  **Alle anderen Module kennen ihn nicht.** Achten Sie besonders auf
-  `diagrams`: dieses Modul hat **weder** `exempt-paths` **noch** den
-  Zeilen-Marker. Wer dort eine Datei ausnehmen muss — etwa ein Beispiel-Diagramm
-  mit erfundenen Kennungen in einem Report —, schneidet über den modul-lokalen
-  `diagrams.scope` oder über `scan.ignore`; sonst meldet jede nicht definierte
-  Kennung im Fence.
+  **eines** Moduls aus — `ids` (je Muster), `versions` (je Muster-Quellen-Paar),
+  `structure` (je Regel), `matrix`, `codepaths` und `diagrams` (jeweils modulweit);
+  der Rest wird weiter gescannt. Die übrigen Module haben den Schlüssel nicht.
+- **`d-check:ignore`** (eine Zeile): der Marker nimmt **eine einzelne Zeile** aus —
+  in `codepaths`, `ids`, `versions` und `diagrams`. Bei `ids` gilt er für nackte
+  wie für Inline-Code-Vorkommen, unabhängig von der Link-Politik; bei `versions`
+  nimmt er die Zeile **allen** Muster-Quellen-Paaren aus, während `exempt-paths`
+  dort paar-lokal wirkt. **Die übrigen Module kennen ihn nicht** — ein
+  `matrix`-Befund etwa wird behoben oder **strukturell** ausgenommen
+  (`exclude-sections`, `allow-supersede-lineage`), nicht zeilenweise
+  stummgeschaltet.
 - **`ignore-refs`** (Ziel, querschnittlich): nimmt bestimmte **aufgelöste
   Ziel-Pfade** von der Existenz-/Anker-Prüfung aus — **referenz-weit** (datei- und
   zeilen-unabhängig) und geteilt von `links`, `anchors` und `codepaths`.
+
+**Im Modul `diagrams` ist der Marker ein Token, kein HTML-Kommentar** — und er
+wirkt an zwei Orten. In Prosa schreiben Sie ihn als `<!-- d-check:ignore -->`;
+innerhalb eines Diagramm-Fence ist das kein Kommentar, sondern Diagramm-Text.
+Das Modul sucht deshalb die **Zeichenfolge** auf der Zeile; wie Sie sie vor dem
+Renderer verstecken, ist Sache der Diagramm-Sprache (in Mermaid `%%`). Auf einer
+Diagramm-Zeile nimmt der Marker **diese Zeile** aus, auf der **Öffnungszeile**
+des Fence den **ganzen** Block — sonst bräuchte ein Beispiel-Diagramm ihn auf
+jeder Kennungs-Zeile:
+
+```markdown
+~~~mermaid %% d-check:ignore (Beispiel-Diagramm, erfundene Kennungen)
+flowchart LR
+    A["ARC-42 Frontend"] --> B["ARC-43 Backend"]
+~~~
+```
+
+Ohne diesen Marker bleibt für `diagrams` nur `diagrams.exempt-paths` (ganze
+Datei), der modul-lokale `diagrams.scope` oder `scan.ignore` — Schnitte, die
+mehr wegnehmen, als gemeint war.
 
 `ignore-refs` ist das **Ziel-Achsen-Pendant** zu `scan.ignore` (Quell-Achse): jenes
 entfernt eine ganze Datei vom Scan, dieses ein einzelnes **Ziel** von der Prüfung —
@@ -1728,10 +1757,12 @@ structure:
     # require-all: ["Beleg", "Lernsignal"]
     # table-order: desc                           # asc|desc: Chronologie-Monotonie der Schlüsselspalte
     # table-column: 1                             # 1-basierte Schlüsselspalte (Default 1; nur mit table-order)
+    # headings-match: '^SPEC-[0-9]{3} '           # JEDE Überschrift im Abschnitt matcht dieses Muster
+    # headings-level: 3                           # geprüfte ATX-Ebene (Default: Abschnitts-Ebene + 1)
     # exempt-paths: []
 ```
 
-**Fünf Dinge, die überraschen können.** Erstens: eine Regel, die **keine** Datei
+**Sechs Dinge, die überraschen können.** Erstens: eine Regel, die **keine** Datei
 trifft, meldet `section-missing` — auch dann, wenn erst `exempt-paths` die Menge
 geleert hat. Eine Regel zu schreiben ist die Behauptung, dass es die Dateien
 gibt; ein leer laufendes Gate darf nicht Erfolg melden. Zweitens: bei `section`
@@ -1760,6 +1791,22 @@ dieser** Zeile, dahinter setzt der Vergleich neu auf. Ein Abschnitt ganz ohne
 Tabellen-Datenzeile meldet den Leerlauf: die Bedingung zu setzen ist die
 Behauptung, dass hier eine chronologische Tabelle steht.
 
+Sechstens: die **Überschriften-Bedingung** (`headings-match`) ist die **zweite**
+Ausnahme von der Bereinigung — sie liest nicht den Abschnitts-Text, sondern die
+Überschriften selbst, mit **derselben** Erkennung, mit der das Modul den
+Abschnitt findet (beliebig viel führender Weißraum, Leerzeichen **oder** Tab als
+Trenner, außerhalb von Fenced-Code). Sie sagt positiv „**jede** Überschrift
+dieses Abschnitts genügt diesem Muster", verglichen wird der Überschriften-**Text**
+ohne die `#`-Folge, und gemeldet wird `section-heading-mismatch` **je**
+verletzender Überschrift auf **ihrer** Zeile — nicht am Abschnittskopf, denn dort
+steht die Reparatur nicht. Geprüft wird genau eine Ebene: `headings-level`, per
+Default die Abschnitts-Ebene + 1 (die unmittelbaren Unterabschnitte). Zwei
+Grenzen sind benannt, nicht geschlossen: trägt der Abschnitt **keine** Überschrift
+der geprüften Ebene, ist die Bedingung wirkungslos wahr, und eine Ebene
+**flacher** als der Abschnitt kann in ihm gar nicht vorkommen. Verwechseln Sie
+den Schlüssel nicht mit `planning.closure.heading-pattern`: jener ist ein
+**Selektor** (welcher Abschnitt), dieser eine **Bedingung** (welche Form).
+
 **Messen Sie, bevor Sie eine Regel aktivieren.** In diesem Repo hat genau das
 eine Regel verhindert, die plausibel klang und falsch war: „abgeschlossener
 Slice ohne offene Task-Boxen“ meldete 32-mal — und jedes Mal zu Recht offen,
@@ -1777,8 +1824,8 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `citations` | opt-in        | wortgleiche Zitate: `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (`>`-Block oder inline `„…"`/`"…"`; Leerzeilen dazwischen sind unschädlich, ein Code-Block dazwischen trennt), das ein whitespace-normalisierter **Teilstring** der Quell-Spanne sein muss; fail-closed bei malformter Direktive | `citation-mismatch`, `citation-out-of-range`, `citation-inverted-range` |
 | `spans`     | opt-in        | ungeschlossene Code-Spans, verschachtelte Links, unbalancierte Fences                    | `span-unclosed`, `span-nested-link`, `fence-unclosed`       |
 | `hostpaths` | opt-in        | host-lokale absolute Pfade (Maschinen-Layout-Leak)                                       | `hostpath-forbidden`                                        |
-| `diagrams`  | opt-in        | Kennungen in Diagramm-Fences (Default `mermaid`) existieren in ihrer `defined-in`-Quelle | `diagram-id-undefined`                                      |
-| `versions`  | opt-in        | gepinnte `ghcr`-Image-Verweise tragen die aktuelle Version (aus `version.md#aktuell`), auch in Fences | `version-stale`                                             |
+| `diagrams`  | opt-in        | Kennungen in Diagramm-Fences (Default `mermaid`) existieren in ihrer `defined-in`-Quelle. **Beide Ventile** wie `ids`/`codepaths`: `exempt-paths` (datei-weit) und der Zeilen-Marker `d-check:ignore` — hier als **Token** statt HTML-Kommentar, und auf der **Öffnungszeile** des Fence für den ganzen Block | `diagram-id-undefined`                                      |
+| `versions`  | opt-in        | gepinnte `ghcr`-Image-Verweise tragen die aktuelle Version (aus `version.md#aktuell`), auch in Fences. **Mehrere Muster-Quellen-Paare** über `versions.patterns` (eigenes Release **und** ein fremder gepinnter Stand); die Kurzform `pin-pattern`/`current-from` **ist** die einelementige Liste, beide Schreibweisen zugleich ⇒ Exit 2. Ausnahmen sind paar-lokal, der Zeilen-Marker ist es nicht | `version-stale`                                             |
 | `pins`      | opt-in        | Content-Pin (`<!-- dpin: … -->`): Ziel-Span eines Links unverändert seit dem Verlinken | `link-stale`                                                |
 | `immutable` | opt-in        | Immutabilitäts-Pin (`<!-- immutable: … -->`): normalisierter **Core** einer Datei (ohne Marker-Zeile + `exclude-sections`) unverändert seit dem Pinnen; hermetisch (kein git) | `core-drift`                                                |
 | `vcs`       | opt-in (git)  | git-Diff-Immutabilität: **Core** einer immutablen Datei (`immutable-when`) unverändert über eine Commit-Range (`--range`/`--staged`); liest `.git` read-only (kein git-Binary, kein Netz). `immutable-when` und die Kopf-Status-Zeile gelten nur **außerhalb von Code-Blöcken** — eine Datei, die ihren eigenen Kopf als Beispiel zeigt, wird dadurch nicht immutabel | `core-drift-vcs`                                            |
@@ -1786,7 +1833,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `heading`-Block (Default `## Aktuelle Welle`) genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten. Überschriften und Marker zählen nur **außerhalb von Code-Blöcken**; die Block-Grenze ist die geteilte Abschnittsgrenze. **Dritte Fähigkeit** (opt-in über `waves.dir`): die Wellen-Register der Roadmap gegen die Wellen-Dateien — Plan-Dokument flach ⟺ aktive Welle (`waves.mode: one`, Default) **oder** Kennungs-Bijektion Aktiv-Block ⟺ flache Dokumente, Marker außen vor (`waves.mode: many`); Vorschau ohne Datei, Abschluss-Register ⟺ Ergebnisnotizen (beidseitig) | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder`, `closure-note-ambiguous`, `wave-drift`, `wave-preview-exists`, `wave-results-missing`, `wave-unregistered` |
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
 | `targets`   | opt-in        | Deklarations-Konsistenz Doku ↔ Build-Targets: jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`makefiles`), und jede Regel steht in der Autoritäts-Doku (`authority`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed bei fehlender Datei. Tabellenzeilen zählen nur **außerhalb von Code-Blöcken** — ein Beispiel-Block dokumentiert kein Target | `gate-phantom`, `gate-undocumented`                         |
-| `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu sieben Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table-order`/`table-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped` |
+| `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu acht Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table-order`/`table-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle; die achte die **Überschriften-Form** (`headings-match`/`headings-level`): **jede** Überschrift der geprüften Ebene innerhalb des Abschnitts matcht das Muster, geprüft auf ihrem **Text**, gemeldet **je** Überschrift auf **ihrer** Zeile. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped`, `section-heading-mismatch` |
 | `external`  | opt-in (Netz) | Erreichbarkeit externer Links                                                            | `external-status`, `external-timeout`, `external-redirects` |
 | `sources`   | opt-in (Netz) | Content-Pin externer Quellen gegen Upstream-Drift: eine auf `sha256` gepinnte `http(s)`-Quelle (Marker `<!-- source-pin: [zip] sha256:… -->` am Link **oder** Config-Block `sources:`; Einzeldatei oder Archiv `unpack: zip`) wird geholt, gehasht, verglichen — Meldung mit vollem Ist-Hash; **zweite** Netz-Tür neben `external`, nie im Default | `source-drift`, `source-unreachable`                        |
 
@@ -1884,7 +1931,10 @@ Ohne Konfiguration werden `docs/`, `spec/` und Wurzel-`*.md` geprüft.
 Andere Verzeichnisse nehmen Sie über `scan.roots` auf.
 
 **Wie schalte ich eine einzelne Zeile von der `ids`-Prüfung frei?**
-Setzen Sie den Marker `d-check:ignore` als HTML-Kommentar an die Zeile.
+Setzen Sie den Marker `d-check:ignore` als HTML-Kommentar an die Zeile. Denselben
+Marker honorieren `codepaths`, `versions` und `diagrams` — in `diagrams` als
+**Token** (in einem Fence gibt es keine HTML-Kommentare), dort auch auf der
+Öffnungszeile für den ganzen Block. Die übrigen Module kennen ihn nicht.
 
 **Ist die Ausgabe stabil/wiederholbar?**
 Ja. Gleiche Eingabe liefert byte-identische Ausgabe (stabile Sortierung).
@@ -1972,3 +2022,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.53             | v0.62.0          | 2026-08-21 | **Kennungs-Bijektion für offene Wellen** — `planning.waves.mode: one`\|`many` (§5/§6, Lastenheft 0.62.0 auf **formalen Konsumenten-CR**): unter `many` vergleicht `wave-drift` die im `heading`-Block genannten Wellen-**Kennungen** gegen die flachen Wellendokumente (beide Richtungen, `target` = Kennung, Fences zählen nicht) statt Marker gegen Datei-Zahl — der Ruhe-Marker bleibt Sache von `planning-drift`, und der Zustand „Welle eröffnet, nichts beansprucht" (Marker **und** Zeiger) ist grün. `one` (Default) unverändert, ohne Schlüssel byte-identisch; unbekannter/explizit leerer Modus ⇒ Exit 2. **Beachten:** unter `many` zählt jede Kennung in der Abschnitts-Prosa als Zeiger — erklärenden Text dort kennungsfrei halten. Nebenbei präzisiert: die §6-planning-Zeile nennt den Eintritts-Block jetzt config-treu (`heading`, Default `## Aktuelle Welle`) |
 | 1.54             | v0.62.0          | 2026-08-22 | Doku-Präzisierung ohne Software-Änderung (Lastenheft 0.62.1): die Wellen-Invariante vergleicht in **beiden** Modi Kennungs-Mengen — zwei flache Wellendokumente derselben Kennung sind ein Element, auch für das Singleton unter `one` (§6, Absatz „Zwei Kardinalitäts-Modelle"). Software-Version bleibt v0.62.0 |
 | 1.55             | v0.62.0          | 2026-08-22 | Doku-Korrektur ohne Software-Änderung (§5 Ventil-Überblick): `exempt-paths` gibt es in **fünf** Modulen (`ids` je Muster, `matrix`, `codepaths`, `versions`, `structure` je Regel) — genannt waren drei; und die Abgrenzung des Zeilen-Markers `d-check:ignore` ist vollständig: er wirkt **nur** für `codepaths` und `ids`, alle übrigen Module kennen ihn nicht. Ausdrücklich benannt ist jetzt `diagrams`, das **weder** Datei- **noch** Zeilen-Ventil hat — dort schneidet nur `diagrams.scope` bzw. `scan.ignore`. Software-Version bleibt v0.62.0 |
+| 1.56             | v0.63.0          | 2026-08-23 | **Drei Konfigurations-Flächen additiv geweitet** (Lastenheft 0.63.0/0.64.0/0.65.0). `versions.patterns`: eine **Liste** von Muster-Quellen-Paaren statt genau eines Paares — die Kurzform `pin-pattern`/`current-from` **ist** die einelementige Liste, beide Schreibweisen zugleich ⇒ Exit 2, Ausnahmen und Selbst-Ausnahme der Quell-Datei sind **paar-lokal**, und weil eine Befund-Adresse zwei Paare nicht unterscheidet, nennt **eine** Meldung alle Erwartungen mit ihrer Quelle (§5/§6). `structure.headings-match`/`headings-level`: achte Bedingung — **jede** Überschrift der Ebene innerhalb des Abschnitts matcht das Muster, **positiv** formuliert statt als Präfix-Negation, geprüft auf dem Überschriften-**Text** mit der Erkennung des Moduls, gemeldet **je** Überschrift auf **ihrer** Zeile; neuer Grund-Code `section-heading-mismatch`, Default-Ebene Abschnitts-Ebene + 1 (§5/§6). `diagrams.exempt-paths` **und** der Zeilen-Marker `d-check:ignore` — Ventil-Parität zu den übrigen Modulen; der Marker ist hier ein **Token** statt eines HTML-Kommentars und wirkt auf der **Öffnungszeile** für den ganzen Block (§5/§6). **Korrektur der Zeile 1.55:** der Zeilen-Marker wirkt in **vier** Modulen (`codepaths`, `ids`, `versions`, `diagrams`), nicht in zweien — `versions` honoriert ihn seit v0.30.0 —, und `exempt-paths` gibt es in **sechs** Modulen, nicht in fünf. Ohne die neuen Schlüssel ist der Befundsatz byte-identisch |
