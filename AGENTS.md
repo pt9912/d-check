@@ -165,9 +165,14 @@ die zeitliche Schicht lebt in `docs/plan/planning/`.
 
 **Zwei Aussagen, eine davon gedeckt:** die **Abwärts-Sperre** hält
 `make doc-check` (Modul `matrix`) — ein Slice-Token im Spec-Körper ist ein
-`matrix-forbidden`-Befund. Die **Sprach-/Meilensteinfreiheit der Sicht** prüft
-kein Gate: ob eine Zeile Schichten benennt oder Modul-Pfade, ist ein Urteil.
-*(Auflösungs-Trigger: permanent.)*
+`matrix-forbidden`-Befund.
+
+Die **Sprachfreiheit der Sicht** prüft kein Gate, und sie zerfällt in zwei
+ungleiche Hälften. Ob eine Zeile **Rollen statt Technologie** benennt, ist ein
+Urteil — *permanent*. Ob sie einen **Modul-Pfad** trägt, ist ein detektierbarer
+Zustand; kein heutiges Modul trägt es (`codepaths` **findet** solche Token,
+verbietet sie aber nicht). *(Auflösungs-Trigger dieser zweiten Hälfte: ein
+Sensor, der Pfad-Token in der Sicht meldet.)*
 
 ### 3.5 ADRs sind nach `Accepted` immutable
 
