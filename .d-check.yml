@@ -207,8 +207,14 @@ matrix:
     forbidden: [superseded, deprecated]
   # exakter Heading-Vergleich. Nur die immutable ADR-Geschichte bleibt
   # provenance-exempt; die Spec-Straten-"7. Historie" ist NICHT mehr ausgenommen
-  # (v5.0.0/ADR-0047: die Referenz-Richtung gilt auch in der Historie — die §7-Chronik
-  # ist entkoppelt/token-frei, die Verweis-Spalte entfernt).
+  # (v5.0.0/ADR-0047: die Referenz-Richtung gilt auch in der Historie — die
+  # §7-Chronik ist entkoppelt und token-frei). Die Lastenheft-Historie trägt seit
+  # der Baseline v5.11.0 wieder eine Verweis-Spalte; das nimmt die Prüfung nicht
+  # zurück, denn der Kanon lässt dort ausschließlich den externen Change Request
+  # zu — ADR- und Slice-Zeiger bleiben in der Historie verboten. Der Baseline-Text
+  # führt dafür dieselbe Begründung wie ADR-0047 (eine superseded ADR in einer
+  # Protokollzeile ist unreparierbar); geändert hat sich das Mittel, nicht das
+  # Ziel.
   exclude-sections: [Geschichte]
   # Grandfathering (DC-FA-MTX-003): die vor Einführung Accepted-ADRs (0001–0021)
   # sind immutabel und nennen Slices als legitime Verifikations-Zeiger im Körper
