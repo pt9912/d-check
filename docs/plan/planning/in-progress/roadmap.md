@@ -34,7 +34,6 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 
 - [welle-83-baseline-v5110-migration](../welle-83-baseline-v5110-migration.md) — Baseline-Pin auf v5.11.0 heben, acht Kurs-Wellen auditieren (Auftraggeber-Freigabe 2026-08-23)
 
-Nichts in Arbeit.
 
 
 
