@@ -62,25 +62,36 @@ Wächter, sondern eine Regel, deren Umgehung **funktioniert und still bleibt**.
 
 ## 4. Definition of Done
 
-- [ ] `nolintlint` ist im Profil, mit begründeter Einstellung je Schlüssel.
-- [ ] Der Bestand ist **gemessen** und die Zahl steht in der Closure-Notiz;
-      jede Fundstelle ist geräumt oder zentral mit `Why:` geführt.
-- [ ] **Drei** Direktiv-Formen gemessen, jede mit gelesenem Exit **und**
-      geprüfter Ursache (nicht „rot" allein): nackt ⇒ rot durch `nolintlint` ·
-      benannt-unbegründet ⇒ rot durch `nolintlint` · vollständig ⇒ grün.
-- [ ] `AGENTS.md` §3.2 sagt hin, was das Gate trägt **und was nicht**.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] `nolintlint` ist im Profil, alle drei Schalter scharf, jeder mit seiner
+      Begründung im Kommentar.
+- [x] Der Bestand ist gemessen: **null** Direktiven, über **sechs** Muster
+      (`//nolint`, `// nolint`, `//lint:ignore`, `//nolint:all`,
+      `revive:disable`, `staticcheck:ignore`). Nichts zu räumen.
+- [x] **Drei** Direktiv-Formen gemessen, jede mit gelesenem Exit **und**
+      geprüfter Ursache im Log: nackt ⇒ rot (*should mention specific linter*) ·
+      benannt-unbegründet ⇒ rot (*should provide explanation*) · vollständig
+      ⇒ **grün**. Beide roten Läufe meldeten **genau einen** Befund, und zwar
+      `nolintlint`.
+- [x] `AGENTS.md` §3.2 sagt hin, was das Gate trägt und was nicht — samt des
+      auf **permanent** zurückgesetzten Triggers.
+- [x] `make gates` Exit 0 (neun Glieder, 475 Dateien, 0 Befunde); unabhängiger
+      Review ([Report](../../../reviews/2026-08-23-slice-134-nolintlint-review.md)),
+      nicht blockierend, beide MEDIUM eingearbeitet.
 
 ## 5. Abnahme-Punkte / Risiken
 
-- **Ein Linter, der Bestand meldet, wird gern per Ausnahme stumm gestellt** —
-  und dann steht die Ausnahme da, wo vorher die Direktive stand. Jede zentrale
-  Ausnahme braucht ihr `Why:` und einen Namen, keinen Sammelbegriff. —
-  **Ausgang:** *(bei Closure)*
-- **`nolintlint` prüft die Form der Direktive, nicht ihre Berechtigung.** Eine
-  begründete, spezifische `//nolint` besteht ihn — die Regel verbietet sie
-  trotzdem. Die Deckung wird also **teilweise** sein, und das gehört benannt
-  statt aufgerundet. — **Ausgang:** *(bei Closure)*
+- **Ein Linter, der Bestand meldet, wird gern per Ausnahme stumm gestellt.**
+  — **Ausgang:** *nicht eingetreten, und die Versuchung gab es gar nicht.* Der
+  Bestand ist null; es war keine Ausnahme nötig, und keine wurde gesetzt. Der
+  `exclusions`-Block blieb unberührt — der Review hat gegengeprüft, dass
+  `nolintlint` dort nirgends versehentlich mit ausgenommen ist, auch nicht für
+  `_test.go`.
+- **`nolintlint` prüft die Form, nicht die Berechtigung.** — **Ausgang:**
+  *eingetreten, genau wie geschrieben — und meine eigene DoD hatte es zwei
+  Absätze weiter oben trotzdem vergessen.* Sie verlangte, dass der
+  Zensus-Verstoß jetzt rot wird; er wird es nicht. Der Widerspruch stand vier
+  Zeilen auseinander im selben Dokument, und gefunden hat ihn der Review, nicht
+  ich.
 
 ## 6. Trigger
 
@@ -107,4 +118,45 @@ Module: Lint-Profil, Gate-Landschaft. Gates: `make lint`, `make gates`.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Geliefert: `nolintlint` steht im Profil, alle drei Schalter scharf, und
+[`AGENTS.md`](../../../../AGENTS.md) §3.2 sagt hin, was das Gate trägt und was
+nicht.
+
+**Das Ergebnis ist kleiner als der Zensus erwarten ließ — und das ist der Wert
+dieses Slice.** Drei Direktiv-Formen, gemessen mit gelesener Ursache:
+
+| Form | `make lint` | Meldung |
+|---|---|---|
+| `//nolint` | **rot** | *should mention specific linter* |
+| `//nolint:unused,gochecknoglobals` | **rot** | *should provide explanation* |
+| `//nolint:unused,gochecknoglobals // Grund` | **grün** | — |
+
+Die dritte Zeile ist der Befund: **ein echter Lint-Verstoß mit vollständiger
+Direktive läuft weiterhin durch.** Der Zensus-Fund besteht fort. Was sich
+geändert hat, ist nicht die Möglichkeit der Umgehung, sondern ihr **Preis**: sie
+muss ihren Linter nennen, sich begründen und wirken — sie wird sichtbar und
+zurechenbar, statt still zu sein. §3.2 steht damit auf *teilgedeckt*, und der
+Auflösungs-Trigger ist wieder **permanent**: die Berechtigungsfrage ist ein
+Urteil, und ein zweiter Wächter darauf wäre der Heuristik-Wächter, den die Welle
+ausschließt.
+
+**Dreimal in einem Slice habe ich aus einem roten Exit den falschen Schluss
+gezogen** — und jedes Mal war es dieselbe Bewegung. Im Zensus nannte die Probe
+den falschen Linter (rot, aber aus anderem Grund). Hier nannte der Slice-Text
+eine Form *wohlgeformt*, die ich nie gefahren hatte (sie wird gemeldet). Und die
+DoD verlangte einen Beleg, den §5 desselben Dokuments vier Zeilen weiter
+ausschließt. **Ein Exit-Code ist kein Beleg, solange seine Ursache ungelesen
+bleibt** — die DoD verlangt das jetzt ausdrücklich.
+
+**Und eine Zurechnung, die ich im selben Commit einmal richtig und einmal falsch
+gemacht habe.** Bei [ADR-0006](../../adr/0006-lint-profil-solid.md) habe ich die „24 weiteren Linter" korrekt dem
+u-boot-Vorbild zugerechnet und dadurch eine Drift **nicht** gemeldet, die es nie
+gab. Drei Zeilen weiter habe ich `nolintlint` in genau diese 24 hineingezählt —
+und im selben Kommentarblock geschrieben, er stehe *über das adoptierte Profil
+hinaus*. Getrennt: 23 aus jener ADR, `nolintlint` aus §3.2, zusammen 24.
+
+**Offen und benannt:** [`BEO-013`](../observations.md) ist in diesem Slice
+entstanden — für Go ist die Frage *„wirkt diese Unterdrückung überhaupt noch?"*
+seit heute gemessen, für den eigenen `<!-- d-check:ignore -->` nicht. Zwölf
+aktive Marker, elf davon eingefroren in `done/`, einer in einem lebenden
+Dokument.
