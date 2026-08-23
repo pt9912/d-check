@@ -34,6 +34,8 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 
 Nichts in Arbeit.
 
+- [welle-84-durchsetzung](../welle-84-durchsetzung.md) — je Hard Rule eine Antwort: tragender Gate-Lauf oder ausgewiesen einseitig (Auftraggeber-Freigabe 2026-08-23)
+
 
 
 
@@ -84,6 +86,8 @@ flowchart LR
     W82["welle-82 - Config-Flaechen weiten, Release v0.63.0 (geschlossen)"]
     W81 --> W82
     W83["welle-83 - Baseline-Migration v5.11.0, Delta-Audit (geschlossen)"]
+    W84["welle-84 - Durchsetzung: Hard Rules und ihre Gates (offen)"]
+    W83 --> W84
     W82 --> W83
     W80 --> W81
 ```
@@ -133,6 +137,7 @@ und zwei Logs driften. Leer heißt starre Roadmap, jede Zeile voll heißt treibe
 
 | Datum | Was wurde geändert? | Warum? |
 |---|---|---|
+| 2026-08-23 | **welle-84 eröffnet** — Durchsetzung: je Hard Rule ein tragender Gate-Lauf oder die Ausweisung als einseitig | Der Kanon nennt eine Hard Rule ohne Feedback-Hälfte **halb durchgesetzt**. Für **drei** der zehn Regeln ist die Einseitigkeit belegt (aus welle-83); für die übrigen ist die Frage offen, nicht beantwortet — niemand hat je Regel für Regel gefragt, welcher Gate-Lauf sie trägt. Den Anlass gab ein Fund beim Sichten der Schwester-Werkzeuge: `tools/harness/fetch-baseline-cache.sh` trägt Integritätsprüfung, Currency-Audit und Content-Drift — und **kein Target, kein Workflow, kein Hook ruft es auf**. Dass der Kurs `v5.11.0` veröffentlicht hatte, hat uns der Auftraggeber gesagt, nicht der dafür gebaute Sensor. Die Produkt-Frage (Freshness als Modul) bleibt ausdrücklich draußen: sie hätte mit einem Release eine eigene Closure-Bedingung, und die gemessene Lage spricht gegen ein vorschnelles Ja — d-check scannt nur Markdown (467 geprüfte Dateien = 467 `.md`), die zwei ungewachten Toolchain-Pins stehen im `Dockerfile` |
 | 2026-08-23 | **Etappe C geschnitten** — welle-83 §4 um [slice-130](../done/slice-130-lastenheft-historie-form.md) (Historie-Form, Kurs-Welle 90) und [slice-131](../done/slice-131-reviewer-skill-waisen.md) (Reviewer-Skill-Waisen, Kurs-Welle 94) ergänzt | Das Delta-Audit liegt vor: je Kurs-Welle 87–94 eine Antwort mit Beleg. **Zwei** Wellen verlangen Handlung, sechs sind belegt folgenlos — der Regelwerks-Diff berührt nur fünf Dateien, und Wellen ohne Diff sind damit nicht vermutet, sondern gemessen folgenlos. Der Vollständigkeits-Zensus aus Kurs-Welle 94 ergab **drei** Fundorte statt des einen bekannten; der dritte ist der Reviewer-Skill und wiegt schwerer als `CLAUDE.md`. Nebenbefund, der die Prüf-Form bestätigt: ein Muster-`grep` meldet für `CLAUDE.md` null Treffer, obwohl dort zwei Waisen stehen — der Kanon nennt die Prüfung deshalb **Prüffrage**, nicht `grep` |
 | 2026-08-23 | **slice-127 pausiert** (`in-progress/` → `next/`), zum zweiten Mal am selben Tag zurückgeführt | Auftraggeber-Entscheid: **erst den Konsumenten-CR klären, dann den Slice**. Ein Zensus über sieben Schwester-Repos zeigt, dass die Änderung nicht in einem Repo fällig ist, sondern in sieben — `CLAUDE.md` schwankt dort zwischen **3 und 477 Zeilen**, **vier** tragen eine Hard Rule in einer Datei ohne Rang in der Source Precedence, und das Repo des Kanons selbst praktiziert bereits die Pointer-Form, ohne dass sein Regelwerk sie kennt. Eine Form zu setzen, bevor der Kanon sie kennt, hieße sie siebenmal zu setzen und danach womöglich siebenmal zu korrigieren. Mitkorrigiert: der zuvor geplante `MR-`Eintrag war das falsche Instrument — dieses Repo führt für repo-lokale Hard Rules keine MRs |
 | 2026-08-23 | **slice-127 zurückgeführt** (`in-progress/` → `next/`), Implementierung zurückgenommen | Der unabhängige Review hat die **Prämisse** des Slice widerlegt, nicht seine Ausführung: `CLAUDE.md` trug sehr wohl Eigeninhalt. Zwei Aussagen stehen im ganzen Repo nirgends sonst — die **Meldepflicht** bei Quellen-Konflikt (AGENTS.md §1 regelt nur die Präzedenz zwischen *dieser Datei* und einer kanonischen Quelle, nicht zwei kanonische gegeneinander, und verlangt kein Melden) und die Pflicht, **vor** der Implementierung Slice-ID, betroffene Module und auszuführende Gates zu **benennen** (§6.3 verlangt nur, Requirement-/ADR-IDs zu *identifizieren*). Damit ist es kein Kürzungs-, sondern ein **Umzugs**-Slice — genau der Fall, den §6 des Plans als Rückführung vorgesehen hat. Die Zensur „jede Zeile steht schon woanders" war selbst aus dem Anlass gebildet und ist die siebte Instanz von `BEO-011` in dieser Welle |
