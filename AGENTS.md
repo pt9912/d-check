@@ -106,10 +106,13 @@ Inline-Suppressions sind verboten: `//nolint`-Direktiven im Code
 brechen das künftige Suppression-Gate. Ausnahmen leben zentral in
 `.golangci.yml` (exclude-rules) mit Begründung.
 
-**Kein Gate prüft das, und die verbotene Direktive wirkt:** ein echter
-Lint-Verstoß mit passendem `//nolint` lässt `make lint` grün durchlaufen —
-gemessen, nicht vermutet. Der Linter `nolintlint`, der genau das meldet, ist
-nicht aktiviert. *(Auflösungs-Trigger: `nolintlint` im Profil.)*
+**Teilweise durchgesetzt, und die Grenze ist gemessen:** `nolintlint` im Profil
+meldet eine Direktive ohne benannten Linter, ohne Begründung oder ohne Wirkung —
+sie wird damit sichtbar und zurechenbar. Eine **wohlgeformte** `//nolint`
+unterdrückt einen echten Verstoß weiterhin, und `make lint` bleibt grün: der
+Linter prüft die **Form** der Direktive, nicht ihre Berechtigung. Verboten
+bleibt sie durch diese Regel, nicht durch das Gate. *(Auflösungs-Trigger:
+permanent — die Berechtigungsfrage ist ein Urteil.)*
 
 ### 3.3 git mv + Inhaltsänderung = zwei Commits
 

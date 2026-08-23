@@ -1,11 +1,17 @@
 # golangci-lint-Konfiguration für d-check (v2-Schema). Profil:
-# 5 Default- + 23 SOLID-nahe Linter nach dem Vorbild
+# 5 Default- + 24 SOLID-nahe Linter nach dem Vorbild
 # https://github.com/pt9912/u-boot — beschlossen in ADR-0006; bewusst
 # OHNE depguard (Architektur-Regeln laufen als eigene Fitness Function
 # im Schwester-Tool a-check — make arch-check, ADR-0005/ADR-0029).
 #
 # Hard Rule (AGENTS.md §3.2): //nolint-Direktiven im Code sind
 # verboten; Ausnahmen leben hier unter exclusions mit Why:-Kommentar.
+# nolintlint ist die Feedback-Hälfte dazu und über das adoptierte Profil
+# hinaus aufgenommen: die Regel stand bis dahin allein im Feedforward-
+# Quadranten, und ein echter Verstoß mit passender Direktive lief
+# nachweislich mit Exit 0 durch. Er prüft die FORM der Direktive
+# (Begründung, benannter Linter, keine unbenutzte), nicht ihre
+# Berechtigung — die Deckung von §3.2 bleibt deshalb teilweise.
 
 version: "2"
 
@@ -39,6 +45,7 @@ linters:
     - maintidx
     - nestif
     - noctx
+    - nolintlint
     - reassign
     - revive
     - testpackage
@@ -86,6 +93,17 @@ linters:
 
     maintidx:
       under: 20
+
+    # Alle drei Schalter scharf: eine Direktive ohne Begruendung oder ohne
+    # benannten Linter ist genau die Form, die §3.2 verbietet, und eine
+    # unbenutzte ist ein stehengebliebener Stummschalter. Gemessen vor dem
+    # Scharfschalten: 0 Direktiven im Bestand (kein //nolint, kein
+    # //lint:ignore) — die Schalter kosten heute nichts und wirken ab dem
+    # ersten Neuzugang.
+    nolintlint:
+      require-explanation: true
+      require-specific: true
+      allow-unused: false
 
     nestif:
       min-complexity: 5

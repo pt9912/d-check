@@ -35,9 +35,13 @@ Wächter, sondern eine Regel, deren Umgehung **funktioniert und still bleibt**.
 2. **Am Bestand messen, bevor scharfgeschaltet wird:** wie viele Befunde meldet
    das Profil heute? Bei 0 ist der Zug frei; bei >0 gehört jede Fundstelle
    einzeln beurteilt — geräumt oder als zentrale Ausnahme mit `Why:` geführt.
-3. **Bewusstes Brechen:** derselbe konstruierte Verstoß wie im Zensus
-   (`//nolint:unused,gochecknoglobals` über einer ungenutzten globalen Variablen)
-   muss `make lint` jetzt **rot** färben; Rückbau grün.
+3. **Bewusstes Brechen — und der Verstoß muss zur Zusage passen.** Der
+   Zensus-Verstoß (`//nolint:unused,gochecknoglobals`) ist **wohlgeformt** und
+   wird von `nolintlint` **nicht** gemeldet; ihn zu erwarten hieße, dem Gate
+   eine Zusage zu unterstellen, die es nicht gibt. Gemessen wird deshalb die
+   Form, die es wirklich trägt: eine **nackte** `//nolint` ⇒ rot; Rückbau grün.
+   Der wohlgeformte Fall wird **ebenfalls gemessen** — sein grüner Exit ist der
+   Beleg für die verbleibende Lücke.
 4. `AGENTS.md` §3.2 nachziehen: der Auflösungs-Trigger ist eingelöst, die Regel
    wechselt von *einseitig* auf **teilgedeckt** — nicht auf *gedeckt*, denn
    `nolintlint` prüft die **Form** der Direktive, nicht ihre Berechtigung (§5).
@@ -61,9 +65,10 @@ Wächter, sondern eine Regel, deren Umgehung **funktioniert und still bleibt**.
 - [ ] `nolintlint` ist im Profil, mit begründeter Einstellung je Schlüssel.
 - [ ] Der Bestand ist **gemessen** und die Zahl steht in der Closure-Notiz;
       jede Fundstelle ist geräumt oder zentral mit `Why:` geführt.
-- [ ] Der konstruierte Verstoß aus dem Zensus färbt `make lint` **rot**;
-      Rückbau grün. Beide Exits gelesen, nicht behauptet.
-- [ ] `AGENTS.md` §3.2 trägt den eingelösten Trigger.
+- [ ] **Zwei** Direktiv-Formen gemessen: nackte `//nolint` ⇒ rot **durch
+      `nolintlint`** (nicht durch einen anderen Linter); wohlgeformte ⇒ grün.
+      Beide Exits gelesen, nicht behauptet.
+- [ ] `AGENTS.md` §3.2 sagt hin, was das Gate trägt **und was nicht**.
 - [ ] `make gates` grün (Exit explizit); unabhängiger Review.
 
 ## 5. Abnahme-Punkte / Risiken
