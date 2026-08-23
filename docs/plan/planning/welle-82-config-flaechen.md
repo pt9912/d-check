@@ -64,7 +64,7 @@ welle-80 und welle-81 sowie im Beobachtungs-Register belegt.
 | [slice-123](done/slice-123-structure-heading-muster.md) | `structure`: ein Schlüssel „jede Überschrift des Abschnitts matcht dieses Muster" statt ausgeschriebener Negation | [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) |
 | [slice-124](done/slice-124-diagrams-ventile.md) | `diagrams`: Datei-Ventil, Zeilen-Marker und die fehlenden §2-Schema-Zeilen — Ventil-Parität zu den übrigen Modulen | [`DC-FA-DIAG-001`](../../../spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in) |
 | [slice-125](done/slice-125-release-v0630.md) | Release-Prep über alle drei Erweiterungen und Release `v0.63.0` (Tag, GHCR, Digest-Backfill) | [`DC-FA-DIST-001`](../../../spec/lastenheft.md#dc-fa-dist-001--docker-image) |
-| [slice-126](open/slice-126-handbuch-abschnitts-schnitt.md) | Nachtrag aus dem Release-Prep: das ungesagte Ventil-Gefälle bei `citations` und der §5-Abschnitt, dessen Überschrift eine Teilmenge nennt | [`DC-FA-CITE-001`](../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in) |
+| [slice-126](in-progress/slice-126-handbuch-abschnitts-schnitt.md) | Nachtrag aus dem Release-Prep: das ungesagte Ventil-Gefälle bei `citations` und der §5-Abschnitt, dessen Überschrift eine Teilmenge nennt | [`DC-FA-CITE-001`](../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in) |
 
 **Eine ADR für die Welle**, nicht drei: die drei Entscheidungen teilen eine
 Begründung (eine Fläche additiv weiten statt eine Ersatz-Konstruktion zu
