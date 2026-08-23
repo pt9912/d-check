@@ -90,24 +90,14 @@ Adressaten, zwei Ordnungen. Es gibt nichts aufzulösen und nichts zu melden.
    markiert und mit Herkunfts-Anker `(seit slice-127)` versehen
    (`modul-09` §AGENTS.md-Regeln: Hard Rules aus dem Steering Loop tragen ihn;
    ohne Welle die Slice-Form).
-3. **`MR-`Eintrag im Konventionsspeicher** für die Verschärfung. Der Kanon sagt
-   „identifizieren", wir sagen „benennen" — das ist ein Delta, und der
-   Konventionsspeicher ist der Ort, an dem ein Delta seinen
-   **Auflösungs-Trigger** bekommt: verschärft die Baseline den Schritt selbst,
-   fällt unsere Adaption weg. Ohne MR bliebe das Delta beim nächsten
-   Baseline-Bump unsichtbar.
-   **Der Upstream-CR ist eine andere Frage — und für sie liegt inzwischen ein
-   Zensus vor.** Gemessen über sieben Schwester-Repos auf dieser Maschine:
-   `CLAUDE.md` schwankt zwischen **3 und 477 Zeilen**; **vier** tragen die
-   Konfliktregel in einer ungerankten Datei, **zwei** davon auch die
-   Benenn-Pflicht (`a-check` ist ein exakter Klon unserer Fassung); und das
-   Repo des Kanons selbst (`ai-harness-course`) fährt bereits die
-   **Pointer-Form** — drei Zeilen, ohne dass sein Regelwerk sie irgendwo
-   nennt. Die Lücke ist damit **keine Vermutung mehr**: das Regelwerk hat
-   keine Form für die Werkzeug-Einstiegsdatei, obwohl sein Referenz-Repo eine
-   praktiziert. **Der CR gehört nicht in diesen Slice** — er betrifft die Form
-   der Datei, nicht unsere Schritt-3-Verschärfung, und er richtet sich an ein
-   fremdes Repo. Er wird als Folge-Punkt benannt, mit dem Zensus als Beleg.
+3. **Kein `MR-`Eintrag.** Das war im ersten Neuschnitt falsch instrumentiert:
+   dieses Repo führt für repo-lokale Hard Rules **keine** MRs — §3.2
+   (Suppression-Verbot) hat keinen, und der einzige MR, der
+   [`AGENTS.md`](../../../../AGENTS.md) berührt, ist
+   [`MR-015`](../../../../harness/conventions.md#mr-015) über die **Rolle** der
+   Datei, nicht über einen Regel-Inhalt. MRs sind hier für Form- und
+   Konventions-Deltas reserviert. Eine Hard Rule kommt nach `modul-09` in
+   AGENTS.md mit Herkunfts-Anker — das ist das ganze Instrument.
 4. **Erst danach `CLAUDE.md` auf den Pointer reduzieren** — und die Zeile so
    formulieren, dass sie **stimmt**: der erste Anlauf versprach Routing zur
    „Leseordnung", ein Wort, das in AGENTS.md gar nicht vorkommt.
@@ -131,10 +121,6 @@ Adressaten, zwei Ordnungen. Es gibt nichts aufzulösen und nichts zu melden.
 - [ ] [`AGENTS.md`](../../../../AGENTS.md) trägt beide Regeln, die Konfliktregel
       in der **kanonischen** (stärkeren) Fassung, die Verschärfung mit
       Herkunfts-Anker.
-- [ ] Der `MR-`Eintrag liegt, mit Geltungsbereich, Ersetzt-Baseline-Regel und
-      Auflösungs-Trigger; die Index-Zeile in
-      [`harness/conventions.md`](../../../../harness/conventions.md) ist
-      ergänzt.
 - [ ] `CLAUDE.md` trägt Titel und genau eine Anweisung; jede Aussage der
       Vorfassung ist danach in einer **gerankten** Quelle nachweisbar —
       zeilenweise belegt, nicht behauptet (`BEO-011`).
@@ -157,8 +143,17 @@ Adressaten, zwei Ordnungen. Es gibt nichts aufzulösen und nichts zu melden.
 
 ## 6. Trigger
 
-**Start** (`next` → `in-progress`): sofort — `in-progress/` trägt keinen Slice,
-und die Rückführung ist mit dem Neuschnitt aufgelöst.
+**Start** (`next` → `in-progress`): **blockiert** — der Slice ist am
+2026-08-23 bewusst **pausiert** (Auftraggeber-Entscheid). Wieder aufnehmbar,
+sobald die CR-Frage an `ai-harness-course` entschieden ist: bekommt die
+Werkzeug-Einstiegsdatei eine **kanonische Form** (reiner Pointer, kein
+Eigeninhalt), richtet sich dieser Slice danach — dann einmal richtig statt
+zweimal. Wird der CR abgelehnt oder zurückgestellt, läuft der Slice in der
+hier geschnittenen Fassung (Umzug nach AGENTS.md, danach der Pointer).
+
+**Warum pausiert statt durchgezogen:** die Änderung ist in **sieben** Repos
+fällig, nicht in einem. Eine Form zu setzen, bevor der Kanon sie kennt, hieße
+sie siebenmal zu setzen und danach eventuell siebenmal zu korrigieren.
 
 **Rückführungen:** `in-progress` → `next`, falls der Review eine **dritte**
 Aussage findet, die nirgends sonst steht — dann ist die Zensur wieder falsch
@@ -187,10 +182,30 @@ Form; die Zwei-Quadranten-Regel des Regelwerks gibt den Ort vor.
 
 ## 9. Folge-Punkte (außerhalb dieses Slice)
 
-- **Konsumenten-CR an `ai-harness-course`:** eine Form für die
-  Werkzeug-Einstiegsdatei (reiner Pointer, kein Eigeninhalt) in
-  `grundlagen-harness-dateien.md` §Verzeichniskonvention — Beleg ist der
-  Sieben-Repo-Zensus oben, nicht dieser Slice. Entscheid des Auftraggebers.
+- **Konsumenten-CR an `ai-harness-course` — der Slice wartet darauf.** Zwei
+  Punkte, **verschieden belegt**, und die Trennung gehört in den CR:
+  - **Form der Werkzeug-Einstiegsdatei** (reiner Pointer, kein Eigeninhalt),
+    in `grundlagen-harness-dateien.md` §Verzeichniskonvention. **Evidenz
+    stark und gemessen:** 3–477 Zeilen über sieben Repos, vier mit einer Hard
+    Rule in einer Datei ohne Rang, und das Repo des Kanons praktiziert die
+    Form bereits, ohne dass sein Regelwerk sie nennt.
+  - **Schritt 3 des 8-Schritt-Pfads** um die Vorab-Nennung von Modulen und
+    Gates erweitern. **Evidenz schwach:** 2 von 7 Repos, davon einer ein
+    Klon; der Zensus misst die Verbreitung des *Textes*, nicht den *Bedarf*.
+    Das Argument ist eine benennbare **Asymmetrie** — Schritt 8 verlangt den
+    Bericht über gelaufene Sensors, nichts verlangt die Vorab-Nennung, obwohl
+    die Baseline halluzinierte Gates selbst „die häufigste Form von
+    Harness-Lüge" nennt. Im CR **benennen, nicht fordern**; ohne
+    Schadensmessung wäre die Forderung eine Aussage aus dem Anlass
+    ([`BEO-011`](../observations.md)).
+- **Die Prozedur ist übertragbar, das Ergebnis nicht.** Jede der sieben
+  Dateien trägt anderen Inhalt (`bernstein` 477 Zeilen), und der erste Anlauf
+  dieses Slice ist genau daran gescheitert, die Kürzung ohne Beleg zu
+  behaupten. Übertragbar ist deshalb die **Reihenfolge**, nicht die Zeile:
+  (1) zeilenweise belegen, wo jede Aussage in einer **gerankten** Quelle
+  steht; (2) die Waisen zuerst nach `AGENTS.md` umziehen, dabei am Kanon
+  ausrichten; (3) **erst dann** kürzen. Wer mit Schritt 3 anfängt, löscht
+  bindende Regeln.
 - **`a-check` trägt dieselben zwei Waisen-Regeln** (Klon unserer Fassung, nur
   `AC-*` statt `DC-*`). Fremdes Repo, eigener Slice dort; hier nur benannt.
   Dieselbe Frage stellt sich für `b-trace`, `m-trace` und `ai-harness-init`.

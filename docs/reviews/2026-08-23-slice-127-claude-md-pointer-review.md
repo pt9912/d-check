@@ -6,7 +6,7 @@
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- Slice-Plan [`slice-127-claude-md-pointer.md`](../plan/planning/in-progress/slice-127-claude-md-pointer.md)
+- Slice-Plan [`slice-127-claude-md-pointer.md`](../plan/planning/next/slice-127-claude-md-pointer.md)
 - [`CLAUDE.md`](../../CLAUDE.md) vorher (`git show ef28d3e:CLAUDE.md`) und nachher
 - [`AGENTS.md`](../../AGENTS.md) §1, §2, §3.1, §3.3, §3.7, §4, §5, §6
 - [`harness/README.md`](../../harness/README.md) §Leseordnung, §Source precedence
