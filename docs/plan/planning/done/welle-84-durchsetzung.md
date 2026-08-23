@@ -18,12 +18,12 @@ da ist.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht.
 
-[`modul-09-implementierung.md` §AGENTS.md-Regeln](../../../.harness/baseline/v5.11.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)
+[`modul-09-implementierung.md` §AGENTS.md-Regeln](../../../../.harness/baseline/v5.11.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)
 sagt: *„Jede Hard Rule liegt in **zwei** Quadranten: inferential feedforward
 (steht in AGENTS.md) + computational feedback (Fitness Function/Linter-Gate).
 Hard Rule nur in einem Quadranten ist **halb durchgesetzt**."*
 
-[`AGENTS.md`](../../../AGENTS.md) §3 trägt **neun Abschnitte** — und
+[`AGENTS.md`](../../../../AGENTS.md) §3 trägt **neun Abschnitte** — und
 **zehn Regeln**: §3.7 bündelt zwei eigenständige Pflichten (Kommentar-Klassen
 und Zustandsfelder). Dazu die Botschafts-Regel in §5. Elf Zeilen also, und der
 Unterschied zwischen Abschnitt und Regel ist die Lehre aus slice-127. Für **drei** davon ist die Einseitigkeit belegt — sie
@@ -33,7 +33,7 @@ Gate-Lauf sie trägt.
 
 **Der Anlass ist ein Fund, der zeigt, dass die Frage nötig ist.** Beim Sichten
 der Werkzeuge des Schwester-Repos hat sich herausgestellt, dass
-[`tools/harness/fetch-baseline-cache.sh`](../../../tools/harness/fetch-baseline-cache.sh)
+[`tools/harness/fetch-baseline-cache.sh`](../../../../tools/harness/fetch-baseline-cache.sh)
 drei Fähigkeiten trägt — Integritätsprüfung des vendorten Bestands,
 Currency-Audit gegen die Release-Liste, Content-Drift am gepinnten Tag — und
 dass **kein `make`-Target, kein Workflow und kein Hook es aufruft**. Ein
@@ -46,7 +46,7 @@ Ausweisung, dass sie einseitig bleibt.
 
 ## 2. Trigger (Welle startet)
 
-- [welle-83](done/welle-83-baseline-v5110-migration.md) ist geschlossen, ihre
+- [welle-83](welle-83-baseline-v5110-migration.md) ist geschlossen, ihre
   Ergebnisnotiz liegt in `done/`.
 - `in-progress/` trägt keinen Slice.
 
@@ -56,7 +56,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht — der Trigger muss das *Mehr* gegenüber den
 einzelnen Slice-DoDs benennen.
 
-- **Der Zensus liegt vor:** je Hard Rule in [`AGENTS.md`](../../../AGENTS.md) §3
+- **Der Zensus liegt vor:** je Hard Rule in [`AGENTS.md`](../../../../AGENTS.md) §3
   **und** der Botschafts-Regel in §5 eine Antwort **mit Beleg** — der tragende
   Gate-Lauf ist benannt, oder die Regel ist als **einseitig ausgewiesen**.
   **Keine Regel ohne Zeile.** Das ist das *Mehr*: eine Aussage über eine ganze
@@ -70,11 +70,11 @@ einzelnen Slice-DoDs benennen.
 
 | Slice | Rolle |
 |---|---|
-| [slice-132](done/slice-132-hard-rule-zensus.md) | **Der Zensus:** je Hard Rule eine Antwort mit Beleg; weist die einseitigen aus und **schneidet** den Rest |
-| [slice-133](done/slice-133-baseline-sensor-verdrahten.md) | **Den verwaisten Sensor anschließen:** `--verify` als Gate, `--check-latest` als Target plus Nachtlauf |
-| [slice-134](done/slice-134-nolintlint.md) | **Vom Zensus geschnitten:** `nolintlint` ins Lint-Profil — §3.2 ist die einzige Regel, deren verbotene Form heute nachweislich **wirkt** |
-| [slice-135](done/slice-135-uses-pin-sensor.md) | **Vom Zensus geschnitten:** ein Sensor auf `uses:`-Pins — löst den Auflösungs-Trigger von §3.9 ein |
-| [slice-136](done/slice-136-agents-34-klaerung.md) | **Berichtigung einer Zensus-Zeile:** §3.4 gegen den Kanon halten — Doppelung, Verschärfung oder keins von beidem, und die Ausweisung entsprechend richtigstellen |
+| [slice-132](slice-132-hard-rule-zensus.md) | **Der Zensus:** je Hard Rule eine Antwort mit Beleg; weist die einseitigen aus und **schneidet** den Rest |
+| [slice-133](slice-133-baseline-sensor-verdrahten.md) | **Den verwaisten Sensor anschließen:** `--verify` als Gate, `--check-latest` als Target plus Nachtlauf |
+| [slice-134](slice-134-nolintlint.md) | **Vom Zensus geschnitten:** `nolintlint` ins Lint-Profil — §3.2 ist die einzige Regel, deren verbotene Form heute nachweislich **wirkt** |
+| [slice-135](slice-135-uses-pin-sensor.md) | **Vom Zensus geschnitten:** ein Sensor auf `uses:`-Pins — löst den Auflösungs-Trigger von §3.9 ein |
+| [slice-136](slice-136-agents-34-klaerung.md) | **Berichtigung einer Zensus-Zeile:** §3.4 gegen den Kanon halten — Doppelung, Verschärfung oder keins von beidem, und die Ausweisung entsprechend richtigstellen |
 
 slice-133 hing **nicht** am Zensus — er behob einen bereits belegten Fund.
 slice-134 und slice-135 sind sein Ergebnis: von zehn geprüften Regeln sind
@@ -116,8 +116,8 @@ Antwort **mit Beleg**; eine unbelegte zählt nicht.
   vergessen.
 - **Kein Mutations-Sensor.** Die Einführungs-Hälfte (*„Bewusstes Brechen"*)
   steht bereits gerankt in
-  [`modul-13-quality-gates.md`](../../../.harness/baseline/v5.11.0/regelwerk/modul-13-quality-gates.md#adr-zur-fitness-function);
+  [`modul-13-quality-gates.md`](../../../../.harness/baseline/v5.11.0/regelwerk/modul-13-quality-gates.md#adr-zur-fitness-function);
   die **Haltbarkeits**-Frage wartet auf einen belegten Vorfall — das
-  [Beobachtungs-Register](observations.md) führt dazu **null von zwölf**
+  [Beobachtungs-Register](../observations.md) führt dazu **null von zwölf**
   Einträgen, und `modul-13` §Guard-Härtung verlangt Beobachtung statt
   Bedrohungsmodell.

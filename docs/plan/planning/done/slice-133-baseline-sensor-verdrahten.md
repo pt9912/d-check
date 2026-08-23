@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-84-durchsetzung](../welle-84-durchsetzung.md).
+**Welle:** [welle-84-durchsetzung](welle-84-durchsetzung.md).
 
 **Bezug:** [`tools/harness/fetch-baseline-cache.sh`](../../../../tools/harness/fetch-baseline-cache.sh);
 [`AGENTS.md`](../../../../AGENTS.md) §4 (Gate-Tabelle — Autorität über die
@@ -117,7 +117,7 @@ Dieser Slice steckt ihn ein. Er baut **nichts Neues**.
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): [welle-84](../welle-84-durchsetzung.md)
+**Start** (`open` → `in-progress`): [welle-84](welle-84-durchsetzung.md)
 eröffnet, WIP-Limit frei. Hängt **nicht** an
 [slice-132](../done/slice-132-hard-rule-zensus.md).
 

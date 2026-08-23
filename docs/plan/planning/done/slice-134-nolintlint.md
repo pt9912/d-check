@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-84-durchsetzung](../welle-84-durchsetzung.md).
+**Welle:** [welle-84-durchsetzung](welle-84-durchsetzung.md).
 
 **Bezug:** [`AGENTS.md`](../../../../AGENTS.md) §3.2 (Suppression-Verbot;
 Auflösungs-Trigger `nolintlint`), §3.6 (Linter-Strenge nur per ADR);

@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-84-durchsetzung](../welle-84-durchsetzung.md).
+**Welle:** [welle-84-durchsetzung](welle-84-durchsetzung.md).
 
 **Bezug:** Baseline-Regelwerk
 [`modul-09-implementierung.md` §AGENTS.md-Regeln](../../../../.harness/baseline/v5.11.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)
@@ -108,7 +108,7 @@ für die Fitness Function verlangt.
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): [welle-84](../welle-84-durchsetzung.md)
+**Start** (`open` → `in-progress`): [welle-84](welle-84-durchsetzung.md)
 eröffnet, WIP-Limit frei.
 
 **Rückführungen:** `in-progress` → `next`, falls der Zensus ergibt, dass eine

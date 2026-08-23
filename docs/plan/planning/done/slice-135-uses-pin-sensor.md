@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-84-durchsetzung](../welle-84-durchsetzung.md).
+**Welle:** [welle-84-durchsetzung](welle-84-durchsetzung.md).
 
 **Bezug:** [`AGENTS.md`](../../../../AGENTS.md) §3.9 (Action-Referenzen
 SHA-gepinnt; *Auflösungs-Trigger: ein Sensor, der `uses:`-Pins prüft*);

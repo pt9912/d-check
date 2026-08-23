@@ -34,8 +34,6 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 
 Nichts in Arbeit.
 
-- [welle-84-durchsetzung](../welle-84-durchsetzung.md) — je Hard Rule eine Antwort: tragender Gate-Lauf oder ausgewiesen einseitig (Auftraggeber-Freigabe 2026-08-23)
-
 
 
 
@@ -86,7 +84,7 @@ flowchart LR
     W82["welle-82 - Config-Flaechen weiten, Release v0.63.0 (geschlossen)"]
     W81 --> W82
     W83["welle-83 - Baseline-Migration v5.11.0, Delta-Audit (geschlossen)"]
-    W84["welle-84 - Durchsetzung: Hard Rules und ihre Gates (offen)"]
+    W84["welle-84 - Durchsetzung: Hard Rules und ihre Gates (geschlossen)"]
     W83 --> W84
     W82 --> W83
     W80 --> W81
@@ -99,6 +97,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
+| welle-84-durchsetzung | 2026-08-23 | [`welle-84-results.md`](../done/welle-84-results.md) |
 | welle-83-baseline-v5110-migration | 2026-08-23 | [`welle-83-results.md`](../done/welle-83-results.md) |
 | welle-82-config-flaechen | 2026-08-23 | [`welle-82-results.md`](../done/welle-82-results.md) |
 | welle-81-zustandsfelder | 2026-08-22 | [`welle-81-results.md`](../done/welle-81-results.md) |

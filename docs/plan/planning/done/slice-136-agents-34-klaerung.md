@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-84-durchsetzung](../welle-84-durchsetzung.md).
+**Welle:** [welle-84-durchsetzung](welle-84-durchsetzung.md).
 
 **Bezug:** [`AGENTS.md`](../../../../AGENTS.md) §3.4; Baseline-Regelwerk
 [`modul-03-spec.md` §Ziel-Form: Architektur-Sicht](../../../../.harness/baseline/v5.11.0/regelwerk/modul-03-spec.md)
