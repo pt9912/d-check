@@ -96,11 +96,11 @@ Dieser Slice steckt ihn ein. Er baut **nichts Neues**.
 ## 5. Abnahme-Punkte / Risiken
 
 - **Ein Nachtlauf, in den niemand sieht, ist ein zweiter verwaister Sensor.**
-  — **Ausgang:** *benannt, nicht gelöst.* Der Workflow-Kopf sagt jetzt hin, wo
-  sein Rot erscheint (Actions-Übersicht) und dass der Job **rot ausfällt** statt
-  nur zu protokollieren. Dass jemand hinsieht, ist damit wahrscheinlicher, nicht
-  gesichert — die ehrliche Form dieses Risikos ist eine Benachrichtigung, und
-  die ist nicht gebaut.
+  — **Ausgang:** *nicht eingetreten.* GitHub schickt bei einem fehlgeschlagenen
+  Workflow-Lauf eine **Mail**; der Job fällt rot aus statt nur zu protokollieren,
+  und damit erreicht die Meldung einen Menschen, ohne dass jemand in die
+  Actions-Übersicht sehen müsste. Der Zustellweg ist eine Konto-Einstellung des
+  Empfängers, kein Repo-seitiger Mechanismus — für diesen Betrieb reicht das.
 - **`gates` um ein Host-Skript zu erweitern berührt §3.1.** — **Ausgang:**
   *eingetreten, aber anders als vermutet.* Der Satz *„Der Host braucht **nur**
   `git`, GNU `make`, `bash` und Docker"* war **schon vorher falsch**:
@@ -184,6 +184,6 @@ dann **zweien** zugeschrieben; `record-gates.sh` ruft keines davon, `sed` ruft i
 Klasse — eine Aufzählung wäre der nächste Spiegel ohne Wächter
 ([`BEO-010`](../observations.md)).
 
-**Offen und benannt:** Der Nachtlauf wird rot, aber niemand wird benachrichtigt.
-Das ist die ehrliche Restlücke dieses Slice — und ein Kandidat für den Zensus in
-[slice-132](../open/slice-132-hard-rule-zensus.md), nicht ein Nachzug hier.
+**Offen bleibt nichts, das dieser Slice zu tragen hätte.** Der Workflow-Kopf
+sagt hin, wo sein Rot erscheint, und der fehlgeschlagene Lauf meldet sich per
+Mail — der Sensor erreicht einen Menschen, nicht nur ein Protokoll.
