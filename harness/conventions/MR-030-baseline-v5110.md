@@ -24,8 +24,12 @@
 
   **Zwei Minors auf einmal, und das Delta ist gemessen statt gezählt:** von 52
   Bundle-Dateien unterscheiden sich **30**; **23 davon ändern ausschließlich
-  den Versions-Stempel** (Quell-URL bzw. Pfad), **sechs** tragen echten
-  Rumpf-Inhalt, eine ist das Manifest. Die sechs, mit Umfang:
+  den Versions-Stempel** (Quell-URL bzw. Pfad), eine ist das Manifest — und von
+  den verbleibenden sechs trägt **eine im Rumpf ebenfalls nur Versions-Zeiger**
+  (`regelwerk/README.md`: zwei URL-Stempel plus die `**Stand:**`-Zeile).
+  **Fünf Dateien tragen also echten Regel-Inhalt**; dieselbe Subtraktion hat
+  [`MR-029`](done/MR-029-baseline-v590.md) für ihre Hebung vorgenommen. Die
+  sechs mit Umfang, die Stempel-Datei ausgewiesen:
 
   | Datei | Umfang |
   |---|---|
@@ -34,7 +38,7 @@
   | `regelwerk/grundlagen-durchsetzungsschicht.md` | +8/−1 |
   | `regelwerk/grundlagen-begriffe.md` | +7/−2 |
   | `templates/spec/lastenheft.template.md` | +22/−7 |
-  | `regelwerk/README.md` | +3/−3 (Stand-Zeile) |
+  | `regelwerk/README.md` | +3/−3 — **kein Regel-Inhalt**, nur Stempel |
 
   **Der größte Block ist die Antwort auf einen Konsumenten-CR dieses Repos.**
   Kurs-Welle 94 („Eine Rangliste ordnet, jetzt deckt sie auch ab") nennt ihn im
@@ -44,6 +48,17 @@
   behauptet keine Konformität** — was der neue Stand von diesem Repo verlangt,
   beantwortet das Delta-Audit der Etappe B, und die erste bekannte Verletzung
   hat bereits ihren eigenen Slice.
+
+  **Der Drei-Klassen-Zensus, fortgeschrieben für den Nachfolger.** MR-029 hat
+  ihn als Checkliste hinterlassen; er wandert mit ihr nach `done/`, das nicht
+  jeder Lauf liest, und steht deshalb hier erneut — mit dem, was diese Hebung
+  ergänzt hat:
+
+  | Klasse | Form | Fallstrick dieser Hebung |
+  |---|---|---|
+  | 1 — Pfade | `.harness/baseline/<tag>/…` **und relativ** (`../baseline/<tag>/…`) | ein `grep` auf die absolute Form übersieht die relative (`.harness/skills/reviewer.md`) |
+  | 2 — URLs | `releases/tag/`, `releases/download/`, `tree/` | Link-**Text** und Link-**Ziel** driften auseinander; eine fünfte Fundstelle (`harness/README.md`) lag außerhalb der zuerst gewählten Datei-Liste |
+  | 3 — Prosa/Ellipsen | `…/<tag>/…`, „Stand"-Angaben, Regel-**Fassungs**-Zitate | ein Fassungs-Zitat ist hebbar, **sobald** die zitierte Regel als unverändert gemessen ist — „nicht geprüft" ist keine Begründung, wenn die Messung im selben Bogen vorliegt |
 
   **Historische Verweise bleiben stehen.** `done/`-Slices, eingefrorene
   Review-Reports, ADRs und aufgelöste `MR-*`-Dateien tragen weiterhin

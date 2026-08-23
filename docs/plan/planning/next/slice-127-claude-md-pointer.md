@@ -152,11 +152,19 @@ veröffentlicht. Die Werkzeug-Einstiegsdatei hat jetzt eine **kanonische Rolle**
 fest"*), und die Rangliste trägt die **Vollständigkeits-Zusage** samt Prüffrage
 und der Regel **Waise ⇒ umgezogen, nicht gelöscht**.
 
-**Neuer Wartegrund:** dieser Kanon ist bei uns noch nicht **gepinnt** — wir
-stehen auf `v5.9.0` (Kurs-Welle 86). Der Slice startet, wenn
-[welle-83](../welle-83-baseline-v5110-migration.md) den Pin gehoben hat.
-Vorher zu handeln hieße, `AGENTS.md` nach Stand 94 zu führen, während der
-Konventionsspeicher `v5.9.0` pinnt.
+**Der zweite Wartegrund ist seit dem 2026-08-23 ebenfalls erledigt:**
+[slice-128](../in-progress/slice-128-baseline-v5110-vendoring.md) hat den Pin auf
+`v5.11.0` gehoben, und die kanonische Rolle der Werkzeug-Einstiegsdatei samt
+Vollständigkeits-Zusage liegt damit im **gepinnten** Baum. Der Slice ist
+**startbar**.
+
+**Ein Reihenfolge-Vorbehalt bleibt, und er ist keine Blockade:**
+[slice-129](../open/slice-129-baseline-v5110-delta-audit.md) beantwortet unter
+anderem, **welche** Artefakte außerhalb der Rangliste normativen Text tragen —
+`CLAUDE.md` ist ein bekannter Eintrag dieser Liste, aber ob der einzige, weiß
+erst das Audit. Wer zuerst startet, ist eine Entscheidung, keine Ableitung:
+vorher heißt einen bekannten Fall früh erledigen, nachher heißt alle Fälle
+einmal gemeinsam schneiden.
 
 **Warum pausiert statt durchgezogen:** die Änderung ist in **sieben** Repos
 fällig, nicht in einem. Eine Form zu setzen, bevor der Kanon sie kennt, hieße

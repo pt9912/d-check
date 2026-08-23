@@ -329,7 +329,7 @@ commits:
 # tools/planning-consistency.sh ab (ADR-0028, letztes Familien-Skript des tools/*.sh-Audits).
 planning:
   roadmap: docs/plan/planning/in-progress/roadmap.md
-  # Offene-Wellen-Form (Baseline v5.9.0): die Sektion traegt
+  # Offene-Wellen-Form (Baseline v5.11.0): die Sektion traegt
   # zwei unabhaengige Aussagen — die Liste folgt den Dateien (je offener
   # Welle ein Zeiger), der Ruhe-Marker "Nichts in Arbeit" folgt dem
   # Anspruch (leeres in-progress/) und steht ZUSAETZLICH zur Liste. Die
