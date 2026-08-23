@@ -18,13 +18,32 @@
 # Wächter, der nichts gefunden hat, und einer, der nichts zu pruefen hatte,
 # sehen im Exit-Code sonst identisch aus.
 #
+# BEIDE ENDUNGEN: GitHub liest `.yml` UND `.yaml`. Ein Glob auf nur eine von
+# beiden waere derselbe stille Gruen-Pfad eine Ebene tiefer -- die Regel bindet
+# an das VERZEICHNIS, nicht an eine Endung.
+#
+# BENANNTE GRENZE (kein Befund, sondern Falsch-Positiv-Richtung): als Pin gilt
+# hier ein 40-stelliger git-SHA. Ein Digest-Verweis (`docker://image@sha256:…`)
+# oder ein in Anfuehrungszeichen gesetzter Wert wuerde gemeldet, obwohl er
+# gepinnt ist. Im Bestand existiert keine solche Form; taucht eine auf, ist der
+# Wächter zu erweitern -- nicht die Meldung wegzunehmen.
+#
 # Exit: 0 = alle Pins formgerecht, 1 = mindestens ein Befund oder leere Menge.
-# bash + coreutils + grep.
+# bash + coreutils + grep + find.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 
 dir=".github/workflows"
 [ -d "$dir" ] || { echo "workflow-pins: ${dir} fehlt" >&2; exit 1; }
+
+# Dateiliste getrennt bilden: `grep -H` erzwingt den Dateinamen-Praefix auch
+# bei GENAU EINER Datei -- ohne ihn laesst GNU-grep ihn dann weg, und die
+# Zerlegung in file/line liefe still auf falsche Felder.
+mapfile -t files < <(find "$dir" -maxdepth 1 -type f \( -name '*.yml' -o -name '*.yaml' \) | LC_ALL=C sort)
+if [ "${#files[@]}" -eq 0 ]; then
+  echo "workflow-pins: keine Workflow-Datei in ${dir} — leere Prüfmenge, fail-closed" >&2
+  exit 1
+fi
 
 findings=0
 checked=0
@@ -46,7 +65,7 @@ while IFS= read -r hit; do
     echo "${file}:${line}	uses-pin-untagged	SHA ohne Tag-Kommentar dahinter"
     findings=$((findings + 1))
   fi
-done < <(grep -nE '^[[:space:]]*(- )?uses:[[:space:]]' "${dir}"/*.yml 2>/dev/null | sed "s|^|${dir}/|; s|^${dir}/${dir}/|${dir}/|")
+done < <(printf '%s\n' "${files[@]}" | xargs -r grep -HnE '^[[:space:]]*(- )?uses:[[:space:]]' || true)
 
 if [ "$checked" -eq 0 ]; then
   echo "workflow-pins: kein einziger uses:-Schlüssel gefunden — leere Prüfmenge, fail-closed" >&2
