@@ -96,11 +96,18 @@ Adressaten, zwei Ordnungen. Es gibt nichts aufzulösen und nichts zu melden.
    **Auflösungs-Trigger** bekommt: verschärft die Baseline den Schritt selbst,
    fällt unsere Adaption weg. Ohne MR bliebe das Delta beim nächsten
    Baseline-Bump unsichtbar.
-   **Kein Upstream-CR an den Kurs** — noch nicht: ein CR aus **einem** Repo
-   wäre eine Aussage aus dem Anlass statt aus dem Bestand
-   ([`BEO-011`](../observations.md)). Der MR trägt deshalb den Trigger *tritt
-   die Klasse in einem zweiten Repo auf, wird daraus ein Konsumenten-CR* —
-   die Form der Upstream-Notiz, die dieses Repo schon fährt.
+   **Der Upstream-CR ist eine andere Frage — und für sie liegt inzwischen ein
+   Zensus vor.** Gemessen über sieben Schwester-Repos auf dieser Maschine:
+   `CLAUDE.md` schwankt zwischen **3 und 477 Zeilen**; **vier** tragen die
+   Konfliktregel in einer ungerankten Datei, **zwei** davon auch die
+   Benenn-Pflicht (`a-check` ist ein exakter Klon unserer Fassung); und das
+   Repo des Kanons selbst (`ai-harness-course`) fährt bereits die
+   **Pointer-Form** — drei Zeilen, ohne dass sein Regelwerk sie irgendwo
+   nennt. Die Lücke ist damit **keine Vermutung mehr**: das Regelwerk hat
+   keine Form für die Werkzeug-Einstiegsdatei, obwohl sein Referenz-Repo eine
+   praktiziert. **Der CR gehört nicht in diesen Slice** — er betrifft die Form
+   der Datei, nicht unsere Schritt-3-Verschärfung, und er richtet sich an ein
+   fremdes Repo. Er wird als Folge-Punkt benannt, mit dem Zensus als Beleg.
 4. **Erst danach `CLAUDE.md` auf den Pointer reduzieren** — und die Zeile so
    formulieren, dass sie **stimmt**: der erste Anlauf versprach Routing zur
    „Leseordnung", ein Wort, das in AGENTS.md gar nicht vorkommt.
@@ -178,6 +185,16 @@ Gates: `make doc-check`, `make gates`.
 **GF (Greenfield, Repo-Default)** — Harness-Dokumentation nach kanonischer
 Form; die Zwei-Quadranten-Regel des Regelwerks gibt den Ort vor.
 
-## 9. Closure-Notiz (nach `done/`)
+## 9. Folge-Punkte (außerhalb dieses Slice)
+
+- **Konsumenten-CR an `ai-harness-course`:** eine Form für die
+  Werkzeug-Einstiegsdatei (reiner Pointer, kein Eigeninhalt) in
+  `grundlagen-harness-dateien.md` §Verzeichniskonvention — Beleg ist der
+  Sieben-Repo-Zensus oben, nicht dieser Slice. Entscheid des Auftraggebers.
+- **`a-check` trägt dieselben zwei Waisen-Regeln** (Klon unserer Fassung, nur
+  `AC-*` statt `DC-*`). Fremdes Repo, eigener Slice dort; hier nur benannt.
+  Dieselbe Frage stellt sich für `b-trace`, `m-trace` und `ai-harness-init`.
+
+## 10. Closure-Notiz (nach `done/`)
 
 *(wird mit dem Closure-Body gefüllt)*
