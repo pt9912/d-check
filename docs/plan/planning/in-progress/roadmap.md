@@ -32,6 +32,8 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
+- [welle-83-baseline-v5110-migration](../welle-83-baseline-v5110-migration.md) — Baseline-Pin auf v5.11.0 heben, acht Kurs-Wellen auditieren (Auftraggeber-Freigabe 2026-08-23)
+
 Nichts in Arbeit.
 
 
@@ -79,6 +81,8 @@ flowchart LR
     W81["welle-81 - Baseline v5.9.0, Zustandsfelder (geschlossen)"]
     W82["welle-82 - Config-Flaechen weiten, Release v0.63.0 (geschlossen)"]
     W81 --> W82
+    W83["welle-83 - Baseline-Migration v5.11.0, Delta-Audit (offen)"]
+    W82 --> W83
     W80 --> W81
 ```
 

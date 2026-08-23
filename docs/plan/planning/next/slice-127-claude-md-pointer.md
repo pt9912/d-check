@@ -143,13 +143,20 @@ Adressaten, zwei Ordnungen. Es gibt nichts aufzulösen und nichts zu melden.
 
 ## 6. Trigger
 
-**Start** (`next` → `in-progress`): **blockiert** — der Slice ist am
-2026-08-23 bewusst **pausiert** (Auftraggeber-Entscheid). Wieder aufnehmbar,
-sobald die CR-Frage an `ai-harness-course` entschieden ist: bekommt die
-Werkzeug-Einstiegsdatei eine **kanonische Form** (reiner Pointer, kein
-Eigeninhalt), richtet sich dieser Slice danach — dann einmal richtig statt
-zweimal. Wird der CR abgelehnt oder zurückgestellt, läuft der Slice in der
-hier geschnittenen Fassung (Umzug nach AGENTS.md, danach der Pointer).
+**Start** (`next` → `in-progress`): **blockiert — der Wartegrund hat am
+2026-08-23 gewechselt.** Der ursprüngliche (die CR-Frage) ist **erledigt**: der
+Kurs hat den Konsumenten-CR dieses Repos in **Kurs-Welle 94** beantwortet und
+mit [`v5.11.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v5.11.0)
+veröffentlicht. Die Werkzeug-Einstiegsdatei hat jetzt eine **kanonische Rolle**
+(*„kein Bindepunkt, sondern der Einstieg … Sie verweist dorthin und legt nichts
+fest"*), und die Rangliste trägt die **Vollständigkeits-Zusage** samt Prüffrage
+und der Regel **Waise ⇒ umgezogen, nicht gelöscht**.
+
+**Neuer Wartegrund:** dieser Kanon ist bei uns noch nicht **gepinnt** — wir
+stehen auf `v5.9.0` (Kurs-Welle 86). Der Slice startet, wenn
+[welle-83](../welle-83-baseline-v5110-migration.md) den Pin gehoben hat.
+Vorher zu handeln hieße, `AGENTS.md` nach Stand 94 zu führen, während der
+Konventionsspeicher `v5.9.0` pinnt.
 
 **Warum pausiert statt durchgezogen:** die Änderung ist in **sieben** Repos
 fällig, nicht in einem. Eine Form zu setzen, bevor der Kanon sie kennt, hieße
