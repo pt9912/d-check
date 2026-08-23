@@ -10,18 +10,25 @@ Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 ## Eingangs-Kontext (Pflicht — sonst nicht reproduzierbar)
 
 Der Reviewer erhält: Diff/Commit-Range, den Slice-Plan, die
-betroffenen `DC-*`-Anforderungen, die referenzierten ADRs und die
-Hard Rules ([`AGENTS.md`](../../AGENTS.md) §3). **Nicht** erhalten:
+betroffenen `DC-*`-Anforderungen, die referenzierten ADRs, die
+Hard Rules ([`AGENTS.md`](../../AGENTS.md) §3) und **vorherige Findings am
+gleichen Modul** (Baseline
+[`modul-10` §Ziel-Form](../baseline/v5.11.0/regelwerk/modul-10-review-harness.md)
+— ohne sie sieht der Reviewer denselben Fehler zum zweiten Mal als ersten). **Nicht** erhalten:
 die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
 (getrennter Kontext, anderes Prüf-Artefakt).
 
 ## Repo-spezifische Anker pro Kategorie
 
 - **HIGH** (blockiert Merge): Stilles-Grün-Pfad in einem Gate oder
-  Gate-Skript (Harness-Lüge); Korrektheitsfehler in Kern-Modulen mit
-  falschen Befunden/Exit-Codes; Verstoß gegen
+  Gate-Skript (Harness-Lüge — [`AGENTS.md`](../../AGENTS.md) §4: *„Halluzinierte
+  Gates sind die häufigste Form von Harness-Lüge"*); Korrektheitsfehler in
+  Kern-Modulen mit falschen Befunden/Exit-Codes (Baseline
+  [`modul-10` §Finding-Kategorien](../baseline/v5.11.0/regelwerk/modul-10-review-harness.md):
+  HIGH = Korrektheits-Verstoß); Verstoß gegen
   [ADR-0005](../../docs/plan/adr/0005-modul-layout-hexagon-ordner.md)-Import-Regeln;
-  Gate-Suppression ohne ADR; Netzzugriff außerhalb `external`
+  Gate-Suppression ohne ADR ([`AGENTS.md`](../../AGENTS.md) §3.2 Inline-Suppression,
+  §3.6 Schwellen-Senkung); Netzzugriff außerhalb `external`
   ([`DC-QA-03`](../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit));
   **Kommentar trägt keine der fünf Klassen** (Zusage · Kopplung ·
   Abgrenzung · Rang-Zeiger · Grenze) — Review-Historie, Deliberation über

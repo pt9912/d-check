@@ -55,9 +55,10 @@ Kanons, und sie ist der Inhalt dieses Slice.
 2. **Waisen umziehen, nicht löschen** — nach `AGENTS.md`, mit Herkunfts-Anker
    (`modul-09`: Hard Rules aus dem Steering Loop tragen ihn). Der Skill behält
    den Anker als **Verweis**.
-3. Prüfen, ob dabei `AGENTS.md` zur Sammelstelle wächst
-   ([`MR-015`](../../../../harness/conventions.md#mr-015): sie **routet**,
-   spiegelt nicht) — der Unterschied ist, dass eine Waise nirgendwo sonst steht.
+3. Prüfen, ob dabei `AGENTS.md` zur Sammelstelle wächst. Der Wächter ist die
+   **Prüffrage des Kanons** selbst — *steht die Aussage auch in einer gerankten
+   Quelle?* —, denn genau dann ist ein Zuzug legitim: eine Waise steht nirgendwo
+   sonst. Je Zuzug ist das zu belegen, nicht zu behaupten.
 4. `make gates`; unabhängiger Review; Closure.
 
 ## 3. Ausdrücklich NICHT in diesem Slice
@@ -104,9 +105,8 @@ Deklarations-Slice.
   Anker, und genau diese Form ist in welle-82 achtmal gekippt. **`BEO-002`**
   für die Ränder jedes umgezogenen Ankers (Skill-Version, Index, Verweise).
 
-Slice-ID: slice-131. Betroffene IDs:
-[`MR-015`](../../../../harness/conventions.md#mr-015). Module: Harness-Dateien,
-Review-Infrastruktur. Gates: `make doc-check`, `make gates`.
+Slice-ID: slice-131. Betroffene IDs: — (Harness-Dateien; keine Anforderung,
+keine ADR, keine Adaption). Module: Harness-Dateien, Review-Infrastruktur. Gates: `make doc-check`, `make gates`.
 
 ## 8. Sub-Area-Modus-Begründung
 

@@ -318,7 +318,7 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   `observations.md` sichten) — Baseline-Regelwerk Modul 5/6, unabhängig vom
   Sub-Area-Modus.
 - Eine Commit-Botschaft oder Closure-Notiz behauptet **nicht mehr, als die
-  Arbeit trägt**: eine genannte Probe muss gelaufen sein (§6.8), und ihr
+  Arbeit trägt**: eine genannte Probe muss gelaufen sein (§6 Schritt 8), und ihr
   Schluss reicht **nicht weiter als die gemessene Menge** — wer N Formen
   geprüft hat, berichtet N; „damit ist X allgemein" ist eine andere Aussage als
   die gemessene. Beides ist Urteil, kein `grep`; der Reviewer-Skill trägt die
