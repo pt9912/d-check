@@ -32,9 +32,11 @@ und die Kürzung ist ihre **Folge**, nicht ihr Inhalt.
 
 Das Regelwerk hat für beide einen Ort, und wir haben ihn nicht benutzt:
 
-> *„Jede Hard Rule liegt in zwei Quadranten: inferential feedforward (**steht in
-> AGENTS.md**) + computational feedback (Fitness Function/Linter-Gate).“*
-> — `modul-09-implementierung.md` §AGENTS.md-Regeln
+> *„Jede Regel, der ein Agent folgen muss, steht in einer gerankten Quelle, im
+> Konventionsspeicher oder in der adoptierten Baseline … Artefakte außerhalb
+> dürfen verweisen, ausführen und einen dort gerankten Ablauf ausbuchstabieren,
+> aber nichts festlegen.“*
+> — `grundlagen-source-precedence.md` §Vollständigkeit
 
 Die beiden Waisen:
 

@@ -86,15 +86,25 @@ dieselbe Zeile wie die drei.
 Quelle je Zeile ist **CHANGELOG und Regelwerks-Diff** (`git diff v5.9.0..v5.11.0
 -- lab/regelwerk/`), nicht die Wellen-Überschrift. Der Diff berührt **fünf**
 Regelwerks-Dateien; vier davon tragen Regel-Inhalt, die fünfte ist die
-Stand-Zeile. Wellen ohne Regelwerks-Änderung sind damit **belegt** folgenlos für
-den Kanon — nicht vermutet.
+Stand-Zeile.
+
+**Die Prämisse dahinter ist nachgetragen, nicht vorausgesetzt** — sie stand in
+der ersten Fassung dieses Audits unbelegt da. Das vendorte Regelwerk sagt über
+sich selbst: *„Es trägt **keine eigene Normativität**: maßgeblich für den
+Inhalt bleibt der Kurs"*
+([`regelwerk/README.md`](../../../../.harness/baseline/v5.11.0/regelwerk/README.md)).
+„Kein Regelwerks-Diff" belegt also **nicht** aus sich heraus „folgenlos" — es
+belegt es nur, wenn der **Kurs** für dieselben Wellen nichts trägt, was das
+Regelwerk nicht abbildet. Für die Wellen 87–94 ist das unabhängig
+gegengeprüft: `kurs/de/` und `lab/example/` folgen dem Regelwerks-Diff exakt.
+Die Antwort bleibt, ihre Begründung ist jetzt vollständig.
 
 | Kurs-Welle | Antwort | Beleg |
 |---|---|---|
 | 87 — Team-Sim in Modul-12-Form | **nicht anwendbar** | Regelwerks-Diff berührt `modul-12` nicht; dieses Repo führt keine team-sim |
 | 88 — Vier unbelegte Aussagen, sieben Verdikte | **konform, keine Handlung** | `modul-10-review-harness.md` steht **nicht** im Diff — die Welle änderte Kurs-Inhalt, keine Regel |
 | 89 — Form ist kein Beleg | **konform, keine Handlung** | `grundlagen-referenz-richtung.md` +29: Genre-Falle und die zwei Achsen (Gehalt · **Änderungs-Prozess**, letzterer entscheidet). Probe am Fall ist die User Story — dieses Repo führt **keine** (`spec/` trägt genau die drei Straten), und `spec/spezifikation.md` deklariert ihr Stratum bereits über den **Prozess** („fortschreibbar ohne Change Request") |
-| 90 — Ab `Accepted` zählt jede Zeile | **Handlung nötig** | `grundlagen-source-precedence.md`: die CR-Pflicht hängt am **Lastenheft-Status**; die Historie-Vorlage trägt jetzt **vier** Spalten (`Verweis`), unsere drei. Siehe unten |
+| 90 — Ab `Accepted` zählt jede Zeile | **Handlung nötig** | `grundlagen-source-precedence.md`: die CR-Pflicht hängt am **Lastenheft-Status**; die **Lastenheft**-Vorlage trägt jetzt vier Spalten (`Verweis`), unsere drei. Die **Spezifikation** ist davon **nicht** betroffen — siehe unten |
 | 91 — Das Kurs-Repo sagt, wie an ihm gearbeitet wird | **nicht anwendbar** | Kurs-internes Repo-Briefing; die Welle selbst erklärt „Regelwerk unberuehrt". Trägt aber einen **Beleg** für uns: der Kurs begründet dort seine eigene Wurzel-Einstiegsdatei als „Werkzeug-Verkabelung, kein Harness-Konstrukt" |
 | 92 — Zwei Gewohnheiten werden Invarianten | **nicht anwendbar** | Kurs-eigene `structure`-Regeln in dessen Prüf-Profil; kein Regelwerks-Diff |
 | 93 — AGENTS.md §4 wird die Autorität über die Targets | **konform, keine Handlung** | kein Regelwerks-Diff; und dieses Repo fährt die Form bereits: `targets` mit `authority: AGENTS.md`, beide Richtungen (`gate-phantom`/`gate-undocumented`) |
@@ -104,9 +114,16 @@ den Kanon — nicht vermutet.
 
 Zwei Deltas, beide klein, beide belegt:
 
-- **Die Historie-Vorlage trägt eine vierte Spalte `Verweis`** (für den externen
-  CR-Vorgang; bei einer Tatsachenberichtigung `—`). Unsere Historie-Tabellen
-  führen drei Spalten.
+- **Die Lastenheft-Historie-Vorlage trägt eine vierte Spalte `Verweis`** (für
+  den externen CR-Vorgang; bei einer Tatsachenberichtigung `—`). Unser
+  Lastenheft führt drei.
+  **Nach Review korrigiert — die erste Fassung sagte „beide Straten führen drei
+  Spalten", und das war falsch:** `spec/spezifikation.md` §7 führt **zwei**
+  (`Datum | Änderung`) und trifft damit die vendorte
+  `spezifikation.template.md` **exakt**. Der Kanon gibt dem Technik-Stratum
+  bewusst **keine** `Verweis`-Spalte — es kennt keinen Change-Request-Vorgang,
+  den sie nennen könnte. Wer die Spalte dort ergänzte, führte eine Form ein,
+  die der Kanon für dieses Stratum gerade **nicht** vorsieht.
 - **Die CR-Pflicht beginnt erst ab Lastenheft-Status `Accepted`.** Unser
   Lastenheft steht auf **`Draft`** — vor `Accepted` ist es laut Kanon *„frei
   änderbar, ohne Change Request, ohne Historie-Zeile"*. Wir fahren also
@@ -120,7 +137,8 @@ Der Kanon nennt die Prüfung ausdrücklich eine **Prüffrage**, kein `grep` — 
 das ist keine Feinheit: ein Muster-Zensus über normative Wörter meldet für
 `CLAUDE.md` **null** Treffer, obwohl dort **zwei** Regeln stehen, die es
 nirgends sonst gibt (in slice-127 einzeln belegt). Die Prüfung ist ein Urteil.
-Als Urteil geführt, ergibt sie **drei** Fundorte statt des einen bekannten:
+Als Urteil geführt, ergibt sie **fünf** Fundorte statt des einen bekannten — drei davon fand die
+erste Fassung, zwei erst der Review:
 
 | Artefakt | Befund | Einordnung |
 |---|---|---|
@@ -128,13 +146,23 @@ Als Urteil geführt, ergibt sie **drei** Fundorte statt des einen bekannten:
 | [`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md) | **zu prüfen, vermutlich mehrere.** Die Kategorien-Anker sind Regeln, denen der Reviewer folgt; mehrere sind dort *entstanden* („neuer HIGH-Eintrag seit 1.5.0", „neuer MEDIUM-Anker seit 1.9.0") statt einen gerankten Ablauf auszubuchstabieren | **neu** — eigener Slice |
 | `.claude/commands/implement-slice.md` | **Grenzfall.** „Do not skip gates" und „Do not claim completion without command output" sind Regel-Sätze; der Kanon erlaubt dem Workflow-Skelett aber ausdrücklich, einen gerankten Ablauf **auszubuchstabieren** — und beide Sätze haben ihr Original in AGENTS.md §6 | **vermutlich konform**, im Slice zu entscheiden |
 
+| [`Makefile`](../../../../Makefile) (Kommentar über `FOCUS_DISABLE`) | **Waise.** *„Spiegelt die `.d-check.yml`-modules-Liste; wächst die dort, hier nachziehen"* — eine Pflege-Pflicht, die nirgends gerankt steht. Sie ist zugleich die Hälfte von `BEO-010`, dort als gate-blind benannt | **neu** |
+| `.github/workflows/{ci,release}.yml` (Kopf-Kommentare) | **Waise.** *„`uses:`-Einträge sind SHA-gepinnt mit Tag-Kommentar"* — eine Konvention ohne Rückhalt in `AGENTS.md`, Konventionsspeicher oder ADR | **neu** |
+
 `.githooks/*` und die Hooks unter `.claude/hooks/` tragen **Durchsetzung**, kein
-Regel-Original — sie sind der computational-feedback-Quadrant und stehen
-außerhalb dieser Frage.
+Regel-Original — sie stehen außerhalb dieser Frage.
+
+**Der Zensus war in seiner ersten Fassung selbst unvollständig**, und zwar auf
+die Weise, vor der [`BEO-011`](../observations.md) warnt: er nannte **drei**
+Fundorte, hatte aber `Makefile`-Kommentare, `.github/workflows/` und
+`tools/*.sh` nie durchsucht. Der Review hat zwei weitere gefunden. Das ist eine
+**frische, ungezählte Instanz** der Klasse, die dieser Slice in §7 als sein
+eigenes zentrales Risiko benennt — und sie steht hier, weil ein Zensus, der
+seine eigene Lücke verschweigt, schlechter ist als keiner.
 
 **Damit ist die Reihenfolge-Frage aus [slice-127](../next/slice-127-claude-md-pointer.md)
 beantwortet:** `CLAUDE.md` ist **nicht** der einzige Fall. Wer nur ihn erledigt,
-schließt einen von drei Fundorten und lässt den größeren offen.
+schließt einen von **fünf** Fundorten und lässt den größeren offen.
 
 ## 5. Abnahme-Punkte / Risiken
 

@@ -10,7 +10,9 @@
 [`grundlagen-source-precedence.md`](../../../../.harness/baseline/v5.11.0/regelwerk/grundlagen-source-precedence.md)
 §Vollständigkeit (Kurs-Welle 94) und
 [`modul-09-implementierung.md` §AGENTS.md-Regeln](../../../../.harness/baseline/v5.11.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)
-(Zwei-Quadranten-Regel); [`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md);
+(*„Jede Hard Rule liegt in zwei Quadranten"* — **Durchsetzungs**-Verdopplung,
+nicht Verortung; die Verortung regelt §Vollständigkeit);
+[`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md);
 [`AGENTS.md`](../../../../AGENTS.md) §3.
 
 **Berührte Spec-Stellen:** — (Harness-Dateien; keine Anforderung).
@@ -22,8 +24,8 @@
 ## 1. Ziel
 
 Der Vollständigkeits-Zensus aus [slice-129](../in-progress/slice-129-baseline-v5110-delta-audit.md)
-hat **drei** Fundorte ergeben statt des einen bekannten. Der zweite ist der
-**Reviewer-Skill** — und er ist der größere: mehrere seiner Kategorien-Anker
+hat **fünf** Fundorte ergeben statt des einen bekannten. Der schwerste ist der
+**Reviewer-Skill**: mehrere seiner Kategorien-Anker
 sind **dort entstanden** („neuer HIGH-Eintrag seit 1.5.0", „neuer MEDIUM-Anker
 seit 1.9.0"), statt einen in einer gerankten Quelle stehenden Ablauf
 auszubuchstabieren.
@@ -32,6 +34,13 @@ Der Kanon erlaubt Artefakten außerhalb der Rangliste ausdrücklich, zu
 **verweisen**, **auszuführen** und einen dort gerankten Ablauf
 **auszubuchstabieren** — aber nichts **festzulegen**, was nicht dort steht. Ein
 HIGH-Anker, der eine Prüf-Pflicht *einführt*, legt fest.
+
+**Zwei kleinere Fundorte reiten mit**, weil sie dieselbe Frage stellen und je
+zwei Zeilen sind: der `FOCUS_DISABLE`-Kommentar im
+[`Makefile`](../../../../Makefile) (*„Spiegelt die `.d-check.yml`-modules-Liste;
+wächst die dort, hier nachziehen"* — zugleich die Hälfte von
+[`BEO-010`](../observations.md)) und die SHA-Pin-Konvention in den beiden
+Workflow-Köpfen. Beide legen fest, beide stehen nirgends gerankt.
 
 **Was dieser Slice nicht behauptet:** dass alle vierzehn normativ wirkenden
 Stellen Waisen sind. Mehrere buchstabieren `AGENTS.md` §3.7 aus und sind damit
@@ -64,7 +73,8 @@ Kanons, und sie ist der Inhalt dieses Slice.
 
 - [ ] Je Anker eine Antwort mit Quelle; die Tabelle ist vollständig **belegt**,
       nicht behauptet (`BEO-011`).
-- [ ] Jede Waise steht in `AGENTS.md` mit Herkunfts-Anker; der Skill verweist.
+- [ ] Jede Waise steht in `AGENTS.md` mit Herkunfts-Anker; der Skill bzw. die
+      Kommentar-Stelle verweist. Das gilt auch für die zwei kleineren Fundorte.
 - [ ] `AGENTS.md` ist nicht zur Sammelstelle geworden — je Zuzug benannt, warum
       er nirgendwo sonst stehen kann.
 - [ ] `make gates` grün (Exit explizit); unabhängiger Review.

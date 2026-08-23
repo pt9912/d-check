@@ -26,10 +26,13 @@ Kurs-Welle 90 bindet die **CR-Pflicht an den Lastenheft-Status** und gibt der
 Historie eine vierte Spalte. Zwei Deltas gegen unseren Bestand, beide vom
 Delta-Audit belegt:
 
-- **Die Historie-Vorlage trägt `| Version | Datum | Änderung | Verweis |`** —
+- **Die Lastenheft-Vorlage trägt `| Version | Datum | Änderung | Verweis |`** —
   die vierte Spalte nennt den externen CR-Vorgang, bei einer
-  **Tatsachenberichtigung** ein `—`. Unsere beiden Historie-Tabellen
-  (Lastenheft, Spezifikation) führen drei Spalten.
+  **Tatsachenberichtigung** ein `—`. Unser Lastenheft führt drei.
+  **Nur das Lastenheft:** `spec/spezifikation.md` §7 führt **zwei** Spalten und
+  trifft damit die vendorte `spezifikation.template.md` exakt — der Kanon gibt
+  dem Technik-Stratum bewusst keine `Verweis`-Spalte, weil es keinen
+  Change-Request-Vorgang kennt.
 - **Vor `Accepted` verlangt der Kanon *nichts*:** *„frei änderbar, ohne Change
   Request, ohne Historie-Zeile"*. Unser Lastenheft steht auf **`Draft`** — wir
   fahren Versions-Bumps und Historie-Zeilen also **strenger als verlangt**.
@@ -38,8 +41,9 @@ Delta-Audit belegt:
 
 ## 2. Vorgehen
 
-1. Die vierte Spalte **einführen**, in beiden Straten-Historien; Bestandszeilen
-   bekommen `—`, weil es für sie keinen externen Vorgang gibt.
+1. Die vierte Spalte **einführen — nur im Lastenheft**; Bestandszeilen
+   bekommen `—`, weil es für sie keinen externen Vorgang gibt. Die
+   Spezifikations-Historie bleibt bei zwei Spalten.
 2. **Die eigene Strenge deklarieren** — als Adaption im Konventionsspeicher
    (`MR-`Eintrag) oder als Satz im Lastenheft-Kopf; **im Slice entscheiden**,
    nicht vorab. Kriterium: eine Form-Frage gehört in den Konventionsspeicher,
@@ -59,7 +63,8 @@ Delta-Audit belegt:
 
 ## 4. Definition of Done
 
-- [ ] Beide Historie-Tabellen tragen die vierte Spalte, Bestandszeilen `—`.
+- [ ] Die **Lastenheft**-Historie trägt die vierte Spalte, Bestandszeilen `—`;
+      die Spezifikations-Historie ist **unverändert** bei zwei Spalten.
 - [ ] Die eigene Strenge ist deklariert, mit begründeter Ortswahl.
 - [ ] Die `structure`-Regel auf `## 7. Historie` läuft unverändert grün.
 - [ ] `make gates` grün (Exit explizit); unabhängiger Review.
@@ -85,7 +90,9 @@ Deklaration eine Auftraggeber-Entscheidung verlangt.
 
 - **Sub-Area prüfen:** Spec-Straten (GF), Konventionsspeicher (GF).
 - **Offene Beobachtungen sichten** (Register-Stand 2026-08-23): **`BEO-002`**
-  für die Ränder der Historie-Form (beide Straten, nicht nur eines);
+  für die Ränder der Historie-Form — und ausdrücklich für die Frage, welches
+  Stratum sie überhaupt trägt (die erste Fassung dieses Slice hat sie falsch
+  beantwortet);
   **`BEO-011`** für jede Aussage darüber, welche Tabellen die Form tragen.
 
 Slice-ID: slice-130. Betroffene IDs:
