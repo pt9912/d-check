@@ -68,7 +68,7 @@ einzelnen Slice-DoDs benennen.
 
 | Slice | Rolle |
 |---|---|
-| [slice-132](open/slice-132-hard-rule-zensus.md) | **Der Zensus:** je Hard Rule eine Antwort mit Beleg; weist die einseitigen aus und **schneidet** den Rest |
+| [slice-132](in-progress/slice-132-hard-rule-zensus.md) | **Der Zensus:** je Hard Rule eine Antwort mit Beleg; weist die einseitigen aus und **schneidet** den Rest |
 | [slice-133](done/slice-133-baseline-sensor-verdrahten.md) | **Den verwaisten Sensor anschließen:** `--verify` als Gate, `--check-latest` als Target plus Nachtlauf |
 
 slice-133 hängt **nicht** am Zensus — er behebt einen bereits belegten Fund und
