@@ -80,7 +80,7 @@ für die Fitness Function verlangt.
       Ausweisungen sind neu, §3.8/§3.9 trugen ihre schon.
 - [x] Der Schnitt steht in der Welle §4: **zwei** baubare Regeln als Slices
       ([slice-134](../done/slice-134-nolintlint.md),
-      [slice-135](../in-progress/slice-135-uses-pin-sensor.md)), der Rest als
+      [slice-135](../done/slice-135-uses-pin-sensor.md)), der Rest als
       ausgewiesen — ihre Durchsetzung wäre ein Heuristik-Wächter.
 - [x] `make gates` Exit 0 (neun Glieder, 474 Dateien, 0 Befunde); unabhängiger
       Review ([Report](../../../reviews/2026-08-23-slice-132-hard-rule-zensus-review.md)),

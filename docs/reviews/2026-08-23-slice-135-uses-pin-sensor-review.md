@@ -13,7 +13,7 @@ slice-135 (`AGENTS.md`, `Makefile`, `harness/README.md`,
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- Slice-Plan [`slice-135-uses-pin-sensor.md`](../plan/planning/in-progress/slice-135-uses-pin-sensor.md)
+- Slice-Plan [`slice-135-uses-pin-sensor.md`](../plan/planning/done/slice-135-uses-pin-sensor.md)
 - Welle [`welle-84-durchsetzung.md`](../plan/planning/welle-84-durchsetzung.md)
 - Zensus [`slice-132-hard-rule-zensus.md`](../plan/planning/done/slice-132-hard-rule-zensus.md) (§3.9-Zeile)
 - `tools/harness/workflow-pins.sh` (vollständig, Quelltext + isolierte Shell-Proben)
