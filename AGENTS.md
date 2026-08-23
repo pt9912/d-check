@@ -160,6 +160,12 @@ Die sprachkonkrete Übersetzung (Modul-Pfade, Import-Regeln) und die
 Begründungen leben in den ADRs, deren `Schärft:`-Feld aufwärts zeigt;
 die zeitliche Schicht lebt in `docs/plan/planning/`.
 
+**Zwei Aussagen, eine davon gedeckt:** die **Abwärts-Sperre** hält
+`make doc-check` (Modul `matrix`) — ein Slice-Token im Spec-Körper ist ein
+`matrix-forbidden`-Befund. Die **Sprach-/Meilensteinfreiheit der Sicht** prüft
+kein Gate: ob eine Zeile Schichten benennt oder Modul-Pfade, ist ein Urteil.
+*(Auflösungs-Trigger: permanent.)*
+
 ### 3.5 ADRs sind nach `Accepted` immutable
 
 Eine ADR mit Status `Accepted` wird nicht inhaltlich überschrieben.

@@ -1,4 +1,4 @@
-# Welle welle-84-durchsetzung: Neun Hard Rules — und ein Sensor, den niemand aufruft
+# Welle welle-84-durchsetzung: Neun Abschnitte, zehn Regeln — und ein Sensor, den niemand aufruft
 
 **Lifecycle:** Diese Datei entsteht bei der **Eröffnung** und liegt **flach**
 unter `docs/plan/planning/`; bei Closure wandert sie per `git mv` nach `done/`
@@ -23,8 +23,10 @@ sagt: *„Jede Hard Rule liegt in **zwei** Quadranten: inferential feedforward
 (steht in AGENTS.md) + computational feedback (Fitness Function/Linter-Gate).
 Hard Rule nur in einem Quadranten ist **halb durchgesetzt**."*
 
-[`AGENTS.md`](../../../AGENTS.md) §3 trägt **neun** Hard Rules, dazu die
-Botschafts-Regel in §5. Für **drei** davon ist die Einseitigkeit belegt — sie
+[`AGENTS.md`](../../../AGENTS.md) §3 trägt **neun Abschnitte** — und
+**zehn Regeln**: §3.7 bündelt zwei eigenständige Pflichten (Kommentar-Klassen
+und Zustandsfelder). Dazu die Botschafts-Regel in §5. Elf Zeilen also, und der
+Unterschied zwischen Abschnitt und Regel ist die Lehre aus slice-127. Für **drei** davon ist die Einseitigkeit belegt — sie
 sind in welle-83 zugezogen und tragen kein Gate. Für die übrigen ist sie
 **weder belegt noch widerlegt**: niemand hat je Regel für Regel gefragt, welcher
 Gate-Lauf sie trägt.
@@ -99,6 +101,12 @@ aus.
   Einseitigkeit **ausgewiesen**, nicht mit einem Wortlisten-Lint übertüncht. Der
   Kurs hat genau diese Forderung an unserem eigenen Konsumenten-CR abgelehnt:
   *ohne Baubarkeit wäre sie ein behauptetes Gate.*
+- **Der übrige §5.** Der Zensus nimmt aus *Dokumentations-Regeln* **nur** die
+  Botschafts-Regel — sie ist dort als Hard Rule mit Auflösungs-Trigger
+  geschrieben, die übrigen Zeilen sind Konventionen, und `modul-09`s
+  Zwei-Quadranten-Satz gilt der **Hard Rule**. Das ist eine gesetzte Grenze,
+  keine Auslassung: ein eigener Zensus über §5 ist damit **benannt**, nicht
+  vergessen.
 - **Kein Mutations-Sensor.** Die Einführungs-Hälfte (*„Bewusstes Brechen"*)
   steht bereits gerankt in
   [`modul-13-quality-gates.md`](../../../.harness/baseline/v5.11.0/regelwerk/modul-13-quality-gates.md#adr-zur-fitness-function);

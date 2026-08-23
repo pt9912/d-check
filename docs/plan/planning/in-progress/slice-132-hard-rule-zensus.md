@@ -40,11 +40,18 @@ für die Fitness Function verlangt.
 ## 2. Vorgehen
 
 1. **Je Regel eine Zeile** in einer Tabelle: Regel · tragender Gate-Lauf
-   (Target + Befund-Code) · Beleg-Form · Verdikt (*gedeckt* / *einseitig* /
-   *teilgedeckt*).
-2. **Teilgedeckt ist ein eigenes Verdikt**, kein aufgerundetes *gedeckt*: §3.3
-   etwa koppelt Lifecycle-Move und Verweise über `planning-check`, sagt aber
-   auch etwas über **Commit-Zerlegung**, das kein Gate sieht.
+   (Target + Befund-Code) · Beleg-Form · Verdikt.
+2. **Vier Verdikte, und die Unterschiede sind tragend** — sie zu verwischen
+   hieße aufrunden:
+   - **gedeckt** — ein Repo-Gate trägt die **ganze** Regel.
+   - **teilgedeckt** — ein Repo-Gate trägt einen **Teil**; der Rest ist Urteil.
+     §3.3 etwa koppelt Lifecycle und Roadmap über `planning-check`, sagt aber
+     auch etwas über **Commit-Zerlegung**, das kein Gate sieht.
+   - **werkzeug-lokal** — ein Wächter trägt die Regel, aber **außerhalb** der
+     Gates: kein `make`-Target und keine CI rufen ihn, ein Lauf mit einem
+     anderen Werkzeug ist ungebunden. Das ist etwas anderes als *teilgedeckt*
+     und darf nicht darunter verschwinden.
+   - **einseitig** — kein Wächter, nirgends.
 3. **Belegen, nicht zuordnen:** je *gedeckt*-Zeile ein konstruierter Verstoß,
    der das genannte Gate rot färbt, und der Rückbau grün.
 4. **Die einseitigen ausweisen** — im Regeltext selbst, in der Form, die §3.7

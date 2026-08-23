@@ -39,7 +39,9 @@ Wächter, sondern eine Regel, deren Umgehung **funktioniert und still bleibt**.
    (`//nolint:unused,gochecknoglobals` über einer ungenutzten globalen Variablen)
    muss `make lint` jetzt **rot** färben; Rückbau grün.
 4. `AGENTS.md` §3.2 nachziehen: der Auflösungs-Trigger ist eingelöst, die Regel
-   wechselt von *einseitig* auf *gedeckt* — und der Zensus-Eintrag in
+   wechselt von *einseitig* auf **teilgedeckt** — nicht auf *gedeckt*, denn
+   `nolintlint` prüft die **Form** der Direktive, nicht ihre Berechtigung (§5).
+   Der Zensus-Eintrag in
    [slice-132](../in-progress/slice-132-hard-rule-zensus.md) bleibt als
    historische Messung stehen.
 5. `make gates`; unabhängiger Review; Closure.
