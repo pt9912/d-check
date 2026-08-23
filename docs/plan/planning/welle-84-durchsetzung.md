@@ -74,6 +74,7 @@ einzelnen Slice-DoDs benennen.
 | [slice-133](done/slice-133-baseline-sensor-verdrahten.md) | **Den verwaisten Sensor anschließen:** `--verify` als Gate, `--check-latest` als Target plus Nachtlauf |
 | [slice-134](done/slice-134-nolintlint.md) | **Vom Zensus geschnitten:** `nolintlint` ins Lint-Profil — §3.2 ist die einzige Regel, deren verbotene Form heute nachweislich **wirkt** |
 | [slice-135](done/slice-135-uses-pin-sensor.md) | **Vom Zensus geschnitten:** ein Sensor auf `uses:`-Pins — löst den Auflösungs-Trigger von §3.9 ein |
+| [slice-136](open/slice-136-agents-34-klaerung.md) | **Berichtigung einer Zensus-Zeile:** §3.4 gegen den Kanon halten — Doppelung, Verschärfung oder keins von beidem, und die Ausweisung entsprechend richtigstellen |
 
 slice-133 hing **nicht** am Zensus — er behob einen bereits belegten Fund.
 slice-134 und slice-135 sind sein Ergebnis: von zehn geprüften Regeln sind
@@ -81,6 +82,12 @@ slice-134 und slice-135 sind sein Ergebnis: von zehn geprüften Regeln sind
 als Folge-Welle vertagt. Die übrigen einseitigen sind im Regeltext als solche
 ausgewiesen — ihre Durchsetzung wäre ein Heuristik-Wächter, und den schließt §6
 aus.
+
+**slice-136 kam nach dem Zensus dazu, auf Auftraggeber-Nachfrage.** Er baut
+nichts, sondern berichtigt **eine Zeile** des Zensus: §3.4s ungedeckte Hälfte
+trägt die Ausweisung *permanent*, also die Behauptung einer Unmöglichkeit — und
+die war nicht geprüft. Die Closure-Bedingung dieser Welle verlangt je Regel eine
+Antwort **mit Beleg**; eine unbelegte zählt nicht.
 
 ## 5. Abhängigkeiten
 
