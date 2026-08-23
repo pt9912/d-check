@@ -78,7 +78,7 @@ Heuristik-Wächter, und der Unterschied ist zu zeigen, nicht zu behaupten.
 
 **Start** (`open` → `in-progress`): [slice-132](../done/slice-132-hard-rule-zensus.md)
 in `done/`, WIP-Limit frei. Hängt **nicht** an
-[slice-134](../in-progress/slice-134-nolintlint.md).
+[slice-134](../done/slice-134-nolintlint.md).
 
 **Rückführungen:** `in-progress` → `next`, falls die Ortswahl auf das
 d-check-Modul fällt — dann ist es ein Produkt-Slice mit ADR und gehört in eine
