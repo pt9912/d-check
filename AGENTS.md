@@ -15,13 +15,14 @@ Diese Datei trägt **Hard Rules und Pointer** auf die kanonischen Quellen und
 angepasst** (Source Precedence — siehe
 [`harness/README.md`](harness/README.md)). Das gilt zwischen **dieser Datei**
 und einer kanonischen Quelle ebenso wie zwischen **zwei kanonischen Quellen**.
-**Der Widerspruch gehört benannt**, nicht stillschweigend nach einer Seite
-aufgelöst: Wer ihn nur befolgt, lässt die falsche Stelle stehen. *(seit dem v5.11.0-Bump)*
+**Melde den Widerspruch**, statt ihn stillschweigend nach einer Seite
+aufzulösen — wer ihn nur befolgt, lässt die falsche Stelle stehen.
 
 Strukturregeln (ID-Schemata, Verzeichniskonvention, Adaptionen ggü.
 Baseline, Modus-Deklarationen pro Sub-Area, Zusatzklassen für
 Sensors-Bindung) leben in
-[`harness/conventions.md`](harness/conventions.md).
+[`harness/conventions.md`](harness/conventions.md) — **vor jeder Änderung an
+Code oder Dokumentation zu lesen**, nicht nur vor Doku-Änderungen.
 
 Das Betriebsregelwerk der adoptierten Baseline ist **committet vendored**:
 das nach Modulen und Grundlagen-Abschnitten aufgeteilte Regelwerk liegt
@@ -299,9 +300,11 @@ Pro Slice:
 2. Relevante kanonische Quelle lesen (Source Precedence beachten).
 3. Betroffene Requirement-/ADR-IDs identifizieren — und **vor der
    Implementierung benennen**: Slice-ID, betroffene `DC-*`-IDs, ADR-IDs,
-   betroffene Module, auszuführende Gates. *(seit dem v5.11.0-Bump)*
+   betroffene Module, auszuführende Gates
+   ([`MR-031`](harness/conventions.md#mr-031)).
 4. Kleinste sinnvolle Änderung planen.
 5. Engsten nützlichen Sensor laufen lassen.
 6. Repo-weiten Gate-Lauf vor Handoff (`make gates`).
 7. Doku/Indizes aktualisieren, falls ein öffentlicher Vertrag berührt.
-8. Ausgeführte Sensors und verbleibende Risiken berichten — keine Erfolgsmeldung ohne Gate-Ausführung.
+8. Ausgeführte Sensors und verbleibende Risiken berichten — keine Erfolgsmeldung ohne
+   Gate-Ausführung **und ohne ihre echte Ausgabe**: ein behaupteter Exit-Code ist keiner.

@@ -84,14 +84,13 @@ Eröffnung angekündigt. Zwei Slices, aus den **zwei** Wellen mit
 Handlungs-Antwort; die übrigen sechs sind belegt folgenlos.
 
 **Der dritte Fundort des Vollständigkeits-Zensus hat bereits seinen Slice:**
-[slice-127](in-progress/slice-127-claude-md-pointer.md) liegt in `next/` und ist
-startbar. Damit ist auch seine offene Reihenfolge-Frage beantwortet —
+[slice-127](in-progress/slice-127-claude-md-pointer.md) ist in Arbeit. Damit ist auch seine offene Reihenfolge-Frage beantwortet —
 `CLAUDE.md` ist **einer von drei** Fundorten, nicht der einzige.
 
 ## 5. Abhängigkeiten
 
-- **Blockiert:** [slice-127](in-progress/slice-127-claude-md-pointer.md) — er folgt
-  einer Regel, die erst mit diesem Bump gepinnt ist.
+- **Entblockt:** [slice-127](in-progress/slice-127-claude-md-pointer.md) — die
+  Regel, der er folgt, ist mit Etappe A gepinnt; er läuft seither.
 - **Wird blockiert von:** nichts. Reihenfolge innerhalb: A vor B (das Audit
   liest den neuen Baum), C nach B.
 

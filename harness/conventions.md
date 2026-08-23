@@ -111,6 +111,7 @@ ob der Eintrag ihn betrifft.
 | [MR-023](conventions/MR-023-baseline-v500.md) <a id="mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout"></a><a id="mr-023"></a>                 | self-contained Bundle-Layout (vendored; historische Pin-Hebung auf v5.0.0 — den aktuellen Pin trägt der Nachtrag darunter) | §Baseline, `fetch-baseline-cache.sh`              | `grundlagen-harness-dateien` §Template-Schichtung            |
 | [MR-025](conventions/MR-025-spiegel-vor-dem-editieren.md) <a id="mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten"></a><a id="mr-025"></a> | Semantik-Änderung: Spiegel **vor** dem Editieren auflisten | jede Änderung an einer zugesagten Semantik (Grund-Code, Algorithmus-Schritt, Config-Schlüssel, Schwelle, Erkennungs-Form) | `modul-10` §Review-Arten |
 | [MR-030](conventions/MR-030-baseline-v5110.md) <a id="mr-030--baseline-pin-hebung-auf-v5110-sechster-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-030"></a> | Baseline-Pin-Hebung auf v5.11.0 (Pin-Fortschreibung, Nachtrag) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v5.11.0/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
+| [MR-031](conventions/MR-031-schritt-3-benennen.md) <a id="mr-031--schritt-3-des-agenten-workflows-verlangt-benennen-nicht-nur-identifizieren"></a><a id="mr-031"></a> | Schritt 3 verlangt Benennen statt nur Identifizieren | `AGENTS.md` §6 Schritt 3; jeder Implementer-Lauf | `modul-09-implementierung.md` §Minimal Agent Workflow, Schritt 3 |
 
 ### Aufgelöste Adaptionen
 
