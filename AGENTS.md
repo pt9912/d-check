@@ -163,16 +163,27 @@ Die sprachkonkrete Übersetzung (Modul-Pfade, Import-Regeln) und die
 Begründungen leben in den ADRs, deren `Schärft:`-Feld aufwärts zeigt;
 die zeitliche Schicht lebt in `docs/plan/planning/`.
 
-**Zwei Aussagen, eine davon gedeckt:** die **Abwärts-Sperre** hält
-`make doc-check` (Modul `matrix`) — ein Slice-Token im Spec-Körper ist ein
-`matrix-forbidden`-Befund.
+**Die Abwärts-Sperre nennt fünf Kategorien; gedeckt sind zwei.**
+`make doc-check` (Modul `matrix`) hält **ADRs** und **Slices** — ein Slice-Token
+im Spec-Körper ist ein `matrix-forbidden`-Befund. Für **Wellen**,
+**Commit-Hashes** und **Closure-Daten** gibt es weder eine Klasse noch ein
+Muster; sie stehen allein hier. *(Auflösungs-Trigger: die drei fehlenden
+Kategorien als Token-Klassen.)*
 
-Die **Sprachfreiheit der Sicht** prüft kein Gate, und sie zerfällt in zwei
-ungleiche Hälften. Ob eine Zeile **Rollen statt Technologie** benennt, ist ein
-Urteil — *permanent*. Ob sie einen **Modul-Pfad** trägt, ist ein detektierbarer
-Zustand; kein heutiges Modul trägt es (`codepaths` **findet** solche Token,
-verbietet sie aber nicht). *(Auflösungs-Trigger dieser zweiten Hälfte: ein
-Sensor, der Pfad-Token in der Sicht meldet.)*
+**Die Sprachfreiheit der Sicht** prüft kein Gate und zerfällt in zwei ungleiche
+Hälften. Ob eine Zeile **Rollen statt Technologie** benennt, ist ein Urteil —
+*permanent*. Ob sie einen **Modul-Pfad** trägt, ist ein detektierbarer Zustand;
+kein heutiges Modul trägt es (`codepaths` **findet** solche Token, verbietet sie
+aber nicht). *(Auflösungs-Trigger: ein Sensor, der Pfad-Token in der Sicht
+meldet.)*
+
+**Das Pfad-Verbot ist eine Verschärfung gegenüber der Baseline** — sie erlaubt
+der Sicht Modul-Pfade ausdrücklich. Geführt als
+[`MR-033`](harness/conventions.md#mr-033).
+
+**Der letzte Satz oben ist eine Ortsangabe, keine Prüfregel:** wo die
+sprachkonkrete Übersetzung und die zeitliche Schicht leben, sagt er als
+Wegweiser. Er trägt kein Verbot und braucht deshalb keinen Trigger.
 
 ### 3.5 ADRs sind nach `Accepted` immutable
 

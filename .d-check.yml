@@ -91,6 +91,12 @@ ignore-refs:
     refs: [".harness/baseline/v5.0.0/**"]
   - in: docs/reviews/2026-08-09-slice-096-vertrag-review.md
     refs: [".harness/baseline/v5.0.0/**"]
+  # Der slice-136-Report zitiert einen Markdown-Link WÖRTLICH aus dem
+  # Bedienhinweis der Architektur-Vorlage. Er löst von der Vorlage aus auf, vom
+  # Report aus nicht — quell-skopiert ausgenommen, statt das Zitat zu
+  # verfälschen.
+  - in: docs/reviews/2026-08-23-slice-136-agents-34-klaerung-review.md
+    refs: ["regelwerk/**"]
   # Tombstone der Baseline-Migration v5.6.0 -> v5.7.0 (slice-110 / MR-028):
   # dieselbe Klasse — EINGEFRORENE Markdown-LINKS auf den entfernten
   # v5.6.0-Baum in der done/-Doku der welle-78 (der Etappe-C-Slice und die
