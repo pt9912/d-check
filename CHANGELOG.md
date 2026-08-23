@@ -80,13 +80,20 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
-- slice-125 — **Doku-Korrektur: die Reichweite des Zeilen-Markers war in drei
-  Dokumenten zu eng angegeben.** Benutzerhandbuch (§5 Ventil-Überblick, §6, §8),
-  `docs/user/operations.md` und beide READMEs behaupteten, `d-check:ignore` wirke
-  ausschließlich für `codepaths` und `ids`. Tatsächlich honorieren ihn **vier**
-  Module — `versions` seit v0.30.0, `diagrams` neu seit dieser Version —, und
-  `exempt-paths` gibt es in **sechs** statt in fünf Modulen. Betroffen ist nur
-  die Dokumentation; das Verhalten ist unverändert.
+- slice-125 — **Doku-Korrektur: die Reichweite des Zeilen-Markers war zu eng
+  angegeben — bis hinauf in die Vertrags-Straten.** Benutzerhandbuch (§5
+  Ventil-Überblick, §6, §8), `docs/user/operations.md` und beide READMEs
+  behaupteten, `d-check:ignore` wirke ausschließlich für `codepaths` und `ids`;
+  Lastenheft (0.65.1) und Spezifikation führten denselben Satz in der
+  Achsen-Abgrenzung des geteilten Referenz-Ventils bzw. in der
+  `matrix`-Klassenauflösung. Tatsächlich honorieren ihn **vier** Module —
+  `versions` seit v0.30.0, `diagrams` neu seit dieser Version —, und
+  `exempt-paths` gibt es in **sechs** statt in fünf Modulen. Welche Module den
+  Marker tragen, ist überall als **benannte Liste** ausgewiesen und
+  ausdrücklich **kein** ableitbares Kriterium: `matrix` und `structure`
+  konfigurieren ebenfalls eigene Muster und melden ebenfalls auf Zeilen, tragen
+  ihn aber nicht. Betroffen ist nur die Dokumentation; Befundsatz, Grund-Codes
+  und Schema sind unverändert.
 
 - slice-112 — **Doku-Präzisierung ohne Verhaltensänderung** (Lastenheft
   0.62.1, Handbuch 1.54): `DC-FA-PLAN-001` §Wellen-Invariante nennt in
