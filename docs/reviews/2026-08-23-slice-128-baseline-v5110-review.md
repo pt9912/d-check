@@ -39,7 +39,7 @@
 
 - **kategorie:** MEDIUM
 - **quelle:** Slice-Plan §2 Schritt 3 (Klasse 3: Prosa-/„Stand"-Pins) · `BEO-008` Richtung 1
-- **pfad:** `docs/plan/planning/in-progress/slice-127-claude-md-pointer.md:155-159`
+- **pfad:** `docs/plan/planning/done/slice-127-claude-md-pointer.md:155-159`
 - **befund:** Der Start-Trigger des lebenden `next/`-Slice sagt im Indikativ über die Gegenwart: „**Neuer Wartegrund:** dieser Kanon ist bei uns noch nicht **gepinnt** — wir stehen auf `v5.9.0` (Kurs-Welle 86)" und begründet die Blockade damit, sonst führte `AGENTS.md` Stand 94, „während der Konventionsspeicher `v5.9.0` pinnt". Nach `5331466` pinnt der Konventionsspeicher `v5.11.0`; beide Aussagen sind falsch. Derselbe Commit hat in **derselben Datei** die zwei Bezug-Links (Z. 11 und Z. 13) auf `v5.11.0` gehoben und die Prosa stehen gelassen — wieder die Form „Link-Ziel neu, Prosa-Pin alt". Die Botschaft von `5331466` nennt als einzige lebende Klasse-3-Stelle den Ellipsen-Pin in `MR-021` und führt diese Stelle weder unter den gehobenen noch unter den bewusst stehen gelassenen.
 - **verifizierbar:** nein — kein Gate liest Zeitform oder Prosa-Pins. Belegt durch `grep` über alle `v5.9.0`-Nennungen außerhalb `docs/reviews/**`, `docs/plan/planning/done/**` und `harness/conventions/done/**`, Stelle für Stelle gegen ihre Zeitform gehalten.
 - **klasse:** prosa-pin-nicht-gehoben

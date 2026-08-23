@@ -6,7 +6,7 @@
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- Slice-Plan [`slice-127-claude-md-pointer.md`](../plan/planning/in-progress/slice-127-claude-md-pointer.md)
+- Slice-Plan [`slice-127-claude-md-pointer.md`](../plan/planning/done/slice-127-claude-md-pointer.md)
 - [`CLAUDE.md`](../../CLAUDE.md) vorher (`git show ef28d3e:CLAUDE.md`) und nachher
 - [`AGENTS.md`](../../AGENTS.md) §1, §2, §3.1, §3.3, §3.7, §4, §5, §6
 - [`harness/README.md`](../../harness/README.md) §Leseordnung, §Source precedence
@@ -62,7 +62,7 @@
 
 - `kategorie`: MEDIUM
 - `quelle`: reviewer.md 1.9.0 §MEDIUM *Botschaft verallgemeinert über die Messung hinaus*; BEO-009 Richtung (b); MR-004/MR-005
-- `pfad`: `docs/plan/planning/in-progress/slice-127-claude-md-pointer.md`:50-56 · `.claude/hooks/pretooluse-command-guard.sh`:28-33 · `.claude/hooks/stop-require-gates.sh`:17-26 · `.claude/settings.json`:5
+- `pfad`: `docs/plan/planning/done/slice-127-claude-md-pointer.md`:50-56 · `.claude/hooks/pretooluse-command-guard.sh`:28-33 · `.claude/hooks/stop-require-gates.sh`:17-26 · `.claude/settings.json`:5
 - `befund`: (a) Der PreToolUse-Guard trägt nur die **negative** Hälfte der Regel: selbst gefahren gibt er bei `{"tool_input":{"command":"docker run img npm test"}}` und bei `python -c "…"` keine Ausgabe (= frei), blockt aber `pip install foo` — „Nur `make`-Targets für Checks und Gates" ist damit nicht erzwungen, und `"matcher": "Bash"` schließt jedes andere Tool (Datei-Schreibzugriffe, MCP-Aufrufe) von vornherein aus. (b) `stop-require-gates.sh` hat **zwei** bedingungslose Freigabepfade statt des einen, den sein Kommentar als Restlücke nennt: neben dem frischen Klon mit cleanem Tree gibt die Schleifen-Schutz-Klausel bei `{"stop_hook_active": true}` — selbst gefahren — `{"decision":"approve"}` zurück, unabhängig vom Gate-Nachweis. Die Plan-Formulierung „gibt den Stop nur frei, wenn der Repo-**Inhalt** durch einen erfolgreichen `make gates`-Lauf gedeckt ist" trifft für keinen der beiden Pfade zu; BEO-007 hält zusätzlich fest, dass der Stop-Hook „nur das Sitzungs-Ende, nicht den Commit dazwischen" fängt.
 - `verifizierbar`: ja — `bash .claude/hooks/pretooluse-command-guard.sh < payload.json` bzw. `bash .claude/hooks/stop-require-gates.sh < payload.json`; beide Läufe sind oben zitiert und wurden vom Reviewer gefahren.
 - `klasse`: `mechanik-begruendung-ueber-die-mechanik-hinaus`
@@ -89,7 +89,7 @@
 
 - `kategorie`: INFO
 - `quelle`: BEO-009 Richtung (a)
-- `pfad`: `docs/plan/planning/in-progress/slice-127-claude-md-pointer.md`:53 · Botschaft `ebc3299`
+- `pfad`: `docs/plan/planning/done/slice-127-claude-md-pointer.md`:53 · Botschaft `ebc3299`
 - `befund`: Der Guard schreibt kein Log, und im Repo existiert kein Artefakt, gegen das die Zahl zu halten wäre — die Aussage ist weder zu bestätigen noch zu widerlegen. Sie trägt in §1 argumentatives Gewicht („die Sorge … trägt nicht") und steht damit als einzige Kennzahl des Slice ohne reproduzierbaren Beleg neben vier nachgefahrenen Gate-Zahlen.
 - `verifizierbar`: nein — kein Sitzungs-Artefakt im Repo.
 - `klasse`: `beleg-ohne-artefakt`

@@ -38,7 +38,7 @@ Verdacht, nicht als Befund**:
   eigene §4-Tabelle.
 - **Kurs-Welle 94** („eine Rangliste ordnet, jetzt deckt sie auch ab") bringt
   die **Vollständigkeits-Zusage**. Eine Verletzung ist bereits bekannt und hat
-  ihren Slice ([slice-127](../in-progress/slice-127-claude-md-pointer.md)); die Frage
+  ihren Slice ([slice-127](../done/slice-127-claude-md-pointer.md)); die Frage
   hier ist, ob es **weitere** gibt — Skill-Dateien, emittierte Fragmente,
   `.claude/commands/`.
 
@@ -66,7 +66,7 @@ dieselbe Zeile wie die drei.
 
 - **Keine Umsetzung.** Das Audit liest und schneidet; es ändert weder Code noch
   Konfiguration noch Doku außerhalb seines eigenen Ergebnisses.
-- **Kein Vorgriff auf [slice-127](../in-progress/slice-127-claude-md-pointer.md).**
+- **Kein Vorgriff auf [slice-127](../done/slice-127-claude-md-pointer.md).**
 - **Keine Sammel-Antwort.** „Die übrigen fünf sind folgenlos" ist genau die
   Aussage, die dieses Audit verbietet.
 
@@ -152,7 +152,7 @@ erste Fassung, zwei erst der Review:
 
 | Artefakt | Befund | Einordnung |
 |---|---|---|
-| `CLAUDE.md` | **zwei Waisen** — Meldepflicht bei Quellen-Konflikt, Benenn-Pflicht vor der Implementierung | bekannt, hat seinen Slice ([slice-127](../in-progress/slice-127-claude-md-pointer.md)) |
+| `CLAUDE.md` | **zwei Waisen** — Meldepflicht bei Quellen-Konflikt, Benenn-Pflicht vor der Implementierung | bekannt, hat seinen Slice ([slice-127](../done/slice-127-claude-md-pointer.md)) |
 | [`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md) | **zu prüfen, vermutlich mehrere.** Die Kategorien-Anker sind Regeln, denen der Reviewer folgt; mehrere sind dort *entstanden* („neuer HIGH-Eintrag seit 1.5.0", „neuer MEDIUM-Anker seit 1.9.0") statt einen gerankten Ablauf auszubuchstabieren | **neu** — eigener Slice |
 | `.claude/commands/implement-slice.md` | **Grenzfall.** „Do not skip gates" und „Do not claim completion without command output" sind Regel-Sätze; der Kanon erlaubt dem Workflow-Skelett aber ausdrücklich, einen gerankten Ablauf **auszubuchstabieren** — und beide Sätze haben ihr Original in AGENTS.md §6 | **vermutlich konform**, im Slice zu entscheiden |
 
@@ -170,7 +170,7 @@ Fundorte, hatte aber `Makefile`-Kommentare, `.github/workflows/` und
 eigenes zentrales Risiko benennt — und sie steht hier, weil ein Zensus, der
 seine eigene Lücke verschweigt, schlechter ist als keiner.
 
-**Damit ist die Reihenfolge-Frage aus [slice-127](../in-progress/slice-127-claude-md-pointer.md)
+**Damit ist die Reihenfolge-Frage aus [slice-127](../done/slice-127-claude-md-pointer.md)
 beantwortet:** `CLAUDE.md` ist **nicht** der einzige Fall. Wer nur ihn erledigt,
 schließt einen von **fünf** Fundorten und lässt den größeren offen.
 
@@ -264,6 +264,6 @@ Vorsatz unterscheiden. [slice-130](../open/slice-130-lastenheft-historie-form.md
 sie nach.
 
 **Und die Reihenfolge-Frage aus
-[slice-127](../in-progress/slice-127-claude-md-pointer.md) ist beantwortet:**
+[slice-127](../done/slice-127-claude-md-pointer.md) ist beantwortet:**
 `CLAUDE.md` ist **einer von fünf** Fundorten und der kleinste. Der schwerste
 ist der Reviewer-Skill — die Datei, mit der jeder dieser Reviews geprüft wird.

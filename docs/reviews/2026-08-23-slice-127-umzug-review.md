@@ -8,7 +8,7 @@
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- Slice-Plan [`slice-127-claude-md-pointer.md`](../plan/planning/in-progress/slice-127-claude-md-pointer.md) §1, §2, §3, §4, §5, §7
+- Slice-Plan [`slice-127-claude-md-pointer.md`](../plan/planning/done/slice-127-claude-md-pointer.md) §1, §2, §3, §4, §5, §7
 - [`CLAUDE.md`](../../CLAUDE.md) vorher (`git show 84b588e:CLAUDE.md`) und nachher
 - [`AGENTS.md`](../../AGENTS.md) §1, §2, §3, §5, §6 (Zeilen-Angaben gegen `git show b806b03:AGENTS.md`)
 - Gepinnter Kanon: [`grundlagen-source-precedence.md`](../../.harness/baseline/v5.11.0/regelwerk/grundlagen-source-precedence.md) §Source Precedence/§Vollständigkeit, [`grundlagen-durchsetzungsschicht.md`](../../.harness/baseline/v5.11.0/regelwerk/grundlagen-durchsetzungsschicht.md) §Referenz-Implementierung, [`grundlagen-traceability.md`](../../.harness/baseline/v5.11.0/regelwerk/grundlagen-traceability.md) §Herkunfts-Anker, [`modul-09-implementierung.md`](../../.harness/baseline/v5.11.0/regelwerk/modul-09-implementierung.md) §Minimal Agent Workflow/§AGENTS.md-Regeln, [`modul-02-harness-bootstrap.md`](../../.harness/baseline/v5.11.0/regelwerk/modul-02-harness-bootstrap.md) §Freshness-Audit
