@@ -120,28 +120,45 @@ Adressaten, zwei Ordnungen. Es gibt nichts aufzulösen und nichts zu melden.
 
 ## 4. Definition of Done
 
-- [ ] [`AGENTS.md`](../../../../AGENTS.md) trägt beide Regeln, die Konfliktregel
-      in der **kanonischen** (stärkeren) Fassung, die Verschärfung mit
-      Herkunfts-Anker.
-- [ ] `CLAUDE.md` trägt Titel und genau eine Anweisung; jede Aussage der
-      Vorfassung ist danach in einer **gerankten** Quelle nachweisbar —
-      zeilenweise belegt, nicht behauptet (`BEO-011`).
-- [ ] Die Pointer-Zeile verspricht nur, was AGENTS.md einlöst.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] [`AGENTS.md`](../../../../AGENTS.md) trägt beide Regeln. Die Konfliktregel
+      in der **kanonischen** Fassung (*die niedriger rangierte wird angepasst*)
+      — **nach Review korrigiert:** die Melde-Pflicht steht daneben als
+      **unsere** Regel, nicht als Kanon-Zitat; der Kanon nennt sie nur im
+      MR-gegen-Baseline-Fall. **Ohne Herkunfts-Anker**, ebenfalls nach Review:
+      beide Regeln sind Bestand seit dem Bootstrap, und
+      `grundlagen-traceability.md` verbietet das Nachrüsten — *„der leere
+      Zustand **ist** die ehrliche Information."*
+- [x] `CLAUDE.md` trägt Titel und genau eine Anweisung; die Vorfassung ist
+      zeilenweise belegt. **Mit einer Korrektur:** die Tabelle führte acht
+      *Zeilen*, nicht acht *Aussagen* — eine **neunte** steckte **innerhalb**
+      einer Zeile und ging verloren (die `conventions.md`-Lesepflicht für
+      Code-Änderungen). Sie ist zurück, ebenso die Nuance *Gate-Ausgabe* statt
+      *Gate-Ausführung*.
+- [x] Die Pointer-Zeile verspricht nur, was AGENTS.md einlöst — die
+      „Leseordnung" des ersten Anlaufs ist raus.
+- [x] `make gates` Exit 0 (acht Gates, 463 Dateien, 0 Befunde); **zwei**
+      unabhängige Reviews, einer je Anlauf
+      ([erster](../../../reviews/2026-08-23-slice-127-claude-md-pointer-review.md),
+      [zweiter](../../../reviews/2026-08-23-slice-127-umzug-review.md)), beide
+      blockierend, alle Befunde eingearbeitet.
 
 ## 5. Abnahme-Punkte / Risiken
 
-- **Der Umzug macht AGENTS.md länger, und AGENTS.md soll routen statt
-  spiegeln** ([`MR-015`](../../../../harness/conventions.md#mr-015)). Der
-  Unterschied ist, dass diese zwei Aussagen **nirgendwo sonst** stehen — sie
-  sind kein Spiegel. Wird das verwechselt, wächst AGENTS.md wieder zur
-  Sammelstelle. — **Ausgang:** *(bei Closure)*
-- **Zwei Hard Rules ohne Gate.** Der Kanon nennt das halb durchgesetzt. Es
-  wird besser als heute (aus null gerankten Quadranten wird einer), aber nicht
-  gut. — **Ausgang:** *(bei Closure)*
-- **Die Vollständigkeits-Aussage ist erneut die Nagelprobe.** Genau sie ist im
-  ersten Anlauf gekippt; diesmal muss der Beleg **vor** dem Löschen stehen. —
-  **Ausgang:** *(bei Closure)*
+- **Der Umzug macht AGENTS.md länger.** — **Ausgang:** *nicht eingetreten.*
+  Der Review hat die Rechtfertigung am Bestand geprüft: beide Aussagen sind
+  wirklich Waisen. Netto ist die Datei sogar **kürzer** geworden, weil im
+  selben Zug acht Slice-Verweise und drei veraltete Zukunftsform-Sätze
+  gefallen sind.
+- **Zwei Hard Rules ohne Gate.** — **Ausgang:** *eingetreten wie erwartet und
+  benannt.* Beide liegen allein im Feedforward-Quadranten;
+  [`MR-031`](../../../../harness/conventions.md#mr-031) schreibt die Grenze
+  ausdrücklich hin, statt sie mit einem Heuristik-Wächter zu übertünchen.
+- **Die Vollständigkeits-Aussage ist erneut die Nagelprobe.** — **Ausgang:**
+  **erneut eingetreten, aber eine Ebene feiner.** Die Tabelle stimmte auf
+  Zeilen-Ebene und war auf **Aussagen**-Ebene zu grob: eine Zeile bündelte
+  sechs Punkte, eine andere trug zwei Aussagen, und eine neunte steckte
+  innerhalb einer Zeile. Der Beleg stand vor dem Löschen — nur in der falschen
+  Auflösung.
 
 ## 6. Trigger
 
@@ -229,4 +246,46 @@ Form; die Zwei-Quadranten-Regel des Regelwerks gibt den Ort vor.
 
 ## 10. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Geliefert: zwei Waisen stehen in `AGENTS.md`, `CLAUDE.md` trägt vier Zeilen und
+verweist. Die Reihenfolge, die der Kanon seit Kurs-Welle 94 vorschreibt —
+*belegen, umziehen, erst dann kürzen* —, ist eingehalten.
+
+**Dieser Slice hat zwei Anläufe gebraucht, und das ist sein Ergebnis.** Der
+erste wollte kürzen und stützte sich auf die Zensur *„jede Zeile steht schon
+woanders"*. Sie war falsch; ohne den Review wären zwei Hard Rules gelöscht
+worden, und kein Gate hätte es gemeldet. Die Rückführung nach `next/` war kein
+Umweg, sondern die einzige Stelle, an der ein falsch geschnittener Slice
+billig bleibt.
+
+**Die Lehre des zweiten Anlaufs ist feiner und unangenehmer.** Ich habe den
+zeilenweisen Beleg diesmal geführt — und er war trotzdem zu grob. Acht
+*Tabellenzeilen* sind nicht acht *Aussagen*: eine bündelte sechs Punkte, eine
+trug zwei, und die neunte, die verloren ging, steckte **innerhalb** einer
+Zeile (die `conventions.md`-Lesepflicht galt für Code **und** Doku, die
+Ersatz-Fundstelle nur für Doku). **Eine Vollständigkeits-Prüfung ist so gut wie
+ihre Auflösung** — und die Auflösung wählt, wer prüft, nicht der Gegenstand.
+
+**Zweimal habe ich den Kanon für mich sprechen lassen, wo er es nicht tut.**
+Der Anker `(seit …)` datierte einen **Umzug** als Ursprung, obwohl beide Regeln
+seit dem Bootstrap bestehen und `grundlagen-traceability.md` das Nachrüsten
+ausdrücklich verbietet — *„der leere Zustand **ist** die ehrliche
+Information."* Ich habe den Anker daraufhin nicht entfernt, sondern **ersetzt**
+(Slice → Baseline-Bump), und erst der zweite Hinweis hat gezeigt, dass jeder
+Anker falsch ist. Und *„der Widerspruch gehört benannt"* steht im Kanon nur im
+Fall MR-gegen-Baseline — dem einen, in dem gerade **nicht** angepasst wird. Die
+Melde-Pflicht ist unsere; sie steht jetzt ohne fremde Autorität da.
+
+**Ein Nachzug, der nicht geplant war und trotzdem hierher gehört:** Auf
+Auftraggeber-Hinweis sind acht Slice-Verweise aus `AGENTS.md` und
+`harness/README.md` gefallen — normative Einstiegsdateien verweisen auf
+Normatives und ADRs, nicht auf Planung. Drei davon waren nicht bloß Verweise,
+sondern veraltete **Zukunftsform** („die Datei entsteht mit …"), seit Monaten
+Gegenwart. Was bleibt, sind zwei `seit welle-<NN>` — die eine Anker-Form, die
+[`AGENTS.md`](../../../../AGENTS.md) §3.7 und der Kanon ausdrücklich zulassen.
+
+**Offen und benannt:** Beide umgezogenen Regeln liegen allein im
+Feedforward-Quadranten. Kein Gate prüft, ob ein Lauf die fünf Felder genannt
+oder einen Widerspruch gemeldet hat.
+[`MR-031`](../../../../harness/conventions.md#mr-031) sagt das hin, statt es zu
+heilen: ein Wächter auf Botschafts-Prosa wäre ein behauptetes Gate — und genau
+diese Forderung hat der Kurs in unserem eigenen CR zu Recht abgelehnt.
