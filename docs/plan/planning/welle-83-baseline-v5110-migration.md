@@ -76,9 +76,18 @@ den Vollständigkeits-Absatz); welle-82 ist geschlossen, `in-progress/` frei.
 | [slice-128](done/slice-128-baseline-v5110-vendoring.md) | **Etappe A:** Bundle `v5.11.0` vendored, Pin-Hebung als `MR-`Eintrag, pin-gebundene Verweise gehoben, Alt-Baum entfernt |
 | [slice-129](in-progress/slice-129-baseline-v5110-delta-audit.md) | **Etappe B:** Delta-Audit über die Kurs-Wellen 87–94, je Welle eine Antwort; **schneidet Etappe C** |
 
-**Etappe C wird vom Audit geschnitten**, nicht hier geraten — dieselbe Form wie
-in der v5.6.0-Migration. Was daraus entsteht, wird beim B-Abschluss mit einer
-Drift-Log-Zeile nachgeführt.
+| [slice-130](open/slice-130-lastenheft-historie-form.md) | **Etappe C-1** (vom Audit geschnitten): Historie-Form auf vier Spalten, und die eigene Strenge deklarieren — aus Kurs-Welle 90 |
+| [slice-131](open/slice-131-reviewer-skill-waisen.md) | **Etappe C-2** (vom Audit geschnitten): die Waisen im Reviewer-Skill nach `AGENTS.md` umziehen — aus Kurs-Welle 94 |
+
+**Etappe C ist vom Audit geschnitten**, nicht hier geraten — dieselbe Form wie
+in der v5.6.0-Migration; nachgeführt mit einer Drift-Log-Zeile, wie bei der
+Eröffnung angekündigt. Zwei Slices, aus den **zwei** Wellen mit
+Handlungs-Antwort; die übrigen sechs sind belegt folgenlos.
+
+**Der dritte Fundort des Vollständigkeits-Zensus hat bereits seinen Slice:**
+[slice-127](next/slice-127-claude-md-pointer.md) liegt in `next/` und ist
+startbar. Damit ist auch seine offene Reihenfolge-Frage beantwortet —
+`CLAUDE.md` ist **einer von drei** Fundorten, nicht der einzige.
 
 ## 5. Abhängigkeiten
 

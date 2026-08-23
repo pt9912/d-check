@@ -81,6 +81,61 @@ dieselbe Zeile wie die drei.
       gesetzt.
 - [ ] `make gates` grün (Exit explizit); unabhängiger Review.
 
+## 4a. Ergebnis: acht Kurs-Wellen, acht Antworten
+
+Quelle je Zeile ist **CHANGELOG und Regelwerks-Diff** (`git diff v5.9.0..v5.11.0
+-- lab/regelwerk/`), nicht die Wellen-Überschrift. Der Diff berührt **fünf**
+Regelwerks-Dateien; vier davon tragen Regel-Inhalt, die fünfte ist die
+Stand-Zeile. Wellen ohne Regelwerks-Änderung sind damit **belegt** folgenlos für
+den Kanon — nicht vermutet.
+
+| Kurs-Welle | Antwort | Beleg |
+|---|---|---|
+| 87 — Team-Sim in Modul-12-Form | **nicht anwendbar** | Regelwerks-Diff berührt `modul-12` nicht; dieses Repo führt keine team-sim |
+| 88 — Vier unbelegte Aussagen, sieben Verdikte | **konform, keine Handlung** | `modul-10-review-harness.md` steht **nicht** im Diff — die Welle änderte Kurs-Inhalt, keine Regel |
+| 89 — Form ist kein Beleg | **konform, keine Handlung** | `grundlagen-referenz-richtung.md` +29: Genre-Falle und die zwei Achsen (Gehalt · **Änderungs-Prozess**, letzterer entscheidet). Probe am Fall ist die User Story — dieses Repo führt **keine** (`spec/` trägt genau die drei Straten), und `spec/spezifikation.md` deklariert ihr Stratum bereits über den **Prozess** („fortschreibbar ohne Change Request") |
+| 90 — Ab `Accepted` zählt jede Zeile | **Handlung nötig** | `grundlagen-source-precedence.md`: die CR-Pflicht hängt am **Lastenheft-Status**; die Historie-Vorlage trägt jetzt **vier** Spalten (`Verweis`), unsere drei. Siehe unten |
+| 91 — Das Kurs-Repo sagt, wie an ihm gearbeitet wird | **nicht anwendbar** | Kurs-internes Repo-Briefing; die Welle selbst erklärt „Regelwerk unberuehrt". Trägt aber einen **Beleg** für uns: der Kurs begründet dort seine eigene Wurzel-Einstiegsdatei als „Werkzeug-Verkabelung, kein Harness-Konstrukt" |
+| 92 — Zwei Gewohnheiten werden Invarianten | **nicht anwendbar** | Kurs-eigene `structure`-Regeln in dessen Prüf-Profil; kein Regelwerks-Diff |
+| 93 — AGENTS.md §4 wird die Autorität über die Targets | **konform, keine Handlung** | kein Regelwerks-Diff; und dieses Repo fährt die Form bereits: `targets` mit `authority: AGENTS.md`, beide Richtungen (`gate-phantom`/`gate-undocumented`) |
+| 94 — Eine Rangliste ordnet, jetzt deckt sie auch ab | **Handlung nötig** | `grundlagen-source-precedence.md` +77 (Vollständigkeits-Zusage, Prüffrage, Aufräum-Reihenfolge) und `grundlagen-durchsetzungsschicht.md` +7 (Rolle der Wurzel-Einstiegsdatei). Auslöser war ein Konsumenten-CR dieses Repos. Siehe unten |
+
+### Welle 90 — was zu tun ist
+
+Zwei Deltas, beide klein, beide belegt:
+
+- **Die Historie-Vorlage trägt eine vierte Spalte `Verweis`** (für den externen
+  CR-Vorgang; bei einer Tatsachenberichtigung `—`). Unsere Historie-Tabellen
+  führen drei Spalten.
+- **Die CR-Pflicht beginnt erst ab Lastenheft-Status `Accepted`.** Unser
+  Lastenheft steht auf **`Draft`** — vor `Accepted` ist es laut Kanon *„frei
+  änderbar, ohne Change Request, ohne Historie-Zeile"*. Wir fahren also
+  **strenger als der Kanon verlangt**. Das ist kein Verstoß, aber es ist heute
+  **undeklariert**: ein Leser kann nicht unterscheiden, ob unsere
+  Historie-Disziplin Pflicht oder Wahl ist.
+
+### Welle 94 — der Vollständigkeits-Zensus
+
+Der Kanon nennt die Prüfung ausdrücklich eine **Prüffrage**, kein `grep` — und
+das ist keine Feinheit: ein Muster-Zensus über normative Wörter meldet für
+`CLAUDE.md` **null** Treffer, obwohl dort **zwei** Regeln stehen, die es
+nirgends sonst gibt (in slice-127 einzeln belegt). Die Prüfung ist ein Urteil.
+Als Urteil geführt, ergibt sie **drei** Fundorte statt des einen bekannten:
+
+| Artefakt | Befund | Einordnung |
+|---|---|---|
+| `CLAUDE.md` | **zwei Waisen** — Meldepflicht bei Quellen-Konflikt, Benenn-Pflicht vor der Implementierung | bekannt, hat seinen Slice ([slice-127](../next/slice-127-claude-md-pointer.md)) |
+| [`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md) | **zu prüfen, vermutlich mehrere.** Die Kategorien-Anker sind Regeln, denen der Reviewer folgt; mehrere sind dort *entstanden* („neuer HIGH-Eintrag seit 1.5.0", „neuer MEDIUM-Anker seit 1.9.0") statt einen gerankten Ablauf auszubuchstabieren | **neu** — eigener Slice |
+| `.claude/commands/implement-slice.md` | **Grenzfall.** „Do not skip gates" und „Do not claim completion without command output" sind Regel-Sätze; der Kanon erlaubt dem Workflow-Skelett aber ausdrücklich, einen gerankten Ablauf **auszubuchstabieren** — und beide Sätze haben ihr Original in AGENTS.md §6 | **vermutlich konform**, im Slice zu entscheiden |
+
+`.githooks/*` und die Hooks unter `.claude/hooks/` tragen **Durchsetzung**, kein
+Regel-Original — sie sind der computational-feedback-Quadrant und stehen
+außerhalb dieser Frage.
+
+**Damit ist die Reihenfolge-Frage aus [slice-127](../next/slice-127-claude-md-pointer.md)
+beantwortet:** `CLAUDE.md` ist **nicht** der einzige Fall. Wer nur ihn erledigt,
+schließt einen von drei Fundorten und lässt den größeren offen.
+
 ## 5. Abnahme-Punkte / Risiken
 
 - **Ein Audit über acht Wellen verführt zur Sammel-Antwort.** Je länger die
