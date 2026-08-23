@@ -12,7 +12,7 @@ Release-Tag) und die Kette bis
 [`MR-021`](../../../../harness/conventions.md#mr-021) (pin-gebundene Verweise);
 [`MR-023`](../../../../harness/conventions.md#mr-023) (Bundle-Layout);
 Baseline-Regelwerk
-[`modul-02-harness-bootstrap.md` §Freshness-Audit](../../../../.harness/baseline/v5.9.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2).
+[`modul-02-harness-bootstrap.md` §Freshness-Audit](../../../../.harness/baseline/v5.11.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2).
 
 **Berührte Spec-Stellen:** — (Harness-Vendoring und Konventionsspeicher; keine
 Anforderung, kein Spec-Stratum, kein Produkt-Code).

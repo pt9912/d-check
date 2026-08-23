@@ -156,7 +156,7 @@ MR-Körper ist jetzt so gefasst, dass beide Lesarten zusammenpassen.
 
 - **Steering-Loop-Eintrag:** Prozedur geschärft: der Hebungs-Zensus prüft
   jede gehobene Stelle auf ihre Zeitform — liegt in
-  [`harness/conventions/MR-029-baseline-v590.md` §Hebungs-Zensus](../../../../harness/conventions/MR-029-baseline-v590.md) und im
+  [`harness/conventions/done/MR-029-baseline-v590.md` §Hebungs-Zensus](../../../../harness/conventions/done/MR-029-baseline-v590.md) und im
   Register-Eintrag. Auslöser: BEO-008, mit diesem Slice bei 3.
 - **Beobachtungs-Register (`../observations.md`):** **BEO-008 auf 3**
   (Schwelle erreicht), Beleg ergänzt, die Klasse um die Über-Hebung erweitert.

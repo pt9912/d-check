@@ -8,9 +8,9 @@ ohne gemeinsame Closure-Bedingung mit anderer Arbeit (Baseline-Regelwerk
 `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht).
 
 **Bezug:** Baseline-Regelwerk
-[`modul-09-implementierung.md` §AGENTS.md-Regeln](../../../../.harness/baseline/v5.9.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)
+[`modul-09-implementierung.md` §AGENTS.md-Regeln](../../../../.harness/baseline/v5.11.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)
 (Zwei-Quadranten-Regel; AGENTS.md gehört in jeden Lauf-Kontext) und
-[`grundlagen-source-precedence.md`](../../../../.harness/baseline/v5.9.0/regelwerk/grundlagen-source-precedence.md)
+[`grundlagen-source-precedence.md`](../../../../.harness/baseline/v5.11.0/regelwerk/grundlagen-source-precedence.md)
 (Konflikt-Hard-Rule); [`AGENTS.md`](../../../../AGENTS.md) §1 und §6;
 [`MR-015`](../../../../harness/conventions.md#mr-015) (AGENTS.md **routet**,
 spiegelt nicht) und [`MR-012`](../../../../harness/conventions.md#mr-012).

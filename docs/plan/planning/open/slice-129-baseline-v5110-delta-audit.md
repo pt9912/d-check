@@ -7,7 +7,7 @@
 (zugeordnet bei der Eröffnung).
 
 **Bezug:** Baseline-Regelwerk
-[`modul-02-harness-bootstrap.md` §Freshness-Audit](../../../../.harness/baseline/v5.9.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)
+[`modul-02-harness-bootstrap.md` §Freshness-Audit](../../../../.harness/baseline/v5.11.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)
 (darunter die **Bestands-Stichprobe, die auch bei aktuellem Pin läuft**);
 [`AGENTS.md`](../../../../AGENTS.md) §1 (breiterer Pflicht-Blick beim
 Drift-Audit); [slice-128](../in-progress/slice-128-baseline-v5110-vendoring.md) (liefert den

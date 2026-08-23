@@ -4,7 +4,7 @@
 
 **Rolle:** Sicht-Stratum — *keine* eigenen Anforderungen, derivativ. Regeln:
 Baseline-Regelwerk
-[`modul-03-spec.md` §Ziel-Form: Architektur-Sicht](../.harness/baseline/v5.9.0/regelwerk/modul-03-spec.md#ziel-form-architektur-sicht).
+[`modul-03-spec.md` §Ziel-Form: Architektur-Sicht](../.harness/baseline/v5.11.0/regelwerk/modul-03-spec.md#ziel-form-architektur-sicht).
 
 **Hard Rule:** Diese Datei ist **sprach- und meilensteinfrei**: Sie
 benennt Schichten und Rollen, keine Technologie, und enthält keine
