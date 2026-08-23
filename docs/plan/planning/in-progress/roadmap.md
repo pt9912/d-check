@@ -32,8 +32,6 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
-Nichts in Arbeit.
-
 - [welle-84-durchsetzung](../welle-84-durchsetzung.md) — je Hard Rule eine Antwort: tragender Gate-Lauf oder ausgewiesen einseitig (Auftraggeber-Freigabe 2026-08-23)
 
 
