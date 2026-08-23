@@ -55,24 +55,34 @@ Heuristik-Wächter, und der Unterschied ist zu zeigen, nicht zu behaupten.
 
 ## 4. Definition of Done
 
-- [ ] Der Ort ist **begründet** gewählt, mit der benannten Folge der beiden
-      verworfenen Kandidaten.
-- [ ] Beide Verstoß-Formen sind rot gesehen — beweglicher Tag **und** SHA ohne
-      Tag-Kommentar —, der Rückbau grün.
-- [ ] Die Zusage ist auf die **Form** beschränkt und sagt das hin.
-- [ ] `AGENTS.md` §3.9 trägt den eingelösten Trigger; falls ein Target entsteht,
-      sind §4 und die Sensors-Tabelle nachgezogen und `gate-consistency` grün.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] Ort begründet gewählt: `make`-Target. **Modul verworfen**, weil das Produkt
+      nur Markdown scannt und YAML eine neue Eingabe-Klasse wäre (§3.8, ADR-Frage);
+      **CI-Schritt verworfen**, weil er nur die CI bindet und der Fehler erst nach
+      dem Push aufliefe — heute zweimal genau so passiert.
+- [x] **Fünf** Verstoß-Formen rot gesehen, nicht zwei: beweglicher Tag ·
+      SHA ohne Tag-Kommentar · leeres Verzeichnis · **`.yaml`-Workflow** ·
+      **genau eine Datei**. Die letzten beiden fand erst der Review; sie gingen
+      vorher grün bzw. mit falscher Fundstelle durch. Rückbau grün.
+- [x] Die Zusage ist auf die **Form** beschränkt und sagt es an drei Stellen —
+      Skript-Kopf, `AGENTS.md` §3.9, Sensors-Zeile.
+- [x] `AGENTS.md` §3.9 trägt den eingelösten Trigger; §4 und die Sensors-Tabelle
+      sind nachgezogen, `gate-consistency` grün.
+- [x] `make gates` Exit 0 (zehn Glieder, 475 Dateien, 0 Befunde); unabhängiger
+      Review ([Report](../../../reviews/2026-08-23-slice-135-uses-pin-sensor-review.md)),
+      blockierend mit einem HIGH, alle drei Befunde eingearbeitet.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Ein Gate auf drei Dateien ist billig zu bauen und leicht zu überdehnen.**
-  „Die Workflows sind gehärtet" wäre die Aussage, die der Sensor **nicht**
-  trägt. — **Ausgang:** *(bei Closure)*
-- **Der d-check-Modul-Weg würde den Gegenstand des Produkts weiten** (YAML statt
-  Markdown) und fiele damit unter §3.8 — eine Eingabe, die das Modul liest, aber
-  nicht scannt. Wird er gewählt, ist das eine ADR-Frage, kein Slice-Entscheid. —
-  **Ausgang:** *(bei Closure)*
+  — **Ausgang:** *eingetreten, und zwar in der Doku, nicht im Code.* Die
+  Sensors-Zeile behauptete *„drei Grenzen, alle drei benannt"* — der Review fand
+  eine **vierte**, und sie war keine benannte Grenze, sondern ein Defekt. Die
+  Zeile nennt jetzt zwei Grenzen und zwei tragende Eigenschaften, statt eine
+  Zahl zu führen, die niemand nachgezählt hatte.
+- **Der d-check-Modul-Weg würde den Gegenstand des Produkts weiten.** —
+  **Ausgang:** *nicht eingetreten, weil der Weg nicht gewählt wurde* — und die
+  Begründung ist gemessen, nicht gesetzt: die geprüfte Dateimenge des Produkts
+  ist exakt die Menge der `.md`-Dateien.
 
 ## 6. Trigger
 
@@ -102,4 +112,36 @@ Module: CI/Workflows, Gate-Landschaft. Gates: `make gate-consistency`,
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Geliefert: `make workflow-pins` ist das zehnte Glied von `make gates`, und
+[`AGENTS.md`](../../../../AGENTS.md) §3.9 trägt seinen eingelösten Trigger —
+**mit** der Grenze, die er nicht überschreitet.
+
+**Die Lehre dieses Slice ist die unangenehmste der ganzen Welle: der Wächter
+gegen stille Grün-Pfade hatte selbst einen.** Sein Glob las
+`.github/workflows/*.yml`; GitHub liest `.yml` **und** `.yaml`. Ein
+`.yaml`-Workflow mit ungepinntem `uses:` wäre für ihn unsichtbar gewesen, und
+`make gates` wäre grün geblieben — während der Skript-Kopf zwei Absätze höher
+genau diese Klasse zum Entwurfsprinzip erklärt und die Sensors-Zeile daneben
+*„drei Grenzen, alle drei benannt"* behauptete.
+
+**Und die zweite Hälfte des Fundes war ein Zufallstreffer, kein Bug.** Die
+`file:line`-Zerlegung funktionierte nur, weil GNU-`grep` den Dateinamen-Präfix
+ab **zwei** Dateien setzt. Mit genau einem Workflow im Verzeichnis wäre sie
+still auf falsche Felder gelaufen: Erkennung und Exit richtig, die **Fundstelle**
+falsch. Ein Gate, das den richtigen Alarm an der falschen Zeile meldet, ist
+schwerer zu entdecken als eines, das schweigt.
+
+**Beides fand der Review, nicht ich — und beides wäre durch meine drei
+konstruierten Verstöße gelaufen.** Ich hatte die Formen geprüft, die ich
+*erwartet* hatte. Fünf sind es jetzt, und die zwei neuen sind genau die, die
+niemand erwartet: eine andere Dateiendung und ein anderer Bestand.
+
+**Bewusst nicht behoben, sondern benannt:** als Pin gilt ein 40-stelliger
+git-SHA. Ein Digest-Verweis (`docker://…@sha256:…`) würde gemeldet, obwohl er
+gepinnt ist. Das ist die **Falsch-Positiv**-Richtung — laut, und sie wird
+repariert, sobald sie auftritt. Ein Falsch-Negativ wäre still geblieben, und
+genau davon hatte dieser Slice schon eines zu viel.
+
+**Offen und benannt:** §3.9 steht auf *teilgedeckt*, nicht auf *gedeckt* — die
+**Gültigkeit** eines Pins (existiert der SHA, bezeichnet er den Commit, den der
+Tag-Kommentar nennt?) ist Netz und gehört zur Freshness-Familie, nicht hierher.
