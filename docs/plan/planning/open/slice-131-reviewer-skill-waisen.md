@@ -23,7 +23,7 @@ nicht Verortung; die Verortung regelt §Vollständigkeit);
 
 ## 1. Ziel
 
-Der Vollständigkeits-Zensus aus [slice-129](../in-progress/slice-129-baseline-v5110-delta-audit.md)
+Der Vollständigkeits-Zensus aus [slice-129](../done/slice-129-baseline-v5110-delta-audit.md)
 hat **fünf** Fundorte ergeben statt des einen bekannten. Der schwerste ist der
 **Reviewer-Skill**: mehrere seiner Kategorien-Anker
 sind **dort entstanden** („neuer HIGH-Eintrag seit 1.5.0", „neuer MEDIUM-Anker
@@ -89,7 +89,7 @@ Kanons, und sie ist der Inhalt dieses Slice.
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): [slice-129](../in-progress/slice-129-baseline-v5110-delta-audit.md)
+**Start** (`open` → `in-progress`): [slice-129](../done/slice-129-baseline-v5110-delta-audit.md)
 in `done/`.
 
 **Rückführungen:** `in-progress` → `next`, falls die Prüfung ergibt, dass die

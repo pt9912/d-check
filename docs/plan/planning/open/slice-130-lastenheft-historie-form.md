@@ -80,7 +80,7 @@ Delta-Audit belegt:
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): [slice-129](../in-progress/slice-129-baseline-v5110-delta-audit.md)
+**Start** (`open` → `in-progress`): [slice-129](../done/slice-129-baseline-v5110-delta-audit.md)
 in `done/`.
 
 **Rückführungen:** `in-progress` → `next`, falls die Ortswahl für die

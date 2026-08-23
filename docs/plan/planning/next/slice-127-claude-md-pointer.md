@@ -161,7 +161,7 @@ Vollständigkeits-Zusage liegt damit im **gepinnten** Baum. Der Slice ist
 **startbar**.
 
 **Ein Reihenfolge-Vorbehalt bleibt, und er ist keine Blockade:**
-[slice-129](../in-progress/slice-129-baseline-v5110-delta-audit.md) beantwortet unter
+[slice-129](../done/slice-129-baseline-v5110-delta-audit.md) beantwortet unter
 anderem, **welche** Artefakte außerhalb der Rangliste normativen Text tragen —
 `CLAUDE.md` ist ein bekannter Eintrag dieser Liste, aber ob der einzige, weiß
 erst das Audit. Wer zuerst startet, ist eine Entscheidung, keine Ableitung:
