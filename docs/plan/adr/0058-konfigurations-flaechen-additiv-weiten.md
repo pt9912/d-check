@@ -315,7 +315,7 @@ eigene Entscheidung mit eigener Messung.
   konfiguriert, dass Nutzer den Marker regelmäßig sichtbar im Diagramm haben —
   dann ist die Token-Entscheidung aus Entscheidung 3 gegen die Praxis zu
   prüfen; die Antwort wäre eine Kommentar-Lexik je Sprache, kein Parser.
-- Ein Modul **ohne** konfigurierbare Muster (`hostpaths`, `pins`, `spans`)
+- Ein Modul **ohne** konfigurierbare Muster (`hostpaths`, `pins`, `spans`, `citations`)
   braucht wiederholt eine Ausnahme — dann ist die enge Reichweite aus
   Entscheidung 3 gegen die Praxis zu prüfen; die Antwort wäre dieselbe
   Ventil-Achse, nicht eine dritte.

@@ -967,7 +967,9 @@ unverändert.
 honoriert von `codepaths`, [`ids`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids),
 [`versions`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) und
 [`diagrams`](#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in)
-— eine benannte Liste, kein ableitbares Kriterium). Keine Achse überschreibt eine andere; ein Ziel, das `scan.ignore`
+— eine benannte Liste, kein ableitbares Kriterium; `matrix`, `structure` und
+[`citations`](#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in)
+melden ebenfalls auf Zeilen und tragen ihn nicht). Keine Achse überschreibt eine andere; ein Ziel, das `scan.ignore`
 bereits vom Scan entfernt, erreicht `ignore-refs` gar nicht.
 
 **Akzeptanzkriterien:**

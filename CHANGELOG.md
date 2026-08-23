@@ -6,6 +6,29 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Changed
+
+- slice-126 — **Doku-Korrektur ohne Software-Änderung** (Handbuch 1.57), zwei
+  Befunde. **(a) Ventil-Lage bei `citations` ausgesprochen:**
+  `citation-out-of-range` und `citation-inverted-range` entstehen in **zwei**
+  Fähigkeiten, und der Grund-Code sagt nicht, in welcher — aus
+  `codepaths.check-lines` sind sie über `exempt-paths`, das geteilte
+  `ignore-refs` und den Zeilen-Marker `d-check:ignore` stummschaltbar, aus dem
+  Modul `citations` **nicht**. Die **groben** Achsen (`scan.ignore`,
+  modul-lokaler `citations.scope`) wirken dagegen für beide. Handbuch und
+  §6-Tabelle stellen die Achsen jetzt gegenüber; ausdrücklich benannt ist, dass
+  dieser Unterschied eine Eigenschaft des heutigen Stands ist und **keine**
+  zugesagte Semantik — weder Lastenheft noch Spezifikation begründen ihn.
+  **(b) §5-Abschnitt geschnitten:** *„Zitate und Zeilen-Referenzen gegen ihre
+  Quelle prüfen"* trug **183 Zeilen** und **sechs** Module — `vcs`, `commits`,
+  `planning` (drei Fähigkeiten) und `tracked` standen nicht in seiner
+  Überschrift und waren dort nicht auffindbar. Jetzt fünf Abschnitte, jede
+  Überschrift nennt ihren Inhalt; der Text ist **unverändert bewegt**, nicht
+  umgeschrieben. Dazu die Aufzählung der marker-losen Module in beiden READMEs,
+  `operations.md`, Lastenheft und Spezifikation um `citations` ergänzt, und die
+  Anti-Anlagerungs-Regel der Release-Prozedur auf ihre **Klasse** gezogen
+  (jeder gegliederte Fließtext, nicht zwei benannte Kapitel).
+
 ## [0.63.0] — 2026-08-23
 
 ### Added
@@ -72,9 +95,9 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   des Fence den **ganzen** Block — ohne die zweite Stelle wäre die intuitive
   Platzierung wirkungslos. Nachgetragen sind zugleich die `diagrams`-Zeilen im
   §2-Konfigurations-Schema, die dem Modul als einzigem fehlten. Kein neuer
-  Grund-Code. **Reichweite bewusst eng:** `hostpaths`, `pins`, `spans`, `matrix`,
-  `structure` und `citations` hängen Befunde ebenfalls an Zeilen und tragen
-  weiterhin kein Ventil — `citations` ist sogar ganz parameterlos. Welche Module den Marker honorieren, ist eine **benannte Liste**, kein
+  Grund-Code. **Reichweite bewusst eng:** `hostpaths`, `pins`, `spans`, `matrix`
+  und `structure` hängen Befunde ebenfalls an Zeilen und tragen weiterhin kein
+  Ventil. Welche Module den Marker honorieren, ist eine **benannte Liste**, kein
   ableitbares Kriterium; die übrigen sind als offene Fläche mit eigenem
   Re-Evaluierungs-Trigger benannt.
 

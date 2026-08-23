@@ -1087,7 +1087,7 @@ additiv (ein Muster mit `always` findet eine Obermenge seiner
    ([§DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code) Schritt 1 gilt
    nur für jene vier). Die Menge ist eine **benannte Liste**, kein ableitbares
    Kriterium: `matrix` konfiguriert mit `classes[].token` ebenfalls ein eigenes
-   Muster und meldet ebenfalls auf Zeilen.
+   Muster und meldet ebenfalls auf Zeilen, ebenso `structure` und `citations`.
 5. **Klasseninterne Verweisrichtung**
    ([`DC-FA-MTX-002`](lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix)):
    Trägt die in Schritt 1 zugeordnete Quell-Klasse ein nicht-leeres `order`

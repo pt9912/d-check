@@ -46,7 +46,7 @@ welle-80 und welle-81 sowie im Beobachtungs-Register belegt.
 
 ## 3. Closure-Trigger (Welle schließt)
 
-- Alle vier Slices in `done/`; `make fullbuild` grün (Exit explizit).
+- Alle fünf Slices in `done/`; `make fullbuild` grün (Exit explizit). (Vier bei der Eröffnung; slice-126 kam nach der Closure von slice-125 dazu — die Zahl folgt §4, nicht dem Eröffnungsstand.)
 - Je Erweiterung ein **Default-Beweis**: ohne den neuen Schlüssel ist der
   Befundsatz byte-identisch gegen das gepinnte Vorgänger-Image — grün wie rot.
 - Je Erweiterung eine **konstruierte Gegenprobe**, die ohne sie stumm bliebe.

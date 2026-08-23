@@ -129,7 +129,9 @@ unberührt. Default aus: ohne das Flag ist der Befundsatz byte-identisch.
 vier Modulen — `ids`, `codepaths`, `versions` und `diagrams` (illustrative
 Beispiele). Diese vier sind eine **benannte Liste**, kein ableitbares Kriterium:
 `matrix` konfiguriert mit `classes[].token` ebenfalls ein eigenes Muster und
-meldet ebenfalls auf Zeilen, trägt den Marker aber nicht — ebenso `structure`.
+meldet ebenfalls auf Zeilen, trägt den Marker aber nicht — ebenso `structure`
+und `citations`, das dieselben Grund-Codes meldet wie das ventil-tragende
+`codepaths`.
 `matrix`-Befunde werden behoben oder **strukturell** ausgenommen
 (`exclude-sections` für Provenance-/Historie-Sektionen,
 `allow-supersede-lineage` für die Lineage-Kante) — legitime Ausnahmen

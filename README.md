@@ -175,8 +175,8 @@ deterministic findings are fixed, not suppressed. An opt-out
 marker exists only where a non-existent target or an illustrative identifier
 can be documented intent (`d-check:ignore`, per line) — it silences four
 modules: `codepaths`, `ids`, `versions` and `diagrams`. That is a **named
-list**, not a derivable criterion: `matrix` and `structure` also configure
-their own patterns and also report on lines, yet do not know the marker
+list**, not a derivable criterion: `matrix`, `structure` and `citations` also
+report on lines and do not know the marker
 ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
 [`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids),
 [`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in),
