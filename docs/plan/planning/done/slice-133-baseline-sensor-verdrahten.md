@@ -77,29 +77,43 @@ Dieser Slice steckt ihn ein. Er baut **nichts Neues**.
 
 ## 4. Definition of Done
 
-- [ ] `--verify` läuft als benanntes Target **in** `make gates`; `make gates`
-      bleibt netzlos (Exit explizit).
-- [ ] `--check-latest` läuft als benanntes Target **außerhalb** `gates` und in
-      einem **eigenen** geplanten Workflow, getrennt von `ci.yml`.
-- [ ] **Beide** Verstoß-Richtungen sind rot gesehen — geänderte Datei **und**
-      zusätzlich eingelegte Datei —, der Rückbau grün.
-- [ ] `AGENTS.md` §4 und die Sensors-Tabelle tragen die neuen Targets;
+- [x] `make baseline-verify` ist **erstes Glied** von `make gates`; der
+      `--verify`-Pfad ruft kein Netz-Werkzeug, der innere Lauf bleibt offline.
+- [x] `make baseline-freshness` läuft **außerhalb** `gates` und im eigenen
+      [`upstream-drift.yml`](../../../../.github/workflows/upstream-drift.yml),
+      täglich 01:00 UTC, getrennt von `ci.yml`.
+- [x] **Vier** Verstoß-Formen rot gesehen, nicht zwei: geänderte · im Baum
+      eingelegte · **als Geschwister der Bäume eingelegte** · gelöschte Datei —
+      alle Exit 2, Rückbau Exit 0. Die dritte hat erst der Review gefunden
+      (§9), und sie ging vorher **grün** durch.
+- [x] `AGENTS.md` §4 und die Sensors-Tabelle tragen beide Targets;
       `make gate-consistency` grün.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] `make gates` Exit 0 (neun Glieder, 471 Dateien, 0 Befunde),
+      `make fullbuild` Exit 0; unabhängiger Review
+      ([Report](../../../reviews/2026-08-23-slice-133-baseline-sensor-review.md)),
+      blockierend, alle sechs Befunde eingearbeitet.
 
 ## 5. Abnahme-Punkte / Risiken
 
-- **Ein Nachtlauf, in den niemand sieht, ist ein zweiter verwaister Sensor** —
-  dieselbe Klasse, die dieser Slice behebt, eine Ebene höher. Der Slice muss
-  benennen, **wo** sein Rot sichtbar wird. — **Ausgang:** *(bei Closure)*
-- **`gates` um ein Host-Skript zu erweitern berührt §3.1.** Erlaubt sind `git`,
-  GNU `make`, `bash` und Docker; `sha256sum`/`find` kommen dazu. Zu prüfen, nicht
-  anzunehmen: ob der Gate-Lauf damit noch auf einem frischen Klon durchläuft. —
-  **Ausgang:** *(bei Closure)*
-- **Der Netz-Teil ist fail-open, der Gate-Teil fail-closed.** Zwei
-  Fehlerpolitiken in einem Skript sind eine Verwechslungsquelle; die Targets
-  müssen sie im Namen und in der Doku-Zeile trennen. — **Ausgang:** *(bei
-  Closure)*
+- **Ein Nachtlauf, in den niemand sieht, ist ein zweiter verwaister Sensor.**
+  — **Ausgang:** *benannt, nicht gelöst.* Der Workflow-Kopf sagt jetzt hin, wo
+  sein Rot erscheint (Actions-Übersicht) und dass der Job **rot ausfällt** statt
+  nur zu protokollieren. Dass jemand hinsieht, ist damit wahrscheinlicher, nicht
+  gesichert — die ehrliche Form dieses Risikos ist eine Benachrichtigung, und
+  die ist nicht gebaut.
+- **`gates` um ein Host-Skript zu erweitern berührt §3.1.** — **Ausgang:**
+  *eingetreten, aber anders als vermutet.* Der Satz *„Der Host braucht **nur**
+  `git`, GNU `make`, `bash` und Docker"* war **schon vorher falsch**:
+  `working-tree-hash.sh`, `coverage-gate.sh` und `semgrep.sh` hängen längst in
+  `gates` und rufen `awk`, `sha256sum`, `sort`, `grep`, `tr`. Neu kommt allein
+  `find` dazu. §3.1 nennt jetzt die **Klasse** statt einer Liste — eine
+  Aufzählung wäre der nächste ungewachte Spiegel.
+- **Der Netz-Teil ist fail-open, der Gate-Teil fail-closed.** — **Ausgang:**
+  *eingetreten, und die Trennung war anfangs nur behauptet.* Die Namen und die
+  Doku-Zeilen trennen sauber, aber der fail-open-Pfad hatte **keine
+  Zeitgrenze**: ein Fehlschlag wurde zu `SKIP`, eine **hängende** Verbindung
+  wäre erst von der Job-Decke abgeräumt worden — und hätte den Nachtlauf rot
+  gefärbt, also genau das Gegenteil der Zusage. Gefunden hat es der Review.
 
 ## 6. Trigger
 
@@ -134,4 +148,42 @@ Harness-Werkzeuge, Gate-Landschaft, CI. Gates: `make gate-consistency`,
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Geliefert: `make baseline-verify` ist erstes Glied von `make gates`,
+`make baseline-freshness` läuft im eigenen Nachtlauf, und beide stehen in den
+zwei Doku-Tabellen, die `gate-consistency` gegen das `Makefile` hält. Gebaut
+wurde **nichts** — das Skript konnte all das schon.
+
+**Der Slice hat gefunden, wonach er gar nicht gesucht hat.** Er trat an, um
+einen verwaisten Sensor einzustecken. Der Review hat gezeigt, dass dieser Sensor
+**selbst einen stillen Grün-Pfad trug** — und zwar genau eine Verzeichnisebene
+über der Lücke, die er schließt. Die Manifest-Deckung zählte per `find` nur
+innerhalb von `regelwerk/` und `templates/`; eine Datei, die als **Geschwister**
+der beiden Bäume abgelegt wird, liegt in keinem Baum und in keiner
+Manifest-Zeile — beide Zahlen blieben gleich, und der Gate meldete grün. Meine
+eigene Begründung stand eine Zeile darüber: *„ohne die Manifest-Deckung wäre
+‚prüft die Integrität' überdehnt."* Sie war es noch immer.
+
+**Das ist die Lehre, und sie ist unbequemer als die Reparatur.** Ein Sensor
+einzustecken heißt nicht, ihn geprüft zu haben. Seit dem 25. Juni 2026 stand
+dieses Skript im Repo und wurde von nichts gerufen; die erste Messung, die seine
+Zusage wirklich befragt hat, war ein **konstruierter Verstoß** — nicht einer der
+Läufe, die es nie gab.
+
+**Zum vierten Mal an einem Tag eine Quelle überdehnt** ([`BEO-012`](../observations.md)).
+Ich habe [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
+zitiert, um zu begründen, dass `make gates` netzlos bleibt. Jene Anforderung
+sagt etwas über das **Produkt** — *„Das Tool schreibt nie … und öffnet keine
+Netzwerkverbindungen"* —, und ihre Messmethode ist ein Container-Lauf. Über den
+inneren Lauf sagt sie nichts. Dass `gates` offline bleibt, ist eine Eigenschaft
+**dieses Repos**, und sie steht jetzt ohne geliehene Autorität da.
+
+**Und eine Zuschreibung, die aus einer zu weiten Messung kam.** Die
+Werkzeug-Liste in `AGENTS.md` §3.1 hatte ich über **vier** Skripte gemessen und
+dann **zweien** zugeschrieben; `record-gates.sh` ruft keines davon, `sed` ruft in
+`gates` niemand, `tr` fehlte. Statt die Liste zu korrigieren nennt §3.1 jetzt die
+Klasse — eine Aufzählung wäre der nächste Spiegel ohne Wächter
+([`BEO-010`](../observations.md)).
+
+**Offen und benannt:** Der Nachtlauf wird rot, aber niemand wird benachrichtigt.
+Das ist die ehrliche Restlücke dieses Slice — und ein Kandidat für den Zensus in
+[slice-132](../open/slice-132-hard-rule-zensus.md), nicht ein Nachzug hier.
