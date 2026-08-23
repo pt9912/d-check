@@ -68,24 +68,29 @@ Eintrag im Konventionsspeicher, den es nicht gibt.
 
 ## 4. Definition of Done
 
-- [ ] Beide Fragen sind **mit Beleg** beantwortet — Doppelung ja/nein,
-      Verschärfung ja/nein —, und der Beleg ist ein Zitat oder eine Zählung,
-      keine Auslegung.
-- [ ] Die Folge ist gezogen: `MR-`Eintrag, Kürzung oder berichtigte Ausweisung.
-- [ ] §3.4 trägt keine Aussage mehr, die eine Unmöglichkeit behauptet, ohne sie
-      geprüft zu haben.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] Beide Fragen mit **Zitat** beantwortet, nicht mit Auslegung — **und die
+      zweite Antwort ist die umgekehrte der ersten Fassung** (§9).
+- [x] Die Folge ist gezogen, und es war die unbequeme:
+      [`MR-033`](../../../../harness/conventions.md#mr-033) statt einer
+      Konformitäts-Erklärung.
+- [x] §3.4 trägt keine unbelegte Unmöglichkeits-Behauptung mehr — und darüber
+      hinaus keinen unbelegten Deckungs-Anspruch: die Abwärts-Sperre steht jetzt
+      auf **zwei von fünf** Kategorien.
+- [x] `make gates` Exit 0 (zehn Glieder, 479 Dateien, 0 Befunde); unabhängiger
+      Review ([Report](../../../reviews/2026-08-23-slice-136-agents-34-klaerung-review.md)),
+      blockierend mit einem HIGH, alle fünf Befunde eingearbeitet.
 
 ## 5. Abnahme-Punkte / Risiken
 
-- **Die Versuchung ist, die bequeme Lesart zu wählen.** *„Modul-Pfade meint
-  Dokument-Pfade"* macht unsere Regel konform, *„Modul-Pfade meint
-  Code-Pfade"* macht sie zur unerklärten Verschärfung. Wer die erste wählt,
-  weil sie weniger Arbeit macht, hat `BEO-012` begangen. — **Ausgang:** *(bei
-  Closure)*
-- **Eine Vorlage ist kein Regeltext.** Was `architecture.template.md`
-  praktiziert, ist starkes Indiz und keine Definition. Die Grenze dieses
-  Belegs gehört benannt. — **Ausgang:** *(bei Closure)*
+- **Die Versuchung ist, die bequeme Lesart zu wählen.** — **Ausgang:**
+  *eingetreten. Ich bin ihr erlegen.* Der erste Anlauf schloss auf „keine
+  Verschärfung" und stützte sich dabei auf die **Praxis** einer Vorlage, während
+  die direkteste Quelle ungelesen blieb. Der Risiko-Satz stand geschrieben,
+  bevor er zutraf — und hat mich nicht davor bewahrt.
+- **Eine Vorlage ist kein Regeltext.** — **Ausgang:** *eingetreten, und zwar
+  genau an der Stelle, an der es zählte.* Die Grenze war benannt; sie zu nennen
+  hat den Fehlschluss nicht verhindert. Was ihn verhindert hätte, war eine
+  einzige Suche in der richtigen Datei.
 
 ## 6. Trigger
 
@@ -115,4 +120,55 @@ Module: Harness-Regeltext, Konventionsspeicher. Gates: `make doc-check`,
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Die Antwort dieses Slice ist die umgekehrte seiner ersten Fassung**, und das
+ist sein Ergebnis.
+
+**Doppelung? Nein — die Frage war falsch gestellt.** §3.4s Abwärts-Sperre steht
+im Kanon **und** ist bei uns gate-gedeckt. Für genau diese Lage verlangt
+`modul-09` **beides**: *„Jede Hard Rule liegt in zwei Quadranten … nur als
+Fitness Function ohne `AGENTS.md`-Eintrag versteht der Agent das Warum nicht"*
+— und gegen die Fehlannahme direkt: *„Beides ist Pflicht."* Der Eintrag ist die
+**vorgeschriebene** Feedforward-Hälfte, nicht die überflüssige Kopie.
+
+**Verschärfung? Ja — und ich hatte zuerst das Gegenteil geschlossen.** Der erste
+Anlauf stützte sich auf die *Praxis* der Architektur-Vorlage: null
+Code-Pfad-Token, Rollen statt Pfade. Die direkteste Quelle blieb ungelesen —
+[`AGENTS.template.md`](../../../../.harness/baseline/v5.11.0/templates/AGENTS.template.md)
+§3.4, das Baseline-Pendant zu unserer eigenen Datei, sagt wörtlich:
+
+> `spec/architecture.md` **referenziert Modul-Pfade**, aber keine Wellen,
+> Slices, Commit-Hashes oder Closure-Daten.
+
+Der Kanon **erlaubt** der Sicht also, was wir ihr **verbieten**. Das ist eine
+Verschärfung; [`MR-031`](../../../../harness/conventions.md#mr-031) verlangt
+dafür einen Eintrag, und
+[`MR-033`](../../../../harness/conventions.md#mr-033) trägt ihn nach.
+
+**Der Slice hat sein eigenes Risiko wörtlich erfüllt.** §5 stand geschrieben,
+bevor es zutraf: *„die bequeme Lesart macht unsere Regel konform … wer sie
+wählt, weil sie weniger Arbeit macht, hat `BEO-012` begangen."* Ich habe
+indirekte Evidenz genommen, die mein Ergebnis stützte, und die direkte nicht
+gesucht. **Ein Risiko zu benennen ersetzt nicht, es zu prüfen** — was hier
+geholfen hätte, war keine Warnung, sondern eine Suche in der richtigen Datei.
+
+**Und ein zweiter Fund, der eine Wiederholung ist.** §3.4s Abwärts-Sperre nennt
+**fünf** Kategorien — ADRs, Wellen, Slices, Commit-Hashes, Closure-Daten.
+`matrix` trägt Klassen für **zwei** davon; für Wellen, Commit-Hashes und
+Closure-Daten gibt es weder Klasse noch Muster. Meine Zensus-Probe prüfte genau
+eine (`slice-999`). Der Review zu
+[slice-132](slice-132-hard-rule-zensus.md) hatte **dieselbe Form** einen Slice
+zuvor als HIGH gemeldet, im **selben Abschnitt**. §3.4 sagt jetzt *zwei von
+fünf* und trägt einen auflösenden Trigger für die drei fehlenden.
+
+**Zwei Zahlen sind aus dem Regeltext verschwunden**, weil sie suchmuster-
+abhängig waren und die Aussage nicht trugen, auf die ich sie gestützt hatte: die
+*„null Code-Pfad-Token"* der Vorlage übersehen ihren Bedienhinweis-Block, und
+die *„fünf"* in der Spezifikation sind ausschließlich `tools/*.sh`-Tombstones,
+die `codepaths.ignore-refs` ohnehin ausnimmt.
+
+**Offen und benannt:** Die Mehrdeutigkeit des Kanon-Bullets bleibt bestehen —
+*„referenziert Modul-Pfade"* sagt nicht, ob Code- oder Dokument-Pfade gemeint
+sind. Für uns ist die Frage durch [`MR-033`](../../../../harness/conventions.md#mr-033) entschieden; für den Kanon ist sie
+ein **CR-Kandidat**, weil sie jedes Adopter-Repo trifft. Ob und wann er
+geschrieben wird, ist eine Auftraggeber-Entscheidung und ausdrücklich nicht Teil
+dieses Slice.
