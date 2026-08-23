@@ -8,7 +8,7 @@
 **Bezug:** [`AGENTS.md`](../../../../AGENTS.md) §3.2 (Suppression-Verbot;
 Auflösungs-Trigger `nolintlint`), §3.6 (Linter-Strenge nur per ADR);
 [ADR-0006](../../adr/0006-lint-profil-solid.md) (Lint-Profil);
-geschnitten vom Zensus in [slice-132](../in-progress/slice-132-hard-rule-zensus.md).
+geschnitten vom Zensus in [slice-132](../done/slice-132-hard-rule-zensus.md).
 
 **Berührte Spec-Stellen:** — (Lint-Profil; keine Anforderung).
 
@@ -42,7 +42,7 @@ Wächter, sondern eine Regel, deren Umgehung **funktioniert und still bleibt**.
    wechselt von *einseitig* auf **teilgedeckt** — nicht auf *gedeckt*, denn
    `nolintlint` prüft die **Form** der Direktive, nicht ihre Berechtigung (§5).
    Der Zensus-Eintrag in
-   [slice-132](../in-progress/slice-132-hard-rule-zensus.md) bleibt als
+   [slice-132](../done/slice-132-hard-rule-zensus.md) bleibt als
    historische Messung stehen.
 5. `make gates`; unabhängiger Review; Closure.
 
@@ -79,7 +79,7 @@ Wächter, sondern eine Regel, deren Umgehung **funktioniert und still bleibt**.
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): [slice-132](../in-progress/slice-132-hard-rule-zensus.md)
+**Start** (`open` → `in-progress`): [slice-132](../done/slice-132-hard-rule-zensus.md)
 in `done/`, WIP-Limit frei.
 
 **Rückführungen:** `in-progress` → `next`, falls die Bestandsmessung so viele

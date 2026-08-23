@@ -7,7 +7,7 @@
 
 **Bezug:** [`AGENTS.md`](../../../../AGENTS.md) §3.9 (Action-Referenzen
 SHA-gepinnt; *Auflösungs-Trigger: ein Sensor, der `uses:`-Pins prüft*);
-geschnitten vom Zensus in [slice-132](../in-progress/slice-132-hard-rule-zensus.md).
+geschnitten vom Zensus in [slice-132](../done/slice-132-hard-rule-zensus.md).
 
 **Berührte Spec-Stellen:** — (Harness-Gate; keine Anforderung).
 
@@ -76,7 +76,7 @@ Heuristik-Wächter, und der Unterschied ist zu zeigen, nicht zu behaupten.
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): [slice-132](../in-progress/slice-132-hard-rule-zensus.md)
+**Start** (`open` → `in-progress`): [slice-132](../done/slice-132-hard-rule-zensus.md)
 in `done/`, WIP-Limit frei. Hängt **nicht** an
 [slice-134](../open/slice-134-nolintlint.md).
 

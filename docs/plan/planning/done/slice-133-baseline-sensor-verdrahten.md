@@ -119,7 +119,7 @@ Dieser Slice steckt ihn ein. Er baut **nichts Neues**.
 
 **Start** (`open` → `in-progress`): [welle-84](../welle-84-durchsetzung.md)
 eröffnet, WIP-Limit frei. Hängt **nicht** an
-[slice-132](../in-progress/slice-132-hard-rule-zensus.md).
+[slice-132](../done/slice-132-hard-rule-zensus.md).
 
 **Rückführungen:** `in-progress` → `next`, falls das Einhängen in `gates` die
 Netzlos- oder Werkzeug-Zusage berührt — dann ist es ein Spec-Thema und kein
