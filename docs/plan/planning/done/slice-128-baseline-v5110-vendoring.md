@@ -54,7 +54,7 @@ später nicht mehr trennen, ob eine Änderung aus dem Bump oder aus dem Audit ka
 
 - **Keine Regel des neuen Stands anwenden.** Auch nicht die
   Vollständigkeits-Zusage aus Kurs-Welle 94, obwohl wir eine Verletzung bereits
-  kennen — sie gehört [slice-127](../next/slice-127-claude-md-pointer.md).
+  kennen — sie gehört [slice-127](../in-progress/slice-127-claude-md-pointer.md).
 - **Kein Delta-Audit.** Das ist Etappe B.
 - **Keine Zwischenstufe über `v5.10.0`.**
 

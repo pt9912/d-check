@@ -38,7 +38,7 @@ CHANGELOG nennt ihn als Auslöser. Die Zusage, die daraus entstand — *jede
 Regel, der ein Agent folgen muss, steht in einer gerankten Quelle oder im
 Konventionsspeicher; Artefakte außerhalb dürfen verweisen und ausführen, aber
 nichts festlegen* — gilt nach dem Bump **für uns selbst**, und wir wissen
-bereits von **einer** Verletzung ([slice-127](next/slice-127-claude-md-pointer.md)).
+bereits von **einer** Verletzung ([slice-127](in-progress/slice-127-claude-md-pointer.md)).
 Sie einzusammeln ist Folge der Welle, nicht ihr Inhalt.
 
 **Die Reihenfolge ist nicht verhandelbar:** erst pinnen, dann dem Kanon folgen.
@@ -84,13 +84,13 @@ Eröffnung angekündigt. Zwei Slices, aus den **zwei** Wellen mit
 Handlungs-Antwort; die übrigen sechs sind belegt folgenlos.
 
 **Der dritte Fundort des Vollständigkeits-Zensus hat bereits seinen Slice:**
-[slice-127](next/slice-127-claude-md-pointer.md) liegt in `next/` und ist
+[slice-127](in-progress/slice-127-claude-md-pointer.md) liegt in `next/` und ist
 startbar. Damit ist auch seine offene Reihenfolge-Frage beantwortet —
 `CLAUDE.md` ist **einer von drei** Fundorten, nicht der einzige.
 
 ## 5. Abhängigkeiten
 
-- **Blockiert:** [slice-127](next/slice-127-claude-md-pointer.md) — er folgt
+- **Blockiert:** [slice-127](in-progress/slice-127-claude-md-pointer.md) — er folgt
   einer Regel, die erst mit diesem Bump gepinnt ist.
 - **Wird blockiert von:** nichts. Reihenfolge innerhalb: A vor B (das Audit
   liest den neuen Baum), C nach B.

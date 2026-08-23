@@ -66,7 +66,7 @@ Kanons, und sie ist der Inhalt dieses Slice.
 - **Kein Gate für die Anker.** Ob eine Review-Regel mechanisierbar ist, ist
   eine eigene Frage — und nach `modul-09` bleibt sie ohne Gate **halb
   durchgesetzt**, was hier zu **benennen** und nicht zu heilen ist.
-- **Nicht `CLAUDE.md`** ([slice-127](../next/slice-127-claude-md-pointer.md))
+- **Nicht `CLAUDE.md`** ([slice-127](../in-progress/slice-127-claude-md-pointer.md))
   und nicht das Workflow-Skelett (im Audit als vermutlich konform eingestuft).
 
 ## 4. Definition of Done
