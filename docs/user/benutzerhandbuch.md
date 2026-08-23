@@ -1,6 +1,6 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.56 · **Software-Version:** [v0.63.0](../../version.md#v0.63.0) ·
+**Handbuch-Version:** 1.57 · **Software-Version:** [v0.63.0](../../version.md#v0.63.0) ·
 **Stand:** 2026-08-23 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
@@ -1103,7 +1103,9 @@ feinsten Schnitt:
   (`exclude-sections`, `allow-supersede-lineage`), nicht zeilenweise
   stummgeschaltet. Diese vier sind eine **benannte Liste, kein ableitbares
   Kriterium**: `matrix` und `structure` konfigurieren ebenfalls eigene Muster
-  und melden ebenfalls auf Zeilen, tragen den Marker aber nicht.
+  und melden ebenfalls auf Zeilen, tragen den Marker aber nicht — und
+  `citations` trägt **gar kein** Ventil, obwohl es dieselben Grund-Codes
+  meldet wie das ventil-tragende `codepaths`.
 - **`ignore-refs`** (Ziel, querschnittlich): nimmt bestimmte **aufgelöste
   Ziel-Pfade** von der Existenz-/Anker-Prüfung aus — **referenz-weit** (datei- und
   zeilen-unabhängig) und geteilt von `links`, `anchors` und `codepaths`.
@@ -1242,6 +1244,29 @@ codepaths:
 # citations wird über --enable citations bzw. modules: [..., citations] aktiviert
 ```
 
+**Achtung, dieselben Grund-Codes — verschiedene Ventil-Lage.**
+`citation-out-of-range` und `citation-inverted-range` können aus **beiden**
+Fähigkeiten kommen, und der Grund-Code sagt Ihnen nicht, aus welcher. Für die
+Reparatur ist das der entscheidende Unterschied:
+
+| | `codepaths.check-lines` | Modul `citations` |
+|---|---|---|
+| Auslöser | `` `datei:<von>-<bis>` `` in Inline-Code | Direktive `<!-- d-check:cite … -->` |
+| `exempt-paths` | ja (`codepaths.exempt-paths`) | **nein** |
+| Zeilen-Marker `d-check:ignore` | ja | **nein** |
+
+`citations` ist **parameterlos**: es hat keinen Konfigurations-Block, keine
+Ausnahmeliste und kennt den Zeilen-Marker nicht. Ein `citation-out-of-range`
+aus einer `d-check:cite`-Direktive lässt sich deshalb **nicht** stummschalten —
+er wird behoben (Bereich korrigieren, Direktive entfernen) oder das Modul wird
+abgeschaltet. Wer den Marker an eine `d-check:cite`-Zeile schreibt, ändert
+nichts; derselbe Marker an einer Inline-Code-Zeilen-Referenz wirkt sehr wohl.
+Das ist Absicht — eine Direktive zu setzen ist ein ausdrücklicher Akt des
+Autors, und eine ausdrücklich gesetzte Prüfung soll nicht zeilenweise
+zurückgenommen werden können.
+
+### Immutabilität über eine Commit-Range prüfen (Modul `vcs`)
+
 Das Modul `vcs` vergleicht den **Core** einer immutablen Datei über zwei
 git-Stände — es braucht daher eine **Commit-Range** und ist nie ein Default-Modul.
 Aufruf über `--range <base>..<head>` (CI/Push) oder `--staged` (lokaler
@@ -1252,6 +1277,8 @@ pre-commit); ohne `.git`/Range bricht es ab (fail-closed). Das `--print-mk`-Targ
 # Range aus dem CI; STAGED=1 für einen lokalen pre-commit-Lauf:
 make doc-immutable RANGE="$BASE..$HEAD"
 ```
+
+### Traceability-Kennungen in Commit-Messages prüfen (Modul `commits`)
 
 Das Modul `commits` prüft, dass jede **Commit-Message** eine Traceability-Kennung
 (`id-patterns`) trägt — die verteilbare Form der früheren `trace-check`-Prüfung. Es
@@ -1266,6 +1293,8 @@ Range-Prüfung an eigene Repos:
 # Range aus dem CI (base..head):
 make doc-commits RANGE="$BASE..$HEAD"
 ```
+
+### Planning-Lifecycle und Closure-Notizen prüfen (Modul `planning`)
 
 Das Modul `planning` prüft **hermetisch** (nur der Arbeitsbaum, kein git) eine
 Planning-Lifecycle-Invariante: die Roadmap trägt den Ruhe-Marker (`marker`, Default
@@ -1365,6 +1394,8 @@ Prüfung an eigene Repos mit demselben Roadmap-Layout:
 ```bash
 make doc-planning
 ```
+
+### Getrackt-Status von Link-Zielen prüfen (Modul `tracked`)
 
 Das Modul `tracked` prüft, dass jedes **auflösbare, existierende**
 Link-/Bild-**Datei**-Ziel im **git-Index getrackt** ist — ein untracktes oder
@@ -1832,7 +1863,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `ids`       | opt-in        | Linkpflicht für Kennungen im Fließtext                                                   | `id-unlinked`                                               |
 | `matrix`    | opt-in        | erlaubte Referenzrichtung und -status zwischen Dokumentklassen                           | `matrix-forbidden`, `matrix-inactive`                       |
 | `codepaths` | opt-in        | explizite Pfade in Inline-Code existieren; opt-in `check-lines`: `datei:<von>-<bis>`-Zeilen-Referenzen verifizieren | `codepath-missing`, `citation-out-of-range`, `citation-inverted-range` |
-| `citations` | opt-in        | wortgleiche Zitate: `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (`>`-Block oder inline `„…"`/`"…"`; Leerzeilen dazwischen sind unschädlich, ein Code-Block dazwischen trennt), das ein whitespace-normalisierter **Teilstring** der Quell-Spanne sein muss; fail-closed bei malformter Direktive | `citation-mismatch`, `citation-out-of-range`, `citation-inverted-range` |
+| `citations` | opt-in        | **kein Ventil** (parameterlos: kein `exempt-paths`, kein Zeilen-Marker) — wortgleiche Zitate: `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (`>`-Block oder inline `„…"`/`"…"`; Leerzeilen dazwischen sind unschädlich, ein Code-Block dazwischen trennt), das ein whitespace-normalisierter **Teilstring** der Quell-Spanne sein muss; fail-closed bei malformter Direktive | `citation-mismatch`, `citation-out-of-range`, `citation-inverted-range` |
 | `spans`     | opt-in        | ungeschlossene Code-Spans, verschachtelte Links, unbalancierte Fences                    | `span-unclosed`, `span-nested-link`, `fence-unclosed`       |
 | `hostpaths` | opt-in        | host-lokale absolute Pfade (Maschinen-Layout-Leak)                                       | `hostpath-forbidden`                                        |
 | `diagrams`  | opt-in        | Kennungen in Diagramm-Fences (Default `mermaid`) existieren in ihrer `defined-in`-Quelle. **Beide Ventile** wie `ids`/`codepaths`: `exempt-paths` (datei-weit) und der Zeilen-Marker `d-check:ignore` — hier als **Token** statt HTML-Kommentar, und auf der **Öffnungszeile** des Fence für den ganzen Block | `diagram-id-undefined`                                      |
@@ -2034,3 +2065,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.54             | v0.62.0          | 2026-08-22 | Doku-Präzisierung ohne Software-Änderung (Lastenheft 0.62.1): die Wellen-Invariante vergleicht in **beiden** Modi Kennungs-Mengen — zwei flache Wellendokumente derselben Kennung sind ein Element, auch für das Singleton unter `one` (§6, Absatz „Zwei Kardinalitäts-Modelle"). Software-Version bleibt v0.62.0 |
 | 1.55             | v0.62.0          | 2026-08-22 | Doku-Korrektur ohne Software-Änderung (§5 Ventil-Überblick): `exempt-paths` gibt es in **fünf** Modulen (`ids` je Muster, `matrix`, `codepaths`, `versions`, `structure` je Regel) — genannt waren drei; und die Abgrenzung des Zeilen-Markers `d-check:ignore` ist vollständig: er wirkt **nur** für `codepaths` und `ids`, alle übrigen Module kennen ihn nicht. Ausdrücklich benannt ist jetzt `diagrams`, das **weder** Datei- **noch** Zeilen-Ventil hat — dort schneidet nur `diagrams.scope` bzw. `scan.ignore`. Software-Version bleibt v0.62.0 |
 | 1.56             | v0.63.0          | 2026-08-23 | **Drei Konfigurations-Flächen additiv geweitet** (Lastenheft 0.63.0/0.64.0/0.65.0). `versions.patterns`: eine **Liste** von Muster-Quellen-Paaren statt genau eines Paares — die Kurzform `pin-pattern`/`current-from` **ist** die einelementige Liste, beide Schreibweisen zugleich ⇒ Exit 2, Ausnahmen und Selbst-Ausnahme der Quell-Datei sind **paar-lokal**, und weil eine Befund-Adresse zwei Paare nicht unterscheidet, nennt **eine** Meldung alle Erwartungen mit ihrer Quelle (§5/§6). `structure.headings-match`/`headings-level`: achte Bedingung — **jede** Überschrift der Ebene innerhalb des Abschnitts matcht das Muster, **positiv** formuliert statt als Präfix-Negation, geprüft auf dem Überschriften-**Text** mit der Erkennung des Moduls, gemeldet **je** Überschrift auf **ihrer** Zeile; neuer Grund-Code `section-heading-mismatch`, Default-Ebene Abschnitts-Ebene + 1 (§5/§6). `diagrams.exempt-paths` **und** der Zeilen-Marker `d-check:ignore` — Ventil-Parität zu den übrigen Modulen; der Marker ist hier ein **Token** statt eines HTML-Kommentars und wirkt auf der **Öffnungszeile** für den ganzen Block (§5/§6). **Korrektur der Zeile 1.55:** der Zeilen-Marker wirkt in **vier** Modulen (`codepaths`, `ids`, `versions`, `diagrams`), nicht in zweien — `versions` honoriert ihn seit v0.30.0 —, und `exempt-paths` gibt es in **sechs** Modulen, nicht in fünf. Ohne die neuen Schlüssel ist der Befundsatz byte-identisch |
+| 1.57             | v0.63.0          | 2026-08-23 | Doku-Korrektur ohne Software-Änderung, zwei Befunde. **(a) Ventil-Gefälle ausgesprochen (§5/§6):** `citation-out-of-range` und `citation-inverted-range` entstehen in **zwei** Fähigkeiten, und der Grund-Code sagt nicht, in welcher — aus `codepaths.check-lines` sind sie über `exempt-paths` und den Zeilen-Marker stummschaltbar, aus dem **parameterlosen** Modul `citations` **nicht** (kein Konfigurations-Block, keine Ausnahmeliste, kein Marker). Gegenüberstellung als Tabelle, dazu die Begründung: eine ausdrücklich gesetzte `d-check:cite`-Direktive soll nicht zeilenweise zurückgenommen werden können. **(b) §5-Abschnitt geschnitten:** *„Zitate und Zeilen-Referenzen gegen ihre Quelle prüfen"* trug **183 Zeilen** und **sechs** Module — `vcs`, `commits`, `planning` (zwei Fähigkeiten) und `tracked` standen nicht in seiner Überschrift und waren dort nicht auffindbar. Jetzt fünf Abschnitte, jede Überschrift nennt ihren Inhalt; der Text ist **unverändert bewegt**, nicht umgeschrieben. Der Zensus über alle dreizehn §5-Abschnitte zeigte genau diesen einen Fall — Länge allein ist kein Defekt. Software-Version bleibt v0.63.0 |

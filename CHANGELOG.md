@@ -72,9 +72,9 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   des Fence den **ganzen** Block — ohne die zweite Stelle wäre die intuitive
   Platzierung wirkungslos. Nachgetragen sind zugleich die `diagrams`-Zeilen im
   §2-Konfigurations-Schema, die dem Modul als einzigem fehlten. Kein neuer
-  Grund-Code. **Reichweite bewusst eng:** `hostpaths`, `pins`, `spans`, `matrix`
-  und `structure` hängen Befunde ebenfalls an Zeilen und tragen weiterhin kein
-  Ventil. Welche Module den Marker honorieren, ist eine **benannte Liste**, kein
+  Grund-Code. **Reichweite bewusst eng:** `hostpaths`, `pins`, `spans`, `matrix`,
+  `structure` und `citations` hängen Befunde ebenfalls an Zeilen und tragen
+  weiterhin kein Ventil — `citations` ist sogar ganz parameterlos. Welche Module den Marker honorieren, ist eine **benannte Liste**, kein
   ableitbares Kriterium; die übrigen sind als offene Fläche mit eigenem
   Re-Evaluierungs-Trigger benannt.
 

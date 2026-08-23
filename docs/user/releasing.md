@@ -48,6 +48,14 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
      bestehende §4-Aufgabe an**. Kein Gate erzwingt Aufgabenorientierung; genau
      durch Anhängen wuchs §4.12 auf ~330 Zeilen / 8 Themen, bis es aufgetrennt
      werden musste.
+     **Dieselbe Regel gilt für §5**, und zwar mit einem eigenen Prüfsatz:
+     *nennt die Überschrift alles, was unter ihr steht?* Nicht die Länge ist der
+     Defekt, sondern die **Unauffindbarkeit** — ein Abschnitt darf lang sein,
+     wenn seine Überschrift ehrlich ist. Der Anlass ist gemessen: „Zitate und
+     Zeilen-Referenzen gegen ihre Quelle prüfen" nannte zwei Fähigkeiten und
+     trug sechs Module über 183 Zeilen, darunter `vcs`, `commits`, `planning`
+     und `tracked`. Die Regel stand bis dahin **nur** für §4 da — geschrieben
+     für das Kapitel, in dem sie wehtat, statt für die Klasse.
    - **README — beide Sprachfassungen synchron halten:** `README.de.md` (Deutsch,
      **kanonische Quelle — zuerst ändern**) und danach `README.md` (Englisch,
      nachübersetzen). Bei einem neuen Modul in **jeder** Fassung: (a) die
