@@ -38,7 +38,7 @@ CHANGELOG nennt ihn als Auslöser. Die Zusage, die daraus entstand — *jede
 Regel, der ein Agent folgen muss, steht in einer gerankten Quelle oder im
 Konventionsspeicher; Artefakte außerhalb dürfen verweisen und ausführen, aber
 nichts festlegen* — gilt nach dem Bump **für uns selbst**, und wir wissen
-bereits von **einer** Verletzung ([slice-127](done/slice-127-claude-md-pointer.md)).
+bereits von **einer** Verletzung ([slice-127](slice-127-claude-md-pointer.md)).
 Sie einzusammeln ist Folge der Welle, nicht ihr Inhalt.
 
 **Die Reihenfolge ist nicht verhandelbar:** erst pinnen, dann dem Kanon folgen.
@@ -56,9 +56,9 @@ den Vollständigkeits-Absatz); welle-82 ist geschlossen, `in-progress/` frei.
   aus dem Release-Asset, `SHA256SUMS` geprüft — netzlos, ohne Handanlegen an
   den Bäumen.
 - **Pin gehoben** als nächster Eintrag der Pin-Serie
-  ([`MR-011`](../../../harness/conventions.md#mr-011)-Kette), **alle**
+  ([`MR-011`](../../../../harness/conventions.md#mr-011)-Kette), **alle**
   pin-gebundenen Verweise retargetet
-  ([`MR-021`](../../../harness/conventions.md#mr-021)) — und die
+  ([`MR-021`](../../../../harness/conventions.md#mr-021)) — und die
   Drei-Klassen-Prüfung aus `BEO-008` gefahren, nicht nur das Pfad-`grep`.
 - **Delta-Audit:** je Kurs-Welle 87–94 **eine Antwort** — konform ohne
   Handlung (mit Beleg), Handlung nötig (mit Slice), oder nicht anwendbar (mit
@@ -73,24 +73,26 @@ den Vollständigkeits-Absatz); welle-82 ist geschlossen, `in-progress/` frei.
 
 | Slice | Rolle |
 |---|---|
-| [slice-128](done/slice-128-baseline-v5110-vendoring.md) | **Etappe A:** Bundle `v5.11.0` vendored, Pin-Hebung als `MR-`Eintrag, pin-gebundene Verweise gehoben, Alt-Baum entfernt |
-| [slice-129](done/slice-129-baseline-v5110-delta-audit.md) | **Etappe B:** Delta-Audit über die Kurs-Wellen 87–94, je Welle eine Antwort; **schneidet Etappe C** |
-| [slice-130](done/slice-130-lastenheft-historie-form.md) | **Etappe C-1** (vom Audit geschnitten): Historie-Form auf vier Spalten, und die eigene Strenge deklarieren — aus Kurs-Welle 90 |
-| [slice-131](done/slice-131-reviewer-skill-waisen.md) | **Etappe C-2** (vom Audit geschnitten): die Waisen im Reviewer-Skill nach `AGENTS.md` umziehen — aus Kurs-Welle 94 |
+| [slice-128](slice-128-baseline-v5110-vendoring.md) | **Etappe A:** Bundle `v5.11.0` vendored, Pin-Hebung als `MR-`Eintrag, pin-gebundene Verweise gehoben, Alt-Baum entfernt |
+| [slice-129](slice-129-baseline-v5110-delta-audit.md) | **Etappe B:** Delta-Audit über die Kurs-Wellen 87–94, je Welle eine Antwort; **schneidet Etappe C** |
+| [slice-130](slice-130-lastenheft-historie-form.md) | **Etappe C-1** (vom Audit geschnitten): Historie-Form auf vier Spalten, und die eigene Strenge deklarieren — aus Kurs-Welle 90 |
+| [slice-131](slice-131-reviewer-skill-waisen.md) | **Etappe C-2** (vom Audit geschnitten): die Waisen im Reviewer-Skill nach `AGENTS.md` umziehen — aus Kurs-Welle 94 |
 
 **Etappe C ist vom Audit geschnitten**, nicht hier geraten — dieselbe Form wie
 in der v5.6.0-Migration; nachgeführt mit einer Drift-Log-Zeile, wie bei der
 Eröffnung angekündigt. Zwei Slices, aus den **zwei** Wellen mit
 Handlungs-Antwort; die übrigen sechs sind belegt folgenlos.
 
-**Der dritte Fundort des Vollständigkeits-Zensus hat bereits seinen Slice:**
-[slice-127](done/slice-127-claude-md-pointer.md) ist in Arbeit. Damit ist auch seine offene Reihenfolge-Frage beantwortet —
-`CLAUDE.md` ist **einer von drei** Fundorten, nicht der einzige.
+**Der Vollständigkeits-Zensus hat am Ende fünf Fundorte ergeben, nicht drei** —
+die drei der ersten Zählung plus zwei, die erst die Prüffrage sichtbar machte.
+[slice-127](slice-127-claude-md-pointer.md) ist geschlossen; damit ist auch seine
+offene Reihenfolge-Frage beantwortet: `CLAUDE.md` ist **einer von fünf**
+Fundorten und der kleinste.
 
 ## 5. Abhängigkeiten
 
-- **Entblockt:** [slice-127](done/slice-127-claude-md-pointer.md) — die
-  Regel, der er folgt, ist mit Etappe A gepinnt; er läuft seither.
+- **Entblockt:** [slice-127](slice-127-claude-md-pointer.md) — die
+  Regel, der er folgt, ist mit Etappe A gepinnt; er lief seither und ist zu.
 - **Wird blockiert von:** nichts. Reihenfolge innerhalb: A vor B (das Audit
   liest den neuen Baum), C nach B.
 

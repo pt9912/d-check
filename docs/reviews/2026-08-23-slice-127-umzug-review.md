@@ -56,7 +56,7 @@
 
 - `kategorie`: MEDIUM
 - `quelle`: BEO-008 Richtung 1 (Link-Ziel neu, Prosa alt); BEO-002
-- `pfad`: [`welle-83-baseline-v5110-migration.md`](../plan/planning/welle-83-baseline-v5110-migration.md):87 und :90-91 · Botschaft `753fb46`
+- `pfad`: [`welle-83-baseline-v5110-migration.md`](../plan/planning/done/welle-83-baseline-v5110-migration.md):87 und :90-91 · Botschaft `753fb46`
 - `befund`: `753fb46` hebt in derselben Zeile das Link-Ziel von `next/` auf `in-progress/` und lässt den Prosa-Teil „liegt in `next/` und ist startbar" stehen; die Zeile sagt danach in einem Satz zweierlei, und die stehen gebliebene Hälfte widerspricht dem Verzeichnis. Ebenso bleibt §5 „**Blockiert:** slice-127 — er folgt einer Regel, die erst mit diesem Bump gepinnt ist" unverändert, obwohl derselbe Commit den Slice beansprucht und der Wartegrund laut seiner eigenen Botschaft erledigt ist. Dies ist die Klasse, die der Review zu [slice-128](../plan/planning/done/slice-128-baseline-v5110-vendoring.md) vier Tage zuvor an derselben Datei-Familie gemeldet hat.
 - `verifizierbar`: nein — `make planning-check` Exit 0 selbst gefahren; das Gate misst Ruhe-Marker ↔ `in-progress/`, nicht Prosa-Lifecycle-Aussagen.
 - `klasse`: `prosa-pin-nicht-gehoben`

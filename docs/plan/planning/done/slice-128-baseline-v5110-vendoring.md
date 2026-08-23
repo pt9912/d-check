@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-83-baseline-v5110-migration](../welle-83-baseline-v5110-migration.md)
+**Welle:** [welle-83-baseline-v5110-migration](welle-83-baseline-v5110-migration.md)
 (zugeordnet bei der Eröffnung).
 
 **Bezug:** [`MR-011`](../../../../harness/conventions.md#mr-011) (Pin auf
