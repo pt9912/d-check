@@ -203,6 +203,33 @@ dem v5.6.0-Bump, geschärft mit dem v5.7.0-Bump auf die
 Baseline-Feld-Formen und mit dem v5.9.0-Bump auf Zustandsfelder;
 Auflösungs-Trigger: permanent.)*
 
+### 3.8 Ein Modul verspricht nur über das, was es scannt
+
+Jedes Modul gibt seine Zusagen über seine **Scan-Menge**. Daneben liest es
+Eingaben, die es nie scannt: Zieldateien außerhalb der Scan-Wurzeln, selbst
+benannte Verzeichnisse eines Post-Passes, git-Revisionen. Dort gilt **keine**
+dieser Zusagen — und die Folge kann **still** sein: ein verdecktes Heading
+macht einen Anker unauflösbar, die Prüfung entfällt kommentarlos. Wer ein Modul
+anlegt oder ändert, beantwortet deshalb: **welche Eingaben liest es, die es
+nicht scannt — und gilt dort dieselbe Zusage?** Wo sie nicht gilt, gehört die
+Grenze in die Anforderung.
+
+**Begründung:** Die Aufzählung von Hand hat dreimal nicht gehalten, jedes Mal
+an einer neuen Achse — deshalb steht hier die Frage und keine Liste. Kein Gate
+fängt das; der Reviewer-Skill trägt den MEDIUM-Anker dazu. *(Hard Rule aus dem
+Steering Loop, [Beobachtungs-Register](docs/plan/planning/observations.md)
+`BEO-004`, seit welle-73; Auflösungs-Trigger: permanent.)*
+
+### 3.9 GitHub-Action-Referenzen sind SHA-gepinnt
+
+Jeder `uses:`-Eintrag in [`.github/workflows/`](.github/workflows) nennt einen
+**vollen Commit-SHA** mit Tag-Kommentar dahinter, nie einen beweglichen Tag.
+Das gilt für beide Workflows gleich und für jeden Neuzugang.
+
+**Begründung:** Supply-Chain-Härtung — ein Tag lässt sich umhängen, ein SHA
+nicht; dieselbe Härtung wie der Docker/make-only-Pfad in §3.1. Kein Gate prüft
+es. *(Auflösungs-Trigger: ein Sensor, der `uses:`-Pins prüft.)*
+
 ## 4. Quality Gates
 
 Nur hier gelistete Targets existieren im Makefile. Halluzinierte
@@ -290,6 +317,14 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   **Vorprüfungen** (Sub-Area prüfen · offene Beobachtungen im Register
   `observations.md` sichten) — Baseline-Regelwerk Modul 5/6, unabhängig vom
   Sub-Area-Modus.
+- Eine Commit-Botschaft oder Closure-Notiz behauptet **nicht mehr, als die
+  Arbeit trägt**: eine genannte Probe muss gelaufen sein (§6.8), und ihr
+  Schluss reicht **nicht weiter als die gemessene Menge** — wer N Formen
+  geprüft hat, berichtet N; „damit ist X allgemein" ist eine andere Aussage als
+  die gemessene. Beides ist Urteil, kein `grep`; der Reviewer-Skill trägt die
+  Anker dazu. *(Hard Rule aus dem Steering Loop,
+  [Beobachtungs-Register](docs/plan/planning/observations.md) `BEO-009`, seit
+  welle-82; Auflösungs-Trigger: permanent.)*
 - `CHANGELOG.md` wird bei nutzersichtbaren Änderungen gepflegt.
 
 ## 6. Minimal Agent Workflow

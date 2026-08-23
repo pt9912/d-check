@@ -15,8 +15,8 @@ name: release
 # Runtime-Image (`d-check:latest`), das anschließend für GHCR
 # umgetaggt und gepusht wird.
 #
-# Action-Pinning (Supply-Chain-Härtung, u-boot-Konvention): alle
-# `uses:`-Einträge sind SHA-gepinnt mit Tag-Kommentar.
+# Action-Pinning (AGENTS.md §3.9, Supply-Chain-Härtung, u-boot-Konvention):
+# alle `uses:`-Einträge sind SHA-gepinnt mit Tag-Kommentar.
 
 on:
   push:

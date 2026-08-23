@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.9.0 · **Datum:** 2026-08-22 ·
+**Version:** 1.10.0 · **Datum:** 2026-08-23 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -56,7 +56,9 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   gegen die Proben-Menge, nicht gegen die Proben: **suche die N+1-te Form.**
   Das ist die zweite Richtung von `BEO-009`; die erste (behauptete Probe fand
   nicht statt) bleibt HIGH-nah, diese ist MEDIUM, weil die Messung stimmt und
-  nur ihre Reichweite überdehnt ist. **Kein Gate fängt das.**
+  nur ihre Reichweite überdehnt ist. **Kein Gate fängt das.** Die Regel selbst
+  steht in [`AGENTS.md`](../../AGENTS.md) §5; hier steht ihre Kategorie und die
+  Arbeitsanweisung.
 - **MEDIUM** (vor Merge zu klären): Spec-Treue-Lücke einer
   Messmethode; Konsistenz-Lücke **zwischen** Modulen derselben
   Eingabe-Klasse; Erkennungs-Differenz zur Alt-Tool-Familie
@@ -80,7 +82,9 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
   liest dieses Modul, die es nicht scannt — und gilt dort dieselbe Zusage?**
   Belegt in drei Review-Runden desselben Slice (Beobachtungs-Register
   **BEO-004**), jedes Mal an einer neuen Achse; die Aufzählung von Hand hat
-  dreimal nicht gehalten, darum steht die Frage hier statt einer Liste.
+  dreimal nicht gehalten, darum steht die Frage statt einer Liste. Die Regel
+  selbst steht in [`AGENTS.md`](../../AGENTS.md) §3.8; hier steht ihre
+  Kategorie und die Prüffrage an den Diff.
   **Adressierungs-Form eines Neuzugangs.** Trägt das Zielelement eine
   Struktur-Kennung (`SPEC-*` in der Spezifikation, `ARC-*` in der Sicht) oder
   eine Verfeinerungs-Kennung, muss ein **neues** `Schärft:`/`Bezug:`-Feld sie

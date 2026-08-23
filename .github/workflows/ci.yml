@@ -12,8 +12,8 @@ name: ci
 # Tag-Pushes (`v*`) laufen ausschliesslich in release.yml -> hier per
 # tags-ignore ausgenommen, keine Doppellaeufe.
 #
-# Action-Pinning (Supply-Chain-Haertung, u-boot-Konvention): `uses:`
-# SHA-gepinnt mit Tag-Kommentar (gleicher Pin wie release.yml).
+# Action-Pinning (AGENTS.md §3.9, Supply-Chain-Haertung, u-boot-Konvention):
+# `uses:` SHA-gepinnt mit Tag-Kommentar (gleicher Pin wie release.yml).
 
 on:
   pull_request:
