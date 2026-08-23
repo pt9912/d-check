@@ -74,7 +74,7 @@ den Vollständigkeits-Absatz); welle-82 ist geschlossen, `in-progress/` frei.
 | Slice | Rolle |
 |---|---|
 | [slice-128](done/slice-128-baseline-v5110-vendoring.md) | **Etappe A:** Bundle `v5.11.0` vendored, Pin-Hebung als `MR-`Eintrag, pin-gebundene Verweise gehoben, Alt-Baum entfernt |
-| [slice-129](open/slice-129-baseline-v5110-delta-audit.md) | **Etappe B:** Delta-Audit über die Kurs-Wellen 87–94, je Welle eine Antwort; **schneidet Etappe C** |
+| [slice-129](in-progress/slice-129-baseline-v5110-delta-audit.md) | **Etappe B:** Delta-Audit über die Kurs-Wellen 87–94, je Welle eine Antwort; **schneidet Etappe C** |
 
 **Etappe C wird vom Audit geschnitten**, nicht hier geraten — dieselbe Form wie
 in der v5.6.0-Migration. Was daraus entsteht, wird beim B-Abschluss mit einer

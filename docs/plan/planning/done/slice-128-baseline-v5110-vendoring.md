@@ -26,7 +26,7 @@ Anforderung, kein Spec-Stratum, kein Produkt-Code).
 Der vendorte Baum trägt `v5.9.0` (Kurs-Welle 86). Diese Etappe hebt ihn auf
 `v5.11.0` (Kurs-Welle 94) — **nur den Pin und seine Verweise**, ohne eine
 einzige Regel anzuwenden. Was der neue Stand inhaltlich verlangt, beantwortet
-[slice-129](../open/slice-129-baseline-v5110-delta-audit.md); wer beides mischt, kann
+[slice-129](../in-progress/slice-129-baseline-v5110-delta-audit.md); wer beides mischt, kann
 später nicht mehr trennen, ob eine Änderung aus dem Bump oder aus dem Audit kam.
 
 ## 2. Vorgehen
