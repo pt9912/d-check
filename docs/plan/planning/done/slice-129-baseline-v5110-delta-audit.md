@@ -83,7 +83,7 @@ dieselbe Zeile wie die drei.
       **zwei erst durch den Review**. Die erste Fassung nannte drei und hatte
       `Makefile`, `.github/workflows/` und `tools/*.sh` nie durchsucht; die
       Lücke ist in §4a ausgewiesen statt geheilt.
-- [x] Etappe C geschnitten: [slice-130](../open/slice-130-lastenheft-historie-form.md)
+- [x] Etappe C geschnitten: [slice-130](../in-progress/slice-130-lastenheft-historie-form.md)
       und [slice-131](../open/slice-131-reviewer-skill-waisen.md), Drift-Log-Zeile
       gesetzt.
 - [x] `make gates` Exit 0 (acht Gates, 461 Dateien, 0 Befunde); unabhängiger
@@ -241,7 +241,7 @@ stimmt (`kurs/de/` folgt dem Diff exakt), aber ich hatte sie nicht daran
 geprüft. Zweitens: „beide Straten führen drei Spalten" — die Spezifikation
 führt **zwei**, und der Kanon gibt dem Technik-Stratum bewusst keine
 `Verweis`-Spalte. Diese zweite war schlimmer: sie war nicht bloß ungeprüft,
-sondern **falsch**, und [slice-130](../open/slice-130-lastenheft-historie-form.md)
+sondern **falsch**, und [slice-130](../in-progress/slice-130-lastenheft-historie-form.md)
 hätte als geschrieben eine Spalte eingeführt, die der Kanon dort gerade nicht
 vorsieht.
 
@@ -260,7 +260,7 @@ Dieses Repo fährt **strenger als der Kanon verlangt** — die CR-Pflicht beginn
 erst ab Lastenheft-Status `Accepted`, unser Lastenheft steht auf `Draft`, und
 wir führen seit Monaten Versions-Bumps und Historie-Zeilen. Das ist eine
 legitime Wahl, aber sie ist undeklariert: ein Leser kann Pflicht nicht von
-Vorsatz unterscheiden. [slice-130](../open/slice-130-lastenheft-historie-form.md) trägt
+Vorsatz unterscheiden. [slice-130](../in-progress/slice-130-lastenheft-historie-form.md) trägt
 sie nach.
 
 **Und die Reihenfolge-Frage aus

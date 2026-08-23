@@ -8,7 +8,7 @@
 
 - Slice-Plan `docs/plan/planning/done/slice-129-baseline-v5110-delta-audit.md`, besonders §3/§4/§4a/§5
 - Wellendokument `docs/plan/planning/welle-83-baseline-v5110-migration.md`
-- Neue Slices `docs/plan/planning/open/slice-130-lastenheft-historie-form.md`, `slice-131-reviewer-skill-waisen.md`
+- Neue Slices `docs/plan/planning/in-progress/slice-130-lastenheft-historie-form.md`, `slice-131-reviewer-skill-waisen.md`
 - `docs/plan/planning/in-progress/roadmap.md` §Historische Trigger-Verschiebungen (Drift-Log)
 - Vendorter Kanon `.harness/baseline/v5.11.0/regelwerk/`: `grundlagen-source-precedence.md`, `grundlagen-durchsetzungsschicht.md`, `grundlagen-referenz-richtung.md`, `modul-09-implementierung.md`, `modul-07-carveouts.md`; Vorlagen `templates/spec/lastenheft.template.md`, `templates/spec/spezifikation.template.md`
 - Schwester-Repo `ai-harness-course` (lokaler Klon, read-only): `CHANGELOG.md`, `git diff v5.9.0..v5.11.0`, Commits `b72b61d`/`355f8dd`/`79f2e5c`/`387677b`/`76813cd`/`e580c0e`/`725279a`/`3ce5982`
@@ -47,7 +47,7 @@
 
 - **kategorie:** MEDIUM
 - **quelle:** `BEO-009` Richtung (a) (behauptete Prüfung fand so nicht statt) · vendorte Vorlage `templates/spec/spezifikation.template.md` §7
-- **pfad:** `docs/plan/planning/done/slice-129-baseline-v5110-delta-audit.md:108` und wortgleich `docs/plan/planning/open/slice-130-lastenheft-historie-form.md:31-32,41`
+- **pfad:** `docs/plan/planning/done/slice-129-baseline-v5110-delta-audit.md:108` und wortgleich `docs/plan/planning/in-progress/slice-130-lastenheft-historie-form.md:31-32,41`
 - **befund:** slice-129 sagt „Unsere Historie-Tabellen führen drei Spalten" (Plural, unspezifisch), slice-130 macht daraus explizit: „Unsere **beiden** Historie-Tabellen (Lastenheft, Spezifikation) führen drei Spalten" und plant unter „Vorgehen" Punkt 1, die vierte Spalte „in **beiden** Straten-Historien" einzuführen. Das ist an `spec/spezifikation.md:2790-2792` widerlegt: Die dortige `## 7. Historie`-Tabelle führt **zwei** Spalten (`| Datum | Änderung |`), nicht drei. Das ist keine Nachlässigkeit im Bestand, sondern die vom selben v5.11.0-Kanon vorgeschriebene Form: `templates/spec/spezifikation.template.md:122` zeigt exakt dieselben zwei Spalten und ausdrücklich „**kein** ADR- und kein Slice-Verweis" — die Spezifikation hat kein `Version`-Kopffeld (anders als das Lastenheft, `**Version:** 0.65.2`) und keinen CR-Prozess, dem eine `Verweis`-Spalte etwas hinzuzufügen hätte; Kurs-Welle 90 hat `spezifikation.template.md` denn auch **nicht** geändert (Diff v5.9.0..v5.11.0 berührt nur `lastenheft.template.md`, +29/−7). Der von diesem Audit geschnittene Folge-Slice 130 ist damit auf einer falschen Bestandsaufnahme aufgesetzt: Wörtlich umgesetzt würde er der Spezifikation eine `Verweis`-Spalte geben, die der Kanon für dieses Stratum explizit **nicht** vorsieht.
 - **verifizierbar:** ja — `spec/spezifikation.md:2790-2792` vs. `.harness/baseline/v5.11.0/templates/spec/spezifikation.template.md:115-124` vs. `.harness/baseline/v5.11.0/templates/spec/lastenheft.template.md:123-154`, direkt gegeneinander gelesen.
 - **klasse:** bestandsaufnahme-nicht-am-artefakt-selbst-geprueft
