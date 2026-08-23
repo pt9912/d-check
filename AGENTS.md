@@ -16,10 +16,8 @@ angepasst** (Source Precedence — siehe
 [`harness/README.md`](harness/README.md)). Das gilt zwischen **dieser Datei**
 und einer kanonischen Quelle ebenso wie zwischen **zwei kanonischen Quellen**.
 **Der Widerspruch gehört benannt**, nicht stillschweigend nach einer Seite
-aufgelöst: Wer ihn nur befolgt, lässt die falsche Stelle stehen. *(Hard Rule
-seit slice-127 — zugezogen aus `CLAUDE.md`, wo sie als einzige Fundstelle
-stand; der Kanon fordert die Anpassung ausdrücklich als universale Hard Rule,
-[`grundlagen-source-precedence.md`](.harness/baseline/v5.11.0/regelwerk/grundlagen-source-precedence.md).
+aufgelöst: Wer ihn nur befolgt, lässt die falsche Stelle stehen. *(Hard Rule seit slice-127;
+Kanon: [`grundlagen-source-precedence.md`](.harness/baseline/v5.11.0/regelwerk/grundlagen-source-precedence.md).
 Auflösungs-Trigger: permanent.)*
 
 Strukturregeln (ID-Schemata, Verzeichniskonvention, Adaptionen ggü.
@@ -305,12 +303,8 @@ Pro Slice:
 2. Relevante kanonische Quelle lesen (Source Precedence beachten).
 3. Betroffene Requirement-/ADR-IDs identifizieren — und **vor der
    Implementierung benennen**: Slice-ID, betroffene `DC-*`-IDs, ADR-IDs,
-   betroffene Module, auszuführende Gates. *(Verschärfung des kanonischen
-   Schritts, der nur „identifizieren" verlangt; Hard Rule seit slice-127 —
-   zugezogen aus `CLAUDE.md`. Die volle Form buchstabiert das
-   Workflow-Skelett `.claude/commands/implement-slice.md` aus, das sie bis
-   dahin als einzige Quelle trug. Auflösungs-Trigger: die Baseline verlangt
-   die Nennung selbst.)*
+   betroffene Module, auszuführende Gates. *(Hard Rule seit slice-127;
+   Auflösungs-Trigger: die Baseline verlangt die Nennung selbst.)*
 4. Kleinste sinnvolle Änderung planen.
 5. Engsten nützlichen Sensor laufen lassen.
 6. Repo-weiten Gate-Lauf vor Handoff (`make gates`).
