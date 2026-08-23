@@ -1,0 +1,53 @@
+name: upstream-drift
+
+# Nachtlauf fuer den Baseline-Pin (slice-133, welle-84; MR-011-Kette).
+#
+# WARUM EIN EIGENER WORKFLOW UND NICHT EIN SCHRITT IN ci.yml: dieses Gate ist
+# das einzige, das das Netz braucht, und es ist bewusst FAIL-OPEN (Netz-,
+# Werkzeug- oder Manifest-Ausfall => SKIP je Teil). In ci.yml wuerde ein
+# Upstream-Ausfall die Integrations-CI rot faerben — und ein Waechter, den man
+# wegen Fremdstoerungen abschaltet, ist schlechter als gar keiner.
+#
+# WAS ER MELDET (`make baseline-freshness`, Exit = schlimmster Teil):
+#   Exit 0  Pin aktuell und Asset unveraendert.
+#   Exit 3  CURRENCY: upstream traegt einen neueren Release-Tag. Kein
+#           Auto-Update — die Hebung bleibt ein bewusster Akt (MR-011-Kette).
+#   Exit 4  CONTENT: der GEPINNTE Tag wurde upstream verschoben oder sein Asset
+#           neu gebaut. Das ist der schwerere Fall: unser vendorter Bestand ist
+#           intakt (das prueft `make baseline-verify` in gates), aber seine
+#           Herkunft stimmt nicht mehr mit dem ueberein, was der Tag heute sagt.
+#
+# WO DAS ROT SICHTBAR WIRD: in der Actions-Uebersicht des Repos als
+# fehlgeschlagener Lauf dieses Workflows. Ein Nachtlauf, in den niemand sieht,
+# waere derselbe verwaiste Sensor eine Ebene hoeher — deshalb faellt der Job
+# rot aus statt nur zu protokollieren.
+#
+# Action-Pinning (AGENTS.md §3.9, Supply-Chain-Haertung, u-boot-Konvention):
+# `uses:` SHA-gepinnt mit Tag-Kommentar (gleicher Pin wie ci.yml).
+
+on:
+  schedule:
+    # taeglich 01:00 UTC. Ein Datum ist hier kein Trigger im Planungs-Sinn,
+    # sondern die Abtastrate eines Zustands, der sich jederzeit aendern kann.
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+# Top-level: alles entziehen; der Job lockert nur, was er braucht.
+permissions: {}
+
+jobs:
+  baseline-freshness:
+    name: Baseline-Pin gegen upstream
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Kein Docker, kein Image-Bau: das Target ruft ein bash-Skript mit curl
+      # und sha256sum. Der Docker/make-only-Pfad (AGENTS.md §3.1) gilt der
+      # Go-Toolchain — hier laeuft keine.
+      - name: make baseline-freshness
+        run: make baseline-freshness

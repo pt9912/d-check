@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
+.PHONY: help deps compile lint test arch-check baseline-verify baseline-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -153,10 +153,28 @@ doc-complete: build ## Vollständigkeits-Dogfood via d-check selbst (--trace --r
 record-gates: ## Nachweis schreiben: Working-Tree-Hash (für den Stop-Hook).
 	@bash tools/harness/record-gates.sh
 
+# Der vendorte Baseline-Bestand ist die netzlose Leseform des adoptierten
+# Regelwerks (MR-011-Kette). Zwei Fragen, zwei Targets, zwei Fehlerpolitiken —
+# die Trennung ist tragend und steht deshalb im Namen:
+#   baseline-verify    "ist der committete Bestand unversehrt?" — netzlos,
+#                      fail-closed, IN gates. Beide Hälften nötig: sha256sum -c
+#                      erkennt geänderte/gelöschte Dateien, die Manifest-Deckung
+#                      zusätzlich EINGELEGTE (eine untermengige, in sich
+#                      konsistente SHA256SUMS passierte sonst grün).
+#   baseline-freshness "ist der gepinnte Stand noch aktuell und authentisch?" —
+#                      Netz, fail-open (Ausfall ⇒ SKIP je Teil), NICHT in gates
+#                      (DC-QA-03: make gates bleibt netzlos). Meldet nur; die
+#                      Pin-Hebung bleibt ein bewusster Akt der MR-011-Kette.
+baseline-verify: ## Vendorte Baseline gegen SHA256SUMS: Integrität + Manifest-Deckung (netzlos, in gates). MR-011-Kette.
+	@bash tools/harness/fetch-baseline-cache.sh --verify
+
+baseline-freshness: ## Upstream-Audit des Baseline-Pins: neuerer Release-Tag (Currency) + Content-Drift am gepinnten Tag (Netz, NICHT in gates, fail-open). MR-011-Kette.
+	@bash tools/harness/fetch-baseline-cache.sh --check-latest
+
 # record-gates läuft als LETZTER Prerequisite — der Nachweis entsteht
 # nur, wenn alle Gates grün sind (sonst bricht make vorher ab).
-gates: doc-check lint test arch-check coverage-gate semgrep gate-consistency planning-check record-gates ## alle inneren Gates (mandatory vor Handoff).
-	@echo "[gates] doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency + planning-check green"
+gates: baseline-verify doc-check lint test arch-check coverage-gate semgrep gate-consistency planning-check record-gates ## alle inneren Gates (mandatory vor Handoff).
+	@echo "[gates] baseline-verify + doc-check + lint + test + arch-check + coverage-gate + semgrep + gate-consistency + planning-check green"
 
 # ci = gates + Image-Integrationstests — das Target, das die
 # Release-Pipeline (slice-011) fährt. fullbuild = volle Closure vor
