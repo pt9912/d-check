@@ -93,11 +93,23 @@ als Liste: eine Aufzählung wäre ein weiterer ungewachter Spiegel.
 
 **Begründung:** Toolchain-Reproduzierbarkeit + Supply-Chain-Defense.
 
+**Durchsetzung:** ein Tool-Call-Wächter
+([`.claude/hooks/pretooluse-command-guard.sh`](.claude/hooks/pretooluse-command-guard.sh))
+prüft die Befehlsposition jedes Segments und Sub-Shell-Strings rekursiv. Er ist
+**werkzeug-lokal**, kein Repo-Gate: kein `make`-Target und keine CI ruft ihn,
+ein Lauf ohne dieses Werkzeug ist ungebunden. Und er nennt seine Grenze selbst —
+*Stolperdraht, keine Sandbox*: andere Interpreter bleiben ungeprüft.
+
 ### 3.2 Suppression-Verbot
 
 Inline-Suppressions sind verboten: `//nolint`-Direktiven im Code
 brechen das künftige Suppression-Gate. Ausnahmen leben zentral in
 `.golangci.yml` (exclude-rules) mit Begründung.
+
+**Kein Gate prüft das, und die verbotene Direktive wirkt:** ein echter
+Lint-Verstoß mit passendem `//nolint` lässt `make lint` grün durchlaufen —
+gemessen, nicht vermutet. Der Linter `nolintlint`, der genau das meldet, ist
+nicht aktiviert. *(Auflösungs-Trigger: `nolintlint` im Profil.)*
 
 ### 3.3 git mv + Inhaltsänderung = zwei Commits
 
@@ -108,6 +120,11 @@ Wenn eine Datei verschoben **und** der Inhalt umgeschrieben wird:
 
 **Begründung:** Sonst fällt die Rename-Detection unter die
 50%-Similarity-Schwelle und `git log --follow` wird unzuverlässig.
+
+**Teilweise durchgesetzt:** `make planning-check` hält die **Kopplung**
+Lifecycle-Verzeichnis ↔ Roadmap-Ruhe-Marker in beide Richtungen. Die
+**Commit-Zerlegung** selbst — Move und Inhaltsänderung in einem Commit — sieht
+kein Gate. *(Auflösungs-Trigger: permanent.)*
 
 **Ausnahme Slice-Lifecycle-Move (`in-progress/` → `done/`):** Der
 `git mv`-Commit trägt hier **zusätzlich** den Roadmap-Flip §Offene Wellen
@@ -156,6 +173,10 @@ erlaubt bleiben `## Geschichte`-Anhänge + der `**Status:**`-Übergang;
 Jede Schwellen-Senkung (Coverage, Linter-Strenge, Prüfregel) ist ein
 ADR, kein PR-Kommentar.
 
+**Kein Gate prüft das** — die Regel gilt einem **Akt**, nicht einem ruhenden
+Zustand: ob eine gesenkte Schwelle eine ADR *hat*, steht in keiner Datei, die
+ein Sensor gegen die Senkung halten könnte. *(Auflösungs-Trigger: permanent.)*
+
 ### 3.7 Kommentare tragen eine der fünf Klassen
 
 Gilt für Code, Konfiguration und Skripte — und, mit **eigener** Form, für
@@ -194,6 +215,10 @@ Lifecycle-Zustand ist ohnehin das Verzeichnis, und das Feld hat dort keine
 Funktion (§5). Gemeldet wird von ihnen nur, was dem Verzeichnis
 **widerspricht**. Kanon:
 [Baseline §Was ein Kommentar trägt](.harness/baseline/v5.11.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
+
+**Kein Gate prüft das** — weder die fünf Klassen noch die Zustandsfeld-Form;
+die Prüfung ist ein Urteil, kein `grep`. Der Reviewer-Skill trägt dazu **zwei**
+HIGH-Anker.
 
 **Bestandsgrenze:** vor der Einführung bzw. vor dieser Schärfung
 geschriebene Kommentare (Test-Kommentare; ältere Config-Kommentare mit

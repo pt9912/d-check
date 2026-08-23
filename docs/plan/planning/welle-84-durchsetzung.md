@@ -70,10 +70,15 @@ einzelnen Slice-DoDs benennen.
 |---|---|
 | [slice-132](in-progress/slice-132-hard-rule-zensus.md) | **Der Zensus:** je Hard Rule eine Antwort mit Beleg; weist die einseitigen aus und **schneidet** den Rest |
 | [slice-133](done/slice-133-baseline-sensor-verdrahten.md) | **Den verwaisten Sensor anschließen:** `--verify` als Gate, `--check-latest` als Target plus Nachtlauf |
+| [slice-134](open/slice-134-nolintlint.md) | **Vom Zensus geschnitten:** `nolintlint` ins Lint-Profil — §3.2 ist die einzige Regel, deren verbotene Form heute nachweislich **wirkt** |
+| [slice-135](open/slice-135-uses-pin-sensor.md) | **Vom Zensus geschnitten:** ein Sensor auf `uses:`-Pins — löst den Auflösungs-Trigger von §3.9 ein |
 
-slice-133 hängt **nicht** am Zensus — er behebt einen bereits belegten Fund und
-läuft unabhängig. Was der Zensus darüber hinaus schneidet, kommt als weitere
-Slices in diese Welle oder als Folge-Welle.
+slice-133 hing **nicht** am Zensus — er behob einen bereits belegten Fund.
+slice-134 und slice-135 sind sein Ergebnis: von zehn geprüften Regeln sind
+**zwei** einseitig **und baubar**, und beide werden in dieser Welle gebaut statt
+als Folge-Welle vertagt. Die übrigen einseitigen sind im Regeltext als solche
+ausgewiesen — ihre Durchsetzung wäre ein Heuristik-Wächter, und den schließt §6
+aus.
 
 ## 5. Abhängigkeiten
 
