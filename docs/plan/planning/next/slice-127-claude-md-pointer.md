@@ -153,7 +153,7 @@ fest"*), und die Rangliste trägt die **Vollständigkeits-Zusage** samt Prüffra
 und der Regel **Waise ⇒ umgezogen, nicht gelöscht**.
 
 **Der zweite Wartegrund ist seit dem 2026-08-23 ebenfalls erledigt:**
-[slice-128](../in-progress/slice-128-baseline-v5110-vendoring.md) hat den Pin auf
+[slice-128](../done/slice-128-baseline-v5110-vendoring.md) hat den Pin auf
 `v5.11.0` gehoben, und die kanonische Rolle der Werkzeug-Einstiegsdatei samt
 Vollständigkeits-Zusage liegt damit im **gepinnten** Baum. Der Slice ist
 **startbar**.

@@ -10,7 +10,7 @@
 [`modul-02-harness-bootstrap.md` §Freshness-Audit](../../../../.harness/baseline/v5.11.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)
 (darunter die **Bestands-Stichprobe, die auch bei aktuellem Pin läuft**);
 [`AGENTS.md`](../../../../AGENTS.md) §1 (breiterer Pflicht-Blick beim
-Drift-Audit); [slice-128](../in-progress/slice-128-baseline-v5110-vendoring.md) (liefert den
+Drift-Audit); [slice-128](../done/slice-128-baseline-v5110-vendoring.md) (liefert den
 Baum, gegen den geprüft wird).
 
 **Berührte Spec-Stellen:** — (das Audit **liest**; was es findet, schneidet
@@ -94,7 +94,7 @@ dieselbe Zeile wie die drei.
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): [slice-128](../in-progress/slice-128-baseline-v5110-vendoring.md)
+**Start** (`open` → `in-progress`): [slice-128](../done/slice-128-baseline-v5110-vendoring.md)
 in `done/` — das Audit liest den **neuen** Baum.
 
 **Rückführungen:** `in-progress` → `next`, falls das Audit eine Produkt-
