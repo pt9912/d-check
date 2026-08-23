@@ -35,13 +35,13 @@ Wächter, sondern eine Regel, deren Umgehung **funktioniert und still bleibt**.
 2. **Am Bestand messen, bevor scharfgeschaltet wird:** wie viele Befunde meldet
    das Profil heute? Bei 0 ist der Zug frei; bei >0 gehört jede Fundstelle
    einzeln beurteilt — geräumt oder als zentrale Ausnahme mit `Why:` geführt.
-3. **Bewusstes Brechen — und der Verstoß muss zur Zusage passen.** Der
-   Zensus-Verstoß (`//nolint:unused,gochecknoglobals`) ist **wohlgeformt** und
-   wird von `nolintlint` **nicht** gemeldet; ihn zu erwarten hieße, dem Gate
-   eine Zusage zu unterstellen, die es nicht gibt. Gemessen wird deshalb die
-   Form, die es wirklich trägt: eine **nackte** `//nolint` ⇒ rot; Rückbau grün.
-   Der wohlgeformte Fall wird **ebenfalls gemessen** — sein grüner Exit ist der
-   Beleg für die verbleibende Lücke.
+3. **Bewusstes Brechen — drei Formen, weil zwei Schalter getrennt greifen.**
+   Der Zensus-Verstoß trug keine Begründung; erst die **vollständige** Form
+   (benannter Linter **und** nachgestellter `// Grund`) passiert alle drei
+   Schalter. Zu messen sind deshalb alle drei: nackte `//nolint` ⇒ rot ·
+   benannt, aber unbegründet ⇒ rot · vollständig ⇒ **grün**. Der letzte, grüne
+   Exit ist der Beleg für die verbleibende Lücke — und die Zusage des Gates ist
+   genau die Differenz zwischen den ersten beiden und ihm.
 4. `AGENTS.md` §3.2 nachziehen: der Auflösungs-Trigger ist eingelöst, die Regel
    wechselt von *einseitig* auf **teilgedeckt** — nicht auf *gedeckt*, denn
    `nolintlint` prüft die **Form** der Direktive, nicht ihre Berechtigung (§5).
@@ -65,9 +65,9 @@ Wächter, sondern eine Regel, deren Umgehung **funktioniert und still bleibt**.
 - [ ] `nolintlint` ist im Profil, mit begründeter Einstellung je Schlüssel.
 - [ ] Der Bestand ist **gemessen** und die Zahl steht in der Closure-Notiz;
       jede Fundstelle ist geräumt oder zentral mit `Why:` geführt.
-- [ ] **Zwei** Direktiv-Formen gemessen: nackte `//nolint` ⇒ rot **durch
-      `nolintlint`** (nicht durch einen anderen Linter); wohlgeformte ⇒ grün.
-      Beide Exits gelesen, nicht behauptet.
+- [ ] **Drei** Direktiv-Formen gemessen, jede mit gelesenem Exit **und**
+      geprüfter Ursache (nicht „rot" allein): nackt ⇒ rot durch `nolintlint` ·
+      benannt-unbegründet ⇒ rot durch `nolintlint` · vollständig ⇒ grün.
 - [ ] `AGENTS.md` §3.2 sagt hin, was das Gate trägt **und was nicht**.
 - [ ] `make gates` grün (Exit explizit); unabhängiger Review.
 

@@ -1,6 +1,7 @@
 # golangci-lint-Konfiguration für d-check (v2-Schema). Profil:
-# 5 Default- + 24 SOLID-nahe Linter nach dem Vorbild
-# https://github.com/pt9912/u-boot — beschlossen in ADR-0006; bewusst
+# 5 Default- + 23 SOLID-nahe Linter nach dem Vorbild
+# https://github.com/pt9912/u-boot — beschlossen in ADR-0006; dazu nolintlint
+# aus anderer Quelle (AGENTS.md §3.2, siehe unten), zusammen 24; bewusst
 # OHNE depguard (Architektur-Regeln laufen als eigene Fitness Function
 # im Schwester-Tool a-check — make arch-check, ADR-0005/ADR-0029).
 #
