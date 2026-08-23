@@ -84,7 +84,7 @@ dieselbe Zeile wie die drei.
       `Makefile`, `.github/workflows/` und `tools/*.sh` nie durchsucht; die
       Lücke ist in §4a ausgewiesen statt geheilt.
 - [x] Etappe C geschnitten: [slice-130](../done/slice-130-lastenheft-historie-form.md)
-      und [slice-131](../open/slice-131-reviewer-skill-waisen.md), Drift-Log-Zeile
+      und [slice-131](../in-progress/slice-131-reviewer-skill-waisen.md), Drift-Log-Zeile
       gesetzt.
 - [x] `make gates` Exit 0 (acht Gates, 461 Dateien, 0 Befunde); unabhängiger
       Review auf **Sonnet 5**
