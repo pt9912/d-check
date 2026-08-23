@@ -162,9 +162,12 @@ record-gates: ## Nachweis schreiben: Working-Tree-Hash (für den Stop-Hook).
 #                      zusätzlich EINGELEGTE (eine untermengige, in sich
 #                      konsistente SHA256SUMS passierte sonst grün).
 #   baseline-freshness "ist der gepinnte Stand noch aktuell und authentisch?" —
-#                      Netz, fail-open (Ausfall ⇒ SKIP je Teil), NICHT in gates
-#                      (DC-QA-03: make gates bleibt netzlos). Meldet nur; die
-#                      Pin-Hebung bleibt ein bewusster Akt der MR-011-Kette.
+#                      Netz, fail-open (Ausfall ⇒ SKIP je Teil), NICHT in gates.
+#                      Der netzlose innere Lauf ist eine Eigenschaft DIESES
+#                      REPOS; DC-QA-03 gilt dem Produkt und ist hier nur über
+#                      doc-check berührt, dessen Container-Lauf ihre Messmethode
+#                      ist. Meldet nur; die Pin-Hebung bleibt ein bewusster Akt
+#                      der MR-011-Kette.
 baseline-verify: ## Vendorte Baseline gegen SHA256SUMS: Integrität + Manifest-Deckung (netzlos, in gates). MR-011-Kette.
 	@bash tools/harness/fetch-baseline-cache.sh --verify
 

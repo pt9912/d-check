@@ -85,7 +85,8 @@ Implementierungssprache ist **Go**
 Go-Toolchain läuft in Docker (Multi-Stage gemäß
 [ADR-0002](docs/plan/adr/0002-distribution-ghcr-image.md)). Der Host braucht `git`, GNU `make`, `bash`,
 Docker und die POSIX-Standardwerkzeuge, die die Gate-Skripte rufen
-(`sha256sum`, `find`, `awk`, `sed`, `grep`, `sort`).
+(coreutils, findutils, `grep`, `awk`). Bewusst als **Klasse** genannt und nicht
+als Liste: eine Aufzählung wäre ein weiterer ungewachter Spiegel.
 
 **Falsch:** `go build ./…`, `go test ./…`, `pip install …`
 **Richtig:** `make gates`
@@ -225,7 +226,7 @@ Steering Loop, [Beobachtungs-Register](docs/plan/planning/observations.md)
 
 Jeder `uses:`-Eintrag in [`.github/workflows/`](.github/workflows) nennt einen
 **vollen Commit-SHA** mit Tag-Kommentar dahinter, nie einen beweglichen Tag.
-Das gilt für beide Workflows gleich und für jeden Neuzugang.
+Das gilt für jeden Workflow gleich und für jeden Neuzugang.
 
 **Begründung:** Supply-Chain-Härtung — ein Tag lässt sich umhängen, ein SHA
 nicht; dieselbe Härtung wie der Docker/make-only-Pfad in §3.1. Kein Gate prüft
@@ -250,7 +251,7 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make ci`                    | CI-äquivalenter Lauf: gates + image-test (fährt die Release-Pipeline)                                                                                                                                                                              |
 | `make trace-check`           | Traceability-Gate **via Modul `commits`** (Image, dogfood): DC-/ADR-/MR-/slice-ID in Commit-Messages (`commit-untraceable`; `RANGE=`-Range für CI, `MSGFILE=` für den `commit-msg`-Hook via stdin; bewusst **nicht** Teil von `gates`/`ci`) ([ADR-0027](docs/plan/adr/0027-commits-traceability-modul.md) löst die Skript-Mechanik von [ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md) ab; [`DC-FA-COMMITS-001`](spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)) |
 | `make adr-check`             | ADR-Immutable-Gate **via Modul `vcs`** (Image, dogfood): `Accepted`-ADRs nicht inhaltlich ändern (`RANGE=`/`STAGED=`-Modi; `pre-commit`-Hook + PR-CI; bewusst **nicht** Teil von `gates`/`ci`) ([ADR-0024](docs/plan/adr/0024-vcs-immutable-gate.md) löst die Skript-Mechanik von [ADR-0016](docs/plan/adr/0016-adr-immutable-gate.md) ab, [ADR-0025](docs/plan/adr/0025-codepaths-ignore-refs.md) entfernt das Alt-Skript)                                                            |
-| `make baseline-freshness`    | Upstream-Audit des Baseline-Pins: neuerer Release-Tag (Currency, gelesen aus der Release-**Liste** — nicht `releases/latest`, das Prereleases überspringt) + Content-Drift am gepinnten Tag. **Netz**, fail-open (Ausfall ⇒ `SKIP` je Teil), bewusst **nicht** in `gates`/`ci` ([`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)); gerufen vom Nachtlauf ([`upstream-drift.yml`](.github/workflows/upstream-drift.yml)). Meldet nur — die Hebung bleibt ein bewusster Akt |
+| `make baseline-freshness`    | Upstream-Audit des Baseline-Pins: neuerer Release-Tag (Currency, gelesen aus der Release-**Liste** — nicht `releases/latest`, das Prereleases überspringt) + Content-Drift am gepinnten Tag. **Netz**, fail-open (Ausfall ⇒ `SKIP` je Teil), bewusst **nicht** in `gates`/`ci` — der netzlose innere Lauf ist eine Eigenschaft dieses Repos, keine Zusage des Produkts; gerufen vom Nachtlauf ([`upstream-drift.yml`](.github/workflows/upstream-drift.yml)). Meldet nur — die Hebung bleibt ein bewusster Akt |
 | `make hooks`                 | git-Hooks installieren (`core.hooksPath` → `.githooks`; aktiviert `commit-msg`-Traceability + `pre-commit` mit ADR-Immutable via Modul `vcs` **und** dem vollen `doc-check` als Doku-GUARD — seit welle-79: ein roter Gate-Exit kann keine Shell-Kette mehr passieren) ([ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md), [ADR-0016](docs/plan/adr/0016-adr-immutable-gate.md), [ADR-0024](docs/plan/adr/0024-vcs-immutable-gate.md))    |
 | `make completeness-check`    | Requirements-Completeness-Gate **via in-Produkt-Flag** `--trace --require-complete` (≥1 Waise ⇒ Exit 1, mit `WAISE`-Zeilen + Anzahl); **Closure-Bindepunkt** (in `make fullbuild`, **nicht** `gates`/`ci`) ([ADR-0026](docs/plan/adr/0026-completeness-in-product-gate.md) löst die Skript-Mechanik von [ADR-0017](docs/plan/adr/0017-requirements-completeness-gate.md) ab; [`DC-FA-CLI-011`](spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)) |
 | `make verify-closure-notes`  | Struktur des `done/`-Bestands: die Closure-Notizen **via Modul `planning`** (Abschnitt vorhanden, Substanz außerhalb Code, keine deklarierte Floskel, opt-in kein Vorlagen-Platzhalter) **und** Abschnitts-Invarianten **via Modul `structure`** (`section-*`-Codes) — beide über dasselbe `--config`-Profil. Fährt ein **eigenes** Prüf-Profil über `--config` ([`DC-FA-CLI-012`](spec/lastenheft.md#dc-fa-cli-012--konfigurations-pfad-überschreiben)); **Closure-Bindepunkt** (in `make fullbuild`, bewusst **nicht** `gates`/`ci`) ([ADR-0048](docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md), [`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |

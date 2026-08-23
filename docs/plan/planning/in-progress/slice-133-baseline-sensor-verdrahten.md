@@ -43,8 +43,10 @@ Dieser Slice steckt ihn ein. Er baut **nichts Neues**.
 ## 2. Vorgehen
 
 1. **`--verify` als Gate**: eigenes Target, Glied von `make gates`. Es ist
-   netzlos und verletzt [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit) nicht — die Zusage *„`make gates` bleibt
-   offline"* bleibt wörtlich erhalten.
+   netzlos — sein Pfad ruft kein Netz-Werkzeug. Dass `make gates` offline bleibt,
+   ist dabei eine Eigenschaft **dieses Repos**;
+   [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)
+   gilt dem **Produkt** und wird hier nicht berührt.
 2. **`--check-latest` als eigenes Target**, ausdrücklich **nicht** in `gates`
    (Netz), analog `trace-check`/`adr-check`, die aus demselben Grund draußen
    stehen.

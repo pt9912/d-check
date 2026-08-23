@@ -8,7 +8,9 @@ name: upstream-drift
 # Upstream-Ausfall die Integrations-CI rot faerben — und ein Waechter, den man
 # wegen Fremdstoerungen abschaltet, ist schlechter als gar keiner.
 #
-# WAS ER MELDET (`make baseline-freshness`, Exit = schlimmster Teil):
+# WAS ER MELDET. Die Codes unten sind die des SKRIPTS (Exit = schlimmster Teil);
+# `make` normalisiert einen fehlgeschlagenen Recipe auf seinen eigenen Exit 2.
+# Der Job wird so oder so rot — WELCHER Teil gemeldet hat, sagt die Ausgabe:
 #   Exit 0  Pin aktuell und Asset unveraendert.
 #   Exit 3  CURRENCY: upstream traegt einen neueren Release-Tag. Kein
 #           Auto-Update — die Hebung bleibt ein bewusster Akt (MR-011-Kette).

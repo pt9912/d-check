@@ -114,8 +114,12 @@ verify() {
   # `sha256sum -c` allein passierte eine untermengige, in sich konsistente
   # SHA256SUMS grün. Die Under-Copy-Barriere (Quelle vs. vendored) sitzt im
   # re-vendor-Pfad.
+  # Gezählt wird das GANZE Tag-Verzeichnis ohne das Manifest selbst, nicht nur
+  # die zwei Bäume: eine Datei, die als Geschwister von regelwerk/ und templates/
+  # abgelegt wird, liegt in keinem der beiden und stünde auch in keiner
+  # Manifest-Zeile — beide Zählungen blieben gleich, und der Gate meldete grün.
   local on_disk manifest
-  on_disk="$(find "${baseline}/regelwerk" "${baseline}/templates" -type f 2>/dev/null | wc -l)"
+  on_disk="$(find "${baseline}" -type f ! -path "$sums" 2>/dev/null | wc -l)"
   manifest="$(grep -c . "$sums" || true)"
   [ "$on_disk" -gt 0 ] \
     || { echo "fetch-baseline-cache: 0 Dateien — leeres/kaputtes Vendoring" >&2; exit 1; }
@@ -131,11 +135,17 @@ check_latest() {
   command -v curl >/dev/null 2>&1 \
     || { echo "fetch-baseline-cache: 'curl' nicht gefunden (Host-Werkzeug)" >&2; exit 1; }
 
+  # Zeitgrenzen sind hier KEIN Komfort, sondern die Bedingung des fail-open:
+  # ein Fehlschlag wird zu SKIP, eine haengende Verbindung wuerde ohne sie erst
+  # von der Job-Decke abgeraeumt — und faerbte den Nachtlauf rot, statt still zu
+  # ueberspringen. Grosszuegig gewaehlt: ein langsames Netz soll melden duerfen.
+  local CT=10 MT=60
+
   # --- (A) Currency: Release-LISTE gegen den Pin (nicht /releases/latest, der
   #         Prereleases überspringt und einen zurückgezogenen Pin verbirgt) ---
   local api tags newest newer currency="skip"
   api="https://api.github.com/repos/${repo}/releases?per_page=100"
-  tags="$(curl -fsSL -H 'Accept: application/vnd.github+json' "$api" 2>/dev/null \
+  tags="$(curl -fsSL --connect-timeout "$CT" --max-time "$MT" -H 'Accept: application/vnd.github+json' "$api" 2>/dev/null \
     | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' \
     | sed 's/.*"\([^"]*\)"$/\1/' \
     | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | LC_ALL=C sort -V -u || true)"
@@ -156,7 +166,7 @@ check_latest() {
   else
     local td; td="$(mktemp -d)"
     local url="https://github.com/${repo}/releases/download/${tag}/lab-regelwerk.zip"
-    if curl -fsSL -o "${td}/lab-regelwerk.zip" "$url" 2>/dev/null \
+    if curl -fsSL --connect-timeout "$CT" --max-time "$MT" -o "${td}/lab-regelwerk.zip" "$url" 2>/dev/null \
        && extract_both_trees "${td}/lab-regelwerk.zip" "${td}/vendored" 2>/dev/null; then
       local up ve
       # xargs -r: eine leere Datei-Liste darf sha256sum NICHT ohne Argumente
