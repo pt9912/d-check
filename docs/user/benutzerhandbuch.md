@@ -1101,30 +1101,38 @@ feinsten Schnitt:
   dort paar-lokal wirkt. **Die übrigen Module kennen ihn nicht** — ein
   `matrix`-Befund etwa wird behoben oder **strukturell** ausgenommen
   (`exclude-sections`, `allow-supersede-lineage`), nicht zeilenweise
-  stummgeschaltet.
+  stummgeschaltet. Diese vier sind eine **benannte Liste, kein ableitbares
+  Kriterium**: `matrix` und `structure` konfigurieren ebenfalls eigene Muster
+  und melden ebenfalls auf Zeilen, tragen den Marker aber nicht.
 - **`ignore-refs`** (Ziel, querschnittlich): nimmt bestimmte **aufgelöste
   Ziel-Pfade** von der Existenz-/Anker-Prüfung aus — **referenz-weit** (datei- und
   zeilen-unabhängig) und geteilt von `links`, `anchors` und `codepaths`.
 
 **Im Modul `diagrams` ist der Marker ein Token, kein HTML-Kommentar** — und er
-wirkt an zwei Orten. In Prosa schreiben Sie ihn als `<!-- d-check:ignore -->`;
-innerhalb eines Diagramm-Fence ist das kein Kommentar, sondern Diagramm-Text.
-Das Modul sucht deshalb die **Zeichenfolge** auf der Zeile; wie Sie sie vor dem
-Renderer verstecken, ist Sache der Diagramm-Sprache (in Mermaid `%%`). Auf einer
-Diagramm-Zeile nimmt der Marker **diese Zeile** aus, auf der **Öffnungszeile**
-des Fence den **ganzen** Block — sonst bräuchte ein Beispiel-Diagramm ihn auf
-jeder Kennungs-Zeile:
+wirkt an genau **zwei** Orten. In Prosa schreiben Sie ihn als
+`<!-- d-check:ignore -->`; innerhalb eines Diagramm-Fence ist das kein
+Kommentar, sondern Diagramm-Text. Das Modul sucht deshalb die **Zeichenfolge**
+selbst, unabhängig davon, was sie umgibt.
 
-```markdown
-~~~mermaid %% d-check:ignore (Beispiel-Diagramm, erfundene Kennungen)
+**Erster Ort — die Öffnungszeile des Fence.** Der Marker nimmt dort den
+**ganzen** Block aus. Er steht im Infostring, ist also weder HTML- noch
+Diagramm-Kommentar und braucht kein Kommentar-Zeichen:
+
+```mermaid d-check:ignore (Beispiel-Diagramm, erfundene Kennungen)
 flowchart LR
     A["ARC-42 Frontend"] --> B["ARC-43 Backend"]
-~~~
 ```
 
-Ohne diesen Marker bleibt für `diagrams` nur `diagrams.exempt-paths` (ganze
-Datei), der modul-lokale `diagrams.scope` oder `scan.ignore` — Schnitte, die
-mehr wegnehmen, als gemeint war.
+**Zweiter Ort — eine einzelne Diagramm-Zeile.** Dort nimmt der Marker nur diese
+eine Zeile aus, und dort ist er echter Diagramm-Inhalt: Sie müssen ihn vor dem
+Renderer verstecken, in Mermaid als `%% d-check:ignore`. Die übrigen Zeilen
+desselben Blocks bleiben geprüft.
+
+**Auf der schließenden Fence-Zeile wirkt er nicht.** Sie ist keiner der beiden
+Orte; wer den Marker dort symmetrisch zur Öffnungszeile setzt, bekommt den
+Befund weiterhin. Ohne Marker bleibt für `diagrams` nur
+`diagrams.exempt-paths` (ganze Datei), der modul-lokale `diagrams.scope` oder
+`scan.ignore` — Schnitte, die mehr wegnehmen, als gemeint war.
 
 `ignore-refs` ist das **Ziel-Achsen-Pendant** zu `scan.ignore` (Quell-Achse): jenes
 entfernt eine ganze Datei vom Scan, dieses ein einzelnes **Ziel** von der Prüfung —
@@ -1758,7 +1766,10 @@ structure:
     # table-order: desc                           # asc|desc: Chronologie-Monotonie der Schlüsselspalte
     # table-column: 1                             # 1-basierte Schlüsselspalte (Default 1; nur mit table-order)
     # headings-match: '^SPEC-[0-9]{3} '           # JEDE Überschrift im Abschnitt matcht dieses Muster
-    # headings-level: 3                           # geprüfte ATX-Ebene (Default: Abschnitts-Ebene + 1)
+    # headings-level: 4                           # geprüfte ATX-Ebene (Default: Abschnitts-Ebene + 1);
+    #                                             # MUSS tiefer als der Abschnitt liegen — eine gleiche
+    #                                             # oder flachere Ebene kommt in ihm nicht vor, die
+    #                                             # Bedingung wäre dann wirkungslos wahr
     # exempt-paths: []
 ```
 

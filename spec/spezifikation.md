@@ -841,7 +841,8 @@ byte-identisch. Top-Level-`ignore-refs` und Alias wirken additiv.
 
 **Achsen-Präzedenz.** `scan.ignore` (Quell-Achse) entfernt ganze Dateien **vor** jeder
 Modul-Prüfung; deren Referenzen erreichen das Ventil nie. Der Zeilen-Marker
-`d-check:ignore` (nur `codepaths`, Schritt 1) wirkt **vor** der Pfad-Erkennung.
+`d-check:ignore` (hier `codepaths`, Schritt 1 — honoriert wird er außerdem von
+`ids`, `versions` und `diagrams`) wirkt **vor** der Pfad-Erkennung.
 `ignore-refs` (Ziel-Achse) wirkt **bei der Auflösung** des Ziels. Die drei Achsen sind
 orthogonal; keine überschreibt eine andere.
 
@@ -1081,9 +1082,12 @@ additiv (ein Muster mit `always` findet eine Obermenge seiner
    als inaktiv. Ohne gesetztes Flag wird `supersede-fields` nicht
    konsultiert; der Befundsatz ist byte-identisch
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)). `matrix`
-   trägt — anders als `codepaths`/`ids` — keinen `d-check:ignore`-Marker
-   ([§DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code) Schritt 1
-   gilt nur für jene Module).
+   trägt **keinen** `d-check:ignore`-Marker — anders als `codepaths`, `ids`,
+   `versions` und `diagrams`, die ihn honorieren
+   ([§DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code) Schritt 1 gilt
+   nur für jene vier). Die Menge ist eine **benannte Liste**, kein ableitbares
+   Kriterium: `matrix` konfiguriert mit `classes[].token` ebenfalls ein eigenes
+   Muster und meldet ebenfalls auf Zeilen.
 5. **Klasseninterne Verweisrichtung**
    ([`DC-FA-MTX-002`](lastenheft.md#dc-fa-mtx-002--verweisrichtung-innerhalb-einer-geordneten-dokumentklasse-modul-matrix)):
    Trägt die in Schritt 1 zugeordnete Quell-Klasse ein nicht-leeres `order`
@@ -2787,6 +2791,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-23 | Nachzug nach unabhängigem Review, vor dem Release: **redaktionell, keine Semantik-Änderung.** Zwei Stellen führten den Zeilen-Marker `d-check:ignore` als exklusiv für `codepaths` bzw. `codepaths`/`ids` — die Achsen-Präzedenz unter §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) und Schritt 4 unter §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung). Beide nennen jetzt alle **vier** honorierenden Module (`codepaths`, `ids`, `versions`, `diagrams`) und weisen die Menge als **benannte Liste** statt als ableitbares Kriterium aus — `matrix` und `structure` erfüllen ein Kriterium „eigene Muster, Befunde an Zeilen“ ebenfalls, tragen den Marker aber nicht. Der Spiegel in der Nutzer-Doku wurde im selben Zug gezogen; kein Grund-Code, kein Schema, kein Befundsatz betroffen |
 | 2026-08-22 | §[`DC-FA-DIAG-001.a`](spezifikation.md#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams) um **Schritt 5 (Ventile)** erweitert und das §2-Schema um **sechs** `diagrams.*`-Zeilen ergänzt ([`DC-FA-DIAG-001`](lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in) 0.65.0, Begründung in begleitender ADR): `exempt-paths` datei-weit und der Zeilen-Marker `d-check:ignore`, der hier ein **Token** ist (die Diagramm-Sprache versteckt ihn, nicht Markdown) und an **zwei Orten** wirkt — auf einer Diagramm-Zeile für sie, auf der **Öffnungszeile** für den ganzen Block. Beide Ventile wirken **scan-seitig** — die Definitionsmenge aus Schritt 3 kennt sie nicht —, und die **schließende** Fence-Zeile ist kein Ventil-Ort. Schritt 4 verlangt für `defined-in` jetzt ausdrücklich eine **Datei** (ein Verzeichnis lieferte die leere Definitionsmenge und damit einen Befund-Sturm). **Die Schema-Lücke ist älter als die Erweiterung:** die Schlüssel des Moduls standen bisher nur im Algorithmus, als einziges Modul; sie sind mit derselben Änderung nachgetragen (die generischen `<modul>.scope.*`-Zeilen decken den Scope, eine eigene Zeile wäre eine zweite Pflegestelle) |
 | 2026-08-22 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) um die **achte Bedingung** `headings-match`/`headings-level` erweitert, §2-Schema um zwei Zeilen, §4 um den Grund-Code [`SPEC-067`](#4-grund--und-fehler-codes) `section-heading-mismatch` ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.64.0, Begründung in begleitender ADR): *jede* Überschrift des Abschnitts genügt einem Muster, **positiv** formuliert, **je Überschrift** gemeldet, auf **ihrer** Zeile. Sie ist als **zweite** Bedingung nicht auf dem bereinigten Abschnitts-Text definiert (Schritt 5 nennt seither beide Ausnahmen), sondern auf den Überschriften selbst — mit derselben Erkennung wie Schritt 3, weil der Anlass eine nachgebaute Lexik war (die abgelöste Präfix-Negation ließ eine **eingerückte** Sektion still entkommen). Geprüft wird der Überschriften-**Text**, nicht die rohe Zeile; Default-Ebene ist Abschnitts-Ebene + 1. Zwei Grenzen benannt: ohne Überschrift der geprüften Ebene ist die Bedingung wirkungslos, ebenso bei einer Ebene flacher als der Abschnitt |
 | 2026-08-22 | Nachzug nach unabhängigem Review, vor dem Release: §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) Schritt 3 sagt jetzt **eine Befund-Adresse, alle Erwartungen** — die Vorfassung versprach zwei Befunde je Paar, die die geteilte Nachrunde ([§DC-QA-02.a](#dc-qa-02a--determinismus-und-sortierung)) nachweislich auf einen zusammenzieht, samt der zweiten Erwartung; und die **Ausgabe**-Reihenfolge ist die der Sortierung, nicht die Deklarationsreihenfolge (die alte Aussage war als beobachtbare Eigenschaft falsch). Der Wortlaut jeder Meldung ist an die Paar-Zahl gebunden (ein Paar ⇒ Kurzform-Schlüssel, byte-identisch; ab zwei ⇒ `versions.patterns[i]`). Schritt 0 und die `versions.patterns`-Schema-Zeile binden die Mischform an die **Anwesenheit** des Schlüssels statt an seinen Wert, mit der benannten Grenze des wertlosen Schlüssels |

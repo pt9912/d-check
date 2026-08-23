@@ -175,9 +175,10 @@ Lese-Tool ([`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-ne
 deterministische Befunde werden behoben, nicht unterdrückt. Einen
 Opt-out-Marker gibt es nur dort, wo ein nicht existierendes Ziel oder
 eine illustrative Kennung dokumentierte Absicht sein kann
-(`d-check:ignore`, zeilenweise) — er stellt genau die vier Module still, die
-eigene Muster konfigurieren und ihre Befunde an Zeilen hängen: `codepaths`,
-`ids`, `versions` und `diagrams`
+(`d-check:ignore`, zeilenweise) — er stellt vier Module still: `codepaths`,
+`ids`, `versions` und `diagrams`. Das ist eine **benannte Liste**, kein
+ableitbares Kriterium: `matrix` und `structure` konfigurieren ebenfalls eigene
+Muster und melden ebenfalls auf Zeilen, kennen den Marker aber nicht
 ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
 [`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids),
 [`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in),

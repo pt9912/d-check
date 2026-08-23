@@ -125,9 +125,11 @@ Zielpfad der Referenz. Alle anderen Referenzen auf Y bleiben
 `matrix-inactive`, und die Klassen-Regeln (`matrix-forbidden`) sind
 unberührt. Default aus: ohne das Flag ist der Befundsatz byte-identisch.
 
-**Kein Zeilen-Marker für `matrix`.** Der `d-check:ignore`-Marker wirkt nur in
-den Modulen, die eigene Muster konfigurieren und ihre Befunde an Zeilen hängen
-(`ids`, `codepaths`, `versions`, `diagrams` — illustrative Beispiele).
+**Kein Zeilen-Marker für `matrix`.** Der `d-check:ignore`-Marker wirkt in genau
+vier Modulen — `ids`, `codepaths`, `versions` und `diagrams` (illustrative
+Beispiele). Diese vier sind eine **benannte Liste**, kein ableitbares Kriterium:
+`matrix` konfiguriert mit `classes[].token` ebenfalls ein eigenes Muster und
+meldet ebenfalls auf Zeilen, trägt den Marker aber nicht — ebenso `structure`.
 `matrix`-Befunde werden behoben oder **strukturell** ausgenommen
 (`exclude-sections` für Provenance-/Historie-Sektionen,
 `allow-supersede-lineage` für die Lineage-Kante) — legitime Ausnahmen

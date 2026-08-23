@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.65.0
+**Version:** 0.65.1
 
 **Status:** Draft
 
@@ -963,8 +963,11 @@ bleibt als **Alias** gültig — sie wirkt wie ein `ignore-refs`-Eintrag ohne
 unverändert.
 
 **Achsen-Abgrenzung:** `ignore-refs` (Ziel) ist orthogonal zu `scan.ignore`
-(Quelldatei, ganze Datei) und zum Zeilen-Marker `d-check:ignore` (Zeile, nur
-`codepaths`). Keine Achse überschreibt eine andere; ein Ziel, das `scan.ignore`
+(Quelldatei, ganze Datei) und zum Zeilen-Marker `d-check:ignore` (Zeile;
+honoriert von `codepaths`, [`ids`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids),
+[`versions`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) und
+[`diagrams`](#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in)
+— eine benannte Liste, kein ableitbares Kriterium). Keine Achse überschreibt eine andere; ein Ziel, das `scan.ignore`
 bereits vom Scan entfernt, erreicht `ignore-refs` gar nicht.
 
 **Akzeptanzkriterien:**
@@ -2955,6 +2958,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung |
 |---|---|---|
+| 0.65.1 | 2026-08-23 | Nachzug nach unabhängigem Review, vor dem Release: **redaktionell, keine Anforderungs-Änderung.** Die Achsen-Abgrenzung des geteilten Referenz-Ventils ([`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)) führte den Zeilen-Marker `d-check:ignore` als „Zeile, **nur** `codepaths`“ — die Aussage war seit 0.8.0 falsch ([`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) honoriert ihn seither, [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) seit seiner Einführung, [`DC-FA-DIAG-001`](#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in) seit 0.65.0). Sie nennt jetzt alle **vier** Module und sagt ausdrücklich, dass die Menge eine **benannte Liste** ist und **kein** ableitbares Kriterium: `matrix` und `structure` konfigurieren ebenfalls eigene Muster und melden ebenfalls auf Zeilen, tragen den Marker aber nicht. Anlass war die Nutzer-Doku-Korrektur desselben Satzes — der Spiegel im ranghöheren Stratum wäre sonst stehengeblieben und hätte per Source Precedence gewonnen |
 | 0.65.0 | 2026-08-22 | [`DC-FA-DIAG-001`](#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in) um die **beiden Ventile** erweitert (`diagrams.exempt-paths` und der Zeilen-Marker `d-check:ignore`, opt-in): das Modul war das einzige mit **konfigurierbaren Mustern**, das **kein** Ventil trug (Module ohne eigene Muster — `hostpaths`, `pins`, `spans` — tragen weiterhin keines; offene Fläche, keine Zusage) — ein Beispiel-Diagramm mit erfundener Kennung war nur durch Herausnehmen ganzer Dateibäume aus dem Scan-Bereich loszuwerden, eine Vermeidung statt einer Ausnahme (am eigenen Profil gemessen). **Zwei Festlegungen aus der Fence-Natur:** der Marker ist ein **Token**, kein HTML-Kommentar — wie der Autor ihn vor dem Renderer versteckt, ist Sache der Diagramm-Sprache (Mermaid: `%%`) —, und er wirkt auf einer Diagramm-Zeile für **diese Zeile**, auf der **Öffnungszeile** für den **ganzen** Block; ohne die zweite Stelle wäre die intuitive Platzierung wirkungslos. Kein neuer Grund-Code. **Ein fail-closed-Rand ist zugleich enger geworden:** ein **Verzeichnis** als `defined-in` bricht jetzt (Exit 2) statt eine leere Definitionsmenge zu liefern und jede Kennung als undefiniert zu melden. Begründung in begleitender ADR |
 | 0.64.0 | 2026-08-22 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um die **Überschriften-Bedingung** erweitert (`headings-match`/`headings-level`, achte Bedingung, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): *jede* Überschrift des Abschnitts genügt einem Muster, **positiv** formuliert und **je Überschrift** gemeldet (eigener Grund-Code `section-heading-mismatch`, Befund auf der Zeile der Überschrift — dort ist die Reparatur). Anlass ist eine gemessene Ersatz-Konstruktion: dieselbe Aussage war nur als ausgeschriebene Präfix-Negation über den Abschnitts-Text formulierbar (RE2 kennt keinen Lookahead), und die sprach die Heading-Lexik des Moduls nicht — eine **eingerückte** Sektion entkam still. Die Bedingung ist als **zweite** nicht auf dem bereinigten Abschnitts-Text definiert, sondern auf den Überschriften selbst, mit **derselben** Erkennung, die den Abschnitt findet. Zwei Grenzen benannt statt zugesagt: ohne Überschrift der geprüften Ebene ist sie wirkungslos, und ein `headings-level` flacher als der Abschnitt kann in ihm nicht vorkommen. **Der Schlüssel heißt bewusst nicht `heading-pattern`:** unter `planning.closure` trägt dieser Name bereits einen **Selektor** („welcher Abschnitt"), hier wäre es eine **Bedingung** („welche Form") — und beide Blöcke leben im selben Profil. Begründung in begleitender ADR |
 | 0.63.1 | 2026-08-22 | Nachzug nach unabhängigem Review, vor dem Release: die Zusage „zwei Paare, zwei Befunde" war **nicht haltbar** — die Befund-Adresse (Datei, Zeile, Regel, `target`, Grund-Code) unterscheidet zwei Befunde an derselben Stelle nicht, und die geteilte Nachrunde verwarf den zweiten samt seiner Erwartung (gemessenes stilles Falsch-Negativ). Jetzt gilt: **eine Befund-Adresse, alle Erwartungen** — die Nachricht nennt jede Erwartung mit ihrer Quelle, in Deklarationsreihenfolge; die **Ausgabe**-Reihenfolge ist die geteilte Sortierung, nicht die Deklarationsreihenfolge (die alte Aussage war als beobachtbare Eigenschaft falsch). Ferner: die Mischform-Erkennung hängt an der **Anwesenheit** des Schlüssels, nicht an seinem Wert (`pin-pattern: ""` neben `patterns` ist eine Mischform), mit der Grenze eines wertlosen Schlüssels; und ab zwei Paaren benennt jede Meldung die Fundstelle, bei genau einem Paar bleibt der Wortlaut byte-identisch |
