@@ -73,28 +73,35 @@ die Integrations-CI nie rot färben darf. Dieser Slice hängt zwei Targets hinei
 
 ## 4. Definition of Done
 
-- [ ] Zwei Targets, ein Skript; der **Vergleicher ist netzlos aufrufbar** und
-      mit Fixture-Werten geprüft.
-- [ ] Beide hängen im **bestehenden** Nachtlauf, keine Achse verdeckt die andere.
-- [ ] Je Achse ein **konstruierter Verstoß** mit gelesener Ursache: veralteter
-      Pin ⇒ rot, Rückbau ⇒ grün. Plus der Ausfall-Pfad ⇒ `SKIP`, nicht rot.
-- [ ] `AGENTS.md` §4 und die Sensors-Tabelle tragen beide Targets;
+- [x] Zwei Targets, ein Skript; `--compare` ruft **nur** den Vergleicher, mit
+      drei Fixture-Proben geprüft (gleich ⇒ 0, ungleich ⇒ 3, leer ⇒ `SKIP`/0).
+- [x] Beide hängen im **bestehenden** Nachtlauf, drei Schritte, die späteren mit
+      `if: always()` — keine Achse verdeckt die andere.
+- [x] Je Achse ein konstruierter Verstoß mit **gelesener Ursache**: `1.20.0` bzw.
+      `v2.0.0` ⇒ *VERALTET* mit genanntem Upstream-Stand; Rückbau ⇒ `ok`. Der
+      Ausfall-Pfad ⇒ `SKIP`, **zweimal** belegt: unerreichbares Repo und — nach
+      dem Review — eine Müll-Antwort mit HTTP 200.
+- [x] `AGENTS.md` §4 und die Sensors-Tabelle tragen beide Targets;
       `gate-consistency` grün.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] `make gates` Exit 0 (zehn Glieder); unabhängiger Review
+      ([Report](../../../reviews/2026-08-23-slice-137-toolchain-freshness-review.md)),
+      blockierend mit einem HIGH, alle vier Befunde eingearbeitet.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Ein fail-open-Sensor, der immer `SKIP` meldet, ist ein grüner Blindgänger.**
-  Die Zusage lautet *„meldet, wenn upstream weiter ist"* — sie ist nur wahr,
-  wenn der Fetch-Pfad wirklich läuft. Der Nachweis ist ein **echter** Lauf, kein
-  Fixture. — **Ausgang:** *(bei Closure)*
-- **Die Vergleichsform ist nicht Semver.** `baseline-freshness` fragt
-  Gleich/Ungleich gegen den neuesten Tag; eine monotone Reihe kennt kein „neuer,
-  aber älter". Ob das für `go.dev` ebenso trägt, ist zu prüfen und nicht zu
-  übernehmen. — **Ausgang:** *(bei Closure)*
-- **Zwei Achsen in einem Nachtlauf-Job:** bricht die erste ab, läuft die zweite
-  womöglich nicht. Der Slice muss zeigen, dass jede Achse ihr Urteil abgibt. —
-  **Ausgang:** *(bei Closure)*
+  — **Ausgang:** *nicht eingetreten, und der Nachweis war ein echter Lauf.*
+  Beide Achsen holen wirklich und melden `ok`. **Das Gegenstück ist dafür
+  eingetreten:** der Sensor meldete zu viel statt zu wenig — eine
+  HTTP-200-Müll-Antwort galt als Versionsstand und ergab ein falsches
+  *VERALTET*. Beide Fehlrichtungen sind jetzt belegt.
+- **Die Vergleichsform ist nicht Semver.** — **Ausgang:** *geprüft, nicht
+  übernommen.* Gleich/Ungleich trägt für beide Achsen, weil beide Reihen monoton
+  sind; der Skript-Kopf sagt das als **Entscheidung** hin, samt der Bedingung,
+  unter der sie fiele.
+- **Zwei Achsen in einem Nachtlauf-Job.** — **Ausgang:** *erkannt und gelöst,
+  bevor es eintrat.* Drei Schritte statt einem, die späteren mit `if: always()`.
+  Ein Job, der nach der ersten roten Achse abbricht, verdeckt die zweite.
 
 ## 6. Trigger
 
@@ -123,4 +130,46 @@ Module: Harness-Werkzeuge, CI. Gates: `make gate-consistency`, `make gates`.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Geliefert: zwei Targets über **einen** parametrierten Sensor, beide im
+bestehenden Nachtlauf. Die Blindheit, die
+[slice-133](slice-133-baseline-sensor-verdrahten.md) zur Hälfte behoben hat, ist
+damit ganz behoben — drei gepinnte Fremd-Bestände, drei Achsen, ein Job.
+
+**Der Fund des Slice ist eine Asymmetrie in meiner eigenen Sorgfalt.** Den
+GitHub-Zweig hatte ich strukturell abgesichert: die Endstation des Redirects
+*muss* `/releases/tag/` enthalten, sonst gilt der Stand als nicht ermittelbar.
+Den `go.dev`-Zweig nicht — dort nahm ich **jede** HTTP-200-Antwort als
+Versionsstring. Eine Fehlerseite hätte ein *VERALTET* erzeugt, also das genaue
+Gegenteil der Zusage, die im Skript-Kopf, in `AGENTS.md` §4 und in der
+Sensors-Zeile gleichlautend steht: **Parse-Ausfall ist SKIP.** Zwei Zweige,
+dieselbe Frage, nur einer beantwortet.
+
+**Und die Fehlrichtung ist die seltenere.** Ein fail-open-Sensor scheitert
+üblicherweise ins Stille — er meldet nichts und sieht grün aus. Dieser hier
+hätte ins Laute gescheitert: ein Alarm ohne Anlass. Beide Richtungen sind jetzt
+mit einem konstruierten Fall belegt, und der zweite brauchte einen `curl`-Stub
+im `PATH`, weil er anders gar nicht herstellbar ist.
+
+**Eine Aussage ist vom Zitat zur Messung geworden.** *„golang/go publiziert
+keine Release-Objekte"* stand dreifach im Repo, aus dem Schwester-Repo
+übernommen und nie geprüft. Nachgemessen: `golang/go/releases/latest` landet auf
+`.../releases` — **ohne** `/tag/` —, `golangci-lint` dagegen auf
+`.../releases/tag/v2.13.1`. Der GitHub-Zweig SKIPpte bei Go also korrekt, statt
+falsch zu vergleichen. Die Sonderquelle ist damit begründet und nicht behauptet.
+
+**Selbst gefunden, vor dem Commit:** meine drei neuen Kommentar-Stellen
+verletzten `AGENTS.md` §3.7 — eine Slice-Kennung im Skript-Kopf, eine
+Befund-Nummer in einem Kommentar, ein Mess-Label mit Datum in der neuen
+Quellen-Aussage. Herkunft gehört als **ein** auflösbares Feld in den Kommentar
+oder gar nicht hinein; die Begründung selbst steht weiter da, nur ohne ihre
+Provenienz.
+
+**Wellenlos, und das war die richtige Form.** Der Slice hat keine
+Closure-Bedingung, die mehr beobachtet als seine eigene DoD. Ihn in eine Welle zu
+packen hätte einen Trigger erzeugt, der nichts prüft — `modul-06` nennt das
+Zeremonie. Sein Zustand ist die Verzeichnis-Position, seine Belege stehen hier
+und in `git`.
+
+**Offen und benannt:** Docker-Basis-Images und Action-Pins haben weiterhin keine
+Freshness-Achse. Ob sie eine brauchen, ist eigens zu entscheiden — der Sensor
+ist parametriert, das Hinzufügen wäre je Achse eine Zeile.
