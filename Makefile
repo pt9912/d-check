@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
+.PHONY: help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci closure-outcomes coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -206,7 +206,7 @@ gates: baseline-verify workflow-pins doc-check lint test arch-check coverage-gat
 ci: gates image-test ## CI-äquivalenter Lauf: gates + image-test (DC-FA-DIST-001).
 	@echo "[ci] gates + image-test green"
 
-fullbuild: ci bench completeness-check verify-closure-notes ## volle Closure: ci + bench + completeness-check + verify-closure-notes; schließt mit dem Image-Hash (Reproduzierbarkeits-Bindung).
+fullbuild: ci bench completeness-check verify-closure-notes closure-outcomes ## volle Closure: ci + bench + completeness-check + verify-closure-notes + closure-outcomes; schließt mit dem Image-Hash (Reproduzierbarkeits-Bindung).
 	@docker image inspect $(IMAGE):latest --format '[fullbuild] green — image-hash {{.Id}}'
 
 # Requirements-Completeness-Gate (Policy slice-042/ADR-0017; Mechanik seit
@@ -224,6 +224,13 @@ completeness-check: build ## Requirements-Completeness via in-Produkt-Flag (--tr
 # eigenes Prüf-Profil über --config (DC-FA-CLI-012) — stünde der closure-Block
 # in der konventionellen .d-check.yml, liefe er in `gates` mit, und eine
 # Closure-Frage gehört nicht in den Inner-Loop (ADR-0048).
+# Waechter zur Drei-Ausgaenge-Regel (modul-05): kein Slice in done/ traegt einen
+# unaufgeloesten Vorlagen-Platzhalter. Haengt an fullbuild und NICHT an gates --
+# die Regel gilt dem UEBERGANG nach done/, und das ist der Closure-Bindepunkt;
+# dieselbe Einordnung, die completeness-check und verify-closure-notes tragen.
+closure-outcomes: ## done/-Slices ohne unaufgelösten Vorlagen-Platzhalter (netzlos; Closure-Bindepunkt, NICHT in gates). Baseline modul-05.
+	@bash tools/harness/closure-outcomes.sh
+
 verify-closure-notes: build ## Struktur des done/-Bestands: Closure-Notizen (Modul planning) UND Abschnitts-Invarianten (Modul structure), via eigenes --config-Profil; Closure-Gate (in fullbuild, NICHT gates/ci). ADR-0048/ADR-0049.
 	$(DCHECK_RUN) --config .d-check.closure.yml --enable planning --enable structure
 
