@@ -74,29 +74,39 @@ Wächter startet also grün und wirkt ab dem ersten Verstoß.
 
 ## 4. Definition of Done
 
-- [ ] Das Target hält `done/slice-*.md` gegen **alle drei** Platzhalter-Formen
-      und ist **fail-closed bei leerer Prüfmenge**.
-- [ ] Es hängt an `fullbuild`, **nicht** an `gates` — mit der Begründung im
-      Target-Kommentar.
-- [ ] **Vier** konstruierte Verstöße rot gesehen, jeder mit gelesener
-      Fundstelle: drei Platzhalter-Formen und die leere Prüfmenge; Rückbau grün.
-- [ ] `AGENTS.md` §4 und die Sensors-Tabelle tragen das Target;
-      `gate-consistency` grün.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] Das Target hält `done/slice-*.md` gegen **vier** Platzhalter-Formen — die
+      vierte kam erst durch den Review dazu, und es war ausgerechnet die, um die
+      die Regel geht (§9). Fail-closed bei leerer Prüfmenge **und** bei einem
+      Leseversagen.
+- [x] Es hängt an `fullbuild`, nicht an `gates`; die Begründung **und ihre
+      Kehrseite** stehen im Target-Kommentar und in §5.
+- [x] **Sechs** konstruierte Verstöße rot gesehen, jeder mit gelesener
+      Fundstelle: vier Platzhalter-Formen, die leere Prüfmenge und die
+      unlesbare Datei; Rückbau je grün.
+- [x] `AGENTS.md` §4 und die Sensors-Tabelle tragen das Target;
+      `gate-consistency` grün. **Darüber hinaus:** die Meta-Gates-Klassifikation
+      kannte **sechs** heute entstandene Targets nicht — alle eingeordnet.
+- [x] `make gates` Exit 0 (zehn Glieder), `make fullbuild` Exit 0 (der Wächter
+      läuft darin, 137 Slices); unabhängiger Review
+      ([Report](../../../reviews/2026-08-23-slice-139-closure-ausgang-waechter-review.md)),
+      blockierend mit **zwei HIGH**, alle vier Befunde eingearbeitet.
 
 ## 5. Abnahme-Punkte / Risiken
 
-- **Ein Wächter auf eine Zeichenkette ist so gut wie seine Liste.** Ändert
-  jemand die Platzhalter-Form im Slice-Kopf, greift er nicht mehr — und
-  schweigt. Die Liste gehört an die Vorlage gebunden, nicht geraten. —
-  **Ausgang:** *(bei Closure)*
-- **`fullbuild` statt `gates` heißt: der Verstoß fällt später auf.** Ein
-  falsch geschlossener Slice könnte einen Commit lang unbemerkt bleiben. Das ist
-  die bewusste Kehrseite der Einordnung als Closure-Bindepunkt und gehört
-  benannt, nicht wegargumentiert. — **Ausgang:** *(bei Closure)*
-- **Der Wächter prüft nur `done/`.** Ein Slice, der nie dorthin wandert, ist
-  ihm gleichgültig — und das ist richtig so, aber es heißt auch: er sagt nichts
-  über den Bestand in `open/`. — **Ausgang:** *(bei Closure)*
+- **Ein Wächter auf eine Zeichenkette ist so gut wie seine Liste.** —
+  **Ausgang:** *eingetreten, sofort, und genau an der teuersten Stelle.* Meine
+  Liste hatte drei Formen und ließ die aus, um die die Regel geht. Ich hatte die
+  Vorlage nach dem *Wortlaut* meiner eigenen Platzhalter durchsucht statt nach
+  **ihren** — der Beleg lag in der Datei, die ich zitiert habe.
+- **`fullbuild` statt `gates` heißt: der Verstoß fällt später auf.** —
+  **Ausgang:** *eingetreten wie erwartet, benannt, nicht geheilt.* Die
+  Einordnung bleibt richtig: die Regel gilt dem Übergang, nicht dem
+  Arbeitsbaum. Der Preis steht im Target-Kommentar.
+- **Der Wächter prüft nur `done/`.** — **Ausgang:** *eingetreten und enger als
+  gedacht.* Er sagt nichts über `open/` — und, wie der Review zeigte, auch
+  nichts über die Formen, die der Platzhalter-Erkenner des Produkts abdeckt.
+  Beide Grenzen stehen jetzt im Skript-Kopf, die zweite mit
+  Auflösungs-Trigger.
 
 ## 6. Trigger
 
@@ -126,4 +136,54 @@ Module: Harness-Werkzeuge, Gate-Landschaft. Gates: `make gate-consistency`,
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Geliefert: `make closure-outcomes` hängt an `fullbuild` und hält die
+`done/`-Slices gegen vier Platzhalter-Formen. Die Drei-Ausgänge-Regel des
+Baseline-Regelwerks hat damit eine Feedback-Hälfte — die **urteilsfreie**; ob ein
+eingetragener Ausgang inhaltlich trägt, bleibt Urteil und ist ausdrücklich nicht
+Gegenstand.
+
+**Der Wächter gegen stille Grün-Pfade hatte selbst einen, zum zweiten Mal in
+zwei Slices.** Meine Liste kannte drei Platzhalter-Formen und ließ die aus, um
+die die Regel geht: die Vorlage schreibt das Ausgang-Feld als
+`<eingetreten: … | entfallen: … | weiter offen: …>`. Ein wörtlich kopiertes,
+unaufgelöstes Risiko wäre unentdeckt durchgelaufen. **Der Grund ist der
+unangenehme Teil:** ich habe die Vorlage nach dem Wortlaut **meiner eigenen**
+Platzhalter durchsucht statt nach **ihren** — und den Beleg dabei in derselben
+Datei übersehen, die ich im Slice-Plan zitiere.
+
+**Und ein maskierter Fehler, den `set -euo pipefail` nicht fängt.** Ein
+`|| true` hinter einer Pipe verschluckte ein **Leseversagen** vollständig: 0
+Befunde, Exit 0, ohne die Datei je gesehen zu haben. Das ist `BEO-007` eine
+Ebene tiefer — dort war es der Exit *hinter* der Pipe, hier der Fehler *davor*.
+Lesbarkeit und `sed`-Erfolg werden jetzt geprüft; die Probe mit einer
+unlesbaren Datei meldet rot.
+
+**Der schwerste Befund ist ein Selbstwiderspruch im Abstand weniger Stunden.**
+Das Produkt trägt in `checkClosurePlaceholder` eine fence- und
+inline-code-bewusste Platzhalter-Erkennung, deren Kommentar ausdrücklich sagt:
+*„dieselbe geteilte Lexik wie überall, **kein Nachbau**"*. Ich habe einen
+Nachbau gebaut — und genau dieses Argument am selben Tag benutzt, um ein
+fremdes Skript abzulehnen, weil *„wir das im Produkt haben"*.
+
+Die Messung macht das Bild feiner, ohne den Vorwurf zu entkräften: das Muster
+des Produkts verlangt **whitespace-freie** Winkelklammern und sieht die
+Ausgang-Zeile deshalb nicht; außerdem prüft es nur den **Abschnitt** der
+Closure-Notiz. Zwei der vier Formen liegen außerhalb seiner Reichweite. Die
+verbleibende Überschneidung ist im Skript-Kopf **benannt** statt übergangen,
+mit Auflösungs-Trigger: sobald der Abschnitts-Skopus des Moduls den ganzen Slice
+umfasst, fällt dieses Skript ersatzlos. **Deckung wegzunehmen, um Doppelung zu
+vermeiden, tauschte eine echte Prüfung gegen ein Reinheitsargument** — das ist
+die Abwägung, und sie steht da, damit der nächste Leser sie prüfen kann.
+
+**Ein Nebenfund, der größer war als sein Befund.** Der Review beanstandete zwei
+nicht nachgezogene `fullbuild`-Spiegel. Beim Nachziehen zeigte sich, dass die
+Meta-Gates-Klassifikation **sechs** an diesem Tag entstandene Targets gar nicht
+kannte. Alle sechs sind jetzt eingeordnet, mit ihren Bindepunkten — eine Fläche,
+die niemand bewacht, und deshalb genau die Klasse, die
+[`BEO-010`](../observations.md) führt.
+
+**Offen und benannt:** Die Platzhalter-Liste ist eine Liste. Ändert die Vorlage
+ihre Form, schweigt der Wächter — sie gehört beim nächsten Vorlagen-Bump
+mitgeprüft. Das ist keine Restlücke, die man wegkonfigurieren kann, sondern der
+Preis eines Zeichenketten-Wächters; die saubere Form wäre der Abschnitts-Skopus
+im Produkt.
