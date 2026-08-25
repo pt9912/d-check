@@ -1,4 +1,4 @@
-# Slice slice-140: Konsumenten-CR an den Kurs — zwei Punkte, beide belegt
+# Slice slice-140: Konsumenten-CR an den Kurs — vier Punkte, jeder belegt
 
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
@@ -22,8 +22,8 @@ und `AGENTS.template.md` §3.4;
 
 ## 1. Ziel
 
-Zwei Beobachtungen aus dem eigenen Betrieb treffen **jedes** Adopter-Repo, nicht
-nur dieses. Beide sind belegt, keine ist ein Vorschlag ins Blaue.
+Vier Beobachtungen aus dem eigenen Betrieb treffen **jedes** Adopter-Repo, nicht
+nur dieses. Jede ist belegt, keine ist ein Vorschlag ins Blaue.
 
 **Punkt 1 — die urteilsfreie Hälfte der Drei-Ausgänge-Regel ist nicht benannt.**
 `modul-05` verlangt, dass jeder offene Punkt beim Übergang nach `done/` genau
@@ -45,8 +45,37 @@ sich entschieden und die Verschärfung deklariert
 ([`MR-033`](../../../../harness/conventions.md#mr-033)); jedes andere Repo steht
 vor derselben ungeklärten Frage.
 
+**Punkt 3 — „bewusst gebrochen" sagt nicht, dass das Rot von der Regel kommt.**
+`modul-13` beschreibt als sechsten Schritt der Fitness-Function-Übersetzung das
+**Bewusste Brechen**: *„das Gate läuft rot mit `ADR-<NNNN> violated`. Genau der
+Effekt, der eine ADR von einer Absichtserklärung trennt."* Was fehlt, ist ein
+halber Satz: **das Rot muss von der gebrochenen Regel kommen, und seine Ursache
+gehört gelesen.** Ohne ihn ist die Bedingung erfüllt, sobald *irgendetwas* rot
+wird. Drei Instanzen aus einem einzigen Arbeitstag, alle in einem Repo, das
+diese Disziplin ernst nimmt: eine Suppression-Probe, die den falschen Linter
+nannte (rot — aber vom Nachbarlinter); eine Direktiv-Form, die als *wohlgeformt*
+galt und nie gefahren worden war (sie wird gemeldet); und eine Probe, die per
+Anhängen im ausgenommenen Abschnitt landete (still — beinahe als *„der Wächter
+greift nicht"* verbucht). Der Punkt verlangt **kein** Gate; er schärft einen
+Satz, den der Kanon schon hat.
+
+**Punkt 4 — die Reichweite eines Zitats ist nicht geregelt.** Der Kanon ordnet
+Quellen (`grundlagen-source-precedence.md` §Source Precedence), sagt aber
+nichts darüber, **wie weit eine einzelne Aussage aus einer gerankten Quelle
+trägt**. Genau dort entsteht eine eigene Fehlerklasse: der Text stimmt, die in
+Anspruch genommene Reichweite nicht — ein Satz, der nur für einen benannten Fall
+gilt, wird universal geführt; ein Adaptions-Eintrag nach seinem **Titel**
+zitiert statt nach seinem Feld `Geltungsbereich`; eine ADR-Entscheidung, die
+einen einmaligen Akt beschreibt, als stehendes Verbot gelesen. Dieses Repo führt
+sie als [`BEO-012`](../observations.md) mit erreichter Schwelle. Weil ein Zitat
+wie ein Beleg **aussieht**, ist es schwerer zu bemerken als eine unbelegte
+Behauptung — und weil der Kanon selbst die zitierte Quelle ist, trifft es jeden
+Adopter.
+
 ## 2. Vorgehen
 
+0. **Nur Punkt 1 hat eine Vorbedingung.** Die Punkte 2 bis 4 hängen an nichts;
+   sie können mit dem Dokument entstehen.
 1. **Reihenfolge:** Punkt 1 erst schreiben, wenn
    [slice-139](../in-progress/slice-139-closure-ausgang-waechter.md) in `done/` liegt. Dann
    trägt der CR eine **gebaute** Form und gemessene Zahlen statt eines
@@ -54,8 +83,8 @@ vor derselben ungeklärten Frage.
    zu Recht gescheitert ist (*„ohne Baubarkeit wäre sie ein behauptetes Gate"*).
 2. **Je Punkt: Beleg vor Bitte.** Was steht wo, was fehlt, was folgt daraus für
    einen Adopter — und ausdrücklich, was der CR **nicht** verlangt.
-3. **Getrennt halten.** Die zwei Punkte haben nichts miteinander zu tun; sie
-   zusammenzubinden schwächt beide. Ein CR-Dokument, zwei nummerierte Punkte,
+3. **Getrennt halten.** Die vier Punkte haben nichts miteinander zu tun; sie
+   zusammenzubinden schwächt alle. Ein CR-Dokument, vier nummerierte Punkte,
    jeder für sich annehmbar oder ablehnbar.
 4. **Vorlegen, nicht senden.** Ob und wann der CR beim Kurs eingeht, ist eine
    Auftraggeber-Entscheidung.
@@ -64,16 +93,25 @@ vor derselben ungeklärten Frage.
 
 - **Keine Änderung am vendorten Baum.** Der CR ist eine Bitte an die Quelle;
   bis der Kurs entscheidet, gilt hier die Baseline unverändert.
-- **Keine dritte Bitte.** Was sonst noch auffiel, wartet auf eigene Belege.
+- **Keine fünfte Bitte.** Die Grenze stand zuerst bei zwei Punkten, mit der
+  Bedingung *„was sonst noch auffiel, wartet auf eigene Belege"*. Für zwei
+  weitere liegen sie inzwischen vor — je drei gemessene Instanzen —, und der
+  Auftraggeber hat die Erweiterung entschieden. Sie ist damit verschoben, nicht
+  gefallen: was **keine** drei Belege hat, wartet weiter. Ausdrücklich draußen
+  bleiben die repo-eigenen Funde — das Fixture mit gleicher Datei-Größe und die
+  Eigenheiten unserer Messskripte.
 - **Keine Vorwegnahme der Antwort.** Lehnt der Kurs Punkt 2 ab und meint
   Code-Pfade, wird die dortige Adaption gegenstandslos — das ist ein Ergebnis,
   kein Verlust.
 
 ## 4. Definition of Done
 
-- [ ] Beide Punkte stehen mit **Zitat und Fundstelle**, nicht mit Auslegung.
-- [ ] Punkt 1 nennt die gebaute Form und ihre gemessenen Zahlen.
-- [ ] Je Punkt steht da, was der CR **nicht** verlangt.
+- [ ] **Alle vier** Punkte stehen mit **Zitat und Fundstelle**, nicht mit
+      Auslegung.
+- [ ] Punkt 1 nennt die gebaute Form und ihre gemessenen Zahlen; Punkt 3 und 4
+      nennen je **drei** Instanzen mit Fundstelle.
+- [ ] Je Punkt steht da, was der CR **nicht** verlangt — bei Punkt 3 und 4
+      ausdrücklich: **kein Gate**, nur ein geschärfter Satz.
 - [ ] Das Dokument liegt vor; die Entscheidung über das Absenden ist
       ausdrücklich offen gelassen.
 - [ ] `make gates` grün (Exit explizit); unabhängiger Review.
@@ -84,6 +122,11 @@ vor derselben ungeklärten Frage.
   müssen zeigen, dass sie **jedes** Adopter-Repo treffen — sonst sind sie eine
   repo-lokale Adaption, und dafür gibt es den Konventionsspeicher. —
   **Ausgang:** *(bei Closure)*
+- **Vier Punkte in einem CR laden zur Teil-Annahme ein.** Beim letzten CR
+  dieses Repos wurden zwei von mehreren Punkten abgelehnt — das ist gesund,
+  solange jeder Punkt für sich steht. Kippt aber die Nummerierung zur
+  Wunschliste, sinkt die Chance für alle. Zu prüfen ist deshalb je Punkt, ob er
+  **ohne** die anderen trägt. — **Ausgang:** *(bei Closure)*
 - **Punkt 2 könnte sich als Lesefehler erweisen.** Wenn der Kanon anderswo
   klärt, was *Modul-Pfad* heißt, ist der CR gegenstandslos und jene Adaption
   falsch. Vor dem Schreiben ist der ganze Kanon danach zu durchsuchen, nicht nur
