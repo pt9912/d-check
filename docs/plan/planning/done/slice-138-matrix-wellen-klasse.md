@@ -80,30 +80,43 @@ würde.
 
 ## 4. Definition of Done
 
-- [ ] Die `welle`-Klasse steht in der Config, mit begründeter Entscheidung über
-      die zweite mögliche Regel (`adr → welle`).
-- [ ] Der Bestand ist **gemessen**, nicht erwartet; jede Fundstelle ist
-      ent-tokenisiert, keine ausgenommen.
-- [ ] Der konstruierte Verstoß meldet `matrix-forbidden` — **Ursache gelesen**,
-      nicht nur der Exit; Rückbau grün.
-- [ ] §3.4 verspricht nur noch, was es halten kann; für die zwei übrigen
-      Kategorien steht dort, **was** ihnen fehlt.
-- [ ] Lastenheft-Bump + Historie-Zeile; `make gates` grün (Exit explizit);
-      unabhängiger Review.
+- [x] Die `welle`-Klasse steht in der Config — **mit beiden Regeln.** Die
+      Entscheidung über `adr → welle` ist im ersten Anlauf **falsch** gefallen
+      und nach dem Review umgekehrt worden (§9); geführt als
+      [`MR-034`](../../../../harness/conventions.md#mr-034).
+- [x] Der Bestand ist gemessen: **zwei** Befunde, nicht der eine erwartete. Der
+      im Lastenheft ist ent-tokenisiert; der in einer `Accepted`-ADR ist
+      **grandfathered** — mit gemessenem Preis (ihr Körper trägt keinen
+      weiteren Token, den die Ausnahme mit stummschaltete).
+- [x] **Vier** konstruierte Verstöße, jeder mit gelesener Fundstelle:
+      `welle-99` und `welle-123` im Spec-Körper, `welle-99` im ADR-Körper, und
+      `welle-98` im ausgenommenen ADR — der bleibt **still**, wie er soll.
+      Rückbau je 0 Befunde.
+- [x] §3.4 verspricht nur noch, was es halten kann: **drei von fünf**, und für
+      die zwei übrigen steht der jeweilige Grund da — beim Commit-Hash die
+      fehlende **Präzision** (nicht die fehlende Fähigkeit), beim Closure-Datum
+      die Ununterscheidbarkeit vom legitimen Bestand.
+- [x] Lastenheft auf **0.65.4** mit Historie-Zeile; `make gates` Exit 0 (zehn
+      Glieder, 485 Dateien), `make fullbuild` Exit 0; unabhängiger Review
+      ([Report](../../../reviews/2026-08-23-slice-138-matrix-wellen-klasse-review.md)),
+      blockierend mit einem HIGH, alle drei Befunde eingearbeitet.
 
 ## 5. Abnahme-Punkte / Risiken
 
-- **Eine neue Token-Klasse trifft mehr als die Spec-Straten.** `matrix` prüft
-  Klassen gegeneinander; kommt `welle` dazu, ist zu prüfen, welche **bestehenden**
-  Regeln sie berührt — und ob dabei Befunde auf ADRs oder Slices entstehen, die
-  niemand erwartet hat. — **Ausgang:** *(bei Closure)*
-- **Das Token `welle-\d{2}` ist zweistellig.** Bei `welle-100` griffe es nicht
-  mehr — oder schlimmer: es griffe auf die ersten zwei Stellen. Die Grenze
-  gehört geprüft, nicht angenommen. — **Ausgang:** *(bei Closure)*
-- **Eine Historie-Zeile zu ändern berührt ein Protokoll.** Der Kanon ändert
-  Historie-Zeilen nicht rückwirkend; hier geht es um die **Form** eines
-  Verweises, nicht um die Aussage. Die Unterscheidung ist zu belegen, nicht zu
-  behaupten. — **Ausgang:** *(bei Closure)*
+- **Eine neue Token-Klasse trifft mehr als die Spec-Straten.** — **Ausgang:**
+  *eingetreten, sofort und mit voller Wucht.* Die erste Messung meldete einen
+  zweiten Befund in einer `Accepted`-ADR. Mein erster Umgang damit war der
+  falsche — siehe §9. Die Fassung, die jetzt steht, bewacht die Kante **und**
+  nimmt den einen immutablen Bestandsfall gemessen aus.
+- **Das Token ist zweistellig.** — **Ausgang:** *vor dem Schreiben abgewendet,
+  danach belegt.* Die Klasse trägt `welle-\d{2,}`; die Probe mit `welle-123`
+  meldet `welle-123` und nicht `welle-12`.
+- **Eine Historie-Zeile zu ändern berührt ein Protokoll.** — **Ausgang:**
+  *eingetreten, und meine erste Formulierung hat es verdeckt.* Die 0.65.4-Zeile
+  behauptete zunächst *„die Aussage bleibt unverändert"* — das stimmte nicht:
+  der Zeiger auf die zeitliche Schicht **entfällt ersatzlos**, und die
+  Ersatz-Formulierung ließ zunächst sogar ein bezugloses *„jener"* stehen. Beides
+  berichtigt; die Zeile sagt jetzt, was wirklich passiert ist.
 
 ## 6. Trigger
 
@@ -134,4 +147,55 @@ Modul-Mechanik.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Geliefert: `matrix` trägt die Klasse `welle` und **zwei** Regeln, §3.4 steht auf
+drei von fünf gedeckten Kategorien, und der eine Verstoß, den der Bestand seit
+Monaten trug, ist weg.
+
+**Der Slice hat eine Regel gebrochen, die dieses Repo selbst geschrieben hat —
+und sie stand seit Juni da.** [`MR-006`](../../../../harness/conventions.md#mr-006)
+§Scope-Grenze (C-4) nennt die Kante `ADR→Welle` *„bewusst unbewacht"* und
+begründet das ausdrücklich damit, dass *„d-check Carveout/Welle/Roadmap **nicht
+als `matrix`-Klassen** modelliert; eine Erweiterung wäre ein eigener Change"*.
+Dieser Slice macht `welle` zur Klasse — und falsifiziert damit die Bedingung, auf
+der die Ausnahme beruhte. Ich habe sie nicht gelesen.
+
+**Stattdessen habe ich die Regel mit einem Non-sequitur wieder herausgenommen.**
+Mein Satz lautete: *„§3.4 verlangt sie ohnehin nicht."* Das stimmt — und trägt
+nichts, denn die bestehende `adr→slice`-Regel verlangt §3.4 genauso wenig. Sie
+kommt aus jenem Eintrag und der kanonischen Referenz-Matrix, die `ADR→Welle` als
+**flaches** Verbot führt, ohne den Marker-Ausweg, den `ADR→Slice` offenlässt.
+Und die Dichotomie, mit der ich es begründete — *Falsch-Verdikt oder pauschale
+Ausnahme* — war eine falsche Alternative: der enge `exempt-paths`-Eintrag, den
+die Reihe `0001`–`0021` längst benutzt, stand die ganze Zeit offen.
+
+**Zweimal habe ich in diesem Slice am eigenen Werkzeug vorbeigemessen, und beide
+Male aus demselben Grund: eine Abschnittsgrenze ist eine Überschrift, keine
+Zeichenkette.**
+
+1. Mein `split('## Geschichte')` traf ein **Zitat im Kopf** der ADR. Der
+   „Körper" schrumpfte auf 846 von 4620 Zeichen, und die Messung meldete null,
+   wo das Modul einen Treffer fand.
+2. Meine erste Gegenprobe hängte den Verstoß **ans Dateiende** — und landete
+   damit in `## Geschichte`, dem einzigen Abschnitt, den `matrix` ausnimmt. Der
+   Wächter schwieg zu Recht, und ich hätte daraus beinahe geschlossen, er greife
+   nicht.
+
+Beide Male hätte ein grünes Ergebnis eine falsche Sicherheit erzeugt. Was half,
+war nicht mehr Sorgfalt, sondern das Werkzeug selbst: `matrix` hat den Treffer
+gefunden, den mein Skript nicht fand.
+
+**Ein Nebenbefund, der nicht hierher gehört und trotzdem benannt ist.** Ein
+`make gates`-Lauf wurde rot, der `make fullbuild` unmittelbar danach auf
+demselben Arbeitsbaum grün. Die Ursache ist identifiziert und steht als
+[`BEO-014`](../observations.md) im Register: ein Fixture schreibt dieselbe Datei
+von `"v1\n"` auf `"v2\n"` — gleiche Größe, gleiche Sekunde, also der
+*racily-clean*-Fall der stat-basierten Änderungserkennung. **Bewusst nicht hier
+repariert:** ein Fixture-Fix ohne eigene Probe wäre die stille Reparatur, die
+diese Arbeit mehrfach beanstandet hat.
+
+**Offen und benannt:** Von den fünf Kategorien des §3.4 bleiben zwei ungedeckt,
+und ihre Gründe sind verschieden. Der Commit-Hash **wäre** ausdrückbar — die
+Token-Mechanik existiert —, ihm fehlt die **Präzision**; das ist ein Slice mit
+einer Messung, kein Verzicht. Das Closure-Datum bleibt Urteil: es ist von den
+Daten, die die Spec-Straten in ihren eigenen Historie-Zeilen führen, nicht
+unterscheidbar.
