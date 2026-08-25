@@ -18,6 +18,21 @@
 # "Nichts gefunden" und "nichts zu pruefen" duerfen im Exit nicht gleich
 # aussehen -- dieselbe Klasse, die in dieser Arbeit schon dreimal aufgefallen ist.
 #
+# WARUM DIE VIERTE FORM: die Vorlage schreibt das Ausgang-Feld als
+# `<eingetreten: … | entfallen: … | weiter offen: …>` -- also GENAU das Feld, um
+# das die Regel geht. Der Platzhalter-Erkenner des Produkts sieht es nicht: sein
+# Muster verlangt whitespace-freie Winkelklammern. Das Feld war damit fuer
+# beide unsichtbar.
+#
+# VERHAELTNIS ZUM PRODUKT, benannt statt uebergangen: das Modul `planning`
+# erkennt Winkelklammer-Platzhalter fence- und inline-code-bewusst -- aber nur
+# im ABSCHNITT der Closure-Notiz. Dieser Waechter deckt den ganzen Slice und
+# zwei Formen, die jenes Muster nicht kennt. Die Ueberschneidung bei `<…>` ist
+# damit bewusst in Kauf genommen: Deckung wegzunehmen, um Doppelung zu
+# vermeiden, tauschte eine echte Pruefung gegen ein Reinheitsargument.
+# Aufloesungs-Trigger: sobald der Abschnitts-Skopus des Moduls den ganzen Slice
+# umfasst, faellt dieses Skript ersatzlos.
+#
 # GRENZE, benannt: die Platzhalter-Liste ist eine LISTE. Aendert die Vorlage
 # ihre Form, greift der Waechter nicht mehr und schweigt. Sie gehoert beim
 # naechsten Vorlagen-Bump mitgeprueft.
@@ -36,16 +51,25 @@ if [ "${#files[@]}" -eq 0 ]; then
   exit 1
 fi
 
-# Die drei Formen: zwei repo-eigene und der Platzhalter der Kanon-Vorlage.
+# Vier Formen: zwei repo-eigene und zwei der Kanon-Vorlage.
 PATTERNS=(
   '(bei Closure)'
   'wird mit dem Closure-Body gefüllt'
   '<…>'
+  '<eingetreten:'
 )
 
 findings=0
 for f in "${files[@]}"; do
-  # Inline-Code paarweise entfernen, dann Zeilennummern erhalten.
+  # Lesbarkeit und sed-Erfolg werden GEPRUEFT, nicht angenommen: ein `|| true`
+  # hinter der Pipe verschluckte ein Leseversagen vollstaendig -- das Skript
+  # meldete dann 0 Befunde, ohne die Datei je gesehen zu haben. Dieselbe
+  # Klasse wie ein Exit-Code hinter einer Pipe.
+  [ -r "$f" ] || { echo "closure-outcomes: ${f} nicht lesbar — fail-closed" >&2; exit 1; }
+  stripped="$(sed 's/`[^`]*`//g' "$f")" \
+    || { echo "closure-outcomes: ${f} konnte nicht gelesen werden — fail-closed" >&2; exit 1; }
+
+  # Inline-Code ist entfernt, die Zeilennummern bleiben erhalten.
   while IFS= read -r hit; do
     line="${hit%%:*}"
     text="${hit#*:}"
@@ -57,7 +81,7 @@ for f in "${files[@]}"; do
           ;;
       esac
     done
-  done < <(sed 's/`[^`]*`//g' "$f" | grep -n . || true)
+  done < <(printf '%s\n' "$stripped" | grep -n . || true)
 done
 
 if [ "$findings" -gt 0 ]; then
