@@ -213,19 +213,17 @@ matrix:
       # ist Absicht -- eine feste Breite hoerte bei dreistelligen Kennungen auf
       # zu greifen oder, schlimmer, traefe nur deren erste Stellen.
       #
-      # BEWUSST OHNE adr->welle-Regel, anders als bei slice: gemessen trifft sie
-      # eine bereits Accepted-ADR, deren Wellen-Nennung reine Provenance ist
-      # ("der Pin ist auf <tag> gehoben"). Der Marker-Ausweg, den die
-      # slice-Regel offenlaesst, steht dort nicht offen -- der Kern einer
-      # Accepted-ADR darf nicht mehr geaendert werden. Die Regel haette also nur
-      # die Wahl zwischen einem Falsch-Verdikt und einer pauschalen Ausnahme.
-      # §3.4 verlangt sie ohnehin nicht: sie gilt den Spec-Straten.
+      # Die Kante ADR->Welle ist in der kanonischen Referenz-Matrix ein flaches
+      # Verbot -- ohne den Marker-Ausweg, den ADR->Slice offenlaesst. Sie war
+      # hier unbewacht, WEIL Welle keine matrix-Klasse war; mit dieser Klasse
+      # faellt diese Bedingung weg (MR-006 §Scope-Grenze C-4, MR-034).
       token: 'welle-\d{2,}'
   rules:
     - {from: spec-straten, to: adr, allow: false}
     - {from: spec-straten, to: slice, allow: false}
     - {from: spec-straten, to: welle, allow: false}
     - {from: adr, to: slice, allow: false}
+    - {from: adr, to: welle, allow: false}
   status:
     forbidden: [superseded, deprecated]
   # exakter Heading-Vergleich. Nur die immutable ADR-Geschichte bleibt
@@ -242,7 +240,13 @@ matrix:
   # Grandfathering (DC-FA-MTX-003): die vor Einführung Accepted-ADRs (0001–0021)
   # sind immutabel und nennen Slices als legitime Verifikations-Zeiger im Körper
   # — sie werden ganz übersprungen; neue ADRs ab 0022 tragen den Marker.
-  exempt-paths: ["docs/plan/adr/00[01][0-9]-*.md", "docs/plan/adr/002[01]-*.md"]
+  # ADR-0047 kommt dazu, aus demselben Grund wie die Reihe davor und nicht aus
+  # Bequemlichkeit: sie ist Accepted und damit immutabel, ihre Wellen-Nennung
+  # ist Provenance ("der Pin ist auf <tag> gehoben"), und der Marker-Ausweg
+  # steht ihr nicht offen, weil ihr Kern nicht mehr geaendert werden darf.
+  # Gemessener Preis der Ausnahme: genau dieses eine Token -- ihr Koerper
+  # traegt keinen Slice-Verweis, den die Ausnahme sonst mit stumm schaltete.
+  exempt-paths: ["docs/plan/adr/00[01][0-9]-*.md", "docs/plan/adr/002[01]-*.md", "docs/plan/adr/0047-*.md"]
 
 # Pfade in Inline-Code (DC-FA-CODE-001): ./ und ../ immer; dazu die
 # Wurzel-Präfixe der eigenen Verzeichniskonvention.

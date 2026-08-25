@@ -114,6 +114,7 @@ ob der Eintrag ihn betrifft.
 | [MR-031](conventions/MR-031-schritt-3-benennen.md) <a id="mr-031--schritt-3-des-agenten-workflows-verlangt-benennen-nicht-nur-identifizieren"></a><a id="mr-031"></a> | Schritt 3 verlangt Benennen statt nur Identifizieren | `AGENTS.md` §6 Schritt 3; jeder Implementer-Lauf | `modul-09-implementierung.md` §Minimal Agent Workflow, Schritt 3 |
 | [MR-032](conventions/MR-032-historie-vor-accepted.md) <a id="mr-032--versions-bump-und-historie-zeile-schon-vor-accepted"></a><a id="mr-032"></a> | Bump und Historie schon vor `Accepted` | `spec/lastenheft.md`, solange sein Status unter `Accepted` liegt | `grundlagen-source-precedence.md` §Wann die CR-Pflicht beginnt |
 | [MR-033](conventions/MR-033-sicht-ohne-modul-pfade.md) <a id="mr-033--die-architektur-sicht-führt-auch-keine-modul-pfade"></a><a id="mr-033"></a> | Sicht ohne Modul-Pfade | `spec/architecture.md` und `AGENTS.md` §3.4 | `AGENTS.template.md` §3.4 / `modul-03-spec.md` §Ziel-Form: Architektur-Sicht |
+| [MR-034](conventions/MR-034-matrix-scope-welle.md) <a id="mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle"></a><a id="mr-034"></a> | Matrix bewacht ADR → Welle | `matrix`-Block der `.d-check.yml` | schärft [`MR-006`](conventions.md#mr-006) §Scope-Grenze (C-4) |
 
 ### Aufgelöste Adaptionen
 
