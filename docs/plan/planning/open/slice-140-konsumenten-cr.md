@@ -77,7 +77,7 @@ Adopter.
 0. **Nur Punkt 1 hat eine Vorbedingung.** Die Punkte 2 bis 4 hängen an nichts;
    sie können mit dem Dokument entstehen.
 1. **Reihenfolge:** Punkt 1 erst schreiben, wenn
-   [slice-139](../in-progress/slice-139-closure-ausgang-waechter.md) in `done/` liegt. Dann
+   [slice-139](../done/slice-139-closure-ausgang-waechter.md) in `done/` liegt. Dann
    trägt der CR eine **gebaute** Form und gemessene Zahlen statt eines
    Vorschlags — genau die Bedingung, an der ein früherer CR-Punkt dieses Repos
    zu Recht gescheitert ist (*„ohne Baubarkeit wäre sie ein behauptetes Gate"*).
@@ -134,7 +134,7 @@ Adopter.
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): [slice-139](../in-progress/slice-139-closure-ausgang-waechter.md)
+**Start** (`open` → `in-progress`): [slice-139](../done/slice-139-closure-ausgang-waechter.md)
 in `done/` — für Punkt 1 ist die gebaute Form die Eintrittskarte.
 
 **Rückführungen:** `in-progress` → `next`, falls die Kanon-Suche zu Punkt 2 die

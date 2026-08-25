@@ -14,7 +14,7 @@ Feedback-Hälfte (BEO-015, slice-139)`). 4 Dateien laut `git show --stat`
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
 - Slice-Plan
-  `docs/plan/planning/in-progress/slice-139-closure-ausgang-waechter.md`
+  `docs/plan/planning/done/slice-139-closure-ausgang-waechter.md`
   (§1–§9, insbesondere §3 NICHT, §4 DoD, §5 Risiken)
 - `tools/harness/closure-outcomes.sh` vollständig (68 Zeilen)
 - `Makefile` (neues Target `closure-outcomes`, `.PHONY`-Zeile, `fullbuild`-Kette)
