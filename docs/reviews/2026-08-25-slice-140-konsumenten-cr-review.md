@@ -17,7 +17,7 @@ Dateien berührt. 3 Dateien laut `git show --stat 9b7c932` (neu
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- Slice-Plan `docs/plan/planning/in-progress/slice-140-konsumenten-cr.md`
+- Slice-Plan `docs/plan/planning/done/slice-140-konsumenten-cr.md`
   vollständig (§1 Ziel, §3 NICHT, §4 DoD, §5 Risiken, §7 Vorprüfungen)
 - Das zu prüfende Dokument
   `docs/plan/cr/2026-08-25-cr-regelwerk-v5110.md` vollständig (174 Zeilen)
@@ -88,7 +88,7 @@ Whitespace-Grenze des produkteigenen Platzhalter-Erkenners zu prüfen.
 - **pfad:** `docs/plan/cr/2026-08-25-cr-regelwerk-v5110.md:120` („**Belege aus
   einem einzigen Arbeitstag**, alle in einem Repo, das diese Disziplin ernst
   nimmt"); gespiegelt in
-  `docs/plan/planning/in-progress/slice-140-konsumenten-cr.md:54` und in der
+  `docs/plan/planning/done/slice-140-konsumenten-cr.md:54` und in der
   Commit-Botschaft von `9b7c932` („Drei Instanzen aus einem Arbeitstag, jede
   mit ihrer Form")
 - **befund:** Die drei Instanzen von Punkt 3 liegen nachweislich auf **zwei**
