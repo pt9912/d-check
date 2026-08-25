@@ -163,12 +163,18 @@ Die sprachkonkrete Übersetzung (Modul-Pfade, Import-Regeln) und die
 Begründungen leben in den ADRs, deren `Schärft:`-Feld aufwärts zeigt;
 die zeitliche Schicht lebt in `docs/plan/planning/`.
 
-**Die Abwärts-Sperre nennt fünf Kategorien; gedeckt sind zwei.**
-`make doc-check` (Modul `matrix`) hält **ADRs** und **Slices** — ein Slice-Token
-im Spec-Körper ist ein `matrix-forbidden`-Befund. Für **Wellen**,
-**Commit-Hashes** und **Closure-Daten** gibt es weder eine Klasse noch ein
-Muster; sie stehen allein hier. *(Auflösungs-Trigger: die drei fehlenden
-Kategorien als Token-Klassen.)*
+**Die Abwärts-Sperre nennt fünf Kategorien; gedeckt sind drei.**
+`make doc-check` (Modul `matrix`) hält **ADRs**, **Slices** und **Wellen** — ein
+solches Token im Spec-Körper ist ein `matrix-forbidden`-Befund.
+
+Die zwei übrigen sind **nicht** als Klasse ausdrückbar, und zwar aus zwei
+verschiedenen Gründen. Ein **Commit-Hash** ist kein Dokument; `matrix` verbietet
+Verweise auf eine Klasse von *Dateien*, und dafür gibt es hier keine — es
+bräuchte ein Muster-Verbot, das kein Modul kennt. Ein **Closure-Datum** ist von
+einem legitimen Datum nicht unterscheidbar: die Spec-Straten führen ihre eigenen
+Historie-Zeilen voller Daten. *(Auflösungs-Trigger: für Commit-Hashes ein
+Muster-Verbot als Modul-Fähigkeit; für Closure-Daten keiner — die Kategorie ist
+maschinell nicht trennbar und bleibt Urteil.)*
 
 **Die Sprachfreiheit der Sicht** prüft kein Gate und zerfällt in zwei ungleiche
 Hälften. Ob eine Zeile **Rollen statt Technologie** benennt, ist ein Urteil —

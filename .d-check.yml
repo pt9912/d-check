@@ -205,9 +205,26 @@ matrix:
       # <!-- d-check:status-provenance --> deklariert (ADRs verweisen abwärts nur
       # als deklarierte Provenance/Verifikations-Zeiger, nie als Entscheidungsgrundlage).
       token: 'slice-\d{3}'
+    - name: welle
+      paths: ["docs/plan/planning/**/welle-*.md"]
+      # Dieselbe Token-Mechanik wie bei slice, eine Ebene hoeher: eine
+      # Wellen-Kennung im SPEC-Koerper ist ein Abwaertsverweis auf die zeitliche
+      # Schicht (AGENTS.md §3.4). Die Weite `{2,}` statt einer festen Stellenzahl
+      # ist Absicht -- eine feste Breite hoerte bei dreistelligen Kennungen auf
+      # zu greifen oder, schlimmer, traefe nur deren erste Stellen.
+      #
+      # BEWUSST OHNE adr->welle-Regel, anders als bei slice: gemessen trifft sie
+      # eine bereits Accepted-ADR, deren Wellen-Nennung reine Provenance ist
+      # ("der Pin ist auf <tag> gehoben"). Der Marker-Ausweg, den die
+      # slice-Regel offenlaesst, steht dort nicht offen -- der Kern einer
+      # Accepted-ADR darf nicht mehr geaendert werden. Die Regel haette also nur
+      # die Wahl zwischen einem Falsch-Verdikt und einer pauschalen Ausnahme.
+      # §3.4 verlangt sie ohnehin nicht: sie gilt den Spec-Straten.
+      token: 'welle-\d{2,}'
   rules:
     - {from: spec-straten, to: adr, allow: false}
     - {from: spec-straten, to: slice, allow: false}
+    - {from: spec-straten, to: welle, allow: false}
     - {from: adr, to: slice, allow: false}
   status:
     forbidden: [superseded, deprecated]
