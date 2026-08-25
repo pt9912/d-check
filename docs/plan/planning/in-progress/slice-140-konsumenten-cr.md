@@ -51,18 +51,20 @@ vor derselben ungeklärten Frage.
 Effekt, der eine ADR von einer Absichtserklärung trennt."* Was fehlt, ist ein
 halber Satz: **das Rot muss von der gebrochenen Regel kommen, und seine Ursache
 gehört gelesen.** Ohne ihn ist die Bedingung erfüllt, sobald *irgendetwas* rot
-wird. Drei Instanzen aus einem einzigen Arbeitstag, alle in einem Repo, das
-diese Disziplin ernst nimmt: eine Suppression-Probe, die den falschen Linter
+wird. Drei Instanzen aus zwei aufeinanderfolgenden Arbeitstagen, alle in einem
+Repo, das diese Disziplin ernst nimmt: eine Suppression-Probe, die den falschen Linter
 nannte (rot — aber vom Nachbarlinter); eine Direktiv-Form, die als *wohlgeformt*
 galt und nie gefahren worden war (sie wird gemeldet); und eine Probe, die per
 Anhängen im ausgenommenen Abschnitt landete (still — beinahe als *„der Wächter
 greift nicht"* verbucht). Der Punkt verlangt **kein** Gate; er schärft einen
 Satz, den der Kanon schon hat.
 
-**Punkt 4 — die Reichweite eines Zitats ist nicht geregelt.** Der Kanon ordnet
-Quellen (`grundlagen-source-precedence.md` §Source Precedence), sagt aber
-nichts darüber, **wie weit eine einzelne Aussage aus einer gerankten Quelle
-trägt**. Genau dort entsteht eine eigene Fehlerklasse: der Text stimmt, die in
+**Punkt 4 — die Reichweite eines Zitats ist nur im Einzelfall geregelt.** Der
+Kanon ordnet Quellen (`grundlagen-source-precedence.md` §Source Precedence) und
+beantwortet die Reichweitenfrage dort zweimal — für Adaptions-Einträge und für
+seinen eigenen Rangordnungs-Satz. Was fehlt, ist der Schritt von diesen
+Einzelfällen zur Frage als solcher: **wie weit trägt eine einzelne Aussage aus
+einer gerankten Quelle?** Genau dort entsteht eine eigene Fehlerklasse: der Text stimmt, die in
 Anspruch genommene Reichweite nicht — ein Satz, der nur für einen benannten Fall
 gilt, wird universal geführt; ein Adaptions-Eintrag nach seinem **Titel**
 zitiert statt nach seinem Feld `Geltungsbereich`; eine ADR-Entscheidung, die
