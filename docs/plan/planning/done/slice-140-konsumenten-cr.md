@@ -108,31 +108,52 @@ Adopter.
 
 ## 4. Definition of Done
 
-- [ ] **Alle vier** Punkte stehen mit **Zitat und Fundstelle**, nicht mit
-      Auslegung.
-- [ ] Punkt 1 nennt die gebaute Form und ihre gemessenen Zahlen; Punkt 3 und 4
-      nennen je **drei** Instanzen mit Fundstelle.
-- [ ] Je Punkt steht da, was der CR **nicht** verlangt — bei Punkt 3 und 4
-      ausdrücklich: **kein Gate**, nur ein geschärfter Satz.
-- [ ] Das Dokument liegt vor; die Entscheidung über das Absenden ist
-      ausdrücklich offen gelassen.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] **Alle vier** Punkte stehen mit **Zitat und Fundstelle** — wahr erst seit
+      dem Review: Punkt 4 trug beides nicht (§9). Acht Blockzitate, alle acht
+      maschinell **wörtlich** gegen die vendorte Quelle gehalten.
+- [x] Punkt 1 nennt die gebaute Form und ihre Zahlen: 137 Slices, null Treffer,
+      **vier** konstruierte Platzhalter-Verstöße — nicht sechs, die Zahl mischte
+      zwei Proben-Klassen — dazu zwei Fail-Closed-Proben. Punkt 3 und 4 nennen
+      je **drei** Instanzen mit Fundstelle.
+- [x] Je Punkt steht da, was der CR **nicht** verlangt; bei Punkt 3 und 4
+      ausdrücklich **kein Gate**. Vom Review je Punkt gegengeprüft.
+- [x] Das Dokument liegt unter
+      [`docs/plan/cr/`](../../cr/2026-08-25-cr-regelwerk-v5110.md); das
+      Absenden bleibt ausdrücklich offen — Auftraggeber-Entscheidung.
+- [x] `make gates` Exit 0 (zehn Glieder); unabhängiger Review
+      ([Report](../../../reviews/2026-08-25-slice-140-konsumenten-cr-review.md)),
+      blockierend mit **drei MEDIUM**, alle sechs Befunde eingearbeitet — dazu
+      ein siebter aus der eigenen Gegenprobe.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Ein CR aus dem eigenen Schmerz heraus ist selten allgemein.** Beide Punkte
   müssen zeigen, dass sie **jedes** Adopter-Repo treffen — sonst sind sie eine
   repo-lokale Adaption, und dafür gibt es den Konventionsspeicher. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** *eingetreten — in Punkt 4, und zwar genau als der Fehler, den
+  Punkt 4 beschreibt.* Er erklärte die Reichweitenfrage pauschal für ungeregelt,
+  während die von ihm selbst genannte Datei sie zweimal regelt. Der Review fand
+  es, die Bitte ist auf das Belegte zurückgeschnitten. Kein Carveout und kein
+  Folge-Slice: der Rest ist null und gemessen — acht von acht Blockzitaten
+  wörtlich belegt.
 - **Vier Punkte in einem CR laden zur Teil-Annahme ein.** Beim letzten CR
   dieses Repos wurden zwei von mehreren Punkten abgelehnt — das ist gesund,
   solange jeder Punkt für sich steht. Kippt aber die Nummerierung zur
   Wunschliste, sinkt die Chance für alle. Zu prüfen ist deshalb je Punkt, ob er
-  **ohne** die anderen trägt. — **Ausgang:** *(bei Closure)*
+  **ohne** die anderen trägt. — **Ausgang:** *entfallen — die Prüfung ist
+  gelaufen.* Der Review hat je Punkt geprüft, ob er allein trägt; Ergebnis: alle
+  vier. Teil-Annahme bleibt möglich und ist gesund — sie war nie das Risiko;
+  das Risiko war die Kippe zur Wunschliste, und die ist geprüft.
 - **Punkt 2 könnte sich als Lesefehler erweisen.** Wenn der Kanon anderswo
   klärt, was *Modul-Pfad* heißt, ist der CR gegenstandslos und jene Adaption
   falsch. Vor dem Schreiben ist der ganze Kanon danach zu durchsuchen, nicht nur
-  die zwei bekannten Stellen. — **Ausgang:** *(bei Closure)*
+  die zwei bekannten Stellen. — **Ausgang:** *entfallen für Punkt 2 —
+  widerlegt, doppelt.* Die Baum-Suche fand **genau zwei** Fundstellen, keine
+  dritte, keine andere Schreibweise; der Reviewer hat das unabhängig
+  reproduziert, Schreibvarianten eingeschlossen. Punkt 2 ist damit die stärkste
+  Stelle des CR. **Der Preis steht in §9:** das Risiko war auf Punkt 2
+  geschnitten statt auf seine Klasse — und für Punkt 4 hat darum niemand
+  gesucht.
 
 ## 6. Trigger
 
@@ -162,4 +183,57 @@ Harness-Regeltext. Gates: `make gates`.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Geliefert: vier Punkte gegen Regelwerk `v5.11.0`, jeder mit Zitat, Fundstelle
+und der ausdrücklichen Angabe, was er **nicht** verlangt. Keiner bittet um ein
+Gate. Das Dokument liegt vor; ob es beim Kurs eingeht, ist nicht entschieden.
+
+**Der CR über Zitat-Reichweite hat selbst überzogen.** Drei der sechs
+Review-Befunde sind [`BEO-012`](../observations.md)-Klasse — die Klasse, die
+dieser CR zu seinem Punkt 4 macht. Der teuerste sitzt in Punkt 4 selbst: er
+erklärte die Reichweitenfrage für ungeregelt, während
+`grundlagen-source-precedence.md` — die Datei, die er als Quelle nennt — sie
+zweimal beantwortet, für Adaptions-Einträge und für den eigenen
+Rangordnungs-Satz. Die Bitte ist jetzt die schmalere und die belegte: nicht
+*„das fehlt"*, sondern *„das steht zweimal für den Einzelfall und nie als
+Frage"*.
+
+**Warum es niemand suchte, steht in §5.** Das Risiko *„könnte sich als
+Lesefehler erweisen"* war auf Punkt 2 geschnitten — auf die Stelle, an der der
+Zweifel entstand, statt auf seine Klasse: **jeder** Punkt, der eine Kanon-Lücke
+behauptet. Für Punkt 2 lief die Baum-Suche und entkräftete das Risiko doppelt;
+für Punkt 4 lief sie nie. Das ist
+[`BEO-011`](../observations.md) Ausprägung (c), begangen im Risiko-Abschnitt
+selbst.
+
+**Der siebte Befund kam nicht vom Reviewer.** Nach dem Einarbeiten habe ich alle
+acht Blockzitate maschinell gegen den Baseline-Baum gehalten. Das
+**Eröffnungszitat** von Punkt 1 — der meistgelesene Satz des Dokuments — tilgte
+drei Einschübe ohne Auslassungszeichen, darunter ausgerechnet *„(ohne sie ist es
+stilles Vergessen)"*. Es stand seit der ersten Fassung da und ist keinem der
+beiden Leser aufgefallen.
+
+**Die Gegenprobe selbst war beim ersten Lauf falsch** und meldete vier
+Fehlschläge, weil sie die Auszeichnung nur auf **einer** Seite entfernte. Erst
+beidseitig normalisiert blieb der eine echte Fund übrig. Dieselbe Sorte
+Messfehler wie beim Abschnitts-Skopus zwei Slices zuvor — ein Messskript, das
+weniger sieht als das, was es prüfen soll, ist kein Beleg, sondern ein zweiter
+ungewachter Spiegel.
+
+**Auftraggeber-Vorgabe während der Einarbeitung: keine Forensik im CR.** Ich
+hatte einen Absatz eingefügt, der dem Kurs die Entstehungsgeschichte unseres
+eigenen Punktes erzählt. Er ist wieder raus. Das Dokument trägt Bitte und Beleg;
+was der CR über sich selbst zu sagen hätte, steht hier.
+
+**Was hielt.** Punkt 2 ist die stärkste Stelle: die Erschöpfungs-Behauptung
+*„genau zwei Fundstellen"* hat der Reviewer unabhängig über den ganzen Baum
+reproduziert. Punkt 3 trägt drei belegte Instanzen — nach der Berichtigung aus
+**zwei** Arbeitstagen statt aus einem; die Dichte-Behauptung stammte aus der
+Datums-Verwechslung, die am Kopf derselben Datei längst berichtigt war.
+
+**Register:** [`BEO-012`](../observations.md) auf Zähler **4**,
+[`BEO-011`](../observations.md) auf Zähler **4** (Ausprägung (c), erstmals aus
+einem Risiko-Abschnitt). Für den fehlenden Reviewer-Anker zu `BEO-012` liegt
+jetzt [slice-147](../open/slice-147-reviewer-anker-reichweite.md) in `open/` —
+die Klasse hat viermal zugeschlagen und wird jedes Mal vom zweiten Leser
+gefunden, nie vom Schreibenden. Das ist eine Feedforward-Lücke, und die gehört
+nicht in eine Closure-Notiz, sondern in eine Datei.
