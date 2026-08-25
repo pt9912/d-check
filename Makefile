@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
+.PHONY: help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -177,6 +177,19 @@ workflow-pins: ## uses:-Einträge der Workflows: voller Commit-SHA + Tag-Komment
 
 baseline-verify: ## Vendorte Baseline gegen SHA256SUMS: Integrität + Manifest-Deckung (netzlos, in gates). MR-011-Kette.
 	@bash tools/harness/fetch-baseline-cache.sh --verify
+
+# Zwei Toolchain-Achsen, ein Sensor. Netz, fail-open, NICHT in gates -- wie
+# baseline-freshness und aus demselben Grund. Sie MELDEN; die Hebung bleibt ein
+# bewusster Akt, und beim Go-Bump zieht das golangci-Pendant mit.
+freshness-go: ## Neuere stabile Go-Version als GO_VERSION melden (Netz, Quelle go.dev, NICHT in gates, fail-open).
+	@NAME='go' PINNED='$(GO_VERSION)' \
+	  ADVICE='GO_VERSION (Makefile) heben, Dockerfile-Digest nachziehen; das golangci-Pendant zieht mit.' \
+	  bash tools/harness/pin-freshness.sh --godev
+
+freshness-golangci: ## Neueren golangci-lint-Release als GOLANGCI_LINT_VERSION melden (Netz, NICHT in gates, fail-open).
+	@NAME='golangci-lint' PINNED='$(GOLANGCI_LINT_VERSION)' \
+	  ADVICE='GOLANGCI_LINT_VERSION (Makefile) heben und den Dockerfile-lint-Digest nachziehen.' \
+	  bash tools/harness/pin-freshness.sh --github golangci/golangci-lint
 
 baseline-freshness: ## Upstream-Audit des Baseline-Pins: neuerer Release-Tag (Currency) + Content-Drift am gepinnten Tag (Netz, NICHT in gates, fail-open). MR-011-Kette.
 	@bash tools/harness/fetch-baseline-cache.sh --check-latest

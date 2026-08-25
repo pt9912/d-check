@@ -1,6 +1,7 @@
 name: upstream-drift
 
-# Nachtlauf fuer den Baseline-Pin (slice-133, welle-84; MR-011-Kette).
+# Nachtlauf fuer die gepinnten Fremd-Bestaende: Baseline-Tag (MR-011-Kette),
+# Go-Toolchain und golangci-lint.
 #
 # WARUM EIN EIGENER WORKFLOW UND NICHT EIN SCHRITT IN ci.yml: dieses Gate ist
 # das einzige, das das Netz braucht, und es ist bewusst FAIL-OPEN (Netz-,
@@ -51,5 +52,16 @@ jobs:
       # Kein Docker, kein Image-Bau: das Target ruft ein bash-Skript mit curl
       # und sha256sum. Der Docker/make-only-Pfad (AGENTS.md §3.1) gilt der
       # Go-Toolchain — hier laeuft keine.
+      # Drei Achsen, drei Schritte, und `if: always()` ist hier tragend: faellt
+      # eine Achse aus, muessen die anderen ihr Urteil trotzdem abgeben. Ein
+      # Job, der nach der ersten roten Achse abbricht, verdeckt die zweite.
       - name: make baseline-freshness
         run: make baseline-freshness
+
+      - name: make freshness-go
+        if: always()
+        run: make freshness-go
+
+      - name: make freshness-golangci
+        if: always()
+        run: make freshness-golangci
