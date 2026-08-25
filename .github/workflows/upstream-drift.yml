@@ -40,7 +40,7 @@ permissions: {}
 
 jobs:
   baseline-freshness:
-    name: Baseline-Pin gegen upstream
+    name: Gepinnte Fremd-Bestände gegen upstream
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 # pin-freshness — read-only Sensor auf einen gepinnten Fremd-Bestandteil: meldet,
-# wenn upstream einen NEUEREN Stand fuehrt als unser Pin (slice-137).
+# wenn upstream einen NEUEREN Stand fuehrt als unser Pin.
 #
 # ZWEI QUELLEN-FORMEN, weil eine davon eine Sonderquelle ist:
 #   --github <owner/repo>  dem Redirect von .../releases/latest folgen und die
 #                          effektive URL lesen; sie endet auf /releases/tag/<x>.
 #                          Kein jq, keine API, kein Token (DC-QA-03-Sparsamkeit).
-#   --godev                golang/go publiziert KEINE Release-Objekte -- der
-#                          releases/latest-Pfad redirected ins Leere. Die stabile
+#   --godev                Fuer golang/go endet releases/latest auf
+#                          .../releases -- OHNE /tag/. Der GitHub-Zweig SKIPpte
+#                          hier also, statt falsch zu vergleichen. Die stabile
 #                          Version kommt als PLAINTEXT von go.dev/VERSION?m=text
-#                          (erste Zeile, z. B. `go1.27.0`).
+#                          (erste Zeile, z. B. `go1.27.0`) und wird auf ihre
+#                          Form geprueft, bevor sie als Stand gilt.
 #
 # NORMALISIERUNG: go.dev sagt `go1.27.0`, unser Pin ist bar `1.27.0`; GitHub sagt
 # `v2.13.1`, unser Pin ebenso. Auf EIN Format bringen heisst hier: fuehrendes
@@ -80,9 +82,22 @@ case "$mode" in
     esac
     ;;
   --godev)
-    upstream="$(curl -fsSL --connect-timeout "$CT" --max-time "$MT" \
-                  'https://go.dev/VERSION?m=text' 2>/dev/null \
-                | head -1 | tr -d '\r' | sed 's/^go//' || true)"
+    # Die Antwort wird auf ihre FORM geprueft, bevor sie als Stand gilt. Ohne
+    # das waere eine HTTP-200-Nicht-Versions-Antwort (Fehlerseite, Wartungstext)
+    # ein gueltiger "upstream" -- und ergaebe ein falsches VERALTET statt des
+    # zugesagten SKIP. Ein Parse-Ausfall ist ein Ausfall, kein Befund.
+    raw="$(curl -fsSL --connect-timeout "$CT" --max-time "$MT" \
+             'https://go.dev/VERSION?m=text' 2>/dev/null \
+           | head -1 | tr -d '\r' || true)"
+    raw="${raw#go}"
+    if printf '%s' "$raw" | grep -qE '^[0-9]+\.[0-9]+(\.[0-9]+)?([a-z]+[0-9]+)?$'; then
+      upstream="$raw"
+    else
+      upstream=""
+    fi
+    # BEIDE Seiten normalisieren. Traegt der Pin eines Tages `go1.27.0`,
+    # verglichen wir sonst dauerhaft ungleich und meldeten fuer immer VERALTET.
+    pinned="${pinned#go}"
     ;;
   *)
     echo "pin-freshness: Modus fehlt (--github <owner/repo> | --godev | --compare)" >&2
