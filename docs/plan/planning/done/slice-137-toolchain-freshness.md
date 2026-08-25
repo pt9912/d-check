@@ -18,7 +18,7 @@ Muster von `make baseline-freshness` aus
 
 **Berührte Spec-Stellen:** — (Harness-Sensoren; keine Anforderung).
 
-**Verantwortlich:** pt9912. **Autor:** pt9912. **Datum:** 2026-08-23.
+**Verantwortlich:** pt9912. **Autor:** pt9912. **Datum:** 2026-08-25.
 
 ---
 
@@ -84,7 +84,7 @@ die Integrations-CI nie rot färben darf. Dieser Slice hängt zwei Targets hinei
 - [x] `AGENTS.md` §4 und die Sensors-Tabelle tragen beide Targets;
       `gate-consistency` grün.
 - [x] `make gates` Exit 0 (zehn Glieder); unabhängiger Review
-      ([Report](../../../reviews/2026-08-23-slice-137-toolchain-freshness-review.md)),
+      ([Report](../../../reviews/2026-08-25-slice-137-toolchain-freshness-review.md)),
       blockierend mit einem HIGH, alle vier Befunde eingearbeitet.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -115,7 +115,7 @@ Vergleichsform eine eigene Entscheidung.
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
 - **Sub-Area prüfen:** Harness-Werkzeuge (GF), CI (GF).
-- **Offene Beobachtungen sichten** (Register-Stand 2026-08-23):
+- **Offene Beobachtungen sichten** (Register-Stand 2026-08-25):
   [`BEO-007`](../observations.md) für jeden Beleg-Lauf — Exit direkt lesen.
   [`BEO-011`](../observations.md) für die Aussage, was der Sensor abdeckt: *zwei*
   Achsen, nicht *„die Toolchain"*. [`BEO-010`](../observations.md), weil zwei

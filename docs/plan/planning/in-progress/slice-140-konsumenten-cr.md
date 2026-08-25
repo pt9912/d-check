@@ -16,7 +16,7 @@ und `AGENTS.template.md` §3.4;
 
 **Berührte Spec-Stellen:** — (Fremd-Repo; keine Anforderung dieses Repos).
 
-**Verantwortlich:** pt9912. **Autor:** pt9912. **Datum:** 2026-08-23.
+**Verantwortlich:** pt9912. **Autor:** pt9912. **Datum:** 2026-08-25.
 
 ---
 
@@ -144,7 +144,7 @@ Auftraggeber-Frage.
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
 - **Sub-Area prüfen:** Harness-Regeltext (GF), Konventionsspeicher (GF).
-- **Offene Beobachtungen sichten** (Register-Stand 2026-08-23):
+- **Offene Beobachtungen sichten** (Register-Stand 2026-08-25):
   [`BEO-012`](../observations.md) ist **zentral** — ein CR behauptet, was eine
   fremde Quelle sagt und nicht sagt; genau daran ist diese Arbeit mehrfach
   gescheitert. [`BEO-011`](../observations.md) für jede Aussage darüber, dass

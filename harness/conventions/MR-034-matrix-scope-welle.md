@@ -7,7 +7,7 @@
   damit, dass *„d-check Carveout/Welle/Roadmap **nicht als `matrix`-Klassen**
   modelliert; eine Erweiterung wäre ein eigener Change"*. Genau dieser Change
   ist eingetreten.
-- **Datum:** 2026-08-23
+- **Datum:** 2026-08-25
 - **Geltungsbereich:** der `matrix`-Block in
   [`.d-check.yml`](../../.d-check.yml) — die Klasse `welle` und die Regel
   `{from: adr, to: welle, allow: false}`.

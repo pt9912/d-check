@@ -1,4 +1,4 @@
-# Review-Report: slice-138 — matrix bekommt die welle-Klasse — 2026-08-23
+# Review-Report: slice-138 — matrix bekommt die welle-Klasse — 2026-08-25
 
 **Review-Art:** Code-Review (Config-/Doku-Diff gegen Kanon und Slice-Plan,
 Modul 10 §Drei Review-Arten) · **Gegenstand:** Commit `a375222` (Diff
@@ -9,7 +9,7 @@ DC-FA-MTX-003, slice-138)`). 3 Dateien laut `git show --stat`
 +5/-2), 32 Einfügungen/8 Löschungen gesamt.
 
 **Skill:** `.harness/skills/reviewer.md` @ 1.10.0 (`9a7654a`) · **Modell-ID:**
-`claude-sonnet-5` · **Datum:** 2026-08-23
+`claude-sonnet-5` · **Datum:** 2026-08-25
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
@@ -34,8 +34,8 @@ DC-FA-MTX-003, slice-138)`). 3 Dateien laut `git show --stat`
   tatsächlich leistet, unabhängig von der Commit-Prosa
 - `docs/plan/planning/observations.md` (`BEO-011`, `BEO-012`)
 - Vorherige Review-Reports am selben Abschnitt (Kalibrierungs-Anker):
-  `docs/reviews/2026-08-23-slice-132-hard-rule-zensus-review.md` und
-  `docs/reviews/2026-08-23-slice-136-agents-34-klaerung-review.md` (beide F-1:
+  `docs/reviews/2026-08-25-slice-132-hard-rule-zensus-review.md` und
+  `docs/reviews/2026-08-25-slice-136-agents-34-klaerung-review.md` (beide F-1:
   ein „gedeckt"-Verdikt deckt nur einen Teil der genannten Kategorien)
 
 **Nicht erhalten:** die DoD-Abhakung (Verifikations-Rolle, getrennter Kontext).
@@ -71,8 +71,8 @@ Inline-Code-Fälle.
   **nicht** als `matrix`-Klassen; eine Erweiterung wäre ein eigener Change)" ·
   `AGENTS.md` §1 („Melde den Widerspruch, statt ihn stillschweigend nach einer
   Seite aufzulösen") · slice-138 §5 Risiko 1 · Kalibrierung: F-1 in
-  `docs/reviews/2026-08-23-slice-132-hard-rule-zensus-review.md` und F-1 in
-  `docs/reviews/2026-08-23-slice-136-agents-34-klaerung-review.md` — exakt
+  `docs/reviews/2026-08-25-slice-132-hard-rule-zensus-review.md` und F-1 in
+  `docs/reviews/2026-08-25-slice-136-agents-34-klaerung-review.md` — exakt
   dasselbe Fehlermuster („gedeckt" trägt weniger, als der Satz suggeriert)
   ein drittes Mal, jetzt eine Ebene tiefer innerhalb der `welle`-Kategorie
   selbst.
@@ -265,8 +265,8 @@ bestandsaussage-ueber-modul-faehigkeit-unbelegt
 **Merge-blockierend:** ja — ein HIGH (F-1) und zwei MEDIUM. F-1 ist die
 dritte Wiederholung desselben Fehlermusters am selben Abschnitt
 („gedeckt"-Verdikt trägt weniger, als sein Wortlaut suggeriert — nach
-`docs/reviews/2026-08-23-slice-132-hard-rule-zensus-review.md` F-1 und
-`docs/reviews/2026-08-23-slice-136-agents-34-klaerung-review.md` F-1), diesmal
+`docs/reviews/2026-08-25-slice-132-hard-rule-zensus-review.md` F-1 und
+`docs/reviews/2026-08-25-slice-136-agents-34-klaerung-review.md` F-1), diesmal
 **innerhalb** der neu gedeckten `welle`-Kategorie: „gedeckt" bedeutet für
 Wellen nur „von Spec-Straten aus", nicht symmetrisch wie bei ADRs/Slices —
 und die einzige einschlägige, Accepted Konvention (`MR-006`), die genau diese

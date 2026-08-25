@@ -17,7 +17,7 @@ Closure-Notiz-Struktur im Modul `planning`);
 
 **Berührte Spec-Stellen:** — (Harness-Gate; keine Anforderung).
 
-**Verantwortlich:** pt9912. **Autor:** pt9912. **Datum:** 2026-08-23.
+**Verantwortlich:** pt9912. **Autor:** pt9912. **Datum:** 2026-08-25.
 
 ---
 
@@ -88,7 +88,7 @@ Wächter startet also grün und wirkt ab dem ersten Verstoß.
       kannte **sechs** heute entstandene Targets nicht — alle eingeordnet.
 - [x] `make gates` Exit 0 (zehn Glieder), `make fullbuild` Exit 0 (der Wächter
       läuft darin, 137 Slices); unabhängiger Review
-      ([Report](../../../reviews/2026-08-23-slice-139-closure-ausgang-waechter-review.md)),
+      ([Report](../../../reviews/2026-08-25-slice-139-closure-ausgang-waechter-review.md)),
       blockierend mit **zwei HIGH**, alle vier Befunde eingearbeitet.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -119,7 +119,7 @@ ein eigener Slice und der Wächter hinge an einer geratenen Liste.
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
 - **Sub-Area prüfen:** Harness-Werkzeuge (GF), Gate-Landschaft (GF).
-- **Offene Beobachtungen sichten** (Register-Stand 2026-08-23):
+- **Offene Beobachtungen sichten** (Register-Stand 2026-08-25):
   [`BEO-015`](../observations.md) ist der **Anlass** dieses Slice — er schließt
   die Feedback-Hälfte zu genau der Regel, deren vierten Ausgang der Eintrag
   benennt. [`BEO-007`](../observations.md) für jeden Beleg-Lauf.

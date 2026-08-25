@@ -1,4 +1,4 @@
-# Review-Report: slice-137 — Zwei Toolchain-Achsen im Nachtlauf — 2026-08-23
+# Review-Report: slice-137 — Zwei Toolchain-Achsen im Nachtlauf — 2026-08-25
 
 **Review-Art:** Code-Review (Diff gegen Slice-Plan, Hard Rules und die
 zitierten `DC-*`-Verträge, Modul 10 §Drei Review-Arten) · **Gegenstand:**
@@ -7,7 +7,7 @@ Commit `26015b4` (`HEAD~1..HEAD`) — der Feature-Commit von slice-137
 Blindheit (slice-137)`).
 
 **Skill:** `.harness/skills/reviewer.md` @ 1.10.0 (Stand `9a7654a`) ·
-**Modell-ID:** `claude-sonnet-5` · **Datum:** 2026-08-23
+**Modell-ID:** `claude-sonnet-5` · **Datum:** 2026-08-25
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 

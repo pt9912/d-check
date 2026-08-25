@@ -20,7 +20,7 @@ und [`DC-FA-MTX-003`](../../../../spec/lastenheft.md#dc-fa-mtx-003--token-basier
 §7 (eine Historie-Zeile wird ent-tokenisiert) — keine Anforderung ändert ihre
 Aussage.
 
-**Verantwortlich:** pt9912. **Autor:** pt9912. **Datum:** 2026-08-23.
+**Verantwortlich:** pt9912. **Autor:** pt9912. **Datum:** 2026-08-25.
 
 ---
 
@@ -98,7 +98,7 @@ würde.
       die Ununterscheidbarkeit vom legitimen Bestand.
 - [x] Lastenheft auf **0.65.4** mit Historie-Zeile; `make gates` Exit 0 (zehn
       Glieder, 485 Dateien), `make fullbuild` Exit 0; unabhängiger Review
-      ([Report](../../../reviews/2026-08-23-slice-138-matrix-wellen-klasse-review.md)),
+      ([Report](../../../reviews/2026-08-25-slice-138-matrix-wellen-klasse-review.md)),
       blockierend mit einem HIGH, alle drei Befunde eingearbeitet.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -129,7 +129,7 @@ Slice und die Scharfschaltung eine Auftraggeber-Frage.
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
 - **Sub-Area prüfen:** Konfigurations-Profil (GF), Spec-Straten (GF).
-- **Offene Beobachtungen sichten** (Register-Stand 2026-08-23):
+- **Offene Beobachtungen sichten** (Register-Stand 2026-08-25):
   [`BEO-011`](../observations.md) für die Bestandsaussage — „**eine** Fundstelle"
   ist eine Messung und bleibt eine, bis der Wächter läuft.
   [`BEO-002`](../observations.md) für die Ränder der ent-tokenisierten Zeile.

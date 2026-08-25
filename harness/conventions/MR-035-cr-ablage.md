@@ -6,7 +6,7 @@
   aber keine Ablage für den **ausgehenden** — die Verzeichnisfrage ist damit
   eine Form-Frage, und die tritt die Rangliste an diesen Speicher ab
   ([`grundlagen-harness-dateien.md` §Konventionsspeicher](../../.harness/baseline/v5.11.0/regelwerk/grundlagen-harness-dateien.md)).
-- **Datum:** 2026-08-23
+- **Datum:** 2026-08-25
 - **Geltungsbereich:** `docs/plan/cr/` — Change Requests, die dieses Repo an die
   **adoptierte Baseline** richtet.
 - **Adaption:** Ausgehende CRs liegen als datierte Datei unter `docs/plan/cr/`,
