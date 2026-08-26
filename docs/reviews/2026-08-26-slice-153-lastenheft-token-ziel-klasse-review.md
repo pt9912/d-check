@@ -11,7 +11,7 @@ unabhängiger Reviewer ohne Anteil an der Arbeit
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- Slice-Plan `docs/plan/planning/in-progress/slice-153-lastenheft-token-ziel-klasse.md`
+- Slice-Plan `docs/plan/planning/done/slice-153-lastenheft-token-ziel-klasse.md`
   vollständig — §1 Ziel, §2 (die vier Schritte), §3 „Ausdrücklich NICHT",
   §4 DoD, §5 Risiken, §7 Vorgelagert
 - `spec/lastenheft.md` vorher (`git show d9fbfe0^:spec/lastenheft.md`) und
@@ -309,7 +309,7 @@ und nach jedem Lauf leer, kein `git checkout` nötig):
   §`DC-FA-MTX-001` — **falls** die Antwort so ausfällt"*) · slice-153 §1 (der
   Satz, der den Slice auslöste, stammt aus `DC-FA-MTX-001`) · slice-153
   §Betroffene IDs (nennt allein `DC-FA-MTX-001`)
-- **pfad:** `docs/plan/planning/in-progress/slice-153-lastenheft-token-ziel-klasse.md:15-17`
+- **pfad:** `docs/plan/planning/done/slice-153-lastenheft-token-ziel-klasse.md:15-17`
   und `:91-92` gegen `git show --stat d9fbfe0`
 - **befund:** Geändert wurden `DC-FA-MTX-003`, das Glossar und die Historie;
   `DC-FA-MTX-001` — die einzige als berührt ausgewiesene Spec-Stelle und die
