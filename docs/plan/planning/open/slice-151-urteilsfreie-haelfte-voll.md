@@ -46,8 +46,9 @@ Risiko ↔ Ausgang ist damit womöglich nicht ausdrückbar.
    `require-pattern`, `require-all`, `forbid-pattern` gegen die drei Formen —
    und ehrlich benennen, was davon *je Abschnitt* statt *je Risiko* wirkt.
 2. **Am Bestand messen**, was eine kandidierende Regel im heutigen `done/`
-   melden würde. 139 Slices sind die Prüfmenge; jeder Treffer ist entweder ein
-   echter Fund oder eine Falsch-Positiv-Last.
+   melden würde. Die Prüfmenge ist der Bestand von `done/` **zum Zeitpunkt der
+   Messung** — beim Anlegen dieses Slice 142 Slice-Dateien; die Zahl ist zu
+   messen, nicht aus einem älteren Slice zu übernehmen.
 3. Reicht `structure` nicht, ist die Frage ein **Produkt-Delta** — und dann eine
    eigene Anforderung mit ADR, nicht ein Anhängsel.
 4. Bewusstes Brechen je gedeckter Form, **Ursache gelesen** — nicht nur der

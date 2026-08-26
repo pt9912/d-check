@@ -74,9 +74,12 @@ Keiner bleibt ungefragt, auch nicht die offensichtlich unberührten.
       [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) geschnitten,
       nicht hier gebaut — das Audit schneidet (§3).
 - [x] `make gates` Exit 0 (zehn Glieder), `make fullbuild` Exit 0.
-- [ ] **Unabhängiger Review — ausstehend.** Der Haken stand hier angekreuzt,
-      bevor ein Review gelaufen war; die Berichtigung ist Teil der Akte, nicht
-      der Formulierung.
+- [x] Unabhängiger Review
+      ([Report](../../../reviews/2026-08-26-slice-149-delta-audit-review.md)),
+      blockierend mit **sieben MEDIUM** und vier LOW, alle elf eingearbeitet.
+      **Der Haken stand hier schon einmal, bevor der Review gelaufen war** — die
+      Berichtigung bleibt in der Akte (§9), weil sie zur Sache gehört und nicht
+      zur Formulierung.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -128,32 +131,65 @@ geschnittene Slices.
 
 | Punkt | Was landete | Antwort für dieses Repo |
 |---|---|---|
-| 1 — urteilsfreie Hälfte benannt | `modul-05`, +11 Zeilen | **Handlung:** [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) — der Kanon nennt *dass ein Ausgang dasteht* **und welcher der drei*; unsere Regel prüft den häufigsten Auslöser |
+| 1 — urteilsfreie Hälfte benannt | `modul-05`, +11 Zeilen | **Handlung:** [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) — der Kanon nennt *dass ein Ausgang dasteht* **und** *welcher der drei*; unsere Regel prüft den häufigsten Auslöser |
 | 2 — *Modul-Pfad* = **Code**-Modul-Pfad | `modul-03` + `AGENTS.template.md` | **Handlung:** [slice-150](../open/slice-150-pin-gebundene-zitate.md) — nicht wegen der Lesart (die bestätigt uns), sondern wegen des **Zitats**, das mitgehoben wurde |
-| 3 — das Rot muss von *dieser* Regel kommen | `modul-13`, +8 Zeilen | **folgenlos für den Regeltext:** der Kanon trägt es, und ihn zu duplizieren verstößt gegen [`AGENTS.md`](../../../../AGENTS.md) §1. **Aber** die Klasse ist hier dreimal aufgetreten und hatte keine Registerzeile — [`BEO-017`](../observations.md) angelegt |
-| 4 — die Reichweitenfrage als Frage | `grundlagen-source-precedence`, +6 Zeilen | **folgenlos:** die Klasse führt [`BEO-012`](../observations.md) bei Zähler 4, und [slice-147](../open/slice-147-reviewer-anker-reichweite.md) liegt für die Feedforward-Hälfte bereits in `open/` |
+| 3 — das Rot muss von *dieser* Regel kommen | `modul-13`, +8 Zeilen | **folgenlos für den Regeltext:** der Kanon ist eine kanonische Quelle und wird pro Entscheidung gelesen; ihn in [`AGENTS.md`](../../../../AGENTS.md) zu wiederholen, verbietet dessen §1 ausdrücklich für **diese Datei**. Das ist **kein** Argument gegen eine Regelstelle anderswo — die braucht es nur nicht, weil die Klasse kein Regeldefizit ist, sondern ein Prüf-Verhalten. **Registerwürdig ist sie trotzdem:** dreimal aufgetreten, ohne Zeile — [`BEO-017`](../observations.md) angelegt |
+| 4 — die Reichweitenfrage als Frage | `grundlagen-source-precedence`, +6 Zeilen | **folgenlos für diese Welle:** die Klasse führt [`BEO-012`](../observations.md) bei Zähler 4. Ihre Feedforward-Hälfte trägt [slice-147](../open/slice-147-reviewer-anker-reichweite.md) — der ist **wellenlos** und steht darum nicht in §4 des Wellendokuments; die Welle schließt nicht auf ihn |
 
 ### Freshness-Audit — 16 gefragt, einer betroffen
 
-Die Verengung ist **gemessen**, nicht geraten, und läuft über zwei Schritte:
-zeigt der `Ersetzt-Baseline-Regel`-Zeiger in eine der **fünf** geänderten
-Dateien (**4 von 16**: [`MR-007`](../../../../harness/conventions.md#mr-007), [`MR-013`](../../../../harness/conventions.md#mr-013), [`MR-032`](../../../../harness/conventions.md#mr-032), [`MR-033`](../../../../harness/conventions.md#mr-033)), und landeten die
-neuen Zeilen im **Abschnitt** dieses Eintrags (**1 von 4**)? [`MR-007`](../../../../harness/conventions.md#mr-007) zeigt auf
-`modul-13` §Hard Rule, die Änderung liegt in §Fitness Function; [`MR-013`](../../../../harness/conventions.md#mr-013) zeigt
-auf `modul-05` §Lifecycle als State Machine, die Änderung in §Offene Risiken;
-[`MR-032`](../../../../harness/conventions.md#mr-032) zeigt auf den Absatz *Wann die CR-Pflicht beginnt*, der unverändert
-ist. Gegengeprüft mit einer **zweiten** Methode — einer normalisierten
-Zitat-Probe über alle Einträge —, die dasselbe Ergebnis liefert.
+Die Verengung ist gemessen, und **der Filter hat eine benannte Blindstelle**.
+Er fragt, wohin der `Ersetzt-Baseline-Regel`-Zeiger zielt — die Frage des Kanons
+lautet aber, ob die neue Fassung das regelt, **wofür der Eintrag angelegt
+wurde**. Das ist der Gegenstand, nicht das Zeigerziel. Wo beides auseinanderfällt,
+trägt der Filter nichts bei, und das gilt für **vier** Einträge, deren Feld gar
+keine Baseline-Datei nennt ([`MR-034`](../../../../harness/conventions.md#mr-034), [`MR-035`](../../../../harness/conventions.md#mr-035),
+[`MR-036`](../../../../harness/conventions.md#mr-036), [`MR-037`](../../../../harness/conventions.md#mr-037)) — sie sind einzeln gelesen und
+unberührt: ihre Gegenstände sind die `matrix`-Kante ADR → Welle, die Ablage
+ausgehender CRs, die Ablage der Antwort und der Pin selbst. Keiner der fünf
+geänderten Texte spricht darüber.
+
+Für die übrigen zwölf lief der Filter, und seine **erste** Stufe ist exakt
+reproduzierbar: **4 von 16** zeigen in eine der fünf geänderten Dateien —
+[`MR-007`](../../../../harness/conventions.md#mr-007), [`MR-013`](../../../../harness/conventions.md#mr-013), [`MR-032`](../../../../harness/conventions.md#mr-032),
+[`MR-033`](../../../../harness/conventions.md#mr-033).
+
+Die **zweite** Stufe fragt, ob die neuen Zeilen die genannte Stelle treffen —
+und hier gehört die **Granularität** dazu, sonst reproduziert die Vorschrift
+das eigene Ergebnis nicht: auf **Abschnitts**-Ebene wären es *zwei von vier*,
+weil die sechs neuen Zeilen von `grundlagen-source-precedence.md` in
+§Source Precedence landen, den [`MR-032`](../../../../harness/conventions.md#mr-032) zuerst nennt. Erst die
+**Absatz**-Ebene entscheidet ihn: sein Feld nennt den Absatz *Wann die CR-Pflicht
+beginnt*, und der ist unverändert. [`MR-007`](../../../../harness/conventions.md#mr-007) zeigt auf `modul-13`
+§Hard Rule, die Änderung liegt in §Fitness Function; [`MR-013`](../../../../harness/conventions.md#mr-013)
+zeigt auf `modul-05` §Lifecycle als State Machine, die Änderung in §Offene
+Risiken — beide schon auf Abschnitts-Ebene entschieden. Bleibt **einer**.
+Gegengeprüft mit einer zweiten Methode — einer normalisierten Zitat-Probe über
+alle Einträge —, die dasselbe Ergebnis liefert.
 
 **[`MR-033`](../../../../harness/conventions.md#mr-033) bleibt, und die Begründung stand schon im eigenen Speicher.** Die
 Frage war, ob unser Verbot nach der Klärung noch eine Verschärfung ist oder nur
 eine nicht ausgeübte Erlaubnis — der Kanon sagt jetzt ausdrücklich *„Die
-Erlaubnis ist keine Pflicht"*. [`MR-032`](../../../../harness/conventions.md#mr-032)
-hat genau diese Abgrenzung schon einmal geprüft und **verworfen**, mit Verweis
-auf [`MR-031`](../../../../harness/conventions.md#mr-031): *wer verschärft,
-weicht ab, auch wenn er nur mehr verlangt.* Der Eintrag bleibt also — und seine
-Prämisse ist jetzt **bestätigt** statt angenommen, was ihn stärker macht als
-vorher.
+Erlaubnis ist keine Pflicht"*. Der Kanon
+stellt die Frage, also gehört sie zuerst an ihm beantwortet: `modul-02`
+§Freshness-Audit kennt für einen Eintrag die Ausgänge *bleibt unverändert* ·
+*wird enger* · *wird abgelöst* · *ist gegenstandslos*. Hier greift der erste,
+denn die Erlaubnis besteht fort und unser Verbot steht weiter gegen sie.
+
+**Die Repo-Präzedenz stützt das, sie ersetzt es nicht.**
+[`MR-032`](../../../../harness/conventions.md#mr-032) hat die Abgrenzung *„eine Freiheit nicht nutzen ist
+keine Abweichung"* schon einmal geprüft und **verworfen**, mit Verweis auf
+[`MR-031`](../../../../harness/conventions.md#mr-031). Dessen Satz lautet vollständig — *„Wer **ihn**
+verschärft, weicht von einem **Baseline-Default** ab — auch wenn er nur *mehr*
+verlangt"* —, und das `ihn` meint dort Schritt 3 des Agenten-Workflows. Die
+Übertragung trägt, weil auch hier ein **Baseline-Default** verschärft wird: der
+Kanon erlaubt, wir verbieten. Sie trüge **nicht**, wenn man den Satz ohne seinen
+Skopus als allgemeines Prinzip führte — genau die Verkürzung, in der
+[`MR-032`](../../../../harness/conventions.md#mr-032) ihn zitiert und in der auch dieser Abschnitt ihn zuerst
+gebracht hat.
+
+Der Eintrag bleibt also — und seine Prämisse ist jetzt **bestätigt** statt
+angenommen, was ihn stärker macht als vorher.
 
 **Ein Fehlalarm gehört in die Akte, weil sein Grund lehrreich ist.** Ein
 zeilenweises `grep` meldete, das Zitat von

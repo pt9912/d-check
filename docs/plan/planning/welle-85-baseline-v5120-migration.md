@@ -108,9 +108,11 @@ unabhängig vom Delta-Audit und darf vorgezogen werden.
 
 - **Kein Release.** Ob die Migration eines braucht, entscheidet das Delta-Audit
   — nur ein Produkt-Delta ist konsumentensichtbar.
-- **Keine Ausweitung der Closure-Regel auf die volle urteilsfreie Hälfte.** Der
-  Kurs hat das ausdrücklich als unsere Entscheidung und **kein
-  Konformitätsthema** bezeichnet. Sie gehört als eigener Slice geschnitten,
-  falls das Audit sie befürwortet — nicht als stiller Anhang der Hebung.
+- **Keine Ausweitung der Closure-Regel als stiller Anhang der Hebung.** Der
+  Kurs hat sie ausdrücklich als unsere Entscheidung und **kein
+  Konformitätsthema** bezeichnet. Diese Grenze galt der **Eröffnung**: sie
+  sollte nicht nebenbei mitlaufen. Das Audit hat sie befürwortet und als
+  [slice-151](open/slice-151-urteilsfreie-haelfte-voll.md) geschnitten — damit
+  steht sie in §4 und ist Gegenstand der Welle, nicht mehr außerhalb.
 - **Keine Nacharbeit an eingefrorenen Zitaten.** Wo `done/`-Dokumente den alten
   Wortlaut zitieren, bleibt er stehen; nur **lebende** Stellen werden gehoben.

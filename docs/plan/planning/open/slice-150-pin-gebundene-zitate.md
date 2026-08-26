@@ -84,7 +84,8 @@ ohnehin verlangt? Davon hängt ab, ob der Bestandsfall repariert werden **darf**
 - **Ein Zitat-Wächter misst Prosa gegen Prosa.** Umbrüche, Auszeichnung und
   Auslassungszeichen machen jede naive Gleichheit falsch; in
   [slice-148](../done/slice-148-baseline-v5120-vendoring.md) hat dieselbe
-  Prüfung sechs Anläufe gebraucht. — **Ausgang:** *(bei Closure)*
+  Prüfung mehrere verworfene Fassungen gebraucht, bis sie trug — die dort
+  genannte Zahl **sechs** zählt Dokument/Quell-Paare, nicht Anläufe. — **Ausgang:** *(bei Closure)*
 
 ## 6. Trigger
 
