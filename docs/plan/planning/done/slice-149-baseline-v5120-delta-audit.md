@@ -61,7 +61,7 @@ Keiner bleibt ungefragt, auch nicht die offensichtlich unberührten.
 ## 4. Definition of Done
 
 - [x] Vier Kurs-Wellen, vier Antworten: **zwei mit Handlung**
-      ([slice-150](../open/slice-150-pin-gebundene-zitate.md),
+      ([slice-150](../in-progress/slice-150-pin-gebundene-zitate.md),
       [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md)), **zwei
       belegt folgenlos** mit Fundstelle (§9).
 - [x] **Alle 16** aktiven Adaptionen gefragt, die Reduktion **gemessen** statt
@@ -132,7 +132,7 @@ geschnittene Slices.
 | Punkt | Was landete | Antwort für dieses Repo |
 |---|---|---|
 | 1 — urteilsfreie Hälfte benannt | `modul-05`, +11 Zeilen | **Handlung:** [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) — der Kanon nennt *dass ein Ausgang dasteht* **und** *welcher der drei*; unsere Regel prüft den häufigsten Auslöser |
-| 2 — *Modul-Pfad* = **Code**-Modul-Pfad | `modul-03` + `AGENTS.template.md` | **Handlung:** [slice-150](../open/slice-150-pin-gebundene-zitate.md) — nicht wegen der Lesart (die bestätigt uns), sondern wegen des **Zitats**, das mitgehoben wurde |
+| 2 — *Modul-Pfad* = **Code**-Modul-Pfad | `modul-03` + `AGENTS.template.md` | **Handlung:** [slice-150](../in-progress/slice-150-pin-gebundene-zitate.md) — nicht wegen der Lesart (die bestätigt uns), sondern wegen des **Zitats**, das mitgehoben wurde |
 | 3 — das Rot muss von *dieser* Regel kommen | `modul-13`, +8 Zeilen | **folgenlos für den Regeltext:** der Kanon ist eine kanonische Quelle und wird pro Entscheidung gelesen; ihn in [`AGENTS.md`](../../../../AGENTS.md) zu wiederholen, verbietet dessen §1 ausdrücklich für **diese Datei**. Das ist **kein** Argument gegen eine Regelstelle anderswo — die braucht es nur nicht, weil die Klasse kein Regeldefizit ist, sondern ein Prüf-Verhalten. **Registerwürdig ist sie trotzdem:** dreimal aufgetreten, ohne Zeile — [`BEO-017`](../observations.md) angelegt |
 | 4 — die Reichweitenfrage als Frage | `grundlagen-source-precedence`, +6 Zeilen | **folgenlos für diese Welle:** die Klasse führt [`BEO-012`](../observations.md) bei Zähler 4. Ihre Feedforward-Hälfte trägt [slice-147](../open/slice-147-reviewer-anker-reichweite.md) — der ist **wellenlos** und steht darum nicht in §4 des Wellendokuments; die Welle schließt nicht auf ihn |
 
@@ -206,6 +206,6 @@ Das veraltete Zitat in [`MR-033`](../../../../harness/conventions.md#mr-033)
 steht noch, weil vorher eine **Regelfrage** zu beantworten ist: Ein
 `Accepted`-Eintrag wird nie überschrieben, und ob die Zitat-Korrektur darunter
 fällt oder unter die Pflege pin-gebundener Referenzen, entscheidet
-[slice-150](../open/slice-150-pin-gebundene-zitate.md). Die bequeme Antwort
+[slice-150](../in-progress/slice-150-pin-gebundene-zitate.md). Die bequeme Antwort
 wäre die zweite; genau darum bekommt sie einen eigenen Slice statt eines
 Nebensatzes hier.
