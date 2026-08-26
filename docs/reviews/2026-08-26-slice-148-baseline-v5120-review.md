@@ -6,7 +6,7 @@
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- Slice-Plan `docs/plan/planning/in-progress/slice-148-baseline-v5120-vendoring.md`
+- Slice-Plan `docs/plan/planning/done/slice-148-baseline-v5120-vendoring.md`
 - Wellendokument `docs/plan/planning/welle-85-baseline-v5120-migration.md`
 - `harness/conventions.md` §Baseline, §Adoptierte Konventions-Quellen, §Adaptions-Block (beide Index-Tabellen)
 - `harness/conventions/MR-037-baseline-v5120.md` (neu), `harness/conventions/done/MR-030-baseline-v5110.md` (verschoben), `MR-011`, `MR-021`, `MR-023`, `MR-033`

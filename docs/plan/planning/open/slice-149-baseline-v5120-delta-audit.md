@@ -81,7 +81,7 @@ Keiner bleibt ungefragt, auch nicht die offensichtlich unberührten.
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): [slice-148](../in-progress/slice-148-baseline-v5120-vendoring.md)
+**Start** (`open` → `in-progress`): [slice-148](../done/slice-148-baseline-v5120-vendoring.md)
 in `done/` — ohne gehobenen Pin gibt es keinen Stand, gegen den geprüft wird.
 
 **Rückführungen:** `in-progress` → `next`, falls das Audit ein Produkt-Delta
