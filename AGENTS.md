@@ -193,14 +193,24 @@ bleibt Urteil.)*
 **Die Sprachfreiheit der Sicht zerfällt in zwei ungleiche Hälften, und eine ist
 jetzt gedeckt.** Ob eine Zeile **Rollen statt Technologie** benennt, ist ein
 Urteil — *permanent*. Ob sie einen **Modul-Pfad** trägt, ist ein detektierbarer
-Zustand: `make doc-check` (Modul `structure`) meldet einen Pfad unter den
-**Code-Wurzeln** dieses Repos in der Sicht als `section-forbidden`.
+Zustand: `make doc-check` (Modul `matrix`) führt die Sicht als **eigene Klasse**
+und meldet einen Pfad unter den **Code-Wurzeln** dieses Repos als
+`matrix-forbidden`.
 
 Gegenstand sind **Modul**-Pfade, nicht Pfade überhaupt — Dokument-Pfade bleiben
-erlaubt, denn ein Dokument ist kein Modul. Drei **benannte Grenzen**:
-Inline-Code und Fenced Blöcke zählen nicht (die Sicht darf einen Pfad
-*zitieren*, ohne ihn zu *führen*), Großschreibung fällt heraus, und
-Skript-Pfade sind bewusst außen vor — ein Gate-Skript ist kein Modul.
+erlaubt, denn ein Dokument ist kein Modul; Skript-Pfade ebenso, denn ein
+Gate-Skript ist keines.
+
+**Die Prüfung liest die rohen Zeilen** — ein Pfad in **Inline-Code** wird
+erfasst, und das ist tragend: so schreibt dieses Repo solche Pfade überwiegend.
+Ihre **benannten Grenzen**: Fenced Blöcke zählen nicht (ein Beispiel-Block ist
+kein Verweis), Großschreibung fällt heraus, und ein Pfad über einen
+Zeilenumbruch ebenfalls.
+
+**Der Preis der eigenen Klasse steht in der Konfiguration:** Die Sicht fällt aus
+der klasseninternen Richtungs-Regel der übrigen Straten heraus; ihre
+Abwärts-Kante und die vier Verbote, die sie mit ihnen teilt, sind dort als
+**explizite** Regeln nachgebaut — gemessen, dass sich nichts daran ändert.
 
 **Das Pfad-Verbot ist eine Verschärfung gegenüber der Baseline** — sie erlaubt
 der Sicht Modul-Pfade ausdrücklich. Geführt als

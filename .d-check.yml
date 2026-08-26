@@ -208,12 +208,37 @@ diagrams:
 # (token + adr→slice + Provenance-Marker). architecture → spezifikation → lastenheft.
 matrix:
   classes:
+    # Die Sicht traegt eine eigene Klasse, damit die Token-Pruefung auf SIE
+    # skopiert werden kann (AGENTS.md §3.4, Verschaerfung: MR-033). Sie steht
+    # VOR spec-straten, weil die Klassen-Zuordnung First-Match ueber diese
+    # Reihenfolge ist -- danach deklariert, wuerde sie nie greifen.
+    #
+    # Der Preis: die Sicht faellt aus der klasseninternen Richtungs-Regel von
+    # spec-straten heraus. Ihre Abwaerts-Kante ist darum unten als eigene Regel
+    # nachgebaut (spec-straten -> sicht), und die vier Verbote der Straten sind
+    # fuer sie wiederholt. Beides ist explizit statt implizit -- eine Kante, die
+    # man liest, statt einer, die aus einer Ordnung folgt.
+    - name: sicht
+      paths: [spec/architecture.md]
+    # Modul-Pfade als Token-Ziel: der Gegenstand ist eine Zeichenkette, kein
+    # Dokument -- wie bei commit-hash. Gemeldet wird ein Pfad unter den
+    # CODE-Wurzeln dieses Repos; Dokument-Pfade sind KEIN Gegenstand, denn die
+    # Regel gilt Modul-Pfaden und ein Dokument ist kein Modul. `tools/` fehlt
+    # bewusst: ein Gate-Skript ist kein Modul, und die Regel darauf
+    # auszudehnen waere eine andere Regel.
+    #
+    # ENTSCHEIDEND FUER DIE ZUSAGE: matrix liest die ROHEN Zeilen. Ein Pfad in
+    # Inline-Code wird damit erfasst -- und genau so schreibt dieses Repo
+    # solche Pfade ueberwiegend. Markdown-Link-Spans und Fenced Bloecke zaehlen
+    # nicht (DC-FA-MTX-003.a).
+    - name: modul-pfad
+      token: '\b(internal|cmd)/[a-z]'
     - name: spec-straten
-      paths: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+      paths: [spec/lastenheft.md, spec/spezifikation.md]
       # Klasseninterne Verweisrichtung (DC-FA-MTX-002): Rang = autoritativste
       # Schicht zuerst; ein Abwärtsverweis (z. B. lastenheft → architecture,
       # auch transitiv) ⇒ matrix-downward.
-      order: [spec/lastenheft.md, spec/spezifikation.md, spec/architecture.md]
+      order: [spec/lastenheft.md, spec/spezifikation.md]
       direction: no-downward
     - name: adr
       paths: ["docs/plan/adr/[0-9]*.md"]
@@ -268,6 +293,17 @@ matrix:
     - {from: spec-straten, to: slice, allow: false}
     - {from: spec-straten, to: welle, allow: false}
     - {from: spec-straten, to: commit-hash, allow: false}
+    # Ersatz fuer die entfallene Richtungs-Kante: die Sicht ist die unterste
+    # Schicht, ein Verweis aus den Straten auf sie ist abwaerts.
+    - {from: spec-straten, to: sicht, allow: false}
+    # Die Sicht erbt die vier Verbote der Straten -- sie ist selbst ein Stratum,
+    # nur eines mit eigener Klasse.
+    - {from: sicht, to: adr, allow: false}
+    - {from: sicht, to: slice, allow: false}
+    - {from: sicht, to: welle, allow: false}
+    - {from: sicht, to: commit-hash, allow: false}
+    # Und das eine, das nur fuer sie gilt.
+    - {from: sicht, to: modul-pfad, allow: false}
     - {from: adr, to: slice, allow: false}
     - {from: adr, to: welle, allow: false}
   status:
@@ -336,25 +372,6 @@ versions:
 # Inner-Loop-Bindepunkt (doc-check), weil die Zeilen in Feat-/Release-Prep-
 # Commits entstehen — dort soll es rot werden, nicht erst an der Closure.
 structure:
-  # Die Sicht fuehrt keine Code-Modul-Pfade (AGENTS.md §3.4, Verschaerfung
-  # gegenueber der Baseline: MR-033). Die Regel zerfaellt in zwei Haelften --
-  # "Rollen statt Technologie" bleibt Urteil, "traegt eine Zeile einen
-  # Modul-Pfad" ist ein Zustand. Diese Regel prueft die zweite.
-  #
-  # ZUSAGE, GENAU: gemeldet wird ein Pfad unter den CODE-Wurzeln dieses Repos
-  # (`internal/`, `cmd/`) im bereinigten Text der Sicht -- auch als Ziel eines
-  # Markdown-Links. Dokument-Pfade (`docs/`, `spec/`, `harness/`) sind KEIN
-  # Gegenstand: die Regel gilt Modul-Pfaden, und ein Dokument ist kein Modul.
-  #
-  # GRENZEN, benannt: Inline-Code und Fenced Bloecke zaehlen nicht (die Sicht
-  # darf einen Pfad zitieren, ohne ihn zu fuehren); Grossschreibung faellt
-  # heraus; und `tools/` ist bewusst NICHT dabei -- ein Gate-Skript ist kein
-  # Modul, und die Regel auf Skript-Pfade auszudehnen waere eine andere Regel.
-  - files: spec/architecture.md
-    section-pattern: '^# '
-    sections: each
-    forbid-pattern: '\b(internal|cmd)/[a-z]'
-
   - files: spec/lastenheft.md
     section: "## 7. Historie"
     table-order: desc          # Spalte 1 = Version (0.61.0 …)
