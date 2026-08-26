@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# pretooluse-command-guard — verbietet Host-Paketmanager und die
-# Host-Go-Toolchain (d-check ist make/Docker-only, AGENTS.md §3.1,
+# pretooluse-command-guard — verbietet Host-Paketmanager, die Host-Go-Toolchain
+# und Host-Skript-Interpreter (d-check ist make/Docker-only, AGENTS.md §3.1,
 # ADR-0001).
 #
 # Geprüft wird die Befehlsposition jedes Kommando-Segments (Trennung
@@ -8,9 +8,21 @@
 # oder `docker run img npm test` bleiben erlaubt; `/usr/bin/pip` und
 # `sudo pip` werden erkannt. Sub-Shell-Strings (`bash -c "…"`, auch in
 # Flag-Bündeln wie `-lc`/`-ec`/`-cx`) werden rekursiv geprüft (MR-005).
-# Bewusst NICHT geprüft: andere Interpreter (`python -c`, `perl -e`,
-# `node -e`, `find -exec`) — der Guard ist ein Stolperdraht gegen
-# versehentliche Host-Toolchain-Nutzung, keine Sandbox.
+#
+# SKRIPT-INTERPRETER: `python`/`python3`/`python3.x`, `perl` und `ruby` in
+# Befehlsposition sind blockiert. Grund ist nicht die Sprache, sondern der
+# Skopus: §3.1 nennt als Host-Klasse `git`, GNU `make`, `bash`, Docker und die
+# POSIX-Standardwerkzeuge, die die Gate-Skripte rufen. Ein General-Purpose-
+# Interpreter gehört nicht dazu, und er hebelt die Klasse aus — er kann alles,
+# was die genannten Werkzeuge können, ohne deren Grenze zu erben.
+#
+# `node` steht bewusst NICHT auf der Liste: dieser Guard führt seine eigene
+# Prüfung damit aus und deklariert es fail-closed als Host-Abhängigkeit. Ein
+# Verbot hier wäre eine Regel, die ihr eigenes Werkzeug verböte.
+#
+# BENANNTE GRENZE: `find -exec`, `awk`-Programme und jeder Interpreter, den
+# diese Liste nicht kennt, bleiben ungeprüft — der Guard ist ein Stolperdraht
+# gegen versehentliche Host-Toolchain-Nutzung, keine Sandbox.
 #
 # Im Pass-Fall: KEINE Ausgabe — "approve" würde das Permission-System
 # überspringen; ohne Ausgabe läuft die normale Permission-Entscheidung.
@@ -27,7 +39,11 @@ input="$(cat)"
 verdict="$(printf '%s' "$input" | node -e '
   const BLOCKED = new Set(["apt","apt-get","brew","pip","pip3","pipx",
     "npm","pnpm","yarn","npx","corepack","cargo","rustup","gem","conda",
-    "go","gofmt","golangci-lint","staticcheck"]); // Host-Go: ADR-0001 + AGENTS §3.1
+    "go","gofmt","golangci-lint","staticcheck", // Host-Go: ADR-0001 + AGENTS §3.1
+    "perl","ruby"]);                            // Skript-Interpreter: AGENTS §3.1
+  // python, python3, python3.12 … — die Versions-Suffixe machen eine Liste
+  // unvollständig, darum als Muster.
+  const BLOCKED_RE = /^python[0-9]*(\.[0-9]+)*$/;
   const PREFIXES = new Set(["sudo","env","command","exec","nice","time",
     "xargs","eval"]);
   const SHELLS = new Set(["bash","sh","zsh","dash","ksh"]);
@@ -43,7 +59,7 @@ verdict="$(printf '%s' "$input" | node -e '
              (/^[A-Za-z_][A-Za-z0-9_]*=/.test(tokens[i]) || PREFIXES.has(tokens[i]))) i++;
       if (i >= tokens.length) continue;
       const head = tokens[i].replace(/^.*\//, ""); // /usr/bin/pip → pip
-      if (BLOCKED.has(head)) return true;
+      if (BLOCKED.has(head) || BLOCKED_RE.test(head)) return true;
       if (SHELLS.has(head)) {
         // -c auch in Flag-Bündeln erkennen (-lc, -ec, -cx, …): bei
         // sh/bash ist c das einzige Single-Letter-Flag mit
@@ -72,7 +88,7 @@ if [ "$verdict" = "block" ]; then
   cat <<'JSON'
 {
   "decision": "block",
-  "reason": "d-check is make/Docker-only (AGENTS.md §3.1, ADR-0001). Use make targets; do not install or run host package managers or host go (apt/brew/pip/npm/cargo/go/...)."
+  "reason": "d-check is make/Docker-only (AGENTS.md §3.1, ADR-0001). Use make targets and the POSIX host tools the gate scripts use (grep/sed/awk/find); do not run host package managers, host go, or host script interpreters (apt/brew/pip/npm/cargo/go/python/perl/ruby)."
 }
 JSON
 fi

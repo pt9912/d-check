@@ -88,7 +88,15 @@ Docker und die POSIX-Standardwerkzeuge, die die Gate-Skripte rufen
 (coreutils, findutils, `grep`, `awk`). Bewusst als **Klasse** genannt und nicht
 als Liste: eine Aufzählung wäre ein weiterer ungewachter Spiegel.
 
-**Falsch:** `go build ./…`, `go test ./…`, `pip install …`
+**Auch kein Host-Skript-Interpreter.** `python`/`python3`, `perl` und `ruby`
+gehören nicht zu dieser Klasse. Der Grund ist nicht die Sprache, sondern der
+**Skopus**: ein General-Purpose-Interpreter kann alles, was die genannten
+Werkzeuge können, ohne deren Grenze zu erben — er hebelt die Klasse aus, statt
+in ihr zu arbeiten. Wo ein Skript wirklich nötig ist, läuft es als **eigene
+Dockerfile-Stage** wie jede andere Toolchain dieses Repos, digest-gepinnt und
+über ein `make`-Target.
+
+**Falsch:** `go build ./…`, `go test ./…`, `pip install …`, `python3 - <<EOF`
 **Richtig:** `make gates`
 
 **Begründung:** Toolchain-Reproduzierbarkeit + Supply-Chain-Defense.
@@ -97,8 +105,14 @@ als Liste: eine Aufzählung wäre ein weiterer ungewachter Spiegel.
 ([`.claude/hooks/pretooluse-command-guard.sh`](.claude/hooks/pretooluse-command-guard.sh))
 prüft die Befehlsposition jedes Segments und Sub-Shell-Strings rekursiv. Er ist
 **werkzeug-lokal**, kein Repo-Gate: kein `make`-Target und keine CI ruft ihn,
-ein Lauf ohne dieses Werkzeug ist ungebunden. Und er nennt seine Grenze selbst —
-*Stolperdraht, keine Sandbox*: andere Interpreter bleiben ungeprüft.
+ein Lauf ohne dieses Werkzeug ist ungebunden. Er blockiert die Paketmanager, die
+Host-Go-Toolchain und die drei genannten Interpreter — bei Python samt
+Versions-Suffix, weil eine Liste dort unvollständig wäre. Und er nennt seine
+Grenze selbst — *Stolperdraht, keine Sandbox*: `find -exec`, `awk`-Programme und
+jeder Interpreter, den die Liste nicht kennt, bleiben ungeprüft. **`node` steht
+bewusst nicht darauf:** der Wächter führt seine eigene Prüfung damit aus und
+deklariert es fail-closed als Host-Abhängigkeit — ein Verbot wäre eine Regel,
+die ihr eigenes Werkzeug verböte.
 
 ### 3.2 Suppression-Verbot
 

@@ -118,6 +118,7 @@ ob der Eintrag ihn betrifft.
 | [MR-036](conventions/MR-036-cr-antwort-ablage.md) <a id="mr-036--die-antwort-auf-einen-ausgehenden-cr-liegt-bei-ihrem-cr"></a><a id="mr-036"></a> | Die Antwort liegt bei ihrem CR | `docs/plan/cr/` — eingehende Antworten | keine — der Kanon kennt den ausgehenden CR nicht, also auch nicht seine Antwort |
 | [MR-037](conventions/MR-037-baseline-v5120.md) <a id="mr-037--baseline-pin-hebung-auf-v5120-siebter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-037"></a> | Baseline-Pin-Hebung auf v5.12.0 (Pin-Fortschreibung, Nachtrag) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v5.12.0/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
 | [MR-039](conventions/MR-039-zitat-delta-im-neuen-eintrag.md) <a id="mr-039--ändert-die-baseline-einen-zitierten-wortlaut-hält-das-ein-neuer-eintrag-fest--nicht-der-zitierende"></a><a id="mr-039"></a> | Geändertes Baseline-Zitat wird im Bump-Eintrag vermerkt, nicht im zitierenden Dokument | wörtliche Baseline-Zitate in allen lebenden Dokumenten | keine — der Kanon gibt das Prinzip, nicht den Ort |
+| [MR-040](conventions/MR-040-guard-skript-interpreter.md) <a id="mr-040--der-tool-call-wächter-blockiert-auch-host-skript-interpreter-schärft-mr-005"></a><a id="mr-040"></a> | Wächter blockiert Host-Skript-Interpreter (schärft [`MR-005`](conventions.md#mr-005)) | `.claude/hooks/pretooluse-command-guard.sh`, `AGENTS.md` §3.1 | keine — der Kanon verlangt die Härtung, nicht ihre Liste |
 
 ### Aufgelöste Adaptionen
 
