@@ -28,6 +28,21 @@ Ergebnis, und die Kategorie bleibt ausgewiesen.
 
 ## 2. Vorgehen
 
+0. **Die Schwelle steht, bevor gemessen wird** — festgehalten am 2026-08-26,
+   vor dem ersten Lauf, weil „vertretbar" sonst nachträglich an das Ergebnis
+   angepasst wird ([`BEO-011`](../observations.md), §7):
+
+   - **Null Falsch-Positive** im Bestand der drei Spec-Straten. Ein Gate in
+     `gates`, das legitime Sätze meldet, erzwingt Umformulierung — und §3
+     verbietet die Ausnahme-Liste als Ersatz für Präzision.
+   - **Positivkontrolle:** ein konstruierter echter Commit-Hash wird gemeldet,
+     die Ursache gelesen, der Rückbau grün.
+   - **Die Falsch-Negativ-Klasse ist zu benennen**, nicht zu minimieren: welche
+     echten Hashes das Muster nicht fängt, gehört ins Ergebnis.
+
+   Ein Kandidat, der die erste Bedingung nur mit Ausnahmen erfüllt, ist
+   durchgefallen.
+
 1. **Kandidaten-Muster formulieren** (Mindestlänge, Wortgrenzen, Ausschluss von
    Inline-Code und Links) und je Kandidat am Bestand messen.
 2. **Beide Fehlerrichtungen zählen**, nicht nur die Treffer: was würde gemeldet,
