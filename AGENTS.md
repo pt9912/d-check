@@ -163,19 +163,24 @@ Die sprachkonkrete Übersetzung (Modul-Pfade, Import-Regeln) und die
 Begründungen leben in den ADRs, deren `Schärft:`-Feld aufwärts zeigt;
 die zeitliche Schicht lebt in `docs/plan/planning/`.
 
-**Die Abwärts-Sperre nennt fünf Kategorien; gedeckt sind drei.**
-`make doc-check` (Modul `matrix`) hält **ADRs**, **Slices** und **Wellen** — ein
-solches Token im Spec-Körper ist ein `matrix-forbidden`-Befund.
+**Die Abwärts-Sperre nennt fünf Kategorien; gedeckt sind vier.**
+`make doc-check` (Modul `matrix`) hält **ADRs**, **Slices**, **Wellen** und
+**Commit-Hashes** — ein solches Token im Spec-Körper ist ein
+`matrix-forbidden`-Befund.
 
-Die zwei übrigen sind ungedeckt, und zwar aus zwei verschiedenen Gründen. Ein
-**Commit-Hash** wäre als Token-Klasse durchaus ausdrückbar — die Mechanik dafür
-existiert —, aber ein Muster über Hex-Zeichenketten träfe jedes Wort, das wie
-ein Hash aussieht; was fehlt, ist **Präzision**, nicht die Fähigkeit. Ein
-**Closure-Datum** ist von einem legitimen Datum überhaupt nicht unterscheidbar:
-die Spec-Straten führen ihre eigenen Historie-Zeilen voller Daten.
-*(Auflösungs-Trigger: für Commit-Hashes ein Muster mit vertretbarer
-Falsch-Positiv-Last, am Bestand gemessen; für Closure-Daten keiner — die
-Kategorie ist maschinell nicht trennbar und bleibt Urteil.)*
+Die Commit-Hash-Klasse ist eine Token-Klasse **ohne Zieldateien**: ihr
+Gegenstand ist eine Zeichenkette, kein Dokument. Ihre Falsch-Positiv-Last ist
+**gemessen, nicht geschätzt** — die Risiko-Klasse sind reine `a`–`f`-Wörter ab
+sieben Zeichen, und über alle Markdown-Dateien des Repos kommt davon **keines**
+natürlich vor. Sie hat drei **benannte Grenzen**: Fenced Blöcke bleiben außen
+vor (ein Beispiel ist kein Verweis), Großschreibung wird nicht erfasst, und
+Kurzformen unter sieben Zeichen fallen heraus.
+
+Ungedeckt bleibt eine Kategorie. Ein **Closure-Datum** ist von einem legitimen
+Datum überhaupt nicht unterscheidbar: die Spec-Straten führen ihre eigenen
+Historie-Zeilen voller Daten.
+*(Auflösungs-Trigger: keiner — die Kategorie ist maschinell nicht trennbar und
+bleibt Urteil.)*
 
 **Die Sprachfreiheit der Sicht** prüft kein Gate und zerfällt in zwei ungleiche
 Hälften. Ob eine Zeile **Rollen statt Technologie** benennt, ist ein Urteil —

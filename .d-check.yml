@@ -237,10 +237,37 @@ matrix:
       # hier unbewacht, WEIL Welle keine matrix-Klasse war; mit dieser Klasse
       # faellt diese Bedingung weg (MR-006 §Scope-Grenze C-4, MR-034).
       token: 'welle-\d{2,}'
+    - name: commit-hash
+      # Vierte der fuenf Kategorien aus AGENTS.md §3.4. Eine Token-Klasse OHNE
+      # paths: der Gegenstand ist kein Dokument, sondern eine Zeichenkette --
+      # matrix verlangt nur `name`, und genau das macht die Kategorie
+      # ausdrueckbar.
+      #
+      # DIE SCHWELLE STAND VOR DER MESSUNG (slice-144 §2 Schritt 0): null
+      # Falsch-Positive im Bestand der drei Straten, Positivkontrolle rot,
+      # Falsch-Negativ-Klasse benannt. Gemessen mit dem Produkt, nicht per grep:
+      #
+      #   Bestand heute      0 Befunde (vier Kandidaten, alle 0)
+      #   Positivkontrolle   Kurz- UND Langform gemeldet, auch in Inline-Code
+      #   Risiko-Klasse      reine a-f-Woerter ab 7 Zeichen; ueber ALLE
+      #                      Markdown-Dateien des Repos gemessen: zehn Treffer,
+      #                      allesamt `deadbeef` -- ein Hex-Platzhalter, kein
+      #                      natuerliches Wort. In den Straten: null.
+      #
+      # BENANNTE GRENZEN, nicht wegkonfiguriert: Fenced Bloecke werden
+      # uebersprungen (ein Hash im Beispiel-Block bleibt unentdeckt -- gewollt,
+      # ein Beispiel ist kein Verweis); Grossschreibung faellt heraus (git
+      # schreibt klein); Kurzformen unter sieben Zeichen ebenfalls. Eine URL mit
+      # Hash wird erfasst.
+      #
+      # Die Obergrenze 40 ist tragend: ein 64-stelliger sha256-Digest hat keine
+      # Wortgrenze in der Mitte und wird darum NICHT als Hash gelesen.
+      token: '\b[0-9a-f]{7,40}\b'
   rules:
     - {from: spec-straten, to: adr, allow: false}
     - {from: spec-straten, to: slice, allow: false}
     - {from: spec-straten, to: welle, allow: false}
+    - {from: spec-straten, to: commit-hash, allow: false}
     - {from: adr, to: slice, allow: false}
     - {from: adr, to: welle, allow: false}
   status:
