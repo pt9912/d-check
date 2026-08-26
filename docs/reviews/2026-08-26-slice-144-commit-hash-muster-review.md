@@ -11,7 +11,7 @@ Slice-Plan), `8e0a6f0` (Feat: `.d-check.yml` +27, `AGENTS.md` +18/−13)
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- Slice-Plan `docs/plan/planning/in-progress/slice-144-commit-hash-muster.md`
+- Slice-Plan `docs/plan/planning/done/slice-144-commit-hash-muster.md`
   vollständig — insbesondere §2 Schritt 0 (die vorab notierte Schwelle), §3
   „Ausdrücklich NICHT", §5 Risiken, §7 Vorgelagert
 - `.d-check.yml`, Block `matrix` vollständig (alle fünf Klassen, `rules`,
@@ -352,7 +352,7 @@ vor und nach jedem Lauf leer, kein `git checkout --` nötig):
 - **quelle:** `89363e3` (Botschaft: *„Vorab gemessen, weil AGENTS.md §3.4 es
   behauptet: eine Token-Klasse OHNE Zieldateien ist ausdrückbar"*) gegen den im
   selben Commit eingefügten Text
-- **pfad:** `docs/plan/planning/in-progress/slice-144-commit-hash-muster.md:31–32`
+- **pfad:** `docs/plan/planning/done/slice-144-commit-hash-muster.md:31–32`
 - **befund:** Der Schwellen-Text sagt *„festgehalten am 2026-08-26, vor dem
   ersten Lauf"*, während dieselbe Commit-Botschaft einen bereits gefahrenen Lauf
   berichtet. Beides ist nur vereinbar, wenn „Lauf" die Falsch-Positiv-Messung
