@@ -163,18 +163,26 @@ Die sprachkonkrete Übersetzung (Modul-Pfade, Import-Regeln) und die
 Begründungen leben in den ADRs, deren `Schärft:`-Feld aufwärts zeigt;
 die zeitliche Schicht lebt in `docs/plan/planning/`.
 
-**Die Abwärts-Sperre nennt fünf Kategorien; gedeckt sind vier.**
-`make doc-check` (Modul `matrix`) hält **ADRs**, **Slices**, **Wellen** und
-**Commit-Hashes** — ein solches Token im Spec-Körper ist ein
-`matrix-forbidden`-Befund.
+**Die Abwärts-Sperre nennt fünf Kategorien; gedeckt sind vier — auf zwei
+verschiedene Arten.** `make doc-check` (Modul `matrix`) hält **ADRs** über die
+**Link**-Prüfung (ein Link aus einem Stratum in die ADR-Klasse ist
+`matrix-forbidden`; ein *bares* `ADR-<NNNN>` im Fließtext ist es **nicht** — die
+Klasse trägt kein `token`), und **Slices**, **Wellen** und **Commit-Hashes**
+zusätzlich als **Token** im Körper.
 
 Die Commit-Hash-Klasse ist eine Token-Klasse **ohne Zieldateien**: ihr
-Gegenstand ist eine Zeichenkette, kein Dokument. Ihre Falsch-Positiv-Last ist
-**gemessen, nicht geschätzt** — die Risiko-Klasse sind reine `a`–`f`-Wörter ab
-sieben Zeichen, und über alle Markdown-Dateien des Repos kommt davon **keines**
-natürlich vor. Sie hat drei **benannte Grenzen**: Fenced Blöcke bleiben außen
-vor (ein Beispiel ist kein Verweis), Großschreibung wird nicht erfasst, und
-Kurzformen unter sieben Zeichen fallen heraus.
+Gegenstand ist eine Zeichenkette, kein Dokument. **Sie sagt mehr zu, als ihr
+Name sagt** — gemeldet wird jede 7- bis 40-stellige Zeichenkette aus `[0-9a-f]`
+zwischen Wortgrenzen, also auch rein dezimale Token dieser Länge (Lauf-Nummern,
+Kompaktdaten) und Hex-Farbwerte. Für die Straten ist das tragbar, weil deren
+Datums- und Versions-Schreibweisen Trennzeichen führen und damit
+auseinanderfallen; im Bestand meldet sie **null**.
+
+Ihre **benannten Grenzen**: Markdown-Link-Spans und Fenced Blöcke zählen nicht —
+ein Hash im Linktext *oder* in der Link-URL bleibt stumm, eine bare URL nicht;
+Großschreibung und Kurzformen unter sieben Zeichen fallen heraus; und der
+Provenance-Marker auf derselben rohen Zeile nimmt auch diese Klasse aus, obwohl
+dieser Abschnitt für die Straten keine solche Ausnahme kennt.
 
 Ungedeckt bleibt eine Kategorie. Ein **Closure-Datum** ist von einem legitimen
 Datum überhaupt nicht unterscheidbar: die Spec-Straten führen ihre eigenen
