@@ -16,9 +16,14 @@
 # Interpreter gehört nicht dazu, und er hebelt die Klasse aus — er kann alles,
 # was die genannten Werkzeuge können, ohne deren Grenze zu erben.
 #
-# `node` steht bewusst NICHT auf der Liste: dieser Guard führt seine eigene
-# Prüfung damit aus und deklariert es fail-closed als Host-Abhängigkeit. Ein
-# Verbot hier wäre eine Regel, die ihr eigenes Werkzeug verböte.
+# `node` steht MIT auf der Liste. Der Agent ruft es nicht mehr auf; der Hook
+# ruft es weiterhin, denn Hook-Subprozesse laufen nicht durch den Hook.
+#
+# DAS IST EINE OFFENE INKONSISTENZ, KEINE LÖSUNG: dieser Guard soll erzwingen,
+# dass nur die in AGENTS.md §3.1 genannte Host-Klasse benutzt wird — und ist
+# selbst in einer Toolchain geschrieben, die nicht dazugehört. Die Ablösung auf
+# bash + POSIX-Werkzeuge ist geschnitten; bis dahin bleibt node eine deklarierte
+# Host-Abhängigkeit dieses einen Skripts.
 #
 # BENANNTE GRENZE: `find -exec`, `awk`-Programme und jeder Interpreter, den
 # diese Liste nicht kennt, bleiben ungeprüft — der Guard ist ein Stolperdraht
@@ -40,7 +45,7 @@ verdict="$(printf '%s' "$input" | node -e '
   const BLOCKED = new Set(["apt","apt-get","brew","pip","pip3","pipx",
     "npm","pnpm","yarn","npx","corepack","cargo","rustup","gem","conda",
     "go","gofmt","golangci-lint","staticcheck", // Host-Go: ADR-0001 + AGENTS §3.1
-    "perl","ruby"]);                            // Skript-Interpreter: AGENTS §3.1
+    "perl","ruby","node","deno","bun"]);        // Skript-Interpreter: AGENTS §3.1
   // python, python3, python3.12 … — die Versions-Suffixe machen eine Liste
   // unvollständig, darum als Muster.
   const BLOCKED_RE = /^python[0-9]*(\.[0-9]+)*$/;
@@ -88,7 +93,7 @@ if [ "$verdict" = "block" ]; then
   cat <<'JSON'
 {
   "decision": "block",
-  "reason": "d-check is make/Docker-only (AGENTS.md §3.1, ADR-0001). Use make targets and the POSIX host tools the gate scripts use (grep/sed/awk/find); do not run host package managers, host go, or host script interpreters (apt/brew/pip/npm/cargo/go/python/perl/ruby)."
+  "reason": "d-check is make/Docker-only (AGENTS.md §3.1, ADR-0001). Use make targets and the POSIX host tools the gate scripts use (grep/sed/awk/find); do not run host package managers, host go, or host script interpreters (apt/brew/pip/npm/cargo/go/python/perl/ruby/node)."
 }
 JSON
 fi
