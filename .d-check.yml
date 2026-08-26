@@ -264,7 +264,8 @@ codepaths:
   # - planning-consistency.sh: abgelöst durch Modul planning (ADR-0028, slice-057)
   # - arch-check.sh: abgelöst durch das Schwester-Tool a-check (ADR-0029, slice-058)
   # - gate-consistency.sh: Prüfung 3 (DC-QA-03-Modulliste) → Go-Test, Kern via Modul targets (ADR-0032, slice-064)
-  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh", "tools/planning-consistency.sh", "tools/arch-check.sh", "tools/gate-consistency.sh"]
+  # - harness/closure-outcomes.sh: abgelöst durch structure.forbid-pattern im Closure-Profil (ADR-0048/ADR-0049, slice-143)
+  ignore-refs: ["tools/adr-immutable-check.sh", "tools/completeness-check.sh", "tools/trace-check.sh", "tools/planning-consistency.sh", "tools/arch-check.sh", "tools/gate-consistency.sh", "tools/harness/closure-outcomes.sh"]
 
 # Versions-Pin-Konsistenz (DC-FA-VER-001, slice-048): jeder ghcr-Image-Pin in
 # den Live-Docs muss die aktuelle Version aus version.md#aktuell tragen — sonst
