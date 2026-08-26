@@ -86,7 +86,7 @@ eine Welle braucht):
 | Slice | Rolle |
 |---|---|
 | [slice-148](done/slice-148-baseline-v5120-vendoring.md) | **Etappe A:** Bundle `v5.12.0` vendored, Pin-Hebung als `MR-`Eintrag, alle drei Spiegel-Klassen gehoben, Alt-Baum entfernt |
-| [slice-149](open/slice-149-baseline-v5120-delta-audit.md) | **Etappe B:** Delta-Audit über die vier Kurs-Wellen **und** der Freshness-Audit über alle aktiven Adaptionen; **schneidet Etappe C** |
+| [slice-149](in-progress/slice-149-baseline-v5120-delta-audit.md) | **Etappe B:** Delta-Audit über die vier Kurs-Wellen **und** der Freshness-Audit über alle aktiven Adaptionen; **schneidet Etappe C** |
 
 **Etappe C wird vom Audit geschnitten, nicht hier geraten** — dieselbe Form wie
 in den zwei Migrationen davor. Was dabei entsteht, kommt mit Kennung in diese
