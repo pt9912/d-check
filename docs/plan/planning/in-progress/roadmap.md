@@ -34,7 +34,6 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 
 - [welle-85-baseline-v5120-migration](../welle-85-baseline-v5120-migration.md) — vier Kurs-Wellen, und alle vier sind die Antwort auf den eigenen Konsumenten-CR (Auftraggeber-Freigabe 2026-08-26)
 
-Nichts in Arbeit.
 
 
 
