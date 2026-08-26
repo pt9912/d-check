@@ -220,9 +220,9 @@ matrix:
     # man liest, statt einer, die aus einer Ordnung folgt.
     - name: sicht
       paths: [spec/architecture.md]
-    # Modul-Pfade als TOKEN-ZIEL-KLASSE (DC-FA-MTX-003): kein Pfad-Muster,
-    # keine Mitglieder, reines Ziel -- der Gegenstand ist eine Zeichenkette,
-    # kein Dokument, wie bei commit-hash. Gemeldet wird ein Pfad unter den
+    # Modul-Pfade als TOKEN-ZIEL (DC-FA-MTX-003): kein Pfad-Muster, keine
+    # Mitglieder -- der Gegenstand ist eine Zeichenkette statt eines
+    # Dokuments, dieselbe Bauform wie commit-hash. Gemeldet wird ein Pfad unter den
     # CODE-Wurzeln dieses Repos; Dokument-Pfade sind KEIN Gegenstand, denn die
     # Regel gilt Modul-Pfaden und ein Dokument ist kein Modul. `tools/` fehlt
     # bewusst: ein Gate-Skript ist kein Modul, und die Regel darauf
@@ -265,9 +265,9 @@ matrix:
       token: 'welle-\d{2,}'
     - name: commit-hash
       # Vierte der fuenf Referenz-Kategorien, die AGENTS.md §3.4 den
-      # Spec-Straten verbietet (DC-FA-MTX-003, MR-006). TOKEN-ZIEL-KLASSE:
-      # kein Pfad-Muster, keine Mitglieder, reines Ziel -- der Gegenstand ist
-      # eine Zeichenkette, kein Dokument.
+      # Spec-Straten verbietet (DC-FA-MTX-003, MR-006). TOKEN-ZIEL: kein
+      # Pfad-Muster, keine Mitglieder -- der Gegenstand ist eine Zeichenkette
+      # statt eines Dokuments.
       #
       # ZUSAGE, GENAU: gemeldet wird jede 7- bis 40-stellige Zeichenkette aus
       # [0-9a-f] zwischen Wortgrenzen. Das ist WEITER als "Commit-Hash" -- rein

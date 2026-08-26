@@ -12,7 +12,10 @@ braucht).
 [`MR-032`](../../../../harness/conventions.md#mr-032) (Bump und Historie);
 [slice-144](../done/slice-144-commit-hash-muster.md) (der Anlass).
 
-**Berührte Spec-Stellen:** `spec/lastenheft.md`, §[`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix) — **falls** die
+**Berührte Spec-Stellen:** `spec/lastenheft.md` — die Beschreibung und die
+Akzeptanzkriterien von §[`DC-FA-MTX-003`](../../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix) sowie der Glossar-Eintrag
+*Dokumentklasse*; §[`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
+bleibt unverändert — **falls** die
 Antwort so ausfällt; Bump und Historie dann nach
 [`MR-032`](../../../../harness/conventions.md#mr-032).
 
@@ -89,7 +92,10 @@ Auftraggeber-Entscheidung verlangt, die nicht vorliegt.
   Lastenheft-Satz zusagt.
 
 Slice-ID: slice-153. Betroffene IDs:
-[`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix).
+[`DC-FA-MTX-003`](../../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)
+(die geänderte Anforderung),
+[`DC-FA-MTX-001`](../../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)
+(die geprüfte, unverändert gebliebene).
 Module: `matrix`, Spec-Straten. Gates: `make gates`.
 
 ## 8. Sub-Area-Modus-Begründung

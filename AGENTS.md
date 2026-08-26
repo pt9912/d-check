@@ -170,10 +170,11 @@ verschiedene Arten.** `make doc-check` (Modul `matrix`) hält **ADRs** über die
 Klasse trägt kein `token`), und **Slices**, **Wellen** und **Commit-Hashes**
 zusätzlich als **Token** im Körper.
 
-Die Commit-Hash-Klasse ist eine **Token-Ziel-Klasse**
+Die Commit-Hash-Klasse ist ein **Token-Ziel**
 ([`DC-FA-MTX-003`](spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)):
-sie trägt kein Pfad-Muster, hat keine Mitglieder und ist reines Ziel — ihr
-Gegenstand ist eine Zeichenkette, kein Dokument. **Sie sagt mehr zu, als ihr
+sie trägt kein Pfad-Muster, hat keine Mitglieder — ihr Gegenstand ist eine
+Zeichenkette statt eines Dokuments. Dieselbe Bauform trägt die Klasse für
+**Modul-Pfade** unten. **Sie sagt mehr zu, als ihr
 Name sagt** — gemeldet wird jede 7- bis 40-stellige Zeichenkette aus `[0-9a-f]`
 zwischen Wortgrenzen, also auch rein dezimale Token dieser Länge (Lauf-Nummern,
 Kompaktdaten) und Hex-Farbwerte. Für die Straten ist das tragbar, weil deren
@@ -196,8 +197,8 @@ bleibt Urteil.)*
 jetzt gedeckt.** Ob eine Zeile **Rollen statt Technologie** benennt, ist ein
 Urteil — *permanent*. Ob sie einen **Modul-Pfad** trägt, ist ein detektierbarer
 Zustand: `make doc-check` (Modul `matrix`) führt die Sicht als **eigene Klasse**
-und meldet einen Pfad unter den **Code-Wurzeln** dieses Repos als
-`matrix-forbidden`.
+und die Code-Modul-Pfade als **Token-Ziel** daneben; ein Pfad unter den
+**Code-Wurzeln** dieses Repos ist damit ein `matrix-forbidden`-Befund.
 
 Gegenstand sind **Modul**-Pfade, nicht Pfade überhaupt — Dokument-Pfade bleiben
 erlaubt, denn ein Dokument ist kein Modul; Skript-Pfade ebenso, denn ein
