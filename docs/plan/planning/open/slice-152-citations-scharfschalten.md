@@ -3,9 +3,12 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-85-baseline-v5120-migration](../welle-85-baseline-v5120-migration.md)
-— **Etappe C**, geschnitten von
-[slice-150](../done/slice-150-pin-gebundene-zitate.md).
+**Welle:** — **wellenlos.** Geschnitten von
+[slice-150](../done/slice-150-pin-gebundene-zitate.md) als Etappe C der
+Baseline-Migration, bei deren Closure aber **herausgelöst**: der Blocker ist
+älter als die Welle, und die Closure-Bedingung geht nicht über die eigene DoD
+hinaus (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
+braucht).
 
 **Bezug:** [`DC-FA-CITE-001`](../../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in);
 [ADR-0045](../../adr/0045-zitat-verifikation-codepaths-erweiterung-und-citations-modul.md)

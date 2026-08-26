@@ -3,9 +3,12 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-85-baseline-v5120-migration](../welle-85-baseline-v5120-migration.md)
-— **Etappe C**, geschnitten vom Delta-Audit in
-[slice-149](../done/slice-149-baseline-v5120-delta-audit.md).
+**Welle:** — **wellenlos.** Geschnitten vom Delta-Audit in
+[slice-149](../done/slice-149-baseline-v5120-delta-audit.md) als Etappe C der
+Baseline-Migration, bei deren Closure aber **herausgelöst**: der Gegenstand
+berührt die Pin-Hebung nicht, und die Closure-Bedingung geht nicht über die
+eigene DoD hinaus (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine
+Welle braucht).
 
 **Bezug:** [slice-143](../done/slice-143-structure-abschnitts-skopus.md) (die
 heutige Deckung), [ADR-0059](../../adr/0059-closure-waechter-weicht-structure-regel.md),

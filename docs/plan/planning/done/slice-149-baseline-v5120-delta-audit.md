@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-85-baseline-v5120-migration](../welle-85-baseline-v5120-migration.md).
+**Welle:** [welle-85-baseline-v5120-migration](../done/welle-85-baseline-v5120-migration.md).
 
 **Bezug:** [`modul-02-harness-bootstrap.md` §Freshness-Audit](../../../../.harness/baseline/v5.12.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2);
 [Antwort des Kurses](../../cr/2026-08-26-antwort-regelwerk-v5110.md);

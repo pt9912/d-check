@@ -20,8 +20,8 @@ Der Baseline-Pin steht auf `v5.11.0` (Kurs-Welle **94**); der Kurs steht auf
 jeder Hebung zuvor wissen wir vorher, was drinsteht: **alle vier sind die
 Antwort auf den Konsumenten-CR dieses Repos vom 2026-08-25**, eine Welle je
 Punkt. Die Antwort liegt im Repo
-([`2026-08-26-antwort-regelwerk-v5110.md`](../cr/2026-08-26-antwort-regelwerk-v5110.md),
-[`MR-036`](../../../harness/conventions.md#mr-036)).
+([`2026-08-26-antwort-regelwerk-v5110.md`](../../cr/2026-08-26-antwort-regelwerk-v5110.md),
+[`MR-036`](../../../../harness/conventions.md#mr-036)).
 
 **Das Delta ist gemessen, nicht geschätzt.** 52 Bundle-Dateien, **28**
 unterscheiden sich; **22 davon ändern ausschließlich den Versions-Stempel**
@@ -39,7 +39,7 @@ Dateien tragen echten Regel-Inhalt:**
 
 **Zwei Folgen stehen schon fest**, beide beim Messen gefunden und nicht geraten:
 
-1. **Punkt 2 trifft [`MR-033`](../../../harness/conventions.md#mr-033).** Der
+1. **Punkt 2 trifft [`MR-033`](../../../../harness/conventions.md#mr-033).** Der
    Kanon sagt jetzt *„darf Pfade zu **Code-Modulen** referenzieren"* — und
    ergänzt: *„Die Erlaubnis ist keine Pflicht: Eine Sicht, die ihre Komponenten
    nur über Rollen und `ARC-*` führt, ist ebenso konform."* Unsere Lesart war
@@ -49,7 +49,7 @@ Dateien tragen echten Regel-Inhalt:**
 2. **Punkt 1 benennt die urteilsfreie Hälfte weiter, als wir sie prüfen.** Der
    neue Text sagt: urteilsfrei ist, *dass* zu jedem Risiko ein Ausgang dasteht
    **und welcher der drei** es ist. Unsere Regel aus
-   [slice-143](done/slice-143-structure-abschnitts-skopus.md) prüft davon den
+   [slice-143](../done/slice-143-structure-abschnitts-skopus.md) prüft davon den
    häufigsten Auslöser — den stehengebliebenen Platzhalter. Der Kanon schließt
    mit *„Welches Werkzeug die urteilsfreie Hälfte prüft, ist Repo-Entscheidung;
    dass sie eine hat, ist es nicht."* Wir haben eine; ob sie die ganze Hälfte
@@ -70,7 +70,7 @@ keine wellenlose Arbeit (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit
 eine Welle braucht):
 
 1. **Der Pin ist gehoben, und zwar in allen Spiegel-Klassen.**
-   [`BEO-008`](observations.md) führt drei: Pfad-Verweise (gate-gedeckt),
+   [`BEO-008`](../observations.md) führt drei: Pfad-Verweise (gate-gedeckt),
    Release-/Tree-URLs und Prosa-/Ellipsen-Pins (beide ungedeckt). Je Klasse
    eine Zählung vor und nach der Hebung.
 2. **Jede aktive Adaption hat eine Antwort auf die Freshness-Frage des Kanons**
@@ -85,11 +85,11 @@ eine Welle braucht):
 
 | Slice | Rolle |
 |---|---|
-| [slice-148](done/slice-148-baseline-v5120-vendoring.md) | **Etappe A:** Bundle `v5.12.0` vendored, Pin-Hebung als `MR-`Eintrag, alle drei Spiegel-Klassen gehoben, Alt-Baum entfernt |
-| [slice-149](done/slice-149-baseline-v5120-delta-audit.md) | **Etappe B:** Delta-Audit über die vier Kurs-Wellen **und** der Freshness-Audit über alle aktiven Adaptionen; **schneidet Etappe C** |
-| [slice-150](done/slice-150-pin-gebundene-zitate.md) | **Etappe C-1** (vom Audit geschnitten): ist ein Zitat der Baseline pin-gebunden wie ein Link? — die Regelfrage hinter der vierten Spiegel-Klasse |
-| [slice-151](open/slice-151-urteilsfreie-haelfte-voll.md) | **Etappe C-2** (vom Audit geschnitten): die urteilsfreie Hälfte so weit ziehen, wie `modul-05` sie seit `v5.12.0` benennt |
-| [slice-152](open/slice-152-citations-scharfschalten.md) | **Etappe C-3** (von C-1 geschnitten): das Modul `citations` scharfschalten — die mechanische Form der vierten Spiegel-Klasse; blockiert von der eigenen Doku der Direktiv-Syntax |
+| [slice-148](../done/slice-148-baseline-v5120-vendoring.md) | **Etappe A:** Bundle `v5.12.0` vendored, Pin-Hebung als `MR-`Eintrag, alle drei Spiegel-Klassen gehoben, Alt-Baum entfernt |
+| [slice-149](../done/slice-149-baseline-v5120-delta-audit.md) | **Etappe B:** Delta-Audit über die vier Kurs-Wellen **und** der Freshness-Audit über alle aktiven Adaptionen; **schneidet Etappe C** |
+| [slice-150](../done/slice-150-pin-gebundene-zitate.md) | **Etappe C-1** (vom Audit geschnitten): ist ein Zitat der Baseline pin-gebunden wie ein Link? — die Regelfrage hinter der vierten Spiegel-Klasse |
+| [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) | **Etappe C-2** (vom Audit geschnitten): die urteilsfreie Hälfte so weit ziehen, wie `modul-05` sie seit `v5.12.0` benennt |
+| [slice-152](../open/slice-152-citations-scharfschalten.md) | **Etappe C-3** (von C-1 geschnitten): das Modul `citations` scharfschalten — die mechanische Form der vierten Spiegel-Klasse; blockiert von der eigenen Doku der Direktiv-Syntax |
 
 **Etappe C ist vom Audit geschnitten**, nicht hier geraten — dieselbe Form wie
 in den zwei Migrationen davor, nachgeführt mit einer Drift-Log-Zeile.
@@ -115,7 +115,7 @@ unabhängig vom Delta-Audit und darf vorgezogen werden.
   Kurs hat sie ausdrücklich als unsere Entscheidung und **kein
   Konformitätsthema** bezeichnet. Diese Grenze galt der **Eröffnung**: sie
   sollte nicht nebenbei mitlaufen. Das Audit hat sie befürwortet und als
-  [slice-151](open/slice-151-urteilsfreie-haelfte-voll.md) geschnitten — damit
+  [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) geschnitten — damit
   steht sie in §4 und ist Gegenstand der Welle, nicht mehr außerhalb.
 - **Keine Nacharbeit an eingefrorenen Zitaten.** Wo `done/`-Dokumente den alten
   Wortlaut zitieren, bleibt er stehen; nur **lebende** Stellen werden gehoben.

@@ -36,7 +36,6 @@ Nichts in Arbeit.
 
 
 
-- [welle-85-baseline-v5120-migration](../welle-85-baseline-v5120-migration.md) — vier Kurs-Wellen, und alle vier sind die Antwort auf den eigenen Konsumenten-CR (Auftraggeber-Freigabe 2026-08-26)
 
 
 
@@ -103,6 +102,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
+| welle-85-baseline-v5120-migration | 2026-08-26 | [`welle-85-results.md`](../done/welle-85-results.md) |
 | welle-84-durchsetzung | 2026-08-23 | [`welle-84-results.md`](../done/welle-84-results.md) |
 | welle-83-baseline-v5110-migration | 2026-08-23 | [`welle-83-results.md`](../done/welle-83-results.md) |
 | welle-82-config-flaechen | 2026-08-23 | [`welle-82-results.md`](../done/welle-82-results.md) |
@@ -142,6 +142,7 @@ und zwei Logs driften. Leer heißt starre Roadmap, jede Zeile voll heißt treibe
 
 | Datum | Was wurde geändert? | Warum? |
 |---|---|---|
+| 2026-08-26 | **welle-85 geschlossen; zwei Slices herausgelöst** — [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) und [slice-152](../open/slice-152-citations-scharfschalten.md) sind ab jetzt wellenlos | Die drei Closure-Trigger der Welle sind erfüllt: Pin gehoben und in allen Spiegel-Klassen gezählt, alle 16 Adaptionen gefragt, je Kurs-Welle eine Antwort. Die zwei Etappe-C-Slices berühren die Pin-Hebung nicht mehr, und ihre Closure-Bedingung geht nicht über die eigene DoD hinaus — sie in der Welle zu halten hieße, sie für Arbeit offen zu lassen, die ihr Ziel nicht betrifft |
 | 2026-08-26 | **Etappe C um C-3 erweitert** — welle-85 §4 um [slice-152](../open/slice-152-citations-scharfschalten.md) nachgeführt | Die Regelfrage aus [slice-150](../done/slice-150-pin-gebundene-zitate.md) ist beantwortet, und die Messung dazu fand die mechanische Form **fertig gebaut** (Modul `citations`, seit v0.50.0). Sie läuft heute nicht an: der Direktiven-Scan ist fence-, aber nicht inline-code-bewusst und bricht fail-closed an der eigenen Dokumentation seiner Syntax |
 | 2026-08-26 | **Etappe C geschnitten** — welle-85 §4 um [slice-150](../done/slice-150-pin-gebundene-zitate.md) (C-1: pin-gebundene Zitate) und [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) (C-2: die volle urteilsfreie Hälfte) nachgeführt | Das Delta-Audit der Etappe B liegt vor: vier Kurs-Wellen, vier Antworten. Zwei tragen Handlung — die Klärung zu *Modul-Pfad* bestätigt [`MR-033`](../../../../harness/conventions.md#mr-033) und legt zugleich frei, dass sein **Zitat** der alten Fassung mitgehoben wurde (C-1); die neu benannte urteilsfreie Hälfte reicht weiter als unsere Regel sie prüft (C-2). Zwei sind belegt folgenlos |
 | 2026-08-23 | **welle-84 eröffnet** — Durchsetzung: je Hard Rule ein tragender Gate-Lauf oder die Ausweisung als einseitig | Der Kanon nennt eine Hard Rule ohne Feedback-Hälfte **halb durchgesetzt**. Für **drei** der zehn Regeln ist die Einseitigkeit belegt (aus welle-83); für die übrigen ist die Frage offen, nicht beantwortet — niemand hat je Regel für Regel gefragt, welcher Gate-Lauf sie trägt. Den Anlass gab ein Fund beim Sichten der Schwester-Werkzeuge: `tools/harness/fetch-baseline-cache.sh` trägt Integritätsprüfung, Currency-Audit und Content-Drift — und **kein Target, kein Workflow, kein Hook ruft es auf**. Dass der Kurs `v5.11.0` veröffentlicht hatte, hat uns der Auftraggeber gesagt, nicht der dafür gebaute Sensor. Die Produkt-Frage (Freshness als Modul) bleibt ausdrücklich draußen: sie hätte mit einem Release eine eigene Closure-Bedingung, und die gemessene Lage spricht gegen ein vorschnelles Ja — d-check scannt nur Markdown (467 geprüfte Dateien = 467 `.md`), die zwei ungewachten Toolchain-Pins stehen im `Dockerfile` |

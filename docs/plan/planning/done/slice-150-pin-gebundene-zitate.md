@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-85-baseline-v5120-migration](../welle-85-baseline-v5120-migration.md)
+**Welle:** [welle-85-baseline-v5120-migration](../done/welle-85-baseline-v5120-migration.md)
 — **Etappe C**, geschnitten vom Delta-Audit in
 [slice-149](../done/slice-149-baseline-v5120-delta-audit.md).
 
