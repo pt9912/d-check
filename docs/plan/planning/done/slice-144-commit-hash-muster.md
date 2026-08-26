@@ -165,7 +165,7 @@ nachgezogen (`paths` optional, eine Klasse ohne Pfade ist reines Token-Ziel,
 ohne beides inert), mit Historie-Zeile und ohne Verhaltens-Delta. Die
 **vertragliche** Beschreibung ist es nicht — das ist keine Implementierungs-,
 sondern eine Vertrags-Frage und liegt als
-[slice-153](../open/slice-153-lastenheft-token-ziel-klasse.md) vor, mit Kennung
+[slice-153](../in-progress/slice-153-lastenheft-token-ziel-klasse.md) vor, mit Kennung
 statt als Absatz.
 
 **Register:** [`BEO-009`](../observations.md) auf Zähler **6**.
