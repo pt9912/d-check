@@ -117,21 +117,28 @@ structure:
 
   # Kein abgeschlossener Slice traegt einen unaufgeloesten Vorlagen-Platzhalter
   # -- die urteilsfreie Haelfte der Drei-Ausgaenge-Regel des Regelwerks
-  # (modul-05 §Offene Risiken werden bei Closure aufgeloest). Der Selektor ist
-  # die H1-Zeile: ihre Spanne reicht bis zur naechsten Ueberschrift gleicher
-  # Ebene, also ueber die GANZE Datei -- Kopfteil eingeschlossen, wo die
-  # Vorlage ebenfalls Platzhalter fuehrt.
+  # (modul-05 §Offene Risiken werden bei Closure aufgeloest). Geprueft wird
+  # JEDER H1-Abschnitt (sections: each), nicht nur der Titel-Abschnitt: ein
+  # Selektor auf die Titelzeile kappte bei einer zweiten H1 die Spanne still,
+  # und die Nullmengen-Haerte deckt nur den Fall KEIN Treffer.
   #
-  # Geprueft wird der bereinigte Abschnitts-Text: Fences entfernt,
-  # Inline-Code-Spannen geleert. Das ist tragend, nicht kosmetisch -- ein Slice,
-  # der ueber die Platzhalter SCHREIBT, nennt sie zwangslaeufig und wuerde sich
-  # sonst selbst melden.
+  # Geprueft wird der bereinigte Abschnitts-Text. VIER BEREICHE SIEHT DIE REGEL
+  # DAMIT NICHT, und drei davon sind gewollt: die Ueberschriften-Zeile selbst,
+  # Fenced Blocks und Inline-Code-Spannen -- ohne diese Trennung meldete ein
+  # Slice, der ueber die Platzhalter SCHREIBT, seine eigene Dokumentation.
+  #
+  # Der vierte ist der Preis: Inline-Code wird ABSATZWEISE gepaart, also auch
+  # ueber Zeilengrenzen hinweg. Ein Platzhalter zwischen zwei Backticks
+  # desselben Absatzes ist unsichtbar -- gemessen. Das abgeloeste Skript paarte
+  # je Zeile und meldete ihn; seine engere Paarung war aber die falschere
+  # Markdown-Lesart. Abgewogen und entschieden in ADR-0059.
   #
   # Grenze, benannt: die Alternation ist eine LISTE. Aendert die Vorlage ihre
   # Platzhalter-Form, schweigt die Regel; sie gehoert beim naechsten
   # Vorlagen-Bump mitgeprueft.
   - files: "docs/plan/planning/done/slice-*.md"
-    section-pattern: '^# Slice slice-'
+    section-pattern: '^# '
+    sections: each
     forbid-pattern: '\(bei Closure\)|wird mit dem Closure-Body gefüllt|<…>|<eingetreten:'
 
   # Jede Wellen-Ergebnisnotiz beantwortet die erste Pflichtfrage.
