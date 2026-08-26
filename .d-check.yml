@@ -336,6 +336,25 @@ versions:
 # Inner-Loop-Bindepunkt (doc-check), weil die Zeilen in Feat-/Release-Prep-
 # Commits entstehen — dort soll es rot werden, nicht erst an der Closure.
 structure:
+  # Die Sicht fuehrt keine Code-Modul-Pfade (AGENTS.md §3.4, Verschaerfung
+  # gegenueber der Baseline: MR-033). Die Regel zerfaellt in zwei Haelften --
+  # "Rollen statt Technologie" bleibt Urteil, "traegt eine Zeile einen
+  # Modul-Pfad" ist ein Zustand. Diese Regel prueft die zweite.
+  #
+  # ZUSAGE, GENAU: gemeldet wird ein Pfad unter den CODE-Wurzeln dieses Repos
+  # (`internal/`, `cmd/`) im bereinigten Text der Sicht -- auch als Ziel eines
+  # Markdown-Links. Dokument-Pfade (`docs/`, `spec/`, `harness/`) sind KEIN
+  # Gegenstand: die Regel gilt Modul-Pfaden, und ein Dokument ist kein Modul.
+  #
+  # GRENZEN, benannt: Inline-Code und Fenced Bloecke zaehlen nicht (die Sicht
+  # darf einen Pfad zitieren, ohne ihn zu fuehren); Grossschreibung faellt
+  # heraus; und `tools/` ist bewusst NICHT dabei -- ein Gate-Skript ist kein
+  # Modul, und die Regel auf Skript-Pfade auszudehnen waere eine andere Regel.
+  - files: spec/architecture.md
+    section-pattern: '^# '
+    sections: each
+    forbid-pattern: '\b(internal|cmd)/[a-z]'
+
   - files: spec/lastenheft.md
     section: "## 7. Historie"
     table-order: desc          # Spalte 1 = Version (0.61.0 …)

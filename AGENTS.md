@@ -190,12 +190,17 @@ Historie-Zeilen voller Daten.
 *(Auflösungs-Trigger: keiner — die Kategorie ist maschinell nicht trennbar und
 bleibt Urteil.)*
 
-**Die Sprachfreiheit der Sicht** prüft kein Gate und zerfällt in zwei ungleiche
-Hälften. Ob eine Zeile **Rollen statt Technologie** benennt, ist ein Urteil —
-*permanent*. Ob sie einen **Modul-Pfad** trägt, ist ein detektierbarer Zustand;
-kein heutiges Modul trägt es (`codepaths` **findet** solche Token, verbietet sie
-aber nicht). *(Auflösungs-Trigger: ein Sensor, der Pfad-Token in der Sicht
-meldet.)*
+**Die Sprachfreiheit der Sicht zerfällt in zwei ungleiche Hälften, und eine ist
+jetzt gedeckt.** Ob eine Zeile **Rollen statt Technologie** benennt, ist ein
+Urteil — *permanent*. Ob sie einen **Modul-Pfad** trägt, ist ein detektierbarer
+Zustand: `make doc-check` (Modul `structure`) meldet einen Pfad unter den
+**Code-Wurzeln** dieses Repos in der Sicht als `section-forbidden`.
+
+Gegenstand sind **Modul**-Pfade, nicht Pfade überhaupt — Dokument-Pfade bleiben
+erlaubt, denn ein Dokument ist kein Modul. Drei **benannte Grenzen**:
+Inline-Code und Fenced Blöcke zählen nicht (die Sicht darf einen Pfad
+*zitieren*, ohne ihn zu *führen*), Großschreibung fällt heraus, und
+Skript-Pfade sind bewusst außen vor — ein Gate-Skript ist kein Modul.
 
 **Das Pfad-Verbot ist eine Verschärfung gegenüber der Baseline** — sie erlaubt
 der Sicht Modul-Pfade ausdrücklich. Geführt als
