@@ -37,8 +37,11 @@
 
   **Anwendungsfall bei Einführung:** genau **einer** — die Klärung aus
   Kurs-Welle 96 hat den Satz geändert, den
-  [`MR-033`](../conventions.md#mr-033) zitiert. Alle übrigen Zitate aktiver
-  Einträge sind gegen `v5.12.0` wortgleich (gemessen, normalisiert).
+  [`MR-033`](../conventions.md#mr-033) zitiert. Von den 22 Zitaten aktiver
+  Einträge sind **neun** Zitate der Baseline, und die übrigen acht davon sind
+  gegen `v5.12.0` wortgleich (normalisiert gemessen). Die restlichen 13 zitieren
+  **nicht** die Baseline, sondern eigene Dokumente oder formulieren einen
+  Merksatz — sie fallen nicht unter diesen Eintrag.
 - **Begründung:** Ein Verweis, der zugleich **zitiert**, hat zwei Hälften, und
   beim Bump wandert nur eine. Die andere altert still: der Pfad löst sauber
   auf, der Wortlaut daneben gilt nicht mehr, und kein Gate sieht die
