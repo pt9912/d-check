@@ -2,11 +2,19 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** [`AGENTS.template.md`](../../.harness/baseline/v5.12.0/templates/AGENTS.template.md)
-  §3.4 — *„`spec/architecture.md` **referenziert Modul-Pfade**, aber keine
-  Wellen, Slices, Commit-Hashes oder Closure-Daten."* Dieselbe Erlaubnis trägt
+  §3.4 — seit `v5.12.0`: *„`spec/architecture.md` **darf** Pfade zu
+  **Code-Modulen** referenzieren (`src/service/`), aber **keine** Wellen,
+  Slices, Commit-Hashes oder Closure-Daten."* Dieselbe Erlaubnis trägt
   [`modul-03-spec.md`](../../.harness/baseline/v5.12.0/regelwerk/modul-03-spec.md)
-  §Ziel-Form: Architektur-Sicht (*„Sprach- und meilensteinfrei — referenziert
-  Modul-Pfade, aber …"*).
+  §Ziel-Form: Architektur-Sicht, dort mit dem Zusatz *„Die Erlaubnis ist keine
+  Pflicht"*.
+
+  **Fassung, gegen die dieser Eintrag geschrieben wurde** (`v5.11.0`, ergänzt
+  nach [`MR-038`](../conventions.md#mr-038), nicht ersetzt): *„`spec/architecture.md`
+  **referenziert Modul-Pfade**, aber keine Wellen, Slices, Commit-Hashes oder
+  Closure-Daten."* Die Klärung aus Kurs-Welle 96 **bestätigt** die hier
+  angenommene Lesart — gemeint sind Code-Modul-Pfade —, und damit bleibt dieses
+  Repo bei einer Verschärfung.
 - **Datum:** 2026-08-23
 - **Geltungsbereich:** [`spec/architecture.md`](../../spec/architecture.md) und
   die Regel [`AGENTS.md`](../../AGENTS.md) §3.4, die sie trägt.

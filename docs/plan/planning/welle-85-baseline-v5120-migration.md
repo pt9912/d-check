@@ -89,11 +89,14 @@ eine Welle braucht):
 | [slice-149](done/slice-149-baseline-v5120-delta-audit.md) | **Etappe B:** Delta-Audit über die vier Kurs-Wellen **und** der Freshness-Audit über alle aktiven Adaptionen; **schneidet Etappe C** |
 | [slice-150](in-progress/slice-150-pin-gebundene-zitate.md) | **Etappe C-1** (vom Audit geschnitten): ist ein Zitat der Baseline pin-gebunden wie ein Link? — die Regelfrage hinter der vierten Spiegel-Klasse |
 | [slice-151](open/slice-151-urteilsfreie-haelfte-voll.md) | **Etappe C-2** (vom Audit geschnitten): die urteilsfreie Hälfte so weit ziehen, wie `modul-05` sie seit `v5.12.0` benennt |
+| [slice-152](open/slice-152-citations-scharfschalten.md) | **Etappe C-3** (von C-1 geschnitten): das Modul `citations` scharfschalten — die mechanische Form der vierten Spiegel-Klasse; blockiert von der eigenen Doku der Direktiv-Syntax |
 
 **Etappe C ist vom Audit geschnitten**, nicht hier geraten — dieselbe Form wie
 in den zwei Migrationen davor, nachgeführt mit einer Drift-Log-Zeile.
-**Zwei** Slices, aus den **zwei** Kurs-Wellen mit Handlungs-Antwort; die
-übrigen zwei sind belegt folgenlos.
+**Drei** Slices: zwei aus den zwei Kurs-Wellen mit Handlungs-Antwort, einer
+von C-1 nachgeschnitten, als die Messung eine bereits gebaute Mechanik fand,
+die heute nicht anlaufen kann. Die übrigen zwei Kurs-Wellen sind belegt
+folgenlos.
 
 ## 5. Abhängigkeiten
 
