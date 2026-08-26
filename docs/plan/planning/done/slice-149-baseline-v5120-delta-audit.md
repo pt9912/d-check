@@ -60,24 +60,39 @@ Keiner bleibt ungefragt, auch nicht die offensichtlich unberührten.
 
 ## 4. Definition of Done
 
-- [ ] Vier Kurs-Wellen, vier Antworten — je Handlung eine Kennung, je
-      Folgenlosigkeit eine Fundstelle.
-- [ ] **Jede** aktive Adaption ist gefragt; das Ergebnis steht je Eintrag, auch
-      „unberührt".
-- [ ] [`MR-033`](../../../../harness/conventions.md#mr-033) ist begründet
-      entschieden — bleibt, wird abgelöst oder aufgelöst.
-- [ ] Die Differenz zur vollen urteilsfreien Hälfte ist benannt und entschieden.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] Vier Kurs-Wellen, vier Antworten: **zwei mit Handlung**
+      ([slice-150](../open/slice-150-pin-gebundene-zitate.md),
+      [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md)), **zwei
+      belegt folgenlos** mit Fundstelle (§9).
+- [x] **Alle 16** aktiven Adaptionen gefragt, die Reduktion **gemessen** statt
+      angenommen: je Eintrag geprüft, ob sein `Ersetzt-Baseline-Regel`-Ziel
+      unter den fünf geänderten Dateien liegt (4 von 16), und bei diesen vier,
+      ob die neuen Zeilen in **seinem** Abschnitt landeten (1 von 4).
+- [x] [`MR-033`](../../../../harness/conventions.md#mr-033) **bleibt** — und die
+      Begründung stand schon im eigenen Speicher (§9).
+- [x] Die Differenz zur vollen urteilsfreien Hälfte ist benannt und als
+      [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) geschnitten,
+      nicht hier gebaut — das Audit schneidet (§3).
+- [x] `make gates` Exit 0 (zehn Glieder); unabhängiger Review.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Ein Audit, das nur bestätigt, was die Antwort sagt, ist kein Audit.** Die
   Kurs-Antwort ist eine gute Erwartung und ein schlechter Beleg; sie kann in
-  Details anders gelandet sein, als sie ankündigt. — **Ausgang:** *(bei Closure)*
+  Details anders gelandet sein, als sie ankündigt. — **Ausgang:** *entfallen —
+  geprüft und deckungsgleich.* Alle vier Änderungen sind gegen den **vendorten**
+  Text gelesen, nicht gegen die Antwort; sie landen wörtlich dort, wo die
+  Antwort sie ankündigt, und der Umfang stimmt bis auf die Datei genau (fünf
+  Dateien, keine sechste). Punkt 1 ist wie angekündigt **anders encodiert** als
+  von uns beantragt — auch das steht so in der Antwort.
 - **Der Freshness-Audit ist lang und langweilig, und genau darum wird er
   abgekürzt.** Wer ihn auf die „offensichtlich betroffenen" Einträge verengt,
   hat die Klasse [`BEO-011`](../observations.md) begangen, bevor er anfängt. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** *entfallen — die Verengung ist gemessen statt geraten.* Alle 16
+  wurden gefragt; die Reduktion auf einen betroffenen Eintrag läuft über zwei
+  mechanische Schritte (Ziel-Datei unter den fünf geänderten; neue Zeilen im
+  Abschnitt des Eintrags) und wurde mit einer **zweiten**, unabhängigen Methode
+  gegengeprüft — einer normalisierten Zitat-Probe über alle Einträge.
 
 ## 6. Trigger
 
@@ -103,4 +118,55 @@ Harness-Regeltext. Gates: `make gates`.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Geliefert: zwei Audits, vier Antworten, ein betroffener Eintrag, zwei
+geschnittene Slices.
+
+### Delta-Audit — vier Kurs-Wellen, vier Antworten
+
+| Punkt | Was landete | Antwort für dieses Repo |
+|---|---|---|
+| 1 — urteilsfreie Hälfte benannt | `modul-05`, +11 Zeilen | **Handlung:** [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) — der Kanon nennt *dass ein Ausgang dasteht* **und welcher der drei*; unsere Regel prüft den häufigsten Auslöser |
+| 2 — *Modul-Pfad* = **Code**-Modul-Pfad | `modul-03` + `AGENTS.template.md` | **Handlung:** [slice-150](../open/slice-150-pin-gebundene-zitate.md) — nicht wegen der Lesart (die bestätigt uns), sondern wegen des **Zitats**, das mitgehoben wurde |
+| 3 — das Rot muss von *dieser* Regel kommen | `modul-13`, +8 Zeilen | **folgenlos für den Regeltext:** der Kanon trägt es, und ihn zu duplizieren verstößt gegen [`AGENTS.md`](../../../../AGENTS.md) §1. **Aber** die Klasse ist hier dreimal aufgetreten und hatte keine Registerzeile — [`BEO-017`](../observations.md) angelegt |
+| 4 — die Reichweitenfrage als Frage | `grundlagen-source-precedence`, +6 Zeilen | **folgenlos:** die Klasse führt [`BEO-012`](../observations.md) bei Zähler 4, und [slice-147](../open/slice-147-reviewer-anker-reichweite.md) liegt für die Feedforward-Hälfte bereits in `open/` |
+
+### Freshness-Audit — 16 gefragt, einer betroffen
+
+Die Verengung ist **gemessen**, nicht geraten, und läuft über zwei Schritte:
+zeigt der `Ersetzt-Baseline-Regel`-Zeiger in eine der **fünf** geänderten
+Dateien (**4 von 16**: [`MR-007`](../../../../harness/conventions.md#mr-007), [`MR-013`](../../../../harness/conventions.md#mr-013), [`MR-032`](../../../../harness/conventions.md#mr-032), [`MR-033`](../../../../harness/conventions.md#mr-033)), und landeten die
+neuen Zeilen im **Abschnitt** dieses Eintrags (**1 von 4**)? [`MR-007`](../../../../harness/conventions.md#mr-007) zeigt auf
+`modul-13` §Hard Rule, die Änderung liegt in §Fitness Function; [`MR-013`](../../../../harness/conventions.md#mr-013) zeigt
+auf `modul-05` §Lifecycle als State Machine, die Änderung in §Offene Risiken;
+[`MR-032`](../../../../harness/conventions.md#mr-032) zeigt auf den Absatz *Wann die CR-Pflicht beginnt*, der unverändert
+ist. Gegengeprüft mit einer **zweiten** Methode — einer normalisierten
+Zitat-Probe über alle Einträge —, die dasselbe Ergebnis liefert.
+
+**[`MR-033`](../../../../harness/conventions.md#mr-033) bleibt, und die Begründung stand schon im eigenen Speicher.** Die
+Frage war, ob unser Verbot nach der Klärung noch eine Verschärfung ist oder nur
+eine nicht ausgeübte Erlaubnis — der Kanon sagt jetzt ausdrücklich *„Die
+Erlaubnis ist keine Pflicht"*. [`MR-032`](../../../../harness/conventions.md#mr-032)
+hat genau diese Abgrenzung schon einmal geprüft und **verworfen**, mit Verweis
+auf [`MR-031`](../../../../harness/conventions.md#mr-031): *wer verschärft,
+weicht ab, auch wenn er nur mehr verlangt.* Der Eintrag bleibt also — und seine
+Prämisse ist jetzt **bestätigt** statt angenommen, was ihn stärker macht als
+vorher.
+
+**Ein Fehlalarm gehört in die Akte, weil sein Grund lehrreich ist.** Ein
+zeilenweises `grep` meldete, das Zitat von
+[`MR-032`](../../../../harness/conventions.md#mr-032) sei aus dem Kanon
+verschwunden — es steht dort, nur **umbrochen**. Beinahe hätte ich eine zweite
+betroffene Adaption gemeldet. Das ist dieselbe Klasse, die dieser Slice-Strang
+gerade als vierte Spiegel-Klasse registriert hat: Prosa gegen Prosa messen ohne
+Normalisierung ist keine Messung.
+
+### Was das Audit NICHT getan hat
+
+Es hat geschnitten, nicht gebaut — auch dort nicht, wo die Reparatur naheliegt.
+Das veraltete Zitat in [`MR-033`](../../../../harness/conventions.md#mr-033)
+steht noch, weil vorher eine **Regelfrage** zu beantworten ist: Ein
+`Accepted`-Eintrag wird nie überschrieben, und ob die Zitat-Korrektur darunter
+fällt oder unter die Pflege pin-gebundener Referenzen, entscheidet
+[slice-150](../open/slice-150-pin-gebundene-zitate.md). Die bequeme Antwort
+wäre die zweite; genau darum bekommt sie einen eigenen Slice statt eines
+Nebensatzes hier.
