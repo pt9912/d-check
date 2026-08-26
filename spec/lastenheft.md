@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.65.4
+**Version:** 0.66.0
 
 **Status:** Draft
 
@@ -1272,7 +1272,11 @@ bisher nur als **Links**; eine Referenz kann aber auch als **bare ID-Token** im
 Fließtext stehen (etwa eine Slice-Kennung in einem ADR-Körper), die der
 link-basierte Scan nicht sieht. Eine Klasse kann daher zusätzlich ein
 **`token`-Muster** (Regex) tragen, das Referenzen auf diese Klasse als Token
-erkennt. Tritt im Körper eines Dokuments der Klasse A ein `token` der Klasse B
+erkennt. Sie kann ein `token`-Muster auch **ausschließlich** tragen, ohne
+Pfad-Muster: eine solche **Token-Ziel-Klasse** hat keine Mitglieder und ist
+reines *Ziel* — ihr Gegenstand ist eine Zeichenkette, kein Dokument (etwa ein
+Commit-Hash oder ein Code-Modul-Pfad). Ohne Pfad-Muster **und** ohne
+`token`-Muster ist eine Klasse inert. Tritt im Körper eines Dokuments der Klasse A ein `token` der Klasse B
 auf — außerhalb Fenced-Code, außerhalb `exclude-sections` und außerhalb von
 Markdown-Links (die deckt der Link-Scan ab) —, gilt das als Referenz A → B;
 eine verbotene Kante erzeugt `matrix-forbidden` in der **Token-Form**.
@@ -2963,6 +2967,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 | Repo-Escape | Linkziel, dessen aufgelöster Pfad außerhalb der Repository-Wurzel liegt. |
 | Kennung | Textuelle ID nach deklariertem Muster (z. B. `ADR-0042`), für die Linkpflicht gelten kann. | <!-- d-check:ignore (Beispiel-ID, fiktiv) -->
 | Dokumentklasse | Über Pfad-Muster definierte Gruppe von Dokumenten (z. B. Contract-Spec, ADR, Slice) als Knoten der Referenzmatrix. |
+| Token-Ziel-Klasse | Klasse **ohne** Pfad-Muster, die nur ein `token`-Muster trägt: keine Mitglieder, ausschließlich Ziel einer Token-Referenz ([`DC-FA-MTX-003`](#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)). Ihr Gegenstand ist eine Zeichenkette, kein Dokument — sie ist damit **keine** Dokumentklasse. |
 | Referenzmatrix | Deklaration, welche Dokumentklasse auf welche verweisen darf, inkl. Status-Bedingungen. |
 | Aktives ADR | ADR, dessen Status-Feld keinen verbotenen Wert (`superseded`, `deprecated`) trägt. |
 | Quell-Tools | Die dreizehn konsolidierten Alt-Tool-Vorkommen in den Schwester-Repositories des Entwicklungs-Workspace: zwölf aus drei Familien (Shell: `verify-doc-refs.sh`, Python: `check_refs.py`, JavaScript: `docs-check.js`) plus eine eigenständige Python-Linie (`check_markdown_links.py`, Inventur-Nachtrag 2026-06-12). |
@@ -2971,6 +2976,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.66.0 | 2026-08-26 | [`DC-FA-MTX-003`](#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix) benennt die **Token-Ziel-Klasse**: eine Klasse darf ein `token`-Muster **ausschließlich** tragen, ohne Pfade — sie hat dann keine Mitglieder und ist reines Ziel, ihr Gegenstand eine Zeichenkette. Das Glossar führt sie als eigenen Begriff und grenzt sie von der **Dokumentklasse** ab, deren Definition (*über Pfad-Muster definiert*) unberührt bleibt. **Kein Verhaltens-Delta:** die Fähigkeit bestand in der Umsetzung, war aber nicht zugesagt | — |
 | 0.65.4 | 2026-08-25 | **Form eines Verweises, keine Anforderungs-Änderung.** Eine Historie-Zeile nannte eine Kennung der zeitlichen Schicht und war damit ein Abwärtsverweis, den §3.4 verbietet; die berichtete Messung bleibt unverändert, der Zeiger auf die zeitliche Schicht entfällt ersatzlos. Sichtbar wurde sie erst, als die Referenzmatrix eine Klasse für diese Schicht bekam — bis dahin fehlte schlicht der Wächter, der sie melden konnte. **Kein Protokoll-Eingriff im Sinne des Kanons:** geändert ist die **Form** eines Verweises, nicht die berichtete Tatsache | — |
 | 0.65.3 | 2026-08-23 | **Form der Historie, keine Anforderungs-Änderung.** Die Tabelle trägt die kanonische vierte Spalte `Verweis`; alle Bestandszeilen tragen `—`, weil ohne begonnene CR-Pflicht kein externer Vorgang existiert, den sie nennen könnte. Der Kopf deklariert, dass dieses Repo Bump und Historie **schon vor `Accepted`** führt, obwohl der Kanon vor diesem Status *keine* verlangt — als Adaption in [`MR-032`](../harness/conventions.md#mr-032) geführt. **Zugleich Tatsachenberichtigung:** die Zeilen 0.65.1 und 0.65.2 waren Berichtigungen im Sinne des Kanons, trugen den verlangten Ausweis aber nicht — nachgetragen. Die Spezifikations-Historie bleibt bei zwei Spalten: eine `Verweis`-Spalte trägt nach dem Kanon nur, **was sonst nirgends im Repo steht** — beim Vertrag der externe Change Request, der kein anderes Zuhause hat, während die Technik ihre Aufwärts-Bezüge bereits im Körper verankert; dieselbe Kopplung ein zweites Mal in der Historie zu führen erzeugt keine Information, sondern eine zweite Fassung, die driftet | — |
 | 0.65.2 | 2026-08-23 | Nachzug nach unabhängigem Review: **Tatsachenberichtigung** (als solche ausgewiesen,  keine Anforderungs-Änderung.** Die Achsen-Abgrenzung des geteilten Referenz-Ventils ([`DC-FA-REF-001`](#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)) wies die vier marker-tragenden Module in 0.65.1 als **benannte Liste** aus, nannte aber keinen Gegen-Beleg. Sie nennt jetzt die drei Module, die ebenfalls auf Zeilen melden und den Marker **nicht** tragen — `matrix`, `structure` und [`DC-FA-CITE-001`](#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in). Ohne diesen Gegen-Beleg liest sich die Liste weiter wie ein herleitbares Kriterium, und genau das ist sie nicht. Kein Grund-Code, kein Schema, kein Befundsatz betroffen | — |

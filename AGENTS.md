@@ -170,7 +170,9 @@ verschiedene Arten.** `make doc-check` (Modul `matrix`) hält **ADRs** über die
 Klasse trägt kein `token`), und **Slices**, **Wellen** und **Commit-Hashes**
 zusätzlich als **Token** im Körper.
 
-Die Commit-Hash-Klasse ist eine Token-Klasse **ohne Zieldateien**: ihr
+Die Commit-Hash-Klasse ist eine **Token-Ziel-Klasse**
+([`DC-FA-MTX-003`](spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)):
+sie trägt kein Pfad-Muster, hat keine Mitglieder und ist reines Ziel — ihr
 Gegenstand ist eine Zeichenkette, kein Dokument. **Sie sagt mehr zu, als ihr
 Name sagt** — gemeldet wird jede 7- bis 40-stellige Zeichenkette aus `[0-9a-f]`
 zwischen Wortgrenzen, also auch rein dezimale Token dieser Länge (Lauf-Nummern,
