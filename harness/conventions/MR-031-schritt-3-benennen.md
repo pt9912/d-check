@@ -1,7 +1,7 @@
 # MR-031 — Schritt 3 des Agenten-Workflows verlangt Benennen, nicht nur Identifizieren
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`modul-09-implementierung.md`](../../.harness/baseline/v5.11.0/regelwerk/modul-09-implementierung.md)
+- **Ersetzt-Baseline-Regel:** [`modul-09-implementierung.md`](../../.harness/baseline/v5.12.0/regelwerk/modul-09-implementierung.md)
   §Minimal Agent Workflow, Schritt 3 — *„Betroffene Requirement-/ADR-IDs
   identifizieren."*
 - **Datum:** 2026-08-23
@@ -30,7 +30,7 @@
   Feedforward-Quadranten. Kein Gate prüft, ob ein Lauf die fünf Felder genannt
   hat — die Nennung ist Prosa, und eine Prosa-Pflicht ohne Wächter bleibt
   *halb durchgesetzt*
-  ([`modul-09`](../../.harness/baseline/v5.11.0/regelwerk/modul-09-implementierung.md)
+  ([`modul-09`](../../.harness/baseline/v5.12.0/regelwerk/modul-09-implementierung.md)
   §AGENTS.md-Regeln). Das ist hier zu wissen, nicht zu heilen: ein
   Heuristik-Wächter auf Botschafts-Text wäre ein behauptetes Gate.
 - **Begründung:** Die Pflicht lebte seit dem Bootstrap in der

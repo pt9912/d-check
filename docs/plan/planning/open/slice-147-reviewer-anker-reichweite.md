@@ -8,7 +8,7 @@ hinausgeht (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
 braucht).
 
 **Bezug:** [`BEO-012`](../observations.md) (Zähler 4); Baseline-Regelwerk
-[`grundlagen-klassifikation.md` §Die 2×2-Matrix](../../../../.harness/baseline/v5.11.0/regelwerk/grundlagen-klassifikation.md#2x2-matrix)
+[`grundlagen-klassifikation.md` §Die 2×2-Matrix](../../../../.harness/baseline/v5.12.0/regelwerk/grundlagen-klassifikation.md#2x2-matrix)
 (Feedforward ↔ Feedback); `.harness/skills/reviewer.md` §Repo-spezifische Anker
 pro Kategorie.
 

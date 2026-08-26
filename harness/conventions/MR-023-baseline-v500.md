@@ -1,7 +1,7 @@
 # MR-023 — Baseline-Pin-Hebung auf v5.0.0 samt self-contained Bundle-Layout
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`grundlagen-harness-dateien.md` §Template-Schichtung](../../.harness/baseline/v5.11.0/regelwerk/grundlagen-harness-dateien.md#template-schichtung--was-der-rumpf-trägt-und-was-der-kommentar)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-harness-dateien.md` §Template-Schichtung](../../.harness/baseline/v5.12.0/regelwerk/grundlagen-harness-dateien.md#template-schichtung--was-der-rumpf-trägt-und-was-der-kommentar)
 - **Datum:** 2026-08-01
 - **Geltungsbereich:** [§Baseline](../conventions.md#baseline), [§Adoptierte
   Konventions-Quellen](../conventions.md#adoptierte-konventions-quellen), das

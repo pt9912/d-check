@@ -5,7 +5,7 @@
 
 **Welle:** [welle-85-baseline-v5120-migration](../welle-85-baseline-v5120-migration.md).
 
-**Bezug:** [`modul-02-harness-bootstrap.md` §Freshness-Audit](../../../../.harness/baseline/v5.11.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2);
+**Bezug:** [`modul-02-harness-bootstrap.md` §Freshness-Audit](../../../../.harness/baseline/v5.12.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2);
 [Antwort des Kurses](../../cr/2026-08-26-antwort-regelwerk-v5110.md);
 [`MR-033`](../../../../harness/conventions.md#mr-033) (die eine Adaption, deren
 Grundlage sich nachweislich geändert hat);
