@@ -5,7 +5,7 @@
 
 **Welle:** [welle-85-baseline-v5120-migration](../welle-85-baseline-v5120-migration.md)
 — **Etappe C**, geschnitten von
-[slice-150](../in-progress/slice-150-pin-gebundene-zitate.md).
+[slice-150](../done/slice-150-pin-gebundene-zitate.md).
 
 **Bezug:** [`DC-FA-CITE-001`](../../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in);
 [ADR-0045](../../adr/0045-zitat-verifikation-codepaths-erweiterung-und-citations-modul.md)

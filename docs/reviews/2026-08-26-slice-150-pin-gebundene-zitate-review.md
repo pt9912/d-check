@@ -6,7 +6,7 @@
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- Slice-Plan `docs/plan/planning/in-progress/slice-150-pin-gebundene-zitate.md` (vollständig, inkl. §3 „Ausdrücklich NICHT", §5 Risiken, §7 Sichtung)
+- Slice-Plan `docs/plan/planning/done/slice-150-pin-gebundene-zitate.md` (vollständig, inkl. §3 „Ausdrücklich NICHT", §5 Risiken, §7 Sichtung)
 - Der neue Eintrag `harness/conventions/MR-038-zitate-pin-gebunden.md` und der ergänzte `harness/conventions/MR-033-sicht-ohne-modul-pfade.md`
 - `harness/conventions/MR-021-vendored-verweise-pin-gebunden.md` (der laut Titel geschärfte Eintrag, im Diff unverändert) und `harness/conventions.md` (§Baseline, §Adaptions-Block, beide Index-Tabellen)
 - Der vendorte Kanon `.harness/baseline/v5.12.0/` (Regelwerk **und** Templates), gelesen als Datei; zusätzlich der rekonstruierte `v5.11.0`-Baum (`git archive 9ee805b^`) als Vergleichsstand
