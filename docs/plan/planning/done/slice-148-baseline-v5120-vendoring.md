@@ -27,7 +27,7 @@ Dateien unterscheiden sich, davon **fünf** mit echtem Regel-Inhalt.
 
 **Der Inhalt ist nicht Gegenstand dieses Slice** — nur der Stand. Was die fünf
 Änderungen für dieses Repo bedeuten, beantwortet
-[slice-149](../in-progress/slice-149-baseline-v5120-delta-audit.md).
+[slice-149](../done/slice-149-baseline-v5120-delta-audit.md).
 
 ## 2. Vorgehen
 
@@ -90,7 +90,7 @@ Dateien unterscheiden sich, davon **fünf** mit echtem Regel-Inhalt.
 - **Ein gehobener Link kann auf einen geänderten Wortlaut zeigen.** Der Pfad
   löst auf, das Zitat daneben stimmt nicht mehr — und kein Gate sieht das. —
   **Ausgang:** *eingetreten, genau einmal — aufgefangen von
-  [slice-149](../in-progress/slice-149-baseline-v5120-delta-audit.md).*
+  [slice-149](../done/slice-149-baseline-v5120-delta-audit.md).*
   [`MR-033`](../../../../harness/conventions.md#mr-033) zitiert zweimal die
   Fassung, die CR-Punkt 2 hat ändern lassen; der Pfad wurde mitgehoben und löst
   sauber auf. Das Schicksal des Eintrags — bleibt, abgelöst oder aufgelöst —

@@ -86,11 +86,14 @@ eine Welle braucht):
 | Slice | Rolle |
 |---|---|
 | [slice-148](done/slice-148-baseline-v5120-vendoring.md) | **Etappe A:** Bundle `v5.12.0` vendored, Pin-Hebung als `MR-`Eintrag, alle drei Spiegel-Klassen gehoben, Alt-Baum entfernt |
-| [slice-149](in-progress/slice-149-baseline-v5120-delta-audit.md) | **Etappe B:** Delta-Audit über die vier Kurs-Wellen **und** der Freshness-Audit über alle aktiven Adaptionen; **schneidet Etappe C** |
+| [slice-149](done/slice-149-baseline-v5120-delta-audit.md) | **Etappe B:** Delta-Audit über die vier Kurs-Wellen **und** der Freshness-Audit über alle aktiven Adaptionen; **schneidet Etappe C** |
+| [slice-150](open/slice-150-pin-gebundene-zitate.md) | **Etappe C-1** (vom Audit geschnitten): ist ein Zitat der Baseline pin-gebunden wie ein Link? — die Regelfrage hinter der vierten Spiegel-Klasse |
+| [slice-151](open/slice-151-urteilsfreie-haelfte-voll.md) | **Etappe C-2** (vom Audit geschnitten): die urteilsfreie Hälfte so weit ziehen, wie `modul-05` sie seit `v5.12.0` benennt |
 
-**Etappe C wird vom Audit geschnitten, nicht hier geraten** — dieselbe Form wie
-in den zwei Migrationen davor. Was dabei entsteht, kommt mit Kennung in diese
-Tabelle und in eine Drift-Log-Zeile.
+**Etappe C ist vom Audit geschnitten**, nicht hier geraten — dieselbe Form wie
+in den zwei Migrationen davor, nachgeführt mit einer Drift-Log-Zeile.
+**Zwei** Slices, aus den **zwei** Kurs-Wellen mit Handlungs-Antwort; die
+übrigen zwei sind belegt folgenlos.
 
 ## 5. Abhängigkeiten
 
