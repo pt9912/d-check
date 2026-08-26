@@ -116,6 +116,7 @@ ob der Eintrag ihn betrifft.
 | [MR-033](conventions/MR-033-sicht-ohne-modul-pfade.md) <a id="mr-033--die-architektur-sicht-führt-auch-keine-modul-pfade"></a><a id="mr-033"></a> | Sicht ohne Modul-Pfade | `spec/architecture.md` und `AGENTS.md` §3.4 | `AGENTS.template.md` §3.4 / `modul-03-spec.md` §Ziel-Form: Architektur-Sicht |
 | [MR-034](conventions/MR-034-matrix-scope-welle.md) <a id="mr-034--die-referenzmatrix-bewacht-auch-die-kante-adr--welle"></a><a id="mr-034"></a> | Matrix bewacht ADR → Welle | `matrix`-Block der `.d-check.yml` | schärft [`MR-006`](conventions.md#mr-006) §Scope-Grenze (C-4) |
 | [MR-035](conventions/MR-035-cr-ablage.md) <a id="mr-035--ausgehende-change-requests-an-die-baseline-liegen-im-repo"></a><a id="mr-035"></a> | Ausgehende CRs liegen in `docs/plan/cr/` | `docs/plan/cr/` | keine — Form-Frage, vom Kanon an den Konventionsspeicher abgetreten |
+| [MR-036](conventions/MR-036-cr-antwort-ablage.md) <a id="mr-036--die-antwort-auf-einen-ausgehenden-cr-liegt-bei-ihrem-cr"></a><a id="mr-036"></a> | Die Antwort liegt bei ihrem CR | `docs/plan/cr/` — eingehende Antworten | keine — der Kanon kennt den ausgehenden CR nicht, also auch nicht seine Antwort |
 
 ### Aufgelöste Adaptionen
 
