@@ -15,7 +15,7 @@ slice-143)`). 6 Dateien laut `git show --stat` (`.d-check.closure.yml` +19,
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
 - Slice-Plan
-  `docs/plan/planning/in-progress/slice-143-structure-abschnitts-skopus.md`
+  `docs/plan/planning/done/slice-143-structure-abschnitts-skopus.md`
   (§1 Ziel, §2 Vorgehen, §3 „Ausdrücklich NICHT", §4 DoD, §5 Risiken, §7)
 - `AGENTS.md` §3 (Hard Rules, insbesondere §3.6 und §3.7), §4 (Gate-Tabelle
   samt Kopfsatz), §5 (Doku-Regeln, insbesondere der `BEO-009`-Absatz)

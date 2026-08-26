@@ -30,7 +30,7 @@ verbietet sie aber nicht.
 
 1. **Ort und Form klären**: ein Muster-Verbot (dieselbe Fähigkeit, die
    [slice-144](../open/slice-144-commit-hash-muster.md) und
-   [slice-143](../in-progress/slice-143-structure-abschnitts-skopus.md) berühren) oder ein
+   [slice-143](../done/slice-143-structure-abschnitts-skopus.md) berühren) oder ein
    Ventil an `codepaths`. Die drei Slices teilen eine Frage — das gehört
    gesehen, bevor drei Mechaniken entstehen.
 2. Am Bestand messen; die Sicht startet grün, andere Dateien womöglich nicht.
