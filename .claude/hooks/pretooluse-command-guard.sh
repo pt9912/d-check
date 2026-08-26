@@ -56,12 +56,16 @@ verdict="$(printf '%s' "$input" | node -e '
 
   function scan(cmd, depth) {
     if (depth > 3) return true; // zu tief verschachtelt → fail-closed
-    const segments = cmd.split(/(?:;|&&|\|\||\||\$\(|`|\(|\r?\n)/);
+    // Auch einfaches & trennt (Hintergrund-Start): `echo x & pip install y`.
+    const segments = cmd.split(/(?:;|&&|&|\|\||\||\$\(|`|\(|\r?\n)/);
     for (const seg of segments) {
       const tokens = seg.trim().split(/\s+/).filter(Boolean).map(stripQuotes);
       let i = 0;
+      // Brace-Group-Delimiter mit ueberspringen: bei `{ go build; }` waere der
+      // Kopf sonst `{` und das Werkzeug an Position 2 entkaeme der Pruefung.
       while (i < tokens.length &&
-             (/^[A-Za-z_][A-Za-z0-9_]*=/.test(tokens[i]) || PREFIXES.has(tokens[i]))) i++;
+             (/^[A-Za-z_][A-Za-z0-9_]*=/.test(tokens[i]) || PREFIXES.has(tokens[i]) ||
+              tokens[i] === "{" || tokens[i] === "}")) i++;
       if (i >= tokens.length) continue;
       const head = tokens[i].replace(/^.*\//, ""); // /usr/bin/pip → pip
       if (BLOCKED.has(head) || BLOCKED_RE.test(head)) return true;

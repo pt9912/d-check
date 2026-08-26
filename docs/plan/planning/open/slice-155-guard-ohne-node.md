@@ -33,6 +33,31 @@ so lange glaubwürdig, wie das dasteht.** Dieser Slice löst den
 Auflösungs-Trigger ein: der Wächter läuft mit `bash` und den POSIX-Werkzeugen,
 die Host-Abhängigkeit entfällt.
 
+**Es ist gebaut, nur nicht hier.** Das Schwester-Repo `ai-harness-init` fährt
+**denselben Wächter** in reinem `bash` + `awk` und führt „kein `node`/`jq`" dort
+als Anforderung. Die JSON-Extraktion liegt in einem eigenen POSIX-awk-Skript —
+ein zeichenweiser Scanner mit Tiefen- und Key-Stack, der Schlüssel von Werten
+unterscheidet. Der Grund ist genau unser Fall: ein Kommando-String kann den
+Schlüsselnamen **als Daten** enthalten, und ein Regex-Griff nähme den Treffer im
+Freitext. **Diese Fassung ist zu übernehmen, nicht neu zu erfinden** — die
+Übersetzung ist ein Abgleich, kein Entwurf.
+
+**Was dort ausserdem gelöst ist und hier gelesen werden muss:** die Fassung des
+Schwester-Repos überspringt Zuweisungs-, Wrapper- **und Brace-Group**-Präfixe
+und trennt auch am einfachen `&`. Beide Lücken waren hier offen und sind
+inzwischen geschlossen; die Übersetzung darf sie nicht wieder verlieren. Und sie
+benennt die quote-blinde Falsch-Positiv-Klasse samt Gegenmittel — Inhalt mit
+blockierten Wörtern gehört in eine **Datei**, nicht in die Kommandozeile.
+
+**Ein zweites Problem am selben Ort, das dieser Slice mitnehmen kann:** Unser
+Wächter antwortet mit `{"decision", "reason"}` auf oberster Ebene. Für
+`PreToolUse` ist das die **veraltete** Form; die aktuelle ist
+`hookSpecificOutput.permissionDecision` und funktioniert heute nur über eine
+Abwärtskompatibilitäts-Abbildung. Der Nachbar-Hook des Schwester-Repos hält das
+fest — **dort ist es ebenfalls offen** und als eigener Slice geführt. Ob beides
+in einen Zug gehört, entscheidet dieser Slice; getrennt gehalten werden muss die
+**Prüfung** von der **Antwortform**.
+
 ## 2. Vorgehen
 
 1. **Die Aufgabe zerlegen**, bevor irgendetwas geschrieben wird: (a) das
