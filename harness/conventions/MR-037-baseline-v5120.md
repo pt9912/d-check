@@ -16,16 +16,22 @@
   (Kurs-Tag vom 2026-08-26) — die von
   [`MR-011`](../conventions.md#mr-011--baseline-auf-release-tag-gepinnt)
   vorgesehene Fortschreibung, siebter Nachtrag der Serie; ersetzt
-  [`MR-030`](done/MR-030-baseline-v5110.md) nach dessen eigenem
+  [`MR-030`](../conventions.md#mr-030) nach dessen eigenem
   Auflösungs-Trigger. Kein Layout-Wechsel: dasselbe self-contained Bundle,
   dasselbe Materialisierungs-Skript, unverändertes Pfadschema.
 
   **Vier Kurs-Wellen, und alle vier sind die Antwort auf den Konsumenten-CR
   dieses Repos** (abgelegt nach [`MR-036`](../conventions.md#mr-036)). Das
   Delta ist gemessen, nicht gezählt: von **52** Bundle-Dateien unterscheiden
-  sich **28**; **22 davon ändern ausschließlich den Versions-Stempel** —
-  maschinell geprüft, kein einziges Zwei-Zeilen-Delta trägt etwas anderes —,
-  und `regelwerk/README.md` trägt zusätzlich nur seine `**Stand:**`-Zeile.
+  sich **29**, und die Subtraktion steht hier statt im Kopf des Lesers — **eine**
+  ist das Manifest `SHA256SUMS`, **22** ändern ausschließlich den
+  Versions-Stempel (maschinell geprüft: kein einziges Zwei-Zeilen-Delta trägt
+  etwas anderes), **eine** ist `regelwerk/README.md` mit Stempel plus
+  `**Stand:**`-Zeile. Bleiben **fünf** mit echtem Regel-Inhalt. Die zwei
+  Nicht-Markdown-Vorlagen des Bundles (`templates/.d-check.yml`,
+  `templates/Makefile`) sind **unverändert** — eigens geprüft, weil die
+  Delta-Schleife über `*.md` lief und sie sonst ungesehen durchgefallen wären.
+
   **Fünf Dateien tragen echten Regel-Inhalt:**
 
   | Datei | Umfang |
@@ -43,10 +49,26 @@
   Vergangenheit stehengelassen (`Ausgelöst durch Baseline-Stand`, die
   CR-Dokumente, das Drift-Log, die abgelöste Vorgänger-Adaption).
 
+  **Die Messvorschrift gehört zur Zahl**, sonst ist sie nicht nachrechenbar:
+  gezählt wurden **Vorkommen** (nicht Dateien) in den von `git ls-files`
+  geführten `*.md`/`*.yml`/`*.sh`/`Makefile`-Dateien, **vor** der Hebung, unter
+  Ausschluss der vier eingefrorenen Präfixe (`docs/plan/planning/done/`,
+  `docs/reviews/`, `harness/conventions/done/`, `.harness/baseline/`); die
+  dritte Klasse ist der Rest nach Abzug der Treffer von Klasse 1 und 2. Eine
+  andere Abgrenzung ergibt eine andere Zahl — repo-weit ohne jeden Ausschluss
+  sind es 60.
+
   **Die erste Zählung der ersten Klasse war zu eng** und hätte den
   Reviewer-Skill auf einen gelöschten Baum zeigen lassen: das Muster verlangte
   `.harness/baseline/…`, der Skill verweist relativ mit `../baseline/…`. Fünf
   Vorkommen, ein Dokument — gefunden, weil die Klasse-3-Liste sie zeigte.
+- **Begründung:** Ein Adopter, der seine Baseline nicht auf einen Tag pinnt,
+  auditiert gegen ein bewegliches Ziel; der Pin macht den Stand zitierbar und
+  die Abweichung benennbar. Dass er **fortgeschrieben** wird statt zu altern,
+  ist die Bedingung dafür, dass der Freshness-Audit überhaupt etwas zu
+  vergleichen hat. Diese Hebung ist zusätzlich die erste, deren Inhalt das Repo
+  selbst erbeten hat.
+- **Löst auf:** [`MR-030`](../conventions.md#mr-030)
 - **Ausgelöst durch Baseline-Stand:** v5.12.0
 - **Auflösungs-Trigger:** der Kurs veröffentlicht einen neuen Release-Tag; dann
   Fortschreibung durch den nächsten Nachtrag zu

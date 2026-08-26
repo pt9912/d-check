@@ -104,6 +104,14 @@ ignore-refs:
   # Datei-Liste genau das waere, was dieses Repo an Listen beanstandet: sie
   # haelt nur so lange, wie jemand sie pflegt. Die refs-Seite bleibt eng --
   # ausgenommen ist ausschliesslich der ENTFERNTE Baum, nicht der gepinnte.
+  #
+  # DER PREIS IST BENANNT: ein Glob deckt auch KUENFTIGE Dateien. Ein Report,
+  # der morgen entsteht und auf den entfernten v5.11.0-Baum zeigt, bleibt stumm
+  # -- gemessen: dieselbe Referenz meldet ausserhalb dieser Verzeichnisse
+  # target-missing, darin nicht. Bewusst in Kauf genommen, weil ein Report den
+  # Stand SEINER Zeit zitiert und ein Zeiger auf einen abgeloesten Baum dort
+  # kein Defekt ist. Fuer den gepinnten Baum gilt das nicht: dorthin zeigende
+  # tote Links melden weiterhin, auch aus done/ und docs/reviews/.
   - in: docs/plan/planning/done/**
     refs: [".harness/baseline/v5.11.0/**"]
   - in: docs/reviews/**
