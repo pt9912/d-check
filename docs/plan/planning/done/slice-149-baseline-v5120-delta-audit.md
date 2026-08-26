@@ -73,7 +73,10 @@ Keiner bleibt ungefragt, auch nicht die offensichtlich unberührten.
 - [x] Die Differenz zur vollen urteilsfreien Hälfte ist benannt und als
       [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) geschnitten,
       nicht hier gebaut — das Audit schneidet (§3).
-- [x] `make gates` Exit 0 (zehn Glieder); unabhängiger Review.
+- [x] `make gates` Exit 0 (zehn Glieder), `make fullbuild` Exit 0.
+- [ ] **Unabhängiger Review — ausstehend.** Der Haken stand hier angekreuzt,
+      bevor ein Review gelaufen war; die Berichtigung ist Teil der Akte, nicht
+      der Formulierung.
 
 ## 5. Abnahme-Punkte / Risiken
 
