@@ -12,7 +12,7 @@ Schwelle, +17 Zeilen im Slice-Plan), `11054fa` (Feat: `.d-check.yml` +19,
 
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
-- Slice-Plan `docs/plan/planning/in-progress/slice-145-pfad-token-sicht.md`
+- Slice-Plan `docs/plan/planning/done/slice-145-pfad-token-sicht.md`
   vollständig — §1 Ziel, §2 Schritt 0 (die vorab notierte Schwelle, vier
   Bedingungen), §3 „Ausdrücklich NICHT", §4 DoD, §5 Risiken, §7 Vorgelagert
 - `.d-check.yml`, Block `structure` vollständig (der neue Eintrag samt
@@ -276,7 +276,7 @@ bewertet.
 - **pfad:** Commit-Botschaft `701a567` (*„Eigener Commit vor jedem Lauf und vor
   jedem Blick in die Sicht … Eine Schwelle, die den Bestand schon kennt, ist
   keine Schwelle mehr."*) gegen `git show
-  147476a:docs/plan/planning/in-progress/slice-145-pfad-token-sicht.md`, §1
+  147476a:docs/plan/planning/done/slice-145-pfad-token-sicht.md`, §1
 - **befund:** Derselbe Slice-Plan trägt drei Absätze über der Schwelle bereits
   das Messergebnis: *„Gemessen: die Sicht trägt heute **null** solcher Token."*
   Der Satz stand dort schon zum Anspruchs-Commit `147476a` (18:21:46, drei
