@@ -28,6 +28,23 @@ verbietet sie aber nicht.
 
 ## 2. Vorgehen
 
+0. **Die Schwelle steht, bevor gemessen wird** — festgehalten am 2026-08-26,
+   vor dem ersten Lauf und vor jedem Blick in die Sicht
+   ([`BEO-011`](../observations.md); dieselbe Form wie in
+   [slice-144](../done/slice-144-commit-hash-muster.md), wo sie getragen hat):
+
+   - **Null Falsch-Positive** in `spec/architecture.md`. Die Sicht ist die
+     einzige bewachte Datei; ein Befund dort, der kein Modul-Pfad ist, kippt den
+     Kandidaten.
+   - **Positivkontrolle:** ein eingesetzter Code-Modul-Pfad wird gemeldet, die
+     Ursache gelesen, der Rückbau grün. Ohne sie ist „null Befunde" von „die
+     Regel tut nichts" nicht zu unterscheiden.
+   - **Die Falsch-Negativ-Klasse ist zu benennen**, nicht zu minimieren.
+   - **Keine dritte Mechanik** (§3): die Wahl fällt zwischen der aus
+     [slice-143](../done/slice-143-structure-abschnitts-skopus.md) und der aus
+     [slice-144](../done/slice-144-commit-hash-muster.md), und sie wird
+     **begründet**, nicht bequem getroffen.
+
 1. **Ort und Form klären**: ein Muster-Verbot (dieselbe Fähigkeit, die
    [slice-144](../done/slice-144-commit-hash-muster.md) und
    [slice-143](../done/slice-143-structure-abschnitts-skopus.md) berühren) oder ein
