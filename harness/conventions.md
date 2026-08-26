@@ -117,7 +117,7 @@ ob der Eintrag ihn betrifft.
 | [MR-035](conventions/MR-035-cr-ablage.md) <a id="mr-035--ausgehende-change-requests-an-die-baseline-liegen-im-repo"></a><a id="mr-035"></a> | Ausgehende CRs liegen in `docs/plan/cr/` | `docs/plan/cr/` | keine — Form-Frage, vom Kanon an den Konventionsspeicher abgetreten |
 | [MR-036](conventions/MR-036-cr-antwort-ablage.md) <a id="mr-036--die-antwort-auf-einen-ausgehenden-cr-liegt-bei-ihrem-cr"></a><a id="mr-036"></a> | Die Antwort liegt bei ihrem CR | `docs/plan/cr/` — eingehende Antworten | keine — der Kanon kennt den ausgehenden CR nicht, also auch nicht seine Antwort |
 | [MR-037](conventions/MR-037-baseline-v5120.md) <a id="mr-037--baseline-pin-hebung-auf-v5120-siebter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-037"></a> | Baseline-Pin-Hebung auf v5.12.0 (Pin-Fortschreibung, Nachtrag) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v5.12.0/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
-| [MR-038](conventions/MR-038-zitate-pin-gebunden.md) <a id="mr-038--ein-zitat-der-baseline-ist-pin-gebunden-wie-ein-link-aber-es-wird-ergänzt-statt-ersetzt-schärft-mr-021"></a><a id="mr-038"></a> | Zitate der Baseline werden beim Bump ergänzt, nicht ersetzt (schärft [`MR-021`](conventions.md#mr-021)) | Zitate der Baseline in aktiven `MR-*`-Einträgen | keine — der Kanon regelt den Fall nicht |
+| [MR-039](conventions/MR-039-zitat-delta-im-neuen-eintrag.md) <a id="mr-039--ändert-die-baseline-einen-zitierten-wortlaut-hält-das-ein-neuer-eintrag-fest--nicht-der-zitierende"></a><a id="mr-039"></a> | Geändertes Baseline-Zitat wird im Bump-Eintrag vermerkt, nicht im zitierenden Dokument | wörtliche Baseline-Zitate in allen lebenden Dokumenten | keine — der Kanon gibt das Prinzip, nicht den Ort |
 
 ### Aufgelöste Adaptionen
 
@@ -147,6 +147,7 @@ auffindbar bleibt, ohne gelesen zu werden.
 | [MR-028](conventions/done/MR-028-baseline-v570.md) <a id="mr-028--baseline-pin-hebung-auf-v570-vierter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-028"></a> | [MR-029](#mr-029) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
 | [MR-029](conventions/done/MR-029-baseline-v590.md) <a id="mr-029--baseline-pin-hebung-auf-v590-fünfter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-029"></a> | [MR-030](#mr-030) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
 | [MR-030](conventions/done/MR-030-baseline-v5110.md) <a id="mr-030--baseline-pin-hebung-auf-v5110-sechster-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-030"></a> | [MR-037](#mr-037) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
+| [MR-038](conventions/done/MR-038-zitate-pin-gebunden.md) <a id="mr-038--ein-zitat-der-baseline-ist-pin-gebunden-wie-ein-link-aber-es-wird-ergänzt-statt-ersetzt-schärft-mr-021"></a><a id="mr-038"></a> | [MR-039](#mr-039) (der Kanon regelt den Fall doch — bestehende Einträge werden nicht rückwirkend umgeschrieben) |
 
 
 

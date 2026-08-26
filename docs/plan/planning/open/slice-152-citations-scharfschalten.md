@@ -31,17 +31,35 @@ Quelle**, whitespace-normalisiert. Das ist genau die Prüfung, an der ein
 Korpus-Test scheitert.
 
 **Sie ist heute nicht aktivierbar, und das ist gemessen.** Ein Probelauf über
-den Bestand bricht fail-closed ab:
+den Bestand bricht fail-closed an der ersten Fundstelle ab:
 
 ```text
-d-check: error: CHANGELOG.md:592: malformte d-check:cite-Direktive
+d-check: error: CHANGELOG.md:592: malformte d-check:cite-Direktive — erwartet
+<!-- d-check:cite <pfad>:<von>-<bis> --> (DC-FA-CITE-001.a Schritt 1, fail-closed)
 ```
 
 Die Fundstelle ist die **Dokumentation der Direktive selbst** — der Kopfteil des
 Musters steht dort in Inline-Code. Der Scan ist **fence**-bewusst, aber nicht
 inline-code-bewusst; eine Fenced-Darstellung wäre immun, die gewählte ist es
-nicht. Betroffen sind neben dem CHANGELOG auch `README.md`/`README.de.md`,
-Lastenheft, Spezifikation und Benutzerhandbuch.
+nicht.
+
+**Der Bestand ist gezählt, nicht geschätzt** (Marker außerhalb von Fences, über
+`git ls-files`, Markdown-Dateien, ohne den vendorten Baum): **zehn** Dateien
+tragen ihn — `CHANGELOG.md`, `README.md`, `README.de.md`, `spec/lastenheft.md`,
+`spec/spezifikation.md`, `docs/user/benutzerhandbuch.md`,
+`docs/plan/adr/0045-…md` und drei Reporte aus `docs/reviews/2026-07-18-…`.
+Der Lauf bricht dabei an **zwei** verschiedenen Stellen des Algorithmus:
+**15** Marker sind malformt (Schritt 1), und **zwei** wohlgeformte Direktiven
+tragen kein folgendes Zitat (Schritt 2). Vier der zehn Dateien sind
+eingefroren (`docs/reviews/`) und dürfen nicht editiert werden — für sie taugt
+nur ein Ventil oder ein Produkt-Delta.
+
+**Neu ist das nicht.** Der Design-Review des Moduls hält denselben Blocker seit
+**2026-07-18** als INFO-Befund fest, mit derselben Ursache und derselben
+Datei-Klasse — und mit der damals gewählten Einordnung als *bewusste,
+dokumentierte Fail-closed-Semantik*. Dieser Slice bringt keine neue
+Entdeckung, sondern die Frage, ob diese Einordnung noch trägt, wenn das Modul
+scharfgeschaltet werden soll.
 
 ## 2. Vorgehen
 
