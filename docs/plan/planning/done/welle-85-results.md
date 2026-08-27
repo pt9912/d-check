@@ -92,7 +92,7 @@ Lese-Schritt über die Bewegungen dieser Welle:
 | [`BEO-008`](../observations.md) | 3 → **4** | Vierte Klasse benannt; die mechanische Form existiert im Produkt (`citations`) und ist blockiert — [slice-152](../next/slice-152-citations-scharfschalten.md) |
 | [`BEO-009`](../observations.md) | 3 → **5** | Beide neuen Instanzen Richtung (a); dabei die eigene **Beleg-Form-Lücke** des Eintrags benannt statt geglättet |
 | [`BEO-017`](../observations.md) | neu, **3** | Der Kanon trägt die Regel seit `v5.12.0` — auf unseren CR hin; keine Regelzeile hier, aber eine Prozedur |
-| [`BEO-012`](../observations.md) | 4 | Unverändert in dieser Welle; die Feedforward-Hälfte wartet in [slice-147](../open/slice-147-reviewer-anker-reichweite.md) |
+| [`BEO-012`](../observations.md) | 4 | Unverändert in dieser Welle; die Feedforward-Hälfte wartet in [slice-147](../in-progress/slice-147-reviewer-anker-reichweite.md) |
 
 ## Folge-Slices
 
