@@ -82,7 +82,7 @@ ohnehin verlangt? Davon hängt ab, ob der Bestandsfall repariert werden **darf**
       seit `v0.50.0`, Zitat gegen die eigene Quelle) und ist **heute nicht
       aktivierbar** — zehn Markdown-Dateien tragen den Direktiven-Marker, der
       Lauf bricht an zwei Stellen des Algorithmus. Geschnitten als
-      [slice-152](../in-progress/slice-152-citations-scharfschalten.md).
+      [slice-152](../done/slice-152-citations-scharfschalten.md).
 - [x] `make gates` Exit 0 (zehn Glieder), `make fullbuild` Exit 0; unabhängiger
       Review ([Report](../../../reviews/2026-08-26-slice-150-pin-gebundene-zitate-review.md)),
       blockierend mit **einem HIGH**, sieben MEDIUM und sechs LOW — alle
@@ -106,7 +106,7 @@ ohnehin verlangt? Davon hängt ab, ob der Bestandsfall repariert werden **darf**
   Prüfung mehrere verworfene Fassungen gebraucht, bis sie trug — die dort
   genannte Zahl **sechs** zählt Dokument/Quell-Paare, nicht Anläufe. —
   **Ausgang:** *eingetreten — aufgefangen von
-  [slice-152](../in-progress/slice-152-citations-scharfschalten.md).* Die Messung
+  [slice-152](../done/slice-152-citations-scharfschalten.md).* Die Messung
   bestätigt das Risiko und entschärft es zugleich: das Produkt normalisiert
   bereits Whitespace und prüft gegen die **eigene Quelle** statt gegen einen
   Korpus. Was bleibt, ist die Wartungslast der Zeilennummern und die

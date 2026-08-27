@@ -12,7 +12,7 @@ braucht).
 (die Anforderung); [ADR-0045](../../adr/0045-zitat-verifikation-codepaths-erweiterung-und-citations-modul.md)
 (das Modul); [ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)
 (die geteilte Lexik und ihre gescopten Ausnahmen);
-[slice-152](../in-progress/slice-152-citations-scharfschalten.md) (der Anlass).
+[slice-152](../done/slice-152-citations-scharfschalten.md) (der Anlass).
 
 **Berührte Spec-Stellen:**
 [`DC-FA-CITE-001`](../../../../spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in)
@@ -31,7 +31,7 @@ Dokumentation der Direktive ist selbst ein Fund**. Wer die Syntax in
 Inline-Code schreibt — `<!-- d-check:cite <pfad>:<von>-<bis> -->` —, erzeugt
 einen malformten Marker, und das Modul bricht fail-closed über den ganzen Lauf.
 
-**Gemessen** ([slice-152](../in-progress/slice-152-citations-scharfschalten.md)):
+**Gemessen** ([slice-152](../done/slice-152-citations-scharfschalten.md)):
 **72** Vorkommen des Markers in **20** getrackten Dateien, davon **70
 außerhalb** eines Fenced-Blocks. Neun der zwanzig sind eingefrorene
 Review-Reporte, dazu ein `done/`-Slice und zwei `Accepted`-ADRs — alle
@@ -72,7 +72,7 @@ vorhandenen Anforderung oder eine neue?
 
 ## 3. Ausdrücklich NICHT in diesem Slice
 
-- **Kein Scharfschalten.** Das ist [slice-152](../in-progress/slice-152-citations-scharfschalten.md),
+- **Kein Scharfschalten.** Das ist [slice-152](../done/slice-152-citations-scharfschalten.md),
   und es wartet auf dieses Ergebnis.
 - **Keine Auszeichnung von Zitaten.** Auch das gehört zu slice-152.
 - **Keine Änderung an den drei gescopten Ausnahmen** aus
@@ -138,7 +138,7 @@ vorhandenen Anforderung oder eine neue?
 
 **Rückführungen:** `in-progress` → `next`, falls die Vertrags-Frage einen
 Auftraggeber-Entscheid verlangt — dann bleibt die Lücke benannt, und
-[slice-152](../in-progress/slice-152-citations-scharfschalten.md) wartet weiter.
+[slice-152](../done/slice-152-citations-scharfschalten.md) wartet weiter.
 
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
