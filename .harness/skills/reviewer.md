@@ -20,7 +20,7 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
 
 ## Repo-spezifische Anker pro Kategorie
 
-- **HIGH** (blockiert Merge): Stilles-Grün-Pfad in einem Gate oder
+- **HIGH** (blockiert Merge): Stilles-Grün-Pfad in einem Gate oder   <!-- d-check:cite AGENTS.md:327-328 -->
   Gate-Skript (Harness-Lüge — [`AGENTS.md`](../../AGENTS.md) §4: *„Halluzinierte
   Gates sind die häufigste Form von Harness-Lüge"*); Korrektheitsfehler in
   Kern-Modulen mit falschen Befunden/Exit-Codes (Baseline
@@ -155,7 +155,7 @@ würde den Befund bestätigen?) · `klasse` (stabile Kurz-Bezeichnung des
 Fehlermusters, über Reviews hinweg wiederauffindbar).
 
 ## Negativbefunde (Pflicht)
-
+<!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-10-review-harness.md:75-75 -->
 Eine „geprüft, ohne Befund"-Zeile pro betrachtetem Bereich — sonst
 ist „keine Findings" nicht von „nicht geprüft" unterscheidbar.
 
