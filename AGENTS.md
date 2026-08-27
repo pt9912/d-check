@@ -100,11 +100,12 @@ Wo ein Skript nötig ist, läuft es als eigene, digest-gepinnte Dockerfile-Stage
 **Durchsetzung:** ein Tool-Call-Wächter
 ([`.claude/hooks/pretooluse-command-guard.sh`](.claude/hooks/pretooluse-command-guard.sh))
 prüft die Befehlsposition jedes Segments und Sub-Shell-Strings rekursiv. Er ist
-**werkzeug-lokal**, kein Repo-Gate: kein `make`-Target und keine CI ruft ihn,
-ein Lauf ohne dieses Werkzeug ist ungebunden. Und er nennt seine Grenze selbst —
-*Stolperdraht, keine Sandbox*. **Er läuft heute mit `node`, also außerhalb der
-oben genannten Klasse** — benannte Inkonsistenz, Bedingungen und Auflösung in
-[`MR-041`](harness/conventions.md#mr-041).
+**werkzeug-lokal**, kein Repo-Gate: keine CI ruft ihn, ein Lauf ohne dieses
+Werkzeug ist ungebunden. Und er nennt seine Grenze selbst — *Stolperdraht, keine
+Sandbox*. Er ist in `bash` geschrieben und liest die Hook-Eingabe mit `awk`,
+läuft also in derselben Klasse, die er durchsetzt
+([`MR-042`](harness/conventions.md#mr-042)); `make guard-probe` (§4) fährt ihn
+gegen seine Proben.
 
 ### 3.2 Suppression-Verbot
 
@@ -366,6 +367,7 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make build` / `make run`    | Runtime-Image bauen / Selbst-Smoke-Test                                                                                                                                                                                                            |
 | `make tidy`                  | `go.mod`/`go.sum` pflegen (`go mod tidy` in Docker; Dependency-Aufnahme/-Hebung — **kein** Gate, bewusster Akt am Dependency-Stand) |
 | `make deps` / `make compile` | Cache-Layer / schnelles Compile-Feedback                                                                                                                                                                                                           |
+| `make guard-probe`           | Fährt den Tool-Call-Wächter aus §3.1 gegen seine Proben: je Fall Erwartung und Ergebnis, Fehlschlag-Zähler am Ende. **Werkzeug-lokal und bewusst nicht in `gates`** — der Wächter ist keine Repo-Invariante, sondern eine Werkzeug-Einstellung; ohne wiederholbare Proben wäre seine Zusage aber eine Erinnerung |
 | `make record-gates`          | Nachweis schreiben: Working-Tree-Hash für den Stop-Hook                                                                                                                                                                                            |
 | `make help` / `make clean`   | Targets anzeigen / Images entfernen                                                                                                                                                                                                                |
 

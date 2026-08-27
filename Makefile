@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
+.PHONY: help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -152,6 +152,13 @@ doc-complete: build ## Vollständigkeits-Dogfood via d-check selbst (--trace --r
 
 record-gates: ## Nachweis schreiben: Working-Tree-Hash (für den Stop-Hook).
 	@bash tools/harness/record-gates.sh
+
+# Der Tool-Call-Wächter ist werkzeug-lokal und hat kein Gate (AGENTS.md §3.1).
+# Ohne wiederholbare Proben wäre seine Zusage eine Erinnerung; dieses Target
+# macht sie nachfahrbar. Bewusst NICHT in gates: der Wächter ist keine
+# Repo-Invariante, sondern eine Werkzeug-Einstellung.
+guard-probe: ## Tool-Call-Wächter gegen seine Proben fahren (werkzeug-lokal, NICHT in gates).
+	@bash tools/harness/guard-probe.sh
 
 # Der vendorte Baseline-Bestand ist die netzlose Leseform des adoptierten
 # Regelwerks (MR-011-Kette). Zwei Fragen, zwei Targets, zwei Fehlerpolitiken —

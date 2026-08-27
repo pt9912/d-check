@@ -3,102 +3,124 @@
 # und Host-Skript-Interpreter (d-check ist make/Docker-only, AGENTS.md §3.1,
 # ADR-0001).
 #
-# Geprüft wird die Befehlsposition jedes Kommando-Segments (Trennung
-# an ; && || | $( ` ( und Zeilenenden) — `git commit -m "docs: pip"`
-# oder `docker run img npm test` bleiben erlaubt; `/usr/bin/pip` und
-# `sudo pip` werden erkannt. Sub-Shell-Strings (`bash -c "…"`, auch in
-# Flag-Bündeln wie `-lc`/`-ec`/`-cx`) werden rekursiv geprüft (MR-005).
+# Reines bash + awk. Die JSON-Extraktion liegt in tools/harness/extract-command.awk
+# und meldet Parse-Zweifel per Exit 3; dieser Guard blockt dann (fail-closed).
 #
-# SKRIPT-INTERPRETER: `python`/`python3`/`python3.x`, `perl` und `ruby` in
-# Befehlsposition sind blockiert. Grund ist nicht die Sprache, sondern der
-# Skopus: §3.1 nennt als Host-Klasse `git`, GNU `make`, `bash`, Docker und die
-# POSIX-Standardwerkzeuge, die die Gate-Skripte rufen. Ein General-Purpose-
-# Interpreter gehört nicht dazu, und er hebelt die Klasse aus — er kann alles,
-# was die genannten Werkzeuge können, ohne deren Grenze zu erben.
+# Geprüft wird die Befehlsposition jedes Kommando-Segments (Trennung an
+# ; & && || | $( ` ( und Zeilenenden). `/usr/bin/pip` und `sudo pip` werden
+# erkannt; Zuweisungs-, Wrapper- und Brace-Group-Präfixe werden übersprungen —
+# ohne Letztere entkäme das Werkzeug in `{ go build; }` als zweites Token.
+# Sub-Shell-Strings (`bash -c "…"`, auch in Flag-Bündeln wie -lc/-ec/-cx)
+# werden rekursiv geprüft, Tiefe ≤ 3, darüber fail-closed (MR-005).
 #
-# `node` steht MIT auf der Liste. Der Agent ruft es nicht mehr auf; der Hook
-# ruft es weiterhin, denn Hook-Subprozesse laufen nicht durch den Hook.
+# SKRIPT-INTERPRETER: `python` samt Versions-Suffix, `perl`, `ruby`, `node`,
+# `deno`, `bun` sind blockiert (MR-040, MR-042). Nicht die Sprache ist der
+# Grund, sondern der Skopus: ein General-Purpose-Interpreter kann alles, was die
+# in §3.1 genannten Werkzeuge können, ohne deren Grenze zu erben.
 #
-# DAS IST EINE OFFENE INKONSISTENZ, KEINE LÖSUNG: dieser Guard soll erzwingen,
-# dass nur die in AGENTS.md §3.1 genannte Host-Klasse benutzt wird — und ist
-# selbst in einer Toolchain geschrieben, die nicht dazugehört. Die Ablösung auf
-# bash + POSIX-Werkzeuge ist geschnitten; bis dahin bleibt node eine deklarierte
-# Host-Abhängigkeit dieses einen Skripts.
+# GRENZE, quote-blind: ein Trenner INNERHALB eines Arguments startet ein neues
+# Segment. Ein Kommando, das ein blockiertes Wort als DATEN trägt, wird deshalb
+# geblockt (Falsch-Positiv). Abhilfe ist die Repo-Praxis ohnehin: solchen Inhalt
+# in eine Datei legen — `git commit -F <datei>`, Proben als Skript.
 #
-# BENANNTE GRENZE: `find -exec`, `awk`-Programme und jeder Interpreter, den
-# diese Liste nicht kennt, bleiben ungeprüft — der Guard ist ein Stolperdraht
-# gegen versehentliche Host-Toolchain-Nutzung, keine Sandbox.
+# GRENZE, Umfang: `find -exec`, `awk`-Programme und jeder Interpreter, den die
+# Liste nicht kennt, bleiben ungeprüft. Stolperdraht, keine Sandbox.
 #
 # Im Pass-Fall: KEINE Ausgabe — "approve" würde das Permission-System
 # überspringen; ohne Ausgabe läuft die normale Permission-Entscheidung.
 set -euo pipefail
 
-# Fail-closed: ohne node keine Prüfung möglich → Tool-Call blockieren.
-if ! command -v node >/dev/null 2>&1; then
-  echo "pretooluse-command-guard: node not found on host — blocking (fail-closed)." >&2
-  exit 2
-fi
+here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+extractor="$here/../../tools/harness/extract-command.awk"
 
-input="$(cat)"
-
-verdict="$(printf '%s' "$input" | node -e '
-  const BLOCKED = new Set(["apt","apt-get","brew","pip","pip3","pipx",
-    "npm","pnpm","yarn","npx","corepack","cargo","rustup","gem","conda",
-    "go","gofmt","golangci-lint","staticcheck", // Host-Go: ADR-0001 + AGENTS §3.1
-    "perl","ruby","node","deno","bun"]);        // Skript-Interpreter: AGENTS §3.1
-  // python, python3, python3.12 … — die Versions-Suffixe machen eine Liste
-  // unvollständig, darum als Muster.
-  const BLOCKED_RE = /^python[0-9]*(\.[0-9]+)*$/;
-  const PREFIXES = new Set(["sudo","env","command","exec","nice","time",
-    "xargs","eval"]);
-  const SHELLS = new Set(["bash","sh","zsh","dash","ksh"]);
-  const stripQuotes = t => t.replace(/^["'\'']+|["'\'']+$/g, "");
-
-  function scan(cmd, depth) {
-    if (depth > 3) return true; // zu tief verschachtelt → fail-closed
-    // Auch einfaches & trennt (Hintergrund-Start): `echo x & pip install y`.
-    const segments = cmd.split(/(?:;|&&|&|\|\||\||\$\(|`|\(|\r?\n)/);
-    for (const seg of segments) {
-      const tokens = seg.trim().split(/\s+/).filter(Boolean).map(stripQuotes);
-      let i = 0;
-      // Brace-Group-Delimiter mit ueberspringen: bei `{ go build; }` waere der
-      // Kopf sonst `{` und das Werkzeug an Position 2 entkaeme der Pruefung.
-      while (i < tokens.length &&
-             (/^[A-Za-z_][A-Za-z0-9_]*=/.test(tokens[i]) || PREFIXES.has(tokens[i]) ||
-              tokens[i] === "{" || tokens[i] === "}")) i++;
-      if (i >= tokens.length) continue;
-      const head = tokens[i].replace(/^.*\//, ""); // /usr/bin/pip → pip
-      if (BLOCKED.has(head) || BLOCKED_RE.test(head)) return true;
-      if (SHELLS.has(head)) {
-        // -c auch in Flag-Bündeln erkennen (-lc, -ec, -cx, …): bei
-        // sh/bash ist c das einzige Single-Letter-Flag mit
-        // Kommando-String-Semantik, das Bündel ist also eindeutig.
-        const cIdx = tokens.findIndex((t, k) => k > i && /^-[a-z]*c[a-z]*$/.test(t));
-        if (cIdx !== -1 && cIdx + 1 < tokens.length &&
-            scan(tokens.slice(cIdx + 1).join(" "), depth + 1)) return true;
-      }
-    }
-    return false;
-  }
-
-  let s = "";
-  process.stdin.on("data", d => s += d);
-  process.stdin.on("end", () => {
-    let cmd = "";
-    try {
-      const j = JSON.parse(s);
-      cmd = String((j.tool_input && j.tool_input.command) || "");
-    } catch { process.stdout.write("block"); return; } // unlesbar → fail-closed
-    process.stdout.write(scan(cmd, 0) ? "block" : "ok");
-  });
-')"
-
-if [ "$verdict" = "block" ]; then
+emit_block() {
   cat <<'JSON'
 {
   "decision": "block",
-  "reason": "d-check is make/Docker-only (AGENTS.md §3.1, ADR-0001). Use make targets and the POSIX host tools the gate scripts use (grep/sed/awk/find); do not run host package managers, host go, or host script interpreters (apt/brew/pip/npm/cargo/go/python/perl/ruby/node)."
+  "reason": "d-check is make/Docker-only (AGENTS.md §3.1, ADR-0001). Use make targets and the POSIX host tools the gate scripts use (grep/sed/awk/find); do not run host package managers, host go, or host script interpreters (apt/brew/pip/npm/cargo/go/python/perl/ruby/node). On parse doubt the guard fails closed."
 }
 JSON
-fi
+}
+
+# Host-Go: ADR-0001 + AGENTS §3.1. Paketmanager: AGENTS §3.1.
+# Skript-Interpreter: MR-040/MR-042.
+BLOCKED="apt apt-get brew pip pip3 pipx npm pnpm yarn npx corepack cargo rustup
+gem conda go gofmt golangci-lint staticcheck perl ruby node deno bun"
+# python, python3, python3.12 … — die Versions-Suffixe machen eine Liste
+# unvollständig, darum als Muster.
+BLOCKED_RE='^python[0-9]*(\.[0-9]+)*$'
+PREFIXES="sudo env command exec nice time xargs eval"
+SHELLS="bash sh zsh dash ksh"
+
+in_set() {  # in_set <whitespace-getrennte-menge> <wort>
+  local w
+  for w in $1; do [ "$w" = "$2" ] && return 0; done
+  return 1
+}
+
+# Ergebnis in der globalen STRIPPED: kein Subshell-Fork je Token — der Guard
+# läuft vor JEDEM Bash-Call, Latenz zählt.
+strip_quotes() {
+  local s=$1
+  while [ -n "$s" ]; do case $s in \"*|\'*) s=${s#?};; *) break;; esac; done
+  while [ -n "$s" ]; do case $s in *\"|*\') s=${s%?};; *) break;; esac; done
+  STRIPPED=$s
+}
+
+scan() {  # scan <cmd> <tiefe>; return 0 = BLOCK, 1 = ok
+  local cmd=$1 depth=$2
+  [ "$depth" -gt 3 ] && return 0          # zu tief verschachtelt -> fail-closed
+  local s=$cmd
+  s=${s//'&&'/$'\n'}; s=${s//'&'/$'\n'}; s=${s//'||'/$'\n'}; s=${s//'|'/$'\n'}
+  s=${s//';'/$'\n'};  s=${s//\$\(/$'\n'}; s=${s//'`'/$'\n'}
+  s=${s//'('/$'\n'};  s=${s//$'\r'/$'\n'}
+  local seg head i j rest x
+  local -a toks stoks
+  while IFS= read -r seg; do
+    read -ra toks <<< "$seg"
+    [ "${#toks[@]}" -eq 0 ] && continue
+    stoks=()
+    for x in "${toks[@]}"; do strip_quotes "$x"; stoks+=("$STRIPPED"); done
+    i=0
+    while [ "$i" -lt "${#stoks[@]}" ]; do
+      if [[ "${stoks[$i]}" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then i=$((i+1)); continue; fi
+      in_set "$PREFIXES" "${stoks[$i]}" && { i=$((i+1)); continue; }
+      case "${stoks[$i]}" in "{"|"}") i=$((i+1)); continue;; esac
+      break
+    done
+    [ "$i" -ge "${#stoks[@]}" ] && continue
+    head=${stoks[$i]}; head=${head##*/}   # /usr/bin/pip -> pip
+    in_set "$BLOCKED" "$head" && return 0
+    [[ "$head" =~ $BLOCKED_RE ]] && return 0
+    if in_set "$SHELLS" "$head"; then
+      # -c auch in Flag-Bündeln (-lc, -ec, -cx, …): bei sh/bash ist c das
+      # einzige Single-Letter-Flag mit Kommando-String-Semantik.
+      j=$((i+1))
+      while [ "$j" -lt "${#stoks[@]}" ]; do
+        if [[ "${stoks[$j]}" =~ ^-[a-z]*c[a-z]*$ ]]; then
+          rest="${stoks[*]:$((j+1))}"
+          scan "$rest" "$((depth+1))" && return 0
+          break
+        fi
+        j=$((j+1))
+      done
+    fi
+  done <<< "$s"
+  return 1
+}
+
+input="$(cat)"
+
+# Ohne awk keine Prüfung -> fail-closed (awk ist POSIX-Basis, AGENTS.md §3.1).
+command -v awk >/dev/null 2>&1 || { emit_block; exit 0; }
+[ -f "$extractor" ] || { emit_block; exit 0; }
+
+set +e
+cmd="$(printf '%s' "$input" | awk -f "$extractor")"
+rc=$?
+set -e
+[ "$rc" -ne 0 ] && { emit_block; exit 0; }   # Parse-Zweifel -> fail-closed
+
+scan "$cmd" 0 && emit_block
 # Pass-Fall: keine Ausgabe — normale Permission-Prüfung übernimmt.
+exit 0

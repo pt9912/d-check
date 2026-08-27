@@ -119,7 +119,7 @@ ob der Eintrag ihn betrifft.
 | [MR-037](conventions/MR-037-baseline-v5120.md) <a id="mr-037--baseline-pin-hebung-auf-v5120-siebter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-037"></a> | Baseline-Pin-Hebung auf v5.12.0 (Pin-Fortschreibung, Nachtrag) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v5.12.0/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
 | [MR-039](conventions/MR-039-zitat-delta-im-neuen-eintrag.md) <a id="mr-039--ändert-die-baseline-einen-zitierten-wortlaut-hält-das-ein-neuer-eintrag-fest--nicht-der-zitierende"></a><a id="mr-039"></a> | Geändertes Baseline-Zitat wird im Bump-Eintrag vermerkt, nicht im zitierenden Dokument | wörtliche Baseline-Zitate in allen lebenden Dokumenten | keine — der Kanon gibt das Prinzip, nicht den Ort |
 | [MR-040](conventions/MR-040-guard-skript-interpreter.md) <a id="mr-040--der-tool-call-wächter-blockiert-auch-host-skript-interpreter-schärft-mr-005"></a><a id="mr-040"></a> | Wächter blockiert Host-Skript-Interpreter (schärft [`MR-005`](conventions.md#mr-005)) | `.claude/hooks/pretooluse-command-guard.sh`, `AGENTS.md` §3.1 | keine — der Kanon verlangt die Härtung, nicht ihre Liste |
-| [MR-041](conventions/MR-041-guard-node-und-eigene-toolchain.md) <a id="mr-041--auch-node-ist-ein-host-interpreter-der-wächter-selbst-bleibt-die-benannte-ausnahme-schärft-mr-040"></a><a id="mr-041"></a> | Auch `node` blockiert; der Wächter selbst bleibt benannte Ausnahme (schärft [`MR-040`](conventions.md#mr-040)) | `.claude/hooks/pretooluse-command-guard.sh`, `AGENTS.md` §3.1 | keine — Fortschreibung der Härtung |
+| [MR-042](conventions/MR-042-guard-in-eigener-klasse.md) <a id="mr-042--der-wächter-läuft-in-der-klasse-die-er-durchsetzt-löst-mr-041-auf"></a><a id="mr-042"></a> | Wächter in `bash` + `awk`; `node`-Sperre fortgeführt (löst [`MR-041`](conventions.md#mr-041) auf) | `.claude/hooks/pretooluse-command-guard.sh`, `tools/harness/extract-command.awk`, `tools/harness/guard-probe.sh`, `AGENTS.md` §3.1/§4 | keine — Form-Frage, vom Kanon an den Konventionsspeicher abgetreten |
 
 ### Aufgelöste Adaptionen
 
@@ -150,6 +150,7 @@ auffindbar bleibt, ohne gelesen zu werden.
 | [MR-029](conventions/done/MR-029-baseline-v590.md) <a id="mr-029--baseline-pin-hebung-auf-v590-fünfter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-029"></a> | [MR-030](#mr-030) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
 | [MR-030](conventions/done/MR-030-baseline-v5110.md) <a id="mr-030--baseline-pin-hebung-auf-v5110-sechster-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-030"></a> | [MR-037](#mr-037) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
 | [MR-038](conventions/done/MR-038-zitate-pin-gebunden.md) <a id="mr-038--ein-zitat-der-baseline-ist-pin-gebunden-wie-ein-link-aber-es-wird-ergänzt-statt-ersetzt-schärft-mr-021"></a><a id="mr-038"></a> | [MR-039](#mr-039) (der Kanon regelt den Fall doch — bestehende Einträge werden nicht rückwirkend umgeschrieben) |
+| [MR-041](conventions/done/MR-041-guard-node-und-eigene-toolchain.md) <a id="mr-041--auch-node-ist-ein-host-interpreter-der-wächter-selbst-bleibt-die-benannte-ausnahme-schärft-mr-040"></a><a id="mr-041"></a> | [MR-042](#mr-042) (die benannte Inkonsistenz ist eingelöst; die `node`-Sperre trägt der Nachfolger fort) |
 
 
 
