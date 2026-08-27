@@ -9,21 +9,31 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 ### Changed
 
 - slice-162 — **Der Zeilen-Marker `d-check:ignore` wirkt bei `codepaths` und `ids`
-  nur noch außerhalb von Inline-Code** (Lastenheft 0.68.0, ADR-0061). In
-  Backticks ist er eine **Erwähnung**, keine Direktive — bisher nahm eine Zeile,
-  die das Ventil *beschreibt*, sich selbst aus der Prüfung. Gemessen über 544
-  getrackte Dateien: von **250** Marker-Zeilen tragen **160** ihn nur in
-  Inline-Code; der Angleich legt **fünf** Befunde frei, und alle fünf sind
-  **echt** — Zeilen des Lastenhefts, die den Marker dokumentieren. Sie tragen
-  jetzt einen **gesetzten** Marker statt eines aus der eigenen Prosa gefolgerten.
-  **Bei `versions` und `diagrams` ändert sich nichts**, und das ist eine benannte
-  Skopierung: ihre Eingabe ist keine Prosa (alle Zeilen inkl. Code-Blöcken bzw.
-  die Zeilen **innerhalb** eines Fence), dort ist ein Backtick literaler Inhalt.
-  **Benannte Grenze:** die **Form** des Markers bleibt ungeregelt — er gilt als
-  gesetzt, sobald die Zeichenkette außerhalb von Code steht, auch ohne die
-  Kommentar-Klammer. Ein Quelltext-Wächter im Regel-Paket meldet künftig jede
-  Roh-Lesung ohne begründeten Eintrag; seine Grenze (Schreibweisen, nicht
-  Verhalten) steht bei ihm.
+  nur noch außerhalb von Inline-Code** (Lastenheft 0.68.0, ADR-0061 in der
+  Fassung von ADR-0062). In Backticks ist er eine **Erwähnung**, keine
+  Direktive — bisher nahm eine Zeile, die das Ventil *beschreibt*, sich selbst
+  aus der Prüfung. Gemessen über **553** getrackte Dateien: von **249**
+  Marker-Prosa-Zeilen tragen **183** ihn nur in Inline-Code, **66** wirken.
+  **Der Ertrag im Bestand ist null gefundene Doku-Defekte:** der Angleich legt
+  fünf Befunde frei, und alle fünf brauchen die Ausnahme wirklich — ihre
+  Kennungen und Pfade sind Beispiele. Was sich ändert, ist dass die Ausnahme
+  **gesetzt** ist statt aus der eigenen Prosa zu folgen; die Begründung des
+  Angleichs liegt im künftigen Fall.
+  **Bei `versions` und `diagrams` ändert sich nichts.** Für `diagrams` ist das
+  strukturell (es liest Zeilen **innerhalb** eines Fence und die Öffnungszeile —
+  dort ist ein Backtick literaler Inhalt). Für `versions` ist es eine **benannte
+  Grenze**: es liest **alle** Zeilen, also auch Prosa-Zeilen, und auf einer
+  solchen antwortet das Produkt damit **zweifach** — `codepaths` meldet, wo
+  `versions` schweigt. Die Divergenz ist dort verschoben, nicht behoben.
+  **Zwei Ränder des Strippens sind benannt:** eine Code-Spanne desselben
+  Absatzes verschluckt auch einen **gesetzten** Marker (Falsch-Rot), und ein
+  **unpaariger** Backtick weiter oben kippt die Parität, sodass eine Erwähnung
+  doch als Direktive wirkt (stilles Grün) — die Zusage gilt nur bei gerader
+  Parität. **Die Form** des Markers bleibt ungeregelt; unter den 66 wirksamen
+  trägt genau **einer** die bare Schreibweise. Ein Quelltext-Wächter im
+  Regel-Paket meldet künftig Roh-Lesungen ohne begründeten Eintrag — er fängt
+  **zwei von sechs** konstruierten Umgehungen und ist datei-granular; beides
+  steht als seine Grenze bei ihm.
 
 - slice-161 — **Sechs gepinnte Fremd-Bestände gehoben**, nachdem der Nachtlauf
   sie gemeldet hatte. **Nutzersichtbar ist einer, und er ist nicht kosmetisch:**

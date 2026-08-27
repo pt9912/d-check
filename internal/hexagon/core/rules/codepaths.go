@@ -17,12 +17,18 @@ const ReasonCodepathMissing = "codepath-missing"
 // honorieren ihn nicht — ihre deterministischen Befunde werden behoben, nicht
 // unterdrückt (DC-FA-CODE-001).
 //
-// GRENZE: die Erkennung ist eine Teilketten-Suche auf der Rohzeile. Damit
-// unterdrückt auch jede ERWÄHNUNG des Markers — Doku über das Ventil schaltet
-// die Prüfung ab, über die sie schreibt. Der Skopus je Modul ist zudem
-// verschieden: codepaths und ids lesen Prosa-Zeilen, versions alle Zeilen,
-// diagrams nur Diagramm-Fences und deren Öffnungszeile, wo der Marker den
-// ganzen Block ausnimmt.
+// WO ER GILT, IST JE MODUL VERSCHIEDEN (ADR-0062). codepaths und ids lesen ihn
+// auf dem inline-code-gestrippten Text — der Marker in Backticks ist dort eine
+// ERWÄHNUNG. versions liest alle Zeilen und diagrams die Zeilen innerhalb eines
+// Fence samt Öffnungszeile (dort nimmt er den ganzen Block aus); beide lesen
+// ihn weiter ROH.
+//
+// GRENZE, benannt statt behoben: bei versions ist das eine Abgrenzung, keine
+// andere Frage — seine Eingabe enthält Prosa-Zeilen, und auf ihnen antwortet
+// das Produkt damit zweifach. Und das Strippen hat zwei geerbte Ränder: eine
+// Code-Spanne desselben Absatzes verschluckt auch einen GESETZTEN Marker
+// (Falsch-Rot), und ein unpaariger Backtick weiter oben kippt die Parität, so
+// dass eine Erwähnung doch als Direktive wirkt (stilles Grün).
 const ignoreMarker = "d-check:ignore"
 
 // CheckCodepaths prüft explizite Pfade in Inline-Code-Spans

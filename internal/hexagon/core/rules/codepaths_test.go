@@ -1,12 +1,12 @@
 package rules
 
 import (
-	"github.com/pt9912/d-check/internal/hexagon/core/model"
-	"regexp"
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 )
 
 // DC-FA-CODE-001 Happy/Negative über Run: existierender Backtick-Pfad
@@ -306,13 +306,18 @@ func TestIgnoreMarkerInInlineCodeIstErwaehnung(t *testing.T) {
 	}
 }
 
-// DC-FA-VER-001.a / DC-FA-DIAG-001.a: die zwei ÜBRIGEN Konsumenten des Markers
-// lesen weiter roh, und das ist kein Versehen — ihre Eingabe ist keine Prosa.
-// versions liest ALLE Zeilen einschließlich Fences, diagrams die Zeilen
-// INNERHALB eines Fence; dort gibt es kein Inline-Code, Backticks sind
-// literaler Inhalt. Der Test nagelt die Grenze fest, damit ein späterer
-// Angleich eine Entscheidung ist und kein Nebeneffekt.
-func TestIgnoreMarkerBleibtRohWoDieEingabeKeineProsaIst(t *testing.T) {
+// DC-FA-VER-001.a: bei versions bleibt die Erkennung ROH — und das ist eine
+// BENANNTE GRENZE, keine andere Frage (ADR-0062). Seine Eingabe sind ALLE
+// Zeilen, also eine Obermenge, die die Prosa-Zeilen einschliesst: auf der Zeile
+// dieses Fixtures — freie Prosa, kein Fence — antwortet das Produkt damit
+// zweifach, weil codepaths dieselbe Zeile gestrippt liest. Der Test nagelt die
+// Divergenz fest, damit ein spaeterer Angleich eine Entscheidung ist und kein
+// Nebeneffekt.
+//
+// diagrams ist hier NICHT gedeckt: seine Eingabe (Zeilen innerhalb eines Fence
+// und die Oeffnungszeile) kennt gar kein Inline-Code, die Konstellation ist
+// dort nicht konstruierbar.
+func TestIgnoreMarkerBleibtRohBeiVersionsUndDiagrams(t *testing.T) {
 	m := coretest.NewMemFS(map[string]string{
 		"docs/src.md": "Stand: v2.0.0\n",
 		"docs/v.md":   "Pin `v1.0.0` mit `d-check:ignore` in Backticks.\n",

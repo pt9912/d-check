@@ -21,7 +21,10 @@ import (
 // Verhalten. Er fängt die Schreibweise `pl.raw`/`raw` neben dem Marker — nicht
 // eine Umgehung über eine Zwischenvariable oder ein anderes Paket. Er ist ein
 // Stolperdraht für den nächsten Konsumenten, keine Beweisführung.
-const markerName = "ignoreMarker"
+const (
+	markerName    = "ignoreMarker"
+	markerLiteral = "d-check:ignore"
+)
 
 // rohLesenErlaubt nennt je Datei, warum der Marker dort auf der ROHEN Zeile
 // gelesen wird — und die Begründung ist in beiden Fällen dieselbe Klasse: die
@@ -55,12 +58,17 @@ func TestLexikGuard_KeinKonsumentLiestRohOhneGrund(t *testing.T) {
 			t.Fatalf("%s nicht lesbar: %v", name, err)
 		}
 		for i, zeile := range strings.Split(string(b), "\n") {
-			if !strings.Contains(zeile, markerName) {
+			// Der Marker zaehlt unter BEIDEN Schreibweisen — als Konstante
+			// und als Literal. Nur das Literal zu vergessen waere die
+			// billigste Umgehung ueberhaupt.
+			if !strings.Contains(zeile, markerName) && !strings.Contains(zeile, markerLiteral) {
 				continue
 			}
-			// Nur der LESENDE Zugriff auf eine rohe Zeile zaehlt — die
-			// Deklaration der Konstanten und Kommentare nicht.
-			if !strings.Contains(zeile, "strings.Contains(") {
+			// Nur der LESENDE Zugriff zaehlt, nicht die Deklaration der
+			// Konstanten und nicht Kommentare. Gefangen sind die zwei
+			// gaengigen Lese-Aufrufe; wer den Marker anders sucht (regexp,
+			// eigene Schleife), steht nicht darin — siehe GRENZE oben.
+			if !strings.Contains(zeile, "strings.Contains(") && !strings.Contains(zeile, "strings.Index(") {
 				continue
 			}
 			if !strings.Contains(zeile, ".raw") && !strings.Contains(zeile, "(raw,") {
@@ -70,7 +78,7 @@ func TestLexikGuard_KeinKonsumentLiestRohOhneGrund(t *testing.T) {
 			if !ok {
 				t.Errorf("%s:%d liest %s auf der rohen Zeile ohne Eintrag in rohLesenErlaubt() — "+
 					"„ist das eine Direktive\" ist eine Prosa-Frage und bekommt die geteilte "+
-					"Antwort (stripInlineCodeByLine, ADR-0054/ADR-0061). Ist die Eingabe "+
+					"Antwort (stripInlineCodeByLine, ADR-0054/ADR-0062). Ist die Eingabe "+
 					"KEINE Prosa, gehoert die Datei mit Grund in die Liste", name, i+1, markerName)
 				continue
 			}

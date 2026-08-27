@@ -1041,8 +1041,10 @@ Ein Inline-Code-Vorkommen ist linkpflichtfrei genau dann, wenn eine der
 Bedingungen gilt: (1) der Code-Span ist der Linktext eines Markdown-Links
 (`` [`…`](ziel) ``); (2) das Vorkommen liegt im `target` des Musters;
 (3) die geprüfte Datei matcht ein Glob aus `ids.patterns[].exempt-paths`;
-(4) die Zeile trägt den Marker `d-check:ignore` (HTML-Kommentar — ab
-dieser Anforderung wirkt er auf `codepaths` **und** `ids`); (5) es ist
+(4) die Zeile trägt den Marker `d-check:ignore` — erkannt auf dem
+**gestrippten** Text wie bei [DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code)
+Schritt 1, in Backticks also eine **Erwähnung**; ab
+dieser Anforderung wirkt er auf `codepaths` **und** `ids`; (5) es ist
 eine ATX-Heading-Zeile. Alle übrigen Inline-Code-Vorkommen erzeugen
 `id-unlinked` (kein neuer Grund-Code). Die Ventile (3) `exempt-paths`
 und (4) `d-check:ignore` sind dieselben wie im Prosa-Basisalgorithmus
@@ -1183,9 +1185,12 @@ byte-identisch.
 
 **Schritte:**
 
-1. Zeilen mit dem Marker `d-check:ignore` (HTML-Kommentar, Begründung
-   in Klammern empfohlen) werden übersprungen — der Marker wirkt
-   ausschließlich auf dieses Modul. ATX-Heading-Zeilen werden ebenso
+1. Zeilen mit dem Marker `d-check:ignore` werden übersprungen. Erkannt wird er
+   auf dem **gestrippten** Text (fence-bewusst und inline-code-frei,
+   §Achsen-Präzedenz): in Backticks ist er eine **Erwähnung**. Die
+   Kommentar-Klammer `<!-- … -->` mit Begründung ist die empfohlene
+   Schreibweise, nicht die geforderte — die **Form** ist ungeregelt. Der
+   Marker wirkt ausschließlich auf dieses Modul. ATX-Heading-Zeilen werden ebenso
    übersprungen: Titel sind keine Prosa-Referenzen (gleiche Ausnahme
    wie [DC-FA-ID-001.a](#dc-fa-id-001a--kennungs-prüfung); ein Marker
    im Heading würde zudem dessen Anker-Slug verändern).
@@ -2831,7 +2836,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
-| 2026-08-27 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) §Achsen-Präzedenz sagt jetzt zu, **wo der Zeilen-Marker gilt und wo er nur erwähnt ist**: die Frage *„ist diese Zeile eine Direktive"* bekommt die geteilte Prosa-Antwort (fence-bewusst **und inline-code-gestrippt**) bei den zwei Konsumenten, deren Eingabe Prosa ist — `codepaths` und `ids`. Bei `versions` (liest alle Zeilen inkl. Fences) und `diagrams` (liest Zeilen **innerhalb** eines Fence) bleibt die Erkennung **roh**, als benannte Skopierung: dort ist ein Backtick literaler Inhalt, es gibt keine geteilte Antwort zu übernehmen. Anlass ist ein gemessener stiller Grün-Pfad — von 250 Marker-Zeilen tragen 160 den Marker nur in Inline-Code, und der Angleich legt fünf **echte** Befunde frei: Zeilen des Lastenhefts, die das Ventil beschreiben und sich dadurch selbst ausnahmen. **Nicht** Gegenstand ist die **Form** des Markers (die Spec nennt einen HTML-Kommentar, die Erkennung akzeptiert jedes Vorkommen der Zeichenkette). Begründung in begleitender ADR |
+| 2026-08-27 | §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) §Achsen-Präzedenz sowie §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Schritt 1 und §[`DC-FA-ID-001.a`](spezifikation.md#dc-fa-id-001a--kennungs-prüfung) Bedingung 4 sagt jetzt zu, **wo der Zeilen-Marker gilt und wo er nur erwähnt ist**: die Frage *„ist diese Zeile eine Direktive"* bekommt die geteilte Prosa-Antwort (fence-bewusst **und inline-code-gestrippt**) bei den zwei Konsumenten, deren Eingabe Prosa ist — `codepaths` und `ids`. Bei `versions` (liest alle Zeilen inkl. Fences) und `diagrams` (liest Zeilen **innerhalb** eines Fence) bleibt die Erkennung **roh**, als benannte Skopierung: dort ist ein Backtick literaler Inhalt, es gibt keine geteilte Antwort zu übernehmen. Anlass ist ein gemessener stiller Grün-Pfad — von 250 Marker-Zeilen tragen 160 den Marker nur in Inline-Code, und der Angleich legt fünf **echte** Befunde frei: Zeilen des Lastenhefts, die das Ventil beschreiben und sich dadurch selbst ausnahmen. **Nicht** Gegenstand ist die **Form** des Markers (die Spec nennt einen HTML-Kommentar, die Erkennung akzeptiert jedes Vorkommen der Zeichenkette). Begründung in begleitender ADR |
 | 2026-08-27 | §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) Kopfsatz und Schritt 1: der **Marker-Scan** bekommt die geteilte Prosa-Antwort — fence-bewusst **und inline-code-gestrippt** —, Suche und Parse auf demselben gestrippten Text, und der `<pfad>` beginnt mit einem Nicht-Whitespace-Zeichen (ein Pfad in Backticks wird sonst zu einem gültigen Parse mit leerem Ziel statt zum fail-closed-Fall); der **Zitattext** bleibt ausdrücklich **roh**. Der Vorfassungs-Satz *„Arbeitet auf den rohen Zeilen (fence-aware wie die übrigen Module)"* sagte beides zugleich und ließ die Inline-Hälfte offen; gemessen wurde eine andere Antwort als bei den übrigen Modulen, mit der Folge, dass die Dokumentation der Direktive selbst den Lauf fail-closed abbrach (25 Marker-Zeilen über 544 Dateien, davon 24 in Inline-Code, keine frei, null produktive Direktiven). **Drei Grenzen des Strippens** neu benannt (absatzweite Verschluckung, Erzeugung einer Direktive, die roh bleibende Ventil-Direktive) und die **Ziel-Seite** als außerhalb aller Prosa-Zusagen ausgewiesen (roh, typunabhängig, nicht von `scan.ignore`/`scope` erfasst). Begründung in begleitender ADR |
 | 2026-08-26 | §2-Schema: `matrix.classes[].paths` ist **optional** — eine Klasse ohne Pfade hat keine Mitglieder und ist reines **Token-Ziel**. Die Fähigkeit bestand in der Implementierung, war aber nicht zugesagt; die Zeile führte `paths` wie das Pflichtfeld `name`. Kein Verhaltens-Delta |
 | 2026-08-23 | Nachzug nach unabhängigem Review: **redaktionell, keine Semantik-Änderung.** Schritt 4 unter §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) wies `matrix` als Gegen-Beleg zur **benannten Liste** der marker-tragenden Module aus und blieb dabei bei einem einzigen Beispiel; genannt sind jetzt auch `structure` und `citations`, die ebenfalls auf Zeilen melden und den Marker nicht tragen. Ein einzelner Gegen-Beleg lässt die Liste weiter als ableitbares Kriterium erscheinen |

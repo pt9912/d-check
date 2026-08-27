@@ -1117,9 +1117,18 @@ feinsten Schnitt:
   in Backticks ist er eine **Erwähnung**, keine Direktive. Ohne das könnte diese
   Seite hier ihn nicht beschreiben, ohne sich selbst auszunehmen — genau das war
   im Lastenheft an fünf Stellen passiert. Bei `versions` und `diagrams` wird er
-  weiterhin **roh** erkannt, und das ist kein Versehen: `versions` liest alle
-  Zeilen einschließlich Code-Blöcken, `diagrams` die Zeilen **innerhalb** eines
-  Fence — dort ist ein Backtick literaler Inhalt, es gibt kein Inline-Code.
+  weiterhin **roh** erkannt — aus zwei **verschiedenen** Gründen. Bei `diagrams`
+  ist es strukturell: es liest die Zeilen **innerhalb** eines Fence und die
+  Öffnungszeile, und dort ist ein Backtick literaler Inhalt. Bei `versions` ist
+  es eine **benannte Grenze**: es liest **alle** Zeilen, also auch Prosa-Zeilen,
+  und auf einer solchen antwortet `d-check` damit **zweifach** — `codepaths`
+  meldet dort, wo `versions` schweigt. Wer eine Zeile mit einer Erwähnung in
+  Backticks schreibt, muss das wissen.
+  **Zwei Ränder, die aus der Absatz-Erkennung folgen:** eine Backtick-Spanne
+  desselben Absatzes verschluckt auch einen **gesetzten** Marker (er wirkt dann
+  nicht — Falsch-Rot), und ein **unpaariger** Backtick weiter oben kippt die
+  Parität, sodass eine Erwähnung doch als Direktive wirkt (stilles Grün). Die
+  Regel oben gilt also nur bei gerader Backtick-Parität des Absatzes.
   **Was der Marker nicht regelt, ist seine eigene Form:** er gilt als gesetzt,
   sobald die Zeichenkette außerhalb von Code steht — die Kommentar-Klammer
   `<!-- … -->` ist die empfohlene, nicht die geforderte Schreibweise.
