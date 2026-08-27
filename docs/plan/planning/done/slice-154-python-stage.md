@@ -84,12 +84,12 @@ vierte Toolchain entsteht.
 
 - **Eine vierte Toolchain ist teurer als sie aussieht.** Sie bringt eine
   `FROM`-Zeile, einen Digest, eine Frische-Achse und eine Doku-Zeile mit — und
-  [slice-142](../in-progress/slice-142-freshness-weitere-achsen.md) führt bereits zwei
+  [slice-142](../done/slice-142-freshness-weitere-achsen.md) führt bereits zwei
   ungewachte Pin-Klassen. Der Nutzen gehört gegen diesen Preis gestellt, nicht
   gegen die Bequemlichkeit. — **Ausgang: entfallen.** Die Abwägung wurde nicht
   gebraucht, weil kein Nutzen auf der anderen Seite stand: acht der neun Fälle
   sind in der erlaubten Klasse lösbar, der neunte trägt keine Toolchain.
-  [slice-142](../in-progress/slice-142-freshness-weitere-achsen.md) bleibt von diesem
+  [slice-142](../done/slice-142-freshness-weitere-achsen.md) bleibt von diesem
   Slice unberührt.
 - **Der belegte Bedarf könnte null sein.** Dann ist die ehrliche Lieferung eine
   **gestrichene Zeile in §3.1**, nicht eine Stage, die niemand ruft. Das ist ein
