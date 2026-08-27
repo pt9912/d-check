@@ -39,9 +39,11 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
    nicht Fließtext oder nackte Tags. Betroffen:
    - **Benutzerhandbuch** — Header-Stempel (Handbuch-/Software-Version),
      Versionsverlauf-Zeile (§11; die neue Zeile **chronologisch unter die
-     letzte**, nicht oben anfügen), ggf. neue Feature-Abschnitte (§5/§6) und das
-     **bare-Tag-Beispiel** in §Versionen und Tags (`:vX.Y.Z` **ohne** `ghcr`-Präfix
-     ⇒ vom `versions`-Gate nicht erfasst, driftet still). **Braucht das Feature
+     letzte**, nicht oben anfügen), ggf. neue Feature-Abschnitte (§5/§6) und die
+     **bare Tags ohne `ghcr`-Präfix** — davon gibt es zwei: das Beispiel in
+     §Versionen und Tags (`:vX.Y.Z`) und der Docker-Hub-Pull
+     `pt9912/d-check:vX.Y.Z` in §Docker-Image. Beide sind vom `versions`-Gate
+     **nicht** erfasst und driften still. **Braucht das Feature
      eine §4-Aufgabe, schreibe eine eigene** — nach dem
      [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md) §5
      (Ausgangslage/Ziel/Vorgehen/Ergebnis) — und **hänge sie nicht an eine
@@ -112,9 +114,14 @@ GHCR-Push. Der Abbruch nennt dann den bereits veröffentlichten GHCR-Digest.
 - Optional die Repository-Variable `DOCKERHUB_IMAGE`, falls ein Fork woandershin
   spiegeln soll; ohne sie gilt `pt9912/d-check`.
 
-**Die Hub-Beschreibungsseite pflegt niemand automatisch** — sie driftet vom Repo
-weg. Das ist eine benannte, nicht gedeckte Fläche
-([ADR-0064](../plan/adr/0064-dockerhub-spiegel-fail-closed.md) §Konsequenzen).
+**Die Hub-Beschreibungsseite wird aus dem Repo gesetzt** — Kurztext und
+Overview-Seite kommen aus
+[`packaging/dockerhub/`](../../packaging/dockerhub/README.md), die **Kategorie**
+bleibt manuell im Web-UI und steht dort als Text. Beide Release-Schritte tragen
+`continue-on-error`: ihr Fehlschlag lässt das Release grün
+([ADR-0065](../plan/adr/0065-spiegel-gleichheit-ist-der-config-digest.md)
+Punkt 5).
+
 ## Release auslösen
 
 ```sh
@@ -135,13 +142,19 @@ Die Pipeline (`release.yml`) läuft bei jedem `v*`-Tag-Push:
    [ADR-0014](../plan/adr/0014-latest-tag-fuer-stabile-releases.md).
 5. **Docker-Hub-Spiegel** — dasselbe lokale Bild wird nach
    `docker.io/pt9912/d-check` getaggt und gepusht, dieselbe Tag-Disziplin
-   wie Schritt 4. Danach vergleicht der Schritt die **Manifest-Digests**
-   beider Registries und bricht bei Ungleichheit ab
+   wie Schritt 4. Danach vergleicht der Schritt die **Config-Digests** beider
+   Registries — aus den Registries gelesen, nicht aus dem lokalen Daemon — und
+   bricht bei Ungleichheit ab
    ([`DC-FA-DIST-002`](../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)).
    **Fail-closed:** jeder Fehlschlag hier macht das Release rot, obwohl
    GHCR bereits trägt — die Meldung nennt deshalb den veröffentlichten
-   GHCR-Digest.
-6. **Digest-Pin** landet im Job-Summary und in den Notes des
+   GHCR-Digest. Die Zugangsdaten werden **vor** dem Push geprüft, sonst
+   scheiterte der Login mit seinem eigenen Text statt mit dieser Meldung.
+6. **Hub-Darstellung** — Kurztext und Overview-Seite aus
+   `packaging/dockerhub/`. Beide Schritte tragen `continue-on-error` und
+   können das Release **nicht** rot machen; das Zeichen-Limit prüft
+   stattdessen `make gates`.
+7. **Digest-Pin** landet im Job-Summary und in den Notes des
    automatisch angelegten GitHub-Releases. Existiert das Release zum
    Tag bereits (z. B. Workflow-Re-Run), wird es wiederverwendet — der
    aktuelle Digest steht dann nur im Job-Summary.

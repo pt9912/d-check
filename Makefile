@@ -238,6 +238,9 @@ checkout-pin-freshness: ## Neueren actions/checkout-Release als den Tag-Kommenta
 login-pin-freshness: ## Neueren docker/login-action-Release als den Tag-Kommentar melden (Netz, NICHT in gates, fail-open).
 	$(call action-pin-axis,docker/login-action)
 
+hubdesc-pin-freshness: ## Neueren peter-evans/dockerhub-description-Release als den Tag-Kommentar melden (Netz, NICHT in gates, fail-open).
+	$(call action-pin-axis,peter-evans/dockerhub-description)
+
 # Die zwei uebrigen gepinnten Fremd-Images. Sie stehen NICHT im Dockerfile —
 # semgrep im Gate-Skript, a-check im include-Fragment —, deshalb je ein eigener
 # Extraktor statt des FROM-Musters oben. Beide tragen Tag UND Digest, also

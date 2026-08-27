@@ -100,6 +100,10 @@ jobs:
         if: always()
         run: make login-pin-freshness
 
+      - name: make hubdesc-pin-freshness
+        if: always()
+        run: make hubdesc-pin-freshness
+
       - name: make runtime-base-digest
         if: always()
         run: make runtime-base-digest

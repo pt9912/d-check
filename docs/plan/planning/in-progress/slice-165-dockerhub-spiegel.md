@@ -128,7 +128,7 @@ Entscheid, nicht eine Zusage ohne Deckung.
 Slice-ID: slice-165. Betroffene IDs:
 [`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image),
 [`DC-FA-DIST-002`](../../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel),
-[ADR-0064](../../adr/0064-dockerhub-spiegel-fail-closed.md).
+[ADR-0065](../../adr/0065-spiegel-gleichheit-ist-der-config-digest.md).
 Module: — (Pipeline, Spec, Doku). Gates: `make gates`, `make ci`.
 
 ## 8. Sub-Area-Modus-Begründung

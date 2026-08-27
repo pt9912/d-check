@@ -11,6 +11,16 @@ Grund-Codes) — diese Seite dupliziert sie nicht.
 docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check@sha256:<digest>
 ```
 
+Dasselbe Bild liegt gespiegelt auf Docker Hub
+([`DC-FA-DIST-002`](../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel));
+der Config-Digest ist auf beiden Registries gleich, der **Manifest**-Digest
+nicht — ein `docker.io`-Pin nimmt deshalb den Docker-Hub-Digest, nicht den von
+GHCR:
+
+```sh
+docker run --rm -v "$PWD:/repo:ro" pt9912/d-check@sha256:<digest-von-docker-hub>
+```
+
 Das Image prüft das nach `/repo` gemountete Repository (read-only
 genügt — das Tool schreibt nie,
 [`DC-QA-03`](../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).

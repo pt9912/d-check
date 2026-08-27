@@ -327,6 +327,12 @@ matrix:
     - {from: adr, to: welle, allow: false}
   status:
     forbidden: [superseded, deprecated]
+    # Der Kanon laesst ADR->ADR ausdruecklich zu (grundlagen-referenz-richtung.md:
+    # "ADR->ADR | Supersedes, Depends-on | ja (Lineage)"). Ohne diese Ausnahme
+    # ist eine Supersede-Kette nicht ausdrueckbar: die abloesende ADR duerfte
+    # ihr Ziel nicht nennen, sobald dessen Status korrekt gesetzt ist.
+    allow-supersede-lineage: true
+    supersede-fields: [Supersedes]
   # exakter Heading-Vergleich. Nur die immutable ADR-Geschichte bleibt
   # provenance-exempt; die Spec-Straten-"7. Historie" ist NICHT mehr ausgenommen
   # (v5.0.0/ADR-0047: die Referenz-Richtung gilt auch in der Historie — die

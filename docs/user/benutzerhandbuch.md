@@ -70,15 +70,16 @@ docker pull ghcr.io/pt9912/d-check:v0.64.0
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
 Repositorys genügt, weil d-check nie schreibt.
 
-**Zweiter Bezugsweg — Docker Hub.** Dasselbe Bild liegt zusätzlich als
-`docker.io/pt9912/d-check`. Es ist **kein zweiter Bau**, sondern dieselbe
-Kopie: der Manifest-Digest ist auf beiden Registries gleich, und damit trägt
-ein `docker.io`-Pin genauso weit wie ein `ghcr.io`-Pin
+**Zweiter Bezugsweg — Docker Hub, ab dem ersten Release nach v0.64.0.** Dasselbe
+Bild wird zusätzlich als `docker.io/pt9912/d-check` gespiegelt — **kein zweiter
+Bau**: der **Config**-Digest ist auf beiden Registries gleich
 ([`DC-FA-DIST-002`](../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)).
-GHCR bleibt die Quelle; Docker Hub folgt ihr.
+Der **Manifest**-Digest ist es **nicht** — er hängt an der Blob-Kompression des
+jeweiligen Registrys; wer per Digest pinnt, nimmt den Digest **der Registry, aus
+der er zieht**. GHCR bleibt die Quelle; Docker Hub folgt ihr.
 
 ```bash
-docker pull pt9912/d-check:v0.64.0
+docker pull pt9912/d-check:v0.65.0
 ```
 
 ### Versionen und Tags

@@ -148,11 +148,35 @@ jobs:
       # continue-on-error und kein Secret-Sondierungs-Schritt; fehlt das
       # Token, ist das Release rot. Der Spiegel steht NACH dem GHCR-Push,
       # damit die Quelle nie hinter dem Spiegel zurueckliegt.
+      # Docker-Hub-Spiegel (DC-FA-DIST-002, ADR-0065). Zusage ist derselbe
+      # Bild-INHALT, gemessen am Config-Digest — der Manifest-Digest ist
+      # registry-lokal (Blob-Neukompression beim zweiten Push) und taugt als
+      # Gleichheits-Groesse nicht. Fail-closed: der Spiegel ist eine Zusage.
+      # Er steht NACH dem GHCR-Push, damit die Quelle nie hinter ihm
+      # zurueckliegt; jeder Abbruch ab hier nennt deshalb den bereits
+      # veroeffentlichten GHCR-Stand.
+      #
+      # Der Login laeuft als `run`-Schritt statt ueber die Action: nur so traegt
+      # die Fehlermeldung den GHCR-Digest, den das Negative-Akzeptanzkriterium
+      # verlangt — eine `uses:`-Action scheitert mit ihrem eigenen Text.
       - name: Log in to Docker Hub
-        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          GHCR_DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          set -euo pipefail
+          fail() {
+            echo "::error::$1 BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io — das Release ist unvollstaendig, der GHCR-Stand aber gueltig. Vorbedingungen: docs/user/releasing.md."
+            exit 1
+          }
+          if [[ -z "${DOCKERHUB_USERNAME}" || -z "${DOCKERHUB_TOKEN}" ]]; then
+            fail "Docker-Hub-Zugangsdaten FEHLEN (DOCKERHUB_USERNAME/DOCKERHUB_TOKEN)."
+          fi
+          if ! printf '%s' "${DOCKERHUB_TOKEN}" \
+               | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin 2>/dev/null; then
+            fail "Docker-Hub-Anmeldung ABGELEHNT (Zugangsdaten ungueltig oder abgelaufen)."
+          fi
 
       - name: Mirror to Docker Hub
         env:
@@ -162,9 +186,6 @@ jobs:
           GHCR_DIGEST: ${{ steps.push.outputs.digest }}
         run: |
           set -euo pipefail
-          # Der GHCR-Stand liegt zu diesem Zeitpunkt bereits oeffentlich vor.
-          # Jeder Abbruch unter dieser Zeile sagt das ausdruecklich, damit der
-          # Teil-Zustand nicht geraten werden muss (DC-FA-DIST-002 Negative).
           trap 'echo "::error::Docker-Hub-Spiegel fehlgeschlagen. BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io — das Release ist unvollstaendig, der GHCR-Stand aber gueltig."' ERR
 
           docker tag "$LOCAL_IMAGE:latest" "$DOCKERHUB_IMAGE:v$VERSION"
@@ -174,51 +195,68 @@ jobs:
             docker push "$DOCKERHUB_IMAGE:latest"
           fi
 
-          # Die Gleichheit wird GEMESSEN, nicht angenommen (ADR-0064 Punkt 2).
-          # RepoDigests fuehrt je Referenz einen Eintrag; gesucht ist der zum
-          # Docker-Hub-Namen, nicht "der erste".
-          HUB_DIGEST=$(docker image inspect --format '{{ range .RepoDigests }}{{ println . }}{{ end }}' \
-            "$DOCKERHUB_IMAGE:v$VERSION" | grep "^${DOCKERHUB_IMAGE}@" | head -1)
-          HUB_SHA="${HUB_DIGEST#*@}"
-          GHCR_SHA="${GHCR_DIGEST#*@}"
-          if [[ -z "$HUB_SHA" || "$HUB_SHA" != "$GHCR_SHA" ]]; then
-            echo "::error::Digest-Ungleichheit: ghcr.io=[$GHCR_SHA] docker.io=[$HUB_SHA]. DC-FA-DIST-002 sagt Gleichheit zu; BEREITS VEROEFFENTLICHT ist der GHCR-Stand."
+          # Gelesen wird aus den REGISTRIES, nicht aus dem lokalen Daemon: zwei
+          # aus demselben lokalen Bild abgeleitete Werte waeren trivial gleich,
+          # und ein Vergleich, der nicht fehlschlagen kann, ist ein stiller
+          # Gruen-Pfad. `sed -n …p` schweigt statt zu scheitern — sonst risse
+          # `pipefail` den Lauf ab, bevor die Leer-Pruefung greift.
+          config_digest() {
+            docker buildx imagetools inspect --raw "$1" 2>/dev/null \
+              | tr -d ' \n' \
+              | sed -n 's/.*"config":{[^}]*"digest":"\(sha256:[0-9a-f]\{64\}\)".*/\1/p'
+          }
+          GHCR_CFG="$(config_digest "$REGISTRY/$IMAGE_NAME:v$VERSION")"
+          HUB_CFG="$(config_digest "$DOCKERHUB_IMAGE:v$VERSION")"
+
+          if [[ -z "$GHCR_CFG" || -z "$HUB_CFG" ]]; then
+            echo "::error::Config-Digest nicht lesbar (ghcr.io=[${GHCR_CFG:-<leer>}] docker.io=[${HUB_CFG:-<leer>}]). Die Gleichheit ist damit UNGEPRUEFT, nicht bestaetigt. BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io."
             exit 1
           fi
-          echo "Spiegel-Digest stimmt ueberein: $HUB_SHA"
+          if [[ "$GHCR_CFG" != "$HUB_CFG" ]]; then
+            echo "::error::Bild-Inhalt verschieden: ghcr.io=[$GHCR_CFG] docker.io=[$HUB_CFG]. DC-FA-DIST-002 sagt Inhalts-Gleichheit zu. BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io."
+            exit 1
+          fi
+          echo "Spiegel traegt denselben Bild-Inhalt: $GHCR_CFG"
+
+          HUB_DIGEST="$(docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$DOCKERHUB_IMAGE:v$VERSION" 2>/dev/null || true)"
           {
             echo ""
-            echo "Gespiegelt nach Docker Hub — gleicher Digest:"
+            echo "Gespiegelt nach Docker Hub — gleicher Bild-Inhalt (Config-Digest \`$GHCR_CFG\`)."
+            echo ""
+            echo "Digest-Pin fuer Docker-Hub-Konsumenten (registry-lokal, NICHT der GHCR-Digest):"
             echo ""
             echo '```'
-            echo "$DOCKERHUB_IMAGE@$HUB_SHA"
+            echo "$DOCKERHUB_IMAGE@${HUB_DIGEST:-<nicht lesbar>}"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      # GitHub-Release mit dem Digest-Pin in den Notes — der Pin ist
-
-      # Hub-Darstellung aus Repo-Dateien (packaging/dockerhub/). Bewusst NICHT
-      # fail-closed, anders als der Spiegel darueber: das Bild ist die Zusage
-      # (DC-FA-DIST-002), der Beschreibungstext ist Praesentation. Ein Release
-      # rot zu machen, weil ein Kurztext nicht gesetzt werden konnte,
-      # verwechselte beides.
+      # Hub-Darstellung aus Repo-Dateien (packaging/dockerhub/). BEIDE Schritte
+      # tragen `continue-on-error`: das Bild ist die Zusage, der
+      # Beschreibungstext ist Praesentation, und das Lastenheft sagt zu, dass
+      # sein Fehlschlag das Release gruen laesst. Das Zeichen-Limit prueft
+      # dagegen `make gates` — es ist eine Eigenschaft einer Repo-Datei und
+      # faellt damit beim Schreiben auf, nicht beim Veroeffentlichen.
       - name: Prepare Docker Hub metadata
         id: hubmeta
+        continue-on-error: true
         env:
           VERSION: ${{ steps.tag.outputs.version }}
         run: |
           set -euo pipefail
           SRC="packaging/dockerhub/description.txt"
-          BYTES=$(wc -c < "$SRC")
-          # Fail-fast statt stillem Abschneiden durch die Action.
-          if [[ "$BYTES" -gt 100 ]]; then
-            echo "::error::$SRC ist $BYTES Bytes gross, Docker Hub erlaubt 100."
-            exit 1
-          fi
-          echo "description=$(cat "$SRC")" >> "$GITHUB_OUTPUT"
-          sed "s/__VERSION__/v$VERSION/g" packaging/dockerhub/overview.md > /tmp/dockerhub-overview.md
+          OVW="packaging/dockerhub/overview.md"
+          test -f "$SRC" || { echo "::error::$SRC fehlt."; exit 1; }
+          test -f "$OVW" || { echo "::error::$OVW fehlt."; exit 1; }
+          DESC="$(head -n 1 "$SRC")"
+          [[ -n "$DESC" ]] || { echo "::error::$SRC ist leer."; exit 1; }
+          # Fehlt der Platzhalter, zeigte die Hub-Seite eine versionslose
+          # Anleitung — das soll auffallen, nicht durchrutschen.
+          grep -q '__VERSION__' "$OVW" || { echo "::error::$OVW enthaelt kein __VERSION__."; exit 1; }
+          echo "description=$DESC" >> "$GITHUB_OUTPUT"
+          sed "s/__VERSION__/v$VERSION/g" "$OVW" > /tmp/dockerhub-overview.md
 
       - name: Sync Docker Hub description
+        if: steps.hubmeta.outcome == 'success'
         continue-on-error: true
         uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
         with:
@@ -227,6 +265,8 @@ jobs:
           repository: ${{ vars.DOCKERHUB_IMAGE || 'pt9912/d-check' }}
           short-description: ${{ steps.hubmeta.outputs.description }}
           readme-filepath: /tmp/dockerhub-overview.md
+
+      # GitHub-Release mit dem Digest-Pin in den Notes — der Pin ist
       # die Referenz, die Pilot-Repos (slice-012) konsumieren.
       - name: Create GitHub Release
         env:

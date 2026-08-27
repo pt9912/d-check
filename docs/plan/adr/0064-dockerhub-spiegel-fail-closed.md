@@ -1,6 +1,6 @@
 # ADR-0064 — Docker-Hub-Spiegel: derselbe Digest, fail-closed
 
-**Status:** Accepted
+**Status:** Superseded by ADR-0065
 **Datum:** 2026-08-27
 **Autor:** pt9912
 **Bezug:** [`DC-FA-DIST-002`](../../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel),
