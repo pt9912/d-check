@@ -97,7 +97,7 @@ Gegenstand diese Klasse **ist**.
   davor — der neue ist der sechzehnte, und die Schwelle des Risikosatzes („der
   fünfzehnte wird nicht mehr gelesen") war damit schon vorher überschritten.
   Ausgang mit Kennung:
-  [slice-160](../in-progress/slice-160-reviewer-skill-kontextlast.md).
+  [slice-160](../done/slice-160-reviewer-skill-kontextlast.md).
 - **Die Klasse ist beim Schreiben blind — auch mit Anker.** Der Anker wirkt im
   Review, also erst nachdem der Fehler geschrieben ist. Ob die
   Feedforward-Hälfte überhaupt greifen kann, ist die eigentliche Frage dieses
