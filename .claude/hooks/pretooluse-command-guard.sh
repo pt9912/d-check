@@ -14,9 +14,11 @@
 # werden rekursiv geprüft, Tiefe ≤ 3, darüber fail-closed (MR-005).
 #
 # SKRIPT-INTERPRETER: `python` samt Versions-Suffix, `perl`, `ruby`, `node`,
-# `deno`, `bun` sind blockiert (MR-040, MR-042). Nicht die Sprache ist der
-# Grund, sondern der Skopus: ein General-Purpose-Interpreter kann alles, was die
-# in §3.1 genannten Werkzeuge können, ohne deren Grenze zu erben.
+# `deno`, `bun` und die uv-Runner sind blockiert (MR-040, MR-042). Nicht die
+# Sprache ist der Grund, sondern der Skopus: ein General-Purpose-Interpreter
+# kann alles, was die in §3.1 genannten Werkzeuge können, ohne deren Grenze zu
+# erben — ein Runner, der sich seine Umgebung selbst herstellt, erst recht.
+# Die verbindliche Menge ist die BLOCKED-Liste unten, nicht diese Aufzählung.
 #
 # GRENZE, quote-blind: ein Trenner INNERHALB eines Arguments startet ein neues
 # Segment. Ein Kommando, das ein blockiertes Wort als DATEN trägt, wird deshalb

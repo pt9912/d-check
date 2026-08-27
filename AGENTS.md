@@ -89,10 +89,18 @@ Docker und die POSIX-Standardwerkzeuge, die die Gate-Skripte rufen
 
 **Auch keine Host-Skript-Interpreter** (`python`, `perl`, `ruby`, `node`, `uv`, …)
 ([`MR-040`](harness/conventions.md#mr-040)). Datei-Änderungen macht das Werkzeug
-ohne Shell, Messungen macht das Produkt, und was ein Gate-Skript braucht, tragen
-`bash` und die POSIX-Werkzeuge. Ein Fall, der darüber hinausgeht, ist ein
-**Entscheid** — keine vierte Toolchain nebenbei
+ohne Shell; für Messungen gilt die Rangfolge **Produkt vor `grep`/`awk` vor
+allem anderen**. Eine Stage für Skripte gibt es nicht, und diese Regel verweist
+auch nicht auf eine: ein Fall, der `bash` und die genannte Host-Klasse
+übersteigt, ist ein **Entscheid** — keine vierte Toolchain nebenbei
 ([`MR-046`](harness/conventions.md#mr-046)).
+
+**Die Host-Klasse oben ist die Zusage an den Agenten, nicht die vollständige
+Liste dessen, was Gate-Skripte rufen.** Die **Netz**-Targets holen sich mehr:
+[`fetch-baseline-cache.sh`](tools/harness/fetch-baseline-cache.sh) braucht
+`curl` und `unzip`, [`pin-freshness.sh`](tools/harness/pin-freshness.sh)
+braucht `curl`. Beide sind fail-open und stehen bewusst außerhalb von `gates`;
+wer sie fährt, fährt sie mit dieser zusätzlichen Erwartung.
 
 **Falsch:** `go build ./…`, `go test ./…`, `pip install …`, `python3 - <<EOF`
 **Richtig:** `make gates`
@@ -102,7 +110,14 @@ ohne Shell, Messungen macht das Produkt, und was ein Gate-Skript braucht, tragen
 **Die Regel gilt unabhängig von ihrer Durchsetzung.** Wer sich auf den Wächter
 verlässt, verlässt sich auf nichts.
 
-**Durchsetzung:** ein Tool-Call-Wächter
+**Durchsetzung, zwei unabhängige Schichten.** Die zweite ist eine
+**Permission-Sperrliste** in [`.claude/settings.json`](.claude/settings.json):
+sie hängt an keinem Hook, matcht aber den **ganzen** Befehl ab dem Anfang und
+sieht deshalb weder Präfixe noch Sub-Shells noch zusammengesetzte Kommandos.
+Ihre git-/docker-Hälfte hat keine zweite Schicht unter sich. Grenzen und
+Nicht-Zusagen: [`MR-047`](harness/conventions.md#mr-047).
+
+Die erste ist ein Tool-Call-Wächter
 ([`.claude/hooks/pretooluse-command-guard.sh`](.claude/hooks/pretooluse-command-guard.sh))
 prüft die Befehlsposition jedes Segments und Sub-Shell-Strings rekursiv. Er ist
 **werkzeug-lokal**, kein Repo-Gate: keine CI ruft ihn, ein Lauf ohne dieses
