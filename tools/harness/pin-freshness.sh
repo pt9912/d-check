@@ -2,7 +2,9 @@
 # pin-freshness — read-only Sensor auf einen gepinnten Fremd-Bestandteil: meldet,
 # wenn upstream einen NEUEREN Stand fuehrt als unser Pin.
 #
-# ZWEI QUELLEN-FORMEN, weil eine davon eine Sonderquelle ist:
+# DREI QUELLEN-FORMEN. Die ersten zwei fragen „gibt es einen neueren Tag" und
+# unterscheiden sich nur in der Sonderquelle; die dritte fragt etwas anderes —
+# „traegt derselbe Tag einen anderen Digest":
 #   --github <owner/repo>  dem Redirect von .../releases/latest folgen und die
 #                          effektive URL lesen; sie endet auf /releases/tag/<x>.
 #                          Kein jq, keine API, kein Token (DC-QA-03-Sparsamkeit).
@@ -12,6 +14,9 @@
 #                          Version kommt als PLAINTEXT von go.dev/VERSION?m=text
 #                          (erste Zeile, z. B. `go1.27.0`) und wird auf ihre
 #                          Form geprueft, bevor sie als Stand gilt.
+#   --digest <ref>         Der Digest, den <ref> heute traegt, via
+#                          `docker buildx imagetools inspect`. Fuer einen Tag
+#                          OHNE Version die einzige Handhabe.
 #
 # NORMALISIERUNG: go.dev sagt `go1.27.0`, unser Pin ist bar `1.27.0`; GitHub sagt
 # `v2.13.1`, unser Pin ebenso. Auf EIN Format bringen heisst hier: fuehrendes
@@ -33,7 +38,8 @@
 # Vergleicher. Ohne diesen Einstieg waere die Semantik nur mit Netz zu pruefen,
 # und damit gar nicht.
 #
-# Exit: 0 = aktuell ODER SKIP, 3 = VERALTET. bash + coreutils + curl.
+# Exit: 0 = aktuell ODER SKIP, 3 = VERALTET. bash + coreutils; je Zweig curl
+# bzw. docker — der Werkzeug-Riegel steht deshalb IM Zweig, nicht davor.
 set -euo pipefail
 
 CT=10   # connect-timeout
@@ -61,8 +67,13 @@ if [ "${1:-}" = "--compare" ]; then
   exit $?
 fi
 
-command -v curl >/dev/null 2>&1 \
-  || { echo "pin-freshness: 'curl' nicht gefunden — SKIP" >&2; exit 0; }
+# Der Werkzeug-Riegel steht JE ZWEIG, nicht davor: die Digest-Form braucht kein
+# curl, und ein SKIP wegen eines Werkzeugs, das der Zweig gar nicht ruft, wäre
+# ein stilles Abschalten aus dem falschen Grund.
+brauche_curl() {
+  command -v curl >/dev/null 2>&1 \
+    || { echo "pin-freshness: 'curl' nicht gefunden — SKIP" >&2; exit 0; }
+}
 
 mode="${1:-}"; shift || true
 name="${NAME:-?}"
@@ -72,6 +83,7 @@ pinned="${PINNED:-}"
 upstream=""
 case "$mode" in
   --github)
+    brauche_curl
     repo="${1:-}"
     eff="$(curl -fsSLo /dev/null -w '%{url_effective}' \
              --connect-timeout "$CT" --max-time "$MT" \
@@ -82,6 +94,7 @@ case "$mode" in
     esac
     ;;
   --godev)
+    brauche_curl
     # Die Antwort wird auf ihre FORM geprueft, bevor sie als Stand gilt. Ohne
     # das waere eine HTTP-200-Nicht-Versions-Antwort (Fehlerseite, Wartungstext)
     # ein gueltiger "upstream" -- und ergaebe ein falsches VERALTET statt des
@@ -99,8 +112,38 @@ case "$mode" in
     # verglichen wir sonst dauerhaft ungleich und meldeten fuer immer VERALTET.
     pinned="${pinned#go}"
     ;;
+  --digest)
+    # DRITTE Quellen-Form, und sie beantwortet eine ANDERE Frage als die zwei
+    # oben: nicht „gibt es einen neueren Tag", sondern „traegt derselbe Tag
+    # inzwischen einen anderen Digest". Fuer ein Basis-Image ohne Version im
+    # Tag — `distroless/static-debian12:nonroot` — ist das die einzige
+    # Handhabe: eine Tag-Frische-Achse gibt es dort nicht, weil es keinen Tag
+    # gibt, der sich bewegt.
+    #
+    # Die Quelle ist `docker buildx imagetools inspect`, nicht curl: eine
+    # Registry-Abfrage von Hand braeuchte Token-Austausch und
+    # Manifest-Listen-Aufloesung — beides ein Parser durch die Hintertuer.
+    # Docker steht ohnehin in der Host-Klasse (AGENTS.md 3.1).
+    #
+    # GRENZE: verglichen wird der Digest der ADRESSIERTEN Referenz. Bei einer
+    # Multi-Plattform-Liste ist das der Listen-Digest — dieselbe Groesse, die
+    # im Dockerfile steht. Ein Plattform-Digest darunter ist eine andere Zahl
+    # und hier nicht gemeint.
+    ref="${1:-}"
+    command -v docker >/dev/null 2>&1 \
+      || { echo "pin-freshness: 'docker' nicht gefunden — SKIP" >&2; exit 0; }
+    raw="$(docker buildx imagetools inspect "$ref" --format '{{.Manifest.Digest}}' 2>/dev/null || true)"
+    # Form pruefen, bevor der Wert als Stand gilt — dieselbe Begruendung wie
+    # beim godev-Zweig: eine Nicht-Digest-Antwort waere sonst ein falsches
+    # VERALTET statt des zugesagten SKIP.
+    if printf '%s' "$raw" | grep -qE '^sha256:[0-9a-f]{64}$'; then
+      upstream="$raw"
+    else
+      upstream=""
+    fi
+    ;;
   *)
-    echo "pin-freshness: Modus fehlt (--github <owner/repo> | --godev | --compare)" >&2
+    echo "pin-freshness: Modus fehlt (--github <owner/repo> | --godev | --digest <ref> | --compare)" >&2
     exit 1
     ;;
 esac

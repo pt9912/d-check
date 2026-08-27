@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
+.PHONY: help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -197,6 +197,19 @@ freshness-golangci: ## Neueren golangci-lint-Release als GOLANGCI_LINT_VERSION m
 	@NAME='golangci-lint' PINNED='$(GOLANGCI_LINT_VERSION)' \
 	  ADVICE='GOLANGCI_LINT_VERSION (Makefile) heben und den Dockerfile-lint-Digest nachziehen.' \
 	  bash tools/harness/pin-freshness.sh --github golangci/golangci-lint
+
+# Die dritte Achse beantwortet eine ANDERE Frage als die zwei oben: nicht
+# „gibt es einen neueren Tag", sondern „traegt derselbe Tag inzwischen einen
+# anderen Digest". Sie gilt genau EINEM Pin — dem Runtime-Basis-Image. Sein Tag
+# `nonroot` traegt keine Version, also gibt es fuer ihn keine Tag-Frische-Achse;
+# der Digest ist die einzige Handhabe. Die uebrigen zwei Basis-Images haengen an
+# GO_VERSION bzw. GOLANGCI_LINT_VERSION und sind ueber deren Achsen gewacht.
+RUNTIME_BASE := gcr.io/distroless/static-debian12:nonroot
+runtime-base-digest: ## Neueren Digest fuer denselben Runtime-Basis-Tag melden (Netz, NICHT in gates, fail-open).
+	@NAME='distroless/static-debian12:nonroot' \
+	  PINNED='$(shell awk '/^FROM gcr.io\/distroless/{ sub(/.*@/,""); sub(/ .*/,""); print }' Dockerfile)' \
+	  ADVICE='Dockerfile-Digest der runtime-Stage nachziehen (ADR-0011); make versions zeigt den Stand.' \
+	  bash tools/harness/pin-freshness.sh --digest '$(RUNTIME_BASE)'
 
 baseline-freshness: ## Upstream-Audit des Baseline-Pins: neuerer Release-Tag (Currency) + Content-Drift am gepinnten Tag (Netz, NICHT in gates, fail-open). MR-011-Kette.
 	@bash tools/harness/fetch-baseline-cache.sh --check-latest

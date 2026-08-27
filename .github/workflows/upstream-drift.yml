@@ -65,3 +65,10 @@ jobs:
       - name: make freshness-golangci
         if: always()
         run: make freshness-golangci
+
+      # Vierte Achse, andere Frage: nicht „neuerer Tag", sondern „anderer Digest
+      # am selben Tag". Sie gilt genau dem Runtime-Basis-Image, dessen Tag
+      # `nonroot` keine Version traegt — fuer ihn gibt es keine Tag-Achse.
+      - name: make runtime-base-digest
+        if: always()
+        run: make runtime-base-digest
