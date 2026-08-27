@@ -137,17 +137,24 @@ tatsächliche Preis dieses Slice ist **eine** Zeile, nicht drei.
 
 ## 4. Definition of Done
 
-- [ ] Der Widerspruch zur `diagrams`-Festlegung ist **entschieden**, nicht
-      umgangen — Spec abgelöst oder Form je Konsument gescopt.
-- [ ] Die Marker-Form ist festgelegt und gegen den Bestand geprüft — inklusive
-      der Frage, ob eine gesetzte Unterdrückung verloren geht. Die eine bekannte
-      Kandidatin (mermaid-Öffnungszeile mit Token) ist ausdrücklich behandelt.
-- [ ] Die Erkennung lässt **Inline-Code** aus; sonst bleibt der Defekt für die
-      25 zitierten Kommentar-Formen bestehen.
-- [ ] Spezifikation, ADR, Code und Tests hängen zusammen; wo die Konsumenten
-      **verschiedene** Antworten tragen, ist das gescopt und begründet.
-- [ ] Ein konstruierter Verstoß je Konsument mit **gelesener Ursache**.
-- [ ] `make gates` grün (Exit explizit), `make fullbuild` grün; unabhängiger
+- [x] Der Widerspruch zur `diagrams`-Festlegung ist **entschieden**, nicht
+      umgangen: die Spec bleibt, und die Form ist **je Eingabe** gescopt
+      ([ADR-0063](../../adr/0063-marker-form-folgt-der-kommentar-lexik-der-eingabe.md)
+      Entscheidung 1).
+- [x] Die Marker-Form ist festgelegt und gegen den Bestand geprüft. **Es geht
+      keine gesetzte Unterdrückung verloren** — die eine bekannte Kandidatin
+      (`mermaid`-Öffnungszeile mit Token) ist belegt sicher: `proseLines` sieht
+      sie gar nicht, die Form-Bedingung erreicht sie nie. Berührt wird **eine**
+      Zeile, und sie war kein gesetzter Marker.
+- [x] Die Erkennung lässt **Inline-Code** aus — geleistet von
+      [slice-162](../done/slice-162-ignore-marker-geteilte-antwort.md); dieser
+      Slice hat es beim Anspruch als überholt ausgewiesen statt es sich
+      zuzuschreiben.
+- [x] Spezifikation, ADR, Code und Tests hängen zusammen; die **verschiedenen**
+      Antworten der Konsumenten sind als Tabelle gescopt und begründet.
+- [x] Ein konstruierter Verstoß je Konsument mit **gelesener Ursache** — für
+      `diagrams` erst in der Nacharbeit, dort fehlte die Assertion ganz.
+- [x] `make gates` grün (Exit explizit), `make fullbuild` grün; unabhängiger
       Review.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -155,11 +162,28 @@ tatsächliche Preis dieses Slice ist **eine** Zeile, nicht drei.
 - **Die Verengung deckt Befunde auf, die niemand bestellt hat.** Was heute eine
   Erwähnung deckt, wird danach rot — in lebenden Dokumenten ist das ein Gewinn,
   in eingefrorenen ein Problem ohne Adressaten. Die Menge gehört gezählt und
-  entschieden, nicht erlitten. — **Ausgang:** *(bei Closure)*
+  entschieden, nicht erlitten. — **Ausgang: entfallen, gemessen.** Aufgedeckt
+  wird **nichts**: 65 der 66 wirksamen Marker tragen die Form bereits, und die
+  eine übrige Zeile liegt in `docs/reviews/`, das beide Konsumenten datei-weit
+  ausnehmen. Der Preis, den §2 Schritt 3 auf drei Zeilen und fünf Befunde
+  schätzte, ist **eine** Zeile und **null** Befunde.
 - **Eine geteilte Konstante zu verengen, ändert vier Module auf einmal.** Die
   Gegenprobe muss je Konsument zeigen, dass ein **gesetzter** Marker weiter
   wirkt — sonst wird aus einem stillen Grün ein stilles Rot. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang: eingetreten, behoben — und erst der Review hat es gesehen.** Die
+  Verengung trifft nur zwei der vier; für `versions` gab es eine Probe, für
+  `diagrams` **keine**, obwohl
+  [ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)
+  Entscheidung 4 je Konsument eine verlangt. Nachgeholt in der Fence-eigenen
+  Konstellation; ein stilles Rot ist damit ausgeschlossen, nicht gehofft.
+- **Ungeplant, vom Review aufgedeckt: die Form-Bedingung hat zwei Grenzen, und
+  eine zeigt in die leise Richtung.** — **Ausgang: eingetreten, benannt.**
+  Geprüft wird **zeilenweise** — ein Marker, dessen HTML-Kommentar auf einer
+  früheren Zeile öffnet, gilt nicht (Falsch-Rot, laut). Und gefordert ist nur
+  der **Öffner**, nicht der Abschluss — ein nie geschlossener Kommentar wirkt
+  (stilles Grün, leise). Die Spezifikation sagte *„Klammer gefordert"* und lag
+  damit über dem Code; sie ist auf die tatsächliche Bedingung gezogen, und beide
+  Grenzen sind Proben.
 
 ## 6. Trigger
 
@@ -189,4 +213,73 @@ an vorhandenen Modulen.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Die erste Arbeit war, nicht loszulegen: die Hälfte dieses Plans war erledigt,
+bevor er beansprucht wurde — durch seine eigene Diagnose.**
+
+**§2 Schritt 2 benennt die tragende Achse selbst:** *„nicht die Kommentar-Form,
+sondern **Marker gegen zitierten Marker**: die Erkennung muss Inline-Code
+auslassen."* Genau die hat
+[slice-162](../done/slice-162-ignore-marker-geteilte-antwort.md) gebaut. Der
+Plan war also nicht falsch, sondern **überholt**, und zwar von einem Slice, den
+seine eigene Analyse angestoßen hat. Ausgewiesen als Nachtrag in §1, nicht
+stillschweigend weiterbenutzt — die Zahlen dort stammten von vor
+[slice-146](../done/slice-146-ignore-marker-wirkung.md).
+
+**Was blieb, war die Form — und ein Widerspruch, den der Plan richtig gemeldet
+statt aufgelöst hat.** Die Spezifikation legt für `diagrams` den **Token**
+ausdrücklich fest, weil im `mermaid`-Fence die Diagramm-Sprache den Kommentar
+bildet und eine Lexik je Fence-Sprache ein Grammatik-Parser wäre. Eine
+repo-weit einheitliche Form war damit nie verfügbar. Die Auflösung ist
+dieselbe Regel auf verschiedene Eingaben: Markdown-Prosa bekommt den
+HTML-Kommentar, Fence-Inneres und sprachgemischte Zeilen den Token.
+
+**Der Ertrag im Bestand ist null Befunde — und der Grund dafür ist enger, als
+die erste Fassung sagte.** Von **66** wirksamen Markern über 558 Dateien tragen
+**65** die Form bereits. Der 66. liegt in `docs/reviews/`, das beide Konsumenten
+datei-weit ausnehmen; der Repo-Lauf **konnte** nichts finden. Der einzige
+Zähne-Beleg ist die konstruierte Gegenprobe: ein blanker Marker neben einem
+toten Pfad wird mit der Verengung gemeldet und ohne sie nicht.
+
+**Der schwerste Befund des Reviews galt meiner Messung, nicht dem Code.** Ich
+hatte jene 66. Zeile als **bare Form** klassifiziert. Sie trägt den Marker in
+**Backticks** und wirkt nur, weil ihr Absatz **ungerade Backtick-Parität** hat
+— 221 Backticks, selbst nachgezählt. Sie ist also keine bare Form, sondern eine
+**eingetretene Instanz** der Grenze *„Erzeugung ⇒ stilles Grün"*, die
+[ADR-0062](../../adr/0062-ventil-marker-versions-ist-eine-benannte-grenze.md)
+selbst benannt und dann für **nicht eingetreten** erklärt hatte. Einen baren
+wirksamen Marker gibt es im Bestand nicht.
+
+**Zwei Folgen daraus, beide festgehalten.** Erstens war
+[ADR-0062](../../adr/0062-ventil-marker-versions-ist-eine-benannte-grenze.md)s
+Trigger erfüllt, und dieser Slice hat die Instanz beseitigt, ohne dass jemand
+entschieden hätte — als `## Geschichte`-Zeile dort vermerkt, samt der
+Feststellung, dass die **Grenze fortbesteht** und nur ihre Fundstelle weg ist.
+Zweitens waren die Zahlen wieder eine andere Grundgesamtheit
+([`BEO-020`](../observations.md), vierte Instanz in dieser Kette): 249/183
+gehören zum Stand jener ADR, nicht zu diesem. Nachgemessen über die
+**Produkt-Scan-Menge**: 558 / 259 / 66 / 193.
+
+**Ein Overclaim ist zurückgenommen.** *„Damit ist jede Erwähnungs-Form
+entschärft"* — entschärft ist die **blanke**. Weiter wirksam sind eine escapte
+Erwähnung, eine in einem HTML-Attribut und eine in einem eingerückten
+Code-Block. Die haltbare Aussage über diese Änderung ist eine andere und
+**stärker**: die Bedingung ist **monoton verengend** und kann keinen neuen
+stillen Grün-Pfad erzeugen.
+
+**Und `diagrams` hatte keine Assertion** — obwohl
+[ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)
+Entscheidung 4 je Konsument eine verlangt und §4 dieses Slice sie fordert. Das
+Akzeptanzkriterium war zudem in der Prosa-Konstellation formuliert, die es bei
+`diagrams` nie gibt. Beides behoben; die Bestands-Fundstelle auf der
+`mermaid`-Öffnungszeile ist damit **belegt** sicher statt behauptet.
+
+**Sensors:** `make gates` (Exit 0, zehn Glieder, 559 Dateien, 0 Befunde,
+Coverage 94,9 %), `make fullbuild` (Exit 0, 48 Anforderungen / 0 Waisen, bench
+Median 710 ms), `make test` (Exit 0, **elf** Grenz-Proben — sechs zur Form, drei
+zu `diagrams`, zwei zu den Rändern), `make adr-check` über die Range (0 Befunde;
+beide ADR-Anhänge sind `## Geschichte`, kein Kern-Eingriff). **Proben, Ursache
+je gelesen:** blanker Marker gegen Kommentar-Marker je Modul; die `>`-Kante; der
+mehrzeilige Kommentar; der nie geschlossene; und drei `diagrams`-Fälle in ihrer
+eigenen Konstellation. Ein unabhängiger Review ist gelaufen; sein Urteil war
+*„schließbar nach Nacharbeit"*, seine vierzehn Befunde sind eingearbeitet, und
+seine zwei HIGH sind eigens nachgemessen statt übernommen.
