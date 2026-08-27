@@ -46,8 +46,14 @@ func CheckCodepaths(fsys driven.Filesystem, file string, content []byte, cfg mod
 	}
 	prose := proseLines(content)
 	spans := inlineSpansByLine(prose)
+	// „Ist diese Zeile eine Direktive" ist eine Prosa-Frage und bekommt die
+	// geteilte Antwort (ADR-0054, ADR-0061): der Marker in Backticks ist eine
+	// Erwähnung. Ohne das nähme eine Zeile, die das Ventil beschreibt, sich
+	// selbst aus dem Gate. Der geprüfte PFAD dagegen steht gerade in Backticks
+	// — deshalb zwei Sichten auf dieselben Zeilen.
+	markers := markerLines(prose)
 	for _, pl := range prose {
-		if strings.Contains(pl.raw, ignoreMarker) {
+		if markers[pl.no] {
 			continue
 		}
 		// Headings sind Titel, keine Prosa-Referenzen — gleiche

@@ -8,6 +8,23 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
+- slice-162 — **Der Zeilen-Marker `d-check:ignore` wirkt bei `codepaths` und `ids`
+  nur noch außerhalb von Inline-Code** (Lastenheft 0.68.0, ADR-0061). In
+  Backticks ist er eine **Erwähnung**, keine Direktive — bisher nahm eine Zeile,
+  die das Ventil *beschreibt*, sich selbst aus der Prüfung. Gemessen über 544
+  getrackte Dateien: von **250** Marker-Zeilen tragen **160** ihn nur in
+  Inline-Code; der Angleich legt **fünf** Befunde frei, und alle fünf sind
+  **echt** — Zeilen des Lastenhefts, die den Marker dokumentieren. Sie tragen
+  jetzt einen **gesetzten** Marker statt eines aus der eigenen Prosa gefolgerten.
+  **Bei `versions` und `diagrams` ändert sich nichts**, und das ist eine benannte
+  Skopierung: ihre Eingabe ist keine Prosa (alle Zeilen inkl. Code-Blöcken bzw.
+  die Zeilen **innerhalb** eines Fence), dort ist ein Backtick literaler Inhalt.
+  **Benannte Grenze:** die **Form** des Markers bleibt ungeregelt — er gilt als
+  gesetzt, sobald die Zeichenkette außerhalb von Code steht, auch ohne die
+  Kommentar-Klammer. Ein Quelltext-Wächter im Regel-Paket meldet künftig jede
+  Roh-Lesung ohne begründeten Eintrag; seine Grenze (Schreibweisen, nicht
+  Verhalten) steht bei ihm.
+
 - slice-161 — **Sechs gepinnte Fremd-Bestände gehoben**, nachdem der Nachtlauf
   sie gemeldet hatte. **Nutzersichtbar ist einer, und er ist nicht kosmetisch:**
   das Runtime-Basis-Image (`distroless/static-debian12:nonroot`) trägt einen

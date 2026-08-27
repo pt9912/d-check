@@ -1112,6 +1112,17 @@ feinsten Schnitt:
   Ziel-Pfade** von der Existenz-/Anker-Prüfung aus — **referenz-weit** (datei- und
   zeilen-unabhängig) und geteilt von `links`, `anchors` und `codepaths`.
 
+  **Wo der Marker wirkt — und wo er nur erwähnt ist.** Bei `codepaths` und `ids`
+  zählt er nur **außerhalb** von Code-Blöcken **und außerhalb von Inline-Code**:
+  in Backticks ist er eine **Erwähnung**, keine Direktive. Ohne das könnte diese
+  Seite hier ihn nicht beschreiben, ohne sich selbst auszunehmen — genau das war
+  im Lastenheft an fünf Stellen passiert. Bei `versions` und `diagrams` wird er
+  weiterhin **roh** erkannt, und das ist kein Versehen: `versions` liest alle
+  Zeilen einschließlich Code-Blöcken, `diagrams` die Zeilen **innerhalb** eines
+  Fence — dort ist ein Backtick literaler Inhalt, es gibt kein Inline-Code.
+  **Was der Marker nicht regelt, ist seine eigene Form:** er gilt als gesetzt,
+  sobald die Zeichenkette außerhalb von Code steht — die Kommentar-Klammer
+  `<!-- … -->` ist die empfohlene, nicht die geforderte Schreibweise.
 **Im Modul `diagrams` ist der Marker ein Token, kein HTML-Kommentar** — und er
 wirkt an genau **zwei** Orten. In Prosa schreiben Sie ihn als
 `<!-- d-check:ignore -->`; innerhalb eines Diagramm-Fence ist das kein

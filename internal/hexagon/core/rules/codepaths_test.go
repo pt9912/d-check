@@ -2,6 +2,7 @@ package rules
 
 import (
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
+	"regexp"
 	"fmt"
 	"testing"
 
@@ -254,5 +255,78 @@ func TestClassifyCodepath(t *testing.T) {
 	}
 	if got := normalizeCodepath("a:b"); got != "a:b" {
 		t.Errorf("kein Zeilen-Suffix: %q", got)
+	}
+}
+
+// DC-FA-CODE-001.a / DC-FA-ID-001.a: der Ventil-Marker in Inline-Code ist eine
+// ERWÄHNUNG, keine Direktive — dieselbe geteilte Prosa-Antwort, die citations
+// für seine Direktive bekommt. Ohne das nimmt eine Zeile, die das Ventil
+// beschreibt, sich selbst aus dem Gate; im Bestand traf das fünf Zeilen des
+// Lastenhefts, die den Marker dokumentieren.
+//
+// Beide Prüfpfade sind gedeckt — der Pfad in Inline-Code (codepaths) und die
+// Kennung (ids); sie konsultieren denselben Satz, damit die Ausnahme nicht
+// divergieren kann. Je Fall die Gegenprobe mit freiem Marker.
+func TestIgnoreMarkerInInlineCodeIstErwaehnung(t *testing.T) {
+	adr := model.IDPattern{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/", LinkPolicy: "always"}
+	cases := []struct {
+		name   string
+		body   string
+		module string
+		want   []string
+	}{
+		{"codepaths erwähnt", "Der Marker `d-check:ignore` nimmt `./gibtsnicht.md` aus.\n",
+			"codepaths", []string{"codepath-missing"}},
+		{"codepaths frei", "Der Marker <!-- d-check:ignore --> nimmt `./gibtsnicht.md` aus.\n",
+			"codepaths", nil},
+		{"ids erwähnt", "Der Marker `d-check:ignore` nimmt `ADR-0042` aus.\n",
+			"ids", []string{"id-unlinked"}},
+		{"ids frei", "Der Marker <!-- d-check:ignore --> nimmt `ADR-0042` aus.\n",
+			"ids", nil},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			m := coretest.NewMemFS(map[string]string{
+				"docs/a.md":               tc.body,
+				"docs/plan/adr/0001-x.md": "Definitions-Ort\n",
+			})
+			cfg := model.Config{IDPatterns: []model.IDPattern{adr}}
+			res, err := Run(m, nil, cfg, []string{tc.module})
+			if err != nil {
+				t.Fatalf("Run(%s): %v", tc.module, err)
+			}
+			var got []string
+			for _, f := range res.Findings {
+				got = append(got, f.Reason)
+			}
+			if fmt.Sprint(got) != fmt.Sprint(tc.want) {
+				t.Fatalf("%s: %v, want %v", tc.name, got, tc.want)
+			}
+		})
+	}
+}
+
+// DC-FA-VER-001.a / DC-FA-DIAG-001.a: die zwei ÜBRIGEN Konsumenten des Markers
+// lesen weiter roh, und das ist kein Versehen — ihre Eingabe ist keine Prosa.
+// versions liest ALLE Zeilen einschließlich Fences, diagrams die Zeilen
+// INNERHALB eines Fence; dort gibt es kein Inline-Code, Backticks sind
+// literaler Inhalt. Der Test nagelt die Grenze fest, damit ein späterer
+// Angleich eine Entscheidung ist und kein Nebeneffekt.
+func TestIgnoreMarkerBleibtRohWoDieEingabeKeineProsaIst(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/src.md": "Stand: v2.0.0\n",
+		"docs/v.md":   "Pin `v1.0.0` mit `d-check:ignore` in Backticks.\n",
+	})
+	cfg := model.Config{Versions: model.VersionsConfig{Patterns: []model.VersionPattern{{
+		PinPattern:  regexp.MustCompile(`v\d+\.\d+\.\d+`),
+		CurrentFrom: "docs/src.md",
+	}}}}
+	res, err := Run(m, nil, cfg, []string{"versions"})
+	if err != nil {
+		t.Fatalf("Run(versions): %v", err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("versions: %d Befund(e), want 0 — der Marker wirkt dort weiter roh (%v)",
+			len(res.Findings), res.Findings)
 	}
 }

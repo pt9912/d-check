@@ -150,16 +150,20 @@ func CheckIDLine(file string, ln Line, patterns []model.IDPattern, inTarget, exe
 }
 
 // markerLines liefert die 1-basierten Nummern der Prosa-Zeilen, die den
-// d-check:ignore-Marker tragen — geprüft auf der rohen Zeile. Der eine
-// zurückgegebene Satz wird von beiden ids-Prüfpfaden konsultiert (nackte
-// Fließtext-Vorkommen in CheckIDs, Inline-Code-Vorkommen in
-// alwaysLineFindings), damit die Zeilen-Ausnahme nicht divergieren kann
-// (spec/spezifikation.md §DC-FA-ID-001.a, Ventil für nackte wie
-// Inline-Code-Vorkommen).
+// d-check:ignore-Marker tragen. Der eine zurückgegebene Satz wird von beiden
+// ids-Prüfpfaden konsultiert (nackte Fließtext-Vorkommen in CheckIDs,
+// Inline-Code-Vorkommen in alwaysLineFindings), damit die Zeilen-Ausnahme
+// nicht divergieren kann (spec/spezifikation.md §DC-FA-ID-001.a).
+//
+// Geprüft wird auf dem GESTRIPPTEN Text: „ist diese Zeile eine Direktive" ist
+// eine Prosa-Frage und bekommt die geteilte Antwort (ADR-0054, ADR-0061). Der
+// Marker in Backticks ist eine Erwähnung — sonst nähme eine Zeile, die das
+// Ventil beschreibt, sich selbst aus dem Gate.
 func markerLines(prose []proseLine) map[int]bool {
+	stripped := stripInlineCodeByLine(prose)
 	var out map[int]bool
 	for _, pl := range prose {
-		if strings.Contains(pl.raw, ignoreMarker) {
+		if strings.Contains(stripped[pl.no], ignoreMarker) {
 			if out == nil {
 				out = make(map[int]bool)
 			}

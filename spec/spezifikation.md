@@ -846,6 +846,22 @@ Modul-Prüfung; deren Referenzen erreichen das Ventil nie. Der Zeilen-Marker
 `ignore-refs` (Ziel-Achse) wirkt **bei der Auflösung** des Ziels. Die drei Achsen sind
 orthogonal; keine überschreibt eine andere.
 
+**Wo der Marker gilt — und wo er nur erwähnt ist.** Die Frage *„ist diese Zeile
+eine Direktive"* ist eine Prosa-Frage und bekommt dieselbe geteilte Antwort wie
+jede andere: **fence-bewusst und inline-code-gestrippt**
+([DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+Schritt 2). Der Marker in Backticks ist damit eine **Erwähnung** — sonst nähme
+eine Zeile, die das Ventil beschreibt, sich selbst aus der Prüfung.
+
+Das gilt für die zwei Konsumenten, deren Eingabe **Prosa** ist: `codepaths` und
+`ids`. Für `versions` und `diagrams` bleibt die Erkennung **roh**, und das ist
+eine benannte Skopierung, kein Rest: `versions` liest **alle** Zeilen
+einschließlich Fenced-Code ([DC-FA-VER-001.a](#dc-fa-ver-001a--versions-pin-konsistenz-versions)),
+`diagrams` die Zeilen **innerhalb** eines Fence
+([DC-FA-DIAG-001.a](#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams)).
+Dort ist ein Backtick literaler Inhalt — es gibt kein Inline-Code, das zu
+strippen wäre, und damit keine geteilte Antwort zu übernehmen.
+
 ---
 
 ### DC-FA-LINK-001.a — Markdown-Vorverarbeitung und Link-Extraktion
@@ -2815,6 +2831,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-27 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) §Achsen-Präzedenz sagt jetzt zu, **wo der Zeilen-Marker gilt und wo er nur erwähnt ist**: die Frage *„ist diese Zeile eine Direktive"* bekommt die geteilte Prosa-Antwort (fence-bewusst **und inline-code-gestrippt**) bei den zwei Konsumenten, deren Eingabe Prosa ist — `codepaths` und `ids`. Bei `versions` (liest alle Zeilen inkl. Fences) und `diagrams` (liest Zeilen **innerhalb** eines Fence) bleibt die Erkennung **roh**, als benannte Skopierung: dort ist ein Backtick literaler Inhalt, es gibt keine geteilte Antwort zu übernehmen. Anlass ist ein gemessener stiller Grün-Pfad — von 250 Marker-Zeilen tragen 160 den Marker nur in Inline-Code, und der Angleich legt fünf **echte** Befunde frei: Zeilen des Lastenhefts, die das Ventil beschreiben und sich dadurch selbst ausnahmen. **Nicht** Gegenstand ist die **Form** des Markers (die Spec nennt einen HTML-Kommentar, die Erkennung akzeptiert jedes Vorkommen der Zeichenkette). Begründung in begleitender ADR |
 | 2026-08-27 | §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) Kopfsatz und Schritt 1: der **Marker-Scan** bekommt die geteilte Prosa-Antwort — fence-bewusst **und inline-code-gestrippt** —, Suche und Parse auf demselben gestrippten Text, und der `<pfad>` beginnt mit einem Nicht-Whitespace-Zeichen (ein Pfad in Backticks wird sonst zu einem gültigen Parse mit leerem Ziel statt zum fail-closed-Fall); der **Zitattext** bleibt ausdrücklich **roh**. Der Vorfassungs-Satz *„Arbeitet auf den rohen Zeilen (fence-aware wie die übrigen Module)"* sagte beides zugleich und ließ die Inline-Hälfte offen; gemessen wurde eine andere Antwort als bei den übrigen Modulen, mit der Folge, dass die Dokumentation der Direktive selbst den Lauf fail-closed abbrach (25 Marker-Zeilen über 544 Dateien, davon 24 in Inline-Code, keine frei, null produktive Direktiven). **Drei Grenzen des Strippens** neu benannt (absatzweite Verschluckung, Erzeugung einer Direktive, die roh bleibende Ventil-Direktive) und die **Ziel-Seite** als außerhalb aller Prosa-Zusagen ausgewiesen (roh, typunabhängig, nicht von `scan.ignore`/`scope` erfasst). Begründung in begleitender ADR |
 | 2026-08-26 | §2-Schema: `matrix.classes[].paths` ist **optional** — eine Klasse ohne Pfade hat keine Mitglieder und ist reines **Token-Ziel**. Die Fähigkeit bestand in der Implementierung, war aber nicht zugesagt; die Zeile führte `paths` wie das Pflichtfeld `name`. Kein Verhaltens-Delta |
 | 2026-08-23 | Nachzug nach unabhängigem Review: **redaktionell, keine Semantik-Änderung.** Schritt 4 unter §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) wies `matrix` als Gegen-Beleg zur **benannten Liste** der marker-tragenden Module aus und blieb dabei bei einem einzigen Beispiel; genannt sind jetzt auch `structure` und `citations`, die ebenfalls auf Zeilen melden und den Marker nicht tragen. Ein einzelner Gegen-Beleg lässt die Liste weiter als ableitbares Kriterium erscheinen |
