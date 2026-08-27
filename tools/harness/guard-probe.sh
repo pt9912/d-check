@@ -19,8 +19,11 @@ verdict() {  # verdict <roh-json> -> setzt GOT
   printf '%s' "$1" | bash "$G" >"$out" 2>/dev/null
   rc=$?
   set -e
-  if [ "$rc" -ne 0 ]; then GOT=crash
-  elif grep -q 'decision' "$out"; then GOT=block
+  if grep -q '"permissionDecision": "deny"' "$out"; then
+    # Beide Kanäle gehören zusammen: fehlt der Exit-Riegel, hängt der Block
+    # allein an der Antwortform. Das ist ein eigenes Verdikt, kein `block`.
+    if [ "$rc" -eq 0 ]; then GOT=halb; else GOT=block; fi
+  elif [ "$rc" -ne 0 ]; then GOT=crash
   else GOT=pass
   fi
 }
@@ -31,7 +34,7 @@ report() {  # report <erwartung> <label>
   printf '%s  %-6s %-44s (erwartet %s)\n' "$mark" "$GOT" "${2:0:44}" "$1"
 }
 
-probe() {  # probe <erwartung: block|pass|crash> <kommando>
+probe() {  # probe <erwartung: block|pass|crash|halb> <kommando>
   verdict "$(printf '{"tool_input":{"command":"%s"}}' "$2")"
   report "$1" "$2"
 }
@@ -88,8 +91,11 @@ guard_ohne_pfad() {
     | env -i PATH=/nonexistent /bin/bash "$PWD/$G" >"$out" 2>/dev/null
   rc=$?
   set -e
-  if [ "$rc" -ne 0 ]; then GOT=crash
-  elif grep -q 'decision' "$out"; then GOT=block
+  if grep -q '"permissionDecision": "deny"' "$out"; then
+    # Beide Kanäle gehören zusammen: fehlt der Exit-Riegel, hängt der Block
+    # allein an der Antwortform. Das ist ein eigenes Verdikt, kein `block`.
+    if [ "$rc" -eq 0 ]; then GOT=halb; else GOT=block; fi
+  elif [ "$rc" -ne 0 ]; then GOT=crash
   else GOT=pass
   fi
 }

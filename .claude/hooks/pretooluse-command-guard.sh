@@ -46,11 +46,20 @@ set -euo pipefail
 here=${BASH_SOURCE[0]%/*}
 extractor="$here/../../tools/harness/extract-command.awk"
 
+# ZWEI KANÄLE, absichtlich beide. Die JSON-Antwort trägt den Grund, den der
+# Aufrufer wörtlich sieht; der Nicht-Null-Exit blockt unabhängig von jeder
+# Antwortform. Beide zugleich sind gemessen konfliktfrei — der Grund erscheint,
+# der Exit liegt als Riegel darunter. Ohne den zweiten Kanal hinge JEDER Block
+# an einem Format, dessen Auslegung dieser Guard nicht kontrolliert.
 emit_block() {
   printf '%s\n' '{' \
-    '  "decision": "block",' \
-    '  "reason": "d-check is make/Docker-only (AGENTS.md §3.1, ADR-0001). Use make targets and the POSIX host tools the gate scripts use (grep/sed/awk/find); do not run host package managers, host go, or host script interpreters (apt/brew/pip/npm/cargo/go/python/perl/ruby/node). On parse doubt the guard fails closed."' \
+    '  "hookSpecificOutput": {' \
+    '    "hookEventName": "PreToolUse",' \
+    '    "permissionDecision": "deny",' \
+    '    "permissionDecisionReason": "d-check is make/Docker-only (AGENTS.md §3.1, ADR-0001). Use make targets and the POSIX host tools the gate scripts use (grep/sed/awk/find); do not run host package managers, host go, or host script interpreters (apt/brew/pip/npm/cargo/go/python/perl/ruby/node). On parse doubt the guard fails closed."' \
+    '  }' \
     '}'
+  exit 2
 }
 
 # Host-Go: ADR-0001 + AGENTS §3.1. Paketmanager: AGENTS §3.1.
@@ -120,17 +129,22 @@ scan() {  # scan <cmd> <tiefe>; return 0 = BLOCK, 1 = ok
   return 1
 }
 
-input="$(</dev/stdin)"
+# Eingabe per read-Builtin, nicht per `cat` (zweite Host-Abhängigkeit) und
+# nicht per `$(</dev/stdin)`: Letzteres schlägt fehl, wo stdin keine
+# nachlesbare Datei ist — unter `set -e` endet der Guard dann ohne Ausgabe,
+# also fail-OPEN. `read -d ''` liest bis EOF und meldet dabei 1; das ist der
+# Normalfall, kein Fehler.
+IFS= read -r -d '' input || true
 
 # Ohne awk keine Prüfung -> fail-closed (awk ist POSIX-Basis, AGENTS.md §3.1).
-command -v awk >/dev/null 2>&1 || { emit_block; exit 0; }
-[ -f "$extractor" ] || { emit_block; exit 0; }
+command -v awk >/dev/null 2>&1 || emit_block
+[ -f "$extractor" ] || emit_block
 
 set +e
 cmd="$(printf '%s' "$input" | awk -f "$extractor")"
 rc=$?
 set -e
-[ "$rc" -ne 0 ] && { emit_block; exit 0; }   # Parse-Zweifel -> fail-closed
+[ "$rc" -ne 0 ] && emit_block                # Parse-Zweifel -> fail-closed
 
 scan "$cmd" 0 && emit_block
 # Pass-Fall: keine Ausgabe — normale Permission-Prüfung übernimmt.
