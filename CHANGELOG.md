@@ -8,6 +8,23 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
+- slice-161 — **Sechs gepinnte Fremd-Bestände gehoben**, nachdem der Nachtlauf
+  sie gemeldet hatte. Nutzersichtbar ist einer: das **Runtime-Basis-Image**
+  (`distroless/static-debian12:nonroot`) trägt einen neuen Bau desselben Tags —
+  das ausgelieferte Image bekommt damit die aktuellen Basis-Layer. Die übrigen
+  fünf sind Bau- und Gate-Bestände ohne Auslieferung: das Go- und das
+  semgrep-Image, `semgrep` 1.167.0 → 1.175.0, das Schwester-Tool `a-check`
+  v0.8.0 → v0.17.0 und die zwei Action-Pins der Workflows
+  (`actions/checkout` v6.0.2 → v7.0.1, `docker/login-action` v4.2.0 → v4.6.0).
+  **Je Pin gemessen statt gesammelt gehoben:** `a-check` v0.17.0 meldet über
+  dieses Repo 0 Befunde **und** denselben konstruierten Verstoß an derselben
+  Zeile wie v0.8.0 — das Grün kommt aus dem Bestand, nicht aus einer Fassung,
+  die weniger prüft; `semgrep` 1.175.0 fährt denselben Umfang (55 Regeln, 50
+  Dateien), weil das Regelset eigen gepinnt ist; und `actions/checkout` v7
+  bricht nur Workflows, die Fork-PRs in `pull_request_target`/`workflow_run`
+  auschecken — keiner unserer drei tut das. Alle zwölf Frische-Achsen melden
+  danach `ok`.
+
 - slice-158 — **Das Modul `citations` erkennt die Direktive nur noch außerhalb
   von Inline-Code** (Lastenheft 0.67.0, ADR-0060). Bisher las der Marker-Scan
   die **rohen** Zeilen: die Syntax in Backticks zu schreiben erzeugte einen

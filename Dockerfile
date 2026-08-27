@@ -32,7 +32,7 @@ ARG GO_VERSION=1.27.0
 ARG GOLANGCI_LINT_VERSION=v2.13.1
 
 # ---- deps ------------------------------------------------------------------
-FROM golang:${GO_VERSION}@sha256:65b6f280bf050ec5af12716857e8ea8439d694dbba8f31ceeb7630670071f2bb AS deps
+FROM golang:${GO_VERSION}@sha256:0ecdc2a9f6156af6451080bfe3d8382a662fcc4e209608c6f919e643453514c1 AS deps
 
 WORKDIR /src
 ENV GOFLAGS="-mod=readonly -buildvcs=false" \
@@ -106,7 +106,7 @@ RUN CGO_ENABLED=0 go build \
     ./cmd/d-check
 
 # ---- runtime ---------------------------------------------------------------
-FROM gcr.io/distroless/static-debian12:nonroot@sha256:d093aa3e30dbadd3efe1310db061a14da60299baff8450a17fe0ccc514a16639 AS runtime
+FROM gcr.io/distroless/static-debian12:nonroot@sha256:afa5c872c891853ca7fcf1f12c3edb23f7eeef36189728842dd51042ff57f7ab AS runtime
 
 # VERSION wird von der Release-Pipeline aus dem Git-Tag durchgereicht
 # (make ci VERSION=…); der Workflow pinnt das Label gegen den Tag —

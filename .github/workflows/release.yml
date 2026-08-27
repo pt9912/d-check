@@ -43,7 +43,7 @@ jobs:
       LOCAL_IMAGE: d-check
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # SemVer-Validate ZUERST (fail-fast vor Login/Build/Push):
       # strikte SemVer-2.0-Prüfung, Build-Metadaten (`+`) abgelehnt
@@ -71,7 +71,7 @@ jobs:
         run: make ci VERSION="$VERSION"
 
       - name: Log in to GHCR
-        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}

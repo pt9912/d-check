@@ -11,10 +11,14 @@
 # UND Digest, wie die Dockerfile-Stages: der Tag macht die Version les- und
 # vergleichbar, gezogen wird trotzdem nach Digest.
 #
-# Das v0.8.0-Release liefert die drei Vorbedingungen des Architektur-Gates
-# (tech.adapter-Liste, composition_root: forbid, exclude).
-A_CHECK_VERSION ?= v0.8.0
-A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check:$(A_CHECK_VERSION)@sha256:a1c9c4d6ae3b9690250c6f7271f87b6bb7d5e8d207386fed35ff064508db8e96
+# Die drei Vorbedingungen des Architektur-Gates (tech.adapter-Liste,
+# composition_root: forbid, exclude) kamen mit v0.8.0 und tragen weiter.
+# Vor der Hebung auf v0.17.0 gemessen: derselbe Lauf ueber dieses Repo, 0
+# Befunde — und beide Fassungen melden denselben konstruierten Verstoss
+# (app-impurity) an derselben Zeile. Das Gruen kommt also aus dem Bestand,
+# nicht aus einer Fassung, die weniger prueft.
+A_CHECK_VERSION ?= v0.17.0
+A_CHECK_IMAGE ?= ghcr.io/pt9912/a-check:$(A_CHECK_VERSION)@sha256:665540114aea653effcc0e0c96ada6e8da2e7bfa867cade74d418d541af88dda
 
 .PHONY: a-check
 a-check: ## Architektur: Hexagon-Regeln via a-check (netzlos, read-only).
