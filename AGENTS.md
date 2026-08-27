@@ -85,8 +85,7 @@ Implementierungssprache ist **Go**
 Go-Toolchain läuft in Docker (Multi-Stage gemäß
 [ADR-0002](docs/plan/adr/0002-distribution-ghcr-image.md)). Der Host braucht `git`, GNU `make`, `bash`,
 Docker und die POSIX-Standardwerkzeuge, die die Gate-Skripte rufen
-(coreutils, findutils, `grep`, `awk`). Bewusst als **Klasse** genannt und nicht
-als Liste: eine Aufzählung wäre ein weiterer ungewachter Spiegel.
+(coreutils, findutils, `grep`, `awk`) — als **Klasse**, nicht als Liste.
 
 **Auch keine Host-Skript-Interpreter** (`python`, `perl`, `ruby`, `node`, …).
 Wo ein Skript nötig ist, läuft es als eigene, digest-gepinnte Dockerfile-Stage
@@ -97,13 +96,7 @@ Wo ein Skript nötig ist, läuft es als eigene, digest-gepinnte Dockerfile-Stage
 
 **Begründung:** Toolchain-Reproduzierbarkeit + Supply-Chain-Defense.
 
-**Die Regel gilt unabhängig von ihrer Durchsetzung — und das ist heute nicht
-theoretisch.** Am 2026-08-27 gemessen: der Wächter urteilt korrekt (direkt gegen
-echtes Hook-JSON geprüft, Ausgabe byte-identisch zur Vorfassung), und ein
-blockiertes Kommando lief über das Werkzeug **trotzdem durch**. Früher am selben
-Tag wurde derselbe Wächter durchgesetzt. Die Ursache liegt in der Antwortform,
-nicht in der Prüfung ([slice-156](docs/plan/planning/in-progress/slice-156-hook-antwortform.md));
-bis dahin ist der Stolperdraht **unzuverlässig gespannt**. Wer sich auf ihn
+**Die Regel gilt unabhängig von ihrer Durchsetzung.** Wer sich auf den Wächter
 verlässt, verlässt sich auf nichts.
 
 **Durchsetzung:** ein Tool-Call-Wächter
@@ -115,8 +108,8 @@ mit `awk`, läuft also in derselben Klasse, die er durchsetzt
 ([`MR-042`](harness/conventions.md#mr-042)); `make guard-probe` (§4) fährt ihn
 gegen seine Proben.
 
-**Er ist ein Stolperdraht, keine Sandbox — und die Lücken sind gemessen, nicht
-geschätzt:** ein Shell-Schlüsselwort als Segment-Kopf (`if … then pip …`), ein
+**Er ist ein Stolperdraht, keine Sandbox.** Ungeprüft bleiben: ein
+Shell-Schlüsselwort als Segment-Kopf (`if … then pip …`), ein
 Wrapper außerhalb seiner Präfix-Liste (`nohup`, `timeout`), ein wort-interner
 Quote-/Backslash-Splice (`p"i"p`) und escapte Quotes in der Verschachtelung
 erreichen ein gelistetes Werkzeug, ohne dass er es als Kopf sieht. Die Regel
@@ -129,7 +122,7 @@ Inline-Suppressions sind verboten: `//nolint`-Direktiven im Code
 brechen das künftige Suppression-Gate. Ausnahmen leben zentral in
 `.golangci.yml` (exclude-rules) mit Begründung.
 
-**Teilweise durchgesetzt, und die Grenze ist gemessen:** `nolintlint` im Profil
+**Teilweise durchgesetzt, und die Grenze:** `nolintlint` im Profil
 meldet eine Direktive ohne benannten Linter, ohne Begründung oder ohne Wirkung —
 sie wird damit sichtbar und zurechenbar. Eine **wohlgeformte** `//nolint`
 unterdrückt einen echten Verstoß weiterhin, und `make lint` bleibt grün: der
@@ -186,65 +179,28 @@ Die sprachkonkrete Übersetzung (Modul-Pfade, Import-Regeln) und die
 Begründungen leben in den ADRs, deren `Schärft:`-Feld aufwärts zeigt;
 die zeitliche Schicht lebt in `docs/plan/planning/`.
 
-**Die Abwärts-Sperre nennt fünf Kategorien; gedeckt sind vier — auf zwei
-verschiedene Arten.** `make doc-check` (Modul `matrix`) hält **ADRs** über die
-**Link**-Prüfung (ein Link aus einem Stratum in die ADR-Klasse ist
-`matrix-forbidden`; ein *bares* `ADR-<NNNN>` im Fließtext ist es **nicht** — die
-Klasse trägt kein `token`), und **Slices**, **Wellen** und **Commit-Hashes**
-zusätzlich als **Token** im Körper.
+**Die Abwärts-Sperre nennt fünf Kategorien; gedeckt sind vier.** `make doc-check`
+(Modul `matrix`) hält **ADRs** über die Link-Prüfung, **Slices**, **Wellen** und
+**Commit-Hashes** zusätzlich als Token im Körper
+([`DC-FA-MTX-003`](spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)).
+Erkennungs-Formen und ihre benannten Grenzen stehen bei der Regel, die sie
+trägt — im `matrix`-Block der [`.d-check.yml`](.d-check.yml).
 
-Die Commit-Hash-Klasse ist ein **Token-Ziel**
-([`DC-FA-MTX-003`](spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)):
-sie trägt kein Pfad-Muster, hat keine Mitglieder — ihr Gegenstand ist eine
-Zeichenkette statt eines Dokuments. Dieselbe Bauform trägt die Klasse für
-**Modul-Pfade** unten. **Sie sagt mehr zu, als ihr
-Name sagt** — gemeldet wird jede 7- bis 40-stellige Zeichenkette aus `[0-9a-f]`
-zwischen Wortgrenzen, also auch rein dezimale Token dieser Länge (Lauf-Nummern,
-Kompaktdaten) und Hex-Farbwerte. Für die Straten ist das tragbar, weil deren
-Datums- und Versions-Schreibweisen Trennzeichen führen und damit
-auseinanderfallen; im Bestand meldet sie **null**.
+**Ungedeckt bleibt das Closure-Datum:** es ist von einem legitimen Datum nicht
+unterscheidbar, und die Spec-Straten führen eigene Historie-Zeilen voller Daten.
+*(Auflösungs-Trigger: keiner — die Kategorie bleibt Urteil.)*
 
-Ihre **benannten Grenzen**: Markdown-Link-Spans und Fenced Blöcke zählen nicht —
-ein Hash im Linktext *oder* in der Link-URL bleibt stumm, eine bare URL nicht;
-Großschreibung und Kurzformen unter sieben Zeichen fallen heraus; und der
-Provenance-Marker auf derselben rohen Zeile nimmt auch diese Klasse aus, obwohl
-dieser Abschnitt für die Straten keine solche Ausnahme kennt.
-
-Ungedeckt bleibt eine Kategorie. Ein **Closure-Datum** ist von einem legitimen
-Datum überhaupt nicht unterscheidbar: die Spec-Straten führen ihre eigenen
-Historie-Zeilen voller Daten.
-*(Auflösungs-Trigger: keiner — die Kategorie ist maschinell nicht trennbar und
-bleibt Urteil.)*
-
-**Die Sprachfreiheit der Sicht zerfällt in zwei ungleiche Hälften, und eine ist
-jetzt gedeckt.** Ob eine Zeile **Rollen statt Technologie** benennt, ist ein
-Urteil — *permanent*. Ob sie einen **Modul-Pfad** trägt, ist ein detektierbarer
-Zustand: `make doc-check` (Modul `matrix`) führt die Sicht als **eigene Klasse**
-und die Code-Modul-Pfade als **Token-Ziel** daneben; ein Pfad unter den
-**Code-Wurzeln** dieses Repos ist damit ein `matrix-forbidden`-Befund.
-
-Gegenstand sind **Modul**-Pfade, nicht Pfade überhaupt — Dokument-Pfade bleiben
-erlaubt, denn ein Dokument ist kein Modul; Skript-Pfade ebenso, denn ein
-Gate-Skript ist keines.
-
-**Die Prüfung liest die rohen Zeilen** — ein Pfad in **Inline-Code** wird
-erfasst, und das ist tragend: so schreibt dieses Repo solche Pfade überwiegend.
-Ihre **benannten Grenzen**: Fenced Blöcke zählen nicht (ein Beispiel-Block ist
-kein Verweis), Großschreibung fällt heraus, und ein Pfad über einen
-Zeilenumbruch ebenfalls.
-
-**Der Preis der eigenen Klasse steht in der Konfiguration:** Die Sicht fällt aus
-der klasseninternen Richtungs-Regel der übrigen Straten heraus; ihre
-Abwärts-Kante und die vier Verbote, die sie mit ihnen teilt, sind dort als
-**explizite** Regeln nachgebaut — gemessen, dass sich nichts daran ändert.
+**Die Sprachfreiheit der Sicht zerfällt in zwei ungleiche Hälften.** Ob eine
+Zeile **Rollen statt Technologie** benennt, ist ein Urteil — *permanent*. Ob sie
+einen **Modul-Pfad** trägt, ist ein detektierbarer Zustand: `matrix` führt die
+Sicht als eigene Klasse und die Code-Modul-Pfade als Token-Ziel daneben.
+Gegenstand sind **Modul**-Pfade, nicht Pfade überhaupt — Dokument- und
+Skript-Pfade bleiben erlaubt, denn weder ein Dokument noch ein Gate-Skript ist
+ein Modul.
 
 **Das Pfad-Verbot ist eine Verschärfung gegenüber der Baseline** — sie erlaubt
 der Sicht Modul-Pfade ausdrücklich. Geführt als
 [`MR-033`](harness/conventions.md#mr-033).
-
-**Der letzte Satz oben ist eine Ortsangabe, keine Prüfregel:** wo die
-sprachkonkrete Übersetzung und die zeitliche Schicht leben, sagt er als
-Wegweiser. Er trägt kein Verbot und braucht deshalb keinen Trigger.
 
 ### 3.5 ADRs sind nach `Accepted` immutable
 
@@ -327,9 +283,9 @@ anlegt oder ändert, beantwortet deshalb: **welche Eingaben liest es, die es
 nicht scannt — und gilt dort dieselbe Zusage?** Wo sie nicht gilt, gehört die
 Grenze in die Anforderung.
 
-**Begründung:** Die Aufzählung von Hand hat dreimal nicht gehalten, jedes Mal
-an einer neuen Achse — deshalb steht hier die Frage und keine Liste. Kein Gate
-fängt das; der Reviewer-Skill trägt den MEDIUM-Anker dazu. *(Hard Rule aus dem
+**Begründung:** Eine Liste der Achsen wäre selbst unvollständig — deshalb steht
+hier die Frage und keine Liste. Kein Gate fängt das; der Reviewer-Skill trägt
+den MEDIUM-Anker dazu. *(Hard Rule aus dem
 Steering Loop, [Beobachtungs-Register](docs/plan/planning/observations.md)
 `BEO-004`, seit welle-73; Auflösungs-Trigger: permanent.)*
 
