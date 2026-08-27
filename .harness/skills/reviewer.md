@@ -69,15 +69,14 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
 - **MEDIUM** (neu seit 1.11.0, Auflösungs-Trigger: permanent):
   **Quelle über ihren Geltungsbereich hinaus zitiert.** Ein Verweis stützt eine
   Aussage, die seine Quelle nicht trägt — der `MR-`Eintrag regelt etwas
-  anderes, die Kanon-Stelle sagt es für einen anderen Fall, die ADR verbietet
-  einen **Akt** und nicht den **Zustand**, um den es geht. Frage an jeden
+  anderes, die Kanon-Stelle sagt es für einen anderen Fall, die ADR **entscheidet
+  einen einmaligen Akt** und wird als stehendes Verbot gelesen. Frage an jeden
   Verweis im Diff: **lies das Geltungs-Feld, nicht den Titel — trägt die Quelle
   die Aussage, für die sie hier steht?** Bei `MR-<NNN>` sind das
   `Geltungsbereich` **und** `Ersetzt-Baseline-Regel`; bei einer Kanon-Stelle der
-  Absatz; und die **direkteste** Quelle sticht die weiter entfernte. Prüfe
-  zusätzlich die Gegenrichtung: widerspricht eine höherrangige Quelle dem
-  Vorschlag, ohne dass der Diff den Widerspruch **meldet**
-  ([`AGENTS.md`](../../AGENTS.md) §1)?
+  Absatz; und die **direkteste** Quelle sticht die weiter entfernte. Die drei
+  genannten Typen sind Beispiele, keine abschließende Liste — Vorlagen,
+  `DC-`Anforderungen und Registerzeilen tragen dieselbe Frage.
   Kategorie wie `BEO-009`(b) und aus demselben Grund: die Quelle ist echt,
   überdehnt ist nur ihre Reichweite. **Kein Gate fängt das** — und es ist die
   Klasse, die der zweite Leser zuverlässig findet und der Schreibende

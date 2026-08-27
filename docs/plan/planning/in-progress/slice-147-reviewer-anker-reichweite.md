@@ -41,7 +41,9 @@ Gegenstand diese Klasse **ist**.
    Fallliste — die Fallliste ist bei `BEO-004` dreimal unvollständig gewesen.
 3. **Die Feedforward-Hälfte prüfen:** trägt `AGENTS.md` §5 die Regel schon, oder
    ist der Skill wieder ihr einziger Ort? Beides ist Pflicht
-   (Baseline `grundlagen-klassifikation.md`, Feedforward **und** Feedback);
+   (Baseline `modul-09-implementierung.md`: *„Jede Hard Rule liegt in zwei
+   Quadranten"*; die 2×2-Matrix selbst steht deskriptiv in
+   `grundlagen-klassifikation.md`);
    eine Waise im Skill ist
    genau der Befund, den [slice-131](../done/slice-131-reviewer-skill-waisen.md)
    behandelt hat.
@@ -70,7 +72,10 @@ Gegenstand diese Klasse **ist**.
       oder ausdrücklich ausgewiesen, warum einer entfällt.
 - [x] Die Deckung der Wortlaut-Probe ist **gemessen** ausgewiesen: was sie
       findet und was sie nicht findet.
-- [x] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] `make gates` grün (Exit explizit); unabhängiger Review. *(Der Haken stand
+      im Feature-Commit, **bevor** der Review lief — `BEO-009`(a), und
+      slice-146 zwei Commits vorher genauso. Er trägt jetzt, weil der Review
+      gelaufen ist; die Reihenfolge war trotzdem falsch.)*
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -86,6 +91,13 @@ Gegenstand diese Klasse **ist**.
   zwei Prüffragen unter einer Überschrift und würde für beide schlechter
   gelesen. Er steht deshalb daneben, mit ausdrücklichem Verweis auf die geteilte
   Kategorie-Begründung.
+
+  **Die Last selbst bleibt davon unbeantwortet, und das war der eigentliche
+  Punkt.** Gezählt: **16** benannte HIGH-/MEDIUM-Anker nach dieser Änderung, 15
+  davor — der neue ist der sechzehnte, und die Schwelle des Risikosatzes („der
+  fünfzehnte wird nicht mehr gelesen") war damit schon vorher überschritten.
+  Ausgang mit Kennung:
+  [slice-160](../open/slice-160-reviewer-skill-kontextlast.md).
 - **Die Klasse ist beim Schreiben blind — auch mit Anker.** Der Anker wirkt im
   Review, also erst nachdem der Fehler geschrieben ist. Ob die
   Feedforward-Hälfte überhaupt greifen kann, ist die eigentliche Frage dieses
@@ -125,14 +137,29 @@ Harness-Regeltext. Gates: `make gates`.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-**Beide Hälften stehen, und die wichtigere fehlte ganz.** Der Slice ging von
-einer fehlenden Anker-Zeile im Reviewer-Skill aus. Gemessen fehlte mehr: die
-Regel *„eine Quelle trägt nur, was in ihrem Geltungsbereich steht"* stand
-**nirgends** normativ — nicht in [`AGENTS.md`](../../../../AGENTS.md), nicht in
-[`harness/README.md`](../../../../harness/README.md), nicht im
-Konventionsspeicher. Sie existierte ausschließlich als Beobachtung. Ein Anker
-allein wäre die Skill-Waise gewesen, die
-[slice-131](../done/slice-131-reviewer-skill-waisen.md) behandelt hat.
+**Beide Hälften stehen — und der erste Anlauf hat begründet, warum, mit einem
+Satz, der die Klasse dieses Slice begeht.** Er lautete: die Regel stehe
+**nirgends** normativ. Gemessen waren drei Orte
+([`AGENTS.md`](../../../../AGENTS.md),
+[`harness/README.md`](../../../../harness/README.md), Konventionsspeicher — dort
+steht sie wirklich nicht), geschlossen wurde universal. **Der Kanon trägt sie
+wörtlich:**
+`grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz — *„Sie ist
+an **jede** zitierte Aussage zu stellen, auch an einen Satz der Baseline"*. Und
+[slice-149](../done/slice-149-baseline-v5120-delta-audit.md) hatte sie mir
+vorgelegt: als Delta-Punkt 4 des `v5.12.0`-Audits, mit slice-147 ausdrücklich
+als Träger der Feedforward-Hälfte. Die Quelle lag in einem geschlossenen
+Artefakt und wurde für nicht existent erklärt.
+
+**Die Änderung bleibt, die Begründung ist eine andere.** Sie steht nicht, weil
+die Regel fehlte, sondern weil der Kanon **zwei Quadranten** verlangt
+(`modul-09-implementierung.md`: *„Jede Hard Rule liegt in zwei Quadranten"*) und
+die verkörperte Form der Ort ist, den ein Implementer liest. Damit ist der
+Anker nach dem Kriterium von
+[slice-131](../done/slice-131-reviewer-skill-waisen.md) auch **keine Waise**,
+sondern ein *„buchstabiert eine gerankte Fundstelle aus"* — dessen Zensus
+akzeptiert die vendorte Baseline mehrfach als gültige Fundstelle. Der §5-Absatz
+trägt den Kanon-Zeiger, wie §3.7 es vorführt.
 
 **Die Kategorie ist begründet, nicht abgeschrieben.** MEDIUM, und zwar aus
 demselben Grund wie `BEO-009`(b): die Quelle ist echt, überdehnt ist nur ihre
@@ -151,17 +178,39 @@ Modul `citations` vergleicht den normalisierten Zitattext als
 Wortlaut-Drift und die **Tilgung ohne Auslassungszeichen** — ein gespleißtes
 Zitat ist kein zusammenhängender Teilstring. Es findet **nicht**, was dieser
 Slice behandelt: ein **wörtlich korrektes** Zitat, das eine Aussage stützen
-soll, die es nicht trägt. Dazu zwei benannte Grenzen: Zitate unter **16**
-normalisierten Zeichen prüft es gar nicht, und ein Verweis **ohne** Zitat (eine
-`MR-`Kennung im Fließtext) ist überhaupt kein Gegenstand. Hinzu kommt, dass das
-Modul heute nicht aktivierbar ist
+soll, die es nicht trägt. Dazu drei benannte Grenzen, die größte zuerst: es
+prüft **nur per Direktive ausgezeichnete** Zitate — *„kein Prosa- oder
+Voll-Scan"* —, ein wörtliches Zitat **ohne** `d-check:cite` ist damit der
+Normalfall im Bestand und überhaupt kein Gegenstand. Ebenso ein Verweis ohne
+Zitat. Und Zitate unter **16** normalisierten Zeichen prüft es gar nicht. Hinzu
+kommt, dass das Modul heute nicht aktivierbar ist
 ([slice-152](../next/slice-152-citations-scharfschalten.md)).
 
+**Ein Widerspruch im eigenen Register, gemeldet statt übergangen.** Zwei Zeilen
+über `BEO-012` steht [`BEO-017`](../observations.md) in derselben Lage — der
+Kanon trägt die Regel — und zieht den **umgekehrten** Schluss: *„Darum hier
+keine eigene Regelzeile: sie zu duplizieren verstieße gegen `AGENTS.md` §1."*
+Beide können nicht gelten. Aufgelöst zugunsten der Zwei-Quadranten-Pflicht:
+`AGENTS.md` §1 verbietet **Duplikation ohne Zeiger**, nicht die verkörperte
+Form — §3.7 führt genau diese Bauform vor (Regel plus `Kanon:`-Zeiger).
+`BEO-017`s Zeile ist damit die zu enge; sie gehört beim nächsten Anfassen
+nachgezogen, nicht von hier aus umgeschrieben.
+
+**Und ein zweiter Widerspruch, an derselben Stelle entstanden.** Der Kanon
+verlangt für eine Steering-Loop-Hard-Rule den Herkunfts-Anker
+`(seit slice-<NNN>)`, wenn keine Welle läuft;
+[`MR-045`](../../../../harness/conventions.md#mr-045) — heute geschrieben —
+verbietet Slice-Verweise in `AGENTS.md` so breit, dass er ihn miterfasste. Die
+höherrangige Quelle ist der Kanon; aufgelöst als
+[`MR-050`](../../../../harness/conventions.md#mr-050), nicht durch einen Edit am
+Vorgänger.
+
 **Was der Slice nicht behauptet:** dass die Regel greift. Alle vier Instanzen
-entstanden, während die Klasse im Beobachtungs-Register stand, und die vierte
-in einem Dokument, dessen Gegenstand diese Klasse **ist**. Der Unterschied ist
-jetzt, dass die Regel an einer Stelle steht, die jeder Lauf liest — nicht, dass
-sie dadurch schwerer zu brechen wäre.
+entstanden, während die Klasse im Beobachtungs-Register stand, die vierte in
+einem Dokument über diese Klasse — **und die fünfte in diesem Slice selbst**.
+Sie gehört an den Zähler, mit slice-147 als Beleg. Damit hat der Slice den
+einzigen Wirksamkeitsnachweis, den er nicht wollte: der Anker, den er einführt,
+hat ihn gefunden.
 
 **Sensors:** `make gates` (Exit 0, zehn Glieder, 535 Dateien, 0 Befunde). Der
 Reviewer-Skill steht auf `1.11.0`; [`BEO-012`](../observations.md) trägt beide

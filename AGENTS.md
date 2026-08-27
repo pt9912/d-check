@@ -430,9 +430,12 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   Vorlage, nicht eine andere. Ein Zitat sieht aus wie ein Beleg, auch wenn es
   keiner ist; das macht die Klasse beim Schreiben unsichtbar und im Review
   auffindbar. Urteil, kein `grep`; der Reviewer-Skill trägt den Anker dazu.
-  *(Hard Rule aus dem Steering Loop,
-  [Beobachtungs-Register](docs/plan/planning/observations.md) `BEO-012`;
-  Auflösungs-Trigger: permanent.)*
+  Kanon:
+  [`grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz](.harness/baseline/v5.12.0/regelwerk/grundlagen-source-precedence.md)
+  — dort als Frage an **jede** zitierte Aussage, hier als operative Form für den
+  Implementer. *(Hard Rule aus dem Steering Loop,
+  [Beobachtungs-Register](docs/plan/planning/observations.md) `BEO-012`, seit
+  slice-147; Auflösungs-Trigger: permanent.)*
 - `CHANGELOG.md` wird bei nutzersichtbaren Änderungen gepflegt.
 
 ## 6. Minimal Agent Workflow
