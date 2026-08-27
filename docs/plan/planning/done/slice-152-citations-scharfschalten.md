@@ -92,6 +92,15 @@ außerhalb eines Fenced-Blocks.
 Ausgetragen als [slice-158](../done/slice-158-citations-inline-code.md). Dieser
 Slice wartet auf dessen Ergebnis; Schritt 3 bis 5 sind unberührt.
 
+**Nachtrag bei der Closure — beide Mess-Generationen dieses Abschnitts sind
+überholt.** Die zehn Dateien oben und die 72/20/70 hier zählten das
+Direktiv-**Token**, also jede Erwähnung der Zeichenkette. Der Gegenstand ist
+der **Marker**, also ein geöffneter HTML-Kommentar. Mit der Produkt-Lexik
+nachgemessen ([slice-158](../done/slice-158-citations-inline-code.md)):
+**25** Marker-Zeilen in 13 Dateien, davon 24 in Inline-Code, eine im Fence,
+**keine** frei. Die Wegwahl bleibt davon unberührt — die Klasse der betroffenen
+Dateien ist dieselbe —, aber die Zahlen sind es nicht.
+
 ## 2. Vorgehen
 
 1. **Den Bestand zählen**, bevor entschieden wird: wie viele Stellen schreiben
@@ -123,26 +132,48 @@ Slice wartet auf dessen Ergebnis; Schritt 3 bis 5 sind unberührt.
 
 ## 4. Definition of Done
 
-- [ ] Der Bestand der Direktiv-Erwähnungen ist **gezählt**, getrennt nach
+- [x] Der Bestand der Direktiv-Erwähnungen ist **gezählt**, getrennt nach
       Inline-Code und Fenced-Block.
-- [ ] Die Wegwahl ist begründet, mit dem benannten Preis des verworfenen Wegs.
-- [ ] `citations` läuft über den Bestand — Exit und Befundzahl genannt.
-- [ ] Die Zitate aktiver Einträge sind ausgezeichnet, soweit sie den gepinnten
+- [x] Die Wegwahl ist begründet, mit dem benannten Preis des verworfenen Wegs.
+- [x] `citations` läuft über den Bestand — Exit und Befundzahl genannt.
+- [x] Die Zitate aktiver Einträge sind ausgezeichnet, soweit sie den gepinnten
       Stand zitieren; die Ausnahmen sind **benannt**, nicht übergangen.
-- [ ] Ein konstruierter Verstoß meldet `citation-mismatch` mit gelesener
+- [x] Ein konstruierter Verstoß meldet `citation-mismatch` mit gelesener
       Ursache; Rückbau grün.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] `make gates` grün (Exit explizit); unabhängiger Review.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Die Direktive trägt Zeilennummern in den vendorten Baum.** Jeder Bump
   verschiebt sie, und dann bricht die Prüfung — laut, aber sie bricht. Ob das
   Wartungs-Last oder gewollter Alarm ist, gehört entschieden statt erlitten. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang: eingetreten, entschieden.** Gewollter Alarm: er ist genau die
+  vierte Spiegel-Klasse aus [`BEO-008`](../observations.md), die sonst still
+  alterte. Der Preis ist benannt — die Direktive meldet auch dann, wenn nur
+  Zeilennummern gewandert sind —, und der Schritt liegt jetzt in der Prozedur,
+  die den Bump ohnehin beschreibt: [`MR-051`](../../../../harness/conventions.md#mr-051),
+  mit **drei** Fällen, weil der Grund-Code sie unterscheidet.
 - **Fail-closed heißt: ein Fehler in EINER Direktive nimmt den ganzen Lauf
   mit.** Bei einem Gate im inneren Loop ist das eine andere Zumutung als bei
   einem Closure-Gate; die Bindepunkt-Frage gehört mitentschieden. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang: eingetreten, entschieden.** Bindepunkt ist der **innere** Loop
+  (`.d-check.yml`, damit `gates` und `pre-commit`). Tragbar, weil
+  [ADR-0060](../../adr/0060-citations-marker-scan-geteilte-prosa-antwort.md)
+  den Doku-Nebeneffekt entfernt hat. **Die erste Fassung dieser Begründung war
+  zu weit** und behauptete, was übrig bleibe, sei ein Autoren-Fehler an einer
+  gerade geschriebenen Zeile — drei Gegenwege sind belegt: der **Bump** meldet
+  planmäßig, ein **Merge** trägt eine fremde Direktive am Hook vorbei, und
+  `d-check:ignore` greift hier **nicht**. Alle drei stehen jetzt in
+  [`AGENTS.md`](../../../../AGENTS.md) §4, in
+  [`harness/README.md`](../../../../harness/README.md) §Sensors und am
+  `modules`-Eintrag der [`.d-check.yml`](../../../../.d-check.yml).
+- **Die Spiegel der Modulliste sind gate-blind.** Wer ein Modul aufnimmt, ändert
+  still drei weitere Stellen mit. — **Ausgang: eingetreten.** Zwei Spiegel waren
+  gebrochen, und keiner der beiden fiel auf: `FOCUS_DISABLE` ließ `citations` in
+  vier fokussierten Gates mitlaufen, und der Netzlos-Guard blieb grün, weil er
+  eine **Teilmenge** prüft. Als zweiter Beleg von [`BEO-010`](../observations.md)
+  geführt, samt der Schärfung, dass dort nur **eine Richtung einer Hälfte**
+  gebunden ist.
 
 ## 6. Trigger
 
@@ -170,4 +201,83 @@ opt-in-Fähigkeit.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Das elfte Modul läuft. Der Ertrag ist nicht das Scharfschalten, sondern was
+die Prüfung über den eigenen Bestand sagt: von 38 Zitaten in den aktiven
+Konventions-Einträgen waren fünf nicht wörtlich.**
+
+**Die Messung, mit der Produkt-Lexik** (Fence-Automat, absatzweise Spannen
+gleicher Backtick-Länge, Zitate ab 16 Zeichen):
+
+| Klasse | Anzahl |
+|---|---|
+| wörtliche Teilstrings des gepinnten Stands | **10** |
+| Baseline-Zitate mit abweichender Auszeichnung oder Zeichensetzung | **5** |
+| gegen den gepinnten Stand nicht prüfbar (Selbstzitate, Werkzeug-Meldungen, historische Pins, elidierte Zitate) | **23** |
+
+**Ausgezeichnet sind neun** — acht der zehn wörtlichen plus einer nach
+Korrektur. Die zwei übrigen wörtlichen stehen in der Delta-Tabelle von
+[`MR-039`](../../../../harness/conventions.md#mr-039), deren Zeile den **alten
+und den neuen** Wortlaut trägt: die Direktive paart mit dem **ersten** Zitat des
+Absatzes, also mit dem historischen. Mit der heutigen Paarungsregel nicht
+adressierbar; benannt statt weggelassen.
+
+**Die fünf Abweichungen zerfallen in zwei Klassen, und die Grenze ist die
+Richtung — nicht das Datum.** Was die Quelle **hat** und das Zitat weglässt
+(eine Fettung, eine Kursivierung) oder was das Zitat **hinzufügt**, wo die
+Quelle weiterläuft (ein Schluss-Punkt), ist ein **Transkriptions-Fehler**: drei
+Einträge, korrigiert und ausgezeichnet. Was das Zitat an **Hervorhebung
+hinzufügt**, ist ein **Autoren-Akt**: zwei Zitate in einem Eintrag, jetzt
+deklariert statt stillschweigend, und ohne Direktive.
+
+**Die erste Fassung begründete das mit dem Datum — und das war zweifach
+falsch.** Sie sagte, für die vor dem Bump geschriebenen Einträge sei *„am Repo
+nicht entscheidbar"*, ob ungenau transkribiert oder seither gedriftet, weil der
+alte Pin nicht mehr vendored ist. Erstens führt der Bump-Eintrag selbst die
+Delta-Tabelle, und eine der beiden Quelldateien steht **nicht** darunter.
+Zweitens — und das ist der eigentliche Punkt — liegt der **alte Baum in der
+git-Historie**: der Bump entfernt ihn aus dem Arbeitsbaum, nicht aus dem Repo.
+Der Diff zeigt in beiden Quelldateien nur die geänderte Provenienz-URL plus
+eine reine Ergänzung weiter unten. Die zitierten Zeilen sind unverändert. *„Am
+Repo nicht entscheidbar"* war eine Aussage über den **Arbeitsbaum**, ausgegeben
+als Aussage über das **Repo**.
+
+**Zwei Entscheidungen sind getroffen, nicht erlitten** — §5 führt sie mit ihren
+Ausgängen. Kurz: der Bump-Alarm ist gewollt, sein Preis benannt, und der
+Neuanker liegt in [`MR-051`](../../../../harness/conventions.md#mr-051) mit drei
+Fällen; der Bindepunkt ist der innere Loop, und die drei Wege, auf denen dort
+ohne Autoren-Fehler Rot entsteht, stehen im Vertrag statt in der Erinnerung.
+
+**Zwei Spiegel der Modulliste waren gebrochen, und keiner fiel auf.**
+`FOCUS_DISABLE` ließ das neue Modul in vier fokussierten Gates mitlaufen —
+fail-closed, über den ganzen Baum, `adr-check` im `pre-commit`-Hook —, obwohl
+der Kommentar direkt darüber die Kopplung wörtlich benennt. Und der
+Netzlos-Guard im Go-Test blieb **grün**, weil er eine **Teilmenge** prüft: er
+fängt ein entferntes Modul, kein hinzugefügtes ohne Spiegel. Beide nachgezogen;
+[`BEO-010`](../observations.md) steht auf zwei und trägt die Schärfung, dass
+dort nur eine **Richtung** einer Hälfte gebunden ist.
+
+**Eine Form-Sache, die ohne Renderer unsichtbar geblieben wäre.** Die
+Direktiven standen zunächst allein auf einer Zeile. Eine Zeile, die mit dem
+Kommentar-Öffner beginnt, ist nach CommonMark ein HTML-**Block** und
+**unterbricht den Absatz** — mitten im Satz. Sie hängen jetzt am **Ende der
+Vorzeile**; die Paarung bleibt, weil das Modul erst ab der Folgezeile sucht, und
+das ist nachgeprüft.
+
+**Was offen bleibt, benannt.** [`MR-039`](../../../../harness/conventions.md#mr-039)
+§Geltungsbereich nennt auch [`AGENTS.md`](../../../../AGENTS.md),
+[`harness/README.md`](../../../../harness/README.md) und die Skills; §3 dieses
+Slice hat sie ausgeklammert. Dort stehen mindestens zwei wörtliche,
+auszeichenbare Zitate — geschnitten als
+[slice-163](../open/slice-163-zitate-ausserhalb-des-speichers.md), zusammen mit
+dem vorbestehenden Befund, dass die historische Spalte der Delta-Tabelle ihr
+eigenes Zitat nicht wörtlich wiedergibt.
+
+**Sensors:** `make gates` (Exit 0, zehn Glieder, 552 Dateien, 0 Befunde),
+`make test` (Exit 0, Netzlos-Guard auf elf Module), `make adr-check` (Exit 0,
+wieder ohne `citations`), `make fullbuild` (Exit 0, 48 Anforderungen / 0
+Waisen). **Bewusstes Brechen, Ursache gelesen:** ein Wort im ausgezeichneten
+Kanon-Kernsatz verfälscht ⇒ `citation-mismatch` an der Direktiven-Zeile mit dem
+richtigen Ziel und Grund-Code; Rückbau grün. Ein unabhängiger Review ist
+gelaufen; sein Urteil war *„schließbar nach Nacharbeit"*, und seine vierzehn
+Befunde sind eingearbeitet — die zwei HIGH sind die gebrochene Spiegel-Kopplung
+und eine Zahl, die über zwei verschiedene Mengen sprach.
