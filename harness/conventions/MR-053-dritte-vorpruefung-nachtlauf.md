@@ -1,13 +1,16 @@
 # MR-053 — Die Slice-Planung trägt eine dritte Vorprüfung: den Nachtlauf-Stand
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`docs/plan/planning/slice.template.md`](../../.harness/baseline/v5.12.0/templates/docs/plan/planning/slice.template.md)
-  §Vorgelagert — die Vorlage kennt **zwei** Blöcke (Sub-Area-Wahl prüfen,
-  offene Beobachtungen sichten). Dieser Eintrag ergänzt einen dritten. Der
-  Kanon kennt keinen Nachtlauf; er kann ihn nicht vorsehen.
+- **Ersetzt-Baseline-Regel:** keine. Der Kanon kennt **zwei** `Vorgelagert`-Blöcke
+  (Sub-Area-Wahl prüfen, offene Beobachtungen sichten) und **keinen**
+  Nachtlauf — er kann ihn nicht vorsehen. Dieser Eintrag ergänzt einen dritten
+  Block; die Form-Frage tritt die Rangliste an diesen Speicher ab.
 - **Datum:** 2026-08-27
-- **Geltungsbereich:** jeder neue Slice-Plan dieses Repos, §Vorgelagert. Kein
-  Retrofit — die geschlossenen Slices bleiben, wie sie sind.
+- **Geltungsbereich:** jeder Slice-Plan dieses Repos, §Vorgelagert. Der Block
+  entsteht **spätestens bei der Beanspruchung** (`open`→`in-progress` bzw.
+  `next`→`in-progress`) — wie das `**Verantwortlich:**`-Feld; ein Plan in
+  `open/` trägt ihn noch nicht. Kein
+  Retrofit: die geschlossenen Slices bleiben, wie sie sind.
 - **Adaption:** Dieses Repo betreibt einen Nachtlauf über **zwölf** gepinnte
   Fremd-Bestände ([`upstream-drift.yml`](../../.github/workflows/upstream-drift.yml)).
   Er meldet korrekt — und **an niemanden**: der Job fällt rot aus und ist nur
@@ -36,13 +39,22 @@
   **Ausgabe** des Laufs, nicht in seiner Farbe — deshalb verlangt die
   Vorprüfung das Lesen, nicht das Zählen.
 
-  **Kein Benachrichtigungs-Kanal, und der Grund ist gemessen, nicht gescheut:**
-  jeder ohne Fremd-Dienst verfügbare Kanal hängt entweder an den
-  **Watch-Einstellungen einzelner Nutzer** — das ist keine Repo-Zusage, sondern
-  eine Konto-Einstellung — oder erzeugt eine **neue Artefakt-Klasse** (ein
-  Issue je rotem Lauf) mit eigenem Rausch-Problem und eigener Pflege. Beides
-  ist teurer als der Lese-Schritt und löst das Kernproblem nicht: dass jemand
-  hinsehen muss.
+  **Kein Benachrichtigungs-Kanal — und das ist eine Erwägung, keine Messung.**
+  Gefahren ist keiner; behauptet wird deshalb nichts über ihre Zustellung.
+  **Drei** Kandidaten sind betrachtet, und die Liste ist nicht vollständig:
+
+  | Kandidat | Warum nicht |
+  |---|---|
+  | Actions-Benachrichtigung | hängt an der **Watch-Einstellung** eines Kontos, nicht am Repo. In einem Ein-Personen-Repo ist dieser Konto-Inhaber derselbe wie der Adressat oben — das Argument ist formal richtig und praktisch schwach |
+  | Issue je rotem Lauf | neue Artefakt-Klasse mit eigenem Rausch- und Pflege-Problem. **Eine mildere Form — ein einziges, fortgeschriebenes Issue — ist nicht betrachtet worden** |
+  | Status-Badge im `README` | keine Konto-Einstellung, keine neue Artefakt-Klasse, kein Geheimnis — aber sichtbar nur auf der **gerenderten** GitHub-Seite, nicht im lokalen Lauf, in dem die Slice-Planung stattfindet |
+
+  **Ausdrücklich keine Kandidaten:** `CODEOWNERS` und Repository-Rulesets
+  steuern PR-Review-Zuweisung, keine Actions-Ausgänge.
+
+  **Keiner der drei löst das Kernproblem** — dass jemand hinsehen muss — besser
+  als ein Lese-Schritt an einem Moment, den es schon gibt. Das ist der Grund;
+  „gemessen" wäre er nicht.
 
   **Grenze, benannt statt wegerklärt:** greift die Vorprüfung nur bei einer
   Slice-Planung, dann liest in einer **Pause** niemand. Das ist der Rest, den

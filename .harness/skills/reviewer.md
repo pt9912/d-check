@@ -20,7 +20,7 @@ die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
 
 ## Repo-spezifische Anker pro Kategorie
 
-- **HIGH** (blockiert Merge): Stilles-Grün-Pfad in einem Gate oder   <!-- d-check:cite AGENTS.md:327-328 -->
+- **HIGH** (blockiert Merge): Stilles-Grün-Pfad in einem Gate oder   <!-- d-check:cite AGENTS.md:328-329 -->
   Gate-Skript (Harness-Lüge — [`AGENTS.md`](../../AGENTS.md) §4: *„Halluzinierte
   Gates sind die häufigste Form von Harness-Lüge"*); Korrektheitsfehler in
   Kern-Modulen mit falschen Befunden/Exit-Codes (Baseline

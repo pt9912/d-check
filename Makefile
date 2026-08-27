@@ -213,7 +213,6 @@ image-digest-axis = @set -- $$(awk -v p='$(1)' '$$1=="FROM" && index($$2,p)==1 {
 	  ADVICE='Dockerfile-Digest der Stage nachziehen (ADR-0011); make versions zeigt den Stand.' \
 	  bash tools/harness/pin-freshness.sh --digest "$$1"
 
-
 runtime-base-digest: ## Neueren Digest fuer denselben Runtime-Basis-Tag melden (Netz, NICHT in gates, fail-open).
 	$(call image-digest-axis,gcr.io/distroless)
 
@@ -266,7 +265,6 @@ a-check-digest: ## Neueren Digest fuer denselben a-check-Tag melden (Netz, NICHT
 	  PINNED="$$(printf '%s' '$(A_CHECK_IMAGE)' | sed 's/.*@//')" \
 	  ADVICE='Digest in a-check.mk nachziehen (ADR-0011).' \
 	  bash tools/harness/pin-freshness.sh --digest 'ghcr.io/pt9912/a-check:$(A_CHECK_VERSION)'
-
 
 # Lese-Schritt, kein Gate: er sagt, ob der Nachtlauf gelesen werden muss, und
 # haengt an dem Moment, an dem ohnehin jemand hinsieht (Slice-Planung, dritte

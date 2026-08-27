@@ -102,10 +102,14 @@ Auftraggeber-Entscheid ist.
 - **Nachtlauf-Stand lesen** (`make nightly-state`, dritte Vorprüfung nach
   [`MR-053`](../../../../harness/conventions.md#mr-053) — die dieser Slice
   einführt und deshalb auf sich selbst anwendet): **ROT**, jüngster Lauf
-  2026-08-27T10:49:23Z. **Gelesen, nicht weggeklickt:** er lief um 10:49, die
-  sechs Pin-Hebungen aus [slice-161](../done/slice-161-sechs-pins-heben.md)
-  landeten um 12:46 — die Meldung ist der Stand **davor** und durch jenen Slice
-  bereits behoben. Alle zwölf Achsen melden seither einzeln `ok`.
+  `2026-08-27T10:49:23Z`. **Gelesen, nicht weggeklickt** — und der Beleg ist
+  der `head_sha`, nicht die Uhrzeit: der Lauf trägt `48cf132`, und der
+  Bump-Commit der sechs Pin-Hebungen aus
+  [slice-161](../done/slice-161-sechs-pins-heben.md) ist dessen **direkter
+  Nachfolger** (`git rev-list --count 48cf132..b8e5cc1` = 1), lag zum Dispatch
+  also noch nicht auf `origin/main`. Der Lauf hat die Hebungen nicht gesehen.
+  Alle zwölf Achsen melden seither einzeln `ok`; **dass der nächste Lauf grün
+  ausfällt, ist damit erwartet und nicht gemessen.**
 
 Slice-ID: slice-164. Betroffene IDs: — (Harness-Betrieb; keine Anforderung).
 Module: CI, Harness-Prozess. Gates: `make gates`.
