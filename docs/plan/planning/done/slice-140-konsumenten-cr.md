@@ -233,7 +233,7 @@ Datums-Verwechslung, die am Kopf derselben Datei längst berichtigt war.
 **Register:** [`BEO-012`](../observations.md) auf Zähler **4**,
 [`BEO-011`](../observations.md) auf Zähler **4** (Ausprägung (c), erstmals aus
 einem Risiko-Abschnitt). Für den fehlenden Reviewer-Anker zu `BEO-012` liegt
-jetzt [slice-147](../in-progress/slice-147-reviewer-anker-reichweite.md) in `open/` —
+jetzt [slice-147](../done/slice-147-reviewer-anker-reichweite.md) in `open/` —
 die Klasse hat viermal zugeschlagen und wird jedes Mal vom zweiten Leser
 gefunden, nie vom Schreibenden. Das ist eine Feedforward-Lücke, und die gehört
 nicht in eine Closure-Notiz, sondern in eine Datei.
