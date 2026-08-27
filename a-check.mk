@@ -5,6 +5,19 @@
 # dabei das Fragment per --print-mk neu erzeugen (das Makefile-Target
 # arch-check delegiert hierher und bleibt unberührt).
 #
+# ZWEI NEUERUNGEN DES v0.17.0-FRAGMENTS SIND BEWUSST NICHT ADOPTIERT, damit die
+# Anweisung oben nicht als unbelegte Zusage dasteht:
+#   DOCKER ?= docker   Eine Runtime-Indirektion zahlt sich nur repo-weit aus;
+#                      die uebrigen Rezepte dieses Repos rufen `docker` hart.
+#                      Sie hier allein einzufuehren erzeugte genau die
+#                      Halb-und-halb-Lage, gegen die sie gebaut ist — und
+#                      Docker ist in AGENTS.md §3.1 als Voraussetzung gesetzt,
+#                      nicht als Wahl.
+#   a-check-graph      Ein neues Target ist gate-consistency-pflichtig (AGENTS.md
+#                      §4 und harness/README.md §Sensors) und damit ein eigener
+#                      Entscheid, kein Nebeneffekt einer Pin-Hebung.
+# Beides bleibt ein benannter Kandidat, kein Versehen.
+#
 # A_CHECK_VERSION steht als eigene Variable, nicht als Prosa im Kommentar:
 # die Version IST der Vergleichsgegenstand der Frische-Achse, und was nur im
 # Kommentar steht, kann kein Sensor lesen. Die Referenz fuehrt beides — Tag

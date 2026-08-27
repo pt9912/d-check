@@ -107,8 +107,11 @@ case "$mode" in
       *)                upstream="" ;;   # kein Tag in der Endstation ⇒ SKIP
     esac
     # BEIDE Seiten normalisieren, symmetrisch (siehe Kopf). Unsere Pins fuehren
-    # das `v` uneinheitlich; ohne das verglichen wir `1.167.0` gegen `v1.167.0`
-    # und meldeten fuer immer VERALTET.
+    # das `v` uneinheitlich — ein Pin ohne, sein Upstream-Tag mit. Ohne die
+    # Strippung verglichen wir die zwei Schreibweisen derselben Version und
+    # meldeten fuer immer VERALTET. Ein konkretes Beispiel steht hier bewusst
+    # NICHT: es waere ein vierter Pin-Spiegel (BEO-008) und driftete beim
+    # naechsten Bump still weg.
     upstream="${upstream#v}"
     pinned="${pinned#v}"
     ;;
