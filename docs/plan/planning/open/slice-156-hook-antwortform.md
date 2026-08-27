@@ -34,6 +34,20 @@ jedem JSON. Diesen Kanal gibt es nicht mehr — **jeder** Block-Pfad läuft jetz
 über die veraltete Antwortform. Fällt die Abbildung weg, fällt der Wächter
 still aus: er läuft, er urteilt, und niemand hört ihn.
 
+**Der Fall ist eingetreten, nicht befürchtet — gemessen am 2026-08-27.** Ein
+`pip --version` lief über das Bash-Werkzeug durch. Dieselbe Eingabe, direkt
+gegen den Wächter gefahren, wird geblockt; die Ausgabe ist **byte-identisch** zu
+der Fassung, die früher am selben Tag noch durchgesetzt wurde — beim Autor wie
+beim Review-Sub-Agenten, beide mit genau diesem `reason`-Text. Der Wächter
+urteilt also richtig, und niemand handelt danach.
+
+**Was daraus NICHT folgt:** *warum*. Die Antwortform ist der wahrscheinlichste
+Grund, weil sie die einzige deklariert veraltete Stelle im Pfad ist — bewiesen
+ist das nicht. Ein Wechsel der Form, der die Ursache nicht trifft, sähe
+hinterher genauso aus wie einer, der sie trifft. Deshalb steht die Messung in
+Schritt 1 vor dem Bauen, und deshalb ist der zweite Kanal aus Schritt 3 keine
+Kür.
+
 **Getrennt gehalten wird die Prüfung von der Antwortform.** Dieser Slice fasst
 die Prüflogik nicht an.
 

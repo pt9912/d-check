@@ -97,6 +97,15 @@ Wo ein Skript nötig ist, läuft es als eigene, digest-gepinnte Dockerfile-Stage
 
 **Begründung:** Toolchain-Reproduzierbarkeit + Supply-Chain-Defense.
 
+**Die Regel gilt unabhängig von ihrer Durchsetzung — und das ist heute nicht
+theoretisch.** Am 2026-08-27 gemessen: der Wächter urteilt korrekt (direkt gegen
+echtes Hook-JSON geprüft, Ausgabe byte-identisch zur Vorfassung), und ein
+blockiertes Kommando lief über das Werkzeug **trotzdem durch**. Früher am selben
+Tag wurde derselbe Wächter durchgesetzt. Die Ursache liegt in der Antwortform,
+nicht in der Prüfung ([slice-156](docs/plan/planning/open/slice-156-hook-antwortform.md));
+bis dahin ist der Stolperdraht **unzuverlässig gespannt**. Wer sich auf ihn
+verlässt, verlässt sich auf nichts.
+
 **Durchsetzung:** ein Tool-Call-Wächter
 ([`.claude/hooks/pretooluse-command-guard.sh`](.claude/hooks/pretooluse-command-guard.sh))
 prüft die Befehlsposition jedes Segments und Sub-Shell-Strings rekursiv. Er ist
