@@ -59,7 +59,7 @@ ist damit vor jedem Code zu entscheiden — die Spec sticht den Plan, und wer si
 ablösen will, braucht eine ADR.
 
 **Das ist dieselbe Klasse wie
-[slice-158](../open/slice-158-citations-inline-code.md)**, nur mit umgekehrtem
+[slice-158](../in-progress/slice-158-citations-inline-code.md)**, nur mit umgekehrtem
 Vorzeichen: dort bricht ein Modul an seiner eigenen Doku laut ab, hier schweigt
 es lautlos. Die laute Variante fällt beim ersten Lauf auf; diese nicht.
 

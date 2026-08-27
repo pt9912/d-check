@@ -144,7 +144,7 @@ Marker heute wirklich etwas tut. Die übrigen 185 schweigen über nichts — ode
 über etwas, das niemand geprüft hat.
 
 **Das ist dieselbe Klasse wie
-[slice-158](../open/slice-158-citations-inline-code.md), mit umgekehrtem
+[slice-158](../in-progress/slice-158-citations-inline-code.md), mit umgekehrtem
 Vorzeichen:** ein Modul, das seine eigene Dokumentation liest. Dort bricht es
 laut ab und fällt beim ersten Lauf auf; hier schweigt es lautlos und ist seit
 der Einführung des Ventils unbemerkt. Ausgetragen als

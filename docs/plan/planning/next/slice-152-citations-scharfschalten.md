@@ -85,7 +85,7 @@ außerhalb eines Fenced-Blocks.
   Module)."* Das Verhalten ist spezifiziert, nicht abweichend — die Änderung
   braucht Lastenheft, Spezifikation und ADR.
 
-Ausgetragen als [slice-158](../open/slice-158-citations-inline-code.md). Dieser
+Ausgetragen als [slice-158](../in-progress/slice-158-citations-inline-code.md). Dieser
 Slice wartet auf dessen Ergebnis; Schritt 3 bis 5 sind unberührt.
 
 ## 2. Vorgehen
