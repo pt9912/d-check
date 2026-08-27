@@ -32,12 +32,31 @@ func repoAt(t *testing.T) (string, *gogit.Worktree) {
 	return dir, wt
 }
 
+// put schreibt eine Fixture-Datei und LEHNT eine gleich lange Neuschreibung
+// derselben Datei AB.
+//
+// Grund: die Änderungserkennung von go-git ist stat-basiert. Schreibt ein Test
+// dieselbe Datei zweimal mit gleich langem Inhalt in einem Zug, sieht der
+// zweite `Add`/`Commit` den Baum als sauber — gemessen an der Meldung
+// „cannot create empty commit: clean working tree". Der Test wird damit
+// zeitabhängig, und ein Gate, das gelegentlich ohne Grund rot wird, erodiert
+// die Zusage „grün heißt geprüft".
+//
+// Die Prüfung steht hier statt in einem eigenen Test, weil sie **beim
+// Schreiben** greifen muss: ein Test, der auf die Zeitkollision wartet, ist
+// selbst zeitabhängig und meldet die Klasse nur manchmal.
 func put(t *testing.T, dir, name, content string) {
 	t.Helper()
-	if err := os.MkdirAll(filepath.Dir(filepath.Join(dir, name)), 0o755); err != nil {
+	full := filepath.Join(dir, name)
+	if old, err := os.ReadFile(full); err == nil && len(old) == len(content) {
+		t.Fatalf("Fixture %q wird mit gleich langem Inhalt neu geschrieben (%d Byte): "+
+			"die stat-basierte Änderungserkennung kann das übersehen. "+
+			"Länge unterscheiden.", name, len(content))
+	}
+	if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(dir, name), []byte(content), 0o644); err != nil {
+	if err := os.WriteFile(full, []byte(content), 0o644); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -72,7 +91,7 @@ func TestRangeAndFileAt(t *testing.T) {
 	put(t, dir, "sub/gone.md", "alt\n")
 	first := snapshot(t, wt, "first")
 
-	put(t, dir, "keep.md", "v2\n")
+	put(t, dir, "keep.md", "fassung zwei\n")
 	if _, err := wt.Remove("sub/gone.md"); err != nil {
 		t.Fatal(err)
 	}
@@ -114,7 +133,7 @@ func TestStaged(t *testing.T) {
 	dir, wt := repoAt(t)
 	put(t, dir, "adr.md", "Accepted A\n")
 	snapshot(t, wt, "first")
-	put(t, dir, "adr.md", "Accepted B\n")
+	put(t, dir, "adr.md", "Accepted B, zweite Fassung\n")
 	if _, err := wt.Add("adr.md"); err != nil {
 		t.Fatal(err)
 	}
@@ -130,7 +149,7 @@ func TestStaged(t *testing.T) {
 	if got, ok := statusOf(changes, "adr.md"); !ok || got != driven.VCSModified {
 		t.Fatalf("staged: adr.md Modified erwartet, got %v", changes)
 	}
-	if b, ok, err := a.FileAt(driven.IndexRef, "adr.md"); err != nil || !ok || string(b) != "Accepted B\n" {
+	if b, ok, err := a.FileAt(driven.IndexRef, "adr.md"); err != nil || !ok || string(b) != "Accepted B, zweite Fassung\n" {
 		t.Fatalf("FileAt(Index) = %q,%v,%v", b, ok, err)
 	}
 	if _, ok, _ := a.FileAt(driven.IndexRef, "weg.md"); ok {
@@ -166,9 +185,9 @@ func TestCommitMessages(t *testing.T) {
 	dir, wt := repoAt(t)
 	put(t, dir, "f.md", "1\n")
 	base := snapshot(t, wt, "A: feat ADR-0001")
-	put(t, dir, "f.md", "2\n")
+	put(t, dir, "f.md", "zwei\n")
 	snapshot(t, wt, "B: chore ohne id")
-	put(t, dir, "f.md", "3\n")
+	put(t, dir, "f.md", "drei drei\n")
 	head := snapshot(t, wt, "C: docs slice-056")
 
 	a, err := gitadapter.Open(dir)
@@ -200,9 +219,9 @@ func TestCommitMessagesSkipsMerges(t *testing.T) {
 	dir, wt := repoAt(t)
 	put(t, dir, "f.md", "1\n")
 	base := snapshot(t, wt, "A: ADR-0001")
-	put(t, dir, "f.md", "2\n")
+	put(t, dir, "f.md", "zwei\n")
 	b := snapshot(t, wt, "B: slice-056")
-	put(t, dir, "f.md", "3\n")
+	put(t, dir, "f.md", "drei drei\n")
 	if err := wt.AddWithOptions(&gogit.AddOptions{All: true}); err != nil {
 		t.Fatal(err)
 	}
