@@ -422,6 +422,17 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   Anker dazu. *(Hard Rule aus dem Steering Loop,
   [Beobachtungs-Register](docs/plan/planning/observations.md) `BEO-009`, seit
   welle-82; Auflösungs-Trigger: permanent.)*
+- Eine zitierte Quelle trägt **nur, was in ihrem Geltungsbereich steht**. Vor
+  jedem Verweis das **Feld** lesen, nicht den Titel: bei `MR-<NNN>` den
+  `Geltungsbereich` **und** `Ersetzt-Baseline-Regel`, bei einer Kanon-Stelle den
+  Absatz, bei einer ADR die Unterscheidung **Akt gegen stehendes Verbot**. Und
+  die **direkteste** Quelle wählen — für eine Regel dieser Datei ist das ihre
+  Vorlage, nicht eine andere. Ein Zitat sieht aus wie ein Beleg, auch wenn es
+  keiner ist; das macht die Klasse beim Schreiben unsichtbar und im Review
+  auffindbar. Urteil, kein `grep`; der Reviewer-Skill trägt den Anker dazu.
+  *(Hard Rule aus dem Steering Loop,
+  [Beobachtungs-Register](docs/plan/planning/observations.md) `BEO-012`;
+  Auflösungs-Trigger: permanent.)*
 - `CHANGELOG.md` wird bei nutzersichtbaren Änderungen gepflegt.
 
 ## 6. Minimal Agent Workflow
