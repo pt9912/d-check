@@ -87,9 +87,12 @@ Go-Toolchain läuft in Docker (Multi-Stage gemäß
 Docker und die POSIX-Standardwerkzeuge, die die Gate-Skripte rufen
 (coreutils, findutils, `grep`, `awk`) — als **Klasse**, nicht als Liste.
 
-**Auch keine Host-Skript-Interpreter** (`python`, `perl`, `ruby`, `node`, …).
-Wo ein Skript nötig ist, läuft es als eigene, digest-gepinnte Dockerfile-Stage
-über ein `make`-Target ([`MR-040`](harness/conventions.md#mr-040)).
+**Auch keine Host-Skript-Interpreter** (`python`, `perl`, `ruby`, `node`, `uv`, …)
+([`MR-040`](harness/conventions.md#mr-040)). Datei-Änderungen macht das Werkzeug
+ohne Shell, Messungen macht das Produkt, und was ein Gate-Skript braucht, tragen
+`bash` und die POSIX-Werkzeuge. Ein Fall, der darüber hinausgeht, ist ein
+**Entscheid** — keine vierte Toolchain nebenbei
+([`MR-046`](harness/conventions.md#mr-046)).
 
 **Falsch:** `go build ./…`, `go test ./…`, `pip install …`, `python3 - <<EOF`
 **Richtig:** `make gates`

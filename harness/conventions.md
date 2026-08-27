@@ -123,6 +123,7 @@ ob der Eintrag ihn betrifft.
 | [MR-043](conventions/MR-043-einstieg-importiert-agents.md) <a id="mr-043--der-werkzeug-einstieg-importiert-agentsmd-statt-auf-ihn-zu-verweisen"></a><a id="mr-043"></a> | `CLAUDE.md` importiert `AGENTS.md` (`@`-Syntax), statt darauf zu verweisen | `CLAUDE.md` | keine — Form-Frage, vom Kanon an den Konventionsspeicher abgetreten |
 | [MR-044](conventions/MR-044-guard-zwei-kanaele.md) <a id="mr-044--der-wächter-blockt-über-zwei-kanäle-und-die-antwortform-ist-die-aktuelle-schärft-mr-042"></a><a id="mr-044"></a> | Wächter blockt über zwei Kanäle; Antwortform aktuell (schärft [`MR-042`](conventions.md#mr-042)) | `.claude/hooks/pretooluse-command-guard.sh`, `tools/harness/guard-probe.sh` | keine — Form-Frage, vom Kanon an den Konventionsspeicher abgetreten |
 | [MR-045](conventions/MR-045-slice-verweise-nicht-im-briefing.md) <a id="mr-045--agentsmd-und-harnessreadmemd-tragen-keine-slice-verweise-schärft-mr-013"></a><a id="mr-045"></a> | Briefing und Harness-Einstieg ohne Slice-Verweise (schärft [`MR-013`](conventions.md#mr-013)) | `AGENTS.md`, `harness/README.md` | keine — folgt aus der Rollenzuweisung, steht dort aber nicht ausdrücklich |
+| [MR-046](conventions/MR-046-keine-skript-stage.md) <a id="mr-046--es-gibt-keine-skript-stage-weil-kein-fall-sie-verlangt-schärft-mr-040"></a><a id="mr-046"></a> | Keine Skript-Stage; §3.1 verweist nicht mehr auf eine (schärft [`MR-040`](conventions.md#mr-040)) | `AGENTS.md` §3.1, `Dockerfile` | keine — eine Regel zeigt auf Vorhandenes, nicht auf Vorgesehenes |
 
 ### Aufgelöste Adaptionen
 
