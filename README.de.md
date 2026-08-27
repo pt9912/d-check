@@ -218,7 +218,10 @@ Lastenhefts, und beide werden gemessen, nicht behauptet:
 ## Nutzung
 
 Verteilung als Container-Image über GHCR
-([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
+([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)),
+gespiegelt nach Docker Hub als `pt9912/d-check` — dasselbe Bild, gleicher
+Manifest-Digest, kein zweiter Bau
+([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
 docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0

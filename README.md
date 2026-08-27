@@ -215,7 +215,10 @@ spec, and both are measured, not asserted:
 ## Usage
 
 Distributed as a container image via GHCR
-([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)):
+([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)),
+mirrored to Docker Hub as `pt9912/d-check` — the same image, same manifest
+digest, not a second build
+([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
 docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0

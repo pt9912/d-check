@@ -142,7 +142,91 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
         id: push
 
+      # Docker-Hub-Spiegel (DC-FA-DIST-002, ADR-0064). Zusage ist DERSELBE
+      # Digest, nicht ein zweiter Bau — deshalb wird dasselbe lokale Bild
+      # getaggt, das schon nach GHCR ging. Fail-closed: kein
+      # continue-on-error und kein Secret-Sondierungs-Schritt; fehlt das
+      # Token, ist das Release rot. Der Spiegel steht NACH dem GHCR-Push,
+      # damit die Quelle nie hinter dem Spiegel zurueckliegt.
+      - name: Log in to Docker Hub
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Mirror to Docker Hub
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+          IS_STABLE: ${{ steps.tag.outputs.is_stable }}
+          DOCKERHUB_IMAGE: ${{ vars.DOCKERHUB_IMAGE || 'pt9912/d-check' }}
+          GHCR_DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          set -euo pipefail
+          # Der GHCR-Stand liegt zu diesem Zeitpunkt bereits oeffentlich vor.
+          # Jeder Abbruch unter dieser Zeile sagt das ausdruecklich, damit der
+          # Teil-Zustand nicht geraten werden muss (DC-FA-DIST-002 Negative).
+          trap 'echo "::error::Docker-Hub-Spiegel fehlgeschlagen. BEREITS VEROEFFENTLICHT: ${GHCR_DIGEST} auf ghcr.io — das Release ist unvollstaendig, der GHCR-Stand aber gueltig."' ERR
+
+          docker tag "$LOCAL_IMAGE:latest" "$DOCKERHUB_IMAGE:v$VERSION"
+          docker push "$DOCKERHUB_IMAGE:v$VERSION"
+          if [[ "$IS_STABLE" == "true" ]]; then
+            docker tag "$LOCAL_IMAGE:latest" "$DOCKERHUB_IMAGE:latest"
+            docker push "$DOCKERHUB_IMAGE:latest"
+          fi
+
+          # Die Gleichheit wird GEMESSEN, nicht angenommen (ADR-0064 Punkt 2).
+          # RepoDigests fuehrt je Referenz einen Eintrag; gesucht ist der zum
+          # Docker-Hub-Namen, nicht "der erste".
+          HUB_DIGEST=$(docker image inspect --format '{{ range .RepoDigests }}{{ println . }}{{ end }}' \
+            "$DOCKERHUB_IMAGE:v$VERSION" | grep "^${DOCKERHUB_IMAGE}@" | head -1)
+          HUB_SHA="${HUB_DIGEST#*@}"
+          GHCR_SHA="${GHCR_DIGEST#*@}"
+          if [[ -z "$HUB_SHA" || "$HUB_SHA" != "$GHCR_SHA" ]]; then
+            echo "::error::Digest-Ungleichheit: ghcr.io=[$GHCR_SHA] docker.io=[$HUB_SHA]. DC-FA-DIST-002 sagt Gleichheit zu; BEREITS VEROEFFENTLICHT ist der GHCR-Stand."
+            exit 1
+          fi
+          echo "Spiegel-Digest stimmt ueberein: $HUB_SHA"
+          {
+            echo ""
+            echo "Gespiegelt nach Docker Hub — gleicher Digest:"
+            echo ""
+            echo '```'
+            echo "$DOCKERHUB_IMAGE@$HUB_SHA"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
       # GitHub-Release mit dem Digest-Pin in den Notes — der Pin ist
+
+      # Hub-Darstellung aus Repo-Dateien (packaging/dockerhub/). Bewusst NICHT
+      # fail-closed, anders als der Spiegel darueber: das Bild ist die Zusage
+      # (DC-FA-DIST-002), der Beschreibungstext ist Praesentation. Ein Release
+      # rot zu machen, weil ein Kurztext nicht gesetzt werden konnte,
+      # verwechselte beides.
+      - name: Prepare Docker Hub metadata
+        id: hubmeta
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          set -euo pipefail
+          SRC="packaging/dockerhub/description.txt"
+          BYTES=$(wc -c < "$SRC")
+          # Fail-fast statt stillem Abschneiden durch die Action.
+          if [[ "$BYTES" -gt 100 ]]; then
+            echo "::error::$SRC ist $BYTES Bytes gross, Docker Hub erlaubt 100."
+            exit 1
+          fi
+          echo "description=$(cat "$SRC")" >> "$GITHUB_OUTPUT"
+          sed "s/__VERSION__/v$VERSION/g" packaging/dockerhub/overview.md > /tmp/dockerhub-overview.md
+
+      - name: Sync Docker Hub description
+        continue-on-error: true
+        uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ vars.DOCKERHUB_IMAGE || 'pt9912/d-check' }}
+          short-description: ${{ steps.hubmeta.outputs.description }}
+          readme-filepath: /tmp/dockerhub-overview.md
       # die Referenz, die Pilot-Repos (slice-012) konsumieren.
       - name: Create GitHub Release
         env:

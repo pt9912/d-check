@@ -95,6 +95,26 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
 Der Digest-Pin in Handbuch §2 entsteht **nach** dem Tag (er existiert erst nach
 dem GHCR-Push) als Folge-Commit.
 
+
+## Vorbedingungen (einmalig, im Konto des Betreibers)
+
+Der Docker-Hub-Spiegel ist **fail-closed**
+([`DC-FA-DIST-002`](../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel),
+[ADR-0064](../plan/adr/0064-dockerhub-spiegel-fail-closed.md)) — fehlt eine
+dieser Vorbedingungen, **schlägt jedes Release fehl**, und zwar erst *nach* dem
+GHCR-Push. Der Abbruch nennt dann den bereits veröffentlichten GHCR-Digest.
+
+- **Repository** `pt9912/d-check` auf Docker Hub. Es entsteht beim ersten Push;
+  Sichtbarkeit (öffentlich) und Beschreibung setzt der Betreiber dort.
+- **Zwei Secrets** im GitHub-Repository: `DOCKERHUB_USERNAME` und
+  `DOCKERHUB_TOKEN` (ein Access-Token mit Schreibrecht, **nicht** das
+  Konto-Passwort).
+- Optional die Repository-Variable `DOCKERHUB_IMAGE`, falls ein Fork woandershin
+  spiegeln soll; ohne sie gilt `pt9912/d-check`.
+
+**Die Hub-Beschreibungsseite pflegt niemand automatisch** — sie driftet vom Repo
+weg. Das ist eine benannte, nicht gedeckte Fläche
+([ADR-0064](../plan/adr/0064-dockerhub-spiegel-fail-closed.md) §Konsequenzen).
 ## Release auslösen
 
 ```sh
@@ -113,7 +133,15 @@ Die Pipeline (`release.yml`) läuft bei jedem `v*`-Tag-Push:
 4. **Push** nach `ghcr.io/pt9912/d-check:v<version>`; `:latest`
    **nur** für stabile Releases (kein Prerelease-Suffix) —
    [ADR-0014](../plan/adr/0014-latest-tag-fuer-stabile-releases.md).
-5. **Digest-Pin** landet im Job-Summary und in den Notes des
+5. **Docker-Hub-Spiegel** — dasselbe lokale Bild wird nach
+   `docker.io/pt9912/d-check` getaggt und gepusht, dieselbe Tag-Disziplin
+   wie Schritt 4. Danach vergleicht der Schritt die **Manifest-Digests**
+   beider Registries und bricht bei Ungleichheit ab
+   ([`DC-FA-DIST-002`](../../spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)).
+   **Fail-closed:** jeder Fehlschlag hier macht das Release rot, obwohl
+   GHCR bereits trägt — die Meldung nennt deshalb den veröffentlichten
+   GHCR-Digest.
+6. **Digest-Pin** landet im Job-Summary und in den Notes des
    automatisch angelegten GitHub-Releases. Existiert das Release zum
    Tag bereits (z. B. Workflow-Re-Run), wird es wiederverwendet — der
    aktuelle Digest steht dann nur im Job-Summary.
