@@ -7,20 +7,38 @@ cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 G=.claude/hooks/pretooluse-command-guard.sh
 fails=0
 
-probe() {  # probe <erwartung: block|pass> <kommando>
-  local want="$1" cmd="$2" n got mark
-  n=$(printf '{"tool_input":{"command":"%s"}}' "$cmd" | bash "$G" | grep -c 'decision' || true)
-  got=pass; [ "$n" != "0" ] && got=block
-  mark="  ok "; [ "$got" != "$want" ] && { mark="FAIL"; fails=$((fails+1)); }
-  printf '%s  %-6s %-44s (erwartet %s)\n' "$mark" "$got" "${cmd:0:44}" "$want"
+out=$(mktemp)
+trap 'rm -f "$out"' EXIT
+
+# Der Exit des Wächters wird MITGENOMMEN, nicht hinter einer Pipe verworfen:
+# ein Wächter, der abstürzt, gibt nichts aus — und wäre sonst von „ausdrücklich
+# erlaubt" nicht zu unterscheiden. Darum das dritte Verdikt `crash`.
+verdict() {  # verdict <roh-json> -> setzt GOT
+  local rc
+  set +e
+  printf '%s' "$1" | bash "$G" >"$out" 2>/dev/null
+  rc=$?
+  set -e
+  if [ "$rc" -ne 0 ]; then GOT=crash
+  elif grep -q 'decision' "$out"; then GOT=block
+  else GOT=pass
+  fi
+}
+
+report() {  # report <erwartung> <label>
+  local mark="  ok "
+  [ "$GOT" != "$1" ] && { mark="FAIL"; fails=$((fails+1)); }
+  printf '%s  %-6s %-44s (erwartet %s)\n' "$mark" "$GOT" "${2:0:44}" "$1"
+}
+
+probe() {  # probe <erwartung: block|pass|crash> <kommando>
+  verdict "$(printf '{"tool_input":{"command":"%s"}}' "$2")"
+  report "$1" "$2"
 }
 
 raw() {  # raw <erwartung> <label> <roh-json>
-  local want="$1" label="$2" json="$3" n got mark
-  n=$(printf '%s' "$json" | bash "$G" | grep -c 'decision' || true)
-  got=pass; [ "$n" != "0" ] && got=block
-  mark="  ok "; [ "$got" != "$want" ] && { mark="FAIL"; fails=$((fails+1)); }
-  printf '%s  %-6s %-44s (erwartet %s)\n' "$mark" "$got" "$label" "$want"
+  verdict "$3"
+  report "$1" "$2"
 }
 
 echo "== Segmentierung: Brace-Group und einzelnes kaufmännisches Und"
@@ -57,6 +75,26 @@ raw block 'u-Escape zu kurz'      '{"tool_input":{"command":"make \u06"}}'
 raw block 'Müll ausserhalb String' '{"tool_input":{"command":"a" garbage }}'
 raw pass  'kein command-Feld'     '{"tool_input":{"other":"x"}}'
 raw pass  'command als VALUE-Wort' '{"tool_input":{"command":"echo command pip"}}'
+raw block 'zwei Strings ohne Trenner'  '{"tool_input":{"command":"pip x""make gates"}}'
+raw block 'zwei Werte mit Leerzeichen' '{"tool_input":{"command":"pip x" "make gates"}}'
+raw block 'u-Escape im Schluessel'     '{"tool_input":{"\u0063ommand":"pip x"}}'
+raw block 'u-Escape im Eltern-Schluessel' '{"\u0074ool_input":{"command":"pip x"}}'
+
+echo "== Der Wächter selbst: ohne Host-PATH bleibt er fail-closed"
+guard_ohne_pfad() {
+  local rc
+  set +e
+  printf '{"tool_input":{"command":"make gates"}}' \
+    | env -i PATH=/nonexistent /bin/bash "$PWD/$G" >"$out" 2>/dev/null
+  rc=$?
+  set -e
+  if [ "$rc" -ne 0 ]; then GOT=crash
+  elif grep -q 'decision' "$out"; then GOT=block
+  else GOT=pass
+  fi
+}
+guard_ohne_pfad
+report block 'leeres PATH: awk fehlt'
 
 echo "== Quote-blinde Falsch-Positiv-Klasse: benannte Grenze, nicht behoben"
 raw block 'Interpreter als Daten in Klammern' '{"tool_input":{"command":"sed -i /Bash(python3 -)/d f"}}'

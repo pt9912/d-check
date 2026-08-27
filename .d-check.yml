@@ -410,6 +410,16 @@ structure:
     section: "## 2. Datenstrukturen und Schemas"
     headings-match: '^SPEC-[0-9]{3} '
 
+  # Der Werkzeug-Einstieg muss AGENTS.md IMPORTIEREN, nicht nur nennen (MR-043).
+  # Die Import-Zeile ist kein Markdown-Link und damit für links/anchors
+  # unsichtbar — fiele sie weg, liefe jeder Folgelauf ohne die Hard Rules im
+  # Kontext an, und kein Gate sagte etwas. Die Existenz des Ziels deckt der
+  # Prosa-Link darunter (Modul links); diese Regel deckt den Import selbst.
+  - files: CLAUDE.md
+    section-pattern: '^# '
+    sections: one
+    require-pattern: '(?m)^@AGENTS\.md$'
+
 # Modul vcs (DC-FA-VCS-001, slice-053): git-Diff-Immutabilität der eigenen
 # Accepted-ADRs über die Commit-Range — `make adr-check` aktiviert es mit
 # `--enable vcs` (NICHT in der modules-Liste oben, daher im Default-doc-check

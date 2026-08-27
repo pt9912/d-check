@@ -3,11 +3,13 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon verlangt von der
   Wurzel-Einstiegsdatei genau dies —
-  [`grundlagen-durchsetzungsschicht.md` §Artefakt-Set](../../.harness/baseline/v5.12.0/regelwerk/grundlagen-durchsetzungsschicht.md):
-  *„Sie **bringt** `AGENTS.md` in den Lauf-Kontext, wo Modul 9 es für jeden Lauf
-  verlangt. Sie **verweist** dorthin und legt nichts fest."* Womit sie das tut,
-  ist werkzeugabhängig und bleibt offen; die Form-Frage tritt die Rangliste an
-  diesen Speicher ab.
+  [`grundlagen-durchsetzungsschicht.md` §Referenz-Implementierung](../../.harness/baseline/v5.12.0/regelwerk/grundlagen-durchsetzungsschicht.md):
+  *„Sie bringt `AGENTS.md` in den Lauf-Kontext, wo Modul 9 es für jeden Lauf
+  verlangt. Sie **verweist** dorthin und legt nichts fest."* — die Fettung im
+  zweiten Satz steht so in der Quelle, das tragende Verb *bringt* nicht; die
+  Beweislast dieses Eintrags hängt an ihm und wird hier daneben genannt statt im
+  Zitat gesetzt. Womit sie das tut, ist werkzeugabhängig und bleibt offen; die
+  Form-Frage tritt die Rangliste an diesen Speicher ab.
 - **Datum:** 2026-08-27
 - **Geltungsbereich:** [`CLAUDE.md`](../../CLAUDE.md).
 - **Adaption:** [`CLAUDE.md`](../../CLAUDE.md) führt `AGENTS.md` als

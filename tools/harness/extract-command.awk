@@ -3,15 +3,16 @@
 # ZUSAGE: Stdout ist der dekodierte Befehl (ggf. leer). Exit 0 = gelesen,
 # Exit 3 = Parse-Zweifel. Der Aufrufer blockt bei 3 (fail-closed).
 #
-# WARUM EIN SCANNER UND KEIN GRIFF: ein Kommando ist Freitext und kann die
-# Zeichenkette "command" selbst enthalten. Ein Regex-Griff naehme den Treffer
-# IM Wert und der Waechter entschiede ueber die falsche Groesse. Darum
-# zeichenweise, mit Tiefen- und Key-Stack: nur der Pfad tool_input -> command
-# auf Objekt-Tiefe 2 zaehlt.
+# WARUM EIN SCANNER: ein Kommando ist Freitext und kann die Zeichenkette
+# "command" selbst enthalten. Der Schluesselname muss deshalb an seiner POSITION
+# erkannt werden, nicht an seinem Wortlaut. Darum zeichenweise, mit Tiefen- und
+# Key-Stack: es zaehlt der Schluessel `command` in einem Objekt, dessen
+# Elternschluessel `tool_input` ist -- auf jeder Tiefe ab 2, und trifft das
+# mehrfach zu, gewinnt der letzte Treffer.
 #
-# GRENZE: \u-Escapes im Befehl gelten als Zweifel und blocken. Sie zu dekodieren
-# hiesse, den Waechter zu einer Sandbox auszubauen; er ist ein Stolperdraht
-# (AGENTS.md §3.1).
+# GRENZE: \u-Escapes gelten als Zweifel und blocken -- im Wert wie im
+# Schluessel. Sie zu dekodieren hiesse, den Waechter zu einer Sandbox
+# auszubauen; er ist ein Stolperdraht (AGENTS.md §3.1).
 #
 # POSIX-awk (busybox/gawk/BSD), kein gawk-Spezifikum.
 
@@ -56,6 +57,10 @@ END {
       if (c == "\"") {
         # Stringende: Key oder Value?
         if (depth > 0 && ctype[depth] == "o" && wantkey[depth] == 1) {
+          # Ein verkuerzt dekodierter SCHLUESSEL trifft still den falschen Pfad:
+          # "command" ergaebe hier `ommand`, der Wert bliebe ungelesen und
+          # der Waechter urteilte ueber nichts. Zweifel gilt beidseitig.
+          if (hadu) exit 3
           curkey[depth] = buf
         } else if (depth >= 2 && ctype[depth] == "o" && curkey[depth] == "command" &&
                    ctype[depth - 1] == "o" && curkey[depth - 1] == "tool_input") {
@@ -64,6 +69,11 @@ END {
           cmdval = buf
         }
         instr = 0
+        # Nach einem String muss ein Trenner kommen. Ohne diese Marke laese der
+        # Scanner den naechsten String im selben Container als weiteren WERT und
+        # ueberschriebe den vorigen: `"command":"pip x""make gates"` ergaebe
+        # `make gates`, und der Waechter urteilte ueber das falsche Kommando.
+        justval[depth] = 1
         continue
       }
       buf = buf c
@@ -71,13 +81,16 @@ END {
     }
 
     # ausserhalb eines Strings
-    if (c == "\"") { instr = 1; buf = ""; hadu = 0; continue }
-    if (c == "{") { depth++; sawobj = 1; ctype[depth] = "o"; wantkey[depth] = 1; curkey[depth] = ""; continue }
+    if (c == "\"") {
+      if (depth > 0 && justval[depth] == 1) exit 3   # zwei Strings ohne Trenner
+      instr = 1; buf = ""; hadu = 0; continue
+    }
+    if (c == "{") { depth++; sawobj = 1; ctype[depth] = "o"; wantkey[depth] = 1; curkey[depth] = ""; justval[depth] = 0; continue }
     if (c == "}") { if (depth > 0) depth--; continue }
-    if (c == "[") { depth++; ctype[depth] = "a"; continue }
+    if (c == "[") { depth++; ctype[depth] = "a"; justval[depth] = 0; continue }
     if (c == "]") { if (depth > 0) depth--; continue }
-    if (c == ":") { if (depth > 0 && ctype[depth] == "o") wantkey[depth] = 0; continue }
-    if (c == ",") { if (depth > 0 && ctype[depth] == "o") wantkey[depth] = 1; continue }
+    if (c == ":") { if (depth > 0) { justval[depth] = 0; if (ctype[depth] == "o") wantkey[depth] = 0 } continue }
+    if (c == ",") { if (depth > 0) { justval[depth] = 0; if (ctype[depth] == "o") wantkey[depth] = 1 } continue }
 
     # Ausserhalb eines Strings sind nur Struktur-Zeichen, Whitespace und die
     # Zeichen von Zahlen/Literalen zulaessig. Alles andere ist malformes JSON

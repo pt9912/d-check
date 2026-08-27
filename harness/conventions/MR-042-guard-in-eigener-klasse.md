@@ -5,7 +5,7 @@
   Durchsetzungsschicht die Härtung als neuen Eintrag
   ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.12.0/regelwerk/modul-13-quality-gates.md))
   und beschreibt den Befehls-Guard als Artefakt
-  ([`grundlagen-durchsetzungsschicht.md` §Artefakt-Set](../../.harness/baseline/v5.12.0/regelwerk/grundlagen-durchsetzungsschicht.md)).
+  ([`grundlagen-durchsetzungsschicht.md` §Referenz-Implementierung](../../.harness/baseline/v5.12.0/regelwerk/grundlagen-durchsetzungsschicht.md)).
   *Womit* er geschrieben ist, sagt er nicht — die Form-Frage tritt die Rangliste
   an diesen Speicher ab.
 - **Datum:** 2026-08-27
@@ -13,6 +13,7 @@
   [`.claude/hooks/pretooluse-command-guard.sh`](../../.claude/hooks/pretooluse-command-guard.sh),
   [`tools/harness/extract-command.awk`](../../tools/harness/extract-command.awk),
   [`tools/harness/guard-probe.sh`](../../tools/harness/guard-probe.sh),
+  das `guard-probe`-Target im [`Makefile`](../../Makefile),
   [`AGENTS.md`](../../AGENTS.md) §3.1 und §4,
   [`harness/README.md`](../README.md).
 - **Adaption:** Der Wächter ist in `bash` geschrieben und holt das Kommando aus
@@ -23,12 +24,19 @@
   unverändert weiter; dieser Eintrag trägt sie fort.
 
   **Fail-closed ist die Voreinstellung, nicht die Ausnahme:** fehlt `awk`, fehlt
-  der Extraktor, oder meldet er Parse-Zweifel, blockiert der Wächter. Der
-  Scanner steigt bei jedem Zeichen aus, das außerhalb einer Zeichenkette nichts
-  in JSON zu suchen hat. Ohne diese Prüfung liefert er bei malformer Eingabe
-  einen **abgeschnittenen** Befehl, und der Wächter urteilt über die halbe
-  Eingabe — die gefährlichste Form des Durchwinkens, weil sie wie ein Urteil
-  aussieht.
+  der Extraktor, oder meldet er Parse-Zweifel, blockiert der Wächter. Damit das
+  auch ohne Host-`PATH` gilt, kommt er ohne jedes weitere externe Programm aus —
+  Pfad, Eingabe und Ausgabe laufen über bash-Builtins; ein fehlendes `dirname`
+  oder `cat` hätte ihn mit Exit 127 und **ohne** Ausgabe enden lassen, also ohne
+  Block.
+
+  **Drei Formen führen zum Zweifel, und jede war einmal ein stilles
+  Durchwinken:** ein Zeichen, das außerhalb einer Zeichenkette nichts in JSON zu
+  suchen hat (der Befehl käme **abgeschnitten** zurück); ein zweiter String im
+  selben Container ohne Trenner (der zweite **überschriebe** den ersten); ein
+  `\u`-Escape im Wert **oder im Schlüssel** (der Schlüssel träfe verkürzt den
+  falschen Pfad, der Wert bliebe ungelesen). Alle drei enden mit Exit 3. Das ist
+  die gefährlichste Klasse, weil das Ergebnis wie ein Urteil aussieht.
 
   **Die Proben sind ein `make`-Target** ([`AGENTS.md`](../../AGENTS.md) §4,
   `make guard-probe`), kein Gate: der Wächter ist eine Werkzeug-Einstellung, und
@@ -39,6 +47,23 @@
   [`MR-040`](../conventions.md#mr-040) ist geerbt, gemessen und bleibt** — sie
   steht als Probe, nicht als Fehler. Ein Wächter, der Daten von Befehlen sicher
   unterscheiden wollte, wäre ein Parser.
+
+  **Umfangs-Grenze — was der Wächter NICHT sieht, gemessen an dieser Fassung.**
+  Vier Klassen erreichen ein gelistetes Werkzeug, ohne dass die Segmentierung es
+  als Segment-Kopf sieht; alle vier sind **geerbt**, keine ist neu:
+
+  | Klasse | Beispiel, das durchläuft |
+  |---|---|
+  | Shell-Schlüsselwort als Kopf | `if true; then pip install x; fi` · `for f in a; do go build; done` · `! pip install x` |
+  | Wrapper außerhalb der Präfix-Liste | `nohup pip install x` · `timeout 5 go build` · `stdbuf -o0 pip install x` |
+  | wort-interne Splices | `p"i"p install x` · `g\o build` |
+  | escapte Quotes in der Verschachtelung | `bash -c "bash -c \"bash -c pip\""` |
+
+  Die Präfix-Liste ist eine **Liste** und damit von Natur aus unvollständig; die
+  Schlüsselwort-Klasse verlangte einen Grammatik-Begriff, den ein Stolperdraht
+  nicht führt. Beides bleibt so und steht hier, statt still zu gelten
+  ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.12.0/regelwerk/modul-13-quality-gates.md):
+  die Grenz-Zeile wird mitgezogen).
 - **Begründung:** [`MR-041`](../conventions.md#mr-041) benannte die
   Inkonsistenz und ließ sie stehen: eine Regel, deren Durchsetzung außerhalb
   ihrer eigenen Klasse steht, ist nur so lange glaubwürdig, wie das dasteht.

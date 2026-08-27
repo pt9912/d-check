@@ -101,11 +101,18 @@ Wo ein Skript nötig ist, läuft es als eigene, digest-gepinnte Dockerfile-Stage
 ([`.claude/hooks/pretooluse-command-guard.sh`](.claude/hooks/pretooluse-command-guard.sh))
 prüft die Befehlsposition jedes Segments und Sub-Shell-Strings rekursiv. Er ist
 **werkzeug-lokal**, kein Repo-Gate: keine CI ruft ihn, ein Lauf ohne dieses
-Werkzeug ist ungebunden. Und er nennt seine Grenze selbst — *Stolperdraht, keine
-Sandbox*. Er ist in `bash` geschrieben und liest die Hook-Eingabe mit `awk`,
-läuft also in derselben Klasse, die er durchsetzt
+Werkzeug ist ungebunden. Er ist in `bash` geschrieben und liest die Hook-Eingabe
+mit `awk`, läuft also in derselben Klasse, die er durchsetzt
 ([`MR-042`](harness/conventions.md#mr-042)); `make guard-probe` (§4) fährt ihn
 gegen seine Proben.
+
+**Er ist ein Stolperdraht, keine Sandbox — und die Lücken sind gemessen, nicht
+geschätzt:** ein Shell-Schlüsselwort als Segment-Kopf (`if … then pip …`), ein
+Wrapper außerhalb seiner Präfix-Liste (`nohup`, `timeout`), ein wort-interner
+Quote-/Backslash-Splice (`p"i"p`) und escapte Quotes in der Verschachtelung
+erreichen ein gelistetes Werkzeug, ohne dass er es als Kopf sieht. Die Regel
+gilt trotzdem — sie hängt nicht an ihm. Tabelle in
+[`MR-042`](harness/conventions.md#mr-042).
 
 ### 3.2 Suppression-Verbot
 

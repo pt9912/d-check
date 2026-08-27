@@ -23,23 +23,34 @@
 # geblockt (Falsch-Positiv). Abhilfe ist die Repo-Praxis ohnehin: solchen Inhalt
 # in eine Datei legen — `git commit -F <datei>`, Proben als Skript.
 #
-# GRENZE, Umfang: `find -exec`, `awk`-Programme und jeder Interpreter, den die
-# Liste nicht kennt, bleiben ungeprüft. Stolperdraht, keine Sandbox.
+# GRENZE, Umfang — gemessen, nicht geschätzt. Ungeprüft bleiben:
+#   1. Segment-Köpfe, die Shell-Schlüsselwörter sind: `if true; then pip …; fi`,
+#      `for f in a; do go build; done`, `while …; do npm i; done`, `! pip …`.
+#   2. Wrapper außerhalb von PREFIXES: `nohup`, `timeout 5`, `stdbuf -o0`,
+#      `setsid`. Die Liste ist eine Liste und damit unvollständig.
+#   3. Wort-interne Splices: `p"i"p`, `g\o` — bash setzt sie zusammen, die
+#      Token-Sicht hier nicht.
+#   4. Verschachtelung mit escapten Quotes: bei `bash -c "bash -c \"…\""`
+#      greift strip_quotes nicht, die Rekursion endet.
+# Dazu `find -exec`, `awk`-Programme und jeder Interpreter, den die Liste nicht
+# kennt. Stolperdraht, keine Sandbox.
 #
 # Im Pass-Fall: KEINE Ausgabe — "approve" würde das Permission-System
 # überspringen; ohne Ausgabe läuft die normale Permission-Entscheidung.
 set -euo pipefail
 
-here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Pfad und Eingabe ohne externes Programm: `dirname` und `cat` wären zwei
+# weitere Host-Abhängigkeiten, und ein fehlendes PATH ließe den Guard mit 127
+# enden — ohne Ausgabe, also OHNE Block. Fail-closed hängt sonst an Werkzeugen,
+# die dieser Guard nicht selbst prüft.
+here=${BASH_SOURCE[0]%/*}
 extractor="$here/../../tools/harness/extract-command.awk"
 
 emit_block() {
-  cat <<'JSON'
-{
-  "decision": "block",
-  "reason": "d-check is make/Docker-only (AGENTS.md §3.1, ADR-0001). Use make targets and the POSIX host tools the gate scripts use (grep/sed/awk/find); do not run host package managers, host go, or host script interpreters (apt/brew/pip/npm/cargo/go/python/perl/ruby/node). On parse doubt the guard fails closed."
-}
-JSON
+  printf '%s\n' '{' \
+    '  "decision": "block",' \
+    '  "reason": "d-check is make/Docker-only (AGENTS.md §3.1, ADR-0001). Use make targets and the POSIX host tools the gate scripts use (grep/sed/awk/find); do not run host package managers, host go, or host script interpreters (apt/brew/pip/npm/cargo/go/python/perl/ruby/node). On parse doubt the guard fails closed."' \
+    '}'
 }
 
 # Host-Go: ADR-0001 + AGENTS §3.1. Paketmanager: AGENTS §3.1.
@@ -109,7 +120,7 @@ scan() {  # scan <cmd> <tiefe>; return 0 = BLOCK, 1 = ok
   return 1
 }
 
-input="$(cat)"
+input="$(</dev/stdin)"
 
 # Ohne awk keine Prüfung -> fail-closed (awk ist POSIX-Basis, AGENTS.md §3.1).
 command -v awk >/dev/null 2>&1 || { emit_block; exit 0; }
