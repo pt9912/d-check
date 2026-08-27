@@ -37,7 +37,7 @@ Zeile im Wächter, hier läge es an der Datei, die ihn überhaupt aufruft.
 eine Bearbeitung die Datei zerschossen hat. Er beantwortet **Balance**, nicht
 **Gültigkeit**, und er ist genau der „Parser durch die Hintertür", vor dem der
 Extraktor-Kommentar warnt. Der Slice ist die Konsequenz aus dem offenen Rest
-von [slice-154](../in-progress/slice-154-python-stage.md).
+von [slice-154](../done/slice-154-python-stage.md).
 
 ## 2. Vorgehen
 
