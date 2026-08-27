@@ -242,6 +242,10 @@ matrix:
       order: [spec/lastenheft.md, spec/spezifikation.md]
       direction: no-downward
     - name: adr
+      # BEWUSST OHNE `token`, und das begrenzt die Zusage: gefangen wird ein
+      # LINK aus einem Stratum in diese Klasse, nicht ein bares `ADR-<NNNN>` im
+      # Fließtext. Die Kennungs-Linkpflicht des Moduls `ids` deckt den Rest —
+      # ein Token hier wäre die zweite Antwort auf dieselbe Frage.
       paths: ["docs/plan/adr/[0-9]*.md"]
     - name: slice
       paths: ["docs/plan/planning/**/slice-*.md"]

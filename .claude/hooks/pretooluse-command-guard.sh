@@ -48,9 +48,9 @@ extractor="$here/../../tools/harness/extract-command.awk"
 
 # ZWEI KANÄLE, absichtlich beide. Die JSON-Antwort trägt den Grund, den der
 # Aufrufer wörtlich sieht; der Nicht-Null-Exit blockt unabhängig von jeder
-# Antwortform. Beide zugleich sind gemessen konfliktfrei — der Grund erscheint,
-# der Exit liegt als Riegel darunter. Ohne den zweiten Kanal hinge JEDER Block
-# an einem Format, dessen Auslegung dieser Guard nicht kontrolliert.
+# Antwortform. Sie widersprechen sich nicht — der Grund erscheint, der Exit
+# liegt als Riegel darunter. Ohne den zweiten Kanal hinge JEDER Block an einem
+# Format, dessen Auslegung dieser Guard nicht kontrolliert (MR-044).
 emit_block() {
   printf '%s\n' '{' \
     '  "hookSpecificOutput": {' \
@@ -134,6 +134,10 @@ scan() {  # scan <cmd> <tiefe>; return 0 = BLOCK, 1 = ok
 # nachlesbare Datei ist — unter `set -e` endet der Guard dann ohne Ausgabe,
 # also fail-OPEN. `read -d ''` liest bis EOF und meldet dabei 1; das ist der
 # Normalfall, kein Fehler.
+# GRENZE des gewählten Wegs: `read -d ''` hält an einem NUL-Byte. Ein NUL im
+# Kommando-Wert schneidet das JSON ab -> Extraktor-Zweifel -> Block; ein NUL
+# zwischen zwei vollständigen Objekten verschluckt das zweite. JSON kennt kein
+# rohes NUL, die Eingabe ist maschinell erzeugt — erreichbar ist das nicht.
 IFS= read -r -d '' input || true
 
 # Ohne awk keine Prüfung -> fail-closed (awk ist POSIX-Basis, AGENTS.md §3.1).

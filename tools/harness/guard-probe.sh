@@ -8,24 +8,29 @@ G=.claude/hooks/pretooluse-command-guard.sh
 fails=0
 
 out=$(mktemp)
-trap 'rm -f "$out"' EXIT
+tmpin=$(mktemp)
+trap 'rm -f "$out" "$tmpin"' EXIT
 
 # Der Exit des Wächters wird MITGENOMMEN, nicht hinter einer Pipe verworfen:
 # ein Wächter, der abstürzt, gibt nichts aus — und wäre sonst von „ausdrücklich
-# erlaubt" nicht zu unterscheiden. Darum das dritte Verdikt `crash`.
+# erlaubt" nicht zu unterscheiden. Vier Verdikte, eine Auswertung: `block`
+# (abgelehnt über beide Kanäle), `halb` (abgelehnt, aber ohne Exit-Riegel),
+# `crash` (keine Ausgabe), `pass` (durchgelassen).
+klassifiziere() {  # klassifiziere <rc> -> setzt GOT
+  if grep -q '"permissionDecision": "deny"' "$out"; then
+    if [ "$1" -eq 0 ]; then GOT=halb; else GOT=block; fi
+  elif [ "$1" -ne 0 ]; then GOT=crash
+  else GOT=pass
+  fi
+}
+
 verdict() {  # verdict <roh-json> -> setzt GOT
   local rc
   set +e
   printf '%s' "$1" | bash "$G" >"$out" 2>/dev/null
   rc=$?
   set -e
-  if grep -q '"permissionDecision": "deny"' "$out"; then
-    # Beide Kanäle gehören zusammen: fehlt der Exit-Riegel, hängt der Block
-    # allein an der Antwortform. Das ist ein eigenes Verdikt, kein `block`.
-    if [ "$rc" -eq 0 ]; then GOT=halb; else GOT=block; fi
-  elif [ "$rc" -ne 0 ]; then GOT=crash
-  else GOT=pass
-  fi
+  klassifiziere "$rc"
 }
 
 report() {  # report <erwartung> <label>
@@ -84,23 +89,45 @@ raw block 'u-Escape im Schluessel'     '{"tool_input":{"\u0063ommand":"pip x"}}'
 raw block 'u-Escape im Eltern-Schluessel' '{"\u0074ool_input":{"command":"pip x"}}'
 
 echo "== Der Wächter selbst: ohne Host-PATH bleibt er fail-closed"
-guard_ohne_pfad() {
+ohne_pfad() {
   local rc
   set +e
   printf '{"tool_input":{"command":"make gates"}}' \
     | env -i PATH=/nonexistent /bin/bash "$PWD/$G" >"$out" 2>/dev/null
   rc=$?
   set -e
-  if grep -q '"permissionDecision": "deny"' "$out"; then
-    # Beide Kanäle gehören zusammen: fehlt der Exit-Riegel, hängt der Block
-    # allein an der Antwortform. Das ist ein eigenes Verdikt, kein `block`.
-    if [ "$rc" -eq 0 ]; then GOT=halb; else GOT=block; fi
-  elif [ "$rc" -ne 0 ]; then GOT=crash
-  else GOT=pass
-  fi
+  klassifiziere "$rc"
 }
-guard_ohne_pfad
+ohne_pfad
 report block 'leeres PATH: awk fehlt'
+
+# Der Ausfall, der diesen Slice ausgelöst hat, lag NICHT im Urteil, sondern im
+# LESEWEG: eine stdin-Form, die der Guard nicht lesen konnte, beendete ihn ohne
+# Ausgabe — und eine Probenmenge, die stdin nur als Pipe bespielt, sieht genau
+# das nicht. Jede Form, die ein Aufrufer liefern kann, gehört gefahren.
+# Erwartung ist überall `block`: entweder wegen des Kommandos oder, wo gar keine
+# Eingabe ankommt, wegen fehlender Parse-Grundlage.
+echo "== Leseweg: jede stdin-Form, die ein Aufrufer liefern kann"
+stdin_form() {  # stdin_form <erwartung> <label> <pipe|datei|herestring|devnull|zu>
+  local rc j='{"tool_input":{"command":"pip --version"}}'
+  set +e
+  case "$3" in
+    pipe)       printf '%s' "$j" | bash "$G" >"$out" 2>/dev/null ;;
+    datei)      printf '%s' "$j" >"$tmpin"; bash "$G" >"$out" 2>/dev/null <"$tmpin" ;;
+    herestring) bash "$G" >"$out" 2>/dev/null <<<"$j" ;;
+    devnull)    bash "$G" >"$out" 2>/dev/null </dev/null ;;
+    zu)         bash "$G" >"$out" 2>/dev/null <&- ;;
+  esac
+  rc=$?
+  set -e
+  klassifiziere "$rc"
+  report "$1" "$2"
+}
+stdin_form block 'stdin als Pipe'          pipe
+stdin_form block 'stdin als Datei'         datei
+stdin_form block 'stdin als Here-String'   herestring
+stdin_form block 'stdin auf /dev/null'     devnull
+stdin_form block 'stdin GESCHLOSSEN'       zu
 
 echo "== Quote-blinde Falsch-Positiv-Klasse: benannte Grenze, nicht behoben"
 raw block 'Interpreter als Daten in Klammern' '{"tool_input":{"command":"sed -i /Bash(python3 -)/d f"}}'
@@ -108,3 +135,6 @@ raw pass  'dieselben Daten ohne Leerzeichen'  '{"tool_input":{"command":"sed -i 
 raw block 'blockiertes Wort nach Trenner in Text' '{"tool_input":{"command":"echo a; pip b"}}'
 
 printf '\n== Fehlschläge: %d\n' "$fails"
+# Das Urteil gehört in den Exit, nicht nur in die Prosa: ein Aufrufer, der die
+# Ausgabe nicht liest, muss den Fehlschlag trotzdem sehen.
+[ "$fails" -eq 0 ]
