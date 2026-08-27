@@ -59,6 +59,8 @@ probe block '/usr/bin/python3.12 x.py'
 probe block 'node -e 1'
 probe block 'perl -e 1'
 probe block 'ruby -e 1'
+probe block 'uv run x.py'
+probe block 'uvx ruff check'
 
 echo "== Paketmanager und Host-Go (MR-005)"
 probe block 'pip install foo'

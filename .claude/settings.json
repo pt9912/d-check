@@ -1,4 +1,45 @@
 {
+    "permissions": {
+        "deny": [
+            "Bash(python *)",
+            "Bash(python3 *)",
+            "Bash(pip *)",
+            "Bash(pip3 *)",
+            "Bash(npm *)",
+            "Bash(npx *)",
+            "Bash(yarn *)",
+            "Bash(pnpm *)",
+            "Bash(pipx *)",
+            "Bash(uv *)",
+            "Bash(uvx *)",
+            "Bash(corepack *)",
+            "Bash(cargo *)",
+            "Bash(rustup *)",
+            "Bash(gem *)",
+            "Bash(conda *)",
+            "Bash(go *)",
+            "Bash(gofmt *)",
+            "Bash(golangci-lint *)",
+            "Bash(staticcheck *)",
+            "Bash(perl *)",
+            "Bash(ruby *)",
+            "Bash(node *)",
+            "Bash(deno *)",
+            "Bash(bun *)",
+            "Bash(apt *)",
+            "Bash(apt-get *)",
+            "Bash(brew *)",
+            "Bash(git push --force *)",
+            "Bash(git push -f *)",
+            "Bash(git push --force-with-lease *)"
+        ],
+        "ask": [
+            "Bash(git reset --hard *)",
+            "Bash(git clean -f*)",
+            "Bash(docker system prune *)",
+            "Bash(docker buildx prune *)"
+        ]
+    },
     "hooks": {
         "PreToolUse": [
             {

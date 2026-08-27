@@ -64,8 +64,8 @@ emit_block() {
 
 # Host-Go: ADR-0001 + AGENTS §3.1. Paketmanager: AGENTS §3.1.
 # Skript-Interpreter: MR-040/MR-042.
-BLOCKED="apt apt-get brew pip pip3 pipx npm pnpm yarn npx corepack cargo rustup
-gem conda go gofmt golangci-lint staticcheck perl ruby node deno bun"
+BLOCKED="apt apt-get brew pip pip3 pipx uv uvx npm pnpm yarn npx corepack cargo
+rustup gem conda go gofmt golangci-lint staticcheck perl ruby node deno bun"
 # python, python3, python3.12 … — die Versions-Suffixe machen eine Liste
 # unvollständig, darum als Muster.
 BLOCKED_RE='^python[0-9]*(\.[0-9]+)*$'
