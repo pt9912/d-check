@@ -58,7 +58,7 @@ Aufwand ohne Wirkung.
   dasselbe Rot zeigt, verliert das Signal für die Achse, die *neu* rot wird —
   genau der verwaiste Sensor, gegen den er gebaut wurde. Das Heben ist ein
   bewusster Akt und damit nicht dieser Slice: geschnitten als
-  [slice-161](../in-progress/slice-161-sechs-pins-heben.md).
+  [slice-161](../done/slice-161-sechs-pins-heben.md).
 - **Digest-Achsen haben keine Tag-Semantik.** Die Gleich/Ungleich-Form der
   bestehenden Achsen trägt hier womöglich nicht. — **Ausgang: entfallen,
   gemessen.** Sie trägt sogar besser: bei Tags musste eigens begründet werden,
@@ -135,7 +135,7 @@ Digest-Form überhaupt existiert.
 (1.167.0 gegen 1.175.0), `a-check` (v0.8.0 gegen v0.17.0) und zwei
 Basis-Image-Digests. Gehoben wird hier nichts: §3 sagt *melden, nicht heben*.
 Dass der Nachtlauf damit **dauerrot** startet, ist der eingetretene §5-Punkt und
-als [slice-161](../in-progress/slice-161-sechs-pins-heben.md) geschnitten.
+als [slice-161](../done/slice-161-sechs-pins-heben.md) geschnitten.
 
 **Drei Änderungen, die das Bauen erzwang, und jede schließt eine eigene Lücke.**
 Der `a-check`-Pin trug **keinen Tag** — seine Version stand nur im Kommentar,
@@ -166,7 +166,7 @@ gepinnte SHA den Commit bezeichnet, den sein Kommentar behauptet, ist eine
 andere Frage; sie bleibt die benannte Grenze von `make workflow-pins`
 ([`AGENTS.md`](../../../../AGENTS.md) §3.9). Und keine Achse trägt eine
 **Kadenz**: sie melden jede Nacht, aber wer das Rot wann liest, steht nirgends —
-als dritter §5-Punkt von [slice-161](../in-progress/slice-161-sechs-pins-heben.md)
+als dritter §5-Punkt von [slice-161](../done/slice-161-sechs-pins-heben.md)
 geführt.
 
 **Sensors:** `make gates` (Exit 0, zehn Glieder, 545 Dateien, 0 Befunde),
