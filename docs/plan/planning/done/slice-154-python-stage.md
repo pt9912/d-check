@@ -67,7 +67,7 @@ vierte Toolchain entsteht.
 - [x] Der Bedarf ist **belegt** — je Fall eine Zuordnung, und der Rest ist
       benannt oder es gibt keinen. *(Neun Fälle mit Zuordnung in
       [`MR-046`](../../../../harness/conventions.md#mr-046); ein Rest benannt und
-      als [slice-157](../in-progress/slice-157-config-gueltigkeit.md) ausgetragen.)*
+      als [slice-157](../done/slice-157-config-gueltigkeit.md) ausgetragen.)*
 - [x] ~~Bei Bau: Stage digest-gepinnt, `make`-Target vorhanden, in `AGENTS.md` §4
       und `harness/README.md` eingetragen, `gate-consistency` grün.~~
       **Entfällt — kein Bau.**
@@ -97,7 +97,7 @@ vierte Toolchain entsteht.
   eigenen Satz.** Der Bedarf ist **fast** null, nicht null: ein Fall bleibt —
   die Gültigkeit einer JSON-Konfiguration. Er trägt keine Stage, aber er ist
   auch nicht nichts, und er wandert deshalb als
-  [slice-157](../in-progress/slice-157-config-gueltigkeit.md) weiter statt in eine
+  [slice-157](../done/slice-157-config-gueltigkeit.md) weiter statt in eine
   Notiz. Die gestrichene Zeile in §3.1 ist geliefert.
 
 ## 6. Trigger
@@ -151,7 +151,7 @@ als erster.
 JSON-Konfiguration ist in der erlaubten Klasse nicht prüfbar; an ihrer Stelle
 stand ein von Hand geschriebener `awk`-Klammerzähler, der Balance beantwortet
 und nicht Gültigkeit. Er trägt keine Toolchain — er trägt einen Sensor, und der
-ist [slice-157](../in-progress/slice-157-config-gueltigkeit.md). Das Gewicht ist
+ist [slice-157](../done/slice-157-config-gueltigkeit.md). Das Gewicht ist
 während dieses Slice gewachsen: seit
 [`MR-047`](../../../../harness/conventions.md#mr-047) hängen **beide**
 Durchsetzungs-Schichten an derselben Datei.
