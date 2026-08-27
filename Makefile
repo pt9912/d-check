@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
+.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -266,6 +266,14 @@ a-check-digest: ## Neueren Digest fuer denselben a-check-Tag melden (Netz, NICHT
 	  PINNED="$$(printf '%s' '$(A_CHECK_IMAGE)' | sed 's/.*@//')" \
 	  ADVICE='Digest in a-check.mk nachziehen (ADR-0011).' \
 	  bash tools/harness/pin-freshness.sh --digest 'ghcr.io/pt9912/a-check:$(A_CHECK_VERSION)'
+
+
+# Lese-Schritt, kein Gate: er sagt, ob der Nachtlauf gelesen werden muss, und
+# haengt an dem Moment, an dem ohnehin jemand hinsieht (Slice-Planung, dritte
+# Vorpruefung nach MR-053). Netz, fail-open, immer Exit 0 — der Ausgang steht
+# in der AUSGABE, damit ein Exit-Code ihn nicht verdecken kann.
+nightly-state: ## Ausgang des juengsten Nachtlaufs lesen (Netz, fail-open, NICHT in gates; Vorpruefung der Slice-Planung).
+	@bash tools/harness/nightly-state.sh
 
 baseline-freshness: ## Upstream-Audit des Baseline-Pins: neuerer Release-Tag (Currency) + Content-Drift am gepinnten Tag (Netz, NICHT in gates, fail-open). MR-011-Kette.
 	@bash tools/harness/fetch-baseline-cache.sh --check-latest

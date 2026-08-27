@@ -99,6 +99,13 @@ Auftraggeber-Entscheid ist.
   [`BEO-020`](../observations.md) — über die gemessene Menge reden, nicht über
   die naheliegende; [`BEO-011`](../observations.md) — die Regel aus dem
   Bestand, nicht aus dem Anlass.
+- **Nachtlauf-Stand lesen** (`make nightly-state`, dritte Vorprüfung nach
+  [`MR-053`](../../../../harness/conventions.md#mr-053) — die dieser Slice
+  einführt und deshalb auf sich selbst anwendet): **ROT**, jüngster Lauf
+  2026-08-27T10:49:23Z. **Gelesen, nicht weggeklickt:** er lief um 10:49, die
+  sechs Pin-Hebungen aus [slice-161](../done/slice-161-sechs-pins-heben.md)
+  landeten um 12:46 — die Meldung ist der Stand **davor** und durch jenen Slice
+  bereits behoben. Alle zwölf Achsen melden seither einzeln `ok`.
 
 Slice-ID: slice-164. Betroffene IDs: — (Harness-Betrieb; keine Anforderung).
 Module: CI, Harness-Prozess. Gates: `make gates`.
