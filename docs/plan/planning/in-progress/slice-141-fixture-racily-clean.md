@@ -98,10 +98,22 @@ Datei zweimal mit gleich langem Inhalt in einem Zug, kann der zweite Commit den
 Baum als sauber sehen. Gelesene Meldung:
 `cannot create empty commit: clean working tree`.
 
-**Die Klasse ist breiter als der Plan.** Nicht ein Fall, sondern **sechs** —
-`keep.md` in `TestRangeAndFileAt`, `adr.md` in `TestStaged` und je zwei
-`f.md`-Paare in `TestCommitMessages` und `TestCommitMessagesSkipsMerges`. Alle
-sechs tragen jetzt unterschiedlich lange Inhalte.
+**Die Klasse ist breiter als der Plan — und breiter als der erste Anlauf sie
+maß.** Der Plan nannte einen Fall. Der erste Anlauf zählte **sechs**, alle im
+Paket `git_test`, und sagte dazu „jede Fundstelle" und „jedes künftige
+Fixture" — beides falsch: es gibt einen **zweiten** Fixture-Helfer in einem
+zweiten Paket, den der Wächter nicht erreichte. Der Review fand dort zwei
+weitere; der Wächter selbst, kaum eingebaut, fand **noch zwei** in einer
+dritten Datei, die auch der Review nicht genannt hatte.
+
+Gemessener Stand: **zehn** Fundstellen in **acht** Testfunktionen und **zwei**
+Paketen — `git_test.go` (6), `cli_vcs_test.go` (2), `cli_commits_test.go` (2).
+Alle zehn tragen jetzt unterschiedlich lange Inhalte, und **beide** Helfer
+rufen denselben Wächter.
+
+**Dass die Enumeration dreimal zu kurz war, ist das eigentliche Argument für den
+Wächter.** Er hat gefunden, was drei Zählungen übersahen — genau deshalb steht
+er dort, wo geschrieben wird, statt in einer Liste.
 
 **Beinahe wäre das Gegenteil geliefert worden.** Die erzwungene Probe — gleiche
 Länge **und**, per `Chtimes`, dieselbe Änderungszeit auf die Nanosekunde — lief
@@ -111,12 +123,25 @@ Reparatur bliebe eine Vermutung; die Closure-Notiz stand bereits so da. Der
 Läufe eines nichtdeterministischen Prüflings sind kein Ergebnis — nur das Rot
 trug eine Aussage. Als Klasse geführt in [`BEO-019`](../observations.md).
 
-**Der Wächter steht dort, wo er nicht auf Zeit angewiesen ist.** Ein Test, der
-auf die Kollision wartet, meldet die Klasse nur manchmal — er wäre selbst der
-Fehler, den er sucht. Stattdessen lehnt der Fixture-Helfer `put` eine gleich
-lange Neuschreibung derselben Datei **beim Schreiben** ab, mit Begründung in der
-Meldung. Das ist deterministisch, greift beim Autor statt beim Lauf, und es
-verhindert die Rückkehr der Klasse in jedem künftigen Fixture.
+**Der Wächter steht dort, wo er nicht auf Zeit angewiesen ist.** Er lehnt eine
+gleich lange Neuschreibung **beim Schreiben** ab, deterministisch und beim
+Autor statt beim Lauf. Die **Entscheidung** liegt im Kern
+(`coretest.GitFixtureRewriteHazard`), die **E/A** bei den Aufrufern — `arch-check`
+hat die erste Fassung zu Recht zurückgewiesen (*„Application importiert os"*),
+und die Trennung ist die bessere Form: eine Antwort auf die Frage, kein
+Dateisystem im Kern.
+
+**Was er nicht deckt, steht bei ihm.** Gleiche Länge ist **notwendig, nicht
+hinreichend** — scharf wird eine Stelle erst, wenn zwischen der zweiten
+Schreibung und dem nächsten Status ein index-schreibender Aufruf liegt; von den
+zehn Fundstellen trifft das auf **eine** zu, und genau dort wurde der Flake
+beobachtet. Die Prüfung ist also konservativ. Und sie misst den Inhalt **auf der
+Platte**, während die Gefahr am **Index-Eintrag** hängt: eine ungestagte
+Zwischenschreibung verschiebt beides gegeneinander, und jeder Schreibweg an den
+Helfern vorbei bleibt ohnehin ungesehen.
+
+**Der Wächter hat einen eigenen Negativ-Selbsttest.** Ohne ihn wäre sein Ausfall
+still — der meldende Zweig wird von keinem anderen Test erreicht.
 
 **Belegt statt behauptet:** die Gegenprobe setzt eine der sechs Stellen auf
 gleiche Länge zurück und meldet

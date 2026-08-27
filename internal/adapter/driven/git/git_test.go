@@ -13,6 +13,7 @@ import (
 
 	gitadapter "github.com/pt9912/d-check/internal/adapter/driven/git"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 )
 
 // Black-Box-Adapter-Tests gegen ein echtes On-Disk-git-Repo über die exportierte
@@ -32,26 +33,21 @@ func repoAt(t *testing.T) (string, *gogit.Worktree) {
 	return dir, wt
 }
 
-// put schreibt eine Fixture-Datei und LEHNT eine gleich lange Neuschreibung
-// derselben Datei AB.
-//
-// Grund: die Änderungserkennung von go-git ist stat-basiert. Schreibt ein Test
-// dieselbe Datei zweimal mit gleich langem Inhalt in einem Zug, sieht der
-// zweite `Add`/`Commit` den Baum als sauber — gemessen an der Meldung
-// „cannot create empty commit: clean working tree". Der Test wird damit
-// zeitabhängig, und ein Gate, das gelegentlich ohne Grund rot wird, erodiert
-// die Zusage „grün heißt geprüft".
-//
-// Die Prüfung steht hier statt in einem eigenen Test, weil sie **beim
-// Schreiben** greifen muss: ein Test, der auf die Zeitkollision wartet, ist
-// selbst zeitabhängig und meldet die Klasse nur manchmal.
+// vorLaenge liefert die Länge des vorhandenen Inhalts oder -1, wenn es keinen
+// gibt — die E/A-Hälfte des Fixture-Wächters, dessen Entscheidung im Kern liegt.
+func vorLaenge(full string) int {
+	b, err := os.ReadFile(full)
+	if err != nil {
+		return -1
+	}
+	return len(b)
+}
+
 func put(t *testing.T, dir, name, content string) {
 	t.Helper()
 	full := filepath.Join(dir, name)
-	if old, err := os.ReadFile(full); err == nil && len(old) == len(content) {
-		t.Fatalf("Fixture %q wird mit gleich langem Inhalt neu geschrieben (%d Byte): "+
-			"die stat-basierte Änderungserkennung kann das übersehen. "+
-			"Länge unterscheiden.", name, len(content))
+	if err := coretest.GitFixtureRewriteHazard(name, vorLaenge(full), len(content)); err != nil {
+		t.Fatal(err)
 	}
 	if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
 		t.Fatal(err)

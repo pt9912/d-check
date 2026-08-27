@@ -12,6 +12,7 @@ import (
 	"github.com/go-git/go-git/v5/plumbing/object"
 
 	"github.com/pt9912/d-check/internal/adapter/driving/cli"
+	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 )
 
 // Modul vcs (DC-FA-VCS-001) end-to-end gegen ein echtes On-Disk-git-Repo —
@@ -47,7 +48,15 @@ func initVCSRepo(t *testing.T, dir string) *gogit.Worktree {
 
 func writeAt(t *testing.T, dir, name, content string) {
 	t.Helper()
-	if err := os.WriteFile(filepath.Join(dir, name), []byte(content), 0o644); err != nil {
+	full := filepath.Join(dir, name)
+	vor := -1
+	if b, err := os.ReadFile(full); err == nil {
+		vor = len(b)
+	}
+	if err := coretest.GitFixtureRewriteHazard(name, vor, len(content)); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(full, []byte(content), 0o644); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -74,7 +83,7 @@ func TestVCS_RangeDrift(t *testing.T) {
 	writeAt(t, dir, ".d-check.yml", vcsConfig)
 	writeAt(t, dir, "adr-x.md", adrText("Accepted", "Tue A."))
 	c1 := commitAll(t, wt, "c1")
-	writeAt(t, dir, "adr-x.md", adrText("Accepted", "Tue B."))
+	writeAt(t, dir, "adr-x.md", adrText("Accepted", "Tue B, zweite Fassung."))
 	c2 := commitAll(t, wt, "c2")
 
 	var stdout, stderr bytes.Buffer
@@ -112,7 +121,7 @@ func TestVCS_Staged(t *testing.T) {
 	writeAt(t, dir, "adr-x.md", adrText("Accepted", "Tue A."))
 	commitAll(t, wt, "c1")
 	// staged Änderung ohne Commit.
-	writeAt(t, dir, "adr-x.md", adrText("Accepted", "Tue B."))
+	writeAt(t, dir, "adr-x.md", adrText("Accepted", "Tue B, zweite Fassung."))
 	if _, err := wt.Add("adr-x.md"); err != nil {
 		t.Fatal(err)
 	}

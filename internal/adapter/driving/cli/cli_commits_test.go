@@ -30,7 +30,7 @@ func TestCommits_RangeUntraceable(t *testing.T) {
 	writeAt(t, dir, ".d-check.yml", commitsConfigYAML)
 	writeAt(t, dir, "f.md", "eins\n")
 	c1 := commitAll(t, wt, "c1: feat ADR-0001")
-	writeAt(t, dir, "f.md", "zwei\n")
+	writeAt(t, dir, "f.md", "zweite fassung\n")
 	c2 := commitAll(t, wt, "c2: chore ohne bezug")
 
 	var stdout, stderr bytes.Buffer
@@ -50,7 +50,7 @@ func TestCommits_RangeClean(t *testing.T) {
 	writeAt(t, dir, ".d-check.yml", commitsConfigYAML)
 	writeAt(t, dir, "f.md", "eins\n")
 	c1 := commitAll(t, wt, "c1: init")
-	writeAt(t, dir, "f.md", "zwei\n")
+	writeAt(t, dir, "f.md", "zweite fassung\n")
 	c2 := commitAll(t, wt, "c2: docs slice-056 Body")
 
 	var stdout, stderr bytes.Buffer
