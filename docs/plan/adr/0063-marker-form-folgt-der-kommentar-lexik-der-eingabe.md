@@ -125,3 +125,11 @@ braucht die vollständige Kommentar-Grammatik.
 **Wiedervorlage für Entscheidung 4** gemeinsam mit
 [ADR-0062](0062-ventil-marker-versions-ist-eine-benannte-grenze.md)s
 `versions`-Grenze — Form und Lage gehören dort in eine Entscheidung.
+
+## Geschichte
+
+| Datum | Ereignis |
+|---|---|
+| 2026-08-27 | Accepted (`slice-159`) |
+| 2026-08-27 | **Drei Tatsachenberichtigungen, keine Entscheidungs-Änderung** (Review zu `slice-159`). **(1)** §Kontext sagt *„**Jeder** heute wirksame Marker dieser zwei Konsumenten trägt die Form bereits"* — richtig sind **65 von 66**. Der 66. ist keine bare Form, sondern eine Erwähnung **in Backticks**, die nur durch das Paritäts-Leck aus [ADR-0062](0062-ventil-marker-versions-ist-eine-benannte-grenze.md) wirkt; einen **baren** wirksamen Marker gibt es im Bestand nicht. **(2)** §Kontext nennt „557 Dateien"; die Messung dieses Commits steht bei **558 / 259 Marker-Prosa-Zeilen / 66 wirksam / 193 nur in Inline-Code**. **(3)** §Konsequenzen sagt *„damit ist **jede** Erwähnungs-Form dieser zwei Konsumenten entschärft"* — entschärft ist die **blanke** Erwähnung. Gemessen wirken weiter: eine escapte Kommentar-Erwähnung, eine in einem HTML-Attribut und eine in einem eingerückten Code-Block. Die haltbare Aussage über die Änderung ist eine andere und stärker: die Bedingung ist **monoton verengend** und kann keinen neuen stillen Grün-Pfad erzeugen |
+| 2026-08-27 | **Zwei Grenzen der Form-Bedingung nachgetragen** (dieselbe Quelle), beide gemessen und als Probe festgenagelt: geprüft wird **zeilenweise** — ein Marker, dessen HTML-Kommentar auf einer früheren Zeile öffnet, gilt **nicht** (Falsch-Rot); und gefordert ist nur der **Öffner** vor dem Marker, nicht der Abschluss — ein nie geschlossener Kommentar wirkt. Die zweite ist die leise Richtung und damit die eigentliche Grenze; §Entscheidung 2 (*„vor dessen Ende"*) und die Spezifikation sind auf die tatsächliche Bedingung gezogen |

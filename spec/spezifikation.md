@@ -1187,11 +1187,15 @@ byte-identisch.
 
 1. Zeilen mit dem Marker `d-check:ignore` werden übersprungen. Erkannt wird er
    auf dem **gestrippten** Text (fence-bewusst und inline-code-frei,
-   §Achsen-Präzedenz): in Backticks ist er eine **Erwähnung**. Die
-   Kommentar-Klammer `<!-- … -->` ist **gefordert** (Begründung darin
-   empfohlen): die Form folgt der Kommentar-Lexik der Eingabe, und für dieses
-   Modul ist die Eingabe Markdown-Prosa. Konservativ: ein `>` vor dem Marker
-   im Kommentar lässt ihn **nicht** gelten. Der Marker wirkt ausschließlich auf
+   §Achsen-Präzedenz): in Backticks ist er eine **Erwähnung**. Der
+   Marker steht nach `<!--`, ohne dass ein `>` dazwischen liegt (Begründung
+   in der Klammer empfohlen): die Form folgt der Kommentar-Lexik der Eingabe,
+   und für dieses Modul ist die Eingabe Markdown-Prosa. **Zwei Grenzen:**
+   geprüft wird **zeilenweise** — ein Marker, dessen Kommentar auf einer
+   früheren Zeile öffnet, gilt **nicht** (Falsch-Rot, die laute Richtung); und
+   gefordert ist nur der **Öffner**, nicht der Abschluss — ein nie geschlossener
+   Kommentar wirkt. Ein `>` vor dem Marker im Kommentar lässt ihn **nicht**
+   gelten. Der Marker wirkt ausschließlich auf
    dieses Modul. ATX-Heading-Zeilen werden ebenso
    übersprungen: Titel sind keine Prosa-Referenzen (gleiche Ausnahme
    wie [DC-FA-ID-001.a](#dc-fa-id-001a--kennungs-prüfung); ein Marker

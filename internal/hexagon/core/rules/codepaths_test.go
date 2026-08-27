@@ -409,3 +409,89 @@ func TestIgnoreMarkerBleibtTokenBeiVersions(t *testing.T) {
 			len(res.Findings), res.Findings)
 	}
 }
+
+// DC-FA-CODE-001.a Schritt 1, die zwei GRENZEN der Form-Bedingung — beide
+// festgenagelt, damit sie benannt bleiben statt entdeckt zu werden (ADR-0063).
+//
+// (a) ZEILENWEISE: ein mehrzeiliger HTML-Kommentar ist legitimes Markdown, aber
+//     die Pruefung sieht nur die Zeile. Ein Marker, dessen Kommentar frueher
+//     oeffnet, gilt nicht — Falsch-Rot, also die laute Richtung.
+// (b) NUR DER OEFFNER: gefordert ist `<!--` vor dem Marker ohne `>` dazwischen,
+//     nicht der Abschluss. Ein nie geschlossener Kommentar wirkt also. Das ist
+//     die leise Richtung und deshalb die eigentliche Grenze.
+func TestIgnoreMarkerFormGrenzen(t *testing.T) {
+	cases := []struct {
+		name string
+		body string
+		want []string
+	}{
+		{"mehrzeiliger Kommentar wirkt nicht",
+			"<!-- Begruendung\nd-check:ignore und `./weg.md`\n-->\n",
+			[]string{"codepath-missing"}},
+		{"nie geschlossener Kommentar wirkt",
+			"Pfad `./weg.md` <!-- d-check:ignore\n",
+			nil},
+		{"Marker nach geschlossenem Kommentar wirkt nicht",
+			"<!-- x --> Pfad `./weg.md` d-check:ignore\n",
+			[]string{"codepath-missing"}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			m := coretest.NewMemFS(map[string]string{"docs/a.md": tc.body})
+			res, err := Run(m, nil, model.Config{}, []string{"codepaths"})
+			if err != nil {
+				t.Fatalf("Run(codepaths): %v", err)
+			}
+			var got []string
+			for _, f := range res.Findings {
+				got = append(got, f.Reason)
+			}
+			if fmt.Sprint(got) != fmt.Sprint(tc.want) {
+				t.Fatalf("%s: %v, want %v", tc.name, got, tc.want)
+			}
+		})
+	}
+}
+
+// DC-FA-DIAG-001.a: die dritte Assertion, die ADR-0054 Entscheidung 4 je
+// Konsument verlangt. Sie liess sich mit der Prosa-Konstellation der uebrigen
+// Faelle nicht bauen — diagrams liest keine Prosa-Zeilen —, also hier in seiner
+// eigenen: eine Diagramm-Fence-Zeile und ihre Oeffnungszeile.
+//
+// Belegt wird die FORM-Halfte: der blanke Token wirkt dort weiter, wo bei
+// codepaths/ids nur der HTML-Kommentar gilt. Ohne diesen Test waere die
+// Token-Festlegung der Spezifikation eine Aussage ohne Probe.
+func TestIgnoreMarkerBleibtTokenBeiDiagrams(t *testing.T) {
+	cfg := model.Config{}
+	cfg.Diagrams.Patterns = []model.DiagramPattern{{
+		Regex:     regexp.MustCompile(`ARC-\d{3}`),
+		DefinedIn: "docs/arc.md",
+	}}
+	cases := []struct {
+		name string
+		body string
+		want int
+	}{
+		{"Kontrolle ohne Marker",
+			"# D\n\n```mermaid\ngraph TD\n  A[ARC-900]\n```\n", 1},
+		{"blanker Token auf der Diagramm-Zeile",
+			"# D\n\n```mermaid\ngraph TD\n  A[ARC-900] %% d-check:ignore\n```\n", 0},
+		{"blanker Token auf der Oeffnungszeile nimmt den Block",
+			"# D\n\n```mermaid d-check:ignore (Beispiel)\ngraph TD\n  A[ARC-900]\n```\n", 0},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			m := coretest.NewMemFS(map[string]string{
+				"docs/arc.md": "Definitions-Ort\n",
+				"docs/d.md":   tc.body,
+			})
+			res, err := Run(m, nil, cfg, []string{"diagrams"})
+			if err != nil {
+				t.Fatalf("Run(diagrams): %v", err)
+			}
+			if len(res.Findings) != tc.want {
+				t.Fatalf("%s: %d Befund(e), want %d (%v)", tc.name, len(res.Findings), tc.want, res.Findings)
+			}
+		})
+	}
+}

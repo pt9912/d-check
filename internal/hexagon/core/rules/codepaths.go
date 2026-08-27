@@ -17,11 +17,15 @@ const ReasonCodepathMissing = "codepath-missing"
 // honorieren ihn nicht — ihre deterministischen Befunde werden behoben, nicht
 // unterdrückt (DC-FA-CODE-001).
 //
-// WO ER GILT, IST JE MODUL VERSCHIEDEN (ADR-0062). codepaths und ids lesen ihn
+// WO UND IN WELCHER FORM ER GILT, IST JE MODUL VERSCHIEDEN (ADR-0062, ADR-0063).
+// codepaths und ids lesen ihn
 // auf dem inline-code-gestrippten Text — der Marker in Backticks ist dort eine
 // ERWÄHNUNG. versions liest alle Zeilen und diagrams die Zeilen innerhalb eines
 // Fence samt Öffnungszeile (dort nimmt er den ganzen Block aus); beide lesen
-// ihn weiter ROH.
+// ihn weiter ROH — und dort ist er ein blanker TOKEN, waehrend er bei codepaths
+// und ids in einem HTML-Kommentar stehen muss (die Kommentar-Lexik folgt der
+// Eingabe: Markdown hier, die Diagramm-Sprache dort, keine einheitliche bei
+// versions). Die Erkennung selbst steht in markerLines (ids.go).
 //
 // GRENZE, benannt statt behoben: bei versions ist das eine Abgrenzung, keine
 // andere Frage — seine Eingabe enthält Prosa-Zeilen, und auf ihnen antwortet

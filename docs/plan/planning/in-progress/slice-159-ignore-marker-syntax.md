@@ -76,11 +76,20 @@ richtig gemeldet statt aufgelöst hat.
 **Die Zahlen dieses Abschnitts sind Stand vor
 [slice-146](../done/slice-146-ignore-marker-wirkung.md)** und nicht mehr die
 Menge, über die hier entschieden wird. Nachgemessen mit der Produkt-Lexik zum
-Zeitpunkt dieses Slice: **558** getrackte Dateien, **249** Marker-Prosa-Zeilen,
-**66** davon wirksam, **183** nur in Inline-Code (die sind seit slice-162
-entschärft). Unter den 66 wirksamen trägt genau **einer** die bare Form. Die
-Verengung auf die Kommentar-Form kostet im Bestand deshalb **null** Befunde —
-was sie nicht folgenlos macht, sondern nur billig.
+Zeitpunkt dieses Slice: **558** getrackte Dateien, **259** Marker-Prosa-Zeilen,
+**66** davon wirksam, **193** nur in Inline-Code (die sind seit slice-162
+entschärft). Die Verengung auf die Kommentar-Form kostet im Bestand deshalb
+**null** Befunde —
+und der Grund dafür ist eng: **65 der 66** wirksamen Marker tragen die Form
+bereits, der 66. ist eine Erwähnung in Backticks, die nur durch das
+Paritäts-Leck wirkt (benannte Grenze von
+[ADR-0062](../../adr/0062-ventil-marker-versions-ist-eine-benannte-grenze.md))
+und in einem für beide Konsumenten datei-weit ausgenommenen Verzeichnis liegt.
+Einen **baren** wirksamen Marker gibt es im Bestand nicht.
+
+**Auch §2 und §3 tragen denselben überholten Stand** — die Zahlen dort (87, 25,
+48, drei, fünf, 58, 185) stammen aus derselben Messung wie die oben. Der
+tatsächliche Preis dieses Slice ist **eine** Zeile, nicht drei.
 
 ## 2. Vorgehen
 

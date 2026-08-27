@@ -169,9 +169,15 @@ var commentMarkerRe = regexp.MustCompile(`<!--[^>]*` + ignoreMarker)
 // (ADR-0062, ADR-0063). LAGE: geprüft wird auf dem gestrippten Text — der
 // Marker in Backticks ist eine Erwähnung. FORM: er muss in einem
 // HTML-Kommentar stehen — das ist die Kommentar-Lexik von Markdown, und für
-// diese zwei Konsumenten ist Markdown die Eingabe. versions und diagrams
-// lesen andere Eingaben und haben deshalb eine andere Form; das ist keine
-// zweite Antwort, sondern eine andere Frage.
+// diese zwei Konsumenten ist Markdown die Eingabe. diagrams liest eine andere
+// Eingabe und hat deshalb eine andere Form — eine andere Frage. Bei versions
+// ist es dagegen eine BENANNTE GRENZE (ADR-0062 Entscheidung 3): seine Eingabe
+// enthaelt Prosa-Zeilen, und auf einer solchen antwortet das Produkt zweifach —
+// auf der Lage-Achse wie auf der Form-Achse.
+//
+// GRENZE der Form-Bedingung: geprueft wird ZEILENWEISE. Ein Marker, dessen
+// Kommentar auf einer frueheren Zeile oeffnet, gilt nicht (Falsch-Rot). Und
+// gefordert ist nur der OEFFNER vor dem Marker, nicht der Abschluss.
 func markerLines(prose []proseLine) map[int]bool {
 	stripped := stripInlineCodeByLine(prose)
 	var out map[int]bool

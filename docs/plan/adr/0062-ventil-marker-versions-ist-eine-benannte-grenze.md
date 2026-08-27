@@ -175,3 +175,10 @@ eintritt — heute tut es keine.
 **Wiedervorlage für Entscheidung 6**, wenn eine der vier ungefangenen Umgehungen
 im Bestand auftaucht; dann ist die Frage, ob die Klasse ein Werkzeug braucht,
 das Quelltext analysiert statt Zeilen zu lesen.
+
+## Geschichte
+
+| Datum | Ereignis |
+|---|---|
+| 2026-08-27 | Accepted (`slice-162`) |
+| 2026-08-27 | **Tatsachenberichtigung, keine Entscheidungs-Änderung.** §Re-Evaluierungs-Trigger sagt für Entscheidung 4 *„wenn eine der zwei Grenzen im Bestand eintritt — **heute tut es keine**"*. Das war beim Schreiben **falsch**: die Grenze *„Erzeugung ⇒ stilles Grün"* war an genau einer Zeile eingetreten (`docs/reviews/2026-06-21-slice-037-…md:225`, Marker in Backticks, wirksam durch ungerade Backtick-Parität des Absatzes — 221 Backticks). Der Trigger war damit erfüllt, ohne dass jemand entschieden hat. Aufgedeckt vom Review zu `slice-159`, dessen Form-Bedingung ([ADR-0063](0063-marker-form-folgt-der-kommentar-lexik-der-eingabe.md)) diese **eine Fundstelle** entfernt hat. **Die Grenze selbst besteht fort** — nur ihre Instanz ist weg; Entscheidung 4 bleibt unverändert |

@@ -15,7 +15,12 @@ import (
 //
 // GEGENSTAND ist die Frage „ist diese Zeile eine Direktive": jeder Zugriff auf
 // den Direktiven-Marker auf einer ROHEN Zeile. Die geteilte Antwort steht in
-// stripInlineCodeByLine; wer sie umgeht, steht unten mit Grund.
+// markerLines (ids.go) — sie traegt Lage UND Form; wer sie umgeht, steht unten
+// mit Grund.
+//
+// UNGEFANGEN, seit die Antwort zwei Haelften hat: wer den Marker auf dem
+// GESTRIPPTEN Text sucht, trifft die Lage und verfehlt die Form. Er liest nicht
+// roh und faellt deshalb durch dieses Sieb.
 //
 // GRENZE, benannt: der Wächter liest den QUELLTEXT dieses Pakets, nicht das
 // Verhalten. Er fängt die Schreibweise `pl.raw`/`raw` neben dem Marker — nicht

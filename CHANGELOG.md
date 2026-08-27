@@ -10,19 +10,24 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 - slice-159 — **Der Zeilen-Marker `d-check:ignore` braucht bei `codepaths` und
   `ids` die HTML-Kommentar-Form** (Lastenheft 0.69.0, ADR-0063). Eine **blanke**
-  Erwähnung in Prosa wirkt dort nicht mehr; zusammen mit der Lage-Regel aus
-  slice-162 ist damit **jede** Erwähnungs-Form dieser zwei Konsumenten
-  entschärft. **Die Form folgt der Kommentar-Lexik der Eingabe** und ist deshalb
-  je Modul verschieden: bei `versions` und `diagrams` bleibt der Marker ein
-  **Token** — im `mermaid`-Fence bildet die Diagramm-Sprache den Kommentar
-  (`%% d-check:ignore`), und eine Lexik je Fence-Sprache wäre ein
-  Grammatik-Parser. **Im Bestand kostenlos** (null zusätzliche Befunde über 558
-  Dateien); dass die Verengung dennoch wirkt, ist per Gegenprobe belegt.
-  **Konservativ:** ein `>` im Kommentar vor dem Marker lässt ihn nicht gelten —
-  ein verpasster Marker ist Falsch-Rot und laut, ein erfundener wäre stilles
-  Grün. **Der Preis, ausgewiesen:** wer den Marker setzt, muss wissen, für
-  welches Modul.
-
+  Erwähnung in Prosa wirkt dort nicht mehr; die in Backticks trug schon
+  slice-162 über die **Lage**. **Die Form folgt der Kommentar-Lexik der
+  Eingabe** und ist deshalb je Modul verschieden: bei `versions` und `diagrams`
+  bleibt der Marker ein **Token** — im `mermaid`-Fence bildet die
+  Diagramm-Sprache den Kommentar (`%% d-check:ignore`), und eine Lexik je
+  Fence-Sprache wäre ein Grammatik-Parser.
+  **Im Bestand kostenlos, und der Grund ist eng:** von **66** wirksamen Markern
+  über 558 Dateien tragen **65** die Form bereits; der 66. ist eine Erwähnung in
+  Backticks, die nur durch ein Paritäts-Leck wirkt und in einem für beide
+  Konsumenten datei-weit ausgenommenen Verzeichnis liegt. Der Repo-Lauf
+  **konnte** also nichts finden — der einzige Zähne-Beleg ist die konstruierte
+  Gegenprobe. Einen **baren** wirksamen Marker gibt es im Bestand nicht.
+  **Zwei Grenzen der Form-Bedingung sind benannt:** geprüft wird **zeilenweise**
+  (ein Marker, dessen Kommentar früher öffnet, gilt nicht — Falsch-Rot), und
+  gefordert ist nur der **Öffner**, nicht der Abschluss (ein nie geschlossener
+  Kommentar wirkt — die leise Richtung). Die Änderung ist **monoton verengend**:
+  sie kann keinen neuen stillen Grün-Pfad erzeugen. **Der Preis:** wer den
+  Marker setzt, muss wissen, für welches Modul.
 - slice-162 — **Der Zeilen-Marker `d-check:ignore` wirkt bei `codepaths` und `ids`
   nur noch außerhalb von Inline-Code** (Lastenheft 0.68.0, ADR-0061 in der
   Fassung von ADR-0062). In Backticks ist er eine **Erwähnung**, keine
