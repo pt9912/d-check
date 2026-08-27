@@ -62,4 +62,4 @@ zwei Mindest-Versions-Aussagen in `.a-check.yml` in v0.17.0 unverändert tragen.
 - **F-6** durch den fehlenden Satz und eine ehrlichere Formel.
 - **F-7** als `## Geschichte`-Zeile in ADR-0010.
 - **F-8** als Ausgang `weiter offen` mit
-  [slice-164](../plan/planning/in-progress/slice-164-nachtlauf-kadenz.md).
+  [slice-164](../plan/planning/done/slice-164-nachtlauf-kadenz.md).

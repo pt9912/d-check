@@ -91,7 +91,7 @@ dieser Slice ist er.
   die Lücke steht seit slice-142 als benannte Grenze im Kopf von
   [`upstream-drift.yml`](../../../../.github/workflows/upstream-drift.yml).
   Fällig ist sie trotzdem, und **jetzt** ist sie billig: geschnitten als
-  [slice-164](../in-progress/slice-164-nachtlauf-kadenz.md).
+  [slice-164](../done/slice-164-nachtlauf-kadenz.md).
 
 ## 6. Trigger
 
