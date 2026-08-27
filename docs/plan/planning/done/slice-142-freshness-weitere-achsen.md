@@ -53,16 +53,27 @@ Aufwand ohne Wirkung.
 
 - **Eine Achse ist billig zu bauen und teuer zu ignorieren.** Wächst die Zahl
   der Nachtlauf-Meldungen, sinkt die Aufmerksamkeit für jede einzelne. —
-  **Ausgang: entfallen.** Der Nachtlauf wächst um **eine** Achse, nicht um
-  zwei; die zweite ist mit Messung abgelehnt. Und die eine gebaute meldet beim
-  ersten Lauf einen echten Rückstand — sie beginnt nicht als Rauschen.
+  **Ausgang: eingetreten.** Der Nachtlauf wuchs von vier Achsen auf zwölf, und
+  **sechs** melden beim ersten Lauf Rückstand. Ein Nachtlauf, der jede Nacht
+  dasselbe Rot zeigt, verliert das Signal für die Achse, die *neu* rot wird —
+  genau der verwaiste Sensor, gegen den er gebaut wurde. Das Heben ist ein
+  bewusster Akt und damit nicht dieser Slice: geschnitten als
+  [slice-161](../open/slice-161-sechs-pins-heben.md).
 - **Digest-Achsen haben keine Tag-Semantik.** Die Gleich/Ungleich-Form der
   bestehenden Achsen trägt hier womöglich nicht. — **Ausgang: entfallen,
   gemessen.** Sie trägt sogar besser: bei Tags musste eigens begründet werden,
   dass Gleich/Ungleich statt eines Semver-Sorts genügt (beide Reihen sind
   monoton). Ein Digest hat gar keine Ordnung — „anders" ist die **einzige**
-  sinnvolle Aussage, und genau die macht der vorhandene Vergleicher. Die neue
-  Form brauchte deshalb keine neue Vergleichs-Semantik, nur eine neue Quelle.
+  sinnvolle Aussage, und genau die macht der vorhandene Vergleicher. Was die
+  Form doch kostete, ist das **Urteilswort**: `VERALTET` behauptete eine
+  Richtung, die es dort nicht gibt; die Digest-Achsen melden `ABWEICHEND`.
+- **Die Klassen-Definition könnte Mitglieder auslassen.** „Basis-Images" und
+  „Action-Pins" sind Namen, keine Aufzählung. — **Ausgang: eingetreten,
+  behoben.** Die erste Fassung ließ **vier** Pins aus: zwei Dockerfile-Stages
+  (mit der falschen Zusage, sie seien „über die Achsen darüber gewacht"), das
+  semgrep-Gate-Image und das a-check-Image. Beim a-check-Pin war der Grund
+  strukturell — seine Version stand nur im **Kommentar**, wo kein Sensor sie
+  liest; sie steht jetzt als `A_CHECK_VERSION` im Fragment.
 
 ## 6. Trigger
 
@@ -84,61 +95,84 @@ Gates: `make gate-consistency`, `make gates`.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-**Eine Achse gebaut, eine mit Messung abgelehnt — und die gebaute war beim
-ersten Lauf schon fällig.**
+**Zwölf Achsen statt vier — und die Entscheidung, die dieser Slice zuerst
+traf, stand auf einer Messung der falschen Menge.**
 
-**Die Messung zuerst, wie §2 es verlangt.** Gezählt wurde, wie oft sich jeder
-Pin seit seiner Einführung bewegt hat:
+**Die erste Messung war vollständig und richtig, nur über den falschen
+Bestand.** Gezählt wurde, wie viele verschiedene Werte jeder Pin **in unserer
+Historie** trug — also wie oft **wir** gehoben haben. Daraus las sich
+*„Action-Pins: null Bewegungen"* und *„`distroless`: nie bewegt"* wie eine
+Aussage über upstream, und sie trug eine Entscheidung: die Action-Achse wurde
+**abgelehnt**. Ein Bestand, den nur wir ändern, kann über einen Bestand, den
+nur andere ändern, nichts sagen. Als Klasse im Register:
+[`BEO-020`](../observations.md).
 
-| Klasse | verschiedene Werte in der Historie | gewacht |
+**Die direkte Messung — upstream fragen — kippte beide tragenden Sätze.** Die
+Ablehnung stand auf zweien: *„braucht eine eigene Quellen-Form"* und *„ein
+alter SHA ist kein Sicherheitsproblem"*. Der erste ist falsch, weil der
+**Tag-Kommentar** neben dem SHA genau die Größe trägt, die der vorhandene
+`releases/latest`-Zweig vergleicht — die Achse ist ein Extraktor, keine neue
+Quelle. Der zweite ist falsch, weil das Pinnen zwar das Umhängen eines Tags
+ausschließt, aber zugleich **blind für dessen Behebung** macht: `checkout`
+v6.0.2 steht gegen v7.0.1, `login-action` v4.2.0 gegen v4.6.0.
+
+**Und die Zusage, die zwei übrigen Basis-Images seien „über die Achsen darüber
+gewacht", war ebenfalls falsch — gemessen.** `make freshness-go` meldet `ok`,
+während `golang:1.27.0` einen **anderen Digest** trägt als unser Pin. Eine
+Tag-Achse wacht die **Version**, nicht den **Bau**; wer beide Pins führt,
+braucht beide Fragen. Das ist keine Feinheit, sondern der Grund, warum die
+Digest-Form überhaupt existiert.
+
+**Gebaut sind deshalb zwölf Achsen, in drei Formen:**
+
+| Form | Frage | Gegenstand |
 |---|---|---|
-| Go-Basis-Image | **drei** Digests | Tag ja, Digest bei gleichem Tag nein |
-| Lint-Basis-Image | **zwei** Digests | dito |
-| `distroless/static-debian12:nonroot` | **einer**, nie bewegt | **gar nicht** |
-| Action-Pins | **null** Bewegungen | Form ja, Gültigkeit nein |
+| Baseline-Skript | neuerer Tag **+** Content-Drift | vendorte Baseline |
+| Versions-Achsen | „gibt es einen neueren Tag" | Go, `golangci-lint`, `semgrep`, `a-check`, `checkout`, `login-action` |
+| Digest-Achsen | „trägt derselbe Tag einen anderen Digest" | die drei `Dockerfile`-Stages, `semgrep`, `a-check` |
 
-**Die Prämisse des Slice war falsch.** §1 sagte, der Sensor sei parametriert und
-je Achse *„wäre es eine Zeile"*. Er trägt zwei Quellen-Formen — beide
-beantworten *„gibt es einen neueren Tag"*. Ein Digest hat keinen Tag, ein
-Action-SHA keinen Release: **beide** Kandidaten brauchen eine **dritte
-Quellen-Form**, keinen Parameter.
+**Sechs melden beim ersten Lauf Rückstand** — beide Action-Pins, `semgrep`
+(1.167.0 gegen 1.175.0), `a-check` (v0.8.0 gegen v0.17.0) und zwei
+Basis-Image-Digests. Gehoben wird hier nichts: §3 sagt *melden, nicht heben*.
+Dass der Nachtlauf damit **dauerrot** startet, ist der eingetretene §5-Punkt und
+als [slice-161](../open/slice-161-sechs-pins-heben.md) geschnitten.
 
-**Gebaut: die Digest-Achse, und nur für einen Pin.** Der Tag
-`distroless/static-debian12:nonroot` trägt **keine Version** — für ihn gibt es
-keine Tag-Frische-Achse, weil es keinen Tag gibt, der sich bewegt; der Digest
-ist die einzige Handhabe. Die beiden anderen Basis-Images hängen an den zwei
-Toolchain-Variablen und sind über die vorhandenen Achsen gewacht; ihre
-Restlücke — ein Neubau **desselben** Tags — ist damit kleiner und schließt sich
-bei jedem Bump von selbst.
+**Drei Änderungen, die das Bauen erzwang, und jede schließt eine eigene Lücke.**
+Der `a-check`-Pin trug **keinen Tag** — seine Version stand nur im Kommentar,
+wo kein Sensor sie lesen kann; sie steht jetzt als `A_CHECK_VERSION` im
+Fragment, und die Referenz führt Tag **und** Digest wie die
+`Dockerfile`-Stages. Das `v`-Präfix wird jetzt **symmetrisch auf beiden Seiten**
+gestrippt: unsere Pins führen es uneinheitlich (`v2.13.1`, aber `1.167.0`), und
+der Kopf-Kommentar behauptete zuvor, das Strippen mache den Vergleich
+großzügiger — solange es symmetrisch geschieht, macht es ihn **richtig**. Und
+die Digest-Achsen melden `ABWEICHEND` statt `VERALTET`, weil Digests keine
+Ordnung haben.
 
-**Der erste Lauf meldet `VERALTET`:** Pin `sha256:d093aa3e…`, upstream
-`sha256:afa5c872…`. Der Tag wurde neu gebaut, und zweieinhalb Monate lang hat
-das niemand gesehen. Gehoben wird hier nichts — §3 sagt *melden, nicht heben*,
-wie bei den drei bestehenden Achsen.
+**Vier Kanten am Sensor, beim Einbau gefunden.** Der Werkzeug-Riegel für `curl`
+stand **vor** dem Dispatch — für die Digest-Form wäre er ein SKIP wegen eines
+Werkzeugs gewesen, das der Zweig gar nicht ruft, also ein stilles Abschalten aus
+dem falschen Grund; er steht jetzt je Zweig. `imagetools inspect` kennt keine
+eigene Zeitgrenze, deshalb steht ein `timeout` davor — die Fail-open-Zusage des
+Kopfes gilt für **jeden** Zweig, und ohne sie wäre eine hängende Verbindung ein
+Job-Timeout statt eines SKIP. Die **Pin-Seite** wird jetzt ebenso auf ihre Form
+geprüft wie die Upstream-Seite: der Pin kommt aus einer Textextraktion am
+`Dockerfile` und ist die fragilere Hälfte. Und die `ok`-Meldung sagte *„ist der
+neueste Stand"* — auch das eine Ordnungs-Behauptung; sie sagt jetzt *„entspricht
+dem Upstream-Stand"*.
 
-**Nicht gebaut: die Action-Achse, und der Grund ist gemessen.** Kein
-Action-Pin hat sich je bewegt, und die Gefahr, gegen die ein Pin schützt — ein
-umgehängter Tag — ist durch das Pinnen strukturell ausgeschlossen;
-`make workflow-pins` hält die Form. Was bliebe, ist *„der SHA ist alt"*, und das
-ist kein Sicherheitsproblem, sondern ein Aktualitäts-Wunsch ohne Dringlichkeit.
-Eine Achse, die nie meldet, senkt die Aufmerksamkeit für die, die melden.
+**Was offen bleibt, benannt.** Die Action-Achsen vergleichen den
+**Tag-Kommentar** gegen upstream, nicht den **SHA** gegen den Kommentar. Ob der
+gepinnte SHA den Commit bezeichnet, den sein Kommentar behauptet, ist eine
+andere Frage; sie bleibt die benannte Grenze von `make workflow-pins`
+([`AGENTS.md`](../../../../AGENTS.md) §3.9). Und keine Achse trägt eine
+**Kadenz**: sie melden jede Nacht, aber wer das Rot wann liest, steht nirgends —
+als dritter §5-Punkt von [slice-161](../open/slice-161-sechs-pins-heben.md)
+geführt.
 
-**Was die Ablehnung offen lässt:** die vom Slice genannte *Gültigkeit* — ob der
-gepinnte SHA den Commit bezeichnet, den sein Tag-Kommentar behauptet. Das ist
-eine andere Frage als Frische, sie bräuchte eine vierte Quellen-Form, und sie
-ist hier weder gemessen noch entschieden. [`AGENTS.md`](../../../../AGENTS.md)
-§3.9 führt sie bereits als benannte Grenze von `make workflow-pins`; dort
-bleibt sie.
-
-**Zwei Nebenbefunde am Sensor, beim Einbau gefunden.** Der Werkzeug-Riegel für
-`curl` stand **vor** dem Dispatch — für die Digest-Form wäre er ein SKIP wegen
-eines Werkzeugs gewesen, das der Zweig gar nicht ruft, also ein stilles
-Abschalten aus dem falschen Grund. Er steht jetzt je Zweig. Und der
-Kopf-Kommentar sagte „zwei Quellen-Formen" sowie eine Werkzeug-Liste ohne
-Docker; beides ist nachgezogen.
-
-**Sensors:** `make gates` (Exit 0, zehn Glieder, 544 Dateien, 0 Befunde) —
-`gate-consistency` grün belegt, dass das neue Target in `Makefile`,
-[`AGENTS.md`](../../../../AGENTS.md) §4 und
-[`harness/README.md`](../../../../harness/README.md) §Sensors konsistent
-deklariert ist. Die neue Achse ist gefahren, mit gelesener Meldung.
+**Sensors:** `make gates` (Exit 0, zehn Glieder, 545 Dateien, 0 Befunde),
+`make workflow-pins` (4 `uses:`-Einträge, alle SHA-gepinnt mit Tag-Kommentar),
+`make arch-check` (0 Befunde, gegen den getaggten a-check-Pin). Alle zwölf
+Achsen sind gefahren, mit gelesener Ausgabe; der netzlose `--compare`-Einstieg
+ist gegen beide Urteilsworte geprüft. Ein unabhängiger Review ist gelaufen —
+sein Urteil war *„nicht schließbar in der vorliegenden Form"*, und die zwei
+blockierenden Befunde sind die zwei oben widerlegten Entscheidungs-Aussagen.
