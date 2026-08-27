@@ -184,7 +184,7 @@ Voll-Scan"* —, ein wörtliches Zitat **ohne** `d-check:cite` ist damit der
 Normalfall im Bestand und überhaupt kein Gegenstand. Ebenso ein Verweis ohne
 Zitat. Und Zitate unter **16** normalisierten Zeichen prüft es gar nicht. Hinzu
 kommt, dass das Modul heute nicht aktivierbar ist
-([slice-152](../next/slice-152-citations-scharfschalten.md)).
+([slice-152](../in-progress/slice-152-citations-scharfschalten.md)).
 
 **Ein Widerspruch im eigenen Register, gemeldet statt übergangen.** Zwei Zeilen
 über `BEO-012` steht [`BEO-017`](../observations.md) in derselben Lage — der
