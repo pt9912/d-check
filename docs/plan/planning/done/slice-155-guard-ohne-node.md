@@ -91,27 +91,45 @@ in einen Zug gehört, entscheidet dieser Slice; getrennt gehalten werden muss di
 
 ## 4. Definition of Done
 
-- [ ] Der Wächter läuft ohne `node`; `command -v node` kommt darin nicht mehr
+- [x] Der Wächter läuft ohne `node`; `command -v node` kommt darin nicht mehr
       vor.
-- [ ] **Alle** Proben der bisherigen Fassung laufen gegen die neue, mit
+- [x] **Alle** Proben der bisherigen Fassung laufen gegen die neue, mit
       gelesener Meldung — Blocker wie Gegenkontrollen.
-- [ ] Die Extraktion ist **fail-closed** belegt: eine unlesbare oder
+- [x] Die Extraktion ist **fail-closed** belegt: eine unlesbare oder
       unerwartete Eingabe blockiert.
-- [ ] Die Falsch-Positiv-Klasse ist gemessen und benannt — geerbt oder nicht.
-- [ ] [`AGENTS.md`](../../../../AGENTS.md) §3.1 und
+- [x] Die Falsch-Positiv-Klasse ist gemessen und benannt — geerbt oder nicht.
+- [x] [`AGENTS.md`](../../../../AGENTS.md) §3.1 und
       [`MR-041`](../../../../harness/conventions.md#mr-041)s Auflösungs-Trigger
       sind eingelöst; die Inkonsistenz-Zeile fällt.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] `make gates` grün (Exit explizit); unabhängiger Review.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Ein Wächter, der schlechter prüft als vorher, ist eine Verschlechterung mit
   besserem Gewissen.** Die Übersetzung darf keine Prüfung verlieren; die
-  Proben-Menge entscheidet das, nicht der Eindruck. — **Ausgang:** *(bei Closure)*
+  Proben-Menge entscheidet das, nicht der Eindruck. — **Ausgang: entfallen.**
+  Der unabhängige Review hat die alte gegen die neue Fassung Zeile für Zeile
+  gelesen und die Wortlisten mechanisch verglichen: `BLOCKED` (24 Wörter),
+  `PREFIXES` (8) und `SHELLS` (5) sind byte-identisch, Segmentierung,
+  Präfix-Überspringen, Basename-Kürzung, Versions-Suffix-Muster,
+  `-c`-Bündel-Rekursion und Tiefenlimit äquivalent. **Eine** Verhaltensdifferenz
+  ist gemessen: die alte Fassung trennte an vertikalem Tabulator und NBSP, die
+  neue nicht — dafür trennt sie an `\r`, was die alte nicht tat. Der Verlust ist
+  keiner, weil `bash` an VT/NBSP ebenfalls nicht trennt; das neue Modell ist dort
+  **treuer**. Das ist die Messung, die [`BEO-011`](../observations.md) verlangt —
+  sie trägt „nichts Wesentliches verloren", nicht „prüft dasselbe".
 - **JSON in `bash` verleitet zur Bastelei.** Jede Zeile, die „meistens" richtig
   liegt, ist hier eine Sicherheits-Aussage. Fail-closed ist die einzige
   vertretbare Voreinstellung, und sie gehört belegt statt behauptet. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang: eingetreten, und dreimal.** Der Review fand drei Eingaben, bei
+  denen der Extraktor einen Befehl lieferte, der nicht dem entsprach, was das
+  Werkzeug ausgeführt hätte: zwei Strings ohne Trenner (der zweite überschrieb
+  den ersten), ein `\u`-Escape im Schlüssel (verkürzt dekodiert, Pfad verfehlt),
+  und — außerhalb des Extraktors — ein fehlendes `PATH`, das den Wächter mit
+  Exit 127 ohne Ausgabe enden ließ. Alle drei sind in `1fd1d6a` geschlossen und
+  als Proben gebunden; keiner war über den Befehlsinhalt erreichbar, weil das
+  Werkzeug die Hook-Eingabe serialisiert. **Der Ausgang ist trotzdem
+  „eingetreten": die Zusage stand, bevor sie stimmte.**
 
 ## 6. Trigger
 
@@ -139,4 +157,52 @@ die zugelassene Werkzeug-Klasse.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+Der Wächter läuft in der Klasse, die er durchsetzt: reines `bash`, das Kommando
+aus einem zeichenweisen POSIX-awk-Scanner. `awk` ist die einzige externe
+Abhängigkeit, und sie steht in der Host-Klasse, die §3.1 ohnehin nennt.
+[`MR-041`](../../../../harness/conventions.md#mr-041) ist damit aufgelöst;
+[`MR-042`](../../../../harness/conventions.md#mr-042) trägt die
+`node`-Sperre fort, die dort mitdrinhing — ein Move nach `done/` ohne Nachfolger
+hätte ihr den Träger genommen.
+
+**Was der Slice über sein Ziel hinaus gefunden hat.** Die Vorlage des
+Schwester-Repos hatte eine Lücke, die hier nicht mit übernommen wurde: der
+Scanner lief über malformes JSON hinweg und lieferte einen **abgeschnittenen**
+Befehl. Der unabhängige Review fand zwei weitere derselben Familie und eine
+dritte im Wächter selbst. Alle vier eint dieselbe Form — der Wächter liefert
+ein Ergebnis, das wie ein Urteil aussieht und keines ist. Das ist die teuerste
+Klasse, die dieser Slice berührt hat, und sie war in keiner DoD-Zeile
+vorhergesehen.
+
+**Zwei Aussagen dieses Slice waren zu weit, beide gemessen korrigiert.** Die
+Commit-Botschaft von `617fbfa` nennt **24** Proben; es waren **28**, und 24 ist
+die Länge der `BLOCKED`-Liste — eine Zahl aus der Nachbarschaft statt aus der
+Messung ([`BEO-009`](../observations.md) Richtung a). Die Botschaft steht so im
+Verlauf und wird nicht umgeschrieben; die Zahl steht heute bei 33 und wird
+gefahren, nicht behauptet. Und
+[`MR-042`](../../../../harness/conventions.md#mr-042) sagte „einzige
+Host-Abhängigkeit", während der Wächter noch `dirname` und `cat` rief — die
+Zusage stimmt erst seit `1fd1d6a`.
+
+**Was liegen bleibt und wo es steht.** Die Antwortform ist die veraltete, und
+mit dem Wegfall des `exit 2`-Pfades läuft jetzt **jeder** Block darüber — der
+Slice hatte die Frage ausdrücklich offengelassen, der Ausgang ist
+[slice-156](../open/slice-156-hook-antwortform.md). Die vier Umgehungs-Klassen
+der Segmentierung (Shell-Schlüsselwort als Kopf, Wrapper außerhalb der
+Präfix-Liste, wort-interne Splices, escapte Quotes) sind geerbt, gemessen und
+als Grenz-Tabelle in
+[`MR-042`](../../../../harness/conventions.md#mr-042) geführt; sie bleiben —
+ein Wächter, der sie schlösse, wäre ein Parser, und die Regel hängt nicht an
+ihm.
+
+**Ein Nebenbefund gehört zum Werkzeug-Einstieg, nicht zum Wächter.** Der
+Reviewer hat als Messung berichtet, was ihm vor seinem ersten eigenen
+Tool-Aufruf im Kontext lag: `CLAUDE.md` **und** `AGENTS.md`. Damit ist die
+Mechanik, die [`MR-043`](../../../../harness/conventions.md#mr-043) behauptet,
+an einem Sub-Agenten belegt statt erschlossen — die Zusage hätte sonst genau
+die Form gehabt, gegen die dieser Slice angetreten ist.
+
+**Sensors:** `make gates` (Exit 0, zehn Glieder, 526 Dateien, 0 Befunde),
+`make guard-probe` (33 Proben, 0 Fehlschläge), `make planning-check` (Exit 0).
+Ein unabhängiger Review ist gelaufen; seine fünf MEDIUM und sechs LOW sind in
+`1fd1d6a` eingearbeitet, zwei davon als benannte Grenze statt als Fix.
