@@ -99,6 +99,14 @@ gestrichene Sorge, keine Umstrukturierung.
   dem einen Anker, der zuletzt dazukam;
   [`BEO-012`](../observations.md) — vor jedem Zitat der Baseline deren
   Geltungsbereich lesen.
+- **Nachtlauf-Stand lesen** (`make nightly-state`, dritte Vorprüfung nach
+  [`MR-053`](../../../../harness/conventions.md#mr-053)): **ROT**, jüngster
+  Lauf `2026-08-27T10:49:23Z`, `head_sha 48cf132`. **Gelesen:** derselbe Lauf,
+  den [slice-164](../done/slice-164-nachtlauf-kadenz.md) §7 bereits eingeordnet
+  hat — er lief vor den sechs Pin-Hebungen aus
+  [slice-161](../done/slice-161-sechs-pins-heben.md), die zum Dispatch noch
+  nicht auf `origin/main` lagen. Keine neue Meldung; der nächste Lauf ist die
+  Probe darauf, und die steht noch aus.
 
 Slice-ID: slice-160. Betroffene IDs: — (kein `DC-`-Bezug; Rollen-Skill).
 Module: — . Gates: `make gates`.
