@@ -3,9 +3,9 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon verlangt von der
   Wurzel-Einstiegsdatei genau dies —
-  [`grundlagen-durchsetzungsschicht.md` §Referenz-Implementierung](../../.harness/baseline/v5.12.0/regelwerk/grundlagen-durchsetzungsschicht.md):
+  [`grundlagen-durchsetzungsschicht.md` §Referenz-Implementierung](../../.harness/baseline/v5.12.0/regelwerk/grundlagen-durchsetzungsschicht.md):   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/grundlagen-durchsetzungsschicht.md:101-103 -->
   *„Sie bringt `AGENTS.md` in den Lauf-Kontext, wo Modul 9 es für jeden Lauf
-  verlangt. Sie **verweist** dorthin und legt nichts fest."* — die Fettung im
+  verlangt. Sie **verweist** dorthin und legt nichts fest"* — die Fettung im
   zweiten Satz steht so in der Quelle, das tragende Verb *bringt* nicht; die
   Beweislast dieses Eintrags hängt an ihm und wird hier daneben genannt statt im
   Zitat gesetzt. Womit sie das tut, ist werkzeugabhängig und bleibt offen; die

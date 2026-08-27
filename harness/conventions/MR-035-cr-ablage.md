@@ -1,9 +1,9 @@
 # MR-035 — Ausgehende Change Requests an die Baseline liegen im Repo
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** keine. Der Kanon kennt genau **einen** Change
-  Request: den eingehenden, *„Externer Vorgang, in dem eine Vertragsänderung
-  mit dem Auftraggeber vereinbart wird — bewusst kein Harness-Konstrukt"*
+- **Ersetzt-Baseline-Regel:** keine. Der Kanon kennt genau **einen** Change   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/grundlagen-begriffe.md:45-45 -->
+  Request: den eingehenden, „Externer Vorgang, in dem eine Vertragsänderung
+  mit dem Auftraggeber vereinbart wird — **bewusst kein Harness-Konstrukt**"
   ([`grundlagen-begriffe.md`](../../.harness/baseline/v5.12.0/regelwerk/grundlagen-begriffe.md)).
   Für den **ausgehenden** — eine Bitte dieses Repos an die Quelle seiner
   Baseline — hat er weder Begriff noch Ablage; *Konsumenten-CR* ist eine

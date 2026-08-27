@@ -23,6 +23,7 @@ func netlessDocModules() []string {
 	return []string{
 		"links", "anchors", "ids", "matrix", "codepaths",
 		"spans", "hostpaths", "versions", "structure", "diagrams",
+		"citations",
 	}
 }
 

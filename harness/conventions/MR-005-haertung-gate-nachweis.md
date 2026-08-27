@@ -8,7 +8,7 @@
   [`MR-004`](../conventions.md#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild)
   übernommenen b-cad-Mechanik:
   (a) Der Working-Tree-Hash ist **inhaltsbasiert** (sha256 über alle getrackten +
-  untracked Dateiinhalte) statt diff-basiert — genau die Design-Eigenschaft
+  untracked Dateiinhalte) statt diff-basiert — genau die Design-Eigenschaft   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/grundlagen-durchsetzungsschicht.md:50-50 -->
   „Nachweis über Inhalt, nicht Diff" der Durchsetzungsschicht. Damit gilt der
   Gate-Nachweis über Commits hinweg (gleicher Inhalt = gleicher Hash), und ein
   Commit *ohne* Gate-Lauf macht den Stop-Hook nicht mehr grün. Restlücke bleibt:

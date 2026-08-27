@@ -4,7 +4,7 @@
 - **Ersetzt-Baseline-Regel:** [`grundlagen-source-precedence.md`](../../.harness/baseline/v5.12.0/regelwerk/grundlagen-source-precedence.md)
   §Source Precedence, Absatz *Wann die CR-Pflicht beginnt* — *„Vor `Accepted`
   ist das Lastenheft ein Entwurf — frei änderbar, ohne Change Request, **ohne
-  Historie-Zeile**."*
+  Historie-Zeile**."* (Hervorhebung hinzugefügt — die Quelle setzt sie nicht; deshalb trägt das Zitat keine `d-check:cite`-Direktive)
 - **Datum:** 2026-08-23
 - **Geltungsbereich:** [`spec/lastenheft.md`](../../spec/lastenheft.md) —
   jede Änderung am Dokument, solange sein `**Status:**` unter `Accepted` liegt.
@@ -15,7 +15,7 @@
   **Warum das ein Eintrag ist und keine bloße Gewohnheit:** Der Kanon weist
   genau diese Entscheidung dem Konventionsspeicher zu — *„Welche Stelle der
   Version steigt, entscheidet das Repo und gehört in den Adaptions-Block von
-  `harness/conventions.md`."* Und der Freshness-Audit liest **diese Liste**;
+  `harness/conventions.md`."* (Hervorhebung fortgelassen — die Quelle fettet den ersten Halbsatz; ebenfalls ohne Direktive) Und der Freshness-Audit liest **diese Liste**;
   ohne Eintrag wäre die Abweichung für ihn unsichtbar. Die zunächst gewählte
   Abgrenzung — *„eine Freiheit nicht nutzen ist keine Abweichung"* —
   widerspricht zudem

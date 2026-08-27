@@ -13,7 +13,18 @@
 scan:
   roots: ["."]
   ignore: [".harness/baseline/**", ".harness/cache/**"]
-modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions, structure, diagrams]
+# citations ist das EINZIGE fail-closed Modul dieser Liste: eine strukturell
+# unbrauchbare Direktive beendet den ganzen Lauf mit Exit 2, auch im
+# pre-commit-Hook. Tragbar, seit die Direktive nur ausserhalb von Inline-Code
+# zaehlt (ADR-0060) — die Syntax-Doku ist damit keine Fundstelle mehr.
+# Die planmaessige Rot-Quelle ist der Baseline-Bump: er verschiebt die
+# Zeilenspannen, und MR-051 legt das Neu-Ankern in die Bump-Prozedur.
+# Grenze: d-check:ignore greift hier NICHT — das Modul kennt keine feine
+# Ventil-Achse; grob wirken nur scan.ignore und citations.scope.
+#
+# Diese Liste hat Spiegel ausserhalb dieser Datei (BEO-010): FOCUS_DISABLE im
+# Makefile und netlessDocModules() im Go-Test. Beide sind hier nachzuziehen.
+modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions, structure, diagrams, citations]
 
 # Geteiltes Referenz-Ventil (DC-FA-REF-001): Ziel-Achsen-Pendant zu scan.ignore
 # (jenes entfernt Quell-Dateien, dieses Ziel-Referenzen), honoriert von
