@@ -143,31 +143,35 @@ structure:
 
   # Die zweite Haelfte der urteilsfreien Drei-Ausgaenge-Pruefung: der Ausgang
   # eines Risikos traegt eines der drei kanonischen Woerter, nicht Freitext.
-  # Der Wachter darueber (die Platzhalter-Regel) faengt den VERGESSENEN Ausgang;
-  # diese Regel faengt den ERFUNDENEN (MR-049).
+  # Die Platzhalter-Regel darueber faengt den VERGESSENEN Ausgang; diese faengt
+  # den ERFUNDENEN (MR-049).
   #
-  # WAS SIE NICHT KANN, gemessen statt geschaetzt: die Bedingungen wirken auf
-  # den ganzen bereinigten Abschnitts-Text, nicht je Risiko-Eintrag, und RE2
-  # kennt keinen Negativ-Lookahead. Ein Abschnitt mit zwei Risiken, von denen
-  # eines kanonisch und eines Freitext ausgeht, laeuft deshalb GRUEN durch.
-  # Gedeckt ist der Abschnitt, in dem KEIN Ausgang kanonisch ist.
+  # Das Muster ist das KOMPLEMENT der drei erlaubten Woerter bis Tiefe fuenf,
+  # als forbid-pattern: es feuert JE VORKOMMEN des Markers, nicht einmal je
+  # Abschnitt. Ein §5 mit einem kanonischen und einem Freitext-Ausgang wird
+  # damit gemeldet. Der Trennteil [\s*_]* deckt Zeilenumbruch, Fettung und
+  # Kursivierung zwischen Marker und Wort -- ohne ihn meldete die Regel die
+  # 80-Spalten-Umbrueche dieses Repos als Verstoss.
   #
-  # `weiter offen` fehlt in der Alternation mit Absicht: dieser dritte Ausgang
-  # traegt seinen Beleg als BEO-Kennung, und die Register-Paarung ist eine
-  # eigene Frage.
+  # WAS SIE NICHT SIEHT, gemessen:
+  #   - ein Risiko GANZ OHNE Marker (kein Vorkommen, kein Match). Im Bestand
+  #     drei Dateien: slice-106, slice-110, slice-111.
+  #   - ein Ausgangswort in Inline-Code -- die Bereinigung leert die Spanne,
+  #     der Marker steht dann vor Freitext und die Regel meldet FALSCH.
+  #   - Abweichungen ab dem sechsten Zeichen (`eingetreXen` laeuft durch).
   #
-  # Die Ausnahme nennt den ABGESCHLOSSENEN Altbestand (slice-0xx, slice-1[0-3]x),
-  # nicht die offene Zukunft: ein Zahlen-Glob auf die neuen Nummern hoerte bei
-  # slice-200 still auf zu greifen. So bleibt jeder kuenftige Slice gedeckt,
-  # ohne dass ein Retrofit erzwungen wird, den niemand beschlossen hat.
-  # Gemessen am Bestand: ohne die Ausnahme 121 Befunde (107 ohne §5-Abschnitt,
-  # 14 mit Freitext-Ausgang), mit ihr null.
+  # Die Ausnahme nennt den ABGESCHLOSSENEN Altbestand mit fester Ziffernzahl.
+  # `slice-1[0-3]*` waere die naheliegende Form und naehme auch slice-1000 bis
+  # slice-1399 heraus -- dieselbe lautlose Klasse, die ein Glob auf die neuen
+  # Nummern erzeugt haette. Gemessen am Bestand: ohne Ausnahme 122 Befunde
+  # (107 `section-missing`, weil die aelteren Slices ihr §5 unter anderem Titel
+  # fuehren, plus 15 Freitext-Ausgaenge), mit ihr null.
   - files: "docs/plan/planning/done/slice-*.md"
     exempt-paths:
-      - "docs/plan/planning/done/slice-0*"
-      - "docs/plan/planning/done/slice-1[0-3]*"
+      - "docs/plan/planning/done/slice-0??-*"
+      - "docs/plan/planning/done/slice-1[0-3]?-*"
     section: "## 5. Abnahme-Punkte / Risiken"
-    require-pattern: '\*\*Ausgang:? ?\*?\*? ?\*?(eingetreten|entfallen)'
+    forbid-pattern: '\*\*Ausgang:[\s*_]*(?:[^ew\s*_]|e[^in]|ei[^n]|ein[^g]|eing[^e]|en[^t]|ent[^f]|entf[^a]|w[^e]|we[^i]|wei[^t]|weit[^e]|weite[^r])'
 
   # Jede Wellen-Ergebnisnotiz beantwortet die erste Pflichtfrage.
   - files: "docs/plan/planning/done/welle-*-results.md"

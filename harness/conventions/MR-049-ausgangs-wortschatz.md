@@ -1,4 +1,4 @@
-# MR-049 — Der Ausgang eines Risikos trägt eines der drei Wörter (schärft MR-006)
+# MR-049 — Der Ausgang eines Risikos trägt eines der drei Wörter
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon benennt die urteilsfreie Hälfte
@@ -11,46 +11,63 @@
 - **Datum:** 2026-08-27
 - **Geltungsbereich:** [`.d-check.closure.yml`](../../.d-check.closure.yml),
   Abschnitt §5 der Slice-Dateien unter `docs/plan/planning/done/`.
-- **Adaption:** Der Ausgangs-Wortschatz ist **geschlossen**: `eingetreten` ·
-  `entfallen` · `weiter offen`. Eine `structure`-Regel im Closure-Profil hält
-  die ersten beiden; sie läuft in `make verify-closure-notes`.
+- **Adaption:** Der Ausgangs-Wortschatz ist **geschlossen** und umfasst alle
+  drei Kanon-Ausgänge: `eingetreten` · `entfallen` · `weiter offen`. Eine
+  `structure`-Regel im Closure-Profil hält ihn; sie läuft in
+  `make verify-closure-notes`.
 
   **Sie ergänzt die vorhandene Regel, sie ersetzt sie nicht.** Die
   Platzhalter-Regel fängt den **vergessenen** Ausgang, diese den **erfundenen** —
-  die Gestalt aus
-  [`BEO-015`](../../docs/plan/planning/observations.md).
+  die Gestalt aus [`BEO-015`](../../docs/plan/planning/observations.md).
 
-  **`weiter offen` steht mit Absicht nicht in der Alternation:** dieser Ausgang
-  trägt seinen Beleg als `BEO`-Kennung, und die Paarung Register ↔ Beleg ist
-  eine eigene Frage mit eigener Mechanik.
+  **Die Form ist ein `forbid-pattern` über das Komplement der drei Wörter**, kein
+  `require-pattern` über ihr Vorkommen. Der Unterschied entscheidet die
+  Reichweite: `forbid-pattern` ist über **jedes Vorkommen** des Markers
+  quantifiziert und trifft damit **je Risiko**, während ein `require-pattern`
+  nur sagt, dass *irgendwo* im Abschnitt ein erlaubtes Wort steht — ein §5 mit
+  einem kanonischen und einem Freitext-Ausgang liefe darunter grün durch.
 - **Grenzen — gemessen, nicht geschätzt.**
 
-  **Je Abschnitt, nicht je Risiko.** Die `structure`-Bedingungen wirken auf den
-  **ganzen bereinigten Abschnitts-Text**, und RE2 kennt keinen
-  Negativ-Lookahead: `(?!` wird vom Produkt mit *„invalid or unsupported Perl
-  syntax"* abgewiesen. Ein §5 mit zwei Risiken, von denen eines kanonisch und
-  eines als Freitext ausgeht, läuft deshalb **grün** durch. Gedeckt ist der
-  Abschnitt, in dem **kein** Ausgang kanonisch ist. Die Korrelation Risiko ↔
-  Ausgang bleibt damit ungedeckt; wer sie will, braucht ein Produkt-Delta.
+  **Der Lookahead-Weg ist versperrt, der Komplement-Weg nicht.** RE2 weist
+  `(?!` mit *„invalid or unsupported Perl syntax"* ab. Das schließt aber nur
+  eine Schreibweise aus: reguläre Sprachen sind unter Komplement abgeschlossen,
+  und das Komplement einer endlichen Wortmenge ist als Präfix-Alternation
+  darstellbar. Genau die steht in der Regel — bis **Tiefe fünf**. Eine
+  Abweichung erst ab dem sechsten Zeichen (`eingetreXen`) läuft durch.
+
+  **Drei Formen sieht die Regel nicht.** Ein Risiko **ganz ohne** Marker liefert
+  kein Vorkommen und damit kein Match — im Bestand betrifft das `slice-106`,
+  `slice-110` und `slice-111`, deren §5 Risiken führt und keinen einzigen
+  Ausgang; das ist der Kanon-Kernsatz *„Ein Slice geht nicht nach `done/`,
+  während ein Risiko ohne Ausgang dasteht"*, dreimal verletzt und von **keiner**
+  der beiden Regeln erreichbar. Ein Ausgangswort in **Inline-Code** wird von der
+  Abschnitts-Bereinigung geleert, und die Regel meldet dann **falsch**. Und der
+  Befund zeigt auf die **Abschnitts-Überschrift**, nicht auf das verletzende
+  Risiko — bei einer Abschnitts-Regel geht es nicht anders.
 
   **Der Altbestand ist ausgenommen, und die Ausnahme zeigt nach hinten.**
-  Ohne sie meldet die Regel **121** Befunde: **107** Slices tragen gar keinen
-  §5-Abschnitt (ältere Haus-Form), **14** der übrigen 43 tragen einen
-  Freitext-Ausgang. Ein Retrofit über 121 Dateien hat niemand beschlossen, und
-  der Kurs hat die Ausweitung ausdrücklich als Repo-Entscheidung und **kein**
-  Konformitätsthema bezeichnet.
+  Ohne sie meldet die Regel **122** Befunde: **107** `section-missing`, weil die
+  älteren Slices ihr §5 unter einem anderen Titel führen (`## 5. Trigger` 43 ·
+  `## 5. Closure-Trigger` 31 · `## 5. Risiken / offene Punkte` 19 · weitere) —
+  eine `## 5.`-Überschrift tragen **alle 150** —, plus **15** Freitext-Ausgänge.
+  Ein Retrofit über 122 Dateien hat niemand beschlossen, und der Kurs hat die
+  Ausweitung ausdrücklich als Repo-Entscheidung und **kein** Konformitätsthema
+  bezeichnet.
 
-  Die Ausnahme nennt deshalb den **abgeschlossenen** Altbestand (`slice-0*`,
-  `slice-1[0-3]*`) und nicht die offene Zukunft. Ein Zahlen-Glob auf die neuen
-  Nummern — `slice-1[4-9][0-9]` — wäre die naheliegende Form und hörte bei
-  `slice-200` **still** auf zu greifen: dieselbe Klasse von lautlosem Ausfall,
-  die dieses Repo zuletzt zweimal getroffen hat.
-- **Begründung:** Der Wortschatz war offen, und das ist gemessen: über den
-  Bestand tragen die Ausgänge rund zwanzig verschiedene Anfangswörter, darunter
-  `behoben`, `erledigt`, `gemessen`, `gehalten`, `aufgelöst`, `benannt` — und
-  blanken Freitext. Jedes einzelne liest sich vernünftig; zusammen ist die
-  geschlossene Menge des Kanons keine mehr, und ein vierter Ausgang fällt nicht
-  auf, weil er wie der fünfte klingt.
+  Die Ausnahme nennt deshalb den **abgeschlossenen** Altbestand mit **fester
+  Ziffernzahl** (`slice-0??-*`, `slice-1[0-3]?-*`). Die naheliegende Kurzform
+  `slice-1[0-3]*` nähme zusätzlich `slice-1000` bis `slice-1399` heraus:
+  `matchGlob` matcht segmentweise mit `path.Match`, und `*` frisst dort den
+  ganzen Rest. Ein Glob auf die **neuen** Nummern (`slice-1[4-9][0-9]`) hätte
+  denselben Fehler mit näherem Horizont — er hörte bei `slice-200` auf. Beides
+  ist dieselbe Klasse lautlosen Ausfalls; die gewählte Form hat sie nicht.
+- **Begründung:** Der Wortschatz war offen, und das ist gemessen: über alle 144
+  Ausgangs-Vorkommen im Bestand stehen **28** verschiedene Anfangswörter,
+  darunter `behoben`, `gemessen`, `gehalten`, `erledigt`, `benannt`,
+  `aufgelöst` — und blanker Freitext. Jedes einzelne liest sich vernünftig;
+  zusammen ist die geschlossene Menge des Kanons keine mehr, und ein vierter
+  Ausgang fällt nicht auf, weil er wie der fünfte klingt.
 - **Auflösungs-Trigger:** das Produkt kann eine Bedingung **je Listen-Eintrag**
-  ausdrücken. Dann ist die Je-Risiko-Korrelation prüfbar, und ein
-  Nachfolge-Eintrag löst diesen ab.
+  ausdrücken. Dann ist auch das Risiko **ohne** Marker erreichbar — die Lücke,
+  die diese Regel bauartbedingt offen lässt — und ein Nachfolge-Eintrag löst
+  sie ab.
