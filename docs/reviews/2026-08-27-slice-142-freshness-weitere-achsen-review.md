@@ -46,6 +46,6 @@ Alle zwölf Befunde sind eingearbeitet (`e4471bf`, `6c1d97a`, `2485f42`):
 - **F-6** samt der strukturellen Ursache: `A_CHECK_VERSION` steht jetzt als
   Variable statt als Prosa im Kommentar.
 - **F-10** als eingetretener Risiko-Ausgang mit Folge-Slice
-  [slice-161](../plan/planning/open/slice-161-sechs-pins-heben.md).
+  [slice-161](../plan/planning/in-progress/slice-161-sechs-pins-heben.md).
 - **F-11** entfiel mit dem Muster: Referenz und Digest kommen jetzt aus
   **einer** `FROM`-Zeile.
