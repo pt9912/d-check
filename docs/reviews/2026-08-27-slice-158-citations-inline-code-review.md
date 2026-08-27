@@ -48,7 +48,7 @@ Alle dreizehn Befunde sind eingearbeitet:
   ist als Konsequenz benannt und als Test festgenagelt.
 - **F-3** als ausdrückliche Skopierung in ADR-0060 Entscheidung 7, mit
   gemessenen Rändern und
-  [slice-162](../plan/planning/open/slice-162-ignore-marker-geteilte-antwort.md)
+  [slice-162](../plan/planning/in-progress/slice-162-ignore-marker-geteilte-antwort.md)
   als Ausgang; der Lastenheft-Satz ist ersetzt.
 - **F-4** durch eine eigene Nachmessung mit der Produkt-Lexik, deckungsgleich
   mit dem Reviewer und mit `git grep`; beide Basen stehen jetzt getrennt da.
