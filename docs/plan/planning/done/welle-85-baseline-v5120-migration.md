@@ -88,7 +88,7 @@ eine Welle braucht):
 | [slice-148](../done/slice-148-baseline-v5120-vendoring.md) | **Etappe A:** Bundle `v5.12.0` vendored, Pin-Hebung als `MR-`Eintrag, alle drei Spiegel-Klassen gehoben, Alt-Baum entfernt |
 | [slice-149](../done/slice-149-baseline-v5120-delta-audit.md) | **Etappe B:** Delta-Audit über die vier Kurs-Wellen **und** der Freshness-Audit über alle aktiven Adaptionen; **schneidet Etappe C** |
 | [slice-150](../done/slice-150-pin-gebundene-zitate.md) | **Etappe C-1** (vom Audit geschnitten): ist ein Zitat der Baseline pin-gebunden wie ein Link? — die Regelfrage hinter der vierten Spiegel-Klasse |
-| [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) | **Etappe C-2** (vom Audit geschnitten): die urteilsfreie Hälfte so weit ziehen, wie `modul-05` sie seit `v5.12.0` benennt |
+| [slice-151](../in-progress/slice-151-urteilsfreie-haelfte-voll.md) | **Etappe C-2** (vom Audit geschnitten): die urteilsfreie Hälfte so weit ziehen, wie `modul-05` sie seit `v5.12.0` benennt |
 | [slice-152](../open/slice-152-citations-scharfschalten.md) | **Etappe C-3** (von C-1 geschnitten): das Modul `citations` scharfschalten — die mechanische Form der vierten Spiegel-Klasse; blockiert von der eigenen Doku der Direktiv-Syntax |
 
 **Etappe C ist vom Audit geschnitten**, nicht hier geraten — dieselbe Form wie
@@ -115,7 +115,7 @@ unabhängig vom Delta-Audit und darf vorgezogen werden.
   Kurs hat sie ausdrücklich als unsere Entscheidung und **kein
   Konformitätsthema** bezeichnet. Diese Grenze galt der **Eröffnung**: sie
   sollte nicht nebenbei mitlaufen. Das Audit hat sie befürwortet und als
-  [slice-151](../open/slice-151-urteilsfreie-haelfte-voll.md) geschnitten — damit
+  [slice-151](../in-progress/slice-151-urteilsfreie-haelfte-voll.md) geschnitten — damit
   steht sie in §4 und ist Gegenstand der Welle, nicht mehr außerhalb.
 - **Keine Nacharbeit an eingefrorenen Zitaten.** Wo `done/`-Dokumente den alten
   Wortlaut zitieren, bleibt er stehen; nur **lebende** Stellen werden gehoben.
