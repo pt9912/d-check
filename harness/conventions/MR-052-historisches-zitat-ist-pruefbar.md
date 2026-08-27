@@ -11,11 +11,15 @@
   Dokumenten dieses Repos, die einen **früheren** Pin zitieren — also genau die
   Menge, für die [`MR-039`](../conventions.md#mr-039) den Wortlaut einfriert.
 - **Adaption:** [`MR-039`](../conventions.md#mr-039) friert den zitierten
-  Wortlaut ein, *„auch wenn er nicht mehr gilt"* — und steht damit auf einer
-  stillschweigenden Annahme: dass der alte Stand nicht mehr zugänglich sei. Der
-  Bump entfernt `.harness/baseline/<alt-tag>/` aus dem **Arbeitsbaum**, nicht
-  aus dem **Repo**. Der Lösch-Commit hat einen Vorgänger, und in dem steht der
-  alte Baum vollständig.
+  Wortlaut ein, *„auch wenn er nicht mehr gilt"*, und begründet das mit der
+  historisch korrekten Aussage über den damaligen Zustand — ein Grund, der von
+  der **Zugänglichkeit** der Quelle unabhängig ist. Der Eintrag selbst nimmt
+  also nichts an. Die **Praxis** tat es: [slice-152](../../docs/plan/planning/done/slice-152-citations-scharfschalten.md)
+  legte drei Abweichungen mit *„am Repo nicht entscheidbar"* ab, weil der alte
+  Pin nicht mehr vendored sei. Das ist strukturell falsch: der Bump entfernt
+  `.harness/baseline/<alt-tag>/` aus dem **Arbeitsbaum**, nicht aus dem
+  **Repo**. Der Lösch-Commit hat einen Vorgänger, und in dem steht der alte
+  Baum vollständig.
 
   **Folge, und sie ist eine Verschärfung, keine Lockerung:** ein historisches
   Zitat ist **prüfbar**. Wer behauptet, es sei am Repo nicht entscheidbar, ob
@@ -39,12 +43,11 @@
   eingefrorener Wortlaut nach
   [`MR-039`](../conventions.md#mr-039). Festgehalten ist **welcher** — das war
   vorher nicht entscheidbar, weil niemand die Quelle gesucht hat.
-- **Begründung:** Eine Regel, die auf „nicht mehr feststellbar" gebaut ist,
+- **Begründung:** Eine Praxis, die auf „nicht mehr feststellbar" ausweicht,
   verdeckt genau dann etwas, wenn die Feststellung doch möglich ist. Der Preis
   der Schärfung ist gering — ein `git show <lösch-commit>^:<alter-pfad>` —, der
   Ertrag ist, dass „nicht entscheidbar" keine zulässige Antwort mehr ist, wo sie
   bloß bequem wäre.
-- **Schärft:** [`MR-039`](../conventions.md#mr-039)
 - **Auflösungs-Trigger:** entfällt, sobald ein Bump den alten Baum nicht mehr
   aus dem Arbeitsbaum entfernt — dann ist die Quelle ohnehin da. Oder sobald
   die git-Historie beschnitten wird; dann greift wieder die Annahme von

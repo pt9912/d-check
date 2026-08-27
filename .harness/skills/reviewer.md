@@ -155,6 +155,7 @@ würde den Befund bestätigen?) · `klasse` (stabile Kurz-Bezeichnung des
 Fehlermusters, über Reviews hinweg wiederauffindbar).
 
 ## Negativbefunde (Pflicht)
+
 <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-10-review-harness.md:75-75 -->
 Eine „geprüft, ohne Befund"-Zeile pro betrachtetem Bereich — sonst
 ist „keine Findings" nicht von „nicht geprüft" unterscheidbar.

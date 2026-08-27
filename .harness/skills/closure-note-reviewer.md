@@ -81,6 +81,7 @@ Floskel-Erkennung ist inferentiell; das Struktur-Gate bestätigt nur die Form) �
 wiederauffindbar).
 
 ## Negativbefunde (Pflicht)
+
 <!-- d-check:cite .harness/baseline/v5.12.0/templates/.harness/skills/closure-note-reviewer.template.md:83-83 -->
 Eine Zeile „geprüft, ohne Befund: `done/<Charge>`" pro betrachteter
 Slice-Charge — sonst ist „keine Findings" nicht von „nicht geprüft"

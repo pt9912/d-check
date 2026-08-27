@@ -42,6 +42,16 @@
   Spanne wird dort neu angekert. Erst wenn der Wortlaut **nirgends** im neuen
   Baum steht, greift [`MR-039`](../conventions.md#mr-039). Ohne diesen dritten
   Fall entfernte man eine Direktive, deren Quelle sehr wohl existiert.
+
+  **GRENZE, seit slice-163: nicht jedes Ziel ist ein Baseline-Ziel.** Eine
+  `cite`-Direktive darf auf jede auflösbare Datei zeigen, und der Reviewer-Skill
+  nutzt das: er zitiert eine Regel und schreibt sie [`AGENTS.md`](../../AGENTS.md)
+  zu, also zeigt seine Direktive dorthin. Für solche Ziele greift dieser Eintrag
+  **nicht** — ihre Spanne wandert nicht beim Bump, sondern bei jeder Änderung
+  des Ziels, und `AGENTS.md` ist das meistgeänderte Dokument des Repos. Der
+  Ausfall ist **laut** (`citation-mismatch` im inneren Loop), aber ohne
+  benannten Adressaten: **wer das Rot sieht, ankert neu — er löscht nicht.**
+  Dieselbe Unterscheidung wie oben gilt sinngemäß.
 - **Begründung:** Ohne diesen Nachtrag hätte der Bump eine gate-rote Nachwirkung
   ohne benannten Adressaten — und die erste Reaktion auf ein dauerrotes Gate ist
   erfahrungsgemäß, es abzuschalten, nicht es zu lesen. Der Schritt gehört in die
