@@ -13,7 +13,7 @@ braucht).
 [ADR-0044](../../adr/0044-geteiltes-referenz-ventil-quell-skopus.md) (das
 geteilte Ventil); [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md);
 [`BEO-013`](../observations.md) (der Anlass);
-[slice-146](../in-progress/slice-146-ignore-marker-wirkung.md) (die Messung).
+[slice-146](../done/slice-146-ignore-marker-wirkung.md) (die Messung).
 
 **Berührte Spec-Stellen:**
 [`DC-FA-CODE-001.a`](../../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code),
@@ -33,7 +33,7 @@ des Markers — in Prosa, in Inline-Code, in einer Tabellenzelle — genauso wie
 gesetzter Marker. Die Dokumentation des Ventils schaltet die Prüfung ab, über
 die sie schreibt.
 
-**Gemessen** ([slice-146](../in-progress/slice-146-ignore-marker-wirkung.md),
+**Gemessen** ([slice-146](../done/slice-146-ignore-marker-wirkung.md),
 Stand vor jenem Slice): **233** Prosa-Zeilen tragen die Zeichenkette und
 unterdrücken damit für `codepaths` und `ids`. Nur **62** sind gesetzte Marker;
 **171** sind Erwähnungen — 146 blank, **25** zitieren die Kommentar-Form in
@@ -99,7 +99,7 @@ es lautlos. Die laute Variante fällt beim ersten Lauf auf; diese nicht.
 
 - **Keine Regel „dieser Marker unterdrückt nichts".** Sie ist erst sinnvoll,
   wenn ein Marker ein Marker ist — vorher meldete sie 185 Zeilen Prosa. Das ist
-  [slice-146](../in-progress/slice-146-ignore-marker-wirkung.md)s Frage, und sie wartet
+  [slice-146](../done/slice-146-ignore-marker-wirkung.md)s Frage, und sie wartet
   auf dieses Ergebnis.
 - **Keine Räumung eingefrorener Dokumente.** `done/` und `docs/reviews/`
   bleiben, wie sie sind; was dort nach der Verengung rot würde, braucht ein
