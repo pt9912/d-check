@@ -145,4 +145,4 @@ fail-closed-Entscheidung neu zu stellen.
 
 | Datum | Ereignis | Verweis |
 |---|---|---|
-| 2026-08-27 | Accepted — ersetzt [ADR-0064](0064-dockerhub-spiegel-fail-closed.md), nachdem ein unabhängiger Review dessen tragende Annahme am Bestand widerlegt hat | [slice-165](../planning/in-progress/slice-165-dockerhub-spiegel.md) |
+| 2026-08-27 | Accepted — ersetzt [ADR-0064](0064-dockerhub-spiegel-fail-closed.md), nachdem ein unabhängiger Review dessen tragende Annahme am Bestand widerlegt hat | [slice-165](../planning/done/slice-165-dockerhub-spiegel.md) |
