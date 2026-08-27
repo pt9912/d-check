@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.11.0 · **Datum:** 2026-08-27 ·
+**Version:** 1.12.0 · **Datum:** 2026-08-27 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -18,7 +18,41 @@ gleichen Modul** (Baseline
 die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
 (getrennter Kontext, anderes Prüf-Artefakt).
 
-## Repo-spezifische Anker pro Kategorie
+## Die sechzehn Prüffragen (erste Ebene)
+
+Jede Frage ist so gestellt, dass **„ja" ein Finding ist**. Die Liste trägt alle
+HIGH- und MEDIUM-Klassen; LOW und INFO stehen nur unten. Sie trägt **nicht**,
+was ausdrücklich *nicht* zu melden ist — die benannten Ausnahmen stehen bei den
+Ankern der zweiten Ebene, und sie sind der Grund, warum die Anker so lang sind.
+Wer nur diese Tabelle liest, meldet die Bestands-Ausnahmen mit.
+
+| #  | Frage an den Diff — „ja" ist ein Finding | Kategorie |
+|----|------------------------------------------|-----------|
+| 1  | Führt ein Gate oder Gate-Skript einen Pfad, auf dem es **still grün** wird? | HIGH |
+| 2  | Meldet ein Kern-Modul falsch — falscher Befund, falscher Exit-Code, falsche Menge? | HIGH |
+| 3  | Verletzt ein Import die Hexagon-Richtung ([ADR-0005](../../docs/plan/adr/0005-modul-layout-hexagon-ordner.md))? | HIGH |
+| 4  | Unterdrückt etwas ein Gate **ohne ADR** — Inline-Suppression oder gesenkte Schwelle? | HIGH |
+| 5  | Greift Code **außerhalb** `external` aufs Netz? | HIGH |
+| 6  | Trägt ein Kommentar **keine** der fünf Klassen (Zusage · Kopplung · Abgrenzung · Rang-Zeiger · Grenze)? | HIGH |
+| 7  | Erzählt ein **Zustandsfeld** die Chronik, statt Zustand und Beleg zu nennen? | HIGH |
+| 8  | Verallgemeinert eine **Botschaft oder Closure-Notiz** über die gelaufene Messung hinaus? | MEDIUM |
+| 9  | Wird eine **Quelle über ihren Geltungsbereich hinaus** zitiert — Titel gelesen statt Geltungs-Feld? | MEDIUM |
+| 10 | Klafft eine **Messmethode** gegen die Spec-Stelle, die sie erfüllen soll? | MEDIUM |
+| 11 | Behandeln zwei **Module derselben Eingabe-Klasse** sie verschieden, ohne benannten Grund? | MEDIUM |
+| 12 | Erkennt ein Modul **weniger als die Alt-Tool-Familie** ([`DC-QA-04`](../../spec/lastenheft.md#dc-qa-04--migrationsabdeckung-der-alt-tools))? | MEDIUM |
+| 13 | Fehlt der **Negativtest** zu einem neuen öffentlichen Vertrag? | MEDIUM |
+| 14 | **Begründet** ein Provenance-Marker eine Entscheidung, statt zu zeigen, wo verifiziert wurde? | MEDIUM |
+| 15 | Liest ein Modul **Eingaben, die es nicht scannt** — und gilt dort die Zusage nicht? | MEDIUM |
+| 16 | Nennt ein neues `Schärft:`/`Bezug:`-Feld nur „§N", **obwohl das Zielelement eine Kennung trägt**? | MEDIUM |
+
+**Was diese Ebene kostet und was nicht.** Sie ist eine Einstiegs-Ordnung, keine
+Kürzung: das Dokument ist durch sie **länger** geworden, nicht kürzer. Der
+Gewinn ist, dass keine der sechzehn Klassen mehr nur in einem Fließtext-Absatz
+steht, in dem sie beim Überfliegen untergeht. Der Preis ist Drift zwischen den
+Ebenen — deshalb trägt die Tabelle keine Ausnahme und keine Begründung,
+sondern ausschließlich die Frage.
+
+## Repo-spezifische Anker pro Kategorie (zweite Ebene: Begründung und Ausnahmen)
 
 - **HIGH** (blockiert Merge): Stilles-Grün-Pfad in einem Gate oder   <!-- d-check:cite AGENTS.md:328-329 -->
   Gate-Skript (Harness-Lüge — [`AGENTS.md`](../../AGENTS.md) §4: *„Halluzinierte
