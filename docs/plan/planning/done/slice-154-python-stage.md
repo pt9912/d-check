@@ -64,14 +64,20 @@ vierte Toolchain entsteht.
 
 ## 4. Definition of Done
 
-- [ ] Der Bedarf ist **belegt** — je Fall eine Zuordnung, und der Rest ist
-      benannt oder es gibt keinen.
-- [ ] Bei Bau: Stage digest-gepinnt, `make`-Target vorhanden, in `AGENTS.md` §4
-      und `harness/README.md` eingetragen, `gate-consistency` grün.
-- [ ] Je Pin-Spiegel-Klasse aus [`BEO-008`](../observations.md) eine Zahl.
-- [ ] Bei Nicht-Bau: [`AGENTS.md`](../../../../AGENTS.md) §3.1 verweist nicht
+- [x] Der Bedarf ist **belegt** — je Fall eine Zuordnung, und der Rest ist
+      benannt oder es gibt keinen. *(Neun Fälle mit Zuordnung in
+      [`MR-046`](../../../../harness/conventions.md#mr-046); ein Rest benannt und
+      als [slice-157](../open/slice-157-config-gueltigkeit.md) ausgetragen.)*
+- [x] ~~Bei Bau: Stage digest-gepinnt, `make`-Target vorhanden, in `AGENTS.md` §4
+      und `harness/README.md` eingetragen, `gate-consistency` grün.~~
+      **Entfällt — kein Bau.**
+- [x] ~~Je Pin-Spiegel-Klasse aus [`BEO-008`](../observations.md) eine Zahl.~~
+      **Entfällt — kein Bau, also keine neue `FROM`-Zeile und kein neuer Pin.**
+      Der Haken stand im DoD unbedingt, in §2 Schritt 3 aber ausdrücklich am
+      Bau; ausgetragen statt still abgehakt.
+- [x] Bei Nicht-Bau: [`AGENTS.md`](../../../../AGENTS.md) §3.1 verweist nicht
       mehr auf einen Weg, den es nicht gibt.
-- [ ] `make gates` grün (Exit explizit), `make fullbuild` grün; unabhängiger
+- [x] `make gates` grün (Exit explizit), `make fullbuild` grün; unabhängiger
       Review.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -80,10 +86,19 @@ vierte Toolchain entsteht.
   `FROM`-Zeile, einen Digest, eine Frische-Achse und eine Doku-Zeile mit — und
   [slice-142](../open/slice-142-freshness-weitere-achsen.md) führt bereits zwei
   ungewachte Pin-Klassen. Der Nutzen gehört gegen diesen Preis gestellt, nicht
-  gegen die Bequemlichkeit. — **Ausgang:** *(bei Closure)*
+  gegen die Bequemlichkeit. — **Ausgang: entfallen.** Die Abwägung wurde nicht
+  gebraucht, weil kein Nutzen auf der anderen Seite stand: acht der neun Fälle
+  sind in der erlaubten Klasse lösbar, der neunte trägt keine Toolchain.
+  [slice-142](../open/slice-142-freshness-weitere-achsen.md) bleibt von diesem
+  Slice unberührt.
 - **Der belegte Bedarf könnte null sein.** Dann ist die ehrliche Lieferung eine
   **gestrichene Zeile in §3.1**, nicht eine Stage, die niemand ruft. Das ist ein
-  Ergebnis, kein Fehlschlag. — **Ausgang:** *(bei Closure)*
+  Ergebnis, kein Fehlschlag. — **Ausgang: eingetreten, mit einer Korrektur am
+  eigenen Satz.** Der Bedarf ist **fast** null, nicht null: ein Fall bleibt —
+  die Gültigkeit einer JSON-Konfiguration. Er trägt keine Stage, aber er ist
+  auch nicht nichts, und er wandert deshalb als
+  [slice-157](../open/slice-157-config-gueltigkeit.md) weiter statt in eine
+  Notiz. Die gestrichene Zeile in §3.1 ist geliefert.
 
 ## 6. Trigger
 
@@ -110,4 +125,61 @@ Multi-Stage-Build.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Die Stage wird nicht gebaut, und §3.1 behauptet nicht mehr, es gebe sie.**
+Die Regel verwies auf eine digest-gepinnte Dockerfile-Stage als vorgesehenen
+Weg — es gab keine. Der Schaden war doppelt: wer den Weg gehen wollte, fand
+nichts; wer die Regel las, hielt die Frage für beantwortet.
+[`MR-046`](../../../../harness/conventions.md#mr-046) hält den Befund fest,
+samt der Bedingungen, unter denen die Stage doch entstünde — und mit dem
+Hinweis, dass ihre **Form** offen ist: die zwei jüngsten Fremd-Toolchains
+dieses Repos sind keine Stage, sondern digest-gepinnte externe Images
+([ADR-0010](../../adr/0010-semgrep-hermetisches-gate.md),
+[ADR-0029](../../adr/0029-arch-check-via-a-check.md)).
+
+**Der erste Anlauf hat die falsche Population gemessen — der Review hat es
+gefangen.** §2 Schritt 1 verlangt die Fälle **aus der Arbeit**, je Fall eine
+Zuordnung; gemessen wurde der committete **Bestand**. Die zwei sind nicht
+dieselbe Menge: ein Interpreter-Aufruf darf seit
+[`MR-040`](../../../../harness/conventions.md#mr-040) gar nicht mehr
+eingecheckt werden, der Bestands-Befund „leer" ist für die Bedarfsfrage also
+fast tautologisch — und der Anlass jenes Eintrags selbst, ein Arbeitstag mit
+Host-Python, steht in keiner Datei. Nachgeholt als Tabelle mit neun Fällen.
+Der Bestand stützt das Ergebnis weiterhin, aber als **zweiter** Beleg, nicht
+als erster.
+
+**Ein Rest ist geblieben und hat eine Kennung bekommen.** Die Gültigkeit einer
+JSON-Konfiguration ist in der erlaubten Klasse nicht prüfbar; an ihrer Stelle
+stand ein von Hand geschriebener `awk`-Klammerzähler, der Balance beantwortet
+und nicht Gültigkeit. Er trägt keine Toolchain — er trägt einen Sensor, und der
+ist [slice-157](../open/slice-157-config-gueltigkeit.md). Das Gewicht ist
+während dieses Slice gewachsen: seit
+[`MR-047`](../../../../harness/conventions.md#mr-047) hängen **beide**
+Durchsetzungs-Schichten an derselben Datei.
+
+**Der Slice hat einen Nachbar-Befund mitgenommen, der schwerer wog als sein
+eigener.** Die Permission-Sperrliste war als zweite Durchsetzungs-Schicht
+eingezogen worden — ohne Eintrag, gegen einen wörtlichen Kanon-Satz. Sie hat
+jetzt [`MR-047`](../../../../harness/conventions.md#mr-047), und dort steht
+auch, was die Commit-Botschaft nur halbseitig sagte: die genannten
+Durchfall-Klassen betreffen alle die Interpreter-Hälfte, die der Wächter
+zweitdeckt; die **git-/docker-Hälfte ist einschichtig**, hat eigene Lücken und
+ein gutes Dutzend Formen ganz ohne Eintrag. Dazu zwei weitere Nicht-Zusagen:
+beide Schichten sind über `make` konstruktionsbedingt durchlässig, und für die
+neue gibt es **keine** wiederholbare Probe.
+
+**Drei eigene Aussagen waren am Bestand widerlegt.** §3.1 sagte „Messungen
+macht das Produkt" — sechs Messungen dieses Repos macht nicht das Produkt; und
+„was ein Gate-Skript braucht, tragen `bash` und die POSIX-Werkzeuge" — zwei
+Netz-Targets brauchen `curl` und `unzip`, die in der Host-Klasse von Absatz 1
+nicht stehen. Beides ersetzt durch eine Rangfolge und eine benannte
+Zusatz-Erwartung. Und „zwölf ausführbare Skripte" passte zu keiner messbaren
+Menge: **zehn** sind ausführbar gesetzt, **zwölf** heißen `*.sh`, **vierzehn**
+tragen einen bash-Shebang. Die zwei außerhalb von `*.sh` — die `.githooks/` —
+fielen aus Zählung **und** Such-Enumeration heraus, dieselbe Achse zweimal
+ausgelassen ([`BEO-009`](../observations.md) Richtung b).
+
+**Sensors:** `make gates` (Exit 0, zehn Glieder, 531 Dateien, 0 Befunde),
+`make fullbuild` (Exit 0, 48 Anforderungen / 0 Waisen, Closure-Profil 479
+Dateien / 0 Befunde), `make guard-probe` (40 Proben, 0 Fehlschläge, Exit 0).
+Ein unabhängiger Review ist gelaufen; seine zwei HIGH, vier MEDIUM und drei LOW
+sind in `f6e72cb` eingearbeitet.
