@@ -71,7 +71,7 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
      neu ist. d-check prüft `links`/`anchors`/`ids`/`versions` in beiden READMEs, aber
      **nicht** die inhaltliche DE↔EN-Synchronität der Prosa.
    - **Das Datum kommt aus dem Kalender, nicht aus der Zeile darüber.** Ein
-     Release trägt fünf Datumsstempel (`version.md` §Aktuell **und** §Verlauf,
+     Release berührt sieben Datumsstempel (`version.md` §Aktuell **und** §Verlauf,
      `CHANGELOG`-Überschrift, Handbuch-Kopf **und** §11-Zeile, die Historien von
      Lastenheft und Spezifikation) — und wer sie schreibt, schreibt sie von der
      Vorgängerzeile ab. Zieht sich eine Welle über mehr als einen Tag, datiert

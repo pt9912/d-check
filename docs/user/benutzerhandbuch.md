@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.57 · **Software-Version:** [v0.63.0](../../version.md#v0.63.0) ·
-**Stand:** 2026-08-23 · **Autor:** pt9912
+**Handbuch-Version:** 1.58 · **Software-Version:** [v0.64.0](../../version.md#v0.64.0) ·
+**Stand:** 2026-08-27 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.63.0
+docker pull ghcr.io/pt9912/d-check:v0.64.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -72,7 +72,7 @@ Repositorys genügt, weil d-check nie schreibt.
 
 ### Versionen und Tags
 
-- `:v0.63.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.64.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -101,7 +101,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -156,7 +156,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -175,7 +175,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.63.0
+  ghcr.io/pt9912/d-check:v0.64.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -194,7 +194,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.63.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.64.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -213,7 +213,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -233,7 +233,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -242,7 +242,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -261,7 +261,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -281,7 +281,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
   --enable ids --disable anchors
 ```
 
@@ -302,7 +302,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
   --enable ids
 ```
 
@@ -323,7 +323,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
   --enable matrix
 ```
 
@@ -391,7 +391,7 @@ Konfigurationsfehler (Exit 2); ohne `token` verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
   --enable external
 ```
 
@@ -413,7 +413,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
   --enable ids --doctor
 ```
 
@@ -441,7 +441,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
   --enable ids --doctor --json
 ```
 
@@ -489,7 +489,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -525,7 +525,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
     --enable ids --repair | git apply
   ```
 
@@ -542,7 +542,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -562,7 +562,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -623,7 +623,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -761,7 +761,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -806,7 +806,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.63.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.64.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -819,7 +819,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.63.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.64.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -880,7 +880,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.63.0 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -1274,9 +1274,13 @@ verschluckt, wenn eine Backtick-Spanne des Absatzes sie umschließt (öffnet ein
 Zeile vorher, schließt eine Zeile später); ein **Pfad** in Backticks fällt
 fail-closed statt zu einem Befund mit leerem Ziel; und eine Backtick-Spanne
 zwischen `<!--` und dem Marker verschwindet, kann eine Direktive also auch
-**erzeugen**. Die **Ventil**-Direktive `d-check:ignore` folgt dieser Regel
-**nicht** — sie wird weiterhin auf der rohen Zeile erkannt und wirkt auch aus
-Backticks heraus.
+**erzeugen**. Die **Ventil**-Direktive `d-check:ignore` folgt derselben Regel,
+aber **nur bei zwei ihrer vier Konsumenten**: bei `codepaths` und `ids` zählt
+sie seit v0.64.0 ebenfalls nur außerhalb von Inline-Code (und muss dort
+zusätzlich in einem HTML-Kommentar stehen), bei `versions` und `diagrams` wird
+sie weiterhin auf der **rohen** Zeile erkannt und wirkt auch aus Backticks
+heraus. Wer den Marker setzt, muss also wissen, für welches Modul — der
+Ventil-Überblick weiter oben führt die Unterscheidung aus.
 
 **Die zitierte Quelle ist nicht Teil des Scans.** Gelesen wird sie **roh und
 typunabhängig**: sie muss weder Markdown sein noch in der Scan-Menge liegen.
@@ -2119,3 +2123,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.55             | v0.62.0          | 2026-08-22 | Doku-Korrektur ohne Software-Änderung (§5 Ventil-Überblick): `exempt-paths` gibt es in **fünf** Modulen (`ids` je Muster, `matrix`, `codepaths`, `versions`, `structure` je Regel) — genannt waren drei; und die Abgrenzung des Zeilen-Markers `d-check:ignore` ist vollständig: er wirkt **nur** für `codepaths` und `ids`, alle übrigen Module kennen ihn nicht. Ausdrücklich benannt ist jetzt `diagrams`, das **weder** Datei- **noch** Zeilen-Ventil hat — dort schneidet nur `diagrams.scope` bzw. `scan.ignore`. Software-Version bleibt v0.62.0 |
 | 1.56             | v0.63.0          | 2026-08-23 | **Drei Konfigurations-Flächen additiv geweitet** (Lastenheft 0.63.0/0.64.0/0.65.0). `versions.patterns`: eine **Liste** von Muster-Quellen-Paaren statt genau eines Paares — die Kurzform `pin-pattern`/`current-from` **ist** die einelementige Liste, beide Schreibweisen zugleich ⇒ Exit 2, Ausnahmen und Selbst-Ausnahme der Quell-Datei sind **paar-lokal**, und weil eine Befund-Adresse zwei Paare nicht unterscheidet, nennt **eine** Meldung alle Erwartungen mit ihrer Quelle (§5/§6). `structure.headings-match`/`headings-level`: achte Bedingung — **jede** Überschrift der Ebene innerhalb des Abschnitts matcht das Muster, **positiv** formuliert statt als Präfix-Negation, geprüft auf dem Überschriften-**Text** mit der Erkennung des Moduls, gemeldet **je** Überschrift auf **ihrer** Zeile; neuer Grund-Code `section-heading-mismatch`, Default-Ebene Abschnitts-Ebene + 1 (§5/§6). `diagrams.exempt-paths` **und** der Zeilen-Marker `d-check:ignore` — Ventil-Parität zu den übrigen Modulen; der Marker ist hier ein **Token** statt eines HTML-Kommentars und wirkt auf der **Öffnungszeile** für den ganzen Block (§5/§6). **Korrektur der Zeile 1.55:** der Zeilen-Marker wirkt in **vier** Modulen (`codepaths`, `ids`, `versions`, `diagrams`), nicht in zweien — `versions` honoriert ihn seit v0.30.0 —, und `exempt-paths` gibt es in **sechs** Modulen, nicht in fünf. Ohne die neuen Schlüssel ist der Befundsatz byte-identisch |
 | 1.57             | v0.63.0          | 2026-08-23 | Doku-Korrektur ohne Software-Änderung, zwei Befunde. **(a) Ventil-Lage bei `citations` ausgesprochen (§5/§6):** `citation-out-of-range` und `citation-inverted-range` entstehen in **zwei** Fähigkeiten, und der Grund-Code sagt nicht, in welcher. Aus `codepaths.check-lines` sind sie über die **feinen** Achsen stummschaltbar (`exempt-paths`, das geteilte `ignore-refs`, der Zeilen-Marker `d-check:ignore`), aus dem Modul `citations` **nicht** — dessen Befund lässt sich nur über die **groben** Achsen loswerden (`scan.ignore`, modul-lokaler `citations.scope`), die für beide gelten. Gegenüberstellung als Tabelle über alle fünf Achsen, samt der ausdrücklichen Einschränkung, dass dieser Unterschied eine **Eigenschaft des heutigen Stands** ist und keine zugesagte Semantik: weder Lastenheft noch Spezifikation begründen ihn. **(b) §5-Abschnitt geschnitten:** *„Zitate und Zeilen-Referenzen gegen ihre Quelle prüfen"* trug **183 Zeilen** und **sechs** Module — `vcs`, `commits`, `planning` (drei Fähigkeiten) und `tracked` standen nicht in seiner Überschrift und waren dort nicht auffindbar. Jetzt fünf Abschnitte, jede Überschrift nennt ihren Inhalt; der Text ist **unverändert bewegt**, nicht umgeschrieben. Der Zensus über alle dreizehn §5-Abschnitte zeigte genau diesen einen Fall — Länge allein ist kein Defekt. Software-Version bleibt v0.63.0 |
+| 1.58             | v0.64.0          | 2026-08-27 | **Der Zeilen-Marker `d-check:ignore` verengt sich — bei zwei seiner vier Konsumenten** (Lastenheft 0.68.0/0.69.0). Bei `codepaths` und `ids` zählt er nur noch **außerhalb von Inline-Code** und muss dort in einem **HTML-Kommentar** stehen; eine blanke oder in Backticks geschriebene Erwähnung wirkt nicht mehr. Bei `versions` und `diagrams` bleibt er ein roh gelesenes **Token** — bei `diagrams` strukturell (im Fence ist ein Backtick literaler Inhalt), bei `versions` als **benannte Grenze**. **Wer den Marker setzt, muss ab hier wissen, für welches Modul.** Ebenso verengt: das Modul `citations` erkennt seine Direktive `d-check:cite` nur außerhalb von Fences **und** Inline-Code (Lastenheft 0.67.0) — erst dadurch wurde es überhaupt aktivierbar. Dazu `matrix`: eine Klasse darf ihr `token`-Muster **ausschließlich** tragen, ohne Pfade (Lastenheft 0.66.0). **Ein nicht-kosmetischer Bestands-Effekt ohne Code-Änderung:** das Runtime-Basis-Image trägt einen neuen Bau desselben Tags und damit einen anderen **CA-Trust-Store** — 142 → 150 Wurzelzertifikate; wer `external` gegen HTTPS-Ziele fährt, vertraut ab diesem Image einer anderen Menge. **Korrektur der Zeile 1.57:** deren §5-Satz *„die Ventil-Direktive `d-check:ignore` folgt dieser Regel **nicht**"* galt bei ihrem Schreiben für alle vier Konsumenten und gilt jetzt nur noch für zwei — er stand unqualifiziert 145 Zeilen entfernt von der Stelle, die das Gegenteil sagte, und ist auf `versions`/`diagrams` eingeschränkt |

@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.64.0] — 2026-08-27
+
 ### Changed
 
 - slice-159 — **Der Zeilen-Marker `d-check:ignore` braucht bei `codepaths` und
