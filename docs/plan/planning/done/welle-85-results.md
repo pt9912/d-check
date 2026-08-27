@@ -101,7 +101,7 @@ Pin-Hebung nicht mehr berührt — sie sind ab jetzt **wellenlos**
 (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht: ihre
 Closure-Bedingung geht nicht über die eigene DoD hinaus):
 
-- [slice-151](../in-progress/slice-151-urteilsfreie-haelfte-voll.md) — die urteilsfreie
+- [slice-151](../done/slice-151-urteilsfreie-haelfte-voll.md) — die urteilsfreie
   Hälfte so weit ziehen, wie `modul-05` sie seit `v5.12.0` benennt. Der Kurs hat
   das ausdrücklich als unsere Entscheidung und **kein Konformitätsthema**
   bezeichnet.

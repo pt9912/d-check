@@ -62,7 +62,7 @@ Keiner bleibt ungefragt, auch nicht die offensichtlich unberührten.
 
 - [x] Vier Kurs-Wellen, vier Antworten: **zwei mit Handlung**
       ([slice-150](../done/slice-150-pin-gebundene-zitate.md),
-      [slice-151](../in-progress/slice-151-urteilsfreie-haelfte-voll.md)), **zwei
+      [slice-151](../done/slice-151-urteilsfreie-haelfte-voll.md)), **zwei
       belegt folgenlos** mit Fundstelle (§9).
 - [x] **Alle 16** aktiven Adaptionen gefragt, die Reduktion **gemessen** statt
       angenommen: je Eintrag geprüft, ob sein `Ersetzt-Baseline-Regel`-Ziel
@@ -71,7 +71,7 @@ Keiner bleibt ungefragt, auch nicht die offensichtlich unberührten.
 - [x] [`MR-033`](../../../../harness/conventions.md#mr-033) **bleibt** — und die
       Begründung stand schon im eigenen Speicher (§9).
 - [x] Die Differenz zur vollen urteilsfreien Hälfte ist benannt und als
-      [slice-151](../in-progress/slice-151-urteilsfreie-haelfte-voll.md) geschnitten,
+      [slice-151](../done/slice-151-urteilsfreie-haelfte-voll.md) geschnitten,
       nicht hier gebaut — das Audit schneidet (§3).
 - [x] `make gates` Exit 0 (zehn Glieder), `make fullbuild` Exit 0.
 - [x] Unabhängiger Review
@@ -131,7 +131,7 @@ geschnittene Slices.
 
 | Punkt | Was landete | Antwort für dieses Repo |
 |---|---|---|
-| 1 — urteilsfreie Hälfte benannt | `modul-05`, +11 Zeilen | **Handlung:** [slice-151](../in-progress/slice-151-urteilsfreie-haelfte-voll.md) — der Kanon nennt *dass ein Ausgang dasteht* **und** *welcher der drei*; unsere Regel prüft den häufigsten Auslöser |
+| 1 — urteilsfreie Hälfte benannt | `modul-05`, +11 Zeilen | **Handlung:** [slice-151](../done/slice-151-urteilsfreie-haelfte-voll.md) — der Kanon nennt *dass ein Ausgang dasteht* **und** *welcher der drei*; unsere Regel prüft den häufigsten Auslöser |
 | 2 — *Modul-Pfad* = **Code**-Modul-Pfad | `modul-03` + `AGENTS.template.md` | **Handlung:** [slice-150](../done/slice-150-pin-gebundene-zitate.md) — nicht wegen der Lesart (die bestätigt uns), sondern wegen des **Zitats**, das mitgehoben wurde |
 | 3 — das Rot muss von *dieser* Regel kommen | `modul-13`, +8 Zeilen | **folgenlos für den Regeltext:** der Kanon ist eine kanonische Quelle und wird pro Entscheidung gelesen; ihn in [`AGENTS.md`](../../../../AGENTS.md) zu wiederholen, verbietet dessen §1 ausdrücklich für **diese Datei**. Das ist **kein** Argument gegen eine Regelstelle anderswo — die braucht es nur nicht, weil die Klasse kein Regeldefizit ist, sondern ein Prüf-Verhalten. **Registerwürdig ist sie trotzdem:** dreimal aufgetreten, ohne Zeile — [`BEO-017`](../observations.md) angelegt |
 | 4 — die Reichweitenfrage als Frage | `grundlagen-source-precedence`, +6 Zeilen | **folgenlos für diese Welle:** die Klasse führt [`BEO-012`](../observations.md) bei Zähler 4. Ihre Feedforward-Hälfte trägt [slice-147](../open/slice-147-reviewer-anker-reichweite.md) — der ist **wellenlos** und steht darum nicht in §4 des Wellendokuments; die Welle schließt nicht auf ihn |
