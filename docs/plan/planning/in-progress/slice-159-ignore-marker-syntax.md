@@ -63,6 +63,25 @@ ablösen will, braucht eine ADR.
 Vorzeichen: dort bricht ein Modul an seiner eigenen Doku laut ab, hier schweigt
 es lautlos. Die laute Variante fällt beim ersten Lauf auf; diese nicht.
 
+**Nachtrag bei der Beanspruchung — dieser Abschnitt ist zur Hälfte überholt,
+und zwar durch die eigene Diagnose.** §2 Schritt 2 unten benennt die tragende
+Achse selbst: *„nicht die Kommentar-Form, sondern **Marker gegen zitierten
+Marker**: die Erkennung muss Inline-Code auslassen."* Genau die hat
+[slice-162](../done/slice-162-ignore-marker-geteilte-antwort.md) gebaut —
+`codepaths` und `ids` lesen den Marker seither auf dem gestrippten Text.
+
+**Was davon bleibt, ist die FORM** — und der Widerspruch unten, den dieser Plan
+richtig gemeldet statt aufgelöst hat.
+
+**Die Zahlen dieses Abschnitts sind Stand vor
+[slice-146](../done/slice-146-ignore-marker-wirkung.md)** und nicht mehr die
+Menge, über die hier entschieden wird. Nachgemessen mit der Produkt-Lexik zum
+Zeitpunkt dieses Slice: **558** getrackte Dateien, **249** Marker-Prosa-Zeilen,
+**66** davon wirksam, **183** nur in Inline-Code (die sind seit slice-162
+entschärft). Unter den 66 wirksamen trägt genau **einer** die bare Form. Die
+Verengung auf die Kommentar-Form kostet im Bestand deshalb **null** Befunde —
+was sie nicht folgenlos macht, sondern nur billig.
+
 ## 2. Vorgehen
 
 1. **Den Widerspruch oben zuerst entscheiden.** Solange die Spezifikation für

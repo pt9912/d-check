@@ -1,7 +1,9 @@
 package rules
 
 import (
+	"regexp"
 	"strings"
+
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
 )
 
@@ -149,26 +151,38 @@ func CheckIDLine(file string, ln Line, patterns []model.IDPattern, inTarget, exe
 	return findings
 }
 
-// markerLines liefert die 1-basierten Nummern der Prosa-Zeilen, die den
-// d-check:ignore-Marker tragen. Der eine zurückgegebene Satz wird von beiden
-// ids-Prüfpfaden konsultiert (nackte Fließtext-Vorkommen in CheckIDs,
-// Inline-Code-Vorkommen in alwaysLineFindings), damit die Zeilen-Ausnahme
-// nicht divergieren kann (spec/spezifikation.md §DC-FA-ID-001.a).
+// commentMarkerRe verlangt, dass der Marker INNERHALB eines HTML-Kommentars
+// steht: nach `<!--` und vor dessen Ende. Das `[^>]*` kann keinen `-->`
+// überqueren — es ist die kurze, konservative Form der Bedingung.
 //
-// Geprüft wird auf dem GESTRIPPTEN Text: „ist diese Zeile eine Direktive" ist
-// eine Prosa-Frage und bekommt die geteilte Antwort (ADR-0054, ADR-0061). Der
-// Marker in Backticks ist eine Erwähnung — sonst nähme eine Zeile, die das
-// Ventil beschreibt, sich selbst aus dem Gate.
+// KONSERVATIV IN DIE SICHERE RICHTUNG: ein `>` im Kommentar vor dem Marker
+// lässt ihn NICHT gelten. Ein verpasster Marker ist Falsch-Rot — laut und
+// sichtbar; ein erfundener wäre stilles Grün.
+var commentMarkerRe = regexp.MustCompile(`<!--[^>]*` + ignoreMarker)
+
+// markerLines liefert die 1-basierten Nummern der Prosa-Zeilen, die den
+// d-check:ignore-Marker als gesetzte Direktive tragen. Der eine
+// zurückgegebene Satz wird von codepaths und von beiden ids-Prüfpfaden
+// konsultiert, damit die Zeilen-Ausnahme nicht divergieren kann.
+//
+// ZWEI BEDINGUNGEN, und beide folgen der Prosa-Lexik dieser Eingabe
+// (ADR-0062, ADR-0063). LAGE: geprüft wird auf dem gestrippten Text — der
+// Marker in Backticks ist eine Erwähnung. FORM: er muss in einem
+// HTML-Kommentar stehen — das ist die Kommentar-Lexik von Markdown, und für
+// diese zwei Konsumenten ist Markdown die Eingabe. versions und diagrams
+// lesen andere Eingaben und haben deshalb eine andere Form; das ist keine
+// zweite Antwort, sondern eine andere Frage.
 func markerLines(prose []proseLine) map[int]bool {
 	stripped := stripInlineCodeByLine(prose)
 	var out map[int]bool
 	for _, pl := range prose {
-		if strings.Contains(stripped[pl.no], ignoreMarker) {
-			if out == nil {
-				out = make(map[int]bool)
-			}
-			out[pl.no] = true
+		if !commentMarkerRe.MatchString(stripped[pl.no]) {
+			continue
 		}
+		if out == nil {
+			out = make(map[int]bool)
+		}
+		out[pl.no] = true
 	}
 	return out
 }

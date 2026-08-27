@@ -8,6 +8,21 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
+- slice-159 — **Der Zeilen-Marker `d-check:ignore` braucht bei `codepaths` und
+  `ids` die HTML-Kommentar-Form** (Lastenheft 0.69.0, ADR-0063). Eine **blanke**
+  Erwähnung in Prosa wirkt dort nicht mehr; zusammen mit der Lage-Regel aus
+  slice-162 ist damit **jede** Erwähnungs-Form dieser zwei Konsumenten
+  entschärft. **Die Form folgt der Kommentar-Lexik der Eingabe** und ist deshalb
+  je Modul verschieden: bei `versions` und `diagrams` bleibt der Marker ein
+  **Token** — im `mermaid`-Fence bildet die Diagramm-Sprache den Kommentar
+  (`%% d-check:ignore`), und eine Lexik je Fence-Sprache wäre ein
+  Grammatik-Parser. **Im Bestand kostenlos** (null zusätzliche Befunde über 558
+  Dateien); dass die Verengung dennoch wirkt, ist per Gegenprobe belegt.
+  **Konservativ:** ein `>` im Kommentar vor dem Marker lässt ihn nicht gelten —
+  ein verpasster Marker ist Falsch-Rot und laut, ein erfundener wäre stilles
+  Grün. **Der Preis, ausgewiesen:** wer den Marker setzt, muss wissen, für
+  welches Modul.
+
 - slice-162 — **Der Zeilen-Marker `d-check:ignore` wirkt bei `codepaths` und `ids`
   nur noch außerhalb von Inline-Code** (Lastenheft 0.68.0, ADR-0061 in der
   Fassung von ADR-0062). In Backticks ist er eine **Erwähnung**, keine

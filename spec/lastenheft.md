@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.68.0
+**Version:** 0.69.0
 
 **Status:** Draft
 
@@ -994,10 +994,22 @@ Konsumenten mit Prosa-Eingabe, `codepaths` und
 [`diagrams`](#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in)
 wird er weiterhin **roh** erkannt, und das ist eine **benannte Skopierung**:
 jene lesen alle Zeilen einschließlich Fences bzw. die Zeilen **innerhalb** eines
-Fence, wo ein Backtick literaler Inhalt ist. Es gibt dort kein Inline-Code und
-damit keine geteilte Antwort zu übernehmen. **Benannte Grenze:** die **Form**
-des Markers ist damit nicht geregelt — er gilt als gesetzt, sobald die
-Zeichenkette außerhalb von Code steht, auch ohne die Kommentar-Klammer.
+Fence samt Öffnungszeile, wo ein Backtick literaler Inhalt ist. Bei `diagrams`
+ist das strukturell; bei `versions` ist es eine **benannte Grenze** — seine
+Eingabe **enthält** Prosa-Zeilen, und auf einer solchen antwortet das Produkt
+damit zweifach.
+
+**Auch die FORM folgt der Eingabe.** Sie ist je Konsument verschieden, weil die
+Kommentar-Lexik es ist: bei `codepaths` und
+[`ids`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) — Eingabe ist
+Markdown-Prosa — muss der Marker in einem **HTML-Kommentar** stehen; eine blanke
+Erwähnung wirkt nicht. Bei
+[`diagrams`](#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in)
+ist er ein **Token**, weil in einem Fence die Diagramm-Sprache den Kommentar
+bildet und eine Lexik je Fence-Sprache ein Grammatik-Parser wäre; bei
+[`versions`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in)
+ebenso, weil es alle Zeilen sprachgemischt liest. **Preis, ausgewiesen:** wer
+den Marker setzt, muss wissen, für welches Modul.
 
 **Akzeptanzkriterien:**
 
@@ -1196,6 +1208,7 @@ Ganzdatei- bzw. Ganzzeilen-Carve-out, kein bloßes Dämpfen der
 - **`always` Negative:** Given `link-policy: always` und ein Vorkommen `` `ADR-0042` `` ohne Link (außerhalb `exempt-paths` und ohne `d-check:ignore`), when das Modul läuft, then ein Befund `id-unlinked`. <!-- d-check:ignore (die Kennungen dieser Zeile sind Beispiele des Kriteriums, keine Verweise) -->
 - **`always` Boundary (Ventile):** Given `link-policy: always`, ein `` `ADR-0042` `` in einer `exempt-paths`-Datei und ein zweites `` `ADR-0099` `` auf einer Zeile mit `d-check:ignore`, when das Modul läuft, then kein Befund für beide. <!-- d-check:ignore (dito) -->
 - **Boundary (Marker in Inline-Code ist Erwähnung):** Given eine Zeile, die den Zeilen-Marker in **Backticks** nennt und daneben einen nicht auflösbaren Pfad bzw. eine unverlinkte Kennung trägt, when `codepaths` bzw. `ids` läuft, then **ein Befund** — dieselbe Zeile mit **freiem** Marker meldet keinen (Gegenprobe). Given dieselbe Konstellation bei `versions` oder `diagrams`, then **kein** Befund: dort wird der Marker weiterhin roh erkannt, weil ihre Eingabe kein Inline-Code kennt.
+- **Boundary (Form folgt der Eingabe):** Given eine Zeile mit **blankem** Marker (ohne Kommentar-Klammer) und einem nicht auflösbaren Pfad bzw. einer unverlinkten Kennung, when `codepaths` bzw. `ids` läuft, then **ein Befund** — dieselbe Zeile mit `<!-- d-check:ignore -->` meldet keinen (Gegenprobe). Given dieselbe Zeile bei `versions` oder `diagrams`, then **kein** Befund: dort ist der Marker ein **Token**. **Konservativ:** ein `>` im Kommentar vor dem Marker lässt ihn nicht gelten.
 - **Ventile für nackte Vorkommen:** Given ein **nacktes** `ADR-0042` im Fließtext einer `exempt-paths`-Datei und ein zweites nacktes `ADR-0099` auf einer Zeile mit `d-check:ignore`, when das Modul läuft, then kein Befund für beide — die Ventile gelten für alle Vorkommen des Musters (nackt wie Inline-Code), unabhängig von der `link-policy`. <!-- d-check:ignore (Beispiel-IDs, fiktiv) -->
 
 **Out-of-Scope:** Automatisches Ermitteln der Muster aus dem Repo-Inhalt **für die Prüfung** (die Prüfung läuft stets gegen explizit konfigurierte Muster — deterministisch, Vertrag); ein *advisory* Scaffold-Modus darf Muster aus **benannten Autoritäts-Quellen** ableiten (Ausgabe-only, vom Menschen bestätigt — [`DC-FA-CLI-006`](#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)). Prüfung, ob die verlinkte Definition inhaltlich zur Kennung passt; ein `link-policy`-Default abweichend von `prose` (bewusst opt-in).
@@ -1369,11 +1382,11 @@ der Anker zusätzlich gegen die gültige Anker-Menge der Zieldatei geprüft
 Werte mit Whitespace,
 Platzhalter-/Glob-Zeichen oder Ellipsen gelten nicht als Pfad
 (konservative Erkennung); Vorkommen in Fenced-Code-Blöcken werden
-nicht geprüft. Der Marker `d-check:ignore` auf derselben
-Zeile — **außerhalb** von Fences und Inline-Code, in Backticks ist er eine
-Erwähnung (§Achsen-Abgrenzung); Kommentar-Klammer und Begründung sind
-empfohlen, nicht gefordert — nimmt die Zeile von **genau
-dieser** Prüfung aus — bewusst nicht existierende Beispiel-Pfade
+nicht geprüft. Der Marker `d-check:ignore` auf derselben Zeile nimmt sie von
+**genau dieser** Prüfung aus. Er gilt nur **in einem HTML-Kommentar** und nur
+**außerhalb** von Fences und Inline-Code — blank oder in Backticks ist er eine
+**Erwähnung** (§Achsen-Abgrenzung); die Begründung in der Klammer ist empfohlen.
+Bewusst nicht existierende Beispiel-Pfade
 (etwa Angriffs-Beispiele in Lehrtexten) sind kein Fehler, sondern
 eine zu dokumentierende Absicht. Für alle anderen Module existiert
 kein Opt-out-Marker: deterministische Befunde werden behoben, nicht
@@ -1406,6 +1419,7 @@ Datei bleibt `codepath-missing`).
 **Akzeptanzkriterien:**
 
 - **Boundary (Marker in Inline-Code ist Erwähnung):** Given eine Zeile, die den Zeilen-Marker in **Backticks** nennt und daneben einen nicht auflösbaren Pfad in Inline-Code trägt, when das Modul läuft, then **ein Befund** `codepath-missing` — dieselbe Zeile mit **freiem** Marker meldet keinen (Gegenprobe). **Benannte Grenze:** eine Code-Spanne desselben Absatzes verschluckt auch einen freien Marker (Falsch-Rot), und ein unpaariger Backtick weiter oben im Absatz kippt die Parität, sodass eine Erwähnung doch wirkt (stilles Grün).
+- **Boundary (Form folgt der Eingabe):** Given eine Zeile mit **blankem** Marker (ohne Kommentar-Klammer) und einem nicht auflösbaren Pfad bzw. einer unverlinkten Kennung, when `codepaths` bzw. `ids` läuft, then **ein Befund** — dieselbe Zeile mit `<!-- d-check:ignore -->` meldet keinen (Gegenprobe). Given dieselbe Zeile bei `versions` oder `diagrams`, then **kein** Befund: dort ist der Marker ein **Token**. **Konservativ:** ein `>` im Kommentar vor dem Marker lässt ihn nicht gelten.
 - **Happy Path:** Given ein Inline-Code-Span `` `docs/plan/adr/` `` auf ein existierendes Verzeichnis und das konfigurierte Präfix `docs/`, when das Modul `codepaths` läuft, then kein Befund.
 - **Boundary:** Given ein Inline-Code-Span mit nicht existierendem Pfad und ein Kommentar `d-check:ignore` auf derselben Zeile, when das Modul läuft, then kein Befund — und der Marker hat keinerlei Wirkung auf Befunde anderer Module derselben Zeile.
 - **Negative:** Given ein Inline-Code-Span `` `../fehlt.md` ``, dessen Ziel nicht existiert (oder die Repository-Wurzel verlässt), when das Modul läuft, then ein Befund mit Datei, Zeile, Ziel und Grund, Exit-Code 1.
@@ -3024,6 +3038,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.69.0 | 2026-08-27 | Die **Form** des Zeilen-Markers folgt der **Kommentar-Lexik seiner Eingabe** und ist damit je Konsument verschieden. Bei [`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) und [`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) — Eingabe ist Markdown-Prosa — muss er in einem **HTML-Kommentar** stehen; eine **blanke** Erwähnung wirkt nicht mehr. Bei [`DC-FA-DIAG-001`](#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in) bleibt er ein **Token** — das ist eine **ausdrückliche Festlegung der Spezifikation** (in einem `mermaid`-Fence bildet die Diagramm-Sprache den Kommentar; eine Lexik je Fence-Sprache wäre ein Grammatik-Parser) —, und bei [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) ebenso, weil es alle Zeilen sprachgemischt liest. Damit ist **jede Erwähnungs-Form** der zwei Prosa-Konsumenten entschärft: die in Backticks über die **Lage** (0.68.0), die blanke über die **Form**. **Im Bestand kostenlos** — null zusätzliche Befunde über 558 Dateien —, und dass die Verengung Zähne hat, ist per Gegenprobe belegt. **Konservativ:** ein `>` im Kommentar vor dem Marker lässt ihn nicht gelten (verpasster Marker = Falsch-Rot und laut; erfundener = stilles Grün). Neues Akzeptanzkriterium (Boundary) bei **beiden** Anforderungen. **Preis, ausgewiesen:** wer den Marker setzt, muss wissen, für welches Modul. Begründung in begleitender ADR | — |
 | 0.68.0 | 2026-08-27 | Der **Zeilen-Marker** `d-check:ignore` wirkt bei [`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) und [`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) nur noch **außerhalb** von Fenced-Blöcken **und außerhalb von Inline-Code** — in Backticks ist er eine Erwähnung. Bei [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) und [`DC-FA-DIAG-001`](#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in) bleibt die Erkennung **roh**, als benannte Skopierung: ihre Eingabe ist keine Prosa (alle Zeilen inkl. Fences bzw. die Zeilen **innerhalb** eines Fence), dort ist ein Backtick literaler Inhalt. Anlass ist ein gemessener stiller Grün-Pfad: von **249** Marker-Prosa-Zeilen über **553** getrackte Dateien tragen **183** ihn nur in Inline-Code (**66** wirken), und der Angleich legt **fünf echte** Befunde frei — Zeilen dieses Dokuments, die das Ventil beschreiben und sich dadurch selbst ausnahmen; sie tragen jetzt einen **gesetzten** Marker. **Erweiterung, kein Ersatz** — die Ventil-Wirkung, die Achsen-Präzedenz und alle Grund-Codes bleiben unverändert; kein Test hatte die alte Roh-Lesung je behauptet. Neues Akzeptanzkriterium (Boundary) mit Gegenprobe in beide Richtungen. **Benannte Grenze:** die **Form** des Markers bleibt ungeregelt — er gilt als gesetzt, sobald die Zeichenkette außerhalb von Code steht, auch ohne Kommentar-Klammer (im Bestand trägt genau **einer** der 66 wirksamen Marker die bare Form). Begründung in begleitender ADR | — |
 | 0.67.0 | 2026-08-27 | [`DC-FA-CITE-001`](#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in) sagt jetzt zu, **was als Direktive gilt**: sie wirkt nur außerhalb von Fenced-Blöcken **und außerhalb von Inline-Code** — die Syntax in Backticks ist eine Erwähnung —, während der **Zitattext** ausdrücklich **roh** verglichen wird. Anlass ist ein gemessener Zustand: über 544 getrackte Dateien tragen **25** Zeilen einen geöffneten Marker, **24** davon in Inline-Code (20 malformt, weil sie die Syntax dokumentieren), **eine** im Fence, **keine** frei; **null** ist eine produktive Direktive — und weil ein malformter Marker fail-closed den ganzen Lauf abbricht, war das Modul **nicht aktivierbar**. Eine Doku-Konvention wäre kein Ausweg gewesen: 12 der 25 liegen in fünf Dateien, die per Regel unantastbar sind. **Zwei** neue Akzeptanzkriterien (Boundary), je mit Gegenprobe. **Erweiterung, kein Ersatz** — der Zitat-Vergleich, die Fail-closed-**Regel** und alle Grund-Codes bleiben unverändert; die **Menge**, die die Regel trifft, fällt von 25 auf null, und genau das ist der Zweck. Ohne aktives Modul ist jeder Befundsatz weiterhin byte-identisch. **Drei Grenzen benannt:** eine echte Direktive wird verschluckt, sobald eine Code-Spanne desselben **Absatzes** sie umschließt; ein Pfad in Backticks fällt fail-closed; und das Strippen kann eine Direktive auch **erzeugen**. Zusätzlich ausgewiesen: die **Ziel-Seite** trägt keine dieser Zusagen (roh, typunabhängig, außerhalb von `scan.ignore`), und die **Ventil-Direktive** wird weiterhin roh erkannt — dieselbe Frage hat im Produkt derzeit zwei Antworten. Begründung in begleitender ADR | — |
 | 0.66.0 | 2026-08-26 | [`DC-FA-MTX-003`](#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix) sagt das **Token-Ziel** zu: eine Klasse darf ein `token`-Muster **ausschließlich** tragen, ohne Pfade — sie hat dann keine Mitglieder, ihr Gegenstand ist eine Zeichenkette, und als **Quelle** einer Regel kann sie nie feuern. Zwei Akzeptanzkriterien decken beide Richtungen. Die Glossar-Definition der **Dokumentklasse** ist entsprechend **geweitet** (Regelfall Pfad-Muster, dazu das Token-Ziel) statt einen Gegenbegriff danebenzustellen: so bleibt jede Bestandszeile wahr, die von Dokumentklassen spricht. **Kein Verhaltens-Delta:** die Fähigkeit bestand in der Umsetzung, war aber nicht zugesagt | — |

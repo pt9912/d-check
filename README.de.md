@@ -181,7 +181,7 @@ eine illustrative Kennung dokumentierte Absicht sein kann
 (`d-check:ignore`, zeilenweise) — er stellt vier Module still: `codepaths`,
 `ids`, `versions` und `diagrams`. Das ist eine **benannte Liste**, kein
 ableitbares Kriterium: `matrix`, `structure` und `citations` melden ebenfalls
-auf Zeilen und kennen den Marker nicht. Bei `codepaths` und `ids` zählt er nur **außerhalb von Inline-Code** — in Backticks ist er eine Erwähnung; bei `versions` und `diagrams` bleibt er roh — bei `diagrams` strukturell, bei `versions` als benannte Grenze (es liest auch Prosa-Zeilen)
+auf Zeilen und kennen den Marker nicht. Bei `codepaths` und `ids` zählt er nur **außerhalb von Inline-Code** — in Backticks ist er eine Erwähnung, und er muss in einem HTML-Kommentar stehen; bei `versions` und `diagrams` bleibt er ein roh gelesenes **Token** — bei `diagrams` strukturell, bei `versions` als benannte Grenze
 ([`DC-FA-CODE-001`](spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in),
 [`DC-FA-ID-001`](spec/lastenheft.md#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids),
 [`DC-FA-VER-001`](spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in),

@@ -1129,9 +1129,13 @@ feinsten Schnitt:
   nicht — Falsch-Rot), und ein **unpaariger** Backtick weiter oben kippt die
   Parität, sodass eine Erwähnung doch als Direktive wirkt (stilles Grün). Die
   Regel oben gilt also nur bei gerader Backtick-Parität des Absatzes.
-  **Was der Marker nicht regelt, ist seine eigene Form:** er gilt als gesetzt,
-  sobald die Zeichenkette außerhalb von Code steht — die Kommentar-Klammer
-  `<!-- … -->` ist die empfohlene, nicht die geforderte Schreibweise.
+  **Auch die Form folgt der Eingabe.** Bei `codepaths` und `ids` muss der
+  Marker in einem **HTML-Kommentar** stehen — `<!-- d-check:ignore (Grund) -->`;
+  eine **blanke** Erwähnung in Prosa wirkt nicht. Bei `versions` und `diagrams`
+  ist er ein **Token**, weil dort kein Markdown-Kommentar die Lexik bildet — im
+  `mermaid`-Fence versteckt ihn die Diagramm-Sprache (`%% d-check:ignore`).
+  **Konservativ:** ein `>` im Kommentar vor dem Marker lässt ihn nicht gelten.
+  **Der Preis:** wer den Marker setzt, muss wissen, für welches Modul.
 **Im Modul `diagrams` ist der Marker ein Token, kein HTML-Kommentar** — und er
 wirkt an genau **zwei** Orten. In Prosa schreiben Sie ihn als
 `<!-- d-check:ignore -->`; innerhalb eines Diagramm-Fence ist das kein

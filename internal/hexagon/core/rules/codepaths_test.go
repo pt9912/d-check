@@ -335,3 +335,77 @@ func TestIgnoreMarkerBleibtRohBeiVersionsUndDiagrams(t *testing.T) {
 			len(res.Findings), res.Findings)
 	}
 }
+
+// DC-FA-CODE-001.a / DC-FA-ID-001.a: der Marker muss bei diesen zwei
+// Konsumenten in einem HTML-KOMMENTAR stehen — das ist die Kommentar-Lexik
+// von Markdown, und Markdown ist ihre Eingabe (ADR-0063). Eine blanke
+// Erwähnung in Prosa wirkt nicht mehr; sie tat es bisher, und damit schaltete
+// jeder Satz ueber das Ventil die Pruefung ab, ueber die er schreibt.
+//
+// Die Bedingung ist KONSERVATIV: ein `>` vor dem Marker im Kommentar laesst
+// ihn nicht gelten. Ein verpasster Marker ist Falsch-Rot — laut; ein
+// erfundener waere stilles Gruen.
+func TestIgnoreMarkerBrauchtDieKommentarForm(t *testing.T) {
+	adr := model.IDPattern{Regex: regexp.MustCompile(`ADR-\d{4}`), Target: "docs/plan/adr/", LinkPolicy: "always"}
+	cases := []struct {
+		name   string
+		body   string
+		module string
+		want   []string
+	}{
+		{"blank wirkt nicht (codepaths)", "Blanker Marker d-check:ignore und `./weg.md`.\n",
+			"codepaths", []string{"codepath-missing"}},
+		{"Kommentar wirkt (codepaths)", "Marker <!-- d-check:ignore --> und `./weg.md`.\n",
+			"codepaths", nil},
+		{"blank wirkt nicht (ids)", "Blanker Marker d-check:ignore und `ADR-0042`.\n",
+			"ids", []string{"id-unlinked"}},
+		{"Kommentar wirkt (ids)", "Marker <!-- d-check:ignore --> und `ADR-0042`.\n",
+			"ids", nil},
+		{"Kommentar mit > davor wirkt nicht", "Marker <!-- a > b d-check:ignore --> und `./weg.md`.\n",
+			"codepaths", []string{"codepath-missing"}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			m := coretest.NewMemFS(map[string]string{
+				"docs/a.md":               tc.body,
+				"docs/plan/adr/0001-x.md": "Definitions-Ort\n",
+			})
+			cfg := model.Config{IDPatterns: []model.IDPattern{adr}}
+			res, err := Run(m, nil, cfg, []string{tc.module})
+			if err != nil {
+				t.Fatalf("Run(%s): %v", tc.module, err)
+			}
+			var got []string
+			for _, f := range res.Findings {
+				got = append(got, f.Reason)
+			}
+			if fmt.Sprint(got) != fmt.Sprint(tc.want) {
+				t.Fatalf("%s: %v, want %v", tc.name, got, tc.want)
+			}
+		})
+	}
+}
+
+// DC-FA-VER-001.a: bei versions bleibt der Marker ein TOKEN — seine Eingabe
+// sind ALLE Zeilen, auch die in Fences fremder Sprachen; eine
+// Markdown-Kommentar-Form gaebe es dort nicht zu fordern. Zusammen mit der
+// festgelegten Token-Form von diagrams (spec/spezifikation.md
+// §DC-FA-DIAG-001.a) ist die Form damit EINGABE-abhaengig, nicht beliebig.
+func TestIgnoreMarkerBleibtTokenBeiVersions(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/src.md": "Stand: v2.0.0\n",
+		"docs/v.md":   "Blanker Marker d-check:ignore, Pin v1.0.0.\n",
+	})
+	cfg := model.Config{Versions: model.VersionsConfig{Patterns: []model.VersionPattern{{
+		PinPattern:  regexp.MustCompile(`v\d+\.\d+\.\d+`),
+		CurrentFrom: "docs/src.md",
+	}}}}
+	res, err := Run(m, nil, cfg, []string{"versions"})
+	if err != nil {
+		t.Fatalf("Run(versions): %v", err)
+	}
+	if len(res.Findings) != 0 {
+		t.Fatalf("versions: %d Befund(e), want 0 — der blanke Token wirkt dort weiter (%v)",
+			len(res.Findings), res.Findings)
+	}
+}

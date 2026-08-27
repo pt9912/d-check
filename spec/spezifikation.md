@@ -1041,7 +1041,7 @@ Ein Inline-Code-Vorkommen ist linkpflichtfrei genau dann, wenn eine der
 Bedingungen gilt: (1) der Code-Span ist der Linktext eines Markdown-Links
 (`` [`…`](ziel) ``); (2) das Vorkommen liegt im `target` des Musters;
 (3) die geprüfte Datei matcht ein Glob aus `ids.patterns[].exempt-paths`;
-(4) die Zeile trägt den Marker `d-check:ignore` — erkannt auf dem
+(4) die Zeile trägt den Marker `d-check:ignore` **in einem HTML-Kommentar** — erkannt auf dem
 **gestrippten** Text wie bei [DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code)
 Schritt 1, in Backticks also eine **Erwähnung**; ab
 dieser Anforderung wirkt er auf `codepaths` **und** `ids`; (5) es ist
@@ -1188,9 +1188,11 @@ byte-identisch.
 1. Zeilen mit dem Marker `d-check:ignore` werden übersprungen. Erkannt wird er
    auf dem **gestrippten** Text (fence-bewusst und inline-code-frei,
    §Achsen-Präzedenz): in Backticks ist er eine **Erwähnung**. Die
-   Kommentar-Klammer `<!-- … -->` mit Begründung ist die empfohlene
-   Schreibweise, nicht die geforderte — die **Form** ist ungeregelt. Der
-   Marker wirkt ausschließlich auf dieses Modul. ATX-Heading-Zeilen werden ebenso
+   Kommentar-Klammer `<!-- … -->` ist **gefordert** (Begründung darin
+   empfohlen): die Form folgt der Kommentar-Lexik der Eingabe, und für dieses
+   Modul ist die Eingabe Markdown-Prosa. Konservativ: ein `>` vor dem Marker
+   im Kommentar lässt ihn **nicht** gelten. Der Marker wirkt ausschließlich auf
+   dieses Modul. ATX-Heading-Zeilen werden ebenso
    übersprungen: Titel sind keine Prosa-Referenzen (gleiche Ausnahme
    wie [DC-FA-ID-001.a](#dc-fa-id-001a--kennungs-prüfung); ein Marker
    im Heading würde zudem dessen Anker-Slug verändern).
@@ -2836,6 +2838,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-27 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Schritt 1 und §[`DC-FA-ID-001.a`](spezifikation.md#dc-fa-id-001a--kennungs-prüfung) Bedingung 4 fordern für den Zeilen-Marker jetzt die **HTML-Kommentar-Form**; eine blanke Erwähnung wirkt dort nicht mehr. Die Form folgt der **Kommentar-Lexik der Eingabe** und ist deshalb je Konsument verschieden — §[`DC-FA-DIAG-001.a`](spezifikation.md#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams) legt den **Token** ausdrücklich fest (Diagramm-Sprache statt Markdown), und §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) liest alle Zeilen sprachgemischt. Die Bedingung ist **konservativ**: ein `>` im Kommentar vor dem Marker lässt ihn nicht gelten — ein verpasster Marker ist Falsch-Rot und laut, ein erfundener wäre stilles Grün. Im Bestand kostenlos (null zusätzliche Befunde), Zähne per Gegenprobe belegt. Begründung in begleitender ADR |
 | 2026-08-27 | §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) §Achsen-Präzedenz sowie §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Schritt 1 und §[`DC-FA-ID-001.a`](spezifikation.md#dc-fa-id-001a--kennungs-prüfung) Bedingung 4 sagt jetzt zu, **wo der Zeilen-Marker gilt und wo er nur erwähnt ist**: die Frage *„ist diese Zeile eine Direktive"* bekommt die geteilte Prosa-Antwort (fence-bewusst **und inline-code-gestrippt**) bei den zwei Konsumenten, deren Eingabe Prosa ist — `codepaths` und `ids`. Bei `versions` (liest alle Zeilen inkl. Fences) und `diagrams` (liest Zeilen **innerhalb** eines Fence) bleibt die Erkennung **roh**, als benannte Skopierung: dort ist ein Backtick literaler Inhalt, es gibt keine geteilte Antwort zu übernehmen. Anlass ist ein gemessener stiller Grün-Pfad — von 250 Marker-Zeilen tragen 160 den Marker nur in Inline-Code, und der Angleich legt fünf **echte** Befunde frei: Zeilen des Lastenhefts, die das Ventil beschreiben und sich dadurch selbst ausnahmen. **Nicht** Gegenstand ist die **Form** des Markers (die Spec nennt einen HTML-Kommentar, die Erkennung akzeptiert jedes Vorkommen der Zeichenkette). Begründung in begleitender ADR |
 | 2026-08-27 | §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) Kopfsatz und Schritt 1: der **Marker-Scan** bekommt die geteilte Prosa-Antwort — fence-bewusst **und inline-code-gestrippt** —, Suche und Parse auf demselben gestrippten Text, und der `<pfad>` beginnt mit einem Nicht-Whitespace-Zeichen (ein Pfad in Backticks wird sonst zu einem gültigen Parse mit leerem Ziel statt zum fail-closed-Fall); der **Zitattext** bleibt ausdrücklich **roh**. Der Vorfassungs-Satz *„Arbeitet auf den rohen Zeilen (fence-aware wie die übrigen Module)"* sagte beides zugleich und ließ die Inline-Hälfte offen; gemessen wurde eine andere Antwort als bei den übrigen Modulen, mit der Folge, dass die Dokumentation der Direktive selbst den Lauf fail-closed abbrach (25 Marker-Zeilen über 544 Dateien, davon 24 in Inline-Code, keine frei, null produktive Direktiven). **Drei Grenzen des Strippens** neu benannt (absatzweite Verschluckung, Erzeugung einer Direktive, die roh bleibende Ventil-Direktive) und die **Ziel-Seite** als außerhalb aller Prosa-Zusagen ausgewiesen (roh, typunabhängig, nicht von `scan.ignore`/`scope` erfasst). Begründung in begleitender ADR |
 | 2026-08-26 | §2-Schema: `matrix.classes[].paths` ist **optional** — eine Klasse ohne Pfade hat keine Mitglieder und ist reines **Token-Ziel**. Die Fähigkeit bestand in der Implementierung, war aber nicht zugesagt; die Zeile führte `paths` wie das Pflichtfeld `name`. Kein Verhaltens-Delta |
