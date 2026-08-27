@@ -141,6 +141,34 @@ structure:
     sections: each
     forbid-pattern: '\(bei Closure\)|wird mit dem Closure-Body gefüllt|<…>|<eingetreten:'
 
+  # Die zweite Haelfte der urteilsfreien Drei-Ausgaenge-Pruefung: der Ausgang
+  # eines Risikos traegt eines der drei kanonischen Woerter, nicht Freitext.
+  # Der Wachter darueber (die Platzhalter-Regel) faengt den VERGESSENEN Ausgang;
+  # diese Regel faengt den ERFUNDENEN (MR-049).
+  #
+  # WAS SIE NICHT KANN, gemessen statt geschaetzt: die Bedingungen wirken auf
+  # den ganzen bereinigten Abschnitts-Text, nicht je Risiko-Eintrag, und RE2
+  # kennt keinen Negativ-Lookahead. Ein Abschnitt mit zwei Risiken, von denen
+  # eines kanonisch und eines Freitext ausgeht, laeuft deshalb GRUEN durch.
+  # Gedeckt ist der Abschnitt, in dem KEIN Ausgang kanonisch ist.
+  #
+  # `weiter offen` fehlt in der Alternation mit Absicht: dieser dritte Ausgang
+  # traegt seinen Beleg als BEO-Kennung, und die Register-Paarung ist eine
+  # eigene Frage.
+  #
+  # Die Ausnahme nennt den ABGESCHLOSSENEN Altbestand (slice-0xx, slice-1[0-3]x),
+  # nicht die offene Zukunft: ein Zahlen-Glob auf die neuen Nummern hoerte bei
+  # slice-200 still auf zu greifen. So bleibt jeder kuenftige Slice gedeckt,
+  # ohne dass ein Retrofit erzwungen wird, den niemand beschlossen hat.
+  # Gemessen am Bestand: ohne die Ausnahme 121 Befunde (107 ohne §5-Abschnitt,
+  # 14 mit Freitext-Ausgang), mit ihr null.
+  - files: "docs/plan/planning/done/slice-*.md"
+    exempt-paths:
+      - "docs/plan/planning/done/slice-0*"
+      - "docs/plan/planning/done/slice-1[0-3]*"
+    section: "## 5. Abnahme-Punkte / Risiken"
+    require-pattern: '\*\*Ausgang:? ?\*?\*? ?\*?(eingetreten|entfallen)'
+
   # Jede Wellen-Ergebnisnotiz beantwortet die erste Pflichtfrage.
   - files: "docs/plan/planning/done/welle-*-results.md"
     section-pattern: '^## Was wurde geliefert'
