@@ -268,7 +268,7 @@ das ist nachgeprüft.
 [`harness/README.md`](../../../../harness/README.md) und die Skills; §3 dieses
 Slice hat sie ausgeklammert. Dort stehen mindestens zwei wörtliche,
 auszeichenbare Zitate — geschnitten als
-[slice-163](../in-progress/slice-163-zitate-ausserhalb-des-speichers.md), zusammen mit
+[slice-163](../done/slice-163-zitate-ausserhalb-des-speichers.md), zusammen mit
 dem vorbestehenden Befund, dass die historische Spalte der Delta-Tabelle ihr
 eigenes Zitat nicht wörtlich wiedergibt.
 

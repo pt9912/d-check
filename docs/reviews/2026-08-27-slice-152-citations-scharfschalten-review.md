@@ -67,4 +67,4 @@ Alle vierzehn Befunde sind eingearbeitet:
 - **F-11**, **F-12** als Kommentar bzw. Erklärung gesetzt.
 - **F-13** im Closure-Body.
 - **F-14** als benannter Rest, zusammen mit den Zitaten außerhalb des Speichers:
-  [slice-163](../plan/planning/in-progress/slice-163-zitate-ausserhalb-des-speichers.md).
+  [slice-163](../plan/planning/done/slice-163-zitate-ausserhalb-des-speichers.md).
