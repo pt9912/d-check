@@ -71,7 +71,7 @@ entstünde?
   nutzlos**, weil **146** blanke Erwähnungen in Doku-Prosa sind. Die Abwägung
   Aufwand-gegen-Ertrag wurde damit nie gebraucht; entschieden hat ein
   tieferliegender Defekt, ausgetragen als
-  [slice-159](../open/slice-159-ignore-marker-syntax.md).
+  [slice-159](../in-progress/slice-159-ignore-marker-syntax.md).
 
 ## 6. Trigger
 
@@ -148,7 +148,7 @@ Marker heute wirklich etwas tut. Die übrigen 185 schweigen über nichts — ode
 Vorzeichen:** ein Modul, das seine eigene Dokumentation liest. Dort bricht es
 laut ab und fällt beim ersten Lauf auf; hier schweigt es lautlos und ist seit
 der Einführung des Ventils unbemerkt. Ausgetragen als
-[slice-159](../open/slice-159-ignore-marker-syntax.md);
+[slice-159](../in-progress/slice-159-ignore-marker-syntax.md);
 [`BEO-013`](../observations.md) trägt die Messung und wartet darauf.
 
 **Was dieser Slice nicht geprüft hat, und es gehört gesagt:** ob die 48 wirkenden
