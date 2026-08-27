@@ -12,11 +12,17 @@ import (
 // (spec/spezifikation.md §4).
 const ReasonCodepathMissing = "codepath-missing"
 
-// ignoreMarker nimmt eine Zeile von der codepaths- und der
-// ids-`always`-Prüfung aus — nur von diesen beiden: deterministische
-// Befunde anderer Module werden behoben, nicht unterdrückt
-// (DC-FA-CODE-001; Geltungsbereich auf ids erweitert mit
-// DC-FA-ID-001 0.8.0, slice-018 — illustrative Beispiel-IDs).
+// ignoreMarker nimmt eine Zeile von vier Prüfungen aus: codepaths, ids (beide
+// Pfade, nicht nur `always`), versions und diagrams. Die übrigen Module
+// honorieren ihn nicht — ihre deterministischen Befunde werden behoben, nicht
+// unterdrückt (DC-FA-CODE-001).
+//
+// GRENZE: die Erkennung ist eine Teilketten-Suche auf der Rohzeile. Damit
+// unterdrückt auch jede ERWÄHNUNG des Markers — Doku über das Ventil schaltet
+// die Prüfung ab, über die sie schreibt. Der Skopus je Modul ist zudem
+// verschieden: codepaths und ids lesen Prosa-Zeilen, versions alle Zeilen,
+// diagrams nur Diagramm-Fences und deren Öffnungszeile, wo der Marker den
+// ganzen Block ausnimmt.
 const ignoreMarker = "d-check:ignore"
 
 // CheckCodepaths prüft explizite Pfade in Inline-Code-Spans

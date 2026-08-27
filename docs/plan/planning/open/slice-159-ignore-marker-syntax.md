@@ -15,9 +15,11 @@ geteilte Ventil); [ADR-0019](../../adr/0019-versions-pin-fence-ausnahme.md);
 [`BEO-013`](../observations.md) (der Anlass);
 [slice-146](../in-progress/slice-146-ignore-marker-wirkung.md) (die Messung).
 
-**Berührte Spec-Stellen:** die Marker-Definition in
-[`spec/spezifikation.md`](../../../../spec/spezifikation.md) für die vier
-Konsumenten `codepaths`, `ids`, `versions`, `diagrams`.
+**Berührte Spec-Stellen:**
+[`DC-FA-CODE-001.a`](../../../../spec/spezifikation.md#dc-fa-code-001a--pfade-in-inline-code),
+[`DC-FA-ID-001.a`](../../../../spec/spezifikation.md#dc-fa-id-001a--kennungs-prüfung),
+[`DC-FA-VER-001.a`](../../../../spec/spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions),
+[`DC-FA-DIAG-001.a`](../../../../spec/spezifikation.md#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams).
 
 **Verantwortlich:** pt9912. **Autor:** pt9912. **Datum:** 2026-08-27.
 
@@ -31,13 +33,30 @@ des Markers — in Prosa, in Inline-Code, in einer Tabellenzelle — genauso wie
 gesetzter Marker. Die Dokumentation des Ventils schaltet die Prüfung ab, über
 die sie schreibt.
 
-**Gemessen** ([slice-146](../in-progress/slice-146-ignore-marker-wirkung.md)):
-**233** Zeilen außerhalb von Fences tragen die Zeichenkette und unterdrücken
-damit für `codepaths`, `ids`, `versions` und `diagrams`. Davon stehen nur
-**87** in der HTML-Kommentar-Form; **146** sind blanke Erwähnungen. Wird die
-Konstante ins Leere gelenkt, treten **58** Befunde auf **48** Zeilen hervor
-(38 `id-unlinked`, 18 `codepath-missing`, 2 `repo-escape`) — die übrigen
-**185** Marker-Zeilen unterdrücken nichts.
+**Gemessen** ([slice-146](../in-progress/slice-146-ignore-marker-wirkung.md),
+Stand vor jenem Slice): **233** Prosa-Zeilen tragen die Zeichenkette und
+unterdrücken damit für `codepaths` und `ids`. Nur **62** sind gesetzte Marker;
+**171** sind Erwähnungen — 146 blank, **25** zitieren die Kommentar-Form in
+Inline-Code. Wird die Konstante ins Leere gelenkt, treten **58** Befunde auf
+**48** Zeilen hervor (38 `id-unlinked`, 18 `codepath-missing`, 2 `repo-escape`);
+die übrigen **185** Marker-Zeilen unterdrücken nichts.
+
+**Die Mengen sind je Konsument verschieden**, und wer das übersieht, baut die
+falsche Regel: `versions` liest **alle** Zeilen, in Fences wie außerhalb —
+seine Menge ist **236**. `diagrams` liest **nur** Diagramm-Fence-Zeilen und die
+Öffnungszeile; seine Menge ist zu den 233 **disjunkt**, und auf der
+Öffnungszeile nimmt der Marker den **ganzen Block** aus.
+
+**WIDERSPRUCH, gemeldet statt aufgelöst** ([`AGENTS.md`](../../../../AGENTS.md)
+§1): Die unten naheliegende Kommentar-Form widerspricht einer **ausdrücklichen**
+Festlegung der Spezifikation für `diagrams` — dort ist der Marker *„ein
+**Token**, kein HTML-Kommentar"*, mit der Begründung, eine Kommentar-Lexik je
+Fence-Sprache wäre ein Grammatik-Parser. Das Benutzerhandbuch sagt es als
+Nutzer-Zusage weiter, und der Bestand trägt eine gesetzte Fundstelle in genau
+dieser Form: eine `mermaid`-Öffnungszeile mit blankem Token im Infostring. Eine
+repo-weit einheitliche Kommentar-Form würde sie **verlieren**. Der Widerspruch
+ist damit vor jedem Code zu entscheiden — die Spec sticht den Plan, und wer sie
+ablösen will, braucht eine ADR.
 
 **Das ist dieselbe Klasse wie
 [slice-158](../open/slice-158-citations-inline-code.md)**, nur mit umgekehrtem
@@ -46,25 +65,35 @@ es lautlos. Die laute Variante fällt beim ersten Lauf auf; diese nicht.
 
 ## 2. Vorgehen
 
-1. **Die Form festlegen, bevor Code entsteht.** Naheliegend ist die
-   HTML-Kommentar-Form (`<!-- d-check:ignore … -->`), weil sie 87 der heutigen
-   Marker bereits tragen und weil sie in gerendertem Markdown unsichtbar ist.
-   Zu prüfen ist, ob das den Bestand trifft: welche der 87 stehen **nicht** am
-   Zeilenanfang, welche tragen Zusatztext, und gibt es eine gesetzte
-   Unterdrückung, die die neue Form **verlöre**?
-2. **Den Preis zählen, nicht schätzen.** Nach der Verengung entstehen die
-   Befunde wieder, die eine blanke Erwähnung heute deckt. Wie viele der 58
-   hängen an einer Erwähnung statt an einem Marker? Das ist die Zahl, die die
-   Umstellung kostet — und sie gehört vor der Entscheidung gemessen.
-3. Trägt die Änderung: Spezifikation (die Marker-Definition je Konsument), eine
+1. **Den Widerspruch oben zuerst entscheiden.** Solange die Spezifikation für
+   `diagrams` den Token ausdrücklich festlegt, ist „eine Form für alle vier"
+   keine Wahl, sondern eine Spec-Änderung. Möglich sind: die Spec per ADR
+   ablösen, oder die Form **je Konsument** festlegen und die Uneinheitlichkeit
+   begründen.
+2. **Die Kommentar-Form allein reicht nicht — gemessen.** Von den 87 Zeilen in
+   Kommentar-Form stehen **25 in Inline-Code**; eine Verengung auf die rohe
+   Teilkette `<!-- d-check:ignore` würde sie **weiter** unterdrücken. Der
+   diagnostizierte Defekt bliebe damit zu rund einem Drittel bestehen. Die
+   tragende Achse ist deshalb nicht die Kommentar-Form, sondern **Marker gegen
+   zitierten Marker**: die Erkennung muss Inline-Code auslassen, wie jedes
+   prosa-lesende Modul es tut.
+3. **Den Preis zählen — er ist bereits erhoben.** Von den 48 wirksamen Zeilen
+   hängen **drei** an einer blanken Erwähnung statt an einem Marker
+   (`spec/lastenheft.md`, Akzeptanzkriterien- und Historien-Prosa), und sie
+   tragen **fünf** der 58 Befunde. Das ist der Preis einer Verengung — und alle
+   drei sind selbst Instanzen des Defekts, den dieser Slice behebt.
+4. Trägt die Änderung: Spezifikation (die Marker-Definition je Konsument), eine
    ADR mit `Schärft:`-Feld, dann Code und Tests. Ob das Lastenheft berührt ist,
    entscheidet sich daran, ob die Marker-Form dort zugesagt ist.
-4. **Die vier Konsumenten gemeinsam.** `codepaths`, `ids`, `versions` und
-   `diagrams` teilen die Konstante; eine Verengung in nur einem wäre die zweite
-   Antwort auf dieselbe Frage und damit ein Defekt nach
-   [ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md).
-5. Bewusstes Brechen je Konsument, **Ursache gelesen**; Rückbau grün.
-6. `make gates`, `make fullbuild`; unabhängiger Review; Closure.
+5. **Die vier Konsumenten gemeinsam — soweit Schritt 1 es zulässt.** Sie teilen
+   heute eine Konstante, und eine Verengung in nur einem wäre die zweite Antwort
+   auf dieselbe Frage
+   ([ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)).
+   Fällt Schritt 1 dagegen zugunsten der Spec aus, ist die Uneinheitlichkeit
+   **keine** zweite Antwort, sondern eine **andere Frage** — dann gehört sie
+   nach demselben ADR ausdrücklich gescopt und begründet.
+6. Bewusstes Brechen je Konsument, **Ursache gelesen**; Rückbau grün.
+7. `make gates`, `make fullbuild`; unabhängiger Review; Closure.
 
 ## 3. Ausdrücklich NICHT in diesem Slice
 
@@ -80,12 +109,15 @@ es lautlos. Die laute Variante fällt beim ersten Lauf auf; diese nicht.
 
 ## 4. Definition of Done
 
+- [ ] Der Widerspruch zur `diagrams`-Festlegung ist **entschieden**, nicht
+      umgangen — Spec abgelöst oder Form je Konsument gescopt.
 - [ ] Die Marker-Form ist festgelegt und gegen den Bestand geprüft — inklusive
-      der Frage, ob eine gesetzte Unterdrückung verloren geht.
-- [ ] Der Preis der Umstellung ist **gezählt**: wie viele der heutigen
-      Unterdrückungen an einer blanken Erwähnung hängen.
-- [ ] Spezifikation, ADR, Code und Tests hängen zusammen; alle vier Konsumenten
-      tragen dieselbe Antwort.
+      der Frage, ob eine gesetzte Unterdrückung verloren geht. Die eine bekannte
+      Kandidatin (mermaid-Öffnungszeile mit Token) ist ausdrücklich behandelt.
+- [ ] Die Erkennung lässt **Inline-Code** aus; sonst bleibt der Defekt für die
+      25 zitierten Kommentar-Formen bestehen.
+- [ ] Spezifikation, ADR, Code und Tests hängen zusammen; wo die Konsumenten
+      **verschiedene** Antworten tragen, ist das gescopt und begründet.
 - [ ] Ein konstruierter Verstoß je Konsument mit **gelesener Ursache**.
 - [ ] `make gates` grün (Exit explizit), `make fullbuild` grün; unabhängiger
       Review.
