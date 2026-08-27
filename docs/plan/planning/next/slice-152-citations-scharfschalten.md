@@ -64,6 +64,30 @@ dokumentierte Fail-closed-Semantik*. Dieser Slice bringt keine neue
 Entdeckung, sondern die Frage, ob diese Einordnung noch trägt, wenn das Modul
 scharfgeschaltet werden soll.
 
+**Stand nach dem ersten Anlauf (2026-08-27): zurückgeführt, weil die Wegwahl
+ein Produkt-Delta verlangt.** Schritt 1 und 2 sind gefahren, das Ergebnis
+schließt beide Wege bis auf einen — und der braucht eine eigene Anforderung.
+Die Zahlen dieses Abschnitts oben sind dabei **überholt**: gemessen sind
+**72** Vorkommen in **20** getrackten Dateien (nicht zehn), davon **70**
+außerhalb eines Fenced-Blocks.
+
+- **Weg A (Doku-Konvention) ist nicht teuer, sondern unmöglich.** Die 70
+  Vorkommen außerhalb von Fences verteilen sich auf **neun** eingefrorene
+  Review-Reporte, einen `done/`-Slice und zwei `Accepted`-ADRs
+  ([ADR-0045](../../adr/0045-zitat-verifikation-codepaths-erweiterung-und-citations-modul.md),
+  [ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)). §3
+  dieses Slice verbietet genau deren Bearbeitung, §3.5 die der ADRs.
+- **Ein Ventil gibt es nicht.** `citations` führt **keinen einzigen**
+  Konfigurations-Schlüssel — kein `exempt-paths`, keinen Zeilen-Marker. Ein
+  Scharfschalten mit benannter Ausnahme ist damit heute nicht möglich.
+- **Weg B ist ein Vertrags-Delta, kein Bugfix.** Die Spezifikation sagt
+  ausdrücklich zu: *„Arbeitet auf den rohen Zeilen (fence-aware wie die übrigen
+  Module)."* Das Verhalten ist spezifiziert, nicht abweichend — die Änderung
+  braucht Lastenheft, Spezifikation und ADR.
+
+Ausgetragen als [slice-158](../open/slice-158-citations-inline-code.md). Dieser
+Slice wartet auf dessen Ergebnis; Schritt 3 bis 5 sind unberührt.
+
 ## 2. Vorgehen
 
 1. **Den Bestand zählen**, bevor entschieden wird: wie viele Stellen schreiben
