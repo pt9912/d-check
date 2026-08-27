@@ -102,7 +102,7 @@ theoretisch.** Am 2026-08-27 gemessen: der Wächter urteilt korrekt (direkt gege
 echtes Hook-JSON geprüft, Ausgabe byte-identisch zur Vorfassung), und ein
 blockiertes Kommando lief über das Werkzeug **trotzdem durch**. Früher am selben
 Tag wurde derselbe Wächter durchgesetzt. Die Ursache liegt in der Antwortform,
-nicht in der Prüfung ([slice-156](docs/plan/planning/open/slice-156-hook-antwortform.md));
+nicht in der Prüfung ([slice-156](docs/plan/planning/in-progress/slice-156-hook-antwortform.md));
 bis dahin ist der Stolperdraht **unzuverlässig gespannt**. Wer sich auf ihn
 verlässt, verlässt sich auf nichts.
 

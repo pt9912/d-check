@@ -187,7 +187,7 @@ Zusage stimmt erst seit `1fd1d6a`.
 **Was liegen bleibt und wo es steht.** Die Antwortform ist die veraltete, und
 mit dem Wegfall des `exit 2`-Pfades läuft jetzt **jeder** Block darüber — der
 Slice hatte die Frage ausdrücklich offengelassen, der Ausgang ist
-[slice-156](../open/slice-156-hook-antwortform.md). Die vier Umgehungs-Klassen
+[slice-156](../in-progress/slice-156-hook-antwortform.md). Die vier Umgehungs-Klassen
 der Segmentierung (Shell-Schlüsselwort als Kopf, Wrapper außerhalb der
 Präfix-Liste, wort-interne Splices, escapte Quotes) sind geerbt, gemessen und
 als Grenz-Tabelle in
