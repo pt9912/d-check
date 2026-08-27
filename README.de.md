@@ -121,7 +121,10 @@ Dokuments:
   `<!-- d-check:cite <pfad>:<von>-<bis> -->` markiert das folgende Zitat (ein
   `>`-Blockquote oder inline `„…"`/`"…"`; Leerzeilen dazwischen sind unschädlich,
   ein Code-Block dazwischen trennt); der whitespace-normalisierte Zitattext muss
-  ein zusammenhängender Teilstring der Quell-Spanne sein (`citation-mismatch`), opt-in
+  ein zusammenhängender Teilstring der Quell-Spanne sein (`citation-mismatch`); die
+  Direktive zählt nur **außerhalb** von Code-Blöcken **und außerhalb von
+  Inline-Code** — in Backticks ist sie eine Erwähnung, keine Direktive —, während
+  die zitierte Quell-Spanne **roh** gelesen wird, opt-in
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — Struktur-Invarianten **innerhalb** eines Dokuments: je Regel eine
   Dokumentklasse über **eigene** Globs, ein Abschnitt (Klartext oder RE2) und bis

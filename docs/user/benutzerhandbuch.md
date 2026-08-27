@@ -1240,6 +1240,25 @@ während jede echte Wort-Abweichung bricht. Zitate unter 16 Zeichen bleiben unge
 eine **malformte** Direktive oder ein **fehlendes** Zitat ist fail-closed (Exit 2) —
 eine kaputte Direktive ist ein Autoren-Fehler, kein Schweigen.
 
+**Wo die Direktive wirkt — und wo sie nur erwähnt ist.** Sie zählt nur
+**außerhalb** von Code-Blöcken **und außerhalb von Inline-Code**: in Backticks
+geschrieben ist sie eine **Erwähnung**, keine Direktive. Ohne das könnte diese
+Seite hier ihre eigene Syntax nicht zeigen, ohne den Lauf abzubrechen. Trägt
+eine Zeile beides, gilt die freie Direktive. **Drei Grenzen, die daraus folgen:**
+die Erkennung wirkt **absatzweit**, eine freie Direktive wird also auch
+verschluckt, wenn eine Backtick-Spanne des Absatzes sie umschließt (öffnet eine
+Zeile vorher, schließt eine Zeile später); ein **Pfad** in Backticks fällt
+fail-closed statt zu einem Befund mit leerem Ziel; und eine Backtick-Spanne
+zwischen `<!--` und dem Marker verschwindet, kann eine Direktive also auch
+**erzeugen**. Die **Ventil**-Direktive `d-check:ignore` folgt dieser Regel
+**nicht** — sie wird weiterhin auf der rohen Zeile erkannt und wirkt auch aus
+Backticks heraus.
+
+**Die zitierte Quelle ist nicht Teil des Scans.** Gelesen wird sie **roh und
+typunabhängig**: sie muss weder Markdown sein noch in der Scan-Menge liegen.
+`scan.ignore` und `citations.scope` skopieren die **prüfende** Datei, nicht das
+Ziel — eine ausgeschlossene Datei kann also weiterhin zitiert werden.
+
 ```yaml
 codepaths:
   check-lines: true       # datei:<von>-<bis>-Zeilen-Referenzen verifizieren

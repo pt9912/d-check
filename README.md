@@ -120,7 +120,9 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   `<!-- d-check:cite <path>:<from>-<to> -->` marks the following quote (a `>`-blockquote or
   inline `„…"`/`"…"`; blank lines in between are harmless, a fenced block in
   between separates); the whitespace-normalized quote must be a contiguous substring
-  of the source span (`citation-mismatch`), opt-in
+  of the source span (`citation-mismatch`); the directive counts only **outside**
+  fenced blocks **and outside inline code** — in backticks it is a mention, not a
+  directive —, while the quoted source span is read **raw**, opt-in
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — structure invariants **within** a document: each rule defines a
   document class via **its own** globs, a section (literal or RE2) and up to

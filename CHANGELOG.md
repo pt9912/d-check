@@ -8,6 +8,28 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ### Changed
 
+- slice-158 — **Das Modul `citations` erkennt die Direktive nur noch außerhalb
+  von Inline-Code** (Lastenheft 0.67.0, ADR-0060). Bisher las der Marker-Scan
+  die **rohen** Zeilen: die Syntax in Backticks zu schreiben erzeugte einen
+  malformten Marker, und weil das fail-closed ist, brach der ganze Lauf ab. Das
+  Modul war damit **nicht aktivierbar** — gemessen über 544 getrackte Dateien
+  tragen **25** Zeilen einen geöffneten Marker, **24** davon in Inline-Code
+  (20 malformt, weil sie die Syntax dokumentieren), **keine** frei; **null** ist
+  eine produktive Direktive. Der Lauf endete an `CHANGELOG.md:592` und meldet
+  jetzt 546 Dateien, 0 Befunde, Exit 0. Marker-Suche **und** Direktiven-Parse
+  laufen auf dem fence-bewussten, inline-code-gestrippten Text — dieselbe
+  Antwort, die jedes andere prosa-lesende Modul auf die Frage *„ist das Prosa"*
+  gibt; der **Zitattext** bleibt ausdrücklich **roh**, dort werden Bytes
+  verglichen. **Drei Grenzen sind benannt:** die Erkennung wirkt **absatzweit**
+  (eine freie Direktive wird auch verschluckt, wenn eine Backtick-Spanne des
+  Absatzes sie umschließt), ein **Pfad** in Backticks fällt fail-closed statt zu
+  einem Befund mit leerem Ziel, und eine Spanne zwischen `<!--` und dem Marker
+  verschwindet — kann eine Direktive also auch **erzeugen**. **Nicht** geändert
+  ist die Ventil-Direktive `d-check:ignore`: sie wird weiterhin roh erkannt und
+  wirkt auch aus Backticks heraus. Fail-closed bleibt als **Regel** unverändert;
+  nur die Menge, die sie trifft, fällt von 25 auf null. Ohne aktives Modul ist
+  jeder Befundsatz byte-identisch.
+
 - slice-126 — **Doku-Korrektur ohne Software-Änderung** (Handbuch 1.57), zwei
   Befunde. **(a) Ventil-Lage bei `citations` ausgesprochen:**
   `citation-out-of-range` und `citation-inverted-range` entstehen in **zwei**
