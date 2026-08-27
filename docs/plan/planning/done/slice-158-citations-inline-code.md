@@ -130,7 +130,7 @@ vorhandenen Anforderung oder eine neue?
   [ADR-0060](../../adr/0060-citations-marker-scan-geteilte-prosa-antwort.md)
   Entscheidung 7 skopiert statt übergangen — mit gemessenen Rändern (173 Zeilen
   nur in Inline-Code; höchstens 58 Befunde) und einem eigenen Slice als Ausgang:
-  [slice-162](../in-progress/slice-162-ignore-marker-geteilte-antwort.md).
+  [slice-162](../done/slice-162-ignore-marker-geteilte-antwort.md).
 
 ## 6. Trigger
 
@@ -225,7 +225,7 @@ geschätzt — **173** Prosa-Zeilen tragen den Ventil-Marker ausschließlich in
 Inline-Code, 63 frei, und ein Lauf mit **ganz** abgeschaltetem Ventil meldet
 **58** Befunde. Der Angleich beträfe höchstens diese 58; wie viele wirklich, ist
 die erste Messung von
-[slice-162](../in-progress/slice-162-ignore-marker-geteilte-antwort.md).
+[slice-162](../done/slice-162-ignore-marker-geteilte-antwort.md).
 
 **Was §3.8 hier zu benennen gab.** Das Modul liest die zitierte Quell-Spanne
 **roh und typunabhängig** — kein Fence-Bewusstsein, kein Strippen, und die
