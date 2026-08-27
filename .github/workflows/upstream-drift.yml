@@ -1,7 +1,18 @@
 name: upstream-drift
 
-# Nachtlauf fuer die gepinnten Fremd-Bestaende: Baseline-Tag (MR-011-Kette),
-# Go-Toolchain und golangci-lint.
+# Nachtlauf fuer die gepinnten Fremd-Bestaende. Gewacht wird JEDER Pin, den
+# dieses Repo auf einen Fremd-Bestand setzt: die vendorte Baseline, die zwei
+# Toolchain-Versionen, die fuenf Fremd-Image-Digests (drei Dockerfile-Stages,
+# semgrep, a-check) und die zwei Action-Pins.
+#
+# ZWEI FRAGEN, NICHT EINE. Ein Tag-Pin und ein Digest-Pin altern verschieden:
+#   „gibt es einen neueren Tag"       — Versions-Achsen (baseline, go, golangci,
+#                                       semgrep, a-check, die zwei Actions)
+#   „traegt derselbe Tag einen        — Digest-Achsen (die drei Basis-Images,
+#    anderen Digest"                    semgrep, a-check)
+# Ein Bestand mit BEIDEN Pins braucht BEIDE Achsen: `freshness-go` meldet `ok`,
+# waehrend derselbe golang-Tag laengst neu gebaut ist. Eine Achse allein haette
+# hier eine Deckung behauptet, die sie nicht traegt.
 #
 # WARUM EIN EIGENER WORKFLOW UND NICHT EIN SCHRITT IN ci.yml: dieses Gate ist
 # das einzige, das das Netz braucht, und es ist bewusst FAIL-OPEN (Netz-,
@@ -9,21 +20,26 @@ name: upstream-drift
 # Upstream-Ausfall die Integrations-CI rot faerben — und ein Waechter, den man
 # wegen Fremdstoerungen abschaltet, ist schlechter als gar keiner.
 #
-# WAS ER MELDET. Die Codes unten sind die des SKRIPTS (Exit = schlimmster Teil);
-# `make` normalisiert einen fehlgeschlagenen Recipe auf seinen eigenen Exit 2.
-# Der Job wird so oder so rot — WELCHER Teil gemeldet hat, sagt die Ausgabe:
-#   Exit 0  Pin aktuell und Asset unveraendert.
-#   Exit 3  CURRENCY: upstream traegt einen neueren Release-Tag. Kein
-#           Auto-Update — die Hebung bleibt ein bewusster Akt (MR-011-Kette).
-#   Exit 4  CONTENT: der GEPINNTE Tag wurde upstream verschoben oder sein Asset
-#           neu gebaut. Das ist der schwerere Fall: unser vendorter Bestand ist
-#           intakt (das prueft `make baseline-verify` in gates), aber seine
-#           Herkunft stimmt nicht mehr mit dem ueberein, was der Tag heute sagt.
+# WAS ER MELDET. Exit 3 heisst „Pin und Upstream sind verschieden"; das WORT
+# dazu unterscheidet sich, weil die Messungen sich unterscheiden — VERALTET bei
+# den Versions-Achsen (ihre Reihen sind monoton, „anders" heisst dort „neuer"),
+# ABWEICHEND bei den Digest-Achsen (Digests haben keine Ordnung). Exit 4 gibt
+# es nur beim Baseline-Skript: der GEPINNTE Tag wurde upstream verschoben oder
+# sein Asset neu gebaut — der schwerere Fall, weil unser vendorter Bestand
+# intakt ist (das prueft `make baseline-verify` in gates), seine Herkunft aber
+# nicht mehr mit dem uebereinstimmt, was der Tag heute sagt. `make`
+# normalisiert einen fehlgeschlagenen Recipe auf seinen eigenen Exit 2; WELCHER
+# Teil gemeldet hat, sagt die Ausgabe.
 #
 # WO DAS ROT SICHTBAR WIRD: in der Actions-Uebersicht des Repos als
 # fehlgeschlagener Lauf dieses Workflows. Ein Nachtlauf, in den niemand sieht,
 # waere derselbe verwaiste Sensor eine Ebene hoeher — deshalb faellt der Job
 # rot aus statt nur zu protokollieren.
+#
+# GRENZE, benannt: ein DAUERROTER Nachtlauf ist wieder derselbe verwaiste
+# Sensor. Die Achsen melden nur; die Hebung bleibt ein bewusster Akt, und
+# solange sie aussteht, meldet die Achse jede Nacht dasselbe. Wer das Rot
+# stehen laesst, verliert das Signal fuer die naechste Achse, die neu rot wird.
 #
 # Action-Pinning (AGENTS.md §3.9, Supply-Chain-Haertung, u-boot-Konvention):
 # `uses:` SHA-gepinnt mit Tag-Kommentar (gleicher Pin wie ci.yml).
@@ -42,19 +58,21 @@ jobs:
   baseline-freshness:
     name: Gepinnte Fremd-Bestände gegen upstream
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      # Kein Docker, kein Image-Bau: das Target ruft ein bash-Skript mit curl
-      # und sha256sum. Der Docker/make-only-Pfad (AGENTS.md §3.1) gilt der
-      # Go-Toolchain — hier laeuft keine.
-      # Drei Achsen, drei Schritte, und `if: always()` ist hier tragend: faellt
-      # eine Achse aus, muessen die anderen ihr Urteil trotzdem abgeben. Ein
-      # Job, der nach der ersten roten Achse abbricht, verdeckt die zweite.
+      # Die Versions-Achsen brauchen kein Docker: sie rufen bash-Skripte mit
+      # curl und sha256sum. Die Digest-Achsen rufen `docker buildx imagetools`
+      # — auf dem Runner vorhanden, und KEIN Image-Bau. Der Docker/make-only-
+      # Pfad (AGENTS.md §3.1) gilt der Go-Toolchain; hier laeuft keine.
+      #
+      # Jede Achse ein eigener Schritt, und `if: always()` ist tragend: faellt
+      # eine aus, muessen die anderen ihr Urteil trotzdem abgeben. Ein Job, der
+      # nach der ersten roten Achse abbricht, verdeckt alle folgenden.
       - name: make baseline-freshness
         run: make baseline-freshness
 
@@ -66,9 +84,38 @@ jobs:
         if: always()
         run: make freshness-golangci
 
-      # Vierte Achse, andere Frage: nicht „neuerer Tag", sondern „anderer Digest
-      # am selben Tag". Sie gilt genau dem Runtime-Basis-Image, dessen Tag
-      # `nonroot` keine Version traegt — fuer ihn gibt es keine Tag-Achse.
+      - name: make freshness-semgrep
+        if: always()
+        run: make freshness-semgrep
+
+      - name: make freshness-a-check
+        if: always()
+        run: make freshness-a-check
+
+      - name: make checkout-pin-freshness
+        if: always()
+        run: make checkout-pin-freshness
+
+      - name: make login-pin-freshness
+        if: always()
+        run: make login-pin-freshness
+
       - name: make runtime-base-digest
         if: always()
         run: make runtime-base-digest
+
+      - name: make go-base-digest
+        if: always()
+        run: make go-base-digest
+
+      - name: make lint-base-digest
+        if: always()
+        run: make lint-base-digest
+
+      - name: make semgrep-digest
+        if: always()
+        run: make semgrep-digest
+
+      - name: make a-check-digest
+        if: always()
+        run: make a-check-digest

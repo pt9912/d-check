@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
+.PHONY: freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -198,18 +198,74 @@ freshness-golangci: ## Neueren golangci-lint-Release als GOLANGCI_LINT_VERSION m
 	  ADVICE='GOLANGCI_LINT_VERSION (Makefile) heben und den Dockerfile-lint-Digest nachziehen.' \
 	  bash tools/harness/pin-freshness.sh --github golangci/golangci-lint
 
-# Die dritte Achse beantwortet eine ANDERE Frage als die zwei oben: nicht
+# Die dritte Achsen-FORM beantwortet eine ANDERE Frage als die zwei oben: nicht
 # „gibt es einen neueren Tag", sondern „traegt derselbe Tag inzwischen einen
-# anderen Digest". Sie gilt genau EINEM Pin — dem Runtime-Basis-Image. Sein Tag
-# `nonroot` traegt keine Version, also gibt es fuer ihn keine Tag-Frische-Achse;
-# der Digest ist die einzige Handhabe. Die uebrigen zwei Basis-Images haengen an
-# GO_VERSION bzw. GOLANGCI_LINT_VERSION und sind ueber deren Achsen gewacht.
-RUNTIME_BASE := gcr.io/distroless/static-debian12:nonroot
+# anderen Digest". Sie gilt ALLEN drei Basis-Images: die Tag-Achsen wachen die
+# VERSION, nicht den Bau — `freshness-go` meldet `ok`, waehrend derselbe
+# golang-Tag laengst neu gebaut ist. Fuer das Runtime-Image ist sie ausserdem
+# die EINZIGE Handhabe, weil sein Tag `nonroot` keine Version fuehrt.
+#
+# Referenz UND Pin kommen aus DERSELBEN FROM-Zeile — zwei Quellen waeren zwei
+# Spiegel, und ein Wechsel des Images liesse den einen stehen.
+image-digest-axis = @set -- $$(awk -v p='$(1)' '$$1=="FROM" && index($$2,p)==1 { d=$$2; sub(/.*@/,"",d); sub(/@.*/,"",$$2); print $$2, d; exit }' Dockerfile \
+	  | sed -e 's|$${GO_VERSION}|$(GO_VERSION)|' -e 's|$${GOLANGCI_LINT_VERSION}|$(GOLANGCI_LINT_VERSION)|'); \
+	NAME="$$1" PINNED="$$2" \
+	  ADVICE='Dockerfile-Digest der Stage nachziehen (ADR-0011); make versions zeigt den Stand.' \
+	  bash tools/harness/pin-freshness.sh --digest "$$1"
+
+
 runtime-base-digest: ## Neueren Digest fuer denselben Runtime-Basis-Tag melden (Netz, NICHT in gates, fail-open).
-	@NAME='distroless/static-debian12:nonroot' \
-	  PINNED='$(shell awk '/^FROM gcr.io\/distroless/{ sub(/.*@/,""); sub(/ .*/,""); print }' Dockerfile)' \
-	  ADVICE='Dockerfile-Digest der runtime-Stage nachziehen (ADR-0011); make versions zeigt den Stand.' \
-	  bash tools/harness/pin-freshness.sh --digest '$(RUNTIME_BASE)'
+	$(call image-digest-axis,gcr.io/distroless)
+
+go-base-digest: ## Neueren Digest fuer denselben Go-Basis-Tag melden (Netz, NICHT in gates, fail-open).
+	$(call image-digest-axis,golang:)
+
+lint-base-digest: ## Neueren Digest fuer denselben Lint-Basis-Tag melden (Netz, NICHT in gates, fail-open).
+	$(call image-digest-axis,golangci/)
+
+# Die Action-Pins brauchen KEINE neue Quellen-Form: der Pin ist ein SHA, aber
+# der Tag-Kommentar daneben traegt den Release-Tag — genau die Groesse, die
+# `--github` vergleicht. Ein alter Action-Pin ist zudem sehr wohl ein
+# Sicherheitsthema: ein SHA-Pin schliesst das Umhaengen eines Tags aus und macht
+# zugleich blind fuer die Behebung.
+action-pin-axis = @NAME='$(1)' \
+	PINNED="$$(grep -h 'uses: $(1)@' .github/workflows/*.yml | head -1 | awk '{print $$NF}')" \
+	ADVICE='SHA + Tag-Kommentar in .github/workflows/ heben (AGENTS.md §3.9).' \
+	bash tools/harness/pin-freshness.sh --github $(1)
+
+checkout-pin-freshness: ## Neueren actions/checkout-Release als den Tag-Kommentar melden (Netz, NICHT in gates, fail-open).
+	$(call action-pin-axis,actions/checkout)
+
+login-pin-freshness: ## Neueren docker/login-action-Release als den Tag-Kommentar melden (Netz, NICHT in gates, fail-open).
+	$(call action-pin-axis,docker/login-action)
+
+# Die zwei uebrigen gepinnten Fremd-Images. Sie stehen NICHT im Dockerfile —
+# semgrep im Gate-Skript, a-check im include-Fragment —, deshalb je ein eigener
+# Extraktor statt des FROM-Musters oben. Beide tragen Tag UND Digest, also
+# stehen ihnen beide Fragen offen: der Tag fragt nach der Version, der Digest
+# nach dem Bau desselben Tags.
+freshness-semgrep: ## Neueren semgrep-Release als SEMGREP_VERSION melden (Netz, NICHT in gates, fail-open).
+	@NAME='semgrep' \
+	  PINNED="$$(sed -nE 's/.*SEMGREP_VERSION:-([^}]+)\}.*/\1/p' tools/semgrep.sh | head -1)" \
+	  ADVICE='SEMGREP_VERSION + SEMGREP_DIGEST in tools/semgrep.sh heben (ADR-0010/ADR-0011).' \
+	  bash tools/harness/pin-freshness.sh --github semgrep/semgrep
+
+semgrep-digest: ## Neueren Digest fuer denselben semgrep-Tag melden (Netz, NICHT in gates, fail-open).
+	@NAME="semgrep/semgrep:$$(sed -nE 's/.*SEMGREP_VERSION:-([^}]+)\}.*/\1/p' tools/semgrep.sh | head -1)" \
+	  PINNED="$$(sed -nE 's/.*SEMGREP_DIGEST:-([^}]+)\}.*/\1/p' tools/semgrep.sh | head -1)" \
+	  ADVICE='SEMGREP_DIGEST in tools/semgrep.sh nachziehen (ADR-0011).' \
+	  bash tools/harness/pin-freshness.sh --digest "semgrep/semgrep:$$(sed -nE 's/.*SEMGREP_VERSION:-([^}]+)\}.*/\1/p' tools/semgrep.sh | head -1)"
+
+freshness-a-check: ## Neueren a-check-Release als A_CHECK_VERSION melden (Netz, NICHT in gates, fail-open).
+	@NAME='a-check' PINNED='$(A_CHECK_VERSION)' \
+	  ADVICE='A_CHECK_VERSION + Digest in a-check.mk heben; Fragment per --print-mk neu erzeugen (ADR-0029).' \
+	  bash tools/harness/pin-freshness.sh --github pt9912/a-check
+
+a-check-digest: ## Neueren Digest fuer denselben a-check-Tag melden (Netz, NICHT in gates, fail-open).
+	@NAME='ghcr.io/pt9912/a-check:$(A_CHECK_VERSION)' \
+	  PINNED="$$(printf '%s' '$(A_CHECK_IMAGE)' | sed 's/.*@//')" \
+	  ADVICE='Digest in a-check.mk nachziehen (ADR-0011).' \
+	  bash tools/harness/pin-freshness.sh --digest 'ghcr.io/pt9912/a-check:$(A_CHECK_VERSION)'
 
 baseline-freshness: ## Upstream-Audit des Baseline-Pins: neuerer Release-Tag (Currency) + Content-Drift am gepinnten Tag (Netz, NICHT in gates, fail-open). MR-011-Kette.
 	@bash tools/harness/fetch-baseline-cache.sh --check-latest

@@ -19,10 +19,12 @@
 #                          OHNE Version die einzige Handhabe.
 #
 # NORMALISIERUNG: go.dev sagt `go1.27.0`, unser Pin ist bar `1.27.0`; GitHub sagt
-# `v2.13.1`, unser Pin ebenso. Auf EIN Format bringen heisst hier: fuehrendes
-# `go` strippen, sonst nichts. Ein `v` wird NICHT gestrippt -- die golangci-Achse
-# fuehrt es auf beiden Seiten, und es zu entfernen machte den Vergleich
-# grosszuegiger, nicht genauer.
+# `v2.13.1`, und unsere Pins fuehren das `v` mal (golangci-lint) und mal nicht
+# (semgrep). Auf EIN Format bringen heisst hier: ein fuehrendes `go` bzw. `v` auf
+# BEIDEN Seiten strippen. Das macht den Vergleich nicht grosszuegiger — solange
+# es symmetrisch geschieht, aendert es nur die Faelle, in denen eine Seite das
+# Praefix fuehrt und die andere nicht, und dort macht es ihn RICHTIG. Ein `v`
+# traegt keine Bedeutung, die dabei verloren ginge.
 #
 # VERGLEICH IST GLEICH/UNGLEICH, kein Semver-Sort. Beide Reihen sind monoton;
 # ein "neuer, aber aelter" existiert dort nicht. Waere eine Quelle es nicht,
@@ -45,17 +47,29 @@ set -euo pipefail
 CT=10   # connect-timeout
 MT=60   # max-time
 
+# Digest-Form, geteilt von Upstream- und Pin-Pruefung des --digest-Zweigs.
+DIGEST_RE='^sha256:[0-9a-f]{64}$'
+
+# VERDICT — das Wort, mit dem der Unterschied gemeldet wird. Die Tag-Achsen
+# sagen VERALTET: ihre Reihen sind monoton, „anders" heisst dort „neuer".
+# Die Digest-Achse sagt ABWEICHEND, weil Digests GAR KEINE Ordnung haben —
+# VERALTET behauptete dort eine Richtung, die die Messung nicht traegt. Der
+# Exit-Code ist in beiden Faellen 3: die Handlung ist dieselbe, nur die Aussage
+# ist eine andere.
+VERDICT_DEFAULT='VERALTET'
+
 compare() {
   local name="$1" pinned="$2" upstream="$3"
+  local verdict="${VERDICT:-$VERDICT_DEFAULT}"
   if [ -z "$upstream" ]; then
     echo "pin-freshness: ${name} SKIP — kein Upstream-Stand ermittelbar (Pin ${pinned})"
     return 0
   fi
   if [ "$pinned" = "$upstream" ]; then
-    echo "pin-freshness: ${name} ok — Pin ${pinned} ist der neueste Stand"
+    echo "pin-freshness: ${name} ok — Pin ${pinned} entspricht dem Upstream-Stand"
     return 0
   fi
-  echo "pin-freshness: ${name} VERALTET — Pin ${pinned}, upstream ${upstream}" >&2
+  echo "pin-freshness: ${name} ${verdict} — Pin ${pinned}, upstream ${upstream}" >&2
   [ -n "${ADVICE:-}" ] && echo "pin-freshness: ${name} — ${ADVICE}" >&2
   return 3
 }
@@ -92,6 +106,11 @@ case "$mode" in
       */releases/tag/*) upstream="${eff##*/releases/tag/}" ;;
       *)                upstream="" ;;   # kein Tag in der Endstation ⇒ SKIP
     esac
+    # BEIDE Seiten normalisieren, symmetrisch (siehe Kopf). Unsere Pins fuehren
+    # das `v` uneinheitlich; ohne das verglichen wir `1.167.0` gegen `v1.167.0`
+    # und meldeten fuer immer VERALTET.
+    upstream="${upstream#v}"
+    pinned="${pinned#v}"
     ;;
   --godev)
     brauche_curl
@@ -120,26 +139,46 @@ case "$mode" in
     # Handhabe: eine Tag-Frische-Achse gibt es dort nicht, weil es keinen Tag
     # gibt, der sich bewegt.
     #
-    # Die Quelle ist `docker buildx imagetools inspect`, nicht curl: eine
-    # Registry-Abfrage von Hand braeuchte Token-Austausch und
-    # Manifest-Listen-Aufloesung — beides ein Parser durch die Hintertuer.
-    # Docker steht ohnehin in der Host-Klasse (AGENTS.md 3.1).
+    # Die Quelle ist `docker buildx imagetools inspect`, weil sie
+    # REGISTRY-AGNOSTISCH ist: derselbe Aufruf trifft gcr.io, Docker Hub und
+    # GHCR, ohne dass hier Token-Fluesse und Accept-Header je Registry gepflegt
+    # werden. Fuer gcr.io allein ginge auch ein curl auf das Manifest — dessen
+    # `docker-content-digest`-Header traegt denselben Wert, ohne Token. Der
+    # Grund ist also die Menge der Registries, nicht die Unmoeglichkeit des
+    # Handbetriebs.
+    #
+    # PREIS DIESER WAHL, benannt: `imagetools inspect` kennt keine Zeitgrenze,
+    # deshalb steht unten ein `timeout`; und Docker wird zur Voraussetzung des
+    # Zweigs — fehlt es, ist das ein SKIP, kein Befund.
     #
     # GRENZE: verglichen wird der Digest der ADRESSIERTEN Referenz. Bei einer
     # Multi-Plattform-Liste ist das der Listen-Digest — dieselbe Groesse, die
     # im Dockerfile steht. Ein Plattform-Digest darunter ist eine andere Zahl
     # und hier nicht gemeint.
     ref="${1:-}"
+    VERDICT="ABWEICHEND"
     command -v docker >/dev/null 2>&1 \
       || { echo "pin-freshness: 'docker' nicht gefunden — SKIP" >&2; exit 0; }
-    raw="$(docker buildx imagetools inspect "$ref" --format '{{.Manifest.Digest}}' 2>/dev/null || true)"
+    # Zeitgrenze wie bei den curl-Zweigen: `imagetools inspect` kennt keine
+    # eigene, und ohne sie waere eine HAENGENDE Verbindung kein SKIP, sondern
+    # ein Job-Timeout — die Zusage im Kopf gilt fuer JEDEN Zweig.
+    raw="$(timeout "$MT" docker buildx imagetools inspect "$ref" \
+             --format '{{.Manifest.Digest}}' 2>/dev/null || true)"
     # Form pruefen, bevor der Wert als Stand gilt — dieselbe Begruendung wie
     # beim godev-Zweig: eine Nicht-Digest-Antwort waere sonst ein falsches
     # VERALTET statt des zugesagten SKIP.
-    if printf '%s' "$raw" | grep -qE '^sha256:[0-9a-f]{64}$'; then
+    if printf '%s' "$raw" | grep -qE "$DIGEST_RE"; then
       upstream="$raw"
     else
       upstream=""
+    fi
+    # BEIDE Seiten pruefen, nicht nur die fremde. Der Pin kommt hier aus einer
+    # Textextraktion am Dockerfile und ist damit die fragilere Haelfte: eine
+    # geaenderte FROM-Form lieferte sonst ein Wort statt eines Digests, und der
+    # Vergleich meldete dauerhaft VERALTET statt des zugesagten SKIP.
+    if ! printf '%s' "$pinned" | grep -qE "$DIGEST_RE"; then
+      echo "pin-freshness: ${name} SKIP — Pin ist kein Digest (${pinned})" >&2
+      exit 0
     fi
     ;;
   *)
