@@ -72,24 +72,40 @@ Risiko ↔ Ausgang ist damit womöglich nicht ausdrückbar.
 
 ## 4. Definition of Done
 
-- [ ] Die Ausdrückbarkeits-Frage ist **gemessen** beantwortet, nicht
-      angenommen — mit der Grenze *je Abschnitt vs. je Risiko*.
-- [ ] Der Bestand ist gemessen; jede Fundstelle geräumt oder ausgewiesen.
-- [ ] Bei Umsetzung: je gedeckter Form ein konstruierter Verstoß mit **gelesener
-      Ursache**, Rückbau je grün.
-- [ ] Bei Nicht-Umsetzung: die Entscheidung steht **mit ihrer Messung** in der
-      Closure-Notiz, und [`BEO-015`](../observations.md) trägt sie.
-- [ ] `make gates` grün (Exit explizit); unabhängiger Review.
+- [x] Die Ausdrückbarkeits-Frage ist **gemessen** beantwortet, nicht
+      angenommen — mit der Grenze *je Abschnitt vs. je Risiko*. *(Und der erste
+      Anlauf hat sie falsch beantwortet: siehe Closure-Notiz.)*
+- [x] Der Bestand ist gemessen; jede Fundstelle geräumt oder ausgewiesen.
+      *(Ausgewiesen, nicht geräumt — die Begründung steht in der Notiz.)*
+- [x] Bei Umsetzung: je gedeckter Form ein konstruierter Verstoß mit **gelesener
+      Ursache**, Rückbau je grün. *(Beide Befund-Formen: `section-forbidden`
+      und `section-missing`.)*
+- [x] ~~Bei Nicht-Umsetzung: die Entscheidung steht **mit ihrer Messung** in der
+      Closure-Notiz, und [`BEO-015`](../observations.md) trägt sie.~~
+      **Entfällt — umgesetzt.**
+- [x] `make gates` grün (Exit explizit); unabhängiger Review.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Eine Regel je Abschnitt kann eine Aussage je Risiko nicht treffen.** Fällt
   die Messung so aus, ist die ehrliche Antwort ein Produkt-Delta oder ein
   Verzicht — nicht eine Regel, die weniger prüft und mehr verspricht. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang: eingetreten, aber nicht so, wie der Punkt es meinte.** Die Messung
+  fiel zunächst genau so aus — und der Schluss daraus war **falsch**. Eine
+  Bedingung je Abschnitt kann die Aussage je Risiko sehr wohl treffen, wenn sie
+  ein `forbid-pattern` ist: das ist über **jedes Vorkommen** quantifiziert. Die
+  ausgelieferte Regel prüft deshalb je Risiko, nicht je Abschnitt, und die
+  Alternative „Produkt-Delta oder Verzicht" war nie nötig. Was der Punkt
+  richtig vorhergesehen hat, ist die Gefahr: der erste Anlauf **hat** weniger
+  geprüft und mehr versprochen, und ohne den Review wäre er so geschlossen
+  worden.
 - **Der Bestand ist gewachsen und uneinheitlich.** 139 Slices tragen ihre
   Ausgänge in Prosa; eine Form-Prüfung könnte breit rot laufen und damit einen
-  Retrofit erzwingen, den niemand beschlossen hat. — **Ausgang:** *(bei Closure)*
+  Retrofit erzwingen, den niemand beschlossen hat. — **Ausgang: entfallen.** Die
+  Ausnahme auf den abgeschlossenen Altbestand wendet es ab: ohne sie 122
+  Befunde, mit ihr null, und kein künftiger Slice fällt heraus. Die Planzahl
+  „139" ist überholt — gemessen sind es **150** Dateien, davon **51** mit
+  Ausgangs-Markern.
 
 ## 6. Trigger
 
@@ -117,4 +133,71 @@ Modul-Mechanik.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-*(wird mit dem Closure-Body gefüllt)*
+**Die urteilsfreie Hälfte hat jetzt zwei Regeln statt einer.** Die vorhandene
+fängt den **vergessenen** Ausgang (Vorlagen-Platzhalter), die neue den
+**erfundenen** — die Gestalt aus [`BEO-015`](../observations.md). Der
+Wortschatz ist geschlossen und umfasst alle drei Kanon-Ausgänge;
+[`MR-049`](../../../../harness/conventions.md#mr-049) trägt sie.
+
+**Der erste Anlauf war falsch, und zwar an der Stelle, die er selbst als
+gemessen ausgab.** Er schloss: *„Die Je-Risiko-Korrelation ist **belegt** nicht
+ausdrückbar."* Gemessen war nur, dass RE2 `(?!` abweist. Daraus folgt nichts
+über die Frage — `forbid-pattern` ist über **jedes Vorkommen** quantifiziert
+und trifft damit je Risiko, und das Komplement einer endlichen Wortmenge ist in
+RE2 ohne Lookahead darstellbar. Der Review hat das nicht behauptet, sondern
+**vorgeführt**. Die Lehre ist nicht „RE2 kann mehr als gedacht", sondern: **ein
+gescheiterter Weg ist kein Beweis, dass es keinen gibt** — und das Wort
+„belegt" stand vor der Messung, nicht dahinter.
+
+**Der zweite Fehler war teurer, weil er still gewesen wäre.** Das erste Muster
+erlaubte zwischen Marker und Ausgangswort höchstens ein Leerzeichen und zwei
+Sterne. Es meldete damit **kanonische** Ausgänge als Verstoß, sobald der
+80-Spalten-Umbruch dieses Repos vor das Wort fiel oder der Autor es fett setzte
+— sieben der vierzehn gemeldeten Dateien waren in Wahrheit korrekt. Ein
+Closure-Gate, das richtige Arbeit ablehnt, erzieht zum Ausweichen auf die
+Formulierung, die durchkommt.
+
+**Und `weiter offen` war nicht ungeprüft, sondern abgelehnt.** Der dritte
+Kanon-Ausgang machte das Gate rot. Meine Begründung trug den Verzicht auf eine
+*Zusatzprüfung*, nicht den Ausschluss aus der *akzeptierten Menge* — zwei
+Sätze, die sich gleich lesen und Verschiedenes sagen.
+
+**Eine eigene Warnung habe ich in derselben Botschaft ausgesprochen und
+gebrochen.** Der verworfene Glob-Kandidat `slice-1[4-9][0-9]` hörte bei
+`slice-200` still auf zu greifen — das stand als Messung 3 in der Botschaft.
+Die stattdessen gewählte Ausnahme `slice-1[0-3]*` nimmt `slice-1000` bis
+`slice-1399` heraus: derselbe Fehler mit weiterem Horizont, weil `matchGlob`
+segmentweise matcht und `*` den Rest frisst. Die Ziffernzahl ist jetzt
+festgenagelt.
+
+**Der Bestand ist ausgewiesen, nicht geräumt — und die erste Auszählung war
+falsch etikettiert.** „107 tragen gar keinen §5-Abschnitt" stimmt nicht:
+**alle 150** tragen eine `## 5.`-Überschrift, 107 davon unter einem anderen
+Titel (`## 5. Trigger` 43 · `## 5. Closure-Trigger` 31 ·
+`## 5. Risiken / offene Punkte` 19 · weitere). Geräumt wird nichts: die
+Ausnahme trägt den Altbestand, und ein Retrofit über 122 Dateien hat niemand
+beschlossen — der Kurs hat die Ausweitung ausdrücklich als Repo-Entscheidung
+und kein Konformitätsthema bezeichnet.
+
+**Was die Sammelzahl verdeckte, ist der schwerste Bestands-Befund.** Drei
+Dateien — `slice-106`, `slice-110`, `slice-111` — führen ein §5 mit Risiken und
+**keinen einzigen** Ausgang. Das ist der Kanon-Kernsatz *„Ein Slice geht nicht
+nach `done/`, während ein Risiko ohne Ausgang dasteht"*, dreimal verletzt, und
+**keine** der beiden Regeln erreicht ihn: die Platzhalter-Regel braucht einen
+Platzhalter, die neue braucht einen Marker. Ausgewiesen in
+[`MR-049`](../../../../harness/conventions.md#mr-049) und hier; die Lücke ist
+der Auflösungs-Trigger jenes Eintrags.
+
+**Und eine Gegenprobe ist mir zunächst danebengegangen, genau wie das Register
+es beschreibt.** Der erste Versuch hängte die Verstoß-Zeile ans **Dateiende** —
+also hinter `## 6.`, außerhalb des geprüften Abschnitts — und meldete nichts.
+[`BEO-017`](../observations.md) führt diese Gestalt wörtlich: *„eine Probe wird
+ans Dateiende angehängt und landet im einzigen Abschnitt, den die Prüfung
+ausnimmt"*. Sie zu kennen hat nicht geholfen; das Lesen der Ausgabe hat.
+
+**Sensors:** `make gates` (Exit 0, zehn Glieder, 533 Dateien, 0 Befunde),
+`make verify-closure-notes` (Exit 0, 479 Dateien, 0 Befunde). Gegenproben je
+Befund-Form (`section-forbidden`, `section-missing`) mit gelesener Meldung; vier
+kanonische Schreibweisen, die der erste Anlauf falsch rot meldete, laufen grün.
+Ein unabhängiger Review ist gelaufen; seine zwei HIGH, fünf MEDIUM und drei LOW
+sind in `2a2849f` eingearbeitet.
