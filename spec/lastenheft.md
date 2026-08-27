@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.66.0
+**Version:** 0.67.0
 
 **Status:** Draft
 
@@ -1425,13 +1425,37 @@ Pfad-/Zeilen-Auflösung von `codepaths`/`links`
 strikt opt-in, hermetisch (nur Datei-Lesen, kein git/Netz —
 [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)) und
 default-aus **byte-identisch** ([`DC-QA-02`](#dc-qa-02--determinismus)).
+**Was als Direktive gilt, ist eine Prosa-Frage und wird geteilt beantwortet:**
+die Direktive wirkt nur **außerhalb** von Fenced-Blöcken **und außerhalb von
+Inline-Code** — die Syntax in Backticks ist eine **Erwähnung**, keine Direktive,
+und trägt eine Zeile beides, gilt die freie. So bleibt die Dokumentation der
+Direktive dokumentierbar, ohne den Lauf abzubrechen. Der **Zitattext** dagegen
+wird **roh** verglichen: dort sind die Bytes der Gegenstand, nicht ihre
+Prosa-Rolle. **Preis, benannt, und er reicht weiter als „steht in Backticks":**
+eine **echte** Direktive wird still übersprungen, sobald eine Code-Spanne
+**desselben Absatzes** sie umschließt — die Spanne darf eine Zeile vorher öffnen
+und eine Zeile später schließen, die Direktive selbst unverklammert dazwischen
+stehen. Es ist derselbe Preis, den jedes prosa-lesende Modul zahlt. **Zwei
+weitere Grenzen, die derselben Wahl folgen:** ein Pfad in Backticks wird durch
+das Strippen zum **fehlenden** Pfad und damit fail-closed statt zu einem Befund
+mit leerem Ziel; und eine Code-Spanne zwischen Kommentar-Öffner und Marker
+verschwindet ebenso — sie kann eine Direktive damit **erzeugen**. **Die
+Ziel-Seite trägt keine dieser Zusagen:** die zitierte Quell-Spanne wird **roh
+und typunabhängig** gelesen, ohne Fence-Bewusstsein und ohne Strippen, und die
+Zieldatei muss weder Markdown sein noch in der Scan-Menge liegen — `scan.ignore`
+gilt der **prüfenden** Datei, nicht dem Ziel.
 **Zitat-Fäule** (Zieldatei fehlt bzw. Spanne über das Datei-Ende ⇒
 `citation-out-of-range`; `von > bis` ⇒ `citation-inverted-range`) ist ein **Befund**
 (kohärent zum `codepaths`-Zeilen-Check), Exit 1. **Fail-closed** (Exit 2) nur bei
 strukturell **unbrauchbarer** Direktive (malformter Span, kein folgendes Zitat); ein
 Repo-Escape des Ziels ist wie bei `codepaths`/`links` ein Befund. `d-check` kennt
-damit **zwei** Direktiven; die Platzierungsregeln folgen der bestehenden
-`d-check:ignore`-Konvention.
+damit **zwei** Direktiven. Ihre Platzierung ist **nicht** dieselbe, und das ist
+eine benannte Grenze: die Zitat-Direktive wirkt nur außerhalb von Fences und
+außerhalb von Inline-Code (oben), die Ventil-Direktive des Moduls
+[`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
+wird weiterhin auf der **rohen** Zeile erkannt und wirkt damit auch aus einer
+Backtick-Spanne heraus. Dieselbe Frage — *ist das eine Direktive* — hat im
+Produkt derzeit zwei Antworten; welche bleibt, ist offen.
 
 **Akzeptanzkriterien:**
 
@@ -1439,6 +1463,8 @@ damit **zwei** Direktiven; die Platzierungsregeln folgen der bestehenden
 - **Negative:** Given denselben Aufbau, aber der Zitattext weicht in mindestens einem Wort/Zeichen ab (nicht nur Whitespace), when das Modul läuft, then ein Befund `citation-mismatch` (Datei, Zeile, Ziel), Exit-Code 1.
 - **Boundary (Fenced-Block trennt):** Given eine `d-check:cite`-Direktive, zwischen der und dem Zitat ein **Fenced-Block** liegt, when das Modul läuft, then **kein** Zitat gilt als gefunden und der Lauf bricht **fail-closed** ab (Exit 2) — dieselbe Datei **ohne** den Block paart normal. Leerzeilen dazwischen trennen dagegen **nicht**.
 - **Boundary (Zitat-Fäule = Befund, nicht fail-closed):** Given eine `d-check:cite`-Direktive, deren Spanne die Zieldatei überschreitet (Zitat-Fäule nach einem Tag-Bump), when das Modul läuft, then ein Befund `citation-out-of-range`, Exit-Code 1 — **kohärent** zum `codepaths`-Zeilen-Check, **nicht** Exit 2; ein ungültiger Bereich (`von > bis`) ⇒ `citation-inverted-range`. Fail-closed (Exit 2) bleibt der malformten Direktive bzw. dem fehlenden folgenden Zitat vorbehalten; ohne `citations`-Modul ist jeder Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
+- **Boundary (Inline-Code ist Erwähnung, nicht Direktive):** Given eine Datei, die die Direktiv-Syntax in **Inline-Code** schreibt — auch wohlgeformt und auch über eine absatzweite Backtick-Spanne umgebrochen —, when das Modul läuft, then **kein** Befund und **kein** fail-closed; dieselbe Direktive **ohne** Backticks wird geprüft (Gegenprobe), und trägt eine Zeile beides, gilt die **freie** Direktive — nicht die zuerst stehende Erwähnung.
+- **Boundary (der Preis reicht bis zur Absatzgrenze):** Given eine **freie**, unverklammerte Direktive, die von einer Code-Spanne **desselben Absatzes** umschlossen wird (Spanne öffnet eine Zeile vorher, schließt eine Zeile später), when das Modul läuft, then **kein** Befund — dieselbe Datei **ohne** die zwei Backticks meldet ihn (Gegenprobe). Given eine Direktive, deren **Pfad** in Backticks steht, then **fail-closed** (fehlender Pfad), nicht ein Befund mit leerem Ziel.
 
 **Out-of-Scope:** Zitate ohne `d-check:cite`-Direktive (das Modul prüft nur ausgezeichnete Zitate — kein Prosa-Scanning); sehr kurze Zitate (< 16 Zeichen normalisiert) — zu schwache Teilstring-Diskriminierung, ungeprüft; Normalisierung über Whitespace/Umbruch hinaus (Markdown-Auszeichnung, Satzzeichen, Groß-/Kleinschreibung zählen); freie Zahlen und Prosa-Quantoren mit externer Grundwahrheit („42 Dateien im ZIP", „fast alle") — bleiben Review-Territorium.
 
@@ -2978,6 +3004,7 @@ Ergebnis und Exit-Code sind identisch zur nativen Ausführung.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.67.0 | 2026-08-27 | [`DC-FA-CITE-001`](#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in) sagt jetzt zu, **was als Direktive gilt**: sie wirkt nur außerhalb von Fenced-Blöcken **und außerhalb von Inline-Code** — die Syntax in Backticks ist eine Erwähnung —, während der **Zitattext** ausdrücklich **roh** verglichen wird. Anlass ist ein gemessener Zustand: über 544 getrackte Dateien tragen **25** Zeilen einen geöffneten Marker, **24** davon in Inline-Code (20 malformt, weil sie die Syntax dokumentieren), **eine** im Fence, **keine** frei; **null** ist eine produktive Direktive — und weil ein malformter Marker fail-closed den ganzen Lauf abbricht, war das Modul **nicht aktivierbar**. Eine Doku-Konvention wäre kein Ausweg gewesen: 12 der 25 liegen in fünf Dateien, die per Regel unantastbar sind. **Zwei** neue Akzeptanzkriterien (Boundary), je mit Gegenprobe. **Erweiterung, kein Ersatz** — der Zitat-Vergleich, die Fail-closed-**Regel** und alle Grund-Codes bleiben unverändert; die **Menge**, die die Regel trifft, fällt von 25 auf null, und genau das ist der Zweck. Ohne aktives Modul ist jeder Befundsatz weiterhin byte-identisch. **Drei Grenzen benannt:** eine echte Direktive wird verschluckt, sobald eine Code-Spanne desselben **Absatzes** sie umschließt; ein Pfad in Backticks fällt fail-closed; und das Strippen kann eine Direktive auch **erzeugen**. Zusätzlich ausgewiesen: die **Ziel-Seite** trägt keine dieser Zusagen (roh, typunabhängig, außerhalb von `scan.ignore`), und die **Ventil-Direktive** wird weiterhin roh erkannt — dieselbe Frage hat im Produkt derzeit zwei Antworten. Begründung in begleitender ADR | — |
 | 0.66.0 | 2026-08-26 | [`DC-FA-MTX-003`](#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix) sagt das **Token-Ziel** zu: eine Klasse darf ein `token`-Muster **ausschließlich** tragen, ohne Pfade — sie hat dann keine Mitglieder, ihr Gegenstand ist eine Zeichenkette, und als **Quelle** einer Regel kann sie nie feuern. Zwei Akzeptanzkriterien decken beide Richtungen. Die Glossar-Definition der **Dokumentklasse** ist entsprechend **geweitet** (Regelfall Pfad-Muster, dazu das Token-Ziel) statt einen Gegenbegriff danebenzustellen: so bleibt jede Bestandszeile wahr, die von Dokumentklassen spricht. **Kein Verhaltens-Delta:** die Fähigkeit bestand in der Umsetzung, war aber nicht zugesagt | — |
 | 0.65.4 | 2026-08-25 | **Form eines Verweises, keine Anforderungs-Änderung.** Eine Historie-Zeile nannte eine Kennung der zeitlichen Schicht und war damit ein Abwärtsverweis, den §3.4 verbietet; die berichtete Messung bleibt unverändert, der Zeiger auf die zeitliche Schicht entfällt ersatzlos. Sichtbar wurde sie erst, als die Referenzmatrix eine Klasse für diese Schicht bekam — bis dahin fehlte schlicht der Wächter, der sie melden konnte. **Kein Protokoll-Eingriff im Sinne des Kanons:** geändert ist die **Form** eines Verweises, nicht die berichtete Tatsache | — |
 | 0.65.3 | 2026-08-23 | **Form der Historie, keine Anforderungs-Änderung.** Die Tabelle trägt die kanonische vierte Spalte `Verweis`; alle Bestandszeilen tragen `—`, weil ohne begonnene CR-Pflicht kein externer Vorgang existiert, den sie nennen könnte. Der Kopf deklariert, dass dieses Repo Bump und Historie **schon vor `Accepted`** führt, obwohl der Kanon vor diesem Status *keine* verlangt — als Adaption in [`MR-032`](../harness/conventions.md#mr-032) geführt. **Zugleich Tatsachenberichtigung:** die Zeilen 0.65.1 und 0.65.2 waren Berichtigungen im Sinne des Kanons, trugen den verlangten Ausweis aber nicht — nachgetragen. Die Spezifikations-Historie bleibt bei zwei Spalten: eine `Verweis`-Spalte trägt nach dem Kanon nur, **was sonst nirgends im Repo steht** — beim Vertrag der externe Change Request, der kein anderes Zuhause hat, während die Technik ihre Aufwärts-Bezüge bereits im Körper verankert; dieselbe Kopplung ein zweites Mal in der Historie zu führen erzeugt keine Information, sondern eine zweite Fassung, die driftet | — |

@@ -77,9 +77,13 @@ außerhalb eines Fenced-Blocks.
   ([ADR-0045](../../adr/0045-zitat-verifikation-codepaths-erweiterung-und-citations-modul.md),
   [ADR-0054](../../adr/0054-geteilte-lexik-bindet-ihre-konsumenten.md)). §3
   dieses Slice verbietet genau deren Bearbeitung, §3.5 die der ADRs.
-- **Ein Ventil gibt es nicht.** `citations` führt **keinen einzigen**
-  Konfigurations-Schlüssel — kein `exempt-paths`, keinen Zeilen-Marker. Ein
-  Scharfschalten mit benannter Ausnahme ist damit heute nicht möglich.
+- **Ein Ventil gibt es, aber kein passendes.** `citations` trägt **keine feine**
+  Achse — kein `exempt-paths`, kein `ignore-refs`, keinen Zeilen-Marker. Grob
+  wirken `scan.ignore` und `citations.scope`; beide nehmen die **ganze Datei**
+  aus dem Modul und schalteten es damit gerade in `CHANGELOG.md`, den
+  `README`-Fassungen, den Spec-Straten und dem Handbuch ab — also dort, wo echte
+  Zitate stehen oder stehen werden. Ein Scharfschalten mit benannter Ausnahme
+  ist damit nicht sinnvoll möglich.
 - **Weg B ist ein Vertrags-Delta, kein Bugfix.** Die Spezifikation sagt
   ausdrücklich zu: *„Arbeitet auf den rohen Zeilen (fence-aware wie die übrigen
   Module)."* Das Verhalten ist spezifiziert, nicht abweichend — die Änderung

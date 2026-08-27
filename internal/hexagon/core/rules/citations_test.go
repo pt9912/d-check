@@ -254,3 +254,123 @@ func TestCitationsFenceImBlockquoteBeendetDenBlock(t *testing.T) {
 		t.Fatalf("Fence beendet den Blockquote → 0 Befunde, got %v", got)
 	}
 }
+
+// DC-FA-CITE-001.a Schritt 1: die Direktiv-Syntax in Inline-Code ist eine
+// ERWÄHNUNG, keine Direktive — die geteilte Prosa-Antwort (ADR-0054). Ohne
+// das bräche die Dokumentation der Direktive den Lauf fail-closed ab.
+// Vier Formen, weil die geteilte Lexik mehr kann als eine Zeile: einfache
+// Backticks, doppelte, eine absatzweite Spanne über zwei Zeilen — und die
+// wohlgeformte Erwähnung, die sonst still als echte Direktive liefe.
+func TestCitationsInlineCodeIstErwaehnung(t *testing.T) {
+	cases := map[string]string{
+		"einfach": "Die Syntax ist `<!-- d-check:cite <pfad>:<von>-<bis> -->`.\n",
+		"doppelt": "Die Syntax ist `` <!-- d-check:cite <pfad> --> `` in Prosa.\n",
+		"absatzweit": "Die Syntax ist `<!-- d-check:cite\n" +
+			"<pfad>:<von>-<bis> -->` und bricht um.\n",
+		"wohlgeformt": "Beispiel: `<!-- d-check:cite docs/src.md:2-2 -->` vor „Die zweite Zeile traegt DEN Zitat\".\n",
+	}
+	for name, body := range cases {
+		t.Run(name, func(t *testing.T) {
+			m := coretest.NewMemFS(map[string]string{
+				"docs/src.md":    citeSrc,
+				"docs/citing.md": body,
+			})
+			if got := citeFindings(t, m); len(got) != 0 {
+				t.Fatalf("Erwähnung in Inline-Code: %v, want 0 Befunde", got)
+			}
+		})
+	}
+}
+
+// DC-FA-CITE-001.a Schritt 1: die Gegenprobe zum Test darüber — dieselbe
+// Direktive OHNE Backticks wird geprüft. Ohne diesen Test wäre „0 Befunde"
+// oben auch dann grün, wenn das Modul gar nichts mehr fände.
+func TestCitationsOhneInlineCodeGeprueft(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/src.md": citeSrc,
+		"docs/citing.md": "Beispiel: <!-- d-check:cite docs/src.md:2-2 -->\n" +
+			"Davor: „Die zweite Zeile traegt DEN Zitat\" steht hier.\n",
+	})
+	got := citeFindings(t, m)
+	want := []string{"docs/src.md:2-2 citation-mismatch"}
+	if fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("freie Direktive: %v, want %v", got, want)
+	}
+}
+
+// DC-FA-CITE-001.a Schritt 1: trägt eine Zeile BEIDES — eine Erwähnung in
+// Inline-Code und daneben eine echte Direktive —, gilt die echte. Der Parse
+// läuft deshalb auf demselben gestrippten Text wie die Suche; auf der rohen
+// Zeile träfe der Regex die Erwähnung zuerst und zitierte gegen den falschen
+// Pfad.
+func TestCitationsErwaehnungUndDirektiveInEinerZeile(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/src.md": citeSrc,
+		"docs/citing.md": "Form `<!-- d-check:cite fehlt.md:9-9 -->`, echt: " +
+			"<!-- d-check:cite docs/src.md:2-2 -->\n" +
+			"Davor: „Die zweite Zeile traegt DEN Zitat\" steht hier.\n",
+	})
+	got := citeFindings(t, m)
+	want := []string{"docs/src.md:2-2 citation-mismatch"}
+	if fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("Erwähnung neben Direktive: %v, want %v", got, want)
+	}
+}
+
+// DC-FA-CITE-001.a Schritt 1: steht der PFAD in Backticks, ersetzt das
+// positionserhaltende Strippen ihn durch Leerzeichen. Ohne die
+// Nicht-Whitespace-Forderung im Muster wäre das ein gültiger Parse mit leerem
+// Ziel — der Befund nennte dann `:2-2` statt eines Pfades. So ist es ein
+// malformter Span und fail-closed, wie es Schritt 1 für einen fehlenden Pfad
+// vorsieht.
+func TestCitationsBacktickPfadIstMalform(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/src.md": citeSrc,
+		"docs/citing.md": "<!-- d-check:cite `docs/src.md`:2-2 -->\n" +
+			"Davor: „Die zweite Zeile traegt das Zitat\" steht hier.\n",
+	})
+	if _, err := Run(m, nil, model.Config{}, []string{"citations"}); err == nil {
+		t.Fatal("Backtick-Pfad: kein Fehler, want fail-closed (malformter Span)")
+	}
+}
+
+// DC-FA-CITE-001.a Schritt 1, die andere Richtung des Strippens: es kann eine
+// Direktive auch ERZEUGEN. Steht eine Code-Spanne zwischen Kommentar-Öffner
+// und Marker, verschwindet sie und macht aus einer Nicht-Direktive eine. Der
+// Test nagelt das als bekanntes Verhalten fest, nicht als Wunsch.
+func TestCitationsStrippenErzeugtDirektive(t *testing.T) {
+	m := coretest.NewMemFS(map[string]string{
+		"docs/src.md": citeSrc,
+		"docs/citing.md": "<!--`x`d-check:cite docs/src.md:2-2 -->\n" +
+			"Davor: „Die zweite Zeile traegt DEN Zitat\" steht hier.\n",
+	})
+	got := citeFindings(t, m)
+	want := []string{"docs/src.md:2-2 citation-mismatch"}
+	if fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("Strippen erzeugt Direktive: %v, want %v", got, want)
+	}
+}
+
+// DC-FA-CITE-001.a Schritt 1, der benannte Preis in seiner WEITEREN Form:
+// verschluckt wird nicht nur eine Direktive, die selbst in Backticks steht,
+// sondern jede, die von einer Code-Spanne DESSELBEN ABSATZES umschlossen wird
+// — die Spanne öffnet vor ihr und schließt hinter ihr. Die Gegenprobe ist
+// dieselbe Datei ohne die zwei Backticks.
+func TestCitationsAbsatzweiteSpanneVerschluckt(t *testing.T) {
+	mit := "Vorher `offen\n" +
+		"<!-- d-check:cite docs/src.md:2-2 -->\n" +
+		"zu` danach: „Die zweite Zeile traegt DEN Zitat\" steht hier.\n"
+	ohne := "Vorher offen\n" +
+		"<!-- d-check:cite docs/src.md:2-2 -->\n" +
+		"zu danach: „Die zweite Zeile traegt DEN Zitat\" steht hier.\n"
+	mMit := coretest.NewMemFS(map[string]string{"docs/src.md": citeSrc, "docs/citing.md": mit})
+	if got := citeFindings(t, mMit); len(got) != 0 {
+		t.Fatalf("absatzweite Spanne: %v, want 0 Befunde (verschluckt)", got)
+	}
+	mOhne := coretest.NewMemFS(map[string]string{"docs/src.md": citeSrc, "docs/citing.md": ohne})
+	got := citeFindings(t, mOhne)
+	want := []string{"docs/src.md:2-2 citation-mismatch"}
+	if fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Fatalf("Gegenprobe ohne Backticks: %v, want %v", got, want)
+	}
+}

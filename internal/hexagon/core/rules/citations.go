@@ -30,10 +30,16 @@ const citationMinLen = 16
 // — nur so wird eine Zeile als Direktive behandelt, nicht bei bloßer
 // Erwähnung des Strings in Prosa.
 var citeMarkerRe = regexp.MustCompile(`<!--\s*d-check:cite\b`)
-
 // citeDirectiveRe parst die volle Direktive: Pfad (nicht-gierig bis zum
 // Zeilen-Suffix), 1-basiertes <von> und optionales <bis>.
-var citeDirectiveRe = regexp.MustCompile(`<!--\s*d-check:cite\s+(.+?):(\d+)(?:-(\d+))?\s*-->`)
+//
+// Der Pfad beginnt mit einem NICHT-Whitespace-Zeichen. Sonst wäre ein Pfad
+// aus lauter Leerzeichen ein gültiger Parse mit leerem Ziel — und genau der
+// entstünde, wenn der Pfad in Backticks stünde: das positionserhaltende
+// Strippen ersetzt die Spanne durch Leerzeichen. Ein fehlender Pfad ist ein
+// malformter Span und damit fail-closed (DC-FA-CITE-001.a Schritt 1), kein
+// Befund gegen die leere Zeichenkette.
+var citeDirectiveRe = regexp.MustCompile(`<!--\s*d-check:cite\s+(\S.*?):(\d+)(?:-(\d+))?\s*-->`)
 
 // wsRun kollabiert jeden Whitespace-Lauf (inkl. Zeilenumbruch) zu einem
 // Leerzeichen (DC-FA-CITE-001.a Schritt 4).
@@ -45,16 +51,23 @@ var wsRun = regexp.MustCompile(`\s+`)
 // Teilstring der normalisierten Quell-Spanne sein. Eine strukturell
 // unbrauchbare Direktive (malformter Span, kein folgendes Zitat) ist
 // fail-closed → error (der Aufrufer mappt auf Exit 2); Zitat-Fäule und
-// Zitat-Abweichung sind Befunde (Exit 1). Arbeitet auf den rohen,
-// fence-bewussten Zeilen.
+// Zitat-Abweichung sind Befunde (Exit 1).
+//
+// Die Frage „ist diese Zeile eine Direktive" bekommt die GETEILTE Antwort
+// (ADR-0054): Marker-Suche und Direktiven-Parse laufen auf dem
+// fence-bewussten, inline-code-gestrippten Text — eine in Inline-Code
+// geschriebene Direktiv-Syntax ist eine Erwähnung, keine Direktive. Der
+// ZITATTEXT dagegen wird roh gelesen: dort sind die Bytes der Gegenstand,
+// nicht ihre Prosa-Rolle.
 func CheckCitations(fsys driven.Filesystem, file string, content []byte) ([]model.Finding, error) {
 	prose := proseLines(content)
+	stripped := stripInlineCodeByLine(prose)
 	var findings []model.Finding
 	for i, pl := range prose {
-		if !citeMarkerRe.MatchString(pl.raw) {
+		if !citeMarkerRe.MatchString(stripped[pl.no]) {
 			continue
 		}
-		fs, err := citationForDirective(fsys, file, prose, i)
+		fs, err := citationForDirective(fsys, file, prose, stripped, i)
 		if err != nil {
 			return nil, err
 		}
@@ -67,9 +80,9 @@ func CheckCitations(fsys driven.Filesystem, file string, content []byte) ([]mode
 // (prose[i]) und liefert höchstens einen Befund. Eine strukturell
 // unbrauchbare Direktive (malformter Span, kein folgendes Zitat, nicht
 // auflösbarer Pfad) ist fail-closed → error.
-func citationForDirective(fsys driven.Filesystem, file string, prose []proseLine, i int) ([]model.Finding, error) {
+func citationForDirective(fsys driven.Filesystem, file string, prose []proseLine, stripped map[int]string, i int) ([]model.Finding, error) {
 	pl := prose[i]
-	m := citeDirectiveRe.FindStringSubmatch(pl.raw)
+	m := citeDirectiveRe.FindStringSubmatch(stripped[pl.no])
 	if m == nil {
 		return nil, fmt.Errorf("%s:%d: malformte d-check:cite-Direktive — erwartet <!-- d-check:cite <pfad>:<von>-<bis> --> (DC-FA-CITE-001.a Schritt 1, fail-closed)", file, pl.no)
 	}

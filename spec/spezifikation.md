@@ -1219,8 +1219,18 @@ byte-identisch.
 ### DC-FA-CITE-001.a — Verbatim-Zitat-Verifikation (`citations`)
 
 Das Modul `citations` prüft **nur** per Direktive ausgezeichnete Zitate — kein
-Prosa- oder Voll-Scan. Arbeitet auf den rohen Zeilen (fence-aware wie die übrigen
-Module).
+Prosa- oder Voll-Scan. Die Frage **„ist diese Zeile eine Direktive"** bekommt die
+geteilte Prosa-Antwort wie jedes andere prosa-lesende Modul: fence-bewusst **und**
+inline-code-gestrippt
+([DC-FA-LINK-001.a](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
+Schritt 2). Der **Zitattext** dagegen wird **roh** gelesen — dort sind die Bytes
+der Gegenstand des Vergleichs, nicht ihre Prosa-Rolle.
+
+**Die Ziel-Seite liegt außerhalb dieser Zusagen** (§3.8): Schritt 3 liest die
+Quell-Spanne **roh und typunabhängig** — kein Fence-Bewusstsein, kein Strippen —,
+und die Zieldatei muss weder Markdown sein noch in der Scan-Menge liegen.
+`scan.ignore` und `citations.scope` skopieren die **prüfende** Datei, nicht das
+Ziel; eine ausgeschlossene Datei kann also weiterhin **zitiert** werden.
 
 **Schritte:**
 
@@ -1228,8 +1238,22 @@ Module).
    (HTML-Kommentar; `<pfad>` Datei-/Wurzel-relativ wie in
    [DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code), `<von>`/`<bis>`
    **1-basierte** Zeilennummern, `<bis>` optional = `<von>`). Fehlt die Direktive,
-   prüft das Modul nichts. Ein **malformter** Span (nicht-numerisch, fehlend) ⇒
-   **fail-closed** (Exit 2).
+   prüft das Modul nichts. **Suche und Parse laufen auf demselben gestrippten
+   Text:** eine in Inline-Code geschriebene Direktiv-Syntax ist eine
+   **Erwähnung**, keine Direktive — und trägt eine Zeile beides, gilt die freie.
+   Der `<pfad>` beginnt mit einem **Nicht-Whitespace**-Zeichen; steht er in
+   Backticks, macht das Strippen ihn zum fehlenden Pfad. Ein **malformter** Span
+   (nicht-numerisch, fehlend) ⇒ **fail-closed** (Exit 2).
+
+   **Drei Grenzen des Strippens, benannt.** (a) Es wirkt **absatzweit**: eine
+   freie, unverklammerte Direktive wird verschluckt, wenn eine Code-Spanne
+   desselben Absatzes sie umschließt. (b) Es kann eine Direktive auch
+   **erzeugen** — eine Code-Spanne zwischen Kommentar-Öffner und Marker
+   verschwindet. (c) Die **Ventil**-Direktive `d-check:ignore` wird davon
+   **nicht** berührt: sie wird weiterhin auf der rohen Zeile erkannt
+   ([DC-FA-CODE-001.a](#dc-fa-code-001a--pfade-in-inline-code)) und wirkt auch
+   aus einer Backtick-Spanne heraus.
+
 2. Der **Zitattext** ist das der Direktive folgende Zitat. **Leerzeilen trennen
    nicht** — gesucht wird der nächste nicht-leere Kandidat, auch über mehrere
    Leerzeilen hinweg. **Ein Fenced-Block dagegen trennt in beiden Zweigen**: er
@@ -2791,6 +2815,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-27 | §[`DC-FA-CITE-001.a`](spezifikation.md#dc-fa-cite-001a--verbatim-zitat-verifikation-citations) Kopfsatz und Schritt 1: der **Marker-Scan** bekommt die geteilte Prosa-Antwort — fence-bewusst **und inline-code-gestrippt** —, Suche und Parse auf demselben gestrippten Text, und der `<pfad>` beginnt mit einem Nicht-Whitespace-Zeichen (ein Pfad in Backticks wird sonst zu einem gültigen Parse mit leerem Ziel statt zum fail-closed-Fall); der **Zitattext** bleibt ausdrücklich **roh**. Der Vorfassungs-Satz *„Arbeitet auf den rohen Zeilen (fence-aware wie die übrigen Module)"* sagte beides zugleich und ließ die Inline-Hälfte offen; gemessen wurde eine andere Antwort als bei den übrigen Modulen, mit der Folge, dass die Dokumentation der Direktive selbst den Lauf fail-closed abbrach (25 Marker-Zeilen über 544 Dateien, davon 24 in Inline-Code, keine frei, null produktive Direktiven). **Drei Grenzen des Strippens** neu benannt (absatzweite Verschluckung, Erzeugung einer Direktive, die roh bleibende Ventil-Direktive) und die **Ziel-Seite** als außerhalb aller Prosa-Zusagen ausgewiesen (roh, typunabhängig, nicht von `scan.ignore`/`scope` erfasst). Begründung in begleitender ADR |
 | 2026-08-26 | §2-Schema: `matrix.classes[].paths` ist **optional** — eine Klasse ohne Pfade hat keine Mitglieder und ist reines **Token-Ziel**. Die Fähigkeit bestand in der Implementierung, war aber nicht zugesagt; die Zeile führte `paths` wie das Pflichtfeld `name`. Kein Verhaltens-Delta |
 | 2026-08-23 | Nachzug nach unabhängigem Review: **redaktionell, keine Semantik-Änderung.** Schritt 4 unter §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) wies `matrix` als Gegen-Beleg zur **benannten Liste** der marker-tragenden Module aus und blieb dabei bei einem einzigen Beispiel; genannt sind jetzt auch `structure` und `citations`, die ebenfalls auf Zeilen melden und den Marker nicht tragen. Ein einzelner Gegen-Beleg lässt die Liste weiter als ableitbares Kriterium erscheinen |
 | 2026-08-23 | Nachzug nach unabhängigem Review, vor dem Release: **redaktionell, keine Semantik-Änderung.** Zwei Stellen führten den Zeilen-Marker `d-check:ignore` als exklusiv für `codepaths` bzw. `codepaths`/`ids` — die Achsen-Präzedenz unter §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) und Schritt 4 unter §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung). Beide nennen jetzt alle **vier** honorierenden Module (`codepaths`, `ids`, `versions`, `diagrams`) und weisen die Menge als **benannte Liste** statt als ableitbares Kriterium aus — `matrix` und `structure` erfüllen ein Kriterium „eigene Muster, Befunde an Zeilen“ ebenfalls, tragen den Marker aber nicht. Der Spiegel in der Nutzer-Doku wurde im selben Zug gezogen; kein Grund-Code, kein Schema, kein Befundsatz betroffen |
