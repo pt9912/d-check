@@ -32,8 +32,13 @@ docker run --rm -v "$PWD:/repo:ro" pt9912/d-check:__VERSION__ --enable ids --dis
 
 Für CI pinnen Sie auf den **Digest** statt auf einen beweglichen Tag. Dieses
 Image ist ein **Spiegel** von `ghcr.io/pt9912/d-check` — dasselbe Bild, kein
-zweiter Bau, gleicher Manifest-Digest. Ein `docker.io`-Pin trägt damit genauso
-weit wie ein `ghcr.io`-Pin.
+zweiter Bau: der **Config**-Digest ist auf beiden Registries gleich, und die
+Release-Pipeline misst das nach dem Push.
+
+**Der Manifest-Digest ist dagegen registry-lokal** — er hängt an der
+Blob-Kompression der jeweiligen Registry. Nehmen Sie deshalb den Digest **der
+Registry, aus der Sie ziehen**; ein von GHCR kopierter Digest löst hier nicht
+auf.
 
 ```bash
 docker run --rm -v "$PWD:/repo:ro" pt9912/d-check@sha256:<digest>

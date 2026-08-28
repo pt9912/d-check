@@ -6,6 +6,35 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-165 — **Docker-Hub-Spiegel als zugesagte Distribution**
+  ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel),
+  Lastenheft 0.70.0/0.71.0, [ADR-0065](docs/plan/adr/0065-spiegel-gleichheit-ist-der-config-digest.md)).
+  Jedes nach GHCR veröffentlichte Image liegt zusätzlich als
+  `docker.io/pt9912/d-check` — **dasselbe Bild unter denselben Tags, kein
+  zweiter Bau**. GHCR bleibt die Quelle; `:latest` bewegt sich weiterhin nur für
+  stabile Releases.
+  **Die zugesagte Gleichheit ist der Config-Digest, nicht der Manifest-Digest**,
+  und die Pipeline **misst** sie nach dem Push — aus beiden Registries gelesen,
+  nicht aus dem lokalen Daemon. Die erste Fassung sagte den *Manifest*-Digest zu;
+  das war **am Bestand widerlegt** (drei von drei geprüften Tag-Paaren tragen
+  verschiedene Manifest-Digests bei identischem Config-Digest — der zweite Push
+  komprimiert die Layer neu) und hätte jedes Release gebrochen.
+  **Für Konsumenten heißt das:** wer per Digest pinnt, nimmt den Digest **der
+  Registry, aus der er zieht**. Ein von GHCR kopierter Digest löst auf Docker
+  Hub nicht auf; das ist eine Eigenschaft von Registry-Digests, keine des
+  Spiegels.
+  **Fail-closed, und das ist die Entscheidung:** schlägt die Spiegelung fehl,
+  ist das Release fehlgeschlagen, auch wenn GHCR bereits trägt — die Meldung
+  nennt dann den veröffentlichten GHCR-Stand, damit der Teil-Zustand nicht
+  geraten werden muss. **Betriebliche Vorbedingung:** Repository und die zwei
+  Secrets `DOCKERHUB_USERNAME`/`DOCKERHUB_TOKEN`; ohne sie schlägt **jedes**
+  Release fehl ([`releasing.md`](docs/user/releasing.md) §Vorbedingungen).
+  Die Hub-Beschreibungsseite kommt aus `packaging/dockerhub/` und ist
+  **nicht** fail-closed — das Bild ist die Zusage, der Beschreibungstext ist
+  Präsentation.
+
 ## [0.64.0] — 2026-08-27
 
 ### Changed
