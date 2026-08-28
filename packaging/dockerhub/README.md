@@ -6,13 +6,31 @@ unterschiedlich gepflegt:
 
 | Feld auf Docker Hub | Quelle | Limit | Gepflegt durch |
 |---|---|---|---|
-| **Description** (Kurztext unter dem Repo-Namen) | [`description.txt`](description.txt) | 100 Bytes | Release-Build ([`release.yml`](../../.github/workflows/release.yml)) |
-| **Repository overview** (Markdown-Seite) | [`overview.md`](overview.md) | 25.000 Bytes | Release-Build, derselbe Step |
+| **Description** (Kurztext unter dem Repo-Namen) | [`description.txt`](description.txt) | 100 Zeichen | Release-Build — **beim ersten Lauf `Forbidden`, siehe unten** |
+| **Repository overview** (Markdown-Seite) | [`overview.md`](overview.md) | 25.000 Zeichen | Release-Build, derselbe Step — **ebenso** |
 | **Category** | dieses Dokument (siehe unten) | — | **manuell im Web-UI** |
 
-Die ersten beiden setzt `peter-evans/dockerhub-description` bei jedem
-Release-Build. Die Action hat **keinen** Input für die Kategorie — deshalb steht
-die Entscheidung hier als Text, statt still im UI zu leben.
+Die ersten beiden **soll** `peter-evans/dockerhub-description` bei jedem
+Release-Build setzen. Die Action hat **keinen** Input für die Kategorie —
+deshalb steht die Entscheidung hier als Text, statt still im UI zu leben.
+
+## Der erste Lauf hat sie NICHT gesetzt — gemessen
+
+Beim Release `v0.65.0` (Run 33139273535) meldete der Schritt `success`, sein Log
+aber `##[error]Forbidden` beim `PATCH` an die Docker-Hub-API. Die API bestätigt
+es: `description` ist leer, `full_description` fehlt ganz. **Der `success` ist
+ein Artefakt von `continue-on-error`** — der Schritt darf das Release nicht rot
+machen (das ist gewollt, [ADR-0065](../../docs/plan/adr/0065-spiegel-gleichheit-ist-der-config-digest.md)
+Punkt 5), aber er verschluckt dabei auch die Meldung, dass er nichts bewirkt hat.
+
+**Die Ursache ist nicht gemessen, nur eingegrenzt.** Der Push desselben Tokens
+funktioniert (das Bild liegt auf Docker Hub); abgelehnt wird nur der
+Metadaten-`PATCH`. Naheliegend ist der **Scope des Access-Tokens** — im
+Schwester-Repo `pt9912/d-migrate` setzt dieselbe Action ihre Beschreibung
+erfolgreich. Wer das prüft, prüft es im Docker-Hub-Konto, nicht hier.
+
+**Bis dahin gilt:** beide Felder sind **manuell** zu setzen, aus genau diesen
+zwei Dateien. Der Inhalt ist damit weiter reviewbar; nur der Transport fehlt.
 
 ## Category
 
