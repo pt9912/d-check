@@ -49,9 +49,16 @@ set -uo pipefail
 TRIVY_VERSION="${TRIVY_VERSION:-0.74.0}"
 TRIVY_DIGEST="${TRIVY_DIGEST:-sha256:62b1e65e8869bc4b4c6aa4fa2b21595256c7c2f6018a9d9ad61caf87187c1969}"
 
-# Der Docker-Hub-Spiegel gehoert hier hinein, SOBALD er ein Bild traegt
-# (DC-FA-DIST-002). Ein Ref ohne Bild machte den Nachtlauf ab dem ersten Tag rot.
-IMAGE_SCAN_REFS="${IMAGE_SCAN_REFS:-ghcr.io/pt9912/d-check:latest}"
+# BEIDE publizierten Bezugswege. Geprueft werden soll, was Anwender ziehen --
+# und seit v0.65.0 sind das zwei Registries (DC-FA-DIST-002). Der Spiegel stand
+# hier zunaechst NICHT drin, weil er kein Bild trug; ein Ref ohne Bild haette
+# den Nachtlauf ab dem ersten Tag rot gemacht.
+#
+# GEMESSEN vor der Aufnahme, statt angenommen: beide Refs melden denselben
+# Befundsatz. Das ist zu erwarten -- gleicher Config-Digest, gleicher Inhalt --,
+# war aber ungeprueft. Zugleich ist es eine zweite, vom Digest UNABHAENGIGE
+# Bestaetigung der Inhalts-Gleichheit.
+IMAGE_SCAN_REFS="${IMAGE_SCAN_REFS:-ghcr.io/pt9912/d-check:latest pt9912/d-check:latest}"
 
 # Cache ausserhalb des Repos, wie das Regelset von `semgrep` (ADR-0010): der
 # Arbeitsbaum bleibt sauber, und `git status` meldet keine Werkzeug-Artefakte.
