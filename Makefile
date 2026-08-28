@@ -87,6 +87,9 @@ bench: build ## DC-QA-01-Benchmark: generiertes Fixture, N=3 Läufe, Median < 5 
 image-test: build ## DC-FA-DIST-001-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container, :ro, Mount-Hinweis).
 	@bash tools/image-test.sh
 
+image-scan: ## CVE-Scan gegen die PUBLIZIERTEN Images (Netz, NICHT in gates, Trivy digest-gepinnt; ADR-0066). Exit 1 = behebbare CRITICAL/HIGH, 2 = Scan gescheitert.
+	@bash tools/image-scan.sh
+
 semgrep: ## Security-/Static-Analysis-Gate: gepinntes semgrep-Image + gepinntes, lokal gecachtes go/lang/security-Regelset, netzloser Scan (Bestandteil von gates; ADR-0010).
 	@bash tools/semgrep.sh
 
@@ -96,6 +99,7 @@ versions: ## Reproduzierbarkeits-Pins ausgeben (Go, Lint, Basis-Image-Digests, s
 	@grep -E '^FROM ' Dockerfile | grep -v '^FROM deps' | sort -u
 	@echo "semgrep-image=semgrep/semgrep:$$(sed -nE 's/.*SEMGREP_VERSION:-([^}]+)\}.*/\1/p' tools/semgrep.sh | head -1)@$$(sed -nE 's/.*SEMGREP_DIGEST:-([^}]+)\}.*/\1/p' tools/semgrep.sh | head -1)"
 	@echo "a-check-image=$(A_CHECK_IMAGE)"
+	@echo "trivy-image=aquasec/trivy:$$(sed -nE 's/.*TRIVY_VERSION:-([^}]+)\}.*/\1/p' tools/image-scan.sh | head -1)@$$(sed -nE 's/.*TRIVY_DIGEST:-([^}]+)\}.*/\1/p' tools/image-scan.sh | head -1)"
 	@docker image inspect $(IMAGE):latest --format 'runtime-image={{.Id}}' 2>/dev/null \
 	    || echo "runtime-image=(nicht gebaut — make build)"
 
@@ -252,6 +256,17 @@ freshness-semgrep: ## Neueren semgrep-Release als SEMGREP_VERSION melden (Netz, 
 	  ADVICE='SEMGREP_VERSION + SEMGREP_DIGEST in tools/semgrep.sh heben (ADR-0010/ADR-0011).' \
 	  bash tools/harness/pin-freshness.sh --github semgrep/semgrep
 
+freshness-trivy: ## Neueren Trivy-Release als TRIVY_VERSION melden (Netz, NICHT in gates, fail-open).
+	@NAME=aquasec/trivy \
+	  PINNED="$$(sed -nE 's/.*TRIVY_VERSION:-([^}]+)\}.*/\1/p' tools/image-scan.sh | head -1)" \
+	  ADVICE='TRIVY_VERSION + TRIVY_DIGEST in tools/image-scan.sh heben (ADR-0011/ADR-0066).' \
+	  bash tools/harness/pin-freshness.sh --github aquasecurity/trivy
+
+trivy-digest: ## Neuen Bau desselben Trivy-Tags melden (Netz, NICHT in gates, fail-open).
+	@NAME="aquasec/trivy:$$(sed -nE 's/.*TRIVY_VERSION:-([^}]+)\}.*/\1/p' tools/image-scan.sh | head -1)" \
+	  PINNED="$$(sed -nE 's/.*TRIVY_DIGEST:-([^}]+)\}.*/\1/p' tools/image-scan.sh | head -1)" \
+	  ADVICE='TRIVY_DIGEST in tools/image-scan.sh nachziehen (ADR-0011).' \
+	  bash tools/harness/pin-freshness.sh --digest "aquasec/trivy:$$(sed -nE 's/.*TRIVY_VERSION:-([^}]+)\}.*/\1/p' tools/image-scan.sh | head -1)"
 semgrep-digest: ## Neueren Digest fuer denselben semgrep-Tag melden (Netz, NICHT in gates, fail-open).
 	@NAME="semgrep/semgrep:$$(sed -nE 's/.*SEMGREP_VERSION:-([^}]+)\}.*/\1/p' tools/semgrep.sh | head -1)" \
 	  PINNED="$$(sed -nE 's/.*SEMGREP_DIGEST:-([^}]+)\}.*/\1/p' tools/semgrep.sh | head -1)" \

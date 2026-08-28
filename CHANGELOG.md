@@ -6,6 +6,24 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Security
+
+- slice-166 — **Vierzehn behebbare HIGH-CVEs im ausgelieferten Image behoben**
+  ([ADR-0066](docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md)).
+  `ghcr.io/pt9912/d-check:latest` trug bis hierher neun CVEs in
+  `golang.org/x/crypto`, vier in `golang.org/x/net` und eine in
+  `github.com/go-git/go-git/v5` — **kein Gate dieses Repos hätte sie je
+  gemeldet**, weil alle an einem Commit hängen und CVEs ohne Commit auftauchen.
+  Gehoben auf `x/crypto` v0.53.0, `x/net` v0.56.0, `x/sys` v0.46.0 und
+  `go-git` v5.19.2; das neu gebaute Image trägt **null** behebbare
+  CRITICAL/HIGH (gemessen gegen das Image-Tarball, nicht gegen `go.mod`).
+- slice-166 — **Neuer Sensor `make image-scan`** gegen die **publizierten**
+  Images, im eigenen Nachtlauf und **außerhalb** von `gates`. Netz ist hier der
+  Zweck: der Scanner ist digest-gepinnt, die Vuln-DB bewusst nicht. Rot macht
+  nur der Entscheidungslauf (`CRITICAL`/`HIGH` **mit verfügbarem Fix**); ein
+  gescheiterter Scan meldet Exit 2 und **nicht** grün. `make nightly-state`
+  liest ab jetzt **beide** Nachtläufe.
+
 ### Added
 
 - slice-165 — **Docker-Hub-Spiegel als zugesagte Distribution**

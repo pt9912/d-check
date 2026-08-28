@@ -102,3 +102,4 @@ Register (Baseline-Vorlage `templates/docs/plan/adr/README.template.md`).
   `Accepted` wurde und damit immutabel ist.
 - **Dateiname** (Repo-Zusatz zur Vorlage): `<NNNN>-<kurzer-titel-kebab>.md`,
   vierstellig, zero-padded.
+| [ADR-0066](0066-cve-scan-gegen-das-publizierte-image.md) | **CVE-Scan gegen das publizierte Image** — Netz ist hier der Zweck, nicht ein Zugeständnis: der Scanner ist digest-gepinnt, die Vuln-DB bewusst nicht. Beide Trivy-Läufe fahren `--exit-code 0`, weil Trivy einen echten Fehler ebenfalls mit 1 quittiert; rot macht nur der Entscheidungslauf (`CRITICAL`/`HIGH` **mit Fix**). Außerhalb `gates` | Accepted | 2026-08-28 | — |

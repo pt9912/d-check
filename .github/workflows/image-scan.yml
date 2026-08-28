@@ -1,0 +1,98 @@
+name: image-scan
+
+# CVE-Scan gegen die PUBLIZIERTEN Images (ADR-0066).
+#
+# Warum zeitgesteuert: alle uebrigen Sicherheits-Gates dieses Repos haengen an
+# einem Commit. Gegen CVEs ist das prinzipiell blind — sie tauchen auf, ohne
+# dass sich das Repo aendert, und zwischen zwei Releases altert das publizierte
+# Image weiter.
+#
+# Warum ein EIGENER Workflow neben upstream-drift.yml: anderer Gegenstand (das
+# publizierte Bild statt unserer Pins) und andere Exit-Semantik (0/1/2 statt
+# fail-open). `make nightly-state` liest beide.
+#
+# `workflow_dispatch` ist Pflicht, nicht Komfort: ein Workflow, der nur an einem
+# seltenen Ereignis haengt, wird erst im Ernstfall auf die Probe gestellt.
+#
+# BETRIEBS-GRENZE, gemessen: die Abtastrate von `schedule` ist unzuverlaessig.
+# Die vier Laeufe des Nachbar-Nachtlaufs vom 24.-27.08.2026 starteten +79, +75,
+# +81 und +589 Minuten nach ihrem Cron. Ein "nightly" ist eine Abtastung, keine
+# Zusage. GitHub schaltet `schedule` in inaktiven Repos zudem nach 60 Tagen ab —
+# ein still abgeschalteter Nachtlauf sieht aus wie ein gruener.
+
+on:
+  schedule:
+    # 03:17 UTC — abseits der vollen Stunde (dort ist die Runner-Nachfrage am
+    # hoechsten) und zwei Stunden nach upstream-drift.yml, damit sich die
+    # beiden Nachtlaeufe nicht ueberlagern.
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  scan:
+    name: Trivy gegen die publizierten Images
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      # Kein `continue-on-error`: der Schritt endet immer mit 0 und meldet
+      # seinen Ausgang ueber `status`. `outcome` kennt nur success/failure und
+      # koennte "Scan gescheitert" (2) nicht von "Befunde gefunden" (1)
+      # trennen — genau die Unterscheidung, fuer die das Skript gebaut ist.
+      - name: make image-scan
+        id: scan
+        run: |
+          set -o pipefail
+          mkdir -p .tmp/security
+          rc=0
+          make image-scan 2>&1 | tee .tmp/security/image-scan.log || rc=$?
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          case "$rc" in
+            0) echo "status=clean"    >> "$GITHUB_OUTPUT" ;;
+            1) echo "status=findings" >> "$GITHUB_OUTPUT" ;;
+            *) echo "status=error"    >> "$GITHUB_OUTPUT" ;;
+          esac
+
+      - name: Bericht ins Job-Summary
+        if: always()
+        env:
+          STATUS: ${{ steps.scan.outputs.status }}
+        run: |
+          set -euo pipefail
+          {
+            echo "### CVE-Scan der publizierten Images"
+            echo ""
+            case "$STATUS" in
+              clean)    echo "**Sauber** — keine behebbaren CRITICAL/HIGH." ;;
+              findings) echo "**Handlungspflichtig** — behebbare CRITICAL/HIGH gefunden." ;;
+              *)        echo "**Scan gescheitert** — der Befundstand ist UNBEKANNT, nicht gruen." ;;
+            esac
+            echo ""
+            echo '```'
+            tail -c 60000 .tmp/security/image-scan.log 2>/dev/null || echo "(kein Log)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Ausgang durchreichen
+        env:
+          STATUS: ${{ steps.scan.outputs.status }}
+          RC: ${{ steps.scan.outputs.rc }}
+        run: |
+          set -euo pipefail
+          if [ "$STATUS" = "clean" ]; then
+            echo "image-scan: sauber."
+            exit 0
+          fi
+          if [ "$STATUS" = "findings" ]; then
+            echo "::error title=CVE-Scan::Behebbare CRITICAL/HIGH im publizierten Image — siehe Job-Summary."
+          else
+            echo "::error title=CVE-Scan::Scan GESCHEITERT (Exit ${RC}) — der Befundstand ist UNBEKANNT, nicht gruen."
+          fi
+          exit 1

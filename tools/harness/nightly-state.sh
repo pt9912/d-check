@@ -37,7 +37,10 @@ set -uo pipefail
 CT=10
 MT=30
 REPO="${NIGHTLY_REPO:-pt9912/d-check}"
-WF="${NIGHTLY_WORKFLOW:-upstream-drift.yml}"
+# Beide Nachtlaeufe. Ein zweiter Workflow ohne Eintrag hier machte diesen
+# Lese-Schritt (MR-053) zur Haelfte blind — er meldete "gruen" und meinte nur
+# den einen, den er kennt.
+WFS="${NIGHTLY_WORKFLOWS:-upstream-drift.yml image-scan.yml}"
 
 # Ein Feld je Zeile greifen. Das Muster ist an BEIDE Anfuehrungszeichen
 # verankert; in einem JSON-String ist ein literales " als \" maskiert, die
@@ -48,7 +51,8 @@ feld() {
 }
 
 urteil() {
-  local json="$1" conclusion created url
+  local json="$1" label="${2:-}" conclusion created url p="nightly-state"
+  [ -n "$label" ] && p="nightly-state[$label]"
   conclusion="$(feld "$json" conclusion)"
   created="$(feld "$json" created_at)"
   url="$(printf '%s' "$json" | tr ',' '\n' | grep -m1 '"html_url".*actions/runs' \
@@ -57,35 +61,35 @@ urteil() {
   # Form pruefen, bevor der Wert als Stand gilt: ein Zeitstempel, der keiner
   # ist, macht aus einem Parse-Ausfall ein Urteil.
   printf '%s' "$created" | grep -qE '^[0-9]{4}-[0-9]{2}-[0-9]{2}T' || {
-    echo "nightly-state: SKIP — keine Lauf-Antwort (Form nicht erkannt)" >&2
+    echo "${p}: SKIP — keine Lauf-Antwort (Form nicht erkannt)" >&2
     return 0
   }
 
   case "$conclusion" in
     success)
-      echo "nightly-state: gruen — juengster Lauf ${created}"
+      echo "${p}: gruen — juengster Lauf ${created}"
       ;;
     null|"")
       # Die API liefert bei laufendem Job JSON-null, nicht ein fehlendes Feld.
-      echo "nightly-state: SKIP — der juengste Lauf (${created}) hat noch keinen Ausgang" >&2
+      echo "${p}: SKIP — der juengste Lauf (${created}) hat noch keinen Ausgang" >&2
       ;;
     failure)
-      echo "nightly-state: ROT (failure) — juengster Lauf ${created}" >&2
-      echo "nightly-state: ${url}" >&2
-      echo "nightly-state: LESEN, nicht wegklicken. Eine PLANMAESSIGE Meldung" >&2
-      echo "nightly-state: (Fremd-Release; Zitat-Spanne nach einem Bump, MR-051)" >&2
-      echo "nightly-state: wird anders behandelt als eine unerwartete — der" >&2
-      echo "nightly-state: Unterschied steht in der AUSGABE des Laufs, nicht in" >&2
-      echo "nightly-state: seiner Farbe." >&2
+      echo "${p}: ROT (failure) — juengster Lauf ${created}" >&2
+      echo "${p}: ${url}" >&2
+      echo "${p}: LESEN, nicht wegklicken. Eine PLANMAESSIGE Meldung" >&2
+      echo "${p}: (Fremd-Release; Zitat-Spanne nach einem Bump, MR-051)" >&2
+      echo "${p}: wird anders behandelt als eine unerwartete — der" >&2
+      echo "${p}: Unterschied steht in der AUSGABE des Laufs, nicht in" >&2
+      echo "${p}: seiner Farbe." >&2
       ;;
     *)
       # cancelled, timed_out, startup_failure, action_required, neutral,
       # skipped, stale: kein Achsen-Urteil, sondern eine Lauf-Stoerung. Der
       # Deutungsrahmen oben waere hier schlicht falsch.
-      echo "nightly-state: ROT (${conclusion}) — juengster Lauf ${created}" >&2
-      echo "nightly-state: ${url}" >&2
-      echo "nightly-state: Lauf-Stoerung, KEIN Achsen-Urteil — die Achsen haben" >&2
-      echo "nightly-state: nichts gemeldet. Neu ausloesen, dann lesen." >&2
+      echo "${p}: ROT (${conclusion}) — juengster Lauf ${created}" >&2
+      echo "${p}: ${url}" >&2
+      echo "${p}: Lauf-Stoerung, KEIN Achsen-Urteil — die Achsen haben" >&2
+      echo "${p}: nichts gemeldet. Neu ausloesen, dann lesen." >&2
       ;;
   esac
 }
@@ -126,14 +130,16 @@ command -v curl >/dev/null 2>&1 || {
   exit 0
 }
 
-json="$(curl -fsSL --connect-timeout "$CT" --max-time "$MT" \
-  "https://api.github.com/repos/${REPO}/actions/workflows/${WF}/runs?per_page=1" \
-  2>/dev/null || true)"
+for wf in ${WFS}; do
+  json="$(curl -fsSL --connect-timeout "$CT" --max-time "$MT" \
+    "https://api.github.com/repos/${REPO}/actions/workflows/${wf}/runs?per_page=1" \
+    2>/dev/null || true)"
 
-if [ -z "$json" ]; then
-  echo "nightly-state: SKIP — Lauf-Stand nicht abrufbar (Netz, privates Repo oder umbenannter Workflow)" >&2
-  exit 0
-fi
+  if [ -z "$json" ]; then
+    echo "nightly-state[${wf}]: SKIP — Lauf-Stand nicht abrufbar (Netz, privates Repo oder umbenannter Workflow)" >&2
+    continue
+  fi
 
-urteil "$json"
+  urteil "$json" "$wf"
+done
 exit 0
