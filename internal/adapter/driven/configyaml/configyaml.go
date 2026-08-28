@@ -226,6 +226,9 @@ type rawStructure struct {
 	TableColumn    *int     `yaml:"table-column"`
 	HeadingsMatch  string   `yaml:"headings-match"`
 	HeadingsLevel  *int     `yaml:"headings-level"`
+	CellMaxColumn  string   `yaml:"cell-max-column"`
+	CellMaxChars   *int     `yaml:"cell-max-chars"`
+	CellMinChars   *int     `yaml:"cell-min-chars"`
 	ExemptPaths    []string `yaml:"exempt-paths"`
 }
 
@@ -310,6 +313,35 @@ func structureUeberschriftFehler(r rawStructure) string {
 	if r.HeadingsLevel != nil && r.HeadingsMatch == "" {
 		return "headings-level ist ohne headings-match wirkungslos (halbe Aktivierung)"
 	}
+	return structureZellenFehler(r)
+}
+
+// structureZellenFehler prüft die Config-Ränder der Zellenlängen-Bedingung
+// (ADR-0069). Sie hat KEINEN Default auf einer der beiden Seiten: eine Spalte
+// ohne Schwelle misst nichts, eine Schwelle ohne Spalte gilt niemandem —
+// beide Halb-Aktivierungen brechen laut, in beide Richtungen.
+func structureZellenFehler(r rawStructure) string {
+	if r.CellMaxColumn != "" && strings.TrimSpace(r.CellMaxColumn) == "" {
+		return "cell-max-column ist leer (nur Weißraum)"
+	}
+	for _, g := range []struct {
+		name string
+		val  *int
+	}{{"cell-max-chars", r.CellMaxChars}, {"cell-min-chars", r.CellMinChars}} {
+		if g.val != nil && *g.val < 1 {
+			return fmt.Sprintf("%s %d muss >= 1 sein", g.name, *g.val)
+		}
+		if g.val != nil && r.CellMaxColumn == "" {
+			return g.name + " ist ohne cell-max-column wirkungslos (halbe Aktivierung)"
+		}
+	}
+	if r.CellMaxColumn != "" && r.CellMaxChars == nil && r.CellMinChars == nil {
+		return "cell-max-column ist ohne cell-max-chars/cell-min-chars wirkungslos (halbe Aktivierung)"
+	}
+	if r.CellMaxChars != nil && r.CellMinChars != nil && *r.CellMinChars > *r.CellMaxChars {
+		return fmt.Sprintf("cell-min-chars %d liegt über cell-max-chars %d — keine Zelle erfüllt beides",
+			*r.CellMinChars, *r.CellMaxChars)
+	}
 	return ""
 }
 
@@ -346,6 +378,8 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 		RequirePattern: r.RequirePattern, RequireAll: r.RequireAll,
 		TableOrder: r.TableOrder, TableColumn: r.TableColumn,
 		HeadingsMatch: r.HeadingsMatch, HeadingsLevel: r.HeadingsLevel,
+		CellMaxColumn: r.CellMaxColumn, CellMaxChars: r.CellMaxChars,
+		CellMinChars: r.CellMinChars,
 		ExemptPaths: r.ExemptPaths,
 	}, nil
 }

@@ -904,6 +904,42 @@ func TestConfigYAMLStructureHeadingPattern(t *testing.T) {
 	}
 }
 
+// Config-Rand der Zellenlaengen-Bedingung (ADR-0069): sie hat auf KEINER der
+// beiden Seiten einen Default, den man still annehmen koennte — jede halbe
+// Aktivierung bricht laut, in beide Richtungen.
+func TestConfigYAMLStructureZellenlaenge(t *testing.T) {
+	base := "structure:\n  - files: 'a/*.md'\n    section: '## S'\n"
+	cases := []struct{ name, yaml, want string }{
+		{"spalte ohne grenze", base + "    cell-max-column: Titel\n", "wirkungslos"},
+		{"obergrenze ohne spalte", base + "    cell-max-chars: 200\n", "wirkungslos"},
+		{"untergrenze ohne spalte", base + "    cell-min-chars: 5\n", "wirkungslos"},
+		{"obergrenze null", base + "    cell-max-column: Titel\n    cell-max-chars: 0\n", ">= 1"},
+		{"untergrenze null", base + "    cell-max-column: Titel\n    cell-min-chars: 0\n", ">= 1"},
+		{"spalte nur weissraum", base + "    cell-max-column: '  '\n    cell-max-chars: 9\n", "leer"},
+		{"unten ueber oben", base + "    cell-max-column: Titel\n    cell-max-chars: 10\n    cell-min-chars: 11\n", "keine Zelle erfüllt beides"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			_, err := configyaml.Decode([]byte(c.yaml))
+			if err == nil || !strings.Contains(err.Error(), c.want) {
+				t.Fatalf("erwartet Fehler mit %q, got %v", c.want, err)
+			}
+		})
+	}
+	// Zwei Regeln ueber DENSELBEN Abschnitt mit verschiedenen Spalten sind
+	// kein Duplikat mehr — die Identitaet traegt die benannte Spalte.
+	ok := base + "    cell-max-column: Titel\n    cell-max-chars: 200\n" +
+		"  - files: 'a/*.md'\n    section: '## S'\n    cell-max-column: Status\n    cell-max-chars: 40\n"
+	if _, err := configyaml.Decode([]byte(ok)); err != nil {
+		t.Fatalf("zwei Spalten desselben Abschnitts abgelehnt: %v", err)
+	}
+	// Dieselben zwei Regeln OHNE Spalten-Angabe bleiben ein Duplikat.
+	dup := base + "    non-empty: true\n  - files: 'a/*.md'\n    section: '## S'\n    non-empty: true\n"
+	if _, err := configyaml.Decode([]byte(dup)); err == nil {
+		t.Fatal("Regel-Duplikat ohne Spalten-Angabe akzeptiert")
+	}
+}
+
 // DC-QA-02: bei mehreren ungueltigen Mustern in derselben Regel ist die
 // Exit-2-Meldung deterministisch — die Reihenfolge der Pruefung ist
 // festgelegt, nicht der Iterationsreihenfolge einer Map ueberlassen.

@@ -94,3 +94,10 @@ Fällt das Release **zweimal** an einer Docker-Hub-Störung aus, während GHCR
 grün war, ist die fail-closed-Entscheidung neu zu stellen — dann kostet die
 Zusage mehr, als sie trägt, und die ehrliche Antwort wäre eine Rücknahme der
 Anforderung, nicht ein stiller Notausgang.
+
+## Geschichte
+
+| Datum | Ereignis | Verweis |
+|---|---|---|
+| 2026-08-27 | Accepted | [slice-165](../planning/done/slice-165-dockerhub-spiegel.md) |
+| 2026-08-28 | Digest-Größe und die d-migrate-Zuschreibung abgelöst — dieselbe Zusage, die andere Größe | [ADR-0065](0065-spiegel-gleichheit-ist-der-config-digest.md) |

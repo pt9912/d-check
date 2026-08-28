@@ -135,3 +135,10 @@ auf die neue Form zu ziehen.
 **Wiedervorlage für Entscheidung 3**, wenn der Wächter eine Umgehung durchlässt,
 die im Bestand eintritt — dann ist die Frage, ob die Klasse ein Werkzeug
 braucht, das Verhalten statt Schreibweisen liest.
+
+## Geschichte
+
+| Datum | Ereignis | Verweis |
+|---|---|---|
+| 2026-08-27 | Accepted | [slice-162](../planning/done/slice-162-ignore-marker-geteilte-antwort.md) |
+| 2026-08-27 | Herleitung, Zahlen und Grenzen abgelöst — das Produktverhalten bleibt | [ADR-0062](0062-ventil-marker-versions-ist-eine-benannte-grenze.md) |

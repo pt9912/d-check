@@ -44,8 +44,8 @@ const (
 	// eindeutigen Abschnitt sagt eine Satzzahl nichts, und ein zweiter Abschnitt
 	// ist der typische Rest einer Vorlage.
 	ReasonClosureNoteAmbiguous = "closure-note-ambiguous"
-	// Die zehn Grund-Codes des Moduls structure (DC-FA-STRUCT-001). Zwei
-	// Struktur-Codes fuer die Abschnitts-Findung und acht Bedingungs-Codes —
+	// Die dreizehn Grund-Codes des Moduls structure (DC-FA-STRUCT-001). Zwei
+	// Struktur-Codes fuer die Abschnitts-Findung und elf Bedingungs-Codes —
 	// je eigener Code, weil die Befund-Deduplikation zwei Verletzungen
 	// desselben Abschnitts sonst zusammenfallen liesse.
 	ReasonLinkPositionDependent = "link-position-dependent"
@@ -71,6 +71,17 @@ const (
 	// restlichen Tabelle wortlos ab.
 	ReasonSectionUnordered   = "section-unordered"
 	ReasonSectionCellUntyped = "section-cell-untyped"
+	// Zellenlaenge (ADR-0069), drei Codes fuer drei Reparaturen:
+	// section-cell-oversized (kuerzen) und section-cell-undersized
+	// (ausfuellen) melden auf der Zeile IHRER Zelle; eine Obergrenze allein
+	// liesse die leere Zelle gruen passieren, weil 0 unter jeder Schwelle
+	// liegt. section-column-missing meldet, dass die benannte Spalte nicht
+	// adressierbar ist (kein Kopf traegt den Namen, er kommt mehrfach vor,
+	// oder die Datenzeile reicht nicht bis zu ihr) — die Bedingung zu setzen
+	// IST die Behauptung, dass es diese Spalte gibt.
+	ReasonSectionCellOversized  = "section-cell-oversized"
+	ReasonSectionCellUndersized = "section-cell-undersized"
+	ReasonSectionColumnMissing  = "section-column-missing"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

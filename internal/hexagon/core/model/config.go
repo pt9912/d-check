@@ -5,6 +5,7 @@ import (
 	"path"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -464,7 +465,16 @@ type StructureRule struct {
 	// Abschnitts + 1) von einem explizit gesetzten Wert unterscheidbar bleibt.
 	HeadingsMatch string
 	HeadingsLevel *int
-	ExemptPaths    []string
+	// CellMaxColumn benennt die geprueften Spalte ueber ihren
+	// KOPFZEILEN-Namen und schaltet die Zellenlaengen-Bedingung scharf;
+	// CellMaxChars/CellMinChars sind Ober- und Untergrenze in ZEICHEN —
+	// Zeiger, damit ein abwesender Schluessel von einem explizit gesetzten
+	// Wert unterscheidbar bleibt. Mindestens eine der beiden Grenzen ist
+	// Pflicht; eine Obergrenze allein laesst die LEERE Zelle passieren.
+	CellMaxColumn string
+	CellMaxChars  *int
+	CellMinChars  *int
+	ExemptPaths   []string
 }
 
 // EffectiveHeadingsLevel liefert die geprueften ATX-Ebene der
@@ -475,6 +485,20 @@ func (r StructureRule) EffectiveHeadingsLevel(sectionLevel int) int {
 		return *r.HeadingsLevel
 	}
 	return sectionLevel + 1
+}
+
+// structureSpaltenTeil liefert den Spalten-Anteil der Regel-Identitaet: leer,
+// wo die Regel keine Spalte NENNT. Die Chronologie-Spalte zaehlt nur, wenn sie
+// explizit gesetzt ist (der Zeiger ist genau dafuer da).
+func structureSpaltenTeil(r StructureRule) string {
+	out := ""
+	if r.TableColumn != nil {
+		out += " :: Spalte " + strconv.Itoa(*r.TableColumn)
+	}
+	if r.CellMaxColumn != "" {
+		out += " :: Spalte " + r.CellMaxColumn
+	}
+	return out
 }
 
 // EffectiveTableColumn liefert die 1-basierte Schluesselspalte der
@@ -494,6 +518,13 @@ func (r StructureRule) Identity() string {
 	if sel == "" {
 		sel = r.SectionPattern
 	}
+	// Die AUSDRUECKLICH benannte Spalte gehoert dazu: zwei Bedingungen ueber
+	// verschiedene Spalten desselben Abschnitts sind verschiedene Zusagen, und
+	// ihre Befunde treffen dieselbe ZEILE mit demselben Grund-Code — ohne die
+	// Spalte im target fielen sie unter die Deduplikation zusammen (ADR-0069).
+	// Nicht dazu gehoert eine unbenannte Default-Spalte: sonst aenderte sich
+	// das target jeder Bestandsregel, die keine nennt.
+	sel += structureSpaltenTeil(r)
 	return r.Files + " :: " + sel
 }
 

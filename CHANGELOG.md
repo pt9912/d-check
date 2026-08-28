@@ -6,6 +6,49 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+### Added
+
+- slice-168 — **Neunte `structure`-Bedingung: Zellenlänge einer benannten
+  Tabellenspalte**
+  ([ADR-0069](docs/plan/adr/0069-zellenlaenge-als-strukturbedingung.md),
+  Lastenheft 0.72.0). `cell-max-column` benennt die Spalte über ihren
+  **Kopfzeilen-Namen** — nicht über eine Position: eine eingefügte Spalte
+  verschöbe eine Positions-Angabe **still** auf die falsche, ein umbenannter
+  Kopf meldet **laut**. `cell-max-chars` und `cell-min-chars` begrenzen sie in
+  **Zeichen** (Unicode-Runen, nicht Bytes); mindestens eine der beiden ist
+  Pflicht. **Eine Obergrenze allein lässt die leere Zelle passieren** — null
+  Zeichen liegen unter jeder Schwelle —, deshalb tragen die Grenzen eigene
+  Grund-Codes: `section-cell-oversized` (kürzen) und `section-cell-undersized`
+  (ausfüllen), beide auf **der Zeile der Zelle**. `section-column-missing`
+  meldet die nicht adressierbare Spalte: kein Kopf trägt den Namen, er kommt
+  mehrfach vor, oder eine Datenzeile reicht nicht bis zu ihr.
+- slice-168 — **Mehrere Spalten je Abschnitt sind konfigurierbar.** Die
+  Regel-Identität trägt jetzt die **ausdrücklich benannte** Spalte
+  (`cell-max-column` bzw. ein explizit gesetztes `table-column`). Ohne das wäre
+  eine zweite Regel über denselben Abschnitt ein Konfigurations-Duplikat, und
+  zwei Befunde **derselben Zeile** fielen unter die Deduplikation zusammen.
+  Damit entfällt die bis 0.71.0 benannte Grenze *„zwei Chronologie-Zusagen über
+  denselben Abschnitt"*. Eine Regel **ohne** Spalten-Angabe behält ihre
+  Identität — für sie ändert sich kein `target`.
+
+### Changed
+
+- slice-168 — **Das Produkt hat eine Zell-Antwort statt zwei.** Die
+  Tabellenzeilen-Zerlegung des Kerns (`structure`, `planning.waves`) ist jetzt
+  **escape- und backtick-bewusst**: `\|` ist ein Zeichen der Zelle und **kein**
+  Zelltrenner. Damit entfällt die in
+  [ADR-0057](docs/plan/adr/0057-structure-tabellen-monotonie.md) §Konsequenzen
+  benannte Grenze, statt an die neue Bedingung vererbt zu werden — auf dem
+  naiven Zerleger hätte sie genau das Loch gehabt, gegen das sie gebaut ist
+  (gemessen: eine Zelle aus zwei Läufen à 105 Zeichen mit `\|` dazwischen
+  entkommt einem Längen-Muster und wird von der Bedingung gemeldet). Kein
+  Grund-Code und keine Befund-Form der bestehenden Bedingungen ändert sich.
+- slice-168 — Die **Befund-Form** von `structure` sagt jetzt aus, dass die drei
+  zeilen-gebundenen Bedingungen (`table-order`, `headings-match`,
+  `cell-max-column`) auf **der Zeile melden, an der repariert wird**, und nur
+  im Leerlauf auf die Abschnitts-Überschrift zurückfallen. Das galt seit der
+  siebten Bedingung und stand so nicht im Vertrag.
+
 ## [0.65.0] — 2026-08-28
 
 ### Security

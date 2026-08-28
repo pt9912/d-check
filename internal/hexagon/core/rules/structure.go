@@ -115,9 +115,9 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 	// In `one` ist nach der Kardinalitäts-Prüfung genau ein Treffer übrig,
 	// `each` misst jeden.
 	var prose map[int]bool
-	if r.TableOrder != "" {
-		// Nur die Chronologie-Bedingung braucht die fence-bewusste
-		// Tabellenzeilen-Auswahl auf den ROHEN Zeilen (ADR-0057).
+	if r.TableOrder != "" || r.CellMaxColumn != "" {
+		// Die beiden Tabellen-Bedingungen brauchen die fence-bewusste
+		// Tabellenzeilen-Auswahl auf den ROHEN Zeilen (ADR-0057, ADR-0069).
 		prose = proseLineSet(content)
 	}
 	var out []model.Finding
@@ -126,6 +126,9 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 		out = append(out, structureConditions(r, file, h.Line, body)...)
 		if r.TableOrder != "" {
 			out = append(out, structureTableOrder(r, file, lines, prose, h.Line, h.Level)...)
+		}
+		if r.CellMaxColumn != "" {
+			out = append(out, structureCellMax(r, file, lines, prose, h.Line, h.Level)...)
 		}
 		if r.HeadingsMatch != "" {
 			out = append(out, structureHeadings(r, file, lines, h)...)

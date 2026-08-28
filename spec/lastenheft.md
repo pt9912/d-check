@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.71.0
+**Version:** 0.72.0
 
 **Status:** Draft
 
@@ -2513,6 +2513,9 @@ verlangt:
 | `table-order` (`asc`/`desc`; Schlüsselspalte `table-column`, Default 1) | `section-unordered` | die Zeile chronologisch einsortieren (bzw. die zugesagte Tabelle führen) |
 | — dieselbe Bedingung, untypisierbare Schlüsselzelle | `section-cell-untyped` | die Schlüsselzelle bzw. die Spaltenwahl korrigieren |
 | `headings-match` (RE2; Ebene `headings-level`, Default Abschnitts-Ebene + 1) | `section-heading-mismatch` | die Überschrift in die zugesagte Form bringen |
+| `cell-max-column` (Kopfzeilen-Name) + `cell-max-chars` (int ≥ 1) | `section-cell-oversized` | die Zelle kürzen — bzw. den Inhalt dorthin bringen, wo er hingehört |
+| — dieselbe Bedingung, Untergrenze `cell-min-chars` | `section-cell-undersized` | die Zelle ausfüllen |
+| — dieselbe Bedingung, Spalte nicht adressierbar | `section-column-missing` | den Spaltennamen bzw. die Kopfzeile korrigieren |
 
 Ein Sammel-Code schiede aus: die Befund-Deduplikation vergleicht (Datei, Zeile,
 Regel, Ziel, Grund) — zwei verletzte Bedingungen desselben Abschnitts fielen
@@ -2593,6 +2596,43 @@ Zelle ohne typisierbaren Schlüssel, eine Zeile mit zu wenigen Zellen oder eine
 restlichen Tabelle wortlos ab; hinter der gemeldeten Zelle setzt der Vergleich
 beim nächsten typisierbaren Nachbar-Paar wieder auf.
 
+**Zellenlänge (`cell-max-column`/`cell-max-chars`).** Eine Tabellenspalte, die
+einen **Titel** trägt, nimmt still die ganze Entscheidung auf: wer eine Zeile
+anfügt, schreibt so viel hinein, wie er gerade weiß, und niemand misst nach.
+Aus einer derivativen Sicht wird so eine **zweite Quelle**, die von der
+eigentlichen abdriften kann. Ist `cell-max-column` gesetzt, prüft d-check jede
+**zusammenhängende** Tabelle des Abschnitts: die Zellen dieser Spalte tragen
+höchstens `cell-max-chars` **Zeichen** ⇒ sonst `section-cell-oversized` an
+**dieser Zeile**, nicht am Abschnittskopf — dort ist die Reparatur.
+
+Die Spalte wird über ihren **Kopfzeilen-Namen** adressiert, nicht über eine
+Position: eine eingefügte Spalte verschöbe eine Positions-Angabe **still** auf
+die falsche Spalte, während ein umbenannter Kopf **laut** meldet. Adressierbar
+heißt: **genau eine** Kopfzelle trägt den Namen. Trägt ihn keine, ist die
+Tabelle für diese Bedingung irrelevant (eine Nebentabelle im selben Abschnitt
+schaltet die Messung nicht ab); trägt ihn eine Kopfzeile **mehrfach**, oder
+bindet **keine** Tabelle des Abschnitts die Spalte, oder reicht eine Datenzeile
+nicht bis zu ihr ⇒ `section-column-missing`. Der Leerlauf-Fall ist dieselbe
+Doppel-Rolle wie bei der Chronologie: die Bedingung zu setzen **ist** die
+Behauptung, dass es diese Spalte gibt.
+
+**Eine Obergrenze allein lässt die leere Zelle durch.** Null Zeichen liegen
+unter jeder Schwelle; eine Spalte, die nur nach oben begrenzt ist, darf leer
+sein. Wer zusagt, dass sie **gefüllt** ist, sagt das mit `cell-min-chars` ⇒
+sonst `section-cell-undersized`. Die beiden Grenzen tragen **eigene**
+Grund-Codes, weil die Reparatur eine andere ist: ausfüllen statt kürzen.
+Mindestens eine der beiden ist Pflicht, sobald `cell-max-column` steht.
+
+**Gezählt werden Zeichen, nicht Bytes** — die Schwelle beschreibt einen Text,
+und ein Umlaut ist ein Zeichen. Die Zell-Zerlegung ist **escape- und
+backtick-bewusst**: `\|` ist ein Zeichen der Zelle und **kein** Zelltrenner. Das
+ist keine Bequemlichkeit, sondern die Bedingung dafür, dass die Zusage trägt —
+ein naiver Split zerteilte genau die Zellen, die ein Autor mit einer Pipe
+füllt, und ließe die zu lange Zelle **unbemerkt** durch. **Grenze, benannt
+statt zugesagt:** gemessen wird die Zelle, **wie sie dasteht**, Markdown-Syntax
+eingeschlossen — eine Zelle aus einem einzigen langen Link ist lang, auch wenn
+ihr sichtbarer Text kurz ist.
+
 **Verhältnis zur Closure-Note-Struktur.** Die zweite Fähigkeit des Moduls
 `planning` ([`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
 ist ein **Preset** dieser Semantik im Modus `one`: gleiche Abschnitts-Bestimmung,
@@ -2612,7 +2652,12 @@ kompilierendes `section-pattern`/`forbid-pattern`/`require-pattern`; explizit
 gesetztes `min-sentences` < 1 oder `max-tasks` < 0; leerer Eintrag in
 `require-all`; `table-order` außerhalb `asc`/`desc`; explizit gesetztes
 `table-column` < 1; `table-column` ohne `table-order` (eine halbe Aktivierung
-ist ein Config-Fehler, kein Zustand). **`exempt-paths` hebelt den Leerlauf-Befund nicht aus:** bleiben
+ist ein Config-Fehler, kein Zustand); `cell-max-column` aus lauter Weißraum;
+explizit gesetztes `cell-max-chars`/`cell-min-chars` < 1; eine Untergrenze
+**über** der Obergrenze (keine Zelle erfüllt beides); und **jede** halbe
+Aktivierung von `cell-max-column` und seinen Grenzen — hier gibt es, anders als
+bei `table-column`, auf **keiner** Seite einen Default, den man still annehmen
+könnte. **`exempt-paths` hebelt den Leerlauf-Befund nicht aus:** bleiben
 nach Abzug null Kandidaten, ist das derselbe `section-missing` — sonst schaltete
 ein Ventil die Regel still ab.
 
@@ -2643,6 +2688,17 @@ ein Ventil die Regel still ab.
 - **Überschriften-Muster (Ebene):** Given einen Abschnitt der Ebene 2 mit einer verletzenden Überschrift der Ebene 3 **und** einer der Ebene 4, when die Regel keine `headings-level` nennt, then meldet nur die der Ebene 3 (Default = Abschnitts-Ebene + 1); mit `headings-level: 4` nur die der Ebene 4.
 - **Überschriften-Muster (wirkungslos, benannt):** Given einen Abschnitt **ohne** Überschrift der geprüften Ebene, when der Lauf endet, then kein Befund — die Bedingung ist dann vacuously wahr, und genau deshalb wird ihre Einführung vorher rot gemessen.
 - **Überschriften-Muster (Modul-aus):** Given eine Regel **ohne** `headings-match`, when `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne den Schlüssel ([`DC-QA-02`](#dc-qa-02--determinismus)); ein nicht kompilierendes Muster ⇒ Exit 2, ein `headings-level` außerhalb 1–6 ⇒ Exit 2.
+- **Zellenlänge (Happy Path):** Given eine Regel mit `cell-max-column`/`cell-max-chars` und einen Abschnitt, dessen Zellen dieser Spalte unter der Schwelle bleiben — während eine **Nachbar**-Spalte sie deutlich überschreitet —, when `d-check --enable structure` läuft, then kein Befund, Exit 0: die Bedingung ist **spalten**-gebunden, nicht zeilen-pauschal.
+- **Zellenlänge (Negative, auf ihrer Zeile):** Given dieselbe Regel und eine Datenzeile, deren Zelle die Schwelle überschreitet, when der Lauf endet, then `section-cell-oversized` mit der Zeile **dieser Datenzeile** (nicht der Abschnitts-Überschrift), und die Meldung nennt Ist- und Soll-Zahl.
+- **Zellenlänge (Grenzfall):** Given eine Zelle mit **genau** `cell-max-chars` Zeichen, when der Lauf endet, then kein Befund; Given eine mit **einem** Zeichen mehr, then genau ein Befund — die Schwelle ist die größte zulässige Länge.
+- **Zellenlänge (Zeichen, nicht Bytes):** Given eine Zelle aus 20 Umlauten (40 Byte) bei `cell-max-chars: 20`, when der Lauf endet, then **kein** Befund — eine Byte-Zählung meldete sie rot.
+- **Zellenlänge (escapte Pipe):** Given eine zu lange Zelle, die eine escapte Pipe (`\|`) enthält, when der Lauf endet, then wird sie als **eine** Zelle gemessen und gemeldet, und die escapte Pipe zählt als **ein** Zeichen — ein naiver Split an `|` zerteilte sie und ließe sie unbemerkt durch.
+- **Zellenlänge (Spalte nicht adressierbar):** Given einen Abschnitt, dessen Tabellen den Namen **nicht** tragen, when der Lauf endet, then `section-column-missing` an der Abschnitts-Überschrift; Given eine Kopfzeile, die ihn **zweimal** trägt, then derselbe Code auf der **Kopfzeile**; Given eine Datenzeile mit zu wenigen Zellen, then derselbe Code auf **dieser** Zeile.
+- **Zellenlänge (Leerlauf und Fence-Treue):** Given einen Abschnitt **ohne** Tabelle — oder einen, dessen einzige Tabelle in einem Fenced-Code-Block steht —, when der Lauf endet, then `section-column-missing` als Leerlauf-Befund: eine Tabelle im Fence deklariert nichts, und eine Bedingung, die nichts misst, meldet nicht Erfolg.
+- **Zellenlänge (zwei Tabellen):** Given einen Abschnitt mit zwei Tabellen, von denen nur die zweite die Spalte trägt, when der Lauf endet, then meldet **nur** die zu lange Zelle der zweiten — eine Tabelle ohne die Spalte schaltet die Messung der anderen **nicht** ab.
+- **Zellenlänge (leere Zelle):** Given eine Regel mit **nur** `cell-max-chars` und eine **leere** Zelle der benannten Spalte, when der Lauf endet, then **kein** Befund — null Zeichen liegen unter jeder Obergrenze; Given dieselbe Regel **mit** `cell-min-chars`, then `section-cell-undersized` auf **ihrer** Zeile, mit einem **anderen** Grund-Code als die zu lange Zelle.
+- **Zellenlänge (zwei Spalten, eine Zeile):** Given zwei Regeln über **denselben** Abschnitt, die **verschiedene** Spalten begrenzen, und eine Zeile, die in **beiden** verletzt, when der Lauf endet, then **zwei** Befunde — die Regel-Identität trägt die benannte Spalte, sonst fielen sie unter die Deduplikation (Datei, Zeile, Regel, Ziel, Grund) zusammen; **ohne** benannte Spalte bleibt die Identität unverändert.
+- **Zellenlänge (Modul-aus / Config-Rand):** Given eine Regel **ohne** die Schlüssel, when `d-check` läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)); Given `cell-max-column` ohne jede Grenze, eine Grenze ohne Spalte, ein `cell-max-column` aus lauter Weißraum, ein explizit gesetztes `cell-max-chars`/`cell-min-chars` < 1 oder eine Untergrenze **über** der Obergrenze, then Exit 2 vor dem Lauf.
 
 **Out-of-Scope:** Aussagen über den **Ort** eines Dokuments (Dateinamens-,
 Verzeichnis- oder Nummerierungs-Konventionen) — keine Struktur *innerhalb* eines
@@ -2661,12 +2717,16 @@ ist ein Change Request, kein konfigurierbares Muster: kein zweiter
 Regel-Interpreter, dieselbe Grenze wie oben); **Ordnungs-Aussagen über
 Tabellen- oder Spalten-Grenzen hinweg** (zwei getrennt sortierte, gegenläufige
 Tabellen im selben Abschnitt bleiben unerkannt — benannte Grenze; der belegte
-Anlassfall ist der Richtungs-Bruch **innerhalb** einer Tabelle); **zwei
-Chronologie-Zusagen über denselben Abschnitt** (die Regel-Identität besteht
-aus Glob und Abschnitts-Selektor und trägt keine Spalte — zwei Regeln
-gleicher Identität mit verschiedenem `table-column` sind ein
-Konfigurations-Duplikat, Exit 2, laut statt still; wer zwei Spalten derselben
-Tabelle monoton zusagen will, stellt einen Change Request gegen diese Grenze).
+Anlassfall ist der Richtungs-Bruch **innerhalb** einer Tabelle).
+
+**Aufgelöste Grenze (0.72.0):** *zwei Zusagen über verschiedene Spalten
+desselben Abschnitts* waren bis dahin ein Konfigurations-Duplikat (Exit 2), weil
+die Regel-Identität nur aus Glob und Abschnitts-Selektor bestand. Sie trägt
+jetzt zusätzlich die **ausdrücklich benannte** Spalte (`cell-max-column` bzw.
+ein explizit gesetztes `table-column`) — ohne das fielen zwei Befunde über
+**dieselbe Zeile** mit **demselben** Grund-Code unter die Deduplikation
+zusammen, und einer bliebe unsichtbar. Eine Regel, die **keine** Spalte nennt,
+behält ihre Identität unverändert.
 
 ---
 
@@ -3063,6 +3123,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.72.0 | 2026-08-28 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um die **Zellenlängen-Bedingung** erweitert (`cell-max-column`/`cell-max-chars`, neunte Bedingung, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): jede Zelle einer **benannten** Spalte trägt höchstens N **Zeichen**, gemeldet auf **ihrer** Zeile. Zwei neue Grund-Codes `section-cell-oversized`/`section-column-missing`, vier neue fail-closed Config-Ränder. **Die Spalte wird über ihren Kopfzeilen-Namen adressiert, nicht über eine Position:** eine eingefügte Spalte verschöbe eine Positions-Angabe **still**, ein umbenannter Kopf meldet **laut** — dieselbe Wahl, die die achte Bedingung bei den Überschriften traf. Anlass ist ein gemessener Bestand: eine Titel-Spalte mit Median 442 und Maximum 2206 Zeichen neben H1-Titeln von Median 77, wodurch eine als **derivativ** deklarierte Sicht zur zweiten, driftfähigen Quelle wurde. **Ein `forbid-pattern` konnte die Länge ausdrücken und taugte trotzdem nicht:** sein Befund nennt den Abschnitt statt Zeile und Spalte, er hängt an der Form einer Nachbarzelle, und eine Zelle mit einer Pipe entkam ihm — dieselbe Bauform, die dieses Repo zuletzt zugunsten einer `structure`-Regel aufgegeben hat. **Mit-Wirkung auf drei Bestands-Flächen:** die Zell-Zerlegung des Produkts ist jetzt **eine** statt zwei — escape- und backtick-bewusst (`\|` ist ein Zeichen, kein Trenner) —, womit die dazu benannte Grenze der Chronologie-Bedingung und die von `planning.waves` **entfällt** statt vererbt zu werden; kein Grund-Code und keine Befund-Form dieser beiden ändert sich. Zugleich sagt die Befund-Form jetzt zu, dass die drei zeilen-gebundenen Bedingungen auf **der Zeile melden, an der repariert wird**, und nur im Leerlauf auf die Überschrift zurückfallen — das galt seit der siebten Bedingung und stand so nicht da. Begründung in begleitender ADR | — |
 | 0.71.0 | 2026-08-27 | [`DC-FA-DIST-002`](#dc-fa-dist-002--docker-hub-spiegel) sagt die Gleichheit jetzt am **Config-Digest** zu statt am **Manifest**-Digest — die Vorfassung war **am Bestand widerlegt**: derselbe lokale Bild-Push liefert je Registry verschiedene Manifest-Digests (gleicher `mediaType`, gleicher Config-Digest, aber neu komprimierte Layer-Blobs; drei von drei geprüften Tag-Paaren des Schwester-Repos). Die fail-closed-Prüfung der Vorfassung hätte damit **jedes** Release gebrochen. Der Config-Digest ist die Identität des Bild-**Inhalts** und registry-stabil; gelesen wird er aus **beiden Registries**, nicht aus dem lokalen Daemon — zwei aus demselben lokalen Bild abgeleitete Werte wären trivial gleich, und ein Vergleich, der nicht fehlschlagen kann, prüft nichts. **Neu ausgesprochen:** der Manifest-Digest ist registry-lokal, ein `docker.io`-Pin nimmt den Docker-Hub-Digest — verschwiegen wäre das eine Falle, deshalb steht es in der Beschreibung und im Out-of-Scope. **Negative-Kriterium geschärft:** der Abbruch erfolgt **vor** dem Spiegel-Push, weil eine `uses:`-Login-Action mit ihrem eigenen Text scheitert und eine nachgelagerte Meldung nie anliefe. **Out-of-Scope präzisiert:** die Hub-Beschreibungsseite wird aus dem Repo gesetzt, ihr Fehlschlag lässt das Release grün — die Prüfung ihres Zeichen-Limits wandert dafür in `make gates`, wo sie beim Schreiben greift statt beim Veröffentlichen. Anlass: unabhängiger Review. Begründung in begleitender ADR | — |
 | 0.70.0 | 2026-08-27 | Neue Anforderung [`DC-FA-DIST-002`](#dc-fa-dist-002--docker-hub-spiegel): jedes nach GHCR veröffentlichte Image wird zusätzlich als `docker.io/pt9912/d-check` **gespiegelt** — dasselbe Bild unter denselben Tags, **kein zweiter Bau**. Prüfgröße ist der **Manifest-Digest**; er ist auf beiden Registries gleich, und damit trägt ein `docker.io`-Pin so weit wie ein `ghcr.io`-Pin. GHCR bleibt die **Quelle**, die Richtung ist Teil der Zusage, und die Tagging-Disziplin ist die von [`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image) (volle Semver-Tags, `:latest` nur stabil). **Fail-closed, und das ist die eigentliche Entscheidung:** eine fehlgeschlagene Spiegelung ist ein fehlgeschlagenes Release, auch wenn GHCR bereits trägt — der Preis ist die Bindung an eine fremde Verfügbarkeit, ausdrücklich gewählt gegen die fail-open-Variante, die ein Schwester-Repo fährt. Damit die Teil-Veröffentlichung nicht geraten werden muss, verlangt das Negative-Kriterium, dass die Meldung den bereits veröffentlichten GHCR-Stand **benennt**. Zugleich **geändert**: der Out-of-Scope-Satz von [`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image) schloss *„Distributionswege jenseits GHCR"* aus und hätte diese Anforderung verboten; er ist auf die verbleibenden Wege (Homebrew, Paketmanager, Release-Binaries) zurückgeschnitten, statt stillschweigend überholt zu werden. **Nicht** zugesagt: weitere Registries, ein vom GHCR-Bild abweichender Hub-Bau, der Inhalt der Hub-Beschreibungsseite (er wird aus dem Repo gesetzt, ist aber nicht Teil der Zusage — sein Fehlschlag lässt das Release grün). Anlass: Auftraggeber. Begründung in begleitender ADR | — |
 | 0.69.0 | 2026-08-27 | Die **Form** des Zeilen-Markers folgt der **Kommentar-Lexik seiner Eingabe** und ist damit je Konsument verschieden. Bei [`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in) und [`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) — Eingabe ist Markdown-Prosa — muss er in einem **HTML-Kommentar** stehen; eine **blanke** Erwähnung wirkt nicht mehr. Bei [`DC-FA-DIAG-001`](#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in) bleibt er ein **Token** — das ist eine **ausdrückliche Festlegung der Spezifikation** (in einem `mermaid`-Fence bildet die Diagramm-Sprache den Kommentar; eine Lexik je Fence-Sprache wäre ein Grammatik-Parser) —, und bei [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) ebenso, weil es alle Zeilen sprachgemischt liest. Damit ist die **blanke** Erwähnung in Prosa entschärft; die in Backticks trug schon 0.68.0 über die **Lage**. Die Bedingung ist **monoton verengend** — sie kann keinen neuen stillen Grün-Pfad erzeugen —, aber sie entschärft nicht *jede* Form: eine escapte oder in einem eingerückten Code-Block stehende Erwähnung wirkt weiter. **Im Bestand kostenlos, und der Grund dafür ist eng:** von **66** wirksamen Markern über 558 Dateien tragen **65** die Form bereits; der 66. ist eine Erwähnung in Backticks, die nur durch das Paritäts-Leck wirkt (benannte Grenze der Vorfassung) und in einem Verzeichnis liegt, das beide Konsumenten datei-weit ausnehmen. Der Repo-Lauf **konnte** also nichts finden — der einzige Zähne-Beleg ist die konstruierte Gegenprobe. Einen **baren** wirksamen Marker gibt es im Bestand nicht. **Konservativ:** ein `>` im Kommentar vor dem Marker lässt ihn nicht gelten (verpasster Marker = Falsch-Rot und laut; erfundener = stilles Grün). Neues Akzeptanzkriterium (Boundary) bei **beiden** Anforderungen. **Preis, ausgewiesen:** wer den Marker setzt, muss wissen, für welches Modul. Begründung in begleitender ADR | — |

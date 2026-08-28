@@ -203,3 +203,9 @@ Nullposten mehr, und die Frage nach einer Warnung — nicht nach einer Rücknahm
 **Wiedervorlage für Entscheidung 7** mit der Closure jenes Slice: entweder der
 Angleich fällt, oder die Zweifach-Antwort wird zur dauerhaft benannten Grenze.
 Beides ist eine Entscheidung; das Weiterbestehen ohne Entscheidung ist keine.
+
+## Geschichte
+
+| Datum | Ereignis | Verweis |
+|---|---|---|
+| 2026-08-27 | Accepted | [slice-158](../planning/done/slice-158-citations-inline-code.md) |

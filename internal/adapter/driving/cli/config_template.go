@@ -190,6 +190,9 @@ modules: [links, anchors]
 #     # table-column: 1                             # 1-basierte Schlüsselspalte (Default 1); nur mit table-order
 #     # headings-match: '^SPEC-[0-9]{3} '          # JEDE Überschrift IM Abschnitt matcht dieses Muster (geprüft: ihr Text) ⇒ sonst section-heading-mismatch je Überschrift, auf IHRER Zeile
 #     # headings-level: 3                           # geprüfte ATX-Ebene (Default: Abschnitts-Ebene + 1); nur mit headings-match
+#     # cell-max-column: Titel                      # Spalte über ihren KOPFZEILEN-Namen (nicht Position); nicht adressierbar ⇒ section-column-missing
+#     # cell-max-chars: 200                         # Obergrenze in ZEICHEN (nicht Bytes) ⇒ sonst section-cell-oversized auf IHRER Zeile
+#     # cell-min-chars: 1                           # Untergrenze — ohne sie passiert die LEERE Zelle grün ⇒ sonst section-cell-undersized
 #     # exempt-paths: []                            # Globs; Treffer werden von DIESER Regel nicht geprüft
 
 # --- targets: Deklarations-Konsistenz Doku ↔ Build-Targets — hermetisch (kein git), opt-in ---

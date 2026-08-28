@@ -517,7 +517,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
 | `id-unlinked`                                                                                                                                                                                                                 | nackte Kennung → Markdown-Link auf ihre Definition; nur **nackte Prosa**-Vorkommen (Inline-Code oder bereits verlinkt bleiben unangetastet)                                     | konservativ (`--repair`) |
 | `target-missing`                                                                                                                                                                                                              | Link → **verschobene** Markdown-Datei gleichen, im Repo **eindeutigen** Namens; **keine** Umbenennung (anderer Name), keine Nicht-Markdown-Ziele, mehrdeutige Namen → kein Edit | breit (`--repair-broad`) |
-| `anchor-missing`, `repo-escape`, `symlink`, `codepath-missing`, `matrix-inactive`, `matrix-forbidden`, `external-status`, `external-timeout`, `external-redirects`, `span-unclosed`, `span-nested-link`, `fence-unclosed`, `closure-note-placeholder`, `closure-note-ambiguous`, `section-*` (alle acht), `hostpath-forbidden` | — kein Auto-Fix, von Hand beheben                                                                                                                                               | —                        |
+| `anchor-missing`, `repo-escape`, `symlink`, `codepath-missing`, `matrix-inactive`, `matrix-forbidden`, `external-status`, `external-timeout`, `external-redirects`, `span-unclosed`, `span-nested-link`, `fence-unclosed`, `closure-note-placeholder`, `closure-note-ambiguous`, **jeder** `section-*`, `hostpath-forbidden` | — kein Auto-Fix, von Hand beheben                                                                                                                                               | —                        |
 
 **Hinweise:**
 
@@ -958,6 +958,58 @@ Erfolg melden. Ohne `closure.dir` ist die Fähigkeit inert und öffnet keine Dat
 Und es prüft **Struktur, nicht Bedeutung**: „war ganz okay, läuft jetzt" ist
 syntaktisch ein vollständiger Satz. Grün heißt „Form erfüllt", nicht „Notizen
 sind gut" — die inhaltliche Beurteilung bleibt einem Review vorbehalten.
+
+### 4.18 Eine Tabellenspalte kurz und gefüllt halten (Modul `structure`)
+
+**Ziel:** Ein Register-Dokument — ein ADR-Index, eine Modul-Tabelle, ein
+Release-Register — hat eine Spalte, die *kurz* sein soll: ein Titel, ein
+Status. Genau dort wächst der Text, weil niemand nachmisst. Aus einer Sicht,
+die auf andere Dokumente **zeigen** soll, wird so eine zweite Quelle, die von
+der ersten abdriftet.
+
+**So geht es:**
+
+```yaml
+structure:
+  - files: docs/plan/adr/README.md
+    section: "# ADR-Index"
+    cell-max-column: Titel      # die Spalte über ihren KOPFZEILEN-Namen
+    cell-max-chars: 200         # Obergrenze in Zeichen
+    cell-min-chars: 10          # Untergrenze — sonst darf sie leer sein
+```
+
+```bash
+docker run --rm --network none -v "$PWD":/repo:ro \
+  ghcr.io/pt9912/d-check:latest --enable structure
+```
+
+**Ergebnis:** je zu langer oder zu kurzer Zelle ein Befund — auf **ihrer**
+Zeile, nicht am Abschnittskopf:
+
+<!-- d-check-test:not-replayable: gekürzte Illustration (Ziel-Spalte elidiert), nicht die wörtliche Ausgabe dieses Repos -->
+```text
+docs/plan/adr/README.md:41  …	section-cell-oversized
+docs/plan/adr/README.md:64  …	section-column-missing
+```
+
+**Drei Dinge, die dabei zählen:**
+
+- **Der Spaltenname, nicht die Position.** Wer `cell-max-column: 2` schreiben
+  könnte, hätte ein Gate, das nach dem Einfügen einer Spalte **still** die
+  falsche misst. Über den Kopfzeilen-Namen fällt derselbe Umbau **laut** auf.
+- **Ohne `cell-min-chars` darf die Zelle leer sein** — null Zeichen liegen
+  unter jeder Obergrenze. Wer „gefüllt" meint, muss es sagen.
+- **Eine Zeile, die gar nicht bis zur Spalte reicht, meldet.** Das ist der Fall,
+  den man sonst nie sieht: die vorderen Spalten stehen ja da. Im ADR-Index
+  dieses Repos hat genau das **vier** Zeilen ohne Datum und ohne Bezug
+  aufgedeckt.
+
+**Mehrere Spalten** begrenzen Sie mit mehreren Regeln über denselben Abschnitt
+— das geht, weil die Regel-Identität die benannte Spalte mitträgt.
+
+**Eine Grenze:** gemessen wird die Zelle, **wie sie dasteht**, Markdown-Syntax
+eingeschlossen. Auf eine Spalte voller Links angewandt misst die Bedingung
+etwas anderes, als Sie meinen.
 
 ## 5. Konfiguration
 
@@ -1866,6 +1918,9 @@ structure:
     # table-order: desc                           # asc|desc: Chronologie-Monotonie der Schlüsselspalte
     # table-column: 1                             # 1-basierte Schlüsselspalte (Default 1; nur mit table-order)
     # headings-match: '^SPEC-[0-9]{3} '           # JEDE Überschrift im Abschnitt matcht dieses Muster
+    # cell-max-column: Titel                      # Spalte über ihren KOPFZEILEN-Namen (nicht Position)
+    # cell-max-chars: 200                         # Obergrenze in ZEICHEN
+    # cell-min-chars: 10                          # Untergrenze — ohne sie passiert die LEERE Zelle
     # headings-level: 4                           # geprüfte ATX-Ebene (Default: Abschnitts-Ebene + 1);
     #                                             # MUSS tiefer als der Abschnitt liegen — eine gleiche
     #                                             # oder flachere Ebene kommt in ihm nicht vor, die
@@ -1918,6 +1973,33 @@ der geprüften Ebene, ist die Bedingung wirkungslos wahr, und eine Ebene
 den Schlüssel nicht mit `planning.closure.heading-pattern`: jener ist ein
 **Selektor** (welcher Abschnitt), dieser eine **Bedingung** (welche Form).
 
+Siebtens: die **Zellenlängen-Bedingung** (`cell-max-column` mit
+`cell-max-chars` und/oder `cell-min-chars`) begrenzt eine Tabellenspalte auf
+eine Spanne in **Zeichen** — nicht Bytes, ein Umlaut ist ein Zeichen. Sie ist
+die dritte Bedingung auf den rohen Abschnitts-Zeilen und die einzige, die ihre
+Spalte über einen **Namen** adressiert: `cell-max-column` nennt die
+**Kopfzelle**, nicht eine Position. Das ist Absicht — eine eingefügte Spalte
+verschöbe eine Positions-Angabe **still** auf die falsche Spalte, während ein
+umbenannter Kopf **laut** meldet (`section-column-missing`).
+
+Gebunden wird **je Tabelle**: trägt eine Tabelle des Abschnitts den Namen
+nicht, ist sie für diese Bedingung irrelevant — eine Nebentabelle schaltet die
+Messung der anderen nicht ab. Trägt eine Kopfzeile ihn **mehrfach**, reicht
+eine Datenzeile nicht bis zur Spalte, oder bindet **keine** Tabelle sie, ist
+das jeweils `section-column-missing`.
+
+**Setzen Sie eine Untergrenze, wenn Sie „gefüllt" meinen.** Eine Obergrenze
+allein lässt die **leere** Zelle passieren, denn null Zeichen liegen unter
+jeder Schwelle. `cell-min-chars` schließt das, mit eigenem Grund-Code
+`section-cell-undersized` — die Reparatur ist ausfüllen, nicht kürzen.
+
+Zwei Dinge sind benannt, nicht geschlossen: gemessen wird die Zelle, **wie sie
+dasteht** — eine Zelle aus einem einzigen langen Link ist lang, auch wenn ihr
+sichtbarer Text kurz ist. Und die Bedingung misst **eine** Spalte je Regel; wer
+mehrere begrenzen will, schreibt mehrere Regeln über denselben Abschnitt. Das
+geht, weil die Regel-Identität die benannte Spalte mitträgt — sonst wären zwei
+Befunde derselben Zeile nicht unterscheidbar.
+
 **Messen Sie, bevor Sie eine Regel aktivieren.** In diesem Repo hat genau das
 eine Regel verhindert, die plausibel klang und falsch war: „abgeschlossener
 Slice ohne offene Task-Boxen“ meldete 32-mal — und jedes Mal zu Recht offen,
@@ -1944,7 +2026,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `heading`-Block (Default `## Aktuelle Welle`) genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten. Überschriften und Marker zählen nur **außerhalb von Code-Blöcken**; die Block-Grenze ist die geteilte Abschnittsgrenze. **Dritte Fähigkeit** (opt-in über `waves.dir`): die Wellen-Register der Roadmap gegen die Wellen-Dateien — Plan-Dokument flach ⟺ aktive Welle (`waves.mode: one`, Default) **oder** Kennungs-Bijektion Aktiv-Block ⟺ flache Dokumente, Marker außen vor (`waves.mode: many`); Vorschau ohne Datei, Abschluss-Register ⟺ Ergebnisnotizen (beidseitig) | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder`, `closure-note-ambiguous`, `wave-drift`, `wave-preview-exists`, `wave-results-missing`, `wave-unregistered` |
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
 | `targets`   | opt-in        | Deklarations-Konsistenz Doku ↔ Build-Targets: jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`makefiles`), und jede Regel steht in der Autoritäts-Doku (`authority`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed bei fehlender Datei. Tabellenzeilen zählen nur **außerhalb von Code-Blöcken** — ein Beispiel-Block dokumentiert kein Target | `gate-phantom`, `gate-undocumented`                         |
-| `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu acht Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table-order`/`table-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle; die achte die **Überschriften-Form** (`headings-match`/`headings-level`): **jede** Überschrift der geprüften Ebene innerhalb des Abschnitts matcht das Muster, geprüft auf ihrem **Text**, gemeldet **je** Überschrift auf **ihrer** Zeile. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped`, `section-heading-mismatch` |
+| `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu neun Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table-order`/`table-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle; die achte die **Überschriften-Form** (`headings-match`/`headings-level`): **jede** Überschrift der geprüften Ebene innerhalb des Abschnitts matcht das Muster, geprüft auf ihrem **Text**, gemeldet **je** Überschrift auf **ihrer** Zeile; die neunte die **Zellenlänge** (`cell-max-column` mit `cell-max-chars`/`cell-min-chars`): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte liegt in einer Spanne aus **Zeichen**, gemeldet auf **ihrer** Zeile — eine Obergrenze allein ließe die leere Zelle passieren. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped`, `section-heading-mismatch`, `section-cell-oversized`, `section-cell-undersized`, `section-column-missing` |
 | `external`  | opt-in (Netz) | Erreichbarkeit externer Links                                                            | `external-status`, `external-timeout`, `external-redirects` |
 | `sources`   | opt-in (Netz) | Content-Pin externer Quellen gegen Upstream-Drift: eine auf `sha256` gepinnte `http(s)`-Quelle (Marker `<!-- source-pin: [zip] sha256:… -->` am Link **oder** Config-Block `sources:`; Einzeldatei oder Archiv `unpack: zip`) wird geholt, gehasht, verglichen — Meldung mit vollem Ist-Hash; **zweite** Netz-Tür neben `external`, nie im Default | `source-drift`, `source-unreachable`                        |
 

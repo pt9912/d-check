@@ -36,13 +36,28 @@ Bequemlichkeits-Sicht."* Eine 2206-Zeichen-Zelle macht den Index zu einer
 und kann von der ADR abdriften, ohne dass ein Gate es merkt.
 
 **Warum kein Regex.** Ein `forbid-pattern` kann eine Zellenlänge ausdrücken —
-ich habe es gemessen, es zählt Zeichen und trifft 43 der 44 zu langen Zeilen.
-Aber es taugt nicht als Gate: der Befund nennt den **Abschnitt**, nicht die
-Zeile und nicht die Spalte; das Muster hängt an der **Form der ID-Zelle** und
-greift still nicht mehr, wenn die sich ändert; und eine Titel-Zelle mit einem
-`|` zerteilt den Lauf und entkommt (im Bestand genau eine). Ein Wächter, dessen
-Treffgenauigkeit an einer Zeichenkette hängt, ist die Bauform, die dieses Repo
-zuletzt in [ADR-0059](../../adr/0059-closure-waechter-weicht-structure-regel.md)
+auf dem **heutigen** Bestand trifft eine zeilenverankerte Form alle 44 zu
+langen Zeilen, nicht 43; die Deckung ist also nicht das Argument. Es taugt
+trotzdem nicht als Gate, aus drei Gründen, von denen zwei gemessen sind:
+
+1. **Der Befund nennt den Abschnitt, nicht die Zeile.** Gemessen an einer Probe
+   mit beiden Wegen nebeneinander: `section-forbidden` meldet auf **Zeile 1**
+   (der Überschrift), `section-cell-oversized` auf **Zeile 5** (der Zeile, in
+   der die Zelle steht). Bei 44 Treffern sagt der erste nicht, welche.
+2. **Eine escapte Pipe zerteilt den Lauf, und die Zelle entkommt.** Gemessen an
+   einer konstruierten Zelle aus zwei Läufen à 105 Zeichen mit `\|` dazwischen
+   (212 Zeichen, Schwelle 200): das Muster schweigt, die Bedingung meldet. Im
+   **heutigen** Bestand entkommt dadurch nichts — die eine betroffene Zeile
+   ([ADR-0031](../../adr/0031-targets-deklarations-konsistenz-modul.md)) hat
+   auf beiden Seiten der Pipe genug Zeichen. Das Loch ist
+   konstruierbar, nicht realisiert; ein Wächter, der erst beim nächsten Autor
+   ausfällt, ist trotzdem keiner.
+3. **Das Muster hängt an der Form der ID-Zelle** und griffe still nicht mehr,
+   wenn die sich ändert.
+
+Ein Wächter, dessen Treffgenauigkeit an einer Zeichenkette hängt, ist die
+Bauform, die dieses Repo zuletzt in
+[ADR-0059](../../adr/0059-closure-waechter-weicht-structure-regel.md)
 zugunsten einer `structure`-Regel aufgegeben hat.
 
 ## 2. Vorgehen
@@ -103,9 +118,14 @@ zugunsten einer `structure`-Regel aufgegeben hat.
 - **Eine Schwelle aus dem heutigen Bestand ist aus dem Anlass gezogen**
   ([`BEO-011`](../observations.md)). 200 liegt über dem längsten **heutigen**
   H1; ein künftiger längerer Titel fiele auf. — **Ausgang:** *(bei Closure)*
-- **Eine Bedingung, die eine Spalte über ihre Position anspricht, hängt an der
-  Spalten-Reihenfolge.** Wird eine Spalte eingefügt, misst sie still die
-  falsche. — **Ausgang:** *(bei Closure)*
+- **Der Spalten-Bezug entscheidet, ob ein Umbau still oder laut ist.** Über die
+  **Position** angesprochen, misst eine eingefügte Spalte still die falsche;
+  über den **Kopfzeilen-Namen** meldet ein umbenannter Kopf laut. — **Ausgang:**
+  *(bei Closure)*
+- **Die Zell-Zerlegung des Produkts war zweigeteilt** — der Kern zerlegte naiv,
+  der RTM-Leser escape-bewusst. Eine neue Bedingung auf dem naiven Zerleger
+  hätte genau das Loch geerbt, gegen das sie gebaut ist. — **Ausgang:** *(bei
+  Closure)*
 
 ## 6. Trigger
 
