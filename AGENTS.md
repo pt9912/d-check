@@ -399,6 +399,15 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   [`MR-000`](harness/conventions.md#mr-000--baseline-aussage)) entstehen nur
   beim Schreiben der Spec-Straten — fortlaufend je Datei — und gehören
   **nicht** in Commit-Botschaften.
+- **Dependabot-Commits tragen die Kennung im Präfix, nicht in einer Ausnahme.**
+  `commit-message.prefix` in [`.github/dependabot.yml`](.github/dependabot.yml)
+  lautet `build(deps) [ADR-0067]` bzw. `build(ci) [ADR-0067]`; damit erfüllt <!-- d-check:ignore (literale Konfigurationswerte, keine Verweise) -->
+  jeder Bump-Commit dieselbe Regel wie jeder andere
+  ([ADR-0067](docs/plan/adr/0067-dependabot-als-hebender-kanal.md)). Die
+  naheliegende Alternative — `commits.exempt-pattern` erweitern — wäre eine
+  **gelockerte Prüfregel** (§3.6) gewesen und hätte den Gate für eine ganze
+  Commit-Klasse blind gemacht. **Die Kennung gilt dem Kanal, nicht dem Inhalt
+  des einzelnen Bumps**; wer mehr Bezug hineinliest, liest zu viel.
 - Neue oder geänderte `DC-*`-Anforderungen entstehen nur in
   [`spec/lastenheft.md`](spec/lastenheft.md) — nie per ADR (ADRs
   schärfen die Spezifikation, nicht das Lastenheft). Der

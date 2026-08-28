@@ -104,3 +104,4 @@ Register (Baseline-Vorlage `templates/docs/plan/adr/README.template.md`).
   `Accepted` wurde und damit immutabel ist.
 - **Dateiname** (Repo-Zusatz zur Vorlage): `<NNNN>-<kurzer-titel-kebab>.md`,
   vierstellig, zero-padded.
+| [ADR-0067](0067-dependabot-als-hebender-kanal.md) | **Dependabot als hebender Kanal — mit Kennung statt mit Gate-Ausnahme** — `gomod` und `github-actions`, **nicht** `docker` (Digest-Pins). Die Traceability-Kollision ist **vor** der Konfiguration gemessen und ohne Lockerung gelöst: die ADR-Kennung steht im `commit-message.prefix`, `commits.exempt-pattern` bleibt unverändert | Accepted | 2026-08-28 | — |
