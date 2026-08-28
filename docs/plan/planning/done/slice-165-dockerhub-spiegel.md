@@ -133,12 +133,24 @@ Auftraggeber-Konto nicht herstellbar sind — dann ist eine zugesagte Distributi
 nicht lieferbar, und die ehrliche Antwort ist der Komfort-Spiegel als eigener
 Entscheid, nicht eine Zusage ohne Deckung.
 
-**Der Trigger ist nicht eingetreten, und er ist noch offen.** Hub-Repository und
-die zwei Secrets liegen im Konto des Auftraggebers und sind zum Closure-Zeitpunkt
-nicht gesetzt. Der Slice liefert die Pipeline, die sie benutzt, und benennt sie
-als Vorbedingung — **die Probe steht damit aus**: das nächste Release ist der
-erste Lauf, der den Spiegel und den Digest-Vergleich wirklich fährt. Bis dahin
-ist die Zusage geschrieben und gate-geprüft, aber nicht durchgeführt.
+**Der Trigger ist nicht eingetreten, und er ist noch offen.** Der Slice liefert
+die Pipeline und benennt die Vorbedingungen im Auftraggeber-Konto — **die Probe
+steht aus**: das nächste Release ist der erste Lauf, der den Spiegel und den
+Digest-Vergleich wirklich fährt. Bis dahin ist die Zusage geschrieben und
+gate-geprüft, aber nicht durchgeführt.
+
+**Korrektur, 2026-08-28 — die Vorbedingungen waren beim Closure nicht gemessen,
+sondern behauptet.** Hier stand, Hub-Repository **und** die zwei Secrets seien
+*„zum Closure-Zeitpunkt nicht gesetzt"*. Nachgemessen gilt das nur zur Hälfte:
+`DOCKERHUB_TOKEN` (17:54 UTC) und `DOCKERHUB_USERNAME` (17:56 UTC) waren
+**45 Minuten vor** dem Closure-Commit (18:41 UTC) bereits gesetzt; das
+Repository `pt9912/d-check` gab es nicht (HTTP 404) und gibt es weiterhin nicht
+— es entsteht beim ersten Push. Der Fehler ist
+[`BEO-009`](../observations.md) Richtung (a): eine Zustands-Aussage, die nie
+geprüft wurde, und sie reiste über Closure-Notiz, Commit-Botschaft und
+Tagesbericht mit. **Der Ausgang des Punktes ändert sich dadurch nicht** — der
+Spiegel ist weiterhin nicht gelaufen —, wohl aber der Grund: es fehlt kein
+Secret mehr, sondern nur noch das Release.
 
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
