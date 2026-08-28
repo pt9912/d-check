@@ -11,14 +11,17 @@
   `next`→`in-progress`) — wie das `**Verantwortlich:**`-Feld; ein Plan in
   `open/` trägt ihn noch nicht. Kein
   Retrofit: die geschlossenen Slices bleiben, wie sie sind.
-- **Adaption:** Dieses Repo betreibt einen Nachtlauf über **zwölf** gepinnte
-  Fremd-Bestände ([`upstream-drift.yml`](../../.github/workflows/upstream-drift.yml)).
-  Er meldet korrekt — und **an niemanden**: der Job fällt rot aus und ist nur
-  in der Actions-Übersicht sichtbar. Der Workflow-Kopf trägt die Lücke seit
-  seiner Erweiterung als benannte Grenze; sie ist damit alt, aber nicht
-  geschlossen.
-
-  **Die Regel benennt zuerst den Adressaten, dann den Takt.** Adressat ist der
+- **Adaption:** Dieses Repo betreibt **zwei** Nachtläufe: einen über zwölf
+  gepinnte Fremd-Bestände
+  ([`upstream-drift.yml`](../../.github/workflows/upstream-drift.yml)) und
+  seit [ADR-0066](../../docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md)
+  den CVE-Scan gegen die publizierten Images
+  ([`image-scan.yml`](../../.github/workflows/image-scan.yml)). `make
+  nightly-state` liest **beide** — ein zweiter Nachtlauf ohne Eintrag dort
+  machte diesen Lese-Schritt zur Hälfte blind. Beide melden korrekt und **an
+  niemanden**: die Jobs fallen rot aus und sind nur in der Actions-Übersicht
+  sichtbar. Die Workflow-Köpfe tragen die Lücke als benannte Grenze; sie ist
+  damit alt, aber nicht geschlossen.
   **Rolleninhaber der Implementer-Rolle beim Planen des nächsten Slice** —
   nicht „das Team" und nicht „wer hinsieht". Takt ist **jede Slice-Planung**,
   als dritter `**Vorgelagert**`-Block neben den zwei des Kanons. Der Moment ist

@@ -14,11 +14,12 @@ name: image-scan
 # `workflow_dispatch` ist Pflicht, nicht Komfort: ein Workflow, der nur an einem
 # seltenen Ereignis haengt, wird erst im Ernstfall auf die Probe gestellt.
 #
-# BETRIEBS-GRENZE, gemessen: die Abtastrate von `schedule` ist unzuverlaessig.
-# Die vier Laeufe des Nachbar-Nachtlaufs vom 24.-27.08.2026 starteten +79, +75,
-# +81 und +589 Minuten nach ihrem Cron. Ein "nightly" ist eine Abtastung, keine
-# Zusage. GitHub schaltet `schedule` in inaktiven Repos zudem nach 60 Tagen ab —
-# ein still abgeschalteter Nachtlauf sieht aus wie ein gruener.
+# BETRIEBS-GRENZE: die Abtastrate von `schedule` ist unzuverlaessig -- ein
+# "nightly" ist eine Abtastung, keine Zusage. Die Messung dazu steht in
+# ADR-0066 (§Konsequenzen), wo sie ein Datum und einen Ort hat; hier stuende
+# sie als Schnappschuss ohne Pfleger. GitHub schaltet `schedule` in inaktiven
+# Repos zudem nach 60 Tagen ab -- ein still abgeschalteter Nachtlauf sieht aus
+# wie ein gruener.
 
 on:
   schedule:
@@ -43,9 +44,15 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # Kein `continue-on-error`: der Schritt endet immer mit 0 und meldet
-      # seinen Ausgang ueber `status`. `outcome` kennt nur success/failure und
-      # koennte "Scan gescheitert" (2) nicht von "Befunde gefunden" (1)
-      # trennen — genau die Unterscheidung, fuer die das Skript gebaut ist.
+      # seinen Ausgang ueber `status`.
+      #
+      # DER AUSGANG WIRD AUS DEM LOG GELESEN, NICHT AUS DEM EXIT-CODE — und das
+      # ist keine Bequemlichkeit: GNU Make normalisiert JEDEN fehlgeschlagenen
+      # Recipe auf seinen eigenen Exit 2. `make image-scan` liefert deshalb nur
+      # 0 oder 2; die Drei-Code-Semantik des Skripts (0 sauber / 1 behebbare
+      # Befunde / 2 Scan gescheitert) ueberlebt die make-Grenze nicht. Wer hier
+      # `rc` auswertet, meldet vierzehn gemessene Befunde als "Scan
+      # gescheitert". Gemessen: Skript 1, `make` 2.
       - name: make image-scan
         id: scan
         run: |
@@ -54,11 +61,17 @@ jobs:
           rc=0
           make image-scan 2>&1 | tee .tmp/security/image-scan.log || rc=$?
           echo "rc=$rc" >> "$GITHUB_OUTPUT"
-          case "$rc" in
-            0) echo "status=clean"    >> "$GITHUB_OUTPUT" ;;
-            1) echo "status=findings" >> "$GITHUB_OUTPUT" ;;
-            *) echo "status=error"    >> "$GITHUB_OUTPUT" ;;
-          esac
+          if grep -q 'GESCHEITERT' .tmp/security/image-scan.log; then
+            echo "status=error" >> "$GITHUB_OUTPUT"
+          elif grep -q 'behebbare CRITICAL/HIGH-Befunde' .tmp/security/image-scan.log; then
+            echo "status=findings" >> "$GITHUB_OUTPUT"
+          elif [ "$rc" -ne 0 ]; then
+            # Nicht-null ohne Skript-Marker: der Lauf ist gar nicht bis zur
+            # Auswertung gekommen (Docker fehlt, make bricht vorher ab).
+            echo "status=error" >> "$GITHUB_OUTPUT"
+          else
+            echo "status=clean" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Bericht ins Job-Summary
         if: always()

@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy
+.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der

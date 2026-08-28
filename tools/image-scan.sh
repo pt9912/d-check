@@ -20,15 +20,27 @@
 #
 # GRENZE: kein Docker-Socket. Trivy liest die Images aus der Registry; fuer
 # publizierte Bilder braucht es ihn nicht, und ein gemounteter Socket waere ein
-# Host-Root-Pfad fuer ein Werkzeug, das ihn nicht noetig hat.
+# Host-Root-Pfad fuer ein Werkzeug, das ihn nicht noetig hat. Ein LOKAL gebautes
+# Bild ist damit ueber dieses Skript NICHT scanbar.
 #
-# GRENZE: das Runtime-Image ist `distroless/static` plus statisches Go-Binary --
-# es gibt praktisch keine OS-Paket-Flaeche. Der Fund-Raum ist die Go-Build-Info
-# des Binaries. Ein gruener Lauf sagt "nichts Bekanntes in diesem Raum", nicht
-# "das Image ist sicher".
+# GRENZE, gemessen: das Runtime-Image ist `distroless/static` plus statisches
+# Go-Binary. Trivy erkennt darin FUENF OS-Pakete (debian) und EINE
+# sprachspezifische Datei, das Go-Binary. Der Fund-Raum ist damit praktisch die
+# Go-Modul-Liste; die OS-Flaeche ist klein, aber NICHT leer. Ein gruener Lauf
+# sagt "nichts Bekanntes in diesem Raum", nicht "das Image ist sicher".
+#
+# GRENZE: der Zaehl-Pfad prueft, ob Trivys Template ZEILEN liefert -- nicht, ob
+# die Feldnamen (`.Vulnerabilities`, `.Severity`, `.FixedVersion`) noch heissen
+# wie hier notiert. Benennt Trivy sie um, rendert das Template nichts, und das
+# saehe aus wie ein sauberes Bild. Der Digest-Pin haelt das still, solange er
+# steht; `--selftest` deckt die Auswertung, nicht die Feldnamen.
 #
 # Exit-Codes: 0 = keine behebbaren CRITICAL/HIGH, 1 = solche gefunden,
-#             2 = Scan gescheitert (Registry, DB, Image).
+#             2 = Scan gescheitert oder Pruefmenge leer.
+# ACHTUNG: das sind die Codes des SKRIPTS. `make image-scan` normalisiert jeden
+# fehlgeschlagenen Recipe auf make-Exit 2 -- ueber `make` sind 1 und 2 nicht
+# unterscheidbar. Wer den Ausgang braucht, liest die AUSGABE oder ruft das
+# Skript direkt.
 set -uo pipefail
 
 # Digest-Pin (ADR-0011): Tag bleibt lesbar, der @sha256:-Digest ist die
@@ -43,14 +55,63 @@ IMAGE_SCAN_REFS="${IMAGE_SCAN_REFS:-ghcr.io/pt9912/d-check:latest}"
 
 # Cache ausserhalb des Repos, wie das Regelset von `semgrep` (ADR-0010): der
 # Arbeitsbaum bleibt sauber, und `git status` meldet keine Werkzeug-Artefakte.
-CACHE="${TRIVY_CACHE:-$HOME/.cache/d-check/trivy}"
-mkdir -p "$CACHE"
+# `XDG_CACHE_HOME` wird geehrt wie dort -- gleiche Klasse, gleiche Form.
+CACHE="${TRIVY_CACHE:-${XDG_CACHE_HOME:-$HOME/.cache}/d-check/trivy}"
 
 # Eine Zeile je Befund plus ein zaehlbarer Marker -- Trivys eigenes
 # Template-Format statt eines JSON-Parsers. Ein Fremd-Interpreter waere eine
-# vierte Toolchain (AGENTS.md §3.1, MR-040).
+# vierte Toolchain (AGENTS.md §3.1).
 TPL='{{ range . }}{{ range .Vulnerabilities }}FINDING {{ .Severity }} {{ .PkgName }} {{ .InstalledVersion }} -> fix {{ .FixedVersion }} {{ .VulnerabilityID }}
 {{ end }}{{ end }}'
+
+# Die Auswertung als eigene Funktion, damit sie NETZLOS pruefbar ist -- wie
+# `pin-freshness.sh --compare` und `nightly-state.sh --parse`. Ohne diesen
+# Einstieg waere die Semantik nur mit Netz zu pruefen und damit gar nicht.
+zaehle() {
+  # `grep -c` liefert 1, wenn nichts passt -- deshalb `|| true`, sonst risse
+  # der Zaehl-Pfad den Lauf ab und ein SAUBERES Image saehe aus wie ein Fehler.
+  printf '%s' "$1" | grep -c '^FINDING ' || true
+}
+
+if [ "${1:-}" = "--selftest" ]; then
+  echo "image-scan: Selbsttest der Auswertung (netzlos)"
+  fails=0
+  probe() {
+    local name="$1" eingabe="$2" erwartet="$3" got
+    got="$(zaehle "$eingabe")"
+    if [ "$got" = "$erwartet" ]; then
+      printf '  ok   %-34s %s\n' "$name" "$erwartet"
+    else
+      printf '  FAIL %-34s erwartet %s, war: %s\n' "$name" "$erwartet" "$got"
+      fails=$((fails + 1))
+    fi
+  }
+  probe "leere Ausgabe"            ''                                                 '0'
+  probe "nur Leerzeile"            '
+'                                                                                     '0'
+  probe "ein Befund"               'FINDING HIGH x/net v0.1 -> fix 0.2 CVE-1'          '1'
+  probe "zwei Befunde"             'FINDING HIGH a v1 -> fix 2 CVE-1
+FINDING CRITICAL b v3 -> fix 4 CVE-2'                                                 '2'
+  probe "Marker nur am Zeilenende" 'xx FINDING HIGH a v1 -> fix 2 CVE-1'              '0'
+  probe "Trivy-Warnzeile dazwischen" 'WARN irgendwas
+FINDING HIGH a v1 -> fix 2 CVE-1'                                                     '1'
+  probe "Feldnamen leer gerendert" 'FINDING    ->  fix  '                             '1'
+  echo
+  echo "== Fehlschlaege: $fails"
+  [ "$fails" -eq 0 ]
+  exit $?
+fi
+
+# Fail-closed bei leerer Pruefmenge — dieselbe Norm wie `make workflow-pins`
+# (AGENTS.md §4). Der Default oben faengt eine LEERE Variable, nicht eine, die
+# nur Leerraum traegt; ohne diese Pruefung liefe die Schleife nullmal und der
+# Schluss-echo behauptete Sauberkeit ueber eine nie besuchte Menge.
+if [ -z "$(printf '%s' "${IMAGE_SCAN_REFS}" | tr -d '[:space:]')" ]; then
+  echo "image-scan: IMAGE_SCAN_REFS ist leer — nichts zu pruefen ist KEIN gruener Befundstand." >&2
+  exit 2
+fi
+
+mkdir -p "$CACHE"
 
 trivy() {
   docker run --rm \
@@ -88,9 +149,7 @@ for ref in ${IMAGE_SCAN_REFS}; do
     continue
   fi
 
-  # `grep -c` liefert 1, wenn nichts passt -- deshalb `|| true`, sonst risse
-  # der Zaehl-Pfad den Lauf ab und ein SAUBERES Image saehe aus wie ein Fehler.
-  count="$(printf '%s' "${out}" | grep -c '^FINDING ' || true)"
+  count="$(zaehle "${out}")"
   if [ "${count}" = "0" ]; then
     echo "OK — keine behebbaren CRITICAL/HIGH in ${ref}."
   else
