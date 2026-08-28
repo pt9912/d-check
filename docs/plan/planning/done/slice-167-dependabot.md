@@ -87,11 +87,16 @@ einmal geschnitten worden
       Regel als Verbot statt als Verfahrenspflicht.
 - [x] `make gates` und `make ci` grün (Exit explizit); unabhängiger Review,
       Urteil *„schließbar nach Nacharbeit"*, neun Befunde eingearbeitet.
-- [ ] **Nicht erfüllt und nicht erfüllbar durch diesen Slice:** die zweite
-      Hälfte des Kanals ist ein **Repository-Schalter**, keine Datei.
-      Dependabot-Alerts und Security-Updates sind aus (gemessen); ohne sie
-      öffnet ein CVE ohne neues Upstream-Release keinen PR. Als Vorbedingung in
-      [`releasing.md`](../../../../docs/user/releasing.md) benannt.
+- [x] **Beim Closure nicht erfüllt, kurz danach erledigt:** die zweite Hälfte
+      des Kanals ist ein **Repository-Schalter**, keine Datei. Beim Schließen
+      des Slice waren Dependabot-Alerts und Security-Updates **aus** (gemessen);
+      ohne sie öffnet ein CVE ohne neues Upstream-Release keinen PR. **Nachtrag
+      2026-08-28:** auf Weisung des Auftraggebers eingeschaltet (`gh api -X PUT`), nachgemessen
+      `automated-security-fixes` `enabled:true`, `vulnerability-alerts` HTTP 204,
+      und `dependabot/alerts` meldet **0**, was den CVE-Scan unabhängig
+      bestätigt. Der Haken steht damit nachträglich, und die Vorbedingung bleibt
+      in [`releasing.md`](../../../../docs/user/releasing.md) — für Forks und
+      Neuaufsetzungen.
 
 ## 5. Abnahme-Punkte / Risiken
 

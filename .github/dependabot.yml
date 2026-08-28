@@ -14,12 +14,13 @@
 # entstehen. `commits.exempt-pattern` bleibt UNVERAENDERT: die Loesung macht die
 # neue Commit-Klasse gate-KONFORM, statt sie auszunehmen.
 #
-# GRENZE, gemessen und nicht behoben: dieser Kanal erreicht die Fundklasse des
-# Sensors nur zur Haelfte. Die zweite Haelfte ist ein REPO-SETTING, keine Datei
-# -- `dependabot_security_updates` und die Dependabot-Alerts sind abgeschaltet
-# (gemessen: automated-security-fixes {"enabled":false}, vulnerability-alerts
-# HTTP 404). Ohne sie oeffnet ein CVE ohne neues Upstream-Release keinen PR.
-# Siehe docs/user/releasing.md §Vorbedingungen.
+# KOPPLUNG zwei, und sie ist KEINE Datei: der Kanal erreicht die Fundklasse des
+# Sensors nur zur Haelfte, wenn die Repository-Schalter aus sind --
+# `dependabot_security_updates` und die Dependabot-Alerts. Ohne sie oeffnet ein
+# CVE ohne neues Upstream-Release keinen PR. Seit 2026-08-28 sind beide AN
+# (gemessen: automated-security-fixes {"enabled":true}, vulnerability-alerts
+# HTTP 204). Wer dieses Repo forkt, setzt sie erneut -- siehe
+# docs/user/releasing.md §Vorbedingungen.
 #
 # ABGRENZUNG: kein Automerge. Dependabot oeffnet PRs; geprueft wird mit
 # `make ci`, und der Merge bleibt ein Akt -- dieselbe Linie wie bei den

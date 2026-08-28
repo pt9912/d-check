@@ -122,12 +122,12 @@ GHCR-Push. Der Abbruch nennt dann den bereits veröffentlichten GHCR-Digest.
 - **Zwei Repository-Einstellungen für den Dependabot-Kanal**
   ([ADR-0067](../plan/adr/0067-dependabot-als-hebender-kanal.md)):
   **Dependabot-Alerts** und **Dependabot-Security-Updates**. Sie stehen in
-  keiner Datei — sie sind Schalter im Repository. **Gemessen am 2026-08-28: beide
-  aus** (`automated-security-fixes` meldet `enabled:false`,
-  `vulnerability-alerts` antwortet HTTP 404). Ohne sie öffnet ein CVE, für das
-  es kein neues Upstream-Release gibt, **keinen** PR — der Kanal trägt dann nur
-  die gewöhnlichen Versions-Updates. Das ist der Unterschied zwischen *„hebt,
-  was veraltet ist"* und *„hebt, was verwundbar ist"*.
+  keiner Datei — sie sind Schalter im Repository. **Seit 2026-08-28 beide an**
+  (`automated-security-fixes` meldet `enabled:true`, `vulnerability-alerts`
+  HTTP 204); davor waren sie aus, und der Kanal hob nur, was **veraltet** war,
+  nicht was **verwundbar** ist. Wer dieses Repo forkt oder neu aufsetzt, setzt
+  sie erneut: ohne sie öffnet ein CVE, für das es kein neues Upstream-Release
+  gibt, **keinen** PR.
 - Optional die Repository-Variable `DOCKERHUB_IMAGE`, falls ein Fork woandershin
   spiegeln soll; ohne sie gilt `pt9912/d-check`.
 
