@@ -317,6 +317,16 @@ Jeder `uses:`-Eintrag in [`.github/workflows/`](.github/workflows) nennt einen
 **vollen Commit-SHA** mit Tag-Kommentar dahinter, nie einen beweglichen Tag.
 Das gilt für jeden Workflow gleich und für jeden Neuzugang.
 
+**Eine Ausnahme, und sie ist keine Lockerung:** eine **lokale**
+Workflow-Referenz (`uses: ./.github/workflows/x.yml`) kann keinen SHA tragen und
+**braucht keinen**. Sie löst auf denselben Commit auf wie der aufrufende
+Workflow und ist damit **stärker** gebunden als ein SHA-Pin — sie kann per
+Konstruktion nicht driften. Der Zweck der Regel ist hier ohne Pin erfüllt.
+Die Ausnahme gilt **nur** dem `./`-Präfix; eine Referenz in ein fremdes
+Repository (`owner/repo/.github/workflows/x.yml@ref`) fällt unter die Regel wie
+jede Action. `make workflow-pins` zählt lokale Referenzen aus und **weist sie in
+seiner Erfolgsmeldung aus**, statt sie stillschweigend zu übergehen.
+
 **Begründung:** Supply-Chain-Härtung — ein Tag lässt sich umhängen, ein SHA
 nicht; dieselbe Härtung wie der Docker/make-only-Pfad in §3.1.
 

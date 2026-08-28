@@ -1,0 +1,111 @@
+name: hub-description
+
+# Setzt Kurztext und Overview-Seite von `pt9912/d-check` auf Docker Hub aus
+# `packaging/dockerhub/` (DC-FA-DIST-002, ADR-0065 Punkt 5).
+#
+# WARUM EIGENSTAENDIG UND NICHT NUR IM RELEASE: die Synchronisation hing bis
+# v0.65.0 ausschliesslich an einem `v*`-Tag — und ist genau deshalb still
+# gescheitert (`Forbidden`, Token-Scope zu eng), ohne dass jemand sie vorher
+# haette proben koennen. `workflow_dispatch` ist hier Pflicht, nicht Komfort:
+# ein Workflow, der nur an einem seltenen Ereignis haengt, wird erst im
+# Ernstfall auf die Probe gestellt.
+#
+# ZWEI EINGAENGE, EINE MECHANIK: `workflow_call` ruft der Release-Workflow mit
+# der Tag-Version; `workflow_dispatch` liest die Version aus `version.md`
+# §Aktuell — derselben Quelle, gegen die das Modul `versions` die `ghcr`-Pins
+# haelt. Die Logik steht damit an EINEM Ort; zwei Kopien wuerden driften.
+#
+# ABGRENZUNG: dieser Workflow beruehrt kein Image. Er setzt Text. Ein
+# Fehlschlag macht deshalb nichts rot, was ausgeliefert ist — er meldet.
+
+on:
+  workflow_dispatch:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version fuer __VERSION__ (z. B. v0.65.0). Leer = aus version.md'
+        required: false
+        type: string
+
+permissions: {}
+
+jobs:
+  sync:
+    name: Hub-Darstellung setzen
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Metadaten vorbereiten
+        id: hubmeta
+        env:
+          VERSION_IN: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          SRC="packaging/dockerhub/description.txt"
+          OVW="packaging/dockerhub/overview.md"
+          test -f "$SRC" || { echo "::error::$SRC fehlt."; exit 1; }
+          test -f "$OVW" || { echo "::error::$OVW fehlt."; exit 1; }
+
+          VERSION="${VERSION_IN}"
+          if [ -z "$VERSION" ]; then
+            # Dieselbe Quelle, gegen die `versions` die ghcr-Pins haelt.
+            VERSION="$(sed -n 's/^Aktuelle Version: \[`\(v[0-9][0-9.]*\)`\].*/\1/p' version.md | head -1)"
+          fi
+          [ -n "$VERSION" ] || { echo "::error::Version weder als Eingabe noch aus version.md ermittelbar."; exit 1; }
+
+          DESC="$(head -n 1 "$SRC")"
+          [ -n "$DESC" ] || { echo "::error::$SRC ist leer."; exit 1; }
+          # Docker Hub misst ZEICHEN, nicht Bytes. Die Repo-Invariante prueft
+          # `make gates`; hier steht der zweite Riegel unmittelbar vor dem
+          # Upload, wo ein stilles Abschneiden entstuende.
+          n="$(printf '%s' "$DESC" | wc -m)"
+          [ "$n" -le 100 ] || { echo "::error::$SRC ist $n Zeichen lang, Docker Hub erlaubt 100."; exit 1; }
+
+          # Fehlt der Platzhalter, zeigte die Hub-Seite eine versionslose
+          # Anleitung — das soll auffallen, nicht durchrutschen.
+          grep -q '__VERSION__' "$OVW" || { echo "::error::$OVW enthaelt kein __VERSION__."; exit 1; }
+
+          echo "description=$DESC" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          sed "s/__VERSION__/${VERSION}/g" "$OVW" > /tmp/dockerhub-overview.md
+          echo "Version fuer die Hub-Seite: ${VERSION}"
+
+      - name: Beschreibung hochladen
+        id: hubdesc
+        continue-on-error: true
+        uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ vars.DOCKERHUB_IMAGE || 'pt9912/d-check' }}
+          short-description: ${{ steps.hubmeta.outputs.description }}
+          readme-filepath: /tmp/dockerhub-overview.md
+
+      # `continue-on-error` setzt `conclusion: success`, laesst `outcome` aber
+      # auf `failure`. Ohne diesen Schritt versickert ein abgelehnter PATCH im
+      # Log: der Lauf ist gruen, die Hub-Seite leer, und niemand erfaehrt es.
+      # Genau so beim ersten Spiegel-Lauf (v0.65.0).
+      - name: Ausgang melden
+        if: always()
+        env:
+          OUTCOME: ${{ steps.hubdesc.outcome }}
+          VERSION: ${{ steps.hubmeta.outputs.version }}
+        run: |
+          set -euo pipefail
+          if [ "$OUTCOME" = "success" ]; then
+            echo "hub-description: gesetzt (Version ${VERSION})."
+            echo "### Hub-Darstellung gesetzt (${VERSION})" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "::warning title=Hub-Beschreibung nicht gesetzt::Der PATCH an die Docker-Hub-API wurde abgelehnt. Ein etwaiges Image ist davon unberuehrt; nur Kurztext und Overview-Seite fehlen. Haeufigste Ursache: DOCKERHUB_TOKEN traegt Scope read/write statt read/write/delete (der Scope laesst sich am bestehenden Token aendern). Siehe docs/user/releasing.md §Vorbedingungen."
+          {
+            echo "### Hub-Darstellung NICHT gesetzt"
+            echo ""
+            echo "Der \`PATCH\` wurde abgelehnt. Pruefe den Scope von \`DOCKERHUB_TOKEN\`."
+          } >> "$GITHUB_STEP_SUMMARY"

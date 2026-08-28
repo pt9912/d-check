@@ -47,6 +47,7 @@ fi
 
 findings=0
 checked=0
+local_refs=0
 
 while IFS= read -r hit; do
   file="${hit%%:*}"
@@ -54,6 +55,20 @@ while IFS= read -r hit; do
   line="${rest%%:*}"
   text="${rest#*:}"
   checked=$((checked + 1))
+
+  # LOKALE Workflow-Referenz (`uses: ./.github/workflows/x.yml`): sie kann
+  # keinen SHA tragen und BRAUCHT keinen. Sie loest auf denselben Commit auf
+  # wie der aufrufende Workflow und ist damit staerker gebunden als ein
+  # SHA-Pin -- sie kann per Konstruktion nicht driften. Der Zweck von §3.9
+  # (keine beweglichen Referenzen) ist hier ohne Pin erfuellt.
+  #
+  # ABGRENZUNG: das gilt NUR fuer den `./`-Praefix. Eine Referenz auf einen
+  # anderen Repo-Pfad (`owner/repo/.github/workflows/x.yml@ref`) ist fremd und
+  # faellt unter die Regel wie jede Action.
+  if printf '%s' "$text" | grep -qE 'uses:[[:space:]]*\./'; then
+    local_refs=$((local_refs + 1))
+    continue
+  fi
 
   # Form: <ref>@<40 Hex> gefolgt von einem Kommentar, der den Tag nennt.
   if ! printf '%s' "$text" | grep -qE '@[0-9a-f]{40}([[:space:]]|$)'; then
@@ -77,4 +92,4 @@ if [ "$findings" -gt 0 ]; then
   exit 1
 fi
 
-echo "workflow-pins: ok (${checked} uses:-Einträge, alle SHA-gepinnt mit Tag-Kommentar)"
+echo "workflow-pins: ok (${checked} uses:-Einträge geprüft, davon ${local_refs} lokale Referenz(en) ohne Pin-Pflicht; alle übrigen SHA-gepinnt mit Tag-Kommentar)"
