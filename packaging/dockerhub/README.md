@@ -23,14 +23,18 @@ ein Artefakt von `continue-on-error`** — der Schritt darf das Release nicht ro
 machen (das ist gewollt, [ADR-0065](../../docs/plan/adr/0065-spiegel-gleichheit-ist-der-config-digest.md)
 Punkt 5), aber er verschluckt dabei auch die Meldung, dass er nichts bewirkt hat.
 
-**Die Ursache ist nicht gemessen, nur eingegrenzt.** Der Push desselben Tokens
-funktioniert (das Bild liegt auf Docker Hub); abgelehnt wird nur der
-Metadaten-`PATCH`. Naheliegend ist der **Scope des Access-Tokens** — im
-Schwester-Repo `pt9912/d-migrate` setzt dieselbe Action ihre Beschreibung
-erfolgreich. Wer das prüft, prüft es im Docker-Hub-Konto, nicht hier.
+**Die Ursache ist belegt.** Der Push desselben Tokens funktioniert (das Bild
+liegt auf Docker Hub); abgelehnt wird nur der Metadaten-`PATCH`. Die Action
+verlangt dafür einen anderen Scope als der Push: *„Docker Hub password or
+Personal Access Token with `read/write/delete` scope"* — ein Token mit
+`read/write` pusht, darf die Beschreibung aber nicht ändern. Im Schwester-Repo
+`pt9912/d-migrate` setzt dieselbe Action ihre Beschreibung erfolgreich; dort
+trägt das Token den weiteren Scope.
 
-**Bis dahin gilt:** beide Felder sind **manuell** zu setzen, aus genau diesen
-zwei Dateien. Der Inhalt ist damit weiter reviewbar; nur der Transport fehlt.
+**Behebung:** ein Docker-Hub-Token mit `read/write/delete` anlegen — der Scope
+ist nach dem Anlegen **nicht änderbar** — und `DOCKERHUB_TOKEN` ersetzen. Bis
+dahin sind beide Felder **manuell** zu setzen, aus genau diesen zwei Dateien.
+Der Inhalt ist damit weiter reviewbar; nur der Transport fehlt.
 
 ## Category
 

@@ -109,8 +109,16 @@ GHCR-Push. Der Abbruch nennt dann den bereits veröffentlichten GHCR-Digest.
 - **Repository** `pt9912/d-check` auf Docker Hub. Es entsteht beim ersten Push;
   Sichtbarkeit (öffentlich) und Beschreibung setzt der Betreiber dort.
 - **Zwei Secrets** im GitHub-Repository: `DOCKERHUB_USERNAME` und
-  `DOCKERHUB_TOKEN` (ein Access-Token mit Schreibrecht, **nicht** das
-  Konto-Passwort).
+  `DOCKERHUB_TOKEN` — ein Access-Token, **nicht** das Konto-Passwort.
+  **Scope `read/write/delete`, nicht nur `read/write`.** Der Spiegel-Push
+  gelingt schon mit `read/write`; der **Metadaten-PATCH** der
+  Beschreibungs-Seite nicht — er wird mit `Forbidden` abgelehnt, und weil der
+  Schritt `continue-on-error` trägt, bleibt das Release grün und die Seite
+  leer. Gemessen beim ersten Spiegel-Lauf (`v0.65.0`); die Anforderung steht in
+  der Action-Doku (*„Docker Hub password or Personal Access Token with
+  `read/write/delete` scope"*). Der Scope eines Docker-Hub-Tokens ist **nach
+  dem Anlegen nicht änderbar** — bei zu engem Scope ein neues anlegen und das
+  Secret ersetzen.
 - Optional die Repository-Variable `DOCKERHUB_IMAGE`, falls ein Fork woandershin
   spiegeln soll; ohne sie gilt `pt9912/d-check`.
 
