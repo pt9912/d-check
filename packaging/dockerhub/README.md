@@ -18,10 +18,17 @@ deshalb steht die Entscheidung hier als Text, statt still im UI zu leben.
 
 Beim Release `v0.65.0` (Run 33139273535) meldete der Schritt `success`, sein Log
 aber `##[error]Forbidden` beim `PATCH` an die Docker-Hub-API. Die API bestätigt
-es: `description` ist leer, `full_description` fehlt ganz. **Der `success` ist
-ein Artefakt von `continue-on-error`** — der Schritt darf das Release nicht rot
-machen (das ist gewollt, [ADR-0065](../../docs/plan/adr/0065-spiegel-gleichheit-ist-der-config-digest.md)
-Punkt 5), aber er verschluckt dabei auch die Meldung, dass er nichts bewirkt hat.
+es: `description` ist leer, `full_description` fehlt ganz.
+
+**Der `success` war ein Artefakt von `continue-on-error`** — der Schritt darf
+das Release nicht rot machen (das ist gewollt,
+[ADR-0065](../../docs/plan/adr/0065-spiegel-gleichheit-ist-der-config-digest.md)
+Punkt 5), aber er verschluckte dabei auch die Meldung, dass er nichts bewirkt
+hat. **Ab dem nächsten Release verschluckt er sie nicht mehr** — der Melder ist nach v0.65.0 entstanden und hat damit noch keinen Lauf gesehen: ein Folgeschritt liest
+`steps.hubdesc.outcome` — `continue-on-error` setzt `conclusion: success`, lässt
+`outcome` aber auf `failure` — und setzt eine **Warnung** mit der wahrscheinlichen
+Ursache. Warnung, nicht Fehler: das Release soll an der Darstellung nicht
+scheitern, nur nicht schweigen.
 
 **Die Ursache ist belegt.** Der Push desselben Tokens funktioniert (das Bild
 liegt auf Docker Hub); abgelehnt wird nur der Metadaten-`PATCH`. Die Action

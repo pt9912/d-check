@@ -256,6 +256,7 @@ jobs:
           sed "s/__VERSION__/v$VERSION/g" "$OVW" > /tmp/dockerhub-overview.md
 
       - name: Sync Docker Hub description
+        id: hubdesc
         if: steps.hubmeta.outcome == 'success'
         continue-on-error: true
         uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
@@ -265,6 +266,20 @@ jobs:
           repository: ${{ vars.DOCKERHUB_IMAGE || 'pt9912/d-check' }}
           short-description: ${{ steps.hubmeta.outputs.description }}
           readme-filepath: /tmp/dockerhub-overview.md
+
+      # `continue-on-error` setzt `conclusion: success`, aber `outcome` bleibt
+      # `failure`. Ohne diesen Schritt versickert ein abgelehnter PATCH im Log:
+      # der Lauf ist gruen, die Hub-Seite leer, und niemand erfaehrt es. Genau
+      # so passiert beim ersten Spiegel-Lauf (v0.65.0) -- `Forbidden`, weil der
+      # Token-Scope `read/write` statt `read/write/delete` trug.
+      #
+      # ABGRENZUNG: `warning`, nicht `error`. Das Release soll an der
+      # DARSTELLUNG nicht scheitern (ADR-0065 Punkt 5) -- es soll nur nicht
+      # schweigen.
+      - name: Hub-Darstellung — Ausgang melden
+        if: always() && steps.hubdesc.outcome == 'failure'
+        run: |
+          echo "::warning title=Hub-Beschreibung nicht gesetzt::Der PATCH an die Docker-Hub-API wurde abgelehnt. Das Bild IST gespiegelt; nur Kurztext und Overview-Seite fehlen. Haeufigste Ursache: DOCKERHUB_TOKEN traegt Scope read/write statt read/write/delete (der Scope ist nach dem Anlegen nicht aenderbar). Siehe docs/user/releasing.md §Vorbedingungen."
 
       # GitHub-Release mit dem Digest-Pin in den Notes — der Pin ist
       # die Referenz, die Pilot-Repos (slice-012) konsumieren.
