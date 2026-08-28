@@ -38,10 +38,12 @@ Personal Access Token with `read/write/delete` scope"* — ein Token mit
 `pt9912/d-migrate` setzt dieselbe Action ihre Beschreibung erfolgreich; dort
 trägt das Token den weiteren Scope.
 
-**Behebung:** ein Docker-Hub-Token mit `read/write/delete` anlegen — der Scope
-ist nach dem Anlegen **nicht änderbar** — und `DOCKERHUB_TOKEN` ersetzen. Bis
-dahin sind beide Felder **manuell** zu setzen, aus genau diesen zwei Dateien.
-Der Inhalt ist damit weiter reviewbar; nur der Transport fehlt.
+**Behebung:** den Scope des bestehenden Tokens in der Docker-Hub-Oberfläche auf
+`read/write/delete` **ändern** — das geht ohne Neuanlage, der Token-Wert bleibt
+derselbe, und `DOCKERHUB_TOKEN` muss nicht ersetzt werden. Die Beschreibung
+setzt die Action dann beim **nächsten** Release; rückwirkend geschieht nichts.
+Bis dahin sind beide Felder **manuell** zu setzen, aus genau diesen zwei
+Dateien. Der Inhalt ist damit weiter reviewbar; nur der Transport fehlt.
 
 ## Category
 
