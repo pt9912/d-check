@@ -53,7 +53,7 @@ COPY . .
 RUN CGO_ENABLED=0 go build -o /tmp/d-check ./cmd/d-check
 
 # ---- lint ------------------------------------------------------------------
-FROM golangci/golangci-lint:${GOLANGCI_LINT_VERSION}@sha256:d371321370bf2907bd13a8f6f8baff0e0ca7438d76fdf636b281eadf7e2305e3 AS lint
+FROM golangci/golangci-lint:${GOLANGCI_LINT_VERSION}@sha256:ba07dffad130794ae79ebaa0056809d18c0168f3f846480ffd3eb6c04578b83d AS lint
 
 WORKDIR /src
 COPY --from=deps /go/pkg/mod /go/pkg/mod
