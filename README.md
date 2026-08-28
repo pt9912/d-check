@@ -215,15 +215,15 @@ spec, and both are measured, not asserted:
 ## Usage
 
 Distributed as a container image via GHCR
-([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)); from the
-first release after `v0.64.0` also mirrored to Docker Hub as `pt9912/d-check` —
+([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)); **since `v0.65.0`**
+also mirrored to Docker Hub as `pt9912/d-check` —
 the same image, not a second build, same **config** digest (the **manifest**
 digest is registry-local: when pinning by digest, use the one from the registry
 you pull from)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.65.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

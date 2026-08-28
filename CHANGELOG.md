@@ -6,6 +6,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
 ## [Unreleased]
 
+## [0.65.0] — 2026-08-28
+
 ### Security
 
 - slice-166 — **Vierzehn behebbare HIGH-CVEs im ausgelieferten Image behoben**

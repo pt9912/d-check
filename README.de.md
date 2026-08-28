@@ -218,15 +218,15 @@ Lastenhefts, und beide werden gemessen, nicht behauptet:
 ## Nutzung
 
 Verteilung als Container-Image über GHCR
-([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)); ab dem
-ersten Release nach `v0.64.0` zusätzlich nach Docker Hub gespiegelt als
+([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)); **seit `v0.65.0`**
+zusätzlich nach Docker Hub gespiegelt als
 `pt9912/d-check` — dasselbe Bild, kein zweiter Bau, gleicher **Config**-Digest
 (der **Manifest**-Digest ist registry-lokal: per Digest pinnt man den der
 Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.64.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.65.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
