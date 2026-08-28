@@ -317,15 +317,18 @@ Jeder `uses:`-Eintrag in [`.github/workflows/`](.github/workflows) nennt einen
 **vollen Commit-SHA** mit Tag-Kommentar dahinter, nie einen beweglichen Tag.
 Das gilt für jeden Workflow gleich und für jeden Neuzugang.
 
-**Eine Ausnahme, und sie ist keine Lockerung:** eine **lokale**
-Workflow-Referenz (`uses: ./.github/workflows/x.yml`) kann keinen SHA tragen und
-**braucht keinen**. Sie löst auf denselben Commit auf wie der aufrufende
-Workflow und ist damit **stärker** gebunden als ein SHA-Pin — sie kann per
-Konstruktion nicht driften. Der Zweck der Regel ist hier ohne Pin erfüllt.
-Die Ausnahme gilt **nur** dem `./`-Präfix; eine Referenz in ein fremdes
-Repository (`owner/repo/.github/workflows/x.yml@ref`) fällt unter die Regel wie
-jede Action. `make workflow-pins` zählt lokale Referenzen aus und **weist sie in
-seiner Erfolgsmeldung aus**, statt sie stillschweigend zu übergehen.
+**Eine Ausnahme, und sie ist keine Lockerung** ([ADR-0068](docs/plan/adr/0068-lokale-workflow-referenzen-ohne-pin.md)):
+eine **lokale** Workflow-Referenz (`uses: ./.github/workflows/x.yml`) kann keinen
+SHA tragen und **braucht keinen**. Sie löst auf denselben Commit auf wie der
+aufrufende Workflow und ist damit **stärker** gebunden als ein SHA-Pin — sie kann
+per Konstruktion nicht driften. **An die Stelle des Pin-Checks tritt die Frage,
+die hier trägt: existiert das Ziel?** Ein vertippter Verweis fiele sonst erst zur
+Laufzeit auf; `make workflow-pins` meldet ihn als `uses-local-missing`. Die
+Ausnahme lässt damit **keinen Eintrag ungeprüft**. Sie gilt **nur** dem
+`./`-Präfix; eine Referenz in ein fremdes Repository
+(`owner/repo/.github/workflows/x.yml@ref`) fällt unter die Regel wie jede
+Action. Die Zahl der lokalen Referenzen steht in der Erfolgsmeldung, statt
+stillschweigend übergangen zu werden.
 
 **Begründung:** Supply-Chain-Härtung — ein Tag lässt sich umhängen, ein SHA
 nicht; dieselbe Härtung wie der Docker/make-only-Pfad in §3.1.

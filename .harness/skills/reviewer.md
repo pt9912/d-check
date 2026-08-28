@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.12.0 · **Datum:** 2026-08-27 ·
+**Version:** 1.13.0 · **Datum:** 2026-08-28 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -54,7 +54,7 @@ sondern ausschließlich die Frage.
 
 ## Repo-spezifische Anker pro Kategorie (zweite Ebene: Begründung und Ausnahmen)
 
-- **HIGH** (blockiert Merge): Stilles-Grün-Pfad in einem Gate oder   <!-- d-check:cite AGENTS.md:341-342 -->
+- **HIGH** (blockiert Merge): Stilles-Grün-Pfad in einem Gate oder   <!-- d-check:cite AGENTS.md:344-345 -->
   Gate-Skript (Harness-Lüge — [`AGENTS.md`](../../AGENTS.md) §4: *„Halluzinierte
   Gates sind die häufigste Form von Harness-Lüge"*); Korrektheitsfehler in
   Kern-Modulen mit falschen Befunden/Exit-Codes (Baseline
@@ -69,7 +69,7 @@ sondern ausschließlich die Frage.
   Verworfenes oder Herkunfts-Prosa im Kommentar; Herkunft ist nur als
   **ein** auflösbares Feld zulässig
   ([Baseline §Was ein Kommentar trägt](../baseline/v5.12.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte);
-  neuer HIGH-Eintrag seit 1.5.0, Auflösungs-Trigger: permanent).
+  Auflösungs-Trigger: permanent).
   **Zustandsfeld trägt Chronik.** Eine `Stand`-/`Status`-Zelle (Roadmap,
   Beobachtungs-Register, Meilenstein-Tabelle) erzählt, **wie** der Zustand
   entstand, statt Zustand und Beleg als auflösbaren Anker zu nennen; oder ein
@@ -87,9 +87,8 @@ sondern ausschließlich die Frage.
   nimmt die Kopf-Status-Zeile aus dem Kern-Vergleich, sie darf korrigiert
   werden — bei einer **neuen** ADR gilt §3.7 ab dem ersten Schreiben
   ([Baseline §Was ein Kommentar trägt](../baseline/v5.12.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte),
-  *Dieselbe Regel für Zustandsfelder*; neuer HIGH-Eintrag seit 1.7.0,
-  Auflösungs-Trigger: permanent).
-- **MEDIUM** (neu seit 1.9.0, Auflösungs-Trigger: permanent):
+  *Dieselbe Regel für Zustandsfelder*; Auflösungs-Trigger: permanent).
+- **MEDIUM** (Auflösungs-Trigger: permanent):
   **Botschaft verallgemeinert über die Messung hinaus.** Eine Commit-Botschaft
   (oder Closure-Notiz) nennt korrekt gelaufene Proben und zieht daraus einen
   Schluss, der weiter reicht als die geprüfte Menge — „damit ist X
@@ -100,7 +99,7 @@ sondern ausschließlich die Frage.
   nur ihre Reichweite überdehnt ist. **Kein Gate fängt das.** Die Regel selbst
   steht in [`AGENTS.md`](../../AGENTS.md) §5; hier steht ihre Kategorie und die
   Arbeitsanweisung.
-- **MEDIUM** (neu seit 1.11.0, Auflösungs-Trigger: permanent):
+- **MEDIUM** (Auflösungs-Trigger: permanent):
   **Quelle über ihren Geltungsbereich hinaus zitiert.** Ein Verweis stützt eine
   Aussage, die seine Quelle nicht trägt — der `MR-`Eintrag regelt etwas
   anderes, die Kanon-Stelle sagt es für einen anderen Fall, die ADR **entscheidet
@@ -139,9 +138,8 @@ sondern ausschließlich die Frage.
   **still** sein (ein verdecktes Heading macht einen Anker unauflösbar, die
   Prüfung entfällt kommentarlos). Frage an jeden Modul-Diff: **welche Eingaben
   liest dieses Modul, die es nicht scannt — und gilt dort dieselbe Zusage?**
-  Belegt in drei Review-Runden desselben Slice (Beobachtungs-Register
-  **BEO-004**), jedes Mal an einer neuen Achse; die Aufzählung von Hand hat
-  dreimal nicht gehalten, darum steht die Frage statt einer Liste. Die Regel
+  Beobachtungs-Register **BEO-004**. Sie steht als **Frage** und nicht als
+  Liste: eine Aufzählung der Achsen fasst die Klasse nicht. Die Regel
   selbst steht in [`AGENTS.md`](../../AGENTS.md) §3.8; hier steht ihre
   Kategorie und die Prüffrage an den Diff.
   **Adressierungs-Form eines Neuzugangs.** Trägt das Zielelement eine

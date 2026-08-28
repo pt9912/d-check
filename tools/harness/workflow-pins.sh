@@ -62,11 +62,21 @@ while IFS= read -r hit; do
   # SHA-Pin -- sie kann per Konstruktion nicht driften. Der Zweck von §3.9
   # (keine beweglichen Referenzen) ist hier ohne Pin erfuellt.
   #
+  # STATT DES PIN-CHECKS die Frage, die hier Sinn ergibt: EXISTIERT das Ziel?
+  # Ein vertippter lokaler Verweis traegt keinen Pin und faellt sonst erst zur
+  # Laufzeit auf. Die Ausnahme nimmt damit eine Pruefung weg und setzt eine
+  # andere an ihre Stelle -- sie laesst keinen Eintrag ungeprueft.
+  #
   # ABGRENZUNG: das gilt NUR fuer den `./`-Praefix. Eine Referenz auf einen
   # anderen Repo-Pfad (`owner/repo/.github/workflows/x.yml@ref`) ist fremd und
   # faellt unter die Regel wie jede Action.
   if printf '%s' "$text" | grep -qE 'uses:[[:space:]]*\./'; then
     local_refs=$((local_refs + 1))
+    target="$(printf '%s' "$text" | sed -nE 's|.*uses:[[:space:]]*\./([^[:space:]]+).*|\1|p')"
+    if [ -z "$target" ] || [ ! -f "$target" ]; then
+      echo "${file}:${line}	uses-local-missing	lokale Workflow-Referenz zeigt auf keine Datei: ./${target}"
+      findings=$((findings + 1))
+    fi
     continue
   fi
 
