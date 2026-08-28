@@ -397,6 +397,19 @@ versions:
 # Inner-Loop-Bindepunkt (doc-check), weil die Zeilen in Feat-/Release-Prep-
 # Commits entstehen — dort soll es rot werden, nicht erst an der Closure.
 structure:
+  # Zweimal passiert, beide Male unbemerkt bis zum Review: eine neue ADR-Zeile
+  # landet per `>>` am DATEIENDE statt in der Tabelle -- also unter
+  # §Konventionen, wo sie gerendert keine Tabellenzeile mehr ist und der Index
+  # die ADR nicht fuehrt. `doc-check` blieb gruen, weil der Link aufloest.
+  # Diese Regel macht aus der Wachsamkeit einen Sensor.
+  #
+  # GRENZE: sie faengt die Zeile am falschen ORT, nicht eine fehlende Zeile.
+  # Wer die ADR gar nicht eintraegt, faellt hier nicht auf.
+  # GRENZE zwei, gemessen: das Muster traegt KEINEN ^-Anker. `forbid-pattern`
+  # prueft den Abschnitts-TEXT als Ganzes -- mit `^\|` feuerte die Regel nie.
+  - files: docs/plan/adr/README.md
+    section: "## Konventionen"
+    forbid-pattern: '\|\s*\[ADR-\d{4}\]'
   - files: spec/lastenheft.md
     section: "## 7. Historie"
     table-order: desc          # Spalte 1 = Version (0.61.0 …)

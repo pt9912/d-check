@@ -55,7 +55,7 @@ einmal geschnitten worden
    Version in einer Make-Variablen; ein Dependabot-PR am Tag ließe den Digest
    stehen und bräche die Kopplung. Für genau diese Frage gibt es **fünf**
    Digest-Achsen im Nachtlauf.
-5. **Gruppieren, sonst ist es Rauschen.** Ein PR je Action bei sechs
+5. **Gruppieren, sonst ist es Rauschen.** Ein PR je Action bei sieben externen
    `uses:`-Einträgen ist kein Kanal, sondern eine Flut.
 6. ADR; `make gates`; unabhängiger Review; Closure.
 
@@ -90,12 +90,22 @@ einmal geschnitten worden
   da ist. — **Ausgang:** *(bei Closure)*
 - **Ein `ignore`-Eintrag, der seinen Grund überlebt, ist ein stiller
   Grün-Pfad.** Er sieht aus wie eine Entscheidung und ist eine Gewohnheit; kein
-  Gate sieht ihn ([`BEO-013`](../observations.md)). — **Ausgang:** *(bei
-  Closure)*
+  Gate sieht ihn ([`BEO-013`](../observations.md)). — **Ausgang: entfallen.**
+  Die Konfiguration enthält **keinen** `ignore`-Schlüssel — das Risiko beschrieb
+  die Datei des Schwester-Repos, nicht unsere. Die Klasse trifft stattdessen die
+  **Ausschlüsse** (`docker` und die vier hand-gepinnten Bestände), und die
+  tragen ihren Grund in der Datei.
 - **Dependabot hebt, was es sieht — und es sieht `go.mod`, nicht das
   ausgelieferte Bild.** Die vierzehn Befunde lagen in **indirekten**
   Abhängigkeiten; ob Dependabot sie ohne Security-Advisory anfasst, ist eine
-  offene Frage und keine Zusage. — **Ausgang:** *(bei Closure)*
+  offene Frage und keine Zusage. — **Ausgang: eingetreten, und die Frage war
+  nicht offen, sondern ungemessen.** Gemessen: **dreizehn** von vierzehn lagen
+  indirekt; Version-Updates sehen ohne `allow: dependency-type: all` **nur** die
+  zwei direkten Requires; und der zweite Weg — Security-Updates — ist im
+  Repository **abgeschaltet**. Der Kanal erreichte die Fundklasse in der ersten
+  Fassung also **nicht**. Die Konfiguration trägt jetzt `allow`; die zweite
+  Hälfte ist ein Repo-Setting und steht als Vorbedingung in
+  [`releasing.md`](../../../../docs/user/releasing.md).
 
 ## 6. Trigger
 

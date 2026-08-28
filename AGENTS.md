@@ -404,10 +404,13 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   lautet `build(deps) [ADR-0067]` bzw. `build(ci) [ADR-0067]`; damit erfüllt <!-- d-check:ignore (literale Konfigurationswerte, keine Verweise) -->
   jeder Bump-Commit dieselbe Regel wie jeder andere
   ([ADR-0067](docs/plan/adr/0067-dependabot-als-hebender-kanal.md)). Die
-  naheliegende Alternative — `commits.exempt-pattern` erweitern — wäre eine
-  **gelockerte Prüfregel** (§3.6) gewesen und hätte den Gate für eine ganze
-  Commit-Klasse blind gemacht. **Die Kennung gilt dem Kanal, nicht dem Inhalt
-  des einzelnen Bumps**; wer mehr Bezug hineinliest, liest zu viel.
+  naheliegende Alternative — `commits.exempt-pattern` erweitern — hätte den Gate
+  für eine **ganze Commit-Klasse** blind gemacht; das ist der Grund, nicht §3.6.
+  §3.6 **verbietet** eine Lockerung nicht, es verlangt eine ADR dafür — die
+  Alternative wäre also dokumentiert zulässig gewesen und ist aus dem Sachgrund
+  verworfen, nicht aus einem Verfahrensgrund. **Die Kennung gilt dem Kanal,
+  nicht dem Inhalt des einzelnen Bumps**; wer mehr Bezug hineinliest, liest zu
+  viel.
 - Neue oder geänderte `DC-*`-Anforderungen entstehen nur in
   [`spec/lastenheft.md`](spec/lastenheft.md) — nie per ADR (ADRs
   schärfen die Spezifikation, nicht das Lastenheft). Der

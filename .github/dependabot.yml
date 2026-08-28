@@ -12,7 +12,14 @@
 # `commit-message.prefix` unten die Kennung DIESES Entscheids -- die ADR, die
 # Dependabot erlaubt, ist der ehrliche Anker fuer die Commits, die daraus
 # entstehen. `commits.exempt-pattern` bleibt UNVERAENDERT: die Loesung macht die
-# neue Commit-Klasse gate-KONFORM, statt sie auszunehmen (AGENTS.md §3.6).
+# neue Commit-Klasse gate-KONFORM, statt sie auszunehmen.
+#
+# GRENZE, gemessen und nicht behoben: dieser Kanal erreicht die Fundklasse des
+# Sensors nur zur Haelfte. Die zweite Haelfte ist ein REPO-SETTING, keine Datei
+# -- `dependabot_security_updates` und die Dependabot-Alerts sind abgeschaltet
+# (gemessen: automated-security-fixes {"enabled":false}, vulnerability-alerts
+# HTTP 404). Ohne sie oeffnet ein CVE ohne neues Upstream-Release keinen PR.
+# Siehe docs/user/releasing.md §Vorbedingungen.
 #
 # ABGRENZUNG: kein Automerge. Dependabot oeffnet PRs; geprueft wird mit
 # `make ci`, und der Merge bleibt ein Akt -- dieselbe Linie wie bei den
@@ -21,12 +28,14 @@ version: 2
 
 updates:
   # Go-Module. HIER lagen die vierzehn Befunde: neun in golang.org/x/crypto,
-  # vier in golang.org/x/net, eine in go-git. Das ist das Oekosystem, fuer das
-  # dieser Kanal existiert.
+  # vier in golang.org/x/net (beide INDIREKT) und eine in go-git (direkt).
   #
-  # GRENZE, offen und nicht behauptet: die vierzehn lagen in INDIREKTEN
-  # Abhaengigkeiten. Ob Dependabot sie ohne Security-Advisory anfasst, ist nicht
-  # gemessen -- der Sensor bleibt die Wahrheit ueber das ausgelieferte Bild.
+  # `allow: dependency-type: all` ist deshalb keine Weite, sondern die
+  # Bedingung, unter der dieser Eintrag ueberhaupt etwas ausrichtet: go.mod
+  # fuehrt ZWEI direkte Requires und ZWANZIG indirekte, und Version-Updates
+  # betrachten ohne diese Zeile nur die direkten. DREIZEHN der vierzehn Befunde
+  # faenden dann keinen Weg. `gomod` unterstuetzt `all`/`indirect` ausdruecklich
+  # (GitHub-Doku, dependabot-options-reference §allow).
   - package-ecosystem: gomod
     directory: /
     schedule:
@@ -35,14 +44,14 @@ updates:
       time: "05:00"
       timezone: Europe/Berlin
     open-pull-requests-limit: 5
+    allow:
+      - dependency-type: all
     commit-message:
       # Die Kennung ist Pflicht, nicht Zierde -- siehe Kopf.
       prefix: build(deps) [ADR-0067]
-    labels:
-      - dependencies
     groups:
-      # Einzel-PRs je Modul waeren bei einem einzigen direkten Dependency reines
-      # Rauschen; die indirekten bewegen sich ohnehin im Verbund.
+      # Einzel-PRs je Modul waeren bei zwei direkten und zwanzig indirekten
+      # Requires reines Rauschen; die indirekten bewegen sich ohnehin im Verbund.
       go-modules:
         patterns:
           - "*"
@@ -53,8 +62,13 @@ updates:
   # KEINE DOPPELUNG ZU DEN FRISCHE-ACHSEN, sondern deren zweite Haelfte:
   # `make checkout-pin-freshness`, `login-pin-freshness` und
   # `hubdesc-pin-freshness` MELDEN einen neueren Release; Dependabot HEBT ihn.
+  # Die drei Achsen decken exakt die drei VERSCHIEDENEN Actions ab, die ueber
+  # sieben externe `uses:`-Eintraege verteilt sind (`make workflow-pins` zaehlt
+  # acht, davon eine lokale Referenz ohne Pin-Pflicht).
+  #
   # Die Form aus AGENTS.md §3.9 bleibt Pflicht -- ein Dependabot-PR, der einen
-  # Tag statt eines SHA setzte, faellt an `make workflow-pins`.
+  # Tag statt eines SHA setzte, fiele an `make workflow-pins`. Gemessen am
+  # Schwester-Repo: Dependabot ersetzt SHA UND Tag-Kommentar gemeinsam.
   - package-ecosystem: github-actions
     directory: /
     schedule:
@@ -65,29 +79,34 @@ updates:
     open-pull-requests-limit: 5
     commit-message:
       prefix: build(ci) [ADR-0067]
-    labels:
-      - dependencies
-      - ci
     groups:
-      # Ein PR je Action waere bei sechs uses:-Eintraegen eine Flut.
+      # Ein PR je Action waere bei sieben externen Eintraegen eine Flut.
       actions:
         patterns:
           - "*"
 
 # BEWUSST NICHT AUFGENOMMEN -- `docker`.
 #
-# Und das ist der wichtigste Ausschluss dieser Datei. Die Basis-Images im
-# Dockerfile sind DIGEST-gepinnt (ADR-0011) und tragen ihre Version in einer
-# Make-Variablen (GO_VERSION, GOLANGCI_LINT_VERSION). Ein Dependabot-PR hoebe
-# den Tag und liesse den Digest stehen -- er braeche genau die Kopplung, die den
-# Pin traegt, und das Ergebnis saehe gruen aus.
+# Der Grund ist ADR-0011 §Entscheidung 4: ein Digest-Hoist ist ein BEWUSSTER
+# COMMIT, kein Auto-Update. Die Digest-Achsen im Nachtlauf melden ihn; gehoben
+# wird er von Hand, mit gelesener Ausgabe.
 #
-# Fuer diese Frage stehen FUENF Digest-Achsen im Nachtlauf
-# (`runtime-base-digest`, `go-base-digest`, `lint-base-digest`,
-# `semgrep-digest`, `a-check-digest`) plus die Versions-Achsen daneben. Sie
-# melden "anderer Bau desselben Tags" -- eine Frage, die Dependabot gar nicht
-# stellt.
+# WAS HIER ZUERST STAND UND FALSCH WAR: "ein Dependabot-PR hoebe den Tag und
+# liesse den Digest stehen". Gegen dependabot-core nachgemessen stimmt das
+# nicht -- der Docker-Updater hebt Tag UND Digest gemeinsam und stellt auch die
+# Frage "anderer Bau desselben Tags". Der Ausschluss steht also auf der
+# Policy-Entscheidung, nicht auf einem technischen Bruch.
+#
+# DRITTE, UNABHAENGIGE TATSACHE: `FROM golang:${GO_VERSION}@sha256:...` und das
+# golangci-lint-Pendant wuerde Dependabot ohnehin nicht parsen -- sein
+# Tag-Muster kennt kein `${...}`. Der einzige Pin, den es sehen wuerde, ist das
+# Runtime-Basis-Image.
 #
 # Ebenfalls nicht aufgenommen und aus demselben Grund: der Trivy-Pin
 # (tools/image-scan.sh), der a-check-Pin, der semgrep-Pin und der
 # Baseline-Pin. Sie leben nicht in einem Manifest, das Dependabot liest.
+#
+# KEINE `labels:` -- absichtlich. Sind sie gesetzt, ERSETZEN sie die
+# Default-Labels, und nicht im Repo existierende werden still ignoriert; das
+# Ergebnis waeren PRs ganz ohne Label. So legt Dependabot sein `dependencies`
+# selbst an.

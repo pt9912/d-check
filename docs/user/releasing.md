@@ -119,6 +119,15 @@ GHCR-Push. Der Abbruch nennt dann den bereits veröffentlichten GHCR-Digest.
   `read/write/delete` scope"*). Der Scope eines bestehenden Tokens lässt sich in
   der Docker-Hub-Oberfläche **ändern** — ein neues Token und ein Ersetzen des
   Secrets sind dafür **nicht** nötig; der Token-Wert bleibt derselbe.
+- **Zwei Repository-Einstellungen für den Dependabot-Kanal**
+  ([ADR-0067](../plan/adr/0067-dependabot-als-hebender-kanal.md)):
+  **Dependabot-Alerts** und **Dependabot-Security-Updates**. Sie stehen in
+  keiner Datei — sie sind Schalter im Repository. **Gemessen am 2026-08-28: beide
+  aus** (`automated-security-fixes` meldet `enabled:false`,
+  `vulnerability-alerts` antwortet HTTP 404). Ohne sie öffnet ein CVE, für das
+  es kein neues Upstream-Release gibt, **keinen** PR — der Kanal trägt dann nur
+  die gewöhnlichen Versions-Updates. Das ist der Unterschied zwischen *„hebt,
+  was veraltet ist"* und *„hebt, was verwundbar ist"*.
 - Optional die Repository-Variable `DOCKERHUB_IMAGE`, falls ein Fork woandershin
   spiegeln soll; ohne sie gilt `pt9912/d-check`.
 
