@@ -32,6 +32,10 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
+- [welle-86](../welle-86-closure-uebergang-durchsetzen.md) — der Closure-Übergang
+  trägt seine Vorbedingungen: vier davon hält heute kein Sensor, und die Prüfung
+  hängt am Zustand statt am Übergang.
+
 
 ## Nächste Wellen
 
