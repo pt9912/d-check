@@ -115,6 +115,45 @@ deterministisch zustellt.
    Vorgriff: erst zeigen, dass die Zustellung greift, dann kürzen.
 7. `make gates`; **Review** und **Verifikation** als getrennte Läufe; Closure.
 
+
+### Eine Referenz-Implementierung liegt vor — und drei Deltas dazu
+
+**Ein Schwester-Projekt fährt den Mechanismus bereits** (Hinweis des
+Auftraggebers, 2026-08-29): ein Hook `rules-on-touch.sh`, der die
+`paths`-Frontmatter der Regel-Dateien selbst liest, aus der Tool-Nutzlast
+Kandidaten-Pfade sammelt — **auch aus dem Bash-Kommando** — und bei einem
+Treffer den Regel-Rumpf über `additionalContext` einspeist. Er markiert je
+Sitzung und Regel einmal, damit nichts doppelt kommt, und überspringt Regeln
+**ohne** `paths:`, statt sie ungefragt einzuspielen. Damit ist die Frage „geht
+das überhaupt?" beantwortet; offen bleiben drei Entscheide.
+
+**Delta 1 — `jq` scheidet aus, und das ist hier entschieden.** Die Referenz
+liest die Hook-Eingabe mit `jq`. Dieses Repo hat genau das schon einmal
+verworfen: der Befehls-Wächter wurde in reinem `bash` + `awk` gebaut, und
+`nightly-state.sh` trägt den Grund als Kommentar — das Werkzeug steht **nicht**
+in der Host-Klasse aus [`AGENTS.md`](../../../../AGENTS.md) §3.1. Der Ersatz
+liegt bereit: die JSON-Extraktion des Wächters lebt schon als eigenes
+`awk`-Programm unter `tools/harness/` und liest dieselbe Nutzlast-Form.
+
+**Delta 2 — `PostToolUse` oder `PreToolUse`?** Die Referenz nimmt
+`PostToolUse`. Das hat zwei Vorzüge: der Hook feuert nur bei **Erfolg**, und er
+mischt sich nicht in den Berechtigungs-Fluss. Der Preis: die Regel kommt für den
+**nächsten** Schritt, nicht für den laufenden — wer eine Planungs-Datei
+schreibt, hat sie beim Schreiben noch nicht. `PreToolUse` dreht beides um. Der
+Entscheid gehört in diesen Slice, nicht in eine Annahme.
+
+**Delta 3 — zwei Glob-Dialekte wären eine Drift-Quelle.** Die Referenz baut sich
+`glob2re` selbst, mit eigener `**`-Semantik. Dieses Repo beantwortet
+Glob-Fragen über `path.Match`. Zwei Dialekte für dieselbe Frage sind die
+Gestalt, die hier als [`BEO-003`](../observations.md) geführt wird — eine
+geteilte Lexik driftet, weil jeder Konsument sie selbst vorbereitet. Welcher
+Dialekt gilt, ist zu entscheiden und zu **schreiben**, nicht zu erben.
+
+**Ein vierter Punkt, der keine Entscheidung braucht, aber eine Zeile:** die
+Einmal-je-Sitzung-Markierung ist richtig und hat einen Preis. Nach einer
+Kontext-Verdichtung ist die Regel aus dem Kontext verschwunden, die Markierung
+aber noch da — sie kommt dann nicht wieder. Das gehört zu den Nicht-Zusagen.
+
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Kein Kürzen von `AGENTS.md`.** Solange nicht gemessen ist, dass die
@@ -148,7 +187,19 @@ deterministisch zustellt.
       Ergebnis mit Fehlschlag-Zähler — Muster: `make guard-probe`.
 - [ ] Die **Nicht-Zusagen** stehen geschrieben, nicht implizit: werkzeug-lokal,
       kein Gate, kein Ersatz für `AGENTS.md`, und der Unterschied zwischen
-      *„der Hook hat gefeuert"* und *„der Text hat gewirkt"*.
+      *„der Hook hat gefeuert"* und *„der Text hat gewirkt"*; dazu, dass die
+      Einmal-je-Sitzung-Markierung eine Kontext-Verdichtung **überlebt**, die
+      eingespeiste Regel aber nicht.
+- [ ] **Kein `jq`.** Die Hook-Eingabe wird mit `bash` + `awk` gelesen — dieselbe
+      Klasse, die [`AGENTS.md`](../../../../AGENTS.md) §3.1 zusagt, und
+      dieselbe, in der der Befehls-Wächter schon liest. Die vorhandene
+      `awk`-Extraktion wird **wiederverwendet**, nicht nachgebaut.
+- [ ] **Der Event-Entscheid steht geschrieben:** `PreToolUse` (Regel wirkt auf
+      den laufenden Schritt, mischt sich aber in den Berechtigungs-Fluss) oder
+      `PostToolUse` (feuert nur bei Erfolg, Regel wirkt ab dem nächsten
+      Schritt) — mit Begründung, nicht als Übernahme.
+- [ ] **Ein Glob-Dialekt, und er ist benannt.** Entweder `path.Match` wie im
+      Produkt oder ein eigener mit `**` — geschrieben, nicht geerbt.
 - [ ] Der Nachfolge-Entscheid ist benannt — ob weitere Pfade folgen und was
       `AGENTS.md` dann abgeben kann.
 - [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
