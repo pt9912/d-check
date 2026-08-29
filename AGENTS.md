@@ -469,6 +469,13 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   gelesen wird — **benannte Grenze:** in einer Pause liest niemand. Der dritte
   Block entsteht **spätestens bei der Beanspruchung**; ein Plan in `open/`
   trägt ihn noch nicht.
+  **Die beiden kanonischen Blöcke belegen ihre Regel** mit einer
+  `d-check:cite`-Direktive auf die **vorschreibende** Regelwerk-Zeile, samt
+  wörtlichem Zitat darunter ([`MR-054`](harness/conventions.md#mr-054));
+  `citations` prüft es wortgleich im inneren Loop, ein falsch angekerter Beleg
+  wird rot. Der dritte Block trägt bewusst keine — sein Ziel ist repo-eigen und
+  meldete bei jeder Änderung. **Kein Sensor hält das:** ein Plan ganz ohne
+  Direktiven ist grün.
 - Eine Commit-Botschaft oder Closure-Notiz behauptet **nicht mehr, als die
   Arbeit trägt**: eine genannte Probe muss gelaufen sein (§6 Schritt 8), und ihr
   Schluss reicht **nicht weiter als die gemessene Menge** — wer N Formen

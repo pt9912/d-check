@@ -631,27 +631,18 @@ workflows:
 
 # Modul citations (DC-FA-CITE-001): parameterlos, direktiven-getrieben — der
 # Block traegt nur den Scope. Ausgenommen sind die drei EINGEFRORENEN
-# Verzeichnisse (MR-054, Nachtrag zu MR-051).
+# Verzeichnisse: dort ist eine Direktive Lauf-Beleg, kein lebender Anker
+# (MR-054, Nachtrag zu MR-051).
 #
-# WARUM: Seit slice-171 tragen Slice-Vorpruefungen `d-check:cite`-Direktiven auf
-# die Regel, die den jeweiligen Schritt vorschreibt. Beim Closure wandern sie
-# nach `done/`. Ein Baseline-Bump verschiebt die Zeilenspannen UND entfernt den
-# alten `<tag>`-Pfad — beides machte dort jeden eingefrorenen Beleg rot, und die
-# Reparatur waere ein Eingriff in Lauf-Belege.
+# KOPPLUNG: ein modul-lokaler Scope ERSETZT den globalen (DC-FA-CONF-002) — die
+# beiden `.harness/`-Ausschluesse aus `scan.ignore` muessen hier wiederholt
+# werden, sonst scannt `citations` die vendored Baseline mit.
 #
-# DER BELEG ZAEHLT ZUM ZEITPUNKT SEINER PRUEFUNG. Vor dem `git mv` laeuft die
-# Direktive im inneren Loop; danach ist sie Historie wie ein Review-Report. Die
-# Link-Achse loest dasselbe schon so — `ignore-refs` nimmt die eingefrorenen
-# Verweise auf entfernte Baseline-Baeume quell-skopiert aus.
+# ABGRENZUNG: der Scope skopiert die PRUEFENDE Datei, nicht das Ziel — die
+# Baseline bleibt zitierbar, obwohl sie selbst nicht gescannt wird.
 #
-# GEMESSEN vor dem Setzen: in den drei Verzeichnissen steht heute KEINE
-# wirksame Direktive. Die 13 Treffer eines rohen `grep` sind Erwaehnungen der
-# Syntax in Inline-Code — ADR-0060 unterscheidet sie, und genau deshalb sind die
-# Gates gruen. Der Ausschluss ist Vorsorge, keine Reparatur.
-# ACHTUNG, gemessen: ein modul-lokaler Scope ERSETZT den globalen
-# (DC-FA-CONF-002) — die beiden `.harness/`-Ausschluesse aus `scan.ignore`
-# muessen hier wiederholt werden. Ohne sie scannte `citations` die vendored
-# Baseline mit: 587 -> 653 Dateien beim ersten Versuch, und damit Fremdinhalt.
+# GRENZE: in den drei Verzeichnissen faellt auch der fail-closed-Pfad weg — eine
+# malformte Direktive nimmt den Lauf dort nicht mehr mit.
 citations:
   scope:
     roots: ["."]

@@ -70,9 +70,11 @@ steht.
    verschiebt sich, und das braucht einen Nachtrag.** Er sagt heute wörtlich
    *„Nicht `done/` … dort steht keine"*. Sobald ein Slice mit Direktiven
    schließt, steht dort eine — und jeder Baseline-Bump machte eingefrorene
-   Belege rot. **Lösung:** `citations.scope` nimmt `done/` aus, wie es
-   `docs/reviews/` faktisch schon ist. Der Beleg zählt zum Zeitpunkt seiner
-   Prüfung; danach ist er Lauf-Beleg wie ein Review-Report.
+   Belege rot. **Lösung:** `citations.scope` nimmt die drei eingefrorenen
+   Verzeichnisse aus. Für `done/` und `conventions/done/` zählt der Beleg zum
+   Zeitpunkt seiner Prüfung; `docs/reviews/` hat gar keine Live-Phase und ist
+   von Geburt an Lauf-Beleg. **Der Preis:** dort entfällt auch der
+   fail-closed-Pfad — vorher nahm eine malformte Direktive den Lauf mit.
 4. **Die Konvention wird benannt, nicht nur vorgemacht.** Ein Slice, der die
    Direktiven trägt, ohne dass die Regel irgendwo steht, ist ein Einzelfall —
    genau die Bauform, die dieses Repo als
@@ -107,8 +109,9 @@ steht.
 - [ ] Der dritte Block trägt **keine** Direktive, und der Grund steht im Slice —
       nicht als Auslassung, sondern als benannter Entscheid.
 - [ ] `citations.scope` nimmt `done/` aus; der Nachtrag zu
-      [`MR-051`](../../../../harness/conventions.md#mr-051) hält fest, dass sein
-      *„dort steht keine"* nicht mehr gilt und warum der Beleg trotzdem trägt.
+      [`MR-051`](../../../../harness/conventions.md#mr-051) hält fest, dass seine
+      Geltungsbereich-Aussage absehbar unwahr wird — heute steht dort noch keine
+      wirksame Direktive — und warum der Beleg trotzdem trägt.
 - [ ] Die Konvention steht an **einer** Stelle (nicht in `AGENTS.md`
       **und** `harness/README.md`) und ist von dort verlinkt.
 - [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
@@ -164,9 +167,8 @@ um (erst Bestand klären, dann Konvention).
   Direktive muss beim Bump neu angekert werden, sonst meldet sie irgendwann
   nur noch sich selbst. Die Regel, die diesen Schritt vorschreibt:
 
-  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:224-225 -->
-  > **Keine Treffer sind ebenfalls eine
-  > Antwort** und werden notiert.
+  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
+  > **Offene Beobachtungen sichten.**
 
 - **Nachtlauf-Stand lesen** (`make nightly-state`,
   [`MR-053`](../../../../harness/conventions.md#mr-053)): beide Achsen melden
