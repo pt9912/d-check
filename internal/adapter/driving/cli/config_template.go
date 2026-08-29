@@ -195,6 +195,9 @@ modules: [links, anchors]
 #     #     - name: Titel                           # die Spalte über ihren KOPFZEILEN-Namen (nicht Position); nicht adressierbar ⇒ section-column-missing
 #     #       cell-max-chars: 200                   # Obergrenze in ZEICHEN (nicht Bytes) ⇒ sonst section-cell-oversized auf IHRER Zeile
 #     #       cell-min-chars: 1                     # Untergrenze — ohne sie passiert die LEERE Zelle grün ⇒ sonst section-cell-undersized
+#     # hint: "was zu tun ist"                     # VERFASSTE Erlaeuterung: wird zur 4. Spalte des Befunds
+#     #                                           # und zur Hinweis-Zeile in --doctor; gewinnt gegen die
+#     #                                           # modul-eigene Meldung. Leer oder mit Tab/Umbruch ⇒ Exit 2
 #     # exempt-paths: []                            # Globs; Treffer werden von DIESER Regel nicht geprüft
 
 

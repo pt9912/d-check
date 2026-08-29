@@ -157,3 +157,10 @@ Schlüssel wird — dann gehört er nicht in `structure[]`.
 
 **Wenn die vierte Spalte einen Konsumenten bricht.** Dann ist Option B
 (`--doctor`-only) die Rückfallposition, und diese ADR bekommt eine Nachfolgerin.
+
+## Geschichte
+
+| Datum | Ereignis |
+|---|---|
+| 2026-08-29 | **Entscheidung 1 ergänzt: der Reporter saniert.** Der Review fand die Zusage „ein Befund bleibt eine Zeile" **brechbar** — ein `hint` mit `\n` erzeugte zwei Zeilen, einer mit `\t` fünf Felder; gemessen. Die Erläuterung kommt aus der Konfiguration **oder aus dem geprüften Material** (`commits` trägt den Commit-Betreff), also aus einer Eingabe, über die der Reporter keine Kontrolle hat (`AGENTS.md` §3.8). Zwei Antworten, bewusst beide: die Konfiguration **weist ab**, was ein Autor anders gemeint hätte als das Ergebnis; der Reporter **ersetzt** Tab, Zeilenumbruch und Wagenrücklauf durch ein Leerzeichen, weil der modul-eigene Weg keinen Config-Rand hat. Drei Mutationsproben gefahren: bedingungslose vierte Spalte, entfernte Sanierung, `hint` auch für Nicht-Mess-Befunde — jede wird jetzt von genau einem Test gefangen |
+| 2026-08-29 | **Zahl im Kontext präzisiert.** Dort steht „22 von 31 Regel-Dateien"; das zählt **Dateien** mit dem Literal `Message:`, darunter acht geteilte Helfer ohne eigene Regel. Der reichweiten-relevante Schnitt lautet **21 von 23** Regel-Einstiegs-Dateien (`func Check*`); ungedeckt sind genau `hostpaths` und `spans`. Der Schluss — der Gewinn ist größer als der Anlass — trägt in beiden Zählungen; die Zahl selbst führte einen späteren Leser zu `run.go`/`scan.go` statt zu den zwei Regeln |

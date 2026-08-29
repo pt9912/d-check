@@ -499,3 +499,30 @@ func TestStructureHintGiltNichtFuerLeerlaufendeRegel(t *testing.T) {
 		t.Fatalf("die leer laufende Regel traegt ihre eigene Meldung, nicht den Hinweis")
 	}
 }
+// unreadableFileFS liefert jede Datei als unlesbar aus — die Lese-Seite des
+// fail-closed-Pfades, die ein reines MemFS nicht herstellen kann.
+type unreadableFileFS struct{ *coretest.MemFS }
+
+func (unreadableFileFS) ReadFile(string) ([]byte, error) { return nil, errors.New("kaputt") }
+
+// Auch die unlesbare EINZELDATEI behaelt ihre Meldung: die Regel hat sie nie
+// gelesen, ein Hinweis auf die gehuetete Zusage verdraengte die
+// fail-closed-Ursache (ADR-0073). Dritter Fall neben leer laufender Regel und
+// unlesbarem Dateibaum.
+func TestStructureHintGiltNichtFuerUnlesbareDatei(t *testing.T) {
+	fs := unreadableFileFS{MemFS: coretest.NewMemFS(map[string]string{"docs/a.md": "# T\n"})}
+	r := model.StructureRule{
+		Files: "docs/a.md", Section: "## DoD", NonEmpty: true,
+		Hint: "Haken setzen oder Slice zurueckfuehren",
+	}
+	got := CheckStructure(fs, []model.StructureRule{r})
+	if len(got) != 1 {
+		t.Fatalf("erwartet ein Befund, got %+v", got)
+	}
+	if got[0].Message == r.Hint {
+		t.Fatalf("die unlesbare Datei traegt ihre eigene Meldung, nicht den Hinweis: %q", got[0].Message)
+	}
+	if !strings.Contains(got[0].Message, "unlesbar") {
+		t.Fatalf("erwartet die fail-closed-Ursache, got %q", got[0].Message)
+	}
+}

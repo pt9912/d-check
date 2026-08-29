@@ -10,10 +10,15 @@ import (
 	"fmt"
 	"io"
 	"strings"
+	"regexp"
 
 	"gopkg.in/yaml.v3"
 
 )
+
+// lineBreakers sind die Zeichen, die die Zeilen- und Feldgrenze des
+// Ausgabeformats verschieben wuerden.
+var lineBreakers = regexp.MustCompile(`[\t\r\n]+`)
 
 // Summary sind die Lauf-Kennzahlen.
 type Summary struct {
@@ -26,15 +31,21 @@ type Summary struct {
 // stderr.
 //
 // VIERTE SPALTE, nur wenn der Befund eine Erlaeuterung traegt (SPEC-001
-// `message`): ein Befund bleibt EINE Zeile — DC-FA-CLI-004 sagt das zu, und
-// ein Akzeptanzkriterium zaehlt Zeilen. Wer auf Tab trennt und die Felder
-// 1-3 liest, liest weiter dasselbe; ein Befund ohne Erlaeuterung ist
-// byte-identisch zu vorher (ADR-0073).
+// `message`): ein Befund ist EINE Zeile mit vier Feldern — DC-FA-CLI-004 sagt
+// das zu, und ein Akzeptanzkriterium zaehlt Zeilen. Wer auf Tab trennt und die
+// Felder 1-3 liest, liest dasselbe wie ohne die Spalte; ein Befund ohne
+// Erlaeuterung ist dreispaltig (ADR-0073).
+//
+// ZUSAGE UEBER FREMDEN TEXT: die Erlaeuterung kommt aus der Konfiguration
+// (structure[].hint) oder aus dem geprueften Material (commits traegt den
+// Commit-Betreff) — beides kann Tab und Zeilenumbruch enthalten und braeche das
+// Format. Der Reporter ersetzt sie deshalb durch ein Leerzeichen, statt eine
+// Zusage ueber eine Eingabe zu geben, die er nicht kontrolliert (AGENTS.md §3.8).
 func Text(stdout, stderr io.Writer, findings []model.Finding, sum Summary) error {
 	for _, f := range findings {
 		line := fmt.Sprintf("%s:%d\t%s\t%s", f.File, f.Line, f.Target, f.Reason)
-		if f.Message != "" {
-			line += "\t" + f.Message
+		if m := oneLine(f.Message); m != "" {
+			line += "\t" + m
 		}
 		if _, err := fmt.Fprintln(stdout, line); err != nil {
 			return err
@@ -43,6 +54,14 @@ func Text(stdout, stderr io.Writer, findings []model.Finding, sum Summary) error
 	_, err := fmt.Fprintf(stderr, "d-check: %d Datei(en) geprüft, %d Befund(e)\n",
 		sum.FilesChecked, sum.FindingCount)
 	return err
+}
+
+// oneLine macht aus einer Erlaeuterung ein EINZEILIGES Feld: Tab, Zeilenumbruch
+// und Wagenruecklauf werden zu einem Leerzeichen. Ohne das koennte ein
+// Konfigurations-Autor oder ein Commit-Betreff die Zeilen- und Feldgrenze des
+// Ausgabeformats verschieben (DC-FA-CLI-004, ADR-0073).
+func oneLine(s string) string {
+	return lineBreakers.ReplaceAllString(s, " ")
 }
 
 // Doctor schreibt die erklärende, nach Datei gruppierte Diagnose auf
@@ -86,10 +105,10 @@ func doctorFinding(stdout io.Writer, f model.Finding, cfg model.Config) error {
 		return err
 	}
 	// Die Erlaeuterung des Befunds (SPEC-001 `message`) — modul-eigen oder aus
-	// structure[].hint verfasst. Sie stand bisher nur in --json/--yaml
-	// (ADR-0073).
+	// structure[].hint verfasst. Sie steht zwischen Stelle und Fix-Kandidat und
+	// ist dessen Gegengroesse: verfasst statt abgeleitet (ADR-0073).
 	if f.Message != "" {
-		if _, err := fmt.Fprintf(stdout, "      Hinweis: %s\n", f.Message); err != nil {
+		if _, err := fmt.Fprintf(stdout, "      Hinweis: %s\n", oneLine(f.Message)); err != nil {
 			return err
 		}
 	}

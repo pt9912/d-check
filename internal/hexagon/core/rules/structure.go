@@ -97,7 +97,11 @@ func structureExempt(r model.StructureRule, file string) bool {
 func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file string) []model.Finding {
 	content, err := fsys.ReadFile(file)
 	if err != nil {
-		return []model.Finding{structureFinding(r, file, 1, model.ReasonSectionMissing,
+		// NICHT durch MessageFor: hier hat die Regel gar nicht gemessen. Ein
+		// verfasster Hinweis auf die gehuetete Zusage verdraengte die
+		// fail-closed-Ursache und zeigte auf eine Bedingung, die nie geprueft
+		// wurde (ADR-0073, benannte Grenze).
+		return []model.Finding{structureRawFinding(r, file, 1, model.ReasonSectionMissing,
 			"Datei ist unlesbar (fail-closed)")}
 	}
 	lines := splitLines(content)
@@ -210,6 +214,16 @@ func structureHeadings(r model.StructureRule, file string, lines []string, h Sec
 			"Überschrift \""+sh.Text+"\" genügt dem geforderten Muster nicht: "+r.HeadingsMatch))
 	}
 	return out
+}
+
+// structureRawFinding traegt die MODUL-EIGENE Meldung, ohne den verfassten
+// Hinweis der Regel. Sie ist den Befunden vorbehalten, die KEINE Bedingung
+// verletzen — dort ist die Ursache die Nachricht (ADR-0073).
+func structureRawFinding(r model.StructureRule, file string, line int, reason, msg string) model.Finding {
+	return model.Finding{
+		File: file, Line: line, Rule: "structure",
+		Target: r.Identity(), Reason: reason, Message: msg,
+	}
 }
 
 func structureFinding(r model.StructureRule, file string, line int, reason, msg string) model.Finding {

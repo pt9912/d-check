@@ -574,7 +574,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.67.0 --json
 ```json
 {
   "findings": [
-    { "file": "docs/anleitung.md", "line": 12, "target": "fehlt.md", "rule": "links", "reason": "target-missing" }
+    { "file": "docs/anleitung.md", "line": 12, "target": "fehlt.md", "rule": "links", "reason": "target-missing", "message": "Linkziel existiert nicht" }
   ],
   "summary": { "filesChecked": 42, "findingCount": 1 },
   "exitCode": 1
@@ -596,6 +596,7 @@ findings:
     target: fehlt.md
     rule: links
     reason: target-missing
+    message: Linkziel existiert nicht
 summary:
   filesChecked: 42
   findingCount: 1
@@ -1002,10 +1003,10 @@ docker run --rm --network none -v "$PWD":/repo:ro \
 **Ergebnis:** je zu langer oder zu kurzer Zelle ein Befund — auf **ihrer**
 Zeile, nicht am Abschnittskopf:
 
-<!-- d-check-test:not-replayable: gekürzte Illustration (Ziel-Spalte elidiert), nicht die wörtliche Ausgabe dieses Repos -->
+<!-- d-check-test:not-replayable: gekürzte Illustration (Ziel-Spalte elidiert, Erläuterung gekürzt), nicht die wörtliche Ausgabe dieses Repos -->
 ```text
-docs/plan/adr/README.md:41  …	section-cell-oversized
-docs/plan/adr/README.md:64  …	section-column-missing
+docs/plan/adr/README.md:41  …	section-cell-oversized	Zelle der Spalte "Titel" hat …
+docs/plan/adr/README.md:64  …	section-column-missing	keine Tabelle des Abschnitts …
 ```
 
 **Vier Dinge, die dabei zählen:**
@@ -2218,7 +2219,8 @@ Ja. Gleiche Eingabe liefert byte-identische Ausgabe (stabile Sortierung).
 
 ## 9. Glossar
 
-- **Befund:** eine einzelne Beanstandung (`Datei:Zeile  Ziel  Grund-Code`).
+- **Befund:** eine einzelne Beanstandung (`Datei:Zeile  Ziel  Grund-Code`, plus
+  eine vierte Spalte, wo eine Erläuterung vorliegt).
 - **Grund-Code:** stabiler, maschinenlesbarer Code eines Befunds (z. B.
   `target-missing`).
 - **Regelmodul:** ein zuschaltbarer Prüfbereich (z. B. `links`, `ids`).

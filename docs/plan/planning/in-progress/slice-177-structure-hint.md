@@ -67,7 +67,7 @@ neben `message`, sondern (a) `message` für Menschen sichtbar machen und (b)
 einer `structure`-Regel erlauben, es aus der Konfiguration zu **verfassen**.
 Ein zweites Feld daneben hätte zwei Slots für dieselbe Frage geschaffen — die
 Bauform, die dieses Repo an anderer Stelle als Redundanz zurückgebaut hat
-([ADR-0069](../../adr/0069-zellenlaenge-als-strukturbedingung.md)).
+([ADR-0070](../../adr/0070-tabellen-klammer-und-spaltenliste.md)).
 
 **Der Anlass ist gemessen und liegt in diesem Repo:**
 [slice-172](../open/slice-172-closure-uebergang-waechtern.md) hat den Sensor für
@@ -163,6 +163,13 @@ Punkt zurückgeführt worden: seine eigene §2 verlangt eine Meldung, die sagt,
 - **Das Feld lädt zur Ausrede ein.** Ein schlecht benannter Grund-Code lässt
   sich mit einem Hinweis zudecken, statt den Code zu schärfen. —
   **Ausgang:** *(bei Closure)*
+- **Der Hinweis ERSETZT, statt zu ergänzen — und das kostet Messwerte.** Mit
+  gesetztem `hint` verlieren **alle** Befunde der Regel die quantitative
+  Angabe der modul-eigenen Meldung, in Befund-Zeile, `--doctor` und `--json`.
+  Gemessen: `section-cell-undersized` meldet dann nicht mehr *„Zelle der Spalte
+  „Titel" hat 1 Zeichen, verlangt sind 10"*, sondern nur den Hinweis. Der
+  Vorrang ist entschieden ([ADR-0073](../../adr/0073-befund-erlaeuterung-fuer-menschen.md)),
+  sein Preis gehört daneben. — **Ausgang:** *(bei Closure)*
 - **In `--doctor` verdoppelt die Hinweis-Zeile bei manchen Modulen den
   Grund-Klartext.** Gemessen an `ids`: „Kennung im Fließtext ohne Markdown-Link
   auf ihre Definition" (Grund-Klartext) neben „Kennung ohne Link auf ihre

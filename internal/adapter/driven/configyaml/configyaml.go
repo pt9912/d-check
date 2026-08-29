@@ -442,6 +442,13 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 	if r.Hint != nil && strings.TrimSpace(*r.Hint) == "" {
 		return fail("hint ist gesetzt, aber leer — ein leerer Hinweis sagt nichts zu")
 	}
+	// Der Hinweis wird zur vierten Spalte einer tab-getrennten Zeile
+	// (DC-FA-CLI-004). Der Reporter saniert zwar, aber ein Autor, der hier einen
+	// Umbruch schreibt, meint etwas anderes als das Ergebnis — das gehoert
+	// abgewiesen und nicht still begradigt (ADR-0073).
+	if r.Hint != nil && strings.ContainsAny(*r.Hint, "\t\r\n") {
+		return fail("hint enthält Tab oder Zeilenumbruch — die Befund-Zeile ist tab-getrennt und einzeilig")
+	}
 	if msg := structureBedingungsFehler(r); msg != "" {
 		return fail("%s", msg)
 	}
@@ -459,8 +466,8 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 
 
 // derefString liefert den Wert eines optionalen Konfigurations-Strings; ein
-// abwesender Schluessel wird zum leeren Wert, was im Kern "Bedingung aus"
-// heisst. Der Rand "gesetzt, aber leer" ist vorher abgewiesen.
+// abwesender Schluessel wird zum leeren Wert. Der Rand "gesetzt, aber leer"
+// ist vorher abgewiesen, ein leerer Wert kommt hier also nur aus Abwesenheit.
 func derefString(p *string) string {
 	if p == nil {
 		return ""

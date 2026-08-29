@@ -246,10 +246,11 @@ ids-Muster iteriert, keine Map-Reihenfolge):
    werden Zeile, Klartext, Regelmodul und Stelle (Ziel).
 4. **Erläuterung** (nur wo gesetzt): das Befund-Feld `message`
    ([`SPEC-001`](#spec-001--befund)) wird als eigene `Hinweis:`-Zeile unter
-   `Stelle:` ausgegeben. Sie ist **verfasst** — modul-eigen oder aus
-   `structure[].hint` — und damit die Gegengröße zum abgeleiteten
-   Fix-Kandidaten in Schritt 5.
-5. **Fix-Kandidat** (nur wo EINDEUTIG ableitbar, sonst keiner): in dieser
+   `Stelle:` ausgegeben. Sie kommt aus dem Modul oder — bei `structure` — aus
+   dem verfassten `hint`; in beiden Fällen ist sie **geschrieben** und damit
+   die Gegengröße zum **abgeleiteten** Fix-Kandidaten in Schritt 5. Tab und
+   Zeilenumbruch werden zu einem Leerzeichen, damit die Diagnose-Zeile eine
+   Zeile bleibt.
    Version ausschließlich für `id-unlinked` — die nackte Kennung wird als
    Markdown-Link auf das in der passenden ids-Regel deklarierte
    Definitions-`target` vorgeschlagen (relativ zum Verzeichnis der
@@ -2105,6 +2106,8 @@ getroffenen Dateien.
    beide; `sections` weder `one` noch `each`; nicht kompilierendes
    `section-pattern`/`forbid-pattern`/`require-pattern`; **explizit** gesetztes
    `min-sentences` < 1 oder `max-tasks` < 0; leerer Eintrag in `require-all`;
+   **explizit leerer** `hint` oder einer aus lauter Whitespace; ein `hint` mit
+   **Tab oder Zeilenumbruch** (das Ausgabeformat ist tab-getrennt und einzeilig);
    `table.order` außerhalb `asc`/`desc`; **explizit** gesetztes
    `table.order-column` < 1; `table.order-column` ohne `table.order`; ein
    `table` **ohne** `order` und ohne `column`-Eintrag; ein `table.column[].name`
@@ -2608,7 +2611,10 @@ liegt nicht vor", nicht „der Workflow läuft".
 
 Die **vierte** Spalte steht **nur**, wenn der Befund eine Erläuterung trägt;
 ein Befund ohne `message` ist dreispaltig. Ein Befund bleibt in beiden Fällen
-**eine** Zeile — die Zusage aus
+**eine** Zeile: Tab, Zeilenumbruch und Wagenrücklauf einer Erläuterung werden
+beim Rendern zu einem Leerzeichen, sonst könnte ein Text aus der Konfiguration
+oder aus dem geprüften Material die Feld- und Zeilengrenze verschieben. Die
+Zusage aus
 [`DC-FA-CLI-004`](lastenheft.md#dc-fa-cli-004--ausgabeformate) gilt unberührt.
 
 Zusammenfassung auf stderr: `d-check: <N> Datei(en) geprüft, <M> Befund(e)`.
@@ -2834,7 +2840,7 @@ Exit 2 ohne Prüfung
 | `structure[].forbid-pattern` | string | leer | RE2 gegen den **gesamten** bereinigten Abschnitts-Text; Treffer ⇒ `section-forbidden` |
 | `structure[].require-pattern` | string | leer | RE2, Spiegelbild von `forbid-pattern`; **kein** Treffer ⇒ `section-pattern-missing`. Deckt zugesagte Aussagen, die **innerhalb** einer Auszeichnung stehen und deshalb keine Marke sind |
 | `structure[].require-all` | string[] | leer | benannte Marken, die **alle** vorkommen müssen — als hervorgehobener Textlauf am Zeilen-Anfang nach optionalem **Listen-Marker** (`- **M:**`, `**M:**`, `- **M (Zusatz):**`) ⇒ sonst `section-marker-missing`; leerer Eintrag ⇒ Exit 2 |
-| `structure[].hint` | string | leer (aus) | vom Konfigurations-Autor **verfasste** Erläuterung dieser Regel: sie schreibt das Befund-Feld `message` ([`SPEC-001`](#spec-001--befund)) und erscheint damit als vierte Spalte der Befund-Zeile und als `Hinweis:`-Zeile in `--doctor`. **Gewinnt** gegen die modul-eigene Meldung — der Grund-Code sagt die **Art** des Defekts, der Hinweis die **Zusage**, die die Regel hütet. **Zwei Befunde ausgenommen:** unlesbarer Dateibaum und leer laufende Regel (`section-missing` auf dem Glob) — dort hat die Regel nicht gemessen. **Explizit** leer oder nur Whitespace ⇒ Exit 2: ein leerer Hinweis sagt nichts zu. **Kein Fix-Kandidat** — der ist abgeleitet und speist `--repair` ([`DC-FA-CLI-007`](lastenheft.md#dc-fa-cli-007--diagnose-modus)), dieser Text wird nie angewendet |
+| `structure[].hint` | string | leer (aus) | vom Konfigurations-Autor **verfasste** Erläuterung dieser Regel: sie schreibt das Befund-Feld `message` ([`SPEC-001`](#spec-001--befund)) und erscheint damit als vierte Spalte der Befund-Zeile und als `Hinweis:`-Zeile in `--doctor`. **Gewinnt** gegen die modul-eigene Meldung — der Grund-Code sagt die **Art** des Defekts, der Hinweis die **Zusage**, die die Regel hütet. **Drei Befunde ausgenommen:** unlesbarer Dateibaum, leer laufende Regel (`section-missing` auf dem Glob) und unlesbare **Einzeldatei** — dort hat die Regel nicht gemessen. **Explizit** leer, nur Whitespace, oder mit Tab/Zeilenumbruch ⇒ Exit 2: ein leerer Hinweis sagt nichts zu, ein mehrzeiliger bräche die Zeilen- und Feldgrenze. **Kein Fix-Kandidat** — der ist abgeleitet und speist `--repair` ([`DC-FA-CLI-007`](lastenheft.md#dc-fa-cli-007--diagnose-modus)), dieser Text wird nie angewendet |
 | `structure[].headings-match` | string | leer (aus) | RE2 gegen den **Text** jeder Überschrift der Ebene `headings-level` **innerhalb** des Abschnitts (ohne `#`-Folge, getrimmt); jede nicht matchende ⇒ `section-heading-mismatch` auf **ihrer** Zeile. Nicht kompilierend ⇒ Exit 2 |
 | `structure[].table` | map | abwesend (aus) | Klammer der beiden **Tabellen**-Bedingungen: beide sprechen über dieselbe Tabelle, adressieren ihre Spalte aber verschieden — `order-column` über die **Position**, `column[].name` über den **Namen**. Weder `order` noch ein `column`-Eintrag ⇒ Exit 2: eine leere Klammer sagt nichts zu |
 | `structure[].table.order` | string | leer (aus) | `asc` oder `desc` — schaltet die **Chronologie-Monotonie** scharf: die Schlüsselspalte jeder zusammenhängenden Tabelle des Abschnitts wird **typisiert** (ISO-Datum, Punkt-Version; **rohe** Zeilen — benannte Ausnahme von der Bereinigung) und nicht-strikt monoton verglichen ⇒ sonst `section-unordered` (auch Leerlauf ohne Datenzeile) bzw. `section-cell-untyped` (untypisierbare Zelle/Typ-Mischung). Anderer Wert ⇒ Exit 2 |

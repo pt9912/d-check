@@ -144,7 +144,7 @@ func handbookExamples() []handbookExample {
 			fixture:    brokenLink,
 			// Der Tab-separierte Befund-Zeilen-Schema-Anker + der Grund-Code;
 			// Pfad/Zeile bewusst NICHT gekoppelt (Form statt Wortlaut).
-			formTokens: []string{"\tfehlt.md\ttarget-missing", "Datei(en) geprüft,", "Befund(e)"},
+			formTokens: []string{"\tfehlt.md\ttarget-missing\tLinkziel existiert nicht", "Datei(en) geprüft,", "Befund(e)"},
 		},
 		{
 			name:       "§4.9 --doctor (Prosa-Diagnose)",
@@ -154,7 +154,7 @@ func handbookExamples() []handbookExample {
 			wantFlags:  []string{"--enable ids", "--doctor"},
 			wantExit:   1,
 			fixture:    idsFixture,
-			formTokens: []string{"d-check Diagnose —", "ohne Markdown-Link", "Fix-Kandidat:"},
+			formTokens: []string{"d-check Diagnose —", "ohne Markdown-Link", "Hinweis:", "Fix-Kandidat:"},
 		},
 		{
 			name:       "§4.12 --trace (RTM-Markdown)",
