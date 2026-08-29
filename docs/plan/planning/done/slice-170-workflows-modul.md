@@ -109,22 +109,22 @@ ist eine Deklaration wie ein Make-Target.
 
 ## 4. Definition of Done
 
-- [ ] Neue `DC-FA-*`-Anforderung im Lastenheft mit Akzeptanzkriterien-Trio,
+- [x] Neue `DC-FA-*`-Anforderung im Lastenheft mit Akzeptanzkriterien-Trio,
       Versions-Bump und Historie-Zeile; Spezifikation (§2-Schema, §4-Codes)
       nachgezogen.
-- [ ] Modul existiert, ist **opt-in** und **hermetisch** (kein git, kein Netz);
+- [x] Modul existiert, ist **opt-in** und **hermetisch** (kein git, kein Netz);
       die Scan-Menge ist konfigurierbar, nicht verdrahtet.
-- [ ] **Die §3.8-Frage ist in der Anforderung beantwortet:** was das Modul
+- [x] **Die §3.8-Frage ist in der Anforderung beantwortet:** was das Modul
       liest, ohne es zu scannen, und ob dort dieselbe Zusage gilt.
-- [ ] **Verhaltens-Parität gemessen**, nicht behauptet: Modul und Skript gegen
+- [x] **Verhaltens-Parität gemessen**, nicht behauptet: Modul und Skript gegen
       denselben Bestand **und** gegen den Retro-Stand vor `4681835`; die
       Differenz ist benannt.
-- [ ] Skript entfernt und pfad-stabil im Tombstone-Register geführt; kein
+- [x] Skript entfernt und pfad-stabil im Tombstone-Register geführt; kein
       Verweis läuft ins Leere.
-- [ ] ADR mit Fitness Function, die
+- [x] ADR mit Fitness Function, die
       [ADR-0071](../../adr/0071-lokale-workflow-referenz-rechte-pruefung.md)
       und die Skript-Mechanik ablöst.
-- [ ] Handbuch, `operations.md` und **beide** READMEs (Status-Zeile **und**
+- [x] Handbuch, `operations.md` und **beide** READMEs (Status-Zeile **und**
       Modul-Liste) tragen das Modul.
 - [ ] `make gates` grün (Exit explizit); unabhängiger Review.
 
@@ -134,19 +134,38 @@ ist eine Deklaration wie ein Make-Target.
   hier als CI-Hygiene begann, wird mit der Anforderung ein Vertrag, den
   Adopter lesen und an dem sie sich ausrichten. Die Grenzen müssen deshalb
   schärfer stehen als im Skript — insbesondere „eine Fehlerklasse, nicht die
-  Lauffähigkeit". — **Ausgang:** *(bei Closure)*
+  Lauffähigkeit". — **Ausgang: weiter offen, permanent.** Die Grenze steht
+  jetzt an vier Stellen, an denen ein Adopter sie liest — in der Anforderung,
+  in [ADR-0072](../../adr/0072-workflows-modul.md) §Konsequenzen, im Handbuch
+  §4.19 und in beiden READMEs. Ob sie so gelesen wird, prüft kein Gate.
 - **Die Parität kann still verloren gehen.** Der echte Parser liest Formen, die
   das Skript meldete; das ist der Gewinn — aber es heißt auch, dass ein
   bisher rotes Repo grün wird, ohne dass sich etwas verbessert hat. Die
   Differenz gehört gemessen und benannt, nicht als Fortschritt verbucht. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang: eingetreten, zweimal, und beide Male gemessen.** Erstens in der
+  **erwarteten** Richtung: `uses-local-perms-unreadable` entfällt ersatzlos —
+  ein Repo mit `read-all` wird grün, ohne dass sich etwas verbessert hat; das
+  steht so im CHANGELOG, nicht als Fortschritt verbucht. Zweitens in der
+  **anderen**, die dieser Punkt nicht vorhergesehen hatte: der Parser las
+  strenger als die Textsuche, weil der Tag-Kommentar in YAML **kein Teil des
+  Werts** ist — das Modul meldete jeden korrekt gepinnten Eintrag als
+  `uses-pin-untagged`, bis der `LineComment` gelesen wurde. Ein roter Test hat
+  es gefunden, nicht die Planung.
 - **Die Scan-Menge ist der eigentliche Entwurfspunkt.** Ein verdrahtetes
   `.github/workflows/` macht das Modul für Adopter wertlos; ein zu freier Glob
-  lässt es YAML prüfen, das keine Workflows sind. — **Ausgang:** *(bei Closure)*
+  lässt es YAML prüfen, das keine Workflows sind. — **Ausgang: weiter offen,
+  mit Trigger.** Gelöst ist die eine Hälfte (`workflows.dir` ist
+  konfigurierbar); die andere — reicht **ein** Verzeichnis, oder braucht es
+  einen Glob? — ist an **einer** Ablage geeicht und hängt am ersten
+  Re-Evaluierungs-Trigger von
+  [ADR-0072](../../adr/0072-workflows-modul.md).
 - **Der Tombstone ist die Stelle, an der Verweise verrotten**
   ([ADR-0025](../../adr/0025-codepaths-ignore-refs.md) existiert genau
   deswegen). Der Skript-Pfad steht in `AGENTS.md`, in zwei ADRs und im
-  Slice-Bestand. — **Ausgang:** *(bei Closure)*
+  Slice-Bestand. — **Ausgang: entfallen.** Der Tombstone deckt die vier
+  eingefrorenen Klassen; die **lebenden** Fundstellen sind umformuliert, und
+  zwei davon hat nicht die Planung gefunden, sondern der Gate-Lauf
+  (`codepath-missing` in CHANGELOG und Lastenheft-Historie).
 
 ## 6. Trigger
 
@@ -199,3 +218,45 @@ Gates: `make gates`, `make workflow-pins`.
 Ablösung eines eigenen Skripts; kein Fremdsystem, keine Reconciliation.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Die Gates haben in diesem Slice dreimal etwas gefunden, das die Planung nicht
+gesehen hat — und jedes Mal war es der interessantere Teil.**
+
+**Der Schnitt kam von `arch-check`, nicht von mir.** Mein erster Bau legte
+`gopkg.in/yaml.v3` in `core/rules`; a-check meldete `app-impurity`. Der Plan
+hatte über den Hexagon-Schnitt kein Wort verloren — er nannte den YAML-Parser
+als Gewinn und übersah, dass er im Kern nicht stehen darf. Die Auflösung ist der
+Port `driven.WorkflowParser` mit dem Adapter `workflowyaml`, dieselbe Ansiedlung
+wie [ADR-0009](../../adr/0009-yaml-im-report-adapter.md). **Der Preis steht in
+[ADR-0072](../../adr/0072-workflows-modul.md), nicht in einem Kommentar:** die
+yaml-Allowlist in `.a-check.yml` wächst von zwei auf drei Adapter.
+
+**Der zweite Fund widerlegt eine Annahme dieses Slice.** §5 führte „die Parität
+kann still verloren gehen" — gedacht als *der Parser ist nachsichtiger*.
+Eingetreten ist beides: `uses-local-perms-unreadable` entfällt (die erwartete
+Richtung), **und** der Parser war strenger, weil der Tag-Kommentar in YAML kein
+Teil des Werts ist. Ohne den `LineComment` meldete das Modul jeden korrekt
+gepinnten Eintrag als `uses-pin-untagged`. Gefunden hat das ein roter Test, kein
+Nachdenken.
+
+**Der dritte Fund ist der kleinste und der lehrreichste:** zwei tote Verweise
+auf das gelöschte Skript standen in **lebender** Doku — CHANGELOG und
+Lastenheft-Historie —, wo der Tombstone nicht greift und auch nicht greifen
+soll. `codepath-missing` hat sie gemeldet. Die Trennung eingefroren/lebend war
+im Plan benannt; welche Fundstellen auf welcher Seite liegen, war es nicht.
+
+**Was den Slice trägt.** Die Parität ist mit dem **finalen** Modul gemessen, in
+beide Richtungen: heutiger Bestand null Befunde bei Modul und Skript; gegen den
+Stand vor dem Rechte-Fix melden **beide** `uses-local-perms-undeclared` auf
+`release.yml:268`. Erst danach ist das Skript gefallen. Dazu 11 getippte Tests
+und `make gates` Exit 0 über alle zehn Glieder.
+
+**Ein DoD-Haken bleibt leer:** der unabhängige Review ist nicht gelaufen. Bei
+einem Slice, der eine **neue Anforderung** in den Vertrag schreibt und ein
+Modul an Adopter ausliefert, wiegt das schwerer als bei den beiden Vorgängern —
+das ist keine interne Formkorrektur mehr. Es steht hier, statt in der
+Commit-Historie verstreut zu sein.
+
+**Offen und bewusst nicht in diesem Slice:** das Release. Ein neues Modul ist
+nutzersichtbar; §3 schließt den Release-Prep ausdrücklich aus, und er bleibt ein
+eigener Schritt.
