@@ -6,8 +6,9 @@
 **Welle:** — **wellenlos**, solange keine Closure-Bedingung über die eigene DoD
 hinausgeht (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
 braucht).
-;
-**Bezug:** das abgeloeste Harness-Skript `workflow-pins.sh` (mit diesem Slice entfernt, Tombstone in [`.d-check.yml`](../../../../.d-check.yml))
+
+**Bezug:** das abgelöste Harness-Skript `workflow-pins.sh` (mit diesem Slice
+entfernt; Tombstone in [`.d-check.yml`](../../../../.d-check.yml));
 [ADR-0071](../../adr/0071-lokale-workflow-referenz-rechte-pruefung.md) und
 [ADR-0068](../../adr/0068-lokale-workflow-referenzen-ohne-pin.md) (die
 Entscheide, deren Mechanik wandert);
@@ -19,9 +20,11 @@ die fünf Präzedenzfälle derselben Bewegung —
 [ADR-0028](../../adr/0028-planning-lifecycle-modul.md),
 [ADR-0031](../../adr/0031-targets-deklarations-konsistenz-modul.md).
 
-**Berührte Spec-Stellen:** eine **neue** `DC-FA-*`-Anforderung im Lastenheft und
-ihre Verfeinerung in der Spezifikation (Kennung beim Anlegen vergeben — nicht
-hier erfunden, [`MR-008`](../../../../harness/conventions.md#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage)).
+**Berührte Spec-Stellen:** [`DC-FA-WF-001`](../../../../spec/lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in)
+(neue Anforderung, Kennung **beim Schreiben** vergeben — nicht beim Planen
+erfunden, [`MR-008`](../../../../harness/conventions.md#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage))
+und ihre Verfeinerung [`DC-FA-WF-001.a`](../../../../spec/spezifikation.md#dc-fa-wf-001a--deklarations-konsistenz-von-workflow-referenzen-workflows) in der Spezifikation, samt neuem
+Bereichskürzel `WF` in §3 des Lastenhefts.
 
 **Verantwortlich:** pt9912. **Autor:** pt9912. **Datum:** 2026-08-29.
 
