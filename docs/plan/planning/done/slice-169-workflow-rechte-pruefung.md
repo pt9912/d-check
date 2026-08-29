@@ -100,18 +100,18 @@ nicht im Blick, nicht verworfen.
 
 ## 4. Definition of Done
 
-- [ ] Der Wächter meldet die **stille Vererbung**: ein Job mit lokaler Referenz
+- [x] Der Wächter meldet die **stille Vererbung**: ein Job mit lokaler Referenz
       ohne eigenes `permissions:`, dessen Ziel Rechte verlangt, ist ein Befund
       mit eigenem Grund-Code.
-- [ ] Der Wächter meldet den **zu engen Aufrufer**: ein Scope, den das Ziel
+- [x] Der Wächter meldet den **zu engen Aufrufer**: ein Scope, den das Ziel
       höher verlangt, als der Aufrufer ihn führt.
-- [ ] **Unlesbare Formen melden**, statt zu schweigen — und die Grenze steht in
+- [x] **Unlesbare Formen melden**, statt zu schweigen — und die Grenze steht in
       der ADR, nicht nur im Skript-Kommentar.
-- [ ] **Retro gemessen:** die Regel meldet den Stand vor `4681835` rot und den
+- [x] **Retro gemessen:** die Regel meldet den Stand vor `4681835` rot und den
       heutigen grün; beide Ausgaben stehen in der Commit-Botschaft.
-- [ ] Proben nach dem Muster von `make guard-probe`, mit Erwartung und Ergebnis
+- [x] Proben nach dem Muster von `make guard-probe`, mit Erwartung und Ergebnis
       je Fall.
-- [ ] ADR mit Fitness Function und benannten Grenzen; `AGENTS.md` §4 und §3.9
+- [x] ADR mit Fitness Function und benannten Grenzen; `AGENTS.md` §4 und §3.9
       nachgezogen.
 - [ ] `make gates` grün (Exit explizit); unabhängiger Review.
 
@@ -121,22 +121,36 @@ nicht im Blick, nicht verworfen.
   Der Bestand trägt genau **eine** lokale Workflow-Referenz; alles, was der
   Wächter über die Klasse behauptet, ist an einem Exemplar geeicht. Der Retro-
   Test gegen den echten Ausfall ist die Gegenprobe, aber er deckt nur die eine
-  Richtung. — **Ausgang:** *(bei Closure)*
+  Richtung. — **Ausgang: weiter offen, mit Trigger.** Die sieben `--selftest`-Proben
+  eichen die Regel über den Anlass hinaus, ersetzen aber keinen zweiten realen
+  Fall; der Trigger in
+  [ADR-0071](../../adr/0071-lokale-workflow-referenz-rechte-pruefung.md) hängt
+  genau an der zweiten lokalen Referenz.
 - **Eine Härtung am Rand kippt die Fehlerpolitik, und die Proben sehen es
   nicht** ([`BEO-018`](../observations.md)). Der Wächter ist Teil von
   `make gates`; wird er bei unlesbarer Form fail-closed, kann eine harmlose
-  Schreibweise künftig den ganzen inneren Loop rot machen. — **Ausgang:** *(bei
-  Closure)*
+  Schreibweise künftig den ganzen inneren Loop rot machen. — **Ausgang: weiter
+  offen, bewusst in Kauf genommen.** Die Probe „unlesbare Form" deckt den
+  Mechanismus, nicht die Frage, ob eine legitime Schreibweise darunter fällt.
+  Als Preis in [ADR-0071](../../adr/0071-lokale-workflow-referenz-rechte-pruefung.md)
+  §Konsequenzen benannt.
 - **YAML ohne YAML-Parser bleibt eine Näherung.** Einrückungs-Zerlegung mit
   `awk` trägt die Block-Form; Anker, Flow-Style und Mehrfach-Dokumente nicht.
   Die Grenze ist benennbar — die Versuchung, sie durch „noch ein `sed`" zu
   verschieben, ist der eigentliche Punkt
-  ([`MR-046`](../../../../harness/conventions.md#mr-046)). — **Ausgang:** *(bei
-  Closure)*
+  ([`MR-046`](../../../../harness/conventions.md#mr-046)). — **Ausgang: weiter
+  offen, und der Nachfolger steht.** Die Näherung ist geblieben, wie geplant;
+  der Auftraggeber hat entschieden, den Wächter als **Produkt-Modul** neu zu
+  bauen, wo ein echter YAML-Parser die Grenze auflöst. Das ist slice-170 und
+  löst diesen Punkt dort, nicht hier.
 - **Der Wächter deckt eine Fehlerklasse, nicht die Lauffähigkeit.** Ein grüner
   Lauf sagt danach „diese eine Klasse liegt nicht vor" — wer mehr hineinliest,
   hat wieder das Versprechen aus [ADR-0068](../../adr/0068-lokale-workflow-referenzen-ohne-pin.md),
-  das dieser Slice korrigiert. — **Ausgang:** *(bei Closure)*
+  das dieser Slice korrigiert. — **Ausgang: weiter offen, permanent.** Das ist
+  keine Restarbeit, sondern die Zusage selbst: sie steht in
+  [ADR-0071](../../adr/0071-lokale-workflow-referenz-rechte-pruefung.md)
+  §Konsequenzen und in [`AGENTS.md`](../../../../AGENTS.md) §3.9, damit sie
+  nicht wieder stillschweigend wächst.
 
 ## 6. Trigger
 
@@ -182,3 +196,41 @@ Harness-Mechanik, konventionsgetragen. Der Slice erweitert ein vorhandenes
 Gate-Skript um eine Bedingung; kein Fremdsystem, keine Reconciliation.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Ein grünes Gate hat ein Release nicht aufgehalten — und der Wächter, der das
+hätte sehen können, las die Datei nicht, die er öffnete.**
+
+**Die Lücke ist zu, und zwar belegt in beide Richtungen.** Gegen den Stand vor
+dem Fix meldet der Wächter `uses-local-perms-undeclared` auf Zeile 268 und endet
+mit Exit 1; gegen den heutigen ist er grün. Ohne diese Retro-Messung wäre die
+Regel eine Behauptung — der Anlassfall ist **ein** Exemplar, und genau das ist
+die Bauform, die dieses Repo als [`BEO-011`](../observations.md) führt. Die
+sieben `--selftest`-Proben eichen sie über ihn hinaus: der zu enge Aufrufer und
+der beim Aufrufer fehlende Scope sind konstruiert, nie beobachtet.
+
+**Der eigentliche Befund war eine Reichweiten-Aussage, nicht ein Bug.**
+[ADR-0068](../../adr/0068-lokale-workflow-referenzen-ohne-pin.md) schloss mit
+*„Die Ausnahme lässt damit keinen Eintrag ungeprüft"*. Über den **Pin** war das
+wahr, über die **Lauffähigkeit** zu weit — und der Satz stand als Zusage in
+[`AGENTS.md`](../../../../AGENTS.md) §3.9, wo ihn jeder Folgelauf gelesen hätte.
+Er ist jetzt korrigiert. Das ist die Lehre: eine ADR, die sagt *„damit ist X
+vollständig"*, ist die Stelle, an der die nächste Lücke entsteht; die
+Vollständigkeits-Behauptung gehört auf die Achse, die sie tatsächlich deckt.
+
+**Der Slice endet mit einem Nachfolger statt mit einem Schlussstrich.** Auf die
+Frage des Auftraggebers, ob der Wächter nicht ins Produkt gehört, ist die
+Antwort ja — und meine Begründung dagegen war schlecht: ich hatte in §3 und in
+[ADR-0071](../../adr/0071-lokale-workflow-referenz-rechte-pruefung.md) notiert,
+`d-check` prüfe „Dokumentation gegen Zustand, nicht Actions-Semantik", während
+`targets` längst Makefiles liest und `commits`/`vcs`/`tracked` git. Das Repo hat
+diesen Weg fünfmal genommen ([ADR-0024](../../adr/0024-vcs-immutable-gate.md), [ADR-0026](../../adr/0026-completeness-in-product-gate.md), [ADR-0027](../../adr/0027-commits-traceability-modul.md), [ADR-0028](../../adr/0028-planning-lifecycle-modul.md), [ADR-0031](../../adr/0031-targets-deklarations-konsistenz-modul.md)):
+erst das Skript, dann löst das Modul es ab. slice-170 nimmt ihn ein sechstes Mal
+und löst dabei die YAML-Näherung dieses Slice auf.
+
+**Ein DoD-Haken bleibt leer:** der unabhängige Review ist nicht gelaufen. Was
+den Slice trägt, sind die Gates, die sieben Proben und die Retro-Messung gegen
+den echten Ausfall — kein zweites Augenpaar.
+
+**Belegt:** `make gates` Exit 0 (582 Dateien, 0 Befunde);
+`bash tools/harness/workflow-pins.sh --selftest` — 7 Proben ok; die Retro-Messung
+mit beiden Ausgaben in der Commit-Botschaft von `f6fba9a`.
