@@ -53,6 +53,22 @@ offenen DoD-Haken.
 **Die fehlende Größe ist regel-lokal, nicht code-lokal.** Sie gehört an die
 Regel, weil nur die Regel weiß, welche Zusage sie hütet.
 
+**Beim Bau gemessen, und es verschiebt den Schnitt:** Das Feld gibt es
+längst. [`SPEC-001`](../../../../spec/spezifikation.md#spec-001--befund) führt
+`message` als *„menschenlesbare Erläuterung (nicht stabilitätsgarantiert)"*,
+**22** der Regel-Dateien setzen es — und **gerendert wird es für Menschen
+nirgends**: weder in der Befund-Zeile noch in `--doctor`. Es erreicht
+ausschließlich `--json`/`--yaml`, also den Maschinen-Konsumenten. Wer
+`make doc-check` rot laufen lässt, sieht die Erläuterung nicht, die das
+Produkt für ihn geschrieben hat.
+
+**Damit ist die Aufgabe eine andere und eine kleinere:** nicht ein neues Feld
+neben `message`, sondern (a) `message` für Menschen sichtbar machen und (b)
+einer `structure`-Regel erlauben, es aus der Konfiguration zu **verfassen**.
+Ein zweites Feld daneben hätte zwei Slots für dieselbe Frage geschaffen — die
+Bauform, die dieses Repo an anderer Stelle als Redundanz zurückgebaut hat
+([ADR-0069](../../adr/0069-zellenlaenge-als-strukturbedingung.md)).
+
 **Der Anlass ist gemessen und liegt in diesem Repo:**
 [slice-172](../open/slice-172-closure-uebergang-waechtern.md) hat den Sensor für
 den offenen DoD-Haken fertig entworfen und beidseitig gemessen (37 Befunde ohne
@@ -62,37 +78,46 @@ Punkt zurückgeführt worden: seine eigene §2 verlangt eine Meldung, die sagt,
 
 ## 2. Vorgehen
 
-1. **Ein neues Feld `structure[].hint`**: freier Text an **einer** Regel. Leer
-   gesetzt ⇒ Exit 2 — ein leerer Hinweis sagt nichts zu, dieselbe Härte, die
+1. **`message` wird für Menschen sichtbar.** Vierte tab-getrennte Spalte in der
+   Befund-Zeile, **nur wenn gefüllt**; eigene `Hinweis:`-Zeile in `--doctor`
+   unter `Stelle:`. `--json`/`--yaml` tragen das Feld bereits — dort ändert
+   sich nichts. Das ist der Teil, von dem **22** Regel-Dateien sofort
+   profitieren, nicht nur die neue Zusage.
+2. **Warum eine vierte Spalte und keine Fortsetzungszeile.**
+   [`DC-FA-CLI-004`](../../../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate)
+   sagt **ein Befund pro Zeile** zu, und ein Akzeptanzkriterium zählt Zeilen
+   („genau zwei Befund-Zeilen"). Eine Fortsetzungszeile bräche beides. Eine
+   vierte Spalte bricht es nicht: wer auf Tab trennt und die Felder 1–3 liest,
+   liest weiter dasselbe. **Nur wenn gefüllt**, damit ein Befund ohne
+   Erläuterung byte-identisch bleibt.
+3. **Ein neues Feld `structure[].hint`**: freier Text an **einer** Regel, der
+   `message` für die Befunde dieser Regel **verfasst**. Leer gesetzt ⇒ Exit 2
+   — ein leerer Hinweis sagt nichts zu, dieselbe Härte, die
    `planning.closure.boilerplate` für den leeren Eintrag führt.
-2. **Die Befund-Zeile bekommt eine vierte Spalte, und nur wenn sie gefüllt
-   ist.** [`DC-FA-CLI-004`](../../../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate)
-   sagt **ein Befund pro Zeile** zu; eine Fortsetzungszeile bräche das. Eine
-   vierte tab-getrennte Spalte bricht es nicht — wer auf Tab trennt und die
-   Felder 1–3 liest, liest weiter dasselbe. **Nur wenn gefüllt**, damit die
-   Ausgabe jeder Regel ohne `hint` **byte-identisch** bleibt; das ist zu
+4. **Vorrang, ausdrücklich entschieden:** setzt die Bedingung selbst schon ein
+   `message` (die Zellen-Bedingungen tun das), **gewinnt das der Regel** —
+   `hint` ist die Zusage des Konfigurations-Autors, die modul-eigene Meldung
+   ist die des Werkzeugs, und die Zusage steht näher am Leser. Der Fall ist zu
    messen, nicht zu behaupten.
-3. **`--json`/`--yaml`** tragen `hint` je `findings`-Eintrag (additiv);
-   **`--doctor`** rendert ihn als eigene Zeile unter `Stelle:`.
-4. **Abgrenzung gegen `fixCandidate`, ausdrücklich.** Der Fix-Kandidat ist
+5. **Abgrenzung gegen `fixCandidate`, ausdrücklich.** Der Fix-Kandidat ist
    **abgeleitet** und nur dort, wo er *eindeutig ableitbar* ist
    ([`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus));
    er speist `--repair` und wird zu einem anwendbaren Patch. Ein `hint` ist
    **verfasst**. Beides zu vermischen hieße, Autoren-Prosa in die
-   Patch-Pipeline zu geben — das ist der Grund für ein eigenes Feld und nicht
-   für `fixCandidate.note`.
-5. **ADR** für die Entscheidung (vierte Spalte statt Fortsetzungszeile;
-   regel-lokal statt code-lokal; `hint` ≠ `fixCandidate`), Lastenheft-Bump,
-   Spezifikations-Verfeinerung, Handbuch.
-6. `make gates`; **Review** und **Verifikation** als getrennte Läufe; Closure.
-
+   Patch-Pipeline zu geben.
+6. **ADR** für die drei Entscheide (vierte Spalte statt Fortsetzungszeile;
+   `hint` schreibt in `message` statt in ein zweites Feld; Vorrang gegenüber
+   der modul-eigenen Meldung), Lastenheft-Bump, Spezifikations-Verfeinerung,
+   Handbuch.
+7. `make gates`; **Review** und **Verifikation** als getrennte Läufe; Closure.
 ## 3. Ausdrücklich NICHT in diesem Slice
 
-- **Kein `hint` für andere Module.** `links`, `ids`, `matrix` und die übrigen
-  konfigurieren keine Regel-Liste mit Autoren-Text; ihre Befunde entstehen aus
-  dem Dokument, nicht aus einer benannten Zusage. Wer das später will, misst
-  erst den Bedarf.
-- **Keine Änderung an `fixCandidate` oder `--repair`.** Siehe §2 Punkt 4.
+- **Kein `hint` für andere Module.** Sie **sehen** ihre `message` ab jetzt —
+  das ist Punkt 1 —, aber sie können sie nicht aus der Konfiguration verfassen.
+  `links`, `ids`, `matrix` und die übrigen konfigurieren keine Regel-Liste mit
+  Autoren-Text; ihre Befunde entstehen aus dem Dokument, nicht aus einer
+  benannten Zusage. Wer das später will, misst erst den Bedarf.
+- **Keine Änderung an `fixCandidate` oder `--repair`.** Siehe §2 Punkt 5.
 - **Keine Prüfung des Hinweis-Textes.** Ob er stimmt, ist Urteil — dieselbe
   Klasse wie ein Kommentar (`AGENTS.md` §3.7). Der Sensor prüft, dass er nicht
   leer ist.
@@ -102,19 +127,26 @@ Punkt zurückgeführt worden: seine eigene §2 verlangt eine Meldung, die sagt,
 
 ## 4. Definition of Done
 
+- [ ] `message` erscheint als **vierte Spalte** der Befund-Zeile (nur wenn
+      gefüllt) und als eigene Zeile in `--doctor`; `--json`/`--yaml` bleiben
+      unverändert. Je mit Test.
 - [ ] `structure[].hint` ist im Schema, in
       [`spec/lastenheft.md`](../../../../spec/lastenheft.md) (Bump + Historie)
       und in [`spec/spezifikation.md`](../../../../spec/spezifikation.md)
       geführt; leerer Wert ⇒ Exit 2, mit Test.
-- [ ] **Byte-Identität gemessen:** ein voller `make gates`-Lauf vor und nach der
-      Änderung liefert für alle Regeln **ohne** `hint` dieselbe Ausgabe; die
-      Messung steht in der Commit-Botschaft, nicht als Behauptung.
-- [ ] Die vierte Spalte erscheint in der Befund-Zeile, `hint` in `--json` und
-      `--yaml`, eine eigene Zeile in `--doctor` — je mit Test.
-- [ ] Eine ADR begründet die drei Entscheide aus §2 Punkt 5 und ist im
+- [ ] **Der Vorrang ist gemessen:** eine `structure`-Regel mit `hint` auf einer
+      Bedingung, die selbst ein `message` setzt, zeigt den `hint` — als Test,
+      nicht als Behauptung.
+- [ ] **Byte-Identität gemessen, und ihre Grenze benannt:** ein grüner Lauf
+      (null Befunde) ist unverändert; ein Befund **ohne** `message` ist
+      unverändert; ein Befund **mit** `message` gewinnt die vierte Spalte —
+      das ist die gewollte Änderung, und sie betrifft 22 Regel-Dateien. Beide
+      Ausgaben stehen in der Commit-Botschaft.
+- [ ] Eine ADR begründet die drei Entscheide aus §2 Punkt 6 und ist im
       [ADR-Index](../../adr/README.md) eingetragen.
 - [ ] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) führt das Feld
-      dort, wo es die übrigen `structure`-Schlüssel führt.
+      dort, wo es die übrigen `structure`-Schlüssel führt, **und** die vierte
+      Spalte dort, wo es das Ausgabeformat beschreibt.
 - [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
       **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
 
