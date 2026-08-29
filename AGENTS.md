@@ -323,12 +323,25 @@ SHA tragen und **braucht keinen**. Sie löst auf denselben Commit auf wie der
 aufrufende Workflow und ist damit **stärker** gebunden als ein SHA-Pin — sie kann
 per Konstruktion nicht driften. **An die Stelle des Pin-Checks tritt die Frage,
 die hier trägt: existiert das Ziel?** Ein vertippter Verweis fiele sonst erst zur
-Laufzeit auf; `make workflow-pins` meldet ihn als `uses-local-missing`. Die
-Ausnahme lässt damit **keinen Eintrag ungeprüft**. Sie gilt **nur** dem
-`./`-Präfix; eine Referenz in ein fremdes Repository
+Laufzeit auf; `make workflow-pins` meldet ihn als `uses-local-missing`. Sie gilt
+**nur** dem `./`-Präfix; eine Referenz in ein fremdes Repository
 (`owner/repo/.github/workflows/x.yml@ref`) fällt unter die Regel wie jede
 Action. Die Zahl der lokalen Referenzen steht in der Erfolgsmeldung, statt
 stillschweigend übergangen zu werden.
+
+**Die Existenz ist nicht die einzige Frage — das stand hier zu weit**
+([ADR-0071](docs/plan/adr/0071-lokale-workflow-referenz-rechte-pruefung.md)).
+Ein aufgerufener Workflow bekommt nur die Rechte, die der aufrufende **Job**
+selbst führt; verlangt er mehr, lehnt GitHub den **ganzen Lauf vor dem ersten
+Job** ab (`startup_failure`, kein Log) — gemessen am Tag-Push von `v0.66.0`,
+während dieses Gate grün meldete. Geprüft wird deshalb auch die
+**Rechte-Anforderung des Ziels**: ein Job ohne eigenes `permissions:`, dessen
+Ziel Rechte verlangt (`uses-local-perms-undeclared`), und ein Aufrufer, der
+einen geforderten Scope zu niedrig führt (`uses-local-perms-narrow`). Was der
+Wächter nicht sicher liest, meldet er (`uses-local-perms-unreadable`), statt es
+zu übergehen. **Er deckt damit eine Fehlerklasse, nicht die Lauffähigkeit** —
+und die Zerlegung ist eine Näherung über die YAML-Block-Form, keine
+Parser-Zusage.
 
 **Begründung:** Supply-Chain-Härtung — ein Tag lässt sich umhängen, ein SHA
 nicht; dieselbe Härtung wie der Docker/make-only-Pfad in §3.1.
@@ -353,7 +366,7 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make gate-consistency`      | Meta-Gate: Deklarations-Konsistenz Doku↔Makefile via Modul `targets` (Image, dogfood; [ADR-0031](docs/plan/adr/0031-targets-deklarations-konsistenz-modul.md); [ADR-0032](docs/plan/adr/0032-gate-consistency-tombstone.md) löst das Rest-Skript voll ab). Die [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Modullisten-Integrität prüft jetzt ein getippter Go-Test in `make test`                                                                           |
 | `make planning-check`        | Meta-Gate **via Modul `planning`** (Image, dogfood): Roadmap §Offene Wellen (Ruhe-Marker) ↔ `in-progress/slice-*` (`planning-drift`, hermetisch — kein git, in `gates`) ([ADR-0028](docs/plan/adr/0028-planning-lifecycle-modul.md) löst die frühere Skript-Mechanik ab; [`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)) |
 | `make doc-check`             | Doku-Links, Anker, Kennungs-Linkpflicht, Referenzmatrix, Inline-Code-Pfade, Abschnitts-Invarianten (Modul `structure`) + Kennungen in Diagramm-Fences (Modul `diagrams`) + **wortgleiche Zitate gegen ihre Quelle** (Modul `citations`) via `d-check` selbst (Dogfooding; netzlos — zugleich [`DC-QA-03`](spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Messmethode). **`citations` ist fail-closed und läuft im inneren Loop:** eine strukturell unbrauchbare Direktive nimmt den ganzen Lauf mit, auch den `pre-commit`-Hook. Das ist tragbar, seit die Direktive nur außerhalb von Inline-Code zählt ([ADR-0060](docs/plan/adr/0060-citations-marker-scan-geteilte-prosa-antwort.md)) — der fail-closed-Rest ist ein Autoren-Fehler an einer **freien** Direktive. **Die planmäßige Rot-Quelle ist ein anderer:** der Baseline-Bump verschiebt die Zeilenspannen, und das Neu-Ankern liegt in der Bump-Prozedur ([`MR-051`](harness/conventions.md#mr-051)). Ein Merge trägt eine fremde Direktive am Hook vorbei, und `d-check:ignore` greift hier **nicht** — grob wirken nur `scan.ignore` und `citations.scope` |
-| `make workflow-pins`         | Jeder `uses:`-Schlüssel in `.github/workflows/` nennt einen **vollen 40-stelligen Commit-SHA** mit Tag-Kommentar dahinter (`uses-pin-missing` / `uses-pin-untagged`). Geprüft wird die **Form**, nicht die Gültigkeit des SHA — das wäre Netz. Liest `.yml` **und** `.yaml` und nur echte YAML-Schlüssel, nicht die Prosa der Workflow-Köpfe; **fail-closed auch bei leerer Prüfmenge**. Netzlos, **Bestandteil von `gates`** (§3.9)                                                                                              |
+| `make workflow-pins`         | Jeder `uses:`-Schlüssel in `.github/workflows/` nennt einen **vollen 40-stelligen Commit-SHA** mit Tag-Kommentar dahinter (`uses-pin-missing` / `uses-pin-untagged`). Geprüft wird die **Form**, nicht die Gültigkeit des SHA — das wäre Netz. Liest `.yml` **und** `.yaml` und nur echte YAML-Schlüssel, nicht die Prosa der Workflow-Köpfe; **fail-closed auch bei leerer Prüfmenge**. Eine **lokale** Referenz (`uses: ./…`) braucht keinen Pin (§3.9, [ADR-0068](docs/plan/adr/0068-lokale-workflow-referenzen-ohne-pin.md)) und wird stattdessen zweifach geprüft: **existiert** das Ziel (`uses-local-missing`) und hat der aufrufende **Job** die Rechte, die es verlangt ([ADR-0071](docs/plan/adr/0071-lokale-workflow-referenz-rechte-pruefung.md)) — `uses-local-perms-undeclared` (Job ohne eigenes `permissions:`, Ziel verlangt welche), `uses-local-perms-narrow` (Scope zu niedrig; ein nicht genannter Scope ist `none`), `uses-local-perms-unreadable` (Form nicht sicher lesbar ⇒ Befund, nicht Übersprung). **Er deckt eine Fehlerklasse, nicht die Lauffähigkeit**, und die Rechte-Zerlegung ist eine Näherung über die YAML-Block-Form — Anker, Flow-Mappings mit Inhalt und abweichende Einrückung melden sich als unlesbar. Netzlos prüfbar über `bash tools/harness/workflow-pins.sh --selftest` (sieben Proben). Netzlos, **Bestandteil von `gates`** (§3.9)                                                                                              |
 | `make baseline-verify`       | Vendorte Baseline gegen `SHA256SUMS`: `sha256sum -c` (geänderte/gelöschte Datei) **plus Manifest-Deckung** (zusätzlich eingelegte Datei — eine untermengige, in sich konsistente `SHA256SUMS` passierte sonst grün). Netzlos, fail-closed, **Bestandteil von `gates`** ([`MR-011`](harness/conventions.md#mr-011)-Kette)                                                    |
 | `make gates`                 | alle inneren Gates (mandatory vor Handoff)                                                                                                                                                                                                         |
 | `make ci`                    | CI-äquivalenter Lauf: gates + image-test (fährt die Release-Pipeline)                                                                                                                                                                              |

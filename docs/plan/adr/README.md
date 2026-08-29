@@ -78,6 +78,7 @@ Register (Baseline-Vorlage `templates/docs/plan/adr/README.template.md`).
 | [ADR-0068](0068-lokale-workflow-referenzen-ohne-pin.md) | Lokale Workflow-Referenzen tragen keinen SHA — und statt des Pins die Existenz-Prüfung | Accepted | 2026-08-28 | — |
 | [ADR-0069](0069-zellenlaenge-als-strukturbedingung.md) | Zellenlänge als `structure`-Bedingung — Spalte über den Namen, beidseitig begrenzt | Accepted (teil-superseded: ADR-0070) | 2026-08-28 | [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), [ADR-0057](0057-structure-tabellen-monotonie.md), [ADR-0059](0059-closure-waechter-weicht-structure-regel.md) |
 | [ADR-0070](0070-tabellen-klammer-und-spaltenliste.md) | Tabellen-Bedingungen unter einer Klammer, Zellengrenzen als Spaltenliste | Accepted | 2026-08-29 | [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), [ADR-0057](0057-structure-tabellen-monotonie.md), [ADR-0069](0069-zellenlaenge-als-strukturbedingung.md) |
+| [ADR-0071](0071-lokale-workflow-referenz-rechte-pruefung.md) | Die lokale Workflow-Referenz wird auch auf ihre Rechte-Anforderung geprüft | Accepted | 2026-08-29 | [ADR-0068](0068-lokale-workflow-referenzen-ohne-pin.md), [`BEO-004`](../planning/observations.md) |
 
 ## Konventionen
 
