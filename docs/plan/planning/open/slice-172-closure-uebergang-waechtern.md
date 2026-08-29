@@ -136,7 +136,7 @@ Beobachtungs-Register: Mensch urteilt, Maschine prüft Deckung.
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): WIP-Limit frei — heute hält
-[slice-171](../in-progress/slice-171-vorpruefungen-belegen.md) den Slot.
+[slice-171](../done/slice-171-vorpruefungen-belegen.md) den Slot.
 
 **Rückführungen:** `in-progress` → `open`, falls die Bestandsmessung eine
 andere Zahl als 37 liefert oder die Treffer über die Nummernspanne streuen —

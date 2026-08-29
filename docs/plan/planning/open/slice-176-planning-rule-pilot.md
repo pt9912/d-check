@@ -136,7 +136,7 @@ angefasst wurde** — nicht, weil jemand vorher wusste, dass er ihn braucht.
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): WIP-Limit frei — heute hält
-[slice-171](../in-progress/slice-171-vorpruefungen-belegen.md) den Slot.
+[slice-171](../done/slice-171-vorpruefungen-belegen.md) den Slot.
 
 **Rückführungen:** `in-progress` → `open`, falls die Messung zeigt, dass die
 Regel **nicht** beim Lesen einer passenden Datei geladen wird — dann trägt die

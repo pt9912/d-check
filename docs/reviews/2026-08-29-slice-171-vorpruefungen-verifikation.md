@@ -1,6 +1,6 @@
 # Verifikation slice-171 — DoD und Spec-Konformität
 
-**Gegenstand:** [slice-171](../plan/planning/in-progress/slice-171-vorpruefungen-belegen.md), Stand `4ef5025`.
+**Gegenstand:** [slice-171](../plan/planning/done/slice-171-vorpruefungen-belegen.md), Stand `4ef5025`.
 **Datum:** 2026-08-29. **Verifikation:** unabhängiger Subagent, eigener Kontext.
 **Methode:** alle Messungen selbst gefahren (Docker/make-only). Jede temporär geänderte Datei per `git checkout --` zurückgesetzt und mit `sha256sum -c` als byte-identisch bestätigt.
 

@@ -1,6 +1,6 @@
 # Review slice-171 — Der Slice erfüllt die von ihm eingeführte Regel in einem von zwei Fällen selbst nicht
 
-**Gegenstand:** [slice-171](../plan/planning/in-progress/slice-171-vorpruefungen-belegen.md), Stand `1fdc0ee` (Plan) + `4ef5025` (Implementierung).
+**Gegenstand:** [slice-171](../plan/planning/done/slice-171-vorpruefungen-belegen.md), Stand `1fdc0ee` (Plan) + `4ef5025` (Implementierung).
 **Datum:** 2026-08-29. **Reviewer:** unabhängiger Subagent, Skill `.harness/skills/reviewer.md` v1.13.0.
 **Eigene Läufe:** `make doc-check` ⇒ 589 Dateien, 0 Befunde, Exit 0. Produkt-Gegenprobe (kein `grep`) über die drei neu ausgeschlossenen Verzeichnisse mit `modules: [citations]` und ohne `ignore` ⇒ 455 Dateien, 0 Befunde, Exit 0.
 
@@ -40,7 +40,7 @@ nicht gilt.
 ### F-2 · `cite-spanne-belegt-nicht-die-benannte-regel`
 
 - **quelle:** MR-054 (Geltungsbereich), BEO-012, Reviewer-Skill Frage 9
-- **pfad:** `docs/plan/planning/in-progress/slice-171-vorpruefungen-belegen.md:165-169`
+- **pfad:** `docs/plan/planning/done/slice-171-vorpruefungen-belegen.md:165-169`
 - **befund:** Der zweite Vorprüfungs-Block schreibt „Die Regel, die diesen
   Schritt vorschreibt:" und zitiert `modul-05-planning-harness.md:224-225` —
   eine **Notier-Pflicht**, nicht die Vorschrift des Schritts. Die vorschreibende

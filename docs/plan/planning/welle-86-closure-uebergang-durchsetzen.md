@@ -62,7 +62,7 @@ betroffenen Slices, nicht als eigener Slice.
 
 ## 2. Trigger (Welle startet)
 
-- [slice-171](in-progress/slice-171-vorpruefungen-belegen.md) ist geschlossen —
+- [slice-171](done/slice-171-vorpruefungen-belegen.md) ist geschlossen —
   er belegt die Lektüre der Regel, auf die diese Welle sich beruft, und hält den
   WIP-Slot.
 
