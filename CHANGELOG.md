@@ -4,7 +4,7 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
-## [0.66.0] — 2026-08-29
+## [0.66.1] — 2026-08-29
 
 ### Added
 
