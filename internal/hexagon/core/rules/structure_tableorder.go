@@ -157,7 +157,7 @@ func structureTableOrder(
 func structureTableRow(
 	r model.StructureRule, file, line string, lineNo int, prev *tableKey, prevLine int,
 ) (*model.Finding, *tableKey, int) {
-	col := r.EffectiveTableColumn()
+	col := r.Table.EffectiveOrderColumn()
 	cells := tableCells(line)
 	if len(cells) < col {
 		f := structureFinding(r, file, lineNo, model.ReasonSectionCellUntyped,
@@ -184,9 +184,9 @@ func structureTableRow(
 		return &f, nil, 0
 	}
 	c := compareTableKeys(key, *prev)
-	if (r.TableOrder == "asc" && c < 0) || (r.TableOrder == "desc" && c > 0) {
+	if (r.Table.Order == "asc" && c < 0) || (r.Table.Order == "desc" && c > 0) {
 		f := structureFinding(r, file, lineNo, model.ReasonSectionUnordered,
-			"Schlüssel "+key.tok+" bricht die "+r.TableOrder+"-Ordnung gegenüber "+
+			"Schlüssel "+key.tok+" bricht die "+r.Table.Order+"-Ordnung gegenüber "+
 				prev.tok+" (Zeile "+strconv.Itoa(prevLine)+")")
 		return &f, &key, lineNo
 	}

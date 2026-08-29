@@ -1,6 +1,6 @@
 # ADR-0057 — Chronologie-Monotonie als siebte `structure`-Bedingung: typisiert, roh gelesen, geteilte Tabellen-Lexik
 
-**Status:** Accepted
+**Status:** Accepted (teil-superseded: ADR-0070)
 **Datum:** 2026-08-21
 **Autor:** pt9912
 **Schärft:** [`spec/spezifikation.md` §DC-FA-STRUCT-001.a](../../../spec/spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure)

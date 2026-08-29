@@ -222,14 +222,42 @@ type rawStructure struct {
 	ForbidPattern  string   `yaml:"forbid-pattern"`
 	RequirePattern string   `yaml:"require-pattern"`
 	RequireAll     []string `yaml:"require-all"`
-	TableOrder     string   `yaml:"table-order"`
-	TableColumn    *int     `yaml:"table-column"`
 	HeadingsMatch  string   `yaml:"headings-match"`
 	HeadingsLevel  *int     `yaml:"headings-level"`
-	CellMaxColumn  string   `yaml:"cell-max-column"`
-	CellMaxChars   *int     `yaml:"cell-max-chars"`
-	CellMinChars   *int     `yaml:"cell-min-chars"`
-	ExemptPaths    []string `yaml:"exempt-paths"`
+
+	Table       *rawTable `yaml:"table"`
+	ExemptPaths []string  `yaml:"exempt-paths"`
+
+	// MIGRATIONS-FANGNETZ (ADR-0070): die fuenf flachen Vorgaenger-Schluessel
+	// stehen hier NUR, um mit Klartext abgelehnt zu werden. Ohne sie meldete
+	// der strikte Decoder `field table-order not found in type rawStructure` —
+	// wahr, aber ohne den neuen Ort. Zeiger, weil allein die ANWESENHEIT
+	// zaehlt.
+	//
+	// GRENZE: das Netz faengt nur den EXAKTEN Alt-Namen. Eine Konfiguration,
+	// die den Schluessel bereits anders verschrieben hat, faellt weiter in die
+	// generische Decoder-Meldung.
+	AltTableOrder    *string `yaml:"table-order"`
+	AltTableColumn   *int    `yaml:"table-column"`
+	AltCellMaxColumn *string `yaml:"cell-max-column"`
+	AltCellMaxChars  *int    `yaml:"cell-max-chars"`
+	AltCellMinChars  *int    `yaml:"cell-min-chars"`
+}
+
+// rawTable ist die Tabellen-Klammer einer structure-Regel (ADR-0070): beide
+// Bedingungen, die ueber eine Tabelle sprechen, unter einem Schluessel.
+type rawTable struct {
+	Order       *string          `yaml:"order"`
+	OrderColumn *int             `yaml:"order-column"`
+	Column      []rawTableColumn `yaml:"column"`
+}
+
+// rawTableColumn ist ein Eintrag der Spalten-Liste: die Spalte ueber ihren
+// Kopfzeilen-Namen, dazu ihre Grenzen in ZEICHEN.
+type rawTableColumn struct {
+	Name         string `yaml:"name"`
+	CellMaxChars *int   `yaml:"cell-max-chars"`
+	CellMinChars *int   `yaml:"cell-min-chars"`
 }
 
 // applyStructure validiert die Regel-Liste am Config-Rand (§DC-FA-STRUCT-001.a
@@ -282,23 +310,26 @@ func structureBedingungsFehler(r rawStructure) string {
 			return "require-all enthält einen leeren Eintrag"
 		}
 	}
-	return structureChronologieFehler(r)
+	return structureAltSchluesselFehler(r)
 }
 
-// structureChronologieFehler prüft die drei Config-Ränder der
-// Chronologie-Bedingung (ADR-0057): eine halbe Aktivierung ist ein
-// Config-Fehler, kein Zustand — table-column ohne table-order bricht laut.
-func structureChronologieFehler(r rawStructure) string {
-	switch r.TableOrder {
-	case "", "asc", "desc":
-	default:
-		return fmt.Sprintf("table-order %q muss asc oder desc sein", r.TableOrder)
-	}
-	if r.TableColumn != nil && *r.TableColumn < 1 {
-		return fmt.Sprintf("table-column %d muss >= 1 sein", *r.TableColumn)
-	}
-	if r.TableColumn != nil && r.TableOrder == "" {
-		return "table-column ist ohne table-order wirkungslos (halbe Aktivierung)"
+// structureAltSchluesselFehler lehnt die fünf flachen Vorgänger-Schlüssel mit
+// dem NEUEN Ort ab (ADR-0070). Ein stilles Ignorieren wäre der schlimmste
+// Ausgang: die Zusage stünde in der Konfiguration und wirkte nicht.
+func structureAltSchluesselFehler(r rawStructure) string {
+	for _, a := range []struct {
+		alt, neu string
+		gesetzt  bool
+	}{
+		{"table-order", "table.order", r.AltTableOrder != nil},
+		{"table-column", "table.order-column", r.AltTableColumn != nil},
+		{"cell-max-column", "table.column[].name", r.AltCellMaxColumn != nil},
+		{"cell-max-chars", "table.column[].cell-max-chars", r.AltCellMaxChars != nil},
+		{"cell-min-chars", "table.column[].cell-min-chars", r.AltCellMinChars != nil},
+	} {
+		if a.gesetzt {
+			return fmt.Sprintf("%s ist entfallen — der Schlüssel heißt jetzt %s", a.alt, a.neu)
+		}
 	}
 	return structureUeberschriftFehler(r)
 }
@@ -313,34 +344,70 @@ func structureUeberschriftFehler(r rawStructure) string {
 	if r.HeadingsLevel != nil && r.HeadingsMatch == "" {
 		return "headings-level ist ohne headings-match wirkungslos (halbe Aktivierung)"
 	}
-	return structureZellenFehler(r)
+	return structureTabellenFehler(r)
 }
 
-// structureZellenFehler prüft die Config-Ränder der Zellenlängen-Bedingung
-// (ADR-0069). Sie hat KEINEN Default auf einer der beiden Seiten: eine Spalte
-// ohne Schwelle misst nichts, eine Schwelle ohne Spalte gilt niemandem —
-// beide Halb-Aktivierungen brechen laut, in beide Richtungen.
-func structureZellenFehler(r rawStructure) string {
-	if r.CellMaxColumn != "" && strings.TrimSpace(r.CellMaxColumn) == "" {
-		return "cell-max-column ist leer (nur Weißraum)"
+// structureTabellenFehler prüft die Config-Ränder der Tabellen-Klammer
+// (ADR-0070): die Chronologie-Hälfte (ADR-0057) und die Klammer selbst. Eine
+// halbe Aktivierung ist ein Config-Fehler, kein Zustand — order-column ohne
+// order bricht laut, und eine leere Klammer ebenso: sie sagt nichts zu.
+func structureTabellenFehler(r rawStructure) string {
+	t := r.Table
+	if t == nil {
+		return ""
 	}
-	for _, g := range []struct {
-		name string
-		val  *int
-	}{{"cell-max-chars", r.CellMaxChars}, {"cell-min-chars", r.CellMinChars}} {
-		if g.val != nil && *g.val < 1 {
-			return fmt.Sprintf("%s %d muss >= 1 sein", g.name, *g.val)
+	if t.Order == nil && t.OrderColumn == nil && len(t.Column) == 0 {
+		return "table ist ohne order/column wirkungslos (leere Klammer)"
+	}
+	ord := ""
+	if t.Order != nil {
+		ord = *t.Order
+	}
+	switch ord {
+	case "", "asc", "desc":
+	default:
+		return fmt.Sprintf("table.order %q muss asc oder desc sein", ord)
+	}
+	if t.OrderColumn != nil && *t.OrderColumn < 1 {
+		return fmt.Sprintf("table.order-column %d muss >= 1 sein", *t.OrderColumn)
+	}
+	if t.OrderColumn != nil && ord == "" {
+		return "table.order-column ist ohne table.order wirkungslos (halbe Aktivierung)"
+	}
+	return structureSpaltenFehler(t.Column)
+}
+
+// structureSpaltenFehler prüft die Einträge der Spalten-Liste (ADR-0069, Form
+// aus ADR-0070). Die Bedingung hat KEINEN Default auf einer der beiden Seiten:
+// eine Spalte ohne Schwelle misst nichts. Der DOPPELTE Name ist ein eigener
+// Rand, den erst die Liste möglich macht — zwei Einträge derselben Spalte
+// trügen dasselbe Befund-Ziel und fielen unter die Deduplikation zusammen.
+func structureSpaltenFehler(cols []rawTableColumn) string {
+	gesehen := map[string]bool{}
+	for i, c := range cols {
+		if strings.TrimSpace(c.Name) == "" {
+			return fmt.Sprintf("table.column[%d].name ist leer", i)
 		}
-		if g.val != nil && r.CellMaxColumn == "" {
-			return g.name + " ist ohne cell-max-column wirkungslos (halbe Aktivierung)"
+		for _, g := range []struct {
+			name string
+			val  *int
+		}{{"cell-max-chars", c.CellMaxChars}, {"cell-min-chars", c.CellMinChars}} {
+			if g.val != nil && *g.val < 1 {
+				return fmt.Sprintf("table.column[%d].%s %d muss >= 1 sein", i, g.name, *g.val)
+			}
 		}
-	}
-	if r.CellMaxColumn != "" && r.CellMaxChars == nil && r.CellMinChars == nil {
-		return "cell-max-column ist ohne cell-max-chars/cell-min-chars wirkungslos (halbe Aktivierung)"
-	}
-	if r.CellMaxChars != nil && r.CellMinChars != nil && *r.CellMinChars > *r.CellMaxChars {
-		return fmt.Sprintf("cell-min-chars %d liegt über cell-max-chars %d — keine Zelle erfüllt beides",
-			*r.CellMinChars, *r.CellMaxChars)
+		if c.CellMaxChars == nil && c.CellMinChars == nil {
+			return fmt.Sprintf("table.column[%d] (%q) ist ohne cell-max-chars/cell-min-chars "+
+				"wirkungslos (halbe Aktivierung)", i, c.Name)
+		}
+		if c.CellMaxChars != nil && c.CellMinChars != nil && *c.CellMinChars > *c.CellMaxChars {
+			return fmt.Sprintf("table.column[%d] (%q): cell-min-chars %d liegt über cell-max-chars %d "+
+				"— keine Zelle erfüllt beides", i, c.Name, *c.CellMinChars, *c.CellMaxChars)
+		}
+		if gesehen[c.Name] {
+			return fmt.Sprintf("table.column[%d]: Spalte %q kommt doppelt vor", i, c.Name)
+		}
+		gesehen[c.Name] = true
 	}
 	return ""
 }
@@ -376,12 +443,28 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 		Sections: r.Sections, NonEmpty: r.NonEmpty, MinSentences: r.MinSentences,
 		MaxTasks: r.MaxTasks, ForbidPattern: r.ForbidPattern,
 		RequirePattern: r.RequirePattern, RequireAll: r.RequireAll,
-		TableOrder: r.TableOrder, TableColumn: r.TableColumn,
 		HeadingsMatch: r.HeadingsMatch, HeadingsLevel: r.HeadingsLevel,
-		CellMaxColumn: r.CellMaxColumn, CellMaxChars: r.CellMaxChars,
-		CellMinChars: r.CellMinChars,
+		Table:       applyTable(r.Table),
 		ExemptPaths: r.ExemptPaths,
 	}, nil
+}
+
+// applyTable übersetzt die Tabellen-Klammer in das Kern-Modell. Eine
+// abwesende Klammer liefert die Null-Regel — beide Bedingungen aus.
+func applyTable(t *rawTable) model.TableRule {
+	if t == nil {
+		return model.TableRule{}
+	}
+	out := model.TableRule{OrderColumn: t.OrderColumn}
+	if t.Order != nil {
+		out.Order = *t.Order
+	}
+	for _, c := range t.Column {
+		out.Columns = append(out.Columns, model.TableColumnRule{
+			Name: c.Name, CellMaxChars: c.CellMaxChars, CellMinChars: c.CellMinChars,
+		})
+	}
+	return out
 }
 
 // rawTracked trägt scope und die Parameter des Moduls tracked

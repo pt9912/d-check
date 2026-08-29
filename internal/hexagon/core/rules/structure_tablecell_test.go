@@ -8,11 +8,19 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
 )
 
-// cellMaxRule baut die Minimal-Regel der Zellenlaengen-Bedingung.
+// cellMaxRule baut die Minimal-Regel der Zellenlaengen-Bedingung: EINE Spalte
+// in der Tabellen-Klammer.
 func cellMaxRule(col string, obergrenze int) model.StructureRule {
+	return cellMaxRuleN(model.TableColumnRule{Name: col, CellMaxChars: &obergrenze})
+}
+
+// cellMaxRuleN baut die Regel ueber BELIEBIG viele Spalten desselben
+// Abschnitts — die Form, die ADR-0070 an die Stelle mehrerer Regeln mit
+// wiederholtem Selektor setzt.
+func cellMaxRuleN(cols ...model.TableColumnRule) model.StructureRule {
 	return model.StructureRule{
 		Files: "docs/*.md", Section: "## Index",
-		CellMaxColumn: col, CellMaxChars: &obergrenze,
+		Table: model.TableRule{Columns: cols},
 	}
 }
 
@@ -176,7 +184,7 @@ func TestCellMaxLeereZelle(t *testing.T) {
 	}
 	untergrenze := 1
 	r := cellMaxRule("Titel", 20)
-	r.CellMinChars = &untergrenze
+	r.Table.Columns[0].CellMinChars = &untergrenze
 	files := map[string]string{"docs/a.md": "# T\n\n## Index\n\n" + body}
 	f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})
 	if len(f) != 1 || f[0].Reason != model.ReasonSectionCellUndersized {
@@ -187,15 +195,18 @@ func TestCellMaxLeereZelle(t *testing.T) {
 	}
 }
 
-// Zwei Spalten, eine Zeile: die Regel-Identitaet traegt die benannte Spalte,
+// Zwei Spalten, eine Zeile, EINE Regel: das Befund-Ziel traegt die Spalte,
 // sonst faenden die beiden Befunde dieselbe Adresse (Datei, Zeile, Regel,
 // Ziel, Grund) und die Deduplikation verloere einen.
 func TestCellMaxZweiSpaltenEineZeile(t *testing.T) {
 	files := map[string]string{"docs/a.md": "# T\n\n## Index\n\n" +
 		"| Titel | Status |\n|---|---|\n| " + strings.Repeat("x", 30) + " | " +
 		strings.Repeat("y", 30) + " |\n"}
-	f := CheckStructure(coretest.NewMemFS(files),
-		[]model.StructureRule{cellMaxRule("Titel", 20), cellMaxRule("Status", 20)})
+	zwanzig := 20
+	f := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{cellMaxRuleN(
+		model.TableColumnRule{Name: "Titel", CellMaxChars: &zwanzig},
+		model.TableColumnRule{Name: "Status", CellMaxChars: &zwanzig},
+	)})
 	if len(f) != 2 {
 		t.Fatalf("erwartet zwei Befunde (eine Zeile, zwei Spalten), got %+v", f)
 	}
@@ -204,16 +215,34 @@ func TestCellMaxZweiSpaltenEineZeile(t *testing.T) {
 	}
 }
 
-// Die Identitaet waechst nur, wo die Regel eine Spalte NENNT: eine
-// Bestandsregel ohne Spalten-Angabe behaelt ihr target unveraendert.
-func TestStructureIdentitaetOhneSpalteUnveraendert(t *testing.T) {
-	r := model.StructureRule{Files: "docs/*.md", Section: "## H"}
+// Die Zellen-Spalten stehen seit ADR-0070 NICHT mehr in der Regel-Identitaet:
+// sie sind eine Liste INNERHALB einer Regel und koennen keine zwei Regeln mehr
+// kollidieren lassen. Getrennt wird je BEFUND ueber ColumnTarget — und dessen
+// Form ist die des frueheren targets, damit sich fuer keine Bestandsregel ein
+// Befund-Ziel aendert.
+func TestStructureIdentitaetOhneSpalte(t *testing.T) {
+	r := cellMaxRuleN(model.TableColumnRule{Name: "Titel"})
+	r.Files, r.Section = "docs/*.md", "## H"
 	if got, want := r.Identity(), "docs/*.md :: ## H"; got != want {
 		t.Errorf("Identity() = %q, want %q", got, want)
 	}
-	r.CellMaxColumn = "Titel"
-	if got, want := r.Identity(), "docs/*.md :: ## H :: Spalte Titel"; got != want {
-		t.Errorf("Identity() mit Spalte = %q, want %q", got, want)
+	if got, want := r.ColumnTarget("Titel"), "docs/*.md :: ## H :: Spalte Titel"; got != want {
+		t.Errorf("ColumnTarget() = %q, want %q", got, want)
+	}
+}
+
+// Die CHRONOLOGIE-Spalte bleibt in der Identitaet: zwei Chronologie-Zusagen
+// ueber denselben Abschnitt sind zwei Regeln und brauchen zwei Identitaeten.
+func TestStructureIdentitaetMitOrderColumn(t *testing.T) {
+	zwei := 2
+	r := model.StructureRule{Files: "docs/*.md", Section: "## H",
+		Table: model.TableRule{Order: "desc", OrderColumn: &zwei}}
+	if got, want := r.Identity(), "docs/*.md :: ## H :: Spalte 2"; got != want {
+		t.Errorf("Identity() = %q, want %q", got, want)
+	}
+	r.Table.OrderColumn = nil
+	if got, want := r.Identity(), "docs/*.md :: ## H"; got != want {
+		t.Errorf("Identity() ohne explizite Spalte = %q, want %q", got, want)
 	}
 }
 

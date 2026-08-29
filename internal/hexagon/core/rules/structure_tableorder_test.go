@@ -12,7 +12,7 @@ import (
 func tableOrderRule(order string, col *int) model.StructureRule {
 	return model.StructureRule{
 		Files: "docs/*.md", Section: "## Historie",
-		TableOrder: order, TableColumn: col,
+		Table: model.TableRule{Order: order, OrderColumn: col},
 	}
 }
 

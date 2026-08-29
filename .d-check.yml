@@ -413,58 +413,63 @@ structure:
   # Der Kopf derselben Datei sagt "Derivativ: Quelle der Wahrheit sind die
   # ADR-Dateien". Eine Titel-Zelle, die die ganze Entscheidung wiederholt,
   # macht die Sicht zur zweiten Quelle -- sie kann von der ADR abdriften, ohne
-  # dass ein Gate es merkt. Die Schwelle kommt aus dem Bestand: der laengste
-  # H1-Titel misst 158 Zeichen, 200 laesst Luft.
+  # dass ein Gate es merkt.
   #
   # GRENZE: gemessen wird die Zelle, wie sie dasteht -- Markdown-Syntax
-  # eingeschlossen. Fuer die Titel-Spalte traegt das, fuer eine Link-Spalte
-  # nicht (die Nachbarspalte Bezug liegt bei Median 251 und ist zu Recht lang).
+  # eingeschlossen. Fuer die vier Spalten hier traegt das; fuer eine reine
+  # Link-Spalte nicht -- Bezug liegt bei Median 251 und ist zu Recht lang,
+  # deshalb steht dort nur eine Untergrenze.
   - files: docs/plan/adr/README.md
     section: "# ADR-Index — d-check"
-    cell-max-column: Titel
-    cell-max-chars: 200
-    cell-min-chars: 10
-  # Die Status-Zelle ist ein ZUSTANDSFELD (AGENTS.md §3.7): sie nennt den
-  # Zustand und den Beleg als auflösbaren Anker, nicht die Chronik, wie es dazu
-  # kam. 40 Zeichen tragen die gelebten Formen -- "Accepted" (Median 8),
-  # "Superseded by ADR-NNNN" (22) und "Accepted (teil-superseded: ADR-NNNN)"
-  # (36) -- und nicht mehr.
-  - files: docs/plan/adr/README.md
-    section: "# ADR-Index — d-check"
-    cell-max-column: Status
-    cell-max-chars: 40
-    cell-min-chars: 8            # "Accepted" ist die kürzeste zulässige Form
-  # Datum und Bezug decken die andere Haelfte ab: eine Zeile, die gar nicht bis
-  # zu ihnen reicht, meldet section-column-missing. Ohne sie bleibt eine
-  # verstuemmelte Zeile unsichtbar -- die vorderen Spalten stehen ja da.
-  - files: docs/plan/adr/README.md
-    section: "# ADR-Index — d-check"
-    cell-max-column: Datum
-    cell-min-chars: 10           # ISO-Datum, exakt zehn Zeichen
-    cell-max-chars: 10
-  - files: docs/plan/adr/README.md
-    section: "# ADR-Index — d-check"
-    cell-max-column: Bezug
-    cell-min-chars: 1            # `—` ist die kuerzeste zulaessige Form; leer nicht
+    table:
+      column:
+        # Die Schwelle kommt aus dem Bestand: der laengste H1-Titel misst
+        # 158 Zeichen, 200 laesst Luft.
+        - name: Titel
+          cell-max-chars: 200
+          cell-min-chars: 10
+        # Die Status-Zelle ist ein ZUSTANDSFELD (AGENTS.md §3.7): sie nennt den
+        # Zustand und den Beleg als auflösbaren Anker, nicht die Chronik, wie es
+        # dazu kam. 40 Zeichen tragen die gelebten Formen -- "Accepted"
+        # (Median 8), "Superseded by ADR-NNNN" (22) und "Accepted
+        # (teil-superseded: ADR-NNNN)" (36) -- und nicht mehr.
+        - name: Status
+          cell-max-chars: 40
+          cell-min-chars: 8      # "Accepted" ist die kürzeste zulässige Form
+        # Datum und Bezug decken die andere Haelfte ab: eine Zeile, die gar
+        # nicht bis zu ihnen reicht, meldet section-column-missing. Ohne sie
+        # bleibt eine verstuemmelte Zeile unsichtbar -- die vorderen Spalten
+        # stehen ja da.
+        - name: Datum
+          cell-min-chars: 10     # ISO-Datum, exakt zehn Zeichen
+          cell-max-chars: 10
+        - name: Bezug
+          cell-min-chars: 1      # `—` ist die kuerzeste Form; leer nicht
   - files: spec/lastenheft.md
     section: "## 7. Historie"
-    table-order: desc          # Spalte 1 = Version (0.61.0 …)
+    table:
+      order: desc              # Spalte 1 = Version (0.61.0 …)
   - files: spec/spezifikation.md
     section: "## 7. Historie"
-    table-order: desc          # Spalte 1 = Datum
+    table:
+      order: desc              # Spalte 1 = Datum
   - files: docs/plan/planning/in-progress/roadmap.md
     section: "## Historische Trigger-Verschiebungen"
-    table-order: desc          # Drift-Log: neue Zeile oben
+    table:
+      order: desc              # Drift-Log: neue Zeile oben
   - files: docs/plan/planning/in-progress/roadmap.md
     section: "## Abgeschlossene Wellen"
-    table-order: desc
-    table-column: 2            # Spalte 1 ist der Wellen-Name, Spalte 2 das Datum
+    table:
+      order: desc
+      order-column: 2          # Spalte 1 ist der Wellen-Name, Spalte 2 das Datum
   - files: version.md
     section: "## Verlauf"
-    table-order: desc          # Spalte 1 = `vX.Y.Z` in Inline-Code (Roh-Lesung)
+    table:
+      order: desc              # Spalte 1 = `vX.Y.Z` in Inline-Code (Roh-Lesung)
   - files: docs/user/benutzerhandbuch.md
     section: "## 11. Änderungshistorie"
-    table-order: asc           # die einzige aufsteigende Bestandstabelle (§11: unten anhängen)
+    table:
+      order: asc               # die einzige aufsteigende Bestandstabelle (§11: unten anhängen)
 
   # Struktur-ID-Vergabe im Technik-Stratum (MR-000, seit welle-80): jede
   # ###-Sektion des Schema-Abschnitts traegt eine SPEC-Kennung — sonst zeigt

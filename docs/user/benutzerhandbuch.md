@@ -973,9 +973,14 @@ der ersten abdriftet.
 structure:
   - files: docs/plan/adr/README.md
     section: "# ADR-Index"
-    cell-max-column: Titel      # die Spalte über ihren KOPFZEILEN-Namen
-    cell-max-chars: 200         # Obergrenze in Zeichen
-    cell-min-chars: 10          # Untergrenze — sonst darf sie leer sein
+    table:
+      column:                       # beliebig viele Spalten, EIN Selektor
+        - name: Titel               # die Spalte über ihren KOPFZEILEN-Namen
+          cell-max-chars: 200       # Obergrenze in Zeichen
+          cell-min-chars: 10        # Untergrenze — sonst darf sie leer sein
+        - name: Datum
+          cell-min-chars: 10        # ISO-Datum, exakt zehn Zeichen
+          cell-max-chars: 10
 ```
 
 ```bash
@@ -992,11 +997,14 @@ docs/plan/adr/README.md:41  …	section-cell-oversized
 docs/plan/adr/README.md:64  …	section-column-missing
 ```
 
-**Drei Dinge, die dabei zählen:**
+**Vier Dinge, die dabei zählen:**
 
-- **Der Spaltenname, nicht die Position.** Wer `cell-max-column: 2` schreiben
+- **Der Spaltenname, nicht die Position.** Wer `name: 2` schreiben
   könnte, hätte ein Gate, das nach dem Einfügen einer Spalte **still** die
   falsche misst. Über den Kopfzeilen-Namen fällt derselbe Umbau **laut** auf.
+- **Ein Selektor, beliebig viele Spalten.** Jede weitere Spalte ist ein
+  Listen-Eintrag, keine zweite Regel mit wiederholtem `files`/`section` — und
+  dieselbe Spalte zweimal zu nennen ist ein Config-Fehler, kein Doppel-Gate.
 - **Ohne `cell-min-chars` darf die Zelle leer sein** — null Zeichen liegen
   unter jeder Obergrenze. Wer „gefüllt" meint, muss es sagen.
 - **Eine Zeile, die gar nicht bis zur Spalte reicht, meldet.** Das ist der Fall,
@@ -1915,12 +1923,14 @@ structure:
     # forbid-pattern: 'TODO'
     # require-pattern: 'Beleg'
     # require-all: ["Beleg", "Lernsignal"]
-    # table-order: desc                           # asc|desc: Chronologie-Monotonie der Schlüsselspalte
-    # table-column: 1                             # 1-basierte Schlüsselspalte (Default 1; nur mit table-order)
+    # table:                                      # die beiden TABELLEN-Bedingungen unter einer Klammer
+    #   order: desc                               # asc|desc: Chronologie-Monotonie der Schlüsselspalte
+    #   order-column: 1                           # 1-basierte Schlüsselspalte (Default 1; nur mit order)
+    #   column:                                   # Zellengrenzen je Spalte — beliebig viele, EIN Selektor
+    #     - name: Titel                           # Spalte über ihren KOPFZEILEN-Namen (nicht Position)
+    #       cell-max-chars: 200                   # Obergrenze in ZEICHEN
+    #       cell-min-chars: 10                    # Untergrenze — ohne sie passiert die LEERE Zelle
     # headings-match: '^SPEC-[0-9]{3} '           # JEDE Überschrift im Abschnitt matcht dieses Muster
-    # cell-max-column: Titel                      # Spalte über ihren KOPFZEILEN-Namen (nicht Position)
-    # cell-max-chars: 200                         # Obergrenze in ZEICHEN
-    # cell-min-chars: 10                          # Untergrenze — ohne sie passiert die LEERE Zelle
     # headings-level: 4                           # geprüfte ATX-Ebene (Default: Abschnitts-Ebene + 1);
     #                                             # MUSS tiefer als der Abschnitt liegen — eine gleiche
     #                                             # oder flachere Ebene kommt in ihm nicht vor, die
@@ -1944,9 +1954,9 @@ Satzende-Zeichen **vor Whitespace oder Zeilenende**: die Punkte in einer
 Versionsnummer wie 0.57.0 oder in einem Dateipfad tragen keinen Satz und zählen
 nicht mit.
 
-Fünftens: die **Chronologie-Bedingung** (`table-order: asc|desc`) ist die eine
+Fünftens: die **Chronologie-Bedingung** (`table.order: asc|desc`) ist die eine
 Ausnahme von dieser Bereinigung — sie liest die Zellen der Schlüsselspalte
-(`table-column`, 1-basiert) **roh**, weil reale Schlüssel in Release-Registern
+(`table.order-column`, 1-basiert) **roh**, weil reale Schlüssel in Release-Registern
 in Inline-Code stehen. Verglichen wird **typisiert** (ISO-Datum `JJJJ-MM-TT`
 oder Punkt-Version wie `1.10`, segmentweise numerisch — `1.10` kommt **nach**
 `1.9`) und **nicht-strikt** monoton je zusammenhängender Tabelle; Kopf- und
@@ -1973,14 +1983,20 @@ der geprüften Ebene, ist die Bedingung wirkungslos wahr, und eine Ebene
 den Schlüssel nicht mit `planning.closure.heading-pattern`: jener ist ein
 **Selektor** (welcher Abschnitt), dieser eine **Bedingung** (welche Form).
 
-Siebtens: die **Zellenlängen-Bedingung** (`cell-max-column` mit
-`cell-max-chars` und/oder `cell-min-chars`) begrenzt eine Tabellenspalte auf
+Siebtens: die **Zellenlängen-Bedingung** (`table.column`, je Eintrag ein `name`
+mit `cell-max-chars` und/oder `cell-min-chars`) begrenzt eine Tabellenspalte auf
 eine Spanne in **Zeichen** — nicht Bytes, ein Umlaut ist ein Zeichen. Sie ist
 die dritte Bedingung auf den rohen Abschnitts-Zeilen und die einzige, die ihre
-Spalte über einen **Namen** adressiert: `cell-max-column` nennt die
+Spalte über einen **Namen** adressiert: `name` nennt die
 **Kopfzelle**, nicht eine Position. Das ist Absicht — eine eingefügte Spalte
 verschöbe eine Positions-Angabe **still** auf die falsche Spalte, während ein
 umbenannter Kopf **laut** meldet (`section-column-missing`).
+
+**`column` ist eine Liste, und das ist der Punkt.** Mehrere Spalten desselben
+Abschnitts sind Einträge unter **einem** Selektor — vorher kostete jede weitere
+Spalte eine eigene Regel mit wiederholtem `files`/`section`. Dieselbe Spalte
+zweimal zu nennen ist ein Config-Fehler (Exit 2): zwei Zusagen über dieselbe
+Zelle trügen dasselbe Befund-Ziel.
 
 Gebunden wird **je Tabelle**: trägt eine Tabelle des Abschnitts den Namen
 nicht, ist sie für diese Bedingung irrelevant — eine Nebentabelle schaltet die
@@ -2026,7 +2042,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `heading`-Block (Default `## Aktuelle Welle`) genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten. Überschriften und Marker zählen nur **außerhalb von Code-Blöcken**; die Block-Grenze ist die geteilte Abschnittsgrenze. **Dritte Fähigkeit** (opt-in über `waves.dir`): die Wellen-Register der Roadmap gegen die Wellen-Dateien — Plan-Dokument flach ⟺ aktive Welle (`waves.mode: one`, Default) **oder** Kennungs-Bijektion Aktiv-Block ⟺ flache Dokumente, Marker außen vor (`waves.mode: many`); Vorschau ohne Datei, Abschluss-Register ⟺ Ergebnisnotizen (beidseitig) | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder`, `closure-note-ambiguous`, `wave-drift`, `wave-preview-exists`, `wave-results-missing`, `wave-unregistered` |
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
 | `targets`   | opt-in        | Deklarations-Konsistenz Doku ↔ Build-Targets: jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`makefiles`), und jede Regel steht in der Autoritäts-Doku (`authority`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed bei fehlender Datei. Tabellenzeilen zählen nur **außerhalb von Code-Blöcken** — ein Beispiel-Block dokumentiert kein Target | `gate-phantom`, `gate-undocumented`                         |
-| `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu neun Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table-order`/`table-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle; die achte die **Überschriften-Form** (`headings-match`/`headings-level`): **jede** Überschrift der geprüften Ebene innerhalb des Abschnitts matcht das Muster, geprüft auf ihrem **Text**, gemeldet **je** Überschrift auf **ihrer** Zeile; die neunte die **Zellenlänge** (`cell-max-column` mit `cell-max-chars`/`cell-min-chars`): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte liegt in einer Spanne aus **Zeichen**, gemeldet auf **ihrer** Zeile — eine Obergrenze allein ließe die leere Zelle passieren. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped`, `section-heading-mismatch`, `section-cell-oversized`, `section-cell-undersized`, `section-column-missing` |
+| `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu neun Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table.order`/`table.order-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle; die achte die **Überschriften-Form** (`headings-match`/`headings-level`): **jede** Überschrift der geprüften Ebene innerhalb des Abschnitts matcht das Muster, geprüft auf ihrem **Text**, gemeldet **je** Überschrift auf **ihrer** Zeile; die neunte die **Zellenlänge** (`table.column` je Eintrag `name` mit `cell-max-chars`/`cell-min-chars`): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte liegt in einer Spanne aus **Zeichen**, gemeldet auf **ihrer** Zeile — eine Obergrenze allein ließe die leere Zelle passieren. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped`, `section-heading-mismatch`, `section-cell-oversized`, `section-cell-undersized`, `section-column-missing` |
 | `external`  | opt-in (Netz) | Erreichbarkeit externer Links                                                            | `external-status`, `external-timeout`, `external-redirects` |
 | `sources`   | opt-in (Netz) | Content-Pin externer Quellen gegen Upstream-Drift: eine auf `sha256` gepinnte `http(s)`-Quelle (Marker `<!-- source-pin: [zip] sha256:… -->` am Link **oder** Config-Block `sources:`; Einzeldatei oder Archiv `unpack: zip`) wird geholt, gehasht, verglichen — Meldung mit vollem Ist-Hash; **zweite** Netz-Tür neben `external`, nie im Default | `source-drift`, `source-unreachable`                        |
 

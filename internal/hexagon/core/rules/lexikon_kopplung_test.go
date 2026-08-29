@@ -182,7 +182,7 @@ func structureKenntZeile(t *testing.T, wrap func(string) string) bool {
 	files := map[string]string{
 		"docs/a.md": "# T\n\n## H\n\n" + wrap("| kaputt |"),
 	}
-	r := model.StructureRule{Files: "docs/*.md", Section: "## H", TableOrder: "desc"}
+	r := model.StructureRule{Files: "docs/*.md", Section: "## H", Table: model.TableRule{Order: "desc"}}
 	for _, f := range CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r}) {
 		if f.Reason == model.ReasonSectionCellUntyped {
 			return true

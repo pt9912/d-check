@@ -454,27 +454,51 @@ type StructureRule struct {
 	ForbidPattern  string
 	RequirePattern string
 	RequireAll     []string
-	// TableOrder (asc/desc) schaltet die Chronologie-Monotonie scharf
-	// (ADR-0057); TableColumn ist die 1-basierte Schluesselspalte — Zeiger,
-	// damit ein abwesender Schluessel (Default 1) von einem explizit
-	// gesetzten unterscheidbar bleibt (Exit-2-Rand: explizit < 1).
-	TableOrder  string
-	TableColumn *int
 	// HeadingsMatch schaltet die Ueberschriften-Bedingung scharf; HeadingsLevel
 	// ist die geprueften ATX-Ebene — Zeiger, damit der Default (Ebene des
 	// Abschnitts + 1) von einem explizit gesetzten Wert unterscheidbar bleibt.
 	HeadingsMatch string
 	HeadingsLevel *int
-	// CellMaxColumn benennt die geprueften Spalte ueber ihren
-	// KOPFZEILEN-Namen und schaltet die Zellenlaengen-Bedingung scharf;
-	// CellMaxChars/CellMinChars sind Ober- und Untergrenze in ZEICHEN —
-	// Zeiger, damit ein abwesender Schluessel von einem explizit gesetzten
-	// Wert unterscheidbar bleibt. Mindestens eine der beiden Grenzen ist
-	// Pflicht; eine Obergrenze allein laesst die LEERE Zelle passieren.
-	CellMaxColumn string
-	CellMaxChars  *int
-	CellMinChars  *int
-	ExemptPaths   []string
+	// Table buendelt die beiden TABELLEN-Bedingungen unter einem Schluessel
+	// (ADR-0070). Beide sprechen ueber dieselbe Tabelle, adressieren ihre
+	// Spalte aber verschieden — die Klammer macht das sichtbar, statt es fuenf
+	// flachen Schluesseln zu ueberlassen.
+	Table       TableRule
+	ExemptPaths []string
+}
+
+// TableRule sind die tabellenbezogenen Bedingungen einer StructureRule
+// (ADR-0070, Konfigurations-Schluessel `table`): die Chronologie-Monotonie
+// (ADR-0057) und die Zellengrenzen je benannter Spalte (ADR-0069).
+//
+// ABGRENZUNG der beiden Spalten-Begriffe, die hier nebeneinander stehen:
+// OrderColumn adressiert ueber die POSITION (typisiert, ein Griff daneben
+// faellt als section-cell-untyped auf), Columns ueber den KOPFZEILEN-NAMEN
+// (eine Laengen-Messung hat diese Selbstkontrolle nicht, deshalb meldet ein
+// umbenannter Kopf laut). Der Praefix in `order-column` traegt die Kopplung an
+// Order, die der Config-Rand ohnehin erzwingt.
+type TableRule struct {
+	// Order (asc/desc) schaltet die Chronologie-Monotonie scharf; OrderColumn
+	// ist die 1-basierte Schluesselspalte — Zeiger, damit ein abwesender
+	// Schluessel (Default 1) von einem explizit gesetzten unterscheidbar
+	// bleibt (Exit-2-Rand: explizit < 1).
+	Order       string
+	OrderColumn *int
+	// Columns traegt je Eintrag EINE Spalte und ihre Grenzen. Die Liste ist
+	// der Grund fuer die Klammer: vor ADR-0070 kostete jede weitere Spalte
+	// desselben Abschnitts eine eigene Regel samt wiederholtem Selektor.
+	Columns []TableColumnRule
+}
+
+// TableColumnRule ist die Zellengrenzen-Zusage ueber EINE Spalte, adressiert
+// ueber ihren Kopfzeilen-Namen (ADR-0069). CellMaxChars/CellMinChars sind Ober-
+// und Untergrenze in ZEICHEN — Zeiger, damit ein abwesender Schluessel von
+// einem explizit gesetzten Wert unterscheidbar bleibt. Mindestens eine der
+// beiden ist Pflicht; eine Obergrenze allein laesst die LEERE Zelle passieren.
+type TableColumnRule struct {
+	Name         string
+	CellMaxChars *int
+	CellMinChars *int
 }
 
 // EffectiveHeadingsLevel liefert die geprueften ATX-Ebene der
@@ -487,27 +511,13 @@ func (r StructureRule) EffectiveHeadingsLevel(sectionLevel int) int {
 	return sectionLevel + 1
 }
 
-// structureSpaltenTeil liefert den Spalten-Anteil der Regel-Identitaet: leer,
-// wo die Regel keine Spalte NENNT. Die Chronologie-Spalte zaehlt nur, wenn sie
-// explizit gesetzt ist (der Zeiger ist genau dafuer da).
-func structureSpaltenTeil(r StructureRule) string {
-	out := ""
-	if r.TableColumn != nil {
-		out += " :: Spalte " + strconv.Itoa(*r.TableColumn)
-	}
-	if r.CellMaxColumn != "" {
-		out += " :: Spalte " + r.CellMaxColumn
-	}
-	return out
-}
-
-// EffectiveTableColumn liefert die 1-basierte Schluesselspalte der
+// EffectiveOrderColumn liefert die 1-basierte Schluesselspalte der
 // Chronologie-Bedingung (Default 1).
-func (r StructureRule) EffectiveTableColumn() int {
-	if r.TableColumn == nil {
+func (t TableRule) EffectiveOrderColumn() int {
+	if t.OrderColumn == nil {
 		return 1
 	}
-	return *r.TableColumn
+	return *t.OrderColumn
 }
 
 // Identity ist die Regel-Identität aus Glob und Abschnitts-Selektor. Sie steht
@@ -518,14 +528,27 @@ func (r StructureRule) Identity() string {
 	if sel == "" {
 		sel = r.SectionPattern
 	}
-	// Die AUSDRUECKLICH benannte Spalte gehoert dazu: zwei Bedingungen ueber
-	// verschiedene Spalten desselben Abschnitts sind verschiedene Zusagen, und
-	// ihre Befunde treffen dieselbe ZEILE mit demselben Grund-Code — ohne die
-	// Spalte im target fielen sie unter die Deduplikation zusammen (ADR-0069).
-	// Nicht dazu gehoert eine unbenannte Default-Spalte: sonst aenderte sich
-	// das target jeder Bestandsregel, die keine nennt.
-	sel += structureSpaltenTeil(r)
+	// Die AUSDRUECKLICH gesetzte Chronologie-Spalte gehoert dazu: zwei
+	// Chronologie-Zusagen ueber denselben Abschnitt sind verschiedene Zusagen
+	// und brauchen verschiedene Identitaeten (ADR-0069). Nicht dazu gehoert
+	// eine unbenannte Default-Spalte: sonst aenderte sich das target jeder
+	// Bestandsregel, die keine nennt. Die ZELLEN-Spalten stehen NICHT hier —
+	// sie leben seit ADR-0070 als Liste INNERHALB einer Regel, koennen also
+	// keine zwei Regeln mehr kollidieren lassen; ihre Trennung leistet
+	// ColumnTarget je Befund.
+	if r.Table.OrderColumn != nil {
+		sel += " :: Spalte " + strconv.Itoa(*r.Table.OrderColumn)
+	}
 	return r.Files + " :: " + sel
+}
+
+// ColumnTarget ist das Befund-Ziel einer SPALTEN-bezogenen Bedingung: die
+// Regel-Identitaet plus die benannte Spalte. Ohne diesen Zusatz fielen zwei zu
+// lange Zellen DERSELBEN Zeile unter die Deduplikation (Datei, Zeile, Regel,
+// Ziel, Grund) zusammen — seit die Spalten einer Regel eine Liste sind, traegt
+// die Identitaet sie nicht mehr (ADR-0070).
+func (r StructureRule) ColumnTarget(name string) string {
+	return r.Identity() + " :: Spalte " + name
 }
 
 // EffectiveSections liefert den Kardinalitäts-Modus (Default `one`).

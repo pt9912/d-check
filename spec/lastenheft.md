@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.72.0
+**Version:** 0.73.0
 
 **Status:** Draft
 
@@ -2510,10 +2510,10 @@ verlangt:
 | `forbid-pattern` (RE2) | `section-forbidden` | die Wendung ersetzen |
 | `require-pattern` (RE2) | `section-pattern-missing` | die zugesagte Aussage nachtragen |
 | `require-all` (Marken-Liste) | `section-marker-missing` | den fehlenden Baustein ergänzen |
-| `table-order` (`asc`/`desc`; Schlüsselspalte `table-column`, Default 1) | `section-unordered` | die Zeile chronologisch einsortieren (bzw. die zugesagte Tabelle führen) |
+| `table.order` (`asc`/`desc`; Schlüsselspalte `table.order-column`, Default 1) | `section-unordered` | die Zeile chronologisch einsortieren (bzw. die zugesagte Tabelle führen) |
 | — dieselbe Bedingung, untypisierbare Schlüsselzelle | `section-cell-untyped` | die Schlüsselzelle bzw. die Spaltenwahl korrigieren |
 | `headings-match` (RE2; Ebene `headings-level`, Default Abschnitts-Ebene + 1) | `section-heading-mismatch` | die Überschrift in die zugesagte Form bringen |
-| `cell-max-column` (Kopfzeilen-Name) + `cell-max-chars` (int ≥ 1) | `section-cell-oversized` | die Zelle kürzen — bzw. den Inhalt dorthin bringen, wo er hingehört |
+| `table.column[].name` (Kopfzeilen-Name) + `cell-max-chars` (int ≥ 1) | `section-cell-oversized` | die Zelle kürzen — bzw. den Inhalt dorthin bringen, wo er hingehört |
 | — dieselbe Bedingung, Untergrenze `cell-min-chars` | `section-cell-undersized` | die Zelle ausfüllen |
 | — dieselbe Bedingung, Spalte nicht adressierbar | `section-column-missing` | den Spaltennamen bzw. die Kopfzeile korrigieren |
 
@@ -2565,13 +2565,13 @@ Form-Angabe im Inneren des Textlaufs, nicht an seinem Anfang). Eine
 Marken-Alternative („eine von dreien") wird dadurch überflüssig und ist
 **nicht** Teil der Zusage.
 
-**Chronologie-Monotonie (`table-order`).** Eine chronologische Tabelle kippt
+**Chronologie-Monotonie (`table.order`).** Eine chronologische Tabelle kippt
 still ihre Richtung — wer eine Zeile anfügt, schaut auf die Zeile daneben statt
 auf die Regel, und danach führt dieselbe Tabelle zwei gegenläufige Blöcke; kein
-anderes Gate liest Reihenfolge. Ist `table-order` gesetzt (`asc` oder `desc` —
+anderes Gate liest Reihenfolge. Ist `table.order` gesetzt (`asc` oder `desc` —
 die Richtung ist **Regel**-Konfiguration, weil legitime Bestände beide führen),
 prüft d-check jede **zusammenhängende** Tabelle des Abschnitts: die Zellen der
-Schlüsselspalte (`table-column`, 1-basiert, Default 1) werden **typisiert** und
+Schlüsselspalte (`table.order-column`, 1-basiert, Default 1) werden **typisiert** und
 über benachbarte Datenzeilen **nicht-strikt** monoton verglichen (gleiche
 Schlüssel erlaubt — mehrere Releases an einem Tag sind der Normalfall). Kopf-
 und Trennzeile deklarieren keine Daten. Jede Zeile, die die Richtung bricht ⇒
@@ -2596,14 +2596,22 @@ Zelle ohne typisierbaren Schlüssel, eine Zeile mit zu wenigen Zellen oder eine
 restlichen Tabelle wortlos ab; hinter der gemeldeten Zelle setzt der Vergleich
 beim nächsten typisierbaren Nachbar-Paar wieder auf.
 
-**Zellenlänge (`cell-max-column`/`cell-max-chars`).** Eine Tabellenspalte, die
+**Zellenlänge (`table.column`).** Eine Tabellenspalte, die
 einen **Titel** trägt, nimmt still die ganze Entscheidung auf: wer eine Zeile
 anfügt, schreibt so viel hinein, wie er gerade weiß, und niemand misst nach.
 Aus einer derivativen Sicht wird so eine **zweite Quelle**, die von der
-eigentlichen abdriften kann. Ist `cell-max-column` gesetzt, prüft d-check jede
+eigentlichen abdriften kann. Nennt `table.column` eine Spalte, prüft d-check jede
 **zusammenhängende** Tabelle des Abschnitts: die Zellen dieser Spalte tragen
 höchstens `cell-max-chars` **Zeichen** ⇒ sonst `section-cell-oversized` an
 **dieser Zeile**, nicht am Abschnittskopf — dort ist die Reparatur.
+
+**`table.column` ist eine Liste, und jeder Eintrag ist eine eigene Zusage.**
+Mehrere Spalten desselben Abschnitts stehen damit unter **einem** Selektor —
+sie kosten keine zweite Regel, die `files` und `section` wortgleich
+wiederholt. Jeder Eintrag wird unabhängig ausgewertet, und das Befund-Ziel
+trägt die Spalte; ohne diesen Zusatz fielen zwei zu lange Zellen **derselben
+Zeile** unter die Deduplikation zusammen. Dieselbe Spalte zweimal zu nennen ist
+deshalb ein Config-Fehler, kein doppeltes Gate.
 
 Die Spalte wird über ihren **Kopfzeilen-Namen** adressiert, nicht über eine
 Position: eine eingefügte Spalte verschöbe eine Positions-Angabe **still** auf
@@ -2621,7 +2629,7 @@ unter jeder Schwelle; eine Spalte, die nur nach oben begrenzt ist, darf leer
 sein. Wer zusagt, dass sie **gefüllt** ist, sagt das mit `cell-min-chars` ⇒
 sonst `section-cell-undersized`. Die beiden Grenzen tragen **eigene**
 Grund-Codes, weil die Reparatur eine andere ist: ausfüllen statt kürzen.
-Mindestens eine der beiden ist Pflicht, sobald `cell-max-column` steht.
+Mindestens eine der beiden ist Pflicht, sobald ein Eintrag eine Spalte nennt.
 
 **Gezählt werden Zeichen, nicht Bytes** — die Schwelle beschreibt einen Text,
 und ein Umlaut ist ein Zeichen. Die Zell-Zerlegung ist **escape- und
@@ -2650,14 +2658,21 @@ ungültiges Glob in `files`/`exempt-paths`; weder `section` noch
 `section-pattern` **oder** beide; unbekannter `sections`-Wert; nicht
 kompilierendes `section-pattern`/`forbid-pattern`/`require-pattern`; explizit
 gesetztes `min-sentences` < 1 oder `max-tasks` < 0; leerer Eintrag in
-`require-all`; `table-order` außerhalb `asc`/`desc`; explizit gesetztes
-`table-column` < 1; `table-column` ohne `table-order` (eine halbe Aktivierung
-ist ein Config-Fehler, kein Zustand); `cell-max-column` aus lauter Weißraum;
+`require-all`; `table.order` außerhalb `asc`/`desc`; explizit gesetztes
+`table.order-column` < 1; `table.order-column` ohne `table.order` (eine halbe Aktivierung
+ist ein Config-Fehler, kein Zustand); ein `table` **ohne** `order` und ohne
+`column`-Eintrag (eine leere Klammer sagt nichts zu); ein `table.column[].name`
+aus lauter Weißraum; **derselbe Name zweimal** in einer Spalten-Liste (beide
+Einträge trügen dasselbe Befund-Ziel);
 explizit gesetztes `cell-max-chars`/`cell-min-chars` < 1; eine Untergrenze
-**über** der Obergrenze (keine Zelle erfüllt beides); und **jede** halbe
-Aktivierung von `cell-max-column` und seinen Grenzen — hier gibt es, anders als
-bei `table-column`, auf **keiner** Seite einen Default, den man still annehmen
-könnte. **`exempt-paths` hebelt den Leerlauf-Befund nicht aus:** bleiben
+**über** der Obergrenze (keine Zelle erfüllt beides); und ein Spalten-Eintrag
+**ohne** jede Grenze — hier gibt es, anders als
+bei `table.order-column`, auf **keiner** Seite einen Default, den man still annehmen
+könnte. **Ebenfalls Exit 2, und mit dem neuen Ort in der Meldung:** die fünf
+flachen Vorgänger-Schlüssel auf Regel-Ebene (`table-order`, `table-column`,
+`cell-max-column`, `cell-max-chars`, `cell-min-chars`) — eine Zusage, die
+dasteht und nicht wirkt, wäre der schlimmste Ausgang.
+**`exempt-paths` hebelt den Leerlauf-Befund nicht aus:** bleiben
 nach Abzug null Kandidaten, ist das derselbe `section-missing` — sonst schaltete
 ein Ventil die Regel still ab.
 
@@ -2672,7 +2687,7 @@ ein Ventil die Regel still ab.
 - **Boundary (fence-treu):** Given einen Abschnitt, dessen Sätze, Task-Items oder Marken **ausschließlich** in einem Fenced-Code-Block stehen, when `d-check --enable structure` läuft, then zählen sie nicht — die Bedingung gilt als verletzt.
 - **Marken-Formen:** Given einen Abschnitt, der eine `require-all`-Marke als Listen-Item (`- **M:**`), bare (`**M:**`) oder qualifiziert (`- **M (Zusatz):**`) trägt, when `d-check --enable structure` läuft, then gilt sie in **allen drei** Formen als vorhanden; trägt er sie nur als Wort im Fließtext, dann `section-marker-missing`.
 - **`require-pattern`:** Given einen Abschnitt, dessen zugesagte Aussage **innerhalb** einer Auszeichnung steht, when eine `require-pattern`-Regel sie beschreibt, then kein Befund; fehlt sie, dann `section-pattern-missing`.
-- **Chronologie (Happy):** Given eine Regel mit `table-order: desc` und einen Abschnitt, dessen Tabelle in der Schlüsselspalte absteigend sortiert ist — gleiche Schlüssel in Folge eingeschlossen —, when `d-check --enable structure` läuft, then kein Befund.
+- **Chronologie (Happy):** Given eine Regel mit `table.order: desc` und einen Abschnitt, dessen Tabelle in der Schlüsselspalte absteigend sortiert ist — gleiche Schlüssel in Folge eingeschlossen —, when `d-check --enable structure` läuft, then kein Befund.
 - **Chronologie (Bruch):** Given dieselbe Regel und eine Datenzeile, deren Schlüssel größer als der ihrer Vorgänger-Zeile ist, when der Lauf endet, then `section-unordered` mit der Zeile der **brechenden** Datenzeile, Exit 1.
 - **Chronologie (Typ-Pflicht):** Given eine absteigend sortierte Versions-Spalte, in der `0.10.0` über `0.9.0` steht, when der Lauf endet, then **kein** Befund — segmentweise numerisch ist `0.10.0` größer; ein zeichenweiser Vergleich meldete rot.
 - **Chronologie (Roh-Lesung):** Given eine Schlüsselspalte, deren Zellen in Inline-Code stehen — eine davon zusätzlich mit HTML-Anker —, when der Lauf endet, then wird jede Zelle getypt und die Ordnung geprüft; auf dem bereinigten Abschnitts-Text wäre jede Zelle leer.
@@ -2688,7 +2703,7 @@ ein Ventil die Regel still ab.
 - **Überschriften-Muster (Ebene):** Given einen Abschnitt der Ebene 2 mit einer verletzenden Überschrift der Ebene 3 **und** einer der Ebene 4, when die Regel keine `headings-level` nennt, then meldet nur die der Ebene 3 (Default = Abschnitts-Ebene + 1); mit `headings-level: 4` nur die der Ebene 4.
 - **Überschriften-Muster (wirkungslos, benannt):** Given einen Abschnitt **ohne** Überschrift der geprüften Ebene, when der Lauf endet, then kein Befund — die Bedingung ist dann vacuously wahr, und genau deshalb wird ihre Einführung vorher rot gemessen.
 - **Überschriften-Muster (Modul-aus):** Given eine Regel **ohne** `headings-match`, when `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne den Schlüssel ([`DC-QA-02`](#dc-qa-02--determinismus)); ein nicht kompilierendes Muster ⇒ Exit 2, ein `headings-level` außerhalb 1–6 ⇒ Exit 2.
-- **Zellenlänge (Happy Path):** Given eine Regel mit `cell-max-column`/`cell-max-chars` und einen Abschnitt, dessen Zellen dieser Spalte unter der Schwelle bleiben — während eine **Nachbar**-Spalte sie deutlich überschreitet —, when `d-check --enable structure` läuft, then kein Befund, Exit 0: die Bedingung ist **spalten**-gebunden, nicht zeilen-pauschal.
+- **Zellenlänge (Happy Path):** Given eine Regel mit einem `table.column`-Eintrag (`name` plus `cell-max-chars`) und einen Abschnitt, dessen Zellen dieser Spalte unter der Schwelle bleiben — während eine **Nachbar**-Spalte sie deutlich überschreitet —, when `d-check --enable structure` läuft, then kein Befund, Exit 0: die Bedingung ist **spalten**-gebunden, nicht zeilen-pauschal.
 - **Zellenlänge (Negative, auf ihrer Zeile):** Given dieselbe Regel und eine Datenzeile, deren Zelle die Schwelle überschreitet, when der Lauf endet, then `section-cell-oversized` mit der Zeile **dieser Datenzeile** (nicht der Abschnitts-Überschrift), und die Meldung nennt Ist- und Soll-Zahl.
 - **Zellenlänge (Grenzfall):** Given eine Zelle mit **genau** `cell-max-chars` Zeichen, when der Lauf endet, then kein Befund; Given eine mit **einem** Zeichen mehr, then genau ein Befund — die Schwelle ist die größte zulässige Länge.
 - **Zellenlänge (Zeichen, nicht Bytes):** Given eine Zelle aus 20 Umlauten (40 Byte) bei `cell-max-chars: 20`, when der Lauf endet, then **kein** Befund — eine Byte-Zählung meldete sie rot.
@@ -2697,8 +2712,10 @@ ein Ventil die Regel still ab.
 - **Zellenlänge (Leerlauf und Fence-Treue):** Given einen Abschnitt **ohne** Tabelle — oder einen, dessen einzige Tabelle in einem Fenced-Code-Block steht —, when der Lauf endet, then `section-column-missing` als Leerlauf-Befund: eine Tabelle im Fence deklariert nichts, und eine Bedingung, die nichts misst, meldet nicht Erfolg.
 - **Zellenlänge (zwei Tabellen):** Given einen Abschnitt mit zwei Tabellen, von denen nur die zweite die Spalte trägt, when der Lauf endet, then meldet **nur** die zu lange Zelle der zweiten — eine Tabelle ohne die Spalte schaltet die Messung der anderen **nicht** ab.
 - **Zellenlänge (leere Zelle):** Given eine Regel mit **nur** `cell-max-chars` und eine **leere** Zelle der benannten Spalte, when der Lauf endet, then **kein** Befund — null Zeichen liegen unter jeder Obergrenze; Given dieselbe Regel **mit** `cell-min-chars`, then `section-cell-undersized` auf **ihrer** Zeile, mit einem **anderen** Grund-Code als die zu lange Zelle.
-- **Zellenlänge (zwei Spalten, eine Zeile):** Given zwei Regeln über **denselben** Abschnitt, die **verschiedene** Spalten begrenzen, und eine Zeile, die in **beiden** verletzt, when der Lauf endet, then **zwei** Befunde — die Regel-Identität trägt die benannte Spalte, sonst fielen sie unter die Deduplikation (Datei, Zeile, Regel, Ziel, Grund) zusammen; **ohne** benannte Spalte bleibt die Identität unverändert.
-- **Zellenlänge (Modul-aus / Config-Rand):** Given eine Regel **ohne** die Schlüssel, when `d-check` läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)); Given `cell-max-column` ohne jede Grenze, eine Grenze ohne Spalte, ein `cell-max-column` aus lauter Weißraum, ein explizit gesetztes `cell-max-chars`/`cell-min-chars` < 1 oder eine Untergrenze **über** der Obergrenze, then Exit 2 vor dem Lauf.
+- **Zellenlänge (zwei Spalten, eine Zeile):** Given **eine** Regel, deren `table.column` **zwei** Einträge über verschiedene Spalten trägt, und eine Zeile, die in **beiden** verletzt, when der Lauf endet, then **zwei** Befunde — das Befund-Ziel trägt die Spalte, sonst fielen sie unter die Deduplikation (Datei, Zeile, Regel, Ziel, Grund) zusammen. Die **Regel-Identität** trägt die Zellen-Spalten **nicht**: sie leben innerhalb einer Regel und können keine zwei Regeln kollidieren lassen.
+- **Zellenlänge (ein Selektor, viele Spalten):** Given einen Abschnitt und **vier** zu begrenzende Spalten, when sie als vier Einträge **einer** Regel konfiguriert sind, then gilt jede Zusage einzeln und `files`/`section` stehen **einmal** da; Given denselben `name` **zweimal** in einer Liste, then Exit 2 vor dem Lauf — zwei Einträge derselben Spalte trügen dasselbe Befund-Ziel.
+- **Zellenlänge (Modul-aus / Config-Rand):** Given eine Regel **ohne** `table`, when `d-check` läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)); Given einen Spalten-Eintrag ohne jede Grenze, ein `table` ohne `order` und ohne `column`, einen `name` aus lauter Weißraum, ein explizit gesetztes `cell-max-chars`/`cell-min-chars` < 1 oder eine Untergrenze **über** der Obergrenze, then Exit 2 vor dem Lauf.
+- **Zellenlänge (Vorgänger-Schlüssel):** Given eine Regel, die einen der fünf flachen Vorgänger-Schlüssel auf Regel-Ebene trägt (`table-order`, `table-column`, `cell-max-column`, `cell-max-chars`, `cell-min-chars`), when `d-check` startet, then Exit 2 **mit dem neuen Ort in der Meldung** — nicht stilles Ignorieren und nicht die generische Unbekannt-Feld-Meldung des Decoders.
 
 **Out-of-Scope:** Aussagen über den **Ort** eines Dokuments (Dateinamens-,
 Verzeichnis- oder Nummerierungs-Konventionen) — keine Struktur *innerhalb* eines
@@ -2719,14 +2736,18 @@ Tabellen- oder Spalten-Grenzen hinweg** (zwei getrennt sortierte, gegenläufige
 Tabellen im selben Abschnitt bleiben unerkannt — benannte Grenze; der belegte
 Anlassfall ist der Richtungs-Bruch **innerhalb** einer Tabelle).
 
-**Aufgelöste Grenze (0.72.0):** *zwei Zusagen über verschiedene Spalten
-desselben Abschnitts* waren bis dahin ein Konfigurations-Duplikat (Exit 2), weil
-die Regel-Identität nur aus Glob und Abschnitts-Selektor bestand. Sie trägt
-jetzt zusätzlich die **ausdrücklich benannte** Spalte (`cell-max-column` bzw.
-ein explizit gesetztes `table-column`) — ohne das fielen zwei Befunde über
-**dieselbe Zeile** mit **demselben** Grund-Code unter die Deduplikation
-zusammen, und einer bliebe unsichtbar. Eine Regel, die **keine** Spalte nennt,
-behält ihre Identität unverändert.
+**Aufgelöste Grenze (0.72.0, Form seit 0.73.0):** *zwei Zusagen über
+verschiedene Spalten desselben Abschnitts* waren bis 0.71.0 ein
+Konfigurations-Duplikat (Exit 2), weil die Regel-Identität nur aus Glob und
+Abschnitts-Selektor bestand. Seit 0.73.0 sind die Zellen-Spalten eine **Liste
+innerhalb einer Regel** und können zwei Regeln gar nicht mehr kollidieren
+lassen; getrennt werden ihre **Befunde**, über das Ziel `… :: Spalte <name>` —
+ohne das fielen zwei Befunde über **dieselbe Zeile** mit **demselben**
+Grund-Code unter die Deduplikation zusammen, und einer bliebe unsichtbar. Die
+**Regel-Identität** trägt weiterhin ein **explizit** gesetztes
+`table.order-column`: zwei Chronologie-Zusagen über denselben Abschnitt sind
+zwei Regeln und brauchen zwei Identitäten. Eine Regel, die **keine** Spalte
+nennt, behält ihre Identität unverändert.
 
 ---
 
@@ -3123,6 +3144,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.73.0 | 2026-08-29 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die **tabellenbezogenen Bedingungen** stehen jetzt unter **einer Klammer** `table` (`order`, `order-column`, `column[]`), und die Zellengrenzen sind eine **Liste je Spalte** statt eines Schlüssel-Tripels je Regel. **Anlass war der eigene Bestand:** vier Spalten desselben Abschnitts kosteten vier Regeln mit viermal wortgleichem `files`/`section` — die Redundanz war die Form, die jede künftige Mehrspalten-Zusage geerbt hätte. Zugleich behoben ist ein **Namens-Defekt**: `cell-max-column` benannte die Spalte und schaltete die Bedingung scharf, trug aber `max` im Namen — auch dort, wo nur eine Untergrenze stand (der eigene Bestand belegte genau das). Die fünf flachen Vorgänger-Schlüssel sind **entfallen** und werden mit dem **neuen Ort** abgewiesen (Exit 2), nicht still ignoriert und nicht mit der generischen Unbekannt-Feld-Meldung des Decoders. **Zwei neue Config-Ränder**, die erst die Liste möglich macht: eine leere `table`-Klammer und derselbe Spaltenname zweimal. **Keine Verhaltensänderung an einem Befund:** Grund-Codes, Zeilen-Zuordnung und die Ziel-Form `… :: Spalte <name>` bleiben, wie sie waren — was sich ändert, ist, wer die Spalte trägt: nicht mehr die Regel-Identität, sondern das Befund-Ziel. Begründung in begleitender ADR | — |
 | 0.72.0 | 2026-08-28 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um die **Zellenlängen-Bedingung** erweitert (`cell-max-column`/`cell-max-chars`, neunte Bedingung, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): jede Zelle einer **benannten** Spalte trägt höchstens N **Zeichen**, gemeldet auf **ihrer** Zeile. Zwei neue Grund-Codes `section-cell-oversized`/`section-column-missing`, vier neue fail-closed Config-Ränder. **Die Spalte wird über ihren Kopfzeilen-Namen adressiert, nicht über eine Position:** eine eingefügte Spalte verschöbe eine Positions-Angabe **still**, ein umbenannter Kopf meldet **laut** — dieselbe Wahl, die die achte Bedingung bei den Überschriften traf. Anlass ist ein gemessener Bestand: eine Titel-Spalte mit Median 442 und Maximum 2206 Zeichen neben H1-Titeln von Median 77, wodurch eine als **derivativ** deklarierte Sicht zur zweiten, driftfähigen Quelle wurde. **Ein `forbid-pattern` konnte die Länge ausdrücken und taugte trotzdem nicht:** sein Befund nennt den Abschnitt statt Zeile und Spalte, er hängt an der Form einer Nachbarzelle, und eine Zelle mit einer Pipe entkam ihm — dieselbe Bauform, die dieses Repo zuletzt zugunsten einer `structure`-Regel aufgegeben hat. **Mit-Wirkung auf drei Bestands-Flächen:** die Zell-Zerlegung des Produkts ist jetzt **eine** statt zwei — escape- und backtick-bewusst (`\|` ist ein Zeichen, kein Trenner) —, womit die dazu benannte Grenze der Chronologie-Bedingung und die von `planning.waves` **entfällt** statt vererbt zu werden; kein Grund-Code und keine Befund-Form dieser beiden ändert sich. Zugleich sagt die Befund-Form jetzt zu, dass die drei zeilen-gebundenen Bedingungen auf **der Zeile melden, an der repariert wird**, und nur im Leerlauf auf die Überschrift zurückfallen — das galt seit der siebten Bedingung und stand so nicht da. Begründung in begleitender ADR | — |
 | 0.71.0 | 2026-08-27 | [`DC-FA-DIST-002`](#dc-fa-dist-002--docker-hub-spiegel) sagt die Gleichheit jetzt am **Config-Digest** zu statt am **Manifest**-Digest — die Vorfassung war **am Bestand widerlegt**: derselbe lokale Bild-Push liefert je Registry verschiedene Manifest-Digests (gleicher `mediaType`, gleicher Config-Digest, aber neu komprimierte Layer-Blobs; drei von drei geprüften Tag-Paaren des Schwester-Repos). Die fail-closed-Prüfung der Vorfassung hätte damit **jedes** Release gebrochen. Der Config-Digest ist die Identität des Bild-**Inhalts** und registry-stabil; gelesen wird er aus **beiden Registries**, nicht aus dem lokalen Daemon — zwei aus demselben lokalen Bild abgeleitete Werte wären trivial gleich, und ein Vergleich, der nicht fehlschlagen kann, prüft nichts. **Neu ausgesprochen:** der Manifest-Digest ist registry-lokal, ein `docker.io`-Pin nimmt den Docker-Hub-Digest — verschwiegen wäre das eine Falle, deshalb steht es in der Beschreibung und im Out-of-Scope. **Negative-Kriterium geschärft:** der Abbruch erfolgt **vor** dem Spiegel-Push, weil eine `uses:`-Login-Action mit ihrem eigenen Text scheitert und eine nachgelagerte Meldung nie anliefe. **Out-of-Scope präzisiert:** die Hub-Beschreibungsseite wird aus dem Repo gesetzt, ihr Fehlschlag lässt das Release grün — die Prüfung ihres Zeichen-Limits wandert dafür in `make gates`, wo sie beim Schreiben greift statt beim Veröffentlichen. Anlass: unabhängiger Review. Begründung in begleitender ADR | — |
 | 0.70.0 | 2026-08-27 | Neue Anforderung [`DC-FA-DIST-002`](#dc-fa-dist-002--docker-hub-spiegel): jedes nach GHCR veröffentlichte Image wird zusätzlich als `docker.io/pt9912/d-check` **gespiegelt** — dasselbe Bild unter denselben Tags, **kein zweiter Bau**. Prüfgröße ist der **Manifest-Digest**; er ist auf beiden Registries gleich, und damit trägt ein `docker.io`-Pin so weit wie ein `ghcr.io`-Pin. GHCR bleibt die **Quelle**, die Richtung ist Teil der Zusage, und die Tagging-Disziplin ist die von [`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image) (volle Semver-Tags, `:latest` nur stabil). **Fail-closed, und das ist die eigentliche Entscheidung:** eine fehlgeschlagene Spiegelung ist ein fehlgeschlagenes Release, auch wenn GHCR bereits trägt — der Preis ist die Bindung an eine fremde Verfügbarkeit, ausdrücklich gewählt gegen die fail-open-Variante, die ein Schwester-Repo fährt. Damit die Teil-Veröffentlichung nicht geraten werden muss, verlangt das Negative-Kriterium, dass die Meldung den bereits veröffentlichten GHCR-Stand **benennt**. Zugleich **geändert**: der Out-of-Scope-Satz von [`DC-FA-DIST-001`](#dc-fa-dist-001--docker-image) schloss *„Distributionswege jenseits GHCR"* aus und hätte diese Anforderung verboten; er ist auf die verbleibenden Wege (Homebrew, Paketmanager, Release-Binaries) zurückgeschnitten, statt stillschweigend überholt zu werden. **Nicht** zugesagt: weitere Registries, ein vom GHCR-Bild abweichender Hub-Bau, der Inhalt der Hub-Beschreibungsseite (er wird aus dem Repo gesetzt, ist aber nicht Teil der Zusage — sein Fehlschlag lässt das Release grün). Anlass: Auftraggeber. Begründung in begleitender ADR | — |

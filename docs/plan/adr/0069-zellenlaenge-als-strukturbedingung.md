@@ -1,6 +1,6 @@
 # ADR-0069: Zellenlänge als `structure`-Bedingung — Spalte über den Namen, beidseitig begrenzt
 
-**Status:** Accepted
+**Status:** Accepted (teil-superseded: ADR-0070)
 
 **Datum:** 2026-08-28
 

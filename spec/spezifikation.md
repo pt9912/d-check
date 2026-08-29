@@ -2100,11 +2100,20 @@ getroffenen Dateien.
    beide; `sections` weder `one` noch `each`; nicht kompilierendes
    `section-pattern`/`forbid-pattern`/`require-pattern`; **explizit** gesetztes
    `min-sentences` < 1 oder `max-tasks` < 0; leerer Eintrag in `require-all`;
-   `table-order` außerhalb `asc`/`desc`; **explizit** gesetztes
-   `table-column` < 1; `table-column` ohne `table-order`.
+   `table.order` außerhalb `asc`/`desc`; **explizit** gesetztes
+   `table.order-column` < 1; `table.order-column` ohne `table.order`; ein
+   `table` **ohne** `order` und ohne `column`-Eintrag; ein `table.column[].name`
+   aus lauter Weißraum; derselbe `name` **zweimal** in einer Liste; ein Eintrag
+   **ohne** jede der beiden Grenzen; **explizit** gesetztes
+   `cell-max-chars`/`cell-min-chars` < 1; `cell-min-chars` > `cell-max-chars`.
    Ein **abwesender** Zahlen-Schlüssel ist kein Fehler, sondern „Bedingung
    aus" — die Unterscheidung „nicht gesetzt" vs. „auf 0 gesetzt" ist Teil der
    Zusage, sonst wäre die Null-Schwelle unerreichbar prüfbar.
+   **Ebenfalls Exit 2, mit dem neuen Ort in der Meldung:** die fünf flachen
+   Vorgänger-Schlüssel `table-order`, `table-column`, `cell-max-column`,
+   `cell-max-chars` und `cell-min-chars` **auf Regel-Ebene**. Sie still zu
+   ignorieren wäre der schlimmste Ausgang — die Zusage stünde in der
+   Konfiguration und wirkte nicht.
 2. **Kandidaten.** Die `files`-Globs werden gegen **Wurzel-relative Pfade über
    den gesamten Baum** ausgewertet — **unabhängig** von `scan.roots`/`scan.ignore`
    (die `SKIP_DIRS` gelten weiterhin). Eine Regel benennt ihre Dateien selbst;
@@ -2143,7 +2152,7 @@ getroffenen Dateien.
    Schritte 1–2) und dieselbe wie beim Preset-Partner
    ([`DC-FA-PLAN-001.a`](#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
    Schritt C4). Alle Bedingungen arbeiten auf **diesem** Text — mit **zwei**
-   benannten Ausnahmen: die Chronologie-Bedingung (`table-order`, Schritt 6)
+   benannten Ausnahmen: die Chronologie-Bedingung (`table.order`, Schritt 6)
    liest die **rohen** Abschnitts-Zeilen, weil die Bereinigung Inline-Code
    leert und reale Schlüsselspalten genau dort stehen; die
    Überschriften-Bedingung (`headings-match`, Schritt 6) liest die
@@ -2162,14 +2171,14 @@ getroffenen Dateien.
    | `forbid-pattern` | das Muster **nicht** matcht | `section-forbidden` |
    | `require-pattern` | das Muster matcht | `section-pattern-missing` |
    | `require-all` | **jede** Marke vorhanden ist | `section-marker-missing` |
-   | `table-order` | jede zusammenhängende Tabelle des Abschnitts in der Schlüsselspalte nicht-strikt monoton ist **und** mindestens eine Datenzeile existiert | `section-unordered` |
+   | `table.order` | jede zusammenhängende Tabelle des Abschnitts in der Schlüsselspalte nicht-strikt monoton ist **und** mindestens eine Datenzeile existiert | `section-unordered` |
    | — (dieselbe Bedingung) | jede Schlüsselzelle typisierbar ist und den Typ ihres typisierbaren **Vorgängers** fortführt (Paar-Lesart; nach jedem Befund setzt der Vergleich neu auf) | `section-cell-untyped` |
    | `headings-match` | **jede** Überschrift der Ebene `headings-level` **innerhalb** des Abschnitts matcht das Muster (geprüft wird ihr **Text**) | `section-heading-mismatch` je verletzender Überschrift, `line` = ihre Zeile |
-   | `cell-max-column` | **jede** Zelle der über ihren **Kopfzeilen-Namen** benannten Spalte höchstens `cell-max-chars` **Zeichen** trägt | `section-cell-oversized` je zu langer Zelle, `line` = ihre Zeile |
+   | `table.column[].name` | **jede** Zelle der über ihren **Kopfzeilen-Namen** benannten Spalte höchstens `cell-max-chars` **Zeichen** trägt | `section-cell-oversized` je zu langer Zelle, `line` = ihre Zeile |
    | — (dieselbe Bedingung) | **jede** dieser Zellen mindestens `cell-min-chars` Zeichen trägt — die leere eingeschlossen | `section-cell-undersized` je zu kurzer Zelle, `line` = ihre Zeile |
    | — (dieselbe Bedingung) | die benannte Spalte adressierbar ist: mindestens eine Tabelle des Abschnitts trägt den Namen **genau einmal** in der Kopfzeile, und jede Datenzeile reicht bis zu ihr | `section-column-missing` |
 
-   **Überschriften-Bedingung** (`headings-match`): sie ist neben `table-order`
+   **Überschriften-Bedingung** (`headings-match`): sie ist neben `table.order`
    die **zweite**, die nicht auf dem bereinigten Abschnitts-Text arbeitet —
    sie liest die Überschriften selbst, mit **derselben** Erkennung, die den
    Abschnitt findet (Schritt 3): ATX, beliebig viel führender Weißraum,
@@ -2206,7 +2215,7 @@ getroffenen Dateien.
    Abschnitts-Text; `^`/`$` binden dort an Text-, nicht an Zeilen-Grenzen (wer
    Zeilen meint, schreibt `(?m)`).
 
-   **Chronologie-Monotonie (`table-order`)** — die eine Bedingung, die die
+   **Chronologie-Monotonie (`table.order`)** — die eine Bedingung, die die
    **rohen** Abschnitts-Zeilen liest (benannte Ausnahme aus Schritt 5):
    - **Datenzeilen bestimmen:** Tabellenzeilen sind die Zeilen des Abschnitts,
      die die geteilte Tabellenzeilen-Lexik bejaht (führendes `|` **außerhalb**
@@ -2214,7 +2223,7 @@ getroffenen Dateien.
      `planning`); die GFM-**Trennzeile** und die **Kopfzeile** unmittelbar davor
      deklarieren keine Daten. **Zusammenhängende** Folgen von Tabellenzeilen
      bilden je eine Tabelle; jede Tabelle wird für sich geprüft.
-   - **Schlüssel typisieren:** je Datenzeile die Zelle `table-column`
+   - **Schlüssel typisieren:** je Datenzeile die Zelle `table.order-column`
      (1-basiert; Zellen = Split der rohen Zeile an `|` nach Trim der
      Rand-Pipes). Getypt wird der **erste** Treffer zweier Muster in der rohen
      Zelle: ISO-Datum (`JJJJ-MM-TT`) oder Punkt-Version (optionales `v`,
@@ -2227,7 +2236,7 @@ getroffenen Dateien.
      zurückgesetzt und setzt beim nächsten typisierbaren Nachbar-Paar wieder
      auf — die gesunde Folge-Zeile hinter einer Misch-Zelle meldet **nicht**.
    - **Ordnung prüfen:** benachbarte typisierbare Datenzeilen derselben Tabelle
-     müssen **nicht-strikt** monoton in Richtung `table-order` liegen (`asc`:
+     müssen **nicht-strikt** monoton in Richtung `table.order` liegen (`asc`:
      Schlüssel ≥ Vorgänger; `desc`: ≤). Jede brechende Zeile ⇒
      `section-unordered` an ihrer Zeile. **Null Datenzeilen im Abschnitt** ⇒
      `section-unordered` als Leerlauf-Befund an der Abschnitts-Überschrift —
@@ -2235,13 +2244,18 @@ getroffenen Dateien.
      Tabelle steht (dieselbe Doppel-Rolle wie `section-missing` beim
      Kandidaten-Leerlauf in Schritt 2).
 
-   **Zellenlänge (`cell-max-column`/`cell-max-chars`)** — die **zweite**
+   **Zellenlänge (`table.column`)** — die **zweite**
    Bedingung auf den rohen Abschnitts-Zeilen, und die einzige, die ihre Spalte
    über einen **Namen** statt über eine Position adressiert:
+   - **Je Eintrag ein Lauf.** `table.column` ist eine **Liste**; jeder Eintrag
+     ist eine eigene Zusage über **eine** Spalte und wird unabhängig
+     ausgewertet, in Listen-Reihenfolge. Das Befund-Ziel trägt die Spalte
+     (`… :: Spalte <name>`) — ohne diesen Zusatz fielen zwei Befunde derselben
+     Zeile mit demselben Grund-Code unter die Deduplikation zusammen.
    - **Spalte binden, je Tabelle.** Die Datenzeilen-Bestimmung ist dieselbe wie
-     bei `table-order` (geteilte Tabellenzeilen-Lexik, Kopf-/Trennzeile
+     bei `table.order` (geteilte Tabellenzeilen-Lexik, Kopf-/Trennzeile
      deklarieren keine Daten, zusammenhängende Folgen sind je eine Tabelle).
-     Für jede Tabelle wird `cell-max-column` gegen die **getrimmten Zellen der
+     Für jede Tabelle wird der `name` des Eintrags gegen die **getrimmten Zellen der
      Kopfzeile** verglichen: **genau ein** Treffer bindet die Spaltenposition;
      **kein** Treffer macht die Tabelle für diese Bedingung irrelevant (kein
      Befund — eine Nebentabelle im selben Abschnitt schaltet die Messung nicht
@@ -2264,7 +2278,7 @@ getroffenen Dateien.
    - **Zelle ist, was der Leser sieht.** Die Zerlegung ist die **geteilte**
      Zell-Antwort des Produkts: escape- und backtick-bewusst — `\|` ist ein
      Zeichen der Zelle und **kein** Zelltrenner, und es zählt als **eines**.
-     Diese Antwort teilt sich die Bedingung mit `table-order`, `planning.waves`
+     Diese Antwort teilt sich die Bedingung mit `table.order`, `planning.waves`
      und den header-gebundenen Tabellen-Lesern
      ([`DC-FA-REQ-001`](lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen)).
    - **Leerlauf.** Bindet **keine** Tabelle des Abschnitts die Spalte ⇒
@@ -2280,7 +2294,7 @@ getroffenen Dateien.
    `rule` = `structure`, `target` = die **Regel-Identität** (`files`-Glob und
    Abschnitts-Selektor), `line` = Zeile der Abschnitts-Überschrift (bzw. 1) —
    **außer** bei den Bedingungen, deren Aussage einer einzelnen Zeile gilt:
-   `table-order`, `headings-match` und `cell-max-column` melden auf **der
+   `table.order`, `headings-match` und `table.column` melden auf **der
    Zeile, an der repariert wird** (brechende Datenzeile, Überschrift, zu lange
    Zelle bzw. Kopfzeile), und fallen nur bei ihrem **Leerlauf** auf die
    Abschnitts-Überschrift zurück.
@@ -2741,12 +2755,14 @@ Exit 2 ohne Prüfung
 | `structure[].forbid-pattern` | string | leer | RE2 gegen den **gesamten** bereinigten Abschnitts-Text; Treffer ⇒ `section-forbidden` |
 | `structure[].require-pattern` | string | leer | RE2, Spiegelbild von `forbid-pattern`; **kein** Treffer ⇒ `section-pattern-missing`. Deckt zugesagte Aussagen, die **innerhalb** einer Auszeichnung stehen und deshalb keine Marke sind |
 | `structure[].require-all` | string[] | leer | benannte Marken, die **alle** vorkommen müssen — als hervorgehobener Textlauf am Zeilen-Anfang nach optionalem **Listen-Marker** (`- **M:**`, `**M:**`, `- **M (Zusatz):**`) ⇒ sonst `section-marker-missing`; leerer Eintrag ⇒ Exit 2 |
-| `structure[].table-order` | string | leer (aus) | `asc` oder `desc` — schaltet die **Chronologie-Monotonie** scharf: die Schlüsselspalte jeder zusammenhängenden Tabelle des Abschnitts wird **typisiert** (ISO-Datum, Punkt-Version; **rohe** Zeilen — benannte Ausnahme von der Bereinigung) und nicht-strikt monoton verglichen ⇒ sonst `section-unordered` (auch Leerlauf ohne Datenzeile) bzw. `section-cell-untyped` (untypisierbare Zelle/Typ-Mischung). Anderer Wert ⇒ Exit 2 |
-| `structure[].table-column` | int | 1 | 1-basierte Schlüsselspalte der Chronologie-Bedingung; **explizit** < 1 ⇒ Exit 2, gesetzt ohne `table-order` ⇒ Exit 2 |
 | `structure[].headings-match` | string | leer (aus) | RE2 gegen den **Text** jeder Überschrift der Ebene `headings-level` **innerhalb** des Abschnitts (ohne `#`-Folge, getrimmt); jede nicht matchende ⇒ `section-heading-mismatch` auf **ihrer** Zeile. Nicht kompilierend ⇒ Exit 2 |
-| `structure[].cell-max-column` | string | leer (aus) | **Kopfzeilen-Name** der geprüften Spalte (exakter Vergleich der getrimmten Kopfzelle) — nicht ihre Position: eine eingefügte Spalte verschöbe die Messung sonst still. Bindet je Tabelle; kein Treffer ⇒ Tabelle irrelevant, mehr als einer ⇒ `section-column-missing` auf der Kopfzeile, **keine** bindende Tabelle im Abschnitt ⇒ derselbe Code an der Überschrift. Nur Weißraum ⇒ Exit 2 |
-| `structure[].cell-max-chars` | int | abwesend (aus) | Obergrenze der Zellenlänge in **Zeichen** (Unicode-Runen, nicht Bytes) für die Spalte aus `cell-max-column`; darüber ⇒ `section-cell-oversized` auf **ihrer** Zeile. **Explizit** < 1 ⇒ Exit 2 |
-| `structure[].cell-min-chars` | int | abwesend (aus) | Untergrenze derselben Zelle; darunter ⇒ `section-cell-undersized` auf **ihrer** Zeile — die **leere** Zelle eingeschlossen, die unter einer Obergrenze allein grün passiert. **Explizit** < 1 ⇒ Exit 2; `cell-min-chars` > `cell-max-chars` ⇒ Exit 2 (keine Zelle erfüllt beides). **Aktivierung:** `cell-max-column` verlangt **mindestens eine** der beiden Grenzen, und jede Grenze verlangt die Spalte — jede halbe Aktivierung ⇒ Exit 2 (kein Default auf einer der Seiten: eine Spalte ohne Schwelle misst nichts, eine Schwelle ohne Spalte gilt niemandem) |
+| `structure[].table` | map | abwesend (aus) | Klammer der beiden **Tabellen**-Bedingungen: beide sprechen über dieselbe Tabelle, adressieren ihre Spalte aber verschieden — `order-column` über die **Position**, `column[].name` über den **Namen**. Weder `order` noch ein `column`-Eintrag ⇒ Exit 2: eine leere Klammer sagt nichts zu |
+| `structure[].table.order` | string | leer (aus) | `asc` oder `desc` — schaltet die **Chronologie-Monotonie** scharf: die Schlüsselspalte jeder zusammenhängenden Tabelle des Abschnitts wird **typisiert** (ISO-Datum, Punkt-Version; **rohe** Zeilen — benannte Ausnahme von der Bereinigung) und nicht-strikt monoton verglichen ⇒ sonst `section-unordered` (auch Leerlauf ohne Datenzeile) bzw. `section-cell-untyped` (untypisierbare Zelle/Typ-Mischung). Anderer Wert ⇒ Exit 2 |
+| `structure[].table.order-column` | int | 1 | 1-basierte Schlüsselspalte der Chronologie-Bedingung (**Position**, nicht Name — hier fällt ein Griff daneben als `section-cell-untyped` auf); **explizit** < 1 ⇒ Exit 2, gesetzt ohne `table.order` ⇒ Exit 2. Steht sie **explizit**, gehört sie zur Regel-Identität: zwei Chronologie-Zusagen über denselben Abschnitt sind sonst ein Konfigurations-Duplikat |
+| `structure[].table.column` | list | leer (aus) | Liste der **Zellengrenzen**-Zusagen; je Eintrag **eine** Spalte, unabhängig ausgewertet. Mehrere Spalten desselben Abschnitts brauchen damit **keine** zweite Regel mit wiederholtem Selektor. Derselbe `name` zweimal ⇒ Exit 2: beide Einträge trügen dasselbe Befund-Ziel und fielen unter die Deduplikation zusammen |
+| `structure[].table.column[].name` | string | Pflicht je Eintrag | **Kopfzeilen-Name** der geprüften Spalte (exakter Vergleich der getrimmten Kopfzelle) — nicht ihre Position: eine eingefügte Spalte verschöbe die Messung sonst still. Bindet je Tabelle; kein Treffer ⇒ Tabelle irrelevant, mehr als einer ⇒ `section-column-missing` auf der Kopfzeile, **keine** bindende Tabelle im Abschnitt ⇒ derselbe Code an der Überschrift. Leer oder nur Weißraum ⇒ Exit 2 |
+| `structure[].table.column[].cell-max-chars` | int | abwesend (aus) | Obergrenze der Zellenlänge in **Zeichen** (Unicode-Runen, nicht Bytes) für die Spalte aus `name`; darüber ⇒ `section-cell-oversized` auf **ihrer** Zeile. **Explizit** < 1 ⇒ Exit 2 |
+| `structure[].table.column[].cell-min-chars` | int | abwesend (aus) | Untergrenze derselben Zelle; darunter ⇒ `section-cell-undersized` auf **ihrer** Zeile — die **leere** Zelle eingeschlossen, die unter einer Obergrenze allein grün passiert. **Explizit** < 1 ⇒ Exit 2; `cell-min-chars` > `cell-max-chars` ⇒ Exit 2 (keine Zelle erfüllt beides). **Aktivierung:** jeder Eintrag verlangt **mindestens eine** der beiden Grenzen — eine Spalte ohne Schwelle misst nichts ⇒ Exit 2 |
 | `structure[].headings-level` | int | Abschnitts-Ebene + 1 | 1-basierte ATX-Ebene der geprüften Überschriften; außerhalb 1–6 ⇒ Exit 2, gesetzt ohne `headings-match` ⇒ Exit 2. **Nicht** zu verwechseln mit `planning.closure.heading-pattern`: jener ist ein **Selektor** (welcher Abschnitt), dies eine **Bedingung** (welche Form) — beide Blöcke können im selben Profil stehen. Ein Wert **flacher** als der Abschnitt kann in ihm nicht vorkommen — die Bedingung ist dann wirkungslos |
 | `structure[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`) über die Quell-Pfade; Treffer werden von **dieser** Regel nicht geprüft — hebeln den Leerlauf-Befund aber nicht aus |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
@@ -2865,12 +2881,12 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-054` | `section-forbidden` | structure | `forbid-pattern` trifft den bereinigten Abschnitts-Text |
 | `SPEC-055` | `section-pattern-missing` | structure | `require-pattern` trifft **nicht** — das Spiegelbild von `section-forbidden` |
 | `SPEC-056` | `section-marker-missing` | structure | eine Marke aus `require-all` fehlt (Auszeichnungs-Marke am Zeilen-Anfang, nach optionalem Listen-Marker) |
-| `SPEC-057` | `section-unordered` | structure | eine Datenzeile bricht die nicht-strikte Monotonie der Schlüsselspalte in Richtung `table-order` (`line` = die brechende Zeile) — **oder** der Abschnitt trägt keine Tabellen-Datenzeile (Leerlauf, `line` = Abschnitts-Überschrift) |
+| `SPEC-057` | `section-unordered` | structure | eine Datenzeile bricht die nicht-strikte Monotonie der Schlüsselspalte in Richtung `table.order` (`line` = die brechende Zeile) — **oder** der Abschnitt trägt keine Tabellen-Datenzeile (Leerlauf, `line` = Abschnitts-Überschrift) |
 | `SPEC-058` | `section-cell-untyped` | structure | eine Schlüsselzelle der Chronologie-Bedingung ist nicht typisierbar (kein Datums-/Versions-Token, zu wenige Zellen, Segment außerhalb des Zahlbereichs) oder weicht vom Typ ihrer typisierbaren **Vorgänger-Zelle** ab — Befund statt stillem Übersprung; genau einer je gemeldeter Zelle |
 | `SPEC-067` | `section-heading-mismatch` | structure | eine Überschrift **innerhalb** des Abschnitts genügt `headings-match` nicht (`line` = die Überschrift, nicht der Abschnittskopf) — geprüft wird ihr Text, auf der Ebene `headings-level` |
-| `SPEC-068` | `section-cell-oversized` | structure | eine Zelle der über `cell-max-column` benannten Spalte trägt mehr als `cell-max-chars` **Zeichen** (`line` = ihre Zeile, nicht der Abschnittskopf) — gemessen wird die getrimmte Zelle, wie sie dasteht |
+| `SPEC-068` | `section-cell-oversized` | structure | eine Zelle der über `table.column[].name` benannten Spalte trägt mehr als `cell-max-chars` **Zeichen** (`line` = ihre Zeile, nicht der Abschnittskopf) — gemessen wird die getrimmte Zelle, wie sie dasteht |
 | `SPEC-070` | `section-cell-undersized` | structure | dieselbe Zelle trägt **weniger** als `cell-min-chars` Zeichen — die **leere** Zelle eingeschlossen, die unter einer Obergrenze allein grün passierte (`line` = ihre Zeile). Eigener Code, weil die Reparatur eine andere ist: ausfüllen statt kürzen |
-| `SPEC-069` | `section-column-missing` | structure | die über `cell-max-column` benannte Spalte ist nicht adressierbar: keine Tabelle des Abschnitts bindet sie (`line` = Abschnitts-Überschrift), der Name kommt in einer Kopfzeile mehrfach vor (`line` = Kopfzeile) oder eine Datenzeile reicht nicht bis zur Spalte (`line` = diese Zeile) |
+| `SPEC-069` | `section-column-missing` | structure | die über `table.column[].name` benannte Spalte ist nicht adressierbar: keine Tabelle des Abschnitts bindet sie (`line` = Abschnitts-Überschrift), der Name kommt in einer Kopfzeile mehrfach vor (`line` = Kopfzeile) oder eine Datenzeile reicht nicht bis zur Spalte (`line` = diese Zeile) |
 | `SPEC-059` | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `SPEC-060` | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
 | `SPEC-061` | `gate-undocumented` | targets | Makefile-Regel (nicht in `targets.exempt-targets`) ohne Deklaration als `make X` in der `targets.authority`-Doku (undokumentiertes Gate) |
@@ -2898,6 +2914,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-29 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 1/6 und das §2-Schema auf die **Tabellen-Klammer** `table` umgestellt ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.73.0, Begründung in begleitender ADR): die fünf flachen Schlüssel `table-order`/`table-column`/`cell-max-column`/`cell-max-chars`/`cell-min-chars` heißen jetzt `table.order`, `table.order-column` und `table.column[]` mit `name`/`cell-max-chars`/`cell-min-chars`. **Die Zellengrenzen sind eine Liste je Spalte**, kein Schlüssel-Tripel je Regel — mehrere Spalten desselben Abschnitts stehen unter **einem** Selektor. Das §2-Schema führt die `table.*`-Zeilen zusammen und benennt die **Abgrenzung der beiden Spalten-Begriffe**: `order-column` adressiert über die **Position** (ein Griff daneben fällt als `section-cell-untyped` auf), `column[].name` über den **Namen** (eine Längen-Messung hat diese Selbstkontrolle nicht). Schritt 1 trägt **zwei neue Exit-2-Ränder**, die erst die Liste möglich macht — leere Klammer, doppelter Spaltenname — und die Abweisung der fünf Vorgänger-Schlüssel **mit dem neuen Ort in der Meldung**. Schritt 6 sagt erstmals aus, dass jeder Listen-Eintrag ein **eigener Lauf** ist und das Befund-Ziel die Spalte trägt: die Regel-Identität tut es für die Zellen-Spalten **nicht mehr**, weil sie innerhalb einer Regel keine zwei Regeln kollidieren lassen können. **Kein Grund-Code und keine Befund-Form ändert sich** |
 | 2026-08-28 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 6 um die **neunte Bedingung** `cell-max-column`/`cell-max-chars` erweitert, §2-Schema um zwei Zeilen, §4 um die Grund-Codes [`SPEC-068`](#4-grund--und-fehler-codes) `section-cell-oversized` und [`SPEC-069`](#4-grund--und-fehler-codes) `section-column-missing` ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.72.0, Begründung in begleitender ADR): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte trägt höchstens N **Zeichen**, gemeldet auf **ihrer** Zeile. Die Bindung erfolgt **je Tabelle** — kein Treffer macht die Tabelle irrelevant statt den Abschnitt blind, ein doppelter Name und eine zu kurze Datenzeile sind Befunde, und der Leerlauf trägt dieselbe Doppel-Rolle wie bei der Chronologie. **Die Zell-Zerlegung ist jetzt die eine des Produkts:** escape- und backtick-bewusst, womit die in Schritt 6 benannte Grenze der Chronologie-Bedingung (`\|` verschiebt die Spaltenadresse) **entfällt**; ohne diesen Zug erbte die neue Bedingung genau das Loch, gegen das sie gebaut ist. Schritt 7 sagt zudem erstmals aus, dass die drei zeilen-gebundenen Bedingungen auf **der Zeile melden, an der repariert wird**, und nur im Leerlauf auf die Abschnitts-Überschrift zurückfallen |
 | 2026-08-27 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Schritt 1 und §[`DC-FA-ID-001.a`](spezifikation.md#dc-fa-id-001a--kennungs-prüfung) Bedingung 4 fordern für den Zeilen-Marker jetzt die **HTML-Kommentar-Form**; eine blanke Erwähnung wirkt dort nicht mehr. Die Form folgt der **Kommentar-Lexik der Eingabe** und ist deshalb je Konsument verschieden — §[`DC-FA-DIAG-001.a`](spezifikation.md#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams) legt den **Token** ausdrücklich fest (Diagramm-Sprache statt Markdown), und §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) liest alle Zeilen sprachgemischt. Die Bedingung ist **konservativ**: ein `>` im Kommentar vor dem Marker lässt ihn nicht gelten — ein verpasster Marker ist Falsch-Rot und laut, ein erfundener wäre stilles Grün. Im Bestand kostenlos (null zusätzliche Befunde), Zähne per Gegenprobe belegt. Begründung in begleitender ADR |
 | 2026-08-27 | §[`DC-FA-REF-001.a`](spezifikation.md#dc-fa-ref-001a--geteiltes-referenz-ventil-ignore-refs) §Achsen-Präzedenz sowie §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Schritt 1 und §[`DC-FA-ID-001.a`](spezifikation.md#dc-fa-id-001a--kennungs-prüfung) Bedingung 4 sagt jetzt zu, **wo der Zeilen-Marker gilt und wo er nur erwähnt ist**: die Frage *„ist diese Zeile eine Direktive"* bekommt die geteilte Prosa-Antwort (fence-bewusst **und inline-code-gestrippt**) bei den zwei Konsumenten, deren Eingabe Prosa ist — `codepaths` und `ids`. Bei `versions` (liest alle Zeilen inkl. Fences) und `diagrams` (liest Zeilen **innerhalb** eines Fence) bleibt die Erkennung **roh**, als benannte Skopierung: dort ist ein Backtick literaler Inhalt, es gibt keine geteilte Antwort zu übernehmen. Anlass ist ein gemessener stiller Grün-Pfad — von 250 Marker-Zeilen tragen 160 den Marker nur in Inline-Code, und der Angleich legt fünf **echte** Befunde frei: Zeilen des Lastenhefts, die das Ventil beschreiben und sich dadurch selbst ausnahmen. **Nicht** Gegenstand ist die **Form** des Markers (die Spec nennt einen HTML-Kommentar, die Erkennung akzeptiert jedes Vorkommen der Zeichenkette). Begründung in begleitender ADR |

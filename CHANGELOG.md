@@ -11,7 +11,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 - slice-168 — **Neunte `structure`-Bedingung: Zellenlänge einer benannten
   Tabellenspalte**
   ([ADR-0069](docs/plan/adr/0069-zellenlaenge-als-strukturbedingung.md),
-  Lastenheft 0.72.0). `cell-max-column` benennt die Spalte über ihren
+  [ADR-0070](docs/plan/adr/0070-tabellen-klammer-und-spaltenliste.md),
+  Lastenheft 0.73.0). `table.column[].name` benennt die Spalte über ihren
   **Kopfzeilen-Namen** — nicht über eine Position: eine eingefügte Spalte
   verschöbe eine Positions-Angabe **still** auf die falsche, ein umbenannter
   Kopf meldet **laut**. `cell-max-chars` und `cell-min-chars` begrenzen sie in
@@ -22,16 +23,33 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   (ausfüllen), beide auf **der Zeile der Zelle**. `section-column-missing`
   meldet die nicht adressierbare Spalte: kein Kopf trägt den Namen, er kommt
   mehrfach vor, oder eine Datenzeile reicht nicht bis zu ihr.
-- slice-168 — **Mehrere Spalten je Abschnitt sind konfigurierbar.** Die
-  Regel-Identität trägt jetzt die **ausdrücklich benannte** Spalte
-  (`cell-max-column` bzw. ein explizit gesetztes `table-column`). Ohne das wäre
-  eine zweite Regel über denselben Abschnitt ein Konfigurations-Duplikat, und
-  zwei Befunde **derselben Zeile** fielen unter die Deduplikation zusammen.
-  Damit entfällt die bis 0.71.0 benannte Grenze *„zwei Chronologie-Zusagen über
-  denselben Abschnitt"*. Eine Regel **ohne** Spalten-Angabe behält ihre
-  Identität — für sie ändert sich kein `target`.
+- slice-168 — **Mehrere Spalten je Abschnitt unter einem Selektor.**
+  `table.column` ist eine **Liste**; jeder Eintrag ist eine eigene Zusage über
+  eine Spalte. Vier Spalten desselben Abschnitts kosten damit **eine** Regel
+  statt vier mit wortgleichem `files`/`section`. Getrennt werden die Befunde
+  über das Ziel `… :: Spalte <name>` — zwei zu lange Zellen **derselben Zeile**
+  fielen sonst unter die Deduplikation zusammen. **Derselbe Spaltenname zweimal
+  in einer Liste ist Exit 2**, kein doppeltes Gate. Damit entfällt zugleich die
+  bis 0.71.0 benannte Grenze *„zwei Chronologie-Zusagen über denselben
+  Abschnitt"*: die Regel-Identität trägt jetzt ein **explizit** gesetztes
+  `table.order-column`.
 
 ### Changed
+
+- **Breaking:** slice-168 — **die tabellenbezogenen `structure`-Schlüssel stehen
+  unter einer Klammer `table`**
+  ([ADR-0070](docs/plan/adr/0070-tabellen-klammer-und-spaltenliste.md)).
+  `table-order` → `table.order`, `table-column` → `table.order-column`; die
+  Zellengrenzen leben in `table.column[]` mit `name`, `cell-max-chars` und
+  `cell-min-chars`. Beide Bedingungen sprechen über dieselbe Tabelle — das
+  trugen vorher nur ihre Namenspräfixe. **Der alte Name `cell-max-column` war
+  zudem unwahr:** er benannte die Spalte und schaltete scharf, auch wo
+  ausschließlich eine Untergrenze stand. **Migration:** jeder der fünf
+  Vorgänger-Schlüssel bricht mit **Exit 2 und dem neuen Ort in der Meldung**
+  (`table-order ist entfallen — der Schlüssel heißt jetzt table.order`); still
+  ignoriert wird keiner. Neu sind zwei Config-Ränder, die erst die Liste
+  möglich macht: eine leere `table`-Klammer und der doppelte Spaltenname.
+  **Kein Grund-Code, keine Zeilen-Zuordnung und keine Ziel-Form ändert sich.**
 
 - slice-168 — **Das Produkt hat eine Zell-Antwort statt zwei.** Die
   Tabellenzeilen-Zerlegung des Kerns (`structure`, `planning.waves`) ist jetzt
@@ -44,8 +62,8 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   entkommt einem Längen-Muster und wird von der Bedingung gemeldet). Kein
   Grund-Code und keine Befund-Form der bestehenden Bedingungen ändert sich.
 - slice-168 — Die **Befund-Form** von `structure` sagt jetzt aus, dass die drei
-  zeilen-gebundenen Bedingungen (`table-order`, `headings-match`,
-  `cell-max-column`) auf **der Zeile melden, an der repariert wird**, und nur
+  zeilen-gebundenen Bedingungen (`table.order`, `headings-match`,
+  `table.column`) auf **der Zeile melden, an der repariert wird**, und nur
   im Leerlauf auf die Abschnitts-Überschrift zurückfallen. Das galt seit der
   siebten Bedingung und stand so nicht im Vertrag.
 

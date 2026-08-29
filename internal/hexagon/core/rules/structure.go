@@ -115,7 +115,7 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 	// In `one` ist nach der Kardinalitäts-Prüfung genau ein Treffer übrig,
 	// `each` misst jeden.
 	var prose map[int]bool
-	if r.TableOrder != "" || r.CellMaxColumn != "" {
+	if r.Table.Order != "" || len(r.Table.Columns) > 0 {
 		// Die beiden Tabellen-Bedingungen brauchen die fence-bewusste
 		// Tabellenzeilen-Auswahl auf den ROHEN Zeilen (ADR-0057, ADR-0069).
 		prose = proseLineSet(content)
@@ -124,11 +124,14 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 	for _, h := range heads {
 		body := SectionProse(content, lines, h.Line, h.Level)
 		out = append(out, structureConditions(r, file, h.Line, body)...)
-		if r.TableOrder != "" {
+		if r.Table.Order != "" {
 			out = append(out, structureTableOrder(r, file, lines, prose, h.Line, h.Level)...)
 		}
-		if r.CellMaxColumn != "" {
-			out = append(out, structureCellMax(r, file, lines, prose, h.Line, h.Level)...)
+		// Ein Lauf je Spalte: die Befunde bleiben damit spaltenweise
+		// gruppiert, so wie sie es unter den frueheren Ein-Spalten-Regeln
+		// waren (ADR-0070 aendert die Form, nicht die Ausgabe).
+		for _, c := range r.Table.Columns {
+			out = append(out, structureCellMax(r, c, file, lines, prose, h.Line, h.Level)...)
 		}
 		if r.HeadingsMatch != "" {
 			out = append(out, structureHeadings(r, file, lines, h)...)

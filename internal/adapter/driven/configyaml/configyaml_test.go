@@ -248,9 +248,9 @@ func TestDecode_PlanningFehler(t *testing.T) {
 // ohne Decode-Test waren.
 func TestDecode_StructureFehler(t *testing.T) {
 	for name, bad := range map[string]string{
-		"table-order unbekannt":       "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table-order: chrono\n",
-		"table-column < 1":            "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table-order: desc\n    table-column: 0\n",
-		"table-column ohne order":     "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table-column: 2\n",
+		"order unbekannt":             "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table:\n      order: chrono\n",
+		"order-column < 1":            "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table:\n      order: desc\n      order-column: 0\n",
+		"order-column ohne order":     "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table:\n      order-column: 2\n",
 		"files fehlt":                 "structure:\n  - section: '## H'\n",
 		"beide Selektoren":            "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    section-pattern: 'H'\n",
 	} {
@@ -258,13 +258,13 @@ func TestDecode_StructureFehler(t *testing.T) {
 			t.Fatalf("%s: ungültige structure-Config akzeptiert: %q", name, bad)
 		}
 	}
-	ok := "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table-order: asc\n    table-column: 2\n"
+	ok := "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table:\n      order: asc\n      order-column: 2\n"
 	cfg, err := configyaml.Decode([]byte(ok))
 	if err != nil {
 		t.Fatalf("gültige Chronologie-Regel abgelehnt: %v", err)
 	}
-	if len(cfg.Structure) != 1 || cfg.Structure[0].TableOrder != "asc" ||
-		cfg.Structure[0].EffectiveTableColumn() != 2 {
+	if len(cfg.Structure) != 1 || cfg.Structure[0].Table.Order != "asc" ||
+		cfg.Structure[0].Table.EffectiveOrderColumn() != 2 {
 		t.Fatalf("Chronologie-Schlüssel nicht durchgereicht: %+v", cfg.Structure)
 	}
 }
@@ -909,14 +909,18 @@ func TestConfigYAMLStructureHeadingPattern(t *testing.T) {
 // Aktivierung bricht laut, in beide Richtungen.
 func TestConfigYAMLStructureZellenlaenge(t *testing.T) {
 	base := "structure:\n  - files: 'a/*.md'\n    section: '## S'\n"
+	spalte := base + "    table:\n      column:\n"
 	cases := []struct{ name, yaml, want string }{
-		{"spalte ohne grenze", base + "    cell-max-column: Titel\n", "wirkungslos"},
-		{"obergrenze ohne spalte", base + "    cell-max-chars: 200\n", "wirkungslos"},
-		{"untergrenze ohne spalte", base + "    cell-min-chars: 5\n", "wirkungslos"},
-		{"obergrenze null", base + "    cell-max-column: Titel\n    cell-max-chars: 0\n", ">= 1"},
-		{"untergrenze null", base + "    cell-max-column: Titel\n    cell-min-chars: 0\n", ">= 1"},
-		{"spalte nur weissraum", base + "    cell-max-column: '  '\n    cell-max-chars: 9\n", "leer"},
-		{"unten ueber oben", base + "    cell-max-column: Titel\n    cell-max-chars: 10\n    cell-min-chars: 11\n", "keine Zelle erfüllt beides"},
+		{"spalte ohne grenze", spalte + "        - name: Titel\n", "wirkungslos"},
+		{"obergrenze null", spalte + "        - name: Titel\n          cell-max-chars: 0\n", ">= 1"},
+		{"untergrenze null", spalte + "        - name: Titel\n          cell-min-chars: 0\n", ">= 1"},
+		{"spalte nur weissraum", spalte + "        - name: '  '\n          cell-max-chars: 9\n", "leer"},
+		{"unten ueber oben", spalte + "        - name: Titel\n          cell-max-chars: 10\n          cell-min-chars: 11\n", "keine Zelle erfüllt beides"},
+		// Erst die LISTE macht diesen Rand moeglich: zwei Eintraege derselben
+		// Spalte truegen dasselbe Befund-Ziel und fielen zusammen (ADR-0070).
+		{"spalte doppelt", spalte + "        - name: Titel\n          cell-max-chars: 10\n        - name: Titel\n          cell-max-chars: 20\n", "kommt doppelt vor"},
+		// Die Klammer selbst sagt ohne Inhalt nichts zu.
+		{"leere klammer", base + "    table:\n      order:\n", "leere Klammer"},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
@@ -926,17 +930,40 @@ func TestConfigYAMLStructureZellenlaenge(t *testing.T) {
 			}
 		})
 	}
-	// Zwei Regeln ueber DENSELBEN Abschnitt mit verschiedenen Spalten sind
-	// kein Duplikat mehr — die Identitaet traegt die benannte Spalte.
-	ok := base + "    cell-max-column: Titel\n    cell-max-chars: 200\n" +
-		"  - files: 'a/*.md'\n    section: '## S'\n    cell-max-column: Status\n    cell-max-chars: 40\n"
-	if _, err := configyaml.Decode([]byte(ok)); err != nil {
-		t.Fatalf("zwei Spalten desselben Abschnitts abgelehnt: %v", err)
+	// Mehrere Spalten desselben Abschnitts brauchen keine zweite Regel mehr —
+	// genau der Zweck der Klammer (ADR-0070).
+	ok := spalte + "        - name: Titel\n          cell-max-chars: 200\n          cell-min-chars: 10\n" +
+		"        - name: Status\n          cell-max-chars: 40\n"
+	cfg, err := configyaml.Decode([]byte(ok))
+	if err != nil {
+		t.Fatalf("zwei Spalten einer Regel abgelehnt: %v", err)
 	}
-	// Dieselben zwei Regeln OHNE Spalten-Angabe bleiben ein Duplikat.
+	if len(cfg.Structure) != 1 || len(cfg.Structure[0].Table.Columns) != 2 {
+		t.Fatalf("Spalten-Liste nicht durchgereicht: %+v", cfg.Structure)
+	}
+	// Zwei Regeln OHNE unterscheidende Angabe bleiben ein Duplikat.
 	dup := base + "    non-empty: true\n  - files: 'a/*.md'\n    section: '## S'\n    non-empty: true\n"
 	if _, err := configyaml.Decode([]byte(dup)); err == nil {
-		t.Fatal("Regel-Duplikat ohne Spalten-Angabe akzeptiert")
+		t.Fatal("Regel-Duplikat ohne unterscheidende Angabe akzeptiert")
+	}
+}
+
+// Migrations-Fangnetz (ADR-0070): die fuenf flachen Vorgaenger-Schluessel
+// werden mit dem NEUEN Ort abgelehnt, nicht mit der generischen
+// KnownFields-Meldung des Decoders — und vor allem nicht still ignoriert.
+func TestConfigYAMLStructureAltSchluessel(t *testing.T) {
+	base := "structure:\n  - files: 'a/*.md'\n    section: '## S'\n"
+	for alt, neu := range map[string]string{
+		"table-order: desc":       "table.order",
+		"table-column: 2":         "table.order-column",
+		"cell-max-column: Titel":  "table.column[].name",
+		"cell-max-chars: 200":     "table.column[].cell-max-chars",
+		"cell-min-chars: 10":      "table.column[].cell-min-chars",
+	} {
+		_, err := configyaml.Decode([]byte(base + "    " + alt + "\n"))
+		if err == nil || !strings.Contains(err.Error(), neu) {
+			t.Errorf("%s: erwartet Migrations-Hinweis auf %q, got %v", alt, neu, err)
+		}
 	}
 }
 
