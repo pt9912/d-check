@@ -163,6 +163,12 @@ Punkt zurückgeführt worden: seine eigene §2 verlangt eine Meldung, die sagt,
 - **Das Feld lädt zur Ausrede ein.** Ein schlecht benannter Grund-Code lässt
   sich mit einem Hinweis zudecken, statt den Code zu schärfen. —
   **Ausgang:** *(bei Closure)*
+- **In `--doctor` verdoppelt die Hinweis-Zeile bei manchen Modulen den
+  Grund-Klartext.** Gemessen an `ids`: „Kennung im Fließtext ohne Markdown-Link
+  auf ihre Definition" (Grund-Klartext) neben „Kennung ohne Link auf ihre
+  Definition" (Erläuterung). Beide Texte tragen historisch dieselbe Aussage; in
+  der **knappen** Befund-Zeile, die keinen Klartext hat, trägt die Erläuterung
+  trotzdem. — **Ausgang:** *(bei Closure)*
 - **Die Fähigkeit entsteht für einen einzigen Konsumenten**
   ([`BEO-011`](../observations.md)): slice-172. Ob weitere Regeln sie nutzen,
   ist nicht gemessen. — **Ausgang:** *(bei Closure)*

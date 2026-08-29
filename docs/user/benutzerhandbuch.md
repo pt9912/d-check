@@ -127,11 +127,15 @@ Bei kaputten Referenzen meldet d-check je einen Befund pro Zeile und endet
 mit Exit-Code 1:
 
 ```text
-docs/anleitung.md:12	fehlt.md	target-missing
+docs/anleitung.md:12	fehlt.md	target-missing	Linkziel existiert nicht
 d-check: 42 Datei(en) geprüft, 1 Befund(e)
 ```
 
-Jede Befund-Zeile hat das Format `Datei:Zeile  Ziel  Grund-Code`.
+Jede Befund-Zeile hat das Format `Datei:Zeile  Ziel  Grund-Code`. Trägt der
+Befund eine **Erläuterung**, folgt sie als **vierte** tab-getrennte Spalte —
+wie oben. Ein Befund bleibt dabei **eine** Zeile, und die ersten drei Felder
+bleiben, wie sie waren: wer die Ausgabe auf Tab trennt und Feld 1–3 liest,
+liest weiter dasselbe. Ein Befund ohne Erläuterung ist dreispaltig.
 
 ### Grundkonzepte
 
@@ -437,11 +441,18 @@ d-check Diagnose — 1 Befund(e) in 1 Datei(en):
 docs/anleitung.md
   Z. 12 · Kennung im Fließtext ohne Markdown-Link auf ihre Definition [ids]
       Stelle: ADR-0007
+      Hinweis: Kennung ohne Link auf ihre Definition
       Fix-Kandidat: ADR-0007 → [`ADR-0007`](plan/adr)
         (Kennung als Markdown-Link auf ihre Definition (docs/plan/adr/) ausführen; Anker ggf. ergänzen)
 ```
 
-**Hinweise:** `--doctor` ist read-only und gibt nur auf stdout aus. Mit
+**Hinweise:** Die `Hinweis:`-Zeile trägt die **Erläuterung** des Befunds — bei
+den meisten Modulen eine feste Meldung, bei `structure` der selbst verfasste
+`hint`. Sie ist die Gegengröße zum **Fix-Kandidaten**: jene ist geschrieben,
+dieser abgeleitet. **Bei manchen Modulen wiederholt sie den Grund-Klartext
+fast wörtlich** — im Beispiel oben —, weil beide Texte historisch dieselbe
+Aussage tragen; in der knappen Befund-Zeile, die keinen Klartext hat, trägt
+sie in jedem Fall. `--doctor` ist read-only und gibt nur auf stdout aus. Mit
 zusätzlichem `--json` wird dieselbe Diagnose **maschinenlesbar**
 ausgegeben (siehe unten). Nicht mit `--repair` kombinierbar (sonst
 Exit-Code 2). Einen Fix-Kandidaten gibt es nur dort, wo er **eindeutig**
@@ -1987,6 +1998,10 @@ structure:
     #                                             # MUSS tiefer als der Abschnitt liegen — eine gleiche
     #                                             # oder flachere Ebene kommt in ihm nicht vor, die
     #                                             # Bedingung wäre dann wirkungslos wahr
+    # hint: "Haken setzen oder Slice zurückführen"   # VERFASSTE Erläuterung dieser Regel:
+    #                                             # sie wird zur vierten Spalte des Befunds und
+    #                                             # zur Hinweis-Zeile in --doctor. Explizit leer
+    #                                             # ⇒ Exit 2
     # exempt-paths: []
 ```
 
