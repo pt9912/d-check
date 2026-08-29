@@ -94,12 +94,17 @@ Beanspruchung sie nicht wiederholt:**
 - **Das Überschriften-Muster trägt.** `^#{2,3} [0-9]+\. Definition of Done`
   deckt alle sieben im Bestand vorkommenden Formen (`## 2.`/`## 3.`/`## 4.`/
   `## 5.`, dazu die Zusätze `(vorläufig)` und `(R1 eingearbeitet)`) — **null**
-  `section-missing` über 170 `done/`-Slices. Das ist der Unterschied zu
+  `section-missing` über den `done/`-Bestand. Das ist der Unterschied zu
   [`MR-049`](../../../../harness/conventions.md#mr-049), dessen Ausnahme 107
   `section-missing` abfangen musste.
 - **Die Bestandszahl stimmt mit der Planung überein:** ohne Ausnahme **37**
   `section-forbidden`, mit ihr **null** — beides im echten Closure-Profil
   gefahren, nicht in einer Probe-Konfiguration.
+- **Bei der zweiten Beanspruchung nachgeprüft, nicht wiederholt:** der Bestand
+  ist von 170 auf **171** `done/`-Slices gewachsen (slice-177 kam hinzu), die
+  Trefferzahl bleibt **37**, die Nummern bleiben dieselben, und es gibt weiter
+  **kein** `section-missing`. Der seither geschlossene Slice trägt
+  seine Haken gesetzt — er hätte die Zahl sonst erhöht.
 - **Die Treffer streuen nicht beliebig:** 025–104 (34 Stück), dann 160, 168,
   169, 170. Eine feste Ziffern-Ausnahme trägt also, sie braucht drei Muster
   statt zwei: `slice-0??-*`, `slice-1[0-6]?-*`, `slice-170-*`. Die Grenze liegt
@@ -181,6 +186,12 @@ eine regel-eigene Meldung gibt es nicht. Die Alternative wäre gewesen, den
 Punkt stillschweigend fallenzulassen; stattdessen wartet dieser Slice auf
 [slice-177](../done/slice-177-structure-hint.md).
 
+**Zweite Beanspruchung am 2026-08-29** (`open` → `in-progress`): die
+Vorbedingung ist geliefert — `structure[].hint` existiert seit
+[slice-177](../done/slice-177-structure-hint.md), und der Nachtlauf-Stand ist
+neu gelesen (§7). Die gemessene Vorarbeit in §2 gilt unverändert; sie wurde
+nicht wiederholt, sondern gegen den heutigen Bestand nur nachgeprüft.
+
 **Rückführungen:** `in-progress` → `open`, falls die Bestandsmessung eine
 andere Zahl als 37 liefert oder die Treffer über die Nummernspanne streuen —
 dann trägt eine feste Ziffern-Ausnahme nicht, und der Schnitt ist ein anderer.
@@ -198,7 +209,7 @@ dann trägt eine feste Ziffern-Ausnahme nicht, und der Schnitt ist ein anderer.
   > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
 - **Offene Beobachtungen sichten** (Register-Stand 2026-08-29, höchste Kennung
-  `BEO-022`): [`BEO-013`](../observations.md) — ein Wächter, der nichts mehr
+  `BEO-023`): [`BEO-013`](../observations.md) — ein Wächter, der nichts mehr
   fängt: hier eine Stufe früher, eine Regel **ohne** Wächter, und die
   Bestands-Ausnahme ist der künftige Kandidat für dieselbe Klasse;
   [`BEO-011`](../observations.md) — Regel aus dem Anlass: die Dringlichkeit
@@ -208,7 +219,10 @@ dann trägt eine feste Ziffern-Ausnahme nicht, und der Schnitt ist ein anderer.
   Closure-Prüfungen; [`BEO-022`](../observations.md) — eine Regel tritt in Kraft,
   bevor ihre Zustellung existiert: die neue Bedingung am Übergang gehört in
   `AGENTS.md` §5 und in die Sensors-Tabelle, sonst blockiert sie einen Autor,
-  der nicht weiß, warum. Die Regel, die diesen Schritt vorschreibt:
+  der nicht weiß, warum; [`BEO-023`](../observations.md) — ein Wächter, der nie
+  fangen konnte: dieser Slice **ist** ein Wächter, und seine DoD verlangt die
+  Umkehr-Probe (die Regel gegen den Bestand rot, mit Ausnahme grün) statt eines
+  grünen Laufs als Beleg. Die Regel, die diesen Schritt vorschreibt:
 
   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
   > **Offene Beobachtungen sichten.**
