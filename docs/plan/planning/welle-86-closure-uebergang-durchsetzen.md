@@ -84,7 +84,7 @@ Sensor; die Welle belegt den **Übergang als Ganzes**.
 
 | Slice | Gegenstand | Werkzeug |
 |---|---|---|
-| [slice-172](in-progress/slice-172-closure-uebergang-waechtern.md) | DoD-Häkchen gesetzt | `structure` (vorhanden) |
+| [slice-172](open/slice-172-closure-uebergang-waechtern.md) | DoD-Häkchen gesetzt | `structure` (vorhanden) |
 | slice-173 | Review-Report-Deckung: jeder `done/`-Slice mit Review-Zusage hat einen Report | neue Fähigkeit (Deckung zweier Mengen) |
 | slice-174 | Beobachtungs-Register-Deckung: zitierte `BEO-<NNN>` hat Registerzeile, jede Zeile trägt einen Beleg | `modul-06` nennt die maschinelle Hälfte selbst |
 | slice-175 | Bindung an den **Übergang**: der `mv`-Commit nach `done/` wird geprüft, nicht der Zustand danach | `.githooks/pre-commit` ruft d-check im `STAGED=`-Modus |
