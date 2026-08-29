@@ -128,14 +128,17 @@ Dokuments:
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — Struktur-Invarianten **innerhalb** eines Dokuments: je Regel eine
   Dokumentklasse über **eigene** Globs, ein Abschnitt (Klartext oder RE2) und bis
-  zu acht Bedingungen mit je eigenem Grund-Code — nicht leer (`section-empty`),
+  zu neun Bedingungen mit je eigenem Grund-Code — nicht leer (`section-empty`),
   Mindest-Sätze (`section-thin`), Task-Obergrenze (`section-oversized`),
   verbotenes bzw. gefordertes Muster (`section-forbidden`,
   `section-pattern-missing`), geforderte Marken (`section-marker-missing`),
   Chronologie-Monotonie der Schlüsselspalte (`section-unordered`,
-  `section-cell-untyped`) und die Form **jeder** Überschrift des Abschnitts
+  `section-cell-untyped`), die Form **jeder** Überschrift des Abschnitts
   (`headings-match`/`headings-level` ⇒ `section-heading-mismatch`, gemeldet je
-  Überschrift auf ihrer Zeile);
+  Überschrift auf ihrer Zeile) und die **Zellenlänge** einer über ihren
+  Kopfzeilen-**Namen** benannten Tabellenspalte (`table.column` ⇒
+  `section-cell-oversized`/`section-cell-undersized` auf **ihrer** Zeile,
+  `section-column-missing` für die nicht adressierbare Spalte);
   fehlt der Abschnitt oder trifft die Regel keine Datei ⇒ `section-missing`,
   mehrfach vorhanden bei `sections: one` ⇒ `section-ambiguous`. **Hermetisch**,
   opt-in; die Closure-Note-Struktur des Moduls `planning` ist ein **Preset**
@@ -218,7 +221,7 @@ Lastenhefts, und beide werden gemessen, nicht behauptet:
 ## Nutzung
 
 Verteilung als Container-Image über GHCR
-([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)); **seit `v0.65.0`**
+([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)); **seit `v0.66.0`**
 zusätzlich nach Docker Hub gespiegelt als
 `pt9912/d-check` — dasselbe Bild, kein zweiter Bau, gleicher **Config**-Digest
 (der **Manifest**-Digest ist registry-lokal: per Digest pinnt man den der
@@ -226,7 +229,7 @@ Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.65.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.66.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

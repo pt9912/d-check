@@ -126,14 +126,17 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — structure invariants **within** a document: each rule defines a
   document class via **its own** globs, a section (literal or RE2) and up to
-  eight conditions, each with its own reason code — non-empty (`section-empty`),
+  nine conditions, each with its own reason code — non-empty (`section-empty`),
   minimum sentences (`section-thin`), task ceiling (`section-oversized`),
   forbidden and required patterns (`section-forbidden`,
   `section-pattern-missing`), required markers (`section-marker-missing`),
   chronological monotonicity of the key column (`section-unordered`,
-  `section-cell-untyped`) and the shape of **every** heading in the section
+  `section-cell-untyped`), the shape of **every** heading in the section
   (`headings-match`/`headings-level` ⇒ `section-heading-mismatch`, reported per
-  heading on its own line);
+  heading on its own line) and the **cell length** of a column addressed by its
+  header **name** (`table.column` ⇒
+  `section-cell-oversized`/`section-cell-undersized` on **its own** line,
+  `section-column-missing` for a column that cannot be addressed);
   a missing section — or a rule matching no file — yields `section-missing`,
   several matches under `sections: one` yield `section-ambiguous`. **Hermetic**,
   opt-in; the closure-note structure of module `planning` is a **preset** of the
@@ -215,7 +218,7 @@ spec, and both are measured, not asserted:
 ## Usage
 
 Distributed as a container image via GHCR
-([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)); **since `v0.65.0`**
+([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)); **since `v0.66.0`**
 also mirrored to Docker Hub as `pt9912/d-check` —
 the same image, not a second build, same **config** digest (the **manifest**
 digest is registry-local: when pinning by digest, use the one from the registry
@@ -223,7 +226,7 @@ you pull from)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.65.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.66.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to
