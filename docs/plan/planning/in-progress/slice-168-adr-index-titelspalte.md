@@ -79,7 +79,15 @@ zugunsten einer `structure`-Regel aufgegeben hat.
 5. **Der Rest der Zelle geht nicht verloren, er ist schon da.** Wo eine Zeile
    etwas trägt, das **nur** dort steht, ist das der eigentliche Befund und
    wandert in die ADR, nicht in den Papierkorb.
-6. Lastenheft, ADR, Implementierung, Tests, Handbuch; `make gates`; unabhängiger
+6. **Die Konfigurationsform trägt die Bedingung, nicht umgekehrt.** Vier Spalten
+   desselben Abschnitts stehen unter **einem** Selektor: alle tabellenbezogenen
+   Bedingungen leben unter der Klammer `table` (`order`, `order-column`,
+   `column[]`), und die Zellengrenzen sind eine **Liste je Spalte**. Der
+   Vorgänger-Name `cell-max-column` entfällt — er benannte die Spalte und
+   schaltete scharf, trug aber `max` im Namen, auch wo nur eine Untergrenze
+   stand. Die fünf flachen Schlüssel werden **mit dem neuen Ort** abgewiesen,
+   nicht still ignoriert ([ADR-0070](../../adr/0070-tabellen-klammer-und-spaltenliste.md)).
+7. Lastenheft, ADR, Implementierung, Tests, Handbuch; `make gates`; unabhängiger
    Review; Closure.
 
 ## 3. Ausdrücklich NICHT in diesem Slice
@@ -103,6 +111,12 @@ zugunsten einer `structure`-Regel aufgegeben hat.
       Fitness Function; Spezifikation, Handbuch und `operations.md` nachgezogen.
 - [ ] Negativtests: zu lange Zelle, Grenzfall genau auf der Schwelle, Umlaute
       (Zeichen ≠ Bytes), Zelle mit `|`, fehlende Spalte, leere Prüfmenge.
+- [ ] Die Tabellen-Bedingungen stehen unter **einer** Klammer `table`, die
+      Zellengrenzen als **Liste je Spalte**; die eigene `.d-check.yml` sagt die
+      vier Index-Spalten mit **einem** Selektor zu. Jeder der fünf
+      Vorgänger-Schlüssel bricht mit **Exit 2 und dem neuen Ort** in der
+      Meldung, und die beiden Ränder, die erst die Liste möglich macht — leere
+      Klammer, doppelter Spaltenname — sind getippt abgedeckt.
 - [ ] Jede Titel-Zelle gibt den H1 der zugehörigen ADR wieder; die 24 bereits
       kurzen Zeilen sind unverändert.
 - [ ] Kein Inhalt ist verloren: was nur im Index stand, ist benannt und
@@ -126,6 +140,16 @@ zugunsten einer `structure`-Regel aufgegeben hat.
   der RTM-Leser escape-bewusst. Eine neue Bedingung auf dem naiven Zerleger
   hätte genau das Loch geerbt, gegen das sie gebaut ist. — **Ausgang:** *(bei
   Closure)*
+- **Die Klammer bricht zwei Schlüssel einer bereits ausgelieferten Bedingung**
+  ([ADR-0057](../../adr/0057-structure-tabellen-monotonie.md)). Der Preis ist
+  gemessen klein — kein Schwester-Repo und kein anderer Konsument führte
+  `table-order` oder `table-column` —, aber „niemand nutzt es" ist eine
+  Momentaufnahme des Sichtbaren, keine Zusage über Unbekannte. — **Ausgang:**
+  *(bei Closure)*
+- **Ein Migrations-Fangnetz, das niemanden fängt, bleibt stehen**
+  ([`BEO-013`](../observations.md)). Die fünf Vorgänger-Schlüssel leben im
+  Config-Struct weiter, nur um abgewiesen zu werden; ihr Ablaufdatum steht als
+  Trigger in der ADR und sonst nirgends. — **Ausgang:** *(bei Closure)*
 
 ## 6. Trigger
 
