@@ -120,7 +120,7 @@ die **CI-Hälfte**; das Repo macht das bei `adr-check` bereits so
 (`pre-commit` **und** PR-CI). Ohne sie ist der Übergang nur höflich gesichert.
 
 **Die vierte Schicht liegt außerhalb dieser Welle:** die pfad-gebundene
-Zustellung (`.claude/rules/`, [slice-176](open/slice-176-planning-rule-pilot.md))
+Zustellung ([slice-176](open/slice-176-planning-rule-pilot.md))
 verhindert keinen Verstoß, sondern die **Überraschung** — ein Hook, der
 blockiert, ohne dass der Autor wusste warum, kostet einen ganzen Zyklus. Sie
 gehört zum selben Bild, aber nicht zum Closure-Trigger dieser Welle.
@@ -154,6 +154,16 @@ Guide kennt **prompt-** und **agent-basierte** Hooks ausdrücklich für
 Entscheidungen, „die Urteilsvermögen erfordern". Der Ausschluss bleibt richtig —
 diese Welle prüft Deckung —, aber sein Grund ist jetzt eine **Wahl** und keine
 Unmöglichkeit mehr. Wer ihn später aufhebt, hat einen Weg.
+
+**Nachtrag zum Nachtrag: der Rules-Kanal fällt weg.** Der Abschnitt oben nannte
+als vierte Schicht `.claude/rules/` mit `paths`-Frontmatter. Nach
+Werkzeug-Auskunft (2026-08-29) hängt eine solche Regel im **Auto-Modus** nur
+ein, wenn die Datei über die **dedizierten** Werkzeuge angefasst wird — jeder
+Shell-Zugriff geht daran vorbei. In diesem Repo, dessen Auto-Modus zur Shell
+rät, hätte der Kanal im Anlassfall geschwiegen. **Auch die Zustellung läuft
+deshalb über Hooks**, die das Harness unabhängig vom Werkzeug ausführt;
+[slice-176](open/slice-176-planning-rule-pilot.md) ist entsprechend neu
+geschnitten, die Klasse steht als [`BEO-024`](observations.md) im Register.
 
 **Ein Rand, den slice-175 kennen muss:** hängen mehrere Hooks am selben Event,
 gewinnt die restriktivste Antwort (`deny` vor `defer` vor `ask` vor `allow`).
