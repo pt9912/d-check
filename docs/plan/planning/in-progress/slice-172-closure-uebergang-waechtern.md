@@ -19,7 +19,7 @@ Bauform ein Slice später).
 **Berührte Spec-Stellen:** — (Konfigurationsregel über vorhandene Fähigkeiten;
 keine Produkt-Anforderung berührt).
 
-**Verantwortlich:** — (bis zur Priorisierung).
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-08-29.
 
@@ -111,6 +111,10 @@ Beobachtungs-Register: Mensch urteilt, Maschine prüft Deckung.
       den Grund: gehobenes Regelwerk, nicht nachgezogene Dokumente.
 - [ ] Die drei Folge-Kandidaten aus §3 sind als solche benannt — nicht
       stillschweigend weggelassen.
+- [ ] Die neue Bedingung ist **zugestellt**, bevor sie blockiert:
+      [`AGENTS.md`](../../../../AGENTS.md) §5 und die Sensors-Tabelle in
+      [`harness/README.md`](../../../../harness/README.md) nennen sie
+      ([`BEO-022`](../observations.md)).
 - [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
       **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
 
@@ -135,8 +139,8 @@ Beobachtungs-Register: Mensch urteilt, Maschine prüft Deckung.
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): WIP-Limit frei — heute hält
-[slice-171](../done/slice-171-vorpruefungen-belegen.md) den Slot.
+**Start** (`open` → `in-progress`): WIP-Limit frei, beansprucht am 2026-08-29 —
+[slice-171](../done/slice-171-vorpruefungen-belegen.md) ist geschlossen.
 
 **Rückführungen:** `in-progress` → `open`, falls die Bestandsmessung eine
 andere Zahl als 37 liefert oder die Treffer über die Nummernspanne streuen —
@@ -155,22 +159,27 @@ dann trägt eine feste Ziffern-Ausnahme nicht, und der Schnitt ist ein anderer.
   > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
 - **Offene Beobachtungen sichten** (Register-Stand 2026-08-29, höchste Kennung
-  `BEO-021`): [`BEO-013`](../observations.md) — ein Wächter, der nichts mehr
+  `BEO-022`): [`BEO-013`](../observations.md) — ein Wächter, der nichts mehr
   fängt: hier eine Stufe früher, eine Regel **ohne** Wächter, und die
   Bestands-Ausnahme ist der künftige Kandidat für dieselbe Klasse;
   [`BEO-011`](../observations.md) — Regel aus dem Anlass: die Dringlichkeit
   stammt aus drei Slices, die Regel selbst aus 37 gemessenen Treffern;
   [`BEO-015`](../observations.md) — ein offener Punkt bekommt bei der Closure
   einen Ausgang, den es nicht gibt: dieselbe Familie urteilsfreier
-  Closure-Prüfungen. Die Regel, die diesen Schritt vorschreibt:
+  Closure-Prüfungen; [`BEO-022`](../observations.md) — eine Regel tritt in Kraft,
+  bevor ihre Zustellung existiert: die neue Bedingung am Übergang gehört in
+  `AGENTS.md` §5 und in die Sensors-Tabelle, sonst blockiert sie einen Autor,
+  der nicht weiß, warum. Die Regel, die diesen Schritt vorschreibt:
 
-  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:224-225 -->
-  > **Keine Treffer sind ebenfalls eine
-  > Antwort** und werden notiert.
+  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
+  > **Offene Beobachtungen sichten.**
 
-- **Nachtlauf-Stand lesen:** entfällt in `open/` — der Block entsteht
-  **spätestens bei der Beanspruchung** (`open→in-progress`), weil ein zum
-  Planungszeitpunkt gelesener Stand bis dahin veraltet wäre.
+- **Nachtlauf-Stand lesen** (`make nightly-state`,
+  [`MR-053`](../../../../harness/conventions.md#mr-053)): beide Achsen melden
+  **gruen** — `upstream-drift.yml` zuletzt 2026-08-29T07:34:35Z,
+  `image-scan.yml` 2026-08-29T10:07:43Z. **Dieser Block trägt bewusst keine
+  `cite`-Direktive** — sein Ziel ist eine Repo-Adaption, kein
+  Baseline-Abschnitt ([`MR-054`](../../../../harness/conventions.md#mr-054)).
 
 Slice-ID: slice-172. Betroffene IDs:
 [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in),
