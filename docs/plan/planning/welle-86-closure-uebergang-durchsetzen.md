@@ -87,11 +87,43 @@ Sensor; die Welle belegt den **Übergang als Ganzes**.
 | [slice-172](open/slice-172-closure-uebergang-waechtern.md) | DoD-Häkchen gesetzt | `structure` (vorhanden) |
 | slice-173 | Review-Report-Deckung: jeder `done/`-Slice mit Review-Zusage hat einen Report | neue Fähigkeit (Deckung zweier Mengen) |
 | slice-174 | Beobachtungs-Register-Deckung: zitierte `BEO-<NNN>` hat Registerzeile, jede Zeile trägt einen Beleg | `modul-06` nennt die maschinelle Hälfte selbst |
-| slice-175 | Bindung an den **Übergang**: der `mv`-Commit nach `done/` wird geprüft, nicht der Zustand danach | `vcs`/`commits`-Port, `pre-commit`-Hook |
+| slice-175 | Bindung an den **Übergang**: der `mv`-Commit nach `done/` wird geprüft, nicht der Zustand danach | `.githooks/pre-commit` ruft d-check im `STAGED=`-Modus |
 
 Die drei letzten sind **noch nicht angelegt** — sie entstehen, wenn sie
 drankommen; wer alle Slices vor der ersten Implementierung plant, plant tote
 Slices (`modul-05`).
+
+### Der Träger von slice-175 ist der git-Hook, nicht der Werkzeug-Hook
+
+**Festgehalten bei der Eröffnung, damit der Slice nicht am falschen Ort
+ansetzt.** Das Repo führt zwei Hook-Familien mit sehr verschiedener Reichweite:
+`.claude/hooks/` ist **werkzeug-lokal** — [`MR-042`](../../../harness/conventions.md#mr-042)
+buchstabiert das aus (*keine CI ruft ihn, ein Lauf ohne dieses Werkzeug ist
+ungebunden*). `.githooks/` läuft für **jedes** Werkzeug und jeden Menschen, der
+`make hooks` ausgeführt hat.
+
+Eine Durchsetzung im Werkzeug-Hook wäre genauso lokal wie die Zustellung, die
+sie flankiert. slice-175 nimmt deshalb `.githooks/pre-commit`.
+
+**Das Muster liegt schon vor und wird nicht neu erfunden.** Der Hook fährt heute
+`make adr-check STAGED=1` und `make doc-check` — er **implementiert nichts**, er
+ruft d-check. Und der `STAGED=`-Modus beweist, dass das Produkt den gestagten
+Zustand lesen kann. Für den Closure-Übergang folgt daraus nur eine Bedingung
+davor: erkennen, dass *dieser* Commit einen Slice schließt (gestagter Rename
+nach `done/`), und dann die Prüfung fahren, die sonst erst in `make fullbuild`
+läuft.
+
+**Drei Orte, eine Logik.** Die Regel lebt im d-check-Modul; Hook und CI rufen
+sie, keiner implementiert sie nach — sonst driften drei Fassungen
+auseinander. Und weil `--no-verify` den Hook umgeht, braucht dieselbe Prüfung
+die **CI-Hälfte**; das Repo macht das bei `adr-check` bereits so
+(`pre-commit` **und** PR-CI). Ohne sie ist der Übergang nur höflich gesichert.
+
+**Die vierte Schicht liegt außerhalb dieser Welle:** die pfad-gebundene
+Zustellung (`.claude/rules/`, [slice-176](open/slice-176-planning-rule-pilot.md))
+verhindert keinen Verstoß, sondern die **Überraschung** — ein Hook, der
+blockiert, ohne dass der Autor wusste warum, kostet einen ganzen Zyklus. Sie
+gehört zum selben Bild, aber nicht zum Closure-Trigger dieser Welle.
 
 ## 5. Abhängigkeiten
 
