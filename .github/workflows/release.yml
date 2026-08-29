@@ -265,6 +265,14 @@ jobs:
   hub-description:
     name: Hub-Darstellung
     needs: release
+    # Der aufgerufene Workflow verlangt `contents: read`; ein aufrufender Job
+    # kann nur weitergeben, was er selbst hat, und erbt hier sonst das
+    # `permissions: {}` des Workflow-Kopfes. Ohne diese Zeile lehnt GitHub den
+    # GANZEN Lauf vor dem ersten Job ab (startup_failure, kein Log) — gemessen
+    # am Tag-Push von v0.66.0. `make workflow-pins` sieht das nicht: es prueft
+    # die Existenz des Ziels, nicht seine Rechte-Anforderung.
+    permissions:
+      contents: read
     uses: ./.github/workflows/hub-description.yml
     with:
       version: v${{ needs.release.outputs.version }}
