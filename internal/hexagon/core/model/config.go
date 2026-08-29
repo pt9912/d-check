@@ -466,6 +466,15 @@ type StructureRule struct {
 	// Spalte aber verschieden — die Klammer macht das sichtbar, statt es fuenf
 	// flachen Schluesseln zu ueberlassen.
 	Table       TableRule
+	// Hint ist die vom Konfigurations-Autor VERFASSTE Erlaeuterung: was der
+	// Leser tun soll, wenn diese Regel meldet. Sie schreibt das message-Feld
+	// des Befunds (SPEC-001) und gewinnt gegen die modul-eigene Meldung —
+	// jene sagt die ART des Defekts, diese die ZUSAGE, die die Regel huetet,
+	// und die steht naeher am Leser (ADR-0073).
+	//
+	// ABGRENZUNG: kein Fix-Kandidat. Der ist ABGELEITET und speist --repair
+	// (DC-FA-CLI-007); dieser Text ist verfasst und wird nie angewendet.
+	Hint        string
 	ExemptPaths []string
 }
 
@@ -551,6 +560,20 @@ func (r StructureRule) Identity() string {
 // die Identitaet sie nicht mehr (ADR-0070).
 func (r StructureRule) ColumnTarget(name string) string {
 	return r.Identity() + " :: Spalte " + name
+}
+
+// MessageFor waehlt die Erlaeuterung eines BEDINGUNGS-Befunds dieser Regel:
+// den verfassten Hint, sonst die modul-eigene Meldung (ADR-0073).
+//
+// GRENZE: die beiden Befunde, die keine Bedingung verletzen — unlesbarer
+// Dateibaum und leer laufende Regel — gehen NICHT hier durch. Ein Hinweis auf
+// die geheutete Zusage wuerde dort in die Irre fuehren: die Regel hat gar
+// nicht gemessen.
+func (r StructureRule) MessageFor(moduleMsg string) string {
+	if r.Hint != "" {
+		return r.Hint
+	}
+	return moduleMsg
 }
 
 // EffectiveSections liefert den Kardinalitäts-Modus (Default `one`).

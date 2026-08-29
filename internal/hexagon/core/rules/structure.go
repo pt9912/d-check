@@ -215,7 +215,7 @@ func structureHeadings(r model.StructureRule, file string, lines []string, h Sec
 func structureFinding(r model.StructureRule, file string, line int, reason, msg string) model.Finding {
 	return model.Finding{
 		File: file, Line: line, Rule: "structure",
-		Target: r.Identity(), Reason: reason, Message: msg,
+		Target: r.Identity(), Reason: reason, Message: r.MessageFor(msg),
 	}
 }
 

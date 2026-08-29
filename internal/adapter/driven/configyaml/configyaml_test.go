@@ -253,6 +253,8 @@ func TestDecode_StructureFehler(t *testing.T) {
 		"order-column ohne order":     "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    table:\n      order-column: 2\n",
 		"files fehlt":                 "structure:\n  - section: '## H'\n",
 		"beide Selektoren":            "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    section-pattern: 'H'\n",
+		"hint gesetzt, aber leer":    "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    hint: ''\n",
+		"hint nur Whitespace":        "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    hint: '   '\n",
 	} {
 		if _, err := configyaml.Decode([]byte(bad)); err == nil {
 			t.Fatalf("%s: ungültige structure-Config akzeptiert: %q", name, bad)
@@ -1039,5 +1041,26 @@ func TestConfigYAMLDiagramsExemptPathsSegmentweise(t *testing.T) {
 	// Doppelstern bleibt gültig.
 	if _, err := configyaml.Decode([]byte(head + "  exempt-paths: [\"docs/**/x.md\"]\n")); err != nil {
 		t.Fatalf("** muss gültig bleiben: %v", err)
+	}
+}
+
+// Ein gesetzter Hinweis erreicht den Kern; ein abwesender ist leer, nicht ein
+// Fehler (ADR-0073).
+func TestDecode_StructureHint(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"structure:\n  - files: 'a/*.md'\n    section: '## H'\n    hint: 'Haken setzen'\n"))
+	if err != nil {
+		t.Fatalf("gültige hint-Regel abgelehnt: %v", err)
+	}
+	if len(cfg.Structure) != 1 || cfg.Structure[0].Hint != "Haken setzen" {
+		t.Fatalf("hint nicht durchgereicht: %+v", cfg.Structure)
+	}
+
+	cfg, err = configyaml.Decode([]byte("structure:\n  - files: 'a/*.md'\n    section: '## H'\n"))
+	if err != nil {
+		t.Fatalf("Regel ohne hint abgelehnt: %v", err)
+	}
+	if cfg.Structure[0].Hint != "" {
+		t.Fatalf("abwesender hint muss leer sein, got %q", cfg.Structure[0].Hint)
 	}
 }

@@ -24,9 +24,19 @@ type Summary struct {
 // Text schreibt Befunde zeilenweise auf stdout
 // (`<file>:<line>\t<target>\t<reason>`) und die Zusammenfassung auf
 // stderr.
+//
+// VIERTE SPALTE, nur wenn der Befund eine Erlaeuterung traegt (SPEC-001
+// `message`): ein Befund bleibt EINE Zeile — DC-FA-CLI-004 sagt das zu, und
+// ein Akzeptanzkriterium zaehlt Zeilen. Wer auf Tab trennt und die Felder
+// 1-3 liest, liest weiter dasselbe; ein Befund ohne Erlaeuterung ist
+// byte-identisch zu vorher (ADR-0073).
 func Text(stdout, stderr io.Writer, findings []model.Finding, sum Summary) error {
 	for _, f := range findings {
-		if _, err := fmt.Fprintf(stdout, "%s:%d\t%s\t%s\n", f.File, f.Line, f.Target, f.Reason); err != nil {
+		line := fmt.Sprintf("%s:%d\t%s\t%s", f.File, f.Line, f.Target, f.Reason)
+		if f.Message != "" {
+			line += "\t" + f.Message
+		}
+		if _, err := fmt.Fprintln(stdout, line); err != nil {
 			return err
 		}
 	}
@@ -74,6 +84,14 @@ func doctorFinding(stdout io.Writer, f model.Finding, cfg model.Config) error {
 	if _, err := fmt.Fprintf(stdout, "  Z. %d · %s [%s]\n      Stelle: %s\n",
 		f.Line, app.ReasonText(f.Reason), f.Rule, f.Target); err != nil {
 		return err
+	}
+	// Die Erlaeuterung des Befunds (SPEC-001 `message`) — modul-eigen oder aus
+	// structure[].hint verfasst. Sie stand bisher nur in --json/--yaml
+	// (ADR-0073).
+	if f.Message != "" {
+		if _, err := fmt.Fprintf(stdout, "      Hinweis: %s\n", f.Message); err != nil {
+			return err
+		}
 	}
 	c := app.FixCandidateFor(f, cfg)
 	if c == nil {

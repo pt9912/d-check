@@ -80,7 +80,7 @@ type cellMaxScan struct {
 func (s *cellMaxScan) finding(line int, reason, msg string) model.Finding {
 	return model.Finding{
 		File: s.file, Line: line, Rule: "structure",
-		Target: s.rule.ColumnTarget(s.col.Name), Reason: reason, Message: msg,
+		Target: s.rule.ColumnTarget(s.col.Name), Reason: reason, Message: s.rule.MessageFor(msg),
 	}
 }
 

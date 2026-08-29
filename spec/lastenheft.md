@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.74.0
+**Version:** 0.75.0
 
 **Status:** Draft
 
@@ -147,11 +147,15 @@ unabhängig vom Code.
 
 **Beschreibung:** Befunde werden zeilenweise im Format
 `<pfad>:<zeile>\t<ziel>\t<grund>` auf stdout ausgegeben (ein Befund pro
-Zeile, Pfade relativ zur Scan-Wurzel); Zusammenfassung und Diagnose
+Zeile, Pfade relativ zur Scan-Wurzel); trägt der Befund eine **Erläuterung**
+(das Befund-Feld `message`), folgt sie als
+**vierte** tab-getrennte Spalte — ein Befund bleibt damit **eine** Zeile, und
+ein Befund ohne Erläuterung ist unverändert. Zusammenfassung und Diagnose
 gehen auf stderr. Mit `--json` **oder** `--yaml` erfolgt die gesamte
 Ausgabe auf stdout als ein maschinenlesbares Dokument (JSON bzw. YAML) mit
 mindestens den Feldern `findings` (Liste mit `file`, `line`, `target`,
-`rule`, `reason`), `summary` (`filesChecked`, `findingCount`) und
+`rule`, `reason` sowie `message`, wo der Befund eine Erläuterung trägt),
+`summary` (`filesChecked`, `findingCount`) und
 `exitCode` — **gleiche Struktur, nur Serialisierung verschieden**; stdout
 enthält dann keine unstrukturierten Textzeilen. `--json` und `--yaml`
 schließen sich gegenseitig aus (Nutzungsfehler, Exit-Code 2). Die
@@ -173,6 +177,7 @@ des Patches ist out of scope.
 - **Boundary:** Given dieselben Befunde, when `d-check --json` läuft, then ist stdout als JSON parsbar, `summary.findingCount` ist 2 und stdout enthält keine Nicht-JSON-Zeilen.
 - **Negative:** Given die unbekannte Option `--format` (kein Teil des CLI), when `d-check --json --format xml` aufgerufen wird, then Exit-Code 2 (ungültige Nutzung, vgl. [`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)).
 - **YAML:** Given dieselben zwei Befunde, when `d-check --yaml` läuft, then ist stdout als YAML parsbar mit derselben Struktur wie `--json` (`summary.findingCount` ist 2, keine unstrukturierten Zeilen); `d-check --doctor --yaml` ergänzt je `findings`-Eintrag `reasonText` und `fixCandidate` (analog `--doctor --json`).
+- **Vierte Spalte:** Given ein Befund mit Erläuterung (etwa `target-missing` des Moduls `links`), when `d-check` läuft, then trägt seine Zeile **vier** tab-getrennte Felder, ist **eine** Zeile, und die Felder 1–3 sind unverändert; ein Befund ohne Erläuterung bleibt dreispaltig.
 - **YAML Negative:** Given die Kombination `d-check --json --yaml`, when aufgerufen, then Exit-Code 2 (sich ausschließende Formate); ebenso `d-check --repair --yaml`.
 
 **Out-of-Scope:** Weitere Formate (SARIF, JUnit-XML) in dieser Version (YAML ist mit 0.19.0 ergänzt).
@@ -322,9 +327,14 @@ Kommentar-Header nennt die zugrunde gelegte Baseline-Version.
 **Lese**-Durchgang wie eine normale Prüfung, gibt aber statt der knappen
 Befund-Zeilen ([`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate)) eine
 **erklärende, nach Datei und Regel gruppierte Diagnose** auf stdout aus:
-je Befund den Grund-Code in Klartext und — wo aus dem Befund **eindeutig
+je Befund den Grund-Code in Klartext, die **Erläuterung** des Befunds
+(das Befund-Feld `message`) als eigene
+`Hinweis:`-Zeile, wo sie gesetzt ist, und — wo aus dem Befund **eindeutig
 ableitbar** — einen **Fix-Kandidaten** (die vorgeschlagene Änderung,
-**nicht angewendet**). Das Werkzeug schreibt niemals selbst
+**nicht angewendet**). **Hinweis und Fix-Kandidat sind verschiedene Größen:**
+jener ist **verfasst** und wird nie angewendet, dieser ist **abgeleitet** und
+wird von [`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch) zum anwendbaren
+Patch gerendert. Das Werkzeug schreibt niemals selbst
 (read-only-Kernvertrag
 [`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 Die Fix-Kandidaten entstehen aus derselben Mechanik, die
@@ -2518,6 +2528,30 @@ verlangt:
 | — dieselbe Bedingung, Untergrenze `cell-min-chars` | `section-cell-undersized` | die Zelle ausfüllen |
 | — dieselbe Bedingung, Spalte nicht adressierbar | `section-column-missing` | den Spaltennamen bzw. die Kopfzeile korrigieren |
 
+
+**Die Regel sagt, welche Zusage sie hütet (`hint`).** Der Grund-Code sagt die
+**Art** des Defekts — *„die Wendung ersetzen"* gilt für jede `forbid`-Regel
+gleich. Welche Zusage **diese** Regel hütet und was der Leser tun soll, kann
+nur die Regel selbst sagen: `hint` ist freier, vom Konfigurations-Autor
+**verfasster** Text, der die **Erläuterung** des Befunds
+(das Befund-Feld `message`) schreibt und damit
+in der vierten Spalte der Befund-Zeile und in `--doctor` erscheint
+([`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate),
+[`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus)). Er **gewinnt** gegen die
+modul-eigene Meldung. Ein **explizit leerer** Wert ⇒ Exit 2: ein leerer Hinweis
+sagt nichts zu.
+
+**Zwei Befunde sind ausgenommen, und der Grund ist nicht technisch:** der
+unlesbare Dateibaum und die **leer laufende** Regel verletzen **keine
+Bedingung** — dort hat die Regel gar nicht gemessen, und ein Hinweis auf die
+gehütete Zusage führte in die Irre. Sie behalten ihre eigene Meldung.
+
+**Abgegrenzt gegen den Fix-Kandidaten**
+([`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus)): der ist **abgeleitet**,
+nur dort vorhanden, wo er eindeutig ableitbar ist, und wird von
+[`DC-FA-CLI-008`](#dc-fa-cli-008--reparatur-patch) zu einem **anwendbaren**
+Patch. Ein `hint` wird nie angewendet.
+
 Ein Sammel-Code schiede aus: die Befund-Deduplikation vergleicht (Datei, Zeile,
 Regel, Ziel, Grund) — zwei verletzte Bedingungen desselben Abschnitts fielen
 darunter zu **einem** Befund zusammen, und die Meldung müsste die Unterscheidung
@@ -3228,6 +3262,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.75.0 | 2026-08-29 | [`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate) und [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die **Erläuterung eines Befunds** (das Befund-Feld `message`) erreicht den Menschen — als **vierte** tab-getrennte Spalte der Befund-Zeile, **nur wenn gefüllt**, und als eigene Zeile in `--doctor`. **Der Befund bleibt EINE Zeile:** die Zusage *„ein Befund pro Zeile"* und das zählende Akzeptanzkriterium bleiben unberührt, ein Befund ohne Erläuterung ist byte-identisch zu vorher. **Gemessen war der Anlass:** 22 von 31 Regel-Dateien setzten das Feld, und gerendert wurde es für Menschen nirgends — es erreichte ausschließlich `--json`/`--yaml`. Neu ist außerdem `structure[].hint`: eine Regel **verfasst** ihre Erläuterung selbst und sagt damit, welche **Zusage** sie hütet, während der Grund-Code die **Art** des Defekts sagt; sie gewinnt gegen die modul-eigene Meldung, **außer** bei den zwei Befunden, die keine Bedingung verletzen (unlesbarer Baum, leer laufende Regel — dort hat die Regel nicht gemessen). Ein explizit leerer `hint` ⇒ Exit 2. **Abgegrenzt gegen den Fix-Kandidaten** ([`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus)): der ist **abgeleitet** und speist `--repair`, der Hinweis ist **verfasst** und wird nie angewendet. Begründung in begleitender ADR | — |
 | 0.74.0 | 2026-08-29 | Neue Anforderung [`DC-FA-WF-001`](#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in) (Modul `workflows`, opt-in) samt neuem Bereichskürzel `WF` in §3: die `uses:`-Referenzen von CI-Workflows tragen **zwei** Deklarations-Zusagen — die fremde Referenz einen vollen 40-stelligen SHA mit Tag-Kommentar (`uses-pin-missing`/`uses-pin-untagged`), die **lokale** ein existierendes Ziel (`uses-local-missing`) **und** einen aufrufenden Job, der die geforderten Rechte führt (`uses-local-perms-undeclared`/`uses-local-perms-narrow`); unlesbares YAML ist ein Befund (`workflow-unparsable`), kein Übersprung. **Die Anforderung entsteht aus einem belegten Ausfall:** ein Job erbte `permissions: {}` vom Workflow-Kopf, sein lokales Ziel verlangte `contents: read`, und der ganze Lauf brach vor dem ersten Job ab — während das damalige Skript-Gate grün meldete. **Sie beantwortet die Grenz-Frage ausdrücklich:** das Modul liest die **Ziele** lokaler Referenzen, die es nicht scannt, und dieselbe Zusage gilt dort. Die Scan-Menge ist **konfigurierbar** (`workflows.dir`), weil der Ort CI-System-spezifisch ist; ohne sie ist das Modul inert. Löst die Mechanik des früheren Harness-Skripts ab. Begründung in begleitender ADR | — |
 | 0.73.0 | 2026-08-29 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die **tabellenbezogenen Bedingungen** stehen jetzt unter **einer Klammer** `table` (`order`, `order-column`, `column[]`), und die Zellengrenzen sind eine **Liste je Spalte** statt eines Schlüssel-Tripels je Regel. **Anlass war der eigene Bestand:** vier Spalten desselben Abschnitts kosteten vier Regeln mit viermal wortgleichem `files`/`section` — die Redundanz war die Form, die jede künftige Mehrspalten-Zusage geerbt hätte. Zugleich behoben ist ein **Namens-Defekt**: `cell-max-column` benannte die Spalte und schaltete die Bedingung scharf, trug aber `max` im Namen — auch dort, wo nur eine Untergrenze stand (der eigene Bestand belegte genau das). Die fünf flachen Vorgänger-Schlüssel sind **entfallen** und werden mit dem **neuen Ort** abgewiesen (Exit 2), nicht still ignoriert und nicht mit der generischen Unbekannt-Feld-Meldung des Decoders. **Zwei neue Config-Ränder**, die erst die Liste möglich macht: eine leere `table`-Klammer und derselbe Spaltenname zweimal. **Keine Verhaltensänderung an einem Befund:** Grund-Codes, Zeilen-Zuordnung und die Ziel-Form `… :: Spalte <name>` bleiben, wie sie waren — was sich ändert, ist, wer die Spalte trägt: nicht mehr die Regel-Identität, sondern das Befund-Ziel. Begründung in begleitender ADR | — |
 | 0.72.0 | 2026-08-28 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um die **Zellenlängen-Bedingung** erweitert (`cell-max-column`/`cell-max-chars`, neunte Bedingung, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): jede Zelle einer **benannten** Spalte trägt höchstens N **Zeichen**, gemeldet auf **ihrer** Zeile. Zwei neue Grund-Codes `section-cell-oversized`/`section-column-missing`, vier neue fail-closed Config-Ränder. **Die Spalte wird über ihren Kopfzeilen-Namen adressiert, nicht über eine Position:** eine eingefügte Spalte verschöbe eine Positions-Angabe **still**, ein umbenannter Kopf meldet **laut** — dieselbe Wahl, die die achte Bedingung bei den Überschriften traf. Anlass ist ein gemessener Bestand: eine Titel-Spalte mit Median 442 und Maximum 2206 Zeichen neben H1-Titeln von Median 77, wodurch eine als **derivativ** deklarierte Sicht zur zweiten, driftfähigen Quelle wurde. **Ein `forbid-pattern` konnte die Länge ausdrücken und taugte trotzdem nicht:** sein Befund nennt den Abschnitt statt Zeile und Spalte, er hängt an der Form einer Nachbarzelle, und eine Zelle mit einer Pipe entkam ihm — dieselbe Bauform, die dieses Repo zuletzt zugunsten einer `structure`-Regel aufgegeben hat. **Mit-Wirkung auf drei Bestands-Flächen:** die Zell-Zerlegung des Produkts ist jetzt **eine** statt zwei — escape- und backtick-bewusst (`\|` ist ein Zeichen, kein Trenner) —, womit die dazu benannte Grenze der Chronologie-Bedingung und die von `planning.waves` **entfällt** statt vererbt zu werden; kein Grund-Code und keine Befund-Form dieser beiden ändert sich. Zugleich sagt die Befund-Form jetzt zu, dass die drei zeilen-gebundenen Bedingungen auf **der Zeile melden, an der repariert wird**, und nur im Leerlauf auf die Überschrift zurückfallen — das galt seit der siebten Bedingung und stand so nicht da. Begründung in begleitender ADR | — |

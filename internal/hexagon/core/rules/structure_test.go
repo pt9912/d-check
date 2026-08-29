@@ -451,3 +451,51 @@ func TestStructureHeadingSectionsEach(t *testing.T) {
 		t.Fatalf("each prueft jeden Abschnitt, got %+v", got)
 	}
 }
+
+// Ein verfasster Hinweis schreibt das message-Feld des Befunds und gewinnt
+// gegen die modul-eigene Meldung (ADR-0073). Beides in einem Test, weil die
+// zweite Aussage ohne die erste nichts sagt.
+func TestStructureHintSchreibtMessageUndGewinnt(t *testing.T) {
+	files := map[string]string{"docs/a.md": "# T\n\n## DoD\n\n- [ ] offen\n"}
+	r := model.StructureRule{
+		Files: "docs/*.md", Section: "## DoD", ForbidPattern: `- \[ \]`,
+	}
+	got := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})
+	if len(got) != 1 {
+		t.Fatalf("erwartet ein Befund, got %+v", got)
+	}
+	modul := got[0].Message
+	if modul == "" {
+		t.Fatalf("die modul-eigene Meldung ist die Vergleichsgroesse, sie fehlt")
+	}
+
+	r.Hint = "Haken setzen oder Slice zurueckfuehren"
+	got = CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})
+	if len(got) != 1 {
+		t.Fatalf("erwartet ein Befund, got %+v", got)
+	}
+	if got[0].Message != r.Hint {
+		t.Fatalf("hint gewinnt: got %q, want %q", got[0].Message, r.Hint)
+	}
+	if got[0].Reason != model.ReasonSectionForbidden {
+		t.Fatalf("der Grund-Code bleibt unberuehrt: got %q", got[0].Reason)
+	}
+}
+
+// Die beiden Befunde, die KEINE Bedingung verletzen, behalten ihre eigene
+// Meldung: die Regel hat dort gar nicht gemessen, ein Hinweis auf die
+// gehuetete Zusage fuehrte in die Irre (ADR-0073, benannte Grenze).
+func TestStructureHintGiltNichtFuerLeerlaufendeRegel(t *testing.T) {
+	files := map[string]string{"docs/a.md": "# T\n"}
+	r := model.StructureRule{
+		Files: "spec/*.md", Section: "## DoD", NonEmpty: true,
+		Hint: "Haken setzen oder Slice zurueckfuehren",
+	}
+	got := CheckStructure(coretest.NewMemFS(files), []model.StructureRule{r})
+	if len(got) != 1 || got[0].Reason != model.ReasonSectionMissing {
+		t.Fatalf("erwartet ein section-missing, got %+v", got)
+	}
+	if got[0].Message == r.Hint {
+		t.Fatalf("die leer laufende Regel traegt ihre eigene Meldung, nicht den Hinweis")
+	}
+}

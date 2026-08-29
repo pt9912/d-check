@@ -227,7 +227,7 @@ erklärende, nach Datei gruppierte Diagnose ausgibt; Schreibzugriff
 entsteht nie
 ([`DC-QA-03`](lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 Mit zusätzlichem `--json` wird dieselbe Diagnose **maschinenlesbar**
-gerendert (Schritt 6) — ein drittes Rendering desselben Modells neben
+gerendert (Schritt 7) — ein drittes Rendering desselben Modells neben
 Prosa und Patch; nur `--repair`+`--json` und `--doctor`+`--repair`
 bleiben Nutzungsfehler (Exit 2). Schritte
 (deterministisch — [`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus):
@@ -244,7 +244,12 @@ ids-Muster iteriert, keine Map-Reihenfolge):
    [§4](#4-grund--und-fehler-codes) genau ein Eintrag, abgesichert durch
    eine Vollständigkeits-Prüfung gegen die Reason-Konstanten. Ausgegeben
    werden Zeile, Klartext, Regelmodul und Stelle (Ziel).
-4. **Fix-Kandidat** (nur wo EINDEUTIG ableitbar, sonst keiner): in dieser
+4. **Erläuterung** (nur wo gesetzt): das Befund-Feld `message`
+   ([`SPEC-001`](#spec-001--befund)) wird als eigene `Hinweis:`-Zeile unter
+   `Stelle:` ausgegeben. Sie ist **verfasst** — modul-eigen oder aus
+   `structure[].hint` — und damit die Gegengröße zum abgeleiteten
+   Fix-Kandidaten in Schritt 5.
+5. **Fix-Kandidat** (nur wo EINDEUTIG ableitbar, sonst keiner): in dieser
    Version ausschließlich für `id-unlinked` — die nackte Kennung wird als
    Markdown-Link auf das in der passenden ids-Regel deklarierte
    Definitions-`target` vorgeschlagen (relativ zum Verzeichnis der
@@ -253,14 +258,14 @@ ids-Muster iteriert, keine Map-Reihenfolge):
    wiederverwendbare Eingabe des Patch-Modus (`--repair`, folgt). Best-
    Guess-Fälle (`target-missing`, `span-*` …) liefern hier bewusst keinen
    Kandidaten.
-5. Bei **null Befunden** weist die Diagnose das aus (kein Kandidat). Die
+6. Bei **null Befunden** weist die Diagnose das aus (kein Kandidat). Die
    Diagnose geht auf stdout, die Zusammenfassung (geprüfte Dateien,
    Befundzahl) auf stderr — analog zum Default-Reporter.
-6. **JSON-Rendering** (`--doctor --json`): statt der Prosa wird ein
+7. **JSON-Rendering** (`--doctor --json`): statt der Prosa wird ein
    JSON-Dokument wie die [JSON-Ausgabe](#spec-002--json-ausgabe---json) auf stdout
    geschrieben, dessen `findings` je Eintrag zusätzlich `reasonText`
    (der Grund-Klartext aus Schritt 3) und `fixCandidate` tragen — das
-   Objekt `{original, replacement, note}` aus Schritt 4 oder explizit
+   Objekt `{original, replacement, note}` aus Schritt 5 oder explizit
    `null`, wo kein eindeutiger Kandidat existiert (nicht weggelassen,
    sonst verschwindet die Aussage „kein eindeutiger Fix"). Die
    Datei-Gruppierung trägt das bereits vorhandene `file`-Feld (keine
@@ -2598,7 +2603,13 @@ liegt nicht vor", nicht „der Workflow läuft".
 
 ```
 <file>:<line>	<target>	<reason>
+<file>:<line>	<target>	<reason>	<message>
 ```
+
+Die **vierte** Spalte steht **nur**, wenn der Befund eine Erläuterung trägt;
+ein Befund ohne `message` ist dreispaltig. Ein Befund bleibt in beiden Fällen
+**eine** Zeile — die Zusage aus
+[`DC-FA-CLI-004`](lastenheft.md#dc-fa-cli-004--ausgabeformate) gilt unberührt.
 
 Zusammenfassung auf stderr: `d-check: <N> Datei(en) geprüft, <M> Befund(e)`.
 
@@ -2823,6 +2834,7 @@ Exit 2 ohne Prüfung
 | `structure[].forbid-pattern` | string | leer | RE2 gegen den **gesamten** bereinigten Abschnitts-Text; Treffer ⇒ `section-forbidden` |
 | `structure[].require-pattern` | string | leer | RE2, Spiegelbild von `forbid-pattern`; **kein** Treffer ⇒ `section-pattern-missing`. Deckt zugesagte Aussagen, die **innerhalb** einer Auszeichnung stehen und deshalb keine Marke sind |
 | `structure[].require-all` | string[] | leer | benannte Marken, die **alle** vorkommen müssen — als hervorgehobener Textlauf am Zeilen-Anfang nach optionalem **Listen-Marker** (`- **M:**`, `**M:**`, `- **M (Zusatz):**`) ⇒ sonst `section-marker-missing`; leerer Eintrag ⇒ Exit 2 |
+| `structure[].hint` | string | leer (aus) | vom Konfigurations-Autor **verfasste** Erläuterung dieser Regel: sie schreibt das Befund-Feld `message` ([`SPEC-001`](#spec-001--befund)) und erscheint damit als vierte Spalte der Befund-Zeile und als `Hinweis:`-Zeile in `--doctor`. **Gewinnt** gegen die modul-eigene Meldung — der Grund-Code sagt die **Art** des Defekts, der Hinweis die **Zusage**, die die Regel hütet. **Zwei Befunde ausgenommen:** unlesbarer Dateibaum und leer laufende Regel (`section-missing` auf dem Glob) — dort hat die Regel nicht gemessen. **Explizit** leer oder nur Whitespace ⇒ Exit 2: ein leerer Hinweis sagt nichts zu. **Kein Fix-Kandidat** — der ist abgeleitet und speist `--repair` ([`DC-FA-CLI-007`](lastenheft.md#dc-fa-cli-007--diagnose-modus)), dieser Text wird nie angewendet |
 | `structure[].headings-match` | string | leer (aus) | RE2 gegen den **Text** jeder Überschrift der Ebene `headings-level` **innerhalb** des Abschnitts (ohne `#`-Folge, getrimmt); jede nicht matchende ⇒ `section-heading-mismatch` auf **ihrer** Zeile. Nicht kompilierend ⇒ Exit 2 |
 | `structure[].table` | map | abwesend (aus) | Klammer der beiden **Tabellen**-Bedingungen: beide sprechen über dieselbe Tabelle, adressieren ihre Spalte aber verschieden — `order-column` über die **Position**, `column[].name` über den **Namen**. Weder `order` noch ein `column`-Eintrag ⇒ Exit 2: eine leere Klammer sagt nichts zu |
 | `structure[].table.order` | string | leer (aus) | `asc` oder `desc` — schaltet die **Chronologie-Monotonie** scharf: die Schlüsselspalte jeder zusammenhängenden Tabelle des Abschnitts wird **typisiert** (ISO-Datum, Punkt-Version; **rohe** Zeilen — benannte Ausnahme von der Bereinigung) und nicht-strikt monoton verglichen ⇒ sonst `section-unordered` (auch Leerlauf ohne Datenzeile) bzw. `section-cell-untyped` (untypisierbare Zelle/Typ-Mischung). Anderer Wert ⇒ Exit 2 |

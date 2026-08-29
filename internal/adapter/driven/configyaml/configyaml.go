@@ -224,6 +224,10 @@ type rawStructure struct {
 	RequireAll     []string `yaml:"require-all"`
 	HeadingsMatch  string   `yaml:"headings-match"`
 	HeadingsLevel  *int     `yaml:"headings-level"`
+	// Hint ist ZEIGER, weil allein die ANWESENHEIT eines leeren Wertes ein
+	// Konfigurations-Fehler ist: ein leerer Hinweis sagt nichts zu (Exit 2),
+	// ein abwesender schaltet die Erlaeuterung nur nicht scharf.
+	Hint           *string  `yaml:"hint"`
 
 	Table       *rawTable `yaml:"table"`
 	ExemptPaths []string  `yaml:"exempt-paths"`
@@ -435,6 +439,9 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 	default:
 		return fail("sections %q muss one oder each sein", r.Sections)
 	}
+	if r.Hint != nil && strings.TrimSpace(*r.Hint) == "" {
+		return fail("hint ist gesetzt, aber leer — ein leerer Hinweis sagt nichts zu")
+	}
 	if msg := structureBedingungsFehler(r); msg != "" {
 		return fail("%s", msg)
 	}
@@ -445,8 +452,20 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 		RequirePattern: r.RequirePattern, RequireAll: r.RequireAll,
 		HeadingsMatch: r.HeadingsMatch, HeadingsLevel: r.HeadingsLevel,
 		Table:       applyTable(r.Table),
+		Hint:        derefString(r.Hint),
 		ExemptPaths: r.ExemptPaths,
 	}, nil
+}
+
+
+// derefString liefert den Wert eines optionalen Konfigurations-Strings; ein
+// abwesender Schluessel wird zum leeren Wert, was im Kern "Bedingung aus"
+// heisst. Der Rand "gesetzt, aber leer" ist vorher abgewiesen.
+func derefString(p *string) string {
+	if p == nil {
+		return ""
+	}
+	return *p
 }
 
 // applyTable übersetzt die Tabellen-Klammer in das Kern-Modell. Eine
