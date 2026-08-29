@@ -103,18 +103,18 @@ steht.
 
 ## 4. Definition of Done
 
-- [ ] Die zwei kanonischen Vorprüfungs-Blöcke tragen je eine
+- [x] Die zwei kanonischen Vorprüfungs-Blöcke tragen je eine
       `d-check:cite`-Direktive mit wörtlichem Zitat; `make doc-check` prüft sie
       grün, und ein manipuliertes Zitat wird rot **gemessen**, nicht behauptet.
-- [ ] Der dritte Block trägt **keine** Direktive, und der Grund steht im Slice —
+- [x] Der dritte Block trägt **keine** Direktive, und der Grund steht im Slice —
       nicht als Auslassung, sondern als benannter Entscheid.
-- [ ] `citations.scope` nimmt `done/` aus; der Nachtrag zu
+- [x] `citations.scope` nimmt `done/` aus; der Nachtrag zu
       [`MR-051`](../../../../harness/conventions.md#mr-051) hält fest, dass seine
       Geltungsbereich-Aussage absehbar unwahr wird — heute steht dort noch keine
       wirksame Direktive — und warum der Beleg trotzdem trägt.
-- [ ] Die Konvention steht an **einer** Stelle (nicht in `AGENTS.md`
+- [x] Die Konvention steht an **einer** Stelle (nicht in `AGENTS.md`
       **und** `harness/README.md`) und ist von dort verlinkt.
-- [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
+- [x] `make gates` grün (Exit explizit); **unabhängiger Review**;
       **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -123,18 +123,39 @@ steht.
   Autor, der die Spanne aus einem anderen Slice übernimmt, hat nichts gelesen.
   Der Beleg ist damit schwächer, als er aussieht — und ein Beleg, der stärker
   aussieht, als er ist, ist die Klasse, gegen die dieser Slice gebaut ist. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** eingetreten, und der Review hat es gefunden. Die zweite
+  Direktive dieses Slice war wortgleich, grün und belegte trotzdem nicht die
+  Regel, die ihre Anrede behauptete — sie zeigte auf die Notier-Nebenregel
+  statt auf den vorschreibenden Satz. Der Beleg sah stärker aus, als er war.
+  **Antwort:** [`MR-054`](../../../../harness/conventions.md#mr-054) verlangt
+  jetzt ausdrücklich die **vorschreibende** Zeile, und der Fall steht dort als
+  eigener Absatz.
 - **Die Direktive bindet die Planung an eine Zeilennummer.** Jeder
   Baseline-Bump verschiebt sie ([`MR-051`](../../../../harness/conventions.md#mr-051)),
   und ab diesem Slice trifft das **jeden neuen Slice-Plan**, nicht mehr nur die
-  Skills. Der Bump wird dadurch teurer. — **Ausgang:** *(bei Closure)*
+  Skills. Der Bump wird dadurch teurer. — **Ausgang:** weiter offen — der
+  Preis fällt erst beim nächsten Bump an und ist bis dahin nicht messbar.
+  [`MR-054`](../../../../harness/conventions.md#mr-054) trägt dafür einen
+  Beobachtungs-Trigger: melden die Slice-Pläne mehr Spannen-Brüche als die
+  Skills, ist über eine stabilere Adresse zu entscheiden (Abschnitts-Anker
+  statt Zeilenspanne).
 - **`citations` ist fail-closed im inneren Loop.** Eine malformte Direktive in
   einem Slice-Plan beendet den ganzen Lauf mit Exit 2, auch im `pre-commit`-Hook
-  — für jeden künftigen Slice-Autor. — **Ausgang:** *(bei Closure)*
+  — für jeden künftigen Slice-Autor. — **Ausgang:** weiter offen für die
+  **lebenden** Pläne; dort bleibt der Pfad, wie er ist. Für die drei
+  eingefrorenen Verzeichnisse hat sich die Richtung **umgekehrt** und ist
+  gemessen: dort entfällt der fail-closed-Pfad ganz, eine malformte Direktive
+  nimmt den Lauf nicht mehr mit. Das ist der Preis des Ausschlusses, und er
+  steht in [`MR-054`](../../../../harness/conventions.md#mr-054).
 - **Die Regel wird aus EINEM Anlassfall gezogen** ([`BEO-011`](../observations.md)):
   drei Slices einer Sitzung. Ob Vorprüfungs-Blöcke *generell* zu schwach sind
   oder ob dieser Lauf ein Ausreißer war, ist nicht gemessen. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** weiter offen. Der **Anlass** stammt aus einer Sitzung, die
+  **Regel** aus dem Bestand — 13 Marker-Treffer, 455 Dateien, 0 Befunde, und
+  die Zahlen zu offenen DoD-Haken und Report-Deckung in
+  [welle-86](../welle-86-closure-uebergang-durchsetzen.md). Ungemessen bleibt
+  die eigentliche Frage: ob Vorprüfungs-Blöcke *generell* zu schwach sind.
+  Sie wird es erst, wenn mehrere Pläne unter der neuen Form gelaufen sind.
 
 ## 6. Trigger
 
@@ -191,3 +212,43 @@ folgt. Konventions-Änderung plus eine Konfigurations-Zeile; kein Fremdsystem,
 keine Reconciliation.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert.** Die beiden kanonischen Vorprüfungs-Blöcke tragen je eine
+`d-check:cite`-Direktive auf die Regelwerk-Zeile, die den Schritt vorschreibt;
+[`MR-054`](../../../../harness/conventions.md#mr-054) trägt die Konvention an
+einer Stelle, [`AGENTS.md`](../../../../AGENTS.md) §5 und
+[`harness/README.md`](../../../../harness/README.md) stellen sie zu, und
+`citations.scope` nimmt die drei eingefrorenen Verzeichnisse aus.
+
+**Der Beleg ist gefahren, nicht behauptet.** `make gates` grün, Exit 0, 591
+Dateien, 0 Befunde. Die Bruch-Probe zweimal: ein manipuliertes Zitat („sichten"
+→ „prüfen") liefert `citation-mismatch` und Exit 1, eine um eine Zeile
+verschobene Spanne (`219` → `220`) ebenfalls; unverändert Exit 0. Die
+Produkt-Gegenprobe über die drei ausgeschlossenen Verzeichnisse — 455 Dateien,
+`modules: [citations]`, ohne jeden `ignore` — meldet 0 Befunde: der Ausschluss
+legt **rückwirkend nichts** still, er wirkt nur vorwärts.
+
+**Der Slice hat seine eigene Regel in einem von zwei Fällen verletzt, und das
+ist sein wichtigstes Ergebnis.** Die zweite Direktive war wortgleich und grün
+und zeigte trotzdem auf die Notier-Nebenregel statt auf den vorschreibenden
+Satz — ein Beleg, der stärker aussah, als er war, also genau die Klasse, gegen
+die der Slice gebaut ist. Gefunden hat es der **unabhängige Review**, nicht der
+Schreibende; [`MR-054`](../../../../harness/conventions.md#mr-054) verlangt seither ausdrücklich die vorschreibende Zeile.
+Zweiter Befund derselben Familie: die Regel galt, bevor sie zugestellt war —
+`AGENTS.md` verlinkte für die dritte Vorprüfung [`MR-053`](../../../../harness/conventions.md#mr-053) und schwieg zu den
+beiden anderen.
+
+**Review und Verifikation liefen in eigenen Kontexten** und liegen als
+[Review-Report](../../../reviews/2026-08-29-slice-171-vorpruefungen-belegen-review.md)
+und
+[Verifikations-Report](../../../reviews/2026-08-29-slice-171-vorpruefungen-verifikation.md)
+vor: 1 HIGH, 4 MEDIUM, 2 LOW, 1 INFO plus sechs Abweichungen. Sieben Befunde
+sind eingearbeitet; F-8 bleibt als INFO stehen, weil sein Ziel repo-eigen ist —
+derselbe Grund, aus dem der dritte Block keine Direktive trägt. Der Anlassfall
+dieses Slice war der **Ausfall** dieser beiden Schritte; sie hier zu fahren war
+die Probe darauf, dass die Antwort mehr ist als ein Text.
+
+**Was der Slice ausdrücklich nicht liefert:** einen Sensor. Ein Plan ganz ohne
+Direktiven ist grün — die Adaption wirkt über Zustellung und Review. Die
+Durchsetzung ist [welle-86](../welle-86-closure-uebergang-durchsetzen.md), die
+pfad-gebundene Zustellung [slice-176](../open/slice-176-planning-rule-pilot.md).
