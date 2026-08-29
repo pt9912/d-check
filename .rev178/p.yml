@@ -1,7 +1,0 @@
-scan:
-  roots: [.rev178]
-modules: []
-structure:
-  - files: '.rev178/*.md'
-    section: '## DoD'
-    max-open-tasks: 0
