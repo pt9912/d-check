@@ -125,6 +125,41 @@ verhindert keinen Verstoß, sondern die **Überraschung** — ein Hook, der
 blockiert, ohne dass der Autor wusste warum, kostet einen ganzen Zyklus. Sie
 gehört zum selben Bild, aber nicht zum Closure-Trigger dieser Welle.
 
+
+### Nachgetragen: was der Hooks-Guide dazu sagt
+
+**Der Abschnitt oben entstand, ohne den Hooks-Guide gelesen zu haben.** Er ist
+inzwischen gelesen; die Entscheidung für den git-Hook bleibt, zwei Punkte kommen
+dazu.
+
+**Die Entscheidung steht.** Der Guide bestätigt, was
+[`MR-042`](../../../harness/conventions.md#mr-042) über die Reichweite sagt: ein
+Hook unter `.claude/` läuft im Werkzeug, nicht im Repo. Für eine
+**Repo-Invariante** bleibt `.githooks/` der Träger, und die CI-Hälfte bleibt
+nötig, weil `--no-verify` den git-Hook umgeht.
+
+**Was fehlte: der `Stop`-Hook fängt früher.** Er löst aus, wenn Claude eine
+Runde beendet, und kann sie mit `decision: "block"` **verweigern** — der
+mitgegebene Grund geht an das Modell zurück, das dann weiterarbeitet. Das ist
+ein anderer Bindepunkt als der Commit: er greift **vor der Übergabe**, nicht
+beim Schreiben. Das Repo fährt das Muster bereits
+([`stop-require-gates.sh`](../../../.claude/hooks/stop-require-gates.sh)) — nur
+für Gates, nicht für den Closure-Übergang. **Er ersetzt den git-Hook nicht**
+(dieselbe Werkzeug-Grenze), aber er ergänzt ihn um die Stelle, an der ein
+Verstoß noch billig ist. slice-175 entscheidet, ob er beide Hälften nimmt.
+
+**Und: die Begründung in §6 war zu stark.** Dort steht, die **Qualität** eines
+Reviews sei out of scope, weil *„Mensch urteilt, Maschine prüft Deckung"*. Der
+Guide kennt **prompt-** und **agent-basierte** Hooks ausdrücklich für
+Entscheidungen, „die Urteilsvermögen erfordern". Der Ausschluss bleibt richtig —
+diese Welle prüft Deckung —, aber sein Grund ist jetzt eine **Wahl** und keine
+Unmöglichkeit mehr. Wer ihn später aufhebt, hat einen Weg.
+
+**Ein Rand, den slice-175 kennen muss:** hängen mehrere Hooks am selben Event,
+gewinnt die restriktivste Antwort (`deny` vor `defer` vor `ask` vor `allow`).
+Ein zweiter Hook kann eine bestehende Erlaubnis also verschärfen, nicht
+aufweichen.
+
 ## 5. Abhängigkeiten
 
 - **slice-175 setzt die drei anderen voraus.** Er bindet die Prüfungen an den
