@@ -82,10 +82,6 @@ const (
 	ReasonSectionCellOversized  = "section-cell-oversized"
 	ReasonSectionCellUndersized = "section-cell-undersized"
 	ReasonSectionColumnMissing  = "section-column-missing"
-	// ReasonSectionTasksOpen meldet ein OFFENES Task-Item im Abschnitt. Eigener
-	// Code neben section-oversized: jener zaehlt ALLE Items auf dem bereinigten
-	// Text, dieser die offenen auf den ROHEN Zeilen (ADR-0074).
-	ReasonSectionTasksOpen      = "section-tasks-open"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

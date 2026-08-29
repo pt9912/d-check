@@ -255,7 +255,6 @@ func TestDecode_StructureFehler(t *testing.T) {
 		"beide Selektoren":            "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    section-pattern: 'H'\n",
 		"hint gesetzt, aber leer":    "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    hint: ''\n",
 		"hint nur Whitespace":        "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    hint: '   '\n",
-		"max-open-tasks < 0":         "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-open-tasks: -1\n",
 	} {
 		if _, err := configyaml.Decode([]byte(bad)); err == nil {
 			t.Fatalf("%s: ungültige structure-Config akzeptiert: %q", name, bad)
@@ -1063,28 +1062,5 @@ func TestDecode_StructureHint(t *testing.T) {
 	}
 	if cfg.Structure[0].Hint != "" {
 		t.Fatalf("abwesender hint muss leer sein, got %q", cfg.Structure[0].Hint)
-	}
-}
-
-// Ein abwesender max-open-tasks-Schluessel ist "Bedingung aus", eine explizit
-// gesetzte 0 ist der scharfe Fall — die Unterscheidung muss den Kern erreichen
-// (ADR-0074).
-func TestDecode_StructureMaxOpenTasks(t *testing.T) {
-	cfg, err := configyaml.Decode([]byte(
-		"structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-open-tasks: 0\n"))
-	if err != nil {
-		t.Fatalf("gültige max-open-tasks-Regel abgelehnt: %v", err)
-	}
-	if len(cfg.Structure) != 1 || cfg.Structure[0].MaxOpenTasks == nil ||
-		*cfg.Structure[0].MaxOpenTasks != 0 {
-		t.Fatalf("explizite 0 nicht durchgereicht: %+v", cfg.Structure)
-	}
-
-	cfg, err = configyaml.Decode([]byte("structure:\n  - files: 'a/*.md'\n    section: '## H'\n"))
-	if err != nil {
-		t.Fatalf("Regel ohne max-open-tasks abgelehnt: %v", err)
-	}
-	if cfg.Structure[0].MaxOpenTasks != nil {
-		t.Fatalf("abwesender Schlüssel muss nil bleiben, got %v", *cfg.Structure[0].MaxOpenTasks)
 	}
 }

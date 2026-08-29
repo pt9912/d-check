@@ -154,3 +154,11 @@ Blindstelle zurückkehrt.
 Ausnahmen von der Bereinigung ist die Frage neu zu stellen, ob die Bereinigung
 selbst der falsche Default ist — dann wäre Option B zu messen statt zu
 verwerfen.
+
+## Geschichte
+
+| Datum | Ereignis |
+|---|---|
+| 2026-08-29 | **Die Umsetzung ist zurückgenommen, die Entscheidung steht.** Review und Verifikation fanden, dass die Bedingung einen **stillen** Ausfall derselben Gestalt behält, gegen die sie gebaut ist: ein einzelner vergessener Schluss-Fence schaltet sie ab — dasselbe Muster wie der Backtick, nur mit anderem Zeichen. Verschärfend fährt das Closure-Profil, für das sie gedacht ist, `spans` nicht, wo `fence-unclosed` den häufigen Fall sonst laut meldete; ein naiv ausgeglichener Fence entkommt auch dem. Entscheid des Auftraggebers: **erst die Fence-Lexik**, dann die Bedingung. Der Code, die Spec-Änderungen und die Handbuch-Zeilen sind entfernt; diese ADR bleibt, weil eine `Accepted`-Entscheidung ein Beleg ist und nicht mit ihrer Umsetzung verschwindet (`AGENTS.md` §3.5, maschinell gehalten) |
+| 2026-08-29 | **Zwei Zahlen im Text sind falsch, und die Korrektur gehört hierher statt in den Kern.** §Entscheidung 1 und §Kontext sprechen von der „**dritten**" Bedingung, die einen anderen Text liest, und zählen Chronologie und Überschriften daneben. Es sind **vier**: die **Zellenlängen**-Bedingung liest ebenfalls die rohen Zeilen und sagt das selbst. Folge für §Re-Evaluierungs-Trigger: *„bei **drei** benannten Ausnahmen"* war im Moment der Annahme bereits erreicht — der Trigger konnte nie feuern. Er ist als **erfüllt** zu lesen: die Frage, ob die Bereinigung der falsche Default ist, steht damit offen und wird im Zuge der Fence-Arbeit beantwortet |
+| 2026-08-29 | **Die Fitness Function beschreibt Tests, die es nicht mehr gibt** — sie sind mit der Umsetzung entfernt. Zwei von ihnen taugten ohnehin nicht: das Backtick-Fixture trug eine **wohlgeformte** Spanne (zwei Backticks) und wurde vom Vorgänger gefunden, belegte also nicht die Blindstelle; und die Abschnittsgrenze hielt kein Test (die Mutation „über die ganze Datei zählen" lief grün durch). Beim Wiederaufbau sind sie neu zu schreiben, nicht zu übernehmen |

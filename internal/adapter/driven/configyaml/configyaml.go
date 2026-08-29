@@ -219,9 +219,6 @@ type rawStructure struct {
 	NonEmpty       bool     `yaml:"non-empty"`
 	MinSentences   *int     `yaml:"min-sentences"`
 	MaxTasks       *int     `yaml:"max-tasks"`
-	// MaxOpenTasks ist ZEIGER, damit eine explizit gesetzte 0 von einem
-	// abwesenden Schluessel unterscheidbar bleibt — 0 ist der scharfe Fall.
-	MaxOpenTasks   *int     `yaml:"max-open-tasks"`
 	ForbidPattern  string   `yaml:"forbid-pattern"`
 	RequirePattern string   `yaml:"require-pattern"`
 	RequireAll     []string `yaml:"require-all"`
@@ -311,9 +308,6 @@ func structureBedingungsFehler(r rawStructure) string {
 	}
 	if r.MaxTasks != nil && *r.MaxTasks < 0 {
 		return fmt.Sprintf("max-tasks %d muss >= 0 sein", *r.MaxTasks)
-	}
-	if r.MaxOpenTasks != nil && *r.MaxOpenTasks < 0 {
-		return fmt.Sprintf("max-open-tasks %d muss >= 0 sein", *r.MaxOpenTasks)
 	}
 	for _, m := range r.RequireAll {
 		if strings.TrimSpace(m) == "" {
@@ -461,7 +455,7 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 	return model.StructureRule{
 		Files: r.Files, Section: r.Section, SectionPattern: r.SectionPattern,
 		Sections: r.Sections, NonEmpty: r.NonEmpty, MinSentences: r.MinSentences,
-		MaxTasks: r.MaxTasks, MaxOpenTasks: r.MaxOpenTasks, ForbidPattern: r.ForbidPattern,
+		MaxTasks: r.MaxTasks, ForbidPattern: r.ForbidPattern,
 		RequirePattern: r.RequirePattern, RequireAll: r.RequireAll,
 		HeadingsMatch: r.HeadingsMatch, HeadingsLevel: r.HeadingsLevel,
 		Table:       applyTable(r.Table),

@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.76.0
+**Version:** 0.75.0
 
 **Status:** Draft
 
@@ -2520,7 +2520,6 @@ verlangt:
 | `non-empty` (bool) | `section-empty` | Inhalt schreiben |
 | `min-sentences` (int ≥ 1) | `section-thin` | Substanz ergänzen |
 | `max-tasks` (int ≥ 0) | `section-oversized` | zerlegen statt dehnen |
-| `max-open-tasks` (int ≥ 0) | `section-tasks-open` | den Haken setzen — oder den Punkt dorthin bringen, wo er eingelöst wird |
 | `forbid-pattern` (RE2) | `section-forbidden` | die Wendung ersetzen |
 | `require-pattern` (RE2) | `section-pattern-missing` | die zugesagte Aussage nachtragen |
 | `require-all` (Marken-Liste) | `section-marker-missing` | den fehlenden Baustein ergänzen |
@@ -2565,33 +2564,6 @@ Ein Sammel-Code schiede aus: die Befund-Deduplikation vergleicht (Datei, Zeile,
 Regel, Ziel, Grund) — zwei verletzte Bedingungen desselben Abschnitts fielen
 darunter zu **einem** Befund zusammen, und die Meldung müsste die Unterscheidung
 tragen, die laut §4 der Spezifikation gerade **nicht** stabil zugesagt ist.
-
-
-**Offene Task-Items, auf den rohen Zeilen gezählt (`max-open-tasks`).** Eine
-Zusage über offene Haken ist auf dem **bereinigten** Text nicht haltbar: die
-Inline-Code-Paarung ist **absatzweise**, und ein einzelner überzähliger Backtick
-im Absatz macht alles dahinter unsichtbar. `max-open-tasks` zählt deshalb auf
-den **rohen** Abschnitts-Zeilen — die **dritte** Bedingung, die einen anderen
-Text liest, neben der Chronologie-Monotonie und der Überschriften-Bedingung.
-
-**Gezählt wird über die Listen-Lexik des Moduls**, nicht über ein Muster aus der
-Konfiguration: Bindestrich, Stern, Plus und die geordnete Liste, mit führendem
-Weißraum und Leerzeichen **oder** Tab als Trenner, gefolgt von einer **leeren**
-Box `[ ]`. Ein gesetzter Haken (`[x]`, `[X]`) zählt nicht. Ein Muster in der
-Konfiguration deckte nur die Bullet-Form, die sein Autor aufgeschrieben hat.
-
-**Ein Befund je offenem Item, auf seiner Zeile** — nicht einer je Abschnitt: die
-Reparatur ist dort, wo der Haken steht.
-
-**Der Fence bleibt außen vor**, über dieselbe fence-bewusste Zeilen-Auswahl wie
-die Tabellen-Bedingungen — sonst meldete ein Dokument, das **über** Task-Items
-schreibt, seine eigene Illustration. **Die Grenze dazu, benannt:** roh heißt
-roh — ein Task-Item in einer **Inline-Code**-Spanne zählt mit.
-
-**Abgrenzung zu `max-tasks`:** jenes zählt **alle** Items auf dem bereinigten
-Text und teilt dessen Blindstelle; dieses zählt die **offenen** auf den rohen
-Zeilen. Beide bleiben nebeneinander bestehen — wer die Zusage über offene Haken
-braucht, greift zu `max-open-tasks`.
 
 **Jede Überschrift des Abschnitts, positiv geprüft.** `headings-match` sagt:
 *jede* Überschrift **innerhalb** des Abschnitts genügt diesem Muster. Geprüft
@@ -2728,8 +2700,7 @@ Regeln ist der Befundsatz byte-identisch
 ungültiges Glob in `files`/`exempt-paths`; weder `section` noch
 `section-pattern` **oder** beide; unbekannter `sections`-Wert; nicht
 kompilierendes `section-pattern`/`forbid-pattern`/`require-pattern`; explizit
-gesetztes `min-sentences` < 1, `max-tasks` < 0 oder `max-open-tasks` < 0; leerer
-Eintrag in
+gesetztes `min-sentences` < 1 oder `max-tasks` < 0; leerer Eintrag in
 `require-all`; **explizit leerer** `hint` oder einer, der nur Whitespace trägt;
 ein `hint` mit **Tab oder Zeilenumbruch** (die Befund-Zeile ist tab-getrennt und
 einzeilig); `table.order` außerhalb `asc`/`desc`; explizit gesetztes
@@ -2791,10 +2762,6 @@ ein Ventil die Regel still ab.
 - **Hinweis (Modul-aus):** Given dieselbe Regel **ohne** `hint`, when der Lauf endet, then ist der Befundsatz byte-identisch zum Lauf vor der Einführung des Schlüssels ([`DC-QA-02`](#dc-qa-02--determinismus)): gleiche Zeile, gleicher Grund-Code, modul-eigene Meldung.
 - **Hinweis (Nicht-Mess-Befunde):** Given eine Regel mit `hint`, deren `files`-Glob **keine** Datei trifft, deren Dateibaum **unlesbar** ist oder deren Kandidat als **Einzeldatei** unlesbar ist, when der Lauf endet, then trägt der Befund die **fail-closed-Ursache**, nicht den Hinweis — die Regel hat dort nicht gemessen.
 - **Hinweis (Config-Rand):** Given `hint` **explizit leer** oder nur Whitespace, when `d-check` startet, then Exit 2 vor dem Lauf; Given einen `hint` mit **Tab oder Zeilenumbruch**, then ebenfalls Exit 2 — die Befund-Zeile ist tab-getrennt und einzeilig ([`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate)).
-- **Offene Task-Items (Backtick-Fall):** Given einen Abschnitt mit einem offenen Task-Item und **einem überzähligen Backtick** weiter oben im selben Absatz, when `d-check --enable structure` mit `max-open-tasks: 0` läuft, then meldet die Bedingung — auf dem bereinigten Text bliebe sie stumm.
-- **Offene Task-Items (alle Listen-Marker):** Given je ein offenes Item mit `-`, `*`, `+` und `1.`, eingerückt und mit Tab-Trenner, when der Lauf endet, then meldet **jedes**; ein gesetzter Haken (`[x]`/`[X]`) meldet **nicht**.
-- **Offene Task-Items (je Item, Fence-Treue):** Given zwei offene Items und eines **innerhalb** eines Fenced-Blocks, when der Lauf endet, then **zwei** Befunde, jeder auf **seiner** Zeile, keiner für das Item im Fence.
-- **Offene Task-Items (Modul-aus/Rand):** Given eine Regel **ohne** `max-open-tasks`, when der Lauf endet, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)); **explizit** gesetztes `max-open-tasks` < 0 ⇒ Exit 2 vor dem Lauf.
 - **Zellenlänge (ein Selektor, viele Spalten):** Given einen Abschnitt und **vier** zu begrenzende Spalten, when sie als vier Einträge **einer** Regel konfiguriert sind, then gilt jede Zusage einzeln und `files`/`section` stehen **einmal** da; Given denselben `name` **zweimal** in einer Liste, then Exit 2 vor dem Lauf — zwei Einträge derselben Spalte trügen dasselbe Befund-Ziel.
 - **Zellenlänge (Modul-aus / Config-Rand):** Given eine Regel **ohne** `table`, when `d-check` läuft, then ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)); Given einen Spalten-Eintrag ohne jede Grenze, ein `table` ohne `order` und ohne `column`, einen `name` aus lauter Weißraum, ein explizit gesetztes `cell-max-chars`/`cell-min-chars` < 1 oder eine Untergrenze **über** der Obergrenze, then Exit 2 vor dem Lauf.
 - **Zellenlänge (Vorgänger-Schlüssel):** Given eine Regel, die einen der fünf flachen Vorgänger-Schlüssel auf Regel-Ebene trägt (`table-order`, `table-column`, `cell-max-column`, `cell-max-chars`, `cell-min-chars`), when `d-check` startet, then Exit 2 **mit dem neuen Ort in der Meldung** — nicht stilles Ignorieren und nicht die generische Unbekannt-Feld-Meldung des Decoders.
@@ -3309,7 +3276,6 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
-| 0.76.0 | 2026-08-29 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): neue Bedingung **`max-open-tasks`** (int ≥ 0) mit eigenem Grund-Code `section-tasks-open` — die **dritte**, die die **rohen** Abschnitts-Zeilen liest. **Der Anlass ist gemessen:** eine Zusage über offene Haken ist auf dem bereinigten Text nicht haltbar, weil die Inline-Code-Paarung **absatzweise** arbeitet — ein einzelner überzähliger Backtick im Absatz schaltete einen Wächter über offene DoD-Haken **ganz** ab (1 Befund ⇒ 0 Befunde, Exit 0). Der Preis dieser Paarung war für einen Vorlagen-Platzhalter ausgewiesen; für eine **Vorbedingung** kippt die Abwägung. **Gezählt wird über die Listen-Lexik des Moduls** (Bindestrich, Stern, Plus, geordnete Liste; Leerzeichen oder Tab) statt über ein Muster aus der Konfiguration — ein solches deckte gemessen nur eine der Bullet-Formen, `* [ ]` und `+ [ ]` liefen still durch. **Ein Befund je offenem Item, auf seiner Zeile**, nicht einer je Abschnitt. Der **Fence** bleibt außen vor, die **Inline-Code**-Spanne ausdrücklich nicht — roh heißt roh. `max-tasks` bleibt unverändert daneben bestehen und teilt die Blindstelle; das ist benannt, nicht übersehen. Begründung in begleitender ADR | — |
 | 0.75.0 | 2026-08-29 | [`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate) und [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die **Erläuterung eines Befunds** (das Befund-Feld `message`) erreicht den Menschen — als **vierte** tab-getrennte Spalte der Befund-Zeile, **nur wenn gefüllt**, und als eigene Zeile in `--doctor`. **Der Befund bleibt EINE Zeile:** die Zusage *„ein Befund pro Zeile"* und das zählende Akzeptanzkriterium bleiben unberührt, ein Befund ohne Erläuterung ist byte-identisch zu vorher. **Gemessen war der Anlass:** **21 von 23** Regel-Einstiegs-Dateien setzen das Feld (ungedeckt nur `hostpaths` und `spans`), und gerendert wurde es für Menschen nirgends — es erreichte ausschließlich `--json`/`--yaml`. **Die vierte Spalte ist gegen fremden Text abgesichert:** eine Erläuterung stammt aus der Konfiguration oder aus dem geprüften Material (`commits` trägt den Commit-Betreff); ein `hint` mit Tab oder Zeilenumbruch wird **abgewiesen** (Exit 2), und der Reporter ersetzt beides im modul-eigenen Weg durch ein Leerzeichen — sonst wäre die Zusage „ein Befund pro Zeile" über einen Text brechbar, den das Werkzeug nicht kontrolliert. Neu ist außerdem `structure[].hint`: eine Regel **verfasst** ihre Erläuterung selbst und sagt damit, welche **Zusage** sie hütet, während der Grund-Code die **Art** des Defekts sagt; sie gewinnt gegen die modul-eigene Meldung, **außer** bei den **drei** Befunden, die keine Bedingung verletzen (unlesbarer Dateibaum, leer laufende Regel, unlesbare Einzeldatei — dort hat die Regel nicht gemessen). Ein explizit leerer `hint` ⇒ Exit 2. **Abgegrenzt gegen den Fix-Kandidaten** ([`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus)): der ist **abgeleitet** und speist `--repair`, der Hinweis ist **verfasst** und wird nie angewendet. Begründung in begleitender ADR | — |
 | 0.74.0 | 2026-08-29 | Neue Anforderung [`DC-FA-WF-001`](#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in) (Modul `workflows`, opt-in) samt neuem Bereichskürzel `WF` in §3: die `uses:`-Referenzen von CI-Workflows tragen **zwei** Deklarations-Zusagen — die fremde Referenz einen vollen 40-stelligen SHA mit Tag-Kommentar (`uses-pin-missing`/`uses-pin-untagged`), die **lokale** ein existierendes Ziel (`uses-local-missing`) **und** einen aufrufenden Job, der die geforderten Rechte führt (`uses-local-perms-undeclared`/`uses-local-perms-narrow`); unlesbares YAML ist ein Befund (`workflow-unparsable`), kein Übersprung. **Die Anforderung entsteht aus einem belegten Ausfall:** ein Job erbte `permissions: {}` vom Workflow-Kopf, sein lokales Ziel verlangte `contents: read`, und der ganze Lauf brach vor dem ersten Job ab — während das damalige Skript-Gate grün meldete. **Sie beantwortet die Grenz-Frage ausdrücklich:** das Modul liest die **Ziele** lokaler Referenzen, die es nicht scannt, und dieselbe Zusage gilt dort. Die Scan-Menge ist **konfigurierbar** (`workflows.dir`), weil der Ort CI-System-spezifisch ist; ohne sie ist das Modul inert. Löst die Mechanik des früheren Harness-Skripts ab. Begründung in begleitender ADR | — |
 | 0.73.0 | 2026-08-29 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die **tabellenbezogenen Bedingungen** stehen jetzt unter **einer Klammer** `table` (`order`, `order-column`, `column[]`), und die Zellengrenzen sind eine **Liste je Spalte** statt eines Schlüssel-Tripels je Regel. **Anlass war der eigene Bestand:** vier Spalten desselben Abschnitts kosteten vier Regeln mit viermal wortgleichem `files`/`section` — die Redundanz war die Form, die jede künftige Mehrspalten-Zusage geerbt hätte. Zugleich behoben ist ein **Namens-Defekt**: `cell-max-column` benannte die Spalte und schaltete die Bedingung scharf, trug aber `max` im Namen — auch dort, wo nur eine Untergrenze stand (der eigene Bestand belegte genau das). Die fünf flachen Vorgänger-Schlüssel sind **entfallen** und werden mit dem **neuen Ort** abgewiesen (Exit 2), nicht still ignoriert und nicht mit der generischen Unbekannt-Feld-Meldung des Decoders. **Zwei neue Config-Ränder**, die erst die Liste möglich macht: eine leere `table`-Klammer und derselbe Spaltenname zweimal. **Keine Verhaltensänderung an einem Befund:** Grund-Codes, Zeilen-Zuordnung und die Ziel-Form `… :: Spalte <name>` bleiben, wie sie waren — was sich ändert, ist, wer die Spalte trägt: nicht mehr die Regel-Identität, sondern das Befund-Ziel. Begründung in begleitender ADR | — |

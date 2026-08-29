@@ -2105,8 +2105,7 @@ getroffenen Dateien.
    `files`/`exempt-paths`; weder `section` noch `section-pattern` gesetzt **oder**
    beide; `sections` weder `one` noch `each`; nicht kompilierendes
    `section-pattern`/`forbid-pattern`/`require-pattern`; **explizit** gesetztes
-   `min-sentences` < 1, `max-tasks` < 0 oder `max-open-tasks` < 0; leerer Eintrag
-   in `require-all`;
+   `min-sentences` < 1 oder `max-tasks` < 0; leerer Eintrag in `require-all`;
    **explizit leerer** `hint` oder einer aus lauter Whitespace; ein `hint` mit
    **Tab oder Zeilenumbruch** (das Ausgabeformat ist tab-getrennt und einzeilig);
    `table.order` außerhalb `asc`/`desc`; **explizit** gesetztes
@@ -2838,7 +2837,6 @@ Exit 2 ohne Prüfung
 | `structure[].non-empty` | bool | `false` | der bereinigte Abschnitts-Text muss mindestens ein Nicht-Whitespace-Zeichen tragen ⇒ sonst `section-empty` |
 | `structure[].min-sentences` | int | abwesend (aus) | Mindestzahl der Satzende-Zeichen (`.`, `!`, `?`) im bereinigten Abschnitts-Text — Fenced-Code entfernt **und Inline-Code geleert** —, gezählt nur, was **vor Whitespace oder Zeilenende** steht (`a.b.c.d.` ⇒ **eins**, nicht vier) ⇒ sonst `section-thin`; **explizit** < 1 ⇒ Exit 2 |
 | `structure[].max-tasks` | int | abwesend (aus) | Obergrenze der Task-Items **im Abschnitt**, nicht dateiweit ⇒ sonst `section-oversized`; **explizit** < 0 ⇒ Exit 2 |
-| `structure[].max-open-tasks` | int | abwesend (aus) | Obergrenze der **offenen** Task-Items (`[ ]`) im Abschnitt, gezählt auf den **rohen** Zeilen über die Listen-Lexik des Moduls (`-`/`*`/`+`/`1.`, Leerzeichen oder Tab); ein gesetzter Haken zählt nicht ⇒ sonst `section-tasks-open`, **ein Befund je Item auf seiner Zeile**. Der **Fence** bleibt außen vor, eine **Inline-Code**-Spanne nicht. **Explizit** < 0 ⇒ Exit 2. Abgrenzung zu `max-tasks`: jenes zählt **alle** Items auf dem **bereinigten** Text |
 | `structure[].forbid-pattern` | string | leer | RE2 gegen den **gesamten** bereinigten Abschnitts-Text; Treffer ⇒ `section-forbidden` |
 | `structure[].require-pattern` | string | leer | RE2, Spiegelbild von `forbid-pattern`; **kein** Treffer ⇒ `section-pattern-missing`. Deckt zugesagte Aussagen, die **innerhalb** einer Auszeichnung stehen und deshalb keine Marke sind |
 | `structure[].require-all` | string[] | leer | benannte Marken, die **alle** vorkommen müssen — als hervorgehobener Textlauf am Zeilen-Anfang nach optionalem **Listen-Marker** (`- **M:**`, `**M:**`, `- **M (Zusatz):**`) ⇒ sonst `section-marker-missing`; leerer Eintrag ⇒ Exit 2 |
@@ -2982,7 +2980,6 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-074` | `uses-local-perms-undeclared` | workflows | das Ziel einer lokalen Referenz verlangt Rechte, der aufrufende **Job** trägt kein eigenes `permissions:` — er erbt den Workflow-Kopf und kann nichts weitergeben, was er nicht deklariert. **Eine** Meldung je Referenz (`line` = ihre Zeile), weil die Reparatur eine ist |
 | `SPEC-075` | `uses-local-perms-narrow` | workflows | der aufrufende Job führt einen geforderten Scope niedriger, als das Ziel ihn verlangt (`none` < `read` < `write`; ein nicht genannter Scope ist `none`). **Eine** Meldung je Scope (`line` = die Referenz-Zeile), weil jede eine eigene Reparatur ist |
 | `SPEC-076` | `workflow-unparsable` | workflows | eine gelesene Datei ist kein gültiges YAML — eine Kandidaten-Datei (`line` = die Parser-Zeile, sonst 1) oder das Ziel einer lokalen Referenz (`line` = die Referenz-Zeile, `target` = das Ziel). Befund statt Übersprung: eine unlesbare Datei ist kein geprüfter Zustand |
-| `SPEC-077` | `section-tasks-open` | structure | mehr **offene** Task-Items (`[ ]`) im Abschnitt als `max-open-tasks` erlaubt — gezählt auf den **rohen** Zeilen (Fence ausgenommen), ein Befund **je** offenem Item auf **seiner** Zeile. Abgrenzung zu `section-oversized`: jenes zählt **alle** Items auf dem bereinigten Text |
 | `SPEC-069` | `section-column-missing` | structure | die über `table.column[].name` benannte Spalte ist nicht adressierbar: keine Tabelle des Abschnitts bindet sie (`line` = Abschnitts-Überschrift), der Name kommt in einer Kopfzeile mehrfach vor (`line` = Kopfzeile) oder eine Datenzeile reicht nicht bis zur Spalte (`line` = diese Zeile) |
 | `SPEC-059` | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `SPEC-060` | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
