@@ -103,6 +103,62 @@ die Klasse, die dieses Repo als [`BEO-003`](../observations.md) führt.
    Spezifikations-Verfeinerung, Handbuch.
 7. `make gates`; **Review** und **Verifikation** als getrennte Läufe; Closure.
 
+
+**Beim ersten Bau gefunden und hier aufgehoben.** Review und Verifikation haben
+die Bedingung gebaut, gemessen — und einen stillen Ausfall derselben Gestalt
+gefunden, gegen die sie gebaut war. Das ist der Grund für die Rückführung (§6).
+
+- **Ein vergessener Schluss-Fence schaltet die Bedingung ab.** Die
+  Zeilen-Auswahl fällt über einen Fence-Toggle; eine einzelne unbeendete
+  Fence-Zeile blendet alles Folgende aus. Der **häufige** Fall wird im inneren
+  Loop von `spans` gefangen (`fence-unclosed`) — das Closure-Profil, für das
+  die Bedingung gedacht ist, führt `spans` aber **nicht**, und ein **naiv
+  ausgeglichener** Fence entkommt auch `spans`. Damit bleibt der Wächter über
+  eine Vorbedingung durch ein Fence-Zeichen abschaltbar.
+- **Der Regressions-Test testete nicht, was sein Name sagt — selbst
+  nachgemessen.** Das Fixture trug `` `erledigt ` `` mit **zwei** Backticks,
+  also eine wohlgeformte Spanne; der **Vorgänger** findet darin den offenen
+  Haken (`section-forbidden`, Exit 1). Der Test belegte „Befund auf der
+  Item-Zeile", nicht „überlebt die Blindstelle". Für den tatsächlich blinden
+  Fall gab es **keinen** Test. Das ist [`BEO-023`](../observations.md) im
+  eigenen Wächter, einen Tag nach der Registrierung der Klasse.
+- **Die Abschnittsgrenze hielt kein Test.** Die Mutation „über die ganze Datei
+  zählen statt nur im Abschnitt" lief grün durch.
+- **Es sind vier Bedingungen auf rohem Text, nicht drei.** Die
+  **Zellenlängen**-Bedingung liest ebenfalls die rohen Zeilen und sagt das
+  selbst. Die Aufzählung stand an vier Stellen falsch, und
+  [ADR-0074](../../adr/0074-offene-tasks-auf-rohen-zeilen.md)s
+  Re-Evaluierungs-Trigger („bei drei benannten Ausnahmen") war damit im Moment
+  der Annahme schon erfüllt — er konnte nie feuern. Korrigiert als
+  `## Geschichte` dort, weil der Kern einer `Accepted`-ADR nicht überschrieben
+  wird.
+- **Die Spezifikation widersprach sich intern.** Die `.a`-Verfeinerung
+  Schritt 5 sagte weiter „zwei benannte Ausnahmen", Schritt 6 hatte keine Zeile
+  für die neue Bedingung, und Schritt 7 verlangte den Befund auf der
+  Abschnitts-Überschrift, während der Code auf der Item-Zeile meldete. Die
+  Historie-Zeile fehlte.
+- **Die Lexik war kopiert, nicht geteilt.** `openTaskItemRE` war ein wörtliches
+  Präfix von `taskItemRE`, ohne Kopplungs-Test — genau die
+  [`BEO-003`](../observations.md)-Form, mit der die Bedingung begründet war.
+- **Bei Schwelle > 0 meldete sie alle Items**, auch die erlaubten: eine
+  Verletzung, drei Befunde, und keiner davon die Reparaturstelle.
+- **Die ausgewiesene Inline-Code-Grenze war überzeichnet.** Eine **einzeilige**
+  Inline-Spanne meldet gar nicht — das Muster ist zeilen-verankert; nur die
+  **mehrzeilige** Spanne zählt mit. Der genannte Preis war höher als der echte.
+- **Ungenannte Lücken:** ein Task-Item im **Blockquote** (`> - [ ]`) entkommt,
+  und `- [\t]` mit Tab in der Box ebenfalls.
+- **[`BEO-016`](../observations.md) wurde in der Sichtung übersehen** — die
+  Beobachtung *„Prosa verschwindet in einer absatzweiten Inline-Code-Spanne —
+  und kein Gate sieht es"* ist die Klasse dieses Defekts, mit einer Prozedur,
+  die der Slice de facto ausführte.
+
+**Was davon bleibt und was neu gemacht wird:** die Bauform trägt — Befund auf
+der Item-Zeile, alle vier Listen-Marker, `sections: each`, CRLF, Config-Rand,
+100 % Coverage auf der Funktion. Neu zu schreiben sind die Tests für die
+Blindstelle und die Abschnittsgrenze; die Zahl „drei" ist überall „vier"; die
+Schwellen-Semantik ist zu entscheiden; und die Grenzen sind zu nennen, wie sie
+sind, nicht wie sie klingen.
+
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **`max-tasks` bleibt, wie es ist.** Es zählt **alle** Task-Items auf dem
@@ -171,6 +227,18 @@ Vorbedingung von
 [slice-172](../open/slice-172-closure-uebergang-waechtern.md), der dafür zum
 zweiten Mal nach `open/` zurückgeführt wurde.
 
+**Rückführung eingetreten am 2026-08-29** (`in-progress` → `open`): nicht aus
+dem unten genannten Grund — die rohe Lesung erzeugt im eigenen Bestand keine
+Falsch-Positive. Die Bedingung war gebaut und gemessen, als Review und
+Verifikation den **stillen Fence-Pfad** fanden (§2) und dazu einen
+Regressions-Test, der die Blindstelle gar nicht traf. **Entscheid des
+Auftraggebers:** erst die **Fence-Lexik** selbst, dann diese Bedingung — nicht
+die Blindstelle benennen und nicht `spans` ins Closure-Profil nachziehen.
+Die Umsetzung ist zurückgenommen, die Messungen bleiben in §2, und
+[ADR-0074](../../adr/0074-offene-tasks-auf-rohen-zeilen.md) bleibt mit drei
+`## Geschichte`-Zeilen stehen — eine `Accepted`-Entscheidung verschwindet nicht
+mit ihrer Umsetzung, und das Immutable-Gate hat den Löschversuch abgewiesen.
+
 **Rückführungen:** `in-progress` → `open`, falls sich zeigt, dass die rohe
 Lesung im eigenen Bestand mehr Falsch-Positive erzeugt als die Blindstelle
 Falsch-Negative — dann ist die Abwägung eine andere, und [ADR-0059](../../adr/0059-closure-waechter-weicht-structure-regel.md)s Preis bleibt
@@ -199,7 +267,10 @@ der bessere.
   Regel aus dem Anlass: die Fähigkeit entsteht für **einen** Konsumenten, und
   das steht als Risiko in §5; [`BEO-013`](../observations.md) — ein Wächter, der
   nichts mehr fängt: `max-tasks` teilt die Blindstelle und bleibt bewusst
-  stehen (§3). Die Regel, die diesen Schritt vorschreibt:
+  stehen (§3); [`BEO-016`](../observations.md) — Prosa verschwindet in einer
+  absatzweiten Inline-Code-Spanne, und kein Gate sieht es: **das ist die
+  Klasse dieses Defekts**, und sie war beim ersten Schnitt übersehen.
+  Die Regel, die diesen Schritt vorschreibt:
 
   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
   > **Offene Beobachtungen sichten.**
