@@ -119,6 +119,57 @@ Beanspruchung sie nicht wiederholt:**
   nicht gab (§3); ihr Befund steht im Register und in der Closure-Notiz von
   slice-171, nicht in einem stillen Haken.
 
+
+**Beim ersten Bau gefunden und hier aufgehoben — zwei Blindstellen, beide
+gemessen.** Sie sind der Grund für die zweite Rückführung (§6):
+
+- **Ein einzelner zusätzlicher Backtick im DoD-Listenblock schaltet den Wächter
+  ganz ab.** Die absatzweite Inline-Code-Paarung
+  ([ADR-0059](../../adr/0059-closure-waechter-weicht-structure-regel.md))
+  schluckt den offenen Haken. An derselben Datei gefahren: offener Haken ⇒ **1**
+  Befund, Exit 1; derselbe Haken plus ein Backtick weiter oben ⇒ **0** Befunde,
+  Exit 0. **Die Exposition ist real:** `slice-061` und `slice-076` tragen heute
+  ungerade Backtick-Zahlen in ihrem DoD-Abschnitt (25 bzw. 45). Der Preis war in
+  [ADR-0059](../../adr/0059-closure-waechter-weicht-structure-regel.md) für einen **Platzhalter** ausgewiesen; hier zahlt ihn eine
+  **Vorbedingung** des Übergangs.
+- **`* [ ]` und `+ [ ]` laufen still durch.** Beide sind gültige
+  CommonMark-Task-Items; gemessen je **0** Befunde. Das Muster muss alle drei
+  Bullet-Formen decken (`[-*+] \[ \]`), nicht nur die im Repo übliche.
+
+**Die Substanz der zurückgenommenen Adaption, damit sie mit der Regel
+zurückkommt:**
+
+- **Die Grenze der Ausnahme ist ein Datum, kein Aufräum-Rest:** sie endet bei
+  [slice-171](../done/slice-171-vorpruefungen-belegen.md), dem ersten Slice nach
+  der korrigierten Praxis. Damit ist sie überprüfbar statt verhandelbar.
+- **Der Anlassfall liegt bewusst *in* der Ausnahme.** slice-168, -169 und -170
+  tragen genau den offenen Review-Haken, der
+  [welle-86](../welle-86-closure-uebergang-durchsetzen.md) ausgelöst hat — der
+  Wächter wird sie nie melden. Ein nachträglich gesetzter Haken behauptete einen
+  Review, den es nicht gab. Wer die Ausnahme liest, ohne das zu wissen, hält sie
+  für Bequemlichkeit; deshalb gehört es in die Adaption.
+- **Zweite Instanz der Form aus
+  [`MR-049`](../../../../harness/conventions.md#mr-049)** — damit ist sie die
+  Haus-Antwort auf „neue Closure-Bedingung über gewachsenem Bestand". Anders als
+  dort fängt die Ausnahme hier **kein** `section-missing`.
+- **Grenze:** ein Haken ist eine Selbstauskunft; die Lücke wandert von
+  *unsichtbar* nach *behauptet*. Und der Befund zeigt auf die
+  **Abschnitts-Überschrift**, nicht auf die Zeile des Hakens — bei neun offenen
+  Haken in `slice-045` gibt es einen Befund, und der Leser sucht selbst.
+
+**Eine Design-Frage ist offen und muss vor dem nächsten Bau beantwortet
+werden.** Der Kopfkommentar von [`.d-check.closure.yml`](../../../../.d-check.closure.yml)
+führt genau diese Regel als **bewusst verworfen**, mit einem sachlichen Grund:
+*ein abgeschlossener Slice darf eine offene Box tragen, wenn die **Welle** sie
+einlöst*. Der Fall ist belegt — `slice-094` und `slice-104` tragen je einen
+offenen Release-Haken mit dem ausdrücklichen Vermerk „Wellen-Trigger, nicht
+Slice-Trigger". Für den Altbestand löst die Ausnahme das mit; für **jeden
+künftigen** Slice wäre er rot. Der naheliegende Ersatzweg: was die Welle
+einlöst, gehört in ihren **Closure-Trigger** (welle-86 §3 führt ihn bereits so)
+und nicht in die DoD eines Slice, der es nicht einlösen kann. Das ist ein
+Vorschlag, kein Entscheid — er kehrt eine dokumentierte Ablehnung um, und der
+Kopfkommentar gehört mit ihm ersetzt.
+
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Keine Review-Report-Deckung.** Die Prüfung „jeder `done/`-Slice mit
@@ -191,6 +242,15 @@ Vorbedingung ist geliefert — `structure[].hint` existiert seit
 [slice-177](../done/slice-177-structure-hint.md), und der Nachtlauf-Stand ist
 neu gelesen (§7). Die gemessene Vorarbeit in §2 gilt unverändert; sie wurde
 nicht wiederholt, sondern gegen den heutigen Bestand nur nachgeprüft.
+
+**Zweite Rückführung am 2026-08-29** (`in-progress` → `open`): erneut nicht aus
+dem unten genannten Grund. Der Wächter war gebaut, beidseitig gemessen und
+zugestellt, als Review und Verifikation zwei **stille** Blindstellen fanden
+(§2): ein Backtick schaltet ihn ganz ab, zwei Bullet-Formen laufen durch.
+Entscheid des Auftraggebers: erst die Produkt-Frage lösen — eine Bedingung, die
+den **rohen** Abschnittstext liest —, dann diesen Slice damit schließen. Die
+Regel, ihre Adaption und die Zustellung sind zurückgenommen; die Messungen
+bleiben in §2.
 
 **Rückführungen:** `in-progress` → `open`, falls die Bestandsmessung eine
 andere Zahl als 37 liefert oder die Treffer über die Nummernspanne streuen —
