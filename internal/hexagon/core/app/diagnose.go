@@ -96,6 +96,9 @@ func AllReasons() []string {
 		rules.ReasonCitationOutOfRange, rules.ReasonCitationInvertedRange,
 		rules.ReasonCitationMismatch,
 		rules.ReasonSourceDrift, rules.ReasonSourceUnreachable,
+		rules.ReasonUsesPinMissing, rules.ReasonUsesPinUntagged,
+		rules.ReasonUsesLocalMissing, rules.ReasonUsesLocalPermsUndecl,
+		rules.ReasonUsesLocalPermsNarrow, rules.ReasonWorkflowUnparsable,
 	}
 }
 
@@ -160,6 +163,12 @@ func reasonTexts() map[string]string {
 		rules.ReasonCitationMismatch:      "Ausgezeichnetes Zitat ist kein Teilstring der normalisierten Quell-Spanne (Zitat-Fäule)",
 		rules.ReasonSourceDrift:           "Gepinnte externe Quelle inhaltlich gedriftet (Content-Hash weicht vom hinterlegten sha256-Pin ab)",
 		rules.ReasonSourceUnreachable:     "Gepinnte externe Quelle nicht materialisierbar (Netzfehler, HTTP ≥ 400, Timeout, Größenlimit oder unter unpack: zip kein gültiges Zip)",
+		rules.ReasonUsesPinMissing:        "uses:-Referenz ohne vollen 40-stelligen Commit-SHA — oder leere Prüfmenge (kein Kandidat, keine Referenz; dann steht der Befund auf workflows.dir)",
+		rules.ReasonUsesPinUntagged:       "uses:-Referenz mit vollem SHA, aber ohne Tag-Kommentar dahinter — welche Version gepinnt ist, ist sonst nicht lesbar",
+		rules.ReasonUsesLocalMissing:      "lokale uses:-Referenz (./…) löst auf kein existierendes Ziel auf",
+		rules.ReasonUsesLocalPermsUndecl:  "Das Ziel einer lokalen Referenz verlangt Rechte, der aufrufende Job trägt kein eigenes permissions: — er kann nichts weitergeben, was er nicht deklariert",
+		rules.ReasonUsesLocalPermsNarrow:  "Der aufrufende Job führt einen geforderten Scope niedriger, als das Ziel ihn verlangt (none < read < write; ein nicht genannter Scope ist none)",
+		rules.ReasonWorkflowUnparsable:    "Workflow-Datei oder Referenz-Ziel ist kein gültiges YAML — Befund statt Übersprung, eine unlesbare Datei ist kein geprüfter Zustand",
 	}
 }
 

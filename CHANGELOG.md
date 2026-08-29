@@ -4,6 +4,51 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [Unreleased]
+
+### Added
+
+- slice-170 — **Neues Modul `workflows`: Deklarations-Konsistenz von
+  Workflow-Referenzen** ([ADR-0072](docs/plan/adr/0072-workflows-modul.md),
+  Lastenheft 0.74.0). Es prüft die `uses:`-Referenzen von CI-Workflows
+  unterhalb eines **konfigurierten** Verzeichnisses (`workflows.dir` — der Ort
+  ist nicht verdrahtet, weil er CI-System-spezifisch ist). Eine **fremde**
+  Referenz nennt einen vollen 40-stelligen Commit-SHA (`uses-pin-missing`) mit
+  Tag-Kommentar dahinter (`uses-pin-untagged`); geprüft wird die **Form**, nicht
+  die Gültigkeit des SHA (das wäre Netz). Eine **lokale** Referenz (`./…`)
+  braucht keinen Pin — sie löst auf denselben Commit auf wie ihr Aufrufer —,
+  dafür zwei andere Zusagen: das Ziel existiert (`uses-local-missing`), **und**
+  der aufrufende **Job** führt die Rechte, die es verlangt
+  (`uses-local-perms-undeclared`, `uses-local-perms-narrow`). Ein Job ohne
+  eigenes `permissions:` erbt zwar den Workflow-Kopf, kann aber nichts
+  weitergeben, was er nicht deklariert — **das ist der Fehler, der ein Release
+  dieses Repos vor dem ersten Job abbrechen ließ, bei grünem Gate.** Stufen:
+  `none` < `read` < `write`; ein nicht genannter Scope ist `none`,
+  `read-all`/`write-all` setzen jeden. Unlesbares YAML meldet
+  (`workflow-unparsable`), statt übersprungen zu werden. **Hermetisch** (kein
+  git, kein Netz, kein Ausführen), opt-in, fail-closed bei leerer Prüfmenge.
+
+### Changed
+
+- slice-170 — **`make workflow-pins` läuft über das Modul statt über ein
+  Skript.** Das frühere Harness-Skript ist entfallen; seine Zusagen sind
+  vollständig im Modul aufgegangen — die sechste Skript-zu-Modul-Bewegung dieses
+  Repos nach [ADR-0024](docs/plan/adr/0024-vcs-immutable-gate.md),
+  [ADR-0026](docs/plan/adr/0026-completeness-in-product-gate.md),
+  [ADR-0027](docs/plan/adr/0027-commits-traceability-modul.md),
+  [ADR-0028](docs/plan/adr/0028-planning-lifecycle-modul.md) und
+  [ADR-0031](docs/plan/adr/0031-targets-deklarations-konsistenz-modul.md).
+  **Parität gemessen, nicht behauptet:** auf dem heutigen Bestand melden Modul
+  und Skript beide null Befunde; gegen den Stand vor dem Rechte-Fix melden
+  **beide** `uses-local-perms-undeclared` auf `release.yml:268` — gleicher Code,
+  gleiche Datei, gleiche Zeile. **Ein Grund-Code entfällt ersatzlos:**
+  `uses-local-perms-unreadable` gab es nur, weil die `awk`-Zerlegung des Skripts
+  `read-all`, Flow-Mappings und Anker nicht lesen konnte. Der echte
+  YAML-Parser liest sie; an seine Stelle tritt `workflow-unparsable` für das,
+  was wirklich unlesbar ist. **Für Konsumenten:** wer `--enable workflows` setzt,
+  bekommt die Prüfung über `d-check.mk` mit — vorher gab es sie nur in diesem
+  Repo.
+
 ## [0.66.1] — 2026-08-29
 
 ### Added

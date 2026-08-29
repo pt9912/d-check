@@ -652,6 +652,7 @@ type raw struct {
 	Tracked   *rawTracked   `yaml:"tracked"`
 	Structure []rawStructure `yaml:"structure"`
 	Targets   *rawTargets   `yaml:"targets"`
+	Workflows *rawWorkflows `yaml:"workflows"`
 	// Sources ist eine bare Liste `sources[]` (spec/spezifikation.md §2;
 	// KEIN Map mit scope — das Modul nutzt den globalen Scan-Scope).
 	Sources []rawSource `yaml:"sources"`
@@ -782,6 +783,11 @@ func applyRemainingModules(r *raw, cfg *model.Config) error {
 	if err := applyTargets(r, cfg); err != nil {
 		return err
 	}
+	wf, werr := applyWorkflows(r.Workflows)
+	if werr != nil {
+		return werr
+	}
+	cfg.Workflows = wf
 	if err := applySources(r, cfg); err != nil {
 		return err
 	}
@@ -2114,4 +2120,33 @@ func applyExternal(e *rawExternal, cfg *model.Config) error {
 		cfg.External.Parallel = *p
 	}
 	return nil
+}
+
+// rawWorkflows trägt die Parameter des Moduls workflows (DC-FA-WF-001): dir
+// (Aktivierungs-Schalter, CI-System-spezifisch und deshalb NICHT verdrahtet)
+// und exempt-paths. **Kein** scope — wie planning und targets ist das Modul
+// kein scannendes im Sinne von DC-FA-CONF-002: es benennt sein Verzeichnis
+// selbst, und ein workflows.scope wäre wirkungslos.
+type rawWorkflows struct {
+	Dir         string   `yaml:"dir"`
+	ExemptPaths []string `yaml:"exempt-paths"`
+}
+
+// applyWorkflows validiert den workflows-Block am Config-Rand: was der Kern nur
+// schlucken könnte, bricht hier laut ab.
+func applyWorkflows(r *rawWorkflows) (model.WorkflowsConfig, error) {
+	if r == nil {
+		return model.WorkflowsConfig{}, nil
+	}
+	// Ein `dir` aus lauter Weißraum ist kein Aktivierungs-Schalter, sondern
+	// ein Tippfehler: er sähe wie "aktiv" aus und liefe inert.
+	if r.Dir != "" && strings.TrimSpace(r.Dir) == "" {
+		return model.WorkflowsConfig{}, fmt.Errorf("%s: workflows.dir ist leer (nur Weißraum)", FileName)
+	}
+	for _, g := range r.ExemptPaths {
+		if _, err := path.Match(g, "probe"); err != nil {
+			return model.WorkflowsConfig{}, fmt.Errorf("%s: workflows.exempt-paths %q ist kein gültiges Glob: %v", FileName, g, err)
+		}
+	}
+	return model.WorkflowsConfig{Dir: r.Dir, ExemptPaths: r.ExemptPaths}, nil
 }

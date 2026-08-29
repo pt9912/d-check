@@ -4,7 +4,8 @@
 
 Konsistenz-Checker: prüft die Dokumentation eines Repos gegen dessen
 tatsächlichen Zustand — Markdown-Referenzen (Links, Bilder, Anker, Kennungen)
-plus Deklarationen (Build-Targets, Versions-Pins, Commit-Trace, Planning).
+plus Deklarationen (Build-Targets, Versions-Pins, Commit-Trace, Planning,
+Workflow-Referenzen).
 Deterministisch, seiteneffektfrei, als Container-Image.
 
 ## Was ist d-check?
@@ -144,6 +145,21 @@ Dokuments:
   opt-in; die Closure-Note-Struktur des Moduls `planning` ist ein **Preset**
   derselben Semantik
   ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in))
+- `workflows` — Deklarations-Konsistenz der `uses:`-Referenzen von CI-Workflows
+  unterhalb eines **konfigurierten** Verzeichnisses (`workflows.dir` — nicht
+  verdrahtet, weil CI-System-spezifisch), opt-in. Eine **fremde** Referenz nennt
+  einen vollen 40-stelligen Commit-SHA (`uses-pin-missing`) mit Tag-Kommentar
+  dahinter (`uses-pin-untagged`) — ein Tag lässt sich umhängen, ein SHA nicht;
+  geprüft wird die **Form**, nicht die Gültigkeit (das wäre Netz). Eine
+  **lokale** Referenz (`./…`) braucht keinen Pin, dafür zwei andere Zusagen: das
+  Ziel existiert (`uses-local-missing`), und der aufrufende **Job** führt die
+  Rechte, die es verlangt (`uses-local-perms-undeclared`,
+  `uses-local-perms-narrow`) — ein Job ohne eigenes `permissions:` erbt zwar den
+  Workflow-Kopf, kann aber nichts weitergeben, was er nicht deklariert.
+  Unlesbares YAML meldet (`workflow-unparsable`), statt übersprungen zu werden.
+  **Hermetisch** (kein git, kein Netz, kein Ausführen); die Referenzen kommen aus
+  dem **YAML-Baum**, nicht aus einer Textsuche
+  ([`DC-FA-WF-001`](spec/lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.

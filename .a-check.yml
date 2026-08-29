@@ -61,9 +61,12 @@ tech:
   - { pattern: '^net/([^u].*|u([^r].*)?|ur([^l].*)?|url.+)$', match: regex, adapter: "internal/adapter/driven/httpcheck/" }
   # R2b (ADR-0024): go-git nur im git-Adapter, auch nicht in CLI/cmd.
   - { pattern: '^github\.com/go-git/go-git/v5(/.*)?$', match: regex, adapter: "internal/adapter/driven/git/", composition_root: forbid }
-  # R3 (ADR-0009): yaml in configyaml UND report — Adapter-Liste
-  # (a-check >= v0.8.0), auch nicht in CLI/cmd.
-  - { pattern: '^gopkg\.in/yaml\.v3$', match: regex, adapter: ["internal/adapter/driven/configyaml/", "internal/adapter/driven/report/"], composition_root: forbid }
+  # R3 (ADR-0009, erweitert ADR-0072): yaml in configyaml, report UND
+  # workflowyaml — Adapter-Liste (a-check >= v0.8.0), auch nicht in CLI/cmd.
+  # Der dritte Eintrag ist der Workflow-Parser des Moduls `workflows`: das
+  # Parsen gehoert in einen Adapter, nicht in den Kern — genau der Schnitt,
+  # den a-check hier erzwungen hat (app-impurity beim ersten Bau).
+  - { pattern: '^gopkg\.in/yaml\.v3$', match: regex, adapter: ["internal/adapter/driven/configyaml/", "internal/adapter/driven/report/", "internal/adapter/driven/workflowyaml/"], composition_root: forbid }
   # R4: os nur im fs-Adapter; CLI + cmd über composition_root (Default
   # allow = Skript-Parität).
   - { pattern: '^os$', match: regex, adapter: "internal/adapter/driven/fs/" }

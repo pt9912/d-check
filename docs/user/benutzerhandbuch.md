@@ -1019,6 +1019,58 @@ docs/plan/adr/README.md:64  …	section-column-missing
 eingeschlossen. Auf eine Spalte voller Links angewandt misst die Bedingung
 etwas anderes, als Sie meinen.
 
+### 4.19 Workflow-Referenzen gepinnt und rechte-gedeckt halten (Modul `workflows`)
+
+**Ausgangslage:** Ihre CI-Workflows rufen fremde Actions und eigene, lokale
+Workflows auf. Beim Fremden ist ein beweglicher Tag eine Supply-Chain-Fläche —
+er lässt sich umhängen. Beim Eigenen ist die Falle eine andere: ein
+aufgerufener Workflow bekommt nur die Rechte, die der aufrufende **Job** selbst
+führt. Verlangt er mehr, bricht der Lauf **vor dem ersten Job** ab — ohne Log,
+ohne Job, ohne Hinweis darauf, welche Zeile schuld ist.
+
+**Ziel:** Beide Zusagen als Gate, bevor ein Tag-Push sie prüft.
+
+**So geht es:**
+
+```yaml
+modules: [workflows]
+workflows:
+  dir: .github/workflows        # Aktivierungs-Schalter; ohne ihn ist das Modul inert
+  # exempt-paths: ["**/experimental-*.yml"]
+```
+
+```bash
+docker run --rm --network none -v "$PWD":/repo:ro \
+  ghcr.io/pt9912/d-check:latest --enable workflows
+```
+
+**Ergebnis:** je Referenz ein Befund auf **ihrer** Zeile:
+
+<!-- d-check-test:not-replayable: gekürzte Illustration, nicht die wörtliche Ausgabe dieses Repos -->
+```text
+.github/workflows/ci.yml:31       …	uses-pin-missing
+.github/workflows/release.yml:268 …	uses-local-perms-undeclared
+```
+
+**Vier Dinge, die dabei zählen:**
+
+- **Die lokale Referenz braucht keinen Pin — und trotzdem eine Prüfung.** Sie
+  löst auf denselben Commit auf wie ihr Aufrufer und ist damit *stärker*
+  gebunden als ein SHA. An die Stelle des Pin-Checks treten die zwei Fragen,
+  die dort Sinn ergeben: existiert das Ziel, und bekommt es seine Rechte?
+- **Ein Job ohne eigenes `permissions:` ist der häufige Fall.** Er erbt den
+  Workflow-Kopf — und wenn der `permissions: {}` führt, gibt er nichts weiter.
+  Das meldet `uses-local-perms-undeclared`, **eine** Meldung je Referenz, weil
+  die Reparatur eine ist: dem Job die Rechte deklarieren.
+- **Ein Scope, den der Aufrufer nicht nennt, ist `none`** — nicht „egal".
+  `read-all` und `write-all` setzen dagegen jeden Scope auf ihre Stufe.
+- **Der Ort ist konfigurierbar, nicht verdrahtet.** `.github/workflows` ist
+  eine GitHub-Konvention; ein festkodierter Pfad wäre für jede andere Ablage
+  wertlos.
+
+**Was das Modul nicht sagt:** ob der Workflow läuft. Es deckt **eine**
+Deklarations-Klasse — ein grüner Lauf heißt „diese Klasse liegt nicht vor".
+
 ## 5. Konfiguration
 
 Eine optionale `.d-check.yml` in der Repo-Wurzel passt d-check an. Ohne
@@ -2043,6 +2095,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
 | `targets`   | opt-in        | Deklarations-Konsistenz Doku ↔ Build-Targets: jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`makefiles`), und jede Regel steht in der Autoritäts-Doku (`authority`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed bei fehlender Datei. Tabellenzeilen zählen nur **außerhalb von Code-Blöcken** — ein Beispiel-Block dokumentiert kein Target | `gate-phantom`, `gate-undocumented`                         |
 | `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu neun Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table.order`/`table.order-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle; die achte die **Überschriften-Form** (`headings-match`/`headings-level`): **jede** Überschrift der geprüften Ebene innerhalb des Abschnitts matcht das Muster, geprüft auf ihrem **Text**, gemeldet **je** Überschrift auf **ihrer** Zeile; die neunte die **Zellenlänge** (`table.column` je Eintrag `name` mit `cell-max-chars`/`cell-min-chars`): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte liegt in einer Spanne aus **Zeichen**, gemeldet auf **ihrer** Zeile — eine Obergrenze allein ließe die leere Zelle passieren. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped`, `section-heading-mismatch`, `section-cell-oversized`, `section-cell-undersized`, `section-column-missing` |
+| `workflows` | opt-in        | Deklarations-Konsistenz der `uses:`-Referenzen von CI-Workflows unterhalb eines **konfigurierten** Verzeichnisses (`workflows.dir` — der Ort ist nicht verdrahtet, weil er CI-System-spezifisch ist). **Fremde** Referenz: voller 40-stelliger Commit-SHA plus Tag-Kommentar dahinter — ein Tag lässt sich umhängen, ein SHA nicht; geprüft wird die **Form**, nicht die **Gültigkeit** (das wäre Netz). **Lokale** Referenz (`./…`): kein Pin nötig — sie löst auf denselben Commit auf wie ihr Aufrufer —, dafür zwei andere Fragen: **existiert** das Ziel, und **bekommt es die Rechte, die es verlangt?** Ein aufgerufener Workflow erhält nur, was der aufrufende **Job** selbst führt; ein Job ohne eigenes `permissions:` erbt zwar den Workflow-Kopf, kann aber nichts weitergeben, was er nicht deklariert. Stufen: `none` < `read` < `write`; ein nicht genannter Scope ist `none`, `read-all`/`write-all` setzen jeden. Die Referenzen kommen aus dem **YAML-Baum**, nicht aus einer Textsuche. **Hermetisch** (kein git, kein Netz, kein Ausführen), fail-closed bei leerer Prüfmenge und bei unlesbarem YAML. **Benannte Grenze:** das Modul liest die **Ziele** lokaler Referenzen, die es nicht scannt — dieselbe Parse-Zusage gilt dort —, und es deckt **eine** Deklarations-Klasse, nicht die Lauffähigkeit | `uses-pin-missing`, `uses-pin-untagged`, `uses-local-missing`, `uses-local-perms-undeclared`, `uses-local-perms-narrow`, `workflow-unparsable` |
 | `external`  | opt-in (Netz) | Erreichbarkeit externer Links                                                            | `external-status`, `external-timeout`, `external-redirects` |
 | `sources`   | opt-in (Netz) | Content-Pin externer Quellen gegen Upstream-Drift: eine auf `sha256` gepinnte `http(s)`-Quelle (Marker `<!-- source-pin: [zip] sha256:… -->` am Link **oder** Config-Block `sources:`; Einzeldatei oder Archiv `unpack: zip`) wird geholt, gehasht, verglichen — Meldung mit vollem Ist-Hash; **zweite** Netz-Tür neben `external`, nie im Default | `source-drift`, `source-unreachable`                        |
 

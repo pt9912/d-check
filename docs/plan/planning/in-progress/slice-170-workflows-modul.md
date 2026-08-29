@@ -6,9 +6,8 @@
 **Welle:** — **wellenlos**, solange keine Closure-Bedingung über die eigene DoD
 hinausgeht (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
 braucht).
-
-**Bezug:** [`tools/harness/workflow-pins.sh`](../../../../tools/harness/workflow-pins.sh)
-(das abzulösende Skript);
+;
+**Bezug:** das abgeloeste Harness-Skript `workflow-pins.sh` (mit diesem Slice entfernt, Tombstone in [`.d-check.yml`](../../../../.d-check.yml))
 [ADR-0071](../../adr/0071-lokale-workflow-referenz-rechte-pruefung.md) und
 [ADR-0068](../../adr/0068-lokale-workflow-referenzen-ohne-pin.md) (die
 Entscheide, deren Mechanik wandert);
@@ -86,8 +85,8 @@ ist eine Deklaration wie ein Make-Target.
    Befundsätze werden verglichen und die Differenz benannt. Erst danach fällt
    das Skript.
 6. **Skript-Tombstone nach dem Muster von
-   [ADR-0025](../../adr/0025-codepaths-ignore-refs.md).** Der Pfad
-   `tools/harness/workflow-pins.sh` steht in Doku und ADRs; er wird
+   [ADR-0025](../../adr/0025-codepaths-ignore-refs.md).**
+   Der Skript-Pfad steht in Doku und ADRs; er wird
    pfad-stabil ins Tombstone-Register geführt, statt Verweise ins Leere laufen
    zu lassen.
 7. Lastenheft, Spezifikation, ADR, Modul, Tests, `.d-check.yml`, `Makefile`,

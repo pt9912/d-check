@@ -18,7 +18,7 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, citations, structure, external, sources
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, citations, structure, workflows, external, sources
 # (external und sources sind die einzigen Netzwerk-Türen — beide strikt opt-in
 #  (external prüft http(s)-Erreichbarkeit, sources Upstream-Content-Drift); vcs und commits sind
 #  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in; tracked ist
@@ -197,6 +197,18 @@ modules: [links, anchors]
 #     #       cell-min-chars: 1                     # Untergrenze — ohne sie passiert die LEERE Zelle grün ⇒ sonst section-cell-undersized
 #     # exempt-paths: []                            # Globs; Treffer werden von DIESER Regel nicht geprüft
 
+
+# --- workflows: Deklarations-Konsistenz der uses:-Referenzen von CI-Workflows — hermetisch, opt-in ---
+#   (--enable workflows. dir ist der AKTIVIERUNGS-SCHALTER; ohne ihn wird keine Datei geöffnet.)
+# workflows:
+#   dir: .github/workflows        # Verzeichnis der Workflow-Dateien (.yml UND .yaml, nicht rekursiv)
+#                                 # NICHT verdrahtet: der Ort ist CI-System-spezifisch
+#   # exempt-paths: ["**/experimental-*.yml"]   # Globs; hebt den Leerlauf-Befund NICHT aus
+#   # FREMDE Referenz  ⇒ voller 40-stelliger SHA (uses-pin-missing) + Tag-Kommentar (uses-pin-untagged)
+#   # LOKALE Referenz  ⇒ Ziel existiert (uses-local-missing) UND der aufrufende Job führt die
+#   #                    geforderten Rechte (uses-local-perms-undeclared / -narrow).
+#   #                    none < read < write; ein nicht genannter Scope ist none.
+#   # Unlesbares YAML ⇒ workflow-unparsable (Befund, kein Übersprung).
 # --- targets: Deklarations-Konsistenz Doku ↔ Build-Targets — hermetisch (kein git), opt-in ---
 #   (Aufruf über das make-Target gate-consistency bzw. --enable targets. NICHT in modules: oben.)
 # targets:

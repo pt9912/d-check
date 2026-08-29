@@ -125,7 +125,7 @@ func TestCheckTracked_ExemptTargets(t *testing.T) {
 // beim Aufrufer), kein stilles Grün.
 func TestRunWithVCS_TrackedFailClosedOhnePort(t *testing.T) {
 	fsys := coretest.NewMemFS(map[string]string{"doc.md": "x"})
-	_, err := RunWithVCS(fsys, nil, nil, "", "", model.Config{Roots: []string{"."}}, []string{"tracked"})
+	_, err := RunWithVCS(fsys, nil, nil, nil, "", "", model.Config{Roots: []string{"."}}, []string{"tracked"})
 	if err == nil || !strings.Contains(err.Error(), "tracked") {
 		t.Fatalf("err = %v, want tracked-fail-closed", err)
 	}
@@ -135,7 +135,7 @@ func TestRunWithVCS_TrackedFailClosedOhnePort(t *testing.T) {
 func TestRunWithVCS_TrackedPortFehler(t *testing.T) {
 	fsys := coretest.NewMemFS(map[string]string{"doc.md": "x"})
 	v := &fakeVCS{err: errIndex}
-	_, err := RunWithVCS(fsys, nil, v, "", "", model.Config{Roots: []string{"."}}, []string{"tracked"})
+	_, err := RunWithVCS(fsys, nil, v, nil, "", "", model.Config{Roots: []string{"."}}, []string{"tracked"})
 	if err == nil || !strings.Contains(err.Error(), errIndex.Error()) {
 		t.Fatalf("err = %v, want Port-Fehler", err)
 	}
@@ -146,7 +146,7 @@ func TestRunWithVCS_TrackedPortFehler(t *testing.T) {
 func TestRunWithVCS_TrackedEndToEnd(t *testing.T) {
 	fsys := coretest.NewMemFS(trackedFiles())
 	v := &fakeVCS{tracked: map[string]bool{"t.md": true, "sub/in.md": true}}
-	res, err := RunWithVCS(fsys, nil, v, "", "", model.Config{Roots: []string{"."}}, []string{"links", "tracked"})
+	res, err := RunWithVCS(fsys, nil, v, nil, "", "", model.Config{Roots: []string{"."}}, []string{"links", "tracked"})
 	if err != nil {
 		t.Fatalf("err = %v", err)
 	}
@@ -174,7 +174,7 @@ func TestRunWithVCS_TrackedEndToEnd(t *testing.T) {
 // der (nil-)Port bleibt ungenutzt — default-aus byte-identisch.
 func TestRunWithVCS_TrackedAusByteIdentisch(t *testing.T) {
 	fsys := coretest.NewMemFS(trackedFiles())
-	res, err := RunWithVCS(fsys, nil, nil, "", "", model.Config{Roots: []string{"."}}, []string{"links"})
+	res, err := RunWithVCS(fsys, nil, nil, nil, "", "", model.Config{Roots: []string{"."}}, []string{"links"})
 	if err != nil {
 		t.Fatalf("err = %v", err)
 	}

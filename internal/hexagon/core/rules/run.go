@@ -17,7 +17,7 @@ type Result struct {
 // Run führt den Prüflauf ohne das opt-in Modul vcs aus — der
 // abwärtskompatible Einstieg für bestehende Aufrufer (vgl. RunWithVCS).
 func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg model.Config, modules []string) (Result, error) {
-	return RunWithVCS(fsys, httpc, nil, "", "", cfg, modules)
+	return RunWithVCS(fsys, httpc, nil, nil, "", "", cfg, modules)
 }
 
 // RunWithVCS führt den Prüflauf aus (spec/spezifikation.md
@@ -29,7 +29,7 @@ func Run(fsys driven.Filesystem, httpc driven.HTTPChecker, cfg model.Config, mod
 // DC-FA-TRK-001) — nicht-hermetische Läufe, die nur das lokale read-only
 // `.git` lesen (DC-QA-03: keine Netzwerkzugriffe; ohne aktives git-Modul
 // bleibt vcs nil und ungenutzt).
-func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS, vcsBase, vcsHead string, cfg model.Config, modules []string) (Result, error) {
+func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS, wp driven.WorkflowParser, vcsBase, vcsHead string, cfg model.Config, modules []string) (Result, error) {
 	var res Result
 	active := map[string]bool{}
 	for _, m := range modules {
@@ -107,7 +107,7 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 	// Post-Pässe (vcs/commits über den VCS-Port, planning hermetisch über fsys):
 	// arbeiten NACH dem Datei-Scan auf git-Historie bzw. Roadmap-Layout, nicht auf
 	// den gescannten Dateien. Ein Port-Fehler (fehlendes .git/Range) ist fail-closed.
-	post, perr := runPostPasses(fsys, vcs, vcsBase, vcsHead, cfg, active)
+	post, perr := runPostPasses(fsys, vcs, wp, vcsBase, vcsHead, cfg, active)
 	if perr != nil {
 		return res, perr
 	}
@@ -134,7 +134,7 @@ func (st *runState) netFindings(httpc driven.HTTPChecker) []model.Finding {
 // bzw. Commit-Messages über den VCS-Port, fail-closed als error) und planning
 // (hermetische Roadmap-↔-in-progress-Invariante über fsys, fail-closed als Befund).
 // Ausgelagert, damit RunWithVCS unter der gocyclo-Schwelle bleibt.
-func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, vcsBase, vcsHead string, cfg model.Config, active map[string]bool) ([]model.Finding, error) {
+func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, wp driven.WorkflowParser, vcsBase, vcsHead string, cfg model.Config, active map[string]bool) ([]model.Finding, error) {
 	var out []model.Finding
 	if active["vcs"] {
 		vf, err := CheckVCS(vcs, cfg.VCS, vcsBase, vcsHead)
@@ -160,6 +160,9 @@ func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, vcsBase, vcsHead stri
 	}
 	if active["structure"] {
 		out = append(out, CheckStructure(fsys, cfg.Structure)...)
+	}
+	if active["workflows"] {
+		out = append(out, CheckWorkflows(fsys, wp, cfg.Workflows)...)
 	}
 	if active["targets"] {
 		tf, err := CheckTargets(fsys, cfg.Targets)

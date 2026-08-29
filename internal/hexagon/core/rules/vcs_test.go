@@ -238,7 +238,7 @@ func TestVCSDispatch(t *testing.T) {
 		files:   refs(adr("Accepted", "Tue A."), adr("Accepted", "Tue B.")),
 	}
 
-	res, err := RunWithVCS(m, nil, driftPort, "BASE", "HEAD", cfg, []string{"vcs"})
+	res, err := RunWithVCS(m, nil, driftPort, nil, "BASE", "HEAD", cfg, []string{"vcs"})
 	if err != nil {
 		t.Fatalf("unerwarteter Fehler: %v", err)
 	}
@@ -247,7 +247,7 @@ func TestVCSDispatch(t *testing.T) {
 	}
 
 	// Modul-aus: derselbe Port, aber vcs nicht im Modulsatz ⇒ keine vcs-Befunde.
-	resOff, err := RunWithVCS(m, nil, driftPort, "BASE", "HEAD", cfg, []string{"links"})
+	resOff, err := RunWithVCS(m, nil, driftPort, nil, "BASE", "HEAD", cfg, []string{"links"})
 	if err != nil {
 		t.Fatalf("unerwarteter Fehler: %v", err)
 	}
@@ -258,7 +258,7 @@ func TestVCSDispatch(t *testing.T) {
 	}
 
 	// fail-closed über RunWithVCS.
-	if _, err := RunWithVCS(m, nil, &fakeVCS{err: errors.New("kein .git")}, "BASE", "HEAD", cfg, []string{"vcs"}); err == nil {
+	if _, err := RunWithVCS(m, nil, &fakeVCS{err: errors.New("kein .git")}, nil, "BASE", "HEAD", cfg, []string{"vcs"}); err == nil {
 		t.Fatal("fail-closed über RunWithVCS erwartet")
 	}
 }

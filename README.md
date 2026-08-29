@@ -4,7 +4,8 @@
 
 Consistency checker that verifies a repository's documentation against its
 actual state — Markdown references (links, images, anchors, identifiers) plus
-declarations (build targets, version pins, commit trace, planning).
+declarations (build targets, version pins, commit trace, planning, workflow
+references).
 Deterministic, side-effect-free, shipped as a container image.
 
 ## What is d-check?
@@ -142,6 +143,20 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   opt-in; the closure-note structure of module `planning` is a **preset** of the
   same semantics
   ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in))
+- `workflows` — declaration consistency of the `uses:` references of CI
+  workflows below a **configured** directory (`workflows.dir` — not hard-wired,
+  because the location is CI-system specific), opt-in. A **foreign** reference
+  names a full 40-character commit SHA (`uses-pin-missing`) with a tag comment
+  behind it (`uses-pin-untagged`) — a tag can be moved, a SHA cannot; the
+  **form** is checked, not the validity (that would be network). A **local**
+  reference (`./…`) needs no pin, but two other guarantees: the target exists
+  (`uses-local-missing`), and the calling **job** carries the permissions the
+  target demands (`uses-local-perms-undeclared`, `uses-local-perms-narrow`) — a
+  job without its own `permissions:` inherits the workflow header but cannot
+  pass on what it does not declare. Unparsable YAML is reported
+  (`workflow-unparsable`) rather than skipped. **Hermetic** (no git, no network,
+  no execution); references come from the **YAML tree**, not from a text search
+  ([`DC-FA-WF-001`](spec/lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in))
 
 Every finding names file, line, target and reason; exit codes:
 `0` clean, `1` findings, `2` environment or configuration error.

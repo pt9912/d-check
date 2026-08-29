@@ -21,6 +21,7 @@ import (
 	configyaml "github.com/pt9912/d-check/internal/adapter/driven/configyaml"
 	fsadapter "github.com/pt9912/d-check/internal/adapter/driven/fs"
 	gitadapter "github.com/pt9912/d-check/internal/adapter/driven/git"
+	workflowyaml "github.com/pt9912/d-check/internal/adapter/driven/workflowyaml"
 	"github.com/pt9912/d-check/internal/adapter/driven/httpcheck"
 	"github.com/pt9912/d-check/internal/adapter/driven/report"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
@@ -612,7 +613,7 @@ func Run(args []string, stdout, stderr io.Writer) int {
 	if code != 0 {
 		return code
 	}
-	res, err := rules.RunWithVCS(fsys, checker, vcsPort, vcsBase, vcsHead, cfg, modules)
+	res, err := rules.RunWithVCS(fsys, checker, vcsPort, workflowyaml.New(), vcsBase, vcsHead, cfg, modules)
 	if err != nil {
 		fmt.Fprintf(stderr, "d-check: error: %v\n", err)
 		return 2

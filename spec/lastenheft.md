@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.73.0
+**Version:** 0.74.0
 
 **Status:** Draft
 
@@ -74,8 +74,9 @@ statt per Code-Kopie.
 > Ziel-Achse zu `SCAN`), `CITE` (Verbatim-Zitat-Verifikation, Modul
 > `citations`), `SRC` (Upstream-Content-Drift externer Quellen, Modul
 > `sources`), `STRUCT` (Struktur-Invarianten
-> innerhalb eines Dokuments, Modul `structure`), `CONF` (Konfiguration), `DIST`
-> (Distribution).
+> innerhalb eines Dokuments, Modul `structure`), `WF`
+> (Workflow-Deklarations-Konsistenz, Modul `workflows`), `CONF`
+> (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
 
@@ -2989,6 +2990,89 @@ modul-lokaler `sources.scope` (die Config-Fläche ist eine bare Liste `sources[]
 
 ---
 
+### DC-FA-WF-001 — Deklarations-Konsistenz von Workflow-Referenzen (Modul `workflows`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `workflows` prüft d-check die
+`uses:`-Referenzen von CI-Workflow-Dateien auf zwei Deklarations-Zusagen: dass
+eine **fremde** Referenz unbeweglich gepinnt ist, und dass eine **lokale**
+Referenz auflöst **und** vom aufrufenden Job die Rechte bekommt, die sie
+verlangt. Geprüft wird die **Deklaration**, nicht die Lauffähigkeit.
+
+| Bedingung | Grund-Code | Reparatur |
+|---|---|---|
+| fremde Referenz nennt einen **vollen 40-stelligen** Commit-SHA | `uses-pin-missing` | den beweglichen Tag durch den SHA ersetzen |
+| … und dahinter einen Kommentar, der den Tag nennt | `uses-pin-untagged` | den Tag-Kommentar ergänzen |
+| lokale Referenz (`./…`) zeigt auf eine existierende Datei | `uses-local-missing` | den Pfad korrigieren |
+| der aufrufende **Job** trägt ein eigenes `permissions:`, wenn das Ziel Rechte verlangt | `uses-local-perms-undeclared` | dem Job die Rechte deklarieren |
+| … und führt jeden geforderten Scope mindestens so hoch | `uses-local-perms-narrow` | den Scope anheben |
+| jede gelesene Datei ist gültiges YAML | `workflow-unparsable` | die Datei reparieren |
+
+**Warum der Pin.** Ein Tag lässt sich umhängen, ein SHA nicht; eine bewegliche
+Referenz ist eine Supply-Chain-Fläche. Geprüft wird die **Form** des Pins, nicht
+seine **Gültigkeit** — ob der SHA existiert und den Commit bezeichnet, den der
+Tag-Kommentar behauptet, ist eine Netz-Frage und ausdrücklich außerhalb.
+
+**Warum die lokale Referenz anders behandelt wird.** Sie kann keinen SHA tragen
+und **braucht keinen**: sie löst auf denselben Commit auf wie ihr Aufrufer und
+ist damit **stärker** gebunden als ein Pin. An die Stelle des Pin-Checks treten
+zwei Fragen, die dort Sinn ergeben — **existiert** das Ziel, und **bekommt es
+die Rechte, die es verlangt?** Ein aufgerufener Workflow erhält nur, was der
+aufrufende **Job** selbst führt; verlangt er mehr, bricht der ganze Lauf vor dem
+ersten Job ab. Ein Job **ohne** eigenes `permissions:` erbt den Workflow-Kopf —
+genau diese stille Vererbung ist der belegte Ausfall.
+
+**Rechte-Vergleich.** Die Stufen sind geordnet: `none` < `read` < `write`. Ein
+Scope, den der Aufrufer **nicht nennt**, zählt als `none`. `read-all` und
+`write-all` setzen alle Scopes auf die jeweilige Stufe; ein leeres Mapping
+(`{}`) verlangt bzw. gewährt nichts.
+
+**Scan-Menge und die Grenze, die daraus folgt.** Das Modul liest die
+Workflow-Dateien unterhalb eines **konfigurierten** Verzeichnisses
+(`workflows.dir`) — der Ort ist nicht verdrahtet, weil er CI-System-spezifisch
+ist. **Es liest darüber hinaus Dateien, die es nicht scannt:** das Ziel jeder
+lokalen Referenz. Für diese Ziele gilt **dieselbe** Zusage wie für die
+Scan-Menge — sie werden geparst, und ein Parse-Fehler ist ein Befund, kein
+Übersprung. Ein Ziel **außerhalb** des konfigurierten Verzeichnisses wird
+ebenso gelesen; die Referenz bestimmt die Eingabe, nicht die Scan-Wurzel.
+
+**Hermetisch und netzlos:** nur der Filesystem-Port, **kein** git, **kein**
+Netz, **kein Ausführen** eines Workflows.
+
+**Strikt opt-in, fail-closed:** `workflows` ist nie Default-Modul; ohne
+`workflows.dir` ist es **inert** (keine Datei wird geöffnet, der Befundsatz ist
+byte-identisch, [`DC-QA-02`](#dc-qa-02--determinismus)). Ist es aktiv und das
+Verzeichnis fehlt, enthält keine Workflow-Datei oder keine einzige
+`uses:`-Referenz, ist das ein **Befund**, kein stilles Grün: ein Wächter, der
+nichts gefunden hat, und einer, der nichts zu prüfen hatte, sähen im Exit-Code
+sonst identisch aus.
+
+**Exit 2 vor dem Lauf** bei: leerem `workflows.dir` (nur Weißraum) und
+ungültigem Glob in `workflows.exempt-paths`.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `workflows` aktiv, eine fremde Referenz mit vollem SHA plus Tag-Kommentar und eine lokale Referenz, deren Ziel existiert und deren aufrufender Job die geforderten Rechte deklariert, when `d-check --enable workflows` läuft, then kein Befund, Exit 0.
+- **Negative (Pin):** Given eine fremde Referenz auf einen beweglichen Tag (`actions/checkout@v4`), when der Lauf endet, then `uses-pin-missing` auf **ihrer** Zeile; Given einen vollen SHA **ohne** Tag-Kommentar, then `uses-pin-untagged`.
+- **Negative (lokale Referenz):** Given eine lokale Referenz auf eine nicht existierende Datei, when der Lauf endet, then `uses-local-missing` auf ihrer Zeile.
+- **Negative (stille Vererbung):** Given einen Workflow-Kopf mit `permissions: {}`, einen Job **ohne** eigenes `permissions:` und ein lokales Ziel, das `contents: read` verlangt, when der Lauf endet, then `uses-local-perms-undeclared` — der Job erbt sonst den Kopf, und der Lauf bricht vor dem ersten Job ab.
+- **Negative (zu enger Scope):** Given einen Job mit `contents: read` und ein Ziel, das `contents: write` verlangt, then `uses-local-perms-narrow`; Given ein Ziel, das einen vom Aufrufer **nicht genannten** Scope verlangt, then derselbe Code — ein nicht genannter Scope ist `none`.
+- **Boundary (`read-all`):** Given einen Aufrufer mit `permissions: read-all` und ein Ziel, das `contents: read` verlangt, when der Lauf endet, then **kein** Befund; verlangt das Ziel `contents: write`, then `uses-local-perms-narrow`.
+- **Boundary (Ziel ohne Forderung):** Given ein lokales Ziel **ohne** `permissions`, when der aufrufende Job ebenfalls keines trägt, then **kein** Befund — es gibt nichts zu vergleichen.
+- **Boundary (fremdes Repository):** Given eine Referenz der Form `owner/repo/.github/workflows/x.yml@<sha>`, when der Lauf endet, then wird sie wie jede Action auf den Pin geprüft und **nicht** auf Rechte — ihr Inhalt liegt nicht im Repo.
+- **fail-closed (leere Prüfmenge):** Given `workflows` aktiv und ein Verzeichnis ohne Workflow-Datei — oder ohne eine einzige `uses:`-Referenz —, when der Lauf endet, then ein Befund, nicht Exit 0.
+- **fail-closed (unlesbares YAML):** Given eine Workflow-Datei oder ein Referenz-Ziel, das kein gültiges YAML ist, when der Lauf endet, then `workflow-unparsable` — nicht Übersprung.
+- **Boundary (Modul-aus):** Given **kein** aktives `workflows`, when `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne den Konfigurations-Block ([`DC-QA-02`](#dc-qa-02--determinismus)), und keine Workflow-Datei wird geöffnet.
+
+**Out-of-Scope:** die **Gültigkeit** eines SHA (Netz — gehört zur
+Freshness-Familie); die **Rechte** einer Referenz in ein fremdes Repository
+(deren Inhalt liegt nicht vor); das Ausführen oder Simulieren eines Workflows;
+jede weitere Semantik von GitHub Actions (Matrix-Auflösung,
+Bedingungs-Auswertung, Secrets-Verfügbarkeit) — das Modul deckt **eine**
+Deklarations-Klasse, und ein grüner Lauf sagt „diese Klasse liegt nicht vor",
+nicht „der Workflow läuft".
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -3144,6 +3228,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.74.0 | 2026-08-29 | Neue Anforderung [`DC-FA-WF-001`](#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in) (Modul `workflows`, opt-in) samt neuem Bereichskürzel `WF` in §3: die `uses:`-Referenzen von CI-Workflows tragen **zwei** Deklarations-Zusagen — die fremde Referenz einen vollen 40-stelligen SHA mit Tag-Kommentar (`uses-pin-missing`/`uses-pin-untagged`), die **lokale** ein existierendes Ziel (`uses-local-missing`) **und** einen aufrufenden Job, der die geforderten Rechte führt (`uses-local-perms-undeclared`/`uses-local-perms-narrow`); unlesbares YAML ist ein Befund (`workflow-unparsable`), kein Übersprung. **Die Anforderung entsteht aus einem belegten Ausfall:** ein Job erbte `permissions: {}` vom Workflow-Kopf, sein lokales Ziel verlangte `contents: read`, und der ganze Lauf brach vor dem ersten Job ab — während das damalige Skript-Gate grün meldete. **Sie beantwortet die Grenz-Frage ausdrücklich:** das Modul liest die **Ziele** lokaler Referenzen, die es nicht scannt, und dieselbe Zusage gilt dort. Die Scan-Menge ist **konfigurierbar** (`workflows.dir`), weil der Ort CI-System-spezifisch ist; ohne sie ist das Modul inert. Löst die Mechanik des früheren Harness-Skripts ab. Begründung in begleitender ADR | — |
 | 0.73.0 | 2026-08-29 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die **tabellenbezogenen Bedingungen** stehen jetzt unter **einer Klammer** `table` (`order`, `order-column`, `column[]`), und die Zellengrenzen sind eine **Liste je Spalte** statt eines Schlüssel-Tripels je Regel. **Anlass war der eigene Bestand:** vier Spalten desselben Abschnitts kosteten vier Regeln mit viermal wortgleichem `files`/`section` — die Redundanz war die Form, die jede künftige Mehrspalten-Zusage geerbt hätte. Zugleich behoben ist ein **Namens-Defekt**: `cell-max-column` benannte die Spalte und schaltete die Bedingung scharf, trug aber `max` im Namen — auch dort, wo nur eine Untergrenze stand (der eigene Bestand belegte genau das). Die fünf flachen Vorgänger-Schlüssel sind **entfallen** und werden mit dem **neuen Ort** abgewiesen (Exit 2), nicht still ignoriert und nicht mit der generischen Unbekannt-Feld-Meldung des Decoders. **Zwei neue Config-Ränder**, die erst die Liste möglich macht: eine leere `table`-Klammer und derselbe Spaltenname zweimal. **Keine Verhaltensänderung an einem Befund:** Grund-Codes, Zeilen-Zuordnung und die Ziel-Form `… :: Spalte <name>` bleiben, wie sie waren — was sich ändert, ist, wer die Spalte trägt: nicht mehr die Regel-Identität, sondern das Befund-Ziel. Begründung in begleitender ADR | — |
 | 0.72.0 | 2026-08-28 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um die **Zellenlängen-Bedingung** erweitert (`cell-max-column`/`cell-max-chars`, neunte Bedingung, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): jede Zelle einer **benannten** Spalte trägt höchstens N **Zeichen**, gemeldet auf **ihrer** Zeile. Zwei neue Grund-Codes `section-cell-oversized`/`section-column-missing`, vier neue fail-closed Config-Ränder. **Die Spalte wird über ihren Kopfzeilen-Namen adressiert, nicht über eine Position:** eine eingefügte Spalte verschöbe eine Positions-Angabe **still**, ein umbenannter Kopf meldet **laut** — dieselbe Wahl, die die achte Bedingung bei den Überschriften traf. Anlass ist ein gemessener Bestand: eine Titel-Spalte mit Median 442 und Maximum 2206 Zeichen neben H1-Titeln von Median 77, wodurch eine als **derivativ** deklarierte Sicht zur zweiten, driftfähigen Quelle wurde. **Ein `forbid-pattern` konnte die Länge ausdrücken und taugte trotzdem nicht:** sein Befund nennt den Abschnitt statt Zeile und Spalte, er hängt an der Form einer Nachbarzelle, und eine Zelle mit einer Pipe entkam ihm — dieselbe Bauform, die dieses Repo zuletzt zugunsten einer `structure`-Regel aufgegeben hat. **Mit-Wirkung auf drei Bestands-Flächen:** die Zell-Zerlegung des Produkts ist jetzt **eine** statt zwei — escape- und backtick-bewusst (`\|` ist ein Zeichen, kein Trenner) —, womit die dazu benannte Grenze der Chronologie-Bedingung und die von `planning.waves` **entfällt** statt vererbt zu werden; kein Grund-Code und keine Befund-Form dieser beiden ändert sich. Zugleich sagt die Befund-Form jetzt zu, dass die drei zeilen-gebundenen Bedingungen auf **der Zeile melden, an der repariert wird**, und nur im Leerlauf auf die Überschrift zurückfallen — das galt seit der siebten Bedingung und stand so nicht da. Begründung in begleitender ADR | — |
 | 0.71.0 | 2026-08-27 | [`DC-FA-DIST-002`](#dc-fa-dist-002--docker-hub-spiegel) sagt die Gleichheit jetzt am **Config-Digest** zu statt am **Manifest**-Digest — die Vorfassung war **am Bestand widerlegt**: derselbe lokale Bild-Push liefert je Registry verschiedene Manifest-Digests (gleicher `mediaType`, gleicher Config-Digest, aber neu komprimierte Layer-Blobs; drei von drei geprüften Tag-Paaren des Schwester-Repos). Die fail-closed-Prüfung der Vorfassung hätte damit **jedes** Release gebrochen. Der Config-Digest ist die Identität des Bild-**Inhalts** und registry-stabil; gelesen wird er aus **beiden Registries**, nicht aus dem lokalen Daemon — zwei aus demselben lokalen Bild abgeleitete Werte wären trivial gleich, und ein Vergleich, der nicht fehlschlagen kann, prüft nichts. **Neu ausgesprochen:** der Manifest-Digest ist registry-lokal, ein `docker.io`-Pin nimmt den Docker-Hub-Digest — verschwiegen wäre das eine Falle, deshalb steht es in der Beschreibung und im Out-of-Scope. **Negative-Kriterium geschärft:** der Abbruch erfolgt **vor** dem Spiegel-Push, weil eine `uses:`-Login-Action mit ihrem eigenen Text scheitert und eine nachgelagerte Meldung nie anliefe. **Out-of-Scope präzisiert:** die Hub-Beschreibungsseite wird aus dem Repo gesetzt, ihr Fehlschlag lässt das Release grün — die Prüfung ihres Zeichen-Limits wandert dafür in `make gates`, wo sie beim Schreiben greift statt beim Veröffentlichen. Anlass: unabhängiger Review. Begründung in begleitender ADR | — |

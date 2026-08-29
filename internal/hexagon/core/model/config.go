@@ -22,7 +22,7 @@ type ResolveFromGroup struct {
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -82,6 +82,8 @@ type Config struct {
 	Tracked TrackedConfig
 	// Targets: Parameter des Moduls targets (DC-FA-TGT-001).
 	Targets TargetsConfig
+	// Workflows: Parameter des Moduls workflows (DC-FA-WF-001).
+	Workflows WorkflowsConfig
 	// ConfigFile: der Wurzel-relative Pfad der TATSÄCHLICH geladenen
 	// Konfigurationsdatei — konventionell `.d-check.yml`, mit `--config`
 	// (DC-FA-CLI-012) die dort genannte. Befunde, die die Konfiguration als
@@ -874,4 +876,14 @@ func EffectiveModules(cfg Config, enable, disable []string) ([]string, error) {
 	}
 	sort.Strings(out)
 	return out, nil
+}
+
+// WorkflowsConfig sind die Parameter des Moduls workflows (DC-FA-WF-001): Dir
+// ist der AKTIVIERUNGS-SCHALTER — leer ⇒ Modul inert, es wird KEINE Datei
+// geöffnet (DC-QA-02). Der Ort ist bewusst nicht verdrahtet: er ist
+// CI-System-spezifisch, und ein festkodierter Pfad machte das Modul für jeden
+// Adopter mit anderer Ablage wertlos.
+type WorkflowsConfig struct {
+	Dir         string
+	ExemptPaths []string
 }

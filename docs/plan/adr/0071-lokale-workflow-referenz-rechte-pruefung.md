@@ -1,6 +1,6 @@
 # ADR-0071: Die lokale Workflow-Referenz wird auch auf ihre Rechte-Anforderung geprüft
 
-**Status:** Accepted
+**Status:** Accepted (teil-superseded: ADR-0072)
 
 **Datum:** 2026-08-29
 

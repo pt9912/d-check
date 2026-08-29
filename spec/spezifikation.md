@@ -2512,6 +2512,74 @@ Die Grund-Codes `source-drift`/`source-unreachable` landen mit der
 Modul-Implementierung in [§4](#4-grund--und-fehler-codes)
 (AllReasons-↔-§4-Lockstep).
 
+### DC-FA-WF-001.a — Deklarations-Konsistenz von Workflow-Referenzen (`workflows`)
+
+Verfeinert [`DC-FA-WF-001`](lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in).
+Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
+**opt-in**.
+
+1. **Inert/Config.** Ohne `workflows.dir` ist das Modul inert: **keine** Datei
+   wird geöffnet, der Befundsatz ist byte-identisch
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)). **Exit 2** vor dem
+   Lauf bei: `workflows.dir` aus lauter Weißraum; ungültiges Glob in
+   `workflows.exempt-paths`.
+2. **Kandidaten.** Alle Dateien **unmittelbar** in `workflows.dir` mit der
+   Endung `.yml` **oder** `.yaml` — beide, weil CI-Systeme beide lesen und ein
+   Glob auf nur eine ein stiller Grün-Pfad wäre. Unterverzeichnisse zählen
+   nicht (ein Workflow-Verzeichnis ist flach). Abgezogen wird
+   `exempt-paths`. Stabil sortiert geprüft. **Null Kandidaten ⇒ Befund**
+   `uses-pin-missing` mit `file` = `workflows.dir`, `line` = 1: eine leere
+   Prüfmenge ist kein Grün.
+3. **Referenzen sammeln.** Aus jeder Kandidaten-Datei wird der YAML-Baum
+   geparst; ein Parse-Fehler ⇒ `workflow-unparsable` (`line` = die vom Parser
+   gemeldete Zeile, sonst 1) und **Abbruch für diese Datei**. Als Referenz
+   gilt jeder `uses:`-Schlüssel — auf Job-Ebene (aufgerufener Workflow) wie auf
+   Step-Ebene (Action). Die **Zeile** stammt aus dem Knoten, nicht aus einer
+   Textsuche. **Null Referenzen über alle Kandidaten ⇒ Befund** wie in
+   Schritt 2 — der Wächter hatte nichts zu prüfen und sagt es.
+4. **Fremde Referenz (kein `./`-Präfix).** Geprüft wird die **Form**:
+   `<ref>@<40 Hex>` ⇒ sonst `uses-pin-missing`; dahinter ein Kommentar mit
+   nicht-leerem Inhalt ⇒ sonst `uses-pin-untagged`. Die **Gültigkeit** des SHA
+   ist Netz und ausdrücklich außerhalb. Eine Referenz in ein fremdes
+   Repository (`owner/repo/…@ref`) fällt hierunter, auch wenn sie einen
+   Workflow bezeichnet: ihr Inhalt liegt nicht vor.
+5. **Lokale Referenz (`./`-Präfix).** Kein Pin-Check — sie löst auf denselben
+   Commit auf wie ihr Aufrufer und ist damit stärker gebunden als ein SHA.
+   Stattdessen zwei Prüfungen:
+   - **Existenz.** Der Pfad wird Wurzel-relativ aufgelöst; existiert keine
+     Datei ⇒ `uses-local-missing`, und die Rechte-Prüfung entfällt für diese
+     Referenz.
+   - **Rechte.** Die Zieldatei wird geparst (Parse-Fehler ⇒
+     `workflow-unparsable` an der **Referenz**-Zeile, mit dem Ziel im
+     `target`). **Verlangt** das Ziel die Vereinigung der `permissions` seines
+     Kopfes und aller seiner Jobs; **führt** der Aufrufer die `permissions` des
+     Jobs, in dem die Referenz steht — und **nur** diese: ein Job ohne eigenes
+     `permissions:` erbt zwar den Kopf, kann aber an einen aufgerufenen
+     Workflow nichts weitergeben, was er nicht selbst deklariert.
+6. **Rechte-Vergleich.** Stufen: `none` < `read` < `write`. `read-all` und
+   `write-all` setzen **jeden** Scope auf die Stufe; ein leeres Mapping
+   verlangt bzw. gewährt nichts. Verlangt das Ziel **irgendeinen** Scope über
+   `none` und trägt der aufrufende Job **kein** `permissions:` ⇒
+   `uses-local-perms-undeclared` (**eine** Meldung je Referenz, nicht je
+   Scope — die Reparatur ist eine). Trägt er eines, wird je gefordertem Scope
+   verglichen; ein vom Aufrufer nicht genannter Scope zählt als `none`. Jede
+   Unterschreitung ⇒ `uses-local-perms-narrow`, **eine** Meldung je Scope, weil
+   jede eine eigene Reparatur ist.
+7. **Befund-Ort.** Jeder Befund steht auf der Zeile der **Referenz** — dort ist
+   die Reparatur —, außer dem Leerlauf aus Schritt 2/3 und einem Parse-Fehler
+   der Kandidaten-Datei selbst. `target` ist bei den lokalen Prüfungen der
+   aufgelöste Ziel-Pfad, sonst der `uses:`-Wert.
+
+**Die Grenze dieses Moduls, ausgesprochen** (die Frage aus
+[`AGENTS.md`](../AGENTS.md) §3.8): es **scannt** die Dateien in
+`workflows.dir` und **liest** darüber hinaus die Ziele lokaler Referenzen, auch
+außerhalb dieses Verzeichnisses. Für sie gilt **dieselbe** Zusage — sie werden
+geparst, und ein Parse-Fehler ist ein Befund. Was das Modul **nicht** deckt:
+jede weitere Actions-Semantik. Ein grüner Lauf sagt „diese Deklarations-Klasse
+liegt nicht vor", nicht „der Workflow läuft".
+
+---
+
 ## 2. Datenstrukturen und Schemas
 
 ### SPEC-001 — Befund
@@ -2765,6 +2833,8 @@ Exit 2 ohne Prüfung
 | `structure[].table.column[].cell-min-chars` | int | abwesend (aus) | Untergrenze derselben Zelle; darunter ⇒ `section-cell-undersized` auf **ihrer** Zeile — die **leere** Zelle eingeschlossen, die unter einer Obergrenze allein grün passiert. **Explizit** < 1 ⇒ Exit 2; `cell-min-chars` > `cell-max-chars` ⇒ Exit 2 (keine Zelle erfüllt beides). **Aktivierung:** jeder Eintrag verlangt **mindestens eine** der beiden Grenzen — eine Spalte ohne Schwelle misst nichts ⇒ Exit 2 |
 | `structure[].headings-level` | int | Abschnitts-Ebene + 1 | 1-basierte ATX-Ebene der geprüften Überschriften; außerhalb 1–6 ⇒ Exit 2, gesetzt ohne `headings-match` ⇒ Exit 2. **Nicht** zu verwechseln mit `planning.closure.heading-pattern`: jener ist ein **Selektor** (welcher Abschnitt), dies eine **Bedingung** (welche Form) — beide Blöcke können im selben Profil stehen. Ein Wert **flacher** als der Abschnitt kann in ihm nicht vorkommen — die Bedingung ist dann wirkungslos |
 | `structure[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`) über die Quell-Pfade; Treffer werden von **dieser** Regel nicht geprüft — hebeln den Leerlauf-Befund aber nicht aus |
+| `workflows.dir` | string | leer (aus) | Verzeichnis der Workflow-Dateien — **Aktivierungs-Schalter** des Moduls; leer ⇒ inert (keine Datei geöffnet). Der Ort ist **nicht verdrahtet**, weil er CI-System-spezifisch ist. Gelesen werden die Dateien **unmittelbar** darin mit Endung `.yml` **oder** `.yaml`; null Kandidaten oder null `uses:`-Referenzen ⇒ Befund (fail-closed). Nur Weißraum ⇒ Exit 2 |
+| `workflows.exempt-paths` | string[] | leer | Globs über Wurzel-relative Pfade; Treffer werden **nicht** geprüft. Ungültiges Glob ⇒ Exit 2. **Hebt den Leerlauf-Befund nicht aus:** bleiben nach Abzug null Kandidaten, ist das derselbe fail-closed-Befund |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien, aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
@@ -2886,6 +2956,12 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-067` | `section-heading-mismatch` | structure | eine Überschrift **innerhalb** des Abschnitts genügt `headings-match` nicht (`line` = die Überschrift, nicht der Abschnittskopf) — geprüft wird ihr Text, auf der Ebene `headings-level` |
 | `SPEC-068` | `section-cell-oversized` | structure | eine Zelle der über `table.column[].name` benannten Spalte trägt mehr als `cell-max-chars` **Zeichen** (`line` = ihre Zeile, nicht der Abschnittskopf) — gemessen wird die getrimmte Zelle, wie sie dasteht |
 | `SPEC-070` | `section-cell-undersized` | structure | dieselbe Zelle trägt **weniger** als `cell-min-chars` Zeichen — die **leere** Zelle eingeschlossen, die unter einer Obergrenze allein grün passierte (`line` = ihre Zeile). Eigener Code, weil die Reparatur eine andere ist: ausfüllen statt kürzen |
+| `SPEC-071` | `uses-pin-missing` | workflows | eine **fremde** `uses:`-Referenz nennt keinen vollen 40-stelligen Commit-SHA (`line` = ihre Zeile) — **oder** die Prüfmenge ist leer: kein Kandidat im Verzeichnis bzw. keine einzige `uses:`-Referenz (`file` = `workflows.dir`, `line` = 1). Geprüft wird die **Form**, nicht die Gültigkeit des SHA |
+| `SPEC-072` | `uses-pin-untagged` | workflows | dieselbe Referenz nennt einen vollen SHA, aber keinen Kommentar mit dem Tag dahinter (`line` = ihre Zeile) — ohne ihn ist nicht lesbar, welche Version gepinnt ist |
+| `SPEC-073` | `uses-local-missing` | workflows | eine **lokale** Referenz (`./…`) löst auf keine existierende Datei auf (`line` = ihre Zeile, `target` = der aufgelöste Pfad); die Rechte-Prüfung entfällt für sie |
+| `SPEC-074` | `uses-local-perms-undeclared` | workflows | das Ziel einer lokalen Referenz verlangt Rechte, der aufrufende **Job** trägt kein eigenes `permissions:` — er erbt den Workflow-Kopf und kann nichts weitergeben, was er nicht deklariert. **Eine** Meldung je Referenz (`line` = ihre Zeile), weil die Reparatur eine ist |
+| `SPEC-075` | `uses-local-perms-narrow` | workflows | der aufrufende Job führt einen geforderten Scope niedriger, als das Ziel ihn verlangt (`none` < `read` < `write`; ein nicht genannter Scope ist `none`). **Eine** Meldung je Scope (`line` = die Referenz-Zeile), weil jede eine eigene Reparatur ist |
+| `SPEC-076` | `workflow-unparsable` | workflows | eine gelesene Datei ist kein gültiges YAML — eine Kandidaten-Datei (`line` = die Parser-Zeile, sonst 1) oder das Ziel einer lokalen Referenz (`line` = die Referenz-Zeile, `target` = das Ziel). Befund statt Übersprung: eine unlesbare Datei ist kein geprüfter Zustand |
 | `SPEC-069` | `section-column-missing` | structure | die über `table.column[].name` benannte Spalte ist nicht adressierbar: keine Tabelle des Abschnitts bindet sie (`line` = Abschnitts-Überschrift), der Name kommt in einer Kopfzeile mehrfach vor (`line` = Kopfzeile) oder eine Datenzeile reicht nicht bis zur Spalte (`line` = diese Zeile) |
 | `SPEC-059` | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `SPEC-060` | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
@@ -2914,6 +2990,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-29 | Neues Modul-Verfahren §[`DC-FA-WF-001.a`](spezifikation.md#dc-fa-wf-001a--deklarations-konsistenz-von-workflow-referenzen-workflows) ([`DC-FA-WF-001`](lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in) 0.74.0, Begründung in begleitender ADR): sieben Schritte über die `uses:`-Referenzen eines konfigurierten Workflow-Verzeichnisses — Pin-**Form** für fremde Referenzen, Existenz **und** Rechte-Deckung für lokale. §2-Schema um `workflows.dir`/`workflows.exempt-paths`, §4 um sechs Codes [`SPEC-071`](#4-grund--und-fehler-codes) bis [`SPEC-076`](#4-grund--und-fehler-codes). **Die Referenzen kommen aus dem YAML-Baum, nicht aus einer Textsuche** — damit entfällt die Zeilen-Näherung des abgelösten Skripts, und `read-all`/`write-all`/Flow-Mappings sind gelesen statt gemeldet. **Schritt 5 trifft eine Aussage, die das Skript nicht traf:** ein Job ohne eigenes `permissions:` erbt zwar den Workflow-Kopf, kann aber an einen aufgerufenen Workflow nichts weitergeben, was er nicht selbst deklariert. **Die §3.8-Grenze ist ausgesprochen**: das Modul liest die Ziele lokaler Referenzen, die es nicht scannt, und dieselbe Parse-Zusage gilt dort |
 | 2026-08-29 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 1/6 und das §2-Schema auf die **Tabellen-Klammer** `table` umgestellt ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.73.0, Begründung in begleitender ADR): die fünf flachen Schlüssel `table-order`/`table-column`/`cell-max-column`/`cell-max-chars`/`cell-min-chars` heißen jetzt `table.order`, `table.order-column` und `table.column[]` mit `name`/`cell-max-chars`/`cell-min-chars`. **Die Zellengrenzen sind eine Liste je Spalte**, kein Schlüssel-Tripel je Regel — mehrere Spalten desselben Abschnitts stehen unter **einem** Selektor. Das §2-Schema führt die `table.*`-Zeilen zusammen und benennt die **Abgrenzung der beiden Spalten-Begriffe**: `order-column` adressiert über die **Position** (ein Griff daneben fällt als `section-cell-untyped` auf), `column[].name` über den **Namen** (eine Längen-Messung hat diese Selbstkontrolle nicht). Schritt 1 trägt **zwei neue Exit-2-Ränder**, die erst die Liste möglich macht — leere Klammer, doppelter Spaltenname — und die Abweisung der fünf Vorgänger-Schlüssel **mit dem neuen Ort in der Meldung**. Schritt 6 sagt erstmals aus, dass jeder Listen-Eintrag ein **eigener Lauf** ist und das Befund-Ziel die Spalte trägt: die Regel-Identität tut es für die Zellen-Spalten **nicht mehr**, weil sie innerhalb einer Regel keine zwei Regeln kollidieren lassen können. **Kein Grund-Code und keine Befund-Form ändert sich** |
 | 2026-08-28 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 6 um die **neunte Bedingung** `cell-max-column`/`cell-max-chars` erweitert, §2-Schema um zwei Zeilen, §4 um die Grund-Codes [`SPEC-068`](#4-grund--und-fehler-codes) `section-cell-oversized` und [`SPEC-069`](#4-grund--und-fehler-codes) `section-column-missing` ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.72.0, Begründung in begleitender ADR): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte trägt höchstens N **Zeichen**, gemeldet auf **ihrer** Zeile. Die Bindung erfolgt **je Tabelle** — kein Treffer macht die Tabelle irrelevant statt den Abschnitt blind, ein doppelter Name und eine zu kurze Datenzeile sind Befunde, und der Leerlauf trägt dieselbe Doppel-Rolle wie bei der Chronologie. **Die Zell-Zerlegung ist jetzt die eine des Produkts:** escape- und backtick-bewusst, womit die in Schritt 6 benannte Grenze der Chronologie-Bedingung (`\|` verschiebt die Spaltenadresse) **entfällt**; ohne diesen Zug erbte die neue Bedingung genau das Loch, gegen das sie gebaut ist. Schritt 7 sagt zudem erstmals aus, dass die drei zeilen-gebundenen Bedingungen auf **der Zeile melden, an der repariert wird**, und nur im Leerlauf auf die Abschnitts-Überschrift zurückfallen |
 | 2026-08-27 | §[`DC-FA-CODE-001.a`](spezifikation.md#dc-fa-code-001a--pfade-in-inline-code) Schritt 1 und §[`DC-FA-ID-001.a`](spezifikation.md#dc-fa-id-001a--kennungs-prüfung) Bedingung 4 fordern für den Zeilen-Marker jetzt die **HTML-Kommentar-Form**; eine blanke Erwähnung wirkt dort nicht mehr. Die Form folgt der **Kommentar-Lexik der Eingabe** und ist deshalb je Konsument verschieden — §[`DC-FA-DIAG-001.a`](spezifikation.md#dc-fa-diag-001a--kennungs-konsistenz-in-diagramm-fences-diagrams) legt den **Token** ausdrücklich fest (Diagramm-Sprache statt Markdown), und §[`DC-FA-VER-001.a`](spezifikation.md#dc-fa-ver-001a--versions-pin-konsistenz-versions) liest alle Zeilen sprachgemischt. Die Bedingung ist **konservativ**: ein `>` im Kommentar vor dem Marker lässt ihn nicht gelten — ein verpasster Marker ist Falsch-Rot und laut, ein erfundener wäre stilles Grün. Im Bestand kostenlos (null zusätzliche Befunde), Zähne per Gegenprobe belegt. Begründung in begleitender ADR |

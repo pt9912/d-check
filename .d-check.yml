@@ -53,6 +53,21 @@ links:
         - docs/plan/planning/done
 
 ignore-refs:
+  # Tombstone des abgeloesten Waechters (slice-170 / ADR-0072): das Skript
+  # tools/harness/workflow-pins.sh ist im Modul `workflows` aufgegangen und
+  # entfernt. Die Verweise darauf stehen in EINGEFRORENEN Artefakten -- zwei
+  # immutable Accepted-ADRs, ein done/-Slice und die Review-Reports, die den
+  # Waechter zur ihrer Zeit geprueft haben. Sie nachzuziehen wuerde Belege
+  # verfaelschen (dieselbe Begruendung wie beim Review-Report-Eintrag oben);
+  # quell-skopiert ausgenommen statt editiert.
+  - in: docs/plan/adr/0068-lokale-workflow-referenzen-ohne-pin.md
+    refs: ["tools/harness/workflow-pins.sh"]
+  - in: docs/plan/adr/0071-lokale-workflow-referenz-rechte-pruefung.md
+    refs: ["tools/harness/workflow-pins.sh"]
+  - in: docs/plan/planning/done/slice-169-workflow-rechte-pruefung.md
+    refs: ["tools/harness/workflow-pins.sh"]
+  - in: docs/reviews/**
+    refs: ["tools/harness/workflow-pins.sh"]
   # Review-Reports sind LAUF-BELEGE: sie halten fest, was zur Review-Zeit galt.
   # Als slice-099/100 nach dem Review zu einem Slice zusammengeführt wurden,
   # zeigten ihre Verweise ins Leere. Die Reports nachzuziehen wäre der falsche
@@ -602,3 +617,14 @@ trace:
     dir: docs/plan/planning
     file-pattern: '^(slice-\d+)-.*\.md$'   # Capture-Gruppe 1 = volle Kennung slice-NNN
     id-prefix: ''                          # leer: der Dateiname trägt die volle Kennung
+
+# Modul workflows (DC-FA-WF-001, ADR-0072): die uses:-Referenzen der eigenen
+# CI-Workflows. Fremde Referenz ⇒ voller SHA mit Tag-Kommentar (AGENTS.md
+# §3.9); lokale Referenz ⇒ Ziel existiert UND der aufrufende Job fuehrt die
+# Rechte, die es verlangt.
+#
+# GRENZE: das Modul liest die ZIELE lokaler Referenzen, die es nicht scannt --
+# dieselbe Parse-Zusage gilt dort. Es deckt EINE Deklarations-Klasse, nicht die
+# Lauffaehigkeit eines Workflows.
+workflows:
+  dir: .github/workflows

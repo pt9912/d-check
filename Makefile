@@ -183,8 +183,8 @@ guard-probe: ## Tool-Call-Wächter gegen seine Proben fahren (werkzeug-lokal, NI
 # Tag-Kommentar), nicht seine Gültigkeit — ob der SHA existiert und zum Tag
 # passt, wäre Netz und gehört zur Freshness-Familie. Netzlos, fail-closed auch
 # bei leerer Prüfmenge, deshalb IN gates.
-workflow-pins: ## uses:-Einträge der Workflows: voller Commit-SHA + Tag-Kommentar (netzlos, in gates). AGENTS.md §3.9.
-	@bash tools/harness/workflow-pins.sh
+workflow-pins: build ## uses:-Einträge der Workflows via Modul workflows (Image, dogfood): voller SHA + Tag-Kommentar; lokale Referenz existiert und bekommt die Rechte ihres Jobs (netzlos, in gates). AGENTS.md §3.9, ADR-0072.
+	$(DCHECK_RUN) --enable workflows $(FOCUS_DISABLE)
 
 baseline-verify: ## Vendorte Baseline gegen SHA256SUMS: Integrität + Manifest-Deckung (netzlos, in gates). MR-011-Kette.
 	@bash tools/harness/fetch-baseline-cache.sh --verify
