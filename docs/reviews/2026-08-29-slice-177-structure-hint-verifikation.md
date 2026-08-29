@@ -1,6 +1,6 @@
 # Verifikation slice-177 — DoD, Spec-Konformität und Mutationsproben
 
-**Gegenstand:** [slice-177](../plan/planning/in-progress/slice-177-structure-hint.md), Stand `c894c7f` … `86d2985`.
+**Gegenstand:** [slice-177](../plan/planning/done/slice-177-structure-hint.md), Stand `c894c7f` … `86d2985`.
 **Datum:** 2026-08-29. **Verifikation:** unabhängiger Subagent, eigener Kontext.
 **Aufbau:** zwei Images — `d-check:latest` (HEAD) und ein aus dem Stand vor dem Feat-Commit gebautes Vergleichs-Image. „Vorher/nachher" ist damit selbst gefahren, nicht abgeschrieben. Arbeitsbaum am Ende unverändert (`sha256sum -c` auf allen temporär mutierten Dateien).
 

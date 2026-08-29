@@ -82,7 +82,7 @@ Beobachtungs-Register: Mensch urteilt, Maschine prüft Deckung.
    nicht** — `structure` kennt keine regel-eigene Meldung, und der
    `--doctor`-Klartext hängt am Grund-Code, nicht an der Regel. Dieser Punkt
    ist der Grund für die Rückführung (§6); die Fähigkeit liefert
-   [slice-177](../in-progress/slice-177-structure-hint.md), und diese Regel
+   [slice-177](../done/slice-177-structure-hint.md), und diese Regel
    wird ihr erster Konsument.
 5. `make gates` und `make fullbuild`; **Review** und **Verifikation** als
    getrennte Läufe; Closure.
@@ -179,7 +179,7 @@ dem unten genannten Grund — die Bestandsmessung stimmt (§2). Der Sensor war
 fertig und beidseitig gemessen, als §2 Punkt 4 auf eine Produkt-Grenze traf:
 eine regel-eigene Meldung gibt es nicht. Die Alternative wäre gewesen, den
 Punkt stillschweigend fallenzulassen; stattdessen wartet dieser Slice auf
-[slice-177](../in-progress/slice-177-structure-hint.md).
+[slice-177](../done/slice-177-structure-hint.md).
 
 **Rückführungen:** `in-progress` → `open`, falls die Bestandsmessung eine
 andere Zahl als 37 liefert oder die Treffer über die Nummernspanne streuen —

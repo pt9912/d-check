@@ -1,6 +1,6 @@
 # Review slice-177 — Die zentrale Zusage war über fremden Text brechbar
 
-**Gegenstand:** [slice-177](../plan/planning/in-progress/slice-177-structure-hint.md), Stand `c894c7f`, `d8c89c8`, `e693df9`, `f107003`, `86d2985`.
+**Gegenstand:** [slice-177](../plan/planning/done/slice-177-structure-hint.md), Stand `c894c7f`, `d8c89c8`, `e693df9`, `f107003`, `86d2985`.
 **Datum:** 2026-08-29. **Reviewer:** unabhängiger Subagent, Skill `.harness/skills/reviewer.md` v1.13.0.
 **Eigener Lauf:** `make gates` ⇒ `593 Datei(en) geprüft, 0 Befund(e)`, Coverage 94,70 %, semgrep 0 Findings, Exit 0. **Alle Befunde sind an grünen Gates vorbeigelaufen.**
 
