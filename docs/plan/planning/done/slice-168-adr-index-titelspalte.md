@@ -104,14 +104,14 @@ zugunsten einer `structure`-Regel aufgegeben hat.
 
 ## 4. Definition of Done
 
-- [ ] Die neunte `structure`-Bedingung existiert: Spalte benannt, Schwelle in
+- [x] Die neunte `structure`-Bedingung existiert: Spalte benannt, Schwelle in
       **Zeichen**, Befund auf der **Zeile** der zu langen Zelle, eigener
       Grund-Code.
-- [ ] [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) trägt sie mit Akzeptanzkriterien-Trio; ADR mit
+- [x] [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) trägt sie mit Akzeptanzkriterien-Trio; ADR mit
       Fitness Function; Spezifikation, Handbuch und `operations.md` nachgezogen.
-- [ ] Negativtests: zu lange Zelle, Grenzfall genau auf der Schwelle, Umlaute
+- [x] Negativtests: zu lange Zelle, Grenzfall genau auf der Schwelle, Umlaute
       (Zeichen ≠ Bytes), Zelle mit `|`, fehlende Spalte, leere Prüfmenge.
-- [ ] Die Tabellen-Bedingungen stehen unter **einer** Klammer `table`, die
+- [x] Die Tabellen-Bedingungen stehen unter **einer** Klammer `table`, die
       Zellengrenzen als **Liste je Spalte**; die eigene `.d-check.yml` sagt die
       vier Index-Spalten mit **einem** Selektor zu. Jeder der fünf
       Vorgänger-Schlüssel bricht mit **Exit 2 und dem neuen Ort** in der
@@ -128,28 +128,44 @@ zugunsten einer `structure`-Regel aufgegeben hat.
 - **Kürzen kann Inhalt vernichten, der nur hier stand.** Der Index ist
   *derivativ* — trägt er etwas Eigenes, ist das der Defekt, nicht die Kürzung.
   Aber „müsste in der ADR stehen" ist eine Annahme, bis sie geprüft ist. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang: weiter offen, und der Beleg fehlt.** Gemessen wurde beim Closure
+  etwas Benachbartes, nicht das Risiko selbst: **54 der 70** Titel-Zellen sind
+  wortgleich mit dem H1 ihrer ADR, **16** weichen ab — und bei einem Teil davon
+  trägt der **Index mehr** als der H1 ([ADR-0011](../../adr/0011-digest-pins-build-gate-images.md) nennt dort
+  „(Dockerfile-`FROM` + semgrep)"). Ob dieses Mehr auch im Rumpf der ADR steht,
+  ist damit **nicht** gezeigt.
 - **Eine Schwelle aus dem heutigen Bestand ist aus dem Anlass gezogen**
   ([`BEO-011`](../observations.md)). 200 liegt über dem längsten **heutigen**
-  H1; ein künftiger längerer Titel fiele auf. — **Ausgang:** *(bei Closure)*
+  H1; ein künftiger längerer Titel fiele auf. — **Ausgang: weiter offen, als
+  Beobachtung geführt.** Die Schwelle hat im ganzen Lauf keine berechtigte
+  Zeile gemeldet; der Trigger in
+  [ADR-0069](../../adr/0069-zellenlaenge-als-strukturbedingung.md) bleibt.
 - **Der Spalten-Bezug entscheidet, ob ein Umbau still oder laut ist.** Über die
   **Position** angesprochen, misst eine eingefügte Spalte still die falsche;
-  über den **Kopfzeilen-Namen** meldet ein umbenannter Kopf laut. — **Ausgang:**
-  *(bei Closure)*
+  über den **Kopfzeilen-Namen** meldet ein umbenannter Kopf laut. — **Ausgang:
+  entfallen.** Die Bindung läuft über den Namen; ein nicht adressierbarer Kopf
+  meldet `section-column-missing` statt still zu messen.
 - **Die Zell-Zerlegung des Produkts war zweigeteilt** — der Kern zerlegte naiv,
   der RTM-Leser escape-bewusst. Eine neue Bedingung auf dem naiven Zerleger
-  hätte genau das Loch geerbt, gegen das sie gebaut ist. — **Ausgang:** *(bei
-  Closure)*
+  hätte genau das Loch geerbt, gegen das sie gebaut ist. — **Ausgang:
+  entfallen.** Das Produkt hat eine Zell-Antwort; die in
+  [ADR-0057](../../adr/0057-structure-tabellen-monotonie.md) benannte Grenze
+  entfällt für `table.order` und `planning.waves` mit.
 - **Die Klammer bricht zwei Schlüssel einer bereits ausgelieferten Bedingung**
   ([ADR-0057](../../adr/0057-structure-tabellen-monotonie.md)). Der Preis ist
   gemessen klein — kein Schwester-Repo und kein anderer Konsument führte
   `table-order` oder `table-column` —, aber „niemand nutzt es" ist eine
-  Momentaufnahme des Sichtbaren, keine Zusage über Unbekannte. — **Ausgang:**
-  *(bei Closure)*
+  Momentaufnahme des Sichtbaren, keine Zusage über Unbekannte. — **Ausgang:
+  weiter offen.** Gemessen ist nur das Sichtbare: neun Schwester-Repos, keines
+  führte einen der Schlüssel. Über unbekannte Konsumenten sagt das nichts — der
+  Bruch ist fail-closed mit Wegweiser, aber er ist einer.
 - **Ein Migrations-Fangnetz, das niemanden fängt, bleibt stehen**
   ([`BEO-013`](../observations.md)). Die fünf Vorgänger-Schlüssel leben im
   Config-Struct weiter, nur um abgewiesen zu werden; ihr Ablaufdatum steht als
-  Trigger in der ADR und sonst nirgends. — **Ausgang:** *(bei Closure)*
+  Trigger in der ADR und sonst nirgends. — **Ausgang: weiter offen, mit
+  Termin.** Der Trigger in
+  [ADR-0070](../../adr/0070-tabellen-klammer-und-spaltenliste.md) datiert das
+  Fangnetz auf den nächsten MAJOR-Bump; bis dahin ist es ein Wächter ohne Beute.
 
 ## 6. Trigger
 
@@ -186,3 +202,48 @@ Module: `structure`. Gates: `make gates`.
 plus eine Regel; kein Fremdsystem, keine Reconciliation.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Die Bedingung steht, und ihre erste Form hielt keine vierundzwanzig Stunden.**
+
+**Der Kern ist erreicht und gemessen.** Der ADR-Index hatte eine Titel-Spalte
+mit Median 442 und Maximum 2206 Zeichen; heute liegt jede Zelle unter 200, und
+`doc-check` hält das als Sensor statt als Wachsamkeit. Dazu kamen zwei Funde,
+die niemand gesucht hatte: **vier** Zeilen trugen nur 3 von 5 Zellen — kein
+Gate hatte das je gesehen, weil die vorderen Spalten dastanden —, und die
+Zell-Zerlegung des Produkts war zweigeteilt, was die neue Bedingung genau das
+Loch hätte erben lassen, gegen das sie argumentiert.
+
+**Die Form der Bedingung war falsch, und der erste Konsument hat es gezeigt.**
+Vier Spalten desselben Abschnitts kosteten vier Regeln mit viermal wortgleichem
+`files`/`section`, und `cell-max-column` benannte die Spalte, während sein Name
+ein Maximum behauptete — im eigenen Bestand stand er einmal mit
+*ausschließlich* einer Untergrenze da. [ADR-0070](../../adr/0070-tabellen-klammer-und-spaltenliste.md)
+zieht daraus die Klammer `table` mit `column` als Liste. Das ist die Lehre
+dieses Slice: **eine Konfigurationsform ist erst geprüft, wenn sie einen echten
+Konsumenten getragen hat** — nicht, wenn die Tests grün sind. Das Zeitfenster
+hat gehalten, was es wert war: unter `[Unreleased]`, ohne fremden Konsumenten,
+war die Korrektur billig; eine Woche später wäre sie eine Migration gewesen.
+
+**Zwei DoD-Punkte sind offen, und sie bleiben es sichtbar.**
+
+Der erste ist eine **Messung, die ich beim Closure nachgeholt und nicht bestanden
+habe**: „jede Titel-Zelle gibt den H1 der zugehörigen ADR wieder". Gegen die
+Dateien gemessen sind **54 von 70** Zellen wortgleich, **16** nicht — und bei
+einem Teil trägt der **Index mehr** als der H1 ([ADR-0011](../../adr/0011-digest-pins-build-gate-images.md): „(Dockerfile-`FROM`
++ semgrep)"). Für das Gate ist das gleichgültig, alle 70 liegen unter der
+Schwelle. Für die Zusage *derivativ* ist es das nicht: ob dieses Mehr im Rumpf
+der ADR steht, ist ungeprüft. Damit bleibt auch das Risiko „Kürzen kann Inhalt
+vernichten" ohne Beleg — es ist **nicht** gezeigt, dass nichts verloren ging.
+
+Der zweite ist schlicht **nicht gelaufen**: der unabhängige Review. Der
+Auftraggeber hat ihn übersprungen und direkt das Release beauftragt. Was diesen
+Slice trägt, sind damit die Gates, die Tests und fünf End-to-End-Proben der
+Config-Ränder gegen ein Mini-Repo — kein zweites Augenpaar. Das ist eine
+schwächere Grundlage als bei den Vorgänger-Slices, und es steht hier, statt in
+der Commit-Historie verstreut zu sein.
+
+**Belegt:** `make gates` Exit 0 über den ganzen Verlauf (zehn Glieder, zuletzt
+580 Dateien, 0 Befunde, Coverage 94,90 %); CI auf `7825420` grün („gates +
+image-test + traceability"); die Migrations-Abweisung und die beiden neuen
+Config-Ränder gegen ein Mini-Repo gemessen, nicht nur im Unit-Test — vier
+Proben Exit 2 mit dem neuen Ort in der Meldung, die neue Form Exit 0.
