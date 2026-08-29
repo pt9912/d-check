@@ -157,18 +157,37 @@ zurückkommt:**
   **Abschnitts-Überschrift**, nicht auf die Zeile des Hakens — bei neun offenen
   Haken in `slice-045` gibt es einen Befund, und der Leser sucht selbst.
 
-**Eine Design-Frage ist offen und muss vor dem nächsten Bau beantwortet
-werden.** Der Kopfkommentar von [`.d-check.closure.yml`](../../../../.d-check.closure.yml)
+**Die Design-Frage ist entschieden** (Auftraggeber, 2026-08-29): **was eine
+Welle einlöst, gehört in ihren Closure-Trigger, nicht in die DoD eines Slice.**
+
+Der Kopfkommentar von [`.d-check.closure.yml`](../../../../.d-check.closure.yml)
 führt genau diese Regel als **bewusst verworfen**, mit einem sachlichen Grund:
 *ein abgeschlossener Slice darf eine offene Box tragen, wenn die **Welle** sie
 einlöst*. Der Fall ist belegt — `slice-094` und `slice-104` tragen je einen
 offenen Release-Haken mit dem ausdrücklichen Vermerk „Wellen-Trigger, nicht
-Slice-Trigger". Für den Altbestand löst die Ausnahme das mit; für **jeden
-künftigen** Slice wäre er rot. Der naheliegende Ersatzweg: was die Welle
-einlöst, gehört in ihren **Closure-Trigger** (welle-86 §3 führt ihn bereits so)
-und nicht in die DoD eines Slice, der es nicht einlösen kann. Das ist ein
-Vorschlag, kein Entscheid — er kehrt eine dokumentierte Ablehnung um, und der
-Kopfkommentar gehört mit ihm ersetzt.
+Slice-Trigger".
+
+**Die Ablehnung war richtig für ihr Werkzeug und ist es nicht mehr für ihre
+Form.** Damals gab es keinen Ort, an dem ein wellen-eingelöster Punkt sonst
+hätte stehen können; heute gibt es ihn, und welle-86 §3 führt ihn bereits so.
+Ein DoD-Punkt, den der Slice **selbst nicht abhaken kann**, zwingt ihn, mit
+offenem Haken zu schließen — und macht damit den Haken als Zustandsfeld
+unbrauchbar: er sagt dann nicht mehr „hier fehlt etwas", sondern „hier fehlt
+vielleicht etwas". Genau diese Unschärfe ist der Grund, aus dem der Wächter
+gebaut wird.
+
+**Zwei Folgen, beide Teil dieses Slice:**
+
+- Der **Kopfkommentar wird ersetzt**, wenn die Regel landet — er beantwortet
+  dieselbe Frage sonst zweimal gegensätzlich. Solange die Regel nicht steht,
+  ist er zutreffend und bleibt.
+- Die **Form-Regel gilt ab sofort**, unabhängig vom Sensor, und steht deshalb
+  in [`AGENTS.md`](../../../../AGENTS.md) §5 — ein Slice, der heute geschrieben
+  wird, soll nicht in eine Form laufen, die morgen rot ist.
+
+**Der Altbestand bleibt unberührt.** slice-094 und slice-104 liegen in der
+Bestands-Ausnahme; sie nachträglich umzuschreiben hieße, ihre Lauf-Belege zu
+fälschen.
 
 ## 3. Ausdrücklich NICHT in diesem Slice
 

@@ -457,6 +457,15 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   Slice nie (§3.4). Feld-Form aus der Baseline-`slice.template.md`, die
   Kennungs-Regel aus
   [`MR-000`](harness/conventions.md#mr-000--baseline-aussage).
+- **Was eine Welle einlöst, gehört in ihren Closure-Trigger — nicht in die DoD
+  eines Slice.** Ein DoD-Punkt, den der Slice **selbst nicht abhaken kann** (das
+  Release, das erst mit der Welle fällt), zwingt ihn, mit offenem Haken zu
+  schließen. Damit ist der Haken als Zustandsfeld unbrauchbar: er sagt nicht
+  mehr *„hier fehlt etwas"*, sondern *„hier fehlt vielleicht etwas"*. Der
+  Wellen-Closure-Trigger trägt ihn; die Slice-DoD nennt ihn gar nicht.
+  **Bestands-Grenze:** vor dieser Regel geschriebene `done/`-Slices behalten
+  ihre Form — ein nachträglich umgeschriebener DoD-Punkt fälschte einen
+  Lauf-Beleg.
 - Slice-Pläne tragen **kein** `**Status:**`-Feld — der Lifecycle-Zustand **ist** die
   Verzeichnis-Position; neue Slices führen stattdessen den `**Lifecycle:**`-Hinweis
   (Baseline-`slice.template.md`). Alt-Slices in `done/` behalten ihr historisches Feld.
