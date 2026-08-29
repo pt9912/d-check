@@ -76,11 +76,43 @@ Beobachtungs-Register: Mensch urteilt, Maschine prüft Deckung.
    heutigen Bestand fahren, die Trefferzahl mit den 37 abgleichen, und mit
    Ausnahme auf null bringen. Weicht die Zahl ab, ist das Muster falsch — nicht
    der Bestand.
-4. **Der Grund-Code trägt die Reparatur, nicht den Zustand.** `section-forbidden`
+4. **Die Meldung trägt die Reparatur, nicht nur den Zustand.** `section-forbidden`
    sagt „hier steht etwas Verbotenes"; die Meldung muss sagen, *was zu tun ist*:
-   den Haken setzen oder den Slice zurückführen.
+   den Haken setzen oder den Slice zurückführen. **Das Schema kann das heute
+   nicht** — `structure` kennt keine regel-eigene Meldung, und der
+   `--doctor`-Klartext hängt am Grund-Code, nicht an der Regel. Dieser Punkt
+   ist der Grund für die Rückführung (§6); die Fähigkeit liefert
+   [slice-177](../in-progress/slice-177-structure-hint.md), und diese Regel
+   wird ihr erster Konsument.
 5. `make gates` und `make fullbuild`; **Review** und **Verifikation** als
    getrennte Läufe; Closure.
+
+
+**Vorarbeit, am 2026-08-29 gemessen und hier festgehalten, damit die nächste
+Beanspruchung sie nicht wiederholt:**
+
+- **Das Überschriften-Muster trägt.** `^#{2,3} [0-9]+\. Definition of Done`
+  deckt alle sieben im Bestand vorkommenden Formen (`## 2.`/`## 3.`/`## 4.`/
+  `## 5.`, dazu die Zusätze `(vorläufig)` und `(R1 eingearbeitet)`) — **null**
+  `section-missing` über 170 `done/`-Slices. Das ist der Unterschied zu
+  [`MR-049`](../../../../harness/conventions.md#mr-049), dessen Ausnahme 107
+  `section-missing` abfangen musste.
+- **Die Bestandszahl stimmt mit der Planung überein:** ohne Ausnahme **37**
+  `section-forbidden`, mit ihr **null** — beides im echten Closure-Profil
+  gefahren, nicht in einer Probe-Konfiguration.
+- **Die Treffer streuen nicht beliebig:** 025–104 (34 Stück), dann 160, 168,
+  169, 170. Eine feste Ziffern-Ausnahme trägt also, sie braucht drei Muster
+  statt zwei: `slice-0??-*`, `slice-1[0-6]?-*`, `slice-170-*`. Die Grenze liegt
+  damit bei [slice-171](../done/slice-171-vorpruefungen-belegen.md) — dem
+  ersten Slice, der unter der korrigierten Praxis geschlossen wurde.
+- **Die Positiv-Probe läuft:** ein geöffneter Haken in slice-171, also
+  außerhalb der Ausnahme, wird mit Datei und Zeile gefangen (Exit 1); zurück
+  gesetzt wieder Exit 0.
+- **Der Anlassfall bleibt ausgenommen, und das ist entschieden.** slice-168,
+  -169 und -170 tragen genau den offenen Review-Haken, der diese Welle
+  ausgelöst hat. Sie nachträglich zu haken behauptete einen Review, den es
+  nicht gab (§3); ihr Befund steht im Register und in der Closure-Notiz von
+  slice-171, nicht in einem stillen Haken.
 
 ## 3. Ausdrücklich NICHT in diesem Slice
 
@@ -141,6 +173,13 @@ Beobachtungs-Register: Mensch urteilt, Maschine prüft Deckung.
 
 **Start** (`open` → `in-progress`): WIP-Limit frei, beansprucht am 2026-08-29 —
 [slice-171](../done/slice-171-vorpruefungen-belegen.md) ist geschlossen.
+
+**Rückführung eingetreten am 2026-08-29** (`in-progress` → `open`): nicht aus
+dem unten genannten Grund — die Bestandsmessung stimmt (§2). Der Sensor war
+fertig und beidseitig gemessen, als §2 Punkt 4 auf eine Produkt-Grenze traf:
+eine regel-eigene Meldung gibt es nicht. Die Alternative wäre gewesen, den
+Punkt stillschweigend fallenzulassen; stattdessen wartet dieser Slice auf
+[slice-177](../in-progress/slice-177-structure-hint.md).
 
 **Rückführungen:** `in-progress` → `open`, falls die Bestandsmessung eine
 andere Zahl als 37 liefert oder die Treffer über die Nummernspanne streuen —
