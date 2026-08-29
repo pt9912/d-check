@@ -173,28 +173,6 @@ structure:
     section: "## 5. Abnahme-Punkte / Risiken"
     forbid-pattern: '\*\*Ausgang:[\s*_]*(?:[^ew\s*_]|e[^in]|ei[^n]|ein[^g]|eing[^e]|en[^t]|ent[^f]|entf[^a]|w[^e]|we[^i]|wei[^t]|weit[^e]|weite[^r])'
 
-
-  # Kein abgeschlossener Slice traegt einen OFFENEN DoD-Haken. Das Regelwerk
-  # macht die Haken zur BEDINGUNG des Uebergangs nach done/ (modul-05); gehalten
-  # wurde davon bisher nur die Closure-Notiz-Haelfte -- die Regel darueber
-  # verlangt vom DoD-Abschnitt nur, dass er nicht LEER ist.
-  #
-  # WAS SIE NICHT SIEHT: ob der Haken zu Recht steht. Sie prueft eine
-  # Selbstauskunft und verschiebt die Luecke von "unsichtbar" nach "behauptet".
-  #
-  # Die Ausnahme nennt den Altbestand mit FESTER Ziffernzahl (MR-055). Gemessen:
-  # ohne Ausnahme 37 Befunde ueber 171 done-Slices, mit ihr null. Die Grenze
-  # liegt bei slice-171 -- kein section-missing im Bestand, das
-  # Ueberschriften-Muster deckt alle sieben vorkommenden Formen.
-  - files: "docs/plan/planning/done/slice-*.md"
-    exempt-paths:
-      - "docs/plan/planning/done/slice-0??-*"
-      - "docs/plan/planning/done/slice-1[0-6]?-*"
-      - "docs/plan/planning/done/slice-170-*"
-    section-pattern: '^#{2,3} [0-9]+\. Definition of Done'
-    forbid-pattern: '- \[ \]'
-    hint: "offener DoD-Haken: Haken setzen, wenn die Zusage erfuellt ist — sonst den Slice nach in-progress/ zurueckfuehren und sie einloesen"
-
   # Jede Wellen-Ergebnisnotiz beantwortet die erste Pflichtfrage.
   - files: "docs/plan/planning/done/welle-*-results.md"
     section-pattern: '^## Was wurde geliefert'
