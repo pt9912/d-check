@@ -183,6 +183,8 @@ modules: [links, anchors]
 #     non-empty: true                               # sonst section-empty
 #     # min-sentences: 4                            # sonst section-thin; abwesend = Bedingung aus
 #     # max-tasks: 0                                # sonst section-oversized (Task-Items IM Abschnitt)
+#     # max-open-tasks: 0                           # OFFENE Task-Items auf den ROHEN Zeilen (Fence aussen
+#     #                                           # vor, Inline-Code nicht) ⇒ sonst section-tasks-open
 #     # forbid-pattern: 'TODO'                      # Treffer ⇒ section-forbidden
 #     # require-pattern: 'Beleg'                    # kein Treffer ⇒ section-pattern-missing
 #     # require-all: ["Beleg", "Lernsignal"]        # fehlende Marke ⇒ section-marker-missing

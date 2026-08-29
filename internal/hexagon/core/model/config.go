@@ -465,6 +465,10 @@ type StructureRule struct {
 	// (ADR-0070). Beide sprechen ueber dieselbe Tabelle, adressieren ihre
 	// Spalte aber verschieden — die Klammer macht das sichtbar, statt es fuenf
 	// flachen Schluesseln zu ueberlassen.
+	// MaxOpenTasks ist die Obergrenze der OFFENEN Task-Items im Abschnitt,
+	// gezaehlt auf den ROHEN Zeilen — Zeiger, damit ein abwesender Schluessel
+	// (Bedingung aus) von einer explizit gesetzten 0 unterscheidbar bleibt.
+	MaxOpenTasks *int
 	Table       TableRule
 	// Hint ist die vom Konfigurations-Autor VERFASSTE Erlaeuterung: was der
 	// Leser tun soll, wenn diese Regel meldet. Sie schreibt das message-Feld

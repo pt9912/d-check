@@ -119,9 +119,10 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 	// In `one` ist nach der Kardinalitäts-Prüfung genau ein Treffer übrig,
 	// `each` misst jeden.
 	var prose map[int]bool
-	if r.Table.Order != "" || len(r.Table.Columns) > 0 {
-		// Die beiden Tabellen-Bedingungen brauchen die fence-bewusste
-		// Tabellenzeilen-Auswahl auf den ROHEN Zeilen (ADR-0057, ADR-0069).
+	if r.Table.Order != "" || len(r.Table.Columns) > 0 || r.MaxOpenTasks != nil {
+		// Die beiden Tabellen-Bedingungen und die Offene-Task-Bedingung brauchen
+		// die fence-bewusste Zeilen-Auswahl auf den ROHEN Zeilen (ADR-0057,
+		// ADR-0069, ADR-0074).
 		prose = proseLineSet(content)
 	}
 	var out []model.Finding
@@ -136,6 +137,9 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 		// waren (ADR-0070 aendert die Form, nicht die Ausgabe).
 		for _, c := range r.Table.Columns {
 			out = append(out, structureCellMax(r, c, file, lines, prose, h.Line, h.Level)...)
+		}
+		if r.MaxOpenTasks != nil {
+			out = append(out, structureOpenTasks(r, file, lines, prose, h.Line, h.Level)...)
 		}
 		if r.HeadingsMatch != "" {
 			out = append(out, structureHeadings(r, file, lines, h)...)
@@ -158,10 +162,11 @@ func structureMatcher(r model.StructureRule) func(string) bool {
 // structureConditions prüft die sechs Prosa-Bedingungen auf dem bereinigten
 // Abschnitts-Text. Jede hat einen eigenen Grund-Code, damit zwei Verletzungen
 // desselben Abschnitts nicht unter der Befund-Deduplikation zusammenfallen.
-// Zwei Bedingungen lesen einen anderen Text und leben anderswo: die
+// DREI Bedingungen lesen einen anderen Text und leben anderswo: die
 // Chronologie-Monotonie auf den rohen Abschnitts-Zeilen
-// (structure_tableorder.go, ADR-0057) und die Überschriften-Bedingung auf den
-// Überschriften selbst (structureHeadings).
+// (structure_tableorder.go, ADR-0057), die Überschriften-Bedingung auf den
+// Überschriften selbst (structureHeadings) und die offenen Task-Items auf den
+// rohen Zeilen (structure_opentasks.go, ADR-0074).
 func structureConditions(r model.StructureRule, file string, line int, body string) []model.Finding {
 	var out []model.Finding
 	add := func(reason, msg string) {
