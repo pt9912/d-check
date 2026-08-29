@@ -127,27 +127,27 @@ Punkt zurückgeführt worden: seine eigene §2 verlangt eine Meldung, die sagt,
 
 ## 4. Definition of Done
 
-- [ ] `message` erscheint als **vierte Spalte** der Befund-Zeile (nur wenn
+- [x] `message` erscheint als **vierte Spalte** der Befund-Zeile (nur wenn
       gefüllt) und als eigene Zeile in `--doctor`; `--json`/`--yaml` bleiben
       unverändert. Je mit Test.
-- [ ] `structure[].hint` ist im Schema, in
+- [x] `structure[].hint` ist im Schema, in
       [`spec/lastenheft.md`](../../../../spec/lastenheft.md) (Bump + Historie)
       und in [`spec/spezifikation.md`](../../../../spec/spezifikation.md)
       geführt; leerer Wert ⇒ Exit 2, mit Test.
-- [ ] **Der Vorrang ist gemessen:** eine `structure`-Regel mit `hint` auf einer
+- [x] **Der Vorrang ist gemessen:** eine `structure`-Regel mit `hint` auf einer
       Bedingung, die selbst ein `message` setzt, zeigt den `hint` — als Test,
       nicht als Behauptung.
-- [ ] **Byte-Identität gemessen, und ihre Grenze benannt:** ein grüner Lauf
+- [x] **Byte-Identität gemessen, und ihre Grenze benannt:** ein grüner Lauf
       (null Befunde) ist unverändert; ein Befund **ohne** `message` ist
       unverändert; ein Befund **mit** `message` gewinnt die vierte Spalte —
       das ist die gewollte Änderung, und sie betrifft 22 Regel-Dateien. Beide
       Ausgaben stehen in der Commit-Botschaft.
-- [ ] Eine ADR begründet die drei Entscheide aus §2 Punkt 6 und ist im
+- [x] Eine ADR begründet die drei Entscheide aus §2 Punkt 6 und ist im
       [ADR-Index](../../adr/README.md) eingetragen.
-- [ ] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) führt das Feld
+- [x] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) führt das Feld
       dort, wo es die übrigen `structure`-Schlüssel führt, **und** die vierte
       Spalte dort, wo es das Ausgabeformat beschreibt.
-- [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
+- [x] `make gates` grün (Exit explizit); **unabhängiger Review**;
       **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -155,30 +155,47 @@ Punkt zurückgeführt worden: seine eigene §2 verlangt eine Meldung, die sagt,
 - **Ein Hinweis ist Autoren-Text und altert wie ein Kommentar.** Er kann
   unwahr werden, ohne dass ein Gate es merkt — die Klasse, die dieses Repo als
   [`BEO-013`](../observations.md) führt, nur ohne Wächter. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** weiter offen. Der Text ist neu, seine Alterung liegt in der
+  Zukunft; [`SPEC-001`](../../../../spec/spezifikation.md#spec-001--befund) sagt für `message` ohnehin keine Stabilität zu, und der
+  Reviewer-Skill trägt den Anker für Kommentar-Klassen.
 - **Die Ausgabe-Zusage wird geweitet.** Ein Konsument, der auf genau drei
   Tab-Felder besteht, sieht ab jetzt bei manchen Regeln vier. Die
   Nicht-Änderung für Regeln ohne `hint` ist messbar, die Weitung selbst bleibt
-  eine Vertrags-Änderung. — **Ausgang:** *(bei Closure)*
+  eine Vertrags-Änderung. — **Ausgang:** eingetreten, und schärfer als
+  geplant. Der Review zeigte, dass die Weitung über **fremden Text** brechbar
+  war: ein `hint` mit `\n` erzeugte zwei Zeilen, einer mit `\t` fünf Felder,
+  und `commits` trägt den Commit-Betreff ohne jeden Config-Rand. **Antwort in
+  zwei Hälften:** die Konfiguration weist ab, der Reporter saniert. Drei
+  Mutationsproben halten es jetzt.
 - **Das Feld lädt zur Ausrede ein.** Ein schlecht benannter Grund-Code lässt
   sich mit einem Hinweis zudecken, statt den Code zu schärfen. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** weiter offen. Dagegen steht die Arbeitsteilung aus
+  [ADR-0073](../../adr/0073-befund-erlaeuterung-fuer-menschen.md) — Code sagt
+  die Art, Hinweis die Zusage —, nicht ein Sensor.
 - **Der Hinweis ERSETZT, statt zu ergänzen — und das kostet Messwerte.** Mit
   gesetztem `hint` verlieren **alle** Befunde der Regel die quantitative
   Angabe der modul-eigenen Meldung, in Befund-Zeile, `--doctor` und `--json`.
   Gemessen: `section-cell-undersized` meldet dann nicht mehr *„Zelle der Spalte
   „Titel" hat 1 Zeichen, verlangt sind 10"*, sondern nur den Hinweis. Der
   Vorrang ist entschieden ([ADR-0073](../../adr/0073-befund-erlaeuterung-fuer-menschen.md)),
-  sein Preis gehört daneben. — **Ausgang:** *(bei Closure)*
+  sein Preis gehört daneben. — **Ausgang:** weiter offen, und der Preis ist
+  jetzt benannt statt still: er steht in diesem §5 und im Handbuch. Ob er zu
+  hoch ist, entscheidet der erste Konsument, der eine quantitative Meldung
+  vermisst.
 - **In `--doctor` verdoppelt die Hinweis-Zeile bei manchen Modulen den
   Grund-Klartext.** Gemessen an `ids`: „Kennung im Fließtext ohne Markdown-Link
   auf ihre Definition" (Grund-Klartext) neben „Kennung ohne Link auf ihre
   Definition" (Erläuterung). Beide Texte tragen historisch dieselbe Aussage; in
   der **knappen** Befund-Zeile, die keinen Klartext hat, trägt die Erläuterung
-  trotzdem. — **Ausgang:** *(bei Closure)*
+  trotzdem. — **Ausgang:** weiter offen. Die Doppelung ist eine Eigenschaft
+  der **modul-eigenen** Texte, nicht des Hinweises; sie zu räumen hieße, 22
+  Meldungen gegen ihre Grund-Klartexte zu prüfen — ein eigener Schnitt.
 - **Die Fähigkeit entsteht für einen einzigen Konsumenten**
   ([`BEO-011`](../observations.md)): slice-172. Ob weitere Regeln sie nutzen,
-  ist nicht gemessen. — **Ausgang:** *(bei Closure)*
+  ist nicht gemessen. — **Ausgang:** weiter offen. Der **Nutzen** ist dagegen
+  breiter als der Anlass und gemessen: **21 von 23** Regel-Einstiegs-Dateien
+  setzen eine Erläuterung, die ab jetzt sichtbar ist — ungedeckt bleiben nur
+  `hostpaths` und `spans`.
 
 ## 6. Trigger
 
@@ -237,3 +254,58 @@ sein Rendering; kein Fremdsystem, keine Reconciliation, kein Bestand, der
 umgestellt werden müsste.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert, und der Schnitt hat sich beim Bauen zweimal geändert.** Der Slice
+war als „neues Feld" geplant. Beim Lesen des Codes zeigte sich, dass es das Feld
+**gibt**: `message` steht seit jeher in [`SPEC-001`](../../../../spec/spezifikation.md#spec-001--befund), **21 von 23**
+Regel-Einstiegs-Dateien setzen es — und für Menschen wurde es **nirgends**
+gerendert, nur in `--json`/`--yaml`. Die Aufgabe wurde damit kleiner und die
+Wirkung größer: nicht ein zweiter Slot, sondern der vorhandene sichtbar gemacht,
+plus `structure[].hint`, damit eine Regel ihn **verfassen** kann.
+
+**Der Beleg ist gefahren, nicht behauptet.** `make gates` grün, Exit 0, 595
+Dateien, 0 Befunde. Die vierte Spalte am selben roten Lauf gegen das alte Image
+gemessen: `… target-missing` wird zu `… target-missing⇥Linkziel existiert
+nicht`. Ein grüner Lauf ist unverändert, ein Befund ohne Erläuterung bleibt
+dreispaltig.
+
+**Das wichtigste Ergebnis kommt aus dem Review, nicht aus dem Bau.** Zwei
+Befunde trafen die tragende Zusage selbst:
+
+- **„Ein Befund bleibt eine Zeile" war brechbar.** Die Zusage galt nur für
+  Text, den das Werkzeug schreibt. Ein `hint` mit `\n` erzeugte zwei Zeilen,
+  einer mit `\t` fünf Felder — und der Fall braucht gar keinen `hint`, weil
+  `commits` den Commit-Betreff einsetzt. Der Report-Adapter versprach über eine
+  Eingabe, die er nicht kontrolliert (`AGENTS.md` §3.8). Antwort in zwei
+  Hälften: die Konfiguration **weist ab**, der Reporter **saniert**.
+- **Die benannte Grenze war untermengig.** Dokumentiert waren zwei ausgenommene
+  Befunde, es sind drei: die unlesbare **Einzeldatei** bekam den Hinweis und
+  verlor damit ihre fail-closed-Ursache — genau die Irreführung, gegen die die
+  Ausnahme gebaut ist.
+
+**Die Verifikation hat gemessen, was ich nur behauptet hatte.** Ihre
+Mutationsprobe zeigte, dass die alte Suite ein bedingungsloses Anhängen der
+vierten Spalte **überlebt** — der Test dafür prüfte mit `t.Logf` statt zu
+assertieren, und seine Fixture erzeugte selbst vier Spalten. Nach der Nacharbeit
+fängt je ein Test jede der drei Mutationen: bedingungslose Spalte, entfernte
+Sanierung, Hinweis für Nicht-Mess-Befunde. Das `report`-Paket hat dafür seine
+erste Testdatei bekommen.
+
+**Zwei Befunde stehen bewusst als Risiko statt als Fix.** Der Hinweis
+**ersetzt** und kostet damit die quantitative Angabe der modul-eigenen Meldung;
+und in `--doctor` verdoppelt er bei manchen Modulen den Grund-Klartext fast
+wörtlich. Beides ist gemessen, benannt und in §5 mit Ausgang geführt — das
+Räumen der modul-eigenen Texte ist ein eigener Schnitt.
+
+**Fortgeschrieben:** `BEO-009` (die Zahl „22 von 31" maß Dateien statt Regeln),
+`BEO-012` (der Plan zitierte [ADR-0069](../../adr/0069-zellenlaenge-als-strukturbedingung.md) für einen Entscheid von [ADR-0070](../../adr/0070-tabellen-klammer-und-spaltenliste.md)),
+`BEO-022` (`--print-config` führte den neuen Schlüssel nicht). Neu registriert
+ist [`BEO-023`](../observations.md) — *„Ein Wächter, der nie fangen konnte,
+liest sich wie einer, der fängt"*; die Mutationsprobe ist die Antwort darauf und
+war der Weg, auf dem er gefunden wurde.
+
+**Offen und ausdrücklich benannt:** `CHANGELOG.md` ist nicht gepflegt. Die
+vierte Spalte ist nutzersichtbar, aber dieses Repo führt CHANGELOG-Einträge im
+Release-Prep. Der nächste Konsument ist
+[slice-172](../open/slice-172-closure-uebergang-waechtern.md): sein Sensor liegt beidseitig
+gemessen im Plan und wartet nur auf `hint`.
