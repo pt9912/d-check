@@ -139,7 +139,17 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   `section-cell-oversized`/`section-cell-undersized` on **its own** line,
   `section-column-missing` for a column that cannot be addressed);
   a missing section — or a rule matching no file — yields `section-missing`,
-  several matches under `sections: one` yield `section-ambiguous`. **Hermetic**,
+  several matches under `sections: one` yield `section-ambiguous`. Every rule may
+  **declare its base set** — `tasks-ignore-pattern` removes task items from the
+  `max-tasks` count (matched against the **item text behind the checkbox**, so
+  that `^` means „the item starts like this"), `exempt-section-pattern` removes
+  **sections** from the rule (matched against the **same** raw heading line as
+  `section-pattern`, `#` sequence included). Both only **shrink** the checked
+  set, carry no reason code of their own, and without them the finding set is
+  byte-identical; if the section exemption empties the set, `section-missing`
+  is reported rather than silent green. And `hint` lets a rule **write its own
+  explanation** — what the reader should do is known only to the rule; the
+  reason code states the **kind** of defect. **Hermetic**,
   opt-in; the closure-note structure of module `planning` is a **preset** of the
   same semantics
   ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in))
@@ -241,7 +251,7 @@ you pull from)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.67.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.68.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

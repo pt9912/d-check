@@ -4,6 +4,63 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.68.0] — 2026-08-30
+
+### Added
+
+- slice-177 — **Die Erläuterung eines Befunds erreicht den Menschen**
+  ([ADR-0073](docs/plan/adr/0073-befund-erlaeuterung-fuer-menschen.md),
+  Lastenheft 0.75.0). Das Befund-Feld `message` gab es seit jeher und **21 von
+  23** Regel-Einstiegs-Dateien setzen es — gerendert wurde es aber nur in
+  `--json`/`--yaml`. Es steht jetzt als **vierte** tab-getrennte Spalte der
+  Befund-Zeile und als eigene `Hinweis:`-Zeile in `--doctor`. **Der Befund
+  bleibt EINE Zeile**, und ein Befund **ohne** Erläuterung ist byte-identisch zu
+  vorher — die Zusage „ein Befund pro Zeile" und das zählende
+  Akzeptanzkriterium sind unberührt. Neu ist außerdem `structure[].hint`: eine
+  Regel **verfasst** ihre Erläuterung selbst und sagt damit, welche **Zusage**
+  sie hütet, während der Grund-Code die **Art** des Defekts sagt; sie gewinnt
+  gegen die modul-eigene Meldung — **außer** bei den drei Befunden, die keine
+  Bedingung verletzen (unlesbarer Dateibaum, leer laufende Regel, unlesbare
+  Einzeldatei), denn dort hat die Regel nicht gemessen. **Gegen fremden Text
+  abgesichert:** ein `hint` mit Tab oder Zeilenumbruch wird **abgewiesen**
+  (Exit 2), und der Reporter saniert beides im modul-eigenen Weg — sonst wäre
+  die Zeilen-Zusage über einen Text brechbar, den das Werkzeug nicht
+  kontrolliert. **Abgegrenzt gegen den Fix-Kandidaten:** der ist **abgeleitet**
+  und speist `--repair`, der Hinweis ist **verfasst** und wird nie angewendet.
+- slice-179 — **Eine `structure`-Regel darf ihre Grundmenge erklären**
+  ([ADR-0075](docs/plan/adr/0075-erklaerte-teilmenge-in-structure.md),
+  Lastenheft 0.76.0; Anlass ist ein eingehender CR eines Adopters). Zwei neue
+  optionale Schlüssel, beide **verkleinern** nur die geprüfte Menge, beide ohne
+  eigenen Grund-Code: `tasks-ignore-pattern` nimmt Task-Items aus der
+  `max-tasks`-Zählung, `exempt-section-pattern` nimmt **Abschnitte** aus der
+  Regel — das Geschwister von `exempt-paths` eine Granularitätsstufe tiefer,
+  für Bestände **innerhalb einer Datei**. **Ohne beide Schlüssel ist der
+  Befundsatz byte-identisch** (gemessen gegen das Vorgänger-Image: 166 Befunde,
+  `diff` leer, in fünf Ausgabeformen). **Die beiden Muster sehen verschiedene
+  Zeichenketten, und das ist die Entscheidung:** das Abschnitts-Muster
+  dieselbe **rohe** Überschriften-Zeile wie `section-pattern` (samt `#`-Folge —
+  ein analog geschriebenes Muster soll nicht still danebengreifen), das
+  Item-Muster den **Item-Text hinter der Checkbox** auf dem **bereinigten**
+  Text, damit `^` „das Item beginnt so" bedeuten kann. **Zwei Fallen sind
+  gemessen und dokumentiert:** ein freies Substring-Muster nimmt Punkte mit,
+  die die Wendung nur **erwähnen**, und ein Muster auf einen Ausdruck in
+  **Backticks** trifft Leerzeichen — die Zählung liest den bereinigten Text.
+  Die Diagnose steht in der Meldung selbst: bei gesetztem Muster nennt sie die
+  Zahl der ignorierten Items, **auch bei null**. Leert die Abschnitts-Ausnahme
+  die Menge ⇒ `section-missing` mit Schlüssel und Zahl, kein stilles Grün; sie
+  läuft **vor** der Kardinalitäts-Prüfung, und ein **gesetztes** Muster gehört
+  zur Regel-Identität. Zwei neue Config-Ränder: nicht kompilierendes RE2 je
+  Schlüssel und `tasks-ignore-pattern` **ohne** `max-tasks` (halbe Aktivierung).
+
+### Changed
+
+- **Die Docker-Hub-Darstellung ist englisch.** Kurztext und Overview-Seite von
+  [`pt9912/d-check`](https://hub.docker.com/r/pt9912/d-check) kommen aus
+  `packaging/dockerhub/` und folgen jetzt `README.md` (englisch) statt
+  `README.de.md`; die Hub-Seite ist Außensicht. Dabei korrigiert: die
+  Modul-Liste dort nannte **20** Module und war seit `v0.67.0` eine Version alt
+  — es sind **21**, `workflows` fehlte.
+
 ## [0.67.0] — 2026-08-29
 
 ### Added

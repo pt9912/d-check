@@ -141,7 +141,17 @@ Dokuments:
   `section-cell-oversized`/`section-cell-undersized` auf **ihrer** Zeile,
   `section-column-missing` für die nicht adressierbare Spalte);
   fehlt der Abschnitt oder trifft die Regel keine Datei ⇒ `section-missing`,
-  mehrfach vorhanden bei `sections: one` ⇒ `section-ambiguous`. **Hermetisch**,
+  mehrfach vorhanden bei `sections: one` ⇒ `section-ambiguous`. Jede Regel darf
+  **ihre Grundmenge erklären** — `tasks-ignore-pattern` nimmt Task-Items aus der
+  `max-tasks`-Zählung (geprüft wird der **Item-Text hinter der Checkbox**, damit
+  `^` „das Item beginnt so" heißt), `exempt-section-pattern` nimmt **Abschnitte**
+  aus der Regel (geprüft wird **dieselbe** rohe Überschriften-Zeile wie bei
+  `section-pattern`, samt `#`-Folge). Beide **verkleinern** nur, tragen keinen
+  eigenen Grund-Code, und ohne sie ist der Befundsatz byte-identisch; leert die
+  Abschnitts-Ausnahme die Menge ⇒ `section-missing` statt stillem Grün. Und
+  `hint` lässt eine Regel ihre **Erläuterung selbst verfassen** — was der Leser
+  tun soll, weiß nur sie; der Grund-Code sagt die **Art** des Defekts.
+  **Hermetisch**,
   opt-in; die Closure-Note-Struktur des Moduls `planning` ist ein **Preset**
   derselben Semantik
   ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in))
@@ -245,7 +255,7 @@ Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.67.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.68.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
