@@ -57,11 +57,21 @@ einzeln nennt, kann nicht versehentlich zu breit werden — es kann nur
 Der Absender beantragt `exempt-may-empty: true` und trägt die Sichtbarkeit
 nach `--doctor`. Er nennt den Preis selbst *„schwächer"*.
 
-**Gemessen ist er null.** `--doctor` läuft in **keinem** Gate dieses Repos —
-nicht im `Makefile`, nicht in `.github/workflows/`, nicht im
-`pre-commit`-Hook —, und `--print-mk` verteilt kein Doctor-Target an
-Konsumenten. Eine Zeile dort erreicht nur den, der ohnehin nachsieht; für den
-Bestandszustand, um den es geht, sieht niemand nach.
+**Gemessen ist er unbestimmt.** `--doctor` läuft in **keinem** Gate dieses
+Repos — nicht im `Makefile`, nicht in `.github/workflows/`, nicht im
+`pre-commit`-Hook. Beim Konsumenten sieht es anders aus: `--print-mk`
+**verteilt** ein `doc-doctor`-Target, und
+[`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+schreibt es vor. Ein Target ist aber kein Gate-Lauf — ob er es in seine Kette
+hängt, weiß dieses Repo nicht und hat es nicht gefragt. Eine Zeile dort
+erreicht nur den, der ohnehin nachsieht; für den Bestandszustand, um den es
+geht, sieht niemand nach.
+
+**Die erste Fassung dieses Absatzes sagte „null" und stützte sich auf eine
+Behauptung über `--print-mk`, die nie gemessen wurde** — der Review hat sie
+mit einem Produktlauf widerlegt. Der Fehler ist die Klasse
+[`BEO-020`](../observations.md): gemessen wurde die eigene Menge (unsere
+Gate-Dateien), ausgesagt wurde über die fremde (das verteilte Fragment).
 
 **Die Antwort ist deshalb eine Deklaration statt einer Erlaubnis.** Nicht
 *„darf leer sein"*, sondern *„so viele sind es"* — `exempt-expect-count`. Damit
@@ -79,9 +89,13 @@ einem Modus zu landen, den niemand fährt.
    *„kein neuer Grund-Code"*; das galt seiner Form. Eine **Zahl** kann nicht
    stimmen, und dieser Zustand verlangt eine andere Reparatur (*Aufzählung oder
    Zahl nachziehen*) als `section-missing` (*Selektor korrigieren*).
-   [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
-   schreibt für genau diesen Fall einen eigenen Code vor. Vorschlag:
+   Die Befund-Deduplikation läuft über (Datei, Zeile, Regel, Ziel, Grund) —
+   zwei Bedeutungen unter einem Code fielen zusammen. Vorschlag:
    `section-exempt-mismatch` — die Form folgt `section-heading-mismatch`.
+   **Nicht** berufen auf den Grundsatz *jede mit eigenem Grund-Code* aus
+   [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in):
+   der gilt dort den **Bedingungen im Abschnitt**, und die Ventil-Familie
+   trägt ausdrücklich keinen eigenen Code.
 3. **Die Drift ist beidseitig.** Mehr ausgenommen als deklariert ist ebenso ein
    Befund wie weniger. Wer die Aufzählung erweitert, ohne die Zahl zu ziehen,
    hat dieselbe Lücke wie umgekehrt — eine einseitige Prüfung wäre ein halber
@@ -122,8 +136,12 @@ einem Modus zu landen, den niemand fährt.
   [`DC-FA-CLI-003`](../../../../spec/lastenheft.md#dc-fa-cli-003--exit-codes)
   führt differenzierte Exit-Codes ausdrücklich als Out-of-Scope. Wenn das
   Werkzeug je einen bekommt, ist das ein **eigener** Entscheid.
-- **Keine `--doctor`-Zeile.** Sie wäre die Form des Antrags; die gewählte
-  braucht sie nicht, und eine Sichtbarkeit ohne Leser ist keine.
+- **Keine `--doctor`-Zeile als Träger der Sichtbarkeit.** Sie wäre die Form des
+  Antrags; die gewählte braucht sie nicht. **Nicht gemeint ist der
+  Grund-Code-Klartext:** `--doctor` führt für **jeden** Grund-Code eine
+  erklärende Zeile, und ein Test hält diese Deckung gegen die Spezifikation —
+  der neue Code bekommt sie also zwangsläufig. Das ist Bestands-Mechanik, keine
+  Sichtbarkeits-Entscheidung.
 - **Kein `exempt-may-empty` daneben.** Zwei Schlüssel für eine Frage sind die
   Verdopplung, die [ADR-0070](../../adr/0070-tabellen-klammer-und-spaltenliste.md)
   für die Tabellen-Bedingungen zurückgebaut hat.

@@ -3049,7 +3049,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 ## 6. Externe Verträge
 
-| 2026-08-30 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 3 und das §2-Schema um `exempt-expect-count` erweitert, §4 um [`SPEC-077`](#4-grund--und-fehler-codes) `section-exempt-mismatch` ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.78.0, Begründung in begleitender ADR): die Nullmengen-Härte des Abschnitts-Ventils bekommt einen **erklärten** Ausnahmefall. Stimmt die deklarierte Anzahl, ist die geleerte Menge **kein** Befund; weicht sie ab, entsteht einer — **in beide Richtungen und unabhängig von einer Restmenge**, denn eine erweiterte Aufzählung ohne nachgezogene Zahl ist dieselbe Lücke wie eine veraltete. **Zwei Zustände, die vorher denselben Code teilten, sind getrennt:** der Konfigurationsdefekt (`section-pattern` trifft nichts) bleibt `section-missing`, der Bestandszustand bekommt seinen eigenen. Der neue Befund ist **nicht** von `hint` ausgenommen — anders als der Nullmengen-Befund hat die Regel hier gemessen. Der Schlüssel geht **nicht** in die Regel-Identität ein: zwei erwartete Zahlen über derselben Regel sind ein Widerspruch, kein Paar. Zwei neue Exit-2-Ränder in Schritt 1 |
+| Kennung | System | Version/Stand | Vertrag |
 |---|---|---|---|
 | `SPEC-064` | `gopkg.in/yaml.v3` | gepinnt via `go.sum` | striktes Decoding (`KnownFields`); vollständig im Config-Adapter gekapselt |
 | `SPEC-065` | GitHub Flavored Markdown (Slug-/Anker-Verhalten) | Referenzverhalten, Stand 2026-06 | [§1, DC-FA-ANCH-001.a](#dc-fa-anch-001a--github-slug-algorithmus) |

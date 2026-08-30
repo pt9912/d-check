@@ -2150,6 +2150,15 @@ gesetzter Zahl. **Der Preis gehört dazu:** die Zahl altert wie jeder andere
 Autoren-Text, und wer sie blind mitzieht, hat einen Wächter, der nur noch sich
 selbst bestätigt.
 
+**Drei Dinge überraschen an dem Schlüssel, und alle drei sollten Sie vorher
+wissen.** Er gilt **je Datei**: trifft Ihr `files`-Glob zehn Dateien, wird die
+Zahl gegen jede einzeln gehalten, nicht gegen die Summe — für einen Bestand in
+**einer** Datei ist er gedacht. Der Befund **bricht die Datei ab**: was hinter
+dem Mismatch stünde, wird nicht mehr geprüft, eine falsche Zahl verdeckt also
+den Rest, bis sie stimmt. Und er ist **fail-closed** — ohne
+`exempt-section-pattern` ist er wirkungslos und der Lauf endet mit **Exit 2**
+statt still zu ignorieren; ein negativer Wert ebenso.
+
 Zwei weitere Eigenschaften, die überraschen können: die Ausnahme
 läuft **vor** der Kardinalitäts-Prüfung, zwei Treffer minus einer ausgenommenen
 sind bei `sections: one` also in Ordnung; und ein **gesetztes** Muster gehört

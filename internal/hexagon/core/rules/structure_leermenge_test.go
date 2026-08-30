@@ -113,6 +113,14 @@ func TestExemptExpectCount_NullIstEineAussage(t *testing.T) {
 			t.Fatalf("erwartet nur Marken-Befunde, got %+v", x)
 		}
 	}
+	// Die Gegenrichtung ist die schaerfere: eine deklarierte NULL, die das
+	// Muster widerlegt, MUSS melden. Ohne sie liesse sich die Zaehlung auf
+	// `> 0` einschraenken, ohne dass ein Test rot wird -- die Null waere dann
+	// von „nicht deklariert" ununterscheidbar, und genau das ist ihr Zweck.
+	r.ExemptSectionPattern = `^### AC-001\b`
+	if f := laufe(t, acDrei, r); len(f) != 1 || f[0].Reason != model.ReasonSectionExemptMismatch {
+		t.Fatalf("null deklariert, einer ausgenommen ⇒ Mismatch, got %+v", f)
+	}
 }
 
 // Der neue Befund traegt den verfassten Hinweis — anders als der

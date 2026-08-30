@@ -586,11 +586,9 @@ func (r StructureRule) Identity() string {
 	if r.ExemptSectionPattern != "" {
 		sel += " :: ohne " + r.ExemptSectionPattern
 	}
-	// exempt-expect-count geht BEWUSST NICHT ein (ADR-0078): zwei Regeln mit
-	// gleichem Selektor UND gleicher Ausnahme, aber verschiedener erwarteter
-	// Zahl sind kein Paar verschiedener Zusagen, sondern ein Widerspruch --
-	// eine davon muss falsch sein. Sie als Duplikat abzuweisen ist die
-	// richtige Antwort, nicht sie zu trennen.
+	// exempt-expect-count geht BEWUSST NICHT ein: zwei erwartete Zahlen ueber
+	// derselben Regel sind ein Widerspruch, kein Paar -- der Duplikat-Rand
+	// faengt sie (ADR-0078).
 	return r.Files + " :: " + sel
 }
 

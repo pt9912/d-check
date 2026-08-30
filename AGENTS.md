@@ -508,7 +508,16 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   Implementer. *(Hard Rule aus dem Steering Loop,
   [Beobachtungs-Register](docs/plan/planning/observations.md) `BEO-012`, seit
   slice-147; Auflösungs-Trigger: permanent.)*
-- `CHANGELOG.md` wird bei nutzersichtbaren Änderungen gepflegt.
+- `CHANGELOG.md` wird bei nutzersichtbaren Änderungen gepflegt — **in der
+  Release-Prep, nicht im Feature-Commit.** Die Datei führt **keinen**
+  `[Unreleased]`-Abschnitt: jeder Eintrag steht unter seiner Versions-Nummer,
+  und die steht erst fest, wenn das Release geschnitten wird. Ein Slice, der
+  seine Zeile vorzieht, muss sie beim Bump wieder anfassen. Dieselbe Grenze
+  gilt den beiden `README*.md` und dem Handbuch-Kopf. **Gemessen, nicht
+  vereinbart:** die Feature-Commits der letzten Slices fassen `CHANGELOG.md`
+  nicht an. Ohne diesen Satz meldet jede Verifikation den Rückstand erneut —
+  zu Recht, denn die Regel darüber sagte nur *„wird gepflegt"* und nicht
+  *wann*.
 
 ## 6. Minimal Agent Workflow
 

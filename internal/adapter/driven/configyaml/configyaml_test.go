@@ -279,13 +279,19 @@ func TestDecode_StructureFehler(t *testing.T) {
 		t.Fatalf("Chronologie-Schlüssel nicht durchgereicht: %+v", cfg.Structure)
 	}
 	teil := "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-tasks: 3\n" +
-		"    tasks-ignore-pattern: '^\\*\\*Konstante:'\n    exempt-section-pattern: '^## Alt'\n"
+		"    tasks-ignore-pattern: '^\\*\\*Konstante:'\n    exempt-section-pattern: '^## Alt'\n" +
+		"    exempt-expect-count: 2\n"
 	cfg, err = configyaml.Decode([]byte(teil))
 	if err != nil {
 		t.Fatalf("gültige Teilmengen-Regel abgelehnt: %v", err)
 	}
+	// Die ZAHL wird hier mitgeprueft, nicht nur ihre Raender: ohne diese
+	// Zusage laesst sich die Zuweisung im Adapter loeschen, ohne dass ein Test
+	// rot wird -- die Regel-Tests bauen ihre Regel direkt und erreichen den
+	// Adapter nie.
 	if len(cfg.Structure) != 1 || cfg.Structure[0].TasksIgnorePattern != `^\*\*Konstante:` ||
-		cfg.Structure[0].ExemptSectionPattern != "^## Alt" {
+		cfg.Structure[0].ExemptSectionPattern != "^## Alt" ||
+		cfg.Structure[0].ExemptExpectCount == nil || *cfg.Structure[0].ExemptExpectCount != 2 {
 		t.Fatalf("Teilmengen-Schlüssel nicht durchgereicht: %+v", cfg.Structure)
 	}
 }

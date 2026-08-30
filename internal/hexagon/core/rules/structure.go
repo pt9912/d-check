@@ -154,8 +154,11 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 			// Rest der Funktion liefert fuer null Abschnitte nichts. Die
 			// deklarierte Leermenge ist damit stumm, weil dieser case die
 			// Nullmengen-Haerte darunter UEBERSPRINGT -- nicht, weil hier
-			// etwas unterdrueckt wuerde. Ein `return nil` hier waere toter
-			// Code (gemessen: keine Mutation daran macht einen Test rot).
+			// etwas unterdrueckt wuerde.
+			//
+			// GRENZE: der Befund bricht die Datei ab. Was hinter dem
+			// Mismatch stuende, wird nicht mehr geprueft -- eine falsche
+			// Zahl verdeckt also den Rest, bis sie stimmt.
 		case len(heads) == 0:
 			// Nullmengen-Haerte wie bei exempt-paths: ein Ventil OHNE
 			// deklarierte Zahl, das die Menge leert, schaltet die Regel NICHT

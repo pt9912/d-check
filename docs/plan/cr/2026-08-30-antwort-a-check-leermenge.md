@@ -22,9 +22,13 @@ ist die richtige Zerlegung, und eure Eingrenzung — die Härte trifft ein
 Einschränkung. *„Das Modul macht mehr rot als der Sensor, den es ablöst"* ist
 ein Bruch, und er ist behoben.
 
-Und: dass ihr euren ersten Entwurf selbst korrigiert habt, statt ihn zu
-verteidigen, hat diese Runde kurz gemacht. Die beiden Spec-Zitate der zweiten
-Fassung sind nachgelesen — **wortgleich und im Geltungsbereich**.
+Eure beiden Spec-Zitate sind nachgelesen: **im Geltungsbereich**, und das
+zweite wortgleich. Das erste — die `Boundary` von
+[`DC-FA-CLI-007`](../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus) —
+endet bei euch einen Halbsatz früher als im Original (dort folgt noch *„ohne
+Fix-Kandidaten"*). Am Sinn ändert das nichts; wir nennen es, weil wir es
+gemessen haben und ihr sonst ein Zertifikat bekämt, das eine Stelle nicht
+deckt.
 
 Drei Dinge sind trotzdem anders geworden, als ihr sie beantragt habt.
 
@@ -48,37 +52,54 @@ exempt-expect-count: 19
 nur veralten"*. Genau dieser Fall ist mit `exempt-may-empty` **stumm** und mit
 einer Zahl **laut** — und zwar dort, wo ihr ohnehin hinseht.
 
-## Abweichung 2 — die Sichtbarkeit bleibt im Gate-Lauf, und der Grund ist gemessen
+## Abweichung 2 — die Sichtbarkeit bleibt im Gate-Lauf
 
-Ihr wählt `--doctor` als Träger und nennt den Preis *„schwächer"*. **In diesem
-Repo ist er null**, gemessen:
+Ihr wählt `--doctor` als Träger und nennt den Preis *„schwächer"*. Er ist nicht
+schwächer, sondern **unbestimmt** — und diese Zeile hat zwei Fassungen, weil
+die erste falsch war.
 
-| Ort | `--doctor` |
-|---|---|
-| `Makefile` (alle Targets) | 0 Fundstellen |
-| `.github/workflows/` | 0 |
-| `.githooks/pre-commit` | 0 |
-| `--print-mk` (verteilte Targets) | kein `doc-doctor` im Gate-Pfad |
+| Ort | `--doctor` | gemessen wie |
+|---|---|---|
+| `Makefile` (alle Targets) | 0 Fundstellen | `grep` über das Makefile |
+| `.github/workflows/` | 0 | dito |
+| `.githooks/pre-commit` | 0 | dito |
+| `--print-mk` (verteiltes Fragment) | **`doc-doctor` ist da** | `d-check --print-mk`, Produktlauf |
 
-Ein Modus, den kein Gate fährt, erreicht nur den, der ohnehin nachsieht — und
-für einen **Bestandszustand** sieht niemand nach. Eure Einordnung des dritten
-Weges als *„ohne Vertragsbruch"* stimmt; nur ist der Preis größer, als *„etwas
-schwächer"* nahelegt.
+**Die vierte Zeile hieß zuerst „kein `doc-doctor`" — das war unbelegt und ist
+falsch.** Unser eigener Review hat es mit einem Produktlauf widerlegt: das
+Fragment trägt `doc-doctor`, und
+[`DC-FA-CLI-010`](../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+schreibt das Target ausdrücklich vor. Ihr habt es also. Wir hatten unsere
+eigenen Gate-Dateien gemessen und über euer Fragment geredet.
 
-**Das ist eine Aussage über dieses Repo, nicht über eures.** Fahrt ihr
-`--doctor` in einem Gate, trägt eure Form, und dann ist diese Abweichung eine
-Bevormundung statt einer Schärfung — sagt uns das, dann ist es ein
-Re-Evaluierungs-Trigger und kein Streit.
+**Was nach der Korrektur bleibt, ist schwächer als das, was da stand.** Ein
+Target ist kein Gate-Lauf: ob ihr `doc-doctor` in eure Kette hängt, wissen wir
+nicht und haben wir nicht gefragt. Die Sichtbarkeit in `--doctor` hängt damit an
+einer Bedingung, die wir nicht kennen; die Zahl im Gate-Lauf hängt an keiner.
+**Das ist der ganze verbliebene Grund** — nicht mehr *„eure Form erreicht
+niemanden"*, sondern *„eure Form erreicht jemanden, wenn ihr sie verdrahtet
+habt, und unsere ohnehin"*.
+
+**Fahrt ihr `doc-doctor` in einem Gate, trägt eure Form**, und dann ist diese
+Abweichung eine Bevormundung statt einer Schärfung — sagt uns das, dann ist es
+ein Re-Evaluierungs-Trigger und kein Streit.
 
 ## Abweichung 3 — es gibt doch einen neuen Grund-Code
 
 Euer Vertrag sagt *„kein neuer Grund-Code"*. Das galt **eurer** Form, die nur
 unterdrückt. Eine **Zahl** kann nicht stimmen, und dieser Zustand verlangt eine
 andere Reparatur: *Aufzählung oder Zahl nachziehen* statt *Selektor
-korrigieren*. [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) schreibt dafür einen eigenen Code vor — die
-Befund-Deduplikation läuft über (Datei, Zeile, Regel, Ziel, Grund), zwei
-Bedeutungen unter einem Code fielen zusammen. Er heißt
+korrigieren*. Die Befund-Deduplikation läuft über (Datei, Zeile, Regel, Ziel,
+Grund) — zwei Bedeutungen unter einem Code fielen zusammen. Er heißt
 **`section-exempt-mismatch`**.
+
+**Zur Genauigkeit, weil wir euch sonst ein zu starkes Argument gäben:** der
+Grundsatz *jede mit eigenem Grund-Code* steht in
+[`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
+bei den **Bedingungen im Abschnitt**. Die Ventil-Familie, zu der der neue
+Schlüssel gehört, trägt dort ausdrücklich **keinen** eigenen Code. Wir berufen
+uns also nicht auf einen Satz, der von anderen Schlüsseln handelt, sondern auf
+die abweichende **Reparatur**.
 
 ## Was ihr bekommt, das ihr nicht beantragt habt
 
@@ -112,9 +133,10 @@ das ist eure eigene Zerlegung, mechanisch gemacht.
   Befunde, `diff` leer.
 - **Nichts für `exempt-paths`** — eure Abgrenzung ist die richtige: ein
   Datei-Glob ist generisch, eine Abschnitts-Aufzählung in einer Datei nicht.
-- **Kein Schweregrad in `model.Finding`.** Ihr habt das selbst zurückgezogen;
-  wir bestätigen es: [`DC-FA-CLI-003`](../../../spec/lastenheft.md#dc-fa-cli-003--exit-codes) führt differenzierte Exit-Codes als
-  Out-of-Scope, und ein Schweregrad wäre ein eigener Entscheid des Werkzeugs.
+- **Kein Schweregrad in `model.Finding`.**
+  [`DC-FA-CLI-003`](../../../spec/lastenheft.md#dc-fa-cli-003--exit-codes)
+  führt differenzierte Exit-Codes als Out-of-Scope; ein Schweregrad wäre ein
+  eigener Entscheid des Werkzeugs.
 - **Fence-Treue** unverändert.
 - **Euer Argument gegen „die Regel weglassen"** trägt und steht in der ADR.
 
