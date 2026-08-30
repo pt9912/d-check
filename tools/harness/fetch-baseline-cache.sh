@@ -20,8 +20,11 @@
 #                   Geschwister) in den committeten Vendor-Pfad, prüft die
 #                   Under-Copy-Barriere, (re)generiert SHA256SUMS über beide
 #                   Bäume und verifiziert. Netz nötig — Anlass: Baseline-Bump.
-#   --verify        Integritätsprüfung des committeten Bestands gegen SHA256SUMS
-#                   + Manifest-Deckung. Offline, kein Netz — CI/Audit/Checkout.
+#   --verify        Integritätsprüfung des committeten Bestands: sha256sum -c,
+#                   Manifest-Deckung UND Aufloesung der Aliase unter
+#                   .claude/rules/ (MR-055). Offline, kein Netz — CI/Audit.
+#   --selftest      Proben der Alias-Aufloesung (neun Faelle, netzlos, ohne
+#                   Wirkung auf das Repo) — `make baseline-probe`.
 #   --check-latest  Upstream-Audit (Netz, informativ, KEIN Gate, KEIN
 #                   fail-closed). Zwei Teile:
 #                   (A) Currency: die Release-LISTE des Kurs-Repos gegen den Pin
@@ -48,6 +51,7 @@ conventions="harness/conventions.md"
 mode="vendor"
 case "${1:-}" in
   --verify)       mode="verify"; shift ;;
+  --selftest)     mode="selftest"; shift ;;
   --check-latest) mode="check-latest"; shift ;;
 esac
 
@@ -100,8 +104,91 @@ extract_both_trees() {
   rm -rf "$stage"
 }
 
+# check_aliases ist die DRITTE Frage von verify(): Aliase IN den gepinnten Baum.
+# Ein Symlink unter .claude/rules/ bindet denselben Pin — er wird aber von keinem
+# Modul gescannt und steht in keiner Manifest-Zeile. Beim Bump braeche er STILL,
+# und weder sha256sum -c noch die Deckungszaehlung saehe es (MR-055).
+#
+# REKURSIV und DOTFILE-BEWUSST: die Zusage lautet "jeder Symlink UNTERHALB von
+# .claude/rules/". Ein flacher Glob liesse ein Unterverzeichnis und jeden
+# Punkt-Namen still passieren — genau die Klasse, gegen die diese Frage steht.
+#
+# GRENZEN, benannt: geprueft wird die AUFLOESUNG, nicht das Ziel (ein Alias auf
+# eine Datei ausserhalb des gepinnten Baums passiert); ein FEHLENDES oder leeres
+# .claude/rules/ ist von "hier gibt es keine Aliase" nicht unterscheidbar und
+# meldet nicht.
+check_aliases() {
+  local root="${1:-.claude/rules}" dangling=0 l tgt
+  [ -d "$root" ] || return 0
+  while IFS= read -r l; do
+    [ -n "$l" ] || continue
+    if tgt="$(readlink -e "$l" 2>/dev/null)" && [ -n "$tgt" ]; then continue; fi
+    if [ -e "$l" ]; then
+      echo "fetch-baseline-cache: unaufloesbarer Symlink ${l} — Zyklus oder zu tiefe Kette" >&2
+    else
+      echo "fetch-baseline-cache: toter Symlink ${l} — Ziel fehlt (Baseline-Bump?)" >&2
+    fi
+    dangling=1
+  done < <(find "$root" -type l 2>/dev/null | LC_ALL=C sort)
+  [ "$dangling" = 0 ]
+}
+
+# selftest faehrt check_aliases gegen einen eigenen Baum unter TMPDIR: je Fall
+# Erwartung und Ergebnis, Fehlschlag-Zaehler am Ende. Netzlos, ohne Wirkung auf
+# das Repo.
+#
+# WARUM: eine Zusage ohne wiederholbare Probe ist eine Erinnerung — dieselbe
+# Begruendung, die `make guard-probe` traegt. Die Faelle sind die, an denen der
+# flache Glob der ersten Fassung still passierte (MR-055).
+selftest() {
+  local d fails=0
+  d="$(mktemp -d "${TMPDIR:-/tmp}/fbc-selftest.XXXXXX")" || exit 1
+  # shellcheck disable=SC2064
+  trap "rm -rf '$d'" EXIT
+
+  probe() { # name erwartung(ok|rot) verzeichnis
+    local name="$1" want="$2" dir="$3" got
+    if check_aliases "$dir" >/dev/null 2>&1; then got="ok"; else got="rot"; fi
+    if [ "$got" = "$want" ]; then
+      printf 'fetch-baseline-cache: selftest OK   %-34s erwartet=%s\n' "$name" "$want"
+    else
+      printf 'fetch-baseline-cache: selftest FEHL %-34s erwartet=%s ergebnis=%s\n' "$name" "$want" "$got"
+      fails=$((fails + 1))
+    fi
+  }
+
+  mkdir -p "$d/ziel" "$d/leer" "$d/flach" "$d/tief/sub" "$d/punkt" "$d/dir" "$d/zyklus" "$d/echt"
+  : > "$d/ziel/da.md"
+
+  ln -s ../ziel/da.md            "$d/flach/gut.md"
+  ln -s ../ziel/weg.md           "$d/tief/tot.md"
+  ln -s ../../ziel/weg.md        "$d/tief/sub/tot.md"
+  ln -s ../ziel/weg.md           "$d/punkt/.versteckt.md"
+  ln -s ../ziel                  "$d/dir/als-verzeichnis"
+  ln -s a.md                     "$d/zyklus/b.md"
+  ln -s b.md                     "$d/zyklus/a.md"
+  printf 'nur text\n'          > "$d/echt/keine-datei.md"
+
+  probe "gesunder Alias"              ok  "$d/flach"
+  probe "toter Alias, flach"          rot "$d/tief"
+  probe "toter Alias im Unterbaum"    rot "$d/tief/sub"
+  probe "toter Alias als Punkt-Name"  rot "$d/punkt"
+  probe "Alias auf Verzeichnis"       ok  "$d/dir"
+  probe "Symlink-Zyklus"              rot "$d/zyklus"
+  probe "echte Datei, kein Alias"     ok  "$d/echt"
+  probe "leeres Verzeichnis"          ok  "$d/leer"
+  probe "Verzeichnis fehlt"           ok  "$d/gibt-es-nicht"
+
+  if [ "$fails" -eq 0 ]; then
+    echo "fetch-baseline-cache: selftest ok (9 Proben)"
+    return 0
+  fi
+  echo "fetch-baseline-cache: selftest FEHLGESCHLAGEN (${fails} von 9)" >&2
+  return 1
+}
+
 verify() {
-  for c in sha256sum find; do
+  for c in sha256sum find readlink; do
     command -v "$c" >/dev/null 2>&1 \
       || { echo "fetch-baseline-cache: '$c' nicht gefunden (Host-Werkzeug)" >&2; exit 1; }
   done
@@ -125,23 +212,7 @@ verify() {
     || { echo "fetch-baseline-cache: 0 Dateien — leeres/kaputtes Vendoring" >&2; exit 1; }
   [ "$on_disk" = "$manifest" ] \
     || { echo "fetch-baseline-cache: Manifest (${manifest} Zeilen) != Dateien auf Platte (${on_disk}) — unvollständig" >&2; exit 1; }
-  # DRITTE FRAGE, andere Achse: Aliase IN den gepinnten Baum. Ein Symlink
-  # unter .claude/rules/ bindet denselben Pin — er wird aber von keinem Modul
-  # gescannt und steht in keiner Manifest-Zeile. Beim Bump braeche er STILL,
-  # und weder sha256sum -c noch die Deckungszaehlung saehe es (MR-055).
-  #
-  # GRENZE: geprueft wird die AUFLOESUNG, nicht das Ziel. Ein Symlink auf eine
-  # Datei ausserhalb des gepinnten Baums loest auf und passiert.
-  local rules=".claude/rules" dangling=0 l
-  if [ -d "$rules" ]; then
-    for l in "$rules"/*; do
-      [ -L "$l" ] || continue
-      readlink -e "$l" >/dev/null 2>&1 && continue
-      echo "fetch-baseline-cache: toter Symlink ${l} — Ziel fehlt (Baseline-Bump?)" >&2
-      dangling=1
-    done
-    [ "$dangling" = 0 ] || exit 1
-  fi
+  check_aliases || exit 1
   echo "fetch-baseline-cache: verify ok (${manifest} Dateien, vollständig)"
 }
 
@@ -221,6 +292,7 @@ check_latest() {
   return $rc
 }
 
+if [ "$mode" = "selftest" ]; then selftest; exit $?; fi
 if [ "$mode" = "verify" ]; then verify; exit 0; fi
 if [ "$mode" = "check-latest" ]; then set +e; check_latest; rc=$?; set -e; exit "$rc"; fi
 

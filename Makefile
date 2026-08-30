@@ -168,10 +168,13 @@ guard-probe: ## Tool-Call-Wächter gegen seine Proben fahren (werkzeug-lokal, NI
 # Regelwerks (MR-011-Kette). Zwei Fragen, zwei Targets, zwei Fehlerpolitiken —
 # die Trennung ist tragend und steht deshalb im Namen:
 #   baseline-verify    "ist der committete Bestand unversehrt?" — netzlos,
-#                      fail-closed, IN gates. Beide Hälften nötig: sha256sum -c
+#                      fail-closed, IN gates. DREI Fragen: sha256sum -c
 #                      erkennt geänderte/gelöschte Dateien, die Manifest-Deckung
 #                      zusätzlich EINGELEGTE (eine untermengige, in sich
-#                      konsistente SHA256SUMS passierte sonst grün).
+#                      konsistente SHA256SUMS passierte sonst grün), und die
+#                      Aufloesung der Aliase unter .claude/rules/ — ein
+#                      Symlink bindet denselben Pin, steht aber in keiner
+#                      Manifest-Zeile (MR-055).
 #   baseline-freshness "ist der gepinnte Stand noch aktuell und authentisch?" —
 #                      Netz, fail-open (Ausfall ⇒ SKIP je Teil), NICHT in gates.
 #                      Der netzlose innere Lauf ist eine Eigenschaft DIESES
@@ -185,6 +188,9 @@ guard-probe: ## Tool-Call-Wächter gegen seine Proben fahren (werkzeug-lokal, NI
 # bei leerer Prüfmenge, deshalb IN gates.
 workflow-pins: build ## uses:-Einträge der Workflows via Modul workflows (Image, dogfood): voller SHA + Tag-Kommentar; lokale Referenz existiert und bekommt die Rechte ihres Jobs (netzlos, in gates). AGENTS.md §3.9, ADR-0072.
 	$(DCHECK_RUN) --enable workflows $(FOCUS_DISABLE)
+
+baseline-probe: ## Faehrt die Alias-Aufloesung von baseline-verify gegen ihre Proben (neun Faelle, netzlos, NICHT in gates). MR-055.
+	@bash tools/harness/fetch-baseline-cache.sh --selftest
 
 baseline-verify: ## Vendorte Baseline gegen SHA256SUMS: Integrität + Manifest-Deckung (netzlos, in gates). MR-011-Kette.
 	@bash tools/harness/fetch-baseline-cache.sh --verify

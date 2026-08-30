@@ -50,7 +50,7 @@ der Fall, vor dem die Werkzeug-Dokumentation warnt:
 `AGENTS.md` über `@AGENTS.md` in jeden Lauf — Imports helfen der
 *Organisation*, nicht dem Kontext.
 
-## Zwei Träger wurden geprüft, einer davon verworfen
+### Zwei Träger wurden geprüft, einer davon verworfen
 
 **Pfad-gebundene Regeln (`.claude/rules/` mit `paths:`) tragen nicht.** Nach
 Werkzeug-Auskunft (2026-08-29) hängt eine solche Regel im **Auto-Modus** nur
@@ -73,7 +73,11 @@ die Klasse, gegen die dieser Slice gebaut ist.
 
 **Vier Symlinks, kein Code.** `.claude/rules/` bekommt Symlinks auf die vier
 Regelwerk-Module, deren Fehlen den Anlassfall verursacht hat. Sie tragen **kein**
-`paths:` und laden deshalb **immer** — beobachtet in einem Schwester-Projekt,
+`paths:`. **Belegt ist damit eine Sitzungsart, nicht „immer":** in einer
+frischen interaktiven Hauptsitzung laden sie (beobachtet, §4); in einem
+**Subagenten**-Kontext desselben Werkzeugs sind sie **nicht** präsent (§5). Der
+Kanal hängt also nicht nur am Werkzeug, sondern am **Sitzungstyp** darin —
+beobachtet in einem Schwester-Projekt,
 das den ganzen Regelwerk-Baum so einhängt (Auskunft des Auftraggebers,
 2026-08-30).
 
@@ -82,7 +86,9 @@ das den ganzen Regelwerk-Baum so einhängt (Auskunft des Auftraggebers,
    `modul-05` (Planning-Form und Vorprüfungen), `modul-06` (Roadmap und
    Beobachtungs-Register — die zweite ausgefallene Pflicht), `modul-08`
    (Rollen-Trennung). **Gemessen: 805 Zeilen** von 4787. Die übrigen 22 Module
-   bleiben draußen, bis ihr Fehlen belegt ist.
+   bleiben draußen, bis ihr Fehlen belegt ist. **Gezählt sind Dateien:** der
+   Baum trägt 26 Dateien — 17 `modul-*`, 8 `grundlagen-*` und eine `README.md`;
+   eingehängt sind vier Module, offen also 13 Module bzw. 22 Dateien.
 2. **Symlink statt Kopie.** Eine Kopie wäre eine zweite Wahrheitsquelle und
    driftete beim Bump still; der Symlink zeigt auf den **gepinnten** Baum, und
    dessen Inhalt hält `make baseline-verify` per SHA — Drift ist dort
@@ -110,7 +116,7 @@ das den ganzen Regelwerk-Baum so einhängt (Auskunft des Auftraggebers,
 
 ### Was diese Zustellung **nicht** zusagt
 
-Fünf Nicht-Zusagen, ausgeschrieben statt implizit:
+Sieben Nicht-Zusagen, ausgeschrieben statt implizit:
 
 1. **Sie ist werkzeug-lokal.** Nur dieses Werkzeug liest `.claude/rules/`; ein
    fremder Agent liest [`AGENTS.md`](../../../../AGENTS.md) direkt und sieht von
@@ -135,6 +141,18 @@ Fünf Nicht-Zusagen, ausgeschrieben statt implizit:
    Kontext stehen. Ob sie das Verhalten ändern, ist nicht belegbar — der
    Anlassfall bestand darin, dass niemand etwas vermisste, und er lässt sich
    nicht wiederholen.
+6. **Sie erreicht keinen Subagenten.** Gemessen in den Review- und
+   Verifikations-Läufen zu diesem Slice: ihr Projekt-Kontext führt `CLAUDE.md`,
+   `AGENTS.md` und die Nutzer-Memory — **keines der vier Module**. Das trifft
+   ausgerechnet die Rollen, deren Ausfall den Anlassfall bildete: ein Review-
+   oder Verifikations-Lauf bekommt `modul-01` und `modul-06` nicht mit. Der
+   Kanal hängt am **Sitzungstyp**, nicht nur am Werkzeug — [`BEO-024`](../observations.md)
+   eine Ebene tiefer.
+7. **Sie überlebt nicht jedes Dateisystem.** Auf einem Checkout ohne
+   Symlink-Unterstützung (`core.symlinks=false`) werden aus den Aliasen reguläre
+   Dateien mit dem Pfad als Inhalt; die Zustellung ist dann eine Textzeile, und
+   der Wächter sieht keinen Symlink mehr
+   ([`MR-055`](../../../../harness/conventions.md#mr-055) §Grenzen).
 
 ### Der Nachfolge-Entscheid
 
@@ -187,6 +205,10 @@ braucht eine **Messung** der Überlappung, keinen Rotstift.
       nicht mit den Alias-Namen: die Mechanik folgt dem Symlink also und meldet,
       was sie wirklich gelesen hat. `AGENTS.md` steht daneben als `@-imported`,
       die vier Module als eigene Einträge.
+      **Herkunft des Belegs, benannt:** `/memory` und `/context` sind
+      Werkzeug-Anzeigen einer Sitzung des Auftraggebers; sie liegen in keiner
+      Datei dieses Repos und sind von hier aus nicht reproduzierbar. Was das
+      Repo selbst hält, ist die **Auflösung** der Aliase (`make baseline-probe`).
 - [x] **Der Preis ist gemessen, nicht geschätzt.** Dieselbe frische Sitzung
       zeigt in `/context` die Kategorie *Memory files* bei **58.3k** Token gegen
       **28.9k** in der bauenden — **+29.4k**. Die Größenordnung passt: die vier
@@ -196,8 +218,10 @@ braucht eine **Messung** der Überlappung, keinen Rotstift.
       baseline-verify` meldet einen toten Symlink unter `.claude/rules/` —
       **gemessen** an einer Probe, mit Erwartung und Ergebnis; geführt als
       [`MR-055`](../../../../harness/conventions.md#mr-055).
-- [x] Die **Nicht-Zusagen** stehen geschrieben (§2, fünf Punkte): werkzeug-lokal, kein Gate,
-      **nicht gate-geprüft** (Symlink), kein Ersatz für `AGENTS.md`.
+- [x] Die **Nicht-Zusagen** stehen geschrieben (§2, **sieben** Punkte):
+      werkzeug-lokal · kein Gate · Inhalt nicht gate-geprüft (Symlink) · kein
+      Ersatz für `AGENTS.md` · Anwesenheit ist nicht Wirkung · erreicht keinen
+      Subagenten · überlebt nicht jedes Dateisystem.
 - [x] Der Nachfolge-Entscheid ist benannt (§2) — ob der Hook folgt, ob weitere
       Module dazukommen, und was `AGENTS.md` dann abgeben kann.
 - [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
@@ -242,10 +266,12 @@ sich um.
 
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
-- **Sub-Area prüfen:** `.claude/` (Werkzeug-Konfiguration) und `harness/`
-  (die Bump-Prozedur). Beide fallen unter den Default `*` = **Greenfield**
+- **Sub-Area prüfen:** `.claude/` (Werkzeug-Konfiguration), `harness/`
+  (die Bump-Prozedur) und `tools/harness/` (das Gate-Skript, das die dritte
+  Frage bekommt). Alle drei fallen unter den Default `*` = **Greenfield**
   ([`harness/conventions.md`](../../../../harness/conventions.md)
-  §Modus-Deklaration); eine eigene Deklaration führt nur `tools/harness/`.
+  §Modus-Deklaration) — `tools/harness/` führt zwar eine eigene Deklaration, sie
+  lautet aber ebenfalls Greenfield.
   Die Regel, die diesen Schritt vorschreibt:
 
   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:213-214 -->
@@ -263,7 +289,11 @@ sich um.
   zeigen, nicht ihre Konfiguration; [`BEO-008`](../observations.md) — die
   Spiegel einer Pin-Hebung sind mehrere Klassen, gehoben wird nur die
   grep-bare: die Symlinks sind ein **neuer** Spiegel, und genau deshalb steht
-  die Bump-Prozedur als DoD-Punkt. Die Regel, die diesen Schritt vorschreibt:
+  die Bump-Prozedur als DoD-Punkt; [`BEO-022`](../observations.md) — eine Regel
+  tritt in Kraft, bevor ihre Zustellung existiert: **der Eintrag, der diesen
+  Slice namentlich führt**, und seine Prozedur verlangt, in derselben Änderung
+  den **Lesepfad** zu benennen — deshalb nennt `AGENTS.md` §1 die vorgeladenen
+  Module (§2). Die Regel, die diesen Schritt vorschreibt:
 
   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
   > **Offene Beobachtungen sichten.**

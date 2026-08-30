@@ -155,15 +155,19 @@ Entscheidungen, „die Urteilsvermögen erfordern". Der Ausschluss bleibt richti
 diese Welle prüft Deckung —, aber sein Grund ist jetzt eine **Wahl** und keine
 Unmöglichkeit mehr. Wer ihn später aufhebt, hat einen Weg.
 
-**Nachtrag zum Nachtrag: der Rules-Kanal fällt weg.** Der Abschnitt oben nannte
-als vierte Schicht `.claude/rules/` mit `paths`-Frontmatter. Nach
-Werkzeug-Auskunft (2026-08-29) hängt eine solche Regel im **Auto-Modus** nur
-ein, wenn die Datei über die **dedizierten** Werkzeuge angefasst wird — jeder
-Shell-Zugriff geht daran vorbei. In diesem Repo, dessen Auto-Modus zur Shell
-rät, hätte der Kanal im Anlassfall geschwiegen. **Auch die Zustellung läuft
-deshalb über Hooks**, die das Harness unabhängig vom Werkzeug ausführt;
-[slice-176](in-progress/slice-176-planning-rule-pilot.md) ist entsprechend neu
-geschnitten, die Klasse steht als [`BEO-024`](observations.md) im Register.
+**Nachtrag zum Nachtrag: der Rules-Kanal trägt — aber in anderer Form.** Der
+Abschnitt oben nannte als vierte Schicht `.claude/rules/` mit
+`paths`-Frontmatter. Nach Werkzeug-Auskunft (2026-08-29) hängt eine solche Regel
+im **Auto-Modus** nur ein, wenn die Datei über die **dedizierten** Werkzeuge
+angefasst wird — jeder Shell-Zugriff geht daran vorbei; in diesem Repo, dessen
+Auto-Modus zur Shell rät, hätte der Kanal im Anlassfall geschwiegen. **Ein
+Eintrag ohne `paths` hat diese Bedingung nicht** und lädt beim Sitzungsstart.
+Genau so liefert [slice-176](in-progress/slice-176-planning-rule-pilot.md): vier
+Symlinks auf den gepinnten Baum, in einer frischen Sitzung gemessen
+([`MR-055`](../../../harness/conventions.md#mr-055)). **Für die Durchsetzung
+dieser Welle ändert das nichts** — eingespeister Kontext ist kein Gate, die
+Schichten der Slices 173–175 bleiben Hooks. Die Klasse, die den Umweg
+verursachte, steht als [`BEO-024`](observations.md) im Register.
 
 **Ein Rand, den slice-175 kennen muss:** hängen mehrere Hooks am selben Event,
 gewinnt die restriktivste Antwort (`deny` vor `defer` vor `ask` vor `allow`).
