@@ -11,9 +11,15 @@
 # dieselbe Bindepunkt-Trennung wie bei `completeness-check`/ADR-0026).
 #
 # `modules: []` = leere Menge; das Profil aktiviert ausschließlich, was die
-# Kommandozeile per `--enable planning` dazuschaltet. Kein Netz-Modul
+# Kommandozeile per `--enable` dazuschaltet — heute `planning`, `structure`
+# und `spans`. Kein Netz-Modul
 # (`external`/`sources`) — die zweite Config ist keine zweite Netz-Tür
 # (DC-QA-03; ein Go-Test verriegelt genau das).
+#
+# WARUM `spans` HIER STEHT, ABER NICHT IN DIESER LISTE (ADR-0076): die Liste
+# leer zu lassen ist die Aussage „dieses Profil schaltet nichts von sich aus
+# scharf". Sie bleibt wahr, und welche Module laufen, steht an EINER Stelle —
+# im Makefile-Rezept. Zwei Orte drifteten.
 modules: []
 
 planning:

@@ -330,8 +330,13 @@ completeness-check: build ## Requirements-Completeness via in-Produkt-Flag (--tr
 # eigenes Prüf-Profil über --config (DC-FA-CLI-012) — stünde der closure-Block
 # in der konventionellen .d-check.yml, liefe er in `gates` mit, und eine
 # Closure-Frage gehört nicht in den Inner-Loop (ADR-0048).
-verify-closure-notes: build ## Struktur des done/-Bestands: Closure-Notizen (Modul planning) UND Abschnitts-Invarianten (Modul structure), via eigenes --config-Profil; Closure-Gate (in fullbuild, NICHT gates/ci). ADR-0048/ADR-0049.
-	$(DCHECK_RUN) --config .d-check.closure.yml --enable planning --enable structure
+#
+# DAS DRITTE MODUL IST DER WAECHTER UEBER DIE BEIDEN ANDEREN (ADR-0076):
+# planning und structure lesen den BEREINIGTEN Abschnitts-Text. Ein vergessener
+# Schluss-Fence verschluckt alles dahinter, und ihre Zusagen werden STILL wahr —
+# gemessen: dieselbe Datei vorher gruen, mit spans rot (fence-unclosed).
+verify-closure-notes: build ## Struktur des done/-Bestands: Closure-Notizen (Modul planning) UND Abschnitts-Invarianten (Modul structure), plus die Span-/Fence-Artefakte (Modul spans), die beide still machen koennten; via eigenes --config-Profil; Closure-Gate (in fullbuild, NICHT gates/ci). ADR-0048/ADR-0049/ADR-0076.
+	$(DCHECK_RUN) --config .d-check.closure.yml --enable planning --enable structure --enable spans
 
 # ---- traceability ------------------------------------------------------------
 

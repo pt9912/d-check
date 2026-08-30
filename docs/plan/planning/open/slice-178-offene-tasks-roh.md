@@ -49,9 +49,19 @@ unsichtbar.
 | offener Haken | 1 Befund, Exit 1 |
 | derselbe Haken + ein Backtick weiter oben im Absatz | **0 Befunde, Exit 0** |
 
-Nicht teilweise blind, sondern ganz. **Die Exposition ist real:** `slice-061`
-und `slice-076` tragen heute ungerade Backtick-Zahlen in ihrem DoD-Abschnitt
-(25 bzw. 45).
+Nicht teilweise blind, sondern ganz.
+
+**Die Expositions-Behauptung dieses Absatzes war falsch gezählt und ist
+korrigiert** (slice-180, [`BEO-020`](../observations.md)). Sie lautete:
+*„`slice-061` und `slice-076` tragen heute ungerade Backtick-Zahlen in ihrem
+DoD-Abschnitt (25 bzw. 45)."* Gezählt wurde **abschnittsweise**, gepaart wird
+aber **absatzweise** — eine Abschnitts-Summe sagt über den Mechanismus nichts.
+Nachgemessen: 21 bzw. 4 Backticks, und `spans` meldet in beiden Dateien
+**nichts**; kein Absatz ist unbalanciert. **Die Exposition dieses Repos ist
+damit heute null**, und der Slice steht auf dem konstruierten Fall, nicht auf
+einem Bestands-Fund. Das ist kein Grund, ihn fallenzulassen — ein Wächter, der
+an einem Tippfehler abschaltet, bleibt ein Defekt —, aber die Dringlichkeit ist
+eine andere, als der Absatz behauptete.
 
 **Der Preis war für einen Vorlagen-Platzhalter ausgewiesen, hier zahlt ihn eine
 Vorbedingung.** Der Entscheid hat die Paarung gegen eine Falsch-Positiv-Klasse
