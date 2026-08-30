@@ -127,32 +127,44 @@ Antwort an den Absender und ins Handbuch, nicht in eine Fußnote.
 
 ## 4. Definition of Done
 
-- [ ] `tasks-ignore-pattern` und `exempt-sections` sind im Schema, in
-      [`spec/lastenheft.md`](../../../../spec/lastenheft.md) (Bump + Historie
+- [x] `tasks-ignore-pattern` und `exempt-section-pattern` sind im Schema, im
+      `--print-config`-Gerüst, in
+      [`spec/lastenheft.md`](../../../../spec/lastenheft.md) (0.76.0 + Historie
       mit CR-Bezug) und in
-      [`spec/spezifikation.md`](../../../../spec/spezifikation.md) geführt;
-      nicht kompilierendes RE2 ⇒ Exit 2, mit Test.
-- [ ] **Default byte-identisch, gemessen:** ein Lauf ohne die beiden Schlüssel
-      liefert denselben Befundsatz wie vor der Änderung.
-- [ ] **Die Überdeckung ist sichtbar:** die Meldung nennt die Zahl der
-      ignorierten Items; gemessen an einem Fall, in dem ein zu breites Muster
-      mehr entfernt als beabsichtigt.
-- [ ] **Die leere Menge ist beantwortet:** `exempt-sections`, das alle
-      Abschnitte trifft, ⇒ `section-missing`, nicht stilles Grün. Mit Test.
-- [ ] **Fence-Treue gemessen** für beide Muster: ein Task-Item bzw. eine
-      Überschrift im Fenced-Block bzw. in Inline-Code wird nicht getroffen.
-- [ ] **Umkehr-Proben** je Zusage, jede von genau einem Test gefangen — und je
-      Regressions-Test der Beleg, dass der **Vorzustand** an diesem Fixture
-      scheitert ([`BEO-023`](../observations.md)).
-- [ ] Eine ADR begründet die Verortung, den Namen und die Sichtbarkeits-Zusage;
-      im [ADR-Index](../../adr/README.md) eingetragen.
-- [ ] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) führt beide
-      Schlüssel, das Beispiel **verankert**.
+      [`spec/spezifikation.md`](../../../../spec/spezifikation.md) (Schritt
+      1/3/6, §2-Schema, Historie) geführt; nicht kompilierendes RE2 ⇒ Exit 2,
+      mit Test — dazu `tasks-ignore-pattern` **ohne** `max-tasks` als halbe
+      Aktivierung.
+- [x] **Default byte-identisch, gemessen:** derselbe `max-tasks`-Lauf gegen das
+      Image **vor** der Änderung und danach liefert **166** Befunde, `diff`
+      leer. Ein Test hält zusätzlich die Meldung ohne Muster als Literal.
+- [x] **Die Überdeckung ist sichtbar:** die Meldung nennt die Zahl der
+      ignorierten Items — gemessen an einem Probe-Repo: *„Abschnitt trägt 4
+      Task-Items (3 ignoriert), erlaubt sind 3"*, dieselbe Zeile in `--doctor`.
+      Ein zu breites Muster (**7 ignoriert**) und eines ohne Treffer
+      (**0 ignoriert**) sind je als Test gefangen.
+- [x] **Die leere Menge ist beantwortet:** `exempt-section-pattern`, das alle
+      Abschnitte trifft ⇒ `section-missing` mit Schlüssel und Zahl in der
+      Meldung, nicht stilles Grün. Mit Test und end-to-end gefahren.
+- [x] **Fence-Treue gemessen** für beide Muster: das Task-Item im Fence zählt
+      nicht, die Überschrift im Fence wird weder gewählt noch ausgenommen —
+      **und die teure Hälfte steht dabei:** ein Muster auf einen Ausdruck in
+      **Inline-Code** trifft Leerzeichen (`make gates`: **null** von 444 Items).
+- [x] **Umkehr-Proben** je Zusage, jede von genau einem Test gefangen — die
+      drei tragenden fahren den **Vorzustand ohne den Schlüssel in derselben
+      Funktion** ([`BEO-023`](../observations.md)).
+- [x] [ADR-0075](../../adr/0075-erklaerte-teilmenge-in-structure.md) begründet
+      Verortung, Namen, Muster-Ziele und die Sichtbarkeits-Zusage; im
+      [ADR-Index](../../adr/README.md) eingetragen.
+- [x] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) führt beide
+      Schlüssel, das Beispiel **verankert** — samt der **zwei gemessenen
+      Fallen** (freies Muster, Muster auf Inline-Code).
 - [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
       **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
-- [ ] Der Absender bekommt eine **Antwort** — angenommen mit Schärfungen, mit
-      der Messung, die sie trägt (Muster-Form: die vorhandene
-      Antwort-Korrespondenz unter `docs/plan/cr/`).
+- [x] Der Absender bekommt eine
+      [**Antwort**](../../cr/2026-08-30-antwort-a-check-structure-teilmenge.md)
+      — angenommen mit drei Messungen dagegen, samt den drei Schritten, die er
+      beim Umstellen zu gehen hat.
 
 ## 5. Abnahme-Punkte / Risiken
 
