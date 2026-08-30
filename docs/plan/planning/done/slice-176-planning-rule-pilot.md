@@ -224,8 +224,11 @@ braucht eine **Messung** der Überlappung, keinen Rotstift.
       Subagenten · überlebt nicht jedes Dateisystem.
 - [x] Der Nachfolge-Entscheid ist benannt (§2) — ob der Hook folgt, ob weitere
       Module dazukommen, und was `AGENTS.md` dann abgeben kann.
-- [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
-      **Verifikation** gegen DoD — beide in eigenen Kontexten.
+- [x] `make gates` grün (Exit explizit) — 602 Dateien, 0 Befunde, Exit 0;
+      **unabhängiger Review** (1 HIGH · 8 MEDIUM · 4 LOW · 2 INFO, blockierend)
+      und **Verifikation** gegen DoD (A-1 bis A-14) in eigenen Kontexten
+      gelaufen, beide Berichte unter [`docs/reviews/`](../../../reviews/),
+      alle Befunde eingearbeitet.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -233,25 +236,40 @@ braucht eine **Messung** der Überlappung, keinen Rotstift.
   (gemessen, §4). Zusammen mit `AGENTS.md` sind das über 1300 Zeilen Kontext,
   bevor die erste Frage gestellt ist — bei diesem Modell 2,9 % des Fensters, bei
   einem 200k-Modell rund 15 %. Ob das billiger ist als eine Heuristik,
-  ist die Wette dieses Slice. — **Ausgang:** *(bei Closure)*
+  ist die Wette dieses Slice. — **Ausgang:** weiter offen. Der **Preis** ist
+  gemessen, der **Nutzen** nicht — und er ist es aus demselben Grund wie im
+  Anlassfall: niemand vermisst, was er nicht kennt. Was sich seither belegen
+  lässt, ist die Anwesenheit.
 - **Zwei Orte für dieselbe Aussage** — die Module und `AGENTS.md` §3/§5 sagen
   beide etwas über Planung und Closure. Solange `AGENTS.md` nichts abgibt (§3),
   ist das die Drift, die dieses Repo als [`BEO-010`](../observations.md)
-  führt. — **Ausgang:** *(bei Closure)*
+  führt. — **Ausgang:** weiter offen, und um eine Stelle schärfer. `AGENTS.md`
+  §1 nennt die vier Module jetzt ausdrücklich, die Doppelung ist damit
+  **deklariert** statt still — gemessen ist sie nicht. Der Schnitt, der
+  `AGENTS.md` etwas abnehmen könnte, braucht diese Messung und steht in §2 als
+  eigener.
 - **Die Symlinks sind nicht gate-geprüft** (gemessen, §2 Punkt 3) — ihr
   **Brechen** ist es seit diesem Slice: `make baseline-verify` meldet einen
   toten Alias. Ungeprüft bleibt ihr **Inhalt**, und das wiegt wenig: das Ziel
   liegt im SHA-gepinnten Baum. Ungeprüft bleibt auch ein Alias, der auf eine
   Datei **außerhalb** des Pins zeigt — er löst auf und passiert
   ([`MR-055`](../../../../harness/conventions.md#mr-055) §Grenze). —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** weiter offen — und der Wächter hielt bei seiner Ablieferung
+  weniger, als dieser Absatz behauptete: ein Alias in einem Unterverzeichnis
+  und einer mit Punkt-Namen passierten still. Beides ist behoben und mit neun
+  Proben belegt; die Grenzen sind von einer auf sechs ausgeschrieben.
 - **Ein werkzeug-lokaler Träger ist ungebunden, sobald das Werkzeug wechselt**
   ([`MR-042`](../../../../harness/conventions.md#mr-042)). Anders als beim
   Wächter ist das hier **inhärent**: Kontext lässt sich nur dorthin einspeisen,
-  wo einer ist. — **Ausgang:** *(bei Closure)*
+  wo einer ist. — **Ausgang:** weiter offen, mit einer gemessenen zweiten Kante:
+  die Zustellung erreicht auch **innerhalb** dieses Werkzeugs keinen
+  Subagenten — also genau die Review- und Verifikations-Rollen, deren Fehlen
+  den Anlassfall auslöste.
 - **Dass etwas geladen ist, heißt nicht, dass es wirkt.** Der Anlassfall bestand
   darin, dass niemand etwas vermisste; er lässt sich nicht wiederholen. Belegbar
-  ist die Anwesenheit, nicht die Wirkung. — **Ausgang:** *(bei Closure)*
+  ist die Anwesenheit, nicht die Wirkung. — **Ausgang:** weiter offen, und
+  dieser Punkt bleibt es dauerhaft. Er ist kein Rest, sondern die Form der
+  Zusage.
 
 ## 6. Trigger
 
@@ -314,8 +332,74 @@ Slice-ID: slice-176. Betroffene IDs:
 
 ## 8. Sub-Area-Modus-Begründung
 
-**GF (Greenfield, Repo-Default)** — beide berührten Sub-Areas fallen unter den
-Default: Doc führt, Code folgt. Vier Symlinks und eine Prozedur-Zeile; kein
-Produkt-Code, kein Fremdsystem, keine Reconciliation.
+**GF (Greenfield, Repo-Default)** — alle drei berührten Sub-Areas fallen unter
+den Default: Doc führt, Code folgt. Vier Symlinks, eine Prozedur-Zeile und eine
+dritte Frage im Gate-Skript; kein Produkt-Code, kein Fremdsystem, keine
+Reconciliation.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert, und der Kanal war ein anderer als der geplante.** Der Slice war
+zweimal geschnitten: erst auf `.claude/rules/` mit `paths`-Frontmatter, dann —
+nach der Werkzeug-Auskunft, dass eine solche Regel im Auto-Modus nur beim
+Zugriff über die dedizierten Werkzeuge lädt — auf einen Hook. Geliefert hat
+schließlich der erste Kanal in der dritten Form: **vier Symlinks ohne
+`paths`**. Ein Eintrag ohne diese Bedingung hat den Werkzeugweg-Vorbehalt
+nicht und lädt beim Sitzungsstart. Der Hook ist damit nicht verworfen, sondern
+nachrangig — und er hat seit diesem Slice ein Kriterium statt einer Meinung:
+er lohnt, wenn der Preis drückt, und der ist mit 29,4k Token beziffert.
+
+**Der Beleg ist eine fremde Sitzung, und das steht so da.** `/memory` einer
+frischen Hauptsitzung nennt die vier Module mit ihren **aufgelösten**
+Zielpfaden, `/context` die Kategorie *Memory files* bei 58.3k gegen 28.9k in
+der bauenden. Beides sind Werkzeug-Anzeigen, die in keiner Datei dieses Repos
+liegen und von hier aus nicht reproduzierbar sind; reproduzierbar ist die
+**Auflösung** der Aliase (`make baseline-probe`). Die Grenze war zuerst nur in
+der Commit-Botschaft benannt — die Verifikation hat sie als A-9 zurück in den
+Plan geholt.
+
+**Der Wächter, den dieser Slice mitbrachte, hielt weniger als sein Wort.**
+[`MR-055`](../../../../harness/conventions.md#mr-055) sagte an drei Stellen
+„jeder Symlink"; der erste Glob war einstufig und punktblind. Ein Alias in einem
+Unterverzeichnis von `.claude/rules/` und einer mit Punkt-Namen passierten still
+— gemessen vom Review, nicht vermutet. Das ist genau die Bauform, gegen die
+dieses Repo [`BEO-023`](../observations.md) führt: ein Wächter, der aussieht wie
+einer, der fängt. Behoben mit `find` statt Glob, mit einer eigenen Meldung für
+den Schleifenfall, mit `readlink` in der Werkzeug-Vorprüfung — und mit neun
+Proben unter `make baseline-probe`, weil eine Zusage ohne wiederholbare Probe
+eine Erinnerung ist. Die Grenzen stehen jetzt zu sechst in
+[`MR-055`](../../../../harness/conventions.md#mr-055), statt zu einer.
+
+**Vier Deklarationen sagten „zwei Hälften", während der Code drei Fragen
+stellte.** Die schwerste saß in der Sensors-Tabelle von
+[`harness/README.md`](../../../../harness/README.md) — der Tabelle, auf die
+`AGENTS.md` §4 selbst für „Details und Bindungen" verweist. Das ist keine
+Lücke, sondern eine Falschaussage an der Stelle, die als genauere gilt. Alle
+vier Flächen sind nachgezogen.
+
+**Zwei Planungs-Stellen behaupteten das Gegenteil des Gelieferten.**
+[welle-86](../welle-86-closure-uebergang-durchsetzen.md) §4 schrieb „der
+Rules-Kanal fällt weg" und nannte diesen Slice als Beleg; die `Stand`-Zelle von
+[`BEO-024`](../observations.md) führte „Hooks statt Regeln" als Antwort. Beide
+waren zum Zeitpunkt ihres Schreibens richtig und sind es durch die Lieferung
+nicht mehr geblieben — ein Zustandsfeld, das seinen Zustand verpasst hat.
+Beide sind fortgeschrieben.
+
+**Die Klasse, die den Anlassfall trug, ist verschoben, nicht getilgt.** Die
+Zustellung erreicht **keinen Subagenten**-Kontext — also genau die Review- und
+Verifikations-Rollen, deren Fehlen `BEO-022` zweimal gefunden hat, und die
+auch diesen Slice geprüft haben. Sie steht als sechste von sieben
+Nicht-Zusagen im Plan und in der `Stand`-Zelle des Eintrags.
+
+**Fortgeschrieben:** [`BEO-022`](../observations.md) (die Beobachtung zur
+Zustellung ist beantwortet; die Klasse verschiebt sich in den
+Subagenten-Kontext), [`BEO-024`](../observations.md) (die Antwort war nicht der
+Hook), [`MR-055`](../../../../harness/conventions.md#mr-055) (Anker auf
+`modul-02` statt auf die Verzeichniskonvention, `## Begründung`, sechs
+Grenzen), `AGENTS.md` §1 und §4, die Sensors-Tabelle und die Bump-Prozedur.
+
+**Was offen bleibt und wohin es gehört:** die Messung der Überlappung zwischen
+`AGENTS.md` §3/§5 und `modul-05`/`modul-06` — sie ist die Vorbedingung dafür,
+dass die Datei zum ersten Mal etwas abgeben kann, und ein eigener Schnitt.
+Weitere Module kommen erst, wenn ihr Fehlen belegt ist; derselbe Maßstab, mit
+dem diese vier gewählt wurden.
