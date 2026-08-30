@@ -42,7 +42,7 @@ ausgewiesene Preis aus
 unsichtbar.
 
 **Gemessen an einer echten Datei, mit dem DoD-Haken-Wächter aus
-[slice-172](../in-progress/slice-172-closure-uebergang-waechtern.md):**
+[slice-172](../done/slice-172-closure-uebergang-waechtern.md):**
 
 | Eingabe | Ergebnis |
 |---|---|
@@ -202,7 +202,7 @@ sind, nicht wie sie klingen.
   Prosa richtig; dieser Slice stellt ihr eine Bedingung zur Seite, er kippt sie
   nicht.
 - **Kein Anwenden auf den DoD-Haken-Wächter.** Das ist
-  [slice-172](../in-progress/slice-172-closure-uebergang-waechtern.md); dieser Slice
+  [slice-172](../done/slice-172-closure-uebergang-waechtern.md); dieser Slice
   liefert die Fähigkeit, nicht ihren ersten Konsumenten.
 - **Keine Antwort auf die offene Design-Frage** aus slice-172 §2 (die
   wellen-eingelöste offene Box). Sie ist eine Planungs-Frage, keine
@@ -286,7 +286,7 @@ sind, nicht wie sie klingen.
 
 **Start** (`open` → `in-progress`): unmittelbar — der Slice entsteht als
 Vorbedingung von
-[slice-172](../in-progress/slice-172-closure-uebergang-waechtern.md), der dafür zum
+[slice-172](../done/slice-172-closure-uebergang-waechtern.md), der dafür zum
 zweiten Mal nach `open/` zurückgeführt wurde.
 
 **Rückführung eingetreten am 2026-08-29** (`in-progress` → `open`): nicht aus
@@ -483,7 +483,7 @@ leer, gegen ein aus dem Vor-Commit gebautes Image · acht Mutationsproben vor,
 zwei weitere nach den Reparaturen, je mit dem fangenden Test.
 
 **Offen und benannt.** Die Fähigkeit hat **einen** vorgesehenen Konsumenten
-([slice-172](../in-progress/slice-172-closure-uebergang-waechtern.md)); ob eine zweite
+([slice-172](../done/slice-172-closure-uebergang-waechtern.md)); ob eine zweite
 Regel offene Task-Items zählen will, ist nicht gemessen. `max-tasks` und
 `max-open-tasks` stehen nebeneinander, und welcher gemeint ist, kann kein
 Sensor beantworten — die Abgrenzung steht deshalb in **beiden** Schema-Zeilen.
