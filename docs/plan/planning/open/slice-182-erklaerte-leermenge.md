@@ -23,7 +23,7 @@ seine `.a`-Verfeinerung (Schritt 3, §2-Schema, §4-Grund-Codes) und
 [`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)
 — letztere **nur zur Abgrenzung**, sie wird nicht geändert.
 
-**Verantwortlich:** — (bis zur Priorisierung).
+**Verantwortlich:** pt9912 (Implementer-Rolle, beansprucht 2026-08-30).
 
 **Autor:** pt9912. **Datum:** 2026-08-30.
 
@@ -220,9 +220,13 @@ Abweichung wäre eine Bevormundung statt einer Schärfung.
   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
   > **Offene Beobachtungen sichten.**
 
-- **Nachtlauf-Stand lesen:** entfällt in `open/` — der Block entsteht
-  **spätestens bei der Beanspruchung** (`open→in-progress`)
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)).
+- **Nachtlauf-Stand lesen** (`make nightly-state`,
+  [`MR-053`](../../../../harness/conventions.md#mr-053)): beide Achsen melden
+  **gruen** — `upstream-drift.yml` zuletzt 2026-08-30T06:08:17Z,
+  `image-scan.yml` 2026-08-30T09:16:25Z (der Lauf **nach** dem Release
+  v0.68.0). **Dieser Block trägt bewusst keine `cite`-Direktive** — sein Ziel
+  ist eine Repo-Adaption, kein Baseline-Abschnitt
+  ([`MR-054`](../../../../harness/conventions.md#mr-054)).
 
 Slice-ID: slice-182. Betroffene IDs:
 [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in).
