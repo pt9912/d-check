@@ -2104,7 +2104,9 @@ getroffenen Dateien.
    geöffnet). **Exit 2** vor dem Lauf bei: Regel ohne `files`; ungültiges Glob in
    `files`/`exempt-paths`; weder `section` noch `section-pattern` gesetzt **oder**
    beide; `sections` weder `one` noch `each`; nicht kompilierendes
-   `section-pattern`/`forbid-pattern`/`require-pattern`; **explizit** gesetztes
+   `section-pattern`/`forbid-pattern`/`require-pattern`/`tasks-ignore-pattern`/`exempt-section-pattern`;
+   ein `tasks-ignore-pattern` **ohne** `max-tasks` (halbe Aktivierung wie
+   `table.order-column` ohne `table.order`); **explizit** gesetztes
    `min-sentences` < 1 oder `max-tasks` < 0; leerer Eintrag in `require-all`;
    **explizit leerer** `hint` oder einer aus lauter Whitespace; ein `hint` mit
    **Tab oder Zeilenumbruch** (das Ausgabeformat ist tab-getrennt und einzeilig);
@@ -2145,6 +2147,16 @@ getroffenen Dateien.
    (c) passen: bei `section` ist der Vergleichsgegenstand die **getrimmte
    Überschriften-Zeile einschließlich der `#`-Folge**, exakt; bei
    `section-pattern` dieselbe Zeile gegen RE2.
+   **Abschnitts-Ausnahme, vor der Kardinalität.** Ist `exempt-section-pattern`
+   gesetzt, werden die Treffer abgezogen, deren **rohe** (getrimmte)
+   Überschriften-Zeile das Muster matcht — **dieselbe** Zeichenkette wie in (c),
+   damit ein analog zu `section-pattern` geschriebenes Muster nicht still
+   danebengreift. Bleiben **null** Treffer übrig ⇒ `section-missing`
+   (`line` = 1), und die Meldung nennt `exempt-section-pattern` samt der Zahl
+   der abgezogenen: dieselbe Nullmengen-Härte wie bei `exempt-paths` in
+   Schritt 2, eine Granularitätsstufe tiefer. Der Abzug läuft **vor**
+   Schritt 4, weil er die **Grundmenge** erklärt — was ausgenommen ist, kann
+   `sections: one` nicht mehrdeutig machen.
 4. **Kardinalität** — `sections` entscheidet, wie viele Treffer erwartet werden:
    - **`one`** (Default): 0 ⇒ `section-missing` (`line` = 1); > 1 ⇒
      `section-ambiguous` (`line` = **zweiter** Treffer) und **Abbruch für diese
@@ -2175,7 +2187,7 @@ getroffenen Dateien.
    |---|---|---|
    | `non-empty` | der bereinigte Text mindestens ein Nicht-Whitespace-Zeichen trägt | `section-empty` |
    | `min-sentences` | die Zahl der Satzende-Zeichen (`.`, `!`, `?`) ≥ Schwelle ist — gezählt wird nur, was **vor Whitespace oder Zeilenende** steht, wie beim Preset-Partner | `section-thin` |
-   | `max-tasks` | die Zahl der **Task-Items** ≤ Schwelle ist | `section-oversized` |
+   | `max-tasks` | die Zahl der **Task-Items** ≤ Schwelle ist — abzüglich der von `tasks-ignore-pattern` getroffenen | `section-oversized` |
    | `forbid-pattern` | das Muster **nicht** matcht | `section-forbidden` |
    | `require-pattern` | das Muster matcht | `section-pattern-missing` |
    | `require-all` | **jede** Marke vorhanden ist | `section-marker-missing` |
@@ -2205,6 +2217,20 @@ getroffenen Dateien.
    **Task-Item** ist eine Zeile, die — nach optionalem Whitespace — mit einem
    Listen-Marker (`-`, `*`, `+` oder `<ziffern>.`), Whitespace und `[ ]` bzw.
    `[x]`/`[X]` beginnt.
+   **Task-Item-Ausnahme** (`tasks-ignore-pattern`): getroffene Items zählen
+   **nicht** mit. Der Vergleichsgegenstand ist der **getrimmte Item-Text hinter
+   dem Marker** — nicht die Zeile: gegen die Zeile bezeichnete `^` immer den
+   Listen-Marker, und die **verankerte** Muster-Form wäre unschreibbar. Das ist
+   die bewusste Asymmetrie zu `exempt-section-pattern`, das die **rohe**
+   Überschriften-Zeile sieht; dort gibt es mit `section-pattern` einen
+   Bezugspunkt, hier gibt es keinen. Gelesen wird der **bereinigte** Text aus
+   Schritt 5 — die Folge gehört dazugesagt: ein Muster, das auf einen Ausdruck
+   in **Backticks** zielt, trifft Leerzeichen. Ist der Schlüssel gesetzt, nennt
+   die `section-oversized`-Meldung die Zahl der ignorierten Items — **auch bei
+   null**, weil ein Muster ohne Treffer eine Zusage ist, die nicht wirkt; ohne
+   den Schlüssel bleibt die Meldung **unverändert**. Die Sichtbarkeit greift,
+   **solange die Regel meldet**: wer so breit ignoriert, dass die Schwelle nie
+   fällt, sieht nichts.
    **Marke `M` vorhanden** heißt: eine Zeile beginnt — nach optionalem
    Listen-Marker und Whitespace — mit einem **hervorgehobenen Textlauf**
    (`**…**`), dessen Inhalt mit `M` anfängt und dort **endet oder mit einem
@@ -2837,6 +2863,7 @@ Exit 2 ohne Prüfung
 | `structure[].non-empty` | bool | `false` | der bereinigte Abschnitts-Text muss mindestens ein Nicht-Whitespace-Zeichen tragen ⇒ sonst `section-empty` |
 | `structure[].min-sentences` | int | abwesend (aus) | Mindestzahl der Satzende-Zeichen (`.`, `!`, `?`) im bereinigten Abschnitts-Text — Fenced-Code entfernt **und Inline-Code geleert** —, gezählt nur, was **vor Whitespace oder Zeilenende** steht (`a.b.c.d.` ⇒ **eins**, nicht vier) ⇒ sonst `section-thin`; **explizit** < 1 ⇒ Exit 2 |
 | `structure[].max-tasks` | int | abwesend (aus) | Obergrenze der Task-Items **im Abschnitt**, nicht dateiweit ⇒ sonst `section-oversized`; **explizit** < 0 ⇒ Exit 2 |
+| `structure[].tasks-ignore-pattern` | string | leer (aus) | RE2 gegen den **Item-Text hinter Listen-Marker und Checkbox** (nicht die Zeile — sonst bezeichnete `^` immer den Marker und die verankerte Form wäre unschreibbar); Treffer zählen für `max-tasks` **nicht** mit. Gelesen wird der **bereinigte** Text: ein Muster auf einen Ausdruck in **Backticks** trifft Leerzeichen. Ist der Schlüssel gesetzt, nennt die Meldung die Zahl der ignorierten Items — **auch bei null**. Nicht kompilierend ⇒ Exit 2; **ohne** `max-tasks` ⇒ Exit 2 (halbe Aktivierung) |
 | `structure[].forbid-pattern` | string | leer | RE2 gegen den **gesamten** bereinigten Abschnitts-Text; Treffer ⇒ `section-forbidden` |
 | `structure[].require-pattern` | string | leer | RE2, Spiegelbild von `forbid-pattern`; **kein** Treffer ⇒ `section-pattern-missing`. Deckt zugesagte Aussagen, die **innerhalb** einer Auszeichnung stehen und deshalb keine Marke sind |
 | `structure[].require-all` | string[] | leer | benannte Marken, die **alle** vorkommen müssen — als hervorgehobener Textlauf am Zeilen-Anfang nach optionalem **Listen-Marker** (`- **M:**`, `**M:**`, `- **M (Zusatz):**`) ⇒ sonst `section-marker-missing`; leerer Eintrag ⇒ Exit 2 |
@@ -2851,6 +2878,7 @@ Exit 2 ohne Prüfung
 | `structure[].table.column[].cell-min-chars` | int | abwesend (aus) | Untergrenze derselben Zelle; darunter ⇒ `section-cell-undersized` auf **ihrer** Zeile — die **leere** Zelle eingeschlossen, die unter einer Obergrenze allein grün passiert. **Explizit** < 1 ⇒ Exit 2; `cell-min-chars` > `cell-max-chars` ⇒ Exit 2 (keine Zelle erfüllt beides). **Aktivierung:** jeder Eintrag verlangt **mindestens eine** der beiden Grenzen — eine Spalte ohne Schwelle misst nichts ⇒ Exit 2 |
 | `structure[].headings-level` | int | Abschnitts-Ebene + 1 | 1-basierte ATX-Ebene der geprüften Überschriften; außerhalb 1–6 ⇒ Exit 2, gesetzt ohne `headings-match` ⇒ Exit 2. **Nicht** zu verwechseln mit `planning.closure.heading-pattern`: jener ist ein **Selektor** (welcher Abschnitt), dies eine **Bedingung** (welche Form) — beide Blöcke können im selben Profil stehen. Ein Wert **flacher** als der Abschnitt kann in ihm nicht vorkommen — die Bedingung ist dann wirkungslos |
 | `structure[].exempt-paths` | string[] | leer | Glob (wie `scan.ignore`) über die Quell-Pfade; Treffer werden von **dieser** Regel nicht geprüft — hebeln den Leerlauf-Befund aber nicht aus |
+| `structure[].exempt-section-pattern` | string | leer (aus) | RE2 gegen **dieselbe** getrimmte Überschriften-Zeile wie `section-pattern` (**einschließlich `#`-Folge** — ein analog geschriebenes Muster soll nicht still danebengreifen); getroffene Abschnitte prüft **diese** Regel nicht. Geschwister von `exempt-paths` eine Granularitätsstufe tiefer, für Bestände **innerhalb einer Datei**. Läuft **vor** der Kardinalitäts-Prüfung; leert es die Menge ⇒ `section-missing` mit Schlüssel und Zahl in der Meldung. Nicht kompilierend ⇒ Exit 2 |
 | `workflows.dir` | string | leer (aus) | Verzeichnis der Workflow-Dateien — **Aktivierungs-Schalter** des Moduls; leer ⇒ inert (keine Datei geöffnet). Der Ort ist **nicht verdrahtet**, weil er CI-System-spezifisch ist. Gelesen werden die Dateien **unmittelbar** darin mit Endung `.yml` **oder** `.yaml`; null Kandidaten oder null `uses:`-Referenzen ⇒ Befund (fail-closed). Nur Weißraum ⇒ Exit 2 |
 | `workflows.exempt-paths` | string[] | leer | Globs über Wurzel-relative Pfade; Treffer werden **nicht** geprüft. Ungültiges Glob ⇒ Exit 2. **Hebt den Leerlauf-Befund nicht aus:** bleiben nach Abzug null Kandidaten, ist das derselbe fail-closed-Befund |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
@@ -3008,6 +3036,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-30 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 1/3/6 und das §2-Schema um die **erklärte Grundmenge** erweitert ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.76.0, Begründung in begleitender ADR): `tasks-ignore-pattern` nimmt Task-Items aus der `max-tasks`-Zählung, `exempt-section-pattern` nimmt **Abschnitte** aus der Regel. Beide **verkleinern** nur; **kein** neuer Grund-Code, und ohne sie ist das Verhalten byte-identisch. **Die beiden Muster sehen verschiedene Zeichenketten, und das ist der Kern:** `exempt-section-pattern` dieselbe wie `section-pattern` (rohe Überschriften-Zeile samt `#`-Folge), `tasks-ignore-pattern` den **Item-Text hinter der Checkbox** — gegen die Zeile bezeichnete `^` immer den Listen-Marker, und gemessen ist die **verankerte** Form die tragfähige (444 Items: verankert 26 Treffer, kein falscher; frei 13 Treffer, **zwei** falsche). **Schritt 5 bekommt eine dritte dazugesagte Folge:** die Item-Ausnahme liest den **bereinigten** Text, ein Muster auf einen Ausdruck in Backticks trifft also Leerzeichen — gemessen trifft `make gates` **null** von 444 Items. Die Abschnitts-Ausnahme läuft **vor** Schritt 4, weil sie die Grundmenge erklärt; leert sie die Menge ⇒ `section-missing` mit Schlüssel und Zahl (Nullmengen-Härte wie `exempt-paths`). Die `section-oversized`-Meldung nennt bei gesetztem Muster die Zahl der ignorierten Items, **auch bei null** — mit der benannten Grenze, dass sie nur greift, solange die Regel meldet. Zwei neue Exit-2-Ränder in Schritt 1 |
 | 2026-08-29 | Neues Modul-Verfahren §[`DC-FA-WF-001.a`](spezifikation.md#dc-fa-wf-001a--deklarations-konsistenz-von-workflow-referenzen-workflows) ([`DC-FA-WF-001`](lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in) 0.74.0, Begründung in begleitender ADR): sieben Schritte über die `uses:`-Referenzen eines konfigurierten Workflow-Verzeichnisses — Pin-**Form** für fremde Referenzen, Existenz **und** Rechte-Deckung für lokale. §2-Schema um `workflows.dir`/`workflows.exempt-paths`, §4 um sechs Codes [`SPEC-071`](#4-grund--und-fehler-codes) bis [`SPEC-076`](#4-grund--und-fehler-codes). **Die Referenzen kommen aus dem YAML-Baum, nicht aus einer Textsuche** — damit entfällt die Zeilen-Näherung des abgelösten Skripts, und `read-all`/`write-all`/Flow-Mappings sind gelesen statt gemeldet. **Schritt 5 trifft eine Aussage, die das Skript nicht traf:** ein Job ohne eigenes `permissions:` erbt zwar den Workflow-Kopf, kann aber an einen aufgerufenen Workflow nichts weitergeben, was er nicht selbst deklariert. **Die §3.8-Grenze ist ausgesprochen**: das Modul liest die Ziele lokaler Referenzen, die es nicht scannt, und dieselbe Parse-Zusage gilt dort |
 | 2026-08-29 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 1/6 und das §2-Schema auf die **Tabellen-Klammer** `table` umgestellt ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.73.0, Begründung in begleitender ADR): die fünf flachen Schlüssel `table-order`/`table-column`/`cell-max-column`/`cell-max-chars`/`cell-min-chars` heißen jetzt `table.order`, `table.order-column` und `table.column[]` mit `name`/`cell-max-chars`/`cell-min-chars`. **Die Zellengrenzen sind eine Liste je Spalte**, kein Schlüssel-Tripel je Regel — mehrere Spalten desselben Abschnitts stehen unter **einem** Selektor. Das §2-Schema führt die `table.*`-Zeilen zusammen und benennt die **Abgrenzung der beiden Spalten-Begriffe**: `order-column` adressiert über die **Position** (ein Griff daneben fällt als `section-cell-untyped` auf), `column[].name` über den **Namen** (eine Längen-Messung hat diese Selbstkontrolle nicht). Schritt 1 trägt **zwei neue Exit-2-Ränder**, die erst die Liste möglich macht — leere Klammer, doppelter Spaltenname — und die Abweisung der fünf Vorgänger-Schlüssel **mit dem neuen Ort in der Meldung**. Schritt 6 sagt erstmals aus, dass jeder Listen-Eintrag ein **eigener Lauf** ist und das Befund-Ziel die Spalte trägt: die Regel-Identität tut es für die Zellen-Spalten **nicht mehr**, weil sie innerhalb einer Regel keine zwei Regeln kollidieren lassen können. **Kein Grund-Code und keine Befund-Form ändert sich** |
 | 2026-08-28 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 6 um die **neunte Bedingung** `cell-max-column`/`cell-max-chars` erweitert, §2-Schema um zwei Zeilen, §4 um die Grund-Codes [`SPEC-068`](#4-grund--und-fehler-codes) `section-cell-oversized` und [`SPEC-069`](#4-grund--und-fehler-codes) `section-column-missing` ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.72.0, Begründung in begleitender ADR): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte trägt höchstens N **Zeichen**, gemeldet auf **ihrer** Zeile. Die Bindung erfolgt **je Tabelle** — kein Treffer macht die Tabelle irrelevant statt den Abschnitt blind, ein doppelter Name und eine zu kurze Datenzeile sind Befunde, und der Leerlauf trägt dieselbe Doppel-Rolle wie bei der Chronologie. **Die Zell-Zerlegung ist jetzt die eine des Produkts:** escape- und backtick-bewusst, womit die in Schritt 6 benannte Grenze der Chronologie-Bedingung (`\|` verschiebt die Spaltenadresse) **entfällt**; ohne diesen Zug erbte die neue Bedingung genau das Loch, gegen das sie gebaut ist. Schritt 7 sagt zudem erstmals aus, dass die drei zeilen-gebundenen Bedingungen auf **der Zeile melden, an der repariert wird**, und nur im Leerlauf auf die Abschnitts-Überschrift zurückfallen |

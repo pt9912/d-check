@@ -45,21 +45,39 @@ Repo über **Datei**-Globs ([`MR-049`](../../../../harness/conventions.md#mr-049
 weil es nichts Feineres gibt. Eine Regel mit `sections: each` über **eine**
 Datei — etwa das Lastenheft — hätte keinen Hebel.
 
-## Der Antrag hat einen gemessenen Defekt, und er ist billig zu beheben
+## Der Antrag hat zwei gemessene Defekte, und beide sind billig zu beheben
 
-**Das Beispiel-Muster des CR nimmt still eine echte Zusage mit.** Gegen 129
-DoD-Items der Slices 150–177 gefahren:
+Die Messung unten ist **nachgezogen**, nachdem die Semantik feststand: der
+erste Anlauf zählte gegen die **rohen** Zeilen und kam auf 24 gegen 23
+Treffer. Das Werkzeug zählt aber gegen den **bereinigten** Text — und damit
+verschiebt sich das Bild so weit, dass die alte Zahl nicht bloß ungenau war,
+sondern die falsche Frage beantwortete. Gefahren mit dem gebauten Stand über
+die **86** DoD-Abschnitte dieses Repos (**444** Task-Items, `max-tasks: 0`,
+damit jeder Abschnitt seine Zahl meldet):
 
-| Musterform | Treffer | davon falsch |
+| Musterform | Items ignoriert | davon falsch |
 |---|---|---|
-| frei, wie im CR | 24 | **1** |
-| verankert (das Item **beginnt** mit dem Ausdruck) | 23 | 0 |
+| frei, wie im CR | 13 | **2** |
+| verankert (das Item **beginnt** mit dem Ausdruck) | 26 | 0 |
 
-Der falsche Treffer ist eine **Liefer**-Zusage: *„Die Prüfung läuft in
-`make gates` und ist netzlos."* Ein freies Substring-Muster entfernt sie aus der
-Zählung, ohne dass jemand es sieht — die Gestalt aus
+**Erster Defekt: das freie Muster nimmt echte Zusagen mit.** Zwei der 13 sind
+**Liefer**-Punkte, die die Closure-Notiz nur als ihren **Ort** nennen — *„§2/§3/§4/§6
+tragen `SPEC-NNN` fortlaufend; Zählung in der Closure-Notiz"* und
+*„[ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md)-§Kern-Messung in der Closure-Notiz"*. Ein freies Substring-Muster
+entfernt sie aus der Zählung, ohne dass jemand es sieht — die Gestalt aus
 [`BEO-023`](../observations.md): ein Filter, der still das Falsche entfernt,
-sieht aus wie einer, der richtig filtert.
+sieht aus wie einer, der richtig filtert. Die verankerte Form trifft beide
+nicht, weil keiner mit dem Ausdruck **beginnt**.
+
+**Zweiter Defekt, und er ist der schärfere: die erste Alternative des CR ist
+hier komplett wirkungslos.** `make gates` trifft **null** von 444 Items —
+gemessen, nicht geschätzt. Der Grund ist die Zusage, die der CR selbst
+verlangt: die Zählung liest den **bereinigten** Text, und in **allen** 86
+Abschnitten steht die Wendung in Inline-Code (`` `make gates` ``, null
+Fundstellen ohne Backticks). Was fence- und inline-code-treu gezählt wird, ist
+auch fence- und inline-code-treu **ignorierbar** — wer ein Muster auf einen
+Ausdruck in Backticks richtet, richtet es auf Leerzeichen. Das gehört in die
+Antwort an den Absender und ins Handbuch, nicht in eine Fußnote.
 
 ## 2. Vorgehen
 

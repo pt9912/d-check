@@ -476,6 +476,18 @@ type StructureRule struct {
 	// (DC-FA-CLI-007); dieser Text ist verfasst und wird nie angewendet.
 	Hint        string
 	ExemptPaths []string
+	// TasksIgnorePattern nimmt Task-Items aus der max-tasks-Zaehlung heraus.
+	// Es sieht den ITEM-TEXT hinter Listen-Marker und Checkbox, nicht die rohe
+	// Zeile: gegen die rohe Zeile bezeichnete `^` immer den Listen-Marker, und
+	// die VERANKERTE Form waere unschreibbar -- sie ist die gemessen
+	// tragfaehige (ADR-0075).
+	TasksIgnorePattern string
+	// ExemptSectionPattern nimmt Abschnitte aus DIESER Regel heraus. Es sieht
+	// DIESELBE Zeile wie section-pattern -- die getrimmte Ueberschriften-Zeile
+	// einschliesslich der #-Folge. Zwei RE2 einer Regel mit zwei verschiedenen
+	// Zielen waeren die Falle, in die der antragstellende Adopter selbst
+	// gelaufen ist (ADR-0075).
+	ExemptSectionPattern string
 }
 
 // TableRule sind die tabellenbezogenen Bedingungen einer StructureRule

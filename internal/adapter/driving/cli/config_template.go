@@ -183,6 +183,8 @@ modules: [links, anchors]
 #     non-empty: true                               # sonst section-empty
 #     # min-sentences: 4                            # sonst section-thin; abwesend = Bedingung aus
 #     # max-tasks: 0                                # sonst section-oversized (Task-Items IM Abschnitt)
+#     # tasks-ignore-pattern: '^\*\*Gate'           # Items, deren TEXT (hinter der Checkbox!) dieses RE2 trifft, zaehlen fuer max-tasks NICHT
+#     #                                             # mit; die Meldung nennt dann die Zahl der ignorierten. Ohne max-tasks ⇒ Exit 2
 #     # forbid-pattern: 'TODO'                      # Treffer ⇒ section-forbidden
 #     # require-pattern: 'Beleg'                    # kein Treffer ⇒ section-pattern-missing
 #     # require-all: ["Beleg", "Lernsignal"]        # fehlende Marke ⇒ section-marker-missing
@@ -199,6 +201,9 @@ modules: [links, anchors]
 #     #                                           # und zur Hinweis-Zeile in --doctor; gewinnt gegen die
 #     #                                           # modul-eigene Meldung. Leer oder mit Tab/Umbruch ⇒ Exit 2
 #     # exempt-paths: []                            # Globs; Treffer werden von DIESER Regel nicht geprüft
+#     # exempt-section-pattern: '^## 9\. Alt'       # Abschnitte, deren ROHE Ueberschriften-Zeile (samt #-Folge, wie bei
+#     #                                             # section-pattern) dieses RE2 trifft, prueft DIESE Regel nicht.
+#     #                                             # Laeuft VOR sections: one; leert es die Menge ⇒ section-missing
 
 
 # --- workflows: Deklarations-Konsistenz der uses:-Referenzen von CI-Workflows — hermetisch, opt-in ---

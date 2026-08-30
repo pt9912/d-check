@@ -255,6 +255,12 @@ func TestDecode_StructureFehler(t *testing.T) {
 		"beide Selektoren":            "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    section-pattern: 'H'\n",
 		"hint gesetzt, aber leer":    "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    hint: ''\n",
 		"hint nur Whitespace":        "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    hint: '   '\n",
+		// Die beiden Teilmengen-Schluessel (ADR-0075): kein Kompilat und —
+		// dieselbe halbe Aktivierung wie bei order-column — ein Ignorier-Muster
+		// ohne die Zaehlung, die es verkleinern soll.
+		"tasks-ignore-pattern RE2":        "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-tasks: 3\n    tasks-ignore-pattern: '^(['\n",
+		"tasks-ignore-pattern ohne max":   "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    tasks-ignore-pattern: '^x'\n",
+		"exempt-section-pattern RE2":      "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    exempt-section-pattern: '^(['\n",
 	} {
 		if _, err := configyaml.Decode([]byte(bad)); err == nil {
 			t.Fatalf("%s: ungültige structure-Config akzeptiert: %q", name, bad)
@@ -268,6 +274,16 @@ func TestDecode_StructureFehler(t *testing.T) {
 	if len(cfg.Structure) != 1 || cfg.Structure[0].Table.Order != "asc" ||
 		cfg.Structure[0].Table.EffectiveOrderColumn() != 2 {
 		t.Fatalf("Chronologie-Schlüssel nicht durchgereicht: %+v", cfg.Structure)
+	}
+	teil := "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-tasks: 3\n" +
+		"    tasks-ignore-pattern: '^\\*\\*Konstante:'\n    exempt-section-pattern: '^## Alt'\n"
+	cfg, err = configyaml.Decode([]byte(teil))
+	if err != nil {
+		t.Fatalf("gültige Teilmengen-Regel abgelehnt: %v", err)
+	}
+	if len(cfg.Structure) != 1 || cfg.Structure[0].TasksIgnorePattern != `^\*\*Konstante:` ||
+		cfg.Structure[0].ExemptSectionPattern != "^## Alt" {
+		t.Fatalf("Teilmengen-Schlüssel nicht durchgereicht: %+v", cfg.Structure)
 	}
 }
 

@@ -232,6 +232,15 @@ type rawStructure struct {
 	Table       *rawTable `yaml:"table"`
 	ExemptPaths []string  `yaml:"exempt-paths"`
 
+	// Die beiden Teilmengen-Schluessel: sie VERKLEINERN die geprueften Mengen
+	// und tragen keinen eigenen Grund-Code. Kein Zeiger -- wie bei jedem
+	// anderen RE2-Schluessel dieses Moduls ist der leere Wert die
+	// ABWESENHEIT, und beide fallen dabei in die STRENGE Richtung: ohne
+	// Muster zaehlt jedes Item und wird jeder Abschnitt geprueft. Ein leerer
+	// hint braucht seinen Zeiger, weil er in die andere Richtung faellt.
+	TasksIgnorePattern   string `yaml:"tasks-ignore-pattern"`
+	ExemptSectionPattern string `yaml:"exempt-section-pattern"`
+
 	// MIGRATIONS-FANGNETZ (ADR-0070): die fuenf flachen Vorgaenger-Schluessel
 	// stehen hier NUR, um mit Klartext abgelehnt zu werden. Ohne sie meldete
 	// der strikte Decoder `field table-order not found in type rawStructure` —
@@ -295,6 +304,8 @@ func structureBedingungsFehler(r rawStructure) string {
 	for _, m := range []struct{ name, pat string }{
 		{"section-pattern", r.SectionPattern}, {"forbid-pattern", r.ForbidPattern},
 		{"require-pattern", r.RequirePattern}, {"headings-match", r.HeadingsMatch},
+		{"tasks-ignore-pattern", r.TasksIgnorePattern},
+		{"exempt-section-pattern", r.ExemptSectionPattern},
 	} {
 		if m.pat == "" {
 			continue
@@ -347,6 +358,12 @@ func structureUeberschriftFehler(r rawStructure) string {
 	}
 	if r.HeadingsLevel != nil && r.HeadingsMatch == "" {
 		return "headings-level ist ohne headings-match wirkungslos (halbe Aktivierung)"
+	}
+	// Dieselbe halbe Aktivierung eine Bedingung weiter: ein Ignorier-Muster
+	// ohne die Zaehlung, die es verkleinern soll, ist eine Zusage, die
+	// dasteht und nicht wirkt.
+	if r.TasksIgnorePattern != "" && r.MaxTasks == nil {
+		return "tasks-ignore-pattern ist ohne max-tasks wirkungslos (halbe Aktivierung)"
 	}
 	return structureTabellenFehler(r)
 }
@@ -461,6 +478,9 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 		Table:       applyTable(r.Table),
 		Hint:        derefString(r.Hint),
 		ExemptPaths: r.ExemptPaths,
+
+		TasksIgnorePattern:   r.TasksIgnorePattern,
+		ExemptSectionPattern: r.ExemptSectionPattern,
 	}, nil
 }
 

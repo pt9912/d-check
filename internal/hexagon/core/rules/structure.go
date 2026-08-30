@@ -84,6 +84,23 @@ func checkStructureRule(fsys driven.Filesystem, r model.StructureRule, all []str
 	return out
 }
 
+// structureExemptSections zieht die von exempt-section-pattern getroffenen
+// Abschnitte ab. Das Muster sieht DIESELBE Zeichenkette wie section-pattern --
+// die getrimmte Ueberschriften-Zeile EINSCHLIESSLICH der #-Folge. Zwei RE2 in
+// einer Regel mit zwei verschiedenen Zielen waeren die Falle: das zweite
+// Muster, analog zum ersten geschrieben, traefe still nichts (ADR-0075).
+func structureExemptSections(r model.StructureRule, lines []string, heads []SectionHead) []SectionHead {
+	re := regexp.MustCompile(r.ExemptSectionPattern)
+	out := make([]SectionHead, 0, len(heads))
+	for _, h := range heads {
+		if re.MatchString(strings.TrimSpace(lines[h.Line-1])) {
+			continue
+		}
+		out = append(out, h)
+	}
+	return out
+}
+
 func structureExempt(r model.StructureRule, file string) bool {
 	for _, g := range r.ExemptPaths {
 		if matchGlob(g, file) {
@@ -109,6 +126,21 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 	if len(heads) == 0 {
 		return []model.Finding{structureFinding(r, file, 1, model.ReasonSectionMissing,
 			"kein Abschnitt passt auf den Selektor")}
+	}
+	// Die Ausnahme erklaert die GRUNDMENGE und laeuft deshalb vor der
+	// Kardinalitaets-Pruefung: was ausgenommen ist, kann `sections: one` nicht
+	// mehrdeutig machen. Dieselbe Reihenfolge wie bei exempt-paths, eine
+	// Granularitaetsstufe tiefer (ADR-0075).
+	if n := len(heads); r.ExemptSectionPattern != "" {
+		heads = structureExemptSections(r, lines, heads)
+		// Nullmengen-Haerte wie bei exempt-paths: ein Ventil, das die Menge
+		// leert, schaltet die Regel NICHT still ab. Die Meldung nennt den
+		// Schluessel, der es tat -- sonst suchte der Leser am Selektor.
+		if len(heads) == 0 {
+			return []model.Finding{structureFinding(r, file, 1, model.ReasonSectionMissing,
+				"alle "+strconv.Itoa(n)+" passenden Abschnitte sind von "+
+					"exempt-section-pattern ausgenommen — die Regel liefe leer")}
+		}
 	}
 	if r.EffectiveSections() == "one" && len(heads) > 1 {
 		// Abbruch für DIESE Datei innerhalb DIESER Regel: ohne eindeutigen
@@ -177,9 +209,19 @@ func structureConditions(r model.StructureRule, file string, line int, body stri
 		}
 	}
 	if r.MaxTasks != nil {
-		if got := countTaskItems(body); got > *r.MaxTasks {
+		got, ignoriert := countTaskItems(body, taskIgnoreRE(r))
+		if got > *r.MaxTasks {
+			// Die Zahl der ignorierten Items steht NUR dabei, wenn ein Muster
+			// gesetzt ist: sonst waere die Meldung jeder Bestandsregel eine
+			// andere. Sie steht dann AUCH bei null -- ein Muster, das nichts
+			// trifft, ist eine Zusage, die nicht wirkt, und das gehoert
+			// sichtbar (ADR-0075).
+			zusatz := ""
+			if r.TasksIgnorePattern != "" {
+				zusatz = " (" + strconv.Itoa(ignoriert) + " ignoriert)"
+			}
 			add(model.ReasonSectionOversized, "Abschnitt trägt "+strconv.Itoa(got)+
-				" Task-Items, erlaubt sind "+strconv.Itoa(*r.MaxTasks))
+				" Task-Items"+zusatz+", erlaubt sind "+strconv.Itoa(*r.MaxTasks))
 		}
 	}
 	if r.ForbidPattern != "" && regexp.MustCompile(r.ForbidPattern).MatchString(body) {
@@ -237,14 +279,39 @@ func structureFinding(r model.StructureRule, file string, line int, reason, msg 
 // Listen-Marker (-, *, + oder <ziffern>.), Whitespace und [ ] bzw. [x]/[X].
 var taskItemRE = regexp.MustCompile(`^[ \t]*(?:[-*+]|[0-9]+\.)[ \t]+\[[ xX]\]`)
 
-func countTaskItems(body string) int {
-	n := 0
+// countTaskItems zaehlt die Task-Items des bereinigten Abschnitts-Textes und
+// meldet daneben, wie viele davon `ignore` herausgenommen hat.
+//
+// ABGRENZUNG, welche Zeichenkette `ignore` sieht: den ITEM-TEXT hinter
+// Listen-Marker und Checkbox, NICHT die rohe Zeile. Gegen die rohe Zeile
+// bezeichnete `^` immer den Listen-Marker; die verankerte Muster-Form waere
+// damit unschreibbar, und gemessen ist gerade sie die tragfaehige -- ein
+// freies Substring-Muster nahm an 129 realen Items eine echte Zusage still
+// mit (ADR-0075). Das ist die bewusste Asymmetrie zu exempt-section-pattern,
+// das die ROHE Ueberschriften-Zeile sieht: dort gibt es mit section-pattern
+// bereits einen Bezugspunkt, hier gibt es keinen.
+func countTaskItems(body string, ignore *regexp.Regexp) (gezaehlt, ignoriert int) {
 	for _, l := range strings.Split(body, "\n") {
-		if taskItemRE.MatchString(l) {
-			n++
+		marker := taskItemRE.FindString(l)
+		if marker == "" {
+			continue
 		}
+		if ignore != nil && ignore.MatchString(strings.TrimSpace(l[len(marker):])) {
+			ignoriert++
+			continue
+		}
+		gezaehlt++
 	}
-	return n
+	return gezaehlt, ignoriert
+}
+
+// taskIgnoreRE liefert das kompilierte Ignorier-Muster der Regel oder nil.
+// Das Kompilat ist am Config-Rand bereits geprueft (Exit 2).
+func taskIgnoreRE(r model.StructureRule) *regexp.Regexp {
+	if r.TasksIgnorePattern == "" {
+		return nil
+	}
+	return regexp.MustCompile(r.TasksIgnorePattern)
 }
 
 // markerRE erkennt eine Auszeichnungs-Marke am Zeilen-Anfang: nach optionalem
