@@ -125,6 +125,23 @@ verify() {
     || { echo "fetch-baseline-cache: 0 Dateien — leeres/kaputtes Vendoring" >&2; exit 1; }
   [ "$on_disk" = "$manifest" ] \
     || { echo "fetch-baseline-cache: Manifest (${manifest} Zeilen) != Dateien auf Platte (${on_disk}) — unvollständig" >&2; exit 1; }
+  # DRITTE FRAGE, andere Achse: Aliase IN den gepinnten Baum. Ein Symlink
+  # unter .claude/rules/ bindet denselben Pin — er wird aber von keinem Modul
+  # gescannt und steht in keiner Manifest-Zeile. Beim Bump braeche er STILL,
+  # und weder sha256sum -c noch die Deckungszaehlung saehe es (MR-055).
+  #
+  # GRENZE: geprueft wird die AUFLOESUNG, nicht das Ziel. Ein Symlink auf eine
+  # Datei ausserhalb des gepinnten Baums loest auf und passiert.
+  local rules=".claude/rules" dangling=0 l
+  if [ -d "$rules" ]; then
+    for l in "$rules"/*; do
+      [ -L "$l" ] || continue
+      readlink -e "$l" >/dev/null 2>&1 && continue
+      echo "fetch-baseline-cache: toter Symlink ${l} — Ziel fehlt (Baseline-Bump?)" >&2
+      dangling=1
+    done
+    [ "$dangling" = 0 ] || exit 1
+  fi
   echo "fetch-baseline-cache: verify ok (${manifest} Dateien, vollständig)"
 }
 
