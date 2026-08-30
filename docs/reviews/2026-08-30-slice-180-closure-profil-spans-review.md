@@ -51,7 +51,7 @@ Der Bau selbst ist korrekt und die diskriminierende Probe hält. Blockierend sin
 ### H-2 · ADR-0076 §Fitness Function schreibt `gate-consistency` eine Deckung zu, die es nicht hat
 
 - **quelle:** `AGENTS.md` §4 (*„Halluzinierte Gates sind die häufigste Form von Harness-Lüge"*), `DC-FA-TGT-001`
-- **pfad:** `docs/plan/adr/0076-spans-am-closure-bindepunkt.md:138`; gleichlautend `docs/plan/planning/in-progress/slice-180-closure-profil-spans.md:79` und die DoD-Zeile `:118-120`
+- **pfad:** `docs/plan/adr/0076-spans-am-closure-bindepunkt.md:138`; gleichlautend `docs/plan/planning/done/slice-180-closure-profil-spans.md:79` und die DoD-Zeile `:118-120`
 - **zugesagt:** *„`make gate-consistency` hält dafür den `##`-Hilfetext gegen die Doku."* („dafür" = als Ersatz dafür, dass die `spans`-Verortung im Rezept maschinell ungeprüft ist.)
 - **gemessen:** In einem vollständigen Klon den `##`-Hilfetext des Targets durch `## irgendwas ganz anderes.` ersetzt → `--enable targets` + Fokus-`--disable`: `608 Datei(en) geprüft, 0 Befund(e)`, Exit 0. Danach zusätzlich `--enable spans` **aus dem Rezept entfernt** → weiterhin `608 / 0 Befunde`, Exit 0; auch der volle `doc-check` bleibt grün. Der Quelltext bestätigt es: `internal/hexagon/core/rules/targets.go:24-28` liest Makefile-**Regelzeilen** (`makefileRuleRe`) und Doku-**Tabellenzeilen** (`docTargetRe`); der `##`-Text kommt in keinem der beiden Pfade vor.
   Das Repo hat diesen Befund bereits: `docs/reviews/2026-08-22-slice-115-arc-vergabe-review.md:43` — *„kein Gate liest die Beschreibungsspalte (`targets` vergleicht Target-**Namen**, nicht Texte)"*.
@@ -63,7 +63,7 @@ Der Bau selbst ist korrekt und die diskriminierende Probe hält. Blockierend sin
 ### H-3 · „Der Defekt fällt erst bei `make fullbuild` auf" ist falsch — der Bindepunkt schließt keine Lücke, die nicht schon geschlossen wäre
 
 - **quelle:** `AGENTS.md` §5 (Botschaft trägt nicht weiter als die Messung), Reviewer-Skill Frage 10
-- **pfad:** `docs/plan/adr/0076-spans-am-closure-bindepunkt.md:112-116` (§Verglichene Alternativen); gleichlautend `docs/plan/planning/in-progress/slice-180-closure-profil-spans.md:144-148` (§5, Risiko 4)
+- **pfad:** `docs/plan/adr/0076-spans-am-closure-bindepunkt.md:112-116` (§Verglichene Alternativen); gleichlautend `docs/plan/planning/done/slice-180-closure-profil-spans.md:144-148` (§5, Risiko 4)
 - **zugesagt:** *„Den Bindepunkt in `gates` ziehen … Verworfen … Der Preis bleibt: der Defekt fällt erst bei `make fullbuild` auf."* Dazu §Kontext `:54` *„die einzige, die heute niemand sieht"*.
 - **gemessen:** Vollständiger Klon, an `docs/plan/planning/done/slice-177-structure-hint.md` ein offener Fence angehängt:
 
@@ -108,7 +108,7 @@ Der Bau selbst ist korrekt und die diskriminierende Probe hält. Blockierend sin
 
 ### L-2 · „alle 676 Markdown-Dateien dieses Repos" — die Grundgesamtheit ist nicht benannt und ist nicht die des Repos
 
-- **pfad:** `docs/plan/adr/0076-…:62`, `docs/plan/adr/0042-…:149`, `docs/plan/planning/in-progress/slice-180-…:52`
+- **pfad:** `docs/plan/adr/0076-…:62`, `docs/plan/adr/0042-…:149`, `docs/plan/planning/done/slice-180-…:52`
 - **gemessen:** heute `git ls-files '*.md'` = **661**; `find . -name '*.md' -type f` = **674** (17 davon gitignoriert unter `.harness/cache/`, `.gitignore:4`); `find -L … -type f` = **678** (löst 4 Symlinks unter `.claude/rules/` auf, die bereits gezählte Regelwerk-Module dupliziert). Rekonstruktion für `9d22a44` (Elter des Plan-Commits): 655 echte + 4 Symlink-Auflösungen + 17 gitignorierte = **676** — die Zahl ist also `find -L`-Semantik über eine Menge, die 17 Dateien **außerhalb** des Repos enthält und 4 doppelt zählt.
 - **warum nur LOW:** die Menge ist eine **Obermenge**; „0 Abweichungen" gilt damit erst recht für das Repo. Aber die Zahl ist heute nicht reproduzierbar, und `BEO-020` verlangt ausdrücklich *„die gezählte Menge benennen, bevor die Zahl fällt"* — genau die Prozedur, die dieser Slice zitiert. Zwei der drei Fundstellen sind bereits immutabel bzw. `Accepted`.
 - **klasse:** `zahl-ohne-nenner`
