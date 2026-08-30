@@ -16,7 +16,7 @@ braucht); der Anlass ist eine Messung, keine Welle.
 Entscheidung, die den Bindepunkt und sein zweites Profil geschaffen hat);
 [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) (deren offener
 Punkt (a) diese Messung beantwortet);
-[slice-178](../in-progress/slice-178-offene-tasks-roh.md) (wartet auf dieses Ergebnis).
+[slice-178](../done/slice-178-offene-tasks-roh.md) (wartet auf dieses Ergebnis).
 
 **Berührte Spec-Stellen:** —. Der Slice ändert **keine** Zusage des Produkts;
 er ändert, welche Module dieses Repo an seinem eigenen Closure-Bindepunkt
@@ -93,7 +93,7 @@ nichts falsch ist.
    `## Geschichte`-Eintrag**: sein offener Punkt (a) ist erneut gemessen — 676
    statt 522 Dateien, weiterhin kein Realfall. Die ADR ist `Accepted` und wird
    nicht im Kern angefasst.
-6. **[slice-178](../in-progress/slice-178-offene-tasks-roh.md) §1 wird richtiggestellt.** Seine
+6. **[slice-178](../done/slice-178-offene-tasks-roh.md) §1 wird richtiggestellt.** Seine
    Expositions-Behauptung zählt Backticks **abschnittsweise** (*„slice-061 und
    slice-076 tragen ungerade Backtick-Zahlen (25 bzw. 45)"*); die Paarung läuft
    **absatzweise**. Gemessen trägt keine der beiden Dateien einen unbalancierten
@@ -110,7 +110,7 @@ nichts falsch ist.
   [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) als Bedingung
   benannt hat.
 - **Keine Roh-Zeilen-Bedingung.** Das ist
-  [slice-178](../in-progress/slice-178-offene-tasks-roh.md), und er kommt danach.
+  [slice-178](../done/slice-178-offene-tasks-roh.md), und er kommt danach.
 - **Kein `non-empty` an den bestehenden Closure-Regeln.** Es machte denselben
   Fall laut, wäre aber eine Bedingungs-Änderung an einer Zusage, die dieser
   Slice nicht führt.
@@ -141,7 +141,7 @@ nichts falsch ist.
       [ADR-Index](../../adr/README.md).
 - [x] [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) trägt die
       Neu-Messung als `## Geschichte`; `make adr-check` grün (611/0).
-- [x] [slice-178](../in-progress/slice-178-offene-tasks-roh.md) §1 steht auf dem
+- [x] [slice-178](../done/slice-178-offene-tasks-roh.md) §1 steht auf dem
       Gemessenen: die **ursprünglichen** Zahlen 25/45 sind richtig, falsch war
       die Folgerung „ungerade ⇒ exponiert". [`BEO-020`](../observations.md) auf
       Zähler **4** — die vierte Instanz ist meine eigene Fehl-Korrektur.
@@ -277,7 +277,7 @@ Fall, auf dem der Entscheid steht, **nicht** laut; die verworfene Alternative
 war schwächer, als ich ihr zugestand.
 
 **Die teuerste Lehre ist eine über das Korrigieren.** Meine Richtigstellung an
-[slice-178](../in-progress/slice-178-offene-tasks-roh.md) §1 ersetzte zwei
+[slice-178](../done/slice-178-offene-tasks-roh.md) §1 ersetzte zwei
 **richtige** Zahlen durch zwei falsche: mein Zähl-Bereich lief von `## 4.` bis
 `## 5.`, während beide Slices ihre DoD als **§3** führen — gezählt war §4
 *Risiken*. Falsch war an der ursprünglichen Aussage nie die Zahl, sondern die
@@ -316,6 +316,6 @@ Defekt: die erste Vorher/Nachher-Probe war schon vorher rot und belegte nichts.
 **Was offen bleibt und wohin es gehört:** dass kein Sensor das Rezept gegen die
 vier Deklarations-Flächen hält, ist benannt und nicht geschlossen — ein
 eigener Schnitt, falls er je gewollt ist.
-[slice-178](../in-progress/slice-178-offene-tasks-roh.md) ist damit entsperrt, seine
+[slice-178](../done/slice-178-offene-tasks-roh.md) ist damit entsperrt, seine
 Dringlichkeit aber gesenkt: er steht auf dem konstruierten Fall, nicht auf
 einem Bestands-Fund.
