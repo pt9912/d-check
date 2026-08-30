@@ -115,7 +115,6 @@ deterministisch zustellt.
    Vorgriff: erst zeigen, dass die Zustellung greift, dann kürzen.
 7. `make gates`; **Review** und **Verifikation** als getrennte Läufe; Closure.
 
-
 ### Eine Referenz-Implementierung liegt vor — und drei Deltas dazu
 
 **Ein Schwester-Projekt fährt den Mechanismus bereits** (Hinweis des
@@ -154,6 +153,59 @@ Einmal-je-Sitzung-Markierung ist richtig und hat einen Preis. Nach einer
 Kontext-Verdichtung ist die Regel aus dem Kontext verschwunden, die Markierung
 aber noch da — sie kommt dann nicht wieder. Das gehört zu den Nicht-Zusagen.
 
+### Die zweite Referenz: das ganze Regelwerk als Symlink-Feld
+
+**Ein zweites Schwester-Projekt geht den entgegengesetzten Weg** (Hinweis des
+Auftraggebers, 2026-08-30): `.claude/rules/` enthält **26 Symlinks** auf den
+vendored Regelwerk-Baum — alle Module und Grundlagen, zusammen **4787 Zeilen**.
+Keine Verdichtung, keine Auswahl.
+
+**Kein `paths:`, in keiner der 26 Dateien.** Die Regelwerk-Dateien tragen
+überhaupt kein Frontmatter (gezählt: 0 von 26) — und das Ergebnis ist
+**beobachtet, nicht gefolgert**: beim Start lädt das Werkzeug das Regelwerk
+über diese Symlinks (Auskunft des Auftraggebers, 2026-08-30). Eine Regel ohne
+`paths:` lädt also **immer**, und hier heißt das: **4787 Zeilen in jedem
+Lauf** — genau das Kontext-Problem, das dieser Slice löst, in Reinform;
+`AGENTS.md` gilt hier mit 511 Zeilen schon als zu lang.
+
+**Und der Symlink nimmt dem Slice seine Gate-Zusage — gemessen.** DoD-Punkt 4
+sagt, der Text liege im Scan-Bereich und werde deshalb von `links`, `anchors`
+und `citations` gegen seine Quelle gehalten. Gegen ein Probe-Repo gefahren:
+
+| Eingabe unter `.claude/rules/` | Ergebnis |
+|---|---|
+| **echte** Datei mit totem Link | gescannt, `target-missing` gemeldet |
+| **Symlink** auf eine Datei mit totem Link | **nicht** gescannt, kein Befund |
+
+Der Scanner folgt Symlinks nicht in die Prüfmenge. Eine symlinkte Zustellung
+wäre also **ungeprüft** — und `scan.ignore` auf `.harness/baseline/**` bliebe
+zugleich wirksam, was hier ein Vorteil ist: der Alias holt den ausgeschlossenen
+Baum nicht zurück in die Prüfmenge.
+
+**Die Asymmetrie ist der eigentliche Befund.** Die **Rules-Mechanik folgt dem
+Symlink** — das Regelwerk lädt. **Der Scanner folgt ihm nicht** — er prüft es
+nie. Zugestellt und ungeprüft in derselben Datei: das ist die Gestalt aus
+[`BEO-024`](../observations.md), diesmal nicht zwischen zwei Arbeitsweisen,
+sondern zwischen zwei Werkzeugen über **denselben** Pfad.
+
+**Ein dritter Punkt, den der Ansatz erbt:** die Symlinks zeigen auf einen
+**versions-gepinnten** Pfad (`…/v5.12.0/…`). Beim nächsten Baseline-Bump brechen
+alle 26 auf einmal — und weder `links` (nicht gescannt) noch
+`make baseline-verify` (prüft die gepinnten Dateien, nicht Aliase darauf) meldet
+es. Das ist die Klasse aus [`MR-021`](../../../../harness/conventions.md#mr-021),
+nur ohne den Sensor, der sie dort fängt.
+
+**Was der Ansatz besser kann, und das gehört gesagt:** er löst *„das Regelwerk
+ist nicht im Kontext"* **vollständig und ohne Heuristik** — kein Pfad-Raten,
+keine Hook-Zerlegung, keine Frage nach `PreToolUse` oder `PostToolUse`. Er
+bezahlt mit Kontext, dieser Slice bezahlt mit einer Heuristik. Beides ist
+kohärent; die Wahl ist eine Abwägung, keine Korrektur.
+
+**Für diesen Slice bleibt es beim Hook** — mit zwei Lehren aus der zweiten
+Referenz: die Zustell-Datei ist eine **echte** Datei, kein Symlink (sonst
+entfällt die Gate-Prüfung), und sie ist **verdichtet**, nicht das ganze
+Regelwerk (sonst entfällt der Zweck).
+
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Kein Kürzen von `AGENTS.md`.** Solange nicht gemessen ist, dass die
@@ -180,6 +232,9 @@ aber noch da — sie kommt dann nicht wieder. Das gehört zu den Nicht-Zusagen.
       unter `docs/plan/planning/` löst den Hook aus, ein `Edit`/`Write`-Zugriff
       ebenso, ein Zugriff außerhalb des Pfades **nicht**. Je Fall Erwartung und
       Ergebnis, Ausgabe im Slice.
+- [ ] Die Zustell-Datei ist eine **echte** Datei, kein Symlink — gemessen folgt
+      der Scanner Symlinks nicht in die Prüfmenge, eine symlinkte Zustellung
+      wäre also ungeprüft.
 - [ ] Jeder normative Satz der Zustellung trägt **beide** Bindungen: eine
       `d-check:cite`-Direktive auf den Wortlaut **und** einen Link auf den
       Regelwerk-Abschnitt; `make doc-check` prüft beides grün.
