@@ -107,6 +107,58 @@ das den ganzen Regelwerk-Baum so einhängt (Auskunft des Auftraggebers,
    Doppelung benannt (§5), nicht aufgelöst.
 6. `make gates`; **Review** und **Verifikation** als getrennte Läufe; Closure.
 
+
+### Was diese Zustellung **nicht** zusagt
+
+Fünf Nicht-Zusagen, ausgeschrieben statt implizit:
+
+1. **Sie ist werkzeug-lokal.** Nur dieses Werkzeug liest `.claude/rules/`; ein
+   fremder Agent liest [`AGENTS.md`](../../../../AGENTS.md) direkt und sieht von
+   den vier Modulen nichts ([`MR-042`](../../../../harness/conventions.md#mr-042)).
+   Anders als beim Befehls-Wächter ist das hier **inhärent** — Kontext lässt
+   sich nur dorthin einspeisen, wo einer ist.
+2. **Sie ist kein Gate.** Eingespeister Text ist Kontext, keine erzwungene
+   Konfiguration. Die Durchsetzung des Closure-Übergangs bleibt
+   [welle-86](../welle-86-closure-uebergang-durchsetzen.md); daran ändert diese
+   Zustellung nichts.
+3. **Ihr Inhalt ist nicht gate-geprüft.** Der Scanner folgt Symlinks nicht in
+   die Prüfmenge (gemessen) — `links`, `anchors` und `citations` sehen die
+   Ziele über den Alias nicht. Gehalten wird stattdessen zweierlei: die
+   **Integrität** der Ziele per SHA (`make baseline-verify`) und die
+   **Auflösung** der Aliase seit
+   [`MR-055`](../../../../harness/conventions.md#mr-055). Ungeprüft bleibt ein
+   Alias, der auf eine Datei **außerhalb** des gepinnten Baums zeigt.
+4. **Sie ersetzt `AGENTS.md` nicht.** Die Datei bleibt die werkzeug-neutrale
+   Quelle und gibt in diesem Slice **nichts** ab; die Doppelung zwischen ihren
+   §3/§5 und den Modulen besteht fort und ist als Risiko geführt.
+5. **Anwesenheit ist nicht Wirkung.** Belegt ist, dass die vier Module im
+   Kontext stehen. Ob sie das Verhalten ändern, ist nicht belegbar — der
+   Anlassfall bestand darin, dass niemand etwas vermisste, und er lässt sich
+   nicht wiederholen.
+
+### Der Nachfolge-Entscheid
+
+**Der Hook ist nicht verworfen, sondern nachrangig.** Er löst dieselbe Aufgabe
+pfad-gebunden und verdichtet, mit vier beweglichen Teilen (Pfad-Heuristik,
+Event-Wahl, Glob-Dialekt, JSON-Extraktion ohne `jq`). Er lohnt sich, **wenn der
+Preis drückt** — und der ist jetzt beziffert: **29,4k Token**. Das Kriterium
+steht damit fest, statt Geschmacksfrage zu sein: solange das Kontextfenster den
+Betrag trägt, ist die Zustellung ohne bewegliche Teile die bessere; wird er
+knapp, ist der Hook der Ausweg.
+
+**Weitere Module kommen erst, wenn ihr Fehlen belegt ist.** Die vier sind
+gewählt, weil ihr Fehlen einen Ausfall verursacht hat — nicht, weil sie die
+wichtigsten scheinen. Für jedes weitere gilt derselbe Maßstab; wer alle 26
+einhängt, zahlt 4787 Zeilen für eine Lücke, die vier erklären.
+
+**`AGENTS.md` kann jetzt zum ersten Mal etwas abgeben — und das ist ein eigener
+Schnitt.** Solange die Module nicht im Kontext waren, wäre jede gestrichene
+Zeile ein Verlust ohne Ersatz gewesen. Jetzt ist die Frage beantwortbar: welche
+Aussagen in `AGENTS.md` §3 und §5 stehen bereits in `modul-05`/`modul-06`, und
+welche sind **Adaptionen**, die der Kanon nicht trägt? Nur die erste Gruppe darf
+weichen — die zweite ist der Grund, warum die Datei existiert. Der Schnitt
+braucht eine **Messung** der Überlappung, keinen Rotstift.
+
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Kein Hook.** Er ist der spätere Schritt, nicht der erste: deterministisch
@@ -125,9 +177,10 @@ das den ganzen Regelwerk-Baum so einhängt (Auskunft des Auftraggebers,
 
 ## 4. Definition of Done
 
-- [ ] `.claude/rules/` trägt **vier** Symlinks auf `modul-01`, `modul-05`,
-      `modul-06`, `modul-08` des gepinnten Regelwerk-Baums; jeder löst auf, und
-      die Summe der Zielzeilen steht als Zahl im Slice.
+- [x] `.claude/rules/` trägt **vier** Symlinks auf `modul-01`, `modul-05`,
+      `modul-06`, `modul-08` des gepinnten Regelwerk-Baums; jeder löst auf
+      (`readlink -e`, alle vier OK), und die Summe der Zielzeilen ist **805**
+      von 4787 — gemessen, nicht geschätzt.
 - [x] **Die Zustellung ist belegt, und der Beleg nennt die Dateien.** `/memory`
       in einer **frischen** Sitzung führt die vier Module einzeln auf — mit
       ihren **aufgelösten Zielpfaden** (`.harness/baseline/v5.12.0/regelwerk/…`),
@@ -139,13 +192,13 @@ das den ganzen Regelwerk-Baum so einhängt (Auskunft des Auftraggebers,
       **28.9k** in der bauenden — **+29.4k**. Die Größenordnung passt: die vier
       Ziele wiegen **59 868 Bytes**, also rund **2,0 Bytes je Token**, für
       deutsche Prosa mit Tabellen und Inline-Code der erwartete Wert.
-- [ ] **Der Bump-Träger ist gewächtert, nicht nur benannt:** `make
+- [x] **Der Bump-Träger ist gewächtert, nicht nur benannt:** `make
       baseline-verify` meldet einen toten Symlink unter `.claude/rules/` —
       **gemessen** an einer Probe, mit Erwartung und Ergebnis; geführt als
       [`MR-055`](../../../../harness/conventions.md#mr-055).
-- [ ] Die **Nicht-Zusagen** stehen geschrieben: werkzeug-lokal, kein Gate,
+- [x] Die **Nicht-Zusagen** stehen geschrieben (§2, fünf Punkte): werkzeug-lokal, kein Gate,
       **nicht gate-geprüft** (Symlink), kein Ersatz für `AGENTS.md`.
-- [ ] Der Nachfolge-Entscheid ist benannt — ob der Hook folgt, ob weitere
+- [x] Der Nachfolge-Entscheid ist benannt (§2) — ob der Hook folgt, ob weitere
       Module dazukommen, und was `AGENTS.md` dann abgeben kann.
 - [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
       **Verifikation** gegen DoD — beide in eigenen Kontexten.
