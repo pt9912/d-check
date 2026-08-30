@@ -66,12 +66,22 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
    - **README — beide Sprachfassungen synchron halten:** `README.de.md` (Deutsch,
      **kanonische Quelle — zuerst ändern**) und danach `README.md` (Englisch,
      nachübersetzen). Bei einem neuen Modul in **jeder** Fassung: (a) die
-     **Status-Zeile** („alle N Regelmodule (…)" — Zahl *und* Enumeration *und* das
-     „zuletzt das Modul X"-Fragment) und (b) die **Modul-Liste** unter
-     §Was ist d-check ergänzen; das Intro-Framing prüfen, falls ein
+     **Dogfooding-Zeile** unter §Warum d-check — sie nennt eine **Zahl** („im
+     Vollausbau (N Module inkl. …)") **und** eine Enumeration, und beide zählen
+     die Module der [`.d-check.yml`](../../.d-check.yml), nicht alle
+     existierenden; und (b) die **Modul-Liste** unter §Was ist d-check
+     ergänzen — bei einer neuen **Bedingung** des Moduls `structure` zusätzlich
+     deren Anzahl („bis zu N Bedingungen") in derselben Aufzählung. Das
+     Intro-Framing prüfen, falls ein
      Nicht-Referenz-Modul (Content-Drift/Immutabilität/Versions/Traceability/Planning)
      neu ist. d-check prüft `links`/`anchors`/`ids`/`versions` in beiden READMEs, aber
      **nicht** die inhaltliche DE↔EN-Synchronität der Prosa.
+     **Diese Zeilen standen bis v0.70.0 falsch da, und der Grund war diese
+     Checkliste:** sie nannte eine „Status-Zeile (*alle N Regelmodule …*)", die
+     in **keiner** der beiden Fassungen existiert. Wer sie suchte, fand nichts
+     und hielt das für Erledigung — die Dogfooding-Zahl blieb zwei Monate bei
+     „acht Module", während die Konfiguration elf führte. **Eine Checkliste, die
+     auf eine nicht existierende Zeile zeigt, ist schlimmer als keine.**
    - **Das Datum kommt aus dem Kalender, nicht aus der Zeile darüber.** Ein
      Release berührt sieben Datumsstempel (`version.md` §Aktuell **und** §Verlauf,
      `CHANGELOG`-Überschrift, Handbuch-Kopf **und** §11-Zeile, die Historien von

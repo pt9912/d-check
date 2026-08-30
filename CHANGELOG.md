@@ -36,8 +36,11 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   ([`DC-FA-SPAN-001`](spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)),
   wer die Bedingung als Vorbedingung fährt, schaltet `spans` im selben Profil
   dazu. Ein negativer Wert ⇒ Exit 2. **Ohne den Schlüssel ist der Befundsatz
-  byte-identisch** — gemessen gegen ein aus dem Vor-Commit gebautes Image: 276
-  Befunde beidseits, `diff` leer
+  byte-identisch** — gemessen gegen ein aus dem Vor-Commit gebautes Image,
+  über dieselbe Prüfmenge beidseits gefahren, `diff` leer. Eine absolute
+  Befundzahl steht hier bewusst **nicht**: sie hängt am Korpus, und der wächst
+  mit jedem Slice — im eingefrorenen Release-Protokoll wäre sie nach einer
+  Woche nicht mehr reproduzierbar
   ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)).
 
 ### Changed

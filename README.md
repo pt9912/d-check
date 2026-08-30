@@ -244,8 +244,9 @@ spec, and both are measured, not asserted:
   ([`DC-FA-CONF-001`](spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
 - **Dogfooding:** d-check validates its own docs on every
   gate run — with the [self-configuration](.d-check.yml) fully
-  built out (eight modules incl. reference matrix, span artifacts,
-  host-path hygiene and version-pin consistency).
+  built out (**eleven** modules incl. reference matrix, span artifacts,
+  host-path hygiene, version-pin consistency, structure invariants,
+  diagram identifiers and verbatim citations).
 - **Container native-identical:** the image's finding output and exit code
   are byte-identical to native execution, tested automatically
   ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image));

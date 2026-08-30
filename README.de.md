@@ -133,7 +133,7 @@ Dokuments:
   Mindest-Sätze (`section-thin`), Task-Obergrenze (`section-oversized`),
   **offene** Task-Items auf den **rohen** Zeilen (`max-open-tasks` ⇒
   `section-tasks-open`, ein Befund je Haken auf **seiner** Zeile — anders als
-  `max-tasks` blind gegen die absatzweise Inline-Code-Paarung, dafür
+  `max-tasks` immun gegen die absatzweise Inline-Code-Paarung, dabei ebenso
   fence-treu),
   verbotenes bzw. gefordertes Muster (`section-forbidden`,
   `section-pattern-missing`), geforderte Marken (`section-marker-missing`),
@@ -248,8 +248,9 @@ Lastenhefts, und beide werden gemessen, nicht behauptet:
   ([`DC-FA-CONF-001`](spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)).
 - **Dogfooding:** d-check validiert die eigene Doku bei jedem
   Gate-Lauf — mit der [Selbstkonfiguration](.d-check.yml) im
-  Vollausbau (acht Module inkl. Referenzmatrix, Span-Artefakten,
-  Host-Pfad-Hygiene und Versions-Pin-Konsistenz).
+  Vollausbau (**elf** Module inkl. Referenzmatrix, Span-Artefakten,
+  Host-Pfad-Hygiene, Versions-Pin-Konsistenz, Struktur-Invarianten,
+  Diagramm-Kennungen und wortgleichen Zitaten).
 - **Container nativ-identisch:** Befund-Ausgabe und Exit-Code des
   Images sind byte-identisch zur nativen Ausführung, automatisiert
   getestet ([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image));
