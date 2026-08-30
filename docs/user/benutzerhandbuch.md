@@ -1984,6 +1984,8 @@ structure:
     non-empty: true
     # min-sentences: 4
     # max-tasks: 0
+    # tasks-ignore-pattern: '^\*\*Konstante:'   # Items, deren TEXT hinter der Checkbox
+    #                                             # so BEGINNT, zählen nicht mit (nur mit max-tasks)
     # forbid-pattern: 'TODO'
     # require-pattern: 'Beleg'
     # require-all: ["Beleg", "Lernsignal"]
@@ -2004,9 +2006,12 @@ structure:
     #                                             # zur Hinweis-Zeile in --doctor. Explizit leer
     #                                             # ⇒ Exit 2
     # exempt-paths: []
+    # exempt-section-pattern: '^### AC-0(0[1-9]|1[0-9])\b'   # Abschnitte, deren ROHE
+    #                                             # Überschriften-Zeile (samt #-Folge!) so
+    #                                             # matcht, prüft DIESE Regel nicht
 ```
 
-**Sechs Dinge, die überraschen können.** Erstens: eine Regel, die **keine** Datei
+**Acht Dinge, die überraschen können.** Erstens: eine Regel, die **keine** Datei
 trifft, meldet `section-missing` — auch dann, wenn erst `exempt-paths` die Menge
 geleert hat. Eine Regel zu schreiben ist die Behauptung, dass es die Dateien
 gibt; ein leer laufendes Gate darf nicht Erfolg melden. Zweitens: bei `section`
@@ -2083,6 +2088,36 @@ sichtbarer Text kurz ist. Und die Bedingung misst **eine** Spalte je Regel; wer
 mehrere begrenzen will, schreibt mehrere Regeln über denselben Abschnitt. Das
 geht, weil die Regel-Identität die benannte Spalte mitträgt — sonst wären zwei
 Befunde derselben Zeile nicht unterscheidbar.
+
+Achtens: eine Regel darf ihre **Grundmenge erklären**, und die zwei Schlüssel
+dafür sehen **verschiedene** Zeichenketten. `tasks-ignore-pattern` nimmt
+Task-Items aus der `max-tasks`-Zählung; verglichen wird der **Item-Text hinter
+der Checkbox**, nicht die Zeile — deshalb bedeutet `^` hier „das Item beginnt
+so". `exempt-section-pattern` nimmt **Abschnitte** aus der Regel; verglichen
+wird die **rohe Überschriften-Zeile samt `#`-Folge**, also genau das, was auch
+`section-pattern` sieht. Beide verkleinern nur; ohne sie ist das Verhalten
+byte-identisch.
+
+**Zwei Fallen, und beide sind gemessen.** Die erste: **verankern Sie das
+Ignorier-Muster.** Ein freies Substring-Muster nimmt still Punkte mit, die die
+Wendung nur **erwähnen** — an den 444 DoD-Items dieses Repos traf ein freies
+Muster 13 Items, davon **zwei** echte Liefer-Zusagen; die verankerte Form traf
+26 und **keine** falsche. Die zweite: **ein Muster auf einen Ausdruck in
+Backticks trifft nichts.** Die Zählung liest den bereinigten Text (Viertens),
+Inline-Code ist dort durch Leerzeichen ersetzt. Ein naheliegendes
+`tasks-ignore-pattern: 'make gates'` trifft in diesem Repo **null** von 444
+Items, weil die Wendung durchgängig als `` `make gates` `` geschrieben ist.
+Die Diagnose dafür steht in der Meldung: ist ein Muster gesetzt, nennt
+`section-oversized` die Zahl der ignorierten Items — *„Abschnitt trägt 4
+Task-Items (3 ignoriert), erlaubt sind 3"* —, und **`(0 ignoriert)` heißt: Ihr
+Muster wirkt nicht.**
+
+Diese Sichtbarkeit hat eine Grenze, die dazugehört: sie greift, **solange die
+Regel meldet**. Wer so breit ignoriert, dass die Schwelle nie fällt, sieht
+nichts. Für `exempt-section-pattern` gibt es dafür ein Netz: nimmt es **alle**
+Abschnitte, meldet die Regel `section-missing` und nennt den Schlüssel — sie
+wird nicht still grün. Und: die Ausnahme läuft **vor** der Kardinalitäts-Prüfung,
+zwei Treffer minus einer ausgenommenen sind bei `sections: one` also in Ordnung.
 
 **Messen Sie, bevor Sie eine Regel aktivieren.** In diesem Repo hat genau das
 eine Regel verhindert, die plausibel klang und falsch war: „abgeschlossener
