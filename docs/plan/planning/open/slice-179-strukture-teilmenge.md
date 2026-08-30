@@ -20,7 +20,7 @@ Bauform).
 [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
 und seine `.a`-Verfeinerung in der Spezifikation.
 
-**Verantwortlich:** — (bis zur Priorisierung).
+**Verantwortlich:** pt9912 (Implementer-Rolle, beansprucht 2026-08-30).
 
 **Autor:** pt9912. **Datum:** 2026-08-30.
 
@@ -155,8 +155,10 @@ sieht aus wie einer, der richtig filtert.
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): WIP-Limit frei — heute hält
-[slice-176](../done/slice-176-planning-rule-pilot.md) den Slot.
+**Start** (`open` → `in-progress`): WIP-Limit frei, beansprucht am 2026-08-30 —
+[slice-176](../done/slice-176-planning-rule-pilot.md) ist geschlossen, und die
+beiden anderen offenen Slices warten auf Vorbedingungen (slice-178 auf die
+Fence-Messung, slice-172 auf slice-178); dieser auf nichts.
 
 **Rückführungen:** `in-progress` → `open`, falls sich zeigt, dass die
 Sichtbarkeits-Zusage nicht tragfähig ist — dann ist die Frage, ob eine
@@ -189,9 +191,12 @@ ein anderer.
   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
   > **Offene Beobachtungen sichten.**
 
-- **Nachtlauf-Stand lesen:** entfällt in `open/` — der Block entsteht
-  **spätestens bei der Beanspruchung** (`open→in-progress`)
-  ([`MR-053`](../../../../harness/conventions.md#mr-053)).
+- **Nachtlauf-Stand lesen** (`make nightly-state`,
+  [`MR-053`](../../../../harness/conventions.md#mr-053)): beide Achsen melden
+  **gruen** — `upstream-drift.yml` zuletzt 2026-08-29T07:34:35Z,
+  `image-scan.yml` 2026-08-29T10:07:43Z. **Dieser Block trägt bewusst keine
+  `cite`-Direktive** — sein Ziel ist eine Repo-Adaption, kein
+  Baseline-Abschnitt ([`MR-054`](../../../../harness/conventions.md#mr-054)).
 
 Slice-ID: slice-179. Betroffene IDs:
 [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in).
