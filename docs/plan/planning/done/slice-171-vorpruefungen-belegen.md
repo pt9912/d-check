@@ -251,4 +251,4 @@ die Probe darauf, dass die Antwort mehr ist als ein Text.
 **Was der Slice ausdrücklich nicht liefert:** einen Sensor. Ein Plan ganz ohne
 Direktiven ist grün — die Adaption wirkt über Zustellung und Review. Die
 Durchsetzung ist [welle-86](../welle-86-closure-uebergang-durchsetzen.md), die
-pfad-gebundene Zustellung [slice-176](../open/slice-176-planning-rule-pilot.md).
+pfad-gebundene Zustellung [slice-176](../in-progress/slice-176-planning-rule-pilot.md).
