@@ -83,6 +83,9 @@ und `## 5.`, während beide Slices ihre DoD als **§3** führen — also §4
 *Risiken*. Beide Fassungen sind
 [`BEO-020`](../observations.md); die zweite entstand beim Korrigieren der
 ersten.
+
+**Der Preis aus [ADR-0059](../../adr/0059-closure-waechter-weicht-structure-regel.md)
+bleibt richtig für Prosa — und wird zu teuer für eine
 Vorbedingung.** Der Entscheid hat die Paarung gegen eine Falsch-Positiv-Klasse
 entschieden und den Preis benannt. Diese Abwägung bleibt richtig für Prosa. Für
 eine **Closure-Vorbedingung** kippt sie: ein Wächter, den ein Tippfehler
@@ -268,6 +271,32 @@ Die Umsetzung ist zurückgenommen, die Messungen bleiben in §2, und
 `## Geschichte`-Zeilen stehen — eine `Accepted`-Entscheidung verschwindet nicht
 mit ihrer Umsetzung, und das Immutable-Gate hat den Löschversuch abgewiesen.
 
+**Dritte Beanspruchung am 2026-08-30** (`open` → `in-progress`): **die
+Vorbedingung aus der Rückführung ist überholt, und das ist gemessen.** Der
+Entscheid lautete *„erst die Fence-Lexik selbst"*; er fiel, als `spans` im
+Closure-Profil **nicht** lief. Zwei Messungen von heute:
+
+- **Die Blindstelle zerfällt in zwei Fälle, und nur einer ist die Lexik-Frage.**
+  Ein **vergessener** Schluss-Fence blendet alles Folgende aus — das tut die
+  CommonMark-Lesart **genauso**, eine offene Fence läuft dort bis Dateiende. Ein
+  Lexik-Wechsel behebt diesen Fall also nicht; ihn fängt `fence-unclosed`, und
+  das Closure-Profil fährt `spans` seit
+  [slice-180](../done/slice-180-closure-profil-spans.md)
+  ([ADR-0077](../../adr/0077-spans-am-bindepunkt-die-begruendung-traegt-anders.md)).
+  Nur der **naiv ausgeglichene** Fence — eine Zeile, die der Toggle als
+  Schließer liest und CommonMark nicht — ist die Lexik-Divergenz.
+- **Diese Divergenz hat im Bestand null Realfälle.** Beide Automaten über alle
+  620 Markdown-Dateien gegeneinander gefahren: der **einzige** Treffer ist die
+  Prosa von
+  [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md), die den
+  Unterschied beschreibt. Dieselbe ADR hat die Frage **ausdrücklich offen
+  gelassen** und ihre Bedingung benannt — sie bekommt *„erst eine Regel, wenn
+  ein Realfall existiert"*. Es existiert keiner.
+
+**Entscheid des Auftraggebers 2026-08-30:** diesen Slice jetzt bauen; Fall 2
+bleibt eine **benannte Grenze** mit dieser Messung, statt einen Lexik-Umbau
+gegen die eigene Bedingung von [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) vorzuziehen.
+
 **Rückführungen:** `in-progress` → `open`, falls sich zeigt, dass die rohe
 Lesung im eigenen Bestand mehr Falsch-Positive erzeugt als die Blindstelle
 Falsch-Negative — dann ist die Abwägung eine andere, und [ADR-0059](../../adr/0059-closure-waechter-weicht-structure-regel.md)s Preis bleibt
@@ -306,8 +335,9 @@ der bessere.
 
 - **Nachtlauf-Stand lesen** (`make nightly-state`,
   [`MR-053`](../../../../harness/conventions.md#mr-053)): beide Achsen melden
-  **gruen** — `upstream-drift.yml` zuletzt 2026-08-29T07:34:35Z,
-  `image-scan.yml` 2026-08-29T10:07:43Z. **Dieser Block trägt bewusst keine
+  **gruen** — bei der dritten Beanspruchung neu gelesen,
+  `upstream-drift.yml` zuletzt 2026-08-30T06:08:17Z, `image-scan.yml`
+  2026-08-30T09:16:25Z. **Dieser Block trägt bewusst keine
   `cite`-Direktive** — sein Ziel ist eine Repo-Adaption, kein
   Baseline-Abschnitt ([`MR-054`](../../../../harness/conventions.md#mr-054)).
 
