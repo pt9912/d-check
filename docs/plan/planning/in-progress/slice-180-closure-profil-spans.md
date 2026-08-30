@@ -118,23 +118,39 @@ nichts falsch ist.
 
 ## 4. Definition of Done
 
-- [ ] `make verify-closure-notes` fährt `spans`; **gemessen vorher und
-      nachher**: Befundzahl über den Bestand unverändert (heute 0 aus `spans`).
-- [ ] **Die neue Deckung ist belegt, nicht behauptet:** eine Probe mit
-      vergessenem Schluss-Fence im `done/`-Abschnitt läuft gegen das Profil
-      **vorher grün und nachher rot** (`fence-unclosed`).
-- [ ] Vier Deklarations-Flächen tragen die dritte Modul-Angabe:
-      `AGENTS.md` §4, Sensors-Tabelle, `##`-Hilfetext, Profil-Kopfkommentar —
-      `make gate-consistency` grün.
-- [ ] Eine ADR begründet Verortung (Rezept statt `modules:`), Deckung und die
-      **Nicht**-Änderung der Fence-Lexik; im [ADR-Index](../../adr/README.md)
-      eingetragen.
-- [ ] [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) trägt die
-      Neu-Messung als `## Geschichte`; `make adr-check` grün.
-- [ ] [slice-178](../open/slice-178-offene-tasks-roh.md) §1 nennt die richtige
-      Zähl-Einheit; [`BEO-020`](../observations.md) ist fortgeschrieben.
-- [ ] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
-      Review**; **Verifikation** gegen DoD — beide in eigenen Kontexten.
+- [x] `make verify-closure-notes` fährt `spans`; **gemessen vorher und
+      nachher**: 546 Dateien, 0 Befunde, Exit 0 unter beiden Rezepten — der
+      Bestand bleibt unverändert. Dass `spans` dabei nicht bloß schweigt,
+      belegt die Probe darunter, nicht der grüne Lauf.
+- [x] **Die neue Deckung ist belegt, nicht behauptet:** ein echter
+      `done/`-Slice als Fixture, unverändert **grün** (Exit 0), mit angehängtem
+      offenem Fence **rot** (`fence-unclosed`, Exit 1). Die **erste** Probe war
+      schon vorher rot und belegte damit nichts — verworfen
+      ([`BEO-023`](../observations.md)). Die Verifikation hat eine **Kontrolle**
+      ergänzt, die zeigt, dass das Vorher-Grün nicht leer ist.
+- [x] Vier Deklarations-Flächen tragen die dritte Modul-Angabe und **alle drei**
+      Grund-Codes: `AGENTS.md` §4, Sensors-Tabelle, `##`-Hilfetext,
+      Profil-Kopfkommentar — `make gate-consistency` grün (611/0). **Benannte
+      Grenze, gemessen:** dieser Lauf hält sie **nicht** gegeneinander —
+      `targets` vergleicht Target-Namen, keine Beschreibungstexte.
+- [x] [ADR-0077](../../adr/0077-spans-am-bindepunkt-die-begruendung-traegt-anders.md)
+      begründet Verortung, **Unabhängigkeit statt Deckung** und die
+      **Nicht**-Änderung der Fence-Lexik; sie löst
+      [ADR-0076](../../adr/0076-spans-am-closure-bindepunkt.md) ab, deren
+      tragende Begründung der Review widerlegt hat. Beide im
+      [ADR-Index](../../adr/README.md).
+- [x] [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) trägt die
+      Neu-Messung als `## Geschichte`; `make adr-check` grün (611/0).
+- [x] [slice-178](../open/slice-178-offene-tasks-roh.md) §1 steht auf dem
+      Gemessenen: die **ursprünglichen** Zahlen 25/45 sind richtig, falsch war
+      die Folgerung „ungerade ⇒ exponiert". [`BEO-020`](../observations.md) auf
+      Zähler **4** — die vierte Instanz ist meine eigene Fehl-Korrektur.
+- [x] `make gates` (611 Dateien, 0 Befunde, Exit 0) und `make fullbuild` grün;
+      [**unabhängiger Review**](../../../reviews/2026-08-30-slice-180-closure-profil-spans-review.md)
+      (3 HIGH · 2 MEDIUM · 2 LOW · 2 INFO, blockierend) und
+      [**Verifikation**](../../../reviews/2026-08-30-slice-180-closure-profil-spans-verifikation.md)
+      (A-1 bis A-8) in eigenen Kontexten gelaufen, alle Befunde eingearbeitet
+      und die strittigen Messungen vorher selbst nachgefahren.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -143,18 +159,34 @@ nichts falsch ist.
   `span-nested-link`. Heute 0 Befunde, aber `spans` prüft den ganzen
   `done/`-Bestand mit; ein künftiger Slice mit unbalanciertem Absatz blockiert
   dann die Closure statt nur die Prosa zu trüben. Das ist gewollt und trotzdem
-  ein Risiko. — **Ausgang:** *(bei Closure)*
+  ein Risiko. — **Ausgang:** weiter offen, und **um einen Grund-Code breiter**,
+  als dieser Punkt annahm: `span-nested-link` steht seit dem Review in allen
+  vier Deklarations-Flächen. Bestands-Rauschen weiterhin null.
 - **Die Messung „0 Abweichungen in 676 Dateien" ist eine Aussage über
   **diesen** Bestand.** Ein Adopter mit anderer Schreibweise kann die Divergenz
-  haben; dieser Slice sagt über ihn nichts. — **Ausgang:** *(bei Closure)*
+  haben; dieser Slice sagt über ihn nichts. — **Ausgang:** weiter offen, und der
+  Nenner ist jetzt benannt — 678 Pfade (`find -L`), eine Obermenge der 661
+  getrackten. Über einen fremden Bestand sagt der Slice weiterhin nichts, und
+  die Messung selbst ist modellierungs-kritisch: unter der falschen
+  Öffner-Lesart ergäbe derselbe Baum eine divergente Datei.
 - **`spans` deckt den umschließenden Span nicht**, und die DoD sagt das auch
   nicht zu. Wer die Tabelle in §1 quer liest, könnte „Closure-Bindepunkt sieht
-  jetzt alles" mitnehmen. — **Ausgang:** *(bei Closure)*
+  jetzt alles" mitnehmen. — **Ausgang:** weiter offen. Der Review hat den Punkt
+  bestätigt und verschärft: nicht nur `spans` deckt den umschließenden Span
+  nicht — **kein** Modul kann es, weil das Item dort per CommonMark Code ist.
+  Die Nicht-Zusage steht jetzt in vier Flächen statt in dreien.
 - **Der Bindepunkt bleibt außerhalb von `gates`.** Ein Defekt fällt erst bei
   `make fullbuild` auf, also spät. Das ist die Bindepunkt-Trennung aus
   [ADR-0048](../../adr/0048-closure-note-struktur-im-planning-modul.md) und
   keine Regression — aber es begrenzt, was dieser Slice einlöst. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** **eingetreten, und anders als erwartet** — dieser Punkt sagte,
+  der Defekt falle erst bei `make fullbuild` auf. Gemessen fällt er beim
+  **Commit** auf, weil `make doc-check` in `gates` und im `pre-commit`-Hook
+  läuft und die Scan-Menge des Bindepunkts eine Teilmenge ist. Der Zuwachs an
+  gefundenen Defekten ist null. Aufgefangen von
+  [ADR-0077](../../adr/0077-spans-am-bindepunkt-die-begruendung-traegt-anders.md),
+  die die Begründung auf die **Unabhängigkeit** des Bindepunkts stellt und
+  [ADR-0076](../../adr/0076-spans-am-closure-bindepunkt.md) ablöst.
 
 ## 6. Trigger
 
@@ -216,3 +248,74 @@ und zwei ADR-Vorgänge; kein Produkt-Code, kein Fremdsystem, keine
 Reconciliation, kein Bestand, der umgestellt werden müsste.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert, und die Begründung dafür ist eine andere als die geplante.** Der
+Closure-Bindepunkt fährt `spans`; ein vergessener Schluss-Fence macht dort
+keine Zusage mehr still wahr. **Der Zuwachs an gefundenen Defekten ist
+null** — das Hauptprofil meldet denselben `fence-unclosed` schon beim Commit,
+und die 546 Dateien des Bindepunkts sind eine Teilmenge seiner 608. Gekauft ist
+die **Unabhängigkeit** von einem fremden Profil, nicht neue Deckung.
+
+**Die tragende Begründung war falsch, und ein Review hat sie widerlegt.**
+[ADR-0076](../../adr/0076-spans-am-closure-bindepunkt.md) nannte den
+vergessenen Fence *„die einzige, die heute niemand sieht"*. Der Slice-Plan
+hatte es in §1 genauer — *„zwei Defekte, die das Produkt **längst** findet"* —,
+und auf dem Weg in die ADR ist die Einschränkung verlorengegangen. Weil das der
+**Grund** der Entscheidung ist und kein Detail, geht die Korrektur nicht als
+Errata durch, sondern als Folge-ADR
+([ADR-0077](../../adr/0077-spans-am-bindepunkt-die-begruendung-traegt-anders.md),
+`supersedes`) — Entscheid des Auftraggebers aus drei vorgelegten Optionen, die
+dritte war die Rücknahme.
+
+**Zwei weitere Zusagen derselben ADR hielten nicht.** Sie schrieb, `make
+gate-consistency` halte den `##`-Hilfetext gegen die Doku; gemessen vergleicht
+`targets` Target-**Namen**, und der Lauf bleibt grün, wenn man den Hilfetext
+verfälscht **oder** `--enable spans` aus dem Rezept entfernt. Es hält also
+**kein** Sensor die vier Deklarations-Flächen gegen das Rezept — das steht
+jetzt als benannte Grenze statt als Zusage. Und `non-empty: true` macht den
+Fall, auf dem der Entscheid steht, **nicht** laut; die verworfene Alternative
+war schwächer, als ich ihr zugestand.
+
+**Die teuerste Lehre ist eine über das Korrigieren.** Meine Richtigstellung an
+[slice-178](../open/slice-178-offene-tasks-roh.md) §1 ersetzte zwei
+**richtige** Zahlen durch zwei falsche: mein Zähl-Bereich lief von `## 4.` bis
+`## 5.`, während beide Slices ihre DoD als **§3** führen — gezählt war §4
+*Risiken*. Falsch war an der ursprünglichen Aussage nie die Zahl, sondern die
+Folgerung *„ungerade ⇒ exponiert"*: eine ungerade Backtick-Zahl heißt, dass der
+letzte Backtick nichts schließt, also wird gar nichts entfernt. Verschluckt
+wird ein Item nur von einer Spanne, die es **umschließt**. Positiv-Kontrolle
+gefahren — an denselben Absatz ein `- [ ]` angehängt, die Regel meldet, trotz
+der 25 Backticks.
+
+**Und der zweite Fehlschluss derselben Art im selben Absatz:** *„`spans` meldet
+nichts, also ist die Exposition null"*. `spans` schweigt bei einer
+**wohlgeformten** Spanne konstruktionsbedingt; sein Schweigen belegt keine
+Abwesenheit. Das Fazit stimmt trotzdem — repo-weit verschwinden sechs
+Task-Items durch wohlgeformte Spannen, alle bewusste Prosa über den Marker.
+Beides ist [`BEO-020`](../observations.md), und beides fand der zweite Leser.
+
+**Was der Slice über das Werkzeug hinaus gezeigt hat:** eine Messung, die eine
+Zahl korrigiert, muss zuerst den **Bereich** prüfen, aus dem die alte stammt.
+Eine falsche Zahl und ein falscher Ausschnitt sehen im Ergebnis identisch aus —
+und wer den Ausschnitt nicht nennt, kann den Fehler nicht sehen. Das ist die
+Prozedur, die `BEO-020` seit heute zusätzlich trägt.
+
+**Die Fence-Frage bleibt, wo sie war.** Beide Lesarten des Produkts liegen über
+678 Pfaden ohne eine einzige Abweichung; der offene Punkt (a) aus
+[ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) ist erneut
+gemessen und bleibt unbelegt. Die Verifikation hat dabei belegt, dass die
+Messung **modellierungs-kritisch** ist: unter der falschen Öffner-Lesart ergäbe
+derselbe Baum eine divergente Datei — die veröffentlichte Null ist die der
+richtigen.
+
+**Fortgeschrieben:** [`BEO-020`](../observations.md) auf Zähler **4** (die
+vierte Instanz entstand beim Korrigieren der dritten),
+[`BEO-023`](../observations.md) auf **4** — dort als **Antwort** statt als
+Defekt: die erste Vorher/Nachher-Probe war schon vorher rot und belegte nichts.
+
+**Was offen bleibt und wohin es gehört:** dass kein Sensor das Rezept gegen die
+vier Deklarations-Flächen hält, ist benannt und nicht geschlossen — ein
+eigener Schnitt, falls er je gewollt ist.
+[slice-178](../open/slice-178-offene-tasks-roh.md) ist damit entsperrt, seine
+Dringlichkeit aber gesenkt: er steht auf dem konstruierten Fall, nicht auf
+einem Bestands-Fund.
