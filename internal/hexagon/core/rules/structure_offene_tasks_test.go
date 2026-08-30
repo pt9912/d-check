@@ -1,6 +1,7 @@
 package rules
 
 import (
+	"regexp"
 	"testing"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
@@ -132,6 +133,18 @@ func TestMaxOpenTasks_NurImAbschnitt(t *testing.T) {
 	if f := laufe(t, drin, rohRule()); len(f) != 1 || f[0].Line != 6 {
 		t.Fatalf("dasselbe Item innerhalb muss auf Zeile 6 melden, got %+v", f)
 	}
+	// DIE GRENZE IST BEIDSEITIG SCHARF: das Item auf der LETZTEN Zeile des
+	// Abschnitts gehoert noch dazu. Ohne diese Zusage liesse sich der Bereich
+	// um eine Zeile verkuerzen, ohne dass ein Test rot wird.
+	rand := "# D\n\n## DoD\n\n- [ ] letzte Zeile des Abschnitts\n## Anderes\n\nText.\n"
+	if f := laufe(t, rand, rohRule()); len(f) != 1 || f[0].Line != 5 {
+		t.Fatalf("das Item direkt vor der naechsten Ueberschrift zaehlt mit, got %+v", f)
+	}
+	// Und am DATEIENDE, wo keine naechste Ueberschrift folgt.
+	ende := "# D\n\n## DoD\n\n- [ ] letzte Zeile der Datei\n"
+	if f := laufe(t, ende, rohRule()); len(f) != 1 || f[0].Line != 5 {
+		t.Fatalf("das Item auf der letzten Dateizeile zaehlt mit, got %+v", f)
+	}
 }
 
 // EIN ABWESENDER SCHLUESSEL IST DIE BEDINGUNG AUS — und die explizite Null ist
@@ -163,19 +176,28 @@ func TestMaxOpenTasks_InlineCodeGrenze(t *testing.T) {
 	}
 }
 
-// DIE LEXIK IST GETEILT, NICHT KOPIERT: offenerHaken erkennt genau die Zeilen,
-// die taskItemRE erkennt, verengt auf die leere Box. Ein zweites RE2 waere ein
-// woertliches Praefix des ersten und driftete beim ersten Zusatz still
-// auseinander (BEO-003).
-func TestOffenerHaken_TeiltDieLexikMitTaskItemRE(t *testing.T) {
-	for _, l := range []string{
-		"- [ ] a", "* [ ] a", "+ [ ] a", "1. [ ] a", "   - [ ] a", "-\t[ ] a",
-		"- [x] a", "- [X] a", "kein Item", "> - [ ] a", "- [\t] a", "",
-	} {
-		erkannt := taskItemRE.MatchString(l)
-		offen := offenerHaken(l)
-		if offen && !erkannt {
-			t.Fatalf("%q gilt als offener Haken, ist aber gar kein Task-Item", l)
-		}
+// DIE LEXIK IST GETEILT, NICHT KOPIERT — und diese Probe faengt die Doppelung,
+// statt sie nur zu behaupten: sie ERWEITERT taskItemRE um eine Form, die es
+// heute nicht gibt, und verlangt, dass offenerHaken ihr folgt. Ein zweites RE2
+// neben taskItemRE — ein woertliches Praefix, wie es der Vorgaenger-Bau hatte —
+// folgt ihr NICHT und macht diesen Test rot (BEO-003).
+//
+// Die naheliegende Form ("offenerHaken trifft nur, was taskItemRE trifft") kann
+// das nicht: offenerHaken LIEST den Treffer von taskItemRE, die Bedingung ist
+// per Konstruktion unerfuellbar, und der Test waere gruen ohne zu messen
+// (BEO-023).
+func TestOffenerHaken_FolgtDerErweitertenLexik(t *testing.T) {
+	orig := taskItemRE
+	t.Cleanup(func() { taskItemRE = orig })
+
+	if offenerHaken("1) [ ] runde Klammer") {
+		t.Fatalf("VORZUSTAND: die runde Klammer gehoert heute NICHT zur Lexik")
+	}
+	taskItemRE = regexp.MustCompile(`^[ \t]*(?:[-*+]|[0-9]+[.)])[ \t]+\[[ xX]\]`)
+	if !offenerHaken("1) [ ] runde Klammer") {
+		t.Fatalf("offenerHaken folgt der erweiterten Lexik nicht — es gibt ein zweites Muster")
+	}
+	if offenerHaken("1) [x] runde Klammer") {
+		t.Fatalf("die Verengung auf die LEERE Box haelt nicht mit")
 	}
 }

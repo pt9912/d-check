@@ -60,8 +60,9 @@ func SectionEnd(lines []string, headingNo, level int) int {
 // Überschrift und dem Abschnitts-Ende, mit entfernten Fenced-Code-Blöcken und
 // geleerten Inline-Code-Spans (dieselbe Vorverarbeitung wie im übrigen
 // Scanner). Die Bedingungen beider Konsumenten arbeiten auf diesem Text —
-// mit zwei benannten Ausnahmen: die Chronologie-Monotonie liest die rohen
-// Abschnitts-Zeilen, die Überschriften-Bedingung die Überschriften selbst.
+// mit VIER benannten Ausnahmen: Chronologie-Monotonie, Zellenlaenge und die
+// offenen Task-Items lesen die rohen Abschnitts-Zeilen, die
+// Überschriften-Bedingung die Überschriften selbst.
 func SectionProse(content []byte, lines []string, headingNo, level int) string {
 	end := SectionEnd(lines, headingNo, level)
 	var b []byte

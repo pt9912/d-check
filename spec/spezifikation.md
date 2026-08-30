@@ -2190,12 +2190,17 @@ getroffenen Dateien.
    ([`DC-FA-LINK-001.a`](#dc-fa-link-001a--markdown-vorverarbeitung-und-link-extraktion)
    Schritte 1–2) und dieselbe wie beim Preset-Partner
    ([`DC-FA-PLAN-001.a`](#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning)
-   Schritt C4). Alle Bedingungen arbeiten auf **diesem** Text — mit **zwei**
-   benannten Ausnahmen: die Chronologie-Bedingung (`table.order`, Schritt 6)
-   liest die **rohen** Abschnitts-Zeilen, weil die Bereinigung Inline-Code
-   leert und reale Schlüsselspalten genau dort stehen; die
-   Überschriften-Bedingung (`headings-match`, Schritt 6) liest die
-   Überschriften selbst. Die Folge gehört
+   Schritt C4). Alle Bedingungen arbeiten auf **diesem** Text — mit **vier**
+   benannten Ausnahmen. **Drei lesen die rohen Abschnitts-Zeilen:** die
+   Chronologie-Bedingung (`table.order`, Schritt 6), weil die Bereinigung
+   Inline-Code leert und reale Schlüsselspalten genau dort stehen; die
+   Zellenlängen-Bedingung (`table.column`, Schritt 6) aus demselben Grund; und
+   die Bedingung über offene Task-Items (`max-open-tasks`, Schritt 6), weil die
+   Inline-Code-Paarung **absatzweise** ist und ein einzelner überzähliger
+   Backtick den Rest des Absatzes unsichtbar machte — für eine Zusage, die eine
+   Closure-Vorbedingung trägt, ist das kein tragbarer Preis. **Die vierte**
+   liest einen anderen Text: die Überschriften-Bedingung (`headings-match`,
+   Schritt 6) die Überschriften selbst. Die Folge gehört
    dazugesagt: ein `forbid-pattern`, das auf ein Wort in Backticks zielt, trifft
    **nicht** — Inline-Code ist Code, kein Fließtext.
 6. **Bedingungen prüfen**, jede optional, jede mit **eigenem** Grund-Code, damit
@@ -2207,6 +2212,7 @@ getroffenen Dateien.
    | `non-empty` | der bereinigte Text mindestens ein Nicht-Whitespace-Zeichen trägt | `section-empty` |
    | `min-sentences` | die Zahl der Satzende-Zeichen (`.`, `!`, `?`) ≥ Schwelle ist — gezählt wird nur, was **vor Whitespace oder Zeilenende** steht, wie beim Preset-Partner | `section-thin` |
    | `max-tasks` | die Zahl der **Task-Items** ≤ Schwelle ist — abzüglich der von `tasks-ignore-pattern` getroffenen | `section-oversized` |
+   | `max-open-tasks` | die Zahl der **offenen** Task-Items ≤ Schwelle ist — gezählt auf den **rohen** Abschnitts-Zeilen (nicht auf dem bereinigten Text) über dieselbe Task-Item-Lexik wie `max-tasks`, verengt auf die leere Box | `section-tasks-open` **je Item über der Schwelle, auf seiner Zeile**; die ersten `max-open-tasks` in Dokument-Reihenfolge melden nicht |
    | `forbid-pattern` | das Muster **nicht** matcht | `section-forbidden` |
    | `require-pattern` | das Muster matcht | `section-pattern-missing` |
    | `require-all` | **jede** Marke vorhanden ist | `section-marker-missing` |
@@ -2366,12 +2372,27 @@ getroffenen Dateien.
      gemeldet wird der Überhang. Sonst meldete eine Verletzung auch die
      erlaubten Items, und keiner der Befunde wäre die Reparaturstelle.
    - **Abschnittsgrenze.** Gezählt wird bis zur nächsten Überschrift derselben
-     oder höherer Ebene, nicht dateiweit.
+     oder höherer Ebene, nicht dateiweit. **Folge bei `sections: each` über
+     einen Selektor, der mehrere Ebenen trifft:** die Abschnitte
+     **überlappen** — ein Item unter einer tieferen Überschrift zählt für
+     **beide**, und der Befund des äußeren Abschnitts kann damit auf einer
+     Zeile liegen, deren eigener Abschnitt die Schwelle einhält. Das gilt für
+     jede Bedingung dieses Moduls gleich und ist eine Eigenschaft der
+     Selektor-Wahl, keine dieser Bedingung.
    - **Grenze, benannt statt zugesagt:** eine **einzeilige** Inline-Code-Spanne
      meldet **nicht** — das Muster ist zeilen-verankert, und der Backtick steht
      vor dem Listen-Marker; eine **mehrzeilige** zählt mit. Ein Task-Item im
      Blockquote (`> - [ ]`) und eine Box mit Tabulator (`- [\t]`) zählen für
      **keine** der beiden Bedingungen — Eigenschaft der geteilten Lexik.
+   - **Die stille Grenze: ein vergessener Schluss-Fence blendet alles Folgende
+     aus.** Die Zeilen-Auswahl aus Schritt 1 gilt bis Dateiende, wenn kein
+     Schluss kommt; ein offenes Item dahinter wird nicht mehr gesehen, und die
+     Bedingung meldet grün, ohne geprüft zu haben. **Die rohe Lesung behebt das
+     nicht** — sie löst den Inline-Code-Ausfall, nicht den Fence-Ausfall. Den
+     Fall meldet `fence-unclosed`
+     ([`DC-FA-SPAN-001`](lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)),
+     also ein **anderes** Modul; wer diese Bedingung als Vorbedingung eines
+     Übergangs führt, fährt beide im selben Profil.
 7. **Befund-Form.** `file` = die geprüfte Datei (bzw. der Glob in Schritt 2),
    `rule` = `structure`, `target` = die **Regel-Identität** (`files`-Glob und
    Abschnitts-Selektor), `line` = Zeile der Abschnitts-Überschrift (bzw. 1) —
@@ -2912,7 +2933,7 @@ Exit 2 ohne Prüfung
 | `structure[].sections` | string | `one` | `one` = genau ein Treffer erwartet (0 ⇒ `section-missing`, > 1 ⇒ `section-ambiguous` + Abbruch für diese Datei); `each` = jeder Treffer wird geprüft (für **wiederkehrende** Abschnitte, 0 ⇒ `section-missing`). Anderer Wert ⇒ Exit 2 |
 | `structure[].non-empty` | bool | `false` | der bereinigte Abschnitts-Text muss mindestens ein Nicht-Whitespace-Zeichen tragen ⇒ sonst `section-empty` |
 | `structure[].min-sentences` | int | abwesend (aus) | Mindestzahl der Satzende-Zeichen (`.`, `!`, `?`) im bereinigten Abschnitts-Text — Fenced-Code entfernt **und Inline-Code geleert** —, gezählt nur, was **vor Whitespace oder Zeilenende** steht (`a.b.c.d.` ⇒ **eins**, nicht vier) ⇒ sonst `section-thin`; **explizit** < 1 ⇒ Exit 2 |
-| `structure[].max-tasks` | int | abwesend (aus) | Obergrenze der Task-Items **im Abschnitt**, nicht dateiweit ⇒ sonst `section-oversized`; **explizit** < 0 ⇒ Exit 2 |
+| `structure[].max-tasks` | int | abwesend (aus) | Obergrenze der Task-Items **im Abschnitt**, nicht dateiweit ⇒ sonst `section-oversized`; **explizit** < 0 ⇒ Exit 2. **Abgrenzung zu `max-open-tasks`:** dieses zählt **alle** Items auf dem **bereinigten** Text und teilt dessen Blindstelle — ein überzähliger Backtick im Absatz macht den Rest unsichtbar; wer eine Zusage über **offene** Items braucht, die daran nicht abschaltet, nimmt den rohen Nachbarn |
 | `structure[].max-open-tasks` | int | abwesend (aus) | Obergrenze der **offenen** Task-Items im Abschnitt, gezählt auf den **rohen** Zeilen ⇒ `section-tasks-open` **je Item auf seiner Zeile**; die ersten `max-open-tasks` in Dokument-Reihenfolge sind erlaubt. Erkannt über dieselbe Task-Item-Lexik wie `max-tasks`, verengt auf die leere Box — kein zweites Muster. Fence-treu; eine **mehrzeilige** Inline-Code-Spanne zählt mit, eine einzeilige nicht. Explizit gesetzt < 0 ⇒ Exit 2. **Abgrenzung zu `max-tasks`:** jenes zählt **alle** Items auf dem **bereinigten** Text |
 | `structure[].tasks-ignore-pattern` | string | leer (aus) | RE2 gegen den **Item-Text hinter Listen-Marker und Checkbox** (nicht die Zeile — sonst bezeichnete `^` immer den Marker und die verankerte Form wäre unschreibbar); Treffer zählen für `max-tasks` **nicht** mit. Gelesen wird der **bereinigte** Text: ein Muster auf einen Ausdruck in **Backticks** trifft Leerzeichen. Ist der Schlüssel gesetzt, nennt die Meldung die Zahl der ignorierten Items — **auch bei null**; ein `hint` derselben Regel **ersetzt** sie. Nicht kompilierend ⇒ Exit 2; **ohne** `max-tasks` ⇒ Exit 2 (halbe Aktivierung) |
 | `structure[].forbid-pattern` | string | leer | RE2 gegen den **gesamten** bereinigten Abschnitts-Text; Treffer ⇒ `section-forbidden` |

@@ -2520,7 +2520,7 @@ Grund-Code, weil jede eine andere Reparatur verlangt:
 |---|---|---|
 | `non-empty` (bool) | `section-empty` | Inhalt schreiben |
 | `min-sentences` (int ≥ 1) | `section-thin` | Substanz ergänzen |
-| `max-tasks` (int ≥ 0; erklärte Teilmenge über `tasks-ignore-pattern`) | `section-oversized` | zerlegen statt dehnen |
+| `max-tasks` (int ≥ 0; erklärte Teilmenge über `tasks-ignore-pattern`) — **alle** Items, **bereinigter** Text | `section-oversized` | zerlegen statt dehnen |
 | `max-open-tasks` (int ≥ 0) — **offene** Task-Items, gezählt auf den **rohen** Zeilen | `section-tasks-open` | den Haken setzen oder den Punkt auflösen |
 | `forbid-pattern` (RE2) | `section-forbidden` | die Wendung ersetzen |
 | `require-pattern` (RE2) | `section-pattern-missing` | die zugesagte Aussage nachtragen |
@@ -2546,7 +2546,7 @@ Konfigurations-Muster deckt nur die Form, die sein Autor aufschrieb.
 steht; die ersten `max-open-tasks` Items in Dokument-Reihenfolge sind erlaubt
 und melden nicht.
 
-**Drei Grenzen, und sie sind gemessen, nicht geschätzt.** Der **Fence** bleibt
+**Vier Grenzen, und sie sind gemessen, nicht geschätzt.** Der **Fence** bleibt
 außen vor — ein Dokument, das über Task-Items schreibt, illustriert sie dort.
 Eine **einzeilige** Inline-Code-Spanne meldet **nicht** (das Muster ist
 zeilen-verankert, der Backtick steht vor dem Listen-Marker); eine
@@ -2554,6 +2554,18 @@ zeilen-verankert, der Backtick steht vor dem Listen-Marker); eine
 Und ein Task-Item im **Blockquote** (`> - [ ]`) sowie eine Box mit **Tabulator**
 (`- [\t]`) zählen für **keine** der beiden Bedingungen — das ist eine
 Eigenschaft der geteilten Modul-Lexik, nicht dieser Bedingung.
+
+**Die vierte Grenze ist die wichtigste, weil sie still ist: ein vergessener
+Schluss-Fence blendet alles Folgende aus.** Die fence-bewusste Zeilen-Auswahl
+gilt bis Dateiende, wenn kein Schluss kommt — ein offenes Task-Item dahinter
+wird dann nicht mehr gesehen, und die Regel meldet grün, ohne etwas geprüft zu
+haben. **Die rohe Lesung behebt das nicht** und soll es nicht: sie löst den
+Inline-Code-Ausfall, nicht den Fence-Ausfall. Wer diese Bedingung als
+Vorbedingung eines Übergangs führt, fährt deshalb
+[`DC-FA-SPAN-001`](#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)
+im selben Profil — `fence-unclosed` ist der Sensor, der den Fall meldet. **Was
+auch dann bleibt:** eine Fence-Folge, die für die eine Lexik schließt und für
+die andere nicht, wird von keinem der beiden gemeldet.
 
 **Eine Regel darf ihre Grundmenge erklären — zweimal, und die beiden Muster
 sehen VERSCHIEDENE Zeichenketten.** Beide **verkleinern** nur, beide sind

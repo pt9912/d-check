@@ -290,8 +290,18 @@ Closure-Profil **nicht** lief. Zwei Messungen von heute:
   Prosa von
   [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md), die den
   Unterschied beschreibt. Dieselbe ADR hat die Frage **ausdrücklich offen
-  gelassen** und ihre Bedingung benannt — sie bekommt *„erst eine Regel, wenn
-  ein Realfall existiert"*. Es existiert keiner.
+  gelassen** und ihre Bedingung benannt: die beiden offenen Punkte seien
+  *„**unbelegt** — kein Realfall in den 522 Dateien — und bekommen erst eine
+  Regel, wenn einer existiert"*. Es existiert keiner.
+
+  **Zur Reproduzierbarkeit der Messung, weil sie eine Entscheidung trägt:** der
+  Zwei-Automaten-Vergleich hängt daran, wie die CommonMark-Seite die
+  **Infozeilen-Regel** behandelt. Meine Fassung wendet sie nur auf den Toggle
+  an und findet deshalb **einen** Treffer (die ADR-Prosa selbst); der Review hat
+  einen Automaten gebaut, der sie beidseits anwendet, und findet **null**.
+  **Die tragende Aussage ist dieselbe** — kein Realfall, der ein Verhalten
+  änderte —, aber die Trefferzahl ist eine Eigenschaft des Messverfahrens, nicht
+  des Bestands, und gehört so gelesen.
 
 **Entscheid des Auftraggebers 2026-08-30:** diesen Slice jetzt bauen; Fall 2
 bleibt eine **benannte Grenze** mit dieser Messung, statt einen Lexik-Umbau

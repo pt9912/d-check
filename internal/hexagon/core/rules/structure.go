@@ -351,6 +351,12 @@ func offenerHaken(line string) bool {
 // Inline-Code-Spanne meldet nicht -- das Muster ist zeilen-verankert und der
 // Backtick steht vor dem Listen-Marker; eine MEHRZEILIGE zaehlt mit.
 //
+// GRENZE, still: ein VERGESSENER Schluss-Fence blendet alles Folgende aus --
+// prose gilt dann bis Dateiende, und diese Bedingung meldet gruen, ohne
+// geprueft zu haben. Die rohe Lesung behebt das nicht; sie loest den
+// Inline-Code-Ausfall. Den Fence-Ausfall meldet `fence-unclosed` im Modul
+// spans, also ein anderes Modul im selben Profil.
+//
 // SCHWELLE: die ersten MaxOpenTasks offenen Items in Dokument-Reihenfolge sind
 // erlaubt und melden nicht. Sonst meldete eine Verletzung jedes Item, auch die
 // erlaubten, und keiner der Befunde waere die Reparaturstelle.

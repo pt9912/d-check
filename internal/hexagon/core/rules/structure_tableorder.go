@@ -1,8 +1,9 @@
 package rules
 
 // Chronologie-Monotonie (DC-FA-STRUCT-001 §Chronologie-Monotonie,
-// §DC-FA-STRUCT-001.a Schritt 6, ADR-0057): die eine structure-Bedingung, die
-// die ROHEN Abschnitts-Zeilen liest — die Bereinigung aus Schritt 5 leert
+// §DC-FA-STRUCT-001.a Schritt 6, ADR-0057): die ERSTE von drei
+// structure-Bedingungen, die die ROHEN Abschnitts-Zeilen lesen — die
+// Bereinigung aus Schritt 5 leert
 // Inline-Code, und reale Schlüsselspalten (Release-Register) stehen genau
 // dort. Die Lexik-Fragen bleiben geteilt: ob eine Zeile Tabellenzeile,
 // Kopf-/Trennzeile oder Zelle ist, beantwortet markdown.go — dieselbe Antwort
