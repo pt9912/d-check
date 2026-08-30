@@ -234,28 +234,28 @@ fälschen.
 
 ## 4. Definition of Done
 
-- [ ] Eine `structure`-Regel im Closure-Profil meldet einen offenen DoD-Haken
+- [x] Eine `structure`-Regel im Closure-Profil meldet einen offenen DoD-Haken
       in `done/slice-*` mit eigener, reparatur-benennender Meldung.
-- [ ] **`spans` läuft im selben Profil, und das ist belegt statt angenommen.**
+- [x] **`spans` läuft im selben Profil, und das ist belegt statt angenommen.**
       Der vergessene Schluss-Fence ist die deklarierte, nicht behobene Grenze
       von `max-open-tasks`; ohne `fence-unclosed` hängt dieser Wächter an einem
       einzelnen Zeichen. Beleg: eine Probe, in der ein offener Haken hinter
       einem vergessenen Fence steht — `structure` allein schweigt, das Profil
       meldet.
-- [ ] **Retro gemessen:** die Regel meldet ohne Ausnahme die erwartete
+- [x] **Retro gemessen:** die Regel meldet ohne Ausnahme die erwartete
       Bestandszahl (144 Befunde in 37 Dateien) und mit Bestands-Ausnahme
       **null**; beide
       Ausgaben stehen in der Commit-Botschaft.
-- [ ] Die Bestands-Ausnahme ist als Adaption geführt (oder an
+- [x] Die Bestands-Ausnahme ist als Adaption geführt (oder an
       [`MR-049`](../../../../harness/conventions.md#mr-049) angehängt) und nennt
       den Grund: gehobenes Regelwerk, nicht nachgezogene Dokumente.
-- [ ] Die drei Folge-Kandidaten aus §3 sind als solche benannt — nicht
+- [x] Die drei Folge-Kandidaten aus §3 sind als solche benannt — nicht
       stillschweigend weggelassen.
-- [ ] Die neue Bedingung ist **zugestellt**, bevor sie blockiert:
+- [x] Die neue Bedingung ist **zugestellt**, bevor sie blockiert:
       [`AGENTS.md`](../../../../AGENTS.md) §5 und die Sensors-Tabelle in
       [`harness/README.md`](../../../../harness/README.md) nennen sie
       ([`BEO-022`](../observations.md)).
-- [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
+- [x] `make gates` grün (Exit explizit); **unabhängiger Review**;
       **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -263,19 +263,39 @@ fälschen.
 - **Ein Haken ist eine Selbstauskunft, und der Sensor prüft nur sie.** Wer den
   Haken setzt, ohne dass ein Review stattfand, passiert das Gate. Der Sensor
   verschiebt die Lücke von „unsichtbar" nach „behauptet" — das ist besser, aber
-  es ist keine Prüfung des Reviews. — **Ausgang:** *(bei Closure)*
+  es ist keine Prüfung des Reviews. — **Ausgang: weiter offen.** Nicht
+  auflösbar: was der Sensor sieht, **ist** die Selbstauskunft. Der Review hat
+  zwei weitere Wege gemessen, auf denen ein Haken unsichtbar bleibt — im
+  **wohlgeformten** Fence (dort meldet auch `fence-unclosed` nichts) und hinter
+  einem **vergessenen** Fence (dort meldet es). Alle drei stehen jetzt als
+  benannte Grenzen in [`MR-056`](../../../../harness/conventions.md#mr-056) und
+  an den drei Zustell-Orten. **Ein Sensor dagegen ist nicht denkbar**: ob ein
+  Fence Beispiel oder Versteck ist, ist ein Urteil.
 - **Die Bestands-Ausnahme ist eine Grandfathering-Klausel und altert.** Sie
   nimmt eine feste Nummernspanne heraus; jeder neue Slice fällt unter die
   Regel. Wächst die Ausnahme je wieder, ist das der Befund
-  ([`BEO-013`](../observations.md)). — **Ausgang:** *(bei Closure)*
+  ([`BEO-013`](../observations.md)). — **Ausgang: weiter offen**, und die
+  Verifikation hat ihn **beziffert**: die Ausnahme nimmt **169 von 177**
+  `done/`-Slices heraus, unter der Regel stehen heute **acht** Dateien. Das ist
+  die deklarierte Alterung, jetzt mit Zahl statt als Ahnung. Der
+  Auflösungs-Trigger steht in [`MR-056`](../../../../harness/conventions.md#mr-056): wächst die Ausnahme, ist das der Befund.
 - **Der Sensor macht den inneren Loop rot, bevor jemand schließen will.**
   `verify-closure-notes` läuft in `make fullbuild`, nicht in `gates` — die neue
   Regel gehört an dieselbe Stelle, sonst meldet sie beim Arbeiten an einem
-  laufenden Slice. — **Ausgang:** *(bei Closure)*
+  laufenden Slice. — **Ausgang: entfallen, mit Messung.** Die Regel steht im
+  Closure-Profil, nicht im Hauptprofil; die Verifikation hat gegengeprüft, dass
+  `make doc-check` mit einem offenen Haken bei **0 Befunden** bleibt. Der
+  befürchtete Fall kann in dieser Verortung nicht eintreten — er käme nur
+  zurück, wenn jemand die Regel ins Hauptprofil zöge, und das wäre eine eigene
+  Entscheidung.
 - **Die Regel wird aus einem Anlass gezogen** ([`BEO-011`](../observations.md)):
   drei Slices einer Sitzung. Gegen den Bestand gemessen ist sie es nicht — 37
   Treffer sind ein Bestand —, aber die *Dringlichkeit* stammt aus dem Anlass. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang: weiter offen.** Die Unterscheidung bleibt richtig und ist nicht
+  auflösbar: eine Regel kann ihren Anlass nicht loswerden. Was sich seit der
+  Notiz geändert hat, stützt sie eher — die Bestandsmessung ist zweimal
+  unabhängig reproduziert worden (144 Befunde in 37 Dateien), und die drei
+  Anlassfälle liegen **in** der Ausnahme, tragen die Regel also gar nicht.
 
 ## 6. Trigger
 
@@ -387,3 +407,99 @@ Default: Doc führt, Code folgt. Eine Konfigurationsregel über eine vorhandene
 Produkt-Fähigkeit; kein Produkt-Code, kein Fremdsystem, keine Reconciliation.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert.** Eine `structure`-Regel im Closure-Profil hält die zweite Hälfte
+der Kanon-Bedingung für den Übergang nach `done/`: `max-open-tasks: 0` über den
+`## N. Definition of Done`-Abschnitt, ein Befund **je Haken auf seiner Zeile**,
+mit verfasstem Reparatur-Hinweis. Dazu
+[`MR-056`](../../../../harness/conventions.md#mr-056), die Zustellung an drei
+Orten und der **Ersatz** des Kopfkommentars, der dieselbe Regel bisher als
+*bewusst verworfen* führte.
+
+**Der dritte Anlauf, und diesmal lag es nicht an diesem Slice.** Beide
+Rückführungen hatten Produkt-Vorbedingungen: eine regel-eigene Meldung
+([slice-177](slice-177-structure-hint.md)) und eine Bedingung auf dem **rohen**
+Abschnittstext ([slice-178](slice-178-offene-tasks-roh.md)). Beide liegen vor,
+und damit sind die zwei Blindstellen des zweiten Baus keine mehr. **Die
+Vorarbeit wurde neu gemessen statt übernommen** — die Form hat sich geändert,
+also ändern sich die Zahlen: 144 Befunde in denselben 37 Dateien, mit Ausnahme
+null.
+
+**Was funktioniert hat.** Der `spans`-Punkt, den ich beim Beanspruchen in die
+DoD gezogen habe, statt ihn als Fußnote zu führen. Isoliert gemessen ist die
+Bedingung hinter einem vergessenen Fence **völlig blind** (0 Befunde, Exit 0);
+im Repo-Profil sieht man das **nicht**, weil eine Nachbarregel zufällig
+`section-empty` wirft. Ohne die isolierte Probe hätte ich eine Abhängigkeit für
+gedeckt gehalten, die es nur zufällig ist.
+
+**Was anders lief.** Der Review blockierte mit zwei HIGH, die Verifikation
+urteilte konform mit sechs Präzisions-Befunden. Beide fanden dieselbe falsche
+Zahl unabhängig. Das **Verhalten** hielt durchweg: 144/37 ohne Ausnahme, null
+mit ihr, Positiv-Probe fängt mit Zeile und Hinweis, Ausnahme-Globs decken die
+Trefferliste exakt und disjunkt (30 + 6 + 1 = 37), alle Gates grün. Rot waren
+die **Aussagen darüber**:
+
+1. **„Elf Closures" war aus der Spanne gerechnet, nicht aus dem Verzeichnis
+   gelesen.** Es sind **acht** Dateien (171, 176–182); 173–175 existieren
+   nirgends, und genau das steht in
+   [welle-86](../welle-86-closure-uebergang-durchsetzen.md) §4 — auf das
+   derselbe Absatz verlinkt. Die Zahl trug den einzigen Beleg dafür, dass die
+   Grenze bei 171 richtig liegt.
+2. **Der neue YAML-Kommentar referierte seine eigene Vorgänger-Fassung.** Sein
+   Subjekt war ein Text, den derselbe Commit entfernt hat — Edit-Historie im
+   Kommentar (§3.7). Die Herkunft gehört in die Commit-Botschaft, die
+   Abgrenzung in den Kommentar.
+3. **Der `hint` erscheint auch auf `section-missing`.** Gemessen: fehlt der
+   DoD-Abschnitt, meldete die Regel *„offener DoD-Haken … Haken setzen"*, obwohl
+   es keinen gibt. Er nennt jetzt die **Zusage** statt des Defekts und stimmt
+   damit für beide Grund-Codes.
+4. **Eine dritte Grenze fehlte an allen Zustell-Orten:** ein Haken **innerhalb**
+   eines wohlgeformten Fenced-Blocks ist unsichtbar, und dort meldet auch
+   `fence-unclosed` nichts.
+
+**Und der Fehler, den ich beim Beheben eines anderen eingebaut habe.** Meine
+Korrektur in [`harness/README.md`](../../../../harness/README.md) sagte, die
+dortigen vier Grenzen gälten für `max-open-tasks` **nicht**. Für die
+**Fence**-Hälften ist das messbar falsch — die Bedingung ist fence-treu wie
+jede andere, und genau daraus folgt Befund 4. Nur die Inline-Code-Hälften
+entfallen. Der Review hat es gemessen; das ist dieselbe Gestalt wie in
+slice-180, wo eine Korrektur die zu korrigierende Zahl durch eine andere
+falsche ersetzte.
+
+**Steering-Loop-Einträge.** Zwei Zähler, keine neue Kennung:
+
+- **[`BEO-020`](../observations.md)** (eigene Menge gemessen, fremde
+  ausgesagt) — hier in zwei Ausprägungen im selben Slice: eine Zahl aus der
+  **Nummernspanne** statt aus dem Verzeichnis, und eine Korrektur, die einen
+  neuen Fehler einführte. **Prozedur, ergänzt:** eine Zahl über einen Bestand
+  wird **gelesen**, nicht gerechnet — `ls | wc -l` statt „von 171 bis 182 sind
+  elf".
+- **[`BEO-002`](../observations.md)** (Semantik-Änderung nur im Körper
+  nachgezogen, die Ränder bleiben stehen) — neue Ausprägung: **zwei Hälften
+  desselben Pflicht-Blocks**. Bei der dritten Beanspruchung wurde der
+  Nachtlauf-Teil von §7 aktualisiert, der Sichtungs-Teil nicht; der veraltete
+  sah so frisch aus wie der frische. Und ausgerechnet die übersehene Kennung
+  [`BEO-024`](../observations.md) handelt von Zustell-Kanälen — der Frage, die
+  DoD-Punkt 6 dieses Slice beantwortet.
+
+**Verifikation.** `make gates` Exit 0 (625 Dateien, 0 Befunde) ·
+`make verify-closure-notes` Exit 0 (562 Dateien) · `make fullbuild` Exit 0,
+Image-Hash `sha256:fb5c3b907001c300e9dd7cb11134ca2b10b9354a2c315ed7e436bdcc3b880f68` ·
+beide Reports in [`docs/reviews/`](../../../reviews/). Die Verifikation hat den
+ersetzten Kopfkommentar gegen den ausgepackten Baum von `e93d6a9` nachgerechnet:
+die damals gezählten **32** Dateien sind **keine** still repariert worden, die
+Differenz zu heute sind fünf Neuzugänge. Nicht benannt war dort nur der
+**Einheitenwechsel** — 32 waren Dateien, 144 sind Haken.
+
+**Offen und benannt.** Die Regel prüft den **Zustand am Ruheort**, nicht den
+**Übergang**; ein Slice, der mit offenem Haken nach `done/` wandert, wird erst
+vom nächsten `verify-closure-notes`-Lauf gesehen. Das ist der Gegenstand von
+`slice-175`, und der Closure-Trigger von
+[welle-86](../welle-86-closure-uebergang-durchsetzen.md) verlangt genau diesen
+Beleg. Drei Grenzen bleiben und sind keine Lücken, sondern Eigenschaften: der
+Haken ist eine Selbstauskunft, ein Haken im wohlgeformten Fence ist unsichtbar,
+und ein vergessener Fence macht die Bedingung blind. **Ein vierter Punkt ist
+neu und gehört einem eigenen Entscheid:** ein regel-eigener `hint` erscheint auf
+Befunden, die gar nicht die Bedingung sind (`section-missing`,
+`section-ambiguous`) — [ADR-0073](../../adr/0073-befund-erlaeuterung-fuer-menschen.md)
+nimmt nur zwei solche Fälle aus.
