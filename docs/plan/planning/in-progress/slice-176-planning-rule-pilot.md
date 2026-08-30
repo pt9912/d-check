@@ -128,11 +128,17 @@ das den ganzen Regelwerk-Baum so einhängt (Auskunft des Auftraggebers,
 - [ ] `.claude/rules/` trägt **vier** Symlinks auf `modul-01`, `modul-05`,
       `modul-06`, `modul-08` des gepinnten Regelwerk-Baums; jeder löst auf, und
       die Summe der Zielzeilen steht als Zahl im Slice.
-- [ ] **Die Zustellung ist belegt, nicht behauptet:** beim nächsten
-      Sitzungsstart führt der Kontext die vier Module — belegt über `/context`
-      oder den `InstructionsLoaded`-Hook, mit der Ausgabe im Slice. **Das ist
-      der eine Punkt, den der bauende Lauf nicht selbst messen kann**; er gehört
-      in die Closure, nicht in eine Zusage.
+- [x] **Die Zustellung ist belegt, und der Beleg nennt die Dateien.** `/memory`
+      in einer **frischen** Sitzung führt die vier Module einzeln auf — mit
+      ihren **aufgelösten Zielpfaden** (`.harness/baseline/v5.12.0/regelwerk/…`),
+      nicht mit den Alias-Namen: die Mechanik folgt dem Symlink also und meldet,
+      was sie wirklich gelesen hat. `AGENTS.md` steht daneben als `@-imported`,
+      die vier Module als eigene Einträge.
+- [x] **Der Preis ist gemessen, nicht geschätzt.** Dieselbe frische Sitzung
+      zeigt in `/context` die Kategorie *Memory files* bei **58.3k** Token gegen
+      **28.9k** in der bauenden — **+29.4k**. Die Größenordnung passt: die vier
+      Ziele wiegen **59 868 Bytes**, also rund **2,0 Bytes je Token**, für
+      deutsche Prosa mit Tabellen und Inline-Code der erwartete Wert.
 - [ ] **Der Bump-Träger ist gewächtert, nicht nur benannt:** `make
       baseline-verify` meldet einen toten Symlink unter `.claude/rules/` —
       **gemessen** an einer Probe, mit Erwartung und Ergebnis; geführt als
@@ -146,9 +152,10 @@ das den ganzen Regelwerk-Baum so einhängt (Auskunft des Auftraggebers,
 
 ## 5. Abnahme-Punkte / Risiken
 
-- **805 Zeilen kommen in jeden Lauf, auch in den, der nichts mit Planung zu tun
-  hat.** Zusammen mit `AGENTS.md` (527) sind das über 1300 Zeilen Kontext,
-  bevor die erste Frage gestellt ist. Ob das billiger ist als eine Heuristik,
+- **29,4k Token kommen in jeden Lauf, auch in den, der nichts mit Planung zu tun**
+  (gemessen, §4). Zusammen mit `AGENTS.md` sind das über 1300 Zeilen Kontext,
+  bevor die erste Frage gestellt ist — bei diesem Modell 2,9 % des Fensters, bei
+  einem 200k-Modell rund 15 %. Ob das billiger ist als eine Heuristik,
   ist die Wette dieses Slice. — **Ausgang:** *(bei Closure)*
 - **Zwei Orte für dieselbe Aussage** — die Module und `AGENTS.md` §3/§5 sagen
   beide etwas über Planung und Closure. Solange `AGENTS.md` nichts abgibt (§3),
@@ -160,6 +167,7 @@ das den ganzen Regelwerk-Baum so einhängt (Auskunft des Auftraggebers,
   liegt im SHA-gepinnten Baum. Ungeprüft bleibt auch ein Alias, der auf eine
   Datei **außerhalb** des Pins zeigt — er löst auf und passiert
   ([`MR-055`](../../../../harness/conventions.md#mr-055) §Grenze). —
+  **Ausgang:** *(bei Closure)*
 - **Ein werkzeug-lokaler Träger ist ungebunden, sobald das Werkzeug wechselt**
   ([`MR-042`](../../../../harness/conventions.md#mr-042)). Anders als beim
   Wächter ist das hier **inhärent**: Kontext lässt sich nur dorthin einspeisen,
@@ -213,6 +221,7 @@ sich um.
   `image-scan.yml` 2026-08-29T10:07:43Z. **Dieser Block trägt bewusst keine
   `cite`-Direktive** — sein Ziel ist eine Repo-Adaption, kein
   Baseline-Abschnitt ([`MR-054`](../../../../harness/conventions.md#mr-054)).
+
 Slice-ID: slice-176. Betroffene IDs:
 [`MR-021`](../../../../harness/conventions.md#mr-021),
 [`MR-042`](../../../../harness/conventions.md#mr-042),
