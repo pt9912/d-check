@@ -133,16 +133,39 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 	// Granularitaetsstufe tiefer (ADR-0075).
 	if n := len(heads); r.ExemptSectionPattern != "" {
 		heads = structureExemptSections(r, lines, heads)
-		// Nullmengen-Haerte wie bei exempt-paths: ein Ventil, das die Menge
-		// leert, schaltet die Regel NICHT still ab. Die Meldung nennt den
-		// Schluessel, der es tat -- sonst suchte der Leser am Selektor.
-		if len(heads) == 0 {
+		switch {
+		case r.ExemptExpectCount != nil:
+			// DEKLARIERTE ANZAHL (ADR-0078). Sie wird IMMER geprueft, nicht
+			// nur bei geleerter Menge: eine erweiterte Aufzaehlung ohne
+			// nachgezogene Zahl ist dieselbe Luecke wie eine veraltete, nur in
+			// die andere Richtung.
+			//
+			// NICHT raw, anders als der Nullmengen-Befund darunter: dort hat
+			// die Regel nicht gemessen, hier hat sie eine Deklaration
+			// widerlegt -- ein verfasster `hint` darf das erklaeren
+			// (ADR-0073).
+			if ausgenommen := n - len(heads); ausgenommen != *r.ExemptExpectCount {
+				return []model.Finding{structureFinding(r, file, 1, model.ReasonSectionExemptMismatch,
+					"exempt-section-pattern nimmt "+strconv.Itoa(ausgenommen)+
+						" von "+strconv.Itoa(n)+" Abschnitten aus, deklariert sind "+
+						strconv.Itoa(*r.ExemptExpectCount))}
+			}
+			// KEIN Zweig fuer die geleerte Menge: sie faellt durch, und der
+			// Rest der Funktion liefert fuer null Abschnitte nichts. Die
+			// deklarierte Leermenge ist damit stumm, weil dieser case die
+			// Nullmengen-Haerte darunter UEBERSPRINGT -- nicht, weil hier
+			// etwas unterdrueckt wuerde. Ein `return nil` hier waere toter
+			// Code (gemessen: keine Mutation daran macht einen Test rot).
+		case len(heads) == 0:
+			// Nullmengen-Haerte wie bei exempt-paths: ein Ventil OHNE
+			// deklarierte Zahl, das die Menge leert, schaltet die Regel NICHT
+			// still ab. Die Meldung nennt den Schluessel, der es tat -- sonst
+			// suchte der Leser am Selektor.
+			//
 			// RAW, nicht ueber MessageFor: das ist die LEER LAUFENDE REGEL,
 			// die ADR-0073 ausdruecklich vom verfassten Hinweis ausnimmt --
 			// hier hat die Regel nicht gemessen, und ein Hinweis auf die
-			// gehuetete Zusage verdraengte die Ursache. Ohne diesen Zug
-			// loeschte ein `hint` genau die Diagnose, die das zu breite
-			// Muster sichtbar macht.
+			// gehuetete Zusage verdraengte die Ursache.
 			return []model.Finding{structureRawFinding(r, file, 1, model.ReasonSectionMissing,
 				"alle "+strconv.Itoa(n)+" passenden Abschnitte sind von "+
 					"exempt-section-pattern ausgenommen — die Regel liefe leer")}

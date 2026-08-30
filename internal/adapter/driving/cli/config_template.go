@@ -204,6 +204,10 @@ modules: [links, anchors]
 #     # exempt-section-pattern: '^## 9\. Alt'       # Abschnitte, deren ROHE Ueberschriften-Zeile (samt #-Folge, wie bei
 #     #                                             # section-pattern) dieses RE2 trifft, prueft DIESE Regel nicht.
 #     #                                             # Laeuft VOR sections: one; leert es die Menge ⇒ section-missing
+#     # exempt-expect-count: 19                     # ... AUSSER die Zahl steht hier und stimmt: dann ist die geleerte
+#     #                                             # Menge der deklarierte Bestandszustand. Weicht die tatsaechliche
+#     #                                             # Zahl ab (in BEIDE Richtungen) ⇒ section-exempt-mismatch.
+#     #                                             # Ohne exempt-section-pattern oder < 0 ⇒ Exit 2
 
 
 # --- workflows: Deklarations-Konsistenz der uses:-Referenzen von CI-Workflows — hermetisch, opt-in ---

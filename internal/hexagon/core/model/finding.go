@@ -82,6 +82,13 @@ const (
 	ReasonSectionCellOversized  = "section-cell-oversized"
 	ReasonSectionCellUndersized = "section-cell-undersized"
 	ReasonSectionColumnMissing  = "section-column-missing"
+
+	// section-exempt-mismatch: die Regel hat eine ERWARTETE Zahl ausgenommener
+	// Abschnitte deklariert, und die tatsaechliche weicht ab. Eigener Code,
+	// weil die Reparatur eine andere ist als bei section-missing: dort ist der
+	// Selektor falsch, hier ist die Aufzaehlung oder die Zahl veraltet
+	// (ADR-0078).
+	ReasonSectionExemptMismatch = "section-exempt-mismatch"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

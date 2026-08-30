@@ -492,6 +492,16 @@ type StructureRule struct {
 	// section-pattern ihn ebenfalls sieht. Das Item-Muster daneben sieht ihn
 	// NICHT -- es liest den bereinigten Abschnitts-Text.
 	ExemptSectionPattern string
+	// ExemptExpectCount deklariert, WIE VIELE Abschnitte die Ausnahme nehmen
+	// soll. Zeiger, damit ein ABWESENDER Schluessel (Nullmengen-Haerte gilt)
+	// von einer explizit deklarierten Null unterscheidbar bleibt -- die
+	// bedeutet "das Muster soll heute noch nichts treffen".
+	//
+	// STIMMT die Zahl, ist eine geleerte Menge KEIN Befund: der Bestand ist
+	// gerade vollstaendig ausgenommen. Stimmt sie NICHT, ist es einer -- in
+	// BEIDE Richtungen, denn eine erweiterte Aufzaehlung ohne nachgezogene
+	// Zahl hat dieselbe Luecke wie eine veraltete (ADR-0078).
+	ExemptExpectCount *int
 }
 
 // TableRule sind die tabellenbezogenen Bedingungen einer StructureRule
@@ -576,6 +586,11 @@ func (r StructureRule) Identity() string {
 	if r.ExemptSectionPattern != "" {
 		sel += " :: ohne " + r.ExemptSectionPattern
 	}
+	// exempt-expect-count geht BEWUSST NICHT ein (ADR-0078): zwei Regeln mit
+	// gleichem Selektor UND gleicher Ausnahme, aber verschiedener erwarteter
+	// Zahl sind kein Paar verschiedener Zusagen, sondern ein Widerspruch --
+	// eine davon muss falsch sein. Sie als Duplikat abzuweisen ist die
+	// richtige Antwort, nicht sie zu trennen.
 	return r.Files + " :: " + sel
 }
 

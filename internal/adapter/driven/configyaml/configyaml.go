@@ -240,6 +240,10 @@ type rawStructure struct {
 	// hint braucht seinen Zeiger, weil er in die andere Richtung faellt.
 	TasksIgnorePattern   string `yaml:"tasks-ignore-pattern"`
 	ExemptSectionPattern string `yaml:"exempt-section-pattern"`
+	// Zeiger, weil eine explizit deklarierte NULL etwas bedeutet ("das Muster
+	// soll heute noch nichts treffen") und von "nicht deklariert" (dann gilt
+	// die Nullmengen-Haerte) unterscheidbar bleiben muss.
+	ExemptExpectCount *int `yaml:"exempt-expect-count"`
 
 	// MIGRATIONS-FANGNETZ (ADR-0070): die fuenf flachen Vorgaenger-Schluessel
 	// stehen hier NUR, um mit Klartext abgelehnt zu werden. Ohne sie meldete
@@ -365,6 +369,15 @@ func structureUeberschriftFehler(r rawStructure) string {
 	if r.TasksIgnorePattern != "" && r.MaxTasks == nil {
 		return "tasks-ignore-pattern ist ohne max-tasks wirkungslos (halbe Aktivierung)"
 	}
+	// Dieselbe halbe Aktivierung am Abschnitts-Ventil: eine erwartete Anzahl
+	// ohne das Muster, dessen Treffer sie zaehlt, ist eine Zusage ohne
+	// Gegenstand.
+	if r.ExemptExpectCount != nil && r.ExemptSectionPattern == "" {
+		return "exempt-expect-count ist ohne exempt-section-pattern wirkungslos (halbe Aktivierung)"
+	}
+	if r.ExemptExpectCount != nil && *r.ExemptExpectCount < 0 {
+		return fmt.Sprintf("exempt-expect-count %d muss >= 0 sein", *r.ExemptExpectCount)
+	}
 	return structureTabellenFehler(r)
 }
 
@@ -481,6 +494,7 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 
 		TasksIgnorePattern:   r.TasksIgnorePattern,
 		ExemptSectionPattern: r.ExemptSectionPattern,
+		ExemptExpectCount:    r.ExemptExpectCount,
 	}, nil
 }
 

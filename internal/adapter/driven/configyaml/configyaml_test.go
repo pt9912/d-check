@@ -261,6 +261,9 @@ func TestDecode_StructureFehler(t *testing.T) {
 		"tasks-ignore-pattern RE2":        "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-tasks: 3\n    tasks-ignore-pattern: '^(['\n",
 		"tasks-ignore-pattern ohne max":   "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    tasks-ignore-pattern: '^x'\n",
 		"exempt-section-pattern RE2":      "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    exempt-section-pattern: '^(['\n",
+		// Die erwartete Anzahl (ADR-0078): halbe Aktivierung und negativer Wert.
+		"exempt-expect-count ohne Muster": "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    exempt-expect-count: 3\n",
+		"exempt-expect-count negativ":     "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    exempt-section-pattern: '^## A'\n    exempt-expect-count: -1\n",
 	} {
 		if _, err := configyaml.Decode([]byte(bad)); err == nil {
 			t.Fatalf("%s: ungültige structure-Config akzeptiert: %q", name, bad)
