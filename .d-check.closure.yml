@@ -101,11 +101,6 @@ planning:
 # Jede Regel ist VOR der Aufnahme am eigenen Bestand gemessen worden; nur was
 # null Befunde hatte, steht hier. Ausdruecklich NICHT aufgenommen:
 #
-#   DoD ohne offene Tasks              32 Befunde — und die sind BERECHTIGT:
-#                                      ein abgeschlossener Slice darf eine
-#                                      offene Box tragen, wenn die WELLE sie
-#                                      einloest (slice-094 tut das). Die Regel
-#                                      waere am ersten Tag falsch gewesen.
 #   ADR: Fitness Function              15   aeltere ADRs kennen den Abschnitt
 #   ADR: Re-Evaluierungs-Trigger       20   noch nicht — Sanierung waere ein
 #   ADR: Verglichene Alternativen      14   eigener Slice, keine Nebenwirkung
@@ -182,6 +177,46 @@ structure:
       - "docs/plan/planning/done/slice-1[0-3]?-*"
     section: "## 5. Abnahme-Punkte / Risiken"
     forbid-pattern: '\*\*Ausgang:[\s*_]*(?:[^ew\s*_]|e[^in]|ei[^n]|ein[^g]|eing[^e]|en[^t]|ent[^f]|entf[^a]|w[^e]|we[^i]|wei[^t]|weit[^e]|weite[^r])'
+
+  # Kein abgeschlossener Slice traegt einen offenen DoD-Haken. Der Kanon macht
+  # daraus eine Bedingung des UEBERGANGS: DoD-Haeckchen und Closure-Notiz sind
+  # die Bedingung dafuer, dass die Datei ueberhaupt nach done/ darf
+  # (modul-05-planning-harness). Gehalten war davon bisher nur die zweite
+  # Haelfte.
+  #
+  # max-open-tasks statt forbid-pattern, und das ist der ganze Unterschied
+  # (ADR-0074): die bereinigt lesende Form fiel an einem einzelnen
+  # ueberzaehligen Backtick im Absatz auf NULL Befunde -- gemessen -- und
+  # deckte nur die Bullet-Form, die ihr Autor aufschrieb. Diese Bedingung
+  # zaehlt roh und ueber die Modul-Lexik; sie meldet je Haken auf SEINER Zeile.
+  #
+  # GRENZE, und sie ist der Grund fuer spans im selben Profil: ein VERGESSENER
+  # Schluss-Fence blendet alles Folgende aus, und die rohe Lesung behebt das
+  # nicht. Gefangen wird er von fence-unclosed (ADR-0077).
+  #
+  # Die frueher hier notierte Ablehnung ("32 Befunde, und die sind berechtigt,
+  # weil die WELLE die Box einloest") ist ueberholt: was eine Welle einloest,
+  # gehoert in ihren Closure-Trigger, nicht in die DoD eines Slice
+  # (AGENTS.md §5). Ein DoD-Punkt, den der Slice selbst nicht abhaken kann,
+  # macht den Haken als Zustandsfeld unbrauchbar.
+  #
+  # Die Ausnahme nennt den ABGESCHLOSSENEN Altbestand mit fester Ziffernzahl,
+  # wie MR-049 es fuer die Drei-Ausgaenge-Regel fuehrt. Gemessen: ohne sie 144
+  # Befunde in 37 Dateien (025-104, dann 160, 168, 169, 170), mit ihr null. Die
+  # Grenze liegt bei slice-171, dem ersten Slice unter der korrigierten Praxis;
+  # 171-182 tragen ihre Haken gesetzt. slice-168/169/170 bleiben BEWUSST
+  # ausgenommen -- sie tragen den offenen Review-Haken, der welle-86 ausgeloest
+  # hat, und ein nachtraeglicher Haken behauptete einen Review, den es nicht
+  # gab.
+  - files: "docs/plan/planning/done/slice-*.md"
+    exempt-paths:
+      - "docs/plan/planning/done/slice-0??-*"
+      - "docs/plan/planning/done/slice-1[0-6]?-*"
+      - "docs/plan/planning/done/slice-170-*"
+    section-pattern: '^#{2,3} [0-9]+\. Definition of Done'
+    sections: each
+    max-open-tasks: 0
+    hint: "offener DoD-Haken in einem geschlossenen Slice: Haken setzen, wenn der Punkt erledigt ist — sonst gehört der Slice zurück nach in-progress/"
 
   # Jede Wellen-Ergebnisnotiz beantwortet die erste Pflichtfrage.
   - files: "docs/plan/planning/done/welle-*-results.md"
