@@ -116,7 +116,14 @@ func flagWasSet(flags *flag.FlagSet, name string) bool {
 // writeUsage gibt die Hilfe aus (DC-FA-CLI-001.a): Kurzbeschreibung,
 // Synopsis mit dem Pfad-Argument, Flag-Liste und ein Konfigurations-
 // Hinweis, der auf --print-config/--suggest-config verweist (das
-// Config-Format wird dort gezeigt, nicht hier dupliziert).
+// Config-Format wird dort gezeigt, nicht hier dupliziert) und auf das
+// Benutzerhandbuch.
+//
+// DIE HANDBUCH-URL ZEIGT AUF `main`, NICHT AUF EINE VERSION: eine
+// versionierte URL waere eine Release-Prep-Flaeche, die kein Gate deckt --
+// `versions` haelt ausschliesslich ghcr-praefixierte Pins. Der Preis ist
+// benannt: wer ein altes Image faehrt, liest ein neueres Handbuch.
+const handbuchURL = "https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md"
 func writeUsage(flags *flag.FlagSet) {
 	out := flags.Output()
 	fmt.Fprintln(out, "d-check — prüft Markdown-Dokumentation auf kaputte Referenzen")
@@ -129,6 +136,8 @@ func writeUsage(flags *flag.FlagSet) {
 	fmt.Fprintln(out, "\nKonfiguration (optionale .d-check.yml in der Repo-Wurzel):")
 	fmt.Fprintln(out, "  d-check --print-config             kommentiertes Start-Gerüst ausgeben")
 	fmt.Fprintln(out, "  d-check --suggest-config <quelle>  Gerüst aus Autoritäts-Quellen vorschlagen")
+	fmt.Fprintln(out, "\nBenutzerhandbuch (aufgabenorientiert, deutsch):")
+	fmt.Fprintln(out, "  "+handbuchURL)
 }
 
 // splitSources zerlegt den --suggest-config-Wert in einzelne Quellen

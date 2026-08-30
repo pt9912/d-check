@@ -55,6 +55,9 @@ const mkTemplate = "# d-check.mk — erzeugt von: d-check --print-mk (DC-FA-CLI-
 	"# Für strikte Reproduzierbarkeit den Digest aus den Release-Notes pinnen —\n" +
 	"# direkt über DCHECK_IMAGE oder bequemer über DCHECK_DIGEST (sticht den Tag):\n" +
 	"#   DCHECK_DIGEST = sha256:<digest>\n" +
+	"#\n" +
+	"# Benutzerhandbuch (aufgabenorientiert, deutsch):\n" +
+	"#   " + handbuchURL + "\n" +
 	"DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v%s\n" +
 	"DCHECK_DIGEST ?=\n" +
 	"# TRACE_FLAGS: optionale Flags für die RTM-Targets (z. B. --json).\n" +
