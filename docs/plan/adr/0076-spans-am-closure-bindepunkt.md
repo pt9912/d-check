@@ -1,6 +1,6 @@
 # ADR-0076: `spans` am Closure-Bindepunkt — der Wächter über den Text, auf dem die anderen urteilen
 
-**Status:** Accepted
+**Status:** Accepted (superseded: ADR-0077)
 
 **Datum:** 2026-08-30
 
@@ -146,3 +146,9 @@ dort formuliert, hier ist er erneut gemessen und nicht eingetreten.
 
 **Wenn `spans` am Bindepunkt Bestands-Befunde erzeugt, die niemand einplanen
 wollte.** Dann ist zuerst der Bestand die Frage und nicht das Gate.
+
+## Geschichte
+
+| Datum | Ereignis |
+|---|---|
+| 2026-08-30 | **Abgelöst durch [ADR-0077](0077-spans-am-bindepunkt-die-begruendung-traegt-anders.md): die Änderung bleibt, die Begründung trägt anders.** Ein unabhängiger Review hat **drei** Aussagen dieser ADR gemessen und widerlegt. **Erstens die tragende:** §Verglichene Alternativen schreibt *„der Defekt fällt erst bei `make fullbuild` auf"*, §Kontext nennt den vergessenen Schluss-Fence *„die einzige, die heute niemand sieht"*. Gemessen fängt ihn das **Hauptprofil** (`make doc-check` — in `gates` **und** im `pre-commit`-Hook) beim Commit: derselbe Befund, 608 Dateien, Exit 1; die Scan-Menge des Bindepunkts ist eine **Teilmenge** (546 ⊂ 608, kein `scan:`-Block im Closure-Profil). Der Zuwachs an gefundenen Defekten ist damit **null** — die Entscheidung kauft Unabhängigkeit, nicht Deckung. **Zweitens** sagt §Fitness Function *„`make gate-consistency` hält dafür den `##`-Hilfetext gegen die Doku"*; das Modul `targets` vergleicht Target-**Namen**, keine Beschreibungstexte — gemessen bleibt der Lauf grün, wenn man den Hilfetext verfälscht **oder** `--enable spans` aus dem Rezept entfernt. Es hält also **kein** Sensor die Deklarations-Flächen gegen das Rezept. **Drittens** sagt §Verglichene Alternativen, `non-empty: true` mache denselben Fall laut; für den Fall, auf dem der Entscheid steht (Fence am **Dateiende**), wird sie **nicht** laut. Die verworfene Alternative ist schwächer, als hier zugestanden — der Verwerfungs-Entscheid wird dadurch richtiger. **Nicht widerlegt** sind die Kern-Messungen: 0 Abweichungen der beiden Fence-Lesarten, 0 `spans`-Befunde im Bestand, und die diskriminierende Probe (vorher grün, nachher rot) |

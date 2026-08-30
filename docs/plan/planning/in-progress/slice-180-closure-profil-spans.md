@@ -36,6 +36,14 @@ findet.** `make verify-closure-notes` fährt `planning` und `structure` über da
 **vergessener Schluss-Fence** verschluckt damit alles dahinter — und die
 Bedingung, die darüber etwas zusagt, wird **still** wahr.
 
+**„Das Produkt findet sie längst" ist wörtlich zu nehmen, und das entscheidet
+den Wert dieses Slice** (nachgemessen nach dem Review): `spans` steht im
+Hauptprofil, `make doc-check` läuft in `gates` **und** im `pre-commit`-Hook, und
+die 546 Dateien des Bindepunkts sind eine **Teilmenge** seiner 608. Der Zuwachs
+an gefundenen Defekten ist damit **null** — gekauft wird die **Unabhängigkeit**
+des Bindepunkts von einem fremden Profil, nicht neue Deckung
+([ADR-0077](../../adr/0077-spans-am-bindepunkt-die-begruendung-traegt-anders.md)).
+
 **Gemessen an vier Proben, mit dem heutigen Stand:**
 
 | Probe | `structure` allein | `structure` + `spans` |
@@ -49,7 +57,7 @@ Bedingung, die darüber etwas zusagt, wird **still** wahr.
 führt zwei Lesarten — den Toggle (`FenceToggle`, benutzt von `proseLines`,
 `PreprocessMarkdown` und der Abschnitts-Findung) und die CommonMark-Lesart
 (`FenceRun` + `FenceCloses`, benutzt von `spans` und dem Tabellen-Reader).
-Beide über **alle 676** Markdown-Dateien dieses Repos gegeneinander gefahren:
+Beide über **678 Pfade** gegeneinander gefahren (`find -L` über den Baum: 674 reguläre Dateien plus vier aufgelöste `.claude/rules/`-Symlinks, davon 17 gitignorierte unter `.harness/cache/` — eine **Obermenge** der 661 getrackten):
 **null Abweichungen**. Die Messung *kann* finden — drei konstruierte Fälle
 (Infostring hinter dem Schluss-Fence, Zeichenwechsel `` ``` ``→`~~~`, zu kurzer
 Schluss-Run) meldet sie, die saubere Datei nicht.
@@ -78,7 +86,7 @@ nichts falsch ist.
    [`harness/README.md`](../../../../harness/README.md), der `##`-Hilfetext des
    Targets (den `gate-consistency` gegen die Doku hält) und der Kopfkommentar
    von [`.d-check.closure.yml`](../../../../.d-check.closure.yml).
-4. **Eine ADR trägt den Entscheid und die Messung.** Warum `spans` an diesen
+4. **Eine ADR trägt den Entscheid und die Messung** ([ADR-0076](../../adr/0076-spans-am-closure-bindepunkt.md), nach dem Review abgelöst durch [ADR-0077](../../adr/0077-spans-am-bindepunkt-die-begruendung-traegt-anders.md)). Warum `spans` an diesen
    Bindepunkt gehört, warum es **nicht** in `modules:` steht, und warum die
    Fence-Lexik unangetastet bleibt.
 5. **[ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) bekommt einen
@@ -130,11 +138,12 @@ nichts falsch ist.
 
 ## 5. Abnahme-Punkte / Risiken
 
-- **Ein drittes Modul am Bindepunkt ist ein drittes, das rot werden kann.**
-  Heute 0 Befunde, aber `spans` prüft den ganzen `done/`-Bestand mit; ein
-  künftiger Slice mit unbalanciertem Absatz blockiert dann die Closure statt
-  nur die Prosa zu trüben. Das ist gewollt und trotzdem ein Risiko. —
-  **Ausgang:** *(bei Closure)*
+- **Ein drittes Modul am Bindepunkt ist ein drittes, das rot werden kann** —
+  über **drei** Grund-Codes: `fence-unclosed`, `span-unclosed` und
+  `span-nested-link`. Heute 0 Befunde, aber `spans` prüft den ganzen
+  `done/`-Bestand mit; ein künftiger Slice mit unbalanciertem Absatz blockiert
+  dann die Closure statt nur die Prosa zu trüben. Das ist gewollt und trotzdem
+  ein Risiko. — **Ausgang:** *(bei Closure)*
 - **Die Messung „0 Abweichungen in 676 Dateien" ist eine Aussage über
   **diesen** Bestand.** Ein Adopter mit anderer Schreibweise kann die Divergenz
   haben; dieser Slice sagt über ihn nichts. — **Ausgang:** *(bei Closure)*

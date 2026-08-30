@@ -51,19 +51,38 @@ unsichtbar.
 
 Nicht teilweise blind, sondern ganz.
 
-**Die Expositions-Behauptung dieses Absatzes war falsch gezählt und ist
-korrigiert** (slice-180, [`BEO-020`](../observations.md)). Sie lautete:
-*„`slice-061` und `slice-076` tragen heute ungerade Backtick-Zahlen in ihrem
-DoD-Abschnitt (25 bzw. 45)."* Gezählt wurde **abschnittsweise**, gepaart wird
-aber **absatzweise** — eine Abschnitts-Summe sagt über den Mechanismus nichts.
-Nachgemessen: 21 bzw. 4 Backticks, und `spans` meldet in beiden Dateien
-**nichts**; kein Absatz ist unbalanciert. **Die Exposition dieses Repos ist
-damit heute null**, und der Slice steht auf dem konstruierten Fall, nicht auf
-einem Bestands-Fund. Das ist kein Grund, ihn fallenzulassen — ein Wächter, der
-an einem Tippfehler abschaltet, bleibt ein Defekt —, aber die Dringlichkeit ist
-eine andere, als der Absatz behauptete.
+**Die Zahlen dieses Absatzes stimmen; der Schluss daraus stimmt nicht**
+(nachgemessen in slice-180, Review und Verifikation unabhängig). Die 25 bzw. 45
+Backticks im DoD-Abschnitt von `slice-061` und `slice-076` reproduzieren exakt —
+und weil beide Abschnitte **je ein einziger Absatz** sind, ist die
+Abschnitts-Summe hier zugleich die Absatz-Summe. **Falsch ist die Folgerung
+„ungerade ⇒ exponiert".** Eine ungerade Zahl heißt, dass der **letzte** Backtick
+eine Spanne öffnet, die nichts schließt — dann findet die Bereinigung gar keine
+vollständige Spanne und entfernt nichts. Verschluckt wird ein Task-Item nur von
+einer Spanne, die es **umschließt**: ein Backtick davor **und** einer dahinter.
+Positiv-Kontrolle gefahren: an denselben Absatz von `slice-061` ein `- [ ]`
+angehängt ⇒ die Regel meldet, trotz der 25.
 
-**Der Preis war für einen Vorlagen-Platzhalter ausgewiesen, hier zahlt ihn eine
+**Die Exposition dieses Repos ist heute null**, aber aus einem anderen Grund als
+„keine unbalancierten Absätze": repo-weit gibt es **sechs** Stellen in fünf
+Dateien, an denen ein `- [ ]` durch eine **wohlgeformte** Spanne aus dem
+bereinigten Text verschwindet — darunter zwei `done/`-Slices und dieser Plan
+selbst. Alle sechs sind bewusste Prosa **über** den Marker; kein echter
+unquittierter Haken ist verdeckt. Dass `spans` schweigt, belegt das **nicht**:
+es meldet eine ungeschlossene Folge nur, wenn sie an Nicht-Whitespace klebt,
+und eine wohlgeformte Spanne ist ohnehin kein Befund.
+
+**Der Slice steht damit auf dem konstruierten Fall, nicht auf einem
+Bestands-Fund.** Das ist kein Grund, ihn fallenzulassen — ein Wächter, der an
+einem Tippfehler abschaltet, bleibt ein Defekt —, aber die Dringlichkeit ist
+eine andere, als dieser Absatz zunächst behauptete.
+
+**Ein erster Korrektur-Versuch in slice-180 lag selbst daneben** und ersetzte
+die richtigen Zahlen durch „21 bzw. 4": gezählt war der Bereich zwischen `## 4.`
+und `## 5.`, während beide Slices ihre DoD als **§3** führen — also §4
+*Risiken*. Beide Fassungen sind
+[`BEO-020`](../observations.md); die zweite entstand beim Korrigieren der
+ersten.
 Vorbedingung.** Der Entscheid hat die Paarung gegen eine Falsch-Positiv-Klasse
 entschieden und den Preis benannt. Diese Abwägung bleibt richtig für Prosa. Für
 eine **Closure-Vorbedingung** kippt sie: ein Wächter, den ein Tippfehler
