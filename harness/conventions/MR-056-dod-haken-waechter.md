@@ -42,7 +42,7 @@
   **Die Grenze ist ein Datum, kein Aufräum-Rest.** Sie endet bei
   [slice-171](../../docs/plan/planning/done/slice-171-vorpruefungen-belegen.md),
   dem ersten Slice unter der korrigierten Praxis. Gemessen halten die Slices
-  171–182 ihre Haken gesetzt — elf Closures ohne einen einzigen offenen.
+  171–182 ihre Haken gesetzt: **acht** Dateien liegen dort (172 ist in Arbeit, 173–175 gibt es noch nicht), und keine trägt einen offenen Haken.
 
   **slice-168, -169 und -170 liegen bewusst *in* der Ausnahme.** Sie tragen
   genau den offenen Review-Haken, der
@@ -55,13 +55,36 @@
   - **Ein Haken ist eine Selbstauskunft.** Wer ihn setzt, ohne dass ein Review
     stattfand, passiert die Regel. Sie verschiebt die Lücke von *unsichtbar*
     nach *behauptet* — das ist besser und keine Prüfung des Reviews.
-  - **Ein vergessener Schluss-Fence schaltet sie ab**, und die rohe Lesung
+  - **Ein Haken IM Fenced-Block ist unsichtbar, und zwar wohlgeformt.**
+    Gemessen: `- [ ]` innerhalb eines geschlossenen Fences im DoD-Abschnitt ⇒
+    **0 Befunde**, und auch kein `fence-unclosed` — der Fence ist ja in
+    Ordnung. Das ist dieselbe Fence-Treue, die verhindert, dass ein Slice über
+    Task-Items schreibt und seine eigene Illustration meldet; sie ist zugleich
+    der Weg, einen offenen Haken zu verstecken. **Kein Sensor deckt das**, und
+    keiner kann es: ob ein Fence Beispiel oder Versteck ist, ist ein Urteil.
+  - **Der `hint` erscheint auch auf `section-missing`.** Gemessen: fehlt der
+    DoD-Abschnitt oder ist er umbenannt, meldet die Regel `section-missing`
+    **mit demselben Hinweis**. Deshalb nennt er die **Zusage** (*„ein
+    geschlossener Slice trägt einen DoD-Abschnitt, dessen Haken alle gesetzt
+    sind"*) und nicht den Defekt — so stimmt er für beide Grund-Codes.
+    [ADR-0073](../../docs/plan/adr/0073-befund-erlaeuterung-fuer-menschen.md)
+    nimmt nur zwei Nicht-Bedingungs-Befunde vom `hint` aus; `section-missing`
+    und `section-ambiguous` gehören derselben Klasse an und sind es **nicht**.
+    Ob sie es sollten, ist ein eigener Entscheid — hier nur benannt.
+  - **Ein vergessener Schluss-Fence macht die BEDINGUNG blind**, und die rohe Lesung
     behebt das nicht. Isoliert gemessen: ein offener Haken hinter einem
     unbeendeten Fence ⇒ **0 Befunde, Exit 0**. Gefangen wird der Fall von
     `fence-unclosed`, also von `spans` — das Profil führt es seit
     [ADR-0077](../../docs/plan/adr/0077-spans-am-bindepunkt-die-begruendung-traegt-anders.md).
     **Diese Regel hängt damit an einer Eigenschaft des Profils, die sie nicht
     selbst herstellt.**
+
+    **Der Bindepunkt als Ganzes wird davon nicht grün, und das gehört
+    unterschieden.** Im heutigen Profil melden Nachbarregeln (etwa
+    `section-empty`, weil der Fence den Abschnitt leert), und `spans` nennt die
+    Ursache. Das ist aber eine Eigenschaft **dieses** Regelsatzes, nicht der
+    Bedingung: fiele die Nachbarregel weg, bliebe nur `fence-unclosed`. Blind
+    ist die Bedingung, nicht der Lauf.
   - **Sie prüft den Zustand, nicht den Übergang.** Ein Slice, der mit offenem
     Haken nach `done/` wandert, wird erst beim nächsten
     `make verify-closure-notes` gesehen — nicht beim `mv`-Commit.

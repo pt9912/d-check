@@ -122,15 +122,16 @@ Beanspruchung sie nicht wiederholt:**
   **je offenem Haken** statt je Abschnitt. Die drei Ausnahme-Muster aus der
   vorigen Zeile tragen unverändert, und die Grenze liegt weiter bei
   [slice-171](../done/slice-171-vorpruefungen-belegen.md): die seither
-  geschlossenen Slices 171–182 tragen ihre Haken gesetzt. **Das ist zugleich
-  der Beleg, dass die korrigierte Praxis hält** — elf Closures ohne einen
-  einzigen offenen Haken.
+  geschlossenen Slices tragen ihre Haken gesetzt. **Das ist zugleich der Beleg,
+  dass die korrigierte Praxis hält** — **acht** Dateien liegen in der Spanne
+  171–182 (172 ist in Arbeit, 173–175 gibt es noch nicht), und keine trägt
+  einen offenen Haken.
 - **Bei der zweiten Beanspruchung nachgeprüft, nicht wiederholt:** der Bestand
   ist von 170 auf **171** `done/`-Slices gewachsen (slice-177 kam hinzu), die
   Trefferzahl bleibt **37**, die Nummern bleiben dieselben, und es gibt weiter
   **kein** `section-missing`. Der seither geschlossene Slice trägt
   seine Haken gesetzt — er hätte die Zahl sonst erhöht.
-- **Die Treffer streuen nicht beliebig:** 025–104 (34 Stück), dann 160, 168,
+- **Die Treffer streuen nicht beliebig:** 025–104 (33 Stück), dann 160, 168,
   169, 170. Eine feste Ziffern-Ausnahme trägt also, sie braucht drei Muster
   statt zwei: `slice-0??-*`, `slice-1[0-6]?-*`, `slice-170-*`. Die Grenze liegt
   damit bei [slice-171](../done/slice-171-vorpruefungen-belegen.md) — dem
@@ -339,8 +340,10 @@ dann trägt eine feste Ziffern-Ausnahme nicht, und der Schnitt ist ein anderer.
   > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
   > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-- **Offene Beobachtungen sichten** (Register-Stand 2026-08-29, höchste Kennung
-  `BEO-023`): [`BEO-013`](../observations.md) — ein Wächter, der nichts mehr
+- **Offene Beobachtungen sichten** (Register-Stand **2026-08-30**, höchste
+  Kennung **`BEO-024`** — bei der dritten Beanspruchung nachgeholt: der
+  Nachtlauf-Block war aktualisiert, dieser nicht, und `BEO-024` stand da schon
+  im Register): [`BEO-013`](../observations.md) — ein Wächter, der nichts mehr
   fängt: hier eine Stufe früher, eine Regel **ohne** Wächter, und die
   Bestands-Ausnahme ist der künftige Kandidat für dieselbe Klasse;
   [`BEO-011`](../observations.md) — Regel aus dem Anlass: die Dringlichkeit
@@ -353,7 +356,13 @@ dann trägt eine feste Ziffern-Ausnahme nicht, und der Schnitt ist ein anderer.
   der nicht weiß, warum; [`BEO-023`](../observations.md) — ein Wächter, der nie
   fangen konnte: dieser Slice **ist** ein Wächter, und seine DoD verlangt die
   Umkehr-Probe (die Regel gegen den Bestand rot, mit Ausnahme grün) statt eines
-  grünen Laufs als Beleg. Die Regel, die diesen Schritt vorschreibt:
+  grünen Laufs als Beleg; [`BEO-024`](../observations.md) — **ein Zustell-Kanal
+  hängt an der Arbeitsweise, die Regel aber am Inhalt**, und das trifft diesen
+  Slice direkt: seine Zustellung liegt in `AGENTS.md` und in der
+  Sensors-Tabelle, also in Dateien, die **jeder** Lauf liest — nicht in einem
+  Kanal, der nur bei bestimmten Werkzeugwegen greift. Der Unterschied zu
+  `BEO-022` ist die Richtung: dort fehlt der Kanal, hier greift er am falschen
+  Kriterium. Die Regel, die diesen Schritt vorschreibt:
 
   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
   > **Offene Beobachtungen sichten.**

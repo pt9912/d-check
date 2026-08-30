@@ -194,11 +194,11 @@ structure:
   # Schluss-Fence blendet alles Folgende aus, und die rohe Lesung behebt das
   # nicht. Gefangen wird er von fence-unclosed (ADR-0077).
   #
-  # Die frueher hier notierte Ablehnung ("32 Befunde, und die sind berechtigt,
-  # weil die WELLE die Box einloest") ist ueberholt: was eine Welle einloest,
-  # gehoert in ihren Closure-Trigger, nicht in die DoD eines Slice
-  # (AGENTS.md §5). Ein DoD-Punkt, den der Slice selbst nicht abhaken kann,
-  # macht den Haken als Zustandsfeld unbrauchbar.
+  # ABGRENZUNG: was eine WELLE einloest, gehoert in ihren Closure-Trigger und
+  # nicht in die DoD eines Slice (AGENTS.md §5). Ein DoD-Punkt, den der Slice
+  # selbst nicht abhaken kann, macht den Haken als Zustandsfeld unbrauchbar --
+  # er sagt dann nicht mehr "hier fehlt etwas", sondern "hier fehlt
+  # vielleicht etwas".
   #
   # Die Ausnahme nennt den ABGESCHLOSSENEN Altbestand mit fester Ziffernzahl,
   # wie MR-049 es fuer die Drei-Ausgaenge-Regel fuehrt. Gemessen: ohne sie 144
@@ -216,7 +216,7 @@ structure:
     section-pattern: '^#{2,3} [0-9]+\. Definition of Done'
     sections: each
     max-open-tasks: 0
-    hint: "offener DoD-Haken in einem geschlossenen Slice: Haken setzen, wenn der Punkt erledigt ist — sonst gehört der Slice zurück nach in-progress/"
+    hint: "Ein geschlossener Slice trägt einen DoD-Abschnitt, dessen Haken alle gesetzt sind — sonst gehört er zurück nach in-progress/"
 
   # Jede Wellen-Ergebnisnotiz beantwortet die erste Pflichtfrage.
   - files: "docs/plan/planning/done/welle-*-results.md"
