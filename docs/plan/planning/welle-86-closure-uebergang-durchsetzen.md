@@ -120,7 +120,7 @@ die **CI-Hälfte**; das Repo macht das bei `adr-check` bereits so
 (`pre-commit` **und** PR-CI). Ohne sie ist der Übergang nur höflich gesichert.
 
 **Die vierte Schicht liegt außerhalb dieser Welle:** die pfad-gebundene
-Zustellung ([slice-176](in-progress/slice-176-planning-rule-pilot.md))
+Zustellung ([slice-176](done/slice-176-planning-rule-pilot.md))
 verhindert keinen Verstoß, sondern die **Überraschung** — ein Hook, der
 blockiert, ohne dass der Autor wusste warum, kostet einen ganzen Zyklus. Sie
 gehört zum selben Bild, aber nicht zum Closure-Trigger dieser Welle.
@@ -162,7 +162,7 @@ im **Auto-Modus** nur ein, wenn die Datei über die **dedizierten** Werkzeuge
 angefasst wird — jeder Shell-Zugriff geht daran vorbei; in diesem Repo, dessen
 Auto-Modus zur Shell rät, hätte der Kanal im Anlassfall geschwiegen. **Ein
 Eintrag ohne `paths` hat diese Bedingung nicht** und lädt beim Sitzungsstart.
-Genau so liefert [slice-176](in-progress/slice-176-planning-rule-pilot.md): vier
+Genau so liefert [slice-176](done/slice-176-planning-rule-pilot.md): vier
 Symlinks auf den gepinnten Baum, in einer frischen Sitzung gemessen
 ([`MR-055`](../../../harness/conventions.md#mr-055)). **Für die Durchsetzung
 dieser Welle ändert das nichts** — eingespeister Kontext ist kein Gate, die

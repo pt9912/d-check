@@ -156,7 +156,7 @@ sieht aus wie einer, der richtig filtert.
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): WIP-Limit frei — heute hält
-[slice-176](../in-progress/slice-176-planning-rule-pilot.md) den Slot.
+[slice-176](../done/slice-176-planning-rule-pilot.md) den Slot.
 
 **Rückführungen:** `in-progress` → `open`, falls sich zeigt, dass die
 Sichtbarkeits-Zusage nicht tragfähig ist — dann ist die Frage, ob eine

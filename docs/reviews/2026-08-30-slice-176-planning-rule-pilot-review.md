@@ -1,6 +1,6 @@
 # Review slice-176 — Der Wächter hielt weniger, als „jeder" verspricht
 
-**Gegenstand:** [slice-176](../plan/planning/in-progress/slice-176-planning-rule-pilot.md), Stand `0cfe876`.
+**Gegenstand:** [slice-176](../plan/planning/done/slice-176-planning-rule-pilot.md), Stand `0cfe876`.
 **Datum:** 2026-08-30. **Reviewer:** unabhängiger Subagent, Skill `.harness/skills/reviewer.md`.
 **Eigener Lauf:** siehe §Negativbefunde. **Alle Befunde sind an grünen Gates vorbeigelaufen.**
 
@@ -79,7 +79,7 @@ Repo unverändert (`git status` leer, HEAD `0cfe876`), alle Proben liefen in `/t
 
 - **kategorie:** MEDIUM
 - **quelle:** `AGENTS.md` §5 (Schluss reicht nicht weiter als die gemessene Menge), `BEO-024`, Reviewer-Frage 8
-- **pfad:** `docs/plan/planning/in-progress/slice-176-planning-rule-pilot.md` §2 („Sie tragen **kein** `paths:` und laden deshalb **immer**"), §4 DoD-Punkt 2, §2 „Was diese Zustellung **nicht** zusagt" (fünf Punkte, keiner nennt den Modus)
+- **pfad:** `docs/plan/planning/done/slice-176-planning-rule-pilot.md` §2 („Sie tragen **kein** `paths:` und laden deshalb **immer**"), §4 DoD-Punkt 2, §2 „Was diese Zustellung **nicht** zusagt" (fünf Punkte, keiner nennt den Modus)
 - **befund:** Belegt ist **eine** Sitzungsart: eine frische interaktive Hauptsitzung (`/memory`, `/context`). Der Schluss lautet „laden immer". `BEO-024` selbst zählt *„eine Regel, die nur im interaktiven Modus greift"* ausdrücklich zur Klasse, gegen die dieser Slice gebaut ist, und seine Prozedur verlangt, **wovon** das Greifen abhängt zu messen, bevor gebaut wird. Beobachtung aus diesem Lauf: dieser Review ist ein Subagent desselben Werkzeugs, im selben Repo, gestartet nach `0cfe876`; sein Projekt-Kontext führt `CLAUDE.md`, `AGENTS.md` und die Nutzer-Memory-Datei — **keines der vier Regelwerk-Module**. Ich kann nur meinen eigenen Kontext bezeugen, nicht den der Hauptsitzung; genau deshalb ist die unqualifizierte Form „immer" der Befund. Die Tragweite ist konkret: `AGENTS.md` §5 und die DoD dieses Slice verlangen Review und Verifikation **in eigenen Kontexten** — also in der Klasse, in der die Zustellung hier nicht ankommt.
 - **verifizierbar:** nein (Werkzeug-Eigenschaft; wiederholbar durch `/context` in einer Subagenten- bzw. Print-Sitzung)
 - **klasse:** `zusage-aus-einer-modus-messung`
@@ -106,7 +106,7 @@ Repo unverändert (`git status` leer, HEAD `0cfe876`), alle Proben liefen in `/t
 
 - **kategorie:** MEDIUM
 - **quelle:** Baseline `modul-05-planning-harness.md:219` („Offene Beobachtungen sichten"), `MR-054`, `BEO-022`
-- **pfad:** `docs/plan/planning/in-progress/slice-176-planning-rule-pilot.md` §7, zweiter Vorprüfungs-Block
+- **pfad:** `docs/plan/planning/done/slice-176-planning-rule-pilot.md` §7, zweiter Vorprüfungs-Block
 - **befund:** Der Block sichtet BEO-024, BEO-010, BEO-023 und BEO-008. `BEO-022` fehlt — der einzige Eintrag, dessen `Stand` slice-176 **namentlich** als laufenden Beobachtungsgegenstand führt („Beobachten, ob die … Zustellung ([slice-176]) die Klasse verschiebt oder nur verlagert"). Der Slice ist damit an einer offenen Beobachtung vorbeigelaufen, die ihn adressiert; dass BEO-022 zusätzlich die Prozedur trägt, in derselben Änderung den **Lesepfad** einer neuen Regel zu benennen, hängt sachlich mit MEDIUM-8 zusammen.
 - **verifizierbar:** nein (Urteil; die `d-check:cite`-Direktive prüft die Regel-Zeile, nicht die Vollständigkeit der Sichtung)
 - **klasse:** `sichtung-uebergeht-eintrag-der-den-slice-nennt`

@@ -1,6 +1,6 @@
 # Verifikation slice-176 — unabhängiger Lauf
 
-**Gegenstand:** [slice-176](../plan/planning/in-progress/slice-176-planning-rule-pilot.md) §4, Commits `8879ff1 · 776c0dd · a8f2c6b · b0850a9 · 0cfe876`. HEAD = `0cfe876`.
+**Gegenstand:** [slice-176](../plan/planning/done/slice-176-planning-rule-pilot.md) §4, Commits `8879ff1 · 776c0dd · a8f2c6b · b0850a9 · 0cfe876`. HEAD = `0cfe876`.
 **Arbeitsort:** alle Mutationsproben in `…/scratchpad/probe` (eigenes `git init`, Kopie von Skript + Baseline-Baum + Aliasen); Scan-Messungen gegen `git archive`-Abzüge in `/tmp`, gemountet als `/repo:ro`. Im Repo selbst nur zwei lesende Läufe (`make baseline-verify`, `git`-Abfragen).
 
 ## 1. DoD-Tabelle
