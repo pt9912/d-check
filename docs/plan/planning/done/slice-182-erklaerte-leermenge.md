@@ -154,35 +154,35 @@ einem Modus zu landen, den niemand fährt.
 
 ## 4. Definition of Done
 
-- [ ] `exempt-expect-count` ist im Schema, im `--print-config`-Gerüst, in
+- [x] `exempt-expect-count` ist im Schema, im `--print-config`-Gerüst, in
       [`spec/lastenheft.md`](../../../../spec/lastenheft.md) (Bump + Historie
       mit CR-Bezug) und in
       [`spec/spezifikation.md`](../../../../spec/spezifikation.md) (Schritt 3,
       §2-Schema, §4-Grund-Code) geführt.
-- [ ] **Default byte-identisch, gemessen:** ein Lauf ohne den Schlüssel liefert
+- [x] **Default byte-identisch, gemessen:** ein Lauf ohne den Schlüssel liefert
       denselben Befundsatz wie vor der Änderung — gegen das Vorgänger-Image,
       nicht gegen einen grünen Lauf.
-- [ ] **Die deklarierte Leermenge ist stumm:** N Abschnitte, N ausgenommen,
+- [x] **Die deklarierte Leermenge ist stumm:** N Abschnitte, N ausgenommen,
       `exempt-expect-count: N` ⇒ **kein Befund**, Exit 0. Mit Test.
-- [ ] **Die Drift ist beidseitig laut:** weniger **und** mehr ausgenommen als
+- [x] **Die Drift ist beidseitig laut:** weniger **und** mehr ausgenommen als
       deklariert ⇒ `section-exempt-mismatch`. Je ein Test.
-- [ ] **Die Trennung hält:** trifft `section-pattern` nichts, bleibt es
+- [x] **Die Trennung hält:** trifft `section-pattern` nichts, bleibt es
       `section-missing` — auch mit gesetztem Schlüssel. Mit Test.
-- [ ] **Zwei Config-Ränder:** ohne `exempt-section-pattern` ⇒ Exit 2; Wert < 0
+- [x] **Zwei Config-Ränder:** ohne `exempt-section-pattern` ⇒ Exit 2; Wert < 0
       ⇒ Exit 2. Je ein Test.
-- [ ] **Die zwei offenen Fragen sind entschieden und begründet** (Identität,
+- [x] **Die zwei offenen Fragen sind entschieden und begründet** (Identität,
       raw-vs-hint) — im Code-Kommentar und in der ADR, nicht nur im Kopf.
-- [ ] **Umkehr-Proben** je Zusage, jede von den Tests gefangen, die dagegen
+- [x] **Umkehr-Proben** je Zusage, jede von den Tests gefangen, die dagegen
       stehen; je Regressions-Test der Beleg, dass der **Vorzustand** an diesem
       Fixture scheitert ([`BEO-023`](../observations.md)).
-- [ ] Eine ADR begründet Verortung, den **neuen Grund-Code**, die beidseitige
+- [x] Eine ADR begründet Verortung, den **neuen Grund-Code**, die beidseitige
       Drift und die Abweichung von der beantragten Form; im
       [ADR-Index](../../adr/README.md) eingetragen.
-- [ ] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) führt den
+- [x] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) führt den
       Schlüssel samt der Falle, die ihn nötig macht.
-- [ ] Der Absender bekommt eine **Antwort** — angenommen in der Sache,
+- [x] Der Absender bekommt eine **Antwort** — angenommen in der Sache,
       abgelehnt in der Form, mit der `--doctor`-Messung, die das trägt.
-- [ ] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
+- [x] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
       Review**; **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -190,16 +190,54 @@ einem Modus zu landen, den niemand fährt.
 - **Die geprüfte Menge zu verkleinern bleibt eine Lockerung** — jetzt eine mit
   Zahl, aber der Bestandszustand ist ab dann stumm. Wer die Zahl mitzieht, ohne
   die Aufzählung zu prüfen, hat einen Wächter, der nur noch sich selbst
-  bestätigt. — **Ausgang:** *(bei Closure)*
+  bestätigt. — **Ausgang: weiter offen.** Nicht auflösbar: die Eigenschaft
+  **ist** der Gegenstand des Schlüssels. Sie ist verortet —
+  [ADR-0078](../../adr/0078-erklaerte-leermenge-mit-zahl.md) §Konsequenzen nennt
+  sie, ein Re-Evaluierungs-Trigger wacht über sie, und das Handbuch nennt sie
+  dem Leser an der Stelle, an der er den Schlüssel setzt. **Verortung ist keine
+  Auflösung**, und sie ersetzt den Ausgang nicht.
 - **Eine deklarierte Zahl ist Autoren-Text und altert wie jede.** Der Schlüssel
-  verschiebt die Pflege, er nimmt sie nicht ab. — **Ausgang:** *(bei Closure)*
+  verschiebt die Pflege, er nimmt sie nicht ab. — **Ausgang: weiter offen.**
+  Dieselbe Klasse wie der Punkt darüber, in der anderen Blickrichtung: dort
+  altert der geprüfte Bestand, hier die Deklaration darüber. Der Review hat den
+  Punkt **verschärft** — die Zahl gilt **je Datei**, ein Glob über viele Dateien
+  hält sie also gegen jede einzeln, und wer das nicht weiß, deklariert eine
+  Summe und bekommt eine Reihe von Einzelurteilen. Steht seither in allen drei
+  Deklarations-Oberflächen.
 - **Neue Bauform ohne Präzedenz:** gemessen führt kein Schlüssel dieses Moduls
   eine **erwartete Anzahl**. Ob die Form trägt, zeigt erst der zweite Fall. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang: weiter offen.** Dieser Slice kann die Frage nicht beantworten; der
+  zweite Fall beantwortet sie, und
+  [ADR-0078](../../adr/0078-erklaerte-leermenge-mit-zahl.md) trägt den Trigger
+  dafür. **Kein Folge-Slice**, weil es nichts zu tun gibt, bis der zweite Fall
+  eintritt — ein Slice auf Vorrat wäre ein Zombie.
 - **Die Abweichung von der beantragten Form ist ein Urteil über einen fremden
   Bestand.** Die `--doctor`-Messung gilt **diesem** Repo; ob der Adopter
   `--doctor` in einem Gate fährt, weiß ich nicht und habe ich nicht gefragt. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang: weiter offen** — aber nicht unverändert. Notiert war *„wir wissen
+  nicht, ob er `--doctor` fährt"*; der Review hat gezeigt, dass die Lage
+  schlechter war: die Messung, auf die sich das Urteil stützte, war **falsch**.
+  `--print-mk` verteilt ihm ein `doc-doctor`-Target, und
+  [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+  schreibt es vor. Berichtigt ist das in Commit `75e50e3` an vier Fundstellen,
+  in der immutablen ADR nach §3.5 und in der ausgehenden Antwort, die dem
+  Absender ausdrücklich sagt, dass die erste Fassung falsch war — samt der
+  Frage, die daraus folgt: *fahrt ihr `doc-doctor` in einem Gate?*
+
+  **Und sie ist beantwortet, bevor dieser Slice schloss.** Der Adopter hat auf
+  seiner Seite gemessen — Makefile-Aggregate 0, Workflows 0, Hooks 0;
+  `doc-doctor` ist dort **advisory** — und die Antwort ist **nein**. Damit ist
+  das Risiko **entfallen**, und die Begründung ist die Messung der Gegenseite,
+  nicht unsere Vermutung: die Unbekannte, an der das Urteil hing, ist keine
+  mehr, und sie fällt zugunsten der getroffenen Entscheidung aus. Der erste
+  Re-Evaluierungs-Trigger von
+  [ADR-0078](../../adr/0078-erklaerte-leermenge-mit-zahl.md) ist damit geprüft
+  und **nicht gezogen**.
+
+  **Was nicht entfällt, ist die Klasse.** Dass hier zufällig herauskam, was wir
+  ohne Messung behauptet hatten, macht die Behauptung nicht nachträglich zu
+  einer Messung — der Zähler [`BEO-020`](../observations.md) ist erhöht und
+  bleibt es.
 
 ## 6. Trigger
 
@@ -260,3 +298,112 @@ kein Bestand, der umgestellt werden müsste — dieses Repo führt heute keine
 Regel mit `exempt-section-pattern`.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert.** Der opt-in-Schlüssel `exempt-expect-count` (int ≥ 0, nur mit
+`exempt-section-pattern`) trennt zwei Zustände, die sich seit
+[ADR-0075](../../adr/0075-erklaerte-teilmenge-in-structure.md) einen Grund-Code
+teilten: den **Konfigurationsdefekt** (der Selektor trifft nichts — bleibt
+`section-missing`) und den **Bestandszustand** (die Ausnahme nimmt alle — ist
+stumm, wenn die Zahl stimmt). Weicht sie ab, meldet der neue Grund-Code
+`section-exempt-mismatch`, in **beide** Richtungen und unabhängig davon, ob noch
+eine Restmenge da ist. Dazu:
+[ADR-0078](../../adr/0078-erklaerte-leermenge-mit-zahl.md), Lastenheft `0.78.0`,
+die `.a`-Verfeinerung samt [`SPEC-077`](../../../../spec/spezifikation.md#4-grund--und-fehler-codes), zwei Config-Ränder fail-closed, acht
+Regel-Tests, das Handbuch und eine **Antwort an den Absender**.
+
+**Was funktioniert hat.** Die zwei offenen Fragen des Plans (Regel-Identität,
+`raw`-vs-`hint`) wurden beim Bauen entschieden **und am Produkt gegengeprüft**,
+statt aus der Vermutung übernommen zu werden: zwei Regeln, die sich nur in der
+Zahl unterscheiden, weist der Config-Adapter mit Exit 2 als Duplikat ab — genau
+die Antwort, die die ADR als richtig bezeichnet. Und die Mutationsprobe, die
+[ADR-0075](../../adr/0075-erklaerte-teilmenge-in-structure.md) als Prozedur hinterlassen hat, hat hier zum ersten Mal **toten Code**
+gefunden statt eines schwachen Tests: ein `return nil`, das nie etwas bewirkt
+hätte.
+
+**Was anders lief — und es betrifft dreimal die Belege, nie das Verhalten.**
+Der Review blockierte mit vier HIGH; die Verifikation urteilte konform und fand
+zwei davon unabhängig. Das Verhalten hielt in beiden Läufen vollständig: alle
+elf Akzeptanzkriterien gegen das laufende Binary, beide Config-Ränder Exit 2,
+und die Byte-Identität gegen ein aus `a062fe8` gebautes Vorgänger-Image —
+**169 Befunde beidseits, `diff` leer**, dazu in drei weiteren Prüfmengen und
+vier Ausgabeformen.
+
+Rot waren die **Aussagen darüber**:
+
+1. **Die tragende Messung war falsch.** *„`--print-mk` verteilt kein
+   Doctor-Target"* — widerlegt mit **einem** Produktlauf, und
+   [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+   schreibt das Target in ihrem Happy Path vor. Die Behauptung widersprach also
+   einem Akzeptanzkriterium **derselben Datei**, in der sie stand. Sie war zu
+   diesem Zeitpunkt schon in eine immutable ADR und in ein ausgehendes Dokument
+   gewandert.
+2. **Ein Spec-Edit hat eine Tabellen-Kopfzeile überschrieben.** Die Historie-Zeile
+   landete auf `| Kennung | System | Version/Stand | Vertrag |` von §6, weil
+   [`SPEC-077`](../../../../spec/spezifikation.md#4-grund--und-fehler-codes) die Zeilennummern verschoben hatte — **dieselbe Klasse, die einen
+   Tag zuvor schon einmal zugeschlagen hatte**, und der Slice-Auftrag an die
+   Verifikation nannte sie ausdrücklich. Kein Gate sieht das: `doc-check` prüft
+   Links und Anker, nicht ob eine Tabelle noch eine ist.
+3. **Zwei Mutationen liefen grün durch**, obwohl die Fitness Function *„jede
+   Zusage ist gefangen"* behauptete: die Config-Verdrahtung ließ sich löschen,
+   ohne dass ein Test rot wurde (das Feature wäre im Produkt wirkungslos
+   gewesen), und die Zählung ließ sich auf `> 0` einschränken, was die Null-
+   Semantik aus §Entscheidung 5 entwertet.
+
+**Steering-Loop-Einträge.** Drei Register-Zähler erhöht, keiner neu vergeben —
+alle drei Klassen standen schon, und das ist der Befund:
+
+- **[`BEO-023`](../observations.md) auf 6** (Wächter, der nie fangen konnte).
+  Neu an dieser Instanz: die Klasse traf nicht einen *schwachen* Test, sondern
+  einen **fehlenden** — die Regel-Tests bauen ihre Regel direkt und erreichen
+  den Config-Adapter nie, also gab es für die Verdrahtung überhaupt keine Probe.
+  Ihr eigener Wortlaut sagt, sie sei nicht auf Tests beschränkt; hier hat sie
+  das eingelöst.
+- **[`BEO-020`](../observations.md) auf 5** (eigene Menge gemessen, fremde
+  ausgesagt). Fünfte Instanz, und die Messung war diesmal nicht *falsch
+  gerechnet*, sondern **gar nicht gemacht**: über `--print-mk` wurde geredet,
+  gemessen wurden unsere Gate-Dateien.
+- **[`BEO-012`](../observations.md) auf 9** (Zitat über den Geltungsbereich).
+  Ein Grundsatz über die **Bedingungen im Abschnitt** wurde für einen
+  **Ventil**-Schlüssel in Anspruch genommen, der ausdrücklich keinen eigenen
+  Grund-Code trägt — an drei Stellen zugleich.
+
+**Eine geschärfte Regel, und sie kommt nicht aus dem Zähler.** Beide Prüfer
+meldeten den CHANGELOG-/README-Rückstand, wie schon bei den beiden Slices davor.
+Gemessen ist die Praxis eindeutig — die Feature-Commits fassen `CHANGELOG.md`
+nicht an, die Datei führt keinen `[Unreleased]`-Abschnitt —, nur stand sie
+nirgends. [`AGENTS.md`](../../../../AGENTS.md) §5 sagte *„wird gepflegt"* und
+nicht *wann*; jetzt nennt der Satz den Moment. Ohne ihn hätte die nächste
+Verifikation denselben Rückstand gemeldet, zu Recht.
+
+**Verifikation.** `make gates` Exit 0 (620 Dateien, 0 Befunde) ·
+`make fullbuild` Exit 0, Image-Hash
+`sha256:4bed7854ca21a6d116b9ffd4a86797072bf2f9081a4241864081b3efd3974b02`,
+50 Anforderungen / 0 Waisen, Closure-Profil über 558 Dateien ohne Befund ·
+Coverage 94,70 % · beide Reports in
+[`docs/reviews/`](../../../reviews/). **Nach den Reparaturen** sind beide zuvor
+grünen Mutationen rot, gemessen mit Namen des fangenden Tests.
+
+**Offen und benannt.** Ob die Bauform *„ein Schlüssel deklariert eine erwartete
+Anzahl"* trägt, zeigt erst der zweite Fall — die ADR trägt den Trigger. Und die
+Regel bleibt, was sie ist: **eine Lockerung mit Zahl.** Sie verschiebt die
+Pflege, sie nimmt sie nicht ab.
+
+**Eine Frage ist noch vor der Closure zugegangen.** Die ausgehende Antwort
+stellte dem Adopter die Frage, die nach der Korrektur übrig blieb — *fahrt ihr
+`doc-doctor` in einem Gate?* Er hat gemessen und geantwortet: **nein**
+(Makefile-Aggregate 0, Workflows 0, Hooks 0; das Target ist dort advisory). Die
+Abweichung von seiner beantragten Form bleibt damit richtig, und zwar zum
+ersten Mal aus einer Messung **seines** Bestands statt aus einer Vermutung
+darüber. Er ordnet unseren Fehler derselben Klasse zu, die sein Register führt,
+und stellt fest, dass beide Seiten sie in dieser Runde begangen haben — das ist
+die ehrlichere Bilanz als „Entscheidung bestätigt".
+
+**Eine Anmerkung zur Prozedur, zum vierten Mal.** Der Kanon
+(`modul-05-planning-harness.md`) schreibt die Closure-Notiz **vor** den
+`git mv`; [`AGENTS.md`](../../../../AGENTS.md) §3.3 und
+[`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)
+schreiben den Move **zuerst** und den Body als Commit 2. Gefahren ist die
+Repo-Form, und sie hat hier einen messbaren Grund: die Register-Belege zeigen
+auf `done/`, und der `pre-commit`-Hook hat den Body-vor-Move-Versuch prompt
+abgewiesen. **Der Widerspruch gehört trotzdem aufgelöst**, statt bei jeder
+Closure neu erklärt zu werden.

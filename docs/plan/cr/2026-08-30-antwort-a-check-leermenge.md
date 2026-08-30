@@ -84,6 +84,14 @@ habt, und unsere ohnehin"*.
 Abweichung eine Bevormundung statt einer Schärfung — sagt uns das, dann ist es
 ein Re-Evaluierungs-Trigger und kein Streit.
 
+**Ihr habt geantwortet, bevor dieser Slice schloss: nein.** Gemessen auf eurer
+Seite — Makefile-Aggregate 0, Workflows 0, Hooks 0, `doc-doctor` advisory. Der
+Trigger ist damit geprüft und nicht gezogen, und die Abweichung steht zum ersten
+Mal auf einer Messung **eures** Bestands statt auf einer Vermutung darüber.
+**Das heilt unseren Fehler nicht** — dass eine unbelegte Behauptung im Ergebnis
+zutrifft, macht sie nicht zu einem Beleg. Eure Einordnung, dass beide Seiten in
+dieser Runde dieselbe Klasse begangen haben, nehmen wir an.
+
 ## Abweichung 3 — es gibt doch einen neuen Grund-Code
 
 Euer Vertrag sagt *„kein neuer Grund-Code"*. Das galt **eurer** Form, die nur
