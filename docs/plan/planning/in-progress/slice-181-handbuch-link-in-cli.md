@@ -89,35 +89,65 @@ Kopf ist der einzige Ort, an dem so ein Zeiger dauerhaft mitreist.
 
 ## 4. Definition of Done
 
-- [ ] `d-check --help` nennt das Handbuch mit voller URL; `d-check --print-mk`
-      trägt sie im Kopfkommentar. **Beides gegen das echte Binary gemessen**,
-      nicht gegen den Quelltext.
-- [ ] Die URL zeigt auf `blob/main` und enthält **keine** Versionsangabe —
-      geprüft, dass ein Release sie nicht anfassen muss.
-- [ ] [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)
+- [x] `d-check --help` nennt das Handbuch mit voller URL; `d-check --print-mk`
+      trägt sie im Kopfkommentar, **vor** der ersten Variablen-Zuweisung.
+      **Beides gegen das echte Binary gemessen**, nicht gegen den Quelltext —
+      je genau ein Vorkommen, `--help` auf stderr, `--print-mk` ohne Mount.
+- [x] Die URL zeigt auf `blob/main` und enthält **keine** Versionsangabe. Die
+      Verifikation hat das **mutativ** belegt statt nur nachgelesen: eine
+      versionierte Handbuch-URL passiert alle elf Default-Module still,
+      während ein veralteter `ghcr`-Pin an derselben Datei `version-stale`
+      meldet — das Vorher-Grün ist also kein taubes.
+- [x] [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)
       und [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
-      fordern den Zeiger im Akzeptanzkriterium; Lastenheft-Bump samt
-      Historie-Zeile.
-- [ ] Je ein Test hält die Zusage, und **jeder wird von genau der Mutation rot**,
-      gegen die er steht (Zeile entfernt ⇒ rot); der Vorzustand ist mitgeprüft
-      ([`BEO-023`](../observations.md)).
-- [ ] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) §4.16 zeigt den
-      Kopf mit der neuen Zeile; `--print-mk` bleibt `not-replayable`.
-- [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
-      **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
+      fordern den Zeiger im Akzeptanzkriterium; Lastenheft **0.77.0** samt
+      Historie-Zeile. **Nach dem Review auch beide `.a`-Verfeinerungen** —
+      sie zählten die Usage-Ausgabe und den Kommentar-Kopf **abschließend**
+      auf und hätten den Zeiger sonst regelkonform wieder entfernt.
+- [x] Je ein Test hält die Zusage; **jede Zusage ist von mindestens einer
+      Mutation gefangen**, und der Vorzustand ist mitgeprüft
+      ([`BEO-023`](../observations.md)). **Präziser als zuerst formuliert:**
+      der Versions-Wächter ist fail-closed und damit ein
+      **Obermengen**-Wächter — er fällt auch bei fehlender Zeile; seine
+      scharfe Probe ist die Versionierung **beider** Literale (1 rot). Die
+      Verifikation hat sechs Proben gefahren, darunter den Vorzustand (3 rot).
+- [x] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) §4.16 zeigt den
+      Kopf mit der neuen Zeile; `--print-mk` bleibt `not-replayable`. Die drei
+      nicht elidierten Kopfzeilen sind **wortgleich** mit der echten Ausgabe.
+- [x] `make gates` grün (615 Dateien, 0 Befunde, Exit 0);
+      [**unabhängiger Review**](../../../reviews/2026-08-30-slice-181-handbuch-link-review.md)
+      (1 HIGH · 5 MEDIUM · 2 LOW · 1 INFO, blockierend) und
+      [**Verifikation**](../../../reviews/2026-08-30-slice-181-handbuch-link-verifikation.md)
+      (A-1 bis A-13) in eigenen Kontexten gelaufen, alle Befunde eingearbeitet
+      und die strittigen vorher selbst nachgemessen — **einer bewusst nicht**
+      (siehe §9).
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Eine URL im Werkzeug ist ein Versprechen über ein fremdes System.** Wird das
   Repository umbenannt oder das Handbuch verschoben, zeigt jedes ausgelieferte
   Binary ins Leere — und kein Gate dieses Repos merkt es, weil `external`
-  strikt opt-in und nie im Default aktiv ist. — **Ausgang:** *(bei Closure)*
+  strikt opt-in und nie im Default aktiv ist. — **Ausgang:** weiter offen, und
+  der Review hat den Punkt **verschärft**: es ist nicht nur `external`, das
+  opt-in ist — d-check scannt ausschließlich Markdown, die Go-Konstante also
+  nie. Kein Sensor dieses Repos kann die URL je auflösen. Dazu kommt eine
+  unbenannte Verdopplung: dieselbe Zeichenkette steht ohne Kopplung in
+  `packaging/dockerhub/overview.md`. Beides steht jetzt als Grenze im
+  Code-Kommentar.
 - **`blob/main` zeigt auf den Kopf, nicht auf die ausgelieferte Version.** Wer
   ein altes Image fährt, liest ein neueres Handbuch. Das ist der bewusste Preis
-  gegen die Drift-Fläche einer versionierten URL. — **Ausgang:** *(bei Closure)*
+  gegen die Drift-Fläche einer versionierten URL. — **Ausgang:** weiter offen.
+  Das Handbuch nannte den Preis zunächst nur als Vorteil (*„so kann er nicht
+  veralten"*) — an genau der Stelle, an der der betroffene Leser steht. Es nennt
+  ihn jetzt und verweist auf den Software-Versions-Stempel im Kopf.
 - **Der `d-check.mk`-Kopf wächst, und er reist in fremde Repos.** Jede Zeile
   dort ist eine Zeile, die ein Adopter nicht geschrieben hat und pflegen muss,
-  wenn er das Fragment je von Hand anpasst. — **Ausgang:** *(bei Closure)*
+  wenn er das Fragment je von Hand anpasst. — **Ausgang:** **entfallen** — für
+  den Kopf des Fragments. Er wächst um zwei Kommentarzeilen, und die Frage war,
+  ob ein Adopter sie pflegen muss; er muss nicht: das Fragment wird **erzeugt**,
+  nicht von Hand gehalten, und die Zeile trägt keine Version. Was bleibt, ist
+  die Zeile selbst — sie steht in §5 der Spezifikation als Bestandteil des
+  Kopfes und damit unter einer Zusage.
 
 ## 6. Trigger
 
@@ -178,3 +208,77 @@ Akzeptanzkriterien, zwei Tests; kein Fremdsystem, keine Reconciliation, kein
 Bestand, der umgestellt werden müsste.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert — zwei Zeilen, und der Review hat vier Orte gefunden, an denen die
+Begründung dazu falsch stand.** `--help` und der Kopf des erzeugten
+`d-check.mk` nennen die URL des Benutzerhandbuchs, beides gegen das echte
+Binary gemessen. Das war der leichte Teil.
+
+**Der Kanon verbietet genau den Kommentar, den ich zweimal geschrieben habe.**
+`grundlagen-harness-dateien.md` §Was ein Kommentar trägt führt *„den Konjunktiv
+über die verworfene Alternative"* ausdrücklich als unzulässig — *„die ist
+entschieden"*. Meine Kommentare in `cli.go` und im Test trugen beide *„eine
+versionierte URL **wäre** eine Release-Prep-Fläche"*. Die Deliberation hat in
+diesem Slice einen legitimen Ort — §2 — und ist von dort in den
+Produktionscode kopiert worden, wo sie mit jeder Zeile weiterreist.
+
+**Und das Argument war ohnehin das falsche.** Ich schrieb an fünf Stellen,
+[`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in)
+halte *„ausschließlich `ghcr`-präfixierte Pins"*. Gemessen ist dessen Muster
+frei konfigurierbar; dass dieses Repo es nur auf `ghcr` richtet, steht in
+seiner `.d-check.yml`, und [`BEO-008`](../observations.md) führt einen zweiten
+Muster-Quellen-Abgleich ausdrücklich als **baubar**. Schärfer noch: der Fundort
+ist eine **Go-Konstante**, und d-check scannt nur Markdown — **keine**
+`versions`-Konfiguration könnte `cli.go` je erreichen. Der tragende Grund ist
+die **Scan-Menge**, nicht der Musterzuschnitt. Das ist
+[`BEO-012`](../observations.md), und die falsche Aussage stand im ranghöchsten
+Stratum.
+
+**Die Lösungsbegründung stand im Akzeptanzkriterium.** Der Kanon
+(`modul-04-adrs.md`) trennt: *ADRs begründen die Lösung, die Spec begründet
+Anforderungen*. Gemessen war es das **einzige** von 74 Given/When/Then-Kriterien
+mit einer solchen Begründung — eine spätere Umstellung hätte damit eine
+Änderung am vertraglich abnahmebindenden Stratum verlangt statt einer
+Folge-ADR.
+
+**Die Spezifikation zählte beide Ausgaben weiter abschließend ohne den Zeiger
+auf** — die Usage-Ausgabe *„in dieser Reihenfolge"* mit fünf Elementen, den
+Kommentar-Kopf mit zweien. Wer eine geschlossene Enumeration befolgt, entfernt
+den Zeiger beim nächsten Umbau **regelkonform** wieder; genau dagegen hatte §2
+die beiden Akzeptanzkriterien geschrieben, und die Verfeinerung darunter blieb
+liegen. Der Slice-Kopf nannte sie nicht, §3 nahm sie nicht aus — die Auslassung
+war weder gedeckt noch deklariert.
+
+**Zwei handwerkliche Fehler dazu.** Der Doc-Kommentar hing nach dem Einfügen
+der Konstante an **ihr** statt an `writeUsage`, das damit ohne Doku und ohne
+Rang-Zeiger dastand (`make lint`: 0 issues — unbewacht). Und der Test fiel
+**still** auf die schwächere Prüfung zurück: fehlte der Anker `DCHECK_IMAGE ?=`,
+blieb `kopf` die ganze Ausgabe, und die „im Kopf"-Zusage kollabierte
+kommentarlos. Der Review hat das mit einer eigenen Probe belegt (Anker
+umbenannt, URL ans Ende ⇒ **PASS**); jetzt bricht der Test am fehlenden Anker,
+und dieselbe Mutation macht ihn rot — nachgemessen.
+
+**Einem Befund bin ich bewusst nicht gefolgt, und die Messung entscheidet.**
+Die Verifikation verlangte einen `CHANGELOG`-Eintrag im Feat-Commit; der Review
+hat das Gegenteil gemessen. Nachgeprüft: die Feat-Commits von slice-177,
+slice-179 und slice-180 fassen `CHANGELOG.md` **nicht** an — geschrieben wird er
+im Release-Prep-Commit. **Zwei unabhängige Läufe können sich widersprechen**,
+und dann gilt nicht der lautere, sondern der gemessene.
+
+**Was der Slice über das Werkzeug hinaus gezeigt hat:** eine Begründung, die im
+Slice-Plan richtig steht, wird beim Kopieren in Code, Test und Spec **nicht
+mitgeprüft**. Sie war an allen vier Zielorten dieselbe und an allen vier falsch
+platziert oder falsch zitiert — und kein Gate sieht davon etwas. Der Plan ist
+der Ort für das Warum; was in den Code wandert, ist die **Grenze** und die
+**Zusage**.
+
+**Fortgeschrieben:** [`BEO-012`](../observations.md) (die Reichweiten-Dehnung an
+fünf Stellen), [`BEO-023`](../observations.md) (der still schwächer werdende
+Wächter im eigenen Test).
+
+**Was offen bleibt und wohin es gehört:** die URL steht unverbunden zweimal im
+Repo (`cli.go` und `packaging/dockerhub/overview.md`); eine Kopplung wäre ein
+eigener Schnitt und braucht erst einen Anlass. Und *„elf `##`-annotierte
+Targets"* war seit `doc-structure` in **zwei** Dokumenten falsch — hier
+korrigiert, aber die Klasse hat keinen Wächter: `targets` misst `make`-Targets,
+nicht die des Fragments.
