@@ -2013,6 +2013,9 @@ structure:
     # exempt-section-pattern: '^### AC-0(0[1-9]|1[0-9])\b'   # Abschnitte, deren ROHE
     #                                             # Überschriften-Zeile (samt #-Folge!) so
     #                                             # matcht, prüft DIESE Regel nicht
+    # exempt-expect-count: 19                     # ... und wenn diese Zahl stimmt, ist die
+    #                                             # LEERE Restmenge kein Befund, sondern der
+    #                                             # deklarierte Bestandszustand
 ```
 
 **Acht Dinge, die überraschen können.** Erstens: eine Regel, die **keine** Datei
@@ -2131,7 +2134,23 @@ Zahl; wer die Überdeckung sehen will, lässt ihn dort weg.
 Für `exempt-section-pattern` gibt es ein Netz: nimmt es **alle** Abschnitte,
 meldet die Regel `section-missing` und nennt den Schlüssel — sie wird nicht
 still grün, **auch nicht neben einem `hint`** (dort hat die Regel nicht
-gemessen). Zwei weitere Eigenschaften, die überraschen können: die Ausnahme
+gemessen).
+
+**Wenn Ihr Bestand gerade vollständig ausgenommen ist, sagen Sie das mit einer
+Zahl.** `exempt-expect-count: 19` heißt: *„neunzehn sollen ausgenommen sein"*.
+Stimmt es, ist die leere Restmenge **kein** Befund — die Regel wartet auf den
+ersten Abschnitt, den die Aufzählung nicht deckt. Stimmt es nicht, meldet
+`section-exempt-mismatch` mit beiden Zahlen. **Die Prüfung läuft in beide
+Richtungen und immer**, nicht nur bei leerer Restmenge: wer die Aufzählung
+erweitert, ohne die Zahl zu ziehen, hat dieselbe Lücke wie umgekehrt. **`0` ist
+erlaubt und bedeutet etwas** — *„das Muster soll heute noch nichts treffen"*.
+Und die Trennung, um die es geht, bleibt: trifft schon `section-pattern`
+nichts, ist das ein Konfigurationsdefekt und bleibt `section-missing`, auch mit
+gesetzter Zahl. **Der Preis gehört dazu:** die Zahl altert wie jeder andere
+Autoren-Text, und wer sie blind mitzieht, hat einen Wächter, der nur noch sich
+selbst bestätigt.
+
+Zwei weitere Eigenschaften, die überraschen können: die Ausnahme
 läuft **vor** der Kardinalitäts-Prüfung, zwei Treffer minus einer ausgenommenen
 sind bei `sections: one` also in Ordnung; und ein **gesetztes** Muster gehört
 zur Regel-Identität — erst dadurch lassen sich zwei Regeln über denselben
