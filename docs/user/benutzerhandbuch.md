@@ -839,10 +839,14 @@ docker run --rm ghcr.io/pt9912/d-check:v0.68.0 --print-mk > d-check.mk
 Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
 `##`-annotierte Targets (`doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`,
 `doc-repair`, `doc-immutable`, `doc-commits`, `doc-planning`, `doc-tracked`,
-`doc-targets`, `doc-help`):
+`doc-targets`, `doc-help`). **Der Kopfkommentar nennt die URL dieses Handbuchs** — das Fragment liegt danach in Ihrem Repo, und der Kopf ist der einzige Ort, an dem der Zeiger dorthin mitfährt. Er steht bewusst auf dem **Hauptzweig** statt auf einer Version: so kann er nicht veralten, und Sie lesen den aktuellen Stand, auch wenn Sie ein älteres Image pinnen.
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
+# … Einbinden, Digest-Pin
+#
+# Benutzerhandbuch (aufgabenorientiert, deutsch):
+#   https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md
 DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.68.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
