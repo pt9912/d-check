@@ -210,29 +210,29 @@ sind, nicht wie sie klingen.
 
 ## 4. Definition of Done
 
-- [ ] `max-open-tasks` ist im Schema, in
+- [x] `max-open-tasks` ist im Schema, in
       [`spec/lastenheft.md`](../../../../spec/lastenheft.md) (Bump + Historie)
       und in [`spec/spezifikation.md`](../../../../spec/spezifikation.md)
       geführt, mit eigenem Grund-Code; **explizit** < 0 ⇒ Exit 2, mit Test.
-- [ ] **Die Blindstelle ist gemessen geschlossen:** derselbe Backtick-Fall, an
+- [x] **Die Blindstelle ist gemessen geschlossen:** derselbe Backtick-Fall, an
       dem der Vorgänger auf 0 Befunde fiel, meldet jetzt — Ausgabe vorher und
       nachher in der Commit-Botschaft.
-- [ ] **Alle Bullet-Formen gemessen:** `-`, `*`, `+` und die geordnete Liste,
+- [x] **Alle Bullet-Formen gemessen:** `-`, `*`, `+` und die geordnete Liste,
       je offen und je gehakt; eingerückt und mit Tab-Trenner. Erwartung und
       Ergebnis je Fall.
-- [ ] **Fence-Treue bleibt:** ein Task-Item **innerhalb** eines Fenced-Blocks
+- [x] **Fence-Treue bleibt:** ein Task-Item **innerhalb** eines Fenced-Blocks
       zählt **nicht** — sonst meldete ein Slice, der über Task-Items schreibt,
       seine eigene Dokumentation. Gemessen, nicht behauptet.
-- [ ] Ein Befund **je offenem Item**, auf **seiner** Zeile; zwei offene Items
+- [x] Ein Befund **je offenem Item**, auf **seiner** Zeile; zwei offene Items
       in einer Datei ⇒ zwei Befunde, nicht einer.
-- [ ] **Umkehr-Probe** ([`BEO-023`](../observations.md)): je Zusage eine
+- [x] **Umkehr-Probe** ([`BEO-023`](../observations.md)): je Zusage eine
       Mutation, die genau einen Test rot macht — die Probe kostet einen Lauf und
       ist der einzige Beleg, dass der Wächter beißt.
-- [ ] Eine ADR begründet die drei Entscheide aus §2 und ist im
+- [x] Eine ADR begründet die drei Entscheide aus §2 und ist im
       [ADR-Index](../../adr/README.md) eingetragen.
-- [ ] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) führt die
+- [x] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) führt die
       Bedingung dort, wo es die übrigen `structure`-Schlüssel führt.
-- [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
+- [x] `make gates` grün (Exit explizit); **unabhängiger Review**;
       **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -240,17 +240,47 @@ sind, nicht wie sie klingen.
 - **Zwei Bedingungen über dieselbe Frage, verschiedene Antworten.**
   `max-tasks` (bereinigt, alle Items) und `max-open-tasks` (roh, offene Items)
   stehen nebeneinander; wer den falschen greift, bekommt stillschweigend die
-  schwächere Zusage. — **Ausgang:** *(bei Closure)*
+  schwächere Zusage. — **Ausgang: weiter offen.** Nicht auflösbar, solange
+  beide Schlüssel existieren, und
+  [ADR-0074](../../adr/0074-offene-tasks-auf-rohen-zeilen.md) §Entscheidung 6
+  hat entschieden, dass `max-tasks` bleibt. Der Review hat den Punkt
+  **verschärft**: die ADR verspricht die Abgrenzung *„in beiden Schema-Zeilen"*,
+  geliefert war zunächst nur die neue. Sie steht jetzt in beiden — in
+  Spezifikation und Lastenheft —, damit der Leser sie an der Stelle findet, an
+  der er den schwächeren Schlüssel greift. **Ein Sensor dagegen gibt es nicht**,
+  und es kann keinen geben: welcher der beiden gemeint ist, ist eine Frage an
+  die Zusage, nicht an die Konfiguration.
 - **Die rohe Lesung holt Falsch-Positive zurück, die die Bereinigung
   fernhält** — ein `- [ ]` in einem Inline-Code-Beispiel zählt jetzt mit. Die
   Fence-Ausnahme deckt den häufigen Fall, die Inline-Form nicht. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang: entfallen für die notierte Form, mit Begründung.** Das Risiko
+  nannte *„ein `- [ ]` in einem Inline-Code-Beispiel"*; gemessen zählt eine
+  **einzeilige** Inline-Spanne **gar nicht** mit — das Muster ist
+  zeilen-verankert, und der Backtick steht vor dem Listen-Marker. Nur die
+  **mehrzeilige** Spanne zählt. Der notierte Preis war also höher als der
+  echte, und das ist jetzt in allen vier Oberflächen so benannt. **Was
+  tatsächlich blieb, war ein anderer Fall und ist eigens verzeichnet:** der
+  vergessene Schluss-Fence, der die Bedingung ganz abschaltet — als vierte
+  Grenze deklariert, samt der Konsequenz, dass ein Konsument `spans` im selben
+  Profil braucht. **Gemessen am eigenen Bestand: null Falsch-Positive** unter
+  144 Befunden.
 - **Die Fähigkeit entsteht für einen einzigen Konsumenten**
   ([`BEO-011`](../observations.md)): slice-172. Ob weitere Regeln offene
-  Task-Items zählen wollen, ist nicht gemessen. — **Ausgang:** *(bei Closure)*
+  Task-Items zählen wollen, ist nicht gemessen. — **Ausgang: weiter offen.**
+  Der zweite Konsument beantwortet es; dieser Slice kann es nicht. **Kein
+  Folge-Slice**, weil es bis dahin nichts zu tun gibt — ein Slice auf Vorrat
+  wäre ein Zombie. Was den Punkt entschärft: die Fähigkeit ist opt-in und ohne
+  den Schlüssel byte-identisch, sie kostet also nichts, solange sie niemand
+  greift.
 - **Der Grund-Code-Raum wächst um einen weiteren `section-*`-Code.** Jede neue
   Bedingung bringt einen; die Menge ist inzwischen zweistellig, und ein Leser
-  muss sie unterscheiden können. — **Ausgang:** *(bei Closure)*
+  muss sie unterscheiden können. — **Ausgang: weiter offen.** Die Alternative
+  wäre ein Sammel-Code, und den schließt die Befund-Deduplikation aus: sie
+  vergleicht (Datei, Zeile, Regel, Ziel, Grund), zwei verletzte Bedingungen
+  desselben Abschnitts fielen darunter zusammen. Der Punkt steht damit
+  strukturell fest und wird erst zur Lücke, wenn ein Leser die Codes nicht mehr
+  auseinanderhält — dann ist es eine Frage an den `--doctor`-Klartext, nicht an
+  die Codes.
 
 ## 6. Trigger
 
@@ -363,3 +393,104 @@ vorhandene Modul-Lexik; kein Fremdsystem, keine Reconciliation, kein Bestand,
 der umgestellt werden müsste.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert.** Die opt-in-Bedingung `max-open-tasks` (int ≥ 0) im Modul
+`structure`: Obergrenze der **offenen** Task-Items eines Abschnitts, gezählt
+auf den **rohen** Zeilen über die Modul-Lexik, ein Befund je Item auf **seiner**
+Zeile, Grund-Code `section-tasks-open` / [`SPEC-078`](../../../../spec/spezifikation.md#4-grund--und-fehler-codes), Lastenheft `0.79.0`. Dazu
+`## Geschichte` an
+[ADR-0074](../../adr/0074-offene-tasks-auf-rohen-zeilen.md) für die Entscheide,
+die sie offenließ, zehn Regel-Tests, zwei Config-Ränder, Handbuch und
+`--print-config`-Gerüst.
+
+**Der dritte Anlauf, und der Unterschied zu den beiden ersten war eine
+Messung.** Die Rückführung von gestern nannte als Vorbedingung *„erst die
+Fence-Lexik selbst"*. Nachgemessen zerfällt die Blindstelle in zwei Fälle, und
+nur einer ist die Lexik-Frage: der **vergessene** Schluss-Fence blendet alles
+Folgende aus — in der CommonMark-Lesart **genauso**, eine offene Fence läuft
+dort bis Dateiende —, ihn fängt `fence-unclosed`, und das Closure-Profil fährt
+`spans` seit [slice-180](slice-180-closure-profil-spans.md). Nur der **naiv
+ausgeglichene** Fence ist die Divergenz, und die hat im Bestand keinen
+Realfall. [ADR-0042](../../adr/0042-markdown-lexik-folgt-commonmark.md) hatte
+die Frage ausdrücklich offen gelassen und ihre Bedingung benannt; sie ist nicht
+eingetreten. **Ohne diese Messung hätte hier ein Lexik-Umbau gestanden, den
+niemand braucht.**
+
+**Was funktioniert hat.** Die acht Mutationsproben vor dem Commit — darunter
+die, die mir bei [slice-182](slice-182-erklaerte-leermenge.md) gefehlt hatte:
+*Verdrahtung Config → Modell entfernt*. Sie fängt jetzt. Und die Zerlegung von
+`checkStructureFile`, als der Linter die Komplexitätsschwelle meldete: weder
+Suppression (§3.2) noch gesenkte Schwelle (§3.6), sondern ein Schnitt entlang
+der Frage — Datei-Ebene wählt Kandidaten, `structureAmAbschnitt` prüft
+Bedingungen.
+
+**Was anders lief.** Der Review blockierte mit drei HIGH, die Verifikation
+urteilte *konform im Verhalten, nicht abschlussreif in der Spezifikation*.
+Das **Verhalten** hielt in über dreißig Produktläufen der Verifikation gegen
+eigene Probe-Bäume: alle vier Listen-Marker, Fence-Treue, Schwelle als reiner
+Überhang, Abschnittsgrenze, beide Config-Ränder, CRLF, und alle vier
+deklarierten Grenzen zeilengenau. Rot waren die **Aussagen darüber**:
+
+1. **Ein wiedergekehrter Befund.** Die Commit-Botschaft sagte *„Lastenheft
+   **und Spezifikation**"* korrigiert — korrigiert war nur das Lastenheft.
+   Genau dieser Befund steht in §2 für den **ersten** Bau protokolliert. Er ist
+   jetzt an der Wurzel behoben: Schritt 5, die Bedingungs-Tabelle in Schritt 6,
+   zwei Doc-Kommentare und die Modul-Tabelle des Handbuchs.
+2. **Ein Test gegen `BEO-003`, der selbst `BEO-023` war.** Meine Lexik-Probe
+   hieß *„teilt die Lexik"* und **konnte nicht fangen**: `offenerHaken` liest
+   den Treffer von `taskItemRE`, die geprüfte Bedingung ist per Konstruktion
+   unerfüllbar. Gemessen — ein zweites, gedoppeltes RE2 daneben ließ sie grün.
+   Die jetzige Fassung **erweitert** die Lexik und verlangt, dass sie mitzieht.
+3. **Die stille Grenze war entschieden und nirgends deklariert.** Der
+   vergessene Schluss-Fence steht jetzt als **vierte** Grenze in Lastenheft,
+   Spezifikation, Handbuch und Code — samt der Konsequenz, dass ein Konsument
+   `spans` im selben Profil braucht.
+
+**Und zwei Korrekturen an meinen eigenen Zahlen.** *„276 Befunde"* nannte
+weder Glob noch Selektor; die Verifikation maß mit drei plausiblen Varianten
+164/331/161 und konnte sie ohne den Korpus nicht reproduzieren — die
+**tragende** Aussage (`diff` leer) hat sie unabhängig mit selbst gebautem
+Vorgänger-Image belegt. Und meine Fence-Divergenz-Zahl ist eine Eigenschaft
+ihres **Verfahrens**: wendet man die Infozeilen-Regel nur auf den Toggle an,
+bleibt **ein** Treffer, beidseits angewandt **null**. Beide tragen dieselbe
+Aussage — aber ich habe mit einer Zahl argumentiert, deren Verfahren ich nicht
+mitgeliefert habe.
+
+**Steering-Loop-Einträge.** Drei Zähler erhöht, keiner neu vergeben:
+
+- **[`BEO-023`](../observations.md)** (Wächter, der nie fangen konnte) — siebte
+  Instanz, und die schärfste bisher: der Test stand **namentlich** gegen eine
+  andere registrierte Klasse und war selbst diese hier. Neu daran: die
+  Untauglichkeit folgte aus der **Konstruktion** (eine Bedingung, die nicht
+  falsch werden kann), nicht aus einem falschen Fixture. **Prozedur, ergänzt:**
+  wer einen Kopplungs-Test schreibt, mutiert die **Quelle** der Kopplung, nicht
+  ihr Ergebnis.
+- **[`BEO-012`](../observations.md)** (Zitat über den Geltungsbereich) — hier
+  als **Paraphrase in Anführungszeichen**: *„erst eine Regel, wenn ein Realfall
+  existiert"* statt des Originals *„… und bekommen erst eine Regel, wenn einer
+  existiert"*. Der Sinn stimmt, der Wortlaut nicht — und ein Zitat sieht aus
+  wie ein Beleg.
+- **[`BEO-003`](../observations.md)** (Lexik kopiert statt geteilt) — als
+  **Antwort** statt als Defekt: es gibt kein zweites Muster mehr, die Box liest
+  sich aus dem Treffer des ersten. Die Klasse kann an dieser Stelle nicht mehr
+  auftreten, statt von einem Test bewacht zu werden.
+
+**Verifikation.** `make gates` Exit 0 (622 Dateien, 0 Befunde) · `make fullbuild`
+Exit 0, Image-Hash `sha256:fb5c3b907001c300e9dd7cb11134ca2b10b9354a2c315ed7e436bdcc3b880f68`,
+Closure-Profil über 560 Dateien ohne Befund · Coverage 94,70 %, die neuen Funktionen 100 % · Byte-Identität ohne den
+Schlüssel nach den Reparaturen erneut gemessen: 276 Befunde beidseits, `diff`
+leer, gegen ein aus dem Vor-Commit gebautes Image · acht Mutationsproben vor,
+zwei weitere nach den Reparaturen, je mit dem fangenden Test.
+
+**Offen und benannt.** Die Fähigkeit hat **einen** vorgesehenen Konsumenten
+([slice-172](../open/slice-172-closure-uebergang-waechtern.md)); ob eine zweite
+Regel offene Task-Items zählen will, ist nicht gemessen. `max-tasks` und
+`max-open-tasks` stehen nebeneinander, und welcher gemeint ist, kann kein
+Sensor beantworten — die Abgrenzung steht deshalb in **beiden** Schema-Zeilen.
+Und die stille Fence-Grenze bleibt: sie ist deklariert, nicht behoben.
+
+**Ein Bestands-Beleg, den der Plan noch als fehlend führte.** §1 schrieb, der
+Slice stehe *„auf dem konstruierten Fall, nicht auf einem Bestands-Fund"*. Die
+Verifikation hat unter den 144 `done/`-Befunden **einen echten unquittierten
+Haken hinter einer offenen Backtick-Spanne** gefunden. Der Satz stimmte, als er
+geschrieben wurde; er stimmt jetzt nicht mehr.
