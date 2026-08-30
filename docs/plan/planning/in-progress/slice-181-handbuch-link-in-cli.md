@@ -18,7 +18,10 @@ braucht); der Anlass ist ein Auftraggeber-Wunsch, keine Welle.
 **Berührte Spec-Stellen:**
 [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)
 (Akzeptanzkriterium *Hilfe*) und
-[`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben).
+[`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) —
+**samt beider `.a`-Verfeinerungen** in der Spezifikation: sie zählen die
+Usage-Ausgabe und den Kommentar-Kopf **abschließend** auf und wären sonst nach
+dem Bump unvollständig.
 
 **Verantwortlich:** pt9912 (Implementer-Rolle, beansprucht 2026-08-30).
 

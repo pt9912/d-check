@@ -49,11 +49,13 @@ angehängt); ein wertnehmendes Flag ohne Wert ist ein Nutzungsfehler
 Usage-Ausgabe führt (in dieser Reihenfolge) eine Kurzbeschreibung, die
 Synopsis `d-check [optionen] [pfad]`, eine Zeile zum Pfad-Argument
 (Scan-Wurzel, Default: aktuelles Verzeichnis), die Flag-Liste
-(`flag.PrintDefaults`) und einen Konfigurations-Hinweis, der auf
+(`flag.PrintDefaults`), einen Konfigurations-Hinweis, der auf
 [`DC-FA-CLI-005`](lastenheft.md#dc-fa-cli-005--konfigurations-gerüst-ausgeben)
 (`--print-config`) und
 [`DC-FA-CLI-006`](lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)
-(`--suggest-config`) verweist — das Config-Format wird nicht dupliziert.
+(`--suggest-config`) verweist — das Config-Format wird nicht dupliziert —,
+und zuletzt die **URL des Benutzerhandbuchs** auf dem Hauptzweig, ohne
+Versionsangabe.
 Symlinks werden beim Scan weder verfolgt noch als Dateien gewertet — der
 Baum-Walk kennt nur Verzeichnisse und reguläre Dateien. Das gilt für **beide**
 Formen: ein Verzeichnis-Symlink wird nicht betreten, und eine nur über einen
@@ -681,7 +683,10 @@ Kurzschluss vor der Wurzel-Auflösung. Ausgabe (deterministisch,
 eingebetteten Version):
 
 1. Kommentar-Kopf: Einbindung via `include`, Hinweis zum Digest-Pin via
-   `DCHECK_IMAGE` bzw. bequemer `DCHECK_DIGEST`.
+   `DCHECK_IMAGE` bzw. bequemer `DCHECK_DIGEST`, und die **URL des
+   Benutzerhandbuchs** auf dem Hauptzweig — das Fragment reist in ein
+   fremdes Repo, und der Kopf ist der einzige Ort, an dem ein Zeiger
+   dorthin mitfährt.
 2. `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v<version>` — `<version>` ist die
    beim Tag-Build via `-ldflags -X …/cli.version=<tag>` eingebettete
    Release-Version (Default `0.0.0-dev` für lokale/Gate-Builds).
@@ -689,7 +694,7 @@ eingebetteten Version):
    `@sha256:`-Digest) leitet `DCHECK_REF` auf `…/d-check@$(DCHECK_DIGEST)` um und
    **sticht** so den Tag von `DCHECK_IMAGE`; sonst `DCHECK_REF := $(DCHECK_IMAGE)`.
 4. `TRACE_FLAGS ?=` — überschreibbare Flag-Variable für die RTM-Targets.
-5. Elf `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
+5. Zwölf `.PHONY`-Targets, jeweils mit `##`-Annotation (die das `help` des
    Konsumenten aufgreift) und **TAB**-eingerücktem
    `docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) …`:
    - `doc-check` (Befund-Gate, ohne Zusatz-Flag),
@@ -3045,6 +3050,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-30 | §[`DC-FA-CLI-001.a`](spezifikation.md#dc-fa-cli-001a--ablauf-eines-prüflaufs) und §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) um den **Handbuch-Zeiger** ergänzt ([`DC-FA-CLI-001`](lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)/[`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 0.77.0). **Beide Stellen waren abschließende Aufzählungen** — die Usage-Ausgabe „in dieser Reihenfolge" mit fünf Elementen, der Kommentar-Kopf mit zweien —, und beide widersprachen nach dem Lastenheft-Bump der ausgelieferten Ausgabe. **Der Nachzug ist die Regel, nicht der Zusatz:** wer eine geschlossene Enumeration in der Spezifikation befolgt, entfernt den Zeiger beim nächsten Umbau regelkonform wieder. Gefunden hat es der unabhängige Review, nicht der Bau. Dabei mitkorrigiert: Punkt 5 sagte **elf** `.PHONY`-Targets und zählt seit `doc-structure` **zwölf** — dieselbe Enumerations-Drift, die die Lastenheft-Historie für diese Stelle schon zweimal protokolliert |
 | 2026-08-30 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 1/3/6 und das §2-Schema um die **erklärte Grundmenge** erweitert ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.76.0, Begründung in begleitender ADR): `tasks-ignore-pattern` nimmt Task-Items aus der `max-tasks`-Zählung, `exempt-section-pattern` nimmt **Abschnitte** aus der Regel. Beide **verkleinern** nur; **kein** neuer Grund-Code, und ohne sie ist das Verhalten byte-identisch. **Die beiden Muster sehen verschiedene Zeichenketten, und das ist der Kern:** `exempt-section-pattern` dieselbe wie `section-pattern` (rohe Überschriften-Zeile samt `#`-Folge), `tasks-ignore-pattern` den **Item-Text hinter der Checkbox** — gegen die Zeile bezeichnete `^` immer den Listen-Marker, und gemessen ist die **verankerte** Form die tragfähige (444 Items: frei 13 Treffer, davon **zwei** echte Liefer-Zusagen; **dasselbe** Muster verankert nur noch eines, und auch das eine; erst ein Muster, das verankert ist **und** auf Text zielt, den die Bereinigung übrig lässt, traf 26 ohne einen falschen). **Schritt 5 bekommt eine dritte dazugesagte Folge:** die Item-Ausnahme liest den **bereinigten** Text, ein Muster auf einen Ausdruck in Backticks trifft also Leerzeichen — gemessen trifft `make gates` **null** von 444 Items. Die Abschnitts-Ausnahme läuft **vor** Schritt 4, weil sie die Grundmenge erklärt; leert sie die Menge ⇒ `section-missing` mit Schlüssel und Zahl (Nullmengen-Härte wie `exempt-paths`), und dieser Befund behält seine Meldung auch neben einem `hint`. Ein **gesetztes** Abschnitts-Muster geht in die **Regel-Identität** ein — ohne das wäre die Grandfathering-Paarung (Bedingung A für alle, B nur für die übrigen) ein Konfigurations-Duplikat. Die `section-oversized`-Meldung nennt bei gesetztem Muster die Zahl der ignorierten Items, **auch bei null** — mit **zwei** benannten Grenzen: sie greift nur, solange die Regel meldet, und ein `hint` ersetzt die Meldung samt der Zahl. Zwei neue Exit-2-Ränder in Schritt 1 |
 | 2026-08-29 | Neues Modul-Verfahren §[`DC-FA-WF-001.a`](spezifikation.md#dc-fa-wf-001a--deklarations-konsistenz-von-workflow-referenzen-workflows) ([`DC-FA-WF-001`](lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in) 0.74.0, Begründung in begleitender ADR): sieben Schritte über die `uses:`-Referenzen eines konfigurierten Workflow-Verzeichnisses — Pin-**Form** für fremde Referenzen, Existenz **und** Rechte-Deckung für lokale. §2-Schema um `workflows.dir`/`workflows.exempt-paths`, §4 um sechs Codes [`SPEC-071`](#4-grund--und-fehler-codes) bis [`SPEC-076`](#4-grund--und-fehler-codes). **Die Referenzen kommen aus dem YAML-Baum, nicht aus einer Textsuche** — damit entfällt die Zeilen-Näherung des abgelösten Skripts, und `read-all`/`write-all`/Flow-Mappings sind gelesen statt gemeldet. **Schritt 5 trifft eine Aussage, die das Skript nicht traf:** ein Job ohne eigenes `permissions:` erbt zwar den Workflow-Kopf, kann aber an einen aufgerufenen Workflow nichts weitergeben, was er nicht selbst deklariert. **Die §3.8-Grenze ist ausgesprochen**: das Modul liest die Ziele lokaler Referenzen, die es nicht scannt, und dieselbe Parse-Zusage gilt dort |
 | 2026-08-29 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 1/6 und das §2-Schema auf die **Tabellen-Klammer** `table` umgestellt ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.73.0, Begründung in begleitender ADR): die fünf flachen Schlüssel `table-order`/`table-column`/`cell-max-column`/`cell-max-chars`/`cell-min-chars` heißen jetzt `table.order`, `table.order-column` und `table.column[]` mit `name`/`cell-max-chars`/`cell-min-chars`. **Die Zellengrenzen sind eine Liste je Spalte**, kein Schlüssel-Tripel je Regel — mehrere Spalten desselben Abschnitts stehen unter **einem** Selektor. Das §2-Schema führt die `table.*`-Zeilen zusammen und benennt die **Abgrenzung der beiden Spalten-Begriffe**: `order-column` adressiert über die **Position** (ein Griff daneben fällt als `section-cell-untyped` auf), `column[].name` über den **Namen** (eine Längen-Messung hat diese Selbstkontrolle nicht). Schritt 1 trägt **zwei neue Exit-2-Ränder**, die erst die Liste möglich macht — leere Klammer, doppelter Spaltenname — und die Abweisung der fünf Vorgänger-Schlüssel **mit dem neuen Ort in der Meldung**. Schritt 6 sagt erstmals aus, dass jeder Listen-Eintrag ein **eigener Lauf** ist und das Befund-Ziel die Spalte trägt: die Regel-Identität tut es für die Zellen-Spalten **nicht mehr**, weil sie innerhalb einer Regel keine zwei Regeln kollidieren lassen können. **Kein Grund-Code und keine Befund-Form ändert sich** |

@@ -836,10 +836,10 @@ docker run --rm ghcr.io/pt9912/d-check:v0.68.0 --print-mk > d-check.mk
 
 **Ergebnis:** ein include-bares `d-check.mk` auf stdout — eine überschreibbare
 `DCHECK_IMAGE`-Variable (auf die ausgelieferte Release-Version gepinnt), die
-Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und elf
+Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und zwölf
 `##`-annotierte Targets (`doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`,
 `doc-repair`, `doc-immutable`, `doc-commits`, `doc-planning`, `doc-tracked`,
-`doc-targets`, `doc-help`). **Der Kopfkommentar nennt die URL dieses Handbuchs** — das Fragment liegt danach in Ihrem Repo, und der Kopf ist der einzige Ort, an dem der Zeiger dorthin mitfährt. Er steht bewusst auf dem **Hauptzweig** statt auf einer Version: so kann er nicht veralten, und Sie lesen den aktuellen Stand, auch wenn Sie ein älteres Image pinnen.
+`doc-targets`, `doc-structure`, `doc-help`). **Der Kopfkommentar nennt die URL dieses Handbuchs** — das Fragment liegt danach in Ihrem Repo, und der Kopf ist der einzige Ort, an dem der Zeiger dorthin mitfährt. Er steht bewusst auf dem **Hauptzweig** statt auf einer Version: so kann er nicht veralten. **Der Preis gehört dazu:** pinnen Sie ein älteres Image, lesen Sie hier über Fähigkeiten, die Ihr Bild noch nicht hat — der Kopf dieses Handbuchs nennt deshalb die Software-Version, zu der es gehört.
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text

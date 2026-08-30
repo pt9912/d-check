@@ -42,20 +42,25 @@ func TestCLI010_PrintMKNenntHandbuch(t *testing.T) {
 	// ZUWEISUNG, sonst stuende sie zwischen Targets statt in der Einleitung.
 	// Der Anker ist "\nDCHECK_IMAGE ?=", nicht der blosse Name — der kommt
 	// schon im Digest-Hinweis darueber vor.
-	kopf := stdout
-	if i := strings.Index(stdout, "\nDCHECK_IMAGE ?="); i > 0 {
-		kopf = stdout[:i]
+	//
+	// FEHLT DER ANKER, BRICHT DER TEST, statt auf die schwaechere Pruefung
+	// oben zurueckzufallen: ein Waechter, der still seine Haelfte verliert,
+	// liest sich wie einer, der sie noch haelt (BEO-023).
+	i := strings.Index(stdout, "\nDCHECK_IMAGE ?=")
+	if i <= 0 {
+		t.Fatalf("Anker \"DCHECK_IMAGE ?=\" fehlt — die Kopf-Zusage ist nicht mehr pruefbar:\n%s", stdout)
 	}
-	if !strings.Contains(kopf, wantHandbuchURL) {
+	if kopf := stdout[:i]; !strings.Contains(kopf, wantHandbuchURL) {
 		t.Fatalf("Handbuch-URL steht nicht im Kopf des Fragments:\n%s", kopf)
 	}
 }
 
-// DIE URL DARF KEINE VERSION TRAGEN. Eine versionierte URL waere eine
-// Release-Prep-Flaeche, die kein Gate deckt: `versions` haelt ausschliesslich
-// ghcr-praefixierte Pins gegen version.md, und nackte Tags in Prosa driften
-// still. Dieser Test ist der Waechter ueber genau diese Entscheidung — er
-// faellt, sobald jemand `blob/v0.68.0` schreibt.
+// DIE URL DARF KEINE VERSION TRAGEN. Dieser Test ist der Waechter ueber
+// genau diese Zusage — er faellt, sobald jemand `blob/v0.68.0` schreibt.
+//
+// GRENZE: er ist fail-closed und damit ein OBERMENGEN-Waechter — er faellt
+// auch, wenn die Zeile ganz fehlt. Die scharfe Probe fuer ihn allein ist
+// eine Versionierung in BEIDEN Literalen, Produktion und Test.
 func TestHandbuchURL_TraegtKeineVersion(t *testing.T) {
 	_, _, hilfe := run(t, "--help")
 	_, fragment, _ := run(t, "--print-mk")

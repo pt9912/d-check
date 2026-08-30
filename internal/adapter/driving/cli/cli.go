@@ -113,17 +113,23 @@ func flagWasSet(flags *flag.FlagSet, name string) bool {
 	return set
 }
 
-// writeUsage gibt die Hilfe aus (DC-FA-CLI-001.a): Kurzbeschreibung,
-// Synopsis mit dem Pfad-Argument, Flag-Liste und ein Konfigurations-
-// Hinweis, der auf --print-config/--suggest-config verweist (das
-// Config-Format wird dort gezeigt, nicht hier dupliziert) und auf das
-// Benutzerhandbuch.
+// handbuchURL zeigt auf den HAUPTZWEIG. Damit steht in beiden Ausgaben
+// derselbe Zeiger, und ein Release muss ihn nicht anfassen.
 //
-// DIE HANDBUCH-URL ZEIGT AUF `main`, NICHT AUF EINE VERSION: eine
-// versionierte URL waere eine Release-Prep-Flaeche, die kein Gate deckt --
-// `versions` haelt ausschliesslich ghcr-praefixierte Pins. Der Preis ist
-// benannt: wer ein altes Image faehrt, liest ein neueres Handbuch.
+// GRENZE: kein Sensor dieses Repos loest ihn auf -- d-check scannt nur
+// Markdown (DC-FA-STRUCT-001), diese Datei also nie, und `external` ist
+// strikt opt-in und nirgends aktiviert. Zeigt die URL ins Leere, faellt es
+// keinem Lauf auf. Zweiter Preis: wer ein aelteres Image faehrt, liest ein
+// neueres Handbuch.
+//
+// DIE ZEICHENKETTE STEHT EIN ZWEITES MAL in packaging/dockerhub/overview.md,
+// ohne Kopplung -- eine Umbenennung braeche beide still.
 const handbuchURL = "https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md"
+
+// writeUsage gibt die Hilfe aus (DC-FA-CLI-001.a): Kurzbeschreibung,
+// Synopsis mit dem Pfad-Argument, Flag-Liste, ein Konfigurations-Hinweis,
+// der auf --print-config/--suggest-config verweist (das Config-Format wird
+// dort gezeigt, nicht hier dupliziert), und der Handbuch-Zeiger.
 func writeUsage(flags *flag.FlagSet) {
 	out := flags.Output()
 	fmt.Fprintln(out, "d-check — prüft Markdown-Dokumentation auf kaputte Referenzen")
