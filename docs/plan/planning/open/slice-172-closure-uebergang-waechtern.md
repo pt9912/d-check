@@ -8,7 +8,8 @@ Closure-Trigger der Welle beobachtet **mehr**, als diese DoD belegt: dass die
 Vorbedingungen am **Übergang** greifen, nicht nur im Zustand danach.
 
 **Bezug:** [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
-(das Werkzeug: `forbid-pattern` über einen Abschnitt);
+(das Werkzeug: `max-open-tasks` über einen Abschnitt — seit
+[slice-178](../done/slice-178-offene-tasks-roh.md));
 [ADR-0059](../../adr/0059-closure-waechter-weicht-structure-regel.md) und
 [`MR-049`](../../../../harness/conventions.md#mr-049) (die Präzedenz: die
 urteilsfreie Hälfte einer Closure-Regel als `structure`-Regel, mit
@@ -63,9 +64,17 @@ Beobachtungs-Register: Mensch urteilt, Maschine prüft Deckung.
 ## 2. Vorgehen
 
 1. **Eine `structure`-Regel im Closure-Profil**, nach dem Muster von
-   [ADR-0059](../../adr/0059-closure-waechter-weicht-structure-regel.md):
-   `forbid-pattern` auf das Task-Item-Muster über den
-   `## N. Definition of Done`-Abschnitt von `done/slice-*`.
+   [ADR-0059](../../adr/0059-closure-waechter-weicht-structure-regel.md), aber
+   mit **`max-open-tasks: 0`** statt `forbid-pattern` über den
+   `## N. Definition of Done`-Abschnitt von `done/slice-*`. **Das ist die
+   Änderung gegenüber den beiden vorigen Anläufen**, und sie ist der Grund, aus
+   dem dieser Slice zweimal zurückging: `forbid-pattern` liest den bereinigten
+   Text und fiel an einem einzelnen Backtick auf null Befunde, und es deckte nur
+   die Bullet-Form, die sein Autor aufschrieb. Beides ist mit
+   [slice-178](../done/slice-178-offene-tasks-roh.md) erledigt —
+   [`ADR-0074`](../../adr/0074-offene-tasks-auf-rohen-zeilen.md) zählt roh und
+   über die Modul-Lexik, und der Befund steht auf **der Zeile des Hakens** statt
+   auf der Abschnitts-Überschrift.
 2. **Bestands-Ausnahme mit fester Ziffernzahl**, exakt wie
    [`MR-049`](../../../../harness/conventions.md#mr-049) sie für die
    Drei-Ausgänge-Regel führt — und aus demselben Grund, den der Auftraggeber
@@ -73,18 +82,24 @@ Beobachtungs-Register: Mensch urteilt, Maschine prüft Deckung.
    nicht durchgängig nachgezogen.** Ein Befund auf einem Slice, der nach
    damaliger Form korrekt war, wäre kein Befund, sondern Lärm.
 3. **Vor dem Scharfschalten rot messen**, nicht behaupten: die Regel gegen den
-   heutigen Bestand fahren, die Trefferzahl mit den 37 abgleichen, und mit
-   Ausnahme auf null bringen. Weicht die Zahl ab, ist das Muster falsch — nicht
-   der Bestand.
-4. **Die Meldung trägt die Reparatur, nicht nur den Zustand.** `section-forbidden`
-   sagt „hier steht etwas Verbotenes"; die Meldung muss sagen, *was zu tun ist*:
-   den Haken setzen oder den Slice zurückführen. **Das Schema kann das heute
-   nicht** — `structure` kennt keine regel-eigene Meldung, und der
-   `--doctor`-Klartext hängt am Grund-Code, nicht an der Regel. Dieser Punkt
-   ist der Grund für die Rückführung (§6); die Fähigkeit liefert
-   [slice-177](../done/slice-177-structure-hint.md), und diese Regel
-   wird ihr erster Konsument.
-5. `make gates` und `make fullbuild`; **Review** und **Verifikation** als
+   heutigen Bestand fahren und mit Ausnahme auf null bringen. Weicht die Zahl
+   ab, ist das Muster falsch — nicht der Bestand.
+4. **Die Meldung trägt die Reparatur, nicht nur den Zustand.**
+   `section-tasks-open` sagt „hier steht ein offener Haken"; die Meldung muss
+   sagen, *was zu tun ist*: den Haken setzen oder den Slice zurückführen. Das
+   leistet `structure[].hint` seit
+   [slice-177](../done/slice-177-structure-hint.md) — diese Regel wird sein
+   erster Konsument, und dass die Fähigkeit fehlte, war der Grund für die
+   **erste** Rückführung (§6).
+5. **`spans` gehört ins Profil, und das ist keine Kür.**
+   [slice-178](../done/slice-178-offene-tasks-roh.md) hat den vergessenen
+   Schluss-Fence als **deklarierte, nicht behobene** Grenze der Bedingung
+   ausgewiesen: er blendet alles Folgende aus, und die rohe Lesung behebt das
+   nicht. Gefangen wird er von `fence-unclosed`. Der Closure-Bindepunkt fährt
+   `spans` seit [slice-180](../done/slice-180-closure-profil-spans.md) —
+   **dieser Slice hängt also von einer Eigenschaft ab, die er nicht selbst
+   herstellt**, und das gehört in seine DoD statt in eine Fußnote.
+6. `make gates` und `make fullbuild`; **Review** und **Verifikation** als
    getrennte Läufe; Closure.
 
 
@@ -100,6 +115,16 @@ Beanspruchung sie nicht wiederholt:**
 - **Die Bestandszahl stimmt mit der Planung überein:** ohne Ausnahme **37**
   `section-forbidden`, mit ihr **null** — beides im echten Closure-Profil
   gefahren, nicht in einer Probe-Konfiguration.
+- **Bei der dritten Beanspruchung neu gemessen, weil sich die Form geändert
+  hat** (2026-08-30): mit `max-open-tasks: 0` statt `forbid-pattern` sind es
+  **144 Befunde in denselben 37 Dateien**, mit der Ausnahme **null**. Die Zahl
+  der *Dateien* ist unverändert, die der *Befunde* nicht — die neue Form meldet
+  **je offenem Haken** statt je Abschnitt. Die drei Ausnahme-Muster aus der
+  vorigen Zeile tragen unverändert, und die Grenze liegt weiter bei
+  [slice-171](../done/slice-171-vorpruefungen-belegen.md): die seither
+  geschlossenen Slices 171–182 tragen ihre Haken gesetzt. **Das ist zugleich
+  der Beleg, dass die korrigierte Praxis hält** — elf Closures ohne einen
+  einzigen offenen Haken.
 - **Bei der zweiten Beanspruchung nachgeprüft, nicht wiederholt:** der Bestand
   ist von 170 auf **171** `done/`-Slices gewachsen (slice-177 kam hinzu), die
   Trefferzahl bleibt **37**, die Nummern bleiben dieselben, und es gibt weiter
@@ -210,8 +235,15 @@ fälschen.
 
 - [ ] Eine `structure`-Regel im Closure-Profil meldet einen offenen DoD-Haken
       in `done/slice-*` mit eigener, reparatur-benennender Meldung.
+- [ ] **`spans` läuft im selben Profil, und das ist belegt statt angenommen.**
+      Der vergessene Schluss-Fence ist die deklarierte, nicht behobene Grenze
+      von `max-open-tasks`; ohne `fence-unclosed` hängt dieser Wächter an einem
+      einzelnen Zeichen. Beleg: eine Probe, in der ein offener Haken hinter
+      einem vergessenen Fence steht — `structure` allein schweigt, das Profil
+      meldet.
 - [ ] **Retro gemessen:** die Regel meldet ohne Ausnahme die erwartete
-      Bestandszahl (37 Dateien) und mit Bestands-Ausnahme **null**; beide
+      Bestandszahl (144 Befunde in 37 Dateien) und mit Bestands-Ausnahme
+      **null**; beide
       Ausgaben stehen in der Commit-Botschaft.
 - [ ] Die Bestands-Ausnahme ist als Adaption geführt (oder an
       [`MR-049`](../../../../harness/conventions.md#mr-049) angehängt) und nennt
@@ -271,6 +303,26 @@ den **rohen** Abschnittstext liest —, dann diesen Slice damit schließen. Die
 Regel, ihre Adaption und die Zustellung sind zurückgenommen; die Messungen
 bleiben in §2.
 
+**Dritte Beanspruchung am 2026-08-30** (`open` → `in-progress`): **beide
+Vorbedingungen der Rückführungen liegen vor.** Die erste — eine regel-eigene
+Meldung — kam mit
+[slice-177](../done/slice-177-structure-hint.md) (`structure[].hint`); die
+zweite — eine Bedingung, die den **rohen** Abschnittstext liest — mit
+[slice-178](../done/slice-178-offene-tasks-roh.md) (`max-open-tasks`). Damit
+sind die beiden Blindstellen, an denen der zweite Bau scheiterte, keine
+Blindstellen mehr: der Backtick schaltet nichts ab, und alle vier
+Listen-Marker zählen, ohne dass ein Konfigurations-Autor sie kennen muss.
+
+**Die Vorarbeit ist neu gemessen, nicht übernommen** — die Form hat sich
+geändert, also ändern sich die Zahlen: 144 Befunde in denselben 37 Dateien,
+mit Ausnahme null. Was **bleibt**, ist die Nummernspanne der Ausnahme; was
+**dazukommt**, ist ein Befund je Haken statt je Abschnitt.
+
+**Eine Abhängigkeit ist neu und steht in der DoD:** dieser Wächter hängt an
+`spans` im selben Profil. Der vergessene Schluss-Fence ist die deklarierte,
+nicht behobene Grenze von `max-open-tasks`; ohne `fence-unclosed` schaltet ein
+einzelnes Zeichen die Vorbedingung ab.
+
 **Rückführungen:** `in-progress` → `open`, falls die Bestandsmessung eine
 andere Zahl als 37 liefert oder die Treffer über die Nummernspanne streuen —
 dann trägt eine feste Ziffern-Ausnahme nicht, und der Schnitt ist ein anderer.
@@ -308,8 +360,9 @@ dann trägt eine feste Ziffern-Ausnahme nicht, und der Schnitt ist ein anderer.
 
 - **Nachtlauf-Stand lesen** (`make nightly-state`,
   [`MR-053`](../../../../harness/conventions.md#mr-053)): beide Achsen melden
-  **gruen** — `upstream-drift.yml` zuletzt 2026-08-29T07:34:35Z,
-  `image-scan.yml` 2026-08-29T10:07:43Z. **Dieser Block trägt bewusst keine
+  **gruen** — bei der dritten Beanspruchung neu gelesen,
+  `upstream-drift.yml` zuletzt 2026-08-30T06:08:17Z, `image-scan.yml`
+  2026-08-30T09:16:25Z. **Dieser Block trägt bewusst keine
   `cite`-Direktive** — sein Ziel ist eine Repo-Adaption, kein
   Baseline-Abschnitt ([`MR-054`](../../../../harness/conventions.md#mr-054)).
 
