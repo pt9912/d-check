@@ -148,7 +148,14 @@ Dokuments:
   aus der Regel (geprüft wird **dieselbe** rohe Überschriften-Zeile wie bei
   `section-pattern`, samt `#`-Folge). Beide **verkleinern** nur, tragen keinen
   eigenen Grund-Code, und ohne sie ist der Befundsatz byte-identisch; leert die
-  Abschnitts-Ausnahme die Menge ⇒ `section-missing` statt stillem Grün. Und
+  Abschnitts-Ausnahme die Menge ⇒ `section-missing` statt stillem Grün —
+  **es sei denn, die Regel sagt, wie viele sie ausnimmt:** `exempt-expect-count`
+  (int ≥ 0, nur mit dem Muster) macht die erklärte Leermenge stumm, solange die
+  Zahl stimmt, und meldet sonst `section-exempt-mismatch` — in **beide**
+  Richtungen und **unabhängig** von einer Restmenge. Der Konfigurationsdefekt
+  (der Selektor trifft nichts) bleibt `section-missing`, auch mit gesetzter
+  Zahl. Die Zahl gilt **je Datei**, ihr Befund **bricht die Datei ab**, und sie
+  altert wie jeder Autoren-Text. Und
   `hint` lässt eine Regel ihre **Erläuterung selbst verfassen** — was der Leser
   tun soll, weiß nur sie; der Grund-Code sagt die **Art** des Defekts.
   **Hermetisch**,
@@ -255,7 +262,7 @@ Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.68.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.69.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

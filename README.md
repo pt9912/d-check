@@ -147,7 +147,14 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   `section-pattern`, `#` sequence included). Both only **shrink** the checked
   set, carry no reason code of their own, and without them the finding set is
   byte-identical; if the section exemption empties the set, `section-missing`
-  is reported rather than silent green. And `hint` lets a rule **write its own
+  is reported rather than silent green — **unless the rule states how many it
+  exempts:** `exempt-expect-count` (int ≥ 0, only alongside the pattern) keeps
+  the declared empty set silent as long as the number holds, and otherwise
+  reports `section-exempt-mismatch` — in **both** directions and
+  **independently** of whether sections remain. The configuration defect (the
+  selector matches nothing) stays `section-missing`, even with the number set.
+  The number applies **per file**, its finding **aborts that file**, and it ages
+  like any other authored text. And `hint` lets a rule **write its own
   explanation** — what the reader should do is known only to the rule; the
   reason code states the **kind** of defect. **Hermetic**,
   opt-in; the closure-note structure of module `planning` is a **preset** of the
@@ -251,7 +258,7 @@ you pull from)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.68.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.69.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

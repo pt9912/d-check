@@ -4,6 +4,75 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.69.0] — 2026-08-30
+
+### Added
+
+- slice-182 — **Eine erklärte Teilmenge darf die geprüfte Menge leeren — wenn
+  sie sagt, wie viele**
+  ([ADR-0078](docs/plan/adr/0078-erklaerte-leermenge-mit-zahl.md),
+  Lastenheft 0.78.0; Anlass ist ein eingehender CR **desselben** Adopters, aus
+  der Anwendung des vorigen). Seit `v0.68.0` meldet eine Regel
+  `section-missing`, wenn `exempt-section-pattern` **alle** Treffer abzieht.
+  Das warf **zwei** Zustände in einen Grund-Code: den **Konfigurationsdefekt**
+  (der Selektor trifft nichts) und den **Bestandszustand** (die Ausnahme nimmt
+  alle — *„noch nichts Neues zu prüfen"*). Der Adopter grandfathert 19
+  Anforderungen in einer Datei mit genau 19 passenden Abschnitten und bekam
+  rot, wo sein abgelöstes Skript `0 neue, 19 grandfathered` mit Exit 0 meldete.
+  Neu ist deshalb der optionale Schlüssel **`exempt-expect-count`** (int ≥ 0,
+  nur mit `exempt-section-pattern`): er **deklariert**, wie viele Abschnitte die
+  Ausnahme nehmen soll. Stimmt die Zahl, ist die geleerte Menge **kein** Befund;
+  weicht sie ab, meldet der neue Grund-Code **`section-exempt-mismatch`** mit
+  beiden Zahlen. **Der Konfigurationsdefekt bleibt `section-missing`** — auch
+  mit gesetzter Zahl; genau diese Trennung ist der ganze Gegenstand.
+  **Die Prüfung läuft in beide Richtungen und immer**, nicht nur bei geleerter
+  Restmenge: eine erweiterte Aufzählung ohne nachgezogene Zahl ist dieselbe
+  Lücke wie eine veraltete, und eine einseitige Prüfung wäre ein halber Wächter.
+  **`0` ist erlaubt und bedeutet etwas** (*„das Muster soll heute noch nichts
+  treffen"* — ein Bestand, der erst wächst) und bleibt von einem abwesenden
+  Schlüssel unterscheidbar. **Zwei Eigenschaften, die überraschen und deshalb in
+  Handbuch, Lastenheft und Spezifikation stehen:** die Zahl gilt **je Datei**,
+  nicht je Regel — ein Glob über zehn Dateien hält sie gegen jede einzeln —, und
+  der Befund **bricht die Datei ab**, verdeckt also den Rest, bis die Zahl
+  stimmt. Zwei neue Config-Ränder, beide Exit 2: der Schlüssel **ohne**
+  `exempt-section-pattern` und ein Wert **< 0**. **Ohne den Schlüssel ist der
+  Befundsatz byte-identisch** — gemessen gegen ein aus dem Vorgänger-Commit
+  gebautes Image: 169 Befunde beidseits (86 `section-missing` + 83
+  `section-oversized`), `diff` leer, dazu in drei weiteren Prüfmengen und vier
+  Ausgabeformen. **Und die ehrliche Zeile:** eine erklärte Menge zu verkleinern
+  bleibt eine **Lockerung**, jetzt eine mit Zahl. Wer die Zahl mitzieht, ohne
+  die Aufzählung zu prüfen, hat einen Wächter, der nur noch sich selbst
+  bestätigt; der Schlüssel verschiebt die Pflege, er nimmt sie nicht ab
+  ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)).
+- slice-181 — **Das Benutzerhandbuch ist aus dem Werkzeug heraus auffindbar**
+  (Lastenheft 0.77.0). `--help` nennt am Ende die URL des Handbuchs, und das per
+  `--print-mk` erzeugte Makefile-Fragment trägt sie in seinem **Kopfkommentar**.
+  Das Fragment reist in ein **fremdes** Repo, und sein Kopf ist der einzige Ort,
+  an dem ein Zeiger dorthin dauerhaft mitfährt. **Die URL zeigt auf den
+  Hauptzweig, ohne Versionsangabe** — sie kann damit nicht veralten, zeigt aber
+  auch nie auf den Stand, den ein gepinntes Image fährt; wer die passende
+  Fassung braucht, liest den Software-Versions-Stempel im Kopf des Handbuchs
+  ([`DC-FA-CLI-001`](spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel),
+  [`DC-FA-CLI-010`](spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)).
+
+### Changed
+
+- slice-180 — **Der Closure-Bindepunkt dieses Repos fährt `spans` mit**
+  ([ADR-0077](docs/plan/adr/0077-spans-am-bindepunkt-die-begruendung-traegt-anders.md),
+  supersedes [ADR-0076](docs/plan/adr/0076-spans-am-closure-bindepunkt.md)).
+  `make verify-closure-notes` prüft die Closure-Notizen über `planning` und
+  `structure`; beide urteilen über **bereinigten** Text, und ein vergessener
+  Schluss-Fence verschluckt alles dahinter — die Zusage würde wahr, ohne etwas
+  gesehen zu haben. Das dritte Modul meldet genau diese Artefakte. **Es findet
+  dabei nichts, was `make gates` nicht schon fände** — gemessen: derselbe
+  `fence-unclosed` erscheint dort beim Commit, und die Scan-Menge des
+  Bindepunkts ist eine **Teilmenge**. Der Gewinn ist die **Unabhängigkeit** von
+  einem fremden Profil, nicht neue Deckung; ADR-0076 hatte das Gegenteil
+  behauptet und ist deshalb abgelöst. **Kein Produkt-Verhalten ändert sich** —
+  Modulsatz, Grund-Codes und Konfigurations-Fläche sind unberührt, der
+  Befundsatz bleibt byte-identisch
+  ([`DC-FA-SPAN-001`](spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)).
+
 ## [0.68.0] — 2026-08-30
 
 ### Added
