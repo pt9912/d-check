@@ -188,8 +188,12 @@ Antwort an den Absender und ins Handbuch, nicht in eine Fußnote.
 - [x] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) führt beide
       Schlüssel, das Beispiel **verankert** — samt der **zwei gemessenen
       Fallen** (freies Muster, Muster auf Inline-Code).
-- [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
-      **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
+- [x] `make gates` grün (Exit explizit) — 606 Dateien, 0 Befunde, Exit 0;
+      [**unabhängiger Review**](../../../reviews/2026-08-30-slice-179-strukture-teilmenge-review.md)
+      (1 HIGH · 4 MEDIUM · 4 LOW · 1 INFO, blockierend) und
+      [**Verifikation**](../../../reviews/2026-08-30-slice-179-strukture-teilmenge-verifikation.md)
+      gegen DoD/Spec (A-1 bis A-7) in eigenen Kontexten gelaufen, alle Befunde
+      eingearbeitet und die strittigen Zahlen vorher selbst nachgemessen.
 - [x] Der Absender bekommt eine
       [**Antwort**](../../cr/2026-08-30-antwort-a-check-structure-teilmenge.md)
       — angenommen mit drei Messungen dagegen, samt den drei Schritten, die er
@@ -199,18 +203,36 @@ Antwort an den Absender und ins Handbuch, nicht in eine Fußnote.
 
 - **Ein Ignorier-Muster ist Autoren-Text und kann still zu breit sein.** Die
   Sichtbarkeits-Zusage (§2 Punkt 2) fängt den Fall nur, **solange die Regel
-  meldet**. Wer alles ignoriert, sieht nichts. — **Ausgang:** *(bei Closure)*
+  meldet**. Wer alles ignoriert, sieht nichts. — **Ausgang:** weiter offen, und
+  die Sichtbarkeit ist seit dem Review **schwächer**, als dieser Punkt annahm:
+  ein `hint` an derselben Regel ersetzt die Meldung samt der Zahl. Beide Grenzen
+  stehen jetzt in Lastenheft, Spezifikation und Handbuch; für den
+  Nullmengen-Befund ist die Lücke geschlossen.
 - **Zwei ähnliche Namen in einem Werkzeug** (`exempt-section-pattern` in `structure`,
   `exclude-sections` in `vcs`). Wer den falschen greift, bekommt eine andere
-  Semantik — literal gegen RE2. — **Ausgang:** *(bei Closure)*
+  Semantik — literal gegen RE2. — **Ausgang:** entfallen — der Name
+  `exempt-sections` wurde nicht vergeben. Der Entscheid des Auftraggebers fiel
+  auf `exempt-section-pattern`, und damit gibt es die Verwechslung nicht:
+  `-pattern` bedeutet in diesem Modul RE2, `exclude-sections` in `vcs`/`sources`
+  ist eine Liste literaler Überschriften. Die Begründung steht in
+  [ADR-0075](../../adr/0075-erklaerte-teilmenge-in-structure.md) §2 und in der
+  Antwort an den Absender.
 - **Die Fähigkeit entsteht aus einem fremden Bestand**
   ([`BEO-011`](../observations.md)). Der Anlass ist hier nachgemessen (80 von 89
   Abschnitten), die **Form** stammt aber vom Absender; ob sie zu diesem Repo passt,
-  zeigt erst die erste eigene Regel. — **Ausgang:** *(bei Closure)*
+  zeigt erst die erste eigene Regel. — **Ausgang:** weiter offen, und die Frage
+  ist schärfer geworden. Die Form stammt vom Absender, und zwei seiner drei
+  Beispiel-Muster tragen auf **diesem** Bestand nicht — das ist gemessen und ihm
+  mitgeteilt. Ob die Fähigkeit hier passt, zeigt weiterhin erst die erste eigene
+  Regel; die Entscheidung darüber ist ausdrücklich nicht Teil dieses Slice (§3).
 - **Die geprüfte Menge zu verkleinern ist per Konstruktion eine Lockerung.**
   Sie ist als Option ausgeführt und damit opt-in — aber jede Konfiguration, die
   sie setzt, senkt ihre eigene Zusage, ohne dass ein Gate es meldet. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang:** weiter offen, und dieser Punkt bleibt es dauerhaft. Er ist kein
+  Rest, sondern die Form der Zusage: die Sichtbarkeits-Meldung ist das Beste,
+  was das Werkzeug dagegen tun kann, und sie hat zwei benannte Grenzen. Das
+  Urteil, ob eine Teilmenge berechtigt ist, liegt beim Konfigurations-Autor und
+  in keinem Gate.
 
 ## 6. Trigger
 
@@ -269,3 +291,87 @@ vorhandene Bedingungen; kein Fremdsystem, keine Reconciliation, kein Bestand,
 der umgestellt werden müsste.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert, und der Antrag war beim Bauen der kleinere Teil.** Beide
+Optionen sind aufgenommen wie beantragt — als Optionen an bestehenden
+Bedingungen, ohne neues Modul, ohne neuen Grund-Code, Default byte-identisch
+(gemessen gegen das Vorher-Image: 166 Befunde, `diff` leer, in fünf
+Ausgabeformen). Der Aufwand lag woanders: **drei** Messungen gegen den Antrag
+und, nach dem Review, **eine gegen die eigene Messung**.
+
+**Die tragende Zahl war falsch, und sie war arithmetisch unmöglich.** Die
+Tabelle stellte *„frei 13 Treffer"* neben *„verankert 26"* unter die
+Überschrift „über dieselben 444 Items" — und maß zwei **verschiedene**
+Ausdrücke. Ein `^` kann die Treffermenge nur verkleinern. Nachgemessen: derselbe
+Ausdruck verankert trifft **eines**, und auch das ist ein Liefer-Punkt; die 26
+stammen von einem korpus-eigenen Ausdruck. **Die Empfehlung wird dadurch nicht
+schwächer, sondern präziser:** verankern allein genügt nicht, das Muster muss
+zusätzlich auf Text zielen, den die Bereinigung übrig lässt. Genau daran
+scheitert das CR-Beispiel doppelt — und das ist jetzt der Kern der Antwort
+statt einer Randnotiz. Die Zahl stand da bereits in einer **immutablen** ADR,
+in beiden Spec-Straten, im Handbuch und im ausgehenden Dokument; die Korrektur
+läuft über `## Geschichte`, weil eine `Accepted`-Entscheidung nicht
+überschrieben wird.
+
+**Die zweite falsche Zahl bezeichnete die falsche Menge.** *„86 Slice-Pläne mit
+`## 4. Definition of Done`"* war der `section-missing`-Zähler desselben Laufs —
+also die Dateien **ohne** den Abschnitt. Es sind **89** Abschnitte in 175
+Dateien. Alles, was daran hängt (444 Items, 80 Befunde, 166 im
+Identitäts-Lauf), reproduziert unverändert; nur die Bezugsmenge war falsch
+benannt. Beide Fehler sind dieselbe Klasse — [`BEO-020`](../observations.md),
+gemessen wird die eine Menge, ausgesagt wird über eine andere —, und beide fand
+der zweite Leser, nicht der Schreibende.
+
+**Zwei Verhaltens-Lücken, die kein Gate gefunden hätte.** Ein `hint` löschte
+**beide** neuen Sichtbarkeits-Zusagen; der Nullmengen-Befund gehört zur Klasse
+*„die Regel hat nicht gemessen"*, die
+[ADR-0073](../../adr/0073-befund-erlaeuterung-fuer-menschen.md) ausdrücklich vom
+verfassten Hinweis ausnimmt, und trägt jetzt seine eigene Meldung. Für die
+`section-oversized`-Zahl gewinnt der Hinweis zu Recht — das ist eine **zweite**
+benannte Grenze der Sichtbarkeits-Zusage. Und das gesetzte
+`exempt-section-pattern` ging nicht in die **Regel-Identität** ein, womit
+ausgerechnet die Paarung, für die der Schlüssel beantragt wurde — Bedingung A
+für alle Abschnitte, B nur für die übrigen —, als Konfigurations-Duplikat mit
+Exit 2 endete.
+
+**Der Test gegen [`BEO-023`](../observations.md) war selbst ein
+`BEO-023`-Fall.** Die Fence-Probe der Abschnitts-Ausnahme richtete ihr Muster
+auf die **gefencte** Überschrift; damit war *„nie gewählt"* von *„gewählt und
+dann ausgenommen"* am Ergebnis nicht unterscheidbar, und eine
+Fence-Blindheits-Mutation lief grün durch. Der Kommentar **über** diesem Test
+schrieb *„eine geerbte Zusage ohne Probe ist eine Erinnerung"*. Die Klasse war
+beim Schreiben benannt und im selben Atemzug begangen. Reparatur: eine Zeile;
+die Mutation macht ihn jetzt rot, gemessen.
+
+**Eine Zuschreibung an den Absender war unfair und ist zurückgenommen.** Sein
+Abschnitts-Muster ist gegen **seine** deklarierte Semantik korrekt — er schreibt
+ausdrücklich *„Abschnitte, deren Überschriftstext dieses RE2 trifft"*. Dass es
+hier nicht greift, folgt aus **unserer** Entscheidung, und am Antrag wurde
+nichts gemessen. Das stand als „dritter gemessener Punkt" in ADR, Code-Kommentar
+und Antwort; die Entscheidung bleibt, ihre Begründung steht jetzt auf der
+Konsistenz **innerhalb** der Regel statt auf einem fremden Fehler
+([`BEO-012`](../observations.md)).
+
+**Was der Slice über das Werkzeug hinaus gezeigt hat:** die Fence-Treue, die
+dieses Modul auszeichnet, ist bei einem **Ignorier**-Muster eine Falle. Wer
+fence-treu zählt, ignoriert auch fence-treu — und wer sein Muster auf einen
+Ausdruck in Backticks richtet, richtet es auf Leerzeichen. Das gilt nicht nur
+hier: die Slice-Vorlage der Baseline schreibt `` - [ ] `make gates` grün ``
+selbst, das Beispiel-Muster des Absenders ist also in **jedem** Repo inert, das
+die Vorlage benutzt. Diese Verallgemeinerung stammt aus der Verifikation und
+ist stärker belegt als das, was die Dokumente behaupten.
+
+**Fortgeschrieben:** [`BEO-020`](../observations.md) und
+[`BEO-023`](../observations.md) auf Zähler **3** — beide haben damit die
+Schwelle erreicht; die Verkörperung fällt an die Closure von
+[welle-86](../welle-86-closure-uebergang-durchsetzen.md) (Lese-Schritt).
+[`BEO-012`](../observations.md) ist als achte Instanz nicht gezählt, weil die
+Zuschreibung im selben Slice entstand und zurückgenommen wurde, bevor sie
+wirkte — sie steht hier, nicht im Register.
+
+**Was offen bleibt und wohin es gehört:** ob dieses Repo `max-tasks` über seine
+eigenen Slice-Pläne scharf schaltet, ist ein eigener Entscheid nach der
+Fähigkeit (§3) — mit der eben gemessenen Vorwarnung, dass ein tragfähiges
+Muster hier auf `^grün \(Exit explizit\)` zielen müsste und damit nur 26 der
+444 Items erreicht. Der `CHANGELOG`-Eintrag gehört in die Release-Prep, wie
+schon der von slice-177.
