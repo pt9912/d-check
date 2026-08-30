@@ -2538,17 +2538,26 @@ optional, beide tragen **keinen** eigenen Grund-Code.
 - `tasks-ignore-pattern` (RE2) nimmt Task-Items aus der `max-tasks`-Zählung
   heraus. Geprüft wird der **Item-Text** hinter Listen-Marker und Checkbox,
   nicht die rohe Zeile: gegen die rohe Zeile bezeichnete `^` immer den
-  Listen-Marker, und die **verankerte** Muster-Form wäre unschreibbar — die
-  aber ist die tragfähige (gemessen an 444 Items: verankert 26 Treffer und
-  **kein** falscher, frei 13 Treffer und **zwei** falsche). Der Schlüssel ohne
-  `max-tasks` ⇒ Exit 2.
+  Listen-Marker, und die **verankerte** Muster-Form wäre unschreibbar. Sie ist
+  die tragfähige, aber nur zusammen mit der zweiten Hälfte — gemessen an 444
+  Items eines gewachsenen Bestands: ein freies Muster traf 13 Items, davon
+  **zwei** echte Liefer-Zusagen; **dasselbe** Muster verankert traf **eines**,
+  und auch das war eine. Erst ein Muster, das **verankert ist und auf Text
+  zielt, den die Bereinigung übrig lässt**, traf 26 Items ohne einen falschen.
+  Der Schlüssel ohne `max-tasks` ⇒ Exit 2.
 - `exempt-section-pattern` (RE2) nimmt **Abschnitte** aus dieser Regel heraus —
   das Geschwister von `exempt-paths` eine Granularitätsstufe tiefer, für
   Bestände, die **innerhalb einer Datei** leben. Geprüft wird **dieselbe**
   Zeichenkette, die `section-pattern` sieht: die getrimmte
   Überschriften-Zeile **einschließlich** der `#`-Folge. Zwei RE2 in einer Regel
   mit zwei verschiedenen Zielen wären eine Falle — ein Muster, analog zum
-  Nachbarn geschrieben, träfe still nichts.
+  Nachbarn geschrieben, träfe still nichts. Ein **gesetztes** Muster gehört zur
+  **Regel-Identität**: zwei Regeln über denselben Selektor, von denen eine
+  einen Bestand ausnimmt, sind verschiedene Zusagen — und genau diese Paarung
+  (Bedingung A für alle Abschnitte, Bedingung B nur für die übrigen) ist die
+  Form, die Grandfathering braucht; ohne den Zusatz wäre sie ein
+  Konfigurations-Duplikat ⇒ Exit 2 und damit unschreibbar. Ein **leeres**
+  Muster geht nicht ein, sonst änderte sich das `target` jeder Bestandsregel.
 
 Es läuft **vor** der Kardinalitäts-Prüfung: was ausgenommen ist, kann
 `sections: one` nicht mehrdeutig machen. **Leert es die Menge ⇒
@@ -2560,13 +2569,24 @@ Muster die Regel still ab.
 `section-oversized`-Meldung die Zahl der ignorierten Items — *„Abschnitt trägt
 4 Task-Items (3 ignoriert), erlaubt sind 3"* —, **auch bei null**: ein Muster,
 das nichts trifft, ist eine Zusage, die nicht wirkt. Ohne den Schlüssel bleibt
-die Meldung unverändert. **Grenze, benannt statt zugesagt:** die Sichtbarkeit
-greift, **solange die Regel meldet**; wer so breit ignoriert, dass die
-Schwelle nie fällt, sieht nichts. Und **beide Muster lesen fence- und
-inline-code-treu** wie die Bedingungen, die sie verkleinern — ein Muster, das
-auf einen Ausdruck in **Backticks** zielt, trifft Leerzeichen (gemessen: `make
-gates` trifft null von 444 Items, weil die Wendung durchgängig in Inline-Code
-steht).
+die Meldung unverändert. **Zwei Grenzen, benannt statt zugesagt:** die
+Sichtbarkeit greift, **solange die Regel meldet** — wer so breit ignoriert,
+dass die Schwelle nie fällt, sieht nichts; und ein **`hint`** an derselben
+Regel **ersetzt** die Meldung samt dieser Zahl (er gewinnt gegen jede
+modul-eigene Meldung einer verletzten Bedingung). Der Nullmengen-Befund der
+Abschnitts-Ausnahme ist davon **ausgenommen** und behält seinen Text: dort hat
+die Regel nicht gemessen.
+
+**Fence- und Inline-Code-Treue: für die beiden Muster verschieden, und der
+Grund ist ihr Vergleichsgegenstand.** `tasks-ignore-pattern` liest den
+bereinigten Abschnitts-Text und ist damit **fence- und inline-code-treu** — ein
+Muster, das auf einen Ausdruck in **Backticks** zielt, trifft Leerzeichen
+(gemessen: `make gates` trifft null von 444 Items, weil die Wendung
+durchgängig in Inline-Code steht). `exempt-section-pattern` ist **fence-treu**
+(eine Überschrift im Fenced-Block ist keine), **sieht aber Inline-Code** — weil
+`section-pattern`, dessen Zeichenkette es teilt, ihn ebenfalls sieht. Eine
+andere Wahl hier hieße, dass zwei Muster derselben Regel dieselbe Zeile
+verschieden lesen.
 
 
 **Die Regel sagt, welche Zusage sie hütet (`hint`).** Der Grund-Code sagt die
@@ -3320,7 +3340,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
-| 0.76.0 | 2026-08-30 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): eine Regel darf ihre **Grundmenge erklären** — `tasks-ignore-pattern` nimmt Task-Items aus der `max-tasks`-Zählung, `exempt-section-pattern` nimmt **Abschnitte** aus der Regel. Beide **verkleinern** nur, beide sind opt-in, beide tragen **keinen** neuen Grund-Code; ohne sie ist das Verhalten byte-identisch. **Anlass ist ein eingehender CR** eines Adopters (`docs/plan/cr/2026-08-30-…`), und er gilt hier nachgemessen genauso: `max-tasks: 3` über die **86** Slice-Pläne dieses Repos liefert **80** `section-oversized` bei **444** Task-Items — der Bestand ist regelkonform, der Zähler misst das Falsche, und die Slice-Vorlage der Baseline liefert den Defekt mit aus. **Zwei Defekte des Antrags sind dabei gemessen und behoben:** das freie Beispiel-Muster nimmt **zwei** echte Liefer-Zusagen mit (verankert: keine), und seine erste Alternative trifft **null** von 444 Items, weil die Zählung den **bereinigten** Text liest und die Wendung durchgängig in Inline-Code steht — was fence-treu gezählt wird, ist auch fence-treu ignorierbar. **Die beiden Muster sehen deshalb verschiedene Zeichenketten, und das ist die Entscheidung:** `exempt-section-pattern` dieselbe Zeile wie `section-pattern` (samt `#`-Folge, sonst wäre ein analog geschriebenes Muster still wirkungslos), `tasks-ignore-pattern` den **Item-Text** hinter der Checkbox (sonst wäre die verankerte Form unschreibbar). **Die Überdeckung ist sichtbar:** die Meldung nennt die Zahl der ignorierten Items, auch bei null — mit der benannten Grenze, dass sie nur greift, solange die Regel meldet. **Leert `exempt-section-pattern` die Abschnitts-Menge ⇒ `section-missing`** wie bei `exempt-paths`, und es läuft **vor** der Kardinalitäts-Prüfung. Zwei neue Config-Ränder: nicht kompilierendes RE2 je Schlüssel und `tasks-ignore-pattern` **ohne** `max-tasks`. **Der Schlüssel heißt bewusst nicht `exempt-sections`:** `-pattern` bedeutet in diesem Modul RE2, und `exclude-sections` ist in `vcs` und `sources` als **Liste literaler** Überschriften vergeben. Begründung in begleitender ADR | — |
+| 0.76.0 | 2026-08-30 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): eine Regel darf ihre **Grundmenge erklären** — `tasks-ignore-pattern` nimmt Task-Items aus der `max-tasks`-Zählung, `exempt-section-pattern` nimmt **Abschnitte** aus der Regel. Beide **verkleinern** nur, beide sind opt-in, beide tragen **keinen** neuen Grund-Code; ohne sie ist das Verhalten byte-identisch. **Anlass ist ein eingehender CR** eines Adopters (`docs/plan/cr/2026-08-30-…`), und er gilt hier nachgemessen genauso: `max-tasks: 3` über die **89** DoD-Abschnitte dieses Repos (in 175 Slice-Plänen) liefert **80** `section-oversized` bei **444** Task-Items — der Bestand ist regelkonform, der Zähler misst das Falsche, und die Slice-Vorlage der Baseline liefert den Defekt mit aus. **Zwei Defekte des Antrags sind dabei gemessen und behoben:** das freie Beispiel-Muster nimmt **zwei** echte Liefer-Zusagen mit — und **dasselbe Muster verankert** trifft nur noch ein einziges Item, das ebenfalls eine ist; tragfähig ist erst ein Muster, das **verankert ist und auf Text zielt, den die Bereinigung übrig lässt** (26 Treffer, kein falscher), und seine erste Alternative trifft **null** von 444 Items, weil die Zählung den **bereinigten** Text liest und die Wendung durchgängig in Inline-Code steht — was fence-treu gezählt wird, ist auch fence-treu ignorierbar. **Die beiden Muster sehen deshalb verschiedene Zeichenketten, und das ist die Entscheidung:** `exempt-section-pattern` dieselbe Zeile wie `section-pattern` (samt `#`-Folge, sonst wäre ein analog geschriebenes Muster still wirkungslos), `tasks-ignore-pattern` den **Item-Text** hinter der Checkbox (sonst wäre die verankerte Form unschreibbar). **Die Überdeckung ist sichtbar:** die Meldung nennt die Zahl der ignorierten Items, auch bei null — mit der benannten Grenze, dass sie nur greift, solange die Regel meldet. **Leert `exempt-section-pattern` die Abschnitts-Menge ⇒ `section-missing`** wie bei `exempt-paths`, und es läuft **vor** der Kardinalitäts-Prüfung. Zwei neue Config-Ränder: nicht kompilierendes RE2 je Schlüssel und `tasks-ignore-pattern` **ohne** `max-tasks`. **Der Schlüssel heißt bewusst nicht `exempt-sections`:** `-pattern` bedeutet in diesem Modul RE2, und `exclude-sections` ist in `vcs` und `sources` als **Liste literaler** Überschriften vergeben. Begründung in begleitender ADR | — |
 | 0.75.0 | 2026-08-29 | [`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate) und [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die **Erläuterung eines Befunds** (das Befund-Feld `message`) erreicht den Menschen — als **vierte** tab-getrennte Spalte der Befund-Zeile, **nur wenn gefüllt**, und als eigene Zeile in `--doctor`. **Der Befund bleibt EINE Zeile:** die Zusage *„ein Befund pro Zeile"* und das zählende Akzeptanzkriterium bleiben unberührt, ein Befund ohne Erläuterung ist byte-identisch zu vorher. **Gemessen war der Anlass:** **21 von 23** Regel-Einstiegs-Dateien setzen das Feld (ungedeckt nur `hostpaths` und `spans`), und gerendert wurde es für Menschen nirgends — es erreichte ausschließlich `--json`/`--yaml`. **Die vierte Spalte ist gegen fremden Text abgesichert:** eine Erläuterung stammt aus der Konfiguration oder aus dem geprüften Material (`commits` trägt den Commit-Betreff); ein `hint` mit Tab oder Zeilenumbruch wird **abgewiesen** (Exit 2), und der Reporter ersetzt beides im modul-eigenen Weg durch ein Leerzeichen — sonst wäre die Zusage „ein Befund pro Zeile" über einen Text brechbar, den das Werkzeug nicht kontrolliert. Neu ist außerdem `structure[].hint`: eine Regel **verfasst** ihre Erläuterung selbst und sagt damit, welche **Zusage** sie hütet, während der Grund-Code die **Art** des Defekts sagt; sie gewinnt gegen die modul-eigene Meldung, **außer** bei den **drei** Befunden, die keine Bedingung verletzen (unlesbarer Dateibaum, leer laufende Regel, unlesbare Einzeldatei — dort hat die Regel nicht gemessen). Ein explizit leerer `hint` ⇒ Exit 2. **Abgegrenzt gegen den Fix-Kandidaten** ([`DC-FA-CLI-007`](#dc-fa-cli-007--diagnose-modus)): der ist **abgeleitet** und speist `--repair`, der Hinweis ist **verfasst** und wird nie angewendet. Begründung in begleitender ADR | — |
 | 0.74.0 | 2026-08-29 | Neue Anforderung [`DC-FA-WF-001`](#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in) (Modul `workflows`, opt-in) samt neuem Bereichskürzel `WF` in §3: die `uses:`-Referenzen von CI-Workflows tragen **zwei** Deklarations-Zusagen — die fremde Referenz einen vollen 40-stelligen SHA mit Tag-Kommentar (`uses-pin-missing`/`uses-pin-untagged`), die **lokale** ein existierendes Ziel (`uses-local-missing`) **und** einen aufrufenden Job, der die geforderten Rechte führt (`uses-local-perms-undeclared`/`uses-local-perms-narrow`); unlesbares YAML ist ein Befund (`workflow-unparsable`), kein Übersprung. **Die Anforderung entsteht aus einem belegten Ausfall:** ein Job erbte `permissions: {}` vom Workflow-Kopf, sein lokales Ziel verlangte `contents: read`, und der ganze Lauf brach vor dem ersten Job ab — während das damalige Skript-Gate grün meldete. **Sie beantwortet die Grenz-Frage ausdrücklich:** das Modul liest die **Ziele** lokaler Referenzen, die es nicht scannt, und dieselbe Zusage gilt dort. Die Scan-Menge ist **konfigurierbar** (`workflows.dir`), weil der Ort CI-System-spezifisch ist; ohne sie ist das Modul inert. Löst die Mechanik des früheren Harness-Skripts ab. Begründung in begleitender ADR | — |
 | 0.73.0 | 2026-08-29 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die **tabellenbezogenen Bedingungen** stehen jetzt unter **einer Klammer** `table` (`order`, `order-column`, `column[]`), und die Zellengrenzen sind eine **Liste je Spalte** statt eines Schlüssel-Tripels je Regel. **Anlass war der eigene Bestand:** vier Spalten desselben Abschnitts kosteten vier Regeln mit viermal wortgleichem `files`/`section` — die Redundanz war die Form, die jede künftige Mehrspalten-Zusage geerbt hätte. Zugleich behoben ist ein **Namens-Defekt**: `cell-max-column` benannte die Spalte und schaltete die Bedingung scharf, trug aber `max` im Namen — auch dort, wo nur eine Untergrenze stand (der eigene Bestand belegte genau das). Die fünf flachen Vorgänger-Schlüssel sind **entfallen** und werden mit dem **neuen Ort** abgewiesen (Exit 2), nicht still ignoriert und nicht mit der generischen Unbekannt-Feld-Meldung des Decoders. **Zwei neue Config-Ränder**, die erst die Liste möglich macht: eine leere `table`-Klammer und derselbe Spaltenname zweimal. **Keine Verhaltensänderung an einem Befund:** Grund-Codes, Zeilen-Zuordnung und die Ziel-Form `… :: Spalte <name>` bleiben, wie sie waren — was sich ändert, ist, wer die Spalte trägt: nicht mehr die Regel-Identität, sondern das Befund-Ziel. Begründung in begleitender ADR | — |

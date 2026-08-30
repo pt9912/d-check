@@ -2098,26 +2098,47 @@ wird die **rohe Überschriften-Zeile samt `#`-Folge**, also genau das, was auch
 `section-pattern` sieht. Beide verkleinern nur; ohne sie ist das Verhalten
 byte-identisch.
 
-**Zwei Fallen, und beide sind gemessen.** Die erste: **verankern Sie das
-Ignorier-Muster.** Ein freies Substring-Muster nimmt still Punkte mit, die die
-Wendung nur **erwähnen** — an den 444 DoD-Items dieses Repos traf ein freies
-Muster 13 Items, davon **zwei** echte Liefer-Zusagen; die verankerte Form traf
-26 und **keine** falsche. Die zweite: **ein Muster auf einen Ausdruck in
-Backticks trifft nichts.** Die Zählung liest den bereinigten Text (Viertens),
-Inline-Code ist dort durch Leerzeichen ersetzt. Ein naheliegendes
+**Zwei Fallen, und beide sind gemessen — an den 444 DoD-Items dieses Repos.**
+Die erste: **verankern reicht nicht, das Muster muss auch auf den richtigen
+Text zielen.** Ein freies Substring-Muster nimmt still Punkte mit, die die
+Wendung nur **erwähnen**: das Beispiel-Muster eines Adopters traf 13 Items,
+davon **zwei** echte Liefer-Zusagen. **Dasselbe** Muster verankert traf nur
+noch **eines** — und auch das war eine. Erst ein Muster, das verankert ist
+**und** auf Text zielt, der die Bereinigung überlebt, traf 26 Items ohne einen
+falschen.
+
+Die zweite erklärt die erste: **ein Muster auf einen Ausdruck in Backticks
+trifft nichts.** Die Zählung liest den bereinigten Text (Viertens), Inline-Code
+ist dort durch Leerzeichen ersetzt. Ein naheliegendes
 `tasks-ignore-pattern: 'make gates'` trifft in diesem Repo **null** von 444
-Items, weil die Wendung durchgängig als `` `make gates` `` geschrieben ist.
+Items, weil die Wendung durchgängig als `` `make gates` `` geschrieben ist —
+verankert oder nicht.
+
 Die Diagnose dafür steht in der Meldung: ist ein Muster gesetzt, nennt
 `section-oversized` die Zahl der ignorierten Items — *„Abschnitt trägt 4
 Task-Items (3 ignoriert), erlaubt sind 3"* —, und **`(0 ignoriert)` heißt: Ihr
 Muster wirkt nicht.**
 
-Diese Sichtbarkeit hat eine Grenze, die dazugehört: sie greift, **solange die
-Regel meldet**. Wer so breit ignoriert, dass die Schwelle nie fällt, sieht
-nichts. Für `exempt-section-pattern` gibt es dafür ein Netz: nimmt es **alle**
-Abschnitte, meldet die Regel `section-missing` und nennt den Schlüssel — sie
-wird nicht still grün. Und: die Ausnahme läuft **vor** der Kardinalitäts-Prüfung,
-zwei Treffer minus einer ausgenommenen sind bei `sections: one` also in Ordnung.
+Diese Sichtbarkeit hat **zwei** Grenzen, die dazugehören. Sie greift, **solange
+die Regel meldet** — wer so breit ignoriert, dass die Schwelle nie fällt, sieht
+nichts. Und ein **`hint`** an derselben Regel **ersetzt** die Meldung samt der
+Zahl; wer die Überdeckung sehen will, lässt ihn dort weg.
+
+Für `exempt-section-pattern` gibt es ein Netz: nimmt es **alle** Abschnitte,
+meldet die Regel `section-missing` und nennt den Schlüssel — sie wird nicht
+still grün, **auch nicht neben einem `hint`** (dort hat die Regel nicht
+gemessen). Zwei weitere Eigenschaften, die überraschen können: die Ausnahme
+läuft **vor** der Kardinalitäts-Prüfung, zwei Treffer minus einer ausgenommenen
+sind bei `sections: one` also in Ordnung; und ein **gesetztes** Muster gehört
+zur Regel-Identität — erst dadurch lassen sich zwei Regeln über denselben
+Abschnitts-Selektor schreiben, von denen eine einen Bestand ausnimmt. Genau
+diese Paarung braucht Grandfathering.
+
+**Und die Treue-Zusagen sind für die beiden Muster verschieden.**
+`tasks-ignore-pattern` liest den bereinigten Text, ist also fence- **und**
+inline-code-treu. `exempt-section-pattern` ist **fence**-treu (eine Überschrift
+im Fenced-Block ist keine), **sieht aber Inline-Code** — es teilt seine
+Zeichenkette mit `section-pattern`, und das tut es auch.
 
 **Messen Sie, bevor Sie eine Regel aktivieren.** In diesem Repo hat genau das
 eine Regel verhindert, die plausibel klang und falsch war: „abgeschlossener

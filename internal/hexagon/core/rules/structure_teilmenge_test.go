@@ -231,12 +231,73 @@ func TestExemptSectionPattern_LaeuftVorDerKardinalitaet(t *testing.T) {
 // Eine Ueberschrift im Fenced-Block ist keine — sie wird weder ausgewaehlt
 // noch ausgenommen. Die Zusage ist geerbt, nicht neu; sie steht hier, weil
 // eine geerbte Zusage ohne Probe eine Erinnerung ist.
+//
+// DAS MUSTER ZEIGT AUF DIE ECHTE UEBERSCHRIFT, nicht auf die gefencte, und
+// das ist der ganze Trick: zeigte es auf die gefencte, waere "nie gewaehlt"
+// von "gewaehlt und dann ausgenommen" am Ergebnis nicht unterscheidbar --
+// ein fence-blinder Scanner liefe gruen durch. So bleibt die gefencte
+// Ueberschrift die EINZIGE nicht ausgenommene, und Fence-Blindheit macht aus
+// dem Nullmengen-Befund einen Marken-Befund.
 func TestExemptSectionPattern_FenceTreu(t *testing.T) {
 	body := "# T\n\n```\n### AC-001 — im Fence\n```\n\n### AC-042 — echt\n\nHappy: ja.\n"
 	r := acRule()
-	r.ExemptSectionPattern = `^### AC-001\b`
+	r.ExemptSectionPattern = `^### AC-042\b`
 	f := laufe(t, body, r)
-	if len(f) != 1 || f[0].Reason != model.ReasonSectionMarkerMissing || f[0].Line != 7 {
-		t.Fatalf("nur der echte Abschnitt zaehlt, und er meldet, got %+v", f)
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionMissing {
+		t.Fatalf("die gefencte Ueberschrift ist keine ⇒ Nullmenge, got %+v", f)
+	}
+	if !strings.Contains(f[0].Message, "alle 1 passenden") {
+		t.Fatalf("genau EIN Abschnitt darf gezaehlt worden sein, got %q", f[0].Message)
+	}
+}
+
+// Der verfasste Hinweis (ADR-0073) gewinnt gegen die modul-eigene Meldung —
+// ABER NICHT bei der leer laufenden Regel: dort hat die Regel nicht gemessen,
+// und die Diagnose, dass das Ventil die Menge geleert hat, ist die einzige
+// Spur. Ohne diese Ausnahme loeschte ein hint genau den Text, der das zu
+// breite Muster sichtbar macht.
+func TestExemptSectionPattern_NullmengeBehaeltIhreMeldung(t *testing.T) {
+	r := acRule()
+	r.ExemptSectionPattern = `^### AC-`
+	r.Hint = "Jede Anforderung braucht eine Boundary-Marke"
+	f := laufe(t, acBody, r)
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionMissing {
+		t.Fatalf("erwartet section-missing, got %+v", f)
+	}
+	if !strings.Contains(f[0].Message, "exempt-section-pattern") {
+		t.Fatalf("der hint darf die Nullmengen-Diagnose nicht verdraengen, got %q", f[0].Message)
+	}
+}
+
+// Die Kehrseite, und sie ist eine BENANNTE GRENZE, kein Defekt: bei einer
+// verletzten BEDINGUNG gewinnt der Hinweis wie ueberall sonst — samt der Zahl
+// der ignorierten Items. Wer die Ueberdeckung sehen will, laesst den Hinweis
+// an dieser Regel weg. Der Test haelt die Grenze fest, damit sie nicht
+// stillschweigend kippt.
+func TestTasksIgnorePattern_HintVerdraengtDieZahl(t *testing.T) {
+	r := dodRule()
+	r.TasksIgnorePattern = `^ZZZ`
+	r.Hint = "Hoechstens drei Liefer-Punkte"
+	f := laufe(t, dodBody, r)
+	if len(f) != 1 || f[0].Message != "Hoechstens drei Liefer-Punkte" {
+		t.Fatalf("bei verletzter Bedingung gewinnt der Hinweis, got %+v", f)
+	}
+}
+
+// Zwei Regeln ueber denselben Selektor, die sich nur durch die Ausnahme
+// unterscheiden, sind VERSCHIEDENE Zusagen — und genau diese Paarung braucht
+// Grandfathering. Ohne die Ausnahme in der Identitaet waere sie ein
+// Konfigurations-Duplikat und damit unschreibbar (ADR-0075).
+func TestExemptSectionPattern_TraegtDieRegelIdentitaet(t *testing.T) {
+	a := acRule()
+	b := acRule()
+	b.ExemptSectionPattern = `^### AC-001\b`
+	if a.Identity() == b.Identity() {
+		t.Fatalf("zwei Regeln mit verschiedener Ausnahme brauchen verschiedene Identitaeten, beide %q", a.Identity())
+	}
+	// Ein LEERES Muster darf die Identitaet NICHT veraendern: sonst aenderte
+	// sich das target jeder Bestandsregel.
+	if a.Identity() != "docs/*.md :: ^### AC-" {
+		t.Fatalf("die Identitaet einer Regel ohne Ausnahme muss unveraendert bleiben, got %q", a.Identity())
 	}
 }

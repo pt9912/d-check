@@ -34,9 +34,9 @@ Grundmenge nicht erklären.** Ein
 zwei Optionen, die beide nur **verkleinern** — `tasks-ignore-pattern` an
 `max-tasks` und `exempt-sections` an der Abschnitts-Auswahl.
 
-**Der Anlass gilt in diesem Repo genauso, und das ist nachgemessen.** Ein Lauf
-von `max-tasks: 3` über die eigenen Slice-Pläne liefert **160 Befunde bei 223
-Dateien**. Die jüngsten Slices tragen 5 bis 9 DoD-Items, von denen der
+von `max-tasks: 3` über die eigenen Slice-Pläne liefert **166 Befunde**: **80**
+`section-oversized` über **89** DoD-Abschnitte und 86 Dateien ohne den
+Abschnitt. Die jüngsten Slices tragen 5 bis 9 DoD-Items, von denen der
 Gate-/Review-/Verifikations-Punkt in **jedem** steht. Nicht der Bestand ist
 falsch — der Zähler misst das Falsche.
 
@@ -52,13 +52,14 @@ erste Anlauf zählte gegen die **rohen** Zeilen und kam auf 24 gegen 23
 Treffer. Das Werkzeug zählt aber gegen den **bereinigten** Text — und damit
 verschiebt sich das Bild so weit, dass die alte Zahl nicht bloß ungenau war,
 sondern die falsche Frage beantwortete. Gefahren mit dem gebauten Stand über
-die **86** DoD-Abschnitte dieses Repos (**444** Task-Items, `max-tasks: 0`,
+die **89** DoD-Abschnitte dieses Repos (**444** Task-Items, `max-tasks: 0`,
 damit jeder Abschnitt seine Zahl meldet):
 
 | Musterform | Items ignoriert | davon falsch |
 |---|---|---|
-| frei, wie im CR | 13 | **2** |
-| verankert (das Item **beginnt** mit dem Ausdruck) | 26 | 0 |
+| CR-Ausdruck, frei | 13 | **2** |
+| **derselbe** Ausdruck, verankert (`^…`) | **1** | **1** |
+| verankert **und** auf Text, der die Bereinigung überlebt | 26 | 0 |
 
 **Erster Defekt: das freie Muster nimmt echte Zusagen mit.** Zwei der 13 sind
 **Liefer**-Punkte, die die Closure-Notiz nur als ihren **Ort** nennen — *„§2/§3/§4/§6
@@ -66,13 +67,20 @@ tragen `SPEC-NNN` fortlaufend; Zählung in der Closure-Notiz"* und
 *„[ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md)-§Kern-Messung in der Closure-Notiz"*. Ein freies Substring-Muster
 entfernt sie aus der Zählung, ohne dass jemand es sieht — die Gestalt aus
 [`BEO-023`](../observations.md): ein Filter, der still das Falsche entfernt,
-sieht aus wie einer, der richtig filtert. Die verankerte Form trifft beide
-nicht, weil keiner mit dem Ausdruck **beginnt**.
+sieht aus wie einer, der richtig filtert. **Verankern allein rettet den
+Ausdruck aber nicht:** derselbe Ausdruck mit `^` behält genau einen Treffer, und
+auch der ist ein Liefer-Punkt. Tragfähig wird erst die Kombination —
+verankert **und** auf Text gerichtet, den die Bereinigung übrig lässt (dritte
+Zeile). Das ist die Korrektur an der ersten Fassung dieser Messung, die „frei
+13" neben „verankert 26" stellte, als wäre es derselbe Ausdruck; ein `^` kann
+die Treffermenge nur verkleinern. Gefunden von Review und Verifikation
+unabhängig voneinander — die Klasse ist
+[`BEO-020`](../observations.md).
 
 **Zweiter Defekt, und er ist der schärfere: die erste Alternative des CR ist
 hier komplett wirkungslos.** `make gates` trifft **null** von 444 Items —
 gemessen, nicht geschätzt. Der Grund ist die Zusage, die der CR selbst
-verlangt: die Zählung liest den **bereinigten** Text, und in **allen** 86
+verlangt: die Zählung liest den **bereinigten** Text, und in **86 der 89**
 Abschnitten steht die Wendung in Inline-Code (`` `make gates` ``, null
 Fundstellen ohne Backticks). Was fence- und inline-code-treu gezählt wird, ist
 auch fence- und inline-code-treu **ignorierbar** — wer ein Muster auf einen
@@ -114,7 +122,7 @@ Antwort an den Absender und ins Handbuch, nicht in eine Fußnote.
 
 ## 3. Ausdrücklich NICHT in diesem Slice
 
-- **Kein Anwenden auf den eigenen Bestand.** Die 160 Befunde sind der *Anlass*,
+- **Kein Anwenden auf den eigenen Bestand.** Die 80 `section-oversized` sind der *Anlass*,
   nicht der Auftrag: ob dieses Repo `max-tasks` über seine Slice-Pläne scharf
   schaltet, ist ein eigener Entscheid nach der Fähigkeit.
 - **Kein Grandfathering-Begriff im Werkzeug.** Der Absender grenzt es selbst
@@ -138,21 +146,42 @@ Antwort an den Absender und ins Handbuch, nicht in eine Fußnote.
 - [x] **Default byte-identisch, gemessen:** derselbe `max-tasks`-Lauf gegen das
       Image **vor** der Änderung und danach liefert **166** Befunde, `diff`
       leer. Ein Test hält zusätzlich die Meldung ohne Muster als Literal.
-- [x] **Die Überdeckung ist sichtbar:** die Meldung nennt die Zahl der
-      ignorierten Items — gemessen an einem Probe-Repo: *„Abschnitt trägt 4
-      Task-Items (3 ignoriert), erlaubt sind 3"*, dieselbe Zeile in `--doctor`.
-      Ein zu breites Muster (**7 ignoriert**) und eines ohne Treffer
-      (**0 ignoriert**) sind je als Test gefangen.
+- [x] **Die Überdeckung ist sichtbar, mit zwei benannten Grenzen:** die
+      Meldung nennt die Zahl der ignorierten Items — gemessen an einem
+      Probe-Repo: *„Abschnitt trägt 4 Task-Items (3 ignoriert), erlaubt sind
+      3"*, dieselbe Zeile in `--doctor`. Ein Muster ohne Treffer
+      (**0 ignoriert**) ist als Test gefangen; der Fall *„das Muster nimmt
+      alles"* ist auf **Modell**-Ebene geprüft und über Konfiguration
+      **unerreichbar** (`max-tasks < 0` ⇒ Exit 2) — das ist die erste Grenze:
+      die Sichtbarkeit greift, solange die Regel meldet. Die zweite: ein
+      `hint` **ersetzt** die Meldung samt der Zahl, und auch das ist als Test
+      gefangen.
 - [x] **Die leere Menge ist beantwortet:** `exempt-section-pattern`, das alle
       Abschnitte trifft ⇒ `section-missing` mit Schlüssel und Zahl in der
-      Meldung, nicht stilles Grün. Mit Test und end-to-end gefahren.
+      Meldung, nicht stilles Grün — und **auch neben einem `hint`**, weil dort
+      die Regel nicht gemessen hat ([ADR-0073](../../adr/0073-befund-erlaeuterung-fuer-menschen.md)).
+      Mit zwei Tests und end-to-end gefahren.
+- [x] **Ein gesetztes `exempt-section-pattern` trägt die Regel-Identität.**
+      Ohne das wäre die Paarung, die Grandfathering braucht — Bedingung A für
+      alle Abschnitte, B nur für die übrigen —, ein Konfigurations-Duplikat
+      (Exit 2, gemessen). Ein leeres Muster geht **nicht** ein, damit kein
+      Bestands-`target` wandert; beides als Test.
 - [x] **Fence-Treue gemessen** für beide Muster: das Task-Item im Fence zählt
-      nicht, die Überschrift im Fence wird weder gewählt noch ausgenommen —
-      **und die teure Hälfte steht dabei:** ein Muster auf einen Ausdruck in
-      **Inline-Code** trifft Leerzeichen (`make gates`: **null** von 444 Items).
-- [x] **Umkehr-Proben** je Zusage, jede von genau einem Test gefangen — die
-      drei tragenden fahren den **Vorzustand ohne den Schlüssel in derselben
-      Funktion** ([`BEO-023`](../observations.md)).
+      nicht, die Überschrift im Fence wird weder gewählt noch ausgenommen (die
+      Probe dafür ist **diskriminierend** gebaut und gegen die
+      Fence-Blindheits-Mutation als rot gemessen). **Inline-Code-Treue gilt
+      nur für das Item-Muster** — ein Muster darauf trifft Leerzeichen
+      (`make gates`: **null** von 444 Items); `exempt-section-pattern` **sieht**
+      Inline-Code, weil es die Zeichenkette mit `section-pattern` teilt. Die
+      halbe Zusage steht als solche im Lastenheft und in der Antwort.
+- [x] **Umkehr-Proben:** jede Zusage ist von mindestens einer Probe gedeckt,
+      und die drei tragenden fahren den **Vorzustand ohne den Schlüssel in
+      derselben Funktion** ([`BEO-023`](../observations.md)). **Gemessen an 13
+      Mutationen:** jede wird gefangen; drei davon von genau einem Test, die
+      übrigen von mehreren — *„genau ein Test je Mutation"* wäre eine andere
+      und falsche Zusage. Die eine Probe, die zunächst **gar nicht** fangen
+      konnte (Fence-Treue der Abschnitts-Ausnahme), ist repariert und gegen die
+      Fence-Blindheits-Mutation als rot gemessen.
 - [x] [ADR-0075](../../adr/0075-erklaerte-teilmenge-in-structure.md) begründet
       Verortung, Namen, Muster-Ziele und die Sichtbarkeits-Zusage; im
       [ADR-Index](../../adr/README.md) eingetragen.
@@ -171,12 +200,12 @@ Antwort an den Absender und ins Handbuch, nicht in eine Fußnote.
 - **Ein Ignorier-Muster ist Autoren-Text und kann still zu breit sein.** Die
   Sichtbarkeits-Zusage (§2 Punkt 2) fängt den Fall nur, **solange die Regel
   meldet**. Wer alles ignoriert, sieht nichts. — **Ausgang:** *(bei Closure)*
-- **Zwei ähnliche Namen in einem Werkzeug** (`exempt-sections` in `structure`,
+- **Zwei ähnliche Namen in einem Werkzeug** (`exempt-section-pattern` in `structure`,
   `exclude-sections` in `vcs`). Wer den falschen greift, bekommt eine andere
   Semantik — literal gegen RE2. — **Ausgang:** *(bei Closure)*
 - **Die Fähigkeit entsteht aus einem fremden Bestand**
-  ([`BEO-011`](../observations.md)). Der Anlass ist hier nachgemessen (160 von
-  223), die **Form** stammt aber vom Absender; ob sie zu diesem Repo passt,
+  ([`BEO-011`](../observations.md)). Der Anlass ist hier nachgemessen (80 von 89
+  Abschnitten), die **Form** stammt aber vom Absender; ob sie zu diesem Repo passt,
   zeigt erst die erste eigene Regel. — **Ausgang:** *(bei Closure)*
 - **Die geprüfte Menge zu verkleinern ist per Konstruktion eine Lockerung.**
   Sie ist als Option ausgeführt und damit opt-in — aber jede Konfiguration, die

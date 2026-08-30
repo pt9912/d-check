@@ -137,7 +137,13 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 		// leert, schaltet die Regel NICHT still ab. Die Meldung nennt den
 		// Schluessel, der es tat -- sonst suchte der Leser am Selektor.
 		if len(heads) == 0 {
-			return []model.Finding{structureFinding(r, file, 1, model.ReasonSectionMissing,
+			// RAW, nicht ueber MessageFor: das ist die LEER LAUFENDE REGEL,
+			// die ADR-0073 ausdruecklich vom verfassten Hinweis ausnimmt --
+			// hier hat die Regel nicht gemessen, und ein Hinweis auf die
+			// gehuetete Zusage verdraengte die Ursache. Ohne diesen Zug
+			// loeschte ein `hint` genau die Diagnose, die das zu breite
+			// Muster sichtbar macht.
+			return []model.Finding{structureRawFinding(r, file, 1, model.ReasonSectionMissing,
 				"alle "+strconv.Itoa(n)+" passenden Abschnitte sind von "+
 					"exempt-section-pattern ausgenommen — die Regel liefe leer")}
 		}
@@ -285,11 +291,10 @@ var taskItemRE = regexp.MustCompile(`^[ \t]*(?:[-*+]|[0-9]+\.)[ \t]+\[[ xX]\]`)
 // ABGRENZUNG, welche Zeichenkette `ignore` sieht: den ITEM-TEXT hinter
 // Listen-Marker und Checkbox, NICHT die rohe Zeile. Gegen die rohe Zeile
 // bezeichnete `^` immer den Listen-Marker; die verankerte Muster-Form waere
-// damit unschreibbar, und gemessen ist gerade sie die tragfaehige -- ein
-// freies Substring-Muster nahm an 129 realen Items eine echte Zusage still
-// mit (ADR-0075). Das ist die bewusste Asymmetrie zu exempt-section-pattern,
-// das die ROHE Ueberschriften-Zeile sieht: dort gibt es mit section-pattern
-// bereits einen Bezugspunkt, hier gibt es keinen.
+// damit unschreibbar, und ein freies Muster nahm an 444 realen Items zwei
+// echte Liefer-Zusagen still mit (ADR-0075). Das ist die bewusste Asymmetrie
+// zu exempt-section-pattern, das die ROHE Ueberschriften-Zeile sieht: dort
+// gibt es mit section-pattern bereits einen Bezugspunkt, hier gibt es keinen.
 func countTaskItems(body string, ignore *regexp.Regexp) (gezaehlt, ignoriert int) {
 	for _, l := range strings.Split(body, "\n") {
 		marker := taskItemRE.FindString(l)

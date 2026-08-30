@@ -485,8 +485,12 @@ type StructureRule struct {
 	// ExemptSectionPattern nimmt Abschnitte aus DIESER Regel heraus. Es sieht
 	// DIESELBE Zeile wie section-pattern -- die getrimmte Ueberschriften-Zeile
 	// einschliesslich der #-Folge. Zwei RE2 einer Regel mit zwei verschiedenen
-	// Zielen waeren die Falle, in die der antragstellende Adopter selbst
-	// gelaufen ist (ADR-0075).
+	// Zielen waeren eine Falle: das zweite, analog zum ersten geschrieben,
+	// traefe still nichts (ADR-0075).
+	//
+	// ABGRENZUNG zur ROHEN Lesung: dieses Muster sieht Inline-Code, weil
+	// section-pattern ihn ebenfalls sieht. Das Item-Muster daneben sieht ihn
+	// NICHT -- es liest den bereinigten Abschnitts-Text.
 	ExemptSectionPattern string
 }
 
@@ -561,6 +565,16 @@ func (r StructureRule) Identity() string {
 	// ColumnTarget je Befund.
 	if r.Table.OrderColumn != nil {
 		sel += " :: Spalte " + strconv.Itoa(*r.Table.OrderColumn)
+	}
+	// Dieselbe Ueberlegung eine Stufe weiter: zwei Regeln ueber denselben
+	// Abschnitts-Selektor, von denen eine einen Bestand ausnimmt, sind
+	// VERSCHIEDENE Zusagen -- und genau diese Paarung braucht Grandfathering
+	// (Bedingung A fuer alle Abschnitte, Bedingung B nur fuer die uebrigen).
+	// Ohne diesen Zusatz waere sie ein Konfigurations-Duplikat und damit
+	// unschreibbar. Ein LEERES Muster geht nicht ein: sonst aenderte sich das
+	// target jeder Bestandsregel (ADR-0075).
+	if r.ExemptSectionPattern != "" {
+		sel += " :: ohne " + r.ExemptSectionPattern
 	}
 	return r.Files + " :: " + sel
 }
