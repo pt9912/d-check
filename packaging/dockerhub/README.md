@@ -6,8 +6,8 @@ unterschiedlich gepflegt:
 
 | Feld auf Docker Hub | Quelle | Limit | Gepflegt durch |
 |---|---|---|---|
-| **Description** (Kurztext unter dem Repo-Namen) | [`description.txt`](description.txt) | 100 Zeichen | Release-Build — **beim ersten Lauf `Forbidden`, siehe unten** |
-| **Repository overview** (Markdown-Seite) | [`overview.md`](overview.md) | 25.000 Zeichen | Release-Build, derselbe Step — **ebenso** |
+| **Description** (Kurztext unter dem Repo-Namen) | [`description.txt`](description.txt) | 100 Zeichen | Release-Build bzw. `workflow_dispatch` — **gesetzt, siehe unten** |
+| **Repository overview** (Markdown-Seite) | [`overview.md`](overview.md) | 25.000 Zeichen | Release-Build, derselbe Step — **ebenso gesetzt** |
 | **Category** | dieses Dokument (siehe unten) | — | **manuell im Web-UI — gesetzt** |
 
 Die ersten beiden **soll** `peter-evans/dockerhub-description` bei jedem
