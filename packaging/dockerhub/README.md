@@ -14,6 +14,14 @@ Die ersten beiden **soll** `peter-evans/dockerhub-description` bei jedem
 Release-Build setzen. Die Action hat **keinen** Input für die Kategorie —
 deshalb steht die Entscheidung hier als Text, statt still im UI zu leben.
 
+**Die beiden hochgeladenen Dateien sind ENGLISCH**, dieses Dokument nicht. Die
+Hub-Seite ist die Außensicht und folgt darin
+[`README.md`](../../README.md) (englisch, mit
+[`README.de.md`](../../README.de.md) daneben); `description.txt` und
+`overview.md` sind das einzige Repo-Material, das ungelesen auf einer fremden
+Plattform steht. Was **hier** steht, ist Betriebswissen für dieses Repo und
+bleibt deutsch wie der Rest der Doku.
+
 ## Der erste Lauf hat sie NICHT gesetzt — gemessen
 
 Beim Release `v0.65.0` (Run 33139273535) meldete der Schritt `success`, sein Log
@@ -84,5 +92,13 @@ andere Doku. Das Byte-Limit der Description prüft der Release-Build
 **fail-fast**, statt der Action das stille Abschneiden zu überlassen:
 
 ```bash
-wc -c < packaging/dockerhub/description.txt   # muss <= 100 sein
+wc -m < packaging/dockerhub/description.txt   # muss <= 100 sein
 ```
+
+**`-m`, nicht `-c`:** Docker Hub misst **Zeichen**, der Go-Test in
+[`dockerhub_description_test.go`](../../internal/adapter/driven/configyaml/dockerhub_description_test.go)
+ebenso (`utf8.RuneCountInString`), und der Release-Build auch. Eine
+Byte-Messung wäre bei Nicht-ASCII **strenger** als die Regel und meldete einen
+Text rot, den Docker Hub annimmt. Hier stand `-c`, solange der Kurztext
+deutsche Umlaute trug — also genau in der Zeit, in der die beiden Zahlen
+auseinandergingen.

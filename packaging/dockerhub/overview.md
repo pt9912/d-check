@@ -1,67 +1,65 @@
 # d-check
 
-Ein deterministisches, netzloses Referenz-Gate für Markdown-Repositories.
-d-check prüft, ob die Verweise in einer Dokumentation halten: lokale Links und
-Bilder, Heading-Anker, Kennungs-Linkpflicht, erlaubte Referenzrichtungen,
-Pfade in Inline-Code, wortgleiche Zitate gegen ihre Quelle — und meldet, was
-nicht hält. **Es repariert nichts und schreibt nie in das geprüfte Repository.**
+A deterministic, network-free reference gate for Markdown repositories.
+d-check checks whether a documentation's references hold: local links and
+images, heading anchors, identifier link obligations, permitted reference
+directions, paths in inline code, verbatim quotes against their source — and
+reports what does not hold. **It repairs nothing and never writes into the
+checked repository.**
 
-## Aufruf
+## Usage
 
 ```bash
 docker run --rm -v "$PWD:/repo:ro" pt9912/d-check:__VERSION__
 ```
 
-Das gemountete Verzeichnis wird als `/repo` geprüft; CLI-Optionen werden
-angehängt. Der Prozess läuft als Nicht-root, und ein **read-only**-Mount
-genügt.
+The mounted directory is checked as `/repo`; CLI options are appended. The
+process runs as non-root, and a **read-only** mount is sufficient.
 
 ```bash
 docker run --rm -v "$PWD:/repo:ro" pt9912/d-check:__VERSION__ --enable ids --disable external
 ```
 
-## Exit-Codes
+## Exit codes
 
-| Code | Bedeutung |
+| Code | Meaning |
 |---|---|
-| `0` | keine Befunde |
-| `1` | Befunde gefunden |
-| `2` | Nutzungs-/Konfigurationsfehler (auch: kein Mount auf `/repo`) |
+| `0` | no findings |
+| `1` | findings reported |
+| `2` | usage or configuration error (including: nothing mounted at `/repo`) |
 
-## Reproduzierbare Läufe
+## Reproducible runs
 
-Für CI pinnen Sie auf den **Digest** statt auf einen beweglichen Tag. Dieses
-Image ist ein **Spiegel** von `ghcr.io/pt9912/d-check` — dasselbe Bild, kein
-zweiter Bau: der **Config**-Digest ist auf beiden Registries gleich, und die
-Release-Pipeline misst das nach dem Push.
+For CI, pin to the **digest** rather than to a moving tag. This image is a
+**mirror** of `ghcr.io/pt9912/d-check` — the same image, not a second build:
+the **config** digest is identical on both registries, and the release pipeline
+verifies it after the push.
 
-**Der Manifest-Digest ist dagegen registry-lokal** — er hängt an der
-Blob-Kompression der jeweiligen Registry. Nehmen Sie deshalb den Digest **der
-Registry, aus der Sie ziehen**; ein von GHCR kopierter Digest löst hier nicht
-auf.
+**The manifest digest, in contrast, is registry-local** — it depends on each
+registry's blob compression. So take the digest **from the registry you pull
+from**; one copied from GHCR will not resolve here.
 
 ```bash
 docker run --rm -v "$PWD:/repo:ro" pt9912/d-check@sha256:<digest>
 ```
 
-Der Digest jeder Version steht in den
-[Release-Notes](https://github.com/pt9912/d-check/releases).
+The digest for every version is listed in the
+[release notes](https://github.com/pt9912/d-check/releases).
 
-`:latest` bewegt sich ausschließlich für stabile Releases; Vorabversionen
-erhalten es nicht.
+`:latest` moves for stable releases only; pre-releases never receive it.
 
-## Module
+## Modules
 
-20 Regelmodule, die meisten opt-in: `links`, `anchors`, `ids`, `matrix`,
+21 rule modules, most of them opt-in: `links`, `anchors`, `ids`, `matrix`,
 `external`, `sources`, `codepaths`, `spans`, `hostpaths`, `diagrams`,
 `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`,
-`targets`, `citations`, `structure`. Zwei davon gehen ins Netz (`external`,
-`sources`) und sind nie im Default aktiv.
+`targets`, `citations`, `structure`, `workflows`. Two of them reach the network
+(`external`, `sources`) and are never active by default.
 
-## Dokumentation
+## Documentation
 
-- [README](https://github.com/pt9912/d-check#readme) — Überblick
-- [Benutzerhandbuch](https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md) — aufgabenorientiert (Deutsch)
-- [Aufruf-Referenz](https://github.com/pt9912/d-check/blob/main/docs/user/operations.md) — Optionen und Exit-Codes
+- [README](https://github.com/pt9912/d-check#readme) — overview
+- [User handbook](https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md) — task-oriented (German)
+- [Invocation reference](https://github.com/pt9912/d-check/blob/main/docs/user/operations.md) — options and exit codes
 
-Quelle und Issues: <https://github.com/pt9912/d-check> · Lizenz: MIT
+Source and issues: <https://github.com/pt9912/d-check> · Licence: MIT

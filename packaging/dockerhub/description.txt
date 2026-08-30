@@ -1,1 +1,1 @@
-Deterministisches, netzloses Referenz-Gate für Markdown-Repos: Links, Anker, Kennungen, Zitate.
+Deterministic, network-free reference gate for Markdown repos: links, anchors, IDs, quotes.
