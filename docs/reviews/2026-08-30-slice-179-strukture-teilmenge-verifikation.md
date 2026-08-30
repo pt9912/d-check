@@ -1,6 +1,6 @@
 # Verifikation slice-179 — DoD, Spec-Konformität und Mutationsproben
 
-**Gegenstand:** `docs/plan/planning/in-progress/slice-179-strukture-teilmenge.md`, Range `a7e1cb4~1..78a1783` (6 Commits, HEAD == origin/main == `78a1783`).
+**Gegenstand:** `docs/plan/planning/done/slice-179-strukture-teilmenge.md`, Range `a7e1cb4~1..78a1783` (6 Commits, HEAD == origin/main == `78a1783`).
 **Datum:** 2026-08-30. **Verifikation:** unabhängiger Subagent, eigener Kontext.
 **Aufbau:** zwei Images. `d-check:latest` habe ich per `make build` neu gebaut (identische Image-ID `f52e98e402b2` ⇒ das Tag steht auf HEAD). Das Vorher-Image habe ich **selbst** aus `git archive e390c2b` gebaut — Ergebnis-ID `bc43d82b63c1`, **identisch** mit dem vorgegebenen `d-check:vor-0075`. Der Vergleichspunkt ist damit belegt, nicht übernommen. Mutationsproben in einer Kopie des Baums im Scratchpad, gefahren gegen ein aus dem `deps`-Stage gebautes Test-Image.
 **Gefahrene make-Targets (alle lesend):** `build`, `doc-check`, `test`, `lint`, `coverage-gate`, `arch-check`, `semgrep`, `baseline-verify`, `workflow-pins`, `gate-consistency`, `planning-check`, `verify-closure-notes`, `nightly-state`. **`make gates` und `make record-gates` bewusst nicht** — `gates` zieht `record-gates` und schriebe `.harness/state/gates-passed.diffsha`.
@@ -88,7 +88,7 @@ Alle vier neuen Akzeptanzkriterien aus `spec/lastenheft.md` 0.76.0 einzeln als P
 ## 5. Abweichungen Zusage ↔ Zustand
 
 **A-1 — Die Korpus-Zahl ist falsch: 86 statt 89.**
-`docs/plan/adr/0075-erklaerte-teilmenge-in-structure.md:37`, `spec/lastenheft.md:3323`, `docs/plan/cr/2026-08-30-antwort-a-check-structure-teilmenge.md:20`, `docs/plan/planning/in-progress/slice-179-strukture-teilmenge.md:55` (auch ADR:158, :179 und slice:75). Behauptet: „die **86** Slice-Pläne dieses Repos, die einen `## 4. Definition of Done` führen". Gemessen: **89**. Die 86 ist die Zahl der `section-missing`-Befunde (Dateien **ohne** die Sektion) — und zufällig auch die Zahl der Abschnitte, die `make gates` tragen. Die davon abhängigen Zahlen (444, 80, 166) sind korrekt; nur die Bezugsmenge nicht. **ADR-0075 ist `Accepted` und damit immutabel** (§3.5) — die Korrektur geht über einen `## Geschichte`-Anhang oder eine Folge-ADR, nicht über eine Kern-Änderung.
+`docs/plan/adr/0075-erklaerte-teilmenge-in-structure.md:37`, `spec/lastenheft.md:3323`, `docs/plan/cr/2026-08-30-antwort-a-check-structure-teilmenge.md:20`, `docs/plan/planning/done/slice-179-strukture-teilmenge.md:55` (auch ADR:158, :179 und slice:75). Behauptet: „die **86** Slice-Pläne dieses Repos, die einen `## 4. Definition of Done` führen". Gemessen: **89**. Die 86 ist die Zahl der `section-missing`-Befunde (Dateien **ohne** die Sektion) — und zufällig auch die Zahl der Abschnitte, die `make gates` tragen. Die davon abhängigen Zahlen (444, 80, 166) sind korrekt; nur die Bezugsmenge nicht. **ADR-0075 ist `Accepted` und damit immutabel** (§3.5) — die Korrektur geht über einen `## Geschichte`-Anhang oder eine Folge-ADR, nicht über eine Kern-Änderung.
 
 **A-2 — Die Zahl „26 Treffer, 0 falsche" ist nicht belegt und nicht reproduzierbar.**
 `…/slice-179-…:61`, `…/0075-…:59` und `:100`, `spec/lastenheft.md:2542`, `…/antwort-…:74`, `docs/user/benutzerhandbuch.md:2105`. **Kein Dokument nennt das verankerte Muster**, obwohl es die tragende Empfehlung an den Absender ist („verankert das Muster"). Die verankerte Form derselben Alternativen misst **1** Treffer, nicht 26 — und dieser eine Treffer ist ein Liefer-Punkt aus `slice-126`, wäre also selbst ein „falscher". Da Anker die Treffermenge nur verkleinern kann, ist 26 > 13 unter der Tabellen-Überschrift *„An denselben 444 Items"* nicht möglich. Der Vorgänger-Stand dieser Messung (`24/23` über 129 Items) steht noch im Scratchpad der Hauptsitzung — die aktuelle Zeile sieht aus wie ihre Fortschreibung, ist aber eine andere Grundmenge. **Das ist die Gestalt aus `BEO-020`** („gemessen wird die eigene Menge, ausgesagt wird über die fremde") an der Zahl, die der Absender in seine eigene Konfiguration übernehmen soll.
@@ -134,7 +134,7 @@ git rev-parse HEAD       → 78a1783820bb6a709ddc74dbe0c6c578b81d6512
 Hashes nach dem Lauf (identisch mit dem Stand vor meinen Messungen — ich habe nie in den Baum geschrieben):
 
 ```
-6af0b14b…302dc  docs/plan/planning/in-progress/slice-179-strukture-teilmenge.md
+6af0b14b…302dc  docs/plan/planning/done/slice-179-strukture-teilmenge.md
 3a762b39…3cad9  internal/hexagon/core/rules/structure.go
 42c0c960…25c6c  spec/lastenheft.md
 7eaec85e…faff8  spec/spezifikation.md

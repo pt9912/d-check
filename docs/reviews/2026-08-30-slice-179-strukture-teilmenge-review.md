@@ -26,7 +26,7 @@
 ## HIGH
 
 ### H-1 · Die tragende Messung „verankert 26 Treffer" ist nicht reproduzierbar und arithmetisch unmöglich
-`docs/plan/adr/0075-…md:59,100` · `spec/lastenheft.md:2542` · `spec/spezifikation.md:3039` · `docs/user/benutzerhandbuch.md:2104` · `docs/plan/cr/2026-08-30-antwort-…md:74` · `docs/plan/planning/in-progress/slice-179-…md:61` · Commit-Body `b9e6052`
+`docs/plan/adr/0075-…md:59,100` · `spec/lastenheft.md:2542` · `spec/spezifikation.md:3039` · `docs/user/benutzerhandbuch.md:2104` · `docs/plan/cr/2026-08-30-antwort-…md:74` · `docs/plan/planning/done/slice-179-…md:61` · Commit-Body `b9e6052`
 
 **Zugesagt:** *„Gefahren über dieselben 444 Items: frei, wie im CR → 13 ignoriert, davon 2 falsch; verankert (das Item **beginnt** mit dem Ausdruck) → 26 ignoriert, 0 falsch."* ADR-0075 Entscheidung 3 stützt die Asymmetrie der beiden Muster ausdrücklich darauf: *„gemessen ist die verankerte Form die tragfähige (26 gegen 13 Treffer, 0 gegen 2 falsche)"*.
 
@@ -125,7 +125,7 @@ exit=2
 Die 444 und die 80 gehören zu **89** Abschnitten (86 exakt + 3 × `## 4. Definition of Done (vorläufig)` in `slice-036/037/038`); über die 86 sind es 425/77. Ebenso: *„in **allen** 86 Abschnitten steht die Wendung in Inline-Code"* — gemessen führen **86 von 89** DoD-Abschnitten `make gates` (84 Items), „alle" trifft auf 3 nicht zu. Die eigentliche Aussage (*Zähler misst das Falsche*) bleibt davon unberührt.
 
 ### L-3 · Slice §1/§3 tragen noch „160 Befunde bei 223 Dateien"
-`docs/plan/planning/in-progress/slice-179-…md:38,117` gegen ADR-0075 („80 Befunde") und DoD („166 Befunde"). Ich habe sechs Selektor-/Glob-Kombinationen durchprobiert und keine gefunden, die 160 liefert (nächstliegend: 161/211 bzw. 166/175). 223 ist plausibel die Zahl der `.md` unter `docs/plan/planning/` **vor** diesem Slice (heute 224) — die Befundzahl daneben bleibt unbelegt. Der Plan sagt selbst, die Messung sei nachgezogen worden; die Kopfzahl ist dabei stehengeblieben.
+`docs/plan/planning/done/slice-179-…md:38,117` gegen ADR-0075 („80 Befunde") und DoD („166 Befunde"). Ich habe sechs Selektor-/Glob-Kombinationen durchprobiert und keine gefunden, die 160 liefert (nächstliegend: 161/211 bzw. 166/175). 223 ist plausibel die Zahl der `.md` unter `docs/plan/planning/` **vor** diesem Slice (heute 224) — die Befundzahl daneben bleibt unbelegt. Der Plan sagt selbst, die Messung sei nachgezogen worden; die Kopfzahl ist dabei stehengeblieben.
 
 ### L-4 · Der „zu breit"-Test fährt eine Konfiguration, die das Produkt mit Exit 2 ablehnt
 `internal/hexagon/core/rules/structure_teilmenge_test.go:77,86` setzt `MaxTasks = ptr(-1)`. Der Config-Rand weist `max-tasks < 0` ab (gemessen: `max-tasks -1 muss >= 0 sein`, Exit 2). Damit belegt `„zu breit": 7 ignoriert` eine Meldung, die über eine gültige Konfiguration **nie** entstehen kann — bei `max-tasks ≥ 0` und `got = 0` greift `got > *r.MaxTasks` nicht. Der DoD-Haken (`slice-179-…md` §4) führt *„Ein zu breites Muster (**7 ignoriert**) … je als Test gefangen"*, was mehr klingt als das, was das Produkt leisten kann. Der Testkommentar benennt die Grenze korrekt; der DoD-Text nicht. (Der `0 ignoriert`-Fall ist dagegen bei `max-tasks: 0` erreichbar und in `TestTasksIgnorePattern_LiestDenBereinigtenText` echt gedeckt.)
