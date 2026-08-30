@@ -129,8 +129,12 @@ Dokuments:
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — Struktur-Invarianten **innerhalb** eines Dokuments: je Regel eine
   Dokumentklasse über **eigene** Globs, ein Abschnitt (Klartext oder RE2) und bis
-  zu neun Bedingungen mit je eigenem Grund-Code — nicht leer (`section-empty`),
+  zu **zehn** Bedingungen mit je eigenem Grund-Code — nicht leer (`section-empty`),
   Mindest-Sätze (`section-thin`), Task-Obergrenze (`section-oversized`),
+  **offene** Task-Items auf den **rohen** Zeilen (`max-open-tasks` ⇒
+  `section-tasks-open`, ein Befund je Haken auf **seiner** Zeile — anders als
+  `max-tasks` blind gegen die absatzweise Inline-Code-Paarung, dafür
+  fence-treu),
   verbotenes bzw. gefordertes Muster (`section-forbidden`,
   `section-pattern-missing`), geforderte Marken (`section-marker-missing`),
   Chronologie-Monotonie der Schlüsselspalte (`section-unordered`,
@@ -262,7 +266,7 @@ Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.69.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.70.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

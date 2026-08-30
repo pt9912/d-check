@@ -127,8 +127,12 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — structure invariants **within** a document: each rule defines a
   document class via **its own** globs, a section (literal or RE2) and up to
-  nine conditions, each with its own reason code — non-empty (`section-empty`),
+  **ten** conditions, each with its own reason code — non-empty (`section-empty`),
   minimum sentences (`section-thin`), task ceiling (`section-oversized`),
+  **open** task items on the **raw** lines (`max-open-tasks` ⇒
+  `section-tasks-open`, one finding per box on **its** line — unlike
+  `max-tasks` it is immune to the paragraph-wide inline-code pairing, while
+  staying fence-true),
   forbidden and required patterns (`section-forbidden`,
   `section-pattern-missing`), required markers (`section-marker-missing`),
   chronological monotonicity of the key column (`section-unordered`,
@@ -258,7 +262,7 @@ you pull from)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.69.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.70.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

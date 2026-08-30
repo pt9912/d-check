@@ -4,6 +4,55 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.70.0] — 2026-08-30
+
+### Added
+
+- slice-178 — **Eine Bedingung zählt offene Task-Items auf dem rohen Abschnitt**
+  ([ADR-0074](docs/plan/adr/0074-offene-tasks-auf-rohen-zeilen.md),
+  Lastenheft 0.79.0). Neu ist **`max-open-tasks`** (int ≥ 0, opt-in): die
+  Obergrenze der **offenen** Task-Items eines Abschnitts, gezählt auf den
+  **rohen** Zeilen, mit dem eigenen Grund-Code **`section-tasks-open`** — ein
+  Befund **je Item auf seiner Zeile**, nicht einer je Abschnitt.
+  **Der Grund ist die absatzweise Inline-Code-Paarung:** `max-tasks` und
+  `forbid-pattern` lesen den bereinigten Text, und ein **einzelner**
+  überzähliger Backtick irgendwo im Absatz macht den Rest unsichtbar —
+  gemessen fällt dieselbe Eingabe von einem Befund auf **null**. Für Prosa ist
+  dieser Preis richtig; für eine Zusage, die eine **Vorbedingung** trägt, ist er
+  es nicht: ein Wächter, den ein Tippfehler abschaltet, meldet grün, wo er
+  nichts gesehen hat. **Gezählt wird über die Lexik des Moduls**, nicht über ein
+  Muster aus der Konfiguration — alle vier Listen-Marker (`-`, `*`, `+`,
+  geordnete Liste), eingerückt und mit Tabulator, verengt auf die leere Box; ein
+  selbst geschriebenes `forbid-pattern: '- \[ \]'` deckt nur die Form, an die
+  sein Autor gedacht hat. Die ersten `max-open-tasks` Items in
+  Dokument-Reihenfolge sind erlaubt und melden nicht.
+  **Vier Grenzen sind gemessen benannt statt zugesagt:** der Fence bleibt außen
+  vor (ein Dokument, das über Task-Items schreibt, darf sie im Codeblock
+  zeigen — ein Haken **im** wohlgeformten Fence ist damit unsichtbar); eine
+  **einzeilige** Inline-Code-Spanne meldet **nicht**, eine **mehrzeilige** zählt
+  mit; ein Haken im **Blockquote** oder mit Tabulator in der Box zählt für
+  **keine** der beiden Bedingungen; und ein **vergessener Schluss-Fence** macht
+  die Bedingung blind — dort meldet `fence-unclosed`
+  ([`DC-FA-SPAN-001`](spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)),
+  wer die Bedingung als Vorbedingung fährt, schaltet `spans` im selben Profil
+  dazu. Ein negativer Wert ⇒ Exit 2. **Ohne den Schlüssel ist der Befundsatz
+  byte-identisch** — gemessen gegen ein aus dem Vor-Commit gebautes Image: 276
+  Befunde beidseits, `diff` leer
+  ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)).
+
+### Changed
+
+- slice-172 — **Der offene DoD-Haken eines geschlossenen Slice wird
+  gewächtert.** Das betrifft **nicht** das Werkzeug, sondern das Prüf-Profil
+  dieses Repos: `make verify-closure-notes` hält jetzt `max-open-tasks: 0` über
+  den `## N. Definition of Done`-Abschnitt der Slices in `done/`, mit
+  Bestands-Ausnahme für den Altbestand. Gemessen: ohne die Ausnahme **144
+  Befunde in 37 Dateien**, mit ihr **null**. Modulsatz, Grund-Codes und
+  Konfigurations-Fläche des Produkts sind unberührt, der Befundsatz bleibt
+  byte-identisch. Aufgenommen hier, weil dieselbe Datei die Regel bisher
+  ausdrücklich als **verworfen** führte — die Ablösung gehört sichtbar
+  dokumentiert, nicht stillschweigend ersetzt.
+
 ## [0.69.0] — 2026-08-30
 
 ### Added
