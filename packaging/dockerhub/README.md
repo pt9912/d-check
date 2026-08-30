@@ -8,7 +8,7 @@ unterschiedlich gepflegt:
 |---|---|---|---|
 | **Description** (Kurztext unter dem Repo-Namen) | [`description.txt`](description.txt) | 100 Zeichen | Release-Build — **beim ersten Lauf `Forbidden`, siehe unten** |
 | **Repository overview** (Markdown-Seite) | [`overview.md`](overview.md) | 25.000 Zeichen | Release-Build, derselbe Step — **ebenso** |
-| **Category** | dieses Dokument (siehe unten) | — | **manuell im Web-UI** |
+| **Category** | dieses Dokument (siehe unten) | — | **manuell im Web-UI — gesetzt** |
 
 Die ersten beiden **soll** `peter-evans/dockerhub-description` bei jedem
 Release-Build setzen. Die Action hat **keinen** Input für die Kategorie —
@@ -22,40 +22,49 @@ Hub-Seite ist die Außensicht und folgt darin
 Plattform steht. Was **hier** steht, ist Betriebswissen für dieses Repo und
 bleibt deutsch wie der Rest der Doku.
 
-## Der erste Lauf hat sie NICHT gesetzt — gemessen
+## Transport: funktioniert — gemessen
 
-Beim Release `v0.65.0` (Run 33139273535) meldete der Schritt `success`, sein Log
-aber `##[error]Forbidden` beim `PATCH` an die Docker-Hub-API. Die API bestätigt
-es: `description` ist leer, `full_description` fehlt ganz.
+**Stand:** beide Felder sind gesetzt, der Inhalt ist **englisch**. Beleg: der
+`workflow_dispatch`-Lauf 3 von [`hub-description.yml`](../../.github/workflows/hub-description.yml)
+auf `c39f5c9` (2026-08-30), Schritt *Beschreibung hochladen* mit
+`conclusion: success`, und die Hub-API selbst — `description` und
+`full_description` tragen den Text aus diesen beiden Dateien.
 
-**Der `success` war ein Artefakt von `continue-on-error`** — der Schritt darf
-das Release nicht rot machen (das ist gewollt,
+**Das war nicht immer so, und der Grund gehört dazu.** Beim Release `v0.65.0`
+(Run 33139273535) meldete der Schritt `success`, sein Log aber
+`##[error]Forbidden` beim `PATCH`; die API bestätigte es: `description` leer,
+`full_description` gar nicht vorhanden. **Der `success` war ein Artefakt von
+`continue-on-error`** — der Schritt darf das Release nicht rot machen (gewollt,
 [ADR-0065](../../docs/plan/adr/0065-spiegel-gleichheit-ist-der-config-digest.md)
-Punkt 5), aber er verschluckte dabei auch die Meldung, dass er nichts bewirkt
-hat. **Ab dem nächsten Release verschluckt er sie nicht mehr** — der Melder ist nach v0.65.0 entstanden und hat damit noch keinen Lauf gesehen: ein Folgeschritt liest
+Punkt 5), verschluckte damit aber auch die Meldung, dass er nichts bewirkt hat.
+
+**Ursache und Behebung, beide belegt:** Der Push desselben Tokens funktionierte
+(das Bild lag auf Docker Hub); abgelehnt wurde nur der Metadaten-`PATCH`. Die
+Action verlangt dafür einen anderen Scope als der Push — *„Docker Hub password
+or Personal Access Token with `read/write/delete` scope"*. Der Scope des
+bestehenden Tokens wurde in der Docker-Hub-Oberfläche geändert; der Token-Wert
+blieb derselbe, `DOCKERHUB_TOKEN` musste nicht ersetzt werden. Seither greift
+der `PATCH`.
+
+**Der Melder bleibt, und er hat jetzt Läufe gesehen.** Ein Folgeschritt liest
 `steps.hubdesc.outcome` — `continue-on-error` setzt `conclusion: success`, lässt
-`outcome` aber auf `failure` — und setzt eine **Warnung** mit der wahrscheinlichen
-Ursache. Warnung, nicht Fehler: das Release soll an der Darstellung nicht
-scheitern, nur nicht schweigen.
+`outcome` aber auf `failure` — und setzt eine **Warnung** mit der
+wahrscheinlichen Ursache. Warnung, nicht Fehler: das Release soll an der
+Darstellung nicht scheitern, nur nicht schweigen. Dass er heute nichts meldet,
+ist die Aussage; er ist nicht deshalb überflüssig.
 
-**Die Ursache ist belegt.** Der Push desselben Tokens funktioniert (das Bild
-liegt auf Docker Hub); abgelehnt wird nur der Metadaten-`PATCH`. Die Action
-verlangt dafür einen anderen Scope als der Push: *„Docker Hub password or
-Personal Access Token with `read/write/delete` scope"* — ein Token mit
-`read/write` pusht, darf die Beschreibung aber nicht ändern. Im Schwester-Repo
-`pt9912/d-migrate` setzt dieselbe Action ihre Beschreibung erfolgreich; dort
-trägt das Token den weiteren Scope.
-
-**Behebung:** den Scope des bestehenden Tokens in der Docker-Hub-Oberfläche auf
-`read/write/delete` **ändern** — das geht ohne Neuanlage, der Token-Wert bleibt
-derselbe, und `DOCKERHUB_TOKEN` muss nicht ersetzt werden. Die Beschreibung
-setzt die Action dann beim **nächsten** Release; rückwirkend geschieht nichts.
-Bis dahin sind beide Felder **manuell** zu setzen, aus genau diesen zwei
-Dateien. Der Inhalt ist damit weiter reviewbar; nur der Transport fehlt.
+**Was ein grüner Lauf trotzdem nicht sagt:** *welchen* Stand er hochgeladen hat.
+`workflow_dispatch` checkt den **Origin**-Stand aus, nicht den lokalen — Lauf 2
+setzte die Seite aus `d009e17` und damit auf den **deutschen** Text, obwohl der
+englische bereits geschrieben war. Wer die Darstellung ändert, **pusht zuerst**
+und dispatcht danach; die Gegenprobe ist die Hub-API, nicht der Ausgang des
+Laufs.
 
 ## Category
 
-**Zu setzen: „Developer tools"** (`developer-tools`).
+**Gesetzt: „Developer tools"** (`developer-tools`) — sichtbar auf der Repo-Seite
+als Marke neben `IMAGE`. Bleibt **manuell**: die Action hat keinen Input dafür,
+und kein Lauf setzt sie zurück.
 
 Begründung: d-check prüft Dokumentations-Referenzen in Entwickler-Repositories
 und läuft als Gate in CI-Pipelines — die Kategorie beschreibt den Nutzen für den
