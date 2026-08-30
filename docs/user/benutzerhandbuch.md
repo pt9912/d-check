@@ -1990,6 +1990,9 @@ structure:
     # max-tasks: 0
     # tasks-ignore-pattern: '^\*\*Konstante:'   # Items, deren TEXT hinter der Checkbox
     #                                             # so BEGINNT, zählen nicht mit (nur mit max-tasks)
+    # max-open-tasks: 0                           # OFFENE Task-Items, ROH gezählt ⇒ je Item
+    #                                             # ein Befund auf SEINER Zeile; anders als
+    #                                             # max-tasks kein Backtick-Ausfall
     # forbid-pattern: 'TODO'
     # require-pattern: 'Beleg'
     # require-all: ["Beleg", "Lernsignal"]
@@ -2171,6 +2174,32 @@ diese Paarung braucht Grandfathering.
 inline-code-treu. `exempt-section-pattern` ist **fence**-treu (eine Überschrift
 im Fenced-Block ist keine), **sieht aber Inline-Code** — es teilt seine
 Zeichenkette mit `section-pattern`, und das tut es auch.
+
+**Wenn Ihre Zusage eine Vorbedingung trägt, nehmen Sie `max-open-tasks` statt
+`max-tasks`.** Der Unterschied klingt klein und ist es nicht: `max-tasks` zählt
+**alle** Task-Items auf dem **bereinigten** Text, `max-open-tasks` zählt die
+**offenen** auf den **rohen** Zeilen. Weil die Inline-Code-Paarung
+**absatzweise** ist, macht ein einzelner überzähliger Backtick irgendwo im
+Absatz den Rest für die bereinigt lesenden Bedingungen unsichtbar — gemessen:
+derselbe offene Haken meldet mit `forbid-pattern` **null** Befunde, sobald ein
+Backtick davor und einer dahinter steht, und mit `max-open-tasks` meldet er.
+Für Prosa ist dieser Preis richtig; für einen Wächter, der über einen Übergang
+entscheidet, ist er es nicht.
+
+Dazu zwei Bequemlichkeiten: **gezählt wird über die Lexik des Moduls**, also
+alle vier Listen-Marker (`-`, `*`, `+`, geordnete Liste), eingerückt und mit
+Tabulator — ein selbst geschriebenes `forbid-pattern: '- \[ \]'` deckt nur die
+Form, an die sein Autor gedacht hat. Und Sie bekommen **einen Befund je Item
+auf seiner Zeile** statt eines je Abschnitt; bei neun offenen Haken suchen Sie
+sonst selbst.
+
+**Drei Grenzen, damit Sie nicht überrascht werden.** Der **Fence** bleibt außen
+vor — ein Dokument, das über Task-Items schreibt, darf sie im Codeblock zeigen.
+Eine **einzeilige** Inline-Spanne (`` `- [ ] Beispiel` ``) meldet **nicht**, eine
+**mehrzeilige** dagegen schon: das ist der ausgewiesene Preis der rohen Lesung.
+Und ein Haken im **Blockquote** (`> - [ ]`) oder mit Tabulator in der Box zählt
+für **keine** der beiden Bedingungen — das ist eine Eigenschaft der geteilten
+Lexik, nicht dieser Bedingung.
 
 **Messen Sie, bevor Sie eine Regel aktivieren.** In diesem Repo hat genau das
 eine Regel verhindert, die plausibel klang und falsch war: „abgeschlossener

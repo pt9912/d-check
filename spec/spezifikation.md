@@ -2345,14 +2345,43 @@ getroffenen Dateien.
      einzigen langen Link besteht, ist lang, auch wenn ihr sichtbarer Text kurz
      ist; wer eine Link-Spalte begrenzen will, misst etwas anderes, als er
      meint.
+
+   **Offene Task-Items (`max-open-tasks`)** — die **dritte** Bedingung auf den
+   rohen Abschnitts-Zeilen, und die einzige, die dort gegen die
+   Inline-Code-Bereinigung entscheidet:
+   - **Warum roh.** Die Bereinigung paart Inline-Code **absatzweise**; ein
+     einzelner überzähliger Backtick macht damit den Rest des Absatzes
+     unsichtbar. Für Prosa ist dieser Preis richtig (Schritt 1); für eine
+     Zusage, die eine Closure-Vorbedingung trägt, ist er es nicht.
+   - **Lexik aus dem Modul.** Erkannt wird über dieselbe Task-Item-Antwort, die
+     `max-tasks` zählt — alle vier Listen-Marker, führender Whitespace, Space
+     **oder** Tab als Trenner —, verengt auf die **leere** Box. Es gibt **kein**
+     zweites Muster: die Box liest sich aus dem Treffer des ersten, sonst
+     driftete ein wörtliches Präfix beim ersten Zusatz still auseinander.
+   - **Fence bleibt außen vor.** Die Zeilen-Auswahl ist die geteilte
+     fence-bewusste (Schritt 1) — ein Dokument, das **über** Task-Items
+     schreibt, illustriert sie im Fenced-Block.
+   - **Ein Befund je Item, auf seiner Zeile.** Die ersten `max-open-tasks`
+     offenen Items in **Dokument-Reihenfolge** sind erlaubt und melden nicht;
+     gemeldet wird der Überhang. Sonst meldete eine Verletzung auch die
+     erlaubten Items, und keiner der Befunde wäre die Reparaturstelle.
+   - **Abschnittsgrenze.** Gezählt wird bis zur nächsten Überschrift derselben
+     oder höherer Ebene, nicht dateiweit.
+   - **Grenze, benannt statt zugesagt:** eine **einzeilige** Inline-Code-Spanne
+     meldet **nicht** — das Muster ist zeilen-verankert, und der Backtick steht
+     vor dem Listen-Marker; eine **mehrzeilige** zählt mit. Ein Task-Item im
+     Blockquote (`> - [ ]`) und eine Box mit Tabulator (`- [\t]`) zählen für
+     **keine** der beiden Bedingungen — Eigenschaft der geteilten Lexik.
 7. **Befund-Form.** `file` = die geprüfte Datei (bzw. der Glob in Schritt 2),
    `rule` = `structure`, `target` = die **Regel-Identität** (`files`-Glob und
    Abschnitts-Selektor), `line` = Zeile der Abschnitts-Überschrift (bzw. 1) —
    **außer** bei den Bedingungen, deren Aussage einer einzelnen Zeile gilt:
-   `table.order`, `headings-match` und `table.column` melden auf **der
-   Zeile, an der repariert wird** (brechende Datenzeile, Überschrift, zu lange
-   Zelle bzw. Kopfzeile), und fallen nur bei ihrem **Leerlauf** auf die
-   Abschnitts-Überschrift zurück.
+   `table.order`, `headings-match`, `table.column` und `max-open-tasks` melden
+   auf **der Zeile, an der repariert wird** (brechende Datenzeile, Überschrift,
+   zu lange Zelle bzw. Kopfzeile, offenes Task-Item). Die ersten drei fallen bei
+   ihrem **Leerlauf** auf die Abschnitts-Überschrift zurück; `max-open-tasks`
+   hat **keinen** Leerlauf-Fall — null offene Items sind die Erfüllung der
+   Bedingung, keine Behauptung über den Abschnitt.
    Die Identität im `target` ist konstitutiv: die Deduplikation vergleicht
    (Datei, Zeile, Regel, Ziel, Grund), und ohne sie verlöre man je Datei den
    Befund der zweiten Regel. **Diagnose-only** (kein `--repair`-Hunk).
@@ -2884,6 +2913,7 @@ Exit 2 ohne Prüfung
 | `structure[].non-empty` | bool | `false` | der bereinigte Abschnitts-Text muss mindestens ein Nicht-Whitespace-Zeichen tragen ⇒ sonst `section-empty` |
 | `structure[].min-sentences` | int | abwesend (aus) | Mindestzahl der Satzende-Zeichen (`.`, `!`, `?`) im bereinigten Abschnitts-Text — Fenced-Code entfernt **und Inline-Code geleert** —, gezählt nur, was **vor Whitespace oder Zeilenende** steht (`a.b.c.d.` ⇒ **eins**, nicht vier) ⇒ sonst `section-thin`; **explizit** < 1 ⇒ Exit 2 |
 | `structure[].max-tasks` | int | abwesend (aus) | Obergrenze der Task-Items **im Abschnitt**, nicht dateiweit ⇒ sonst `section-oversized`; **explizit** < 0 ⇒ Exit 2 |
+| `structure[].max-open-tasks` | int | abwesend (aus) | Obergrenze der **offenen** Task-Items im Abschnitt, gezählt auf den **rohen** Zeilen ⇒ `section-tasks-open` **je Item auf seiner Zeile**; die ersten `max-open-tasks` in Dokument-Reihenfolge sind erlaubt. Erkannt über dieselbe Task-Item-Lexik wie `max-tasks`, verengt auf die leere Box — kein zweites Muster. Fence-treu; eine **mehrzeilige** Inline-Code-Spanne zählt mit, eine einzeilige nicht. Explizit gesetzt < 0 ⇒ Exit 2. **Abgrenzung zu `max-tasks`:** jenes zählt **alle** Items auf dem **bereinigten** Text |
 | `structure[].tasks-ignore-pattern` | string | leer (aus) | RE2 gegen den **Item-Text hinter Listen-Marker und Checkbox** (nicht die Zeile — sonst bezeichnete `^` immer den Marker und die verankerte Form wäre unschreibbar); Treffer zählen für `max-tasks` **nicht** mit. Gelesen wird der **bereinigte** Text: ein Muster auf einen Ausdruck in **Backticks** trifft Leerzeichen. Ist der Schlüssel gesetzt, nennt die Meldung die Zahl der ignorierten Items — **auch bei null**; ein `hint` derselben Regel **ersetzt** sie. Nicht kompilierend ⇒ Exit 2; **ohne** `max-tasks` ⇒ Exit 2 (halbe Aktivierung) |
 | `structure[].forbid-pattern` | string | leer | RE2 gegen den **gesamten** bereinigten Abschnitts-Text; Treffer ⇒ `section-forbidden` |
 | `structure[].require-pattern` | string | leer | RE2, Spiegelbild von `forbid-pattern`; **kein** Treffer ⇒ `section-pattern-missing`. Deckt zugesagte Aussagen, die **innerhalb** einer Auszeichnung stehen und deshalb keine Marke sind |
@@ -3031,6 +3061,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-075` | `uses-local-perms-narrow` | workflows | der aufrufende Job führt einen geforderten Scope niedriger, als das Ziel ihn verlangt (`none` < `read` < `write`; ein nicht genannter Scope ist `none`). **Eine** Meldung je Scope (`line` = die Referenz-Zeile), weil jede eine eigene Reparatur ist |
 | `SPEC-076` | `workflow-unparsable` | workflows | eine gelesene Datei ist kein gültiges YAML — eine Kandidaten-Datei (`line` = die Parser-Zeile, sonst 1) oder das Ziel einer lokalen Referenz (`line` = die Referenz-Zeile, `target` = das Ziel). Befund statt Übersprung: eine unlesbare Datei ist kein geprüfter Zustand |
 | `SPEC-077` | `section-exempt-mismatch` | structure | die Zahl der von `exempt-section-pattern` abgezogenen Abschnitte weicht von `exempt-expect-count` ab (`line` = 1) — in **beide** Richtungen und auch, wenn eine Restmenge bleibt. Eigener Code, weil die Reparatur eine andere ist als bei `section-missing`: dort ist der Selektor falsch, hier ist die Aufzählung oder die Zahl veraltet |
+| `SPEC-078` | `section-tasks-open` | structure | der Abschnitt trägt mehr **offene** Task-Items, als `max-open-tasks` erlaubt — gezählt auf den **rohen** Abschnitts-Zeilen (`line` = Zeile des Items). Ein Befund **je** Item über der Grenze; die ersten `max-open-tasks` in Dokument-Reihenfolge sind erlaubt und melden nicht. Eigener Code neben `section-oversized`, weil beide Bedingungen denselben Abschnitt verletzen können und die Reparatur eine andere ist |
 | `SPEC-069` | `section-column-missing` | structure | die über `table.column[].name` benannte Spalte ist nicht adressierbar: keine Tabelle des Abschnitts bindet sie (`line` = Abschnitts-Überschrift), der Name kommt in einer Kopfzeile mehrfach vor (`line` = Kopfzeile) oder eine Datenzeile reicht nicht bis zur Spalte (`line` = diese Zeile) |
 | `SPEC-059` | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `SPEC-060` | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
@@ -3059,6 +3090,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-30 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) um die Bedingung **offene Task-Items** (`max-open-tasks`) erweitert: eigener Block im Ablauf (roh statt bereinigt, geteilte Lexik ohne zweites Muster, Fence-Treue, ein Befund je Item, Abschnittsgrenze, drei benannte Grenzen), §2-Schema-Zeile, §4-Grund-Code `SPEC-078` und Schritt 7 um die vierte zeilen-meldende Bedingung — samt der Klarstellung, dass sie als einzige **keinen** Leerlauf-Fall hat. Dabei korrigiert: der Zellenlängen-Block war als **zweite** Roh-Bedingung geführt und die neue ist die **dritte** |
 | 2026-08-30 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 3 und das §2-Schema um `exempt-expect-count` erweitert, §4 um [`SPEC-077`](#4-grund--und-fehler-codes) `section-exempt-mismatch` ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.78.0, Begründung in begleitender ADR): die Nullmengen-Härte des Abschnitts-Ventils bekommt einen **erklärten** Ausnahmefall. Stimmt die deklarierte Anzahl, ist die geleerte Menge **kein** Befund; weicht sie ab, entsteht einer — **in beide Richtungen und unabhängig von einer Restmenge**, denn eine erweiterte Aufzählung ohne nachgezogene Zahl ist dieselbe Lücke wie eine veraltete. **Zwei Zustände, die vorher denselben Code teilten, sind getrennt:** der Konfigurationsdefekt (`section-pattern` trifft nichts) bleibt `section-missing`, der Bestandszustand bekommt seinen eigenen. Der neue Befund ist **nicht** von `hint` ausgenommen — anders als der Nullmengen-Befund hat die Regel hier gemessen. Der Schlüssel geht **nicht** in die Regel-Identität ein: zwei erwartete Zahlen über derselben Regel sind ein Widerspruch, kein Paar. Zwei neue Exit-2-Ränder in Schritt 1 |
 | 2026-08-30 | §[`DC-FA-CLI-001.a`](spezifikation.md#dc-fa-cli-001a--ablauf-eines-prüflaufs) und §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) um den **Handbuch-Zeiger** ergänzt ([`DC-FA-CLI-001`](lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)/[`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 0.77.0). **Beide Stellen waren abschließende Aufzählungen** — die Usage-Ausgabe „in dieser Reihenfolge" mit fünf Elementen, der Kommentar-Kopf mit zweien —, und beide widersprachen nach dem Lastenheft-Bump der ausgelieferten Ausgabe. **Der Nachzug ist die Regel, nicht der Zusatz:** wer eine geschlossene Enumeration in der Spezifikation befolgt, entfernt den Zeiger beim nächsten Umbau regelkonform wieder. Gefunden hat es der unabhängige Review, nicht der Bau. Dabei mitkorrigiert: Punkt 5 sagte **elf** `.PHONY`-Targets und zählt seit `doc-structure` **zwölf** — dieselbe Enumerations-Drift, die die Lastenheft-Historie für diese Stelle schon zweimal protokolliert |
 | 2026-08-30 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 1/3/6 und das §2-Schema um die **erklärte Grundmenge** erweitert ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) 0.76.0, Begründung in begleitender ADR): `tasks-ignore-pattern` nimmt Task-Items aus der `max-tasks`-Zählung, `exempt-section-pattern` nimmt **Abschnitte** aus der Regel. Beide **verkleinern** nur; **kein** neuer Grund-Code, und ohne sie ist das Verhalten byte-identisch. **Die beiden Muster sehen verschiedene Zeichenketten, und das ist der Kern:** `exempt-section-pattern` dieselbe wie `section-pattern` (rohe Überschriften-Zeile samt `#`-Folge), `tasks-ignore-pattern` den **Item-Text hinter der Checkbox** — gegen die Zeile bezeichnete `^` immer den Listen-Marker, und gemessen ist die **verankerte** Form die tragfähige (444 Items: frei 13 Treffer, davon **zwei** echte Liefer-Zusagen; **dasselbe** Muster verankert nur noch eines, und auch das eine; erst ein Muster, das verankert ist **und** auf Text zielt, den die Bereinigung übrig lässt, traf 26 ohne einen falschen). **Schritt 5 bekommt eine dritte dazugesagte Folge:** die Item-Ausnahme liest den **bereinigten** Text, ein Muster auf einen Ausdruck in Backticks trifft also Leerzeichen — gemessen trifft `make gates` **null** von 444 Items. Die Abschnitts-Ausnahme läuft **vor** Schritt 4, weil sie die Grundmenge erklärt; leert sie die Menge ⇒ `section-missing` mit Schlüssel und Zahl (Nullmengen-Härte wie `exempt-paths`), und dieser Befund behält seine Meldung auch neben einem `hint`. Ein **gesetztes** Abschnitts-Muster geht in die **Regel-Identität** ein — ohne das wäre die Grandfathering-Paarung (Bedingung A für alle, B nur für die übrigen) ein Konfigurations-Duplikat. Die `section-oversized`-Meldung nennt bei gesetztem Muster die Zahl der ignorierten Items, **auch bei null** — mit **zwei** benannten Grenzen: sie greift nur, solange die Regel meldet, und ein `hint` ersetzt die Meldung samt der Zahl. Zwei neue Exit-2-Ränder in Schritt 1 |

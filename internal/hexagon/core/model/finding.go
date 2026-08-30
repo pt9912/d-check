@@ -89,6 +89,13 @@ const (
 	// Selektor falsch, hier ist die Aufzaehlung oder die Zahl veraltet
 	// (ADR-0078).
 	ReasonSectionExemptMismatch = "section-exempt-mismatch"
+	// section-tasks-open: der Abschnitt traegt mehr OFFENE Task-Items, als die
+	// Regel erlaubt -- gezaehlt auf den ROHEN Zeilen. Eigener Code neben
+	// section-oversized, weil beide Bedingungen denselben Abschnitt verletzen
+	// koennen und die Deduplikation ueber (Datei, Zeile, Regel, Ziel, Grund)
+	// laeuft; und weil die Reparatur eine andere ist: dort zerlegen, hier den
+	// Haken setzen oder den Punkt aufloesen (ADR-0074).
+	ReasonSectionTasksOpen = "section-tasks-open"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

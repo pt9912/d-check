@@ -264,6 +264,7 @@ func TestDecode_StructureFehler(t *testing.T) {
 		// Die erwartete Anzahl (ADR-0078): halbe Aktivierung und negativer Wert.
 		"exempt-expect-count ohne Muster": "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    exempt-expect-count: 3\n",
 		"exempt-expect-count negativ":     "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    exempt-section-pattern: '^## A'\n    exempt-expect-count: -1\n",
+		"max-open-tasks negativ":          "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-open-tasks: -1\n",
 	} {
 		if _, err := configyaml.Decode([]byte(bad)); err == nil {
 			t.Fatalf("%s: ungültige structure-Config akzeptiert: %q", name, bad)
@@ -280,7 +281,7 @@ func TestDecode_StructureFehler(t *testing.T) {
 	}
 	teil := "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-tasks: 3\n" +
 		"    tasks-ignore-pattern: '^\\*\\*Konstante:'\n    exempt-section-pattern: '^## Alt'\n" +
-		"    exempt-expect-count: 2\n"
+		"    exempt-expect-count: 2\n    max-open-tasks: 0\n"
 	cfg, err = configyaml.Decode([]byte(teil))
 	if err != nil {
 		t.Fatalf("gültige Teilmengen-Regel abgelehnt: %v", err)
@@ -291,7 +292,8 @@ func TestDecode_StructureFehler(t *testing.T) {
 	// Adapter nie.
 	if len(cfg.Structure) != 1 || cfg.Structure[0].TasksIgnorePattern != `^\*\*Konstante:` ||
 		cfg.Structure[0].ExemptSectionPattern != "^## Alt" ||
-		cfg.Structure[0].ExemptExpectCount == nil || *cfg.Structure[0].ExemptExpectCount != 2 {
+		cfg.Structure[0].ExemptExpectCount == nil || *cfg.Structure[0].ExemptExpectCount != 2 ||
+		cfg.Structure[0].MaxOpenTasks == nil || *cfg.Structure[0].MaxOpenTasks != 0 {
 		t.Fatalf("Teilmengen-Schlüssel nicht durchgereicht: %+v", cfg.Structure)
 	}
 }

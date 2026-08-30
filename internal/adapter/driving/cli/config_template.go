@@ -185,6 +185,9 @@ modules: [links, anchors]
 #     # max-tasks: 0                                # sonst section-oversized (Task-Items IM Abschnitt)
 #     # tasks-ignore-pattern: '^\*\*Gate'           # Items, deren TEXT (hinter der Checkbox!) dieses RE2 trifft, zaehlen fuer max-tasks NICHT
 #     #                                             # mit; die Meldung nennt dann die Zahl der ignorierten. Ohne max-tasks ⇒ Exit 2
+#     # max-open-tasks: 0                           # OFFENE Task-Items, gezaehlt auf den ROHEN Zeilen ⇒ section-tasks-open
+#     #                                             # je Item auf SEINER Zeile. Anders als max-tasks blind gegen die
+#     #                                             # absatzweise Inline-Code-Paarung — ein Backtick schaltet es nicht ab
 #     # forbid-pattern: 'TODO'                      # Treffer ⇒ section-forbidden
 #     # require-pattern: 'Beleg'                    # kein Treffer ⇒ section-pattern-missing
 #     # require-all: ["Beleg", "Lernsignal"]        # fehlende Marke ⇒ section-marker-missing

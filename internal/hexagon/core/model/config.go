@@ -453,6 +453,17 @@ type StructureRule struct {
 	NonEmpty       bool
 	MinSentences   *int
 	MaxTasks       *int
+	// MaxOpenTasks ist die Obergrenze der OFFENEN Task-Items -- gezaehlt auf
+	// den ROHEN Abschnitts-Zeilen, nicht auf dem bereinigten Text wie
+	// MaxTasks. Das ist der Unterschied, um den es geht: ein einzelner
+	// ueberzaehliger Backtick leert den Rest des Absatzes, und eine Zusage,
+	// die eine Closure-Vorbedingung traegt, darf daran nicht abschalten
+	// (ADR-0074).
+	//
+	// ABGRENZUNG zu MaxTasks: jenes zaehlt ALLE Items auf dem BEREINIGTEN
+	// Text und teilt dessen Blindstelle. Beide stehen nebeneinander; wer den
+	// falschen greift, bekommt die schwaechere Zusage.
+	MaxOpenTasks   *int
 	ForbidPattern  string
 	RequirePattern string
 	RequireAll     []string

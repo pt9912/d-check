@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.78.0
+**Version:** 0.79.0
 
 **Status:** Draft
 
@@ -2509,17 +2509,19 @@ Wie viele Treffer erwartet werden, sagt `sections`:
   ist kein Ausweg, sondern ein stiller.
 
 **Bedingungen im Abschnitt**, je Abschnitt geprüft, jede optional, jede
-**fence-treu** (der Abschnitts-Text wird zuvor um Fenced-Code bereinigt; **zwei**
-Bedingungen lesen einen anderen Text und sind unten je benannt: die
-Chronologie-Bedingung die rohen Abschnitts-Zeilen, die Überschriften-Bedingung
-die Überschriften selbst) — und jede mit **eigenem** Grund-Code, weil jede eine andere Reparatur
-verlangt:
+**fence-treu** (der Abschnitts-Text wird zuvor um Fenced-Code bereinigt;
+**vier** Bedingungen lesen einen anderen Text und sind unten je benannt: die
+Chronologie-Bedingung, die Zellenlängen-Bedingung und die Bedingung über
+**offene** Task-Items je die rohen Abschnitts-Zeilen, die
+Überschriften-Bedingung die Überschriften selbst) — und jede mit **eigenem**
+Grund-Code, weil jede eine andere Reparatur verlangt:
 
 | Bedingung | verletzt ⇒ | Reparatur |
 |---|---|---|
 | `non-empty` (bool) | `section-empty` | Inhalt schreiben |
 | `min-sentences` (int ≥ 1) | `section-thin` | Substanz ergänzen |
 | `max-tasks` (int ≥ 0; erklärte Teilmenge über `tasks-ignore-pattern`) | `section-oversized` | zerlegen statt dehnen |
+| `max-open-tasks` (int ≥ 0) — **offene** Task-Items, gezählt auf den **rohen** Zeilen | `section-tasks-open` | den Haken setzen oder den Punkt auflösen |
 | `forbid-pattern` (RE2) | `section-forbidden` | die Wendung ersetzen |
 | `require-pattern` (RE2) | `section-pattern-missing` | die zugesagte Aussage nachtragen |
 | `require-all` (Marken-Liste) | `section-marker-missing` | den fehlenden Baustein ergänzen |
@@ -2530,6 +2532,28 @@ verlangt:
 | — dieselbe Bedingung, Untergrenze `cell-min-chars` | `section-cell-undersized` | die Zelle ausfüllen |
 | — dieselbe Bedingung, Spalte nicht adressierbar | `section-column-missing` | den Spaltennamen bzw. die Kopfzeile korrigieren |
 
+**`max-open-tasks` liest die rohen Zeilen, und das ist der ganze Grund für sie.**
+`max-tasks` und `forbid-pattern` sehen den bereinigten Text; dessen
+Inline-Code-Paarung ist **absatzweise**, also macht ein einzelner überzähliger
+Backtick den Rest des Absatzes unsichtbar. Für Prosa ist dieser Preis richtig —
+für eine Zusage, die eine **Closure-Vorbedingung** trägt, kippt er: ein Wächter,
+den ein Tippfehler abschaltet, meldet grün, wo er nichts gesehen hat.
+**Gezählt wird über die Modul-Lexik**, nicht über ein Muster aus der
+Konfiguration: alle vier Listen-Marker (`-`, `*`, `+`, geordnete Liste),
+eingerückt und mit Tab-Trenner, verengt auf die **leere** Box. Ein
+Konfigurations-Muster deckt nur die Form, die sein Autor aufschrieb.
+**Ein Befund je Item, auf seiner Zeile** — die Reparatur ist dort, wo der Haken
+steht; die ersten `max-open-tasks` Items in Dokument-Reihenfolge sind erlaubt
+und melden nicht.
+
+**Drei Grenzen, und sie sind gemessen, nicht geschätzt.** Der **Fence** bleibt
+außen vor — ein Dokument, das über Task-Items schreibt, illustriert sie dort.
+Eine **einzeilige** Inline-Code-Spanne meldet **nicht** (das Muster ist
+zeilen-verankert, der Backtick steht vor dem Listen-Marker); eine
+**mehrzeilige** zählt mit, und das ist der ausgewiesene Preis der rohen Lesung.
+Und ein Task-Item im **Blockquote** (`> - [ ]`) sowie eine Box mit **Tabulator**
+(`- [\t]`) zählen für **keine** der beiden Bedingungen — das ist eine
+Eigenschaft der geteilten Modul-Lexik, nicht dieser Bedingung.
 
 **Eine Regel darf ihre Grundmenge erklären — zweimal, und die beiden Muster
 sehen VERSCHIEDENE Zeichenketten.** Beide **verkleinern** nur, beide sind
@@ -2787,7 +2811,7 @@ kompilierendes `section-pattern`/`forbid-pattern`/`require-pattern`/`tasks-ignor
 ein `exempt-expect-count` **ohne** `exempt-section-pattern` oder mit einem Wert **< 0**;
 ein `tasks-ignore-pattern` **ohne** `max-tasks` (dieselbe halbe Aktivierung wie
 `table.order-column` ohne `table.order`); explizit
-gesetztes `min-sentences` < 1 oder `max-tasks` < 0; leerer Eintrag in
+gesetztes `min-sentences` < 1, `max-tasks` < 0 oder `max-open-tasks` < 0; leerer Eintrag in
 `require-all`; **explizit leerer** `hint` oder einer, der nur Whitespace trägt;
 ein `hint` mit **Tab oder Zeilenumbruch** (die Befund-Zeile ist tab-getrennt und
 einzeilig); `table.order` außerhalb `asc`/`desc`; explizit gesetztes
@@ -2823,6 +2847,9 @@ ein Ventil die Regel still ab.
 - **Erklärte Leermenge (`exempt-expect-count`):** Given eine Datei mit drei gleichartigen Abschnitten, die **alle** von `exempt-section-pattern` getroffen werden, und `exempt-expect-count: 3`, when `d-check --enable structure` läuft, then **kein Befund**, Exit 0 — **ohne** den Schlüssel `section-missing`. Given dieselbe Datei mit `exempt-expect-count: 2` **oder** `: 4`, then je ein `section-exempt-mismatch`, dessen Meldung beide Zahlen nennt. Given einen vierten, **nicht** getroffenen Abschnitt und weiterhin `: 3`, then wird nur dieser geprüft; bei `: 4` meldet die Regel den Mismatch, obwohl noch eine Restmenge da ist.
 - **Erklärte Leermenge (Trennung und Null):** Given ein `section-pattern`, das **nichts** trifft, und ein gesetztes `exempt-expect-count`, when der Lauf endet, then `section-missing` — ein Konfigurationsdefekt bleibt einer. Given ein Muster, das nichts ausnimmt, und `exempt-expect-count: 0`, then werden **alle** Abschnitte geprüft und es entsteht kein Mismatch; given dasselbe `: 0`, aber ein Muster, das **einen** Abschnitt nimmt, then `section-exempt-mismatch` — die deklarierte Null ist eine Aussage und wird widerlegt, nicht übergangen.
 - **Erklärte Leermenge (Reichweite):** Given eine Regel, deren `files`-Glob **mehrere** Dateien trifft, und ein gesetztes `exempt-expect-count`, when der Lauf endet, then wird die Zahl gegen **jede** Datei einzeln gehalten — nicht gegen die Summe; und given eine Datei mit einem `section-exempt-mismatch`, then trägt sie **genau diesen einen** Befund: die Prüfung dieser Datei bricht ab, die übrigen Bedingungen laufen für sie nicht mehr.
+- **Offene Task-Items roh gezählt (`max-open-tasks`):** Given ein Abschnitt, in dem ein offenes Task-Item von einer **mehrzeiligen** Inline-Code-Spanne umschlossen ist, when `d-check --enable structure` mit `max-open-tasks: 0` läuft, then meldet die Regel `section-tasks-open` auf der **Zeile des Items** — während `forbid-pattern` über denselben Abschnitt **nichts** meldet, weil die absatzweise Paarung das Item leert. Given denselben Abschnitt ohne den Schlüssel, then meldet die Regel nichts (abwesender Schlüssel ⇒ Bedingung aus); die **explizit gesetzte Null** ist davon unterscheidbar.
+- **Offene Task-Items — Lexik und Granularität:** Given Task-Items mit den Markern `-`, `*`, `+` und als geordnete Liste, eingerückt und mit Tabulator als Trenner, when der Lauf endet, then meldet **jedes offene** und **kein gehaktes** (`[x]`/`[X]`); given zwei offene Items in einem Abschnitt, then **zwei** Befunde auf ihren je eigenen Zeilen, nicht einer. Given `max-open-tasks: 2` und vier offene Items, then genau **zwei** Befunde — auf dem dritten und vierten Item in Dokument-Reihenfolge.
+- **Offene Task-Items — Fence und Abschnittsgrenze:** Given ein offenes Task-Item **innerhalb** eines Fenced-Blocks, when der Lauf endet, then **kein** Befund; given dasselbe Item außerhalb, then einer. Given ein offenes Item im **folgenden** Abschnitt, then zählt es nicht mit — die Bedingung endet an der Abschnittsgrenze.
 - **Teilmenge (Nullmenge und Kardinalität):** Given ein `exempt-section-pattern`, das **alle** Treffer nimmt, when der Lauf endet, then `section-missing` (`line` = 1) und die Meldung nennt `exempt-section-pattern` samt Zahl — kein stilles Grün. Given zwei Treffer bei `sections: one`, von denen einer ausgenommen ist, when der Lauf endet, then **kein** `section-ambiguous`: die Ausnahme läuft vor der Kardinalitäts-Prüfung.
 - **Marken-Formen:** Given einen Abschnitt, der eine `require-all`-Marke als Listen-Item (`- **M:**`), bare (`**M:**`) oder qualifiziert (`- **M (Zusatz):**`) trägt, when `d-check --enable structure` läuft, then gilt sie in **allen drei** Formen als vorhanden; trägt er sie nur als Wort im Fließtext, dann `section-marker-missing`.
 - **`require-pattern`:** Given einen Abschnitt, dessen zugesagte Aussage **innerhalb** einer Auszeichnung steht, when eine `require-pattern`-Regel sie beschreibt, then kein Befund; fehlt sie, dann `section-pattern-missing`.
@@ -3370,6 +3397,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.79.0 | 2026-08-30 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): neue Bedingung **`max-open-tasks`** (int ≥ 0, opt-in) — Obergrenze der **offenen** Task-Items eines Abschnitts, gezählt auf den **rohen** Zeilen, Grund-Code `section-tasks-open`. **Der Grund ist die absatzweise Inline-Code-Paarung:** `max-tasks` und `forbid-pattern` lesen den bereinigten Text, und ein einzelner überzähliger Backtick macht den Rest des Absatzes unsichtbar. Für Prosa ist dieser Preis richtig; für eine Zusage, die eine **Closure-Vorbedingung** trägt, kippt er — ein Wächter, den ein Tippfehler abschaltet, meldet grün, wo er nichts gesehen hat. **Gezählt wird über die Modul-Lexik**, nicht über ein Konfigurations-Muster: alle vier Listen-Marker, eingerückt und mit Tab-Trenner, verengt auf die leere Box; ein Konfigurations-Muster deckt nur die Form, die sein Autor aufschrieb. **Ein Befund je Item auf seiner Zeile**, die ersten `max-open-tasks` in Dokument-Reihenfolge sind erlaubt. **Drei Grenzen sind gemessen benannt:** der Fence bleibt außen vor, eine **einzeilige** Inline-Spanne meldet nicht und eine **mehrzeilige** zählt mit, und Blockquote bzw. Tabulator in der Box zählen für **keine** der beiden Bedingungen (Eigenschaft der geteilten Lexik). Dabei korrigiert: der Tabellenkopf sprach von **zwei** Bedingungen, die einen anderen Text lesen — es sind **vier**. `max-tasks` bleibt unverändert. Ohne den Schlüssel byte-identisches Verhalten. Begründung in begleitender ADR | — |
 | 0.78.0 | 2026-08-30 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die Nullmengen-Härte von `exempt-section-pattern` bekommt einen **erklärten Ausnahmefall** — `exempt-expect-count` (int ≥ 0, opt-in, nur mit dem Muster). **Anlass ist ein eingehender CR** desselben Adopters, aus der Anwendung des vorigen: er grandfathert 19 Anforderungen in einer Datei mit genau 19 passenden Abschnitten, und die Regel meldete rot, wo sein abgelöstes Skript `0 neue, 19 grandfathered` mit Exit 0 meldete — **das Modul machte mehr rot als der Sensor, den es ablöst**. Die Härte bleibt richtig, ihre Reichweite war zu weit: sie trifft ein **generisches** Muster, nicht ein **aufzählendes**, das 19 Kennungen einzeln nennt und nur **veralten** kann. **Zwei Zustände teilten sich einen Grund-Code** — der Konfigurationsdefekt (der Selektor trifft nichts) und der Bestandszustand (die Ausnahme nimmt alle); die Trennung ist jetzt gezogen, und der Defekt bleibt `section-missing`. **Ein neuer Grund-Code `section-exempt-mismatch`**, weil die Reparatur eine andere ist: *Aufzählung oder Zahl nachziehen* statt *Selektor korrigieren*. **Die Drift ist beidseitig und unabhängig von einer Restmenge** — eine erweiterte Aufzählung ohne nachgezogene Zahl ist dieselbe Lücke wie eine veraltete, und eine einseitige Prüfung wäre ein halber Wächter. **Eine deklarierte Null bedeutet etwas** (*„das Muster soll heute noch nichts treffen"*) und bleibt von einem abwesenden Schlüssel unterscheidbar. Zwei neue Config-Ränder: ohne Muster und < 0. **Die Form weicht vom Antrag ab, und der Grund ist gemessen:** der Absender beantragte `exempt-may-empty: true` mit der Sichtbarkeit in `--doctor` und nannte den Preis „schwächer" — der Preis ist nicht „schwächer", sondern **unbestimmt**: `--doctor` läuft in keinem Gate dieses Repos, und das per `--print-mk` verteilte `doc-doctor`-Target ([`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben)) ist ein Target, kein Gate-Lauf — ob ein Konsument es in seine Gate-Kette hängt, weiß dieses Repo nicht. Die gewählte Form hängt an dieser Unbekannten nicht. Eine **Deklaration** statt einer Erlaubnis hält die Prüfung im Gate-Lauf und macht genau das laut, was der Absender als einziges Risiko benennt. Ohne den Schlüssel byte-identisches Verhalten. Begründung in begleitender ADR | — |
 | 0.77.0 | 2026-08-30 | [`DC-FA-CLI-001`](#dc-fa-cli-001--aufruf-und-scan-wurzel) und [`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben): **beide Ausgaben nennen das Benutzerhandbuch mit voller URL** — die Hilfe als eigene Trailer-Zeile, das erzeugte `d-check.mk` im Kopfkommentar. **Anlass ist eine Lücke, die gemessen ist:** beide Ausgaben trugen **null** URLs und verwiesen ausschließlich auf **andere Ausgaben** (`--print-config`/`--suggest-config` bzw. die Release-Notes); wer d-check aus dem Werkzeug heraus kennenlernt, fand den aufgabenorientierten Einstieg nicht. Beim Fragment wiegt das schwerer als bei der Hilfe: es reist in ein **fremdes** Repo, und sein Kopf ist der einzige Ort, an dem ein Zeiger dauerhaft mitfährt. **Die URL zeigt auf den Hauptzweig, nicht auf eine Version, und das ist die Entscheidung:** eine versionierte Form wäre eine **neue Release-Prep-Fläche** — und zwar eine, die grundsätzlich kein Sensor dieses Repos erreichen kann: der Fundort ist eine **Go-Konstante**, und d-check scannt ausschließlich Markdown. Der naheliegende Vergleich mit [`DC-FA-VER-001`](#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in) trägt dabei **nicht**: dessen Muster ist frei konfigurierbar, und dass dieses Repo es nur auf `ghcr`-präfixierte Pins richtet, ist eine Eigenschaft seiner `.d-check.yml`, nicht der Anforderung. **Der Preis ist benannt statt verschwiegen:** wer ein älteres Image fährt, liest ein neueres Handbuch — und eine URL im Werkzeug ist ein Versprechen über ein fremdes System, das **kein** Gate dieses Repos hält (`external` ist strikt opt-in, die Zeichenkette steht zudem unverbunden ein zweites Mal in `packaging/dockerhub/overview.md`). **Kein fremdsprachiger Marker:** anders als `README.md`, das englisch ist und das Handbuch als *(German)* führt, sind Hilfe und Fragment **selbst deutsch** — sie nennen die Sprache trotzdem, nur in eigener Sprache (*„aufgabenorientiert, deutsch"*). Kein neues Verhalten, keine neue Option, kein Grund-Code — zwei Textzeilen und zwei Akzeptanzkriterien | — |
 | 0.76.0 | 2026-08-30 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): eine Regel darf ihre **Grundmenge erklären** — `tasks-ignore-pattern` nimmt Task-Items aus der `max-tasks`-Zählung, `exempt-section-pattern` nimmt **Abschnitte** aus der Regel. Beide **verkleinern** nur, beide sind opt-in, beide tragen **keinen** neuen Grund-Code; ohne sie ist das Verhalten byte-identisch. **Anlass ist ein eingehender CR** eines Adopters (`docs/plan/cr/2026-08-30-…`), und er gilt hier nachgemessen genauso: `max-tasks: 3` über die **89** DoD-Abschnitte dieses Repos (in 175 Slice-Plänen) liefert **80** `section-oversized` bei **444** Task-Items — der Bestand ist regelkonform, der Zähler misst das Falsche, und die Slice-Vorlage der Baseline liefert den Defekt mit aus. **Zwei Defekte des Antrags sind dabei gemessen und behoben:** das freie Beispiel-Muster nimmt **zwei** echte Liefer-Zusagen mit — und **dasselbe Muster verankert** trifft nur noch ein einziges Item, das ebenfalls eine ist; tragfähig ist erst ein Muster, das **verankert ist und auf Text zielt, den die Bereinigung übrig lässt** (26 Treffer, kein falscher), und seine erste Alternative trifft **null** von 444 Items, weil die Zählung den **bereinigten** Text liest und die Wendung durchgängig in Inline-Code steht — was fence-treu gezählt wird, ist auch fence-treu ignorierbar. **Die beiden Muster sehen deshalb verschiedene Zeichenketten, und das ist die Entscheidung:** `exempt-section-pattern` dieselbe Zeile wie `section-pattern` (samt `#`-Folge, sonst wäre ein analog geschriebenes Muster still wirkungslos), `tasks-ignore-pattern` den **Item-Text** hinter der Checkbox (sonst wäre die verankerte Form unschreibbar). **Die Überdeckung ist sichtbar:** die Meldung nennt die Zahl der ignorierten Items, auch bei null — mit der benannten Grenze, dass sie nur greift, solange die Regel meldet. **Leert `exempt-section-pattern` die Abschnitts-Menge ⇒ `section-missing`** wie bei `exempt-paths`, und es läuft **vor** der Kardinalitäts-Prüfung. Zwei neue Config-Ränder: nicht kompilierendes RE2 je Schlüssel und `tasks-ignore-pattern` **ohne** `max-tasks`. **Der Schlüssel heißt bewusst nicht `exempt-sections`:** `-pattern` bedeutet in diesem Modul RE2, und `exclude-sections` ist in `vcs` und `sources` als **Liste literaler** Überschriften vergeben. Begründung in begleitender ADR | — |

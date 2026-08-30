@@ -183,27 +183,41 @@ func checkStructureFile(fsys driven.Filesystem, r model.StructureRule, file stri
 	// In `one` ist nach der Kardinalitäts-Prüfung genau ein Treffer übrig,
 	// `each` misst jeden.
 	var prose map[int]bool
-	if r.Table.Order != "" || len(r.Table.Columns) > 0 {
-		// Die beiden Tabellen-Bedingungen brauchen die fence-bewusste
-		// Tabellenzeilen-Auswahl auf den ROHEN Zeilen (ADR-0057, ADR-0069).
+	if r.Table.Order != "" || len(r.Table.Columns) > 0 || r.MaxOpenTasks != nil {
+		// Die ROH lesenden Bedingungen brauchen die fence-bewusste
+		// Zeilen-Auswahl (ADR-0057, ADR-0069, ADR-0074).
 		prose = proseLineSet(content)
 	}
 	var out []model.Finding
 	for _, h := range heads {
-		body := SectionProse(content, lines, h.Line, h.Level)
-		out = append(out, structureConditions(r, file, h.Line, body)...)
-		if r.Table.Order != "" {
-			out = append(out, structureTableOrder(r, file, lines, prose, h.Line, h.Level)...)
-		}
-		// Ein Lauf je Spalte: die Befunde bleiben damit spaltenweise
-		// gruppiert, so wie sie es unter den frueheren Ein-Spalten-Regeln
-		// waren (ADR-0070 aendert die Form, nicht die Ausgabe).
-		for _, c := range r.Table.Columns {
-			out = append(out, structureCellMax(r, c, file, lines, prose, h.Line, h.Level)...)
-		}
-		if r.HeadingsMatch != "" {
-			out = append(out, structureHeadings(r, file, lines, h)...)
-		}
+		out = append(out, structureAmAbschnitt(r, file, content, lines, prose, h)...)
+	}
+	return out
+}
+
+// structureAmAbschnitt faehrt alle Bedingungen gegen EINEN Abschnitt. Getrennt
+// von der Datei-Ebene, damit dort die Kandidaten-Auswahl steht und hier die
+// Bedingungen -- zwei Fragen, zwei Funktionen.
+func structureAmAbschnitt(
+	r model.StructureRule, file string, content []byte, lines []string,
+	prose map[int]bool, h SectionHead,
+) []model.Finding {
+	body := SectionProse(content, lines, h.Line, h.Level)
+	out := structureConditions(r, file, h.Line, body)
+	if r.Table.Order != "" {
+		out = append(out, structureTableOrder(r, file, lines, prose, h.Line, h.Level)...)
+	}
+	// Ein Lauf je Spalte: die Befunde bleiben damit spaltenweise gruppiert, so
+	// wie sie es unter den frueheren Ein-Spalten-Regeln waren (ADR-0070
+	// aendert die Form, nicht die Ausgabe).
+	for _, c := range r.Table.Columns {
+		out = append(out, structureCellMax(r, c, file, lines, prose, h.Line, h.Level)...)
+	}
+	if r.MaxOpenTasks != nil {
+		out = append(out, structureOpenTasks(r, file, lines, prose, h.Line, h.Level)...)
+	}
+	if r.HeadingsMatch != "" {
+		out = append(out, structureHeadings(r, file, lines, h)...)
 	}
 	return out
 }
@@ -222,10 +236,11 @@ func structureMatcher(r model.StructureRule) func(string) bool {
 // structureConditions prüft die sechs Prosa-Bedingungen auf dem bereinigten
 // Abschnitts-Text. Jede hat einen eigenen Grund-Code, damit zwei Verletzungen
 // desselben Abschnitts nicht unter der Befund-Deduplikation zusammenfallen.
-// Zwei Bedingungen lesen einen anderen Text und leben anderswo: die
-// Chronologie-Monotonie auf den rohen Abschnitts-Zeilen
-// (structure_tableorder.go, ADR-0057) und die Überschriften-Bedingung auf den
-// Überschriften selbst (structureHeadings).
+// VIER Bedingungen lesen einen anderen Text und leben anderswo: die
+// Chronologie-Monotonie und die Zellenlänge auf den rohen Abschnitts-Zeilen
+// (structure_tableorder.go, ADR-0057, ADR-0069), die offenen Task-Items
+// ebenfalls roh (structureOpenTasks, ADR-0074) und die Überschriften-Bedingung
+// auf den Überschriften selbst (structureHeadings).
 func structureConditions(r model.StructureRule, file string, line int, body string) []model.Finding {
 	var out []model.Finding
 	add := func(reason, msg string) {
@@ -310,6 +325,57 @@ func structureFinding(r model.StructureRule, file string, line int, reason, msg 
 // taskItemRE erkennt ein Task-Item: nach optionalem Whitespace ein
 // Listen-Marker (-, *, + oder <ziffern>.), Whitespace und [ ] bzw. [x]/[X].
 var taskItemRE = regexp.MustCompile(`^[ \t]*(?:[-*+]|[0-9]+\.)[ \t]+\[[ xX]\]`)
+
+// offenerHaken meldet, ob die Zeile ein Task-Item mit LEERER Box traegt.
+//
+// KOPPLUNG: es gibt kein zweites Muster. Die Zeile wird mit taskItemRE
+// erkannt, und die Box liest sich aus deren Treffer -- ein eigenes RE2 waere
+// ein woertliches Praefix des ersten und driftete beim ersten Zusatz still
+// auseinander (BEO-003). Wer die Lexik erweitert, erweitert sie hier
+// automatisch mit (ADR-0074).
+func offenerHaken(line string) bool {
+	return strings.HasSuffix(taskItemRE.FindString(line), "[ ]")
+}
+
+// structureOpenTasks zaehlt die OFFENEN Task-Items des Abschnitts auf den
+// ROHEN Zeilen und meldet jedes ueber der Schwelle auf SEINER Zeile
+// (ADR-0074).
+//
+// ZUSAGE: roh heisst roh -- die absatzweise Inline-Code-Paarung (ADR-0059)
+// wird hier nicht durchlaufen, weil ein einzelner ueberzaehliger Backtick
+// sonst den Rest des Absatzes unsichtbar machte. Genau daran scheiterte die
+// Vorgaenger-Form als Closure-Vorbedingung.
+//
+// GRENZE: der Fence bleibt aussen vor (prose), weil ein Dokument, das UEBER
+// Task-Items schreibt, sie im Fence illustriert. Eine EINZEILIGE
+// Inline-Code-Spanne meldet nicht -- das Muster ist zeilen-verankert und der
+// Backtick steht vor dem Listen-Marker; eine MEHRZEILIGE zaehlt mit.
+//
+// SCHWELLE: die ersten MaxOpenTasks offenen Items in Dokument-Reihenfolge sind
+// erlaubt und melden nicht. Sonst meldete eine Verletzung jedes Item, auch die
+// erlaubten, und keiner der Befunde waere die Reparaturstelle.
+func structureOpenTasks(
+	r model.StructureRule, file string, lines []string, prose map[int]bool, headingNo, level int,
+) []model.Finding {
+	end := SectionEnd(lines, headingNo, level)
+	if end == 0 {
+		end = len(lines) + 1
+	}
+	frei := *r.MaxOpenTasks
+	var out []model.Finding
+	for i := headingNo; i < end-1; i++ {
+		if !prose[i+1] || !offenerHaken(lines[i]) {
+			continue
+		}
+		if frei > 0 {
+			frei--
+			continue
+		}
+		out = append(out, structureFinding(r, file, i+1, model.ReasonSectionTasksOpen,
+			"offenes Task-Item über der Grenze von "+strconv.Itoa(*r.MaxOpenTasks)))
+	}
+	return out
+}
 
 // countTaskItems zaehlt die Task-Items des bereinigten Abschnitts-Textes und
 // meldet daneben, wie viele davon `ignore` herausgenommen hat.
