@@ -1763,6 +1763,19 @@ abdeckt:
    (M/T) → Core-Vergleich; Löschung (D) / Umbenennung (R) →
    Pfad-Stabilitäts-Prüfung; Hinzufügung (A) → frei (eine neue Datei ist noch
    nicht immutabel — wie eine frisch reifende ADR).
+   **Dass eine Umbenennung überhaupt als solche ankommt, ist eine Zusage des
+   Adapters und keine Selbstverständlichkeit.** Der Range-Pfad difft **ohne
+   Rename-Erkennung**: nur dann erscheint die Umbenennung als **Löschung des
+   alten** plus **Hinzufügung des neuen** Pfads, und nur dann greift die
+   Pfad-Stabilitäts-Prüfung. Mit eingeschalteter Erkennung — dem Default der
+   verwendeten Bibliothek — kommt sie als **eine** Änderung auf dem **neuen**
+   Pfad an, der alte verschwindet aus dem Diff, und die Prüfung läuft still ins
+   Leere; erst wenn der Inhalt zusätzlich stark genug abweicht, zerfällt die
+   Änderung wieder und der Befund erscheint. Der `--staged`-Pfad trägt dieselbe
+   Eigenschaft über seine eigene Übersetzung. **Beide Modi antworten damit
+   gleich — das ist eine gehaltene Eigenschaft, keine Folge des gemeinsamen
+   Moduls**, und der Preis ist benannt: der Range-Pfad misst keine
+   Inhalts-Ähnlichkeit (Out-of-Scope der Anforderung).
 3. **Immutabilitäts-Bedingung.** Geprüft wird nur, wenn die **BASE**-Version die
    Bedingung `vcs.immutable-when` erfüllt (Zeilen-Regex, erstes Vorkommen
    **außerhalb** von Fenced-Code — eine Datei, die ihren eigenen Kopf als
@@ -3130,6 +3143,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-08-31 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 nennt den **Mechanismus**, durch den eine Umbenennung sichtbar wird: der Range-Pfad difft **ohne Rename-Erkennung**. Der Schritt sagte die Pfad-Stabilitäts-Prüfung für `D`/`R` seit jeher zu, aber nicht, wodurch ein `R` überhaupt entsteht — und der Adapter lieferte sie im Range-Pfad **nicht**: mit der eingeschalteten Erkennung der verwendeten Bibliothek kam ein **reiner** Rename als eine Änderung auf dem neuen Pfad an, der alte verschwand, und der Befund für die umbenannte immutable Datei entstand nie. Der `--staged`-Pfad war über seine eigene Übersetzung immer korrekt; **die Zusage war damit modus-abhängig, ohne dass das irgendwo stand** — und still war ausgerechnet der Modus, den die CI fährt. Gemeldet von einem Adopter, reproduziert in beiden Modi und in den drei Kontrollfällen (Löschen, Rename mit Umformulierung, `--staged`). **Kein Lastenheft-Bump:** die Anforderung sagte den Befund bereits zu, ohne einen Modus einzuschränken; sie wurde nicht geändert, sondern eingelöst. Kein neuer Grund-Code | — |
 | 2026-08-31 | §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) Punkt 5 um das **dreizehnte** Target `doc-usage` erweitert ([`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 0.80.0, Change Request des Auftraggebers): Zahl **und** Aufzählungspunkt. Es exponiert den Hilfe-Modus aus [`DC-FA-CLI-001`](lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel) und trägt als **Modus**-Target keine `--enable`/`--disable`-Wahl — darin nicht allein: gezählt am erzeugten Fragment tragen sechs der dreizehn eine Fokus-Liste, sieben nicht. Zwei Eigenschaften stehen ausdrücklich dabei, weil sie sonst erst beim Aufruf auffielen: die Hilfe erscheint auf `stderr`, und der Mount bleibt, obwohl `--help` vor der Wurzel-Auflösung kurzschließt. Kein neues Verhalten, kein Grund-Code, keine Schema-Zeile — dieselbe Bauform wie die Target-Erweiterungen davor | — |
 | 2026-08-31 | §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) Punkt 5: `doc-structure` in die Aufzählung der Targets nachgetragen. **Die Zahl war korrigiert, die Aufzählung darunter nicht** — sie führte weiter elf Einträge und ließ genau das Target aus, das die Zahl auf zwölf bewegt hatte. Der Nachzug vom 2026-08-30 hat die Ziffer an dieser Stelle gehoben, die Liste im selben Punkt aber nicht ergänzt; dieselbe Enumeration ist im Lastenheft für diese Anforderung schon zweimal saniert worden (Beschreibung und Out-of-Scope zu 0.57.0, Akzeptanzkriterien zu 0.57.1). **Keine Änderung einer Festlegung:** Lastenheft, ausgeliefertes Fragment und Handbuch führen `doc-structure` seit 0.57.0 — abweichend war allein diese Aufzählung |
 | 2026-08-30 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) um die Bedingung **offene Task-Items** (`max-open-tasks`) erweitert: eigener Block im Ablauf (roh statt bereinigt, geteilte Lexik ohne zweites Muster, Fence-Treue, ein Befund je Item, Abschnittsgrenze, drei benannte Grenzen), §2-Schema-Zeile, §4-Grund-Code `SPEC-078` und Schritt 7 um die vierte zeilen-meldende Bedingung — samt der Klarstellung, dass sie als einzige **keinen** Leerlauf-Fall hat. Dabei korrigiert: der Zellenlängen-Block war als **zweite** Roh-Bedingung geführt und die neue ist die **dritte** |

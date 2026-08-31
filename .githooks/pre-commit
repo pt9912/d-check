@@ -9,6 +9,11 @@
 # klon-unabhaengige Kontrolle ist der CI-Range-Check (.github/workflows/ci.yml).
 #
 # EINE Wahrheit: ruft dasselbe Gate wie CI und `make adr-check` (das Modul vcs).
+# Gleiches Gate heisst aber nicht von selbst gleiche Antwort: --staged und
+# --range tragen je eine eigene Diff-Uebersetzung, und dort lief die Zusage aus
+# DC-FA-VCS-001 einmal auseinander — ein reiner Rename meldete nur ueber
+# --staged. Die Uebereinstimmung ist eine gehaltene Eigenschaft, keine, die aus
+# dem gemeinsamen Gate folgt.
 # Das abgeloeste Alt-Skript wurde mit ADR-0025 entfernt (codepaths.ignore-refs).
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"

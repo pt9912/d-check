@@ -260,3 +260,38 @@ func TestCommitMessagesFailClosed(t *testing.T) {
 		t.Fatal("unauflösbare Basis muss fail-closed liefern")
 	}
 }
+
+// Ein REINER Rename (Inhalt byte-identisch) muss auch im Range-Pfad die
+// Delete-Hälfte auf dem ALTEN Pfad erzeugen: DC-FA-VCS-001 sagt den Befund für
+// die umbenannte immutable Datei zu, ohne einen Eingabe-Modus einzuschränken.
+// Grenze, die dieser Test hält: er misst die Übersetzung, nicht die Ähnlichkeit
+// — eine Rename-Erkennung würde beide Hälften zu einer Modified-Änderung auf
+// dem neuen Pfad zusammenziehen, und der alte Pfad verschwände spurlos.
+func TestRangePureRenameYieldsDelete(t *testing.T) {
+	dir, wt := repoAt(t)
+	const body = "# ADR-0001 — Kern\n\n**Status:** Accepted\n\nEin Text, der unverändert bleibt.\n"
+	put(t, dir, "adr/0001-kern.md", body)
+	first := snapshot(t, wt, "first")
+
+	put(t, dir, "adr/0002-kern.md", body) // byte-identisch — der Rename ist rein
+	if _, err := wt.Remove("adr/0001-kern.md"); err != nil {
+		t.Fatal(err)
+	}
+	second := snapshot(t, wt, "reiner Rename")
+
+	a, err := gitadapter.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	changes, err := a.ChangedPaths(first, second)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for path, want := range map[string]driven.VCSStatus{
+		"adr/0001-kern.md": driven.VCSDeleted, "adr/0002-kern.md": driven.VCSAdded,
+	} {
+		if got, ok := statusOf(changes, path); !ok || got != want {
+			t.Fatalf("reiner Rename, %s: %c erwartet, got %c ok=%v (alle %v)", path, want, got, ok, changes)
+		}
+	}
+}

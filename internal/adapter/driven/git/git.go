@@ -8,6 +8,7 @@
 package git
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -87,11 +88,19 @@ func (a *Adapter) ChangedPaths(base, head string) ([]driven.VCSChange, error) {
 	return diffTrees(baseTree, headTree)
 }
 
-// diffTrees übersetzt einen go-git-Tree-Diff in VCSChanges. Renames erscheinen
-// als Delete(alt) + Add(neu) — keine Inhalts-Ähnlichkeits-Erkennung
-// (DC-FA-VCS-001 Out-of-Scope); der Delete des immutablen Pfads ist der Befund.
+// diffTrees übersetzt einen go-git-Tree-Diff in VCSChanges. Die
+// Rename-Erkennung ist hier **ausgeschaltet**, und das ist die Zusage, nicht
+// eine Sparmaßnahme: mit ihr (go-gits Default) kommt ein Rename als EINE
+// Änderung mit From und To an und wird zu Modified auf dem NEUEN Pfad — der
+// alte Pfad verschwindet, und der core-drift-vcs-Befund für die umbenannte
+// immutable Datei entsteht nie (DC-FA-VCS-001, der Fall trat real ein). Ohne
+// sie erscheint der Rename als Delete(alt) + Add(neu), und der Delete des
+// immutablen Pfads ist der Befund. Grenze: der Range-Pfad misst damit keine
+// Inhalts-Ähnlichkeit — dieselbe Eigenschaft, die der --staged-Pfad über seine
+// eigene Übersetzung (diffTreeIndex) immer schon hatte.
 func diffTrees(base, head *object.Tree) ([]driven.VCSChange, error) {
-	changes, err := base.Diff(head)
+	changes, err := object.DiffTreeWithOptions(context.Background(), base, head,
+		&object.DiffTreeOptions{DetectRenames: false})
 	if err != nil {
 		return nil, fmt.Errorf("git-Diff fehlgeschlagen: %w", err)
 	}

@@ -39,6 +39,13 @@ Kennung ist der Pfad; der Zähler wird aus den gültigen Evidence-Dateien
 Modul `vcs` über `--range`/`--staged` bereits ab
 ([`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)).
 
+**Dieser Absatz ist vom Absender zurückgezogen** (Nachtrag vom selben Tag): die
+Pfadidentität ist **nicht** gelöst. Ein reiner Rename blieb im `--range`-Pfad
+still — festgehalten als eigener
+[Werkzeug-Befund](2026-08-31-befund-ai-harness-course-vcs-rename.md). Er steht
+hier stehen, weil dieses Dokument den CR **wie empfangen** hält; die Korrektur
+gehört daneben, nicht an seine Stelle.
+
 ## Beantragter Vertrag (sechs Teile)
 
 1. **Identität aus Pfad und Inhalt** — Namespace `BEO-<SUB-AREA>`, Slug 3–80

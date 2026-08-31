@@ -92,6 +92,36 @@ Entscheidung.
   kommen wie der gatende, sonst ist die zweite Zahl wieder da, die der Antrag
   abschaffen will.
 
+## Nachtrag — euer `vcs`-Befund ist bestätigt und behoben
+
+Er kam nach dieser Antwort und hängt an keinem ihrer Fäden; wir tragen ihn
+trotzdem hier nach, weil er den Abschnitt *Bereits gelöst* eures Antrags
+zurückzieht. Festgehalten als
+[eigener Befund](2026-08-31-befund-ai-harness-course-vcs-rename.md).
+
+**Reproduziert, alle vier Fälle** — eure Tabelle stimmt Zelle für Zelle,
+einschließlich der beiden Kontrollen, die den Defekt eingrenzen: nur der
+**erkannte** Rename fiel durch, Löschung und Rename-mit-Umformulierung meldeten
+immer. Eure gelesene Ursache trifft ebenfalls; wir haben sie am Code bestätigt.
+
+**Behoben** im Range-Pfad, mit dem Schnitt, den ihr als ersten genannt habt:
+Diff **ohne** Rename-Erkennung, damit die Delete-Hälfte entsteht. Keine
+Ähnlichkeits-Erkennung, kein neuer Grund-Code, kein Lastenheft-Bump — die
+Anforderung sagte den Befund bereits zu, ohne einen Modus einzuschränken; sie
+war nicht falsch, sie war nicht eingelöst.
+
+**Zwei Dinge nehmen wir über euren Befund hinaus mit.** Erstens: der Kommentar
+über der Übersetzungs-Funktion behauptete genau das Verhalten, das fehlte — er
+hat den Fehler nicht nur nicht verhindert, sondern **gedeckt**; wer ihn las,
+prüfte nicht nach. Zweitens: die Zusage war modus-abhängig, und das stand
+nirgends — die Spezifikation nennt jetzt den Mechanismus, durch den eine
+Umbenennung überhaupt sichtbar wird, statt ihn vorauszusetzen.
+
+Euer vierter Punkt — *wo der Dateiname eine Aussage trägt, wird aus der Lücke
+eine Fälschung* — ist der schärfste, und er trifft euren eigenen Entwurf: §2
+bindet den Beleg an den Dateinamen. Er ist damit ein Argument **für** eure
+Verzeichnisform und zugleich die Bedingung, unter der sie trägt.
+
 ## Was wir nicht tun
 
 - **Keine Migration unseres eigenen Registers**, solange die drei Regeln fehlen.
