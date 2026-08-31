@@ -182,6 +182,13 @@ historische Slices auch die Status-Zeile) bleibt Commit 2 — die Slice-Datei se
 unverändert, also hält die Rename-Detection. Kanonisch:
 [`MR-013`](harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise).
 
+**Ausnahme Beanspruchung (`open/` → `in-progress/`):** dieselbe Kopplung mit
+umgekehrtem Vorzeichen — der Ruhe-Marker **verlässt** §Offene Wellen, und die
+Pfad-Verweise auf den Slice wandern von `open/` nach `in-progress/`. Auch hier
+ist ein byte-reiner Move-Commit gate-rot: `planning-drift` meldet den Slice in
+`in-progress/` gegen die Roadmap, die den Marker noch trägt. Kanonisch:
+[`MR-013`](harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise).
+
 **Ausnahme MR-/Wellen-Lifecycle-Move** (`conventions/` → `conventions/done/`,
 flaches Wellendokument → `done/`): hier trägt der Move-Commit die
 **Link-Tiefen-Fixes der bewegten Datei selbst** mit — ein reiner Move wäre

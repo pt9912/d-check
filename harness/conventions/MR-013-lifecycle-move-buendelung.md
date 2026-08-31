@@ -4,7 +4,8 @@
 - **Ersetzt-Baseline-Regel:** [`modul-05-planning-harness.md` §Lifecycle als State Machine](../../.harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md#lifecycle-als-state-machine)
 - **Datum:** 2026-06-21
 - **Geltungsbereich:** [`AGENTS.md` §3.3](../../AGENTS.md#33-git-mv--inhaltsänderung--zwei-commits),
-  der Slice-Lifecycle `docs/plan/planning/in-progress/` → `…/done/`,
+  der Slice-Lifecycle in **beide** gekoppelten Richtungen — `docs/plan/planning/open/`
+  → `…/in-progress/` (Beanspruchung) und `…/in-progress/` → `…/done/` (Closure) —,
   `make planning-check`; die MR-/Wellen-Lifecycle-Moves
   (`conventions/` → `conventions/done/`, flaches Wellendokument → `done/`)
 - **Adaption:** Erste Adaption einer **Lifecycle-Regel** (Nachtrag zu
@@ -25,6 +26,19 @@
   `done/`-Slices behalten ihre) bleibt im zweiten Commit; weil die Slice-Datei im
   Move-Commit unverändert ist, hält die Rename-Detection (`R100`) und damit
   die `git log --follow`-Begründung des Baseline-§3.3.
+  - **Dieselbe Bündelung gilt für die Beanspruchung** `open/` → `in-progress/`
+    (seit slice-185), nur mit umgekehrtem Vorzeichen: dort **verlässt** der
+    Ruhe-Marker §Offene Wellen, statt zurückzukehren, und die Pfad-Verweise auf
+    den Slice wandern von `open/` nach `in-progress/`. `make planning-check`
+    hält den Marker in **beide** Richtungen, ein byte-reiner Move-Commit ist
+    deshalb auch hier gate-rot — gemessen: Marker stehengelassen, Slice in
+    `in-progress/`, Ergebnis `planning-drift` („Slice(s) in
+    `docs/plan/planning/in-progress`, aber die Roadmap-Sektion … trägt den
+    Ruhe-Marker") und Exit 2. **Das Feld nannte bis dahin nur die
+    Closure-Richtung**, während die Übersichtstabelle in
+    [`conventions.md`](../conventions.md#mr-013) längst
+    „Slice-Lifecycle-Moves" führte — der Widerspruch lag zwischen zwei Stellen
+    desselben Dokuments, und die gelebte Praxis folgte der Tabelle.
   - **Dieselbe Bündelung gilt für MR- und Wellen-Lifecycle-Moves** (seit
     welle-79): eine nach `conventions/done/` bzw. `done/` wandernde Datei
     trägt **relative** Verweise, die vom neuen Ort eine Ebene tiefer
