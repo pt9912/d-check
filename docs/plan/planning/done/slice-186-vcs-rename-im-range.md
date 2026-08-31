@@ -95,22 +95,22 @@ reinen Rename nicht.
 
 ## 4. Definition of Done
 
-- [ ] Der reine Rename einer immutablen Datei meldet `core-drift-vcs` **auch über
+- [x] Der reine Rename einer immutablen Datei meldet `core-drift-vcs` **auch über
       `--range`** — mit Test, und der Test ist **vor** dem Fix rot gewesen
       (Ausgabe in der Closure-Notiz).
-- [ ] Die drei Kontrollfälle sind unverändert: `--staged`-Rename, `--range`-Löschen,
+- [x] Die drei Kontrollfälle sind unverändert: `--staged`-Rename, `--range`-Löschen,
       `--range`-Rename-mit-Umformulierung.
-- [ ] **Die zwei falschen Zusagen sind weg** (`git.go`-Kommentar,
+- [x] **Die zwei falschen Zusagen sind weg** (`git.go`-Kommentar,
       `.githooks/pre-commit`), und [`AGENTS.md`](../../../../AGENTS.md) §3.5 sagt
       wieder die Wahrheit — oder trägt die verbleibende Grenze benannt.
-- [ ] Spezifikation §[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) nennt den Mechanismus; Historie-Zeile
+- [x] Spezifikation §[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) nennt den Mechanismus; Historie-Zeile
       gesetzt; **kein** Lastenheft-Bump.
-- [ ] Der Befund ist als eingehendes Dokument abgelegt, und die zwei
+- [x] Der Befund ist als eingehendes Dokument abgelegt, und die zwei
       CR-Dokumente vom 2026-08-31 sind um den zurückgezogenen Abschnitt
       korrigiert.
-- [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
+- [x] `make gates` grün (Exit explizit); **unabhängiger Review**;
       **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag; Beobachtungs-Register
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag; Beobachtungs-Register
       fortgeschrieben; jedes Risiko aus §5 mit Ausgang; die drei Paarungen
       geprüft.
 
@@ -119,17 +119,23 @@ reinen Rename nicht.
 - **Der Fix könnte andere Befunde bewegen.** Rename-Erkennung auszuschalten
   ändert die Diff-Menge für **jede** `--range`-Prüfung des Moduls, nicht nur für
   immutable Pfade. Gegenprobe: der eigene Bestand über eine echte Range, vor und
-  nach dem Fix. — **Ausgang:** *(bei Closure)*
+  nach dem Fix. — **Ausgang:** *entfallen* — gemessen, nicht erwartet: der Bestandslauf über 60 Commits meldet 0 Befunde, und die Verifikation hat unabhängig zwei weitere Ranges gefahren (je 0 Befunde, Exit 0). `diffTrees` hat genau einen Konsumenten (`vcs`); `commits` und `tracked` lesen Messages bzw. Index. **Grenze, die dazugehört:** keiner der Bereiche enthält einen ADR-Rename — das ist ein Regressions-Beleg, kein Rename-Beleg.
 - **Eine umbenannte Datei erzeugt künftig zwei Einträge** (Delete + Add). Ob das
   irgendwo als Doppel-Befund sichtbar wird, ist zu messen, nicht zu vermuten.
-  — **Ausgang:** *(bei Closure)*
+  — **Ausgang:** *entfallen* — gemessen: der Rename erzeugt **einen** Befund, nicht zwei. Der Add auf dem neuen Pfad ist frei („eine neue Datei ist noch nicht immutabel"), und genau diese Paarung hält jetzt `TestVCSRenameOutOfClass` fest.
 - **Die Kommentar-Korrektur ist die eigentliche Lehre und die am leichtesten
   vergessene.** Der Code war falsch, aber der Kommentar hat den Fehler *gedeckt*
-  — wer ihn liest, prüft nicht nach. — **Ausgang:** *(bei Closure)*
+  — wer ihn liest, prüft nicht nach. — **Ausgang:** *weiter offen* → [`BEO-002`](../observations.md), Zähler **7**. Eingetreten, und schlimmer als befürchtet: es waren **vier** Kommentare mit derselben falschen Zusage, meine handverlesene Liste fand **zwei**, und die Botschaft behauptete Vollständigkeit. Gefunden hat es der Review. Repariert nicht durch Nachtragen, sondern durch Umbau: die zwei abgeleiteten Behauptungen zeigen jetzt auf den **Halter** der Eigenschaft, statt sie festzustellen.
 - **`BEO-024` oder nicht:** der Absender fragt, ob dies eine zweite Instanz ist.
   Die Entscheidung fällt bei der Closure, mit dem vollen Eintrag vor Augen — eine
   vorhandene Kennung zu dehnen wäre selbst ein
-  [`BEO-012`](../observations.md)-Fall. — **Ausgang:** *(bei Closure)*
+  [`BEO-012`](../observations.md)-Fall. — **Ausgang:** *entfallen* — die
+  Entscheidung ist getroffen, und zwar **gegen** meine Neigung im Plan: es
+  **ist** eine zweite Instanz. Der Eintrag öffnet seine Klasse ausdrücklich
+  über Werkzeug-Konfiguration hinaus und nennt als Beispiel *„ein Gate, das nur
+  bei bestimmten Commit-Formen läuft"*. Ich hatte nach dem Titel geurteilt statt
+  nach dem Geltungssatz — genau die Klasse, die ich im selben Atemzug als Risiko
+  notiert hatte. Der Zähler steht auf **2**.
 
 ## 6. Trigger
 
@@ -195,3 +201,45 @@ Evidenz-Risiko ist hier ausnahmsweise **nicht** niedrig, sondern gemessen: Code
 und Kommentar standen auseinander, und der Kommentar hat gewonnen.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+- **Was hat funktioniert:** **Test zuerst, Fix danach** — und der Test war
+  nachweislich rot, mit einer Ausgabe, die den Defekt selbst zeigte:
+  `reiner Rename, adr/0002-kern.md: A erwartet, got M ok=true (alle
+  [{77 adr/0002-kern.md}])`. Eine einzige `Modified`-Änderung auf dem neuen
+  Pfad, der alte spurlos. Danach grün, und beide Folge-Rollen haben die Probe
+  **selbst nachgestellt** statt sie zu zitieren. Ebenso getragen hat die
+  Entscheidung, den Befund des Absenders **nicht zu glauben**: alle vier Zeilen
+  seiner Tabelle reproduziert, bevor eine Zeile Code fiel — dadurch war der
+  Defekt von Anfang an eng (nur der *erkannte* Rename) statt „Range-Modus
+  kaputt".
+- **Was ging anders als geplant:** Drei Dinge, alle in dieselbe Richtung.
+  (1) Es waren **vier** Kommentare mit derselben falschen Zusage, nicht zwei —
+  die DoD dieses Slice sagt „die zwei falschen Zusagen", und **auch diese Zahl
+  war schon falsch, als sie geschrieben wurde**. Sie bleibt so stehen: ein
+  nachträglich passend gemachter DoD-Punkt fälschte einen Lauf-Beleg. (2) Der
+  Absender ergänzte während der Arbeit einen vierten Punkt (*wo der Dateiname
+  eine Aussage trägt, wird aus der Lücke eine Fälschung*), der einen Fall
+  nahelegte, den mein Test nicht deckte — den Rename **aus** der geschützten
+  Klasse heraus; er ist jetzt gemessen und gepinnt. (3) Die `BEO-024`-Frage
+  habe ich im Plan verneint und bei der Closure **umgedreht**.
+- **Steering-Loop-Eintrag:** keiner mit Zielort. Was dieser Slice gelernt hat,
+  ist in zwei Registerzeilen gezählt und **nicht** verkörpert — die
+  naheliegende Mechanisierung (ein Wächter gegen Kommentare, die eine
+  Code-Eigenschaft behaupten) ist ein Urteil und kein `grep`, und die zweite
+  (Gleichheit zweier Eingabe-Modi messen) hat keinen Ort, an dem sie stünde.
+  Der Eintrag ist damit *gezählt, nicht verkörpert* — der Normalfall.
+- **Beobachtungs-Register (`../observations.md`):**
+  [`BEO-024`](../observations.md) auf **2** erhöht (die Reichweite hing am
+  Aufruf-Modus; Zugehörigkeit zuerst verneint, dann am Geltungssatz des
+  Eintrags entschieden), [`BEO-002`](../observations.md) auf **7** (vier
+  Spiegel, zwei gefunden — der in slice-185 geschärfte Ableiter wurde einen
+  Slice später nicht befolgt). [`BEO-023`](../observations.md) bleibt bei **7**:
+  der Eintrag zieht die Abgrenzung selbst, und ein Ereignis füllt einen Zähler,
+  nicht zwei.
+- **Folge-Slices:** keine.
+- **Risiken aus §5:** vier, jedes mit genau einem Ausgang — dreimal *entfallen*
+  mit Begründung, einmal *weiter offen* (→ [`BEO-002`](../observations.md)).
+- **Drei Paarungen:** (a) **Anker** — kein `liegt in`-Feld, weil nichts
+  verkörpert wurde; nichts zu paaren. (b) **Folge-Slice** — keiner genannt.
+  (c) **Register** — die vier zitierten Kennungen (`BEO-002`, `BEO-012`,
+  `BEO-023`, `BEO-024`) haben je genau eine Zeile; geprüft, nicht behauptet.
