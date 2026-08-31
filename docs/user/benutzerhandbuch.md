@@ -1093,6 +1093,13 @@ Deklarations-Klasse — ein grüner Lauf heißt „diese Klasse liegt nicht vor"
 
 ### 4.20 Erfundene Register-Kennungen finden (Modul `planning`)
 
+> **Diese Fähigkeit ist in `v0.71.1` noch nicht enthalten.** Der Kopf dieses
+> Handbuchs nennt die Software-Version, zu der es gehört — und diese Aufgabe
+> läuft dem Bild voraus. Mit dem gepinnten Image oben quittiert das Beispiel
+> `field observations not found` und **Exit 2**, weil die
+> Konfigurations-Prüfung unbekannte Schlüssel abweist. Sie kommt mit dem
+> nächsten Release; bis dahin ist dieser Abschnitt eine Vorschau.
+
 **Ausgangslage:** Ihr Prozess führt ein Register — Beobachtungen, Risiken,
 Entscheide —, dessen Zeilen eine Kennung tragen, und Ihre Dokumente zitieren
 diese Kennungen. Wer eine Kennung zitiert, die es nicht gibt, erzeugt einen
