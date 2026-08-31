@@ -363,7 +363,38 @@ type PlanningConfig struct {
 	Marker    string
 	SliceGlob string
 	Closure   ClosureConfig
+	Observations ObservationsConfig
 	Waves     WavesConfig
+}
+
+// ObservationsConfig ist die VIERTE planning-Fähigkeit: die Deckung zwischen
+// zitierten Beobachtungs-Kennungen und den Zeilen des Registers. Opt-in
+// INNERHALB des opt-in Moduls wie WavesConfig — ohne Register wird keine Datei
+// geöffnet und der Befundsatz ist byte-identisch (DC-QA-02).
+//
+// Geprüft wird EINE Richtung: Zitat ⇒ Registerzeile. Die Umkehrung („jede Zeile
+// ist irgendwo zitiert") ist ausgeschlossen, weil die meisten Zeilen unter der
+// Schwelle stehen und nirgends zitiert sind.
+type ObservationsConfig struct {
+	// Register ist die Datei, deren Tabellenzeilen die Kennungen führen.
+	Register string
+	// Dirs sind die Verzeichnisse, deren Markdown-Dateien zitieren dürfen —
+	// rekursiv. Leer ⇒ nur das Verzeichnis des Registers.
+	Dirs []string
+	// Pattern ist die Kennungs-Gestalt; leer ⇒ DefaultObservationPattern.
+	Pattern string
+}
+
+// DefaultObservationPattern ist die Kennungs-Gestalt des Beobachtungs-Registers
+// (Baseline-Regelwerk modul-06: `BEO-<NNN>`).
+const DefaultObservationPattern = `BEO-\d{3}`
+
+// EffectivePattern liefert die konfigurierte oder die Default-Gestalt.
+func (o ObservationsConfig) EffectivePattern() string {
+	if o.Pattern == "" {
+		return DefaultObservationPattern
+	}
+	return o.Pattern
 }
 
 // WavesConfig ist die dritte planning-Fähigkeit (DC-FA-PLAN-001

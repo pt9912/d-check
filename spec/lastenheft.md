@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.80.0
+**Version:** 0.81.0
 
 **Status:** Draft
 
@@ -2409,8 +2409,57 @@ Regelwerk führt: die Liste folgt den **Dateien**, der Marker folgt dem **Anspru
 Der Aktiv-Status wird weiterhin **nicht** ein zweites Mal bestimmt; beide
 Fähigkeiten lesen denselben Block.
 
+**Register-Deckung (vierte Fähigkeit, `planning.observations`, opt-in innerhalb
+des opt-in Moduls):** Ist `planning.observations.register` gesetzt, prüft
+d-check die eine Richtung der Register-Paarung, die **ohne Urteil** entscheidbar
+ist: **eine zitierte Beobachtungs-Kennung hat eine Zeile im Register**. Fehlt
+sie, ist das ein Befund `observation-unregistered`. Ohne den Schlüssel wird
+keine Datei geöffnet und der Befundsatz ist byte-identisch
+([`DC-QA-02`](#dc-qa-02--determinismus)); die Prüfung ist **hermetisch** wie die
+drei Fähigkeiten davor.
+
+**Nur diese Richtung, und der Grund gehört dazu.** Die Umkehrung — *jede Zeile
+ist irgendwo zitiert* — ist **ausgeschlossen**: die meisten Zeilen eines
+Beobachtungs-Registers stehen unter der Verkörperungs-Schwelle und sind nirgends
+zitiert; ein Sensor, der sie einforderte, liefe auf jedem gewachsenen Register
+rot. Ebenso ausgeschlossen bleibt das **Urteil**, ob zwei Beobachtungen dieselbe
+sind — das fällt beim Schreiben, durch einen Menschen.
+
+**Eine Zeile FÜHRT eine Kennung nur in ihrer ersten Zelle.** Deklarierend ist
+die erste Zelle einer Tabellenzeile, die **ganz** aus der Kennung besteht; eine
+Erwähnung im Fließtext einer anderen Zelle deklariert nichts. Andernfalls
+deklarierte sich jede Quer-Referenz des Registers selbst, und der Wächter fände
+nie etwas.
+
+**Gezählt werden Prosa und Linktext; ein reines Inline-Code-Span nicht.** Das
+ist die Trennlinie zwischen **Zitat** und **Beispiel**, und sie ist nicht
+beliebig: die verbreitete Zitier-Form führt die Kennung gerade **in** Backticks
+(`[`BEO-NNN`](…)`), während eine erfundene Kennung in einem Text über die Regel
+als reines Code-Span steht. Eine Regel *„Inline-Code zählt nicht"* — wie sie die
+Platzhalter-Bedingung oben trifft — übersähe deshalb genau die Zitate, um die es
+geht. Die Ausnahme ist dieselbe, die
+[`DC-FA-ID-001`](#dc-fa-id-001--linkpflicht-für-kennungen-modul-ids) für ihre
+Linkpflicht trifft: ein Vorkommen im **Linktext** ist eine Behauptung.
+
+**Scan-Menge und Kennungs-Gestalt sind konfigurierbar, die Richtung nicht.**
+`observations.dirs` nennt die Verzeichnisse, deren Markdown-Dateien zitieren
+(rekursiv; leer ⇒ das Verzeichnis des Registers), `observations.pattern` die
+Kennungs-Gestalt (Default `BEO-\d{3}`). **Das Modul verspricht nur über seine
+Scan-Menge** ([`AGENTS.md` §3.8](../AGENTS.md#38-ein-modul-verspricht-nur-über-das-was-es-scannt)):
+eine Kennung in einem nicht gelisteten Verzeichnis wird nicht geprüft.
+
+**fail-closed an drei Rändern:** ein unlesbares Register, ein `dirs`-Eintrag,
+der kein lesbares Verzeichnis ist, und ein ungültiges `pattern` sind je ein
+Befund bzw. Exit 2 — nicht ein stilles Grün. Der zweite Rand ist ausdrücklich
+benannt, weil ein vertipptes Verzeichnis bei manchen Adaptern eine **leere
+Liste** statt eines Fehlers liefert und die Fähigkeit damit still inert ginge.
+
 **Akzeptanzkriterien:**
 
+- **Happy Path (Register-Deckung):** Given `planning` aktiv mit gesetztem `planning.observations.register` und einem Zitier-Verzeichnis, in dem jede zitierte Kennung eine Registerzeile hat, when `d-check` läuft, then entsteht **kein** `observation-unregistered`-Befund; ohne den Schlüssel ist der Befundsatz byte-identisch zum Lauf ohne die Fähigkeit ([`DC-QA-02`](#dc-qa-02--determinismus)).
+- **Boundary (Zitat gegen Beispiel):** Given dieselbe Kennung steht einmal als Linktext (`[`BEO-999`](…)`) und einmal als reines Inline-Code-Span (`` `BEO-999` ``), und sie hat **keine** Registerzeile, when `d-check` läuft, then meldet **nur** das Linktext-Vorkommen — das Code-Span ist ein Beispiel, keine Behauptung. Ein Vorkommen in Fließtext meldet ebenfalls.
+- **Boundary (nur die erste Zelle deklariert):** Given eine Kennung steht im Fließtext einer Registerzelle, aber in keiner ersten Zelle, when sie zitiert wird, then ist sie **nicht** gedeckt und meldet.
+- **Negative (fail-closed):** Given `planning.observations.register` zeigt auf eine fehlende Datei, **oder** ein `dirs`-Eintrag ist kein lesbares Verzeichnis, when `d-check` läuft, then entsteht ein Befund statt eines stillen Grün; ein ungültiges `pattern` ist ein Konfigurationsfehler (Exit 2).
 - **Wellen-Happy-Path:** Given `planning.waves.dir` gesetzt, eine Roadmap, deren Aktiv-Status-Abschnitt eine Welle nennt, **genau ein** flaches Wellendokument, eine Vorschau ohne Kennungen und ein Abschluss-Register, dessen Zeilen und Ergebnisnotizen sich **beidseitig** decken, when `d-check --enable planning` läuft, then **kein** Befund.
 - **Wellen-Negative (vier Richtungen):** Given je eine Verletzung — Roadmap nennt eine Welle ohne flaches Dokument · eine Vorschau-Zeile nennt eine Welle, die bereits eine Datei hat · eine Abschluss-Zeile ohne Ergebnisnotiz · eine Ergebnisnotiz ohne Abschluss-Zeile —, when das Modul läuft, then je **ein** Befund mit dem zugehörigen Grund-Code (`wave-drift` · `wave-preview-exists` · `wave-results-missing` · `wave-unregistered`), Exit-Code 1.
 - **Wellen-Boundary (Rollen-Trennung):** Given ein Ruheort, in dem Plan-Dokumente **und** Ergebnisnotizen demselben `waves.glob` genügen, when das Modul läuft, then zählt eine Ergebnisnotiz **nicht** als Plan-Dokument (`results-glob` wird abgezogen) — und eine Abschluss-Zeile, deren Welle nur ein Plan-Dokument, aber keine Notiz hat, meldet `wave-results-missing`.
@@ -3415,6 +3464,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.81.0 | 2026-08-31 | [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in): **vierte** Fähigkeit `planning.observations` (opt-in innerhalb des opt-in Moduls) — die eine **urteilsfreie** Richtung der Register-Paarung: eine **zitierte** Beobachtungs-Kennung hat eine Zeile im Register, sonst `observation-unregistered`. Die Umkehrung bleibt ausgeschlossen, weil die meisten Zeilen unter der Verkörperungs-Schwelle stehen und nirgends zitiert sind. **Die tragende Festlegung ist die Erkennungs-Form, und sie ist gemessen:** gezählt werden **Prosa und Linktext**, ein reines Inline-Code-Span nicht — am eigenen Bestand stehen **366** echte Zitate als Link **mit** Backticks im Linktext, während beide gefundenen Beispiel-Nennungen reine Code-Spans sind; eine Regel „Inline-Code zählt nicht" (wie bei der Platzhalter-Bedingung) übersähe genau die Zitate. Deklarierend ist **nur die erste Zelle** einer Tabellenzeile, sonst deklarierte sich jede Quer-Referenz selbst. Scan-Menge und Kennungs-Gestalt sind konfigurierbar, die **Richtung** nicht; die Scan-Mengen-Grenze steht ausdrücklich in der Anforderung ([`AGENTS.md` §3.8](../AGENTS.md#38-ein-modul-verspricht-nur-über-das-was-es-scannt)). **Drei fail-closed-Ränder**, darunter der vertippte `dirs`-Eintrag: er liefert bei manchen Adaptern eine **leere Liste** statt eines Fehlers, und die Fähigkeit ginge still inert — gemessen am In-Memory-Adapter der Kern-Tests. Vor dem Scharfschalten gemessen: eigener Bestand **0** Befunde, konstruierte Kennung als Link **1**, dieselbe als Code-Span **0**. Begründung in begleitender ADR | — |
 | 0.80.0 | 2026-08-31 | Change Request (Auftraggeber): [`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben) (`--print-mk`-Fragment) um ein **dreizehntes** Target erweitert — `doc-usage` exponiert den Hilfe-Modus aus [`DC-FA-CLI-001`](#dc-fa-cli-001--aufruf-und-scan-wurzel) als Fragment-Target, damit der Konsument die Oberfläche des gepinnten Image erreicht, ohne sich den `docker run`-Aufruf zusammenzusetzen. Dieselbe Bauform wie 0.27.0 (`doc-doctor`/`doc-repair`): ein **bestehender** Modus bekommt eine Oberfläche, kein neues Verhalten — additiv, kein ADR. **Recipe-Echo unterdrückt** wie bei `doc-repair` und `doc-help`, weil die Ausgabe die Nutzlast ist; **und die Hilfe erscheint auf `stderr`, nicht auf stdout** (gemessen: 0 Byte stdout, 2488 Byte stderr, Exit 0) — eine Eigenschaft des CLI, die das Target erstmals bequem erreichbar macht und deshalb hier benannt gehört. **Namens-Entscheid:** `doc-usage`, nicht `doc-check-help` — `doc-help` ist die Make-Ebene (Liste der Targets), `doc-usage` die Werkzeug-Ebene; die zwei Ebenen liegen im Namen auseinander statt in vier Buchstaben. **Dabei mitkorrigiert:** die Modus-Aufzählung des Boundary-Kriteriums sprang von `doc-targets` direkt zum Satzende und ließ `doc-structure` aus — dieselbe Enumerations-Drift, die diese Historie für diese Stelle in 0.37.1 und 0.57.1 schon protokolliert hat und die parallel in der Spezifikation saniert wurde | — |
 | 0.79.0 | 2026-08-30 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): neue Bedingung **`max-open-tasks`** (int ≥ 0, opt-in) — Obergrenze der **offenen** Task-Items eines Abschnitts, gezählt auf den **rohen** Zeilen, Grund-Code `section-tasks-open`. **Der Grund ist die absatzweise Inline-Code-Paarung:** `max-tasks` und `forbid-pattern` lesen den bereinigten Text, und ein einzelner überzähliger Backtick macht den Rest des Absatzes unsichtbar. Für Prosa ist dieser Preis richtig; für eine Zusage, die eine **Closure-Vorbedingung** trägt, kippt er — ein Wächter, den ein Tippfehler abschaltet, meldet grün, wo er nichts gesehen hat. **Gezählt wird über die Modul-Lexik**, nicht über ein Konfigurations-Muster: alle vier Listen-Marker, eingerückt und mit Tab-Trenner, verengt auf die leere Box; ein Konfigurations-Muster deckt nur die Form, die sein Autor aufschrieb. **Ein Befund je Item auf seiner Zeile**, die ersten `max-open-tasks` in Dokument-Reihenfolge sind erlaubt. **Drei Grenzen sind gemessen benannt:** der Fence bleibt außen vor, eine **einzeilige** Inline-Spanne meldet nicht und eine **mehrzeilige** zählt mit, und Blockquote bzw. Tabulator in der Box zählen für **keine** der beiden Bedingungen (Eigenschaft der geteilten Lexik). Dabei korrigiert: der Tabellenkopf sprach von **zwei** Bedingungen, die einen anderen Text lesen — es sind **vier**. `max-tasks` bleibt unverändert. Ohne den Schlüssel byte-identisches Verhalten. Begründung in begleitender ADR | — |
 | 0.78.0 | 2026-08-30 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in): die Nullmengen-Härte von `exempt-section-pattern` bekommt einen **erklärten Ausnahmefall** — `exempt-expect-count` (int ≥ 0, opt-in, nur mit dem Muster). **Anlass ist ein eingehender CR** desselben Adopters, aus der Anwendung des vorigen: er grandfathert 19 Anforderungen in einer Datei mit genau 19 passenden Abschnitten, und die Regel meldete rot, wo sein abgelöstes Skript `0 neue, 19 grandfathered` mit Exit 0 meldete — **das Modul machte mehr rot als der Sensor, den es ablöst**. Die Härte bleibt richtig, ihre Reichweite war zu weit: sie trifft ein **generisches** Muster, nicht ein **aufzählendes**, das 19 Kennungen einzeln nennt und nur **veralten** kann. **Zwei Zustände teilten sich einen Grund-Code** — der Konfigurationsdefekt (der Selektor trifft nichts) und der Bestandszustand (die Ausnahme nimmt alle); die Trennung ist jetzt gezogen, und der Defekt bleibt `section-missing`. **Ein neuer Grund-Code `section-exempt-mismatch`**, weil die Reparatur eine andere ist: *Aufzählung oder Zahl nachziehen* statt *Selektor korrigieren*. **Die Drift ist beidseitig und unabhängig von einer Restmenge** — eine erweiterte Aufzählung ohne nachgezogene Zahl ist dieselbe Lücke wie eine veraltete, und eine einseitige Prüfung wäre ein halber Wächter. **Eine deklarierte Null bedeutet etwas** (*„das Muster soll heute noch nichts treffen"*) und bleibt von einem abwesenden Schlüssel unterscheidbar. Zwei neue Config-Ränder: ohne Muster und < 0. **Die Form weicht vom Antrag ab, und der Grund ist gemessen:** der Absender beantragte `exempt-may-empty: true` mit der Sichtbarkeit in `--doctor` und nannte den Preis „schwächer" — der Preis ist nicht „schwächer", sondern **unbestimmt**: `--doctor` läuft in keinem Gate dieses Repos, und das per `--print-mk` verteilte `doc-doctor`-Target ([`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben)) ist ein Target, kein Gate-Lauf — ob ein Konsument es in seine Gate-Kette hängt, weiß dieses Repo nicht. Die gewählte Form hängt an dieser Unbekannten nicht. Eine **Deklaration** statt einer Erlaubnis hält die Prüfung im Gate-Lauf und macht genau das laut, was der Absender als einziges Risiko benennt. Ohne den Schlüssel byte-identisches Verhalten. Begründung in begleitender ADR | — |

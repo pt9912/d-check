@@ -53,6 +53,11 @@ const (
 	ReasonWavePreviewExists     = "wave-preview-exists"
 	ReasonWaveResultsMissing    = "wave-results-missing"
 	ReasonWaveUnregistered      = "wave-unregistered"
+	// Eine zitierte Beobachtungs-Kennung ohne Registerzeile — die maschinelle
+	// Haelfte der Register-Paarung. Eigener Code neben wave-unregistered:
+	// dieselbe Frage (Artefakt <-> Register), aber andere Richtung und anderes
+	// Register, und die Reparatur ist eine andere.
+	ReasonObservationUnregistered = "observation-unregistered"
 	ReasonSectionMissing        = "section-missing"
 	ReasonSectionAmbiguous      = "section-ambiguous"
 	ReasonSectionEmpty          = "section-empty"

@@ -157,6 +157,7 @@ func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, wp driven.WorkflowPar
 		out = append(out, CheckPlanning(fsys, cfg.Planning)...)
 		out = append(out, CheckPlanningClosure(fsys, cfg.Planning)...)
 		out = append(out, CheckPlanningWaves(fsys, cfg.Planning)...)
+		out = append(out, CheckPlanningObservations(fsys, cfg.Planning)...)
 	}
 	if active["structure"] {
 		out = append(out, CheckStructure(fsys, cfg.Structure)...)

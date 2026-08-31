@@ -172,9 +172,19 @@ type rawPlanning struct {
 	Marker    string       `yaml:"marker"`
 	SliceGlob string       `yaml:"slice-glob"`
 	Closure   *rawClosure  `yaml:"closure"`
-	Waves     *rawWaves    `yaml:"waves"`
+	Waves        *rawWaves        `yaml:"waves"`
+	Observations *rawObservations `yaml:"observations"`
 }
 
+
+// rawObservations traegt die VIERTE planning-Faehigkeit (DC-FA-PLAN-001
+// §Register-Deckung): register ist der Aktivierungs-Schalter (leer/abwesend
+// ⇒ inert), dirs und pattern haben Kern-Defaults.
+type rawObservations struct {
+	Register string   `yaml:"register"`
+	Dirs     []string `yaml:"dirs"`
+	Pattern  string   `yaml:"pattern"`
+}
 // rawWaves trägt die dritte planning-Fähigkeit (DC-FA-PLAN-001
 // §Wellen-Invariante): dir ist der Aktivierungs-Schalter (leer/abwesend ⇒
 // inert), alles Weitere hat Konventions-Defaults im Kern.
@@ -1362,9 +1372,13 @@ func applyPlanning(r *raw, cfg *model.Config) error {
 	if err != nil {
 		return err
 	}
+	observations, err := applyObservations(p.Observations)
+	if err != nil {
+		return err
+	}
 	cfg.Planning = model.PlanningConfig{
 		Roadmap: p.Roadmap, Heading: p.Heading, Marker: p.Marker, SliceGlob: p.SliceGlob,
-		Closure: closure, Waves: waves,
+		Closure: closure, Waves: waves, Observations: observations,
 	}
 	return nil
 }
@@ -2213,4 +2227,28 @@ func applyWorkflows(r *rawWorkflows) (model.WorkflowsConfig, error) {
 		}
 	}
 	return model.WorkflowsConfig{Dir: r.Dir, ExemptPaths: r.ExemptPaths}, nil
+}
+
+// applyObservations validiert die Register-Deckungs-Parameter. Dieselbe
+// Config-Rand-Disziplin wie applyWaves: ein Pfad, der die Wurzel verlaesst,
+// und ein ungueltiges Kennungs-Muster sind jeweils ein stilles Gruen, wenn man
+// sie durchlaesst.
+func applyObservations(o *rawObservations) (model.ObservationsConfig, error) {
+	if o == nil {
+		return model.ObservationsConfig{}, nil
+	}
+	paths := append([]string{o.Register}, o.Dirs...)
+	for _, p := range paths {
+		if p != "" && (strings.HasPrefix(p, "/") || strings.Contains(p, "..")) {
+			return model.ObservationsConfig{}, fmt.Errorf(
+				"%s: planning.observations %q muss relativ zur Repo-Wurzel liegen", FileName, p)
+		}
+	}
+	if o.Pattern != "" {
+		if _, err := regexp.Compile(o.Pattern); err != nil {
+			return model.ObservationsConfig{}, fmt.Errorf(
+				"%s: planning.observations.pattern %q ist kein gueltiger Ausdruck: %v", FileName, o.Pattern, err)
+		}
+	}
+	return model.ObservationsConfig{Register: o.Register, Dirs: o.Dirs, Pattern: o.Pattern}, nil
 }
