@@ -129,13 +129,19 @@ in diesem Plan, und es liegt in Backticks.
   ungewächtert. **Anzahl** ist die einzige echte Lücke — und sie ginge auf dem
   Bestand rot: [`BEO-023`](../observations.md) trägt Zähler 7 bei sechs
   eindeutigen Slices, [`BEO-004`](../observations.md) Zähler 3 bei einem. Beide
-  Abweichungen sind **in der Zeile begründet**, und der Kanon-Geber räumt ein,
-  zwei Regeln zu schulden (ein Vorkommen außerhalb einer Slice-Closure; ein
-  zweites Vorkommen derselben Klasse im selben Slice). **Der Weg dorthin ist
-  benannt, nicht verbaut:** eine Bestands-Ausnahme wie
-  [`MR-049`](../../../../harness/conventions.md#mr-049) und
-  [`MR-056`](../../../../harness/conventions.md#mr-056) trägt so etwas — sie
-  gehört in einen eigenen Slice mit eigener Messung.
+  Abweichungen sind **in der Zeile begründet** — und der Grund dafür ist
+  **während dieses Slice weggefallen**: die Quelle des Kanons hat inzwischen die
+  zwei Regeln gesetzt, die den Fall entscheiden (zwei Funde im selben Vorgang
+  sind eine Gelegenheit; ein Vorkommen ohne abgeschlossenen Vorgang bewegt den
+  Zähler nicht). Damit sind die zwei Zeilen **keine begründeten Abweichungen
+  mehr, sondern zu hoch gezählt** — 6 statt 7, 1 statt 3. **Der Ausschluss
+  bleibt richtig, seine Begründung ist eine andere:** die Anzahl-Achse braucht
+  einen Bestand, der die Regel erfüllt, und den stellt
+  [slice-188](../open/slice-188-register-gegen-neuen-kanon.md) her. Eine
+  Bestands-Ausnahme wie [`MR-049`](../../../../harness/conventions.md#mr-049)
+  oder [`MR-056`](../../../../harness/conventions.md#mr-056) braucht es
+  **nicht** — das war meine Einschätzung, solange die Regel fehlte, und sie ist
+  überholt.
 - **Die Umkehrung** („jede Zeile ist zitiert"). Der Kanon schließt sie aus.
 - **Das Urteil, ob zwei Beobachtungen dieselbe sind.** Mensch.
 - **Das Nachrüsten von Bestands-Zitaten.** Es gibt nichts nachzurüsten: 24 von
