@@ -172,7 +172,7 @@ gehört an eine Stelle, die die ganze Scan-Menge ohnehin hält.
   ([`harness/conventions.md`](../../../../harness/conventions.md)
   §Modus-Deklaration). Die Regel, die diesen Schritt vorschreibt:
 
-  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:213-214 -->
+  <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md:213-214 -->
   > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
   > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
@@ -187,7 +187,7 @@ gehört an eine Stelle, die die ganze Scan-Menge ohnehin hält.
   Bestand, den wir **nicht sehen**, und unsere Antwort darf das nicht
   überspielen. Die Regel, die diesen Schritt vorschreibt:
 
-  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
+  <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md:219-219 -->
   > **Offene Beobachtungen sichten.**
 
 - **Nachtlauf-Stand lesen** (`make nightly-state`,

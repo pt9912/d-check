@@ -4,9 +4,9 @@
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon regelt den Fall nicht: er hält für
   `MR-<NNN>` die **Append-only-Disziplin** fest — *„Wird eine `MR-<NNN>` durch
   ein Baseline-Update gegenstandslos, wird sie nicht überschrieben"*
-  ([`grundlagen-source-precedence.md` §Source Precedence](../../../.harness/baseline/v5.12.0/regelwerk/grundlagen-source-precedence.md))
+  ([`grundlagen-source-precedence.md` §Source Precedence](../../../.harness/baseline/v5.15.0/regelwerk/grundlagen-source-precedence.md))
   — und schützt bei ADRs den **inhaltlichen** Kern
-  ([`modul-04-adrs.md`](../../../.harness/baseline/v5.12.0/regelwerk/modul-04-adrs.md)).
+  ([`modul-04-adrs.md`](../../../.harness/baseline/v5.15.0/regelwerk/modul-04-adrs.md)).
   Ob ein **Zitat** der Baseline zum geschützten Kern gehört oder zur
   pin-gebundenen Referenz, sagt keine der beiden Stellen. Die Form-Frage tritt
   die Rangliste an diesen Speicher ab.

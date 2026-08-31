@@ -64,10 +64,13 @@ bei der Anlage nicht absehbar.
    Alias-Auflösung). Erst danach steht fest, was die Schritte 3 und 4 zu tun
    haben — der Plan nimmt es nicht vorweg.
 2. **Alle Pfad-Verweise ziehen** ([`MR-021`](../../../../harness/conventions.md#mr-021)):
-   gemessen **76** Dateien mit `baseline/v5.12.0`, dazu die **zwei** Symlinks
-   unter `.claude/rules/` ([`MR-055`](../../../../harness/conventions.md#mr-055)) —
-   sie binden denselben Pin, werden von keinem Modul gescannt und brächen
-   still. `make baseline-verify` fängt genau das.
+   gemessen bei der Anlage **76** Dateien mit `baseline/v5.12.0`, dazu die
+   Symlinks unter `.claude/rules/`
+   ([`MR-055`](../../../../harness/conventions.md#mr-055)) — sie binden
+   denselben Pin, werden von keinem Modul gescannt und brächen still.
+   `make baseline-verify` fängt genau das. **Bei der Ausführung nachgemessen:
+   es sind VIER Aliase, nicht zwei**, und der Wächter hat alle vier gemeldet,
+   bevor irgendetwas committet war.
 3. **Die `cite`-Spannen neu ankern**
    ([`MR-051`](../../../../harness/conventions.md#mr-051)). Gemessen sind es
    **rund 33 echte Direktiven** in den vendorten Baum — die rohe Zahl 133 zählt
@@ -175,7 +178,7 @@ Slice ist — dann trägt dieser Slice den Bump und der Rückbau folgt getrennt.
   ([`harness/conventions.md`](../../../../harness/conventions.md)
   §Modus-Deklaration). Die Regel, die diesen Schritt vorschreibt:
 
-  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:213-214 -->
+  <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md:213-214 -->
   > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
   > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
@@ -197,7 +200,7 @@ Slice ist — dann trägt dieser Slice den Bump und der Rückbau folgt getrennt.
   [`BEO-025`](../observations.md) (**1**) — ein Liefer-Punkt landet im Commit
   eines fremden Slice; ein Bump zerfällt in mehrere Commits, und das ist genau
   die Lage, in der die Zuordnung verrutscht.
-  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
+  <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md:219-219 -->
   > **Offene Beobachtungen sichten.**
 
 - **Nachtlauf-Stand lesen** (`make nightly-state`,

@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Fortschreibung der Härtung aus
   [`MR-040`](../../conventions.md#mr-040) in der Form, die
-  [`modul-13-quality-gates.md` §Guard-Härtung](../../../.harness/baseline/v5.12.0/regelwerk/modul-13-quality-gates.md)
+  [`modul-13-quality-gates.md` §Guard-Härtung](../../../.harness/baseline/v5.15.0/regelwerk/modul-13-quality-gates.md)
   vorgibt: jede Härtung ein neuer Eintrag, nie eine Änderung am akzeptierten.
 - **Datum:** 2026-08-26
 - **Geltungsbereich:** [`.claude/hooks/pretooluse-command-guard.sh`](../../../.claude/hooks/pretooluse-command-guard.sh)

@@ -1,7 +1,7 @@
 # MR-015 — Auflösung der MR-012-Pointer-Drift: AGENTS.md routet, spiegelt nicht mehr
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`grundlagen-harness-dateien.md` §Template-Schichtung](../../.harness/baseline/v5.12.0/regelwerk/grundlagen-harness-dateien.md#template-schichtung--was-der-rumpf-trägt-und-was-der-kommentar)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-harness-dateien.md` §Template-Schichtung](../../.harness/baseline/v5.15.0/regelwerk/grundlagen-harness-dateien.md#template-schichtung--was-der-rumpf-trägt-und-was-der-kommentar)
 - **Datum:** 2026-06-22
 - **Geltungsbereich:** [`AGENTS.md`](../../AGENTS.md) §1,
   [`MR-011`](../conventions.md#mr-011--baseline-auf-release-tag-gepinnt),

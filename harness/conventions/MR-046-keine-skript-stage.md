@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon verlangt, dass eine Regel auf
   Vorhandenes zeigt, nicht auf Vorgesehenes
-  ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.12.0/regelwerk/modul-13-quality-gates.md)
+  ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.15.0/regelwerk/modul-13-quality-gates.md)
   — eine Doku, die mehr verspricht als der Bestand trägt, ist eine
   Harness-Lüge); *ob* ein Repo eine Skript-Toolchain führt, ist seine Sache.
 - **Datum:** 2026-08-27

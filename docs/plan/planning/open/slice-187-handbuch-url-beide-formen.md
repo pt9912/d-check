@@ -117,7 +117,7 @@ Adressat) — die wäre größer als dieser Zeiger.
   ([`harness/conventions.md`](../../../../harness/conventions.md)
   §Modus-Deklaration pro Sub-Area). Die Regel, die diesen Schritt vorschreibt:
 
-  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:213-214 -->
+  <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md:213-214 -->
   > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
   > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
@@ -129,7 +129,7 @@ Adressat) — die wäre größer als dieser Zeiger.
   Kommentar nur den **Zweig** begründet. Die Regel, die diesen Schritt
   vorschreibt:
 
-  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
+  <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md:219-219 -->
   > **Offene Beobachtungen sichten.**
 
 ## 8. Sub-Area-Modus-Begründung

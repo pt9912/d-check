@@ -1,7 +1,7 @@
 # MR-025 — Semantik-Änderung: die Spiegel vor dem Editieren auflisten
 
 - **Status:** Accepted
-- **Ergänzt-Baseline-Regel:** [`modul-10-review-harness.md`](../../.harness/baseline/v5.12.0/regelwerk/modul-10-review-harness.md)
+- **Ergänzt-Baseline-Regel:** [`modul-10-review-harness.md`](../../.harness/baseline/v5.15.0/regelwerk/modul-10-review-harness.md)
   (Review-Arten) — die Baseline kennt die Review-Arten, aber keine Vorab-Auflistung
   der Stellen, die eine Semantik spiegeln.
 - **Datum:** 2026-08-15

@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon gibt das **Prinzip** und lässt
   offen, wo das Delta landet.
-  [`modul-02-harness-bootstrap.md` §Freshness-Audit](../../.harness/baseline/v5.12.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-02-harness-bootstrap.md:283-284 -->
+  [`modul-02-harness-bootstrap.md` §Freshness-Audit](../../.harness/baseline/v5.15.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)   <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-02-harness-bootstrap.md:283-284 -->
   hält beides fest — *„bestehende werden nicht rückwirkend umgeschrieben"* und
   *„**Rückbau ist ein neuer Eintrag, kein Edit** … Die alte Zeile ist die
   historisch korrekte Aussage über den damaligen Zustand"*. Was er **nicht**

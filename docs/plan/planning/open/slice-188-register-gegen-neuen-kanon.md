@@ -147,7 +147,7 @@ eigener Schnitt und keine Nebenwirkung dieser Korrektur.
   §Modus-Deklaration pro Sub-Area); der Slice berührt weder Code noch Spec. Die
   Regel, die diesen Schritt vorschreibt:
 
-  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:213-214 -->
+  <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md:213-214 -->
   > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
   > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
@@ -161,7 +161,7 @@ eigener Schnitt und keine Nebenwirkung dieser Korrektur.
   stünden sie in unserem Pin, wäre genau diese Klasse. Die Regel, die diesen
   Schritt vorschreibt:
 
-  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
+  <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md:219-219 -->
   > **Offene Beobachtungen sichten.**
 
 ## 8. Sub-Area-Modus-Begründung

@@ -1,7 +1,7 @@
 # MR-031 — Schritt 3 des Agenten-Workflows verlangt Benennen, nicht nur Identifizieren
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`modul-09-implementierung.md`](../../.harness/baseline/v5.12.0/regelwerk/modul-09-implementierung.md)   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-09-implementierung.md:20-20 -->
+- **Ersetzt-Baseline-Regel:** [`modul-09-implementierung.md`](../../.harness/baseline/v5.15.0/regelwerk/modul-09-implementierung.md)   <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-09-implementierung.md:20-20 -->
   §Minimal Agent Workflow, Schritt 3 — *„Betroffene Requirement-/ADR-IDs
   identifizieren."*
 - **Datum:** 2026-08-23
@@ -19,9 +19,9 @@
   Abweichung wäre beim nächsten Baseline-Bump unsichtbar.
 
   **Was die Verschärfung trägt:** Der Kanon nennt die *minimalen Eingaben eines
-  Implementer-Agenten gegen Halluzination* und stellt fest, dass fehlende   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-09-implementierung.md:166-166 -->
+  Implementer-Agenten gegen Halluzination* und stellt fest, dass fehlende   <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-09-implementierung.md:166-166 -->
   Eingaben *„durch Raten ersetzt"* werden. Er verlangt in Schritt 8 den Bericht
-  über **gelaufene** Sensors, aber nirgends die **Vorab-Nennung** der Gates,   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/grundlagen-harness-dateien.md:187-187 -->
+  über **gelaufene** Sensors, aber nirgends die **Vorab-Nennung** der Gates,   <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/grundlagen-harness-dateien.md:187-187 -->
   die laufen sollen — obwohl er halluzinierte Gates selbst als *„die häufigste
   Form von Harness-Lüge"* führt. Diese Asymmetrie schließt der Eintrag
   repo-lokal.
@@ -30,7 +30,7 @@
   Feedforward-Quadranten. Kein Gate prüft, ob ein Lauf die fünf Felder genannt
   hat — die Nennung ist Prosa, und eine Prosa-Pflicht ohne Wächter bleibt
   *halb durchgesetzt*
-  ([`modul-09`](../../.harness/baseline/v5.12.0/regelwerk/modul-09-implementierung.md)
+  ([`modul-09`](../../.harness/baseline/v5.15.0/regelwerk/modul-09-implementierung.md)
   §AGENTS.md-Regeln). Das ist hier zu wissen, nicht zu heilen: ein
   Heuristik-Wächter auf Botschafts-Text wäre ein behauptetes Gate.
 - **Begründung:** Die Pflicht lebte seit dem Bootstrap in der
