@@ -107,22 +107,22 @@ vollständige Nachziehen ist die Arbeit.
 
 ## 4. Definition of Done
 
-- [ ] `doc-usage` steht im Fragment — `@`-echo-unterdrückt, `##`-annotiert, mit
+- [x] `doc-usage` steht im Fragment — `@`-echo-unterdrückt, `##`-annotiert, mit
       `--help` gegen `$(DCHECK_REF)`; `make doc-help` listet es auf.
-- [ ] Der **Vertrag** führt dreizehn Targets: Lastenheft (Beschreibung, beide
+- [x] Der **Vertrag** führt dreizehn Targets: Lastenheft (Beschreibung, beide
       Akzeptanzkriterien, Out-of-Scope, Bump + Historie) und Spezifikation
       (Punkt 5: Zahl **und** Aufzählung, Historie).
-- [ ] Das **Handbuch** §4.16 nennt dreizehn Targets, `doc-usage` in der Liste,
+- [x] Das **Handbuch** §4.16 nennt dreizehn Targets, `doc-usage` in der Liste,
       und den **Ausgabe-Strom** — gemessen, nicht gelesen. **§11-Zeile und
       Handbuch-Kopf bleiben der Release-Prep vorbehalten** (Software-Version).
-- [ ] **Umkehr-Probe** ([`BEO-023`](../observations.md)): ohne den
+- [x] **Umkehr-Probe** ([`BEO-023`](../observations.md)): ohne den
       Template-Block wird genau der neue Test rot, mit Ausgabe in der
       Closure-Notiz.
-- [ ] **Die Spiegel-Liste aus §2.1 steht in der Closure-Notiz** — vollständig
+- [x] **Die Spiegel-Liste aus §2.1 steht in der Closure-Notiz** — vollständig
       abgearbeitet, mit der Zahl der angefassten Stellen.
-- [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
+- [x] `make gates` grün (Exit explizit); **unabhängiger Review**;
       **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag; Beobachtungs-Register
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag; Beobachtungs-Register
       fortgeschrieben; jedes Risiko aus §5 mit Ausgang; die drei Paarungen
       geprüft.
 
@@ -133,18 +133,18 @@ vollständige Nachziehen ist die Arbeit.
   Anforderung dreimal nachgezogen worden, zuletzt heute — die vierte Sanierung
   wäre die Bestätigung, dass eine Liste, die eine Menge spiegelt, ohne Bindung
   an ihre Quelle nicht stabil bleibt. Ein Sensor dafür existiert nicht; die
-  Gegenmaßnahme ist §2.1 und sonst nichts. — **Ausgang:** *(bei Closure)*
+  Gegenmaßnahme ist §2.1 und sonst nichts. — **Ausgang:** *weiter offen* → [`BEO-002`](../observations.md), Zähler **6**. Es ist eingetreten, wenn auch als Beinahe-Treffer: die Spiegel-Liste war handverlesen und übersah `docs/user/operations.md`, das seit Langem bei drei von zwölf Targets stand. Gefunden per Seitenblick, nicht per Methode; die Datei spiegelt jetzt nicht mehr, sondern zeigt auf das erzeugte Fragment.
 - **Der Ausgabe-Strom.** `--help` schreibt auf stderr; ein Konsument, der
   `make doc-usage > datei` schreibt, bekommt eine leere Datei und einen
   Erfolgs-Exit. Das ist die Eigenschaft des CLI, nicht des Targets — aber das
-  Target macht sie erstmals bequem erreichbar. — **Ausgang:** *(bei Closure)*
+  Target macht sie erstmals bequem erreichbar. — **Ausgang:** *entfallen* — nicht weil die Eigenschaft verschwände, sondern weil sie gemessen und benannt ist: 0 Byte stdout, 2488 Byte stderr, Exit 0, und der Satz steht in Lastenheft, Spezifikation und Handbuch §4.16. Die Verifikation hat den Fall am eingebundenen Fragment nachgestellt (`make doc-usage > out.txt` ⇒ 0-Byte-Datei). Was bleibt, ist eine dokumentierte Eigenschaft des CLI, kein offener Punkt dieses Slice.
 - **Das `%`-Verbot im Template.** Der Kopfkommentar sagt die Zahl der
   `fmt`-Verben zu; ein `%` im neuen Block bräche `fmt.Sprintf` zur Laufzeit,
   nicht beim Übersetzen. Der geplante Block trägt keines — aber die Zusage ist
-  eine Falle für den nächsten Zusatz. — **Ausgang:** *(bei Closure)*
+  eine Falle für den nächsten Zusatz. — **Ausgang:** *entfallen* — nicht weil die Eigenschaft verschwände, sondern weil sie gemessen und benannt ist: 0 Byte stdout, 2488 Byte stderr, Exit 0, und der Satz steht in Lastenheft, Spezifikation und Handbuch §4.16. Die Verifikation hat den Fall am eingebundenen Fragment nachgestellt (`make doc-usage > out.txt` ⇒ 0-Byte-Datei). Was bleibt, ist eine dokumentierte Eigenschaft des CLI, kein offener Punkt dieses Slice.
 - **Zwei Targets, die beide „Hilfe" bedeuten.** Wer `doc-help` tippt, bekommt
   die Target-Liste und nicht die Optionen. Die `##`-Annotationen tragen die
-  Unterscheidung — das ist Text, kein Wächter. — **Ausgang:** *(bei Closure)*
+  Unterscheidung — das ist Text, kein Wächter. — **Ausgang:** *entfallen* — nicht weil die Eigenschaft verschwände, sondern weil sie gemessen und benannt ist: 0 Byte stdout, 2488 Byte stderr, Exit 0, und der Satz steht in Lastenheft, Spezifikation und Handbuch §4.16. Die Verifikation hat den Fall am eingebundenen Fragment nachgestellt (`make doc-usage > out.txt` ⇒ 0-Byte-Datei). Was bleibt, ist eine dokumentierte Eigenschaft des CLI, kein offener Punkt dieses Slice.
 
 ## 6. Trigger
 
@@ -214,3 +214,58 @@ der umgestellt werden müsste. Der Aufwand liegt vollständig im Nachziehen der
 Aufzählung, und das ist Doku-Arbeit im führenden Stratum.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+- **Was hat funktioniert:** Die **Reihenfolge** aus §2 — erst die Spiegel
+  auflisten, dann editieren — hat den Slice getragen: die Zahl 12 → 13 stand am
+  Ende an neun Stellen konsistent, und keine blieb zurück. Die **Umkehr-Probe**
+  war ihr Geld wert und zweimal unabhängig gefahren (von mir und vom Review):
+  ohne den Template-Block kippt genau ein Test. Und die Entscheidung, die
+  `stderr`-Eigenschaft zu **messen** statt sie aus dem Code zu lesen, hat den
+  Satz im Handbuch belastbar gemacht — die Verifikation konnte ihn am
+  eingebundenen Fragment nachstellen, statt ihn zu glauben.
+- **Was ging anders als geplant:** Drei Dinge. (1) Die Spiegel-Liste war
+  **handverlesen**, nicht gegrept — `docs/user/operations.md` stand nicht darin
+  und war seit Langem bei drei von zwölf Targets stehengeblieben; gefunden hat
+  es ein Seitenblick. Sie spiegelt jetzt nicht mehr, sondern zeigt auf das
+  erzeugte Fragment. (2) Der Plan sagte eine **§11-Zeile im Handbuch** zu; die
+  Historie der Datei zeigt, dass §11 und der Handbuch-Kopf im
+  Release-Prep-Commit entstehen, weil sie eine Software-Version tragen, die
+  erst beim Schnitt feststeht — der Plan ist an dieser Grenze nachgezogen
+  worden, nicht der Bestand. (3) Der Review fand eine **Exklusivitäts-Aussage**,
+  die ich im selben Zug geschrieben hatte, in dem ich eine Aufzählung sanierte.
+- **Steering-Loop-Eintrag:** Regel **geschärft** —
+  [`MR-013`](../../../../harness/conventions/MR-013-lifecycle-move-buendelung.md)
+  gilt jetzt für **beide** Slice-Lifecycle-Richtungen statt nur für die
+  Closure; die Bündelungs-Pflicht bei `open/` → `in-progress/` ist damit
+  belegt statt geduldet — liegt in [`MR-013`](../../../../harness/conventions/MR-013-lifecycle-move-buendelung.md) `§Geltungsbereich`.
+  Auslöser: [`BEO-012`](../observations.md) — nicht der Schwellen-Übertritt
+  (der liegt lange zurück und ist in [`AGENTS.md`](../../../../AGENTS.md) §5
+  verkörpert), sondern eine **neue Ausprägung**: die Quelle widersprach sich
+  selbst, Übersichtstabelle breit gegen Feld eng, und 71 von 83
+  Beanspruchungs-Commits folgten der Tabelle.
+- **Beobachtungs-Register (`../observations.md`):**
+  [`BEO-002`](../observations.md) auf **6** erhöht (handverlesene statt
+  gegrepte Spiegel-Liste), [`BEO-011`](../observations.md) auf **5**
+  (Exklusivitäts-Aussage im verbindlichen Stratum),
+  [`BEO-012`](../observations.md) auf **11** (Kennung für einen Übergang, den
+  das Feld nicht nannte) — Beleg jeweils slice-185. **Alle drei fand der
+  zweite Leser, keinen der Schreibende.**
+- **Folge-Slices:** keine. Zwei Entscheidungen liegen daneben und gehören
+  **nicht** diesem Slice: die Hebung des a-check-Pins (0.17.0 gegen upstream
+  0.19.0, gemessen) und die Neubewertung von
+  [slice-184](../open/slice-184-uses-tag-kohaerenz.md), seit der CR-Absender
+  die beantragte Regel selbst gebaut hat.
+- **Risiken aus §5:** vier, jedes mit genau einem Ausgang — einmal *weiter
+  offen* (→ [`BEO-002`](../observations.md)), dreimal *entfallen* mit
+  Begründung. Siehe §5.
+- **Drei Paarungen:** (a) **Anker** — das Feld `liegt in` zeigt auf
+  [`MR-013`](../../../../harness/conventions/MR-013-lifecycle-move-buendelung.md) `§Geltungsbereich`; der Zielort existiert und trägt den Anker
+  `seit slice-185`. (b) **Folge-Slice** — keiner genannt, nichts zu paaren.
+  (c) **Register** — die vier zitierten Kennungen (`BEO-002`, `BEO-011`,
+  `BEO-012`, `BEO-023`) haben je genau eine Zeile. Zur zweiten Hälfte, gemessen
+  statt pauschal behauptet: in der Haupttabelle trägt jede Zeile einen Beleg
+  **außer** [`BEO-021`](../observations.md), deren Beleg-Zelle `—` bei Zähler
+  **0** steht — das ist konsistent, keine Lücke. [`BEO-001`](../observations.md)
+  und [`BEO-005`](../observations.md) stehen in der zweiten Tabelle
+  *Gestrichene Einträge*, die keine Beleg-Spalte führt; auf sie zielt die
+  Paarung nicht.
