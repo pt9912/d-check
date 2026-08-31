@@ -1091,6 +1091,64 @@ docker run --rm --network none -v "$PWD":/repo:ro \
 **Was das Modul nicht sagt:** ob der Workflow läuft. Es deckt **eine**
 Deklarations-Klasse — ein grüner Lauf heißt „diese Klasse liegt nicht vor".
 
+### 4.20 Erfundene Register-Kennungen finden (Modul `planning`)
+
+**Ausgangslage:** Ihr Prozess führt ein Register — Beobachtungen, Risiken,
+Entscheide —, dessen Zeilen eine Kennung tragen, und Ihre Dokumente zitieren
+diese Kennungen. Wer eine Kennung zitiert, die es nicht gibt, erzeugt einen
+Beleg, der ins Leere zeigt: die Zeile, die ihn tragen soll, existiert nicht.
+Auffallen kann das nur jemandem, der beide Seiten von Hand vergleicht.
+
+**Ziel:** ein Gate, das **eine** Richtung prüft — jede zitierte Kennung hat eine
+Zeile im Register.
+**Voraussetzung:** eine Registerdatei, deren Zeilen die Kennung in ihrer
+**ersten Tabellenzelle** führen, und ein oder mehrere Verzeichnisse, deren
+Markdown-Dateien zitieren.
+
+**Vorgehen:**
+
+```yaml
+planning:
+  observations:
+    register: docs/plan/planning/observations.md
+    dirs: [docs/plan/planning]
+    # pattern: 'BEO-\d{3}'   # Default; eigene Kennungs-Gestalt hier setzen
+```
+
+```bash
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+  --enable planning
+```
+
+**Ergebnis:** je zitierter Kennung ohne Registerzeile ein Befund
+`observation-unregistered` auf **ihrer** Zeile, mit der Kennung in der Meldung.
+Ohne den Schlüssel `register` wird keine Datei geöffnet und Ihr Befundsatz
+ändert sich nicht.
+
+**Was zählt und was nicht — die wichtigste Eigenschaft dieser Prüfung.** Eine
+Kennung in **Fließtext** und eine im **Linktext** (`[`BEO-024`](…)`) sind
+Behauptungen und werden geprüft. Eine Kennung in einem reinen
+**Inline-Code-Span** (`` `BEO-999` ``) ist ein **Beispiel** und wird
+übergangen — genau so schreiben Sie eine erfundene Kennung, wenn Sie *über* die
+Regel schreiben. Diese Trennlinie ist die Umkehrung dessen, was die
+Platzhalter-Prüfung (§4.17) tut, und sie ist Absicht: Kennungen werden
+üblicherweise **mit** Backticks im Linktext zitiert.
+
+**Nur die erste Zelle deklariert.** Eine Kennung, die im Fließtext einer anderen
+Registerzelle steht — etwa als Quer-Referenz —, deklariert **keine** Zeile.
+Sonst deklarierte sich jedes Beispiel im Register selbst.
+
+**Drei Ränder melden, statt still zu schweigen:** ein Register, das fehlt; ein
+`dirs`-Eintrag, der kein lesbares Verzeichnis ist; ein `pattern`, das kein
+gültiger Ausdruck ist. Besonders der zweite ist wichtig — ein Tippfehler im
+Pfad ließe die Prüfung sonst leer laufen und **grün** melden.
+
+**Was das Modul nicht sagt:** ob eine Registerzeile irgendwo zitiert **wird**.
+Diese Umkehrung ist bewusst ausgeschlossen — in einem gewachsenen Register sind
+die meisten Zeilen nirgends zitiert, und ein Gate, das sie einforderte, liefe
+dauerhaft rot. Und es urteilt nicht, **ob** zwei Einträge dasselbe meinen; das
+bleibt bei Ihnen.
+
 ## 5. Konfiguration
 
 Eine optionale `.d-check.yml` in der Repo-Wurzel passt d-check an. Ohne
@@ -2237,7 +2295,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `immutable` | opt-in        | Immutabilitäts-Pin (`<!-- immutable: … -->`): normalisierter **Core** einer Datei (ohne Marker-Zeile + `exclude-sections`) unverändert seit dem Pinnen; hermetisch (kein git) | `core-drift`                                                |
 | `vcs`       | opt-in (git)  | git-Diff-Immutabilität: **Core** einer immutablen Datei (`immutable-when`) unverändert über eine Commit-Range (`--range`/`--staged`); liest `.git` read-only (kein git-Binary, kein Netz). `immutable-when` und die Kopf-Status-Zeile gelten nur **außerhalb von Code-Blöcken** — eine Datei, die ihren eigenen Kopf als Beispiel zeigt, wird dadurch nicht immutabel | `core-drift-vcs`                                            |
 | `commits`   | opt-in (git)  | Traceability-Kennung (`id-patterns`) in jeder Commit-Message einer Range (`--range`) bzw. der Pending-Message (`--commit-msg`); liest `.git` read-only (kein git-Binary, kein Netz) | `commit-untraceable`                                        |
-| `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `heading`-Block (Default `## Aktuelle Welle`) genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten. Überschriften und Marker zählen nur **außerhalb von Code-Blöcken**; die Block-Grenze ist die geteilte Abschnittsgrenze. **Dritte Fähigkeit** (opt-in über `waves.dir`): die Wellen-Register der Roadmap gegen die Wellen-Dateien — Plan-Dokument flach ⟺ aktive Welle (`waves.mode: one`, Default) **oder** Kennungs-Bijektion Aktiv-Block ⟺ flache Dokumente, Marker außen vor (`waves.mode: many`); Vorschau ohne Datei, Abschluss-Register ⟺ Ergebnisnotizen (beidseitig) | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder`, `closure-note-ambiguous`, `wave-drift`, `wave-preview-exists`, `wave-results-missing`, `wave-unregistered` |
+| `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `heading`-Block (Default `## Aktuelle Welle`) genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten. Überschriften und Marker zählen nur **außerhalb von Code-Blöcken**; die Block-Grenze ist die geteilte Abschnittsgrenze. **Dritte Fähigkeit** (opt-in über `waves.dir`): die Wellen-Register der Roadmap gegen die Wellen-Dateien — Plan-Dokument flach ⟺ aktive Welle (`waves.mode: one`, Default) **oder** Kennungs-Bijektion Aktiv-Block ⟺ flache Dokumente, Marker außen vor (`waves.mode: many`); Vorschau ohne Datei, Abschluss-Register ⟺ Ergebnisnotizen (beidseitig). **Vierte Fähigkeit** (opt-in über `observations.register`): eine **zitierte** Kennung hat eine Zeile im Register — gezählt werden Prosa und Linktext, ein reines Inline-Code-Span nicht (Beispiel statt Behauptung); deklarierend ist nur die **erste** Tabellenzelle; die Umkehrung („jede Zeile ist zitiert") bleibt ausgeschlossen | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder`, `closure-note-ambiguous`, `wave-drift`, `wave-preview-exists`, `wave-results-missing`, `wave-unregistered`, `observation-unregistered` |
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
 | `targets`   | opt-in        | Deklarations-Konsistenz Doku ↔ Build-Targets: jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`makefiles`), und jede Regel steht in der Autoritäts-Doku (`authority`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed bei fehlender Datei. Tabellenzeilen zählen nur **außerhalb von Code-Blöcken** — ein Beispiel-Block dokumentiert kein Target | `gate-phantom`, `gate-undocumented`                         |
 | `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu **zehn** Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table.order`/`table.order-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle; die achte die **Überschriften-Form** (`headings-match`/`headings-level`): **jede** Überschrift der geprüften Ebene innerhalb des Abschnitts matcht das Muster, geprüft auf ihrem **Text**, gemeldet **je** Überschrift auf **ihrer** Zeile; die neunte die **Zellenlänge** (`table.column` je Eintrag `name` mit `cell-max-chars`/`cell-min-chars`): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte liegt in einer Spanne aus **Zeichen**, gemeldet auf **ihrer** Zeile — eine Obergrenze allein ließe die leere Zelle passieren; die **zehnte** die **offenen Task-Items** (`max-open-tasks`): gezählt auf den **rohen** Abschnitts-Zeilen statt auf dem bereinigten Text, ein Befund je Item auf **seiner** Zeile ⇒ `section-tasks-open` — ein überzähliger Backtick im Absatz schaltet sie nicht ab, ein vergessener Schluss-Fence sehr wohl. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat; **einzige Ausnahme** ist die per `exempt-expect-count` **erklärte** Leermenge, deren Abweichung `section-exempt-mismatch` meldet | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped`, `section-heading-mismatch`, `section-cell-oversized`, `section-cell-undersized`, `section-column-missing`, `section-exempt-mismatch`, `section-tasks-open` |
