@@ -1,4 +1,4 @@
-# Slice slice-183: Die Baseline steht auf v5.14.0
+# Slice slice-183: Die Baseline steht auf v5.15.0
 
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
@@ -30,7 +30,7 @@ Produkt-Anforderung berührt).
 
 **Der vendorte Baseline-Baum steht auf `v5.12.0`, upstream stehen drei
 Releases weiter.** Gemessen mit `make baseline-freshness`: `v5.13.0`,
-`v5.13.1`, `v5.14.0` — und der Content am gepinnten Tag ist **unverändert**
+`v5.13.1`, `v5.14.0`, `v5.15.0` — und der Content am gepinnten Tag ist **unverändert**
 (`Bytes == vendored SHA256SUMS`). Es ist also ein reiner **Currency**-Rückstand,
 kein Drift: nichts ist falsch, aber die verkörperte Form beruft sich auf eine
 Fassung, die drei Releases alt ist.
@@ -43,9 +43,23 @@ die uns direkt betreffen: der Abschnitt `§Referenz-Implementierung` heißt jetz
 verloren. **Was `v5.13.1` und `v5.14.0` tragen, wissen wir nicht** — das ist
 der erste Schritt, nicht eine Annahme dieses Plans.
 
+**Das Ziel ist während der Wartezeit gewandert, und der Grund ist neu.** Der
+Plan zielte bei seiner Anlage auf `v5.14.0`. Inzwischen ist `v5.15.0`
+erschienen, und **erst dort** liegen die zwei Quell-Wellen, die unser
+Beobachtungs-Register betreffen: die Vergabe des Bereichssegments und die
+Schwelle mit ihren drei Ausgängen. Nachgemessen: beide Wellen sind **sieben
+Commits jünger als `v5.14.0`** und in diesem Tag nicht enthalten. Ein Bump
+dorthin hätte den Pin gehoben und den eigentlichen Anlass verfehlt.
+
+**Damit hängt ein zweiter Slice an diesem hier:**
+[slice-188](../open/slice-188-register-gegen-neuen-kanon.md) korrigiert zwei Zähler
+unseres Registers gegen die neue Beleg-Definition — und kann die Regel erst
+zitieren, wenn sie im vendorten Baum steht. Diese Abhängigkeit ist neu und war
+bei der Anlage nicht absehbar.
+
 ## 2. Vorgehen
 
-1. **Re-vendorn und das Delta sichten.** `fetch-baseline-cache.sh v5.14.0`,
+1. **Re-vendorn und das Delta sichten.** `fetch-baseline-cache.sh v5.15.0`,
    dann `make baseline-verify` (Integrität **und** Manifest-Deckung **und**
    Alias-Auflösung). Erst danach steht fest, was die Schritte 3 und 4 zu tun
    haben — der Plan nimmt es nicht vorweg.
@@ -102,7 +116,7 @@ der erste Schritt, nicht eine Annahme dieses Plans.
 
 ## 4. Definition of Done
 
-- [ ] Der Pin steht auf `v5.14.0`: vendorter Baum re-vendored,
+- [ ] Der Pin steht auf `v5.15.0`: vendorter Baum re-vendored,
       `make baseline-verify` grün (Integrität, Manifest-Deckung, Alias-Auflösung),
       alle Pfad-Verweise und die zwei Symlinks gezogen.
 - [ ] **Jede `cite`-Direktive ist entschieden**, nicht nur grün: je Direktive
@@ -115,7 +129,7 @@ der erste Schritt, nicht eine Annahme dieses Plans.
 - [ ] [`MR-048`](../../../../harness/conventions.md#mr-048) zeigt auf
       `§Das vollständige Artefakt-Set`; der `F-7`-Befund aus slice-155 ist als
       geschlossen vermerkt.
-- [ ] **Das Delta ist gelesen, nicht angenommen:** was `v5.13.1` und `v5.14.0`
+- [ ] **Das Delta ist gelesen, nicht angenommen:** was `v5.13.1`, `v5.14.0` und `v5.15.0`
       gegenüber `v5.13.0` tragen, steht im Slice — der Herausgeber hat nur
       `v5.13.0` angekündigt.
 - [ ] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
@@ -133,8 +147,8 @@ der erste Schritt, nicht eine Annahme dieses Plans.
   33 Einträge — die Gefahr ist nicht, einen falsch zu entscheiden, sondern alle
   reflexhaft auf „bleibt gültig" zu setzen, weil das der Normalfall ist. —
   **Ausgang:** *(bei Closure)*
-- **Drei Releases auf einmal.** Angekündigt ist nur `v5.13.0`; `v5.13.1` und
-  `v5.14.0` sind unbekannt. Ein Sprung über drei Fassungen macht das Delta
+- **Vier Releases auf einmal.** Angekündigt ist nur `v5.13.0`; `v5.13.1`,
+  `v5.14.0` und `v5.15.0` kamen ohne Ankündigung. Ein Sprung über vier Fassungen macht das Delta
   größer als den Diff, den ein Reviewer in einer Sitzung prüft. — **Ausgang:**
   *(bei Closure)*
 - **Der Bump macht eine fremde Adaption beurteilbar, die auf uns zeigt.** Die
@@ -146,7 +160,7 @@ der erste Schritt, nicht eine Annahme dieses Plans.
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): WIP-Limit frei — `in-progress/` trägt
-keinen Slice; `v5.14.0` ist upstream verfügbar (gemessen mit
+keinen Slice; `v5.15.0` ist upstream verfügbar (gemessen mit
 `make baseline-freshness`).
 
 **Rückführungen:** `in-progress` → `open`, falls das Delta einen Ausgang
