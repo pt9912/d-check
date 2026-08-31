@@ -11,7 +11,7 @@ Welle braucht).
 **Bezug:** die zwei Quell-Wellen des Adopters `ai-harness-course`
 (Bereichssegment; die Schwelle und ihre drei Ausgänge) — **noch in keinem
 Release**;
-[slice-183](../open/slice-183-baseline-v5150.md) (der Baseline-Bump, der sie
+[slice-183](../in-progress/slice-183-baseline-v5150.md) (der Baseline-Bump, der sie
 frühestens transportieren kann);
 [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 (die Register-Deckung, die diesen Bestand prüft).
@@ -89,7 +89,7 @@ unbequemere und die richtige Lesart, und sie gehört in die Closure-Notiz.
 
 - **Nicht die Anzahl-Prüfung bauen.** Sie ist der Folge-Slice und braucht diesen
   Bestand.
-- **Kein Baseline-Bump.** Der ist [slice-183](../open/slice-183-baseline-v5150.md), und
+- **Kein Baseline-Bump.** Der ist [slice-183](../in-progress/slice-183-baseline-v5150.md), und
   er transportiert die neuen Regeln ohnehin nicht.
 - **Keine Migration auf die Verzeichnisform.** Das ist der BEO-CR, und er wartet
   auf seine eigenen Bedingungen.

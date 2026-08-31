@@ -179,27 +179,39 @@ Slice ist — dann trägt dieser Slice den Bump und der Rückbau folgt getrennt.
   > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
   > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-- **Offene Beobachtungen sichten** (Register-Stand 2026-08-30, höchste Kennung
-  `BEO-024`): [`BEO-012`](../observations.md) — ein Zitat über seinen
-  Geltungsbereich hinaus: der Adaptions-Review liest 33 Fremd-Regeln und
-  entscheidet je Eintrag, ob sie eine Adaption ablösen; das ist genau die Lage,
-  in der eine Reichweite überdehnt wird; [`BEO-002`](../observations.md) — eine
-  Semantik-Änderung wird nur im Körper nachgezogen, die Ränder bleiben stehen:
-  ein Bump ist die Rand-Operation schlechthin, und die Symlinks sind der Rand,
-  den kein Modul scannt; [`BEO-013`](../observations.md) — ein Wächter, der
-  nichts mehr fängt: eine `cite`-Direktive, deren Ziel verschwunden ist, wird
-  nach [`MR-039`](../../../../harness/conventions.md#mr-039) entfernt und hinterlässt einen Wortlaut ohne Prüfung.
-  Die Regel, die diesen Schritt vorschreibt:
-
+- **Offene Beobachtungen sichten** — **bei der Beanspruchung aufgefrischt**, weil
+  der Plan seit dem 2026-08-30 in `open/` lag und das Register sich seither
+  bewegt hat (Stand 2026-08-31, höchste Kennung `BEO-025`):
+  [`BEO-012`](../observations.md) (**12**, war 11) — ein Zitat über seinen
+  Geltungsbereich hinaus: ein Bump ankert `cite`-Spannen neu, und eine Spanne,
+  die zufällig wieder wortgleich trifft, ist kein Beleg dafür, dass sie noch
+  dieselbe Regel zitiert; [`BEO-008`](../observations.md) (**4**) — die drei
+  Klassen einer Pin-Hebung, von denen nur die grep-bare gehoben wird, plus die
+  vierte (der zitierende Verweis), die genau bei diesem Vorgang eintritt;
+  [`BEO-002`](../observations.md) (**7**) — die Spiegel des Pins, und der
+  geschärfte Ableiter dazu: die Liste entsteht aus einem `grep` nach dem
+  **alten** Wortlaut, nicht aus dem Gedächtnis; [`BEO-013`](../observations.md)
+  (**1**) — ein Wächter, der nichts mehr fängt, bleibt stehen: die
+  Bestands-Stichprobe des Freshness-Audits gehört gefahren, auch wenn der Pin
+  aktuell ist. **Neu seit der Anlage und für diesen Slice einschlägig:**
+  [`BEO-025`](../observations.md) (**1**) — ein Liefer-Punkt landet im Commit
+  eines fremden Slice; ein Bump zerfällt in mehrere Commits, und das ist genau
+  die Lage, in der die Zuordnung verrutscht.
   <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
   > **Offene Beobachtungen sichten.**
 
 - **Nachtlauf-Stand lesen** (`make nightly-state`,
-  [`MR-053`](../../../../harness/conventions.md#mr-053)): beide Achsen melden
-  **gruen** — `upstream-drift.yml` zuletzt 2026-08-30T06:08:17Z,
-  `image-scan.yml` 2026-08-30T09:16:25Z. **Dieser Block trägt bewusst keine
-  `cite`-Direktive** — sein Ziel ist eine Repo-Adaption, kein
-  Baseline-Abschnitt ([`MR-054`](../../../../harness/conventions.md#mr-054)).
+  [`MR-053`](../../../../harness/conventions.md#mr-053)) — **bei der
+  Beanspruchung neu gelesen:** `upstream-drift.yml` meldet **ROT** (jüngster
+  Lauf 2026-08-31T06:31:40Z), `image-scan.yml` grün. Gelesen statt weggeklickt:
+  drei Schritte fielen — `freshness-a-check` und `go-base-digest` sind seither
+  **behoben** (beide Pins gehoben, alle acht Achsen melden `ok`), und der
+  dritte ist `baseline-freshness`, **also genau dieser Slice**. Der Nachtlauf
+  wird grün, wenn er geschlossen ist. Die benannte Grenze des Targets zeigt
+  sich dabei: es liest den **jüngsten** Lauf, nicht sein Alter — zwei der drei
+  Ursachen sind längst weg, der Lauf ist nur nicht wiederholt. **Dieser Block
+  trägt bewusst keine `cite`-Direktive** — sein Ziel ist eine Repo-Adaption
+  ([`MR-054`](../../../../harness/conventions.md#mr-054)).
 
 Slice-ID: slice-183. Betroffene IDs:
 [`MR-021`](../../../../harness/conventions.md#mr-021),

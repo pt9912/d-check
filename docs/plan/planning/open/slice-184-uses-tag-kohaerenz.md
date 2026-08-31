@@ -195,7 +195,7 @@ gehört an eine Stelle, die die ganze Scan-Menge ohnehin hält.
   **gruen** — `upstream-drift.yml` zuletzt 2026-08-30T06:08:17Z,
   `image-scan.yml` 2026-08-30T09:16:25Z. **Der Baseline-Rückstand
   (`v5.12.0` gegen `v5.14.0`) ist bekannt und aufgeschoben** — er hängt an
-  [slice-183](../open/slice-183-baseline-v5150.md), nicht an diesem Slice.
+  [slice-183](../in-progress/slice-183-baseline-v5150.md), nicht an diesem Slice.
   **Dieser Block trägt bewusst keine `cite`-Direktive** — sein Ziel ist eine
   Repo-Adaption, kein Baseline-Abschnitt
   ([`MR-054`](../../../../harness/conventions.md#mr-054)).
