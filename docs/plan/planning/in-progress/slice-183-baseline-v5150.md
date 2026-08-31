@@ -28,12 +28,12 @@ Produkt-Anforderung berührt).
 
 ## 1. Ziel
 
-**Der vendorte Baseline-Baum steht auf `v5.12.0`, upstream stehen drei
+**Der vendorte Baseline-Baum steht auf `v5.12.0`, upstream stehen vier
 Releases weiter.** Gemessen mit `make baseline-freshness`: `v5.13.0`,
 `v5.13.1`, `v5.14.0`, `v5.15.0` — und der Content am gepinnten Tag ist **unverändert**
 (`Bytes == vendored SHA256SUMS`). Es ist also ein reiner **Currency**-Rückstand,
 kein Drift: nichts ist falsch, aber die verkörperte Form beruft sich auf eine
-Fassung, die drei Releases alt ist.
+Fassung, die vier Releases alt ist.
 
 **Der Herausgeber hat den Inhalt für `v5.13.0` angekündigt** — fünf
 Regelwerk-Dateien mit echtem Inhalt (`grundlagen-durchsetzungsschicht`,
@@ -150,6 +150,39 @@ und ihr Zweck ist das Aufdecken.
   [`MR-057`](../../../../harness/conventions.md#mr-057); die Auflösung ist ein
   Nachfolge-Eintrag plus Nachzug in [`AGENTS.md`](../../../../AGENTS.md) §3.3,
   nicht ein Edit am bestehenden Eintrag.
+
+  **Der Herausgeber hat darauf geantwortet, und die Antwort ist nachgemessen.**
+  Seine Feststellung: keine Stufe unserer CI checkt je einen Zwischen-Commit
+  aus. Unabhängig geprüft in
+  [`ci.yml`](../../../../.github/workflows/ci.yml) — `checkout` holt ohne
+  `ref:` den Tip, `make trace-check` und `make adr-check` bekommen eine
+  **Range** und lesen deren Enden (Zwei-Baum-Diff), `make ci` läuft über den
+  ausgecheckten Baum, also wieder den Tip. **Die Begründung von [`MR-013`](../../../../harness/conventions.md#mr-013) ist
+  damit zu breit formuliert:** der gefürchtete Fall entsteht in genau einer
+  Lage — wenn jemand den Move **allein** pusht. Genau das war 2026-06-21 bei
+  slice-040 passiert.
+
+  **Zitierbar ist die neue Bedingung aber noch nicht.** Sie stammt aus
+  Kurs-Welle 110 und liegt in **keinem Release**: `v5.16.0` existiert bereits,
+  trägt Welle 109 und enthält sie nicht. Wer sie jetzt zitiert, zitiert etwas,
+  das im vendorten Baum nicht steht — dieselbe Lage, aus der dieser Slice
+  [slice-188](../open/slice-188-register-gegen-neuen-kanon.md) gerade befreit
+  hat.
+
+  **Und „Trigger statt Nachfolger" greift zu kurz.** [`MR-013`](../../../../harness/conventions.md#mr-013) deckt **drei**
+  Move-Klassen; nur die dritte (`MR`-/Wellen-Lifecycle) kollidiert. Die beiden
+  Slice-Klassen hängen an der Roadmap-Kopplung, die `make planning-check`
+  erzwingt — ein anderer Mechanismus, der von der Bedingung unberührt bleibt.
+  Verliert ein Eintrag durch die Baseline **einen Teil** seines
+  Geltungsbereichs, ist das nach dem Kanon eine **Ablösung mit engerem
+  Nachfolger**, keine Auflösung. Der Folge-Slice hat also beides zu tun: den
+  engeren Nachfolger schreiben **und** den Pin auf ein Release heben, das
+  Welle 110 trägt.
+
+  **`v5.16.0` ist während dieser Arbeit erschienen** und damit Sache der
+  nächsten Pin-Hebung, nicht dieser — ein Wechsel des Ziels hätte den
+  gemessenen Delta-Durchgang entwertet, und Welle 109 (Wellen-Closure
+  archiviert ihre Zeitdokumente) berührt den Anlass dieses Slice nicht.
 
 ## 3. Ausdrücklich NICHT in diesem Slice
 
