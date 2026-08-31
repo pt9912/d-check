@@ -4,6 +4,33 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.71.0] — 2026-08-31
+
+### Added
+
+- slice-185 — **`--print-mk` trägt ein dreizehntes Target: `doc-usage`**
+  ([`DC-FA-CLI-010`](spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
+  Lastenheft 0.80.0). Es macht die Hilfe des Werkzeugs selbst zu einem Target
+  des Fragments: Konsumenten erreichen die Oberfläche des gepinnten Image, ohne
+  sich den `docker run`-Aufruf zusammenzusetzen. Dieselbe Bauform wie
+  `doc-doctor`/`doc-repair` — ein **bestehender** Modus bekommt eine
+  Oberfläche, kein neues Verhalten; das Target wählt deshalb **kein** Modul ab.
+  Das Recipe ist wie bei `doc-repair` und `doc-help` **echo-unterdrückt**, weil
+  die Ausgabe die Nutzlast ist. **Und die Hilfe erscheint auf `stderr`, nicht
+  auf stdout** — gemessen: 0 Byte stdout, 2488 Byte stderr, Exit 0; ein
+  `make doc-usage > datei` fängt nichts ein und meldet trotzdem Erfolg. Der
+  Name grenzt bewusst gegen das vorhandene `doc-help` ab: das ist die
+  Make-Ebene (die Liste der Targets), `doc-usage` die Werkzeug-Ebene.
+
+### Fixed
+
+- **Die Operations-Referenz nannte drei Targets von zwölf.** Die
+  `--print-mk`-Zeile in [`operations.md`](docs/user/operations.md) zählte
+  `doc-check`, `doc-trace` und `doc-complete` auf, als wären es alle, und
+  verschwieg zugleich die Variable `DCHECK_DIGEST`. Sie zählt jetzt nicht mehr
+  auf, sondern verweist auf das erzeugte Fragment — eine Aufzählung weniger,
+  die altern kann.
+
 ## [0.70.0] — 2026-08-30
 
 ### Added
