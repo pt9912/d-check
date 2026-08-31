@@ -583,14 +583,19 @@ planning:
   # Trennlinie zwischen Zitat und Beispiel, gemessen: 366 echte Zitate stehen
   # als Link MIT Backticks, beide Beispiel-Nennungen als reines Code-Span.
   #
-  # NOCH NICHT SCHARF, dieselbe Ruecksicht wie bei mode: many oben -- ein
-  # unbekannter Schluessel ist Exit 2 fuer jeden aelteren Pruefer, und die
-  # ausgelieferte Version ist einer. Wird nach Release und Digest-Backfill
-  # gesetzt. Vor dem Scharfschalten gemessen: eigener Bestand 0 Befunde,
-  # konstruierte Kennung als Link 1, dieselbe als Code-Span 0.
-  # observations:
-  #   register: docs/plan/planning/observations.md
-  #   dirs: [docs/plan/planning]
+  # SCHARF, und der Preis ist benannt. Die Ruecksicht von mode: many oben --
+  # ein unbekannter Schluessel ist Exit 2 fuer jeden aelteren Pruefer -- hat
+  # hier keinen Anlass im eigenen Lauf: kein Target und kein Workflow faehrt
+  # ein released Image gegen diese Datei, doc-check baut aus der Quelle
+  # (nachgemessen). Was bleibt, ist ein Fenster nach aussen: wer v0.71.1 gegen
+  # DIESES Repo laufen laesst, bekommt bis zum naechsten Release Exit 2. Das
+  # ist bewusst in Kauf genommen, weil die Alternative ein unerfuellter
+  # DoD-Punkt ohne verfolgten Nachzug war. Gemessen vor dem Scharfschalten:
+  # eigener Bestand 0 Befunde, konstruierte Kennung als Link 1, dieselbe als
+  # Code-Span 0.
+  observations:
+    register: docs/plan/planning/observations.md
+    dirs: [docs/plan/planning]
 
 # Modul targets (DC-FA-TGT-001, slice-063): Deklarations-Konsistenz Doku ↔
 # Build-Targets — `make gate-consistency` aktiviert es mit `--enable targets`
