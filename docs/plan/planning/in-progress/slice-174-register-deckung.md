@@ -84,6 +84,43 @@ Closure-Übergang beschreibt.
 7. `make gates` und `make fullbuild`; **Review** und **Verifikation** als
    getrennte Läufe; Closure.
 
+## 2a. Getroffene Entscheidungen (mit ihrer Messung)
+
+**Träger: eine vierte Fähigkeit im vorhandenen Modul `planning`, kein eigenes
+Modul.** `planning` besitzt bereits das Layout, den hermetischen Vertrag und
+die Bauform „opt-in **innerhalb** des opt-in Moduls" (so ist `waves`
+geschnitten). Ein Modul `registry` rechtfertigte sich mit zwei weiteren
+Registern (ADR-Index, Konventionsspeicher-Index), die heute niemand prüft —
+das ist eine Aussage über künftigen Bedarf und damit genau
+[`BEO-011`](../observations.md). Fällt die dritte Anwendung wirklich an, ist
+die Verallgemeinerung dann mit Bestand zu begründen, nicht jetzt mit einer
+Vermutung.
+
+**Scan-Menge: der Planning-Baum, nicht nur `done/` — und die Grenze ist
+gemessen.** Der Kanon sagt „in `done/` zitiert"; im Baum stehen Kennungen aber
+auch in `open/` (7) und `in-progress/` (9). Eine Behauptung über eine
+Registerzeile wiegt dort genauso. **Ausgenommen bleibt `docs/reviews/`**: das
+sind Lauf-Belege fremder Rollen, eingefroren, und dort steht mit `BEO-099` ein
+weiteres Beispiel.
+
+**Erkennungs-Form: Prosa und Linktext zählen, ein reines Inline-Code-Span
+nicht.** Das ist die Unterscheidung, die `ids` bereits trifft (*ein
+Code-Span-Vorkommen ist linkpflichtfrei, wenn es im Linktext liegt*), und sie
+ist hier zwingend: gemessen im Planning-Baum stehen **366** echte Zitate als
+`[`BEO-NNN`](…)`, also **mit** Backticks im Linktext. Eine Regel „Inline-Code
+zählt nicht" übersähe genau sie. Umgekehrt sind beide gefundenen Beispiel-Nennungen
+(`BEO-999` hier, `BEO-099` in einem Review) reine Code-Spans.
+
+**Verworfen, gemessen: der `ids`-Weg.** Kennung als Linkpflicht auf einen Anker
+je Registerzeile — wie `version.md` es für Versionen tut — bräuchte drei
+Retrofits: Anker in 22 Zeilen (klein), `#beo-NNN` in 366 bestehende Links
+(groß) und Links für 293 Prosa-Nennungen allein im Planning-Baum (groß). Die
+letzten beiden schrieben eingefrorene Lauf-Belege um.
+
+**Gegenprobe vor dem Bau:** unter dieser Regel hat der heutige Baum **null**
+Waisen — die einzige Fundstelle ohne Registerzeile ist das Beispiel `BEO-999`
+in diesem Plan, und es liegt in Backticks.
+
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Die Beleg-Form-Prüfungen (Form · Anzahl · Lage).** Sie gehören zur selben
