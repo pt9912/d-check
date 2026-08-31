@@ -284,3 +284,28 @@ func TestVCSStatusImFenceZaehltNicht(t *testing.T) {
 		t.Fatalf("Proposed-Datei mit Accepted-Beispiel im Fence ist nicht immutabel → 0 Befunde, got %+v", got)
 	}
 }
+
+// Ein Rename AUS der immutablen Klasse heraus: die Prüfung hängt am ALTEN Pfad.
+// Der Delete des in-Klasse-Pfads trägt den Befund, der Add auf einem Pfad
+// außerhalb von vcs.paths ist frei. Grenze, die dieser Test hält: wer die
+// Klassen-Prüfung je auf den NEUEN Pfad umstellte, machte genau diesen Fall
+// still — und der Rename innerhalb der Klasse bliebe grün, also unauffällig.
+func TestVCSRenameOutOfClass(t *testing.T) {
+	fv := &fakeVCS{
+		changes: []driven.VCSChange{
+			{Status: driven.VCSDeleted, Path: adrPath},
+			{Status: driven.VCSAdded, Path: "docs/notes/kern.md"},
+		},
+		files: refs(adr("Accepted", "Tue A."), nil),
+	}
+	got, err := CheckVCS(fv, adrConfig(), "BASE", "HEAD")
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if len(got) != 1 {
+		t.Fatalf("Rename aus der Klasse: ein core-drift-vcs erwartet, got %d (%v)", len(got), got)
+	}
+	if got[0].Target != adrPath {
+		t.Fatalf("Befund-Ziel = %q, erwartet der ALTE Pfad %q", got[0].Target, adrPath)
+	}
+}
