@@ -178,7 +178,7 @@ eigene Begründung statt einer Zeile im Vorgehen.
   [`MR-053`](../../../../harness/conventions.md#mr-053)): `upstream-drift.yml`
   meldet **ROT** (Lauf 2026-08-31T06:31:40Z), `image-scan.yml` grün. Gelesen
   statt weggeklickt — drei Schritte fielen: `baseline-freshness` (bekannt,
-  geschnitten als [slice-183](../open/slice-183-baseline-v5140.md)),
+  geschnitten als [slice-183](../open/slice-183-baseline-v5150.md)),
   `freshness-a-check` (**heute behoben**, Pin steht auf v0.19.0) und
   `go-base-digest` (**neu**: der `golang:1.27.0`-Tag ist upstream neu gebaut,
   ABWEICHEND). Keiner der drei berührt diesen Slice; der dritte ist ein eigener

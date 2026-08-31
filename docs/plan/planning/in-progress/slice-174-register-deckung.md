@@ -228,7 +228,7 @@ verlangt, die wir nicht allein treffen können.
   [`MR-053`](../../../../harness/conventions.md#mr-053)): `upstream-drift.yml`
   meldet **ROT** (Lauf 2026-08-31T06:31:40Z), `image-scan.yml` grün
   (2026-08-31T09:48:33Z). Gelesen: die drei roten Schritte waren
-  `baseline-freshness` (bekannt, [slice-183](../open/slice-183-baseline-v5140.md)),
+  `baseline-freshness` (bekannt, [slice-183](../open/slice-183-baseline-v5150.md)),
   `freshness-a-check` und `go-base-digest` — **die letzten beiden sind seither
   behoben**, der Lauf ist nur noch nicht wiederholt worden. Das ist die
   benannte Grenze des Targets: es liest den **jüngsten** Lauf, nicht sein
