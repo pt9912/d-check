@@ -130,7 +130,7 @@ unbequemere und die richtige Lesart, und sie gehört in die Closure-Notiz.
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): WIP-Limit frei — heute hält
-[slice-174](../in-progress/slice-174-register-deckung.md) den Slot. **Zusätzlich
+[slice-174](../done/slice-174-register-deckung.md) den Slot. **Zusätzlich
 die Entscheidung aus §2.1**: entweder ein Release des Adopters, das die zwei
 Wellen enthält, **oder** der ausdrückliche Beschluss, unter dem heutigen Pin zu
 korrigieren.

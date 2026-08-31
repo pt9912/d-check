@@ -102,7 +102,7 @@ Lücke, er widerspricht keiner Entscheidung.
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): WIP-Limit frei — `in-progress/` trägt keinen
-Slice. Heute hält [slice-174](../in-progress/slice-174-register-deckung.md) den
+Slice. Heute hält [slice-174](../done/slice-174-register-deckung.md) den
 Slot.
 
 **Rückführungen:** `in-progress` → `open`, falls die Beschriftungs-Frage aus §2.1
