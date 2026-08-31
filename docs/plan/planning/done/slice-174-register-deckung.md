@@ -2,7 +2,6 @@
 
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
-
 **Welle:** [welle-86](../welle-86-closure-uebergang-durchsetzen.md) — dritter
 von vier Slices. Ihr Closure-Trigger fordert einen Beleg, den keine einzelne
 DoD liefert: dass die Vorbedingungen **am Übergang** greifen.
@@ -149,18 +148,18 @@ in diesem Plan, und es liegt in Backticks.
 
 ## 4. Definition of Done
 
-- [ ] Eine in `done/` zitierte `BEO-<NNN>` **ohne** Registerzeile erzeugt einen
+- [x] Eine in `done/` zitierte `BEO-<NNN>` **ohne** Registerzeile erzeugt einen
       Befund mit eigenem Grund-Code; die Richtung und die **Scan-Menge** stehen
       in der Anforderung, nicht nur im Code.
-- [ ] **Umkehr-Probe gemessen:** konstruiertes `BEO-999` ⇒ Befund; eigener
+- [x] **Umkehr-Probe gemessen:** konstruiertes `BEO-999` ⇒ Befund; eigener
       Bestand ⇒ 0 Befunde. Beide Ausgaben in der Closure-Notiz.
-- [ ] Träger-Entscheid (`planning`-Bedingung gegen eigenes Modul) **begründet**
+- [x] Träger-Entscheid (`planning`-Bedingung gegen eigenes Modul) **begründet**
       in einer ADR, samt der gemessenen Verwerfung des `ids`-Wegs.
-- [ ] Anforderung, `.a`-Verfeinerung mit Grund-Code, Profil-Aktivierung und
+- [x] Anforderung, `.a`-Verfeinerung mit Grund-Code, Profil-Aktivierung und
       Handbuch sind nachgezogen.
-- [ ] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
+- [x] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
       Review**; **Verifikation** — beide in eigenen Kontexten.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag; Beobachtungs-Register
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag; Beobachtungs-Register
       fortgeschrieben; jedes Risiko aus §5 mit Ausgang; die drei Paarungen
       geprüft.
 
@@ -170,20 +169,33 @@ in diesem Plan, und es liegt in Backticks.
   nie eingetreten ist — genau die Lage, in der ein Sensor später für überflüssig
   gehalten und entfernt wird ([`BEO-013`](../observations.md), Zähler 1). Die
   Anforderung muss sagen, **wovor** er schützt, nicht nur was er prüft.
-  — **Ausgang:** *(bei Closure)*
+  — **Ausgang:** *entfallen* — gemessen, nicht zugesagt: die Anforderung sagt,
+  wovor er schützt, und die Gegenprobe zeigt, **dass** er greift. Eine
+  umbenannte Registerzeile erzeugt sofort Befunde in jeder zitierenden Datei,
+  nach dem Zurückstellen wieder null. Ein grüner Wächter, von dem niemand
+  weiß, ob er fangen kann, wäre [`BEO-023`](../observations.md).
 - **Die Scan-Menge ist die eigentliche Entscheidung.** Zählt nur `done/`, ist
   ein erfundenes `BEO-999` in einem `open/`-Slice oder in
   [`AGENTS.md`](../../../../AGENTS.md) weiter unsichtbar; zählt alles, meldet
   die Prüfung womöglich in Dokumenten, die gar keine Belege führen sollen.
-  — **Ausgang:** *(bei Closure)*
+  — **Ausgang:** *entfallen* — entschieden und begründet: der **Planning-Baum**
+  statt nur `done/` (Kennungen stehen auch in `open/` und `in-progress/`),
+  `docs/reviews/` bleibt außen (eingefrorene Lauf-Belege fremder Rollen). Die
+  Grenze steht in der Anforderung, nicht nur im Code
+  ([`AGENTS.md`](../../../../AGENTS.md) §3.8).
 - **Ein eigenes Modul auf Vorrat.** Kandidat (b) rechtfertigt sich mit zwei
   weiteren Registern, die heute niemand prüft. Das ist eine Aussage über
   künftigen Bedarf — [`BEO-011`](../observations.md), Zähler 5, ist genau die
-  Klasse „Regel aus dem Anlass statt aus dem Bestand". — **Ausgang:** *(bei
-  Closure)*
+  Klasse „Regel aus dem Anlass statt aus dem Bestand". — **Ausgang:**
+  *entfallen* — das Modul ist **nicht** gebaut worden. Die vierte Fähigkeit
+  liegt in `planning`, und die Ablehnung samt ihrer Umkehrbedingung steht in
+  [ADR-0079](../../adr/0079-register-deckung-zaehlt-linktext.md).
 - **Die Beleg-Form bleibt liegen**, und mit ihr die zwei begründeten
   Abweichungen. Wer den Slice liest, könnte die Deckung für die ganze
-  maschinelle Hälfte halten. — **Ausgang:** *(bei Closure)*
+  maschinelle Hälfte halten. — **Ausgang:** *eingetreten* → Folge-Slice
+  [slice-188](../open/slice-188-register-gegen-neuen-kanon.md). Er bringt den
+  Bestand mit der neuen Beleg-Definition in Übereinstimmung; erst danach ist
+  die Anzahl-Achse baubar. Die Abgrenzung steht in §3 dieses Plans.
 
 ## 6. Trigger
 
@@ -267,3 +279,54 @@ Bestand abhängt, gehört die **Messung** vor die Anforderung — nicht der Code
 Der Slice hätte mit einer Mess-Etappe beginnen können und wäre danach doc-first
 geblieben.
 ## 9. Closure-Notiz (nach `done/`)
+
+- **Was hat funktioniert:** **Erst messen, dann entscheiden.** Die tragende
+  Regel — Prosa und Linktext zählen, ein reines Inline-Code-Span nicht — kam
+  aus einer Zählung am Bestand (366 / 293 / 112 / 5), nicht aus dem
+  Präzedenzfall. Wäre ich dem gefolgt (*„Inline-Code zählt nicht"*, wie
+  `citations` und die Platzhalter-Bedingung), hätte der Wächter **genau die
+  Zitate übersehen**, um die es geht, und nur die Beispiele gemeldet. Ebenso
+  getragen hat, den `ids`-Weg **gemessen** zu verwerfen (1450 Nennungen, 1042
+  nackt) statt ihn zu erwägen — die Zahl steht in der ADR und muss nicht noch
+  einmal erhoben werden.
+- **Was ging anders als geplant:** Vier Dinge, und drei davon fand ein anderer.
+  (1) **Code-first in einer GF-Sub-Area** — §8 sagt es aus, statt es hier zu
+  mildern: gebaut wurde vor der Anforderung, weil die tragende Entscheidung
+  beim Bau entstand. Die Korrektur für den nächsten Fall steht dort: wo die
+  Regel von einer Messung abhängt, gehört die **Messung** vor die Anforderung,
+  nicht der Code. (2) Der Review fand ein **HIGH**: zwei verschiedene
+  ungedeckte Kennungen auf einer Zeile fielen in der Deduplikation zusammen —
+  der Lauf blieb rot, aber die **Zahl** war falsch, also genau die Klasse,
+  gegen die diese Fähigkeit gebaut ist. `ids` löst das seit jeher, und ich
+  hatte das Muster nicht befolgt, obwohl ich in derselben Datei darauf
+  verweise. (3) Die Verifikation fand ein **reproduzierbar falsches
+  Handbuch-Beispiel**: §4.20 wies das gepinnte `v0.71.1` an, das den Schlüssel
+  nicht kennt — `field observations not found`, Exit 2. (4) Die
+  Profil-Aktivierung stand als *nachgezogen* in der DoD und war es nicht.
+- **Steering-Loop-Eintrag:** keiner mit Zielort. Beide Lehren dieses Slice sind
+  **gezählt, nicht verkörpert** — ein Wächter gegen übernommene Präzedenzen
+  wäre ein Urteil, kein `grep`, und die Commit-Zuordnung sieht kein Sensor
+  (`commits` prüft, **dass** eine Kennung dasteht, nicht ob es die richtige
+  ist). Das als Verkörperung auszugeben wäre die Überdehnung, die
+  [`BEO-012`](../observations.md) beschreibt.
+- **Beobachtungs-Register (`../observations.md`):**
+  [`BEO-012`](../observations.md) auf **12** erhöht — zweimal in diesem Slice,
+  und beide Male war die gedehnte Quelle eine **Präzedenz** statt eines Textes
+  (die aufgeschobene Aktivierung nach dem Vorbild `waves.mode: many`, dessen
+  Anlass bei uns nachweislich fehlt; die gepinnte Version im Handbuch-Beispiel,
+  aus den Nachbar-Aufgaben übernommen). **[`BEO-025`](../observations.md) neu
+  angelegt** (Zähler 1): ein Liefer-Punkt landet im Commit eines **fremden**
+  Slice — Handbuch §4.20 und die Modultabellenzeile liegen in `a4bc209`, dem
+  Commit, der slice-187 schneidet.
+- **Folge-Slices:**
+  [slice-188](../open/slice-188-register-gegen-neuen-kanon.md) — er bringt den
+  Register-Bestand mit der neuen Beleg-Definition in Übereinstimmung; erst
+  danach ist die Anzahl-Achse baubar.
+- **Risiken aus §5:** vier, jedes mit genau einem Ausgang — dreimal
+  *entfallen* mit Begründung, einmal *eingetreten* mit Folge-Slice.
+- **Drei Paarungen:** (a) **Anker** — kein `liegt in`-Feld, weil nichts
+  verkörpert wurde; nichts zu paaren. (b) **Folge-Slice** — slice-188 existiert
+  als Datei in `open/`. (c) **Register** — die zitierten Kennungen
+  (`BEO-011`, `BEO-012`, `BEO-013`, `BEO-015`, `BEO-023`, `BEO-025`) haben je
+  eine Zeile; **und das prüft ab jetzt der Wächter dieses Slice selbst**, scharf
+  im eigenen Profil.
