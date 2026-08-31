@@ -19,7 +19,7 @@ oder eine neue `DC-FA-*`-Anforderung — die Wahl ist Teil des Slice (§2), und 
 ihr die `.a`-Verfeinerung in der
 [Spezifikation](../../../../spec/spezifikation.md).
 
-**Verantwortlich:** —.
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-08-31.
 
