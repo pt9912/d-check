@@ -50,8 +50,9 @@ func CheckVCS(vcs driven.VCS, cfg model.VCSConfig, base, head string) ([]model.F
 }
 
 // vcsDeleted meldet die Löschung/Umbenennung einer immutablen BASE-Datei
-// (der Pfad einer immutablen Datei ist stabil; ein Rename erscheint als
-// Delete(alt)+Add(neu) und wird über die Delete-Hälfte gefangen).
+// (der Pfad einer immutablen Datei ist stabil). Dass ein Rename überhaupt als
+// Delete-Hälfte hier ankommt, hält die Diff-Übersetzung im VCS-Adapter, nicht
+// diese Funktion.
 func vcsDeleted(vcs driven.VCS, cfg model.VCSConfig, base, path string) ([]model.Finding, error) {
 	content, ok, err := vcs.FileAt(base, path)
 	if err != nil {

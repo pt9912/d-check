@@ -42,7 +42,7 @@ Modul `vcs` über `--range`/`--staged` bereits ab
 **Dieser Absatz ist vom Absender zurückgezogen** (Nachtrag vom selben Tag): die
 Pfadidentität ist **nicht** gelöst. Ein reiner Rename blieb im `--range`-Pfad
 still — festgehalten als eigener
-[Werkzeug-Befund](2026-08-31-befund-ai-harness-course-vcs-rename.md). Er steht
+[Werkzeug-Befund](2026-08-31-befund-ai-harness-course-vcs-rename.md). Er bleibt
 hier stehen, weil dieses Dokument den CR **wie empfangen** hält; die Korrektur
 gehört daneben, nicht an seine Stelle.
 

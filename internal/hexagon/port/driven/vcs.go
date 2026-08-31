@@ -1,10 +1,12 @@
 package driven
 
 // VCSStatus klassifiziert eine Änderung im git-Diff einer Commit-Range
-// (DC-FA-VCS-001.a Schritt 2). Renames werden pfadbasiert als Löschung des
-// alten Pfads + Hinzufügung des neuen erkannt — eine immutable Datei behält
-// ihren Pfad, ihr Verschwinden ist der Befund (kein Inhalts-Ähnlichkeits-
-// Matching, spec/lastenheft.md §DC-FA-VCS-001 Out-of-Scope).
+// (DC-FA-VCS-001.a Schritt 2). Ein Rename erscheint hier als Löschung des alten
+// plus Hinzufügung des neuen Pfads — eine immutable Datei behält ihren Pfad,
+// ihr Verschwinden ist der Befund (kein Inhalts-Ähnlichkeits-Matching,
+// spec/lastenheft.md §DC-FA-VCS-001 Out-of-Scope). Grenze: diese Form ist eine
+// Zusage der Diff-Übersetzung im VCS-Adapter, keine Eigenschaft von git — der
+// Port beschreibt sie, hält sie aber nicht.
 type VCSStatus rune
 
 // Diff-Status-Klassen einer Commit-Range bzw. eines staged Index-Diffs.

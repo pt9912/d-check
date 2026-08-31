@@ -93,7 +93,7 @@ func (a *Adapter) ChangedPaths(base, head string) ([]driven.VCSChange, error) {
 // eine Sparmaßnahme: mit ihr (go-gits Default) kommt ein Rename als EINE
 // Änderung mit From und To an und wird zu Modified auf dem NEUEN Pfad — der
 // alte Pfad verschwindet, und der core-drift-vcs-Befund für die umbenannte
-// immutable Datei entsteht nie (DC-FA-VCS-001, der Fall trat real ein). Ohne
+// immutable Datei entsteht nie (DC-FA-VCS-001). Ohne
 // sie erscheint der Rename als Delete(alt) + Add(neu), und der Delete des
 // immutablen Pfads ist der Befund. Grenze: der Range-Pfad misst damit keine
 // Inhalts-Ähnlichkeit — dieselbe Eigenschaft, die der --staged-Pfad über seine
