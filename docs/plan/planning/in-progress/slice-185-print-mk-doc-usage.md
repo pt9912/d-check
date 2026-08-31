@@ -82,7 +82,10 @@ vollständige Nachziehen ist die Arbeit.
    **stderr** und endet mit Exit 0. Das ist gelesen, nicht gemessen — vor der
    Handbuch-Zeile fällt der Lauf.
 7. **Handbuch** §4.16: Zahl, Liste, und der Satz zum Ausgabe-Strom (ein
-   `make doc-usage > datei` fängt nichts); §11-Zeile chronologisch.
+   `make doc-usage > datei` fängt nichts). **§11-Zeile und Handbuch-Kopf nicht** —
+   die tragen eine Software-Version, die erst beim Release-Schnitt feststeht;
+   gemessen an der Historie der Datei entstehen sie im Release-Prep-Commit
+   ([`AGENTS.md`](../../../../AGENTS.md) §5, dieselbe Grenze wie beim CHANGELOG).
 8. `make gates`; **Review** und **Verifikation** als getrennte Läufe; Closure.
    `CHANGELOG.md` und der Handbuch-Kopf bleiben unberührt — die gehören in die
    Release-Prep ([`AGENTS.md`](../../../../AGENTS.md) §5).
@@ -110,8 +113,8 @@ vollständige Nachziehen ist die Arbeit.
       Akzeptanzkriterien, Out-of-Scope, Bump + Historie) und Spezifikation
       (Punkt 5: Zahl **und** Aufzählung, Historie).
 - [ ] Das **Handbuch** §4.16 nennt dreizehn Targets, `doc-usage` in der Liste,
-      und den **Ausgabe-Strom** — gemessen, nicht gelesen; §11-Zeile
-      chronologisch eingeordnet.
+      und den **Ausgabe-Strom** — gemessen, nicht gelesen. **§11-Zeile und
+      Handbuch-Kopf bleiben der Release-Prep vorbehalten** (Software-Version).
 - [ ] **Umkehr-Probe** ([`BEO-023`](../observations.md)): ohne den
       Template-Block wird genau der neue Test rot, mit Ausgabe in der
       Closure-Notiz.

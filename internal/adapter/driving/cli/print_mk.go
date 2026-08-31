@@ -19,10 +19,10 @@ import (
 var version = "0.0.0-dev"
 
 // makefileFragment erzeugt das d-check.mk: version-gepinnter, per
-// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus zwölf
+// DCHECK_IMAGE/DCHECK_DIGEST überschreibbarer Image-Ref plus dreizehn
 // `##`-annotierte Targets (doc-check/doc-trace/doc-complete/doc-doctor/
 // doc-repair/doc-immutable/doc-commits/doc-planning/doc-tracked/doc-targets/
-// doc-structure/doc-help) und die TRACE_FLAGS-Variable. Das Template hat genau
+// doc-structure/doc-usage/doc-help) und die TRACE_FLAGS-Variable. Das Template hat genau
 // SIEBEN fmt-Verben — das %s der Version + je ein %s der vcs-/commits-/
 // planning-/tracked-/targets-/structure-Disable-Flags; sonst KEIN '%' (sed
 // statt awk-printf im doc-help-Recipe), sonst bräche fmt.Sprintf. Deterministisch (hängt nur an der eingebetteten Version +
@@ -115,6 +115,14 @@ const mkTemplate = "# d-check.mk — erzeugt von: d-check --print-mk (DC-FA-CLI-
 	".PHONY: doc-structure\n" +
 	"doc-structure: ## Struktur-Invarianten innerhalb der Dokumente via Modul structure; hermetisch, ohne Range (DC-FA-STRUCT-001)\n" +
 	"\tdocker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --enable structure %s\n" +
+	"\n" +
+	// --help schreibt auf stderr und endet mit Exit 0 — eine Umleitung von
+	// stdout fängt nichts (gemessen: 0 Byte stdout, 2488 Byte stderr). Das
+	// Recipe-Echo ist unterdrückt, weil die Ausgabe die Nutzlast ist, nicht
+	// ein Befund — dieselbe Klasse wie doc-repair und doc-help.
+	".PHONY: doc-usage\n" +
+	"doc-usage: ## Aufruf und Optionen von d-check selbst (--help)\n" +
+	"\t@docker run --rm --network none -v \"$(CURDIR):/repo:ro\" $(DCHECK_REF) --help\n" +
 	"\n" +
 	".PHONY: doc-help\n" +
 	"doc-help: ## diese Liste der doc-*-Targets\n" +

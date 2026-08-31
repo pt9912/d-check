@@ -836,10 +836,10 @@ docker run --rm ghcr.io/pt9912/d-check:v0.70.0 --print-mk > d-check.mk
 
 **Ergebnis:** ein include-bares `d-check.mk` auf stdout — eine überschreibbare
 `DCHECK_IMAGE`-Variable (auf die ausgelieferte Release-Version gepinnt), die
-Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und zwölf
+Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und dreizehn
 `##`-annotierte Targets (`doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`,
 `doc-repair`, `doc-immutable`, `doc-commits`, `doc-planning`, `doc-tracked`,
-`doc-targets`, `doc-structure`, `doc-help`). **Der Kopfkommentar nennt die URL dieses Handbuchs** — das Fragment liegt danach in Ihrem Repo, und der Kopf ist der einzige Ort, an dem der Zeiger dorthin mitfährt. Er steht bewusst auf dem **Hauptzweig** statt auf einer Version: so kann er nicht veralten. **Der Preis gehört dazu:** pinnen Sie ein älteres Image, lesen Sie hier über Fähigkeiten, die Ihr Bild noch nicht hat — der Kopf dieses Handbuchs nennt deshalb die Software-Version, zu der es gehört.
+`doc-targets`, `doc-structure`, `doc-usage`, `doc-help`). **Der Kopfkommentar nennt die URL dieses Handbuchs** — das Fragment liegt danach in Ihrem Repo, und der Kopf ist der einzige Ort, an dem der Zeiger dorthin mitfährt. Er steht bewusst auf dem **Hauptzweig** statt auf einer Version: so kann er nicht veralten. **Der Preis gehört dazu:** pinnen Sie ein älteres Image, lesen Sie hier über Fähigkeiten, die Ihr Bild noch nicht hat — der Kopf dieses Handbuchs nennt deshalb die Software-Version, zu der es gehört.
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
@@ -870,6 +870,7 @@ doc-repair: ## Reparatur-Patch (unified diff) auf stdout, git-apply-rein
 	@docker run --rm --network none -v "$(CURDIR):/repo:ro" $(DCHECK_REF) --repair
 
 # … doc-trace, doc-complete (RTM/Gate, --trace[ --require-complete] $(TRACE_FLAGS))
+# … doc-usage (--help des Werkzeugs, echo-unterdrückt, Ausgabe auf stderr)
 # … doc-help (listet die doc-*-Targets über die ##-Annotationen)
 ```
 
@@ -880,7 +881,10 @@ Digest aus den Release-Notes — `make doc-check DCHECK_DIGEST=sha256:<digest>`
 (sticht den Tag) oder überschreiben den vollen `DCHECK_IMAGE`. `make doc-trace`
 gibt die RTM advisory aus, `make doc-complete` als Gate (Waise ⇒ Exit 1); `make
 doc-doctor` zeigt eine erklärende Diagnose, `make doc-repair > fix.patch` einen
-`git apply`-reinen Reparatur-Patch, `make doc-help` listet die `doc-*`-Targets.
+`git apply`-reinen Reparatur-Patch, `make doc-help` listet die `doc-*`-Targets
+und `make doc-usage` zeigt Aufruf und Optionen von `d-check` selbst. **Die Hilfe
+erscheint dabei auf `stderr`, nicht auf stdout** — wie beim direkten Aufruf; ein
+`make doc-usage > datei` fängt nichts ein und meldet trotzdem Erfolg.
 Mit `TRACE_FLAGS=--json` werden die RTM-Targets maschinenlesbar.
 
 ### 4.17 Closure-Notizen auf Substanz prüfen (Modul `planning`)

@@ -2795,6 +2795,38 @@ func TestCLI063_PrintMK_TargetsTarget(t *testing.T) {
 	}
 }
 
+// DC-FA-CLI-010-Erweiterung (12→13): das --print-mk-Fragment trägt zusätzlich
+// das Target doc-usage. Es exponiert die Hilfe des Werkzeugs selbst
+// (DC-FA-CLI-001) und wählt deshalb KEIN Modul ab — anders als die
+// Fokus-Targets. Echo-unterdrückt, weil die Ausgabe die Nutzlast ist.
+func TestCLI185_PrintMK_UsageTarget(t *testing.T) {
+	code, stdout, stderr := run(t, "--print-mk")
+	if code != 0 {
+		t.Fatalf("Exit = %d, stderr = %q", code, stderr)
+	}
+	if !strings.Contains(stdout, "\ndoc-usage: ## ") {
+		t.Fatalf("d-check.mk ohne doc-usage-Target:\n%s", stdout)
+	}
+	line := mkTargetRecipe(t, stdout, "$(DCHECK_REF) --help")
+	for _, want := range []string{
+		"\t@docker run", // Echo unterdrückt wie bei doc-repair/doc-help
+		"--network none",
+		"-v \"$(CURDIR):/repo:ro\"",
+	} {
+		if !strings.Contains(line, want) {
+			t.Fatalf("doc-usage-Recipe ohne %q:\n%s", want, line)
+		}
+	}
+	// Ein Modus, kein Regelmodul: keine --enable/--disable-Liste.
+	if strings.Contains(line, "--enable") || strings.Contains(line, "--disable") {
+		t.Fatalf("doc-usage trägt fälschlich eine Modul-Wahl:\n%s", line)
+	}
+	// doc-help bleibt daneben bestehen — zwei Targets, zwei Ebenen.
+	if !strings.Contains(stdout, "\ndoc-help: ## ") {
+		t.Fatalf("doc-help fehlt neben doc-usage:\n%s", stdout)
+	}
+}
+
 // crossDoc erweitert traceDoc um die Kreuzverweis-Befunde (DC-FA-XREF-001).
 type crossDoc struct {
 	Total            int `json:"total"`
