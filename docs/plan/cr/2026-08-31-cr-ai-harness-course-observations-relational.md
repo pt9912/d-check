@@ -10,8 +10,26 @@ Invalidierungen als Differenzmenge, Alias-Auflösung, abgeleiteter Zähler mit
 **Nachtrag:** [Antwort des Absenders auf unsere vier Rückfragen](2026-08-31-antwort-ai-harness-course-observations-relational.md)
 — sie zieht Teile des Antrags zurück und ist zusammen mit ihm zu lesen.
 
-Dieses Dokument hält den CR **wie empfangen** fest. Die Bewertung steht nicht
-hier — ein CR-Dokument trägt Bitte und Beleg, nicht die Antwort darauf.
+**Zur Herkunft dieser Fassung, damit sie richtig gelesen wird:** dies ist eine
+**verdichtete** Wiedergabe, nicht der Wortlaut des Absenders. Sein Dokument
+liegt in seinem Repo und ist rund doppelt so lang; die Gliederung ist übernommen,
+die Beispiel-Konfiguration und die tabellarische Form der sechzehn
+Mutationsproben sind es nicht. Wo hier zitiert wird, sind Wortlaut und Zahlen
+die seinen. Die Bewertung steht nicht hier — ein CR-Dokument trägt Bitte und
+Beleg, nicht die Antwort darauf.
+
+**Und der Antrag ist nicht mehr der, der hier steht.** Auf unsere vier
+Rückfragen hat der Absender ihn selbst verkleinert; wer diesen Text als
+Arbeitsgrundlage nimmt, arbeitet an zurückgezogenen Teilen. Der Stand:
+
+| Teil | Stand nach der Antwort des Absenders |
+|---|---|
+| §1 Identität | Bestands-Zugehörigkeit **vertagt**, bis sein Kanon Sub-Area-Kürzel trägt; Autoritäts-Quelle in Config **und** Anforderung |
+| §2 Evidence-Paarung | beantragt, aber vom Absender als **Verschärfung** gegen seinen eigenen Kanon gekennzeichnet — wartet auf eine Quell-Entscheidung |
+| §5 `threshold.count` und `accept:` | **zurückgezogen**; die 3 ist Konvention und gehört in die Anforderung, nicht in die Konfiguration |
+| §6 Diagnosesicht | als `--doctor`-Erweiterung **zurückgezogen**; wird als eigener Ausgabemodus neu eingereicht |
+| *Bereits gelöst: Immutabilität* | **zurückgezogen** — siehe den Absatz unten und den [Werkzeug-Befund](2026-08-31-befund-ai-harness-course-vcs-rename.md) |
+| Mutationsproben | zwei ergänzt: Zähler-Anspruch ohne Slice-Beleg (rot); zwei Funde im selben Slice (grün, zählt einmal) |
 
 ---
 
