@@ -100,3 +100,45 @@ func TestObservationsFailClosedAndInert(t *testing.T) {
 		t.Fatalf("unlesbares Verzeichnis: ein Befund erwartet, got %v", got)
 	}
 }
+
+// F-1 der Review-Runde: zwei VERSCHIEDENE ungedeckte Kennungen auf EINER Zeile
+// muessen zwei Befunde ergeben. Die Deduplikation laeuft ueber (Datei, Zeile,
+// Regel, Ziel, Grund) OHNE die Meldung — traegt das Ziel die Datei statt der
+// Kennung, faellt der zweite Befund still weg, und die Zahl ist falsch, ohne
+// dass der Lauf gruen wuerde. ids loest das seit jeher ueber dasselbe Mittel.
+func TestObservationsTwoIDsOnOneLineDoNotCollide(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"plan/observations.md": obsRegister,
+		"plan/done/s.md":       "zwei: [BEO-777](../observations.md) und [BEO-888](../observations.md)\n",
+	})
+	got := model.SortFindings(rules.CheckPlanningObservations(fs, obsCfg("plan/done")))
+	if len(got) != 2 {
+		t.Fatalf("zwei Kennungen auf einer Zeile: 2 Befunde erwartet, got %d (%v)", len(got), got)
+	}
+	if got[0].Target == got[1].Target {
+		t.Fatalf("beide Befunde tragen dasselbe Ziel %q — sie kollidieren in der Deduplikation", got[0].Target)
+	}
+}
+
+// Ebenso zwei unlesbare Zitier-Verzeichnisse: sie teilen Datei, Zeile, Regel
+// und Grund und faenden ohne eigenes Ziel zu EINEM Befund zusammen.
+func TestObservationsTwoBadDirsDoNotCollide(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{"plan/observations.md": obsRegister})
+	got := model.SortFindings(rules.CheckPlanningObservations(fs, obsCfg("plan/weg-a", "plan/weg-b")))
+	if len(got) != 2 {
+		t.Fatalf("zwei fehlende Verzeichnisse: 2 Befunde erwartet, got %d (%v)", len(got), got)
+	}
+}
+
+// F-5: eine erste Zelle darf die Backtick-Konvention des Dokuments tragen,
+// ohne still aufzuhoeren zu deklarieren.
+func TestObservationsFirstCellMayCarryBackticks(t *testing.T) {
+	reg := obsRegister + "| `BEO-003` | dekoriert | 1 | slice-1 |\n"
+	fs := coretest.NewMemFS(map[string]string{
+		"plan/observations.md": reg,
+		"plan/done/s.md":       "siehe BEO-003\n",
+	})
+	if got := rules.CheckPlanningObservations(fs, obsCfg("plan/done")); len(got) != 0 {
+		t.Fatalf("dekorierte erste Zelle deklariert nicht: %v", got)
+	}
+}

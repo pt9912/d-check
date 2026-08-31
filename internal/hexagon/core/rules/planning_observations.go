@@ -28,12 +28,12 @@ func CheckPlanningObservations(fsys driven.Filesystem, cfg model.PlanningConfig)
 	}
 	re, err := regexp.Compile(o.EffectivePattern())
 	if err != nil {
-		return observationFinding(o.Register, 1,
+		return observationFinding(o.Register, 1, o.Register,
 			"Kennungs-Muster "+o.EffectivePattern()+" ist kein gültiger Ausdruck (fail-closed)")
 	}
 	content, err := fsys.ReadFile(o.Register)
 	if err != nil {
-		return observationFinding(o.Register, 1,
+		return observationFinding(o.Register, 1, o.Register,
 			"Register "+o.Register+" fehlt oder ist unlesbar (fail-closed)")
 	}
 	declared := declaredObservationIDs(string(content), re)
@@ -45,7 +45,7 @@ func CheckPlanningObservations(fsys driven.Filesystem, cfg model.PlanningConfig)
 	for _, d := range dirs {
 		files, err := markdownFilesUnder(fsys, d)
 		if err != nil {
-			out = append(out, observationFinding(o.Register, 1,
+			out = append(out, observationFinding(o.Register, 1, d,
 				"Zitier-Verzeichnis "+d+" fehlt oder ist unlesbar (fail-closed)")...)
 			continue
 		}
@@ -68,6 +68,7 @@ func declaredObservationIDs(content string, re *regexp.Regexp) map[string]bool {
 			continue
 		}
 		cell := strings.TrimSpace(strings.SplitN(strings.TrimPrefix(t, "|"), "|", 2)[0])
+		cell = strings.Trim(cell, "`")
 		if m := re.FindString(cell); m != "" && m == cell {
 			out[cell] = true
 		}
@@ -98,7 +99,7 @@ func citedWithoutRow(fsys driven.Filesystem, file string, re *regexp.Regexp, dec
 			if inCodeOnly(codeByLine[pl.no], links, loc[0], loc[1]) {
 				continue // Beispiel, keine Behauptung
 			}
-			out = append(out, observationFinding(file, pl.no,
+			out = append(out, observationFinding(file, pl.no, id,
 				"Kennung "+id+" ist zitiert, hat aber keine Zeile im Register")...)
 		}
 	}
@@ -106,26 +107,16 @@ func citedWithoutRow(fsys driven.Filesystem, file string, re *regexp.Regexp, dec
 }
 
 // inCodeOnly meldet, ob [start,end) in einem Inline-Code-Span liegt, OHNE
-// zugleich Linktext zu sein. Die Linktext-Ausnahme ist dieselbe, die ids für
-// seine Linkpflicht trifft (IDOccurrenceExempt) — eine zweite Antwort auf
-// dieselbe Frage wäre ein Defekt.
+// zugleich verlinkt zu sein. Die Verlinkungs-Frage beantwortet
+// IDOccurrenceExempt — dieselbe Stelle, die ids fuer seine Linkpflicht ruft;
+// eine zweite Antwort auf dieselbe Frage waere ein Defekt.
 func inCodeOnly(code []inlineSpan, links []LinkSpan, start, end int) bool {
-	inCode := false
 	for _, sp := range code {
 		if start >= sp.start && end <= sp.end {
-			inCode = true
-			break
+			return !IDOccurrenceExempt(links, start, end)
 		}
 	}
-	if !inCode {
-		return false
-	}
-	for _, sp := range links {
-		if start >= sp.TextStart && end <= sp.TextEnd && !sp.IsImage {
-			return false // Linktext: eine Behauptung, kein Beispiel
-		}
-	}
-	return true
+	return false
 }
 
 // markdownFilesUnder sammelt die Markdown-Dateien eines Verzeichnisbaums.
@@ -159,12 +150,12 @@ func markdownFilesUnder(fsys driven.Filesystem, dir string) ([]string, error) {
 	return out, nil
 }
 
-func observationFinding(file string, line int, msg string) []model.Finding {
+func observationFinding(file string, line int, target, msg string) []model.Finding {
 	return []model.Finding{{
 		File:   file,
 		Line:   line,
 		Rule:   "planning",
-		Target: file,
+		Target: target,
 		Reason: model.ReasonObservationUnregistered,
 		Message: msg,
 	}}

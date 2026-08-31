@@ -1091,3 +1091,48 @@ func TestDecode_StructureHint(t *testing.T) {
 		t.Fatalf("abwesender hint muss leer sein, got %q", cfg.Structure[0].Hint)
 	}
 }
+
+// F-2 der Review-Runde: die vierte planning-Faehigkeit hatte keine
+// Konfigurations-Negativtests, waehrend die Schwester-Faehigkeit waves sie
+// fuehrt. Der Config-Rand ist die Stelle, an der ein Tippfehler still gruen
+// wuerde -- genau dagegen ist die fail-closed-Zusage gerichtet.
+func TestDecode_ObservationsFehler(t *testing.T) {
+	for name, bad := range map[string]string{
+		"register absolut":  "planning:\n  observations:\n    register: /abs/reg.md\n",
+		"register mit ..":   "planning:\n  observations:\n    register: ../raus.md\n",
+		"dirs absolut":      "planning:\n  observations:\n    register: r.md\n    dirs: [/abs]\n",
+		"dirs mit ..":       "planning:\n  observations:\n    register: r.md\n    dirs: ['../raus']\n",
+		"pattern ungültig":  "planning:\n  observations:\n    register: r.md\n    pattern: '[a-'\n",
+	} {
+		if _, err := configyaml.Decode([]byte(bad)); err == nil {
+			t.Fatalf("%s: Fehler erwartet, got nil", name)
+		}
+	}
+}
+
+// Happy: die drei Schluessel landen im Kern, und ohne register bleibt die
+// Faehigkeit inert (leerer Wert, kein Default-Pfad).
+func TestDecode_ObservationsHappy(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"planning:\n  observations:\n    register: docs/obs.md\n    dirs: [docs/plan]\n    pattern: 'OBS-\\d{2}'\n"))
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	o := cfg.Planning.Observations
+	if o.Register != "docs/obs.md" || len(o.Dirs) != 1 || o.Dirs[0] != "docs/plan" {
+		t.Fatalf("Register/Dirs nicht uebernommen: %+v", o)
+	}
+	if o.EffectivePattern() != `OBS-\d{2}` {
+		t.Fatalf("Pattern = %q", o.EffectivePattern())
+	}
+	leer, err := configyaml.Decode([]byte("planning:\n  roadmap: r.md\n"))
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if leer.Planning.Observations.Register != "" {
+		t.Fatalf("ohne Schluessel inert erwartet, got %+v", leer.Planning.Observations)
+	}
+	if leer.Planning.Observations.EffectivePattern() != `BEO-\d{3}` {
+		t.Fatalf("Default-Muster = %q", leer.Planning.Observations.EffectivePattern())
+	}
+}

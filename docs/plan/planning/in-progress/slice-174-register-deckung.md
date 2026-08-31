@@ -240,7 +240,24 @@ Module: `planning` oder neu. Gates: `make test`, `make planning-check`,
 
 **GF (Greenfield, Repo-Default)** — alle drei berührten Sub-Areas fallen unter
 den Default: Doc führt, Code folgt. Die Regel steht im Kanon, der Bestand ist
-gemessen und konform (24/24), es gibt keine Reconciliation. Das
-Evidenz-Risiko ist niedrig und **gemessen**, nicht geschätzt.
+gemessen und konform (24/24), es gibt keine Reconciliation.
 
+**Die GF-Reihenfolge wurde dabei NICHT eingehalten, und das gehört hierher statt
+in eine milde Closure-Formulierung.** Gebaut wurde **code-first**: Regel, Tests
+und Grund-Code standen, bevor Lastenheft und ADR nachgezogen wurden — der
+Feat-Commit trägt die Spec-Änderung, der ADR-Commit folgt ihm. Doc führt heißt
+Spec → ADR → Code, und das war hier umgekehrt.
+
+**Der Grund ist nicht bloß Bequemlichkeit, und er entwertet die Abweichung
+nicht:** die tragende technische Entscheidung — Prosa und Linktext zählen, ein
+reines Inline-Code-Span nicht — **entstand beim Bau**. Erst die Messung am
+Bestand (366 Zitate mit Backticks im Linktext gegen 112 reine Code-Spans) zeigte,
+dass der naheliegende Präzedenzfall dieses Repos die Zitate übersehen hätte. Eine
+doc-first geschriebene Anforderung hätte die falsche Regel zugesagt.
+
+**Was daraus folgt, ist keine Ausnahme, sondern eine Reihenfolge-Korrektur für
+den nächsten Fall dieser Art:** wo die tragende Regel von einer Messung am
+Bestand abhängt, gehört die **Messung** vor die Anforderung — nicht der Code.
+Der Slice hätte mit einer Mess-Etappe beginnen können und wäre danach doc-first
+geblieben.
 ## 9. Closure-Notiz (nach `done/`)
