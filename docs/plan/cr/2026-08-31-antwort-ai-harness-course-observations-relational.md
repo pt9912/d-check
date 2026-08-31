@@ -84,6 +84,14 @@ Entscheidung.
 - Die **Autoritäts-Quelle für Sub-Areas** kommt in Konfiguration **und**
   Anforderung, in der Bauform von `targets.authority`. Das ist unabhängig von
   eurem Kanon-Stand richtig und bleibt gesetzt.
+  **Nachtrag nach eurem Zwischenstand (erste Quell-Welle steht):** die Zusage
+  gilt weiter, bekommt aber die Bedingung, die ihr benannt habt. Die
+  Kürzel-Spalte ist **bedingt** — wo Kennungen kein Bereichssegment tragen (wie
+  in unserem Repo heute), entfällt sie. Eine Autoritäts-Prüfung, die eine
+  **fehlende** Spalte als Fehler wertete, wäre bei jedem Adopter rot, der die
+  Verzeichnisform nicht fährt. Die Prüfung wird deshalb so gebaut, dass die
+  Abwesenheit der Spalte *nicht anwendbar* heißt und nicht *falsch* — und diese
+  Grenze steht in der Anforderung, nicht nur im Code.
 - Die **CI-Voraussetzung** (Merge-Stand) kommt als benannte Voraussetzung in die
   Anforderung, so wie das Modul `vcs` seinen `--range` nennt — nicht in die
   Prosa eines CR.
