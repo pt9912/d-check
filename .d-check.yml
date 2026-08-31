@@ -577,6 +577,20 @@ planning:
     # Digest-Backfill gesetzt — ein aelterer Pruefer braeche am
     # unbekannten Schluessel mit Exit 2.
     mode: many
+  # Register-Deckung (vierte Faehigkeit, DC-FA-PLAN-001 0.81.0, ADR-0079):
+  # eine zitierte Beobachtungs-Kennung hat eine Zeile im Register. Gezaehlt
+  # werden Prosa UND Linktext, ein reines Inline-Code-Span nicht -- die
+  # Trennlinie zwischen Zitat und Beispiel, gemessen: 366 echte Zitate stehen
+  # als Link MIT Backticks, beide Beispiel-Nennungen als reines Code-Span.
+  #
+  # NOCH NICHT SCHARF, dieselbe Ruecksicht wie bei mode: many oben -- ein
+  # unbekannter Schluessel ist Exit 2 fuer jeden aelteren Pruefer, und die
+  # ausgelieferte Version ist einer. Wird nach Release und Digest-Backfill
+  # gesetzt. Vor dem Scharfschalten gemessen: eigener Bestand 0 Befunde,
+  # konstruierte Kennung als Link 1, dieselbe als Code-Span 0.
+  # observations:
+  #   register: docs/plan/planning/observations.md
+  #   dirs: [docs/plan/planning]
 
 # Modul targets (DC-FA-TGT-001, slice-063): Deklarations-Konsistenz Doku ↔
 # Build-Targets — `make gate-consistency` aktiviert es mit `--enable targets`
