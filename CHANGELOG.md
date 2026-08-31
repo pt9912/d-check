@@ -4,6 +4,31 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.71.1] — 2026-08-31
+
+### Fixed
+
+- slice-186 — **Das Modul `vcs` meldet den reinen Rename einer immutablen Datei
+  jetzt auch über `--range`**
+  ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)).
+  **Die Zusage war modus-abhängig, und das stand nirgends:** über `--staged`
+  entstand der Befund `core-drift-vcs`, über `--range` **nicht** — ein reiner
+  Rename (Inhalt unverändert) kam durch die Rename-Erkennung der verwendeten
+  git-Bibliothek als **eine** Änderung auf dem **neuen** Pfad an, der alte Pfad
+  verschwand aus dem Diff, und die Pfad-Stabilitäts-Prüfung lief ins Leere.
+  Erst wenn der Inhalt zusätzlich stark abwich, zerfiel die Änderung wieder und
+  der Befund erschien. Der Range-Pfad difft jetzt **ohne** Rename-Erkennung.
+  **Für Konsumenten heißt das: ein Lauf, der bisher grün war, kann jetzt einen
+  Befund melden** — genau dann, wenn eine immutable Datei umbenannt oder
+  verschoben wurde, ohne dass jemand ihren Inhalt anfasste. Das ist der Fall,
+  den die Anforderung immer schon meinte. **Der stille Modus war der
+  CI-Pfad**; wer `doc-immutable` mit `RANGE=` in der Pipeline fährt, war
+  betroffen, der lokale `--staged`-Hook nicht. Gemeldet von einem Adopter als
+  Werkzeug-Befund. Keine neue Fähigkeit, kein neuer Grund-Code, keine
+  Vertrags-Änderung — die Anforderung war nicht falsch, sie war nicht
+  eingelöst. **Der Preis ist benannt:** der Range-Pfad misst keine
+  Inhalts-Ähnlichkeit (Out-of-Scope der Anforderung).
+
 ## [0.71.0] — 2026-08-31
 
 ### Added
