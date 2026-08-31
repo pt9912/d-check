@@ -97,6 +97,60 @@ bei der Anlage nicht absehbar.
 6. `make gates` und `make fullbuild`; **Review** und **Verifikation** als
    getrennte Läufe; Closure.
 
+## 2a. Ergebnis der Bestands-Stichprobe (ausgeführt 2026-08-31)
+
+**Gezogen:** [`modul-07-carveouts.md` §Ziel-Form: Carveout](../../../../.harness/baseline/v5.15.0/regelwerk/modul-07-carveouts.md#ziel-form-carveout).
+**Auswahl nach Kanon-Kriterium** — aus den inhaltlich delta-freien Abschnitten
+(15 Module tragen nur den Versions-Stempel), rotierend: `modul-14` war die
+Stichprobe des `v5.6.0`-Bumps. Der Grund für gerade diesen Abschnitt ist
+[`MR-000`](../../../../harness/conventions.md#mr-000--baseline-aussage): dort
+steht *„keine inhaltlichen Adaptionen ggü. Baseline-Default für …
+Carveout-Disziplin"* — eine Behauptung, die dieses Repo nie geprüft hat, weil
+es **nie einen Carveout eröffnet** hat.
+
+**Befund: drei der vier operativen Regeln stehen nicht im ausgefüllten
+Artefakt.** [`docs/plan/carveouts/README.md`](../../carveouts/README.md) ist
+die einzige Stelle, die die Disziplin trägt:
+
+| Kanon-Regel | Im ausgefüllten Artefakt? |
+|---|---|
+| Sechs Pflicht-Header-Felder (Status · Datum angelegt · Letzte Prüfung · betroffenes Gate · Geltungsbereich · Folge-Slice) | **nein** — genannt sind zwei (Auflösungs-Trigger, Folge-Slice) |
+| Auflösungs-Trigger als beobachtbare, messbare Bedingung | teilweise — das Feld ist genannt, die Beobachtbarkeits-Anforderung nicht |
+| Die Gate-Konfiguration nennt die `CO-<NNN>` im Gate-Output | **nein** — nirgends |
+| Auflösung ist ein `git mv` nach `done/` | **nein** — es gibt kein `carveouts/done/` |
+
+**Das ist genau die Klasse, die die Stichprobe finden soll:** eine alte,
+stabile Baseline-Regel erzeugt keinen Template-Diff und hat keinen
+`MR`-Eintrag, den der Adaptions-Durchgang abschreiten könnte — sie ist
+unsichtbar, *weil* sie sich nie geändert hat. **Kein Gate sieht das**, und die
+Lücke ist folgenlos, solange kein Carveout existiert; sie wird es in dem
+Moment, in dem einer eröffnet wird. **Ausgang: Folge-Slice** — entweder das
+`README` auf die sechs Felder ziehen, oder die Abweichung als `MR` erklären.
+Nicht in diesem Slice: die DoD nennt die Stichprobe nicht, nur das Vorgehen,
+und ihr Zweck ist das Aufdecken.
+
+## 2b. Zwei Funde des Delta-Durchgangs, die dieser Slice nicht einlöst
+
+- **Der Kanon verlangt einen Versions-Sensor auf den Baseline-Pin, wir haben
+  ihn nicht.** Kurs-Welle 103
+  ([`grundlagen-traceability.md`](../../../../.harness/baseline/v5.15.0/regelwerk/grundlagen-traceability.md)):   <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/grundlagen-traceability.md:89-89 -->
+  der adoptierte Stand steht **einmal** im Adaptions-Block, ein Sensor prüft
+  jeden Pin dagegen — *„Ein vergessener Nachzug ist dann ein Befund, kein toter
+  Link."* Bei uns fängt das heute die **Existenz** (`links`/`codepaths` melden
+  den gelöschten Pfad), nicht der **Vergleich**; solange beide Bäume
+  nebeneinander liegen, ist ein stehengebliebener Pin unsichtbar. Die
+  Kurs-Vorlage schlägt dafür die **Kurzform** unter `versions:` vor — die ist
+  hier von [`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in)
+  belegt. Über `versions.patterns` ginge es ohne Produktänderung
+  ([ADR-0058](../../adr/0058-konfigurations-flaechen-additiv-weiten.md)). **Der
+  Vorschlag der Vorlage ist damit für jeden Adopter mit belegter Kurzform
+  falsch** — das ist zugleich ein CR-Kandidat an den Kurs.
+- **[`MR-013`](../../../../harness/conventions.md#mr-013) ist teilweise
+  überholt.** Der Widerspruch samt beider Begründungen steht in
+  [`MR-057`](../../../../harness/conventions.md#mr-057); die Auflösung ist ein
+  Nachfolge-Eintrag plus Nachzug in [`AGENTS.md`](../../../../AGENTS.md) §3.3,
+  nicht ein Edit am bestehenden Eintrag.
+
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Kein Entfernen der `Status:`-Felder.** Die `MR`-Vorlage des Herausgebers
