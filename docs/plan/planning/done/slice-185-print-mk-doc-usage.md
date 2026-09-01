@@ -193,7 +193,7 @@ Liefer-Punkte aufmacht (Fragment · Vertrag · Handbuch).
   und der Lese-Schritt sieht den jüngsten Lauf, nicht sein Alter — die
   benannte Grenze des Targets, hier sichtbar statt bloß dokumentiert. Der
   Baseline-Rückstand (`v5.12.0` gegen `v5.14.0`) hängt an
-  [slice-183](../in-progress/slice-183-baseline-v5150.md), nicht an diesem Slice. **Dieser
+  [slice-183](../done/slice-183-baseline-v5150.md), nicht an diesem Slice. **Dieser
   Block trägt bewusst keine `cite`-Direktive** — sein Ziel ist eine
   Repo-Adaption, kein Baseline-Abschnitt
   ([`MR-054`](../../../../harness/conventions.md#mr-054)).

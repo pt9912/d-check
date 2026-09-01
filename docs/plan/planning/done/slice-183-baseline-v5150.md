@@ -266,12 +266,16 @@ und ihr Zweck ist das Aufdecken.
       gegenüber `v5.13.0` tragen, steht im Slice — der Herausgeber hat nur
       `v5.13.0` angekündigt. Siehe §1: Wellen 99–106 je Tag zugeordnet, 52
       Bundle-Dateien nach unverändert/Stempel/echtem-Inhalt klassifiziert.
-- [ ] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
+- [x] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
       Review**; **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
       `make gates` grün: zehn Gates, 647 Dateien, 0 Befunde, Coverage 94,70 %
       (2026-09-01). `make fullbuild` grün: Image-Hash
       `sha256:7b8cb29549c4553300d87ee9e382dfbb3630068b63cf945f3a095f2f2caa3b1e`
-      (2026-09-01). Review und Verifikation stehen noch aus.
+      (2026-09-01). **Review** (eigener Kontext): 0 HIGH, 1 MEDIUM, 1 LOW —
+      beide behoben in `d32c13d`. **Verifikation** (eigener Kontext, nach
+      `d32c13d`): alle acht geprüften Punkte konform, Zahlen/Hashes/Zitate
+      unabhängig nachgerechnet und deckungsgleich; Freigabe für `done/`
+      erteilt.
 
 ## 5. Abnahme-Punkte / Risiken
 
