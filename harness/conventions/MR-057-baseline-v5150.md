@@ -91,10 +91,18 @@
   **31 bleiben gültig** — die Deltas sind fast durchweg Ergänzungen
   (`modul-13` +21, `grundlagen-source-precedence` +5, `grundlagen-begriffe` +1
   ändern keine bestehende Zeile), und die wenigen geänderten Zeilen liegen in
-  Abschnitten, die kein Eintrag als Basis nennt. **Zwei tragen eine Antwort:**
-  [`MR-048`](../conventions.md#mr-048) mit dem nachgezogenen Abschnittsnamen,
-  und [`MR-013`](../conventions.md#mr-013) ist **teilweise überholt** — dazu
-  unten.
+  Abschnitten, die kein Eintrag als Basis nennt. Darunter fallen
+  [`MR-042`](../conventions.md#mr-042) und
+  [`MR-043`](../conventions.md#mr-043): ihr Linktext ist oben bereits als
+  Nachzug des `F-7`-Befunds erklärt, eine **eigene** Antwort dieses
+  Adaptions-Reviews ist das nicht. **Zwei tragen eine neue Antwort dieses
+  Durchgangs:** [`MR-048`](../conventions.md#mr-048) — sein veralteter
+  Linktext war vor diesem Bump **nicht** bekannt (anders als bei MR-042/043
+  über `F-7`; die Historie zeigt MR-048 seit seiner Anlage mit dem
+  damals korrekten Namen, der erst durch die Umbenennung stale wurde) und ist
+  damit ein eigenständiger Fund dieses Reviews, kein Nachzug eines bekannten
+  Befunds — und [`MR-013`](../conventions.md#mr-013) ist **teilweise
+  überholt** — dazu unten.
 
   **Die Kollision, benannt statt aufgelöst.** Kurs-Welle 103 hat
   [`grundlagen-traceability.md` §Herkunfts-Anker für Steering-Loop-Regeln](../../.harness/baseline/v5.15.0/regelwerk/grundlagen-traceability.md#herkunfts-anker-für-steering-loop-regeln)   <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/grundlagen-traceability.md:80-81 -->

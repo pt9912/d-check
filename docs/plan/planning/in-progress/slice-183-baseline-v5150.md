@@ -80,11 +80,18 @@ bei der Anlage nicht absehbar.
    es sind VIER Aliase, nicht zwei**, und der Wächter hat alle vier gemeldet,
    bevor irgendetwas committet war.
 3. **Die `cite`-Spannen neu ankern**
-   ([`MR-051`](../../../../harness/conventions.md#mr-051)). Gemessen sind es
-   **rund 33 echte Direktiven** in den vendorten Baum — die rohe Zahl 133 zählt
-   Erwähnungen mit, darunter Doku-Beispiele wie `<pfad>`. Verteilung: 25 in
-   `modul-05`, je 2 in `modul-09` und `grundlagen-durchsetzungsschicht`, je 1 in
-   `modul-02`, `modul-10`, `modul-11` und den Templates. **Unterschieden wird
+   ([`MR-051`](../../../../harness/conventions.md#mr-051)). **Vorab-Schätzung
+   bei der Anlage** (noch auf `v5.14.0` gezielt, §1): rund 33 echte Direktiven
+   in den vendorten Baum — die rohe Zahl 133 zählt Erwähnungen mit, darunter
+   Doku-Beispiele wie `<pfad>`. Geschätzte Verteilung: 25 in `modul-05`, je 2 in
+   `modul-09` und `grundlagen-durchsetzungsschicht`, je 1 in `modul-02`,
+   `modul-10`, `modul-11` und den Templates. **Diese Schätzung war überholt:**
+   Bei der Ausführung gegen `v5.15.0` gemessen sind es **24** lebende
+   Direktiven, davon **14** in `modul-05` — das deckt sich mit dem
+   tatsächlichen Ergebnis (§4: 2 nachgezogen + 0 entfernt + 22 unverändert =
+   24). Die Differenz zur Vorab-Schätzung erklärt sich aus dem gewechselten
+   Ziel-Tag (§1) und aus der groben Ersteinschätzung; sie ändert nichts an
+   Schritt 4. **Unterschieden wird
    nach Grund-Code, nicht nach Gefühl:** `citation-mismatch` mit dem Wortlaut
    anderswo in derselben Datei ⇒ Spanne nachziehen; Wortlaut nirgends mehr ⇒
    [`MR-039`](../../../../harness/conventions.md#mr-039), Direktive entfernen,
@@ -95,10 +102,19 @@ bei der Anlage nicht absehbar.
    Ausgängen (gegenstandslos · bleibt gültig · teilweise überholt · Bezug
    entfallen · Schärfung). Gegenstand sind die **33 lebenden** `MR`-Einträge;
    die 23 in `conventions/done/` sind aufgelöst und nicht Gegenstand.
-   **Ein Ausgang ist schon bekannt:** [`MR-048`](../../../../harness/conventions.md#mr-048)
-   zitiert `§Referenz-Implementierung`; der Abschnitt heißt ab `v5.13.0`
-   `§Das vollständige Artefakt-Set`. Damit schließt sich zugleich der
-   `F-7`-Befund aus dem slice-155-Review.
+   **Ein Ausgang ist schon bekannt:** drei lebende Einträge zitieren
+   `§Referenz-Implementierung`; der Abschnitt heißt ab `v5.13.0`
+   `§Das vollständige Artefakt-Set`. **Bei der Ausführung präzisiert:**
+   [`MR-048`](../../../../harness/conventions.md#mr-048) ist der eigenständige
+   Fund dieses Adaptions-Reviews — sein Linktext war seit seiner Anlage
+   korrekt und wurde erst durch die Umbenennung stale.
+   [`MR-042`](../../../../harness/conventions.md#mr-042) und
+   [`MR-043`](../../../../harness/conventions.md#mr-043) tragen denselben
+   mechanischen Nachzug, aber ihre Situation war schon bekannt: der
+   `F-7`-Befund aus dem slice-155-Review hatte genau ihren Linktext gemeldet
+   (in der Gegenrichtung — sie nannten den neuen Namen, als noch der alte
+   galt) und ist damit jetzt geschlossen, nicht neu gefunden (siehe
+   [`MR-057`](../../../../harness/conventions.md#mr-057)).
 5. **Die Bestands-Stichprobe fahren**, die
    [`AGENTS.md`](../../../../AGENTS.md) §1 auch bei aktuellem Pin verlangt —
    sie hängt nicht am Delta.
@@ -229,14 +245,22 @@ und ihr Zweck ist das Aufdecken.
       gegen den Datei-Diff geprüft und unverändert bestätigt.
 - [x] **Der Adaptions-Review ist gefahren und dokumentiert:** je lebendem
       `MR`-Eintrag einer der fünf Ausgänge. **Keine Treffer sind ebenfalls eine
-      Antwort** und werden notiert. Belegt in `08373c9`: 33 lebende Einträge
-      geprüft, 31 bleiben gültig;
-      [`MR-042`](../../../../harness/conventions.md#mr-042)/`043`/[`MR-048`](../../../../harness/conventions.md#mr-048)
-      ziehen den umbenannten Abschnittsnamen nach,
-      [`MR-013`](../../../../harness/conventions.md#mr-013) ist teilweise
-      überholt (§2b, [`MR-057`](../../../../harness/conventions.md#mr-057)).
-- [x] [`MR-048`](../../../../harness/conventions.md#mr-048) zeigt auf
-      `§Das vollständige Artefakt-Set`; der `F-7`-Befund aus slice-155 ist als
+      Antwort** und werden notiert. Belegt in `08373c9`/[`MR-057`](../../../../harness/conventions.md#mr-057):
+      33 lebende Einträge geprüft, 31 bleiben gültig — darunter
+      [`MR-042`](../../../../harness/conventions.md#mr-042) und
+      [`MR-043`](../../../../harness/conventions.md#mr-043), deren
+      Linktext-Nachzug bereits der `F-7`-Befund aus slice-155 trägt, keine
+      neue Antwort dieses Reviews. **Zwei** tragen eine neue Antwort:
+      [`MR-048`](../../../../harness/conventions.md#mr-048) (eigenständiger
+      Fund: sein Linktext war seit Anlage korrekt und wurde erst durch die
+      Umbenennung stale) und
+      [`MR-013`](../../../../harness/conventions.md#mr-013), das teilweise
+      überholt ist (§2b).
+- [x] [`MR-048`](../../../../harness/conventions.md#mr-048),
+      [`MR-042`](../../../../harness/conventions.md#mr-042) und
+      [`MR-043`](../../../../harness/conventions.md#mr-043) zeigen auf
+      `§Das vollständige Artefakt-Set`; der `F-7`-Befund aus slice-155 (er
+      betraf die beiden zuletzt genannten, nicht das MR davor) ist damit
       geschlossen vermerkt. Belegt in `08373c9`.
 - [x] **Das Delta ist gelesen, nicht angenommen:** was `v5.13.1`, `v5.14.0` und `v5.15.0`
       gegenüber `v5.13.0` tragen, steht im Slice — der Herausgeber hat nur
