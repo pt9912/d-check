@@ -40,8 +40,16 @@ Regelwerk-Dateien mit echtem Inhalt (`grundlagen-durchsetzungsschicht`,
 `grundlagen-begriffe`, `modul-13`, `modul-14`, `modul-02`), dazu zwei Punkte,
 die uns direkt betreffen: der Abschnitt `§Referenz-Implementierung` heißt jetzt
 `§Das vollständige Artefakt-Set`, und die `MR`-Vorlage hat ihr `Status:`-Feld
-verloren. **Was `v5.13.1` und `v5.14.0` tragen, wissen wir nicht** — das ist
-der erste Schritt, nicht eine Annahme dieses Plans.
+verloren.
+
+**Das Delta ist inzwischen gelesen, nicht angenommen** — netzlos aus dem
+Kurs-Klon, Tag für Tag: `v5.13.0` = Wellen 99–101, `v5.13.1` = Welle 102
+(kein Delta in `kurs/de/`, geändert ist nur die Konfigurations-Vorlage),
+`v5.14.0` = Welle 103, `v5.15.0` = Wellen 105/106. Von 52 Bundle-Dateien sind
+20 unverändert, 16 tragen nur den Versions-Stempel, 14 echten Regel-Inhalt —
+darunter `templates/.d-check.yml` mit 31 geänderten Zeilen, die eine
+Delta-Schleife über `*.md` allein übersehen hätte ([`MR-037`](../../../../harness/conventions.md#mr-037)
+hatte genau davor gewarnt).
 
 **Das Ziel ist während der Wartezeit gewandert, und der Grund ist neu.** Der
 Plan zielte bei seiner Anlage auf `v5.14.0`. Inzwischen ist `v5.15.0`
@@ -206,24 +214,40 @@ und ihr Zweck ist das Aufdecken.
 
 ## 4. Definition of Done
 
-- [ ] Der Pin steht auf `v5.15.0`: vendorter Baum re-vendored,
+- [x] Der Pin steht auf `v5.15.0`: vendorter Baum re-vendored,
       `make baseline-verify` grün (Integrität, Manifest-Deckung, Alias-Auflösung),
-      alle Pfad-Verweise und die zwei Symlinks gezogen.
-- [ ] **Jede `cite`-Direktive ist entschieden**, nicht nur grün: je Direktive
+      alle Pfad-Verweise und die zwei Symlinks gezogen. Belegt in `08373c9`:
+      129 lebende `v5.12.0`-Vorkommen, 95 gehoben, 34 als Aussagen über die
+      Vergangenheit stehen gelassen; alle vier `.claude/rules`-Aliase von
+      `baseline-verify` vor dem Commit gemeldet.
+- [x] **Jede `cite`-Direktive ist entschieden**, nicht nur grün: je Direktive
       steht fest, ob sie nachgezogen, umgehängt oder nach
       [`MR-039`](../../../../harness/conventions.md#mr-039) entfernt wurde. Die
-      Zahl der drei Fälle steht in der Commit-Botschaft.
-- [ ] **Der Adaptions-Review ist gefahren und dokumentiert:** je lebendem
+      Zahl der drei Fälle steht in der Commit-Botschaft. Belegt in `08373c9`:
+      2 nachgezogen ([`MR-035`](../../../../harness/conventions.md#mr-035),
+      [`MR-043`](../../../../harness/conventions.md#mr-043)), 0 entfernt, 22
+      gegen den Datei-Diff geprüft und unverändert bestätigt.
+- [x] **Der Adaptions-Review ist gefahren und dokumentiert:** je lebendem
       `MR`-Eintrag einer der fünf Ausgänge. **Keine Treffer sind ebenfalls eine
-      Antwort** und werden notiert.
-- [ ] [`MR-048`](../../../../harness/conventions.md#mr-048) zeigt auf
+      Antwort** und werden notiert. Belegt in `08373c9`: 33 lebende Einträge
+      geprüft, 31 bleiben gültig;
+      [`MR-042`](../../../../harness/conventions.md#mr-042)/`043`/[`MR-048`](../../../../harness/conventions.md#mr-048)
+      ziehen den umbenannten Abschnittsnamen nach,
+      [`MR-013`](../../../../harness/conventions.md#mr-013) ist teilweise
+      überholt (§2b, [`MR-057`](../../../../harness/conventions.md#mr-057)).
+- [x] [`MR-048`](../../../../harness/conventions.md#mr-048) zeigt auf
       `§Das vollständige Artefakt-Set`; der `F-7`-Befund aus slice-155 ist als
-      geschlossen vermerkt.
-- [ ] **Das Delta ist gelesen, nicht angenommen:** was `v5.13.1`, `v5.14.0` und `v5.15.0`
+      geschlossen vermerkt. Belegt in `08373c9`.
+- [x] **Das Delta ist gelesen, nicht angenommen:** was `v5.13.1`, `v5.14.0` und `v5.15.0`
       gegenüber `v5.13.0` tragen, steht im Slice — der Herausgeber hat nur
-      `v5.13.0` angekündigt.
+      `v5.13.0` angekündigt. Siehe §1: Wellen 99–106 je Tag zugeordnet, 52
+      Bundle-Dateien nach unverändert/Stempel/echtem-Inhalt klassifiziert.
 - [ ] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
       Review**; **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
+      `make gates` grün: zehn Gates, 647 Dateien, 0 Befunde, Coverage 94,70 %
+      (2026-09-01). `make fullbuild` grün: Image-Hash
+      `sha256:7b8cb29549c4553300d87ee9e382dfbb3630068b63cf945f3a095f2f2caa3b1e`
+      (2026-09-01). Review und Verifikation stehen noch aus.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -231,21 +255,33 @@ und ihr Zweck ist das Aufdecken.
   [`MR-051`](../../../../harness/conventions.md#mr-051) nennt den Preis: eine
   Direktive meldet **auch dann**, wenn nur die Zeilennummern gewandert sind. Bei
   33 Direktiven ist das Arbeit ohne inhaltlichen Anlass, und die Versuchung ist,
-  sie mechanisch nachzuziehen statt den Grund-Code zu lesen. — **Ausgang:**
-  *(bei Closure)*
+  sie mechanisch nachzuziehen statt den Grund-Code zu lesen. — **Ausgang:
+  entfallen.** Das differenzierte Ergebnis (2 nachgezogen, 0 entfernt, 22 gegen
+  den Datei-Diff geprüft statt pauschal übernommen) belegt, dass je Direktive
+  der Grund-Code gelesen wurde, nicht die Zeilennummer.
 - **Der Adaptions-Review ist Urteil, kein `grep`.** Fünf Ausgänge je Eintrag,
   33 Einträge — die Gefahr ist nicht, einen falsch zu entscheiden, sondern alle
   reflexhaft auf „bleibt gültig" zu setzen, weil das der Normalfall ist. —
-  **Ausgang:** *(bei Closure)*
+  **Ausgang: entfallen.** Von 33 Einträgen wurden 2 als nicht trivial
+  identifiziert ([`MR-042`](../../../../harness/conventions.md#mr-042)/`043`/[`MR-048`](../../../../harness/conventions.md#mr-048)
+  aktualisiert, [`MR-013`](../../../../harness/conventions.md#mr-013)
+  teilweise überholt) — ein rein reflexhafter Durchgang hätte alle 33 auf
+  „bleibt gültig" gesetzt.
 - **Vier Releases auf einmal.** Angekündigt ist nur `v5.13.0`; `v5.13.1`,
   `v5.14.0` und `v5.15.0` kamen ohne Ankündigung. Ein Sprung über vier Fassungen macht das Delta
-  größer als den Diff, den ein Reviewer in einer Sitzung prüft. — **Ausgang:**
-  *(bei Closure)*
+  größer als den Diff, den ein Reviewer in einer Sitzung prüft. — **Ausgang:
+  entfallen.** Die Datei-Klassifikation (unverändert · nur Versions-Stempel ·
+  echter Regel-Inhalt) hat die 52 Bundle-Dateien auf 14 inhaltlich relevante
+  reduziert und den Diff dadurch review-fähig gemacht — als geschärfte Regel
+  im Lerneintrag (§9) festgehalten.
 - **Der Bump macht eine fremde Adaption beurteilbar, die auf uns zeigt.** Die
   `--print-mk`-Frage hängt an `modul-14 §Der Prüflauf ist hermetisch`; solange
   der Abschnitt nicht im Baum liegt, wäre jede Antwort darauf ein Urteil aus dem
-  Zitat eines Dritten ([`BEO-012`](../observations.md)). — **Ausgang:**
-  *(bei Closure)*
+  Zitat eines Dritten ([`BEO-012`](../observations.md)). — **Ausgang:
+  entfallen.** Die Vorbedingung des Risikos (unvollständige Quelle) ist mit dem
+  Vendoring von `v5.15.0` behoben — `modul-14` liegt jetzt vollständig im Baum.
+  Die Frage selbst bleibt unbeantwortet, aber das ist eine bewusste
+  Scope-Entscheidung (§3), kein offenes Risiko dieses Slice mehr.
 
 ## 6. Trigger
 
