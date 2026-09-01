@@ -125,6 +125,32 @@ Widerspruch, der eine Seite zum Weichen zwingt. Der Folge-Eintrag (§4)
 trennt beide Begründungen explizit und zitiert Kurs-Welle 110 nur dort, wo
 sie zutrifft.
 
+## 2b. Ergebnis der Bestands-Stichprobe (ausgeführt 2026-09-01)
+
+**Gezogen:** [`modul-11-verification.md` §Fitness Function ohne Standard-Tool](../../../../.harness/baseline/v5.18.0/regelwerk/modul-11-verification.md#fitness-function-ohne-standard-tool-modul-11).
+**Auswahl nach Kanon-Kriterium** — rotierend gegen die Stichproben der beiden
+vorigen Bumps (`modul-14` beim `v5.6.0`-Bump, `modul-07` bei slice-183);
+`modul-11` trägt in diesem Delta keinen Diff und hatte noch keine Stichprobe.
+
+**Befund: konform, keine Diskrepanz.** Der Kanon beschreibt den Bau eines
+selbstgebauten Sensors für eine ADR-Aussage ohne Standardwerkzeug
+(Operationalisieren → Sensor-Schicht nach Kosten → Skript+Gate verdrahten →
+inferentielle Schicht für Semantik). d-checks
+[`verify-closure-notes`](../../../../AGENTS.md) ist genau dieses Muster: ein
+Make-Target-Sensor (Modul `planning`/`structure`/`spans`) für die
+strukturelle Hälfte, mit [`.harness/skills/closure-note-reviewer.md`](../../../../.harness/skills/closure-note-reviewer.md)
+als der vom Kanon selbst benannten inferentiellen Schicht für die
+Floskel-Erkennung — derselbe Prompt-Anker, den `modul-11` als Referenz
+verlinkt. Beide Quadranten des „Hard Rule in zwei Quadranten"-Musters sind
+besetzt: `AGENTS.md` §5 nennt die Closure-Notiz-Pflicht (feedforward), das
+Gate prüft sie (feedback), und jeder Slice läuft `make fullbuild` (das
+`verify-closure-notes` trägt) vor der Closure-Meldung — die vom Kanon
+verlangte Selbstprüfung vor der „fertig"-Meldung.
+
+**Nicht geprüft, weil nicht einschlägig:** die „Obermengen-Nachweis"-Pflicht
+für den Fall, dass ein Standardwerkzeug den eigenen Sensor später ablöst —
+kein solcher Kandidat ist derzeit sichtbar.
+
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Keine Adoption des Zeitdokumente-Archivs** (Wellen 109/111, neuer
@@ -141,28 +167,39 @@ sie zutrifft.
 
 ## 4. Definition of Done
 
-- [ ] Der Pin steht auf `v5.18.0`: vendorter Baum re-vendored,
-      `make baseline-verify` grün, alle Pfad-Verweise und die vier Symlinks
-      gezogen.
-- [ ] **Jede `cite`-Direktive ist entschieden**, nicht nur grün: je Direktive
+- [x] Der Pin steht auf `v5.18.0`: vendorter Baum re-vendored,
+      `make baseline-verify` grün (Integrität, Manifest-Deckung,
+      Alias-Auflösung, 53 Dateien), alle Pfad-Verweise und die vier Symlinks
+      gezogen (44 lebende `v5.15.0`-Vorkommen gehoben, drei eingefrorene
+      stehen gelassen).
+- [x] **Jede `cite`-Direktive ist entschieden**, nicht nur grün: je Direktive
       steht fest, ob sie nachgezogen, umgehängt oder nach
       [`MR-039`](../../../../harness/conventions.md#mr-039) entfernt wurde.
-      Die Zahl der drei Fälle steht in der Commit-Botschaft.
-- [ ] **Der Adaptions-Review ist gefahren und dokumentiert:** je lebendem
-      `MR`-Eintrag einer der fünf Ausgänge. Keine Treffer sind ebenfalls eine
-      Antwort.
-- [ ] **Die Kollision aus §2a ist aufgelöst, nicht abgelöst:** ein neuer Eintrag
-      trennt die Push-CI-Begründung (Slice-/Beanspruchungs-Move) von der
-      lokalen `doc-check`-Begründung (MR-/Wellen-Lifecycle-Move), zitiert
-      Kurs-Welle 110 nur für die erste, und markiert
-      [`MR-057`](../../../../harness/conventions.md#mr-057) als aufgelöst.
-      [`MR-013`](../../../../harness/conventions.md#mr-013) selbst bleibt in
-      Kraft — kein Praxiswechsel, siehe §2a.
-- [ ] **Das Delta ist gelesen, nicht angenommen:** was `v5.16.0`, `v5.17.0`
+      28 lebende Direktiven: 8 in den fünf real geänderten Dateien (6
+      nachgezogen um +5/+6 Zeilen, 2 unverändert bestätigt — vor der
+      jeweiligen Einfügestelle), 20 unverändert (Datei-Stempel-only oder
+      unberührt), 0 entfernt.
+- [x] **Der Adaptions-Review ist gefahren und dokumentiert:** je lebendem
+      `MR`-Eintrag einer der fünf Ausgänge. Alle 33 lebenden Einträge geprüft:
+      **alle 33 bleiben gültig** — kein Abschnitt umbenannt, keine Regel
+      entfallen, keine Ergänzung berührt eine bestehende Zeile (siehe
+      [`MR-058`](../../../../harness/conventions.md#mr-058)).
+- [x] **Die Kollision aus §2a ist aufgelöst, nicht abgelöst:** 
+      [`MR-058`](../../../../harness/conventions.md#mr-058) trennt die
+      Push-CI-Begründung (Slice-/Beanspruchungs-Move) von der lokalen
+      `doc-check`-Begründung (MR-/Wellen-Lifecycle-Move), zitiert Kurs-Welle
+      110 nur für die erste, und markiert
+      [`MR-057`](../../../../harness/conventions.md#mr-057) als aufgelöst
+      (`git mv` nach `conventions/done/`).
+      [`MR-013`](../../../../harness/conventions.md#mr-013) selbst bleibt
+      inhaltlich unverändert in Kraft — kein Praxiswechsel, siehe §2a.
+- [x] **Das Delta ist gelesen, nicht angenommen:** was `v5.16.0`, `v5.17.0`
       und `v5.18.0` tragen, steht im Slice (§1) — inklusive des
       Archiv-Mechanismus, den dieser Slice bewusst nicht adoptiert (§3).
 - [ ] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
       Review**; **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
+      `make gates` grün: zehn Gates, 649 Dateien, 0 Befunde (2026-09-01).
+      Review und Verifikation stehen noch aus.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -170,15 +207,22 @@ sie zutrifft.
   Kurs-Welle 110 pauschal als *„Adaption auflösen"* zu lesen und die
   MR-/Wellen-Lifecycle-Bündelung ersatzlos zu streichen — das bräche
   `make hooks`s `pre-commit`-Hook beim nächsten MR-Move (`doc-check`-rot vor
-  jedem Commit). — **Ausgang:** *(bei Closure)*
+  jedem Commit). — **Ausgang: entfallen.** [`MR-058`](../../../../harness/conventions.md#mr-058)
+  behält die Bündelung ausdrücklich bei und benennt den eigenständigen,
+  lokalen Grund dafür — kein Praxiswechsel ist eingetreten.
 - **Der Bump-Alarm bei kleinem Delta verleitet zur Unterschätzung.** Nur 8
   von 51 Dateien mit echtem Inhalt heißt nicht, dass der Adaptions-Review
   oberflächlich laufen darf — die Zahl der `MR`-Einträge (33) bleibt
-  unverändert groß. — **Ausgang:** *(bei Closure)*
+  unverändert groß. — **Ausgang: entfallen.** Alle 33 Einträge sind einzeln
+  gegen ihr `Ersetzt-Baseline-Regel`-Feld geprüft (nicht pauschal
+  übernommen); das Ergebnis „alle bleiben gültig" ist durch die Prüfung
+  begründet, nicht durch die kleine Delta-Zahl vorweggenommen.
 - **Der optionale Archiv-Mechanismus könnte trotzdem einen `MR`-Eintrag
   berühren**, wenn ein bestehender Eintrag (z. B. zur Wellen-Closure-Prozedur)
-  auf die jetzt verschobenen Schritt-Nummern 4/5 zeigt. — **Ausgang:**
-  *(bei Closure)*
+  auf die jetzt verschobenen Schritt-Nummern 4/5 zeigt. — **Ausgang:
+  entfallen.** Nachgemessen (`grep` über alle lebenden `MR`-Dateien nach
+  „Wellen-Closure-Prozedur"/„Schritt 4"/„Schritt 5"): kein Treffer außer im
+  neuen [`MR-058`](../../../../harness/conventions.md#mr-058) selbst.
 
 ## 6. Trigger
 
@@ -197,7 +241,7 @@ ein Slice ist.
   **Greenfield** ([`harness/conventions.md`](../../../../harness/conventions.md)
   §Modus-Deklaration).
 
-  <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md:213-214 -->
+  <!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md:219-220 -->
   > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
   > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
@@ -216,7 +260,7 @@ ein Slice ist.
   aktuell ist; [`BEO-025`](../observations.md) (**1**) — ein Bump zerfällt in
   mehrere Commits, Zuordnung vor dem Editieren klären.
 
-  <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md:219-219 -->
+  <!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md:225-225 -->
   > **Offene Beobachtungen sichten.**
 
 - **Nachtlauf-Stand lesen** (`make nightly-state`,

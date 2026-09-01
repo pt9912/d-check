@@ -6,7 +6,7 @@
 
 **Rolle:** Technik-Stratum — fortschreibbar ohne Change Request; eine ADR darf
 sie schärfen, das Lastenheft nicht. Regeln: Baseline-Regelwerk
-[`modul-03-spec.md` §Ziel-Form: Spezifikation](../.harness/baseline/v5.15.0/regelwerk/modul-03-spec.md#ziel-form-spezifikation).
+[`modul-03-spec.md` §Ziel-Form: Spezifikation](../.harness/baseline/v5.18.0/regelwerk/modul-03-spec.md#ziel-form-spezifikation).
 
 ---
 

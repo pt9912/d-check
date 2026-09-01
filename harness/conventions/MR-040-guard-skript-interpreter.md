@@ -4,7 +4,7 @@
 - **Ersetzt-Baseline-Regel:** keine. Die Baseline verlangt für die
   Durchsetzungsschicht, dass gegen eine **beobachtete** Umgehung gehärtet wird
   und jede Härtung als neuer Eintrag landet
-  ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.15.0/regelwerk/modul-13-quality-gates.md));
+  ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.18.0/regelwerk/modul-13-quality-gates.md));
   *welche* Interpreter ein Repo führt, ist seine Sache.
 - **Datum:** 2026-08-26
 - **Geltungsbereich:** [`.claude/hooks/pretooluse-command-guard.sh`](../../.claude/hooks/pretooluse-command-guard.sh),

@@ -1,7 +1,7 @@
 # Roadmap
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine Reihenfolge von
-Terminen (siehe [Baseline-Regelwerk `modul-06-roadmap.md`](../../../../.harness/baseline/v5.15.0/regelwerk/modul-06-roadmap.md)).
+Terminen (siehe [Baseline-Regelwerk `modul-06-roadmap.md`](../../../../.harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md)).
 Termine erscheinen — falls überhaupt — als Konsequenz der Wellen-Schätzung, nie als
 Treiber.
 

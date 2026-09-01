@@ -1,7 +1,7 @@
 # MR-021 — In-Repo-Verweise auf das vendored Regelwerk sind pin-gebunden
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`grundlagen-harness-dateien.md` §Verzeichniskonvention](../../.harness/baseline/v5.15.0/regelwerk/grundlagen-harness-dateien.md#verzeichniskonvention)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-harness-dateien.md` §Verzeichniskonvention](../../.harness/baseline/v5.18.0/regelwerk/grundlagen-harness-dateien.md#verzeichniskonvention)
 - **Datum:** 2026-06-26
 - **Geltungsbereich:** **alle** Markdown-Links auf `.harness/baseline/<tag>/…`
   in der Live-Doku — das Briefing, [`harness/README.md`](../README.md), dieser

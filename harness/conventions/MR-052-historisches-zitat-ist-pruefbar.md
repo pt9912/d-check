@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon regelt, dass ein bestehender
   Eintrag nicht rückwirkend umgeschrieben wird
-  ([`modul-02-harness-bootstrap.md` §Freshness-Audit](../../.harness/baseline/v5.15.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)).
+  ([`modul-02-harness-bootstrap.md` §Freshness-Audit](../../.harness/baseline/v5.18.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)).
   Ob das damalige Zitat **wörtlich** war, ist eine andere Frage, und der Kanon
   stellt sie nicht.
 - **Datum:** 2026-08-27

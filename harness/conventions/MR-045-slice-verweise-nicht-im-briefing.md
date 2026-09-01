@@ -3,8 +3,8 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon weist `AGENTS.md` die **Hard
   Rules und Pointer** zu und die zeitliche Schicht der Planung
-  ([`modul-09-implementierung.md` §AGENTS.md-Regeln](../../.harness/baseline/v5.15.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9),
-  [`modul-05-planning-harness.md` §Lifecycle als State Machine](../../.harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md#lifecycle-als-state-machine));
+  ([`modul-09-implementierung.md` §AGENTS.md-Regeln](../../.harness/baseline/v5.18.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9),
+  [`modul-05-planning-harness.md` §Lifecycle als State Machine](../../.harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md#lifecycle-als-state-machine));
   dass ein Briefing **keinen** Slice nennt, folgt daraus, steht aber nirgends
   ausdrücklich.
 - **Datum:** 2026-08-27
@@ -30,5 +30,5 @@
   [`MR-013`](../conventions.md#mr-013):** dessen Aufzählung war für den Stand
   richtig, gegen den sie geschrieben wurde. Einträge werden nicht rückwirkend
   umgeschrieben
-  ([`modul-02-harness-bootstrap.md` §Freshness-Audit](../../.harness/baseline/v5.15.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)).
+  ([`modul-02-harness-bootstrap.md` §Freshness-Audit](../../.harness/baseline/v5.18.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)).
 - **Auflösungs-Trigger:** permanent.

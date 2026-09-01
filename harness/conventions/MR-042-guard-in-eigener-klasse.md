@@ -3,9 +3,9 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon verlangt für die
   Durchsetzungsschicht die Härtung als neuen Eintrag
-  ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.15.0/regelwerk/modul-13-quality-gates.md))
+  ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.18.0/regelwerk/modul-13-quality-gates.md))
   und beschreibt den Befehls-Guard als Artefakt
-  ([`grundlagen-durchsetzungsschicht.md` §Das vollständige Artefakt-Set](../../.harness/baseline/v5.15.0/regelwerk/grundlagen-durchsetzungsschicht.md)).
+  ([`grundlagen-durchsetzungsschicht.md` §Das vollständige Artefakt-Set](../../.harness/baseline/v5.18.0/regelwerk/grundlagen-durchsetzungsschicht.md)).
   *Womit* er geschrieben ist, sagt er nicht — die Form-Frage tritt die Rangliste
   an diesen Speicher ab.
 - **Datum:** 2026-08-27
@@ -62,7 +62,7 @@
   Die Präfix-Liste ist eine **Liste** und damit von Natur aus unvollständig; die
   Schlüsselwort-Klasse verlangte einen Grammatik-Begriff, den ein Stolperdraht
   nicht führt. Beides bleibt so und steht hier, statt still zu gelten
-  ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.15.0/regelwerk/modul-13-quality-gates.md):
+  ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.18.0/regelwerk/modul-13-quality-gates.md):
   die Grenz-Zeile wird mitgezogen).
 - **Begründung:** [`MR-041`](../conventions.md#mr-041) benannte die
   Inkonsistenz und ließ sie stehen: eine Regel, deren Durchsetzung außerhalb
@@ -74,7 +74,7 @@
   Eintrag zwei Dinge trägt — die eingelöste Inkonsistenz und die weiter geltende
   Sperre. Ein Move nach `done/` ohne Nachfolger nähme der Sperre ihren Träger.
   Der Kanon löst genau das mit einem neuen Eintrag
-  ([`modul-02-harness-bootstrap.md` §Freshness-Audit](../../.harness/baseline/v5.15.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)).
+  ([`modul-02-harness-bootstrap.md` §Freshness-Audit](../../.harness/baseline/v5.18.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)).
 - **Löst auf:** [`MR-041`](../conventions.md#mr-041)
 - **Auflösungs-Trigger:** der Kanon schreibt der Durchsetzungsschicht selbst
   eine Werkzeug-Klasse vor. Dann gilt seine.

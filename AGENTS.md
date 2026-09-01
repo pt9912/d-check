@@ -9,7 +9,7 @@ einhalten muss.
 
 Diese Datei trägt **Hard Rules und Pointer** auf die kanonischen Quellen und
 **dupliziert deren Inhalt nicht** — sonst entsteht Drift (Kanon:
-[`modul-09-implementierung.md` §AGENTS.md-Regeln](.harness/baseline/v5.15.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)).
+[`modul-09-implementierung.md` §AGENTS.md-Regeln](.harness/baseline/v5.18.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)).
 
 **Bei Konflikt gilt die höherrangige Quelle, und die niedriger rangierte wird
 angepasst** (Source Precedence — siehe
@@ -47,7 +47,7 @@ startet — nicht das gesamte Regelwerk im Kontext halten. **Breiterer
 Pflicht-Blick** bleibt bei: Bootstrap, Änderung an
 [`harness/conventions.md`](harness/conventions.md) (Adaptionen `MR-<NNN>`,
 Source-Precedence, ID-Schema) und dem Drift-Audit gegen die Baseline
-([`modul-02-harness-bootstrap.md` §Freshness-Audit](.harness/baseline/v5.15.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)
+([`modul-02-harness-bootstrap.md` §Freshness-Audit](.harness/baseline/v5.18.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)
 — darunter die **Bestands-Stichprobe, die auch bei aktuellem Pin läuft**).
 Die **Skelett-Vorlagen** der Baseline liegen aus demselben self-contained Bundle
 **committet vendored** unter `.harness/baseline/<tag>/templates/` (parallel zum
@@ -255,7 +255,7 @@ Zustandsfelder (unten). **Ein Kommentar beschreibt, was da ist**
 (Baseline-Merksatz). Er
 beantwortet in Code, Konfiguration oder Skript, was der Code nicht
 beantworten kann — **Zusage · Kopplung · Abgrenzung · Rang-Zeiger ·
-Grenze** ([Baseline §Was ein Kommentar trägt](.harness/baseline/v5.15.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte)).
+Grenze** ([Baseline §Was ein Kommentar trägt](.harness/baseline/v5.18.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte)).
 Keine Review-Historie und keine Review-Befund-Marker, keine Deliberation
 über Verworfenes, keine Herkunfts-Prosa, keine Slice-Nummern und keine
 Mess-Labels; Herkunft nur als **ein** auflösbares Feld nach dem
@@ -285,7 +285,7 @@ bleiben, wie sie sind — sie sind eingefrorene Lauf-Belege, ihr
 Lifecycle-Zustand ist ohnehin das Verzeichnis, und das Feld hat dort keine
 Funktion (§5). Gemeldet wird von ihnen nur, was dem Verzeichnis
 **widerspricht**. Kanon:
-[Baseline §Was ein Kommentar trägt](.harness/baseline/v5.15.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
+[Baseline §Was ein Kommentar trägt](.harness/baseline/v5.18.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
 
 **Kein Gate prüft das** — weder die fünf Klassen noch die Zustandsfeld-Form;
 die Prüfung ist ein Urteil, kein `grep`. Der Reviewer-Skill trägt dazu **zwei**
@@ -389,7 +389,7 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make baseline-freshness`    | Upstream-Audit des Baseline-Pins: neuerer Release-Tag (Currency, gelesen aus der Release-**Liste** — nicht `releases/latest`, das Prereleases überspringt) + Content-Drift am gepinnten Tag. **Netz**, fail-open (Ausfall ⇒ `SKIP` je Teil), bewusst **nicht** in `gates`/`ci` — der netzlose innere Lauf ist eine Eigenschaft dieses Repos, keine Zusage des Produkts; gerufen vom Nachtlauf ([`upstream-drift.yml`](.github/workflows/upstream-drift.yml)). Meldet nur — die Hebung bleibt ein bewusster Akt |
 | `make nightly-state`        | **Lese-Schritt, kein Gate:** liest den Ausgang des jüngsten Laufs **beider** Nachtläufe ([`upstream-drift.yml`](.github/workflows/upstream-drift.yml) und [`image-scan.yml`](.github/workflows/image-scan.yml)) über die GitHub-API und sagt, ob er gelesen werden muss. Er ersetzt den Nachtlauf nicht — er macht seinen Stand an dem Moment verfügbar, an dem ohnehin jemand hinsieht: als **dritte Vorprüfung** der Slice-Planung ([`MR-053`](harness/conventions.md#mr-053), §5). **Netz** (nur `curl`, kein `gh` — die Netz-Targets tragen diese Erwartung ohnehin), fail-open, **immer Exit 0**: der Ausgang steht in der **Ausgabe**, damit kein Exit-Code ihn verdecken kann. Bewusst **nicht** in `gates`; netzlos prüfbar über `--parse <datei>` und `--selftest` (sechs Proben). **Vier benannte Grenzen:** greift der Schritt nur bei einer Slice-Planung, liest in einer **Pause** niemand; er liest den **jüngsten** Lauf, nicht sein **Alter** — ein abgeschalteter Nachtlauf meldete weiter `gruen`; bei privatem Repo oder umbenanntem Workflow ist der `SKIP` von einer Netzstörung ununterscheidbar; und der Repo-Slug ist ein **Default** (`NIGHTLY_REPO`, `NIGHTLY_WORKFLOWS` überschreiben ihn (die Liste, seit dem zweiten Nachtlauf — der Singular ist tot)) — in einem Fork meldete es sonst den Nachtlauf des Originals |
 | `make hooks`                 | git-Hooks installieren (`core.hooksPath` → `.githooks`; aktiviert `commit-msg`-Traceability + `pre-commit` mit ADR-Immutable via Modul `vcs` **und** dem vollen `doc-check` als Doku-GUARD — seit welle-79: ein roter Gate-Exit kann keine Shell-Kette mehr passieren) ([ADR-0013](docs/plan/adr/0013-pr-ci-und-traceability-gate.md), [ADR-0016](docs/plan/adr/0016-adr-immutable-gate.md), [ADR-0024](docs/plan/adr/0024-vcs-immutable-gate.md))    |
-| `make completeness-check`    | Requirements-Completeness-Gate **via in-Produkt-Flag** `--trace --require-complete` (≥1 Waise ⇒ Exit 1, mit `WAISE`-Zeilen + Anzahl); **Closure-Bindepunkt** (in `make fullbuild`, **nicht** `gates`/`ci`) ([ADR-0026](docs/plan/adr/0026-completeness-in-product-gate.md) löst die Skript-Mechanik von [ADR-0017](docs/plan/adr/0017-requirements-completeness-gate.md) ab; [`DC-FA-CLI-011`](spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)) |   <!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md:136-136 -->
+| `make completeness-check`    | Requirements-Completeness-Gate **via in-Produkt-Flag** `--trace --require-complete` (≥1 Waise ⇒ Exit 1, mit `WAISE`-Zeilen + Anzahl); **Closure-Bindepunkt** (in `make fullbuild`, **nicht** `gates`/`ci`) ([ADR-0026](docs/plan/adr/0026-completeness-in-product-gate.md) löst die Skript-Mechanik von [ADR-0017](docs/plan/adr/0017-requirements-completeness-gate.md) ab; [`DC-FA-CLI-011`](spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)) |   <!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md:142-142 -->
 | `make verify-closure-notes`  | Struktur des `done/`-Bestands: die Closure-Notizen **via Modul `planning`** (Abschnitt vorhanden, Substanz außerhalb Code, keine deklarierte Floskel, opt-in kein Vorlagen-Platzhalter) **und** Abschnitts-Invarianten **via Modul `structure`** (`section-*`-Codes), darunter die **urteilsfreie Hälfte der Drei-Ausgänge-Regel** des Baseline-Regelwerks (`modul-05`: *„Ein Slice geht nicht nach `done/`, während ein Risiko ohne Ausgang dasteht"*) in **zwei** Regeln: der **vergessene** Ausgang als `forbid-pattern` über jeden H1-Abschnitt, der **erfundene** als Komplement-`forbid-pattern` über §5 — der Wortschatz ist geschlossen und umfasst alle drei Kanon-Ausgänge ([`MR-049`](harness/conventions.md#mr-049)). **Sie sieht ein Risiko ganz ohne Ausgangs-Marker nicht**, und der Altbestand vor slice-140 ist ausgenommen. **Ob** ein eingetragener Ausgang inhaltlich trägt, bleibt Urteil. **Vier Bereiche sieht sie nicht** — Überschriften-Zeile, Fenced Blocks, Inline-Code (die drei gewollt, sonst meldete ein Slice über Platzhalter seine eigene Doku) und, als ausgewiesener Preis, Prosa innerhalb einer **absatzweiten** Inline-Code-Spanne ([ADR-0059](docs/plan/adr/0059-closure-waechter-weicht-structure-regel.md)) — beide über dasselbe `--config`-Profil. **Seit slice-172 hält sie zusätzlich den DoD-Haken:** `max-open-tasks: 0` über den `## N. Definition of Done`-Abschnitt meldet jeden offenen Haken eines `done/`-Slice (`section-tasks-open`, je Haken auf **seiner** Zeile, mit verfasstem Reparatur-Hinweis), mit Bestands-Ausnahme bis `slice-170` ([`MR-056`](harness/conventions.md#mr-056)). Der Kanon macht daraus eine Bedingung des **Übergangs**; diese Regel prüft den **Zustand am Ruheort**. **Drei Grenzen:** ein Haken ist eine Selbstauskunft; ein **vergessener** Schluss-Fence macht die Bedingung blind (deshalb fährt dasselbe Profil `spans`); und ein Haken **innerhalb** eines wohlgeformten Fenced-Blocks ist unsichtbar, ohne dass irgendetwas meldet. **Ein drittes Modul macht den Bindepunkt selbstgenügsam:** `spans` meldet die Fence-Artefakte, die die Bereinigung der beiden anderen **still** machen — ein vergessener Schluss-Fence verschluckt alles dahinter, und die Zusage darüber wird wahr, ohne etwas gesehen zu haben. **Es findet dabei nichts, was `gates` nicht schon fände** (gemessen: `make doc-check` meldet denselben `fence-unclosed` beim Commit, und die Scan-Menge des Bindepunkts ist eine Teilmenge). Der Gewinn ist die **Unabhängigkeit** von einem fremden Profil, nicht neue Deckung ([ADR-0077](docs/plan/adr/0077-spans-am-bindepunkt-die-begruendung-traegt-anders.md), supersedes [ADR-0076](docs/plan/adr/0076-spans-am-closure-bindepunkt.md)). **Drei** Grund-Codes können den Bindepunkt rot machen: `fence-unclosed`, `span-unclosed` und `span-nested-link`. **Es deckt nicht** die vierte Grenze oben — ein **wohlgeformter** Span, der Prosa umschließt, ist kein Defekt, sondern Code. Fährt ein **eigenes** Prüf-Profil über `--config` ([`DC-FA-CLI-012`](spec/lastenheft.md#dc-fa-cli-012--konfigurations-pfad-überschreiben)); **Closure-Bindepunkt** (in `make fullbuild`, bewusst **nicht** `gates`/`ci`) ([ADR-0048](docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md), [`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), [`DC-FA-SPAN-001`](spec/lastenheft.md#dc-fa-span-001--markdown-span-artefakte-modul-spans-opt-in)) |
 | `make fullbuild`             | volle Closure: gates + image-test + bench + completeness-check + verify-closure-notes, schließt mit dem Image-Hash                                                                                                                                                                             |
 | `make image-test`            | [`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container)                                                                                                                |
@@ -443,7 +443,7 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   schärfen die Spezifikation, nicht das Lastenheft). Der
   Anlege-Prozess (Akzeptanzkriterien-Trio, Versions-Bump + Historie,
   Beleg-Pflicht) folgt dem Baseline-Regelwerk
-  ([`modul-03-spec`](.harness/baseline/v5.15.0/regelwerk/modul-03-spec.md)); das
+  ([`modul-03-spec`](.harness/baseline/v5.18.0/regelwerk/modul-03-spec.md)); das
   repo-spezifische ID-Schema steht in `spec/lastenheft.md` §3.
 - Neue ADRs müssen den ADR-Index aktualisieren.
 - Neue ADRs tragen die Sektion `## Re-Evaluierungs-Trigger` (oder „permanent");
@@ -523,7 +523,7 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   keiner ist; das macht die Klasse beim Schreiben unsichtbar und im Review
   auffindbar. Urteil, kein `grep`; der Reviewer-Skill trägt den Anker dazu.
   Kanon:
-  [`grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz](.harness/baseline/v5.15.0/regelwerk/grundlagen-source-precedence.md)
+  [`grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz](.harness/baseline/v5.18.0/regelwerk/grundlagen-source-precedence.md)
   — dort als Frage an **jede** zitierte Aussage, hier als operative Form für den
   Implementer. *(Hard Rule aus dem Steering Loop,
   [Beobachtungs-Register](docs/plan/planning/observations.md) `BEO-012`, seit

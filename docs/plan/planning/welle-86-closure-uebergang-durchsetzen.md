@@ -17,7 +17,7 @@ Vorbedingungen fehlt — statt hinterher zu melden, dass er stattgefunden hat.**
 
 Das Regelwerk nennt die Bedingung unmissverständlich:
 
-<!-- d-check:cite .harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md:33-34 -->
+<!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md:33-34 -->
 > DoD-Häkchen und Closure-Notiz
 > sind die Bedingung dafür, dass die Datei überhaupt nach `done/` darf.
 

@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon verlangt die beiden
   Vorprüfungs-Schritte
-  ([`modul-05-planning-harness.md` §Zwei Schritte vor der Modus-Begründung](../../.harness/baseline/v5.15.0/regelwerk/modul-05-planning-harness.md#zwei-schritte-vor-der-modus-begründung)),
+  ([`modul-05-planning-harness.md` §Zwei Schritte vor der Modus-Begründung](../../.harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md#zwei-schritte-vor-der-modus-begründung)),
   sagt aber nichts darüber, **wie** ihre Ausführung belegt wird — er setzt kein
   Werkzeug voraus, das einen Beleg prüfen könnte. Diese Adaption ergänzt die
   Form, nicht die Pflicht.

@@ -144,6 +144,13 @@ ignore-refs:
     refs: [".harness/baseline/v5.11.0/**"]
   - in: docs/reviews/**
     refs: [".harness/baseline/v5.11.0/**"]
+  # Tombstone der Baseline-Migration v5.15.0 -> v5.18.0 (slice-189): ein
+  # Eintrag genuegt -- einzige quell-skopierte Fundstelle ist der eigene
+  # Slice-Text von slice-183, der v5.15.0 als seinen damaligen Arbeitsstand
+  # nennt. Keine neuen immutablen ADRs seit v5.12.0, kein Review-Report mit
+  # Markdown-Link auf den entfernten Baum.
+  - in: docs/plan/planning/done/slice-183-baseline-v5150.md
+    refs: [".harness/baseline/v5.15.0/**"]
   # Tombstone der Baseline-Migration v5.12.0 -> v5.15.0 (slice-183): dieselbe
   # Klasse, aber DREI Eintraege statt zwei -- und der dritte ist neu. Erstmals
   # tragen IMMUTABLE ADRs Pfad-Verweise auf den abgeloesten Baum: zehn Stueck
@@ -152,11 +159,18 @@ ignore-refs:
   # sie stehen zu lassen waere target-missing; also quell-skopiert ausnehmen,
   # wie bei done/ und docs/reviews/. Die refs-Seite bleibt eng -- ausgenommen
   # ist ausschliesslich der ENTFERNTE Baum, nicht der gepinnte.
+  # VIERTER Eintrag, nachgetragen mit slice-189: der urspruengliche Bulk-Zensus
+  # hatte harness/conventions/done/ nicht ausgenommen und MR-038/MR-041 versehentlich
+  # auf v5.15.0 gehoben, obwohl beide eingefroren sind (bei v5.12.0 fixiert). Beim
+  # v5.18.0-Bump auf v5.12.0 zurueckgesetzt und hier ergaenzt statt beim naechsten
+  # Bump erneut zu brechen.
   - in: docs/plan/planning/done/**
     refs: [".harness/baseline/v5.12.0/**"]
   - in: docs/reviews/**
     refs: [".harness/baseline/v5.12.0/**"]
   - in: docs/plan/adr/**
+    refs: [".harness/baseline/v5.12.0/**"]
+  - in: harness/conventions/done/**
     refs: [".harness/baseline/v5.12.0/**"]
   # Tombstone der Baseline-Migration v5.6.0 -> v5.7.0 (slice-110 / MR-028):
   # dieselbe Klasse — EINGEFRORENE Markdown-LINKS auf den entfernten

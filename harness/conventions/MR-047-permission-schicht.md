@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon verlangt für die
   Durchsetzungsschicht, dass jede Härtung als neuer Eintrag landet
-  ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.15.0/regelwerk/modul-13-quality-gates.md));
+  ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.18.0/regelwerk/modul-13-quality-gates.md));
   *wie viele* Schichten ein Repo führt, ist seine Sache.
 - **Datum:** 2026-08-27
 - **Geltungsbereich:** [`.claude/settings.json`](../../.claude/settings.json)
