@@ -10,7 +10,7 @@ Treiber.
 ## Offene Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
-§Roadmap-Struktur (v5.15.0): *Offene Wellen* trägt **zwei unabhängige
+§Roadmap-Struktur (v5.18.0): *Offene Wellen* trägt **zwei unabhängige
 Aussagen**. Die **Liste** folgt den Dateien — je offener Welle-Datei ein
 Zeiger; Ziel, Trigger und Closure-Kriterien stehen in der Welle-Datei,
 nicht hier, das *Geplante Ende* dort ist Schätzung, kein Closure-Kriterium,

@@ -169,16 +169,16 @@ kein solcher Kandidat ist derzeit sichtbar.
 
 - [x] Der Pin steht auf `v5.18.0`: vendorter Baum re-vendored,
       `make baseline-verify` grün (Integrität, Manifest-Deckung,
-      Alias-Auflösung, 53 Dateien), alle **Pfad**-Verweise
-      (`baseline/v5.15.0/…`) und die vier Symlinks gezogen (44 lebende
-      Vorkommen gehoben, drei eingefrorene stehen gelassen). **Der Review
-      fand eine engere Klasse, die dieser Zensus nicht erfasst:** fünf
-      externe Release-/Tree-URLs (kein `baseline/`-Pfad, daher außerhalb des
-      Grep-Musters) — dieselbe Spiegel-Klasse wie
-      [`BEO-008`](../observations.md), jetzt fünfte Instanz. Nachträglich
-      gefunden und gehoben (`AGENTS.md`, `harness/conventions.md` ×2,
-      `harness/README.md`,
-      [`MR-021`](../../../../harness/conventions.md#mr-021)).
+      Alias-Auflösung, 53 Dateien; `make baseline-probe` 9/9), alle
+      **Pfad**-Verweise (`baseline/v5.15.0/…`) und die vier Symlinks gezogen
+      (44 lebende Vorkommen gehoben, drei eingefrorene stehen gelassen).
+      **Der eng gefasste Pfad-Zensus deckt zwei weitere Klassen desselben
+      Registereintrags nicht ab** ([`BEO-008`](../observations.md), fünfte
+      Instanz, beide in derselben Slice-Closure gefunden): fünf externe
+      Release-/Tree-URLs ohne `baseline/`-Pfadsegment (Review) und zwei
+      Prosa-Klammer-Nennungen der Version ohne Pfad oder URL, in
+      `docs/plan/planning/in-progress/roadmap.md` und `.d-check.yml`
+      (Verifikation). Alle sieben nachträglich gefunden und gehoben.
 - [x] **Jede `cite`-Direktive ist entschieden**, nicht nur grün: je Direktive
       steht fest, ob sie nachgezogen, umgehängt oder nach
       [`MR-039`](../../../../harness/conventions.md#mr-039) entfernt wurde.
@@ -203,10 +203,22 @@ kein solcher Kandidat ist derzeit sichtbar.
 - [x] **Das Delta ist gelesen, nicht angenommen:** was `v5.16.0`, `v5.17.0`
       und `v5.18.0` tragen, steht im Slice (§1) — inklusive des
       Archiv-Mechanismus, den dieser Slice bewusst nicht adoptiert (§3).
-- [ ] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
+- [x] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
       Review**; **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
-      `make gates` grün: zehn Gates, 649 Dateien, 0 Befunde (2026-09-01).
-      Review und Verifikation stehen noch aus.
+      `make gates` grün: zehn Gates, 650 Dateien, 0 Befunde (2026-09-01).
+      **Review** (eigener Kontext, `docs/reviews/2026-09-01-slice-189-baseline-v5180-code-r1.md`):
+      0 HIGH, 1 MEDIUM (fünf externe Release-URLs auf `v5.15.0` stehen
+      geblieben), 2 LOW — behoben in `5a04f79`. **Verifikation** (eigener
+      Kontext, nach `5a04f79`): sechs von sieben geprüften DoD-Punkten
+      konform bei Erstlauf; zwei eigenständig gefundene Lücken — die
+      Commit-Botschaft von `5a04f79` hatte „in der Closure-Notiz benannt"
+      behauptet, obwohl §9 zu diesem Zeitpunkt noch leer war (§9 füllt sich
+      erst im Closure-Body-Commit, die Formulierung war trotzdem verfrüht im
+      Präsens), und zwei weitere `v5.15.0`-Prosa-Reste
+      (`docs/plan/planning/in-progress/roadmap.md`, `.d-check.yml`) blieben
+      vom Review unentdeckt. Beide behoben — derselbe
+      [`BEO-008`](../observations.md)-Vorgang (fünfte Instanz), zweite
+      gefundene Teilklasse.
 
 ## 5. Abnahme-Punkte / Risiken
 
