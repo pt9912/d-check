@@ -385,3 +385,73 @@ Achse mit Substanz: der vendorte Baum ist Fremd-Inhalt, und ob eine Adaption
 noch trägt, entscheidet sein Delta — nicht unser Bestand.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert.** Der vendorte Baseline-Baum steht auf `v5.15.0` — vier Releases
+in einem Bump statt der ursprünglich geplanten einen (§1), Wellen 99–106 je
+Tag zugeordnet, nicht angenommen. Alle 129 lebenden `v5.12.0`-Pfadverweise
+gezogen (95 gehoben, 34 als Aussagen über die Vergangenheit stehen gelassen),
+die vier `.claude/rules`-Symlink-Aliase mitgezogen, 24 `d-check:cite`-Direktiven
+entschieden (2 nachgezogen, 0 entfernt, 22 bestätigt), ein Adaptions-Review
+über alle 33 lebenden `MR`-Einträge gefahren (31 bleiben gültig,
+[`MR-048`](../../../../harness/conventions.md#mr-048) ist ein eigenständiger
+Fund, [`MR-013`](../../../../harness/conventions.md#mr-013) ist teilweise
+überholt), [`MR-037`](../../../../harness/conventions/done/MR-037-baseline-v5120.md)
+nach `conventions/done/` migriert,
+[`MR-057`](../../../../harness/conventions.md#mr-057) als Nachfolge-Eintrag
+angelegt.
+
+**Was funktioniert hat.** Die Datei-Klassifikation (unverändert · nur
+Versions-Stempel · echter Regel-Inhalt) hat den Vier-Releases-Sprung auf 14
+inhaltlich relevante Dateien reduziert und damit den Diff review-fähig
+gehalten, obwohl der Herausgeber nur eines der vier Releases angekündigt
+hatte. Die differenzierten Ausgänge in §5 (2 von 33 MR-Einträgen als
+nicht-trivial markiert, 2 von 24 Direktiven nachgezogen) belegen, dass die
+Versuchung zum reflexhaften Pauschal-Urteil nicht eingetreten ist.
+
+**Was anders lief.** Der unabhängige Review (dde0916..HEAD) fand 0 HIGH, 1
+MEDIUM, 1 LOW — beide behoben in `d32c13d`: eine seit der Plan-Anlage
+stehengebliebene Vorab-Schätzung unter dem Wort „Gemessen" (§2 Schritt 3;
+Ursache und Reparatur jetzt als siebte Instanz von
+[`BEO-009`](../observations.md) registriert, erstmals an einem Slice-Plan statt
+an einer Commit-Botschaft), und eine unbegründete Klassifikations-Asymmetrie
+in [`MR-057`](../../../../harness/conventions.md#mr-057) zwischen
+[`MR-048`](../../../../harness/conventions.md#mr-048) und
+[`MR-042`](../../../../harness/conventions.md#mr-042)/[`MR-043`](../../../../harness/conventions.md#mr-043)
+(jetzt mit dem `F-7`-Bezug präzisiert — der ursprüngliche Plan-Text hatte
+`F-7` fälschlich dem einen statt den beiden anderen zugeordnet). Die
+unabhängige Verifikation (nach `d32c13d`) fand
+alle acht geprüften DoD-Punkte konform, mit unabhängig nachgerechneten
+Zahlen, Hashes und Zitat-Proben.
+
+**Ein benannter Verfahrens-Fehler, klein aber real.** Der letzte DoD-Haken
+(Review/Verifikation) wurde in der Datei gesetzt, **bevor** der `git mv`
+folgte — dieser Edit blieb ungecommittet, bis der `git mv` ihn mitnahm. Der
+Move-Commit (`11c614d`) ist damit **kein** byte-identischer Rename (98 %
+Similarity statt 100 %), anders als es
+[`AGENTS.md`](../../../../AGENTS.md) §3.3 für die Slice-Lifecycle-Move-Ausnahme
+vorsieht ("die Slice-Datei selbst ist im Move-Commit unverändert"). Praktisch
+folgenlos — `git log --follow` hält (die Similarity liegt weit über der
+50-%-Schwelle, gemessen), `make gates` blieb grün —, aber es ist eine
+Abweichung von der etablierten Form (verglichen mit dem Vorgehen bei
+[slice-182](slice-182-erklaerte-leermenge.md): dort blieben alle DoD-Haken bis
+zum Closure-Body-Commit offen). **Prozedur, präzisiert:** der letzte DoD-Haken
+gehört wie alle anderen erst in den Body-Commit nach dem Move, nicht in einen
+Zwischen-Commit davor.
+
+**Zwei offene Punkte, benannt statt eingelöst (§2b).** Der vom Kanon
+verlangte Versions-Sensor auf den Baseline-Pin fehlt weiterhin — die
+Kurzform der Kurs-Vorlage ist hier von
+[`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in)
+belegt, ein Folge-Slice ist nicht geschnitten. Die
+[`MR-013`](../../../../harness/conventions.md#mr-013)/[`MR-057`](../../../../harness/conventions.md#mr-057)-Kollision
+(Kurs-Welle 103 verlangt für den `MR`-Lifecycle-Move den umgekehrten
+Commit-Schnitt) bleibt gemeldet statt aufgelöst — die neue Kanon-Bedingung
+liegt in keinem Release (`v5.16.0` trägt Welle 109, nicht 110) und ist damit
+noch nicht zitierbar; ein Folge-Eintrag mit engerem Nachfolger für die dritte
+Move-Klasse ist fällig, sobald sie es ist.
+
+**Verifikation.** `make gates` Exit 0 (zehn Gates, 647 Dateien, 0 Befunde,
+Coverage 94,70 %) · `make fullbuild` Exit 0, Image-Hash
+`sha256:7b8cb29549c4553300d87ee9e382dfbb3630068b63cf945f3a095f2f2caa3b1e`, 50
+Anforderungen / 0 Waisen · unabhängiger Review (0/1/1, behoben) · unabhängige
+Verifikation (8/8 konform).
