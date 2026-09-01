@@ -38,12 +38,12 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
 ## Adoptierte Konventions-Quellen
 
 - **Extern (Lehrmaterial):**
-  [`ai-harness-course@v5.15.0`](https://github.com/pt9912/ai-harness-course/tree/v5.15.0)
+  [`ai-harness-course@v5.18.0`](https://github.com/pt9912/ai-harness-course/tree/v5.18.0)
   (`kurs/de/` — Konventionen in `grundlagen/`, Templates in `lab/templates/`).
   Kanonische Quelle; bei Konflikt maßgeblich.
 - **Vendored Baseline (Regelwerk + Templates):** aus dem self-contained
   Release-Asset
-  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v5.15.0/lab-regelwerk.zip)
+  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v5.18.0/lab-regelwerk.zip)
   entpackt nach [`.harness/baseline/v5.18.0/`](../.harness/baseline/v5.18.0/regelwerk/)
   (`{regelwerk,templates}/` + `SHA256SUMS`) — der **netzlose** Lesepfad,
   materialisiert/verifiziert per

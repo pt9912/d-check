@@ -169,9 +169,16 @@ kein solcher Kandidat ist derzeit sichtbar.
 
 - [x] Der Pin steht auf `v5.18.0`: vendorter Baum re-vendored,
       `make baseline-verify` grün (Integrität, Manifest-Deckung,
-      Alias-Auflösung, 53 Dateien), alle Pfad-Verweise und die vier Symlinks
-      gezogen (44 lebende `v5.15.0`-Vorkommen gehoben, drei eingefrorene
-      stehen gelassen).
+      Alias-Auflösung, 53 Dateien), alle **Pfad**-Verweise
+      (`baseline/v5.15.0/…`) und die vier Symlinks gezogen (44 lebende
+      Vorkommen gehoben, drei eingefrorene stehen gelassen). **Der Review
+      fand eine engere Klasse, die dieser Zensus nicht erfasst:** fünf
+      externe Release-/Tree-URLs (kein `baseline/`-Pfad, daher außerhalb des
+      Grep-Musters) — dieselbe Spiegel-Klasse wie
+      [`BEO-008`](../observations.md), jetzt fünfte Instanz. Nachträglich
+      gefunden und gehoben (`AGENTS.md`, `harness/conventions.md` ×2,
+      `harness/README.md`,
+      [`MR-021`](../../../../harness/conventions.md#mr-021)).
 - [x] **Jede `cite`-Direktive ist entschieden**, nicht nur grün: je Direktive
       steht fest, ob sie nachgezogen, umgehängt oder nach
       [`MR-039`](../../../../harness/conventions.md#mr-039) entfernt wurde.

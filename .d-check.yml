@@ -159,11 +159,8 @@ ignore-refs:
   # sie stehen zu lassen waere target-missing; also quell-skopiert ausnehmen,
   # wie bei done/ und docs/reviews/. Die refs-Seite bleibt eng -- ausgenommen
   # ist ausschliesslich der ENTFERNTE Baum, nicht der gepinnte.
-  # VIERTER Eintrag, nachgetragen mit slice-189: der urspruengliche Bulk-Zensus
-  # hatte harness/conventions/done/ nicht ausgenommen und MR-038/MR-041 versehentlich
-  # auf v5.15.0 gehoben, obwohl beide eingefroren sind (bei v5.12.0 fixiert). Beim
-  # v5.18.0-Bump auf v5.12.0 zurueckgesetzt und hier ergaenzt statt beim naechsten
-  # Bump erneut zu brechen.
+  # VIERTER Eintrag: dieselbe Klasse gilt auch fuer harness/conventions/done/,
+  # dessen eingefrorene Eintraege (MR-038, MR-041) bei v5.12.0 fixiert sind.
   - in: docs/plan/planning/done/**
     refs: [".harness/baseline/v5.12.0/**"]
   - in: docs/reviews/**
