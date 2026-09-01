@@ -312,3 +312,63 @@ Fremd-Inhalt, und ob eine Adaption noch trägt, entscheidet sein Delta — nicht
 unser Bestand.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert.** Der vendorte Baseline-Baum steht auf `v5.18.0` — drei Releases
+gelesen statt angenommen (Wellen 109/110/111), 8 von 51 Bundle-Dateien mit
+echtem Inhalt. Der neue Zeitdokumente-Archiv-Mechanismus bleibt bewusst
+unadoptiert (§3). [`MR-058`](../../../../harness/conventions.md#mr-058) löst die
+in [`MR-057`](../../../../harness/conventions/done/MR-057-baseline-v5150.md)
+gemeldete, aber offen gelassene Kollision zwischen
+[`MR-013`](../../../../harness/conventions.md#mr-013) und Kurs-Welle 110 auf —
+mit dem eigenen CR als Beispiel im Kurs-Changelog zitiert. Kein Praxiswechsel:
+[`MR-013`](../../../../harness/conventions.md#mr-013) trennt die Push-CI-
+Begründung (bestätigt) von einer unabhängigen, lokalen `doc-check`-Begründung
+(von Kurs-Welle 110 unberührt) bereits in seinem eigenen Text — die
+„Kollision" war eine Vermischung zweier Begründungen unter einem Eintrag,
+kein echter Widerspruch.
+
+**Was funktioniert hat.** Der Adaptions-Review (33 lebende `MR`-Einträge)
+und der cite-Zensus (28 Direktiven, 8 in den geänderten Dateien) liefen
+gegen die Liste, nicht gegen das Gefühl — beide Ergebnisse („alle bleiben
+gültig", 6 nachgezogen/2 unverändert/0 entfernt) sind aus der Prüfung
+begründet, nicht aus der kleinen Delta-Zahl vorweggenommen.
+
+**Was anders lief.** Der unabhängige Review (0 HIGH, 1 MEDIUM, 2 LOW) fand
+fünf externe Release-URLs, die derselbe `baseline/`-Pfad-Zensus nicht
+erfasst — eine engere Klasse desselben Registereintrags
+([`BEO-008`](../observations.md), fünfte Instanz). Die unabhängige
+Verifikation fand danach zwei weitere Lücken, beide vom Review übersehen:
+zwei zusätzliche `v5.15.0`-Prosa-Reste ohne Pfad oder URL (zweite Teilklasse
+derselben `BEO-008`-Instanz), und eine verfrühte Commit-Behauptung — der
+Bump-Commit sagte im Präsens, das Ein-Commit-Muster der
+[`MR-057`](../../../../harness/conventions/done/MR-057-baseline-v5150.md)-Migration
+werde „in der Closure-Notiz benannt", während diese Sektion zu dem Zeitpunkt
+plangemäß noch leer war (achte Instanz von
+[`BEO-009`](../observations.md), neue Spielart: nicht ausgebliebene, sondern
+noch nicht fällige Arbeit als bereits geschehen dargestellt). Alle drei
+Funde sind in eigenen Fix-Commits behoben.
+
+**Das benannte Ein-Commit-Muster selbst (F-3 aus dem Review).** Der
+Baustein-Commit (`55f3639`) bündelte den gesamten Pfad-/cite-/Adaptions-Bump
+**und** die [`MR-057`](../../../../harness/conventions/done/MR-057-baseline-v5150.md)→`done/`-Migration
+in einem einzigen Commit, statt die Migration — wie
+[`MR-013`](../../../../harness/conventions.md#mr-013)s Ausnahme für
+MR-/Wellen-Lifecycle-Moves es vorsieht („Alles Übrige bleibt Commit 2") — in
+zwei Commits zu trennen. **Das ist keine neue Abweichung dieses Slice**: der
+Review benennt es als „ein seit mehreren vorangehenden Baseline-Bumps
+unverändertes, ungewächtertes Muster" — schon slice-183s Bump-Commit
+(`08373c9`) bündelte auf dieselbe Weise den Pfad-Bump mit der
+[`MR-037`](../../../../harness/conventions/done/MR-037-baseline-v5120.md)→`done/`-Migration.
+**Ausgang: weiter offen, nicht in diesem Slice
+aufgelöst.** Eine rückwirkende Commit-Zerlegung für einen LOW-Fund in einem
+bereits abgeschlossenen Bump-Commit wäre unverhältnismäßig; die Lücke ist
+benannt statt verschwiegen und wandert als Prozedur-Hinweis in den nächsten
+Baseline-Bump: die `MR-*`→`done/`-Migration verdient dort probeweise einen
+eigenen, vorgezogenen Commit, getrennt vom übrigen Pfad-Bump.
+
+**Verifikation.** `make gates` Exit 0 (zehn Gates, 650 Dateien, 0 Befunde) ·
+`make fullbuild` Exit 0 (Image-Test, Bench, 50 Anforderungen/0 Waisen,
+`verify-closure-notes` 585 Dateien/0 Befunde), Image-Hash unverändert
+`sha256:7b8cb29549c4553300d87ee9e382dfbb3630068b63cf945f3a095f2f2caa3b1e` ·
+unabhängiger Review (0/1/2, alle behoben) · unabhängige Verifikation (fand
+zwei weitere Lücken, beide behoben, dann `done/`-freigegeben).
