@@ -220,12 +220,14 @@ ein Slice ist.
   > **Offene Beobachtungen sichten.**
 
 - **Nachtlauf-Stand lesen** (`make nightly-state`,
-  [`MR-053`](../../../../harness/conventions.md#mr-053)) — gelesen bei
-  Anlage: `upstream-drift.yml` meldet **ROT** (jüngster Lauf
-  2026-08-31T06:31:40Z, vor dem `v5.15.0`-Bump und vor diesem Slice — wird
-  erst nach dem nächsten Nachtlauf neu bewertbar), `image-scan.yml` grün.
-  **Dieser Block trägt bewusst keine `cite`-Direktive** — sein Ziel ist eine
-  Repo-Adaption ([`MR-054`](../../../../harness/conventions.md#mr-054)).
+  [`MR-053`](../../../../harness/conventions.md#mr-053)) — **bei der
+  Beanspruchung neu gelesen:** `upstream-drift.yml` meldet weiter **ROT**,
+  jetzt mit jüngstem Lauf 2026-09-01T05:56:48Z (ein zweiter Lauf seit der
+  Anlage dieses Slice — derselbe Grund: unser Pin ist hinter `v5.18.0`
+  zurück), `image-scan.yml` grün. Der Nachtlauf wird grün, wenn dieser Slice
+  geschlossen ist. **Dieser Block trägt bewusst keine `cite`-Direktive** —
+  sein Ziel ist eine Repo-Adaption
+  ([`MR-054`](../../../../harness/conventions.md#mr-054)).
 
 Slice-ID: slice-189. Betroffene IDs:
 [`MR-013`](../../../../harness/conventions.md#mr-013),
