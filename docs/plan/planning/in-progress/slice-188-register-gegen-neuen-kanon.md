@@ -72,6 +72,22 @@ unbequemere und die richtige Lesart, und sie gehört in die Closure-Notiz.
    ist also: unter dem heutigen Pin korrigieren (Richtung aus dem unreleasten
    Kanon vorweggenommen, ausdrücklich als solche benannt) — oder auf ein Release
    warten und den Slice bis dahin ruhen lassen.
+
+   **Entschieden bei Beanspruchung (2026-09-02): die Frage hat sich von selbst
+   erledigt.** [slice-189](../done/slice-189-baseline-v5180.md) hat den Pin
+   zwischenzeitlich auf `v5.18.0` gehoben — der vendorte Baum trägt die beiden
+   zitierten Regeln jetzt wörtlich:
+
+   <!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md:105-108 -->
+   > **Ein Vorgang zählt einmal — und was keinen hat, zählt gar nicht.** Der
+   > Regelfall eines Belegs ist die Slice-Kennung; auch eine Welle und ein
+   > Review-Report sind abgeschlossene Vorgänge und taugen als Beleg. Zwei
+   > Funde **im selben** Vorgang
+
+   Es gibt also **keine** Vorwegnahme mehr zu benennen — die Korrektur zitiert
+   einen Kanon-Abschnitt, der im gepinnten Baum steht, nicht auf `main`. Die
+   ursprüngliche Alternative (auf ein Release warten) ist gegenstandslos
+   geworden, bevor der Slice sie ziehen musste.
 2. **Die zwei Zähler korrigieren**, jeweils mit der Begründung in der Zeile;
    die bisherige Abweichungs-Begründung wird **nicht gelöscht**, sondern
    abgelöst — sie war die ehrliche Notiz ihrer Zeit.
@@ -151,18 +167,35 @@ eigener Schnitt und keine Nebenwirkung dieser Korrektur.
   > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
   > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-- **Offene Beobachtungen sichten** (Register-Stand 2026-08-31, höchste Kennung
-  `BEO-024`): [`BEO-011`](../observations.md) (Zähler 5) — jede **Erhöhung** in
-  Punkt 3 ist eine Aussage, die aus dem Bestand kommen muss und nicht aus dem
-  Anlass; [`BEO-002`](../observations.md) (Zähler 7) — die 14 umzuschreibenden
-  Stand-Zellen sind gewachsene Prosa, und beim Umstellen geht leicht verloren,
-  was sie zusätzlich sagten; [`BEO-012`](../observations.md) (Zähler 11) — die
-  neuen Regeln liegen **unreleast** auf `main`, und sie zu zitieren, als
-  stünden sie in unserem Pin, wäre genau diese Klasse. Die Regel, die diesen
-  Schritt vorschreibt:
+- **Offene Beobachtungen sichten** (Register-Stand **2026-09-02** — bei der
+  Beanspruchung aufgefrischt, höchste Kennung jetzt `BEO-026`):
+  [`BEO-011`](../observations.md) (Zähler **5**, unverändert seit der
+  Autorenschaft) — jede **Erhöhung** in Punkt 3 ist eine Aussage, die aus dem
+  Bestand kommen muss und nicht aus dem Anlass; [`BEO-002`](../observations.md)
+  (Zähler jetzt **8**, war 7 bei der Autorenschaft — zwei weitere Zeilen sind
+  seither dazugekommen) — die freien Stand-Zellen sind gewachsene Prosa, und
+  beim Umstellen geht leicht verloren, was sie zusätzlich sagten;
+  [`BEO-012`](../observations.md) (Zähler jetzt **12**, war 11) — die Frage
+  „liegt die Quelle im gepinnten Baum" ist seit dem Baseline-Bump auf
+  `v5.18.0` ([slice-189](../done/slice-189-baseline-v5180.md)) mit Ja
+  beantwortet (siehe §2 Punkt 1), die Wachsamkeit der Klasse bleibt trotzdem
+  für jedes künftige Zitat gültig. Die Regel, die diesen Schritt vorschreibt:
 
   <!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md:225-225 -->
   > **Offene Beobachtungen sichten.**
+
+- **Nachtlauf-Stand lesen** (`make nightly-state`,
+  [`MR-053`](../../../../harness/conventions.md#mr-053)): `image-scan.yml`
+  **gruen** (jüngster Lauf 2026-09-02T07:56:37Z). `upstream-drift.yml`
+  **ROT** — jüngster Lauf 2026-09-02T05:19:44Z, aber **planmäßig**: die
+  Meldung ist der bekannte, informative Fremd-Release-Fund (Go 1.27.0→1.27.1,
+  semgrep 1.175.0→1.176.0), kein Zitat-Bruch nach dem Bump und keine
+  Regression — nachgelesen im Lauf selbst, nicht nur an der Farbe. Beide
+  Achsen sind für diesen Slice ohne Konsequenz: er berührt weder eine
+  Toolchain-Version noch eine Zitat-Spanne außerhalb der beiden in §2 Punkt 1
+  geprüften. **Dieser Block trägt bewusst keine `cite`-Direktive** — sein Ziel
+  ist eine Repo-Adaption, kein Baseline-Abschnitt
+  ([`MR-054`](../../../../harness/conventions.md#mr-054)).
 
 ## 8. Sub-Area-Modus-Begründung
 

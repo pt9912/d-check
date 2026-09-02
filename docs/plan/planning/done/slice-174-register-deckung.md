@@ -136,7 +136,7 @@ in diesem Plan, und es liegt in Backticks.
   mehr, sondern zu hoch gezählt** — 6 statt 7, 1 statt 3. **Der Ausschluss
   bleibt richtig, seine Begründung ist eine andere:** die Anzahl-Achse braucht
   einen Bestand, der die Regel erfüllt, und den stellt
-  [slice-188](../open/slice-188-register-gegen-neuen-kanon.md) her. Eine
+  [slice-188](../in-progress/slice-188-register-gegen-neuen-kanon.md) her. Eine
   Bestands-Ausnahme wie [`MR-049`](../../../../harness/conventions.md#mr-049)
   oder [`MR-056`](../../../../harness/conventions.md#mr-056) braucht es
   **nicht** — das war meine Einschätzung, solange die Regel fehlte, und sie ist
@@ -193,7 +193,7 @@ in diesem Plan, und es liegt in Backticks.
 - **Die Beleg-Form bleibt liegen**, und mit ihr die zwei begründeten
   Abweichungen. Wer den Slice liest, könnte die Deckung für die ganze
   maschinelle Hälfte halten. — **Ausgang:** *eingetreten* → Folge-Slice
-  [slice-188](../open/slice-188-register-gegen-neuen-kanon.md). Er bringt den
+  [slice-188](../in-progress/slice-188-register-gegen-neuen-kanon.md). Er bringt den
   Bestand mit der neuen Beleg-Definition in Übereinstimmung; erst danach ist
   die Anzahl-Achse baubar. Die Abgrenzung steht in §3 dieses Plans.
 
@@ -319,7 +319,7 @@ geblieben.
   Slice — Handbuch §4.20 und die Modultabellenzeile liegen in `a4bc209`, dem
   Commit, der slice-187 schneidet.
 - **Folge-Slices:**
-  [slice-188](../open/slice-188-register-gegen-neuen-kanon.md) — er bringt den
+  [slice-188](../in-progress/slice-188-register-gegen-neuen-kanon.md) — er bringt den
   Register-Bestand mit der neuen Beleg-Definition in Übereinstimmung; erst
   danach ist die Anzahl-Achse baubar.
 - **Risiken aus §5:** vier, jedes mit genau einem Ausgang — dreimal
