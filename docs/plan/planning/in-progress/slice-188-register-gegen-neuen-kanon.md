@@ -78,7 +78,7 @@ unbequemere und die richtige Lesart, und sie gehört in die Closure-Notiz.
    zwischenzeitlich auf `v5.18.0` gehoben — der vendorte Baum trägt die beiden
    zitierten Regeln jetzt wörtlich:
 
-   <!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md:105-108 -->
+   <!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md:105-107 -->
    > **Ein Vorgang zählt einmal — und was keinen hat, zählt gar nicht.** Der
    > Regelfall eines Belegs ist die Slice-Kennung; auch eine Welle und ein
    > Review-Report sind abgeschlossene Vorgänge und taugen als Beleg. Zwei
