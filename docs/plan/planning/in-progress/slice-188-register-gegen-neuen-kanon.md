@@ -122,11 +122,18 @@ unbequemere und die richtige Lesart, und sie gehört in die Closure-Notiz.
       `BEO-025`/`BEO-026` dazugekommen — beide bereits unter der neuen Regel
       angelegt) sind gegen die erweiterte Beleg-Definition geprüft; jede
       Erhöhung nennt ihren abgeschlossenen Vorgang.
-- [x] Die Stand-Zellen tragen die geschlossene Menge; die **11** aktuellen
-      Schwellen-Zeilen (Zähler ≥ 3 nach der Korrektur — `BEO-004` fällt durch
-      die Korrektur selbst aus der Menge) haben einen formgültigen Ausgang.
-- [ ] `make gates` grün (Exit explizit); **unabhängiger Review**.
-- [ ] Closure-Notiz mit Lerneintrag; jedes Risiko aus §5 mit Ausgang; die drei
+- [x] Die Stand-Zellen tragen die geschlossene Menge, **mit einer ehrlichen
+      Einschränkung statt eines erfundenen Ausgangs:** von den **11** aktuellen
+      Schwellen-Zeilen (Zähler ≥ 3 nach der Korrektur) tragen **9** einen
+      formgültigen Ausgang (*verkörpert*/*geplant*). Für **4 Fundstellen**
+      (`BEO-008`, `BEO-015`, zwei Instanzen von `BEO-020`) war weder ehrlich
+      verfügbar — die unabhängige Verifikation hat einen ersten Versuch mit
+      „weiter offen" zu Recht als denselben Kanon-Verstoß zurückgewiesen, den
+      `BEO-015` selbst beschreibt. Als neue Beobachtung
+      [`BEO-027`](../observations.md) registriert statt hier erfunden — ihre
+      Auflösung ist ein eigener Folge-Slice, kein Rest dieses.
+- [x] `make gates` grün (Exit explizit); **unabhängiger Review**.
+- [x] Closure-Notiz mit Lerneintrag; jedes Risiko aus §5 mit Ausgang; die drei
       Paarungen geprüft.
 
 ## 5. Abnahme-Punkte / Risiken
@@ -134,17 +141,29 @@ unbequemere und die richtige Lesart, und sie gehört in die Closure-Notiz.
 - **Zähler zu senken sieht aus wie Vertuschen.** Wer die Historie liest, sieht
   eine Zahl fallen. Die Begründung muss in der Zeile stehen, nicht nur im
   Commit — sonst ist die Korrektur von einer Schönung ununterscheidbar.
-  — **Ausgang:** *(bei Closure)*
+  — **Ausgang: entfallen.** Beide Korrekturen tragen die Begründung **in der
+  Zeile selbst**, mit der alten Notiz **abgelöst statt gelöscht** davor
+  stehend — nachprüfbar ohne den Commit zu lesen. Nicht eingetreten.
 - **Punkt 3 ist die Stelle, an der aus einer Korrektur eine Erfindung wird.**
   Einen Zähler zu **heben**, weil sich ein Vorgang „auch als Beleg lesen lässt",
   wäre eine Aussage aus dem Anlass statt aus dem Bestand
-  ([`BEO-011`](../observations.md), Zähler 5). — **Ausgang:** *(bei Closure)*
+  ([`BEO-011`](../observations.md), Zähler 5). — **Ausgang: entfallen.** Jede
+  Erhöhung (`BEO-002` auf 9) nennt einen echten, benannten Vorgang
+  (slice-188 selbst); keine Zeile wurde ohne Beleg gehoben. Nicht eingetreten.
 - **Die Regeln sind unreleast.** Ein Zitat auf sie ist heute nicht auflösbar,
   und ein Slice, der auf eine `main`-Fassung baut, kann veralten, bevor er
-  schließt. — **Ausgang:** *(bei Closure)*
+  schließt. — **Ausgang: entfallen.** Durch [slice-189](../done/slice-189-baseline-v5180.md)
+  gegenstandslos geworden, bevor dieser Slice es ziehen musste — siehe §2
+  Punkt 1.
 - **Die Stand-Umstellung berührt 14 Zellen mit gewachsener Prosa.** Beim
   Umschreiben geht leicht verloren, was die Zelle *zusätzlich* sagte
-  ([`BEO-002`](../observations.md), Zähler 7). — **Ausgang:** *(bei Closure)*
+  ([`BEO-002`](../observations.md), Zähler 7). — **Ausgang: entfallen.** Jeder
+  Ausgang-Marker wurde **angehängt**, nie eine bestehende Zeile umformuliert
+  oder gekürzt — gemessen: kein Satz der Alt-Prosa ist verschwunden. **Neu und
+  ungeplant eingetreten ist die Schwester-Gefahr:** nicht eine Zelle, sondern
+  die **Kopfzeile der Datei** (die Beleg-Regeln in eigener Prosa) blieb beim
+  ersten Durchgang stehen — vom Auftraggeber gefunden, als neunte Instanz von
+  [`BEO-002`](../observations.md) nachgetragen (Zähler 9).
 
 ## 6. Trigger
 
@@ -207,3 +226,76 @@ Default. Kein Code, keine Spec, keine Reconciliation: der Slice bringt einen
 **Bestand** mit einer Regel in Übereinstimmung, die anderswo entschieden wurde.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert.** Zwei Zähler-Korrekturen nach der v5.18.0-Kanon-Regel
+(„zwei Funde im selben Vorgang sind eine Gelegenheit, kein zweites
+Auftreten"; „ein Vorkommen ohne abgeschlossenen Vorgang bewegt den Zähler
+nicht"): `BEO-023` 7→6 (Duplikat-Vorgang `slice-178` entfernt), `BEO-004`
+3→1 (zwei unbelegte Vorkommen entfernt). Alle 24 aktuell aktiven
+Registerzeilen gegen die erweiterte Beleg-Definition (Welle/Review-Report
+zählen jetzt auch) durchgegangen — keine weitere Zeile gewinnt einen neuen
+Beleg. Elf Schwellen-Zeilen (Zähler ≥ 3) auf die geschlossene Stand-Form
+umgestellt, neun davon formgültig (*verkörpert*/*geplant*). Die Kopfzeile
+der Registerdatei trägt jetzt die Baseline-Version und die erweiterte
+Beleg-Definition, samt einer benannten Grenze: der Kanon sieht eine
+Wellen-Archivierung vor (`archiv.zip`, Review-Reports ohne Stub), die
+dieses Repo noch nie durchgeführt hat — für die aktuell offene
+[`welle-86`](../welle-86-closure-uebergang-durchsetzen.md) greift die
+Nachrüst-Ausnahme **nicht**, und kein Werkzeug führt die Archivierung aus.
+
+**Was funktioniert hat.** Die Timing-Frage aus §2 Punkt 1 hat sich von
+selbst erledigt — [slice-189](../done/slice-189-baseline-v5180.md) hob den
+Baseline-Pin zwischenzeitlich auf `v5.18.0`, und der zitierte Kanon-Abschnitt
+steht seither wörtlich im vendorten Baum. Die Methode „nur anhängen, nie
+umschreiben" für die Stand-Zellen hat den in §5 befürchteten
+Informationsverlust vermieden: kein Satz der Alt-Prosa ist verschwunden.
+
+**Was anders lief.** Zweimal fand nicht der Review oder die Verifikation
+den ersten Fund, sondern der Auftraggeber selbst — beide Male am eigenen
+Beitrag dieses Slices, nicht an einer Nebensache:
+
+1. **Die Kopfzeile der Registerdatei war die falsche Stelle, an der die
+   Semantik-Änderung endete.** Alle Zeilen wurden korrigiert; die
+   Zusammenfassung der Beleg-Regeln am Dateianfang, die genau diese Semantik
+   in eigener Prosa trägt, blieb unangetastet und beschrieb danach eine
+   Regel, die im Rest der Datei schon nicht mehr galt. Neunte Instanz von
+   [`BEO-002`](../observations.md) (8→9) — der übersehene Rand ist hier
+   nicht eine Historie-Zeile, sondern die Selbstbeschreibung des geänderten
+   Artefakts selbst.
+2. **Die „Nachrüst-Ausnahme ist konform"-Formulierung klang stärker, als sie
+   ist.** Sie deckt nur Wellen, die vor der Regel-Einführung schlossen — nicht
+   `welle-86`, die aktuell offen ist. Nachgeschärft, mit der konkreten
+   Konsequenz benannt (kein Werkzeug, nächste Closure ist die erste betroffene).
+
+Die **unabhängige Verifikation** fand einen dritten, härteren Fund, den weder
+ich noch der Review sahen: **„weiter offen" ist oberhalb der Zähler-Schwelle
+kein gültiger Ausgang** — der Kanon lässt dort nur *verkörpert* oder
+*geplant (mit Kennung)* zu. Vier Fundstellen (`BEO-008`, `BEO-015`, zwei
+Instanzen von `BEO-020`) hatten ehrlich keins von beidem verfügbar, und ein
+erster Versuch trug dort „weiter offen" ein — genau der Kanon-Verstoß, den
+`BEO-015` selbst beschreibt (*„ein offener Punkt bekommt bei der Closure
+einen Ausgang, den es nicht gibt"*), nur diesmal als **fehlender** statt
+**erfundener** vierter Ausgang. Statt einen Ausgang zu fabrizieren, ist die
+Lücke als neue Beobachtung [`BEO-027`](../observations.md) registriert —
+ihre Auflösung (ein Sensor, der Schwellen-Zeilen gegen die zwei zulässigen
+Ausgangs-Formen hält) ist ein eigener Folge-Slice.
+
+**Steering-Loop-Einträge.** Zwei Register-Zähler erhöht, keiner davon neu
+außer dem Fund selbst:
+
+- [`BEO-002`](../observations.md) **auf 9** (Semantik-Änderung im Körper
+  nachgezogen, Rand blieb stehen) — neu daran: der übersehene Rand ist die
+  Selbstbeschreibung des Artefakts, nicht eine Historie- oder Index-Zeile.
+- [`BEO-027`](../observations.md) **neu, Zähler 1** — eine Registerzeile
+  übersteht ihre Schwellen-Lese-Schritte ohne zugewiesenen Ausgang; vier
+  Fundstellen in einem Vorgang, nach der neuen Vorgangs-Zählung eine
+  Gelegenheit. Abgrenzung zu [`BEO-015`](../observations.md) in der Zeile
+  selbst: dort ein erfundener vierter Ausgang, hier ein fehlender.
+
+**Register-Paarung geprüft:** beide zitierten Kennungen
+([`BEO-002`](../observations.md), [`BEO-027`](../observations.md)) existieren
+als Registerzeile mit mindestens einem Beleg. **Anker-Paarung:** entfällt —
+dieser Slice verkörpert selbst keine Regel mit `seit slice-188`-Anker.
+**Folge-Slice-Paarung:** kein genannter Folge-Slice trägt bereits eine
+Datei — die Auflösung von `BEO-027` und die Wellen-Archivierung sind als
+künftige Arbeit benannt, nicht als existierende Kennung zitiert.
