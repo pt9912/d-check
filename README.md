@@ -105,7 +105,11 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   default) **or** identifier bijection active block ⟺ files with the rest
   marker staying out of it (`waves.mode: many`); preview without a file,
   closed register ⟺ results notes both ways (`wave-drift`,
-  `wave-preview-exists`, `wave-results-missing`, `wave-unregistered`), opt-in
+  `wave-preview-exists`, `wave-results-missing`, `wave-unregistered`), opt-in.
+  **Register coverage** (additionally opt-in via `observations.register`): a
+  cited observation identifier without a register line
+  (`observation-unregistered`) — prose and link text count, a plain
+  inline-code example does not
   ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
 - `tracked` — tracked status of resolvable, **existing** link/image targets
   against the git **index** (`target-untracked`: an untracked/gitignored
@@ -169,7 +173,10 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   because the location is CI-system specific), opt-in. A **foreign** reference
   names a full 40-character commit SHA (`uses-pin-missing`) with a tag comment
   behind it (`uses-pin-untagged`) — a tag can be moved, a SHA cannot; the
-  **form** is checked, not the validity (that would be network). A **local**
+  **form** is checked, not the validity (that would be network). If the same
+  SHA carries more than one tag comment within the scan set — across files —
+  every affected line is reported (`uses-pin-tag-conflict`); repetition stays
+  clean, and which comment is correct remains network. A **local**
   reference (`./…`) needs no pin, but two other guarantees: the target exists
   (`uses-local-missing`), and the calling **job** carries the permissions the
   target demands (`uses-local-perms-undeclared`, `uses-local-perms-narrow`) — a
@@ -263,7 +270,7 @@ you pull from)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

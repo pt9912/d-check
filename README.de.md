@@ -105,7 +105,10 @@ Dokuments:
   Kennungs-Bijektion Aktiv-Block ⟺ Dateien, Ruhe-Marker außen vor
   (`waves.mode: many`); Vorschau ohne Datei, Abschluss-Register ⟺
   Ergebnisnotizen beidseitig (`wave-drift`, `wave-preview-exists`,
-  `wave-results-missing`, `wave-unregistered`), opt-in
+  `wave-results-missing`, `wave-unregistered`), opt-in. **Register-Deckung**
+  (zusätzlich opt-in über `observations.register`): eine zitierte
+  Beobachtungs-Kennung ohne Zeile im Register (`observation-unregistered`) —
+  gezählt werden Prosa und Linktext, ein reines Inline-Code-Beispiel nicht
   ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
 - `tracked` — Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele
   gegen den git-**Index** (`target-untracked`: ein untracktes/gitignoriertes
@@ -171,7 +174,10 @@ Dokuments:
   verdrahtet, weil CI-System-spezifisch), opt-in. Eine **fremde** Referenz nennt
   einen vollen 40-stelligen Commit-SHA (`uses-pin-missing`) mit Tag-Kommentar
   dahinter (`uses-pin-untagged`) — ein Tag lässt sich umhängen, ein SHA nicht;
-  geprüft wird die **Form**, nicht die Gültigkeit (das wäre Netz). Eine
+  geprüft wird die **Form**, nicht die Gültigkeit (das wäre Netz). Trägt
+  derselbe SHA innerhalb der Scan-Menge — dateiübergreifend — mehr als einen
+  Tag-Kommentar, meldet jede beteiligte Zeile (`uses-pin-tag-conflict`);
+  Wiederholung bleibt befundfrei, welcher Kommentar stimmt bleibt Netz. Eine
   **lokale** Referenz (`./…`) braucht keinen Pin, dafür zwei andere Zusagen: das
   Ziel existiert (`uses-local-missing`), und der aufrufende **Job** führt die
   Rechte, die es verlangt (`uses-local-perms-undeclared`,
@@ -267,7 +273,7 @@ Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

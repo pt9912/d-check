@@ -4,6 +4,46 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.72.0] — 2026-09-02
+
+### Added
+
+- slice-174 — **Vierte Fähigkeit des Moduls `planning`: die Register-Deckung
+  bekommt ihren Wächter**
+  ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
+  Lastenheft 0.81.0). Opt-in über `planning.observations.register`: eine
+  **zitierte** Beobachtungs-Kennung (`BEO-<NNN>` oder eigenes Muster) ohne
+  Zeile im Register meldet `observation-unregistered`. Die Umkehrung
+  (jede Zeile ist zitiert) bleibt bewusst ausgeschlossen — die meisten Zeilen
+  stehen unter der Verkörperungs-Schwelle und sind nirgends zitiert. **Gezählt
+  werden Prosa und Linktext, ein reines Inline-Code-Span nicht** — dieselbe
+  Trennlinie wie bei der Platzhalter-Prüfung, hier in der Gegenrichtung: eine
+  Kennung in Backticks ist ein Beispiel, keine Behauptung. Ohne den Schlüssel
+  `register` ist der Befundsatz byte-identisch.
+- slice-187 — **Handbuch-Zeiger nennen jetzt beide URL-Formen**
+  ([`DC-FA-CLI-001`](spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel),
+  [`DC-FA-CLI-010`](spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
+  Lastenheft 0.82.0). `--help` und das per `--print-mk` erzeugte Fragment
+  zeigen zusätzlich zur gerenderten GitHub-Seite die rohe
+  `raw.githubusercontent.com`-Form. **Anlass:** der Hauptleser beider
+  Ausgaben ist ein Code-Agent, kein Mensch im Terminal — für ihn ist die
+  gerenderte Seite die schlechtere Quelle (siebenfache Nutzlast bei
+  identischem Inhalt, verlorene Markdown-Linkziele). Beide URLs zeigen
+  weiterhin auf den Hauptzweig, ohne Versionsangabe.
+- slice-184 — **Dritter Grund-Code der Pin-Familie im Modul `workflows`:
+  `uses-pin-tag-conflict`**
+  ([`DC-FA-WF-001`](spec/lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in),
+  Lastenheft 0.83.0, [ADR-0080](docs/plan/adr/0080-uses-pin-tag-conflict.md)).
+  Trägt derselbe SHA innerhalb der Scan-Menge — **dateiübergreifend**, die
+  erste Bedingung des Moduls, die nicht je Datei urteilt — mehr als einen
+  distinkten Tag-Kommentar, meldet jede beteiligte Zeile mit den
+  widersprüchlichen Werten in der Nachricht. Wiederholung (identischer
+  Kommentar über beliebig viele Zeilen) bleibt befundfrei; welcher Wert
+  stimmt, ist Netz und bleibt außerhalb. **Benannte Grenze:** zwei legitime
+  Tags auf demselben Commit (ein Major-Tag neben seinem Patch-Release) melden
+  wie ein echter Widerspruch. Kein neues Konfigurationsfeld — dieselbe
+  Aktivierungsschranke wie `uses-pin-untagged`.
+
 ## [0.71.1] — 2026-08-31
 
 ### Fixed

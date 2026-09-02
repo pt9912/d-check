@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.66 · **Software-Version:** [v0.71.1](../../version.md#v0.71.1) ·
-**Stand:** 2026-08-31 · **Autor:** pt9912
+**Handbuch-Version:** 1.67 · **Software-Version:** [v0.72.0](../../version.md#v0.72.0) ·
+**Stand:** 2026-09-02 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.71.1
+docker pull ghcr.io/pt9912/d-check:v0.72.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -79,12 +79,12 @@ jeweiligen Registrys; wer per Digest pinnt, nimmt den Digest **der Registry, aus
 der er zieht**. GHCR bleibt die Quelle; Docker Hub folgt ihr.
 
 ```bash
-docker pull pt9912/d-check:v0.71.1
+docker pull pt9912/d-check:v0.72.0
 ```
 
 ### Versionen und Tags
 
-- `:v0.71.1` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.72.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -113,7 +113,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -172,7 +172,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -191,7 +191,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.71.1
+  ghcr.io/pt9912/d-check:v0.72.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -210,7 +210,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.71.1 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.72.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -229,7 +229,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -249,7 +249,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -258,7 +258,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -277,7 +277,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -297,7 +297,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
   --enable ids --disable anchors
 ```
 
@@ -318,7 +318,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
   --enable ids
 ```
 
@@ -339,7 +339,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
   --enable matrix
 ```
 
@@ -407,7 +407,7 @@ Konfigurationsfehler (Exit 2); ohne `token` verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
   --enable external
 ```
 
@@ -429,7 +429,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
   --enable ids --doctor
 ```
 
@@ -464,7 +464,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
   --enable ids --doctor --json
 ```
 
@@ -512,7 +512,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -548,7 +548,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
     --enable ids --repair | git apply
   ```
 
@@ -565,7 +565,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -585,7 +585,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -647,7 +647,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -785,7 +785,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -830,7 +830,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.71.1 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.72.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -848,7 +848,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und dreizehn
 # Benutzerhandbuch (aufgabenorientiert, deutsch):
 #   https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md
 #   https://raw.githubusercontent.com/pt9912/d-check/refs/heads/main/docs/user/benutzerhandbuch.md  (roh, für Werkzeuge/Agenten)
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.71.1
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.72.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -913,7 +913,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -1103,13 +1103,6 @@ Deklarations-Klasse — ein grüner Lauf heißt „diese Klasse liegt nicht vor"
 
 ### 4.20 Erfundene Register-Kennungen finden (Modul `planning`)
 
-> **Diese Fähigkeit ist in `v0.71.1` noch nicht enthalten.** Der Kopf dieses
-> Handbuchs nennt die Software-Version, zu der es gehört — und diese Aufgabe
-> läuft dem Bild voraus. Mit dem gepinnten Image oben quittiert das Beispiel
-> `field observations not found` und **Exit 2**, weil die
-> Konfigurations-Prüfung unbekannte Schlüssel abweist. Sie kommt mit dem
-> nächsten Release; bis dahin ist dieser Abschnitt eine Vorschau.
-
 **Ausgangslage:** Ihr Prozess führt ein Register — Beobachtungen, Risiken,
 Entscheide —, dessen Zeilen eine Kennung tragen, und Ihre Dokumente zitieren
 diese Kennungen. Wer eine Kennung zitiert, die es nicht gibt, erzeugt einen
@@ -1133,7 +1126,7 @@ planning:
 ```
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.71.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.72.0 \
   --enable planning
 ```
 
@@ -2517,3 +2510,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.64             | v0.70.0          | 2026-08-30 | **Eine Bedingung zählt offene Task-Items auf dem ROHEN Abschnitt** (Lastenheft 0.79.0). Neu ist **`max-open-tasks`** (§5, int ≥ 0, opt-in): die Obergrenze der **offenen** Task-Items eines Abschnitts, gezählt auf den **rohen** Zeilen, mit dem eigenen Grund-Code **`section-tasks-open`** — ein Befund **je Haken auf seiner Zeile**, nicht einer je Abschnitt. **Der Unterschied zu `max-tasks` klingt klein und ist es nicht:** jenes liest den bereinigten Text, und weil die Inline-Code-Paarung **absatzweise** ist, macht ein einzelner überzähliger Backtick den Rest des Absatzes unsichtbar — gemessen fällt dieselbe Eingabe von einem Befund auf **null**. Für Prosa ist dieser Preis richtig; für einen Wächter, der über einen Übergang entscheidet, nicht. **Gezählt wird über die Lexik des Moduls:** alle vier Listen-Marker (`-`, `*`, `+`, geordnete Liste), eingerückt und mit Tabulator, verengt auf die leere Box — ein selbst geschriebenes `forbid-pattern: '- \[ \]'` deckt nur die Form, an die sein Autor gedacht hat. Die ersten `max-open-tasks` Items in Dokument-Reihenfolge sind erlaubt. **Vier Grenzen stehen im Handbuch, weil sie überraschen:** der Fence bleibt außen vor (ein Haken **im** wohlgeformten Fenced-Block ist damit unsichtbar); eine **einzeilige** Inline-Spanne meldet **nicht**, eine **mehrzeilige** zählt mit; Blockquote und Tabulator in der Box zählen für **keine** der beiden Bedingungen; und ein **vergessener** Schluss-Fence macht die Bedingung blind — wer sie als Vorbedingung fährt, schaltet `spans` im selben Profil dazu, dort meldet `fence-unclosed`. Ein negativer Wert ⇒ Exit 2. Ohne den Schlüssel ist der Befundsatz **byte-identisch** |
 | 1.65             | v0.71.0          | 2026-08-31 | **Das `--print-mk`-Fragment trägt ein dreizehntes Target: `doc-usage`** (Lastenheft 0.80.0, §4.16). Es macht die Hilfe des Werkzeugs selbst zu einem Target — die Oberfläche des gepinnten Image ohne selbst gebauten `docker run`-Aufruf. Dieselbe Bauform wie `doc-doctor`/`doc-repair`: ein bestehender Modus bekommt eine Oberfläche, kein neues Verhalten, und **kein** Modul wird abgewählt. Recipe echo-unterdrückt wie bei `doc-repair`/`doc-help`; **die Hilfe erscheint auf `stderr`**, ein `make doc-usage > datei` fängt nichts ein und meldet trotzdem Erfolg. Abgegrenzt gegen `doc-help`: das ist die Make-Ebene, `doc-usage` die Werkzeug-Ebene |
 | 1.66             | v0.71.1          | 2026-08-31 | **Der reine Rename einer immutablen Datei meldet jetzt auch über `--range`** (Modul `vcs`, §5). Die Zusage war modus-abhängig: `--staged` meldete, `--range` nicht — und `--range` ist der Modus der CI. **Für Sie heißt das: ein bisher grüner Lauf kann jetzt einen Befund melden**, wenn eine immutable Datei umbenannt oder verschoben wurde, ohne dass ihr Inhalt sich änderte. Genau dieser Fall war gemeint. Keine neue Option, kein neuer Grund-Code; der Range-Pfad misst dafür weiterhin keine Inhalts-Ähnlichkeit |
+| 1.67             | v0.72.0          | 2026-09-02 | **Drei Fähigkeiten seit dem letzten Release.** Erstens erreicht §4.20 (**erfundene Register-Kennungen finden**, Modul `planning`) das gepinnte Image — die Vorschau-Markierung entfällt, die vierte `planning`-Fähigkeit ist jetzt scharf: eine zitierte Beobachtungs-Kennung ohne Registerzeile meldet `observation-unregistered`, gezählt werden Prosa und Linktext, ein reines Inline-Code-Beispiel nicht. Zweitens nennen `--help` und das `--print-mk`-Fragment jetzt **beide URL-Formen** für das Handbuch — die gerenderte GitHub-Seite und die rohe `raw.githubusercontent.com`-Form, letztere für Code-Agenten, die die gerenderte Seite siebenfach größer laden müssten und dabei Markdown-Linkziele verlieren. Drittens bekommt §4.19 (Modul `workflows`) eine **dritte Bedingung der Pin-Familie**: `uses-pin-tag-conflict` meldet, wenn derselbe SHA innerhalb der Scan-Menge — dateiübergreifend — mehr als einen Tag-Kommentar trägt; Wiederholung bleibt befundfrei, welcher Kommentar stimmt bleibt Netz. Keine Breaking Changes, kein Konfigurations-Bruch |
