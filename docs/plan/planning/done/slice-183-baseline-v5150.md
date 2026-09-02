@@ -60,7 +60,7 @@ Commits jünger als `v5.14.0`** und in diesem Tag nicht enthalten. Ein Bump
 dorthin hätte den Pin gehoben und den eigentlichen Anlass verfehlt.
 
 **Damit hängt ein zweiter Slice an diesem hier:**
-[slice-188](../in-progress/slice-188-register-gegen-neuen-kanon.md) korrigiert zwei Zähler
+[slice-188](../done/slice-188-register-gegen-neuen-kanon.md) korrigiert zwei Zähler
 unseres Registers gegen die neue Beleg-Definition — und kann die Regel erst
 zitieren, wenn sie im vendorten Baum steht. Diese Abhängigkeit ist neu und war
 bei der Anlage nicht absehbar.
@@ -190,7 +190,7 @@ und ihr Zweck ist das Aufdecken.
   Kurs-Welle 110 und liegt in **keinem Release**: `v5.16.0` existiert bereits,
   trägt Welle 109 und enthält sie nicht. Wer sie jetzt zitiert, zitiert etwas,
   das im vendorten Baum nicht steht — dieselbe Lage, aus der dieser Slice
-  [slice-188](../in-progress/slice-188-register-gegen-neuen-kanon.md) gerade befreit
+  [slice-188](../done/slice-188-register-gegen-neuen-kanon.md) gerade befreit
   hat.
 
   **Und „Trigger statt Nachfolger" greift zu kurz.** [`MR-013`](../../../../harness/conventions.md#mr-013) deckt **drei**

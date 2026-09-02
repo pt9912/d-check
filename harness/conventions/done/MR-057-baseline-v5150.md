@@ -126,7 +126,7 @@
   ist die Bedingung dafür, dass der Freshness-Audit etwas zu vergleichen hat.
   Diese Hebung hat zusätzlich einen Anlass, den die Serie bisher nicht kannte:
   sie ist die **Vorbedingung eines anderen Slice** —
-  [slice-188](../../../docs/plan/planning/in-progress/slice-188-register-gegen-neuen-kanon.md)
+  [slice-188](../../../docs/plan/planning/done/slice-188-register-gegen-neuen-kanon.md)
   kann die Beleg- und Ausgangs-Regeln erst zitieren, seit sie im vendorten Baum
   stehen.
 - **Löst auf:** [`MR-037`](../../conventions.md#mr-037)
