@@ -104,8 +104,8 @@ Lücke, er widerspricht keiner Entscheidung.
       Zeitpunkt bereits falsch war (`origin/main` stand schon auf `1ae05ca`)
       — als Ergänzung zur neunten `BEO-009`-Instanz nachgetragen, kein
       Blocker für die Sachlage.
-- [ ] Closure-Notiz mit Lerneintrag; Register fortgeschrieben; jedes Risiko aus
-      §5 mit Ausgang; die drei Paarungen geprüft.
+- [x] Closure-Notiz mit Lerneintrag; Register fortgeschrieben; jedes Risiko aus
+      §5 mit Ausgang; die drei Paarungen geprüft. Siehe §9.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -187,3 +187,69 @@ den Default. Eine Zeiger-Form ändert sich; kein Fremdsystem, keine
 Reconciliation, kein Bestand, der umgestellt werden müsste.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert.** `--help` und der `--print-mk`-Kopf nennen jetzt beide
+Handbuch-URLs — die gerenderte GitHub-Seite (unverändert zuerst) und die
+rohe `raw.githubusercontent.com`-Form danach, mit eigener Beschriftung für
+Werkzeuge/Agenten. Gemessen, nicht angenommen: 174,6 KB gegen 1,2 MB
+Nutzlast für identischen Inhalt, und die rohe Form allein erhält
+Markdown-Linkziele. Beide Anforderungen
+([`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel),
+[`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben),
+Lastenheft 0.82.0) und ihre `.a`-Verfeinerungen sagen jetzt zwei URLs zu.
+
+**Was funktioniert hat.** Die vier gegrepten Spiegelstellen zwangen zur
+Einzelfall-Prüfung statt zur pauschalen Verdopplung: Test und
+Handbuch-Illustration reproduzieren Werkzeug-Output wörtlich und bekamen
+beide Formen; `packaging/dockerhub/overview.md` ist ein handkuratierter
+Link für einen Menschen und blieb bewusst bei der einen. Diese
+Unterscheidung — **Illustration** gegen **Verweis** — ist die eigentliche
+Antwort auf die seit slice-181 offene Kopplungsfrage
+([`BEO-002`](../observations.md), achte Instanz): nicht jeder
+Spiegel-Kandidat ist ein Spiegel.
+
+**Was anders lief.** Diese Closure trägt eine ungewöhnlich dichte
+Fehlerkette, alle um dieselbe Klasse
+([`BEO-009`](../observations.md), neunte Instanz plus rekursive Ergänzung):
+
+1. Der **Beanspruchungs-Commit** (`e25f8b0`) hakte DoD-Punkte ab und erhöhte
+   das Register mit vollständiger Vergangenheitsform, bevor die
+   Implementierung (`1ae05ca`) überhaupt committet war — Ursache war die
+   tatsächliche Arbeitsreihenfolge dieser Sitzung (geplant → implementiert →
+   Beanspruchung nachgetragen), die der Plan-Text nicht offenlegte. Gefunden
+   vom **Review**.
+2. Der **Fix-Commit** dafür (`96504a4`) begründete den Verzicht auf eine
+   Commit-Umschreibung mit „nichts gepusht" — unbelegt, und zu dem Zeitpunkt
+   bereits falsch: `origin/main` stand da schon auf `1ae05ca`. Gefunden von
+   der **Verifikation**.
+3. Eine Commit-Botschaft (`1ae05ca`) zitierte
+   [`MR-021`](../../../../harness/conventions.md#mr-021) statt
+   [`MR-025`](../../../../harness/conventions.md#mr-025) als
+   Quelle der gelösten Kopplungsfrage. Ebenfalls vom **Review** gefunden.
+
+**Drei unabhängige Rollen — Implementer, Review, Verifikation — haben in
+diesem einen Slice denselben Fehlertyp je einmal übersehen, bevor die
+letzte ihn fing.** Der Code-Diff selbst war bei jeder Prüfung sauber; alle
+drei Funde lagen im **Beleg**, nicht in der Sache. Keine Commit-Umschreibung
+in allen drei Fällen — die Inhalte sind an ihrem jeweiligen Ort richtig
+gestellt, benannt statt verschwiegen.
+
+**Steering-Loop-Eintrag.** [`BEO-009`](../observations.md) auf 9 (neunte
+Instanz: Register/DoD vor dem Code) plus eine rekursive Ergänzung im selben
+Vorgang (unbelegte „nichts gepusht"-Behauptung im eigenen Fix-Commit) —
+neue Prozedur-Zeile: eine Aussage über den Repo-Zustand ist so
+belegpflichtig wie jede andere Tatsachenbehauptung, auch in einem Commit,
+der einen Beleg-Fehler korrigiert. [`BEO-002`](../observations.md) auf 8
+(achte Instanz: Illustration-vs-Verweis als Kriterium, ob ein zweiter
+String mitspiegeln muss).
+
+**Verifikation.** `make gates` Exit 0 (zehn Gates, 651 Dateien, 0 Befunde) ·
+`make test` Exit 0, alle Pakete grün · unabhängiger Review
+(1 HIGH/1 MEDIUM/1 INFO, behoben in `96504a4`) · unabhängige Verifikation
+(fand den rekursiven Beleg-Fehler in `96504a4`, behoben in `43d9a26`).
+
+**Drei Paarungen** (wellenlos, hier geprüft): **Anker** — jede zitierte
+`BEO-<NNN>` hat eine Registerzeile (BEO-002, BEO-009, BEO-012, BEO-025 —
+alle existieren). **Folge-Slice** — keiner benannt, keiner fällig. **Register** —
+BEO-002 (Zähler 8) und BEO-009 (Zähler 9) tragen je genau so viele Belege wie
+ihr Zähler.
