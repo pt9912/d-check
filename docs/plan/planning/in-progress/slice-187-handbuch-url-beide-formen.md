@@ -95,8 +95,10 @@ Lücke, er widerspricht keiner Entscheidung.
       raw-Form nicht ([`BEO-002`](../observations.md), achte Instanz).
 - [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
       **Verifikation** — beide in eigenen Kontexten. `make gates` grün: zehn
-      Gates, 650 Dateien, 0 Befunde (2026-09-02). Review und Verifikation
-      stehen noch aus.
+      Gates, 651 Dateien, 0 Befunde (2026-09-02). **Review**
+      (`docs/reviews/2026-09-02-slice-187-handbuch-url-code-r1.md`): 1 HIGH,
+      1 MEDIUM, 1 INFO — beide ersten behoben in `96504a4`. Verifikation
+      steht noch aus.
 - [ ] Closure-Notiz mit Lerneintrag; Register fortgeschrieben; jedes Risiko aus
       §5 mit Ausgang; die drei Paarungen geprüft.
 
