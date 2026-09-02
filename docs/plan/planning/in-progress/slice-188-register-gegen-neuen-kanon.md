@@ -114,14 +114,17 @@ unbequemere und die richtige Lesart, und sie gehört in die Closure-Notiz.
 
 ## 4. Definition of Done
 
-- [ ] Die Timing-Entscheidung aus §2.1 ist **getroffen und begründet** — nicht
+- [x] Die Timing-Entscheidung aus §2.1 ist **getroffen und begründet** — nicht
       implizit durch das Tun.
-- [ ] `BEO-023` steht auf **6**, `BEO-004` auf **1**, je mit Begründung in der
+- [x] `BEO-023` steht auf **6**, `BEO-004` auf **1**, je mit Begründung in der
       Zeile; die abgelöste Notiz bleibt lesbar.
-- [ ] Alle 22 Zeilen sind gegen die erweiterte Beleg-Definition geprüft; jede
+- [x] Alle **24** aktuell aktiven Zeilen (22 zur Autorenschaft, seither
+      `BEO-025`/`BEO-026` dazugekommen — beide bereits unter der neuen Regel
+      angelegt) sind gegen die erweiterte Beleg-Definition geprüft; jede
       Erhöhung nennt ihren abgeschlossenen Vorgang.
-- [ ] Die Stand-Zellen tragen die geschlossene Menge; die 12 Schwellen-Zeilen
-      haben einen formgültigen Ausgang.
+- [x] Die Stand-Zellen tragen die geschlossene Menge; die **11** aktuellen
+      Schwellen-Zeilen (Zähler ≥ 3 nach der Korrektur — `BEO-004` fällt durch
+      die Korrektur selbst aus der Menge) haben einen formgültigen Ausgang.
 - [ ] `make gates` grün (Exit explizit); **unabhängiger Review**.
 - [ ] Closure-Notiz mit Lerneintrag; jedes Risiko aus §5 mit Ausgang; die drei
       Paarungen geprüft.
