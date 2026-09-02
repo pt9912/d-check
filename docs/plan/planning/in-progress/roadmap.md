@@ -35,6 +35,9 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 - [welle-86](../welle-86-closure-uebergang-durchsetzen.md) — der Closure-Übergang
   trägt seine Vorbedingungen: vier davon hält heute kein Sensor, und die Prüfung
   hängt am Zustand statt am Übergang.
+- [welle-87](../welle-87-wellen-archivierung.md) — die Wellen-Archivierung
+  (Kanon-Schritt 4) wird nachgerüstet: Werkzeug bauen, Alt-Bestand
+  archivieren, bevor welle-86 vor derselben Lücke steht.
 
 Nichts in Arbeit.
 
