@@ -36,6 +36,8 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
   trägt seine Vorbedingungen: vier davon hält heute kein Sensor, und die Prüfung
   hängt am Zustand statt am Übergang.
 
+Nichts in Arbeit.
+
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
