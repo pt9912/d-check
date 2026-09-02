@@ -17,7 +17,7 @@ braucht).
 `.a`-Verfeinerungen in der
 [Spezifikation](../../../../spec/spezifikation.md).
 
-**Verantwortlich:** —.
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-08-31.
 
@@ -75,14 +75,27 @@ Lücke, er widerspricht keiner Entscheidung.
 
 ## 4. Definition of Done
 
-- [ ] `--help` und der `--print-mk`-Kopf nennen **beide** Formen, beschriftet,
-      und der Test hält beide.
-- [ ] Beide Anforderungen und beide `.a`-Verfeinerungen sagen zwei URLs zu;
+- [x] `--help` und der `--print-mk`-Kopf nennen **beide** Formen, beschriftet,
+      und der Test hält beide. Umgesetzt: `handbuchURLRaw`-Konstante neben
+      `handbuchURL` in `cli.go`, beide Ausgaben in `writeUsage`/`mkTemplate`
+      erweitert, `TestHandbuchURL_TraegtKeineVersion` prüft jetzt beide
+      Zeilen einzeln (blob gegen `/blob/main/`, raw gegen
+      `/refs/heads/main/`, keine der beiden mit Version).
+- [x] Beide Anforderungen und beide `.a`-Verfeinerungen sagen zwei URLs zu;
       Historie-Zeilen gesetzt.
-- [ ] Die vier Spiegel sind nachgezogen; über die ungekoppelte Zweitfassung ist
-      **entschieden**, nicht hinweggegangen.
+      [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)/[`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+      (Lastenheft 0.82.0) und ihre `.a`-Abschnitte in `spec/spezifikation.md` (Historie
+      2026-09-01) umgeschrieben.
+- [x] Die vier Spiegel sind nachgezogen; über die ungekoppelte Zweitfassung ist
+      **entschieden**, nicht hinweggegangen. Test-Literal und
+      Handbuch-Illustration tragen jetzt beide Formen (sie reproduzieren
+      Werkzeug-Output wörtlich); `packaging/dockerhub/overview.md` bleibt
+      bewusst bei der einen (blob-)Form — sie ist ein handkuratierter
+      Link für einen Menschen, keine Output-Illustration, und braucht die
+      raw-Form nicht ([`BEO-002`](../observations.md), achte Instanz).
 - [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
-      **Verifikation** — beide in eigenen Kontexten.
+      **Verifikation** — beide in eigenen Kontexten. `make gates` grün: siehe
+      unten; Review/Verifikation stehen aus.
 - [ ] Closure-Notiz mit Lerneintrag; Register fortgeschrieben; jedes Risiko aus
       §5 mit Ausgang; die drei Paarungen geprüft.
 
@@ -90,20 +103,33 @@ Lücke, er widerspricht keiner Entscheidung.
 
 - **Zwei URLs sind mehr Zeilen in einer Hilfe-Ausgabe, die knapp bleiben soll.**
   Wer beide nennt, muss auch sagen, wofür jede da ist — sonst kostet die
-  Ergänzung Aufmerksamkeit statt sie zu sparen. — **Ausgang:** *(bei Closure)*
+  Ergänzung Aufmerksamkeit statt sie zu sparen. — **Ausgang: entfallen.** Die
+  zweite Zeile trägt eine eigene Beschriftung („roh, für Werkzeuge/Agenten"),
+  die erste bleibt unverändert — kein Mensch, der nur die erste Zeile liest,
+  verliert etwas.
 - **Die ungekoppelte Zweitfassung.** Sie ist seit slice-181 benannt und bleibt
-  eine stille Spiegel-Stelle ([`BEO-002`](../observations.md), Zähler 7); dieser
-  Slice verdoppelt die zu pflegende Zeichenkette. — **Ausgang:** *(bei
-  Closure)*
+  eine stille Spiegel-Stelle ([`BEO-002`](../observations.md), Zähler 7 bei
+  Anlage); dieser Slice verdoppelt die zu pflegende Zeichenkette. —
+  **Ausgang: eingetreten, aber enger als befürchtet.** Geprüft statt
+  angenommen: die Docker-Hub-Seite (`packaging/dockerhub/overview.md`)
+  reproduziert keinen Werkzeug-Output und braucht die neue rohe Form nicht —
+  dort bleibt es bei einer Zeichenkette, nicht zwei. Die tatsächliche
+  Verdopplung betrifft nur Test und Handbuch-Illustration, die den Bau
+  ohnehin wörtlich zeigen — kein Folge-Slice, [`BEO-002`](../observations.md)
+  auf 8 mit dieser Unterscheidung als Lerneintrag.
 - **Die Messung stammt aus zwei Abrufen, nicht aus einer Reihe.** 174,6 KB
   gegen 1,2 MB ist ein Verhältnis aus je einem Lauf; die Größenordnung trägt,
-  die exakte Zahl ist kein Mittelwert. — **Ausgang:** *(bei Closure)*
+  die exakte Zahl ist kein Mittelwert. — **Ausgang: entfallen.** Die
+  tragende Entscheidung (`raw` zusätzlich nennen) hängt an der
+  **Größenordnung** (siebenfache Nutzlast, verlorene Linkziele), nicht an der
+  Nachkommastelle — eine Wiederholung der Messung könnte die exakte Zahl
+  verschieben, nicht die Schlussfolgerung. Kein Risiko für die getroffene
+  Entscheidung.
 
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): WIP-Limit frei — `in-progress/` trägt keinen
-Slice. Heute hält [slice-174](../done/slice-174-register-deckung.md) den
-Slot.
+Slice.
 
 **Rückführungen:** `in-progress` → `open`, falls die Beschriftungs-Frage aus §2.1
 eine Entscheidung über die Hilfe-Ausgabe insgesamt verlangt (Umfang, Reihenfolge,
@@ -121,16 +147,30 @@ Adressat) — die wäre größer als dieser Zeiger.
   > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
   > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
-- **Offene Beobachtungen sichten** (Register-Stand 2026-08-31, höchste Kennung
-  `BEO-024`): [`BEO-002`](../observations.md) (Zähler 7) — die ungekoppelte
-  Zweitfassung in `packaging/` ist genau diese Klasse, und dieser Slice
-  vergrößert sie; [`BEO-012`](../observations.md) (Zähler 11) — die Versuchung,
+- **Offene Beobachtungen sichten** — **bei der Beanspruchung aufgefrischt**
+  (Register-Stand 2026-09-02, höchste Kennung `BEO-025`):
+  [`BEO-002`](../observations.md) (**8**, war 7 bei der Anlage) — die
+  ungekoppelte Zweitfassung in `packaging/` ist genau diese Klasse; geprüft
+  statt angenommen, ob sie sich durch diesen Slice tatsächlich vergrößert
+  (Ergebnis: nein — die Docker-Hub-Seite reproduziert keinen Werkzeug-Output
+  und braucht die neue rohe Form nicht, nur Test und Handbuch-Illustration
+  tun das); [`BEO-012`](../observations.md) (Zähler 12) — die Versuchung,
   slice-181 als „hat sich für `blob` entschieden" zu lesen, obwohl sein
   Kommentar nur den **Zweig** begründet. Die Regel, die diesen Schritt
   vorschreibt:
 
   <!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md:225-225 -->
   > **Offene Beobachtungen sichten.**
+
+- **Nachtlauf-Stand lesen** (`make nightly-state`,
+  [`MR-053`](../../../../harness/conventions.md#mr-053)) — **bei der
+  Beanspruchung gelesen:** `upstream-drift.yml` meldet **ROT** (jüngster Lauf
+  2026-09-02T05:19:44Z) — aber aus zwei Gründen, die diesen Slice nicht
+  betreffen: die Toolchain-Pins `go` (1.27.0→1.27.1) und `semgrep`
+  (1.175.0→1.176.0) sind veraltet, `baseline-freshness` selbst ist seit
+  slice-189 grün. `image-scan.yml` grün. **Dieser Block trägt bewusst keine
+  `cite`-Direktive** — sein Ziel ist eine Repo-Adaption
+  ([`MR-054`](../../../../harness/conventions.md#mr-054)).
 
 ## 8. Sub-Area-Modus-Begründung
 
