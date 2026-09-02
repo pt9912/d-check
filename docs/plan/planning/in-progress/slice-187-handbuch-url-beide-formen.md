@@ -93,12 +93,17 @@ Lücke, er widerspricht keiner Entscheidung.
       bewusst bei der einen (blob-)Form — sie ist ein handkuratierter
       Link für einen Menschen, keine Output-Illustration, und braucht die
       raw-Form nicht ([`BEO-002`](../observations.md), achte Instanz).
-- [ ] `make gates` grün (Exit explizit); **unabhängiger Review**;
+- [x] `make gates` grün (Exit explizit); **unabhängiger Review**;
       **Verifikation** — beide in eigenen Kontexten. `make gates` grün: zehn
       Gates, 651 Dateien, 0 Befunde (2026-09-02). **Review**
       (`docs/reviews/2026-09-02-slice-187-handbuch-url-code-r1.md`): 1 HIGH,
-      1 MEDIUM, 1 INFO — beide ersten behoben in `96504a4`. Verifikation
-      steht noch aus.
+      1 MEDIUM, 1 INFO — beide ersten behoben in `96504a4`. **Verifikation**
+      (eigener Kontext, nach `96504a4`): sechs von sieben Punkten konform bei
+      Erstlauf; ein rekursiver Fund — der Fix-Commit `96504a4` selbst
+      begründete den Nicht-Rewrite mit „nichts gepusht", was zu dem
+      Zeitpunkt bereits falsch war (`origin/main` stand schon auf `1ae05ca`)
+      — als Ergänzung zur neunten `BEO-009`-Instanz nachgetragen, kein
+      Blocker für die Sachlage.
 - [ ] Closure-Notiz mit Lerneintrag; Register fortgeschrieben; jedes Risiko aus
       §5 mit Ausgang; die drei Paarungen geprüft.
 
