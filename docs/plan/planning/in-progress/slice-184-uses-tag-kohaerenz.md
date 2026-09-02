@@ -149,7 +149,7 @@ parst.
   gemessene Fälle. Das ist der Normalfall für einen CR und trotzdem eine
   Aussage über einen Bestand, den wir nicht sehen. — **Ausgang:** *(bei
   Closure)*
-- **Der Grund-Code-Raum des Moduls wächst auf sechs.** Ein Leser muss
+- **Der Grund-Code-Raum des Moduls wächst auf sieben.** Ein Leser muss
   `uses-pin-missing`, `uses-pin-untagged` und `uses-pin-tag-conflict`
   auseinanderhalten — drei Codes für eine Familie. — **Ausgang:** *(bei
   Closure)*

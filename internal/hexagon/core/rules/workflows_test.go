@@ -286,6 +286,43 @@ func TestWorkflowsPinTagConflictWiederholungKeinBefund(t *testing.T) {
 	}
 }
 
+// Eine ungetaggte Schwester-Referenz desselben SHA geht nicht in den Konflikt
+// ein -- sie traegt bereits uses-pin-untagged, und ohne Kommentar gibt es
+// nichts, das widersprechen koennte. Ohne diesen Test koennte eine
+// verengte hasTagComment-Bedingung den Konflikt an einer ungetaggten Zeile
+// fabrizieren, ohne dass etwas rot wird.
+func TestWorkflowsPinTagConflictIgnoriertUngetaggteSchwester(t *testing.T) {
+	files := map[string]string{
+		".github/workflows/a.yml": "jobs:\n  b:\n    steps:\n" +
+			"      - uses: actions/checkout@" + sha1 + " # v4.2.0\n" +
+			"      - uses: actions/checkout@" + sha1 + "\n",
+	}
+	f := wfRun(files)
+	if got := countReason(f, ReasonUsesPinTagConflict); got != 0 {
+		t.Fatalf("ungetaggte Schwester ohne zweiten Tag-Wert: erwartet 0 uses-pin-tag-conflict, got %d in %+v", got, f)
+	}
+	if !hasReason(f, ReasonUsesPinUntagged) {
+		t.Fatalf("die ungetaggte Zeile soll weiterhin uses-pin-untagged tragen, got %+v", reasons(f))
+	}
+}
+
+// Whitespace um den Tag-Kommentar aendert seinen Vergleichswert nicht --
+// spec/spezifikation.md sagt das zu (Schritt 5: "whitespace-normalisiert,
+// ohne fuehrendes #"), und ohne diesen Test koennte eine geaenderte
+// tagText-Normalisierung stillschweigend Falsch-Positive erzeugen.
+func TestWorkflowsPinTagConflictWhitespaceNormalisiert(t *testing.T) {
+	files := map[string]string{
+		".github/workflows/a.yml": "jobs:\n  b:\n    steps:\n" +
+			"      - uses: actions/checkout@" + sha1 + " #v4.2.0\n" +
+			"      - uses: actions/checkout@" + sha1 + " #   v4.2.0  \n" +
+			"      - uses: actions/checkout@" + sha1 + " # v4.2.0\n",
+	}
+	f := wfRun(files)
+	if got := countReason(f, ReasonUsesPinTagConflict); got != 0 {
+		t.Fatalf("drei aequivalent geschriebene Tag-Kommentare: erwartet 0 Befunde, got %d in %+v", got, f)
+	}
+}
+
 // Verdrahtung (BEO-023): ein Konflikt, der NUR ueber den vollen Einstiegspunkt
 // CheckWorkflows sichtbar wird, beweist, dass die Sammel-Schleife tatsaechlich
 // an checkTagConflicts angeschlossen ist -- nicht nur, dass die Gruppierung
