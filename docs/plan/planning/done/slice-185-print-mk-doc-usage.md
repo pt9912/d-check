@@ -253,7 +253,7 @@ Aufzählung, und das ist Doku-Arbeit im führenden Stratum.
 - **Folge-Slices:** keine. Zwei Entscheidungen liegen daneben und gehören
   **nicht** diesem Slice: die Hebung des a-check-Pins (0.17.0 gegen upstream
   0.19.0, gemessen) und die Neubewertung von
-  [slice-184](../open/slice-184-uses-tag-kohaerenz.md), seit der CR-Absender
+  [slice-184](../in-progress/slice-184-uses-tag-kohaerenz.md), seit der CR-Absender
   die beantragte Regel selbst gebaut hat.
 - **Risiken aus §5:** vier, jedes mit genau einem Ausgang — einmal *weiter
   offen* (→ [`BEO-002`](../observations.md)), dreimal *entfallen* mit
