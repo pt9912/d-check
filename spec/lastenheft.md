@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.82.0
+**Version:** 0.83.0
 
 **Status:** Draft
 
@@ -3238,6 +3238,7 @@ verlangt. Geprüft wird die **Deklaration**, nicht die Lauffähigkeit.
 |---|---|---|
 | fremde Referenz nennt einen **vollen 40-stelligen** Commit-SHA | `uses-pin-missing` | den beweglichen Tag durch den SHA ersetzen |
 | … und dahinter einen Kommentar, der den Tag nennt | `uses-pin-untagged` | den Tag-Kommentar ergänzen |
+| … und derselbe SHA trägt innerhalb der Scan-Menge **überall denselben** Tag-Kommentar | `uses-pin-tag-conflict` | den falschen Kommentar korrigieren (welcher stimmt, ist Netz — siehe unten) |
 | lokale Referenz (`./…`) zeigt auf eine existierende Datei | `uses-local-missing` | den Pfad korrigieren |
 | der aufrufende **Job** trägt ein eigenes `permissions:`, wenn das Ziel Rechte verlangt | `uses-local-perms-undeclared` | dem Job die Rechte deklarieren |
 | … und führt jeden geforderten Scope mindestens so hoch | `uses-local-perms-narrow` | den Scope anheben |
@@ -3247,6 +3248,26 @@ verlangt. Geprüft wird die **Deklaration**, nicht die Lauffähigkeit.
 Referenz ist eine Supply-Chain-Fläche. Geprüft wird die **Form** des Pins, nicht
 seine **Gültigkeit** — ob der SHA existiert und den Commit bezeichnet, den der
 Tag-Kommentar behauptet, ist eine Netz-Frage und ausdrücklich außerhalb.
+
+**Warum der Tag-Konflikt zusätzlich zur Untagged-Bedingung.** `uses-pin-untagged`
+prüft nur, *dass* ein Kommentar dasteht — nicht, *ob* er überall gleich lautet.
+Ein SHA, der an zwei Stellen mit unterschiedlichen Tag-Kommentaren steht, sagt
+zwei sich widersprechende Dinge über denselben Commit, und **eine** der beiden
+Stellen liegt falsch (Anlass: ein eingehender Change Request maß genau diesen
+Fall — derselbe SHA mit `# v4.2.0` an der einen und `# v3.6.0` an der anderen
+Stelle, aufgelöst über die GitHub-API). Die Bedingung ist **dateiübergreifend**
+— die erste des Moduls, die nicht je Datei urteilt — und meldet **jede**
+beteiligte Zeile, nicht nur eine je SHA: Ein SHA mit zwei Kommentar-Werten über
+drei Zeilen ist drei Befunde, nicht einer. **Welcher der widersprechenden
+Kommentare stimmt, sagt die Regel nicht** — das wäre die Gültigkeitsfrage von
+oben und bleibt Netz. **Benannte Grenze:** zwei *legitime* Tags auf demselben
+Commit (ein unversionierter Major-Tag `v4` neben seinem spezifischen
+Patch-Release `v4.2.0`, unmittelbar nach dessen Erscheinen) sind textuell
+verschieden und lösen **denselben** Befund aus — die Regel unterscheidet nicht
+zwischen einem echten Fehler und zwei wahren, aber unterschiedlich präzisen
+Namen für denselben Commit. Diese Unterscheidung wäre ein
+Versions-Kompatibilitäts-Urteil (welcher Tag "umfasst" den anderen), keine
+Deklarations-Prüfung, und bleibt bewusst außerhalb.
 
 **Warum die lokale Referenz anders behandelt wird.** Sie kann keinen SHA tragen
 und **braucht keinen**: sie löst auf denselben Commit auf wie ihr Aufrufer und
@@ -3289,6 +3310,8 @@ ungültigem Glob in `workflows.exempt-paths`.
 
 - **Happy Path:** Given `workflows` aktiv, eine fremde Referenz mit vollem SHA plus Tag-Kommentar und eine lokale Referenz, deren Ziel existiert und deren aufrufender Job die geforderten Rechte deklariert, when `d-check --enable workflows` läuft, then kein Befund, Exit 0.
 - **Negative (Pin):** Given eine fremde Referenz auf einen beweglichen Tag (`actions/checkout@v4`), when der Lauf endet, then `uses-pin-missing` auf **ihrer** Zeile; Given einen vollen SHA **ohne** Tag-Kommentar, then `uses-pin-untagged`.
+- **Negative (Tag-Konflikt, dateiübergreifend):** Given denselben SHA in **zwei** Workflow-Dateien mit unterschiedlichem Tag-Kommentar, when der Lauf endet, then `uses-pin-tag-conflict` auf **beiden** Zeilen, mit den genannten widersprüchlichen Werten in der Meldung; Given denselben SHA mit zwei Kommentar-Werten über **drei** Zeilen einer Datei, then **drei** Befunde, nicht einer.
+- **Boundary (Wiederholung ist kein Konflikt):** Given denselben SHA mit **identischem** Tag-Kommentar an beliebig vielen Stellen über beliebig viele Dateien, when der Lauf endet, then **kein** `uses-pin-tag-conflict` — Wiederholung ist keine Abweichung.
 - **Negative (lokale Referenz):** Given eine lokale Referenz auf eine nicht existierende Datei, when der Lauf endet, then `uses-local-missing` auf ihrer Zeile.
 - **Negative (stille Vererbung):** Given einen Workflow-Kopf mit `permissions: {}`, einen Job **ohne** eigenes `permissions:` und ein lokales Ziel, das `contents: read` verlangt, when der Lauf endet, then `uses-local-perms-undeclared` — der Job erbt sonst den Kopf, und der Lauf bricht vor dem ersten Job ab.
 - **Negative (zu enger Scope):** Given einen Job mit `contents: read` und ein Ziel, das `contents: write` verlangt, then `uses-local-perms-narrow`; Given ein Ziel, das einen vom Aufrufer **nicht genannten** Scope verlangt, then derselbe Code — ein nicht genannter Scope ist `none`.
@@ -3300,12 +3323,16 @@ ungültigem Glob in `workflows.exempt-paths`.
 - **Boundary (Modul-aus):** Given **kein** aktives `workflows`, when `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne den Konfigurations-Block ([`DC-QA-02`](#dc-qa-02--determinismus)), und keine Workflow-Datei wird geöffnet.
 
 **Out-of-Scope:** die **Gültigkeit** eines SHA (Netz — gehört zur
-Freshness-Familie); die **Rechte** einer Referenz in ein fremdes Repository
-(deren Inhalt liegt nicht vor); das Ausführen oder Simulieren eines Workflows;
-jede weitere Semantik von GitHub Actions (Matrix-Auflösung,
-Bedingungs-Auswertung, Secrets-Verfügbarkeit) — das Modul deckt **eine**
-Deklarations-Klasse, und ein grüner Lauf sagt „diese Klasse liegt nicht vor",
-nicht „der Workflow läuft".
+Freshness-Familie); **welcher** von zwei widersprechenden Tag-Kommentaren
+stimmt (dieselbe Netz-Frage); zwei textuell verschiedene, aber beide
+**legitime** Tags auf demselben Commit (Major- neben Patch-Tag) — die Regel
+meldet sie wie einen echten Widerspruch, weil die Unterscheidung ein
+Versions-Kompatibilitäts-Urteil wäre; die **Rechte** einer Referenz in ein
+fremdes Repository (deren Inhalt liegt nicht vor); das Ausführen oder
+Simulieren eines Workflows; jede weitere Semantik von GitHub Actions
+(Matrix-Auflösung, Bedingungs-Auswertung, Secrets-Verfügbarkeit) — das Modul
+deckt **eine** Deklarations-Klasse, und ein grüner Lauf sagt „diese Klasse
+liegt nicht vor", nicht „der Workflow läuft".
 
 ---
 
@@ -3464,6 +3491,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.83.0 | 2026-09-02 | [`DC-FA-WF-001`](#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in): dritter Grund-Code `uses-pin-tag-conflict` — derselbe SHA trägt innerhalb der Scan-Menge **überall denselben** Tag-Kommentar, sonst ein Befund je beteiligter Zeile. **Anlass ist ein eingehender CR** der Schwester-Anwendung `a-check` (`docs/plan/cr/2026-08-30-cr-a-check-uses-tag-kohaerenz.md`): ihr eigenes Bash-Sensor-Äquivalent fand denselben SHA zweimal gepinnt mit unterschiedlichem Tag-Kommentar, einmal innerhalb einer Datei, einmal dateiübergreifend — über die GitHub-API aufgelöst (`v4.2.0` korrekt, `v3.6.0` falsch). **Die tragende Neuerung ist dateiübergreifend** — die erste Bedingung des Moduls, die nicht je Datei urteilt, sondern über die gesamte Scan-Menge gruppiert. **Am eigenen Bestand gemessen:** `.github/workflows/` liefert **0** Konflikte (3 distinkte SHAs, je genau ein Tag-Kommentar; `actions/checkout` 5× mit identischem Kommentar — Wiederholung löst keinen Befund aus). **Benannte Grenze:** zwei legitime, aber textuell verschiedene Tags auf demselben Commit (Major- neben Patch-Release) lösen denselben Befund aus wie ein echter Fehler — die Unterscheidung wäre ein Versions-Kompatibilitäts-Urteil, keine Deklarations-Prüfung, und bleibt bewusst außerhalb. Kein neues Konfigurations-Feld — dieselbe Aktivierungs-Schranke wie `uses-pin-untagged`. Begründung in begleitender ADR | — |
 | 0.82.0 | 2026-09-01 | [`DC-FA-CLI-001`](#dc-fa-cli-001--aufruf-und-scan-wurzel) und [`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben): **zweite Handbuch-URL-Form** neben der bestehenden — die rohe `raw.githubusercontent.com/…/refs/heads/main/…`-Form neben der gerenderten `github.com/…/blob/main/…`-Form, in beiden Ausgaben. **Anlass ist eine Adressaten-Lücke:** Hauptleser beider Ausgaben ist ein Code-Agent, kein Mensch im Terminal, und für ihn ist die gerenderte Seite die schlechtere Quelle — **siebenfache Nutzlast** für identischen Inhalt (gemessen: 174,6 KB roh gegen 1,2 MB gerendert) und **verlorene Markdown-Linkziele** (`[v0.71.1](../../version.md#v0.71.1)` roh gegen bloßes `v0.71.1` gerendert). Das übliche Argument „Agenten können `blob` nicht lesen" trifft **nicht** zu; entscheidend sind die zwei genannten Achsen, nicht Lesbarkeit. **Was hier nicht umgedreht wird:** der Zweig bleibt `main`, ohne Versionsangabe, in beiden Formen — dieselbe mit 0.77.0 begründete Entscheidung. Kein neues Verhalten jenseits der zweiten Zeile, kein Grund-Code | — |
 | 0.81.0 | 2026-08-31 | [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in): **vierte** Fähigkeit `planning.observations` (opt-in innerhalb des opt-in Moduls) — die eine **urteilsfreie** Richtung der Register-Paarung: eine **zitierte** Beobachtungs-Kennung hat eine Zeile im Register, sonst `observation-unregistered`. Die Umkehrung bleibt ausgeschlossen, weil die meisten Zeilen unter der Verkörperungs-Schwelle stehen und nirgends zitiert sind. **Die tragende Festlegung ist die Erkennungs-Form, und sie ist gemessen:** gezählt werden **Prosa und Linktext**, ein reines Inline-Code-Span nicht — am eigenen Bestand stehen **366** echte Zitate als Link **mit** Backticks im Linktext, während beide gefundenen Beispiel-Nennungen reine Code-Spans sind; eine Regel „Inline-Code zählt nicht" (wie bei der Platzhalter-Bedingung) übersähe genau die Zitate. Deklarierend ist **nur die erste Zelle** einer Tabellenzeile, sonst deklarierte sich jede Quer-Referenz selbst. Scan-Menge und Kennungs-Gestalt sind konfigurierbar, die **Richtung** nicht; die Scan-Mengen-Grenze steht ausdrücklich in der Anforderung ([`AGENTS.md` §3.8](../AGENTS.md#38-ein-modul-verspricht-nur-über-das-was-es-scannt)). **Drei fail-closed-Ränder**, darunter der vertippte `dirs`-Eintrag: er liefert bei manchen Adaptern eine **leere Liste** statt eines Fehlers, und die Fähigkeit ginge still inert — gemessen am In-Memory-Adapter der Kern-Tests. Vor dem Scharfschalten gemessen: eigener Bestand **0** Befunde, konstruierte Kennung als Link **1**, dieselbe als Code-Span **0**. Begründung in begleitender ADR | — |
 | 0.80.0 | 2026-08-31 | Change Request (Auftraggeber): [`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben) (`--print-mk`-Fragment) um ein **dreizehntes** Target erweitert — `doc-usage` exponiert den Hilfe-Modus aus [`DC-FA-CLI-001`](#dc-fa-cli-001--aufruf-und-scan-wurzel) als Fragment-Target, damit der Konsument die Oberfläche des gepinnten Image erreicht, ohne sich den `docker run`-Aufruf zusammenzusetzen. Dieselbe Bauform wie 0.27.0 (`doc-doctor`/`doc-repair`): ein **bestehender** Modus bekommt eine Oberfläche, kein neues Verhalten — additiv, kein ADR. **Recipe-Echo unterdrückt** wie bei `doc-repair` und `doc-help`, weil die Ausgabe die Nutzlast ist; **und die Hilfe erscheint auf `stderr`, nicht auf stdout** (gemessen: 0 Byte stdout, 2488 Byte stderr, Exit 0) — eine Eigenschaft des CLI, die das Target erstmals bequem erreichbar macht und deshalb hier benannt gehört. **Namens-Entscheid:** `doc-usage`, nicht `doc-check-help` — `doc-help` ist die Make-Ebene (Liste der Targets), `doc-usage` die Werkzeug-Ebene; die zwei Ebenen liegen im Namen auseinander statt in vier Buchstaben. **Dabei mitkorrigiert:** die Modus-Aufzählung des Boundary-Kriteriums sprang von `doc-targets` direkt zum Satzende und ließ `doc-structure` aus — dieselbe Enumerations-Drift, die diese Historie für diese Stelle in 0.37.1 und 0.57.1 schon protokolliert hat und die parallel in der Spezifikation saniert wurde | — |

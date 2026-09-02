@@ -26,10 +26,12 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
-// Grund-Codes des Moduls workflows (spec/spezifikation.md §4, SPEC-071..076).
+// Grund-Codes des Moduls workflows (spec/spezifikation.md §4, SPEC-071..076,
+// SPEC-080).
 const (
 	ReasonUsesPinMissing       = "uses-pin-missing"
 	ReasonUsesPinUntagged      = "uses-pin-untagged"
+	ReasonUsesPinTagConflict   = "uses-pin-tag-conflict"
 	ReasonUsesLocalMissing     = "uses-local-missing"
 	ReasonUsesLocalPermsUndecl = "uses-local-perms-undeclared"
 	ReasonUsesLocalPermsNarrow = "uses-local-perms-narrow"
@@ -39,10 +41,21 @@ const (
 // pinnedRe erkennt einen vollen 40-stelligen Commit-SHA hinter dem `@`.
 var pinnedRe = regexp.MustCompile(`@[0-9a-f]{40}(\s|$)`)
 
+// shaRe erfasst denselben SHA als Submatch -- die Gruppierungs-Grundlage des
+// dateiuebergreifenden Tag-Konflikt-Checks (uses-pin-tag-conflict).
+var shaRe = regexp.MustCompile(`@([0-9a-f]{40})(\s|$)`)
+
 // hasTagComment sagt, ob hinter dem SHA ein Kommentar mit Inhalt steht. Der
 // Tag-Kommentar ist KEIN Teil des Werts -- YAML fuehrt ihn getrennt.
 func hasTagComment(c string) bool {
-	return strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(c), "#")) != ""
+	return tagText(c) != ""
+}
+
+// tagText liefert den Kommentar-Text ohne fuehrendes `#` und Whitespace --
+// dieselbe Normalisierung, mit der hasTagComment die Leere prueft, hier
+// zusaetzlich als Vergleichs-Schluessel fuer uses-pin-tag-conflict.
+func tagText(c string) string {
+	return strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(c), "#"))
 }
 
 // permLevel ordnet die drei Stufen; ein nicht genannter Scope ist `none`.
@@ -123,6 +136,7 @@ func CheckWorkflows(fsys driven.Filesystem, wp driven.WorkflowParser, cfg model.
 	}
 	files := workflowCandidates(fsys, cfg)
 	var out []model.Finding
+	var pinned []pinnedTag
 	refs := 0
 	for _, f := range files {
 		doc, err := readWorkflow(fsys, wp, f)
@@ -134,8 +148,14 @@ func CheckWorkflows(fsys driven.Filesystem, wp driven.WorkflowParser, cfg model.
 		refs += len(doc.Uses)
 		for _, r := range doc.Uses {
 			out = append(out, checkRef(fsys, wp, f, r)...)
+			if m := shaRe.FindStringSubmatch(r.Value); m != nil && hasTagComment(r.Comment) {
+				pinned = append(pinned, pinnedTag{file: f, line: r.Line, sha: m[1], value: r.Value, tag: tagText(r.Comment)})
+			}
 		}
 	}
+	// DATEIUEBERGREIFEND: die erste Bedingung des Moduls, die nicht je Datei
+	// urteilt -- ein SHA-Konflikt kann genau zwischen zwei Kandidaten liegen.
+	out = append(out, checkTagConflicts(pinned)...)
 	// FAIL-CLOSED: nichts gefunden und nichts zu pruefen sehen im Exit-Code
 	// sonst identisch aus.
 	if len(files) == 0 || refs == 0 {
@@ -143,6 +163,59 @@ func CheckWorkflows(fsys driven.Filesystem, wp driven.WorkflowParser, cfg model.
 			Reason: ReasonUsesPinMissing,
 			Message: fmt.Sprintf("leere Pruefmenge: %d Workflow-Datei(en), %d uses:-Referenz(en) — fail-closed",
 				len(files), refs)})
+	}
+	return out
+}
+
+// pinnedTag ist eine fremde, voll gepinnte, tag-kommentierte Referenz -- der
+// Rohstoff fuer den dateiuebergreifenden Tag-Konflikt-Check. Eine Referenz
+// ohne Tag-Kommentar traegt uses-pin-untagged bereits und geht hier nicht
+// ein: ohne Kommentar gibt es nichts, das widersprechen koennte.
+type pinnedTag struct {
+	file  string
+	line  int
+	sha   string
+	value string
+	tag   string
+}
+
+// checkTagConflicts meldet JEDE Zeile, deren SHA innerhalb der Scan-Menge mit
+// mindestens einem ANDEREN Tag-Kommentar vorkommt -- die dritte Bedingung der
+// Pin-Familie (uses-pin-tag-conflict). Ein identischer Kommentar ueber
+// beliebig viele Zeilen ist Wiederholung, kein Befund. Welcher der
+// widersprechenden Kommentare stimmt, sagt die Regel nicht -- das waere die
+// Gueltigkeitsfrage (Netz) und ausdruecklich Out-of-Scope.
+func checkTagConflicts(pinned []pinnedTag) []model.Finding {
+	bySHA := map[string][]pinnedTag{}
+	for _, p := range pinned {
+		bySHA[p.sha] = append(bySHA[p.sha], p)
+	}
+	shas := make([]string, 0, len(bySHA))
+	for s := range bySHA {
+		shas = append(shas, s)
+	}
+	sort.Strings(shas) // Map-Iteration waere sonst nicht deterministisch (DC-QA-02)
+	var out []model.Finding
+	for _, sha := range shas {
+		group := bySHA[sha]
+		tags := map[string]bool{}
+		for _, p := range group {
+			tags[p.tag] = true
+		}
+		if len(tags) < 2 {
+			continue
+		}
+		distinct := make([]string, 0, len(tags))
+		for t := range tags {
+			distinct = append(distinct, t)
+		}
+		sort.Strings(distinct)
+		msg := fmt.Sprintf("SHA %s traegt innerhalb der Scan-Menge widersprüchliche Tag-Kommentare: %s",
+			sha, strings.Join(distinct, ", "))
+		for _, p := range group {
+			out = append(out, model.Finding{File: p.file, Line: p.line, Rule: "workflows",
+				Target: p.value, Reason: ReasonUsesPinTagConflict, Message: msg})
+		}
 	}
 	return out
 }

@@ -2683,7 +2683,19 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    ist Netz und ausdrücklich außerhalb. Eine Referenz in ein fremdes
    Repository (`owner/repo/…@ref`) fällt hierunter, auch wenn sie einen
    Workflow bezeichnet: ihr Inhalt liegt nicht vor.
-5. **Lokale Referenz (`./`-Präfix).** Kein Pin-Check — sie löst auf denselben
+5. **Tag-Konflikt (dateiübergreifend).** Jede fremde, voll gepinnte,
+   tag-kommentierte Referenz **aller** Kandidaten-Dateien wird nach ihrem SHA
+   gruppiert — die erste Bedingung des Moduls, die nicht je Datei urteilt.
+   Führt eine Gruppe **mehr als einen** distinkten Tag-Kommentar-Text
+   (Whitespace-normalisiert, ohne führendes `#`), meldet **jede** Zeile der
+   Gruppe `uses-pin-tag-conflict`, mit den distinkten Werten (sortiert) in der
+   Meldung. Ein identischer Kommentar über beliebig viele Zeilen ist
+   Wiederholung, kein Befund. Referenzen ohne Tag-Kommentar gehen nicht ein —
+   die tragen bereits `uses-pin-untagged`, und ohne Kommentar gibt es nichts,
+   das widersprechen könnte. Die Gruppierung ist über die SHA-Zeichenkette
+   sortiert, das Ergebnis damit deterministisch
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
+6. **Lokale Referenz (`./`-Präfix).** Kein Pin-Check — sie löst auf denselben
    Commit auf wie ihr Aufrufer und ist damit stärker gebunden als ein SHA.
    Stattdessen zwei Prüfungen:
    - **Existenz.** Der Pfad wird Wurzel-relativ aufgelöst; existiert keine
@@ -2696,7 +2708,7 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
      Jobs, in dem die Referenz steht — und **nur** diese: ein Job ohne eigenes
      `permissions:` erbt zwar den Kopf, kann aber an einen aufgerufenen
      Workflow nichts weitergeben, was er nicht selbst deklariert.
-6. **Rechte-Vergleich.** Stufen: `none` < `read` < `write`. `read-all` und
+7. **Rechte-Vergleich.** Stufen: `none` < `read` < `write`. `read-all` und
    `write-all` setzen **jeden** Scope auf die Stufe; ein leeres Mapping
    verlangt bzw. gewährt nichts. Verlangt das Ziel **irgendeinen** Scope über
    `none` und trägt der aufrufende Job **kein** `permissions:` ⇒
@@ -2705,7 +2717,7 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    verglichen; ein vom Aufrufer nicht genannter Scope zählt als `none`. Jede
    Unterschreitung ⇒ `uses-local-perms-narrow`, **eine** Meldung je Scope, weil
    jede eine eigene Reparatur ist.
-7. **Befund-Ort.** Jeder Befund steht auf der Zeile der **Referenz** — dort ist
+8. **Befund-Ort.** Jeder Befund steht auf der Zeile der **Referenz** — dort ist
    die Reparatur —, außer dem Leerlauf aus Schritt 2/3 und einem Parse-Fehler
    der Kandidaten-Datei selbst. `target` ist bei den lokalen Prüfungen der
    aufgelöste Ziel-Pfad, sonst der `uses:`-Wert.
@@ -3119,6 +3131,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-077` | `section-exempt-mismatch` | structure | die Zahl der von `exempt-section-pattern` abgezogenen Abschnitte weicht von `exempt-expect-count` ab (`line` = 1) — in **beide** Richtungen und auch, wenn eine Restmenge bleibt. Eigener Code, weil die Reparatur eine andere ist als bei `section-missing`: dort ist der Selektor falsch, hier ist die Aufzählung oder die Zahl veraltet |
 | `SPEC-078` | `section-tasks-open` | structure | der Abschnitt trägt mehr **offene** Task-Items, als `max-open-tasks` erlaubt — gezählt auf den **rohen** Abschnitts-Zeilen (`line` = Zeile des Items). Ein Befund **je** Item über der Grenze; die ersten `max-open-tasks` in Dokument-Reihenfolge sind erlaubt und melden nicht. Eigener Code neben `section-oversized`, weil beide Bedingungen denselben Abschnitt verletzen können und die Reparatur eine andere ist |
 | `SPEC-079` | `observation-unregistered` | planning | eine **zitierte** Beobachtungs-Kennung hat **keine** Zeile im Register — die maschinelle Hälfte der Register-Paarung. Nur diese Richtung: die Umkehrung („jede Zeile ist zitiert") ist ausgeschlossen, weil die meisten Zeilen unter der Schwelle stehen. **Gezählt werden Prosa und Linktext**, ein reines Inline-Code-Span nicht — das ist die Trennlinie zwischen Zitat und Beispiel, und sie ist zwingend, weil die verbreitete Zitier-Form die Kennung in Backticks führt |
+| `SPEC-080` | `uses-pin-tag-conflict` | workflows | derselbe SHA trägt innerhalb der Scan-Menge — dateiübergreifend gruppiert — mehr als einen distinkten Tag-Kommentar-Text; **eine** Meldung je beteiligter Zeile (`line` = ihre Zeile), mit den distinkten Werten in der Meldung. Ein identischer Kommentar über beliebig viele Zeilen ist Wiederholung, kein Befund; welcher Wert stimmt, ist Netz |
 | `SPEC-069` | `section-column-missing` | structure | die über `table.column[].name` benannte Spalte ist nicht adressierbar: keine Tabelle des Abschnitts bindet sie (`line` = Abschnitts-Überschrift), der Name kommt in einer Kopfzeile mehrfach vor (`line` = Kopfzeile) oder eine Datenzeile reicht nicht bis zur Spalte (`line` = diese Zeile) |
 | `SPEC-059` | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `SPEC-060` | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |
@@ -3147,6 +3160,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-09-02 | §[`DC-FA-WF-001.a`](spezifikation.md#dc-fa-wf-001a--deklarations-konsistenz-von-workflow-referenzen-workflows) um Schritt 5 **Tag-Konflikt (dateiübergreifend)** ergänzt ([`DC-FA-WF-001`](lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in) 0.83.0, Begründung in begleitender ADR): fremde, voll gepinnte, tag-kommentierte Referenzen werden über **alle** Kandidaten-Dateien nach SHA gruppiert; führt eine Gruppe mehr als einen distinkten Tag-Kommentar, meldet jede beteiligte Zeile. Die alten Schritte 5–7 rücken zu 6–8. §4 um [`SPEC-080`](#4-grund--und-fehler-codes) `uses-pin-tag-conflict`. **Erste dateiübergreifende Bedingung des Moduls** — bisher urteilte jede Bedingung isoliert je Datei. Anlass ein eingehender CR der Schwester-Anwendung `a-check` (`docs/plan/cr/2026-08-30-cr-a-check-uses-tag-kohaerenz.md`) | — |
 | 2026-09-01 | §[`DC-FA-CLI-001.a`](spezifikation.md#dc-fa-cli-001a--ablauf-eines-prüflaufs) und §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) um die **zweite Handbuch-URL-Form** ergänzt ([`DC-FA-CLI-001`](lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)/[`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 0.82.0): die geschlossene Usage-Aufzählung bzw. der Kopfkommentar-Punkt nennen jetzt **beide** URLs (gerenderte GitHub-Seite, dann die rohe `raw.githubusercontent.com`-Form) statt einer. Beide Stellen sind geschlossene Aufzählungen — dieselbe Klasse, die diese Historie für §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) bereits zweimal nachziehen musste (Target-Enumeration): eine geschlossene Aufzählung, die dem Bau nicht mehr entspricht, ist der Rückstand, nicht der Zusatz | — |
 | 2026-08-31 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 nennt den **Mechanismus**, durch den eine Umbenennung sichtbar wird: der Range-Pfad difft **ohne Rename-Erkennung**. Der Schritt sagte die Pfad-Stabilitäts-Prüfung für `D`/`R` seit jeher zu, aber nicht, wodurch ein `R` überhaupt entsteht — und der Adapter lieferte sie im Range-Pfad **nicht**: mit der eingeschalteten Erkennung der verwendeten Bibliothek kam ein **reiner** Rename als eine Änderung auf dem neuen Pfad an, der alte verschwand, und der Befund für die umbenannte immutable Datei entstand nie. Der `--staged`-Pfad war über seine eigene Übersetzung immer korrekt; **die Zusage war damit modus-abhängig, ohne dass das irgendwo stand** — und still war ausgerechnet der Modus, den die CI fährt. Gemeldet von einem Adopter, reproduziert in beiden Modi und in den drei Kontrollfällen (Löschen, Rename mit Umformulierung, `--staged`). **Kein Lastenheft-Bump:** die Anforderung sagte den Befund bereits zu, ohne einen Modus einzuschränken; sie wurde nicht geändert, sondern eingelöst. Kein neuer Grund-Code | — |
 | 2026-08-31 | §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) Punkt 5 um das **dreizehnte** Target `doc-usage` erweitert ([`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 0.80.0, Change Request des Auftraggebers): Zahl **und** Aufzählungspunkt. Es exponiert den Hilfe-Modus aus [`DC-FA-CLI-001`](lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel) und trägt als **Modus**-Target keine `--enable`/`--disable`-Wahl — darin nicht allein: gezählt am erzeugten Fragment tragen sechs der dreizehn eine Fokus-Liste, sieben nicht. Zwei Eigenschaften stehen ausdrücklich dabei, weil sie sonst erst beim Aufruf auffielen: die Hilfe erscheint auf `stderr`, und der Mount bleibt, obwohl `--help` vor der Wurzel-Auflösung kurzschließt. Kein neues Verhalten, kein Grund-Code, keine Schema-Zeile — dieselbe Bauform wie die Target-Erweiterungen davor | — |
