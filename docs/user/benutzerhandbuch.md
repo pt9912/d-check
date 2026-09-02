@@ -839,7 +839,7 @@ docker run --rm ghcr.io/pt9912/d-check:v0.71.1 --print-mk > d-check.mk
 Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und dreizehn
 `##`-annotierte Targets (`doc-check`, `doc-trace`, `doc-complete`, `doc-doctor`,
 `doc-repair`, `doc-immutable`, `doc-commits`, `doc-planning`, `doc-tracked`,
-`doc-targets`, `doc-structure`, `doc-usage`, `doc-help`). **Der Kopfkommentar nennt die URL dieses Handbuchs** — das Fragment liegt danach in Ihrem Repo, und der Kopf ist der einzige Ort, an dem der Zeiger dorthin mitfährt. Er steht bewusst auf dem **Hauptzweig** statt auf einer Version: so kann er nicht veralten. **Der Preis gehört dazu:** pinnen Sie ein älteres Image, lesen Sie hier über Fähigkeiten, die Ihr Bild noch nicht hat — der Kopf dieses Handbuchs nennt deshalb die Software-Version, zu der es gehört.
+`doc-targets`, `doc-structure`, `doc-usage`, `doc-help`). **Der Kopfkommentar nennt dieses Handbuch in zwei URL-Formen** — das Fragment liegt danach in Ihrem Repo, und der Kopf ist der einzige Ort, an dem die Zeiger dorthin mitfahren: die gerenderte GitHub-Seite zum Anklicken, dazu die rohe `raw.githubusercontent.com`-Form für Werkzeuge und Code-Agenten (kleinere Nutzlast, erhält Markdown-Linkziele). Beide stehen bewusst auf dem **Hauptzweig** statt auf einer Version: so können sie nicht veralten. **Der Preis gehört dazu:** pinnen Sie ein älteres Image, lesen Sie hier über Fähigkeiten, die Ihr Bild noch nicht hat — der Kopf dieses Handbuchs nennt deshalb die Software-Version, zu der es gehört.
 
 <!-- d-check-test:not-replayable: abgekürzte Illustration (Elision mit # …), nicht die wörtliche --print-mk-Ausgabe -->
 ```text
@@ -847,6 +847,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und dreizehn
 #
 # Benutzerhandbuch (aufgabenorientiert, deutsch):
 #   https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md
+#   https://raw.githubusercontent.com/pt9912/d-check/refs/heads/main/docs/user/benutzerhandbuch.md  (roh, für Werkzeuge/Agenten)
 DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.71.1
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=

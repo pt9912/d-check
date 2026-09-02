@@ -113,23 +113,37 @@ func flagWasSet(flags *flag.FlagSet, name string) bool {
 	return set
 }
 
-// handbuchURL zeigt auf den HAUPTZWEIG. Damit steht in beiden Ausgaben
-// derselbe Zeiger, und ein Release muss ihn nicht anfassen.
+// handbuchURL und handbuchURLRaw zeigen beide auf den HAUPTZWEIG. Damit
+// stehen in beiden Ausgaben dieselben zwei Zeiger, und ein Release muss sie
+// nicht anfassen. Zwei Formen statt einer, seit slice-187: `blob` rendert
+// GitHub-seitig (fuer den Menschen, der klickt), `raw` liefert den
+// Quelltext roh (fuer den Code-Agenten, der ihn zieht) -- gemessen 174,6 KB
+// gegen 1,2 MB fuer denselben Inhalt, und `blob` verliert dabei jedes
+// Markdown-Linkziel. Die Reihenfolge in der Ausgabe haelt `blob` zuerst
+// (unveraenderte Gewohnheit), `raw` danach mit eigener Beschriftung.
 //
-// GRENZE: kein Sensor dieses Repos loest ihn auf -- d-check scannt nur
-// Markdown (DC-FA-STRUCT-001), diese Datei also nie, und `external` ist
-// strikt opt-in und nirgends aktiviert. Zeigt die URL ins Leere, faellt es
-// keinem Lauf auf. Zweiter Preis: wer ein aelteres Image faehrt, liest ein
-// neueres Handbuch.
+// GRENZE: kein Sensor dieses Repos loest eine der beiden auf -- d-check
+// scannt nur Markdown (DC-FA-STRUCT-001), diese Datei also nie, und
+// `external` ist strikt opt-in und nirgends aktiviert. Zeigt eine URL ins
+// Leere, faellt es keinem Lauf auf. Zweiter Preis: wer ein aelteres Image
+// faehrt, liest ein neueres Handbuch.
 //
-// DIE ZEICHENKETTE STEHT EIN ZWEITES MAL in packaging/dockerhub/overview.md,
-// ohne Kopplung -- eine Umbenennung braeche beide still.
-const handbuchURL = "https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md"
+// NUR handbuchURL (die blob-Form) STEHT EIN ZWEITES MAL in
+// packaging/dockerhub/overview.md, ohne Kopplung -- eine Umbenennung braeche
+// beide still. Die raw-Form hat dort KEIN Gegenstueck: die Docker-Hub-Seite
+// ist ein handkuratierter Link fuer einen Menschen, keine Illustration von
+// --help/--print-mk-Output, und braucht die maschinenfreundliche Form nicht.
+// Eine Kopplung ueber das eigene `versions`-Modul traegt hier ohnehin nicht: der Fundort ist eine
+// Go-Konstante, d-check scannt ausschliesslich Markdown (BEO-002).
+const (
+	handbuchURL    = "https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md"
+	handbuchURLRaw = "https://raw.githubusercontent.com/pt9912/d-check/refs/heads/main/docs/user/benutzerhandbuch.md"
+)
 
 // writeUsage gibt die Hilfe aus (DC-FA-CLI-001.a): Kurzbeschreibung,
 // Synopsis mit dem Pfad-Argument, Flag-Liste, ein Konfigurations-Hinweis,
 // der auf --print-config/--suggest-config verweist (das Config-Format wird
-// dort gezeigt, nicht hier dupliziert), und der Handbuch-Zeiger.
+// dort gezeigt, nicht hier dupliziert), und die beiden Handbuch-Zeiger.
 func writeUsage(flags *flag.FlagSet) {
 	out := flags.Output()
 	fmt.Fprintln(out, "d-check — prüft Markdown-Dokumentation auf kaputte Referenzen")
@@ -144,6 +158,7 @@ func writeUsage(flags *flag.FlagSet) {
 	fmt.Fprintln(out, "  d-check --suggest-config <quelle>  Gerüst aus Autoritäts-Quellen vorschlagen")
 	fmt.Fprintln(out, "\nBenutzerhandbuch (aufgabenorientiert, deutsch):")
 	fmt.Fprintln(out, "  "+handbuchURL)
+	fmt.Fprintln(out, "  "+handbuchURLRaw+"  (roh, für Werkzeuge/Agenten)")
 }
 
 // splitSources zerlegt den --suggest-config-Wert in einzelne Quellen

@@ -56,10 +56,11 @@ const mkTemplate = "# d-check.mk — erzeugt von: d-check --print-mk (DC-FA-CLI-
 	"# direkt über DCHECK_IMAGE oder bequemer über DCHECK_DIGEST (sticht den Tag):\n" +
 	"#   DCHECK_DIGEST = sha256:<digest>\n" +
 	"#\n" +
-	// Der Zeiger steht im KOPF, weil das Fragment in ein fremdes Repo reist:
-	// dort ist die Einleitung der einzige Ort, an dem er mitfaehrt.
+	// Die Zeiger stehen im KOPF, weil das Fragment in ein fremdes Repo reist:
+	// dort ist die Einleitung der einzige Ort, an dem sie mitfahren.
 	"# Benutzerhandbuch (aufgabenorientiert, deutsch):\n" +
 	"#   " + handbuchURL + "\n" +
+	"#   " + handbuchURLRaw + "  (roh, für Werkzeuge/Agenten)\n" +
 	"DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v%s\n" +
 	"DCHECK_DIGEST ?=\n" +
 	"# TRACE_FLAGS: optionale Flags für die RTM-Targets (z. B. --json).\n" +

@@ -54,8 +54,10 @@ Synopsis `d-check [optionen] [pfad]`, eine Zeile zum Pfad-Argument
 (`--print-config`) und
 [`DC-FA-CLI-006`](lastenheft.md#dc-fa-cli-006--konfigurations-vorschlag-aus-autoritäts-dokumenten)
 (`--suggest-config`) verweist — das Config-Format wird nicht dupliziert —,
-und zuletzt die **URL des Benutzerhandbuchs** auf dem Hauptzweig, ohne
-Versionsangabe.
+und zuletzt **beide URLs des Benutzerhandbuchs** auf dem Hauptzweig, ohne
+Versionsangabe: die gerenderte GitHub-Seite (`.../blob/main/...`), dann die
+rohe `raw.githubusercontent.com`-Form mit eigener Beschriftung für
+Werkzeuge/Agenten.
 Symlinks werden beim Scan weder verfolgt noch als Dateien gewertet — der
 Baum-Walk kennt nur Verzeichnisse und reguläre Dateien. Das gilt für **beide**
 Formen: ein Verzeichnis-Symlink wird nicht betreten, und eine nur über einen
@@ -683,10 +685,11 @@ Kurzschluss vor der Wurzel-Auflösung. Ausgabe (deterministisch,
 eingebetteten Version):
 
 1. Kommentar-Kopf: Einbindung via `include`, Hinweis zum Digest-Pin via
-   `DCHECK_IMAGE` bzw. bequemer `DCHECK_DIGEST`, und die **URL des
-   Benutzerhandbuchs** auf dem Hauptzweig — das Fragment reist in ein
-   fremdes Repo, und der Kopf ist der einzige Ort, an dem ein Zeiger
-   dorthin mitfährt.
+   `DCHECK_IMAGE` bzw. bequemer `DCHECK_DIGEST`, und **beide URLs des
+   Benutzerhandbuchs** auf dem Hauptzweig (gerenderte GitHub-Seite, dann die
+   rohe `raw.githubusercontent.com`-Form mit eigener Beschriftung) — das
+   Fragment reist in ein fremdes Repo, und der Kopf ist der einzige Ort, an
+   dem die Zeiger dorthin mitfahren.
 2. `DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v<version>` — `<version>` ist die
    beim Tag-Build via `-ldflags -X …/cli.version=<tag>` eingebettete
    Release-Version (Default `0.0.0-dev` für lokale/Gate-Builds).
@@ -3144,6 +3147,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-09-01 | §[`DC-FA-CLI-001.a`](spezifikation.md#dc-fa-cli-001a--ablauf-eines-prüflaufs) und §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) um die **zweite Handbuch-URL-Form** ergänzt ([`DC-FA-CLI-001`](lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)/[`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 0.82.0): die geschlossene Usage-Aufzählung bzw. der Kopfkommentar-Punkt nennen jetzt **beide** URLs (gerenderte GitHub-Seite, dann die rohe `raw.githubusercontent.com`-Form) statt einer. Beide Stellen sind geschlossene Aufzählungen — dieselbe Klasse, die diese Historie für §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) bereits zweimal nachziehen musste (Target-Enumeration): eine geschlossene Aufzählung, die dem Bau nicht mehr entspricht, ist der Rückstand, nicht der Zusatz | — |
 | 2026-08-31 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 nennt den **Mechanismus**, durch den eine Umbenennung sichtbar wird: der Range-Pfad difft **ohne Rename-Erkennung**. Der Schritt sagte die Pfad-Stabilitäts-Prüfung für `D`/`R` seit jeher zu, aber nicht, wodurch ein `R` überhaupt entsteht — und der Adapter lieferte sie im Range-Pfad **nicht**: mit der eingeschalteten Erkennung der verwendeten Bibliothek kam ein **reiner** Rename als eine Änderung auf dem neuen Pfad an, der alte verschwand, und der Befund für die umbenannte immutable Datei entstand nie. Der `--staged`-Pfad war über seine eigene Übersetzung immer korrekt; **die Zusage war damit modus-abhängig, ohne dass das irgendwo stand** — und still war ausgerechnet der Modus, den die CI fährt. Gemeldet von einem Adopter, reproduziert in beiden Modi und in den drei Kontrollfällen (Löschen, Rename mit Umformulierung, `--staged`). **Kein Lastenheft-Bump:** die Anforderung sagte den Befund bereits zu, ohne einen Modus einzuschränken; sie wurde nicht geändert, sondern eingelöst. Kein neuer Grund-Code | — |
 | 2026-08-31 | §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) Punkt 5 um das **dreizehnte** Target `doc-usage` erweitert ([`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 0.80.0, Change Request des Auftraggebers): Zahl **und** Aufzählungspunkt. Es exponiert den Hilfe-Modus aus [`DC-FA-CLI-001`](lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel) und trägt als **Modus**-Target keine `--enable`/`--disable`-Wahl — darin nicht allein: gezählt am erzeugten Fragment tragen sechs der dreizehn eine Fokus-Liste, sieben nicht. Zwei Eigenschaften stehen ausdrücklich dabei, weil sie sonst erst beim Aufruf auffielen: die Hilfe erscheint auf `stderr`, und der Mount bleibt, obwohl `--help` vor der Wurzel-Auflösung kurzschließt. Kein neues Verhalten, kein Grund-Code, keine Schema-Zeile — dieselbe Bauform wie die Target-Erweiterungen davor | — |
 | 2026-08-31 | §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) Punkt 5: `doc-structure` in die Aufzählung der Targets nachgetragen. **Die Zahl war korrigiert, die Aufzählung darunter nicht** — sie führte weiter elf Einträge und ließ genau das Target aus, das die Zahl auf zwölf bewegt hatte. Der Nachzug vom 2026-08-30 hat die Ziffer an dieser Stelle gehoben, die Liste im selben Punkt aber nicht ergänzt; dieselbe Enumeration ist im Lastenheft für diese Anforderung schon zweimal saniert worden (Beschreibung und Out-of-Scope zu 0.57.0, Akzeptanzkriterien zu 0.57.1). **Keine Änderung einer Festlegung:** Lastenheft, ausgeliefertes Fragment und Handbuch führen `doc-structure` seit 0.57.0 — abweichend war allein diese Aufzählung |
