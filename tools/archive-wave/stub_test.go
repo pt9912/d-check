@@ -80,6 +80,23 @@ func TestFormatHervorgegangen_Keine(t *testing.T) {
 	}
 }
 
+// TestExtractSurvivingIDs_IgnoriertInlineCodeUndFences belegt die an
+// slice-075 gemessene Luecke: eine erfundene, aehnlich geformte Kennung
+// als Illustration eines Parsing-Grenzfalls in Inline-Code
+// ("`GG-QA-001, 007 Sekunden`") darf nicht als echter Beleg in den Stub
+// wandern -- sonst behauptet er eine Anforderung, die es nie gab. Eine
+// echte Kennung ausserhalb von Code bleibt dabei erfasst.
+func TestExtractSurvivingIDs_IgnoriertInlineCodeUndFences(t *testing.T) {
+	content := "Betrifft DC-FA-REF-001 (echt).\n" +
+		"Beispiel: `GG-QA-001, 007 Sekunden` ist kein echter Beleg.\n" +
+		"```\nADR-9999 steht nur im Fenced-Block\n```\n"
+	got := ExtractSurvivingIDs(content)
+	want := []string{"DC-FA-REF-001"}
+	if len(got) != len(want) || got[0] != want[0] {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
 func TestWelleStub(t *testing.T) {
 	got := WelleStub("welle-87", "Wellen-Archivierung", "welle-87-results.md", 2, 1)
 	if hasSubheading(got) {

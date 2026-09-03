@@ -31,13 +31,24 @@ func ExtractTitle(content string) string {
 // erfundene, eigene Klasse.
 var survivingIDRE = regexp.MustCompile(`\b(?:[A-Z][A-Z0-9]*-(?:FA-[A-Z]+|QA)-\d+[A-Za-z]?|ADR-\d{4})\b`)
 
+var fencedBlockRE = regexp.MustCompile("(?s)```.*?```")
+var inlineCodeRE = regexp.MustCompile("`[^`\n]*`")
+
 // ExtractSurvivingIDs liest die DC-*/ADR-*-Kennungen aus einem Slice-Volltext
 // -- die "Kennungen, die den Vorgang ueberlebt haben" aus dem Baseline-Stub-
 // Template. Gemessen: ohne das wird eine Anforderung, deren EINZIGER
 // zitierender Slice archiviert wird, zur Trace-Waise (der Stub traegt den
 // Original-Text nicht mehr, nur d-checks eigener --require-complete-Lauf hat
 // das ans Licht gebracht, kein anderes Gate). Sortiert, dedupliziert.
+//
+// Fenced Blocks und Inline-Code werden VOR dem Suchen entfernt: ein Slice
+// kann eine erfundene, aehnlich geformte Kennung als Illustration eines
+// Parsing-Grenzfalls in Inline-Code zeigen (gemessen an slice-075:
+// "`GG-QA-001, 007 Sekunden`") -- ohne den Ausschluss haette der Stub eine
+// Anforderung behauptet, die in diesem Repo nie existierte.
 func ExtractSurvivingIDs(content string) []string {
+	content = fencedBlockRE.ReplaceAllString(content, "")
+	content = inlineCodeRE.ReplaceAllString(content, "")
 	seen := map[string]bool{}
 	var out []string
 	for _, m := range survivingIDRE.FindAllString(content, -1) {
