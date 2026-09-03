@@ -16,7 +16,7 @@ die Behebung der beiden HIGH-Befunde (F-1, F-2) — siehe slice-195 §9.
 
 **Eingangs-Kontext:**
 
-- [slice-195](../plan/planning/in-progress/slice-195-beobachtungsregister-migration.md)
+- [slice-195](../plan/planning/done/slice-195-beobachtungsregister-migration.md)
 - `AGENTS.md` §3.3 (git mv + Inhaltsänderung = zwei Commits, inkl. der vier
   benannten Ausnahmen), §3.5 (ADR-Immutabilität), §3.7 (Kommentarklassen),
   §3.4 (Spec-Straten-Abwärtssperre)

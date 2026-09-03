@@ -13,7 +13,7 @@ die Behebung der beiden HIGH-Befunde — siehe slice-195 §9.
 **Modell:** Claude Sonnet 5 · **Datum:** 2026-09-03
 
 **Eingangs-Kontext:**
-[slice-195](../plan/planning/in-progress/slice-195-beobachtungsregister-migration.md)
+[slice-195](../plan/planning/done/slice-195-beobachtungsregister-migration.md)
 §4 Definition of Done, §5 Risiken, §9 Closure-Notiz; `AGENTS.md` (Hard
 Rules); [`harness/conventions.md`](../../harness/conventions.md) MR-013,
 MR-049, MR-059.
