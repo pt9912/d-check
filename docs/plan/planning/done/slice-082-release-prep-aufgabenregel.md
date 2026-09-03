@@ -8,7 +8,7 @@ bestehen; Auftraggeber-Aufnahme 2026-07-19).
 
 **Bezug:** Prozess-Härtung der [Releasing-Checkliste](../../../user/releasing.md)
 §Release-Prep gegen den in
-[slice-072](../done/slice-072-handbuch-aufgabenorientierung.md) §4 benannten
+[slice-072](welle-65/slice-072-handbuch-aufgabenorientierung.md) §4 benannten
 **strukturellen** Erosions-Mechanismus des
 [Benutzerhandbuchs](../../../user/benutzerhandbuch.md) §4, gemessen am
 [Benutzerhandbuch-Standard](../../../user/benutzerhandbuch-standard.md) §2/§5.
@@ -108,7 +108,7 @@ eine **eigene** Aufgabe (nach Benutzerhandbuch-Standard §5), keine Anhängung a
 eine bestehende Aufgabe — begründet mit dem Inline-Fakt „§4.12 wuchs auf ~330
 Zeilen / 8 Themen", ehrlich „kein Gate erzwingt sie" (Ton des Punkt 4). Schließt
 den strukturellen Erosions-Bindepunkt, den
-[slice-072](slice-072-handbuch-aufgabenorientierung.md) nur redaktionell umging.
+[slice-072](welle-65/slice-072-handbuch-aufgabenorientierung.md) nur redaktionell umging.
 
 **Commits (4).** `c6d3418` (welle-66 eröffnet: Plan + Roadmap-Flip) · `c3bf39f`
 (Plan-Review-Nits) · `9b4dc16` (Umsetzung `releasing.md`) · Closure-Move + dieser
