@@ -143,7 +143,7 @@ zieht die Move-Regel im selben Commit nach. Die Grenze steht in der ADR.
 ## 6. Trigger
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei. Unabhängig von
-[slice-094](../done/slice-094-closure-zaehl-paritaet.md) und
+[slice-094](welle-72/slice-094-closure-zaehl-paritaet.md) und
 [slice-096](welle-69/slice-096-structure-modul-analyse.md) umsetzbar.
 
 **Rückführungen:** `in-progress` → `open`, falls die Laufzeit-Messung ein

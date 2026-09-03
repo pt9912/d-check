@@ -10,12 +10,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Wellen-Closure-Prozedur, Schritt 3 — *was gelernt wurde*: geliefert · was
 funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
 
-- **Zähl-Parität** ([slice-094](slice-094-closure-zaehl-paritaet.md)): der
+- **Zähl-Parität** ([slice-094](welle-72/slice-094-closure-zaehl-paritaet.md)): der
   Closure-Abschnitt wird **einmal** bereinigt (Fenced-Code **und** Inline-Code),
   alle Bedingungen lesen diesen einen Text, ein Satzende zählt nur vor
   Whitespace oder Zeilenende.
   [ADR-0053](../../adr/0053-eine-bereinigung-fuer-alle-closure-bedingungen.md).
-- **Wortgrenzen** ([slice-104](slice-104-floskel-wortgrenze.md)): die
+- **Wortgrenzen** ([slice-104](welle-72/slice-104-floskel-wortgrenze.md)): die
   Floskel-Bedingung vergleicht an Wortgrenzen statt als Teilstring.
 - **Ein Release, eine Notiz** — **v0.56.0**. Das war das Wellen-Ziel jenseits
   beider DoDs, und es ist eingelöst: der CHANGELOG-Eintrag nennt **alle drei**

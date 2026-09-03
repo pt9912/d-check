@@ -14,7 +14,7 @@ CR + ADR, Implementierung slice-094, Lifecycle-Move, Implementierung slice-104.
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
 - [welle-72-closure-semantik](../plan/planning/welle-72-closure-semantik.md), besonders §5 (die Kopplung beider Slices)
-- [slice-094](../plan/planning/done/slice-094-closure-zaehl-paritaet.md) und [slice-104](../plan/planning/in-progress/slice-104-floskel-wortgrenze.md)
+- [slice-094](../plan/planning/done/welle-72/slice-094-closure-zaehl-paritaet.md) und [slice-104](../plan/planning/in-progress/slice-104-floskel-wortgrenze.md)
 - [ADR-0053](../plan/adr/0053-eine-bereinigung-fuer-alle-closure-bedingungen.md) (Proposed) und [ADR-0048](../plan/adr/0048-closure-note-struktur-im-planning-modul.md)
 - [`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) (Lastenheft 0.56.0) und [`DC-FA-PLAN-001.a`](../../spec/spezifikation.md#dc-fa-plan-001a--planning-lifecycle-konsistenz-planning) Schritt C4/C4b
 - [`AGENTS.md`](../../AGENTS.md) Hard Rules, besonders [§3.6](../../AGENTS.md#36-gates-dürfen-nicht-ohne-adr-gelockert-werden)
