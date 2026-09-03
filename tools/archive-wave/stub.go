@@ -34,6 +34,30 @@ var survivingIDRE = regexp.MustCompile(`\b(?:[A-Z][A-Z0-9]*-(?:FA-[A-Z]+|QA)-\d+
 var fencedBlockRE = regexp.MustCompile("(?s)```.*?```")
 var inlineCodeRE = regexp.MustCompile("`[^`\n]*`")
 
+// stripStandaloneInlineCode entfernt Inline-Code-Spannen, LASSEN aber die
+// weitaus haeufigere, echte Zitat-Form dieses Repos stehen: eine Kennung als
+// Markdown-Link-Label, "[`DC-FA-XXX-001`](ziel)" -- der Span endet dort
+// unmittelbar vor "](", nicht vor Prosa. Go's RE2 kennt kein Lookahead,
+// deshalb der manuelle Nachbar-Zeichen-Check statt eines Regex-Ausschlusses.
+func stripStandaloneInlineCode(content string) string {
+	idx := inlineCodeRE.FindAllStringIndex(content, -1)
+	if idx == nil {
+		return content
+	}
+	var b strings.Builder
+	last := 0
+	for _, m := range idx {
+		start, end := m[0], m[1]
+		b.WriteString(content[last:start])
+		if end+1 < len(content) && content[end] == ']' && content[end+1] == '(' {
+			b.WriteString(content[start:end]) // Link-Label erhalten
+		}
+		last = end
+	}
+	b.WriteString(content[last:])
+	return b.String()
+}
+
 // ExtractSurvivingIDs liest die DC-*/ADR-*-Kennungen aus einem Slice-Volltext
 // -- die "Kennungen, die den Vorgang ueberlebt haben" aus dem Baseline-Stub-
 // Template. Gemessen: ohne das wird eine Anforderung, deren EINZIGER
@@ -41,14 +65,19 @@ var inlineCodeRE = regexp.MustCompile("`[^`\n]*`")
 // Original-Text nicht mehr, nur d-checks eigener --require-complete-Lauf hat
 // das ans Licht gebracht, kein anderes Gate). Sortiert, dedupliziert.
 //
-// Fenced Blocks und Inline-Code werden VOR dem Suchen entfernt: ein Slice
-// kann eine erfundene, aehnlich geformte Kennung als Illustration eines
-// Parsing-Grenzfalls in Inline-Code zeigen (gemessen an slice-075:
-// "`GG-QA-001, 007 Sekunden`") -- ohne den Ausschluss haette der Stub eine
-// Anforderung behauptet, die in diesem Repo nie existierte.
+// Fenced Blocks werden vollstaendig entfernt; ein reiner Inline-Code-Span
+// (kein Link-Label) ebenso -- ein Slice kann eine erfundene, aehnlich
+// geformte Kennung als Illustration eines Parsing-Grenzfalls zeigen
+// (gemessen an slice-075: "`GG-QA-001, 007 Sekunden`"), ohne Ausschluss
+// haette der Stub eine Anforderung behauptet, die es nie gab. Ein
+// Link-Label ("[`DC-FA-XXX-001`](ziel)") bleibt dagegen erhalten -- das ist
+// die weitaus haeufigere, echte Zitat-Form dieses Repos; ein blindes
+// Wegwerfen aller Inline-Code-Spannen haette echte Belege mitgeloescht
+// (gemessen: erste Fassung dieser Funktion strich 3 von 4 echten Kennungen
+// in slice-073).
 func ExtractSurvivingIDs(content string) []string {
 	content = fencedBlockRE.ReplaceAllString(content, "")
-	content = inlineCodeRE.ReplaceAllString(content, "")
+	content = stripStandaloneInlineCode(content)
 	seen := map[string]bool{}
 	var out []string
 	for _, m := range survivingIDRE.FindAllString(content, -1) {

@@ -97,6 +97,26 @@ func TestExtractSurvivingIDs_IgnoriertInlineCodeUndFences(t *testing.T) {
 	}
 }
 
+// TestExtractSurvivingIDs_ErhaeltLinkLabel belegt die Gegenprobe zur
+// vorigen: die weitaus haeufigere, echte Zitat-Form dieses Repos ist ein
+// Markdown-Link mit Kennung als Label ("[`DC-FA-XXX-001`](ziel)") -- die
+// erste Fassung des Inline-Code-Ausschlusses hatte das mitgeloescht
+// (gemessen: 3 von 4 echten Kennungen in slice-073 verschwanden).
+func TestExtractSurvivingIDs_ErhaeltLinkLabel(t *testing.T) {
+	content := "Siehe [`DC-FA-PLAN-001`](spec/lastenheft.md#anchor) und " +
+		"[ADR-0048](docs/plan/adr/0048-x.md)."
+	got := ExtractSurvivingIDs(content)
+	want := []string{"ADR-0048", "DC-FA-PLAN-001"}
+	if len(got) != len(want) {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("got %v, want %v", got, want)
+		}
+	}
+}
+
 func TestWelleStub(t *testing.T) {
 	got := WelleStub("welle-87", "Wellen-Archivierung", "welle-87-results.md", 2, 1)
 	if hasSubheading(got) {
