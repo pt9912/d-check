@@ -6,7 +6,7 @@
 **Welle:** — **wellenlos**. Sein Closure-Grund geht über die eigene DoD nicht
 hinaus (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
 braucht); der **Anlass** liegt in
-[welle-86](../welle-86-closure-uebergang-durchsetzen.md), die **Fähigkeit**
+[welle-86](welle-86-closure-uebergang-durchsetzen.md), die **Fähigkeit**
 gehört jeder `structure`-Regel.
 
 **Bezug:**

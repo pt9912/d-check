@@ -11,7 +11,7 @@
 **Eingangs-Kontext:**
 
 - [slice-175](../plan/planning/done/slice-175-uebergangs-waechter.md)
-- [welle-86](../plan/planning/welle-86-closure-uebergang-durchsetzen.md) §4
+- [welle-86](../plan/planning/done/welle-86-closure-uebergang-durchsetzen.md) §4
 - `AGENTS.md` §3.1, `MR-042` (Hard Rules, Hook-Reichweite)
 
 ---

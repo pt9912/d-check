@@ -45,15 +45,15 @@ offenen Haken; **87 von 95** Slices mit Review-Zusage haben einen Report in
 Register-Stand 2026-08-29, höchste Kennung `BEO-021`). Drei betreffen die
 Sub-Areas dieser Welle:
 
-- [`BEO-013`](observations.md) — *ein Wächter, der nichts mehr fängt, bleibt
+- [`BEO-013`](../observations.md) — *ein Wächter, der nichts mehr fängt, bleibt
   stehen*: hier eine Stufe früher — eine Regel, die **nie** einen Wächter
   hatte. Die Bestands-Ausnahmen, die diese Welle einführt, sind der künftige
   Kandidat für genau diese Klasse.
-- [`BEO-011`](observations.md) — *Regel aus dem Anlass statt aus dem Bestand*:
+- [`BEO-011`](../observations.md) — *Regel aus dem Anlass statt aus dem Bestand*:
   die **Dringlichkeit** stammt aus drei Slices einer Sitzung, die **Regel** aus
   37 bzw. 87/95 gemessenen Fällen. Der Unterschied gehört in jede Slice-DoD
   dieser Welle.
-- [`BEO-015`](observations.md) — *ein offener Punkt bekommt bei der Closure
+- [`BEO-015`](../observations.md) — *ein offener Punkt bekommt bei der Closure
   einen Ausgang, den es nicht gibt*: dieselbe Familie urteilsfreier
   Closure-Prüfungen, die diese Welle erweitert.
 
@@ -62,7 +62,7 @@ betroffenen Slices, nicht als eigener Slice.
 
 ## 2. Trigger (Welle startet)
 
-- [slice-171](done/slice-171-vorpruefungen-belegen.md) ist geschlossen —
+- [slice-171](slice-171-vorpruefungen-belegen.md) ist geschlossen —
   er belegt die Lektüre der Regel, auf die diese Welle sich beruft, und hält den
   WIP-Slot.
 
@@ -85,7 +85,7 @@ Sensor; die Welle belegt den **Übergang als Ganzes**.
 Abschluss von slice-172–175 zeigten ein gemischtes Bild — zwei der vier
 Vorbedingungen wurden **beim lokalen `mv`-Commit** noch nicht abgewiesen
 (Beobachtungs-Register nur über `make gates`, Review-Report-Deckung
-überhaupt nicht). Ursache und Auflösung: [ADR-0082](../adr/0082-uebergangswaechter-reviews-observations.md),
+überhaupt nicht). Ursache und Auflösung: [ADR-0082](../../adr/0082-uebergangswaechter-reviews-observations.md),
 umgesetzt als fünfter Slice dieser Welle, slice-192. Erst mit ihm sind alle
 vier Proben real und lokal bestanden.
 
@@ -93,11 +93,11 @@ vier Proben real und lokal bestanden.
 
 | Slice | Gegenstand | Werkzeug |
 |---|---|---|
-| [slice-172](done/slice-172-closure-uebergang-waechtern.md) | DoD-Häkchen gesetzt | `structure` (vorhanden) |
-| [slice-173](done/slice-173-review-report-deckung.md) | Review-Report-Deckung: jeder `done/`-Slice mit Review-Zusage hat einen Report | neue Fähigkeit (Deckung zweier Mengen) |
+| [slice-172](slice-172-closure-uebergang-waechtern.md) | DoD-Häkchen gesetzt | `structure` (vorhanden) |
+| [slice-173](slice-173-review-report-deckung.md) | Review-Report-Deckung: jeder `done/`-Slice mit Review-Zusage hat einen Report | neue Fähigkeit (Deckung zweier Mengen) |
 | slice-174 | Beobachtungs-Register-Deckung: zitierte `BEO-<NNN>` hat Registerzeile, jede Zeile trägt einen Beleg | `modul-06` nennt die maschinelle Hälfte selbst |
-| [slice-175](done/slice-175-uebergangs-waechter.md) | Bindung an den **Übergang**: der `mv`-Commit nach `done/` wird geprüft, nicht der Zustand danach | `.githooks/pre-commit` ruft d-check im `STAGED=`-Modus |
-| [slice-192](done/slice-192-uebergangswaechter-nachliefern.md) | **Nachtrag (Trigger-Audit):** zwei der vier Vorbedingungen (Register-Deckung, Review-Report-Deckung) waren beim lokalen `mv`-Commit noch nicht durchgesetzt | [ADR-0082](../adr/0082-uebergangswaechter-reviews-observations.md) — `reviews` + `planning.observations` in `.d-check.closure.yml` |
+| [slice-175](slice-175-uebergangs-waechter.md) | Bindung an den **Übergang**: der `mv`-Commit nach `done/` wird geprüft, nicht der Zustand danach | `.githooks/pre-commit` ruft d-check im `STAGED=`-Modus |
+| [slice-192](slice-192-uebergangswaechter-nachliefern.md) | **Nachtrag (Trigger-Audit):** zwei der vier Vorbedingungen (Register-Deckung, Review-Report-Deckung) waren beim lokalen `mv`-Commit noch nicht durchgesetzt | [ADR-0082](../../adr/0082-uebergangswaechter-reviews-observations.md) — `reviews` + `planning.observations` in `.d-check.closure.yml` |
 
 Alle fünf sind mittlerweile angelegt und geschlossen; der fünfte kam erst
 durch den Trigger-Audit dazu — wer alle Slices vor der ersten Implementierung
@@ -107,7 +107,7 @@ plant, plant tote Slices (`modul-05`).
 
 **Festgehalten bei der Eröffnung, damit der Slice nicht am falschen Ort
 ansetzt.** Das Repo führt zwei Hook-Familien mit sehr verschiedener Reichweite:
-`.claude/hooks/` ist **werkzeug-lokal** — [`MR-042`](../../../harness/conventions.md#mr-042)
+`.claude/hooks/` ist **werkzeug-lokal** — [`MR-042`](../../../../harness/conventions.md#mr-042)
 buchstabiert das aus (*keine CI ruft ihn, ein Lauf ohne dieses Werkzeug ist
 ungebunden*). `.githooks/` läuft für **jedes** Werkzeug und jeden Menschen, der
 `make hooks` ausgeführt hat.
@@ -130,7 +130,7 @@ die **CI-Hälfte**; das Repo macht das bei `adr-check` bereits so
 (`pre-commit` **und** PR-CI). Ohne sie ist der Übergang nur höflich gesichert.
 
 **Die vierte Schicht liegt außerhalb dieser Welle:** die pfad-gebundene
-Zustellung ([slice-176](done/slice-176-planning-rule-pilot.md))
+Zustellung ([slice-176](slice-176-planning-rule-pilot.md))
 verhindert keinen Verstoß, sondern die **Überraschung** — ein Hook, der
 blockiert, ohne dass der Autor wusste warum, kostet einen ganzen Zyklus. Sie
 gehört zum selben Bild, aber nicht zum Closure-Trigger dieser Welle.
@@ -143,7 +143,7 @@ inzwischen gelesen; die Entscheidung für den git-Hook bleibt, zwei Punkte komme
 dazu.
 
 **Die Entscheidung steht.** Der Guide bestätigt, was
-[`MR-042`](../../../harness/conventions.md#mr-042) über die Reichweite sagt: ein
+[`MR-042`](../../../../harness/conventions.md#mr-042) über die Reichweite sagt: ein
 Hook unter `.claude/` läuft im Werkzeug, nicht im Repo. Für eine
 **Repo-Invariante** bleibt `.githooks/` der Träger, und die CI-Hälfte bleibt
 nötig, weil `--no-verify` den git-Hook umgeht.
@@ -153,7 +153,7 @@ Runde beendet, und kann sie mit `decision: "block"` **verweigern** — der
 mitgegebene Grund geht an das Modell zurück, das dann weiterarbeitet. Das ist
 ein anderer Bindepunkt als der Commit: er greift **vor der Übergabe**, nicht
 beim Schreiben. Das Repo fährt das Muster bereits
-([`stop-require-gates.sh`](../../../.claude/hooks/stop-require-gates.sh)) — nur
+([`stop-require-gates.sh`](../../../../.claude/hooks/stop-require-gates.sh)) — nur
 für Gates, nicht für den Closure-Übergang. **Er ersetzt den git-Hook nicht**
 (dieselbe Werkzeug-Grenze), aber er ergänzt ihn um die Stelle, an der ein
 Verstoß noch billig ist. slice-175 entscheidet, ob er beide Hälften nimmt.
@@ -172,12 +172,12 @@ im **Auto-Modus** nur ein, wenn die Datei über die **dedizierten** Werkzeuge
 angefasst wird — jeder Shell-Zugriff geht daran vorbei; in diesem Repo, dessen
 Auto-Modus zur Shell rät, hätte der Kanal im Anlassfall geschwiegen. **Ein
 Eintrag ohne `paths` hat diese Bedingung nicht** und lädt beim Sitzungsstart.
-Genau so liefert [slice-176](done/slice-176-planning-rule-pilot.md): vier
+Genau so liefert [slice-176](slice-176-planning-rule-pilot.md): vier
 Symlinks auf den gepinnten Baum, in einer frischen Sitzung gemessen
-([`MR-055`](../../../harness/conventions.md#mr-055)). **Für die Durchsetzung
+([`MR-055`](../../../../harness/conventions.md#mr-055)). **Für die Durchsetzung
 dieser Welle ändert das nichts** — eingespeister Kontext ist kein Gate, die
 Schichten der Slices 173–175 bleiben Hooks. Die Klasse, die den Umweg
-verursachte, steht als [`BEO-024`](observations.md) im Register.
+verursachte, steht als [`BEO-024`](../observations.md) im Register.
 
 **Ein Rand, den slice-175 kennen muss:** hängen mehrere Hooks am selben Event,
 gewinnt die restriktivste Antwort (`deny` vor `defer` vor `ask` vor `allow`).

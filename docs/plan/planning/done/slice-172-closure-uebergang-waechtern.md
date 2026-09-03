@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-86](../welle-86-closure-uebergang-durchsetzen.md) — der
+**Welle:** [welle-86](welle-86-closure-uebergang-durchsetzen.md) — der
 Closure-Trigger der Welle beobachtet **mehr**, als diese DoD belegt: dass die
 Vorbedingungen am **Übergang** greifen, nicht nur im Zustand danach.
 
@@ -170,7 +170,7 @@ zurückkommt:**
   der korrigierten Praxis. Damit ist sie überprüfbar statt verhandelbar.
 - **Der Anlassfall liegt bewusst *in* der Ausnahme.** slice-168, -169 und -170
   tragen genau den offenen Review-Haken, der
-  [welle-86](../welle-86-closure-uebergang-durchsetzen.md) ausgelöst hat — der
+  [welle-86](welle-86-closure-uebergang-durchsetzen.md) ausgelöst hat — der
   Wächter wird sie nie melden. Ein nachträglich gesetzter Haken behauptete einen
   Review, den es nicht gab. Wer die Ausnahme liest, ohne das zu wissen, hält sie
   für Bequemlichkeit; deshalb gehört es in die Adaption.
@@ -442,7 +442,7 @@ die **Aussagen darüber**:
 1. **„Elf Closures" war aus der Spanne gerechnet, nicht aus dem Verzeichnis
    gelesen.** Es sind **acht** Dateien (171, 176–182); 173–175 existieren
    nirgends, und genau das steht in
-   [welle-86](../welle-86-closure-uebergang-durchsetzen.md) §4 — auf das
+   [welle-86](welle-86-closure-uebergang-durchsetzen.md) §4 — auf das
    derselbe Absatz verlinkt. Die Zahl trug den einzigen Beleg dafür, dass die
    Grenze bei 171 richtig liegt.
 2. **Der neue YAML-Kommentar referierte seine eigene Vorgänger-Fassung.** Sein
@@ -495,7 +495,7 @@ Differenz zu heute sind fünf Neuzugänge. Nicht benannt war dort nur der
 **Übergang**; ein Slice, der mit offenem Haken nach `done/` wandert, wird erst
 vom nächsten `verify-closure-notes`-Lauf gesehen. Das ist der Gegenstand von
 `slice-175`, und der Closure-Trigger von
-[welle-86](../welle-86-closure-uebergang-durchsetzen.md) verlangt genau diesen
+[welle-86](welle-86-closure-uebergang-durchsetzen.md) verlangt genau diesen
 Beleg. Drei Grenzen bleiben und sind keine Lücken, sondern Eigenschaften: der
 Haken ist eine Selbstauskunft, ein Haken im wohlgeformten Fence ist unsichtbar,
 und ein vergessener Fence macht die Bedingung blind. **Ein vierter Punkt ist

@@ -364,7 +364,7 @@ ist stärker belegt als das, was die Dokumente behaupten.
 **Fortgeschrieben:** [`BEO-020`](../observations.md) und
 [`BEO-023`](../observations.md) auf Zähler **3** — beide haben damit die
 Schwelle erreicht; die Verkörperung fällt an die Closure von
-[welle-86](../welle-86-closure-uebergang-durchsetzen.md) (Lese-Schritt).
+[welle-86](welle-86-closure-uebergang-durchsetzen.md) (Lese-Schritt).
 [`BEO-012`](../observations.md) ist als achte Instanz nicht gezählt, weil die
 Zuschreibung im selben Slice entstand und zurückgenommen wurde, bevor sie
 wirkte — sie steht hier, nicht im Register.

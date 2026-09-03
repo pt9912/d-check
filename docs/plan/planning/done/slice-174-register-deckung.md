@@ -2,7 +2,7 @@
 
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
-**Welle:** [welle-86](../welle-86-closure-uebergang-durchsetzen.md) — dritter
+**Welle:** [welle-86](welle-86-closure-uebergang-durchsetzen.md) — dritter
 von vier Slices. Ihr Closure-Trigger fordert einen Beleg, den keine einzelne
 DoD liefert: dass die Vorbedingungen **am Übergang** greifen.
 
@@ -45,7 +45,7 @@ irgendwo zitiert"), weil die allermeisten unter der Schwelle stehen.
 erfundenes `BEO-999` in einer Closure-Notiz fiele heute niemandem auf, und die
 Zeile, die es belegen soll, gäbe es nicht. Die Deckung ist gelebte Praxis ohne
 Sensor — genau die Lage, die
-[welle-86](../welle-86-closure-uebergang-durchsetzen.md) für den ganzen
+[welle-86](welle-86-closure-uebergang-durchsetzen.md) für den ganzen
 Closure-Übergang beschreibt.
 
 ## 2. Vorgehen

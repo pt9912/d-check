@@ -6,7 +6,7 @@
 **Welle:** — **wellenlos**, solange keine Closure-Bedingung über die eigene DoD
 hinausgeht (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
 braucht). Der **Anlass** liegt in
-[welle-86](../welle-86-closure-uebergang-durchsetzen.md); dort ist die
+[welle-86](welle-86-closure-uebergang-durchsetzen.md); dort ist die
 Zustellung ausdrücklich **nicht** der Closure-Trigger.
 
 **Bezug:** [`AGENTS.md`](../../../../AGENTS.md) §1 (das Prinzip: Hard Rules und
@@ -125,7 +125,7 @@ Sieben Nicht-Zusagen, ausgeschrieben statt implizit:
    sich nur dorthin einspeisen, wo einer ist.
 2. **Sie ist kein Gate.** Eingespeister Text ist Kontext, keine erzwungene
    Konfiguration. Die Durchsetzung des Closure-Übergangs bleibt
-   [welle-86](../welle-86-closure-uebergang-durchsetzen.md); daran ändert diese
+   [welle-86](welle-86-closure-uebergang-durchsetzen.md); daran ändert diese
    Zustellung nichts.
 3. **Ihr Inhalt ist nicht gate-geprüft.** Der Scanner folgt Symlinks nicht in
    die Prüfmenge (gemessen) — `links`, `anchors` und `citations` sehen die
@@ -378,7 +378,7 @@ Lücke, sondern eine Falschaussage an der Stelle, die als genauere gilt. Alle
 vier Flächen sind nachgezogen.
 
 **Zwei Planungs-Stellen behaupteten das Gegenteil des Gelieferten.**
-[welle-86](../welle-86-closure-uebergang-durchsetzen.md) §4 schrieb „der
+[welle-86](welle-86-closure-uebergang-durchsetzen.md) §4 schrieb „der
 Rules-Kanal fällt weg" und nannte diesen Slice als Beleg; die `Stand`-Zelle von
 [`BEO-024`](../observations.md) führte „Hooks statt Regeln" als Antwort. Beide
 waren zum Zeitpunkt ihres Schreibens richtig und sind es durch die Lieferung

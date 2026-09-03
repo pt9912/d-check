@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-86](../welle-86-closure-uebergang-durchsetzen.md) — der
+**Welle:** [welle-86](welle-86-closure-uebergang-durchsetzen.md) — der
 Closure-Trigger der Welle verlangt vier Slices in `done/`; dieser ist der
 vierte und letzte, und er **setzt die drei anderen voraus** (welle-86 §5): er
 bindet die Prüfungen, die 172–174 liefern, an den Übergang selbst.

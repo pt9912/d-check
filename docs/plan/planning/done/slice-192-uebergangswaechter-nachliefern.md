@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-86](../welle-86-closure-uebergang-durchsetzen.md) — fünfter
+**Welle:** [welle-86](welle-86-closure-uebergang-durchsetzen.md) — fünfter
 Slice, nachträglich durch den Trigger-Audit (Modul 6 Schritt 2) geschnitten.
 
 **Bezug:** [ADR-0082](../../adr/0082-uebergangswaechter-reviews-observations.md)
