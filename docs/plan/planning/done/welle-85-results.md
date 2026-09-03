@@ -23,11 +23,11 @@ und sie decken sich exakt mit der Lieferzusage der Kurs-Antwort.
 
 **Alle vier Kurs-Wellen sind die Antwort auf den Konsumenten-CR dieses Repos.**
 Zwei tragen Handlung, zwei sind belegt folgenlos — die Einzelheiten stehen im
-Closure-Body von [slice-149](../done/slice-149-baseline-v5120-delta-audit.md).
+Closure-Body von [slice-149](welle-85/slice-149-baseline-v5120-delta-audit.md).
 
-Zwei Slices der Welle sind geschlossen ([slice-148](../done/slice-148-baseline-v5120-vendoring.md),
-[slice-149](../done/slice-149-baseline-v5120-delta-audit.md)), dazu die vom Audit
-geschnittene Etappe C-1 ([slice-150](../done/slice-150-pin-gebundene-zitate.md)).
+Zwei Slices der Welle sind geschlossen ([slice-148](welle-85/slice-148-baseline-v5120-vendoring.md),
+[slice-149](welle-85/slice-149-baseline-v5120-delta-audit.md)), dazu die vom Audit
+geschnittene Etappe C-1 ([slice-150](welle-85/slice-150-pin-gebundene-zitate.md)).
 
 ## Was hat funktioniert?
 

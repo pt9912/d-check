@@ -146,7 +146,7 @@ steht sie wirklich nicht), geschlossen wurde universal. **Der Kanon trägt sie
 wörtlich:**
 `grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz — *„Sie ist
 an **jede** zitierte Aussage zu stellen, auch an einen Satz der Baseline"*. Und
-[slice-149](../done/slice-149-baseline-v5120-delta-audit.md) hatte sie mir
+[slice-149](welle-85/slice-149-baseline-v5120-delta-audit.md) hatte sie mir
 vorgelegt: als Delta-Punkt 4 des `v5.12.0`-Audits, mit slice-147 ausdrücklich
 als Träger der Feedforward-Hälfte. Die Quelle lag in einem geschlossenen
 Artefakt und wurde für nicht existent erklärt.

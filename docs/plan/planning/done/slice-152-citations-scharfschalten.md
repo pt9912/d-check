@@ -4,7 +4,7 @@
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
 **Welle:** — **wellenlos.** Geschnitten von
-[slice-150](../done/slice-150-pin-gebundene-zitate.md) als Etappe C der
+[slice-150](welle-85/slice-150-pin-gebundene-zitate.md) als Etappe C der
 Baseline-Migration, bei deren Closure aber **herausgelöst**: der Blocker ist
 älter als die Welle, und die Closure-Bedingung geht nicht über die eigene DoD
 hinaus (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle

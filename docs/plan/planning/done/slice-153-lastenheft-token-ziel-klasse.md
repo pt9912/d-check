@@ -78,7 +78,7 @@ eigener Slice: Ändert man einen Lastenheft-Satz, weil die Umsetzung ihn
 ## 5. Abnahme-Punkte / Risiken
 
 - **Die bequeme Antwort ist, den Vertrag der Umsetzung anzupassen.** Genau
-  dieselbe Lage wie in [slice-150](slice-150-pin-gebundene-zitate.md),
+  dieselbe Lage wie in [slice-150](welle-85/slice-150-pin-gebundene-zitate.md),
   wo sie sich als falsch erwiesen hat. Die Begründung muss aus dem Text kommen.
   — **Ausgang:** *eingetreten, halb.* Der Vertrag ist der Umsetzung angepasst
   worden — das war die bequeme Richtung. Sie ist diesmal die richtige, weil die
