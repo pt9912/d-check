@@ -46,7 +46,7 @@ erst beim Ausführen entdeckt** — genau die Vorsicht, die
 2. **Die vier vermeintlich wellenlosen Alt-Slices sind keine.** Gemessen:
    `done/slice-*.md` ohne `**Welle:**`-Feld sind genau vier —
    [slice-077](../done/welle-60/slice-077-stiller-tabellen-uebersprung.md),
-   [slice-078](../done/slice-078-ignore-refs-quell-skopus.md),
+   [slice-078](../done/welle-61/slice-078-ignore-refs-quell-skopus.md),
    [slice-079](../done/slice-079-zitat-verifikation.md),
    [slice-103](../done/slice-103-geteilte-lexik-raender.md). Alle vier
    nennen ihre Welle **in Prosa** (Status-Zeile bzw. Fließtext): `slice-077`
