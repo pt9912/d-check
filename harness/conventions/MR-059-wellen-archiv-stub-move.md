@@ -28,8 +28,8 @@
   Form wie beim MR-/Wellen-Lifecycle-Move in MR-013, aus demselben Grund —
   „git mv trifft hier nicht zu" statt eines stillschweigenden Bruchs der
   Zwei-Commit-Erwartung.
-- **Begründung:** Gemessen bei [slice-191](../../docs/plan/planning/done/slice-191-alt-bestand-archivieren.md)
-  (Anwendung von [slice-190](../../docs/plan/planning/done/slice-190-wellen-archiv-werkzeug.md)s
+- **Begründung:** Gemessen bei [slice-191](../../docs/plan/planning/done/welle-87/slice-191-alt-bestand-archivieren.md)
+  (Anwendung von [slice-190](../../docs/plan/planning/done/welle-87/slice-190-wellen-archiv-werkzeug.md)s
   Werkzeug auf welle-01…85, 85 Archivierungs-Commits): jeder Commit trägt
   D/A-Paare statt Renames, keiner löste `make planning-check` oder eine
   andere Lifecycle-Kopplung aus (die betroffenen Dateien sind bereits in

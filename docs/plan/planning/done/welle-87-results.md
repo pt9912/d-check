@@ -15,12 +15,12 @@ Regel für jede Wellen-Closure. `welle-87` liefert das fehlende Werkzeug und
 wendet es sofort auf den **gesamten** Alt-Bestand an, nicht nur auf den
 ursprünglich vorgesehenen Ausschnitt:
 
-- [slice-190](slice-190-wellen-archiv-werkzeug.md): `tools/archive-wave`,
+- [slice-190](welle-87/slice-190-wellen-archiv-werkzeug.md): `tools/archive-wave`,
   ein eigenständiges Go-Programm (eigenes `go.mod`, eigenes `Dockerfile`,
   eigenes `Makefile`) — Sammeln nach `**Welle:**`-Feld, ZIP-Bau, Stub-Erzeugung
   nach Template, repo-weiter Verweis-Nachzug. An einem konstruierten Fixture
   bewiesen, nicht am echten Bestand.
-- [slice-191](slice-191-alt-bestand-archivieren.md): das Werkzeug auf
+- [slice-191](welle-87/slice-191-alt-bestand-archivieren.md): das Werkzeug auf
   **alle 85** nummerierten Wellen dieses Repos angewendet (`welle-01` bis
   `welle-85`) — nicht nur `welle-60…85`, wie ursprünglich geplant. Die
   Scope-Erweiterung war ein Nutzer-Entscheid, ausgelöst durch die Messung,
