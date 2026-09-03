@@ -222,6 +222,9 @@ ignore-refs:
     refs: ["docs/reviews/2026-06-20-slice-032-semgrep-gate.md"]
   - in: docs/plan/planning/done/slice-033-dockerfile-digest-pins.md
     refs: ["docs/reviews/2026-06-20-slice-032-semgrep-gate.md"]
+  # Dieselbe Grenze, welle-22-Archivierung (slice-191).
+  - in: docs/plan/planning/done/slice-034-latest-tag-versoehnen.md
+    refs: ["docs/reviews/2026-06-20-slice-033-digest-pins.md"]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.
