@@ -206,6 +206,9 @@ ignore-refs:
   # editiert, auch wenn sein eigenes Ziel archiviert wurde.
   - in: docs/reviews/2026-08-31-slice-174-register-deckung-code-r1.md
     refs: ["docs/reviews/2026-08-02-slice-088-planning-layer-review.md"]
+  # Dieselbe Grenze, welle-70-Archivierung (slice-191).
+  - in: docs/reviews/2026-08-16-slice-103-geteilte-lexik-review.md
+    refs: ["docs/reviews/2026-08-09-slice-101-fence-review-r3.md"]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.

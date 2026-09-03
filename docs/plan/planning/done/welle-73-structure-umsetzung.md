@@ -33,7 +33,7 @@ zum ersten Mal wirken, nicht an ihm zum vierten Mal fehlen.
 
 Freigabe des Auftraggebers (2026-08-15), WIP-Slot frei, und die **bindende**
 Start-Bedingung des Slice ist erfüllt: [slice-096](welle-69/slice-096-structure-modul-analyse.md)
-**und** [slice-101](slice-101-fence-unbalanciert.md) liegen in `done/`. Die
+**und** [slice-101](welle-70/slice-101-fence-unbalanciert.md) liegen in `done/`. Die
 zweite war nicht Vorliebe, sondern Bedingung — sonst erbte das neue Modul über
 die geteilte Mechanik einen **bekannten** stillen Grün-Pfad.
 

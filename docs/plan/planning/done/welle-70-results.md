@@ -89,7 +89,7 @@ zurückfließt.
 ## Verifikation
 
 - **Closure-Trigger erfüllt:** der eine Slice dieser Welle
-  ([slice-101](slice-101-fence-unbalanciert.md)) liegt in `done/`.
+  ([slice-101](welle-70/slice-101-fence-unbalanciert.md)) liegt in `done/`.
 - `make fullbuild` grün; `make ci` vor dem Tag grün (Gates + Image-Test).
 - Release **v0.53.0** gebaut und nach GHCR gepusht, Pipeline-Lauf 31362555433
   erfolgreich, Digest `sha256:0cbe2d54…9424`.

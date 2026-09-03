@@ -14,7 +14,7 @@ Modulen).
 
 ## 1. Welle-Ziel
 
-Die Klasse schließen, die [slice-101](slice-101-fence-unbalanciert.md) für
+Die Klasse schließen, die [slice-101](welle-70/slice-101-fence-unbalanciert.md) für
 die **Fence**-Lexik geschlossen hat, dort aber ausdrücklich nur für sie:
 *eine geteilte Lexik driftet an den Rändern, weil jeder Konsument sie selbst
 vorbereitet.* [slice-103](slice-103-geteilte-lexik-raender.md) trägt
@@ -22,7 +22,7 @@ die drei Befunde, die in slice-101 nicht hingehörten.
 
 **Das Mehr gegenüber der Slice-DoD ist eine Entscheidung, keine Lieferung.**
 Das Beobachtungs-Register führt die Klasse als **BEO-003** mit Zähler **2**
-([slice-101](slice-101-fence-unbalanciert.md),
+([slice-101](welle-70/slice-101-fence-unbalanciert.md),
 [slice-099](welle-69/slice-099-structure-modul.md)). Diese Welle bringt sie
 entweder zum Abschluss — oder auf **3**, und dann verlangt die Register-Regel
 die Verkörperung statt eines weiteren Zählschritts. Diese Welle entscheidet das
@@ -39,7 +39,7 @@ einem Lauf, Fall 3 ist eine **benannte Grenze** ohne heutigen Schaden.
 
 Freigabe des Auftraggebers (2026-08-16), WIP-Slot frei (welle-73 geschlossen,
 `in-progress/` trägt nur die Roadmap), und die Start-Bedingung des Slice ist
-erfüllt: [slice-101](slice-101-fence-unbalanciert.md) liegt in `done/`.
+erfüllt: [slice-101](welle-70/slice-101-fence-unbalanciert.md) liegt in `done/`.
 
 ## 3. Closure-Trigger (Welle schließt)
 
