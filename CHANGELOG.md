@@ -4,6 +4,29 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.73.0] — 2026-09-03
+
+### Added
+
+- slice-173 — **Neues Modul `reviews`: Review-Report-Deckung für
+  `done/`-Slices**
+  ([`DC-FA-RVW-001`](spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in),
+  Lastenheft 0.84.0, [ADR-0081](docs/plan/adr/0081-reviews-modul.md)). Ein
+  `done/`-Slice mit einer Review-Zusage (ein DoD-Haken, dessen Zeile
+  „unabhängiger Review" nennt, jede Bullet-Form, Haken-Zustand egal) braucht
+  mindestens einen Report unter einem konfigurierten Verzeichnis
+  (`reviews-dir`) mit derselben `slice-<NNN>`-Kennung im Dateinamen —
+  Substring-Match, 1:N zulässig; Grund-Code `review-missing`. **Fail-closed
+  bei leerer Kandidatenmenge oder unlesbarem `reviews-dir`**, **nicht** bei
+  null gefundenen Zusagen unter vorhandenen Kandidaten (ein junger Bestand
+  ohne jede Zusage ist legitim). Beide Verzeichnisse (`done-dir`,
+  `reviews-dir`) werden **nicht rekursiv** gescannt. **Anlass ist eine
+  ausdrücklich benannte Lücke eines vorherigen `structure`-Wächters**, der
+  nur den offenen DoD-Haken deckt, nicht die Deckung zweier Mengen zwischen
+  zwei Verzeichnissen. **Am eigenen Bestand gemessen:** fünf reale Funde,
+  davon zwei mit geschlossenem Haken — für den Haken-Wächter unsichtbar.
+  Opt-in, keine Breaking Changes.
+
 ## [0.72.0] — 2026-09-02
 
 ### Added

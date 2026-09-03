@@ -30,7 +30,7 @@ CLI-Optionen werden als Container-Argumente angehängt.
 
 | Option | Wirkung |
 |---|---|
-| `--enable <modul>` / `--disable <modul>` | Regelmodule zu-/abschalten (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`); CLI schlägt Konfiguration ([`DC-FA-CLI-002`](../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)) |
+| `--enable <modul>` / `--disable <modul>` | Regelmodule zu-/abschalten (`links`, `anchors`, `ids`, `matrix`, `external`, `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`, `immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`); CLI schlägt Konfiguration ([`DC-FA-CLI-002`](../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)) |
 | `--json` | maschinenlesbare Gesamt-Ausgabe ([Schema](../../spec/spezifikation.md)) |
 | `--yaml` | wie `--json`, aber als YAML — gleiche Struktur (`findings`/`summary`/`exitCode`), nur Serialisierung; `--json` und `--yaml` schließen sich aus ([`DC-FA-CLI-004`](../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate)) |
 | `--doctor` | erklärende, nach Datei gruppierte Diagnose auf stdout statt der Befund-Zeilen, mit Fix-Kandidaten wo eindeutig (v1: `id-unlinked` → Definitions-Link) — **liest, schreibt nichts**; mit `--json` oder `--yaml` kombinierbar (maschinenlesbare Diagnose: `findings` zusätzlich mit `reasonText`/`fixCandidate`), nicht mit `--repair` ([`DC-FA-CLI-007`](../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)) |
