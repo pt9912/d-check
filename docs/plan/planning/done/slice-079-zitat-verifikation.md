@@ -13,6 +13,8 @@ Stufe 3 (`verbatim`) als **eigenes Modul** (setzt auf `codepaths`' Detektion auf
 Kürzel-Kriterium mit
 slice-078).
 
+**Welle:** welle-62.
+
 **Bezug:** **Change Request** eines Adopters (`ai-harness-init`), eingereicht
 2026-07-17. Berührt
 [`DC-FA-CODE-001`](../../../../spec/lastenheft.md#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)

@@ -6,6 +6,8 @@ ACCEPT-WITH-NITS, alle drei Nits eingearbeitet, Release v0.48.0). Closure-Notiz 
 Messbefund mit bewusst offener Regel; die Regel ist gemessen entschieden
 (relevant-Header-Grenze).
 
+**Welle:** welle-60.
+
 **Bezug:** betrifft
 [`DC-FA-REQ-001.a`](../../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen)
 Schritt 5 und — über den geteilten Reader —

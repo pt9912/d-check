@@ -8,6 +8,8 @@ Spezifikation `.a`,
 über `links`/`anchors`/`codepaths` + Alias, Realdatenbeleg gegen `ai-harness-course`,
 unabhängiger Review R1 ACCEPT-WITH-NITS.
 
+**Welle:** welle-61.
+
 **Bezug:** **Change Request** eines Konsumenten (`ai-harness-course`), eingereicht
 2026-07-17, Design nach zwei Rückfragen verfeinert (§2.1). Betrifft das Ventil
 `ignore-refs`, das heute **in**
