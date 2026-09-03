@@ -20,7 +20,7 @@ aber **ohne** VCS-Port (nur Filesystem). Verteilung wie der Rest des Werkzeugs
 
 ## 1. Ziel
 
-`tools/planning-consistency.sh` ([slice-040](../done/slice-040-planning-consistency-gate.md))
+`tools/planning-consistency.sh` ([slice-040](welle-29/slice-040-planning-consistency-gate.md))
 erzwingt die Planning-Lifecycle-Invariante („Roadmap §Aktuelle Welle ↔ `in-progress/slice-*`",
 [`AGENTS.md` §3.3](../../../../AGENTS.md#33-git-mv--inhaltsänderung--zwei-commits)) — volle
 Prüfung, aber als **Skript** nur per Kopie in Schwester-Repos nutzbar (Copy-Drift,

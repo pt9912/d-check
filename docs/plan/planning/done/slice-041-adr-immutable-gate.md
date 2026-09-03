@@ -79,7 +79,7 @@ tools/adr-immutable-check.sh   # Waechter: core-compare + Negativ-Selbsttest
   `## Geschichte`-Abschnitt robust abgrenzen (bis zur nächsten `## `-H2 bzw.
   EOF); eine umbenannte Geschichte-Überschrift würde den Abschnitt zum Körper
   zählen (fail-closed: dann feuert das Gate eher, kein silent-green — analog
-  Heading-Guard aus [slice-040](../done/slice-040-planning-consistency-gate.md)).
+  Heading-Guard aus [slice-040](welle-29/slice-040-planning-consistency-gate.md)).
 - **Status-Policy v1:** erlaubt sind `Accepted…` und `Superseded by ADR-NNNN`;
   exotische Status-Werte feuern. Verfeinerung (z. B. Teil-Supersede-Grammatik)
   bleibt Folgepunkt.

@@ -9,7 +9,7 @@
 **Bezug:** [`DC-FA-CLI-009`](../../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix)
 (RTM-Modus `--trace`: je Anforderung referenzierende ADRs/Slices +
 Waisen-Markierung; advisory, Exit 0). Mechanik-Präzedenz: die Meta-Gates
-[slice-040](../done/slice-040-planning-consistency-gate.md) (`planning-check`)
+[slice-040](welle-29/slice-040-planning-consistency-gate.md) (`planning-check`)
 und [slice-041](../done/slice-041-adr-immutable-gate.md) (`adr-check`) —
 `tools/`-Skript + Negativ-Selbsttest + Doku-Kopplung. Bindepunkt-Policy in
 eigener Prozess-ADR ([ADR-0017](../../adr/0017-requirements-completeness-gate.md),

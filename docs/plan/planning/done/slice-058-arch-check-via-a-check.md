@@ -172,7 +172,7 @@ damit einlösbar.
 ## 6. Sub-Area-Modus-Begründung
 
 GF („Doc führt, Code folgt": ADR vor Umbau). Kein d-check-Produkt-Code — Gate-/
-Harness-Infrastruktur wie [slice-039](welle-25/slice-039-pr-ci-traceability-gate.md)/[slice-040](../done/slice-040-planning-consistency-gate.md)/[slice-055](../done/slice-055-completeness-rueckbau.md);
+Harness-Infrastruktur wie [slice-039](welle-25/slice-039-pr-ci-traceability-gate.md)/[slice-040](welle-29/slice-040-planning-consistency-gate.md)/[slice-055](../done/slice-055-completeness-rueckbau.md);
 keine BF-Sub-Area. Die konsumierte Prüf-Logik lebt im Schwester-Repo (a-check, eigener
 Harness); hier entstehen nur Config (`.a-check.yml`), Makefile-Verdrahtung und Rückbau.
 

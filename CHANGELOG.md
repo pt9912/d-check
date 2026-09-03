@@ -1570,7 +1570,7 @@ Richtungen.** Wer `planning.closure` nutzt, sollte alle drei lesen; ohne
 
 - slice-057 — `tools/planning-consistency.sh` entfernt (das **letzte** Gate-Skript
   des `tools/*.sh`-Audits), abgelöst durch das Modul `planning`. Die immutable
-  [slice-040](docs/plan/planning/done/slice-040-planning-consistency-gate.md)-Inline-Referenz
+  [slice-040](docs/plan/planning/done/welle-29/slice-040-planning-consistency-gate.md)-Inline-Referenz
   ist über `codepaths.ignore-refs` als Tombstone deklariert (vierter Fall nach
   `adr-immutable-check.sh`/`completeness-check.sh`/`trace-check.sh`); der
   3-Richtungs-Negativ-Selbsttest lebt als Modul-Akzeptanztest (`make test`) weiter.
