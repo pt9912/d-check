@@ -10,7 +10,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Wellen-Closure-Prozedur, Schritt 3 — *was gelernt wurde*: geliefert · was
 funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
 
-- **Konvention zuerst** ([slice-113](slice-113-struktur-id-konvention.md)):
+- **Konvention zuerst** ([slice-113](welle-80/slice-113-struktur-id-konvention.md)):
   die deklarierte Abweichung ist per `git mv` aufgelöst (Index-Zeile umgezogen,
   beide Voll-Slug-Anker mitgenommen, damit eingefrorene Verweise weiter
   auflösen), die Vergabe-Aussage steht in
@@ -20,21 +20,21 @@ funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
   Commit-Botschaften. Der ADR-Index und `AGENTS.md` §5 sagen dasselbe in ihrer
   Rolle. Das Prüf-Profil kennt seither zwei Kennungs-Muster mit Linkpflicht.
 - **Vergabe im Technik-Stratum**
-  ([slice-114](slice-114-spec-vergabe-spezifikation.md)): 66 Kennungen —
+  ([slice-114](welle-80/slice-114-spec-vergabe-spezifikation.md)): 66 Kennungen —
   fünf Schema-Überschriften, sieben Defaults, 51 Grund-Codes, drei externe
   Verträge, die drei Tabellen je mit einer neuen ersten Spalte. Zwei
   Konsumenten wurden im selben Commit scharf: eine Abschnitts-Invariante über
   die Schema-Überschriften und der bestehende Grund-Code-Lockstep-Test, der
   jetzt zusätzlich die Kennungs-Spalte auf Eindeutigkeit prüft.
 - **Vergabe in der Sicht**
-  ([slice-115](slice-115-arc-vergabe-architektur.md)): elf Kennungen — sieben
+  ([slice-115](welle-80/slice-115-arc-vergabe-architektur.md)): elf Kennungen — sieben
   Komponenten in einer neuen Komponenten-Tabelle (und im Kasten-Label des
   Flowcharts), vier externe Berührungspunkte als Fortsetzung; die
   Schichten-Tabelle referenziert dieselben sieben, ohne neue zu vergeben. Der
   Konsument ist das Modul `diagrams`, auf die Spec-Straten gescopt und in der
   Netzlos-Modulliste verankert.
 - **Anwendung statt Deklaration**
-  ([slice-116](slice-116-adr-neuzugangs-regel.md)): die beiden `Proposed`-ADRs
+  ([slice-116](welle-80/slice-116-adr-neuzugangs-regel.md)): die beiden `Proposed`-ADRs
   tragen die neue Adressierungs-Form (eine bekam ihr `Schärft:`-Feld erstmals
   überhaupt), der ADR-Index zeigt beide Formen, und der Reviewer-Skill hat
   einen Anker dafür — mit dem `Accepted`-Bestand ausdrücklich ausgenommen.
