@@ -37,6 +37,13 @@ planning:
   # zusätzlich die Lifecycle-Invariante — dieselbe Aussage wie in `gates`,
   # doppelt gefahren schadet nicht (hermetisch, deterministisch).
   roadmap: docs/plan/planning/in-progress/roadmap.md
+  # Register-Deckung wie im Hauptprofil (ADR-0082) -- ohne diesen Block war
+  # eine zitierte, nicht registrierte BEO-Kennung fuer den lokalen
+  # Uebergangs-Waechter unsichtbar, nur `make gates`/`planning-check` fing sie.
+  # Gemessen bei welle-86s eigener Trigger-Pruefung.
+  observations:
+    register: docs/plan/planning/observations.md
+    dirs: [docs/plan/planning]
   closure:
     # Der Ruheort der abgeschlossenen Slices. Nur hier wird Slice-INHALT
     # gelesen; in-progress-Slices tragen noch keine Closure-Pflicht.
@@ -222,3 +229,20 @@ structure:
   - files: "docs/plan/planning/done/welle-*-results.md"
     section-pattern: '^## Was wurde geliefert'
     non-empty: true
+
+# Review-Report-Deckung wie im Hauptprofil (ADR-0081, ADR-0082) -- ohne
+# diesen Block war ein fehlender Review-Report fuer den lokalen
+# Uebergangs-Waechter unsichtbar; `make gates` deckte ihn ebenfalls nicht,
+# weil `reviews` bewusst ausserhalb der unconditional gates-Zusammensetzung
+# bleibt. Dieselbe Bestands-Ausnahme wie im Hauptprofil -- wird sie dort
+# erweitert, muss sie auch hier nachgezogen werden (benannte Grenze,
+# ADR-0082 Konsequenzen).
+reviews:
+  done-dir: docs/plan/planning/done
+  reviews-dir: docs/reviews
+  exempt-paths:
+    - "docs/plan/planning/done/slice-141-fixture-racily-clean.md"
+    - "docs/plan/planning/done/slice-168-adr-index-titelspalte.md"
+    - "docs/plan/planning/done/slice-169-workflow-rechte-pruefung.md"
+    - "docs/plan/planning/done/slice-170-workflows-modul.md"
+    - "docs/plan/planning/done/slice-188-register-gegen-neuen-kanon.md"

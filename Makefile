@@ -344,8 +344,8 @@ completeness-check: build ## Requirements-Completeness via in-Produkt-Flag (--tr
 # spans meldet das — findet dabei aber NICHTS, was doc-check nicht schon beim
 # Commit faende (gemessen; die Scan-Menge hier ist eine Teilmenge). Gekauft ist
 # die Unabhaengigkeit von einem fremden Profil, nicht neue Deckung.
-verify-closure-notes: build ## Struktur des done/-Bestands: Closure-Notizen (Modul planning) UND Abschnitts-Invarianten (Modul structure), plus die Span-/Fence-Artefakte (Modul spans), die beide still machen koennten; via eigenes --config-Profil; Closure-Gate (in fullbuild, NICHT gates/ci). ADR-0048/ADR-0049/ADR-0077.
-	$(DCHECK_RUN) --config .d-check.closure.yml --enable planning --enable structure --enable spans
+verify-closure-notes: build ## Struktur des done/-Bestands: Closure-Notizen + Register-Deckung (Modul planning) UND Abschnitts-Invarianten (Modul structure), plus die Span-/Fence-Artefakte (Modul spans) UND Review-Report-Deckung (Modul reviews) -- via eigenes --config-Profil; Closure-Gate (in fullbuild, NICHT gates/ci). ADR-0048/ADR-0049/ADR-0077/ADR-0081/ADR-0082.
+	$(DCHECK_RUN) --config .d-check.closure.yml --enable planning --enable structure --enable spans --enable reviews
 
 # ---- traceability ------------------------------------------------------------
 

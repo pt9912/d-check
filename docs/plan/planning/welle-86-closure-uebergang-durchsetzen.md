@@ -71,7 +71,8 @@ betroffenen Slices, nicht als eigener Slice.
 Das **Mehr** gegenüber den einzelnen Slice-DoDs: jede DoD belegt *einen*
 Sensor; die Welle belegt den **Übergang als Ganzes**.
 
-- Alle vier Slices liegen in `done/`.
+- Alle Slices liegen in `done/` (ursprünglich vier — siehe Nachtrag unten für
+  den fünften).
 - `make fullbuild` grün.
 - **Ein konstruierter Test-Slice mit je einer fehlenden Vorbedingung wird beim
   `mv`-Commit abgewiesen** — vier Proben, je eine pro Vorbedingung, mit
@@ -79,6 +80,14 @@ Sensor; die Welle belegt den **Übergang als Ganzes**.
   liefert: dass die Bedingungen **am Übergang** greifen und nicht nur im
   Nachhinein melden.
 - Closure-Notiz in `done/welle-86-results.md`.
+
+**Nachtrag (Trigger-Audit, Modul 6 Schritt 2):** Die vier realen Proben nach
+Abschluss von slice-172–175 zeigten ein gemischtes Bild — zwei der vier
+Vorbedingungen wurden **beim lokalen `mv`-Commit** noch nicht abgewiesen
+(Beobachtungs-Register nur über `make gates`, Review-Report-Deckung
+überhaupt nicht). Ursache und Auflösung: [ADR-0082](../adr/0082-uebergangswaechter-reviews-observations.md),
+umgesetzt als fünfter Slice dieser Welle, slice-192. Erst mit ihm sind alle
+vier Proben real und lokal bestanden.
 
 ## 4. Slices in dieser Welle
 
@@ -88,10 +97,11 @@ Sensor; die Welle belegt den **Übergang als Ganzes**.
 | [slice-173](done/slice-173-review-report-deckung.md) | Review-Report-Deckung: jeder `done/`-Slice mit Review-Zusage hat einen Report | neue Fähigkeit (Deckung zweier Mengen) |
 | slice-174 | Beobachtungs-Register-Deckung: zitierte `BEO-<NNN>` hat Registerzeile, jede Zeile trägt einen Beleg | `modul-06` nennt die maschinelle Hälfte selbst |
 | [slice-175](done/slice-175-uebergangs-waechter.md) | Bindung an den **Übergang**: der `mv`-Commit nach `done/` wird geprüft, nicht der Zustand danach | `.githooks/pre-commit` ruft d-check im `STAGED=`-Modus |
+| slice-192 | **Nachtrag (Trigger-Audit):** zwei der vier Vorbedingungen (Register-Deckung, Review-Report-Deckung) waren beim lokalen `mv`-Commit noch nicht durchgesetzt | [ADR-0082](../adr/0082-uebergangswaechter-reviews-observations.md) — `reviews` + `planning.observations` in `.d-check.closure.yml` |
 
-Die drei letzten sind **noch nicht angelegt** — sie entstehen, wenn sie
-drankommen; wer alle Slices vor der ersten Implementierung plant, plant tote
-Slices (`modul-05`).
+Alle fünf sind mittlerweile angelegt und geschlossen; der fünfte kam erst
+durch den Trigger-Audit dazu — wer alle Slices vor der ersten Implementierung
+plant, plant tote Slices (`modul-05`).
 
 ### Der Träger von slice-175 ist der git-Hook, nicht der Werkzeug-Hook
 
