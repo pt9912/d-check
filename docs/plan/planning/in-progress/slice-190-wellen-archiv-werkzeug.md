@@ -80,10 +80,12 @@ dann auf den Alt-Bestand loslassen (Folge-Slice).
    Pflicht wie bei jedem Lifecycle-Move
    ([`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)),
    hier über potenziell viele Dateien statt einer Handvoll.
-7. **`--dry-run`** als Pflicht-Flag: listet die geplante Operation (welche
-   Dateien, welche Verweis-Fixes), schreibt nichts. Das ist der einzige
-   sichere Weg, das Werkzeug gegen den echten Bestand zu **prüfen**, bevor
-   ein Folge-Slice es **anwendet**.
+7. **Sicherer Dry-Run als Default, `-apply` als Opt-in-Flag** (statt eines
+   `--dry-run`-Opt-in-Flags — dieselbe Wirkung, umgekehrtes Vorzeichen: ohne
+   `-apply` listet das Werkzeug die geplante Operation (welche Dateien,
+   welche Verweis-Fixes) und schreibt nichts). Das ist der einzige sichere
+   Weg, das Werkzeug gegen den echten Bestand zu **prüfen**, bevor ein
+   Folge-Slice es **anwendet**.
 8. **Verifikation an einem konstruierten Fixture**, nicht am echten Bestand:
    eine Test-Welle mit zwei Test-Slices und einem Test-Review-Report, in
    einem isolierten Testverzeichnis. Umkehr-Proben
@@ -121,8 +123,8 @@ dann auf den Alt-Bestand loslassen (Folge-Slice).
       Review-Reports per Dateiname zu, baut `archiv.zip`, erzeugt beide
       Stub-Arten nach Template, zieht repo-weite Verweise in beiden
       Pfad-Formen nach.
-- [ ] `--dry-run` schreibt nichts und listet die geplante Operation
-      vollständig (Dateien, Verweis-Fixes), mit Test.
+- [ ] Ohne `-apply` schreibt das Werkzeug nichts und listet die geplante
+      Operation vollständig (Dateien, Verweis-Fixes), mit Test.
 - [ ] `make archive-wave WELLE=<id>`-Target dokumentiert (Handbuch-Klasse:
       internes Werkzeug, kein d-check-Produktfeature — Dokumentation gehört
       in dieses Slice-Verzeichnis bzw. eine kurze tools/archive-wave/README.md,
