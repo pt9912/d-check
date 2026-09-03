@@ -32,6 +32,10 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
+- [welle-88](../welle-88-baseline-v600-migration.md) — Baseline-Migration auf
+  v6.0.0: Pin-Bump, wellenlose Zeitdokumente-Archivierung, Beobachtungs-Register
+  neu gestaltet (Fähigkeit + Migration).
+
 Nichts in Arbeit.
 
 ## Nächste Wellen
