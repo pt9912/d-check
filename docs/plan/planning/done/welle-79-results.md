@@ -10,7 +10,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Wellen-Closure-Prozedur, Schritt 3 — *was gelernt wurde*: geliefert · was
 funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
 
-- **Bump** ([slice-110](slice-110-baseline-v570-bump.md)): Baseline
+- **Bump** ([slice-110](welle-79/slice-110-baseline-v570-bump.md)): Baseline
   v5.6.0 → **v5.7.0** vendored (`--verify` 51 Dateien, `--check-latest`
   beidseitig OK), [`MR-028`](../../../../harness/conventions.md#mr-028)
   als vierter Pin-Nachtrag mit aufgelöster
@@ -19,7 +19,7 @@ funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
   erst auf Review-Auflage, zum zweiten Mal in Folge), zwei exakt
   skopierte Tombstones, die Zwei-Hälften-Prosa der Roadmap, Delta-Audit
   über fünf Bundle-Dateien.
-- **Produkt** ([slice-111](slice-111-wave-drift-zwei-haelften.md)):
+- **Produkt** ([slice-111](welle-79/slice-111-wave-drift-zwei-haelften.md)):
   `planning.waves.mode: one | many` auf **formalen Konsumenten-CR**
   („Bijektion statt Singleton", ai-harness-course) — der CR landete als
   reiner Lastenheft-Commit (0.62.0), die Entscheide als
