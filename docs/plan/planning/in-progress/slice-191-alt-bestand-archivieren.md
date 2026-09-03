@@ -176,9 +176,12 @@ unerwartet groß wird.
   > **Offene Beobachtungen sichten.**
 
 - **Nachtlauf-Stand lesen** (`make nightly-state`,
-  [`MR-053`](../../../../harness/conventions.md#mr-053)): wird beim
-  Beanspruchen (`open` → `in-progress`) aufgefrischt, dieser Block trägt
-  noch keinen Stand.
+  [`MR-053`](../../../../harness/conventions.md#mr-053)): `image-scan.yml`
+  **grün** (jüngster Lauf 2026-09-02T07:56:37Z). `upstream-drift.yml`
+  **ROT** — jüngster Lauf 2026-09-02T05:19:44Z, derselbe planmäßige Fund wie
+  bei [slice-190](../done/slice-190-wellen-archiv-werkzeug.md) §7 (Go
+  1.27.0→1.27.1, semgrep 1.175.0→1.176.0), kein Zitat-Bruch, keine
+  Regression. Ohne Konsequenz für diesen Slice.
 
 Slice-ID: slice-191. Betroffene IDs: keine `DC-FA-*`. Module: keins.
 Gates: `make gates`, `make fullbuild`.

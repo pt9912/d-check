@@ -274,6 +274,6 @@ nur bei `APPLY=1` beschreibbar.
   Vorprüfung (§7) gesichtet, keine neue Instanz ausgelöst.
 
 **Zeiger:** [Beobachtungs-Register](../observations.md). Folge-Slice:
-[slice-191](../open/slice-191-alt-bestand-archivieren.md) — Anwendung des
+[slice-191](../in-progress/slice-191-alt-bestand-archivieren.md) — Anwendung des
 Werkzeugs auf welle-60…welle-85 und Zuordnung der wellenlosen Alt-Slices,
 welle-87 §4.
