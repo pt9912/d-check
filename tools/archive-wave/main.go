@@ -64,8 +64,13 @@ func run(root, welleID string, apply bool) error {
 		fmt.Printf("    %s\n", RelPath(root, r))
 	}
 
-	if len(slices) == 0 {
-		return fmt.Errorf("keine Slices fuer %s gefunden -- Abbruch, fail-closed statt leeres Archiv", welleID)
+	// Fail-closed nur, wenn BEIDE Signale fehlen -- das ist der Tippfehler-
+	// Fall (Welle existiert gar nicht). Ein Welle-Plan ohne eigene Slices ist
+	// dagegen legitim (gemessen an welle-73: ihr Closure-Trigger ist ein
+	// Slice aus welle-69, sie liefert selbst keinen): dann bleibt etwas zu
+	// archivieren -- der Plan.
+	if len(slices) == 0 && wellePlan == "" {
+		return fmt.Errorf("weder Welle-Plan noch Slices fuer %s gefunden -- Abbruch, fail-closed statt leeres Archiv", welleID)
 	}
 
 	p := Plan{WelleID: welleID, WellePlan: wellePlan, Slices: slices, Reviews: reviews}

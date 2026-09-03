@@ -125,3 +125,34 @@ func TestDropReviewSelfHits(t *testing.T) {
 		t.Fatalf("got %v, want %v", hits, want)
 	}
 }
+
+// TestRun_PlanOhneEigeneSlices belegt die an welle-73 gemessene Eigenheit:
+// ein Welle-Plan ohne eigene Slices (ihr Closure-Trigger ist ein Slice
+// einer ANDEREN Welle) ist legitim und archiviert den Plan allein -- nur
+// wenn WEDER Plan NOCH Slices existieren, ist es der Tippfehler-Fall.
+func TestRun_PlanOhneEigeneSlices(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-73-x.md"),
+		"# Welle welle-73: X\n\nLiefert nichts Eigenes.\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-73-results.md"),
+		"# Ergebnis welle-73\n")
+	writeFile(t, filepath.Join(root, "docs/reviews/.gitkeep"), "")
+
+	if err := run(root, "welle-73", true); err != nil {
+		t.Fatalf("erwartet Erfolg (Plan ohne eigene Slices ist legitim), got: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(root, "docs/plan/planning/done/welle-73/archiv.zip")); err != nil {
+		t.Errorf("archiv.zip fehlt: %v", err)
+	}
+}
+
+// TestRun_WederPlanNochSlices belegt die Gegenprobe: existiert die Welle
+// gar nicht (Tippfehler), bleibt der Fail-Closed-Guard scharf.
+func TestRun_WederPlanNochSlices(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/.gitkeep"), "")
+
+	if err := run(root, "welle-404", true); err == nil {
+		t.Fatal("erwartet Fehler ohne Plan und ohne Slices")
+	}
+}
