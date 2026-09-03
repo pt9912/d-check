@@ -396,7 +396,7 @@ clean: ## Lokale Images entfernen.
 # archive-wave (Baseline-Regelwerk modul-06-roadmap.md §Wellen-Closure-
 # Prozedur, Schritt 4): eigenstaendiges Werkzeug unter tools/archive-wave/,
 # eigenes go.mod, eigenes Dockerfile, eigenes Makefile -- portabel fuer
-# jedes Repo mit demselben Planning-Layout (slice-190). Delegiert an das
+# jedes Repo mit demselben Planning-Layout. Delegiert an das
 # lokale Makefile statt den Docker-Aufruf hier zu duplizieren -- eine
 # Quelle fuer den Mount/UID-Umgang, kein Drift-Risiko zwischen zwei
 # Kopien. Sicherer Default: ohne APPLY=1 wird NICHTS geschrieben und der

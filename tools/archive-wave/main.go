@@ -15,6 +15,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 func main() {
@@ -71,7 +72,7 @@ func run(root, welleID string, apply bool) error {
 		if err != nil {
 			return err
 		}
-		fmt.Println("  Geplante Verweis-Fixes (--apply schreibt nichts ohne dieses Flag):")
+		fmt.Println("  Geplante Verweis-Fixes (ohne -apply wird nichts geschrieben):")
 		if len(hits) == 0 {
 			fmt.Println("    (keine)")
 		}
@@ -98,28 +99,19 @@ func run(root, welleID string, apply bool) error {
 }
 
 // previewMoves berechnet dieselben Move-Ziele wie Apply, ohne zu schreiben --
-// fuer den --dry-run-Verweis-Vorschau-Schritt.
+// fuer die Verweis-Vorschau ohne -apply.
 func previewMoves(root string, p Plan) []Move {
 	archiveDir := "docs/plan/planning/done/" + p.WelleID
 	var moves []Move
 	moves = append(moves, Move{
 		Old: RelPath(root, p.WellePlan),
-		New: archiveDir + "/" + baseName(p.WellePlan),
+		New: archiveDir + "/" + filepath.Base(p.WellePlan),
 	})
 	for _, s := range p.Slices {
 		moves = append(moves, Move{
 			Old: RelPath(root, s),
-			New: archiveDir + "/" + baseName(s),
+			New: archiveDir + "/" + filepath.Base(s),
 		})
 	}
 	return moves
-}
-
-func baseName(p string) string {
-	for i := len(p) - 1; i >= 0; i-- {
-		if p[i] == '/' || p[i] == '\\' {
-			return p[i+1:]
-		}
-	}
-	return p
 }

@@ -30,8 +30,7 @@ RUN mkdir -p "$GOMODCACHE" && go mod download
 # ---- test ---------------------------------------------------------------
 # Eigenes Ziel, weil test/build getrennte Stages im Docker/make-only-Workflow
 # sind (dasselbe Muster wie d-checks eigenes Dockerfile) -- die Fixture-
-# Verifikation und die drei Umkehr-Proben (BEO-023) laufen hier, nicht nur
-# einmalig von Hand.
+# Verifikation und die Umkehr-Proben laufen hier, nicht nur einmalig von Hand.
 FROM deps AS test
 
 COPY . .

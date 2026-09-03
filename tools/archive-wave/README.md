@@ -57,3 +57,11 @@ Quelle für den Docker-Aufruf, kein Duplikat (siehe `AGENTS.md` §4).
   Slice-Kennung im Namen bleibt unzugeordnet.
 - Kein Rollback bei einem Fehler mitten in `-apply`: derselbe Umgang wie bei
   jedem `git mv` — der Bediener sieht den Zwischenstand per `git status`.
+- Der Verweis-Nachzug löst einen nicht-`/`-präfigierten Verweis relativ zum
+  **Verzeichnis der verweisenden Datei** auf (`path.Join(Dir(quelle), ziel)`)
+  — die geschwister-relative Form. Ein Verzeichnis-Präfix-Verweis (voller
+  Repo-Pfad ab `docs/...`) löst damit nur korrekt auf, wenn die verweisende
+  Datei im Repo-Wurzelverzeichnis liegt (heute in diesem Repo für jeden
+  bestehenden Verweis dieser Form der Fall). Ein künftiger
+  Verzeichnis-Präfix-Verweis aus einer **nicht-Wurzel**-Datei würde still
+  übersehen, statt gemeldet zu werden.

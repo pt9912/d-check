@@ -15,8 +15,8 @@ languages:
 # (z. B. importiert der git-Adapter-Test os) — ohne exclude wäre der
 # saubere Baum rot. a-check >= v0.8.0 (slice-023-Deltas).
 #
-# tools/archive-wave/**: eigenständiges Werkzeug mit eigenem go.mod
-# (slice-190) — kein Teil des Hexagon-Moduls, das dieses Regelwerk prüft;
+# tools/archive-wave/**: eigenständiges Werkzeug mit eigenem go.mod —
+# kein Teil des Hexagon-Moduls, das dieses Regelwerk prüft;
 # seine os-Nutzung unterliegt einer anderen Architektur (keine Adapter,
 # portabel für Fremd-Repos ohne d-checks Kern-Pakete).
 exclude: ["**/*_test.go", "tools/archive-wave/**"]
