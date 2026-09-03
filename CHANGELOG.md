@@ -1384,7 +1384,7 @@ Richtungen.** Wer `planning.closure` nutzt, sollte alle drei lesen; ohne
 
 ### Fixed
 
-- [`slice-069`](docs/plan/planning/done/slice-069-trace-handbuch-parsergrenzen.md)
+- [`slice-069`](docs/plan/planning/done/welle-58/slice-069-trace-handbuch-parsergrenzen.md)
   präzisiert die Dokumentation von `--trace` für v0.42.0: Anforderungen
   werden nur aus ATX-Überschriften mit der ID als erstem vollständigem Token
   definiert; Tabellen-/Listen-/Fließtext, Body-only-Modalität, die exakte

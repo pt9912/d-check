@@ -3,7 +3,7 @@
 **Status:** done
 
 **Welle:** welle-59-trace-tabellenquellen; Vorgänger
-[`slice-069`](../done/slice-069-trace-handbuch-parsergrenzen.md) ist
+[`slice-069`](welle-58/slice-069-trace-handbuch-parsergrenzen.md) ist
 abgeschlossen.
 
 **Bezug:** neuer Lastenheft-Change-Request
