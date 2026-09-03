@@ -15,7 +15,7 @@ noch in d-check mechanisieren?" → das **letzte** Gate-Skript der Familie,
 bleiben). Dieselbe VCS-Port-Präzedenz wie
 [`slice-053`](welle-42/slice-053-vcs-modul.md)/[ADR-0024](../../adr/0024-vcs-immutable-gate.md)
 (dort Datei-Inhalt, hier Commit-**Messages**) und dieselbe Skript-Ablösungs-Linie wie
-[`slice-055`](../done/slice-055-completeness-rueckbau.md)/[ADR-0026](../../adr/0026-completeness-in-product-gate.md).
+[`slice-055`](welle-44/slice-055-completeness-rueckbau.md)/[ADR-0026](../../adr/0026-completeness-in-product-gate.md).
 Verteilung wie der Rest des Werkzeugs (gepinntes Image, kein kopiertes Skript —
 [`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Linie).
 

@@ -9,7 +9,7 @@ rein **hermetisch**, ohne git).
 **Bezug:** Führt eine **neue Anforderung** im Lastenheft ein (Modul `planning`,
 `planning-drift`) plus [ADR-0028](../../adr/0028-planning-lifecycle-modul.md) (erste
 Planning-Gate-ADR — das slice-040-Skript war ADR-los). Dieselbe Skript-Ablösungs-Linie
-wie [`slice-053`](welle-42/slice-053-vcs-modul.md)/[`slice-055`](../done/slice-055-completeness-rueckbau.md)/[`slice-056`](../done/slice-056-commits-modul.md),
+wie [`slice-053`](welle-42/slice-053-vcs-modul.md)/[`slice-055`](welle-44/slice-055-completeness-rueckbau.md)/[`slice-056`](../done/slice-056-commits-modul.md),
 aber **ohne** VCS-Port (nur Filesystem). Verteilung wie der Rest des Werkzeugs
 (gepinntes Image, kein kopiertes Skript —
 [`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Linie).

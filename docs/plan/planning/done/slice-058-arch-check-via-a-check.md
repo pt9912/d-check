@@ -11,10 +11,10 @@ Fitness-Function-Mechanik von [ADR-0005](../../adr/0005-modul-layout-hexagon-ord
 Regeln R1–R6 bleiben). **Bewusst kein Lastenheft-CR:** das d-check-Produkt ändert sich
 nicht — der [Anforderungs-Anlege-Prozess](../../../../AGENTS.md#5-dokumentations-regeln)
 greift nur für `DC-*`-Anforderungen, Gate-Mechanik ist ADR-Domäne (Präzedenz
-[slice-039](welle-25/slice-039-pr-ci-traceability-gate.md)/[slice-055](../done/slice-055-completeness-rueckbau.md));
+[slice-039](welle-25/slice-039-pr-ci-traceability-gate.md)/[slice-055](welle-44/slice-055-completeness-rueckbau.md));
 die [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Bindung
 des Gates bleibt. Dieselbe Skript-Ablösungs-Linie wie
-[`slice-053`](welle-42/slice-053-vcs-modul.md)/[`slice-055`](../done/slice-055-completeness-rueckbau.md)/[`slice-056`](../done/slice-056-commits-modul.md)/[`slice-057`](../done/slice-057-planning-modul.md),
+[`slice-053`](welle-42/slice-053-vcs-modul.md)/[`slice-055`](welle-44/slice-055-completeness-rueckbau.md)/[`slice-056`](../done/slice-056-commits-modul.md)/[`slice-057`](../done/slice-057-planning-modul.md),
 aber erstmals durch das **Schwester-Tool** statt durch ein d-check-Modul
 ([`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Linie:
 verteilen statt kopieren).
@@ -100,7 +100,7 @@ adressierte Finding.
   Target-Name bleibt (`gate-consistency` hält Doku ↔ Makefile).
 - **Pin-Pflege:** der a-check-Pin erscheint in `make versions`; Hebung = bewusster Commit.
 - **Kein d-check-Produkt-Code, kein Release** — das d-check-Image bleibt byte-identisch
-  (wie [`slice-055`](../done/slice-055-completeness-rueckbau.md)).
+  (wie [`slice-055`](welle-44/slice-055-completeness-rueckbau.md)).
 
 ## 3. Definition of Done
 
@@ -172,7 +172,7 @@ damit einlösbar.
 ## 6. Sub-Area-Modus-Begründung
 
 GF („Doc führt, Code folgt": ADR vor Umbau). Kein d-check-Produkt-Code — Gate-/
-Harness-Infrastruktur wie [slice-039](welle-25/slice-039-pr-ci-traceability-gate.md)/[slice-040](welle-29/slice-040-planning-consistency-gate.md)/[slice-055](../done/slice-055-completeness-rueckbau.md);
+Harness-Infrastruktur wie [slice-039](welle-25/slice-039-pr-ci-traceability-gate.md)/[slice-040](welle-29/slice-040-planning-consistency-gate.md)/[slice-055](welle-44/slice-055-completeness-rueckbau.md);
 keine BF-Sub-Area. Die konsumierte Prüf-Logik lebt im Schwester-Repo (a-check, eigener
 Harness); hier entstehen nur Config (`.a-check.yml`), Makefile-Verdrahtung und Rückbau.
 
