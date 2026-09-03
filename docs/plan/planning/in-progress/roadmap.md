@@ -36,6 +36,8 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
   v6.0.0: Pin-Bump, wellenlose Zeitdokumente-Archivierung, Beobachtungs-Register
   neu gestaltet (Fähigkeit + Migration).
 
+Nichts in Arbeit.
+
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
