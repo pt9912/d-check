@@ -146,16 +146,22 @@ erst beim Ausführen entdeckt** — genau die Vorsicht, die
 - **26 (später 85) Wellen in Folge zu archivieren ist viel Wiederholung —
   eine falsche Annahme im Werkzeug wirkt N-fach, nicht einmal.** —
   **Ausgang: eingetreten, aber durch die Mitigation vollständig
-  aufgefangen.** Drei echte Werkzeug-Lücken traten tatsächlich auf
-  (Ortsfeste-Verweise-Idiom bricht beim Tiefenwechsel, welle-70; Fail-Closed-
-  Guard zu streng für einen legitimen Plan-ohne-Slices-Fall, welle-73;
-  `Hervorgegangen:`-Feld trug nie die überlebenden Kennungen, sichtbar erst
-  bei `make fullbuild` — keines der Gates zwischen den Wellen). Die
-  Schrittweite (Commit je Welle, `doc-check` nach jedem Schritt) hat die
-  Blast-Radius exakt wie geplant begrenzt: keine der 85 Wellen musste
-  zurückgenommen werden, jeder Fund wurde am Ort seines Auftretens korrigiert
-  und rückwirkend nur dort gepatcht, wo er tatsächlich einen Requirements-
-  Waisen erzeugte (drei Stubs), nicht am ganzen Bestand.
+  aufgefangen.** Vier echte Werkzeug-Lücken traten tatsächlich auf
+  (Ortsfeste-Verweise-Idiom bricht beim Tiefenwechsel, welle-70;
+  Fail-Closed-Guard zu streng für einen legitimen Plan-ohne-Slices-Fall,
+  welle-73; `Hervorgegangen:`-Feld trug nie die überlebenden Kennungen,
+  sichtbar erst bei `make fullbuild`; der Nachbesserungs-Regex strich beim
+  Rückbau selbst wieder echte Link-Label-Zitate, selbst entdeckt vor dem
+  Commit des Backfills — keine der vier von einem Gate zwischen den Wellen
+  gefangen). Die Schrittweite (Commit je Welle, `doc-check` nach jedem
+  Schritt) hat die Blast-Radius exakt wie geplant begrenzt: keine der 85
+  Wellen musste zurückgenommen werden. Der `Hervorgegangen:`-Rückbau lief
+  zunächst nur für die drei Stubs, die tatsächlich einen Requirements-Waisen
+  erzeugten (Verhältnismäßigkeit vor Vollständigkeit) — die unabhängige
+  Verifikation maß den verbliebenen Rückstand (59 Stubs mit rohem
+  Platzhalter statt echter Kennungen oder `— keine —`) und benannte ihn als
+  Formfehler; **vollständig nachgetragen**, DoD-Punkt 3 gilt jetzt
+  uneingeschränkt.
 - **Der Feld-Nachtrag (§2 Punkt 1) ändert historische `done/`-Dateien.** —
   **Ausgang: entfallen** — die Grenze wurde durch den Akt selbst geprüft und
   bestätigt: der `pre-commit`-Hook (inkl. `adr-check`) akzeptierte den
@@ -272,7 +278,7 @@ weil sie nur an gewachsenem, echtem Bestand auftreten — exakt die von
 **Steering-Loop-Einträge:**
 - [`BEO-011`](../observations.md) sechste Instanz (slice-190) — **Ausgang:
   weiter offen, nicht verkörpert (Review-Korrektur).** Die Vorsicht, die
-  die Beobachtung einforderte, traf zu (drei echte, im Fixture nicht
+  die Beobachtung einforderte, traf zu (vier echte, im Fixture nicht
   sichtbare Werkzeug-Lücken) und wurde durch das tatsächlich gefahrene
   Vorgehen — Welle-für-Welle mit Gate-Prüfung zwischen jedem Schritt statt
   Massenanwendung — einzeln und ohne Rückabwicklung aufgefangen. Das ist
@@ -287,6 +293,16 @@ weil sie nur an gewachsenem, echtem Bestand auftreten — exakt die von
   (`Hervorgegangen:`), sonst bricht `--require-complete` lautlos für jede
   Anforderung, deren einziger Beleg-Slice archiviert wird — kein anderes
   Gate hätte das gefunden.
+- Zweite Lehre, aus dem Rückbau selbst: eine textbasierte Kennungs-
+  Extraktion muss zwischen einer **echten** Zitat-Form
+  (`` [`DC-FA-XXX-001`](ziel) ``) und einer **illustrativen**
+  (Inline-Code ohne folgenden Link, z. B. eine erfundene Kennung als
+  Beispiel für einen Parsing-Grenzfall) unterscheiden — ein blindes
+  Wegwerfen aller Inline-Code-Spannen ist keine sichere Näherung, sondern
+  verschluckt echte Belege (gemessen: 3 von 4 Kennungen in slice-073
+  verschwanden in der ersten Fassung). Vor jeder Commit dieser Art: die
+  Fund-Anzahl gegen eine plausible Grundgesamtheit prüfen, nicht nur „lief
+  durch".
 
 **Zeiger:** [Beobachtungs-Register](../observations.md). Diese Slice-
 Closure löst zugleich [welle-87](../welle-87-wellen-archivierung.md)s
