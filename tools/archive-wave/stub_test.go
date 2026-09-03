@@ -37,7 +37,7 @@ func TestExtractTitle_Keine(t *testing.T) {
 // unzip-Zeiger, und dass Welle-Feld und Archiviert-mit-Feld getrennt bleiben
 // (zwei Tatsachen, kein Widerspruch -- Template-Vorgabe).
 func TestSliceStub(t *testing.T) {
-	got := SliceStub("slice-190", "Das Werkzeug bauen", "— wellenlos", "welle-87")
+	got := SliceStub("slice-190", "Das Werkzeug bauen", "— wellenlos", "welle-87", "DC-FA-PLAN-001")
 	if hasSubheading(got) {
 		t.Fatal("Stub traegt eine Abschnittsueberschrift -- das ist keine Kuerzung mehr")
 	}
@@ -49,6 +49,34 @@ func TestSliceStub(t *testing.T) {
 	}
 	if !strings.Contains(got, "**Archiviert mit:** welle-87") {
 		t.Fatal("Archiviert-mit-Feld fehlt")
+	}
+	if !strings.Contains(got, "**Hervorgegangen:** DC-FA-PLAN-001") {
+		t.Fatal("Hervorgegangen-Feld nicht uebernommen")
+	}
+}
+
+// TestExtractSurvivingIDs belegt die an der Archivierung von welle-60/61/63
+// gemessene Luecke: eine Anforderung, deren einziger zitierender Slice
+// archiviert wird, wurde zur Trace-Waise, weil der Stub die Kennung nicht
+// mehr trug. Erfasst DC-*-Requirement-IDs und ADR-NNNN, dedupliziert,
+// sortiert.
+func TestExtractSurvivingIDs(t *testing.T) {
+	content := "Betrifft DC-FA-REF-001 und noch einmal DC-FA-REF-001, dazu ADR-0044 und ADR-0020."
+	got := ExtractSurvivingIDs(content)
+	want := []string{"ADR-0020", "ADR-0044", "DC-FA-REF-001"}
+	if len(got) != len(want) {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("got %v, want %v", got, want)
+		}
+	}
+}
+
+func TestFormatHervorgegangen_Keine(t *testing.T) {
+	if got := FormatHervorgegangen(nil); got != "— keine —" {
+		t.Fatalf("erwartet Template-Leerwert, got %q", got)
 	}
 }
 

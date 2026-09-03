@@ -77,10 +77,15 @@ func Apply(root string, p Plan) ([]Move, error) {
 	}
 
 	for _, s := range p.Slices {
-		title, err := readTitle(s)
+		raw, err := os.ReadFile(s)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("%s lesen: %w", s, err)
 		}
+		title := ExtractTitle(string(raw))
+		if title == "" {
+			return nil, fmt.Errorf("%s: keine Ueberschrift gefunden", s)
+		}
+		hervorgegangen := FormatHervorgegangen(ExtractSurvivingIDs(string(raw)))
 		field, err := ReadWelleField(s)
 		if err != nil {
 			return nil, err
@@ -94,7 +99,7 @@ func Apply(root string, p Plan) ([]Move, error) {
 		// gemessen (welle-70): RewriteRepo laeuft erst NACH dem Schreiben und
 		// loest von der neuen, tieferen Position aus falsch auf.
 		field = RewriteFieldForMove(RelPath(root, s), RelPath(root, newAbs), field, moves)
-		stub := SliceStub(id, title, field, p.WelleID)
+		stub := SliceStub(id, title, field, p.WelleID, hervorgegangen)
 		if err := os.WriteFile(newAbs, []byte(stub), 0o644); err != nil {
 			return nil, fmt.Errorf("%s schreiben: %w", newAbs, err)
 		}

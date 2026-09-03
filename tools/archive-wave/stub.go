@@ -7,6 +7,8 @@ package main
 import (
 	"fmt"
 	"regexp"
+	"sort"
+	"strings"
 )
 
 var h1RE = regexp.MustCompile(`(?m)^#\s+(?:Slice\s+|Welle\s+)?[\w-]+:?\s*(.*)$`)
@@ -23,13 +25,49 @@ func ExtractTitle(content string) string {
 	return m[1]
 }
 
+// survivingIDRE erfasst genau die beiden Kennungs-Formen, die das Produkt
+// selbst fuer Requirements-Traceability liest (trace.requirements.id-pattern
+// aus .d-check.yml) und die ADR-Form (trace.adrs.file-pattern) -- keine
+// erfundene, eigene Klasse.
+var survivingIDRE = regexp.MustCompile(`\b(?:[A-Z][A-Z0-9]*-(?:FA-[A-Z]+|QA)-\d+[A-Za-z]?|ADR-\d{4})\b`)
+
+// ExtractSurvivingIDs liest die DC-*/ADR-*-Kennungen aus einem Slice-Volltext
+// -- die "Kennungen, die den Vorgang ueberlebt haben" aus dem Baseline-Stub-
+// Template. Gemessen: ohne das wird eine Anforderung, deren EINZIGER
+// zitierender Slice archiviert wird, zur Trace-Waise (der Stub traegt den
+// Original-Text nicht mehr, nur d-checks eigener --require-complete-Lauf hat
+// das ans Licht gebracht, kein anderes Gate). Sortiert, dedupliziert.
+func ExtractSurvivingIDs(content string) []string {
+	seen := map[string]bool{}
+	var out []string
+	for _, m := range survivingIDRE.FindAllString(content, -1) {
+		if !seen[m] {
+			seen[m] = true
+			out = append(out, m)
+		}
+	}
+	sort.Strings(out)
+	return out
+}
+
+// FormatHervorgegangen liefert den Feldwert nach Template-Vorgabe: die
+// gefundenen Kennungen kommagetrennt, sonst "— keine —" (der Template-eigene
+// Leerwert, nicht der generische Platzhalter).
+func FormatHervorgegangen(ids []string) string {
+	if len(ids) == 0 {
+		return "— keine —"
+	}
+	return strings.Join(ids, ", ")
+}
+
 const placeholder = "<manuell auszufuellen>"
 
 // SliceStub erzeugt den Slice-Stub-Text. welleField ist der Wert des
 // urspruenglichen **Welle:**-Feldes (z. B. "welle-87" oder "ohne Welle") --
 // er bleibt unveraendert, waehrend "Archiviert mit" die einsammelnde Welle
 // nennt (fuer wellenlose Slices sind das zwei verschiedene Tatsachen).
-func SliceStub(id, title, welleField, welleID string) string {
+// hervorgegangen ist das fertig formatierte Feld (FormatHervorgegangen).
+func SliceStub(id, title, welleField, welleID, hervorgegangen string) string {
 	return fmt.Sprintf(
 		"# %s — %s\n\n"+
 			"> **ARCHIVIERT** — Volltext:\n"+
@@ -37,7 +75,7 @@ func SliceStub(id, title, welleField, welleID string) string {
 			"**Welle:** %s\n"+
 			"**Archiviert mit:** %s · **Geschlossen:** %s\n"+
 			"**Hervorgegangen:** %s\n",
-		id, title, welleID, welleField, welleID, placeholder, placeholder,
+		id, title, welleID, welleField, welleID, placeholder, hervorgegangen,
 	)
 }
 
