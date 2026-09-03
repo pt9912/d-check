@@ -38,7 +38,7 @@ erst beim Ausführen entdeckt** — genau die Vorsicht, die
    zeigt nur `welle-60-results.md` … `welle-66-results.md` — keine
    `welle-6N-<titel>.md`. Diese sechs Wellen wurden **vor** der
    Plan-Datei-Konvention geschlossen und tragen laut
-   [slice-088](../done/slice-088-etappe-d1-doc-form.md) Zeile 131 eine
+   [slice-088](../done/welle-67/slice-088-etappe-d1-doc-form.md) Zeile 131 eine
    „retroaktiv markierte, minimale Ergebnis-Notiz" als bewusste
    Nutzer-Entscheidung nach — nicht eine vollständige Plan-Rekonstruktion.
    `tools/archive-wave`s `FindWellePlan` verlangt **genau eine** Treffer-Datei

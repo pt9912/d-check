@@ -200,6 +200,12 @@ ignore-refs:
   # docs/plan/planning/done/welle-60/archiv.zip erreichbar.
   - in: docs/plan/adr/0043-tabellengrenze-am-relevanten-header.md
     refs: ["docs/reviews/2026-07-17-slice-074-implementation-r3.md"]
+  # Dieselbe Grenze, diesmal an einem Review-Report statt einer ADR
+  # (welle-67-Archivierung, slice-191): ein Review-Report ist selbst ein
+  # LAUF-BELEG (siehe die Review-Report-Begruendung oben) und wird nicht
+  # editiert, auch wenn sein eigenes Ziel archiviert wurde.
+  - in: docs/reviews/2026-08-31-slice-174-register-deckung-code-r1.md
+    refs: ["docs/reviews/2026-08-02-slice-088-planning-layer-review.md"]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.
