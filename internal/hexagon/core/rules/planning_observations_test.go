@@ -142,3 +142,47 @@ func TestObservationsFirstCellMayCarryBackticks(t *testing.T) {
 		t.Fatalf("dekorierte erste Zelle deklariert nicht: %v", got)
 	}
 }
+
+// Fuenfte planning-Faehigkeit (ADR-0083): Verzeichnis-Modus. Eine zitierte
+// Kennung BEO-ALL/foo gilt als nachgewiesen, wenn
+// observations/BEO-ALL/foo/observation.md existiert — kein Tabellenzeilen-
+// Parsing mehr. Die Umkehr-Probe: ein erfundener Pfad ohne diese Datei meldet.
+func obsDirCfg(dirs ...string) model.PlanningConfig {
+	return model.PlanningConfig{Observations: model.ObservationsConfig{
+		Dir: "observations", Dirs: dirs,
+	}}
+}
+
+func TestObservationsDirModeDeclaredExists(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"observations/BEO-ALL/foo/observation.md": "# Foo\n",
+		"plan/done/s.md":                          "siehe [`BEO-ALL/foo`](../../observations/BEO-ALL/foo/observation.md)\n",
+	})
+	got := rules.CheckPlanningObservations(fs, obsDirCfg("plan/done"))
+	if len(got) != 0 {
+		t.Fatalf("BEO-ALL/foo hat ein observation.md, kein Befund erwartet: %v", got)
+	}
+}
+
+func TestObservationsDirModeUndeclaredReports(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"observations/BEO-ALL/foo/observation.md": "# Foo\n",
+		"plan/done/s.md":                          "siehe BEO-ALL/erfunden im Text\n",
+	})
+	got := rules.CheckPlanningObservations(fs, obsDirCfg("plan/done"))
+	if len(got) != 1 {
+		t.Fatalf("BEO-ALL/erfunden hat kein observation.md, ein Befund erwartet: %v", got)
+	}
+	if !strings.Contains(got[0].Message, "BEO-ALL/erfunden") {
+		t.Fatalf("Meldung nennt die Kennung nicht: %q", got[0].Message)
+	}
+}
+
+// Fail-closed: ein fehlendes Dir meldet, statt die Faehigkeit still zu leeren.
+func TestObservationsDirModeFailClosedOnMissingDir(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{"plan/done/s.md": "BEO-ALL/x\n"})
+	got := rules.CheckPlanningObservations(fs, obsDirCfg("plan/done"))
+	if len(got) != 1 {
+		t.Fatalf("fehlendes observations/-Verzeichnis: ein Befund erwartet, got %v", got)
+	}
+}

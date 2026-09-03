@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/pt9912/d-check/internal/adapter/driven/configyaml"
+	"github.com/pt9912/d-check/internal/hexagon/core/model"
 )
 
 func TestDecode_Vollbeispiel(t *testing.T) {
@@ -1098,11 +1099,14 @@ func TestDecode_StructureHint(t *testing.T) {
 // wuerde -- genau dagegen ist die fail-closed-Zusage gerichtet.
 func TestDecode_ObservationsFehler(t *testing.T) {
 	for name, bad := range map[string]string{
-		"register absolut":  "planning:\n  observations:\n    register: /abs/reg.md\n",
-		"register mit ..":   "planning:\n  observations:\n    register: ../raus.md\n",
-		"dirs absolut":      "planning:\n  observations:\n    register: r.md\n    dirs: [/abs]\n",
-		"dirs mit ..":       "planning:\n  observations:\n    register: r.md\n    dirs: ['../raus']\n",
-		"pattern ungültig":  "planning:\n  observations:\n    register: r.md\n    pattern: '[a-'\n",
+		"register absolut":       "planning:\n  observations:\n    register: /abs/reg.md\n",
+		"register mit ..":        "planning:\n  observations:\n    register: ../raus.md\n",
+		"dirs absolut":           "planning:\n  observations:\n    register: r.md\n    dirs: [/abs]\n",
+		"dirs mit ..":            "planning:\n  observations:\n    register: r.md\n    dirs: ['../raus']\n",
+		"pattern ungültig":       "planning:\n  observations:\n    register: r.md\n    pattern: '[a-'\n",
+		"register und dir zugleich (ADR-0083)": "planning:\n  observations:\n    register: r.md\n    dir: d\n",
+		"dir absolut":            "planning:\n  observations:\n    dir: /abs\n",
+		"dir mit ..":             "planning:\n  observations:\n    dir: ../raus\n",
 	} {
 		if _, err := configyaml.Decode([]byte(bad)); err == nil {
 			t.Fatalf("%s: Fehler erwartet, got nil", name)
@@ -1134,5 +1138,25 @@ func TestDecode_ObservationsHappy(t *testing.T) {
 	}
 	if leer.Planning.Observations.EffectivePattern() != `BEO-\d{3}` {
 		t.Fatalf("Default-Muster = %q", leer.Planning.Observations.EffectivePattern())
+	}
+}
+
+// Fuenfte Faehigkeit (ADR-0083): dir landet im Kern, und der Default-Muster
+// wechselt auf die Verzeichnis-Gestalt (Kuerzel/Slug statt der Zahlenform).
+func TestDecode_ObservationsDirHappy(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"planning:\n  observations:\n    dir: docs/plan/planning/observations\n"))
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	o := cfg.Planning.Observations
+	if o.Dir != "docs/plan/planning/observations" {
+		t.Fatalf("Dir nicht uebernommen: %+v", o)
+	}
+	if o.Register != "" {
+		t.Fatalf("Register muss im Verzeichnis-Modus leer bleiben, got %q", o.Register)
+	}
+	if o.EffectivePattern() != model.DefaultObservationDirPattern {
+		t.Fatalf("Default-Muster im Verzeichnis-Modus = %q, want %q", o.EffectivePattern(), model.DefaultObservationDirPattern)
 	}
 }

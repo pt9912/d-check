@@ -2455,12 +2455,34 @@ Befund bzw. Exit 2 — nicht ein stilles Grün. Der zweite Rand ist ausdrücklic
 benannt, weil ein vertipptes Verzeichnis bei manchen Adaptern eine **leere
 Liste** statt eines Fehlers liefert und die Fähigkeit damit still inert ginge.
 
+**Register-Deckung, Verzeichnis-Modus (fünfte Fähigkeit,
+`planning.observations.dir`, additiv zur vierten):** Ist
+`planning.observations.dir` gesetzt (statt `.register`), prüft d-check
+dieselbe Richtung der Register-Paarung gegen eine **Verzeichnis-Ablage**
+statt einer Tabellen-Datei: eine zitierte Beobachtungs-Kennung `<pfad>` gilt
+als nachgewiesen, wenn `<observations.dir>/<pfad>/observation.md`
+existiert. `.register` und `.dir` schließen sich aus (Exit 2 beim
+Konfigurations-Laden, nicht als Befund). Die übrige Mechanik — Scan-Menge
+über `observations.dirs`, Zitat-vs.-Beispiel-Unterscheidung, fail-closed bei
+unlesbarem Verzeichnis — ist identisch zur vierten Fähigkeit; nur die
+Kennungs-Gestalt wechselt auf den Default `BEO-[A-Z][A-Z0-9]*/[a-z][a-z0-9-]*`
+(Kürzel/Slug statt `BEO-\d{3}`), ebenfalls über `observations.pattern`
+überschreibbar. Eine dritte Prüfung entfällt strukturell: ein gespeicherter
+Zähler existiert im Verzeichnis-Modus nicht, er wird aus der Zahl der
+`evidence/`-Dateien abgeleitet und kann seiner eigenen Ableitung nicht
+widersprechen.
+
 **Akzeptanzkriterien:**
 
 - **Happy Path (Register-Deckung):** Given `planning` aktiv mit gesetztem `planning.observations.register` und einem Zitier-Verzeichnis, in dem jede zitierte Kennung eine Registerzeile hat, when `d-check` läuft, then entsteht **kein** `observation-unregistered`-Befund; ohne den Schlüssel ist der Befundsatz byte-identisch zum Lauf ohne die Fähigkeit ([`DC-QA-02`](#dc-qa-02--determinismus)).
 - **Boundary (Zitat gegen Beispiel):** Given dieselbe Kennung steht einmal als Linktext (`[`BEO-999`](…)`) und einmal als reines Inline-Code-Span (`` `BEO-999` ``), und sie hat **keine** Registerzeile, when `d-check` läuft, then meldet **nur** das Linktext-Vorkommen — das Code-Span ist ein Beispiel, keine Behauptung. Ein Vorkommen in Fließtext meldet ebenfalls.
 - **Boundary (nur die erste Zelle deklariert):** Given eine Kennung steht im Fließtext einer Registerzelle, aber in keiner ersten Zelle, when sie zitiert wird, then ist sie **nicht** gedeckt und meldet.
 - **Negative (fail-closed):** Given `planning.observations.register` zeigt auf eine fehlende Datei, **oder** ein `dirs`-Eintrag ist kein lesbares Verzeichnis, when `d-check` läuft, then entsteht ein Befund statt eines stillen Grün; ein ungültiges `pattern` ist ein Konfigurationsfehler (Exit 2).
+- **Happy Path (Verzeichnis-Modus):** Given `planning.observations.dir` gesetzt und ein Zitier-Verzeichnis, in dem jede zitierte Kennung `<pfad>` ein `<dir>/<pfad>/observation.md` hat, when `d-check` läuft, then **kein** `observation-unregistered`-Befund.
+- **Negative (Verzeichnis-Modus, Umkehr-Probe):** Given `planning.observations.dir` gesetzt und eine zitierte Kennung ohne zugehöriges `observation.md`, when `d-check` läuft, then ein Befund `observation-unregistered`.
+- **fail-closed (Kollision):** Given `planning.observations.register` **und** `planning.observations.dir` zugleich gesetzt, when `d-check` startet, then Abbruch mit Exit-Code 2, bevor eine Datei geöffnet wird.
+- **fail-closed (Verzeichnis-Modus, fehlendes Dir):** Given `planning.observations.dir` zeigt auf ein fehlendes oder unlesbares Verzeichnis, when `d-check` läuft, then entsteht ein Befund statt eines stillen Grün.
+- **Modul-aus (fünfte Fähigkeit):** Given weder `planning.observations.register` noch `.dir` gesetzt, when `d-check --enable planning` läuft, then wird keine Beobachtungs-Kennung geprüft und der Befundsatz ist byte-identisch zum Lauf ohne beide Fähigkeiten ([`DC-QA-02`](#dc-qa-02--determinismus)).
 - **Wellen-Happy-Path:** Given `planning.waves.dir` gesetzt, eine Roadmap, deren Aktiv-Status-Abschnitt eine Welle nennt, **genau ein** flaches Wellendokument, eine Vorschau ohne Kennungen und ein Abschluss-Register, dessen Zeilen und Ergebnisnotizen sich **beidseitig** decken, when `d-check --enable planning` läuft, then **kein** Befund.
 - **Wellen-Negative (vier Richtungen):** Given je eine Verletzung — Roadmap nennt eine Welle ohne flaches Dokument · eine Vorschau-Zeile nennt eine Welle, die bereits eine Datei hat · eine Abschluss-Zeile ohne Ergebnisnotiz · eine Ergebnisnotiz ohne Abschluss-Zeile —, when das Modul läuft, then je **ein** Befund mit dem zugehörigen Grund-Code (`wave-drift` · `wave-preview-exists` · `wave-results-missing` · `wave-unregistered`), Exit-Code 1.
 - **Wellen-Boundary (Rollen-Trennung):** Given ein Ruheort, in dem Plan-Dokumente **und** Ergebnisnotizen demselben `waves.glob` genügen, when das Modul läuft, then zählt eine Ergebnisnotiz **nicht** als Plan-Dokument (`results-glob` wird abgezogen) — und eine Abschluss-Zeile, deren Welle nur ein Plan-Dokument, aber keine Notiz hat, meldet `wave-results-missing`.
@@ -3564,6 +3586,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.85.0 | 2026-09-03 | [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in): **fünfte Fähigkeit, additiv zur vierten** — Register-Deckung im **Verzeichnis-Modus** (`planning.observations.dir`). Statt einer Tabellen-Datei prüft die Fähigkeit gegen eine Verzeichnis-Ablage: eine zitierte Kennung `<pfad>` gilt als nachgewiesen, wenn `<dir>/<pfad>/observation.md` existiert. `.register` und `.dir` schließen sich aus (Exit 2 beim Konfigurations-Laden). **Anlass:** die adoptierte Baseline gestaltet ihr eigenes Beobachtungs-Register komplett neu (Tabelle → Verzeichnis, Kennung wird Pfad, abgeleiteter statt gepflegter Zähler); die vierte Fähigkeit bleibt unverändert für Rückwärtskompatibilität und den eigenen Zwischenzustand (der Bestand migriert erst mit einem Folge-Slice). Kein neuer Grund-Code — derselbe `observation-unregistered` wie im Tabellen-Modus | — |
 | 0.84.0 | 2026-09-03 | Neue Anforderung [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in) — **Review-Report-Deckung** (Modul `reviews`, opt-in): jeder `done/`-Slice mit einer Review-Zusage (DoD-Haken, dessen Zeile „unabhängiger Review" nennt, jede Bullet-Form, Haken-Zustand egal) braucht mindestens einen Report unter einem konfigurierten Verzeichnis mit derselben `slice-<NNN>`-Kennung im Dateinamen. **Anlass ist eine ausdrücklich benannte Lücke eines vorherigen `structure`-Wächters**, der nur den **offenen** DoD-Haken deckt, nicht die Deckung zweier Mengen zwischen zwei Verzeichnissen — das sei eine neue Fähigkeit und gehöre in einen eigenen Anlauf. **Am eigenen Bestand gemessen:** fünf reale Funde, davon zwei mit
 **geschlossenem** Haken — für `structure`s Wächter unsichtbar, weil der Haken
 gesetzt ist. Bloßes „Review" wäre als Phrase zu breit gewesen (ein realer Fund trägt „Adaptions-Review", ein anderes, selbst-dokumentiertes Konzept ohne externen Report); die engere Phrase „unabhängiger Review" trägt exakt die gemessene Konvention. Kein rekursiver Scan — ein archivierter Slice-Stub trägt keine DoD mehr und fällt natürlich aus der Kandidatenmenge. Fail-closed bei leerer Kandidatenmenge, **nicht** bei null gefundenen Zusagen unter vorhandenen Kandidaten (ein junger Bestand ohne jede Zusage ist legitim). Begründung in begleitender ADR | — |

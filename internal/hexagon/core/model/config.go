@@ -369,34 +369,49 @@ type PlanningConfig struct {
 	Waves     WavesConfig
 }
 
-// ObservationsConfig ist die VIERTE planning-Fähigkeit: die Deckung zwischen
-// zitierten Beobachtungs-Kennungen und den Zeilen des Registers. Opt-in
-// INNERHALB des opt-in Moduls wie WavesConfig — ohne Register wird keine Datei
-// geöffnet und der Befundsatz ist byte-identisch (DC-QA-02).
+// ObservationsConfig ist die VIERTE planning-Fähigkeit (Tabellen-Modus,
+// `Register`) und ihre additive FÜNFTE (Verzeichnis-Modus, `Dir`, ADR-0083):
+// die Deckung zwischen zitierten Beobachtungs-Kennungen und ihrem Nachweis
+// im Register — als Tabellenzeile oder als Verzeichnis. Opt-in INNERHALB des
+// opt-in Moduls wie WavesConfig — ohne `Register` UND ohne `Dir` wird keine
+// Datei geöffnet und der Befundsatz ist byte-identisch (DC-QA-02).
 //
-// Geprüft wird EINE Richtung: Zitat ⇒ Registerzeile. Die Umkehrung („jede Zeile
-// ist irgendwo zitiert") ist ausgeschlossen, weil die meisten Zeilen unter der
+// Geprüft wird EINE Richtung: Zitat ⇒ Nachweis. Die Umkehrung („jeder Nachweis
+// ist irgendwo zitiert") ist ausgeschlossen, weil die meisten unter der
 // Schwelle stehen und nirgends zitiert sind.
 type ObservationsConfig struct {
-	// Register ist die Datei, deren Tabellenzeilen die Kennungen führen.
+	// Register ist die Datei, deren Tabellenzeilen die Kennungen führen
+	// (Tabellen-Modus). Mutually exclusive mit Dir.
 	Register string
+	// Dir ist die Wurzel der Verzeichnis-Ablage (Verzeichnis-Modus, ADR-0083):
+	// eine zitierte Kennung <pfad> gilt als nachgewiesen, wenn
+	// <Dir>/<pfad>/observation.md existiert. Mutually exclusive mit Register.
+	Dir string
 	// Dirs sind die Verzeichnisse, deren Markdown-Dateien zitieren dürfen —
-	// rekursiv. Leer ⇒ nur das Verzeichnis des Registers.
+	// rekursiv. Leer ⇒ nur das Verzeichnis des Registers bzw. von Dir.
 	Dirs []string
-	// Pattern ist die Kennungs-Gestalt; leer ⇒ DefaultObservationPattern.
+	// Pattern ist die Kennungs-Gestalt; leer ⇒ modusabhängiger Default.
 	Pattern string
 }
 
-// DefaultObservationPattern ist die Kennungs-Gestalt des Beobachtungs-Registers
-// (Baseline-Regelwerk modul-06: `BEO-<NNN>`).
+// DefaultObservationPattern ist die Kennungs-Gestalt des Tabellen-Modus
+// (Baseline-Regelwerk modul-06 vor v6.0.0: `BEO-<NNN>`).
 const DefaultObservationPattern = `BEO-\d{3}`
 
-// EffectivePattern liefert die konfigurierte oder die Default-Gestalt.
+// DefaultObservationDirPattern ist die Kennungs-Gestalt des Verzeichnis-Modus
+// (Baseline-Regelwerk modul-06 seit v6.0.0: `BEO-<KUERZEL>/<slug>`, ADR-0083).
+const DefaultObservationDirPattern = `BEO-[A-Z][A-Z0-9]*/[a-z][a-z0-9-]*`
+
+// EffectivePattern liefert die konfigurierte oder die modusabhängige
+// Default-Gestalt: Verzeichnis-Modus (Dir gesetzt) vs. Tabellen-Modus.
 func (o ObservationsConfig) EffectivePattern() string {
-	if o.Pattern == "" {
-		return DefaultObservationPattern
+	if o.Pattern != "" {
+		return o.Pattern
 	}
-	return o.Pattern
+	if o.Dir != "" {
+		return DefaultObservationDirPattern
+	}
+	return DefaultObservationPattern
 }
 
 // WavesConfig ist die dritte planning-Fähigkeit (DC-FA-PLAN-001

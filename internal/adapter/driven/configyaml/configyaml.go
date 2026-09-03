@@ -178,10 +178,13 @@ type rawPlanning struct {
 
 
 // rawObservations traegt die VIERTE planning-Faehigkeit (DC-FA-PLAN-001
-// §Register-Deckung): register ist der Aktivierungs-Schalter (leer/abwesend
-// ⇒ inert), dirs und pattern haben Kern-Defaults.
+// §Register-Deckung, Tabellen-Modus) und ihre additive FUENFTE
+// (Verzeichnis-Modus, ADR-0083): register bzw. dir ist je der
+// Aktivierungs-Schalter (beide leer/abwesend ⇒ inert, mutually exclusive),
+// dirs und pattern haben Kern-Defaults.
 type rawObservations struct {
 	Register string   `yaml:"register"`
+	Dir      string   `yaml:"dir"`
 	Dirs     []string `yaml:"dirs"`
 	Pattern  string   `yaml:"pattern"`
 }
@@ -2272,7 +2275,11 @@ func applyObservations(o *rawObservations) (model.ObservationsConfig, error) {
 	if o == nil {
 		return model.ObservationsConfig{}, nil
 	}
-	paths := append([]string{o.Register}, o.Dirs...)
+	if o.Register != "" && o.Dir != "" {
+		return model.ObservationsConfig{}, fmt.Errorf(
+			"%s: planning.observations.register und planning.observations.dir schließen sich aus (ADR-0083)", FileName)
+	}
+	paths := append([]string{o.Register, o.Dir}, o.Dirs...)
 	for _, p := range paths {
 		if p != "" && (strings.HasPrefix(p, "/") || strings.Contains(p, "..")) {
 			return model.ObservationsConfig{}, fmt.Errorf(
@@ -2285,5 +2292,5 @@ func applyObservations(o *rawObservations) (model.ObservationsConfig, error) {
 				"%s: planning.observations.pattern %q ist kein gueltiger Ausdruck: %v", FileName, o.Pattern, err)
 		}
 	}
-	return model.ObservationsConfig{Register: o.Register, Dirs: o.Dirs, Pattern: o.Pattern}, nil
+	return model.ObservationsConfig{Register: o.Register, Dir: o.Dir, Dirs: o.Dirs, Pattern: o.Pattern}, nil
 }

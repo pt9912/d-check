@@ -183,7 +183,7 @@ Reproduzierbarkeit):
 
 ## Modus-Deklaration pro Sub-Area
 
-| Sub-Area (Pfad / Modul)         | Modus      | Begründung                                                                                                   | Graduation-Bedingung / Folge-Slice |
-| ------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
-| `*` (Default für gesamtes Repo) | Greenfield | Projekt startet spec-first; Doc führt, Code folgt                                                            | n/a (GF)                           |
-| `tools/harness/`                | Greenfield | adoptierte Harness-Mechanik, konventionsgetragen über [MR-004](conventions/MR-004-gate-nachweis-mechanik.md) | n/a (GF)                           |
+| Sub-Area (Pfad / Modul)         | Modus      | BEO-Kürzel | Begründung                                                                                                   | Graduation-Bedingung / Folge-Slice |
+| ------------------------------- | ---------- | ---------- | ------------------------------------------------------------------------------------------------------------ | ---------------------------------- |
+| `*` (Default für gesamtes Repo) | Greenfield | `ALL`      | Projekt startet spec-first; Doc führt, Code folgt                                                            | n/a (GF)                           |
+| `tools/harness/`                | Greenfield | `HARN`     | adoptierte Harness-Mechanik, konventionsgetragen über [MR-004](conventions/MR-004-gate-nachweis-mechanik.md) | n/a (GF)                           |
