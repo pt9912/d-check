@@ -178,7 +178,7 @@ und undeklarierte Präzedenzen werden zitiert.
 
 **Ein Folge-Punkt, hier nicht entschieden:** `BEO-008` steht jetzt bei vier
 Vorfällen, und seine benannte mechanische Form ist seit
-[slice-122](slice-122-versions-musterliste.md) **baubar** — `versions.patterns`
+[slice-122](welle-82/slice-122-versions-musterliste.md) **baubar** — `versions.patterns`
 trägt ein zweites Muster-Quellen-Paar, das den Baseline-Tag in URLs und Prosa
 gegen den §Baseline-Pin hielte. Drei der vier Vorfälle wären davon gefangen
 worden. Das zu bauen ist ein eigener Entscheid mit eigener Messung; ihn hier

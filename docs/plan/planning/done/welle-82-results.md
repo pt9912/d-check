@@ -14,26 +14,26 @@ Drei Konfigurations-Flächen, jede um genau die Kerbe geweitet, an der sie
 nachweislich zu schmal war — plus die Auslieferung und zwei Doku-Nachträge, die
 erst der Betrieb sichtbar gemacht hat:
 
-- [slice-122](slice-122-versions-musterliste.md) — **`versions.patterns`:** eine
+- [slice-122](welle-82/slice-122-versions-musterliste.md) — **`versions.patterns`:** eine
   **Liste** von Muster-Quellen-Paaren statt genau eines. Die Kurzform *ist* die
   einelementige Liste (ein Auswertungspfad); das **Paar** ist die Einheit, seine
   Ausnahmen sind paar-lokal, der Zeilen-Marker ist es nicht. Weil eine
   Befund-Adresse zwei Paare nicht unterscheidet, trägt **eine** Meldung alle
   Erwartungen mit ihrer Quelle.
-- [slice-123](slice-123-structure-heading-muster.md) —
+- [slice-123](welle-82/slice-123-structure-heading-muster.md) —
   **`structure.headings-match`/`headings-level`:** achte Bedingung, *jede*
   Überschrift des Abschnitts **positiv** geprüft, je Überschrift auf ihrer Zeile
   gemeldet (`section-heading-mismatch`), mit **derselben** Heading-Erkennung, mit
   der das Modul den Abschnitt findet.
-- [slice-124](slice-124-diagrams-ventile.md) — **beide Ventile für `diagrams`**
+- [slice-124](welle-82/slice-124-diagrams-ventile.md) — **beide Ventile für `diagrams`**
   (`exempt-paths`, Zeilen-Marker) samt der §2-Schema-Zeilen, die dem Modul als
   einzigem fehlten. Der Marker ist dort ein **Token**, kein HTML-Kommentar, und
   wirkt auf der Öffnungszeile für den ganzen Block.
-- [slice-125](slice-125-release-v0630.md) — **Release `v0.63.0`** samt
+- [slice-125](welle-82/slice-125-release-v0630.md) — **Release `v0.63.0`** samt
   Doku-Currency über alle drei Erweiterungen, Digest-Backfill — und der
   Korrektur einer Aussage, die **älter war als die Welle**: der Zeilen-Marker
   wirkt in **vier** Modulen, nicht in zweien.
-- [slice-126](slice-126-handbuch-abschnitts-schnitt.md) — **nach** dem Release
+- [slice-126](welle-82/slice-126-handbuch-abschnitts-schnitt.md) — **nach** dem Release
   entstanden, auf Nachfrage des Auftraggebers: die ungesagte Ventil-Lage bei
   `citations` und ein §5-Abschnitt, dessen Überschrift zwei Fähigkeiten nannte,
   während er sechs Module über 183 Zeilen trug.
@@ -71,8 +71,8 @@ Selektor kollidiert.
 
 ## Was ging anders als geplant?
 
-**Die Welle bekam einen fünften Slice.** [slice-126](slice-126-handbuch-abschnitts-schnitt.md)
-entstand **nach** der Closure von [slice-125](slice-125-release-v0630.md) und
+**Die Welle bekam einen fünften Slice.** [slice-126](welle-82/slice-126-handbuch-abschnitts-schnitt.md)
+entstand **nach** der Closure von [slice-125](welle-82/slice-125-release-v0630.md) und
 nach dem Release — aus einer Nachfrage, nicht aus der Planung. Der
 Closure-Trigger dieser Welle sagte weiterhin „alle **vier** Slices" und wäre
 damit erfüllbar gewesen, während ein Slice offen lag; der Review hat es
@@ -118,7 +118,7 @@ Gelesen zur Closure ([`observations.md`](../observations.md)):
 
 - **[`BEO-011`](../observations.md) neu angelegt**, Zähler **3**, Schwelle
   erreicht — die Klasse dieser Welle. Drei weitere Instanzen aus
-  [slice-126](slice-126-handbuch-abschnitts-schnitt.md) sind dort benannt und
+  [slice-126](welle-82/slice-126-handbuch-abschnitts-schnitt.md) sind dort benannt und
   bringen die dritte Ausprägung erstmals in die Belege.
 - **[`BEO-008`](../observations.md) bleibt bei 3, und seine benannte
   mechanische Form ist seit dieser Welle *baubar*** — `versions.patterns` trägt
@@ -127,8 +127,8 @@ Gelesen zur Closure ([`observations.md`](../observations.md)):
   dieser Welle.
 - **[`BEO-002`](../observations.md) hat wieder getroffen** und bleibt offen: der
   `grep` nach dem **alten** Wortlaut, repo-weit, stand seit
-  [slice-125](slice-125-release-v0630.md) als Ableiter in dessen Closure-Notiz
-  und wurde in [slice-126](slice-126-handbuch-abschnitts-schnitt.md) wieder
+  [slice-125](welle-82/slice-125-release-v0630.md) als Ableiter in dessen Closure-Notiz
+  und wurde in [slice-126](welle-82/slice-126-handbuch-abschnitts-schnitt.md) wieder
   nicht gefahren — sechs Fundstellen blieben stehen, zwei davon in den
   Spec-Straten. Eine Regel für Menschen kann weiter verfehlt werden.
 - **[`BEO-009`](../observations.md)** traf einmal in Richtung (b): eine
