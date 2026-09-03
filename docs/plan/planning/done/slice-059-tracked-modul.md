@@ -13,7 +13,7 @@ Lastenheft 0.37.0; zugleich
 9→10 Targets) plus [ADR-0030](../../adr/0030-tracked-referenz-ziele.md)
 (Proposed). Dritte Nutzung des VCS-Ports aus
 [`slice-053`](welle-42/slice-053-vcs-modul.md) (`vcs`: Range-Diff,
-[`slice-056`](../done/slice-056-commits-modul.md)/`commits`: Messages,
+[`slice-056`](welle-45/slice-056-commits-modul.md)/`commits`: Messages,
 `tracked`: **Index** — ohne Range); Kein-Doppelbefund-Prinzip wie
 [`slice-049`](welle-38/slice-049-pins-modul.md)/`pins`.
 

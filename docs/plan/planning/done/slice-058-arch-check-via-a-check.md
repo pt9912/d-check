@@ -14,7 +14,7 @@ greift nur für `DC-*`-Anforderungen, Gate-Mechanik ist ADR-Domäne (Präzedenz
 [slice-039](welle-25/slice-039-pr-ci-traceability-gate.md)/[slice-055](welle-44/slice-055-completeness-rueckbau.md));
 die [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)-Bindung
 des Gates bleibt. Dieselbe Skript-Ablösungs-Linie wie
-[`slice-053`](welle-42/slice-053-vcs-modul.md)/[`slice-055`](welle-44/slice-055-completeness-rueckbau.md)/[`slice-056`](../done/slice-056-commits-modul.md)/[`slice-057`](../done/slice-057-planning-modul.md),
+[`slice-053`](welle-42/slice-053-vcs-modul.md)/[`slice-055`](welle-44/slice-055-completeness-rueckbau.md)/[`slice-056`](welle-45/slice-056-commits-modul.md)/[`slice-057`](../done/slice-057-planning-modul.md),
 aber erstmals durch das **Schwester-Tool** statt durch ein d-check-Modul
 ([`MR-007`](../../../../harness/conventions.md#mr-007--auflösung-von-mr-003-doc-check-als-dogfooding)-Linie:
 verteilen statt kopieren).
