@@ -2,22 +2,22 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** — *(keine; Pin-Fortschreibung innerhalb des von
-  [`MR-023`](../conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)
+  [`MR-023`](../../conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)
   festgelegten self-contained Bundle-Layouts)*
 - **Datum:** 2026-09-01
-- **Geltungsbereich:** [§Baseline](../conventions.md#baseline), [§Adoptierte
-  Konventions-Quellen](../conventions.md#adoptierte-konventions-quellen), die
+- **Geltungsbereich:** [§Baseline](../../conventions.md#baseline), [§Adoptierte
+  Konventions-Quellen](../../conventions.md#adoptierte-konventions-quellen), die
   pin-gebundenen Verweise
-  ([`MR-021`](../conventions.md#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden))
-  in [`AGENTS.md`](../../AGENTS.md), [`harness/README.md`](../README.md), den
+  ([`MR-021`](../../conventions.md#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden))
+  in [`AGENTS.md`](../../../AGENTS.md), [`harness/README.md`](../../README.md), den
   aktiven `MR-*`-Dateien, den Spec-Straten und den Planning-Docs; dazu die
   vier Aliase unter `.claude/rules/`
-  ([`MR-055`](../conventions.md#mr-055)); und zusätzlich §Die
+  ([`MR-055`](../../conventions.md#mr-055)); und zusätzlich §Die
   MR-013-Kollision aus MR-057, aufgelöst statt weiter offen gemeldet.
 - **Adaption:** Der Baseline-Pin ist von `v5.15.0` auf **`v5.18.0`** gehoben —
-  die von [`MR-011`](../conventions.md#mr-011--baseline-auf-release-tag-gepinnt)
+  die von [`MR-011`](../../conventions.md#mr-011--baseline-auf-release-tag-gepinnt)
   vorgesehene Fortschreibung, neunter Nachtrag der Serie; ersetzt
-  [`MR-057`](../conventions.md#mr-057) nach dessen eigenem
+  [`MR-057`](../../conventions.md#mr-057) nach dessen eigenem
   Auflösungs-Trigger. Kein Layout-Wechsel: dasselbe self-contained Bundle,
   dasselbe Materialisierungs-Skript, unverändertes Pfadschema.
 
@@ -41,7 +41,7 @@
 
   **Der Zeitdokumente-Archiv-Mechanismus (Wellen 109 + 111) wird nicht
   adoptiert.** Ein neuer Schritt 4 der Wellen-Closure-Prozedur
-  ([`modul-06-roadmap.md` §Wellen-Closure-Prozedur](../../.harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6))
+  ([`modul-06-roadmap.md` §Wellen-Closure-Prozedur](../../../.harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6))
   archiviert geschlossene Slices und Review-Reports in `done/<welle-id>/`,
   mit gekürztem Stub an der alten Stelle bei Slices. Kurs-Welle 111 macht das
   ausdrücklich **optional** — kein Nachrüst-Zwang, kein Verbot. d-check fährt
@@ -49,7 +49,7 @@
   zwei neue Vorlagen) steht in keinem Verhältnis zum Nutzen im aktuellen
   Betrieb. Eigener Folge-Slice, sobald eine Wellen-Closure ansteht.
 
-  **Die Spiegel-Klassen aus [`BEO-008`](../../docs/plan/planning/observations.md):**
+  **Die Spiegel-Klassen aus [`BEO-008`](../../../docs/plan/planning/observations.md):**
   44 lebende Vorkommen von `v5.15.0` vor der Hebung (Pfad-Verweise), dazu 3
   eingefrorene (Aussagen über die Vergangenheit in zwei offenen Plänen und
   diesem Eintrags-Vorgänger). Alle 44 gehoben, keines stehen gelassen — kein
@@ -59,11 +59,11 @@
   `make baseline-verify` bestätigt Integrität, Manifest-Deckung und
   Alias-Auflösung.
 
-  **Ein Bulk-Zensus-Fehler aus [`MR-057`](../conventions.md#mr-057) ist dabei
+  **Ein Bulk-Zensus-Fehler aus [`MR-057`](../../conventions.md#mr-057) ist dabei
   aufgefallen und behoben:** dessen Pfad-Hebung hatte
   `harness/conventions/done/` nicht ausgenommen und zwei **eingefrorene**
-  Einträge ([`MR-038`](../conventions/done/MR-038-zitate-pin-gebunden.md),
-  [`MR-041`](../conventions/done/MR-041-guard-node-und-eigene-toolchain.md))
+  Einträge ([`MR-038`](../../conventions/done/MR-038-zitate-pin-gebunden.md),
+  [`MR-041`](../../conventions/done/MR-041-guard-node-und-eigene-toolchain.md))
   versehentlich von `v5.12.0` auf `v5.15.0` gehoben — unsichtbar, solange der
   `v5.12.0`-Baum noch da war, und erst mit dessen Entfernung durch diesen
   Bump als `target-missing` sichtbar geworden. Beide auf `v5.12.0`
@@ -86,9 +86,9 @@
 
 ## Die MR-013-Kollision aus MR-057, aufgelöst
 
-[`MR-057`](../conventions.md#mr-057) meldete eine Kollision zwischen
-[`MR-013`](../conventions.md#mr-013) und Kurs-Welle 103
-([`grundlagen-traceability.md` §Herkunfts-Anker für Steering-Loop-Regeln](../../.harness/baseline/v5.18.0/regelwerk/grundlagen-traceability.md#herkunfts-anker-für-steering-loop-regeln)),
+[`MR-057`](../../conventions.md#mr-057) meldete eine Kollision zwischen
+[`MR-013`](../../conventions.md#mr-013) und Kurs-Welle 103
+([`grundlagen-traceability.md` §Herkunfts-Anker für Steering-Loop-Regeln](../../../.harness/baseline/v5.18.0/regelwerk/grundlagen-traceability.md#herkunfts-anker-für-steering-loop-regeln)),
 statt sie aufzulösen — die neue Bedingung lag in keinem Release. Kurs-Welle
 110 (jetzt in `v5.17.0`/`v5.18.0`) beantwortet genau diese Meldung, mit dem
 eigenen CR als Beispiel im Kurs-Changelog zitiert: *„Ein Adopter hat eine
@@ -102,19 +102,19 @@ nicht falsch, sondern unvollständig."* Die fehlende Bedingung:
 
 **Die naheliegende Lesart ist zu breit.** Kurs-Welle 110 endet mit *„der
 Adopter kann seine Adaption auflösen, statt ihr einen Nachfolger zu geben"*
-— das läse sich als Auftrag, [`MR-013`](../conventions.md#mr-013)s Bündelung
+— das läse sich als Auftrag, [`MR-013`](../../conventions.md#mr-013)s Bündelung
 insgesamt zu streichen. Nachgemessen am eigenen Text von
-[`MR-013`](../conventions.md#mr-013) zeigt sich: Die Kollision trifft nur
+[`MR-013`](../../conventions.md#mr-013) zeigt sich: Die Kollision trifft nur
 **zwei** der drei dort gebündelten Move-Klassen.
 
-- **Slice-Lifecycle-Move und Beanspruchung.** [`MR-013`](../conventions.md#mr-013)s
+- **Slice-Lifecycle-Move und Beanspruchung.** [`MR-013`](../../conventions.md#mr-013)s
   eigene Begründung nennt den Anlass: sichtbar bei slice-040 (2026-06-21),
   eine **Push-CI**, die auf dem reinen Move-Commit rot lief
   (`target-missing` + `make planning-check`). Das ist exakt Kurs-Welle 110s
   Fall — ein Zwischen-Commit, der zur geprüften Spitze eines Push wurde. Die
   jetzt zitierbare Bedingung **bestätigt** die Praxis: beide Commits landen
   hier ohnehin nie in getrennten Pushes.
-- **MR-/Wellen-Lifecycle-Move.** [`MR-013`](../conventions.md#mr-013) trägt
+- **MR-/Wellen-Lifecycle-Move.** [`MR-013`](../../conventions.md#mr-013) trägt
   für diese dritte Klasse eine **andere, eigenständige** Begründung: eine
   nach `conventions/done/` bzw. `done/` wandernde Datei trägt relative
   Verweise, die vom neuen Ort eine Ebene tiefer auflösen müssen — ein
@@ -129,11 +129,11 @@ insgesamt zu streichen. Nachgemessen am eigenen Text von
 
 **Ausgang: Die Meldung ist aufgelöst, die Praxis bleibt unverändert.** Die
 Kollision war eine **Vermischung zweier Begründungen unter einem Eintrag**,
-kein Widerspruch, der eine Seite zum Weichen zwingt. [`MR-013`](../conventions.md#mr-013)
+kein Widerspruch, der eine Seite zum Weichen zwingt. [`MR-013`](../../conventions.md#mr-013)
 selbst braucht keine inhaltliche Änderung — seine beiden Begründungen waren
 immer schon getrennt geschrieben, nur ihre Trennschärfe gegenüber dem Kanon
 war unklar, bis die fehlende Bedingung zitierbar wurde.
-[`AGENTS.md`](../../AGENTS.md) §3.3 bedarf aus demselben Grund keines
+[`AGENTS.md`](../../../AGENTS.md) §3.3 bedarf aus demselben Grund keines
 Nachzugs: seine drei Ausnahme-Absätze beschreiben bereits exakt diese
 Zweiteilung, ohne sie als solche zu benennen.
 
@@ -142,8 +142,8 @@ Zweiteilung, ohne sie als solche zu benennen.
   und die Abweichung benennbar. Dass er **fortgeschrieben** wird statt zu
   altern, ist die Bedingung dafür, dass der Freshness-Audit etwas zu
   vergleichen hat.
-- **Löst auf:** [`MR-057`](../conventions.md#mr-057)
+- **Löst auf:** [`MR-057`](../../conventions.md#mr-057)
 - **Ausgelöst durch Baseline-Stand:** v5.18.0
 - **Auflösungs-Trigger:** der Kurs veröffentlicht einen neuen Release-Tag;
   dann Fortschreibung durch den nächsten Nachtrag zu
-  [`MR-011`](../conventions.md#mr-011--baseline-auf-release-tag-gepinnt).
+  [`MR-011`](../../conventions.md#mr-011--baseline-auf-release-tag-gepinnt).
