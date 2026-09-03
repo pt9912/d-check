@@ -126,16 +126,16 @@ erst beim Ausführen entdeckt** — genau die Vorsicht, die
 
 ## 4. Definition of Done
 
-- [ ] `**Welle:**`-Feld für slice-077/078/079/103 nachgetragen, mit
+- [x] `**Welle:**`-Feld für slice-077/078/079/103 nachgetragen, mit
       Beleg-Zeile in diesem Slice-Plan (§1) belegt.
-- [ ] `tools/archive-wave` behandelt eine Welle ohne Plan-Datei
+- [x] `tools/archive-wave` behandelt eine Welle ohne Plan-Datei
       (welle-60…66) korrekt — Test vorhanden, `make archive-wave-test` grün.
-- [ ] welle-01 bis welle-85 sind archiviert: `done/<welle-id>/archiv.zip`
+- [x] welle-01 bis welle-85 sind archiviert: `done/<welle-id>/archiv.zip`
       existiert je Welle, Stubs an der Zielform, Review-Reports ohne Stub,
       keine gebrochenen Repo-Verweise (`make doc-check` grün nach jeder
       angewendeten Welle).
-- [ ] `make gates` **und** `make fullbuild` grün auf dem archivierten
-      Bestand (Exit explizit).
+- [x] `make gates` **und** `make fullbuild` grün auf dem archivierten
+      Bestand (Exit explizit — 50 Requirements, 0 Waisen).
 - [ ] **Unabhängiger Review und unabhängige Verifikation.**
 - [ ] Closure-Notiz mit Lerneintrag; jedes Risiko aus §5 mit Ausgang; die
       drei Modul-6-Paarungen geprüft (bei der Closure von welle-87, die
@@ -143,27 +143,33 @@ erst beim Ausführen entdeckt** — genau die Vorsicht, die
 
 ## 5. Abnahme-Punkte / Risiken
 
-- **26 Wellen in Folge zu archivieren ist viel Wiederholung — eine falsche
-  Annahme im Werkzeug wirkt 26-fach, nicht einmal.** Mitigiert durch
-  Schrittweite (§2 Punkt 3: Commit je Welle, nicht ein Sammel-Commit) —
-  bricht es bei welle-70, sind 60–69 bereits sicher committet. —
-  **Ausgang:** *(bei Closure)*
-- **Der Feld-Nachtrag (§2 Punkt 1) ändert historische `done/`-Dateien.**
-  `AGENTS.md` §3.7 schützt das `**Status:**`-Feld dieser Slices ausdrücklich
-  als eingefrorenen Lauf-Beleg — ein `**Welle:**`-Nachtrag ist ein anderes
-  Feld, aber die Grenze („was darf an einem historischen Slice noch
-  ergänzt werden") ist an diesem Bestand vorher nicht geprüft worden. —
-  **Ausgang:** *(bei Closure)*
-- **Der Verweis-Nachzug über 26 Wellen kann eine Datei mehrfach treffen**
-  (ein Dokument, das auf Slices aus zwei verschiedenen Wellen verweist).
-  `RewriteRepo` verarbeitet das move-für-move korrekt, aber die
-  Reihenfolge der 26 Anwendungen ist neu für das Werkzeug — bei slice-190
-  nur an einer einzelnen Welle geprüft. — **Ausgang:** *(bei Closure)*
-- **`welle-87`s eigene Closure hängt an diesem Slice** — verzögert sich
-  dieser Slice, verzögert sich die ganze Welle, und `welle-86` bekommt bei
-  ihrer eigenen Closure weiterhin kein bewiesenes Werkzeug gegen einen
-  Mehrwellen-Lauf (nur gegen das Fixture aus slice-190). —
-  **Ausgang:** *(bei Closure)*
+- **26 (später 85) Wellen in Folge zu archivieren ist viel Wiederholung —
+  eine falsche Annahme im Werkzeug wirkt N-fach, nicht einmal.** —
+  **Ausgang: eingetreten, aber durch die Mitigation vollständig
+  aufgefangen.** Drei echte Werkzeug-Lücken traten tatsächlich auf
+  (Ortsfeste-Verweise-Idiom bricht beim Tiefenwechsel, welle-70; Fail-Closed-
+  Guard zu streng für einen legitimen Plan-ohne-Slices-Fall, welle-73;
+  `Hervorgegangen:`-Feld trug nie die überlebenden Kennungen, sichtbar erst
+  bei `make fullbuild` — keines der Gates zwischen den Wellen). Die
+  Schrittweite (Commit je Welle, `doc-check` nach jedem Schritt) hat die
+  Blast-Radius exakt wie geplant begrenzt: keine der 85 Wellen musste
+  zurückgenommen werden, jeder Fund wurde am Ort seines Auftretens korrigiert
+  und rückwirkend nur dort gepatcht, wo er tatsächlich einen Requirements-
+  Waisen erzeugte (drei Stubs), nicht am ganzen Bestand.
+- **Der Feld-Nachtrag (§2 Punkt 1) ändert historische `done/`-Dateien.** —
+  **Ausgang: entfallen** — die Grenze wurde durch den Akt selbst geprüft und
+  bestätigt: der `pre-commit`-Hook (inkl. `adr-check`) akzeptierte den
+  Welle-Feld-Nachtrag in vier `done/`-Slices anstandslos, weil er ein
+  ANDERES Feld als das AGENTS.md §3.7-geschützte `**Status:**` ist. Kein
+  Gate-Widerspruch in über 60 Commits dieses Slices.
+- **Der Verweis-Nachzug über N Wellen kann eine Datei mehrfach treffen.** —
+  **Ausgang: entfallen** — genau dieser Fall trat wiederholt ein (ein
+  Review-Report akkumulierte über vier separate Wellen-Läufe hinweg vier
+  `ignore-refs`-Einträge, additiv, ohne Konflikt) und `RewriteRepo` verhielt
+  sich dabei in jedem gemessenen Fall korrekt.
+- **`welle-87`s eigene Closure hängt an diesem Slice.** — **Ausgang:
+  entfallen** — dieser Slice schließt jetzt, welle-87s Closure-Prozedur
+  folgt unmittelbar danach im selben Zug.
 
 ## 6. Trigger
 
@@ -219,3 +225,57 @@ den Default: Doc führt, Code folgt. Erweiterung einer Infrastruktur ohne
 eigene Konventions-Historie, kein Reconciliation-Aufwand.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert:** `**Welle:**`-Feld für vier historische Slices nachgetragen
+(slice-077/078/079/103); `tools/archive-wave` um den Plan-losen-Welle-Fall
+(welle-60…66), die Review-Selbstreferenz-Vorschaufilterung, das
+Tiefenwechsel-korrekte Feld-Retargeting (`RewriteFieldForMove`), den
+gelockerten Fail-Closed-Guard und die Kennungs-Übernahme ins
+`Hervorgegangen:`-Feld erweitert — alle fünf an echten Bestands-Eigenheiten
+gemessen, nicht spekulativ gebaut. **Alle 85 nummerierten Wellen dieses
+Repos (welle-01 bis welle-85) archiviert:** je ein `archiv.zip`, Slice-
+und Welle-Stubs an der Zielform, Review-Reports ohne Stub. `make gates`
+und `make fullbuild` grün auf dem vollständig archivierten Bestand (50
+Requirements, 0 Waisen). 52 Slices ab `slice-137` bestätigt als bewusst
+wellenlos (Baseline-Konvention „wellenlos heißt nicht wächterlos") und
+damit korrekt außerhalb der Archivierungspflicht.
+
+**Was funktioniert hat:** Die Wellen-für-Welle-Disziplin (§2 Punkt 3) hat
+sich vollständig ausgezahlt — jede der drei während der Ausführung
+gefundenen Werkzeug-Lücken wurde durch `make doc-check` nach genau der
+Welle sichtbar, die sie auslöste, nie erst Dutzende Wellen später. Der
+pre-commit-Hook (`doc-check` + `adr-check`) hat bei über 60 Commits kein
+einziges Mal fälschlich blockiert und zweimal echte, unvorhergesehene
+Belegbrüche (ADR-Geschichte-Referenzen, Review-Report-Ketten) korrekt
+gemeldet.
+
+**Was anders lief:** Der Scope wuchs zweimal während der Ausführung, beide
+Male durch Nutzer-Entscheid und beide Male, weil eine Messung mehr zeigte
+als der ursprüngliche Plan angenommen hatte: zuerst die Erkenntnis, dass
+die Wellen-Nummerierung bei welle-01 beginnt (nicht welle-60), dann die
+explizite Bestätigung, auch die docs/reviews/-Altlast „regelkonform" zu
+archivieren — was sich als bereits durch die Wellen-Archivierung
+eingelöst herausstellte, sobald der Scope korrekt war. Drei echte
+Werkzeug-Lücken (siehe §5) waren beim Bauen in slice-190 nicht vorhersehbar,
+weil sie nur an gewachsenem, echtem Bestand auftreten — exakt die von
+`BEO-011` benannte Grenze einer Fixture-Beweisführung.
+
+**Steering-Loop-Einträge:**
+- [`BEO-011`](../observations.md) sechste Instanz (slice-190) — **Ausgang:
+  verkörpert.** Die Vorsicht, die die Beobachtung einforderte (eine
+  Fixture-Beweisführung generalisiert nicht automatisch auf den echten
+  Bestand), ist in der tatsächlich gefahrenen Prozedur bereits verkörpert:
+  Welle-für-Welle mit Gate-Prüfung zwischen jedem Schritt, statt einer
+  Massenanwendung — genau das hat die drei echten Lücken einzeln und ohne
+  Rückabwicklung aufgefangen.
+- Neue Prozedur-Lehre (keine gesonderte Regel-Datei, in diesem Closure
+  festgehalten): ein Archivierungswerkzeug, das Volltexte durch Stubs
+  ersetzt, muss die überlebenden Kennungen aktiv ins Stub-Feld übernehmen
+  (`Hervorgegangen:`), sonst bricht `--require-complete` lautlos für jede
+  Anforderung, deren einziger Beleg-Slice archiviert wird — kein anderes
+  Gate hätte das gefunden.
+
+**Zeiger:** [Beobachtungs-Register](../observations.md). Diese Slice-
+Closure löst zugleich [welle-87](../welle-87-wellen-archivierung.md)s
+eigene Closure-Prozedur aus (Modul 6, sechs Schritte) — sie folgt
+unmittelbar danach.
