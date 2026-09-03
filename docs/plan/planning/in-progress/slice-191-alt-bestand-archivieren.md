@@ -146,22 +146,29 @@ erst beim Ausführen entdeckt** — genau die Vorsicht, die
 - **26 (später 85) Wellen in Folge zu archivieren ist viel Wiederholung —
   eine falsche Annahme im Werkzeug wirkt N-fach, nicht einmal.** —
   **Ausgang: eingetreten, aber durch die Mitigation vollständig
-  aufgefangen.** Vier echte Werkzeug-Lücken traten tatsächlich auf
+  aufgefangen.** Fünf echte Lücken traten tatsächlich auf
   (Ortsfeste-Verweise-Idiom bricht beim Tiefenwechsel, welle-70;
   Fail-Closed-Guard zu streng für einen legitimen Plan-ohne-Slices-Fall,
   welle-73; `Hervorgegangen:`-Feld trug nie die überlebenden Kennungen,
-  sichtbar erst bei `make fullbuild`; der Nachbesserungs-Regex strich beim
-  Rückbau selbst wieder echte Link-Label-Zitate, selbst entdeckt vor dem
-  Commit des Backfills — keine der vier von einem Gate zwischen den Wellen
-  gefangen). Die Schrittweite (Commit je Welle, `doc-check` nach jedem
-  Schritt) hat die Blast-Radius exakt wie geplant begrenzt: keine der 85
-  Wellen musste zurückgenommen werden. Der `Hervorgegangen:`-Rückbau lief
-  zunächst nur für die drei Stubs, die tatsächlich einen Requirements-Waisen
-  erzeugten (Verhältnismäßigkeit vor Vollständigkeit) — die unabhängige
-  Verifikation maß den verbliebenen Rückstand (59 Stubs mit rohem
-  Platzhalter statt echter Kennungen oder `— keine —`) und benannte ihn als
-  Formfehler; **vollständig nachgetragen**, DoD-Punkt 3 gilt jetzt
-  uneingeschränkt.
+  sichtbar erst bei `make fullbuild`; der erste Nachbesserungs-Regex strich
+  beim Rückbau selbst wieder echte Link-Label-Zitate, selbst entdeckt vor
+  dem Commit des Backfills; und — von einer ZWEITEN unabhängigen Prüfung
+  gefunden, nicht selbst — eine Shell-Näherung des (korrekten) Go-Codes
+  behandelte punkt-suffigierte Kennungen wie [`DC-FA-REQ-001.a`](../../../../spec/spezifikation.md#dc-fa-req-001a--anforderungsquellen-headings-und-tabellen) falsch und
+  verschluckte sie ganz, während sechs schon 2026-09-03 früh archivierte
+  Wellen (welle-03/08/28/34/47/56, vor dem Inline-Code-Fix) unbemerkt bare
+  Fremd-/erfundene Kennungen trugen). Keine der fünf von einem Gate
+  zwischen den Wellen gefangen — `make fullbuild`s Vollständigkeits-Check
+  bleibt grün, solange irgendein anderer Slice dieselbe Anforderung auch
+  zitiert; er sieht keine falsche oder fehlende einzelne Kennung. Die
+  Schrittweite (Commit je Welle) hat trotzdem die Blast-Radius begrenzt:
+  keine der 85 Wellen musste zurückgenommen werden, und die **endgültige**
+  Korrektur lief nicht mehr per Handnäherung, sondern per **temporärem
+  Go-Test, der die echte `ExtractSurvivingIDs`-Funktion gegen jedes
+  `archiv.zip` aller 85 Wellen fuhr** und jede Abweichung von jedem
+  committeten Stub meldete (zehn Funde, alle korrigiert, Re-Lauf: 0
+  Abweichungen) — die Lehre aus dem vierten Fund (Shell-Näherung ≠ Produkt)
+  unmittelbar angewandt, nicht nur notiert.
 - **Der Feld-Nachtrag (§2 Punkt 1) ändert historische `done/`-Dateien.** —
   **Ausgang: entfallen** — die Grenze wurde durch den Akt selbst geprüft und
   bestätigt: der `pre-commit`-Hook (inkl. `adr-check`) akzeptierte den
@@ -278,7 +285,7 @@ weil sie nur an gewachsenem, echtem Bestand auftreten — exakt die von
 **Steering-Loop-Einträge:**
 - [`BEO-011`](../observations.md) sechste Instanz (slice-190) — **Ausgang:
   weiter offen, nicht verkörpert (Review-Korrektur).** Die Vorsicht, die
-  die Beobachtung einforderte, traf zu (vier echte, im Fixture nicht
+  die Beobachtung einforderte, traf zu (fünf echte, im Fixture nicht
   sichtbare Werkzeug-Lücken) und wurde durch das tatsächlich gefahrene
   Vorgehen — Welle-für-Welle mit Gate-Prüfung zwischen jedem Schritt statt
   Massenanwendung — einzeln und ohne Rückabwicklung aufgefangen. Das ist
@@ -303,6 +310,15 @@ weil sie nur an gewachsenem, echtem Bestand auftreten — exakt die von
   verschwanden in der ersten Fassung). Vor jeder Commit dieser Art: die
   Fund-Anzahl gegen eine plausible Grundgesamtheit prüfen, nicht nur „lief
   durch".
+- Dritte Lehre, aus der zweiten unabhängigen Prüfung: die eigene
+  Shell-Näherung der zweiten Lehre trug denselben Fehler in neuer Form
+  (punkt-suffigierte Kennungen fielen durch ihre eigene
+  Link-Label-Erhalt-Regel). Aufgelöst nicht durch eine dritte Regex-
+  Iteration, sondern durch den Wechsel des Mittels: ein **Go-Test, der die
+  echte, bereits getestete Funktion aufruft**, statt einer weiteren
+  Handnäherung ihrer Logik — genau AGENTS.md „Produkt vor grep/awk vor
+  allem anderen", hier auf eine Mess-**Korrektur** angewandt, nicht nur auf
+  eine Mess-**Anzeige**.
 
 **Zeiger:** [Beobachtungs-Register](../observations.md). Diese Slice-
 Closure löst zugleich [welle-87](../welle-87-wellen-archivierung.md)s
