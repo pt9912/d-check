@@ -238,7 +238,16 @@ und Welle-Stubs an der Zielform, Review-Reports ohne Stub. `make gates`
 und `make fullbuild` grün auf dem vollständig archivierten Bestand (50
 Requirements, 0 Waisen). 52 Slices ab `slice-137` bestätigt als bewusst
 wellenlos (Baseline-Konvention „wellenlos heißt nicht wächterlos") und
-damit korrekt außerhalb der Archivierungspflicht.
+damit korrekt außerhalb der Archivierungspflicht. Nach unabhängigem
+Review zusätzlich: zwei durch einen zu engen `git add`-Scope verpasste
+Verweis-Nachzüge außerhalb von `docs/plan/planning`/`docs/reviews`
+nachgeholt ([ADR-0058](../../adr/0058-konfigurations-flaechen-additiv-weiten.md),
+[MR-003](../../../../harness/conventions/done/MR-003-vendorter-bootstrap-sensor.md)),
+und [`MR-059`](../../../../harness/conventions/MR-059-wellen-archiv-stub-move.md)
+plus `AGENTS.md` §3.3 vierte Ausnahme neu geschrieben — die bislang nur
+implizit gelebte Ein-Commit-Form der Wellen-Archivierung ist damit
+kanonisch benannt, nicht länger nur durch einzelne Commit-Botschaften
+behauptet.
 
 **Was funktioniert hat:** Die Wellen-für-Welle-Disziplin (§2 Punkt 3) hat
 sich vollständig ausgezahlt — jede der drei während der Ausführung
@@ -262,12 +271,16 @@ weil sie nur an gewachsenem, echtem Bestand auftreten — exakt die von
 
 **Steering-Loop-Einträge:**
 - [`BEO-011`](../observations.md) sechste Instanz (slice-190) — **Ausgang:
-  verkörpert.** Die Vorsicht, die die Beobachtung einforderte (eine
-  Fixture-Beweisführung generalisiert nicht automatisch auf den echten
-  Bestand), ist in der tatsächlich gefahrenen Prozedur bereits verkörpert:
-  Welle-für-Welle mit Gate-Prüfung zwischen jedem Schritt, statt einer
-  Massenanwendung — genau das hat die drei echten Lücken einzeln und ohne
-  Rückabwicklung aufgefangen.
+  weiter offen, nicht verkörpert (Review-Korrektur).** Die Vorsicht, die
+  die Beobachtung einforderte, traf zu (drei echte, im Fixture nicht
+  sichtbare Werkzeug-Lücken) und wurde durch das tatsächlich gefahrene
+  Vorgehen — Welle-für-Welle mit Gate-Prüfung zwischen jedem Schritt statt
+  Massenanwendung — einzeln und ohne Rückabwicklung aufgefangen. Das ist
+  aber eine einmalig sorgfältig gefahrene Prozedur, keine Verkörperung im
+  Modul-6-Sinn: es fehlt der Zielort samt Herkunfts-Anker, der die Regel
+  „ein fixture-bewiesenes Werkzeug wird am echten Bestand inkrementell mit
+  Gate-Prüfung zwischen jeder Einheit ausgerollt" für künftige Läufe
+  auffindbar machte. Bleibt im Register offen.
 - Neue Prozedur-Lehre (keine gesonderte Regel-Datei, in diesem Closure
   festgehalten): ein Archivierungswerkzeug, das Volltexte durch Stubs
   ersetzt, muss die überlebenden Kennungen aktiv ins Stub-Feld übernehmen

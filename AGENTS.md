@@ -198,6 +198,15 @@ Richtung 50 %, deklariert die Commit-Botschaft den Move ausdrücklich als
 `git mv`. Kanonisch:
 [`MR-013`](harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise).
 
+**Ausnahme Wellen-Archiv-Stub-Move** (`tools/archive-wave`, Modul 6
+Schritt 4): hier gibt es **keine** Zwei-Commit-Zerlegung, weil es keine
+Phase gibt, in der die bewegte Datei ihren Inhalt unverändert behält — der
+Stub *ersetzt* den Volltext im selben Akt, der ihn verschiebt. Ein
+Wellen-Archivierungs-Commit bleibt deshalb bewusst **ein** Commit, in der
+Botschaft ausdrücklich als solcher deklariert; git zeigt reine `D`/`A`-Paare,
+keine Renames. Kanonisch:
+[`MR-059`](harness/conventions.md#mr-059--wellen-archiv-stub-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013).
+
 ### 3.4 Architektur sprach-/meilensteinfrei; Spec-Straten nie abwärts
 
 [`spec/architecture.md`](spec/architecture.md) benennt Schichten und
