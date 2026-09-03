@@ -119,24 +119,24 @@ dann auf den Alt-Bestand loslassen (Folge-Slice).
 
 ## 4. Definition of Done
 
-- [ ] Ein Go-Programm sammelt Slices nach `**Welle:**`-Feld, ordnet
+- [x] Ein Go-Programm sammelt Slices nach `**Welle:**`-Feld, ordnet
       Review-Reports per Dateiname zu, baut `archiv.zip`, erzeugt beide
       Stub-Arten nach Template, zieht repo-weite Verweise in beiden
       Pfad-Formen nach.
-- [ ] Ohne `-apply` schreibt das Werkzeug nichts und listet die geplante
+- [x] Ohne `-apply` schreibt das Werkzeug nichts und listet die geplante
       Operation vollständig (Dateien, Verweis-Fixes), mit Test.
-- [ ] `make archive-wave WELLE=<id>`-Target dokumentiert (Handbuch-Klasse:
+- [x] `make archive-wave WELLE=<id>`-Target dokumentiert (Handbuch-Klasse:
       internes Werkzeug, kein d-check-Produktfeature — Dokumentation gehört
       in dieses Slice-Verzeichnis bzw. eine kurze tools/archive-wave/README.md,
       **nicht** ins Benutzerhandbuch, das dem Produkt d-check gilt).
-- [ ] Verifiziert an einem konstruierten Fixture (Test-Welle, zwei
+- [x] Verifiziert an einem konstruierten Fixture (Test-Welle, zwei
       Test-Slices, ein Test-Review-Report) — Stub-Form, ZIP-Inhalt,
       Verweis-Nachzug alle geprüft.
-- [ ] Umkehr-Proben ([`BEO-023`](../observations.md)): je Kernzusage eine
+- [x] Umkehr-Proben ([`BEO-023`](../observations.md)): je Kernzusage eine
       Mutation, die genau den zugehörigen Test rot macht — Sammeln-Bedingung,
       Link-Nachzug, ZIP-Vollständigkeit.
-- [ ] `make gates` grün (Exit explizit); **unabhängiger Review**.
-- [ ] Closure-Notiz mit Lerneintrag; jedes Risiko aus §5 mit Ausgang; die drei
+- [x] `make gates` grün (Exit explizit); **unabhängiger Review**.
+- [x] Closure-Notiz mit Lerneintrag; jedes Risiko aus §5 mit Ausgang; die drei
       Paarungen geprüft (bei der Closure von [welle-87](../welle-87-wellen-archivierung.md),
       da dieser Slice ihr angehört).
 
@@ -147,21 +147,35 @@ dann auf den Alt-Bestand loslassen (Folge-Slice).
   Rename-Similarity sinkt damit unter 50 % — der Commit muss den Move
   ausdrücklich als `git mv` deklarieren (analog zur MR-/Wellen-Lifecycle-Move-
   Ausnahme in `AGENTS.md` §3.3, hier auf eine neue Kategorie angewandt, die
-  dort noch nicht benannt ist). — **Ausgang:** *(bei Closure)*
+  dort noch nicht benannt ist). — **Ausgang: eingetreten → Folge-Slice
+  slice-191** (Anwendung auf den echten Alt-Bestand, welle-87 §4) — dort
+  entsteht der erste echte Stub-vs-Volltext-Move-Commit dieser Art, und die
+  `git mv`-Deklarationspflicht gilt ihm, nicht diesem Slice (der nur das
+  Werkzeug baute, ohne es gegen echte Dateien anzuwenden).
 - **Review-Report-Zuordnung per Dateiname ist eine Heuristik.** Ein Review
   ohne erkennbare Slice-Kennung im Dateinamen (z. B. reine CR-Antwort-
   Dokumente) bleibt unzugeordnet und landet nicht im Archiv — das ist
   gewollt (nur Slice-Reviews gehören zum Slice-Vorgang), aber die Grenze
-  gehört benannt und getestet. — **Ausgang:** *(bei Closure)*
+  gehört benannt und getestet. — **Ausgang: entfallen** — das Risiko war,
+  dass diese Grenze unbenannt/ungetestet bliebe; sie ist jetzt beides:
+  benannt in [`tools/archive-wave/README.md`](../../../../tools/archive-wave/README.md)
+  §Grenzen, getestet in `collect_test.go:TestCollectReviews` (Fall
+  `cr-ohne-slice.md`, unabhängig vom Review bestätigt).
 - **Ein neues Go-Programm außerhalb des d-check-Kernmoduls ist ungetesteter
   Boden.** Die Fixture-Verifikation deckt den Entwurfsfall, nicht jede
   Eigenheit des echten, gewachsenen Bestands (uneinheitliche
   Review-Dateinamen, historische `**Welle:**`-Feld-Schreibweisen vor einer
-  Konventions-Schärfung). — **Ausgang:** *(bei Closure)*
+  Konventions-Schärfung). — **Ausgang: eingetreten → Folge-Slice slice-191**
+  — genau dessen Aufgabe ist, das Werkzeug gegen den echten Bestand zu
+  fahren und dabei auftretende Eigenheiten zu behandeln.
 - **Die Regel entsteht für einen Bestand, den dieser Slice nicht anfasst**
   ([`BEO-011`](../observations.md)): das Werkzeug wird gegen ein
   Fixture bewiesen, nicht gegen welle-60…85. Der Folge-Slice kann Eigenheiten
-  finden, die hier nicht vorgedacht wurden. — **Ausgang:** *(bei Closure)*
+  finden, die hier nicht vorgedacht wurden. — **Ausgang: weiter offen** —
+  als weitere Instanz von `BEO-011` registriert (Zähler jetzt 6, Beleg
+  dieser Slice); ob das Muster (Regel aus dem Anlass statt aus der Klasse)
+  hier tatsächlich zutraf oder durch die bewusste Fixture/Bestand-Trennung
+  vermieden wurde, entscheidet sich erst an der Closure von slice-191.
 
 ## 6. Trigger
 
@@ -216,3 +230,50 @@ den Default: Doc führt, Code folgt. Ein neues Werkzeug ohne Vorgänger, keine
 Reconciliation, kein umzustellender Bestand.
 
 ## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert:** `tools/archive-wave/` — eigenständiges Go-Programm mit
+eigenem `go.mod`, eigenem `Dockerfile` (deps/test/build/runtime-Stages)
+und eigenem `Makefile` (`test`/`build`/`run`/`help`), das Modul 6 Schritt 4
+umsetzt: Sammeln nach `**Welle:**`-Feld, Review-Zuordnung per Dateiname,
+`archiv.zip`-Bau, beide Stub-Arten nach Template, repo-weiter
+Verweis-Nachzug. Sicherer Dry-Run-Default (`-apply`-Opt-in), Mount nur bei
+`APPLY=1` beschreibbar. Das Wurzel-Makefile delegiert
+(`make archive-wave`/`archive-wave-test`) statt den Docker-Aufruf zu
+duplizieren. Verifiziert an einem konstruierten Fixture (`TestFixture_EndToEnd`)
+plus drei benannten Umkehr-Proben und einem Dry-Run-Baum-Snapshot-Test.
+Ein Smoke-Test gegen den echten Bestand (`welle-85`, Dry-Run, `:ro`-Mount)
+lief bereits erfolgreich.
+
+**Was funktioniert hat:** Die Trennung „Werkzeug bauen, nicht anwenden"
+(§3) hat den Slice klein gehalten und den Fixture-Beweis vom
+Anlass-Bestand ferngehalten — genau die BEO-011-Vorsicht, die §7 vorab
+benannte. Die unabhängige Review- und Verifikations-Sequenz (Modul 8) fing
+zwei HIGH-Befunde (Slice-Nummer-Litter in Kommentaren gegen AGENTS.md §3.7;
+fehlender Test für den Dry-Run-Pfad), die beim Schreiben unbemerkt blieben.
+
+**Was anders lief:** Drei Nutzer-Korrekturen während des Baus haben die
+Architektur verbessert, bevor sie ins Review ging: (1) Go-Version blind aus
+einer anderen Datei kopiert statt aus dem gepinnten `GO_VERSION` gelesen —
+korrigiert auf 1.27.0. (2) Das Werkzeug sollte zunächst d-checks interne
+Kern-Pakete wiederverwenden — der Hinweis „andere Repos brauchen das auch"
+kehrte das um: eigenständiges Modul, self-contained Pfad-Auflösung. (3) Der
+Docker-Aufruf stand zunächst roh in README und Wurzel-Makefile dupliziert,
+mit einem durchgehend beschreibbaren Voll-Mount auch im Dry-Run — ein
+eigenes lokales `Makefile` kapselt ihn jetzt einmalig, und der Mount ist
+nur bei `APPLY=1` beschreibbar.
+
+**Steering-Loop-Einträge:**
+- **Geschärfte Prozedur (verkörpert in diesem Slice-Plan, keine gesonderte
+  Regel-Datei):** ein Docker-Aufruf, der in mehr als einem Makefile/einer
+  README vorkäme, gehört hinter EIN Target, nicht dupliziert — dieselbe
+  Drift-Vermeidung wie AGENTS.md §1 sie für Doku-Inhalt schon fordert, hier
+  erstmals auf einen Docker-Aufruf angewandt.
+- [`BEO-011`](../observations.md) — sechste Instanz registriert (Zähler 6),
+  Ausgang offen bis zur Closure von slice-191.
+- Zwei bereits im Register geführte Beobachtungen wurden während der
+  Vorprüfung (§7) gesichtet, keine neue Instanz ausgelöst.
+
+**Zeiger:** [Beobachtungs-Register](../observations.md). Folge-Slice:
+[slice-191](../open/slice-191-alt-bestand-archivieren.md) — Anwendung des
+Werkzeugs auf welle-60…welle-85 und Zuordnung der wellenlosen Alt-Slices,
+welle-87 §4.
