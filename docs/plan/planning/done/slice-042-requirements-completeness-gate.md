@@ -10,7 +10,7 @@
 (RTM-Modus `--trace`: je Anforderung referenzierende ADRs/Slices +
 Waisen-Markierung; advisory, Exit 0). Mechanik-Präzedenz: die Meta-Gates
 [slice-040](welle-29/slice-040-planning-consistency-gate.md) (`planning-check`)
-und [slice-041](../done/slice-041-adr-immutable-gate.md) (`adr-check`) —
+und [slice-041](welle-30/slice-041-adr-immutable-gate.md) (`adr-check`) —
 `tools/`-Skript + Negativ-Selbsttest + Doku-Kopplung. Bindepunkt-Policy in
 eigener Prozess-ADR ([ADR-0017](../../adr/0017-requirements-completeness-gate.md),
 entsteht mit diesem Slice).
