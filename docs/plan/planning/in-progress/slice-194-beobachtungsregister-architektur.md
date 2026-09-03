@@ -92,18 +92,18 @@ dieses Slice, keine Vorentscheidung hier.
 
 ## 4. Definition of Done
 
-- [ ] ADR geschrieben und `Accepted`.
-- [ ] Kürzel für beide heute deklarierten Sub-Areas (`*`, `tools/harness/`)
+- [x] ADR geschrieben und `Accepted`.
+- [x] Kürzel für beide heute deklarierten Sub-Areas (`*`, `tools/harness/`)
       in `harness/conventions.md` festgelegt, kollisionsfrei.
-- [ ] `internal/hexagon/core/rules/planning_observations.go` erweitert um
+- [x] `internal/hexagon/core/rules/planning_observations.go` erweitert um
       den Verzeichnis-Modus (oder ersetzt — je nach ADR-Entscheidung).
-- [ ] Unit-Tests für den neuen Zweig, inkl. Umkehr-Probe.
-- [ ] [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) in `spec/lastenheft.md` fortgeschrieben
+- [x] Unit-Tests für den neuen Zweig, inkl. Umkehr-Probe.
+- [x] [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) in `spec/lastenheft.md` fortgeschrieben
       (Akzeptanzkriterien-Trio, Versions-Bump, Historie-Zeile).
-- [ ] `make gates` grün (zehn Gates), `make test` deckt den neuen Zweig.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
-- [ ] Unabhängige Verifikation durchgeführt.
-- [ ] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
+- [x] `make gates` grün (zehn Gates), `make test` deckt den neuen Zweig.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
+- [x] Unabhängige Verifikation durchgeführt.
+- [x] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -111,13 +111,27 @@ dieses Slice, keine Vorentscheidung hier.
   wird sie später geändert, wandern alle bis dahin migrierten
   Beobachtungs-Pfade mit. Risiko: zu granulare oder zu grobe Kürzel-Wahl
   jetzt, die slice-195 oder einen künftigen Slice zur Nacharbeit zwingt.
+  — **Ausgang: weiter offen.** Zwei Kürzel (`ALL`, `HARN`) sind gewählt und
+  kollisionsfrei; ob sie sich bei der Migration in slice-195 als passend
+  erweisen, zeigt sich erst dort.
 - **Rückwärtskompatibilität vs. Ablösung** ist eine echte Weggabelung mit
   Implementierungsaufwand in beide Richtungen — die ADR muss das mit
-  Alternativen belegen, nicht als Formsache abhaken.
+  Alternativen belegen, nicht als Formsache abhaken. — **Ausgang: entfallen.**
+  [ADR-0083](../../adr/0083-beobachtungsregister-verzeichnis-modus.md) entscheidet additiv mit drei verglichenen Alternativen; der
+  unabhängige Review bestätigt sie als eigenständig begründet, nicht als
+  Strohmänner.
 - **Der bestehende Bestand (`observations.md`) bleibt bis slice-195 die
   Quelle der Wahrheit** — dieser Slice darf `make planning-check`/
   `make gates` nicht rot machen, obwohl er einen zweiten, noch ungenutzten
   Modus einführt (additiv, nicht `observations.register` selbst ändernd).
+  — **Ausgang: entfallen.** `make gates` blieb während der gesamten
+  Implementierung grün; der Tabellen-Modus ist unverändert, alle
+  Alt-Tests laufen weiter unmodifiziert grün gegen den neuen `switch`-Dispatch.
+- **Neu, während der Umsetzung gefunden (nicht vorab benannt):** ein aus
+  Zitat-Text abgeleiteter Pfad kann bei einem überschriebenen
+  `observations.pattern` die Repo-Wurzel verlassen (Review-Finding F-1,
+  HIGH). — **Ausgang: entfallen.** Behoben in `a4935fb`
+  (`pathHasDotDotSegment`), durch Regressionstest belegt.
 
 ## 6. Trigger
 
@@ -178,4 +192,43 @@ Produktcode statt Baseline-Pin angewendet).
 
 ## 9. Closure-Notiz (nach `done/`)
 
-<!-- wird erst bei Closure gefüllt -->
+**Geliefert.** Das Modul `planning` trägt jetzt eine fünfte, additive
+Fähigkeit: der Verzeichnis-Modus (`observations.dir`) prüft die
+Register-Deckung gegen `<dir>/<pfad>/observation.md` statt gegen
+Tabellenzeilen. [ADR-0083](../../adr/0083-beobachtungsregister-verzeichnis-modus.md) dokumentiert die Entscheidung (additiv statt
+Ablösung), zwei Sub-Area-Kürzel sind deklariert (`ALL`, `HARN`),
+[`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) trägt die fünfte Fähigkeit im Lastenheft (0.85.0). Die
+eigentliche Datenmigration bleibt bewusst slice-195.
+
+**Was funktioniert hat.** Die Wiederverwendung der bestehenden Scan-Logik
+(`scanCitedWithoutDeclaration`, Zitat-Erkennung, Prosa-vs-Code-Unterscheidung)
+über ein neues `declaredSet`-Interface hielt die Änderung klein — nur die
+Frage „ist diese Kennung nachgewiesen?" bekam eine zweite Antwort, nicht
+die ganze Scan-Maschinerie eine zweite Kopie. Die Mutual-Exclusivity-Prüfung
+am Config-Rand statt im Scan-Code (Validierung an der Systemgrenze, nicht
+erneut im Kern) hielt sich an das im Repo etablierte Muster (`waves`s W1).
+
+**Was anders lief.** Der unabhängige Review fand eine echte
+Sicherheitslücke (F-1, HIGH): `declaredObservationIDsFromDir.Has` verließ
+sich implizit auf den sicheren Default-Pattern, um Pfad-Traversal
+auszuschließen — ein überschriebenes `observations.pattern` hätte das
+unterlaufen können. Der Tabellen-Modus, den diese Fähigkeit erweitert,
+hatte dieses Risiko nie, weil sein `declared` eine reine In-Memory-Map ist
+und nie pro Kennung auf das Dateisystem zugreift. **Neu an dieser
+Instanz:** additive Erweiterungen bestehender, bereits gehärteter Module
+können neue Angriffsflächen einführen, die keine der bestehenden
+Sicherheits-Prüfungen automatisch mitzieht — der neue Code-Pfad
+(Filesystem-Zugriff pro Kennung) existierte im Tabellen-Modus schlicht
+nicht, und die Config-Rand-Validierung deckte nur die STATISCHEN
+Konfigurationsfelder (`Register`/`Dir`/`Dirs`), nicht das dynamisch
+angewendete `Pattern`. Zusätzlich fand der Review zwei kleinere Lücken:
+ein ungetesteter Default-Zweig mit geänderter Argument-Semantik (F-2,
+MEDIUM) und eine Terminologie-Überzeichnung im ADR-Beleg (F-3, LOW, als
+`## Geschichte`-Anhang korrigiert, da [ADR-0083](../../adr/0083-beobachtungsregister-verzeichnis-modus.md) bereits `Accepted` ist).
+Alle drei vor der Closure behoben, mit Regressionstests belegt.
+
+**Verifikation.** `make gates` Exit 0 (zehn Gates) auf jedem Commit ·
+`make test` grün, Coverage 94,6 % ≥ 93 % · `make lint` 0 Issues ·
+unabhängiger Review (1 HIGH + 1 MEDIUM + 1 LOW, alle behoben) ·
+unabhängige Verifikation (alle DoD-Punkte bestätigt, keine weiteren
+Lücken).
