@@ -214,6 +214,14 @@ ignore-refs:
   # Review-Befund, der ihn ausloeste, als Lauf-Beleg.
   - in: docs/plan/planning/done/slice-112-wellen-invariante-kennungs-menge.md
     refs: ["docs/reviews/2026-08-21-slice-111-waves-mode-review.md"]
+  # Dieselbe Grenze, diesmal als Inline-Code-Pfad (Modul codepaths statt
+  # links -- beide honorieren dasselbe ignore-refs-Ventil), welle-21-
+  # Archivierung (slice-191): eine ADR und ein done/-Slice zitieren den
+  # Review-Report als Beleg.
+  - in: docs/plan/adr/0010-semgrep-hermetisches-gate.md
+    refs: ["docs/reviews/2026-06-20-slice-032-semgrep-gate.md"]
+  - in: docs/plan/planning/done/slice-033-dockerfile-digest-pins.md
+    refs: ["docs/reviews/2026-06-20-slice-032-semgrep-gate.md"]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.
