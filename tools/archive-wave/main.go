@@ -76,6 +76,12 @@ func run(root, welleID string, apply bool) error {
 		if err != nil {
 			return err
 		}
+		// Review-Reports bekommen bei -apply keinen Stub -- sie sind zum
+		// Zeitpunkt des Verweis-Nachzugs bereits geloescht und koennen selbst
+		// nie eine nachgezogene Referenz tragen. Ohne diesen Filter zeigte die
+		// Vorschau einen Treffer, der bei -apply nie eintritt (gemessen an
+		// welle-60: Review-Reports verweisen auf andere gesammelte Slices).
+		dropReviewSelfHits(hits, root, p.Reviews)
 		fmt.Println("  Geplante Verweis-Fixes (ohne -apply wird nichts geschrieben):")
 		if len(hits) == 0 {
 			fmt.Println("    (keine)")
@@ -120,4 +126,13 @@ func previewMoves(root string, p Plan) []Move {
 		})
 	}
 	return moves
+}
+
+// dropReviewSelfHits entfernt Review-Report-Pfade aus einer Treffer-Map --
+// sie werden bei -apply ohne Stub geloescht, bevor der Verweis-Nachzug
+// laeuft, und koennen deshalb selbst nie eine nachgezogene Referenz tragen.
+func dropReviewSelfHits(hits map[string]int, root string, reviews []string) {
+	for _, r := range reviews {
+		delete(hits, RelPath(root, r))
+	}
 }

@@ -108,3 +108,20 @@ func TestPreviewRewrites_OnlyExistingFiles(t *testing.T) {
 		t.Fatalf("got %v, want %v", hits, want)
 	}
 }
+
+// TestDropReviewSelfHits belegt eine an welle-60 gemessene Eigenheit: ein
+// Review-Report kann selbst auf einen mit-gesammelten Slice verweisen, wird
+// bei -apply aber ohne Stub geloescht, bevor der Verweis-Nachzug laeuft --
+// die Vorschau darf diesen Treffer nicht als tatsaechlich eintretend zeigen.
+func TestDropReviewSelfHits(t *testing.T) {
+	root := "/repo"
+	hits := map[string]int{
+		"docs/plan/planning/observations.md": 1,
+		"docs/reviews/r1.md":                 2,
+	}
+	dropReviewSelfHits(hits, root, []string{filepath.Join(root, "docs/reviews/r1.md")})
+	want := map[string]int{"docs/plan/planning/observations.md": 1}
+	if !reflect.DeepEqual(hits, want) {
+		t.Fatalf("got %v, want %v", hits, want)
+	}
+}
