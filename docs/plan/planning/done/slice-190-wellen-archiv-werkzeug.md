@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-87](../welle-87-wellen-archivierung.md).
+**Welle:** [welle-87](welle-87-wellen-archivierung.md).
 
 **Bezug:** [`modul-06-roadmap.md` §Wellen-Closure-Prozedur, Schritt 4](../../../../.harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6)
 (die Operation, die dieser Slice als Werkzeug einlöst);
@@ -11,7 +11,7 @@
 und
 [`archiv-stub-welle.template.md`](../../../../.harness/baseline/v5.18.0/templates/docs/plan/planning/archiv-stub-welle.template.md)
 (die Ziel-Form der beiden Stub-Arten);
-[welle-87](../welle-87-wellen-archivierung.md) (Ziel, Closure-Trigger,
+[welle-87](welle-87-wellen-archivierung.md) (Ziel, Closure-Trigger,
 Out-of-Scope-Abgrenzung zu diesem Slice).
 
 **Berührte Spec-Stellen:** — Dieser Slice baut kein d-check-Regelmodul und
@@ -34,7 +34,7 @@ während welle-60 bis welle-85 bereits geschlossen sind und
 Pflicht trifft.
 
 **Dieser Slice liefert genau das Werkzeug — nicht seine Anwendung auf den
-echten Bestand.** Das ist [welle-87](../welle-87-wellen-archivierung.md)s
+echten Bestand.** Das ist [welle-87](welle-87-wellen-archivierung.md)s
 eigene Trennung: erst bauen und an einem kontrollierten Fixture beweisen,
 dann auf den Alt-Bestand loslassen (Folge-Slice).
 
@@ -60,7 +60,7 @@ dann auf den Alt-Bestand loslassen (Folge-Slice).
    Wellen-ID: alle `docs/plan/planning/done/slice-*.md`, deren
    `**Welle:**`-Feld exakt diese ID nennt. **Wellenlose Alt-Slices bleiben
    außen vor** — ihre Zuordnung ist eine eigene Entscheidung
-   ([welle-87](../welle-87-wellen-archivierung.md) §3, Folge-Slice).
+   ([welle-87](welle-87-wellen-archivierung.md) §3, Folge-Slice).
 3. **Review-Reports zuordnen.** `docs/reviews/*.md`, deren Dateiname die
    Slice-Kennung (`slice-<NNN>`) eines gesammelten Slice trägt — 1:N zulässig
    (mehrere Reviews desselben Slice, z. B. `-r1`/`-r2`-Suffixe, gemessener
@@ -101,13 +101,13 @@ dann auf den Alt-Bestand loslassen (Folge-Slice).
   (welle-60…welle-85) — ein neues, ungetestetes Werkzeug wird erst am Fixture
   bewiesen, nicht direkt am echten Baum ausprobiert. Das ist eine
   Reihenfolge-, keine Zeit-Entscheidung: der Folge-Slice
-  ([welle-87](../welle-87-wellen-archivierung.md) §4) läuft **im Anschluss,
+  ([welle-87](welle-87-wellen-archivierung.md) §4) läuft **im Anschluss,
   in derselben Sitzung** — Ziel ist ein vollständig archivierter Bestand am
   Ende des Durchgangs, nicht ein auf unbestimmte Zeit vertagter Rest.
 - **Keine Zuordnung wellenloser Alt-Slices** zu einer archivierenden Welle in
   DIESEM Slice — dieselbe Abgrenzung, derselbe unmittelbare Folge-Slice.
 - **`welle-86` wird nicht eingesammelt** — sie bleibt eigenständig
-  ([welle-87](../welle-87-wellen-archivierung.md) §5).
+  ([welle-87](welle-87-wellen-archivierung.md) §5).
 - **Kein neues `make gates`-Gate**, das die Archivierung erzwingt oder
   prüft. Dieser Slice liefert ein **Werkzeug**, keine Automatisierung im
   CI-Pfad — die Archivierung bleibt ein bewusster, von Hand ausgelöster
@@ -137,7 +137,7 @@ dann auf den Alt-Bestand loslassen (Folge-Slice).
       Link-Nachzug, ZIP-Vollständigkeit.
 - [x] `make gates` grün (Exit explizit); **unabhängiger Review**.
 - [x] Closure-Notiz mit Lerneintrag; jedes Risiko aus §5 mit Ausgang; die drei
-      Paarungen geprüft (bei der Closure von [welle-87](../welle-87-wellen-archivierung.md),
+      Paarungen geprüft (bei der Closure von [welle-87](welle-87-wellen-archivierung.md),
       da dieser Slice ihr angehört).
 
 ## 5. Abnahme-Punkte / Risiken

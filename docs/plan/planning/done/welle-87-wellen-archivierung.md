@@ -14,7 +14,7 @@ bekommt ihre Ergebnisnotiz `welle-87-results.md` daneben.
 
 **Dieses Repo hat noch keine einzige Welle archiviert — obwohl der Kanon das
 für jede Wellen-Closure vorschreibt, seit die Regel eingeführt ist.**
-Gemessen bei [slice-188](done/slice-188-register-gegen-neuen-kanon.md):
+Gemessen bei [slice-188](slice-188-register-gegen-neuen-kanon.md):
 kein `archiv.zip`, kein `done/<welle-id>/`-Verzeichnis existiert, während
 welle-60 bis welle-85 bereits geschlossen sind.
 
@@ -25,7 +25,7 @@ welle-60 bis welle-85 bereits geschlossen sind.
 
 **Die Nachrüst-Ausnahme des Kanons deckt nur die Vergangenheit, nicht die
 Zukunft.** Wellen, die vor Einführung der Regel schlossen, müssen nicht
-archiviert werden — ein Repo bleibt ohne das konform. [`welle-86`](welle-86-closure-uebergang-durchsetzen.md)
+archiviert werden — ein Repo bleibt ohne das konform. [`welle-86`](../welle-86-closure-uebergang-durchsetzen.md)
 steht aber **aktuell offen**: Schließt sie, greift die Pflicht ungemindert,
 und heute führt sie kein Werkzeug aus. Diese Welle baut das Werkzeug **und**
 wendet es rückwirkend auf den Alt-Bestand an — bevor welle-86 selbst vor
@@ -39,7 +39,7 @@ Einzelkriterium.
 
 ## 2. Trigger (Welle startet)
 
-- [slice-188](done/slice-188-register-gegen-neuen-kanon.md) ist geschlossen
+- [slice-188](slice-188-register-gegen-neuen-kanon.md) ist geschlossen
   — er hat die Lücke gemessen und den Anlass geliefert.
 
 ## 3. Closure-Trigger (Welle schließt)
@@ -68,12 +68,12 @@ typische Fehlannahmen: "Erst plan ich alle Slices"). -->
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [slice-190](done/slice-190-wellen-archiv-werkzeug.md) | Archivierungs-Werkzeug bauen (Sammeln, ZIP, Stubs, Verweis-Nachzug), verifiziert an einem Fixture | `modul-06-roadmap.md` §Wellen-Closure-Prozedur, Schritt 4 |
-| [slice-191](done/slice-191-alt-bestand-archivieren.md) | Alt-Bestand archivieren (welle-60…welle-85) und Zuordnung der wellenlosen Alt-Slices entscheiden | dito |
+| [slice-190](slice-190-wellen-archiv-werkzeug.md) | Archivierungs-Werkzeug bauen (Sammeln, ZIP, Stubs, Verweis-Nachzug), verifiziert an einem Fixture | `modul-06-roadmap.md` §Wellen-Closure-Prozedur, Schritt 4 |
+| [slice-191](slice-191-alt-bestand-archivieren.md) | Alt-Bestand archivieren (welle-60…welle-85) und Zuordnung der wellenlosen Alt-Slices entscheiden | dito |
 
 ## 5. Abhängigkeiten
 
-- **Wird gebraucht von:** [`welle-86`](welle-86-closure-uebergang-durchsetzen.md)
+- **Wird gebraucht von:** [`welle-86`](../welle-86-closure-uebergang-durchsetzen.md)
   — ihre eigene Closure trifft dieselbe Archivierungspflicht, sobald ihre
   vier Vorbedingungen erfüllt sind. `welle-86` bleibt eigenständig und wird
   **nicht** in diese Welle eingesammelt; sie nutzt nur das hier gebaute
@@ -83,11 +83,11 @@ typische Fehlannahmen: "Erst plan ich alle Slices"). -->
 ## 6. Out-of-Scope für diese Welle
 
 - **`welle-86` selbst schließen.** Eigene Welle, eigene vier Vorbedingungen —
-  siehe [`welle-86`](welle-86-closure-uebergang-durchsetzen.md) §1.
-- **[`BEO-027`](observations.md) auflösen** (Registerzeilen ohne
+  siehe [`welle-86`](../welle-86-closure-uebergang-durchsetzen.md) §1.
+- **[`BEO-027`](../observations.md) auflösen** (Registerzeilen ohne
   formgültigen Ausgang). Verwandtes, aber eigenständiges Thema — eigener
   Folge-Slice, keine Vermischung mit der Archivierungs-Mechanik.
-- **Der `registry`-Modul-Vorschlag** aus [`BEO-001`](observations.md#gestrichene-einträge)
+- **Der `registry`-Modul-Vorschlag** aus [`BEO-001`](../observations.md#gestrichene-einträge)
   (ADR-Index/Konventionsspeicher-Index gegen dieselbe Drift). Andere
   Register-Klasse, eigene Entscheidung.
 
@@ -96,13 +96,16 @@ typische Fehlannahmen: "Erst plan ich alle Slices"). -->
 Register-Stand 2026-09-02, höchste Kennung `BEO-027`. Keine Beobachtung
 trifft die Archivierungs-Mechanik selbst direkt — zwei liegen in derselben
 Sub-Area (`docs/plan/planning/`) und werden bewusst **nicht** mit
-eingesammelt (siehe §6): [`BEO-015`](observations.md) (ein Slice bekommt bei
+eingesammelt (siehe §6): [`BEO-015`](../observations.md) (ein Slice bekommt bei
 der Closure einen Ausgang, den es nicht gibt — dieselbe Familie wie
-`BEO-027`, aber die andere Richtung) und [`BEO-027`](observations.md)
+`BEO-027`, aber die andere Richtung) und [`BEO-027`](../observations.md)
 selbst (Registerzeile ohne zugewiesenen Ausgang). Keine Treffer sind
 ebenfalls eine Antwort.
 
 ## 8. Closure-Notiz
 
-Ergebnis: —
-Zähler: —
+Ergebnis: alle vier Closure-Trigger-Bedingungen erfüllt — siehe
+[`welle-87-results.md`](welle-87-results.md) für den vollständigen
+Lerneintrag.
+Zähler: [`BEO-011`](../observations.md) 5 → 6 (sechste Instanz, Ausgang
+weiter offen).

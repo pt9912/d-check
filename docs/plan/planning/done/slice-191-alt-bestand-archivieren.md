@@ -3,13 +3,13 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-87](../welle-87-wellen-archivierung.md).
+**Welle:** [welle-87](welle-87-wellen-archivierung.md).
 
 **Bezug:** [`modul-06-roadmap.md` §Wellen-Closure-Prozedur, Schritt 4](../../../../.harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6)
 (die Pflicht, die dieser Slice nachholt);
 [slice-190](../done/slice-190-wellen-archiv-werkzeug.md) (liefert das
 Werkzeug `tools/archive-wave/`, das dieser Slice anwendet);
-[welle-87](../welle-87-wellen-archivierung.md) §3/§4 (Closure-Trigger,
+[welle-87](welle-87-wellen-archivierung.md) §3/§4 (Closure-Trigger,
 Slice-Platzhalter `slice-<NN-B>`, den dieser Slice einlöst).
 
 **Berührte Spec-Stellen:** — Planning-Infrastruktur, keine `DC-FA-*`-Anforderung.
@@ -27,7 +27,7 @@ Archivierungs-Werkzeug gebaut und an einem Fixture bewiesen — nicht am
 echten Bestand. Dieser Slice zieht die Trennung nach.
 
 **Scope-Erweiterung während der Ausführung (Nutzer-Entscheid):** ursprünglich
-auf welle-60…85 begrenzt (die Wellen, für die [welle-87](../welle-87-wellen-archivierung.md)
+auf welle-60…85 begrenzt (die Wellen, für die [welle-87](welle-87-wellen-archivierung.md)
 die Nachrüstpflicht maß). Nach deren vollständiger Archivierung zeigte die
 Sichtung der verbliebenen `docs/reviews/`-Altlast (158 Dateien), dass die
 Wellen-Nummerierung **nicht** erst bei welle-60 beginnt, sondern bei
@@ -321,6 +321,6 @@ weil sie nur an gewachsenem, echtem Bestand auftreten — exakt die von
   eine Mess-**Anzeige**.
 
 **Zeiger:** [Beobachtungs-Register](../observations.md). Diese Slice-
-Closure löst zugleich [welle-87](../welle-87-wellen-archivierung.md)s
+Closure löst zugleich [welle-87](welle-87-wellen-archivierung.md)s
 eigene Closure-Prozedur aus (Modul 6, sechs Schritte) — sie folgt
 unmittelbar danach.
