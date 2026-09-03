@@ -14,21 +14,21 @@ Die Baseline ist **vollständig** von v5.0.0 auf **v5.6.0** gehoben — vier
 Slices, je mit unabhängigem Frischkontext-Review (zwei davon zusätzlich mit
 bestätigender Re-Review):
 
-- **Etappe A** ([slice-106](slice-106-baseline-v560-vendoring.md)): Bundle
+- **Etappe A** ([slice-106](welle-78/slice-106-baseline-v560-vendoring.md)): Bundle
   v5.6.0 committet vendored (`--verify` 51 Dateien), v5.0.0-Baum entfernt,
   Pin samt [`MR-026`](../../../../harness/conventions.md#mr-026), lebende
   Verweise pin-gebunden retargetet, fünf eingefrorene Fundstellen
   getombstoned; dabei zwei Defekte im `--check-latest`-Content-Audit gefixt
   (falscher Drift-Alarm, Müll-Verzeichnisse).
-- **Etappe B** ([slice-107](slice-107-baseline-v560-delta-audit.md)): der
+- **Etappe B** ([slice-107](welle-78/slice-107-baseline-v560-delta-audit.md)): der
   Stufen-Audit v5.1.0–v5.6.0 — je Regel eine Antwort (konform · anzupassen ·
   n. a. mit Begründung), sechs „anzupassen"-Findings zu zwei
   Etappe-C-Slices gebündelt.
-- **Etappe C-1** ([slice-108](slice-108-roadmap-offene-wellen.md)): die
+- **Etappe C-1** ([slice-108](welle-78/slice-108-roadmap-offene-wellen.md)): die
   Roadmap in der v5.6.0-Form **§Offene Wellen** (derivativ, Ruhe-Marker
   „Nichts in Arbeit" mit Wächter), beide Prüf-Profile per Config,
   [`MR-024`](../../../../harness/conventions.md#mr-024) aufgelöst.
-- **Etappe C-2…C-6** ([slice-109](slice-109-v560-konventions-nachzuege.md)):
+- **Etappe C-2…C-6** ([slice-109](welle-78/slice-109-v560-konventions-nachzuege.md)):
   Vergabe-Deklaration, [`MR-027`](../../../../harness/conventions.md#mr-027)
   (Struktur-ID-Verzicht als deklarierte Abweichung), Kommentar-Regel-Träger
   (AGENTS §3.7 + `reviewer.md` 1.5.0) samt Räumung von zwanzig
