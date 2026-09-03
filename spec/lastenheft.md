@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.83.0
+**Version:** 0.84.0
 
 **Status:** Draft
 
@@ -75,7 +75,8 @@ statt per Code-Kopie.
 > `citations`), `SRC` (Upstream-Content-Drift externer Quellen, Modul
 > `sources`), `STRUCT` (Struktur-Invarianten
 > innerhalb eines Dokuments, Modul `structure`), `WF`
-> (Workflow-Deklarations-Konsistenz, Modul `workflows`), `CONF`
+> (Workflow-Deklarations-Konsistenz, Modul `workflows`), `RVW`
+> (Review-Report-Deckung, Modul `reviews`), `CONF`
 > (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
@@ -3336,6 +3337,78 @@ liegt nicht vor", nicht „der Workflow läuft".
 
 ---
 
+### DC-FA-RVW-001 — Review-Report-Deckung (Modul `reviews`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `reviews` prüft d-check, ob
+jeder `done/`-Slice mit einer **Review-Zusage** — ein DoD-Haken, dessen Zeile
+die Phrase „unabhängiger Review" trägt, in jeder der drei CommonMark-Bullet-
+Formen (`-`/`*`/`+`), unabhängig vom Haken-Zustand — mindestens einen Report
+unter einem konfigurierten Verzeichnis hat, dessen Dateiname dieselbe
+`slice-<NNN>`-Kennung trägt (Substring-Match, 1:N zulässig, z. B.
+`-r1`/`-r2`-Suffixe).
+
+| Bedingung | Grund-Code | Reparatur |
+|---|---|---|
+| jede Review-Zusage hat mindestens einen Report unter `reviews.reviews-dir` | `review-missing` | den Report ergänzen — oder, falls fälschlich zugesagt, den Haken korrigieren |
+| die Kandidatenmenge ist nicht leer und `reviews.reviews-dir` lesbar | `review-missing` (fail-closed) | Konfiguration/Pfad korrigieren |
+
+**Warum die engere Phrase.** Bloßes „Review" wäre zu breit — gemessen an
+einem realen Fall, dessen DoD-Zeile ein anderes, in der Slice-Datei selbst
+dokumentiertes Konzept („Adaptions-Review") ohne externen Report nennt. Die
+Phrase „unabhängiger Review" trägt exakt die Konvention, unter der ein
+externer Report tatsächlich entsteht.
+
+**Warum ein Haken-Zustand nicht zählt.** Ein **geschlossener** Haken ist eine
+schwächere Zusage als ein Report: Er sagt „hier wurde etwas erledigt", nicht
+„der Report existiert". Ein Modul, das nur offene Haken meldet, sieht einen
+geschlossenen Haken ohne Report nicht — genau der Fall, den dieses Modul
+zusätzlich zu einem reinen Struktur-Wächter deckt.
+
+**Warum kein rekursiver Scan.** Ein bereits archivierter Slice-Stub
+(`done/<welle-id>/…`) trägt keine DoD mehr und fällt damit natürlich aus der
+Kandidatenmenge — kein Sonderfall nötig. Die Scan-Menge ist bewusst auf die
+**unmittelbaren** Einträge beider konfigurierten Verzeichnisse beschränkt.
+
+**Scan-Menge und die Grenze, die daraus folgt.** Das Modul liest Dateien
+unterhalb zweier **konfigurierter** Verzeichnisse (`reviews.done-dir`,
+`reviews.reviews-dir`) — beide sind Repo-Konvention, nicht verdrahtet.
+Geprüft wird die **Deckung** (ein Report existiert), nicht seine **Qualität**
+— dieselbe Grenze wie beim DoD-Haken selbst: eine Selbstauskunft.
+
+**Hermetisch und netzlos:** nur der Filesystem-Port, **kein** git, **kein**
+Netz.
+
+**Strikt opt-in, fail-closed:** `reviews` ist nie Default-Modul; ohne
+`reviews.done-dir` ist es **inert** (keine Datei wird geöffnet, der Befundsatz
+ist byte-identisch, [`DC-QA-02`](#dc-qa-02--determinismus)). Ist es aktiv und
+die Kandidatenmenge leer oder `reviews.reviews-dir` unlesbar, ist das ein
+**Befund**, kein stilles Grün. **Null gefundene Review-Zusagen unter
+vorhandenen Kandidaten** ist dagegen **kein** Fail-Closed-Auslöser — ein
+kleiner oder junger Bestand ohne jede Zusage ist ein legitimer Zustand.
+
+**Exit 2 vor dem Lauf** bei: leerem `reviews.done-dir` (nur Weißraum),
+gesetztem `reviews.done-dir` ohne `reviews.reviews-dir` und ungültigem Glob
+in `reviews.exempt-paths`.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given `reviews` aktiv, ein `done/`-Slice mit einer Review-Zusage-Zeile und ein Report unter `reviews.reviews-dir`, dessen Dateiname dieselbe `slice-<NNN>`-Kennung trägt, when `d-check --enable reviews` läuft, then kein Befund, Exit 0.
+- **Negative:** Given einen Slice mit Review-Zusage und **keinem** passenden Report, when der Lauf endet, then `review-missing` auf der Zusage-Zeile.
+- **Boundary (Bullet-Formen):** Given dieselbe Zusage einmal je Bullet-Form (`-`/`*`/`+`), when der Lauf endet, then in jedem Fall dieselbe Erkennung — unabhängig vom Haken-Zustand (`[ ]`/`[x]`/`[X]`).
+- **Boundary (kein Kandidat, keine Zusage):** Given einen `done/`-Slice **ohne** Review-Zusage-Zeile, when der Lauf endet, then kein Befund auf ihm — und für sich allein **kein** Fail-Closed, solange andere Kandidaten existieren.
+- **fail-closed (leere Kandidatenmenge):** Given `reviews` aktiv und `reviews.done-dir` ohne eine einzige `slice-*.md`-Datei, when der Lauf endet, then ein Befund, nicht Exit 0.
+- **Boundary (exempt-paths):** Given einen Kandidaten, der über `reviews.exempt-paths` ausgenommen ist, when der Lauf endet, then kein Befund auf ihm — der Leerlauf-Befund bleibt bestehen, falls die Ausnahme die Kandidatenmenge auf null bringt.
+- **Boundary (archivierte Stubs):** Given einen archivierten Slice-Stub unterhalb eines Unterverzeichnisses von `reviews.done-dir` (`done/<welle-id>/…`), when der Lauf endet, then ist er **kein** Kandidat — der Scan ist nicht rekursiv.
+- **Boundary (Modul-aus):** Given **kein** aktives `reviews`, when `d-check` läuft, then ist der Befundsatz byte-identisch zum Lauf ohne den Konfigurations-Block ([`DC-QA-02`](#dc-qa-02--determinismus)), und keine Datei wird geöffnet.
+
+**Out-of-Scope:** die **Qualität** eines Reports (Selbstauskunft, wie der
+DoD-Haken selbst); jede Review-Zusage-Formulierung außer der einen
+konventionellen Phrase; ein rekursiver Scan; die zeitliche Reihenfolge von
+Review-Commit und Closure-Commit (das wäre eine Historien-Aussage und gehört
+zur `vcs`-Familie).
+
+---
+
 ### DC-FA-CONF-001 — Konfigurationsdatei
 
 **Beschreibung:** Eine optionale Datei `.d-check.yml` in der
@@ -3491,6 +3564,9 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.84.0 | 2026-09-03 | Neue Anforderung [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in) — **Review-Report-Deckung** (Modul `reviews`, opt-in): jeder `done/`-Slice mit einer Review-Zusage (DoD-Haken, dessen Zeile „unabhängiger Review" nennt, jede Bullet-Form, Haken-Zustand egal) braucht mindestens einen Report unter einem konfigurierten Verzeichnis mit derselben `slice-<NNN>`-Kennung im Dateinamen. **Anlass ist eine ausdrücklich benannte Lücke eines vorherigen `structure`-Wächters**, der nur den **offenen** DoD-Haken deckt, nicht die Deckung zweier Mengen zwischen zwei Verzeichnissen — das sei eine neue Fähigkeit und gehöre in einen eigenen Anlauf. **Am eigenen Bestand gemessen:** fünf reale Funde, davon zwei mit
+**geschlossenem** Haken — für `structure`s Wächter unsichtbar, weil der Haken
+gesetzt ist. Bloßes „Review" wäre als Phrase zu breit gewesen (ein realer Fund trägt „Adaptions-Review", ein anderes, selbst-dokumentiertes Konzept ohne externen Report); die engere Phrase „unabhängiger Review" trägt exakt die gemessene Konvention. Kein rekursiver Scan — ein archivierter Slice-Stub trägt keine DoD mehr und fällt natürlich aus der Kandidatenmenge. Fail-closed bei leerer Kandidatenmenge, **nicht** bei null gefundenen Zusagen unter vorhandenen Kandidaten (ein junger Bestand ohne jede Zusage ist legitim). Begründung in begleitender ADR | — |
 | 0.83.0 | 2026-09-02 | [`DC-FA-WF-001`](#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in): dritter Grund-Code `uses-pin-tag-conflict` — derselbe SHA trägt innerhalb der Scan-Menge **überall denselben** Tag-Kommentar, sonst ein Befund je beteiligter Zeile. **Anlass ist ein eingehender CR** der Schwester-Anwendung `a-check` (`docs/plan/cr/2026-08-30-cr-a-check-uses-tag-kohaerenz.md`): ihr eigenes Bash-Sensor-Äquivalent fand denselben SHA zweimal gepinnt mit unterschiedlichem Tag-Kommentar, einmal innerhalb einer Datei, einmal dateiübergreifend — über die GitHub-API aufgelöst (`v4.2.0` korrekt, `v3.6.0` falsch). **Die tragende Neuerung ist dateiübergreifend** — die erste Bedingung des Moduls, die nicht je Datei urteilt, sondern über die gesamte Scan-Menge gruppiert. **Am eigenen Bestand gemessen:** `.github/workflows/` liefert **0** Konflikte (3 distinkte SHAs, je genau ein Tag-Kommentar; `actions/checkout` 5× mit identischem Kommentar — Wiederholung löst keinen Befund aus). **Benannte Grenze:** zwei legitime, aber textuell verschiedene Tags auf demselben Commit (Major- neben Patch-Release) lösen denselben Befund aus wie ein echter Fehler — die Unterscheidung wäre ein Versions-Kompatibilitäts-Urteil, keine Deklarations-Prüfung, und bleibt bewusst außerhalb. Kein neues Konfigurations-Feld — dieselbe Aktivierungs-Schranke wie `uses-pin-untagged`. Begründung in begleitender ADR | — |
 | 0.82.0 | 2026-09-01 | [`DC-FA-CLI-001`](#dc-fa-cli-001--aufruf-und-scan-wurzel) und [`DC-FA-CLI-010`](#dc-fa-cli-010--makefile-fragment-ausgeben): **zweite Handbuch-URL-Form** neben der bestehenden — die rohe `raw.githubusercontent.com/…/refs/heads/main/…`-Form neben der gerenderten `github.com/…/blob/main/…`-Form, in beiden Ausgaben. **Anlass ist eine Adressaten-Lücke:** Hauptleser beider Ausgaben ist ein Code-Agent, kein Mensch im Terminal, und für ihn ist die gerenderte Seite die schlechtere Quelle — **siebenfache Nutzlast** für identischen Inhalt (gemessen: 174,6 KB roh gegen 1,2 MB gerendert) und **verlorene Markdown-Linkziele** (`[v0.71.1](../../version.md#v0.71.1)` roh gegen bloßes `v0.71.1` gerendert). Das übliche Argument „Agenten können `blob` nicht lesen" trifft **nicht** zu; entscheidend sind die zwei genannten Achsen, nicht Lesbarkeit. **Was hier nicht umgedreht wird:** der Zweig bleibt `main`, ohne Versionsangabe, in beiden Formen — dieselbe mit 0.77.0 begründete Entscheidung. Kein neues Verhalten jenseits der zweiten Zeile, kein Grund-Code | — |
 | 0.81.0 | 2026-08-31 | [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in): **vierte** Fähigkeit `planning.observations` (opt-in innerhalb des opt-in Moduls) — die eine **urteilsfreie** Richtung der Register-Paarung: eine **zitierte** Beobachtungs-Kennung hat eine Zeile im Register, sonst `observation-unregistered`. Die Umkehrung bleibt ausgeschlossen, weil die meisten Zeilen unter der Verkörperungs-Schwelle stehen und nirgends zitiert sind. **Die tragende Festlegung ist die Erkennungs-Form, und sie ist gemessen:** gezählt werden **Prosa und Linktext**, ein reines Inline-Code-Span nicht — am eigenen Bestand stehen **366** echte Zitate als Link **mit** Backticks im Linktext, während beide gefundenen Beispiel-Nennungen reine Code-Spans sind; eine Regel „Inline-Code zählt nicht" (wie bei der Platzhalter-Bedingung) übersähe genau die Zitate. Deklarierend ist **nur die erste Zelle** einer Tabellenzeile, sonst deklarierte sich jede Quer-Referenz selbst. Scan-Menge und Kennungs-Gestalt sind konfigurierbar, die **Richtung** nicht; die Scan-Mengen-Grenze steht ausdrücklich in der Anforderung ([`AGENTS.md` §3.8](../AGENTS.md#38-ein-modul-verspricht-nur-über-das-was-es-scannt)). **Drei fail-closed-Ränder**, darunter der vertippte `dirs`-Eintrag: er liefert bei manchen Adaptern eine **leere Liste** statt eines Fehlers, und die Fähigkeit ginge still inert — gemessen am In-Memory-Adapter der Kern-Tests. Vor dem Scharfschalten gemessen: eigener Bestand **0** Befunde, konstruierte Kennung als Link **1**, dieselbe als Code-Span **0**. Begründung in begleitender ADR | — |

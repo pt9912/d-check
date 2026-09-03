@@ -727,6 +727,7 @@ type raw struct {
 	Structure []rawStructure `yaml:"structure"`
 	Targets   *rawTargets   `yaml:"targets"`
 	Workflows *rawWorkflows `yaml:"workflows"`
+	Reviews   *rawReviews   `yaml:"reviews"`
 	// Sources ist eine bare Liste `sources[]` (spec/spezifikation.md §2;
 	// KEIN Map mit scope — das Modul nutzt den globalen Scan-Scope).
 	Sources []rawSource `yaml:"sources"`
@@ -862,6 +863,11 @@ func applyRemainingModules(r *raw, cfg *model.Config) error {
 		return werr
 	}
 	cfg.Workflows = wf
+	rv, rverr := applyReviews(r.Reviews)
+	if rverr != nil {
+		return rverr
+	}
+	cfg.Reviews = rv
 	if err := applySources(r, cfg); err != nil {
 		return err
 	}
@@ -2227,6 +2233,35 @@ func applyWorkflows(r *rawWorkflows) (model.WorkflowsConfig, error) {
 		}
 	}
 	return model.WorkflowsConfig{Dir: r.Dir, ExemptPaths: r.ExemptPaths}, nil
+}
+
+// rawReviews trägt die Parameter des Moduls reviews (DC-FA-RVW-001):
+// done-dir (Aktivierungs-Schalter), reviews-dir und exempt-paths. **Kein**
+// scope — wie workflows benennt das Modul seine beiden Verzeichnisse selbst.
+type rawReviews struct {
+	DoneDir     string   `yaml:"done-dir"`
+	ReviewsDir  string   `yaml:"reviews-dir"`
+	ExemptPaths []string `yaml:"exempt-paths"`
+}
+
+// applyReviews validiert den reviews-Block am Config-Rand: ein aktiviertes
+// Modul ohne reviews-dir liefe inert, ohne dass jemand es sähe.
+func applyReviews(r *rawReviews) (model.ReviewsConfig, error) {
+	if r == nil {
+		return model.ReviewsConfig{}, nil
+	}
+	if r.DoneDir != "" && strings.TrimSpace(r.DoneDir) == "" {
+		return model.ReviewsConfig{}, fmt.Errorf("%s: reviews.done-dir ist leer (nur Weißraum)", FileName)
+	}
+	if r.DoneDir != "" && strings.TrimSpace(r.ReviewsDir) == "" {
+		return model.ReviewsConfig{}, fmt.Errorf("%s: reviews.done-dir gesetzt, reviews.reviews-dir fehlt", FileName)
+	}
+	for _, g := range r.ExemptPaths {
+		if _, err := path.Match(g, "probe"); err != nil {
+			return model.ReviewsConfig{}, fmt.Errorf("%s: reviews.exempt-paths %q ist kein gültiges Glob: %v", FileName, g, err)
+		}
+	}
+	return model.ReviewsConfig{DoneDir: r.DoneDir, ReviewsDir: r.ReviewsDir, ExemptPaths: r.ExemptPaths}, nil
 }
 
 // applyObservations validiert die Register-Deckungs-Parameter. Dieselbe

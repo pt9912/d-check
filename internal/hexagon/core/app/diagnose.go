@@ -103,6 +103,7 @@ func AllReasons() []string {
 		rules.ReasonUsesPinTagConflict,
 		rules.ReasonUsesLocalMissing, rules.ReasonUsesLocalPermsUndecl,
 		rules.ReasonUsesLocalPermsNarrow, rules.ReasonWorkflowUnparsable,
+		rules.ReasonReviewMissing,
 	}
 }
 
@@ -177,6 +178,7 @@ func reasonTexts() map[string]string {
 		rules.ReasonUsesLocalPermsUndecl:  "Das Ziel einer lokalen Referenz verlangt Rechte, der aufrufende Job trägt kein eigenes permissions: — er kann nichts weitergeben, was er nicht deklariert",
 		rules.ReasonUsesLocalPermsNarrow:  "Der aufrufende Job führt einen geforderten Scope niedriger, als das Ziel ihn verlangt (none < read < write; ein nicht genannter Scope ist none)",
 		rules.ReasonWorkflowUnparsable:    "Workflow-Datei oder Referenz-Ziel ist kein gültiges YAML — Befund statt Übersprung, eine unlesbare Datei ist kein geprüfter Zustand",
+		rules.ReasonReviewMissing:         "Review-Zusage ohne passenden Report unter dem konfigurierten Verzeichnis (oder leere Kandidatenmenge — fail-closed)",
 	}
 }
 

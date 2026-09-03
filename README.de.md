@@ -187,6 +187,16 @@ Dokuments:
   **Hermetisch** (kein git, kein Netz, kein Ausführen); die Referenzen kommen aus
   dem **YAML-Baum**, nicht aus einer Textsuche
   ([`DC-FA-WF-001`](spec/lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in))
+- `reviews` — Review-Report-Deckung: jeder `done/`-Slice-Plan mit einer
+  Review-Zusage (ein DoD-Haken, dessen Zeile „unabhängiger Review" nennt,
+  jede Bullet-Form, Haken-Zustand egal) braucht mindestens einen Report unter
+  einem **konfigurierten** Verzeichnis (`reviews.reviews-dir`) mit derselben
+  `slice-<NNN>`-Kennung im Dateinamen — sonst `review-missing`. Beide
+  Verzeichnisse werden **nicht rekursiv** gescannt: ein bereits archivierter
+  Slice-Stub trägt keine DoD mehr und fällt natürlich aus der
+  Kandidatenmenge. Geprüft wird die **Deckung**, nicht die Qualität des
+  Reports. **Hermetisch** (kein git, kein Netz), opt-in
+  ([`DC-FA-RVW-001`](spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.

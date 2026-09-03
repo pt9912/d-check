@@ -2732,6 +2732,60 @@ liegt nicht vor", nicht „der Workflow läuft".
 
 ---
 
+### DC-FA-RVW-001.a — Review-Report-Deckung (`reviews`)
+
+Verfeinert [`DC-FA-RVW-001`](lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in).
+Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
+**opt-in**.
+
+1. **Inert/Config.** Ohne `reviews.done-dir` ist das Modul inert: **keine**
+   Datei wird geöffnet, der Befundsatz ist byte-identisch
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)). **Exit 2** vor dem
+   Lauf bei: `reviews.done-dir` aus lauter Weißraum; `reviews.done-dir`
+   gesetzt ohne `reviews.reviews-dir`; ungültiges Glob in
+   `reviews.exempt-paths`.
+2. **Kandidaten.** Alle Dateien **unmittelbar** in `reviews.done-dir` mit der
+   Endung `.md` und dem Namens-Präfix `slice-` — Unterverzeichnisse zählen
+   nicht (ein archivierter Slice-Stub liegt eine Ebene tiefer und trägt keine
+   DoD mehr). Abgezogen wird `exempt-paths`. Stabil sortiert geprüft. **Null
+   Kandidaten ⇒ Befund** `review-missing` mit `file` = `reviews.done-dir`,
+   `line` = 1: eine leere Prüfmenge ist kein Grün.
+3. **Review-Zusage erkennen.** Der Inhalt jeder Kandidaten-Datei wird
+   **roh**, zeilenweise gescannt (dieselbe Lexik-Entscheidung wie bei
+   `max-open-tasks`: eine absatzweite Inline-Code-Paarung dürfte die Zusage
+   nicht verschlucken). Eine Zeile ist eine Zusage, wenn sie **beide**
+   Bedingungen erfüllt: sie beginnt (nach optionalem Leerraum) mit einer der
+   drei CommonMark-Bullet-Formen (`-`, `*`, `+`, oder einer nummerierten
+   Form) gefolgt von einer Task-Box `[ ]`/`[x]`/`[X]` — der Haken-Zustand
+   zählt nicht —, und sie enthält die Phrase **„unabhängiger Review"**
+   (Groß-/Kleinschreibung am ersten Buchstaben unerheblich). Die **erste**
+   solche Zeile trägt den Befund-Ort; eine Datei ohne jede solche Zeile ist
+   **kein** Kandidat mit Zusage und erzeugt für sich allein keinen Befund.
+4. **Deckung prüfen.** Aus dem Dateinamen des Kandidaten wird die
+   `slice-<NNN>`-Kennung gelesen. `reviews.reviews-dir` wird **unmittelbar**
+   (nicht rekursiv) gelistet; trägt **mindestens ein** Eintrag dieselbe
+   Kennung als Substring seines Dateinamens (1:N zulässig, z. B.
+   `-r1`/`-r2`-Suffixe), gilt die Zusage als gedeckt. Sonst: Befund
+   `review-missing`, `file` = die Kandidaten-Datei, `line` = die
+   Zusage-Zeile, `target` = `reviews.reviews-dir`.
+5. **Nullmenge unter Kandidaten ist kein Fail-Closed.** Anders als in
+   Schritt 2 (keine Kandidaten) löst eine **vorhandene** Kandidatenmenge ohne
+   eine einzige gefundene Zusage **keinen** Leerlauf-Befund aus — ein junger
+   oder kleiner Bestand ohne jede Zusage ist ein legitimer Zustand.
+   `reviews.reviews-dir` **unlesbar** (Verzeichnis existiert nicht oder keine
+   Leseberechtigung) löst dagegen denselben Leerlauf-Befund wie Schritt 2 aus
+   — eine unlesbare Ziel-Menge sähe sonst identisch aus wie „alles gedeckt".
+
+**Die Grenze dieses Moduls, ausgesprochen** (die Frage aus
+[`AGENTS.md`](../AGENTS.md) §3.8): es **scannt** die unmittelbaren Einträge
+von `reviews.done-dir` und `reviews.reviews-dir`, beide nicht rekursiv. Was
+das Modul **nicht** deckt: die **Qualität** eines Reports (Selbstauskunft, wie
+der DoD-Haken selbst); jede Review-Zusage-Formulierung außer der einen
+konventionellen Phrase; die zeitliche Reihenfolge von Review- und
+Closure-Commit.
+
+---
+
 ## 2. Datenstrukturen und Schemas
 
 ### SPEC-001 — Befund
@@ -3001,6 +3055,9 @@ Exit 2 ohne Prüfung
 | `structure[].exempt-section-pattern` | string | leer (aus) | RE2 gegen **dieselbe** getrimmte Überschriften-Zeile wie `section-pattern` (**einschließlich `#`-Folge** — ein analog geschriebenes Muster soll nicht still danebengreifen); getroffene Abschnitte prüft **diese** Regel nicht. Geschwister von `exempt-paths` eine Granularitätsstufe tiefer, für Bestände **innerhalb einer Datei**. Läuft **vor** der Kardinalitäts-Prüfung; leert es die Menge ⇒ `section-missing` mit Schlüssel und Zahl in der Meldung — und dieser Befund behält seine modul-eigene Meldung auch neben einem `hint` (die Regel hat dort nicht gemessen). **Sieht Inline-Code**, anders als das Item-Muster: es teilt die Zeichenkette mit `section-pattern`. Ein **gesetztes** Muster geht in die Regel-Identität ein (`… :: ohne <muster>`), ein leeres nicht. Nicht kompilierend ⇒ Exit 2 |
 | `workflows.dir` | string | leer (aus) | Verzeichnis der Workflow-Dateien — **Aktivierungs-Schalter** des Moduls; leer ⇒ inert (keine Datei geöffnet). Der Ort ist **nicht verdrahtet**, weil er CI-System-spezifisch ist. Gelesen werden die Dateien **unmittelbar** darin mit Endung `.yml` **oder** `.yaml`; null Kandidaten oder null `uses:`-Referenzen ⇒ Befund (fail-closed). Nur Weißraum ⇒ Exit 2 |
 | `workflows.exempt-paths` | string[] | leer | Globs über Wurzel-relative Pfade; Treffer werden **nicht** geprüft. Ungültiges Glob ⇒ Exit 2. **Hebt den Leerlauf-Befund nicht aus:** bleiben nach Abzug null Kandidaten, ist das derselbe fail-closed-Befund |
+| `reviews.done-dir` | string | leer (aus) | Verzeichnis der `done/`-Slice-Pläne — **Aktivierungs-Schalter** des Moduls; leer ⇒ inert (keine Datei geöffnet). Gelesen werden die Dateien **unmittelbar** darin mit Endung `.md` und Präfix `slice-`; null Kandidaten ⇒ Befund (fail-closed). Nur Weißraum ⇒ Exit 2 |
+| `reviews.reviews-dir` | string | leer | Verzeichnis der Review-Reports; **Pflicht**, sobald `done-dir` gesetzt ist (sonst Exit 2). Unmittelbar (nicht rekursiv) gelistet; unlesbar ⇒ derselbe fail-closed-Befund wie null Kandidaten |
+| `reviews.exempt-paths` | string[] | leer | Globs über Wurzel-relative Pfade; Treffer werden **nicht** geprüft. Ungültiges Glob ⇒ Exit 2. **Hebt den Leerlauf-Befund nicht aus:** bleiben nach Abzug null Kandidaten, ist das derselbe fail-closed-Befund |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien, aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
@@ -3132,6 +3189,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-078` | `section-tasks-open` | structure | der Abschnitt trägt mehr **offene** Task-Items, als `max-open-tasks` erlaubt — gezählt auf den **rohen** Abschnitts-Zeilen (`line` = Zeile des Items). Ein Befund **je** Item über der Grenze; die ersten `max-open-tasks` in Dokument-Reihenfolge sind erlaubt und melden nicht. Eigener Code neben `section-oversized`, weil beide Bedingungen denselben Abschnitt verletzen können und die Reparatur eine andere ist |
 | `SPEC-079` | `observation-unregistered` | planning | eine **zitierte** Beobachtungs-Kennung hat **keine** Zeile im Register — die maschinelle Hälfte der Register-Paarung. Nur diese Richtung: die Umkehrung („jede Zeile ist zitiert") ist ausgeschlossen, weil die meisten Zeilen unter der Schwelle stehen. **Gezählt werden Prosa und Linktext**, ein reines Inline-Code-Span nicht — das ist die Trennlinie zwischen Zitat und Beispiel, und sie ist zwingend, weil die verbreitete Zitier-Form die Kennung in Backticks führt |
 | `SPEC-080` | `uses-pin-tag-conflict` | workflows | derselbe SHA trägt innerhalb der Scan-Menge — dateiübergreifend gruppiert — mehr als einen distinkten Tag-Kommentar-Text; **eine** Meldung je beteiligter Zeile (`line` = ihre Zeile), mit den distinkten Werten in der Meldung. Ein identischer Kommentar über beliebig viele Zeilen ist Wiederholung, kein Befund; welcher Wert stimmt, ist Netz |
+| `SPEC-081` | `review-missing` | reviews | ein `done/`-Slice mit Review-Zusage (DoD-Zeile mit „unabhängiger Review", jede Bullet-Form, Haken-Zustand egal) hat **keinen** Report unter `reviews.reviews-dir` mit derselben `slice-<NNN>`-Kennung im Dateinamen — **oder** die Prüfmenge ist leer: kein Kandidat in `reviews.done-dir` bzw. `reviews.reviews-dir` unlesbar (`file` = `reviews.done-dir`, `line` = 1). Geprüft wird die **Deckung**, nicht die Qualität des Reports |
 | `SPEC-069` | `section-column-missing` | structure | die über `table.column[].name` benannte Spalte ist nicht adressierbar: keine Tabelle des Abschnitts bindet sie (`line` = Abschnitts-Überschrift), der Name kommt in einer Kopfzeile mehrfach vor (`line` = Kopfzeile) oder eine Datenzeile reicht nicht bis zur Spalte (`line` = diese Zeile) |
 | `SPEC-059` | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `SPEC-060` | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |

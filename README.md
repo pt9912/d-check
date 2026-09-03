@@ -185,6 +185,16 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   (`workflow-unparsable`) rather than skipped. **Hermetic** (no git, no network,
   no execution); references come from the **YAML tree**, not from a text search
   ([`DC-FA-WF-001`](spec/lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in))
+- `reviews` — review-report coverage: every `done/` slice plan with a review
+  promise (a DoD checkbox whose line names "unabhängiger Review", any bullet
+  form, checkbox state irrelevant) needs at least one report under a
+  **configured** directory (`reviews.reviews-dir`) whose filename carries the
+  same `slice-<NNN>` identifier — otherwise `review-missing`. Both
+  directories are scanned **non-recursively**: an already-archived slice
+  stub carries no DoD anymore and naturally falls out of the candidate set.
+  Checked is **coverage**, not the quality of the report. **Hermetic** (no
+  git, no network), opt-in
+  ([`DC-FA-RVW-001`](spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in))
 
 Every finding names file, line, target and reason; exit codes:
 `0` clean, `1` findings, `2` environment or configuration error.

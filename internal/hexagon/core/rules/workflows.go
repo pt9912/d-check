@@ -246,7 +246,7 @@ func workflowCandidates(fsys driven.Filesystem, cfg model.WorkflowsConfig) []str
 			continue
 		}
 		rel := path.Join(cfg.Dir, e.Name)
-		if matchAnyWorkflowGlob(cfg.ExemptPaths, rel) {
+		if matchAnyGlob(cfg.ExemptPaths, rel) {
 			continue
 		}
 		out = append(out, rel)
@@ -255,9 +255,9 @@ func workflowCandidates(fsys driven.Filesystem, cfg model.WorkflowsConfig) []str
 	return out
 }
 
-// matchAnyWorkflowGlob prueft die Ventil-Globs (Go path.Match, wie jedes
+// matchAnyGlob prueft die Ventil-Globs (Go path.Match, wie jedes
 // andere d-check-Glob).
-func matchAnyWorkflowGlob(globs []string, rel string) bool {
+func matchAnyGlob(globs []string, rel string) bool {
 	for _, g := range globs {
 		if ok, err := path.Match(g, rel); err == nil && ok {
 			return true

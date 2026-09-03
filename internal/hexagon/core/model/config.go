@@ -22,7 +22,7 @@ type ResolveFromGroup struct {
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows", "reviews"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -84,6 +84,8 @@ type Config struct {
 	Targets TargetsConfig
 	// Workflows: Parameter des Moduls workflows (DC-FA-WF-001).
 	Workflows WorkflowsConfig
+	// Reviews: Parameter des Moduls reviews (DC-FA-RVW-001).
+	Reviews ReviewsConfig
 	// ConfigFile: der Wurzel-relative Pfad der TATSÄCHLICH geladenen
 	// Konfigurationsdatei — konventionell `.d-check.yml`, mit `--config`
 	// (DC-FA-CLI-012) die dort genannte. Befunde, die die Konfiguration als
@@ -989,5 +991,15 @@ func EffectiveModules(cfg Config, enable, disable []string) ([]string, error) {
 // Adopter mit anderer Ablage wertlos.
 type WorkflowsConfig struct {
 	Dir         string
+	ExemptPaths []string
+}
+
+// ReviewsConfig sind die Parameter des Moduls reviews (DC-FA-RVW-001):
+// DoneDir ist der AKTIVIERUNGS-SCHALTER — leer ⇒ Modul inert, es wird KEINE
+// Datei geöffnet (DC-QA-02). Zwei Verzeichnisse statt eines: DoneDir trägt die
+// Slice-Pläne mit ihrer Review-Zusage, ReviewsDir die tatsächlichen Reports.
+type ReviewsConfig struct {
+	DoneDir     string
+	ReviewsDir  string
 	ExemptPaths []string
 }

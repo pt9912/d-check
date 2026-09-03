@@ -18,7 +18,7 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, citations, structure, workflows, external, sources
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, citations, structure, workflows, reviews, external, sources
 # (external und sources sind die einzigen Netzwerk-Türen — beide strikt opt-in
 #  (external prüft http(s)-Erreichbarkeit, sources Upstream-Content-Drift); vcs und commits sind
 #  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in; tracked ist
@@ -224,6 +224,17 @@ modules: [links, anchors]
 #   #                    geforderten Rechte (uses-local-perms-undeclared / -narrow).
 #   #                    none < read < write; ein nicht genannter Scope ist none.
 #   # Unlesbares YAML ⇒ workflow-unparsable (Befund, kein Übersprung).
+
+
+# --- reviews: Review-Report-Deckung — hermetisch, opt-in ---
+#   (--enable reviews. done-dir ist der AKTIVIERUNGS-SCHALTER; ohne ihn wird keine Datei geöffnet.)
+# reviews:
+#   done-dir: docs/plan/planning/done   # Slice-Pläne mit Review-Zusage (nicht rekursiv)
+#   reviews-dir: docs/reviews            # Reports; Dateiname trägt die slice-<NNN>-Kennung
+#   # exempt-paths: ["docs/plan/planning/done/slice-000-*.md"]   # Globs; hebt den Leerlauf-Befund NICHT aus
+#   # Ein DoD-Haken, dessen Zeile "Review" nennt (jede Bullet-Form, Haken-Zustand egal),
+#   # verlangt mindestens einen Report unter reviews-dir mit derselben Kennung im Namen
+#   # ⇒ sonst review-missing. Geprüft wird die Deckung, nicht die Qualität des Reports.
 # --- targets: Deklarations-Konsistenz Doku ↔ Build-Targets — hermetisch (kein git), opt-in ---
 #   (Aufruf über das make-Target gate-consistency bzw. --enable targets. NICHT in modules: oben.)
 # targets:

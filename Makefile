@@ -189,6 +189,13 @@ guard-probe: ## Tool-Call-Wächter gegen seine Proben fahren (werkzeug-lokal, NI
 workflow-pins: build ## uses:-Einträge der Workflows via Modul workflows (Image, dogfood): voller SHA + Tag-Kommentar; lokale Referenz existiert und bekommt die Rechte ihres Jobs (netzlos, in gates). AGENTS.md §3.9, ADR-0072.
 	$(DCHECK_RUN) --enable workflows $(FOCUS_DISABLE)
 
+# Netzlos, fail-closed auch bei leerer Kandidatenmenge -- aber bewusst NOCH
+# NICHT in gates: eine neue Modul-Klasse startet als eigenstaendiger Fokus-Lauf
+# (dieselbe Vorsicht wie bei trace-check/commits), Aufnahme in gates ist eine
+# spaetere, eigene Entscheidung.
+review-coverage: build ## Review-Report-Deckung via Modul reviews (Image, dogfood): jede DoD-Zusage "unabhängiger Review" braucht einen passenden Report unter docs/reviews/ (netzlos, NICHT in gates). ADR-0081.
+	$(DCHECK_RUN) --enable reviews $(FOCUS_DISABLE)
+
 baseline-probe: ## Faehrt die Alias-Aufloesung von baseline-verify gegen ihre Proben (neun Faelle, netzlos, NICHT in gates). MR-055.
 	@bash tools/harness/fetch-baseline-cache.sh --selftest
 

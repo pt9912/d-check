@@ -165,6 +165,9 @@ func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, wp driven.WorkflowPar
 	if active["workflows"] {
 		out = append(out, CheckWorkflows(fsys, wp, cfg.Workflows)...)
 	}
+	if active["reviews"] {
+		out = append(out, CheckReviews(fsys, cfg.Reviews)...)
+	}
 	if active["targets"] {
 		tf, err := CheckTargets(fsys, cfg.Targets)
 		if err != nil {
