@@ -105,8 +105,8 @@ Planning-Lifecycle existieren.
 - [slice-099](welle-69/slice-099-structure-modul.md) — die Implementierung des
   Moduls samt Preset-Kopplung und neun Grund-Codes.
 - [slice-094](../done/slice-094-closure-zaehl-paritaet.md),
-  [slice-097](../done/slice-097-closure-glob-entkopplung.md),
-  [slice-098](../done/slice-098-closure-note-placeholder.md) — bleiben
+  [slice-097](welle-71/slice-097-closure-glob-entkopplung.md),
+  [slice-098](welle-71/slice-098-closure-note-placeholder.md) — bleiben
   eigenständig, Zuschnitt durch diese Welle entschieden.
 
 ## Verifikation

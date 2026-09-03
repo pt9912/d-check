@@ -10,11 +10,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Wellen-Closure-Prozedur, Schritt 3 — *was gelernt wurde*: geliefert · was
 funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
 
-- **`planning.closure.glob`** ([slice-097](slice-097-closure-glob-entkopplung.md),
+- **`planning.closure.glob`** ([slice-097](welle-71/slice-097-closure-glob-entkopplung.md),
   Release **v0.54.0**, [ADR-0051](../../adr/0051-eigener-kandidaten-filter-closure.md)):
   ein eigener Kandidaten-Filter für die Closure-Fähigkeit, Default als
   **Verweis** auf `slice-glob`.
-- **`closure-note-placeholder`** ([slice-098](slice-098-closure-note-placeholder.md),
+- **`closure-note-placeholder`** ([slice-098](welle-71/slice-098-closure-note-placeholder.md),
   Release **v0.55.0**, [ADR-0052](../../adr/0052-platzhalter-erkennung-inline-code.md)):
   die vierte, opt-in Bedingung — der unausgefüllte Rumpf einer Vorlage.
 - **Das Wellen-Ziel ist erreicht:** die Closure-Fähigkeit deckt jetzt beide
