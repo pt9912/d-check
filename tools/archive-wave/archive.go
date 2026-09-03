@@ -86,8 +86,15 @@ func Apply(root string, p Plan) ([]Move, error) {
 			return nil, err
 		}
 		id := SliceIDFromPath(s)
-		stub := SliceStub(id, title, field, p.WelleID)
 		newAbs := filepath.Join(archiveDir, filepath.Base(s))
+		// Ein Feld-Link ist von der ALTEN Slice-Position aus geschrieben (oft
+		// per "Ortsfeste Verweise"-Idiom "../done/X", das nur von einer der
+		// vier Lifecycle-Wurzeln aus aufloest) -- der Stub liegt aber eine
+		// Ebene TIEFER (done/<welle-id>/). Ein blosses Uebernehmen brach hier
+		// gemessen (welle-70): RewriteRepo laeuft erst NACH dem Schreiben und
+		// loest von der neuen, tieferen Position aus falsch auf.
+		field = RewriteFieldForMove(RelPath(root, s), RelPath(root, newAbs), field, moves)
+		stub := SliceStub(id, title, field, p.WelleID)
 		if err := os.WriteFile(newAbs, []byte(stub), 0o644); err != nil {
 			return nil, fmt.Errorf("%s schreiben: %w", newAbs, err)
 		}

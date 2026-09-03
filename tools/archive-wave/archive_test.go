@@ -34,6 +34,47 @@ func buildFixture(t *testing.T) string {
 	return root
 }
 
+// TestFixture_OrtsfesteVerweiseTiefenwechsel belegt die an welle-70
+// gemessene Eigenheit: ein Welle-Feld im "Ortsfeste Verweise"-Idiom
+// (../done/X, aufloesbar von jeder der vier Lifecycle-Wurzeln inklusive
+// done/ selbst) bricht, wenn der Stub eine Ebene TIEFER landet
+// (done/<welle-id>/) als die Wurzel, von der aus das Feld geschrieben
+// wurde -- RewriteFieldForMove muss den Link bereits bei der Stub-Erzeugung
+// korrekt auf die neue Tiefe umschreiben.
+func TestFixture_OrtsfesteVerweiseTiefenwechsel(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-77-x.md"),
+		"# Welle welle-77: X\n\nInhalt.\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-77-results.md"),
+		"# Ergebnis welle-77\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-701-ortsfest.md"),
+		"# Slice slice-701: Ortsfest\n\n**Welle:** [welle-77-x](../done/welle-77-x.md), eroeffnet.\n")
+
+	wellePlan, err := FindWellePlan(root, "welle-77")
+	if err != nil {
+		t.Fatal(err)
+	}
+	slices, err := CollectSlices(root, "welle-77")
+	if err != nil {
+		t.Fatal(err)
+	}
+	p := Plan{WelleID: "welle-77", WellePlan: wellePlan, Slices: slices}
+	if _, err := Apply(root, p); err != nil {
+		t.Fatal(err)
+	}
+
+	stubB, err := os.ReadFile(filepath.Join(root, "docs/plan/planning/done/welle-77/slice-701-ortsfest.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(stubB), "(welle-77-x.md)") {
+		t.Fatalf("Ortsfester Verweis wurde beim Tiefenwechsel nicht korrekt umgeschrieben: %q", string(stubB))
+	}
+	if strings.Contains(string(stubB), "../done/") {
+		t.Fatalf("Stub traegt noch den alten, jetzt falschen Ortsfeste-Verweise-Pfad: %q", string(stubB))
+	}
+}
+
 // buildFixtureNoPlan legt eine Welle wie welle-60..66 an: nur eine
 // retroaktive `-results.md`, kein Welle-Plan (slice-191).
 func buildFixtureNoPlan(t *testing.T) string {
@@ -204,22 +245,26 @@ func TestFixture_EndToEnd(t *testing.T) {
 		t.Errorf("Fremd-Slice haette liegen bleiben muessen: %v", err)
 	}
 
-	// Verweis-Nachzug -- betrifft ZWEI Dateien: den externen Beleg UND den
-	// frisch geschriebenen Stub von slice-502 selbst, dessen unveraendert
-	// uebernommenes **Welle:**-Feld noch auf den alten Welle-Plan-Pfad zeigt.
-	hits, err := RewriteRepo(root, moves)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(hits) != 2 {
-		t.Fatalf("erwartet 2 betroffene Dateien, got %d: %v", len(hits), hits)
-	}
+	// slice-502s Stub traegt sein **Welle:**-Feld bereits KORREKT retargetet
+	// -- Apply() loest den Feld-Link ueber RewriteFieldForMove sofort auf,
+	// nicht erst per nachtraeglichem RewriteRepo-Fund (das waere bei einer
+	// Archiv-Tiefe > 1 Ebene falsch aufgeloest, gemessen an welle-70).
 	stubB, err := os.ReadFile(filepath.Join(archiveDir, "slice-502-zwei.md"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !strings.Contains(string(stubB), "welle-99-testwelle.md)") {
-		t.Fatalf("Stub-eigener Welle-Verweis wurde nicht nachgezogen: %q", string(stubB))
+		t.Fatalf("Stub-eigener Welle-Verweis wurde nicht sofort retargetet: %q", string(stubB))
+	}
+
+	// Verweis-Nachzug betrifft nur noch den externen Beleg -- der Stub
+	// braucht keine zweite Korrektur mehr.
+	hits, err := RewriteRepo(root, moves)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(hits) != 1 {
+		t.Fatalf("erwartet 1 betroffene Datei, got %d: %v", len(hits), hits)
 	}
 
 	b, err = os.ReadFile(filepath.Join(root, "docs/plan/planning/observations.md"))

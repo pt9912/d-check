@@ -76,6 +76,30 @@ func RewriteFile(selfRel, content string, moves []Move) (string, int) {
 	return out, n
 }
 
+// RewriteFieldForMove behandelt einen Feld-Wert (kein Datei-Inhalt), dessen
+// TRAEGER selbst verschoben wird: ein enthaltener Link wird von der ALTEN
+// Position des Traegers aufgeloest (oldRel) und relativ zur NEUEN Position
+// (newRel) neu geschrieben -- anders als RewriteFile, das dieselbe Position
+// fuer beides annimmt. Noetig, weil ein "Ortsfeste Verweise"-Pfad
+// (z. B. "../done/X") nur von einer der vier Lifecycle-Wurzeln aus korrekt
+// aufloest, nicht von einem neuen, tieferen Archiv-Unterverzeichnis
+// (gemessen an welle-70: slice-101s eigener Welle-Link brach genau so).
+func RewriteFieldForMove(oldRel, newRel, field string, moves []Move) string {
+	byOld := make(map[string]string, len(moves))
+	for _, m := range moves {
+		byOld[m.Old] = m.New
+	}
+	return mdLinkRE.ReplaceAllStringFunc(field, func(match string) string {
+		target := match[2 : len(match)-1]
+		resolved, fragment := resolveLink(oldRel, target)
+		newTarget, ok := byOld[resolved]
+		if !ok {
+			newTarget = resolved
+		}
+		return "](" + relativize(newRel, newTarget) + fragment + ")"
+	})
+}
+
 // RewriteRepo wendet RewriteFile auf jede .md-Datei unter root an (rekursiv,
 // `.git` ausgenommen) und schreibt geaenderte Dateien zurueck. Liefert die
 // betroffenen Dateien (Repo-relativ) mit ihrer Treffer-Anzahl, sortiert.
