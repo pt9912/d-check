@@ -1364,7 +1364,7 @@ Richtungen.** Wer `planning.closure` nutzt, sollte alle drei lesen; ohne
 
 ### Added
 
-- [`slice-070`](docs/plan/planning/done/slice-070-trace-tabellenquellen-nullmengen-guard.md)
+- [`slice-070`](docs/plan/planning/done/welle-59/slice-070-trace-tabellenquellen-nullmengen-guard.md)
   ergänzt für `--trace` native Markdown-Pipe-Tabellen als Anforderungsquelle
   ([`DC-FA-REQ-001`](spec/lastenheft.md#dc-fa-req-001--anforderungsquellen-als-headings-oder-tabellen),
   [ADR-0037](docs/plan/adr/0037-trace-tabellenquellen-nullmengen-guard.md)).
