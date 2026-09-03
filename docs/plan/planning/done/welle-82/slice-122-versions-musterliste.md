@@ -5,4 +5,4 @@
 
 **Welle:** [welle-82-config-flaechen](welle-82-config-flaechen.md) (zugeordnet
 **Archiviert mit:** welle-82 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0058, DC-FA-VER-001, DC-QA-02

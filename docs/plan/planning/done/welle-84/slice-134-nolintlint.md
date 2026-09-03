@@ -5,4 +5,4 @@
 
 **Welle:** [welle-84-durchsetzung](welle-84-durchsetzung.md).
 **Archiviert mit:** welle-84 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0006

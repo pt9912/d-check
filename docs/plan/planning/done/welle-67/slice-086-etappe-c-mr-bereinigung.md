@@ -5,4 +5,4 @@
 
 **Welle:** welle-67-baseline-v500-migration (dritte Umsetzungs-Etappe, nach
 **Archiviert mit:** welle-67 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** — keine —

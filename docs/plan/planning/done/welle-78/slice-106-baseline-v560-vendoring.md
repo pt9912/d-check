@@ -5,4 +5,4 @@
 
 **Welle:** welle-78-baseline-v560-migration (zugeordnet bei der Eröffnung).
 **Archiviert mit:** welle-78 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** — keine —

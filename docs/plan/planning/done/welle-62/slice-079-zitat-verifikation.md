@@ -5,4 +5,4 @@
 
 **Welle:** welle-62.
 **Archiviert mit:** welle-62 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0020, ADR-0024, ADR-0030, ADR-0045, DC-FA-CITE-001, DC-FA-CODE-001

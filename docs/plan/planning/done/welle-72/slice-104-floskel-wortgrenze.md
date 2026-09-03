@@ -5,4 +5,4 @@
 
 **Welle:** [welle-72-closure-semantik](welle-72-closure-semantik.md), gemeinsam
 **Archiviert mit:** welle-72 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0048, ADR-0053, DC-FA-PLAN-001

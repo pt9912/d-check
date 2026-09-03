@@ -5,4 +5,4 @@
 
 **Welle:** welle-79-zwei-haelften-ein-waechter (zugeordnet bei der Eröffnung).
 **Archiviert mit:** welle-79 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0055

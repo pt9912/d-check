@@ -5,4 +5,4 @@
 
 **Welle:** welle-60 — **vorrangig** in Arbeit genommen, weil der Auftraggeber
 **Archiviert mit:** welle-60 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0041, DC-FA-COV-001, DC-FA-XREF-001

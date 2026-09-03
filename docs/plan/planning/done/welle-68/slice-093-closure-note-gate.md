@@ -5,4 +5,4 @@
 
 **Welle:** welle-68-planning-roadmap-harness (zweiter Slice, nach slice-092).
 **Archiviert mit:** welle-68 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0048, DC-FA-CLI-012, DC-FA-PLAN-001

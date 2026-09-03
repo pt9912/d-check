@@ -5,4 +5,4 @@
 
 **Welle:** welle-77-chronologie-ordnung (zugeordnet bei der Eröffnung).
 **Archiviert mit:** welle-77 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0044, ADR-0049, ADR-0054, ADR-0057, DC-FA-STRUCT-001, DC-QA-03

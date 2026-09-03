@@ -5,4 +5,4 @@
 
 **Welle:** welle-68-planning-roadmap-harness (erster Slice).
 **Archiviert mit:** welle-68 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** — keine —

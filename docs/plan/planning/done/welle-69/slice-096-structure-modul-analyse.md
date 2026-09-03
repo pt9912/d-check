@@ -5,4 +5,4 @@
 
 **Welle:** [welle-69-structure-schnitt](welle-69-structure-schnitt.md),
 **Archiviert mit:** welle-69 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0044, ADR-0048, ADR-0049, DC-FA-PLAN-001, DC-FA-TRK-001

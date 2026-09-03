@@ -5,4 +5,4 @@
 
 **Welle:** [welle-80-struktur-ids](welle-80-struktur-ids.md) (zugeordnet bei
 **Archiviert mit:** welle-80 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** DC-FA-ID-001, DC-QA-03

@@ -5,4 +5,4 @@
 
 **Welle:** welle-60.
 **Archiviert mit:** welle-60 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0037, ADR-0043

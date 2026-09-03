@@ -5,4 +5,4 @@
 
 **Welle:** welle-71, gemeinsam mit [slice-097](slice-097-closure-glob-entkopplung.md)
 **Archiviert mit:** welle-71 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0048, ADR-0052, DC-FA-PLAN-001

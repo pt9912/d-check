@@ -5,4 +5,4 @@
 
 **Welle:** welle-67-baseline-v500-migration (C-3-Nachzug, nach
 **Archiviert mit:** welle-67 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0022, ADR-0047, DC-FA-MTX-001, DC-FA-MTX-003

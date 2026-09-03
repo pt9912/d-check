@@ -5,4 +5,4 @@
 
 **Welle:** [welle-70-fence-lexik](welle-70-fence-lexik.md), eröffnet am
 **Archiviert mit:** welle-70 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** <manuell auszufuellen>
+**Hervorgegangen:** ADR-0042, ADR-0044, ADR-0050, DC-FA-PLAN-001, DC-FA-SPAN-001
