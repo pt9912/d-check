@@ -147,3 +147,10 @@ befolgt — beides ein Entscheid, kein stiller Nachtrag.
 `review-coverage` grün gelaufen ist, ist die Aufnahme in `gates` fällig zu
 prüfen — dieselbe Reifung wie bei `workflows` (`workflow-pins` kam erst mit
 diesem Modul in `gates`, nicht mit seinem Vorgänger-Skript).
+
+## Geschichte
+
+| Datum | Ereignis |
+|---|---|
+| 2026-09-03 | Accepted. |
+| 2026-09-03 | Unabhängiger Review (slice-173) fand zwei HIGH, vor der Closure behoben: die Erkennung verlangte Checkbox und Phrase auf derselben Zeile, obwohl der überwiegende Bestand DoD-Punkte über mehrere Zeilen schreibt (Fix: Item-Span bis zur nächsten Checkbox/Leerzeile/Dateiende; Neumessung liefert weiterhin exakt fünf Funde); ein unlesbares `reviews-dir` mit vorhandenen Zusagen erzeugte zusätzlich zu den Pro-Kandidat-Befunden eine textlich widersprüchliche „leere Prüfmenge"-Meldung (Fix: diese Meldung feuert nur noch, wenn sie die einzige wäre). Vier neue Tests in `internal/hexagon/core/rules/reviews_test.go`. **Policy und Entscheidung unverändert** — beide Funde sind Implementierungs-Korrekturen an der bereits getroffenen Entscheidung, keine neue Abwägung. |

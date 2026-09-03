@@ -734,9 +734,10 @@ workflows:
   dir: .github/workflows
 
 # Modul reviews (DC-FA-RVW-001, ADR-0081): jeder done/-Slice mit einer
-# Review-Zusage (ein DoD-Haken, dessen Zeile "Review" nennt, jede Bullet-Form,
-# Haken-Zustand egal) braucht mindestens einen Report unter reviews-dir mit
-# derselben slice-<NNN>-Kennung im Dateinamen.
+# Review-Zusage (ein DoD-Item, dessen Text "unabhängiger Review" nennt --
+# Checkbox-Zeile plus lose Folgezeilen --, jede Bullet-Form, Haken-Zustand
+# egal) braucht mindestens einen Report unter reviews-dir mit derselben
+# slice-<NNN>-Kennung im Dateinamen.
 #
 # GRENZE: beide Verzeichnisse werden NICHT rekursiv gescannt -- ein bereits
 # archivierter Stub (done/<welle-id>/) traegt keine DoD mehr und faellt damit

@@ -200,9 +200,25 @@ verankert), die Phase-Reife der berührten Abschnitte ist etabliert.
   Bare-Token-Zitate mit `<!-- d-check:status-provenance -->`-Marker
   (ADR→Slice) bzw. vollständigem Verzicht auf die Kennung (ADR→Welle, das
   ist ein flaches Verbot ohne Marker-Ausweg).
-- **Steering-Loop-Eintrag:** keiner verkörpert — die beiden Lehren oben sind
-  Einzelfälle dieser Session, keine dritte Instanz einer geführten
-  Beobachtung.
+- **Der unabhängige Review fand zwei HIGH und ein MEDIUM, alle eingearbeitet
+  vor der Closure:** (1) `reviewLineRE` verlangte Checkbox und Phrase auf
+  **derselben** Zeile — der überwiegende Bestand schreibt lange DoD-Punkte
+  aber als Fließtext über mehrere Zeilen, und „unabhängiger Review" steht
+  dabei häufig auf einer Folgezeile (gemessen: sechs Fälle im Bestand, u. a.
+  `slice-138`). Behoben durch eine Item-Span-Erkennung (Checkbox-Zeile plus
+  lose Folgezeilen bis zur nächsten Checkbox/Leerzeile/Dateiende); die
+  Neumessung gegen den echten Bestand liefert weiterhin genau die
+  **gleichen** fünf Funde — keiner der sechs neu erfassten Fälle war
+  tatsächlich ungedeckt. (2) Ein unlesbares `reviews-dir` mit vorhandenen
+  Zusagen erzeugte zusätzlich zu den Pro-Kandidat-Befunden eine
+  textlich widersprüchliche „leere Prüfmenge"-Meldung — behoben, die
+  generische Meldung feuert jetzt nur noch, wenn sie die einzige wäre. (3)
+  Der `.d-check.yml`-Kommentar nannte nur „Review" statt „unabhängiger
+  Review" und unterschlug damit die tragende Einschränkung — korrigiert.
+  Vier neue Tests decken beide HIGH-Fälle inklusive Gegenproben.
+- **Steering-Loop-Eintrag:** keiner verkörpert — alle vier Lehren dieser
+  Session (zwei eigene, zwei vom Review gefunden) sind Einzelfälle, keine
+  dritte Instanz einer bereits geführten Beobachtung.
 - **Beobachtungs-Register (`../observations.md`):** keine Beobachtung
   angefallen, die eine neue Kennung oder einen Zähler-Schritt rechtfertigt.
 - **Folge-Slices:** keine.

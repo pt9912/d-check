@@ -1,10 +1,12 @@
 package rules
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
+	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
 func rvCfg() model.ReviewsConfig {
@@ -124,5 +126,98 @@ func TestReviewsIgnoresArchivedSubdirs(t *testing.T) {
 	f := rvRun(files)
 	if len(f) != 1 || f[0].File != "docs/plan/planning/done" {
 		t.Fatalf("archivierter Stub wurde faelschlich als Kandidat gelesen, oder Fail-Closed griff nicht: %+v", f)
+	}
+}
+
+// H1-Regression (Review-Fund, commit 85b1fce): die Phrase steht bei der
+// Mehrheit des Bestands NICHT auf der Checkbox-Zeile selbst, sondern auf einer
+// Folgezeile desselben DoD-Items (gemessen an slice-138 u. a.). Eine Regel, die
+// nur die Checkbox-Zeile liest, uebersieht das und meldet faelschlich
+// "keine Zusage".
+func TestReviewsPromiseOnContinuationLine(t *testing.T) {
+	files := map[string]string{
+		"docs/plan/planning/done/slice-106-b.md": "## 2. Definition of Done\n\n" +
+			"- [x] Lastenheft auf 0.65.4; `make gates` Exit 0 (zehn\n" +
+			"      Glieder), unabhängiger Review\n" +
+			"      ([Report](../../../reviews/x.md)).\n",
+	}
+	f := rvRun(files)
+	if !hasReason(f, ReasonReviewMissing) {
+		t.Fatalf("erwartet review-missing (Phrase auf Folgezeile), got %+v", reasons(f))
+	}
+	var hit *model.Finding
+	for i := range f {
+		if f[i].File == "docs/plan/planning/done/slice-106-b.md" {
+			hit = &f[i]
+		}
+	}
+	if hit == nil {
+		t.Fatalf("kein Befund auf der Slice-Datei, got %+v", f)
+	}
+	if hit.Line != 3 {
+		t.Errorf("Line = %d, want 3 (die Checkbox-Zeile des Items, nicht die Phrasen-Zeile)", hit.Line)
+	}
+}
+
+// Gegenprobe zu TestReviewsPromiseOnContinuationLine: dieselbe Form, aber mit
+// passendem Report -- die Zusammenfuehrung mehrerer Zeilen zu einem Item darf
+// den Happy Path nicht brechen.
+func TestReviewsPromiseOnContinuationLineCovered(t *testing.T) {
+	files := map[string]string{
+		"docs/plan/planning/done/slice-106-b.md": "## 2. Definition of Done\n\n" +
+			"- [x] Lastenheft auf 0.65.4; `make gates` Exit 0 (zehn\n" +
+			"      Glieder), unabhängiger Review\n" +
+			"      ([Report](../../../reviews/x.md)).\n",
+		"docs/reviews/2026-01-01-slice-106-review.md": "# Review\n",
+	}
+	if f := rvRun(files); f != nil {
+		t.Fatalf("erwartet befundfrei, got %+v", reasons(f))
+	}
+}
+
+// reviewsListErrFS erzwingt einen Lesefehler fuer EIN benanntes Verzeichnis --
+// coretest.MemFS selbst kennt keine Fehler, ein unlesbares reviews-dir
+// braucht deshalb eine eigene Fake.
+type reviewsListErrFS struct {
+	*coretest.MemFS
+	errDir string
+}
+
+func (f reviewsListErrFS) List(rel string) ([]driven.DirEntry, error) {
+	if rel == f.errDir {
+		return nil, fmt.Errorf("simuliert: %s nicht lesbar", rel)
+	}
+	return f.MemFS.List(rel)
+}
+
+// H2-Regression (Review-Fund, commit 85b1fce): ein unlesbares reviews-dir MIT
+// vorhandenen Review-Zusagen darf NICHT zusaetzlich zu den bereits erzeugten
+// Pro-Kandidat-Befunden eine zweite, textlich widerspruechliche
+// "leere Pruefmenge"-Meldung erzeugen -- die Menge ist dann gerade NICHT leer.
+func TestReviewsUnreadableReviewsDirWithPromisesNoRedundantFinding(t *testing.T) {
+	base := coretest.NewMemFS(map[string]string{
+		"docs/plan/planning/done/slice-105-x.md": "## 2. Definition of Done\n\n- [x] unabhängiger Review.\n",
+	})
+	fsys := reviewsListErrFS{MemFS: base, errDir: "docs/reviews"}
+	f := CheckReviews(fsys, rvCfg())
+	if len(f) != 1 {
+		t.Fatalf("erwartet genau einen Befund (der Kandidat selbst, keine zusaetzliche Leerlauf-Meldung), got %+v", f)
+	}
+	if f[0].File != "docs/plan/planning/done/slice-105-x.md" {
+		t.Fatalf("erwartet Befund auf dem Kandidaten, got %+v", f)
+	}
+}
+
+// Gegenprobe: ein unlesbares reviews-dir OHNE jede Kandidaten-Zusage
+// braucht weiterhin die generische Fail-Closed-Meldung -- sonst waere ein
+// leerer Bestand von einem unlesbaren Verzeichnis nicht zu unterscheiden.
+func TestReviewsUnreadableReviewsDirNoPromisesStillFailsClosed(t *testing.T) {
+	base := coretest.NewMemFS(map[string]string{
+		"docs/plan/planning/done/slice-105-x.md": "## 2. Definition of Done\n\n- [x] `make gates` grün.\n",
+	})
+	fsys := reviewsListErrFS{MemFS: base, errDir: "docs/reviews"}
+	f := CheckReviews(fsys, rvCfg())
+	if len(f) != 1 || f[0].File != "docs/plan/planning/done" {
+		t.Fatalf("erwartet genau die Leerlauf-Meldung auf DoneDir, got %+v", f)
 	}
 }

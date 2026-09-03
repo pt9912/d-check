@@ -1,10 +1,12 @@
 package rules
 
 // Modul reviews (DC-FA-RVW-001): Review-Report-Deckung. Ein `done/`-Slice mit
-// Review-Zusage -- ein DoD-Haken, dessen Zeile "Review" nennt, in JEDER der
-// drei CommonMark-Bullet-Formen (`-`/`*`/`+`) und unabhaengig vom Haken-Zustand
-// -- braucht mindestens einen Report in reviews.reviews-dir, dessen Dateiname
-// dieselbe slice-<NNN>-Kennung traegt.
+// Review-Zusage -- ein DoD-Item, dessen TEXT (Checkbox-Zeile plus lose
+// Folgezeilen bis zur naechsten Checkbox/Leerzeile/Dateiende) die Phrase
+// "unabhängiger Review" traegt, in JEDER der drei CommonMark-Bullet-Formen
+// (`-`/`*`/`+`) und unabhaengig vom Haken-Zustand -- braucht mindestens einen
+// Report in reviews.reviews-dir, dessen Dateiname dieselbe slice-<NNN>-Kennung
+// traegt.
 //
 // GRENZE, ausgesprochen (AGENTS.md §3.8): das Modul scannt done-dir und
 // reviews-dir NICHT rekursiv -- ein bereits archivierter Slice (Stub unter
@@ -28,15 +30,16 @@ import (
 // (spec/spezifikation.md §4, SPEC-081).
 const ReasonReviewMissing = "review-missing"
 
-// reviewLineRE erkennt eine DoD-Zeile mit Review-Zusage: dieselbe
-// bullet-Toleranz wie taskItemRE (structure.go, ADR-0074) -- Haken-Zustand
-// zaehlt hier nicht, nur dass die Zeile die Phrase "unabhängiger Review"
-// traegt (Groß-/Kleinschreibung am Wortanfang egal, gemessen an beiden Formen
-// im Bestand). Bloßes "Review" ist ZU BREIT -- gemessen an slice-183: dessen
-// "Adaptions-Review" ist ein anderes, in der Slice-Datei SELBST dokumentiertes
-// Konzept ohne eigenen Report unter docs/reviews/, kein Review-Zusage im Sinne
-// dieses Moduls.
-var reviewLineRE = regexp.MustCompile(`^[ \t]*(?:[-*+]|[0-9]+\.)[ \t]+\[[ xX]\].*[Uu]nabhängiger Review`)
+// checkboxLineRE erkennt den BEGINN eines DoD-Items: dieselbe bullet-Toleranz
+// wie taskItemRE (structure.go, ADR-0074) -- Haken-Zustand zaehlt nicht.
+var checkboxLineRE = regexp.MustCompile(`^[ \t]*(?:[-*+]|[0-9]+\.)[ \t]+\[[ xX]\]`)
+
+// reviewPhraseRE erkennt die Review-Zusage-Phrase (Groß-/Kleinschreibung am
+// Wortanfang egal, gemessen an beiden Formen im Bestand). Bloßes "Review" ist
+// ZU BREIT -- gemessen an slice-183: dessen "Adaptions-Review" ist ein
+// anderes, in der Slice-Datei SELBST dokumentiertes Konzept ohne eigenen
+// Report unter docs/reviews/, keine Review-Zusage im Sinne dieses Moduls.
+var reviewPhraseRE = regexp.MustCompile(`[Uu]nabhängiger Review`)
 
 // sliceIDRE liest die slice-<NNN>-Kennung aus einem Dateinamen -- dieselbe
 // Form wie tools/archive-wave/collect.go's sliceIDInNameRE, hier unabhaengig
@@ -73,13 +76,19 @@ func CheckReviews(fsys driven.Filesystem, cfg model.ReviewsConfig) []model.Findi
 				Message: fmt.Sprintf("Review-Zusage ohne Report unter %s fuer %s", cfg.ReviewsDir, id)})
 		}
 	}
-	// FAIL-CLOSED: leere Kandidatenmenge oder unlesbares reviews-dir sehen
-	// sonst identisch aus wie "alles gedeckt". Null Review-ZUSAGEN unter
-	// vorhandenen Kandidaten ist dagegen ein legitimer Zustand (ein kleiner
-	// oder junger Bestand kann das sein) und loest fuer sich allein KEIN
-	// Fail-Closed aus -- anders als bei workflows' refs==0, wo eine
-	// Workflow-Datei ohne jede uses:-Zeile ein Anomalie-Signal ist.
-	if len(candidates) == 0 || listErr != nil {
+	// FAIL-CLOSED: leere Kandidatenmenge, oder unlesbares reviews-dir OHNE dass
+	// eine einzige Review-Zusage vorliegt, saehen sonst identisch aus wie
+	// "alles gedeckt". Ein unlesbares reviews-dir MIT vorhandenen Zusagen
+	// braucht diese Zeile NICHT zusaetzlich: jede Zusage hat dann bereits ihren
+	// eigenen `review-missing`-Befund oben ausgeloest (hasMatchingReview kann
+	// gegen eine leere Namens-Liste nie treffen) -- eine weitere Meldung mit
+	// dem Text "leere Pruefmenge" waere hier irrefuehrend, weil die Menge
+	// gerade NICHT leer ist. Null Review-ZUSAGEN unter vorhandenen Kandidaten
+	// ist ein legitimer Zustand (ein kleiner oder junger Bestand kann das
+	// sein) und loest fuer sich allein KEIN Fail-Closed aus -- anders als bei
+	// workflows' refs==0, wo eine Workflow-Datei ohne jede uses:-Zeile ein
+	// Anomalie-Signal ist.
+	if len(candidates) == 0 || (listErr != nil && promises == 0) {
 		out = append(out, model.Finding{File: cfg.DoneDir, Line: 1, Rule: "reviews", Target: cfg.DoneDir,
 			Reason: ReasonReviewMissing,
 			Message: fmt.Sprintf("leere Pruefmenge: %d Kandidat(en), %d Review-Zusage(n), reviews-dir lesbar: %v — fail-closed",
@@ -88,14 +97,28 @@ func CheckReviews(fsys driven.Filesystem, cfg model.ReviewsConfig) []model.Findi
 	return out
 }
 
-// reviewPromise sucht die ERSTE Review-Zusage-Zeile im Dokument (roh, ueber
-// alle Zeilen -- dieselbe Lexik-Entscheidung wie max-open-tasks/ADR-0074:
-// Haken-Zustand zaehlt nicht, nur dass die Zeile "Review" nennt) und liefert
-// ihre 1-basierte Zeilennummer fuer den Befund.
+// reviewPromise sucht das ERSTE DoD-Item, dessen TEXT die Review-Zusage-Phrase
+// traegt, und liefert die 1-basierte Zeilennummer seines Checkbox-Starts.
+//
+// Ein Item ist NICHT auf seine Checkbox-Zeile beschraenkt: der ueberwiegende
+// Bestand schreibt lange DoD-Punkte als Fließtext ueber mehrere Zeilen, und
+// "unabhängiger Review" steht dabei haeufig auf einer FOLGEZEILE, nicht auf
+// der Checkbox-Zeile selbst (gemessen: mindestens sechs Faelle im Bestand,
+// u. a. slice-138). Eine Item-Grenze ist deshalb der Bereich von einer
+// Checkbox-Zeile bis ausschließlich der naechsten Checkbox-Zeile, einer
+// Leerzeile oder dem Dateiende -- dieselbe Grenze, an der ein loses
+// Markdown-Listenelement endet.
 func reviewPromise(content string) (line int, ok bool) {
 	lines := strings.Split(content, "\n")
-	for i, l := range lines {
-		if reviewLineRE.MatchString(l) {
+	for i := 0; i < len(lines); i++ {
+		if !checkboxLineRE.MatchString(lines[i]) {
+			continue
+		}
+		item := lines[i]
+		for j := i + 1; j < len(lines) && strings.TrimSpace(lines[j]) != "" && !checkboxLineRE.MatchString(lines[j]); j++ {
+			item += "\n" + lines[j]
+		}
+		if reviewPhraseRE.MatchString(item) {
 			return i + 1, true
 		}
 	}
