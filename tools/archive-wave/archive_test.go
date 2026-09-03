@@ -34,6 +34,86 @@ func buildFixture(t *testing.T) string {
 	return root
 }
 
+// buildFixtureNoPlan legt eine Welle wie welle-60..66 an: nur eine
+// retroaktive `-results.md`, kein Welle-Plan (slice-191).
+func buildFixtureNoPlan(t *testing.T) string {
+	t.Helper()
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-61-results.md"),
+		"# Ergebnis welle-61\n\nRetroaktiv, minimal.\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-601-eins.md"),
+		"# Slice slice-601: Eins\n\n**Welle:** welle-61.\n")
+	writeFile(t, filepath.Join(root, "docs/reviews/2026-07-18-slice-601-r1.md"),
+		"# Review slice-601\n")
+	return root
+}
+
+// TestFixture_NoWellePlan belegt slice-191 §2 Punkt 2: eine Welle ohne
+// Plan-Datei archiviert Slices + Reviews, ohne einen Welle-Stub zu
+// erfinden -- es gibt nichts, das er ersetzen koennte.
+func TestFixture_NoWellePlan(t *testing.T) {
+	root := buildFixtureNoPlan(t)
+
+	wellePlan, err := FindWellePlan(root, "welle-61")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if wellePlan != "" {
+		t.Fatalf("erwartet keinen Welle-Plan, got %q", wellePlan)
+	}
+
+	slices, err := CollectSlices(root, "welle-61")
+	if err != nil {
+		t.Fatal(err)
+	}
+	reviews, err := CollectReviews(root, slices)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	p := Plan{WelleID: "welle-61", WellePlan: wellePlan, Slices: slices, Reviews: reviews}
+	moves, err := Apply(root, p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(moves) != 1 { // nur der eine Slice, kein Welle-Plan-Move
+		t.Fatalf("erwartet 1 Move (nur Slice), got %d: %v", len(moves), moves)
+	}
+
+	archiveDir := filepath.Join(root, "docs/plan/planning/done/welle-61")
+	zr, err := zip.OpenReader(filepath.Join(archiveDir, "archiv.zip"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer zr.Close()
+	if len(zr.File) != 2 { // Slice + Review, kein Welle-Plan-Eintrag
+		t.Fatalf("erwartet 2 Zip-Eintraege (Slice+Review, kein Plan), got %d", len(zr.File))
+	}
+
+	if _, err := os.Stat(filepath.Join(archiveDir, "slice-601-eins.md")); err != nil {
+		t.Errorf("Slice-Stub fehlt: %v", err)
+	}
+	// Kein Welle-Stub -- es gab keinen Volltext, den er ersetzen koennte.
+	entries, err := os.ReadDir(archiveDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, e := range entries {
+		if strings.HasPrefix(e.Name(), "welle-61") {
+			t.Errorf("unerwarteter Welle-Stub ohne Vorlage: %s", e.Name())
+		}
+	}
+
+	resultsPath := filepath.Join(root, "docs/plan/planning/done/welle-61-results.md")
+	b, err := os.ReadFile(resultsPath)
+	if err != nil {
+		t.Fatalf("Ergebnisnotiz wurde angefasst oder geloescht: %v", err)
+	}
+	if string(b) != "# Ergebnis welle-61\n\nRetroaktiv, minimal.\n" {
+		t.Error("Ergebnisnotiz-Inhalt veraendert")
+	}
+}
+
 func TestFixture_EndToEnd(t *testing.T) {
 	root := buildFixture(t)
 

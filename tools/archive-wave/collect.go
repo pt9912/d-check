@@ -40,8 +40,11 @@ func SliceIDFromPath(path string) string {
 }
 
 // FindWellePlan findet die flache Welle-Plan-Datei in
-// <root>/docs/plan/planning/done/, die nicht auf -results.md endet. Erwartet
-// genau eine Datei -- mehrdeutig oder keine ist ein Fehler, kein Uebersprung.
+// <root>/docs/plan/planning/done/, die nicht auf -results.md endet. Genau
+// eine Datei ist der Regelfall; **keine** ist gueltig fuer eine Welle von vor
+// der Plan-Datei-Konvention (nur eine retroaktive `-results.md` existiert,
+// slice-191) -- leerer String ohne Fehler signalisiert das. Mehrdeutig
+// (>1 Kandidat) bleibt ein Fehler, kein Uebersprung.
 func FindWellePlan(root, welleID string) (string, error) {
 	dir := filepath.Join(root, "docs/plan/planning/done")
 	entries, err := os.ReadDir(dir)
@@ -65,7 +68,7 @@ func FindWellePlan(root, welleID string) (string, error) {
 	}
 	switch len(found) {
 	case 0:
-		return "", fmt.Errorf("kein Welle-Plan fuer %s in %s gefunden", welleID, dir)
+		return "", nil
 	case 1:
 		return filepath.Join(dir, found[0]), nil
 	default:

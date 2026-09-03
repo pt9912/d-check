@@ -40,12 +40,19 @@ func TestFindWellePlan_Mehrdeutig(t *testing.T) {
 	}
 }
 
+// TestFindWellePlan_Keine belegt slice-191 §2 Punkt 2: eine Welle ohne
+// Plan-Datei (welle-60..66, vor der Plan-Datei-Konvention) ist gueltig, kein
+// Fehler -- nur eine `-results.md` allein ist kein Kandidat.
 func TestFindWellePlan_Keine(t *testing.T) {
 	root := t.TempDir()
-	writeFile(t, filepath.Join(root, "docs/plan/planning/done/.gitkeep"), "")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/welle-87-results.md"), "# Ergebnis\n")
 
-	if _, err := FindWellePlan(root, "welle-87"); err == nil {
-		t.Fatal("erwartet Fehler ohne Kandidat")
+	got, err := FindWellePlan(root, "welle-87")
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if got != "" {
+		t.Fatalf("erwartet leeren String ohne Plan-Kandidat, got %q", got)
 	}
 }
 

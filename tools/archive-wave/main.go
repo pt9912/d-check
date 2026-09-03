@@ -50,7 +50,11 @@ func run(root, welleID string, apply bool) error {
 	}
 
 	fmt.Printf("archive-wave: %s\n", welleID)
-	fmt.Printf("  Welle-Plan: %s\n", RelPath(root, wellePlan))
+	if wellePlan == "" {
+		fmt.Println("  Welle-Plan: (keiner -- Welle vor der Plan-Datei-Konvention, nur -results.md)")
+	} else {
+		fmt.Printf("  Welle-Plan: %s\n", RelPath(root, wellePlan))
+	}
 	fmt.Printf("  Slices (%d):\n", len(slices))
 	for _, s := range slices {
 		fmt.Printf("    %s\n", RelPath(root, s))
@@ -103,10 +107,12 @@ func run(root, welleID string, apply bool) error {
 func previewMoves(root string, p Plan) []Move {
 	archiveDir := "docs/plan/planning/done/" + p.WelleID
 	var moves []Move
-	moves = append(moves, Move{
-		Old: RelPath(root, p.WellePlan),
-		New: archiveDir + "/" + filepath.Base(p.WellePlan),
-	})
+	if p.WellePlan != "" {
+		moves = append(moves, Move{
+			Old: RelPath(root, p.WellePlan),
+			New: archiveDir + "/" + filepath.Base(p.WellePlan),
+		})
+	}
 	for _, s := range p.Slices {
 		moves = append(moves, Move{
 			Old: RelPath(root, s),

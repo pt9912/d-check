@@ -15,7 +15,7 @@ import (
 // Plan ist das Ergebnis des Sammeln-Schritts: alles, was zu welleID gehoert.
 type Plan struct {
 	WelleID   string
-	WellePlan string // absoluter Pfad
+	WellePlan string // absoluter Pfad, leer fuer eine Welle ohne Plan-Datei
 	Slices    []string
 	Reviews   []string
 }
@@ -44,7 +44,11 @@ func Apply(root string, p Plan) ([]Move, error) {
 		return nil, fmt.Errorf("%s anlegen: %w", archiveDir, err)
 	}
 
-	all := append([]string{p.WellePlan}, p.Slices...)
+	var all []string
+	if p.WellePlan != "" {
+		all = append(all, p.WellePlan)
+	}
+	all = append(all, p.Slices...)
 	all = append(all, p.Reviews...)
 	if err := buildZip(root, filepath.Join(archiveDir, "archiv.zip"), all); err != nil {
 		return nil, err
@@ -52,20 +56,25 @@ func Apply(root string, p Plan) ([]Move, error) {
 
 	var moves []Move
 
-	welleTitle, err := readTitle(p.WellePlan)
-	if err != nil {
-		return nil, err
+	// Eine Welle ohne Plan-Datei (welle-60..66, vor der Plan-Datei-Konvention,
+	// slice-191) hat nichts, das ein Stub ersetzen koennte -- ueberspringen
+	// statt eine Datei zu erfinden.
+	if p.WellePlan != "" {
+		welleTitle, err := readTitle(p.WellePlan)
+		if err != nil {
+			return nil, err
+		}
+		resultsFile := p.WelleID + "-results.md"
+		welleStub := WelleStub(p.WelleID, welleTitle, resultsFile, len(p.Slices), len(p.Reviews))
+		welleNewAbs := filepath.Join(archiveDir, filepath.Base(p.WellePlan))
+		if err := os.WriteFile(welleNewAbs, []byte(welleStub), 0o644); err != nil {
+			return nil, fmt.Errorf("%s schreiben: %w", welleNewAbs, err)
+		}
+		if err := os.Remove(p.WellePlan); err != nil {
+			return nil, fmt.Errorf("%s loeschen: %w", p.WellePlan, err)
+		}
+		moves = append(moves, Move{Old: RelPath(root, p.WellePlan), New: RelPath(root, welleNewAbs)})
 	}
-	resultsFile := p.WelleID + "-results.md"
-	welleStub := WelleStub(p.WelleID, welleTitle, resultsFile, len(p.Slices), len(p.Reviews))
-	welleNewAbs := filepath.Join(archiveDir, filepath.Base(p.WellePlan))
-	if err := os.WriteFile(welleNewAbs, []byte(welleStub), 0o644); err != nil {
-		return nil, fmt.Errorf("%s schreiben: %w", welleNewAbs, err)
-	}
-	if err := os.Remove(p.WellePlan); err != nil {
-		return nil, fmt.Errorf("%s loeschen: %w", p.WellePlan, err)
-	}
-	moves = append(moves, Move{Old: RelPath(root, p.WellePlan), New: RelPath(root, welleNewAbs)})
 
 	for _, s := range p.Slices {
 		title, err := readTitle(s)
