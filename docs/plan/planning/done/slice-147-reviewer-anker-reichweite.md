@@ -45,7 +45,7 @@ Gegenstand diese Klasse **ist**.
    Quadranten"*; die 2×2-Matrix selbst steht deskriptiv in
    `grundlagen-klassifikation.md`);
    eine Waise im Skill ist
-   genau der Befund, den [slice-131](../done/slice-131-reviewer-skill-waisen.md)
+   genau der Befund, den [slice-131](welle-83/slice-131-reviewer-skill-waisen.md)
    behandelt hat.
 4. **Messen statt annehmen**, ob eine mechanische Hälfte existiert: die
    Wortlaut-Probe aller Blockzitate eines Dokuments gegen die zitierte Quelle
@@ -107,7 +107,7 @@ Gegenstand diese Klasse **ist**.
   [`harness/README.md`](../../../../harness/README.md), noch im
   Konventionsspeicher; sie existierte nur als Beobachtung. Ein Anker allein wäre
   damit genau die Skill-Waise gewesen, die
-  [slice-131](../done/slice-131-reviewer-skill-waisen.md) behandelt hat. Sie
+  [slice-131](welle-83/slice-131-reviewer-skill-waisen.md) behandelt hat. Sie
   steht jetzt als Hard Rule in §5. **Ob sie greift, ist damit nicht behauptet** —
   vier Instanzen entstanden, während die Klasse im Register stand, eine davon in
   einem Dokument über die Klasse selbst.
@@ -156,7 +156,7 @@ die Regel fehlte, sondern weil der Kanon **zwei Quadranten** verlangt
 (`modul-09-implementierung.md`: *„Jede Hard Rule liegt in zwei Quadranten"*) und
 die verkörperte Form der Ort ist, den ein Implementer liest. Damit ist der
 Anker nach dem Kriterium von
-[slice-131](../done/slice-131-reviewer-skill-waisen.md) auch **keine Waise**,
+[slice-131](welle-83/slice-131-reviewer-skill-waisen.md) auch **keine Waise**,
 sondern ein *„buchstabiert eine gerankte Fundstelle aus"* — dessen Zensus
 akzeptiert die vendorte Baseline mehrfach als gültige Fundstelle. Der §5-Absatz
 trägt den Kanon-Zeiger, wie §3.7 es vorführt.

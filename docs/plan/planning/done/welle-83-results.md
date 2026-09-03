@@ -14,24 +14,24 @@ Der Baseline-Pin ist von `v5.9.0` (Kurs-Welle 86) auf `v5.11.0` (Kurs-Welle 94)
 gehoben, acht Kurs-Wellen sind einzeln beantwortet, und die zwei Wellen mit
 Handlungs-Antwort sind abgearbeitet:
 
-- [slice-128](slice-128-baseline-v5110-vendoring.md) — **Etappe A:** Bundle
+- [slice-128](welle-83/slice-128-baseline-v5110-vendoring.md) — **Etappe A:** Bundle
   `v5.11.0` netzlos vendored und gegen `SHA256SUMS` verifiziert, Pin gehoben als
   [`MR-030`](../../../../harness/conventions.md#mr-030), 38 pin-gebundene
   Verweise retargetet, Alt-Baum entfernt. Der gemessene Delta: 52 Dateien, 30
   unterschiedlich, 23 davon reine Versions-Stempel — **fünf** mit echtem
   Regel-Inhalt.
-- [slice-129](slice-129-baseline-v5110-delta-audit.md) — **Etappe B:** je
+- [slice-129](welle-83/slice-129-baseline-v5110-delta-audit.md) — **Etappe B:** je
   Kurs-Welle 87–94 **eine** Antwort mit Beleg. Zwei verlangen Handlung, sechs
   sind **gemessen** folgenlos (der Regelwerks-Diff berührt nur fünf Dateien),
   keine ist vermutet. Der Vollständigkeits-Zensus aus Kurs-Welle 94 ergab
   **fünf** Fundorte statt des einen bekannten.
-- [slice-130](slice-130-lastenheft-historie-form.md) — **Etappe C-1:** die
+- [slice-130](welle-83/slice-130-lastenheft-historie-form.md) — **Etappe C-1:** die
   Lastenheft-Historie trägt die kanonische vierte Spalte `Verweis`, alle 95
   Bestandszeilen `—`; die Spezifikations-Historie bleibt bei zwei Spalten. Die
   eigene Strenge — Bump und Historie schon vor `Accepted`, was der Kanon nicht
   verlangt — ist deklariert und als
   [`MR-032`](../../../../harness/conventions.md#mr-032) geführt.
-- [slice-131](slice-131-reviewer-skill-waisen.md) — **Etappe C-2:** ein Zensus
+- [slice-131](welle-83/slice-131-reviewer-skill-waisen.md) — **Etappe C-2:** ein Zensus
   über 18 Aussagen außerhalb der Rangliste; **drei** Waisen nach `AGENTS.md`
   umgezogen (§3.8 Modul-Zusagen auf der Ziel-Achse, §3.9 SHA-gepinnte
   Action-Referenzen, §5 die Reichweite eines Schlusses), ein eigener Befund

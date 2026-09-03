@@ -172,13 +172,13 @@ fest"*), und die Rangliste trägt die **Vollständigkeits-Zusage** samt Prüffra
 und der Regel **Waise ⇒ umgezogen, nicht gelöscht**.
 
 **Der zweite Wartegrund ist seit dem 2026-08-23 ebenfalls erledigt:**
-[slice-128](../done/slice-128-baseline-v5110-vendoring.md) hat den Pin auf
+[slice-128](welle-83/slice-128-baseline-v5110-vendoring.md) hat den Pin auf
 `v5.11.0` gehoben, und die kanonische Rolle der Werkzeug-Einstiegsdatei samt
 Vollständigkeits-Zusage liegt damit im **gepinnten** Baum. Der Slice ist
 **startbar**.
 
 **Ein Reihenfolge-Vorbehalt bleibt, und er ist keine Blockade:**
-[slice-129](../done/slice-129-baseline-v5110-delta-audit.md) beantwortet unter
+[slice-129](welle-83/slice-129-baseline-v5110-delta-audit.md) beantwortet unter
 anderem, **welche** Artefakte außerhalb der Rangliste normativen Text tragen —
 `CLAUDE.md` ist ein bekannter Eintrag dieser Liste, aber ob der einzige, weiß
 erst das Audit. Wer zuerst startet, ist eine Entscheidung, keine Ableitung:

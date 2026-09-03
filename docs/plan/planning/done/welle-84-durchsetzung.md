@@ -46,7 +46,7 @@ Ausweisung, dass sie einseitig bleibt.
 
 ## 2. Trigger (Welle startet)
 
-- [welle-83](welle-83-baseline-v5110-migration.md) ist geschlossen, ihre
+- [welle-83](welle-83/welle-83-baseline-v5110-migration.md) ist geschlossen, ihre
   Ergebnisnotiz liegt in `done/`.
 - `in-progress/` trägt keinen Slice.
 

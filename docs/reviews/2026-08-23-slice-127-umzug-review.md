@@ -14,7 +14,7 @@
 - Gepinnter Kanon: [`grundlagen-source-precedence.md`](../../.harness/baseline/v5.11.0/regelwerk/grundlagen-source-precedence.md) §Source Precedence/§Vollständigkeit, [`grundlagen-durchsetzungsschicht.md`](../../.harness/baseline/v5.11.0/regelwerk/grundlagen-durchsetzungsschicht.md) §Referenz-Implementierung, [`grundlagen-traceability.md`](../../.harness/baseline/v5.11.0/regelwerk/grundlagen-traceability.md) §Herkunfts-Anker, [`modul-09-implementierung.md`](../../.harness/baseline/v5.11.0/regelwerk/modul-09-implementierung.md) §Minimal Agent Workflow/§AGENTS.md-Regeln, [`modul-02-harness-bootstrap.md`](../../.harness/baseline/v5.11.0/regelwerk/modul-02-harness-bootstrap.md) §Freshness-Audit
 - [`harness/README.md`](../../harness/README.md) §Leseordnung, §Source precedence · [`harness/conventions.md`](../../harness/conventions.md) §Modus-Deklaration, MR-000, MR-013, MR-015
 - `.claude/commands/implement-slice.md`, `.claude/settings.json`, `.claude/hooks/*`
-- Delta-Audit [`slice-129-baseline-v5110-delta-audit.md`](../plan/planning/done/slice-129-baseline-v5110-delta-audit.md) §4a (Fünf-Fundorte-Zensus)
+- Delta-Audit [`slice-129-baseline-v5110-delta-audit.md`](../plan/planning/done/welle-83/slice-129-baseline-v5110-delta-audit.md) §4a (Fünf-Fundorte-Zensus)
 - Report des ersten Anlaufs [`2026-08-23-slice-127-claude-md-pointer-review.md`](2026-08-23-slice-127-claude-md-pointer-review.md)
 - [`observations.md`](../plan/planning/observations.md) BEO-002, BEO-008, BEO-009, BEO-011
 
@@ -56,8 +56,8 @@
 
 - `kategorie`: MEDIUM
 - `quelle`: BEO-008 Richtung 1 (Link-Ziel neu, Prosa alt); BEO-002
-- `pfad`: [`welle-83-baseline-v5110-migration.md`](../plan/planning/done/welle-83-baseline-v5110-migration.md):87 und :90-91 · Botschaft `753fb46`
-- `befund`: `753fb46` hebt in derselben Zeile das Link-Ziel von `next/` auf `in-progress/` und lässt den Prosa-Teil „liegt in `next/` und ist startbar" stehen; die Zeile sagt danach in einem Satz zweierlei, und die stehen gebliebene Hälfte widerspricht dem Verzeichnis. Ebenso bleibt §5 „**Blockiert:** slice-127 — er folgt einer Regel, die erst mit diesem Bump gepinnt ist" unverändert, obwohl derselbe Commit den Slice beansprucht und der Wartegrund laut seiner eigenen Botschaft erledigt ist. Dies ist die Klasse, die der Review zu [slice-128](../plan/planning/done/slice-128-baseline-v5110-vendoring.md) vier Tage zuvor an derselben Datei-Familie gemeldet hat.
+- `pfad`: [`welle-83-baseline-v5110-migration.md`](../plan/planning/done/welle-83/welle-83-baseline-v5110-migration.md):87 und :90-91 · Botschaft `753fb46`
+- `befund`: `753fb46` hebt in derselben Zeile das Link-Ziel von `next/` auf `in-progress/` und lässt den Prosa-Teil „liegt in `next/` und ist startbar" stehen; die Zeile sagt danach in einem Satz zweierlei, und die stehen gebliebene Hälfte widerspricht dem Verzeichnis. Ebenso bleibt §5 „**Blockiert:** slice-127 — er folgt einer Regel, die erst mit diesem Bump gepinnt ist" unverändert, obwohl derselbe Commit den Slice beansprucht und der Wartegrund laut seiner eigenen Botschaft erledigt ist. Dies ist die Klasse, die der Review zu [slice-128](../plan/planning/done/welle-83/slice-128-baseline-v5110-vendoring.md) vier Tage zuvor an derselben Datei-Familie gemeldet hat.
 - `verifizierbar`: nein — `make planning-check` Exit 0 selbst gefahren; das Gate misst Ruhe-Marker ↔ `in-progress/`, nicht Prosa-Lifecycle-Aussagen.
 - `klasse`: `prosa-pin-nicht-gehoben`
 

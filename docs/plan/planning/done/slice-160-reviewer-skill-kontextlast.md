@@ -11,7 +11,7 @@ braucht).
 Baseline
 [`modul-10-review-harness.md`](../../../../.harness/baseline/v5.12.0/regelwerk/modul-10-review-harness.md)
 §Ziel-Form: Reviewer-Skill;
-[slice-131](../done/slice-131-reviewer-skill-waisen.md) (der Waisen-Zensus);
+[slice-131](welle-83/slice-131-reviewer-skill-waisen.md) (der Waisen-Zensus);
 [slice-147](../done/slice-147-reviewer-anker-reichweite.md) (der Anlass).
 
 **Berührte Spec-Stellen:** — (Rollen-Skill; das Produkt bleibt unberührt).
