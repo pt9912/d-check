@@ -30,7 +30,7 @@ der Heilungs-Commit `d3e3501`; Arbeitsbaum-Stand `d3e3501` (= HEAD, clean).
 - Der Slice-Plan
   [slice-102](../plan/planning/done/slice-102-wellen-lifecycle-invariante.md)
   (§3, §3a samt F-8-Korrektur) und das Wellendokument
-  [welle-75](../plan/planning/done/welle-75-wellen-register.md)
+  [welle-75](../plan/planning/done/welle-75/welle-75-wellen-register.md)
 
 **Läufe dieses Re-Reviews.** Das Image wurde aus dem HEAD-Stand frisch gebaut;
 Baseline `make test` grün (Exit 0). **Sechs Mutationsläufe**, jeder über eine

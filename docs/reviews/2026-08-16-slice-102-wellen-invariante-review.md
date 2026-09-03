@@ -34,7 +34,7 @@ vier, der ADR-Commit liegt separat); Arbeitsbaum-Stand `a040eff` (= HEAD).
 - Der Slice-Plan
   [slice-102](../plan/planning/done/slice-102-wellen-lifecycle-invariante.md)
   (§3 Abnahme-Punkte mit Ausgängen, §3a Messung) und das Wellendokument
-  [welle-75](../plan/planning/done/welle-75-wellen-register.md)
+  [welle-75](../plan/planning/done/welle-75/welle-75-wellen-register.md)
 
 **Läufe dieses Reviews.** Alle Fixtures und alle Mutations-Kopien in einem
 Scratch-Verzeichnis außerhalb des Repos; keine Probe-Config wurde im Repo
