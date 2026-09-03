@@ -24,25 +24,29 @@ Für eine übergebene Wellen-ID (`-welle=welle-NN`):
 
 ## Nutzung
 
-Docker-only — kein Host-Go nötig, dieselbe Toolchain-Disziplin wie das
-aufrufende Repo (`AGENTS.md` §3.1, falls vorhanden). Aus diesem Verzeichnis:
+Docker/make-only — kein Host-Go nötig, kein roher `docker`-Aufruf: jede
+Operation steht hinter einem Target im eigenen [`Makefile`](Makefile), damit
+dieses Verzeichnis dieselbe Disziplin trägt wie das aufrufende Repo
+(`AGENTS.md` §3.1, falls vorhanden). Aus diesem Verzeichnis:
 
 ```
-docker build --target test -f Dockerfile -t archive-wave:test .   # Testsuite
-docker build -f Dockerfile -t archive-wave:latest .                # Binary bauen
-
-# Dry-Run (Default) -- schreibt nichts, listet die geplante Operation:
-docker run --rm -v "/pfad/zum/repo":/repo:ro \
-    archive-wave:latest -root=/repo -welle=welle-42
-
-# Anwenden -- schreibt, Datei-Eigner via -u:
-docker run --rm -u "$(id -u):$(id -g)" -v "/pfad/zum/repo":/repo \
-    archive-wave:latest -root=/repo -welle=welle-42 -apply
+make test                                    # Testsuite
+make run WELLE=welle-42                      # Dry-Run gegen den Repo-Zweig eine Ebene über tools/
+make run WELLE=welle-42 APPLY=1              # schreibt
+make run WELLE=welle-42 ROOT=/pfad/zum/repo  # gegen ein anderes Repo
 ```
 
-`-root` ist optional (Default `.`). In d-check selbst führt
-`make archive-wave WELLE=welle-42 [APPLY=1]` denselben Build- und
-Run-Schritt aus (siehe `AGENTS.md` §4).
+`ROOT` ist optional (Default: die zwei Verzeichnisebenen über diesem
+`Makefile` — die Annahme `<repo>/tools/archive-wave/`; bei abweichender
+Ablage explizit setzen). Der Mount ist **nur bei `APPLY=1` beschreibbar** —
+im Dry-Run-Default hängt der Container am Repo mit `:ro`, dieselbe
+Read-only-Form wie d-checks eigenes Image, nicht ein durchgehend
+beschreibbarer Voll-Mount. `-u` bindet den Dateieigner an den aufrufenden
+Bediener statt an eine feste Image-UID.
+
+In d-check selbst delegiert `make archive-wave WELLE=welle-42 [APPLY=1]`
+(bzw. `make archive-wave-test`) an genau dieses lokale Makefile — eine
+Quelle für den Docker-Aufruf, kein Duplikat (siehe `AGENTS.md` §4).
 
 ## Grenzen
 

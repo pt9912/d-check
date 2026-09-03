@@ -395,20 +395,16 @@ clean: ## Lokale Images entfernen.
 
 # archive-wave (Baseline-Regelwerk modul-06-roadmap.md §Wellen-Closure-
 # Prozedur, Schritt 4): eigenstaendiges Werkzeug unter tools/archive-wave/,
-# eigenes go.mod, eigenes Dockerfile -- portabel fuer jedes Repo mit
-# demselben Planning-Layout (slice-190). Sicherer Default: ohne APPLY=1
-# wird NICHTS geschrieben, nur der geplante Umfang angezeigt.
-# `-u $(id -u):$(id -g)`: geschriebene Dateien gehoeren dem Bediener, nicht
-# einer festen Image-UID (dasselbe Muster wie `tidy`).
+# eigenes go.mod, eigenes Dockerfile, eigenes Makefile -- portabel fuer
+# jedes Repo mit demselben Planning-Layout (slice-190). Delegiert an das
+# lokale Makefile statt den Docker-Aufruf hier zu duplizieren -- eine
+# Quelle fuer den Mount/UID-Umgang, kein Drift-Risiko zwischen zwei
+# Kopien. Sicherer Default: ohne APPLY=1 wird NICHTS geschrieben und der
+# Mount ist read-only (das lokale Makefile schaltet ihn erst bei
+# APPLY=1 beschreibbar).
 archive-wave-test: ## archive-wave-Testsuite (eigenes go.mod, nicht Teil von `make test`).
-	docker build $(PROGRESS_FLAG) --build-arg GO_VERSION=$(GO_VERSION) \
-	    --target test -f tools/archive-wave/Dockerfile -t archive-wave:test tools/archive-wave
+	$(MAKE) -C tools/archive-wave test GO_VERSION=$(GO_VERSION) PROGRESS_FLAG='$(PROGRESS_FLAG)'
 
 archive-wave: ## Welle archivieren: make archive-wave WELLE=welle-NN [APPLY=1].
-	@if [ -z "$(WELLE)" ]; then \
-	    echo "archive-wave: WELLE=welle-NN ist Pflicht" >&2; exit 2; \
-	fi
-	docker build $(PROGRESS_FLAG) --build-arg GO_VERSION=$(GO_VERSION) \
-	    -f tools/archive-wave/Dockerfile -t archive-wave:latest tools/archive-wave
-	docker run --rm -u "$$(id -u):$$(id -g)" -v "$(CURDIR)":/repo \
-	    archive-wave:latest -root=/repo -welle=$(WELLE) $(if $(APPLY),-apply,)
+	$(MAKE) -C tools/archive-wave run WELLE=$(WELLE) APPLY=$(APPLY) ROOT=$(CURDIR) \
+	    GO_VERSION=$(GO_VERSION) PROGRESS_FLAG='$(PROGRESS_FLAG)'
