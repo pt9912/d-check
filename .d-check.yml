@@ -200,6 +200,11 @@ ignore-refs:
   # docs/plan/planning/done/welle-60/archiv.zip erreichbar.
   - in: docs/plan/adr/0043-tabellengrenze-am-relevanten-header.md
     refs: ["docs/reviews/2026-07-17-slice-074-implementation-r3.md"]
+  # Dieselbe Grenze, welle-47-Archivierung (slice-191).
+  - in: docs/plan/adr/0029-arch-check-via-a-check.md
+    refs:
+      - "docs/reviews/2026-07-03-slice-058-arch-check-plan-r1.md"
+      - "docs/reviews/2026-07-03-slice-058-arch-check-impl-r2.md"
   # Dieselbe Grenze, diesmal an einem Review-Report statt einer ADR
   # (welle-67-Archivierung, slice-191): ein Review-Report ist selbst ein
   # LAUF-BELEG (siehe die Review-Report-Begruendung oben) und wird nicht
