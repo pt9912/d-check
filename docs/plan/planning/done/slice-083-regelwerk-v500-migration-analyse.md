@@ -124,7 +124,7 @@ erst nach Prüfung des Flotten-Stands (Etappe B) sicher.
    `Accepted`, also immutabel nach
    [ADR-0016](../../adr/0016-adr-immutable-gate.md) /
    [ADR-0024](../../adr/0024-vcs-immutable-gate.md)),
-   [slice-080](../done/slice-080-sources-modul.md) und
+   [slice-080](welle-63/slice-080-sources-modul.md) und
    [slice-081](../done/slice-081-pins-hash-ergonomie.md).
 5. **Module 03/04 umbenannt** (`v4.0.0`, MAJOR): `modul-03-lastenheft.md` →
    `modul-03-spec.md`, `modul-04-architektur-adrs.md` → `modul-04-adrs.md`. Bricht
