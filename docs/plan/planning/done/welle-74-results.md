@@ -11,7 +11,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
 
 - **Sechs Module beantworten ihre Lexik-Fragen jetzt gleich**
-  ([slice-103](slice-103-geteilte-lexik-raender.md)): `citations` (Absatzgrenze),
+  ([slice-103](welle-74/slice-103-geteilte-lexik-raender.md)): `citations` (Absatzgrenze),
   `versions` und `pins` (Anker-Auflösung, vollständig — Fence, Inline-Code,
   Tag-Kontext, Duplikat-Slug, Prozent-Dekodierung, Groß-/Kleinschreibung),
   `planning` (Überschrift, Marker, Block-Grenze), `vcs` (Status-Zeile,
@@ -109,7 +109,7 @@ Der Lese-Schritt dieser Welle: das Register führt **BEO-001** (2×),
 
 ## Verifikation
 
-- **Closure-Trigger erfüllt:** [slice-103](slice-103-geteilte-lexik-raender.md)
+- **Closure-Trigger erfüllt:** [slice-103](welle-74/slice-103-geteilte-lexik-raender.md)
   in `done/`; die Bestandsmessung lag **vor** dem Schnitt-Entscheid; **BEO-003
   ist entschieden** (auf 3, verkörpert); Release **v0.58.0** samt
   Digest-Backfill; `make fullbuild` grün, Image-Hash
