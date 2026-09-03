@@ -116,3 +116,10 @@ ist zu prüfen, ob der Tabellen-Modus für d-checks eigene Nutzung noch
 gebraucht wird oder als Altlast markiert werden kann — dieselbe Reifung
 wie bei ADR-0081s eigenem Trigger. Die Entscheidung über andere
 Adopter-Repos liegt nicht bei d-check.
+
+## Geschichte
+
+| Datum | Ereignis |
+|---|---|
+| 2026-09-03 | Proposed → Accepted (slice-194) |
+| 2026-09-03 | Korrektur zu §Fitness Function: der Kollisions-Fall (`Dir` und `Register` beide gesetzt) bricht beim Konfigurations-Laden mit einem generischen `error`, nicht mit einem strukturierten Grund-Code — Grund-Codes (`model.Reason*`) existieren nur für Scan-Befunde, nicht für Config-Fehler. Der ursprüngliche Wortlaut suggerierte fälschlich einen Grund-Code auch für diesen Fall (unabhängiger Review, F-3) |

@@ -186,3 +186,44 @@ func TestObservationsDirModeFailClosedOnMissingDir(t *testing.T) {
 		t.Fatalf("fehlendes observations/-Verzeichnis: ein Befund erwartet, got %v", got)
 	}
 }
+
+// F-2 der Review-Runde: ohne Dirs faellt der Verzeichnis-Modus auf
+// path.Dir(o.Dir) zurueck (den GESCHWISTER-Baum von observations/, nicht
+// dessen Elternverzeichnis selbst) -- bislang ungetestet. Layout wie im
+// eigenen Repo: observations/ und done/ liegen nebeneinander unter plan/.
+func TestObservationsDirModeDefaultDirsIsParentOfDir(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		"plan/observations/BEO-ALL/foo/observation.md": "# Foo\n",
+		"plan/done/s.md": "siehe BEO-ALL/erfunden\n",
+	})
+	cfg := model.PlanningConfig{Observations: model.ObservationsConfig{Dir: "plan/observations"}}
+	got := rules.CheckPlanningObservations(fs, cfg)
+	if len(got) != 1 {
+		t.Fatalf("Default-Scan ueber path.Dir(Dir) muss plan/done/s.md erfassen, ein Befund erwartet, got %d (%v)", len(got), got)
+	}
+}
+
+// F-1 der Review-Runde: ein UEBERSCHRIEBENES observations.pattern koennte
+// Punkte zulassen, wo der Default keine erlaubt. Ohne eigene Pruefung wuerde
+// path.Join einen ".."-tragenden Fund unveraendert an den Filesystem-Adapter
+// weiterreichen -- ein Existenz-Orakel ausserhalb von root. Die Kennung muss
+// trotz permissivem Pattern als NICHT deklariert gelten.
+func TestObservationsDirModeRejectsPathTraversal(t *testing.T) {
+	fs := coretest.NewMemFS(map[string]string{
+		// Existiert AUSSERHALB von observations/ -- waere sie ueber die
+		// Traversal erreichbar, meldete Has() faelschlich "deklariert".
+		"geheim/observation.md": "# Nicht Teil des Registers\n",
+		"observations/BEO-ALL/foo/observation.md": "# Foo\n",
+		"plan/done/s.md": "siehe BEO-ALL/../../../geheim\n",
+	})
+	cfg := model.PlanningConfig{Observations: model.ObservationsConfig{
+		Dir: "observations", Dirs: []string{"plan/done"},
+		// Permissiv genug, um ".."-Segmente zu matchen -- genau der Fall,
+		// den der Default-Pattern (kein Punkt zugelassen) ausschliesst.
+		Pattern: `BEO-[A-Za-z0-9./]+`,
+	}}
+	got := rules.CheckPlanningObservations(fs, cfg)
+	if len(got) != 1 {
+		t.Fatalf("Traversal-Kennung muss als NICHT deklariert gemeldet werden, got %d (%v)", len(got), got)
+	}
+}

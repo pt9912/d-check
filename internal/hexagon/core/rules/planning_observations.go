@@ -110,14 +110,37 @@ func (m mapDeclared) Has(id string) bool { return m[id] }
 // declaredObservationIDsFromDir prüft je Kennung die Existenz von
 // <root>/<id>/observation.md — ohne Vorab-Scan, jede Prüfung ist ein
 // einzelner Filesystem-Zugriff (dieselbe Kosten-Form wie ein Kartei-Lookup).
+//
+// Sicherheits-Grenze (F-1, Review slice-194): id stammt aus einem ZITAT in
+// gescanntem Text, geprüft gegen ein REPO-KONFIGURIERTES Pattern — der
+// Default lässt keinen Punkt zu, ein überschriebenes `observations.pattern`
+// könnte das aber. Ohne eigene Prüfung würde `path.Join` einen `..`-tragenden
+// Fund unverändert an den Filesystem-Adapter weiterreichen, der ihn außerhalb
+// von root auflöst (Existenz-Orakel über Kind()). Jedes `..`-Segment gilt
+// deshalb hier als NICHT deklariert, unabhängig vom konfigurierten Pattern.
 type declaredObservationIDsFromDir struct {
 	fsys driven.Filesystem
 	root string
 }
 
 func (d declaredObservationIDsFromDir) Has(id string) bool {
+	if pathHasDotDotSegment(id) {
+		return false
+	}
 	k, err := d.fsys.Kind(path.Join(d.root, id, "observation.md"))
 	return err == nil && k == driven.KindFile
+}
+
+// pathHasDotDotSegment meldet ein "."- oder ".."-Segment in p — unabhängig
+// vom Trennzeichen-Stil, damit ein Pattern mit `\` oder gemischten Trennern
+// dieselbe Prüfung nicht umgeht.
+func pathHasDotDotSegment(p string) bool {
+	for _, seg := range strings.FieldsFunc(p, func(r rune) bool { return r == '/' || r == '\\' }) {
+		if seg == ".." || seg == "." {
+			return true
+		}
+	}
+	return false
 }
 
 // declaredObservationIDs sammelt die Kennungen, die das Register als
