@@ -10,7 +10,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Wellen-Closure-Prozedur, Schritt 3 — *was gelernt wurde*: geliefert · was
 funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
 
-- **Die Chronologie-Monotonie** ([slice-105](slice-105-tabellen-monotonie.md)):
+- **Die Chronologie-Monotonie** ([slice-105](welle-77/slice-105-tabellen-monotonie.md)):
   siebte Bedingung von
   [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
   (kein neues Modul, kein neues Kürzel — Kriterium aus
@@ -109,7 +109,7 @@ schreibt wieder, und die Verkörperungen finden weiter, statt zu zählen.
 
 ## Verifikation
 
-- **Closure-Trigger erfüllt:** [slice-105](slice-105-tabellen-monotonie.md)
+- **Closure-Trigger erfüllt:** [slice-105](welle-77/slice-105-tabellen-monotonie.md)
   in `done/`; Retro-Beleg mit dem Produkt (27 = 14 · 6 · 7 am
   Vor-Heilungs-Stand, null heute) samt naiver Gegenprobe als Testfall; der
   Kopplungs-Test läuft; der Register-Schritt ist entschieden (gestrichen);
