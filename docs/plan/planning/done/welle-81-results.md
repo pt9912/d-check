@@ -11,25 +11,25 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
 
 - **Pin-Hebung über zwei Stufen**
-  ([slice-117](slice-117-baseline-v590-bump.md)): das Bundle am Tag `v5.9.0`
+  ([slice-117](welle-81/slice-117-baseline-v590-bump.md)): das Bundle am Tag `v5.9.0`
   vendored (51 Dateien beide Bäume plus Manifest), der Vorgänger-Baum entfernt,
   `--verify` offline grün und `--check-latest` meldet den Pin als neuesten
   Release. Nachfolge-Adaption angelegt, Vorgängerin aufgelöst, alle
   pin-gebundenen Verweise nach dem Drei-Klassen-Zensus gehoben.
 - **Die Regel verkörpert, bevor sie angewandt wird**
-  ([slice-118](slice-118-zustandsfeld-regel.md)): das Briefing sagt in seiner
+  ([slice-118](welle-81/slice-118-zustandsfeld-regel.md)): das Briefing sagt in seiner
   Rolle, dass ein Zustandsfeld ein Zustands-Artefakt mit **eigener** Form ist —
   es erbt vom Kommentar die zwei Tests, nicht dessen fünf Klassen; der
   Reviewer-Skill trägt den HIGH-Anker samt der Ausnahme für Daten, die ein
   **benannter Trigger** pflegt.
 - **Die Kopf-Zustandsfelder**
-  ([slice-119](slice-119-kopf-zustandsfelder.md)): drei von vier Zeilen
+  ([slice-119](welle-81/slice-119-kopf-zustandsfelder.md)): drei von vier Zeilen
   ersatzlos entfernt (beide lebenden Register und das Technik-Stratum); die
   Sicht behält ihre und sagt an Ort und Stelle, warum sie dort ein
   Frische-Marker ist. Nebenbei tragen beide Spec-Straten die Rollen-Zeile der
   Vorlage nach, die im Bestand fehlte.
 - **Die Register selbst**
-  ([slice-120](slice-120-register-und-drift-log.md)): acht `Stand`-Zellen auf
+  ([slice-120](welle-81/slice-120-register-und-drift-log.md)): acht `Stand`-Zellen auf
   Zustand, Gegenmittel und mechanische Form gezogen (577–3 011 → 326–636
   Zeichen), das Drift-Log von **69 auf 10** Zeilen zurückgeschnitten, die
   Meilenstein-Status-Form ergänzt und der fünfte Treffer geheilt — die

@@ -14,8 +14,8 @@ Baseline-Regel; Reviewer-Skill (der
 HIGH-Anker *Zustandsfeld trägt Chronik*); Baseline-Regelwerk
 `grundlagen-harness-dateien.md` §Was ein Kommentar trägt; die drei Befunde
 stammen aus den Reviews der welle-81
-([slice-119](../done/slice-119-kopf-zustandsfelder.md),
-[slice-120](../done/slice-120-register-und-drift-log.md)) und sind dort als
+([slice-119](welle-81/slice-119-kopf-zustandsfelder.md),
+[slice-120](welle-81/slice-120-register-und-drift-log.md)) und sind dort als
 Folgepunkte benannt.
 
 **Berührte Spec-Stellen:** — (Briefing, Register-Bestand, Release-Register;
