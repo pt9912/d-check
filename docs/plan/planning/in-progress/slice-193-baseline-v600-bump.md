@@ -100,11 +100,11 @@ selbst nichts.
 
 ## 4. Definition of Done
 
-- [ ] [`MR-058`](../../../../harness/conventions.md#mr-058) nach `harness/conventions/done/` migriert, eigener Commit,
+- [x] [`MR-058`](../../../../harness/conventions.md#mr-058) nach `harness/conventions/done/` migriert, eigener Commit,
       `make doc-check` grün auf dem Zwischenstand.
-- [ ] Alle 15 lebenden `d-check:cite`-Direktiven (11 Dateien) auf `v6.0.0` re-geankert
+- [x] Alle 15 lebenden `d-check:cite`-Direktiven (11 Dateien) auf `v6.0.0` re-geankert
       (Pfad + ggf. Zeilenspanne), `make doc-check --enable citations` grün.
-- [ ] Alle übrigen lebenden `.harness/baseline/v5.18.0/`-Pfad-Referenzen auf
+- [x] Alle übrigen lebenden `.harness/baseline/v5.18.0/`-Pfad-Referenzen auf
       `v6.0.0` gezogen (0 Treffer bei `grep -rn "\.harness/baseline/v5\.18\.0"`
       außerhalb von `done/`, `docs/reviews/`, `harness/conventions/done/`,
       `docs/plan/adr/` [immutable ADRs], `docs/plan/cr/`, `CHANGELOG.md`,
@@ -112,31 +112,40 @@ selbst nichts.
       Kanon-Stand als Herkunfts-Anker nennt (z. B. „seit `v5.18.0`" in
       `observations.md`), ist davon nicht betroffen — sie trägt kein
       `.harness/baseline/`-Pfadsegment und bleibt unverändert.
-- [ ] Adaptions-Review aller lebenden `MR`-Einträge durchgeführt, Ergebnis
+- [x] Adaptions-Review aller lebenden `MR`-Einträge durchgeführt, Ergebnis
       benannt (wie viele bleiben gültig, wie viele angepasst).
-- [ ] `.harness/baseline/v5.18.0/` entfernt, `v6.0.0` einziger vendorter Baum.
-- [ ] `harness/conventions.md` §Baseline `**Stand:**` auf `v6.0.0`.
-- [ ] `make baseline-verify` und `make baseline-freshness` (Content-Teil)
+- [x] `.harness/baseline/v5.18.0/` entfernt, `v6.0.0` einziger vendorter Baum.
+- [x] `harness/conventions.md` §Baseline `**Stand:**` auf `v6.0.0`.
+- [x] `make baseline-verify` und `make baseline-freshness` (Content-Teil)
       grün auf `v6.0.0`.
-- [ ] `make gates` grün (zehn Gates).
-- [ ] `make fullbuild` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
-- [ ] Unabhängige Verifikation durchgeführt.
-- [ ] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
+- [x] `make gates` grün (zehn Gates).
+- [x] `make fullbuild` grün.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
+- [x] Unabhängige Verifikation durchgeführt.
+- [x] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Das Ein-Commit-Muster aus §2 Schritt 2 könnte wieder zusammenfallen**,
   wenn der Bump unter Zeitdruck in einem Rutsch committet wird — dieselbe
   Beobachtung wie bei slice-189 (F-3), diesmal bewusst vorab benannt statt
-  erst im Review gefunden.
+  erst im Review gefunden. — **Ausgang: entfallen.** Die Trennung gelang
+  (`faac05c`/`8bd9ab7`), über einen Zwischenzustand, den `harness/conventions.md`s
+  Tabellenstruktur zunächst nicht erlaubte ([MR-058](../../../../harness/conventions/done/MR-058-baseline-v5180.md)
+  blieb vorübergehend in „Aktive Adaptionen", nur ihr Pfad zeigt schon auf
+  `done/`).
 - **Die Zeilenspann-Verschiebung in `modul-05` ist von Hand nachgerechnet**,
   nicht durch ein Werkzeug — ein Rechenfehler bliebe unentdeckt, bis
   `citations` ihn meldet (fail-closed, würde also auffallen, aber ggf. erst
-  spät im Lauf).
+  spät im Lauf). — **Ausgang: entfallen.** `make doc-check --enable citations`
+  bestätigt alle vier Verschiebungen wortgleich; kein Rechenfehler.
 - **Der Adaptions-Review-Umfang** (Zahl lebender `MR`-Einträge) ist zum
   Planungszeitpunkt nicht neu gezählt — Risiko einer Unterschätzung wie bei
-  slice-189 selbst benannt.
+  slice-189 selbst benannt. — **Ausgang: eingetreten, in schwächerer Form.**
+  Nicht der `MR`-Review selbst war ungenau (34 Einträge korrekt gezählt,
+  alle bleiben gültig), sondern die **cite-/Tombstone-Zählung** in
+  [MR-060](../../../../harness/conventions.md#mr-060--baseline-pin-hebung-auf-v600-zehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)s
+  eigener Selbstauskunft (Review-Finding F-1, behoben vor der Closure).
 
 ## 6. Trigger
 
@@ -203,4 +212,50 @@ unser Bestand.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-<!-- wird erst bei Closure gefüllt -->
+**Geliefert.** Der vendorte Baseline-Baum steht auf `v6.0.0` — drei Releases
+gelesen statt angenommen (Wellen 112–116), 14 von 53 Bundle-Dateien mit
+echtem Inhalt. Die wellenlose Zeitdokumente-Archivierung ist auf
+Regelwerk-Ebene adoptiert (Umsetzung im Werkzeug bleibt Folge-Slice); die
+Beobachtungs-Register-Neugestaltung ist bewusst noch nicht umgesetzt —
+das ist slice-194/195, derselben Welle.
+
+**Was funktioniert hat.** Diesmal wurde die [MR-013](../../../../harness/conventions.md#mr-013)-Zwei-Commit-Trennung
+tatsächlich versucht statt wie bei slice-183/189 mangels Zeit als „weiter
+offen" liegen gelassen — und sie gelang, mit einer nicht vorab bedachten
+Zusatzbedingung: der Move-Commit brauchte nicht nur die eigenen
+Link-Tiefen-Fixes der bewegten Datei, sondern auch den einen externen
+Referrer (`harness/conventions.md`s Tabellenzeile), sonst wäre der
+Zwischenstand `target-missing` gewesen.
+[MR-058](../../../../harness/conventions/done/MR-058-baseline-v5180.md)
+bleibt in diesem Commit bewusst noch in „Aktive Adaptionen" — ihr Umzug
+nach „Aufgelöste Adaptionen" gehört inhaltlich zum Hauptbump, nicht zum
+reinen Move.
+
+**Was anders lief.** Der unabhängige Review fand eine MEDIUM-Klasse
+Selbstauskunfts-Ungenauigkeit:
+[MR-060](../../../../harness/conventions.md#mr-060--baseline-pin-hebung-auf-v600-zehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)s
+eigene Zahlen für die
+cite-Direktiven (11 statt real 15) und die Tombstone-Fundstellen (acht
+statt real zwölf) waren zu klein — derselbe Fehlertyp wie `BEO-009`
+Richtung (b), diesmal in einem frisch geschriebenen Adaptions-Dokument
+statt einer Commit-Botschaft. Die unabhängige Verifikation fand danach
+zwei weitere Lücken: einen übersehenen lebenden `v5.18.0`-Verweis in
+`roadmap.md` (eine Version-Tag-Annotation neben einem Zitat, deren
+zugehörige Regelwerk-Sektion inhaltlich unverändert war und die deshalb
+kein Herkunfts-Anker, sondern ein Live-Zeiger ist), und die noch nicht
+vollzogene Commit-Trennung selbst. Beide vor der Closure behoben.
+
+**Neu benannt, nicht behoben:** `make baseline-freshness`s `check-latest`
+zeigte `v6.0.0` nicht als verfügbaren Release, obwohl er zum Prüfzeitpunkt
+bereits publiziert war (direkte GitHub-API-Abfrage bestätigte das) —
+sobald der Pin selbst auf `v6.0.0` steht, meldet `check-latest` wieder
+korrekt „ist der neueste Tag". Wirkt wie eine Lücke in der
+Currency-Erkennung *vor* dem eigenen Pin, nicht danach — eigener,
+unverbindlicher Beobachtungspunkt, kein Blocker für diesen Slice.
+
+**Verifikation.** `make gates` Exit 0 (zehn Gates, 497 Dateien, 0 Befunde)
+auf jedem der beiden Commits · `make fullbuild` Exit 0 — 51 Requirements,
+0 Waisen, Image-Hash unverändert `sha256:dc1452307635894a943cfac03c7b3104e92b33bc858273c922dc15fbc1f80081`
+· `make baseline-verify`/`make baseline-freshness` grün auf `v6.0.0` ·
+unabhängiger Review (0/1/0/0, MEDIUM behoben) · unabhängige Verifikation
+(zwei zusätzliche Lücken gefunden, beide behoben, dann `done/`-freigegeben).
