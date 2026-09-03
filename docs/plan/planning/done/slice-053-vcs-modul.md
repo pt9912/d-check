@@ -13,7 +13,7 @@ git-Diff/`core-drift-vcs`) plus [ADR-0024](../../adr/0024-vcs-immutable-gate.md)
 (neuer reine-Go-VCS-Port; **Teil-Supersede der Skript-Mechanik** von
 [ADR-0016](../../adr/0016-adr-immutable-gate.md) — Policy/Gate bleiben). Schwester-
 und Boden-Hälfte ist der hermetische `immutable`-Pin
-([`slice-052`](slice-052-immutable-modul.md),
+([`slice-052`](welle-41/slice-052-immutable-modul.md),
 [ADR-0023](../../adr/0023-immutable-core-pin.md)); der VCS-Port ist von
 [ADR-0008](../../adr/0008-reparatur-ableitbarkeit.md) als „künftiges VCS-Modul …
 analog `external`" vorgezeichnet. Verteilung wie der Rest des Werkzeugs (gepinntes
@@ -30,7 +30,7 @@ Image, kein kopiertes Skript —
 erzwingt die ADR-Immutabilität über einen **git-Diff** (`core(BASE)` vs.
 `core(HEAD)` über eine Commit-Range) — volle Garantie, aber als **Skript** nur per
 Kopie in Schwester-Repos nutzbar (Copy-Drift). Der hermetische `immutable`-Pin
-([`slice-052`](slice-052-immutable-modul.md)) löste die **verteilbare**
+([`slice-052`](welle-41/slice-052-immutable-modul.md)) löste die **verteilbare**
 Hälfte (neu-pinn-bar, schwächere Garantie). **Neu:** dieselbe **harte** git-Garantie
 verteilbar im Image — ein opt-in Modul `vcs` vergleicht `core(BASE)` ≟ `core(HEAD)`
 über `--range <base>..<head>` (CI/Push) bzw. `--staged` (pre-commit) und meldet

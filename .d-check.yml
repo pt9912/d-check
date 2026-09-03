@@ -225,6 +225,12 @@ ignore-refs:
   # Dieselbe Grenze, welle-22-Archivierung (slice-191).
   - in: docs/plan/planning/done/slice-034-latest-tag-versoehnen.md
     refs: ["docs/reviews/2026-06-20-slice-033-digest-pins.md"]
+  # Dieselbe Grenze, welle-41-Archivierung (slice-191): ein Review-Report
+  # zitiert zwei jetzt archivierte Review-Reports.
+  - in: docs/reviews/2026-08-31-slice-186-vcs-rename-code-r1.md
+    refs:
+      - "docs/reviews/2026-06-28-slice-052-immutable-r1.md"
+      - "docs/reviews/2026-06-28-slice-052-immutable-r2.md"
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.
