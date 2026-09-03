@@ -213,7 +213,7 @@ Drei Aussagen folgen daraus, und sie drehen die Ausgangslage:
 ## 7. Trigger
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei. **Vor**
-[slice-099](slice-099-structure-modul.md) sinnvoll — sonst erbt das neue Modul
+[slice-099](welle-69/slice-099-structure-modul.md) sinnvoll — sonst erbt das neue Modul
 den bekannten stillen Grün-Pfad über die geteilte Mechanik.
 
 **Rückführungen:** `in-progress` → `open`, falls die Bestandsmessung zeigt, dass

@@ -104,7 +104,7 @@ Kopplung.
    eine Artefakt-Verwechslung: eine Wellen-Ergebnisnotiz *enthält* keine
    Closure-Notiz, sie **ist** eine. Sie zu prüfen heißt, ihre Abschnitts-Struktur
    zu prüfen — die Zusage des Moduls `structure`
-   ([slice-099](slice-099-structure-modul.md)), nicht die dieser
+   ([slice-099](welle-69/slice-099-structure-modul.md)), nicht die dieser
    Fähigkeit. Ein Kandidaten-Filter kann eine Datei in die Menge holen, aber
    nicht die Frage ändern, die an sie gestellt wird.
 
@@ -189,7 +189,7 @@ Kopplung.
 ## 6. Trigger
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei — **und**
-[slice-096](../done/slice-096-structure-modul-analyse.md) in `done/`, weil dessen
+[slice-096](welle-69/slice-096-structure-modul-analyse.md) in `done/`, weil dessen
 Schnitt über den Zuschnitt dieses Slice mitentscheidet.
 
 **Rückführungen:** `in-progress` → `open`, falls Abnahme-Punkt 2 eine

@@ -130,7 +130,7 @@ bereinigte Texte zu führen.
       erreichbar, weil das Adopter-Skript zusätzlich die **Anzahl** der
       Closure-Abschnitte prüft und d-check laut Spezifikation nur den ersten
       liest. Diese Lücke ist ein Abnahme-Punkt von
-      [slice-096](../done/slice-096-structure-modul-analyse.md), nicht dieses Slice.
+      [slice-096](welle-69/slice-096-structure-modul-analyse.md), nicht dieses Slice.
 - [x] Implementierung samt **fünf** geprüften Rückbauten (alle rot). Zwei blieben
       zunächst grün und haben Arbeit erzeugt: der **Tab** als Whitespace war
       ungetestet, und der Zeilenende-Zweig ist über die Modul-Oberfläche gar
@@ -171,7 +171,7 @@ bereinigte Texte zu führen.
 ## 6. Trigger
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei — **und**
-[slice-096](../done/slice-096-structure-modul-analyse.md) in `done/`. Die frühere
+[slice-096](welle-69/slice-096-structure-modul-analyse.md) in `done/`. Die frühere
 Fassung stellte diesen Slice davor; das ist nach dem Schnitt-Review umgekehrt
 (F-3): er sagt Deckungsgleichheit einer Semantik zu, die slice-096 gerade neu
 schneidet.

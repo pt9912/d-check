@@ -66,7 +66,7 @@ Einzel-Assertionen.
 ## 5. Abhängigkeiten
 
 - [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
-  und das Modul liegen vor ([slice-099](slice-099-structure-modul.md),
+  und das Modul liegen vor ([slice-099](welle-69/slice-099-structure-modul.md),
   [ADR-0049](../../adr/0049-structure-modul-schnitt-und-preset.md)); erweitert
   wird eine bestehende Anforderung.
 - Die Tabellenzeilen-Lexik ist entdriftet (welle-74) und trägt seit welle-75

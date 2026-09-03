@@ -24,7 +24,7 @@ funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
   richtig gebaut?") als eigene Kategorie. Sie lief mit `spans`/`hostpaths` längst
   mit, war aber nie ausgesprochen — genau die Klasse, die den Antrag ausgelöst hat.
 - **Zwei Folge-Slices geschnitten und angelegt:**
-  [slice-099](slice-099-structure-modul.md) (Implementierung) und
+  [slice-099](welle-69/slice-099-structure-modul.md) (Implementierung) und
   [slice-101](../done/slice-101-fence-unbalanciert.md).
 - **Die drei liegenden Closure-Slices haben ihre Entscheidung:** alle drei
   bleiben eigenständig — das war das *Mehr* dieser Welle gegenüber der Slice-DoD.
@@ -102,7 +102,7 @@ Planning-Lifecycle existieren.
 
 - [slice-101](../done/slice-101-fence-unbalanciert.md) — der ausgelieferte stille
   Grün-Pfad im Fence-Automaten; **bindende** Vorbedingung für 099.
-- [slice-099](slice-099-structure-modul.md) — die Implementierung des
+- [slice-099](welle-69/slice-099-structure-modul.md) — die Implementierung des
   Moduls samt Preset-Kopplung und neun Grund-Codes.
 - [slice-094](../done/slice-094-closure-zaehl-paritaet.md),
   [slice-097](../done/slice-097-closure-glob-entkopplung.md),

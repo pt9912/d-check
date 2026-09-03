@@ -25,7 +25,7 @@ was ein einzelner Slice zusagen kann.
 ## 2. Trigger (Welle startet)
 
 Freigabe des Auftraggebers (2026-08-10) und ein freier WIP-Slot. Beide
-Slice-Trigger sind erfüllt: [slice-096](slice-096-structure-modul-analyse.md)
+Slice-Trigger sind erfüllt: [slice-096](welle-69/slice-096-structure-modul-analyse.md)
 liegt in `done/`, und dessen Schnitt hat entschieden, dass beide Slices
 **eigenständig** bleiben (nicht im `structure`-Modul aufgehen) — der Vorbehalt in
 den Slice-Köpfen ist damit aufgelöst.
@@ -70,7 +70,7 @@ aussagekräftiger. WIP-Limit 1, also ohnehin nacheinander.
   die in welle-70 eine eigene konsumentensichtbare Zeile gekostet hat, und sie
   verdient eine eigene Welle mit eigener Bestandsmessung — nicht ein Mitfahren
   im Windschatten zweier additiver Slices.
-- Die `structure`-Umsetzung ([slice-099](slice-099-structure-modul.md)) —
+- Die `structure`-Umsetzung ([slice-099](welle-69/slice-099-structure-modul.md)) —
   eigene Welle, Trigger eingetreten, Freigabe offen.
 
 ## 7. Closure-Notiz

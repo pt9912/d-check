@@ -32,14 +32,14 @@ zum ersten Mal wirken, nicht an ihm zum vierten Mal fehlen.
 ## 2. Trigger (Welle startet)
 
 Freigabe des Auftraggebers (2026-08-15), WIP-Slot frei, und die **bindende**
-Start-Bedingung des Slice ist erfüllt: [slice-096](slice-096-structure-modul-analyse.md)
+Start-Bedingung des Slice ist erfüllt: [slice-096](welle-69/slice-096-structure-modul-analyse.md)
 **und** [slice-101](slice-101-fence-unbalanciert.md) liegen in `done/`. Die
 zweite war nicht Vorliebe, sondern Bedingung — sonst erbte das neue Modul über
 die geteilte Mechanik einen **bekannten** stillen Grün-Pfad.
 
 ## 3. Closure-Trigger (Welle schließt)
 
-- [slice-099](slice-099-structure-modul.md) liegt in `done/`.
+- [slice-099](welle-69/slice-099-structure-modul.md) liegt in `done/`.
 - **[`MR-025`](../../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten) hat an diesem Slice gewirkt:** die Spiegel-Liste steht im Slice,
   **bevor** die Grund-Codes geändert wurden, und ist am Ende abgehakt.
 - Release als **Minor**, Digest-Backfill.
@@ -49,7 +49,7 @@ die geteilte Mechanik einen **bekannten** stillen Grün-Pfad.
 
 | Slice | Rolle |
 |---|---|
-| [slice-099](slice-099-structure-modul.md) | Modul `structure` vollständig + Preset-Kopplung der Closure-Fähigkeit samt `closure-note-ambiguous` |
+| [slice-099](welle-69/slice-099-structure-modul.md) | Modul `structure` vollständig + Preset-Kopplung der Closure-Fähigkeit samt `closure-note-ambiguous` |
 
 Ein Slice, und das ist Absicht: der Umsetzbarkeits-Review hat den früheren
 Zwei-Slice-Schnitt an der **Release-Grenze** verworfen — ein Modul, das die
@@ -78,7 +78,7 @@ lieferbarer Zwischenstand.
 ## 7. Closure-Notiz
 
 Geschlossen am 2026-08-15 mit **v0.57.0**. Alle vier Closure-Trigger sind
-erfüllt: [slice-099](slice-099-structure-modul.md) liegt in `done/`, die
+erfüllt: [slice-099](welle-69/slice-099-structure-modul.md) liegt in `done/`, die
 Spiegel-Regel hat an ihm gewirkt und ist mit Bilanz abgehakt, das Release samt
 Digest-Backfill ist draußen, und `make fullbuild` ist grün.
 

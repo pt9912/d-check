@@ -27,7 +27,7 @@ jeweils ein Stück verschieben.
 ## 2. Trigger (Welle startet)
 
 Freigabe des Auftraggebers (2026-08-10) und ein freier WIP-Slot. Beide
-Slice-Trigger sind erfüllt: [slice-096](slice-096-structure-modul-analyse.md)
+Slice-Trigger sind erfüllt: [slice-096](welle-69/slice-096-structure-modul-analyse.md)
 liegt in `done/` und hat den Zuschnitt entschieden — beide bleiben eigenständig.
 
 ## 3. Closure-Trigger (Welle schließt)
@@ -86,7 +86,7 @@ daneben und muss in derselben Notiz erscheinen.
 - **Eine Sanierung des eigenen Bestands**, falls die Vorab-Messung Notizen rot
   macht. Das wäre ein Befund über die Notizen und ein eigener Slice — kein Grund,
   die Zählung aufzuweichen.
-- **Das Modul `structure`** ([slice-099](slice-099-structure-modul.md)) —
+- **Das Modul `structure`** ([slice-099](welle-69/slice-099-structure-modul.md)) —
   eigene Welle.
 
 ## 8. Closure-Notiz

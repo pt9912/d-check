@@ -46,7 +46,7 @@ ist die Klasse **zweimal** eingetreten:
    `done/` wanderte, brachen seine eigenen Zeiger.
 
 Und ein drittes Mal, im selben Maßstab: die Eröffnung von
-[welle-69](../done/welle-69-structure-schnitt.md) am 2026-08-09 verschob **einen**
+[welle-69](welle-69/welle-69-structure-schnitt.md) am 2026-08-09 verschob **einen**
 Slice von `open/` nach `in-progress/` — und brach damit **19 Links** auf einen
 Schlag. Betroffen waren die vier Nachbar-Slices in `open/` (präfixlose
 Geschwister-Verweise), ein Review-Report und der verschobene Slice selbst, dessen
@@ -144,7 +144,7 @@ zieht die Move-Regel im selben Commit nach. Die Grenze steht in der ADR.
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei. Unabhängig von
 [slice-094](../done/slice-094-closure-zaehl-paritaet.md) und
-[slice-096](../done/slice-096-structure-modul-analyse.md) umsetzbar.
+[slice-096](welle-69/slice-096-structure-modul-analyse.md) umsetzbar.
 
 **Rückführungen:** `in-progress` → `open`, falls die Laufzeit-Messung ein
 Carveout nötig macht.

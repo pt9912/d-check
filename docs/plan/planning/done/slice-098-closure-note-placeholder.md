@@ -135,7 +135,7 @@ gegenseitig verdecken. Für den Vertrag ist das folgenlos (gemeldet wird der
 ## 6. Trigger
 
 **Start** (`next` → `in-progress`): Freigabe; WIP-Slot frei — **und**
-[slice-096](../done/slice-096-structure-modul-analyse.md) in `done/`. Von
+[slice-096](welle-69/slice-096-structure-modul-analyse.md) in `done/`. Von
 [slice-097](../done/slice-097-closure-glob-entkopplung.md) unabhängig: die gemeinsame
 Abnahmebedingung des Konsumenten verlangt beide, aber keine Reihenfolge.
 

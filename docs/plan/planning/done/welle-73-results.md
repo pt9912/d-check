@@ -10,7 +10,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Wellen-Closure-Prozedur, Schritt 3 — *was gelernt wurde*: geliefert · was
 funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
 
-- **Modul `structure`** ([slice-099](slice-099-structure-modul.md)), das 20.
+- **Modul `structure`** ([slice-099](welle-69/slice-099-structure-modul.md)), das 20.
   Regelmodul: Struktur-Invarianten **innerhalb** eines Dokuments, je Regel eine
   Dokumentklasse über eigene Globs, ein Abschnitt und bis zu sechs Bedingungen
   mit je eigenem Grund-Code.
@@ -122,7 +122,7 @@ verkörpert) und neu **BEO-005**.
 
 ## Verifikation
 
-- **Closure-Trigger erfüllt:** [slice-099](slice-099-structure-modul.md) in
+- **Closure-Trigger erfüllt:** [slice-099](welle-69/slice-099-structure-modul.md) in
   `done/`; [`MR-025`](../../../../harness/conventions.md#mr-025--semantik-änderung-die-spiegel-vor-dem-editieren-auflisten) hat am Slice gewirkt und ist mit Bilanz abgehakt; Release
   **v0.57.0** samt Digest-Backfill; `make fullbuild` grün, Image-Hash
   `sha256:a908533a…1e84b`.

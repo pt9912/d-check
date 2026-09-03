@@ -23,7 +23,7 @@ die drei Befunde, die in slice-101 nicht hingehörten.
 **Das Mehr gegenüber der Slice-DoD ist eine Entscheidung, keine Lieferung.**
 Das Beobachtungs-Register führt die Klasse als **BEO-003** mit Zähler **2**
 ([slice-101](slice-101-fence-unbalanciert.md),
-[slice-099](slice-099-structure-modul.md)). Diese Welle bringt sie
+[slice-099](welle-69/slice-099-structure-modul.md)). Diese Welle bringt sie
 entweder zum Abschluss — oder auf **3**, und dann verlangt die Register-Regel
 die Verkörperung statt eines weiteren Zählschritts. Diese Welle entscheidet das
 ausdrücklich, statt es der nächsten zu überlassen: **BEO-002** und **BEO-004**

@@ -31,7 +31,7 @@ Closure ins Beobachtungs-Register, nicht in diese Welle.
 
 ## 2. Trigger (Welle startet)
 
-- [slice-096](slice-096-structure-modul-analyse.md) ist geschlossen; der
+- [slice-096](welle-69/slice-096-structure-modul-analyse.md) ist geschlossen; der
   Defekt ist dort als eigener Slice ausgewiesen und **bindende** Vorbedingung
   für die Umsetzungs-Welle.
 - Kein WIP-Konflikt: `in-progress/` trug beim Start keinen Slice.

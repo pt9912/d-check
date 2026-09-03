@@ -82,7 +82,7 @@ zurückfließt.
   anderen Lexiken (`citations`-Absatzbildung, Anker-Auflösung, git-Revisionen).
   Aus der dritten Review-Runde geschnitten, ausdrücklich **nicht** in dieser
   Welle erledigt: eigene Verträge, eigene Module.
-- [slice-099](slice-099-structure-modul.md) — der Trigger der
+- [slice-099](welle-69/slice-099-structure-modul.md) — der Trigger der
   Folge-Welle ist mit dieser Closure **eingetreten**: der Fence-Defekt ist
   behoben, das neue Modul erbt ihn nicht mehr.
 
