@@ -203,9 +203,22 @@ trägt bereits `adr-check`, hier eins zu eins wiederverwendet).
   Pipe (`| tail -30`) ist der von `tail`, nicht von `git` — für die Proben
   ohne Bedeutung, weil `git log`/`git status` das eigentliche Ergebnis
   direkt zeigen, aber notiert, damit niemand `$?` danach vertraut.
-- **Steering-Loop-Eintrag:** keiner verkörpert — beide Beobachtungen oben
-  sind Einzelfälle dieser Session, keine dritte Instanz einer bereits
-  geführten Beobachtung.
+- **Der unabhängige Review fand ein LOW, vor der Closure behoben:**
+  `awk '{print $NF}'` spaltet auf **jedem** Whitespace, nicht nur auf dem
+  Tab, den `git diff --name-status` als Feldtrenner benutzt — ein
+  Dateiname mit Leerzeichen hätte die Erkennung **still** (fail-open, nicht
+  fail-closed) verfehlt. Behoben mit `awk -F'\t'`, in beiden Dateien; beide
+  Regressions-Fälle (slice-173-Move erkannt, welle-87-Archiv-Stub nicht
+  erkannt) bleiben nach dem Fix unverändert richtig. **Zusätzlich vom
+  Review verifiziert, ohne Änderungsbedarf:** ein pfadgebundener `git diff`
+  auf `docs/plan/planning/done/` zeigt einen `in-progress→done`-Move **nie**
+  als `R` (nur als `A`) — `--diff-filter=AR` fängt ihn trotzdem über die
+  `A`-Hälfte; und `set -e` propagiert eine fehlschlagende Zeile **innerhalb**
+  eines `if …; then …; fi`-Blocks korrekt, nur die Bedingung selbst ist
+  ausgenommen.
+- **Steering-Loop-Eintrag:** keiner verkörpert — alle drei Beobachtungen
+  dieser Session (zwei eigene, eine vom Review gefunden) sind Einzelfälle,
+  keine dritte Instanz einer bereits geführten Beobachtung.
 - **Beobachtungs-Register (`../observations.md`):** keine Beobachtung
   angefallen, die eine neue Kennung oder einen Zähler-Schritt rechtfertigt.
 - **Folge-Slices:** keiner für den Stop-Hook — er bleibt ein benannter,

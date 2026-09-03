@@ -76,7 +76,7 @@ jobs:
           make trace-check RANGE="$RANGE"
           make adr-check RANGE="$RANGE"
           if git diff --name-status --diff-filter=AR "$RANGE" -- 'docs/plan/planning/done/' \
-              | awk '{print $NF}' | grep -qE '^docs/plan/planning/done/slice-[0-9]+[^/]*\.md$'; then
+              | awk -F'\t' '{print $NF}' | grep -qE '^docs/plan/planning/done/slice-[0-9]+[^/]*\.md$'; then
             echo "Slice-Closure-Uebergang im Commit-Range erkannt -- verify-closure-notes"
             make verify-closure-notes
           fi

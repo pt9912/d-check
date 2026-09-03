@@ -32,7 +32,7 @@ make adr-check STAGED=1
 # ihn traegt (set -e). Kostet einen Image-Cache-Lauf (~Sekunden).
 make doc-check
 if git diff --cached --name-status --diff-filter=AR -- 'docs/plan/planning/done/' \
-    | awk '{print $NF}' | grep -qE '^docs/plan/planning/done/slice-[0-9]+[^/]*\.md$'; then
+    | awk -F'\t' '{print $NF}' | grep -qE '^docs/plan/planning/done/slice-[0-9]+[^/]*\.md$'; then
     echo "pre-commit: Slice-Closure-Uebergang erkannt -- verify-closure-notes" >&2
     make verify-closure-notes
 fi
