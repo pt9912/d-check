@@ -8,7 +8,7 @@
 (Anforderung gilt für **alle dreizehn** Quell-Tool-Vorkommen —
 Inventur-Nachtrag Lastenheft 0.4.0; die
 Messmethode — drei Piloten — ist seit
-[slice-012](../done/slice-012-pilot-migrationen.md) erfüllt, dieser
+[slice-012](welle-04/slice-012-pilot-migrationen.md) erfüllt, dieser
 Slice vervollständigt den Beleg auf 13/13);
 [`DC-FA-CONF-001`](../../../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)
 (repo-spezifisches Verhalten per Config).
