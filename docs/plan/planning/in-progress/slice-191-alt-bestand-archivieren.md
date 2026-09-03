@@ -136,8 +136,8 @@ erst beim Ausführen entdeckt** — genau die Vorsicht, die
       angewendeten Welle).
 - [x] `make gates` **und** `make fullbuild` grün auf dem archivierten
       Bestand (Exit explizit — 50 Requirements, 0 Waisen).
-- [ ] **Unabhängiger Review und unabhängige Verifikation.**
-- [ ] Closure-Notiz mit Lerneintrag; jedes Risiko aus §5 mit Ausgang; die
+- [x] **Unabhängiger Review und unabhängige Verifikation.**
+- [x] Closure-Notiz mit Lerneintrag; jedes Risiko aus §5 mit Ausgang; die
       drei Modul-6-Paarungen geprüft (bei der Closure von welle-87, die
       dieser Slice schließt).
 
