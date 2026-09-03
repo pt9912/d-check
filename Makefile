@@ -44,7 +44,7 @@ DOCKER_BUILD := docker build $(PROGRESS_FLAG) \
 
 .DEFAULT_GOAL := help
 
-.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest
+.PHONY: nightly-state freshness-semgrep semgrep-digest freshness-a-check a-check-digest help deps compile lint test arch-check baseline-verify baseline-freshness workflow-pins freshness-go freshness-golangci runtime-base-digest go-base-digest lint-base-digest checkout-pin-freshness login-pin-freshness coverage-gate gate-consistency planning-check verify-closure-notes bench image-test semgrep versions build run doc-check trace record-gates guard-probe gates ci fullbuild completeness-check trace-check adr-check hooks clean tidy image-scan freshness-trivy trivy-digest archive-wave-test archive-wave
 
 # Der gates-Nachweis (record-gates) darf erst nach grünen Gates
 # entstehen — unter `make -j` liefen Prerequisites parallel und der
@@ -392,3 +392,23 @@ clean: ## Lokale Images entfernen.
 	    $(IMAGE):lint $(IMAGE):test \
 	    $(IMAGE):coverage 2>/dev/null || true
 	@echo "[clean] images removed"
+
+# archive-wave (Baseline-Regelwerk modul-06-roadmap.md §Wellen-Closure-
+# Prozedur, Schritt 4): eigenstaendiges Werkzeug unter tools/archive-wave/,
+# eigenes go.mod, eigenes Dockerfile -- portabel fuer jedes Repo mit
+# demselben Planning-Layout (slice-190). Sicherer Default: ohne APPLY=1
+# wird NICHTS geschrieben, nur der geplante Umfang angezeigt.
+# `-u $(id -u):$(id -g)`: geschriebene Dateien gehoeren dem Bediener, nicht
+# einer festen Image-UID (dasselbe Muster wie `tidy`).
+archive-wave-test: ## archive-wave-Testsuite (eigenes go.mod, nicht Teil von `make test`).
+	docker build $(PROGRESS_FLAG) --build-arg GO_VERSION=$(GO_VERSION) \
+	    --target test -f tools/archive-wave/Dockerfile -t archive-wave:test tools/archive-wave
+
+archive-wave: ## Welle archivieren: make archive-wave WELLE=welle-NN [APPLY=1].
+	@if [ -z "$(WELLE)" ]; then \
+	    echo "archive-wave: WELLE=welle-NN ist Pflicht" >&2; exit 2; \
+	fi
+	docker build $(PROGRESS_FLAG) --build-arg GO_VERSION=$(GO_VERSION) \
+	    -f tools/archive-wave/Dockerfile -t archive-wave:latest tools/archive-wave
+	docker run --rm -u "$$(id -u):$$(id -g)" -v "$(CURDIR)":/repo \
+	    archive-wave:latest -root=/repo -welle=$(WELLE) $(if $(APPLY),-apply,)
