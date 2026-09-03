@@ -7,6 +7,10 @@
 Beobachtungs-Register-Datenmigration Tabelle -> Verzeichnis, slice-195,
 welle-88, ADR-0083, MR-013)
 
+**Nachtrag:** `4d3a386` ist nach diesem Report in zwei Commits zerlegt
+worden (`94b19bd` Beanspruchung, `b1b960b` Migrationsinhalt) und trägt
+die Behebung der beiden HIGH-Befunde (F-1, F-2) — siehe slice-195 §9.
+
 **Skill:** `.harness/skills/reviewer.md`
 **Modell:** Claude Sonnet 5 · **Datum:** 2026-09-03
 

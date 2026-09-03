@@ -6,6 +6,10 @@
 **Gegenstand:** Commit `4d3a386` (feat: Beobachtungs-Register-Datenmigration
 Tabelle → Verzeichnis).
 
+**Nachtrag:** `4d3a386` ist nach diesem Report in zwei Commits zerlegt
+worden (`94b19bd` Beanspruchung, `b1b960b` Migrationsinhalt) und trägt
+die Behebung der beiden HIGH-Befunde — siehe slice-195 §9.
+
 **Modell:** Claude Sonnet 5 · **Datum:** 2026-09-03
 
 **Eingangs-Kontext:**
