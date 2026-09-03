@@ -16,7 +16,7 @@ daran).
 
 **Berührte Spec-Stellen:** [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) (Erweiterung).
 
-**Verantwortlich:** —.
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-09-03.
 
@@ -142,11 +142,15 @@ eigener Folge-Slice, die ADR bleibt hier.
   > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
 
 - **Offene Beobachtungen sichten** (Stand 2026-09-03, höchste Kennung
-  `BEO-027`): [`BEO-027`](../observations.md) (**1**, Sub-Area
+  `BEO-028` — bei der Beanspruchung neu gelesen, seit der Eröffnung um
+  eine Instanz gewachsen): [`BEO-027`](../observations.md) (**1**, Sub-Area
   `docs/plan/planning/observations.md`) — beschreibt eine Sensor-Lücke der
   **heutigen** Register-Form (Zeile übersteht die Schwelle ohne Ausgang);
   relevant als Kontext, ob die neue `state.md`-Form sie strukturell
-  entschärft, ist Teil der ADR-Abwägung, kein eigener Fix hier. Keine
+  entschärft, ist Teil der ADR-Abwägung, kein eigener Fix hier.
+  [`BEO-028`](../observations.md) (**1**, Sub-Area `tools/harness/`) —
+  betrifft `fetch-baseline-cache.sh`s `check-latest`, nicht das
+  Beobachtungs-Register; kein Treffer für die Sub-Areas dieses Slice. Keine
   weiteren Treffer für die berührten Sub-Areas.
 
   <!-- d-check:cite .harness/baseline/v6.0.0/regelwerk/modul-05-planning-harness.md:229-229 -->
