@@ -17,27 +17,31 @@ flach und kennt kein `open/`/`done/`; jede dort abgelegte Datei ist per
 Existenz bereits das fertige Produkt eines gelaufenen Reviews, keine
 Zwischenstufe. Für ihn ist die Lage-Prüfung deshalb erfüllt, sobald die Datei
 existiert — nicht „archiviert" wie ein Slice, weil es diesen Zustand für
-Reviews hier nicht gibt. **Benannte Grenze, ungeprüft:** der Kanon sieht für
-geschlossene Wellen eine Archivierung vor — Slice-Dateien, Welle-Plan und die
-**Review-Reports ihrer Slices** wandern in ein unveränderliches
-`done/<welle-id>/archiv.zip`, ohne Stub für die Reports
+Reviews hier nicht gibt. **Ehemals „benannte Grenze, ungeprüft" — jetzt
+gemessen und aufgelöst:** der Kanon sieht für geschlossene Wellen eine
+Archivierung vor — Slice-Dateien, Welle-Plan und die **Review-Reports ihrer
+Slices** wandern in ein unveränderliches `done/<welle-id>/archiv.zip`, ohne
+Stub für die Reports
 ([`modul-06-roadmap.md`](../../../.harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md)
-§Wellen-Closure-Prozedur, Schritt 4). **Dieses Repo hat noch keine einzige
-Welle archiviert** (gemessen: kein `archiv.zip`, keine `done/<welle-id>/`
-existiert) — seit [slice-190](done/slice-190-wellen-archiv-werkzeug.md)
-existiert dafür ein Werkzeug (`tools/archive-wave/`), aber angewendet ist es
-noch nicht (Folge-Slice
-[slice-191](in-progress/slice-191-alt-bestand-archivieren.md)). **Die
+§Wellen-Closure-Prozedur, Schritt 4). Seit
+[slice-190](done/slice-190-wellen-archiv-werkzeug.md) existiert dafür ein
+Werkzeug (`tools/archive-wave/`); [slice-191](in-progress/slice-191-alt-bestand-archivieren.md)
+wendet es gerade auf welle-60…85 an. **Die vorhergesagte Grenze trat beim
+ersten Anwenden (welle-60) tatsächlich ein:** [ADR-0043](../adr/0043-tabellengrenze-am-relevanten-header.md)
+zitierte den Review-Report zu slice-074 (`-implementation-r3`) als Beleg —
+archiviert, verschwindet die Datei ohne Stub, und die immutable, `Accepted`
+ADR (`AGENTS.md` §3.5) kann den Verweis nicht nachziehen. Aufgelöst über
+dasselbe, bereits etablierte Ventil wie bei anderen eingefrorenen
+Verweisen auf entferntes/archiviertes Material: ein quell-skopierter
+`ignore-refs`-Eintrag in [`.d-check.yml`](../../../.d-check.yml), der Beleg
+bleibt über `unzip -p done/welle-60/archiv.zip <pfad>` erreichbar. **Die
 Nachrüst-Ausnahme des Kanons ist enger, als sie beim ersten Lesen klingt:**
 sie gilt nur für Wellen, die **vor der Einführung** dieser Regel schlossen
 (welle-60 bis mindestens welle-8x) — nicht für eine Welle, die jetzt oder
 künftig schließt. [`welle-86`](welle-86-closure-uebergang-durchsetzen.md)
 steht **aktuell offen**; schließt sie, greift die Archivierungspflicht
-ungemindert. Ein als Beleg zitierter Review-Report bleibt deshalb nur **bis
-zur nächsten Wellen-Archivierung** stabil auflösbar; träte sie für eine Welle
-ein, deren Slices einen zitierten Report tragen, verschwände die
-Datei ohne Stub aus dem sichtbaren Baum, und der Beleg-Link bräche. Diese
-Grenze ist hier benannt, nicht gelöst.
+ungemindert und trifft nun auf ein bewiesenes Werkzeug samt bewiesenem
+Umgang mit dieser Grenze.
 
 | Kennung | Beobachtung | Sub-Area | Zähler | Belege | Stand |
 |---|---|---|---|---|---|

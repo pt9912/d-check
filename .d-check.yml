@@ -190,6 +190,16 @@ ignore-refs:
   # ohnehin ausgenommen.
   - in: harness/conventions/done/MR-027-struktur-id-verzicht.md
     refs: [".harness/baseline/v5.7.0/**"]
+  # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
+  # ausgeloest, die observations.md seit slice-190 benennt: ein
+  # Review-Report ohne Stub verschwindet ohne Ersatz, sobald seine Welle
+  # archiviert wird. ADR-0043 zitiert ihn als Beleg -- die ADR ist
+  # Accepted und immutable (AGENTS.md SS3.5); den Verweis nachzuziehen
+  # wuerde den Beleg verfaelschen (dieselbe Begruendung wie beim
+  # Review-Report-Eintrag oben). Volltext bleibt in
+  # docs/plan/planning/done/welle-60/archiv.zip erreichbar.
+  - in: docs/plan/adr/0043-tabellengrenze-am-relevanten-header.md
+    refs: ["docs/reviews/2026-07-17-slice-074-implementation-r3.md"]
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.
