@@ -47,7 +47,13 @@ jobs:
       # laeuft fail-fast zuerst. ADR-Immutable laeuft seit ADR-0024 ueber das Modul
       # vcs (Image) statt eines Skripts und baut dafuer das Runtime-Image — das
       # `make ci` darunter per Docker-Cache wiederverwendet (kein Doppel-Build).
-      - name: Traceability + ADR-Immutable (Commit-Range)
+      #
+      # Slice-Closure-Uebergang (welle-86/slice-175): dieselbe Bindung wie im
+      # lokalen pre-commit-Hook (.githooks/pre-commit), hier ueber die
+      # Commit-Range statt --staged -- --no-verify umgeht den Hook, nicht die
+      # CI. Ein Rename/Add nach docs/plan/planning/done/slice-*.md IRGENDWO in
+      # der Range loest make verify-closure-notes gegen den HEAD-Stand aus.
+      - name: Traceability + ADR-Immutable + Slice-Closure-Uebergang (Commit-Range)
         env:
           EVENT: ${{ github.event_name }}
           PR_BASE: ${{ github.event.pull_request.base.sha }}
@@ -69,6 +75,11 @@ jobs:
           echo "Pruefe Commit-Range: $RANGE"
           make trace-check RANGE="$RANGE"
           make adr-check RANGE="$RANGE"
+          if git diff --name-status --diff-filter=AR "$RANGE" -- 'docs/plan/planning/done/' \
+              | awk '{print $NF}' | grep -qE '^docs/plan/planning/done/slice-[0-9]+[^/]*\.md$'; then
+            echo "Slice-Closure-Uebergang im Commit-Range erkannt -- verify-closure-notes"
+            make verify-closure-notes
+          fi
 
       # Volle Gates + Image-Integrationstests (identische Engine wie Release).
       - name: Gates + Image-Integrationstests (make ci)

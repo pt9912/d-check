@@ -14,6 +14,15 @@
 # Frage dieselbe Antwort geben, ist eine gehaltene Eigenschaft
 # (DC-FA-VCS-001), keine, die aus dem gemeinsamen Gate folgt.
 # Das abgeloeste Alt-Skript wurde mit ADR-0025 entfernt (codepaths.ignore-refs).
+#
+# Slice-Closure-Uebergang (welle-86/slice-175, Baseline-Regelwerk modul-05
+# §Lifecycle als State Machine): die Vorbedingungen fuer done/ (DoD-Haekchen,
+# Closure-Notiz, Risiko-Ausgaenge) haengen bisher nur an make fullbuild, einer
+# gelegentlichen Zustands-Pruefung -- nicht am UEBERGANG selbst. Ein gestagter
+# Rename/Add nach docs/plan/planning/done/slice-*.md loest deshalb zusaetzlich
+# make verify-closure-notes aus. Archivierte Stubs (done/<welle-id>/slice-*.md,
+# eine Verzeichnisebene tiefer) sind bewusst ausgenommen -- MR-059s Ein-Commit-
+# Form ersetzt dort ohnehin den Volltext, keine neue Zusage entsteht.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 make adr-check STAGED=1
@@ -21,4 +30,9 @@ make adr-check STAGED=1
 # Commit an einen gruenen Doku-Stand — ein roter Gate-Exit in einer
 # Shell-Kette kann den Commit nicht mehr passieren, weil der Hook selbst
 # ihn traegt (set -e). Kostet einen Image-Cache-Lauf (~Sekunden).
-exec make doc-check
+make doc-check
+if git diff --cached --name-status --diff-filter=AR -- 'docs/plan/planning/done/' \
+    | awk '{print $NF}' | grep -qE '^docs/plan/planning/done/slice-[0-9]+[^/]*\.md$'; then
+    echo "pre-commit: Slice-Closure-Uebergang erkannt -- verify-closure-notes" >&2
+    make verify-closure-notes
+fi
