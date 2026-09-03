@@ -12,7 +12,7 @@ ADR-0083, DC-FA-PLAN-001)
 
 **Eingangs-Kontext:**
 
-- [slice-194](../plan/planning/in-progress/slice-194-beobachtungsregister-architektur.md)
+- [slice-194](../plan/planning/done/slice-194-beobachtungsregister-architektur.md)
 - [ADR-0083](../plan/adr/0083-beobachtungsregister-verzeichnis-modus.md)
 - [`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 - `AGENTS.md` §3.1 (Filesystem-Port als einzige Dateisystem-Tür), §3.4
