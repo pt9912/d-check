@@ -82,9 +82,10 @@ durchgesetzt, nicht nur zwei.
       (`observation-unregistered`); ein Test-Kandidat mit Review-Zusage
       ohne Report wird jetzt lokal abgewiesen (`review-missing`). Beide
       Ausgaben in §9.
-- [x] Zwei Review-Reports nachgezogen (`docs/reviews/2026-09-03-slice-173-…`,
-      `…-slice-175-…`), aus den tatsächlichen Befunden der bereits
-      gelaufenen unabhängigen Reviews.
+- [x] Drei Review-Reports nachgezogen (`docs/reviews/2026-09-03-slice-173-…`,
+      `…-slice-175-…`, `…-slice-192-…` — der dritte, weil der eigene
+      `mv`-Versuch vom eigenen Wächter abgewiesen wurde, siehe §9), aus den
+      tatsächlichen Befunden der bereits gelaufenen unabhängigen Reviews.
 - [x] [ADR-0082](../../adr/0082-uebergangswaechter-reviews-observations.md)
       trägt Kontext, Entscheidung, mindestens drei verglichene
       Alternativen, Konsequenzen, Fitness Function,
@@ -190,9 +191,18 @@ begründet).
   `matrix-forbidden` achtfach (Bare-Token-Referenzen auf `welle-86` und
   `slice-175`) — behoben mit `<!-- d-check:status-provenance -->`, diesmal
   auch für die `welle`-Klasse als Bare-Token (anders als die reine
-  Link-Form, die keinen Marker-Ausweg hat).
-- **Steering-Loop-Eintrag:** keiner verkörpert — beide Beobachtungen oben
-  sind Einzelfälle dieser Session.
+  Link-Form, die keinen Marker-Ausweg hat). Drittens, und am lehrreichsten:
+  der erste `git mv`-Versuch dieses Slice nach `done/` wurde vom **eigenen,
+  gerade geschärften** Wächter abgewiesen — `slice-192` selbst trägt eine
+  `unabhängiger Review`-DoD-Zusage ohne persistierten Report unter
+  `docs/reviews/` (derselbe Fund wie bei `slice-173`/`slice-175`, nur diesmal
+  von der eigenen Neuerung sofort gefangen statt erst später gemessen).
+  Behoben durch denselben Nachzug: ein dritter Report
+  ([2026-09-03-slice-192-…](../../../reviews/2026-09-03-slice-192-uebergangswaechter-nachliefern-review.md))
+  aus den tatsächlichen Befunden des bereits gelaufenen Reviews (ein
+  MEDIUM: Doku-Rückstand, in Commit `d606ec9` behoben).
+- **Steering-Loop-Eintrag:** keiner verkörpert — alle drei Beobachtungen
+  oben sind Einzelfälle dieser Session.
 - **Beobachtungs-Register (`../observations.md`):** keine Beobachtung
   angefallen, die eine neue Kennung oder einen Zähler-Schritt rechtfertigt.
 - **Folge-Slices:** keine.
