@@ -13,7 +13,7 @@ braucht); der Anlass ist ein **Auftraggeber-Wunsch**, keine Welle.
 [`DC-FA-CLI-001`](../../../../spec/lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)
 als Fragment-Target. **Kein ADR** — additiv, Fragment-Erweiterung; dieselbe
 Einordnung wie beim direkten Vorgänger
-[slice-047](../done/slice-047-print-mk-doctor-repair-help-digest.md), der
+[slice-047](welle-36/slice-047-print-mk-doctor-repair-help-digest.md), der
 `doc-doctor`/`doc-repair`/`doc-help` auf demselben Weg nachzog.
 
 **Berührte Spec-Stellen:**
