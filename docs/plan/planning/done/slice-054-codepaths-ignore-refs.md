@@ -5,7 +5,7 @@
 **Welle:** welle-43-ignore-refs (Trigger: Auftraggeber — „Wir brauchen eine bessere
 Lösung, dass solch ein Problem — etwas wird refaktoriert/gelöscht — nicht immer
 wieder auftaucht." Konkreter Auslöser: das in slice-053 abgelöste, aber **behaltene**
-`tools/adr-immutable-check.sh` ([`slice-053`](../done/slice-053-vcs-modul.md),
+`tools/adr-immutable-check.sh` ([`slice-053`](welle-42/slice-053-vcs-modul.md),
 [ADR-0024](../../adr/0024-vcs-immutable-gate.md) entschied „pfad-stabil behalten") —
 weil die **immutable** [ADR-0016](../../adr/0016-adr-immutable-gate.md) es in
 Inline-Code referenziert und `codepaths` das als Existenz-Pflicht erzwingt.)

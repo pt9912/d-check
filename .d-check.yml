@@ -231,6 +231,8 @@ ignore-refs:
     refs:
       - "docs/reviews/2026-06-28-slice-052-immutable-r1.md"
       - "docs/reviews/2026-06-28-slice-052-immutable-r2.md"
+      - "docs/reviews/2026-06-29-slice-053-vcs-code-r2.md"
+      - "docs/reviews/2026-06-29-slice-053-vcs-doc-first-r1.md"
 
 # Linkpflicht für Kennungen (DC-FA-ID-001): nackte IDs im Fließtext
 # müssen auf ihre Definition verlinken. Reihenfolge = Präzedenz.

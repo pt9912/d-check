@@ -5,7 +5,7 @@
 **Welle:** welle-45-commits-modul (Trigger: Auftraggeber-Audit „welche `tools/*.sh`
 noch in d-check mechanisieren?" → das **letzte** Gate-Skript der Familie,
 `tools/trace-check.sh`; der reine-Go-VCS-Port aus
-[`slice-053`](../done/slice-053-vcs-modul.md) macht es mechanisierbar — „das nächste
+[`slice-053`](welle-42/slice-053-vcs-modul.md) macht es mechanisierbar — „das nächste
 `adr-check`").
 
 **Bezug:** Führt eine **neue Anforderung** im Lastenheft ein (Modul `commits`,
@@ -13,7 +13,7 @@ noch in d-check mechanisieren?" → das **letzte** Gate-Skript der Familie,
 (VCS-Port um Commit-Message-Lesen erweitert; **Teil-Supersede der Skript-Mechanik** von
 [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md) — Policy/Bindepunkt/CI-Topologie
 bleiben). Dieselbe VCS-Port-Präzedenz wie
-[`slice-053`](../done/slice-053-vcs-modul.md)/[ADR-0024](../../adr/0024-vcs-immutable-gate.md)
+[`slice-053`](welle-42/slice-053-vcs-modul.md)/[ADR-0024](../../adr/0024-vcs-immutable-gate.md)
 (dort Datei-Inhalt, hier Commit-**Messages**) und dieselbe Skript-Ablösungs-Linie wie
 [`slice-055`](../done/slice-055-completeness-rueckbau.md)/[ADR-0026](../../adr/0026-completeness-in-product-gate.md).
 Verteilung wie der Rest des Werkzeugs (gepinntes Image, kein kopiertes Skript —

@@ -12,7 +12,7 @@ Lastenheft 0.37.0; zugleich
 [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
 9→10 Targets) plus [ADR-0030](../../adr/0030-tracked-referenz-ziele.md)
 (Proposed). Dritte Nutzung des VCS-Ports aus
-[`slice-053`](../done/slice-053-vcs-modul.md) (`vcs`: Range-Diff,
+[`slice-053`](welle-42/slice-053-vcs-modul.md) (`vcs`: Range-Diff,
 [`slice-056`](../done/slice-056-commits-modul.md)/`commits`: Messages,
 `tracked`: **Index** — ohne Range); Kein-Doppelbefund-Prinzip wie
 [`slice-049`](welle-38/slice-049-pins-modul.md)/`pins`.
