@@ -82,7 +82,7 @@ weiterhin die volle Repo-Wurzel prüfen.
 
 Change Request 0.7.0 im Lastenheft (erfüllt 2026-06-12) **und**
 Priorisierung durch den Auftraggeber. Unabhängig von
-[slice-015](../done/slice-015-spans-modul.md)/[slice-016](slice-016-hostpaths-modul.md)
+[slice-015](welle-06/slice-015-spans-modul.md)/[slice-016](welle-06/slice-016-hostpaths-modul.md)
 implementierbar (orthogonal: Scope vs. neue Module); bei Bündelung
 in ein gemeinsames v0.3.0 profitieren künftige Module sofort vom
 Scope-Schlüssel.
