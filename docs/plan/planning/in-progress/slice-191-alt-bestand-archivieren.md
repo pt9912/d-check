@@ -1,4 +1,4 @@
-# Slice slice-191: Den Alt-Bestand archivieren (welle-60…welle-85)
+# Slice slice-191: Den Alt-Bestand archivieren (welle-01…welle-85)
 
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
@@ -24,10 +24,21 @@ Slice-Platzhalter `slice-<NN-B>`, den dieser Slice einlöst).
 
 [slice-190](../done/slice-190-wellen-archiv-werkzeug.md) hat das
 Archivierungs-Werkzeug gebaut und an einem Fixture bewiesen — nicht am
-echten Bestand. Dieser Slice zieht die Trennung nach: **welle-60 bis
-welle-85 archivieren**, plus die Zuordnung wellenloser Alt-Slices klären,
-die [Modul 6](../../../../.harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6)
-bei der Nachrüstung verlangt.
+echten Bestand. Dieser Slice zieht die Trennung nach.
+
+**Scope-Erweiterung während der Ausführung (Nutzer-Entscheid):** ursprünglich
+auf welle-60…85 begrenzt (die Wellen, für die [welle-87](../welle-87-wellen-archivierung.md)
+die Nachrüstpflicht maß). Nach deren vollständiger Archivierung zeigte die
+Sichtung der verbliebenen `docs/reviews/`-Altlast (158 Dateien), dass die
+Wellen-Nummerierung **nicht** erst bei welle-60 beginnt, sondern bei
+welle-01 — jeder Slice vor welle-60 trägt bereits ein gültiges
+`**Welle:**`-Feld (z. B. `slice-001` → `welle-01-fundament`, `slice-050` →
+`welle-39-matrix-richtung`), nur ohne flache Welle-Plan-Datei in `done/`
+(dieselbe, bereits gelöste Eigenheit wie welle-60…66). Ein Sammel-Archiv für
+„wellenlosen Bestand vor der Einführung" ([Modul 6](../../../../.harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6))
+ist damit **nicht** nötig — der Bestand ist durchgängig Welle-zugeordnet.
+**Neuer Umfang: welle-01 bis welle-85**, mit demselben Werkzeug, demselben
+Wellen-für-Welle-Vorgehen.
 
 **Zwei Bestands-Eigenheiten wurden bereits beim Planen gemessen, nicht
 erst beim Ausführen entdeckt** — genau die Vorsicht, die
@@ -104,7 +115,7 @@ erst beim Ausführen entdeckt** — genau die Vorsicht, die
       Beleg-Zeile in diesem Slice-Plan (§1) belegt.
 - [ ] `tools/archive-wave` behandelt eine Welle ohne Plan-Datei
       (welle-60…66) korrekt — Test vorhanden, `make archive-wave-test` grün.
-- [ ] welle-60 bis welle-85 sind archiviert: `done/<welle-id>/archiv.zip`
+- [ ] welle-01 bis welle-85 sind archiviert: `done/<welle-id>/archiv.zip`
       existiert je Welle, Stubs an der Zielform, Review-Reports ohne Stub,
       keine gebrochenen Repo-Verweise (`make doc-check` grün nach jeder
       angewendeten Welle).
