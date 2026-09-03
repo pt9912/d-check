@@ -75,10 +75,25 @@ erst beim Ausführen entdeckt** — genau die Vorsicht, die
    historischen `**Status:**`-Felds (das bleibt unverändert, `AGENTS.md`
    §3.7 Bestands-Ausnahme) — es ergänzt ein bislang fehlendes Feld aus
    bereits im selben Dokument stehenden Fakten. Nach diesem Schritt gibt es
-   **keine** wellenlosen Alt-Slices mehr vor der Einführung der Regel — die
-   welle-87-§3-Bedingung „Zuordnung entschieden" ist damit für diesen
-   gemessenen Bestand erfüllt, ohne Sammel-Archiv oder chronologische
-   Näherung zu brauchen.
+   **keine** wellenlosen Alt-Slices mehr vor der Einführung der Regel.
+   **Präzisierung, nach Abschluss aller 85 Wellen gemessen:** diese Aussage
+   galt nur der alten Lücke „Feld ganz abwesend" (vier Fälle). Ab
+   `slice-137` führt dieses Repo eine **zweite, bewusste** Wellenlos-Form —
+   das Feld trägt ausdrücklich `— wellenlos` (Baseline-Regelwerk
+   [`modul-06-roadmap.md` §Wann Arbeit eine Welle braucht](../../../../.harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md#wann-arbeit-eine-welle-braucht-modul-6):
+   „Wellenlos heißt nicht wächterlos"). Das sind **52** Slices — gemessen
+   per Feld-Wert, nicht per Feld-Abwesenheit (`slice-137` bis `slice-189`,
+   plus sechs ältere Einzelfälle mit gleichwertiger Prosa:
+   `slice-083/095/102/112/121/127`) — durchweg **aktueller** Bestand, nicht
+   Vor-Einführungs-Altlast, und ohne Wellen-Zugehörigkeit **by design**: ihr
+   Closure-Grund ist ihre eigene DoD, keine Wellen-Closure-Bedingung. Für sie
+   gilt keine Archivierungspflicht — Modul 6 Schritt 4 archiviert **Wellen**,
+   und eine Welle, die es nie gab, hat nichts zu schließen. Die zugehörigen
+   `docs/reviews/`-Reports bleiben aus demselben Grund unangetastet. Die
+   welle-87-§3-Bedingung „Zuordnung entschieden" bezieht sich auf den
+   **Vor-Einführungs**-Bestand (Modul 6: „…für den Bestand vor der
+   Einführung") und ist mit welle-01…85 vollständig erfüllt — ohne
+   Sammel-Archiv oder chronologische Näherung.
 2. **`tools/archive-wave` um den Plan-losen Fall erweitern.** `FindWellePlan`
    liefert für welle-60…66 **null** Treffer statt eines Fehlers; `Apply`
    überspringt in diesem Fall den Welle-Plan-Eintrag im ZIP und die
