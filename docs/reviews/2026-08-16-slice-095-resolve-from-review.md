@@ -40,7 +40,7 @@ Implementierung `cd79619`); Arbeitsbaum-Stand `cd79619` (= HEAD).
   [slice-095](../plan/planning/done/slice-095-links-resolve-from.md)
   (§2 dreifacher Anlass, §3 Abnahme-Punkte, §3a Messung samt Retro-Beleg) und
   das Wellendokument
-  [welle-76](../plan/planning/done/welle-76-ortsfeste-verweise.md)
+  [welle-76](../plan/planning/done/welle-76/welle-76-ortsfeste-verweise.md)
 
 **Läufe dieses Reviews.** Alle Fixtures, Probe-Configs und Mutations-Kopien in
 einem Scratch-Verzeichnis außerhalb des Repos (danach gelöscht); keine

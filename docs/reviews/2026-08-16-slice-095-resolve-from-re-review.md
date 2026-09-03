@@ -47,7 +47,7 @@ Arbeitsbaum-Stand `3eaf512` (= HEAD, clean).
 - Der Slice-Plan
   [slice-095](../plan/planning/done/slice-095-links-resolve-from.md)
   (§3a inkl. der korrigierten Überclaim-Passage) und das Wellendokument
-  [welle-76](../plan/planning/done/welle-76-ortsfeste-verweise.md)
+  [welle-76](../plan/planning/done/welle-76/welle-76-ortsfeste-verweise.md)
   (Closure-Trigger)
 
 **Läufe dieses Re-Reviews.** Baseline `make test` grün (Exit 0); das Image aus
