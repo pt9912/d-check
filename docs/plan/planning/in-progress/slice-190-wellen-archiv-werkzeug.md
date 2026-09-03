@@ -95,10 +95,15 @@ dann auf den Alt-Bestand loslassen (Folge-Slice).
 
 ## 3. Ausdrücklich NICHT in diesem Slice
 
-- **Keine Anwendung auf den echten Alt-Bestand** (welle-60…welle-85). Das ist
-  der Folge-Slice aus [welle-87](../welle-87-wellen-archivierung.md) §4.
-- **Keine Zuordnung wellenloser Alt-Slices** zu einer archivierenden Welle —
-  dieselbe Abgrenzung.
+- **Keine Anwendung auf den echten Alt-Bestand innerhalb DIESES Slices**
+  (welle-60…welle-85) — ein neues, ungetestetes Werkzeug wird erst am Fixture
+  bewiesen, nicht direkt am echten Baum ausprobiert. Das ist eine
+  Reihenfolge-, keine Zeit-Entscheidung: der Folge-Slice
+  ([welle-87](../welle-87-wellen-archivierung.md) §4) läuft **im Anschluss,
+  in derselben Sitzung** — Ziel ist ein vollständig archivierter Bestand am
+  Ende des Durchgangs, nicht ein auf unbestimmte Zeit vertagter Rest.
+- **Keine Zuordnung wellenloser Alt-Slices** zu einer archivierenden Welle in
+  DIESEM Slice — dieselbe Abgrenzung, derselbe unmittelbare Folge-Slice.
 - **`welle-86` wird nicht eingesammelt** — sie bleibt eigenständig
   ([welle-87](../welle-87-wellen-archivierung.md) §5).
 - **Kein neues `make gates`-Gate**, das die Archivierung erzwingt oder
@@ -191,8 +196,13 @@ getrennt vom Verweis-Nachzug) — dann ist der Schnitt ein anderer.
   > **Offene Beobachtungen sichten.**
 
 - **Nachtlauf-Stand lesen** (`make nightly-state`,
-  [`MR-053`](../../../../harness/conventions.md#mr-053)): wird bei der
-  Beanspruchung aufgefrischt.
+  [`MR-053`](../../../../harness/conventions.md#mr-053)): `image-scan.yml`
+  **gruen** (jüngster Lauf 2026-09-02T07:56:37Z). `upstream-drift.yml`
+  **ROT** — jüngster Lauf 2026-09-02T05:19:44Z, planmäßig: der bekannte,
+  informative Fremd-Release-Fund (Go 1.27.0→1.27.1, semgrep
+  1.175.0→1.176.0), kein Zitat-Bruch, keine Regression. Ohne Konsequenz für
+  diesen Slice — er berührt weder eine Toolchain-Version noch eine
+  Zitat-Spanne außerhalb der beiden bereits in §7 geprüften.
 
 Slice-ID: slice-190. Betroffene IDs: keine `DC-FA-*` (Planning-Infrastruktur,
 kein d-check-Regelmodul). Module: keins. Gates: `make gates`.
