@@ -11,8 +11,10 @@ Datei beschreibt den Prozess; die Pipeline selbst ist
 
 Versionen folgen SemVer; die menschlich kuratierte Begründung jedes
 Releases ist der zugehörige Abschnitt in
-[`CHANGELOG.md`](../../CHANGELOG.md). Vor dem Tag wird dort der
-`[Unreleased]`-Stand unter die neue Version geschnitten.
+[`CHANGELOG.md`](../../CHANGELOG.md). Die Datei führt **keinen**
+`[Unreleased]`-Abschnitt: der Eintrag für die neue Version entsteht direkt
+unter ihrer Versionsnummer, erst in der Release-Prep — nicht im
+Feature-Commit, wo die Nummer noch nicht feststeht.
 
 Die **aktuelle** Version führt zusätzlich das Release-Register
 [`version.md`](../../version.md#aktuell) (§Aktuell). Das opt-in Modul `versions`
@@ -33,7 +35,8 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
    neue Version ziehen — das aktive `versions`-Gate meldet sonst `version-stale`
    für jeden vergessenen Pin. Historische Pins in `done/`-Slices, `CHANGELOG.md`
    und der Lastenheft-Historie sind per `exempt-paths` ausgenommen.
-3. **`CHANGELOG.md`** — den `[Unreleased]`-Stand unter die neue Version schneiden.
+3. **`CHANGELOG.md`** — neuen Abschnitt unter der neuen Versionsnummer schreiben
+   (kein `[Unreleased]`-Zwischenstand; siehe [Versionsquelle](#versionsquelle)).
 4. **Prosa-Currency von Hand nachziehen — kein Gate erzwingt sie.** Der
    `versions`-Gate prüft nur `ghcr`-**präfixierte** Pins gegen `version.md#aktuell`,
    nicht Fließtext oder nackte Tags. Betroffen:
