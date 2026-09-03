@@ -123,7 +123,7 @@ damit zu.
 ## 5. Trigger
 
 Bestands-Folgepunkt aus dem Closure-Lerneintrag von
-[slice-059](../done/slice-059-tracked-modul.md) §7 („Kandidat für einen
+[slice-059](welle-48/slice-059-tracked-modul.md) §7 („Kandidat für einen
 Hygiene-Slice samt Vollständigkeits-Verriegelung §4 ↔ `AllReasons`");
 Nutzer-Auftrag 2026-07-04.
 
