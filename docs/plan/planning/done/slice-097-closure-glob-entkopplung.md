@@ -4,7 +4,9 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** gemeinsam mit [slice-098](../done/slice-098-closure-note-placeholder.md) —
+**Welle:** welle-71, gemeinsam mit [slice-098](../done/slice-098-closure-note-placeholder.md)
+(Kennung nachgetragen bei [slice-191](../in-progress/slice-191-alt-bestand-archivieren.md)
+— das Feld nannte bislang nur die Zuordnungs-Bedingung, nicht die Kennung) —
 der Konsument kann sein letztes handgeschriebenes Prüfskript **erst dann**
 zurückziehen, wenn **beide** Slices liegen. Das ist eine Closure-Bedingung
 jenseits der beiden Slice-DoDs und damit genau der Fall, für den es eine Welle

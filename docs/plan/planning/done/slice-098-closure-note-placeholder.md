@@ -4,7 +4,9 @@
 `in-progress/`/`done/`) — kein `Status:`-Feld; Wechsel nur per `git mv`
 (Baseline-Regelwerk `modul-05-planning-harness.md`).
 
-**Welle:** gemeinsam mit [slice-097](../done/slice-097-closure-glob-entkopplung.md) —
+**Welle:** welle-71, gemeinsam mit [slice-097](../done/slice-097-closure-glob-entkopplung.md)
+(Kennung nachgetragen bei [slice-191](../in-progress/slice-191-alt-bestand-archivieren.md)
+— das Feld nannte bislang nur die Zuordnungs-Bedingung, nicht die Kennung) —
 erst mit **beiden** ist die Closure-Fähigkeit eine Obermenge des
 Konsumenten-Skripts; einzeln bringt jede Deckung, löst den Faden aber nicht auf.
 **Zuordnung entschieden** mit der welle-69-Closure (2026-08-09): der Slice
