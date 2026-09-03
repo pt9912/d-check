@@ -11,7 +11,7 @@ und Review-Report-Deckung)
 
 **Eingangs-Kontext:**
 
-- [slice-192](../plan/planning/in-progress/slice-192-uebergangswaechter-nachliefern.md)
+- [slice-192](../plan/planning/done/slice-192-uebergangswaechter-nachliefern.md)
 - [ADR-0082](../plan/adr/0082-uebergangswaechter-reviews-observations.md)
 - [ADR-0081](../plan/adr/0081-reviews-modul.md) §Re-Evaluierungs-Trigger
 - `AGENTS.md` (Hard Rules)

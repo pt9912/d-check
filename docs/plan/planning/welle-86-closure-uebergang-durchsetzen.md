@@ -97,7 +97,7 @@ vier Proben real und lokal bestanden.
 | [slice-173](done/slice-173-review-report-deckung.md) | Review-Report-Deckung: jeder `done/`-Slice mit Review-Zusage hat einen Report | neue Fähigkeit (Deckung zweier Mengen) |
 | slice-174 | Beobachtungs-Register-Deckung: zitierte `BEO-<NNN>` hat Registerzeile, jede Zeile trägt einen Beleg | `modul-06` nennt die maschinelle Hälfte selbst |
 | [slice-175](done/slice-175-uebergangs-waechter.md) | Bindung an den **Übergang**: der `mv`-Commit nach `done/` wird geprüft, nicht der Zustand danach | `.githooks/pre-commit` ruft d-check im `STAGED=`-Modus |
-| slice-192 | **Nachtrag (Trigger-Audit):** zwei der vier Vorbedingungen (Register-Deckung, Review-Report-Deckung) waren beim lokalen `mv`-Commit noch nicht durchgesetzt | [ADR-0082](../adr/0082-uebergangswaechter-reviews-observations.md) — `reviews` + `planning.observations` in `.d-check.closure.yml` |
+| [slice-192](done/slice-192-uebergangswaechter-nachliefern.md) | **Nachtrag (Trigger-Audit):** zwei der vier Vorbedingungen (Register-Deckung, Review-Report-Deckung) waren beim lokalen `mv`-Commit noch nicht durchgesetzt | [ADR-0082](../adr/0082-uebergangswaechter-reviews-observations.md) — `reviews` + `planning.observations` in `.d-check.closure.yml` |
 
 Alle fünf sind mittlerweile angelegt und geschlossen; der fünfte kam erst
 durch den Trigger-Audit dazu — wer alle Slices vor der ersten Implementierung
