@@ -153,7 +153,7 @@ steht.
   **Ausgang:** weiter offen. Der **Anlass** stammt aus einer Sitzung, die
   **Regel** aus dem Bestand — 13 Marker-Treffer, 455 Dateien, 0 Befunde, und
   die Zahlen zu offenen DoD-Haken und Report-Deckung in
-  [welle-86](welle-86-closure-uebergang-durchsetzen.md). Ungemessen bleibt
+  [welle-86](welle-86/welle-86-closure-uebergang-durchsetzen.md). Ungemessen bleibt
   die eigentliche Frage: ob Vorprüfungs-Blöcke *generell* zu schwach sind.
   Sie wird es erst, wenn mehrere Pläne unter der neuen Form gelaufen sind.
 
@@ -250,5 +250,5 @@ die Probe darauf, dass die Antwort mehr ist als ein Text.
 
 **Was der Slice ausdrücklich nicht liefert:** einen Sensor. Ein Plan ganz ohne
 Direktiven ist grün — die Adaption wirkt über Zustellung und Review. Die
-Durchsetzung ist [welle-86](welle-86-closure-uebergang-durchsetzen.md), die
+Durchsetzung ist [welle-86](welle-86/welle-86-closure-uebergang-durchsetzen.md), die
 pfad-gebundene Zustellung [slice-176](../done/slice-176-planning-rule-pilot.md).

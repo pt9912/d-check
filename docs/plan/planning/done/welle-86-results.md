@@ -10,20 +10,20 @@ Fünf Slices lösen die vier Vorbedingungen ein, die welle-86 §1 als **offen**
 auswies — DoD-Häkchen gesetzt, Beobachtungs-Register fortgeschrieben, Review
 fand statt, die Prüfung hängt am Übergang, nicht am Zustand:
 
-- [slice-172](slice-172-closure-uebergang-waechtern.md): eine
+- [slice-172](welle-86/slice-172-closure-uebergang-waechtern.md): eine
   `structure`-Regel (`max-open-tasks: 0`) meldet jeden offenen DoD-Haken
   eines `done/`-Slice, mit Bestands-Ausnahme bis `slice-170`.
-- [slice-173](slice-173-review-report-deckung.md): das neue Modul `reviews`
+- [slice-173](welle-86/slice-173-review-report-deckung.md): das neue Modul `reviews`
   ([`DC-FA-RVW-001`](../../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in),
   [ADR-0081](../../adr/0081-reviews-modul.md)) — jeder `done/`-Slice mit
   Review-Zusage braucht mindestens einen Report unter `docs/reviews/`.
-- [slice-174](slice-174-register-deckung.md): die maschinelle Hälfte der
+- [slice-174](welle-86/slice-174-register-deckung.md): die maschinelle Hälfte der
   Register-Paarung — eine zitierte `BEO-<NNN>` hat eine Registerzeile.
-- [slice-175](slice-175-uebergangs-waechter.md): `.githooks/pre-commit` und
+- [slice-175](welle-86/slice-175-uebergangs-waechter.md): `.githooks/pre-commit` und
   die PR-/Push-CI erkennen einen Slice-Closure-Übergang (Rename/Add nach
   `docs/plan/planning/done/slice-*.md`) und lösen `make verify-closure-notes`
   aus.
-- [slice-192](slice-192-uebergangswaechter-nachliefern.md): welle-86s
+- [slice-192](welle-86/slice-192-uebergangswaechter-nachliefern.md): welle-86s
   eigene Trigger-Prüfung fand, dass zwei der vier Vorbedingungen beim
   lokalen `mv`-Commit noch nicht griffen (`.d-check.closure.yml` kannte
   weder `planning.observations` noch `reviews`) — behoben,

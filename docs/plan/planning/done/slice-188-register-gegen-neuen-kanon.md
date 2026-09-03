@@ -168,7 +168,7 @@ unbequemere und die richtige Lesart, und sie gehört in die Closure-Notiz.
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): WIP-Limit frei — heute hält
-[slice-174](../done/slice-174-register-deckung.md) den Slot. **Zusätzlich
+[slice-174](welle-86/slice-174-register-deckung.md) den Slot. **Zusätzlich
 die Entscheidung aus §2.1**: entweder ein Release des Adopters, das die zwei
 Wellen enthält, **oder** der ausdrückliche Beschluss, unter dem heutigen Pin zu
 korrigieren.
@@ -240,7 +240,7 @@ der Registerdatei trägt jetzt die Baseline-Version und die erweiterte
 Beleg-Definition, samt einer benannten Grenze: der Kanon sieht eine
 Wellen-Archivierung vor (`archiv.zip`, Review-Reports ohne Stub), die
 dieses Repo noch nie durchgeführt hat — für die aktuell offene
-[`welle-86`](welle-86-closure-uebergang-durchsetzen.md) greift die
+[`welle-86`](welle-86/welle-86-closure-uebergang-durchsetzen.md) greift die
 Nachrüst-Ausnahme **nicht**, und kein Werkzeug führt die Archivierung aus.
 
 **Was funktioniert hat.** Die Timing-Frage aus §2 Punkt 1 hat sich von

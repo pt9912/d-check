@@ -6,7 +6,7 @@
 **Welle:** — **wellenlos**. Sein Closure-Grund geht über die eigene DoD nicht
 hinaus (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
 braucht); der **Anlass** liegt in
-[welle-86](welle-86-closure-uebergang-durchsetzen.md), die **Fähigkeit**
+[welle-86](welle-86/welle-86-closure-uebergang-durchsetzen.md), die **Fähigkeit**
 gehört jeder `structure`-Regel.
 
 **Bezug:**
@@ -70,7 +70,7 @@ Bauform, die dieses Repo an anderer Stelle als Redundanz zurückgebaut hat
 ([ADR-0070](../../adr/0070-tabellen-klammer-und-spaltenliste.md)).
 
 **Der Anlass ist gemessen und liegt in diesem Repo:**
-[slice-172](../done/slice-172-closure-uebergang-waechtern.md) hat den Sensor für
+[slice-172](welle-86/slice-172-closure-uebergang-waechtern.md) hat den Sensor für
 den offenen DoD-Haken fertig entworfen und beidseitig gemessen (37 Befunde ohne
 Bestands-Ausnahme, null mit ihr, Positiv-Probe grün) — und ist an genau diesem
 Punkt zurückgeführt worden: seine eigene §2 verlangt eine Meldung, die sagt,
@@ -122,7 +122,7 @@ Punkt zurückgeführt worden: seine eigene §2 verlangt eine Meldung, die sagt,
   Klasse wie ein Kommentar (`AGENTS.md` §3.7). Der Sensor prüft, dass er nicht
   leer ist.
 - **Keine Anwendung auf den DoD-Haken-Sensor.** Das ist
-  [slice-172](../done/slice-172-closure-uebergang-waechtern.md); dieser Slice
+  [slice-172](welle-86/slice-172-closure-uebergang-waechtern.md); dieser Slice
   liefert die Fähigkeit, nicht ihren ersten Konsumenten.
 
 ## 4. Definition of Done
@@ -200,7 +200,7 @@ Punkt zurückgeführt worden: seine eigene §2 verlangt eine Meldung, die sagt,
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): unmittelbar — der Slice entsteht als
-Vorbedingung von [slice-172](../done/slice-172-closure-uebergang-waechtern.md),
+Vorbedingung von [slice-172](welle-86/slice-172-closure-uebergang-waechtern.md),
 der dafür nach `open/` zurückgeführt wurde.
 
 **Rückführungen:** `in-progress` → `open`, falls sich beim Bau zeigt, dass die
@@ -307,5 +307,5 @@ war der Weg, auf dem er gefunden wurde.
 **Offen und ausdrücklich benannt:** `CHANGELOG.md` ist nicht gepflegt. Die
 vierte Spalte ist nutzersichtbar, aber dieses Repo führt CHANGELOG-Einträge im
 Release-Prep. Der nächste Konsument ist
-[slice-172](../done/slice-172-closure-uebergang-waechtern.md): sein Sensor liegt beidseitig
+[slice-172](welle-86/slice-172-closure-uebergang-waechtern.md): sein Sensor liegt beidseitig
 gemessen im Plan und wartet nur auf `hint`.

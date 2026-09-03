@@ -46,7 +46,7 @@
 
   **slice-168, -169 und -170 liegen bewusst *in* der Ausnahme.** Sie tragen
   genau den offenen Review-Haken, der
-  [welle-86](../../docs/plan/planning/done/welle-86-closure-uebergang-durchsetzen.md)
+  [welle-86](../../docs/plan/planning/done/welle-86/welle-86-closure-uebergang-durchsetzen.md)
   ausgelöst hat. Ein nachträglich gesetzter Haken behauptete einen Review, den
   es nicht gab; ihr Befund steht im Register und in der Closure-Notiz von
   slice-171. Wer die Ausnahme ohne diesen Satz liest, hält sie für
