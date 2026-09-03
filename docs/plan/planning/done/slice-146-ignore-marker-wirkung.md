@@ -13,7 +13,7 @@ braucht).
 [`DC-FA-VER-001`](../../../../spec/lastenheft.md#dc-fa-ver-001--versions-pin-konsistenz-modul-versions-opt-in),
 [`DC-FA-DIAG-001`](../../../../spec/lastenheft.md#dc-fa-diag-001--kennungs-konsistenz-in-diagramm-fences-modul-diagrams-opt-in)
 (die vier Konsumenten des Ventils); `nolintlint` mit `allow-unused` als Vorbild
-aus [slice-134](../done/slice-134-nolintlint.md).
+aus [slice-134](welle-84/slice-134-nolintlint.md).
 
 **Berührte Spec-Stellen:** — (der Slice misst und entscheidet; eine Anforderung
 wächst erst, wenn gebaut wird).

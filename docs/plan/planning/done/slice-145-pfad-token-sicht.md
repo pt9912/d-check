@@ -7,7 +7,7 @@
 hinausgeht (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
 braucht).
 
-**Bezug:** [`AGENTS.md`](../../../../AGENTS.md) §3.4 (zweiter Auflösungs-Trigger); [`MR-033`](../../../../harness/conventions.md#mr-033); [slice-136](../done/slice-136-agents-34-klaerung.md).
+**Bezug:** [`AGENTS.md`](../../../../AGENTS.md) §3.4 (zweiter Auflösungs-Trigger); [`MR-033`](../../../../harness/conventions.md#mr-033); [slice-136](welle-84/slice-136-agents-34-klaerung.md).
 
 **Berührte Spec-Stellen:** — (abhängig von der Wegwahl; ein Produkt-Delta bräuchte Bump und ADR).
 

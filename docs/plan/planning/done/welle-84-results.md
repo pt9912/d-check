@@ -10,19 +10,19 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Wellen-Closure-Prozedur, Schritt 3 — *was gelernt wurde*: geliefert · was
 funktionierte · was anders lief · Steering-Loop · Register-Lese-Schritt.
 
-- [slice-133](slice-133-baseline-sensor-verdrahten.md) — **der verwaiste Sensor
+- [slice-133](welle-84/slice-133-baseline-sensor-verdrahten.md) — **der verwaiste Sensor
   ist eingesteckt.** `make baseline-verify` ist erstes Glied von `make gates`,
   `make baseline-freshness` läuft im eigenen Nachtlauf `upstream-drift.yml`,
   getrennt von `ci.yml`. Gebaut wurde nichts — das Skript konnte all das schon
   und wurde von nichts gerufen.
-- [slice-132](slice-132-hard-rule-zensus.md) — **der Zensus.** Elf Zeilen: neun
+- [slice-132](welle-84/slice-132-hard-rule-zensus.md) — **der Zensus.** Elf Zeilen: neun
   Abschnitte in §3 tragen zehn Regeln, dazu die Botschafts-Regel aus §5. Jede
   Deckungs-Aussage steht auf einem konstruierten Verstoß mit rotem Exit.
-- [slice-134](slice-134-nolintlint.md) — **`nolintlint` im Profil.** §3.2 von
+- [slice-134](welle-84/slice-134-nolintlint.md) — **`nolintlint` im Profil.** §3.2 von
   *einseitig* auf *teilgedeckt*.
-- [slice-135](slice-135-uses-pin-sensor.md) — **`make workflow-pins`**, zehntes
+- [slice-135](welle-84/slice-135-uses-pin-sensor.md) — **`make workflow-pins`**, zehntes
   Glied von `gates`. §3.9s auflösender Trigger ist eingelöst.
-- [slice-136](slice-136-agents-34-klaerung.md) — **eine Zensus-Zeile
+- [slice-136](welle-84/slice-136-agents-34-klaerung.md) — **eine Zensus-Zeile
   berichtigt**, und mit ihr eine falsche Konformitäts-Annahme:
   [`MR-033`](../../../../harness/conventions.md#mr-033).
 

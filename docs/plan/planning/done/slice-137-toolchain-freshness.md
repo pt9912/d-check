@@ -14,7 +14,7 @@ ohnehin belegen, ist Zeremonie."*
 (das Produkt, nicht der innere Lauf); der Nachtlauf
 [`upstream-drift.yml`](../../../../.github/workflows/upstream-drift.yml) und das
 Muster von `make baseline-freshness` aus
-[slice-133](../done/slice-133-baseline-sensor-verdrahten.md).
+[slice-133](welle-84/slice-133-baseline-sensor-verdrahten.md).
 
 **Berührte Spec-Stellen:** — (Harness-Sensoren; keine Anforderung).
 
@@ -32,7 +32,7 @@ prüfend**.
 
 Die Folge ist belegt, nicht vermutet: dass der Kurs `v5.11.0` veröffentlicht
 hatte, hat uns der Auftraggeber gesagt, nicht der Sensor. Für die Baseline-Achse
-ist das seit [slice-133](../done/slice-133-baseline-sensor-verdrahten.md)
+ist das seit [slice-133](welle-84/slice-133-baseline-sensor-verdrahten.md)
 behoben; die zwei Toolchain-Achsen sind die verbliebene Hälfte derselben
 Blindheit.
 
@@ -50,7 +50,7 @@ die Integrations-CI nie rot färben darf. Dieser Slice hängt zwei Targets hinei
    ebenso (`go1.27.0` ⇄ `1.27.0`).
 3. **Fail-open wie die Baseline-Achse:** Netz- oder Werkzeug-Ausfall ⇒ `SKIP`,
    nicht rot. Mit Zeitgrenzen — ohne sie wäre eine hängende Verbindung genau der
-   Fehler, den [slice-133](../done/slice-133-baseline-sensor-verdrahten.md)
+   Fehler, den [slice-133](welle-84/slice-133-baseline-sensor-verdrahten.md)
    schon einmal einarbeiten musste.
 4. **In den bestehenden Nachtlauf hängen**, nicht in einen zweiten. Ein Ausfall
    einer Achse darf die anderen nicht verdecken.
@@ -132,7 +132,7 @@ Module: Harness-Werkzeuge, CI. Gates: `make gate-consistency`, `make gates`.
 
 Geliefert: zwei Targets über **einen** parametrierten Sensor, beide im
 bestehenden Nachtlauf. Die Blindheit, die
-[slice-133](slice-133-baseline-sensor-verdrahten.md) zur Hälfte behoben hat, ist
+[slice-133](welle-84/slice-133-baseline-sensor-verdrahten.md) zur Hälfte behoben hat, ist
 damit ganz behoben — drei gepinnte Fremd-Bestände, drei Achsen, ein Job.
 
 **Der Fund des Slice ist eine Asymmetrie in meiner eigenen Sorgfalt.** Den

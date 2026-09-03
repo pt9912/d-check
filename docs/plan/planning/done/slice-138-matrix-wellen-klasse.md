@@ -13,8 +13,8 @@ Kategorien, zwei gedeckt);
 und [`DC-FA-MTX-003`](../../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix);
 [ADR-0047](../../adr/0047-matrix-spec-historie-nicht-provenance-exempt.md)
 (die §7-Historie ist **nicht** provenance-exempt); der Zensus in
-[slice-132](../done/slice-132-hard-rule-zensus.md) und seine Berichtigung in
-[slice-136](../done/slice-136-agents-34-klaerung.md).
+[slice-132](welle-84/slice-132-hard-rule-zensus.md) und seine Berichtigung in
+[slice-136](welle-84/slice-136-agents-34-klaerung.md).
 
 **Berührte Spec-Stellen:** [`spec/lastenheft.md`](../../../../spec/lastenheft.md)
 §7 (eine Historie-Zeile wird ent-tokenisiert) — keine Anforderung ändert ihre
@@ -28,7 +28,7 @@ Aussage.
 
 §3.4 verbietet den Spec-Straten **fünf** Referenz-Kategorien; `matrix` trägt
 Klassen für **zwei** (ADRs, Slices). Der Zensus hatte das als *gedeckt*
-ausgewiesen, [slice-136](../done/slice-136-agents-34-klaerung.md) hat es auf
+ausgewiesen, [slice-136](welle-84/slice-136-agents-34-klaerung.md) hat es auf
 *zwei von fünf* berichtigt und einen Trigger gesetzt: *die drei fehlenden
 Kategorien als Token-Klassen.*
 
