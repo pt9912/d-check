@@ -15,7 +15,7 @@ Lastenheft 0.37.0; zugleich
 [`slice-053`](../done/slice-053-vcs-modul.md) (`vcs`: Range-Diff,
 [`slice-056`](../done/slice-056-commits-modul.md)/`commits`: Messages,
 `tracked`: **Index** — ohne Range); Kein-Doppelbefund-Prinzip wie
-[`slice-049`](../done/slice-049-pins-modul.md)/`pins`.
+[`slice-049`](welle-38/slice-049-pins-modul.md)/`pins`.
 
 **Autor:** pt9912. **Datum:** 2026-07-03.
 
