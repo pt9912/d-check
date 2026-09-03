@@ -330,4 +330,4 @@ eigene Entscheidung mit eigener Messung.
 
 | Datum | Ereignis | Verweis |
 |---|---|---|
-| 2026-08-22 | Accepted — drei Entscheidungen, je ein Slice | [slice-122](../planning/done/slice-122-versions-musterliste.md), [slice-123](../planning/done/slice-123-structure-heading-muster.md), [slice-124](../planning/done/slice-124-diagrams-ventile.md) |
+| 2026-08-22 | Accepted — drei Entscheidungen, je ein Slice | [slice-122](../planning/done/welle-82/slice-122-versions-musterliste.md), [slice-123](../planning/done/welle-82/slice-123-structure-heading-muster.md), [slice-124](../planning/done/welle-82/slice-124-diagrams-ventile.md) |

@@ -15,4 +15,4 @@
   ab.
 - **Auflösungs-Trigger:** slice-004 — `make doc-check` läuft über
   `d-check` selbst (Dogfooding), das Skript wird gelöscht
-  ([Slice-Plan](../../../docs/plan/planning/done/slice-004-anchors-modul-und-dogfooding.md)).
+  ([Slice-Plan](../../../docs/plan/planning/done/welle-02/slice-004-anchors-modul-und-dogfooding.md)).
