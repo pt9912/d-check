@@ -5,4 +5,4 @@
 
 **Welle:** welle-60 — der Fix sitzt im **geteilten** Parser und ist damit
 **Archiviert mit:** welle-60 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** ADR-0039, DC-FA-COV-001, DC-FA-ID-001
+**Hervorgegangen:** ADR-0039, DC-FA-COV-001, DC-FA-ID-001, DC-FA-XREF-001

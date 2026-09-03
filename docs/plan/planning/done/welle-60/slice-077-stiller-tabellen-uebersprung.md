@@ -5,4 +5,4 @@
 
 **Welle:** welle-60.
 **Archiviert mit:** welle-60 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** ADR-0037, ADR-0043
+**Hervorgegangen:** ADR-0037, ADR-0043, DC-FA-REQ-001, DC-FA-XREF-001

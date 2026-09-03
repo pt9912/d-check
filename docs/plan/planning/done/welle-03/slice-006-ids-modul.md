@@ -5,4 +5,4 @@
 
 **Welle:** welle-03-regelmodule.
 **Archiviert mit:** welle-03 · **Geschlossen:** <manuell auszufuellen>
-**Hervorgegangen:** ADR-0005, ADR-0042, DC-FA-CLI-002, DC-FA-CONF-001, DC-FA-ID-001
+**Hervorgegangen:** ADR-0005, DC-FA-CLI-002, DC-FA-CONF-001, DC-FA-ID-001
