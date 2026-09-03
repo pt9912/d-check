@@ -323,7 +323,7 @@ func TestWorkflowsPinTagConflictWhitespaceNormalisiert(t *testing.T) {
 	}
 }
 
-// Verdrahtung (BEO-023): ein Konflikt, der NUR ueber den vollen Einstiegspunkt
+// Verdrahtung (BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt): ein Konflikt, der NUR ueber den vollen Einstiegspunkt
 // CheckWorkflows sichtbar wird, beweist, dass die Sammel-Schleife tatsaechlich
 // an checkTagConflicts angeschlossen ist -- nicht nur, dass die Gruppierung
 // fuer sich isoliert korrekt waere.

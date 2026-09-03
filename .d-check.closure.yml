@@ -42,7 +42,7 @@ planning:
   # Uebergangs-Waechter unsichtbar, nur `make gates`/`planning-check` fing sie.
   # Gemessen bei welle-86s eigener Trigger-Pruefung.
   observations:
-    register: docs/plan/planning/observations.md
+    dir: docs/plan/planning/observations
     dirs: [docs/plan/planning]
   closure:
     # Der Ruheort der abgeschlossenen Slices. Nur hier wird Slice-INHALT

@@ -1,0 +1,1 @@
+**Stand:** verkörpert in welle-74 — ein Kopplungs-Test fährt dieselbe Eingabe durch alle Konsumenten derselben Frage, Fehlschlag bei abweichender Antwort. Offen bleibt die Klasse, wo noch kein Kopplungs-Test existiert (Absatz- und Überschriften-Achse) und konfigurationsseitig.

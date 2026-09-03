@@ -90,7 +90,7 @@
     `make verify-closure-notes` gesehen — nicht beim `mv`-Commit.
   - **Die Ausnahme altert.** Sie nimmt eine feste Nummernspanne heraus; jeder
     neue Slice fällt unter die Regel. Wächst die Ausnahme je wieder, ist das der
-    Befund ([`BEO-013`](../../docs/plan/planning/observations.md)).
+    Befund ([`BEO-ALL/stale-suppression-marker-hides-next-finding`](../../docs/plan/planning/observations/BEO-ALL/stale-suppression-marker-hides-next-finding/observation.md)).
 - **Auflösungs-Trigger:** wenn die Bindung an den **Übergang** steht (der
   `mv`-Commit wird geprüft, nicht der Zustand danach) — dann ist die
   Zustands-Regel die schwächere Hälfte und ihre Rolle neu zu lesen.

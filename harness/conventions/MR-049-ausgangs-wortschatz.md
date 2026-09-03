@@ -18,7 +18,7 @@
 
   **Sie ergänzt die vorhandene Regel, sie ersetzt sie nicht.** Die
   Platzhalter-Regel fängt den **vergessenen** Ausgang, diese den **erfundenen** —
-  die Gestalt aus [`BEO-015`](../../docs/plan/planning/observations.md).
+  die Gestalt aus [`BEO-ALL/invented-fourth-closure-outcome`](../../docs/plan/planning/observations/BEO-ALL/invented-fourth-closure-outcome/observation.md).
 
   **Die Form ist ein `forbid-pattern` über das Komplement der drei Wörter**, kein
   `require-pattern` über ihr Vorkommen. Der Unterschied entscheidet die

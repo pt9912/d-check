@@ -134,7 +134,7 @@ func flagWasSet(flags *flag.FlagSet, name string) bool {
 // ist ein handkuratierter Link fuer einen Menschen, keine Illustration von
 // --help/--print-mk-Output, und braucht die maschinenfreundliche Form nicht.
 // Eine Kopplung ueber das eigene `versions`-Modul traegt hier ohnehin nicht: der Fundort ist eine
-// Go-Konstante, d-check scannt ausschliesslich Markdown (BEO-002).
+// Go-Konstante, d-check scannt ausschliesslich Markdown (BEO-ALL/semantic-change-body-only-edges-stale).
 const (
 	handbuchURL    = "https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md"
 	handbuchURLRaw = "https://raw.githubusercontent.com/pt9912/d-check/refs/heads/main/docs/user/benutzerhandbuch.md"

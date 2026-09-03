@@ -23,7 +23,7 @@ func leerRule() model.StructureRule {
 }
 
 // DIE DEKLARIERTE LEERMENGE IST STUMM — und die Umkehr steht in derselben
-// Funktion: ohne die Zahl meldet dieselbe Eingabe section-missing (BEO-023).
+// Funktion: ohne die Zahl meldet dieselbe Eingabe section-missing (BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt).
 func TestExemptExpectCount_DeklarierteLeermengeIstStumm(t *testing.T) {
 	r := leerRule()
 	f := laufe(t, acDrei, r)

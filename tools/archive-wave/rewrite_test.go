@@ -25,7 +25,7 @@ func TestResolveLink(t *testing.T) {
 	}
 }
 
-// TestRewriteFile ist die Umkehr-Probe fuer den Verweis-Nachzug (BEO-023):
+// TestRewriteFile ist die Umkehr-Probe fuer den Verweis-Nachzug (BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt):
 // ein Link, der NICHT im Move-Set steht, muss unveraendert bleiben -- kehrt
 // man die ok-Pruefung in RewriteFile um (jeder Link "trifft"), wird dieser
 // Test rot, weil der unbeteiligte Link dann faelschlich umgeschrieben wuerde.

@@ -103,7 +103,7 @@ func TestWavesAbschlussOhneNotiz(t *testing.T) {
 }
 
 // W5c: die Gegenrichtung — Ergebnisnotiz ohne Registerzeile. Genau der Fall,
-// der in einer realen Wellen-Closure dreimal eingetreten ist (BEO-001).
+// der in einer realen Wellen-Closure dreimal eingetreten ist (BEO-ALL/registry-vs-authority-table-drift).
 func TestWavesNotizOhneRegisterzeile(t *testing.T) {
 	files := map[string]string{
 		planRoadmap: wavesRoadmap("welle-9-neu in Arbeit.", "",

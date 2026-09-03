@@ -75,7 +75,7 @@
      Slice die eigene Größenregel (Modul 5, ≤ 3 Liefer-Punkte) überschreiten
      würden.
 
-  **Die Spiegel-Klassen aus [`BEO-008`](../../docs/plan/planning/observations.md):**
+  **Die Spiegel-Klassen aus [`BEO-ALL/pin-bump-mirrors-ungated`](../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md):**
   40 lebende Dateien mit Pfad-/URL-Verweisen auf `v5.18.0` (30 `MR-*.md`,
   2 Reviewer-Skills, `AGENTS.md`, `harness/README.md`,
   `harness/conventions.md`, `spec/architecture.md`, `spec/spezifikation.md`,

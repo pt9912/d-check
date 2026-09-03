@@ -54,7 +54,7 @@ sondern ausschließlich die Frage.
 
 ## Repo-spezifische Anker pro Kategorie (zweite Ebene: Begründung und Ausnahmen)
 
-- **HIGH** (blockiert Merge): Stilles-Grün-Pfad in einem Gate oder   <!-- d-check:cite AGENTS.md:376-377 -->
+- **HIGH** (blockiert Merge): Stilles-Grün-Pfad in einem Gate oder   <!-- d-check:cite AGENTS.md:386-387 -->
   Gate-Skript (Harness-Lüge — [`AGENTS.md`](../../AGENTS.md) §4: *„Halluzinierte
   Gates sind die häufigste Form von Harness-Lüge"*); Korrektheitsfehler in
   Kern-Modulen mit falschen Befunden/Exit-Codes (Baseline
@@ -94,7 +94,7 @@ sondern ausschließlich die Frage.
   Schluss, der weiter reicht als die geprüfte Menge — „damit ist X
   verhaltenserhaltend", nachdem N Formen gemessen wurden. Prüfe den Schluss
   gegen die Proben-Menge, nicht gegen die Proben: **suche die N+1-te Form.**
-  Das ist die zweite Richtung von `BEO-009`; die erste (behauptete Probe fand
+  Das ist die zweite Richtung von `BEO-ALL/commit-message-overclaims-work`; die erste (behauptete Probe fand
   nicht statt) bleibt HIGH-nah, diese ist MEDIUM, weil die Messung stimmt und
   nur ihre Reichweite überdehnt ist. **Kein Gate fängt das.** Die Regel selbst
   steht in [`AGENTS.md`](../../AGENTS.md) §5; hier steht ihre Kategorie und die
@@ -110,11 +110,11 @@ sondern ausschließlich die Frage.
   Absatz; und die **direkteste** Quelle sticht die weiter entfernte. Die drei
   genannten Typen sind Beispiele, keine abschließende Liste — Vorlagen,
   `DC-`Anforderungen und Registerzeilen tragen dieselbe Frage.
-  Kategorie wie `BEO-009`(b) und aus demselben Grund: die Quelle ist echt,
+  Kategorie wie `BEO-ALL/commit-message-overclaims-work`(b) und aus demselben Grund: die Quelle ist echt,
   überdehnt ist nur ihre Reichweite. **Kein Gate fängt das** — und es ist die
   Klasse, die der zweite Leser zuverlässig findet und der Schreibende
   zuverlässig übersieht, weil ein Zitat wie ein Beleg aussieht
-  (Beobachtungs-Register **BEO-012**). Die Regel selbst steht in
+  (Beobachtungs-Register **BEO-ALL/citation-stretched-beyond-scope**). Die Regel selbst steht in
   [`AGENTS.md`](../../AGENTS.md) §5; hier steht ihre Kategorie und die
   Prüffrage an den Diff.
 - **MEDIUM** (vor Merge zu klären): Spec-Treue-Lücke einer
@@ -138,7 +138,7 @@ sondern ausschließlich die Frage.
   **still** sein (ein verdecktes Heading macht einen Anker unauflösbar, die
   Prüfung entfällt kommentarlos). Frage an jeden Modul-Diff: **welche Eingaben
   liest dieses Modul, die es nicht scannt — und gilt dort dieselbe Zusage?**
-  Beobachtungs-Register **BEO-004**. Sie steht als **Frage** und nicht als
+  Beobachtungs-Register **BEO-ALL/module-promise-only-on-scan-axis**. Sie steht als **Frage** und nicht als
   Liste: eine Aufzählung der Achsen fasst die Klasse nicht. Die Regel
   selbst steht in [`AGENTS.md`](../../AGENTS.md) §3.8; hier steht ihre
   Kategorie und die Prüffrage an den Diff.

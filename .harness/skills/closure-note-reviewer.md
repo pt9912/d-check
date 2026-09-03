@@ -21,7 +21,7 @@ syntaktisch ein vollständiger Satz und überlebt jede Zählung.
   eine Notiz tragen soll
 - die Ausgabe von `make verify-closure-notes` **für denselben Stand**: was das
   Struktur-Gate bereits gemeldet hat, wird **nicht** doppelt gemeldet
-- das Beobachtungs-Register [`observations.md`](../../docs/plan/planning/observations.md)
+- das Beobachtungs-Register [`observations/`](../../docs/plan/planning/observations/README.md)
   — eine dort schon geführte Beobachtung wird zitiert, nicht neu benannt
 
 Ohne den Gate-Lauf im Eingang prüfst du Text, aber du weißt nicht, welcher

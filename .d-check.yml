@@ -24,7 +24,7 @@ scan:
 # Grenze: d-check:ignore greift hier NICHT — das Modul kennt keine feine
 # Ventil-Achse; grob wirken nur scan.ignore und citations.scope.
 #
-# Diese Liste hat Spiegel ausserhalb dieser Datei (BEO-010): FOCUS_DISABLE im
+# Diese Liste hat Spiegel ausserhalb dieser Datei (BEO-ALL/modulliste-spiegel-ungegated): FOCUS_DISABLE im
 # Makefile und netlessDocModules() im Go-Test. Beide sind hier nachzuziehen.
 modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions, structure, diagrams, citations]
 
@@ -209,13 +209,30 @@ ignore-refs:
   - in: docs/plan/cr/**
     refs: [".harness/baseline/v5.18.0/**"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
-  # ausgeloest, die observations.md seit slice-190 benennt: ein
+  # ausgeloest, die docs/plan/planning/observations/README.md seit
+  # slice-190 benennt: ein
   # Review-Report ohne Stub verschwindet ohne Ersatz, sobald seine Welle
   # archiviert wird. ADR-0043 zitiert ihn als Beleg -- die ADR ist
   # Accepted und immutable (AGENTS.md SS3.5); den Verweis nachzuziehen
   # wuerde den Beleg verfaelschen (dieselbe Begruendung wie beim
   # Review-Report-Eintrag oben). Volltext bleibt in
   # docs/plan/planning/done/welle-60/archiv.zip erreichbar.
+  # Tombstone der Register-Migration Tabelle -> Verzeichnis (slice-195,
+  # ADR-0083): docs/plan/planning/observations.md existiert nicht mehr.
+  # Dieselben fuenf eingefrorenen Quell-Klassen wie beim v5.18.0-Tombstone
+  # oben zitieren den Pfad als Stand ihrer Zeit -- Accepted-ADR-Kerne
+  # (AGENTS.md SS3.5) und gesendete CRs (docs/plan/cr/) koennen den Verweis
+  # nicht nachziehen, done/-Slices und Review-Reports sind Lauf-Belege.
+  - in: docs/plan/planning/done/**
+    refs: ["docs/plan/planning/observations.md"]
+  - in: docs/reviews/**
+    refs: ["docs/plan/planning/observations.md"]
+  - in: docs/plan/adr/**
+    refs: ["docs/plan/planning/observations.md"]
+  - in: harness/conventions/done/**
+    refs: ["docs/plan/planning/observations.md"]
+  - in: docs/plan/cr/**
+    refs: ["docs/plan/planning/observations.md"]
   - in: docs/plan/adr/0043-tabellengrenze-am-relevanten-header.md
     refs: ["docs/reviews/2026-07-17-slice-074-implementation-r3.md"]
   # Dieselbe Grenze, welle-47-Archivierung (slice-191).
@@ -680,11 +697,13 @@ planning:
     # Digest-Backfill gesetzt — ein aelterer Pruefer braeche am
     # unbekannten Schluessel mit Exit 2.
     mode: many
-  # Register-Deckung (vierte Faehigkeit, DC-FA-PLAN-001 0.81.0, ADR-0079):
-  # eine zitierte Beobachtungs-Kennung hat eine Zeile im Register. Gezaehlt
-  # werden Prosa UND Linktext, ein reines Inline-Code-Span nicht -- die
-  # Trennlinie zwischen Zitat und Beispiel, gemessen: 366 echte Zitate stehen
-  # als Link MIT Backticks, beide Beispiel-Nennungen als reines Code-Span.
+  # Register-Deckung (vierte Faehigkeit, DC-FA-PLAN-001 0.81.0, ADR-0079;
+  # seit slice-195 im fuenften, additiven Verzeichnis-Modus, ADR-0083):
+  # eine zitierte Beobachtungs-Kennung hat ein Verzeichnis im Register.
+  # Gezaehlt werden Prosa UND Linktext, ein reines Inline-Code-Span nicht --
+  # die Trennlinie zwischen Zitat und Beispiel, gemessen (Tabellen-Modus vor
+  # der Migration): 366 echte Zitate stehen als Link MIT Backticks, beide
+  # Beispiel-Nennungen als reines Code-Span.
   #
   # SCHARF, und der Preis ist benannt. Die Ruecksicht von mode: many oben --
   # ein unbekannter Schluessel ist Exit 2 fuer jeden aelteren Pruefer -- hat
@@ -697,7 +716,7 @@ planning:
   # eigener Bestand 0 Befunde, konstruierte Kennung als Link 1, dieselbe als
   # Code-Span 0.
   observations:
-    register: docs/plan/planning/observations.md
+    dir: docs/plan/planning/observations
     dirs: [docs/plan/planning]
 
 # Modul targets (DC-FA-TGT-001, slice-063): Deklarations-Konsistenz Doku ↔

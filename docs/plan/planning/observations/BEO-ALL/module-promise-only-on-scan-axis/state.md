@@ -1,0 +1,1 @@
+**Stand:** offen — bereits verkörpert in welle-73 (`AGENTS.md` §3.8, Reviewer-Skill-Anker) für den ursprünglichen Zähler-Stand; nach der `v6.0.0`-Korrektur (zwei unbelegte Vorkommen nicht mehr mitgezählt, Zähler 3→1) unter der Schwelle, die Klasse bleibt trotzdem wach — jedes Modul, das eine neue Ziel-Achse öffnet, kann sie erneut treffen.

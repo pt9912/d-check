@@ -331,7 +331,7 @@ var taskItemRE = regexp.MustCompile(`^[ \t]*(?:[-*+]|[0-9]+\.)[ \t]+\[[ xX]\]`)
 // KOPPLUNG: es gibt kein zweites Muster. Die Zeile wird mit taskItemRE
 // erkannt, und die Box liest sich aus deren Treffer -- ein eigenes RE2 waere
 // ein woertliches Praefix des ersten und driftete beim ersten Zusatz still
-// auseinander (BEO-003). Wer die Lexik erweitert, erweitert sie hier
+// auseinander (BEO-ALL/shared-lexicon-drifts-at-edges). Wer die Lexik erweitert, erweitert sie hier
 // automatisch mit (ADR-0074).
 func offenerHaken(line string) bool {
 	return strings.HasSuffix(taskItemRE.FindString(line), "[ ]")

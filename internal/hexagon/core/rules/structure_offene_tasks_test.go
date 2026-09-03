@@ -17,7 +17,7 @@ func rohRule() model.StructureRule {
 // DIE BLINDSTELLE IST GESCHLOSSEN — und der Vorzustand steht in derselben
 // Funktion: die BEREINIGT lesende Form faellt an genau diesem Backtick auf
 // null Befunde, die rohe nicht. Ein Regressions-Test ohne belegte Regression
-// ist keiner (BEO-023); die Klasse selbst ist BEO-016.
+// ist keiner (BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt); die Klasse selbst ist BEO-ALL/prosa-verschwindet-in-inline-code-spanne.
 func TestMaxOpenTasks_BacktickSchaltetNichtAb(t *testing.T) {
 	// Ein Backtick VOR dem Haken und einer dahinter, im selben Absatz: die
 	// absatzweise Paarung umschliesst das Item und leert es.
@@ -42,7 +42,7 @@ func TestMaxOpenTasks_BacktickSchaltetNichtAb(t *testing.T) {
 // ALLE VIER LISTEN-MARKER, eingerueckt und mit Tab-Trenner — und die gehakte
 // Box meldet nie. Ein Konfigurations-Muster deckt nur die Form, die sein Autor
 // aufgeschrieben hat; die Modul-Lexik kann diesen Fehler nicht machen
-// (BEO-003).
+// (BEO-ALL/shared-lexicon-drifts-at-edges).
 func TestMaxOpenTasks_AlleMarkerFormen(t *testing.T) {
 	for name, tc := range map[string]struct {
 		zeile string
@@ -180,12 +180,12 @@ func TestMaxOpenTasks_InlineCodeGrenze(t *testing.T) {
 // statt sie nur zu behaupten: sie ERWEITERT taskItemRE um eine Form, die es
 // heute nicht gibt, und verlangt, dass offenerHaken ihr folgt. Ein zweites RE2
 // neben taskItemRE — ein woertliches Praefix, wie es der Vorgaenger-Bau hatte —
-// folgt ihr NICHT und macht diesen Test rot (BEO-003).
+// folgt ihr NICHT und macht diesen Test rot (BEO-ALL/shared-lexicon-drifts-at-edges).
 //
 // Die naheliegende Form ("offenerHaken trifft nur, was taskItemRE trifft") kann
 // das nicht: offenerHaken LIEST den Treffer von taskItemRE, die Bedingung ist
 // per Konstruktion unerfuellbar, und der Test waere gruen ohne zu messen
-// (BEO-023).
+// (BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt).
 func TestOffenerHaken_FolgtDerErweitertenLexik(t *testing.T) {
 	orig := taskItemRE
 	t.Cleanup(func() { taskItemRE = orig })

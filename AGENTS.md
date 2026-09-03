@@ -207,6 +207,16 @@ Botschaft ausdrücklich als solcher deklariert; git zeigt reine `D`/`A`-Paare,
 keine Renames. Kanonisch:
 [`MR-059`](harness/conventions.md#mr-059--wellen-archiv-stub-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013).
 
+**Ausnahme Register-Formatmigration** (Beobachtungs-Register, Tabellen- auf
+Verzeichnis-Form, slice-195, **einmalig, erschöpft**): dieselbe Begründung
+wie beim Wellen-Archiv-Stub-Move — die neue Verzeichnisform ersetzt die
+Tabelle im selben Akt, der sie verschiebt, ohne Phase mit unverändertem
+Inhalt. Anders als die vier übrigen Fälle deckt diese Ausnahme **keinen**
+wiederkehrenden Vorgang: sie ist mit dem einen Migrations-Commit, den sie
+trägt, bereits verbraucht und begründet keinen künftigen Formatwechsel.
+Kanonisch:
+[`MR-061`](harness/conventions.md#mr-061--register-formatmigration-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013).
+
 ### 3.4 Architektur sprach-/meilensteinfrei; Spec-Straten nie abwärts
 
 [`spec/architecture.md`](spec/architecture.md) benennt Schichten und
@@ -324,8 +334,8 @@ Grenze in die Anforderung.
 **Begründung:** Eine Liste der Achsen wäre selbst unvollständig — deshalb steht
 hier die Frage und keine Liste. Kein Gate fängt das; der Reviewer-Skill trägt
 den MEDIUM-Anker dazu. *(Hard Rule aus dem
-Steering Loop, [Beobachtungs-Register](docs/plan/planning/observations.md)
-`BEO-004`, seit welle-73; Auflösungs-Trigger: permanent.)*
+Steering Loop, [`BEO-ALL/module-promise-only-on-scan-axis`](docs/plan/planning/observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md),
+seit welle-73; Auflösungs-Trigger: permanent.)*
 
 ### 3.9 GitHub-Action-Referenzen sind SHA-gepinnt
 
@@ -504,7 +514,7 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   (Baseline-`slice.template.md`). Alt-Slices in `done/` behalten ihr historisches Feld.
 - Jeder Slice-Plan trägt **vor** der Sub-Area-Modus-Begründung die **drei**
   Vorprüfungen: Sub-Area prüfen · offene Beobachtungen im Register
-  `observations.md` sichten (beide Baseline-Regelwerk Modul 5/6, unabhängig vom
+  (`docs/plan/planning/observations/`) sichten (beide Baseline-Regelwerk Modul 5/6, unabhängig vom
   Sub-Area-Modus) · den **Nachtlauf-Stand** lesen (`make nightly-state`). Die
   dritte ist eine Adaption ([`MR-053`](harness/conventions.md#mr-053)): der
   Kanon kennt keinen Nachtlauf. Sie hängt an diesem Moment, weil dort ohnehin
@@ -524,8 +534,8 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   geprüft hat, berichtet N; „damit ist X allgemein" ist eine andere Aussage als
   die gemessene. Beides ist Urteil, kein `grep`; der Reviewer-Skill trägt die
   Anker dazu. *(Hard Rule aus dem Steering Loop,
-  [Beobachtungs-Register](docs/plan/planning/observations.md) `BEO-009`, seit
-  welle-82; Auflösungs-Trigger: permanent.)*
+  [`BEO-ALL/commit-message-overclaims-work`](docs/plan/planning/observations/BEO-ALL/commit-message-overclaims-work/observation.md),
+  seit welle-82; Auflösungs-Trigger: permanent.)*
 - Eine zitierte Quelle trägt **nur, was in ihrem Geltungsbereich steht**. Vor
   jedem Verweis das **Feld** lesen, nicht den Titel: bei `MR-<NNN>` den
   `Geltungsbereich` **und** `Ersetzt-Baseline-Regel`, bei einer Kanon-Stelle den
@@ -538,8 +548,8 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   [`grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz](.harness/baseline/v6.0.0/regelwerk/grundlagen-source-precedence.md)
   — dort als Frage an **jede** zitierte Aussage, hier als operative Form für den
   Implementer. *(Hard Rule aus dem Steering Loop,
-  [Beobachtungs-Register](docs/plan/planning/observations.md) `BEO-012`, seit
-  slice-147; Auflösungs-Trigger: permanent.)*
+  [`BEO-ALL/citation-stretched-beyond-scope`](docs/plan/planning/observations/BEO-ALL/citation-stretched-beyond-scope/observation.md),
+  seit slice-147; Auflösungs-Trigger: permanent.)*
 - `CHANGELOG.md` wird bei nutzersichtbaren Änderungen gepflegt — **in der
   Release-Prep, nicht im Feature-Commit.** Die Datei führt **keinen**
   `[Unreleased]`-Abschnitt: jeder Eintrag steht unter seiner Versions-Nummer,

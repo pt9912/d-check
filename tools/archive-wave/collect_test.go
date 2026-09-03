@@ -57,7 +57,7 @@ func TestFindWellePlan_Keine(t *testing.T) {
 }
 
 // TestCollectSlices ist zugleich die Umkehr-Probe fuer die Sammeln-Bedingung
-// (BEO-023): ein Slice mit ABWEICHENDER Welle (welle-86) und ein wellenloser
+// (BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt): ein Slice mit ABWEICHENDER Welle (welle-86) und ein wellenloser
 // Slice muessen draussen bleiben -- dreht man den Vergleich in
 // CollectSlices auf "IMMER wahr", wird genau dieser Test rot.
 func TestCollectSlices(t *testing.T) {

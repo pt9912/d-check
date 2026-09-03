@@ -19,7 +19,7 @@ tragen die wellenlose Zeitdokumente-Archivierung, Anlass war der eigene CR
 [`2026-09-03-cr-ai-harness-course-wellenlose-review-archivierung.md`](../cr/2026-09-03-cr-ai-harness-course-wellenlose-review-archivierung.md)).
 Von `v5.18.0` bis `v6.0.0` kommt ein zweites, unabhängiges Delta dazu: das
 **Beobachtungs-Register wird neu gestaltet** — von einer stehenden Tabellen-Datei
-(`docs/plan/planning/observations.md`, Kennung `BEO-<NNN>`, gepflegter Zähler)
+(`docs/plan/planning/observations.md`, Kennung `BEO-<NNN>`, gepflegter Zähler) <!-- d-check:ignore (Quell-Form, seit slice-195 entfernt) -->
 zu einer Verzeichnis-Ablage (`docs/plan/planning/observations/`, Kennung = <!-- d-check:ignore (Ziel-Form, existiert erst nach slice-195) -->
 Pfad `BEO-<KUERZEL>/<slug>`, abgeleiteter Zähler aus `evidence/`-Dateien).
 
@@ -85,7 +85,7 @@ WIP-Limit ist frei.
 - Rückwirkende `BEO-<KUERZEL>/<slug>`-Neuvergabe in eingefrorenen
   Dokumenten (`done/`, `docs/reviews/`, `harness/conventions/done/`) — sie
   zitieren den Stand ihrer Zeit, keine Migration.
-- Die in [`BEO-027`](observations.md) benannte Sensor-Lücke (Registerzeile
+- Die in [`BEO-ALL/registerzeile-ohne-ausgang-nach-schwelle`](observations/BEO-ALL/registerzeile-ohne-ausgang-nach-schwelle/observation.md) benannte Sensor-Lücke (Registerzeile
   ohne zugewiesenen Ausgang oberhalb der Schwelle) — eigener Folge-Slice bei
   Bedarf, von dieser Welle nicht miterledigt, auch wenn die neue
   `state.md`-Form sie strukturell entschärfen könnte.
@@ -98,5 +98,4 @@ WIP-Limit ist frei.
 <!-- wird erst nach Welle-Abschluss gefüllt -->
 
 Ergebnis: `done/welle-88-results.md`
-Zähler: [`observations.md`](observations.md) (Stand vor der Migration) bzw.
-`observations/` (danach)
+Zähler: [`observations/`](observations/README.md) (Verzeichnis-Form, seit slice-195)

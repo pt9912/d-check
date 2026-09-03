@@ -61,7 +61,7 @@
   `make`-Target, die Deklaration in
   [`AGENTS.md`](../../AGENTS.md) §4 und
   [`harness/README.md`](../README.md), und sie zöge die drei Pin-Spiegel-Klassen
-  aus [`BEO-008`](../../docs/plan/planning/observations.md) nach sich.
+  aus [`BEO-ALL/pin-bump-mirrors-ungated`](../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md) nach sich.
 
   **Und die Form wäre offen, nicht vorgegeben.** Die zwei jüngsten
   Fremd-Toolchains dieses Repos sind **keine** Dockerfile-Stage, sondern ein

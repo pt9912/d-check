@@ -1,0 +1,1 @@
+**Stand:** verkörpert in welle-79 — der `pre-commit`-Hook läuft zusätzlich den vollen `make doc-check`: ein roter Doku-Stand ist uncommitbar, unabhängig von der Shell-Kette. Die Verkörperung beendet das Zählen, nicht die Klasse: Gates jenseits von `doc-check` bleiben Kür der Arbeitsregel.

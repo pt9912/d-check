@@ -1,0 +1,1 @@
+**Stand:** geplant (welle-86) — die Zeile benannte selbst „Verkörperung steht aus und fällt an die Closure von welle-86" für ihre dritte Instanz; die fünf übrigen Belege bleiben je ein eigener Vorgang, keiner davon bringt einen eigenen Zielort.

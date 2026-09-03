@@ -32,7 +32,7 @@ func laufe(t *testing.T, body string, r model.StructureRule) []model.Finding {
 
 // Die erste Probe des Antrags — und die Umkehr dazu in derselben Funktion:
 // OHNE das Muster meldet dieselbe Eingabe rot. Ein Regressions-Test ohne
-// belegte Regression ist keiner (BEO-023).
+// belegte Regression ist keiner (BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt).
 func TestTasksIgnorePattern_KonstantenZaehlenNichtMit(t *testing.T) {
 	r := dodRule()
 	if f := laufe(t, dodBody, r); len(f) != 1 || f[0].Reason != model.ReasonSectionOversized {
@@ -159,7 +159,7 @@ func acRule() model.StructureRule {
 }
 
 // Die vierte und fuenfte Probe des Antrags in einem Lauf — mit der Umkehr
-// davor: OHNE den Schluessel melden alle drei Abschnitte (BEO-023).
+// davor: OHNE den Schluessel melden alle drei Abschnitte (BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt).
 func TestExemptSectionPattern_NimmtDenBestandHeraus(t *testing.T) {
 	r := acRule()
 	if f := laufe(t, acBody, r); len(f) != 3 {

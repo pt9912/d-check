@@ -1,0 +1,1 @@
+**Stand:** offen — Vorfrage beantwortet (slice-146: das Produkt hält die Information nicht, Marker ist ein frühes `continue` vor der Prüfung); nicht gebaut, weil die Erkennung erst eine Form braucht (slice-159), bevor eine Melde-Regel sinnvoll wird.

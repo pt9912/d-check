@@ -49,7 +49,7 @@
   geschrieben. Die Liste ist der Notbehelf für alles, was sich nicht binden
   lässt.
 - **Begründung:** Die Klasse ist **dreimal** eingetreten
-  ([`BEO-002`](../../docs/plan/planning/observations.md)) und **kein einziges Mal
+  ([`BEO-ALL/semantic-change-body-only-edges-stale`](../../docs/plan/planning/observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)) und **kein einziges Mal
   von einem Gate** gefunden worden — jedes Mal von einem Menschen oder einem
   unabhängigen Review. Sie ist gate-unsichtbar, weil die Spiegel **Prosa** sind:
   `links`, `anchors` und `ids` prüfen, ob eine Referenz auflöst, nicht ob eine

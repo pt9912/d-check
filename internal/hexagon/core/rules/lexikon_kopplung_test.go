@@ -8,7 +8,7 @@ import (
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
 )
 
-// Dieser Test ist die Verkoerperung von BEO-003: eine geteilte Lexik driftet an
+// Dieser Test ist die Verkoerperung von BEO-ALL/shared-lexicon-drifts-at-edges: eine geteilte Lexik driftet an
 // den Raendern, weil jeder Konsument sie selbst vorbereitet. Er prueft nicht,
 // dass eine bestimmte Funktion aufgerufen wird, sondern dass alle Konsumenten
 // derselben Frage bei DERSELBEN Eingabe DASSELBE antworten — die Kopplung ist

@@ -1,0 +1,1 @@
+**Stand:** kein formgültiger Ausgang (mechanische Form `versions.patterns` seit slice-122 baubar, aber bewusst nicht scharfgeschaltet — also nicht *verkörpert*; keine konkrete Folge-Kennung — also nicht *geplant*) — als [`BEO-ALL/registerzeile-ohne-ausgang-nach-schwelle`](../registerzeile-ohne-ausgang-nach-schwelle/observation.md) neu registriert statt hier erfunden.

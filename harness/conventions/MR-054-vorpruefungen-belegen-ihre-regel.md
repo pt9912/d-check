@@ -34,7 +34,7 @@ Absatz.** Ein Schritt-Punkt des Regelwerks führt neben der Vorschrift auch
 Nebenregeln — Notier-Pflichten, Lesehinweise. Eine Direktive darauf ist grün und
 belegt trotzdem nicht, was ihre Anrede behauptet; verschwindet die Nebenregel
 beim Bump, entfällt der Beleg, während der Schritt weiter vorgeschrieben ist.
-Das ist die [`BEO-012`](../../docs/plan/planning/observations.md)-Klasse in
+Das ist die [`BEO-ALL/citation-stretched-beyond-scope`](../../docs/plan/planning/observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)-Klasse in
 Direktiven-Form.
 
 **Der Anlass ist gemessen und liegt in diesem Repo.** slice-168, -169 und -170

@@ -58,7 +58,7 @@ func TestCLI010_PrintMKNenntHandbuch(t *testing.T) {
 	//
 	// FEHLT DER ANKER, BRICHT DER TEST, statt auf die schwaechere Pruefung
 	// oben zurueckzufallen: ein Waechter, der still seine Haelfte verliert,
-	// liest sich wie einer, der sie noch haelt (BEO-023).
+	// liest sich wie einer, der sie noch haelt (BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt).
 	i := strings.Index(stdout, "\nDCHECK_IMAGE ?=")
 	if i <= 0 {
 		t.Fatalf("Anker \"DCHECK_IMAGE ?=\" fehlt — die Kopf-Zusage ist nicht mehr pruefbar:\n%s", stdout)

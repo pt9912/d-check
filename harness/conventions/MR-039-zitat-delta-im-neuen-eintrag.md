@@ -29,7 +29,7 @@
   **Warum es überhaupt festgehalten wird:** Ohne den Vermerk altert das Zitat
   **still**. Der Pfad daneben löst sauber auf, der Wortlaut gilt nicht mehr, und
   kein Gate sieht die Kombination — die vierte Spiegel-Klasse aus
-  [`BEO-008`](../../docs/plan/planning/observations.md).
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md).
 
   **Bestand bei Einführung, gemessen:** In [`MR-033`](../conventions.md#mr-033)
   sind **zwei** Zitate durch die Klärung aus Kurs-Welle 96 veraltet, und beide

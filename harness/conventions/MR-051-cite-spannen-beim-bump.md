@@ -20,7 +20,7 @@
 
   **Der Alarm ist gewollt, der Preis ist benannt.** Verschiebt sich die Spanne,
   meldet `citations` `citation-mismatch` — genau die vierte Spiegel-Klasse aus
-  [`BEO-008`](../../docs/plan/planning/observations.md), die sonst still
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md), die sonst still
   alterte. Der Preis: die Direktive meldet **auch dann**, wenn nur die
   Zeilennummern gewandert sind und der Wortlaut unverändert gilt. Das ist keine
   Falschmeldung — die Direktive zeigt dann tatsächlich auf die falschen Zeilen

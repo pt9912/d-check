@@ -16,7 +16,7 @@
 
   **Warum überhaupt zwei:** der Wächter war der einzige Punkt, an dem die ganze
   Durchsetzung hing, und als er ausfiel, sagte niemand etwas
-  ([`BEO-018`](../../docs/plan/planning/observations.md)). Eine Schicht, deren
+  ([`BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft`](../../docs/plan/planning/observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/observation.md)). Eine Schicht, deren
   Ausfall unsichtbar ist, ist keine Zusage.
 
   **Verhältnis zu [`MR-040`](../conventions.md#mr-040):** dessen Satz *„Die

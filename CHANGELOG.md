@@ -703,7 +703,7 @@ die Versionierung folgt [SemVer](https://semver.org/lang/de/).
   `structure` (`table-order`/`table-column`, opt-in je Regel;
   `DC-FA-STRUCT-001` §Chronologie-Monotonie,
   [ADR-0057](docs/plan/adr/0057-structure-tabellen-monotonie.md); Anlass
-  BEO-005 aus dem eigenen Beobachtungs-Register). Eine chronologische Tabelle
+  BEO-ALL/chronological-table-silently-reverses aus dem eigenen Beobachtungs-Register). Eine chronologische Tabelle
   kippt still ihre Richtung — aus „unten anhängen" wird irgendwann „oben
   einfügen", und danach führt dieselbe Tabelle zwei gegenläufige Blöcke; kein
   Gate liest Reihenfolge. Jetzt wird die Schlüsselspalte jeder

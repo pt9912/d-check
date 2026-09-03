@@ -1,0 +1,1 @@
+**Stand:** verkörpert — Feedforward-Hälfte als Hard Rule in `AGENTS.md` §5 (seit slice-147), Feedback-Hälfte als MEDIUM-Anker im Reviewer-Skill (Prüffrage an den Diff statt Fallliste). Bleibt trotz Verkörperung wach: eine Regel für Menschen kann weiter verfehlt werden.
