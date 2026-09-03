@@ -7,7 +7,7 @@
 
 **Bezug:** [`modul-06-roadmap.md` §Wellen-Closure-Prozedur, Schritt 4](../../../../.harness/baseline/v5.18.0/regelwerk/modul-06-roadmap.md#wellen-closure-prozedur-modul-6)
 (die Pflicht, die dieser Slice nachholt);
-[slice-190](../in-progress/slice-190-wellen-archiv-werkzeug.md) (liefert das
+[slice-190](../done/slice-190-wellen-archiv-werkzeug.md) (liefert das
 Werkzeug `tools/archive-wave/`, das dieser Slice anwendet);
 [welle-87](../welle-87-wellen-archivierung.md) §3/§4 (Closure-Trigger,
 Slice-Platzhalter `slice-<NN-B>`, den dieser Slice einlöst).
@@ -22,7 +22,7 @@ Slice-Platzhalter `slice-<NN-B>`, den dieser Slice einlöst).
 
 ## 1. Ziel
 
-[slice-190](../in-progress/slice-190-wellen-archiv-werkzeug.md) hat das
+[slice-190](../done/slice-190-wellen-archiv-werkzeug.md) hat das
 Archivierungs-Werkzeug gebaut und an einem Fixture bewiesen — nicht am
 echten Bestand. Dieser Slice zieht die Trennung nach: **welle-60 bis
 welle-85 archivieren**, plus die Zuordnung wellenloser Alt-Slices klären,
@@ -31,7 +31,7 @@ bei der Nachrüstung verlangt.
 
 **Zwei Bestands-Eigenheiten wurden bereits beim Planen gemessen, nicht
 erst beim Ausführen entdeckt** — genau die Vorsicht, die
-[slice-190 §5](../in-progress/slice-190-wellen-archiv-werkzeug.md) (Risiko 3,
+[slice-190 §5](../done/slice-190-wellen-archiv-werkzeug.md) (Risiko 3,
 `BEO-011` sechste Instanz) benannt hat:
 
 1. **welle-60 bis welle-66 haben keinen Welle-Plan.** `ls done/welle-6*`
@@ -141,7 +141,7 @@ erst beim Ausführen entdeckt** — genau die Vorsicht, die
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): [slice-190](../in-progress/slice-190-wellen-archiv-werkzeug.md)
+**Start** (`open` → `in-progress`): [slice-190](../done/slice-190-wellen-archiv-werkzeug.md)
 liegt in `done/`, WIP-Limit frei.
 
 **Rückführungen:** `in-progress` → `next`, falls sich beim Ausführen zeigt,

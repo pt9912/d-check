@@ -68,7 +68,7 @@ typische Fehlannahmen: "Erst plan ich alle Slices"). -->
 
 | Slice | Titel | Bezug |
 |---|---|---|
-| [slice-190](in-progress/slice-190-wellen-archiv-werkzeug.md) | Archivierungs-Werkzeug bauen (Sammeln, ZIP, Stubs, Verweis-Nachzug), verifiziert an einem Fixture | `modul-06-roadmap.md` §Wellen-Closure-Prozedur, Schritt 4 |
+| [slice-190](done/slice-190-wellen-archiv-werkzeug.md) | Archivierungs-Werkzeug bauen (Sammeln, ZIP, Stubs, Verweis-Nachzug), verifiziert an einem Fixture | `modul-06-roadmap.md` §Wellen-Closure-Prozedur, Schritt 4 |
 | [slice-191](open/slice-191-alt-bestand-archivieren.md) | Alt-Bestand archivieren (welle-60…welle-85) und Zuordnung der wellenlosen Alt-Slices entscheiden | dito |
 
 ## 5. Abhängigkeiten

@@ -39,6 +39,8 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
   (Kanon-Schritt 4) wird nachgerüstet: Werkzeug bauen, Alt-Bestand
   archivieren, bevor welle-86 vor derselben Lücke steht.
 
+Nichts in Arbeit.
+
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
