@@ -42,7 +42,7 @@ aufgeht, **ohne** Config-Bruch bei Adoptern.
 Der Antrag beschreibt `require-section` · `non-empty` · fence-treues
 `min-sentences` · `forbid-pattern` — das ist, bis auf die Verallgemeinerung über
 **beliebige Dokumentklassen**, genau die Fähigkeit, die
-[slice-093](../done/slice-093-closure-note-gate.md) als
+[slice-093](welle-68/slice-093-closure-note-gate.md) als
 `planning.closure.*` ausgeliefert hat. Zwei Mechanismen für dieselbe Frage will
 dieses Repo nicht.
 

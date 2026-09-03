@@ -22,7 +22,7 @@ Arbeitsbaum bei HEAD `e03afea`, Working-Tree sauber.
 **Eingangs-Kontext** (die Verträge, gegen die geprüft wurde):
 
 - die fünf Slice-Pläne oben; zuletzt geschlossen
-  [slice-093](../plan/planning/done/slice-093-closure-note-gate.md)
+  [slice-093](../plan/planning/done/welle-68/slice-093-closure-note-gate.md)
 - [ADR-0048](../plan/adr/0048-closure-note-struktur-im-planning-modul.md)
   (die Fähigkeit, um die vier der fünf Slices kreisen),
   [ADR-0044](../plan/adr/0044-geteiltes-referenz-ventil-quell-skopus.md)

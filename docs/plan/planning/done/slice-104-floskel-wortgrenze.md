@@ -49,7 +49,7 @@ Drei Aussagen folgen daraus:
    fünf heute konfigurierten Phrasen ändern sich **nicht** — für den eigenen
    Lauf ist die Änderung byte-identisch.
 3. **Es macht verworfene Phrasen brauchbar.** `fertig` und `läuft jetzt` wurden
-   in [slice-093](../done/slice-093-closure-note-gate.md) ausdrücklich **nicht**
+   in [slice-093](welle-68/slice-093-closure-note-gate.md) ausdrücklich **nicht**
    aufgenommen, weil sie als Teilstring Falschbefunde erzeugten. `fertig` fällt
    mit Wortgrenzen auf 0.
 
@@ -182,7 +182,7 @@ nicht — für den eigenen Lauf war die Änderung byte-identisch.
 
 **Der eigentliche Gewinn ist ein anderer als der CR nannte.** Er wollte kurze
 Phrasen brauchbar machen; geliefert ist, dass genau die Phrasen aufgenommen
-werden konnten, die [slice-093](slice-093-closure-note-gate.md) als Teilstring
+werden konnten, die [slice-093](welle-68/slice-093-closure-note-gate.md) als Teilstring
 **verwerfen musste**: `fertig` (3 → 0 Treffer) und `n/a` (2 → 0). Vor der
 Aufnahme wurde jeder Kandidat einzeln gemessen — `ok`, `erledigt` und `läuft`
 sind draußen geblieben, weil ihre verbleibenden Treffer echte Prosa sind.

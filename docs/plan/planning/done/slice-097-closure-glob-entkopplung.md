@@ -47,7 +47,7 @@ der Ruhe-Marker **nie** gesetzt wird — falsch genau dann, wenn die Welle
 wirklich ruht.
 
 **Das ist ein Entwurfsfehler aus
-[slice-093](../done/slice-093-closure-note-gate.md)**, nicht eine fehlende
+[slice-093](welle-68/slice-093-closure-note-gate.md)**, nicht eine fehlende
 Fähigkeit: die zweite Fähigkeit hat den Glob der ersten mitbenutzt, weil beide
 zufällig Slice-Dateien meinten. Sobald eine Grundmenge weiter ist, bricht die
 Kopplung.

@@ -37,7 +37,7 @@ Wechsel — sichtbar erst dann, wenn man ihn nicht mehr reparieren darf, ohne di
 Move-Regel zu verletzen.
 
 **Der Beleg liegt im eigenen Repo, nicht nur beim Antragsteller.** Bei der
-Closure von [slice-093](../done/slice-093-closure-note-gate.md) am 2026-08-09
+Closure von [slice-093](welle-68/slice-093-closure-note-gate.md) am 2026-08-09
 ist die Klasse **zweimal** eingetreten:
 
 1. Die Links der Review-Reports auf den Slice zeigten nach `in-progress/` und
