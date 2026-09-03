@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon zählt `.claude/settings.json` und
   `.claude/hooks/*` zum Artefakt-Set der Durchsetzungsschicht
-  ([`grundlagen-durchsetzungsschicht.md` §Das vollständige Artefakt-Set](../../.harness/baseline/v5.18.0/regelwerk/grundlagen-durchsetzungsschicht.md))
+  ([`grundlagen-durchsetzungsschicht.md` §Das vollständige Artefakt-Set](../../.harness/baseline/v6.0.0/regelwerk/grundlagen-durchsetzungsschicht.md))
   und benennt daneben **drei** Bindepunkte, zu denen diese Artefakte
   ausdrücklich **nicht** gehören. Ob ein Repo trotzdem über sie wacht, sagt er
   nicht.

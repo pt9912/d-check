@@ -102,12 +102,16 @@ selbst nichts.
 
 - [ ] [`MR-058`](../../../../harness/conventions.md#mr-058) nach `harness/conventions/done/` migriert, eigener Commit,
       `make doc-check` grün auf dem Zwischenstand.
-- [ ] Alle 12 lebenden `d-check:cite`-Direktiven auf `v6.0.0` re-geankert
+- [ ] Alle 15 lebenden `d-check:cite`-Direktiven (11 Dateien) auf `v6.0.0` re-geankert
       (Pfad + ggf. Zeilenspanne), `make doc-check --enable citations` grün.
-- [ ] Alle übrigen lebenden `.harness/baseline/v5.18.0/`-Referenzen auf
-      `v6.0.0` gezogen (0 Treffer bei `grep -rn "v5.18.0"` außerhalb von
-      `done/`, `docs/reviews/`, `harness/conventions/done/`,
-      `CHANGELOG.md`, historischen `MR-*.md`-Prosa-Erwähnungen).
+- [ ] Alle übrigen lebenden `.harness/baseline/v5.18.0/`-Pfad-Referenzen auf
+      `v6.0.0` gezogen (0 Treffer bei `grep -rn "\.harness/baseline/v5\.18\.0"`
+      außerhalb von `done/`, `docs/reviews/`, `harness/conventions/done/`,
+      `docs/plan/adr/` [immutable ADRs], `docs/plan/cr/`, `CHANGELOG.md`,
+      `spec/lastenheft.md`). Bloße Bestands-Prosa, die einen vergangenen
+      Kanon-Stand als Herkunfts-Anker nennt (z. B. „seit `v5.18.0`" in
+      `observations.md`), ist davon nicht betroffen — sie trägt kein
+      `.harness/baseline/`-Pfadsegment und bleibt unverändert.
 - [ ] Adaptions-Review aller lebenden `MR`-Einträge durchgeführt, Ergebnis
       benannt (wie viele bleiben gültig, wie viele angepasst).
 - [ ] `.harness/baseline/v5.18.0/` entfernt, `v6.0.0` einziger vendorter Baum.

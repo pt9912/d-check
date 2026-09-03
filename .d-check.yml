@@ -190,6 +190,24 @@ ignore-refs:
   # ohnehin ausgenommen.
   - in: harness/conventions/done/MR-027-struktur-id-verzicht.md
     refs: [".harness/baseline/v5.7.0/**"]
+  # Tombstone der Baseline-Migration v5.18.0 -> v6.0.0 (MR-060): vier
+  # Glob-Eintraege ueber die eingefrorenen Verzeichnisse, plus ein fuenfter
+  # fuer den ausgehenden CR (docs/plan/cr/), der als gesendete Kommunikation
+  # ebenfalls nicht nachtraeglich umgeschrieben wird. Zwoelf reale
+  # Fundstellen gemessen: vier done/-Slices, zwei Review-Reports, zwei
+  # eingefrorene MR-Eintraege (MR-057, MR-058) unter harness/conventions/done/,
+  # drei immutable ADRs (ADR-0080, ADR-0081, ADR-0082) unter docs/plan/adr/,
+  # und der CR selbst.
+  - in: docs/plan/planning/done/**
+    refs: [".harness/baseline/v5.18.0/**"]
+  - in: docs/reviews/**
+    refs: [".harness/baseline/v5.18.0/**"]
+  - in: docs/plan/adr/**
+    refs: [".harness/baseline/v5.18.0/**"]
+  - in: harness/conventions/done/**
+    refs: [".harness/baseline/v5.18.0/**"]
+  - in: docs/plan/cr/**
+    refs: [".harness/baseline/v5.18.0/**"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
   # ausgeloest, die observations.md seit slice-190 benennt: ein
   # Review-Report ohne Stub verschwindet ohne Ersatz, sobald seine Welle

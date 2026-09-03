@@ -2,11 +2,11 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon benennt die urteilsfreie Hälfte
-  der Drei-Ausgänge-Regel ausdrücklich — *dass* zu jedem Risiko ein Ausgang   <!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md:152-153 -->
+  der Drei-Ausgänge-Regel ausdrücklich — *dass* zu jedem Risiko ein Ausgang   <!-- d-check:cite .harness/baseline/v6.0.0/regelwerk/modul-05-planning-harness.md:156-157 -->
   dasteht **und welcher der drei** es ist — und schließt mit: „*Welches* Werkzeug
   die urteilsfreie Hälfte prüft, ist Repo-Entscheidung; dass sie eine hat, ist
   es nicht."
-  ([`modul-05-planning-harness.md`](../../.harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md)). Die Auszeichnung folgt hier der **Quelle**, nicht der Haus-Form `*„…"*` — sie fasst das erste Wort kursiv, und eine Kursiv-Klammer darum verschluckte es. Das Zitat ist per Direktive gebunden; wer die Klammer zurücksetzt, macht das Gate rot.
+  ([`modul-05-planning-harness.md`](../../.harness/baseline/v6.0.0/regelwerk/modul-05-planning-harness.md)). Die Auszeichnung folgt hier der **Quelle**, nicht der Haus-Form `*„…"*` — sie fasst das erste Wort kursiv, und eine Kursiv-Klammer darum verschluckte es. Das Zitat ist per Direktive gebunden; wer die Klammer zurücksetzt, macht das Gate rot.
   Diese Adaption ist die Werkzeug-Wahl, nicht eine Abweichung.
 - **Datum:** 2026-08-27
 - **Geltungsbereich:** [`.d-check.closure.yml`](../../.d-check.closure.yml),
@@ -37,7 +37,7 @@
 
   **Drei Formen sieht die Regel nicht.** Ein Risiko **ganz ohne** Marker liefert
   kein Vorkommen und damit kein Match — im Bestand betrifft das `slice-106`,
-  `slice-110` und `slice-111`, deren §5 Risiken führt und keinen einzigen   <!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md:142-142 -->
+  `slice-110` und `slice-111`, deren §5 Risiken führt und keinen einzigen   <!-- d-check:cite .harness/baseline/v6.0.0/regelwerk/modul-05-planning-harness.md:146-146 -->
   Ausgang; das ist der Kanon-Kernsatz *„Ein Slice geht nicht nach `done/`,
   während ein Risiko ohne Ausgang dasteht"*, dreimal verletzt und von **keiner**
   der beiden Regeln erreichbar. Ein Ausgangswort in **Inline-Code** wird von der

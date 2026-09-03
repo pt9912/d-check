@@ -3,9 +3,9 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon kennt den vendored Baum als
   **präsente, gepinnte Referenz**
-  ([`modul-02-harness-bootstrap.md` §Freshness-Audit](../../.harness/baseline/v5.18.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2))
+  ([`modul-02-harness-bootstrap.md` §Freshness-Audit](../../.harness/baseline/v6.0.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2))
   und die Verzeichniskonvention, die ihn beherbergt
-  ([`grundlagen-harness-dateien.md`](../../.harness/baseline/v5.18.0/regelwerk/grundlagen-harness-dateien.md#verzeichniskonvention)).
+  ([`grundlagen-harness-dateien.md`](../../.harness/baseline/v6.0.0/regelwerk/grundlagen-harness-dateien.md#verzeichniskonvention)).
   Dass **In-Repo-Verweise** auf diesen Baum an den Pin gebunden sind, ist
   dagegen keine Kanon-Aussage, sondern die Adaption
   [`MR-021`](../conventions.md#mr-021) — dieser Eintrag ist ihr Nachtrag, nicht

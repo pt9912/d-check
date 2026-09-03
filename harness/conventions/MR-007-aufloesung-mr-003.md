@@ -1,7 +1,7 @@
 # MR-007 — Auflösung von MR-003: doc-check als Dogfooding
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`modul-13-quality-gates.md` §Hard Rule (Doku-Disziplin)](../../.harness/baseline/v5.18.0/regelwerk/modul-13-quality-gates.md#hard-rule-doku-disziplin)
+- **Ersetzt-Baseline-Regel:** [`modul-13-quality-gates.md` §Hard Rule (Doku-Disziplin)](../../.harness/baseline/v6.0.0/regelwerk/modul-13-quality-gates.md#hard-rule-doku-disziplin)
 - **Datum:** 2026-06-10
 - **Geltungsbereich:** `make doc-check`, [`.d-check.yml`](../../.d-check.yml)
 - **Adaption:** Der Auflösungs-Trigger von

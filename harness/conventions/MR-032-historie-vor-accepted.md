@@ -1,7 +1,7 @@
 # MR-032 — Versions-Bump und Historie-Zeile schon vor `Accepted`
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`grundlagen-source-precedence.md`](../../.harness/baseline/v5.18.0/regelwerk/grundlagen-source-precedence.md)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-source-precedence.md`](../../.harness/baseline/v6.0.0/regelwerk/grundlagen-source-precedence.md)
   §Source Precedence, Absatz *Wann die CR-Pflicht beginnt* — *„Vor `Accepted`
   ist das Lastenheft ein Entwurf — frei änderbar, ohne Change Request, **ohne
   Historie-Zeile**."* (Hervorhebung hinzugefügt — die Quelle setzt sie nicht; deshalb trägt das Zitat keine `d-check:cite`-Direktive)

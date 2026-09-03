@@ -10,7 +10,7 @@
 - **Geltungsbereich:** `tools/archive-wave` (`Apply()`), jeder
   Wellen-Archivierungs-Commit (`make archive-wave WELLE=<id> APPLY=1`).
 - **Adaption:** Ein Slice- oder Welle-Stub **ersetzt** den Volltext durch
-  einen komplett neuen, templatierten Text ([`archiv-stub-slice.template.md`](../../.harness/baseline/v5.18.0/templates/docs/plan/planning/archiv-stub-slice.template.md)) —
+  einen komplett neuen, templatierten Text ([`archiv-stub-slice.template.md`](../../.harness/baseline/v6.0.0/templates/docs/plan/planning/archiv-stub-slice.template.md)) —
   Identität, Archiv-Zeiger, Zustand, überlebende Kennungen, sonst nichts.
   Die alte Datei wird zugleich gelöscht, die neue liegt eine Verzeichnisebene
   tiefer (`done/<welle-id>/`). Anders als bei den drei MR-013-Fällen gibt es

@@ -2,10 +2,10 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon macht die DoD-Häkchen zur
-  **Bedingung des Übergangs** und sagt das wörtlich:   <!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md:33-34 -->
+  **Bedingung des Übergangs** und sagt das wörtlich:   <!-- d-check:cite .harness/baseline/v6.0.0/regelwerk/modul-05-planning-harness.md:33-34 -->
   „DoD-Häkchen und Closure-Notiz
   sind die Bedingung dafür, dass die Datei überhaupt nach `done/` darf."
-  ([`modul-05-planning-harness.md`](../../.harness/baseline/v5.18.0/regelwerk/modul-05-planning-harness.md)).
+  ([`modul-05-planning-harness.md`](../../.harness/baseline/v6.0.0/regelwerk/modul-05-planning-harness.md)).
   Gehalten war davon nur die zweite Hälfte. Diese Adaption ist die
   Werkzeug-Wahl für die erste, keine Abweichung.
 - **Datum:** 2026-08-30

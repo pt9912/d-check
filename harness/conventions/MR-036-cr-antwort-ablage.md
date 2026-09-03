@@ -5,7 +5,7 @@
   Request nicht (siehe [`MR-035`](../conventions.md#mr-035)) und damit auch
   nicht die Antwort darauf. Die Ablage-Frage ist eine Form-Frage, und die tritt
   die Rangliste an diesen Speicher ab
-  ([`grundlagen-harness-dateien.md` §Konventionsspeicher](../../.harness/baseline/v5.18.0/regelwerk/grundlagen-harness-dateien.md#harnessconventionsmd-als-konventionsspeicher)).
+  ([`grundlagen-harness-dateien.md` §Konventionsspeicher](../../.harness/baseline/v6.0.0/regelwerk/grundlagen-harness-dateien.md#harnessconventionsmd-als-konventionsspeicher)).
 - **Datum:** 2026-08-26
 - **Geltungsbereich:** `docs/plan/cr/` — **eingehende Antworten** auf
   Change Requests, die dieses Repo an die adoptierte Baseline gerichtet hat.

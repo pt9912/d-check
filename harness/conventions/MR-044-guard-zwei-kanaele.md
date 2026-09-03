@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon verlangt die Härtung als neuen
-  Eintrag ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v5.18.0/regelwerk/modul-13-quality-gates.md));
+  Eintrag ([`modul-13-quality-gates.md` §Guard-Härtung](../../.harness/baseline/v6.0.0/regelwerk/modul-13-quality-gates.md));
   *wie* der Guard seine Ablehnung übermittelt, sagt er nicht — die Form-Frage
   tritt die Rangliste an diesen Speicher ab.
 - **Datum:** 2026-08-27

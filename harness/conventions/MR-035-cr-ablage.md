@@ -1,15 +1,15 @@
 # MR-035 — Ausgehende Change Requests an die Baseline liegen im Repo
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** keine. Der Kanon kennt genau **einen** Change   <!-- d-check:cite .harness/baseline/v5.18.0/regelwerk/grundlagen-begriffe.md:46-46 -->
+- **Ersetzt-Baseline-Regel:** keine. Der Kanon kennt genau **einen** Change   <!-- d-check:cite .harness/baseline/v6.0.0/regelwerk/grundlagen-begriffe.md:46-46 -->
   Request: den eingehenden, „Externer Vorgang, in dem eine Vertragsänderung
   mit dem Auftraggeber vereinbart wird — **bewusst kein Harness-Konstrukt**"
-  ([`grundlagen-begriffe.md`](../../.harness/baseline/v5.18.0/regelwerk/grundlagen-begriffe.md)).
+  ([`grundlagen-begriffe.md`](../../.harness/baseline/v6.0.0/regelwerk/grundlagen-begriffe.md)).
   Für den **ausgehenden** — eine Bitte dieses Repos an die Quelle seiner
   Baseline — hat er weder Begriff noch Ablage; *Konsumenten-CR* ist eine
   Prägung dieses Repos, kein Kanon-Wort. Die Verzeichnisfrage ist damit
   eine Form-Frage, und die tritt die Rangliste an diesen Speicher ab
-  ([`grundlagen-harness-dateien.md` §Konventionsspeicher](../../.harness/baseline/v5.18.0/regelwerk/grundlagen-harness-dateien.md)).
+  ([`grundlagen-harness-dateien.md` §Konventionsspeicher](../../.harness/baseline/v6.0.0/regelwerk/grundlagen-harness-dateien.md)).
 - **Datum:** 2026-08-25
 - **Geltungsbereich:** `docs/plan/cr/` — Change Requests, die dieses Repo an die
   **adoptierte Baseline** richtet.
