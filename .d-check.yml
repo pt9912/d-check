@@ -223,10 +223,16 @@ ignore-refs:
 # (Changelog, Review-Reports) aus; Beispiel-IDs tragen d-check:ignore.
 ids:
   patterns:
+    # "docs/plan/planning/done/welle-*/*.md" ist der Archiv-Stub-Pfad
+    # (tools/archive-wave, slice-191): das Hervorgegangen-Feld traegt bare
+    # Kennungen aus dem archivierten Original-Volltext, absichtlich
+    # unverlinkt -- dieselbe Literal-Erhaltung wie beim Review-Report-Grund
+    # oben, hier fuer "die Kennungen, die den Vorgang ueberlebt haben"
+    # (Baseline-Stub-Template).
     - regex: 'ADR-\d{4}'
       target: docs/plan/adr/
       link-policy: always
-      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**", "docs/plan/planning/done/welle-*/*.md"]
     - regex: 'MR-\d{3}'
       target: harness/conventions/
       link-policy: always
@@ -234,7 +240,7 @@ ids:
     - regex: 'DC-(FA-[A-Z]+|QA)-\d+'
       target: spec/lastenheft.md
       link-policy: always
-      exempt-paths: [CHANGELOG.md, "docs/reviews/**"]
+      exempt-paths: [CHANGELOG.md, "docs/reviews/**", "docs/plan/planning/done/welle-*/*.md"]
     # Struktur-IDs der Spec-Straten (Baseline-Default seit welle-80, MR-000):
     # Wortgrenzen sind Pflicht: ohne die abschliessende \b meldete eine
     # vierstellige Kennung ihr dreistelliges Praefix als Ziel (dieselbe
