@@ -1,7 +1,7 @@
 # Verifikation slice-196 — `tools/archive-wave` wellenloser Einzel-Slice-Modus
 
 **Art:** Verifikation.
-**Gegenstand:** [slice-196](../plan/planning/in-progress/slice-196-archive-wave-slice-modus.md), HEAD `50e243c` ("feat(planning): slice-196 -- archive-wave wellenloser Einzel-Slice-Modus") auf `main`. Slice liegt noch in `in-progress/`.
+**Gegenstand:** [slice-196](../plan/planning/done/slice-196-archive-wave-slice-modus.md), HEAD `50e243c` ("feat(planning): slice-196 -- archive-wave wellenloser Einzel-Slice-Modus") auf `main`. Slice liegt noch in `in-progress/`.
 **Modell-ID:** `claude-sonnet-5`.
 **Datum:** 2026-09-04.
 **Rolle:** unabhängiger Verifier — geprüft wird gegen **DoD und Spec** (Baseline-Regelwerk [`modul-08-agentenrollen.md` §Welche Rolle braucht welche Artefaktklasse](../../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#welche-rolle-braucht-welche-artefaktklasse-modul-8)), nicht gegen Plan/ADR-Maintainability (Reviewer-Aufgabe). Kein Review-Report für slice-196 unter `docs/reviews/` gefunden (Stand dieser Verifikation) — auch dessen Existenz wurde nicht geprüft, um die Rollen-Trennung zu wahren; nur ein `ls`-Check ohne Inhaltszugriff.

@@ -5,7 +5,7 @@
 - **Skill:** [`.harness/skills/reviewer.md`](../../.harness/skills/reviewer.md)
 - **Modell-ID:** claude-sonnet-5
 - **Datum:** 2026-09-04
-- **Eingangs-Kontext:** Slice-Plan [`slice-196`](../plan/planning/in-progress/slice-196-archive-wave-slice-modus.md); [`AGENTS.md`](../../AGENTS.md) §3.1, §3.3, §3.4, §3.7, §3.8, §4 (`make archive-wave`-Zeile); Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht. Kein Zugriff auf Implementer-Kontext (Rollentrennung, Modul 8).
+- **Eingangs-Kontext:** Slice-Plan [`slice-196`](../plan/planning/done/slice-196-archive-wave-slice-modus.md); [`AGENTS.md`](../../AGENTS.md) §3.1, §3.3, §3.4, §3.7, §3.8, §4 (`make archive-wave`-Zeile); Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht. Kein Zugriff auf Implementer-Kontext (Rollentrennung, Modul 8).
 
 Repo unverändert nach dem Review (`git status --short` leer, HEAD `50e243c`).
 
