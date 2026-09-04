@@ -66,12 +66,11 @@ einen Review-Report trägt.
 - [x] `docs/plan/planning/done/` enthält (außerhalb `done/wellenlos/`) keinen
       flachen wellenlosen Slice mehr.
 - [x] `make gates` grün (zehn Gates) auf dem Endstand.
-- [ ] `make fullbuild` grün (`--require-complete`: 0 neue Trace-Waisen). Noch
-      nicht bestätigt: der nicht-rekursive `done/slice-*.md`-Glob des
-      Closure-Profils trifft aktuell auf 0 Dateien, solange dieser Slice
-      selbst noch in `in-progress/` liegt (alle anderen flachen Slices sind
-      archiviert) — wird nach dem `git mv` dieses Slices nach `done/` erneut
-      geprüft.
+- [x] `make fullbuild` grün (`--require-complete`: 0 neue Trace-Waisen).
+      Bestätigt erst nach dem `git mv` dieses Slices nach `done/` — davor
+      traf der nicht-rekursive `done/slice-*.md`-Glob des Closure-Profils auf
+      0 Dateien, weil alle anderen flachen wellenlosen Slices bereits
+      archiviert waren.
 - [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
 - [x] Unabhängige Verifikation durchgeführt.
 - [x] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
