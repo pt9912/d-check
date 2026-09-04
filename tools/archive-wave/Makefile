@@ -28,13 +28,14 @@ build: ## Binary-Image bauen
 	docker build $(PROGRESS_FLAG) --build-arg GO_VERSION=$(GO_VERSION) \
 	    -f Dockerfile -t $(IMAGE):latest .
 
-run: build ## Welle oder wellenlosen Slice archivieren: make run WELLE=welle-NN|SLICE=slice-NNN [ROOT=/pfad] [APPLY=1].
-	@if [ -z "$(WELLE)" ] && [ -z "$(SLICE)" ]; then \
-	    echo "run: eines von WELLE=welle-NN oder SLICE=slice-NNN ist Pflicht" >&2; exit 2; \
-	fi
-	@if [ -n "$(WELLE)" ] && [ -n "$(SLICE)" ]; then \
-	    echo "run: WELLE und SLICE sind mutually exclusive" >&2; exit 2; \
+run: build ## Welle, wellenlosen Slice oder eigenstaendigen Review archivieren: make run WELLE=welle-NN|SLICE=slice-NNN|REVIEW=datei.md [ROOT=/pfad] [APPLY=1].
+	@n=0; \
+	for v in "$(WELLE)" "$(SLICE)" "$(REVIEW)"; do \
+	    [ -n "$$v" ] && n=$$((n+1)); \
+	done; \
+	if [ "$$n" -ne 1 ]; then \
+	    echo "run: genau eines von WELLE=welle-NN, SLICE=slice-NNN oder REVIEW=datei.md ist Pflicht" >&2; exit 2; \
 	fi
 	docker run --rm -u "$$(id -u):$$(id -g)" \
 	    -v "$(ROOT)":/repo$(if $(APPLY),,:ro) \
-	    $(IMAGE):latest -root=/repo $(if $(WELLE),-welle=$(WELLE),-slice=$(SLICE)) $(if $(APPLY),-apply,)
+	    $(IMAGE):latest -root=/repo $(if $(WELLE),-welle=$(WELLE),$(if $(SLICE),-slice=$(SLICE),-review=$(REVIEW))) $(if $(APPLY),-apply,)

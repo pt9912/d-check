@@ -12,6 +12,7 @@ import (
 )
 
 var h1RE = regexp.MustCompile(`(?m)^#\s+(?:Slice\s+|Welle\s+)?[\w-]+:?\s*(.*)$`)
+var fullH1RE = regexp.MustCompile(`(?m)^#\s+(.*)$`)
 
 // ExtractTitle liest den Titel aus der ersten Ueberschrift eines Slice- oder
 // Welle-Plans ("# Slice slice-190: Titel" bzw. "# Welle welle-87: Titel").
@@ -19,6 +20,21 @@ var h1RE = regexp.MustCompile(`(?m)^#\s+(?:Slice\s+|Welle\s+)?[\w-]+:?\s*(.*)$`)
 // wird -- der Aufrufer entscheidet, ob das ein Fehler ist.
 func ExtractTitle(content string) string {
 	m := h1RE.FindStringSubmatch(content)
+	if m == nil {
+		return ""
+	}
+	return m[1]
+}
+
+// ExtractFullHeading liest die vollstaendige erste Ueberschriftszeile ohne
+// das Slice-/Welle-Praefixschema von ExtractTitle abzuziehen -- Review-
+// Reports dieses Repos tragen keine einheitliche "X Y: Titel"-Form ("Review-
+// Report: ...", "Review — ...", "Review Release-Prep ..."), ExtractTitle
+// wuerde das fuehrende Wort (z. B. "Review-Report") verschlucken, weil es
+// dessen Gruppe 1 nie zurueckgibt. Liefert einen leeren String ohne
+// passende Ueberschrift.
+func ExtractFullHeading(content string) string {
+	m := fullH1RE.FindStringSubmatch(content)
 	if m == nil {
 		return ""
 	}
@@ -139,6 +155,25 @@ func SliceStubStandalone(id, title, welleField, hervorgegangen string) string {
 			"**Archiviert:** %s (eigene Closure)\n"+
 			"**Hervorgegangen:** %s <!-- d-check:ignore (Kennungen aus dem archivierten Volltext, absichtlich unverlinkt) -->\n",
 		id, title, id, welleField, placeholder, hervorgegangen,
+	)
+}
+
+// ReviewStub erzeugt den Stub-Text fuer einen eigenstaendigen, archivierten
+// Review-Report. Anders als ein Slice-/Wellen-Review (kein Stub laut Kanon,
+// Identitaet kommt vom Slice/von der Welle) ist dieser Review selbst der
+// abgeschlossene Vorgang -- der Stub traegt deshalb Titel, Archiv-Zeiger und
+// Datum wie ein Slice-Stub, ohne ein Welle-Feld (das es fuer einen
+// eigenstaendigen Review nicht gibt). Der d-check:ignore-Marker exempt die
+// Hervorgegangen-Zeile von der Linkpflicht, aus demselben Grund wie beim
+// wellenlosen Slice-Stub.
+func ReviewStub(basename, title, hervorgegangen string) string {
+	return fmt.Sprintf(
+		"# %s\n\n"+
+			"> **ARCHIVIERT** — Volltext:\n"+
+			"> `unzip -p docs/reviews/archiv/%s-archiv.zip <pfad-im-archiv>`\n\n"+
+			"**Archiviert:** %s (eigene Closure)\n"+
+			"**Hervorgegangen:** %s <!-- d-check:ignore (Kennungen aus dem archivierten Volltext, absichtlich unverlinkt) -->\n",
+		title, basename, placeholder, hervorgegangen,
 	)
 }
 

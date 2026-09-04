@@ -160,6 +160,19 @@ func FindSlice(root, sliceID string) (string, error) {
 	}
 }
 
+// FindReview findet einen eigenstaendigen Review-Report unter
+// <root>/docs/reviews/ per EXAKTEM Dateinamen -- anders als FindSlice
+// (Praefix-Suche ueber die Slice-Nummer) kennt der Aufrufer hier bereits den
+// vollen Dateinamen (aus `ls docs/reviews/`), ein Praefix-Match waere
+// unnoetige Mehrdeutigkeit.
+func FindReview(root, filename string) (string, error) {
+	p := filepath.Join(root, "docs/reviews", filename)
+	if k, err := os.Stat(p); err != nil || k.IsDir() {
+		return "", fmt.Errorf("%s nicht gefunden unter docs/reviews/", filename)
+	}
+	return p, nil
+}
+
 // CollectReviews findet Review-Reports in <root>/docs/reviews/, deren
 // Dateiname eine der Slice-Kennungen aus slicePaths traegt. 1:N zulaessig
 // (mehrere Reviews desselben Slice, z. B. -r1/-r2-Suffixe).

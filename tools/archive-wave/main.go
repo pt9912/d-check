@@ -20,22 +20,26 @@ import (
 )
 
 func main() {
-	welle := flag.String("welle", "", "Wellen-Kennung, z. B. welle-87 (mutually exclusive mit -slice)")
-	sliceID := flag.String("slice", "", "Slice-Kennung eines wellenlosen Slice, z. B. slice-137 (mutually exclusive mit -welle)")
+	welle := flag.String("welle", "", "Wellen-Kennung, z. B. welle-87 (mutually exclusive mit -slice/-review)")
+	sliceID := flag.String("slice", "", "Slice-Kennung eines wellenlosen Slice, z. B. slice-137 (mutually exclusive mit -welle/-review)")
+	reviewFile := flag.String("review", "", "Dateiname eines eigenstaendigen Reviews unter docs/reviews/, z. B. 2026-06-11-cr-dc-fa-code-001.md (mutually exclusive mit -welle/-slice)")
 	root := flag.String("root", ".", "Repo-Wurzel")
 	apply := flag.Bool("apply", false, "Aenderungen tatsaechlich schreiben (Default: nur anzeigen)")
 	flag.Parse()
 
-	if err := validateModeFlags(*welle, *sliceID); err != nil {
+	if err := validateModeFlags(*welle, *sliceID, *reviewFile); err != nil {
 		fmt.Fprintln(os.Stderr, "archive-wave: "+err.Error())
 		os.Exit(2)
 	}
 
 	var err error
-	if *welle != "" {
+	switch {
+	case *welle != "":
 		err = runWelle(*root, *welle, *apply)
-	} else {
+	case *sliceID != "":
 		err = runSlice(*root, *sliceID, *apply)
+	default:
+		err = runReview(*root, *reviewFile, *apply)
 	}
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "archive-wave: "+err.Error())
@@ -45,9 +49,15 @@ func main() {
 
 // validateModeFlags erzwingt, dass genau eines von -welle/-slice gesetzt
 // ist -- weder beides (mehrdeutig, welcher Modus?) noch keines (kein Ziel).
-func validateModeFlags(welle, sliceID string) error {
-	if (welle == "") == (sliceID == "") {
-		return fmt.Errorf("genau eines von -welle oder -slice ist Pflicht (z. B. -welle=welle-87 oder -slice=slice-137)")
+func validateModeFlags(welle, sliceID, reviewFile string) error {
+	n := 0
+	for _, v := range []string{welle, sliceID, reviewFile} {
+		if v != "" {
+			n++
+		}
+	}
+	if n != 1 {
+		return fmt.Errorf("genau eines von -welle, -slice oder -review ist Pflicht (z. B. -welle=welle-87, -slice=slice-137 oder -review=2026-06-11-cr-dc-fa-code-001.md)")
 	}
 	return nil
 }
@@ -220,6 +230,58 @@ func runSlice(root, sliceID string, apply bool) error {
 	}
 
 	moves, err := ApplySlice(root, sliceID, slicePath, reviews)
+	if err != nil {
+		return err
+	}
+	hits, err := RewriteRepo(root, moves)
+	if err != nil {
+		return err
+	}
+	fmt.Println("  Verweise nachgezogen:")
+	for _, f := range SortedKeys(hits) {
+		fmt.Printf("    %s: %d\n", f, hits[f])
+	}
+	fmt.Println("  Fertig -- git status pruefen, dann Commit wie im Plan vorgesehen.")
+	return nil
+}
+
+// runReview archiviert einen einzelnen EIGENSTAENDIGEN Review-Report (kein
+// Slice-Partner) -- anders als ein Slice-/Wellen-Review, der beim
+// Archivieren keinen Stub bekommt (seine Identitaet kommt vom Slice/von der
+// Welle), IST ein eigenstaendiger Review selbst der abgeschlossene Vorgang
+// und bekommt deshalb, wie ein Slice, einen eigenen Stub -- sonst
+// verschwaende er spurlos ohne Zeiger auf sein Archiv.
+func runReview(root, filename string, apply bool) error {
+	reviewPath, err := FindReview(root, filename)
+	if err != nil {
+		return err
+	}
+	if SliceIDFromPath(filename) != "" {
+		return fmt.Errorf("%s traegt ein slice-<NNN>-Muster -- das gehoert in den -slice-Modus (dessen Sammel-Logik es ohnehin findet, sobald der Slice archiviert wird), nicht -review", filename)
+	}
+
+	newAbs := filepath.Join(root, ReviewArchiveDir, filepath.Base(reviewPath))
+	previewMove := Move{Old: RelPath(root, reviewPath), New: RelPath(root, newAbs)}
+
+	fmt.Printf("archive-wave: %s (eigenstaendiger Review)\n", filename)
+	fmt.Printf("  Review: %s -> %s\n", previewMove.Old, previewMove.New)
+
+	if !apply {
+		hits, err := PreviewRewrites(root, []Move{previewMove})
+		if err != nil {
+			return err
+		}
+		fmt.Println("  Geplante Verweis-Fixes fuer den Review-Move (ohne -apply wird nichts geschrieben):")
+		if len(hits) == 0 {
+			fmt.Println("    (keine)")
+		}
+		for _, f := range SortedKeys(hits) {
+			fmt.Printf("    %s: %d\n", f, hits[f])
+		}
+		return nil
+	}
+
+	moves, err := ApplyReview(root, reviewPath)
 	if err != nil {
 		return err
 	}

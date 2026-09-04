@@ -212,18 +212,22 @@ func TestFindReferencesToPaths_ExcludesSelfAndReviews(t *testing.T) {
 
 func TestValidateModeFlags(t *testing.T) {
 	cases := []struct {
-		welle, sliceID string
-		wantErr        bool
+		welle, sliceID, reviewFile string
+		wantErr                    bool
 	}{
-		{"welle-87", "", false},
-		{"", "slice-137", false},
-		{"", "", true},
-		{"welle-87", "slice-137", true},
+		{"welle-87", "", "", false},
+		{"", "slice-137", "", false},
+		{"", "", "2026-01-01-x.md", false},
+		{"", "", "", true},
+		{"welle-87", "slice-137", "", true},
+		{"welle-87", "", "2026-01-01-x.md", true},
+		{"", "slice-137", "2026-01-01-x.md", true},
+		{"welle-87", "slice-137", "2026-01-01-x.md", true},
 	}
 	for _, c := range cases {
-		err := validateModeFlags(c.welle, c.sliceID)
+		err := validateModeFlags(c.welle, c.sliceID, c.reviewFile)
 		if (err != nil) != c.wantErr {
-			t.Errorf("validateModeFlags(%q, %q): got err=%v, wantErr=%v", c.welle, c.sliceID, err, c.wantErr)
+			t.Errorf("validateModeFlags(%q, %q, %q): got err=%v, wantErr=%v", c.welle, c.sliceID, c.reviewFile, err, c.wantErr)
 		}
 	}
 }

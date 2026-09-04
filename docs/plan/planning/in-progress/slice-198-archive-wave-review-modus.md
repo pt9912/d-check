@@ -67,41 +67,43 @@ Stub — sonst verschwände er spurlos, ohne Zeiger auf sein Archiv.
 
 ## 4. Definition of Done
 
-- [ ] `-review=<dateiname>`-Modus implementiert, mutually exclusive zu
-      `-welle` **und** `-slice` (Exit 2 bei mehr oder weniger als einem
-      gesetzten Flag).
-- [ ] Archiv liegt unter `docs/reviews/archiv/<basisname>-archiv.zip`, Stub
+- [x] `-review=<dateiname>`-Modus implementiert, mutually exclusive zu
+      `-welle` **und** `-slice` (`validateModeFlags` auf drei Flags erweitert:
+      genau eines von dreien, Exit 2 sonst).
+- [x] Archiv liegt unter `docs/reviews/archiv/<basisname>-archiv.zip`, Stub
       im selben Verzeichnis mit Titel, Archiv-Zeiger, Datum,
       `Hervorgegangen:`-Feld.
-- [ ] Ein Review mit `slice-<NNN>` im Dateinamen wird über `-review`
+- [x] Ein Review mit `slice-<NNN>` im Dateinamen wird über `-review`
       abgelehnt (Fehlermeldung, kein stilles Falsch-Archivieren).
-- [ ] `ExtractTitle` funktioniert nachweislich für mindestens zwei der elf
-      realen, uneinheitlichen Überschriftenformen (Fixture-Kopie).
-- [ ] Unit-Tests inkl. Fixture-Vorher/Nachher-Vergleich und beiden
+- [x] **Präzisiert:** nicht `ExtractTitle` (Slice-/Wellen-Präfixschema),
+      sondern eine neue Funktion `ExtractFullHeading` — `ExtractTitle` hätte
+      das führende Wort einer Review-Überschrift ("Review-Report:", "Review
+      —") verschluckt, weil es dessen Gruppe 1 nie zurückgibt. Gegen drei
+      der elf realen Überschriftenformen getestet, gegen alle elf im
+      Dry-Run smoke-getestet.
+- [x] Unit-Tests inkl. Fixture-Vorher/Nachher-Vergleich und beiden
       Negativtests.
-- [ ] `make archive-wave-test` grün.
-- [ ] `make gates` grün (zehn Gates).
-- [ ] `make fullbuild` grün.
+- [x] `make archive-wave-test` grün.
+- [x] `make gates` grün (zehn Gates).
+- [x] `make fullbuild` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
 - [ ] Unabhängige Verifikation durchgeführt.
 - [ ] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
 
 ## 5. Abnahme-Punkte / Risiken
 
-- **`ExtractTitle`s Regex ist auf Slice-/Wellen-Header zugeschnitten
-  (`^#\s+(?:Slice\s+|Welle\s+)?[\w-]+:?\s*(.*)$`) und wurde nie gegen
-  uneinheitliche Review-Überschriften geprüft.** Gegenmaßnahme: expliziter
-  Test gegen reale Formen (siehe §2 Punkt 4) vor der Anwendung auf den
-  Bestand — dieselbe Lehre wie bei slice-196/197 (Fixture-vs-Bestand-Lücke
-  erst am echten Bestand sichtbar).
+- **`ExtractTitle`s Regex ist auf Slice-/Wellen-Header zugeschnitten und
+  wurde nie gegen uneinheitliche Review-Überschriften geprüft — eingetreten,
+  aufgefangen statt entfallen.** Genau dieses Risiko materialisierte sich
+  beim Entwurf: `ExtractTitle` hätte das führende Wort verschluckt. Gelöst
+  durch eine eigene Funktion (`ExtractFullHeading`) statt Wiederverwendung,
+  siehe §9 — kein Produktionsfehler, weil vor der Implementierung erkannt.
 - **Ein Review, dessen einzige Zitierstelle einer Anforderung er ist, könnte
-  die Anforderung zur Trace-Waise machen**, wenn `Hervorgegangen:` fehlt
-  oder falsch extrahiert. Gegenmaßnahme: `make fullbuild`
-  (`--require-complete`) nach der Anwendung in slice-199, nicht nur `make
-  gates`.
+  die Anforderung zur Trace-Waise machen — entfallen für diesen Slice**
+  (kein Bestand berührt), bleibt Prüfpunkt für slice-199 (`--require-complete`
+  nach der Anwendung).
 - **Zeitgleiche Arbeit an einem anderen Slice könnte einen neuen,
-  eigenständigen Review anlegen**, während slice-199 später den Bestand
-  aufnimmt — WIP-Limit 1 schützt dagegen.
+  eigenständigen Review anlegen — entfallen.** WIP-Limit 1 hielt.
 
 ## 6. Trigger
 
@@ -146,4 +148,30 @@ getesteten Werkzeugs um einen dritten Modus, keine neue Konvention.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-<!-- wird erst bei Closure gefüllt -->
+**Geliefert:** `tools/archive-wave` bekam einen dritten Modus
+(`-review=<dateiname>`), mutually exclusive zu `-welle`/`-slice`. Neue
+Funktionen: `FindReview` (collect.go), `ApplyReview`, `ReviewArchiveDir`
+(archive.go), `ReviewStub`, `ExtractFullHeading` (stub.go), `runReview`
+(main.go). Beide Makefiles nehmen `REVIEW=` als dritte Alternative zu
+`WELLE=`/`SLICE=` an. `AGENTS.md`s `make archive-wave`-Zeile nachgezogen —
+dabei auch eine bereits veraltete Passage korrigiert (beschrieb noch den
+flachen Vor-welle-89-Pfad des `-slice`-Modus).
+
+**Was anders lief als geplant:** Das im Plan (§5) benannte Risiko trat
+tatsächlich ein, aber **vor** jeder Implementierung: `ExtractTitle` (für
+Slice-/Wellen-Header gebaut) hätte bei einer Review-Überschrift wie
+"# Review-Report: Change Request …" das Wort "Review-Report" verschluckt,
+weil die Funktion nur ihre erste Capture-Gruppe zurückgibt. Statt die
+bestehende Regex zu erweitern (und beide Aufrufer subtil zu koppeln),
+eigene Funktion `ExtractFullHeading` (liest die ganze Zeile nach `# `) für
+Reviews. Gegen drei der elf realen Überschriftenformen unit-getestet, gegen
+alle elf im Dry-Run smoke-getestet, bevor slice-199 den Bestand anfasst.
+
+**Lerneintrag:** keiner über das Vermerkte hinaus — die Lehre aus
+slice-196/197 (Fixture-vs-Bestand-Lücken vor der Bestandsanwendung
+schließen, nicht danach) wurde hier direkt angewendet, kein neuer
+Steering-Loop-Eintrag nötig.
+
+**Risiko-Ausgänge:** siehe §5 — alle drei entfallen (das erste durch
+rechtzeitiges Erkennen vor der Implementierung, nicht durch einen
+Bestandsfehler).

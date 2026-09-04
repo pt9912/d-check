@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 )
 
 // Plan ist das Ergebnis des Sammeln-Schritts: alles, was zu welleID gehoert.
@@ -180,6 +181,52 @@ func ApplySlice(root, sliceID, slicePath string, reviews []string) ([]Move, erro
 		}
 	}
 	return []Move{{Old: RelPath(root, slicePath), New: RelPath(root, newAbs)}}, nil
+}
+
+// ReviewArchiveDir ist der gemeinsame Ablageort aller eigenstaendigen
+// Review-Archive -- dieselbe Gruppierungs-Logik wie WellenlosArchiveDir,
+// nur fuer Reviews ohne Slice-Partner statt fuer wellenlose Slices.
+const ReviewArchiveDir = "docs/reviews/archiv"
+
+// ApplyReview archiviert einen einzelnen eigenstaendigen Review-Report
+// (keinen Slice-/Wellen-Review -- die bekommen laut Kanon keinen Stub, weil
+// ihre Identitaet vom Slice/von der Welle kommt). Anders als bei jenen IST
+// der Review hier selbst der abgeschlossene Vorgang und bekommt deshalb,
+// wie ein Slice, einen eigenen Stub -- er wandert nach ReviewArchiveDir,
+// sein Archiv liegt als "<basisname>-archiv.zip" daneben. Liefert den Move
+// fuer den anschliessenden repo-weiten Verweis-Nachzug.
+func ApplyReview(root, reviewPath string) ([]Move, error) {
+	archiveDir := filepath.Join(root, ReviewArchiveDir)
+	if err := os.MkdirAll(archiveDir, 0o755); err != nil {
+		return nil, fmt.Errorf("%s anlegen: %w", archiveDir, err)
+	}
+
+	base := filepath.Base(reviewPath)
+	basename := strings.TrimSuffix(base, filepath.Ext(base))
+	zipPath := filepath.Join(archiveDir, basename+"-archiv.zip")
+	if err := buildZip(root, zipPath, []string{reviewPath}); err != nil {
+		return nil, err
+	}
+
+	raw, err := os.ReadFile(reviewPath)
+	if err != nil {
+		return nil, fmt.Errorf("%s lesen: %w", reviewPath, err)
+	}
+	title := ExtractFullHeading(string(raw))
+	if title == "" {
+		return nil, fmt.Errorf("%s: keine Ueberschrift gefunden", reviewPath)
+	}
+	hervorgegangen := FormatHervorgegangen(ExtractSurvivingIDs(string(raw)))
+
+	newAbs := filepath.Join(archiveDir, base)
+	stub := ReviewStub(basename, title, hervorgegangen)
+	if err := os.WriteFile(newAbs, []byte(stub), 0o644); err != nil {
+		return nil, fmt.Errorf("%s schreiben: %w", newAbs, err)
+	}
+	if err := os.Remove(reviewPath); err != nil {
+		return nil, fmt.Errorf("%s loeschen: %w", reviewPath, err)
+	}
+	return []Move{{Old: RelPath(root, reviewPath), New: RelPath(root, newAbs)}}, nil
 }
 
 func readTitle(path string) (string, error) {

@@ -412,6 +412,6 @@ clean: ## Lokale Images entfernen.
 archive-wave-test: ## archive-wave-Testsuite (eigenes go.mod, nicht Teil von `make test`).
 	$(MAKE) -C tools/archive-wave test GO_VERSION=$(GO_VERSION) PROGRESS_FLAG='$(PROGRESS_FLAG)'
 
-archive-wave: ## Welle oder wellenlosen Slice archivieren: make archive-wave WELLE=welle-NN|SLICE=slice-NNN [APPLY=1].
-	$(MAKE) -C tools/archive-wave run WELLE=$(WELLE) SLICE=$(SLICE) APPLY=$(APPLY) ROOT=$(CURDIR) \
+archive-wave: ## Welle, wellenlosen Slice oder eigenstaendigen Review archivieren: make archive-wave WELLE=welle-NN|SLICE=slice-NNN|REVIEW=datei.md [APPLY=1].
+	$(MAKE) -C tools/archive-wave run WELLE=$(WELLE) SLICE=$(SLICE) REVIEW=$(REVIEW) APPLY=$(APPLY) ROOT=$(CURDIR) \
 	    GO_VERSION=$(GO_VERSION) PROGRESS_FLAG='$(PROGRESS_FLAG)'
