@@ -51,29 +51,36 @@ nach welle-89 noch in `docs/reviews/` liegt, wird per
 
 ## 4. Definition of Done
 
-- [ ] Bestand exakt erhoben (Zahl im DoD eingetragen).
-- [ ] Alle erhobenen Reviews archiviert (`docs/reviews/archiv/<basisname>-archiv.zip`
+- [x] Bestand exakt erhoben: **11** eigenständige Reviews.
+- [x] Alle erhobenen Reviews archiviert (`docs/reviews/archiv/<basisname>-archiv.zip`
       + Stub je Review).
-- [ ] `docs/reviews/` enthält (außerhalb `docs/reviews/archiv/`) <!-- d-check:ignore (Ziel-Form, entsteht erst mit slice-198) --> keinen
+- [x] `docs/reviews/` enthält (außerhalb `docs/reviews/archiv/`) <!-- d-check:ignore (Ziel-Form, entsteht erst mit slice-198) --> keinen
       eigenständigen Review mehr.
-- [ ] `make gates` grün (zehn Gates) auf dem Endstand.
-- [ ] `make fullbuild` grün (`--require-complete` insbesondere:
+- [x] `make gates` grün (zehn Gates) auf dem Endstand.
+- [x] `make fullbuild` grün (`--require-complete` insbesondere:
       `Hervorgegangen:`-Felder verhindern neue Trace-Waisen).
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
-- [ ] Unabhängige Verifikation durchgeführt.
-- [ ] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
+- [x] Unabhängige Verifikation durchgeführt.
+- [x] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Dieselbe Klasse „stille Bedeutungsverschiebung" wie bei slice-197.**
-  Gegenmaßnahme: Voll-Dry-Run vor der Anwendung (§2 Punkt 2), `make
-  fullbuild` auf dem Endstand statt 11 Einzel-Prüfungen.
+  **Entfallen** — Voll-Dry-Run vor der Anwendung lief sauber, Stub-Stichproben
+  (unabhängiger Review + Verifikation) bestätigen unveränderten Titel und
+  byte-identischen Volltext im Zip für alle geprüften Fälle.
 - **Ein Review könnte die einzige Zitierstelle einer `DC-*`/`ADR-*`-Anforderung
-  sein** — `Hervorgegangen:` fängt das strukturell auf, `--require-complete`
-  bestätigt es empirisch.
+  sein.** **Entfallen** — `make fullbuild --require-complete` meldet 0
+  Trace-Waisen bei unveränderter Anforderungszahl (51). Präzisierung aus dem
+  unabhängigen Review (F-4, LOW): `Hervorgegangen:` fängt nicht *jede* im
+  Original zitierte Kennung strukturell auf, sondern nur die außerhalb von
+  Fenced-/Inline-Code-Spannen bzw. als Link-Label stehenden — der
+  tatsächliche Schutz in diesem Slice ist der empirische
+  `--require-complete`-Lauf, nicht die Feld-Konstruktion allein.
 - **Der Umfang (11 Reviews) ist klein genug, um NICHT dieselbe
-  Ein-Sitzungs-Grenze wie bei slice-195/197 zu sprengen** — falls doch,
-  Rückführung nach `next`.
+  Ein-Sitzungs-Grenze wie bei slice-195/197 zu sprengen.** **Entfallen** —
+  alle 11 Archivierungen liefen in einem gebündelten Commit, keine
+  Rückführung nach `next` nötig.
 
 ## 6. Trigger
 
@@ -119,4 +126,47 @@ gebauten und getesteten Werkzeug (slice-198), kein neuer Produktcode.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-<!-- wird erst bei Closure gefüllt -->
+Alle 11 zum Zeitpunkt der Planung erhobenen eigenständigen Reviews (kein
+`slice-<NNN>` im Dateinamen) sind archiviert: Voll-Dry-Run vor der Anwendung
+lief sauber, dann 11 `-review=<datei> -apply`-Läufe, ein gebündelter Commit
+(`6c4146f`), `make gates` (zehn Module) und `make fullbuild`
+(`--require-complete`, 0 Trace-Waisen bei unveränderten 51 Anforderungen)
+beide grün auf dem Endstand.
+
+**Nach Review/Verifikation behoben** (unabhängig übereinstimmend gefunden):
+
+- **F-1 (HIGH):** Der `-review=<datei>`-Modus hatte keine der fünf in
+  `AGENTS.md` §3.3 enumerierten Ein-Commit-Ausnahmen — derselbe Lücken-Typ,
+  der bei slice-197 bereits
+  [`MR-062`](../../../../harness/conventions.md#mr-062--wellenloser-einzel-slice-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013)
+  nötig machte. Behoben durch
+  [`MR-063`](../../../../harness/conventions.md#mr-063--eigenständiger-review-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013)
+  plus sechste Ausnahme-Bullet in `AGENTS.md` §3.3 (Fix-Commit `d0639fd`).
+- **F-2 (MEDIUM):** Vier durch die Archivierung verwaiste `ignore-refs`-
+  Einträge in `.d-check.yml` (deren Quelldateien jetzt Stubs ohne die
+  ignorierten Verweise sind) entfernt.
+- **F-3 (MEDIUM):** Die immutable
+  [ADR-0013](../../adr/0013-pr-ci-und-traceability-gate.md) zitierte einen der
+  archivierten Reviews als Klartext-Pfad (kein Modul scannt das). Ein
+  Geschichte-Anhang vermerkt die Verlegung, ohne die bestehende Zeile zu
+  ändern (§3.5-konform).
+- **F-4 (LOW):** Plan-Formulierung zu `Hervorgegangen:` präzisiert (siehe §5).
+
+**Beobachtungs-Register:**
+[`BEO-ALL/review-collection-misses-non-slice-filenames`](../observations/BEO-ALL/review-collection-misses-non-slice-filenames/observation.md)
+auf **gestrichen** gesetzt — der neue `-review`-Modus deckt genau die Lücke,
+die die Beobachtung benannte, unabhängig vom 3×-Zähler.
+[`BEO-ALL/large-migration-exceeds-session-review-limit`](../observations/BEO-ALL/large-migration-exceeds-session-review-limit/observation.md)
+bleibt bei Zähler 2 — die angekündigte Gegenprüfung bestätigt: der Umfang
+(11 Läufe, ein Commit) sprengte die Ein-Sitzungs-Grenze nicht (§5 dritter
+Punkt).
+
+**Lerneintrag:** Eine neue `tools/archive-wave`-Betriebsart braucht ihre
+Ein-Commit-Rechtfertigung als **eigene** `MR-0XX` von Anfang an, nicht erst
+nach einem Review-Fund — dieselbe Lehre, die slice-197s Korrektur-Commit
+(`9980aa9` →
+[`MR-062`](../../../../harness/conventions.md#mr-062--wellenloser-einzel-slice-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013))
+schon einmal hinterließ, hier aber noch nicht auf den nächsten neuen Modus
+übertragen wurde. Geschärfte Regel:
+[`MR-063`](../../../../harness/conventions.md#mr-063--eigenständiger-review-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013)
+selbst sowie die Bündelungs-Klärung in `AGENTS.md` §3.3.
