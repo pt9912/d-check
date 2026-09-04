@@ -3,7 +3,8 @@
 **Sub-Area:** `*`
 
 `make image-scan` macht nur bei CRITICAL/HIGH **mit verfügbarem Fix** rot
-(ADR-0066). Ein frisch veröffentlichter CVE trägt in Trivys Vuln-DB zunächst
+([ADR-0066](../../../../adr/0066-cve-scan-gegen-das-publizierte-image.md)). Ein
+frisch veröffentlichter CVE trägt in Trivys Vuln-DB zunächst
 Severity `UNKNOWN` (die eigene Warnung: „Using severities from other vendors
 for some vulnerabilities"), während ein anderer Vendor zum selben Zeitpunkt
 bereits eine Severity führt. Der Fund selbst steht im Vollbericht — nur das
