@@ -35,8 +35,6 @@ was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 - [welle-89](../welle-89-wellenlose-review-archivierung.md) — Wellenlose
   Review-Archivierung: Werkzeug-Modus + Anwendung auf den Bestand.
 
-Nichts in Arbeit.
-
 ## Nächste Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
