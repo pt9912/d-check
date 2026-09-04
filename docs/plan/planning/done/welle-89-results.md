@@ -17,10 +17,10 @@ bereits geschlossen (`modul-06-roadmap.md` §Wann Arbeit eine Welle braucht:
 die Slice-Closure selbst archiviert, Schlüssel ist der Slice). Zwei Slices,
 nach dem welle-87-Muster (Werkzeug bauen, dann anwenden):
 
-- [slice-196](slice-196-archive-wave-slice-modus.md): `tools/archive-wave`
+- [slice-196](welle-89/slice-196-archive-wave-slice-modus.md): `tools/archive-wave`
   bekam einen zweiten Modus (`-slice=<id>`), mutually exclusive zu `-welle`.
   An einem konstruierten Fixture bewiesen, nicht am echten Bestand.
-- [slice-197](slice-197-wellenlosen-bestand-archivieren.md): der neue Modus
+- [slice-197](welle-89/slice-197-wellenlosen-bestand-archivieren.md): der neue Modus
   auf alle 45 wellenlosen `done/`-Slices mit noch unarchivierten Reviews
   angewendet — mehr als die geschätzten ~43.
 
