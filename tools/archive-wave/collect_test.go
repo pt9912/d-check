@@ -153,6 +153,30 @@ func TestReadWelleField(t *testing.T) {
 	}
 }
 
+// TestReadWelleField_Mehrzeilig belegt einen an slice-197 gemessenen Fund:
+// das Feld ist in diesem Repo haeufig ein mehrsaetziger, umgebrochener
+// Absatz statt einer einzeiligen Kennung -- ein Ein-Zeilen-Capture schnitt
+// ihn mitten im Satz ab (gemessen: 44 von 45 wellenlosen Archiv-Stubs im
+// ersten Anwendungslauf). Gelesen wird bis zur ersten Leerzeile.
+func TestReadWelleField_Mehrzeilig(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "slice.md")
+	writeFile(t, path,
+		"# X\n\n**Welle:** — wellenlos. Seine Closure-Bedingung waere seine\n"+
+			"eigene DoD, und das *Mehr* einer Welle liefert sie nicht.\n\n"+
+			"**Bezug:** AGENTS.md.\n")
+
+	got, err := ReadWelleField(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := "— wellenlos. Seine Closure-Bedingung waere seine\n" +
+		"eigene DoD, und das *Mehr* einer Welle liefert sie nicht."
+	if got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+}
+
 func TestSliceIDFromPath(t *testing.T) {
 	if got := SliceIDFromPath("/a/b/slice-190-titel.md"); got != "slice-190" {
 		t.Fatalf("got %q", got)

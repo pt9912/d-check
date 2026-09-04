@@ -12,22 +12,36 @@ import (
 )
 
 var welleFieldRE = regexp.MustCompile(`(?m)^\*\*Welle:\*\*\s*(.*)$`)
+var welleFieldStartRE = regexp.MustCompile(`(?m)^\*\*Welle:\*\*[ \t]*`)
 var welleIDInFieldRE = regexp.MustCompile(`\bwelle-(\d+)\b`)
 var sliceIDInNameRE = regexp.MustCompile(`slice-(\d+)`)
 
 // ReadWelleField liest den rohen Wert des **Welle:**-Feldes einer
-// Slice-Datei (z. B. "welle-87" oder "— wellenlos. ..."), unveraendert fuer
-// die Uebernahme in den Stub. Leerer String, wenn das Feld fehlt.
+// Slice-Datei (z. B. "welle-87" oder ein mehrzeiliger wellenloser
+// Begruendungs-Absatz), unveraendert fuer die Uebernahme in den Stub. Liest
+// bis zur ersten LEERZEILE -- die Haus-Stil-Form dieses Repos schreibt das
+// Feld haeufig als mehrsaetziger, umgebrochener Absatz (gemessen: 44 von 45
+// wellenlosen Slices im ersten Anwendungslauf von slice-197), nicht als
+// einzeilige Kennung. Ein Ein-Zeilen-Capture schnitt den Absatz mitten im
+// Satz ab. Leerer String, wenn das Feld fehlt.
 func ReadWelleField(path string) (string, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {
 		return "", fmt.Errorf("%s lesen: %w", path, err)
 	}
-	m := welleFieldRE.FindStringSubmatch(string(b))
-	if m == nil {
+	loc := welleFieldStartRE.FindStringIndex(string(b))
+	if loc == nil {
 		return "", nil
 	}
-	return strings.TrimSpace(m[1]), nil
+	rest := string(b)[loc[1]:]
+	var lines []string
+	for _, ln := range strings.Split(rest, "\n") {
+		if strings.TrimSpace(ln) == "" {
+			break
+		}
+		lines = append(lines, ln)
+	}
+	return strings.TrimSpace(strings.Join(lines, "\n")), nil
 }
 
 // SliceIDFromPath liest die slice-<NNN>-Kennung aus einem Dateinamen.
