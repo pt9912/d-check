@@ -121,6 +121,48 @@ func Apply(root string, p Plan) ([]Move, error) {
 	return moves, nil
 }
 
+// ApplySlice archiviert einen einzelnen wellenlosen Slice (Baseline-Regelwerk
+// `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht, Zeile
+// "Zeitdokumente archivieren ... Ohne Wellen tut es die Slice-Closure
+// selbst"). Anders als Apply (Wellen-Modus) WANDERT die Slice-Datei nicht --
+// ihr Pfad bleibt, nur ihr Inhalt wird durch den Stub ersetzt, und das
+// Archiv liegt flach daneben (`<sliceID>-archiv.zip`), nicht in einem
+// Wellen-Unterverzeichnis. Es gibt deshalb keinen Move fuer den Slice
+// selbst -- nur seine Review-Reports verschwinden ersatzlos, wie im
+// Wellen-Modus auch.
+func ApplySlice(root, sliceID, slicePath string, reviews []string) error {
+	zipPath := filepath.Join(filepath.Dir(slicePath), sliceID+"-archiv.zip")
+	all := append([]string{slicePath}, reviews...)
+	if err := buildZip(root, zipPath, all); err != nil {
+		return err
+	}
+
+	raw, err := os.ReadFile(slicePath)
+	if err != nil {
+		return fmt.Errorf("%s lesen: %w", slicePath, err)
+	}
+	title := ExtractTitle(string(raw))
+	if title == "" {
+		return fmt.Errorf("%s: keine Ueberschrift gefunden", slicePath)
+	}
+	hervorgegangen := FormatHervorgegangen(ExtractSurvivingIDs(string(raw)))
+	field, err := ReadWelleField(slicePath)
+	if err != nil {
+		return err
+	}
+	stub := SliceStubStandalone(sliceID, title, field, hervorgegangen)
+	if err := os.WriteFile(slicePath, []byte(stub), 0o644); err != nil {
+		return fmt.Errorf("%s schreiben: %w", slicePath, err)
+	}
+
+	for _, r := range reviews {
+		if err := os.Remove(r); err != nil {
+			return fmt.Errorf("%s loeschen: %w", r, err)
+		}
+	}
+	return nil
+}
+
 func readTitle(path string) (string, error) {
 	b, err := os.ReadFile(path)
 	if err != nil {

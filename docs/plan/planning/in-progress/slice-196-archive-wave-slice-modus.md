@@ -68,35 +68,42 @@ Modi sind exklusiv (`-welle` und `-slice` gleichzeitig ⇒ Exit 2).
 
 ## 4. Definition of Done
 
-- [ ] `-slice=<slice-id>`-Modus implementiert, mutually exclusive zu
-      `-welle` (Exit 2 bei beiden gesetzt oder keinem gesetzt).
-- [ ] Archiv liegt flach unter `done/slice-<NNN>-archiv.zip`, Stub trägt die
-      neue `**Archiviert:** … (eigene Closure)`-Form.
-- [ ] Ein Slice mit gesetztem `**Welle:**`-Feld wird über `-slice`
+- [x] `-slice=<slice-id>`-Modus implementiert, mutually exclusive zu
+      `-welle` (Exit 2 bei beiden gesetzt oder keinem gesetzt) —
+      `validateModeFlags` in `main.go`, separat testbar von `main()`.
+- [x] Archiv liegt flach unter `done/slice-<NNN>-archiv.zip`, Stub trägt die
+      neue `**Archiviert:** … (eigene Closure)`-Form — gegen einen echten
+      Bestands-Slice (`slice-137`) im Dry-Run smoke-getestet.
+- [x] Ein Slice mit gesetztem, echtem `**Welle:**`-Feld wird über `-slice`
       abgelehnt (Fehlermeldung, kein stilles Falsch-Archivieren).
-- [ ] Unit-Tests inkl. Fixture-Vorher/Nachher-Vergleich und beiden
-      Negativtests.
-- [ ] `make archive-wave-test` grün.
-- [ ] `make gates` grün (zehn Gates).
-- [ ] `make fullbuild` grün.
+- [x] Unit-Tests inkl. Fixture-Vorher/Nachher-Vergleich und beiden
+      Negativtests, plus ein dritter, im Vorgehen nicht benannter Test: eine
+      Meldung (nicht Behebung) toter externer Verweise auf die zu löschenden
+      Review-Reports, da für sie kein Move-Ziel existiert (`FindReferencesToPaths`).
+- [x] `make archive-wave-test` grün.
+- [x] `make gates` grün (zehn Gates).
+- [x] `make fullbuild` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
 - [ ] Unabhängige Verifikation durchgeführt.
 - [ ] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
 
 ## 5. Abnahme-Punkte / Risiken
 
-- **Das Stub-Feld `**Archiviert mit:**` bekommt eine Bedeutung, die das
-  vendorte Template nicht wörtlich trägt** (Wert ist keine Welle-Kennung,
-  sondern ein Datum + Erläuterung). Gegenmaßnahme: im Slice-Plan explizit
-  begründet (siehe §2 Punkt 4); keine Änderung am vendorten Template selbst
-  (das bleibt committet vendored).
+- **Das Feld, das im Wellen-Modus `**Archiviert mit:**` heißt, bekommt für
+  den wellenlosen Fall einen eigenen Namen (`**Archiviert:**`) und eine
+  Bedeutung, die das vendorte Template nicht wörtlich vorwegnimmt —
+  entfallen.** Umgesetzt genau wie in §2 Punkt 4 begründet:
+  `SliceStubStandalone` schreibt `**Archiviert:** <Datum> (eigene
+  Closure)`, das vendorte Template selbst bleibt unverändert (committet
+  vendored) — die Adaption lebt allein im Werkzeug-Code, nicht im Template.
 - **Ein Slice, dessen Review-Report-Namen nicht dem `slice-<NNN>`-Muster
-  folgen, wird von der Sammel-Logik nicht gefunden** — dieselbe Grenze wie
-  im bestehenden Wellen-Modus, hier nicht neu, aber erstmals gegen einzelne
-  Slices statt gegen einen ganzen Wellen-Bestand gemessen.
+  folgen, wird von der Sammel-Logik nicht gefunden — entfallen als neues
+  Risiko, benannt als Bestandsgrenze.** Dieselbe Grenze wie im bestehenden
+  Wellen-Modus (unverändert), hier nicht neu geschaffen; ob sie beim
+  Bestand aus slice-197 real zutrifft, zeigt sich erst dort.
 - **Zeitgleiche Arbeit an einem anderen Slice könnte einen neuen,
-  wellenlosen `done/`-Slice anlegen**, während slice-197 später den
-  Bestand aufnimmt — WIP-Limit 1 schützt dagegen.
+  wellenlosen `done/`-Slice anlegen — entfallen.** WIP-Limit 1 hielt; kein
+  zweiter Slice lief parallel.
 
 ## 6. Trigger
 
@@ -139,4 +146,23 @@ getesteten Werkzeugs um einen zweiten Modus, keine neue Konvention.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-<!-- wird erst bei Closure gefüllt -->
+**Geliefert:** `tools/archive-wave` bekam einen zweiten Modus (`-slice=<id>`),
+mutually exclusive zu `-welle` (`validateModeFlags`, separat testbar von
+`main()`). Neue Funktionen: `FindSlice` (collect.go), `ApplySlice`
+(archive.go), `SliceStubStandalone` (stub.go), `runSlice` (main.go),
+`FindReferencesToPaths` (rewrite.go, meldet tote Verweise auf gelöschte
+Review-Reports, da für sie kein Move-Ziel existiert). Beide Makefiles
+(`tools/archive-wave/Makefile`, Root-`Makefile`) nehmen `SLICE=` als
+Alternative zu `WELLE=` an. `AGENTS.md`s `make archive-wave`-Zeile
+nachgezogen.
+
+**Was anders lief als geplant:** nichts Wesentliches — der Umfang deckte
+sich mit §2. Ein Fixture-Bug in der eigenen Testdatei (falsche
+Pfad-Tiefe im externen Verweis, `../../` statt `../../../`) führte zu
+einem zunächst falsch-negativen Test (`TestRunSlice_DanglingReviewReference`)
+— sofort selbst gefunden und korrigiert, kein Produktcode-Fehler.
+
+**Lerneintrag:** keiner — reine Werkzeug-Erweiterung nach etabliertem
+Muster (Wellen-Modus als Vorlage), keine neue Fehlerklasse.
+
+**Risiko-Ausgänge:** siehe §5 — alle drei entfallen.

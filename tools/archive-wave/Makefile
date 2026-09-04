@@ -28,10 +28,13 @@ build: ## Binary-Image bauen
 	docker build $(PROGRESS_FLAG) --build-arg GO_VERSION=$(GO_VERSION) \
 	    -f Dockerfile -t $(IMAGE):latest .
 
-run: build ## Welle archivieren: make run WELLE=welle-NN [ROOT=/pfad] [APPLY=1].
-	@if [ -z "$(WELLE)" ]; then \
-	    echo "run: WELLE=welle-NN ist Pflicht" >&2; exit 2; \
+run: build ## Welle oder wellenlosen Slice archivieren: make run WELLE=welle-NN|SLICE=slice-NNN [ROOT=/pfad] [APPLY=1].
+	@if [ -z "$(WELLE)" ] && [ -z "$(SLICE)" ]; then \
+	    echo "run: eines von WELLE=welle-NN oder SLICE=slice-NNN ist Pflicht" >&2; exit 2; \
+	fi
+	@if [ -n "$(WELLE)" ] && [ -n "$(SLICE)" ]; then \
+	    echo "run: WELLE und SLICE sind mutually exclusive" >&2; exit 2; \
 	fi
 	docker run --rm -u "$$(id -u):$$(id -g)" \
 	    -v "$(ROOT)":/repo$(if $(APPLY),,:ro) \
-	    $(IMAGE):latest -root=/repo -welle=$(WELLE) $(if $(APPLY),-apply,)
+	    $(IMAGE):latest -root=/repo $(if $(WELLE),-welle=$(WELLE),-slice=$(SLICE)) $(if $(APPLY),-apply,)

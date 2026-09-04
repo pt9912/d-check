@@ -119,6 +119,27 @@ func SliceStub(id, title, welleField, welleID, hervorgegangen string) string {
 	)
 }
 
+// SliceStubStandalone erzeugt den Slice-Stub-Text fuer den wellenlosen
+// Einzel-Slice-Modus (slice-196): das Archiv liegt flach neben dem Stub
+// (`<id>-archiv.zip`, kein Wellen-Unterverzeichnis), und es gibt keine
+// einsammelnde Welle -- an die Stelle von "Archiviert mit: <welle-id>" tritt
+// "Archiviert: <Datum> (eigene Closure)". Dasselbe vendorte Template
+// (`archiv-stub-slice.template.md`) beschreibt beide Faelle: sein
+// "Archiviert mit"-Feld benennt die *Einsammlung*, hier eben durch die
+// eigene Closure statt durch eine Welle -- keine neue Norm, nur ein neuer
+// Feldwert (slice-196 SS2 Punkt 4).
+func SliceStubStandalone(id, title, welleField, hervorgegangen string) string {
+	return fmt.Sprintf(
+		"# %s — %s\n\n"+
+			"> **ARCHIVIERT** — Volltext:\n"+
+			"> `unzip -p done/%s-archiv.zip <pfad-im-archiv>`\n\n"+
+			"**Welle:** %s\n"+
+			"**Archiviert:** %s (eigene Closure)\n"+
+			"**Hervorgegangen:** %s\n",
+		id, title, id, welleField, placeholder, hervorgegangen,
+	)
+}
+
 // WelleStub erzeugt den Welle-Plan-Stub-Text. nSlices/nReviews sind gezaehlt,
 // nicht geschaetzt -- die Zahl, gegen die sich die Vollstaendigkeit des
 // Archivs abzaehlen laesst.

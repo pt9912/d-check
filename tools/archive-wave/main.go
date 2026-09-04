@@ -19,23 +19,40 @@ import (
 )
 
 func main() {
-	welle := flag.String("welle", "", "Wellen-Kennung, z. B. welle-87 (Pflicht)")
+	welle := flag.String("welle", "", "Wellen-Kennung, z. B. welle-87 (mutually exclusive mit -slice)")
+	sliceID := flag.String("slice", "", "Slice-Kennung eines wellenlosen Slice, z. B. slice-137 (mutually exclusive mit -welle)")
 	root := flag.String("root", ".", "Repo-Wurzel")
 	apply := flag.Bool("apply", false, "Aenderungen tatsaechlich schreiben (Default: nur anzeigen)")
 	flag.Parse()
 
-	if *welle == "" {
-		fmt.Fprintln(os.Stderr, "archive-wave: -welle ist Pflicht (z. B. -welle=welle-87)")
+	if err := validateModeFlags(*welle, *sliceID); err != nil {
+		fmt.Fprintln(os.Stderr, "archive-wave: "+err.Error())
 		os.Exit(2)
 	}
 
-	if err := run(*root, *welle, *apply); err != nil {
+	var err error
+	if *welle != "" {
+		err = runWelle(*root, *welle, *apply)
+	} else {
+		err = runSlice(*root, *sliceID, *apply)
+	}
+	if err != nil {
 		fmt.Fprintln(os.Stderr, "archive-wave: "+err.Error())
 		os.Exit(1)
 	}
 }
 
-func run(root, welleID string, apply bool) error {
+// validateModeFlags erzwingt, dass genau eines von -welle/-slice gesetzt
+// ist -- weder beides (mehrdeutig, welcher Modus?) noch keines (der alte
+// Pflicht-Fehler von vor slice-196, jetzt fuer zwei Flags statt einem).
+func validateModeFlags(welle, sliceID string) error {
+	if (welle == "") == (sliceID == "") {
+		return fmt.Errorf("genau eines von -welle oder -slice ist Pflicht (z. B. -welle=welle-87 oder -slice=slice-137)")
+	}
+	return nil
+}
+
+func runWelle(root, welleID string, apply bool) error {
 	wellePlan, err := FindWellePlan(root, welleID)
 	if err != nil {
 		return err
@@ -131,6 +148,61 @@ func previewMoves(root string, p Plan) []Move {
 		})
 	}
 	return moves
+}
+
+// runSlice archiviert einen einzelnen wellenlosen Slice (Modul 6 §Wann
+// Arbeit eine Welle braucht, "Ohne Wellen tut es die Slice-Closure selbst").
+// Anders als runWelle gibt es keinen Move fuer die Slice-Datei selbst (ihr
+// Pfad bleibt, nur der Inhalt wird ersetzt) -- ein repo-weiter
+// Verweis-Nachzug ist deshalb fuer sie unnoetig. Fuer die geloeschten
+// Review-Reports (kein Stub, kein Move-Ziel) prueft runSlice stattdessen auf
+// tote Verweise: ein Fund wird gemeldet, aber nicht blockiert -- derselbe
+// Report-vs-Fund-statt-Fehler-Umgang wie beim Wellen-Modus.
+func runSlice(root, sliceID string, apply bool) error {
+	slicePath, err := FindSlice(root, sliceID)
+	if err != nil {
+		return err
+	}
+	field, err := ReadWelleField(slicePath)
+	if err != nil {
+		return err
+	}
+	if welleIDInFieldRE.MatchString(field) {
+		return fmt.Errorf("%s gehoert zu einer Welle (Welle-Feld: %q) -- das gehoert in den -welle-Modus, nicht -slice", sliceID, field)
+	}
+	reviews, err := CollectReviews(root, []string{slicePath})
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("archive-wave: %s (wellenlos)\n", sliceID)
+	fmt.Printf("  Slice: %s\n", RelPath(root, slicePath))
+	fmt.Printf("  Review-Reports (%d):\n", len(reviews))
+	for _, r := range reviews {
+		fmt.Printf("    %s\n", RelPath(root, r))
+	}
+
+	danglers, err := FindReferencesToPaths(root, reviews, append([]string{slicePath}, reviews...))
+	if err != nil {
+		return err
+	}
+	fmt.Println("  Verweise auf die geloeschten Review-Reports (werden NICHT nachgezogen, kein Move-Ziel):")
+	if len(danglers) == 0 {
+		fmt.Println("    (keine)")
+	}
+	for _, f := range SortedKeys(danglers) {
+		fmt.Printf("    %s: %d\n", f, danglers[f])
+	}
+
+	if !apply {
+		return nil
+	}
+
+	if err := ApplySlice(root, sliceID, slicePath, reviews); err != nil {
+		return err
+	}
+	fmt.Println("  Fertig -- git status pruefen, dann Commit wie im Plan vorgesehen.")
+	return nil
 }
 
 // dropReviewSelfHits entfernt Review-Report-Pfade aus einer Treffer-Map --

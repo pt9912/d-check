@@ -44,7 +44,7 @@ func TestRun_DryRun_NoWrites(t *testing.T) {
 	root := buildFixture(t)
 	before := snapshot(t, root)
 
-	if err := run(root, "welle-99", false); err != nil {
+	if err := runWelle(root, "welle-99", false); err != nil {
 		t.Fatalf("Dry-Run schlug fehl: %v", err)
 	}
 
@@ -138,7 +138,7 @@ func TestRun_PlanOhneEigeneSlices(t *testing.T) {
 		"# Ergebnis welle-73\n")
 	writeFile(t, filepath.Join(root, "docs/reviews/.gitkeep"), "")
 
-	if err := run(root, "welle-73", true); err != nil {
+	if err := runWelle(root, "welle-73", true); err != nil {
 		t.Fatalf("erwartet Erfolg (Plan ohne eigene Slices ist legitim), got: %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(root, "docs/plan/planning/done/welle-73/archiv.zip")); err != nil {
@@ -152,7 +152,7 @@ func TestRun_WederPlanNochSlices(t *testing.T) {
 	root := t.TempDir()
 	writeFile(t, filepath.Join(root, "docs/plan/planning/done/.gitkeep"), "")
 
-	if err := run(root, "welle-404", true); err == nil {
+	if err := runWelle(root, "welle-404", true); err == nil {
 		t.Fatal("erwartet Fehler ohne Plan und ohne Slices")
 	}
 }

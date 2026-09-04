@@ -175,6 +175,60 @@ func relOrSelf(root, p string) string {
 	return rel
 }
 
+// FindReferencesToPaths meldet jede .md-Datei unter root (ausser den in
+// excludeAbs genannten), die einen Markdown-Link auf einen der Pfade in
+// targetsAbs aufloest -- ohne etwas zu schreiben. Anders als RewriteFile
+// gibt es hier kein Umschreibe-Ziel: die aufgerufene Stelle (runSlice) hat
+// fuer einen geloeschten Review-Report kein Move (kein Stub ersetzt ihn),
+// ein toter Verweis kann also nicht automatisch repariert werden -- nur
+// gemeldet.
+func FindReferencesToPaths(root string, targetsAbs, excludeAbs []string) (map[string]int, error) {
+	targets := make(map[string]bool, len(targetsAbs))
+	for _, t := range targetsAbs {
+		targets[filepath.ToSlash(relOrSelf(root, t))] = true
+	}
+	exclude := make(map[string]bool, len(excludeAbs))
+	for _, e := range excludeAbs {
+		exclude[filepath.ToSlash(relOrSelf(root, e))] = true
+	}
+
+	hits := map[string]int{}
+	err := filepath.WalkDir(root, func(p string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			if d.Name() == ".git" {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+		if !strings.HasSuffix(p, ".md") {
+			return nil
+		}
+		rel := filepath.ToSlash(relOrSelf(root, p))
+		if exclude[rel] {
+			return nil
+		}
+		b, err := os.ReadFile(p)
+		if err != nil {
+			return fmt.Errorf("%s lesen: %w", p, err)
+		}
+		n := 0
+		for _, m := range mdLinkRE.FindAllStringSubmatch(string(b), -1) {
+			resolved, _ := resolveLink(rel, m[1])
+			if targets[resolved] {
+				n++
+			}
+		}
+		if n > 0 {
+			hits[rel] = n
+		}
+		return nil
+	})
+	return hits, err
+}
+
 // SortedKeys liefert die Schluessel einer Treffer-Map sortiert -- fuer eine
 // deterministische --dry-run-Ausgabe.
 func SortedKeys(m map[string]int) []string {

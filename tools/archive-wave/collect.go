@@ -112,6 +112,40 @@ func CollectSlices(root, welleID string) ([]string, error) {
 	return out, nil
 }
 
+// FindSlice findet die Slice-Datei in <root>/docs/plan/planning/done/, deren
+// Name mit "<sliceID>-" beginnt. Genau eine Datei ist der Regelfall; keine
+// oder mehrdeutig sind beides Fehler -- anders als FindWellePlan gibt es
+// keinen legitimen Nullfall (ein wellenloser Einzel-Slice OHNE eigene Datei
+// existiert nicht, ADR/Slice-Existenz wird zwar nicht erzwungen, aber der
+// Aufrufer nennt hier ausdruecklich eine Kennung, die auflösen muss).
+func FindSlice(root, sliceID string) (string, error) {
+	dir := filepath.Join(root, "docs/plan/planning/done")
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return "", fmt.Errorf("done-Verzeichnis lesen: %w", err)
+	}
+	prefix := sliceID + "-"
+	var found []string
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		name := e.Name()
+		if strings.HasPrefix(name, prefix) && strings.HasSuffix(name, ".md") {
+			found = append(found, name)
+		}
+	}
+	switch len(found) {
+	case 0:
+		return "", fmt.Errorf("%s nicht gefunden unter %s", sliceID, RelPath(root, dir))
+	case 1:
+		return filepath.Join(dir, found[0]), nil
+	default:
+		sort.Strings(found)
+		return "", fmt.Errorf("mehrdeutig: %d Kandidaten fuer %s: %v", len(found), sliceID, found)
+	}
+}
+
 // CollectReviews findet Review-Reports in <root>/docs/reviews/, deren
 // Dateiname eine der Slice-Kennungen aus slicePaths traegt. 1:N zulaessig
 // (mehrere Reviews desselben Slice, z. B. -r1/-r2-Suffixe).
