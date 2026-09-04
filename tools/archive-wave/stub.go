@@ -120,22 +120,24 @@ func SliceStub(id, title, welleField, welleID, hervorgegangen string) string {
 }
 
 // SliceStubStandalone erzeugt den Slice-Stub-Text fuer den wellenlosen
-// Einzel-Slice-Modus: das Archiv liegt flach neben dem Stub
-// (`<id>-archiv.zip`, kein Wellen-Unterverzeichnis), und es gibt keine
-// einsammelnde Welle -- an die Stelle von "Archiviert mit: <welle-id>" tritt
-// "Archiviert: <Datum> (eigene Closure)". Dasselbe vendorte Template
+// Einzel-Slice-Modus: Stub und Archiv liegen zusammen in
+// `WellenlosArchiveDir` (archive.go), und es gibt keine einsammelnde Welle --
+// an die Stelle von "Archiviert mit: <welle-id>" tritt "Archiviert: <Datum>
+// (eigene Closure)". Dasselbe vendorte Template
 // (`archiv-stub-slice.template.md`) beschreibt beide Faelle: sein
 // "Archiviert mit"-Feld benennt die *Einsammlung*, hier eben durch die
 // eigene Closure statt durch eine Welle -- keine neue Norm, nur ein neuer
-// Feldwert.
+// Feldwert. Der d-check:ignore-Marker auf der Hervorgegangen-Zeile exempt sie
+// von der Linkpflicht: die Kennungen im archivierten Original-Volltext waren
+// zum Teil verlinkt, der Stub traegt nur noch den blossen Text.
 func SliceStubStandalone(id, title, welleField, hervorgegangen string) string {
 	return fmt.Sprintf(
 		"# %s — %s\n\n"+
 			"> **ARCHIVIERT** — Volltext:\n"+
-			"> `unzip -p done/%s-archiv.zip <pfad-im-archiv>`\n\n"+
+			"> `unzip -p done/wellenlos/%s-archiv.zip <pfad-im-archiv>`\n\n"+
 			"**Welle:** %s\n"+
 			"**Archiviert:** %s (eigene Closure)\n"+
-			"**Hervorgegangen:** %s\n",
+			"**Hervorgegangen:** %s <!-- d-check:ignore (Kennungen aus dem archivierten Volltext, absichtlich unverlinkt) -->\n",
 		id, title, id, welleField, placeholder, hervorgegangen,
 	)
 }

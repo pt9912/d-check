@@ -174,8 +174,11 @@ func runSlice(root, sliceID string, apply bool) error {
 		return err
 	}
 
+	newAbs := filepath.Join(root, WellenlosArchiveDir, filepath.Base(slicePath))
+	previewMove := Move{Old: RelPath(root, slicePath), New: RelPath(root, newAbs)}
+
 	fmt.Printf("archive-wave: %s (wellenlos)\n", sliceID)
-	fmt.Printf("  Slice: %s\n", RelPath(root, slicePath))
+	fmt.Printf("  Slice: %s -> %s\n", previewMove.Old, previewMove.New)
 	fmt.Printf("  Review-Reports (%d):\n", len(reviews))
 	for _, r := range reviews {
 		fmt.Printf("    %s\n", RelPath(root, r))
@@ -194,11 +197,31 @@ func runSlice(root, sliceID string, apply bool) error {
 	}
 
 	if !apply {
+		hits, err := PreviewRewrites(root, []Move{previewMove})
+		if err != nil {
+			return err
+		}
+		fmt.Println("  Geplante Verweis-Fixes fuer den Slice-Move (ohne -apply wird nichts geschrieben):")
+		if len(hits) == 0 {
+			fmt.Println("    (keine)")
+		}
+		for _, f := range SortedKeys(hits) {
+			fmt.Printf("    %s: %d\n", f, hits[f])
+		}
 		return nil
 	}
 
-	if err := ApplySlice(root, sliceID, slicePath, reviews); err != nil {
+	moves, err := ApplySlice(root, sliceID, slicePath, reviews)
+	if err != nil {
 		return err
+	}
+	hits, err := RewriteRepo(root, moves)
+	if err != nil {
+		return err
+	}
+	fmt.Println("  Verweise nachgezogen:")
+	for _, f := range SortedKeys(hits) {
+		fmt.Printf("    %s: %d\n", f, hits[f])
 	}
 	fmt.Println("  Fertig -- git status pruefen, dann Commit wie im Plan vorgesehen.")
 	return nil

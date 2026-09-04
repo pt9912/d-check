@@ -121,46 +121,65 @@ func Apply(root string, p Plan) ([]Move, error) {
 	return moves, nil
 }
 
+// WellenlosArchiveDir ist der gemeinsame Ablageort aller wellenlosen
+// Einzel-Slice-Archive -- ein Verzeichnis statt 1:1-Unterverzeichnissen je
+// Slice (das waeren viele fast leere Ordner mit je nur zwei Dateien, ohne
+// inhaltliche Gruppierung). Es entgeht denselben nicht-rekursiven
+// `docs/plan/planning/done/slice-*.md`-Scan-Mustern (structure,
+// planning.closure, reviews) wie `done/<welle-id>/` es fuer den Wellen-Modus
+// tut -- derselbe Fluchtweg, andere Gruppierung.
+const WellenlosArchiveDir = "docs/plan/planning/done/wellenlos"
+
 // ApplySlice archiviert einen einzelnen wellenlosen Slice (Baseline-Regelwerk
 // `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht, Zeile
 // "Zeitdokumente archivieren ... Ohne Wellen tut es die Slice-Closure
-// selbst"). Anders als Apply (Wellen-Modus) WANDERT die Slice-Datei nicht --
-// ihr Pfad bleibt, nur ihr Inhalt wird durch den Stub ersetzt, und das
-// Archiv liegt flach daneben (`<sliceID>-archiv.zip`), nicht in einem
-// Wellen-Unterverzeichnis. Es gibt deshalb keinen Move fuer den Slice
-// selbst -- nur seine Review-Reports verschwinden ersatzlos, wie im
-// Wellen-Modus auch.
-func ApplySlice(root, sliceID, slicePath string, reviews []string) error {
-	zipPath := filepath.Join(filepath.Dir(slicePath), sliceID+"-archiv.zip")
+// selbst"). Die Slice-Datei wandert nach `WellenlosArchiveDir` (Stub, alter
+// Dateiname bleibt), ihr Archiv liegt als `<sliceID>-archiv.zip` daneben.
+// Liefert den Move fuer den anschliessenden repo-weiten Verweis-Nachzug --
+// Review-Reports bekommen wie im Wellen-Modus keinen Stub und verschwinden
+// ersatzlos, ohne eigenen Move-Eintrag.
+func ApplySlice(root, sliceID, slicePath string, reviews []string) ([]Move, error) {
+	archiveDir := filepath.Join(root, WellenlosArchiveDir)
+	if err := os.MkdirAll(archiveDir, 0o755); err != nil {
+		return nil, fmt.Errorf("%s anlegen: %w", archiveDir, err)
+	}
+
+	zipPath := filepath.Join(archiveDir, sliceID+"-archiv.zip")
 	all := append([]string{slicePath}, reviews...)
 	if err := buildZip(root, zipPath, all); err != nil {
-		return err
+		return nil, err
 	}
 
 	raw, err := os.ReadFile(slicePath)
 	if err != nil {
-		return fmt.Errorf("%s lesen: %w", slicePath, err)
+		return nil, fmt.Errorf("%s lesen: %w", slicePath, err)
 	}
 	title := ExtractTitle(string(raw))
 	if title == "" {
-		return fmt.Errorf("%s: keine Ueberschrift gefunden", slicePath)
+		return nil, fmt.Errorf("%s: keine Ueberschrift gefunden", slicePath)
 	}
 	hervorgegangen := FormatHervorgegangen(ExtractSurvivingIDs(string(raw)))
 	field, err := ReadWelleField(slicePath)
 	if err != nil {
-		return err
+		return nil, err
 	}
+
+	newAbs := filepath.Join(archiveDir, filepath.Base(slicePath))
+	field = RewriteFieldForMove(RelPath(root, slicePath), RelPath(root, newAbs), field, nil)
 	stub := SliceStubStandalone(sliceID, title, field, hervorgegangen)
-	if err := os.WriteFile(slicePath, []byte(stub), 0o644); err != nil {
-		return fmt.Errorf("%s schreiben: %w", slicePath, err)
+	if err := os.WriteFile(newAbs, []byte(stub), 0o644); err != nil {
+		return nil, fmt.Errorf("%s schreiben: %w", newAbs, err)
+	}
+	if err := os.Remove(slicePath); err != nil {
+		return nil, fmt.Errorf("%s loeschen: %w", slicePath, err)
 	}
 
 	for _, r := range reviews {
 		if err := os.Remove(r); err != nil {
-			return fmt.Errorf("%s loeschen: %w", r, err)
+			return nil, fmt.Errorf("%s loeschen: %w", r, err)
 		}
 	}
-	return nil
+	return []Move{{Old: RelPath(root, slicePath), New: RelPath(root, newAbs)}}, nil
 }
 
 func readTitle(path string) (string, error) {

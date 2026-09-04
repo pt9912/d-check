@@ -26,9 +26,11 @@ func buildSliceFixture(t *testing.T) string {
 	writeFile(t, filepath.Join(root, "docs/reviews/2026-09-04-slice-602-r1.md"),
 		"# Review slice-602\n")
 	// Externer Verweis auf einen der beiden geloeschten Review-Reports --
-	// fuer den Dangling-Check-Teil des Tests.
+	// fuer den Dangling-Check-Teil des Tests -- UND auf den Slice selbst --
+	// fuer den Move-Nachzug-Teil.
 	writeFile(t, filepath.Join(root, "docs/plan/planning/in-progress/roadmap.md"),
-		"Beleg: [r1](../../../reviews/2026-09-04-slice-601-r1.md).\n")
+		"Beleg: [r1](../../../reviews/2026-09-04-slice-601-r1.md), "+
+			"[slice-601](../done/slice-601-eins.md).\n")
 	return root
 }
 
@@ -55,17 +57,21 @@ func TestRunSlice_Apply(t *testing.T) {
 		t.Fatalf("unerwarteter Fehler: %v", err)
 	}
 
-	// Die Slice-Datei bleibt an ihrem Pfad -- kein Move, nur Inhaltsersatz.
-	stubB, err := os.ReadFile(filepath.Join(root, "docs/plan/planning/done/slice-601-eins.md"))
+	// Die Slice-Datei wandert ins gemeinsame Wellenlos-Archiv-Verzeichnis --
+	// am alten Pfad bleibt nichts zurueck.
+	if _, err := os.Stat(filepath.Join(root, "docs/plan/planning/done/slice-601-eins.md")); !os.IsNotExist(err) {
+		t.Fatalf("Slice haette am alten Pfad nicht mehr existieren duerfen")
+	}
+	stubB, err := os.ReadFile(filepath.Join(root, "docs/plan/planning/done/wellenlos/slice-601-eins.md"))
 	if err != nil {
-		t.Fatalf("Stub fehlt am unveraenderten Pfad: %v", err)
+		t.Fatalf("Stub fehlt im Wellenlos-Archiv-Verzeichnis: %v", err)
 	}
 	stub := string(stubB)
 	if strings.Contains(stub, "Inhalt.") {
 		t.Fatalf("Stub traegt noch den Volltext: %q", stub)
 	}
-	if !strings.Contains(stub, "unzip -p done/slice-601-archiv.zip") {
-		t.Fatalf("Stub nennt nicht den flachen Archiv-Pfad: %q", stub)
+	if !strings.Contains(stub, "unzip -p done/wellenlos/slice-601-archiv.zip") {
+		t.Fatalf("Stub nennt nicht den Archiv-Pfad im Wellenlos-Verzeichnis: %q", stub)
 	}
 	if !strings.Contains(stub, "**Welle:** — wellenlos.") {
 		t.Fatalf("Stub hat das urspruengliche Welle-Feld nicht uebernommen: %q", stub)
@@ -74,8 +80,8 @@ func TestRunSlice_Apply(t *testing.T) {
 		t.Fatalf("Stub nennt nicht die eigene Closure als Einsammlung: %q", stub)
 	}
 
-	// Archiv liegt flach neben dem Stub, nicht in einem Unterverzeichnis.
-	zipPath := filepath.Join(root, "docs/plan/planning/done/slice-601-archiv.zip")
+	// Archiv liegt neben dem Stub im selben Verzeichnis.
+	zipPath := filepath.Join(root, "docs/plan/planning/done/wellenlos/slice-601-archiv.zip")
 	zr, err := zip.OpenReader(zipPath)
 	if err != nil {
 		t.Fatalf("archiv.zip fehlt oder unlesbar: %v", err)
@@ -109,6 +115,15 @@ func TestRunSlice_Apply(t *testing.T) {
 	// Der Fremd-Slice und sein Review bleiben unangetastet.
 	if _, err := os.Stat(filepath.Join(root, "docs/reviews/2026-09-04-slice-602-r1.md")); err != nil {
 		t.Errorf("Fremd-Review haette unangetastet bleiben muessen: %v", err)
+	}
+
+	// Der externe Verweis auf den Slice selbst ist nachgezogen.
+	roadmapB, err := os.ReadFile(filepath.Join(root, "docs/plan/planning/in-progress/roadmap.md"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(roadmapB), "done/wellenlos/slice-601-eins.md") {
+		t.Fatalf("externer Verweis auf den verschobenen Slice wurde nicht nachgezogen: %q", string(roadmapB))
 	}
 }
 
