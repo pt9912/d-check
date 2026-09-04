@@ -3,7 +3,7 @@
 **Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
 `in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
 
-**Welle:** [welle-89](../welle-89-wellenlose-review-archivierung.md) — erster
+**Welle:** [welle-89](welle-89-wellenlose-review-archivierung.md) — erster
 von zwei Slices: baut den Werkzeug-Modus, den slice-197 auf den Bestand
 anwendet.
 

@@ -19,7 +19,7 @@ Werkzeug verlangt zwingend eine `-welle`-Kennung.
 
 **Der Baseline-Bump auf `v6.0.0` (welle-88) hat die Kanon-Lücke geschlossen,
 die dieses Repo im CR
-[`2026-09-03-cr-ai-harness-course-wellenlose-review-archivierung.md`](../cr/2026-09-03-cr-ai-harness-course-wellenlose-review-archivierung.md)
+[`2026-09-03-cr-ai-harness-course-wellenlose-review-archivierung.md`](../../cr/2026-09-03-cr-ai-harness-course-wellenlose-review-archivierung.md)
 gemeldet hatte:** `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht
 nennt jetzt explizit eine Form für den wellenlosen Fall — die Slice-Closure
 selbst archiviert, Schlüssel ist der Slice: `done/slice-<NNN>-archiv.zip`,
