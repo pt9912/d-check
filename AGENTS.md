@@ -525,7 +525,7 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   seiner Zeile, mit verfasstem Reparatur-Hinweis). Sie läuft in
   `make verify-closure-notes`, **nicht** in `gates` — sonst meldete sie beim
   Arbeiten an einem laufenden Slice. Der Altbestand bis
-  [`slice-170`](docs/plan/planning/done/slice-170-workflows-modul.md) ist mit
+  [`slice-170`](docs/plan/planning/done/wellenlos/slice-170-workflows-modul.md) ist mit
   fester Ziffernzahl ausgenommen
   ([`MR-056`](harness/conventions.md#mr-056)). **Drei Grenzen gehören dazu:**
   ein Haken ist eine **Selbstauskunft** — die Regel verschiebt die Lücke von

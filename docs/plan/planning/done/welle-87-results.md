@@ -9,7 +9,7 @@
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Wellen-Closure-Prozedur, Schritt 3.
 
-Dieses Repo hatte, gemessen bei [slice-188](slice-188-register-gegen-neuen-kanon.md),
+Dieses Repo hatte, gemessen bei [slice-188](wellenlos/slice-188-register-gegen-neuen-kanon.md),
 noch nie eine Welle archiviert — der Kanon verlangt das seit Einführung der
 Regel für jede Wellen-Closure. `welle-87` liefert das fehlende Werkzeug und
 wendet es sofort auf den **gesamten** Alt-Bestand an, nicht nur auf den
