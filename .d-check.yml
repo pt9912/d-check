@@ -78,26 +78,15 @@ ignore-refs:
   - in: docs/reviews/2026-09-02-slice-187-handbuch-url-code-r1.md
     refs:
       - "docs/plan/planning/in-progress/slice-187-handbuch-url-beide-formen.md"
-  - in: "docs/reviews/2026-08-09-*.md"
-    refs:
-      - "docs/plan/planning/open/slice-099-structure-modul-kern.md"
-      - "docs/plan/planning/open/slice-099-structure-modul.md"
-      - "docs/plan/planning/open/slice-100-structure-marken-und-zaehlung.md"
-      - "docs/plan/planning/in-progress/slice-096-structure-modul-analyse.md"
-      - "docs/plan/planning/welle-69-structure-schnitt.md"
-      - "docs/plan/planning/open/slice-101-fence-unbalanciert.md"
-      - "docs/plan/planning/open/slice-098-closure-note-placeholder.md"
-      - "docs/plan/planning/open/slice-094-closure-zaehl-paritaet.md"
-      - "docs/plan/planning/in-progress/slice-094-closure-zaehl-paritaet.md"
-      - "docs/plan/planning/in-progress/slice-101-fence-unbalanciert.md"
-      - "docs/plan/planning/open/slice-097-closure-glob-entkopplung.md"
-  - in: "docs/reviews/2026-08-10-*.md"
-    refs:
-      - "docs/plan/planning/in-progress/slice-097-closure-glob-entkopplung.md"
-      - "docs/plan/planning/in-progress/slice-098-closure-note-placeholder.md"
-      - "docs/plan/planning/in-progress/slice-104-floskel-wortgrenze.md"
-      - "docs/plan/planning/welle-72-closure-semantik.md"
-      - "docs/plan/planning/open/slice-098-closure-note-placeholder.md"
+  # Die beiden Glob-Eintraege fuer 2026-08-09/2026-08-10 sind mit slice-199
+  # (welle-90) entfernt: ihre einzigen Treffer -- 2026-08-09-backlog-schnitt-
+  # review.md und 2026-08-10-welle-72-closure-semantik-review.md -- wurden
+  # als eigenstaendige Reviews archiviert (`-review=<datei> -apply`,
+  # MR-063). Der Volltext, der die ignorierten Verweise trug, existiert am
+  # alten Pfad nicht mehr; der Stub unter docs/reviews/archiv/ traegt sie
+  # nicht (nur `Hervorgegangen:`-Kennungen). Ein Nachziehen des Ventils auf
+  # den Archiv-Pfad waere gegenstandslos -- gefunden von der unabhaengigen
+  # Review von slice-199 (F-2).
   - in: docs/plan/adr/0022-matrix-token-richtung-provenance-marker.md
     refs: [".harness/baseline/v1.4.0/**"]
   - in: docs/plan/planning/done/slice-080-sources-modul.md

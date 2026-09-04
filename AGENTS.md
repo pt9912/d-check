@@ -227,6 +227,18 @@ unverändertem Inhalt. Anders als die Register-Formatmigration ist dies ein
 der Wellen-Archiv-Stub-Move — nur mit anderem Geltungsbereich. Kanonisch:
 [`MR-062`](harness/conventions.md#mr-062--wellenloser-einzel-slice-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013).
 
+**Ausnahme Eigenständiger Review-Archiv-Move** (`tools/archive-wave
+-review=<datei>`, seit slice-198): dieselbe Begründung wie bei den beiden
+vorigen Ausnahmen — der Stub ersetzt den Volltext des Review-Reports im
+selben Akt, der ihn nach `docs/reviews/archiv/` verschiebt, ohne Phase mit
+unverändertem Inhalt. Anders als bei Welle und Einzel-Slice dürfen hier
+zusätzlich **mehrere unabhängige Review-Moves in einem gemeinsamen Commit
+gebündelt werden**, wenn die Operation mechanisch uniform und
+werkzeug-verifiziert bleibt (kein inhaltliches Unterscheidungsurteil je
+Datei) — dieselbe Praxis, die der Einzel-Slice-Modus bereits vorlebt (45
+gebündelte Archive in einem Commit, slice-197). Kanonisch:
+[`MR-063`](harness/conventions.md#mr-063--eigenständiger-review-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013).
+
 ### 3.4 Architektur sprach-/meilensteinfrei; Spec-Straten nie abwärts
 
 [`spec/architecture.md`](spec/architecture.md) benennt Schichten und
