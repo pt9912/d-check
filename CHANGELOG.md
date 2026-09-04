@@ -4,6 +4,25 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.74.1] — 2026-09-04
+
+### Security
+
+- slice-201 — **`golang.org/x/crypto` v0.55.0 auf v0.56.0 gehoben** — behebt
+  zwei behebbare CVEs im ausgelieferten Image, `CVE-2026-56855` und
+  `CVE-2026-78662` (DoS über eine deadlocked/undecided SSH-Channel-Race,
+  `GO-2026-6355`/`GO-2026-6354`), beide laut `vuln.go.dev`/`osv.dev` mit Fix
+  in `v0.56.0`. **Keine Software-Änderung am Prüf-Verhalten:** Modulsatz,
+  Grund-Codes und Konfigurations-Fläche sind unverändert, der Befundsatz
+  bleibt byte-identisch. `go.mod`s eigene `go`-Zeile wurde als notwendige
+  Nebenwirkung von `1.25.0` auf `1.26.0` gehoben (Mindestanforderung von
+  `x/crypto v0.56.0` selbst) — keine Toolchain-Änderung, `GO_VERSION` im
+  Makefile bleibt unverändert und lag schon vorher darüber. Gefunden über
+  einen Fremd-Scanner (Docker Scout), **bevor** Trivys eigene Vuln-DB die
+  Severity nachzog — der Nachtlauf `make image-scan` blieb deshalb zunächst
+  grün, obwohl der Fund im Vollbericht stand (Severity `UNKNOWN`); als
+  Beobachtung festgehalten (`BEO-ALL/scanner-vendor-severity-lag`).
+
 ## [0.74.0] — 2026-09-04
 
 ### Added
