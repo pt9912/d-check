@@ -217,6 +217,16 @@ trägt, bereits verbraucht und begründet keinen künftigen Formatwechsel.
 Kanonisch:
 [`MR-061`](harness/conventions.md#mr-061--register-formatmigration-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013).
 
+**Ausnahme Wellenloser Einzel-Slice-Archiv-Move** (`tools/archive-wave
+-slice=<id>`, seit slice-196): dieselbe Begründung wie beim
+Wellen-Archiv-Stub-Move, jetzt für den wellenlosen Modus — der Stub ersetzt
+den Volltext im selben Akt, der die Slice-Datei nach
+`docs/plan/planning/done/wellenlos/` verschiebt, ohne Phase mit
+unverändertem Inhalt. Anders als die Register-Formatmigration ist dies ein
+**wiederkehrender** Vorgang (jeder künftige `-slice=<id> -apply`-Lauf), wie
+der Wellen-Archiv-Stub-Move — nur mit anderem Geltungsbereich. Kanonisch:
+[`MR-062`](harness/conventions.md#mr-062--wellenloser-einzel-slice-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013).
+
 ### 3.4 Architektur sprach-/meilensteinfrei; Spec-Straten nie abwärts
 
 [`spec/architecture.md`](spec/architecture.md) benennt Schichten und

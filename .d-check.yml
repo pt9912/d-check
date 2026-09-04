@@ -260,11 +260,6 @@ ignore-refs:
     refs:
       - "docs/reviews/2026-08-31-slice-185-code-r1.md"
       - "docs/reviews/2026-08-31-slice-185-verifikation.md"
-  # Dieselbe Grenze, diesmal an einem done/-Slice statt einem Review-Report
-  # oder einer ADR (welle-79-Archivierung, slice-191): der Slice zitiert den
-  # Review-Befund, der ihn ausloeste, als Lauf-Beleg.
-  - in: docs/plan/planning/done/slice-112-wellen-invariante-kennungs-menge.md
-    refs: ["docs/reviews/2026-08-21-slice-111-waves-mode-review.md"]
   # Dieselbe Grenze, diesmal als Inline-Code-Pfad (Modul codepaths statt
   # links -- beide honorieren dasselbe ignore-refs-Ventil), welle-21-
   # Archivierung (slice-191): eine ADR und ein done/-Slice zitieren den
