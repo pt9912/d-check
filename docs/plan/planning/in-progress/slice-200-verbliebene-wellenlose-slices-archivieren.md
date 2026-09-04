@@ -17,7 +17,7 @@ archivierbar sind (per Dry-Run bestätigt).
 
 **Berührte Spec-Stellen:** — (Bestandspflege, keine neue Anforderung).
 
-**Verantwortlich:** —.
+**Verantwortlich:** claude-sonnet-5.
 
 **Autor:** pt9912. **Datum:** 2026-09-04.
 
