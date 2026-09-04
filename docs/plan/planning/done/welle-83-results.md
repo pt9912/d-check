@@ -38,7 +38,7 @@ Handlungs-Antwort sind abgearbeitet:
   widerlegt, Reviewer-Skill auf 1.10.0.
 
 Dazu, außerhalb der Welle und von ihr entblockt:
-[slice-127](wellenlos/slice-127-claude-md-pointer.md) — `CLAUDE.md` steht auf vier Zeilen
+[slice-127](slice-127-claude-md-pointer.md) — `CLAUDE.md` steht auf vier Zeilen
 und verweist; zwei Hard Rules, die dort allein standen, sind nach `AGENTS.md`
 umgezogen.
 
@@ -185,5 +185,5 @@ Gelesen zur Closure ([`observations.md`](../observations.md)):
   Verdikt: **0 HIGH, 13 MEDIUM, 6 LOW, 1 INFO** — aus den Kategorie-Summaries
   der vier Reporte gezählt, nicht geschätzt. Alle eingearbeitet, jede
   Einarbeitung nachgemessen. Die zwei Reviews zu
-  [slice-127](wellenlos/slice-127-claude-md-pointer.md) sind hier **nicht** mitgezählt:
+  [slice-127](slice-127-claude-md-pointer.md) sind hier **nicht** mitgezählt:
   der Slice lief neben der Welle, nicht in ihr.

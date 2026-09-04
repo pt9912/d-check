@@ -74,7 +74,7 @@ unbequemere und die richtige Lesart, und sie gehört in die Closure-Notiz.
    warten und den Slice bis dahin ruhen lassen.
 
    **Entschieden bei Beanspruchung (2026-09-02): die Frage hat sich von selbst
-   erledigt.** [slice-189](wellenlos/slice-189-baseline-v5180.md) hat den Pin
+   erledigt.** [slice-189](../done/slice-189-baseline-v5180.md) hat den Pin
    zwischenzeitlich auf `v5.18.0` gehoben — der vendorte Baum trägt die beiden
    zitierten Regeln jetzt wörtlich:
 
@@ -152,7 +152,7 @@ unbequemere und die richtige Lesart, und sie gehört in die Closure-Notiz.
   (slice-188 selbst); keine Zeile wurde ohne Beleg gehoben. Nicht eingetreten.
 - **Die Regeln sind unreleast.** Ein Zitat auf sie ist heute nicht auflösbar,
   und ein Slice, der auf eine `main`-Fassung baut, kann veralten, bevor er
-  schließt. — **Ausgang: entfallen.** Durch [slice-189](wellenlos/slice-189-baseline-v5180.md)
+  schließt. — **Ausgang: entfallen.** Durch [slice-189](../done/slice-189-baseline-v5180.md)
   gegenstandslos geworden, bevor dieser Slice es ziehen musste — siehe §2
   Punkt 1.
 - **Die Stand-Umstellung berührt 14 Zellen mit gewachsener Prosa.** Beim
@@ -199,7 +199,7 @@ eigener Schnitt und keine Nebenwirkung dieser Korrektur.
   beim Umstellen geht leicht verloren, was sie zusätzlich sagten;
   [`BEO-012`](../observations.md) (Zähler jetzt **12**, war 11) — die Frage
   „liegt die Quelle im gepinnten Baum" ist seit dem Baseline-Bump auf
-  `v5.18.0` ([slice-189](wellenlos/slice-189-baseline-v5180.md)) mit Ja
+  `v5.18.0` ([slice-189](../done/slice-189-baseline-v5180.md)) mit Ja
   beantwortet (siehe §2 Punkt 1), die Wachsamkeit der Klasse bleibt trotzdem
   für jedes künftige Zitat gültig. Die Regel, die diesen Schritt vorschreibt:
 
@@ -244,7 +244,7 @@ dieses Repo noch nie durchgeführt hat — für die aktuell offene
 Nachrüst-Ausnahme **nicht**, und kein Werkzeug führt die Archivierung aus.
 
 **Was funktioniert hat.** Die Timing-Frage aus §2 Punkt 1 hat sich von
-selbst erledigt — [slice-189](wellenlos/slice-189-baseline-v5180.md) hob den
+selbst erledigt — [slice-189](../done/slice-189-baseline-v5180.md) hob den
 Baseline-Pin zwischenzeitlich auf `v5.18.0`, und der zitierte Kanon-Abschnitt
 steht seither wörtlich im vendorten Baum. Die Methode „nur anhängen, nie
 umschreiben" für die Stand-Zellen hat den in §5 befürchteten

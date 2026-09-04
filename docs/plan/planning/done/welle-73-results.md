@@ -113,8 +113,8 @@ verkörpert) und neu **BEO-005**.
 
 - [slice-103](welle-74/slice-103-geteilte-lexik-raender.md) — dieselbe
   Drift-Klasse in anderen Lexiken; durch BEO-003 zum zweiten Mal belegt.
-- [slice-095](wellenlos/slice-095-links-resolve-from.md) und
-  [slice-102](wellenlos/slice-102-wellen-lifecycle-invariante.md) lagen bei
+- [slice-095](slice-095-links-resolve-from.md) und
+  [slice-102](../done/slice-102-wellen-lifecycle-invariante.md) lagen bei
   dieser Closure unverändert in `open/` (beide inzwischen umgesetzt —
   die Links zeigen auf ihre heutigen Orte, die Aussage gilt dem Closure-Zeitpunkt).
 - **Kein** Folge-Slice für BEO-001: der `registry`-Vorschlag steht im Register

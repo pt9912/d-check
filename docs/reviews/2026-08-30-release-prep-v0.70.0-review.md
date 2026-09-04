@@ -148,7 +148,7 @@ Korrektur an sich selbst:
 
 > *„«276 Befunde» nannte weder Glob noch Selektor; die Verifikation maß mit drei plausiblen
 > Varianten 164/331/161 und konnte sie ohne den Korpus nicht reproduzieren"*
-> ([slice-178](../plan/planning/done/wellenlos/slice-178-offene-tasks-roh.md), §Lerneintrag)
+> ([slice-178](../plan/planning/done/slice-178-offene-tasks-roh.md), §Lerneintrag)
 
 Die Prep hat die Zahl aus der Closure-Notiz ins **eingefrorene** Release-Protokoll
 übernommen — samt der Eigenschaft, wegen der sie dort schon beanstandet war. `AGENTS.md` §5

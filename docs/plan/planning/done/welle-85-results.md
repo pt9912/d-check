@@ -89,10 +89,10 @@ Lese-Schritt über die Bewegungen dieser Welle:
 
 | Eintrag | Stand | Was daraus folgt |
 |---|---|---|
-| [`BEO-008`](../observations.md) | 3 → **4** | Vierte Klasse benannt; die mechanische Form existiert im Produkt (`citations`) und ist blockiert — [slice-152](wellenlos/slice-152-citations-scharfschalten.md) |
+| [`BEO-008`](../observations.md) | 3 → **4** | Vierte Klasse benannt; die mechanische Form existiert im Produkt (`citations`) und ist blockiert — [slice-152](../done/slice-152-citations-scharfschalten.md) |
 | [`BEO-009`](../observations.md) | 3 → **5** | Beide neuen Instanzen Richtung (a); dabei die eigene **Beleg-Form-Lücke** des Eintrags benannt statt geglättet |
 | [`BEO-017`](../observations.md) | neu, **3** | Der Kanon trägt die Regel seit `v5.12.0` — auf unseren CR hin; keine Regelzeile hier, aber eine Prozedur |
-| [`BEO-012`](../observations.md) | 4 | Unverändert in dieser Welle; die Feedforward-Hälfte wartet in [slice-147](wellenlos/slice-147-reviewer-anker-reichweite.md) |
+| [`BEO-012`](../observations.md) | 4 | Unverändert in dieser Welle; die Feedforward-Hälfte wartet in [slice-147](../done/slice-147-reviewer-anker-reichweite.md) |
 
 ## Folge-Slices
 
@@ -101,11 +101,11 @@ Pin-Hebung nicht mehr berührt — sie sind ab jetzt **wellenlos**
 (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht: ihre
 Closure-Bedingung geht nicht über die eigene DoD hinaus):
 
-- [slice-151](wellenlos/slice-151-urteilsfreie-haelfte-voll.md) — die urteilsfreie
+- [slice-151](../done/slice-151-urteilsfreie-haelfte-voll.md) — die urteilsfreie
   Hälfte so weit ziehen, wie `modul-05` sie seit `v5.12.0` benennt. Der Kurs hat
   das ausdrücklich als unsere Entscheidung und **kein Konformitätsthema**
   bezeichnet.
-- [slice-152](wellenlos/slice-152-citations-scharfschalten.md) — `citations`
+- [slice-152](../done/slice-152-citations-scharfschalten.md) — `citations`
   scharfschalten. Der Blocker ist älter als diese Welle (Design-Review des
   Moduls, 2026-07-18).
 

@@ -433,7 +433,7 @@ vorsieht ("die Slice-Datei selbst ist im Move-Commit unverändert"). Praktisch
 folgenlos — `git log --follow` hält (die Similarity liegt weit über der
 50-%-Schwelle, gemessen), `make gates` blieb grün —, aber es ist eine
 Abweichung von der etablierten Form (verglichen mit dem Vorgehen bei
-[slice-182](wellenlos/slice-182-erklaerte-leermenge.md): dort blieben alle DoD-Haken bis
+[slice-182](slice-182-erklaerte-leermenge.md): dort blieben alle DoD-Haken bis
 zum Closure-Body-Commit offen). **Prozedur, präzisiert:** der letzte DoD-Haken
 gehört wie alle anderen erst in den Body-Commit nach dem Move, nicht in einen
 Zwischen-Commit davor.

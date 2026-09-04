@@ -10,7 +10,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Wellen-Closure-Prozedur, Schritt 3 — *was gelernt wurde*: geliefert · was
 funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
 
-- **Die Wellen-Invariante** ([slice-102](wellenlos/slice-102-wellen-lifecycle-invariante.md)):
+- **Die Wellen-Invariante** ([slice-102](slice-102-wellen-lifecycle-invariante.md)):
   dritte Fähigkeit des Moduls `planning`, vier Aussagen mit je eigenem
   Grund-Code (`wave-drift` · `wave-preview-exists` · `wave-results-missing` ·
   `wave-unregistered`), opt-in über `planning.waves.dir`.
@@ -101,7 +101,7 @@ verkörpert), **BEO-005** (1×).
 
 ## Folge-Slices
 
-- [slice-095](wellenlos/slice-095-links-resolve-from.md) lag bei dieser
+- [slice-095](slice-095-links-resolve-from.md) lag bei dieser
   Closure unverändert in `open/` (inzwischen umgesetzt — der Link zeigt auf
   seinen heutigen Ort, die Aussage gilt dem Closure-Zeitpunkt); die
   Chronologie-Ordnung (**BEO-005**) steht als geplante Welle in der Vorschau.
@@ -111,7 +111,7 @@ verkörpert), **BEO-005** (1×).
 
 ## Verifikation
 
-- **Closure-Trigger erfüllt:** [slice-102](wellenlos/slice-102-wellen-lifecycle-invariante.md)
+- **Closure-Trigger erfüllt:** [slice-102](slice-102-wellen-lifecycle-invariante.md)
   in `done/`; die Bestandsmessung lag **vor** jeder Scharfschaltung (je Aussage,
   §3a); **BEO-001 ist entschieden** (geschlossen für die eingetretene Instanz);
   Release **v0.59.0** samt Digest-Backfill; `make fullbuild` grün, Image-Hash

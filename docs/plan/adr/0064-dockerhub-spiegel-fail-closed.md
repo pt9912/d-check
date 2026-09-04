@@ -99,5 +99,5 @@ Anforderung, nicht ein stiller Notausgang.
 
 | Datum | Ereignis | Verweis |
 |---|---|---|
-| 2026-08-27 | Accepted | [slice-165](../planning/done/wellenlos/slice-165-dockerhub-spiegel.md) |
+| 2026-08-27 | Accepted | [slice-165](../planning/done/slice-165-dockerhub-spiegel.md) |
 | 2026-08-28 | Digest-Größe und die d-migrate-Zuschreibung abgelöst — dieselbe Zusage, die andere Größe | [ADR-0065](0065-spiegel-gleichheit-ist-der-config-digest.md) |

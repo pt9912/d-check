@@ -40,7 +40,7 @@
   liegen: `slice-0??-*`, `slice-1[0-6]?-*`, `slice-170-*`.
 
   **Die Grenze ist ein Datum, kein Aufräum-Rest.** Sie endet bei
-  [slice-171](../../docs/plan/planning/done/wellenlos/slice-171-vorpruefungen-belegen.md),
+  [slice-171](../../docs/plan/planning/done/slice-171-vorpruefungen-belegen.md),
   dem ersten Slice unter der korrigierten Praxis. Gemessen halten die Slices
   171–182 ihre Haken gesetzt: **acht** Dateien liegen dort (172 ist in Arbeit, 173–175 gibt es noch nicht), und keine trägt einen offenen Haken.
 

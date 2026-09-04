@@ -1,0 +1,409 @@
+# Slice slice-182: Eine erklärte Teilmenge darf die Menge leeren — wenn sie sagt, wie viele
+
+**Lifecycle:** Der Zustand dieses Slice ist das **Verzeichnis** (`open/`/`next/`/
+`in-progress/`/`done/`), bewegt per `git mv` — kein Status-Feld.
+
+**Welle:** — **wellenlos**. Sein Closure-Grund geht über die eigene DoD nicht
+hinaus (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle
+braucht); der Anlass ist ein **eingehender CR**, keine Welle.
+
+**Bezug:** [der eingehende CR 4](../../cr/2026-08-30-cr-a-check-leermenge.md)
+(Antrag und Beleg des Absenders);
+[CR 3](../../cr/2026-08-30-cr-a-check-structure-teilmenge.md) samt
+[Antwort](../../cr/2026-08-30-antwort-a-check-structure-teilmenge.md) (der
+Vorgänger, aus dessen Anwendung dieser Antrag kommt);
+[`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
+(das erweiterte Modul);
+[ADR-0075](../../adr/0075-erklaerte-teilmenge-in-structure.md) (die
+Nullmengen-Härte, deren Reichweite hier zurückgeschnitten wird).
+
+**Berührte Spec-Stellen:**
+[`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in),
+seine `.a`-Verfeinerung (Schritt 3, §2-Schema, §4-Grund-Codes) und
+[`DC-FA-CLI-007`](../../../../spec/lastenheft.md#dc-fa-cli-007--diagnose-modus)
+— letztere **nur zur Abgrenzung**, sie wird nicht geändert.
+
+**Verantwortlich:** pt9912 (Implementer-Rolle, beansprucht 2026-08-30).
+
+**Autor:** pt9912. **Datum:** 2026-08-30.
+
+---
+
+## 1. Ziel
+
+**Zwei verschiedene Zustände teilen sich einen Grund-Code.** Seit
+[ADR-0075](../../adr/0075-erklaerte-teilmenge-in-structure.md) meldet eine
+Regel `section-missing`, wenn `exempt-section-pattern` **alle** Treffer
+abzieht. Der Absender von
+[CR 4](../../cr/2026-08-30-cr-a-check-leermenge.md) hat gemessen, dass das
+seinen Bestand trifft: 19 Anforderungen, 19 grandfathert, 19 passende
+Abschnitte — und die Regel meldet rot, wo das abgelöste Skript
+`0 neue AC(s) geprueft, 19 grandfathered` mit Exit 0 meldete. **Das Modul
+macht mehr rot als der Sensor, den es ablöst.**
+
+| Zustand | Bedeutung | heute |
+|---|---|---|
+| `section-pattern` trifft **nichts** | Konfigurationsdefekt | `section-missing` — richtig |
+| Muster trifft, Ausnahme nimmt **alle** | Bestandszustand: *„noch nichts Neues zu prüfen"* | `section-missing` — falsch |
+
+**Die Härte bleibt richtig, ihre Reichweite ist zu weit.** [ADR-0075](../../adr/0075-erklaerte-teilmenge-in-structure.md) begründet
+sie damit, dass ein zu breites Muster die Regel sonst **still** abschaltet. Das
+trifft ein **generisches** Muster. Ein **aufzählendes**, das 19 Kennungen
+einzeln nennt, kann nicht versehentlich zu breit werden — es kann nur
+**veralten**.
+
+## Der Antrag ist angenommen, seine Form nicht — und das ist gemessen
+
+Der Absender beantragt `exempt-may-empty: true` und trägt die Sichtbarkeit
+nach `--doctor`. Er nennt den Preis selbst *„schwächer"*.
+
+**Gemessen ist er unbestimmt.** `--doctor` läuft in **keinem** Gate dieses
+Repos — nicht im `Makefile`, nicht in `.github/workflows/`, nicht im
+`pre-commit`-Hook. Beim Konsumenten sieht es anders aus: `--print-mk`
+**verteilt** ein `doc-doctor`-Target, und
+[`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+schreibt es vor. Ein Target ist aber kein Gate-Lauf — ob er es in seine Kette
+hängt, weiß dieses Repo nicht und hat es nicht gefragt. Eine Zeile dort
+erreicht nur den, der ohnehin nachsieht; für den Bestandszustand, um den es
+geht, sieht niemand nach.
+
+**Die erste Fassung dieses Absatzes sagte „null" und stützte sich auf eine
+Behauptung über `--print-mk`, die nie gemessen wurde** — der Review hat sie
+mit einem Produktlauf widerlegt. Der Fehler ist die Klasse
+[`BEO-020`](../observations.md): gemessen wurde die eigene Menge (unsere
+Gate-Dateien), ausgesagt wurde über die fremde (das verteilte Fragment).
+
+**Die Antwort ist deshalb eine Deklaration statt einer Erlaubnis.** Nicht
+*„darf leer sein"*, sondern *„so viele sind es"* — `exempt-expect-count`. Damit
+bleibt die Prüfung im **Gate-Lauf**, und genau das, was der Absender als
+einziges Risiko benennt (*„es kann nur veralten"*), wird **laut**, statt in
+einem Modus zu landen, den niemand fährt.
+
+## 2. Vorgehen
+
+1. **`exempt-expect-count` (int ≥ 0) an `exempt-section-pattern`.** Stimmt die
+   Zahl mit den tatsächlich ausgenommenen Abschnitten überein, entsteht **kein**
+   Nullmengen-Befund. Stimmt sie nicht, entsteht einer — auch dann, wenn noch
+   Abschnitte übrig sind.
+2. **Ein neuer Grund-Code, und das ist eine Abweichung vom Antrag.** Er sagt
+   *„kein neuer Grund-Code"*; das galt seiner Form. Eine **Zahl** kann nicht
+   stimmen, und dieser Zustand verlangt eine andere Reparatur (*Aufzählung oder
+   Zahl nachziehen*) als `section-missing` (*Selektor korrigieren*).
+   Die Befund-Deduplikation läuft über (Datei, Zeile, Regel, Ziel, Grund) —
+   zwei Bedeutungen unter einem Code fielen zusammen. Vorschlag:
+   `section-exempt-mismatch` — die Form folgt `section-heading-mismatch`.
+   **Nicht** berufen auf den Grundsatz *jede mit eigenem Grund-Code* aus
+   [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in):
+   der gilt dort den **Bedingungen im Abschnitt**, und die Ventil-Familie
+   trägt ausdrücklich keinen eigenen Code.
+3. **Die Drift ist beidseitig.** Mehr ausgenommen als deklariert ist ebenso ein
+   Befund wie weniger. Wer die Aufzählung erweitert, ohne die Zahl zu ziehen,
+   hat dieselbe Lücke wie umgekehrt — eine einseitige Prüfung wäre ein halber
+   Wächter.
+4. **`0` bleibt erlaubt und bedeutet etwas:** *„das Muster soll heute noch
+   nichts treffen"* — ein Bestand, der erst wächst. Es zu verbieten nähme dem
+   Schlüssel seinen Vorwärts-Fall.
+5. **Der Schlüssel greift nur nach dem Abzug.** Trifft schon `section-pattern`
+   nichts, bleibt es `section-missing` — genau die Trennung aus §1, und sie
+   gehört als Test.
+6. **Zwei offene Fragen werden beim Bauen entschieden und begründet**, nicht
+   angenommen: ob `exempt-expect-count` in die **Regel-Identität** gehört
+   (Vermutung: nein — zwei Regeln mit gleichem Selektor **und** gleicher
+   Ausnahme, aber verschiedener Zahl sind ein Widerspruch, kein Paar), und ob
+   der neue Befund ein **raw** Finding ist wie der Nullmengen-Befund
+   (Vermutung: nein — dort hat die Regel nicht gemessen, hier hat sie eine
+   Deklaration widerlegt).
+7. **Config-Ränder, fail-closed:** der Schlüssel **ohne**
+   `exempt-section-pattern` ⇒ Exit 2 (halbe Aktivierung, Präzedenz
+   `table.order-column` ohne `table.order`); ein Wert **< 0** ⇒ Exit 2.
+8. **Umkehr-Proben je Zusage** ([`BEO-023`](../observations.md), Zähler **5**):
+   je Mutation genau die Tests, die dagegen stehen — und für jeden
+   Regressions-Test der Beleg, dass der **Vorzustand** an seinem Fixture
+   scheitert. Kein Anker einer Assertion darf still auf eine schwächere Form
+   zurückfallen.
+9. **ADR** (§3.6: die geprüfte Menge zu verkleinern ist eine **Lockerung**),
+   Lastenheft-Bump samt Historie mit CR-Bezug, `.a`-Verfeinerung **und**
+   §4-Grund-Code-Tabelle, `--print-config`-Gerüst, Handbuch.
+10. **Antwort an den Absender** mit den drei Abweichungen und der
+    `--doctor`-Messung, die sie trägt.
+11. `make gates`, `make fullbuild`; **Review** und **Verifikation** als
+    getrennte Läufe; Closure.
+
+## 3. Ausdrücklich NICHT in diesem Slice
+
+- **Kein Schweregrad in `model.Finding`.** Der erste Entwurf des Absenders
+  hätte ihn stillschweigend eingeführt;
+  [`DC-FA-CLI-003`](../../../../spec/lastenheft.md#dc-fa-cli-003--exit-codes)
+  führt differenzierte Exit-Codes ausdrücklich als Out-of-Scope. Wenn das
+  Werkzeug je einen bekommt, ist das ein **eigener** Entscheid.
+- **Keine `--doctor`-Zeile als Träger der Sichtbarkeit.** Sie wäre die Form des
+  Antrags; die gewählte braucht sie nicht. **Nicht gemeint ist der
+  Grund-Code-Klartext:** `--doctor` führt für **jeden** Grund-Code eine
+  erklärende Zeile, und ein Test hält diese Deckung gegen die Spezifikation —
+  der neue Code bekommt sie also zwangsläufig. Das ist Bestands-Mechanik, keine
+  Sichtbarkeits-Entscheidung.
+- **Kein `exempt-may-empty` daneben.** Zwei Schlüssel für eine Frage sind die
+  Verdopplung, die [ADR-0070](../../adr/0070-tabellen-klammer-und-spaltenliste.md)
+  für die Tabellen-Bedingungen zurückgebaut hat.
+- **Nichts für `exempt-paths`.** Der Absender grenzt es selbst ab: ein
+  Datei-Glob ist generisch und kann einen ganzen Baum verschlucken; eine
+  Abschnitts-Aufzählung in **einer** Datei kann das nicht.
+- **Kein Anwenden auf den eigenen Bestand.** Dieses Repo führt heute keine
+  Regel mit `exempt-section-pattern`; ob eine entsteht, ist ein eigener
+  Entscheid nach der Fähigkeit.
+
+## 4. Definition of Done
+
+- [x] `exempt-expect-count` ist im Schema, im `--print-config`-Gerüst, in
+      [`spec/lastenheft.md`](../../../../spec/lastenheft.md) (Bump + Historie
+      mit CR-Bezug) und in
+      [`spec/spezifikation.md`](../../../../spec/spezifikation.md) (Schritt 3,
+      §2-Schema, §4-Grund-Code) geführt.
+- [x] **Default byte-identisch, gemessen:** ein Lauf ohne den Schlüssel liefert
+      denselben Befundsatz wie vor der Änderung — gegen das Vorgänger-Image,
+      nicht gegen einen grünen Lauf.
+- [x] **Die deklarierte Leermenge ist stumm:** N Abschnitte, N ausgenommen,
+      `exempt-expect-count: N` ⇒ **kein Befund**, Exit 0. Mit Test.
+- [x] **Die Drift ist beidseitig laut:** weniger **und** mehr ausgenommen als
+      deklariert ⇒ `section-exempt-mismatch`. Je ein Test.
+- [x] **Die Trennung hält:** trifft `section-pattern` nichts, bleibt es
+      `section-missing` — auch mit gesetztem Schlüssel. Mit Test.
+- [x] **Zwei Config-Ränder:** ohne `exempt-section-pattern` ⇒ Exit 2; Wert < 0
+      ⇒ Exit 2. Je ein Test.
+- [x] **Die zwei offenen Fragen sind entschieden und begründet** (Identität,
+      raw-vs-hint) — im Code-Kommentar und in der ADR, nicht nur im Kopf.
+- [x] **Umkehr-Proben** je Zusage, jede von den Tests gefangen, die dagegen
+      stehen; je Regressions-Test der Beleg, dass der **Vorzustand** an diesem
+      Fixture scheitert ([`BEO-023`](../observations.md)).
+- [x] Eine ADR begründet Verortung, den **neuen Grund-Code**, die beidseitige
+      Drift und die Abweichung von der beantragten Form; im
+      [ADR-Index](../../adr/README.md) eingetragen.
+- [x] Das [Benutzerhandbuch](../../../user/benutzerhandbuch.md) führt den
+      Schlüssel samt der Falle, die ihn nötig macht.
+- [x] Der Absender bekommt eine **Antwort** — angenommen in der Sache,
+      abgelehnt in der Form, mit der `--doctor`-Messung, die das trägt.
+- [x] `make gates` und `make fullbuild` grün (Exit explizit); **unabhängiger
+      Review**; **Verifikation** gegen DoD/Spec — beide in eigenen Kontexten.
+
+## 5. Abnahme-Punkte / Risiken
+
+- **Die geprüfte Menge zu verkleinern bleibt eine Lockerung** — jetzt eine mit
+  Zahl, aber der Bestandszustand ist ab dann stumm. Wer die Zahl mitzieht, ohne
+  die Aufzählung zu prüfen, hat einen Wächter, der nur noch sich selbst
+  bestätigt. — **Ausgang: weiter offen.** Nicht auflösbar: die Eigenschaft
+  **ist** der Gegenstand des Schlüssels. Sie ist verortet —
+  [ADR-0078](../../adr/0078-erklaerte-leermenge-mit-zahl.md) §Konsequenzen nennt
+  sie, ein Re-Evaluierungs-Trigger wacht über sie, und das Handbuch nennt sie
+  dem Leser an der Stelle, an der er den Schlüssel setzt. **Verortung ist keine
+  Auflösung**, und sie ersetzt den Ausgang nicht.
+- **Eine deklarierte Zahl ist Autoren-Text und altert wie jede.** Der Schlüssel
+  verschiebt die Pflege, er nimmt sie nicht ab. — **Ausgang: weiter offen.**
+  Dieselbe Klasse wie der Punkt darüber, in der anderen Blickrichtung: dort
+  altert der geprüfte Bestand, hier die Deklaration darüber. Der Review hat den
+  Punkt **verschärft** — die Zahl gilt **je Datei**, ein Glob über viele Dateien
+  hält sie also gegen jede einzeln, und wer das nicht weiß, deklariert eine
+  Summe und bekommt eine Reihe von Einzelurteilen. Steht seither in allen drei
+  Deklarations-Oberflächen.
+- **Neue Bauform ohne Präzedenz:** gemessen führt kein Schlüssel dieses Moduls
+  eine **erwartete Anzahl**. Ob die Form trägt, zeigt erst der zweite Fall. —
+  **Ausgang: weiter offen.** Dieser Slice kann die Frage nicht beantworten; der
+  zweite Fall beantwortet sie, und
+  [ADR-0078](../../adr/0078-erklaerte-leermenge-mit-zahl.md) trägt den Trigger
+  dafür. **Kein Folge-Slice**, weil es nichts zu tun gibt, bis der zweite Fall
+  eintritt — ein Slice auf Vorrat wäre ein Zombie.
+- **Die Abweichung von der beantragten Form ist ein Urteil über einen fremden
+  Bestand.** Die `--doctor`-Messung gilt **diesem** Repo; ob der Adopter
+  `--doctor` in einem Gate fährt, weiß ich nicht und habe ich nicht gefragt. —
+  **Ausgang: weiter offen** — aber nicht unverändert. Notiert war *„wir wissen
+  nicht, ob er `--doctor` fährt"*; der Review hat gezeigt, dass die Lage
+  schlechter war: die Messung, auf die sich das Urteil stützte, war **falsch**.
+  `--print-mk` verteilt ihm ein `doc-doctor`-Target, und
+  [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+  schreibt es vor. Berichtigt ist das in Commit `75e50e3` an vier Fundstellen,
+  in der immutablen ADR nach §3.5 und in der ausgehenden Antwort, die dem
+  Absender ausdrücklich sagt, dass die erste Fassung falsch war — samt der
+  Frage, die daraus folgt: *fahrt ihr `doc-doctor` in einem Gate?*
+
+  **Und sie ist beantwortet, bevor dieser Slice schloss.** Der Adopter hat auf
+  seiner Seite gemessen — Makefile-Aggregate 0, Workflows 0, Hooks 0;
+  `doc-doctor` ist dort **advisory** — und die Antwort ist **nein**. Damit ist
+  das Risiko **entfallen**, und die Begründung ist die Messung der Gegenseite,
+  nicht unsere Vermutung: die Unbekannte, an der das Urteil hing, ist keine
+  mehr, und sie fällt zugunsten der getroffenen Entscheidung aus. Der erste
+  Re-Evaluierungs-Trigger von
+  [ADR-0078](../../adr/0078-erklaerte-leermenge-mit-zahl.md) ist damit geprüft
+  und **nicht gezogen**.
+
+  **Was nicht entfällt, ist die Klasse.** Dass hier zufällig herauskam, was wir
+  ohne Messung behauptet hatten, macht die Behauptung nicht nachträglich zu
+  einer Messung — der Zähler [`BEO-020`](../observations.md) ist erhöht und
+  bleibt es.
+
+## 6. Trigger
+
+**Start** (`open` → `in-progress`): WIP-Limit frei — `in-progress/` trägt
+keinen Slice.
+
+**Rückführungen:** `in-progress` → `open`, falls sich zeigt, dass der Adopter
+`--doctor` sehr wohl in einem Gate fährt — dann trägt seine Form, und die
+Abweichung wäre eine Bevormundung statt einer Schärfung.
+
+## 7. Vorgelagert (vor der Modus-Begründung)
+
+- **Sub-Area prüfen:** `internal/hexagon/core/` (Kern: Modell und Regel) und
+  `spec/` (Anforderung und Verfeinerung). Beide fallen unter den Default `*` =
+  **Greenfield**
+  ([`harness/conventions.md`](../../../../harness/conventions.md)
+  §Modus-Deklaration).
+  Die Regel, die diesen Schritt vorschreibt:
+
+  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:213-214 -->
+  > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+  > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+- **Offene Beobachtungen sichten** (Register-Stand 2026-08-30, höchste Kennung
+  `BEO-024`): [`BEO-012`](../observations.md) — **Zähler 8**, breiteste
+  Instanz war slice-181 mit fünf Fundstellen derselben überdehnten Aussage:
+  dieser Slice zitiert [ADR-0075](../../adr/0075-erklaerte-teilmenge-in-structure.md), CR 4 und [`DC-FA-CLI-003`](../../../../spec/lastenheft.md#dc-fa-cli-003--exit-codes), und **jedes** Zitat
+  ist vor dem Schreiben an seinem Geltungsbereich zu prüfen.
+  [`BEO-023`](../observations.md) — **Zähler 5**, zuletzt ein Test, dessen
+  Anker still auf die schwächere Form zurückfiel: §2 Punkt 8 ist die Antwort
+  darauf. [`BEO-013`](../observations.md) — ein Wächter, der nichts mehr
+  fängt: eine Zahl, die jemand blind mitzieht, ist genau das, und sie steht als
+  erstes Risiko in §5.
+  Die Regel, die diesen Schritt vorschreibt:
+
+  <!-- d-check:cite .harness/baseline/v5.12.0/regelwerk/modul-05-planning-harness.md:219-219 -->
+  > **Offene Beobachtungen sichten.**
+
+- **Nachtlauf-Stand lesen** (`make nightly-state`,
+  [`MR-053`](../../../../harness/conventions.md#mr-053)): beide Achsen melden
+  **gruen** — `upstream-drift.yml` zuletzt 2026-08-30T06:08:17Z,
+  `image-scan.yml` 2026-08-30T09:16:25Z (der Lauf **nach** dem Release
+  v0.68.0). **Dieser Block trägt bewusst keine `cite`-Direktive** — sein Ziel
+  ist eine Repo-Adaption, kein Baseline-Abschnitt
+  ([`MR-054`](../../../../harness/conventions.md#mr-054)).
+
+Slice-ID: slice-182. Betroffene IDs:
+[`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in).
+Module: `structure`. Gates: `make gates`, `make test`, `make doc-check`,
+`make fullbuild`.
+
+## 8. Sub-Area-Modus-Begründung
+
+**GF (Greenfield, Repo-Default)** — beide berührten Sub-Areas fallen unter den
+Default: Doc führt, Code folgt. Ein optionaler Konfigurationsschlüssel, ein
+neuer Grund-Code, zwei Config-Ränder; kein Fremdsystem, keine Reconciliation,
+kein Bestand, der umgestellt werden müsste — dieses Repo führt heute keine
+Regel mit `exempt-section-pattern`.
+
+## 9. Closure-Notiz (nach `done/`)
+
+**Geliefert.** Der opt-in-Schlüssel `exempt-expect-count` (int ≥ 0, nur mit
+`exempt-section-pattern`) trennt zwei Zustände, die sich seit
+[ADR-0075](../../adr/0075-erklaerte-teilmenge-in-structure.md) einen Grund-Code
+teilten: den **Konfigurationsdefekt** (der Selektor trifft nichts — bleibt
+`section-missing`) und den **Bestandszustand** (die Ausnahme nimmt alle — ist
+stumm, wenn die Zahl stimmt). Weicht sie ab, meldet der neue Grund-Code
+`section-exempt-mismatch`, in **beide** Richtungen und unabhängig davon, ob noch
+eine Restmenge da ist. Dazu:
+[ADR-0078](../../adr/0078-erklaerte-leermenge-mit-zahl.md), Lastenheft `0.78.0`,
+die `.a`-Verfeinerung samt [`SPEC-077`](../../../../spec/spezifikation.md#4-grund--und-fehler-codes), zwei Config-Ränder fail-closed, acht
+Regel-Tests, das Handbuch und eine **Antwort an den Absender**.
+
+**Was funktioniert hat.** Die zwei offenen Fragen des Plans (Regel-Identität,
+`raw`-vs-`hint`) wurden beim Bauen entschieden **und am Produkt gegengeprüft**,
+statt aus der Vermutung übernommen zu werden: zwei Regeln, die sich nur in der
+Zahl unterscheiden, weist der Config-Adapter mit Exit 2 als Duplikat ab — genau
+die Antwort, die die ADR als richtig bezeichnet. Und die Mutationsprobe, die
+[ADR-0075](../../adr/0075-erklaerte-teilmenge-in-structure.md) als Prozedur hinterlassen hat, hat hier zum ersten Mal **toten Code**
+gefunden statt eines schwachen Tests: ein `return nil`, das nie etwas bewirkt
+hätte.
+
+**Was anders lief — und es betrifft dreimal die Belege, nie das Verhalten.**
+Der Review blockierte mit vier HIGH; die Verifikation urteilte konform und fand
+zwei davon unabhängig. Das Verhalten hielt in beiden Läufen vollständig: alle
+elf Akzeptanzkriterien gegen das laufende Binary, beide Config-Ränder Exit 2,
+und die Byte-Identität gegen ein aus `a062fe8` gebautes Vorgänger-Image —
+**169 Befunde beidseits, `diff` leer**, dazu in drei weiteren Prüfmengen und
+vier Ausgabeformen.
+
+Rot waren die **Aussagen darüber**:
+
+1. **Die tragende Messung war falsch.** *„`--print-mk` verteilt kein
+   Doctor-Target"* — widerlegt mit **einem** Produktlauf, und
+   [`DC-FA-CLI-010`](../../../../spec/lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben)
+   schreibt das Target in ihrem Happy Path vor. Die Behauptung widersprach also
+   einem Akzeptanzkriterium **derselben Datei**, in der sie stand. Sie war zu
+   diesem Zeitpunkt schon in eine immutable ADR und in ein ausgehendes Dokument
+   gewandert.
+2. **Ein Spec-Edit hat eine Tabellen-Kopfzeile überschrieben.** Die Historie-Zeile
+   landete auf `| Kennung | System | Version/Stand | Vertrag |` von §6, weil
+   [`SPEC-077`](../../../../spec/spezifikation.md#4-grund--und-fehler-codes) die Zeilennummern verschoben hatte — **dieselbe Klasse, die einen
+   Tag zuvor schon einmal zugeschlagen hatte**, und der Slice-Auftrag an die
+   Verifikation nannte sie ausdrücklich. Kein Gate sieht das: `doc-check` prüft
+   Links und Anker, nicht ob eine Tabelle noch eine ist.
+3. **Zwei Mutationen liefen grün durch**, obwohl die Fitness Function *„jede
+   Zusage ist gefangen"* behauptete: die Config-Verdrahtung ließ sich löschen,
+   ohne dass ein Test rot wurde (das Feature wäre im Produkt wirkungslos
+   gewesen), und die Zählung ließ sich auf `> 0` einschränken, was die Null-
+   Semantik aus §Entscheidung 5 entwertet.
+
+**Steering-Loop-Einträge.** Drei Register-Zähler erhöht, keiner neu vergeben —
+alle drei Klassen standen schon, und das ist der Befund:
+
+- **[`BEO-023`](../observations.md) auf 6** (Wächter, der nie fangen konnte).
+  Neu an dieser Instanz: die Klasse traf nicht einen *schwachen* Test, sondern
+  einen **fehlenden** — die Regel-Tests bauen ihre Regel direkt und erreichen
+  den Config-Adapter nie, also gab es für die Verdrahtung überhaupt keine Probe.
+  Ihr eigener Wortlaut sagt, sie sei nicht auf Tests beschränkt; hier hat sie
+  das eingelöst.
+- **[`BEO-020`](../observations.md) auf 5** (eigene Menge gemessen, fremde
+  ausgesagt). Fünfte Instanz, und die Messung war diesmal nicht *falsch
+  gerechnet*, sondern **gar nicht gemacht**: über `--print-mk` wurde geredet,
+  gemessen wurden unsere Gate-Dateien.
+- **[`BEO-012`](../observations.md) auf 9** (Zitat über den Geltungsbereich).
+  Ein Grundsatz über die **Bedingungen im Abschnitt** wurde für einen
+  **Ventil**-Schlüssel in Anspruch genommen, der ausdrücklich keinen eigenen
+  Grund-Code trägt — an drei Stellen zugleich.
+
+**Eine geschärfte Regel, und sie kommt nicht aus dem Zähler.** Beide Prüfer
+meldeten den CHANGELOG-/README-Rückstand, wie schon bei den beiden Slices davor.
+Gemessen ist die Praxis eindeutig — die Feature-Commits fassen `CHANGELOG.md`
+nicht an, die Datei führt keinen `[Unreleased]`-Abschnitt —, nur stand sie
+nirgends. [`AGENTS.md`](../../../../AGENTS.md) §5 sagte *„wird gepflegt"* und
+nicht *wann*; jetzt nennt der Satz den Moment. Ohne ihn hätte die nächste
+Verifikation denselben Rückstand gemeldet, zu Recht.
+
+**Verifikation.** `make gates` Exit 0 (620 Dateien, 0 Befunde) ·
+`make fullbuild` Exit 0, Image-Hash
+`sha256:4bed7854ca21a6d116b9ffd4a86797072bf2f9081a4241864081b3efd3974b02`,
+50 Anforderungen / 0 Waisen, Closure-Profil über 558 Dateien ohne Befund ·
+Coverage 94,70 % · beide Reports in
+[`docs/reviews/`](../../../reviews/). **Nach den Reparaturen** sind beide zuvor
+grünen Mutationen rot, gemessen mit Namen des fangenden Tests.
+
+**Offen und benannt.** Ob die Bauform *„ein Schlüssel deklariert eine erwartete
+Anzahl"* trägt, zeigt erst der zweite Fall — die ADR trägt den Trigger. Und die
+Regel bleibt, was sie ist: **eine Lockerung mit Zahl.** Sie verschiebt die
+Pflege, sie nimmt sie nicht ab.
+
+**Eine Frage ist noch vor der Closure zugegangen.** Die ausgehende Antwort
+stellte dem Adopter die Frage, die nach der Korrektur übrig blieb — *fahrt ihr
+`doc-doctor` in einem Gate?* Er hat gemessen und geantwortet: **nein**
+(Makefile-Aggregate 0, Workflows 0, Hooks 0; das Target ist dort advisory). Die
+Abweichung von seiner beantragten Form bleibt damit richtig, und zwar zum
+ersten Mal aus einer Messung **seines** Bestands statt aus einer Vermutung
+darüber. Er ordnet unseren Fehler derselben Klasse zu, die sein Register führt,
+und stellt fest, dass beide Seiten sie in dieser Runde begangen haben — das ist
+die ehrlichere Bilanz als „Entscheidung bestätigt".
+
+**Eine Anmerkung zur Prozedur, zum vierten Mal.** Der Kanon
+(`modul-05-planning-harness.md`) schreibt die Closure-Notiz **vor** den
+`git mv`; [`AGENTS.md`](../../../../AGENTS.md) §3.3 und
+[`MR-013`](../../../../harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise)
+schreiben den Move **zuerst** und den Body als Commit 2. Gefahren ist die
+Repo-Form, und sie hat hier einen messbaren Grund: die Register-Belege zeigen
+auf `done/`, und der `pre-commit`-Hook hat den Body-vor-Move-Versuch prompt
+abgewiesen. **Der Widerspruch gehört trotzdem aufgelöst**, statt bei jeder
+Closure neu erklärt zu werden.

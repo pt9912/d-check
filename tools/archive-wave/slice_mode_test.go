@@ -140,6 +140,24 @@ func TestRunSlice_RejectsWelleSlice(t *testing.T) {
 	}
 }
 
+// TestRunSlice_AcceptsContextualWelleMention belegt einen an slice-197
+// gemessenen Fund: ein wellenloser Absatz nennt haeufig eine FREMDE Welle
+// als Kontext ("Anlass liegt in welle-86", "welle-66 abgeschlossen") in
+// einer spaeteren Zeile -- das ist keine eigene Zugehoerigkeit und darf den
+// Slice-Modus nicht ablehnen. Die Zugehoerigkeits-Pruefung darf deshalb nur
+// die ERSTE Zeile des Feldes lesen, nicht den vollen, mehrzeiligen Text.
+func TestRunSlice_AcceptsContextualWelleMention(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-605-kontext.md"),
+		"# Slice slice-605: Kontext\n\n**Welle:** — wellenlos, solange keine Closure-Bedingung ueber die eigene\n"+
+			"DoD hinausgeht. Der Anlass liegt in [welle-86](welle-86/x.md).\n")
+	writeFile(t, filepath.Join(root, "docs/reviews/.gitkeep"), "")
+
+	if err := runSlice(root, "slice-605", false); err != nil {
+		t.Fatalf("erwartet Erfolg -- welle-86 ist hier nur Kontext, keine eigene Zugehoerigkeit: %v", err)
+	}
+}
+
 // TestRunSlice_DanglingReviewReference belegt den Melde-Teil (kein
 // automatischer Nachzug moeglich, da kein Move-Ziel existiert): ein
 // externer Verweis auf einen geloeschten Review-Report wird als toter

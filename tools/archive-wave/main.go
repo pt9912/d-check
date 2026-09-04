@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func main() {
@@ -166,8 +167,15 @@ func runSlice(root, sliceID string, apply bool) error {
 	if err != nil {
 		return err
 	}
-	if welleIDInFieldRE.MatchString(field) {
-		return fmt.Errorf("%s gehoert zu einer Welle (Welle-Feld: %q) -- das gehoert in den -welle-Modus, nicht -slice", sliceID, field)
+	// Zugehoerigkeits-Pruefung nur auf der ERSTEN Zeile (wie CollectSlices
+	// es fuer denselben Zweck tut) -- nicht auf dem vollen, mehrzeiligen
+	// Feld: ein wellenloser Absatz nennt haeufig eine FREMDE Welle als
+	// Kontext ("Anlass liegt in welle-86", "welle-66 abgeschlossen"), keine
+	// eigene Zugehoerigkeit. Jede reale Wellen-Zuordnung dieses Repos steht
+	// dagegen bereits in der ersten Zeile (gemessen, siehe slice-193..197).
+	firstLine, _, _ := strings.Cut(field, "\n")
+	if welleIDInFieldRE.MatchString(firstLine) {
+		return fmt.Errorf("%s gehoert zu einer Welle (Welle-Feld, erste Zeile: %q) -- das gehoert in den -welle-Modus, nicht -slice", sliceID, firstLine)
 	}
 	reviews, err := CollectReviews(root, []string{slicePath})
 	if err != nil {
