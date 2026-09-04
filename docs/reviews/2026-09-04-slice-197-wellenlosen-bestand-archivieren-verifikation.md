@@ -1,7 +1,7 @@
 # Verifikation slice-197 — Wellenlosen Review-Bestand archivieren
 
 **Art:** Verifikation.
-**Gegenstand:** [slice-197](../plan/planning/in-progress/slice-197-wellenlosen-bestand-archivieren.md), HEAD `ba750b7` ("docs(plan): slice-197 Closure-Body -- DoD, drei Risiko-Ausgaenge, Lerneintrag") auf `main`. Slice liegt noch in `in-progress/`. Commit-Kette geprüft: `f683c7e` (Beanspruchung) → `05dfd81`/`50e243c`/`35cbc8d`/`5e57c00` (slice-196, Voraussetzung, bereits in `done/`) → `d057f19` (Fix am Werkzeug) → `0fe76a7` (45-Slice-Anwendung) → `ba750b7` (Closure-Body).
+**Gegenstand:** [slice-197](../plan/planning/done/slice-197-wellenlosen-bestand-archivieren.md), HEAD `ba750b7` ("docs(plan): slice-197 Closure-Body -- DoD, drei Risiko-Ausgaenge, Lerneintrag") auf `main`. Slice liegt noch in `in-progress/`. Commit-Kette geprüft: `f683c7e` (Beanspruchung) → `05dfd81`/`50e243c`/`35cbc8d`/`5e57c00` (slice-196, Voraussetzung, bereits in `done/`) → `d057f19` (Fix am Werkzeug) → `0fe76a7` (45-Slice-Anwendung) → `ba750b7` (Closure-Body).
 **Modell-ID:** `claude-sonnet-5`.
 **Datum:** 2026-09-04.
 **Rolle:** unabhängiger Verifier — geprüft wird gegen **DoD und Spec** (Baseline-Regelwerk [`modul-08-agentenrollen.md` §Welche Rolle braucht welche Artefaktklasse](../../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#welche-rolle-braucht-welche-artefaktklasse-modul-8)), nicht gegen Plan/ADR-Maintainability (Reviewer-Aufgabe). Kein Review-Report für slice-197 gelesen oder mit dem Reviewer koordiniert (Rollen-Trennung), nur ein `ls`-Check auf `docs/reviews/` ohne Inhaltszugriff auf einen etwaigen slice-197-Report.
