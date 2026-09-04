@@ -32,9 +32,6 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
-- [welle-90](../welle-90-eigenstaendige-review-archivierung.md) — Eigenständige
-  Review-Archivierung: Werkzeug-Modus + Anwendung auf den Bestand.
-
 Nichts in Arbeit.
 
 ## Nächste Wellen
@@ -94,6 +91,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 
 | Welle | Abschluss | Closure-Notiz |
 |---|---|---|
+| welle-90-eigenstaendige-review-archivierung | 2026-09-04 | [`welle-90-results.md`](../done/welle-90-results.md) |
 | welle-89-wellenlose-review-archivierung | 2026-09-04 | [`welle-89-results.md`](../done/welle-89-results.md) |
 | welle-88-baseline-v600-migration | 2026-09-04 | [`welle-88-results.md`](../done/welle-88-results.md) |
 | welle-86-closure-uebergang-durchsetzen | 2026-09-03 | [`welle-86-results.md`](../done/welle-86-results.md) |
