@@ -140,5 +140,5 @@ braucht, das Verhalten statt Schreibweisen liest.
 
 | Datum | Ereignis | Verweis |
 |---|---|---|
-| 2026-08-27 | Accepted | [slice-162](../planning/done/slice-162-ignore-marker-geteilte-antwort.md) |
+| 2026-08-27 | Accepted | [slice-162](../planning/done/wellenlos/slice-162-ignore-marker-geteilte-antwort.md) |
 | 2026-08-27 | Herleitung, Zahlen und Grenzen abgelöst — das Produktverhalten bleibt | [ADR-0062](0062-ventil-marker-versions-ist-eine-benannte-grenze.md) |

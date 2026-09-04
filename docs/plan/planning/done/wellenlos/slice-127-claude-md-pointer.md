@@ -4,5 +4,7 @@
 > `unzip -p done/wellenlos/slice-127-archiv.zip <pfad-im-archiv>`
 
 **Welle:** ohne Welle — ein einzelner Harness-Hygiene-Punkt mit eigener DoD und
+ohne gemeinsame Closure-Bedingung mit anderer Arbeit (Baseline-Regelwerk
+`modul-06-roadmap.md` §Wann Arbeit eine Welle braucht).
 **Archiviert:** <manuell auszufuellen> (eigene Closure)
 **Hervorgegangen:** — keine — <!-- d-check:ignore (Kennungen aus dem archivierten Volltext, absichtlich unverlinkt) -->

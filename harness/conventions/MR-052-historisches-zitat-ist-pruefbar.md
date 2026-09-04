@@ -14,7 +14,7 @@
   Wortlaut ein, *„auch wenn er nicht mehr gilt"*, und begründet das mit der
   historisch korrekten Aussage über den damaligen Zustand — ein Grund, der von
   der **Zugänglichkeit** der Quelle unabhängig ist. Der Eintrag selbst nimmt
-  also nichts an. Die **Praxis** tat es: [slice-152](../../docs/plan/planning/done/slice-152-citations-scharfschalten.md)
+  also nichts an. Die **Praxis** tat es: [slice-152](../../docs/plan/planning/done/wellenlos/slice-152-citations-scharfschalten.md)
   legte drei Abweichungen mit *„am Repo nicht entscheidbar"* ab, weil der alte
   Pin nicht mehr vendored sei. Das ist strukturell falsch: der Bump entfernt
   `.harness/baseline/<alt-tag>/` aus dem **Arbeitsbaum**, nicht aus dem

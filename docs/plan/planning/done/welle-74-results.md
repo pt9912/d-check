@@ -99,8 +99,8 @@ Der Lese-Schritt dieser Welle: das Register führt **BEO-001** (2×),
 
 ## Folge-Slices
 
-- [slice-095](slice-095-links-resolve-from.md) und
-  [slice-102](../done/slice-102-wellen-lifecycle-invariante.md) lagen bei
+- [slice-095](wellenlos/slice-095-links-resolve-from.md) und
+  [slice-102](wellenlos/slice-102-wellen-lifecycle-invariante.md) lagen bei
   dieser Closure unverändert in `open/` (beide inzwischen umgesetzt —
   die Links zeigen auf ihre heutigen Orte, die Aussage gilt dem Closure-Zeitpunkt).
 - **Kein** Folge-Slice aus Abnahme-Punkt 2: die Messung hat den Schnitt auf

@@ -10,7 +10,7 @@ und die referenzierten ADRs.
 
 **Gegenstand:** die fünf Slices in `docs/plan/planning/open/` —
 [slice-094](../plan/planning/open/slice-094-closure-zaehl-paritaet.md),
-[slice-095](../plan/planning/done/slice-095-links-resolve-from.md),
+[slice-095](../plan/planning/done/wellenlos/slice-095-links-resolve-from.md),
 [slice-096](../plan/planning/in-progress/slice-096-structure-modul-analyse.md),
 [slice-097](../plan/planning/open/slice-097-closure-glob-entkopplung.md),
 [slice-098](../plan/planning/open/slice-098-closure-note-placeholder.md);
@@ -197,7 +197,7 @@ Host-`go`, das Repo nicht verändert):
   Produkt-Slices desselben Backlogs führen ihn ausdrücklich
   ([slice-094](../plan/planning/open/slice-094-closure-zaehl-paritaet.md) §4:
   „Release als **Minor**";
-  [slice-095](../plan/planning/done/slice-095-links-resolve-from.md) §4:
+  [slice-095](../plan/planning/done/wellenlos/slice-095-links-resolve-from.md) §4:
   „Release als Minor"). Eine Welle-DoD, die die Lücke auffangen könnte, gibt es
   nicht — die Welle ist angekündigt, nicht eröffnet.
 - `verifizierbar`: nein — DoD-Vollständigkeit ist Plan-Eigenschaft.
@@ -365,7 +365,7 @@ erfolgen. F-1 betrifft eine Prüfregel im Gate-Pfad und die Frage, ob der
 geplante Release eine ADR braucht; F-2 macht einen DoD-Punkt unerfüllbar, F-3
 und F-4 entscheiden über Reihenfolge und Ablöse-Pfad. F-5 bis F-9 sind vor der
 jeweiligen Umsetzung zu klären, blockieren die Freigabe der übrigen Slices aber
-nicht: [slice-095](../plan/planning/done/slice-095-links-resolve-from.md) ist
+nicht: [slice-095](../plan/planning/done/wellenlos/slice-095-links-resolve-from.md) ist
 vom Strang unabhängig und trägt keinen Befund.
 
 Zur ausdrücklich gestellten Schnitt-Frage, soweit sie nicht in ein Finding
