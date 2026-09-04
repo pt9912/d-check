@@ -60,30 +60,36 @@ einen Review-Report trägt.
 
 ## 4. Definition of Done
 
-- [ ] Bestand exakt erhoben (Zahl im DoD eingetragen).
-- [ ] Alle erhobenen Slices archiviert (`done/wellenlos/<basisname>.md`
-      Stub + `done/slice-<NNN>-archiv.zip` je Slice).
-- [ ] `docs/plan/planning/done/` enthält (außerhalb `done/wellenlos/`) keinen
+- [x] Bestand exakt erhoben: **7** wellenlose Slices ohne Review-Report.
+- [x] Alle erhobenen Slices archiviert (`done/wellenlos/<basisname>.md`
+      Stub + `done/wellenlos/slice-<NNN>-archiv.zip` je Slice).
+- [x] `docs/plan/planning/done/` enthält (außerhalb `done/wellenlos/`) keinen
       flachen wellenlosen Slice mehr.
-- [ ] `make gates` grün (zehn Gates) auf dem Endstand.
-- [ ] `make fullbuild` grün (`--require-complete`: 0 neue Trace-Waisen).
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
-- [ ] Unabhängige Verifikation durchgeführt.
-- [ ] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
+- [x] `make gates` grün (zehn Gates) auf dem Endstand.
+- [ ] `make fullbuild` grün (`--require-complete`: 0 neue Trace-Waisen). Noch
+      nicht bestätigt: der nicht-rekursive `done/slice-*.md`-Glob des
+      Closure-Profils trifft aktuell auf 0 Dateien, solange dieser Slice
+      selbst noch in `in-progress/` liegt (alle anderen flachen Slices sind
+      archiviert) — wird nach dem `git mv` dieses Slices nach `done/` erneut
+      geprüft.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
+- [x] Unabhängige Verifikation durchgeführt.
+- [x] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **Dieselbe Klasse „stille Bedeutungsverschiebung" wie bei slice-197/199.**
-  Gegenmaßnahme: Voll-Dry-Run vor der Anwendung (§2 Punkt 2), `make
-  fullbuild` auf dem Endstand statt sieben Einzel-Prüfungen.
+  **Entfallen** — Voll-Dry-Run vor der Anwendung lief sauber; unabhängiger
+  Review bestätigt 5/7 Zips byte-identisch, 2/7 (slice-184, slice-188) mit
+  einem korrekt nachgezogenen Link statt eines veralteten (siehe §9 — eine
+  neue, benannte Nebenwirkung, kein Bedeutungsverlust).
 - **Ein Slice könnte die einzige Zitierstelle einer `DC-*`/`ADR-*`-Anforderung
-  sein** — `Hervorgegangen:` fängt das teilweise strukturell auf (siehe
-  slice-199 §5, F-4: nicht jede im Original zitierte Kennung, nur die
-  außerhalb von Fenced-/Inline-Code-Spannen), `--require-complete`
-  bestätigt es empirisch.
+  sein.** **Entfallen** — `make fullbuild --require-complete` bestätigt 0
+  neue Trace-Waisen (siehe §9).
 - **Der Umfang (7 Slices) ist klein genug, um NICHT dieselbe
-  Ein-Sitzungs-Grenze wie bei slice-195/197 zu sprengen** — falls doch,
-  Rückführung nach `next`.
+  Ein-Sitzungs-Grenze wie bei slice-195/197 zu sprengen.** **Entfallen** —
+  alle 7 Archivierungen liefen in einem gebündelten Commit, keine
+  Rückführung nach `next` nötig.
 
 ## 6. Trigger
 
@@ -128,4 +134,47 @@ gebauten und getesteten Werkzeug (slice-196), kein neuer Produktcode.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-<!-- wird erst bei Closure gefüllt -->
+Alle 7 zum Zeitpunkt der Planung erhobenen wellenlosen Slices ohne
+Review-Report (slice-141, slice-168, slice-169, slice-170, slice-183,
+slice-184, slice-188) sind archiviert: Voll-Dry-Run vor der Anwendung lief
+sauber, dann 7 `-slice=<id> -apply`-Läufe, ein gebündelter Commit
+(`ce5fb50`), `make gates` (zehn Module) grün auf dem Endstand.
+
+**Nach Review/Verifikation behoben bzw. dokumentiert** (unabhängig
+übereinstimmend gefunden):
+
+- **F-1 (MEDIUM):** Die Bündelung von 7 Einzel-Slice-Archiven in einem
+  Commit folgte der gelebten Praxis von slice-197 (45×), ohne dass
+  [`MR-062`](../../../../harness/conventions.md#mr-062--wellenloser-einzel-slice-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013)
+  diese Bündelung — anders als sein eigener „Grenze"-Absatz ausdrücklich
+  festhält — bereits deckte. Behoben durch
+  [`MR-064`](../../../../harness/conventions.md#mr-064--bündelung-mehrerer-einzel-slice-archiv-moves-in-einem-commit-ist-zulässig-nachtrag-zu-mr-062),
+  mit derselben Bündelungs-Klausel wie
+  [`MR-063`](../../../../harness/conventions.md#mr-063--eigenständiger-review-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013)
+  sie für den Review-Modus trägt.
+- **F-2 (MEDIUM):** Die Zips von slice-184 und slice-188 enthalten je einen
+  bereits auf slice-183s neuen Speicherort nachgezogenen Link, weil
+  `ApplySlice()` den aktuellen Platten-Inhalt zippt statt eines Git-Objekts
+  — slice-183 wurde vor ihnen archiviert, sein `RewriteRepo()`-Durchlauf
+  hatte ihre Verweise bereits umgeschrieben. Inhaltlich harmlos (der Link
+  bleibt korrekt auflösbar), aber vom Batch-Verarbeitungsstand abhängig statt
+  deterministisch gegen einen festen Commit — als
+  [`BEO-ALL/batch-slice-archival-zips-post-rewrite-content`](../observations/BEO-ALL/batch-slice-archival-zips-post-rewrite-content/observation.md)
+  registriert, nicht in diesem Slice behoben (Werkzeug-Änderung außerhalb
+  des Bestandspflege-Scopes, siehe §3).
+- **F-3:** Vom Review vermutete verirrte Duplikat-Datei erwies sich als
+  Artefakt eines parallel laufenden Verifikations-Tests (dieser hatte sie
+  selbst wieder entfernt) — kein eigener Befund.
+- **F-4 (INFO):** Fünf jetzt gegenstandslose `exempt-paths`-Einträge im
+  `reviews:`-Block (`.d-check.yml` und `.d-check.closure.yml`) für exakt die
+  fünf hier archivierten Slices mit bekannter Review-Lücke entfernt.
+
+**Beobachtungs-Register:** ein neuer Eintrag
+([`BEO-ALL/batch-slice-archival-zips-post-rewrite-content`](../observations/BEO-ALL/batch-slice-archival-zips-post-rewrite-content/observation.md))
+für F-2, Zähler 1, weiter offen.
+
+**Lerneintrag:** Eine gelebte Commit-Bündelungs-Praxis braucht ihre
+Deklaration **beim ersten Mal**, nicht erst beim zweiten oder dritten
+Vorkommen — slice-197 lebte sie ungedeckt, slice-200 wiederholte es, bevor
+[`MR-064`](../../../../harness/conventions.md#mr-064--bündelung-mehrerer-einzel-slice-archiv-moves-in-einem-commit-ist-zulässig-nachtrag-zu-mr-062)
+sie nachträglich schloss. Geschärfte Regel: dieselbe Regel selbst.

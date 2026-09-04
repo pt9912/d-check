@@ -780,15 +780,14 @@ workflows:
 # aus welle-86 §1; slice-141 und slice-188 sind zusaetzliche, unabhaengig davon
 # gemessene Funde derselben Klasse. Kein Nachtrag: ein nachtraeglich erzeugter
 # Report behauptete eine Pruefung, die es nicht gab.
+#
+# Die fuenf Eintraege sind mit slice-200 entfernt: alle fuenf Slices sind
+# archiviert (`-slice=<id> -apply`, MR-064) und liegen jetzt unter
+# `done/wellenlos/`, ausserhalb der nicht-rekursiven Kandidatenmenge dieser
+# Regel (siehe GRENZE oben) -- die Ausnahme ist gegenstandslos geworden.
 reviews:
   done-dir: docs/plan/planning/done
   reviews-dir: docs/reviews
-  exempt-paths:
-    - "docs/plan/planning/done/slice-141-fixture-racily-clean.md"
-    - "docs/plan/planning/done/slice-168-adr-index-titelspalte.md"
-    - "docs/plan/planning/done/slice-169-workflow-rechte-pruefung.md"
-    - "docs/plan/planning/done/slice-170-workflows-modul.md"
-    - "docs/plan/planning/done/slice-188-register-gegen-neuen-kanon.md"
 
 # Modul citations (DC-FA-CITE-001): parameterlos, direktiven-getrieben — der
 # Block traegt nur den Scope. Ausgenommen sind die drei EINGEFRORENEN
