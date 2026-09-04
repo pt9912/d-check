@@ -12,7 +12,7 @@ Bestand anwendet.
 **Berührte Spec-Stellen:** — (Tooling unter `tools/`, kein Produktcode-Modul
 von d-check selbst).
 
-**Verantwortlich:** —.
+**Verantwortlich:** pt9912.
 
 **Autor:** pt9912. **Datum:** 2026-09-04.
 
