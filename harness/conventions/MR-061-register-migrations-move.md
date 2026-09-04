@@ -7,7 +7,7 @@
   Rename-Detection (`R100`) über der 50 %-Schwelle hält. Diese Regel benennt
   einen weiteren Fall, in dem diese Prämisse strukturell nicht zutrifft — und
   korrigiert zugleich eine fehlgeschlagene Analogie: der Migrations-Commit
-  von [slice-195](../../docs/plan/planning/done/slice-195-beobachtungsregister-migration.md)
+  von [slice-195](../../docs/plan/planning/done/welle-88/slice-195-beobachtungsregister-migration.md)
   berief sich in seiner Botschaft auf [MR-059](MR-059-wellen-archiv-stub-move.md),
   dessen eigener Geltungsbereich (`tools/archive-wave`) und dessen eigene
   Grenzklausel (*„keine Blankovollmacht für beliebige Content-Move-Commits"*)
