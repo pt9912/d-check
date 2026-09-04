@@ -43,8 +43,7 @@ func main() {
 }
 
 // validateModeFlags erzwingt, dass genau eines von -welle/-slice gesetzt
-// ist -- weder beides (mehrdeutig, welcher Modus?) noch keines (der alte
-// Pflicht-Fehler von vor slice-196, jetzt fuer zwei Flags statt einem).
+// ist -- weder beides (mehrdeutig, welcher Modus?) noch keines (kein Ziel).
 func validateModeFlags(welle, sliceID string) error {
 	if (welle == "") == (sliceID == "") {
 		return fmt.Errorf("genau eines von -welle oder -slice ist Pflicht (z. B. -welle=welle-87 oder -slice=slice-137)")

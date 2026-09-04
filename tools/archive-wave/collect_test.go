@@ -86,6 +86,42 @@ func TestCollectSlices(t *testing.T) {
 	}
 }
 
+func TestFindSlice(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-137-toolchain-freshness.md"), "# Slice slice-137: X\n")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-138-matrix-wellen-klasse.md"), "# Slice slice-138: Y\n")
+
+	got, err := FindSlice(root, "slice-137")
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if filepath.Base(got) != "slice-137-toolchain-freshness.md" {
+		t.Fatalf("erwartet slice-137, got %s", got)
+	}
+}
+
+// TestFindSlice_Keine ist die Umkehr-Probe zu TestFindSlice: anders als
+// FindWellePlan hat ein fehlender Slice-Kandidat hier keinen legitimen
+// Nullfall -- der Aufrufer nennt eine Kennung, die auflösen muss.
+func TestFindSlice_Keine(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/.gitkeep"), "")
+
+	if _, err := FindSlice(root, "slice-999"); err == nil {
+		t.Fatal("erwartet Fehler ohne passenden Kandidaten")
+	}
+}
+
+func TestFindSlice_Mehrdeutig(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-137-a.md"), "x")
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-137-b.md"), "x")
+
+	if _, err := FindSlice(root, "slice-137"); err == nil {
+		t.Fatal("erwartet Fehler bei mehrdeutigem Bestand")
+	}
+}
+
 func TestCollectReviews(t *testing.T) {
 	root := t.TempDir()
 	writeFile(t, filepath.Join(root, "docs/reviews/2026-09-01-slice-190-r1.md"), "x")

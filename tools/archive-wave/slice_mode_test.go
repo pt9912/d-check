@@ -9,8 +9,8 @@ import (
 )
 
 // buildSliceFixture legt einen wellenlosen Slice mit zwei Review-Reports und
-// einer externen Referenz an -- das im Slice-Plan (slice-196 §2 Punkt 5)
-// verlangte Fixture fuer den Einzel-Slice-Modus.
+// einer externen Referenz an -- die konstruierte Test-Grundlage fuer den
+// Einzel-Slice-Modus, nicht der echte Bestand.
 func buildSliceFixture(t *testing.T) string {
 	t.Helper()
 	root := t.TempDir()
@@ -112,9 +112,9 @@ func TestRunSlice_Apply(t *testing.T) {
 	}
 }
 
-// TestRunSlice_RejectsWelleSlice belegt slice-196 §4: ein Slice mit
-// gesetztem, echtem Welle-Feld gehoert in den -welle-Modus und wird hier
-// abgelehnt statt still falsch archiviert.
+// TestRunSlice_RejectsWelleSlice belegt: ein Slice mit gesetztem, echtem
+// Welle-Feld gehoert in den -welle-Modus und wird hier abgelehnt statt
+// still falsch archiviert.
 func TestRunSlice_RejectsWelleSlice(t *testing.T) {
 	root := t.TempDir()
 	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-603-mit-welle.md"),
@@ -146,6 +146,34 @@ func TestRunSlice_DanglingReviewReference(t *testing.T) {
 	want := map[string]int{"docs/plan/planning/in-progress/roadmap.md": 1}
 	if len(hits) != len(want) || hits["docs/plan/planning/in-progress/roadmap.md"] != 1 {
 		t.Fatalf("got %v, want %v", hits, want)
+	}
+}
+
+// TestFindReferencesToPaths_ExcludesSelfAndReviews belegt die exclude-Menge:
+// ein Review-Report, der auf einen ANDEREN, ebenfalls zu loeschenden Review
+// verweist (dieselbe Eigenheit, die runWelle als "dropReviewSelfHits" fuer
+// den Wellen-Modus behandelt), darf sich nicht selbst als toten Verweis
+// zaehlen. Ohne die exclude-Pruefung wuerde dieser Test rot.
+func TestFindReferencesToPaths_ExcludesSelfAndReviews(t *testing.T) {
+	root := t.TempDir()
+	writeFile(t, filepath.Join(root, "docs/plan/planning/done/slice-604-eins.md"),
+		"# Slice slice-604: Eins\n\n**Welle:** — wellenlos.\n")
+	r1 := filepath.Join(root, "docs/reviews/2026-09-04-slice-604-r1.md")
+	writeFile(t, r1, "# Review r1\n")
+	writeFile(t, filepath.Join(root, "docs/reviews/2026-09-04-slice-604-verifikation.md"),
+		"# Verifikation\n\nBezieht sich auf [r1](2026-09-04-slice-604-r1.md).\n")
+
+	reviews := []string{
+		r1,
+		filepath.Join(root, "docs/reviews/2026-09-04-slice-604-verifikation.md"),
+	}
+	slicePath := filepath.Join(root, "docs/plan/planning/done/slice-604-eins.md")
+	hits, err := FindReferencesToPaths(root, reviews, append([]string{slicePath}, reviews...))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(hits) != 0 {
+		t.Fatalf("erwartet keine Treffer (Verweis liegt in einer ausgeschlossenen Datei), got %v", hits)
 	}
 }
 

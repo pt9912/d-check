@@ -83,9 +83,13 @@ Modi sind exklusiv (`-welle` und `-slice` gleichzeitig ⇒ Exit 2).
 - [x] `make archive-wave-test` grün.
 - [x] `make gates` grün (zehn Gates).
 - [x] `make fullbuild` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
-- [ ] Unabhängige Verifikation durchgeführt.
-- [ ] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
+- [x] Unabhängiger Review durchgeführt
+      ([Report](../../../reviews/2026-09-04-slice-196-archive-wave-slice-modus-code-r1.md),
+      1 HIGH + 2 MEDIUM — alle drei behoben, siehe §9).
+- [x] Unabhängige Verifikation durchgeführt
+      ([Report](../../../reviews/2026-09-04-slice-196-archive-wave-slice-modus-verifikation.md),
+      bestanden, 1 LOW ohne Handlungsbedarf).
+- [x] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -162,7 +166,27 @@ Pfad-Tiefe im externen Verweis, `../../` statt `../../../`) führte zu
 einem zunächst falsch-negativen Test (`TestRunSlice_DanglingReviewReference`)
 — sofort selbst gefunden und korrigiert, kein Produktcode-Fehler.
 
-**Lerneintrag:** keiner — reine Werkzeug-Erweiterung nach etabliertem
-Muster (Wellen-Modus als Vorlage), keine neue Fehlerklasse.
+**Nach Review/Verifikation behoben (1 HIGH + 2 MEDIUM, unabhängig
+gefunden):**
+
+- **Fünf neue Kommentare trugen Slice-Nummer-Provenienz** (`slice-196` als
+  Herkunfts-Prosa in `main.go`, `stub.go`, `slice_mode_test.go`) — §3.7
+  verbietet das ausdrücklich. Behoben: Slice-Bezug entfernt, nur die
+  funktionale Beschreibung bleibt stehen. Unterschied zu den unveränderten
+  Alt-Kommentaren desselben Werkzeugs (`gemessen an welle-70`, `slice-075`):
+  jene zitieren empirischen Bestandsbefund, die neuen erzählten die eigene
+  Autorschaft — genau die vom Kanon ausgeschlossene Klasse.
+- **`FindSlice`s beide Fehlerpfade (0 Treffer, mehrdeutig) waren ungetestet**
+  — anders als das strukturell analoge `FindWellePlan`. Zwei Tests
+  nachgetragen (`TestFindSlice_Keine`, `TestFindSlice_Mehrdeutig`).
+- **Die exclude-Menge von `FindReferencesToPaths` war nie geprüft** — ein
+  Regressions-Test nachgetragen
+  (`TestFindReferencesToPaths_ExcludesSelfAndReviews`), der Vorgänger
+  (`BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt`) verlangt die
+  Umkehr-Probe: mit auskommentiertem Exclude-Check schlägt der neue Test
+  fehl, mit dem echten Code besteht er.
+
+**Lerneintrag:** keiner über das Behobene hinaus — reine Werkzeug-Erweiterung
+nach etabliertem Muster (Wellen-Modus als Vorlage), keine neue Fehlerklasse.
 
 **Risiko-Ausgänge:** siehe §5 — alle drei entfallen.
