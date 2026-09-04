@@ -78,6 +78,9 @@ ignore-refs:
   - in: docs/reviews/2026-09-02-slice-187-handbuch-url-code-r1.md
     refs:
       - "docs/plan/planning/in-progress/slice-187-handbuch-url-beide-formen.md"
+  - in: docs/reviews/2026-09-04-slice-199-eigenstaendige-reviews-archivieren-verifikation.md
+    refs:
+      - "docs/plan/planning/in-progress/slice-199-eigenstaendige-reviews-archivieren.md"
   # Die beiden Glob-Eintraege fuer 2026-08-09/2026-08-10 sind mit slice-199
   # (welle-90) entfernt: ihre einzigen Treffer -- 2026-08-09-backlog-schnitt-
   # review.md und 2026-08-10-welle-72-closure-semantik-review.md -- wurden
