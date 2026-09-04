@@ -106,10 +106,11 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   marker staying out of it (`waves.mode: many`); preview without a file,
   closed register ⟺ results notes both ways (`wave-drift`,
   `wave-preview-exists`, `wave-results-missing`, `wave-unregistered`), opt-in.
-  **Register coverage** (additionally opt-in via `observations.register`): a
-  cited observation identifier without a register line
-  (`observation-unregistered`) — prose and link text count, a plain
-  inline-code example does not
+  **Register coverage** (additionally opt-in via `observations.register` **or**
+  `observations.dir`, mutually exclusive): a cited observation identifier
+  without proof (`observation-unregistered`) — a register line in table mode,
+  a `<path>/observation.md` folder in directory mode; prose and link text
+  count, a plain inline-code example does not
   ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
 - `tracked` — tracked status of resolvable, **existing** link/image targets
   against the git **index** (`target-untracked`: an untracked/gitignored
@@ -280,7 +281,7 @@ you pull from)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.73.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

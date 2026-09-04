@@ -4,6 +4,26 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.74.0] — 2026-09-04
+
+### Added
+
+- slice-194 — **Fünfte `planning`-Fähigkeit, additiv: Verzeichnis-Register
+  für die Register-Deckung**
+  ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
+  Lastenheft 0.85.0, [ADR-0083](docs/plan/adr/0083-beobachtungsregister-verzeichnis-modus.md)).
+  Statt einer Tabellen-Datei (`observations.register`) kann die
+  Register-Deckung jetzt gegen eine **Verzeichnis-Ablage** prüfen
+  (`observations.dir`): eine zitierte Kennung `<pfad>` gilt als
+  nachgewiesen, wenn `<observations.dir>/<pfad>/observation.md` existiert.
+  Beide Schlüssel schließen sich aus — sind beide gesetzt, bricht der Lauf
+  mit Exit 2, bevor eine Datei geöffnet wird. Kein neuer Grund-Code —
+  derselbe `observation-unregistered` wie im Tabellen-Modus. `.register`
+  bleibt für Rückwärtskompatibilität unverändert bestehen. **Anlass:** die
+  adoptierte Harness-Baseline gestaltet ihr eigenes Beobachtungs-Register
+  neu (Tabelle → Verzeichnis, Kennung wird Pfad, abgeleiteter statt
+  gepflegter Zähler). Opt-in, keine Breaking Changes.
+
 ## [0.73.0] — 2026-09-03
 
 ### Added

@@ -106,9 +106,11 @@ Dokuments:
   (`waves.mode: many`); Vorschau ohne Datei, Abschluss-Register ⟺
   Ergebnisnotizen beidseitig (`wave-drift`, `wave-preview-exists`,
   `wave-results-missing`, `wave-unregistered`), opt-in. **Register-Deckung**
-  (zusätzlich opt-in über `observations.register`): eine zitierte
-  Beobachtungs-Kennung ohne Zeile im Register (`observation-unregistered`) —
-  gezählt werden Prosa und Linktext, ein reines Inline-Code-Beispiel nicht
+  (zusätzlich opt-in über `observations.register` **oder** `observations.dir`,
+  mutually exclusive): eine zitierte Beobachtungs-Kennung ohne Nachweis
+  (`observation-unregistered`) — im Tabellen-Modus eine Zeile im Register, im
+  Verzeichnis-Modus ein Ordner `<pfad>/observation.md`; gezählt werden Prosa
+  und Linktext, ein reines Inline-Code-Beispiel nicht
   ([`DC-FA-PLAN-001`](spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in))
 - `tracked` — Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele
   gegen den git-**Index** (`target-untracked`: ein untracktes/gitignoriertes
@@ -283,7 +285,7 @@ Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.73.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf
