@@ -91,11 +91,11 @@ func TestRunReview_RejectsSliceReview(t *testing.T) {
 	}
 }
 
-// TestExtractFullHeading_RealeUeberschriftenformen belegt slice-198 §2
-// Punkt 4/§4: ExtractFullHeading darf das fuehrende Wort einer
-// uneinheitlichen Review-Ueberschrift nicht verschlucken -- anders als
-// ExtractTitle, das fuer das Slice-/Welle-Praefixschema gebaut ist.
-// Gegen zwei der elf realen Formen geprueft (Fixture-Kopie).
+// TestExtractFullHeading_RealeUeberschriftenformen belegt: ExtractFullHeading
+// darf das fuehrende Wort einer uneinheitlichen Review-Ueberschrift nicht
+// verschlucken -- anders als ExtractTitle, das fuer das Slice-/Welle-
+// Praefixschema gebaut ist. Gegen drei der elf realen Formen geprueft
+// (Fixture-Kopie).
 func TestExtractFullHeading_RealeUeberschriftenformen(t *testing.T) {
 	cases := []struct{ heading, want string }{
 		{"# Review-Report: Change Request `DC-FA-CODE-001` — 2026-06-11",

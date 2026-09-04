@@ -47,8 +47,9 @@ func main() {
 	}
 }
 
-// validateModeFlags erzwingt, dass genau eines von -welle/-slice gesetzt
-// ist -- weder beides (mehrdeutig, welcher Modus?) noch keines (kein Ziel).
+// validateModeFlags erzwingt, dass genau eines von -welle/-slice/-review
+// gesetzt ist -- weder mehrere (mehrdeutig, welcher Modus?) noch keines
+// (kein Ziel).
 func validateModeFlags(welle, sliceID, reviewFile string) error {
 	n := 0
 	for _, v := range []string{welle, sliceID, reviewFile} {

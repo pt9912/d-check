@@ -79,25 +79,35 @@ Stub — sonst verschwände er spurlos, ohne Zeiger auf sein Archiv.
       sondern eine neue Funktion `ExtractFullHeading` — `ExtractTitle` hätte
       das führende Wort einer Review-Überschrift ("Review-Report:", "Review
       —") verschluckt, weil es dessen Gruppe 1 nie zurückgibt. Gegen drei
-      der elf realen Überschriftenformen getestet, gegen alle elf im
-      Dry-Run smoke-getestet.
+      der elf realen Überschriftenformen unit-getestet; der Dry-Run gegen
+      alle elf testet nur `FindReview`/den Ablehnungs-Pfad, **nicht**
+      `ExtractFullHeading` selbst (kehrt vorher zurück) — die unabhängige
+      Verifikation hat die tatsächliche Titel-Extraktion separat gegen alle
+      elf realen Überschriften bestätigt (siehe Verifikations-Report).
 - [x] Unit-Tests inkl. Fixture-Vorher/Nachher-Vergleich und beiden
       Negativtests.
 - [x] `make archive-wave-test` grün.
 - [x] `make gates` grün (zehn Gates).
 - [x] `make fullbuild` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/`.
-- [ ] Unabhängige Verifikation durchgeführt.
+- [x] Unabhängiger Review durchgeführt
+      ([Report](../../../reviews/2026-09-04-slice-198-archive-wave-review-modus-code-r1.md),
+      1 HIGH + 2 LOW + 1 INFO — alle behoben, siehe §9).
+- [x] Unabhängige Verifikation durchgeführt
+      ([Report](../../../reviews/2026-09-04-slice-198-archive-wave-review-modus-verifikation.md),
+      bestanden, ein Formulierungs-Widerspruch §5/§9 gemeldet — behoben,
+      siehe §9).
 - [ ] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
 
 ## 5. Abnahme-Punkte / Risiken
 
 - **`ExtractTitle`s Regex ist auf Slice-/Wellen-Header zugeschnitten und
-  wurde nie gegen uneinheitliche Review-Überschriften geprüft — eingetreten,
-  aufgefangen statt entfallen.** Genau dieses Risiko materialisierte sich
-  beim Entwurf: `ExtractTitle` hätte das führende Wort verschluckt. Gelöst
-  durch eine eigene Funktion (`ExtractFullHeading`) statt Wiederverwendung,
-  siehe §9 — kein Produktionsfehler, weil vor der Implementierung erkannt.
+  wurde nie gegen uneinheitliche Review-Überschriften geprüft —
+  entfallen.** `ExtractTitle` wurde für Reviews nie eingesetzt: die
+  Prüfung (manuelles Durchspielen der Regex gegen alle elf realen
+  Überschriften, siehe §9) zeigte das Verschlucken des führenden Worts
+  bereits am Entwurf, vor jeder Implementierung — eine eigene Funktion
+  (`ExtractFullHeading`) trat von Anfang an an ihre Stelle. Kein
+  Produktionscode hat je die falsche Funktion verwendet.
 - **Ein Review, dessen einzige Zitierstelle einer Anforderung er ist, könnte
   die Anforderung zur Trace-Waise machen — entfallen für diesen Slice**
   (kein Bestand berührt), bleibt Prüfpunkt für slice-199 (`--require-complete`
@@ -157,15 +167,39 @@ Funktionen: `FindReview` (collect.go), `ApplyReview`, `ReviewArchiveDir`
 dabei auch eine bereits veraltete Passage korrigiert (beschrieb noch den
 flachen Vor-welle-89-Pfad des `-slice`-Modus).
 
-**Was anders lief als geplant:** Das im Plan (§5) benannte Risiko trat
-tatsächlich ein, aber **vor** jeder Implementierung: `ExtractTitle` (für
-Slice-/Wellen-Header gebaut) hätte bei einer Review-Überschrift wie
-"# Review-Report: Change Request …" das Wort "Review-Report" verschluckt,
-weil die Funktion nur ihre erste Capture-Gruppe zurückgibt. Statt die
-bestehende Regex zu erweitern (und beide Aufrufer subtil zu koppeln),
-eigene Funktion `ExtractFullHeading` (liest die ganze Zeile nach `# `) für
-Reviews. Gegen drei der elf realen Überschriftenformen unit-getestet, gegen
-alle elf im Dry-Run smoke-getestet, bevor slice-199 den Bestand anfasst.
+**Was anders lief als geplant:** Das im Plan (§5) benannte Risiko wurde
+bereits **beim Entwurf** erkannt, bevor `ExtractTitle` je für Reviews
+verwendet wurde: die Funktion (für Slice-/Wellen-Header gebaut) hätte bei
+einer Review-Überschrift wie "# Review-Report: Change Request …" das Wort
+"Review-Report" verschluckt, weil sie nur ihre erste Capture-Gruppe
+zurückgibt. Statt die bestehende Regex zu erweitern (und beide Aufrufer
+subtil zu koppeln), eigene Funktion `ExtractFullHeading` (liest die ganze
+Zeile nach `# `) für Reviews — von Anfang an, kein Produktionscode hat je
+`ExtractTitle` für einen Review aufgerufen. Gegen drei der elf realen
+Überschriftenformen unit-getestet; der Dry-Run gegen alle elf prüft nur den
+Sammel-/Ablehnungs-Pfad, nicht die Extraktion selbst — die unabhängige
+Verifikation hat sie separat gegen alle elf realen Überschriften bestätigt.
+
+**Nach Review/Verifikation behoben (1 HIGH + 2 LOW + 1 Formulierungs-Befund,
+unabhängig gefunden):**
+
+- **Ein neuer Testkommentar trug erneut Slice-Nummer-Provenienz**
+  (`review_mode_test.go`, „belegt slice-198 §2 Punkt 4/§4") — dieselbe
+  Fehlerklasse wie bei slice-196 (§3.7), in derselben Sitzung ein zweites
+  Mal. Behoben: Slice-Bezug entfernt; die Zahlenangabe „gegen zwei" auf die
+  tatsächliche „gegen drei" korrigiert.
+- **Ein Kommentar über `validateModeFlags` war seit der Drei-Flag-Erweiterung
+  veraltet** (beschrieb noch zwei Flags) — nachgezogen.
+- **Die DoD/§9-Formulierung überzeichnete den Dry-Run-Beleg**: der Dry-Run
+  gegen alle elf testet nur `FindReview`/den Ablehnungs-Pfad, nicht
+  `ExtractFullHeading` selbst (kehrt vorher zurück) — die unabhängige
+  Verifikation deckte die tatsächliche Extraktion separat ab. Beide Stellen
+  präzisiert.
+- **§5 und §9 widersprachen sich wörtlich** über denselben Risiko-Ausgang
+  (§5: „eingetreten, aufgefangen statt entfallen"; §9: „entfallen") —
+  unabhängige Verifikation. Auf „entfallen" vereinheitlicht: kein
+  Produktionscode hat je `ExtractTitle` für einen Review aufgerufen, das
+  Risiko wurde vor jeder Implementierung erkannt.
 
 **Lerneintrag:** keiner über das Vermerkte hinaus — die Lehre aus
 slice-196/197 (Fixture-vs-Bestand-Lücken vor der Bestandsanwendung
