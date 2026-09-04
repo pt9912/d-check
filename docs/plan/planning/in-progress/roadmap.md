@@ -32,6 +32,9 @@ Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
 §Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
+- [welle-89](../welle-89-wellenlose-review-archivierung.md) — Wellenlose
+  Review-Archivierung: Werkzeug-Modus + Anwendung auf den Bestand.
+
 Nichts in Arbeit.
 
 ## Nächste Wellen
