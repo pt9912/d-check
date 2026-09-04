@@ -10,7 +10,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
 §Wellen-Closure-Prozedur, Schritt 3 — *was gelernt wurde*: geliefert · was
 funktionierte · was anders lief. Mit ID-Bezug, wo es einen gibt.
 
-- **`links.resolve-from`** ([slice-095](slice-095-links-resolve-from.md)):
+- **`links.resolve-from`** ([slice-095](wellenlos/slice-095-links-resolve-from.md)):
   Erweiterung von
   [`DC-FA-LINK-001`](../../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)
   (kein neues Modul, kein neues Kürzel — Kriterium aus
@@ -115,7 +115,7 @@ BEO-001 ist gestrichen.
 
 ## Verifikation
 
-- **Closure-Trigger erfüllt:** [slice-095](slice-095-links-resolve-from.md) in
+- **Closure-Trigger erfüllt:** [slice-095](wellenlos/slice-095-links-resolve-from.md) in
   `done/`; der Realdatenbeleg liegt vor (Retro-Lauf mit dem Produkt, die
   Quellort-Hälfte des Bruchs; Ziel-Wanderung als Grenze in
   [ADR-0056](../../adr/0056-resolve-from-wandernde-quellorte.md)); die

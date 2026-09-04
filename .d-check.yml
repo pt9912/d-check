@@ -252,6 +252,14 @@ ignore-refs:
   # Dieselbe Grenze, welle-70-Archivierung (slice-191).
   - in: docs/reviews/2026-08-16-slice-103-geteilte-lexik-review.md
     refs: ["docs/reviews/2026-08-09-slice-101-fence-review-r3.md"]
+  # Dieselbe Grenze, jetzt am wellenlosen Einzel-Slice-Modus (slice-197):
+  # dieser Review-Report zitiert die beiden slice-185-Reports als
+  # Lauf-Beleg, nicht als Gegenstand -- slice-185 selbst ist seither per
+  # `-slice=slice-185` archiviert.
+  - in: docs/reviews/2026-08-31-release-prep-v0.71.0-review.md
+    refs:
+      - "docs/reviews/2026-08-31-slice-185-code-r1.md"
+      - "docs/reviews/2026-08-31-slice-185-verifikation.md"
   # Dieselbe Grenze, diesmal an einem done/-Slice statt einem Review-Report
   # oder einer ADR (welle-79-Archivierung, slice-191): der Slice zitiert den
   # Review-Befund, der ihn ausloeste, als Lauf-Beleg.

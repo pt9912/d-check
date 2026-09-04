@@ -208,4 +208,4 @@ Beides ist eine Entscheidung; das Weiterbestehen ohne Entscheidung ist keine.
 
 | Datum | Ereignis | Verweis |
 |---|---|---|
-| 2026-08-27 | Accepted | [slice-158](../planning/done/slice-158-citations-inline-code.md) |
+| 2026-08-27 | Accepted | [slice-158](../planning/done/wellenlos/slice-158-citations-inline-code.md) |
