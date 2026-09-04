@@ -96,7 +96,7 @@ Stub — sonst verschwände er spurlos, ohne Zeiger auf sein Archiv.
       ([Report](../../../reviews/2026-09-04-slice-198-archive-wave-review-modus-verifikation.md),
       bestanden, ein Formulierungs-Widerspruch §5/§9 gemeldet — behoben,
       siehe §9).
-- [ ] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
+- [x] Closure-Notiz (§9) geschrieben, jedes Risiko aus §5 mit Ausgang.
 
 ## 5. Abnahme-Punkte / Risiken
 
