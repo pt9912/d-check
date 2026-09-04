@@ -1,7 +1,7 @@
 # Verifikation slice-198 — `tools/archive-wave`: Modus für eigenständige Review-Archivierung
 
 **Art:** Verifikation.
-**Gegenstand:** [slice-198](../plan/planning/in-progress/slice-198-archive-wave-review-modus.md), HEAD `d820833` ("feat(planning): slice-198 -- archive-wave Modus fuer eigenstaendige Review-Archivierung"). Slice liegt noch in `in-progress/`, DoD-Zeilen 9–11 (Review/Verifikation/Closure-Move) sind im Plan bewusst noch `[ ]`.
+**Gegenstand:** [slice-198](../plan/planning/done/slice-198-archive-wave-review-modus.md), HEAD `d820833` ("feat(planning): slice-198 -- archive-wave Modus fuer eigenstaendige Review-Archivierung"). Slice liegt noch in `in-progress/`, DoD-Zeilen 9–11 (Review/Verifikation/Closure-Move) sind im Plan bewusst noch `[ ]`.
 **Modell-ID:** `claude-sonnet-5`.
 **Datum:** 2026-09-04.
 **Rolle:** unabhängiger Verifier — geprüft wird gegen **DoD und Spec** (Baseline-Regelwerk [`modul-08-agentenrollen.md` §Welche Rolle braucht welche Artefaktklasse](../../.harness/baseline/v6.0.0/regelwerk/modul-08-agentenrollen.md#welche-rolle-braucht-welche-artefaktklasse-modul-8)), nicht gegen Plan/ADR-Maintainability (Reviewer-Aufgabe). Kein Review-Report zu slice-198 gelesen oder mit dem Reviewer koordiniert — nur ein `ls`-Check auf `docs/reviews/` (keiner vorhanden, dort liegt bislang nur diese Verifikation).
