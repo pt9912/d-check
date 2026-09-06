@@ -1,0 +1,2 @@
+**Vorgang:** slice-202
+**Fund:** Die Teilmengen-Variante, dreimal in einem Slice: gehobene Dateien als 52 statt 51 berichtet, `cite`-Direktiven als 15 in 10 Dateien statt 16 in 11, Register-Verzeichnisse als 34 statt 33. Bemerkenswert ist die Verteilung — die **fremde** Menge (Bundle-Delta) war korrekt gemessen und die Fehlmessung dort eigens abgefangen; falsch waren genau die **selbst erzeugten** Mengen, für die keine Abfangstelle gebaut worden war.

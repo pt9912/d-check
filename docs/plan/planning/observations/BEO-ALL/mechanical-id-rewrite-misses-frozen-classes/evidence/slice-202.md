@@ -1,0 +1,2 @@
+**Vorgang:** slice-202
+**Fund:** Der Zensus des Baseline-Bumps hob eine Zeile mit, die den zu **entfernenden** Baum identifiziert (`.harness/baseline/v6.0.0/ | entfällt` in der Plan-Tabelle) — danach nannte die Tabelle denselben Pfad zweimal, als neu und als entfallend. Neue Ausprägung: nicht ein eingefrorenes Verzeichnis, sondern eine **identifizierende Nennung in einem lebenden Dokument**; kein Gate meldet sie, weil beide Pfade auflösen.

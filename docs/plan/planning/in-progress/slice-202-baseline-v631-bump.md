@@ -41,11 +41,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**; Gate-Läufe und die
 Closure-Pflichten darunter zählen nicht mit.
 
-- [ ] **(1)** Vendorter Baum steht auf `v6.3.1`: alter `v6.0.0`-Baum entfernt,
+- [x] **(1)** Vendorter Baum steht auf `v6.3.1`: alter `v6.0.0`-Baum entfernt,
       neuer materialisiert samt `SHA256SUMS`, die acht Baseline-Aliase unter
       `.claude/rules/` umgehängt; `make baseline-verify` grün (Integrität,
       Manifest-Deckung, Alias-Auflösung).
-- [ ] **(2)** Alle **lebenden** pin-gebundenen Verweise auf `v6.3.1` gehoben
+- [x] **(2)** Alle **lebenden** pin-gebundenen Verweise auf `v6.3.1` gehoben
       (Zensus nach [`MR-021`](../../../../harness/conventions.md#mr-021),
       inklusive der beiden benannten Übersetzungsfehler-Klassen:
       `../baseline/` <!-- d-check:ignore (Muster-Praefix, illustriert die Fehlerklasse) -->-relative Pfade in `.harness/skills/` und Release-URLs
@@ -53,18 +53,18 @@ Closure-Pflichten darunter zählen nicht mit.
       wo nötig neu verankert
       ([`MR-051`](../../../../harness/conventions.md#mr-051));
       `.d-check.yml`-Tombstone für den entfernten Baum ergänzt.
-- [ ] **(3)** [`MR-065`](../../../../harness/conventions.md) geschrieben —
+- [x] **(3)** [`MR-065`](../../../../harness/conventions.md) geschrieben —
       mit Delta-Tabelle je Tag, Adoptions-Entscheid je Strang und
       Adaptions-Review über alle aktiven Einträge —,
       [`MR-060`](../../../../harness/conventions.md#mr-060) nach
       `conventions/done/` bewegt, beide Index-Tabellen fortgeschrieben.
-- [ ] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues
+- [x] `make gates` grün.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — neues
       Verzeichnis oder eine weitere Datei in einem vorhandenen `evidence/`;
       kein Zähler wird gesetzt, er folgt aus den Dateien.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
       im wellenlosen Betrieb hier geprüft, nach dem `git mv`.
 
@@ -110,29 +110,117 @@ behauptet. Dazu die Closure-Notiz mit Steering-Loop-Eintrag.
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Offene Risiken werden bei Closure aufgelöst — **jedes** Risiko bekommt genau
-**einen** Ausgang.
+**einen** Ausgang, und kein Slice geht nach `done/`, während eines ohne Ausgang
+dasteht.
 
 - **Vier Tags auf einmal überschreiten das Review-Limit einer Sitzung**
   ([`BEO-ALL/large-migration-exceeds-session-review-limit`](../observations/BEO-ALL/large-migration-exceeds-session-review-limit/observation.md),
-  Zähler 2×). Das gemessene Delta ist klein (13 Dateien mit echtem Inhalt,
-  davon vier mit mehr als 10 Zeilen), aber der Zensus berührt viele Dateien
-  mechanisch. — **Ausgang:** <offen>
+  Zähler 2×). — **Ausgang:** entfallen — das gemessene Delta war klein (13
+  Dateien mit echtem Inhalt), und der unabhängige Review prüfte alle vier
+  Commits in **einem** Lauf mit vollständigem Verdikt und eigenen
+  Gate-Läufen. Die Grenze wurde nicht erreicht.
 - **Der Zensus übersieht eine Spiegel-Klasse**
   ([`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md),
-  Zähler 5×; kein Sensor hält die Menge). Beim `v6.0.0`-Bump wurden zwei
-  Klassen erst im zweiten Durchlauf gefunden. — **Ausgang:** <offen>
+  Zähler 5×; kein Sensor hält die Menge). — **Ausgang:** entfallen — der
+  Review prüfte die Vorwärts-Richtung eigens (Negativbefund 3): kein lebender
+  Verweis trägt mehr `v6.0.0`. Übersehen wurde nichts; der Fehler lag in der
+  **Gegenrichtung** und ist beim nächsten Punkt geführt.
 - **Der mechanische Rewrite trifft eine eingefrorene Klasse**
   ([`BEO-ALL/mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md),
-  Zähler 1×): immutable ADRs, `done/`-Slices, Reviews und der ausgehende CR
-  zitieren den Stand ihrer Zeit und dürfen **nicht** gehoben werden. — **Ausgang:** <offen>
+  Zähler 1×). — **Ausgang:** eingetreten — als Review-Befund F-4: der Zensus
+  hob die §3-Zeile mit, die den zu **entfernenden** Baum identifiziert.
+  Behoben vor der Closure; Beleg `evidence/slice-202.md` im Register, Zähler
+  steht damit bei 2×. Neue Ausprägung, benannt: nicht ein eingefrorenes
+  *Verzeichnis*, sondern eine identifizierende Nennung in einem **lebenden**
+  Dokument — kein Gate meldet sie, weil beide Pfade auflösen.
 - **Die Adoptions-Stränge werden als „mitgemacht" behauptet, obwohl nur der
-  Pin steht.** Das Delta trägt mit `harness/sensors/` <!-- d-check:ignore (Kanon-Form aus v6.3.1, im Repo noch nicht angelegt) --> eine Form-Änderung, die
-  d-checks überladene Sensors-Tabelle unmittelbar betrifft; sie ist in diesem
-  Slice **nicht** umgesetzt — sie kann es nicht sein: die neuen Vorlagen liegen erst **nach** diesem Bump im Repo. — **Ausgang:** <offen; vorgesehener Ausgang: eingetreten, Folge-Slice slice-203 (Adoption der Template-Deltas)>
+  Pin steht.** — **Ausgang:** entfallen — der Review prüfte die Frage eigens
+  (Negativbefund 14) und fand keine solche Behauptung: die Abgrenzung ist in
+  §1, DoD (2)/(3) und [`MR-065`](../../../../harness/conventions.md#mr-065)
+  gleichlautend als Reihenfolge-Bedingung geführt. Der Folge-Slice
+  [slice-203](../open/slice-203-v631-template-adoption.md) liegt in `open/`.
 
 ## 7. Closure-Notiz
 
-<wird vor dem `git mv` nach `done/` gefüllt>
+**Was hat funktioniert.** Die Delta-Messung. Ein naiver Datei-Diff meldet
+alle 53 Bundle-Dateien als geändert, weil jede eine `Quelle:`-Zeile mit dem
+Tag trägt; erst `diff -I '<!-- Quelle:'` zeigt die **13**, um die es geht.
+Ohne diesen Schritt wäre der Slice mit einem vierfach überhöhten Delta
+gestartet und hätte vier Tags für unlesbar gehalten. Ebenso getragen hat die
+Zwei-Commit-Trennung beim [`MR-060`](../../../../harness/conventions.md#mr-060)-Move — inklusive der Erkenntnis, dass sie
+**scheitern kann, ohne dass ein Gate es merkt**: der `pre-commit`-Hook prüft
+den Arbeitsbaum, nicht den Commit-Stand.
+
+**Was ging anders als geplant.** Der `git add` des Move-Commits scheiterte am
+bereits durch `git mv` entfernten Pfad und riss die Kette mit; der Commit trug
+danach nur den Rename, während der Arbeitsbaum grün war. Genau der gate-rote
+Zwischenstand, den [`MR-013`](../../../../harness/conventions.md#mr-013)
+ausschließt — sichtbar erst, weil der Commit-Stand eigens gegen `git show`
+geprüft wurde. Über einen `--amend` geheilt (lokal, ungepusht).
+
+Der unabhängige Review meldete **0 HIGH, 7 MEDIUM, 1 LOW, 1 INFO** und
+blockierte. Bemerkenswert ist die Verteilung: Die **mechanische** Hälfte
+bestätigte er in achtzehn Negativbefunden als sauber — Baum, Aliase, Zensus in
+beide Richtungen, Tombstone-Entscheidung, Move-Konformität, alle zehn Gates in
+seinem eigenen Lauf. Blockiert hat ausschließlich die **Selbstauskunft**
+darüber: drei falsche Zahlen, eine überhobene Zeile, ein Beleg auf einer
+Nebenregel, zwei Begründungen ohne Gegenstand. Alle sieben waren an Text
+korrigierbar, keiner verlangte, den Bump zu wiederholen.
+
+**Steering-Loop-Eintrag:** Die drei Zahl-Befunde (F-1/F-2/F-3) sind **nicht**
+drei Einzelfehler. Für die **fremde** Menge — das Bundle-Delta — war eine
+Abfangstelle gebaut worden, und sie griff; falsch waren genau die **selbst
+erzeugten** Mengen, für die keine gebaut war. Der Reflex „fremde Zahlen sind
+unsicher, eigene kenne ich" ist die Lücke, nicht die Arithmetik. Eingetragen
+als weiterer Beleg bei
+[`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+(Zähler 7×) — dort ist die Teilmengen-Variante bereits als verwandte Form
+benannt. **Verkörpert wurde mit diesem Slice nichts**; der Eintrag ist
+gezählt, nicht verkörpert.
+
+**Neu registriert:**
+[`BEO-ALL/begruendung-traegt-entscheidung-nicht`](../observations/BEO-ALL/begruendung-traegt-entscheidung-nicht/observation.md)
+(1×) — aus F-7. Die Klasse ist eigenständig: Der Tombstone traf die richtige
+Entscheidung (**ein** Glob) und begründete sie mit einem Sachverhalt, der
+nicht zutrifft. Weil das Ergebnis stimmt, meldet kein Sensor etwas; falsch ist
+nur der Satz daneben — und der ist die einzige Fassung, aus der die nächste
+Migration ihre Reichweite ableitet.
+
+**Beobachtungs-Register (`../observations/`):** vier Belege
+`evidence/slice-202.md` — bei
+[`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+(7×),
+[`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)
+(2×),
+[`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+(13×) und dem neuen Eintrag oben (1×). **Eine Gegenbeobachtung, bewusst ohne
+Beleg:**
+[`BEO-HARN/check-latest-blind-before-pin`](../observations/BEO-HARN/check-latest-blind-before-pin/observation.md)
+trat **nicht** ein — `check-latest` meldete alle vier neuen Tags korrekt,
+obwohl der Pin dahinter lag. Eine Nicht-Wiederholung ist kein Auftreten und
+bewegt den Zähler nicht; sie steht hier, statt still zu bleiben.
+
+**Nicht behoben, mit Begründung:** F-8 (LOW) — [`MR-055`](../../../../harness/conventions.md#mr-055)s „vier tote Aliase"
+beschreibt den Bestand von slice-176 und ist für seinen Zeitpunkt korrekt;
+heute sind es acht. Ein akzeptierter Adaptions-Eintrag wird nicht nachträglich
+umgeschrieben (Adaptions-Block-Disziplin), und eine Mess-Aussage von damals
+ist kein Defekt von heute.
+
+**Folge-Slices:** [slice-203](../open/slice-203-v631-template-adoption.md)
+(Adoption der v6.3.1-Template-Deltas) — ist eine Datei in `open/`.
+
+**Risiken aus §6:** vier, jedes mit genau einem Ausgang — drei entfallen mit
+Begründung, eines eingetreten und behoben; siehe §6.
+
+**Verifikation.** `make gates` Exit 0 (zehn Gates, 625 Dateien, 0 Befunde) ·
+`make baseline-verify` ok (54 Dateien, vollständig) · `make baseline-freshness`
+meldet `v6.3.1` als neuesten Tag **und** den Inhalt unverändert — damit ist die
+rote Nachtlauf-Achse geschlossen · unabhängiger Review (0/7/1/1, alle sieben
+MEDIUM behoben, LOW mit Begründung offen gelassen), Report unter
+[`docs/reviews/`](../../../reviews/2026-09-06-slice-202-baseline-v631-review.md).
+
+**Drei Paarungen:** nach dem `git mv` geprüft — Ergebnis im letzten
+DoD-Häkchen.
 
 ## 8. Sub-Area-Modus-Begründung
 
