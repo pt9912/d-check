@@ -16,9 +16,9 @@ angenommen in Vorschlag **A**; berührt
 [`DC-FA-COV-001`](../../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
 nur als **Abgrenzung**, nicht als Änderung.
 
-**Berührte Spec-Stellen:** neue `DC-FA-*`-Anforderung in
+**Berührte Spec-Stellen:** [`DC-FA-MENT-001`](../../../../spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in) (mit diesem Slice vergeben) in
 [`spec/lastenheft.md`](../../../../spec/lastenheft.md) §3 (Bereichs-Kürzel wird
-mit ihr vergeben); Versions-Bump 0.84.0 → 0.85.0 samt Historie-Zeile.
+mit ihr vergeben); Versions-Bump samt Historie-Zeile — **auf 0.86.0, nicht wie hier zunächst geplant auf 0.85.0**: Der Plan las das Kopf-Feld, das auf 0.84.0 stand; die Historie darunter führte bereits eine 0.85.0-Zeile (§5).
 
 **Verantwortlich:** pt9912 · **Autor:** pt9912. **Datum:** 2026-09-06.
 
@@ -106,7 +106,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - [ ] **(1)** Die Anforderung steht in
       [`spec/lastenheft.md`](../../../../spec/lastenheft.md), nur dort, mit dem
       Akzeptanzkriterien-Trio (Happy Path · Boundary · Negativ), dem
-      Bereichs-Kürzel in §3, Versions-Bump auf 0.85.0 und Historie-Zeile
+      Bereichs-Kürzel in §3, Versions-Bump und Historie-Zeile
       (Baseline-Regelwerk `modul-03-spec.md`).
 - [ ] **(2)** Eine neue ADR <!-- d-check:ignore (wird mit diesem Slice angelegt) --> trägt die **zwei** Entscheide mit ihren
       verworfenen Alternativen: **(a) eigene Achse oder dritte Quell-Form von
@@ -162,6 +162,30 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   jede Schwelle und Ausnahme-Klasse müsste am Fremd-Repo justiert werden. Das
   widerspricht der gelebten Praxis, jede Regel vor der Aufnahme am **eigenen**
   Bestand zu messen. — **Ausgang:** <offen>
+- **Zwei Deklarations-Drifts im eigenen Lastenheft, während der Arbeit
+  gefunden — und beide sind das Rauschen, dessen Fehlen der Punkt darüber
+  beklagt.** (i) Die Modul-Aufzählung in
+  [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)
+  nannte 20 Module und ließ `workflows` und `reviews` aus, obwohl beide seit
+  0.83.0 bzw. 0.84.0 eigene Anforderungen tragen. (ii) Das `**Version:**`-Feld
+  stand auf 0.84.0, während die Historie darunter bereits eine
+  0.85.0-Zeile führte — der Kopf-Bump unterblieb bei jenem Eintrag. Beide
+  wurden **nicht still behoben**: (i) mit der Anforderung berichtigt, weil die
+  Liste ohnehin anzufassen war und eine bekannt falsche Aufzählung darin
+  schlechter gewesen wäre; (ii) durch den Bump auf **0.86.0** aufgelöst, statt
+  wie geplant auf 0.85.0. **Der Plan selbst ist der Beleg für die Klasse:**
+  seine DoD nannte 0.85.0, weil sie das Kopf-Feld las und nicht die Historie.
+  — **Ausgang:** <offen>
+- **Der Sichtungs-Schritt in §7 hat den einschlägigsten Eintrag nicht
+  gefunden.** Gesichtet wurden vier Beobachtungen; die Drift aus (i) ist eine
+  dritte Instanz von
+  [`modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
+  (bisher 2×) — die Modul-Aufzählung des Lastenhefts ist ein **vierter**
+  Spiegel neben `FOCUS_DISABLE`, der Netzlos-Modulliste und der Gate-Prosa,
+  und der Eintrag benennt genau diese Klasse. Damit erreicht er mit diesem
+  Slice die Schwelle **3×** und braucht bei der Closure einen Ausgang. Der
+  Sichtungs-Schritt suchte nach dem Gegenstand des Slice, nicht nach dem, was
+  der Slice **anfassen** würde. — **Ausgang:** <offen>
 
 ## 6. Trigger
 
@@ -223,6 +247,16 @@ betreffen diesen Gegenstand:
   der neuen Anforderung braucht ihr Kriterium, nicht nur der Happy Path.
 
 Keiner der vier erreicht mit diesem Slice die Schwelle von 3× erstmalig.
+
+**Diese Sichtung war unvollständig, und das ist während der Arbeit
+aufgefallen** (§5): Ein **fünfter** Eintrag —
+[`modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md),
+bisher 2× — erreicht mit diesem Slice die Schwelle und braucht bei der Closure
+einen Ausgang. Er stand hier nicht, weil die Sichtung nach dem **Gegenstand**
+des Slice suchte (Soll/Ist-Achse, Anforderungs-Schreiben) und nicht danach, was
+der Slice **anfassen** würde — und angefasst wird die Modul-Aufzählung, deren
+Spiegel genau dieser Eintrag führt. Der Fund bleibt hier stehen, statt die
+Sichtung oben nachträglich zu glätten: Was sie sah, ist Lauf-Beleg.
 
 **Vorgelagert — Nachtlauf-Stand lesen**
 ([`MR-053`](../../../../harness/conventions.md#mr-053)):
