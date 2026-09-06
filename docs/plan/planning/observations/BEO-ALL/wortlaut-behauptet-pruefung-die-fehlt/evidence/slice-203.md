@@ -1,0 +1,2 @@
+**Vorgang:** slice-203
+**Fund:** Die Commit-Botschaft schrieb der neu eingezogenen Zellenlängen-Regel zwei Funde zu, die sie nicht machen konnte: Die Regel band nur die Vertrags-Spalte, eine Zeile ohne Bindung-Zelle passierte sie still. Der Reviewer hat das per Break-Test widerlegt. Behoben durch Bindung der Spalte statt durch Rücknahme der Aussage — die Regel findet die Klasse jetzt wirklich, belegt durch einen eigenen Break-Test.

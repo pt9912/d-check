@@ -1,0 +1,2 @@
+**Vorgang:** slice-203
+**Fund:** Zwei Stellen in den neu angelegten Träger-Dateien. Eine Grenze wurde „permanent" genannt, obwohl die zitierte Quelle ([`MR-048`](../../../../../../../harness/conventions.md#mr-048)) für genau sie einen Auflösungs-Trigger führt — als permanent deklariert, hätte kein Retirement-Check sie beim Eintritt des Triggers noch angefasst. Dazu eine Heilungs-Aussage, die ihre Quelle verkürzte: „heilbar nur durch Gegenlesen", während die Quelle zwischen *sichtbar durch Gegenlesen* und *geheilt per `--amend`* unterscheidet.

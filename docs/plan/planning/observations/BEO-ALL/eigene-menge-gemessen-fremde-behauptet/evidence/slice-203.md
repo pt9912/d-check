@@ -1,0 +1,2 @@
+**Vorgang:** slice-203
+**Fund:** Erneut die selbst erzeugte Menge, erneut zweistufig. Zuerst maß der Zuschnitt die **Zeilen**länge inklusive Markdown-Spaltenpolsterung statt des Zellinhalts — die drei ausgewählten Träger waren nach echter Messung Rang 1, 9 und 11, die Ränge 2 bis 8 wären stehen geblieben. Nach der Korrektur reproduzierten zwei der neuen Zahlen erneut nicht (24 statt 21 Zellen über der Schwelle; die Zielzahl der größten Zelle 60 statt 106). Beide Male war die **fremde** Menge korrekt gemessen und die **eigene** falsch.
