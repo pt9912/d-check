@@ -608,15 +608,37 @@ structure:
   # GRENZE: gemessen wird die ZELLE, nicht der Satz -- zwei kurze Saetze
   # unter der Schwelle passieren. Die Ein-Satz-Regel bleibt Urteil, der
   # Sensor haelt nur ihre Obergrenze.
+  # Dieselbe Regel eine Datei weiter: der Adaptions-Index ist der Ort, den der
+  # Kanon als VORBILD fuer die Sensors-Form nennt ("wie die MR-Zelle im
+  # Adaptions-Block") -- er war selbst keins. Die Traeger-Dateien existieren
+  # hier bereits, die Zeile ist reiner Index.
+  # GELTUNGSBEREICH: nur die Aktive-Tabelle traegt diese drei Spalten; die
+  # Aufgeloeste-Tabelle fuehrt "aufgeloest durch" und bindet nicht.
+  - files: harness/conventions.md
+    section: "### Aktive Adaptionen"
+    table:
+      column:
+        - name: Titel
+          cell-max-chars: 200
+          cell-min-chars: 20
+        - name: Geltungsbereich
+          cell-max-chars: 200
+          cell-min-chars: 8
+        - name: Ersetzt-Baseline-Regel
+          cell-max-chars: 200
+          cell-min-chars: 20
+    hint: "Die Zeile ist ein Index: Prosa gehoert in die MR-Eintrags-Datei, eine fast leere Zelle traegt keine Aussage"
   - files: harness/README.md
     section: "## Sensors (Feedback-Gates)"
     table:
       column:
         - name: Vertrag
           cell-max-chars: 200
+          cell-min-chars: 20
         - name: Tut was
           cell-max-chars: 200
-    hint: "Vertrag nach harness/sensors/<target>.md auslagern, Zeile als Index mit Link behalten"
+          cell-min-chars: 20
+    hint: "Die Zeile ist ein Index: mehr als ein Satz gehoert nach harness/sensors/<target>.md, weniger als ein Satz ist keine Zusage"
   - files: docs/plan/planning/in-progress/roadmap.md
     section: "## Abgeschlossene Wellen"
     table:
