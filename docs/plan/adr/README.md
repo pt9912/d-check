@@ -91,6 +91,7 @@ Register (Baseline-Vorlage `templates/docs/plan/adr/README.template.md`).
 | [ADR-0081](0081-reviews-modul.md) | Review-Report-Deckung wird das Modul `reviews` | Accepted | 2026-09-03 | [`DC-FA-RVW-001`](../../../spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in), [slice-172](../planning/done/welle-86/slice-172-closure-uebergang-waechtern.md), [ADR-0072](0072-workflows-modul.md) |
 | [ADR-0082](0082-uebergangswaechter-reviews-observations.md) | Der Übergangs-Wächter bindet jetzt Review-Report-Deckung und Register-Deckung | Accepted | 2026-09-03 | [ADR-0081](0081-reviews-modul.md), [ADR-0048](0048-closure-note-struktur-im-planning-modul.md), [ADR-0077](0077-spans-am-bindepunkt-die-begruendung-traegt-anders.md) |
 | [ADR-0083](0083-beobachtungsregister-verzeichnis-modus.md) | Das Beobachtungs-Register bekommt einen zweiten, additiven Verzeichnis-Modus | Accepted | 2026-09-03 | [ADR-0082](0082-uebergangswaechter-reviews-observations.md), [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) |
+| [ADR-0084](0084-mentions-eigenes-modul.md) | Die Erwähnungs-Deckung wird ein eigenes Modul, kein dritter Quell-Modus der Kreuzprüfung | Accepted | 2026-09-06 | [ADR-0031](0031-targets-deklarations-konsistenz-modul.md), [`DC-FA-MENT-001`](../../../spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in) |
 
 ## Konventionen
 
