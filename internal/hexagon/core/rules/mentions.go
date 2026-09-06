@@ -81,12 +81,13 @@ func CheckMentions(fsys driven.Filesystem, cfg model.MentionsConfig, ignore []st
 	corpus := mentionsCorpus(fsys, documents)
 	target := strings.Join(cfg.Documents, ",")
 	basename := cfg.EffectiveMatch() == model.MentionsMatchBasename
+	needles := mentionsNeedles(artifacts, basename)
+	if a, b, ok := mentionsCollision(artifacts, needles); ok {
+		return res, fmt.Errorf("mentions: die Suchbegriffe von %q und %q kollidieren — eine Nennung des zweiten deckt das erste, und das erste kann nie als unerwaehnt gemeldet werden. Soll-Menge schneiden oder mentions.match wechseln (DC-FA-MENT-001, fail-closed)", a, b)
+	}
 	res.Artifacts, res.Documents = len(artifacts), len(documents)
-	for _, a := range artifacts {
-		needle := a
-		if basename {
-			needle = path.Base(a)
-		}
+	for i, a := range artifacts {
+		needle := needles[i]
 		if mentionsOccurs(corpus, needle) {
 			res.Mentioned++
 			continue
@@ -254,4 +255,57 @@ func mentionsRightFree(after string) bool {
 	}
 	r, _ := utf8.DecodeRuneInString(after)
 	return !unicode.IsLetter(r) && !unicode.IsDigit(r)
+}
+
+// mentionsNeedles bildet je Mitglied den Suchbegriff -- unter `basename` den
+// Dateinamen, sonst den '/'-relativen Pfad.
+func mentionsNeedles(artifacts []string, basename bool) []string {
+	out := make([]string, len(artifacts))
+	for i, a := range artifacts {
+		out[i] = a
+		if basename {
+			out[i] = path.Base(a)
+		}
+	}
+	return out
+}
+
+// mentionsCollision findet ein Paar, bei dem der Suchbegriff des einen
+// Mitglieds im Suchbegriff des anderen als eigenstaendige Nennung steckt. Ein
+// solches Mitglied kann NIE als unerwaehnt gemeldet werden -- die Nennung des
+// laengeren Geschwisters deckt es -, und das Ergebnis waere ein stilles Gruen
+// ueber einer Menge, die der Konfigurierende fuer geprueft haelt.
+//
+// WARUM DAS DER WAECHTER TUT UND NICHT DER MENSCH: Die Bedingung haengt an der
+// Grenz-Regel, und die ist Produkt-Interna. Eine Vorbedingung, die der
+// Konfigurierende von Hand nachrechnen soll, ist bei jeder Aenderung der
+// Grenz-Regel still falsch -- eine Erinnerung, kein Waechter.
+//
+// Geprueft werden BENACHBARTE Paare der sortierten Begriffe, und das genuegt:
+// Ist x Praefix von y, liegen zwischen ihnen nur Begriffe, die ebenfalls mit x
+// beginnen -- die Relation ist damit transitiv ueber die Nachbarschaft
+// erfasst. Gleiche Begriffe (zwei Mitglieder, ein Dateiname) fallen im selben
+// Vergleich an.
+func mentionsCollision(artifacts, needles []string) (string, string, bool) {
+	type pair struct{ needle, member string }
+	ps := make([]pair, len(needles))
+	for i := range needles {
+		ps[i] = pair{needles[i], artifacts[i]}
+	}
+	sort.Slice(ps, func(i, j int) bool {
+		if ps[i].needle != ps[j].needle {
+			return ps[i].needle < ps[j].needle
+		}
+		return ps[i].member < ps[j].member
+	})
+	for i := 0; i+1 < len(ps); i++ {
+		a, b := ps[i], ps[i+1]
+		if a.needle == b.needle {
+			return a.member, b.member, true
+		}
+		if strings.HasPrefix(b.needle, a.needle) && mentionsRightFree(b.needle[len(a.needle):]) {
+			return a.member, b.member, true
+		}
+	}
+	return "", "", false
 }

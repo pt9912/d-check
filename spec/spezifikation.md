@@ -2821,7 +2821,18 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    Invarianten in **einem** Block halten keine von beiden — ein Mitglied gilt
    als erwähnt, sobald es in **irgendeinem** Dokument steht, auch in dem, das
    für ein anderes Paar gedacht war. Ein Block ist **ein** Paar.
-5. **Vorkommen prüfen.** Je Mitglied der Soll-Menge wird eine Zeichenkette im
+5. **Kollidierende Suchbegriffe ⇒ Exit 2.** Je Mitglied wird der Suchbegriff
+   gebildet (unter `basename` der Dateiname, sonst der Pfad). Steckt der
+   Suchbegriff eines Mitglieds im Suchbegriff eines anderen — als
+   eigenständige Nennung nach Schritt 6 —, bricht der Lauf ab und nennt
+   **beide** Mitglieder. Grund: Das kürzere könnte **nie** als unerwähnt
+   gemeldet werden, ein grüner Lauf über dieser Menge wäre also eine
+   Deckungs-Aussage, die nicht gilt. Geprüft werden **benachbarte** Paare der
+   sortierten Suchbegriffe; das genügt, weil zwischen zwei Begriffen in
+   Präfix-Relation nur Begriffe liegen, die ebenfalls mit dem kürzeren
+   beginnen. Gleiche Suchbegriffe (unter `basename` derselbe Dateiname in zwei
+   Verzeichnissen) fallen im selben Vergleich an.
+6. **Vorkommen prüfen.** Je Mitglied der Soll-Menge wird eine Zeichenkette im
    Korpus gesucht: unter `mentions.match: path` (Default) der '/'-relative
    Pfad, unter `basename` nur der Dateiname. Gesucht wird **wörtlich** im rohen
    Text — ohne Markdown-Lexik, ohne Fence- oder Inline-Code-Ausnahme, aber als
@@ -2836,12 +2847,12 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    unter `path` jede relative Verlinkung. Fehlt das
    Vorkommen: Befund `artifact-unmentioned`, `file` = der Artefakt-Pfad,
    `line` = **1**, `target` = die `mentions.documents`-Globs, komma-getrennt.
-6. **`line` ist ein Vertrags-Platzhalter, keine Fundstelle.**
+7. **`line` ist ein Vertrags-Platzhalter, keine Fundstelle.**
    [`DC-FA-CLI-004`](lastenheft.md#dc-fa-cli-004--ausgabeformate) verlangt für
    jeden Befund `<pfad>:<zeile>`; das Artefakt wird in diesem Modul **nie
    geöffnet**, und die Anforderung sagt keine Zeile zu. Die `1` erfüllt den
    Ausgabevertrag und behauptet nichts.
-7. **Bezugsmenge in der Zusammenfassung.** Der Lauf trägt eine
+8. **Bezugsmenge in der Zusammenfassung.** Der Lauf trägt eine
    Zusammenfassungs-Zeile bei: `mentions: <N> von <M> Artefakt(en) erwähnt,
    über <D> Dokument(e)`. Sie erscheint im Default-Modus auf stderr und unter
    `--json`/`--yaml` im Feld `summary.notes` (eine Liste). Damit sagt auch ein

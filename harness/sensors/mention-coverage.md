@@ -42,15 +42,21 @@ Endung und ein fremdes Pfad-Präfix decken das Mitglied darunter. Eine Nennung i
 Block zählt, eine korrekte Beschreibung ohne Namensnennung zählt nicht. Ob eine
 Erwähnung *trägt*, bleibt Urteil.
 
-**Die Erkennungsform ist am Bestand zu wählen, und beide Prüfungen gehören
-dazu.** `match: path` (Default) sucht den Pfad ab der Scan-Wurzel, `basename`
-nur den Dateinamen. Für **Markdown-Dokumente, die relativ verlinken, ist `path`
-die falsche Form** — gemessen: **84 von 84** ADRs und **24 von 24**
-Sensor-Dateien wären gemeldet worden, ausnahmslos falsch. An einem
-Fremd-Bestand lieferten dagegen **beide** Formen dasselbe Ergebnis, weil jenes
-Handbuch mit vollem Pfad nennt. Wer `basename` wählt, prüft **zwei** Dinge:
-dass die Basisnamen eindeutig sind **und** dass keiner Endstück eines anderen
-ist — die zweite fehlte einmal und deckte einen echten Fehlalarm zu.
+**Die Erkennungsform ist am Bestand zu wählen.** `match: path` (Default) sucht
+den Pfad ab der Scan-Wurzel, `basename` nur den Dateinamen. Für
+**Markdown-Dokumente, die relativ verlinken, ist `path` die falsche Form** —
+gemessen: **84 von 84** ADRs und **24 von 24** Sensor-Dateien wären gemeldet
+worden, ausnahmslos falsch. An einem Fremd-Bestand lieferten dagegen **beide**
+Formen dasselbe Ergebnis, weil jenes Handbuch mit vollem Pfad nennt.
+
+**Die Kollisions-Prüfung macht das Modul selbst.** Steckt der Suchbegriff eines
+Mitglieds im Suchbegriff eines anderen, bricht der Lauf ab — Exit 2, mit
+Nennung **beider**. Sonst könnte das kürzere nie als unerwähnt gemeldet werden,
+und ein grüner Lauf wäre eine Deckungs-Aussage, die nicht gilt. Gewöhnliche
+Bestände treffen das: `x.md`/`x.md.bak`, `x.sh`/`x.sh.in`. **Von Hand ist das
+nicht mehr zu prüfen** — die Bedingung hängt an der Grenz-Regel, und eine
+nachgerechnete Vorbedingung wäre bei jeder Änderung der Grenze still falsch.
+Sie war es zweimal.
 
 ## Ausgabe und Ausgänge
 
@@ -63,7 +69,7 @@ gefunden hat. Im Default-Modus auf stderr, unter `--json`/`--yaml` als
 | --- | --- |
 | Exit 0 | jedes Mitglied der Soll-Menge kommt in der Ist-Menge vor |
 | Exit 1 | mindestens ein `artifact-unmentioned` — der Befund nennt den Artefakt-Pfad; `line` ist der **Vertrags-Platzhalter** `1`, weil das Artefakt nicht geöffnet wird |
-| Exit 2 | fail-closed: eine der beiden Mengen fehlt, ihr Glob trifft nichts, oder ein Verzeichnis unter der Wurzel ist nicht lesbar |
+| Exit 2 | fail-closed: eine der beiden Mengen fehlt, ihr Glob trifft nichts, ein Verzeichnis unter der Wurzel ist nicht lesbar, **oder zwei Suchbegriffe kollidieren** |
 
 ## Sperren
 

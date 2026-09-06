@@ -421,3 +421,73 @@ func TestMentionsGrenzeIstRunenBasiert(t *testing.T) {
 		t.Fatalf("Ätest.md darf test.md nicht decken, got %+v", res.Findings)
 	}
 }
+
+// Ein Mitglied, dessen Suchbegriff im Suchbegriff eines anderen steckt, kann
+// NIE als unerwaehnt gemeldet werden -- die Nennung des laengeren deckt es.
+// Das waere ein stilles Gruen ueber einer Menge, die der Konfigurierende fuer
+// geprueft haelt, und ist deshalb fail-closed. Die Faelle sind gewoehnliche
+// Bestaende: x.md/x.md.bak, x.yml/x.yml.example, x.sh/x.sh.in.
+func TestMentionsKollidierendeSuchbegriffeFailClosed(t *testing.T) {
+	for name, tc := range map[string]struct {
+		files map[string]string
+		match string
+	}{
+		"Endung angehaengt, basename": {
+			files: map[string]string{"a/x.md": "y", "a/x.md.bak": "y", "h.md": "z"},
+			match: model.MentionsMatchBasename,
+		},
+		"Endung angehaengt, path (Default)": {
+			files: map[string]string{"a/x.md": "y", "a/x.md.bak": "y", "h.md": "z"},
+			match: model.MentionsMatchPath,
+		},
+		"Bindestrich-Suffix": {
+			files: map[string]string{"a/x.sh": "y", "a/x.sh-alt": "y", "h.md": "z"},
+			match: model.MentionsMatchBasename,
+		},
+		"gleicher Dateiname in zwei Verzeichnissen": {
+			files: map[string]string{"a/x.md": "y", "b/x.md": "y", "h.md": "z"},
+			match: model.MentionsMatchBasename,
+		},
+	} {
+		cfg := model.MentionsConfig{Artifacts: []string{"a/*", "b/*"}, Documents: []string{"h.md"}, Match: tc.match}
+		_, err := CheckMentions(coretest.NewMemFS(tc.files), cfg, nil)
+		if err == nil {
+			t.Errorf("%s: erwartet fail-closed error, got nil", name)
+			continue
+		}
+		if !strings.Contains(err.Error(), "kollidieren") {
+			t.Errorf("%s: Meldung benennt die Kollision nicht: %v", name, err)
+		}
+	}
+}
+
+// Gegenprobe: eine Menge OHNE Kollision laeuft durch. Ohne diesen Test koennte
+// der Waechter jede Konfiguration ablehnen und beide Tests waeren gruen.
+func TestMentionsOhneKollisionKeinAbbruch(t *testing.T) {
+	cfg := model.MentionsConfig{Artifacts: []string{"a/*"}, Documents: []string{"h.md"},
+		Match: model.MentionsMatchBasename}
+	files := map[string]string{"a/x.md": "y", "a/y.md": "y", "a/image-x.md": "y", "h.md": "z"}
+	res, err := CheckMentions(coretest.NewMemFS(files), cfg, nil)
+	if err != nil {
+		t.Fatalf("unerwarteter Abbruch: %v", err)
+	}
+	if len(res.Findings) != 3 {
+		t.Fatalf("erwartet drei Befunde, got %+v", res.Findings)
+	}
+}
+
+// Die RECHTE Grenze ist runen-basiert wie die linke. Ohne diesen Test bliebe
+// eine byte-basierte Fassung der rechten Seite unbemerkt.
+func TestMentionsRechteGrenzeIstRunenBasiert(t *testing.T) {
+	cfg := mnCfg()
+	cfg.Artifacts = []string{"a/x.md"}
+	cfg.Documents = []string{"h.md"}
+	cfg.Match = model.MentionsMatchBasename
+	files := map[string]string{
+		"a/x.md": "y",
+		"h.md":   "hier steht x.mdÄndern und sonst nichts\n",
+	}
+	if res := mnRun(t, files, cfg); len(res.Findings) != 1 {
+		t.Fatalf("ein Nicht-ASCII-Buchstabe rechts muss blockieren, got %+v", res.Findings)
+	}
+}

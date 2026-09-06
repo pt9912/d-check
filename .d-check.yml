@@ -893,9 +893,9 @@ citations:
 # jede ADR steht im ADR-Index.
 #
 # match: basename, weil der Index RELATIV verlinkt ("0084-….md", nicht
-# "docs/plan/adr/0084-….md"). Vor der Wahl sind zwei Dinge zu prüfen, nicht
-# eines: die Basisnamen müssen eindeutig sein UND keiner darf Endstück eines
-# anderen sein — sonst deckt die Nennung des längeren das kürzere Mitglied.
+# "docs/plan/adr/0084-….md"). Kollidierende Suchbegriffe braucht niemand von
+# Hand zu prüfen — das Modul bricht ab, wenn der Suchbegriff eines Mitglieds im
+# Suchbegriff eines anderen steckt (Exit 2, mit Nennung beider).
 mentions:
   artifacts:
     - docs/plan/adr/[0-9]*.md
