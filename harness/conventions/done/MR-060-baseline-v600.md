@@ -2,21 +2,21 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** — *(keine; Pin-Fortschreibung innerhalb des von
-  [`MR-023`](../conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)
+  [`MR-023`](../../conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)
   festgelegten self-contained Bundle-Layouts)*
 - **Datum:** 2026-09-03
-- **Geltungsbereich:** [§Baseline](../conventions.md#baseline), [§Adoptierte
-  Konventions-Quellen](../conventions.md#adoptierte-konventions-quellen), die
+- **Geltungsbereich:** [§Baseline](../../conventions.md#baseline), [§Adoptierte
+  Konventions-Quellen](../../conventions.md#adoptierte-konventions-quellen), die
   pin-gebundenen Verweise
-  ([`MR-021`](../conventions.md#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden))
-  in [`AGENTS.md`](../../AGENTS.md), [`harness/README.md`](../README.md), den
+  ([`MR-021`](../../conventions.md#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden))
+  in [`AGENTS.md`](../../../AGENTS.md), [`harness/README.md`](../../README.md), den
   aktiven `MR-*`-Dateien, den Spec-Straten, den Planning-Docs und den
   Reviewer-Skills; dazu die vier Aliase unter `.claude/rules/`
-  ([`MR-055`](../conventions.md#mr-055)).
+  ([`MR-055`](../../conventions.md#mr-055)).
 - **Adaption:** Der Baseline-Pin ist von `v5.18.0` auf **`v6.0.0`** gehoben —
-  die von [`MR-011`](../conventions.md#mr-011--baseline-auf-release-tag-gepinnt)
+  die von [`MR-011`](../../conventions.md#mr-011--baseline-auf-release-tag-gepinnt)
   vorgesehene Fortschreibung, zehnter Nachtrag der Serie; ersetzt
-  [`MR-058`](../conventions/done/MR-058-baseline-v5180.md) nach dessen eigenem
+  [`MR-058`](MR-058-baseline-v5180.md) nach dessen eigenem
   Auflösungs-Trigger. Kein Layout-Wechsel: dasselbe self-contained Bundle,
   dasselbe Materialisierungs-Skript, unverändertes Pfadschema.
 
@@ -34,7 +34,7 @@
   **Der eigene CR trägt einen Teil dieser Historie.** d-check meldete am
   2026-09-03 einen Widerspruch im Kanon (fehlender Träger für wellenlose
   Zeitdokumente-Archivierung,
-  [CR](../../docs/plan/cr/2026-09-03-cr-ai-harness-course-wellenlose-review-archivierung.md)).
+  [CR](../../../docs/plan/cr/2026-09-03-cr-ai-harness-course-wellenlose-review-archivierung.md)).
   Die erste Antwort (in `v5.19.0` ausgeliefert) lehnte die beantragte
   sechste Tabellenzeile ab und nannte die Lücke stattdessen einen Halbsatz
   ohne Träger — **falsch**, wie die zweite Antwort (nach `v5.19.0`, vor
@@ -75,16 +75,16 @@
      Slice die eigene Größenregel (Modul 5, ≤ 3 Liefer-Punkte) überschreiten
      würden.
 
-  **Die Spiegel-Klassen aus [`BEO-ALL/pin-bump-mirrors-ungated`](../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md):**
+  **Die Spiegel-Klassen aus [`BEO-ALL/pin-bump-mirrors-ungated`](../../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md):**
   40 lebende Dateien mit Pfad-/URL-Verweisen auf `v5.18.0` (30 `MR-*.md`,
   2 Reviewer-Skills, `AGENTS.md`, `harness/README.md`,
   `harness/conventions.md`, `spec/architecture.md`, `spec/spezifikation.md`,
   `docs/plan/planning/README.md`, die Roadmap, das Beobachtungs-Register)
   vor der Hebung. Alle 40 gehoben, keines stehen gelassen — kein immutables
   ADR trägt `v5.18.0` mehr **als lebender Verweis**; drei immutable ADRs
-  ([ADR-0080](../../docs/plan/adr/0080-uses-pin-tag-conflict.md),
-  [ADR-0081](../../docs/plan/adr/0081-reviews-modul.md),
-  [ADR-0082](../../docs/plan/adr/0082-uebergangswaechter-reviews-observations.md))
+  ([ADR-0080](../../../docs/plan/adr/0080-uses-pin-tag-conflict.md),
+  [ADR-0081](../../../docs/plan/adr/0081-reviews-modul.md),
+  [ADR-0082](../../../docs/plan/adr/0082-uebergangswaechter-reviews-observations.md))
   zitieren den Stand ihrer Zeit weiter und
   sind quell-skopiert ausgenommen (`.d-check.yml`-Tombstone, s. u.). Zwei
   Übersetzungsfehler beim ersten Zensus-Durchlauf gefunden und behoben: der
@@ -128,8 +128,8 @@
   und die Abweichung benennbar. Dass er **fortgeschrieben** wird statt zu
   altern, ist die Bedingung dafür, dass der Freshness-Audit etwas zu
   vergleichen hat.
-- **Löst auf:** [`MR-058`](../conventions/done/MR-058-baseline-v5180.md)
+- **Löst auf:** [`MR-058`](MR-058-baseline-v5180.md)
 - **Ausgelöst durch Baseline-Stand:** v6.0.0
 - **Auflösungs-Trigger:** der Kurs veröffentlicht einen neuen Release-Tag;
   dann Fortschreibung durch den nächsten Nachtrag zu
-  [`MR-011`](../conventions.md#mr-011--baseline-auf-release-tag-gepinnt).
+  [`MR-011`](../../conventions.md#mr-011--baseline-auf-release-tag-gepinnt).
