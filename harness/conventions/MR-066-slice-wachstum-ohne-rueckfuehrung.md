@@ -1,54 +1,60 @@
-# MR-066 — Wird die Rückführung nicht gezogen, wird die Review-Last geteilt statt des Slice
+# MR-066 — Was „nicht still weiterschieben" verlangt, wenn die Rückführung nicht gezogen wird
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** keine. Der Kanon kennt für den zu groß gewordenen
-  Slice **eine** Antwort — die Rückführung `in-progress` → `next`
-  ([`modul-05-planning-harness.md` §Trigger je Lifecycle-Übergang](../../.harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md#trigger-je-lifecycle-übergang-und-wip-limit-modul-5)).
-  Er sagt nichts über den Fall, dass ihr etwas **entgegensteht**. Dieser
-  Eintrag ergänzt ihn dort und weicht nicht von ihm ab: Die Rückführung bleibt
-  der Regelfall.
+- **Ersetzt-Baseline-Regel:** keine — der Eintrag **präzisiert** eine
+  Kanon-Regel, statt von ihr abzuweichen.
+  [`modul-05-planning-harness.md` §Ziel-Form: Slice](../../.harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md#ziel-form-slice)
+  sagt für den zu groß gewordenen Slice: *„Dann zurück zum Schneiden
+  (`in-progress→next`), nicht still weiterschieben."* Der Satz verbietet das
+  **stille** Weiterschieben — er sagt nicht, was an die Stelle der Stille
+  tritt, wenn die Rückführung aus einem Sachgrund unterbleibt. Genau diese
+  Lücke füllt der Eintrag. Die Rückführung bleibt der Regelfall; sie wird
+  weder abgeschafft noch aufgeweicht.
 - **Datum:** 2026-09-06 · **Herkunft:** seit slice-204 (Steering Loop,
   `BEO-ALL/large-migration-exceeds-session-review-limit` 3×)
 - **Geltungsbereich:** jeder Slice, dessen Umfang die Ein-Sitzungs-Review-Grenze
   überschreitet und der **nicht** zurückgeführt wird. **Nicht** erfasst: ein
   Slice, der die Grenze hält, und einer, der regulär zurückgeführt wird — für
   beide gilt der Kanon unverändert.
-- **Adaption:** Wird die Rückführung nicht gezogen, sind **zwei** Dinge fällig,
-  und das zweite ist der eigentliche Gehalt dieser Regel:
+- **Adaption:** Zwei Pflichten, und die zweite ist der Gehalt:
 
-  1. **Der Grund steht geschrieben** — im Slice-Plan. Vorab, wo er vorab
-     bekannt ist; **beim Überschreiten**, wo er erst während der Arbeit
-     entsteht. Der zweite Fall ist der unauffälligere und verlangt, dass das
-     Wachstum überhaupt **bemerkt** wird: Wächst ein Slice schrittweise, sprengt
-     kein einzelner Schritt die Grenze — nur ihre Summe, und die sieht niemand,
-     der nur auf den nächsten Schritt schaut.
-  2. **Die Review-Last bekommt eine benannte Ersatz-Form.** Nicht der Slice
-     wird geteilt, sondern die Prüfung: mehrere Review-Runden gegen je einen
-     abgeschlossenen Zwischenstand · ein gezielter Stichproben-Fokus statt
-     vollständiger Zeile-für-Zeile-Prüfung · eine andere, die der Plan benennt.
-     **Ohne diesen zweiten Teil ist es kein Ausnahmefall, sondern nur ein zu
-     großer Slice mit einer Begründung davor.**
+  1. **Der Grund steht im Slice-Plan.** Vorab, wo er vorab bekannt ist;
+     **beim Überschreiten**, wo er erst während der Arbeit entsteht.
+  2. **Die Ersatz-Form der Prüfung steht ebenfalls im Plan — und ihr Vollzug
+     im Review-Report.** Nicht der Slice wird geteilt, sondern die Prüfung:
+     mehrere Runden gegen je einen abgeschlossenen Stand · ein deklarierter
+     Stichproben-Fokus · eine mechanische Vollprüfung entlang einer Achse
+     (Byte-Diff, Feld-Vergleich) · eine andere, die der Plan benennt.
 
-  **Warum das die Größenregel nicht aufweicht.** Sie existiert aus **einem**
-  Grund: dass ein Reviewer den Diff prüfen kann. Wo die Teilung diesen Grund
-  besser bedient, wird geteilt — das ist der Regelfall und bleibt es. Wo sie
-  ihn *verschlechtert*, weil sie einen Beleg zerreißt, der nur im Zusammenhang
-  trägt, ist die Teilung das falsche Mittel für das richtige Ziel; dann wird
-  das Ziel direkt verfolgt.
+  **Warum die Deklaration und nicht die Praxis der Gegenstand ist.** Der
+  Befund aus den drei Instanzen ist nicht, dass die Prüfung ausblieb — sie
+  fand jedes Mal statt, mit sehr unterschiedlicher Gründlichkeit. Der Befund
+  ist, dass sie **nirgends vorher stand**: Wie gründlich geprüft wurde, erfuhr
+  man erst hinterher aus dem Report, und damit war die Prüftiefe weder planbar
+  noch einforderbar. Eine Regel, die nur den *Grund* verlangt, ändert daran
+  nichts.
 
-  **Gezogen aus drei Instanzen, und die dritte ist die, an der die Regel sich
-  bewähren muss** (`BEO-ALL/large-migration-exceeds-session-review-limit`, 3×):
+  | Vorgang | Warum nicht zurückgeführt | Was tatsächlich geprüft wurde | Vorab benannt? |
+  |---|---|---|---|
+  | slice-195 | eine Teilung hätte den Zähler-Diff-Beleg zerrissen | Stichprobe, 8 von 29 Einträgen | nein |
+  | slice-197 | eine Teilung hätte die Werkzeug-Korrektur vervielfacht | Byte-Diff, Titel- und Feld-Vergleich über **alle 45**, dazu drei Dateien Zeile für Zeile — fand so ein HIGH | nein |
+  | slice-203 | kein einzelner Nachsteuerungs-Schritt sprengte die Grenze | zwei Review-Runden, die zweite über den gesamten Bereich | nein |
 
-  | Vorgang | Warum nicht zurückgeführt | Ersatz-Form |
-  |---|---|---|
-  | slice-195 | eine Teilung hätte den Zähler-Diff-Beleg zerrissen | gezielter Stichproben-Fokus |
-  | slice-197 | eine Teilung hätte die Werkzeug-Korrektur vervielfacht | **keine benannt** |
-  | slice-204s Anlass (slice-203) | kein einzelner Nachsteuerungs-Schritt sprengte die Grenze | zwei Review-Runden gegen je einen abgeschlossenen Stand |
+  **Die mittlere Zeile ist der Grund für die Form von Pflicht 2.** Ausgerechnet
+  dort war der Prüfumfang am größten — und der Slice-Plan sagte darüber nichts.
+  Wer nur die Reports vergleicht, hielte slice-197 für den ungedeckten Fall;
+  wer die Praxis misst, findet das Gegenteil. Deklariert wird deshalb die
+  **Ersatz-Form**, nicht ihre Gründlichkeit: Die ist ein Urteil, ihre
+  Benennung nicht.
 
-  **Die mittlere Zeile ist der Grund für Teil 2.** In slice-197 wurde die
-  Teilung mit gutem Grund unterlassen und **nichts** an ihre Stelle gesetzt;
-  die Grenze war damit einfach weg. Wer nur Teil 1 verlangt, hätte diesen Fall
-  durchgewinkt.
+  **Zwei Lagen, und nur die erste ist eine Abwägung.** In slice-195 und
+  slice-197 war die Teilung *möglich* und hätte die Prüfbarkeit
+  **verschlechtert** — dort ist die Nicht-Rückführung eine begründete Wahl.
+  In slice-203 stellte sich die Frage nie: Das Wachstum lief schrittweise, kein
+  einzelner Schritt sprengte die Grenze, nur ihre Summe. **Für diese zweite
+  Lage ist die erste Pflicht das Bemerken** — und danach steht die Wahl
+  zwischen Rückführung und Pflicht 2 offen wie in der ersten Lage. Wer die
+  zweite Lage mit der ersten begründet, hat sie nicht verstanden.
 
   **Was diese Regel nicht leistet, ausgeschrieben:**
 
@@ -57,17 +63,17 @@
   - Sie ist **kein Sensor.** Ob ein Slice die Ein-Sitzungs-Grenze überschreitet,
     ist ein Urteil; eine Zeichen- oder Dateizahl daraus zu machen, tauschte ein
     ehrliches Urteil gegen falsche Genauigkeit. Kein Gate prüft diesen Eintrag.
-  - Sie sagt **nicht**, wie viele Runden genügen. Zwei waren es einmal; die
-    Zahl folgt dem Gegenstand, nicht der Regel.
+  - Sie prüft **nicht die Gründlichkeit** der Ersatz-Form, nur ihre Benennung
+    und ihren Vollzug. Eine deklarierte Stichprobe von zwei Zeilen erfüllt sie
+    formal — dass das zu wenig ist, bleibt Review-Urteil.
   - Sie ist aus **drei** Anlässen gezogen, nicht aus einer Inventur
     (`BEO-ALL/rule-drawn-from-occasion-not-inventory`). Ob sie trägt,
     entscheidet die vierte Instanz — bis dahin ist sie belegt, nicht bewiesen.
 
 - **Begründung:** Dreimal stand dieselbe Spannung, dreimal wurde sie einzeln
-  aufgelöst, und beim dritten Mal fiel auf, dass die Auflösungen sich
-  unterscheiden — einmal mit Ersatz, einmal ohne. Ohne geschriebene Regel
-  entscheidet jeder Lauf neu, und der bequeme Ausgang ist immer, die
-  Rückführung zu unterlassen und nichts an ihre Stelle zu setzen.
-- **Ausgelöst durch Baseline-Stand:** v6.3.1
-- **Auflösungs-Trigger:** der Kanon nimmt den Fall selbst auf — dann gilt
-  seiner. Bis dahin permanent.
+  aufgelöst, und in keinem der drei Fälle stand vorher, wie die verlorene
+  Prüftiefe aufgefangen wird. Ohne geschriebene Regel entscheidet jeder Lauf
+  neu und im Nachhinein; der bequeme Ausgang ist, die Rückführung zu
+  unterlassen und die Frage gar nicht zu stellen.
+- **Auflösungs-Trigger:** der Kanon sagt selbst, was an die Stelle der Stille
+  tritt — dann gilt seiner. Bis dahin permanent.

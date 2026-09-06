@@ -286,7 +286,7 @@ Artefakt des Nebeneinanders. Wer beides parallel fährt, muss den roten Lauf
 gegen `git status` halten, bevor er ihn glaubt.
 
 **Folge-Slices:** [slice-204](../in-progress/slice-204-slice-wachstum-aufloesung.md)
-(Auflösung für den wachsenden Slice) — ist eine Datei in `open/`.
+(Auflösung für den wachsenden Slice) — ist eine Datei im Planning-Lifecycle.
 
 **Risiken aus §5:** drei, jedes mit genau einem Ausgang — **zwei eingetreten**
 (Deckungsnachweis in fünf Dateien; Nicht-Gate-Zuordnung in der benannten
