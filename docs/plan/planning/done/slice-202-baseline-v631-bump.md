@@ -51,7 +51,7 @@ Bump eintreffenden Vorlagen voraus.
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Die Umsetzung der vier Delta-Stränge in der verkörperten Form.** Sie ist
-  [slice-203](../in-progress/slice-203-v631-template-adoption.md) — allen voran die
+  [slice-203](../done/slice-203-v631-template-adoption.md) — allen voran die
   Auslagerung überladener Sensors-Einträge, die d-checks eigene §Sensors-Tabelle
   unmittelbar betrifft. Die Abgrenzung ist eine **Reihenfolge-Bedingung**, keine
   Bequemlichkeit: die neuen Vorlagen liegen erst nach diesem Bump im Repo.
@@ -126,7 +126,7 @@ dasteht.
   (Negativbefund 14) und fand keine solche Behauptung: die Abgrenzung ist in
   §1, DoD (2)/(3) und [`MR-065`](../../../../harness/conventions.md#mr-065)
   gleichlautend als Reihenfolge-Bedingung geführt. Der Folge-Slice
-  [slice-203](../in-progress/slice-203-v631-template-adoption.md) ist eine Datei im Planning-Lifecycle.
+  [slice-203](../done/slice-203-v631-template-adoption.md) ist eine Datei im Planning-Lifecycle.
 
 ## 6. Trigger
 
@@ -314,7 +314,7 @@ heute sind es acht. Ein akzeptierter Adaptions-Eintrag wird nicht nachträglich
 umgeschrieben (Adaptions-Block-Disziplin), und eine Mess-Aussage von damals
 ist kein Defekt von heute.
 
-**Folge-Slices:** [slice-203](../in-progress/slice-203-v631-template-adoption.md)
+**Folge-Slices:** [slice-203](../done/slice-203-v631-template-adoption.md)
 (Adoption der v6.3.1-Template-Deltas) — ist eine Datei im Planning-Lifecycle.
 
 **Risiken aus §5:** vier, jedes mit genau einem Ausgang — drei entfallen mit
