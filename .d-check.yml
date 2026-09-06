@@ -881,28 +881,21 @@ citations:
 
 # Modul mentions (DC-FA-MENT-001, ADR-0084): Erwähnungs-Deckung — eine
 # Soll-Menge von Artefakten gegen eine Ist-Menge von Dokumenten. Opt-in, läuft
-# nur über `make mention-coverage`, nicht in `gates` (neue Modul-Klasse startet
-# als eigener Fokus-Lauf, dieselbe Vorsicht wie bei reviews).
+# nur über `make mention-coverage`, nicht in `gates`.
 #
-# EIN BLOCK IST EIN PAAR, und das ist die Grenze, an der die erste Fassung
-# dieser Konfiguration scheiterte: Sie führte ZWEI Invarianten in einem Block
-# (ADRs gegen den Index, Sensor-Dateien gegen die Sensors-Tabelle) und hielt
-# damit keine von beiden. Die Ist-Menge wird als VEREINIGUNG gelesen — 21 der
-# 84 ADR-Basisnamen kommen auch in harness/README.md vor, und für die war der
-# Index-Eintrag ungewächtert (unabhängiger Review, H-1). Wer zwei Invarianten
-# will, braucht zwei Läufe.
+# EIN BLOCK IST EIN PAAR. Die Ist-Menge wird als VEREINIGUNG gelesen: Ein
+# Mitglied gilt als erwähnt, sobald es in irgendeinem Dokument steht. Zwei
+# voneinander unabhängige Invarianten in einem Block halten deshalb keine von
+# beiden; wer zwei will, braucht zwei Läufe.
 #
 # DIE MENGEN-WAHL IST DAS URTEIL, und hier trägt sie die Invariante, die
-# AGENTS.md §5 ausdrücklich als Regel führt und die bisher KEIN Gate hielt:
+# AGENTS.md §5 ausdrücklich als Regel führt und die kein anderes Gate hält:
 # jede ADR steht im ADR-Index.
 #
-# match: basename, und der Grund ist gemessen. Der Index verlinkt RELATIV
-# ("0084-….md", nicht "docs/plan/adr/0084-….md") — die Default-Form `path`
-# meldete deshalb alle 84 ADRs, ausnahmslos falsch. Die Kollisionsgefahr, gegen
-# die der Default steht, ist hier zweifach geprüft: die Basisnamen sind
-# eindeutig (0 Duplikate), und keiner ist Endstück eines anderen — die zweite
-# Prüfung fehlte in der ersten Fassung und deckte dort einen echten Fehlalarm
-# zu (Review H-2, im Modul behoben).
+# match: basename, weil der Index RELATIV verlinkt ("0084-….md", nicht
+# "docs/plan/adr/0084-….md"). Vor der Wahl sind zwei Dinge zu prüfen, nicht
+# eines: die Basisnamen müssen eindeutig sein UND keiner darf Endstück eines
+# anderen sein — sonst deckt die Nennung des längeren das kürzere Mitglied.
 mentions:
   artifacts:
     - docs/plan/adr/[0-9]*.md

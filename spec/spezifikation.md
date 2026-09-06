@@ -2825,11 +2825,15 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    Korpus gesucht: unter `mentions.match: path` (Default) der '/'-relative
    Pfad, unter `basename` nur der Dateiname. Gesucht wird **wörtlich** im rohen
    Text — ohne Markdown-Lexik, ohne Fence- oder Inline-Code-Ausnahme, aber als
-   **eigenständige Nennung**: unmittelbar davor und dahinter darf kein Zeichen
-   stehen, das selbst Teil eines Datei- oder Pfadnamens sein kann
-   (`[A-Za-z0-9_.-]` und `/`); **links** ist unter `basename` der `/`
-   **ausgenommen**, weil dort legitim ein Pfad-Präfix steht. Ohne diese Grenze
-   deckte die Nennung von `image-test.md` das Mitglied `test.md`. Fehlt das
+   **eigenständige Nennung**. Die Grenze ist **asymmetrisch** und wird auf
+   **Runen** geprüft, nicht auf Bytes: **links** blockiert ein Buchstabe oder
+   eine Ziffer (jeder Schrift) sowie `-` und `.`; **rechts** blockiert nur ein
+   Buchstabe oder eine Ziffer. Erlaubt bleiben damit `/` links (die
+   `../`-relative Verlinkung), `_` beidseitig (Kursivierung), `.` rechts
+   (Satz-Schlusspunkt) und `-` rechts (deutsches Kompositum) — alle vier am
+   Bestand gemessen. Ohne die Grenze deckte `image-test.md` das Mitglied
+   `test.md`; mit einer **weiteren** Grenze fielen die vier Formen durch, und
+   unter `path` jede relative Verlinkung. Fehlt das
    Vorkommen: Befund `artifact-unmentioned`, `file` = der Artefakt-Pfad,
    `line` = **1**, `target` = die `mentions.documents`-Globs, komma-getrennt.
 6. **`line` ist ein Vertrags-Platzhalter, keine Fundstelle.**

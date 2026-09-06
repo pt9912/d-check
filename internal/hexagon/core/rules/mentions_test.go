@@ -248,9 +248,13 @@ func TestMentionsBasenameKeineTeilzeichenkette(t *testing.T) {
 	}
 }
 
-// Dieselbe Grenze auf der PFAD-Seite: `docs/a.md` darf nicht durch
-// `x/docs/a.md` gedeckt werden -- das ist eine andere Datei.
-func TestMentionsPathKeinPraefixTreffer(t *testing.T) {
+// GRENZE, festgehalten statt behauptet: Ein fremdes Pfad-Praefix deckt das
+// Mitglied darunter -- `x/docs/a.md` gilt als Nennung von `docs/a.md`. Das ist
+// der ausgewiesene Preis dafuer, dass `/` links erlaubt ist, und `/` links
+// muss erlaubt sein, damit die `../`-relative Verlinkung zaehlt. Der Test
+// haelt die Wahl fest: kippt sie, faellt er, und die Grenze ist neu zu
+// bewerten statt still zu wandern.
+func TestMentionsPfadPraefixDecktMitglied(t *testing.T) {
 	cfg := mnCfg()
 	cfg.Artifacts = []string{"docs/a.md"}
 	cfg.Documents = []string{"h.md"}
@@ -258,8 +262,8 @@ func TestMentionsPathKeinPraefixTreffer(t *testing.T) {
 		"docs/a.md": "x",
 		"h.md":      "hier steht nur x/docs/a.md\n",
 	}
-	if res := mnRun(t, files, cfg); len(res.Findings) != 1 {
-		t.Fatalf("Praefix-Treffer darf nicht decken, got %+v", res.Findings)
+	if res := mnRun(t, files, cfg); len(res.Findings) != 0 {
+		t.Fatalf("die Grenze ist gewandert: Praefix-Treffer deckt nicht mehr, got %+v", res.Findings)
 	}
 }
 
@@ -293,22 +297,25 @@ func TestMentionsGlobDoppelsternUeberMehrereSegmente(t *testing.T) {
 	}
 }
 
-// scan.ignore prunt die Soll-Menge. Ohne das bekaeme ein Adopter einen
+// scan.ignore prunt die Soll-Menge. Die Fixture benutzt bewusst KEINEN Namen
+// aus der festen Skip-Liste -- sonst pruefte der Test jene und nicht das
+// scan.ignore-Verhalten, und er koennte nicht fallen. Ohne die Auswertung
+// bekaeme ein Adopter einen
 // bewusst ausgenommenen Fremdbaum ueber ein weites Glob zurueck.
 func TestMentionsHonoriertScanIgnore(t *testing.T) {
 	cfg := mnCfg()
 	cfg.Artifacts = []string{"**/*.sh"}
 	files := map[string]string{
 		"tools/eigen.sh":    "x",
-		"vendor/fremd.sh":   "x",
+		"fremdbaum/fremd.sh": "x",
 		"docs/handbuch.md":  "leer\n",
 	}
-	res, err := CheckMentions(coretest.NewMemFS(files), cfg, []string{"vendor/**"})
+	res, err := CheckMentions(coretest.NewMemFS(files), cfg, []string{"fremdbaum/**"})
 	if err != nil {
 		t.Fatalf("unerwarteter Fehler: %v", err)
 	}
 	if res.Artifacts != 1 || len(res.Findings) != 1 || res.Findings[0].File != "tools/eigen.sh" {
-		t.Fatalf("vendor/ soll geprunt sein, got %d Mitglieder %+v", res.Artifacts, res.Findings)
+		t.Fatalf("fremdbaum/ soll geprunt sein, got %d Mitglieder %+v", res.Artifacts, res.Findings)
 	}
 }
 
@@ -356,3 +363,61 @@ func (brokenFS) ReadFile(string) ([]byte, error)            { return nil, errBro
 func (brokenFS) List(string) ([]driven.DirEntry, error)     { return nil, errBroken }
 
 var errBroken = fmt.Errorf("probe: nicht lesbar")
+
+// Die Grenz-Pruefung darf ERWAEHNTE Artefakte nicht als unerwaehnt melden.
+// Alle vier Formen sind am Bestand gemessen und in gewoehnlicher Prosa der
+// Regelfall; eine zu weite Grenze machte das Modul im Default unbrauchbar.
+func TestMentionsGrenzeMeldetHaeufigeFormenNicht(t *testing.T) {
+	cfg := mnCfg()
+	cfg.Artifacts = []string{"a/*.md"}
+	cfg.Match = model.MentionsMatchBasename
+	for name, text := range map[string]string{
+		"Satz-Schlusspunkt":  "siehe x.md.\n",
+		"deutsches Kompositum": "die x.md-Datei traegt es\n",
+		"Kursivierung":       "_x.md_ ist kursiv\n",
+		"Klammer":            "(x.md) in Klammern\n",
+		"Inline-Code":        "`x.md` als Code\n",
+		"deutsche Anfuehrung": "„x.md\" in Anfuehrung\n",
+		"Doppelpunkt-Zeile":  "x.md:12 mit Zeilennummer\n",
+		"Zeilenende":         "am Ende steht x.md",
+	} {
+		files := map[string]string{"a/x.md": "y", "docs/handbuch.md": text}
+		if res := mnRun(t, files, cfg); len(res.Findings) != 0 {
+			t.Errorf("%s: Nennung %q zaehlt nicht, got %+v", name, text, res.Findings)
+		}
+	}
+}
+
+// Und unter dem DEFAULT `path` traegt die `../`-relative Verlinkung, die in
+// Markdown der Regelfall ist. Ohne das meldete ein Adopter mit dem ueblichen
+// Layout seine gesamte Soll-Menge als Befund.
+func TestMentionsPathTraegtRelativeVerlinkung(t *testing.T) {
+	cfg := mnCfg()
+	cfg.Artifacts = []string{"docs/plan/*.md"}
+	cfg.Documents = []string{"h.md"}
+	files := map[string]string{
+		"docs/plan/a.md": "y",
+		"h.md":           "[A](../docs/plan/a.md)\n",
+	}
+	if res := mnRun(t, files, cfg); len(res.Findings) != 0 {
+		t.Fatalf("../-relative Verlinkung muss zaehlen, got %+v", res.Findings)
+	}
+}
+
+// Nicht-ASCII links ist ein Namensbestandteil und muss blockieren -- eine
+// byte-basierte Pruefung sah hier das zweite Byte eines Umlauts und liess
+// durch. Deutsche Anfuehrungszeichen sind dagegen Satzzeichen und zaehlen
+// (oben mitgeprueft).
+func TestMentionsGrenzeIstRunenBasiert(t *testing.T) {
+	cfg := mnCfg()
+	cfg.Artifacts = []string{"a/test.md"}
+	cfg.Documents = []string{"h.md"}
+	files := map[string]string{
+		"a/test.md": "y",
+		"h.md":      "hier steht Ätest.md und sonst nichts\n",
+	}
+	cfg.Match = model.MentionsMatchBasename
+	if res := mnRun(t, files, cfg); len(res.Findings) != 1 {
+		t.Fatalf("Ätest.md darf test.md nicht decken, got %+v", res.Findings)
+	}
+}

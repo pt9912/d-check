@@ -34,7 +34,11 @@ Pfade aus dem Dateibaum aufgesammelt. **Und eine zweite Achse:** aufgesammelt
 wird aus dem **ganzen** Baum ab der Repository-Wurzel, unter der Skip-Liste und
 `scan.ignore`, aber **nicht** eingeschränkt auf `scan.roots`.
 
-**Geprüft wird eine Zeichenkette, nicht eine Rolle:** eine Nennung im Fenced
+**Geprüft wird eine eigenständige Nennung, nicht eine Rolle:** links blockiert
+Buchstabe, Ziffer, `-` und `.`, rechts nur Buchstabe und Ziffer — damit zählen
+Satz-Schlusspunkt, Kompositum, Kursivierung und `../`-relative Verlinkung. Der
+Preis sind drei benannte Grenzen: ein Unterstrich-Kompositum, eine angehängte
+Endung und ein fremdes Pfad-Präfix decken das Mitglied darunter. Eine Nennung im Fenced
 Block zählt, eine korrekte Beschreibung ohne Namensnennung zählt nicht. Ob eine
 Erwähnung *trägt*, bleibt Urteil.
 

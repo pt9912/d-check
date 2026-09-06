@@ -28,6 +28,8 @@ import (
 	"path"
 	"sort"
 	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
@@ -85,7 +87,7 @@ func CheckMentions(fsys driven.Filesystem, cfg model.MentionsConfig, ignore []st
 		if basename {
 			needle = path.Base(a)
 		}
-		if mentionsOccurs(corpus, needle, basename) {
+		if mentionsOccurs(corpus, needle) {
 			res.Mentioned++
 			continue
 		}
@@ -196,29 +198,38 @@ func mentionsMatchAny(globs []string, rel string) bool {
 
 // mentionsOccurs prueft, ob needle im Korpus als EIGENSTAENDIGE Nennung steht.
 //
-// Blankes strings.Contains genuegt nicht, und der Fall ist gemessen: unter
-// `basename` deckte die Nennung von `image-test.md` das Mitglied `test.md` ab,
-// obwohl dieses nirgends genannt war -- ein Mitglied galt als erwaehnt, weil
-// sein Name Endstueck eines anderen ist. Genau die
-// Kollision, gegen die der Default `path` laut Anforderung steht.
+// Blankes strings.Contains genuegt nicht, und der Fall ist gemessen: die
+// Nennung von `image-test.md` deckte das Mitglied `test.md` ab, obwohl dieses
+// nirgends genannt war. Genau die Kollision, gegen die der Default `path`
+// steht.
 //
-// Geprueft wird deshalb die linke und die rechte GRENZE der Fundstelle. Rechts
-// darf kein Namens-Zeichen folgen (sonst waere `a.sh` in `a.shx` ein Treffer).
-// Links unterscheidet sich die Regel nach Erkennungsform: unter `basename` ist
-// ein `/` davor LEGITIM (der Pfad-Praefix einer relativen Verlinkung), unter
-// `path` ist er es NICHT (`x/docs/a.md` ist eine andere Datei als
-// `docs/a.md`).
-func mentionsOccurs(corpus, needle string, basename bool) bool {
+// Die Grenze ist ASYMMETRISCH und ENG geschnitten, weil eine weite Grenze
+// erwaehnte Artefakte als unerwaehnt meldet -- ebenfalls gemessen. Blockiert
+// wird nur, was WIRKLICH Namensbestandteil sein kann:
+//
+//   links   Buchstabe oder Ziffer (jede Schrift), `-`, `.`
+//   rechts  Buchstabe oder Ziffer (jede Schrift)
+//
+// Was damit ERLAUBT ist und warum -- alle vier Formen am Bestand gemessen:
+// `/` links traegt die `../`-relative Verlinkung, die in Markdown der
+// Regelfall ist; `_` links und rechts traegt die Kursivierung `_x.md_`; `.`
+// rechts traegt den Satz-Schlusspunkt („siehe x.md."); `-` rechts traegt das
+// deutsche Kompositum („die x.md-Datei").
+//
+// GRENZE, ausgesprochen: Damit deckt `image_test.md` das Mitglied `test.md`,
+// `a.sh.bak` das Mitglied `a.sh` und ein fremdes Praefix (`x/docs/a.md`) das
+// Mitglied `docs/a.md`. Das ist der Preis dafuer, dass die haeufigen Formen
+// zaehlen -- eine rein textuelle Regel kann Namensteil und Satzzeichen nicht
+// trennen, wo dasselbe Zeichen beides ist.
+func mentionsOccurs(corpus, needle string) bool {
 	for i := 0; i+len(needle) <= len(corpus); {
 		j := strings.Index(corpus[i:], needle)
 		if j < 0 {
 			return false
 		}
 		at := i + j
-		left := at == 0 || !mentionsNameByte(corpus[at-1], basename)
 		end := at + len(needle)
-		right := end == len(corpus) || !mentionsNameByte(corpus[end], false)
-		if left && right {
+		if mentionsLeftFree(corpus[:at]) && mentionsRightFree(corpus[end:]) {
 			return true
 		}
 		i = at + 1
@@ -226,17 +237,21 @@ func mentionsOccurs(corpus, needle string, basename bool) bool {
 	return false
 }
 
-// mentionsNameByte sagt, ob ein Byte selbst Teil eines Datei- oder Pfadnamens
-// sein kann. `allowSlash` nimmt den Trenner aus -- gebraucht fuer die LINKE
-// Grenze unter `basename`, wo ein Pfad-Praefix vor dem Dateinamen stehen darf.
-func mentionsNameByte(b byte, allowSlash bool) bool {
-	switch {
-	case b >= 'a' && b <= 'z', b >= 'A' && b <= 'Z', b >= '0' && b <= '9':
+// mentionsLeftFree sagt, ob vor der Fundstelle kein Namensbestandteil steht.
+func mentionsLeftFree(before string) bool {
+	if before == "" {
 		return true
-	case b == '_' || b == '-' || b == '.':
-		return true
-	case b == '/':
-		return !allowSlash
 	}
-	return false
+	r, _ := utf8.DecodeLastRuneInString(before)
+	return !unicode.IsLetter(r) && !unicode.IsDigit(r) && r != '-' && r != '.'
+}
+
+// mentionsRightFree sagt, ob nach der Fundstelle kein Namensbestandteil steht.
+// Enger als links: `.` und `-` sind hier Satzzeichen bzw. Kompositum-Fuge.
+func mentionsRightFree(after string) bool {
+	if after == "" {
+		return true
+	}
+	r, _ := utf8.DecodeRuneInString(after)
+	return !unicode.IsLetter(r) && !unicode.IsDigit(r)
 }
