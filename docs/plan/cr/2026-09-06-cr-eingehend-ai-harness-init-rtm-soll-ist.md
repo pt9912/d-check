@@ -149,16 +149,19 @@ schloss über das Repo — genau der Fehler, den die Anforderung eine Zeile
 weiter benennt.
 
 Getragen hat die Entscheidung ohnehin etwas anderes: die **Inventur**. Zwölf
-Repos unter demselben Wurzelverzeichnis führen das Paar Soll (`spec/lastenheft.md`)
-und Ist (`docs/user/`), und ihre Soll-Seiten führen auf Überschriften-Ebene
-**fünf verschiedene ID-Schemata** (`LH`, `HSM`, `DC`, `AC` und eine
-repo-lokale Gruppe), im Rumpf deutlich mehr. Genau daraus folgt die Bauform —
+Repos unter demselben Wurzelverzeichnis führen das Paar Soll
+(`spec/lastenheft.md`) und Ist (`docs/user/`). **Neun** davon führen
+kennungstragende Überschriften, in **vier** verschiedenen Schemata (`LH` in
+sechs Repos, dazu `HSM`, `DC`, `AC`); **drei** führen auf dieser Ebene gar
+keine, im Rumpf dagegen eigene Familien. Genau daraus folgt die Bauform —
 eine kennungsbasierte Lösung müsste jedes kennen, eine pfadbasierte keines.
 Das ist der eigentliche Grund, warum sich die Achse zu bauen lohnt, und er ist
-stärker als der Anlass. **Die Zahlen der ersten Fassung (zehn Repos, vier
-Anforderungs-Zählungen, ein nicht existentes Schema) sind in
-[ADR-0084](../adr/0084-mentions-eigenes-modul.md) §Geschichte berichtigt;**
-die Richtung des Arguments wird dadurch stärker, nicht schwächer.
+stärker als der Anlass. **Die Zahlen sind zweimal berichtigt worden** — die
+erste Fassung nannte zehn Repos und ein Schema, das es nicht gibt; die zweite
+zählte mit einer Methode, die deutsche Komposita für Kennungen hielt. Beide
+Berichtigungen stehen in
+[ADR-0084](../adr/0084-mentions-eigenes-modul.md) §Geschichte; die Richtung
+des Arguments wird dadurch stärker, nicht schwächer.
 
 ### Fünf Abweichungen vom CR-Wortlaut, jede gemessen
 

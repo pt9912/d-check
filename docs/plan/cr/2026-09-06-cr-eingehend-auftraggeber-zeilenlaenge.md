@@ -43,7 +43,7 @@ Unterschied in der Sache, die Rate allein wäre kein Befund.
 Das Modul `structure` misst die Größe eines Abschnitts (`min-sentences`,
 `max-tasks`) und seit slice-203 die einer **Tabellenzelle**
 (`cell-max-chars`/`cell-min-chars`). Eine Zeichenzahl **pro Zeile** ist in
-keiner Bedingung enthalten, und keines der zwanzig Module hat sie als
+keiner Bedingung enthalten, und keines der zweiundzwanzig Module hat sie als
 Gegenstand. Die Lücke ist also strukturell, nicht konfigurativ.
 
 ## Warum es zählt — und warum nicht Ästhetik

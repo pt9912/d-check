@@ -39,6 +39,23 @@ zwei Fragen, zwei Antworten.
 | [`spec/lastenheft.md`](../../../../spec/lastenheft.md) | update | neue `DC-FA-*` mit Akzeptanzkriterien-Trio, Bereichs-Kürzel in §3, Versions-Bump + Historie |
 | neue ADR unter [`docs/plan/adr/`](../../../../docs/plan/adr/) | neu | der Entscheid **eigene Achse gegen dritte Quell-Form von `trace.cross-consistency`**, plus Abgrenzung zu `targets` und zur RTM |
 | CR-Dokument | update | Stand von *eingegangen* auf *angenommen (Vorschlag A)*, mit Verweis auf Anforderung und ADR |
+> **Zweimal berichtigt (Review-Runden 1 und 2, M-8 / R2-M-1).** Der folgende
+> Block steht im Zustand der Planung und ist in **beiden** Fassungen falsch;
+> er bleibt als Lauf-Beleg stehen. Gemessen mit einer Methode, die verlangt,
+> was eine Kennung ausmacht — Präfix **plus Ziffernblock** —, gilt: **zwölf**
+> Repos führen beide Seiten, **neun** davon mit kennungstragenden
+> Überschriften in **vier** Schemata (`LH` sechsmal, dazu `HSM`, `DC`, `AC`),
+> **drei** ohne (`b-trace`, `cmake-xray`, `m-trace`). Die hier genannte Zahl
+> zehn, vier der zehn Anforderungs-Zählungen und das Schema `S-*` sind falsch;
+> das in der ersten Berichtigung ergänzte fünfte Schema `CLI`/`CORS`/`MVP`
+> ebenfalls — es entstand daraus, dass die Zählmethode deutsche Komposita
+> (`MVP-Abgrenzung`, `CORS- und CSP-Grundregeln`) für Kennungen hielt. Der
+> Stand steht in [ADR-0084](../../adr/0084-mentions-eigenes-modul.md)
+> §Geschichte. **Die Richtung des Arguments überlebt beide Berichtigungen** und
+> wird stärker: vier Schemata über neun Repos plus drei ganz ohne
+> Heading-Kennung sind für eine kennungsbasierte Achse genau das Problem, das
+> die pfadbasierte nicht hat.
+
 
 **Der Bestand, gemessen — und er trägt die Anforderung, nicht der Anlass.**
 **Zehn** Repos unter `/Development` führen das Paar Soll (`spec/lastenheft.md`)
@@ -63,8 +80,8 @@ sich zu bauen lohnt.
   `DC-*`-Nennungen bei **51** Anforderungen. Die Konvention „Ist-Dokument
   zitiert IDs" existiert auch hier nicht — `trace.coverage` kann diese Achse
   also prinzipiell nicht bedienen.
-- **Die Gegenprobe an d-check läuft grün:** Alle 20 Module sind im Handbuch
-  erwähnt. Wir bauen für einen Bedarf, den wir selbst nicht haben — mit der
+- **Die Gegenprobe an d-check läuft grün:** Alle Module sind im Handbuch
+  erwähnt (zur Planungszeit 20, inzwischen 22). Wir bauen für einen Bedarf, den wir selbst nicht haben — mit der
   Folge, dass **eigenes Rauschen zum Kalibrieren fehlt**.
 - **Eine erste Stichprobe an `u-boot` meldete „nichts gefunden" — sie prüfte
   nichts.** Der Glob traf dort keine Datei; null geprüfte Mitglieder lasen
@@ -192,12 +209,21 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   3×-Behauptung ist damit zurückgezogen** — sie wäre ein Ausgang für eine
   Schwelle gewesen, die eine andere Menge betrifft, und genau die Klasse
   [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md).
-  **Offen bleibt die Zuordnung selbst:** Die Drift ist echt und ungegated, aber
-  weder `modulliste-spiegel-ungegated` noch
-  [`registry-vs-authority-table-drift`](../observations/BEO-ALL/registry-vs-authority-table-drift/observation.md)
-  (dort ein **Datei**-Register) deckt sie. Ob daraus ein neuer Eintrag wird
-  oder ein Beleg für einen vorhandenen, entscheidet die Closure — erfunden wird
-  die Passung nicht. — **Ausgang:** <offen>
+  **Die Zuordnung war dann selbst wieder zu schnell** (Review-Runde 2,
+  R2-M-6): „weder der eine noch der andere Eintrag deckt sie" stand gegen 35
+  Registerverzeichnisse, von denen ich zwei geprüft hatte. Es gibt einen, der
+  wörtlich passt —
+  [`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
+  (9 Belege, verkörpert als
+  [`MR-025`](../../../../harness/conventions.md#mr-025), bewusst weiter offen):
+  *„wo eine **Aufzählung eine Menge spiegelt**, gehört sie an ihre Quelle
+  gebunden statt in eine Liste geschrieben."* Genau das ist die
+  Modul-Aufzählung des Lastenhefts gegenüber der Modulmenge des Produkts. Die
+  Closure trägt den Beleg dort ein. **Zweimal in Folge habe ich in derselben
+  Sache zu wenig gelesen** — erst den Geltungsbereich eines Eintrags, dann den
+  Bestand des Registers; beides sind Lese-Fehler, keine Urteils-Fehler. —
+  **Ausgang:** <offen>
+
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): Der Auftraggeber hat Vorschlag A
@@ -272,6 +298,7 @@ passenden Registereintrag; die Zuordnung entscheidet die Closure. **Beide
 Fassungen bleiben stehen** — die ursprüngliche Sichtung, weil sie Lauf-Beleg
 ist, und der falsche Nachzug, weil eine nachträglich geglättete Korrektur die
 Klasse verstecken würde, die sie selbst instanziiert.
+
 **Vorgelagert — Nachtlauf-Stand lesen**
 ([`MR-053`](../../../../harness/conventions.md#mr-053)):
 
