@@ -4,7 +4,7 @@
 **Richtung:** ausgehend ([`MR-035`](../../../harness/conventions.md#mr-035))
 **Ziel:** `lab/templates/docs/plan/planning/slice.template.md`, `modul-09-implementierung.md`
 **Baseline-Stand:** `v6.3.1`
-**Stand:** **beantwortet, beide Bitten angenommen** — siehe
+**Stand:** **beantwortet und umgesetzt**, beide Bitten angenommen — siehe
 [Antwort](2026-09-06-antwort-ai-harness-course-slice-formluecken.md).
 
 ---

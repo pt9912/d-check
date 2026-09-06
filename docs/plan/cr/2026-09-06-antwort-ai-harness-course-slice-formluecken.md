@@ -3,8 +3,9 @@
 **Absender:** `ai-harness-course` · **Datum:** 2026-09-06
 **Bezug:** [CR vom 2026-09-06](2026-09-06-cr-ai-harness-course-slice-formluecken.md)
 **Baseline-Stand des CR:** `v6.3.1`
-**Ergebnis:** **beide Bitten angenommen** — Bitte 1 mit geschärfter Diagnose,
-Bitte 2 im Befund angenommen, in der Lösung abweichend.
+**Ergebnis:** **beide Bitten angenommen und umgesetzt** — Bitte 1 mit geschärfter Diagnose,
+Bitte 2 im Befund angenommen, in der Lösung abweichend. Zweite Antwort:
+umgesetzt, Landung im angekündigten MINOR-Tag.
 
 **Ablage nach [`MR-036`](../../../harness/conventions.md#mr-036):** wörtlich,
 nicht zusammengefasst — der Wert liegt in der Begründung der Gegenseite, und
@@ -12,7 +13,7 @@ die überlebt keine Paraphrase.
 
 ---
 
-## Wortlaut
+## Erste Antwort — Wortlaut
 
 > **Antwort auf CR „Der Slice-Plan hat zwei Formlücken" — ai-harness-course**
 >
@@ -82,7 +83,7 @@ die überlebt keine Paraphrase.
 
 ---
 
-## Was daraus für dieses Repo folgt
+### Einordnung der ersten Antwort
 
 - **Die Lösung zu Bitte 2 ist besser als unser Vorschlag**, und der Grund ist
   einer, den wir nicht gemessen hatten: die **Adress-Kosten**. §8 wird 37-mal
@@ -99,7 +100,7 @@ die überlebt keine Paraphrase.
 
 ---
 
-## Gelieferte Formulierungen (2026-09-06, weitergegeben)
+### Gelieferte Formulierungen (2026-09-06, weitergegeben)
 
 Die im CR zugesagten Formulierungen sind geliefert. **Mit einer Korrektur:**
 Der CR sprach von **drei** Klassen — der Bestand zeigt **vier**. Die vierte war
@@ -134,3 +135,75 @@ für Wachstum** getragen — was der Slice abgab, bekam dort eine Kennung. Er ha
 **nicht** verhindert, dass ein Slice wächst: slice-203 wuchs von drei auf 23
 Träger, mit vollständigem Abschnitt. Er macht Wachstum benennbar, nicht
 unmöglich.
+
+---
+
+## Zweite Antwort — umgesetzt (2026-09-06)
+
+Wörtlich abgelegt nach [`MR-036`](../../../harness/conventions.md#mr-036).
+
+> **Zweite Antwort — CR „Der Slice-Plan hat zwei Formlücken" · umgesetzt**
+>
+> Eure Formulierungen sind übernommen, mit einer Abweichung beim Titel. Wir
+> führen den Abschnitt als *Ausdrücklich NICHT in diesem Slice* — eure
+> Frageform, weil euer Argument stimmt: „Out-of-Scope" lädt zur Aufzählung des
+> Fernliegenden ein. Der Kanon behält das Wort *Out-of-Scope* aber dort, wo er
+> die Disziplin benennt (Modul 3, Modul 6, Lastenheft-Vorlage), damit Modul 6s
+> „dieselbe Disziplin wie im Lastenheft" wahr bleibt und ein grep beide Enden
+> findet. Begriff im Kanon, Frageform in der Vorlage.
+>
+> Klasse 4 hat den Ausschlag gegeben. Ihr habt sie im CR übersehen und
+> nachgereicht — sie ist jetzt die vierte im Kanon, mit eurer Begründung: Sie
+> sagt nicht, wann etwas kommt, sondern dass es woanders hingehört, und ist beim
+> Review sofort prüfbar. Alle vier stehen in Modul 5, im Spiegel und als
+> Platzhalter in der Vorlage.
+>
+> Eure zwei „Was wir nicht empfehlen" sind mitverankert, wörtlich als Regel:
+> keine Mindestzahl („ein Slice mit einem echten Ausschluss ist besser als einer
+> mit vier erfundenen") und kein Sensor darauf („ein Pflichtfeld erzeugt
+> Pflichterfüllung").
+>
+> Und eure ehrliche Reichweite steht dabei. Dass slice-203 mit vollständigem
+> Abschnitt von 3 auf 23 Träger wuchs, haben wir übernommen — als Messung, nicht
+> als Fußnote. Der Satz im Kanon lautet jetzt: Der Abschnitt verhindert Wachstum
+> nicht, er macht es benennbar. Wer später mitnimmt, was ausgeschlossen war, hat
+> den Plan geändert, nicht ergänzt. Ein Mechanismus, dessen Grenze mitgeliefert
+> wird, hält länger als einer, dem man Wirkung andichtet.
+>
+> Zur Platzierung eine zweite Anwendung eures eigenen Konters. Ihr habt den
+> Abschnitt „zwischen Vorgehen/Plan und DoD" vorgeschlagen. In unserer
+> Sektionsfolge hieße das Einfügen vor §8 — und damit dasselbe Adress-Problem,
+> das ihr bei Bitte 2 anerkannt habt: gemessen 102 Nennungen von §2, §3, §7 und
+> §8 plus 13 Slice-Dateien. Also derselbe Zug wie dort: §1 heißt jetzt *Ziel und
+> Abgrenzung* und trägt beide Hälften. Scope und Gegen-Scope stehen
+> nebeneinander, wie im Lastenheft — und keine Nummer bewegt sich.
+>
+> Bitte 2 ist wie besprochen umgesetzt: §8 heißt *Sub-Area-Prüfungen und
+> Modus-Begründung*, die zwei *Vorgelagert*-Blöcke stehen als unbedingter Kopf
+> voran, der Modus-Begründungsblock als bedingter Rumpf danach. Beide
+> Prosa-Pflaster sind weg — das im Template und das in `templates/README.md` —,
+> weil die Gliederung die Aussage jetzt selbst trägt.
+>
+> Landung: Modul 5 · Modul 9 · beide Spiegel · `slice.template.md` ·
+> `templates/README.md`. Regel-Änderung, also **MINOR**. Version und
+> CHANGELOG-Zeile kommen mit dem Tag.
+
+### Einordnung der zweiten Antwort
+
+- **Die Platzierung ist besser als unser Vorschlag, aus unserem eigenen
+  Argument.** Wir hatten bei Bitte 2 die Adress-Kosten als Gegenargument
+  akzeptiert und beim Out-of-Scope-Vorschlag selbst nicht angewandt — ein
+  eingefügter Abschnitt hätte §2 aufwärts verschoben. Dass der Ausschluss als
+  **zweite Hälfte von §1** neben das Ziel rückt, ist zudem die stärkere Form:
+  Scope und Gegen-Scope an einer Stelle, wie im Lastenheft. Kein Gegen-Einwand.
+- **Die Haus-Form löst sich beim Bump anders auf als geplant.** Unser §3
+  *Ausdrücklich NICHT in diesem Slice* wandert nicht auf eine neue Nummer,
+  sondern **in §1**; §3 verschwindet als eigener Abschnitt. Das betrifft die
+  Umstellung, nicht den heutigen Bestand — und bestätigt den Entscheid, bis zum
+  Tag zu warten statt zwischendurch umzubauen.
+- **Die Begriffs-Trennung ist zu übernehmen:** *Out-of-Scope* bleibt der
+  Begriff, wo die Disziplin benannt wird, die Frageform ist die
+  Abschnitts-Überschrift. Unsere Haus-Form führt heute schon die Frageform als
+  Titel und den Begriff in der Prosa — die Trennung stimmt bereits.
+- **Der CR-Zyklus ist geschlossen.** Was bleibt, ist die Adoption beim
+  angekündigten MINOR-Tag: neuer Pin, Vorlagen-Delta, Auflösung der Haus-Form.
