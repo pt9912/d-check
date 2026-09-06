@@ -15,7 +15,7 @@ setzt es nicht voraus.
 
 **Berührte Spec-Stellen:** — (Planungs-Form, keine Spec-Stelle).
 
-**Verantwortlich:** — · **Autor:** pt9912. **Datum:** 2026-09-06.
+**Verantwortlich:** pt9912 · **Autor:** pt9912. **Datum:** 2026-09-06.
 
 ---
 
@@ -105,13 +105,68 @@ Zielort trägt den Herkunfts-Anker.
 
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
-<die drei Vorprüfungen entstehen spätestens bei der Beanspruchung; ein Plan in
-`open/` trägt den Nachtlauf-Block noch nicht>
+**Vorgelagert — Sub-Area-Wahl prüfen:**
+
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:223-224 -->
+
+> **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+> muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+**Eine** Sub-Area: `*` (Repo-Default). Sie erfüllt die Schwelle über eigene
+Konventionsregeln, eigene Sensoren und eigene Artefaktklassen. Der Slice
+berührt die **Planungs-Form**, nicht Code und nicht `tools/harness/`; eine
+Ausdifferenzierung ist nicht nötig.
+
+**Vorgelagert — offene Beobachtungen sichten:**
+
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:229-229 -->
+
+> **Offene Beobachtungen sichten.**
+
+Register durchgegangen (gemergter Stand, 34 Verzeichnisse). Der Slice hat
+einen **ungewöhnlichen** Anlass: Er ist selbst der Ausgang einer Beobachtung,
+statt sie nur zu sichten.
+
+- [`large-migration-exceeds-session-review-limit`](../observations/BEO-ALL/large-migration-exceeds-session-review-limit/observation.md)
+  (**3×, geplant — dieser Slice ist der Ausgang**). Die Sichtung ist hier
+  keine Vorsichtsmaßnahme, sondern der Auftrag: Der Eintrag steht auf
+  `geplant` mit der Kennung dieses Slice, und die Closure hebt ihn auf
+  `verkörpert` — oder benennt, warum keine gemeinsame Regel trägt.
+- [`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
+  (6×, gemischt) — **die schärfste Warnung für genau diesen Slice.** Er
+  schreibt eine Regel aus **drei** Anlässen; die Beobachtung sagt, dass eine
+  Regel aus dem Anlass statt aus dem Bestand gezogen wird. Gegenmittel im
+  Vorgehen: die drei Instanzen stehen als Tabelle da, mit ihrem je eigenen
+  Grund, und die Regel muss alle drei tragen — oder sich auf die benennen,
+  die sie trägt.
+- [`liefer-punkt-in-fremdem-commit`](../observations/BEO-ALL/liefer-punkt-in-fremdem-commit/observation.md)
+  (1×) und
+  [`path-scoped-commit-carries-staged-rest`](../observations/BEO-ALL/path-scoped-commit-carries-staged-rest/observation.md)
+  (2×) — beide betreffen die **Commit**-Zerlegung, nicht die Slice-Größe;
+  gesichtet, kein Bezug zu diesem Gegenstand.
+
+Keiner der drei übrigen erreicht mit diesem Slice die Schwelle.
+
+**Vorgelagert — Nachtlauf-Stand lesen**
+([`MR-053`](../../../../harness/conventions.md#mr-053)):
+
+`make nightly-state` am 2026-09-06 gelesen. `image-scan.yml` **grün**
+(07:56:19Z). `upstream-drift.yml` **ROT** (05:23:44Z) — unverändert der Lauf
+**vor** der Pin-Hebung aus slice-202; seine Ursache ist behoben,
+`make baseline-freshness` meldet lokal beide Teile grün. Es ist dieselbe
+benannte Grenze wie beim vorigen Slice: Das Target liest den **jüngsten** Lauf,
+nicht sein **Alter**.
 
 ## 8. Sub-Area-Modus-Begründung
 
-<entsteht mit der Beanspruchung>
-
+**Modus:** `*` ist **GF** (Greenfield, Repo-Default) — Doc führt, Code folgt.
+Kein Produkt-Code. **Konventionen-Dichte** hoch: Lifecycle und Rückführung sind
+vollständig im Kanon verankert, die Lücke ist benannt und nicht strukturell.
+**Phase-Reife** hoch. **Evidenz-/Diskrepanz-Risiko** liegt in der Regel selbst:
+Sie wird aus drei Anlässen gezogen, und ob sie trägt, entscheidet sich erst an
+der vierten Instanz — deshalb die Warnung aus
+[`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
+oben.
 ## 9. Closure-Notiz (nach `done/`)
 
 <wird vor dem `git mv` nach `done/` gefüllt>
