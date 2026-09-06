@@ -731,6 +731,7 @@ type raw struct {
 	Targets   *rawTargets   `yaml:"targets"`
 	Workflows *rawWorkflows `yaml:"workflows"`
 	Reviews   *rawReviews   `yaml:"reviews"`
+	Mentions  *rawMentions  `yaml:"mentions"`
 	// Sources ist eine bare Liste `sources[]` (spec/spezifikation.md §2;
 	// KEIN Map mit scope — das Modul nutzt den globalen Scan-Scope).
 	Sources []rawSource `yaml:"sources"`
@@ -871,6 +872,11 @@ func applyRemainingModules(r *raw, cfg *model.Config) error {
 		return rverr
 	}
 	cfg.Reviews = rv
+	mn, mnerr := applyMentions(r.Mentions)
+	if mnerr != nil {
+		return mnerr
+	}
+	cfg.Mentions = mn
 	if err := applySources(r, cfg); err != nil {
 		return err
 	}
@@ -2293,4 +2299,44 @@ func applyObservations(o *rawObservations) (model.ObservationsConfig, error) {
 		}
 	}
 	return model.ObservationsConfig{Register: o.Register, Dir: o.Dir, Dirs: o.Dirs, Pattern: o.Pattern}, nil
+}
+
+// rawMentions trägt die Parameter des Moduls mentions (DC-FA-MENT-001):
+// artifacts (Soll-Menge), documents (Ist-Menge) und match (Erkennungsform).
+// **Kein** exempt-paths — wer ein Mitglied ausnehmen will, schneidet sein
+// Glob; ein zweites Ventil neben der Menge wäre eine zweite Stelle, an der
+// dieselbe Entscheidung driften kann.
+type rawMentions struct {
+	Artifacts []string `yaml:"artifacts"`
+	Documents []string `yaml:"documents"`
+	Match     string   `yaml:"match"`
+}
+
+// applyMentions validiert den mentions-Block am Config-Rand. Ein Block, der
+// nur eine der beiden Mengen trägt, ist ein Fehler und kein halber Lauf: Die
+// Deckungs-Frage braucht beide Seiten (DC-FA-MENT-001, Exit 2).
+func applyMentions(r *rawMentions) (model.MentionsConfig, error) {
+	if r == nil {
+		return model.MentionsConfig{}, nil
+	}
+	if len(r.Artifacts) > 0 && len(r.Documents) == 0 {
+		return model.MentionsConfig{}, fmt.Errorf("%s: mentions.artifacts gesetzt, mentions.documents fehlt", FileName)
+	}
+	if len(r.Documents) > 0 && len(r.Artifacts) == 0 {
+		return model.MentionsConfig{}, fmt.Errorf("%s: mentions.documents gesetzt, mentions.artifacts fehlt", FileName)
+	}
+	for _, g := range append(append([]string{}, r.Artifacts...), r.Documents...) {
+		if strings.TrimSpace(g) == "" {
+			return model.MentionsConfig{}, fmt.Errorf("%s: mentions-Glob ist leer (nur Weißraum)", FileName)
+		}
+		if _, err := path.Match(g, "probe"); err != nil {
+			return model.MentionsConfig{}, fmt.Errorf("%s: mentions-Glob %q ist kein gültiges Glob: %v", FileName, g, err)
+		}
+	}
+	switch strings.TrimSpace(r.Match) {
+	case "", model.MentionsMatchPath, model.MentionsMatchBasename:
+	default:
+		return model.MentionsConfig{}, fmt.Errorf("%s: mentions.match %q ist unbekannt (erlaubt: %s, %s)", FileName, r.Match, model.MentionsMatchPath, model.MentionsMatchBasename)
+	}
+	return model.MentionsConfig{Artifacts: r.Artifacts, Documents: r.Documents, Match: strings.TrimSpace(r.Match)}, nil
 }

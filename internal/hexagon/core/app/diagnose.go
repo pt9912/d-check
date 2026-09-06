@@ -104,6 +104,7 @@ func AllReasons() []string {
 		rules.ReasonUsesLocalMissing, rules.ReasonUsesLocalPermsUndecl,
 		rules.ReasonUsesLocalPermsNarrow, rules.ReasonWorkflowUnparsable,
 		rules.ReasonReviewMissing,
+		rules.ReasonArtifactUnmentioned,
 	}
 }
 
@@ -179,6 +180,7 @@ func reasonTexts() map[string]string {
 		rules.ReasonUsesLocalPermsNarrow:  "Der aufrufende Job führt einen geforderten Scope niedriger, als das Ziel ihn verlangt (none < read < write; ein nicht genannter Scope ist none)",
 		rules.ReasonWorkflowUnparsable:    "Workflow-Datei oder Referenz-Ziel ist kein gültiges YAML — Befund statt Übersprung, eine unlesbare Datei ist kein geprüfter Zustand",
 		rules.ReasonReviewMissing:         "Review-Zusage ohne passenden Report unter dem konfigurierten Verzeichnis (oder leere Kandidatenmenge — fail-closed)",
+		rules.ReasonArtifactUnmentioned:   "Artefakt der Soll-Menge kommt in keinem Dokument der Ist-Menge vor (die Zeile 1 ist ein Vertrags-Platzhalter, keine Fundstelle)",
 	}
 }
 

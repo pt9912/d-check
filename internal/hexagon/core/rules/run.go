@@ -11,6 +11,12 @@ import (
 // Result ist das Ergebnis eines Prüflaufs.
 type Result struct {
 	Findings     []model.Finding
+	// Notes sind Zusammenfassungs-Zeilen einzelner Module (heute: mentions,
+	// DC-FA-MENT-001). Sie gehören in die ZUSAMMENFASSUNG, nicht in ein
+	// Befund-Feld — DC-FA-CLI-004 sagt den Wortlaut des message-Feldes
+	// ausdrücklich nicht zu. Generisch gehalten, damit der Report-Adapter
+	// kein Modul kennen muss.
+	Notes        []string
 	FilesChecked int
 }
 
@@ -107,11 +113,12 @@ func RunWithVCS(fsys driven.Filesystem, httpc driven.HTTPChecker, vcs driven.VCS
 	// Post-Pässe (vcs/commits über den VCS-Port, planning hermetisch über fsys):
 	// arbeiten NACH dem Datei-Scan auf git-Historie bzw. Roadmap-Layout, nicht auf
 	// den gescannten Dateien. Ein Port-Fehler (fehlendes .git/Range) ist fail-closed.
-	post, perr := runPostPasses(fsys, vcs, wp, vcsBase, vcsHead, cfg, active)
+	post, notes, perr := runPostPasses(fsys, vcs, wp, vcsBase, vcsHead, cfg, active)
 	if perr != nil {
 		return res, perr
 	}
 	res.Findings = append(res.Findings, post...)
+	res.Notes = notes
 	res.Findings = model.SortFindings(res.Findings)
 	return res, nil
 }
@@ -134,19 +141,20 @@ func (st *runState) netFindings(httpc driven.HTTPChecker) []model.Finding {
 // bzw. Commit-Messages über den VCS-Port, fail-closed als error) und planning
 // (hermetische Roadmap-↔-in-progress-Invariante über fsys, fail-closed als Befund).
 // Ausgelagert, damit RunWithVCS unter der gocyclo-Schwelle bleibt.
-func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, wp driven.WorkflowParser, vcsBase, vcsHead string, cfg model.Config, active map[string]bool) ([]model.Finding, error) {
+func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, wp driven.WorkflowParser, vcsBase, vcsHead string, cfg model.Config, active map[string]bool) ([]model.Finding, []string, error) {
 	var out []model.Finding
+	var notes []string
 	if active["vcs"] {
 		vf, err := CheckVCS(vcs, cfg.VCS, vcsBase, vcsHead)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		out = append(out, vf...)
 	}
 	if active["commits"] {
 		cf, err := CheckCommits(vcs, cfg.Commits, vcsBase, vcsHead)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		out = append(out, cf...)
 	}
@@ -168,14 +176,22 @@ func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, wp driven.WorkflowPar
 	if active["reviews"] {
 		out = append(out, CheckReviews(fsys, cfg.Reviews)...)
 	}
+	if active["mentions"] {
+		mr, err := CheckMentions(fsys, cfg.Mentions)
+		if err != nil {
+			return nil, nil, err
+		}
+		out = append(out, mr.Findings...)
+		notes = append(notes, mr.Note())
+	}
 	if active["targets"] {
 		tf, err := CheckTargets(fsys, cfg.Targets)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		out = append(out, tf...)
 	}
-	return out, nil
+	return out, notes, nil
 }
 
 // runState bündelt den Lauf-Zustand (Caches, Befunde) — der

@@ -18,7 +18,7 @@ scan:
   # ignore: ["pfad/**"]   # Glob, relativ zur Wurzel (prunt den Abstieg)
 
 modules: [links, anchors]
-# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, citations, structure, workflows, reviews, external, sources
+# Verfügbar: links, anchors, ids, matrix, codepaths, spans, hostpaths, diagrams, versions, pins, immutable, vcs, commits, planning, tracked, targets, citations, structure, workflows, reviews, mentions, external, sources
 # (external und sources sind die einzigen Netzwerk-Türen — beide strikt opt-in
 #  (external prüft http(s)-Erreichbarkeit, sources Upstream-Content-Drift); vcs und commits sind
 #  git-basiert und brauchen .git + eine Commit-Range — strikt opt-in; tracked ist

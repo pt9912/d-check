@@ -193,6 +193,9 @@ workflow-pins: build ## uses:-Einträge der Workflows via Modul workflows (Image
 # NICHT in gates: eine neue Modul-Klasse startet als eigenstaendiger Fokus-Lauf
 # (dieselbe Vorsicht wie bei trace-check/commits), Aufnahme in gates ist eine
 # spaetere, eigene Entscheidung.
+mention-coverage: build ## Erwähnungs-Deckung via Modul mentions (Image, dogfood): jede ADR im ADR-Index, jede Sensor-Datei aus harness/README.md verlinkt (netzlos, NICHT in gates). ADR-0084.
+	$(DCHECK_RUN) --enable mentions $(FOCUS_DISABLE)
+
 review-coverage: build ## Review-Report-Deckung via Modul reviews (Image, dogfood): jede DoD-Zusage "unabhängiger Review" braucht einen passenden Report unter docs/reviews/ (netzlos, NICHT in gates). ADR-0081.
 	$(DCHECK_RUN) --enable reviews $(FOCUS_DISABLE)
 

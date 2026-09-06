@@ -2786,6 +2786,60 @@ Closure-Commit.
 
 ---
 
+### DC-FA-MENT-001.a — Erwähnungs-Deckung einer Artefakt-Menge (`mentions`)
+
+Verfeinert [`DC-FA-MENT-001`](lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in).
+Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
+**opt-in**.
+
+1. **Config.** **Exit 2** vor dem Lauf bei: einem `mentions`-Block, der nur
+   `artifacts` **oder** nur `documents` trägt; einem Glob aus lauter Weißraum;
+   einem ungültigen Glob in einer der beiden Mengen; einem unbekannten Wert in
+   `mentions.match` (erlaubt: `path`, `basename`). Ohne Block bleibt die
+   Konfiguration leer.
+2. **Soll-Menge auflösen.** Der Dateibaum wird ab der Scan-Wurzel rekursiv
+   gelaufen, unter derselben Skip-Liste wie die Markdown-Discovery (`.git/`,
+   `node_modules/`, … — sonst würden Build- und Fremdverzeichnisse Mitglieder).
+   Mitglied ist jede **Datei**, deren '/'-relativer Pfad mindestens eines der
+   Globs aus `mentions.artifacts` trifft (dieselbe Glob-Semantik wie
+   `scan.ignore`, `**` als Segment eingeschlossen). Verzeichnisse sind **keine**
+   Mitglieder. Stabil sortiert, dedupliziert. **Leere Soll-Menge ⇒ Exit 2**,
+   mit Nennung der Globs.
+3. **Ist-Menge auflösen.** Dasselbe Verfahren über `mentions.documents`.
+   **Leere Ist-Menge ⇒ Exit 2** — eine Deckungs-Aussage gegen null Dokumente
+   ist keine.
+4. **Korpus bilden.** Die Ist-Dokumente werden **einmal** gelesen und als
+   Vereinigung gehalten: Die Frage lautet „kommt in **irgendeinem** Dokument
+   vor". Ein unlesbares Dokument trägt nichts bei, **zählt aber als Mitglied**
+   der Ist-Menge — seine Existenz trägt die Mengen-Aussage, nicht sein Inhalt.
+5. **Vorkommen prüfen.** Je Mitglied der Soll-Menge wird eine Zeichenkette im
+   Korpus gesucht: unter `mentions.match: path` (Default) der '/'-relative
+   Pfad, unter `basename` nur der Dateiname. Gesucht wird **wörtlich** im rohen
+   Text — ohne Markdown-Lexik, ohne Fence- oder Inline-Code-Ausnahme. Fehlt das
+   Vorkommen: Befund `artifact-unmentioned`, `file` = der Artefakt-Pfad,
+   `line` = **1**, `target` = die `mentions.documents`-Globs, komma-getrennt.
+6. **`line` ist ein Vertrags-Platzhalter, keine Fundstelle.**
+   [`DC-FA-CLI-004`](lastenheft.md#dc-fa-cli-004--ausgabeformate) verlangt für
+   jeden Befund `<pfad>:<zeile>`; das Artefakt wird in diesem Modul **nie
+   geöffnet**, und die Anforderung sagt keine Zeile zu. Die `1` erfüllt den
+   Ausgabevertrag und behauptet nichts.
+7. **Bezugsmenge in der Zusammenfassung.** Der Lauf trägt eine
+   Zusammenfassungs-Zeile bei: `mentions: <N> von <M> Artefakt(en) erwähnt,
+   über <D> Dokument(e)`. Sie erscheint im Default-Modus auf stderr und unter
+   `--json`/`--yaml` im Feld `summary.notes` (eine Liste). Damit sagt auch ein
+   **befundfreier** Lauf, worüber er nichts gefunden hat. Sie steht
+   ausdrücklich **nicht** im `message`-Feld eines Befundes, dessen Wortlaut
+   [`DC-FA-CLI-004`](lastenheft.md#dc-fa-cli-004--ausgabeformate) nicht zusagt.
+
+**Nicht Gegenstand:** die Gegenrichtung (ein Dokument nennt ein Artefakt, das
+nicht existiert — das decken `links` und `codepaths`); eine Soll-Menge aus
+Literalen; die Angemessenheit einer Erwähnung; eine Struktur-Bindung der
+Fundstelle; die Zeile, an der die Soll-Menge ein Mitglied führt (ein Glob führt
+seine Mitglieder an keiner Zeile).
+
+---
+
+
 ## 2. Datenstrukturen und Schemas
 
 ### SPEC-001 — Befund
@@ -3190,6 +3244,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-079` | `observation-unregistered` | planning | eine **zitierte** Beobachtungs-Kennung hat **keine** Zeile im Register — die maschinelle Hälfte der Register-Paarung. Nur diese Richtung: die Umkehrung („jede Zeile ist zitiert") ist ausgeschlossen, weil die meisten Zeilen unter der Schwelle stehen. **Gezählt werden Prosa und Linktext**, ein reines Inline-Code-Span nicht — das ist die Trennlinie zwischen Zitat und Beispiel, und sie ist zwingend, weil die verbreitete Zitier-Form die Kennung in Backticks führt |
 | `SPEC-080` | `uses-pin-tag-conflict` | workflows | derselbe SHA trägt innerhalb der Scan-Menge — dateiübergreifend gruppiert — mehr als einen distinkten Tag-Kommentar-Text; **eine** Meldung je beteiligter Zeile (`line` = ihre Zeile), mit den distinkten Werten in der Meldung. Ein identischer Kommentar über beliebig viele Zeilen ist Wiederholung, kein Befund; welcher Wert stimmt, ist Netz |
 | `SPEC-081` | `review-missing` | reviews | ein `done/`-Slice mit Review-Zusage (DoD-Zeile mit „unabhängiger Review", jede Bullet-Form, Haken-Zustand egal) hat **keinen** Report unter `reviews.reviews-dir` mit derselben `slice-<NNN>`-Kennung im Dateinamen — **oder** die Prüfmenge ist leer: kein Kandidat in `reviews.done-dir` bzw. `reviews.reviews-dir` unlesbar (`file` = `reviews.done-dir`, `line` = 1). Geprüft wird die **Deckung**, nicht die Qualität des Reports |
+| `SPEC-082` | `artifact-unmentioned` | mentions | ein Mitglied der Soll-Menge (`mentions.artifacts`) kommt in **keinem** Dokument der Ist-Menge (`mentions.documents`) vor. `file` = der Artefakt-Pfad, `line` = **1** (Vertrags-Platzhalter: das Artefakt wird nie geöffnet), `target` = die Ist-Globs. Die **leere** Soll- oder Ist-Menge ist kein Befund, sondern **Exit 2** |
 | `SPEC-069` | `section-column-missing` | structure | die über `table.column[].name` benannte Spalte ist nicht adressierbar: keine Tabelle des Abschnitts bindet sie (`line` = Abschnitts-Überschrift), der Name kommt in einer Kopfzeile mehrfach vor (`line` = Kopfzeile) oder eine Datenzeile reicht nicht bis zur Spalte (`line` = diese Zeile) |
 | `SPEC-059` | `target-untracked` | tracked | aufgelöstes, **existierendes** Link-/Bild-Ziel ist nicht im git-Index getrackt (untracked/gitignoriert) — die Referenz wäre auf jedem frischen Klon `target-missing` |
 | `SPEC-060` | `gate-phantom` | targets | in einer Doku-Tabellenzeile als `make X` behauptetes Target ohne zugehörige Makefile-Regel (halluziniertes Gate) |

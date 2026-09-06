@@ -878,3 +878,29 @@ citations:
       - "docs/plan/planning/done/**"
       - "docs/reviews/**"
       - "harness/conventions/done/**"
+
+# Modul mentions (DC-FA-MENT-001, ADR-0084): Erwähnungs-Deckung — eine
+# Soll-Menge von Artefakten gegen eine Ist-Menge von Dokumenten. Opt-in, läuft
+# nur über `make mentions-check`, nicht in `gates` (neue Modul-Klasse startet
+# als eigener Fokus-Lauf, dieselbe Vorsicht wie bei reviews).
+#
+# DIE MENGEN-WAHL IST DAS URTEIL, und hier trägt sie zwei Invarianten, die
+# dieses Repo ausdrücklich führt und die bisher KEIN Gate hielt: jede ADR steht
+# im ADR-Index (AGENTS.md §5), und jede Sensor-Datei ist aus der
+# Sensors-Tabelle verlinkt (harness/README.md).
+#
+# match: basename, und der Grund ist gemessen. Beide Ist-Dokumente verlinken
+# ihre Artefakte RELATIV ("0084-….md" im Index, "sensors/lint.md" in
+# harness/README.md) — die Default-Form `path` sucht den Pfad ab der
+# Scan-Wurzel und meldete deshalb 84 von 84 ADRs und 23 von 23 Sensor-Dateien,
+# ausnahmslos falsch. Die Kollisionsgefahr, gegen die der Default steht,
+# besteht hier nicht: beide Soll-Mengen haben eindeutige Basisnamen (gemessen,
+# 0 Duplikate).
+mentions:
+  artifacts:
+    - docs/plan/adr/[0-9]*.md
+    - harness/sensors/*.md
+  documents:
+    - docs/plan/adr/README.md
+    - harness/README.md
+  match: basename

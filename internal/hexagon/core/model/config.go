@@ -22,7 +22,7 @@ type ResolveFromGroup struct {
 // validModules sind die vertraglich gültigen Regelmodul-Namen
 // (DC-FA-CLI-002).
 func validModules() []string {
-	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows", "reviews"}
+	return []string{"links", "anchors", "ids", "matrix", "external", "codepaths", "spans", "hostpaths", "diagrams", "versions", "pins", "immutable", "vcs", "commits", "planning", "tracked", "targets", "citations", "sources", "structure", "workflows", "reviews", "mentions"}
 }
 
 // ValidModules ist die exportierte Sicht auf validModules (DC-FA-CLI-002) —
@@ -86,6 +86,7 @@ type Config struct {
 	Workflows WorkflowsConfig
 	// Reviews: Parameter des Moduls reviews (DC-FA-RVW-001).
 	Reviews ReviewsConfig
+	Mentions MentionsConfig
 	// ConfigFile: der Wurzel-relative Pfad der TATSÄCHLICH geladenen
 	// Konfigurationsdatei — konventionell `.d-check.yml`, mit `--config`
 	// (DC-FA-CLI-012) die dort genannte. Befunde, die die Konfiguration als
@@ -1017,4 +1018,34 @@ type ReviewsConfig struct {
 	DoneDir     string
 	ReviewsDir  string
 	ExemptPaths []string
+}
+
+// MentionsConfig sind die Parameter des Moduls mentions (DC-FA-MENT-001):
+// Artifacts ist die SOLL-Menge (Pfad-Globs relativ zur Scan-Wurzel), Documents
+// die IST-Menge. Beide sind Pflicht, sobald das Modul aktiv ist — ein
+// fehlender Schlüssel bricht ab, statt still zu einem Lauf über nichts zu
+// werden (DC-FA-CLI-003, Exit 2).
+//
+// Match wählt die Erkennungsform: "path" (Default) sucht den Pfad relativ zur
+// Scan-Wurzel, "basename" nur den Dateinamen. Der Default ist der strengere,
+// weil ein bloßer Dateiname kollidiert.
+type MentionsConfig struct {
+	Artifacts []string
+	Documents []string
+	Match     string
+}
+
+// MentionsMatchPath und MentionsMatchBasename sind die beiden gültigen Werte
+// von mentions.match.
+const (
+	MentionsMatchPath     = "path"
+	MentionsMatchBasename = "basename"
+)
+
+// EffectiveMatch liefert die Erkennungsform mit Default (DC-FA-MENT-001).
+func (c MentionsConfig) EffectiveMatch() string {
+	if strings.TrimSpace(c.Match) == "" {
+		return MentionsMatchPath
+	}
+	return c.Match
 }

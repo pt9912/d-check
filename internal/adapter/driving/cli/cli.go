@@ -545,7 +545,7 @@ func renderStdout(res rules.Result, opts options, cfg model.Config, fsys driven.
 	if len(res.Findings) > 0 {
 		exit = 1
 	}
-	sum := report.Summary{FilesChecked: res.FilesChecked, FindingCount: len(res.Findings)}
+	sum := report.Summary{FilesChecked: res.FilesChecked, FindingCount: len(res.Findings), Notes: res.Notes}
 	switch {
 	case opts.doctor && opts.json:
 		return exit, report.DoctorJSON(stdout, res.Findings, sum, exit, cfg)

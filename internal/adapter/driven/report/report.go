@@ -24,6 +24,10 @@ var lineBreakers = regexp.MustCompile(`[\t\r\n]+`)
 type Summary struct {
 	FilesChecked int `json:"filesChecked" yaml:"filesChecked"`
 	FindingCount int `json:"findingCount" yaml:"findingCount"`
+	// Notes sind Zusammenfassungs-Zeilen einzelner Module (DC-FA-CLI-004:
+	// summary trägt MINDESTENS filesChecked und findingCount, weitere Felder
+	// sind ausdrücklich zugelassen). Generisch: der Reporter kennt kein Modul.
+	Notes []string `json:"notes,omitempty" yaml:"notes,omitempty"`
 }
 
 // Text schreibt Befunde zeilenweise auf stdout
@@ -48,6 +52,11 @@ func Text(stdout, stderr io.Writer, findings []model.Finding, sum Summary) error
 			line += "\t" + m
 		}
 		if _, err := fmt.Fprintln(stdout, line); err != nil {
+			return err
+		}
+	}
+	for _, n := range sum.Notes {
+		if _, err := fmt.Fprintf(stderr, "d-check: %s\n", oneLine(n)); err != nil {
 			return err
 		}
 	}
@@ -124,6 +133,11 @@ func doctorFinding(stdout io.Writer, f model.Finding, cfg model.Config) error {
 // doctorSummary schreibt die Lauf-Zusammenfassung auf stderr (wie der
 // Default-Reporter).
 func doctorSummary(stderr io.Writer, sum Summary) error {
+	for _, n := range sum.Notes {
+		if _, err := fmt.Fprintf(stderr, "d-check: %s\n", oneLine(n)); err != nil {
+			return err
+		}
+	}
 	_, err := fmt.Fprintf(stderr, "d-check: %d Datei(en) geprüft, %d Befund(e)\n",
 		sum.FilesChecked, sum.FindingCount)
 	return err
