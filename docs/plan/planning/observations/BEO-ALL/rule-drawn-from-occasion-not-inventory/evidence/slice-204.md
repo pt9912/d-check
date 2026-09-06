@@ -1,0 +1,2 @@
+**Vorgang:** slice-204
+**Fund:** Selbstauskunft, vom Review bestätigt: [`MR-066`](../../../../../../../harness/conventions.md#mr-066) ist aus **drei Anlässen** gezogen, nicht aus einer Inventur der Slice-Historie. Der Eintrag benennt das in seiner vierten Grenze selbst („belegt, nicht bewiesen — ob sie trägt, entscheidet die vierte Instanz"), was die Klasse nicht aufhebt, sondern nur sichtbar macht.
