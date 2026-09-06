@@ -4,7 +4,10 @@
 **Richtung:** eingehend — dieses Repo ist der **Empfänger**, nicht der Bittsteller.
 **Ziel-Dokument:** [`spec/lastenheft.md`](../../../spec/lastenheft.md)
 **Berührt:** [`DC-FA-CLI-009`](../../../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) (RTM), [`DC-FA-COV-001`](../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in) (`trace.coverage`)
-**Stand:** eingegangen, **noch nicht entschieden**.
+**Stand:** **entschieden am 2026-09-06** — Vorschlag **A angenommen**, Vorschlag **B
+zurückgestellt**. Umgesetzt als Anforderung
+[`DC-FA-MENT-001`](../../../spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in)
+mit [ADR-0084](../adr/0084-mentions-eigenes-modul.md); Begründung unten.
 **Eingriff am Wortlaut:** keiner am Text — die vier genannten `DC-*`-Kennungen sind
 zusaetzlich als Link auf ihre Definition gesetzt (Kennungs-Linkpflicht dieses
 Repos). Der gelesene Wortlaut ist unveraendert.
@@ -121,3 +124,39 @@ welcher Begründung entschieden wurde. Ob daraus eine Adaption wird, ist offen.
 > Ist-Dokument (`docs/user/…`), und die Traceability-Achse liegt bereits in
 > d-check. Die Lücke ist damit keine Eigenheit eines Adopters, sondern eine
 > strukturelle Lücke der Kette Spec → Implementierung → Beschreibung.
+
+---
+
+## Entscheid (2026-09-06)
+
+**Vorschlag A angenommen**, umgesetzt als
+[`DC-FA-MENT-001`](../../../spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in)
+(Modul `mentions`, opt-in) mit [ADR-0084](../adr/0084-mentions-eigenes-modul.md).
+**Vorschlag B zurückgestellt**, nicht abgelehnt — der CR nennt ihn selbst
+nachrangig, und er löst nur den **deklarierten** Fall: Er findet, was jemand
+schon als Kante gepflegt hat, und damit gerade nicht die unbekannte Lücke, die
+den Anlass produziert hat.
+
+### Was den Ausschlag gab — und es steht nicht im CR
+
+Die Prämisse ist bestätigt: d-checks eigenes Handbuch trägt fünf
+`DC-*`-Nennungen bei 52 Anforderungen; `trace.coverage` kann die Achse hier
+prinzipiell nicht bedienen. Getragen hat die Entscheidung aber die
+**Inventur**: Zehn Repos unter demselben Wurzelverzeichnis führen das Paar
+Soll/Ist, und ihre Soll-Seiten führen **fünf verschiedene ID-Schemata**. Genau
+daraus folgt die Bauform — eine kennungsbasierte Lösung müsste jedes der fünf
+kennen, eine pfadbasierte keines. Das ist der eigentliche Grund, warum sich die
+Achse zu bauen lohnt, und er ist stärker als der Anlass.
+
+### Drei Abweichungen vom CR-Wortlaut, jede gemessen
+
+| CR sagt | Umgesetzt | Warum |
+|---|---|---|
+| „ein Ist-Dokument" | eine **Menge** von Dokumenten | Ein Fremd-Repo führt acht Dateien unter `docs/user/`; wer gegen eine prüft, misst an sieben vorbei. |
+| (nichts über die leere Prüfmenge) | **fail-closed auf beiden Seiten** | Die erste Stichprobe dieses Entscheids meldete „nichts gefunden", nachdem ihr Glob keine Datei getroffen hatte — eine Zusage über null Mitglieder. |
+| „die Differenz ist ein **Hinweis**, kein Befund" | **ein Befund ist ein Befund** (Exit 1) | Das Argument trifft zu, zieht aber die falsche Konsequenz: Die Unschärfe sitzt in der **Menge**, nicht im Exit-Code. Gemessen: `tools/**/*.sh` gegen `docs/user/` liefert elf Funde und **keinen** Mangel — das ist eine falsch gewählte Menge. Ein Berichts-Modus machte sie dauerhaft bequem; das Verdikt erzwingt die Kuratierung. Ausgeschrieben in [ADR-0084](../adr/0084-mentions-eigenes-modul.md) §Entscheidung (b). |
+
+### Was hier **nicht** entschieden ist
+
+Die **Implementierung** — Modul, Grund-Codes, Konfigurations-Schema — liegt in
+einem Folge-Slice. Diese Ablage trägt den Entscheid, nicht die Lieferung.
