@@ -156,7 +156,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   die Menge nicht als konfigurierte, begründete Wahl führt, produziert
   Falsch-Positive statt Funde. Dieselbe Stichprobe lehrte zugleich die
   **Leermengen-Falle**: Der erste Lauf traf keine Datei und las sich wie ein
-  grünes Ergebnis. — **Ausgang:** eingetreten — die Leermengen-Falle trat **in diesem Slice selbst** ein (die erste Stichprobe meldete „nichts gefunden" über null geprüfte Mitglieder). Aufgefangen in der Anforderung (fail-closed auf beiden Seiten); die Mengen-Wahl als Urteil trägt [slice-206](../open/slice-206-mentions-modul.md) DoD (3).
+  grünes Ergebnis. — **Ausgang:** eingetreten — die Leermengen-Falle trat **in diesem Slice selbst** ein (die erste Stichprobe meldete „nichts gefunden" über null geprüfte Mitglieder). Aufgefangen in der Anforderung (fail-closed auf beiden Seiten); die Mengen-Wahl als Urteil trägt [slice-206](../in-progress/slice-206-mentions-modul.md) DoD (3).
 - **„Bericht statt Gate" ist in d-check KEINE neue Klasse** — diese Annahme des
   ersten Plan-Entwurfs war falsch, gefunden vom Auftraggeber.
   [`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)
@@ -178,7 +178,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - **Kein eigenes Rauschen zum Kalibrieren.** d-checks Gegenprobe läuft grün;
   jede Schwelle und Ausnahme-Klasse müsste am Fremd-Repo justiert werden. Das
   widerspricht der gelebten Praxis, jede Regel vor der Aufnahme am **eigenen**
-  Bestand zu messen. — **Ausgang:** eingetreten — beide Review-Runden trafen genau diese Schicht: der Kern hielt, die Belege aus fremden Beständen nicht. Der Kalibrierungs-Auftrag steht als [slice-206](../open/slice-206-mentions-modul.md) DoD (3), mit der Pflicht, je Mengen-Wahl auch das Urteil über die Funde auszuweisen.
+  Bestand zu messen. — **Ausgang:** eingetreten — beide Review-Runden trafen genau diese Schicht: der Kern hielt, die Belege aus fremden Beständen nicht. Der Kalibrierungs-Auftrag steht als [slice-206](../in-progress/slice-206-mentions-modul.md) DoD (3), mit der Pflicht, je Mengen-Wahl auch das Urteil über die Funde auszuweisen.
 - **Zwei Deklarations-Drifts im eigenen Lastenheft, während der Arbeit
   gefunden — und beide sind das Rauschen, dessen Fehlen der Punkt darüber
   beklagt.** (i) Die Modul-Aufzählung in
@@ -383,7 +383,7 @@ Berichtigung als **falsch behoben** auswies. Die Kette im Einzelnen:
   eine Regel dafür aus **einem** Anlass zu ziehen wäre genau
   [`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md).
 
-**Folge-Slice.** [slice-206](../open/slice-206-mentions-modul.md) — die
+**Folge-Slice.** [slice-206](../in-progress/slice-206-mentions-modul.md) — die
 Implementierung, mit dem Kalibrierungs-Auftrag als eigenem DoD-Punkt. Er ist
 der Ausgang für zwei der sechs Risiken.
 
