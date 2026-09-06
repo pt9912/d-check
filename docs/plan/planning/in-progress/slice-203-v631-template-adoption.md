@@ -44,25 +44,24 @@ lagen über 200.
 
 ## 3. Ausdrücklich NICHT in diesem Slice
 
-- **Der Adaptions-Block in [`harness/conventions.md`](../../../../harness/conventions.md).**
-  Dieselbe Regel-Klasse, anderer Gegenstand: 38 Zeilen, davon 11 über 200
-  Zeichen (Maximum 1186). Sie ist **billiger** als die Sensors-Räumung, weil
-  die Träger-Dateien dort bereits existieren — es wäre reines Kürzen. Sie ist
-  trotzdem ein eigener Slice: mit ihr bräche dieser die Größenregel, und die
-  Zellenlängen-Regel greift dort über einen eigenen Selektor.
-- **Eine Untergrenze (`cell-min-chars`).** Eine Obergrenze allein lässt die
-  **leere** Zelle passieren; ob „gefüllt" hier eine Zusage sein soll, ist nicht
-  entschieden und wird nicht nebenbei entschieden.
-- **Jede Änderung an Produkt-Code.** Der Slice berührt Harness-Form, Config und
-  Briefing, nicht `internal/` oder `cmd/`.
+- **Jede weitere Tabelle.** Die Zellenlängen-Regel gilt der Sensors-Sektion
+  und dem Adaptions-Block; andere Tabellen des Repos (Roadmap, Meilensteine,
+  Beobachtungs-Register) sind nicht geprüft und nicht gekürzt.
+- **Die `Bindung`-Spalte als Längen-Bedingung.** Sie ist beim Aufräumen
+  vollständig **gefüllt** worden — zwei Zeilen fehlte sie ganz —, trägt aber
+  keine Schwelle: Eine Kennungs-Liste ist keine Prosa, und ihre Länge wächst
+  mit der Zahl der Bindungen, nicht mit Geschwätzigkeit.
+- **Jede Änderung an Produkt-Code.** Der Slice berührt Harness-Form, Config
+  und Briefing, nicht `internal/` oder `cmd/`.
 ## 4. Definition of Done
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**; Gate-Läufe und die
-Closure-Pflichten darunter zählen nicht mit. **Dieser Slice trägt vier**, und
-das ist eine bewusste, vom Auftraggeber getriebene Erweiterung: Punkt (4) kam
+Closure-Pflichten darunter zählen nicht mit. **Dieser Slice trägt fünf**, und
+das ist eine bewusste, vom Auftraggeber getriebene Erweiterung: (4) und (5) kamen
 hinzu, nachdem sich zeigte, dass das Produkt die Regel selbst halten kann.
-Ohne ihn wäre (1) eine einmalige Aufräumaktion statt einer gehaltenen Form.
+Ohne (4) wäre (1) eine einmalige Aufräumaktion statt einer gehaltenen Form;
+(5) wendet dieselbe Regel auf den Ort an, den der Kanon als ihr Vorbild nennt.
 
 - [ ] **(1)** `harness/sensors/` <!-- d-check:ignore (entsteht mit diesem Slice) --> trägt jeden Vertrag, der mehr als einen
       Satz braucht, nach der vendorten `gate.template.md`; die Index-Zellen
@@ -81,6 +80,11 @@ Ohne ihn wäre (1) eine einmalige Aufräumaktion statt einer gehaltenen Form.
       und läuft in `make gates`. Die Schwelle bildet die **Ein-Satz-Regel** ab,
       nicht den Bestand — eine auf den Bestand kalibrierte Schwelle hätte ihn
       eingefroren, statt die Regel zu verkörpern.
+- [ ] **(5)** Dieselbe Regel gilt dem **Adaptions-Block** in
+      [`harness/conventions.md`](../../../../harness/conventions.md): Titel,
+      Geltungsbereich und Ersetzt-Baseline-Regel unter der Schwelle, Prosa in
+      der Eintrags-Datei. Beide Tabellen tragen zusätzlich eine **Untergrenze**
+      — eine Obergrenze allein lässt die leere Zelle passieren.
 - [ ] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
@@ -99,9 +103,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   Deckungsnachweis des Werkzeugs (der lebt in ADR, Spec-Zeile, Skriptkopf).
   Prüfbar am Ergebnis: steht in einer Träger-Datei ein Satz über *welcher Test
   welche Hälfte deckt*, ist er am falschen Ort. — **Ausgang:** <offen>
-- **Der Rest-Bestand wird unsichtbar.** Nach diesem Slice sind drei Zellen
-  geheilt und 27 nicht — wer die Sektion liest, sieht eine halb umgestellte
-  Form und hält sie womöglich für fertig. — **Ausgang:** <offen>
+- **Der Rest-Bestand bleibt unsichtbar.** — **Ausgang:** entfallen — es gibt
+  keinen: Der ursprüngliche Zuschnitt (drei von 30) beruhte auf einer falschen
+  Messgröße; nach der Korrektur ist der Bestand vollständig geräumt, und die
+  Schwelle in [`.d-check.yml`](../../../../.d-check.yml) hält ihn. Ein Rest,
+  den eine Prosa-Zeile ausweisen müsste, ist nicht übrig.
 - **Die Nicht-Gate-Zuordnung ist ein Urteil, kein `grep`.** Ob `make bench`
   über den Zustand des Repos urteilt oder über seinen eigenen Lauf, entscheidet
   kein Muster; eine falsche Einordnung macht aus einem Gate ein Werkzeug oder
