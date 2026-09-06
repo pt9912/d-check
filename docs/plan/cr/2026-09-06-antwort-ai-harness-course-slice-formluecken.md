@@ -93,6 +93,44 @@ die überlebt keine Paraphrase.
   wird dann aufgelöst — nicht vorher. Eine Zwischen-Umstellung auf die heutige
   Acht-Abschnitt-Form hieße, zweimal umzubauen und die heute uniforme
   `done/`-Sektion vorübergehend ungleich zu machen.
-- **Offene Bringschuld:** die zugesagten Formulierungen für den
+- **Bringschuld erfüllt:** die zugesagten Formulierungen für den
   Out-of-Scope-Abschnitt. Der Bestand zeigt **vier** Klassen, nicht drei wie im
-  CR behauptet — die Korrektur geht mit der Lieferung raus.
+  CR behauptet — die Korrektur ging mit der Lieferung raus (siehe unten).
+
+---
+
+## Gelieferte Formulierungen (2026-09-06, weitergegeben)
+
+Die im CR zugesagten Formulierungen sind geliefert. **Mit einer Korrektur:**
+Der CR sprach von **drei** Klassen — der Bestand zeigt **vier**. Die vierte war
+im CR übersehen und kommt im eigenen Bestand am häufigsten vor.
+
+**Titel-Vorschlag:** `## N. Ausdrücklich NICHT in diesem Slice` — nicht
+„Out-of-Scope". Die Formulierung stellt die Frage, die der Abschnitt
+beantworten soll: *Was könnte man hier vermuten, das nicht kommt?*
+„Out-of-Scope" lädt zur Aufzählung des ohnehin Fernliegenden ein.
+
+**Bedienhinweis:** Je Punkt eine **Begründung**, nicht nur eine Nennung — ein
+Ausschluss ohne Grund ist eine Behauptung. Was dort steht, ist die Grenze, an
+der ein wachsender Slice sich messen lässt.
+
+| Klasse | Was sie leistet |
+|---|---|
+| **1. Ein Folge-Slice übernimmt es** — mit Kennung | macht aus „später" eine Adresse |
+| **2. Bestand bleibt bewusst stehen** — mit Begründung | verhindert, dass ein Sensor später gegen Altbestand meldet, den niemand entschieden hat |
+| **3. Es wäre ein anderer Vorgang** | trennt Arbeit am Gegenstand von Arbeit am Werkzeug |
+| **4. Schicht-Abgrenzung** | hält den Slice in seiner Schicht |
+
+**Klasse 4 ist die übersehene** — sie steht in vier von sechs eigenen
+Abschnitten und leistet etwas, das die anderen drei nicht tun: Sie sagt nicht,
+*wann* etwas kommt, sondern *dass es woanders hingehört*.
+
+**Nicht empfohlen:** eine Mindestzahl (ein echter Ausschluss schlägt vier
+erfundene) und ein Sensor darauf (ob ein Ausschluss trägt, ist Urteil; ein
+Pflichtfeld erzeugt Pflichterfüllung).
+
+**Wirksamkeit, ehrlich eingeordnet:** Der Abschnitt hat dreimal als **Adresse
+für Wachstum** getragen — was der Slice abgab, bekam dort eine Kennung. Er hat
+**nicht** verhindert, dass ein Slice wächst: slice-203 wuchs von drei auf 23
+Träger, mit vollständigem Abschnitt. Er macht Wachstum benennbar, nicht
+unmöglich.
