@@ -34,55 +34,59 @@ Rollenwechsel statt als Abschluss.
 | `harness/README.md` §Sensors | update | die drei ausgelagerten Zellen werden Index-Zeile mit Link; Nicht-Gates in eine zweite Tabelle |
 | [`AGENTS.md`](../../../../AGENTS.md) §6 | update | Schritt 8 ist Rollenwechsel, kein Abschluss; kein Self-Review |
 
-**Gemessen, nicht geschätzt** — Zeichen je Tabellenzeile, absteigend:
-`verify-closure-notes` 5668 · `test` 2203 · `hooks` 2124 · `doc-check` 1908 ·
-`gate-consistency` 1769 · … · `freshness-trivy`/`trivy-digest` 130. **30 von
-31** Zeilen liegen über 600 Zeichen; nur die letzte passt in einen Satz.
+**Gemessen, nicht geschätzt — und die Messgröße ist der ZELLINHALT, nicht die
+Zeilenlänge.** Markdown-Tabellen polstern jede Zeile auf die Breite der
+Trennzeile; wer die Zeile misst, misst die Formatierung mit und bekommt eine
+Rangfolge, die es nicht gibt. Nach Zellinhalt lag der Bestand vor diesem Slice
+bei `verify-closure-notes` 4997 · Digest-Achsen 1420 · `nightly-state` 1347 ·
+`baseline-verify` 1253 · … · `record-gates` 44 Zeichen; **21 von 31** Zeilen
+lagen über 200.
 
 ## 3. Ausdrücklich NICHT in diesem Slice
 
-- **Die vollständige Auslagerung aller 30 Kandidaten.** Dieser Slice nimmt die
-  **drei über 2000 Zeichen** (`verify-closure-notes`, `test`, `hooks`) — den
-  Ausreißer und seine zwei nächsten. Die übrigen 27 bleiben als **benannter
-  Bestand** über der Grenze stehen; sie sind Folge-Slice, nicht Versehen. Grund
-  ist die Größenregel: 30 Verträge umzuschichten ist in **einer**
-  Review-Sitzung nicht prüfbar
-  ([`BEO-ALL/large-migration-exceeds-session-review-limit`](../observations/BEO-ALL/large-migration-exceeds-session-review-limit/observation.md),
-  Zähler 2×) — und dieselbe Beobachtung hat genau dafür schon zweimal gefeuert.
-- **Die Vollständigkeits-Zeilen mit eingefrorenen Zahlen.** Der Kanon verlangt
-  dort das **Kommando** statt der Zahl; das betrifft dieselben 27 Zellen und
-  wandert mit ihnen in den Folge-Slice. Die drei ausgelagerten Träger tragen
-  die neue Form von Anfang an.
-- **Ein `MR`-Eintrag für die Form.** Die Sensors-Datei ist Baseline-Default ab
-  `v6.3.1`, keine Adaption — ein `MR` wäre nur nötig, wenn dieses Repo davon
-  abwiche.
-
+- **Der Adaptions-Block in [`harness/conventions.md`](../../../../harness/conventions.md).**
+  Dieselbe Regel-Klasse, anderer Gegenstand: 38 Zeilen, davon 11 über 200
+  Zeichen (Maximum 1186). Sie ist **billiger** als die Sensors-Räumung, weil
+  die Träger-Dateien dort bereits existieren — es wäre reines Kürzen. Sie ist
+  trotzdem ein eigener Slice: mit ihr bräche dieser die Größenregel, und die
+  Zellenlängen-Regel greift dort über einen eigenen Selektor.
+- **Eine Untergrenze (`cell-min-chars`).** Eine Obergrenze allein lässt die
+  **leere** Zelle passieren; ob „gefüllt" hier eine Zusage sein soll, ist nicht
+  entschieden und wird nicht nebenbei entschieden.
+- **Jede Änderung an Produkt-Code.** Der Slice berührt Harness-Form, Config und
+  Briefing, nicht `internal/` oder `cmd/`.
 ## 4. Definition of Done
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**; Gate-Läufe und die
-Closure-Pflichten darunter zählen nicht mit.
+Closure-Pflichten darunter zählen nicht mit. **Dieser Slice trägt vier**, und
+das ist eine bewusste, vom Auftraggeber getriebene Erweiterung: Punkt (4) kam
+hinzu, nachdem sich zeigte, dass das Produkt die Regel selbst halten kann.
+Ohne ihn wäre (1) eine einmalige Aufräumaktion statt einer gehaltenen Form.
 
-- [ ] **(1)** `harness/sensors/` <!-- d-check:ignore (entsteht mit diesem Slice) --> trägt die drei Verträge über 2000 Zeichen
-      (`verify-closure-notes`, `test`, `hooks`) nach der vendorten
-      `gate.template.md`; ihre Index-Zellen sind auf **einen Satz** gekürzt und
-      verlinken die Datei. Der Link ist die einzige geprüfte Fassung der
-      Zuordnung — `make doc-check` hält ihn.
-- [ ] **(2)** Nicht-Gates stehen in einer **zweiten Tabelle** unter der
-      Gate-Tabelle und tragen `kein Gate` **in der Bindung-Spalte**, nicht in
-      Prosa daneben. Die Zuordnung ist gemessen: Kriterium ist, **worüber** ein
-      Target urteilt — Zustand des Repos (Gate) gegen Vorbedingungen des
-      eigenen Laufs (Werkzeug).
+- [ ] **(1)** `harness/sensors/` <!-- d-check:ignore (entsteht mit diesem Slice) --> trägt jeden Vertrag, der mehr als einen
+      Satz braucht, nach der vendorten `gate.template.md`; die Index-Zellen
+      sind auf **einen Satz** gekürzt und verlinken ihre Datei. Der Link ist
+      die einzige geprüfte Fassung der Zuordnung — eine bloße
+      Namenskonvention bliebe still grün, wenn die Datei verschwände.
+- [ ] **(2)** Nicht-Gates stehen in einer **zweiten Tabelle** und tragen
+      `kein Gate` **in der Bindung-Spalte**, nicht in Prosa daneben. Kriterium
+      ist, **worüber** ein Target urteilt — Zustand des Repos gegen
+      Vorbedingungen des eigenen Laufs. Kein Target, das ein Lauf braucht,
+      fehlt in einer der beiden Tabellen.
 - [ ] **(3)** [`AGENTS.md`](../../../../AGENTS.md) §6 Schritt 8 benennt den
-      Rollenwechsel (Handoff an Reviewer, kein Self-Review) mit Verweis auf den
-      Reviewer-Skill.
+      Rollenwechsel (Handoff an Reviewer, kein Self-Review).
+- [ ] **(4)** Eine `structure`-Regel in [`.d-check.yml`](../../../../.d-check.yml)
+      hält die Zellenlänge beider Tabellen (`table.column`, `cell-max-chars`)
+      und läuft in `make gates`. Die Schwelle bildet die **Ein-Satz-Regel** ab,
+      nicht den Bestand — eine auf den Bestand kalibrierte Schwelle hätte ihn
+      eingefroren, statt die Regel zu verkörpern.
 - [ ] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
 - [ ] Jedes Risiko aus §5 trägt einen Ausgang.
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
-
 ## 5. Abnahme-Punkte / Risiken
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`

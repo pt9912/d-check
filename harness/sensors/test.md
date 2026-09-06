@@ -1,13 +1,12 @@
-# `make test` — fährt die Go-Testsuite des Hauptmoduls, inklusive dreier Zusagen jenseits des Produktcodes
+# `make test` — fährt die Go-Testsuite des Hauptmoduls, inklusive zweier Zusagen des Repos über sich selbst
 
 ## Vertrag
 
 Die Akzeptanzkriterien der bezogenen `DC-FA-*` liegen als Tests vor und laufen
-grün. Dazu drei Zusagen, die keinen Produktcode prüfen, sondern **Aussagen des
-Repos über sich selbst**:
+grün — darunter der **Determinismus-Test** ([`DC-QA-02`](../../spec/lastenheft.md#dc-qa-02--determinismus)),
+eine Produkteigenschaft. Dazu **zwei** Zusagen, die keinen Produktcode prüfen,
+sondern **Aussagen des Repos über sich selbst**:
 
-- **Determinismus** ([`DC-QA-02`](../../spec/lastenheft.md#dc-qa-02--determinismus)) —
-  identische Eingabe ⇒ identische Ausgabe.
 - **Netzlos-Modullisten-Integrität** der [`.d-check.yml`](../../.d-check.yml)
   als getippter Go-Test statt als Skript-Vergleich
   ([ADR-0032](../../docs/plan/adr/0032-gate-consistency-tombstone.md)): die in

@@ -596,6 +596,27 @@ structure:
     section: "## Historische Trigger-Verschiebungen"
     table:
       order: desc              # Drift-Log: neue Zeile oben
+  # Eine Sensors-Zelle, die zum Absatz geworden ist, ist der Fund, nicht die
+  # Ausnahme: der Vertrag gehoert dann nach harness/sensors/<target>.md, die
+  # Zeile bleibt als Index und verlinkt ihn (Baseline-Regelwerk
+  # grundlagen-harness-dateien.md, Paragraph harness/README.md als
+  # Einstiegspunkt).
+  # SCHWELLE: 200 Zeichen -- die Groessenordnung eines Satzes, nicht des
+  # Bestands. Eine auf den Bestand kalibrierte Schwelle haette ihn
+  # eingefroren statt die Regel zu verkoerpern, und bei vierstelligen Zellen
+  # ist jede ein Absatz.
+  # GRENZE: gemessen wird die ZELLE, nicht der Satz -- zwei kurze Saetze
+  # unter der Schwelle passieren. Die Ein-Satz-Regel bleibt Urteil, der
+  # Sensor haelt nur ihre Obergrenze.
+  - files: harness/README.md
+    section: "## Sensors (Feedback-Gates)"
+    table:
+      column:
+        - name: Vertrag
+          cell-max-chars: 200
+        - name: Tut was
+          cell-max-chars: 200
+    hint: "Vertrag nach harness/sensors/<target>.md auslagern, Zeile als Index mit Link behalten"
   - files: docs/plan/planning/in-progress/roadmap.md
     section: "## Abgeschlossene Wellen"
     table:

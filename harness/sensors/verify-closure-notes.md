@@ -8,7 +8,7 @@ trägt; keiner trägt einen offenen DoD-Haken; kein notiertes Risiko steht ohne
 einen der drei Kanon-Ausgänge da; keine zitierte Beobachtung ist unregistriert;
 keine Review-Zusage steht ohne Report.
 
-Drei Module tragen das über **ein eigenes Profil**
+Vier Module tragen das über **ein eigenes Profil**
 ([`.d-check.closure.yml`](../../.d-check.closure.yml), per `--config`):
 
 - **`planning`** — der erste `closure.heading-pattern`-Abschnitt je Slice:
@@ -58,6 +58,12 @@ erfüllt", nicht „die Notizen sind gut". Die semantische Schicht ist der Skill
    Form, schweigt sie. Heilbar: beim Vorlagen-Bump mitprüfen.
 6. **Ein Risiko ganz ohne Ausgangs-Marker** sieht sie nicht; der Altbestand vor
    slice-140 ist ausgenommen, ebenso der DoD-Haken-Bestand bis `slice-170`.
+7. **Die Überschriften-Zeile bleibt außen vor**, ebenso Fenced Blocks und
+   Inline-Code — die drei gewollt: sonst meldete ein Slice, der über die
+   Platzhalter schreibt, seine eigene Dokumentation. Die
+   Platzhalter-Regel deckt **vier Formen** (die zwei repo-eigenen und die
+   zwei der Kanon-Vorlage); die generische Winkelklammer-Form fängt daneben
+   `closure-note-placeholder`, aber **nur im Closure-Abschnitt**.
 
 **Von diesen Grenzen gelten dem DoD-Haken-Wächter die Fence-Hälften, nicht die
 Inline-Code-Hälften:** er liest die **rohen** Zeilen, also verschluckt die
@@ -86,15 +92,19 @@ Defekt, sondern Code.
 |---|---|
 | 0 | keine Befunde — Form erfüllt |
 | 1 | mindestens ein Befund; die Grund-Codes stehen je Zeile |
-| 2 | fail-closed: Prüfverzeichnis fehlt oder Profil unlesbar |
+| 2 | ungültige Nutzung oder Umgebungsfehler ([`DC-FA-CLI-003`](../../spec/lastenheft.md#dc-fa-cli-003--exit-codes)) |
 
-Diagnose-only: Der Lauf schreibt nichts ins Repo.
+**Das sind die Codes des Produkts, nicht die des Targets.** GNU Make
+normalisiert jeden fehlgeschlagenen Recipe auf seinen eigenen Exit 2 — über
+`make verify-closure-notes` sind 1 und 2 damit **nicht** unterscheidbar; welcher
+Fall vorliegt, sagt die **Ausgabe**, nicht der Exit.
 
-## Sperren
+**Ein fehlendes oder unlesbares `planning.closure.dir` ist ein Befund, keine
+Sperre:** Es zählt fail-closed als `closure-note-missing`
+([`spec/spezifikation.md`](../../spec/spezifikation.md) §4, Grund-Codes) — der Lauf bricht nicht ab, er meldet. Eine Zusage über null
+Dateien wäre sonst wahr, ohne etwas gesehen zu haben.
 
-- `fehlendes done/-Verzeichnis` — fail-closed statt stiller Leermenge: eine
-  Zusage über null Dateien wäre wahr, ohne etwas gesehen zu haben.
-
+**Hermetisch** (kein git, kein Netz) und diagnose-only: Der Lauf schreibt nichts ins Repo.
 ## Bindung
 
 **Closure-Bindepunkt** — in `make fullbuild`, bewusst **nicht** in

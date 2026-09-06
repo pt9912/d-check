@@ -35,10 +35,6 @@ drei Bindungen:
    Pflicht-Status-Check auf dem Default-Branch liegt **außerhalb** des Repos
    und ist aus dem Klon nicht auditierbar. Ohne sie ist die CI *advisory*.
 
-## Sperren
-
-- `kein git-Repository` — der Aufruf setzt `core.hooksPath` und braucht eines.
-
 ## Bindung
 
 Kein Gate über den Repo-Zustand, sondern Einrichtung: das Target **installiert**
