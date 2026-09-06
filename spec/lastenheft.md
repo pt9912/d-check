@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.86.0
+**Version:** 0.86.1
 
 **Status:** Draft
 
@@ -3491,21 +3491,46 @@ einem eigenen Lauf.
 **Die Mengen-Wahl ist das Urteil, nicht die Differenz.** Am eigenen Bestand
 gemessen: die Menge `tools/**/*.sh` gegen `docs/user/` liefert **elf** Funde,
 und **keiner davon ist ein Mangel** — Harness-Skripte gehören nicht ins
-Benutzerhandbuch. Dieselbe Ist-Menge gegen die 22 Regelmodule liefert **null**
-Funde. Das Modul kann diese Differenz nicht beurteilen; es meldet, was die
-konfigurierte Menge verlangt. Die Begründung der Menge gehört deshalb zu ihr —
-so wie bei `matrix.exclude-sections` und `trace.cross-consistency`s
-`exclude-req`.
+Benutzerhandbuch. An einem Fremd-Repo, dieselbe Mengen-Form: `scripts/*.sh`
+plus `tools/*.py` gegen dessen acht Ist-Dokumente liefert **vier** Funde bei
+**fünf** Mitgliedern. Zwei Pfad-Mengen, zwei Ergebnisse, und keines von beiden
+kann das Modul beurteilen; es meldet, was die konfigurierte Menge verlangt. Die
+Begründung der Menge gehört deshalb zu ihr — so wie bei
+`matrix.exclude-sections` und `trace.cross-consistency`s `exclude-req`.
 
+**Eine Kalibrierungs-Messung, die hier ausdrücklich nicht als Beleg zählt.**
+Der Bestand der Regelmodul-Namen gegen dieselbe Ist-Menge liefert null Funde —
+diese Menge ist aber eine **Literal**-Menge und damit von Out-of-Scope (2)
+ausgeschlossen. Sie hat die Grenze sichtbar gemacht und steht deshalb hier;
+als Beleg **für** diese Anforderung taugt sie nicht, weil sie unter ihr nicht
+laufen könnte.
+
+**Wo ein Befund steht.**
+[`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate) verlangt für **jeden** Befund
+`<pfad>:<zeile>`. Für `artifact-unmentioned` ist `file` der **Artefakt-Pfad**
+und `line` der Platzhalter `1`: Das Artefakt wird nicht geöffnet, der Befund
+hat keine Zeile, und diese Anforderung sagt auch keine zu — der Platzhalter
+erfüllt den Ausgabevertrag und behauptet nichts. `target` trägt das Glob der
+Ist-Menge, gegen die geprüft wurde.
+
+**Die Bezugsmenge steht in der Zusammenfassung, nicht im Befund.** Der Lauf
+nennt auf stderr, worüber er geurteilt hat — `N von M Artefakt(en) erwähnt`,
+über `D` Dokument(e) —, damit ein Lauf ohne Befund sagt, worüber er nichts
+gefunden hat. Sie gehört **nicht** ins `message`-Feld eines Befundes:
+[`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate) sagt dessen **Wortlaut**
+ausdrücklich nicht zu, und ein Akzeptanzkriterium darf nicht prüfen, was der
+
+Vertrag nicht zusagt.
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given eine Soll-Menge von fünf Artefakten, deren Pfade alle in mindestens einem Dokument der Ist-Menge stehen, when `d-check --enable mentions` läuft, then Exit 0 und kein Befund; ein read-only gemountetes Repository genügt.
+- **Bezugsmenge im sauberen Lauf:** Given eine Soll-Menge, deren Mitglieder alle erwähnt sind, when der Lauf erfolgt, then nennt die Zusammenfassung auf stderr die Bezugsmenge (`N von M Artefakt(en) erwähnt`, über `D` Dokument(e)) — ein Lauf ohne Befund sagt, worüber er nichts gefunden hat.
 - **Boundary (Ist-Seite ist eine Menge):** Given ein Artefakt, das in **einem** von acht Dokumenten der Ist-Menge steht, when der Lauf erfolgt, then **kein** Befund — ein Vorkommen genügt, die Ist-Menge wird als Vereinigung gelesen.
-- **Negative (Fund):** Given ein Artefakt der Soll-Menge, dessen Pfad in keinem Dokument der Ist-Menge steht, when der Lauf erfolgt, then Exit 1 und ein Befund `artifact-unmentioned` mit dem Artefakt-Pfad und der Zahl der geprüften Dokumente.
+- **Negative (Fund):** Given ein Artefakt der Soll-Menge, dessen Pfad in keinem Dokument der Ist-Menge steht, when der Lauf erfolgt, then Exit 1 und ein Befund `artifact-unmentioned`, dessen `file` der Artefakt-Pfad und dessen `line` der Platzhalter `1` ist ([`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate)).
 - **Erkennungsform:** Given `mentions.match: basename` und ein Dokument, das `coverage-gate.sh` ohne Pfad nennt, when der Lauf erfolgt, then kein Befund; unter dem Default `path` **ein** Befund — dieselbe Eingabe, zwei Urteile, und der Unterschied steht in der Konfiguration.
 - **Negative (leere Soll-Menge, fail-closed):** Given ein `mentions.artifacts`, das kein Artefakt trifft, when der Lauf erfolgt, then Exit 2 mit Nennung des leeren Globs — **nicht** Exit 0 mit „0 Befunde".
 - **Negative (leere Ist-Menge, fail-closed):** Given ein `mentions.documents`, das kein Dokument trifft, when der Lauf erfolgt, then Exit 2 — eine Deckungs-Aussage gegen null Dokumente ist keine.
-- **Negative (Config):** Given ein fehlender oder leerer `mentions.artifacts`- bzw. `mentions.documents`-Schlüssel bei aktiviertem Modul, when der Lauf erfolgt, then Exit 2; das Modul ist ohne beide Mengen **inert deklariert**, nicht still übersprungen.
+- **Negative (Config):** Given ein fehlender oder leerer `mentions.artifacts`- bzw. `mentions.documents`-Schlüssel bei aktiviertem Modul, when der Lauf erfolgt, then Exit 2 — der fehlende Schlüssel **bricht ab**, statt still übersprungen zu werden. („Inert" heißt in diesem Lastenheft der byte-identische Nulllauf und ist hier ausdrücklich **nicht** gemeint.)
 - **Determinismus:** Given dieselbe Eingabe, when der Lauf zweimal erfolgt, then byte-identische Ausgabe in stabiler Sortierung ([`DC-QA-02`](#dc-qa-02--determinismus)); nichts wird geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
 - **Default byte-identisch:** Given **kein** `mentions`-Block und kein `--enable mentions`, when `d-check` läuft, then Ausgabe und Exit byte-identisch zur Fassung vor dieser Anforderung.
 
@@ -3520,7 +3545,11 @@ Literal-Menge wäre eine zweite Quell-Form und braucht ihren eigenen Beleg.
 (3) **Die Angemessenheit einer Erwähnung** — ob ein genanntes Artefakt
 *beschrieben* oder nur erwähnt ist, bleibt Urteil. (4) **Eine Struktur-Bindung
 der Fundstelle** (nur in Links, nur außerhalb von Fenced Blocks): geprüft wird
-der rohe Text; eine Nennung im Code-Block zählt.
+der rohe Text; eine Nennung im Code-Block zählt. (5) **Die Zeile, an der die
+Soll-Menge ein Artefakt führt** — der CR wünscht sie im Befund; eine Menge aus
+Pfad-Globs führt ihre Mitglieder an keiner Zeile, und eine erfundene wäre
+falsch. Wer die Herkunft eines Mitglieds sehen will, liest das Glob in der
+Konfiguration.
 
 ---
 
@@ -3681,7 +3710,8 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
-| 0.86.0 | 2026-09-06 | Neue Anforderung [`DC-FA-MENT-001`](#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in) — **Erwähnungs-Deckung** (Modul `mentions`, opt-in) samt neuem Bereichskürzel `MENT` in §3: eine über Pfad-Globs konfigurierte **Soll-Menge** von Artefakten wird gegen eine ebenso konfigurierte **Ist-Menge** von Dokumenten gehalten; gemeldet wird jedes Mitglied, das in **keinem** Dokument vorkommt (`artifact-unmentioned`). **Anlass ist ein eingehender Change Request** des Adopters `ai-harness-init` (`docs/plan/cr/2026-09-06-cr-eingehend-ai-harness-init-rtm-soll-ist.md`, Vorschlag A angenommen), **die Grundlage aber eine Inventur**: zehn Repos unter demselben Wurzelverzeichnis führen das Paar Soll (`spec/lastenheft.md`) und Ist (`docs/user/`), und ihre Soll-Seiten führen **fünf verschiedene ID-Schemata**. Genau daraus folgt die Bauform: Die RTM-Familie ([`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix), [`DC-FA-XREF-001`](#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)) misst **verfolgt** und arbeitet über Kennungen; diese Achse misst **erwähnt** und arbeitet über Pfade — schema-frei, damit über alle zehn ohne eine einzige Schema-Angabe tragfähig. **Zwei Merkmale folgen aus Messungen, nicht aus dem CR:** die Ist-Seite ist eine **Menge** (ein Fremd-Repo führt acht Dokumente; wer gegen eines prüft, misst an sieben vorbei), und der Lauf ist **fail-closed bei leerer Prüfmenge auf beiden Seiten** — eine erste Stichprobe meldete „nichts gefunden", nachdem ihr Glob keine Datei getroffen hatte. **Die Erkennungsform ist gemessen entschieden:** an sieben Artefakten aus zwei Repos lieferten Vollpfad und Dateiname **dasselbe** Ergebnis; der Default `path` trägt deshalb das Kollisions-Argument (`README.md` träfe überall), nicht einen Messwert. **Am eigenen Bestand gemessen:** die 22 Regelmodule gegen `docs/user/` liefern **null** Funde, die Menge `tools/**/*.sh` gegen dieselbe Ist-Menge **elf** — und keiner davon ist ein Mangel; die Mengen-Wahl ist damit als Urteil ausgewiesen, nicht als Detail. Begründung in begleitender ADR. **Mit derselben Änderung berichtigt:** die Modul-Aufzählung in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) nannte 20 Module und ließ `workflows` und `reviews` aus, obwohl beide seit 0.83.0 bzw. 0.84.0 eigene Anforderungen tragen — und dieses Kopf-Feld stand auf 0.84.0, während die Historie darunter bereits 0.85.0 führte — der Kopf-Bump unterblieb bei jenem Eintrag und fiel seither nicht auf. Beide sind Deklarations-Drift derselben Klasse, die diese Anforderung beschreibt, und kein Gate deckt sie | — |
+| 0.86.1 | 2026-09-06 | Nachzug nach unabhängigem Review, vor dem Release: **Tatsachenberichtigung und zwei Vertrags-Festlegungen** an [`DC-FA-MENT-001`](#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in) — die Anforderung selbst bleibt in Achse, Bauform und Verdikt unverändert. **(1) Die eigene grüne Gegenprobe war keine.** Die Zeile „die 22 Regelmodule gegen `docs/user/` liefern null Funde" benutzt eine **Literal**-Menge und ist damit von Out-of-Scope (2) derselben Anforderung ausgeschlossen — sie könnte unter ihr nicht laufen. Sie steht jetzt ausdrücklich als **Kalibrierungs-Messung ohne Beleg-Kraft** dort, und an ihre Stelle tritt eine zweite **Pfad**-Menge an einem Fremd-Repo (`scripts/*.sh` + `tools/*.py`: vier Funde bei fünf Mitgliedern). **(2) Die Erkennungsform-Messung war falsch zusammengefasst.** Die Behauptung, Vollpfad und Dateiname lieferten „dasselbe Ergebnis", hält nicht: über **zwölf** Artefakte aus **drei** Repos weichen die Formen **einmal** ab, und die Abweichung ist ein Falsch-Positiv der laxen Form — ein `README.md` im Fremd-Handbuch meint die Projekt-Wurzel, nicht das gleichnamige Artefakt der Soll-Menge. Das stützt den Default `path` **stärker** als die vorige, unhaltbare Fassung: nicht „kein Unterschied", sondern „der einzige gemessene Unterschied ist ein Fehlalarm". **(3) Der einzige Grund-Code hatte keinen Ort im Ausgabevertrag.** [`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate) verlangt für jeden Befund `<pfad>:<zeile>`; `artifact-unmentioned` betrifft ein Artefakt, das die Anforderung „nie geöffnet" nennt. Festgelegt: `file` ist der Artefakt-Pfad, `line` der Platzhalter `1`, `target` das Glob der Ist-Menge. **(4) Ein Akzeptanzkriterium prüfte einen nicht zugesagten Wert.** Die „Zahl der geprüften Dokumente" stand im Befund und hätte nur ins `message`-Feld gekonnt, dessen **Wortlaut** derselbe Vertrag ausdrücklich nicht zusagt; sie steht jetzt in der **Zusammenfassung**. Damit ist zugleich eine offene Bitte des CR eingelöst, die die erste Fassung überging: der saubere Lauf nennt seine Bezugsmenge (`N von M`), statt bloß „0 Befunde" zu sagen. **(5) Zweite überhörte CR-Bitte, als Grenze aufgenommen:** die Zeile, an der die Soll-Menge ein Artefakt führt, gibt es nicht — ein Glob führt seine Mitglieder an keiner Zeile (Out-of-Scope 5). **(6) „inert" war doppeldeutig** und bezeichnete im selben Kriterium einen Abbruch und den byte-identischen Nulllauf; der Abbruch heißt jetzt Abbruch. Die Inventur-Zahlen der Zeile 0.86.0 bleiben stehen und werden in der begleitenden ADR berichtigt — sie tragen die Richtung des Arguments, nicht seine Ziffern | — |
+| 0.86.0 | 2026-09-06 | Neue Anforderung [`DC-FA-MENT-001`](#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in) — **Erwähnungs-Deckung** (Modul `mentions`, opt-in) samt neuem Bereichskürzel `MENT` in §3: eine über Pfad-Globs konfigurierte **Soll-Menge** von Artefakten wird gegen eine ebenso konfigurierte **Ist-Menge** von Dokumenten gehalten; gemeldet wird jedes Mitglied, das in **keinem** Dokument vorkommt (`artifact-unmentioned`). **Anlass ist ein eingehender Change Request** des Adopters `ai-harness-init` (`docs/plan/cr/2026-09-06-cr-eingehend-ai-harness-init-rtm-soll-ist.md`, Vorschlag A angenommen), **die Grundlage aber eine Inventur**: zehn Repos unter demselben Wurzelverzeichnis führen das Paar Soll (`spec/lastenheft.md`) und Ist (`docs/user/`), und ihre Soll-Seiten führen **fünf verschiedene ID-Schemata**. Genau daraus folgt die Bauform: Die RTM-Familie ([`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix), [`DC-FA-XREF-001`](#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)) misst **verfolgt** und arbeitet über Kennungen; diese Achse misst **erwähnt** und arbeitet über Pfade — schema-frei, damit über alle zehn ohne eine einzige Schema-Angabe tragfähig. **Zwei Merkmale folgen aus Messungen, nicht aus dem CR:** die Ist-Seite ist eine **Menge** (ein Fremd-Repo führt acht Dokumente; wer gegen eines prüft, misst an sieben vorbei), und der Lauf ist **fail-closed bei leerer Prüfmenge auf beiden Seiten** — eine erste Stichprobe meldete „nichts gefunden", nachdem ihr Glob keine Datei getroffen hatte. **Die Erkennungsform ist gemessen entschieden:** an sieben Artefakten aus zwei Repos lieferten Vollpfad und Dateiname **dasselbe** Ergebnis; der Default `path` trägt deshalb das Kollisions-Argument (`README.md` träfe überall), nicht einen Messwert. **Am eigenen Bestand gemessen:** die 22 Regelmodule gegen `docs/user/` liefern **null** Funde, die Menge `tools/**/*.sh` gegen dieselbe Ist-Menge **elf** — und keiner davon ist ein Mangel; die Mengen-Wahl ist damit als Urteil ausgewiesen, nicht als Detail. Begründung in begleitender ADR. **Mit derselben Änderung berichtigt:** die Modul-Aufzählung in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) nannte 20 Module und ließ `workflows` und `reviews` aus, obwohl beide seit 0.83.0 bzw. 0.84.0 eigene Anforderungen tragen — und dieses Kopf-Feld stand auf 0.84.0, während die Historie darunter bereits 0.85.0 führte — der Kopf-Bump unterblieb bei jenem Eintrag und fiel seither nicht auf. Beide sind Deklarations-Drift derselben Klasse, die diese Anforderung beschreibt, und kein Gate deckt sie | [CR `ai-harness-init` 2026-09-06](../docs/plan/cr/2026-09-06-cr-eingehend-ai-harness-init-rtm-soll-ist.md) |
 | 0.85.0 | 2026-09-03 | [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in): **fünfte Fähigkeit, additiv zur vierten** — Register-Deckung im **Verzeichnis-Modus** (`planning.observations.dir`). Statt einer Tabellen-Datei prüft die Fähigkeit gegen eine Verzeichnis-Ablage: eine zitierte Kennung `<pfad>` gilt als nachgewiesen, wenn `<dir>/<pfad>/observation.md` existiert. `.register` und `.dir` schließen sich aus (Exit 2 beim Konfigurations-Laden). **Anlass:** die adoptierte Baseline gestaltet ihr eigenes Beobachtungs-Register komplett neu (Tabelle → Verzeichnis, Kennung wird Pfad, abgeleiteter statt gepflegter Zähler); die vierte Fähigkeit bleibt unverändert für Rückwärtskompatibilität und den eigenen Zwischenzustand (der Bestand migriert erst mit einem Folge-Slice). Kein neuer Grund-Code — derselbe `observation-unregistered` wie im Tabellen-Modus | — |
 | 0.84.0 | 2026-09-03 | Neue Anforderung [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in) — **Review-Report-Deckung** (Modul `reviews`, opt-in): jeder `done/`-Slice mit einer Review-Zusage (DoD-Haken, dessen Zeile „unabhängiger Review" nennt, jede Bullet-Form, Haken-Zustand egal) braucht mindestens einen Report unter einem konfigurierten Verzeichnis mit derselben `slice-<NNN>`-Kennung im Dateinamen. **Anlass ist eine ausdrücklich benannte Lücke eines vorherigen `structure`-Wächters**, der nur den **offenen** DoD-Haken deckt, nicht die Deckung zweier Mengen zwischen zwei Verzeichnissen — das sei eine neue Fähigkeit und gehöre in einen eigenen Anlauf. **Am eigenen Bestand gemessen:** fünf reale Funde, davon zwei mit
 **geschlossenem** Haken — für `structure`s Wächter unsichtbar, weil der Haken
