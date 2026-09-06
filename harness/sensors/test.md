@@ -21,14 +21,17 @@ sondern **Aussagen des Repos über sich selbst**:
 
 ## Grenze — was das Grün nicht abdeckt
 
-Die dritte Zusage ist die mit den meisten Löchern, und sie sind gewollt:
+Die zweite Zusage ist die mit den meisten Löchern, und sie sind gewollt:
 
 1. **Kein Beleg, dass die Durchsetzung läuft** — nur dafür, dass die Dateien
    wohlgeformt sind und aufeinander zeigen. Permanent: ob ein Hook im
    laufenden Werkzeug greift, ist von außen nicht prüfbar.
 2. **Fehlende Dateien werden übersprungen, nicht eingefordert** — ein Repo-Gate
    über eine **Werkzeug**-Datei prüft Wohlgeformtheit, nicht Anwesenheit
-   ([`MR-048`](../conventions/MR-048-gate-ueber-werkzeug-datei.md)). Permanent:
+   ([`MR-048`](../conventions/MR-048-gate-ueber-werkzeug-datei.md)).
+   **Nicht permanent:** der Eintrag führt dafür einen Auflösungs-Trigger —
+   nimmt der Kanon die Werkzeug-Artefakte in die Bindepunkte auf, sind sie
+   Repo-Pflicht und die Skip-Hälfte entfällt. Bis dahin gilt:
    die Werkzeug-Wahl ist keine Repo-Invariante.
 3. **Die Hook-Pfad-Prüfung ist eine Teilketten-Suche, keine Shell-Analyse** —
    ein Pfad, der in einer Kommandokette steckt, wird gefunden; was die Kette
@@ -48,6 +51,11 @@ Die dritte Zusage ist die mit den meisten Löchern, und sie sind gewollt:
 |---|---|
 | 0 | alle Tests grün |
 | 1 | mindestens ein Test rot — die Ausgabe nennt Paket und Fall |
+
+**Das sind die Codes des Produkts, nicht die des Targets.** `make test` ist ein
+Docker-Build-Recipe; GNU Make normalisiert jeden fehlgeschlagenen Recipe auf
+seinen eigenen Exit 2 — über das Target ist die 1 nicht beobachtbar. Welcher
+Fall vorliegt, sagt die **Ausgabe**.
 
 ## Bindung
 

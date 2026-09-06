@@ -2,10 +2,12 @@
 
 ## Vertrag
 
-Sieben Modul-Klassen über die gesamte Repo-Doku: Links, **Anker**,
+**Elf Module** über die gesamte Repo-Doku: Links, **Anker**,
 **Kennungs-Linkpflicht**, **Referenzmatrix**, **Inline-Code-Pfade**,
 **Abschnitts-Invarianten** (`structure`), **Kennungen in Diagramm-Fences**
-(`diagrams`) und **wortgleiche Zitate gegen ihre Quelle** (`citations`).
+(`diagrams`), **Markdown-Span-Artefakte** (`spans`), **Host-Pfade**
+(`hostpaths`), **Versions-Pins** (`versions`) und **wortgleiche Zitate gegen
+ihre Quelle** (`citations`).
 
 **Dogfooding-Selbstkonfiguration:** Runtime-Image, read-only-Mount,
 `--network none`, [`.d-check.yml`](../../.d-check.yml). Der Lauf ist zugleich

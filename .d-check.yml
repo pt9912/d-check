@@ -638,6 +638,17 @@ structure:
         - name: Tut was
           cell-max-chars: 200
           cell-min-chars: 20
+        # Die Bindung-Spalte traegt KEINE Obergrenze: eine Kennungs-Liste ist
+        # keine Prosa, ihre Laenge waechst mit der Zahl der Bindungen. Die
+        # UNTERgrenze steht trotzdem, und sie ist der Grund fuer diesen
+        # Eintrag: sie bindet die Spalte ueberhaupt erst, womit eine Zeile,
+        # der die Spalte GANZ fehlt, als section-column-missing meldet.
+        # Ohne sie passierte genau das still -- gemessen an zwei Zeilen, die
+        # sie vor slice-203 verloren hatten.
+        # SCHWELLE 1: `—` ist die kuerzeste zulaessige Form (make gates,
+        # make ci fuehren sie); leer ist keine.
+        - name: Bindung
+          cell-min-chars: 1
     hint: "Die Zeile ist ein Index: mehr als ein Satz gehoert nach harness/sensors/<target>.md, weniger als ein Satz ist keine Zusage"
   - files: docs/plan/planning/in-progress/roadmap.md
     section: "## Abgeschlossene Wellen"

@@ -19,8 +19,6 @@ Eine gelöschte oder umbenannte `Accepted`-ADR ist ein **FAIL**.
 1. **Zwei Modi, ein Bindepunkt-Paar** — `STAGED=1` im `pre-commit`-Hook,
    `RANGE=` in der PR-/Push-CI. Der lokale Hook ist **opt-in pro Klon**
    (`make hooks`); `--no-verify` umgeht ihn, nicht die CI.
-2. **Der Negativ-Selbsttest lebt als Akzeptanztest im Modul** (`make test`),
-   nicht hier.
 
 ## Bindung
 

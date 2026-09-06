@@ -16,7 +16,6 @@ für den Hook über stdin.
    Review-Territorium.
 2. **Der lokale Hook ist opt-in pro Klon** (`make hooks`); `--no-verify`
    umgeht ihn, nicht die PR-/Push-CI.
-3. **Der Negativ-Selbsttest lebt als Akzeptanztest im Modul** (`make test`).
 
 **Dependabot braucht dafür keine Ausnahme:** Seine Botschaften tragen die
 Kennung im Präfix und erfüllen die Regel wie jeder andere Commit

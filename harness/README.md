@@ -86,19 +86,26 @@ liegt in CI bzw. lokal (`make gates`), nicht hier.
 | [`make trace-check`](sensors/trace-check.md) | hält, dass jede Commit-Botschaft eine Traceability-Kennung nennt | [ADR-0027](../docs/plan/adr/0027-commits-traceability-modul.md) (löst die Skript-Mechanik von [ADR-0013](../docs/plan/adr/0013-pr-ci-und-traceability-gate.md) ab); [`DC-FA-COMMITS-001`](../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in) |
 | [`make adr-check`](sensors/adr-check.md) | hält, dass eine `Accepted`-ADR nicht inhaltlich überschrieben wird | [ADR-0024](../docs/plan/adr/0024-vcs-immutable-gate.md) (löst die Skript-Mechanik von [ADR-0016](../docs/plan/adr/0016-adr-immutable-gate.md) ab); [ADR-0025](../docs/plan/adr/0025-codepaths-ignore-refs.md) (entfernt das Alt-Skript); [`AGENTS.md` §3.5](../AGENTS.md#35-adrs-sind-nach-accepted-immutable) |
 | [`make completeness-check`](sensors/completeness-check.md) | meldet Anforderungen ohne referenzierenden Slice am Closure-Punkt | [ADR-0026](../docs/plan/adr/0026-completeness-in-product-gate.md) (löst die Skript-Mechanik von [ADR-0017](../docs/plan/adr/0017-requirements-completeness-gate.md) ab); [`DC-FA-CLI-011`](../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) |
+| `make doc-complete` | meldet Anforderungen ohne referenzierenden Slice — dasselbe Urteil wie `completeness-check`, byte-identisches Recipe | ohne Bindepunkt; die Closure-Wahrheit trägt [`make completeness-check`](sensors/completeness-check.md) · [`DC-FA-CLI-011`](../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) |
+| `make archive-wave-test` | fährt die Testsuite von `tools/archive-wave/` — eigenes `go.mod`, nicht Teil von `make test` | ohne Bindepunkt in `gates`/`ci` |
 | [`make verify-closure-notes`](sensors/verify-closure-notes.md) | hält die Struktur des `done/`-Bestands am Closure-Bindepunkt | [ADR-0048](../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md); [`DC-FA-PLAN-001`](../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) |
 | `make fullbuild` | volle Closure vor Welle-Merge/Release (gates + image-test + bench + completeness-check + verify-closure-notes); schließt mit dem Image-Hash des Runtime-Builds ab | Reproduzierbarkeits-Bindung: Image-Hash (`sha256:…`) im Lauf-Abschluss; Pins via `make versions` ([Kurs-Modul 14](../.harness/baseline/v6.3.1/regelwerk/modul-14-docker-harness.md)) |
 
 
 **Werkzeuge — genannt, weil der Lauf sie braucht, aber kein Gate.** Das
 Kriterium ist nicht, ob ein Target in `gates` läuft, sondern **worüber es
-urteilt**: Ein Gate prüft den Zustand des Repos, ein Werkzeug die
-Vorbedingungen seines eigenen Laufs — es *bewegt*, *misst*, *sagt* oder
-*meldet Fremdes*. Das schärfste Unterscheidungsmerkmal ist **fail-open**:
-was im Zweifel durchlässt, urteilt nicht (Baseline-Regelwerk
-`modul-13-quality-gates.md` §Hard Rule, *Die dritte Lage*). Weglassen wäre
-nur für ein Target richtig, das niemand braucht; unmarkiert in der
-Gate-Tabelle stehen hieße, es als Gate zu behaupten.
+urteilt**: Ein Gate prüft den Zustand des **Repos**, ein Werkzeug etwas
+anderes — es *bewegt*, *sagt*, *meldet einen fremden Stand* oder prüft **eine
+Werkzeug-Einstellung** statt einer Repo-Invariante. **fail-open ist ein
+starkes Indiz, aber nicht das Kriterium:** Die Netz-Achsen lassen im Zweifel
+durch und urteilen schon deshalb nicht; `guard-probe` und `baseline-probe`
+urteilen dagegen fail-closed und sind trotzdem keine Gates — ihr Gegenstand
+ist ein Werkzeug, keine Repo-Invariante. Umgekehrt bleibt ein Target, das über
+den Repo-Zustand urteilt, ein Gate, **auch ohne Bindepunkt**; wo es gebunden
+ist, sagt seine Bindung-Spalte (Baseline-Regelwerk `modul-13-quality-gates.md`
+§Hard Rule, *Die dritte Lage*). Weglassen wäre nur für ein Target richtig, das
+niemand braucht; unmarkiert in der Gate-Tabelle stehen hieße, es als Gate zu
+behaupten.
 
 | Target | Tut was | Bindung |
 | --- | --- | --- |
@@ -112,14 +119,16 @@ Gate-Tabelle stehen hieße, es als Gate zu behaupten.
 | [`make guard-probe`](sensors/guard-probe.md) | fährt den Tool-Call-Wächter gegen seine Proben | kein Gate · [`MR-005`](conventions.md#mr-005), [`MR-040`](conventions.md#mr-040), [`MR-042`](conventions.md#mr-042), [`MR-044`](conventions.md#mr-044) |
 | `make record-gates` | Working-Tree-Hash-Nachweis für den Stop-Hook | kein Gate |
 | [`make hooks`](sensors/hooks.md) | installiert die lokalen git-Hooks, die Commit und Übergang an grüne Gates binden | kein Gate · [ADR-0013](../docs/plan/adr/0013-pr-ci-und-traceability-gate.md), [ADR-0024](../docs/plan/adr/0024-vcs-immutable-gate.md) |
-| `make versions` | Reproduzierbarkeits-Pins: `GO_VERSION`, `GOLANGCI_LINT_VERSION`, alle `FROM`-Basis-Images, Runtime-Image-ID | kein Gate |
 | `make bench` | misst die Performance gegen ein generiertes Fixture (Median aus drei Läufen) | kein Gate, [`DC-QA-01`](../spec/lastenheft.md#dc-qa-01--performance) |
 | `make baseline-probe` | fährt die Alias-Auflösung von [`baseline-verify`](sensors/baseline-verify.md) gegen neun Proben | kein Gate · [`MR-055`](conventions.md#mr-055) |
 | `make trace` | gibt die Requirements-Traceability-Matrix auf stdout aus | kein Gate · [`DC-FA-CLI-009`](../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) |
-| `make doc-complete` | sagt, welche Anforderungen ohne referenzierenden Slice sind — ohne Closure-Bindung | kein Gate · [`DC-FA-CLI-011`](../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code) |
 | `make archive-wave` | bewegt geschlossene Zeitdokumente ins Archiv und ersetzt sie durch Stubs; ohne `APPLY=1` wird nichts geschrieben | kein Gate |
-| `make archive-wave-test` | fährt die Testsuite von `tools/archive-wave/` (eigenes `go.mod`, nicht Teil von `make test`) | kein Gate |
 | `make tidy` | pflegt `go.mod`/`go.sum` in Docker — bewusster Akt am Dependency-Stand | kein Gate |
+| `make build` | baut das Runtime-Image — Prerequisite von `image-test` und damit von `ci`/`fullbuild` | kein Gate |
+| `make run` | Selbst-Smoke-Test des gebauten Images | kein Gate |
+| `make deps` / `make compile` | Cache-Layer / schnelles Compile-Feedback | kein Gate |
+| `make versions` | gibt die Reproduzierbarkeits-Pins aus (Go, Lint, Basis-Images, Runtime-Image-ID) | kein Gate |
+| `make help` / `make clean` | Targets anzeigen / Images entfernen | kein Gate |
 
 **Aktueller Lauf-Status:** lokal `make gates`; Releases laufen über
 [`release.yml`](../.github/workflows/release.yml) (Tag-Push `v*` →
@@ -138,6 +147,7 @@ sind deshalb keine Gates, auch keine Meta-Gates.
 | Klasse | Was geprüft wird | Targets | Bindepunkt |
 | --- | --- | --- | --- |
 | **Produkt-Gates** | Eigenschaften des Arbeitsprodukts (Code, Doku, Image) | `lint`, `test`, `arch-check`, `coverage-gate`, `semgrep`, `doc-check`, `image-test` | Arbeitsbaum-Inhalt (in `make gates`/`ci`) |
+| **Produkt-Gate mit fremdem Gegenstand** | das **publizierte** Image statt des Arbeitsbaums — CVEs entstehen ohne Commit | `image-scan` | Netz, Nachtlauf, **nicht** in `gates` |
 | **Meta-/Governance-Gates** | Harness-Integrität & Prozess-Invarianten („keine Harness-Lüge") | `gate-consistency`, `planning-check`, `baseline-verify`, `workflow-pins` (in `gates`); `trace-check`, `adr-check` (Commit-/Diff-Bindepunkt, **nicht** in `gates`/`ci`); `review-coverage` (eigenständiger Fokus-Lauf, **nicht** in `gates`/`ci`); `completeness-check`, `verify-closure-notes` (**Closure-Bindepunkte**: in `fullbuild`, **nicht** `gates`/`ci`) | Doku↔Makefile, Roadmap↔Lifecycle, Commit↔ID, ADR-Immutability, Requirements-Waisen, Closure-Note-Substanz, Risiko-Ausgänge, Vendor-Integrität, `uses:`-Pin-Form, Review-Report-Deckung |
 
 Meta-Gates sind **ausführbare, fail-closed Gates mit Negativ-Selbsttest** —
@@ -212,3 +222,8 @@ keine aspirativen Texte. Aber ihre Kraft ist real begrenzt:
 6. Repo-weiten Gate-Lauf vor Handoff (`make gates`).
 7. Doku/Indizes aktualisieren, falls ein öffentlicher Vertrag berührt.
 8. Ausgeführte Sensors und verbleibende Risiken berichten.
+
+**Schritt 8 ist der Rollenwechsel, kein Abschluss** — nach dem Bericht folgt
+der Handoff an den Reviewer ([`.harness/skills/reviewer.md`](../.harness/skills/reviewer.md)),
+danach an den Verifier; kein Self-Review. Ausgeschrieben in
+[`AGENTS.md`](../AGENTS.md) §6.

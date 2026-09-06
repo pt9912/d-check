@@ -15,9 +15,6 @@ ohne Netz.
 
 1. **Der Umfang ist `go/lang/security`**, nicht das ganze Regelset. Ein
    grüner Lauf sagt etwas über diesen Ausschnitt.
-2. **Ein Security-Gate verlangt Datenfluss-Analyse** — Architektur-Schnitt und
-   Coverage-Lücken fängt es nicht; dafür stehen
-   [`arch-check`](arch-check.md) und `make coverage-gate` daneben.
 
 **Wie groß der Ausschnitt ist, sagt das Kommando:** Der Lauf nennt die Zahl
 der gescannten Dateien und Regeln in seiner Zusammenfassung.

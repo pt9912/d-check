@@ -4,7 +4,7 @@
 
 Proben für den Wächter
 ([`pretooluse-command-guard.sh`](../../.claude/hooks/pretooluse-command-guard.sh)):
-Paketmanager, Host-Toolchain, Skript-Interpreter, Brace-Group und Sub-Shell
+Paketmanager, die Host-Sprachtoolchain, Skript-Interpreter, Brace-Group und Sub-Shell
 werden blockiert; **Gegenkontrollen** — legitime Aufrufe, die ein blockiertes
 Wort tragen — müssen durchlaufen. Dazu die Fail-closed-Fälle: die des
 Extraktors (malformes/abgeschnittenes JSON, `\u`-Escape in Wert und Schlüssel,

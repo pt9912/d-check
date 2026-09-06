@@ -39,7 +39,7 @@ Zeilenlänge.** Markdown-Tabellen polstern jede Zeile auf die Breite der
 Trennzeile; wer die Zeile misst, misst die Formatierung mit und bekommt eine
 Rangfolge, die es nicht gibt. Nach Zellinhalt lag der Bestand vor diesem Slice
 bei `verify-closure-notes` 4997 · Digest-Achsen 1420 · `nightly-state` 1347 ·
-`baseline-verify` 1253 · … · `record-gates` 44 Zeichen; **21 von 31** Zeilen
+`baseline-verify` 1253 · … · `record-gates` 44 Zeichen; **24 von 31** Zeilen
 lagen über 200.
 
 ## 3. Ausdrücklich NICHT in diesem Slice
@@ -161,11 +161,16 @@ Register durchgegangen (gemergter Stand, 34 Verzeichnisse). Vier Einträge
 betreffen `*` und diesen Slice:
 
 - [`large-migration-exceeds-session-review-limit`](../observations/BEO-ALL/large-migration-exceeds-session-review-limit/observation.md)
-  (2×, offen) — **treibt den Zuschnitt**, statt nur notiert zu werden: Der
-  gemessene Bestand von 30 Kandidaten hätte den Slice über die Grenze gebracht,
-  an der dieser Eintrag zweimal gefeuert hat. Der Schnitt auf drei Träger in §3
-  ist die Antwort darauf. Ein dritter Beleg entsteht damit **nicht** — die
-  Beobachtung wurde gelesen, bevor sie eintreten konnte.
+  (2×, offen) — **gesichtet, und der Schutz hat nicht getragen.** Beim
+  Schreiben dieses Blocks lautete die Antwort: „der Schnitt auf drei Träger
+  ist die Antwort, ein dritter Beleg entsteht nicht". Der Schnitt beruhte auf
+  einer falschen Messgröße und wurde korrigiert; der Slice liefert 23 Träger
+  plus zwei zusätzliche Liefer-Punkte. **Die Beobachtung ist damit
+  eingetreten** — nicht durch das Wachstum allein, sondern durch seine Folge:
+  der zweite Review fand 19 Befunde, darunter mehrere, die direkt aus dem
+  Wachstum stammen (nicht nachgezogene Zahlen, ein veralteter Vorprüfungs-Block,
+  Deckungsnachweis in fünf neuen Dateien). Der Beleg wird bei der Closure
+  eingetragen; der Zähler steht damit bei **3×** und die Schwelle ist erreicht.
 - [`wortlaut-behauptet-pruefung-die-fehlt`](../observations/BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt/observation.md)
   (6×, geplant) — unmittelbar im Gegenstand: Die auszulagernden Verträge sind
   genau die Stellen, an denen die Sektion Prüfungen beschreibt. Wer Prosa

@@ -38,7 +38,7 @@ hat, sagt die Ausgabe, nicht der Exit.
 
 ## Bindung
 
-kein Gate, bewusst **nicht** in `gates`/`ci`. Bindepunkt ist der Nachtlauf
+**Netz**, fail-open, kein Gate, bewusst **nicht** in `gates`/`ci`. Bindepunkt ist der Nachtlauf
 [`upstream-drift.yml`](../../.github/workflows/upstream-drift.yml), von
 `ci.yml` getrennt, damit ein Upstream-Ausfall nie die CI rot färbt.
 [`MR-011`](../conventions/done/MR-011-baseline-pin-release-tag.md)-Kette

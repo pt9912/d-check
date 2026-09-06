@@ -8,7 +8,9 @@ Ruhe-Marker „Nichts in Arbeit" **genau dann** tragen, wenn kein `slice-*` in
 `docs/plan/planning/in-progress/` liegt (`planning-drift`).
 
 **Beide Richtungen zählen:** ein fehlender Marker bei leerem `in-progress/` und
-ein stehengebliebener Marker bei beanspruchtem Slice sind derselbe Defekt. Das
+ein stehengebliebener Marker bei beanspruchtem Slice sind derselbe Defekt.
+**Fail-closed via Heading-Guard:** Fehlt die §Offene-Wellen-Überschrift oder
+ist sie umbenannt, meldet der Lauf — er passiert nicht still grün. Das
 ist die Kopplung, die [`MR-013`](../conventions/MR-013-lifecycle-move-buendelung.md)
 atomar hält — ein byte-reiner Lifecycle-Move ist deshalb gate-rot.
 
@@ -19,8 +21,6 @@ atomar hält — ein byte-reiner Lifecycle-Move ist deshalb gate-rot.
    für die andere hält, hält einen halben Wächter für einen ganzen.
 2. **Hermetisch — kein git.** Der Zustand ist das Verzeichnis im Arbeitsbaum,
    nicht der gemergte Stand.
-3. **Der Negativ-Selbsttest lebt als Akzeptanztest im Modul** (`make test`).
-
 ## Bindung
 
 Bestandteil von `make gates`.

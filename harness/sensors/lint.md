@@ -2,7 +2,7 @@
 
 ## Vertrag
 
-24 kalibrierte Linter: 5 Default- plus 23 aus
+**29** kalibrierte Linter: 5 Default-Linter plus 23 aus
 [ADR-0006](../../docs/plan/adr/0006-lint-profil-solid.md), dazu `nolintlint`
 aus [`AGENTS.md`](../../AGENTS.md) §3.2. Ausnahmen leben **zentral** in
 `.golangci.yml` (`exclude-rules`) mit Begründung; Inline-Suppressions sind

@@ -7,16 +7,14 @@ Import-Regeln R1–R5 des Hexagon-Schnitts plus R6 (Kern-Paket-Richtung
 include-bares `a-check.mk` plus [`.a-check.yml`](../../.a-check.yml), Lauf mit
 `--network none` und read-only-Mount.
 
-**Test-Dateien sind via `exclude` ausgenommen.** Die Parität zum abgelösten
-Skript ist per **Proben-Matrix je Verbotszweig** belegt, nicht behauptet
-([ADR-0029](../../docs/plan/adr/0029-arch-check-via-a-check.md)).
+**Test-Dateien sind via `exclude` ausgenommen.** Die Ablösung des früheren
+Skripts folgt [ADR-0029](../../docs/plan/adr/0029-arch-check-via-a-check.md);
+womit sie gedeckt ist, steht dort.
 
 ## Grenze — was das Grün nicht abdeckt
 
-1. **Ein Architekturtest prüft Struktur, nicht Verhalten** — was zur Laufzeit
-   geschieht und welche lokalen Muster im Code stehen, fängt er nicht.
-2. **Der Gegenstand sind Import-Kanten**, nicht die Rollen-Treue der
-   Schichten: dass ein Paket importieren *darf*, sagt nicht, dass es die
+1. **Der Gegenstand sind Import-Kanten** — die sechs Regeln R1–R6, nicht die
+   Rollen-Treue der Schichten: dass ein Paket importieren *darf*, sagt nicht, dass es die
    richtige Rolle spielt. Permanent — das ist Review-Territorium.
 
 ## Bindung
