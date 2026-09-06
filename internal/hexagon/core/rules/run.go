@@ -177,7 +177,7 @@ func runPostPasses(fsys driven.Filesystem, vcs driven.VCS, wp driven.WorkflowPar
 		out = append(out, CheckReviews(fsys, cfg.Reviews)...)
 	}
 	if active["mentions"] {
-		mr, err := CheckMentions(fsys, cfg.Mentions)
+		mr, err := CheckMentions(fsys, cfg.Mentions, cfg.Ignore)
 		if err != nil {
 			return nil, nil, err
 		}

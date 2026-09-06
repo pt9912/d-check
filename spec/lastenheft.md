@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.86.2
+**Version:** 0.86.3
 
 **Status:** Draft
 
@@ -3453,7 +3453,14 @@ jenes vergleicht Doku gegen **Build-Regeln**, dieses Doku gegen den
 **Datei-Bestand**.
 
 **Was „kommt vor" heißt, ist eine erklärte Wahl, keine Selbstverständlichkeit.**
-Geprüft wird das wörtliche Vorkommen einer Zeichenkette im Dokument-Text.
+Geprüft wird das Vorkommen einer Zeichenkette im Dokument-Text — und zwar als
+**eigenständige Nennung**, nicht als beliebige Teilzeichenkette. Unmittelbar
+davor und dahinter darf kein Zeichen stehen, das selbst Teil eines Datei- oder
+Pfadnamens sein kann; auf der **linken** Seite ist unter `basename` ein `/`
+ausgenommen, weil dort legitim ein Pfad-Präfix steht. **Das ist keine
+Verfeinerung, sondern die Bedingung, unter der die Prüfung überhaupt trägt:**
+ohne sie deckte die Nennung von `image-test.md` das Mitglied `test.md` ab, und
+`x/docs/a.md` das Mitglied `docs/a.md` — beides gemessen. <!-- d-check:ignore (Illustrations-Pfade, keine Verweise) -->
 `mentions.match` wählt die Form: `path` (Default) sucht den Pfad relativ zur
 Scan-Wurzel, `basename` nur den Dateinamen. **Der Default ist der strengere
 und mit Grund gewählt:** ein bloßer Dateiname kollidiert (`README.md` träfe
@@ -3471,6 +3478,17 @@ Pfade aufgesammelt, und ihre Mitgliedschaft ist eine Aussage über das
 Verzeichnis, nicht über ihren Inhalt. Ein Artefakt, das existiert, aber leer
 oder unlesbar ist, bleibt Mitglied der Soll-Menge. Diese Asymmetrie ist die
 Grenze des Moduls und keine Nachlässigkeit.
+
+**Und eine zweite Achse, benannt statt vorausgesetzt:** Die Soll- und
+Ist-Mengen werden aus dem **ganzen** Baum ab der Repository-Wurzel aufgesammelt
+— unter der festen Skip-Liste und unter `scan.ignore`, aber **nicht**
+eingeschränkt auf `scan.roots`. Das ist eine Wahl: Ein Artefakt liegt typisch
+außerhalb der Doku-Wurzeln (`tools/`, `harness/`), und die Globs **sind** hier
+der Geltungsbereich. „Relativ zur Scan-Wurzel" meint die Pfad-**Form**, nicht
+eine Beschränkung auf die konfigurierten Wurzeln. Ein **unlesbares
+Verzeichnis** unterhalb der Wurzel ist dabei ein **Fehler** (Exit 2), kein
+stilles Überspringen — es verkleinerte sonst die Soll-Menge, ohne dass eine
+Zahl oder ein Befund das zeigte.
 
 **Fail-closed bei leerer Prüfmenge, auf beiden Seiten.** Trifft
 `mentions.artifacts` kein Artefakt oder `mentions.documents` kein Dokument,
@@ -3490,15 +3508,31 @@ Der Berichts-Hebel liegt eine Ebene höher — das Modul ist **opt-in**, und die
 Soll-Menge ist eine kuratierte Wahl. Wer nur berichten will, aktiviert es in
 einem eigenen Lauf.
 
+**Ein Block ist EIN Paar, und das ist eine Grenze mit Preis.** Die Ist-Menge
+wird als **Vereinigung** gelesen; wer zwei voneinander unabhängige Invarianten
+in einen Block legt, hält **keine** von beiden. Gemessen am eigenen Bestand:
+zwei Paare in einem Block (ADRs gegen ihren Index, Sensor-Dateien gegen ihre
+Tabelle) meldeten `108 von 108` auch dann noch, als eine ADR vollständig aus
+dem Index entfernt war — 21 der 84 ADR-Namen kommen auch im anderen Dokument
+vor. Zwei Invarianten brauchen zwei Läufe.
+
 **Die Mengen-Wahl ist das Urteil, nicht die Differenz.** Am eigenen Bestand
 gemessen: die Menge `tools/**/*.sh` gegen `docs/user/` liefert **elf** Funde,
 und **keiner davon ist ein Mangel** — Harness-Skripte gehören nicht ins
-Benutzerhandbuch. An einem Fremd-Repo, dieselbe Mengen-Form: `scripts/*.sh`
+Benutzerhandbuch. An einem Fremd-Bestand, dieselbe Mengen-Form: `scripts/*.sh`
 plus `tools/*.py` gegen dessen acht Ist-Dokumente liefert **vier** Funde bei
-**fünf** Mitgliedern. Zwei Pfad-Mengen, zwei Ergebnisse, und keines von beiden
-kann das Modul beurteilen; es meldet, was die konfigurierte Menge verlangt. Die
-Begründung der Menge gehört deshalb zu ihr — so wie bei
+**fünf** Mitgliedern — und auch hier trägt das Modul das Urteil nicht: einer
+der vier ist eine Test-Datei, deren Fehlen im Benutzerhandbuch kein Mangel ist.
+Die Begründung der Menge gehört deshalb zu ihr — so wie bei
 `matrix.exclude-sections` und `trace.cross-consistency`s `exclude-req`.
+
+**Die Erkennungsform ist am Bestand zu wählen, nicht aus dem Gefühl.** Gemessen
+an diesem Repo: Beide Ist-Dokumente verlinken **relativ**, und `match: path`
+meldete deshalb **84 von 84** ADRs und **24 von 24** Sensor-Dateien —
+ausnahmslos falsch. Am Fremd-Bestand oben lieferten **beide** Formen dasselbe
+Ergebnis, weil jenes Handbuch mit vollem Pfad nennt, wo es überhaupt nennt. Der
+Default bleibt der strengere; wer `basename` wählt, prüft **zwei** Dinge: dass
+die Basisnamen eindeutig sind **und** dass keiner Endstück eines anderen ist.
 
 **Eine Kalibrierungs-Messung, die hier ausdrücklich nicht als Beleg zählt.**
 Der Bestand der Regelmodul-Namen gegen dieselbe Ist-Menge liefert null Funde —
@@ -3718,6 +3752,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.86.3 | 2026-09-06 | Nachzug nach dem unabhängigen Review der **Implementierung** (drei HIGH, alle über Bruch-Tests belegt). **Die Anforderung ändert sich an einer Stelle wirklich: (1) „Vorkommen" heißt jetzt EIGENSTÄNDIGE NENNUNG, nicht beliebige Teilzeichenkette.** Die alte Fassung sagte „das wörtliche Vorkommen einer Zeichenkette" — damit deckte die Nennung von `image-test.md` das Mitglied `test.md` ab und ein Pfad mit fremdem Präfix das Mitglied darunter; ein Mitglied galt als erwähnt, das nirgends genannt war. Geprüft wird jetzt die linke und die rechte Grenze der Fundstelle, links unter `basename` mit Ausnahme des `/` (dort steht legitim ein Pfad-Präfix). **Das ist genau die Kollision, gegen die der Default `path` laut derselben Anforderung steht** — die Messung, die sie ausschließen sollte, prüfte Gleichheit von Basisnamen und nicht Enthaltensein. **(2) Ein Block ist EIN Paar, mit Preis.** Die Ist-Menge ist eine Vereinigung; zwei unabhängige Invarianten in einem Block halten **keine** von beiden. Gemessen: zwei Paare in einem Block meldeten „108 von 108" auch dann noch, als eine ADR vollständig aus ihrem Index entfernt war. Die Grenze steht jetzt in der Anforderung. **(3) Die zweite Scan-Achse ist benannt statt vorausgesetzt:** aufgesammelt wird aus dem ganzen Baum ab der Repository-Wurzel, unter der Skip-Liste **und** `scan.ignore`, aber **nicht** eingeschränkt auf `scan.roots`; ein unlesbares Verzeichnis ist Exit 2 statt stillem Schrumpfen. **(4) Die Erkennungsform-Wahl bekommt ihre Mess-Regel:** Wer `basename` wählt, prüft **zwei** Dinge — Eindeutigkeit der Basisnamen **und** dass keiner Endstück eines anderen ist. **(5) Die Zahlen sind neu gemessen und teils berichtigt:** am eigenen Bestand meldet `match: path` **84 von 84** ADRs und **24 von 24** Sensor-Dateien (nicht 23), ausnahmslos falsch; am Fremd-Bestand lieferten **beide** Formen dasselbe Ergebnis (4 Funde bei 5 Mitgliedern), weil jenes Handbuch mit vollem Pfad nennt — und eines der vier ist eine Test-Datei und damit kein Mangel. Damit ist zugleich der Kalibrierungs-Beleg an einem **fremden** Bestand nachgeholt, den die Anforderung bisher nur am eigenen führte | — |
 | 0.86.2 | 2026-09-06 | Zweite Review-Runde am selben, noch nicht veröffentlichten Stand: **drei Befunde, von denen zwei die Berichtigung 0.86.1 selbst betreffen.** **(1) Die widerlegte Aussage stand weiter im Anforderungstext.** 0.86.1 dementierte die Behauptung, Vollpfad und Dateiname lieferten „dasselbe Ergebnis" — der Absatz §Was „kommt vor" heißt führte sie unverändert fort. Anders als bei einer `Accepted`-ADR verbot hier nichts das Editieren: Dieses Dokument steht auf `Status: Draft`. Der Absatz trägt jetzt die gemessene Fassung — zwölf Artefakte aus drei Repos, **eine** Abweichung, und diese ist ein Fehlalarm der laxen Form. Eine Historie-Zeile ersetzt keine Korrektur am Ort; sie belegt sie. **(2) Das Ersatz-Kriterium für die Bezugsmenge war an eine Ausgabe-Form gebunden, die es unter `--json`/`--yaml` nicht gibt.** Die 0.86.1-Fassung verlangte die Zusammenfassung „auf stderr" — im maschinenlesbaren Modus liegt die gesamte Ausgabe auf stdout, und das Kriterium hätte einen Modus geprüft und einen nicht. Das ist dieselbe Klasse, die 0.86.1 gerade behoben hatte (eine Zusage an einen Ort, den der Vertrag nicht trägt), nur von `message` in die Zusammenfassung verschoben. Festgelegt: **beide** Formen — stderr im Default, zusätzliche Felder des `summary`-Objekts unter `--json`/`--yaml`, wo [`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate) **mindestens** `filesChecked` und `findingCount` fordert und weitere ausdrücklich zulässt. **(3) Drei Absatz-Grenzen waren beim Editieren zerstört** — eine eingefügte Leerzeile mitten in einem Satz und eine fehlende vor `**Akzeptanzkriterien:**`. Kein Gate sieht das; gefunden hat es der zweite Reviewer. Die Inventur-Zahlen der Zeile 0.86.0 sind weiterhin dort nicht berichtigt — sie stehen in der begleitenden ADR (§Geschichte), jetzt in zweiter, methodisch tragfähiger Fassung | — |
 | 0.86.1 | 2026-09-06 | Nachzug nach unabhängigem Review, vor dem Release: **Tatsachenberichtigung und zwei Vertrags-Festlegungen** an [`DC-FA-MENT-001`](#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in) — die Anforderung selbst bleibt in Achse, Bauform und Verdikt unverändert. **(1) Die eigene grüne Gegenprobe war keine.** Die Zeile „die 22 Regelmodule gegen `docs/user/` liefern null Funde" benutzt eine **Literal**-Menge und ist damit von Out-of-Scope (2) derselben Anforderung ausgeschlossen — sie könnte unter ihr nicht laufen. Sie steht jetzt ausdrücklich als **Kalibrierungs-Messung ohne Beleg-Kraft** dort, und an ihre Stelle tritt eine zweite **Pfad**-Menge an einem Fremd-Repo (`scripts/*.sh` + `tools/*.py`: vier Funde bei fünf Mitgliedern). **(2) Die Erkennungsform-Messung war falsch zusammengefasst.** Die Behauptung, Vollpfad und Dateiname lieferten „dasselbe Ergebnis", hält nicht: über **zwölf** Artefakte aus **drei** Repos weichen die Formen **einmal** ab, und die Abweichung ist ein Falsch-Positiv der laxen Form — ein `README.md` im Fremd-Handbuch meint die Projekt-Wurzel, nicht das gleichnamige Artefakt der Soll-Menge. Das stützt den Default `path` **stärker** als die vorige, unhaltbare Fassung: nicht „kein Unterschied", sondern „der einzige gemessene Unterschied ist ein Fehlalarm". **(3) Der einzige Grund-Code hatte keinen Ort im Ausgabevertrag.** [`DC-FA-CLI-004`](#dc-fa-cli-004--ausgabeformate) verlangt für jeden Befund `<pfad>:<zeile>`; `artifact-unmentioned` betrifft ein Artefakt, das die Anforderung „nie geöffnet" nennt. Festgelegt: `file` ist der Artefakt-Pfad, `line` der Platzhalter `1`, `target` das Glob der Ist-Menge. **(4) Ein Akzeptanzkriterium prüfte einen nicht zugesagten Wert.** Die „Zahl der geprüften Dokumente" stand im Befund und hätte nur ins `message`-Feld gekonnt, dessen **Wortlaut** derselbe Vertrag ausdrücklich nicht zusagt; sie steht jetzt in der **Zusammenfassung**. Damit ist zugleich eine offene Bitte des CR eingelöst, die die erste Fassung überging: der saubere Lauf nennt seine Bezugsmenge (`N von M`), statt bloß „0 Befunde" zu sagen. **(5) Zweite überhörte CR-Bitte, als Grenze aufgenommen:** die Zeile, an der die Soll-Menge ein Artefakt führt, gibt es nicht — ein Glob führt seine Mitglieder an keiner Zeile (Out-of-Scope 5). **(6) „inert" war doppeldeutig** und bezeichnete im selben Kriterium einen Abbruch und den byte-identischen Nulllauf; der Abbruch heißt jetzt Abbruch. Die Inventur-Zahlen der Zeile 0.86.0 bleiben stehen und werden in der begleitenden ADR berichtigt — sie tragen die Richtung des Arguments, nicht seine Ziffern | — |
 | 0.86.0 | 2026-09-06 | Neue Anforderung [`DC-FA-MENT-001`](#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in) — **Erwähnungs-Deckung** (Modul `mentions`, opt-in) samt neuem Bereichskürzel `MENT` in §3: eine über Pfad-Globs konfigurierte **Soll-Menge** von Artefakten wird gegen eine ebenso konfigurierte **Ist-Menge** von Dokumenten gehalten; gemeldet wird jedes Mitglied, das in **keinem** Dokument vorkommt (`artifact-unmentioned`). **Anlass ist ein eingehender Change Request** des Adopters `ai-harness-init` (`docs/plan/cr/2026-09-06-cr-eingehend-ai-harness-init-rtm-soll-ist.md`, Vorschlag A angenommen), **die Grundlage aber eine Inventur**: zehn Repos unter demselben Wurzelverzeichnis führen das Paar Soll (`spec/lastenheft.md`) und Ist (`docs/user/`), und ihre Soll-Seiten führen **fünf verschiedene ID-Schemata**. Genau daraus folgt die Bauform: Die RTM-Familie ([`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix), [`DC-FA-XREF-001`](#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)) misst **verfolgt** und arbeitet über Kennungen; diese Achse misst **erwähnt** und arbeitet über Pfade — schema-frei, damit über alle zehn ohne eine einzige Schema-Angabe tragfähig. **Zwei Merkmale folgen aus Messungen, nicht aus dem CR:** die Ist-Seite ist eine **Menge** (ein Fremd-Repo führt acht Dokumente; wer gegen eines prüft, misst an sieben vorbei), und der Lauf ist **fail-closed bei leerer Prüfmenge auf beiden Seiten** — eine erste Stichprobe meldete „nichts gefunden", nachdem ihr Glob keine Datei getroffen hatte. **Die Erkennungsform ist gemessen entschieden:** an sieben Artefakten aus zwei Repos lieferten Vollpfad und Dateiname **dasselbe** Ergebnis; der Default `path` trägt deshalb das Kollisions-Argument (`README.md` träfe überall), nicht einen Messwert. **Am eigenen Bestand gemessen:** die 22 Regelmodule gegen `docs/user/` liefern **null** Funde, die Menge `tools/**/*.sh` gegen dieselbe Ist-Menge **elf** — und keiner davon ist ein Mangel; die Mengen-Wahl ist damit als Urteil ausgewiesen, nicht als Detail. Begründung in begleitender ADR. **Mit derselben Änderung berichtigt:** die Modul-Aufzählung in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) nannte 20 Module und ließ `workflows` und `reviews` aus, obwohl beide seit 0.83.0 bzw. 0.84.0 eigene Anforderungen tragen — und dieses Kopf-Feld stand auf 0.84.0, während die Historie darunter bereits 0.85.0 führte — der Kopf-Bump unterblieb bei jenem Eintrag und fiel seither nicht auf. Beide sind Deklarations-Drift derselben Klasse, die diese Anforderung beschreibt, und kein Gate deckt sie | [CR `ai-harness-init` 2026-09-06](../docs/plan/cr/2026-09-06-cr-eingehend-ai-harness-init-rtm-soll-ist.md) |

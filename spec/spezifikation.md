@@ -2798,8 +2798,13 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    `mentions.match` (erlaubt: `path`, `basename`). Ohne Block bleibt die
    Konfiguration leer.
 2. **Soll-Menge auflösen.** Der Dateibaum wird ab der Scan-Wurzel rekursiv
-   gelaufen, unter derselben Skip-Liste wie die Markdown-Discovery (`.git/`,
-   `node_modules/`, … — sonst würden Build- und Fremdverzeichnisse Mitglieder).
+   gelaufen, unter derselben Prün-Regel wie die Markdown-Discovery — der festen
+   Skip-Liste (`.git/`,
+   `node_modules/`, …) **und** `scan.ignore`. **Nicht** eingeschränkt auf
+   `scan.roots`: Die Globs **sind** hier der Geltungsbereich, und ein Artefakt
+   liegt typisch außerhalb der Doku-Wurzeln. Ein **unlesbares Verzeichnis** ist
+   **Exit 2**, kein stilles Überspringen — es verkleinerte sonst die Soll-Menge,
+   ohne dass eine Zahl oder ein Befund das zeigte.
    Mitglied ist jede **Datei**, deren '/'-relativer Pfad mindestens eines der
    Globs aus `mentions.artifacts` trifft (dieselbe Glob-Semantik wie
    `scan.ignore`, `**` als Segment eingeschlossen). Verzeichnisse sind **keine**
@@ -2812,10 +2817,19 @@ Das Modul ist **hermetisch** (nur Filesystem-Port, kein git, kein Netz) und
    Vereinigung gehalten: Die Frage lautet „kommt in **irgendeinem** Dokument
    vor". Ein unlesbares Dokument trägt nichts bei, **zählt aber als Mitglied**
    der Ist-Menge — seine Existenz trägt die Mengen-Aussage, nicht sein Inhalt.
+   **Die Vereinigung ist eine Grenze mit Preis:** Zwei voneinander unabhängige
+   Invarianten in **einem** Block halten keine von beiden — ein Mitglied gilt
+   als erwähnt, sobald es in **irgendeinem** Dokument steht, auch in dem, das
+   für ein anderes Paar gedacht war. Ein Block ist **ein** Paar.
 5. **Vorkommen prüfen.** Je Mitglied der Soll-Menge wird eine Zeichenkette im
    Korpus gesucht: unter `mentions.match: path` (Default) der '/'-relative
    Pfad, unter `basename` nur der Dateiname. Gesucht wird **wörtlich** im rohen
-   Text — ohne Markdown-Lexik, ohne Fence- oder Inline-Code-Ausnahme. Fehlt das
+   Text — ohne Markdown-Lexik, ohne Fence- oder Inline-Code-Ausnahme, aber als
+   **eigenständige Nennung**: unmittelbar davor und dahinter darf kein Zeichen
+   stehen, das selbst Teil eines Datei- oder Pfadnamens sein kann
+   (`[A-Za-z0-9_.-]` und `/`); **links** ist unter `basename` der `/`
+   **ausgenommen**, weil dort legitim ein Pfad-Präfix steht. Ohne diese Grenze
+   deckte die Nennung von `image-test.md` das Mitglied `test.md`. Fehlt das
    Vorkommen: Befund `artifact-unmentioned`, `file` = der Artefakt-Pfad,
    `line` = **1**, `target` = die `mentions.documents`-Globs, komma-getrennt.
 6. **`line` ist ein Vertrags-Platzhalter, keine Fundstelle.**
@@ -3112,6 +3126,9 @@ Exit 2 ohne Prüfung
 | `reviews.done-dir` | string | leer (aus) | Verzeichnis der `done/`-Slice-Pläne — **Aktivierungs-Schalter** des Moduls; leer ⇒ inert (keine Datei geöffnet). Gelesen werden die Dateien **unmittelbar** darin mit Endung `.md` und Präfix `slice-`; null Kandidaten ⇒ Befund (fail-closed). Nur Weißraum ⇒ Exit 2 |
 | `reviews.reviews-dir` | string | leer | Verzeichnis der Review-Reports; **Pflicht**, sobald `done-dir` gesetzt ist (sonst Exit 2). Unmittelbar (nicht rekursiv) gelistet; unlesbar ⇒ derselbe fail-closed-Befund wie null Kandidaten |
 | `reviews.exempt-paths` | string[] | leer | Globs über Wurzel-relative Pfade; Treffer werden **nicht** geprüft. Ungültiges Glob ⇒ Exit 2. **Hebt den Leerlauf-Befund nicht aus:** bleiben nach Abzug null Kandidaten, ist das derselbe fail-closed-Befund |
+| `mentions.artifacts` | Liste von Globs | leer (aus) | **Soll-Menge**: die Artefakte, deren Erwähnung geprüft wird. Aufgesammelt aus dem **ganzen** Baum ab der Repository-Wurzel unter der Skip-Liste **und** `scan.ignore`, **nicht** eingeschränkt auf `scan.roots`; Glob-Semantik wie `scan.ignore` (`**` über beliebig viele Segmente). Verzeichnisse sind keine Mitglieder. Ohne `mentions.documents` ⇒ Exit 2; leeres Glob oder Treffermenge leer ⇒ Exit 2 |
+| `mentions.documents` | Liste von Globs | leer (aus) | **Ist-Menge**: die Dokumente, in denen gesucht wird — als **Vereinigung** gelesen. Ein Block ist **ein** Paar: zwei unabhängige Invarianten in einem Block halten keine von beiden. Ohne `mentions.artifacts` ⇒ Exit 2; Treffermenge leer ⇒ Exit 2 |
+| `mentions.match` | `path` \| `basename` | `path` | Erkennungsform: der '/'-relative Pfad oder nur der Dateiname. Gesucht wird als **eigenständige Nennung** (Grenz-Prüfung links und rechts; links unter `basename` ist `/` ausgenommen). Ein anderer Wert ⇒ Exit 2 |
 | `tracked.exempt-targets` | string[] | leer | Glob (wie `scan.ignore`); **aufgelöste Ziel-Pfade**, die matchen, werden nicht auf Getrackt-Status geprüft — **referenz-weit** (analog `codepaths.ignore-refs`), für absichtlich untrackte Ziele; jedes Glob **segmentweise** gültig und nicht leer (sonst Exit 2); ohne Eintrag byte-identisch ([`DC-FA-TRK-001`](lastenheft.md#dc-fa-trk-001--getrackt-status-auflösbarer-referenz-ziele-modul-tracked-opt-in)) |
 | `targets.makefiles` | string[] | leer | Wurzel-relative Makefile-Dateien, aus denen Regelnamen per statischer Zeilen-Heuristik extrahiert werden; leer ⇒ Modul inert; eine fehlende/unlesbare Datei ⇒ Exit 2 ([`DC-FA-TGT-001`](lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)) |
 | `targets.doc-tables` | string[] | leer | Wurzel-relative Doku-Dateien; ihre `make X`-**Tabellenzeilen** (nur Zeilen mit Pipe in Spalte 0, keine Prosa) werden gegen die Makefile-Regelmenge geprüft (Richtung 1 `gate-phantom`); leer ⇒ Richtung 1 entfällt; fehlende Datei ⇒ Exit 2 |
@@ -3273,6 +3290,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-09-06 | Neues Modul-Verfahren §[`DC-FA-MENT-001.a`](spezifikation.md#dc-fa-ment-001a--erwähnungs-deckung-einer-artefakt-menge-mentions) ([`DC-FA-MENT-001`](lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in) 0.86.0, Begründung in begleitender ADR): sieben Schritte über eine Soll-Menge von Artefakten gegen eine Ist-Menge von Dokumenten. §2-Schema um `mentions.artifacts`/`mentions.documents`/`mentions.match`, §4 um [`SPEC-082`](#4-grund--und-fehler-codes). **Drei Zusagen sind nach dem unabhängigen Review geschärft** (Lastenheft 0.86.3): das Vorkommen ist eine **eigenständige Nennung** mit Grenz-Prüfung, nicht eine beliebige Teilzeichenkette (sonst deckte `image-test.md` das Mitglied `test.md`); die Soll-/Ist-Auflösung folgt der **Prün-Regel der Discovery** samt `scan.ignore` und ein unlesbares Verzeichnis ist Exit 2; und die **Vereinigung der Ist-Menge** ist als Grenze benannt — ein Block ist **ein** Paar. **Die §3.8-Grenze ist ausgesprochen** und hat hier **zwei** Achsen: das Modul öffnet die Soll-Artefakte nie, und es sammelt aus dem ganzen Baum statt aus `scan.roots` |
 | 2026-09-02 | §[`DC-FA-WF-001.a`](spezifikation.md#dc-fa-wf-001a--deklarations-konsistenz-von-workflow-referenzen-workflows) um Schritt 5 **Tag-Konflikt (dateiübergreifend)** ergänzt ([`DC-FA-WF-001`](lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in) 0.83.0, Begründung in begleitender ADR): fremde, voll gepinnte, tag-kommentierte Referenzen werden über **alle** Kandidaten-Dateien nach SHA gruppiert; führt eine Gruppe mehr als einen distinkten Tag-Kommentar, meldet jede beteiligte Zeile. Die alten Schritte 5–7 rücken zu 6–8. §4 um [`SPEC-080`](#4-grund--und-fehler-codes) `uses-pin-tag-conflict`. **Erste dateiübergreifende Bedingung des Moduls** — bisher urteilte jede Bedingung isoliert je Datei. Anlass ein eingehender CR der Schwester-Anwendung `a-check` (`docs/plan/cr/2026-08-30-cr-a-check-uses-tag-kohaerenz.md`) | — |
 | 2026-09-01 | §[`DC-FA-CLI-001.a`](spezifikation.md#dc-fa-cli-001a--ablauf-eines-prüflaufs) und §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) um die **zweite Handbuch-URL-Form** ergänzt ([`DC-FA-CLI-001`](lastenheft.md#dc-fa-cli-001--aufruf-und-scan-wurzel)/[`DC-FA-CLI-010`](lastenheft.md#dc-fa-cli-010--makefile-fragment-ausgeben) 0.82.0): die geschlossene Usage-Aufzählung bzw. der Kopfkommentar-Punkt nennen jetzt **beide** URLs (gerenderte GitHub-Seite, dann die rohe `raw.githubusercontent.com`-Form) statt einer. Beide Stellen sind geschlossene Aufzählungen — dieselbe Klasse, die diese Historie für §[`DC-FA-CLI-010.a`](spezifikation.md#dc-fa-cli-010a--makefile-fragment) bereits zweimal nachziehen musste (Target-Enumeration): eine geschlossene Aufzählung, die dem Bau nicht mehr entspricht, ist der Rückstand, nicht der Zusatz | — |
 | 2026-08-31 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 nennt den **Mechanismus**, durch den eine Umbenennung sichtbar wird: der Range-Pfad difft **ohne Rename-Erkennung**. Der Schritt sagte die Pfad-Stabilitäts-Prüfung für `D`/`R` seit jeher zu, aber nicht, wodurch ein `R` überhaupt entsteht — und der Adapter lieferte sie im Range-Pfad **nicht**: mit der eingeschalteten Erkennung der verwendeten Bibliothek kam ein **reiner** Rename als eine Änderung auf dem neuen Pfad an, der alte verschwand, und der Befund für die umbenannte immutable Datei entstand nie. Der `--staged`-Pfad war über seine eigene Übersetzung immer korrekt; **die Zusage war damit modus-abhängig, ohne dass das irgendwo stand** — und still war ausgerechnet der Modus, den die CI fährt. Gemeldet von einem Adopter, reproduziert in beiden Modi und in den drei Kontrollfällen (Löschen, Rename mit Umformulierung, `--staged`). **Kein Lastenheft-Bump:** die Anforderung sagte den Befund bereits zu, ohne einen Modus einzuschränken; sie wurde nicht geändert, sondern eingelöst. Kein neuer Grund-Code | — |

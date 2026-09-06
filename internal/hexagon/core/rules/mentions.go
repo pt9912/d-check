@@ -56,16 +56,22 @@ func (r MentionsResult) Note() string {
 // CheckMentions ist das Regelmodul mentions (DC-FA-MENT-001): hermetisch (nur
 // Filesystem-Port, kein git, kein Netz). Der error-Rueckgabewert traegt die
 // fail-closed-Faelle; der Aufrufer mappt ihn auf Exit 2.
-func CheckMentions(fsys driven.Filesystem, cfg model.MentionsConfig) (MentionsResult, error) {
+func CheckMentions(fsys driven.Filesystem, cfg model.MentionsConfig, ignore []string) (MentionsResult, error) {
 	var res MentionsResult
 	if len(cfg.Artifacts) == 0 || len(cfg.Documents) == 0 {
 		return res, fmt.Errorf("das Modul mentions braucht mentions.artifacts UND mentions.documents (DC-FA-MENT-001, fail-closed)")
 	}
-	artifacts := mentionsResolve(fsys, cfg.Artifacts)
+	artifacts, aerr := mentionsResolve(fsys, cfg.Artifacts, ignore)
+	if aerr != nil {
+		return res, aerr
+	}
 	if len(artifacts) == 0 {
 		return res, fmt.Errorf("mentions.artifacts %v trifft kein Artefakt — eine Deckungs-Aussage ueber null Mitglieder ist keine (DC-FA-MENT-001, fail-closed)", cfg.Artifacts)
 	}
-	documents := mentionsResolve(fsys, cfg.Documents)
+	documents, derr := mentionsResolve(fsys, cfg.Documents, ignore)
+	if derr != nil {
+		return res, derr
+	}
 	if len(documents) == 0 {
 		return res, fmt.Errorf("mentions.documents %v trifft kein Dokument — eine Deckungs-Aussage gegen null Dokumente ist keine (DC-FA-MENT-001, fail-closed)", cfg.Documents)
 	}
@@ -79,7 +85,7 @@ func CheckMentions(fsys driven.Filesystem, cfg model.MentionsConfig) (MentionsRe
 		if basename {
 			needle = path.Base(a)
 		}
-		if strings.Contains(corpus, needle) {
+		if mentionsOccurs(corpus, needle, basename) {
 			res.Mentioned++
 			continue
 		}
@@ -100,29 +106,43 @@ func CheckMentions(fsys driven.Filesystem, cfg model.MentionsConfig) (MentionsRe
 // -- rekursiv ueber den Filesystem-Port, stabil sortiert und dedupliziert
 // (DC-QA-02). Verzeichnisse sind keine Mitglieder: die Erwaehnungs-Frage gilt
 // einem Artefakt, und ein Verzeichnis ist keines.
-func mentionsResolve(fsys driven.Filesystem, globs []string) []string {
+func mentionsResolve(fsys driven.Filesystem, globs, ignore []string) ([]string, error) {
 	seen := map[string]bool{}
 	var all []string
-	mentionsWalk(fsys, "", &all)
+	if err := mentionsWalk(fsys, "", ignore, &all); err != nil {
+		return nil, err
+	}
 	var out []string
 	for _, rel := range all {
-		if seen[rel] || !matchAnyGlob(globs, rel) {
+		if seen[rel] || !mentionsMatchAny(globs, rel) {
 			continue
 		}
 		seen[rel] = true
 		out = append(out, rel)
 	}
 	sort.Strings(out)
-	return out
+	return out, nil
 }
 
-// mentionsWalk laeuft den Baum ab der Scan-Wurzel ab und sammelt Dateien --
-// dieselbe Skip-Liste wie die Markdown-Discovery (scan.go), damit .git und
-// Build-Verzeichnisse nicht zu Mitgliedern werden.
-func mentionsWalk(fsys driven.Filesystem, dir string, out *[]string) {
+// mentionsWalk laeuft den Baum ab der Repo-Wurzel ab und sammelt Dateien --
+// unter DERSELBEN Pruen-Regel wie die Markdown-Discovery (scan.go): die feste
+// Skip-Liste UND scan.ignore. Ohne die zweite bekaeme ein Adopter einen
+// bewusst ausgenommenen Fremdbaum ueber ein weites artifacts-Glob als
+// Soll-Mitglieder zurueck (unabhaengiger Review, M-5).
+//
+// NICHT auf scan.roots eingeschraenkt, und das ist eine Wahl: Die Soll-Menge
+// ist kein Markdown-Scan, ihre Globs SIND ihr Geltungsbereich -- ein Artefakt
+// liegt typisch ausserhalb der Doku-Wurzeln (tools/, harness/). "Relativ zur
+// Scan-Wurzel" meint in DC-FA-MENT-001 die Pfad-FORM, nicht eine Beschraenkung
+// auf scan.roots.
+//
+// Ein unlesbares Verzeichnis ist ein FEHLER, kein stilles Ueberspringen: es
+// verkleinerte sonst die Soll-Menge, ohne dass ein Befund oder eine Zahl das
+// zeigte (Review M-8). Die Wurzel selbst unlesbar zu finden ist derselbe Fall.
+func mentionsWalk(fsys driven.Filesystem, dir string, ignore []string, out *[]string) error {
 	entries, err := fsys.List(dir)
 	if err != nil {
-		return
+		return fmt.Errorf("mentions: Verzeichnis %q nicht lesbar (%v) — eine unvollständige Soll-Menge ist keine (DC-FA-MENT-001, fail-closed)", dir, err)
 	}
 	for _, e := range entries {
 		rel := e.Name
@@ -131,14 +151,19 @@ func mentionsWalk(fsys driven.Filesystem, dir string, out *[]string) {
 		}
 		switch e.Kind {
 		case driven.KindDir:
-			if isSkipDir(e.Name) {
+			if isSkipDir(e.Name) || dirIgnored(rel, ignore) {
 				continue
 			}
-			mentionsWalk(fsys, rel, out)
+			if err := mentionsWalk(fsys, rel, ignore, out); err != nil {
+				return err
+			}
 		case driven.KindFile:
-			*out = append(*out, rel)
+			if !ignored(rel, ignore) {
+				*out = append(*out, rel)
+			}
 		}
 	}
+	return nil
 }
 
 // mentionsCorpus liest die Ist-Menge EINMAL und haelt sie als einen String --
@@ -157,4 +182,65 @@ func mentionsCorpus(fsys driven.Filesystem, documents []string) string {
 		b.WriteByte('\n')
 	}
 	return b.String()
+}
+
+// mentionsMatchAny prueft die Mengen-Globs mit der SEMANTIK VON scan.ignore --
+// matchGlob loest `**` segmentweise ueber beliebig viele Segmente auf, blankes
+// path.Match nicht. Ohne das fielen bei `tools/**/*.sh` still fuenf von elf
+// Mitgliedern aus der Soll-Menge, und fail-closed griffe nicht, weil die Menge
+// nicht leer ist (unabhaengiger Review, H-3).
+func mentionsMatchAny(globs []string, rel string) bool {
+	for _, g := range globs {
+		if matchGlob(g, rel) {
+			return true
+		}
+	}
+	return false
+}
+
+// mentionsOccurs prueft, ob needle im Korpus als EIGENSTAENDIGE Nennung steht.
+//
+// Blankes strings.Contains genuegt nicht, und der Fall ist gemessen: unter
+// `basename` deckte die Nennung von `image-test.md` das Mitglied `test.md` ab,
+// obwohl dieses nirgends genannt war -- ein Mitglied galt als erwaehnt, weil
+// sein Name Endstueck eines anderen ist (unabhaengiger Review, H-2). Genau die
+// Kollision, gegen die der Default `path` laut Anforderung steht.
+//
+// Geprueft wird deshalb die linke und die rechte GRENZE der Fundstelle. Rechts
+// darf kein Namens-Zeichen folgen (sonst waere `a.sh` in `a.shx` ein Treffer).
+// Links unterscheidet sich die Regel nach Erkennungsform: unter `basename` ist
+// ein `/` davor LEGITIM (der Pfad-Praefix einer relativen Verlinkung), unter
+// `path` ist er es NICHT (`x/docs/a.md` ist eine andere Datei als
+// `docs/a.md`).
+func mentionsOccurs(corpus, needle string, basename bool) bool {
+	for i := 0; i+len(needle) <= len(corpus); {
+		j := strings.Index(corpus[i:], needle)
+		if j < 0 {
+			return false
+		}
+		at := i + j
+		left := at == 0 || !mentionsNameByte(corpus[at-1], basename)
+		end := at + len(needle)
+		right := end == len(corpus) || !mentionsNameByte(corpus[end], false)
+		if left && right {
+			return true
+		}
+		i = at + 1
+	}
+	return false
+}
+
+// mentionsNameByte sagt, ob ein Byte selbst Teil eines Datei- oder Pfadnamens
+// sein kann. `allowSlash` nimmt den Trenner aus -- gebraucht fuer die LINKE
+// Grenze unter `basename`, wo ein Pfad-Praefix vor dem Dateinamen stehen darf.
+func mentionsNameByte(b byte, allowSlash bool) bool {
+	switch {
+	case b >= 'a' && b <= 'z', b >= 'A' && b <= 'Z', b >= '0' && b <= '9':
+		return true
+	case b == '_' || b == '-' || b == '.':
+		return true
+	case b == '/':
+		return !allowSlash
+	}
+	return false
 }

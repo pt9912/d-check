@@ -881,26 +881,31 @@ citations:
 
 # Modul mentions (DC-FA-MENT-001, ADR-0084): Erwähnungs-Deckung — eine
 # Soll-Menge von Artefakten gegen eine Ist-Menge von Dokumenten. Opt-in, läuft
-# nur über `make mentions-check`, nicht in `gates` (neue Modul-Klasse startet
+# nur über `make mention-coverage`, nicht in `gates` (neue Modul-Klasse startet
 # als eigener Fokus-Lauf, dieselbe Vorsicht wie bei reviews).
 #
-# DIE MENGEN-WAHL IST DAS URTEIL, und hier trägt sie zwei Invarianten, die
-# dieses Repo ausdrücklich führt und die bisher KEIN Gate hielt: jede ADR steht
-# im ADR-Index (AGENTS.md §5), und jede Sensor-Datei ist aus der
-# Sensors-Tabelle verlinkt (harness/README.md).
+# EIN BLOCK IST EIN PAAR, und das ist die Grenze, an der die erste Fassung
+# dieser Konfiguration scheiterte: Sie führte ZWEI Invarianten in einem Block
+# (ADRs gegen den Index, Sensor-Dateien gegen die Sensors-Tabelle) und hielt
+# damit keine von beiden. Die Ist-Menge wird als VEREINIGUNG gelesen — 21 der
+# 84 ADR-Basisnamen kommen auch in harness/README.md vor, und für die war der
+# Index-Eintrag ungewächtert (unabhängiger Review, H-1). Wer zwei Invarianten
+# will, braucht zwei Läufe.
 #
-# match: basename, und der Grund ist gemessen. Beide Ist-Dokumente verlinken
-# ihre Artefakte RELATIV ("0084-….md" im Index, "sensors/lint.md" in
-# harness/README.md) — die Default-Form `path` sucht den Pfad ab der
-# Scan-Wurzel und meldete deshalb 84 von 84 ADRs und 23 von 23 Sensor-Dateien,
-# ausnahmslos falsch. Die Kollisionsgefahr, gegen die der Default steht,
-# besteht hier nicht: beide Soll-Mengen haben eindeutige Basisnamen (gemessen,
-# 0 Duplikate).
+# DIE MENGEN-WAHL IST DAS URTEIL, und hier trägt sie die Invariante, die
+# AGENTS.md §5 ausdrücklich als Regel führt und die bisher KEIN Gate hielt:
+# jede ADR steht im ADR-Index.
+#
+# match: basename, und der Grund ist gemessen. Der Index verlinkt RELATIV
+# ("0084-….md", nicht "docs/plan/adr/0084-….md") — die Default-Form `path`
+# meldete deshalb alle 84 ADRs, ausnahmslos falsch. Die Kollisionsgefahr, gegen
+# die der Default steht, ist hier zweifach geprüft: die Basisnamen sind
+# eindeutig (0 Duplikate), und keiner ist Endstück eines anderen — die zweite
+# Prüfung fehlte in der ersten Fassung und deckte dort einen echten Fehlalarm
+# zu (Review H-2, im Modul behoben).
 mentions:
   artifacts:
     - docs/plan/adr/[0-9]*.md
-    - harness/sensors/*.md
   documents:
     - docs/plan/adr/README.md
-    - harness/README.md
   match: basename

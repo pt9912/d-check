@@ -1,11 +1,13 @@
 package rules
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/coretest"
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
+	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
 
 // mnCfg ist die Standard-Konfiguration der Tests: eine Soll-Menge aus zwei
@@ -19,7 +21,7 @@ func mnCfg() model.MentionsConfig {
 
 func mnRun(t *testing.T, files map[string]string, cfg model.MentionsConfig) MentionsResult {
 	t.Helper()
-	res, err := CheckMentions(coretest.NewMemFS(files), cfg)
+	res, err := CheckMentions(coretest.NewMemFS(files), cfg, nil)
 	if err != nil {
 		t.Fatalf("unerwarteter Fehler: %v", err)
 	}
@@ -113,7 +115,7 @@ func TestMentionsErkennungsform(t *testing.T) {
 func TestMentionsLeereSollMengeFailClosed(t *testing.T) {
 	cfg := mnCfg()
 	cfg.Artifacts = []string{"gibtesnicht/*.sh"}
-	_, err := CheckMentions(coretest.NewMemFS(map[string]string{"docs/handbuch.md": "x\n"}), cfg)
+	_, err := CheckMentions(coretest.NewMemFS(map[string]string{"docs/handbuch.md": "x\n"}), cfg, nil)
 	if err == nil {
 		t.Fatal("erwartet fail-closed error, got nil")
 	}
@@ -130,7 +132,7 @@ func TestMentionsLeereSollMengeFailClosed(t *testing.T) {
 func TestMentionsLeereIstMengeFailClosed(t *testing.T) {
 	cfg := mnCfg()
 	cfg.Documents = []string{"gibtesnicht/*.md"}
-	res, err := CheckMentions(coretest.NewMemFS(map[string]string{"tools/a.sh": "x\n"}), cfg)
+	res, err := CheckMentions(coretest.NewMemFS(map[string]string{"tools/a.sh": "x\n"}), cfg, nil)
 	if err == nil {
 		t.Fatalf("erwartet fail-closed error, got %+v", res)
 	}
@@ -150,7 +152,7 @@ func TestMentionsFehlenderSchluesselBrichtAb(t *testing.T) {
 		"ohne documents": {Artifacts: []string{"tools/*.sh"}},
 		"beide leer":     {},
 	} {
-		if _, err := CheckMentions(coretest.NewMemFS(map[string]string{"docs/a.md": "x"}), cfg); err == nil {
+		if _, err := CheckMentions(coretest.NewMemFS(map[string]string{"docs/a.md": "x"}), cfg, nil); err == nil {
 			t.Fatalf("%s: erwartet fail-closed error, got nil", name)
 		}
 	}
@@ -221,3 +223,136 @@ func TestMentionsEffectiveMatch(t *testing.T) {
 		t.Fatalf("gesetzte Form soll durchgereicht werden, got %q", got)
 	}
 }
+
+// Regression zu H-2 (unabhaengiger Review): Unter `basename` deckte eine
+// TEILZEICHENKETTEN-Kollision ein Mitglied ab -- `test.md` galt als erwaehnt,
+// weil `image-test.md` im Korpus stand. Genau die Kollision, gegen die der
+// Default `path` steht. Der Test faellt, sobald die Grenz-Pruefung entfaellt.
+func TestMentionsBasenameKeineTeilzeichenkette(t *testing.T) {
+	cfg := mnCfg()
+	cfg.Artifacts = []string{"s/*.md"}
+	cfg.Match = model.MentionsMatchBasename
+	files := map[string]string{
+		"s/test.md":        "x",
+		"s/image-test.md":  "x",
+		"docs/handbuch.md": "nur [image-test](s/image-test.md) ist verlinkt\n",
+	}
+	res := mnRun(t, files, cfg)
+	if len(res.Findings) != 1 || res.Findings[0].File != "s/test.md" {
+		t.Fatalf("erwartet genau s/test.md als Fund, got %+v", res.Findings)
+	}
+	// Gegenprobe: der Pfad-Praefix vor dem Basisnamen ist LEGITIM und darf
+	// nicht mitblockieren -- sonst waere die Regel unbrauchbar.
+	if res.Mentioned != 1 {
+		t.Fatalf("s/image-test.md soll ueber seinen relativen Link zaehlen, got %d erwaehnt", res.Mentioned)
+	}
+}
+
+// Dieselbe Grenze auf der PFAD-Seite: `docs/a.md` darf nicht durch
+// `x/docs/a.md` gedeckt werden -- das ist eine andere Datei.
+func TestMentionsPathKeinPraefixTreffer(t *testing.T) {
+	cfg := mnCfg()
+	cfg.Artifacts = []string{"docs/a.md"}
+	cfg.Documents = []string{"h.md"}
+	files := map[string]string{
+		"docs/a.md": "x",
+		"h.md":      "hier steht nur x/docs/a.md\n",
+	}
+	if res := mnRun(t, files, cfg); len(res.Findings) != 1 {
+		t.Fatalf("Praefix-Treffer darf nicht decken, got %+v", res.Findings)
+	}
+}
+
+// Und die rechte Grenze: `a.sh` darf nicht durch `a.shx` gedeckt werden.
+func TestMentionsRechteGrenze(t *testing.T) {
+	files := map[string]string{
+		"tools/a.sh":       "x",
+		"docs/handbuch.md": "hier steht tools/a.shx\n",
+	}
+	if res := mnRun(t, files, mnCfg()); len(res.Findings) != 1 {
+		t.Fatalf("rechte Grenze traegt nicht, got %+v", res.Findings)
+	}
+}
+
+// Regression zu H-3 (unabhaengiger Review): Die Mengen-Globs folgen der
+// SEMANTIK VON scan.ignore -- `**` loest ueber beliebig viele Segmente auf.
+// Mit blankem path.Match fielen die tiefer liegenden Mitglieder still aus der
+// Soll-Menge, und fail-closed griffe nicht, weil die Menge nicht leer ist.
+func TestMentionsGlobDoppelsternUeberMehrereSegmente(t *testing.T) {
+	cfg := mnCfg()
+	cfg.Artifacts = []string{"tools/**/*.sh"}
+	files := map[string]string{
+		"tools/flach.sh":            "x",
+		"tools/harness/tiefer.sh":   "x",
+		"tools/a/b/noch-tiefer.sh":  "x",
+		"docs/handbuch.md":          "leer\n",
+	}
+	res := mnRun(t, files, cfg)
+	if res.Artifacts != 3 {
+		t.Fatalf("erwartet 3 Mitglieder ueber beliebig viele Segmente, got %d", res.Artifacts)
+	}
+}
+
+// M-5: scan.ignore prunt die Soll-Menge. Ohne das bekaeme ein Adopter einen
+// bewusst ausgenommenen Fremdbaum ueber ein weites Glob zurueck.
+func TestMentionsHonoriertScanIgnore(t *testing.T) {
+	cfg := mnCfg()
+	cfg.Artifacts = []string{"**/*.sh"}
+	files := map[string]string{
+		"tools/eigen.sh":    "x",
+		"vendor/fremd.sh":   "x",
+		"docs/handbuch.md":  "leer\n",
+	}
+	res, err := CheckMentions(coretest.NewMemFS(files), cfg, []string{"vendor/**"})
+	if err != nil {
+		t.Fatalf("unerwarteter Fehler: %v", err)
+	}
+	if res.Artifacts != 1 || len(res.Findings) != 1 || res.Findings[0].File != "tools/eigen.sh" {
+		t.Fatalf("vendor/ soll geprunt sein, got %d Mitglieder %+v", res.Artifacts, res.Findings)
+	}
+}
+
+// M-3: Der Determinismus-Test der ersten Fassung konnte nicht fallen, weil
+// MemFS.List selbst sortiert und der Walk tiefen-erst laeuft. Diese Fixture
+// TRENNT die beiden Ordnungen: lexikografisch steht "tools.md" VOR
+// "tools/a.sh" ('.' < '/'), die Tiefensuche liefert es danach. Ohne
+// sort.Strings faellt der Test.
+func TestMentionsSortierungTrenntDFSVonLexikografisch(t *testing.T) {
+	cfg := mnCfg()
+	cfg.Artifacts = []string{"tools.md", "tools/*.sh"}
+	files := map[string]string{
+		"tools.md":         "x",
+		"tools/a.sh":       "x",
+		"docs/handbuch.md": "leer\n",
+	}
+	res := mnRun(t, files, cfg)
+	var got []string
+	for _, f := range res.Findings {
+		got = append(got, f.File)
+	}
+	if strings.Join(got, "|") != "tools.md|tools/a.sh" {
+		t.Fatalf("erwartet lexikografische Ordnung, got %v", got)
+	}
+}
+
+// M-8: Ein unlesbares Verzeichnis verkleinerte die Soll-Menge still. Jetzt ist
+// es fail-closed. Geprueft ueber die WURZEL, weil MemFS keine gezielt
+// unlesbaren Unterverzeichnisse kennt -- der Fehlerpfad ist derselbe.
+func TestMentionsUnlesbaresVerzeichnisFailClosed(t *testing.T) {
+	_, err := CheckMentions(brokenFS{}, mnCfg(), nil)
+	if err == nil {
+		t.Fatal("erwartet fail-closed error, got nil")
+	}
+	if !strings.Contains(err.Error(), "nicht lesbar") {
+		t.Fatalf("Meldung nennt die Ursache nicht: %v", err)
+	}
+}
+
+// brokenFS liefert fuer jedes Verzeichnis einen Lesefehler.
+type brokenFS struct{}
+
+func (brokenFS) Kind(string) (driven.EntryKind, error)      { return driven.KindMissing, errBroken }
+func (brokenFS) ReadFile(string) ([]byte, error)            { return nil, errBroken }
+func (brokenFS) List(string) ([]driven.DirEntry, error)     { return nil, errBroken }
+
+var errBroken = fmt.Errorf("probe: nicht lesbar")
