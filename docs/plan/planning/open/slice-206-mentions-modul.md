@@ -21,7 +21,7 @@ liefert, was dort ausdrücklich aus dem Umfang genommen wurde.
 [`DC-FA-CONF-001`](../../../../spec/lastenheft.md#dc-fa-conf-001--konfigurationsdatei)
 (neuer Konfigurations-Block).
 
-**Verantwortlich:** — · **Autor:** pt9912. **Datum:** 2026-09-06.
+**Verantwortlich:** pt9912 · **Autor:** pt9912. **Datum:** 2026-09-06.
 
 ---
 
@@ -120,13 +120,102 @@ Kalibrierungs-Beleg aus DoD (3) liegt vor.
 
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
-<entsteht spätestens bei der Beanspruchung — ein Plan in `open/` trägt die drei
-Vorprüfungen noch nicht>
+**Vorgelagert — Sub-Area-Wahl prüfen:**
+
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:223-224 -->
+
+> **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+> muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+**Eine** Sub-Area: `*` (Repo-Default). Der Slice berührt Produkt-Code
+(Kern-Regel, Konfigurations-Schema, Tests) und die Betriebsdoku — beides liegt
+unter dem Default. `tools/harness/` ist **nicht** berührt: das Modul ist
+Produkt, kein Harness-Werkzeug. Eine Ausdifferenzierung wäre künstlich, weil
+alle drei Achsen des Inklusionskriteriums auf dieselbe Antwort zeigen.
+
+**Vorgelagert — offene Beobachtungen sichten:**
+
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:229-229 -->
+
+> **Offene Beobachtungen sichten.**
+
+Register durchgegangen (gemergter Stand, **35** Verzeichnisse — nachgezählt, nicht aus dem Vorgänger-Plan übernommen). **Fünf** Einträge
+betreffen diesen Gegenstand — und diesmal ist nach beidem gesucht: nach dem
+**Gegenstand** des Slice und nach dem, was er **anfasst**. Genau diese
+Zweiteilung fehlte in slice-205 und erzeugte dort einen Fehl-Ausgang.
+
+- [`module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
+  (1×) — der einschlägigste. Das Modul liest **zwei** Eingaben und scannt nur
+  eine: Ist-Dokumente als Text, Soll-Artefakte nur als Pfade aus dem
+  Verzeichnisbaum. Die Anforderung schreibt diese Grenze bereits aus; der Slice
+  muss sie im **Modul-Kommentar** wiederholen, wo der nächste Leser sie sucht.
+- [`wortlaut-behauptet-pruefung-die-fehlt`](../observations/BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt/observation.md)
+  (7×) — unmittelbar einschlägig für die Tests: Ein Test, dessen Fixture den
+  Zustand gar nicht erzeugt, über den sein Name spricht, ist grün und von einem
+  echten Wächter nicht zu unterscheiden. Beide fail-closed-Fälle sind genau
+  solche Kandidaten — ihr Erfolgsfall ist der Abbruch, und ein Fixture, das
+  versehentlich eine nicht-leere Menge liefert, macht den Test still nutzlos.
+- [`spec-randbedingung-ohne-test`](../observations/BEO-ALL/spec-randbedingung-ohne-test/observation.md)
+  (1×) — die Anforderung trägt **neun** Akzeptanzkriterien, nicht nur das Trio.
+  Jedes einzelne braucht seinen Test, auch die beiden, die nur eine Ausgabe-Form
+  betreffen.
+- [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+  (9×, mit slice-205 zuletzt gewachsen) — der Kalibrierungs-Beleg aus DoD (3)
+  ist genau die Stelle, an der dieser Eintrag wieder zuschlagen kann: Wer am
+  Fremd-Bestand misst und über das Modul spricht, muss beide Mengen benennen.
+- [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+  (1×, aus slice-205) — der Eintrag ist jung und trifft diesen Slice unmittelbar:
+  Das Modul **ist** eine Zählmethode. Sein Ableiter — vor der Messung die Form
+  des Gegenstands ausschreiben und die Trefferliste stichprobenweise gegen sie
+  halten — gilt dem Kalibrierungs-Beleg wortwörtlich.
+
+**Was ich geprüft und ausgeschlossen habe:**
+[`modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
+(2×) liegt nahe, weil der Slice `validModules()` erweitert. Sein
+`Sub-Area`-Feld nennt `.d-check.yml`, `Makefile`, Gate-Doku, und seine drei
+benannten Spiegel sind die der **Profil**-Modulliste. `mentions` kommt nicht ins
+Profil (opt-in, eigener Fokus-Lauf wie `reviews`), `FOCUS_DISABLE` bleibt
+unberührt, und die Lastenheft-Aufzählung trägt es bereits. **Ob der Eintrag
+trotzdem greift, entscheidet sich am Ende an dem, was der Slice wirklich
+angefasst hat** — nicht jetzt an einer Vermutung. In slice-205 wurde genau
+diese Zuordnung zweimal zu schnell getroffen.
+
+Keiner der fünf erreicht mit diesem Slice die Schwelle von 3× erstmalig.
+
+**Vorgelagert — Nachtlauf-Stand lesen**
+([`MR-053`](../../../../harness/conventions.md#mr-053)):
+
+`make nightly-state` am 2026-09-06 gelesen. `image-scan.yml` **grün**.
+`upstream-drift.yml` **ROT**, und diesmal aus einem neuen und wichtigen Grund:
+Die Baseline führt upstream **`v6.4.0`** — den angekündigten MINOR-Bump, der
+die beiden angenommenen Bitten des ausgehenden CR einlöst
+([Antwort](../../cr/2026-09-06-antwort-ai-harness-course-slice-formluecken.md)).
+Alle fünf Versions-Achsen und der Content-Drift am gepinnten Tag sind
+**grün**; rot ist allein die Currency-Achse. **Das berührt diesen Slice
+nicht** — er fasst kein Planning-Artefakt an, dessen Form sich mit `v6.4.0`
+ändert. Es berührt den **nächsten**: Die Pin-Hebung ist ein eigener Slice, und
+mit ihr löst sich d-checks Slice-Haus-Form auf.
 
 ## 8. Sub-Area-Modus-Begründung
 
-<entsteht mit den Vorprüfungen bei der Beanspruchung>
+**Modus:** `*` ist **GF** (Greenfield, Repo-Default).
 
+- **Konventionen-Dichte:** hoch. Der Modul-Schnitt ist durch
+  [ADR-0005](../../adr/0005-modul-layout-hexagon-ordner.md) und
+  [ADR-0012](../../adr/0012-kern-paketschnitt-model-rules-app.md) verankert und
+  wird von `make arch-check` gehalten; die Bauform dieses Moduls ist zusätzlich
+  in [ADR-0084](../../adr/0084-mentions-eigenes-modul.md) entschieden. Es gibt
+  in diesem Slice keine offene Struktur-Frage.
+- **Phase-Reife:** Phase 5 für die berührten Sektionen — Anforderung,
+  Entscheid, Modul-Muster und Test-Layout liegen alle vor. Der Slice folgt
+  einem sechsfach gelebten Muster (`reviews` als jüngstes).
+- **Evidenz-/Diskrepanz-Risiko:** niedrig für den Code, **erhöht für den
+  Beleg**. Der Code-Bestand kann von der Doku nicht divergieren, weil er noch
+  nicht existiert. Die fünf gesichteten Beobachtungen zeigen aber, wo das
+  Risiko wirklich liegt: nicht in der Implementierung, sondern in den
+  **Aussagen über sie** — Tests, die nicht messen, was ihr Name sagt, und ein
+  Kalibrierungs-Beleg ohne benannte Menge.
+- **Reconciliation-Aufwand:** keiner (GF). Graduation entfällt.
 ## 9. Closure-Notiz (nach `done/`)
 
 <wird vor dem `git mv` nach `done/` gefüllt>
