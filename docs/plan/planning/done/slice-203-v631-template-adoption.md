@@ -263,7 +263,7 @@ Nachsteuerungs-Schritt** die Grenze — nur ihre Summe. Der Ausgang ist
 **geplant**, nicht *verkörpert*, und das ist die inhaltliche Entscheidung
 dieser Closure: Die Auflösung in genau dem Slice zu schreiben, der die
 Schwelle ausgelöst hat, würde den Fehler wiederholen, den sie benennt. Sie ist
-[slice-204](../open/slice-204-slice-wachstum-aufloesung.md).
+[slice-204](../in-progress/slice-204-slice-wachstum-aufloesung.md).
 **Verkörpert wurde mit diesem Slice nichts** — der Eintrag ist gezählt und
 geplant, nicht verkörpert.
 
@@ -285,7 +285,7 @@ zehn Minuten später verschwunden waren — echt zum Zeitpunkt der Messung,
 Artefakt des Nebeneinanders. Wer beides parallel fährt, muss den roten Lauf
 gegen `git status` halten, bevor er ihn glaubt.
 
-**Folge-Slices:** [slice-204](../open/slice-204-slice-wachstum-aufloesung.md)
+**Folge-Slices:** [slice-204](../in-progress/slice-204-slice-wachstum-aufloesung.md)
 (Auflösung für den wachsenden Slice) — ist eine Datei in `open/`.
 
 **Risiken aus §5:** drei, jedes mit genau einem Ausgang — **zwei eingetreten**
