@@ -120,12 +120,12 @@ nicht zur Disposition:
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** Die Anforderung steht in
+- [x] **(1)** Die Anforderung steht in
       [`spec/lastenheft.md`](../../../../spec/lastenheft.md), nur dort, mit dem
       Akzeptanzkriterien-Trio (Happy Path · Boundary · Negativ), dem
       Bereichs-Kürzel in §3, Versions-Bump und Historie-Zeile
       (Baseline-Regelwerk `modul-03-spec.md`).
-- [ ] **(2)** [ADR-0084](../../adr/0084-mentions-eigenes-modul.md) trägt die **zwei** Entscheide mit ihren
+- [x] **(2)** [ADR-0084](../../adr/0084-mentions-eigenes-modul.md) trägt die **zwei** Entscheide mit ihren
       verworfenen Alternativen: **(a) eigene Achse oder dritte Quell-Form von
       [`trace.cross-consistency`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)**
       — dort existiert der Mengenabgleich samt Richtungslabel und Gate-Modi,
@@ -134,15 +134,15 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Muster *Bericht per Default, Verdikt per Konfiguration* ist etabliert,
       also ist zu entscheiden, nicht zu erfinden. Die Abgrenzung zu `targets`
       gehört ebenfalls hinein.
-- [ ] **(3)** Das CR-Dokument führt den Stand *angenommen (A), B
+- [x] **(3)** Das CR-Dokument führt den Stand *angenommen (A), B
       zurückgestellt* mit Verweis auf Anforderung und ADR — die Antwort steht
       bei ihrer Bitte.
-- [ ] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §5 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] `make gates` grün.
+- [x] Unabhängiger Review durchgeführt — **zwei Runden**, beide blockierend, beide Reports unter `docs/reviews/`.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — eine neue Beobachtung, drei Belege.
+- [x] Jedes Risiko aus §5 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -156,7 +156,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   die Menge nicht als konfigurierte, begründete Wahl führt, produziert
   Falsch-Positive statt Funde. Dieselbe Stichprobe lehrte zugleich die
   **Leermengen-Falle**: Der erste Lauf traf keine Datei und las sich wie ein
-  grünes Ergebnis. — **Ausgang:** <offen>
+  grünes Ergebnis. — **Ausgang:** eingetreten — die Leermengen-Falle trat **in diesem Slice selbst** ein (die erste Stichprobe meldete „nichts gefunden" über null geprüfte Mitglieder). Aufgefangen in der Anforderung (fail-closed auf beiden Seiten); die Mengen-Wahl als Urteil trägt [slice-206](../open/slice-206-mentions-modul.md) DoD (3).
 - **„Bericht statt Gate" ist in d-check KEINE neue Klasse** — diese Annahme des
   ersten Plan-Entwurfs war falsch, gefunden vom Auftraggeber.
   [`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)
@@ -174,11 +174,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   (Pfad-Globs gegen Dokument-Text, schema-frei). Ob A deshalb eine dritte
   Quell-Form von `trace.cross-consistency` wird statt eines eigenen Moduls, ist
   **der zentrale Entscheid dieses Slice** — und er ist mit dem Fund offen, nicht
-  entschieden. — **Ausgang:** <offen>
+  entschieden. — **Ausgang:** entfallen — [ADR-0084](../../adr/0084-mentions-eigenes-modul.md) §Entscheidung (a) hat ihn getroffen: eigenes Modul, mit drei je hinreichenden Gründen und benannter Gegenrede.
 - **Kein eigenes Rauschen zum Kalibrieren.** d-checks Gegenprobe läuft grün;
   jede Schwelle und Ausnahme-Klasse müsste am Fremd-Repo justiert werden. Das
   widerspricht der gelebten Praxis, jede Regel vor der Aufnahme am **eigenen**
-  Bestand zu messen. — **Ausgang:** <offen>
+  Bestand zu messen. — **Ausgang:** eingetreten — beide Review-Runden trafen genau diese Schicht: der Kern hielt, die Belege aus fremden Beständen nicht. Der Kalibrierungs-Auftrag steht als [slice-206](../open/slice-206-mentions-modul.md) DoD (3), mit der Pflicht, je Mengen-Wahl auch das Urteil über die Funde auszuweisen.
 - **Zwei Deklarations-Drifts im eigenen Lastenheft, während der Arbeit
   gefunden — und beide sind das Rauschen, dessen Fehlen der Punkt darüber
   beklagt.** (i) Die Modul-Aufzählung in
@@ -192,7 +192,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   schlechter gewesen wäre; (ii) durch den Bump auf **0.86.0** aufgelöst, statt
   wie geplant auf 0.85.0. **Der Plan selbst ist der Beleg für die Klasse:**
   seine DoD nannte 0.85.0, weil sie das Kopf-Feld las und nicht die Historie.
-  — **Ausgang:** <offen>
+  — **Ausgang:** weiter offen — eingetragen als Beleg bei [`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md) (jetzt 10×, verkörpert als [`MR-025`](../../../../harness/conventions.md#mr-025) und bewusst weiter offen, weil eine Regel für Menschen weiter verfehlt werden kann).
 - **Der Sichtungs-Schritt in §7 hat den Bestand nicht nach dem durchsucht, was
   der Slice anfassen würde** — und der erste Nachzug hat daraus die falsche
   Zuordnung gezogen (unabhängiger Review, M-6). Gesichtet wurden vier
@@ -222,7 +222,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   Closure trägt den Beleg dort ein. **Zweimal in Folge habe ich in derselben
   Sache zu wenig gelesen** — erst den Geltungsbereich eines Eintrags, dann den
   Bestand des Registers; beides sind Lese-Fehler, keine Urteils-Fehler. —
-  **Ausgang:** <offen>
+  **Ausgang:** weiter offen — eingetragen als Beleg bei [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md) (jetzt 15×).
 
 ## 6. Trigger
 
@@ -321,4 +321,80 @@ halten kann, ist der Fehler, den die gesichteten Beobachtungen benennen.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-<wird vor dem `git mv` nach `done/` gefüllt>
+**Geliefert.** Die Anforderung
+[`DC-FA-MENT-001`](../../../../spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in)
+(Modul `mentions`, opt-in), [ADR-0084](../../adr/0084-mentions-eigenes-modul.md)
+mit den zwei vorab verlangten Entscheiden, und der Entscheid im eingehenden CR
+(A angenommen, B zurückgestellt). Drei Liefer-Punkte, drei Dokumente.
+
+**Was funktionierte.** Die zwei Entscheide sind **gemessen** statt begründet
+gefallen. Bei (a) trägt XREFs eigener Rechtfertigungssatz gegen die
+Wiederverwendung: *„die einzige neue Logik ist … kein neuer Parser"* — genau
+das gilt hier nicht. Bei (b) hat die Ablehnung des vom Einreicher gewünschten
+Berichts-Modus ein Argument, das aus der eigenen Messung kommt: elf Funde ohne
+einen einzigen Mangel sind eine falsch gewählte Menge, und ein Berichts-Modus
+machte sie dauerhaft bequem. Die im Plan als möglicher Rückführungs-Grund
+benannte Erkennungsform-Frage war mit einer Messung erledigt und brauchte
+keinen eigenen Slice.
+
+**Was anders lief — und es ist die eigentliche Ausbeute.** Zwei Review-Runden,
+beide **blockierend**, und beide trafen dieselbe Schicht: nicht den Entscheid,
+sondern seine **Belege**. Runde 1 fand neun MEDIUM, Runde 2 sieben — davon
+zwei, die meine Berichtigungen aus Runde 1 betrafen, und eines, das eine
+Berichtigung als **falsch behoben** auswies. Die Kette im Einzelnen:
+
+- Meine eigene grüne Gegenprobe (22 Modulnamen gegen `docs/user/`) benutzt eine
+  **Literal**-Menge und ist von Out-of-Scope (2) derselben Anforderung
+  ausgeschlossen — sie konnte unter der Regel, für die sie bürgen sollte, nicht
+  laufen.
+- Die Prämisse, die `trace.coverage` ausschloss, war an **einem** Dokument
+  gemessen, während dieselbe Anforderung dreißig Zeilen weiter genau das zum
+  Fehler erklärt.
+- Der einzige Grund-Code hatte **keinen Ort** im Ausgabevertrag, und ein
+  Akzeptanzkriterium prüfte einen Wert, dessen Wortlaut der Vertrag ausdrücklich
+  nicht zusagt.
+- Meine Korrektur dieser letzten Stelle verschob dieselbe Klasse nur von
+  `message` in eine Zusammenfassung, die es unter `--json` nicht gibt.
+- Und die Berichtigung der Inventur zählte mit einer Methode, die **deutsche
+  Komposita** für Kennungen hielt — aus `MVP-Abgrenzung` und
+  `CORS- und CSP-Grundregeln` entstand ein **fünftes ID-Schema, das es nicht
+  gibt**. Die erste Fassung hatte falsche Zahlen; die Korrektur erfand eine
+  Kategorie.
+
+**Steering-Loop-Einträge.**
+
+- **Neue Beobachtung:**
+  [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+  (1×) — eine Zählmethode misst ein Muster, das dem Gegenstand ähnelt, und wer
+  ihre Treffer für den Gegenstand hält, leitet aus den Fehltreffern eine
+  Kategorie ab. Der Ableiter steht dort: vor der Messung die **Form** des
+  Gegenstands ausschreiben und die Trefferliste stichprobenweise gegen sie
+  halten, nicht nur die Zahl. **Kein Zielort und kein Anker** — der Eintrag ist
+  gezählt, nicht verkörpert; ein Träger wäre bei 3× zu suchen.
+- **Drei Belege** an vorhandenen Einträgen:
+  [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+  (9×, die Ein-Dokument-Prämisse),
+  [`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
+  (10×, drei Ränder gegen ihre Menge) und
+  [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+  (15×, ein Registereintrag nach Titel statt nach Geltungsbereich zitiert).
+- **Keine geschärfte Regel und kein neuer Sensor.** Beides wäre hier
+  vorschnell: Der Ableiter der neuen Beobachtung ist eine Lese-Disziplin, und
+  eine Regel dafür aus **einem** Anlass zu ziehen wäre genau
+  [`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md).
+
+**Folge-Slice.** [slice-206](../open/slice-206-mentions-modul.md) — die
+Implementierung, mit dem Kalibrierungs-Auftrag als eigenem DoD-Punkt. Er ist
+der Ausgang für zwei der sechs Risiken.
+
+**Verifikation.** `make gates` grün über zehn Gates (`baseline-verify`,
+`workflow-pins`, `doc-check`, `lint`, `test`, `arch-check`, `coverage-gate`,
+`semgrep`, `gate-consistency`, `planning-check`), Coverage 94,70 %,
+`make doc-complete` ohne Waise. Zwei unabhängige Review-Runden mit Reports
+unter [`docs/reviews/`](../../../reviews/).
+
+**Was ein Leser hieraus mitnehmen sollte.** Die Anforderung sagt: Miss gegen
+die **Menge**, nicht gegen ein Mitglied; nenne deine Menge; und ein leerer Lauf
+ist kein grüner. Alle drei Sätze habe ich beim Schreiben derselben Anforderung
+verletzt — beim Belegen, nicht beim Entscheiden. Das ist kein Zufall: Der
+Entscheid stand unter Beobachtung, die Belege nicht.
