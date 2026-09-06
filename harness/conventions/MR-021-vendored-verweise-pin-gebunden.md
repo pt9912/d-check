@@ -1,7 +1,7 @@
 # MR-021 — In-Repo-Verweise auf das vendored Regelwerk sind pin-gebunden
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`grundlagen-harness-dateien.md` §Verzeichniskonvention](../../.harness/baseline/v6.0.0/regelwerk/grundlagen-harness-dateien.md#verzeichniskonvention)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-harness-dateien.md` §Verzeichniskonvention](../../.harness/baseline/v6.3.1/regelwerk/grundlagen-harness-dateien.md#verzeichniskonvention)
 - **Datum:** 2026-06-26
 - **Geltungsbereich:** **alle** Markdown-Links auf `.harness/baseline/<tag>/…`
   in der Live-Doku — das Briefing, [`harness/README.md`](../README.md), dieser
@@ -17,7 +17,7 @@
   ist das vendored Regelwerk ein in-repo auflösbares **Link-Ziel** — die
   Live-Doku verweist auf konkrete Regelwerk-Dateien (Lesestoff: Modul-/
   Grundlagen-Verweise) statt nur auf externe Kurs-URLs (die als **Provenienz**
-  bleiben). Diese Links tragen den **konkreten** Pin (aktuell `…/v6.0.0/…`), nicht
+  bleiben). Diese Links tragen den **konkreten** Pin (aktuell `…/v6.3.1/…`), nicht
   `<tag>` — sie sind damit **pin-gebunden**. Regel: Der Baseline-Pin-Bump-
   Drift-Audit ([`MR-020`](../conventions.md#mr-020--baseline-template-propagation-per-drift-audit-template-frei-bestätigt))
   (1) entfernt das alte `.harness/baseline/<alt-tag>/` und (2) zieht alle

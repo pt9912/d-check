@@ -26,7 +26,7 @@
 - **Adaption:** Ein Registerformat-Wechsel dieser Art ersetzt Inhalt und
   Ablageform im selben Akt: die alte Tabellendatei wird gelöscht, während an
   ihrer Stelle eine komplett neue Verzeichnisstruktur mit templatierten
-  Dateien entsteht ([`observation.template.md`](../../.harness/baseline/v6.0.0/templates/docs/plan/planning/observation.template.md)),
+  Dateien entsteht ([`observation.template.md`](../../.harness/baseline/v6.3.1/templates/docs/plan/planning/observation.template.md)),
   und jedes lebende Zitat der alten Kennungsform wird im selben Zug auf die
   neue umgehängt. Es gibt **keine Phase**, in der die alte Tabellendatei
   bereits gelöscht ist, während die neue Verzeichnisform noch fehlt oder ein

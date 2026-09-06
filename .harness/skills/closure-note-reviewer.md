@@ -10,7 +10,7 @@ Dies ist die **semantische** Schicht über dem **strukturellen** Gate
 `make verify-closure-notes`
 ([`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
 [ADR-0048](../../docs/plan/adr/0048-closure-note-struktur-im-planning-modul.md)).
-Das Gate prüft **Struktur**, dieser Skill prüft **Inhalt vs. Floskel**. Der   <!-- d-check:cite .harness/baseline/v6.0.0/regelwerk/modul-11-verification.md:64-64 -->
+Das Gate prüft **Struktur**, dieser Skill prüft **Inhalt vs. Floskel**. Der   <!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-11-verification.md:64-64 -->
 Grund für die Zweiteilung ist konkret: „war ganz okay, läuft jetzt" ist
 syntaktisch ein vollständiger Satz und überlebt jede Zählung.
 
@@ -82,7 +82,7 @@ wiederauffindbar).
 
 ## Negativbefunde (Pflicht)
 
-<!-- d-check:cite .harness/baseline/v6.0.0/templates/.harness/skills/closure-note-reviewer.template.md:83-83 -->
+<!-- d-check:cite .harness/baseline/v6.3.1/templates/.harness/skills/closure-note-reviewer.template.md:83-83 -->
 Eine Zeile „geprüft, ohne Befund: `done/<Charge>`" pro betrachteter
 Slice-Charge — sonst ist „keine Findings" nicht von „nicht geprüft"
 unterscheidbar.

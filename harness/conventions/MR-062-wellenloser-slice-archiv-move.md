@@ -16,7 +16,7 @@
   Einzel-Slice-Archiv-Move Inhalt und Ablageort im selben Akt: die Slice-Datei
   wandert nach `docs/plan/planning/done/wellenlos/`, ihr Volltext wird durch
   einen komplett neuen, templatierten Stub ersetzt
-  ([`archiv-stub-slice.template.md`](../../.harness/baseline/v6.0.0/templates/docs/plan/planning/archiv-stub-slice.template.md)),
+  ([`archiv-stub-slice.template.md`](../../.harness/baseline/v6.3.1/templates/docs/plan/planning/archiv-stub-slice.template.md)),
   und ihre Review-Reports verschwinden ersatzlos ins Archiv. Es gibt **keine
   Phase**, in der die bewegte Datei ihren Inhalt unverändert behält — die
   Inhaltsersetzung ist der Zweck der Operation, nicht ihr Nebeneffekt. Der

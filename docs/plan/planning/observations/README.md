@@ -2,7 +2,7 @@
 
 Verzeichnis-Form seit `v6.0.0` (migriert in slice-195; vorher eine Tabelle
 an dieser Stelle, `observations.md`). Regeln: Baseline-Regelwerk
-[`modul-06-roadmap.md`](../../../../.harness/baseline/v6.0.0/regelwerk/modul-06-roadmap.md)
+[`modul-06-roadmap.md`](../../../../.harness/baseline/v6.3.1/regelwerk/modul-06-roadmap.md)
 §Das Beobachtungs-Register.
 
 Je Beobachtung ein Verzeichnis `BEO-<KUERZEL>/<slug>/` mit drei Dateien,

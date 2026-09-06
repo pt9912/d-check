@@ -1,10 +1,10 @@
 # MR-033 — Die Architektur-Sicht führt auch keine Modul-Pfade
 
 - **Status:** Accepted
-- **Ersetzt-Baseline-Regel:** [`AGENTS.template.md`](../../.harness/baseline/v6.0.0/templates/AGENTS.template.md)
+- **Ersetzt-Baseline-Regel:** [`AGENTS.template.md`](../../.harness/baseline/v6.3.1/templates/AGENTS.template.md)
   §3.4 — *„`spec/architecture.md` **referenziert Modul-Pfade**, aber keine
   Wellen, Slices, Commit-Hashes oder Closure-Daten."* Dieselbe Erlaubnis trägt
-  [`modul-03-spec.md`](../../.harness/baseline/v6.0.0/regelwerk/modul-03-spec.md)
+  [`modul-03-spec.md`](../../.harness/baseline/v6.3.1/regelwerk/modul-03-spec.md)
   §Ziel-Form: Architektur-Sicht (*„Sprach- und meilensteinfrei — referenziert
   Modul-Pfade, aber …"*).
 - **Datum:** 2026-08-23

@@ -2,13 +2,13 @@
 
 - **Status:** Accepted
 - **Datum:** 2026-06-10
-- **Ersetzt-Baseline-Regel:** [`grundlagen-durchsetzungsschicht.md` §Vier Design-Eigenschaften](../../.harness/baseline/v6.0.0/regelwerk/grundlagen-durchsetzungsschicht.md#vier-design-eigenschaften)
+- **Ersetzt-Baseline-Regel:** [`grundlagen-durchsetzungsschicht.md` §Vier Design-Eigenschaften](../../.harness/baseline/v6.3.1/regelwerk/grundlagen-durchsetzungsschicht.md#vier-design-eigenschaften)
 - **Geltungsbereich:** [`tools/harness/working-tree-hash.sh`](../../tools/harness/working-tree-hash.sh), [`.claude/hooks/`](../../.claude/hooks/)
 - **Adaption:** Zwei Abweichungen von der per
   [`MR-004`](../conventions.md#mr-004--gate-nachweis-mechanik-und-claude-hooks-nach-b-cad-vorbild)
   übernommenen b-cad-Mechanik:
   (a) Der Working-Tree-Hash ist **inhaltsbasiert** (sha256 über alle getrackten +
-  untracked Dateiinhalte) statt diff-basiert — genau die Design-Eigenschaft   <!-- d-check:cite .harness/baseline/v6.0.0/regelwerk/grundlagen-durchsetzungsschicht.md:50-50 -->
+  untracked Dateiinhalte) statt diff-basiert — genau die Design-Eigenschaft   <!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/grundlagen-durchsetzungsschicht.md:50-50 -->
   „Nachweis über Inhalt, nicht Diff" der Durchsetzungsschicht. Damit gilt der
   Gate-Nachweis über Commits hinweg (gleicher Inhalt = gleicher Hash), und ein
   Commit *ohne* Gate-Lauf macht den Stop-Hook nicht mehr grün. Restlücke bleibt:

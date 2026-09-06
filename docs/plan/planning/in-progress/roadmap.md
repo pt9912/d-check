@@ -1,7 +1,7 @@
 # Roadmap
 
 **Format-Regel:** Die Roadmap ist eine Reihenfolge von **Wellen**, keine Reihenfolge von
-Terminen (siehe [Baseline-Regelwerk `modul-06-roadmap.md`](../../../../.harness/baseline/v6.0.0/regelwerk/modul-06-roadmap.md)).
+Terminen (siehe [Baseline-Regelwerk `modul-06-roadmap.md`](../../../../.harness/baseline/v6.3.1/regelwerk/modul-06-roadmap.md)).
 Termine erscheinen — falls überhaupt — als Konsequenz der Wellen-Schätzung, nie als
 Treiber.
 
@@ -10,7 +10,7 @@ Treiber.
 ## Offene Wellen
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-06-roadmap.md`
-§Roadmap-Struktur (v6.0.0): *Offene Wellen* trägt **zwei unabhängige
+§Roadmap-Struktur (v6.3.1): *Offene Wellen* trägt **zwei unabhängige
 Aussagen**. Die **Liste** folgt den Dateien — je offener Welle-Datei ein
 Zeiger; Ziel, Trigger und Closure-Kriterien stehen in der Welle-Datei,
 nicht hier, das *Geplante Ende* dort ist Schätzung, kein Closure-Kriterium,

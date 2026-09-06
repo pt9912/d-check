@@ -13,7 +13,7 @@ Der Reviewer erhält: Diff/Commit-Range, den Slice-Plan, die
 betroffenen `DC-*`-Anforderungen, die referenzierten ADRs, die
 Hard Rules ([`AGENTS.md`](../../AGENTS.md) §3) und **vorherige Findings am
 gleichen Modul** (Baseline
-[`modul-10` §Ziel-Form](../baseline/v6.0.0/regelwerk/modul-10-review-harness.md)
+[`modul-10` §Ziel-Form](../baseline/v6.3.1/regelwerk/modul-10-review-harness.md)
 — ohne sie sieht der Reviewer denselben Fehler zum zweiten Mal als ersten). **Nicht** erhalten:
 die DoD-Abhakung — Plan-/DoD-Konformität prüft die Verifikation
 (getrennter Kontext, anderes Prüf-Artefakt).
@@ -58,7 +58,7 @@ sondern ausschließlich die Frage.
   Gate-Skript (Harness-Lüge — [`AGENTS.md`](../../AGENTS.md) §4: *„Halluzinierte
   Gates sind die häufigste Form von Harness-Lüge"*); Korrektheitsfehler in
   Kern-Modulen mit falschen Befunden/Exit-Codes (Baseline
-  [`modul-10` §Finding-Kategorien](../baseline/v6.0.0/regelwerk/modul-10-review-harness.md):
+  [`modul-10` §Finding-Kategorien](../baseline/v6.3.1/regelwerk/modul-10-review-harness.md):
   HIGH = Korrektheits-Verstoß); Verstoß gegen
   [ADR-0005](../../docs/plan/adr/0005-modul-layout-hexagon-ordner.md)-Import-Regeln;
   Gate-Suppression ohne ADR ([`AGENTS.md`](../../AGENTS.md) §3.2 Inline-Suppression,
@@ -68,7 +68,7 @@ sondern ausschließlich die Frage.
   Abgrenzung · Rang-Zeiger · Grenze) — Review-Historie, Deliberation über
   Verworfenes oder Herkunfts-Prosa im Kommentar; Herkunft ist nur als
   **ein** auflösbares Feld zulässig
-  ([Baseline §Was ein Kommentar trägt](../baseline/v6.0.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte);
+  ([Baseline §Was ein Kommentar trägt](../baseline/v6.3.1/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte);
   Auflösungs-Trigger: permanent).
   **Zustandsfeld trägt Chronik.** Eine `Stand`-/`Status`-Zelle (Roadmap,
   Beobachtungs-Register, Meilenstein-Tabelle) erzählt, **wie** der Zustand
@@ -86,7 +86,7 @@ sondern ausschließlich die Frage.
   `**Status:**`-Feld einer ADR ist dagegen **kein** Sonderfall: `adr-check`
   nimmt die Kopf-Status-Zeile aus dem Kern-Vergleich, sie darf korrigiert
   werden — bei einer **neuen** ADR gilt §3.7 ab dem ersten Schreiben
-  ([Baseline §Was ein Kommentar trägt](../baseline/v6.0.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte),
+  ([Baseline §Was ein Kommentar trägt](../baseline/v6.3.1/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte),
   *Dieselbe Regel für Zustandsfelder*; Auflösungs-Trigger: permanent).
 - **MEDIUM** (Auflösungs-Trigger: permanent):
   **Botschaft verallgemeinert über die Messung hinaus.** Eine Commit-Botschaft
@@ -130,7 +130,7 @@ sondern ausschließlich die Frage.
   `<!-- d-check:status-provenance -->`, prüfe, ob die Deklaration **ehrlich** ist —
   *zeigt* sie, wo verifiziert/entstanden (Provenance, ok), oder *begründet* sie
   eine Entscheidung (getarnte Entscheidungsgrundlage → Finding)? Regelwerk:
-  [§Referenz-Richtung (SDP)](../baseline/v6.0.0/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren).
+  [§Referenz-Richtung (SDP)](../baseline/v6.3.1/regelwerk/grundlagen-referenz-richtung.md#referenz-richtung-sdp-wer-darf-wen-referenzieren).
   **Modul-Grenze auf der Ziel-Achse.** Ein Modul gibt seine Zusagen über das,
   was es **scannt** — und liest dabei Eingaben, die es nie scannt: Zieldateien
   außerhalb der Scan-Wurzeln, selbst benannte Verzeichnisse eines Post-Passes,
@@ -188,7 +188,7 @@ Fehlermusters, über Reviews hinweg wiederauffindbar).
 
 ## Negativbefunde (Pflicht)
 
-<!-- d-check:cite .harness/baseline/v6.0.0/regelwerk/modul-10-review-harness.md:75-75 -->
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-10-review-harness.md:82-82 -->
 Eine „geprüft, ohne Befund"-Zeile pro betrachtetem Bereich — sonst
 ist „keine Findings" nicht von „nicht geprüft" unterscheidbar.
 

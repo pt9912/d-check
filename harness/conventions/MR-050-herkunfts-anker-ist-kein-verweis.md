@@ -5,7 +5,7 @@
   Baseline wieder her**. [`MR-045`](../conventions.md#mr-045) formulierte
   „`AGENTS.md` trägt **keine** `slice-<NNN>`-Verweise" so breit, dass er auch
   den Herkunfts-Anker erfasste, den der Kanon ausdrücklich verlangt:
-  [`modul-09-implementierung.md`](../../.harness/baseline/v6.0.0/regelwerk/modul-09-implementierung.md)
+  [`modul-09-implementierung.md`](../../.harness/baseline/v6.3.1/regelwerk/modul-09-implementierung.md)
   — *„Eine Hard Rule, die aus dem Steering Loop entstand …, trägt den
   Herkunfts-Anker `(seit welle-<NN>)` — ohne Welle `(seit slice-<NNN>)`"*.
 - **Datum:** 2026-08-27

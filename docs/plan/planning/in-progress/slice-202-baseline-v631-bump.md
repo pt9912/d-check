@@ -42,7 +42,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 Closure-Pflichten darunter zählen nicht mit.
 
 - [ ] **(1)** Vendorter Baum steht auf `v6.3.1`: alter `v6.0.0`-Baum entfernt,
-      neuer materialisiert samt `SHA256SUMS`, die neun Baseline-Aliase unter
+      neuer materialisiert samt `SHA256SUMS`, die acht Baseline-Aliase unter
       `.claude/rules/` umgehängt; `make baseline-verify` grün (Integrität,
       Manifest-Deckung, Alias-Auflösung).
 - [ ] **(2)** Alle **lebenden** pin-gebundenen Verweise auf `v6.3.1` gehoben
@@ -73,7 +73,7 @@ Closure-Pflichten darunter zählen nicht mit.
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | `.harness/baseline/v6.3.1/` | neu | der gehobene vendorte Baum (Regelwerk + Templates + `SHA256SUMS`) |
-| `.harness/baseline/v6.0.0/` | entfällt | sonst stiller Stale-Content neben dem neuen Pin ([`MR-021`](../../../../harness/conventions.md#mr-021)) |
+| `.harness/baseline/v6.3.1/` | entfällt | sonst stiller Stale-Content neben dem neuen Pin ([`MR-021`](../../../../harness/conventions.md#mr-021)) |
 | `.claude/rules/*.md` (Baseline-Aliase) | update | Symlink-Ziele auf den neuen Tag ([`MR-055`](../../../../harness/conventions.md#mr-055)) |
 | `harness/conventions.md` | update | §Baseline, §Adoptierte Konventions-Quellen, beide Index-Tabellen |
 | neue Eintrags-Datei unter `harness/conventions/` | neu | der Hebungs-Eintrag [`MR-065`](../../../../harness/conventions.md) |
@@ -138,7 +138,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 **Vorgelagert — Sub-Area-Wahl prüfen:**
 
-<!-- d-check:cite .harness/baseline/v6.0.0/regelwerk/modul-05-planning-harness.md:223-224 -->
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:223-224 -->
 
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
@@ -161,7 +161,7 @@ nötig, weil die Hebung beide nur an ihren bereits deklarierten Kanten berührt.
 
 **Vorgelagert — offene Beobachtungen sichten:**
 
-<!-- d-check:cite .harness/baseline/v6.0.0/regelwerk/modul-05-planning-harness.md:234-236 -->
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:234-236 -->
 
 > **Keine Treffer sind ebenfalls eine Antwort** und werden notiert. Gelesen
 > wird der **gemergte** Stand: Das Register ist beim Lesen so alt wie der

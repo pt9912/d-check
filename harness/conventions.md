@@ -24,9 +24,9 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
 ## Baseline
 
 - **Konvention:** AI-Harness-Kurs
-- **Stand:** [`v6.0.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v6.0.0),
+- **Stand:** [`v6.3.1`](https://github.com/pt9912/ai-harness-course/releases/tag/v6.3.1),
   gepinnt mit
-  [`MR-060`](#mr-060--baseline-pin-hebung-auf-v600-zehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023)
+  [`MR-065`](#mr-065)
   — der jeweils aktuelle Eintrag der Pin-Serie. Die **Kette** der bisherigen
   Hebungen steht nicht hier, sondern in
   [§Aufgelöste Adaptionen](#aufgelöste-adaptionen): dort trägt jede Zeile ihren
@@ -38,13 +38,13 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
 ## Adoptierte Konventions-Quellen
 
 - **Extern (Lehrmaterial):**
-  [`ai-harness-course@v6.0.0`](https://github.com/pt9912/ai-harness-course/tree/v6.0.0)
+  [`ai-harness-course@v6.3.1`](https://github.com/pt9912/ai-harness-course/tree/v6.3.1)
   (`kurs/de/` — Konventionen in `grundlagen/`, Templates in `lab/templates/`).
   Kanonische Quelle; bei Konflikt maßgeblich.
 - **Vendored Baseline (Regelwerk + Templates):** aus dem self-contained
   Release-Asset
-  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v6.0.0/lab-regelwerk.zip)
-  entpackt nach [`.harness/baseline/v6.0.0/`](../.harness/baseline/v6.0.0/regelwerk/)
+  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v6.3.1/lab-regelwerk.zip)
+  entpackt nach [`.harness/baseline/v6.3.1/`](../.harness/baseline/v6.3.1/regelwerk/)
   (`{regelwerk,templates}/` + `SHA256SUMS`) — der **netzlose** Lesepfad,
   materialisiert/verifiziert per
   [`fetch-baseline-cache.sh`](../tools/harness/fetch-baseline-cache.sh).
@@ -60,7 +60,7 @@ vendored Vorlage `harness/conventions/MR-<NNN>-titel.template.md`; ist ihr
 Auflösungs-Trigger eingetreten, wandert sie per `git mv` nach `conventions/done/`.
 Der **Zustand ist die Verzeichnis-Position**, kein Status-Feld — was hier steht,
 liest **jeder** Agentenlauf, aufgelöste Adaptionen gehören nicht in diesen Pfad
-([Baseline-Regelwerk §Konventionsspeicher](../.harness/baseline/v6.0.0/regelwerk/grundlagen-harness-dateien.md#harnessconventionsmd-als-konventionsspeicher)).
+([Baseline-Regelwerk §Konventionsspeicher](../.harness/baseline/v6.3.1/regelwerk/grundlagen-harness-dateien.md#harnessconventionsmd-als-konventionsspeicher)).
 Je Index-Zeile steht ein Voll-Slug-`<a id>` — **Migrations-Schuld**, damit die
 eingefrorenen in-repo-Verweise auf `conventions.md#mr-…` (immutable ADRs, `done/`-
 Slices, Reviews) ohne Retarget und ohne ADR-Edit auflösen; ein frisch unter der
@@ -134,11 +134,11 @@ ob der Eintrag ihn betrifft.
 | [MR-055](conventions/MR-055-symlink-als-pin-traeger.md) <a id="mr-055--ein-symlink-auf-den-vendored-baum-ist-ein-pin-gebundener-träger-nachtrag-zu-mr-021"></a><a id="mr-055"></a> | Ein **Symlink** auf `.harness/baseline/<tag>/` bindet denselben Pin wie ein Markdown-Link — und ist von [MR-021](#mr-021)s Zensus **nicht** erfasst, der nach Markdown-Links sucht. **Die Lücke ist gemessen:** der Scanner folgt Symlinks nicht in die Prüfmenge (eine *echte* Datei unter `.claude/rules/` wird gescannt, ein *Symlink* nicht), und `sha256sum -c` samt Manifest-Deckung bleibt grün, während der Alias ins Leere zeigt. **Die Antwort ist ein Sensor, keine Prozedur-Zeile:** `--verify` prüft als dritte Frage, dass jeder Symlink unter `.claude/rules/` auflöst, und läuft in `make gates`. Rekursiv und dotfile-bewusst; die Proben fahren als `make baseline-probe`. **Sechs Grenzen, ausgeschrieben:** geprüft wird die **Auflösung**, nicht das Ziel; ein **fehlendes** oder leeres `.claude/rules/` meldet nicht (wer die Aliase löscht statt sie umzuhängen, hat einen grünen Lauf); ein Alias auf ein **Verzeichnis** passiert; die dritte Frage läuft **nach** den beiden ersten und akkumuliert nicht; ein Symlink überlebt nicht jedes Dateisystem (`core.symlinks=false` macht Textdateien daraus); und ob die verlinkten Dateien wirklich in den Kontext laden, ist beobachtet, nicht gewächtert | Symlinks unter `.claude/rules/` mit Ziel in `.harness/baseline/<tag>/` | keine — Nachtrag zu [MR-021](#mr-021), **nicht** zum Kanon: dass In-Repo-Verweise pin-gebunden sind, ist die Adaption von [MR-021](#mr-021). Der Kanon kennt den Baum als gepinnte Referenz, aber keinen Symlink als Träger |
 | [MR-056](conventions/MR-056-dod-haken-waechter.md) <a id="mr-056--der-dod-haken-eines-geschlossenen-slice-wird-gewächtert"></a><a id="mr-056"></a> | Der **DoD-Haken** eines geschlossenen Slice wird gewächtert: `max-open-tasks: 0` über den DoD-Abschnitt, mit `hint` für die Reparatur und einer Bestands-Ausnahme mit fester Ziffernzahl. **Nicht** `forbid-pattern` — die bereinigt lesende Form fiel an einem einzelnen Backtick auf null Befunde und deckte nur eine Bullet-Form. **Sie prüft den Zustand am Ruheort, nicht den Übergang**, und ein vergessener Schluss-Fence schaltet sie ab (gefangen von `spans` im selben Profil) | `.d-check.closure.yml`, Abschnitt `## N. Definition of Done` der Slice-Dateien unter `docs/plan/planning/done/` | keine — der Kanon macht die DoD-Häkchen zur Bedingung des Übergangs; gehalten war davon nur die Closure-Notiz-Hälfte. Werkzeug-Wahl, keine Abweichung |
 | [MR-059](conventions/MR-059-wellen-archiv-stub-move.md) <a id="mr-059--wellen-archiv-stub-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013"></a><a id="mr-059"></a> | Ein Wellen-Archivierungs-Commit (`tools/archive-wave`) ersetzt Volltext durch Stub im selben Akt — anders als die drei [MR-013](#mr-013)-Fälle gibt es keine Phase, in der die bewegte Datei unverändert bleibt, also keine Zwei-Commit-Zerlegung. Bleibt ein einziger, in der Botschaft ausdrücklich deklarierter Commit; git zeigt reine D/A-Paare, keine Renames | `tools/archive-wave` (`Apply()`), jeder `make archive-wave WELLE=<id> APPLY=1`-Commit | keine — Nachtrag zu [MR-013](#mr-013); der Kanon kennt Modul 6 Schritt 4 als Operation, aber nicht ihre Commit-Granularität |
-| [MR-060](conventions/done/MR-060-baseline-v600.md) <a id="mr-060--baseline-pin-hebung-auf-v600-zehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-060"></a> | Baseline-Pin-Hebung auf v6.0.0 (Pin-Fortschreibung, Nachtrag); wellenlose Zeitdokumente-Archivierung adoptiert (Regelwerk-Ebene), Beobachtungs-Register-Neugestaltung adoptiert (slice-194/195, selbe Welle) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v6.0.0/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
 | [MR-061](conventions/MR-061-register-migrations-move.md) <a id="mr-061--register-formatmigration-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013"></a><a id="mr-061"></a> | Register-Formatmigration (Beobachtungs-Register Tabelle → Verzeichnis) ist ein einziger, deklarierter Commit — korrigiert eine fehlgeschlagene [MR-059](#mr-059)-Analogie in der Commit-Botschaft von slice-195 | genau der eine Migrations-Commit von [slice-195](../docs/plan/planning/done/welle-88/slice-195-beobachtungsregister-migration.md); erschöpft, keine Blankovollmacht | keine — Nachtrag zu [MR-013](#mr-013) |
 | [MR-062](conventions/MR-062-wellenloser-slice-archiv-move.md) <a id="mr-062--wellenloser-einzel-slice-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013"></a><a id="mr-062"></a> | Wellenloser Einzel-Slice-Archiv-Move (`tools/archive-wave -slice=<id>`) ist ein einziger, deklarierter Commit — korrigiert eine fehlgeschlagene [MR-059](#mr-059)-Analogie im Plan von slice-197 | `tools/archive-wave`s Einzel-Slice-Modus (`ApplySlice()`), jeder `-slice=<id> -apply`-Commit | keine — Nachtrag zu [MR-013](#mr-013) |
 | [MR-063](conventions/MR-063-eigenstaendiger-review-archiv-move.md) <a id="mr-063--eigenständiger-review-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013"></a><a id="mr-063"></a> | Eigenständiger Review-Archiv-Move (`tools/archive-wave -review=<datei>`) ist ein einziger, deklarierter Commit; Bündelung mehrerer unabhängiger Review-Moves in einem Commit ist zulässig — schließt eine von der unabhängigen Review von slice-199 gefundene Lücke, bevor sie einen eigenen Korrektur-Commit brauchte | `tools/archive-wave`s Review-Modus (`ApplyReview()`), jeder `-review=<datei> -apply`-Commit | keine — Nachtrag zu [MR-013](#mr-013) |
 | [MR-064](conventions/MR-064-buendelung-slice-archiv-move.md) <a id="mr-064--bündelung-mehrerer-einzel-slice-archiv-moves-in-einem-commit-ist-zulässig-nachtrag-zu-mr-062"></a><a id="mr-064"></a> | Bündelung mehrerer `-slice=<id> -apply`-Läufe in einem gemeinsamen Commit ist zulässig — beantwortet die Frage, die [MR-062](#mr-062)s eigener Grenze-Absatz offenließ, nachdem slice-197 (45×) und slice-200 (7×) sie bereits ohne deklarierte Grundlage lebten | `tools/archive-wave`s Einzel-Slice-Modus (`ApplySlice()`) | keine — Nachtrag zu [MR-062](#mr-062) |
+| [MR-065](conventions/MR-065-baseline-v631.md) <a id="mr-065--baseline-pin-hebung-auf-v631-elfter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-065"></a> | Baseline-Pin-Hebung auf v6.3.1 (Pin-Fortschreibung, Nachtrag); vier Tags gelesen, alle vier Delta-Stränge auf Regelwerk-Ebene adoptiert, ihre Umsetzung in der verkörperten Form als slice-203 abgegrenzt | §Baseline, pin-gebundene Verweise, `.harness/baseline/v6.3.1/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
 
 ### Aufgelöste Adaptionen
 
@@ -173,6 +173,7 @@ auffindbar bleibt, ohne gelesen zu werden.
 | [MR-041](conventions/done/MR-041-guard-node-und-eigene-toolchain.md) <a id="mr-041--auch-node-ist-ein-host-interpreter-der-wächter-selbst-bleibt-die-benannte-ausnahme-schärft-mr-040"></a><a id="mr-041"></a> | [MR-042](#mr-042) (die benannte Inkonsistenz ist eingelöst; die `node`-Sperre trägt der Nachfolger fort) |
 | [MR-057](conventions/done/MR-057-baseline-v5150.md) <a id="mr-057--baseline-pin-hebung-auf-v5150-achter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-057"></a> | [MR-058](#mr-058) (nächste Pin-Hebung, löst zugleich die dort gemeldete [MR-013](#mr-013)-Kollision auf) |
 | [MR-058](conventions/done/MR-058-baseline-v5180.md) <a id="mr-058--baseline-pin-hebung-auf-v5180-neunter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-058"></a> | [MR-060](#mr-060) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
+| [MR-060](conventions/done/MR-060-baseline-v600.md) <a id="mr-060--baseline-pin-hebung-auf-v600-zehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-060"></a> | [MR-065](#mr-065) (nächste Pin-Hebung — der eigene Auflösungs-Trigger des Eintrags) |
 
 
 

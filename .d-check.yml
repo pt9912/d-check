@@ -197,6 +197,16 @@ ignore-refs:
     refs: [".harness/baseline/v5.18.0/**"]
   - in: docs/plan/cr/**
     refs: [".harness/baseline/v5.18.0/**"]
+  # Tombstone der Baseline-Migration v6.0.0 -> v6.3.1 (MR-065). EIN
+  # Glob-Eintrag, nicht fuenf: gemessen traegt nur ADR-0083 einen
+  # Markdown-Link auf den entfernten v6.0.0-Baum. Die uebrigen
+  # eingefrorenen Klassen (done/-Slices, Reviews, conventions/done/,
+  # docs/plan/cr/) nennen v6.0.0 zwar, aber entweder als reine
+  # Versions-Aussage ohne Pfad oder in Inline-Code, das dort ohnehin
+  # ausgenommen ist -- der Lauf meldete sie nicht. Vier Globs auf Vorrat
+  # waeren unbelegte Ausnahmen.
+  - in: docs/plan/adr/**
+    refs: [".harness/baseline/v6.0.0/**"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
   # ausgeloest, die docs/plan/planning/observations/README.md seit
   # slice-190 benennt: ein
