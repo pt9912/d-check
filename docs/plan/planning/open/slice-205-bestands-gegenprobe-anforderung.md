@@ -37,7 +37,7 @@ zwei Fragen, zwei Antworten.
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | [`spec/lastenheft.md`](../../../../spec/lastenheft.md) | update | neue `DC-FA-*` mit Akzeptanzkriterien-Trio, Bereichs-Kürzel in §3, Versions-Bump + Historie |
-| neue ADR unter [`docs/plan/adr/`](../../../../docs/plan/adr/) | neu | der Entscheid **Bericht statt Gate** und die Abgrenzung zum Modul `targets` |
+| neue ADR unter [`docs/plan/adr/`](../../../../docs/plan/adr/) | neu | der Entscheid **eigene Achse gegen dritte Quell-Form von `trace.cross-consistency`**, plus Abgrenzung zu `targets` und zur RTM |
 | CR-Dokument | update | Stand von *eingegangen* auf *angenommen (Vorschlag A)*, mit Verweis auf Anforderung und ADR |
 
 **Der Bestand, gemessen — und er trägt die Anforderung, nicht der Anlass.**
@@ -108,11 +108,15 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Akzeptanzkriterien-Trio (Happy Path · Boundary · Negativ), dem
       Bereichs-Kürzel in §3, Versions-Bump auf 0.85.0 und Historie-Zeile
       (Baseline-Regelwerk `modul-03-spec.md`).
-- [ ] **(2)** ADR-0084 <!-- d-check:ignore (wird mit diesem Slice angelegt) --> trägt die **zwei** Entscheide mit ihren verworfenen
-      Alternativen: **Bericht statt Gate** (kein Exit-Code über dem Urteil —
-      eine neue Klasse, denn alle 20 Module urteilen bisher mit Exit-Code) und
-      **eigenes Modul statt `targets`-Erweiterung** (dessen Grund-Codes tragen
-      „gate" im Namen, seine `authority` ist gate-spezifisch).
+- [ ] **(2)** Eine neue ADR <!-- d-check:ignore (wird mit diesem Slice angelegt) --> trägt die **zwei** Entscheide mit ihren
+      verworfenen Alternativen: **(a) eigene Achse oder dritte Quell-Form von
+      [`trace.cross-consistency`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)**
+      — dort existiert der Mengenabgleich samt Richtungslabel und Gate-Modi,
+      die Mengen unterscheiden sich aber (ID-zentriert gegen
+      artefakt-zentriert); **(b) welcher Gate-Modus der Default wird** — das
+      Muster *Bericht per Default, Verdikt per Konfiguration* ist etabliert,
+      also ist zu entscheiden, nicht zu erfinden. Die Abgrenzung zu `targets`
+      gehört ebenfalls hinein.
 - [ ] **(3)** Das CR-Dokument führt den Stand *angenommen (A), B
       zurückgestellt* mit Verweis auf Anforderung und ADR — die Antwort steht
       bei ihrer Bitte.
@@ -136,11 +140,24 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   Falsch-Positive statt Funde. Dieselbe Stichprobe lehrte zugleich die
   **Leermengen-Falle**: Der erste Lauf traf keine Datei und las sich wie ein
   grünes Ergebnis. — **Ausgang:** <offen>
-- **„Bericht statt Gate" ist in d-check eine neue Klasse.** Alle 20 Module
-  liefern Befunde mit Exit-Code; ein reiner Bericht ist bisher die
-  `--trace`-Bauart (Flag-Modus). Wird das als Modul gebaut, entsteht ein
-  Modul, das nie rot wird — und die Frage, ob es dann in `gates` gehört.
-  — **Ausgang:** <offen>
+- **„Bericht statt Gate" ist in d-check KEINE neue Klasse** — diese Annahme des
+  ersten Plan-Entwurfs war falsch, gefunden vom Auftraggeber.
+  [`DC-FA-XREF-001`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)
+  führt den Mengenabgleich zweier Sichten bereits **mit konfigurierbarem
+  Verdikt**: Modus `equal` gatet beide Differenzen, `superset` nur eine. Dazu
+  ist `--trace` selbst advisory (Exit 0), und `--require-complete` schaltet das
+  Verdikt zu. Das Muster **Bericht per Default, Gate per Konfiguration** ist
+  also etabliert — die Frage ist nicht *ob*, sondern welcher Modus der Default
+  wird. — **Ausgang:** entfallen (die Annahme traf nicht zu)
+- **Der nähere Verwandte ist XREF, nicht `targets`.** XREF sagt über sich
+  selbst: *„Die einzige neue Logik ist: eine Sicht invertieren und die Mengen
+  diffen — kein neuer Parser."* Genau das ist auch Vorschlag A. Der
+  **Unterschied** liegt in den Mengen: XREF ist **ID-zentriert** (`F(R)` und
+  `B(R)` je Anforderung, damit schema-abhängig), A ist **artefakt-zentriert**
+  (Pfad-Globs gegen Dokument-Text, schema-frei). Ob A deshalb eine dritte
+  Quell-Form von `trace.cross-consistency` wird statt eines eigenen Moduls, ist
+  **der zentrale Entscheid dieses Slice** — und er ist mit dem Fund offen, nicht
+  entschieden. — **Ausgang:** <offen>
 - **Kein eigenes Rauschen zum Kalibrieren.** d-checks Gegenprobe läuft grün;
   jede Schwelle und Ausnahme-Klasse müsste am Fremd-Repo justiert werden. Das
   widerspricht der gelebten Praxis, jede Regel vor der Aufnahme am **eigenen**
