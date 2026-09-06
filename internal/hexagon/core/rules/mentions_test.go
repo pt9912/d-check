@@ -224,9 +224,9 @@ func TestMentionsEffectiveMatch(t *testing.T) {
 	}
 }
 
-// Regression zu H-2 (unabhaengiger Review): Unter `basename` deckte eine
-// TEILZEICHENKETTEN-Kollision ein Mitglied ab -- `test.md` galt als erwaehnt,
-// weil `image-test.md` im Korpus stand. Genau die Kollision, gegen die der
+// Unter `basename` darf eine TEILZEICHENKETTEN-Kollision kein Mitglied
+// abdecken: `test.md` gilt nicht als erwaehnt, nur weil `image-test.md` im
+// Korpus steht. Genau die Kollision, gegen die der
 // Default `path` steht. Der Test faellt, sobald die Grenz-Pruefung entfaellt.
 func TestMentionsBasenameKeineTeilzeichenkette(t *testing.T) {
 	cfg := mnCfg()
@@ -274,7 +274,7 @@ func TestMentionsRechteGrenze(t *testing.T) {
 	}
 }
 
-// Regression zu H-3 (unabhaengiger Review): Die Mengen-Globs folgen der
+// Die Mengen-Globs folgen der
 // SEMANTIK VON scan.ignore -- `**` loest ueber beliebig viele Segmente auf.
 // Mit blankem path.Match fielen die tiefer liegenden Mitglieder still aus der
 // Soll-Menge, und fail-closed griffe nicht, weil die Menge nicht leer ist.
@@ -293,7 +293,7 @@ func TestMentionsGlobDoppelsternUeberMehrereSegmente(t *testing.T) {
 	}
 }
 
-// M-5: scan.ignore prunt die Soll-Menge. Ohne das bekaeme ein Adopter einen
+// scan.ignore prunt die Soll-Menge. Ohne das bekaeme ein Adopter einen
 // bewusst ausgenommenen Fremdbaum ueber ein weites Glob zurueck.
 func TestMentionsHonoriertScanIgnore(t *testing.T) {
 	cfg := mnCfg()
@@ -312,9 +312,9 @@ func TestMentionsHonoriertScanIgnore(t *testing.T) {
 	}
 }
 
-// M-3: Der Determinismus-Test der ersten Fassung konnte nicht fallen, weil
-// MemFS.List selbst sortiert und der Walk tiefen-erst laeuft. Diese Fixture
-// TRENNT die beiden Ordnungen: lexikografisch steht "tools.md" VOR
+// Die Sortierung ist real lasttragend, und die Fixture muss sie pruefen
+// koennen: MemFS.List sortiert selbst und der Walk laeuft tiefen-erst. Diese
+// Fixture TRENNT die beiden Ordnungen: lexikografisch steht "tools.md" VOR
 // "tools/a.sh" ('.' < '/'), die Tiefensuche liefert es danach. Ohne
 // sort.Strings faellt der Test.
 func TestMentionsSortierungTrenntDFSVonLexikografisch(t *testing.T) {
@@ -335,8 +335,8 @@ func TestMentionsSortierungTrenntDFSVonLexikografisch(t *testing.T) {
 	}
 }
 
-// M-8: Ein unlesbares Verzeichnis verkleinerte die Soll-Menge still. Jetzt ist
-// es fail-closed. Geprueft ueber die WURZEL, weil MemFS keine gezielt
+// Ein unlesbares Verzeichnis darf die Soll-Menge nicht still verkleinern.
+// Geprueft ueber die WURZEL, weil MemFS keine gezielt
 // unlesbaren Unterverzeichnisse kennt -- der Fehlerpfad ist derselbe.
 func TestMentionsUnlesbaresVerzeichnisFailClosed(t *testing.T) {
 	_, err := CheckMentions(brokenFS{}, mnCfg(), nil)

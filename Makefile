@@ -188,14 +188,17 @@ guard-probe: ## Tool-Call-Wächter gegen seine Proben fahren (werkzeug-lokal, NI
 # bei leerer Prüfmenge, deshalb IN gates.
 workflow-pins: build ## uses:-Einträge der Workflows via Modul workflows (Image, dogfood): voller SHA + Tag-Kommentar; lokale Referenz existiert und bekommt die Rechte ihres Jobs (netzlos, in gates). AGENTS.md §3.9, ADR-0072.
 	$(DCHECK_RUN) --enable workflows $(FOCUS_DISABLE)
+# Netzlos, fail-closed auf BEIDEN Seiten: eine leere Soll- oder Ist-Menge ist
+# Exit 2, nicht "0 Befunde". Bewusst NICHT in gates -- eine neue Modul-Klasse
+# startet als eigenstaendiger Fokus-Lauf, Aufnahme ist eine spaetere,
+# eigene Entscheidung.
+mention-coverage: build ## Erwähnungs-Deckung via Modul mentions (Image, dogfood): jede ADR steht im ADR-Index (ein Block ist ein Paar, netzlos, NICHT in gates). ADR-0084.
+	$(DCHECK_RUN) --enable mentions $(FOCUS_DISABLE)
 
 # Netzlos, fail-closed auch bei leerer Kandidatenmenge -- aber bewusst NOCH
 # NICHT in gates: eine neue Modul-Klasse startet als eigenstaendiger Fokus-Lauf
 # (dieselbe Vorsicht wie bei trace-check/commits), Aufnahme in gates ist eine
 # spaetere, eigene Entscheidung.
-mention-coverage: build ## Erwähnungs-Deckung via Modul mentions (Image, dogfood): jede ADR steht im ADR-Index (ein Block ist ein Paar, netzlos, NICHT in gates). ADR-0084.
-	$(DCHECK_RUN) --enable mentions $(FOCUS_DISABLE)
-
 review-coverage: build ## Review-Report-Deckung via Modul reviews (Image, dogfood): jede DoD-Zusage "unabhängiger Review" braucht einen passenden Report unter docs/reviews/ (netzlos, NICHT in gates). ADR-0081.
 	$(DCHECK_RUN) --enable reviews $(FOCUS_DISABLE)
 

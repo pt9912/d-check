@@ -156,7 +156,7 @@ Zweiteilung fehlte in slice-205 und erzeugte dort einen Fehl-Ausgang.
   solche Kandidaten — ihr Erfolgsfall ist der Abbruch, und ein Fixture, das
   versehentlich eine nicht-leere Menge liefert, macht den Test still nutzlos.
 - [`spec-randbedingung-ohne-test`](../observations/BEO-ALL/spec-randbedingung-ohne-test/observation.md)
-  (1×) — die Anforderung trägt **neun** Akzeptanzkriterien, nicht nur das Trio.
+  (1×) — die Anforderung trägt **zehn** Akzeptanzkriterien, nicht nur das Trio — die Zahl stand hier zunächst auf neun, und ausgerechnet das übersehene war das einzige ohne Test (nachgezählt: `grep -c` über den Block).
   Jedes einzelne braucht seinen Test, auch die beiden, die nur eine Ausgabe-Form
   betreffen.
 - [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)

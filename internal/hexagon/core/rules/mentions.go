@@ -61,17 +61,17 @@ func CheckMentions(fsys driven.Filesystem, cfg model.MentionsConfig, ignore []st
 	if len(cfg.Artifacts) == 0 || len(cfg.Documents) == 0 {
 		return res, fmt.Errorf("das Modul mentions braucht mentions.artifacts UND mentions.documents (DC-FA-MENT-001, fail-closed)")
 	}
-	artifacts, aerr := mentionsResolve(fsys, cfg.Artifacts, ignore)
-	if aerr != nil {
-		return res, aerr
+	// EIN Baum-Durchlauf fuer beide Mengen: die gesammelte Datei-Liste ist
+	// dieselbe, nur die Filter unterscheiden sich.
+	var all []string
+	if err := mentionsWalk(fsys, "", ignore, &all); err != nil {
+		return res, err
 	}
+	artifacts := mentionsFilter(all, cfg.Artifacts)
 	if len(artifacts) == 0 {
 		return res, fmt.Errorf("mentions.artifacts %v trifft kein Artefakt — eine Deckungs-Aussage ueber null Mitglieder ist keine (DC-FA-MENT-001, fail-closed)", cfg.Artifacts)
 	}
-	documents, derr := mentionsResolve(fsys, cfg.Documents, ignore)
-	if derr != nil {
-		return res, derr
-	}
+	documents := mentionsFilter(all, cfg.Documents)
 	if len(documents) == 0 {
 		return res, fmt.Errorf("mentions.documents %v trifft kein Dokument — eine Deckungs-Aussage gegen null Dokumente ist keine (DC-FA-MENT-001, fail-closed)", cfg.Documents)
 	}
@@ -102,16 +102,12 @@ func CheckMentions(fsys driven.Filesystem, cfg model.MentionsConfig, ignore []st
 	return res, nil
 }
 
-// mentionsResolve sammelt die Dateien, die mindestens eines der Globs treffen
-// -- rekursiv ueber den Filesystem-Port, stabil sortiert und dedupliziert
-// (DC-QA-02). Verzeichnisse sind keine Mitglieder: die Erwaehnungs-Frage gilt
-// einem Artefakt, und ein Verzeichnis ist keines.
-func mentionsResolve(fsys driven.Filesystem, globs, ignore []string) ([]string, error) {
+// mentionsFilter waehlt aus der gesammelten Datei-Liste die Mitglieder einer
+// Menge: alles, was mindestens eines der Globs trifft -- stabil sortiert und
+// dedupliziert (DC-QA-02). Verzeichnisse kommen in der Liste nicht vor: die
+// Erwaehnungs-Frage gilt einem Artefakt, und ein Verzeichnis ist keines.
+func mentionsFilter(all, globs []string) []string {
 	seen := map[string]bool{}
-	var all []string
-	if err := mentionsWalk(fsys, "", ignore, &all); err != nil {
-		return nil, err
-	}
 	var out []string
 	for _, rel := range all {
 		if seen[rel] || !mentionsMatchAny(globs, rel) {
@@ -121,14 +117,14 @@ func mentionsResolve(fsys driven.Filesystem, globs, ignore []string) ([]string, 
 		out = append(out, rel)
 	}
 	sort.Strings(out)
-	return out, nil
+	return out
 }
 
 // mentionsWalk laeuft den Baum ab der Repo-Wurzel ab und sammelt Dateien --
 // unter DERSELBEN Pruen-Regel wie die Markdown-Discovery (scan.go): die feste
 // Skip-Liste UND scan.ignore. Ohne die zweite bekaeme ein Adopter einen
 // bewusst ausgenommenen Fremdbaum ueber ein weites artifacts-Glob als
-// Soll-Mitglieder zurueck (unabhaengiger Review, M-5).
+// Soll-Mitglieder zurueck.
 //
 // NICHT auf scan.roots eingeschraenkt, und das ist eine Wahl: Die Soll-Menge
 // ist kein Markdown-Scan, ihre Globs SIND ihr Geltungsbereich -- ein Artefakt
@@ -138,7 +134,7 @@ func mentionsResolve(fsys driven.Filesystem, globs, ignore []string) ([]string, 
 //
 // Ein unlesbares Verzeichnis ist ein FEHLER, kein stilles Ueberspringen: es
 // verkleinerte sonst die Soll-Menge, ohne dass ein Befund oder eine Zahl das
-// zeigte (Review M-8). Die Wurzel selbst unlesbar zu finden ist derselbe Fall.
+// zeigte. Die Wurzel selbst unlesbar zu finden ist derselbe Fall.
 func mentionsWalk(fsys driven.Filesystem, dir string, ignore []string, out *[]string) error {
 	entries, err := fsys.List(dir)
 	if err != nil {
@@ -188,7 +184,7 @@ func mentionsCorpus(fsys driven.Filesystem, documents []string) string {
 // matchGlob loest `**` segmentweise ueber beliebig viele Segmente auf, blankes
 // path.Match nicht. Ohne das fielen bei `tools/**/*.sh` still fuenf von elf
 // Mitgliedern aus der Soll-Menge, und fail-closed griffe nicht, weil die Menge
-// nicht leer ist (unabhaengiger Review, H-3).
+// nicht leer ist.
 func mentionsMatchAny(globs []string, rel string) bool {
 	for _, g := range globs {
 		if matchGlob(g, rel) {
@@ -203,7 +199,7 @@ func mentionsMatchAny(globs []string, rel string) bool {
 // Blankes strings.Contains genuegt nicht, und der Fall ist gemessen: unter
 // `basename` deckte die Nennung von `image-test.md` das Mitglied `test.md` ab,
 // obwohl dieses nirgends genannt war -- ein Mitglied galt als erwaehnt, weil
-// sein Name Endstueck eines anderen ist (unabhaengiger Review, H-2). Genau die
+// sein Name Endstueck eines anderen ist. Genau die
 // Kollision, gegen die der Default `path` laut Anforderung steht.
 //
 // Geprueft wird deshalb die linke und die rechte GRENZE der Fundstelle. Rechts

@@ -255,8 +255,12 @@ func workflowCandidates(fsys driven.Filesystem, cfg model.WorkflowsConfig) []str
 	return out
 }
 
-// matchAnyGlob prueft die Ventil-Globs (Go path.Match, wie jedes
-// andere d-check-Glob).
+// matchAnyGlob prueft die Ventil-Globs von workflows und reviews mit Go
+// path.Match.
+//
+// GRENZE: `**` traegt hier nicht ueber mehrere Segmente -- path.Match kennt
+// nur EIN Segment je Muster-Segment. Wer die Semantik von scan.ignore braucht,
+// nimmt matchGlob (paths.go); mentions tut das.
 func matchAnyGlob(globs []string, rel string) bool {
 	for _, g := range globs {
 		if ok, err := path.Match(g, rel); err == nil && ok {
