@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.84.0
+**Version:** 0.86.0
 
 **Status:** Draft
 
@@ -76,7 +76,8 @@ statt per Code-Kopie.
 > `sources`), `STRUCT` (Struktur-Invarianten
 > innerhalb eines Dokuments, Modul `structure`), `WF`
 > (Workflow-Deklarations-Konsistenz, Modul `workflows`), `RVW`
-> (Review-Report-Deckung, Modul `reviews`), `CONF`
+> (Review-Report-Deckung, Modul `reviews`), `MENT`
+> (Erwähnungs-Deckung einer Artefakt-Menge, Modul `mentions`), `CONF`
 > (Konfiguration), `DIST` (Distribution).
 
 ### DC-FA-CLI-001 — Aufruf und Scan-Wurzel
@@ -107,7 +108,7 @@ verweist für das Konfigurations-Format auf
 **Beschreibung:** Die Prüf-Funktionalität ist in benannte Regelmodule
 gegliedert: `links`, `anchors`, `ids`, `matrix`, `external`,
 `codepaths`, `spans`, `hostpaths`, `diagrams`, `versions`, `pins`,
-`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
+`immutable`, `vcs`, `commits`, `planning`, `tracked`, `targets`, `citations`, `sources`, `structure`, `workflows`, `reviews`, `mentions`. Ohne Konfiguration sind `links` und `anchors` aktiv. Module werden über
 Kommandozeilen-Optionen (`--enable <modul>`, `--disable <modul>`)
 und über die Konfigurationsdatei ([`DC-FA-CONF-001`](#dc-fa-conf-001--konfigurationsdatei))
 aktiviert; Kommandozeilen-Optionen haben Vorrang vor der Konfiguration.
@@ -3429,6 +3430,100 @@ konventionellen Phrase; ein rekursiver Scan; die zeitliche Reihenfolge von
 Review-Commit und Closure-Commit (das wäre eine Historien-Aussage und gehört
 zur `vcs`-Familie).
 
+### DC-FA-MENT-001 — Erwähnungs-Deckung einer Artefakt-Menge (Modul `mentions`, opt-in)
+
+**Beschreibung:** Bei explizit aktiviertem Modul `mentions` hält d-check eine
+konfigurierte **Soll-Menge** von Artefakten gegen eine konfigurierte
+**Ist-Menge** von Dokumenten und meldet jedes Mitglied der Soll-Menge, das in
+**keinem** Dokument der Ist-Menge vorkommt (`artifact-unmentioned`). Beide
+Mengen werden über Pfad-Globs relativ zur Scan-Wurzel adressiert
+(`mentions.artifacts`, `mentions.documents`).
+
+**Die Achse ist eine andere als die der RTM.** Die RTM
+([`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix)) und ihre
+Kreuzprüfung
+([`DC-FA-XREF-001`](#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in))
+messen, ob eine Anforderung **verfolgt** ist — sie arbeiten über **Kennungen**
+und setzen voraus, dass beide Seiten dieselben führen. Dieses Modul misst, ob
+ein Artefakt **erwähnt** ist, und arbeitet über **Pfade**: Es braucht auf
+keiner Seite eine Kennung und ist damit unabhängig vom ID-Schema des Repos.
+Ebenso wenig ist es
+[`DC-FA-TGT-001`](#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in):
+jenes vergleicht Doku gegen **Build-Regeln**, dieses Doku gegen den
+**Datei-Bestand**.
+
+**Was „kommt vor" heißt, ist eine erklärte Wahl, keine Selbstverständlichkeit.**
+Geprüft wird das wörtliche Vorkommen einer Zeichenkette im Dokument-Text.
+`mentions.match` wählt die Form: `path` (Default) sucht den Pfad relativ zur
+Scan-Wurzel, `basename` nur den Dateinamen. **Der Default ist der strengere
+und mit Grund gewählt:** ein bloßer Dateiname kollidiert (`README.md` träfe
+überall), ein Pfad ist im Repo eindeutig. **Er ist nicht durch eine gemessene
+Differenz begründet** — an sieben Artefakten aus zwei Repos lieferten beide
+Formen dasselbe Ergebnis; kein gemessener Fall nannte einen Dateinamen ohne
+seinen Pfad. Die Wahl trägt also das Kollisions-Argument, nicht ein Messwert.
+
+**Das Modul liest zwei Eingaben, und es scannt nur eine.** Die
+**Ist**-Dokumente werden als Text gelesen — dort gilt die Zusage. Die
+**Soll**-Artefakte werden **nie geöffnet**: Sie werden aus dem Dateibaum als
+Pfade aufgesammelt, und ihre Mitgliedschaft ist eine Aussage über das
+Verzeichnis, nicht über ihren Inhalt. Ein Artefakt, das existiert, aber leer
+oder unlesbar ist, bleibt Mitglied der Soll-Menge. Diese Asymmetrie ist die
+Grenze des Moduls und keine Nachlässigkeit.
+
+**Fail-closed bei leerer Prüfmenge, auf beiden Seiten.** Trifft
+`mentions.artifacts` kein Artefakt oder `mentions.documents` kein Dokument,
+ist das **Exit 2**, nicht „0 Befunde". Ein Lauf über null Mitglieder oder
+gegen null Dokumente behauptete Deckung, ohne etwas geprüft zu haben — die
+gefährlichste Form eines grünen Laufs. Dieselbe Strenge führen
+[`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in)
+und
+[`DC-FA-WF-001`](#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in).
+**Null Befunde unter vorhandenen Mitgliedern** sind dagegen ein gültiges
+Ergebnis und kein Fehler.
+
+**Ein Befund ist ein Befund.** Das Modul kennt keinen modul-lokalen
+Berichts-Modus: Ist es aktiviert, führt ein Fund zu Exit 1
+([`DC-FA-CLI-003`](#dc-fa-cli-003--exit-codes)) wie bei jedem anderen Modul.
+Der Berichts-Hebel liegt eine Ebene höher — das Modul ist **opt-in**, und die
+Soll-Menge ist eine kuratierte Wahl. Wer nur berichten will, aktiviert es in
+einem eigenen Lauf.
+
+**Die Mengen-Wahl ist das Urteil, nicht die Differenz.** Am eigenen Bestand
+gemessen: die Menge `tools/**/*.sh` gegen `docs/user/` liefert **elf** Funde,
+und **keiner davon ist ein Mangel** — Harness-Skripte gehören nicht ins
+Benutzerhandbuch. Dieselbe Ist-Menge gegen die 22 Regelmodule liefert **null**
+Funde. Das Modul kann diese Differenz nicht beurteilen; es meldet, was die
+konfigurierte Menge verlangt. Die Begründung der Menge gehört deshalb zu ihr —
+so wie bei `matrix.exclude-sections` und `trace.cross-consistency`s
+`exclude-req`.
+
+**Akzeptanzkriterien:**
+
+- **Happy Path:** Given eine Soll-Menge von fünf Artefakten, deren Pfade alle in mindestens einem Dokument der Ist-Menge stehen, when `d-check --enable mentions` läuft, then Exit 0 und kein Befund; ein read-only gemountetes Repository genügt.
+- **Boundary (Ist-Seite ist eine Menge):** Given ein Artefakt, das in **einem** von acht Dokumenten der Ist-Menge steht, when der Lauf erfolgt, then **kein** Befund — ein Vorkommen genügt, die Ist-Menge wird als Vereinigung gelesen.
+- **Negative (Fund):** Given ein Artefakt der Soll-Menge, dessen Pfad in keinem Dokument der Ist-Menge steht, when der Lauf erfolgt, then Exit 1 und ein Befund `artifact-unmentioned` mit dem Artefakt-Pfad und der Zahl der geprüften Dokumente.
+- **Erkennungsform:** Given `mentions.match: basename` und ein Dokument, das `coverage-gate.sh` ohne Pfad nennt, when der Lauf erfolgt, then kein Befund; unter dem Default `path` **ein** Befund — dieselbe Eingabe, zwei Urteile, und der Unterschied steht in der Konfiguration.
+- **Negative (leere Soll-Menge, fail-closed):** Given ein `mentions.artifacts`, das kein Artefakt trifft, when der Lauf erfolgt, then Exit 2 mit Nennung des leeren Globs — **nicht** Exit 0 mit „0 Befunde".
+- **Negative (leere Ist-Menge, fail-closed):** Given ein `mentions.documents`, das kein Dokument trifft, when der Lauf erfolgt, then Exit 2 — eine Deckungs-Aussage gegen null Dokumente ist keine.
+- **Negative (Config):** Given ein fehlender oder leerer `mentions.artifacts`- bzw. `mentions.documents`-Schlüssel bei aktiviertem Modul, when der Lauf erfolgt, then Exit 2; das Modul ist ohne beide Mengen **inert deklariert**, nicht still übersprungen.
+- **Determinismus:** Given dieselbe Eingabe, when der Lauf zweimal erfolgt, then byte-identische Ausgabe in stabiler Sortierung ([`DC-QA-02`](#dc-qa-02--determinismus)); nichts wird geschrieben ([`DC-QA-03`](#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+- **Default byte-identisch:** Given **kein** `mentions`-Block und kein `--enable mentions`, when `d-check` läuft, then Ausgabe und Exit byte-identisch zur Fassung vor dieser Anforderung.
+
+**Out-of-Scope:** (1) **Die Gegenrichtung** — ein Dokument, das ein Artefakt
+nennt, das nicht existiert; das decken
+[`DC-FA-LINK-001`](#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links)
+und
+[`DC-FA-CODE-001`](#dc-fa-code-001--explizite-pfade-in-inline-code-modul-codepaths-opt-in)
+bereits. (2) **Eine Soll-Menge aus Literalen** statt aus Pfaden (Modulnamen,
+Build-Targets) — für die Makefile-Achse existiert `targets`; eine allgemeine
+Literal-Menge wäre eine zweite Quell-Form und braucht ihren eigenen Beleg.
+(3) **Die Angemessenheit einer Erwähnung** — ob ein genanntes Artefakt
+*beschrieben* oder nur erwähnt ist, bleibt Urteil. (4) **Eine Struktur-Bindung
+der Fundstelle** (nur in Links, nur außerhalb von Fenced Blocks): geprüft wird
+der rohe Text; eine Nennung im Code-Block zählt.
+
+---
+
 ---
 
 ### DC-FA-CONF-001 — Konfigurationsdatei
@@ -3586,6 +3681,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.86.0 | 2026-09-06 | Neue Anforderung [`DC-FA-MENT-001`](#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in) — **Erwähnungs-Deckung** (Modul `mentions`, opt-in) samt neuem Bereichskürzel `MENT` in §3: eine über Pfad-Globs konfigurierte **Soll-Menge** von Artefakten wird gegen eine ebenso konfigurierte **Ist-Menge** von Dokumenten gehalten; gemeldet wird jedes Mitglied, das in **keinem** Dokument vorkommt (`artifact-unmentioned`). **Anlass ist ein eingehender Change Request** des Adopters `ai-harness-init` (`docs/plan/cr/2026-09-06-cr-eingehend-ai-harness-init-rtm-soll-ist.md`, Vorschlag A angenommen), **die Grundlage aber eine Inventur**: zehn Repos unter demselben Wurzelverzeichnis führen das Paar Soll (`spec/lastenheft.md`) und Ist (`docs/user/`), und ihre Soll-Seiten führen **fünf verschiedene ID-Schemata**. Genau daraus folgt die Bauform: Die RTM-Familie ([`DC-FA-CLI-009`](#dc-fa-cli-009--requirements-traceability-matrix), [`DC-FA-XREF-001`](#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)) misst **verfolgt** und arbeitet über Kennungen; diese Achse misst **erwähnt** und arbeitet über Pfade — schema-frei, damit über alle zehn ohne eine einzige Schema-Angabe tragfähig. **Zwei Merkmale folgen aus Messungen, nicht aus dem CR:** die Ist-Seite ist eine **Menge** (ein Fremd-Repo führt acht Dokumente; wer gegen eines prüft, misst an sieben vorbei), und der Lauf ist **fail-closed bei leerer Prüfmenge auf beiden Seiten** — eine erste Stichprobe meldete „nichts gefunden", nachdem ihr Glob keine Datei getroffen hatte. **Die Erkennungsform ist gemessen entschieden:** an sieben Artefakten aus zwei Repos lieferten Vollpfad und Dateiname **dasselbe** Ergebnis; der Default `path` trägt deshalb das Kollisions-Argument (`README.md` träfe überall), nicht einen Messwert. **Am eigenen Bestand gemessen:** die 22 Regelmodule gegen `docs/user/` liefern **null** Funde, die Menge `tools/**/*.sh` gegen dieselbe Ist-Menge **elf** — und keiner davon ist ein Mangel; die Mengen-Wahl ist damit als Urteil ausgewiesen, nicht als Detail. Begründung in begleitender ADR. **Mit derselben Änderung berichtigt:** die Modul-Aufzählung in [`DC-FA-CLI-002`](#dc-fa-cli-002--regelmodul-auswahl) nannte 20 Module und ließ `workflows` und `reviews` aus, obwohl beide seit 0.83.0 bzw. 0.84.0 eigene Anforderungen tragen — und dieses Kopf-Feld stand auf 0.84.0, während die Historie darunter bereits 0.85.0 führte — der Kopf-Bump unterblieb bei jenem Eintrag und fiel seither nicht auf. Beide sind Deklarations-Drift derselben Klasse, die diese Anforderung beschreibt, und kein Gate deckt sie | — |
 | 0.85.0 | 2026-09-03 | [`DC-FA-PLAN-001`](#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in): **fünfte Fähigkeit, additiv zur vierten** — Register-Deckung im **Verzeichnis-Modus** (`planning.observations.dir`). Statt einer Tabellen-Datei prüft die Fähigkeit gegen eine Verzeichnis-Ablage: eine zitierte Kennung `<pfad>` gilt als nachgewiesen, wenn `<dir>/<pfad>/observation.md` existiert. `.register` und `.dir` schließen sich aus (Exit 2 beim Konfigurations-Laden). **Anlass:** die adoptierte Baseline gestaltet ihr eigenes Beobachtungs-Register komplett neu (Tabelle → Verzeichnis, Kennung wird Pfad, abgeleiteter statt gepflegter Zähler); die vierte Fähigkeit bleibt unverändert für Rückwärtskompatibilität und den eigenen Zwischenzustand (der Bestand migriert erst mit einem Folge-Slice). Kein neuer Grund-Code — derselbe `observation-unregistered` wie im Tabellen-Modus | — |
 | 0.84.0 | 2026-09-03 | Neue Anforderung [`DC-FA-RVW-001`](#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in) — **Review-Report-Deckung** (Modul `reviews`, opt-in): jeder `done/`-Slice mit einer Review-Zusage (DoD-Haken, dessen Zeile „unabhängiger Review" nennt, jede Bullet-Form, Haken-Zustand egal) braucht mindestens einen Report unter einem konfigurierten Verzeichnis mit derselben `slice-<NNN>`-Kennung im Dateinamen. **Anlass ist eine ausdrücklich benannte Lücke eines vorherigen `structure`-Wächters**, der nur den **offenen** DoD-Haken deckt, nicht die Deckung zweier Mengen zwischen zwei Verzeichnissen — das sei eine neue Fähigkeit und gehöre in einen eigenen Anlauf. **Am eigenen Bestand gemessen:** fünf reale Funde, davon zwei mit
 **geschlossenem** Haken — für `structure`s Wächter unsichtbar, weil der Haken
