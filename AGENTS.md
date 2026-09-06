@@ -599,3 +599,13 @@ Pro Slice:
 7. Doku/Indizes aktualisieren, falls ein öffentlicher Vertrag berührt.
 8. Ausgeführte Sensors und verbleibende Risiken berichten — keine Erfolgsmeldung ohne
    Gate-Ausführung **und ohne ihre echte Ausgabe**: ein behaupteter Exit-Code ist keiner.
+
+**Schritt 8 ist der Rollenwechsel, kein Abschluss.** Dieser Workflow deckt
+ausschließlich die **Implementer**-Rolle ab; nach dem Bericht folgt der Handoff
+an den Reviewer ([`.harness/skills/reviewer.md`](.harness/skills/reviewer.md),
+siehe [`harness/README.md`](harness/README.md) §Guides) und danach an den
+Verifier. **Kein Self-Review** — anderer Kontext findet andere Findings,
+derselbe Kontext dieselben blinden Flecken (Baseline-Regelwerk
+`modul-08-agentenrollen.md`). Rollen-Trennung ist Kontext-Trennung, nicht
+Personen-Trennung: dieselbe Person darf mehrere Rollen füllen, aber nicht im
+selben Kontextfenster.
