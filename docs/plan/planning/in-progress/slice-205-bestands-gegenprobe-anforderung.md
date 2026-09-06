@@ -108,7 +108,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Akzeptanzkriterien-Trio (Happy Path · Boundary · Negativ), dem
       Bereichs-Kürzel in §3, Versions-Bump und Historie-Zeile
       (Baseline-Regelwerk `modul-03-spec.md`).
-- [ ] **(2)** Eine neue ADR <!-- d-check:ignore (wird mit diesem Slice angelegt) --> trägt die **zwei** Entscheide mit ihren
+- [ ] **(2)** [ADR-0084](../../adr/0084-mentions-eigenes-modul.md) trägt die **zwei** Entscheide mit ihren
       verworfenen Alternativen: **(a) eigene Achse oder dritte Quell-Form von
       [`trace.cross-consistency`](../../../../spec/lastenheft.md#dc-fa-xref-001--kreuzverweis-konsistenz-zweier-traceability-sichten-tracecross-consistency-opt-in)**
       — dort existiert der Mengenabgleich samt Richtungslabel und Gate-Modi,
@@ -176,17 +176,28 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   wie geplant auf 0.85.0. **Der Plan selbst ist der Beleg für die Klasse:**
   seine DoD nannte 0.85.0, weil sie das Kopf-Feld las und nicht die Historie.
   — **Ausgang:** <offen>
-- **Der Sichtungs-Schritt in §7 hat den einschlägigsten Eintrag nicht
-  gefunden.** Gesichtet wurden vier Beobachtungen; die Drift aus (i) ist eine
-  dritte Instanz von
-  [`modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
-  (bisher 2×) — die Modul-Aufzählung des Lastenhefts ist ein **vierter**
-  Spiegel neben `FOCUS_DISABLE`, der Netzlos-Modulliste und der Gate-Prosa,
-  und der Eintrag benennt genau diese Klasse. Damit erreicht er mit diesem
-  Slice die Schwelle **3×** und braucht bei der Closure einen Ausgang. Der
-  Sichtungs-Schritt suchte nach dem Gegenstand des Slice, nicht nach dem, was
-  der Slice **anfassen** würde. — **Ausgang:** <offen>
-
+- **Der Sichtungs-Schritt in §7 hat den Bestand nicht nach dem durchsucht, was
+  der Slice anfassen würde** — und der erste Nachzug hat daraus die falsche
+  Zuordnung gezogen (unabhängiger Review, M-6). Gesichtet wurden vier
+  Beobachtungen, alle nach dem **Gegenstand** des Slice; die Drift aus (i)
+  betrifft dagegen, was er **anfasst**. Sie ist **nicht** eine dritte Instanz
+  von
+  [`modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md):
+  jener Eintrag führt als Sub-Area `.d-check.yml`, `Makefile`, Gate-Doku und
+  meint die Spiegel der **Profil**-Modulliste (`FOCUS_DISABLE`,
+  Netzlos-Modulliste, Gate-Prosa) — `workflows` und `reviews` stehen in
+  `.d-check.yml` gar nicht. Die Aufzählung in
+  [`DC-FA-CLI-002`](../../../../spec/lastenheft.md#dc-fa-cli-002--regelmodul-auswahl)
+  spiegelt eine **andere** Menge: die im Produkt gültigen Modulnamen. **Die
+  3×-Behauptung ist damit zurückgezogen** — sie wäre ein Ausgang für eine
+  Schwelle gewesen, die eine andere Menge betrifft, und genau die Klasse
+  [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md).
+  **Offen bleibt die Zuordnung selbst:** Die Drift ist echt und ungegated, aber
+  weder `modulliste-spiegel-ungegated` noch
+  [`registry-vs-authority-table-drift`](../observations/BEO-ALL/registry-vs-authority-table-drift/observation.md)
+  (dort ein **Datei**-Register) deckt sie. Ob daraus ein neuer Eintrag wird
+  oder ein Beleg für einen vorhandenen, entscheidet die Closure — erfunden wird
+  die Passung nicht. — **Ausgang:** <offen>
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): Der Auftraggeber hat Vorschlag A
@@ -204,7 +215,7 @@ mit Soll/Ist-Paar. WIP-Limit frei.
 
 **Closure-Trigger.** Zwei beobachtbare Kriterien und ein Lerneintrag: (a) die
 Anforderung steht mit vollständigem Akzeptanzkriterien-Trio im Lastenheft und
-`make gates` ist grün; (b) die begleitende ADR <!-- d-check:ignore (wird mit diesem Slice angelegt) --> ist `Accepted` und im ADR-Index verlinkt.
+`make gates` ist grün; (b) [ADR-0084](../../adr/0084-mentions-eigenes-modul.md) ist `Accepted` und im ADR-Index verlinkt.
 
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
@@ -248,16 +259,19 @@ betreffen diesen Gegenstand:
 
 Keiner der vier erreicht mit diesem Slice die Schwelle von 3× erstmalig.
 
-**Diese Sichtung war unvollständig, und das ist während der Arbeit
-aufgefallen** (§5): Ein **fünfter** Eintrag —
-[`modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md),
-bisher 2× — erreicht mit diesem Slice die Schwelle und braucht bei der Closure
-einen Ausgang. Er stand hier nicht, weil die Sichtung nach dem **Gegenstand**
-des Slice suchte (Soll/Ist-Achse, Anforderungs-Schreiben) und nicht danach, was
-der Slice **anfassen** würde — und angefasst wird die Modul-Aufzählung, deren
-Spiegel genau dieser Eintrag führt. Der Fund bleibt hier stehen, statt die
-Sichtung oben nachträglich zu glätten: Was sie sah, ist Lauf-Beleg.
-
+**Diese Sichtung war unvollständig, und der erste Nachzug hat daraus die
+falsche Zuordnung gezogen** (§5, unabhängiger Review M-6): Gesichtet wurde nach
+dem **Gegenstand** des Slice, nicht nach dem, was er **anfassen** würde — und
+angefasst wird die Modul-Aufzählung des Lastenhefts. Der Nachzug erklärte sie
+zum vierten Spiegel von
+[`modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
+und dessen Schwelle für erreicht. **Das ist zurückgezogen:** Jener Eintrag
+meint die Spiegel der **Profil**-Modulliste, und die beiden fehlenden Namen
+stehen im Profil gar nicht. Was bleibt, ist eine echte, ungegatete Drift ohne
+passenden Registereintrag; die Zuordnung entscheidet die Closure. **Beide
+Fassungen bleiben stehen** — die ursprüngliche Sichtung, weil sie Lauf-Beleg
+ist, und der falsche Nachzug, weil eine nachträglich geglättete Korrektur die
+Klasse verstecken würde, die sie selbst instanziiert.
 **Vorgelagert — Nachtlauf-Stand lesen**
 ([`MR-053`](../../../../harness/conventions.md#mr-053)):
 

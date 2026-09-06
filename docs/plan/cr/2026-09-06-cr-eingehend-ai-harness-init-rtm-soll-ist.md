@@ -139,22 +139,36 @@ den Anlass produziert hat.
 
 ### Was den Ausschlag gab — und es steht nicht im CR
 
-Die Prämisse ist bestätigt: d-checks eigenes Handbuch trägt fünf
-`DC-*`-Nennungen bei 52 Anforderungen; `trace.coverage` kann die Achse hier
-prinzipiell nicht bedienen. Getragen hat die Entscheidung aber die
-**Inventur**: Zehn Repos unter demselben Wurzelverzeichnis führen das Paar
-Soll/Ist, und ihre Soll-Seiten führen **fünf verschiedene ID-Schemata**. Genau
-daraus folgt die Bauform — eine kennungsbasierte Lösung müsste jedes der fünf
-kennen, eine pfadbasierte keines. Das ist der eigentliche Grund, warum sich die
-Achse zu bauen lohnt, und er ist stärker als der Anlass.
+**Die Prämisse des CR trifft zu, aber nicht in der Schärfe, in der sie hier
+zuerst stand** (unabhängiger Review, M-1): d-checks **Handbuch** trägt fünf
+`DC-*`-Nennungen — über die ganze Ist-**Menge** `docs/user/` sind es **35
+Vorkommen** und **24 verschiedene** Kennungen bei 52 Anforderungen. Die
+Konvention *„das Ist-Dokument zitiert Kennungen"* existiert hier also
+**teilweise**, nicht gar nicht; der erste Wortlaut maß gegen ein Dokument und
+schloss über das Repo — genau der Fehler, den die Anforderung eine Zeile
+weiter benennt.
 
-### Drei Abweichungen vom CR-Wortlaut, jede gemessen
+Getragen hat die Entscheidung ohnehin etwas anderes: die **Inventur**. Zwölf
+Repos unter demselben Wurzelverzeichnis führen das Paar Soll (`spec/lastenheft.md`)
+und Ist (`docs/user/`), und ihre Soll-Seiten führen auf Überschriften-Ebene
+**fünf verschiedene ID-Schemata** (`LH`, `HSM`, `DC`, `AC` und eine
+repo-lokale Gruppe), im Rumpf deutlich mehr. Genau daraus folgt die Bauform —
+eine kennungsbasierte Lösung müsste jedes kennen, eine pfadbasierte keines.
+Das ist der eigentliche Grund, warum sich die Achse zu bauen lohnt, und er ist
+stärker als der Anlass. **Die Zahlen der ersten Fassung (zehn Repos, vier
+Anforderungs-Zählungen, ein nicht existentes Schema) sind in
+[ADR-0084](../adr/0084-mentions-eigenes-modul.md) §Geschichte berichtigt;**
+die Richtung des Arguments wird dadurch stärker, nicht schwächer.
+
+### Fünf Abweichungen vom CR-Wortlaut, jede gemessen
 
 | CR sagt | Umgesetzt | Warum |
 |---|---|---|
 | „ein Ist-Dokument" | eine **Menge** von Dokumenten | Ein Fremd-Repo führt acht Dateien unter `docs/user/`; wer gegen eine prüft, misst an sieben vorbei. |
 | (nichts über die leere Prüfmenge) | **fail-closed auf beiden Seiten** | Die erste Stichprobe dieses Entscheids meldete „nichts gefunden", nachdem ihr Glob keine Datei getroffen hatte — eine Zusage über null Mitglieder. |
 | „die Differenz ist ein **Hinweis**, kein Befund" | **ein Befund ist ein Befund** (Exit 1) | Das Argument trifft zu, zieht aber die falsche Konsequenz: Die Unschärfe sitzt in der **Menge**, nicht im Exit-Code. Gemessen: `tools/**/*.sh` gegen `docs/user/` liefert elf Funde und **keinen** Mangel — das ist eine falsch gewählte Menge. Ein Berichts-Modus machte sie dauerhaft bequem; das Verdikt erzwingt die Kuratierung. Ausgeschrieben in [ADR-0084](../adr/0084-mentions-eigenes-modul.md) §Entscheidung (b). |
+| „Ist jedes Mitglied erwähnt, sagt der Lauf das mit seiner Bezugsmenge (`N von N`), nicht bloß `0`" | **übernommen** | In der ersten Fassung dieses Entscheids überhört (unabhängiger Review, M-5). Die Bitte ist gut und kostet nichts: Die Zusammenfassung nennt `N von M Artefakt(en) erwähnt`, über `D` Dokument(e). Sie steht dort und **nicht** im `message`-Feld eines Befundes — dessen Wortlaut sagt [`DC-FA-CLI-004`](../../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate) ausdrücklich nicht zu. |
+| Fundzeile „mit Pfad **und der Zeile, an der die Menge es führt**" | **nicht umsetzbar**, als Grenze aufgenommen | Ebenfalls zunächst überhört (M-5). Eine Soll-Menge aus Pfad-Globs führt ihre Mitglieder **an keiner Zeile**; eine erfundene wäre falsch. Der Befund trägt deshalb den Artefakt-Pfad und den Platzhalter `1` als Zeile, und Out-of-Scope (5) der Anforderung sagt das ausdrücklich. Wer die Herkunft eines Mitglieds sehen will, liest das Glob in der Konfiguration. |
 
 ### Was hier **nicht** entschieden ist
 
