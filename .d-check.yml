@@ -198,13 +198,15 @@ ignore-refs:
   - in: docs/plan/cr/**
     refs: [".harness/baseline/v5.18.0/**"]
   # Tombstone der Baseline-Migration v6.0.0 -> v6.3.1 (MR-065). EIN
-  # Glob-Eintrag, nicht fuenf: gemessen traegt nur ADR-0083 einen
-  # Markdown-Link auf den entfernten v6.0.0-Baum. Die uebrigen
-  # eingefrorenen Klassen (done/-Slices, Reviews, conventions/done/,
-  # docs/plan/cr/) nennen v6.0.0 zwar, aber entweder als reine
-  # Versions-Aussage ohne Pfad oder in Inline-Code, das dort ohnehin
-  # ausgenommen ist -- der Lauf meldete sie nicht. Vier Globs auf Vorrat
-  # waeren unbelegte Ausnahmen.
+  # Glob-Eintrag, nicht fuenf -- und der Grund ist enger als er aussieht:
+  # gemessen traegt nur ADR-0083 einen MARKDOWN-LINK auf den entfernten
+  # v6.0.0-Baum, und nur solche liest das Modul links. Die uebrigen
+  # eingefrorenen Klassen nennen den Tag sehr wohl mit auflösendem Pfad --
+  # done/slice-200 und done/slice-201 je zwei d-check:cite-Direktiven,
+  # conventions/done/MR-057 und MR-058 je eine. Die bleiben still, weil
+  # citations.scope diese Verzeichnisse ausnimmt und links keine
+  # HTML-Kommentare liest, NICHT weil dort kein Pfad staende. Ein Glob
+  # mehr deckte dort also nichts, was nicht schon ausgenommen ist.
   - in: docs/plan/adr/**
     refs: [".harness/baseline/v6.0.0/**"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze

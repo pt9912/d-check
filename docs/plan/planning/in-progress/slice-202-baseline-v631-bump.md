@@ -73,7 +73,7 @@ Closure-Pflichten darunter zählen nicht mit.
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | `.harness/baseline/v6.3.1/` | neu | der gehobene vendorte Baum (Regelwerk + Templates + `SHA256SUMS`) |
-| `.harness/baseline/v6.3.1/` | entfällt | sonst stiller Stale-Content neben dem neuen Pin ([`MR-021`](../../../../harness/conventions.md#mr-021)) |
+| `.harness/baseline/v6.0.0/` | entfällt | sonst stiller Stale-Content neben dem neuen Pin ([`MR-021`](../../../../harness/conventions.md#mr-021)) |
 | `.claude/rules/*.md` (Baseline-Aliase) | update | Symlink-Ziele auf den neuen Tag ([`MR-055`](../../../../harness/conventions.md#mr-055)) |
 | `harness/conventions.md` | update | §Baseline, §Adoptierte Konventions-Quellen, beide Index-Tabellen |
 | neue Eintrags-Datei unter `harness/conventions/` | neu | der Hebungs-Eintrag [`MR-065`](../../../../harness/conventions.md) |
@@ -161,13 +161,11 @@ nötig, weil die Hebung beide nur an ihren bereits deklarierten Kanten berührt.
 
 **Vorgelagert — offene Beobachtungen sichten:**
 
-<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:234-236 -->
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:229-229 -->
 
-> **Keine Treffer sind ebenfalls eine Antwort** und werden notiert. Gelesen
-> wird der **gemergte** Stand: Das Register ist beim Lesen so alt wie der
-> letzte Merge
+> **Offene Beobachtungen sichten.**
 
-Register durchgegangen (gemergter Stand, 34 Verzeichnisse). Treffer je
+Register durchgegangen (gemergter Stand, 33 Verzeichnisse). Treffer je
 berührter Sub-Area:
 
 - **`tools/harness/` (`BEO-HARN`):** ein Eintrag,
