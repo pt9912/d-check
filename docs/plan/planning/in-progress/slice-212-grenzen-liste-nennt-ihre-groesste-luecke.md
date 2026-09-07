@@ -75,11 +75,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Folge enthielt eine ausgeschriebene Grenzen-Liste ihre eigene größte
       Lücke nicht.
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
 
@@ -196,22 +196,107 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - **Die Inventur kann den Zuschnitt sprengen.** 24 Dateien sind lesbar, aber
   wenn zehn davon eine Lücke tragen, ist DoD (2) kein Nachtrag mehr. Die
   Rückführung ist deshalb vorab benannt und **nicht** die Ausnahme, sondern
-  ein erwarteter Ausgang. — **Ausgang:** \<offen\>
+  ein erwarteter Ausgang. — **Ausgang:** eingetreten, aber **nicht** in der
+  Richtung, die das Risiko beschrieb. Die Zahl blieb tragbar — **sieben** von
+  24 Dateien brauchten eine Ergänzung, nicht zehn —, und die Rückführung war
+  nicht nötig. Gesprengt hat den Zuschnitt etwas anderes: die **Gründlichkeit
+  je Datei**. Die erste Fassung meldete vier Ergänzungen und *„20 von 24
+  vollständig"*; der Review fand drei weitere Lücken in drei Stichproben und
+  zwei **falsche** unter meinen vier. Der Aufwand lag nicht in der Zahl der
+  Funde, sondern darin, jeden gegen den **Code** statt gegen die Beschreibung
+  zu prüfen. **Das Risiko hat die richtige Achse verfehlt** — und dass es
+  überhaupt eine Achse benannte, ist der Grund, warum die Rückführung vorab
+  dastand.
 - **„Vollständig" bleibt an der Kante ein Urteil.** Die Form in §3 macht den
   Kern entscheidbar (kennt das Skript die Lücke?), aber eine Lücke, die
   **niemand** bisher benannt hat, findet auch diese Inventur nicht. Sie
   verschiebt den Fehler von *unbenannt* nach *einmal geprüft*, nicht nach
-  *ausgeschlossen*. — **Ausgang:** \<offen\>
+  *ausgeschlossen*. — **Ausgang:** eingetreten, und der Review hat gezeigt, wie
+  weit. Die Form in §3 machte den Kern entscheidbar (*kennt das Skript die
+  Lücke?*) — und trotzdem gingen **drei** Lücken durch, die das Skript bzw.
+  seine Konfiguration sehr wohl kannte (`.golangci.yml`, `ignore-refs`,
+  `exclude`). Die Form war richtig, ihre **Anwendung** unvollständig: Ich habe
+  die `## Grenze`-Abschnitte gegen meine Lektüre gehalten, nicht gegen die
+  Konfigurationsdateien. **Die Verschiebung ist damit von *unbenannt* nach
+  *einmal geprüft, davon drei Stichproben nachgeprüft*** — schmaler, als die
+  erste Fassung klang.
 - **Der Anlass kam von außen, und das ist selbst ein Befund.** Die Lücke fand
   der Auftraggeber beim Lesen eines Zwischenbescheids, nicht ein Review und
   kein Gate. Ob die zwei Vorgänger-Instanzen und diese dieselbe Klasse sind
   oder zwei, entscheidet DoD (3) — sie zu verschmelzen wäre bequem und
-  vielleicht falsch. — **Ausgang:** \<offen\>
+  vielleicht falsch. — **Ausgang:** eingetreten — und die Entscheidung fiel
+  gegen das Verschmelzen. Der neue Eintrag
+  [`grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md)
+  grenzt sich in seinem Kopf gegen **beide** Nachbarn ab, und der unabhängige
+  Review hat die Abgrenzung geprüft und als **echt** bestätigt. **Dass der
+  Anlass von außen kam**, steht als Beleg in der Evidence-Datei: Gefunden hat
+  die Lücke der Auftraggeber, nicht ein Review und kein Gate — bei einer
+  Klasse, deren zweiter Ableiter-Teil *„die Liste braucht einen fremden Leser"*
+  lautet. Der fremdeste Leser war diesmal kein Reviewer.
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** Die Echtheits-Grenze in `harness/sensors/baseline-verify.md`
+mit beiden gemessenen Ausgaben (DoD 1), eine Inventur über **alle 24**
+Sensor-Dateien mit **sieben** Ergänzungen (DoD 2), und ein neuer
+Registereintrag mit drei Belegen und dem Ausgang *geplant* → slice-213
+(DoD 3). Ein unabhängiger Review, blockierend, vier MEDIUM und drei LOW.
+`make gates` grün (zehn Gates, 726 Dateien).
 
+**Was funktioniert hat: der Zuschnitt trug die Inventur statt des Anlasses.**
+[`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
+(9×) stand in slice-209 und slice-210 als Grenze im Eintrag und blieb beide
+Male folgenlos. Hier hat er zum **ersten Mal den Umfang** eines Slice geändert.
+Und er hat sich gelohnt: Aus **einer** gefundenen Lücke wurden **sieben** —
+sechs davon hätte kein Anlass zutage gefördert.
+
+**Was Friktion war: die Inventur trug ihre eigene These nicht.** Sie meldete
+*„20 von 24 vollständig, vier ergänzt"*. Der Review zog drei Stichproben aus
+der Vollständig-Menge und fand in **allen dreien** eine ungenannte Lücke; zwei
+meiner vier Ergänzungen beschrieben **Mechanismen, die es nicht gibt**; und die
+als *nicht entscheidbar* abgelegte Datei war mit zwei Messungen entscheidbar.
+
+**Steering-Loop-Lerneintrag: der Ableiter braucht eine zweite Stufe, und der
+Slice hat sie sich selbst beigebracht.** Der neue Eintrag sagt, man solle nach
+dem Schreiben einer Grenzen-Liste den **Vertrags**-Teil desselben Artefakts
+umdrehen. **Das setzt voraus, dass der Vertrag stimmt.** Bei `review-coverage`
+stimmte er nicht — dort steht *„Substring-Match"* im Code-Kommentar, und das
+Verhalten ist ein **Gleichheits**-Vergleich. Meine Grenze erbte den Fehler und
+beschrieb eine Kollision, die es nicht geben kann. Ergänzt: **wo der Gegenstand
+Code ist, wird gegen den Code geprüft, nicht gegen seine Beschreibung.**
+
+**Und der zweite Teil des Ableiters hat sich an diesem Slice selbst bewiesen.**
+Er lautet: *die Liste braucht einen fremden Leser*. Die Echtheits-Lücke fand
+der **Auftraggeber** beim Lesen eines Zwischenbescheids; die drei
+Stichproben-Lücken und die zwei falschen Ergänzungen fand der **Review**. **In
+keinem der sieben Fälle war es der Autor** — und der Autor hatte die Klasse
+zu diesem Zeitpunkt bereits benannt.
+
+**Die dritte DoD-Antwort ist kein Ausweichgleis.** *„Nicht entscheidbar ohne
+Bruch-Test"* stand für `adr-check` da, und nötig waren zwei Messungen:
+`exclude-sections: [Geschichte]` in der Konfiguration und die Zählung, wie
+viele ADRs die Sektion als **letzte** führen (**79 von 84** — bei ihnen liegt
+der ganze Rest hinter dem Wächter). Keine manipulierte ADR, kein eigener
+Vorgang. Wer *„unentscheidbar"* schreibt, weil eine Messung teuer **aussieht**,
+benutzt eine ehrliche Antwort als bequeme.
+
+**Was offen bleibt.** Die Vorfrage — braucht die Klasse eine eigene Regel, oder
+trägt [`AGENTS.md`](../../../../AGENTS.md) §6 sie mit? — liegt in
+[slice-213](../open/slice-213-grenzen-liste-braucht-fremden-leser.md), samt
+dem unbequemen Risiko, dass **zwei der drei Belege nachgetragen** sind. Und
+`semgrep`s Regel-Cache hat kein `SHA256SUMS`-Gegenstück; das ist eine
+Beobachtung des Reviews, kein Befund dieses Slice, und sie ist hier **benannt,
+nicht aufgelöst**.
+
+**Die drei Paarungen, gemessen.** **(a) Anker** — vakant: Der Slice verkörpert
+keine Regel; sein Eintrag steht auf *geplant*. **(b) Folge-Slice** —
+[slice-213](../open/slice-213-grenzen-liste-braucht-fremden-leser.md) existiert
+in `open/` und trägt eine DoD, die den Ausgang einlöst. **(c) Register** — alle
+zitierten Pfade lösen auf; die neuen Belege liegen als `evidence/slice-212.md`
+in ihren Verzeichnissen. Der Wachposten
+[`kanal-kennung-als-inhalt-gelesen`](../observations/BEO-ALL/kanal-kennung-als-inhalt-gelesen/observation.md)
+trägt weiterhin kein `evidence/` — unverändert die benannte Spannung aus
+slice-208.
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
