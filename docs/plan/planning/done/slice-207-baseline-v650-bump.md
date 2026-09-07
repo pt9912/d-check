@@ -134,7 +134,7 @@ im Folge-Slice; hier ist sie nur gemessen.
 
 - **Jede Regel-Adoption.** Ob und wie ein Delta-Punkt übernommen wird, ist ein
   Urteil je Regel und gehört in
-  [slice-208](../in-progress/slice-208-v650-regel-adoption.md). Dieser Slice **misst** den
+  [slice-208](../done/slice-208-v650-regel-adoption.md). Dieser Slice **misst** den
   Delta und **hebt den Pin**; er entscheidet nichts.
 - **Die Auflösung der Slice-Haus-Form.** Sie folgt aus dem `v6.4.0`-Delta und
   ist der Kern des Folge-Slice — inklusive der Gate-Regeln, die heute auf
@@ -177,7 +177,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   eine eigene Regel-Änderung trägt, ist der Folge-Slice **vor** seiner
   Beanspruchung neu zu schneiden. Das ist kein Fehler, sondern der Grund,
   warum die Messung in diesem Slice liegt und nicht im nächsten. —
-  **Ausgang:** entfallen — die Messung liegt vor und der Folge-Slice ist geschnitten: Zwölf Dateien tragen ein Delta, davon sieben aus `v6.5.0`. Zwei davon (RTM als Kanon-Begriff, Zitier-Form für einfrierende Artefakte) gehen über eine Template-Adoption hinaus und sind in [slice-208](../in-progress/slice-208-v650-regel-adoption.md) §5 bei dessen Beanspruchung zu ergänzen — der Plan wurde geschrieben, als der Delta noch unbekannt war.
+  **Ausgang:** entfallen — die Messung liegt vor und der Folge-Slice ist geschnitten: Zwölf Dateien tragen ein Delta, davon sieben aus `v6.5.0`. Zwei davon (RTM als Kanon-Begriff, Zitier-Form für einfrierende Artefakte) gehen über eine Template-Adoption hinaus und sind in [slice-208](../done/slice-208-v650-regel-adoption.md) §5 bei dessen Beanspruchung zu ergänzen — der Plan wurde geschrieben, als der Delta noch unbekannt war.
 - **Die `d-check:cite`-Spannen sind die planmäßige Rot-Quelle**
   ([`MR-051`](../../../../harness/conventions.md#mr-051)). `citations` ist
   fail-closed und läuft im inneren Loop: eine nicht neu geankerte Direktive
@@ -261,7 +261,7 @@ Vier Einträge sind einschlägig:
 - [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
   (1×, aus slice-205) — DoD (1) **ist** eine Zählmethode: `diff -I` misst den
   Delta, und aus seinen Treffern wird die Regel-Liste abgeleitet, auf der
-  [slice-208](../in-progress/slice-208-v650-regel-adoption.md) urteilt. Der Ableiter
+  [slice-208](../done/slice-208-v650-regel-adoption.md) urteilt. Der Ableiter
   des Eintrags gilt wörtlich — vor der Messung die **Form** des Gegenstands
   ausschreiben (was ist eine *Regel*-Änderung, was Rauschen?) und die
   Trefferliste stichprobenweise dagegen halten, nicht nur die Zahl.
@@ -365,7 +365,7 @@ Register führt ein zweites Kürzel.
   Nachrechnen auf. Der Eintrag war in §7 gesichtet und hat trotzdem zugeschlagen
   — Sichten schützt nicht, es macht nur nachvollziehbar.
 
-**Folge-Slices.** [slice-208](../in-progress/slice-208-v650-regel-adoption.md) urteilt
+**Folge-Slices.** [slice-208](../done/slice-208-v650-regel-adoption.md) urteilt
 über den gemessenen Delta;
 [slice-209](../open/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
 schreibt die Frozen-Klassen-Regel und wartet auf 208, weil `v6.5.0` selbst eine

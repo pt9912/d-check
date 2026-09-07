@@ -63,7 +63,7 @@ Slice. Ob die Regel dieses Repos damit **entbehrlich** wird oder ob sie den
 - **Ein Retrofit der drei Anlässe.** Was geschehen ist, steht in den
   Evidence-Dateien; die geschlossenen Slices bleiben, wie sie sind.
 - **Die Adoption der `v6.5.0`-Artefakt-Unterscheidung.** Sie liegt in
-  [slice-208](../in-progress/slice-208-v650-regel-adoption.md); dieser Slice
+  [slice-208](../done/slice-208-v650-regel-adoption.md); dieser Slice
   **liest** sie nur, um zu entscheiden, ob seine Regel noch gebraucht wird.
 
 ## 4. Definition of Done
@@ -111,7 +111,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): [slice-208](../in-progress/slice-208-v650-regel-adoption.md)
+**Start** (`open` → `in-progress`): [slice-208](../done/slice-208-v650-regel-adoption.md)
 liegt in `done/` — die Vorfrage aus DoD (1) braucht den adoptierten
 `v6.5.0`-Stand, sonst urteilt sie über einen Kanon, den das Repo noch nicht
 führt. WIP-Limit frei.
