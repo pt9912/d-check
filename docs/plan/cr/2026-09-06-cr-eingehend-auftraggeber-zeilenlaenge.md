@@ -4,7 +4,9 @@
 **Richtung:** eingehend — dieses Repo ist der **Empfänger**.
 **Ziel-Dokument:** [`spec/lastenheft.md`](../../../spec/lastenheft.md)
 **Berührt:** [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) (Modul `structure`)
-**Stand:** eingegangen, **noch nicht entschieden**.
+**Stand:** eingegangen, **noch nicht entschieden** — der Entscheid ist am
+2026-09-07 **bis zum Obermengen-Nachweis vertagt** (Auftraggeber-Entscheid);
+was bis dahin gemessen ist, steht unter §Zwischenstand.
 
 **Ablage-Hinweis.** Dies ist der **kanonische** Change Request — der Kanon
 kennt genau einen, den eingehenden, als „externen Vorgang, in dem eine
@@ -109,3 +111,56 @@ Zeilenlänge in Code-Dateien (dafür ist der Linter zuständig).
    fremdes Gate billiger als eine eigene Bedingung.
 3. Falls eigenes Modul: rechtfertigt der Nutzen den Schritt in
    Formatter-Territorium — und wo verläuft die Linie danach?
+
+---
+
+## Zwischenstand (2026-09-07) — gemessen, nicht entschieden
+
+**Der Entscheid ist vertagt**, und zwar auf genau die Frage, die der CR selbst
+als offen benennt: Ist `markdownlint` MD013 eine **Obermenge**? Der Kanon
+verlangt dafür nicht den Datenblatt-Vergleich, sondern **je Verstoßklasse
+einen Break-Test mit beiden Sensoren nebeneinander**, plus den unveränderten
+Bestand, auf dem beide schweigen müssen
+(Baseline-Regelwerk `modul-11-verification.md` §Fitness Function ohne
+Standard-Tool). Der Nachweis steht aus; bis dahin ist über die Fragen 1 und 3
+nicht entschieden.
+
+**Was inzwischen gemessen ist: die Bedingung existiert bereits.** Ein
+`forbid-pattern: '.{N,}'` im Modul `structure` ist ein Zeilenlängen-Wächter —
+und zwar ein echter, nicht bloß ein zufällig passender:
+
+| Fall | Verhalten | vom CR gefordert |
+|---|---|---|
+| Fließtext-Zeile über N | meldet | meldet |
+| Abschnitt aus lauter kurzen Zeilen, 758 Zeichen gesamt | schweigt | schweigt — `.` matcht keinen Zeilenumbruch, die Bedingung ist **pro Zeile** |
+| Zeile in einem Fenced Block | schweigt | schweigt |
+| Tabellenzeile | **meldet** | soll schweigen |
+| unteilbares Token (lange URL) | **meldet** | soll schweigen |
+| Inline-Code-Spanne | **meldet** | soll schweigen |
+
+Dazu zwei Formabweichungen von den Akzeptanzkriterien: Der Befund sitzt auf
+der **Überschriften**-Zeile statt auf der langen Zeile, und er nennt die
+gemessene Länge nicht — der Grund-Code ist das generische
+`section-forbidden`.
+
+**Der Bestand sagt, dass die Tabellen-Blindheit kein Randfall ist.** Über
+`docs/`, `spec/` und `harness/`, Archiv ausgenommen:
+
+| Schwelle | Tabellenzeilen | Fließtext-Zeilen |
+|---|---|---|
+| > 400 Zeichen | 524 | 281 |
+| > 1000 Zeichen | 121 | 21 |
+
+Knapp zwei Drittel bzw. rund sechs Siebtel dessen, was der Workaround meldete,
+wären Falsch-Positive. **Nicht** verwendbar als Kosten-Schätzung sind
+Sweep-Läufe über das ganze Repo: Zwei verschiedene Abschnitts-Selektoren
+lieferten über derselben Schwelle 342 gegen 645 Befunde — die Zahl hängt am
+Abschnitts-Schnitt, und das ist selbst ein Befund über den Workaround, keine
+Messung des Bestands.
+
+**Eine Vorbedingung des Nachweises, die der CR nicht kennt.**
+`markdownlint` ist Node; [`AGENTS.md`](../../../AGENTS.md) §3.1 sperrt
+Host-Skript-Interpreter, und der Tool-Call-Wächter blockt sie. Der Vergleich
+braucht deshalb ein **digest-gepinntes Image**, denselben Weg, den `semgrep`
+und `trivy` gehen. Das ist machbar und es ist ein eigener Vorgang — kein
+Nebenbei-Lauf.
