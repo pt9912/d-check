@@ -10,7 +10,10 @@
   Diese Adaption ist die Werkzeug-Wahl, nicht eine Abweichung.
 - **Datum:** 2026-08-27
 - **Geltungsbereich:** [`.d-check.closure.yml`](../../.d-check.closure.yml),
-  Abschnitt §5 der Slice-Dateien unter `docs/plan/planning/done/`.
+  der **Risiko-Abschnitt** der Slice-Dateien unter `docs/plan/planning/done/` —
+  Baseline-Form `v6.5.0`: *Risiken und offene Punkte*; Haus-Form des
+  eingefrorenen Bestands: *Abnahme-Punkte / Risiken*. Die Regel im
+  Closure-Profil trägt beide über ein Muster mit offener Ziffer.
 - **Adaption:** Der Ausgangs-Wortschatz ist **geschlossen** und umfasst alle
   drei Kanon-Ausgänge: `eingetreten` · `entfallen` · `weiter offen`. Eine
   `structure`-Regel im Closure-Profil hält ihn; sie läuft in

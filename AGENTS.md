@@ -594,12 +594,14 @@ Pro Slice:
    Implementierung benennen**: Slice-ID, betroffene `DC-*`-IDs, ADR-IDs,
    betroffene Module, auszuführende Gates
    ([`MR-031`](harness/conventions.md#mr-031)).
-4. Kleinste sinnvolle Änderung planen — und die **Abgrenzung** mit ausgeben:
-   was der Slice ausdrücklich **nicht** tut. Der Lauf schreibt fort, was §1 des
-   Plans ausschließt; er erfindet die Abgrenzung nicht neu und **weitet sie
-   nicht stillschweigend**. Nimmt er etwas mit, das §1 ausschließt, ist das
-   eine **Plan-Änderung** und gehört vor den Code, nicht in den Bericht danach
-   (Baseline-Regelwerk `modul-09-implementierung.md` §Minimal Agent Workflow).
+4. Kleinste sinnvolle Änderung planen — **samt Abgrenzung.** Was der Slice
+   ausdrücklich nicht tut, steht in seinem Plan, und der Lauf bleibt daran
+   gebunden: Er darf die Abgrenzung nicht ausweiten, weder still noch
+   begründet. Wer im Lauf etwas mitnimmt, das der Plan ausschließt, hat den
+   **Plan geändert** — und das gehört vor den Code, nicht in den Bericht
+   danach. Der Abschnitt heißt in der Baseline-Form `v6.5.0` §1 *Ziel und
+   Abgrenzung*; der eingefrorene Bestand führt ihn als §3 (Kanon:
+   Baseline-Regelwerk `modul-09-implementierung.md` §Minimal Agent Workflow).
 5. Engsten nützlichen Sensor laufen lassen.
 6. Repo-weiten Gate-Lauf vor Handoff (`make gates`).
 7. Doku/Indizes aktualisieren, falls ein öffentlicher Vertrag berührt.

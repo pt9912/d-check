@@ -38,7 +38,7 @@ entbehrlich macht.
 | [`.d-check.closure.yml`](../../../../.d-check.closure.yml) | update | zwei Regeln keilen heute auf Haus-Form-Titel; eine bindet `## 5. Abnahme-Punkte / Risiken` **wörtlich** |
 | [`harness/conventions/`](../../../../harness/conventions/) | update | was abweicht, wird deklarierte Adaption; was der Kanon jetzt selbst sagt, löst seinen Eintrag auf |
 
-**Der Bestand ist gemessen und klein — aber er ist eingefroren.** **Sechs**
+**Der Bestand ist gemessen und klein — aber er ist eingefroren.** **Acht**
 `done/`-Slices tragen die Haus-Form (`## 3. Ausdrücklich NICHT`,
 `## 5. Abnahme-Punkte / Risiken`). Sie sind Lauf-Belege und werden **nicht**
 nachgezogen; ein umgeschriebener DoD-Punkt fälschte einen Beleg. Die
@@ -163,7 +163,7 @@ einen zu.
 - **Die Pin-Hebung selbst.** Sie liegt in
   [slice-207](../done/slice-207-baseline-v650-bump.md); ohne den dortigen `diff -I`-Beleg
   hat dieser Slice keinen Gegenstand.
-- **Ein Retrofit des `done/`-Bestands.** Die sechs Slices in Haus-Form bleiben,
+- **Ein Retrofit des `done/`-Bestands.** Die **acht** `done/`-Slices in Haus-Form bleiben,
   wie sie sind — eingefrorene Lauf-Belege.
 - **Jede Regel, die der Delta nicht berührt.** Der Slice adoptiert, was
   `v6.4.0`/`v6.5.0` ändern, und benutzt die Gelegenheit nicht, um Nachbarregeln
@@ -218,7 +218,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   DoD (2) und nicht bloß ein grüner Lauf. — **Ausgang:** \<offen\>
 - **Der `done/`-Bestand und die neue Form leben nebeneinander.** Solange beide
   existieren, ist „die Form eines Slice" zweideutig, und jede Regel darüber
-  braucht eine Zeit- oder Verzeichnis-Grenze. Ob die sechs Bestands-Slices als
+  braucht eine Zeit- oder Verzeichnis-Grenze. Ob die acht Bestands-Slices als
   feste Liste oder über eine Ziffern-Schwelle ausgenommen werden, ist ein
   Entscheid — die Ziffern-Schwelle ist die gelebte Form
   ([`MR-056`](../../../../harness/conventions.md#mr-056)). — **Ausgang:** \<offen\>
@@ -323,7 +323,7 @@ der Fehler des Vorgänger-Slice). Vier Einträge sind einschlägig:
 - [`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)
   (3×, Ausgang *geplant*) — unmittelbar: Eine Abschnitts-Umnummerierung ist
   genau die mechanische Ersetzung, die dreimal zu weit gegriffen hat. **Die
-  sechs `done/`-Slices in Haus-Form sind eingefrorene Lauf-Belege und werden
+  **acht** `done/`-Slices in Haus-Form sind eingefrorene Lauf-Belege und werden
   nicht angefasst.** Der Folge-Slice
   [slice-209](../open/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
   schreibt die Regel dazu und wartet auf **diesen** Slice — hier ist sie also

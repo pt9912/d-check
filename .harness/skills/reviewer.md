@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.13.0 · **Datum:** 2026-08-28 ·
+**Version:** 1.14.0 · **Datum:** 2026-09-07 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -218,5 +218,7 @@ Deshalb **Kennung statt Adresse**:
   zu einem Ausnahme-Ventil, das selbst eine Gate-Senkung ist
   ([`MR-069`](../../harness/conventions.md#mr-069)).
 
-Das `pfad`-Feld eines Findings bleibt davon unberührt: Es benennt die
-Fundstelle im geprüften Stand und ist damit selbst Messung, nicht Verweis.
+Das `pfad`-Feld eines Findings ist davon **nicht ausgenommen, sondern präzisiert**: Es benennt die
+Fundstelle im geprüften Stand und darf sie festhalten — aber in derselben Form,
+den **Tag eingeschlossen** (`` `v<X.Y.Z>` · `regelwerk/<datei>.md` §<Abschnitt> ``).
+Eine Fundstelle ohne Tag sagt nicht, in welchem Stand sie galt.
