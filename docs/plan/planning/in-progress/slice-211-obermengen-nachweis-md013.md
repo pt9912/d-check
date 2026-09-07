@@ -69,11 +69,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - [x] **(3)** Der CR ist **entschieden**: alle drei Fragen beantwortet,
       `Stand:`-Zeile gesetzt, Begründung je Frage.
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
 
@@ -160,22 +160,113 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   Frage 3 („rechtfertigt der Nutzen den Schritt?") trotzdem **nein** — die
   Kosten einer Node-Toolchain sind keine Eigenschaft von MD013. Wer aus einem
   Ja auf Frage 2 ein Ja auf Frage 3 schließt, hat eine Frage übersprungen.
-  — **Ausgang:** \<offen\>
+  — **Ausgang:** entfallen — die Kopplung, vor der das Risiko warnt, ist nicht
+  eingetreten. Frage 2 fiel auf **nein**, Frage 3 wurde **eigenständig**
+  beantwortet (Decke des eigenen Wegs, Preis des fremden) und nicht aus Frage 2
+  abgeleitet. Der unabhängige Review hat ausdrücklich auch die **Gegenrichtung**
+  geprüft — ob aus einem Nein auf Frage 2 unzulässig ein Nein auf Frage 3 wird —
+  und keinen Befund erhoben.
 - **Die Klassen-Liste stammt aus dem Anlass, nicht aus einer Inventur**
   ([`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md),
   9×). Die sechs Klassen sind die Akzeptanzkriterien des CR; eine siebte, die
   niemand aufgeschrieben hat, fällt durch den Nachweis. Das ist die Grenze des
-  Nachweises und gehört in den Entscheid. — **Ausgang:** \<offen\>
+  Nachweises und gehört in den Entscheid. — **Ausgang:** eingetreten, und die
+  Messung hat es selbst gezeigt: Die sechs Klassen stammen aus den
+  CR-Akzeptanzkriterien, und eine **siebte** entstand erst beim Messen — die
+  **teilbare** Inline-Code-Spanne (K6b), die der CR mit dem unteilbaren Token in
+  einem Atemzug nennt und die sich als eigene Klasse erwies. Der Anlass hat die
+  Liste also nachweislich unvollständig geliefert. Die Grenze steht im
+  Entscheid; eine **achte**, die niemand aufschrieb, fiele weiterhin durch.
 - **Der Vergleich misst zwei Werkzeuge mit verschiedenem Skopus.** MD013
   urteilt datei-weit, `structure` abschnitts-weit; die Zahl der Befunde ist
   deshalb **nicht** vergleichbar, nur ihr Verhalten je Klasse. Die eigene
   Vormessung hat das bereits gezeigt: zwei Abschnitts-Selektoren lieferten über
-  derselben Schwelle 342 gegen 645 Befunde. — **Ausgang:** \<offen\>
+  derselben Schwelle 342 gegen 645 Befunde. — **Ausgang:** eingetreten, und
+  zwar doppelt. **Erstens produktiv:** Der Skopus-Unterschied wurde nicht
+  weggerechnet, sondern zu **Teil 3** des Nachweises — und genau er ist der
+  Grund, warum MD013 **keine** Obermenge ist. Das Risiko wurde damit zum
+  tragenden Befund. **Zweitens als Fehler:** Der unabhängige Review hat gezeigt,
+  dass die Populations-**Angabe** des Bestands-Laufs unvollständig war —
+  `structure` wertet seinen `files`-Glob unabhängig von `scan.roots` aus, was
+  eine Nachmessung 21 statt 22 zählen lässt. Vor dem Skopus gewarnt und ihn in
+  der eigenen Beschreibung übersehen; korrigiert.
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** Ein Obermengen-Nachweis in der Kanon-Form — sieben Proben, beide
+Sensoren nebeneinander, drei Teile (Kandidaten-Menge · Bedingungen · Schwelle),
+dazu der Lauf über den unveränderten Bestand —, das Kommando samt Image-Digest
+reproduzierbar im CR, und der **Entscheid**: dreimal Nein, mit drei
+Umkehr-Bedingungen. Ein unabhängiger Review, blockierend, fünf MEDIUM plus ein
+LOW und zwei INFO. `make gates` grün (zehn Gates, 718 Dateien).
 
+**Was funktioniert hat: die Form vor der Messung — nachweislich.** §3 schrieb
+aus, was eine *Verstoßklasse* und was eine *Obermenge* ist, bevor gemessen
+wurde. Genau daran fielen **zwei** Proben auf, die ihre Klasse nicht
+isolierten: eine Prosa-Zeile, die zufällig MD013s Ausnahme für unumbrechbare
+Zeilen traf, und eine Inline-Code-Spanne mit Leerzeichen — also kein
+*unteilbares* Token. Ohne die vorab geschriebene Form wären beide als Ergebnis
+durchgegangen, und der Nachweis hätte MD013 dreimal falsch beurteilt. **Die
+Regel aus slice-210 hat bei ihrer ersten Anwendung getragen.**
+
+**Und sie hat eine Grenze, die erst dieser Lauf zeigt.** Sie schützt nicht
+davor, die Form **unterwegs zu verschieben**: Klasse K6 wurde zwischen §3 und
+dem Nachweis von *„Inline-Code-Spanne"* zu *„unteilbares Inline-Code-Token"*,
+ohne dass der Text es sagte — die Probe zur Plan-Klasse stand als „Nebenfund"
+außerhalb der Zählung. **Die Form vorher auszuschreiben ersetzt den Abgleich am
+Ende nicht**, und den machte der Review. Das gehört zur Regel und ist als
+Beleg eingetragen
+([`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md),
+vierter Beleg).
+
+**Was Friktion war: dreimal die Population.** Die längste Zeile *„2045"* stammt
+aus dem vendorten Baum, den derselbe Nachweis zwei Absätze weiter ausschließt;
+*„die drei Klassen"* sind am Bestand **eine**; und die Populations-Angabe nannte
+`scan.roots`, obwohl `structure` seinen `files`-Glob unabhängig davon
+auswertet. **Verschärfend zweifach:** Die 2045 war zuvor schon einmal
+berichtet, und der Slice hatte den Skopus-Unterschied **als eigenes Risiko**
+vorab benannt — und ihn in der eigenen Beschreibung dann übersehen
+([`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md),
+zwölfter Beleg).
+
+**Steering-Loop-Lerneintrag: ein selbst geschriebener Geltungsbereich wird beim
+Anwenden nicht automatisch gelesen.** Die Beanspruchungs-Commits von slice-210
+**und** slice-211 reklamieren einen *„Lauf unter
+[`MR-070`](../../../../harness/conventions.md#mr-070)"* — dessen
+Geltungsbereich den Pfad-Nachzug eines Lifecycle-Moves **ausdrücklich
+ausnimmt**. Beide Commits taten genau das und nichts anderes. **Die Ausnahme
+stammt aus slice-209, drei Commits zuvor, und ich habe sie dort selbst
+geschrieben**, nachdem ein Review die Kollision mit
+[`MR-013`](../../../../harness/conventions.md#mr-013) gemeldet hatte.
+Eingetragen bei
+[`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+(18×) — der Eintrag galt bisher **fremden** Quellen; dies ist der Beleg, dass
+er für die eigene frische Regel genauso gilt. Commit-Botschaften sind nicht
+änderbar, der Fall bleibt stehen.
+
+**Der Entscheid selbst ist von keinem Befund berührt.** Das ist die
+Arbeitsteilung, die der Zuschnitt beabsichtigt hat: Der Nachweis trägt das
+Urteil, und die Befunde trafen die **Belege**, nicht das **Ergebnis**. Alle
+drei Antworten stehen unverändert — MD013 ist Obermenge bei Bedingungen und
+Schwelle, nicht bei der Kandidaten-Menge; das eigene Mittel hat eine Decke bei
+1000; gebaut wird keines von beiden.
+
+**Was offen bleibt.** Die **Absatz**-Länge — die Größe, die der CR eigentlich
+meint — hat weiterhin keinen Sensor und keinen CR. Der Entscheid nennt sie
+ausdrücklich als eigenen Vorgang und nimmt ihn nicht vorweg. Und die drei
+Umkehr-Bedingungen sind **Wiedervorlage-Bedingungen ohne Wächter**; das steht
+bei ihnen.
+
+**Die drei Paarungen, gemessen.** **(a) Anker** — vakant: Der Slice verkörpert
+keine Steering-Loop-Regel, sein Lerneintrag steht bei einem bestehenden
+Eintrag. **(b) Folge-Slice** — keiner genannt; die Absatz-Frage ist bewusst
+**ohne** Kennung gelassen, weil es sie noch nicht gibt und eine Kennung ohne
+Datei keine Adresse ist. **(c) Register** — alle zitierten Pfade lösen auf, die
+drei neuen Belege liegen als `evidence/slice-211.md` in ihren Verzeichnissen.
+Der Wachposten
+[`kanal-kennung-als-inhalt-gelesen`](../observations/BEO-ALL/kanal-kennung-als-inhalt-gelesen/observation.md)
+trägt weiterhin kein `evidence/` — unverändert die benannte Spannung aus
+slice-208.
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
