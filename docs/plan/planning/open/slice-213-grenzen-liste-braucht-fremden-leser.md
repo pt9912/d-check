@@ -16,7 +16,7 @@ dieses Slice verschieden wäre.
 **Berührte Spec-Stellen:** — *(keine; der Slice entscheidet über eine Regel und
 ändert kein Verhalten)*
 
-**Verantwortlich:** — · **Autor:** pt9912. **Datum:** 2026-09-07.
+**Verantwortlich:** pt9912 · **Autor:** pt9912. **Datum:** 2026-09-07.
 
 ---
 
@@ -135,5 +135,70 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
-\<die drei Vorprüfungen und der Modus-Block entstehen spätestens bei der
-Beanspruchung — ein Plan in `open/` trägt sie noch nicht\>
+Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
+§Ziel-Form: Sub-Area-Modus-Begründung. **Der Abschnitt entfällt nie**; bedingt
+ist allein der Modus-Block am Ende. Dieses Repo führt **drei** Prüfungen — die
+zwei kanonischen und, als Adaption, den Nachtlauf-Stand
+([`MR-053`](../../../../harness/conventions.md#mr-053)).
+
+**Vorgelagert — Sub-Area-Wahl prüfen:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:268-269 -->
+
+> **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+> muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+**Eine** Sub-Area: `*` (Repo-Default). Der Slice ändert höchstens
+[`AGENTS.md`](../../../../AGENTS.md) und eine Register-Datei.
+`tools/harness/` ist **nicht** berührt — §1 schließt einen Sensor aus.
+
+**Vorgelagert — offene Beobachtungen sichten:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:274-274 -->
+
+> **Offene Beobachtungen sichten.** Das
+
+Register durchgegangen (gemergter Stand, **38** Verzeichnisse über beide
+Kürzel — der neue Eintrag ist der 38.). **Vier** sind einschlägig:
+
+- [`grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md)
+  (3×, Ausgang *geplant*) — **der Gegenstand.** Der Eintrag nennt diesen Slice
+  namentlich. **Zwei seiner drei Belege sind nachgetragen**, und §6 führt das
+  als Risiko: Wer eine Klasse benennt und dann rückwärts sammelt, findet sie.
+- [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+  (18×) — **der einschlägigste für DoD (1)**, und zwar in **beide** Richtungen:
+  [`AGENTS.md`](../../../../AGENTS.md) §6 enger zu lesen, um eine eigene Regel
+  zu rechtfertigen, ist derselbe Fehler wie ihn weiter zu lesen, um sie zu
+  sparen. Der Beleg muss aus dem **Wortlaut** kommen.
+- [`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
+  (9×) — slice-212 hat gezeigt, was er wert ist: Dort änderte er den **Umfang**
+  und machte aus einer Lücke sieben. Hier ist die Inventur klein und schon
+  getan — die 24 Sensor-Dateien liegen vor, der Bestand ist gemessen.
+- [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+  (13×, Stand *gemischt*) — dreimal in slice-211 und einmal in slice-212
+  eingetreten. Dieser Slice zählt wenig; wo er es tut, gilt der Test.
+
+**Keiner der vier erreicht mit diesem Slice die Schwelle erstmalig.**
+
+**Vorgelagert — Nachtlauf-Stand lesen**
+([`MR-053`](../../../../harness/conventions.md#mr-053)):
+
+`make nightly-state` am 2026-09-07 gelesen: **beide Nachtläufe grün** —
+`upstream-drift.yml` (2026-09-07T05:33:45Z) und `image-scan.yml`
+(2026-09-07T08:21:32Z). Nichts zu tun.
+
+**Modus-Begründungsblock.** Alle berührten Sub-Areas GF — ein Block genügt.
+
+### Sub-Area: `*`
+
+- **Modus:** GF (Repo-Default).
+- **Konventions-Dichte:** hoch, und diesmal ist sie der **Gegenstand**:
+  [`AGENTS.md`](../../../../AGENTS.md) §5 und §6 regeln beide etwas, das an
+  die Klasse grenzt. Die Frage ist gerade, wo die Grenze verläuft.
+- **Phase-Reife:** Phase 5 für die Slice-Mechanik; Phase 4 für den Gegenstand —
+  die Klasse ist benannt, dreimal belegt und in ihrem Ableiter zweistufig
+  ausformuliert, aber noch nirgends als Regel geschrieben.
+- **Evidenz-/Diskrepanz-Risiko:** **niedrig für den Bestand, hoch für DoD (1).**
+  Am Bestand ist nichts zu inventarisieren. Das Risiko sitzt im Urteil über
+  §6 — und `citation-stretched-beyond-scope` steht bei 18×.
+- **Reconciliation-Aufwand:** keiner (GF). Graduation entfällt.
