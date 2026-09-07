@@ -37,14 +37,22 @@ den Baum ersetzt, listet die Frozen-Klassen vorher auf — und die Liste ist
 | [`BEO-ALL/mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/state.md) | update | Ausgang von *geplant* auf *verkörpert*, mit Herkunfts-Anker |
 
 **Was die drei Anlässe gemeinsam haben, und es ist nicht das Verzeichnis:**
-Beim ersten Mal (Register-Formatmigration) blieben `Accepted`-ADR-Kerne und
+Beim ersten (Register-Formatmigration) blieben `Accepted`-ADR-Kerne und
 gesendete CRs unbedacht, obwohl die drei *benannten* Frozen-Verzeichnisse
-korrekt ausgenommen waren. Beim zweiten (Pin-Hebung) dasselbe Muster. Beim
+korrekt ausgenommen waren. Der zweite (Pin-Hebung) ist ein **anderer** Fall —
+*(die erste Fassung schrieb „dasselbe Muster" und widersprach damit der eigenen
+Evidence-Datei; der Review hat es gemessen)*: Getroffen war kein eingefrorenes
+Verzeichnis, sondern eine **identifizierende Nennung in einem lebenden
+Dokument** — die Plan-Tabelle nannte danach denselben Pfad zweimal, als neu und
+als entfallend, und **beide lösten auf**, weshalb kein Gate es meldete. Beim
 dritten (Pin-Hebung) gab es **gar keine** Ausnahme-Liste, und gehoben wurden
 zehn `d-check:cite`-Direktiven in `done/`-Slices, deren Zitat gegen den alten
 Tag geschrieben war. **Die Verzeichnis-Liste ist die falsche Abstraktion** —
 maßgeblich ist die Eigenschaft *„zitiert den Stand seiner Zeit"*, und die
-tragen auch Zeilen, die in keinem der drei Verzeichnisse stehen.
+tragen auch Zeilen, die in keinem der drei Verzeichnisse stehen. Dass die drei
+Anlässe **nicht** dasselbe Muster zeigen, ist dabei kein Einwand gegen die
+Regel, sondern ihr Argument: Ein Muster ließe sich als Verzeichnis-Liste
+fassen, drei verschiedene nicht.
 
 **Der Kanon hat dazu seit `v6.5.0` etwas zu sagen**
 (`grundlagen-harness-dateien.md` §Ein einfrierendes Artefakt …): Er
@@ -70,16 +78,29 @@ ersetzt**, in einem Moment **lange nach** dem Schreiben; die Anweisung betrifft
 die **Ausschluss-Menge einer Massen-Operation**. Anderer Adressat, anderer
 Zeitpunkt, andere Handlung.
 
-**Beleg 1 — eine kanon-konforme Datei wurde trotzdem beschädigt.** Die dritte
-Form des Kanons lautet: *„Eine Stelle der vendored Baseline heißt Tag **und**
-Pfad in Inline-Code, nicht als Link."* Genau diese Form haben die zehn
-`d-check:cite`-Direktiven, die slice-207 mitgehoben hat — sie sind
-HTML-Kommentare mit Tag und Pfad, kein Link. Sie waren **konform** und wurden
-beschädigt. Damit ist gezeigt: Vollständige Kanon-Befolgung schließt den
-Fehler nicht aus, sie ist gegen ihn wirkungslos. Schlimmer noch, die Richtung
-kehrt sich um — die vom Kanon **vorgeschriebene** Form ist genau das, was eine
-Tag-Ersetzung greift, während der abgeratene Link von einem Sensor gemeldet
-würde.
+**Beleg 1 — die vom Kanon vorgeschriebene Form schützt nicht.** *(Die erste
+Fassung dieses Belegs war falsch und ist vom unabhängigen Review widerlegt
+worden; sie behauptete, die zehn gehobenen `d-check:cite`-Direktiven **seien**
+die Kanon-Form. Sind sie nicht: Der Kanon sagt *„Tag **und** Pfad in
+Inline-Code"*, und eine `<!-- d-check:cite … -->`-Direktive ist ein
+HTML-Kommentar, kein Inline-Code — sie ist eine dritte Form, weder Link noch
+Backtick.)*
+
+**Der Beleg trägt trotzdem, über eine andere Messung.** Die Kanon-Form ist
+gegen eine Massen-Ersetzung **genauso wehrlos**, denn sie enthält den Pfad,
+auf den eine Tag-Hebung skopiert. Gemessen im heutigen Bestand: **neun**
+Vorkommen der Form `` `.harness/baseline/<alter-tag>/…` `` — mit Backticks,
+also kanon-konform — stehen in eingefrorenen Artefakten, darunter
+`done/slice-202`, `done/slice-203`, `done/welle-67-results` und vier
+aufgelöste `MR`-Einträge. Sie tragen genau das Präfix, das eine Pin-Hebung
+sucht. **Überlebt haben sie, weil ihr Verzeichnis ausgenommen war** — also
+durch die Handlung, die diese Regel vorschreibt, und nicht durch ihre Form.
+
+*(Auch die Gegenthese des Reviewers hält damit nicht: Er schrieb, die
+Kanon-Form trage den Präfix `.harness/baseline/<tag>/` „gerade nicht" und
+slice-207s Ersetzung hätte sie nicht berührt. Die neun Vorkommen tragen ihn.
+Die Richtung seines Befundes stimmt, seine Begründung nicht — und das ändert
+den Schluss nicht, sondern schärft ihn.)*
 
 **Beleg 2 — eine der drei Instanzen liegt außerhalb des Kanon-Geltungsbereichs.**
 Der Fund in slice-202 betraf eine identifizierende Nennung in einem
@@ -87,12 +108,22 @@ Der Fund in slice-202 betraf eine identifizierende Nennung in einem
 benennt). Der Kanon nimmt lebende Artefakte ausdrücklich aus. Eine Regel, die
 nur die einfrierenden deckt, hätte diese Instanz nie gefangen.
 
-**Beleg 3 — die Kanon-Aufzählung ist für dieses Repo unvollständig.** slice-195
-traf `Accepted`-ADR-Kerne (vom Kanon genannt) **und gesendete CRs** unter
-`docs/plan/cr/` (vom Kanon nicht genannt). Ein gesendeter CR ist einfrierend
-nach derselben Eigenschaft — er hält eine Bitte zu ihrem Datum fest —, steht
-aber in keiner der fünf Klassen. Das ist wörtlich der Punkt dieser Regel: **die
-Liste über die Eigenschaft, nicht über eine Aufzählung.**
+**Beleg 3 — der schwächste der drei, und er wird als solcher geführt.**
+slice-195 traf `Accepted`-ADR-Kerne (vom Kanon genannt) **und gesendete CRs**
+unter `docs/plan/cr/` (nicht genannt). *(Die erste Fassung schrieb, der Kanon
+führe eine „reine Aufzählung" — das ist zu stark, und der Review hat es
+gemessen: Der Kanon-Satz nennt die **Eigenschaft** mit, „Einfrierend sind die
+**Zeitdokumente**", und leitet die fünf Klassen daraus ab. Ein Beleg, der dem
+Kanon eine Aufzählung unterstellt und den Gegenbeleg dann aus der Eigenschaft
+zieht, die im selben Satz steht, argumentiert gegen sich selbst.)*
+
+**Was bleibt, ist schmaler und trägt trotzdem:** Der Kanon nennt die
+Eigenschaft dem **Autor**, der sein eigenes Dokument einordnet — eine Frage
+mit einer Datei als Gegenstand. Diese Regel verlangt dieselbe Ableitung vom
+**Ersetzenden**, über den **ganzen Baum**, für Klassen, die er nicht
+geschrieben hat. Dass die fünf Klassen den gesendeten CR nicht enthalten, ist
+dafür ein Symptom, kein eigenständiger Beweis: Es zeigt, dass die Aufzählung
+allein nicht reicht — nicht, dass der Kanon keine Eigenschaft kennt.
 
 **Die Gegenprobe, und sie gehört dazu.** Die stärkste Lesart eines **Ja**
 wäre: Stünde nirgends eine Adresse, gäbe es nichts zu über-heben. Beleg 1
@@ -108,6 +139,37 @@ Massen-Ersetzung — geprüft über den ganzen `regelwerk/`-Baum; der einzige
 Treffer zu *„repo-weit"* steht in `grundlagen-source-precedence.md` und gilt
 dem Geltungsbereich eines `MR`-Eintrags, nicht einer Ersetzung. Es gibt also
 keine nähere Quelle, die zu zitieren wäre.
+
+**Die zweite Hälfte der Vorfrage, vom Review nachgereicht: gegen**
+[`MR-069`](../../../../harness/conventions.md#mr-069)**.**
+§8 stellt sie wörtlich — *„ein vierter Eintrag daneben muss sagen, was die drei
+nicht sagen"* —, und die erste Fassung beantwortete sie nur gegen den Kanon.
+[`MR-069`](../../../../harness/conventions.md#mr-069) trägt bereits eine
+**gemessene Vier-Klassen-Liste** derselben Eigenschaft: 18 `Accepted`-ADRs,
+sechs aufgelöste Konventions-Einträge, drei `done/`-Slices, ein gesendeter CR.
+Die Frage ist damit real und nicht rhetorisch.
+
+**Die Antwort ist die Achse *Zustand gegen Akt*.** [`MR-069`](../../../../harness/conventions.md#mr-069) beschreibt einen
+**Zustand**: Wie viele Verweise stehen heute hinter dem Ventil, über welche
+Tags, in welchen Klassen — eine Bestandsaufnahme, die mit jedem Bump wächst
+und die er selbst als Gate-Senkung deklariert. [`MR-070`](../../../../harness/conventions.md#mr-070) schreibt einen **Akt**
+vor: wie die Ausschluss-Menge **vor** einer Ersetzung gebildet wird. Zwei
+Belege dafür, dass das nicht dieselbe Aussage ist:
+
+- **Die Mengen decken sich nicht.** [`MR-069`](../../../../harness/conventions.md#mr-069)s Liste ist auf Verweise **in die
+  vendorte Baseline** beschränkt — das ist sein Geltungsbereich. Die Instanz
+  aus slice-202 (identifizierende Nennung in einem **lebenden** Dokument) und
+  die Register-Kennungen aus slice-195 fallen nicht darunter; sie stehen nur
+  unter [`MR-070`](../../../../harness/conventions.md#mr-070)s Test.
+- **Die Richtung ist entgegengesetzt.** [`MR-069`](../../../../harness/conventions.md#mr-069) rechtfertigt, dass ein
+  bereits entstandener toter Verweis **stehen bleibt**. [`MR-070`](../../../../harness/conventions.md#mr-070) soll
+  verhindern, dass ein lebender Verweis **falsch wird**. Der eine verwaltet
+  Schaden, der andere vermeidet ihn.
+
+**Und die Grenze dieser Antwort:** Die beiden berühren sich trotzdem — wer
+[`MR-070`](../../../../harness/conventions.md#mr-070) befolgt, erzeugt weniger Einträge für [`MR-069`](../../../../harness/conventions.md#mr-069)s Ventil. Das ist eine
+Wirkung, keine Dopplung; aber es heißt, dass die beiden Einträge zusammen
+gelesen werden müssen und ein späterer Vorgang sie zusammenführen könnte.
 
 **Folge:** DoD (2) greift — der Eintrag wird geschrieben, und er trägt die
 Differenz oben als seine Existenzberechtigung.

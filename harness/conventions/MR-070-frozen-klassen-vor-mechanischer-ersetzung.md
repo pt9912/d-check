@@ -14,9 +14,12 @@
 - **Datum:** 2026-09-07 · **Herkunft:** seit slice-209 (Steering Loop,
   `BEO-ALL/mechanical-id-rewrite-misses-frozen-classes` 3×)
 - **Geltungsbereich:** jede **mechanische Ersetzung über mehr als eine Datei** —
-  `sed`, `git mv` mit Nachzug, ein Werkzeug-Lauf, der Token austauscht. **Nicht**
-  erfasst: die Änderung einer einzelnen Datei von Hand, und die Wahl der
-  Verweis-**Form** beim Schreiben (die regelt der Kanon).
+  `sed`, ein Werkzeug-Lauf, der Token austauscht, jede Massen-Operation, die
+  einen Wert durch einen anderen ersetzt. **Nicht** erfasst: die Änderung einer
+  einzelnen Datei von Hand, die Wahl der Verweis-**Form** beim Schreiben (die
+  regelt der Kanon) — und, ausdrücklich, der **Pfad-Nachzug eines
+  Lifecycle-Moves** nach [`MR-013`](../conventions.md#mr-013); siehe die
+  gemeldete Kollision unten.
 - **Adaption:** Zwei Pflichten, und die erste ist die, die dreimal fehlte:
 
   1. **Die Ausschluss-Menge steht vor dem Lauf** — geschrieben, nicht erinnert.
@@ -34,16 +37,44 @@
   |---|---|---|
   | `docs/plan/planning/done/` | Lauf-Beleg zu seinem Datum | ja |
   | `docs/reviews/` | Befundstand zu seinem Datum | ja |
-  | `harness/conventions/done/` | die Form, die das Repo einmal hatte | ja (als Archiv-Stub-Klasse) |
+  | `harness/conventions/done/` | die Form, die das Repo einmal hatte | **nein** — der Kanon führt den aufgelösten `MR`-Eintrag als *aufbewahrt*, nicht als Zeitdokument |
   | `Accepted`-ADR-**Kerne** | [`AGENTS.md`](../../AGENTS.md#35-adrs-sind-nach-accepted-immutable) §3.5 | ja |
   | gesendete CRs in `docs/plan/cr/` | die Bitte zu ihrem Datum | **nein** |
   | identifizierende Nennungen in **lebenden** Dokumenten | sie benennen den Gegenstand, den die Ersetzung entfernt | **nein — der Kanon nimmt lebende Artefakte ausdrücklich aus** |
 
-  **Die letzte Zeile ist der Grund für die Eigenschaft.** Eine Plan-Tabelle, die
+  **Drei der sechs Zeilen nennt der Kanon nicht** — der gesendete CR, der
+  aufgelöste `MR`-Eintrag und die identifizierende Nennung in einem lebenden
+  Dokument. **Die letzte ist der Grund für die Eigenschaft.** Eine Plan-Tabelle, die
   den zu entfernenden Baum benennt, ist ein lebendes Dokument und wird trotzdem
   falsch, wenn die Ersetzung sie mitnimmt: Danach steht derselbe Pfad zweimal
   da, als neu und als entfallend, und **beide lösen auf** — kein Gate meldet
   es. Wer die Menge über Verzeichnisse bildet, findet diesen Fall nie.
+
+
+  **Gemeldete Kollision mit [`MR-013`](../conventions.md#mr-013) —
+  [`AGENTS.md`](../../AGENTS.md#1-was-diese-datei-ist) §1 verlangt die Meldung,
+  nicht die stille Auflösung.** Ein Lifecycle-Move zieht die Pfad-Verweise auf
+  den bewegten Slice **auch in `done/`-Dateien** nach; genau das ist die
+  `MR-013`-Ausnahme, und der Beanspruchungs-Commit dieses Slice hat es an sechs
+  Stellen getan. Die erste Fassung dieses Eintrags führte *„`git mv` mit
+  Nachzug"* im Geltungsbereich und nahm zugleich `done/` in Zeile 1 aus — wer
+  das literal befolgte, ließe die Verweise stehen, und `links` meldete
+  `target-missing`. **Der unabhängige Review hat es gefunden, kein Gate.**
+
+  **Der Eigenschafts-Test löst den Widerspruch, und deshalb bleibt es bei zwei
+  Regeln statt einer Ausnahme.** Ein Pfad-Nachzug verfälscht **nicht**, was das
+  Artefakt festgehalten hat: Es nannte einen Slice, und es nennt ihn weiter —
+  nur an seinem neuen Ort. Eine Tag- oder Kennungs-Ersetzung verfälscht sehr
+  wohl: Sie behauptet, das Artefakt habe damals einen Wert gemeint, den es nicht
+  gab. **Die Unterscheidung ist nicht *ob* geschrieben wird, sondern *ob die
+  Aussage danach noch dieselbe ist*.** Der Geltungsbereich oben nimmt den
+  Nachzug deshalb ausdrücklich aus, statt Zeile 1 aufzuweichen.
+
+  **Und die Grenze der Auflösung:** Sie hält, solange der Nachzug wirklich nur
+  Pfade berührt. Ein Lifecycle-Move, der zugleich eine **Kennung** ersetzt,
+  fällt unter beide Regeln — dann gilt dieser Eintrag, und die
+  `MR-013`-Bündelung entbindet nicht davon. Ein Fall dieser Art ist im Bestand
+  **nicht** gemessen; die Aussage ist Ableitung, kein Beleg.
 
   **Was diese Regel nicht leistet, ausgeschrieben:**
 
