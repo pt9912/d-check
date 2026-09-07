@@ -66,11 +66,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - [x] **(3)** Der Registereintrag trägt den Ausgang *verkörpert* mit
       auflösbarem Zielort.
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
 
@@ -170,22 +170,112 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   reiche *„nicht weiter als die gemessene Menge"*. Das ist nah, aber es ist die
   Aussage über den **Schluss**, nicht über die **Messmethode** — der Unterschied
   ist genau der zwischen `commit-message-overclaims-work` und diesem Eintrag.
-  Ob er trägt, ist DoD (1). — **Ausgang:** \<offen\>
+  Ob er trägt, ist DoD (1). — **Ausgang:** entfallen — DoD (1) hat es
+  entschieden, und zwar nicht durch Auslegung: Anker 8 des Reviewer-Skills
+  schreibt die korrekte Messung wörtlich als seine **Voraussetzung** fest
+  (*„weil die Messung stimmt"*). Der Fall, in dem die Messung selbst den
+  falschen Gegenstand zählt, liegt damit nach der Selbstauskunft des Trägers
+  außerhalb. **Der unabhängige Review hat genau diese Frage nachgeprüft** — sie
+  stand als erste in seinem Auftrag — und die Lücke bestätigt. Das Risiko kann
+  nicht mehr eintreten.
 - **Eine Regel aus drei Vorgängen ist keine Inventur**
   ([`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md),
   8×, zuletzt slice-209). Alle drei Vorgänge sind Doku-/Planning-Messungen; ob die Regel für eine
   Code-Messung trägt, ist unbelegt und gehört als Grenze in die Formulierung.
-  — **Ausgang:** \<offen\>
+  — **Ausgang:** weiter offen — eingetragen als neunter Beleg bei
+  [`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md),
+  zweiter in Folge nach slice-209. Die Grenze steht in
+  [`AGENTS.md`](../../../../AGENTS.md) §5, wie der Plan es verlangt hat: belegt
+  ist die Klasse nur an Doku-/Planning-Messungen, für eine Code-Messung ist sie
+  unbelegt. Zweimal hintereinander eine Regel aus dem Anlass statt aus dem
+  Bestand zu ziehen, ist selbst ein Muster — es steht in der Closure-Notiz und
+  nicht nur hier.
 - **Kein Gate, und das ist eine Aussage über die Wirkung.** Die Regel verschiebt
   einen Fehler von *unsichtbar* nach *vermeidbar*, nicht nach *unmöglich*; drei
   von vier Instanzen fand ein Review, und daran ändert eine geschriebene Regel
   zunächst nichts. Das gehört ausgeschrieben, sonst liest sie sich stärker, als
-  sie ist. — **Ausgang:** \<offen\>
+  sie ist. — **Ausgang:** entfallen — die Grenze ist ausgeschrieben (*„gilt der
+  Methode, nicht der Sorgfalt — sie verhindert keinen Zählfehler, sie macht ihn
+  auffindbar"*), und der Skill-Anker nennt zusätzlich, **wo** die Regel greift:
+  in drei von vier belegten Instanzen fand die Klasse der Review, nicht der
+  Zählende. **Der Review hat die Grenzen-Liste trotzdem als unvollständig
+  erwiesen** (F-4): Die Regel nannte keinen Ort, an dem die Form stehen muss,
+  und war damit nicht befolgbar — anders als beide Nachbar-Regeln. Behoben; die
+  Form steht jetzt dort, wo die Zahl steht. **Zweiter Slice in Folge, dessen
+  ausgeschriebene Grenzen die eigene Lücke nicht enthielten.**
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** Die Regel *„Vor einer Messung steht die Form ihres
+Gegenstands"* an zwei Orten — [`AGENTS.md`](../../../../AGENTS.md) §5 für den
+Messenden, [`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md)
+Anker 17 für den Prüfenden (Version 1.15.0) —, beide mit Herkunfts-Anker
+`seit slice-210` und ausgeschriebener Grenze. Registereintrag auf
+*verkörpert*. Ein unabhängiger Review, blockierend, vier MEDIUM plus zwei LOW
+und ein INFO — alle eingearbeitet bis auf das INFO, das benannt bleibt.
+`make gates` grün (zehn Gates, 711 Dateien).
 
+**Was funktioniert hat: die Lücke wurde nicht behauptet, sondern belegt.** DoD
+(1) hätte sich bequem mit *„§5 deckt das nicht"* beantworten lassen. Statt
+dessen steht dort das Zitat aus Anker 8 — *„weil die **Messung stimmt** und nur
+ihre Reichweite überdehnt ist"* —, also die Selbstauskunft des Trägers über
+seinen eigenen Geltungsbereich. Das war die Vorsichtsmaßnahme gegen
+[`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md),
+und der Review hat sie eigens nachgeprüft: Die Lücke ist echt, §5 wurde nicht
+enger gelesen, um die Regel zu retten. **Ein Beleg aus dem Zielartefakt selbst
+ist stärker als jede Auslegung** — und er war billiger zu haben, als die
+Diskussion darüber gewesen wäre.
+
+**Was Friktion war: der Slice über Fehlzählungen hat dreimal falsch gezählt.**
+Einmal selbst gefunden (*„viermal von fünf"* statt *„dreimal von vier"*, plus
+eine Instanz, die dem Geschwister-Eintrag gehört), zweimal vom Review
+(`10×, verkörpert` für einen Eintrag, dessen Stand *gemischt* ist und der zwei
+Instanzen ohne formgültigen Ausgang führt; `7×` gegen `8×` für denselben
+Eintrag im selben Plan). **Alle drei betreffen Zahlen über das
+Beobachtungs-Register** — also über das Artefakt, das dieser Slice am
+gründlichsten gelesen hat.
+
+**Der Steering-Loop-Lerneintrag ist deshalb nicht die Regel, sondern ihre
+Reichweite.** Die geschriebene Regel hätte keinen der drei Fehler verhindert:
+Sie verlangt die **Form** des Gezählten, und die war in allen drei Fällen klar
+— falsch war die **Menge** und der abgelesene **Zustand**. Das ist die
+Arbeitsteilung mit
+[`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+(jetzt 11×) und
+[`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+(17×), und sie ist mit diesem Lauf gemessen statt vermutet: **Drei
+Register-Klassen liegen nebeneinander, und die neue deckt die schmalste von
+ihnen.** Wer sie für die allgemeine Zahlen-Disziplin hält, liest zu viel
+hinein — der Satz gehört in die Regel und steht dort.
+
+**Zwei Muster über Slice-Grenzen hinweg, beide zum zweiten Mal in Folge.**
+**(1)** Eine Regel aus dem **Anlass** statt aus dem Bestand: slice-209 und
+slice-210 haben beide die 3×-Schwelle bedient, beide die Inventur nicht
+gemacht, beide die Grenze vorab benannt
+([`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md),
+neunter Beleg). **(2)** Eine ausgeschriebene **Grenzen-Liste**, die die eigene
+Lücke nicht enthielt: In slice-209 fand der Review eine sechste Grenze, hier
+(F-4) die fehlende Ortsangabe, ohne die die Regel nicht befolgbar war. Eine
+Grenzen-Liste macht eine Regel ehrlicher, nicht vollständig — und sie braucht
+denselben fremden Leser wie die Regel selbst.
+
+**Eine Kanon-Regel wurde nicht befolgt, und das ist kein Steering-Loop-Signal.**
+Die `state.md` speicherte *„Drei Vorgänge, vier Instanzen"*, obwohl der Kanon
+sagt, der Zähler werde **abgeleitet**: *„Es gibt kein Feld, in das man ihn
+schreibt, und deshalb keines, das falsch stehen kann."* Der Review hat die
+Drift **gemessen** — dieselbe Evidence-Basis trug nacheinander drei
+verschiedene Zahlen. Das gehört nicht ins Register: Die Regel existiert, sie
+wurde übergangen. Beide Zahlen sind entfernt.
+
+**Die drei Paarungen, gemessen.** **(a) Anker** — beide Zielorte tragen
+`seit slice-210`, beide lösen auf, der Registereintrag nennt beide.
+**(b) Folge-Slice** — dieser Slice nennt keinen; nichts wurde auf später
+verwiesen. **(c) Register** — alle zitierten Pfade lösen auf, die vier neuen
+Belege liegen als `evidence/slice-210.md` in ihren Verzeichnissen. Der
+Wachposten
+[`kanal-kennung-als-inhalt-gelesen`](../observations/BEO-ALL/kanal-kennung-als-inhalt-gelesen/observation.md)
+trägt weiterhin kein `evidence/` — unverändert die benannte Spannung aus
+slice-208.
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
