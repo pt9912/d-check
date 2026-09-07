@@ -173,7 +173,7 @@ einen zu.
 - **Ein Retrofit des `done/`-Bestands.** Die **acht** `done/`-Slices in Haus-Form bleiben,
   wie sie sind — eingefrorene Lauf-Belege.
 - **Eine Umschrift der beiden lebenden Pläne.** Dieser Plan selbst und
-  [slice-209](../open/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
+  [slice-209](../in-progress/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
   sind vor der Adoption geschrieben und tragen die Haus-Form. Sie werden
   **nicht** umnummeriert: Dieser hier trägt `d-check:cite`-Spannen und
   §-Verweise, die in Commit-Botschaften und in zwei Review-Reports zitiert
@@ -405,7 +405,7 @@ der Fehler des Vorgänger-Slice). Vier Einträge sind einschlägig:
   genau die mechanische Ersetzung, die dreimal zu weit gegriffen hat. **Die
   **acht** `done/`-Slices in Haus-Form sind eingefrorene Lauf-Belege und werden
   nicht angefasst.** Der Folge-Slice
-  [slice-209](../open/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
+  [slice-209](../in-progress/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
   schreibt die Regel dazu und wartet auf **diesen** Slice — hier ist sie also
   noch Disziplin, nicht Konvention.
 - [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
@@ -536,7 +536,7 @@ die Zitier-Form im Skill,
 Schritt 4), stammt aus dem **Kanon-Delta**, nicht aus der 3×-Schwelle, und
 braucht deshalb keinen Herkunfts-Anker. **(b) Folge-Slice** — der einzige
 genannte ist
-[slice-209](../open/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md),
+[slice-209](../in-progress/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md),
 und er liegt im Lifecycle (`open/`). **(c) Register** — alle in diesem Plan
 zitierten Beobachtungs-Pfade lösen auf; von den jetzt **37** Verzeichnissen
 trägt genau eines kein `evidence/`:

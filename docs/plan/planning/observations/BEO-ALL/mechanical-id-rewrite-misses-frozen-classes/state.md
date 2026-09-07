@@ -1,1 +1,1 @@
-**Stand:** geplant — [slice-209](../../../open/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md) schreibt die Regel. Die Schwelle ist mit dem dritten Beleg erreicht; der Ausgang wird dort zu *verkörpert*.
+**Stand:** geplant — [slice-209](../../../in-progress/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md) schreibt die Regel. Die Schwelle ist mit dem dritten Beleg erreicht; der Ausgang wird dort zu *verkörpert*.
