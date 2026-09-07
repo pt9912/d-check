@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.15.0 · **Datum:** 2026-09-07 ·
+**Version:** 1.16.0 · **Datum:** 2026-09-07 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -45,6 +45,7 @@ Wer nur diese Tabelle liest, meldet die Bestands-Ausnahmen mit.
 | 15 | Liest ein Modul **Eingaben, die es nicht scannt** — und gilt dort die Zusage nicht? | MEDIUM |
 | 16 | Nennt ein neues `Schärft:`/`Bezug:`-Feld nur „§N", **obwohl das Zielelement eine Kennung trägt**? | MEDIUM |
 | 17 | Zählt eine **Messung** ein Muster, das dem Gegenstand nur ähnelt? | MEDIUM |
+| 18 | Nennt eine **Grenzen-Liste** ihre größte Lücke nicht — steht sie im Vertrag oder im Code daneben? | MEDIUM |
 
 **Was diese Ebene kostet und was nicht.** Sie ist eine Einstiegs-Ordnung, keine
 Kürzung: das Dokument ist durch sie **länger** geworden, nicht kürzer. Der
@@ -116,6 +117,23 @@ sondern ausschließlich die Frage.
   Arbeitsanweisung. **Wo sie greift, ist gemessen:** In drei von vier belegten
   Instanzen fand sie der Review, nicht der Zählende
   (`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`, seit slice-210).
+- **MEDIUM** (Auflösungs-Trigger: permanent):
+  **Grenzen-Liste ohne ihre größte Lücke.** Ein Abschnitt zählt auf, was ein
+  grüner Lauf **nicht** abdeckt, und lässt gerade den Eintrag weg, der die
+  anderen überwiegt. Er liest sich durch seine Form als **Menge** und ist eine
+  Auswahl. **Arbeitsanweisung, zwei Griffe:** Lies den **Vertrags**-Teil
+  desselben Artefakts und dreh jede Zusage um — folgt daraus eine Grenze, die
+  unten fehlt? Und wo der Gegenstand **Code oder Konfiguration** ist, lies
+  diese, nicht die Prosa darüber: Gemessen stand in einem von sieben Fällen die
+  echte Grenze **nur im Code**, während der Vertrags-Text das Gegenteil des
+  Verhaltens sagte. Das ist die **andere** Frage als Anker 9: Dort wird eine
+  Quelle über ihren Geltungsbereich gelesen; hier wird der Geltungsbereich
+  richtig gelesen und seine Kehrseite nicht aufgeschrieben. **Kein Gate fängt
+  das.** Die Regel selbst steht in [`AGENTS.md`](../../AGENTS.md) §5; hier
+  steht ihre Kategorie und die Arbeitsanweisung. **Und dieser Anker ist der
+  Träger, den die Regel meint:** In allen sieben belegten Fundstellen fand die
+  Lücke jemand anderes als der Autor
+  (`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`, seit slice-213).
 - **MEDIUM** (Auflösungs-Trigger: permanent):
   **Quelle über ihren Geltungsbereich hinaus zitiert.** Ein Verweis stützt eine
   Aussage, die seine Quelle nicht trägt — der `MR-`Eintrag regelt etwas

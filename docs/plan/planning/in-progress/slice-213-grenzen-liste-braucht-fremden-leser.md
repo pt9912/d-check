@@ -11,7 +11,7 @@ dieses Slice verschieden wäre.
 **Bezug:** [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md)
 (3× erreicht, Ausgang *geplant* — dieser Slice ist der Ausgang),
 [`BEO-ALL/rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
-(10×).
+(9×).
 
 **Berührte Spec-Stellen:** — *(keine; der Slice entscheidet über eine Regel und
 ändert kein Verhalten)*

@@ -557,14 +557,22 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   Auswahl. Vor dem Handoff deshalb zweierlei: **den Vertrags-Teil desselben
   Artefakts durchgehen und jede Zusage einmal umdrehen** — was folgt daraus für
   das Grün? —, und **wo der Gegenstand Code oder Konfiguration ist, gegen
-  diese prüfen statt gegen die Prosa darüber**. Gemessen: In sieben von sieben
-  Fundstellen stand die fehlende Grenze bereits im Vertrags-Teil oder in der
-  Konfiguration; zwei Grenzen, die nur aus der Prosa abgeleitet waren,
-  beschrieben Mechanismen, die es nicht gibt — in einem Fall widersprach der
-  Code-Kommentar dem Verhalten. **Grenze:** Die Regel gilt dem **Autor vor der
-  Übergabe** und ersetzt den fremden Leser nicht — den richtet
-  [§6](#6-minimal-agent-workflow) ein, und er hat in allen sieben Fällen
-  gefunden, was hier vermieden werden soll. Urteil, kein `grep`.
+  diese prüfen statt gegen die Prosa darüber**. Gemessen an sieben Fundstellen:
+  In **sechs** stand die fehlende Grenze bereits im Vertrags-Teil oder in der
+  Konfiguration; in der **siebten** stand sie **nur im Code** — und der
+  Vertrags-Text daneben sagte das Gegenteil des Verhaltens. **Die zweite Hälfte
+  der Regel ist genau für diesen Fall da**, und zwei Grenzen, die nur aus der
+  Prosa abgeleitet waren, beschrieben denn auch Mechanismen, die es nicht gibt.
+  **Nächste Verwandte:** [§3.8](#38-ein-modul-verspricht-nur-über-das-was-es-scannt)
+  verlangt dieselbe Umkehrung für ein **Modul** und seine Scan-Menge; dieser
+  Absatz verlangt sie für **jede** aufgeschriebene Grenze. **Drei Grenzen:**
+  Die Regel gilt dem **Autor vor der Übergabe** und ersetzt den fremden Leser
+  nicht — gemessen fand ihn in allen sieben Fällen **jemand anderes als der
+  Autor**, sechsmal der unabhängige Review, einmal der Auftraggeber; §6 richtet
+  davon den Review ein, nicht jeden fremden Leser. Ihre erste Hälfte setzt
+  einen **korrekten** Vertrags-Text voraus — wo er lügt, fängt nur die zweite.
+  Und belegt ist sie an **Sensor-Beschreibungen**, nicht an Grenzen-Listen
+  überhaupt. Urteil, kein `grep`; der Reviewer-Skill trägt den Anker dazu.
   *(Hard Rule aus dem Steering Loop,
   [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](docs/plan/planning/observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md),
   seit slice-213; Auflösungs-Trigger: permanent.)*
