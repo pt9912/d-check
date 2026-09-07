@@ -63,8 +63,8 @@ Tabellen-Padding, nachgezogene Querverweise.
 **Und die Methode des Vorgängers reichte nicht.** Die Lehre aus der letzten
 Hebung lautete *„Bundle-Delta nur mit `diff -I` messen"* — das filtert Versionen
 und Daten. Damit blieben **27** Markdown-Dateien mit Delta stehen, und die
-größte (`grundlagen-begriffe.md`, 81 Zeilen) war **vollständig**
-Tabellen-Padding: die Glossar-Tabelle wurde von Ausricht-Leerzeichen befreit.
+größte (`grundlagen-begriffe.md`, 81 geänderte Zeilen) war **bis auf eine Zeile**
+Tabellen-Padding: Die Glossar-Tabelle wurde von Ausricht-Leerzeichen befreit; inhaltlich kam **eine** Zeile hinzu (RTM), und genau deshalb steht die Datei unten unter den zwölf.
 Erst `diff -w -B -I` trennt das:
 
 | Messung | Dateien mit Delta |
@@ -72,6 +72,13 @@ Erst `diff -w -B -I` trennt das:
 | roh (`diff -rq`) | 35 Pfade |
 | mit `-I` (Versionen, Daten) | 27 Markdown-Dateien |
 | **mit `-w -B -I`** | **12 Markdown-Dateien** |
+
+**Die Filter, ausgeschrieben — ohne sie ist die Tabelle nicht nachrechenbar:**
+`-I 'v6\.[0-9]\+\.[0-9]\+'` (Versionsnummern, vor allem die Quell-URL im Kopf
+jeder Datei), `-I '20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]'` (Datumsangaben), `-w`
+(Weißraum innerhalb der Zeile — das Tabellen-Padding), `-B` (eingefügte
+Leerzeilen). Verglichen wird Datei für Datei über die Namensmenge des alten
+Baums, nicht als Verzeichnis-Diff.
 
 Fünfzehn Dateien waren reines Weißraum-Rauschen. Ohne den zweiten Filter hätte
 der Folge-Slice über sie geurteilt. **Der Datei-Bestand ist unverändert:** 55
@@ -226,7 +233,10 @@ die Antwort „keine Änderung" lauten kann.
 
 > **Offene Beobachtungen sichten.**
 
-Register durchgegangen (gemergter Stand, **35** Verzeichnisse — nachgezählt).
+Register durchgegangen (gemergter Stand, **36** Verzeichnisse). Die erste Fassung
+nannte **35** und zählte damit nur `BEO-ALL/` — das Register führt ein zweites
+Kürzel (`BEO-HARN`, ein Eintrag). Dieselbe Klasse wie die Delta-Messung unten:
+die Zählung traf einen Teilbaum, nicht den Gegenstand.
 Gesucht nach **beidem**: dem Gegenstand des Slice und dem, was er **anfasst**.
 Vier Einträge sind einschlägig:
 

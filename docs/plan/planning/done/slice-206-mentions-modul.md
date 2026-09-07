@@ -122,7 +122,7 @@ Kalibrierungs-Beleg aus DoD (3) liegt vor.
 
 **Vorgelagert — Sub-Area-Wahl prüfen:**
 
-<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:223-224 -->
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:223-224 -->
 
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
@@ -135,7 +135,7 @@ alle drei Achsen des Inklusionskriteriums auf dieselbe Antwort zeigen.
 
 **Vorgelagert — offene Beobachtungen sichten:**
 
-<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:229-229 -->
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:229-229 -->
 
 > **Offene Beobachtungen sichten.**
 

@@ -30,7 +30,7 @@ Produkt-Welle — dürfen gleichzeitig als flache Wellendokumente offen sein; je
 Strang ein Zeiger in der Liste, die Bijektion hält beides, und das
 `Welle:`-Feld des Slices sagt, wohin er gehört. Eröffnet wird weiterhin nur,
 was einen eigenen Closure-Grund hat (Baseline-Regelwerk `modul-06-roadmap.md`
-
+§Wann Arbeit eine Welle braucht) — Parallelität ist Erlaubnis, kein Ziel.
 
 ## Nächste Wellen
 

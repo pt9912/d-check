@@ -209,16 +209,24 @@ ignore-refs:
   # mehr deckte dort also nichts, was nicht schon ausgenommen ist.
   - in: docs/plan/adr/**
     refs: [".harness/baseline/v6.0.0/**"]
-  # Tombstone der Baseline-Migration v6.3.1 -> v6.5.0. Wieder EIN Eintrag, und
-  # wieder aus demselben Grund: Nur eine `Accepted`-ADR traegt einen
-  # Markdown-Link auf den entfernten Baum, und nur sie DARF nicht nachgezogen
-  # werden -- §3.5 schuetzt ihren Kern, und `adr-check` hat den Versuch
-  # gemeldet. Alle uebrigen Klassen sind gehoben, auch die eingefrorenen:
-  # `done/`-Slices, Reviews und aufgeloeste MR-Eintraege tragen ihre
-  # `d-check:cite`-Direktiven auf dem neuen Tag, und die zitierten Zeilen
-  # stimmen dort weiter (gemessen: vier Spannen neu geankert, der Rest hielt).
-  # Der Pfad wandert, die Aussage bleibt.
-  - in: docs/plan/adr/**
+  # Tombstone der Baseline-Migration v6.3.1 -> v6.5.0 (MR-067). EIN Eintrag,
+  # und er ist DATEI-skopiert statt auf docs/plan/adr/**: Gemessen traegt genau
+  # ADR-0084 einen Markdown-Link auf den entfernten Baum. Ein Glob ueber alle
+  # ADRs deckte auch jeden KUENFTIGEN Link dorthin still -- die datei-skopierte
+  # Form steht in dieser Datei zweimal als Praezedenz.
+  #
+  # Warum ausgerechnet diese Klasse: Eine `Accepted`-ADR ist im Kern
+  # unantastbar (AGENTS.md §3.5), und `adr-check` meldet jeden Retarget-Versuch
+  # als core-drift-vcs. Alle uebrigen lebenden Klassen sind gehoben.
+  #
+  # NICHT gehoben und ausdruecklich nicht hier gedeckt: die
+  # `d-check:cite`-Direktiven der eingefrorenen `done/`-Slices. Sie nennen den
+  # Tag, gegen den ihr Zitat geschrieben wurde -- der alte Baum liegt in der
+  # git-Historie (MR-052), und ein Lift machte die Zeilen-Spanne still falsch.
+  # `citations` sieht sie nicht, weil `citations.scope` diese Verzeichnisse
+  # ausnimmt; die Regel steht hier trotzdem, damit der naechste Bump sie nicht
+  # wieder mithebt.
+  - in: docs/plan/adr/0084-mentions-eigenes-modul.md
     refs: [".harness/baseline/v6.3.1/**"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
   # ausgeloest, die docs/plan/planning/observations/README.md seit

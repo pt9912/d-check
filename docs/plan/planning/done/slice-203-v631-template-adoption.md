@@ -128,7 +128,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): [`MR-065`](../../../../harness/conventions.md#mr-065)
-ist geschlossen und die Vorlagen liegen unter `.harness/baseline/v6.5.0/templates/`.
+ist geschlossen und die Vorlagen liegen unter `.harness/baseline/v6.3.1/templates/`.
 WIP-Limit frei (alle Lifecycle-Verzeichnisse leer).
 
 **Rückführungen — vorab benannt:**
@@ -151,7 +151,7 @@ ist länger als ein Satz — gemessen, nicht geschätzt.
 
 **Vorgelagert — Sub-Area-Wahl prüfen:**
 
-<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:223-224 -->
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:223-224 -->
 
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
@@ -165,7 +165,7 @@ Ausdifferenzierung ist nicht nötig.
 
 **Vorgelagert — offene Beobachtungen sichten:**
 
-<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:229-229 -->
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:229-229 -->
 
 > **Offene Beobachtungen sichten.**
 

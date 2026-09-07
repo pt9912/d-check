@@ -39,7 +39,7 @@ Bump eintreffenden Vorlagen voraus.
 
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
-| `.harness/baseline/v6.5.0/` | neu | der gehobene vendorte Baum (Regelwerk + Templates + `SHA256SUMS`) |
+| `.harness/baseline/v6.3.1/` | neu | der gehobene vendorte Baum (Regelwerk + Templates + `SHA256SUMS`) |
 | `.harness/baseline/v6.0.0/` | entfällt | sonst stiller Stale-Content neben dem neuen Pin ([`MR-021`](../../../../harness/conventions.md#mr-021)) |
 | `.claude/rules/*.md` (Baseline-Aliase) | update | Symlink-Ziele auf den neuen Tag ([`MR-055`](../../../../harness/conventions.md#mr-055)) |
 | `harness/conventions.md` | update | §Baseline, §Adoptierte Konventions-Quellen, beide Index-Tabellen |
@@ -157,7 +157,7 @@ behauptet. Dazu die Closure-Notiz mit Steering-Loop-Eintrag.
 
 **Vorgelagert — Sub-Area-Wahl prüfen:**
 
-<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:223-224 -->
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:223-224 -->
 
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
@@ -180,7 +180,7 @@ nötig, weil die Hebung beide nur an ihren bereits deklarierten Kanten berührt.
 
 **Vorgelagert — offene Beobachtungen sichten:**
 
-<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:229-229 -->
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:229-229 -->
 
 > **Offene Beobachtungen sichten.**
 
