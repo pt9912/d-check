@@ -21,6 +21,21 @@ Integritätsprüfung von `.harness/baseline/<tag>/{regelwerk,templates}/` gegen
 
 ## Grenze — was das Grün nicht abdeckt
 
+0. **Der Lauf beweist innere Konsistenz, nicht Echtheit** — und das ist die
+   Grenze, die alle folgenden überwiegt. Geprüft wird der Baum gegen das
+   `SHA256SUMS`, **das mit ihm kam**. Wer eine Datei ändert **und** das Manifest
+   nachzieht, bekommt einen grünen Lauf. Gemessen: dieselbe Änderung meldet ohne
+   nachgezogenes Manifest `GESCHEITERT` (Exit 1), mit nachgezogenem Manifest
+   `verify ok (54 Dateien, vollständig)` (Exit 0).
+   **Das ist kein Mangel des Gates, sondern die Grenze eines netzlosen
+   Vergleichs:** Ohne Netz gibt es nichts, wogegen die Echtheit zu prüfen wäre.
+   Sie hält [`make baseline-freshness`](baseline-freshness.md) mit
+   `--check-latest` — dieselbe Manipulation ⇒ Exit 4,
+   `UPSTREAM-CONTENT-DRIFT`. **Der Träger ist Netz, fail-open und kein Gate**:
+   Die Zusage *„das Original-Bundle wird unverändert verwendet"* hängt damit am
+   Nachtlauf, nicht am inneren Loop. Das Skript sagt es im Kopf
+   (*„Integrität ist nicht Aktualität"*); hier stand es bisher nicht.
+   Permanent — solange `gates` netzlos bleibt.
 1. **Geprüft wird die Auflösung, nicht das Ziel** — ein Alias auf ein
    Verzeichnis passiert. Permanent.
 2. **Ein fehlendes `.claude/rules/` ist von „hier gibt es keine Aliase" nicht
@@ -30,7 +45,10 @@ Integritätsprüfung von `.harness/baseline/<tag>/{regelwerk,templates}/` gegen
 4. **Ein Symlink überlebt nicht jedes Dateisystem** — `core.symlinks=false`
    macht Textdateien daraus.
 
-Ihre Proben fährt `make baseline-probe` (neun Fälle, netzlos).
+Ihre Proben fährt `make baseline-probe` (neun Fälle, netzlos) — **die
+Echtheits-Grenze (0) hat keine**, denn sie ist keine Eigenschaft der
+Alias-Auflösung; ihr Bruch-Test steht in
+[slice-212](../../docs/plan/planning/in-progress/slice-212-grenzen-liste-nennt-ihre-groesste-luecke.md).
 
 ## Ausgabe und Ausgänge
 

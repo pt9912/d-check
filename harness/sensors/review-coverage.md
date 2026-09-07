@@ -21,6 +21,12 @@ Haken-Zustand egal — braucht mindestens einen Report unter
    unsichtbar).
 4. **Geprüft ist die Existenz eines Reports, nicht sein Inhalt** — die
    Kategorisierung eines Findings bleibt inferential.
+5. **Der Kennungs-Abgleich ist eine Teilzeichenketten-Suche** — ein Report
+   erfüllt die Zusage eines Slice, wenn dessen `slice-<NNN>` im Dateinamen
+   **vorkommt**. Wäre eine Kennung Präfix einer anderen, deckte der Report der
+   längeren die kürzere mit ab. **Im Bestand nicht eingetreten** (alle Kennungen
+   dreistellig, keine ist Präfix einer anderen) — die Grenze ist strukturell,
+   nicht aktuell.
 
 ## Bindung
 

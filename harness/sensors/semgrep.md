@@ -16,6 +16,14 @@ ohne Netz.
 1. **Der Umfang ist `go/lang/security`**, nicht das ganze Regelset. Ein
    grüner Lauf sagt etwas über diesen Ausschnitt.
 
+2. **Das Regelset ist gepinnt und altert** — der Lauf misst gegen den Stand des
+   Pins, nicht gegen den heutigen. Eine Regel, die upstream nach der Hebung
+   entstand, existiert für diesen Gate nicht. Das ist der Preis der
+   Netzlosigkeit und der Grund, warum es
+   [`make freshness-semgrep`](freshness-go.md) und `make semgrep-digest`
+   gibt — **beide fail-open und außerhalb von `gates`**. Ein grüner Lauf sagt
+   also „nichts nach dem gepinnten Regelstand", nicht „nichts Bekanntes".
+
 **Wie groß der Ausschnitt ist, sagt das Kommando:** Der Lauf nennt die Zahl
 der gescannten Dateien und Regeln in seiner Zusammenfassung.
 

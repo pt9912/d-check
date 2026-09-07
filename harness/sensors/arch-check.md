@@ -16,6 +16,11 @@ womit sie gedeckt ist, steht dort.
 1. **Der Gegenstand sind Import-Kanten** — die sechs Regeln R1–R6, nicht die
    Rollen-Treue der Schichten: dass ein Paket importieren *darf*, sagt nicht, dass es die
    richtige Rolle spielt. Permanent — das ist Review-Territorium.
+2. **Geprüft werden die Regeln, die in [`.a-check.yml`](../../.a-check.yml)
+   stehen** — eine Kante, für die keine Regel existiert, ist kein Befund,
+   sondern unsichtbar. Das Grün sagt „keine der sechs Regeln gebrochen", nicht
+   „der Schnitt ist eingehalten". Permanent: Welche Regeln nötig sind, ist ein
+   Entwurfs-Urteil, kein prüfbarer Zustand.
 
 ## Bindung
 

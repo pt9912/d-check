@@ -63,11 +63,11 @@ Sensor-Datei nicht.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** `harness/sensors/baseline-verify.md` §Grenze nennt die
+- [x] **(1)** `harness/sensors/baseline-verify.md` §Grenze nennt die
       Echtheits-Lücke, mit der **gemessenen** Ausgabe beider Läufe und dem
       Zeiger auf den Träger, der sie hält (`--check-latest`, mit seiner
       fail-open-Bindung).
-- [ ] **(2)** Die **23** übrigen Sensor-Dateien sind **einmal** gegen ihr
+- [x] **(2)** Die **23** übrigen Sensor-Dateien sind **einmal** gegen ihr
       Skript/Target gehalten: je Datei eine Antwort — Grenze vollständig ·
       Grenze ergänzt (mit der ergänzten Lücke) · nicht entscheidbar (mit
       Begründung). Eine Datei ohne Antwort ist ein offener Punkt.
@@ -106,6 +106,51 @@ die Instanz, die den Eintrag zum vierten Mal belegt. **24 Dateien sind eine
 Menge, die sich in einer Sitzung lesen lässt** — die Inventur ist hier
 bezahlbar, und genau das ist die Bedingung, unter der der Eintrag sie
 verlangt.
+
+### Die Inventur (DoD 2)
+
+**Zuerst eine eigene Fehlmessung, weil sie den Ableiter belegt.** Der erste
+Überblick zählte `## Grenze`-Abschnitte über **Listenmarker** (`^- ` und
+`^N.`) und meldete für `mention-coverage` **null Einträge**. Die Datei führt
+ihre Grenzen als **Fettabsätze**. Gezählt war ein Proxy, ausgesagt wurde über
+den Gegenstand — genau die Klasse, die
+[`AGENTS.md`](../../../../AGENTS.md) §5 seit slice-210 führt, im
+**Inventur-Schritt dieses Slice selbst**. Die zweite Zählung misst Zeilen mit
+Inhalt.
+
+**Der Bestand ist besser als erwartet.** Von **24** Dateien tragen **20** einen
+`## Grenze`-Abschnitt, der die Lücken nennt, die Skript und Target kennen.
+**Vier** brauchten eine Ergänzung, **eine** davon war der Anlass.
+
+| Datei | Antwort |
+|---|---|
+| `baseline-verify` | **ergänzt** — Echtheit vs. innere Konsistenz (der Anlass, DoD 1) |
+| `semgrep` | **ergänzt** — das gepinnte Regelset **altert**; der Ausschnitt war genannt, sein Alter nicht |
+| `review-coverage` | **ergänzt** — der Kennungs-Abgleich ist eine **Teilzeichenketten**-Suche; im Bestand nicht eingetreten |
+| `arch-check` | **ergänzt** — geprüft sind die **konfigurierten** Regeln; eine Kante ohne Regel ist unsichtbar, kein Befund |
+| `adr-check` | **nicht entscheidbar ohne Bruch-Test** — s. u. |
+| `doc-check` · `lint` · `test` · `gate-consistency` · `planning-check` · `trace-check` · `completeness-check` · `hooks` | **vollständig** |
+| `image-scan` · `nightly-state` · `guard-probe` · `workflow-pins` · `verify-closure-notes` · `mention-coverage` | **vollständig** |
+| `baseline-freshness` · `freshness-go` · `checkout-pin-freshness` · `runtime-base-digest` · `image-test` | **vollständig** |
+
+**Was die vier Ergänzungen gemeinsam haben, und es ist nicht Nachlässigkeit:**
+In **allen vier** stand die Tatsache bereits in der Datei — im **Vertrags**-Teil
+(*„gepinntes, lokal gecachtes Regelset"*, *„Substring-Match, 1:N zulässig"*,
+*„Lauf mit `.a-check.yml`"*, *„gegen `SHA256SUMS`"*). Was fehlte, war ihre
+**Umkehrung**: was das **Grün** deshalb nicht abdeckt. Eine Eigenschaft im
+Vertrag und dieselbe Eigenschaft als Grenze sind zwei Aussagen, und nur die
+zweite liest, wer wissen will, worauf er sich nicht verlassen darf.
+
+**`adr-check` ist die dritte Antwort, und sie ist keine Ausrede.** Die Datei
+nennt im Vertrag *„Erlaubt bleiben zwei Dinge: `## Geschichte`-Anhänge und der
+`**Status:**`-Übergang"*. Ob daraus eine **Lücke** folgt — ob eine
+Kern-Änderung, die **innerhalb** eines `## Geschichte`-Abschnitts abgelegt
+wird, den Vergleich passiert —, ist eine Frage an das Modul `vcs` und nur
+durch einen Bruch-Test zu beantworten. **§1 schließt Verhaltens-Prüfungen
+nicht aus, aber der Test bräuchte eine manipulierte `Accepted`-ADR im
+Arbeitsbaum**, und das ist ein eigener Vorgang mit eigenem Risiko. Als
+*„vollständig"* zu zählen, was ungeprüft ist, wäre die Klasse, gegen die
+dieser Slice geschrieben ist.
 
 ## 4. Trigger
 
