@@ -178,14 +178,14 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Slice: übernommen (mit Träger) · nicht anwendbar (mit Begründung) ·
       abweichend (mit Adaptions-Eintrag). Eine Regel ohne Antwort ist ein
       offener Punkt, kein stilles Übergehen.
-- [ ] **(2)** Die Slice-Haus-Form ist aufgelöst: die Vorlage folgt der
+- [x] **(2)** Die Slice-Haus-Form ist aufgelöst: die Vorlage folgt der
       Baseline-Form, und die Regeln in
       [`.d-check.closure.yml`](../../../../.d-check.closure.yml) tragen den
       Bestand **und** die neue Form — mit einem **Bruch-Test je Richtung**, der
       belegt, dass beide noch gefangen werden.
-- [ ] **(3)** Die Konventions-Einträge sind nachgezogen: was der Kanon jetzt
+- [x] **(3)** Die Konventions-Einträge sind nachgezogen: was der Kanon jetzt
       selbst sagt, ist aufgelöst; was abweicht, ist deklariert.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.

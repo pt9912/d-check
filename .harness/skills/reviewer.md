@@ -202,3 +202,21 @@ Eingangs-Kontext (die Verträge, gegen die geprüft wurde). Danach: Findings ·
 Negativbefunde · Kategorie-Summary · Verdikt. Nie überschreiben — Folgeläufe bekommen
 eine neue Datei. Verdikt: HIGH und MEDIUM blockieren typischerweise;
 Abweichungen werden im Report begründet.
+
+**Zitier-Form — der Report friert ein, was er zitiert, bewegt sich weiter.**
+Deshalb **Kennung statt Adresse**:
+
+- `slice-<NNN>` statt seines Lifecycle-Pfads — die Datei wandert nach `done/`
+  und später ins Archiv, die Kennung nicht.
+- `make <target>` als Token statt eines Links auf `harness/sensors/<target>.md`
+  — ein **lebendes** Artefakt verlinkt die Sensor-Datei, ein einfrierendes
+  nennt das Target.
+- Eine Baseline-Stelle als **Tag plus Pfad in Inline-Code** statt als Link:
+  `` `v<X.Y.Z>` · `regelwerk/<datei>.md` §<Abschnitt> ``. Der vendorte Baum
+  trägt genau **einen** Tag; der nächste Bump löscht den alten, und ein Link
+  darauf färbt einen Report rot, den niemand mehr anfassen darf — oder zwingt
+  zu einem Ausnahme-Ventil, das selbst eine Gate-Senkung ist
+  ([`MR-069`](../../harness/conventions.md#mr-069)).
+
+Das `pfad`-Feld eines Findings bleibt davon unberührt: Es benennt die
+Fundstelle im geprüften Stand und ist damit selbst Messung, nicht Verweis.

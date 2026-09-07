@@ -182,7 +182,13 @@ structure:
     exempt-paths:
       - "docs/plan/planning/done/slice-0??-*"
       - "docs/plan/planning/done/slice-1[0-3]?-*"
-    section: "## 5. Abnahme-Punkte / Risiken"
+    # ZWEI FORMEN, EIN MUSTER (slice-208): Die Baseline v6.5.0 fuehrt den
+    # Abschnitt als `## 6. Risiken und offene Punkte`, der eingefrorene
+    # Bestand als `## 5. Abnahme-Punkte / Risiken`. Beide werden gehalten --
+    # ein woertlicher `section:`-Schluessel deckte nach der Umbenennung nur
+    # noch eine Haelfte und waere GRUEN, ohne noch etwas zu pruefen. Die
+    # Ziffer ist bewusst offen: der Abschnitt wandert von 5 auf 6.
+    section-pattern: '^## [0-9]+\. (?:Abnahme-Punkte / Risiken|Risiken und offene Punkte)$'
     forbid-pattern: '\*\*Ausgang:[\s*_]*(?:[^ew\s*_]|e[^in]|ei[^n]|ein[^g]|eing[^e]|en[^t]|ent[^f]|entf[^a]|w[^e]|we[^i]|wei[^t]|weit[^e]|weite[^r])'
 
   # Kein abgeschlossener Slice traegt einen offenen DoD-Haken. Der Kanon macht
