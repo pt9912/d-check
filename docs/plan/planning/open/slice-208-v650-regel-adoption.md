@@ -8,7 +8,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 **Welle:** ohne Welle — es gibt keine Closure-Bedingung, die von der DoD
 dieses Slice verschieden wäre.
 
-**Bezug:** [slice-207](../open/slice-207-baseline-v650-bump.md) (misst den Delta und
+**Bezug:** [slice-207](../in-progress/slice-207-baseline-v650-bump.md) (misst den Delta und
 hebt den Pin; dieser Slice **urteilt** über ihn),
 [Antwort auf den ausgehenden CR](../../cr/2026-09-06-cr-ai-harness-course-slice-formluecken.md)
 (die `v6.4.0`-Hälfte des Deltas ist die Umsetzung unserer beiden angenommenen
@@ -54,7 +54,7 @@ nur seine Umformulierung, ist je Eintrag zu entscheiden.
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Die Pin-Hebung selbst.** Sie liegt in
-  [slice-207](../open/slice-207-baseline-v650-bump.md); ohne den dortigen `diff -I`-Beleg
+  [slice-207](../in-progress/slice-207-baseline-v650-bump.md); ohne den dortigen `diff -I`-Beleg
   hat dieser Slice keinen Gegenstand.
 - **Ein Retrofit des `done/`-Bestands.** Die sechs Slices in Haus-Form bleiben,
   wie sie sind — eingefrorene Lauf-Belege.
@@ -118,7 +118,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 ## 6. Trigger
 
-**Start** (`open` → `in-progress`): [slice-207](../open/slice-207-baseline-v650-bump.md)
+**Start** (`open` → `in-progress`): [slice-207](../in-progress/slice-207-baseline-v650-bump.md)
 liegt in `done/`, der Delta ist mit `diff -I` gemessen und als Liste
 festgehalten. WIP-Limit frei.
 
