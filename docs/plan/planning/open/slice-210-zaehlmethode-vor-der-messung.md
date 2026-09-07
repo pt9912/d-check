@@ -16,7 +16,7 @@ dieses Slice verschieden wäre.
 **Berührte Spec-Stellen:** — *(keine; der Slice verkörpert eine
 Steering-Loop-Regel, er ändert keine Anforderung)*
 
-**Verantwortlich:** — · **Autor:** pt9912. **Datum:** 2026-09-07.
+**Verantwortlich:** pt9912 · **Autor:** pt9912. **Datum:** 2026-09-07.
 
 **Form-Hinweis.** Erster Plan dieses Repos in der **Baseline-Form**
 (`v6.5.0`, acht Abschnitte). Die Haus-Form ist mit
@@ -140,5 +140,94 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
-\<die drei Vorprüfungen und der Modus-Block entstehen spätestens bei der
-Beanspruchung — ein Plan in `open/` trägt sie noch nicht\>
+Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
+§Ziel-Form: Sub-Area-Modus-Begründung. **Der Abschnitt selbst entfällt nie** —
+die vorgelagerten Prüfungen hängen weder am Modus noch am Slice-Typ; bedingt
+ist allein der Modus-Block am Ende. Dieses Repo führt **drei** Prüfungen: die
+zwei kanonischen und, als Adaption, den Nachtlauf-Stand
+([`MR-053`](../../../../harness/conventions.md#mr-053)).
+
+**Vorgelagert — Sub-Area-Wahl prüfen:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:268-269 -->
+
+> **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+> muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+**Eine** Sub-Area: `*` (Repo-Default). Der Slice schreibt eine Regel über das
+Messen und ändern höchstens `AGENTS.md`, den Reviewer-Skill und eine
+Register-Datei. `tools/harness/` ist **nicht** berührt — §1 schließt einen
+Sensor ausdrücklich aus, und ohne Sensor gibt es dort nichts anzufassen.
+
+**Vorgelagert — offene Beobachtungen sichten:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:274-274 -->
+
+> **Offene Beobachtungen sichten.** Das
+
+Register durchgegangen (gemergter Stand, **37** Verzeichnisse über beide
+Kürzel). **Sechs** Einträge sind einschlägig, und drei davon entscheiden über
+den Zuschnitt:
+
+- [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+  (3×, Ausgang *geplant*) — **der Gegenstand selbst.** Der Eintrag nennt
+  diesen Slice namentlich; sein Ausgang wird hier zu *verkörpert*.
+- [`commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/observation.md)
+  (9×, verkörpert in [`AGENTS.md`](../../../../AGENTS.md) §5) — **der Eintrag,
+  der DoD (1) entscheidet.** Seine Regel sagt, ein Schluss reiche *„nicht
+  weiter als die gemessene Menge"*. Das ist die Aussage über den **Schluss**;
+  hier geht es um die **Messmethode**. Ob die Differenz trägt oder ob eine
+  Schärfung dort genügt, ist genau die Frage von DoD (1) — und sie ist
+  **nicht** vorentschieden.
+- [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+  (16×) — **zweimal in Folge eingetreten**, zuletzt in slice-209, und beide
+  Male in derselben Bauform: eine vorhandene Regel wurde weiter gelesen, als
+  ihr Geltungsbereich reicht. DoD (1) stellt genau diese Frage an
+  `AGENTS.md` §5. Der Ableiter gilt hier ungekürzt — den **Absatz** lesen,
+  nicht den Titel; und ein **Ja** („§5 deckt es schon"), das die dortige Regel
+  weiter zieht, als sie reicht, wäre der teuerste Fehler dieses Slice.
+- [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+  (10×, verkörpert) — der **Geschwister-Eintrag**, den §1 ausdrücklich
+  ausschließt. Die Abgrenzung ist beim Schreiben nachzuhalten: dort ist die
+  **Menge** falsch und die Kategorie richtig, hier ist die **Kategorie**
+  erfunden. Eine gemeinsame Formulierung machte beide unschärfer.
+- [`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
+  (8×, zuletzt slice-209) — §6 führt es als Risiko: drei Vorgänge, alle drei
+  Doku-/Planning-Messungen. Die Grenze gehört in die Formulierung.
+- [`begruendung-traegt-entscheidung-nicht`](../observations/BEO-ALL/begruendung-traegt-entscheidung-nicht/observation.md)
+  (2×, frisch aus slice-209) — für DoD (1): Der Zielort kann **richtig**
+  gewählt und **falsch** begründet sein, und dann leitet die nächste Änderung
+  ihre Reichweite aus dem falschen Satz ab. Der Test des Eintrags gehört
+  angewandt: *Bliebe die Entscheidung richtig, wenn die Begründung falsch
+  wäre?*
+
+**Keiner der sechs erreicht mit diesem Slice die Schwelle erstmalig.**
+
+**Vorgelagert — Nachtlauf-Stand lesen**
+([`MR-053`](../../../../harness/conventions.md#mr-053)):
+
+`make nightly-state` am 2026-09-07 gelesen: **beide Nachtläufe grün** —
+`upstream-drift.yml` (jüngster Lauf 2026-09-07T05:33:45Z) und `image-scan.yml`
+(2026-09-07T08:21:32Z). Nichts zu tun.
+
+**Modus-Begründungsblock.** Alle berührten Sub-Areas GF — ein Block genügt.
+
+### Sub-Area: `*`
+
+- **Modus:** GF (Repo-Default).
+- **Konventions-Dichte:** hoch für die **Träger**, null für den
+  **Gegenstand**. Wie eine Regel in [`AGENTS.md`](../../../../AGENTS.md) §5
+  oder im Reviewer-Skill auszusehen hat, ist dicht geregelt; *dass* eine
+  Messmethode vor ihrer Zahl steht, sagt heute kein Artefakt. Genau diese
+  Asymmetrie ist der Slice.
+- **Phase-Reife:** Phase 5 für den Vorgang — eine Steering-Loop-Regel aus
+  einem 3×-Stand ist der eingespielteste Ablauf dieses Repos, zuletzt in
+  slice-209. Phase 4 für den Gegenstand: Die Klasse ist benannt und dreimal
+  belegt, aber noch nie in eine Formulierung gebracht worden.
+- **Evidenz-/Diskrepanz-Risiko:** **niedrig für den Bestand, hoch für DoD (1).**
+  Am Bestand ist nichts zu inventarisieren — die drei Vorgänge sind in den
+  Evidence-Dateien belegt und werden nicht angefasst. Das Risiko sitzt allein
+  im Urteil über `AGENTS.md` §5, und es ist der 16×-Eintrag
+  `citation-stretched-beyond-scope`, der es benennt — zweimal in Folge
+  eingetreten.
+- **Reconciliation-Aufwand:** keiner (GF). Graduation entfällt.
