@@ -172,6 +172,17 @@ einen zu.
   hat dieser Slice keinen Gegenstand.
 - **Ein Retrofit des `done/`-Bestands.** Die **acht** `done/`-Slices in Haus-Form bleiben,
   wie sie sind — eingefrorene Lauf-Belege.
+- **Eine Umschrift der beiden lebenden Pläne.** Dieser Plan selbst und
+  [slice-209](../open/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
+  sind vor der Adoption geschrieben und tragen die Haus-Form. Sie werden
+  **nicht** umnummeriert: Dieser hier trägt `d-check:cite`-Spannen und
+  §-Verweise, die in Commit-Botschaften und in zwei Review-Reports zitiert
+  sind — eine Umschrift mitten im Lauf machte jeden dieser Verweise falsch.
+  Die Adoption ist **template-forward**: Sie gilt jedem Plan, der nach ihr
+  entsteht, und beide Formen sind seit diesem Slice in den Deklarations-Trägern
+  und im Prüf-Profil benannt. **Nachgetragen bei der Closure**, weil die
+  Abgrenzung beim Anlegen implizit blieb — die Regel, die dieser Slice mit R4
+  adoptiert, verlangt sie ausgeschrieben.
 - **Jede Regel, die der Delta nicht berührt.** Der Slice adoptiert, was
   `v6.4.0`/`v6.5.0` ändern, und benutzt die Gelegenheit nicht, um Nachbarregeln
   mitzunehmen.
@@ -193,11 +204,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - [x] **(3)** Die Konventions-Einträge sind nachgezogen: was der Kanon jetzt
       selbst sagt, ist aufgelöst; was abweicht, ist deklariert.
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §5 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §5 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -211,24 +222,58 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   [`MR-066`](../../../../harness/conventions.md#mr-066) **zweierlei**: den
   Grund **und** die **Ersatz-Form der Prüfung**, benannt im Plan und vollzogen
   im Report. Beides gehört bei der Beanspruchung in §6, nicht erst in den
-  Review. — **Ausgang:** \<offen\>
+  Review. — **Ausgang:** eingetreten — und zwar wie vorhergesehen. Beide
+  Pflichten aus [`MR-066`](../../../../harness/conventions.md#mr-066) stehen in
+  §6, geschrieben **vor** der ersten Zeile Arbeit: der Grund (eine Teilung
+  zerrisse den Delta-Audit) und die Ersatz-Form (zwei Runden gegen je einen
+  abgeschlossenen Stand). Vollzogen sind sie in den beiden Reports unter
+  [`docs/reviews/`](../../../reviews/) — Runde 1 gegen den Delta-Audit, ohne
+  die Migration zu sehen, Runde 2 gegen die Migration, den Audit als gegeben.
+  **Damit ist dies die vierte Instanz**, an der sich der Eintrag messen lassen
+  wollte, und die erste mit Vorab-Deklaration. Sie trägt: Runde 1 fand vier
+  Lücken im Audit, die eine zweite Runde über denselben Bereich nicht gefunden
+  hätte, weil sie ihn schon als geprüft gelesen hätte.
 - **Der Umfang steht erst nach slice-207 fest.** `v6.4.0` ist angekündigt und
   bekannt, `v6.5.0` nicht. Trägt es eine eigene Regel-Änderung, ist dieser
   Slice **vor** der Beanspruchung neu zu schneiden — eine Schätzung jetzt wäre
   aus dem Anlass gezogen und nicht aus dem Bestand
   ([`BEO-ALL/rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md),
-  7×). — **Ausgang:** \<offen\>
+  7×). — **Ausgang:** eingetreten — `v6.5.0` trug **zwei** eigene
+  Regel-Änderungen (RTM als Kanon-Begriff, Zitier-Form für einfrierende
+  Artefakte), und der Slice wurde **nicht** neu geschnitten. Das ist der Fall,
+  den der Risiko-Text als Alternative benennt, und er ist bewusst gegen den
+  Schnitt entschieden: Beide Regeln hängen an derselben Delta-Liste wie die
+  Form-Migration, ein Schnitt hätte sie zerrissen. Die Deckung dafür liefert
+  der Ausgang darüber — [`MR-066`](../../../../harness/conventions.md#mr-066)
+  ist genau für diese Wahl geschrieben. Kein Folge-Slice; die beiden Regeln
+  sind in diesem Slice beantwortet (R5, R6/R7).
 - **Die Gate-Regeln sind die stille Stelle.** Eine Regel, die auf einen
   Haus-Form-Titel keilt, wird nach der Umbenennung **grün, ohne noch etwas zu
   prüfen** — dieselbe Klasse wie ein Sensor, der auf `done/*.md` keilt und die
   archivierten Stubs nicht mehr sieht. Deshalb der Bruch-Test je Richtung in
-  DoD (2) und nicht bloß ein grüner Lauf. — **Ausgang:** \<offen\>
+  DoD (2) und nicht bloß ein grüner Lauf. — **Ausgang:** eingetreten — die
+  stille Stelle war real und wurde gefunden: Genau **eine** Regel keilte auf
+  einen wörtlichen Titel und wäre nach der Umbenennung grün geblieben, ohne
+  noch etwas zu prüfen. Der Bruch-Test je Richtung ist gefahren und im Report
+  von Runde 2 unabhängig reproduziert — beide Titel melden `section-forbidden`
+  auf derselben Zeile, ein dritter Titel meldet weiterhin `section-missing`.
+  **Der Review hat die Gegenrichtung mitgemessen und eine neue Fläche
+  benannt** (F-15): Trägt eine Datei beide Titel, ist der Selektor mehrdeutig
+  und die Prüfung entfällt für sie — laut, nicht still, und jetzt im
+  Kommentar über der Regel.
 - **Der `done/`-Bestand und die neue Form leben nebeneinander.** Solange beide
   existieren, ist „die Form eines Slice" zweideutig, und jede Regel darüber
   braucht eine Zeit- oder Verzeichnis-Grenze. Ob die acht Bestands-Slices als
   feste Liste oder über eine Ziffern-Schwelle ausgenommen werden, ist ein
   Entscheid — die Ziffern-Schwelle ist die gelebte Form
-  ([`MR-056`](../../../../harness/conventions.md#mr-056)). — **Ausgang:** \<offen\>
+  ([`MR-056`](../../../../harness/conventions.md#mr-056)). — **Ausgang:**
+  eingetreten, und der Entscheid ist gefallen: **beides, an getrennten
+  Achsen**. Die Ziffern-Schwelle (`exempt-paths` bis `slice-13?`) trennt den
+  Altbestand, der den Abschnitt gar nicht führt; das **Doppel-Muster** im
+  Selektor trägt die acht Slices, die ihn in Haus-Form führen, neben der neuen
+  Form. Eine feste Dateiliste wäre die dritte Möglichkeit gewesen und ist
+  verworfen: Sie müsste bei jedem geschlossenen Slice gepflegt werden, und
+  genau das ist die Klasse, die dieses Repo als zweite Quelle meidet.
 
 - **Zwei `v6.5.0`-Regeln gehen über eine Template-Adoption hinaus** — beim
   Anlegen dieses Plans war das unbekannt, die Delta-Messung des Vorgängers hat
@@ -242,7 +287,20 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   die **Kennung statt der Adresse**; sie berührt Bestand (Review-Reports,
   `done/`-Slices) und macht den ADR-Tombstone der letzten Hebung künftig
   entbehrlich. Beide sind **Urteile**, keine Umbenennungen, und beide können
-  den Zuschnitt sprengen. — **Ausgang:** \<offen\>
+  den Zuschnitt sprengen. — **Ausgang:** eingetreten — beide sind Urteile
+  geworden, und beide haben den Zuschnitt gehalten. **(a)** Die RTM: vier
+  Setzungen, alle vier ohne Zutun erfüllt. Der kurzzeitig geschriebene
+  Konventions-Eintrag dazu ist **zurückgezogen** — er deklarierte eine
+  Abweichung, die dieses Repo nicht praktiziert. **(b)** Die Unterscheidung
+  *einfrierend / lebend*: übernommen in zwei Trägern — die Zitier-Form steht
+  im Reviewer-Skill (1.14.0), und das `ignore-refs`-Ventil ist als
+  Gate-Senkung deklariert
+  ([`MR-069`](../../../../harness/conventions.md#mr-069)). Was sie **nicht**
+  entbehrlich macht, ist der ADR-Tombstone: Die ADR-Vorlage trägt die
+  Zitier-Form nicht, und für die 18 `Accepted`-ADRs gibt es damit keinen
+  Träger — als benannte Grenze in [`MR-069`](../../../../harness/conventions.md#mr-069)
+  festgehalten, nicht stillschweigend
+  weggelassen.
 - **Die Umnummerierung bewegt JEDEN Abschnitt** — gemessen: neun Haus-Form-
   Abschnitte gegen acht der Baseline, und die Zuordnung ist keine Bijektion
   (§1+§3 fallen zusammen, §6 spaltet sich in §4+§5). **Gate-seitig ist es
@@ -255,7 +313,17 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   nachgemessen: Sie zählte die Regeln, die beim Schreiben vor Augen standen,
   und sagte über alle aus. Der Schluss bleibt richtig, die Zahl unter ihm war
   falsch — genau die Klasse, die dieser Slice in §7 als gesichtet führt.
-  — **Ausgang:** \<offen\>
+  — **Ausgang:** eingetreten — und zwar in der Form, die der Risiko-Text
+  vorwegnimmt: *„sie ist eine Zählung, und der Register-Eintrag zu Zählungen
+  ist gesichtet"*. Die Zählung war zweimal falsch — „drei Regeln" statt fünf,
+  und beim Korrigieren „16 Ventil-Einträge" statt sieben von 25 —, beide Male
+  weil über eine andere Menge geredet als gezählt wurde. Eingetragen als
+  achter Beleg bei
+  [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md),
+  die Proxy-Variante als dritter bei
+  [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md).
+  Das Sichten hat die Klasse benannt und ihr Eintreten nicht verhindert; der
+  unabhängige Review hat sie gefangen.
 
 ## 6. Trigger
 
@@ -399,4 +467,93 @@ Meldung auf, ohne dass hier etwas zu tun wäre.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** Ein Delta-Audit über **sieben** Regeln in zwölf Trägern, je
+Regel eine Antwort; die Auflösung der Slice-Haus-Form (Vorlage, Prüf-Profil,
+Deklarations-Träger) mit einem Bruch-Test je Richtung; drei Handlungen am
+Delta — der Out-of-Scope-Schritt in beiden Workflow-Kopien, die Zitier-Form im
+Reviewer-Skill (1.14.0), das `ignore-refs`-Ventil als deklarierte Gate-Senkung
+([`MR-069`](../../../../harness/conventions.md#mr-069)). Zwei Review-Runden
+gegen je einen abgeschlossenen Stand, beide blockierend, beide eingearbeitet.
+`make gates` grün (zehn Gates, 693 Dateien), `make verify-closure-notes` grün
+(593 Dateien).
+
+**Was funktioniert hat: die vorab deklarierte Ersatz-Form.** Dies ist die
+vierte Instanz von [`MR-066`](../../../../harness/conventions.md#mr-066) und
+die erste, in der Grund und Ersatz-Form **vor** der Arbeit standen. Der Gewinn
+ist messbar und nicht rhetorisch: Runde 1 sah nur den Delta-Audit und fand
+darin vier Lücken — eine Regel ganz ohne Antwort, zwei, die in Wahrheit eine
+waren, vier fehlende Träger. Eine zweite Runde über denselben Gesamt-Bereich
+hätte den Audit als geprüft gelesen. Die Teilung **nach Gegenstand** statt nach
+Umfang ist der Grund, dass die Lücke gefunden wurde.
+
+**Was Friktion war: die Deklaration hinkt der Konfiguration hinterher.** Die
+Gate-Regel wurde auf beide Abschnitts-Formen umgestellt und mit einem
+Bruch-Test belegt — und sechs lebende Stellen, die über genau diese Regel
+**reden**, nannten weiter die alte Nummer. Der Slice hatte
+[`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
+in §7 selbst als *„den zentralen"* Eintrag geführt und sich dessen Ableiter
+verordnet; angewandt wurde er auf die Ausführung, nicht auf die Rede darüber.
+Ein Spiegel ist nicht nur, wer die Regel **ausführt**, sondern auch, wer sie
+**zitiert**.
+
+**Steering-Loop-Lerneintrag — neu benannt:** *Eine Review-Korrektur wird nur an
+der zitierten Fundstelle eingearbeitet*
+([`review-fix-applied-only-at-cited-site`](../observations/BEO-ALL/review-fix-applied-only-at-cited-site/observation.md),
+1×). Review-Runde 2 hat das Muster selbst benannt: drei ihrer Befunde sind
+Stellen, an denen eine Korrektur aus Runde 1 an genau der zitierten Fundstelle
+landete und ihre Geschwister stehen blieben — im deutlichsten Fall blieb die
+widerlegte Zahl in §3 stehen, also dort, wo sie den Umfang **normativ**
+festlegt. Das `pfad`-Feld eines Findings sagt, wo der Befund **gefunden**
+wurde, nicht wo er **steht**; ein Reviewer belegt, er inventarisiert nicht.
+Der Eintrag steht bei 1× und wartet, wie es die Regel vorsieht.
+
+**Drei weitere Belege**, alle drei in §7 vorab gesichtet und trotzdem
+eingetreten:
+[`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+(dreimal, dazu derselbe Fehler beim Korrigieren),
+[`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+(Slice-Kennungen gezählt, über Folge-Slice-Verweise ausgesagt) und
+[`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
+(oben). **Das Sichten hat sie benannt und ihr Eintreten nicht verhindert** —
+gefangen hat sie der unabhängige Review, jedes Mal. Wer daraus schließt, das
+Sichten sei wirkungslos, liest zu viel hinein: Ohne die Sichtung hätte der
+Slice die Klassen nicht benennen können, in die seine Befunde fallen. Aber als
+*Vermeidungs*-Werkzeug hat es in diesem Lauf nicht getragen, und das gehört
+so notiert.
+
+**Ein zurückgezogener Konventions-Eintrag.** `MR-068` <!-- d-check:ignore (zurückgezogen, es gibt kein Ziel mehr) --> deklarierte eine
+Abweichung über `trace.coverage` — einen Schlüssel, den die `.d-check.yml`
+dieses Repos nicht führt. Er ist gelöscht, nicht umformuliert: Ein Eintrag, der
+eine nicht gelebte Abweichung behauptet, ist schlechter als keiner. Die
+Nummer bleibt vergeben und wird nicht nachbelegt
+([`MR-000`](../../../../harness/conventions.md#mr-000--baseline-aussage)).
+
+**Die drei Paarungen, gemessen.** **(a) Anker** — vakant: Der
+Steering-Loop-Eintrag dieses Slice steht bei 1× und ist damit *gezählt, nicht
+verkörpert*; er trägt kein `liegt in`-Pflichtfeld und ist kein Gegenstand der
+Paarung. Was dieser Slice verkörpert ([`MR-069`](../../../../harness/conventions.md#mr-069),
+die Zitier-Form im Skill,
+Schritt 4), stammt aus dem **Kanon-Delta**, nicht aus der 3×-Schwelle, und
+braucht deshalb keinen Herkunfts-Anker. **(b) Folge-Slice** — der einzige
+genannte ist
+[slice-209](../open/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md),
+und er liegt im Lifecycle (`open/`). **(c) Register** — alle in diesem Plan
+zitierten Beobachtungs-Pfade lösen auf; von den jetzt **37** Verzeichnissen
+trägt genau eines kein `evidence/`:
+[`kanal-kennung-als-inhalt-gelesen`](../observations/BEO-ALL/kanal-kennung-als-inhalt-gelesen/observation.md).
+Das ist **kein** Defekt dieses Slice, sondern ein bewusst als *Wachposten*
+geführter Eintrag mit Zähler 0 — der Kanon lässt ein Vorkommen ohne
+abgeschlossenen Vorgang ausdrücklich zu („benannt, nicht gezählt"). Die
+zweite Hälfte der Register-Paarung („jede Zeile trägt mindestens einen
+Beleg") und diese Form widersprechen einander; hier nur **gemessen und
+benannt**, nicht aufgelöst — die Auflösung wäre eine Änderung an der
+Paarungs-Regel und gehört nicht in einen Adoptions-Slice.
+
+**Was offen bleibt, benannt statt verschwiegen.**
+[`MR-069`](../../../../harness/conventions.md#mr-069) trägt drei Grenzen,
+und die dritte ist die unbequeme: Die Auflösung nach vorn — Kennung statt
+Adresse — hat für Review-Reports einen Träger (den Skill), für die **18
+`Accepted`-ADRs** keinen. Eine ADR entsteht aus einer Vorlage, und die
+adoptierte Vorlage führt die Zitier-Form nicht. Solange das so ist, erzeugt die
+gelebte ADR-Praxis weiter Ventil-Einträge. Der Auflösungs-Trigger dieses Eintrags
+verlangt deshalb **beide** Bedingungen und kann heute nicht feuern.
