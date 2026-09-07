@@ -147,25 +147,25 @@ im Folge-Slice; hier ist sie nur gemessen.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** Der vendorte Bestand steht auf `v6.5.0`, `make baseline-verify`
+- [x] **(1)** Der vendorte Bestand steht auf `v6.5.0`, `make baseline-verify`
       und `make baseline-probe` sind grün, und der **Delta gegenüber `v6.3.1`
       ist mit `diff -I` gemessen** und als Liste im Slice festgehalten —
       getrennt nach *Regelwerk*, *Templates* und *reines Rauschen*.
-- [ ] **(2)** Alle pin-gebundenen Verweise zeigen auf `v6.5.0`
+- [x] **(2)** Alle pin-gebundenen Verweise zeigen auf `v6.5.0`
       ([`MR-021`](../../../../harness/conventions.md#mr-021)), die
       `d-check:cite`-Spannen sind neu geankert
       ([`MR-051`](../../../../harness/conventions.md#mr-051)), und die Aliase
       unter `.claude/rules/` lösen auf
       ([`MR-055`](../../../../harness/conventions.md#mr-055)).
-- [ ] **(3)** Ein neuer Konventions-Eintrag trägt die Hebung als Nachtrag zur
+- [x] **(3)** Ein neuer Konventions-Eintrag trägt die Hebung als Nachtrag zur
       [`MR-011`](../../../../harness/conventions.md#mr-011)-Kette, mit dem
       **gemessenen** Delta-Umfang statt einer Schätzung.
-- [ ] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §5 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] `make gates` grün.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor — blockierend, alle vierzehn Befunde abgearbeitet.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — zwei Belege, eine Schwelle erreicht.
+- [x] Jedes Risiko aus §5 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -177,17 +177,17 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   eine eigene Regel-Änderung trägt, ist der Folge-Slice **vor** seiner
   Beanspruchung neu zu schneiden. Das ist kein Fehler, sondern der Grund,
   warum die Messung in diesem Slice liegt und nicht im nächsten. —
-  **Ausgang:** \<offen\>
+  **Ausgang:** entfallen — die Messung liegt vor und der Folge-Slice ist geschnitten: Zwölf Dateien tragen ein Delta, davon sieben aus `v6.5.0`. Zwei davon (RTM als Kanon-Begriff, Zitier-Form für einfrierende Artefakte) gehen über eine Template-Adoption hinaus und sind in [slice-208](../open/slice-208-v650-regel-adoption.md) §5 bei dessen Beanspruchung zu ergänzen — der Plan wurde geschrieben, als der Delta noch unbekannt war.
 - **Die `d-check:cite`-Spannen sind die planmäßige Rot-Quelle**
   ([`MR-051`](../../../../harness/conventions.md#mr-051)). `citations` ist
   fail-closed und läuft im inneren Loop: eine nicht neu geankerte Direktive
   nimmt den `pre-commit`-Hook mit. Über **zwei** Versionen verschieben sich
-  mehr Zeilen als über eine. — **Ausgang:** \<offen\>
+  mehr Zeilen als über eine. — **Ausgang:** eingetreten — vier Spannen wanderten und wurden neu geankert, `citations` benannte sie einzeln und fail-closed. Die Aufwands-Vermutung traf zu; die Auflösung war die vorgesehene.
 - **Ein Verweis, den kein Gate hält**
   ([`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)):
   Release-/Tree-URLs, Prosa-Pins und der **zitierende** Verweis, dessen Zitat
   am neuen Ziel nicht mehr existiert. Gate-blind in beide Richtungen —
-  vergessene Hebung wie Über-Hebung. — **Ausgang:** \<offen\>
+  vergessene Hebung wie Über-Hebung. — **Ausgang:** eingetreten, und zwar in der Richtung, die der Eintrag zuletzt nennt: **Über-Hebung**. Zehn eingefrorene Zitate wurden mitgehoben; kein Gate sah es, der unabhängige Review schon. Eingetragen als dritter Beleg bei [`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md) — damit ist die Schwelle erreicht, und der Ausgang *geplant* zeigt auf [slice-209](../open/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md).
 
 ## 6. Trigger
 
@@ -314,4 +314,70 @@ grün — rot ist allein die Currency-Achse. Der Slice schließt sie.
 
 ## 9. Closure-Notiz (nach `done/`)
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** Der vendorte Bestand steht auf `v6.5.0`, alle pin-gebundenen
+Verweise samt der acht Symlinks sind gehoben, vier `d-check:cite`-Spannen neu
+geankert, und [`MR-067`](../../../../harness/conventions.md#mr-067) trägt die
+Hebung mit gemessenem Delta-Umfang. `make baseline-freshness` meldet den Pin
+als aktuell — die rote Currency-Achse des Nachtlaufs ist geschlossen.
+
+**Was funktionierte — und es ist die Messung, nicht die Hebung.** Die Lehre des
+Vorgängers lautete *„Bundle-Delta nur mit `diff -I` messen"*. Sie reicht nicht:
+`-I` filtert Versionen und Daten, und damit standen **27** Dateien als geändert
+da. Erst `diff -w -B -I` zeigt, dass **fünfzehn** davon reines Tabellen-Padding
+waren — die größte Einzeldatei mit 81 geänderten Zeilen trägt genau **eine**
+inhaltliche. Ohne den zweiten Filter hätte der Folge-Slice über fünfzehn
+Dateien geurteilt, die nichts sagen. Die Filter stehen jetzt ausgeschrieben in
+§2, damit die Zahlen nachrechenbar sind.
+
+**Was anders lief.** Der Review urteilte blockierend, und der Befund ist die
+**Gegenrichtung** dessen, was ich für gemeistert hielt. Ich hatte auf
+Vollständigkeit geachtet — vier Spiegel-Klassen, zwei davon fand mein erstes
+`grep` nicht — und dabei **zu viel** gehoben: zehn `d-check:cite`-Direktiven in
+fünf eingefrorenen `done/`-Slices zeigten danach auf den neuen Tag mit den
+**alten** Zeilennummern. Gate-blind, weil `citations.scope` diese
+Verzeichnisse ausnimmt.
+
+**Der Bestand trug die Regel die ganze Zeit sichtbar:** Zwei ältere
+`done/`-Slices stehen seit der vorigen Hebung auf ihrem damaligen Tag — genau
+deshalb. Ich habe sie gesehen und nicht als Regel gelesen, sondern als
+Restbestand.
+
+**Zwei weitere Fehler derselben Familie.** Der Beanspruchungs-Commit löschte
+**zwei** Zeilen statt einer; mit dem Ruhe-Marker verschwand ein Satzende, und
+§Offene Wellen der Roadmap endete mitten im Satz — beide Gates blieben grün,
+weil `planning-check` den Marker prüft und nicht den Absatz. Und die
+Register-Zählung *„35 Verzeichnisse — nachgezählt"* zählte nur `BEO-ALL/`; das
+Register führt ein zweites Kürzel.
+
+**Steering-Loop-Einträge.**
+
+- [`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)
+  — **dritter Beleg, Schwelle erreicht.** Ausgang *geplant*:
+  [slice-209](../open/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
+  schreibt die Regel. Der Eintrag hat mit jeder Instanz dieselbe Form gezeigt —
+  die Verzeichnis-Liste ist die falsche Abstraktion, maßgeblich ist die
+  Eigenschaft *„zitiert den Stand seiner Zeit"*. Beim dritten Mal gab es gar
+  keine Liste mehr.
+- [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+  — **zweiter Beleg**, und diesmal zweifach im selben Slice: Die Delta-Messung
+  zählte geänderte Zeilen statt Regel-Änderungen, und die Register-Zählung
+  zählte einen Teilbaum statt des Registers. Beide fielen erst durch
+  Nachrechnen auf. Der Eintrag war in §7 gesichtet und hat trotzdem zugeschlagen
+  — Sichten schützt nicht, es macht nur nachvollziehbar.
+
+**Folge-Slices.** [slice-208](../open/slice-208-v650-regel-adoption.md) urteilt
+über den gemessenen Delta;
+[slice-209](../open/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
+schreibt die Frozen-Klassen-Regel und wartet auf 208, weil `v6.5.0` selbst eine
+Antwort auf dieselbe Frage mitbringt.
+
+**Verifikation.** `make gates` grün über zehn Gates,
+`make baseline-verify` (54 Dateien, vollständig), `make baseline-probe` (neun
+Proben), `make adr-check`, `make baseline-freshness` beide Achsen grün. Ein
+unabhängiger Review, Report unter [`docs/reviews/`](../../../reviews/).
+
+**Was ein Leser hieraus mitnehmen sollte.** Bei einer mechanischen Ersetzung
+über den Baum ist die gefährliche Richtung nicht die vergessene, sondern die
+**zu weite**: Eine vergessene Hebung meldet ein Gate, eine Über-Hebung nicht.
+Und wer eine Menge zählt, zählt fast nie die Menge, über die er redet — zweimal
+in diesem Slice, beide Male an einem Teilbaum, der plausibel aussah.
