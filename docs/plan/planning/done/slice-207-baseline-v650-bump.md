@@ -187,7 +187,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   ([`BEO-ALL/pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)):
   Release-/Tree-URLs, Prosa-Pins und der **zitierende** Verweis, dessen Zitat
   am neuen Ziel nicht mehr existiert. Gate-blind in beide Richtungen —
-  vergessene Hebung wie Über-Hebung. — **Ausgang:** eingetreten, und zwar in der Richtung, die der Eintrag zuletzt nennt: **Über-Hebung**. Zehn eingefrorene Zitate wurden mitgehoben; kein Gate sah es, der unabhängige Review schon. Eingetragen als dritter Beleg bei [`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md) — damit ist die Schwelle erreicht, und der Ausgang *geplant* zeigt auf [slice-209](../in-progress/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md).
+  vergessene Hebung wie Über-Hebung. — **Ausgang:** eingetreten, und zwar in der Richtung, die der Eintrag zuletzt nennt: **Über-Hebung**. Zehn eingefrorene Zitate wurden mitgehoben; kein Gate sah es, der unabhängige Review schon. Eingetragen als dritter Beleg bei [`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md) — damit ist die Schwelle erreicht, und der Ausgang *geplant* zeigt auf [slice-209](../done/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md).
 
 ## 6. Trigger
 
@@ -353,7 +353,7 @@ Register führt ein zweites Kürzel.
 
 - [`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)
   — **dritter Beleg, Schwelle erreicht.** Ausgang *geplant*:
-  [slice-209](../in-progress/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
+  [slice-209](../done/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
   schreibt die Regel. Der Eintrag hat mit jeder Instanz dieselbe Form gezeigt —
   die Verzeichnis-Liste ist die falsche Abstraktion, maßgeblich ist die
   Eigenschaft *„zitiert den Stand seiner Zeit"*. Beim dritten Mal gab es gar
@@ -367,7 +367,7 @@ Register führt ein zweites Kürzel.
 
 **Folge-Slices.** [slice-208](../done/slice-208-v650-regel-adoption.md) urteilt
 über den gemessenen Delta;
-[slice-209](../in-progress/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
+[slice-209](../done/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
 schreibt die Frozen-Klassen-Regel und wartet auf 208, weil `v6.5.0` selbst eine
 Antwort auf dieselbe Frage mitbringt.
 

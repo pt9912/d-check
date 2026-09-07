@@ -9,7 +9,7 @@
   Moment des Schreibens. Dieser Eintrag regelt die **Ausschluss-Menge einer
   Massen-Operation**, ausgeführt von jemand anderem lange danach. Anderer
   Adressat, anderer Zeitpunkt, andere Handlung — der Nachweis steht in
-  [slice-209](../../docs/plan/planning/in-progress/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
+  [slice-209](../../docs/plan/planning/done/slice-209-frozen-klassen-vor-mechanischer-ersetzung.md)
   §2 und ruht auf drei Belegen, nicht auf einer Behauptung.
 - **Datum:** 2026-09-07 · **Herkunft:** seit slice-209 (Steering Loop,
   `BEO-ALL/mechanical-id-rewrite-misses-frozen-classes` 3×)
