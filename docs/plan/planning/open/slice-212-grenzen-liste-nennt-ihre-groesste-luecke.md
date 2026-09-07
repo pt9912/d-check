@@ -18,7 +18,7 @@ dieses Slice verschieden wäre.
 **Berührte Spec-Stellen:** — *(keine; der Slice korrigiert eine
 Sensor-Beschreibung und ändert keine Anforderung und kein Verhalten)*
 
-**Verantwortlich:** — · **Autor:** pt9912. **Datum:** 2026-09-07.
+**Verantwortlich:** pt9912 · **Autor:** pt9912. **Datum:** 2026-09-07.
 
 ---
 
@@ -153,5 +153,89 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
-\<die drei Vorprüfungen und der Modus-Block entstehen spätestens bei der
-Beanspruchung — ein Plan in `open/` trägt sie noch nicht\>
+Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
+§Ziel-Form: Sub-Area-Modus-Begründung. **Der Abschnitt entfällt nie**; bedingt
+ist allein der Modus-Block am Ende. Dieses Repo führt **drei** Prüfungen — die
+zwei kanonischen und, als Adaption, den Nachtlauf-Stand
+([`MR-053`](../../../../harness/conventions.md#mr-053)).
+
+**Vorgelagert — Sub-Area-Wahl prüfen:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:268-269 -->
+
+> **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+> muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+**Eine** Sub-Area: `*` (Repo-Default). Der Slice ändert
+[`harness/sensors/`](../../../../harness/sensors/)-Beschreibungen und eine
+Register-Datei. **`tools/harness/` ist nicht berührt, und das ist hier eine
+Aussage und keine Formalie:** §1 schließt jede Verhaltens-Änderung aus — die
+Skripte werden **gelesen**, um die Grenzen zu prüfen, nicht angefasst. Die
+Sub-Area der Skripte wäre `tools/harness/` (BEO-Kürzel `HARN`); sie bleibt
+außen vor.
+
+**Vorgelagert — offene Beobachtungen sichten:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:274-274 -->
+
+> **Offene Beobachtungen sichten.** Das
+
+Register durchgegangen (gemergter Stand, **37** Verzeichnisse über beide
+Kürzel). **Fünf** Einträge sind einschlägig, und der erste ist der Grund für
+den Zuschnitt:
+
+- [`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
+  (10×, zuletzt slice-210) — **er bestimmt den Zuschnitt, statt nur als Risiko
+  danebenzustehen.** In slice-209 und slice-210 stand er als Grenze im Eintrag
+  und blieb folgenlos. Hier trägt DoD (2) die **Inventur** über alle 24
+  Sensor-Dateien; das ist die erste Instanz, in der der Eintrag den Umfang
+  eines Slice geändert hat statt nur seinen Text.
+- [`wortlaut-behauptet-pruefung-die-fehlt`](../observations/BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt/observation.md)
+  (8×, Ausgang *geplant*) — die nächste Verwandte des Gegenstands: Dort
+  behauptet ein Wortlaut eine Prüfung, die es nicht gibt; hier **verschweigt**
+  eine Grenzen-Liste, was die Prüfung nicht kann. Ob das dieselbe Klasse ist
+  oder eine zweite, entscheidet DoD (3) — §6 führt es als Risiko.
+- [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+  (12×, Stand *gemischt*) — dreimal in slice-211 eingetreten. Die Inventur ist
+  eine Messung über 24 Dateien: Die **Menge** ist hier trivial (das
+  Verzeichnis), die Gefahr sitzt in der **Antwort** je Datei.
+- [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+  (4×, seit slice-210 *verkörpert*) — deshalb schreibt §3 aus, was
+  *vollständig* heißt, **bevor** die 24 Dateien durchgegangen werden. Die
+  Lehre aus slice-211 steht dabei: Die Form vorher auszuschreiben schützt
+  nicht davor, sie unterwegs zu verschieben — der Abgleich am Ende gehört
+  dazu.
+- [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+  (18×) — für DoD (1): Die Aussage über `baseline-verify` muss den
+  **Geltungsbereich** des Skripts wiedergeben, nicht seinen Titel. Der
+  Skript-Kopf sagt *„Integrität ist nicht Aktualität"*; genau dieser Satz fehlt
+  in der Sensor-Datei.
+
+**Keiner der fünf erreicht mit diesem Slice die Schwelle erstmalig.**
+
+**Vorgelagert — Nachtlauf-Stand lesen**
+([`MR-053`](../../../../harness/conventions.md#mr-053)):
+
+`make nightly-state` am 2026-09-07 gelesen: **beide Nachtläufe grün** —
+`upstream-drift.yml` (2026-09-07T05:33:45Z) und `image-scan.yml`
+(2026-09-07T08:21:32Z). **Für diesen Slice ist der Nachtlauf mehr als
+Routine:** `upstream-drift.yml` fährt `make baseline-freshness`, also genau den
+Träger, der die Echtheits-Lücke dieses Slice hält. Sein Grün heißt: Der
+gepinnte Baum entspricht dem Release-Asset — heute.
+
+**Modus-Begründungsblock.** Alle berührten Sub-Areas GF — ein Block genügt.
+
+### Sub-Area: `*`
+
+- **Modus:** GF (Repo-Default).
+- **Konventions-Dichte:** hoch für die **Form** der Sensor-Dateien (die
+  vendorte `gate.template.md` gibt sie vor, seit slice-203 adoptiert), **null**
+  für die Frage, wann eine Grenzen-Liste vollständig ist. Genau diese
+  Asymmetrie ist der Slice.
+- **Phase-Reife:** Phase 5 für die Slice-Mechanik. Phase 3 für den Gegenstand:
+  Die Sensor-Dateien sind seit slice-203 in Gebrauch, ihre Grenzen-Abschnitte
+  aber nie als **Menge** geprüft worden — dies ist die erste Inventur.
+- **Evidenz-/Diskrepanz-Risiko:** **mittel bis hoch.** Nicht am Bestand — der
+  liegt offen —, sondern in der Frage, wie viele Lücken die Inventur findet.
+  §6 führt das als erstes Risiko mit vorab benannter Rückführung.
+- **Reconciliation-Aufwand:** keiner (GF). Graduation entfällt.
