@@ -1,6 +1,6 @@
 # Reviewer-Skill — d-check
 
-**Version:** 1.14.0 · **Datum:** 2026-09-07 ·
+**Version:** 1.15.0 · **Datum:** 2026-09-07 ·
 **Baseline:** `modul-10-review-harness.md` §Ziel-Form: Reviewer-Skill (Output-Schema,
 Kategorien-Semantik, Report-Pflicht); Referenz-Richtung (SDP) aus
 `grundlagen-referenz-richtung.md` §Referenz-Richtung — seit
@@ -44,6 +44,7 @@ Wer nur diese Tabelle liest, meldet die Bestands-Ausnahmen mit.
 | 14 | **Begründet** ein Provenance-Marker eine Entscheidung, statt zu zeigen, wo verifiziert wurde? | MEDIUM |
 | 15 | Liest ein Modul **Eingaben, die es nicht scannt** — und gilt dort die Zusage nicht? | MEDIUM |
 | 16 | Nennt ein neues `Schärft:`/`Bezug:`-Feld nur „§N", **obwohl das Zielelement eine Kennung trägt**? | MEDIUM |
+| 17 | Zählt eine **Messung** ein Muster, das dem Gegenstand nur ähnelt — und steht die **Form** des Gegenstands nirgends? | MEDIUM |
 
 **Was diese Ebene kostet und was nicht.** Sie ist eine Einstiegs-Ordnung, keine
 Kürzung: das Dokument ist durch sie **länger** geworden, nicht kürzer. Der
@@ -99,6 +100,22 @@ sondern ausschließlich die Frage.
   nur ihre Reichweite überdehnt ist. **Kein Gate fängt das.** Die Regel selbst
   steht in [`AGENTS.md`](../../AGENTS.md) §5; hier steht ihre Kategorie und die
   Arbeitsanweisung.
+- **MEDIUM** (Auflösungs-Trigger: permanent):
+  **Messung zählt einen Proxy statt des Gegenstands.** Eine Zahl belegt eine
+  Aussage, und das Gezählte ist nicht das, worüber geredet wird — Überschriften
+  statt Kennungen, geänderte Zeilen statt geänderter Regeln, `slice-NNN`-Nennungen
+  statt Folge-Slice-Verweisen. Die Zahl fällt nicht auf, weil sie plausibel ist;
+  gefährlich wird sie im **zweiten** Schritt, wenn jemand die Trefferliste für
+  den Gegenstand hält und aus den Fehltreffern eine Kategorie ableitet.
+  **Arbeitsanweisung: verlange die Form vor der Zahl** — was macht einen Treffer
+  zu einem Treffer? — und **sieh dir drei Treffer an**, nicht die Zahl. Das ist
+  die **andere** Frage als Anker 8: Dort stimmt die Messung und nur ihr Schluss
+  ist überdehnt; hier stimmt der Schluss vielleicht und die Messung nicht.
+  **Kein Gate fängt das.** Die Regel selbst steht in
+  [`AGENTS.md`](../../AGENTS.md) §5; hier steht ihre Kategorie und die
+  Arbeitsanweisung. **Wo sie greift, ist gemessen:** In drei von vier belegten
+  Instanzen fand sie der Review, nicht der Zählende
+  (`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`, seit slice-210).
 - **MEDIUM** (Auflösungs-Trigger: permanent):
   **Quelle über ihren Geltungsbereich hinaus zitiert.** Ein Verweis stützt eine
   Aussage, die seine Quelle nicht trägt — der `MR-`Eintrag regelt etwas

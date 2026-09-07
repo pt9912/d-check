@@ -551,6 +551,20 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   wird rot. Der dritte Block trägt bewusst keine — sein Ziel ist repo-eigen und
   meldete bei jeder Änderung. **Kein Sensor hält das:** ein Plan ganz ohne
   Direktiven ist grün.
+- **Vor einer Messung steht die Form ihres Gegenstands.** Was macht eine
+  Kennung zu einer Kennung, einen Verweis zu einem *Folge*-Verweis, eine Regel
+  zu einer Regel? Die Antwort wird **ausgeschrieben, bevor** gezählt wird, und
+  die Trefferliste wird stichprobenweise gegen sie gehalten — nicht nur ihre
+  Zahl gelesen. Ein Muster, das dem Gegenstand ähnelt, liefert eine plausible
+  Zahl, und aus ihren Fehltreffern entsteht die Kategorie, die es nie gab.
+  **Andere Frage als der Absatz darüber:** Der prüft, ob der **Schluss** weiter
+  reicht als die gemessene Menge, und setzt eine korrekte Messung voraus; dieser
+  prüft die **Messung** selbst. **Grenze:** Die Regel gilt der Methode, nicht
+  der Sorgfalt — sie verhindert keinen Zählfehler, sie macht ihn auffindbar,
+  und belegt ist sie nur an Doku-/Planning-Messungen. Urteil, kein `grep`; der
+  Reviewer-Skill trägt den Anker dazu. *(Hard Rule aus dem Steering Loop,
+  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](docs/plan/planning/observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md),
+  seit slice-210; Auflösungs-Trigger: permanent.)*
 - Eine Commit-Botschaft oder Closure-Notiz behauptet **nicht mehr, als die
   Arbeit trägt**: eine genannte Probe muss gelaufen sein (§6 Schritt 8), und ihr
   Schluss reicht **nicht weiter als die gemessene Menge** — wer N Formen

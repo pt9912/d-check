@@ -60,11 +60,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       [`AGENTS.md`](../../../../AGENTS.md) §5 (wie die beiden
       Geschwister-Klassen), der Reviewer-Skill, oder beide? Ein Ort, der aus
       der Gewohnheit gewählt ist, ist keiner.
-- [ ] **(2)** Die Regel steht am entschiedenen Ort, mit Herkunfts-Anker
+- [x] **(2)** Die Regel steht am entschiedenen Ort, mit Herkunfts-Anker
       `seit slice-210` und mit der **Grenze**, was sie nicht leistet.
-- [ ] **(3)** Der Registereintrag trägt den Ausgang *verkörpert* mit
+- [x] **(3)** Der Registereintrag trägt den Ausgang *verkörpert* mit
       auflösbarem Zielort.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
