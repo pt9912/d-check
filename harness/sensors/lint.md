@@ -21,6 +21,11 @@ verboten.
    Funktionsgrenzen und Struktur-Regeln fängt er nicht; dafür stehen
    [`semgrep`](semgrep.md) und [`arch-check`](arch-check.md) daneben.
 
+3. **Fünf Ausschluss-Regeln verkleinern den Prüfbereich** —
+   [`.golangci.yml`](../../.golangci.yml) nimmt die Komplexitäts-Linter für
+   `_test.go` heraus und `testpackage` für den Kern-Baum. Zentral deklariert
+   mit Begründung, wie `AGENTS.md` §3.2 es verlangt — und trotzdem eine
+   Verkleinerung: Ein grüner Lauf sagt „sauber außerhalb dieser fünf".
 ## Bindung
 
 Bestandteil von `make gates`.

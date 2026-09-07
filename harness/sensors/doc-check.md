@@ -31,6 +31,12 @@ die automatisierte Messmethode für
    [`MR-054`](../conventions/MR-054-vorpruefungen-belegen-ihre-regel.md) die
    drei eingefrorenen Verzeichnisse aus.
 
+4. **Der Prüfbereich ist über zwei Ventile verkleinert, und das ist eine
+   deklarierte Gate-Senkung** — `ignore-refs` trägt **45** Einträge, und
+   **248** `d-check:ignore`-Marker stehen über die Doku verteilt. Beide sind
+   bewusste Akte mit Begründung an Ort und Stelle
+   ([`MR-069`](../conventions.md#mr-069) nennt das Ventil selbst so), aber ein
+   grüner Lauf sagt „nichts außerhalb dieser Ausnahmen".
 **Wie groß der Ausschnitt ist, sagt das Kommando:** `make doc-check` nennt die
 geprüfte Dateizahl in seiner Schluss-Zeile.
 

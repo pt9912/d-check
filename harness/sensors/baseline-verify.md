@@ -47,8 +47,7 @@ Integritätsprüfung von `.harness/baseline/<tag>/{regelwerk,templates}/` gegen
 
 Ihre Proben fährt `make baseline-probe` (neun Fälle, netzlos) — **die
 Echtheits-Grenze (0) hat keine**, denn sie ist keine Eigenschaft der
-Alias-Auflösung; ihr Bruch-Test steht in
-[slice-212](../../docs/plan/planning/in-progress/slice-212-grenzen-liste-nennt-ihre-groesste-luecke.md).
+Alias-Auflösung; ihr Bruch-Test steht in `slice-212`.
 
 ## Ausgabe und Ausgänge
 

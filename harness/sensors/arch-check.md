@@ -16,11 +16,17 @@ womit sie gedeckt ist, steht dort.
 1. **Der Gegenstand sind Import-Kanten** — die sechs Regeln R1–R6, nicht die
    Rollen-Treue der Schichten: dass ein Paket importieren *darf*, sagt nicht, dass es die
    richtige Rolle spielt. Permanent — das ist Review-Territorium.
-2. **Geprüft werden die Regeln, die in [`.a-check.yml`](../../.a-check.yml)
-   stehen** — eine Kante, für die keine Regel existiert, ist kein Befund,
-   sondern unsichtbar. Das Grün sagt „keine der sechs Regeln gebrochen", nicht
-   „der Schnitt ist eingehalten". Permanent: Welche Regeln nötig sind, ist ein
-   Entwurfs-Urteil, kein prüfbarer Zustand.
+2. **`exclude` nimmt zwei Mengen ganz heraus** —
+   [`.a-check.yml`](../../.a-check.yml) führt `**/*_test.go` und
+   `tools/archive-wave/**`. Für das Schwester-Werkzeug mit eigenem `go.mod`
+   gilt der Hexagon-Schnitt dieses Repos also **gar nicht**, und Testdateien
+   sind es ebenso wenig. Das ist gewollt und war es nicht in der Grenze.
+3. **`edges` ist eine Erlaubnisliste, keine Verbotsliste** — eine Kante, die
+   dort nicht steht, ist ein **Befund**, nicht unsichtbar. Was unsichtbar
+   bleibt, ist eine Datei, die **keiner** der deklarierten `layers`-Globs
+   trifft: Sie gehört zu keiner Schicht, und über ihre Importe sagt der Lauf
+   nichts. *(Die erste Fassung dieser Zeile behauptete das Gegenteil und ist
+   vom unabhängigen Review am Bestand widerlegt worden.)*
 
 ## Bindung
 

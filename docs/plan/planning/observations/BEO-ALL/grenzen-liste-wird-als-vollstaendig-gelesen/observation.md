@@ -29,3 +29,9 @@ Ableiter, zwei Schritte: **(1)** Nach dem Schreiben einer Grenzen-Liste den
 umdrehen — was folgt daraus für das Grün? **(2)** Die Liste braucht einen
 **fremden** Leser; in allen drei Instanzen fand die Lücke jemand anderes, nie
 der Autor.
+
+**Der Ableiter hat eine zweite Stufe, und sie ist in slice-212 teuer gelernt
+worden:** Schritt (1) setzt voraus, dass der **Vertrags**-Teil stimmt. Tut er
+das nicht, erbt die Grenze seinen Fehler — zweimal gemessen, einmal stand
+sogar im Code-Kommentar das Gegenteil des Verhaltens. **Wo der Gegenstand Code
+ist, wird gegen den Code geprüft, nicht gegen seine Beschreibung.**

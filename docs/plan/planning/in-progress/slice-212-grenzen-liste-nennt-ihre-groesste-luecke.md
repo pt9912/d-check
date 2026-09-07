@@ -115,42 +115,58 @@ verlangt.
 ihre Grenzen als **Fettabsätze**. Gezählt war ein Proxy, ausgesagt wurde über
 den Gegenstand — genau die Klasse, die
 [`AGENTS.md`](../../../../AGENTS.md) §5 seit slice-210 führt, im
-**Inventur-Schritt dieses Slice selbst**. Die zweite Zählung misst Zeilen mit
-Inhalt.
+**Inventur-Schritt dieses Slice selbst**.
 
-**Der Bestand ist besser als erwartet.** Von **24** Dateien tragen **20** einen
-`## Grenze`-Abschnitt, der die Lücken nennt, die Skript und Target kennen.
-**Vier** brauchten eine Ergänzung, **eine** davon war der Anlass.
+**Und die erste Fassung dieser Inventur war ebenfalls falsch — in beide
+Richtungen.** Sie meldete *„20 von 24 vollständig, vier ergänzt"*. Der
+unabhängige Review hat drei Stichproben gezogen und in **allen dreien** eine
+ungenannte Lücke gefunden; dazu waren **zwei** der vier Ergänzungen
+inhaltlich falsch, und die als *nicht entscheidbar* abgelegte Datei war am
+Code entscheidbar. **Die Inventur hat also ihre eigene These nicht getragen** —
+und der Grund ist derselbe, den der Registereintrag beschreibt: Wer die
+Grenzen liest, kennt den Gegenstand zu gut.
 
-| Datei | Antwort |
-|---|---|
-| `baseline-verify` | **ergänzt** — Echtheit vs. innere Konsistenz (der Anlass, DoD 1) |
-| `semgrep` | **ergänzt** — das gepinnte Regelset **altert**; der Ausschnitt war genannt, sein Alter nicht |
-| `review-coverage` | **ergänzt** — der Kennungs-Abgleich ist eine **Teilzeichenketten**-Suche; im Bestand nicht eingetreten |
-| `arch-check` | **ergänzt** — geprüft sind die **konfigurierten** Regeln; eine Kante ohne Regel ist unsichtbar, kein Befund |
-| `adr-check` | **nicht entscheidbar ohne Bruch-Test** — s. u. |
-| `doc-check` · `lint` · `test` · `gate-consistency` · `planning-check` · `trace-check` · `completeness-check` · `hooks` | **vollständig** |
-| `image-scan` · `nightly-state` · `guard-probe` · `workflow-pins` · `verify-closure-notes` · `mention-coverage` | **vollständig** |
-| `baseline-freshness` · `freshness-go` · `checkout-pin-freshness` · `runtime-base-digest` · `image-test` | **vollständig** |
+**Der Stand nach der Korrektur: 17 vollständig, 7 ergänzt.**
 
-**Was die vier Ergänzungen gemeinsam haben, und es ist nicht Nachlässigkeit:**
-In **allen vier** stand die Tatsache bereits in der Datei — im **Vertrags**-Teil
-(*„gepinntes, lokal gecachtes Regelset"*, *„Substring-Match, 1:N zulässig"*,
-*„Lauf mit `.a-check.yml`"*, *„gegen `SHA256SUMS`"*). Was fehlte, war ihre
-**Umkehrung**: was das **Grün** deshalb nicht abdeckt. Eine Eigenschaft im
-Vertrag und dieselbe Eigenschaft als Grenze sind zwei Aussagen, und nur die
-zweite liest, wer wissen will, worauf er sich nicht verlassen darf.
+| Datei | Antwort | Was fehlte |
+|---|---|---|
+| `baseline-verify` | **ergänzt** | Echtheit vs. innere Konsistenz — der Anlass (DoD 1) |
+| `adr-check` | **ergänzt** | `## Geschichte` ist bis zum Dateiende ausgenommen; **79 von 84** ADRs führen sie als letzte Sektion |
+| `doc-check` | **ergänzt** | **45** `ignore-refs`-Einträge und **248** `d-check:ignore`-Marker verkleinern den Prüfbereich |
+| `lint` | **ergänzt** | **fünf** Ausschluss-Regeln in `.golangci.yml` |
+| `arch-check` | **ergänzt** | `exclude` nimmt `**/*_test.go` und `tools/archive-wave/**` ganz heraus |
+| `semgrep` | **ergänzt** | das gepinnte Regelset **altert** |
+| `review-coverage` | **ergänzt** | der Abgleich sieht die **erste** Kennung im Dateinamen, und nur sie |
+| die übrigen **17** | **vollständig** | — |
 
-**`adr-check` ist die dritte Antwort, und sie ist keine Ausrede.** Die Datei
-nennt im Vertrag *„Erlaubt bleiben zwei Dinge: `## Geschichte`-Anhänge und der
-`**Status:**`-Übergang"*. Ob daraus eine **Lücke** folgt — ob eine
-Kern-Änderung, die **innerhalb** eines `## Geschichte`-Abschnitts abgelegt
-wird, den Vergleich passiert —, ist eine Frage an das Modul `vcs` und nur
-durch einen Bruch-Test zu beantworten. **§1 schließt Verhaltens-Prüfungen
-nicht aus, aber der Test bräuchte eine manipulierte `Accepted`-ADR im
-Arbeitsbaum**, und das ist ein eigener Vorgang mit eigenem Risiko. Als
-*„vollständig"* zu zählen, was ungeprüft ist, wäre die Klasse, gegen die
-dieser Slice geschrieben ist.
+**Zwei Ergänzungen mussten zurückgenommen und ersetzt werden.** Sie
+beschrieben Mechanismen, die es nicht gibt:
+
+- `review-coverage`: Die erste Fassung nannte eine **Teilzeichenketten**-Suche
+  und eine mögliche Präfix-Kollision. Der Code zieht die Kennung per Muster aus
+  dem Namen und vergleicht auf **Gleichheit** — die Kollision ist
+  ausgeschlossen. Die **echte** Grenze ist eine andere: Ein Report mit **zwei**
+  Kennungen im Namen deckt nur die erste.
+- `arch-check`: Die erste Fassung sagte, eine Kante ohne Regel sei
+  *„unsichtbar"*. `edges` ist eine **Erlaubnis**liste — eine undeklarierte
+  Kante ist ein **Befund**. Unsichtbar ist etwas anderes: eine Datei, die
+  keinen `layers`-Glob trifft.
+
+**Beide Fehlfassungen sind aus dem Vertrags-Teil abgeleitet worden statt aus
+dem Code** — und das ist die Ironie dieses Slice: Sein eigener Ableiter sagt,
+man solle den Vertrags-Teil umdrehen. Er setzt voraus, dass der Vertrag
+**stimmt**. Bei `review-coverage` stimmte er nicht (*„Substring-Match"* steht
+so im Code-Kommentar, das Verhalten ist Gleichheit). **Der Ableiter braucht
+eine zweite Stufe: gegen den Code, nicht gegen die Beschreibung** — das gehört
+in den Registereintrag und in die Vorfrage von slice-213.
+
+**`adr-check` war entscheidbar, und die erste Fassung hat sich gedrückt.** Sie
+schrieb *„nicht entscheidbar ohne Bruch-Test"*. Nötig waren zwei Messungen:
+`exclude-sections: [Geschichte]` in der Konfiguration, und die Zählung, wie
+viele ADRs `## Geschichte` als **letzte** Sektion führen (79 von 84). Kein
+Bruch-Test, keine manipulierte ADR. **Die dritte Antwort der DoD ist für den
+Fall da, dass etwas wirklich unentscheidbar ist — nicht dafür, dass die
+Messung teuer aussieht.**
 
 ## 4. Trigger
 
@@ -230,7 +246,7 @@ Kürzel). **Fünf** Einträge sind einschlägig, und der erste ist der Grund fü
 den Zuschnitt:
 
 - [`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
-  (10×, zuletzt slice-210) — **er bestimmt den Zuschnitt, statt nur als Risiko
+  (9×, zuletzt slice-210) — **er bestimmt den Zuschnitt, statt nur als Risiko
   danebenzustehen.** In slice-209 und slice-210 stand er als Grenze im Eintrag
   und blieb folgenlos. Hier trägt DoD (2) die **Inventur** über alle 24
   Sensor-Dateien; das ist die erste Instanz, in der der Eintrag den Umfang
