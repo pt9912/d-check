@@ -4,9 +4,9 @@
 **Richtung:** eingehend — dieses Repo ist der **Empfänger**.
 **Ziel-Dokument:** [`spec/lastenheft.md`](../../../spec/lastenheft.md)
 **Berührt:** [`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) (Modul `structure`)
-**Stand:** eingegangen, **noch nicht entschieden** — der Entscheid ist am
-2026-09-07 **bis zum Obermengen-Nachweis vertagt** (Auftraggeber-Entscheid);
-was bis dahin gemessen ist, steht unter §Zwischenstand.
+**Stand:** **entschieden am 2026-09-07 — nicht umgesetzt**, alle drei Fragen
+beantwortet (§Entscheid); der Obermengen-Nachweis liegt vor (§Obermengen-Nachweis).
+Der §Zwischenstand hält fest, was vor dem Nachweis gemessen war.
 
 **Ablage-Hinweis.** Dies ist der **kanonische** Change Request — der Kanon
 kennt genau einen, den eingehenden, als „externen Vorgang, in dem eine
@@ -254,3 +254,81 @@ MD013 ist Obermenge bei den **Bedingungen** und bei der **Schwelle**; bei der
 ausdrücken kann, die der CR selbst fordert. Zwei von drei Teilen genügen dem
 Kanon-Test nicht: *„Ist das Werkzeug Obermenge, wird das Skript retired — sonst
 benennt man die fehlende Klasse und behält es."*
+
+---
+
+## Entscheid (2026-09-07)
+
+**Der CR wird nicht umgesetzt** — weder als `max-line-chars` im Modul
+`structure` noch durch Einbau von `markdownlint`. Die Sorge dahinter ist
+berechtigt und bleibt unbestritten; abgelehnt wird die **Größe**, an der sie
+gemessen werden soll.
+
+### Antwort auf Frage 1 — trägt die Zeile als Proxy?
+
+**Nein**, und der CR benennt den Einwand selbst als den ernstzunehmenden. Die
+Zeile misst, wie ein Autor seinen Quelltext **umbricht**; gemeint ist, wie lang
+ein **Absatz** ist. Dass beides in diesem Repo zusammenfällt, ist eine
+Eigenschaft seiner Schreibgewohnheit, nicht der Messgröße — im Anlass-Repo
+`ai-harness-init` fällt es auseinander, und genau dort entstand der Anlass.
+
+**Der Nachweis hat den Einwand geschärft statt entkräftet.** Die zwei Proben,
+die neu gebaut werden mussten, zeigen dieselbe Sache im Kleinen: Ob eine lange
+Zeile ein Defekt ist, hängt daran, ob sie **umbrechbar** ist — MD013 macht
+genau diese Unterscheidung und nennt sie *whitespace beyond the limit*. Damit
+misst auch MD013 nicht die Absatzlänge, sondern eine bessere Näherung an sie.
+
+### Antwort auf Frage 2 — ist MD013 eine Obermenge?
+
+**Nein** — gemessen, drei Teile, oben im Nachweis. Obermenge bei den
+**Bedingungen** (6 von 6 gegen 3 von 6) und bei der **Schwelle**; **nicht** bei
+der Kandidaten-Menge, weil MD013 die abschnitts-weise Skopierung nicht
+ausdrücken kann, die der CR selbst fordert.
+
+### Antwort auf Frage 3 — rechtfertigt der Nutzen den Schritt?
+
+**Nein, für beide Wege — und die Gründe sind verschieden.**
+
+**Der eigene Weg scheitert an einer Decke.** `forbid-pattern` kann keine
+Schwelle über **1000** ausdrücken; darüber fällt der Lauf mit Exit 2. Die
+längste Zeile des Bestands misst 2045. Ein Gate, das die Anforderung nicht
+formulieren kann, ist keines — und eine eigene `max-line-chars`-Bedingung wäre
+kein *Werkzeug*-Einbau mehr, sondern eine neue Produkt-Fähigkeit mit
+Lastenheft-Anforderung, Akzeptanzkriterien und Modul-Arbeit.
+
+**Der fremde Weg scheitert am Preis.** `markdownlint` ist Node und wäre die
+**vierte Toolchain** dieses Repos. Sie entsteht nicht nebenbei
+([`MR-046`](../../../harness/conventions.md#mr-046)): digest-gepinnter Pin,
+`make`-Target, Deklaration in [`AGENTS.md`](../../../AGENTS.md) §4 und
+[`harness/README.md`](../../../harness/README.md), Nachtlauf-Achsen für Version
+und Digest, dazu die drei Pin-Spiegel-Klassen. Gegenwert: **neun** Dateien
+oberhalb von 1000 Zeichen.
+
+### Was an die Stelle des Nein tritt
+
+- **Der `forbid-pattern`-Weg bleibt verfügbar, aber nicht empfohlen** — als
+  **Ad-hoc-Messung**, nicht als Gate. Seine drei Falsch-Positiv-Klassen
+  (Tabellenzeile, unteilbares Token, Inline-Code-Token) und die 1000er-Decke
+  stehen im Nachweis; wer ihn benutzt, weiß, was er bekommt.
+- **Die eigentliche Frage bleibt offen und wird nicht umbenannt.** Eine
+  Bedingung über die **Absatz**-Länge — Zeichen oder Sätze je Absatz — deckt
+  `markdownlint` nicht, und sie adressiert den Diff-Schaden direkt, der den CR
+  ausgelöst hat. Sie wäre ein **anderer** CR mit anderen Akzeptanzkriterien,
+  und dieser Entscheid nimmt ihn nicht vorweg.
+
+### Was den Entscheid umkehren würde
+
+Drei Bedingungen, jede einzeln hinreichend:
+
+1. Das Modul `structure` bekommt aus **anderem** Grund eine Bedingung über
+   Zeichen je Zeile oder Absatz — dann fällt die Grenzkosten-Rechnung anders
+   aus.
+2. Dieses Repo nimmt aus **anderem** Grund eine Node-Toolchain auf — dann ist
+   MD013 nahezu umsonst zu haben, und die fehlende Abschnitts-Skopierung wird
+   zur einzigen offenen Frage.
+3. Der Bestand wächst über die Klasse hinaus, die gemessen wurde — heute neun
+   Dateien über 1000 Zeichen und eine über 2000.
+
+**Kein Sensor wacht über diese drei.** Sie sind Bedingungen für eine
+Wiedervorlage, kein Trigger mit Wächter, und das ist die benannte Grenze
+dieses Entscheids.

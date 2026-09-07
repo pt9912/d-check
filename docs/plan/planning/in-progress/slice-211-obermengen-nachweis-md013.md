@@ -66,9 +66,9 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - [x] **(2)** Der Nachweis ist **reproduzierbar dokumentiert**: das
       vollständige Kommando samt Image-Digest steht im CR. Ohne das ist er
       eine Selbstauskunft und der Kanon-Anspruch nicht erfüllt.
-- [ ] **(3)** Der CR ist **entschieden**: alle drei Fragen beantwortet,
+- [x] **(3)** Der CR ist **entschieden**: alle drei Fragen beantwortet,
       `Stand:`-Zeile gesetzt, Begründung je Frage.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
