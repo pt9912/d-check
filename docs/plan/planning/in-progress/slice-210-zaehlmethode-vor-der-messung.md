@@ -39,7 +39,8 @@ nur ihre Zahl gelesen.**
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Der Geschwister-Eintrag `eigene-menge-gemessen-fremde-behauptet`.** Er
-  steht bei 10× und ist bereits *verkörpert*; seine Frage ist die **Menge**
+  steht bei 10×, sein Stand ist *gemischt* (differenziert nach Instanz, zwei
+  davon ohne formgültigen Ausgang); seine Frage ist die **Menge**
   (*wer ändert, was ich zähle?*), diese hier ist die **Kategorie** (*ist das
   Gezählte überhaupt der Gegenstand?*). Zwei Fragen, zwei Regeln — eine
   gemeinsame Formulierung machte beide unschärfer.
@@ -172,7 +173,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   Ob er trägt, ist DoD (1). — **Ausgang:** \<offen\>
 - **Eine Regel aus drei Vorgängen ist keine Inventur**
   ([`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md),
-  7×). Alle drei Vorgänge sind Doku-/Planning-Messungen; ob die Regel für eine
+  8×, zuletzt slice-209). Alle drei Vorgänge sind Doku-/Planning-Messungen; ob die Regel für eine
   Code-Messung trägt, ist unbelegt und gehört als Grenze in die Formulierung.
   — **Ausgang:** \<offen\>
 - **Kein Gate, und das ist eine Aussage über die Wirkung.** Die Regel verschiebt
@@ -234,7 +235,8 @@ den Zuschnitt:
   nicht den Titel; und ein **Ja** („§5 deckt es schon"), das die dortige Regel
   weiter zieht, als sie reicht, wäre der teuerste Fehler dieses Slice.
 - [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
-  (10×, verkörpert) — der **Geschwister-Eintrag**, den §1 ausdrücklich
+  (10×, Stand *gemischt* — differenziert nach Instanz, zwei davon ohne
+  formgültigen Ausgang) — der **Geschwister-Eintrag**, den §1 ausdrücklich
   ausschließt. Die Abgrenzung ist beim Schreiben nachzuhalten: dort ist die
   **Menge** falsch und die Kategorie richtig, hier ist die **Kategorie**
   erfunden. Eine gemeinsame Formulierung machte beide unschärfer.

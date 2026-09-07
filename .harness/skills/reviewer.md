@@ -44,7 +44,7 @@ Wer nur diese Tabelle liest, meldet die Bestands-Ausnahmen mit.
 | 14 | **Begründet** ein Provenance-Marker eine Entscheidung, statt zu zeigen, wo verifiziert wurde? | MEDIUM |
 | 15 | Liest ein Modul **Eingaben, die es nicht scannt** — und gilt dort die Zusage nicht? | MEDIUM |
 | 16 | Nennt ein neues `Schärft:`/`Bezug:`-Feld nur „§N", **obwohl das Zielelement eine Kennung trägt**? | MEDIUM |
-| 17 | Zählt eine **Messung** ein Muster, das dem Gegenstand nur ähnelt — und steht die **Form** des Gegenstands nirgends? | MEDIUM |
+| 17 | Zählt eine **Messung** ein Muster, das dem Gegenstand nur ähnelt? | MEDIUM |
 
 **Was diese Ebene kostet und was nicht.** Sie ist eine Einstiegs-Ordnung, keine
 Kürzung: das Dokument ist durch sie **länger** geworden, nicht kürzer. Der
