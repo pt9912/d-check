@@ -1,1 +1,1 @@
-**Stand:** geplant — [slice-213](../../../open/slice-213-grenzen-liste-braucht-fremden-leser.md) entscheidet, ob die Klasse eine eigene Regel braucht oder ob [`AGENTS.md`](../../../../../../AGENTS.md) §6 sie mitträgt.
+**Stand:** geplant — [slice-213](../../../in-progress/slice-213-grenzen-liste-braucht-fremden-leser.md) entscheidet, ob die Klasse eine eigene Regel braucht oder ob [`AGENTS.md`](../../../../../../AGENTS.md) §6 sie mitträgt.

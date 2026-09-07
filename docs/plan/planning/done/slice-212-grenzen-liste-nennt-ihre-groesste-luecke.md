@@ -282,7 +282,7 @@ benutzt eine ehrliche Antwort als bequeme.
 
 **Was offen bleibt.** Die Vorfrage — braucht die Klasse eine eigene Regel, oder
 trägt [`AGENTS.md`](../../../../AGENTS.md) §6 sie mit? — liegt in
-[slice-213](../open/slice-213-grenzen-liste-braucht-fremden-leser.md), samt
+[slice-213](../in-progress/slice-213-grenzen-liste-braucht-fremden-leser.md), samt
 dem unbequemen Risiko, dass **zwei der drei Belege nachgetragen** sind. Und
 `semgrep`s Regel-Cache hat kein `SHA256SUMS`-Gegenstück; das ist eine
 Beobachtung des Reviews, kein Befund dieses Slice, und sie ist hier **benannt,
@@ -290,7 +290,7 @@ nicht aufgelöst**.
 
 **Die drei Paarungen, gemessen.** **(a) Anker** — vakant: Der Slice verkörpert
 keine Regel; sein Eintrag steht auf *geplant*. **(b) Folge-Slice** —
-[slice-213](../open/slice-213-grenzen-liste-braucht-fremden-leser.md) existiert
+[slice-213](../in-progress/slice-213-grenzen-liste-braucht-fremden-leser.md) existiert
 in `open/` und trägt eine DoD, die den Ausgang einlöst. **(c) Register** — alle
 zitierten Pfade lösen auf; die neuen Belege liegen als `evidence/slice-212.md`
 in ihren Verzeichnissen. Der Wachposten
