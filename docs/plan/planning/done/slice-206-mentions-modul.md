@@ -280,7 +280,7 @@ gehört in den Wächter"* — ist aus **einem** Anlass gezogen
 unter [`docs/reviews/`](../../../reviews/); 16 Akzeptanzkriterien, davon
 gemessen fallende Tests für die neuen Zusagen.
 
-**Was ein Leser hieraus mitnehmen sollte.** Eine Härtung ist erst fertig, wenn
+**Was ein Leser hieraus mitnehmen sollte.** Eine Härtung trägt erst, wenn
 **beide** Richtungen gemessen sind — der Fall, den sie schließt, und der
 Bestand, den sie tragen muss. Zweimal habe ich nur die erste Hälfte gemessen,
 und zweimal war das Ergebnis schlimmer als der Ausgangszustand. Und: Wo eine
