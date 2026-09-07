@@ -53,6 +53,65 @@ Review-Report, Closure-Notiz, Archiv-Stub, `Accepted`-ADR, geschlossener
 Slice. Ob die Regel dieses Repos damit **entbehrlich** wird oder ob sie den
 *Vorgang* regelt, den der Kanon nicht kennt, ist die erste Frage des Slice.
 
+### Die Vorfrage, beantwortet (DoD 1)
+
+**Nein — der Kanon macht die Regel nicht entbehrlich.** Er regelt eine andere
+Größe, und die Differenz ist an drei Stellen belegbar statt behauptet.
+
+**Was der Kanon regelt.** `v6.5.0` sagt: *„Ein einfrierendes Artefakt nennt ein
+prozess-bewegtes bei seiner Kennung, nicht unter seiner Adresse"*, zählt die
+einfrierenden auf (Review-Report, Closure-Notiz, Archiv-Stub, `Accepted`-ADR,
+geschlossener Slice) und grenzt ausdrücklich ab: *„Die Grenze: Sie gilt für
+einfrierende Artefakte."* Adressat ist der **Autor**, im **Moment des
+Schreibens**; die Anweisung betrifft die **Form eines Verweises**.
+
+**Was diese Regel regeln will.** Adressat ist, wer **mechanisch über den Baum
+ersetzt**, in einem Moment **lange nach** dem Schreiben; die Anweisung betrifft
+die **Ausschluss-Menge einer Massen-Operation**. Anderer Adressat, anderer
+Zeitpunkt, andere Handlung.
+
+**Beleg 1 — eine kanon-konforme Datei wurde trotzdem beschädigt.** Die dritte
+Form des Kanons lautet: *„Eine Stelle der vendored Baseline heißt Tag **und**
+Pfad in Inline-Code, nicht als Link."* Genau diese Form haben die zehn
+`d-check:cite`-Direktiven, die slice-207 mitgehoben hat — sie sind
+HTML-Kommentare mit Tag und Pfad, kein Link. Sie waren **konform** und wurden
+beschädigt. Damit ist gezeigt: Vollständige Kanon-Befolgung schließt den
+Fehler nicht aus, sie ist gegen ihn wirkungslos. Schlimmer noch, die Richtung
+kehrt sich um — die vom Kanon **vorgeschriebene** Form ist genau das, was eine
+Tag-Ersetzung greift, während der abgeratene Link von einem Sensor gemeldet
+würde.
+
+**Beleg 2 — eine der drei Instanzen liegt außerhalb des Kanon-Geltungsbereichs.**
+Der Fund in slice-202 betraf eine identifizierende Nennung in einem
+**lebenden** Dokument (die Plan-Tabelle, die den zu entfernenden Baum
+benennt). Der Kanon nimmt lebende Artefakte ausdrücklich aus. Eine Regel, die
+nur die einfrierenden deckt, hätte diese Instanz nie gefangen.
+
+**Beleg 3 — die Kanon-Aufzählung ist für dieses Repo unvollständig.** slice-195
+traf `Accepted`-ADR-Kerne (vom Kanon genannt) **und gesendete CRs** unter
+`docs/plan/cr/` (vom Kanon nicht genannt). Ein gesendeter CR ist einfrierend
+nach derselben Eigenschaft — er hält eine Bitte zu ihrem Datum fest —, steht
+aber in keiner der fünf Klassen. Das ist wörtlich der Punkt dieser Regel: **die
+Liste über die Eigenschaft, nicht über eine Aufzählung.**
+
+**Die Gegenprobe, und sie gehört dazu.** Die stärkste Lesart eines **Ja**
+wäre: Stünde nirgends eine Adresse, gäbe es nichts zu über-heben. Beleg 1
+widerlegt sie — der Kanon **schreibt** die Adressform hier vor, weil sie für
+den *Leser* die sichere ist. Sie ist es nur nicht gegen `sed`. Damit steht
+neben dem lokalen Eintrag eine Beobachtung, die den Kanon selbst betrifft; sie
+gehört gemeldet, aber nicht in diesen Slice (§3, *anderer Vorgang*).
+
+**Die direkteste Quelle wurde gesucht, nicht die bequemste**
+([`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md),
+15×). Das Regelwerk `v6.5.0` kennt **keine** Stelle über die mechanische
+Massen-Ersetzung — geprüft über den ganzen `regelwerk/`-Baum; der einzige
+Treffer zu *„repo-weit"* steht in `grundlagen-source-precedence.md` und gilt
+dem Geltungsbereich eines `MR`-Eintrags, nicht einer Ersetzung. Es gibt also
+keine nähere Quelle, die zu zitieren wäre.
+
+**Folge:** DoD (2) greift — der Eintrag wird geschrieben, und er trägt die
+Differenz oben als seine Existenzberechtigung.
+
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Ein Sensor auf die Regel.** Ob eine Ersetzung ihre Frozen-Klassen
@@ -71,7 +130,7 @@ Slice. Ob die Regel dieses Repos damit **entbehrlich** wird oder ob sie den
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** Die **Vorfrage ist beantwortet**: Macht die
+- [x] **(1)** Die **Vorfrage ist beantwortet**: Macht die
       `v6.5.0`-Unterscheidung *einfrierend / lebend* die Regel entbehrlich? Ein
       **Nein** braucht die Differenz — was regelt der Kanon nicht —, ein **Ja**
       schließt den Slice ohne neuen Eintrag und setzt den Register-Ausgang auf
