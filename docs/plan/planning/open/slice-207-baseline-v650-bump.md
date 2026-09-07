@@ -20,7 +20,7 @@ Release-Tag), [`MR-023`](../../../../harness/conventions.md#mr-023)
 **Berührte Spec-Stellen:** — *(keine; der Slice bewegt den Baseline-Pin und
 die pin-gebundenen Verweise, keine Anforderung und keine Sicht)*
 
-**Verantwortlich:** — · **Autor:** pt9912. **Datum:** 2026-09-06.
+**Verantwortlich:** pt9912 · **Autor:** pt9912. **Datum:** 2026-09-06.
 
 ---
 
@@ -132,12 +132,104 @@ gepinnten Tag ist unverändert. WIP-Limit frei.
 
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
-\<entsteht spätestens bei der Beanspruchung — ein Plan in `open/` trägt die drei
-Vorprüfungen noch nicht\>
+**Vorgelagert — Sub-Area-Wahl prüfen:**
+
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:223-224 -->
+
+> **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+> muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+**Zwei** Sub-Areas, und diesmal ist die Ausdifferenzierung nicht künstlich:
+`*` (Repo-Default) für die pin-gebundenen Verweise in den lebenden Dokumenten,
+**und** `tools/harness/` für das Werkzeug, das die Hebung ausführt. Die zweite
+ist in [`harness/conventions.md`](../../../../harness/conventions.md)
+§Modus-Deklaration eigens geführt und über
+[`MR-004`](../../../../harness/conventions.md#mr-004) konventionsgetragen. Ob
+`fetch-baseline-cache.sh` selbst angefasst werden muss, entscheidet die
+Delta-Messung — der Slice führt die Sub-Area deshalb als berührt, auch wenn
+die Antwort „keine Änderung" lauten kann.
+
+**Vorgelagert — offene Beobachtungen sichten:**
+
+<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:229-229 -->
+
+> **Offene Beobachtungen sichten.**
+
+Register durchgegangen (gemergter Stand, **35** Verzeichnisse — nachgezählt).
+Gesucht nach **beidem**: dem Gegenstand des Slice und dem, was er **anfasst**.
+Vier Einträge sind einschlägig:
+
+- [`pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+  (5×) — der unmittelbarste. Er benennt **vier** Spiegel-Klassen einer
+  Pin-Hebung und sagt, dass nur die grep-bare gehoben wird: Release-/Tree-URLs
+  mit dem Tag, Prosa-/Ellipsen-Pins und der **zitierende** Verweis, dessen
+  Zitat am neuen Ziel nicht mehr existiert. Gate-blind in **beide** Richtungen
+  — vergessene Hebung wie Über-Hebung. Er ist der Grund, warum DoD (2) die
+  Verweise **und** die Zitat-Spannen nennt und nicht nur die Pfade.
+- [`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
+  (11×, mit dem Vorgänger-Slice zuletzt gewachsen) — dieselbe Klasse eine Ebene
+  höher, und seine **Präzisierung aus slice-206** trifft hier direkt: Ein
+  Spiegel, der eine **abgeleitete Aussage** ist statt eines Verweises, lässt
+  sich nicht per `grep` finden. Bei einer Pin-Hebung sind das die Sätze, die
+  über den *Inhalt* des gepinnten Stands reden, ohne ihn zu zitieren.
+- [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+  (15×) — die `d-check:cite`-Spannen werden neu geankert, und ein neu
+  geankertes Zitat kann auf eine Zeile zeigen, die *ähnlich* aussieht, aber
+  einen anderen Geltungsbereich hat. `citations` prüft die **Wortgleichheit**,
+  nicht den Geltungsbereich.
+- [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+  (1×, aus slice-205) — DoD (1) **ist** eine Zählmethode: `diff -I` misst den
+  Delta, und aus seinen Treffern wird die Regel-Liste abgeleitet, auf der
+  [slice-208](../open/slice-208-v650-regel-adoption.md) urteilt. Der Ableiter
+  des Eintrags gilt wörtlich — vor der Messung die **Form** des Gegenstands
+  ausschreiben (was ist eine *Regel*-Änderung, was Rauschen?) und die
+  Trefferliste stichprobenweise dagegen halten, nicht nur die Zahl.
+
+**Geprüft und ausgeschlossen:**
+[`modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
+(2×) — der Slice fasst keine Modulliste an. Keiner der vier erreicht mit
+diesem Slice die Schwelle von 3× erstmalig.
+
+**Vorgelagert — Nachtlauf-Stand lesen**
+([`MR-053`](../../../../harness/conventions.md#mr-053)):
+
+`make nightly-state` am 2026-09-07 gelesen. `image-scan.yml` **grün**.
+`upstream-drift.yml` **ROT**, und die Ursache ist der Anlass dieses Slice: Der
+Pin steht auf `v6.3.1`, upstream liegen **zwei** Releases (`v6.4.0`, `v6.5.0`).
+Alle fünf Versions-Achsen und der **Content-Drift am gepinnten Tag** sind
+grün — rot ist allein die Currency-Achse. Der Slice schließt sie.
 
 ## 8. Sub-Area-Modus-Begründung
 
-\<entsteht mit den Vorprüfungen bei der Beanspruchung\>
+**Sub-Area `*` — Modus: GF** (Greenfield, Repo-Default).
+
+- **Konventions-Dichte:** hoch. Die Pin-Serie ist über die
+  [`MR-011`](../../../../harness/conventions.md#mr-011)-Kette elfmal gelebt,
+  das Bundle-Layout steht in
+  [`MR-023`](../../../../harness/conventions.md#mr-023), die Verweis-Bindung in
+  [`MR-021`](../../../../harness/conventions.md#mr-021), das Neu-Ankern in
+  [`MR-051`](../../../../harness/conventions.md#mr-051). Es gibt keine offene
+  Form-Frage.
+- **Phase-Reife:** Phase 5. Der Vorgang ist prozedural vollständig beschrieben
+  und werkzeug-getragen.
+- **Evidenz-/Diskrepanz-Risiko:** **erhöht, und zwar messbar höher als bei
+  jeder bisherigen Hebung.** Der Sprung überspringt zwei Releases; die
+  gesichteten Einträge `pin-bump-mirrors-ungated` (5×) und
+  `semantic-change-body-only-edges-stale` (11×) beschreiben beide genau die
+  Klasse, die dabei still bleibt. Das Risiko liegt nicht im Vendoring — das
+  hält `baseline-verify` —, sondern in den Verweisen, die kein Gate deckt.
+- **Reconciliation-Aufwand:** keiner (GF). Graduation entfällt.
+
+**Sub-Area `tools/harness/` — Modus: GF**, Kürzel `HARN`.
+
+- **Konventions-Dichte:** hoch —
+  [`MR-004`](../../../../harness/conventions.md#mr-004) trägt die
+  Harness-Mechanik.
+- **Phase-Reife:** Phase 5; das Werkzeug hat elf Hebungen getragen.
+- **Evidenz-/Diskrepanz-Risiko:** niedrig, aber **nicht null**: Ändert das
+  Bundle sein Layout, greift die tolerante Entpackung ins Leere. Das zeigt die
+  Delta-Messung, und `baseline-verify` fängt es fail-closed.
+- **Reconciliation-Aufwand:** keiner (GF).
 
 ## 9. Closure-Notiz (nach `done/`)
 
