@@ -59,11 +59,11 @@ Bestand, auf dem beide schweigen müssen.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** Der Nachweis liegt vor: **je Verstoßklasse** ein Break-Test mit
+- [x] **(1)** Der Nachweis liegt vor: **je Verstoßklasse** ein Break-Test mit
       beiden Sensoren nebeneinander **und** der unveränderte Bestand, auf dem
       beide schweigen — jeweils mit **echter Ausgabe**, nicht mit behauptetem
       Ergebnis.
-- [ ] **(2)** Der Nachweis ist **reproduzierbar dokumentiert**: das
+- [x] **(2)** Der Nachweis ist **reproduzierbar dokumentiert**: das
       vollständige Kommando samt Image-Digest steht im CR. Ohne das ist er
       eine Selbstauskunft und der Kanon-Anspruch nicht erfüllt.
 - [ ] **(3)** Der CR ist **entschieden**: alle drei Fragen beantwortet,

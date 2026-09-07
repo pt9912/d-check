@@ -164,3 +164,93 @@ Host-Skript-Interpreter, und der Tool-Call-Wächter blockt sie. Der Vergleich
 braucht deshalb ein **digest-gepinntes Image**, denselben Weg, den `semgrep`
 und `trivy` gehen. Das ist machbar und es ist ein eigener Vorgang — kein
 Nebenbei-Lauf.
+
+---
+
+## Obermengen-Nachweis gegen `markdownlint` MD013 (2026-09-07, slice-211)
+
+**Die Form des Nachweises gibt der Kanon vor** und schließt den
+Datenblatt-Vergleich ausdrücklich aus: je Verstoßklasse ein Break-Test mit
+**beiden** Sensoren nebeneinander, plus der unveränderte Bestand
+(Baseline-Regelwerk `modul-11-verification.md` §Fitness Function ohne
+Standard-Tool). Geprüft wird **Obermenge in drei Teilen** — dieselbe
+Kandidaten-Menge, dieselben Bedingungen, dieselbe Schwelle, **wie die
+Anforderung sie setzt**, nicht wie das Werkzeug sie vorbelegt.
+
+**Reproduzierbar:** `markdownlint-cli2` als digest-gepinntes Image, netzlos:
+
+```
+docker run --rm --network none -v "<probenverzeichnis>":/workdir:ro \
+  davidanson/markdownlint-cli2@sha256:173cb697a255a8a985f2c6a83b4f7a8b3c98f4fb382c71c45f1c52e4d4fed63a \
+  "**/*.md"
+```
+
+mit `.markdownlint-cli2.jsonc`:
+`{ "config": { "default": false, "MD013": { "line_length": N, "code_blocks": false, "tables": false, "headings": false } } }`
+
+Das repo-eigene Mittel ist `d-check --enable structure` mit
+`forbid-pattern: '.{N+1,}'` über den Abschnitt.
+
+### Teil 1 — Bedingungen: MD013 ist Obermenge
+
+Sieben Proben, Schwelle 300. **Zwei Proben mussten neu gebaut werden**, weil sie
+ihre Klasse nicht isolierten — die erste Prosa-Probe endete zufällig ohne
+Leerzeichen jenseits der Schwelle und traf damit MD013s Ausnahme für
+unumbrechbare Zeilen; die Inline-Code-Probe enthielt Leerzeichen und war damit
+kein *unteilbares* Token. Beide Male ähnelte die Probe der Klasse, ohne sie zu
+sein.
+
+| Klasse | vom CR gefordert | MD013 (auf die Anforderung konfiguriert) | `forbid-pattern` |
+|---|---|---|---|
+| K1 Fließtext-Zeile über der Schwelle | Befund | **meldet** ✔ | **meldet** ✔ |
+| K2 Abschnitt aus kurzen Zeilen, Summe darüber | Schweigen | schweigt ✔ | schweigt ✔ |
+| K3 Zeile in einem Fenced Block | Schweigen | schweigt ✔ | schweigt ✔ |
+| K4 Tabellenzeile | Schweigen | schweigt ✔ | **meldet** ✘ |
+| K5 unteilbares Token (lange URL) | Schweigen | schweigt ✔ | **meldet** ✘ |
+| K6a unteilbares Inline-Code-Token | Schweigen | schweigt ✔ | **meldet** ✘ |
+
+**Sechs von sechs gegen drei von sechs.** Auf dieser Achse ist MD013 Obermenge,
+und zwar deutlich.
+
+**Ein Nebenfund, der eine Klasse teilt:** Eine Inline-Code-Spanne **mit**
+Leerzeichen (K6b) meldet bei beiden. Sie ist umbrechbar und damit keine
+Ausnahme — *„Inline-Code"* ist keine Klasse, *„unteilbares Token"* ist eine.
+Der CR nennt beides in einem Atemzug.
+
+### Teil 2 — Schwelle: das eigene Mittel kann die Anforderung nicht ausdrücken
+
+`forbid-pattern` ist RE2, und RE2 begrenzt den Wiederholungszähler auf **1000**.
+Gemessen: `.{1000,}` läuft, `.{1001,}` ist ein **Konfigurationsfehler** und
+nimmt den ganzen Lauf mit (Exit 2) — es schweigt nicht, es fällt.
+
+**Die längste Zeile des Bestands misst 2045 Zeichen.** Eine Schwelle oberhalb
+von 1000 ist mit dem eigenen Mittel also **nicht formulierbar**, und der
+Kanon-Test *„der unveränderte Bestand, auf dem beide schweigen müssen"* ist für
+`forbid-pattern` **konstruktiv unerreichbar**. MD013 nimmt jedes `N`.
+
+### Teil 3 — Kandidaten-Menge: hier ist MD013 **keine** Obermenge
+
+Gemessen an Probe K7 (lange Zeile in einem **anderen** Abschnitt derselben
+Datei, Regel auf `## Text` skopiert): MD013 meldet, `structure` schweigt.
+MD013 kennt **keinen** Abschnitts-Begriff — es urteilt datei-weit.
+
+**Der CR verlangt genau das Gegenteil:** *„Eine Bedingung `max-line-chars` im
+Modul `structure`, **abschnitts-skopiert wie die übrigen**."* Die eigene
+Vormessung hatte denselben Unterschied schon gezeigt: zwei Abschnitts-Selektoren
+lieferten über derselben Schwelle 342 gegen 645 Befunde.
+
+### Der unveränderte Bestand
+
+Bei Schwelle 1000 über `docs/`, `spec/`, `harness/` (Archiv ausgenommen):
+MD013 meldet **9** Dateien, `forbid-pattern` **22**. Die Differenz ist
+einseitig — **null** Dateien meldet nur MD013, **13** nur `forbid-pattern`,
+und das sind genau die drei Klassen aus Teil 1, die es zu Unrecht trifft.
+
+### Antwort auf Frage 2
+
+**Nein — aber knapp, und die Lücke sitzt an einer anderen Stelle als vermutet.**
+MD013 ist Obermenge bei den **Bedingungen** und bei der **Schwelle**; bei der
+**Kandidaten-Menge** ist es das nicht, weil es die Abschnitts-Skopierung nicht
+ausdrücken kann, die der CR selbst fordert. Zwei von drei Teilen genügen dem
+Kanon-Test nicht: *„Ist das Werkzeug Obermenge, wird das Skript retired — sonst
+benennt man die fehlende Klasse und behält es."*
