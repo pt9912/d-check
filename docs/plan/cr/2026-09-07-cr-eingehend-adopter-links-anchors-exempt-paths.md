@@ -150,3 +150,71 @@ gegen `ignore-refs` einen **Breiten-Wächter** — *„6 von 24 Paaren überschr
 die Kappung"*. Das ist eine Regel im Repo des Absenders, keine Eigenschaft
 dieses Werkzeugs. Ob daraus eine Produkt-Änderung folgt, ist die eigentliche
 Frage.
+
+### Nachtrag vom Auftraggeber (2026-09-07): die Ursache liegt woanders
+
+**Mitgeteilt, nicht von hier gemessen.** Der Anlass im Repo des Absenders
+(`ai-harness-init`) war, dass ein Quellen-Kommentar seine **Form verlor**: aus
+
+```
+<!-- Quelle: [02-planung/modul-05-planning-harness.md](https://github.com/pt9912/ai-harness-course/blob/v6.5.0/kurs/de/02-planung/modul-05-planning-harness.md) -->
+```
+
+wurde wieder ein **relativer** Pfad (`../../kurs/de/…`). Ein solcher Pfad löst <!-- d-check:ignore (zitierte Fremd-Form, kein Verweis) -->
+im Adopter-Repo nicht auf — dort gibt es kein `kurs/de/`; er zeigt in das
+**Kurs**-Repo. Daher die Befunde.
+
+**Das ist ein reparierbarer Defekt, keine Folge der Immutabilität** — und damit
+eine andere Lage als die, die der CR beschreibt. Die absolute Form ist am Ziel
+gültig und überlebt jeden Pin-Sprung, weil sie den Tag **im Link** trägt statt
+im Verzeichnis.
+
+**Hier gemessen, zur Einordnung:** Das vendorte Bundle liefert die **absolute**
+Form — alle **25** `Quelle:`-Kommentare unter
+`.harness/baseline/v6.5.0/regelwerk/`, und ebenso in den vier vorherigen
+Pin-Generationen (`v6.3.1`, `v6.0.0`, `v5.18.0`, `v5.15.0`, je Stichprobe an
+`modul-05`). Der Rückfall ist also **nicht** im ausgelieferten Bundle
+entstanden; wo er entstand, ist von hier aus nicht feststellbar und wird nicht
+vermutet.
+
+**Was das für den Entscheid ändert:** Die Bitte bleibt für sich prüfbar — ein
+Werkzeug-Knopf steht oder fällt nicht mit dem Anlass. Aber die Begründung
+*„weder reparierbar noch ignorierbar"* trägt für diesen Fall nicht mehr: Er ist
+reparierbar, und für den Rest gibt es
+[`DC-FA-REF-001`](../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus).
+Der Entscheid hat damit zu prüfen, ob nach Abzug dieses Anlasses ein Fall
+übrig bleibt, den das vorhandene Ventil nicht trägt.
+
+### Der Wächter dagegen existiert — gemessen, nicht behauptet
+
+**Die Forderung *„das Original-Bundle muss unverändert verwendet werden"* ist in
+diesem Repo ein Gate**, kein Vorsatz:
+[`make baseline-verify`](../../../harness/sensors/baseline-verify.md) prüft den
+vendorten Bestand gegen `SHA256SUMS` und läuft als erstes Glied in
+`make gates`.
+
+**Bruch-Test, in einer isolierten Kopie gefahren** (der Arbeitsbaum wurde nicht
+angefasst), mit **genau** dem Rückfall aus dem Nachtrag oben — absolute URL
+zurück auf `../../kurs/de/…` in `modul-05-planning-harness.md`: <!-- d-check:ignore (zitierte Fremd-Form, kein Verweis) -->
+
+```
+unverändert:  Exit 0  ·  "verify ok (54 Dateien, vollständig)"
+nach dem Rückfall:  Exit 1  ·  "regelwerk/modul-05-planning-harness.md: GESCHEITERT"
+```
+
+**Ein einziges geändertes Zeichen im vendorten Baum macht `make gates` rot.**
+Damit ist die Klasse, die den CR ausgelöst hat, an ihrer Wurzel gefangen — und
+zwar **bevor** sie als toter Link in einem eingefrorenen Artefakt auftaucht.
+
+**Was das für den Entscheid heißt.** Die Kette des CR lautet: Bundle-Inhalt
+ändert sich → Links sterben → eingefrorene Artefakte werden rot → es braucht
+`exempt-paths`. Das erste Glied ist gewächtert. Ob der Absender diesen Wächter
+fährt, ist von hier aus **nicht** feststellbar und wird nicht vermutet; dass es
+ihn gibt, gehört in die Antwort.
+
+**Und die Grenze dieser Messung:** Sie gilt dem Fall *„Bundle verändert"*. Der
+**andere** Fall des CR — der Pin-Sprung, bei dem das alte Verzeichnis
+planmäßig fällt und Adressen darauf sterben — bleibt davon unberührt. Für ihn
+gilt weiterhin die Antwort oben:
+[`DC-FA-REF-001`](../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)
+mit `in:`-Skopus, in diesem Repo 25-fach gelebt.
