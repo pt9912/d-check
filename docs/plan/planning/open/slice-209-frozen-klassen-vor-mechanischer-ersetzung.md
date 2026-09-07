@@ -18,7 +18,7 @@ ist über die git-Historie prüfbar).
 **Berührte Spec-Stellen:** — *(keine; der Slice verkörpert eine
 Steering-Loop-Regel, er ändert keine Anforderung)*
 
-**Verantwortlich:** — · **Autor:** pt9912. **Datum:** 2026-09-07.
+**Verantwortlich:** pt9912 · **Autor:** pt9912. **Datum:** 2026-09-07.
 
 ---
 
@@ -131,13 +131,95 @@ Registereintrag trägt einen Ausgang mit auflösbarem Zielort.
 
 ## 7. Vorgelagert (vor der Modus-Begründung)
 
-\<entsteht spätestens bei der Beanspruchung — ein Plan in `open/` trägt die drei
-Vorprüfungen noch nicht\>
+**Vorgelagert — Sub-Area-Wahl prüfen:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:268-269 -->
+
+> **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+> muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+**Eine** Sub-Area: `*` (Repo-Default). Der Slice schreibt eine Regel über den
+Umgang mit dem Doku-Bestand und ändert höchstens einen Konventions-Eintrag und
+eine Register-Datei. `tools/harness/` ist **nicht** berührt: Der Slice baut
+keinen Sensor, und §3 schließt das ausdrücklich aus.
+
+**Vorgelagert — offene Beobachtungen sichten:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:274-274 -->
+
+> **Offene Beobachtungen sichten.** Das
+
+Register durchgegangen (gemergter Stand, **37** Verzeichnisse über beide
+Kürzel, `BEO-ALL` und `BEO-HARN`). **Fünf** Einträge sind einschlägig, und
+zwei davon erreichen mit diesem Slice ihren Zielpunkt:
+
+- [`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)
+  (3×, Ausgang *geplant*) — **der Gegenstand selbst.** Der Eintrag nennt diesen
+  Slice namentlich; sein Ausgang wird hier zu *verkörpert* oder, wenn die
+  Vorfrage mit **Ja** endet, zu *verkörpert* mit dem **Kanon** als Zielort.
+  Beides ist ein Ausgang, und keines der beiden ist ein Freitext.
+- [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+  (15× — der größte Eintrag des Registers) — **der einschlägigste für die
+  Vorfrage.** DoD (1) fragt, ob eine Kanon-Stelle eine eigene Regel entbehrlich
+  macht; das ist wörtlich die Frage *wie weit trägt ein zitierter Satz*. Der
+  Ableiter gilt hier ungekürzt: den **Geltungsbereich** lesen, nicht den Titel,
+  und die **direkteste** Quelle wählen. Ein **Ja** auf die Vorfrage, das den
+  Kanon weiter zieht, als sein Absatz reicht, wäre der teuerste Fehler dieses
+  Slice — er löschte eine Regel, statt sie zu ersetzen.
+- [`registerzeile-ohne-ausgang-nach-schwelle`](../observations/BEO-ALL/registerzeile-ohne-ausgang-nach-schwelle/observation.md)
+  (2×, frisch erhöht) — der zweite Beleg entstand **einen Commit vor diesem
+  Plan**: slice-208 hob einen Eintrag auf 3× und ließ ihn ohne Ausgang. Dieser
+  Slice hat dieselbe Pflicht an zwei Stellen — DoD (3) und der Ausgang oben —
+  und der Fehler ist frisch genug, um ihn nicht zu wiederholen.
+- [`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
+  (7×) — die Gegenrichtung, und §5 führt sie bereits als Risiko: Drei Anlässe
+  sind die Kanon-Schwelle, aber alle drei sind vom selben Typ. Die Grenze
+  gehört in den Eintrag, nicht in den Bericht danach.
+- [`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
+  (12×) — der Geschwister-Eintrag zu
+  [`MR-025`](../../../../harness/conventions.md#mr-025). Fällt die Vorfrage auf
+  **Ja**, verschwindet nichts still: Wer eine Regel für entbehrlich erklärt,
+  listet ihre Spiegel genauso auf wie beim Ändern.
+
+**Geprüft und ausgeschlossen:**
+[`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+(3×, Ausgang *geplant* → [slice-210](../open/slice-210-zaehlmethode-vor-der-messung.md))
+— dieser Slice zählt nichts; seine Vorfrage ist ein Urteil über einen Absatz,
+keine Messung über eine Menge. **Keiner der fünf erreicht mit diesem Slice die
+Schwelle erstmalig.**
+
+**Vorgelagert — Nachtlauf-Stand lesen**
+([`MR-053`](../../../../harness/conventions.md#mr-053)):
+
+`make nightly-state` am 2026-09-07 gelesen: **beide Nachtläufe grün** —
+`upstream-drift.yml` (jüngster Lauf 2026-09-07T05:33:45Z) und `image-scan.yml`
+(2026-09-06T07:56:19Z). Damit ist die Meldung aufgelöst, die
+[slice-208](../done/slice-208-v650-regel-adoption.md) noch als **ROT**
+vorfand: Jener Lauf datierte von **vor** der Pin-Hebung, und die benannte
+Grenze des Targets — es liest den jüngsten Lauf, nicht sein Alter — hat sich
+als genau das erwiesen, was sie zu sein behauptete. Nichts zu tun.
 
 ## 8. Sub-Area-Modus-Begründung
 
-\<entsteht mit den Vorprüfungen bei der Beanspruchung\>
+**Modus:** `*` ist **GF** (Greenfield, Repo-Default).
 
+- **Konventions-Dichte:** hoch. Der Umgang mit eingefrorenem Bestand ist über
+  [`MR-025`](../../../../harness/conventions.md#mr-025) (Spiegel vor dem
+  Editieren), [`MR-052`](../../../../harness/conventions.md#mr-052)
+  (historisches Zitat über die git-Historie prüfbar) und
+  [`MR-069`](../../../../harness/conventions.md#mr-069) (das Ventil als
+  deklarierte Gate-Senkung) bereits dreifach berührt. **Genau diese Dichte ist
+  das Risiko** — ein vierter Eintrag daneben muss sagen, was die drei nicht
+  sagen, sonst ist er die zweite Quelle, vor der die Source-Precedence warnt.
+- **Phase-Reife:** Phase 5. Ein Konventions-Eintrag aus einem 3×-Registerstand
+  ist der eingespielteste Vorgang dieses Repos; die Form liegt in der vendorten
+  Vorlage, der Ablauf in vier Vorgänger-Slices.
+- **Evidenz-/Diskrepanz-Risiko:** **niedrig für den Bestand, hoch für die
+  Vorfrage.** Am Bestand ist nichts zu inventarisieren — die drei Anlässe sind
+  in den Evidence-Dateien belegt und werden nicht angefasst. Das Risiko sitzt
+  allein im Urteil über die Kanon-Stelle, und es ist der 15×-Eintrag
+  `citation-stretched-beyond-scope`, der es benennt.
+- **Reconciliation-Aufwand:** keiner (GF). Graduation entfällt.
 ## 9. Closure-Notiz (nach `done/`)
 
 \<wird vor dem `git mv` nach `done/` gefüllt\>
