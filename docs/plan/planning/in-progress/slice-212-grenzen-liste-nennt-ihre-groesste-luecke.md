@@ -71,10 +71,10 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Skript/Target gehalten: je Datei eine Antwort — Grenze vollständig ·
       Grenze ergänzt (mit der ergänzten Lücke) · nicht entscheidbar (mit
       Begründung). Eine Datei ohne Antwort ist ein offener Punkt.
-- [ ] **(3)** Der Register-Eintrag zur Wiederholung ist geschrieben: dreimal in
+- [x] **(3)** Der Register-Eintrag zur Wiederholung ist geschrieben: dreimal in
       Folge enthielt eine ausgeschriebene Grenzen-Liste ihre eigene größte
       Lücke nicht.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
