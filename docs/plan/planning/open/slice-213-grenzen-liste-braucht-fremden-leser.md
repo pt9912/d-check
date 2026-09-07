@@ -36,7 +36,7 @@ den **Vertrags**-Teil desselben Artefakts umdreht.
 **Ausdrücklich NICHT in diesem Slice** — je Punkt mit Begründung:
 
 - **Eine erneute Inventur über die Sensor-Dateien.** Sie liegt in
-  [slice-212](../in-progress/slice-212-grenzen-liste-nennt-ihre-groesste-luecke.md)
+  [slice-212](../done/slice-212-grenzen-liste-nennt-ihre-groesste-luecke.md)
   und ist dort abgeschlossen; dieser Slice urteilt über die **Regel**, nicht
   über den Bestand.
 - **Ein Sensor darauf.** Ob eine Grenzen-Liste vollständig ist, ist ein Urteil
@@ -86,7 +86,7 @@ zu sparen.
 
 ## 4. Trigger
 
-**Start** (`open` → `in-progress`): [slice-212](../in-progress/slice-212-grenzen-liste-nennt-ihre-groesste-luecke.md)
+**Start** (`open` → `in-progress`): [slice-212](../done/slice-212-grenzen-liste-nennt-ihre-groesste-luecke.md)
 liegt in `done/` — der Registereintrag und seine drei Belege müssen stehen,
 bevor über die Regel geurteilt wird. WIP-Limit frei.
 
