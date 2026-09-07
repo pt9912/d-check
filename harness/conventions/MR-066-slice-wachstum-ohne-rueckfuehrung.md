@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine — der Eintrag **präzisiert** eine
   Kanon-Regel, statt von ihr abzuweichen.
-  [`modul-05-planning-harness.md` §Ziel-Form: Slice](../../.harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md#ziel-form-slice)
+  [`modul-05-planning-harness.md` §Ziel-Form: Slice](../../.harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md#ziel-form-slice)
   sagt für den zu groß gewordenen Slice: *„Dann zurück zum Schneiden
   (`in-progress→next`), nicht still weiterschieben."* Der Satz verbietet das
   **stille** Weiterschieben — er sagt nicht, was an die Stelle der Stille

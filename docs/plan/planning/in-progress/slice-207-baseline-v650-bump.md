@@ -52,6 +52,77 @@ angenommenen Bitten unseres ausgehenden CR
 und bedingtem Rumpf, beide Prosa-Pflaster entfernt. **Was `v6.5.0` bringt, ist
 unbekannt**; das misst dieser Slice.
 
+### Der gemessene Delta (DoD 1)
+
+**Die Messmethode zuerst, wie der Register-Eintrag es verlangt.** Ein
+**Regel**-Delta ist eine Zeile, die ändert, was ein Implementer tun oder lassen
+muss — eine Pflicht, ein Verbot, eine Form-Vorgabe, eine Ziel-Form. **Rauschen**
+ist alles, was die Verpflichtung unberührt lässt: Versions- und Datumsangaben,
+Tabellen-Padding, nachgezogene Querverweise.
+
+**Und die Methode des Vorgängers reichte nicht.** Die Lehre aus der letzten
+Hebung lautete *„Bundle-Delta nur mit `diff -I` messen"* — das filtert Versionen
+und Daten. Damit blieben **27** Markdown-Dateien mit Delta stehen, und die
+größte (`grundlagen-begriffe.md`, 81 Zeilen) war **vollständig**
+Tabellen-Padding: die Glossar-Tabelle wurde von Ausricht-Leerzeichen befreit.
+Erst `diff -w -B -I` trennt das:
+
+| Messung | Dateien mit Delta |
+|---|---|
+| roh (`diff -rq`) | 35 Pfade |
+| mit `-I` (Versionen, Daten) | 27 Markdown-Dateien |
+| **mit `-w -B -I`** | **12 Markdown-Dateien** |
+
+Fünfzehn Dateien waren reines Weißraum-Rauschen. Ohne den zweiten Filter hätte
+der Folge-Slice über sie geurteilt. **Der Datei-Bestand ist unverändert:** 55
+Dateien vorher wie nachher, keine neu, keine entfallen.
+
+**Die zwölf, klassifiziert.** Zwei Gruppen, und die Trennlinie ist scharf:
+
+**(A) `v6.4.0` — die Umsetzung unseres ausgehenden CR** (fünf Dateien):
+
+1. `modul-05` §Ziel-Form: Slice — §1 heißt **Ziel und Abgrenzung**, mit den
+   **vier Klassen** und der Begründungs-Pflicht je Punkt. **Plus eine Schärfung,
+   die wir nicht erbeten haben:** *„Die Adresse muss die Sendung annehmen"* — ein
+   Folge-Slice, der den verwiesenen Punkt selbst ausschließt oder **vor** dem
+   verweisenden schließt, ist keine Adresse.
+2. `slice.template.md` — §1 und §8 umbenannt (`Sub-Area-Prüfungen und
+   Modus-Begründung`), Bedienhinweise, die zwei *Vorgelagert*-Blöcke als
+   unbedingter Kopf.
+3. `modul-09` — die Plan-Ausgabe nennt Out-of-Scope, **und eine neue Pflicht**:
+   Nimmt der Lauf etwas mit, das §1 ausschließt, ist das eine **Plan-Änderung**
+   und gehört vor den Code, nicht in den Bericht danach.
+4. `modul-06` — Querverweis auf die neue §1-Form.
+5. `templates/README.md` — beide Abschnitte beschrieben.
+
+**(B) `v6.5.0` — neu, und die erste Hälfte trifft d-check ins Zentrum** (sieben
+Dateien):
+
+6. `grundlagen-traceability.md` — **neue Sektion** *„Die zweite Richtung:
+   Anforderung → Beleg"*: die **RTM** als Kanon-Begriff, *„sie wird **erzeugt**,
+   nicht gepflegt"*, und die Setzung, dass es eine **Konfigurationsentscheidung**
+   ist, welche Verweis-Quelle eine Anforderung *entlastet*. Das beschreibt
+   `--trace` — unser eigenes Werkzeug — und ist damit der inhaltlich schwerste
+   Punkt des Deltas.
+7. `grundlagen-begriffe.md` — RTM im Glossar (die einzige nicht-Rauschen-Zeile
+   dieser Datei).
+8. `grundlagen-harness-dateien.md` — **einfrierendes gegen lebendes Artefakt**:
+   Ein lebendes verlinkt `harness/sensors/<target>.md`, ein einfrierendes nennt
+   `make <target>` als **Token**. Einfrierend sind Review-Report, Closure-Notiz,
+   Archiv-Stub, `Accepted`-ADR und geschlossener Slice.
+9. `review-report.template.md` — die **Zitier-Form** dazu: Kennung statt
+   Adresse, und eine Baseline-Stelle als **Tag + Pfad in Inline-Code** statt als
+   Link. Begründung des Kanons: Der vendorte Baum trägt genau einen Tag, und ein
+   Link darauf färbt beim nächsten Bump ein Artefakt rot, das niemand mehr
+   anfassen darf.
+10.–12. `archiv-stub-slice`, `archiv-stub-welle`, `welle-results` — dieselbe
+   Zitier-Form in den übrigen einfrierenden Vorlagen.
+
+**Der Punkt 8/9 hat diesen Slice bereits eingeholt**, und das ist kein
+Nebenbefund: Die `Accepted`-ADR-Ausnahme unten (§5) ist genau der Fall, den die
+neue Kanon-Regel künftig gar nicht erst entstehen lässt. Die **Adoption** liegt
+im Folge-Slice; hier ist sie nur gemessen.
+
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Jede Regel-Adoption.** Ob und wie ein Delta-Punkt übernommen wird, ist ein
@@ -134,7 +205,7 @@ gepinnten Tag ist unverändert. WIP-Limit frei.
 
 **Vorgelagert — Sub-Area-Wahl prüfen:**
 
-<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:223-224 -->
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:268-269 -->
 
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
@@ -151,7 +222,7 @@ die Antwort „keine Änderung" lauten kann.
 
 **Vorgelagert — offene Beobachtungen sichten:**
 
-<!-- d-check:cite .harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md:229-229 -->
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:274-274 -->
 
 > **Offene Beobachtungen sichten.**
 

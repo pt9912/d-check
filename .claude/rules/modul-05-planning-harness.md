@@ -1,1 +1,1 @@
-../../.harness/baseline/v6.3.1/regelwerk/modul-05-planning-harness.md
+../../.harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md

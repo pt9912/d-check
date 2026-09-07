@@ -24,9 +24,9 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
 ## Baseline
 
 - **Konvention:** AI-Harness-Kurs
-- **Stand:** [`v6.3.1`](https://github.com/pt9912/ai-harness-course/releases/tag/v6.3.1),
+- **Stand:** [`v6.5.0`](https://github.com/pt9912/ai-harness-course/releases/tag/v6.5.0),
   gepinnt mit
-  [`MR-065`](#mr-065)
+  [`MR-067`](#mr-067)
   — der jeweils aktuelle Eintrag der Pin-Serie. Die **Kette** der bisherigen
   Hebungen steht nicht hier, sondern in
   [§Aufgelöste Adaptionen](#aufgelöste-adaptionen): dort trägt jede Zeile ihren
@@ -38,13 +38,13 @@ Diese Datei ist konformitätsbringend für *Form*-Fragen, nicht autoritativ
 ## Adoptierte Konventions-Quellen
 
 - **Extern (Lehrmaterial):**
-  [`ai-harness-course@v6.3.1`](https://github.com/pt9912/ai-harness-course/tree/v6.3.1)
+  [`ai-harness-course@v6.5.0`](https://github.com/pt9912/ai-harness-course/tree/v6.5.0)
   (`kurs/de/` — Konventionen in `grundlagen/`, Templates in `lab/templates/`).
   Kanonische Quelle; bei Konflikt maßgeblich.
 - **Vendored Baseline (Regelwerk + Templates):** aus dem self-contained
   Release-Asset
-  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v6.3.1/lab-regelwerk.zip)
-  entpackt nach [`.harness/baseline/v6.3.1/`](../.harness/baseline/v6.3.1/regelwerk/)
+  [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v6.5.0/lab-regelwerk.zip)
+  entpackt nach [`.harness/baseline/v6.5.0/`](../.harness/baseline/v6.5.0/regelwerk/)
   (`{regelwerk,templates}/` + `SHA256SUMS`) — der **netzlose** Lesepfad,
   materialisiert/verifiziert per
   [`fetch-baseline-cache.sh`](../tools/harness/fetch-baseline-cache.sh).
@@ -60,7 +60,7 @@ vendored Vorlage `harness/conventions/MR-<NNN>-titel.template.md`; ist ihr
 Auflösungs-Trigger eingetreten, wandert sie per `git mv` nach `conventions/done/`.
 Der **Zustand ist die Verzeichnis-Position**, kein Status-Feld — was hier steht,
 liest **jeder** Agentenlauf, aufgelöste Adaptionen gehören nicht in diesen Pfad
-([Baseline-Regelwerk §Konventionsspeicher](../.harness/baseline/v6.3.1/regelwerk/grundlagen-harness-dateien.md#harnessconventionsmd-als-konventionsspeicher)).
+([Baseline-Regelwerk §Konventionsspeicher](../.harness/baseline/v6.5.0/regelwerk/grundlagen-harness-dateien.md#harnessconventionsmd-als-konventionsspeicher)).
 Je Index-Zeile steht ein Voll-Slug-`<a id>` — **Migrations-Schuld**, damit die
 eingefrorenen in-repo-Verweise auf `conventions.md#mr-…` (immutable ADRs, `done/`-
 Slices, Reviews) ohne Retarget und ohne ADR-Edit auflösen; ein frisch unter der
@@ -138,8 +138,9 @@ ob der Eintrag ihn betrifft.
 | [MR-062](conventions/MR-062-wellenloser-slice-archiv-move.md) <a id="mr-062--wellenloser-einzel-slice-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013"></a><a id="mr-062"></a> | Wellenloser Einzel-Slice-Archiv-Move (`tools/archive-wave -slice=<id>`) ist ein einziger, deklarierter Commit — korrigiert eine fehlgeschlagene [MR-059](#mr-059)-Analogie im Plan von slice-197 | `tools/archive-wave`s Einzel-Slice-Modus (`ApplySlice()`), jeder `-slice=<id> -apply`-Commit | keine — Nachtrag zu [MR-013](#mr-013) |
 | [MR-063](conventions/MR-063-eigenstaendiger-review-archiv-move.md) <a id="mr-063--eigenständiger-review-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013"></a><a id="mr-063"></a> | Eigenständiger Review-Archiv-Move ist ein einziger, deklarierter Commit (Nachtrag zu [MR-013](#mr-013)) | `tools/archive-wave`s Review-Modus (`ApplyReview()`), jeder `-review=<datei> -apply`-Commit | keine — Nachtrag zu [MR-013](#mr-013) |
 | [MR-064](conventions/MR-064-buendelung-slice-archiv-move.md) <a id="mr-064--bündelung-mehrerer-einzel-slice-archiv-moves-in-einem-commit-ist-zulässig-nachtrag-zu-mr-062"></a><a id="mr-064"></a> | Bündelung mehrerer Einzel-Slice-Archiv-Moves in einem Commit ist zulässig (Nachtrag zu [MR-062](#mr-062)) | `tools/archive-wave`s Einzel-Slice-Modus (`ApplySlice()`) | keine — Nachtrag zu [MR-062](#mr-062) |
-| [MR-065](conventions/MR-065-baseline-v631.md) <a id="mr-065--baseline-pin-hebung-auf-v631-elfter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-065"></a> | Baseline-Pin-Hebung auf v6.3.1 (elfter Nachtrag zu [MR-011](#mr-011), Nachtrag zu [MR-023](#mr-023)) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v6.3.1/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
+| [MR-065](conventions/MR-065-baseline-v631.md) <a id="mr-065--baseline-pin-hebung-auf-v631-elfter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-065"></a> | Baseline-Pin-Hebung auf v6.3.1 (elfter Nachtrag zu [MR-011](#mr-011), Nachtrag zu [MR-023](#mr-023)) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v6.5.0/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
 | [MR-066](conventions/MR-066-slice-wachstum-ohne-rueckfuehrung.md) <a id="mr-066--was-nicht-still-weiterschieben-verlangt-wenn-die-rückführung-nicht-gezogen-wird"></a><a id="mr-066"></a> | Was „nicht still weiterschieben" verlangt, wenn die Rückführung nicht gezogen wird: Grund **und** benannte Ersatz-Form der Prüfung (seit slice-204) | jeder Slice über der Ein-Sitzungs-Review-Grenze, der nicht zurückgeführt wird | keine — **präzisiert** `modul-05` §Ziel-Form: Slice, die das stille Weiterschieben verbietet, ohne zu sagen, was an die Stelle der Stille tritt |
+| [MR-067](conventions/MR-067-baseline-v650.md) <a id="mr-067--baseline-pin-hebung-auf-v650-zwölfter-nachtrag-zu-mr-011-nachtrag-zu-mr-023"></a><a id="mr-067"></a> | Baseline-Pin-Hebung auf v6.5.0 (zwölfter Nachtrag zu [MR-011](#mr-011), Nachtrag zu [MR-023](#mr-023)) | §Baseline, pin-gebundene Verweise, `.harness/baseline/v6.5.0/` | — *(Pin-Fortschreibung im Bundle-Layout des Vorgängers)* |
 
 ### Aufgelöste Adaptionen
 
