@@ -109,7 +109,7 @@ verlangt.
 
 ## 4. Trigger
 
-**Start** (`open` → `in-progress`): [slice-211](../in-progress/slice-211-obermengen-nachweis-md013.md)
+**Start** (`open` → `in-progress`): [slice-211](../done/slice-211-obermengen-nachweis-md013.md)
 liegt in `done/` — WIP-Limit frei.
 
 **Rückführungen — vorab benannt:**
