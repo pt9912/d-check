@@ -64,23 +64,23 @@ slice-205 benannten Mengen sind der Startpunkt, nicht das Ziel.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** Das Modul `mentions` existiert, ist opt-in und erfüllt alle
+- [x] **(1)** Das Modul `mentions` existiert, ist opt-in und erfüllt alle
       Akzeptanzkriterien von
       [`DC-FA-MENT-001`](../../../../spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in)
       als Tests — einschließlich beider fail-closed-Fälle und des
       byte-identischen Default-Laufs.
-- [ ] **(2)** Ein Fokus-Target fährt es, und die Doku (`docs/user/`, Sensors-
+- [x] **(2)** Ein Fokus-Target fährt es, und die Doku (`docs/user/`, Sensors-
       Tabelle) nennt es — mit `kein Gate` in der Zeile, solange es nicht in
       `gates` läuft.
-- [ ] **(3)** Ein **Kalibrierungs-Beleg** an einem Fremd-Bestand liegt vor: je
+- [x] **(3)** Ein **Kalibrierungs-Beleg** an einem Fremd-Bestand liegt vor: je
       Mengen-Wahl die Zahl der Funde **und** das Urteil, wie viele davon Mängel
       sind. Ohne diesen Beleg ist die Ausnahme-Klasse geraten.
-- [ ] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §5 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] `make gates` grün.
+- [x] Unabhängiger Review durchgeführt — **drei Runden**, alle blockierend, alle drei Reports unter `docs/reviews/`.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — vier Belege, keine neue Beobachtung.
+- [x] Jedes Risiko aus §5 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -91,14 +91,14 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   Artefakt-Pfad, `line` der Platzhalter `1` — das Artefakt wird nie geöffnet.
   Sechs Module führen `Line: 1` bereits als Platzhalter; ob die Kombination aus
   nicht geöffneter Datei **und** Platzhalter-Zeile in `--doctor` und `--repair`
-  sinnvoll erscheint, ist ungeprüft. — **Ausgang:** <offen>
+  sinnvoll erscheint, ist ungeprüft. — **Ausgang:** entfallen — beide gemessen und beide tragen: `--doctor` gruppiert den Befund unter dem Artefakt und nennt den Platzhalter im Klartext ausdrücklich („die Zeile 1 ist ein Vertrags-Platzhalter, keine Fundstelle"); `--repair` liefert **0 Hunks**, weil es keinen eindeutigen Fix gibt — ein Index-Eintrag ist ein Urteil.
 - **Die Bezugsmenge muss in zwei Ausgabe-Formen erscheinen.** stderr im
   Default, `summary`-Felder unter `--json`/`--yaml`. Die zweite Hälfte
   erweitert ein Struct, das heute zwei Felder trägt; ob das rückwärtskompatibel
-  bleibt, entscheidet sich an den vorhandenen Konsumenten. — **Ausgang:** <offen>
+  bleibt, entscheidet sich an den vorhandenen Konsumenten. — **Ausgang:** entfallen — die Frage ist beantwortet und gewächtert: vier Tests im Report-Adapter halten die stderr-Zeile, beide maschinellen Formen und die Rückwärtskompatibilität, die allein an einem `omitempty` hängt.
 - **Kein eigenes Rauschen — geerbt aus slice-205.** Die Ausnahme-Klasse wird am
   Fremd-Bestand justiert, nicht am eigenen. Das weicht von der gelebten Praxis
-  ab und ist der Grund für DoD (3). — **Ausgang:** <offen>
+  ab und ist der Grund für DoD (3). — **Ausgang:** entfallen — DoD (3) ist erbracht: am Fremd-Bestand gemessen (5 Mitglieder, 8 Ist-Dokumente, 4 Funde, beide Erkennungsformen identisch), samt Urteil über die Funde — einer ist eine Test-Datei und damit kein Mangel. Der Beleg liegt als Beleg bei [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md) nicht vor: die Messung nennt diesmal beide Mengen.
 
 ## 6. Trigger
 
@@ -218,4 +218,70 @@ mit ihr löst sich d-checks Slice-Haus-Form auf.
 - **Reconciliation-Aufwand:** keiner (GF). Graduation entfällt.
 ## 9. Closure-Notiz (nach `done/`)
 
-<wird vor dem `git mv` nach `done/` gefüllt>
+**Geliefert.** Das Modul `mentions` (23. Regelmodul), das Fokus-Target
+`make mention-coverage`, der Grund-Code [`SPEC-082`](../../../../spec/spezifikation.md#4-grund--und-fehler-codes), das Verfahren
+§[`DC-FA-MENT-001`](../../../../spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in).a, drei Konfigurations-Schlüssel und der
+Kalibrierungs-Beleg. Was das Repo damit hält: **jede ADR steht im ADR-Index** —
+die Regel, die [`AGENTS.md`](../../../../AGENTS.md) §5 ausdrücklich führt und
+die zuvor kein Gate hielt. 84 von 84.
+
+**Was funktionierte.** Drei Spiegel der Modul-Menge hat je ein Gate gefangen,
+bevor ich sie suchte: die `# Verfügbar:`-Zeile des Config-Templates, die
+Grund-Code-Registrierung samt `--doctor`-Klartext und die Doku-Tabellen. Die
+Sichtung in §7 hatte die Zuordnung zu
+[`modulliste-spiegel-ungegated`](../observations/BEO-ALL/modulliste-spiegel-ungegated/observation.md)
+bewusst offengelassen, statt sie wie im Vorgänger-Slice vorschnell zu treffen —
+und die Antwort war, dass der Eintrag hier **nicht** greift.
+
+**Was anders lief — drei Review-Runden, alle blockierend, und die Kette ist
+der Lerneintrag.** Nicht die Entscheide fielen, sondern immer die Schicht
+darunter:
+
+| Runde | Fund | Was er traf |
+|---|---|---|
+| 1 | `strings.Contains` deckte `test.md` durch `image-test.md` | die Erkennung selbst |
+| 2 | die Grenz-Prüfung dagegen meldete **erwähnte** Artefakte — vier Formen, darunter im Default jede `../`-Verlinkung | die Reparatur aus Runde 1 |
+| 3 | die Vorbedingung, die von der Grenze abhängt, war dreimal nicht mitgezogen | den Vertrag um die Reparatur |
+
+**Die Bewegung ist in allen drei Fällen dieselbe:** Ich prüfte die neue Form
+gegen den Fall, den sie beheben sollte, und nicht gegen den Bestand, den sie
+weiter tragen musste. Runde 3 hat das erstmals umgekehrt gemessen — beide
+Gegenrichtungen gebaut und gefahren — und damit belegt, dass die Regel jetzt
+trägt. Kein Report hat sie einfach für richtig erklärt.
+
+**Steering-Loop-Einträge.** Vier Belege, keine neue Beobachtung:
+
+- [`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
+  (11×) — **der wichtigste, und er erschien in allen drei Runden an derselben
+  Anforderung.** Der Ableiter des Eintrags („vor dem Ändern einer Semantik ihre
+  Spiegel per `grep` nach dem **alten** Wortlaut auflisten") griff hier nicht,
+  und das ist die Präzisierung: Der Spiegel war **kein Verweis, sondern eine
+  abgeleitete Aussage**. Nach einer Folgerung kann man nicht greppen. Aufgelöst
+  wurde es nicht durch besseres Nachziehen, sondern indem die abgeleitete
+  Aussage vom Menschen zum **Wächter** wanderte — was gerechnet werden kann,
+  wird gerechnet.
+- [`haertung-kippt-fehlerpolitik-ungeprueft`](../observations/BEO-ALL/haertung-kippt-fehlerpolitik-ungeprueft/observation.md)
+  (2×) — die Härtung aus Runde 1, gemessen am falschen Fall.
+- [`wortlaut-behauptet-pruefung-die-fehlt`](../observations/BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt/observation.md)
+  (8×) — drei Tests, die nicht fallen konnten; alle drei fielen erst auf, als
+  ein Reviewer sie am Produktivcode mutierte.
+- [`module-promise-only-on-scan-axis`](../observations/BEO-ALL/module-promise-only-on-scan-axis/observation.md)
+  (2×) — eine Scan-Achse benannt, zwei gehabt.
+
+**Keine neue Beobachtung und keine geschärfte Regel.** Beides wäre hier
+vorschnell: Was zu lernen war, steht in vorhandenen Einträgen, und der eine
+Kandidat für eine Regel — *„eine Vorbedingung, die an Produkt-Interna hängt,
+gehört in den Wächter"* — ist aus **einem** Anlass gezogen
+([`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md),
+7×). Er ist im Register verankert, nicht in `AGENTS.md`.
+
+**Verifikation.** `make gates` grün über zehn Gates, Coverage 94,60 %,
+`make mention-coverage` 84 von 84. Drei unabhängige Review-Runden mit Reports
+unter [`docs/reviews/`](../../../reviews/); 16 Akzeptanzkriterien, davon
+gemessen fallende Tests für die neuen Zusagen.
+
+**Was ein Leser hieraus mitnehmen sollte.** Eine Härtung ist erst fertig, wenn
+**beide** Richtungen gemessen sind — der Fall, den sie schließt, und der
+Bestand, den sie tragen muss. Zweimal habe ich nur die erste Hälfte gemessen,
+und zweimal war das Ergebnis schlimmer als der Ausgangszustand. Und: Wo eine
+Zusage von Produkt-Interna abhängt, ist sie beim Menschen falsch aufgehoben.
