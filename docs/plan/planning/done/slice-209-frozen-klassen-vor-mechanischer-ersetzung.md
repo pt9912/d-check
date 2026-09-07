@@ -332,7 +332,7 @@ zwei davon erreichen mit diesem Slice ihren Zielpunkt:
 
 **Geprüft und ausgeschlossen:**
 [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
-(3×, Ausgang *geplant* → [slice-210](../in-progress/slice-210-zaehlmethode-vor-der-messung.md))
+(3×, Ausgang *geplant* → [slice-210](../done/slice-210-zaehlmethode-vor-der-messung.md))
 — dieser Slice zählt nichts; seine Vorfrage ist ein Urteil über einen Absatz,
 keine Messung über eine Menge. **Keiner der fünf erreicht mit diesem Slice die
 Schwelle erstmalig.**
