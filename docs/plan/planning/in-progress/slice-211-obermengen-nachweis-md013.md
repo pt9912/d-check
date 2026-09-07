@@ -142,10 +142,19 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - **[`MR-046`](../../../../harness/conventions.md#mr-046) ist geprüft und bleibt
   gültig — aber nur unter einer Bedingung.**
   Der Eintrag sagt, eine vierte Toolchain entstehe nicht nebenbei, und sein
-  Auflösungs-Trigger ist genau diese Slice-Planung. Er bleibt gültig, **weil
-  nichts im Bestand bleibt**: kein Target, keine Deklaration, kein Pin in einer
-  getrackten Datei. Kippt das im Lauf, ist der Eintrag abzulösen und nicht zu
-  dehnen. — **Ausgang:** \<offen\>
+  Auflösungs-Trigger ist genau diese Slice-Planung. — **Ausgang:** entfallen —
+  er bleibt gültig, und die Bedingung ist geprüft statt behauptet: **kein
+  Target, keine Deklaration in [`AGENTS.md`](../../../../AGENTS.md) §4 oder
+  [`harness/README.md`](../../../../harness/README.md), kein `make`-Aufruf.**
+  **Eine Zusage der ersten Fassung trifft dagegen nicht mehr zu, und der Review
+  hat es gefunden:** Sie sagte *„kein Pin in einer getrackten Datei"* — der
+  Image-Digest steht jetzt im CR, und der ist getrackt. **Das ist gewollt und
+  kein Rückfall:** DoD (2) verlangt einen reproduzierbaren Nachweis, und
+  reproduzierbar heißt hier, dass der Digest lesbar dasteht. Was
+  [`MR-046`](../../../../harness/conventions.md#mr-046)
+  meint, ist ein Pin, den ein **Lauf** zieht — eine Zahl in einem Zeitdokument
+  ist keine Toolchain. Die ungenaue Formulierung ist der Befund, nicht der
+  Digest.
 - **MD013 kann Obermenge sein und trotzdem nicht einsetzbar.** Die drei Fragen
   des CR sind unabhängig: Frage 2 („Obermenge?") kann **ja** ergeben und
   Frage 3 („rechtfertigt der Nutzen den Schritt?") trotzdem **nein** — die

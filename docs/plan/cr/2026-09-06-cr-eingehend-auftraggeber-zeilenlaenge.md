@@ -208,25 +208,44 @@ sein.
 | K4 Tabellenzeile | Schweigen | schweigt ✔ | **meldet** ✘ |
 | K5 unteilbares Token (lange URL) | Schweigen | schweigt ✔ | **meldet** ✘ |
 | K6a unteilbares Inline-Code-Token | Schweigen | schweigt ✔ | **meldet** ✘ |
+| K6b **teilbare** Inline-Code-Spanne (Leerzeichen darin) | — | **meldet** | **meldet** |
 
 **Sechs von sechs gegen drei von sechs.** Auf dieser Achse ist MD013 Obermenge,
 und zwar deutlich.
 
-**Ein Nebenfund, der eine Klasse teilt:** Eine Inline-Code-Spanne **mit**
-Leerzeichen (K6b) meldet bei beiden. Sie ist umbrechbar und damit keine
-Ausnahme — *„Inline-Code"* ist keine Klasse, *„unteilbares Token"* ist eine.
-Der CR nennt beides in einem Atemzug.
+**Die K6-Zeile ist gegenüber §3 des Slice-Plans korrigiert, und der Review hat
+es gemessen.** Der Plan führte die Klasse als *„Inline-Code-Spanne → kein
+Befund"*; gemessen wurde ein **unteilbares Inline-Code-Token**. Das ist nicht
+dieselbe Klasse: Eine Spanne **mit** Leerzeichen (K6b) ist umbrechbar, und
+beide Sensoren melden sie — zu Recht. Die Klasse wurde also **während** der
+Messung geschärft; die Tabelle nennt jetzt beide Zeilen statt eine.
 
+**Folge für den Nutzen-Vergleich:** Der CR-Wortlaut nennt *„eine lange URL oder
+einen langen Inline-Code"* in einem Atemzug. Nach dieser Messung sind das zwei
+Dinge, und nur das **unteilbare** Token ist die Ausnahme, die der CR meint.
 ### Teil 2 — Schwelle: das eigene Mittel kann die Anforderung nicht ausdrücken
 
 `forbid-pattern` ist RE2, und RE2 begrenzt den Wiederholungszähler auf **1000**.
 Gemessen: `.{1000,}` läuft, `.{1001,}` ist ein **Konfigurationsfehler** und
 nimmt den ganzen Lauf mit (Exit 2) — es schweigt nicht, es fällt.
 
-**Die längste Zeile des Bestands misst 2045 Zeichen.** Eine Schwelle oberhalb
-von 1000 ist mit dem eigenen Mittel also **nicht formulierbar**, und der
-Kanon-Test *„der unveränderte Bestand, auf dem beide schweigen müssen"* ist für
-`forbid-pattern` **konstruktiv unerreichbar**. MD013 nimmt jedes `N`.
+**Die Schwelle, die der Bestand verlangt, liegt darüber — und die erste Zahl
+hier war falsch.** Sie lautete *„die längste Zeile des Bestands misst 2045"*.
+Die 2045 stammt aus dem **vendorten Baseline-Baum**, den die Bestands-Messung
+weiter unten ausdrücklich ausschließt; der unabhängige Review hat es
+nachgemessen. Über `docs/`, `spec/`, `harness/` (Archiv ausgenommen) gilt
+statt dessen:
+
+| Population | längste Zeile | Dateien mit einer Zeile > 2000 |
+|---|---|---|
+| **überhaupt** (Tabellenzeilen eingeschlossen) | **3083** (`spec/lastenheft.md`) | 3 |
+| **Fließtext** (Tabellenzeilen ausgenommen) | **1478** (`spec/lastenheft.md`) | 0 |
+
+**Beide Zahlen liegen über 1000, und damit steht der Schluss** — mit der
+Tabellen-Population deutlich, mit der Fließtext-Population knapp. **Die
+Populations-Angabe ist hier nicht Beiwerk:** Die Fließtext-Zahl schließt genau
+die Klasse aus, die `forbid-pattern` fälschlich meldet, und ohne sie wäre der
+Vergleich schief.
 
 ### Teil 3 — Kandidaten-Menge: hier ist MD013 **keine** Obermenge
 
@@ -241,10 +260,33 @@ lieferten über derselben Schwelle 342 gegen 645 Befunde.
 
 ### Der unveränderte Bestand
 
-Bei Schwelle 1000 über `docs/`, `spec/`, `harness/` (Archiv ausgenommen):
-MD013 meldet **9** Dateien, `forbid-pattern` **22**. Die Differenz ist
-einseitig — **null** Dateien meldet nur MD013, **13** nur `forbid-pattern`,
-und das sind genau die drei Klassen aus Teil 1, die es zu Unrecht trifft.
+**Population, ausgeschrieben, weil sie die Zahlen trägt:** eine Kopie von
+`docs/`, `spec/`, `harness/` samt `AGENTS.md` und `README.md`, Archiv
+ausgenommen. MD013 mit dem Glob `**/*.md` und der Konfiguration oben;
+`d-check --enable structure` mit `section-pattern: '^## '`, `sections: each`
+und `forbid-pattern: '.{1000,}'`.
+
+**`structure` wertet seinen `files`-Glob unabhängig von `scan.roots` aus**
+([`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in):
+*„über den gesamten Baum — **unabhängig** von `scan.roots`/`scan.ignore`"*).
+Wer die `roots` für die Population hält, zählt anders — das ist der Grund,
+warum eine Nachmessung 21 statt 22 ergeben kann, und es gehört zur Angabe
+dazu.
+
+Bei Schwelle 1000: MD013 meldet **9** Dateien, `forbid-pattern` **22**. Die
+Differenz ist einseitig — **null** Dateien meldet nur MD013, **13** nur
+`forbid-pattern`.
+
+**Und die 13 sind *eine* Klasse, nicht drei** — die erste Fassung schrieb
+*„genau die drei Klassen aus Teil 1"*; der unabhängige Review hat sie
+aufgeschlüsselt, und die Nachmessung bestätigt es: In **allen 13** Dateien ist
+**jede** überlange Zeile eine **Tabellenzeile**; Fließtext-Zeilen über 1000
+gibt es dort **null**. K5 (unteilbare URL) und K6a (unteilbares
+Inline-Code-Token) kommen im Bestand **überhaupt nicht** vor.
+
+**Das schwächt den Befund nicht, es schärft ihn:** Von den drei Klassen, in
+denen `forbid-pattern` falsch meldet, ist am realen Bestand **eine** wirksam —
+und sie stellt trotzdem 13 von 22 Dateien.
 
 ### Antwort auf Frage 2
 
@@ -324,10 +366,15 @@ Drei Bedingungen, jede einzeln hinreichend:
    Zeichen je Zeile oder Absatz — dann fällt die Grenzkosten-Rechnung anders
    aus.
 2. Dieses Repo nimmt aus **anderem** Grund eine Node-Toolchain auf — dann ist
-   MD013 nahezu umsonst zu haben, und die fehlende Abschnitts-Skopierung wird
-   zur einzigen offenen Frage.
-3. Der Bestand wächst über die Klasse hinaus, die gemessen wurde — heute neun
-   Dateien über 1000 Zeichen und eine über 2000.
+   MD013 nahezu umsonst zu haben. **Offen bliebe dann mehr als eine Frage:**
+   die fehlende Abschnitts-Skopierung (Teil 3) **und** die teilbare
+   Inline-Code-Spanne (K6b), die MD013 meldet. Die erste Fassung nannte die
+   Skopierung als *„einzige"* offene Frage; das war vor der Klassen-Teilung in
+   Teil 1 geschrieben und ist überholt.
+3. Der Bestand wächst über die Population hinaus, die gemessen wurde: heute
+   **9** Dateien mit einer Zeile über 1000, **null** davon im **Fließtext**
+   über 2000. Nachmessbar mit derselben Population wie oben — ohne sie ist die
+   Bedingung nicht prüfbar.
 
 **Kein Sensor wacht über diese drei.** Sie sind Bedingungen für eine
 Wiedervorlage, kein Trigger mit Wächter, und das ist die benannte Grenze
