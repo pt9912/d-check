@@ -51,17 +51,17 @@ den **Vertrags**-Teil desselben Artefakts umdreht.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** Die **Vorfrage ist beantwortet**, und zwar aus dem **Wortlaut**
+- [x] **(1)** Die **Vorfrage ist beantwortet**, und zwar aus dem **Wortlaut**
       von [`AGENTS.md`](../../../../AGENTS.md) §6, nicht aus seiner Absicht:
       Deckt er den Ableiter — beide Teile, oder nur den zweiten? Ein **Ja**
       schließt den Slice ohne neue Regel und setzt den Register-Ausgang auf
       *verkörpert* mit §6 als Zielort.
-- [ ] **(2)** Fällt die Antwort auf **Nein**: Die Regel steht am entschiedenen
+- [x] **(2)** Fällt die Antwort auf **Nein**: Die Regel steht am entschiedenen
       Ort, mit Herkunfts-Anker `seit slice-213` und mit ihrer Grenze — **und
       diese Grenzen-Liste wird nach ihrem eigenen Ableiter geprüft**, bevor der
       Review sie sieht.
-- [ ] **(3)** Der Registereintrag trägt den Ausgang mit auflösbarem Zielort.
-- [ ] `make gates` grün.
+- [x] **(3)** Der Registereintrag trägt den Ausgang mit auflösbarem Zielort.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
@@ -83,6 +83,49 @@ des Trägers. Die Falle ist beide Male dieselbe:
 [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
 (18×) — §6 enger zu lesen, um die eigene Regel zu retten, oder weiter, um sie
 zu sparen.
+
+### Die Vorfrage, beantwortet (DoD 1)
+
+**Die Antwort ist geteilt, und das war keine der beiden vorgesehenen.** Die DoD
+sah **Ja** (§6 trägt es, kein neuer Eintrag) oder **Nein** (Regel schreiben)
+vor. Gemessen am Wortlaut trägt §6 den **zweiten** Teil des Ableiters
+vollständig und den **ersten** gar nicht. Geschrieben wird deshalb **nur der
+erste** — eine deutlich kleinere Regel, als der Registereintrag nahelegt.
+
+**Teil 2 — *„die Liste braucht einen fremden Leser"* — trägt §6, wörtlich.**
+Der Absatz nach Schritt 8 lautet:
+
+> **Kein Self-Review** — anderer Kontext findet andere Findings, derselbe
+> Kontext dieselben blinden Flecken
+
+Das ist die Aussage, und sie gilt **jedem** Artefakt, das der Slice
+hervorbringt — eine Grenzen-Liste ist keine Ausnahme, die eigens zu benennen
+wäre. **Eine zweite Regel daneben wäre eine zweite Quelle für dieselbe
+Aussage**, und genau davor warnt die Source Precedence. Der Bestand stützt das:
+In allen sieben Fundstellen aus slice-212 fand die Lücke jemand anderes — der
+Mechanismus, den §6 einrichtet, **hat funktioniert**. Was fehlte, war nie der
+fremde Leser.
+
+**Teil 1 — *„den Vertrags-Teil umdrehen, und wo der Gegenstand Code ist, gegen
+den Code prüfen"* — steht nirgends.** §6 kennt acht Schritte; der nächste
+Verwandte ist Schritt 5 (*„Engsten nützlichen Sensor laufen lassen"*), und der
+meint einen **Sensor**, nicht das Lesen eines Vertragstexts. §5 regelt, was
+eine Aussage behaupten darf; §3.7, was ein Kommentar trägt. **Keine der drei
+sagt, was man tut, bevor man eine Grenzen-Liste aus der Hand gibt.**
+
+**Die Gegenprobe, und sie ist hier die wichtigere Hälfte.** Die bequeme
+Antwort wäre **Ja** gewesen — sie spart einen Eintrag. Sie hätte §6 von *„das
+Arbeitsergebnis geht an einen fremden Leser"* auf *„also braucht der Autor
+vorher nichts zu tun"* gedehnt. Das ist
+[`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+(18×) in seiner teuersten Form: eine dreimal belegte Beobachtung mit einem
+Satz löschen, der von etwas anderem handelt. **Die Gegenrichtung ist ebenso
+geprüft:** §6 enger zu lesen, um auch Teil 2 als Regel zu rechtfertigen, wäre
+derselbe Fehler mit umgekehrtem Vorzeichen — deshalb fällt Teil 2 weg.
+
+**Folge:** DoD (2) greift, aber **nur für Teil 1**. Der Registereintrag behält
+seinen zweistufigen Ableiter — er beschreibt die Klasse —, die **Regel** trägt
+davon nur, was nirgends sonst steht.
 
 ## 4. Trigger
 

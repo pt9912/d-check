@@ -551,6 +551,23 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   wird rot. Der dritte Block trägt bewusst keine — sein Ziel ist repo-eigen und
   meldete bei jeder Änderung. **Kein Sensor hält das:** ein Plan ganz ohne
   Direktiven ist grün.
+- **Wer eine Grenze aufschreibt, prüft sie gegen den Gegenstand, nicht gegen
+  seine Beschreibung.** Ein Abschnitt, der aufzählt, **was ein grüner Lauf
+  nicht abdeckt**, liest sich durch seine Form als Menge und ist immer eine
+  Auswahl. Vor dem Handoff deshalb zweierlei: **den Vertrags-Teil desselben
+  Artefakts durchgehen und jede Zusage einmal umdrehen** — was folgt daraus für
+  das Grün? —, und **wo der Gegenstand Code oder Konfiguration ist, gegen
+  diese prüfen statt gegen die Prosa darüber**. Gemessen: In sieben von sieben
+  Fundstellen stand die fehlende Grenze bereits im Vertrags-Teil oder in der
+  Konfiguration; zwei Grenzen, die nur aus der Prosa abgeleitet waren,
+  beschrieben Mechanismen, die es nicht gibt — in einem Fall widersprach der
+  Code-Kommentar dem Verhalten. **Grenze:** Die Regel gilt dem **Autor vor der
+  Übergabe** und ersetzt den fremden Leser nicht — den richtet
+  [§6](#6-minimal-agent-workflow) ein, und er hat in allen sieben Fällen
+  gefunden, was hier vermieden werden soll. Urteil, kein `grep`.
+  *(Hard Rule aus dem Steering Loop,
+  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](docs/plan/planning/observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md),
+  seit slice-213; Auflösungs-Trigger: permanent.)*
 - **Vor einer Messung steht die Form ihres Gegenstands.** Was macht eine
   Kennung zu einer Kennung, einen Verweis zu einem *Folge*-Verweis, eine Regel
   zu einer Regel? Die Antwort wird **ausgeschrieben, bevor** gezählt wird, und
