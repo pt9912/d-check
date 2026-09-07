@@ -53,57 +53,110 @@ nur seine Umformulierung, ist je Eintrag zu entscheiden.
 
 ### Der Delta-Audit (DoD 1)
 
-**Zuerst die Form des Gegenstands, wie der Register-Eintrag es verlangt.** Der
-Vorgänger hat **zwölf Dateien** mit Delta gemessen. Eine Datei ist aber keine
-Regel: Dieselbe Regel steht oft in mehreren Trägern, und ein Träger kann eine
-Regel nur nachziehen. Gezählt wird deshalb, was ein Implementer **tun oder
-lassen** muss. Ergebnis: **sieben Regeln in zwölf Trägern.**
+**Zuerst die Form des Gegenstands.** Der Vorgänger hat **zwölf Dateien** mit
+Delta gemessen. Eine Datei ist keine Regel: Dieselbe steht oft in mehreren
+Trägern, und ein Träger kann sie **normativ** führen oder nur **nachziehen**.
+Gezählt wird, was ein Implementer tun oder lassen muss.
 
-| # | Regel | Träger | Antwort |
-|---|---|---|---|
-| R1 | §1 heißt *Ziel und Abgrenzung* — vier Klassen, Begründung je Punkt, keine Mindestzahl, kein Sensor | `modul-05`, `slice.template`, `templates/README`, `modul-06`, `modul-09` | **übernommen** |
-| R2 | *„Die Adresse muss die Sendung annehmen"* — ein Folge-Slice, der den verwiesenen Punkt selbst ausschließt oder **vor** dem verweisenden schließt, ist keine Adresse | `modul-05` | **übernommen** |
-| R3 | §8 heißt *Sub-Area-Prüfungen und Modus-Begründung*; die zwei *Vorgelagert*-Blöcke sind unbedingter Kopf | `slice.template`, `templates/README` | **übernommen** |
-| R4 | Der Lauf weitet die Abgrenzung nicht stillschweigend — Mitnahme ist eine **Plan-Änderung** und gehört vor den Code | `modul-09` | **übernommen** |
-| R5 | Die **RTM** wird *erzeugt, nicht gepflegt*; was eine Anforderung **entlastet**, ist eine Setzung und gehört aufgeschrieben | `grundlagen-traceability`, `grundlagen-begriffe` | **übernommen, mit Handlung** |
-| R6 | **Einfrierend gegen lebend**: ein lebendes Artefakt verlinkt `harness/sensors/<target>.md`, ein einfrierendes nennt `make <target>` als Token | `grundlagen-harness-dateien` | **übernommen, Bestand konform** |
-| R7 | **Zitier-Form** einfrierender Artefakte: Kennung statt Adresse, Baseline-Stelle als Tag + Pfad in Inline-Code statt als Link | `review-report`, `archiv-stub-slice`, `archiv-stub-welle`, `welle-results` | **übernommen, template-forward** |
+**Die erste Fassung dieses Audits zählte trotzdem datei-weise** — jede Datei
+bekam die Regel, die als ihre Hauptaussage gelesen wurde. Alle zwölf waren
+abgedeckt, aber nicht alle Regeln *in* ihnen: Eine Regel hatte gar keine
+Antwort, zwei waren in Wahrheit eine, und vier Träger fehlten. Der unabhängige
+Review hat das gemessen. Die Fassung unten ist regel-weise gebildet — jede
+Regel gegen **jede** Datei gehalten.
 
-**R1–R4 sind die CR-Umsetzung** und lösen d-checks Haus-Form auf. §1 und §3
-fallen zusammen, §7 und §8 ebenso, §6 spaltet sich in Trigger und
-Closure-Trigger; neun Abschnitte werden acht. Die Zuordnung ist **keine
-Bijektion**, und deshalb ist es keine Umbenennung, sondern eine Migration.
+| # | Regel | Normativ in | Nachgezogen in | Antwort |
+|---|---|---|---|---|
+| R1 | §1 heißt *Ziel und Abgrenzung* — vier Klassen, Begründung je Punkt, keine Mindestzahl, kein Sensor | `modul-05` | `slice.template`, `templates/README`, `modul-06`, `modul-09` | **übernommen** (DoD 2) |
+| R2 | *„Die Adresse muss die Sendung annehmen"* — ein Folge-Slice, der den verwiesenen Punkt selbst ausschließt oder **vor** dem verweisenden schließt, ist keine Adresse | `modul-05` | `slice.template` | **übernommen, Bestand geprüft** |
+| R3 | §8 heißt *Sub-Area-Prüfungen und Modus-Begründung*; die zwei *Vorgelagert*-Blöcke sind unbedingter Kopf, der Modus-Block bedingter Rumpf | `modul-05` | `slice.template`, `templates/README` | **übernommen** (DoD 2) |
+| R4 | Der Lauf weitet die Abgrenzung nicht — Mitnahme ist eine **Plan-Änderung** und gehört vor den Code | `modul-09` | `modul-05`, `slice.template` | **übernommen, mit Handlung** |
+| R5 | Die **RTM** — vier Setzungen (s. u.) | `grundlagen-traceability` | `grundlagen-begriffe` | **drei erfüllt, eine deklarationspflichtig** |
+| R6 | **Kennung statt Adresse** für einfrierende Artefakte, in **drei Formen**, für eine **erweiterte** Klasse | `grundlagen-harness-dateien` | `review-report`, `archiv-stub-slice`, `archiv-stub-welle`, `welle-results` | **übernommen, template-forward** |
+| R7 | Ein **Ausnahme-Ventil** im Prüfbereich ist *„eine Gate-Senkung mit eigener Begründungslast"* | `grundlagen-harness-dateien` | — | **übernommen, mit Handlung** |
 
-**R2 ist neu und wurde nicht erbeten.** Sie schärft die Klasse *„ein
-Folge-Slice übernimmt es"*, die dieses Repo selbst geliefert hat — und sie
-trifft eine reale Praxis: Von den sechs gelebten Ausschluss-Abschnitten nennen
-vier einen Folge-Slice, und ob der die Sendung annimmt, hat bisher niemand
-geprüft.
+**R1–R4 sind die CR-Umsetzung.** §1 und §3 fallen zusammen, §7 und §8 ebenso,
+§6 spaltet sich; neun Abschnitte werden acht. Keine Bijektion, also eine
+Migration und keine Umbenennung.
 
-**R5 verlangt als einzige eine Handlung am Bestand, und sie ist klein.**
-d-checks `--trace` **erzeugt** die RTM aus den Ankern — die erste Hälfte ist
-also erfüllt, ohne dass etwas zu tun wäre. Die zweite ist offen: Der
-`trace`-Block deklariert `adrs` und `slices` als Quellen, die eine Anforderung
-entlasten, **und nennt nirgends den Grund**. Genau davor warnt der Kanon: Das
-ist eine Konfigurationsentscheidung, keine Naturgesetzlichkeit — dieselbe ADR
-entlastet oder entlastet nicht, je nachdem, was das Repo gesetzt hat.
+**R2, am Bestand geprüft — und die erste Messung war ein Proxy.** Die erste
+Fassung schrieb *„von sechs Ausschluss-Abschnitten nennen vier einen
+Folge-Slice"*. Gezählt hatte sie **Slice-Kennungen** im Abschnitt, nicht
+**Folge-Slice-Verweise**. Richtig: **acht** geschlossene Slices führen den
+Abschnitt, und **zwei** nennen darin einen echten Folge-Slice
+(slice-202 → slice-203, slice-207 → slice-208). Die beiden anderen Treffer
+waren Rückverweise auf bereits geschlossene Slices. **Beide echten Adressen
+nehmen die Sendung an** — slice-203 hat den verwiesenen Punkt geliefert,
+slice-208 führt ihn als DoD (1). Kein Handlungsbedarf, und die Regel ist am
+Bestand belegt statt behauptet.
 
-**R6 ist gemessen und der Bestand trägt sie schon.** 26 Verweise aus lebenden
-Artefakten verlinken die Sensor-Datei — richtig. Aus dem eingefrorenen Bestand
-tut es **genau einer**, und der steht in einem Review-Report, der nicht mehr
-angefasst wird. Kein Handlungsbedarf am Bestand; die Regel greift vorwärts.
+**R4 verlangt eine Handlung, die die erste Fassung übersehen hat.** Der Kanon
+bindet die Regel an **Schritt 4** des Acht-Schritt-Workflows. Dieses Repo führt
+den Workflow als adoptierte Kopie in [`AGENTS.md`](../../../../AGENTS.md) §6
+und in [`harness/README.md`](../../../../harness/README.md) — und sein
+Schritt 4 lautet vollständig *„Kleinste sinnvolle Änderung planen."*, ohne
+Out-of-Scope und ohne die Plan-Änderungs-Pflicht. Beide Träger gehören
+nachgezogen.
 
-**R7 ist die Regel, die der Pin-Hebung ihre Ausnahme nimmt.** Die letzte
-Hebung brauchte einen Tombstone, weil eine `Accepted`-ADR einen **Link** in den
-vendorten Baum trug. Unter R7 hätte sie ihn nie getragen. Träger bei uns ist
-nicht die Baseline-Vorlage — dieses Repo führt eine eigene Review-Form —,
-sondern der **Reviewer-Skill**.
+**R5 — vier Setzungen, drei ohne Zutun erfüllt.** Der Kanon sagt: (a) die RTM
+*wird erzeugt, nicht gepflegt* — `--trace` tut genau das; (b) *Bericht und Gate
+sind derselbe Lauf* — `--trace` gegen `--trace --require-complete`, dieselbe
+Mechanik; (c) *der Vorschlag des Kurses: der **Slice** entlastet, die ADR steht
+als Spalte* — **genau so gesetzt**, und die erste Fassung dieses Audits
+behauptete das Gegenteil: sie las `adrs:` als entlastende Quelle. Das
+Lastenheft sagt wörtlich, *„eine bloße ADR-Referenz ohne Slice/Coverage deckt
+weiterhin **nicht** ab"*
+([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)).
+Die abgeleitete „Handlung" zielte auf eine Konfiguration, die es nicht gibt.
 
-**Keine Regel des Deltas ist *nicht anwendbar*, und keine wird *abweichend*
-adoptiert.** Das ist ein Befund und keine Selbstverständlichkeit: Die beiden
-Vorgänger-Adoptionen trugen je mehrere Nicht-anwendbar-Antworten (Wellen-Betrieb,
-Mehr-Schreiber-Teile). Dieser Delta trifft ausschließlich Bereiche, in denen
-dieses Repo aktiv arbeitet.
+**Offen ist die vierte:** Der Kanon verlangt, einen **anderen** Schnitt zu
+deklarieren, *„wie jede Abweichung von der Baseline"* — und nennt als Beispiel
+genau unseren Fall, eine kuratierte Nachweis-Datei als entlastende Quelle. Das
+ist [`DC-FA-COV-001`](../../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
+(`trace.coverage`), eine **dritte, opt-in** Referenzklasse. Sie ist im
+Lastenheft beschrieben, aber **nicht als Abweichung vom Kanon-Vorschlag
+deklariert** — der Kanon kannte diesen Vorschlag bis `v6.5.0` nicht.
+
+**R6 ist eine Regel in drei Formen, nicht zwei Regeln.** Der Kanon schreibt sie
+so: Gate-Token statt Sensor-Link · `slice-NNN` statt Lifecycle-Pfad ·
+Baseline-Stelle als Tag + Pfad in Inline-Code. Und er **erweitert die Klasse**:
+einfrierend sind jetzt auch Archiv-Stub, `Accepted`-ADR und geschlossener
+Slice. Am Bestand gemessen: **26** Verweise aus lebenden Artefakten verlinken
+die Sensor-Datei (richtig), aus dem eingefrorenen Bestand tut es **einer** —
+und der ist ein **Zitat** aus einem Review-Report, keine eigene Referenz. Kein
+Handlungsbedarf am Bestand.
+
+**Der Träger-Satz der ersten Fassung war falsch.** Sie schrieb, dieses Repo
+führe *„eine eigene Review-Form"* und der Reviewer-Skill sei der Träger. Beides
+hält nicht: Der Skill nennt die **Baseline**-Vorlage als Ziel-Form, es gibt
+keine lokale Kopie, und kein Konventions-Eintrag deklariert eine Abweichung —
+eine „eigene Form" wäre nach
+[`MR-000`](../../../../harness/conventions.md#mr-000--baseline-aussage) eine
+undeklarierte Abweichung. Der Skill **trägt die Zitier-Form nicht**; sie
+gehört hinein.
+
+**R7 ist die Regel, die die erste Fassung ganz übersehen hat — und sie trifft
+uns am härtesten.** Der Kanon schließt: *„Steht die Adresse erst im
+eingefrorenen Artefakt, bleiben zwei Wege: es doch anfassen — dann ist es kein
+Zeitdokument mehr — oder ein Ausnahme-Ventil im Prüfbereich, also eine
+**Gate-Senkung mit eigener Begründungslast**."* Genau dieses Ventil betreibt
+dieses Repo: `ignore-refs` in [`.d-check.yml`](../../../../.d-check.yml) trägt
+**25** Tombstone-Einträge über **zehn** entfernte Baseline-Bäume, zuletzt für
+`v6.3.1` mit [`MR-067`](../../../../harness/conventions.md#mr-067). Dahinter
+stehen **28** Dateien mit Links in Bäume, die es nicht mehr gibt — 18
+`Accepted`-ADRs, 6 aufgelöste Konventions-Einträge, 3 `done/`-Slices, ein CR.
+
+**Das Ventil ist nicht falsch, aber es wächst mit jedem Bump**, und der Kanon
+nennt es jetzt eine Gate-Senkung. Die Begründungslast ist damit fällig — und
+R6 ist ihre Auflösung nach vorn: Wer die Kennung statt der Adresse schreibt,
+braucht beim nächsten Bump keinen neuen Eintrag.
+
+**Keine Regel ist *nicht anwendbar*, keine wird *abweichend* adoptiert.** Zum
+Vergleich mit den Vorgängern, gemessen statt behauptet: `slice-107` führte
+einen Stufen-Audit über sechs Stufen **mit** mehreren Nicht-anwendbar-Antworten;
+`slice-203` führte **gar keinen** Regel-Audit, sondern übernahm Template-Deltas
+direkt. Der Vergleich der ersten Fassung („beide Vorgänger") traf also nur auf
+einen zu.
 
 ## 3. Ausdrücklich NICHT in diesem Slice
 
@@ -276,7 +329,7 @@ der Fehler des Vorgänger-Slice). Vier Einträge sind einschlägig:
   schreibt die Regel dazu und wartet auf **diesen** Slice — hier ist sie also
   noch Disziplin, nicht Konvention.
 - [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
-  (2×) — die Delta-Liste aus dem Vorgänger ist eine **Zählung**, und dieser
+  (1× — der in slice-207 angekündigte zweite Beleg wurde dort nie geschrieben; er kommt mit diesem Slice) — die Delta-Liste aus dem Vorgänger ist eine **Zählung**, und dieser
   Slice urteilt auf ihr. Vor jeder Aussage „so viele Regeln sind betroffen"
   gehört die Form des Gegenstands ausgeschrieben.
 - [`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
@@ -284,6 +337,15 @@ der Fehler des Vorgänger-Slice). Vier Einträge sind einschlägig:
   ist der vorhandene Konventions-Eintrag aufzulösen, nicht umzuformulieren. Ein
   Eintrag, der nur noch wiederholt, was der Kanon selbst sagt, ist eine zweite
   Quelle.
+
+- [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+  (9×) — **nachgetragen nach Review-Runde 1**, und er war der einschlägigste
+  von allen: Drei Befunde dieser Runde fallen in seine Klasse. Der Audit
+  zählte Slice-**Kennungen** und sagte über Folge-Slice-**Verweise** aus; er
+  las `adrs:` als entlastende Quelle und sagte über die
+  Waisen-Definition aus; und er verglich mit „beiden Vorgängern", von denen
+  einer gar keinen Audit führt. Der Test des Eintrags — *wer ändert die Menge,
+  die ich zähle, und wer die, über die ich rede?* — hätte alle drei gefangen.
 
 **Geprüft und ausgeschlossen:**
 [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
@@ -319,7 +381,7 @@ Meldung auf, ohne dass hier etwas zu tun wäre.
   (`semantic-change-body-only-edges-stale`, 11×), eine mechanische Ersetzung
   über eingefrorenen Bestand (`mechanical-id-rewrite-misses-frozen-classes`,
   3×) und eine Zählung als Urteilsgrundlage
-  (`zaehlmethode-misst-proxy-statt-gegenstand`, 2×). Das ist die höchste
+  (`zaehlmethode-misst-proxy-statt-gegenstand`, 1×). Das ist die höchste
   Risiko-Dichte, die ein Slice dieses Repos bisher vorab getragen hat.
 - **Reconciliation-Aufwand:** keiner (GF). Graduation entfällt.
 

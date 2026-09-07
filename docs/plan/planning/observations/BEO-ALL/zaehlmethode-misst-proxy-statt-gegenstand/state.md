@@ -1,1 +1,1 @@
-**Stand:** offen — erstes Auftreten; ein Ableiter steht in der Beobachtung, ein Träger noch nicht.
+**Stand:** offen — zwei Vorgänge, vier Instanzen. Die Klasse zeigt sich nicht beim Zählen, sondern erst, wenn jemand die Trefferliste gegen die **Form** des Gezählten hält; dreimal von vier tat das ein unabhängiger Review, nicht der Zählende.
