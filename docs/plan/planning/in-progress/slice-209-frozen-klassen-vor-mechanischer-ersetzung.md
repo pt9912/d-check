@@ -135,12 +135,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       **Nein** braucht die Differenz — was regelt der Kanon nicht —, ein **Ja**
       schließt den Slice ohne neuen Eintrag und setzt den Register-Ausgang auf
       *verkörpert* mit dem Kanon als Zielort.
-- [ ] **(2)** Fällt die Antwort auf **Nein**: Ein Konventions-Eintrag trägt die
+- [x] **(2)** Fällt die Antwort auf **Nein**: Ein Konventions-Eintrag trägt die
       Regel samt der **Klassen-Liste über die Eigenschaft** und der Grenze, was
       sie nicht leistet.
-- [ ] **(3)** Der Registereintrag trägt den Ausgang *verkörpert* mit
+- [x] **(3)** Der Registereintrag trägt den Ausgang *verkörpert* mit
       auflösbarem Zielort und Herkunfts-Anker `seit slice-209`.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
