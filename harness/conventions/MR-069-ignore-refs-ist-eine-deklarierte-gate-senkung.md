@@ -41,11 +41,11 @@
   **(1) Das Ventil wächst mit jedem Bump.** Jede Hebung, die eine Adresse in
   einem einfrierenden Artefakt zurücklässt, braucht einen weiteren Eintrag.
 
-  **(2) Ein Teil davon skopiert nichts mehr.** Gemessen: **16** der Einträge
-  in `ignore-refs` nennen eine `in:`-Datei, die es **nicht mehr gibt** — sie
-  wurde archiviert, nachdem der Eintrag geschrieben war. Sie sind wirkungslos
-  und niemand meldet sie; die 25 Baseline-Skopen oben sind die **deklarierten**,
-  nicht durchgehend die **wirksamen**. Das Aufräumen ist ein eigener Vorgang und
+  **(2) Ein Teil davon skopiert nichts mehr.** Gemessen: **sieben** der 25
+  Baseline-Einträge nennen eine `in:`-Datei, die es **nicht mehr gibt** — sie
+  wurde archiviert, nachdem der Eintrag geschrieben war. Sie sind wirkungslos,
+  und niemand meldet sie: Die 25 oben sind die **deklarierten** Skopen, nicht
+  durchgehend die **wirksamen**. Das Aufräumen ist ein eigener Vorgang und
   gehört nicht in diesen Eintrag.
 
   **(3) Die Auflösung nach vorn trägt nur eine der vier Klassen.** Der Kanon

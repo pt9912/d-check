@@ -188,6 +188,11 @@ structure:
     # ein woertlicher `section:`-Schluessel deckte nach der Umbenennung nur
     # noch eine Haelfte und waere GRUEN, ohne noch etwas zu pruefen. Die
     # Ziffer ist bewusst offen: der Abschnitt wandert von 5 auf 6.
+    # GRENZE der Doppel-Form: Traegt EINE Datei beide Titel, ist der Selektor
+    # mehrdeutig -- `sections: one` meldet dann `section-ambiguous` und bricht
+    # fuer diese Datei ab, die forbid-pattern-Pruefung laeuft nicht mehr. Das
+    # ist laut, kein stiller Gruen-Pfad, aber erst diese Regel macht es
+    # moeglich: ein woertlicher Selektor konnte zwei Titel nie zugleich treffen.
     section-pattern: '^## [0-9]+\. (?:Abnahme-Punkte / Risiken|Risiken und offene Punkte)$'
     forbid-pattern: '\*\*Ausgang:[\s*_]*(?:[^ew\s*_]|e[^in]|ei[^n]|ein[^g]|eing[^e]|en[^t]|ent[^f]|entf[^a]|w[^e]|we[^i]|wei[^t]|weit[^e]|weite[^r])'
 

@@ -71,8 +71,8 @@ Regel gegen **jede** Datei gehalten.
 | R2 | *„Die Adresse muss die Sendung annehmen"* — ein Folge-Slice, der den verwiesenen Punkt selbst ausschließt oder **vor** dem verweisenden schließt, ist keine Adresse | `modul-05` | `slice.template` | **übernommen, Bestand geprüft** |
 | R3 | §8 heißt *Sub-Area-Prüfungen und Modus-Begründung*; die zwei *Vorgelagert*-Blöcke sind unbedingter Kopf, der Modus-Block bedingter Rumpf | `modul-05` | `slice.template`, `templates/README` | **übernommen** (DoD 2) |
 | R4 | Der Lauf weitet die Abgrenzung nicht — Mitnahme ist eine **Plan-Änderung** und gehört vor den Code | `modul-09` | `modul-05`, `slice.template` | **übernommen, mit Handlung** |
-| R5 | Die **RTM** — vier Setzungen (s. u.) | `grundlagen-traceability` | `grundlagen-begriffe` | **drei erfüllt, eine deklarationspflichtig** |
-| R6 | **Kennung statt Adresse** für einfrierende Artefakte, in **drei Formen**, für eine **erweiterte** Klasse | `grundlagen-harness-dateien` | `review-report`, `archiv-stub-slice`, `archiv-stub-welle`, `welle-results` | **übernommen, template-forward** |
+| R5 | Die **RTM** — vier Setzungen (s. u.) | `grundlagen-traceability` | `grundlagen-begriffe` | **vier erfüllt, keine Abweichung** |
+| R6 | **Kennung statt Adresse** für einfrierende Artefakte, in **drei Formen**, für eine **erweiterte** Klasse | `grundlagen-harness-dateien` | `review-report`, `archiv-stub-slice`, `archiv-stub-welle`, `welle-results` | **übernommen, mit Handlung** (Skill) |
 | R7 | Ein **Ausnahme-Ventil** im Prüfbereich ist *„eine Gate-Senkung mit eigener Begründungslast"* | `grundlagen-harness-dateien` | — | **übernommen, mit Handlung** |
 
 **R1–R4 sind die CR-Umsetzung.** §1 und §3 fallen zusammen, §7 und §8 ebenso,
@@ -109,13 +109,18 @@ weiterhin **nicht** ab"*
 ([`DC-FA-CLI-011`](../../../../spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)).
 Die abgeleitete „Handlung" zielte auf eine Konfiguration, die es nicht gibt.
 
-**Offen ist die vierte:** Der Kanon verlangt, einen **anderen** Schnitt zu
-deklarieren, *„wie jede Abweichung von der Baseline"* — und nennt als Beispiel
-genau unseren Fall, eine kuratierte Nachweis-Datei als entlastende Quelle. Das
-ist [`DC-FA-COV-001`](../../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
-(`trace.coverage`), eine **dritte, opt-in** Referenzklasse. Sie ist im
-Lastenheft beschrieben, aber **nicht als Abweichung vom Kanon-Vorschlag
-deklariert** — der Kanon kannte diesen Vorschlag bis `v6.5.0` nicht.
+**Die vierte war eine Fehlmessung, und Review-Runde 2 hat sie gefunden.** Sie
+lautete zunächst *„offen"*: Der Kanon verlangt, einen **anderen** Schnitt zu
+deklarieren, *„wie jede Abweichung von der Baseline"*, und dieser Slice trug
+dafür kurz einen eigenen Konventions-Eintrag. Er ist **zurückgezogen**. Der
+Kanon-Auslöser gilt einem Repo, *„das das anders schneidet"* — die
+`.d-check.yml` dieses Repos schneidet nicht anders: ihr `trace:`-Block führt
+`requirements`, `adrs` und `slices` und **kein** `coverage`. Was abweicht, ist
+eine **Produkt-Fähigkeit** ([`DC-FA-COV-001`](../../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in),
+strikt opt-in, default-aus byte-identisch) — die eigene Konfiguration und der
+Funktionsumfang des eigenen Werkzeugs sind zwei Mengen, und die Regel gilt
+der ersten. Ein Eintrag, der eine nicht gelebte Abweichung deklariert, ist
+schlechter als keiner.
 
 **R6 ist eine Regel in drei Formen, nicht zwei Regeln.** Der Kanon schreibt sie
 so: Gate-Token statt Sensor-Link · `slice-NNN` statt Lifecycle-Pfad ·
@@ -132,8 +137,10 @@ hält nicht: Der Skill nennt die **Baseline**-Vorlage als Ziel-Form, es gibt
 keine lokale Kopie, und kein Konventions-Eintrag deklariert eine Abweichung —
 eine „eigene Form" wäre nach
 [`MR-000`](../../../../harness/conventions.md#mr-000--baseline-aussage) eine
-undeklarierte Abweichung. Der Skill **trägt die Zitier-Form nicht**; sie
-gehört hinein.
+undeklarierte Abweichung. Der Skill **trug die Zitier-Form nicht** — sie
+ist mit diesem Slice hineingeschrieben: [`.harness/skills/reviewer.md`](../../../../.harness/skills/reviewer.md)
+§Zitier-Form, Version 1.14.0. Damit sind es **drei** Handlungen an diesem
+Delta, nicht zwei; die Antwort-Spalte der R6-Zeile sagte das zuerst nicht.
 
 **R7 ist die Regel, die die erste Fassung ganz übersehen hat — und sie trifft
 uns am härtesten.** Der Kanon schließt: *„Steht die Adresse erst im
@@ -239,12 +246,17 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - **Die Umnummerierung bewegt JEDEN Abschnitt** — gemessen: neun Haus-Form-
   Abschnitte gegen acht der Baseline, und die Zuordnung ist keine Bijektion
   (§1+§3 fallen zusammen, §6 spaltet sich in §4+§5). **Gate-seitig ist es
-  weniger, als es aussieht:** Von drei Regeln im Closure-Profil, die einen
-  Abschnitt adressieren, keilt genau **eine** auf einen wörtlichen Titel
-  (`## 5. Abnahme-Punkte / Risiken`); die beiden anderen sind Muster über
-  `Definition of Done` und überleben. Die Zahl ist gemessen, nicht geschätzt —
-  aber sie ist eine Zählung, und der Register-Eintrag zu Zählungen ist
-  gesichtet. — **Ausgang:** \<offen\>
+  weniger, als es aussieht:** **Fünf** `structure`-Regeln des Closure-Profils
+  adressieren einen Abschnitt der `done/`-Slices; genau **eine** keilte auf
+  einen wörtlichen Titel (`## 5. Abnahme-Punkte / Risiken`). Die vier übrigen
+  sind form-agnostisch — zweimal `Definition of Done` mit offener Ziffer, dazu
+  `Closure-Notiz` und jedes H1 — und überleben die Umbenennung unverändert.
+  **Die erste Fassung zählte drei**, und der unabhängige Review hat
+  nachgemessen: Sie zählte die Regeln, die beim Schreiben vor Augen standen,
+  und sagte über alle aus. Der Schluss bleibt richtig, die Zahl unter ihm war
+  falsch — genau die Klasse, die dieser Slice in §7 als gesichtet führt.
+  — **Ausgang:** \<offen\>
+
 ## 6. Trigger
 
 **Start** (`open` → `in-progress`): [slice-207](../done/slice-207-baseline-v650-bump.md)

@@ -219,9 +219,9 @@ keine aspirativen Texte. Aber ihre Kraft ist real begrenzt:
 2. Relevante kanonische Quelle lesen.
 3. Betroffene IDs identifizieren.
 4. Kleinste Änderung planen — und die **Abgrenzung** mit ausgeben (was der
-   Slice ausdrücklich **nicht** tut). Der Lauf bleibt daran gebunden und weitet sie nicht;
-   Mitnahme ist eine Plan-Änderung und gehört vor den Code. Ausgeschrieben in
-   [`AGENTS.md`](../AGENTS.md) §6.
+   Slice ausdrücklich **nicht** tut). Der Lauf bleibt daran gebunden und
+   weitet sie nicht; Mitnahme ist eine Plan-Änderung und gehört vor den Code.
+   Ausgeschrieben in [`AGENTS.md`](../AGENTS.md) §6.
 5. Engsten nützlichen Sensor laufen lassen.
 6. Repo-weiten Gate-Lauf vor Handoff (`make gates`).
 7. Doku/Indizes aktualisieren, falls ein öffentlicher Vertrag berührt.
