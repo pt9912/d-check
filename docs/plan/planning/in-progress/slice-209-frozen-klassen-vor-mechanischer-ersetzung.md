@@ -203,11 +203,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - [x] **(3)** Der Registereintrag trägt den Ausgang *verkörpert* mit
       auflösbarem Zielort und Herkunfts-Anker `seit slice-209`.
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §5 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §5 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 5. Abnahme-Punkte / Risiken
 
@@ -219,16 +219,44 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   Aufzählung, die alle drei Anlässe abdeckt. Ein eigener Eintrag daneben wäre
   dann eine zweite Quelle für dieselbe Regel — genau das, wovor die
   Source-Precedence warnt. Die Vorfrage steht deshalb **als DoD-Punkt**, nicht
-  als Vorbemerkung. — **Ausgang:** \<offen\>
+  als Vorbemerkung. — **Ausgang:** entfallen — die Vorfrage ist beantwortet,
+  und zwar mit **Nein**. Die Regel ist nicht überflüssig: Der Kanon regelt die
+  **Form eines Verweises** beim Schreiben, dieser Eintrag die
+  **Ausschluss-Menge einer Massen-Operation** danach. Das Risiko kann nicht
+  mehr eintreten, weil die Frage entschieden ist. **Was der Review daran
+  korrigiert hat, ändert die Antwort nicht, sondern ihre Belege:** Von den drei
+  Belegen trug einer die falsche Begründung und einer war zu stark formuliert;
+  beide sind neu gefasst, der zweite als der schwächste ausgewiesen. Der Kern —
+  anderer Adressat, anderer Zeitpunkt, andere Handlung — ist unangetastet
+  geblieben.
 - **Eine Regel aus drei Anlässen ist keine Inventur**
   ([`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md),
   7×). Drei ist die Kanon-Schwelle, aber die drei Anlässe sind alle vom selben
   Typ (Pin-/Format-Migration). Ob die Regel für andere mechanische Ersetzungen
-  trägt, ist unbelegt und gehört als Grenze in den Eintrag. — **Ausgang:** \<offen\>
+  trägt, ist unbelegt und gehört als Grenze in den Eintrag. — **Ausgang:**
+  weiter offen — eingetragen als achter Beleg bei
+  [`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md).
+  Die Grenze steht im Eintrag, wie der Plan es verlangt hat; belegt ist sie
+  damit nicht. **Verschärfend, und erst im Schreiben aufgefallen:** Von den
+  zwei Pflichten der Regel ist die **erste** — die Vorab-Liste — die unbelegte.
+  Gefangen wurde der Fehler dreimal von der zweiten Pflicht oder vom Review,
+  nie von einer Liste davor, denn es gab keine. Die Regel schreibt also eine
+  Handlung vor, deren Wirksamkeit sie nicht belegen kann; das steht jetzt in
+  ihr.
 - **Kein Gate, und das ist eine Aussage über die Wirkung.** Die Regel hängt an
   der Disziplin des Ausführenden; sie verschiebt einen Fehler von *unsichtbar*
   nach *vermeidbar*, nicht nach *unmöglich*. Das gehört ausgeschrieben, sonst
-  liest sie sich stärker, als sie ist. — **Ausgang:** \<offen\>
+  liest sie sich stärker, als sie ist. — **Ausgang:** entfallen — die Grenze
+  ist ausgeschrieben, und zwar fünffach; der Eintrag sagt in eigenen Worten,
+  dass er den Fehler von *unsichtbar* nach *vermeidbar* verschiebt, nicht nach
+  *unmöglich*. **Die Liste war trotzdem unvollständig, und das ist die
+  Pointe:** Der unabhängige Review fand eine sechste Grenze, die keine der fünf
+  vorwegnahm — die **Kollision mit
+  [`MR-013`](../../../../harness/conventions.md#mr-013)**, bei der die literale
+  Befolgung der neuen Regel `make doc-check` rot gemacht hätte. Sie ist jetzt
+  als eigener Block gemeldet statt still aufgelöst
+  ([`AGENTS.md`](../../../../AGENTS.md) §1). Wer seine Grenzen aufzählt, hat
+  sie damit nicht vollständig — das gilt auch für diesen Satz.
 
 ## 6. Trigger
 
@@ -343,4 +371,82 @@ als genau das erwiesen, was sie zu sein behauptete. Nichts zu tun.
 - **Reconciliation-Aufwand:** keiner (GF). Graduation entfällt.
 ## 9. Closure-Notiz (nach `done/`)
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** Eine beantwortete Vorfrage, ein Konventions-Eintrag
+([`MR-070`](../../../../harness/conventions.md#mr-070)) mit fünf
+ausgeschriebenen Grenzen und einer gemeldeten Regel-Kollision, ein
+Registereintrag auf *verkörpert* mit Zielort und Anker. Ein unabhängiger
+Review, blockierend, sechs MEDIUM plus ein LOW und ein INFO — alle
+eingearbeitet. `make gates` grün (zehn Gates, 706 Dateien).
+
+**Was funktioniert hat: die Vorfrage als DoD-Punkt statt als Vorbemerkung.**
+Der Plan hat *„macht der Kanon die Regel entbehrlich?"* nicht vorweg
+beantwortet, sondern als abhakbaren Punkt geführt, mit beiden Ausgängen
+vorab beschrieben. Das hat den Slice gezwungen, den Kanon-Absatz **vollständig
+zu lesen**, statt seinen Titel zu zitieren — und der Review konnte gegen einen
+benannten Anspruch prüfen statt gegen eine Stimmung. Von den sechs MEDIUM
+betrafen vier die **Belege** der Antwort und keiner ihr **Ergebnis**; das ist
+die Trennung, die ein DoD-Punkt möglich macht.
+
+**Was Friktion war: der Slice ist genau der Klasse aufgesessen, die er vorab
+gesichtet hatte.** §7 führt
+[`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+(15×) als *„den einschlägigsten für die Vorfrage"* — und drei der sechs
+Befunde sind Ausprägungen genau davon. Der schwerste: Der tragende Beleg las
+den Kanon-Satz *„Tag und Pfad in Inline-Code, **nicht als Link**"* als erfüllt,
+weil die geprüften Direktiven keine Links sind. Das ist die **Negation gelesen
+statt der Vorschrift** — ein HTML-Kommentar ist weder das eine noch das andere.
+**Zum zweiten Mal in Folge gilt damit:** Das Sichten benennt die Klasse und
+verhindert ihr Eintreten nicht; gefangen hat sie der unabhängige Review.
+
+**Steering-Loop-Lerneintrag:** *Die Entscheidung trägt, die Begründung daneben
+nicht*
+([`begruendung-traegt-entscheidung-nicht`](../observations/BEO-ALL/begruendung-traegt-entscheidung-nicht/observation.md),
+jetzt 2×) — und dieser Beleg ist aus zwei Richtungen zugleich entstanden. **Der
+Slice** kam zum richtigen Schluss mit einer falschen Begründung. **Der Review**
+widerlegte die Begründung zu Recht und stellte daneben eine eigene auf, die
+ebenfalls nicht zutrifft: die Kanon-Form trage den Präfix
+`.harness/baseline/<tag>/` „gerade nicht". Gemessen tragen ihn **neun**
+Vorkommen in eingefrorenen Artefakten, die nur überlebt haben, weil ihr
+Verzeichnis ausgenommen war. **Ein Befund kann richtig sein und seine
+Begründung falsch** — wer den Befund übernimmt, ohne nachzumessen, übernimmt
+beides. Der Eintrag steht bei 2× und wartet.
+
+**Der teuerste Einzelbefund war nicht die Vorfrage, sondern die Regel selbst.**
+[`MR-070`](../../../../harness/conventions.md#mr-070)s Geltungsbereich führte
+*„`git mv` mit Nachzug"*, während seine
+Tabelle `done/` ausnimmt — und
+[`MR-013`](../../../../harness/conventions.md#mr-013) verlangt genau diesen
+Nachzug in `done/`-Dateien. **Der Beanspruchungs-Commit dieses Slice hat ihn an
+sechs Stellen ausgeführt**, drei Commits bevor die Regel geschrieben wurde, die
+ihn verbietet. Wer sie literal befolgt hätte, machte `make doc-check` rot. Die
+Kollision ist jetzt gemeldet, nicht still aufgelöst
+([`AGENTS.md`](../../../../AGENTS.md) §1): Der Eigenschafts-Test entscheidet
+sie, weil ein Pfad-Nachzug die Aussage nicht verfälscht, eine
+Kennungs-Ersetzung schon.
+
+**Die Lehre daraus ist unbequemer als der Fix.** Der Eintrag zählt fünf
+Grenzen auf, und keine davon nahm die sechste vorweg. Eine ausgeschriebene
+Grenzen-Liste macht eine Regel ehrlicher, nicht vollständig — und die Liste
+selbst braucht einen fremden Leser.
+
+**Was offen bleibt.** Die erste der beiden Pflichten von
+[`MR-070`](../../../../harness/conventions.md#mr-070) — die
+Vorab-Liste — ist die **unbelegte**: Gefangen wurde der Fehler dreimal von der
+zweiten Pflicht oder vom Review, nie von einer Liste davor, denn es gab keine.
+Das steht im Eintrag und im Register
+([`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md),
+achter Beleg). Ob die Regel trägt, entscheidet die vierte Instanz — dieselbe
+Wette wie bei [`MR-066`](../../../../harness/conventions.md#mr-066).
+
+**Die drei Paarungen, gemessen.** **(a) Anker** — [`MR-070`](../../../../harness/conventions.md#mr-070) trägt
+`seit slice-209`, der Registereintrag zeigt auf ihn, der Zielort löst auf.
+**(b) Folge-Slice** — dieser Slice nennt keinen; die Kanon-Beobachtung aus dem
+Beleg (die vom Kanon vorgeschriebene Form ist gegen `sed` unsicher) ist als
+**ausgehender CR** vorgemerkt und bewusst ohne Kennung gelassen, weil §3 den
+anderen Vorgang ausschließt — eine Kennung ohne Datei wäre eine Adresse, die
+die Sendung nicht annimmt. **(c) Register** — alle zitierten
+Beobachtungs-Pfade lösen auf; die drei neuen Belege liegen als
+`evidence/slice-209.md` in ihren Verzeichnissen. Der Wachposten
+[`kanal-kennung-als-inhalt-gelesen`](../observations/BEO-ALL/kanal-kennung-als-inhalt-gelesen/observation.md)
+trägt weiterhin kein `evidence/` — unverändert die benannte Spannung aus
+slice-208, nicht ein Defekt dieses Slice.
