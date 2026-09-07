@@ -51,6 +51,60 @@ unseren CR nennt es ausdrücklich: „euren lokalen Fork könnt ihr dann
 auflösen". Ob daraus die **Auflösung** eines Konventions-Eintrags folgt oder
 nur seine Umformulierung, ist je Eintrag zu entscheiden.
 
+### Der Delta-Audit (DoD 1)
+
+**Zuerst die Form des Gegenstands, wie der Register-Eintrag es verlangt.** Der
+Vorgänger hat **zwölf Dateien** mit Delta gemessen. Eine Datei ist aber keine
+Regel: Dieselbe Regel steht oft in mehreren Trägern, und ein Träger kann eine
+Regel nur nachziehen. Gezählt wird deshalb, was ein Implementer **tun oder
+lassen** muss. Ergebnis: **sieben Regeln in zwölf Trägern.**
+
+| # | Regel | Träger | Antwort |
+|---|---|---|---|
+| R1 | §1 heißt *Ziel und Abgrenzung* — vier Klassen, Begründung je Punkt, keine Mindestzahl, kein Sensor | `modul-05`, `slice.template`, `templates/README`, `modul-06`, `modul-09` | **übernommen** |
+| R2 | *„Die Adresse muss die Sendung annehmen"* — ein Folge-Slice, der den verwiesenen Punkt selbst ausschließt oder **vor** dem verweisenden schließt, ist keine Adresse | `modul-05` | **übernommen** |
+| R3 | §8 heißt *Sub-Area-Prüfungen und Modus-Begründung*; die zwei *Vorgelagert*-Blöcke sind unbedingter Kopf | `slice.template`, `templates/README` | **übernommen** |
+| R4 | Der Lauf weitet die Abgrenzung nicht stillschweigend — Mitnahme ist eine **Plan-Änderung** und gehört vor den Code | `modul-09` | **übernommen** |
+| R5 | Die **RTM** wird *erzeugt, nicht gepflegt*; was eine Anforderung **entlastet**, ist eine Setzung und gehört aufgeschrieben | `grundlagen-traceability`, `grundlagen-begriffe` | **übernommen, mit Handlung** |
+| R6 | **Einfrierend gegen lebend**: ein lebendes Artefakt verlinkt `harness/sensors/<target>.md`, ein einfrierendes nennt `make <target>` als Token | `grundlagen-harness-dateien` | **übernommen, Bestand konform** |
+| R7 | **Zitier-Form** einfrierender Artefakte: Kennung statt Adresse, Baseline-Stelle als Tag + Pfad in Inline-Code statt als Link | `review-report`, `archiv-stub-slice`, `archiv-stub-welle`, `welle-results` | **übernommen, template-forward** |
+
+**R1–R4 sind die CR-Umsetzung** und lösen d-checks Haus-Form auf. §1 und §3
+fallen zusammen, §7 und §8 ebenso, §6 spaltet sich in Trigger und
+Closure-Trigger; neun Abschnitte werden acht. Die Zuordnung ist **keine
+Bijektion**, und deshalb ist es keine Umbenennung, sondern eine Migration.
+
+**R2 ist neu und wurde nicht erbeten.** Sie schärft die Klasse *„ein
+Folge-Slice übernimmt es"*, die dieses Repo selbst geliefert hat — und sie
+trifft eine reale Praxis: Von den sechs gelebten Ausschluss-Abschnitten nennen
+vier einen Folge-Slice, und ob der die Sendung annimmt, hat bisher niemand
+geprüft.
+
+**R5 verlangt als einzige eine Handlung am Bestand, und sie ist klein.**
+d-checks `--trace` **erzeugt** die RTM aus den Ankern — die erste Hälfte ist
+also erfüllt, ohne dass etwas zu tun wäre. Die zweite ist offen: Der
+`trace`-Block deklariert `adrs` und `slices` als Quellen, die eine Anforderung
+entlasten, **und nennt nirgends den Grund**. Genau davor warnt der Kanon: Das
+ist eine Konfigurationsentscheidung, keine Naturgesetzlichkeit — dieselbe ADR
+entlastet oder entlastet nicht, je nachdem, was das Repo gesetzt hat.
+
+**R6 ist gemessen und der Bestand trägt sie schon.** 26 Verweise aus lebenden
+Artefakten verlinken die Sensor-Datei — richtig. Aus dem eingefrorenen Bestand
+tut es **genau einer**, und der steht in einem Review-Report, der nicht mehr
+angefasst wird. Kein Handlungsbedarf am Bestand; die Regel greift vorwärts.
+
+**R7 ist die Regel, die der Pin-Hebung ihre Ausnahme nimmt.** Die letzte
+Hebung brauchte einen Tombstone, weil eine `Accepted`-ADR einen **Link** in den
+vendorten Baum trug. Unter R7 hätte sie ihn nie getragen. Träger bei uns ist
+nicht die Baseline-Vorlage — dieses Repo führt eine eigene Review-Form —,
+sondern der **Reviewer-Skill**.
+
+**Keine Regel des Deltas ist *nicht anwendbar*, und keine wird *abweichend*
+adoptiert.** Das ist ein Befund und keine Selbstverständlichkeit: Die beiden
+Vorgänger-Adoptionen trugen je mehrere Nicht-anwendbar-Antworten (Wellen-Betrieb,
+Mehr-Schreiber-Teile). Dieser Delta trifft ausschließlich Bereiche, in denen
+dieses Repo aktiv arbeitet.
+
 ## 3. Ausdrücklich NICHT in diesem Slice
 
 - **Die Pin-Hebung selbst.** Sie liegt in
@@ -67,7 +121,7 @@ nur seine Umformulierung, ist je Eintrag zu entscheiden.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** Zu **jeder** Regel des gemessenen Deltas steht eine Antwort im
+- [x] **(1)** Zu **jeder** Regel des gemessenen Deltas steht eine Antwort im
       Slice: übernommen (mit Träger) · nicht anwendbar (mit Begründung) ·
       abweichend (mit Adaptions-Eintrag). Eine Regel ohne Antwort ist ein
       offener Punkt, kein stilles Übergehen.
