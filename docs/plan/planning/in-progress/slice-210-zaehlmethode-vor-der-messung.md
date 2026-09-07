@@ -56,7 +56,7 @@ nur ihre Zahl gelesen.**
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** Der **Zielort ist entschieden und begründet**: trägt die Regel
+- [x] **(1)** Der **Zielort ist entschieden und begründet**: trägt die Regel
       [`AGENTS.md`](../../../../AGENTS.md) §5 (wie die beiden
       Geschwister-Klassen), der Reviewer-Skill, oder beide? Ein Ort, der aus
       der Gewohnheit gewählt ist, ist keiner.
@@ -90,6 +90,53 @@ Fehltreffern eine Aussage abgeleitet, die es nie gab.
 **Dreimal von vier fand es der unabhängige Review, nicht der Zählende** — das
 ist die Eigenschaft, die den Zielort mitbestimmt: Eine Regel, die nur im
 Briefing steht, adressiert genau den, der sie beim Zählen nicht liest.
+
+### Der Zielort, entschieden (DoD 1)
+
+**Beide — [`AGENTS.md`](../../../../AGENTS.md) §5 und der Reviewer-Skill.** Die
+Entscheidung hat zwei Teile, und der erste ist die Frage, ob es überhaupt eine
+Lücke gibt.
+
+**Teil 1: Deckt `AGENTS.md` §5 die Klasse schon?** Nein — und das ist
+**nicht** meine Lesart, sondern die Selbstauskunft des Trägers. Der §5-Absatz
+sagt, ein Schluss reiche *„nicht weiter als die gemessene Menge"*; der
+zugehörige Anker 8 des Reviewer-Skills schreibt dazu wörtlich:
+
+> diese ist MEDIUM, weil die **Messung stimmt** und nur ihre Reichweite
+> überdehnt ist.
+
+**Beide setzen eine korrekte Messung voraus.** Der Fall, in dem die Messung
+selbst den falschen Gegenstand zählt, liegt außerhalb — nach ihren eigenen
+Worten, nicht nach meiner Auslegung. Das ist die Vorsichtsmaßnahme gegen
+[`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+(16×, zweimal in Folge eingetreten): Ich lese §5 nicht enger, um meine Regel zu
+retten — der Träger von §5 nennt seinen Geltungsbereich selbst.
+
+**Teil 2: Warum beide Orte, und warum das keine Gewohnheit ist.** Die
+Geschwister-Einträge stehen ebenfalls an beiden Orten; genau deshalb ist
+*„beide"* die verdächtige Antwort und braucht ein eigenes Argument.
+
+- **Zwei verschiedene Handlungen zu zwei verschiedenen Zeitpunkten.**
+  `AGENTS.md` adressiert den **Messenden**, *bevor* er zählt: die Form des
+  Gegenstands ausschreiben. Der Skill adressiert den **Prüfenden**, *nachdem*
+  gezählt wurde: die Trefferliste gegen diese Form halten. Keine der beiden
+  Anweisungen lässt sich am anderen Ort ausführen.
+- **Gemessen, wo die Klasse tatsächlich auffällt:** Von den **vier** Instanzen
+  in drei Vorgängen fand sie **dreimal** der unabhängige Review und **einmal**
+  der Zählende selbst. Eine Regel nur in `AGENTS.md` stünde damit an der
+  Stelle, an der sie nachweislich seltener greift.
+
+**Und der Test aus
+[`begruendung-traegt-entscheidung-nicht`](../observations/BEO-ALL/begruendung-traegt-entscheidung-nicht/observation.md)
+(2×), angewandt:** *Bliebe die Entscheidung richtig, wenn die Begründung falsch
+wäre?* **Ja.** Das zweite Argument ist eine Zahl, und sie stärkt die
+Skill-Hälfte, sie erzeugt sie nicht — die Entscheidung ruht auf dem ersten
+Argument, den zwei Handlungen. Das ist hier keine Formalie: Die Zahl **war**
+zuerst falsch. Die `state.md` dieses Eintrags nannte *„viermal von fünf"*;
+nachgezählt sind es **dreimal von vier**, und die fünfte Instanz gehörte nie
+hierher, sondern zum Geschwister-Eintrag. **Der Slice über Fehlzählungen hat
+sich beim Zählen seiner eigenen Belege vertan** — korrigiert, und als Beleg für
+genau diese Klasse zu behandeln.
 
 ## 4. Trigger
 
