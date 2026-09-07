@@ -2,21 +2,21 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** — *(keine; Pin-Fortschreibung innerhalb des von
-  [`MR-023`](../conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)
+  [`MR-023`](../../conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)
   festgelegten self-contained Bundle-Layouts)*
 - **Datum:** 2026-09-06
-- **Geltungsbereich:** [§Baseline](../conventions.md#baseline), [§Adoptierte
-  Konventions-Quellen](../conventions.md#adoptierte-konventions-quellen), die
+- **Geltungsbereich:** [§Baseline](../../conventions.md#baseline), [§Adoptierte
+  Konventions-Quellen](../../conventions.md#adoptierte-konventions-quellen), die
   pin-gebundenen Verweise
-  ([`MR-021`](../conventions.md#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden))
-  in [`AGENTS.md`](../../AGENTS.md), [`harness/README.md`](../README.md), den
+  ([`MR-021`](../../conventions.md#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden))
+  in [`AGENTS.md`](../../../AGENTS.md), [`harness/README.md`](../../README.md), den
   aktiven `MR-*`-Dateien, den Spec-Straten, den Planning-Docs und den beiden
   Skills; dazu die acht Baseline-Aliase unter `.claude/rules/`
-  ([`MR-055`](../conventions.md#mr-055)).
+  ([`MR-055`](../../conventions.md#mr-055)).
 - **Adaption:** Der Baseline-Pin ist von `v6.0.0` auf **`v6.3.1`** gehoben —
-  die von [`MR-011`](../conventions.md#mr-011--baseline-auf-release-tag-gepinnt)
+  die von [`MR-011`](../../conventions.md#mr-011--baseline-auf-release-tag-gepinnt)
   vorgesehene Fortschreibung, elfter Nachtrag der Serie; ersetzt
-  [`MR-060`](done/MR-060-baseline-v600.md) nach dessen eigenem
+  [`MR-060`](MR-060-baseline-v600.md) nach dessen eigenem
   Auflösungs-Trigger. Kein Layout-Wechsel: dasselbe self-contained Bundle,
   dasselbe Materialisierungs-Skript, unverändertes Pfadschema.
 
@@ -47,7 +47,7 @@
   `<!-- Quelle: … blob/<tag>/… -->`-Herkunftszeile, die den Tag nennt. Wer diese
   Zahl berichtet, behauptet ein Delta von 53 statt der gemessenen 13. Der Fall
   ist als eingetretene Instanz von
-  [`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../../docs/plan/planning/observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+  [`BEO-ALL/eigene-menge-gemessen-fremde-behauptet`](../../../docs/plan/planning/observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
   notiert; das echte Delta entsteht erst mit `diff -I '<!-- Quelle:'`.
 
   **Adoptions-Entscheid je Strang — die Hebung ist nicht die Adoption.**
@@ -59,11 +59,11 @@
   §Sensors-Tabelle, deren Zellen längst absatzlang sind — der Kanon nennt genau
   das den Fund, nicht die Ausnahme.
 
-  **Der Zensus** ([`MR-021`](../conventions.md#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden)):
+  **Der Zensus** ([`MR-021`](../../conventions.md#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden)):
   **51** lebende Dateien gehoben — `AGENTS.md`, `harness/README.md`,
   `harness/conventions.md`, **32** aktive `MR-*`-Einträge, beide Skills, beide
   berührten Spec-Straten, vier Planning-Docs und die acht Aliase. Beide von
-  [`MR-060`](done/MR-060-baseline-v600.md) benannten
+  [`MR-060`](MR-060-baseline-v600.md) benannten
   Übersetzungsfehler-Klassen sind erneut aufgetreten und wurden gefangen: der
   `../baseline/` <!-- d-check:ignore (Muster-Praefix, benennt die Fehlerklasse) -->-relative Pfad in `.harness/skills/` und der Release-Link ohne
   `.harness/baseline/`-Segment. **Eine dritte Klasse kam hinzu** — der
@@ -73,21 +73,21 @@
 
   **Was ausdrücklich NICHT gehoben wurde**, obwohl es `v6.0.0` nennt: die
   historischen Aussagen. Zwei Kommentare in
-  [`config.go`](../../internal/hexagon/core/model/config.go) (*„vor/seit
+  [`config.go`](../../../internal/hexagon/core/model/config.go) (*„vor/seit
   `v6.0.0`"* über den Wechsel der Register-Form), die
   Verzeichnis-Form-Notiz in
-  [`observations/README.md`](../../docs/plan/planning/observations/README.md),
+  [`observations/README.md`](../../../docs/plan/planning/observations/README.md),
   der Tombstone-Kommentar der **vorigen** Migration in `.d-check.yml` und die
   Titel-/Geltungsbereich-Angaben von
-  [`MR-060`](done/MR-060-baseline-v600.md) selbst. Sie bleiben wahr; ein
+  [`MR-060`](MR-060-baseline-v600.md) selbst. Sie bleiben wahr; ein
   mechanischer Rewrite hätte sie still verfälscht
-  ([`BEO-ALL/mechanical-id-rewrite-misses-frozen-classes`](../../docs/plan/planning/observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)).
+  ([`BEO-ALL/mechanical-id-rewrite-misses-frozen-classes`](../../../docs/plan/planning/observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)).
   Die Gegenprobe gilt auch rückwärts: **zwei** Vorkommen waren trotz
   Versions-Nennung **Live-Zeiger** und wurden gehoben — die
   Kanon-Sektions-Annotation in der Roadmap und das Pin-Beispiel in
-  [`MR-021`](../conventions.md#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden).
+  [`MR-021`](../../conventions.md#mr-021--in-repo-verweise-auf-das-vendored-regelwerk-sind-pin-gebunden).
 
-  **cite-Direktiven** ([`MR-051`](../conventions.md#mr-051)): **16** lebende
+  **cite-Direktiven** ([`MR-051`](../../conventions.md#mr-051)): **16** lebende
   Direktiven in 11 Dateien. **3 neu verankert** — `grundlagen-begriffe.md`
   `:46`→`:47`, `grundlagen-harness-dateien.md` `:187`→`:190`,
   `modul-10-review-harness.md` `:75`→`:82` —, **0 entfallen**, **13**
@@ -96,7 +96,7 @@
   vorausberechnet; die Neuankerung folgte dem Zieltext.
   **`.d-check.yml`-Tombstone: EIN Glob-Eintrag, nicht fünf** — und der Grund
   ist enger, als die Entscheidung aussehen lässt. Gemessen trägt nur
-  [ADR-0083](../../docs/plan/adr/0083-beobachtungsregister-verzeichnis-modus.md)
+  [ADR-0083](../../../docs/plan/adr/0083-beobachtungsregister-verzeichnis-modus.md)
   einen **Markdown-Link** auf den entfernten `v6.0.0`-Baum, und nur solche
   liest das Modul `links`. Die übrigen eingefrorenen Klassen nennen den Tag
   sehr wohl **mit auflösendem Pfad**: `done/slice-200` und `done/slice-201`
@@ -111,18 +111,18 @@
   eine überholte Feld-Aussage weiter.** Kein Abschnittsname ist umbenannt,
   keine bestehende Regel entfällt oder widerspricht dem Delta — alle vier
   Stränge sind additiv. Die Ausnahme ist
-  [`MR-051`](../conventions.md#mr-051): sein `Geltungsbereich` sagt, in den
+  [`MR-051`](../../conventions.md#mr-051): sein `Geltungsbereich` sagt, in den
   eingefrorenen Verzeichnissen stehe **keine** `cite`-Direktive — die vier in
   `done/slice-200`/`slice-201` widerlegen das. Die **Regel** trägt
   unverändert; überholt ist nur die Feld-Aussage, und zwar bereits durch
-  [`MR-054`](../conventions.md#mr-054), was die Index-Zeile in
-  [`conventions.md`](../conventions.md#mr-051) schon ausweist. Der Eintrag
+  [`MR-054`](../../conventions.md#mr-054), was die Index-Zeile in
+  [`conventions.md`](../../conventions.md#mr-051) schon ausweist. Der Eintrag
   bleibt deshalb unangetastet — ein `MR` wird nicht nachträglich
   umgeschrieben —, aber „gültig" heißt hier *die Regel gilt*, nicht *jedes
   Feld stimmt noch*. Eigens geprüft, weil ihr Auflösungs-Trigger genau darauf
   zeigt:
-  [`MR-035`](../conventions.md#mr-035) und
-  [`MR-036`](../conventions.md#mr-036) bleiben **aktiv** — der Kanon benennt
+  [`MR-035`](../../conventions.md#mr-035) und
+  [`MR-036`](../../conventions.md#mr-036) bleiben **aktiv** — der Kanon benennt
   auch in `v6.3.1` keinen Ruheort für den ausgehenden Change Request;
   `grundlagen-begriffe.md` hat seine Artefakt-Tabelle erweitert, aber um
   `harness/sensors/` <!-- d-check:ignore (Kanon-Form aus v6.3.1, im Repo erst mit slice-203) -->, nicht um eine CR-Ablage.
@@ -132,8 +132,8 @@
   und die Abweichung benennbar. Dass er **fortgeschrieben** wird statt zu
   altern, ist die Bedingung dafür, dass der Freshness-Audit etwas zu
   vergleichen hat.
-- **Löst auf:** [`MR-060`](done/MR-060-baseline-v600.md)
+- **Löst auf:** [`MR-060`](MR-060-baseline-v600.md)
 - **Ausgelöst durch Baseline-Stand:** v6.3.1
 - **Auflösungs-Trigger:** der Kurs veröffentlicht einen neuen Release-Tag;
   dann Fortschreibung durch den nächsten Nachtrag zu
-  [`MR-011`](../conventions.md#mr-011--baseline-auf-release-tag-gepinnt).
+  [`MR-011`](../../conventions.md#mr-011--baseline-auf-release-tag-gepinnt).
