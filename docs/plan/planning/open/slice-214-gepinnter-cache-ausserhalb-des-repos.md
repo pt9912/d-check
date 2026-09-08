@@ -18,7 +18,7 @@ semgrep-Gate), [ADR-0011](../../adr/0011-digest-pins-build-gate-images.md)
 **Berührte Spec-Stellen:** — *(keine; der Slice beschreibt eine bestehende
 Eigenschaft und ändert kein Verhalten)*
 
-**Verantwortlich:** — · **Autor:** pt9912. **Datum:** 2026-09-08.
+**Verantwortlich:** pt9912 · **Autor:** pt9912. **Datum:** 2026-09-08.
 
 ---
 
@@ -156,5 +156,98 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
-\<die drei Vorprüfungen und der Modus-Block entstehen spätestens bei der
-Beanspruchung — ein Plan in `open/` trägt sie noch nicht\>
+Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
+§Ziel-Form: Sub-Area-Modus-Begründung. **Der Abschnitt entfällt nie**; bedingt
+ist allein der Modus-Block am Ende. Dieses Repo führt **drei** Prüfungen — die
+zwei kanonischen und, als Adaption, den Nachtlauf-Stand
+([`MR-053`](../../../../harness/conventions.md#mr-053)).
+
+**Vorgelagert — Sub-Area-Wahl prüfen:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:268-269 -->
+
+> **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+> muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+**Zwei** Sub-Areas, und das ist neu gegenüber den drei Vorgängern:
+
+- **`*`** (Repo-Default) — die Sensor-Beschreibungen unter
+  [`harness/sensors/`](../../../../harness/sensors/), die geändert werden.
+- **`tools/harness/`** (Kürzel `HARN`,
+  [`MR-004`](../../../../harness/conventions.md#mr-004)) — **gelesen, nicht
+  geändert.** Der Gegenstand von DoD (1) sind die Skripte und
+  Konfigurationen, die den Bezug herstellen ([`tools/semgrep.sh`](../../../../tools/semgrep.sh),
+  [`tools/harness/fetch-baseline-cache.sh`](../../../../tools/harness/fetch-baseline-cache.sh),
+  [`Dockerfile`](../../../../Dockerfile), [`a-check.mk`](../../../../a-check.mk)).
+  **Die Sub-Area wird geführt, weil sie den Gegenstand trägt, nicht weil sie
+  ein Diff bekommt** — genau das verlangt das Inklusionskriterium, und §1
+  schließt Verhaltens-Änderungen dort aus.
+
+**Vorgelagert — offene Beobachtungen sichten:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:274-274 -->
+
+> **Offene Beobachtungen sichten.** Das
+
+Register durchgegangen (gemergter Stand, **38** Verzeichnisse über beide
+Kürzel). Für `HARN` steht **kein** Eintrag im Register — das ist ebenfalls eine
+Antwort und wird notiert. **Vier** Einträge unter `ALL` sind einschlägig:
+
+- [`grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md)
+  (4×, seit slice-213 verkörpert) — **der Anlass**, und seine Regel gilt diesem
+  Slice unmittelbar: DoD (1) liest Konfiguration und Skript, **nicht** die
+  Prosa darüber. Genau daran ist die Vermutung *„der `semgrep`-Cache ist
+  ungeprüft"* schon einmal zerbrochen — er ist per Commit-SHA gebunden.
+- [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+  (14×, Stand *gemischt*) — **der gefährlichste hier.** Die Inventur hat eine
+  **Menge** (welche Artefakte zählen?) und eine **Aussage je Mitglied**
+  (Prüfzeitpunkt). slice-212 hat gezeigt, dass die Gefahr in der zweiten sitzt:
+  Dort war die Menge trivial und die Antwort je Datei falsch.
+- [`wortlaut-behauptet-pruefung-die-fehlt`](../observations/BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt/observation.md)
+  (8×, Ausgang *geplant*) — §6 führt es als Risiko: Dass Docker einen Digest
+  beim Pull nachrechnet, ist **bekannt**, nicht in diesem Repo **gemessen**.
+  Eine Inventur, die Vermutungen in Tabellenzellen schreibt, behauptet
+  Prüfungen.
+- [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+  (4×, verkörpert) — deshalb schreibt §3 vorher aus, was als *gepinntes
+  Fremd-Artefakt* und was als *Prüfzeitpunkt* zählt.
+
+**Keiner der vier erreicht mit diesem Slice die Schwelle erstmalig.**
+
+**Vorgelagert — Nachtlauf-Stand lesen**
+([`MR-053`](../../../../harness/conventions.md#mr-053)):
+
+`make nightly-state` am 2026-09-08 gelesen: **beide Nachtläufe grün** —
+`upstream-drift.yml` (jüngster Lauf 2026-09-07T05:33:45Z) und `image-scan.yml`
+(2026-09-07T08:21:32Z). **Beide sind für diesen Slice einschlägig, nicht
+Routine:** Sie sind die einzigen Träger, die gepinnte Fremd-Artefakte gegen
+upstream halten — und ihr Grün ist von gestern. **Genau das ist die
+Prüfzeitpunkt-Frage, die dieser Slice stellt**, angewandt auf seine eigene
+Vorprüfung.
+
+**Modus-Begründungsblock.** Beide berührten Sub-Areas GF — ein Block je
+Sub-Area, der zweite kurz, weil dort nichts geändert wird.
+
+### Sub-Area: `*`
+
+- **Modus:** GF (Repo-Default).
+- **Konventions-Dichte:** hoch — die Form der Sensor-Dateien gibt die vendorte
+  `gate.template.md` vor, und seit slice-213 sagt
+  [`AGENTS.md`](../../../../AGENTS.md) §5, wie eine Grenze zu prüfen ist.
+- **Phase-Reife:** Phase 5.
+- **Evidenz-/Diskrepanz-Risiko:** **mittel.** Der Bestand liegt offen; das
+  Risiko sitzt in der Antwort je Artefakt, und §6 führt es.
+- **Reconciliation-Aufwand:** keiner (GF).
+
+### Sub-Area: `tools/harness/`
+
+- **Modus:** GF ([`MR-004`](../../../../harness/conventions.md#mr-004)).
+- **Konventions-Dichte:** hoch — die Skripte sind über
+  [`MR-004`](../../../../harness/conventions.md#mr-004),
+  [`MR-005`](../../../../harness/conventions.md#mr-005) und
+  [`MR-042`](../../../../harness/conventions.md#mr-042) konventionsgetragen.
+- **Phase-Reife:** Phase 5.
+- **Evidenz-/Diskrepanz-Risiko:** **niedrig** — die Sub-Area wird **gelesen**,
+  nicht geändert; eine Diskrepanz zwischen Skript und Doku ist genau der Fund,
+  den der Slice sucht, und kein Risiko seines Vorgehens.
+- **Reconciliation-Aufwand:** keiner (GF).
