@@ -50,7 +50,8 @@ Lücken** — das ist der Grund für diesen Slice und nicht nur für eine Zeile.
   nennt den einmaligen Bezug ausdrücklich als Eigenschaft). Dieser Slice
   beschreibt den Ist-Zustand.
 - **Der `ignore-refs`-/`exempt-paths`-CR.** Er liegt unentschieden in
-  [`docs/plan/cr/`](../../cr/) und wartet auf eine Antwort des Absenders;
+  [`docs/plan/cr/`](../../cr/); dieses Repo ist dort der **Empfänger** und
+  schuldet den Entscheid, nicht der Absender eine Antwort —
   ein anderer Vorgang.
 - **Eine erneute Inventur der `## Grenze`-Abschnitte.** Sie liegt in
   [slice-212](../done/slice-212-grenzen-liste-nennt-ihre-groesste-luecke.md);
@@ -107,45 +108,63 @@ davon liegt außerhalb des Repos.**
 
 ### Die Inventur (DoD 1)
 
+**Die erste Fassung war unvollständig und in ihrer Kernaussage falsch.** Sie
+zählte **sieben** Artefakte, fand an drei **Fundorten** statt an der in §3
+definierten **Form**, und schloss daraus, das `semgrep`-Regelset sei *„das
+einzige gepinnte Fremd-Artefakt außerhalb des Repos"*. Der unabhängige Review
+hat fünf fehlende Mitglieder gefunden und den Schluss widerlegt. Beides ist
+unten korrigiert; die Fehlfassung steht in der Closure-Notiz als Beleg.
+
 **Gelesen aus Konfiguration und Skript**, nicht aus der Prosa darüber
-([`AGENTS.md`](../../../../AGENTS.md) §5, `seit slice-213`). **Sieben**
-Artefakte erfüllen die Form aus §3; die achte Zeile ist die Referenz-Antwort
+([`AGENTS.md`](../../../../AGENTS.md) §5, `seit slice-213`). **Zwölf**
+Artefakte erfüllen die Form aus §3; die letzte Zeile ist die Referenz-Antwort
 und zählt nicht mit.
 
 | Artefakt | Ort | Bindung | Prüfzeitpunkt |
 |---|---|---|---|
-| `golang`-Basis (`deps`) | außerhalb, Docker-Store | Digest im [`Dockerfile`](../../../../Dockerfile) | **jeder Image-Bau** (Docker rechnet den Digest nach) |
-| `golangci-lint`-Image | außerhalb, Docker-Store | Digest im `Dockerfile` | **jeder Image-Bau** |
-| `distroless`-Runtime | außerhalb, Docker-Store | Digest im `Dockerfile` | **jeder Image-Bau** |
-| `a-check`-Image | außerhalb, Docker-Store | Digest in [`a-check.mk`](../../../../a-check.mk) | **jeder Lauf** |
-| `semgrep`-Image | außerhalb, Docker-Store | Digest in [`tools/semgrep.sh`](../../../../tools/semgrep.sh) | **jeder Lauf** |
-| **`semgrep`-Regelset** | **außerhalb, unter dem Nutzer-Cache** | **git-Commit-SHA** | **einmalig** — danach nur Verzeichnis-Existenz |
-| vendorte Baseline | **im Repo**, `.harness/baseline/<tag>/` | `SHA256SUMS` (kommt mit dem Baum) | **jeder `make gates`** — Echtheit nur im Nachtlauf |
-| *(Referenz: Modul-Abhängigkeiten)* | *außerhalb, Modul-Cache* | *Prüfsummen-Datei des Moduls* | *jeder Bau, über den read-only-Schalter im `Dockerfile`* |
+| `golang`-Basis (`deps`) | Docker-Store | Digest im [`Dockerfile`](../../../../Dockerfile) | **beim Bezug** |
+| `golangci-lint`-Image | Docker-Store | Digest im `Dockerfile` | **beim Bezug** |
+| `distroless`-Runtime | Docker-Store | Digest im `Dockerfile` | **beim Bezug** |
+| `golang`-Basis des Werkzeugs | Docker-Store | **anderer** Digest in [`tools/archive-wave/Dockerfile`](../../../../tools/archive-wave/Dockerfile) | **beim Bezug** |
+| `a-check`-Image | Docker-Store | Digest in [`a-check.mk`](../../../../a-check.mk) | **beim Bezug** |
+| `semgrep`-Image | Docker-Store | Digest in [`tools/semgrep.sh`](../../../../tools/semgrep.sh) | **beim Bezug** |
+| `trivy`-Image | Docker-Store | Digest in [`tools/image-scan.sh`](../../../../tools/image-scan.sh) | **beim Bezug** |
+| drei GitHub-Actions | Runner des Anbieters | **Commit-SHA** im `uses:` ([`AGENTS.md`](../../../../AGENTS.md) §3.9) | **jeder CI-Lauf** — der Runner hat keinen Cache |
+| **`semgrep`-Regelset** | **Nutzer-Cache**, außerhalb von Repo **und** Docker-Store | **git-Commit-SHA** | **beim Bezug** — lokal einmalig, in CI jedes Mal |
+| `# syntax=docker/dockerfile:1.7` | Docker-Store | **keine** — beweglicher Tag | **beim Bezug**, ohne Bindung |
+| vendorte Baseline | **im Repo** | `SHA256SUMS` (kommt mit dem Baum) | **jeder `make gates`** — Echtheit nur im Nachtlauf |
+| *(Referenz: Modul-Abhängigkeiten)* | *Modul-Cache* | *Prüfsummen-Datei* | *jeder Bau, über den read-only-Schalter* |
 
-**Zwei Artefakte fallen aus der Reihe, und zwar in entgegengesetzte
-Richtungen.**
+**Die Achse der ersten Fassung ist zusammengebrochen, und die richtige ist
+schärfer.** Sie lautete *„stark gebunden, selten geprüft"* gegen *„schwach
+gebunden, oft geprüft"* und setzte voraus, dass die Digest-Images bei **jedem
+Bau** nachgerechnet werden. **Gemessen im eigenen `gates`-Lauf: kein Pull, 22
+Schichten aus dem Cache.** Ein Digest wird **beim Bezug** eingelöst, nicht bei
+jeder Verwendung — genau wie der git-Commit-Pin des Regelsets.
 
-**Das `semgrep`-Regelset ist das einzige mit einmaligem Prüfzeitpunkt.** Der
-Bezug ist der stärkste im ganzen Bestand — ein git-Commit-SHA ist ein Hash über
-den **Baum**, nicht über eine mitgelieferte Liste —, aber er wird genau einmal
-eingelöst. Danach prüft das Skript nur noch, ob das Verzeichnis **existiert**.
-Wer den Cache danach ändert, wird von nichts bemerkt; er liegt außerhalb des
-Repos, also sieht ihn auch kein Gate, das den Arbeitsbaum prüft.
+**Damit steht die eigentliche Aussage:** Von zwölf gepinnten Fremd-Artefakten
+wird **genau eines bei jedem Lauf erneut geprüft** — die vendorte Baseline, und
+ausgerechnet ihre Bindung kann die Echtheit nicht beweisen (slice-212). **Alle
+übrigen werden einmal beim Bezug geprüft und danach geglaubt.** Das ist keine
+Eigenheit des `semgrep`-Caches, sondern der Normalfall; die Ausnahme ist das
+Repo-interne Artefakt.
 
-**Die vendorte Baseline ist der Gegenfall** und in slice-212 gemessen: jeder
-Lauf, aber die Bindung kann die Echtheit nicht beweisen, weil das Manifest mit
-dem Baum kommt. **Zusammen ergeben die beiden die Achse dieses Slice** —
-*stark gebunden, selten geprüft* gegen *schwach gebunden, oft geprüft*.
+**Was das Regelset trotzdem unterscheidet — schmaler als behauptet.** Es liegt
+als einziges weder im Repo **noch** im Docker-Store, sondern im Nutzer-Cache:
+ein Verzeichnis, das kein Werkzeug verwaltet und dessen Inhalt nach dem Holen
+von nichts mehr adressiert wird. Der Docker-Store ist inhaltsadressiert, das
+Cache-Verzeichnis ist es nicht. **Ob der Docker-Store spätere Veränderung
+bemerkt, ist hier nicht gemessen** und wird nicht behauptet.
 
-**Was gemessen ist und was nicht — die Grenze der Inventur.** Die
-Docker-Zeilen tragen *„Docker rechnet den Digest nach"*, und **das ist in
-diesem Repo nicht gemessen**, sondern die dokumentierte Eigenschaft des
-Werkzeugs; dasselbe gilt für die Modul-Prüfsummen. Gemessen sind hier **Ort
-und Bindung** (aus den Dateien gelesen) und der Prüfzeitpunkt **dort, wo ein
-eigenes Skript ihn setzt** — beim `semgrep`-Regelset und bei der vendorten
-Baseline. **Wo der Beleg von einem fremden Werkzeug kommt, steht das da**,
-statt als eigene Messung aufzutreten; §6 führt genau das als Risiko.
+**Was gemessen ist und was nicht — die Grenze der Inventur.** Gemessen sind
+**Ort und Bindung** (aus den Dateien gelesen), der Prüfzeitpunkt **dort, wo ein
+eigenes Skript ihn setzt** (Regelset, vendorte Baseline), und die
+**Cache-Wirkung** im eigenen Lauf. **Nicht gemessen** und als Fremd-Eigenschaft
+gekennzeichnet: dass Docker beim Pull nachrechnet, dass git einen
+Commit-Bezug gegen den SHA prüft, und dass die Modul-Prüfsummen bei jedem Bau
+greifen. **Auch die git-Aussage trägt diesen Vorbehalt** — die erste Fassung
+gab ihn nur den Docker-Zeilen und stellte die eigene Lieblings-These
+ungeprüft daneben.
 
 ## 4. Trigger
 
@@ -232,9 +251,17 @@ zwei kanonischen und, als Adaption, den Nachtlauf-Stand
 > **Offene Beobachtungen sichten.** Das
 
 Register durchgegangen (gemergter Stand, **38** Verzeichnisse über beide
-Kürzel). Für `HARN` steht **kein** Eintrag im Register — das ist ebenfalls eine
-Antwort und wird notiert. **Vier** Einträge unter `ALL` sind einschlägig:
+Kürzel). **Fünf** Einträge sind einschlägig — und der erste ist eine
+Korrektur: Die erste Fassung behauptete, für `HARN` stehe **kein** Eintrag im
+Register. Das war nicht nachgesehen, sondern angenommen.
 
+- [`BEO-HARN/check-latest-blind-before-pin`](../observations/BEO-HARN/check-latest-blind-before-pin/observation.md)
+  (Stand *offen*) — **der einschlägigste Eintrag überhaupt, und er wäre
+  beinahe übersehen worden.** Er betrifft
+  [`fetch-baseline-cache.sh`](../../../../tools/harness/fetch-baseline-cache.sh)
+  `--check-latest` — also genau den Träger, den die Inventur als einzige
+  Echtheits-Prüfung des vendorten Baums führt. Wer über Prüfzeitpunkte urteilt
+  und diesen Eintrag nicht liest, urteilt an der eigenen Beobachtung vorbei.
 - [`grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md)
   (4×, seit slice-213 verkörpert) — **der Anlass**, und seine Regel gilt diesem
   Slice unmittelbar: DoD (1) liest Konfiguration und Skript, **nicht** die
@@ -243,18 +270,20 @@ Antwort und wird notiert. **Vier** Einträge unter `ALL` sind einschlägig:
 - [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
   (14×, Stand *gemischt*) — **der gefährlichste hier.** Die Inventur hat eine
   **Menge** (welche Artefakte zählen?) und eine **Aussage je Mitglied**
-  (Prüfzeitpunkt). slice-212 hat gezeigt, dass die Gefahr in der zweiten sitzt:
-  Dort war die Menge trivial und die Antwort je Datei falsch.
+  (Prüfzeitpunkt). slice-212 hat gezeigt, dass die Gefahr in der zweiten sitzt.
+  **In diesem Slice traf es beide** — die Menge war um fünf Mitglieder zu
+  klein, die Aussage je Mitglied in drei Varianten formuliert.
 - [`wortlaut-behauptet-pruefung-die-fehlt`](../observations/BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt/observation.md)
   (8×, Ausgang *geplant*) — §6 führt es als Risiko: Dass Docker einen Digest
-  beim Pull nachrechnet, ist **bekannt**, nicht in diesem Repo **gemessen**.
+  beim Bezug nachrechnet, ist **bekannt**, nicht in diesem Repo **gemessen**.
   Eine Inventur, die Vermutungen in Tabellenzellen schreibt, behauptet
   Prüfungen.
 - [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
   (4×, verkörpert) — deshalb schreibt §3 vorher aus, was als *gepinntes
-  Fremd-Artefakt* und was als *Prüfzeitpunkt* zählt.
+  Fremd-Artefakt* und was als *Prüfzeitpunkt* zählt. **Die erste Fassung hat
+  die Form geschrieben und dann an drei Fundorten gesucht statt an ihr.**
 
-**Keiner der vier erreicht mit diesem Slice die Schwelle erstmalig.**
+**Keiner der fünf erreicht mit diesem Slice die Schwelle erstmalig.**
 
 **Vorgelagert — Nachtlauf-Stand lesen**
 ([`MR-053`](../../../../harness/conventions.md#mr-053)):

@@ -23,19 +23,25 @@ ohne Netz.
    [`make freshness-semgrep`](freshness-go.md) und `make semgrep-digest`
    gibt — **beide fail-open und außerhalb von `gates`**. Ein grüner Lauf sagt
    also „nichts nach dem gepinnten Regelstand", nicht „nichts Bekanntes".
-3. **Der Regel-Cache wird genau einmal geprüft — beim Holen.** Der Bezug läuft
-   über einen **git-Commit-Pin**, und das ist die **stärkste** Bindung im
-   ganzen Pin-Bestand dieses Repos: Ein Commit-SHA ist ein Hash über den
-   **Baum**, nicht über eine Liste, die mit ihm geliefert wird. **Danach prüft
-   ihn nichts mehr.** Die Bedingung für einen erneuten Bezug ist die
-   **Existenz** des Cache-Verzeichnisses; wer seinen Inhalt anschließend
-   ändert, wird von nichts bemerkt. Der Cache liegt **außerhalb des Repos**,
-   also sieht ihn auch kein Gate, das den Arbeitsbaum prüft — er ist das
-   einzige gepinnte Fremd-Artefakt dieses Repos, auf das das zutrifft.
-   **Umgekehrt zu [`baseline-verify`](baseline-verify.md):** dort jeder Lauf,
-   aber die Bindung beweist die Echtheit nicht; hier beweist sie sie, und der
-   Lauf prüft nicht. Permanent, solange der einmalige Bezug die gewollte
-   Eigenschaft ist ([ADR-0010](../../docs/plan/adr/0010-semgrep-hermetisches-gate.md)).
+3. **Der Regel-Cache wird beim Bezug geprüft, danach nicht mehr — wie fast
+   alles hier.** Der Bezug läuft über einen **git-Commit-Pin**; ein Commit-SHA
+   ist ein Hash über den **Baum**, nicht über eine mitgelieferte Liste.
+   *(Dass git den Bezug gegen den SHA prüft, ist die dokumentierte Eigenschaft
+   des Werkzeugs und in diesem Repo nicht gemessen.)* Eingelöst wird die
+   Bindung, wenn geholt wird: **lokal einmalig** — die Bedingung für einen
+   erneuten Bezug ist die **Existenz des Regel-Unterverzeichnisses** —,
+   **in CI bei jedem Lauf**, weil der Runner keinen Cache mitbringt.
+   **Das ist nicht die Ausnahme, sondern der Normalfall:** Von zwölf gepinnten
+   Fremd-Artefakten dieses Repos wird genau eines bei **jedem** Lauf erneut
+   geprüft — die vendorte Baseline
+   ([`baseline-verify`](baseline-verify.md)), und ausgerechnet deren Bindung
+   beweist die Echtheit nicht.
+   **Was den Regel-Cache unterscheidet, ist sein Ort:** Er liegt als einziges
+   Artefakt weder im Repo noch im Docker-Store, sondern in einem
+   Nutzer-Cache-Verzeichnis, das kein Werkzeug verwaltet und dessen Inhalt
+   nach dem Holen von nichts mehr adressiert wird. Permanent, solange der
+   einmalige Bezug die gewollte Eigenschaft ist
+   ([ADR-0010](../../docs/plan/adr/0010-semgrep-hermetisches-gate.md)).
 
 **Wie groß der Ausschnitt ist, sagt das Kommando:** Der Lauf nennt die Zahl
 der gescannten Dateien und Regeln in seiner Zusammenfassung.
