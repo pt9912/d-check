@@ -17,7 +17,7 @@ Entscheidung, er stellt eine bereits geltende Regel wieder her.
 
 **Berührte Spec-Stellen:** — (der Slice berührt keine Spec-Stelle).
 
-**Verantwortlich:** — (wird bei der Beanspruchung gesetzt).
+**Verantwortlich:** pt9912 (Implementer-Rolle).
 
 **Autor:** pt9912.
 
@@ -189,23 +189,82 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Sub-Area-Modus-Begründung. **Der Abschnitt entfällt nie**; bedingt
-ist allein der Modus-Block am Ende.
+ist allein der Modus-Block am Ende. Dieses Repo führt **drei** Prüfungen — die
+zwei kanonischen und, als Adaption, den Nachtlauf-Stand
+([`MR-053`](../../../../harness/conventions.md#mr-053)).
 
-**Die drei Vorprüfungen entstehen spätestens bei der Beanspruchung**
-([`AGENTS.md`](../../../../AGENTS.md) §5) — dieser Plan liegt in `open/`.
-**Zwei sind trotzdem schon gelaufen**, weil sie den Zuschnitt tragen, und
-werden bei der Beanspruchung gegen den dann gültigen Stand wiederholt:
+**Vorgelagert — Sub-Area-Wahl prüfen:**
 
-- **Nachtlauf-Stand** ([`MR-053`](../../../../harness/conventions.md#mr-053)):
-  am 2026-09-08 beide grün (`upstream-drift.yml` 05:31:31Z, `image-scan.yml`
-  08:07:20Z). Ohne Bezug zu diesem Slice.
-- **Register** (40 Verzeichnisse): **zwei** Einträge sind einschlägig.
-  [`registry-vs-authority-table-drift`](../observations/BEO-ALL/registry-vs-authority-table-drift/observation.md)
-  (2×) trifft den Gegenstand unmittelbar — ein Register und seine
-  Autoritäts-Tabelle driften; hier sind es zwei Tabellen über dieselbe Menge.
-  **Erreicht der Eintrag mit diesem Slice 3×, ist er keine Notiz mehr,
-  sondern eine Lücke** und braucht einen eigenen Folge-Slice; das ist bei der
-  Beanspruchung zu entscheiden.
-  [`large-migration-exceeds-session-review-limit`](../observations/BEO-ALL/large-migration-exceeds-session-review-limit/observation.md)
-  (3×, verkörpert als [`MR-066`](../../../../harness/conventions.md#mr-066))
-  ist der Grund, warum §6 die Ersatz-Form der Prüfung schon jetzt benennt.
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:268-269 -->
+
+> **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+> muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+**Eine** Sub-Area: `*` (Repo-Default). Der Slice ändert Doku und eine
+Konfigurations-Regel; `tools/harness/` ist nicht berührt.
+
+**Vorgelagert — offene Beobachtungen sichten:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:274-274 -->
+
+> **Offene Beobachtungen sichten.** Das
+
+Register durchgegangen (gemergter Stand, **40** Verzeichnisse). **Die erste
+Fassung dieses Abschnitts nannte einen Eintrag, der nicht trägt**, und der
+Fehler gehört hierher, weil er die Sichtung selbst betrifft:
+`registry-vs-authority-table-drift` ist **gestrichen** (2026-08-16), und seine
+Klasse ist eine andere — *„Artefakt ⇒ registriert" ungeprüft*, nicht doppelte
+Beschreibung. **Zitiert war der Titel, nicht der Inhalt** — genau
+[`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+(18×), und der Eintrag bekommt dafür bei der Closure seinen Beleg.
+
+**Vier Einträge sind wirklich einschlägig:**
+
+- [`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
+  (16×, verkörpert) — **der tragende.** Substanz aus §4 in die Sensor-Dateien
+  zu ziehen **ist** eine Semantik-Verschiebung, deren Kanten mitmüssen: Wer
+  heute auf eine §4-Zeile verweist, muss danach noch ankommen. In slice-218
+  hat genau diese Klasse dreimal zugeschlagen, jede Review-Runde einmal.
+- [`grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md)
+  (8×, verkörpert) — die Zellen, die verschoben werden, **sind** überwiegend
+  Grenzen-Listen. Ihr Ableiter ist das erste Risiko in §6: Eine Grenze, die in
+  einer Gate-Beschreibung steckt, kann eine Hard Rule sein.
+- [`large-migration-exceeds-session-review-limit`](../observations/BEO-ALL/large-migration-exceeds-session-review-limit/observation.md)
+  (3×, verkörpert als [`MR-066`](../../../../harness/conventions.md#mr-066)) —
+  43 Zellen sind 43 Urteile. §6 benennt die Ersatz-Form der Prüfung deshalb
+  vorab; **bei dieser Beanspruchung bestätigt**, unverändert: mechanische
+  Vollprüfung über die Zeichenmenge plus fünf Zellen Wort für Wort.
+- [`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)
+  (3×, verkörpert als [`MR-070`](../../../../harness/conventions.md#mr-070))
+  — **einschlägig dem Thema nach, aber nicht dem Geltungsbereich nach.**
+  [`MR-070`](../../../../harness/conventions.md#mr-070) gilt der **mechanischen** Ersetzung über mehr als eine Datei; §3
+  schreibt ausdrücklich das Gegenteil vor (eine Datei nach der anderen, jede
+  Zelle ein eigenes Urteil). Feld gelesen, nicht Titel — die Lehre aus dem
+  Fehler oben.
+
+**Keiner der vier erreicht mit diesem Slice die Schwelle erstmalig.**
+
+**Vorgelagert — Nachtlauf-Stand lesen**
+([`MR-053`](../../../../harness/conventions.md#mr-053)):
+
+`make nightly-state` am 2026-09-08 gelesen: **beide Nachtläufe grün** —
+`upstream-drift.yml` (05:31:31Z) und `image-scan.yml` (08:07:20Z). Für diesen
+Slice ohne Bezug: Er ändert kein gepinntes Artefakt und keinen Sensor-Lauf.
+**Notiert, weil die Prüfung unbedingt ist.**
+
+**Modus-Begründungsblock.** Alle berührten Sub-Areas GF — ein Block genügt.
+
+### Sub-Area: `*`
+
+- **Modus:** GF (Repo-Default).
+- **Konventions-Dichte:** **hoch, und ungewöhnlich konkret**: Die Zielform
+  steht in `AGENTS.md` §1 als Selbstbeschreibung (*„Hard Rules und Pointer …
+  dupliziert deren Inhalt nicht"*), und die Ablage-Struktur
+  `harness/sensors/<target>.md` existiert seit langem für 24 der 54 Targets.
+- **Phase-Reife:** Phase 5. Beide Dokumente sind gewachsen und gewächtert;
+  `gate-consistency` hält die Target-Menge in beide Richtungen.
+- **Evidenz-/Diskrepanz-Risiko:** **niedrig für den Bestand, hoch für die
+  Operation.** Zu inventarisieren ist nichts — die Zahlen stehen in §1. Das
+  Risiko sitzt vollständig im Verschieben: 43 Urteile, und eines davon kann
+  eine Hard Rule aus dem Dokument holen, das jeder Lauf lädt.
+- **Reconciliation-Aufwand:** keiner (GF).
