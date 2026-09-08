@@ -70,11 +70,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       §Grenze, mit der gemessenen Zahl und der Bedingung, unter der es greift.
       Der Registereintrag trägt einen untersuchten Stand.
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
 
@@ -146,23 +146,111 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   netzlos nur mit einer Attrappe erzeugen. `--selftest` deckt heute die
   **Alias-Auflösung**, nicht den Currency-Zweig. **Wenn der Beleg nur mit Netz
   zu haben ist, gehört das gesagt** — ein behaupteter Bruch-Test wäre schlimmer
-  als keiner. — **Ausgang:** \<offen\>
+  als keiner. — **Ausgang:** entfallen — der Bruch-Test war ohne Attrappe zu
+  haben: Das Skript nimmt einen **expliziten Tag** als Argument, und ein Pin,
+  den es nicht gibt (`v0.0.1`), erzeugt den Zustand direkt gegen die echte API.
+  Beide Richtungen sind mit echter Ausgabe belegt — vorher Exit 0, nachher
+  Exit 3. **Für die schwierigere Form brauchte es doch eine Kopie**, aber keine
+  Attrappe: ein abgebrochener Transfer über `--max-time`, gegen dieselbe echte
+  API. Der Beleg ist damit netz-gebunden und **nicht** behauptet.
 - **Ein Exit-Code kann die fail-open-Linie verschieben, ohne dass es auffällt.**
   `skip` (Netz weg) und `ahead` (Pin nicht gefunden) laufen heute beide auf 0.
   Wer nur `ahead` hebt, muss sicher sein, dass kein Netz-Ausfall in diesem
   Zweig landet — sonst wird der Nachtlauf bei jeder API-Störung rot, und die
-  bewusste fail-open-Wahl ist still gekippt. — **Ausgang:** \<offen\>
+  bewusste fail-open-Wahl ist still gekippt. — **Ausgang:** **eingetreten**, und
+  zwar genau so. Der Lauf erklärte das Risiko für ausgeräumt, nachdem er
+  **eine** Ausfall-Form gemessen hatte (unerreichbarer Host ⇒ `skip`). Der
+  unabhängige Review fand die zweite: ein **abgebrochener** Transfer liefert
+  Teildaten *und* einen Fehlerstatus, die alte Zeile wertete nur den
+  Pipeline-Ausgang — und der Nachtlauf wurde bei Netzausfall **rot**. Behoben,
+  indem `curl`s Status getrennt geprüft wird; derselbe Abbruch ergibt jetzt
+  `SKIP`. **Das Risiko hat sich als richtig formuliert erwiesen und der Lauf
+  als zu schnell zufrieden** — eingetragen bei
+  [`commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/observation.md)
+  (11×), dessen Ableiter wörtlich *„suche die N+1-te Form"* lautet.
 - **Die Anlass-Beobachtung bleibt möglicherweise ungeklärt.** Heute sind
   Release- und Tag-Liste deckungsgleich; die naheliegende Erklärung trägt
   nicht. Ein Slice, der die Ursache **nicht** findet, muss das als Ergebnis
   hinschreiben — und der Registereintrag bleibt dann bei 1× mit untersuchtem
   Stand, statt eine Ursache zu bekommen, die niemand gemessen hat.
-  — **Ausgang:** \<offen\>
+  — **Ausgang:** eingetreten — die Ursache **bleibt** ungeklärt, und das steht
+  als Ergebnis da. Der Suchraum ist aber enger: Die **Fenster**-Hypothese ist
+  ausgeschlossen, und zwar aus der Beobachtung selbst (dass `v5.19.0`/`v5.20.0`
+  gemeldet wurden, beweist, dass der Pin in der Liste stand). Übrig bleibt
+  *Tag ohne Release-Objekt* — die der Slice zunächst mit einem **temporalen
+  Fehlschluss** verworfen hatte und die jetzt als
+  [`baseline-freshness`](../../../../harness/sensors/baseline-freshness.md)
+  §Grenze 6 dasteht. **Der Eintrag bleibt bei 1× mit untersuchtem Stand**, wie
+  der Plan es verlangt hat.
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** Ein geschlossener **stiller Grün-Pfad**: Der `ahead`-Zweig von
+`--check-latest` meldete *„Pin nicht in der Release-Liste"* mit Exit 0 und war
+für den Nachtlauf — der ausschließlich den Exit-Code liest — von *„Pin ist der
+neueste Tag"* nicht zu unterscheiden. Jetzt Exit 3. Dazu **vier neue Grenzen**
+in `harness/sensors/baseline-freshness.md` und ein untersuchter Stand im
+Registereintrag. Ein unabhängiger Review, blockierend, vier MEDIUM und ein LOW.
+`make gates` grün (zehn Gates, 742 Dateien).
 
+**Was funktioniert hat: der Bruch-Test brauchte keine Attrappe.** Das Skript
+nimmt einen expliziten Tag als Argument — ein Pin, den es nicht gibt, erzeugt
+den Zustand direkt gegen die echte API. §6 hatte befürchtet, der Beleg sei nur
+mit einer Attrappe zu haben; er war es nicht, und beide Richtungen stehen mit
+echter Ausgabe im Slice.
+
+**Was Friktion war: die Rechtfertigung war schwächer als die Änderung.** Der
+Fix selbst ist richtig und vom Review bestätigt. Falsch war die **Zusage**, mit
+der er begründet wurde — *„ein Netz-/API-Ausfall landet im `skip`-Zweig"*,
+gemessen an **einer** Ausfall-Form und in **drei** Artefakten wiederholt. Die
+N+1-te Form widerlegt sie: Ein **abgebrochener** Transfer liefert Teildaten
+*und* einen Fehlerstatus (35 010 von 322 579 Bytes, `curl`-Exit 28); die alte
+Zeile wertete nur den Pipeline-Ausgang. **Mein eigener Fix machte den Nachtlauf
+bei Netzausfall rot** — genau das Risiko, das §6 vorab benannt und der Lauf
+nach einer einzigen Messung für ausgeräumt erklärt hatte.
+
+**Steering-Loop-Lerneintrag: eine fail-open-Zusage aus einer Ausfall-Form ist
+keine.** Der Eintrag
+[`commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/observation.md)
+(11×) trägt den Ableiter wörtlich — *„Prüfe den Schluss gegen die Proben-Menge,
+nicht gegen die Proben: suche die N+1-te Form"* —, und er ist seit welle-82 in
+[`AGENTS.md`](../../../../AGENTS.md) §5 verkörpert. **Er stand also da, und der
+Lauf hat ihn nicht angewandt**; gefunden hat die N+1-te Form der Review, mit
+einer Messung, die zu machen ich unterlassen hatte. **Bei einer Zusage über
+Ausfälle ist „eine Form gemessen" nie genug — Ausfälle sind eine Familie, kein
+Ereignis.**
+
+**Ein zweiter Lerneintrag, und er ist unangenehmer als der erste.** Die
+Ursache-Frage habe ich mit einem **temporalen Fehlschluss** beantwortet:
+*„Release- und Tag-Liste sind heute deckungsgleich, also trägt die Erklärung
+nicht"* — über eine Beobachtung von vor drei Monaten. **Die entscheidende
+Evidenz lag ungenutzt im Eintrag selbst:** Dass `v5.19.0`/`v5.20.0` gemeldet
+wurden, beweist, dass der Pin damals in der Liste stand — womit die
+**Fenster**-Hypothese ausgeschlossen ist und die Release-Objekt-Hypothese
+übrig bleibt. **Ich habe die falsche Hypothese verworfen und die richtige
+stehen lassen**, und beides mit einer Messung, die die Frage nicht berührt.
+
+**Die Grenzen-Liste hat es zum sechsten Mal nicht selbst gesehen.** Sie wuchs
+um zwei Einträge und ließ aus, dass die Currency-Hälfte Release-**Objekte**
+misst statt Tags — also den Mechanismus, unter dem die Beobachtung steht, die
+den Slice ausgelöst hat. Dazu der Prereleases verwerfende Filter. **Wer zwei
+Grenzen ergänzt, hält die Liste danach für vollständig.**
+
+**Was offen bleibt.** Die Ursache der Anlass-Beobachtung ist **weiterhin
+unbekannt**; der Suchraum ist enger und der Eintrag bleibt bei 1×. Und die
+Prerelease-Blindheit ist benannt, nicht behoben: Ein Prerelease-Pin in der
+`**Stand:**`-Zeile fiele durch den Filter, ohne dass etwas meldet — das wäre
+ein eigener Vorgang.
+
+**Die drei Paarungen, gemessen.** **(a) Anker** — vakant: Der Slice verkörpert
+keine Steering-Loop-Regel; sein Lerneintrag liegt bei einem bestehenden.
+**(b) Folge-Slice** — keiner genannt; die Prerelease-Frage ist bewusst **ohne**
+Kennung gelassen. **(c) Register** — alle zitierten Pfade lösen auf, die vier
+neuen Belege liegen als `evidence/slice-215.md` in ihren Verzeichnissen. Der
+Wachposten
+[`kanal-kennung-als-inhalt-gelesen`](../observations/BEO-ALL/kanal-kennung-als-inhalt-gelesen/observation.md)
+trägt weiterhin kein `evidence/` — unverändert die benannte Spannung aus
+slice-208.
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
