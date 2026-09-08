@@ -238,6 +238,18 @@ func (a *Adapter) FileAt(ref, path string) ([]byte, bool, error) {
 	}
 	f, err := tree.File(path)
 	if errors.Is(err, object.ErrFileNotFound) {
+		// Grenze der Bibliothek: go-git meldet ein UNLESBARES Blob mit
+		// demselben Fehler wie eine im Tree fehlende Datei. Nur der zweite
+		// Fall ist harmlos (Datei später angelegt) und darf befundfrei
+		// bleiben; der erste ist ein Umgebungsfehler und muss den Lauf
+		// abbrechen, sonst verschwindet eine echte Core-Änderung still.
+		// Der Tree-Eintrag trennt die beiden: er trägt Name und Hash und
+		// braucht das Blob nicht.
+		if unreadable, ferr := entryUnreadable(tree, path); unreadable {
+			return nil, false, fmt.Errorf("nicht lesbares Objekt zu %q in %q: %w", path, ref, err)
+		} else if ferr != nil {
+			return nil, false, fmt.Errorf("nicht lesbarer Tree-Eintrag zu %q in %q: %w", path, ref, ferr)
+		}
 		return nil, false, nil
 	}
 	if err != nil {
@@ -248,6 +260,23 @@ func (a *Adapter) FileAt(ref, path string) ([]byte, bool, error) {
 		return nil, false, err
 	}
 	return []byte(s), true, nil
+}
+
+// entryUnreadable trennt die zwei Zustände, die go-git beide als
+// object.ErrFileNotFound meldet: existiert der Tree-Eintrag zu path, war das
+// zugehörige Blob unlesbar (true); existiert er nicht, fehlt die Datei in
+// diesem Stand (false, nil). Ein Fehler beim Nachsehen, der nicht "gibt es
+// nicht" bedeutet, wird durchgereicht statt als Abwesenheit gelesen.
+func entryUnreadable(tree *object.Tree, path string) (bool, error) {
+	_, err := tree.FindEntry(path)
+	switch {
+	case err == nil:
+		return true, nil
+	case errors.Is(err, object.ErrEntryNotFound), errors.Is(err, object.ErrDirectoryNotFound):
+		return false, nil
+	default:
+		return false, err
+	}
 }
 
 // TrackedPaths liefert die Menge der im git-Index getrackten Pfade

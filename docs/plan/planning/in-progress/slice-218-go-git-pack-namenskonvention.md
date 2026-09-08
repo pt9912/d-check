@@ -55,21 +55,56 @@ nicht.
 
 **Abgrenzung — vier Punkte, jeder mit Grund:**
 
-1. **Kein Fix im Produkt, und der Grund ist ein Kernvertrag.** Die
-   naheliegende Abhilfe wäre, dass d-check selbst repackt — das schriebe in
+1. **Kein Repack durch das Produkt, und der Grund ist ein Kernvertrag.** Die
+   naheliegendste Abhilfe wäre, dass d-check selbst repackt — das schriebe in
    das geprüfte Repository und bräche
    [`DC-QA-03`](../../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit).
    *Es wäre ein anderer Vorgang*, und zwar einer mit ADR-Last.
-2. **Auch keine bessere Fehlermeldung.** Sie wäre Produkt-Code, verdoppelte
-   den Slice und verlangte eine eigene Entscheidung darüber, wie viel ein
-   Werkzeug über die Objektdatenbank seines Wirts vermuten darf —
-   *Schicht-Abgrenzung*: dieser Slice ändert Dokumentation, keinen Code.
-3. **Kein Sensor darauf.** Ein Wächter über Pack-Namen wäre ein neues Modul
+2. **Kein Sensor auf Pack-Namen.** Ein Wächter darüber wäre ein neues Modul
    mit eigener Scan-Zusage. *Bestand bleibt bewusst stehen.*
-4. **Keine Lastenheft-/Spezifikations-Änderung.** Eine aufgeschriebene Grenze
-   ist keine geänderte Anforderung; die Zusage war nie eine andere. Ein
-   Spec-Eintrag käme erst in Frage, wenn das Produkt sein Verhalten ändert
-   (Punkt 1 oder 2) — *ein Folge-Slice übernähme es dann.*
+3. **Keine Lastenheft-/Spezifikations-Änderung.** Der Fix (unten) stellt das
+   **zugesagte** Verhalten her, statt ein neues zu vereinbaren:
+   [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
+   verspricht schon heute, dass eine Core-Änderung gemeldet wird. Ein
+   Spec-Eintrag käme erst in Frage, wenn ein **neuer** Grund-Code entstünde —
+   *ein Folge-Slice übernähme es dann.*
+4. **Keine Behebung im veröffentlichten Bild.** Der Fix wirkt erst mit dem
+   nächsten Release; jeder Adopter auf `v0.75.0` oder früher behält den
+   blinden Pfad. Das ist **nicht** stillschweigend hingenommen, sondern als
+   [`CO-001`](../../carveouts/CO-001-vcs-range-stiller-skip.md) geführt —
+   *ein Folge-Slice übernimmt es*, nämlich das Release.
+
+**Plan-Änderung (2026-09-08, nach Review-Runde 1) — der Fix kommt hinzu.**
+Die erste Fassung schloss **Produkt-Code aus** und wollte den stillen Pfad nur
+beschreiben. Der Review fand, dass die beschriebene Grenze in Wahrheit ein
+**Defekt** ist: `vcs` überspringt im `RANGE=`-Modus eine echte
+`core-drift-vcs`-Verletzung, wenn der unsichtbare Pack einzelne Objekte
+verschluckt — gemessen, Exit 0 statt Exit 1. **Auftraggeber-Entscheid vom
+2026-09-08: der Fix wird mitgenommen**, statt ihn zu vertagen; ein Gate, der
+im CI-Modus schweigt, ist kein Gate (Baseline-Regelwerk
+`modul-13-quality-gates.md` §Kernidee). Die Abgrenzung ist damit
+**ausdrücklich geöffnet** — nicht still ausgeweitet, und das steht hier vor
+dem Code.
+
+**Der Slice überschreitet damit die Ein-Sitzungs-Review-Grenze**
+([`MR-066`](../../../../harness/conventions.md#mr-066)), und beide Pflichten
+sind hier einzulösen:
+
+- **Grund für die Nicht-Rückführung:** Eine Teilung träfe genau die Naht, an
+  der der Wert entsteht. Die korrigierte Doku und der Fix beschreiben
+  **denselben** Sachverhalt in zwei Registern; getrennt geschnitten stünde die
+  Doku eine Zeit lang als *„so verhält es sich"* da, während der Fix sie schon
+  überholt — und die Beschreibung eines Defekts, den es nicht mehr gibt, ist
+  schlechter als keine. Zudem ist der Fix klein (**eine** Fallunterscheidung
+  im git-Adapter), aber sein Beleg ist der Bruch-Test, der auch die Doku trägt.
+- **Ersatz-Form der Prüfung, vorab benannt:** **zwei Review-Runden gegen je
+  einen abgeschlossenen Stand** — Runde 1 lag über der Doku (erledigt, 1 HIGH
+  / 2 MEDIUM / 1 LOW), Runde 2 liegt über dem Code und der korrigierten Doku.
+  Runde 2 trägt einen **deklarierten Fokus**: die Fallunterscheidung im
+  Adapter gegen die **Gegenrichtung** — eine Datei, die im BASE-Tree
+  wirklich nicht existiert (neu angelegte ADR), darf **weiterhin** befundfrei
+  bleiben. *Ein Fix, der beide Fälle gleich behandelt, tauscht ein stilles
+  Übersehen gegen einen Fehlalarm.*
 
 ## 2. Definition of Done
 
@@ -90,6 +125,16 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Objektdatenbank). Belegt durch **Positiv-Kontrolle** — derselbe
       `target-untracked`-Befund unter beiden Pack-Namen —, nicht durch einen
       grünen Lauf, der auch „nichts geprüft" heißen könnte.
+- [ ] **(4)** *(nach der Plan-Änderung, §1)* **Der stille Pfad ist behoben:**
+      Ein **unlesbares** Objekt wird nicht mehr wie eine **im Tree fehlende**
+      Datei behandelt. Beleg ist der Bruch-Test in **beide** Richtungen —
+      derselbe partielle Pack, der heute Exit 0 liefert, meldet danach; **und**
+      eine im BASE-Tree wirklich fehlende Datei bleibt weiterhin befundfrei.
+      Dazu ein **Regressionstest** in `make test`, der ohne den Fix fällt.
+- [ ] **(5)** *(nach der Plan-Änderung, §1)* **`CO-001` ist angelegt** und im
+      Carveout-Index eingetragen: Der Defekt steckt im **veröffentlichten**
+      Bild und bleibt dort bis zum nächsten Release; Auflösungs-Trigger und
+      Folge-Slice sind benannt.
 - [ ] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.

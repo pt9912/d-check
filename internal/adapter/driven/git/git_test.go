@@ -295,3 +295,61 @@ func TestRangePureRenameYieldsDelete(t *testing.T) {
 		}
 	}
 }
+
+// TestFileAtUnlesbaresObjekt: Ein UNLESBARES Objekt darf nicht wie eine im
+// Tree fehlende Datei gelesen werden. go-git meldet beide als
+// object.ErrFileNotFound; nur der zweite Fall ist harmlos. Ohne die
+// Unterscheidung im Adapter überspringt der Immutabilitäts-Vergleich die
+// Datei still, und eine echte Core-Änderung verschwindet (DC-FA-VCS-001).
+func TestFileAtUnlesbaresObjekt(t *testing.T) {
+	dir, wt := repoAt(t)
+	put(t, dir, "docs/plan/adr/0001-a.md", "# ADR-0001\n\n**Status:** Accepted\n\nUrsprung.\n")
+	base := snapshot(t, wt, "base")
+
+	a, err := gitadapter.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Vorbedingung: lesbar, und der Inhalt stimmt.
+	if _, ok, err := a.FileAt(base, "docs/plan/adr/0001-a.md"); err != nil || !ok {
+		t.Fatalf("Vorbedingung verfehlt: ok=%v err=%v", ok, err)
+	}
+
+	// Das Blob unlesbar machen — dieselbe Wirkung wie ein Pack unter
+	// unkanonischem Namen, nur ohne Pack-Mechanik im Test.
+	repo, err := gogit.PlainOpen(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	commit, err := repo.CommitObject(plumbing.NewHash(base))
+	if err != nil {
+		t.Fatal(err)
+	}
+	tree, err := commit.Tree()
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry, err := tree.FindEntry("docs/plan/adr/0001-a.md")
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := entry.Hash.String()
+	if err := os.Remove(filepath.Join(dir, ".git", "objects", h[:2], h[2:])); err != nil {
+		t.Fatal(err)
+	}
+
+	// Kern der Regression: Fehler, nicht (nil, false, nil).
+	b, ok, err := a.FileAt(base, "docs/plan/adr/0001-a.md")
+	if err == nil {
+		t.Fatalf("unlesbares Objekt still übersprungen: ok=%v len=%d — erwartet war ein Fehler", ok, len(b))
+	}
+	if !strings.Contains(err.Error(), "nicht lesbar") {
+		t.Errorf("Meldung nennt die Ursache nicht: %v", err)
+	}
+
+	// Gegenrichtung: eine im Tree WIRKLICH fehlende Datei bleibt (nil, false, nil).
+	if _, ok, err := a.FileAt(base, "docs/plan/adr/0002-gibt-es-nicht.md"); err != nil || ok {
+		t.Errorf("fehlende Datei falsch behandelt: ok=%v err=%v", ok, err)
+	}
+}

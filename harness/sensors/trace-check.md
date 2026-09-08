@@ -27,13 +27,15 @@ für den Hook über stdin.
    oder `commit <sha> nicht lesbar: object not found` — beides **Exit 2**.
    **Abhilfe:** `git repack -A -d`.
 
-   **`commits` ist dabei fail-closed, `vcs` nicht — die beiden sind hier
-   ausdrücklich *nicht* gleich.** Ein unlesbarer Commit bricht diesen Lauf ab
-   (gemessen); [`make adr-check`](adr-check.md#grenze--was-das-grün-nicht-abdeckt)
-   dagegen meldet im `RANGE=`-Modus **still grün**, wenn der unsichtbare Pack
-   nur einzelne Objekte verschluckt. Die vollständige Messung steht dort, damit
-   sie an *einem* Ort gepflegt wird; dass sie für dieses Target **günstiger**
-   ausfällt, ist gemessen und nicht angenommen *(seit slice-218)*.
+   **Dieses Target war dabei immer fail-closed** — ein unlesbarer Commit
+   bricht den Lauf ab (gemessen). [`make adr-check`](adr-check.md#grenze--was-das-grün-nicht-abdeckt)
+   war es **nicht**: Bis slice-218 meldete es im `RANGE=`-Modus still grün,
+   wenn der unsichtbare Pack nur einzelne Objekte verschluckte; der Fix liegt
+   dort, und für gepinnte Konsumenten führt
+   [`CO-001`](../../docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md) die
+   Reststrecke. Die vollständige Messung steht bei `adr-check`, damit sie an
+   *einem* Ort gepflegt wird; dass sie für dieses Target **günstiger** ausfiel,
+   ist gemessen und nicht angenommen *(seit slice-218)*.
 
 **Dependabot braucht dafür keine Ausnahme:** Seine Botschaften tragen die
 Kennung im Präfix und erfüllen die Regel wie jeder andere Commit

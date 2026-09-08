@@ -1590,33 +1590,28 @@ auffindbar. Sie sehen dann je nach Repo-Zustand
 `staged-Basis "HEAD" nicht auflösbar: reference not found` oder
 `HEAD-Tree nicht lesbar: object not found`.
 
-**Im `--range`-Modus kann dieser Zustand still bleiben — das ist die
-wichtigere Hälfte.** Wie er sich auswirkt, hängt davon ab, *was* der
-unsichtbare Pack enthält:
+Je nachdem, was der unsichtbare Pack verschluckt, sehen Sie
+`staged-Basis "HEAD" nicht auflösbar: reference not found`,
+`HEAD-Tree nicht lesbar: object not found` oder
+`nicht lesbares Objekt zu "<pfad>" in "<ref>": file not found` — **alle mit
+Exit 2**. Der Lauf verweigert die Aussage, statt fälschlich grün zu melden.
+**Abhilfe:** `git repack -A -d` in Ihrem Repository — danach liegen alle
+Objekte wieder unter dem kanonischen Namen. `git` selbst ist von der
+Namensform nicht betroffen und arbeitet durchgehend normal; nur diese Prüfung
+ist es.
 
-| Der unsichtbare Pack verschluckt … | `vcs` meldet |
-| --- | --- |
-| eine ganze Referenz (BASE-Commit oder -Tree) | **Exit 2**, der Lauf bricht ab |
-| **einzelne Objekte** (etwa nur den BASE-Blob einer Datei) | **Exit 0, 0 Befunde** |
+> **Wichtig, wenn Sie ein Image bis `v0.75.0` pinnen.** Bis einschließlich
+> `v0.75.0` **schwieg** dieser Fall im `--range`-Modus, sobald der unsichtbare
+> Pack nur *einzelne* Objekte verschluckte — und genau solche partiellen Packs
+> hinterlässt `git maintenance`, weil es in Stapeln arbeitet. Eine echte
+> Core-Änderung wurde dann **nicht gemeldet**: `0 Befunde`, Exit 0. Ursache
+> war, dass die verwendete Bibliothek ein *unlesbares* Objekt mit demselben
+> Fehler meldet wie *„diese Datei existiert in diesem Stand nicht"* — ein
+> legitimer Zustand, den die Prüfung überspringen muss. **Ab der Version nach
+> `v0.75.0` ist das behoben.** Solange Sie älter pinnen, prüfen Sie einmalig
+> mit `ls .git/objects/pack/`, dass jede `.pack`-Datei mit `pack-` beginnt.
 
-Die zweite Zeile ist der gefährliche Fall, und er ist der **realistischere**:
-`git maintenance` packt in Stapeln und hinterlässt typischerweise genau solche
-partiellen Packs. Eine echte Core-Änderung wird dann **nicht gemeldet** —
-gemessen an einer geänderten `**Status:** Accepted`-Datei, die mit kanonischem
-Pack-Namen einen `core-drift-vcs`-Befund erzeugt und nach dem Umbenennen
-desselben Packs verschwindet, während `git diff` sie unverändert anzeigt.
-Ursache ist, dass die verwendete Bibliothek ein *unlesbares* Objekt mit
-demselben Fehler meldet wie *„diese Datei existiert in diesem Stand nicht"* —
-ein legitimer Zustand, den die Prüfung überspringen muss.
-
-**Was das für Sie heißt:** Ein grüner `--range`-Lauf setzt voraus, dass Ihre
-Objektdatenbank kanonisch gepackt ist. Läuft in Ihrem Repository eine
-git-Wartungsaufgabe, prüfen Sie das mit
-`ls .git/objects/pack/` — jede `.pack`-Datei muss `pack-` heißen.
-**Abhilfe:** `git repack -A -d`. `git` selbst ist von der Namensform nicht
-betroffen und arbeitet durchgehend normal; nur diese Prüfung ist es.
-
-**`commits` (unten) verhält sich hier günstiger** und bricht mit Exit 2 ab —
+**`commits` (unten) war von dem stillen Fall nie betroffen** und bricht ab —
 gemessen, nicht angenommen. **`tracked` ist gar nicht betroffen**, weil es den
 git-Index liest statt der Objektdatenbank.
 
@@ -1645,11 +1640,11 @@ dann `Range-Basis "<base>" nicht auflösbar: reference not found` oder
 `commit <sha> nicht lesbar: object not found`, jeweils mit **Exit 2**;
 `git repack -A -d` behebt es.
 
-**Anders als `vcs` bricht dieses Modul dabei ab, statt still grün zu melden**
-— gemessen an einem unsichtbar gemachten Zwischen-Commit. Verlassen Sie sich
-trotzdem nicht darauf, dass ein grüner Lauf des einen etwas über den anderen
-sagt: Die beiden lesen dieselbe Objektdatenbank, aber sie behandeln ein
-fehlendes Objekt unterschiedlich.
+**Dieses Modul war von dem stillen Fall nie betroffen**, den `vcs` bis
+`v0.75.0` hatte — gemessen an einem unsichtbar gemachten Zwischen-Commit, der
+den Lauf mit Exit 2 abbricht. Verlassen Sie sich trotzdem nicht darauf, dass
+ein grüner Lauf des einen etwas über den anderen sagt: Die beiden lesen
+dieselbe Objektdatenbank, treffen darin aber unterschiedliche Objekte.
 
 ### Planning-Lifecycle, Closure-Notizen und Wellen-Register prüfen (Modul `planning`)
 
