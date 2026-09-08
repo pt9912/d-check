@@ -50,17 +50,34 @@ Eine gelöschte oder umbenannte `Accepted`-ADR ist ein **FAIL**.
    lose werden statt verworfen).
 
    **Die dritte Form gab es bis slice-218 nicht — dort war der Lauf still
-   grün.** go-git meldet ein *unlesbares* Objekt mit demselben Fehler wie eine
-   *im Tree fehlende* Datei (`object.ErrFileNotFound`); der zweite Fall ist
-   legitim (Datei später angelegt) und muss befundfrei bleiben, der erste ist
-   ein Umgebungsfehler. Der Adapter behandelte beide gleich und übersprang die
-   Datei — **eine echte `core-drift-vcs`-Verletzung verschwand** (gemessen:
-   Exit 1 mit kanonischem Pack-Namen, Exit 0 nach dem Umbenennen derselben
-   Datei, während `git diff` die Änderung unverändert zeigte). Seit slice-218
-   trennt der Adapter die beiden über den **Tree-Eintrag**, der Name und Hash
-   trägt und das Blob nicht braucht. Ein Regressionstest in `make test`
-   (`TestFileAtUnlesbaresObjekt`) fällt ohne diese Unterscheidung — verifiziert
-   durch Zurücknehmen des Fixes.
+   grün, in zwei Ausprägungen.** go-git meldet ein *unlesbares* Objekt mit
+   demselben Fehler wie eine *im Tree fehlende* Datei
+   (`object.ErrFileNotFound`); der zweite Fall ist legitim (Datei später
+   angelegt) und muss befundfrei bleiben, der erste ist ein Umgebungsfehler.
+   Gemessen an derselben echten `core-drift-vcs`-Verletzung, kanonisch je
+   Exit 1:
+
+   | Der unsichtbar benannte Pack verschluckt … | Ankunft | vor slice-218 |
+   | --- | --- | --- |
+   | das BASE-**Blob** | `M` | `0 Befund(e)`, Exit 0 |
+   | das BASE-**Tree** des Verzeichnisses | `A` | `0 Befund(e)`, Exit 0 |
+
+   Die **zweite** Zeile fand erst Review-Runde 2; sie läuft über den
+   `A`-Zweig, der `FileAt` gar nicht rief. Seit slice-218 trennt der Adapter
+   die beiden Zustände über den **Tree-Eintrag** (Name und Modus, ohne den
+   Datei-Inhalt), und der `A`-Zweig fasst den BASE-Stand an, statt ihn
+   ungesehen für frei zu erklären. **Die Gegenrichtung gehört zur Zusage:** ein
+   Eintrag **ohne** Datei-Inhalt — Verzeichnis oder Gitlink — ist kein
+   unlesbares Objekt und bleibt befundfrei; ein wandernder Submodul-Zeiger in
+   der Klasse brach in der Zwischenfassung fälschlich ab. Zwei
+   Regressionstests halten beide Richtungen und fallen ohne ihren Fix
+   (`TestFileAtUnlesbaresObjekt`, `TestFileAtEintragOhneBlob`,
+   `TestVCSAddedMeldetUnlesbareBasis`) — verifiziert durch Zurücknehmen.
+
+   **Geprüft sind die drei Diff-Zustände, die das Modul kennt** (`A`, `M`,
+   `D`); alle drei fassen den BASE-Stand jetzt über denselben Adapter-Pfad an.
+   Das ist die Menge, über die hier geurteilt wird — nicht „jeder denkbare
+   Repo-Zustand".
 
    **Für gepinnte Konsumenten gilt das noch nicht:** Wer ein veröffentlichtes
    Image ab `v0.75.0` abwärts fährt, hat den stillen Pfad weiterhin — geführt

@@ -16,6 +16,7 @@ import (
 
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/filemode"
 	"github.com/go-git/go-git/v5/plumbing/format/index"
 	"github.com/go-git/go-git/v5/plumbing/object"
 
@@ -268,10 +269,15 @@ func (a *Adapter) FileAt(ref, path string) ([]byte, bool, error) {
 // diesem Stand (false, nil). Ein Fehler beim Nachsehen, der nicht "gibt es
 // nicht" bedeutet, wird durchgereicht statt als Abwesenheit gelesen.
 func entryUnreadable(tree *object.Tree, path string) (bool, error) {
-	_, err := tree.FindEntry(path)
+	e, err := tree.FindEntry(path)
 	switch {
 	case err == nil:
-		return true, nil
+		// Nur ein Eintrag, der einen Datei-Inhalt bezeichnet, kann unlesbar
+		// sein. Ein Gitlink (Submodul) und ein Verzeichnis tragen keinen —
+		// für sie ist die Abwesenheit eines Blobs der Normalfall und
+		// befundfrei richtig, nicht ein Umgebungsfehler.
+		return e.Mode == filemode.Regular || e.Mode == filemode.Executable ||
+			e.Mode == filemode.Symlink, nil
 	case errors.Is(err, object.ErrEntryNotFound), errors.Is(err, object.ErrDirectoryNotFound):
 		return false, nil
 	default:

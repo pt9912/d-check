@@ -31,7 +31,15 @@ func CheckVCS(vcs driven.VCS, cfg model.VCSConfig, base, head string) ([]model.F
 		}
 		switch c.Status {
 		case driven.VCSAdded:
-			// neue Datei ist noch nicht immutabel (Proposed→Accepted-Reifung frei)
+			// Neue Datei ist noch nicht immutabel (Proposed→Accepted-Reifung
+			// frei). Der BASE-Stand wird trotzdem angefasst: „Added" ist auch
+			// die Antwort, die ein Tree-Diff gibt, wenn er den BASE-Stand gar
+			// nicht lesen konnte — dann verschwände eine echte Kern-Änderung
+			// befundfrei. Der Zugriff unterscheidet die beiden, sein Ergebnis
+			// wird nicht gebraucht.
+			if _, _, err := vcs.FileAt(base, c.Path); err != nil {
+				return nil, err
+			}
 		case driven.VCSDeleted:
 			f, err := vcsDeleted(vcs, cfg, base, c.Path)
 			if err != nil {

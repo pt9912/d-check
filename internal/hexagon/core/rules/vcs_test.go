@@ -19,6 +19,7 @@ type fakeVCS struct {
 	commits []driven.CommitMeta          // Modul commits (DC-FA-COMMITS-001)
 	tracked map[string]bool              // Modul tracked (DC-FA-TRK-001)
 	err     error
+	fileErr error // FileAt scheitert — unlesbares Objekt oder unlesbarer Tree-Eintrag
 }
 
 func (f *fakeVCS) ChangedPaths(_, _ string) ([]driven.VCSChange, error) {
@@ -43,6 +44,9 @@ func (f *fakeVCS) TrackedPaths() (map[string]bool, error) {
 }
 
 func (f *fakeVCS) FileAt(ref, path string) ([]byte, bool, error) {
+	if f.fileErr != nil {
+		return nil, false, f.fileErr
+	}
 	if m, ok := f.files[ref]; ok {
 		if c, ok := m[path]; ok {
 			return c, true, nil
@@ -307,5 +311,29 @@ func TestVCSRenameOutOfClass(t *testing.T) {
 	}
 	if got[0].Target != adrPath {
 		t.Fatalf("Befund-Ziel = %q, erwartet der ALTE Pfad %q", got[0].Target, adrPath)
+	}
+}
+
+// TestVCSAddedMeldetUnlesbareBasis: "Added" ist auch die Antwort, die ein
+// Tree-Diff gibt, wenn er den BASE-Stand gar nicht lesen konnte. Wer den Zweig
+// ohne Rückfrage passieren lässt, verliert dort jede Kern-Änderung befundfrei
+// (DC-FA-VCS-001).
+func TestVCSAddedMeldetUnlesbareBasis(t *testing.T) {
+	cfg := adrConfig()
+	unlesbar := &fakeVCS{
+		changes: []driven.VCSChange{{Status: driven.VCSAdded, Path: "docs/plan/adr/0001-a.md"}},
+		fileErr: errors.New("nicht lesbarer Tree-Eintrag"),
+	}
+	if _, err := CheckVCS(unlesbar, cfg, "BASE", "HEAD"); err == nil {
+		t.Fatal("unlesbare BASE bei Added still passiert — erwartet war ein Fehler")
+	}
+
+	// Gegenrichtung: eine wirklich neu angelegte Datei bleibt befundfrei.
+	echtNeu := &fakeVCS{
+		changes: []driven.VCSChange{{Status: driven.VCSAdded, Path: "docs/plan/adr/0001-a.md"}},
+		files:   map[string]map[string][]byte{"HEAD": {"docs/plan/adr/0001-a.md": adr("Accepted", "Neu.")}},
+	}
+	if got, err := CheckVCS(echtNeu, cfg, "BASE", "HEAD"); err != nil || len(got) != 0 {
+		t.Errorf("neu angelegte Datei falsch behandelt: %d Befund(e), err=%v", len(got), err)
 	}
 }

@@ -1601,15 +1601,17 @@ Namensform nicht betroffen und arbeitet durchgehend normal; nur diese Prüfung
 ist es.
 
 > **Wichtig, wenn Sie ein Image bis `v0.75.0` pinnen.** Bis einschließlich
-> `v0.75.0` **schwieg** dieser Fall im `--range`-Modus, sobald der unsichtbare
-> Pack nur *einzelne* Objekte verschluckte — und genau solche partiellen Packs
-> hinterlässt `git maintenance`, weil es in Stapeln arbeitet. Eine echte
-> Core-Änderung wurde dann **nicht gemeldet**: `0 Befunde`, Exit 0. Ursache
-> war, dass die verwendete Bibliothek ein *unlesbares* Objekt mit demselben
-> Fehler meldet wie *„diese Datei existiert in diesem Stand nicht"* — ein
-> legitimer Zustand, den die Prüfung überspringen muss. **Ab der Version nach
-> `v0.75.0` ist das behoben.** Solange Sie älter pinnen, prüfen Sie einmalig
-> mit `ls .git/objects/pack/`, dass jede `.pack`-Datei mit `pack-` beginnt.
+> `v0.75.0` **schwieg** dieser Fall, sobald der unsichtbare Pack nur *einzelne*
+> Objekte verschluckte — und genau solche partiellen Packs hinterlässt
+> `git maintenance`, weil es in Stapeln arbeitet. Eine echte Core-Änderung wurde
+> dann **nicht gemeldet**: `0 Befunde`, Exit 0. Das galt in **zwei** Ausprägungen
+> — verschluckt der Pack das alte **Blob** der Datei, oder das **Verzeichnis-Objekt**,
+> in dem sie liegt. Ursache war, dass die verwendete Bibliothek ein *unlesbares*
+> Objekt mit demselben Fehler meldet wie *„diese Datei existiert in diesem Stand
+> nicht“* — ein legitimer Zustand, den die Prüfung überspringen muss. **Ab der
+> Version nach `v0.75.0` ist das behoben**, in beiden Ausprägungen und in beiden
+> Modi. Solange Sie älter pinnen, prüfen Sie einmalig mit
+> `ls .git/objects/pack/`, dass jede `.pack`-Datei mit `pack-` beginnt.
 
 **`commits` (unten) war von dem stillen Fall nie betroffen** und bricht ab —
 gemessen, nicht angenommen. **`tracked` ist gar nicht betroffen**, weil es den

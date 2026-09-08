@@ -62,12 +62,18 @@ nicht.
    *Es wäre ein anderer Vorgang*, und zwar einer mit ADR-Last.
 2. **Kein Sensor auf Pack-Namen.** Ein Wächter darüber wäre ein neues Modul
    mit eigener Scan-Zusage. *Bestand bleibt bewusst stehen.*
-3. **Keine Lastenheft-/Spezifikations-Änderung.** Der Fix (unten) stellt das
-   **zugesagte** Verhalten her, statt ein neues zu vereinbaren:
+3. **Keine Lastenheft-Änderung — die Spezifikation dagegen schon.**
    [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)
-   verspricht schon heute, dass eine Core-Änderung gemeldet wird. Ein
-   Spec-Eintrag käme erst in Frage, wenn ein **neuer** Grund-Code entstünde —
-   *ein Folge-Slice übernähme es dann.*
+   verspricht schon heute, dass eine Core-Änderung gemeldet wird; der Fix löst
+   die Zusage ein, statt eine neue zu vereinbaren. **Die erste Fassung dieses
+   Punktes schloss auch die Spezifikation aus** — mit der Begründung, ein
+   Spec-Eintrag käme erst bei einem **neuen Grund-Code** in Frage. Das ist am
+   eigenen Bestand widerlegt: Die Historie derselben Spec-Sektion führt zum
+   2026-08-31 einen strukturgleichen Fall (Rename-Erkennung, *„still war
+   ausgerechnet der Modus, den die CI fährt"*), der **ohne** neuen Grund-Code
+   einen Spezifikations-Eintrag bekam und ausdrücklich keinen Lastenheft-Bump.
+   §[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 trägt den Mechanismus jetzt als Geschwister
+   zur Rename-Zusage.
 4. **Keine Behebung im veröffentlichten Bild.** Der Fix wirkt erst mit dem
    nächsten Release; jeder Adopter auf `v0.75.0` oder früher behält den
    blinden Pfad. Das ist **nicht** stillschweigend hingenommen, sondern als
@@ -105,6 +111,27 @@ sind hier einzulösen:
   wirklich nicht existiert (neu angelegte ADR), darf **weiterhin** befundfrei
   bleiben. *Ein Fix, der beide Fälle gleich behandelt, tauscht ein stilles
   Übersehen gegen einen Fehlalarm.*
+
+**Zweite Plan-Änderung (2026-09-08, nach Review-Runde 2).** Der deklarierte
+Fokus hat **genau getroffen, wovor er warnte** — und noch etwas dazu. Zwei
+HIGH, beide selbst nachgemessen und beide eingearbeitet:
+
+- **Der stille Pfad war nur zur Hälfte zu.** Liegt statt des BASE-**Blobs** das
+  BASE-**Tree** des geschützten Verzeichnisses im unsichtbar benannten Pack,
+  kommt die Datei als `A` an — und der `Added`-Zweig ruft `FileAt` gar nicht,
+  der Adapter-Fix konnte dort nicht greifen. Gemessen: weiterhin
+  `0 Befund(e)`/Exit 0. Der Zweig fasst den BASE-Stand jetzt an.
+- **Der befürchtete Fehlalarm trat ein**, und zwar für Einträge **ohne**
+  Datei-Inhalt: Ein wandernder Gitlink (Submodul) in der `vcs.paths`-Klasse
+  brach mit Exit 2 ab, wo der Vor-Fix-Stand korrekt schwieg. `entryUnreadable`
+  prüft jetzt den **Modus** des Tree-Eintrags.
+
+**Damit wächst der Slice ein zweites Mal**, und die [`MR-066`](../../../../harness/conventions.md#mr-066)-Pflichten gelten
+erneut: Der **Grund** ist derselbe (die Doku beschriebe sonst einen Defekt,
+den es halb nicht mehr gibt); die **Ersatz-Form** wird um eine **dritte Runde**
+ergänzt, deren Fokus die *Vollständigkeit der Klasse* ist — nicht mehr die
+Gegenrichtung einer Bedingung, sondern die Frage, welche **weiteren**
+Diff-Zustände (`D`, Typänderung) denselben Weg nehmen könnten.
 
 ## 2. Definition of Done
 

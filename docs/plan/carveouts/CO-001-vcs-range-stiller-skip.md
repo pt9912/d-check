@@ -1,10 +1,10 @@
-# CO-001: `vcs --range` überspringt still, solange das publizierte Image den Fix nicht trägt
+# CO-001: `vcs` überspringt still, solange das publizierte Image den Fix nicht trägt
 
 **Status:** Aktiv.
 
 **Datum angelegt:** 2026-09-08. **Letzte Prüfung:** 2026-09-08.
 
-**Betroffenes Gate:** `adr-check` (Modul `vcs`, `RANGE=`-Modus) — der
+**Betroffenes Gate:** `adr-check` (Modul `vcs`) — in beiden Modi, und darunter der
 Bindepunkt der PR-/Push-CI.
 
 **Geltungsbereich:** **Konsumenten**, die ein veröffentlichtes Image pinnen —
@@ -19,9 +19,8 @@ dem Commit, auch in der PR-/Push-CI. **Eine frühere Fassung dieses Carveouts
 behauptete das Gegenteil** („dieses Repo eingeschlossen") — sie hatte den
 Image-Pin nicht nachgeschlagen.
 
-**Folge-Slice:** [`slice-218`](../planning/in-progress/slice-218-go-git-pack-namenskonvention.md)
-— derselbe Slice, der den Fix liefert; der Carveout deckt die Strecke zwischen
-Fix und Auslieferung.
+**Folge-Slice:** [`slice-219`](../planning/open/slice-219-release-loest-co-001.md) — das Release, das den Fix ausliefert. **Nicht** slice-218: der liefert den Fix und schließt davor; ein Carveout, dessen Folge-Slice vor ihm schließt, hat faktisch keinen.
+Der Carveout deckt die Strecke zwischen Fix und Auslieferung.
 
 Regeln: Baseline-Regelwerk `modul-07-carveouts.md` §Ziel-Form: Carveout — ein
 Carveout braucht immer einen Auflösungs-Trigger **und** einen Folge-Slice.
@@ -34,22 +33,30 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-07-carveouts.md`
 §Ziel-Form: Carveout — technische Begründung, keine
 „noch nicht geschafft"-Aussagen.
 
-**Der Gate ist im CI-Modus blind, wenn die Objektdatenbank nicht kanonisch
-gepackt ist.** go-git meldet ein **unlesbares** Objekt mit demselben Fehler wie
+**Der Gate ist blind, wenn die Objektdatenbank nicht kanonisch
+gepackt ist — in beiden Modi.** go-git meldet ein **unlesbares** Objekt mit demselben Fehler wie
 eine **im Tree fehlende** Datei (`object.ErrFileNotFound`). Der zweite Fall ist
 harmlos und muss befundfrei bleiben — eine später angelegte Datei —, der erste
 ist ein Umgebungsfehler. Vor dem Fix behandelte der Adapter beide gleich und
 übersprang die Datei ohne Befund.
 
-**Gemessen, mit echter Verletzung:** dieselbe Range, eine geänderte
-`**Status:** Accepted`-Datei. Mit kanonischem Pack-Namen
-`1 Datei(en) geprüft, 1 Befund(e)` (`core-drift-vcs`, Exit 1); nachdem
-**dieselbe** Pack-Datei auf einen unkanonischen Namen umbenannt wurde
-`1 Datei(en) geprüft, 0 Befund(e)`, **Exit 0** — während `git diff` die
-Änderung unverändert anzeigt. Der praktische Auslöser ist
-`git maintenance run --task=loose-objects`: Es schreibt `loose-<Hash>.pack`
-und packt in Stapeln, hinterlässt also genau die **partiellen** Packs, in
-denen der stille Pfad greift.
+**Gemessen, mit echter Verletzung, in zwei Ausprägungen** — dieselbe Range,
+eine geänderte `**Status:** Accepted`-Datei, kanonisch je
+`1 Befund(e)`/Exit 1:
+
+| Was der unsichtbar benannte Pack verschluckt | wie die Datei ankommt | vor dem Fix |
+| --- | --- | --- |
+| das BASE-**Blob** | `M` — der Core-Vergleich überspringt sie | `0 Befund(e)`, Exit 0 |
+| das BASE-**Tree** des Verzeichnisses | `A` — als wäre sie neu | `0 Befund(e)`, Exit 0 |
+
+`git diff` zeigt die Änderung in beiden Fällen unverändert an. **Die zweite
+Zeile fand erst die zweite Review-Runde** — die erste Fassung dieses Carveouts
+kannte nur die Blob-Hälfte und sagte den Abschluss trotzdem über die ganze
+Klasse zu.
+
+Der praktische Auslöser ist `git maintenance run --task=loose-objects`: Es
+schreibt `loose-<Hash>.pack` und packt in Stapeln, hinterlässt also genau die
+**partiellen** Packs, in denen der stille Pfad greift.
 
 **Warum das ein Carveout ist und nicht nur ein behobener Fehler:** Der Fix
 liegt im Quellstand, aber ein Konsument fährt ein **gepinntes Image**. Bis
@@ -78,9 +85,13 @@ docker run --rm --network none -v "$PWD:/repo:ro" <neues-image> \
   --enable vcs --disable links --range <base>..<head>
 ```
 
-gegen ein Probe-Repo mit **partiell** unsichtbarem Pack: Vor der Auflösung
-meldet es `0 Befund(e)` mit Exit 0, danach `Objekt zu … nicht lesbar` mit
-Exit 2.
+gegen ein Probe-Repo mit **partiell** unsichtbarem Pack, und zwar in **beiden**
+Ausprägungen — unsichtbares BASE-**Blob** (die Datei kommt als `M` an) und
+unsichtbares BASE-**Tree** (sie kommt als `A` an). Vor der Auflösung meldet der
+Lauf je `0 Befund(e)` mit Exit 0, danach `nicht lesbares Objekt zu …` bzw.
+`nicht lesbarer Tree-Eintrag zu …` mit Exit 2. **Beide sind zu fahren:** Die
+erste Fassung dieses Carveouts kannte nur die Blob-Hälfte und hätte den
+Trigger für erfüllt gehalten, während die andere Hälfte noch offen war.
 
 ## Geltungs-Konfiguration
 

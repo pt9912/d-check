@@ -353,3 +353,31 @@ func TestFileAtUnlesbaresObjekt(t *testing.T) {
 		t.Errorf("fehlende Datei falsch behandelt: ok=%v err=%v", ok, err)
 	}
 }
+
+// TestFileAtEintragOhneBlob: Ein Tree-Eintrag, der keinen Datei-Inhalt
+// bezeichnet — Verzeichnis oder Gitlink —, ist kein unlesbares Objekt. Wer
+// beide gleich behandelt, tauscht ein stilles Übersehen gegen einen Fehlalarm
+// mit irreführender Abhilfe (DC-FA-VCS-001).
+func TestFileAtEintragOhneBlob(t *testing.T) {
+	dir, wt := repoAt(t)
+	put(t, dir, "docs/plan/adr/0001-a.md", "# ADR-0001\n\n**Status:** Accepted\n\nUrsprung.\n")
+	base := snapshot(t, wt, "base")
+
+	a, err := gitadapter.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// "docs" existiert im Tree, trägt aber keinen Datei-Inhalt.
+	if _, ok, err := a.FileAt(base, "docs"); err != nil || ok {
+		t.Errorf("Verzeichnis-Eintrag als unlesbares Objekt gelesen: ok=%v err=%v", ok, err)
+	}
+
+	// Und die Nachbarn bleiben, wie sie waren.
+	if _, ok, err := a.FileAt(base, "docs/plan/adr/0001-a.md"); err != nil || !ok {
+		t.Errorf("reguläre Datei falsch behandelt: ok=%v err=%v", ok, err)
+	}
+	if _, ok, err := a.FileAt(base, "gibt/es/nicht.md"); err != nil || ok {
+		t.Errorf("fehlende Datei falsch behandelt: ok=%v err=%v", ok, err)
+	}
+}
