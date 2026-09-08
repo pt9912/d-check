@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.70 · **Software-Version:** [v0.74.1](../../version.md#v0.74.1) ·
-**Stand:** 2026-09-04 · **Autor:** pt9912
+**Handbuch-Version:** 1.71 · **Software-Version:** [v0.75.0](../../version.md#v0.75.0) ·
+**Stand:** 2026-09-08 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.74.1
+docker pull ghcr.io/pt9912/d-check:v0.75.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -79,12 +79,12 @@ jeweiligen Registrys; wer per Digest pinnt, nimmt den Digest **der Registry, aus
 der er zieht**. GHCR bleibt die Quelle; Docker Hub folgt ihr.
 
 ```bash
-docker pull pt9912/d-check:v0.74.0
+docker pull pt9912/d-check:v0.75.0
 ```
 
 ### Versionen und Tags
 
-- `:v0.74.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.75.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -113,7 +113,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -172,7 +172,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -191,7 +191,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.74.1
+  ghcr.io/pt9912/d-check:v0.75.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -210,7 +210,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.74.1 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.75.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -229,7 +229,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -249,7 +249,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -258,7 +258,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -277,7 +277,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -297,7 +297,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
   --enable ids --disable anchors
 ```
 
@@ -318,7 +318,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
   --enable ids
 ```
 
@@ -339,7 +339,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
   --enable matrix
 ```
 
@@ -407,7 +407,7 @@ Konfigurationsfehler (Exit 2); ohne `token` verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
   --enable external
 ```
 
@@ -429,7 +429,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
   --enable ids --doctor
 ```
 
@@ -464,7 +464,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
   --enable ids --doctor --json
 ```
 
@@ -512,7 +512,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -548,7 +548,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
     --enable ids --repair | git apply
   ```
 
@@ -565,7 +565,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -585,7 +585,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -647,7 +647,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -785,7 +785,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -830,7 +830,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.74.1 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.75.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -848,7 +848,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und dreizehn
 # Benutzerhandbuch (aufgabenorientiert, deutsch):
 #   https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md
 #   https://raw.githubusercontent.com/pt9912/d-check/refs/heads/main/docs/user/benutzerhandbuch.md  (roh, für Werkzeuge/Agenten)
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.74.1
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.75.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -913,7 +913,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -1126,7 +1126,7 @@ planning:
 ```
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
   --enable planning
 ```
 
@@ -2548,3 +2548,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.68             | v0.73.0          | 2026-09-03 | **Neues Modul `reviews`: Review-Report-Deckung für `done/`-Slices** (§6, Lastenheft 0.84.0). Ein `done/`-Slice mit einer Review-Zusage (ein DoD-Haken, dessen Zeile „unabhängiger Review" nennt, jede Bullet-Form, Haken-Zustand egal) braucht mindestens einen Report unter einem konfigurierten Verzeichnis (`reviews-dir`) mit derselben `slice-<NNN>`-Kennung im Dateinamen — Substring-Match, 1:N zulässig; Grund-Code `review-missing`. **Fail-closed bei leerer Kandidatenmenge oder unlesbarem `reviews-dir`**, **nicht** bei null gefundenen Zusagen unter vorhandenen Kandidaten (ein junger Bestand ohne jede Zusage ist legitim). Beide Verzeichnisse werden **nicht rekursiv** gescannt. **Anlass ist eine ausdrücklich benannte Lücke eines vorherigen `structure`-Wächters**, der nur den offenen DoD-Haken deckt, nicht die Deckung zweier Mengen zwischen zwei Verzeichnissen. Opt-in, keine Breaking Changes |
 | 1.69             | v0.74.0          | 2026-09-04 | **Fünfte `planning`-Fähigkeit, additiv: Verzeichnis-Register für die Register-Deckung** (§4.19, [`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), Lastenheft 0.85.0). Statt einer Tabellen-Datei (`observations.register`) kann die Register-Deckung jetzt gegen eine **Verzeichnis-Ablage** prüfen (`observations.dir`): eine zitierte Kennung `<pfad>` gilt als nachgewiesen, wenn `<observations.dir>/<pfad>/observation.md` existiert. Beide Schlüssel schließen sich aus — sind beide gesetzt, bricht der Lauf mit Exit 2, bevor eine Datei geöffnet wird. **Anlass:** die adoptierte Harness-Baseline gestaltet ihr eigenes Beobachtungs-Register neu (Tabelle → Verzeichnis, Kennung wird Pfad, abgeleiteter statt gepflegter Zähler); `.register` bleibt für Rückwärtskompatibilität unverändert bestehen. Kein neuer Grund-Code — derselbe `observation-unregistered` wie im Tabellen-Modus. Opt-in, keine Breaking Changes |
 | 1.70             | v0.74.1          | 2026-09-04 | **Sicherheitsrelevant:** dieses Release behebt zwei behebbare CVEs im ausgelieferten Image — `CVE-2026-56855` und `CVE-2026-78662` in `golang.org/x/crypto`, gehoben auf `v0.56.0` (laut `vuln.go.dev`/`osv.dev`). Gefunden über einen Fremd-Scanner (Docker Scout), bevor Trivys eigene Vuln-DB die Severity nachzog — `make image-scan` blieb deshalb zunächst grün, der Fund stand im Vollbericht mit Severity `UNKNOWN`, als Beobachtung festgehalten (`BEO-ALL/scanner-vendor-severity-lag`). **Keine Software-Änderung am Prüf-Verhalten:** Modulsatz, Grund-Codes und Konfigurations-Fläche sind unverändert; der Befundsatz bleibt byte-identisch |
+| 1.71             | v0.75.0          | 2026-09-08 | **Neues Modul `mentions`: Erwähnungs-Deckung einer Artefakt-Menge** (§6, [`DC-FA-MENT-001`](../../spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in), Lastenheft 0.86.2). Eine über Pfad-Globs konfigurierte **Soll-Menge** (`artifacts`) wird gegen eine ebenso konfigurierte **Ist-Menge** von Dokumenten (`documents`) gehalten; jedes Mitglied, das in **keinem** Dokument vorkommt, meldet `artifact-unmentioned`. **Andere Achse als die RTM:** jene misst *verfolgt* über Kennungen, diese misst *erwähnt* über Pfade — schema-frei, für Artefakte ohne Kennungs-Konvention. **Ein Block ist EIN Paar:** die Ist-Menge ist eine Vereinigung, zwei unabhängige Invarianten in einem Block halten keine von beiden. **Zwei Eingaben, eine Scan-Zusage:** die Ist-Dokumente werden als Text gelesen, die Soll-Artefakte **nie geöffnet**; aufgesammelt wird aus dem ganzen Baum unter `scan.ignore`, **nicht** aus `scan.roots`. Gesucht wird eine **eigenständige** Nennung, keine Teilzeichenkette. **Fail-closed** bei fehlender oder leerer Menge und bei unlesbarem Verzeichnis (Exit 2, nicht „0 Befunde"). Die Zusammenfassung nennt die **Bezugsmenge** (`N von M`) — dafür trägt sie ab jetzt allgemein **Notiz-Zeilen** einzelner Module, auch in `--json`/`--yaml` als `summary.notes` ([`DC-FA-CLI-004`](../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate) lässt weitere Felder ausdrücklich zu); wer `summary` strikt gegen zwei Felder validiert, sieht ein zusätzliches. Opt-in, keine Breaking Changes |

@@ -199,6 +199,17 @@ Dokuments:
   Kandidatenmenge. Geprüft wird die **Deckung**, nicht die Qualität des
   Reports. **Hermetisch** (kein git, kein Netz), opt-in
   ([`DC-FA-RVW-001`](spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in))
+- `mentions` — Erwähnungs-Deckung einer Artefakt-Menge: jedes Mitglied einer
+  über Pfad-Globs konfigurierten **Soll-Menge** (`mentions.artifacts`) muss in
+  mindestens einem Dokument der ebenso konfigurierten **Ist-Menge**
+  (`mentions.documents`) vorkommen — sonst `artifact-unmentioned`. **Andere
+  Achse als die Referenzmatrix:** jene misst *verfolgt* über Kennungen, diese
+  misst *erwähnt* über Pfade und ist damit schema-frei — für Artefakte, die
+  keiner Kennungs-Konvention folgen. Gesucht wird eine **eigenständige**
+  Nennung, keine Teilzeichenkette; die Soll-Artefakte werden **nie geöffnet**.
+  **Fail-closed** bei fehlender oder leerer Menge (Exit 2, nicht „0 Befunde").
+  **Hermetisch** (kein git, kein Netz), opt-in
+  ([`DC-FA-MENT-001`](spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in))
 
 Jeder Befund nennt Datei, Zeile, Ziel und Grund; Exit-Codes:
 `0` sauber, `1` Befunde, `2` Umgebungs- oder Konfigurationsfehler.
@@ -285,7 +296,7 @@ Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

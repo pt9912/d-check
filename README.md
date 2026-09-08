@@ -196,6 +196,17 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   Checked is **coverage**, not the quality of the report. **Hermetic** (no
   git, no network), opt-in
   ([`DC-FA-RVW-001`](spec/lastenheft.md#dc-fa-rvw-001--review-report-deckung-modul-reviews-opt-in))
+- `mentions` — mention coverage for a set of artifacts: every member of a
+  **target set** configured through path globs (`mentions.artifacts`) must
+  appear in at least one document of the likewise configured **actual set**
+  (`mentions.documents`) — otherwise `artifact-unmentioned`. **A different
+  axis than the reference matrix:** that one measures *traced* through
+  identifiers, this one measures *mentioned* through paths and is therefore
+  schema-free — for artifacts that follow no identifier convention. What is
+  searched for is a **standalone** mention, not a substring; the target
+  artifacts are **never opened**. **Fail-closed** on a missing or empty set
+  (exit 2, not "0 findings"). **Hermetic** (no git, no network), opt-in
+  ([`DC-FA-MENT-001`](spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in))
 
 Every finding names file, line, target and reason; exit codes:
 `0` clean, `1` findings, `2` environment or configuration error.
@@ -281,7 +292,7 @@ you pull from)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.74.1
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to

@@ -4,6 +4,48 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.75.0] — 2026-09-08
+
+### Added
+
+- slice-205/206 — **Neues Modul `mentions`: Erwähnungs-Deckung einer
+  Artefakt-Menge** ([`DC-FA-MENT-001`](spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in),
+  [ADR-0084](docs/plan/adr/0084-mentions-eigenes-modul.md)). Eine über
+  Pfad-Globs konfigurierte **Soll-Menge** (`mentions.artifacts`) wird gegen
+  eine ebenso konfigurierte **Ist-Menge** von Dokumenten
+  (`mentions.documents`) gehalten; jedes Mitglied, das in **keinem** Dokument
+  vorkommt, meldet `artifact-unmentioned`. **Andere Achse als die
+  Referenzmatrix:** jene misst *verfolgt* über Kennungen, diese misst
+  *erwähnt* über Pfade — schema-frei, für Artefakte ohne
+  Kennungs-Konvention. Gesucht wird eine **eigenständige** Nennung, keine
+  Teilzeichenkette; die Soll-Artefakte werden **nie geöffnet**, die
+  Ist-Dokumente als Text gelesen. **Ein Block ist EIN Paar:** die Ist-Menge
+  ist eine Vereinigung — zwei unabhängige Invarianten in einem Block halten
+  keine von beiden. Aufgesammelt wird aus dem ganzen Baum unter
+  `scan.ignore`, **nicht** aus `scan.roots`. **Fail-closed** bei fehlender
+  oder leerer Menge und bei unlesbarem Verzeichnis (Exit 2, nicht
+  „0 Befunde"). Hermetisch (kein git, kein Netz), opt-in — nicht Teil von
+  `make gates`/`ci`.
+- slice-206 — **Die Lauf-Zusammenfassung trägt Notiz-Zeilen einzelner
+  Module** (`summary.notes`, auch in `--json` und `--yaml`). `mentions` nennt
+  darüber seine **Bezugsmenge** (`N von M`).
+  [`DC-FA-CLI-004`](spec/lastenheft.md#dc-fa-cli-004--ausgabeformate)
+  lässt weitere Felder neben `filesChecked` und `findingCount` ausdrücklich
+  zu; der Reporter bleibt modul-unkundig. **Wer `summary` strikt gegen genau
+  zwei Felder validiert, sieht ab jetzt ein zusätzliches** — das ist die
+  einzige Stelle, an der dieses Release eine bestehende Ausgabe verändert.
+
+### Changed
+
+- slice-207 — **Baseline-Pin auf `v6.5.0` gehoben** (von `v6.3.1`,
+  [`MR-067`](harness/conventions.md#mr-067)). Betrifft ausschließlich den
+  Harness dieses Repos, **nicht** das Prüf-Verhalten des Werkzeugs:
+  Modulsatz, Grund-Codes und Konfigurations-Fläche sind davon unberührt.
+- slice-217 — **`harness/README.md`: Tabellen-Padding entfernt.** Die zwei
+  ausgerichteten Tabellen tragen jetzt dieselbe schlanke Form wie die drei
+  übrigen und wie die Baseline-Vorlage. Reine Whitespace-Operation, 233
+  Zeilen unverändert; kein Inhalt, kein Prüf-Verhalten berührt.
+
 ## [0.74.1] — 2026-09-04
 
 ### Security
