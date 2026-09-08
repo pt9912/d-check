@@ -41,13 +41,24 @@ Eine gelöschte oder umbenannte `Accepted`-ADR ist ein **FAIL**.
    liest weiter** — es enumeriert `*.idx` unabhängig vom Namen.
 
    **Auslöser in freier Wildbahn:** `git maintenance run --task=loose-objects`
-   schreibt `loose-<Hash>.pack`. Je nachdem, was der unsichtbare Pack
-   verschluckt, meldet der Lauf `staged-Basis "HEAD" nicht auflösbar:
-   reference not found`, `HEAD-Tree nicht lesbar: object not found` oder
-   `nicht lesbares Objekt zu "<pfad>" in "<ref>": file not found` — **alle mit
-   Exit 2**. Wer nur eine der Formen kennt, erkennt die anderen nicht wieder.
-   **Abhilfe:** `git repack -A -d` (die `-A`-Form, damit unerreichbare Objekte
-   lose werden statt verworfen).
+   schreibt `loose-<Hash>.pack`. **Was der Lauf dann tut, hängt davon ab, was
+   der unsichtbare Pack verschluckt — und es sind drei verschiedene Ausgänge,
+   nicht einer:**
+
+   | Verschluckt | Ausgang |
+   | --- | --- |
+   | eine ganze Referenz, ein Commit, ein Blob (BASE oder HEAD), der BASE-Tree | **Exit 2** mit `… nicht auflösbar` / `… nicht lesbar` |
+   | der **HEAD**-Tree des geschützten Verzeichnisses | **Exit 1** mit `core-drift-vcs` *„gelöscht oder umbenannt"* — **eine Fehldiagnose**: laut, aber inhaltlich falsch |
+   | der **BASE**-Tree, **ohne Pendant** auf der Gegenseite (Verzeichnis gelöscht/umbenannt) | **Exit 0, 0 Befunde** — die Löschung erreicht die Änderungsliste nie |
+
+   **Die dritte Zeile ist weiterhin offen** und als
+   [`CO-001`](../../docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md)
+   geführt: Der Tree-Walker der Bibliothek macht aus einem nicht ladbaren
+   Unterbaum ein `io.EOF`, die Änderung entsteht also **vor** jeder Stelle, an
+   der dieses Modul prüfen könnte. Gemessen ist auch, dass der naheliegende
+   Wachposten nicht trägt: `tree.Files()` benutzt denselben Walker und
+   schweigt ebenso. **Abhilfe für alle drei:** `git repack -A -d` (die
+   `-A`-Form, damit unerreichbare Objekte lose werden statt verworfen).
 
    **Die dritte Form gab es bis slice-218 nicht — dort war der Lauf still
    grün, in zwei Ausprägungen.** go-git meldet ein *unlesbares* Objekt mit
@@ -76,8 +87,16 @@ Eine gelöschte oder umbenannte `Accepted`-ADR ist ein **FAIL**.
 
    **Geprüft sind die drei Diff-Zustände, die das Modul kennt** (`A`, `M`,
    `D`); alle drei fassen den BASE-Stand jetzt über denselben Adapter-Pfad an.
-   Das ist die Menge, über die hier geurteilt wird — nicht „jeder denkbare
-   Repo-Zustand".
+   **Das deckt aber nur, was im Diff ankommt** — die dritte Tabellenzeile oben
+   entsteht davor und bleibt offen. Das ist die Menge, über die hier geurteilt
+   wird; „jeder denkbare Repo-Zustand" wäre eine andere Aussage.
+
+   **Und die Gegenrichtung hat einen Preis, der hierher gehört:** Weil ein
+   Eintrag ohne Datei-Inhalt befundfrei bleibt, geht auch der Fall durch, in
+   dem eine `Accepted`-ADR am geschützten Pfad durch einen **Gitlink** ersetzt
+   wird — sie ist dann verschwunden, und niemand meldet es. Das ist kein
+   Neuzugang dieses Slice (der Vor-Fix-Stand schwieg ebenso), aber die Regel
+   sanktioniert es jetzt ausdrücklich, und deshalb steht es hier.
 
    **Für gepinnte Konsumenten gilt das noch nicht:** Wer ein veröffentlichtes
    Image ab `v0.75.0` abwärts fährt, hat den stillen Pfad weiterhin — geführt
