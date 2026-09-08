@@ -102,6 +102,32 @@ hinterher.
 1. **Frozen-Klassen auflisten** — über die Eigenschaft *„würde ein
    korrigierter Wert verfälschen, was dieses Artefakt zu seinem Datum
    festgehalten hat?"*, nicht über Verzeichnisnamen.
+
+**Ausgeführt am 2026-09-08, vor der ersten Ersetzung.** 108 Dateien nennen
+`v6.5.0`, mit 299 Vorkommen:
+
+| Klasse | Dateien | Pfad-Verweise | nur Versionsnennung | Behandlung |
+|---|---|---|---|---|
+| vendorter Baum | 28 | 29 | 0 | wird **ersetzt** |
+| `done/`-Slice (Lauf-Beleg) | 12 | 16 | 39 | **eingefroren** |
+| Review-Report (Lauf-Beleg) | 14 | 16 | 93 | **eingefroren** |
+| `CHANGELOG.md` (Versions-Historie) | 1 | 0 | 1 | **eingefroren** |
+| Register-Beleg (ab Merge unveränderlich) | 1 | 1 | 0 | **eingefroren** |
+| **lebend** | 52 | **77** | **28** | retargeten |
+
+**Die Einteilung ist die Eigenschaft, nicht der Pfad** — und der erste Versuch
+über Verzeichnismuster fiel durch, er warf alles in eine Klasse. Das ist der
+Grund für [`MR-070`](../../../../harness/conventions.md#mr-070) und hier
+gleich wieder belegt.
+
+**Zwei Zahlen tragen den Rest des Slice.** Die **33** eingefrorenen
+Pfad-Verweise werden beim Entfernen des Baums zu `target-missing` und brauchen
+den elften `ignore-refs`-Eintrag — `.d-check.yml` führt bereits zehn, von
+`v1.4.0` bis `v6.3.1` ([`MR-069`](../../../../harness/conventions.md#mr-069)).
+Die **28** lebenden **Versionsnennungen ohne Pfad** sind die gate-blinde
+Prosa-Klasse: Jede einzelne ist ein Urteil — Gegenwarts-Aussage (heben) oder
+Vergangenheits-Aussage (stehen lassen). **Keine ADR nennt `v6.5.0`**, die
+immutable Klasse ist also gar nicht betroffen.
 2. **Delta messen, nicht beurteilen:** `diff -I '<!-- Quelle:'` gegen den
    alten Baum — die Herkunftszeile in Zeile 3 jeder Regelwerk-Datei trägt den
    Tag und meldete sonst *jede* Datei als geändert. Die Liste wandert in den
