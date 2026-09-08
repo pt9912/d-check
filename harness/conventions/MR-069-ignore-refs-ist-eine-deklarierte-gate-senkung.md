@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:**
-  [`grundlagen-harness-dateien.md` §harness/README.md als Einstiegspunkt](../../.harness/baseline/v6.5.0/regelwerk/grundlagen-harness-dateien.md#harnessreadmemd-als-einstiegspunkt) (Absatz *„Ein einfrierendes Artefakt nennt ein prozess-bewegtes bei seiner Kennung"* — eine Fett-Zeile, keine Überschrift, deshalb der Abschnitts-Anker)
+  [`grundlagen-harness-dateien.md` §harness/README.md als Einstiegspunkt](../../.harness/baseline/v6.6.0/regelwerk/grundlagen-harness-dateien.md#harnessreadmemd-als-einstiegspunkt) (Absatz *„Ein einfrierendes Artefakt nennt ein prozess-bewegtes bei seiner Kennung"* — eine Fett-Zeile, keine Überschrift, deshalb der Abschnitts-Anker)
   — keine Abweichung, sondern die **Einlösung** der dort verlangten
   Begründungslast: *„ein Ausnahme-Ventil im Prüfbereich, also eine
   Gate-Senkung mit eigener Begründungslast"*.

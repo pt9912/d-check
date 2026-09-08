@@ -3,7 +3,7 @@
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine — der Eintrag **ergänzt** die Baseline um
   einen Vorgang, den sie nicht führt. Die nächstgelegene Regel ist
-  [`grundlagen-harness-dateien.md` §harness/README.md als Einstiegspunkt](../../.harness/baseline/v6.5.0/regelwerk/grundlagen-harness-dateien.md#harnessreadmemd-als-einstiegspunkt)
+  [`grundlagen-harness-dateien.md` §harness/README.md als Einstiegspunkt](../../.harness/baseline/v6.6.0/regelwerk/grundlagen-harness-dateien.md#harnessreadmemd-als-einstiegspunkt)
   (Absatz *„Ein einfrierendes Artefakt nennt ein prozess-bewegtes bei seiner
   Kennung"*). Sie regelt die **Form eines Verweises**, geschrieben vom Autor im
   Moment des Schreibens. Dieser Eintrag regelt die **Ausschluss-Menge einer

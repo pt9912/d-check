@@ -182,7 +182,7 @@ structure:
     exempt-paths:
       - "docs/plan/planning/done/slice-0??-*"
       - "docs/plan/planning/done/slice-1[0-3]?-*"
-    # ZWEI FORMEN, EIN MUSTER (slice-208): Die Baseline v6.5.0 fuehrt den
+    # ZWEI FORMEN, EIN MUSTER (slice-208): Die Baseline v6.6.0 fuehrt den
     # Abschnitt als `## 6. Risiken und offene Punkte`, der eingefrorene
     # Bestand als `## 5. Abnahme-Punkte / Risiken`. Beide werden gehalten --
     # ein woertlicher `section:`-Schluessel deckte nach der Umbenennung nur

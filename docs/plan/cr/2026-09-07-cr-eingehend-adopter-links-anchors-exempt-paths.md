@@ -173,7 +173,7 @@ im Verzeichnis.
 
 **Hier gemessen, zur Einordnung:** Das vendorte Bundle liefert die **absolute**
 Form — alle **25** `Quelle:`-Kommentare unter
-`.harness/baseline/v6.5.0/regelwerk/`, und ebenso in den vier vorherigen
+`.harness/baseline/v6.6.0/regelwerk/`, und ebenso in den vier vorherigen
 Pin-Generationen (`v6.3.1`, `v6.0.0`, `v5.18.0`, `v5.15.0`, je Stichprobe an
 `modul-05`). Der Rückfall ist also **nicht** im ausgelieferten Bundle
 entstanden; wo er entstand, ist von hier aus nicht feststellbar und wird nicht

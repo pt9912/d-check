@@ -226,6 +226,16 @@ ignore-refs:
   # `citations` sieht sie nicht, weil `citations.scope` diese Verzeichnisse
   # ausnimmt; die Regel steht hier trotzdem, damit der naechste Bump sie nicht
   # wieder mithebt.
+  # Elfter Eintrag der Bump-Kette (MR-069, slice-222): der v6.5.0-Baum ist
+  # entfernt, zwei eingefrorene Artefakte zitieren ihn weiter. Beide sind
+  # LAUF-BELEGE -- slice-217 mass die Vorlage zu ihrem Stand, und der Beleg im
+  # Register haelt genau diese Messung fest. Ein Lift machte die Aussage still
+  # falsch (die v6.6.0-Vorlage fuehrt gar keine §4-Tabelle mehr), also bleibt
+  # der Pfad stehen und die Referenz-Pruefung wird fuer ihn ausgesetzt.
+  - in: docs/plan/planning/done/slice-217-tabellen-padding-harness-readme.md
+    refs: [".harness/baseline/v6.5.0/**"]
+  - in: docs/plan/planning/observations/BEO-ALL/form-vom-nachbarn-statt-von-der-vorlage/evidence/slice-217.md
+    refs: [".harness/baseline/v6.5.0/**"]
   - in: docs/plan/adr/0084-mentions-eigenes-modul.md
     refs: [".harness/baseline/v6.3.1/**"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze

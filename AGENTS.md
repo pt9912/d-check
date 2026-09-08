@@ -9,7 +9,7 @@ einhalten muss.
 
 Diese Datei trägt **Hard Rules und Pointer** auf die kanonischen Quellen und
 **dupliziert deren Inhalt nicht** — sonst entsteht Drift (Kanon:
-[`modul-09-implementierung.md` §AGENTS.md-Regeln](.harness/baseline/v6.5.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)).
+[`modul-09-implementierung.md` §AGENTS.md-Regeln](.harness/baseline/v6.6.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)).
 
 **Bei Konflikt gilt die höherrangige Quelle, und die niedriger rangierte wird
 angepasst** (Source Precedence — siehe
@@ -33,7 +33,7 @@ per `tools/harness/fetch-baseline-cache.sh` (`--verify` offline-Integrität;
 `--check-latest` = Currency- + Content-Drift-Audit ggü. Upstream, informativ/kein Gate,
 [`MR-022`](harness/conventions.md#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019); Tag aus §Baseline;
 Quelle ist das derivative Release-Bundle
-[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v6.5.0/lab-regelwerk.zip);
+[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v6.6.0/lab-regelwerk.zip);
 Pfadschema/Provenance siehe
 [`harness/conventions.md`](harness/conventions.md) §Adoptierte Konventions-Quellen,
 [`MR-019`](harness/conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)).
@@ -47,7 +47,7 @@ startet — nicht das gesamte Regelwerk im Kontext halten. **Breiterer
 Pflicht-Blick** bleibt bei: Bootstrap, Änderung an
 [`harness/conventions.md`](harness/conventions.md) (Adaptionen `MR-<NNN>`,
 Source-Precedence, ID-Schema) und dem Drift-Audit gegen die Baseline
-([`modul-02-harness-bootstrap.md` §Freshness-Audit](.harness/baseline/v6.5.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)
+([`modul-02-harness-bootstrap.md` §Freshness-Audit](.harness/baseline/v6.6.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)
 — darunter die **Bestands-Stichprobe, die auch bei aktuellem Pin läuft**).
 Die **Skelett-Vorlagen** der Baseline liegen aus demselben self-contained Bundle
 **committet vendored** unter `.harness/baseline/<tag>/templates/` (parallel zum
@@ -296,14 +296,14 @@ Zustandsfelder (unten). **Ein Kommentar beschreibt, was da ist**
 (Baseline-Merksatz). Er
 beantwortet in Code, Konfiguration oder Skript, was der Code nicht
 beantworten kann — **Zusage · Kopplung · Abgrenzung · Rang-Zeiger ·
-Grenze** ([Baseline §Was ein Kommentar trägt](.harness/baseline/v6.5.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte)).
+Grenze** ([Baseline §Was ein Kommentar trägt](.harness/baseline/v6.6.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte)).
 Keine Review-Historie und keine Review-Befund-Marker, keine Deliberation
 über Verworfenes, keine Herkunfts-Prosa, keine Slice-Nummern und keine
 Mess-Labels; Herkunft nur als **ein** auflösbares Feld nach dem
 Baseline-Schema (`DC-*` — die Baseline-Form `LH-*` —, `ADR-*`, `MR-*`,
 `seit welle-<NN>`). Der Reviewer-Skill trägt den HIGH-Anker dazu.
 
-**Zustandsfelder** (seit dem v5.9.0-Bump) sind Zustands-Artefakte wie der
+**Zustandsfelder** sind Zustands-Artefakte wie der
 Kommentar, nur im Rumpf — sie tragen **nicht** dessen fünf Klassen, sondern
 eine **eigene Form**; übertragen sind die **zwei Tests**: Adressat ist, wer
 den Zustand liest, um zu handeln, und die Zeitform ist der Indikativ über das,
@@ -326,7 +326,7 @@ bleiben, wie sie sind — sie sind eingefrorene Lauf-Belege, ihr
 Lifecycle-Zustand ist ohnehin das Verzeichnis, und das Feld hat dort keine
 Funktion (§5). Gemeldet wird von ihnen nur, was dem Verzeichnis
 **widerspricht**. Kanon:
-[Baseline §Was ein Kommentar trägt](.harness/baseline/v6.5.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
+[Baseline §Was ein Kommentar trägt](.harness/baseline/v6.6.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
 
 **Kein Gate prüft das** — weder die fünf Klassen noch die Zustandsfeld-Form;
 die Prüfung ist ein Urteil, kein `grep`. Der Reviewer-Skill trägt dazu **zwei**
@@ -336,11 +336,8 @@ HIGH-Anker.
 geschriebene Kommentare (Test-Kommentare; ältere Config-Kommentare mit
 Slice-Nummer) sind grandfathered — geräumt wird beim nächsten Anfassen
 der Zeile; Neuzugänge fallen überall unter den Anker. **Für Zustandsfelder
-gibt es keine Bestandsgrenze:** der vorhandene Bestand wird mit dem
-v5.9.0-Bump umgestellt, nicht grandfathered. *(Hard Rule seit
-dem v5.6.0-Bump, geschärft mit dem v5.7.0-Bump auf die
-Baseline-Feld-Formen und mit dem v5.9.0-Bump auf Zustandsfelder;
-Auflösungs-Trigger: permanent.)*
+gibt es keine Bestandsgrenze:** der vorhandene Bestand ist
+umgestellt, nicht grandfathered. *(Auflösungs-Trigger: permanent.)*
 
 ### 3.8 Ein Modul verspricht nur über das, was es scannt
 
@@ -432,7 +429,7 @@ Gates sind die häufigste Form von Harness-Lüge.
 | `make baseline-freshness`    | Upstream-Audit des Baseline-Pins: neuerer Release-Tag **oder unbestimmter Currency-Stand** (Pin nicht in der Liste — beides Exit 3, `seit slice-215`), gelesen aus der Release-**Liste** — nicht `releases/latest`, das Prereleases überspringt) + Content-Drift am gepinnten Tag. **Netz**, fail-open (Ausfall ⇒ `SKIP` je Teil), bewusst **nicht** in `gates`/`ci` — der netzlose innere Lauf ist eine Eigenschaft dieses Repos, keine Zusage des Produkts; gerufen vom Nachtlauf ([`upstream-drift.yml`](.github/workflows/upstream-drift.yml)). Meldet nur — die Hebung bleibt ein bewusster Akt |
 | `make nightly-state` | **Lese-Schritt, kein Gate:** liest den Ausgang des jüngsten Laufs **beider** Nachtläufe über die GitHub-API und sagt, ob er gelesen werden muss — die **dritte Vorprüfung** der Slice-Planung ([`MR-053`](harness/conventions.md#mr-053), §5). **Netz**, fail-open, **immer Exit 0**: der Ausgang steht in der **Ausgabe**, damit kein Exit-Code ihn verdeckt. Netzlos prüfbar über `--parse` und `--selftest`. Vier benannte Grenzen: [`harness/sensors/nightly-state.md`](harness/sensors/nightly-state.md) |
 | `make hooks` | Installiert die lokalen git-Hooks (`core.hooksPath` → `.githooks`): `commit-msg`-Traceability sowie `pre-commit` mit ADR-Immutable (Modul `vcs`), dem vollen `doc-check` als Doku-Guard und dem **Slice-Closure-Übergangs-Wächter**, der bei einem gestagten Übergang nach `done/` zusätzlich `make verify-closure-notes` auslöst. **Opt-in pro Klon**, und `--no-verify` umgeht den lokalen Hook — nicht die PR-/Push-CI. Die drei Teile, ihre Grenzen und die ADR-Kette: [`harness/sensors/hooks.md`](harness/sensors/hooks.md) |
-| `make completeness-check`    | Requirements-Completeness-Gate **via in-Produkt-Flag** `--trace --require-complete` (≥1 Waise ⇒ Exit 1, mit `WAISE`-Zeilen + Anzahl); **Closure-Bindepunkt** (in `make fullbuild`, **nicht** `gates`/`ci`) ([ADR-0026](docs/plan/adr/0026-completeness-in-product-gate.md) löst die Skript-Mechanik von [ADR-0017](docs/plan/adr/0017-requirements-completeness-gate.md) ab; [`DC-FA-CLI-011`](spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)) |   <!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:146-146 -->
+| `make completeness-check`    | Requirements-Completeness-Gate **via in-Produkt-Flag** `--trace --require-complete` (≥1 Waise ⇒ Exit 1, mit `WAISE`-Zeilen + Anzahl); **Closure-Bindepunkt** (in `make fullbuild`, **nicht** `gates`/`ci`) ([ADR-0026](docs/plan/adr/0026-completeness-in-product-gate.md) löst die Skript-Mechanik von [ADR-0017](docs/plan/adr/0017-requirements-completeness-gate.md) ab; [`DC-FA-CLI-011`](spec/lastenheft.md#dc-fa-cli-011--vollständigkeits-prüfung-als-opt-in-exit-code)) |   <!-- d-check:cite .harness/baseline/v6.6.0/regelwerk/modul-05-planning-harness.md:146-146 -->
 | `make verify-closure-notes` | Struktur des `done/`-Bestands am **Closure-Bindepunkt**: Closure-Notizen und Register-Deckung (`planning`), Abschnitts-Invarianten samt DoD-Haken (`structure`), Fence-/Span-Artefakte (`spans`), Review-Deckung (`reviews`). Darunter die **urteilsfreie Hälfte der Drei-Ausgänge-Regel** des Baseline-Regelwerks (`modul-05`: *„Ein Slice geht nicht nach `done/`, während ein Risiko ohne Ausgang dasteht"*) — **ob** ein eingetragener Ausgang inhaltlich trägt, bleibt Urteil. Eigenes `--config`-Profil ([`.d-check.closure.yml`](.d-check.closure.yml)); in `make fullbuild`, bewusst **nicht** in `gates`/`ci`. Grund-Codes, **sieben** Grenzen und ihre Begründungen: [`harness/sensors/verify-closure-notes.md`](harness/sensors/verify-closure-notes.md) |
 | `make fullbuild`             | volle Closure: gates + image-test + bench + completeness-check + verify-closure-notes, schließt mit dem Image-Hash                                                                                                                                                                             |
 | `make image-test`            | [`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)-Akzeptanzkriterien gegen das lokale Image (nativ vs. Container)                                                                                                                |
@@ -488,7 +485,7 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   schärfen die Spezifikation, nicht das Lastenheft). Der
   Anlege-Prozess (Akzeptanzkriterien-Trio, Versions-Bump + Historie,
   Beleg-Pflicht) folgt dem Baseline-Regelwerk
-  ([`modul-03-spec`](.harness/baseline/v6.5.0/regelwerk/modul-03-spec.md)); das
+  ([`modul-03-spec`](.harness/baseline/v6.6.0/regelwerk/modul-03-spec.md)); das
   repo-spezifische ID-Schema steht in `spec/lastenheft.md` §3.
 - Neue ADRs müssen den ADR-Index aktualisieren.
 - Neue ADRs tragen die Sektion `## Re-Evaluierungs-Trigger` (oder „permanent");
@@ -609,7 +606,7 @@ Sensors-Tabelle in [`harness/README.md`](harness/README.md).
   keiner ist; das macht die Klasse beim Schreiben unsichtbar und im Review
   auffindbar. Urteil, kein `grep`; der Reviewer-Skill trägt den Anker dazu.
   Kanon:
-  [`grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz](.harness/baseline/v6.5.0/regelwerk/grundlagen-source-precedence.md)
+  [`grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz](.harness/baseline/v6.6.0/regelwerk/grundlagen-source-precedence.md)
   — dort als Frage an **jede** zitierte Aussage, hier als operative Form für den
   Implementer. *(Hard Rule aus dem Steering Loop,
   [`BEO-ALL/citation-stretched-beyond-scope`](docs/plan/planning/observations/BEO-ALL/citation-stretched-beyond-scope/observation.md),
@@ -640,7 +637,7 @@ Pro Slice:
    gebunden: Er darf die Abgrenzung nicht ausweiten, weder still noch
    begründet. Wer im Lauf etwas mitnimmt, das der Plan ausschließt, hat den
    **Plan geändert** — und das gehört vor den Code, nicht in den Bericht
-   danach. Der Abschnitt heißt in der Baseline-Form `v6.5.0` §1 *Ziel und
+   danach. Der Abschnitt heißt in der Baseline-Form `v6.6.0` §1 *Ziel und
    Abgrenzung*; der eingefrorene Bestand führt ihn als §3 (Kanon:
    Baseline-Regelwerk `modul-09-implementierung.md` §Minimal Agent Workflow).
 5. Engsten nützlichen Sensor laufen lassen.

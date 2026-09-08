@@ -2,7 +2,7 @@
 
 Verzeichnis-Form seit `v6.0.0` (migriert in slice-195; vorher eine Tabelle
 an dieser Stelle, `observations.md`). Regeln: Baseline-Regelwerk
-[`modul-06-roadmap.md`](../../../../.harness/baseline/v6.5.0/regelwerk/modul-06-roadmap.md)
+[`modul-06-roadmap.md`](../../../../.harness/baseline/v6.6.0/regelwerk/modul-06-roadmap.md)
 §Das Beobachtungs-Register.
 
 Je Beobachtung ein Verzeichnis `BEO-<KUERZEL>/<slug>/` mit drei Dateien,
@@ -15,7 +15,7 @@ Zähler ist die Zahl dieser Dateien, kein gepflegtes Feld).
 **Wer schreibt:** die Slice-Closure — neues Verzeichnis oder eine weitere
 Evidence-Datei. **Wer liest:** die Welle-Closure (Lese-Schritt bei 3×,
 ohne Wellen-Betrieb löst die Slice-Closure selbst aus) und die
-Slice-Planung (Sichtungs-Schritt darunter, im Abschnitt der **vorgelagerten Prüfungen** jedes Slice-Plans — Baseline-Form `v6.5.0` §8, Haus-Form des eingefrorenen Bestands §7).
+Slice-Planung (Sichtungs-Schritt darunter, im Abschnitt der **vorgelagerten Prüfungen** jedes Slice-Plans — Baseline-Form `v6.6.0` §8, Haus-Form des eingefrorenen Bestands §7).
 
 **Gestrichen heißt nicht gelöscht** — das Verzeichnis bleibt liegen,
 `state.md` trägt `gestrichen` mit Begründung; wer still löscht, macht eine

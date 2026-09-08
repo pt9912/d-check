@@ -1,1 +1,1 @@
-../../.harness/baseline/v6.5.0/regelwerk/grundlagen-traceability.md
+../../.harness/baseline/v6.6.0/regelwerk/grundlagen-traceability.md

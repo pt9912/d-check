@@ -249,7 +249,7 @@ zwei kanonischen und, als Adaption, den Nachtlauf-Stand
 
 **Vorgelagert — Sub-Area-Wahl prüfen:**
 
-<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:268-269 -->
+<!-- d-check:cite .harness/baseline/v6.6.0/regelwerk/modul-05-planning-harness.md:268-269 -->
 
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
@@ -259,7 +259,7 @@ Konfigurations-Regel; `tools/harness/` ist nicht berührt.
 
 **Vorgelagert — offene Beobachtungen sichten:**
 
-<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:274-274 -->
+<!-- d-check:cite .harness/baseline/v6.6.0/regelwerk/modul-05-planning-harness.md:274-274 -->
 
 > **Offene Beobachtungen sichten.** Das
 

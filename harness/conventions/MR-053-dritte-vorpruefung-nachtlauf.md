@@ -6,7 +6,7 @@
   Nachtlauf — er kann ihn nicht vorsehen. Dieser Eintrag ergänzt einen dritten
   Block; die Form-Frage tritt die Rangliste an diesen Speicher ab.
 - **Datum:** 2026-08-27
-- **Geltungsbereich:** jeder Slice-Plan dieses Repos, im Abschnitt der **vorgelagerten Prüfungen** (Baseline-Form `v6.5.0`: §8 *Sub-Area-Prüfungen und Modus-Begründung*, unbedingter Kopf; Haus-Form des eingefrorenen Bestands: §7 *Vorgelagert*). Der Block
+- **Geltungsbereich:** jeder Slice-Plan dieses Repos, im Abschnitt der **vorgelagerten Prüfungen** (Baseline-Form `v6.6.0`: §8 *Sub-Area-Prüfungen und Modus-Begründung*, unbedingter Kopf; Haus-Form des eingefrorenen Bestands: §7 *Vorgelagert*). Der Block
   entsteht **spätestens bei der Beanspruchung** (`open`→`in-progress` bzw.
   `next`→`in-progress`) — wie das `**Verantwortlich:**`-Feld; ein Plan in
   `open/` trägt ihn noch nicht. Kein
