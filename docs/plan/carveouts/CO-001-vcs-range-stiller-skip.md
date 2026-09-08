@@ -146,4 +146,4 @@ der ihn ausdrückt. Er beschreibt einen Zustand des gepinnten Images.
 
 | Datum | Ereignis | Verweis |
 |---|---|---|
-| 2026-09-08 | Angelegt | [slice-218](../planning/in-progress/slice-218-go-git-pack-namenskonvention.md) |
+| 2026-09-08 | Angelegt | [slice-218](../planning/done/slice-218-go-git-pack-namenskonvention.md) |

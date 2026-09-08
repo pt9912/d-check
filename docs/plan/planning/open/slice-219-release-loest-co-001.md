@@ -21,7 +21,7 @@ Auflösung dieser Slice trägt.
 
 ## 1. Ziel und Abgrenzung
 
-**Ziel.** Der Fix aus [slice-218](../in-progress/slice-218-go-git-pack-namenskonvention.md)
+**Ziel.** Der Fix aus [slice-218](../done/slice-218-go-git-pack-namenskonvention.md)
 erreicht das **publizierte** Image, und
 [`CO-001`](../../carveouts/CO-001-vcs-range-stiller-skip.md) wird aufgelöst.
 Solange das nicht geschehen ist, fährt jeder Konsument mit gepinntem
