@@ -132,7 +132,8 @@ welcher Begründung entschieden wurde. Ob daraus eine Adaption wird, ist offen.
 **Vorschlag A angenommen**, umgesetzt als
 [`DC-FA-MENT-001`](../../../spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in)
 (Modul `mentions`, opt-in) mit [ADR-0084](../adr/0084-mentions-eigenes-modul.md).
-**Vorschlag B zurückgestellt**, nicht abgelehnt — der CR nennt ihn selbst
+**Vorschlag B zurückgestellt**, nicht abgelehnt (Wiedervorlage-Bedingung
+unten nachgetragen) — der CR nennt ihn selbst
 nachrangig, und er löst nur den **deklarierten** Fall: Er findet, was jemand
 schon als Kante gepflegt hat, und damit gerade nicht die unbekannte Lücke, die
 den Anlass produziert hat.
@@ -177,3 +178,34 @@ des Arguments wird dadurch stärker, nicht schwächer.
 
 Die **Implementierung** — Modul, Grund-Codes, Konfigurations-Schema — liegt in
 einem Folge-Slice. Diese Ablage trägt den Entscheid, nicht die Lieferung.
+
+### Wiedervorlage-Bedingung für Vorschlag B (nachgetragen 2026-09-08)
+
+**Der Entscheid ließ B ohne Bedingung liegen, und das ist derselbe Mangel, den
+dieses Repo anderswo als Regel führt.** *„Zurückgestellt"* ohne einen Anlass,
+zu dem jemand wieder hinsieht, ist von *„vergessen"* nicht zu unterscheiden —
+Baseline-Regelwerk `modul-13-quality-gates.md` §Hard Rule sagt es für Hard
+Rules, [ADR-Re-Evaluierungs-Trigger](../adr/README.md) für ADRs, und ein
+Carveout trägt seit je einen. **Ein zurückgestellter CR-Teil hatte diese
+Pflicht bisher nicht; hier bekommt er sie.**
+
+**Drei Bedingungen, jede einzeln hinreichend:**
+
+1. **Ein zweiter Adopter meldet denselben Fall** — ein Ist-Dokument, das die
+   Kennungen seiner Anforderungen aus einem **Sachgrund** nicht tragen soll.
+   Ein Fall ist ein Anlass; zwei sind ein Muster, und erst dann trägt die
+   Mengen-Frage, an der B hängt.
+2. **Dieses Repo konfiguriert `trace.coverage`** — heute tut es das nicht
+   ([`DC-FA-COV-001`](../../../spec/lastenheft.md#dc-fa-cov-001--kuratierte-coverage-quellen-der-rtm-tracecoverage-opt-in)
+   ist strikt opt-in, und der `trace:`-Block führt den Schlüssel nicht).
+   Solange es keinen eigenen Konsumenten gibt, wäre B eine Fähigkeit ohne
+   Dogfooding.
+3. **`mentions` erweist sich als unzureichend für den Anlass** — also der Fall
+   tritt erneut auf und die mit A gelieferte Achse fängt ihn nicht. Das wäre
+   der stärkste Grund, weil er die Entscheidung von damals widerlegt statt sie
+   zu ergänzen.
+
+**Kein Sensor wacht über die drei**, und das ist die benannte Grenze: Sie sind
+Bedingungen für eine Wiedervorlage, kein Trigger mit Wächter. **Der Unterschied
+zu vorher ist trotzdem real** — vorher gab es nichts, woran ein späterer Lauf
+den Fall wiedererkennen könnte.
