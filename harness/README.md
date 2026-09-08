@@ -34,32 +34,32 @@ Baseline-Skelett am Ende — der Einstieg gehört an den Anfang:
 
 ## Source precedence
 
-| Rang | Datei                                                                                       | Charakter                                                                                                                 |
-| ---- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| 1    | [`spec/lastenheft.md`](../spec/lastenheft.md)                                               | vertraglich abnahmebindend                                                                                                |
-| 2    | [`spec/spezifikation.md`](../spec/spezifikation.md)                                         | technisch fortschreibbar                                                                                                  |
-| 3    | [`spec/architecture.md`](../spec/architecture.md)                                           | Komponenten/Sequenzen, meilensteinfrei                                                                                    |
-| 4    | [`docs/plan/adr/`](../docs/plan/adr/)                                                       | Architekturentscheidungen                                                                                                 |
-| 5    | [`docs/plan/planning/in-progress/roadmap.md`](../docs/plan/planning/in-progress/roadmap.md) | Wellen-Sequenzierung (offene Wellen derivativ)                                                                                                            |
-| 6    | [`docs/user/`](../docs/user/)                                                               | Operations, Releasing (löst [`MR-009`](conventions.md#mr-009--source-precedence-ohne-docsuser-rang) auf) |
-| 7    | [`README.md`](../README.md)                                                                 | Projekt-Überblick                                                                                                         |
-| 8    | [`AGENTS.md`](../AGENTS.md)                                                                 | Agent-Briefing                                                                                                            |
-| 9    | diese Datei                                                                                 | Harness-Einstieg                                                                                                          |
+| Rang | Datei | Charakter |
+| --- | --- | --- |
+| 1 | [`spec/lastenheft.md`](../spec/lastenheft.md) | vertraglich abnahmebindend |
+| 2 | [`spec/spezifikation.md`](../spec/spezifikation.md) | technisch fortschreibbar |
+| 3 | [`spec/architecture.md`](../spec/architecture.md) | Komponenten/Sequenzen, meilensteinfrei |
+| 4 | [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
+| 5 | [`docs/plan/planning/in-progress/roadmap.md`](../docs/plan/planning/in-progress/roadmap.md) | Wellen-Sequenzierung (offene Wellen derivativ) |
+| 6 | [`docs/user/`](../docs/user/) | Operations, Releasing (löst [`MR-009`](conventions.md#mr-009--source-precedence-ohne-docsuser-rang) auf) |
+| 7 | [`README.md`](../README.md) | Projekt-Überblick |
+| 8 | [`AGENTS.md`](../AGENTS.md) | Agent-Briefing |
+| 9 | diese Datei | Harness-Einstieg |
 
 ## Guides (Feedforward-Quellen)
 
-| Quelle                                                                                                                 | Inhalt                                                                                                                                                                                                                                                                                                                                     |
-| ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [`spec/lastenheft.md`](../spec/lastenheft.md)                                                                          | Anforderungen (`DC-FA-*`, `DC-QA-*`), Akzeptanzkriterien                                                                                                                                                                                                                                                                                   |
-| [`spec/spezifikation.md`](../spec/spezifikation.md)                                                                    | Algorithmen, Schemas (`--json`, `.d-check.yml`), Defaults, Grund-Codes                                                                                                                                                                                                                                                                     |
-| [`spec/architecture.md`](../spec/architecture.md)                                                                      | Hexagon-Schnitt (Rollen), Zugriffs-Constraints, Sequenzen                                                                                                                                                                                                                                                                                  |
-| [`docs/plan/adr/`](../docs/plan/adr/)                                                                                  | Architekturentscheidungen                                                                                                                                                                                                                                                                                                                  |
-| [`docs/plan/planning/`](../docs/plan/planning/)                                                                        | Slice-Pläne und Roadmap                                                                                                                                                                                                                                                                                                                    |
-| [`AGENTS.md`](../AGENTS.md)                                                                                            | Hard Rules, Source Precedence, Workflow                                                                                                                                                                                                                                                                                                    |
-| [`conventions.md`](conventions.md)                                                                                     | repo-lokale Strukturregeln, Adaptions-Block (`MR-*`), Modus-Deklarationen                                                                                                                                                                                                                                                                  |
+| Quelle | Inhalt |
+| --- | --- |
+| [`spec/lastenheft.md`](../spec/lastenheft.md) | Anforderungen (`DC-FA-*`, `DC-QA-*`), Akzeptanzkriterien |
+| [`spec/spezifikation.md`](../spec/spezifikation.md) | Algorithmen, Schemas (`--json`, `.d-check.yml`), Defaults, Grund-Codes |
+| [`spec/architecture.md`](../spec/architecture.md) | Hexagon-Schnitt (Rollen), Zugriffs-Constraints, Sequenzen |
+| [`docs/plan/adr/`](../docs/plan/adr/) | Architekturentscheidungen |
+| [`docs/plan/planning/`](../docs/plan/planning/) | Slice-Pläne und Roadmap |
+| [`AGENTS.md`](../AGENTS.md) | Hard Rules, Source Precedence, Workflow |
+| [`conventions.md`](conventions.md) | repo-lokale Strukturregeln, Adaptions-Block (`MR-*`), Modus-Deklarationen |
 | [`.harness/baseline/v6.5.0/regelwerk/`](../.harness/baseline/v6.5.0/regelwerk/) | adoptiertes Betriebsregelwerk der Baseline (committet vendored, netzlos; die dortige `README.md` ist der Index), pro Session **nur den benötigten Abschnitt** lesen — nach Modulen + Grundlagen aufgeteilt, vendored aus dem self-contained [`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v6.5.0/lab-regelwerk.zip) ([`MR-019`](conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017), Layout [`MR-023`](conventions.md#mr-023--baseline-pin-hebung-auf-v500-samt-self-contained-bundle-layout)); das frühere separate `agents-regelwerk.md` ist im Kurs abgelöst; derivativ — Stand siehe [`conventions.md` §Baseline](conventions.md#baseline) |
-| [`.harness/skills/reviewer.md`](../.harness/skills/reviewer.md)                                                        | Reviewer-Skill: Kategorien-Anker, Output-Schema, Negativbefund-Pflicht; ein Report pro Lauf unter [`docs/reviews/`](../docs/reviews/)                                                                                                                                                                                                      |
-| [`.harness/skills/closure-note-reviewer.md`](../.harness/skills/closure-note-reviewer.md)                              | Closure-Note-Reviewer-Skill: die **semantische** Schicht über dem strukturellen `make verify-closure-notes` — prüft *Inhalt vs. Floskel* (Lernsignal · Folge-Slice · Architektur-Beobachtung) und meldet ausdrücklich **nicht** doppelt, was das Gate bereits abdeckt |
+| [`.harness/skills/reviewer.md`](../.harness/skills/reviewer.md) | Reviewer-Skill: Kategorien-Anker, Output-Schema, Negativbefund-Pflicht; ein Report pro Lauf unter [`docs/reviews/`](../docs/reviews/) |
+| [`.harness/skills/closure-note-reviewer.md`](../.harness/skills/closure-note-reviewer.md) | Closure-Note-Reviewer-Skill: die **semantische** Schicht über dem strukturellen `make verify-closure-notes` — prüft *Inhalt vs. Floskel* (Lernsignal · Folge-Slice · Architektur-Beobachtung) und meldet ausdrücklich **nicht** doppelt, was das Gate bereits abdeckt |
 
 ## Sensors (Feedback-Gates)
 
