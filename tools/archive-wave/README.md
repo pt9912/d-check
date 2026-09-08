@@ -46,7 +46,7 @@ Bediener statt an eine feste Image-UID.
 
 In d-check selbst delegiert `make archive-wave WELLE=welle-42 [APPLY=1]`
 (bzw. `make archive-wave-test`) an genau dieses lokale Makefile — eine
-Quelle für den Docker-Aufruf, kein Duplikat (siehe `AGENTS.md` §4).
+Quelle für den Docker-Aufruf, kein Duplikat (siehe `harness/README.md` §Sensors).
 
 ## Grenzen
 

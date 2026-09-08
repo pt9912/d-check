@@ -29,27 +29,44 @@
   ansteht.
 
   **Vier Spiegel-Klassen, drei davon gate-blind**
-  ([`BEO-ALL/pin-bump-mirrors-ungated`](../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)):
-  108 Dateien nannten `v6.5.0` mit 299 Vorkommen. Retargetet wurden 77
-  Pfad-Verweise in 52 lebenden Dateien plus fünf Release-/Tree-URLs und sieben
-  Prosa-Nennungen; **stehen geblieben** sind die eingefrorenen (28 Dateien,
-  166 Vorkommen) sowie fünf bewusste Vergangenheits-Aussagen — der
-  `ignore-refs`-Tombstone, das wörtliche Fremdzitat eines Adopters im CR und
-  dreimal [`MR-067`](../conventions.md#mr-067), der die v6.5.0-Hebung **ist**.
+  ([`BEO-ALL/pin-bump-mirrors-ungated`](../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)).
+  **Die Form der Zählung steht neben der Zahl**, sonst ist sie beliebig:
+  *Vorkommen* meint jedes einzelne Auftreten der Zeichenkette (`grep -ro`),
+  nicht die Zeile; *Pfad-Verweis* ein Vorkommen mit unmittelbar
+  vorausgehendem `baseline/` — die **weite** Form, weil die enge
+  (`.harness/baseline/…`) die relativen Schreibweisen übersieht.
 
-  **Zwei Fehler der mechanischen Ersetzung sind dabei aufgetreten und
-  behoben** — beide von der Beobachtung vorhergesagt: eine **Über-Hebung**
-  (der Geltungsbereich von `MR-067` sagte plötzlich `v6.6.0`, obwohl der
-  Eintrag die v6.5.0-Hebung beschreibt) und eine **übersehene Form** (die
-  relative Schreibweise `../baseline/v6.5.0/` <!-- d-check:ignore (der Baum ist mit diesem Eintrag entfernt) --> in
+  Gemessen am Vorzustand: 108 Dateien nannten `v6.5.0` mit **315** Vorkommen
+  auf 302 Zeilen. **Lebend** waren 52 Dateien mit 87 Pfad-Verweisen und 30
+  reinen Versionsnennungen, darunter **sieben** Release-/Tree-/Blob-URLs;
+  **eingefroren** 28 Dateien mit 169 Vorkommen, dazu die 29 Nennungen im
+  vendorten Baum, die mit ihm verschwanden. **Stehen geblieben** sind die
+  bewussten Vergangenheits-Aussagen — der `ignore-refs`-Tombstone, das
+  wörtliche Fremdzitat eines Adopters im CR und
+  [`MR-067`](../conventions.md#mr-067), der die v6.5.0-Hebung **ist**.
+
+  **Drei Fehler der mechanischen Ersetzung sind aufgetreten und behoben**, die
+  ersten beiden von der Beobachtung vorhergesagt: eine **Über-Hebung** (der
+  Geltungsbereich von `MR-067` sagte plötzlich `v6.6.0`, obwohl der Eintrag die
+  v6.5.0-Hebung beschreibt), eine **übersehene Form** (die relative
+  Schreibweise `../baseline/v6.5.0/` <!-- d-check:ignore (der Baum ist mit diesem Eintrag entfernt) --> in
   [`.harness/skills/reviewer.md`](../../.harness/skills/reviewer.md), die das
-  Muster `.harness/baseline/v6.5.0/` nicht traf).
+  Muster `.harness/baseline/v6.5.0/` nicht traf) und eine **stehengebliebene
+  URL** in [`harness/README.md`](../README.md), die auf den `v6.6.0`-Baum
+  zeigte und im selben Satz das `v6.5.0`-Release-Asset nannte — vom Review
+  gefunden, nicht vom Lauf.
 
   **`ignore-refs` wächst um einen elften Eintrag**
-  ([`MR-069`](../conventions.md#mr-069)): zwei eingefrorene Lauf-Belege aus
-  slice-217 zitieren die entfernte `README`-Vorlage des alten
-  Baums. Ein Lift machte ihre Aussage still falsch — die v6.6.0-Vorlage führt
-  gar keine §4-Tabelle mehr, gegen die slice-217 gemessen hatte.
+  ([`MR-069`](../conventions.md#mr-069)) — **bemessen an den Befunden, nicht an
+  den Verweisen**: Ein Lauf ohne ihn meldet **4** Befunde, alle vier
+  `target-missing` auf dieselbe Datei, die `README`-Vorlage des alten Baums.
+  Die 35 eingefrorenen Pfad-Verweise insgesamt sagen darüber nichts — ein
+  Verweis feuert, wenn ein Modul ihn auflöst, und die übrigen sind
+  `d-check:cite`-Direktiven in ausgenommenen Verzeichnissen oder stehen in
+  Inline-Code. Beide ausgenommenen Artefakte sind **Lauf-Belege**: slice-217
+  maß das Zellen-Padding gegen die Tabellen **jener** Vorlage. Ein Lift zeigte
+  auf einen anderen Gegenstand als den gemessenen — die v6.6.0-Vorlage führt
+  40 Tabellenzeilen statt 39 —, ohne dass es auffiele.
 
   **Die `d-check:cite`-Spannen brauchten kein Neu-Ankern**
   ([`MR-051`](../conventions.md#mr-051)) — vier Direktiven zeigen in geänderte

@@ -336,8 +336,9 @@ HIGH-Anker.
 geschriebene Kommentare (Test-Kommentare; ältere Config-Kommentare mit
 Slice-Nummer) sind grandfathered — geräumt wird beim nächsten Anfassen
 der Zeile; Neuzugänge fallen überall unter den Anker. **Für Zustandsfelder
-gibt es keine Bestandsgrenze:** der vorhandene Bestand ist
-umgestellt, nicht grandfathered. *(Auflösungs-Trigger: permanent.)*
+gibt es keine Bestandsgrenze:** auch Altbestand fällt unter die Form — bis
+auf die oben benannte Ausnahme wird nichts grandfathered.
+*(Auflösungs-Trigger: permanent.)*
 
 ### 3.8 Ein Modul verspricht nur über das, was es scannt
 
@@ -410,11 +411,20 @@ oder zum Carveout. **Diese Datei führt die Liste nicht.**
 
 **Kein Target nennen, das im Makefile nicht existiert — auch nicht in Prosa.**
 Halluzinierte Gates sind die häufigste Form von Harness-Lüge
-(Baseline-Regelwerk `modul-13-quality-gates.md`). Maschinell gehalten wird das
-von `make gate-consistency` in **beide** Richtungen: ein im Index behauptetes
-`make X` ohne Makefile-Regel meldet `gate-phantom`, eine Makefile-Regel ohne
-Index-Eintrag `gate-undocumented`
+(Baseline-Regelwerk `modul-13-quality-gates.md`). **Gedeckt ist davon die
+Tabellen-Hälfte**, und `make gate-consistency` hält sie in **beide**
+Richtungen: ein im Index behauptetes `make X` ohne Makefile-Regel meldet
+`gate-phantom`, eine Makefile-Regel ohne Index-Eintrag `gate-undocumented`
 ([`DC-FA-TGT-001`](spec/lastenheft.md#dc-fa-tgt-001--deklarations-konsistenz-zwischen-doku-und-build-targets-modul-targets-opt-in)).
+
+**Die Prosa-Hälfte trägt kein Mechanismus** — das Modul `targets` liest als
+Doku-Target nur `` `make X` `` in Zeilen, deren erstes Zeichen `|` ist, und
+seit der Umstellung auf den einen Index nur noch in
+[`harness/README.md`](harness/README.md); **diese Datei ist weder Scan-Ziel
+noch Autorität**. Ein erfundenes Target im Fließtext — hier oder anderswo —
+erzeugt null Befunde. Das ist §3.8 auf diesen Sensor angewandt: er verspricht
+nur über seine Scan-Menge. *(Auflösungs-Trigger: permanent — die Prosa-Hälfte
+zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
 
 ## 5. Dokumentations-Regeln
 

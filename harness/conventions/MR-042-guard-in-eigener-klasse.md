@@ -38,7 +38,7 @@
   falschen Pfad, der Wert bliebe ungelesen). Alle drei enden mit Exit 3. Das ist
   die gefährlichste Klasse, weil das Ergebnis wie ein Urteil aussieht.
 
-  **Die Proben sind ein `make`-Target** ([`AGENTS.md`](../../AGENTS.md) §4,
+  **Die Proben sind ein `make`-Target** ([`harness/README.md`](../README.md) §Sensors,
   `make guard-probe`), kein Gate: der Wächter ist eine Werkzeug-Einstellung, und
   ein Gate darüber wäre eine Zusage, die ein Lauf ohne dieses Werkzeug nicht
   hält. Ohne wiederholbare Proben wäre seine Zusage aber eine Erinnerung.

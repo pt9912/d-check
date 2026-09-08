@@ -3,8 +3,8 @@
 ## Vertrag
 
 Meta-Gate gegen die häufigste Form der Harness-Lüge: ein dokumentiertes Gate,
-das es nicht gibt. Der cross-repo-Kern — in [`AGENTS.md`](../../AGENTS.md) §4
-und in der Sensors-Tabelle dokumentierte `make X` ↔ Makefile-Regeln, **beide
+das es nicht gibt. Der cross-repo-Kern — die in [`harness/README.md`](../README.md)
+§Sensors dokumentierten `make X` ↔ Makefile-Regeln, **beide
 Richtungen** — läuft via Modul `targets` (Image, dogfood). Der
 
 ## Grenze — was das Grün nicht abdeckt

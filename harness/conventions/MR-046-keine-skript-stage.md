@@ -59,8 +59,7 @@
   **Tritt später ein Fall auf, ist er ein Entscheid.** Eine vierte Toolchain
   entsteht nicht nebenbei: sie bräuchte einen digest-gepinnten Pin, ein
   `make`-Target, die Deklaration in
-  [`AGENTS.md`](../../AGENTS.md) §4 und
-  [`harness/README.md`](../README.md), und sie zöge die drei Pin-Spiegel-Klassen
+  [`harness/README.md`](../README.md) §Sensors, und sie zöge die drei Pin-Spiegel-Klassen
   aus [`BEO-ALL/pin-bump-mirrors-ungated`](../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md) nach sich.
 
   **Und die Form wäre offen, nicht vorgegeben.** Die zwei jüngsten

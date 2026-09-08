@@ -227,11 +227,18 @@ ignore-refs:
   # ausnimmt; die Regel steht hier trotzdem, damit der naechste Bump sie nicht
   # wieder mithebt.
   # Elfter Eintrag der Bump-Kette (MR-069, slice-222): der v6.5.0-Baum ist
-  # entfernt, zwei eingefrorene Artefakte zitieren ihn weiter. Beide sind
-  # LAUF-BELEGE -- slice-217 mass die Vorlage zu ihrem Stand, und der Beleg im
-  # Register haelt genau diese Messung fest. Ein Lift machte die Aussage still
-  # falsch (die v6.6.0-Vorlage fuehrt gar keine §4-Tabelle mehr), also bleibt
-  # der Pfad stehen und die Referenz-Pruefung wird fuer ihn ausgesetzt.
+  # entfernt. Vier Verweise werden dadurch target-missing -- gemessen, nicht
+  # geschaetzt (Lauf ohne diesen Eintrag: 4 Befunde). ALLE VIER zeigen auf
+  # dieselbe Datei, templates/harness/README.template.md, und beide Artefakte
+  # sind LAUF-BELEGE: slice-217 mass das Zellen-Padding gegen die Tabellen
+  # JENER Vorlage, der Register-Beleg haelt genau diese Messung fest. Die
+  # v6.6.0-Vorlage fuehrt 40 Tabellenzeilen statt 39 -- ein Lift zeigte auf
+  # einen anderen Gegenstand als den gemessenen, ohne dass es auffiele.
+  # Die uebrigen eingefrorenen Nennungen des alten Baums brauchen den Eintrag
+  # NICHT: die 24 in done/ sind d-check:cite-Direktiven (citations.scope nimmt
+  # diese Verzeichnisse aus), die sieben in docs/reviews/ stehen in Inline-Code
+  # und Fences. Ein Verweis feuert, wenn ein Modul ihn aufloest -- nicht, weil
+  # die Zeichenkette dasteht.
   - in: docs/plan/planning/done/slice-217-tabellen-padding-harness-readme.md
     refs: [".harness/baseline/v6.5.0/**"]
   - in: docs/plan/planning/observations/BEO-ALL/form-vom-nachbarn-statt-von-der-vorlage/evidence/slice-217.md
@@ -811,14 +818,17 @@ planning:
 # (NICHT in der modules-Liste oben, daher im Default-doc-check inert). Hermetisch
 # (Filesystem-Port, kein git/Netz/Makefile-Ausführen): ein in einer Doku-Tabellen-
 # zeile behauptetes `make X` ohne Makefile-Regel ⇒ gate-phantom; jede Makefile-
-# Regel ohne Eintrag in der Autoritäts-Doku (AGENTS.md §4) ⇒ gate-undocumented.
-# exempt-targets bleibt leer — d-check dokumentiert alle Targets in AGENTS.md §4
-# (die erschöpfende Prüfung des abgelösten gate-consistency.sh-Kerns). Löst den
-# Doku-↔-Makefile-Kern von tools/gate-consistency.sh ab (ADR-0031).
+# Regel ohne Eintrag in der Autoritaets-Doku (harness/README.md §Sensors) ⇒
+# gate-undocumented. exempt-targets bleibt leer -- d-check dokumentiert alle 54
+# Targets in harness/README.md §Sensors, dem EINEN Gate-Index (MR-071, aus der
+# adoptierten Vorlage: "Der Gate-Index steht einmal ... Diese Datei fuehrt die
+# Liste nicht.") -- die erschoepfende Pruefung des abgeloesten
+# gate-consistency.sh-Kerns.
+# Loest den Doku-↔-Makefile-Kern von tools/gate-consistency.sh ab (ADR-0031).
 targets:
   makefiles: [Makefile]
-  doc-tables: [harness/README.md]                                       # der EINE Gate-Index (Baseline v6.6.0)
-  authority: harness/README.md                                          # dieselbe Datei — es gibt nur einen Index
+  doc-tables: [harness/README.md]                                       # der EINE Gate-Index (MR-071)
+  authority: harness/README.md                                          # dieselbe Datei -- es gibt nur einen Index
   exempt-targets: []
 
 # --trace ist ein Flag-Modus (DC-FA-CLI-009), KEIN --enable-Modul — steht daher
