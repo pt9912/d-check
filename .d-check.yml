@@ -817,8 +817,8 @@ planning:
 # Doku-↔-Makefile-Kern von tools/gate-consistency.sh ab (ADR-0031).
 targets:
   makefiles: [Makefile]
-  doc-tables: [AGENTS.md, harness/README.md]
-  authority: AGENTS.md
+  doc-tables: [harness/README.md]                                       # der EINE Gate-Index (Baseline v6.6.0)
+  authority: harness/README.md                                          # dieselbe Datei — es gibt nur einen Index
   exempt-targets: []
 
 # --trace ist ein Flag-Modus (DC-FA-CLI-009), KEIN --enable-Modul — steht daher

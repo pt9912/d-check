@@ -45,15 +45,41 @@ unverändert ist (Bytes == vendored `SHA256SUMS`).
    **gemessen und gelistet**, aber nicht beantwortet — *ein Folge-Slice
    übernimmt es*, und zwar mit einer Antwort je Regel (übernommen · nicht
    anwendbar mit Begründung · abweichend als Adaption).
-2. **Keine Template-Adoption.** Die neue `AGENTS.template.md` führt
-   **weniger Tabellen** (Auftraggeber-Information) — genau der Grund, aus dem
-   [slice-221](../next/slice-221-agents-md-tabellenzellen.md) nach `next/`
-   zurückging. **Dieser Slice übernimmt die Form nicht**; er macht sie nur
-   lesbar. *Es wäre ein anderer Vorgang*, und slice-221 wartet auf **ihn**,
-   nicht auf diesen hier.
+2. ~~**Keine Template-Adoption.**~~ **Aufgehoben — siehe Plan-Änderung
+   unten.**
 3. **slice-221 wird nicht angefasst.** Weder beansprucht noch nachgezogen —
    *Schicht-Abgrenzung*: Dieser Slice hebt einen Pin, er räumt keine Tabelle
-   auf.
+   auf. **Das gilt weiter**, auch nach der Plan-Änderung: Die §4-Tabelle
+   verschwindet **ganz**, statt gekürzt zu werden — damit erledigt sich
+   slice-221s Gegenstand, aber das zu entscheiden ist Sache jenes Slice.
+
+**Plan-Änderung (2026-09-08) — die Template-Adoption kommt hinzu.**
+Abgrenzung 2 schloss sie aus, mit der Begründung, der Bump sei mechanisch und
+die Adoption ein Urteil. **Der Auftraggeber hat widersprochen, und das
+Argument trägt:** *„Wenn wir AGENTS.md nicht anpassen würden, bräuchten wir
+nicht auf v6.6.0 umstellen."* Der gemessene Delta ist klein (sechs
+Regelwerk-Dateien), und seine **Schlagzeile ist genau diese Formänderung** —
+ein Pin ohne sie wäre eine Versionsnummer. Schwerer wiegt: `AGENTS.md`
+widerspräche der vendorten Vorlage, die **jeder Lauf** mitlädt.
+
+**Was übernommen wird**, wörtlich aus der neuen `AGENTS.template.md`: *„Der
+Gate-Index steht **einmal**, in `harness/README.md` §Sensors … Diese Datei
+führt die Liste nicht."* Dazu die Template-`.d-check.yml`, die für das Modul
+`targets` **beide** Schlüssel auf `harness/README.md` setzt.
+
+**Machbarkeit vorab gemessen, nicht angenommen:** 54 Makefile-Regeln, 54 in
+`harness/README.md` — keine Lücke in beide Richtungen. `exempt-targets` bleibt
+deshalb leer; die Autorität wechselt die Datei, nicht die Strenge.
+
+**Der Slice überschreitet damit die Ein-Sitzungs-Review-Grenze**
+([`MR-066`](../../../../harness/conventions.md#mr-066)). **Grund für die
+Nicht-Rückführung:** Bump und Adoption getrennt zu schneiden hieße, den
+Widerspruch zwischen Vorlage und `AGENTS.md` für die Dauer eines Slice stehen
+zu lassen — in der Datei, die jeder Lauf lädt. **Ersatz-Form der Prüfung,
+vorab benannt:** ein **Bruch-Test in beide Richtungen** am Autoritäts-Wechsel
+(ein erfundenes `make`-Target im neuen Index muss `gate-phantom` melden; eine
+Makefile-Regel ohne Index-Eintrag muss `gate-undocumented` melden), dazu der
+unabhängige Review über den Gesamt-Stand.
 4. **Kein Aufräumen der `ignore-refs`-Einträge.** Die Hebung **fügt** einen
    hinzu (der `v6.5.0`-Baum verschwindet, eingefrorene Artefakte zitieren ihn
    weiter); dass die Liste damit wächst, ist als deklarierte Gate-Senkung
