@@ -123,7 +123,7 @@ behaupten.
 | `make bench` | misst die Performance gegen ein generiertes Fixture (Median aus drei Läufen) | kein Gate, [`DC-QA-01`](../spec/lastenheft.md#dc-qa-01--performance) |
 | `make baseline-probe` | fährt die Alias-Auflösung von [`baseline-verify`](sensors/baseline-verify.md) gegen neun Proben | kein Gate · [`MR-055`](conventions.md#mr-055) |
 | `make trace` | gibt die Requirements-Traceability-Matrix auf stdout aus | kein Gate · [`DC-FA-CLI-009`](../spec/lastenheft.md#dc-fa-cli-009--requirements-traceability-matrix) |
-| `make archive-wave` | bewegt geschlossene Zeitdokumente ins Archiv und ersetzt sie durch Stubs; ohne `APPLY=1` wird nichts geschrieben | kein Gate |
+| [`make archive-wave`](sensors/archive-wave.md) | bewegt geschlossene Zeitdokumente ins Archiv und ersetzt sie durch Stubs; ohne `APPLY=1` wird nichts geschrieben | kein Gate |
 | `make tidy` | pflegt `go.mod`/`go.sum` in Docker — bewusster Akt am Dependency-Stand | kein Gate |
 | `make build` | baut das Runtime-Image — Prerequisite von `image-test` und damit von `ci`/`fullbuild` | kein Gate |
 | `make run` | Selbst-Smoke-Test des gebauten Images | kein Gate |

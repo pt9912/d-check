@@ -36,6 +36,13 @@ statt stillschweigend übergangen zu werden.
 
 ## Bindung
 
-Bestandteil von `make gates`.
-[ADR-0072](../../docs/plan/adr/0072-workflows-modul.md) ·
+Bestandteil von `make gates`; die Regel selbst steht in
+[`AGENTS.md`](../../AGENTS.md) §3.9.
+[ADR-0072](../../docs/plan/adr/0072-workflows-modul.md) — löst die
+Skript-Mechanik von
+[ADR-0071](../../docs/plan/adr/0071-lokale-workflow-referenz-rechte-pruefung.md)
+ab, die die **Rechte**-Prüfung lokaler Referenzen überhaupt erst einführte;
+davor prüfte das Target nur die Existenz des Ziels ·
+[ADR-0068](../../docs/plan/adr/0068-lokale-workflow-referenzen-ohne-pin.md) —
+die Ausnahme für lokale Referenzen, die keinen SHA tragen können ·
 [`DC-FA-WF-001`](../../spec/lastenheft.md#dc-fa-wf-001--deklarations-konsistenz-von-workflow-referenzen-modul-workflows-opt-in)

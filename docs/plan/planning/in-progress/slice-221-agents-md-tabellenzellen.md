@@ -35,9 +35,25 @@ dorthin, wo sie ohnehin hingehört — `harness/sensors/<target>.md`. Ein neuer
 | Größe | **69,6 KB**, 660 Zeilen | 23,7 KB, 233 Zeilen |
 | davon Tabellen | **42 %** | 67 % |
 | längste Zelle | **4090 Zeichen** | 817 Zeichen |
-| §4-Tabelle | 43 Zeilen, **27 607 Zeichen**, Median 374 | — |
+| §4-Tabelle | **41** Target-Zeilen, **24 526** Zeichen Inhalt | — |
 | Zellen > 1000 Zeichen | **8** | 0 |
-| Zellen ≤ 200 Zeichen | **2** von 43 | — |
+| Zellen 401–1000 | **12** | — |
+| Zellen ≤ 200 Zeichen | **14** von 41 | — |
+
+**Die erste Fassung dieser Tabelle nannte drei falsche Zahlen**, und der
+Fehler gehört hierher, weil er den Gegenstand dieses Slice betrifft: Sie
+sprach von *„43 Zeilen, 27 607 Zeichen, 2 Zellen ≤ 200"*. Gezählt hatte sie
+Kopf- und Trennzeile mit — und, schwerer, das **Spalten-Padding** als Inhalt.
+Die §4-Tabelle ist nämlich gepaddet, mit **3122** Füll-Zeichen; zwölf Zeilen
+maßen dadurch identische 244 Zeichen, was erst beim Blick auf die
+Trefferliste auffiel. **Die Arbeit ist damit kleiner, als der Plan zunächst
+behauptete:** Ein Drittel der Zellen ist schon kurz, die Substanz sitzt in
+etwa zwanzig Zeilen.
+
+**Das Padding verschwindet als Nebenwirkung, nicht als Ziel.** Wer eine Zelle
+kürzt, schreibt ihre Füllung ohnehin neu; die entstehende Form ist die
+schlanke aus [slice-217](../done/slice-217-tabellen-padding-harness-readme.md),
+nicht eine neu ausgerichtete.
 
 **Drei Gründe, warum das mehr kostet als Platz.** Erstens wird `AGENTS.md`
 über `CLAUDE.md`s `@AGENTS.md` in **jeden** Lauf importiert — die 69,6 KB sind
@@ -72,10 +88,21 @@ größten Zellen** gehören dazu. Die eine Ausnahme unter den Großen ist
    steht, steht danach in der Sensor-Datei — vollständig. Wer kürzen will,
    was inhaltlich überflüssig ist, führt ein Urteil je Satz; das ist
    *ein anderer Vorgang* — *Schicht-Abgrenzung*.
-3. **`harness/README.md` wird nicht angefasst.** Seine Sensors-Tabelle hat
-   eine eigene `structure`-Regel mit `cell-min-chars` und eine andere Rolle.
-   Ob **sie** zu lang ist, ist **nicht gemessen** und wird hier nicht
-   gemessen — *ein Folge-Slice übernähme es*.
+3. **`harness/README.md` wird nicht gekürzt.** Seine Sensors-Tabelle hat eine
+   eigene `structure`-Regel mit `cell-min-chars` und eine andere Rolle. Ob
+   **sie** zu lang ist, ist **nicht gemessen** und wird hier nicht gemessen —
+   *ein Folge-Slice übernähme es*.
+
+   **Eine schmale Ausnahme, deklariert statt im Bericht nachgereicht** (seit
+   der `archive-wave`-Zeile): Entsteht für ein Target eine **neue**
+   Sensor-Datei, bekommt seine Zeile dort den Link darauf — ein Zeichen-Zuwachs
+   von etwa dreißig. Der Grund ist keine Bequemlichkeit, sondern die Kante:
+   Der Bestand verlinkt jedes Werkzeug auf seine Sensor-Datei, sobald es eine
+   gibt (`guard-probe` tut es); ohne Nachzug bliebe genau die schale Kante
+   stehen, die
+   [`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
+   führt und die §8 als **tragenden** Eintrag dieses Slice benennt. **Gekürzt
+   wird die Datei trotzdem nicht.**
 4. **Keine Änderung an `gate-consistency` oder der Autoritäts-Rolle.** Alle
    54 Target-**Namen** bleiben in §4; nur ihre Beschreibungen schrumpfen.
    *Bestand bleibt bewusst stehen.*
