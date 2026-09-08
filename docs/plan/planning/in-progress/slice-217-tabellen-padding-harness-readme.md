@@ -32,20 +32,30 @@ Form wie die drei übrigen Tabellen derselben Datei (§Sensors, §Werkzeuge,
 §Gate-Taxonomie) **und wie die Baseline-Vorlage**
 [`harness/README.template.md`](../../../../.harness/baseline/v6.5.0/templates/harness/README.template.md).
 
-**Der Anlass ist gemessen, nicht ästhetisch.** Von **4737** Padding-Zeichen
-stehen **3394 in der jeweils letzten Spalte** — dort, wo hinter dem Pipe
-nichts mehr folgt, das ausgerichtet werden könnte. Die restlichen 1297 richten
-aus, aber unvollständig: Z. 43, 44, 60 und 62 brechen die Ausrichtung bereits
-heute, Z. 60 sogar am **inneren** Pipe. Eine Ausrichtung, die vier von 23
-Zeilen nicht einhalten, ist keine mehr; sie kostet nur noch.
+**Der Anlass ist gemessen, nicht ästhetisch.** Die zwei Tabellen tragen **46
+Leerzeichen-Läufe** von je zwei oder mehr Zeichen vor einem Pipe. Die Läufe
+umfassen zusammen 4737 Zeichen; **überflüssig** sind davon **4691**, denn je
+Lauf bleibt eines als Zell-Begrenzung stehen (§3 definiert die Klasse so, und
+nur diese Zahl ist gegen sie gemessen). Von den 4691 stehen **3394 in der
+jeweils letzten Spalte** — dort, wo hinter dem Pipe nichts mehr folgt, das
+ausgerichtet werden könnte. Die restlichen 1297 richten aus, aber
+unvollständig: Z. 43, 44, 60 und 62 brechen die Ausrichtung bereits heute,
+Z. 60 sogar am **inneren** Pipe. Eine Ausrichtung, die vier von 23 Zeilen
+nicht einhalten, ist keine mehr; sie kostet nur noch.
 
-**Die Form-Frage ist an der Vorlage geklärt, nicht am Nachbarn.** Die
-Baseline-Vorlage führt **39** Tabellenzeilen mit **null** Padding (Trenner
-`|---|---|---|`). Das Entpadden bewegt diese Datei also **zur** Vorlage hin.
-Ohne diese Prüfung wäre der Slice eine Angleichung an den lokalen Bestand
-gewesen — genau der Fehler, den
-[`rule-drawn-from-occasion-not-inventory`](../observations/BEO-ALL/rule-drawn-from-occasion-not-inventory/observation.md)
-führt.
+**Die Vorlage klärt das Padding — den Trenner-Abstand klärt sie nicht.** Die
+Baseline-Vorlage
+[`harness/README.template.md`](../../../../.harness/baseline/v6.5.0/templates/harness/README.template.md)
+führt **39** Tabellenzeilen mit **null** Padding; das Entpadden bewegt diese
+Datei also **zur** Vorlage hin, und das ist die tragende Aussage. **Ihre
+Trennzeilen lauten aber `|---|---|---|` ohne Leerzeichen**, während dieser
+Slice `| --- | --- | --- |` setzt — die Form der drei übrigen Tabellen
+derselben Datei. **Das ist eine bewusste Wahl, keine Übernahme aus
+Bequemlichkeit:** Die verkörperte Form führt gegenüber der Referenz-Form
+([`AGENTS.md`](../../../../AGENTS.md) §1), und eine Datei, die zwei
+Trenner-Stile nebeneinander führte, hätte gegen den Zweck dieses Slice
+gearbeitet. **Gesagt werden muss es trotzdem** — die erste Fassung dieses
+Absatzes schrieb den Trenner der Vorlage zu und hatte ihn vom Nachbarn.
 
 **Abgrenzung — vier Punkte, jeder mit Grund:**
 
@@ -74,15 +84,23 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       gezählt wird** — was genau ein überflüssiges Leerzeichen ist und was
       nicht. Die Trefferliste wird stichprobenweise dagegen gehalten, nicht
       nur ihre Zahl gelesen.
-- [ ] **(2)** §Source precedence und §Guides tragen die schlanke Form:
-      genau ein Leerzeichen beidseits jedes Zellinhalts, Trenner `| --- |`.
-      Die drei übrigen Tabellen der Datei sind **unverändert**.
-- [ ] **(3)** **Die zwei gemessenen Konfigurations-Kanten sind nach der
-      Änderung nachweislich intakt** — mit echter Ausgabe, nicht mit einem
-      behaupteten Exit-Code: `make gate-consistency` (das Modul `targets`
-      liest `harness/README.md` als `doc-tables` und findet in §Guides
-      **ein** `make`-Target) und `make doc-check` (die `structure`-Regel auf
-      §Sensors mit `cell-min-chars`).
+- [ ] **(2)** §Source precedence und §Guides tragen die schlanke Form: **vor**
+      jedem Pipe genau ein Leerzeichen, Trenner `| --- |` (der Stil der drei
+      übrigen Tabellen, nicht der der Vorlage — §1 begründet die Wahl). Die
+      Klasse in §3 ist **einseitig**; dass danach auch **hinter** jedem Pipe
+      genau eines steht, folgt nicht aus ihr, sondern daraus, dass es
+      Links-Padding im Ausgangsstand **nicht gab** (gemessen: 0). Die drei
+      übrigen Tabellen der Datei sind **unverändert**.
+- [ ] **(3)** **Die tragende Konfigurations-Kante ist nach der Änderung
+      nachweislich intakt** — mit echter Ausgabe und **in beide Richtungen**:
+      `make gate-consistency` grün, **und** eine Positiv-Kontrolle, die zeigt,
+      dass das Modul `targets` die entpaddete Tabelle überhaupt noch liest
+      (ein Phantom-Target darin muss `gate-phantom` auslösen). Ohne die zweite
+      Richtung sagt das Grün nur, dass nichts gemeldet wurde. **Die zweite
+      Kante ist ausdrücklich schwächer:** die `structure`-Regel mit
+      `cell-min-chars` bindet §Sensors — einen Abschnitt, den dieser Slice
+      **nicht anfasst**. Ihr grüner Lauf ist über diese Änderung eine
+      Tautologie und wird nur gefahren, um die Datei als Ganzes zu belegen.
 - [ ] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
@@ -98,14 +116,27 @@ verlangt
 und die Regel hat sich in der Voruntersuchung dieses Slice bereits **zweimal
 bezahlt gemacht** (§6). Als *überflüssiges Leerzeichen* zählt:
 
-- ein Lauf von **zwei oder mehr** Leerzeichen unmittelbar vor einem `|`
-  innerhalb einer Tabellenzeile;
+- in einem Lauf von **zwei oder mehr** Leerzeichen unmittelbar **vor** einem
+  `|` alle Zeichen **außer dem letzten** — das letzte ist die Zell-Begrenzung
+  und bleibt;
 - in der Trennzeile die Bindestrich-Strecke über `---` hinaus.
 
 **Nicht** dazu zählt das **eine** Leerzeichen nach und vor einem `|` — das ist
-die übliche Zell-Begrenzung und steht auch in der Vorlage. Die Unterscheidung
-ist der ganze Punkt: Ein Muster, das *ein* Leerzeichen mitnimmt, trifft
-**jede** Tabellenzeile und liefert eine plausible, falsche Zahl.
+die übliche Zell-Begrenzung. Die Unterscheidung ist der ganze Punkt: Ein
+Muster, das *ein* Leerzeichen mitnimmt, trifft **jede** Tabellenzeile und
+liefert eine plausible, falsche Zahl. **Und sie muss bis in die Arithmetik
+durchgehalten werden:** Die erste Fassung nannte als Gesamtzahl die Summe der
+ganzen Läufe (4737) und daneben Teilzahlen, die je Lauf ein Zeichen abzogen
+(3394 + 1297 = 4691). Beide Zahlen waren richtig gemessen — nur maßen sie
+**zwei verschiedene Größen**, und die Summe ging um genau die Zahl der Läufe
+(46) nicht auf.
+
+**Die Klasse ist einseitig und deckt vier weitere Formen nicht** — jede davon
+im Ausgangsstand **selbst gemessen und bei null**, das Ergebnis steht also;
+gedeckt ist sie deshalb trotzdem nicht: Links-Padding (≥2 Leerzeichen **nach**
+einem `|`, 0), Zeilenende-Whitespace (0), Tabs in Tabellenzeilen (0) und
+`&nbsp;` (0). Wer die Klasse auf eine andere Datei anwendet, misst sie dort
+neu.
 
 **Gemessener Ausgangsstand** (gegen diese Form, Stichprobe geprüft):
 
