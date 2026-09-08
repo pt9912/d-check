@@ -62,14 +62,14 @@ Lücken** — das ist der Grund für diesen Slice und nicht nur für eine Zeile.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** Die **Inventur** liegt vor: je gepinntem Fremd-Artefakt **Ort**
+- [x] **(1)** Die **Inventur** liegt vor: je gepinntem Fremd-Artefakt **Ort**
       (im Repo / außerhalb), **Bindung** (Digest · Commit-SHA · Manifest),
       **Prüfzeitpunkt** (jeder Lauf · einmalig · nie) — aus der Konfiguration
       bzw. dem Skript gelesen, nicht aus der Prosa darüber
       ([`AGENTS.md`](../../../../AGENTS.md) §5, `seit slice-213`).
-- [ ] **(2)** Wo die Antwort in der Sensor-Beschreibung fehlt, steht sie dort —
+- [x] **(2)** Wo die Antwort in der Sensor-Beschreibung fehlt, steht sie dort —
       mit dem Zeitpunkt, nicht nur mit der Bindung.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
@@ -104,6 +104,48 @@ davon liegt außerhalb des Repos.**
 |---|---|---|
 | [`harness/sensors/semgrep.md`](../../../../harness/sensors/semgrep.md) | update | der Anlass: Bindung stark, Prüfzeitpunkt einmalig |
 | weitere Sensor-Dateien | update, wo die Antwort fehlt | Ergebnis von DoD (1) |
+
+### Die Inventur (DoD 1)
+
+**Gelesen aus Konfiguration und Skript**, nicht aus der Prosa darüber
+([`AGENTS.md`](../../../../AGENTS.md) §5, `seit slice-213`). **Sieben**
+Artefakte erfüllen die Form aus §3; die achte Zeile ist die Referenz-Antwort
+und zählt nicht mit.
+
+| Artefakt | Ort | Bindung | Prüfzeitpunkt |
+|---|---|---|---|
+| `golang`-Basis (`deps`) | außerhalb, Docker-Store | Digest im [`Dockerfile`](../../../../Dockerfile) | **jeder Image-Bau** (Docker rechnet den Digest nach) |
+| `golangci-lint`-Image | außerhalb, Docker-Store | Digest im `Dockerfile` | **jeder Image-Bau** |
+| `distroless`-Runtime | außerhalb, Docker-Store | Digest im `Dockerfile` | **jeder Image-Bau** |
+| `a-check`-Image | außerhalb, Docker-Store | Digest in [`a-check.mk`](../../../../a-check.mk) | **jeder Lauf** |
+| `semgrep`-Image | außerhalb, Docker-Store | Digest in [`tools/semgrep.sh`](../../../../tools/semgrep.sh) | **jeder Lauf** |
+| **`semgrep`-Regelset** | **außerhalb, unter dem Nutzer-Cache** | **git-Commit-SHA** | **einmalig** — danach nur Verzeichnis-Existenz |
+| vendorte Baseline | **im Repo**, `.harness/baseline/<tag>/` | `SHA256SUMS` (kommt mit dem Baum) | **jeder `make gates`** — Echtheit nur im Nachtlauf |
+| *(Referenz: Modul-Abhängigkeiten)* | *außerhalb, Modul-Cache* | *Prüfsummen-Datei des Moduls* | *jeder Bau, über den read-only-Schalter im `Dockerfile`* |
+
+**Zwei Artefakte fallen aus der Reihe, und zwar in entgegengesetzte
+Richtungen.**
+
+**Das `semgrep`-Regelset ist das einzige mit einmaligem Prüfzeitpunkt.** Der
+Bezug ist der stärkste im ganzen Bestand — ein git-Commit-SHA ist ein Hash über
+den **Baum**, nicht über eine mitgelieferte Liste —, aber er wird genau einmal
+eingelöst. Danach prüft das Skript nur noch, ob das Verzeichnis **existiert**.
+Wer den Cache danach ändert, wird von nichts bemerkt; er liegt außerhalb des
+Repos, also sieht ihn auch kein Gate, das den Arbeitsbaum prüft.
+
+**Die vendorte Baseline ist der Gegenfall** und in slice-212 gemessen: jeder
+Lauf, aber die Bindung kann die Echtheit nicht beweisen, weil das Manifest mit
+dem Baum kommt. **Zusammen ergeben die beiden die Achse dieses Slice** —
+*stark gebunden, selten geprüft* gegen *schwach gebunden, oft geprüft*.
+
+**Was gemessen ist und was nicht — die Grenze der Inventur.** Die
+Docker-Zeilen tragen *„Docker rechnet den Digest nach"*, und **das ist in
+diesem Repo nicht gemessen**, sondern die dokumentierte Eigenschaft des
+Werkzeugs; dasselbe gilt für die Modul-Prüfsummen. Gemessen sind hier **Ort
+und Bindung** (aus den Dateien gelesen) und der Prüfzeitpunkt **dort, wo ein
+eigenes Skript ihn setzt** — beim `semgrep`-Regelset und bei der vendorten
+Baseline. **Wo der Beleg von einem fremden Werkzeug kommt, steht das da**,
+statt als eigene Messung aufzutreten; §6 führt genau das als Risiko.
 
 ## 4. Trigger
 

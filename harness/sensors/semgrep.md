@@ -23,6 +23,19 @@ ohne Netz.
    [`make freshness-semgrep`](freshness-go.md) und `make semgrep-digest`
    gibt — **beide fail-open und außerhalb von `gates`**. Ein grüner Lauf sagt
    also „nichts nach dem gepinnten Regelstand", nicht „nichts Bekanntes".
+3. **Der Regel-Cache wird genau einmal geprüft — beim Holen.** Der Bezug läuft
+   über einen **git-Commit-Pin**, und das ist die **stärkste** Bindung im
+   ganzen Pin-Bestand dieses Repos: Ein Commit-SHA ist ein Hash über den
+   **Baum**, nicht über eine Liste, die mit ihm geliefert wird. **Danach prüft
+   ihn nichts mehr.** Die Bedingung für einen erneuten Bezug ist die
+   **Existenz** des Cache-Verzeichnisses; wer seinen Inhalt anschließend
+   ändert, wird von nichts bemerkt. Der Cache liegt **außerhalb des Repos**,
+   also sieht ihn auch kein Gate, das den Arbeitsbaum prüft — er ist das
+   einzige gepinnte Fremd-Artefakt dieses Repos, auf das das zutrifft.
+   **Umgekehrt zu [`baseline-verify`](baseline-verify.md):** dort jeder Lauf,
+   aber die Bindung beweist die Echtheit nicht; hier beweist sie sie, und der
+   Lauf prüft nicht. Permanent, solange der einmalige Bezug die gewollte
+   Eigenschaft ist ([ADR-0010](../../docs/plan/adr/0010-semgrep-hermetisches-gate.md)).
 
 **Wie groß der Ausschnitt ist, sagt das Kommando:** Der Lauf nennt die Zahl
 der gescannten Dateien und Regeln in seiner Zusammenfassung.
