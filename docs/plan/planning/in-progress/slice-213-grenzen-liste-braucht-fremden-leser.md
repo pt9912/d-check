@@ -62,11 +62,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Review sie sieht.
 - [x] **(3)** Der Registereintrag trägt den Ausgang mit auflösbarem Zielort.
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
 
@@ -160,22 +160,102 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   dreimal aufgetreten ist. Der Beleg muss aus dem **Wortlaut** kommen, nicht
   aus der Absicht — sonst ist es
   [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
-  in seiner teuersten Form. — **Ausgang:** \<offen\>
+  in seiner teuersten Form. — **Ausgang:** entfallen — die bequeme Antwort ist
+  nicht gegeben worden, und der unabhängige Review hat es geprüft: Die
+  Ja-Hälfte ist **keine Dehnung** (ein allgemeiner Satz auf einen Fall, den
+  sein Wortlaut umfasst), die Nein-Hälfte **keine künstliche Verengung** (§6
+  kennt keinen Vertrags-Umkehr-Schritt). **Der Beleg kam aus dem Wortlaut**,
+  wie das Risiko es verlangt hat. Das Risiko kann nicht mehr eintreten: Die
+  Frage ist entschieden und die Entscheidung geprüft.
 - **Zwei der drei Belege sind nachgetragen.** Sie stammen aus den
   Review-Reports von slice-209 und slice-210, nicht aus einer Rekonstruktion —
   aber sie wurden geschrieben, **nachdem** die Klasse benannt war. Wer eine
   Klasse benennt und dann rückwärts Belege sammelt, findet sie. Die
   Kennzeichnung steht in den Dateien; ob die Schwelle damit **gültig** erreicht
-  ist, gehört geprüft und nicht vorausgesetzt. — **Ausgang:** \<offen\>
+  ist, gehört geprüft und nicht vorausgesetzt. — **Ausgang:** entfallen — und
+  zwar durch eine **vierte** Instanz, die im Lauf entstand statt nachgetragen
+  zu werden: Der Slice gab der neuen Regel eine Grenzen-Aussage mit **einer**
+  Grenze, und der Review fand zwei weitere, die der Slice anderswo bereits
+  wusste. **Die Schwelle ruht damit nicht mehr auf zwei rückwärts gesammelten
+  Belegen.** Der unabhängige Review hat zusätzlich geprüft, ob die beiden
+  nachgetragenen hergeben, was ihnen zugeschrieben wird — sie tun es, gedeckt
+  durch die Reports von slice-209 und slice-210.
 - **Eine vierte Instanz wäre der bessere Beleg als eine dritte nachgetragene.**
   Der Eintrag ist mit diesem Zuschnitt an der Schwelle, nicht darüber. Trägt
   die Regel, entscheidet die nächste Grenzen-Liste, die jemand schreibt.
-  — **Ausgang:** \<offen\>
+  — **Ausgang:** entfallen — die vierte Instanz ist da, und sie ist die
+  aussagekräftigste der vier: Sie entstand an dem Artefakt, das die Klasse
+  **benennt**, geschrieben von jemandem, der sie zu diesem Zeitpunkt kannte.
+  **Damit ist die Frage beantwortet, ob die Regel trägt** — sie hat ihren
+  eigenen Autor nicht davor bewahrt, und genau das ist ihre erste Grenze.
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** Eine **geteilt** beantwortete Vorfrage (DoD 1), die Regel für
+den Teil, den [`AGENTS.md`](../../../../AGENTS.md) §6 **nicht** trägt — in §5
+mit drei Grenzen und als Anker 18 im Reviewer-Skill (1.16.0) —, und der
+Registereintrag auf *verkörpert* (DoD 2/3). Ein unabhängiger Review,
+blockierend, sechs MEDIUM und ein LOW. `make gates` grün (zehn Gates, 730
+Dateien).
 
+**Was funktioniert hat: die Vorfrage hat die Regel halbiert.** Ohne sie wäre
+der volle zweistufige Ableiter als Regel gelandet. Gemessen am **Wortlaut**
+trägt §6 den zweiten Teil bereits — *„Kein Self-Review — anderer Kontext findet
+andere Findings"* —, und eine zweite Regel daneben wäre eine zweite Quelle für
+dieselbe Aussage. **Geschrieben ist nur, was nirgends sonst steht.** Der Review
+hat beide Hälften geprüft: keine Dehnung, keine künstliche Verengung.
+
+**Was Friktion war, und es ist die Pointe dieses Slice: die neue Regel tat
+dreimal selbst, wogegen sie geschrieben ist.**
+
+- **Ihre Grenze war aus einer Beschreibung abgeleitet, nicht aus dem Beleg.**
+  Sie sagte, den fremden Leser richte §6 ein *„und er hat in allen sieben
+  Fällen gefunden"*. Die eigene Evidence-Datei sagt wörtlich das Gegenteil: Die
+  Echtheits-Lücke fand der **Auftraggeber**, *„nicht ein Review und kein
+  Gate"*. Aus *„nicht der Autor"* war *„§6s Leser"* geworden — und **genau
+  dieser Satz begründete, Teil 2 nicht zu schreiben**.
+- **Ihre Zahl hielt nicht.** *„Sieben von sieben stand die Lücke im
+  Vertrags-Teil"* — bei `review-coverage` stand sie **nur im Code**, und der
+  Vertrags-Text sagte das Gegenteil des Verhaltens. Sechs von sieben; die
+  siebte ist der Fall, für den die **zweite** Regelhälfte existiert.
+- **Ihre Grenzen-Liste war unvollständig** — zwei Grenzen, die der Slice an
+  anderer Stelle bereits wusste, standen nicht in ihr.
+
+**Steering-Loop-Lerneintrag: die vierte Instanz ist da, und sie ist die
+aussagekräftigste.**
+[`grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md)
+stand bei 3×, zwei davon nachgetragen — §6 dieses Plans nannte das als Risiko
+und eine vierte, im Lauf entstandene Instanz als den besseren Beleg. **Sie ist
+eingetreten, an dem Artefakt, das die Klasse benennt, geschrieben von jemandem,
+der sie kannte.** Damit ist auch die Frage beantwortet, ob die Regel trägt: Sie
+hat ihren eigenen Autor nicht davor bewahrt — und genau das ist ihre erste
+Grenze, die jetzt in ihr steht.
+
+**Ein zweiter Lerneintrag, den der Review als Kandidat markiert hat.** Die
+`state.md` des Registereintrags wurde **vollständig überschrieben** statt
+geändert — und holte dabei die Chronik-Hälfte zurück, die der Review des
+Vorgängers zwei Commits zuvor hatte entfernen lassen. Dazu der Zähler, der im
+Kopf `10×` und in §8 `9×` stand. **Beides dieselbe Wurzel** — eine Stelle
+geändert, ihre Geschwister nicht gelesen — und die **dritte** Meldung in drei
+aufeinanderfolgenden Slices; eingetragen bei
+[`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md).
+**Wer eine Datei ersetzt statt sie zu ändern, verliert jede fremde Korrektur
+darin, ohne es zu merken.**
+
+**Was offen bleibt.** Die Regel ist an **Sensor-Beschreibungen** belegt, nicht
+an Grenzen-Listen überhaupt — das steht in ihr und im Register. Und ``semgrep``s
+Regel-Cache ohne `SHA256SUMS`-Gegenstück ist weiterhin benannt, nicht
+aufgelöst (Beobachtung des slice-212-Reviews).
+
+**Die drei Paarungen, gemessen.** **(a) Anker** — `AGENTS.md` §5 und Anker 18
+des Reviewer-Skills tragen `seit slice-213`, beide lösen auf, der
+Registereintrag nennt beide. **(b) Folge-Slice** — keiner genannt; nichts wurde
+auf später verwiesen. **(c) Register** — alle zitierten Pfade lösen auf, die
+drei neuen Belege liegen als `evidence/slice-213.md` in ihren Verzeichnissen.
+Der Wachposten
+[`kanal-kennung-als-inhalt-gelesen`](../observations/BEO-ALL/kanal-kennung-als-inhalt-gelesen/observation.md)
+trägt weiterhin kein `evidence/` — unverändert die benannte Spannung aus
+slice-208.
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
