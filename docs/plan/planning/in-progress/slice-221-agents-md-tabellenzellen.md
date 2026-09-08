@@ -168,6 +168,33 @@ Schritt 1 zeigt, dass mehr als etwa ein Dutzend Targets eine **neue**
 Sensor-Datei brauchen — dann ist der Slice keine Umschichtung mehr, sondern
 das Anlegen einer Doku-Ebene, und das ist ein anderer Zuschnitt.
 
+**Tatsächlich gezogen: `in-progress→next` am 2026-09-08 — aus einem Grund, den
+keine der beiden Bedingungen unten vorsah.** Der Kanon verlangt deshalb, ihn
+**beim Übergang** nachzutragen (Baseline-Regelwerk
+`modul-05-planning-harness.md` §Lifecycle als State Machine: die Bedingung
+vorab, der Grund im Nachhinein).
+
+**Der Grund:** Upstream existiert **`v6.6.0`**, und die neue
+`AGENTS.template.md` führt **weniger Tabellen**
+(Auftraggeber-Information, am Sensor bestätigt: `make baseline-freshness`
+meldet den neuen Release, der gepinnte Tag ist inhaltlich unverändert). Damit
+leitet dieser Slice seine **Zielform aus dem Bestand** ab, während eine
+neuere **Vorlage** existiert, die niemand gelesen hat — wörtlich
+[`form-vom-nachbarn-statt-von-der-vorlage`](../observations/BEO-ALL/form-vom-nachbarn-statt-von-der-vorlage/observation.md),
+einen Tag nach dessen Anlage. Konkret betroffen ist die
+`cell-max-chars`-Regel: Sie bewacht eine **Tabelle**, die die Zielform
+womöglich nicht mehr führt.
+
+**Was nicht zurückgeht:** die neun umgezogenen Zeilen. Die Substanz gehört
+unter **jeder** Form in die Sensor-Dateien; sie ist committet, gemessen und
+grün (24 526 → 15 588 Zeichen, keine Zelle über 1000). **Zurück geht der
+unfertige Teil** — die rund zwanzig mittleren Zellen und die Schwellen-Regel,
+die deshalb aus [`.d-check.yml`](../../../../.d-check.yml) wieder
+herausgenommen wurde, obwohl sie grün war und ihr Bruch-Test hielt.
+
+**Neu geschnitten wird nach dem Baseline-Bump**, gegen die dann geltende
+Vorlage.
+
 **Rückführung nach `open/`** (`in-progress→open`): wenn sich beim Verschieben
 zeigt, dass eine Zelle Substanz trägt, die **nirgendwo sonst** hingehört —
 etwa eine Hard-Rule-Aussage, die sich als Gate-Beschreibung tarnt. Dann ist
