@@ -80,18 +80,18 @@ Absatzes schrieb den Trenner der Vorlage zu und hatte ihn vom Nachbarn.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** **Die Form des Gegenstands steht in §3 ausgeschrieben, bevor
+- [x] **(1)** **Die Form des Gegenstands steht in §3 ausgeschrieben, bevor
       gezählt wird** — was genau ein überflüssiges Leerzeichen ist und was
       nicht. Die Trefferliste wird stichprobenweise dagegen gehalten, nicht
       nur ihre Zahl gelesen.
-- [ ] **(2)** §Source precedence und §Guides tragen die schlanke Form: **vor**
+- [x] **(2)** §Source precedence und §Guides tragen die schlanke Form: **vor**
       jedem Pipe genau ein Leerzeichen, Trenner `| --- |` (der Stil der drei
       übrigen Tabellen, nicht der der Vorlage — §1 begründet die Wahl). Die
       Klasse in §3 ist **einseitig**; dass danach auch **hinter** jedem Pipe
       genau eines steht, folgt nicht aus ihr, sondern daraus, dass es
       Links-Padding im Ausgangsstand **nicht gab** (gemessen: 0). Die drei
       übrigen Tabellen der Datei sind **unverändert**.
-- [ ] **(3)** **Die tragende Konfigurations-Kante ist nach der Änderung
+- [x] **(3)** **Die tragende Konfigurations-Kante ist nach der Änderung
       nachweislich intakt** — mit echter Ausgabe und **in beide Richtungen**:
       `make gate-consistency` grün, **und** eine Positiv-Kontrolle, die zeigt,
       dass das Modul `targets` die entpaddete Tabelle überhaupt noch liest
@@ -101,12 +101,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       `cell-min-chars` bindet §Sensors — einen Abschnitt, den dieser Slice
       **nicht anfasst**. Ihr grüner Lauf ist über diese Änderung eine
       Tautologie und wird nur gefahren, um die Datei als Ganzes zu belegen.
-- [ ] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] `make gates` grün.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
 
@@ -198,13 +198,30 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   und beide Male fiel es nur auf, weil das Ergebnis gegen den Augenschein
   gehalten wurde. **Ein drittes Mal wäre kein Zufall mehr**, und der
   Bruch-Test dagegen ist Schritt 2: Ein whitespace-ignorierender Vergleich
-  muss leer sein. — **Ausgang:** \<offen\>
+  muss leer sein. — **Ausgang:** eingetreten, und das dritte Mal war kein
+  Zufall. Der Bruch-Test aus Schritt 2 hat gehalten, was er sollte — er belegt,
+  dass **nur** die deklarierte Klasse fiel, und er tat es erst in der
+  geschärften Fassung (Leerzeichen **und** Bindestrich-Läufe normalisiert; die
+  einfache `-w`-Probe ließ die zwei Trennzeilen als Rest stehen und wäre
+  großzügig gelesen durchgegangen). **Gegen die dritte Fehlmessung war er
+  blind**, weil sie nicht im Diff saß, sondern in der Arithmetik: 4737 zählte
+  ganze Läufe, 3394 + 1297 dieselben Läufe je um ein Zeichen gekürzt. Gefunden
+  hat sie der unabhängige Review. Beleg bei
+  [`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+  (5×).
 - **Zeilennummern-basiertes Patchen hat in diesem Repo wiederholt Dateien
   beschädigt** (duplizierte Zeilen, abgeschnittene Sätze) — zuletzt in der
   Closure von slice-216, wo eine `awk`-Ersetzung eine Zeile doppelt schrieb,
   die schon dastand. Der Gegenstand hier ist eine Datei mit **75**
   Tabellenzeilen, und die Operation läuft über die meisten davon. — **Ausgang:**
-  \<offen\>
+  entfallen. Die Operation lief **marker-basiert** (Zonen-Erkennung über die
+  Abschnitts-Überschriften, Ersetzung je Zeile nach Muster) und berührte keine
+  Zeilennummer. Belegt durch drei unabhängige Proben: der geschärfte
+  Whitespace-Vergleich ist leer, die drei übrigen Tabellen sind byte-identisch
+  (`cmp` über 170 Zeilen), und die Zeilenzahl ist unverändert (233). Der
+  unabhängige Review hat alle drei reproduziert und zusätzlich die konsistente
+  Spaltenzahl aller Zeilen geprüft. **Die Gefahr bleibt für künftige Läufe
+  bestehen** — entfallen ist sie für diesen, nicht als Klasse.
 - **Die zwei Konfigurations-Kanten sind gemessen, aber ihre Wirkung ist
   nicht.** Dass `targets` die Datei als `doc-tables` liest und `structure` eine
   Zell-Untergrenze auf §Sensors führt, steht in
@@ -214,11 +231,87 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   gleichgültig, weil dort kein Padding steht; für §Guides mit seinem einen
   `make`-Target ist es die offene Frage. **Der Slice beantwortet sie durch
   Fahren, nicht durch Lesen** — und wenn eine Kante meldet, greift §4. —
-  **Ausgang:** \<offen\>
+  **Ausgang:** eingetreten, und die Antwort fiel schärfer aus als die Frage.
+  Beide Kanten laufen grün, aber ein grüner Lauf beantwortet die Frage nicht:
+  Er sagt nur, dass nichts gemeldet wurde. Die **Positiv-Kontrolle** beantwortet
+  sie — ein Phantom-Target in die entpaddete §Guides-Tabelle gesetzt, `targets`
+  meldet `gate-phantom` in Z. 62; das Modul liest die Tabelle also weiterhin und
+  zählt das Padding nicht mit. Der unabhängige Review hat die Kontrolle
+  **reproduziert**. **Die zweite Kante hat sich als das entpuppt, was sie ist:**
+  eine Tautologie über diese Änderung, weil `cell-min-chars` §Sensors bindet —
+  einen Abschnitt, den der Slice nicht anfasst. §4 griff nicht; das Risiko war
+  richtig benannt, nur zur Hälfte an der falschen Kante aufgehängt.
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** `harness/README.md` trägt in allen fünf Tabellen dieselbe
+schlanke Form: 233 Zeilen wie zuvor, 5340 Bytes leichter, Padding auf null.
+Ein unabhängiger Review, blockierend, drei MEDIUM, drei LOW, ein INFO.
+`make gates` grün (zehn Gates, 748 Dateien).
+
+**Was funktioniert hat: die Positiv-Kontrolle.** DoD (3) verlangte nicht nur
+grüne Kanten, sondern den Beweis, dass die entpaddete Tabelle **noch gelesen
+wird**. Ein Phantom-Target hineingesetzt, `gate-phantom` in Z. 62, Datei
+byte-identisch wiederhergestellt. Der Review hat sie reproduziert. **Ohne sie
+hätte hier ein grüner Lauf gestanden, der über die Änderung nichts aussagt** —
+und die zweite Kante zeigt, wie leicht das passiert: Ihre `structure`-Regel
+bindet §Sensors, einen Abschnitt, den der Slice gar nicht anfasst.
+
+**Was Friktion war: der Slice hat seine eigene Titel-Regel verfehlt.** §1
+lautete *„Die Form-Frage ist an der Vorlage geklärt, nicht am Nachbarn"* — und
+schrieb der Vorlage den Trenner `| --- |` zu. Sie führt `|---|---|---|` ohne
+Leerzeichen. Die Vorlage klärte die **Padding**-Frage, und diese Antwort trägt
+den Slice; der **Trenner-Abstand** ist eine zweite Form-Frage, die im selben
+Satz mitgenommen und stillschweigend derselben Quelle zugeschrieben wurde. Die
+Wahl bleibt — die verkörperte Form führt gegenüber der Referenz-Form, und zwei
+Trenner-Stile in einer Datei hätten gegen den Zweck gearbeitet —, aber sie
+steht jetzt als **Wahl** da, nicht als Ableitung. **Ich hatte
+`|---|---|---|` vorher selbst gemessen und in der Ausgabe stehen.**
+
+**Steering-Loop-Lerneintrag, neu:
+[`form-vom-nachbarn-statt-von-der-vorlage`](../observations/BEO-ALL/form-vom-nachbarn-statt-von-der-vorlage/observation.md)**
+(1×). Eine Auftraggeber-Vorgabe vom 2026-08-27 sagt genau das, und sie traf
+damals zweimal an einem Tag zu; jene Vorkommen hängen an keinem
+abgeschlossenen Vorgang und sind deshalb **benannt, nicht gezählt**. **Die
+teure Variante ist die zweite Stufe:** nicht die Form vom Nachbarn zu nehmen,
+sondern sie anschließend der Vorlage **zuzuschreiben** — dann steht ein Beleg
+da, wo keiner ist, und weil der Satz die richtige Autorität nennt, liest ihn
+niemand nach.
+
+**Zweiter Lerneintrag: die Form durchhalten reicht bis in die Arithmetik.**
+[`zaehlmethode-misst-proxy-statt-gegenstand`](../observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md)
+(5×) traf **dreimal** in einem Slice, der die Form des Gegenstands zu DoD (1)
+gemacht hatte. Zwei Fehlmuster in der Voruntersuchung fielen dem Autor auf; die
+dritte Fehlmessung nicht, weil sie nicht im Diff saß: 4737 zählte **ganze**
+Läufe, 3394 + 1297 dieselben Läufe je um ein Zeichen gekürzt. *Eine Gesamtzahl
+gegen ihre Teilzahlen zu prüfen ist die billigste Probe, die es gibt.*
+
+**Dritter: die Klassen-Definition war selbst eine Auswahl.**
+[`grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md)
+(8×) — §3 definierte die Klasse **einseitig** (nur vor dem Pipe), §2 las sie
+zweiseitig, zwei Abschnitte voneinander entfernt. Vier weitere Formen
+(Links-Padding, Zeilenende-Whitespace, Tabs, `&nbsp;`) sind nachgemessen und
+alle null; das **Ergebnis** steht damit, die **Deckung** nicht.
+
+**Was offen bleibt — zwei Punkte, beide außerhalb der Abgrenzung.** **(1)** Ein
+**Produkt-Befund**, der diesen Slice nur zufällig traf: Der `pre-commit`-Hook
+brach mit `HEAD-Tree nicht lesbar: object not found` ab, nachdem etwas
+`git maintenance` gefahren und Packs mit `loose-`-Präfix angelegt hatte. Das
+Modul `vcs` liest über go-git, das Packs nach dem `pack-`-Präfix listet; der
+Blob `.a-check.yml` aus dem HEAD-Tree lag danach ausschließlich dort.
+`git repack -A -d` behebt es (HEAD und Staging unverändert, `fsck` sauber).
+**Das kann jeden Adopter treffen und gehört als Grenze zu `make adr-check`** —
+eigener Vorgang, hier bewusst nicht mitgenommen (§1 Punkt 1 und 2). **(2)** Ob
+`AGENTS.md` dasselbe Tabellen-Bild zeigt, ist weiterhin **nicht gemessen** —
+§1 Punkt 2 schließt es aus, und der Lauf hat sich daran gehalten.
+
+**Die drei Paarungen, gemessen.** **(a) Anker** — vakant: Der Slice verkörpert
+keine Steering-Loop-Regel; seine drei Lerneinträge liegen bei Registereinträgen,
+einer davon neu angelegt. **(b) Folge-Slice** — keiner genannt; die
+go-git-Pack-Grenze ist bewusst **ohne** Kennung gelassen. **(c) Register** —
+alle zitierten Pfade lösen auf, die drei Belege liegen als
+`evidence/slice-217.md` in ihren Verzeichnissen, und der neue Eintrag trägt
+`observation.md`, `state.md` und ein nicht leeres `evidence/`.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
