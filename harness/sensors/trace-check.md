@@ -17,19 +17,23 @@ für den Hook über stdin.
 2. **Der lokale Hook ist opt-in pro Klon** (`make hooks`); `--no-verify`
    umgeht ihn, nicht die PR-/Push-CI.
 
-3. **Pack-Dateien mit unkanonischem Namen sind unsichtbar — der Lauf bricht
-   ab, statt still grün zu melden.** Dieselbe Grenze wie bei
-   [`make adr-check`](adr-check.md), aus demselben Grund: Das Modul liest die
-   Objektdatenbank über go-git (`v5.19.2`), und go-git findet einen Pack nur
-   unter git's kanonischem Namen `pack-<Hash-des-Packs>.{idx,pack}` — **beide**
-   Namensteile zählen (gemessen, sechs Proben; `git` selbst liest weiter).
-   Schreibt etwa `git maintenance run --task=loose-objects` einen
-   `loose-<Hash>.pack`, meldet dieses Target `Range-Basis "HEAD~1" nicht
-   auflösbar: reference not found` mit **Exit 2**. **Fail-closed**, kein
-   stilles Grün. **Abhilfe:** `git repack -A -d`. Die Fundstelle mit den
-   vollständigen Proben steht bei
-   [`make adr-check`](adr-check.md#grenze--was-das-grün-nicht-abdeckt), damit
-   sie nur an *einem* Ort gepflegt wird *(seit slice-218)*.
+3. **Pack-Dateien mit unkanonischem Namen sind unsichtbar — hier bricht der
+   Lauf ab.** Das Modul liest die Objektdatenbank über go-git (`v5.19.2`), und
+   go-git findet einen Pack nur unter git's kanonischem Namen
+   `pack-<Hash-des-Packs>.{idx,pack}` — **beide** Namensteile zählen (gemessen;
+   `git` selbst liest weiter). Schreibt etwa
+   `git maintenance run --task=loose-objects` einen `loose-<Hash>.pack`, meldet
+   dieses Target `Range-Basis "<base>" nicht auflösbar: reference not found`
+   oder `commit <sha> nicht lesbar: object not found` — beides **Exit 2**.
+   **Abhilfe:** `git repack -A -d`.
+
+   **`commits` ist dabei fail-closed, `vcs` nicht — die beiden sind hier
+   ausdrücklich *nicht* gleich.** Ein unlesbarer Commit bricht diesen Lauf ab
+   (gemessen); [`make adr-check`](adr-check.md#grenze--was-das-grün-nicht-abdeckt)
+   dagegen meldet im `RANGE=`-Modus **still grün**, wenn der unsichtbare Pack
+   nur einzelne Objekte verschluckt. Die vollständige Messung steht dort, damit
+   sie an *einem* Ort gepflegt wird; dass sie für dieses Target **günstiger**
+   ausfällt, ist gemessen und nicht angenommen *(seit slice-218)*.
 
 **Dependabot braucht dafür keine Ausnahme:** Seine Botschaften tragen die
 Kennung im Präfix und erfüllen die Regel wie jeder andere Commit

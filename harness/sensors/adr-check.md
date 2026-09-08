@@ -50,20 +50,47 @@ Eine gelöschte oder umbenannte `Accepted`-ADR ist ein **FAIL**.
    andere nicht wieder.
 
    **Abhilfe:** `git repack -A -d` (die `-A`-Form, damit unerreichbare Objekte
-   lose werden statt verworfen). **Die entlastende Hälfte gehört dazu:** Exit
-   **2** ist fail-closed — es gibt hier **kein stilles Grün**, der Lauf
-   verweigert die Aussage, statt eine falsche zu treffen.
+   lose werden statt verworfen).
 
-   **Die Reichweite ist gemessen, nicht geschätzt:** betroffen sind die Module,
-   die die **Objektdatenbank** lesen — `vcs` (dieses Target) und `commits`
-   ([`make trace-check`](trace-check.md)), beide mit Exit 2. **`tracked` ist
-   nicht betroffen**, weil es den git-**Index** liest: Es meldete unter beiden
-   Pack-Namen denselben `target-untracked`-Befund — eine Positiv-Kontrolle,
-   kein grüner Lauf, der auch *„nichts geprüft"* heißen könnte. **Über andere
-   Stellen des Produkts sagt das nichts** — drei Module sind geprüft, nicht
-   alle. Permanent, solange die Module über go-git lesen; ein Bump der
-   Abhängigkeit kann es verschieben und ist der Anlass, hier nachzumessen
-   *(seit slice-218)*.
+   **Und jetzt der schlimmere Teil: im `RANGE=`-Modus meldet dieses Target
+   dann still grün.** Wie der unsichtbare Pack wirkt, hängt davon ab, *was* in
+   ihm liegt — und die beiden Fälle sind nicht gleich schlimm:
+
+   | Was der unsichtbare Pack verschluckt | Verhalten |
+   | --- | --- |
+   | eine ganze Referenz (BASE-Commit oder -Tree) | **Exit 2**, fail-closed |
+   | **einzelne Objekte** — etwa nur den BASE-Blob einer ADR | **Exit 0, 0 Befunde** |
+
+   **Gemessen, und die Verletzung war echt:** dieselbe Range, dieselbe Datei,
+   eine geänderte ADR-Kern-Zeile. Mit kanonischem Pack-Namen
+   `1 Datei(en) geprüft, 1 Befund(e)` (`core-drift-vcs`, Exit 1); nach dem
+   Umbenennen **desselben** Packs `1 Datei(en) geprüft, 0 Befund(e)`, Exit 0 —
+   `git diff` zeigt die Änderung unverändert an. **Der Grund liegt in einer
+   Zusammenfassung zweier Zustände:** go-git meldet ein *unlesbares* Blob als
+   `ErrFileNotFound`, also mit demselben Fehler wie *„diese Datei gibt es in
+   diesem Tree nicht"* — ein völlig legitimer Zustand (eine später angelegte
+   Datei). Der Adapter bildet das auf `ok=false, err=nil` ab, und
+   `vcsModified` überspringt die Datei dann ohne Befund.
+
+   **Das ist keine bloße Grenze, sondern ein Defekt**, und er trifft den
+   Bindepunkt, der *nicht* opt-in ist: Die PR-/Push-CI fährt `RANGE=`
+   ([`ci.yml`](../../.github/workflows/ci.yml)), der fail-closede
+   `--staged`-Pfad ist der lokale Hook. **Bis er behoben ist, ersetzt kein
+   grüner `adr-check`-Lauf die Gewissheit, dass die Objektdatenbank kanonisch
+   gepackt ist.**
+
+   **Die Reichweite ist gemessen, nicht geschätzt** — und die Module verhalten
+   sich **unterschiedlich**, was drei Formulierungen hier zuvor gleichsetzten:
+   `commits` ([`make trace-check`](trace-check.md)) **ist** fail-closed (ein
+   unlesbarer Commit ⇒ `commit … nicht lesbar`, Exit 2, gemessen); `vcs` ist es
+   nur in den zwei Zeilen der Tabelle oben. **`tracked` ist nicht betroffen**,
+   weil es den git-**Index** liest: Es meldete unter beiden Pack-Namen denselben
+   `target-untracked`-Befund — eine Positiv-Kontrolle, kein grüner Lauf, der
+   auch *„nichts geprüft"* heißen könnte. **Über andere Stellen des Produkts
+   sagt das nichts** — drei Module sind geprüft, nicht alle. Permanent, solange
+   die Module über go-git lesen; ein Bump der Abhängigkeit ist der Anlass,
+   hier nachzumessen — **und zwar mit einem *partiellen* unsichtbaren Pack**,
+   denn nur der deckt den stillen Pfad auf *(seit slice-218)*.
 
 ## Bindung
 
