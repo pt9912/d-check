@@ -30,6 +30,41 @@ Eine gelöschte oder umbenannte `Accepted`-ADR ist ein **FAIL**.
    Permanent — die Unterscheidung *Anhang gegen verkleidete Kern-Änderung* ist
    ein Urteil.
 
+3. **Pack-Dateien mit unkanonischem Namen sind unsichtbar — der Lauf bricht
+   ab, statt still grün zu melden.** Das Modul liest die Objektdatenbank über
+   go-git (`v5.19.2`), und go-git findet einen Pack nur unter git's
+   kanonischem Namen `pack-<Hash-des-Packs>.{idx,pack}`. **Gemessen, sechs
+   Proben in einem isolierten Repo** (alle Objekte im Pack, `.idx`/`.pack`/
+   `.rev` gemeinsam umbenannt, sonst nichts verändert): `pack-<eigener Hash>`
+   ⇒ Exit 0; `loose-<eigener Hash>`, `pack-<gültige Form, fremder Hash>`,
+   `pack-zzzzzzzz`, `packXYZ`, `xpack-abc` ⇒ **je Exit 2**. Es zählen also
+   **beide** Namensteile. **`git` selbst liest weiter** — es enumeriert
+   `*.idx` unabhängig vom Namen.
+
+   **Auslöser in freier Wildbahn:** `git maintenance run --task=loose-objects`
+   schreibt `loose-<Hash>.pack`. Danach meldet dieses Target — gemessen an
+   diesem Repo am 2026-09-08 — `HEAD-Tree nicht lesbar: object not found`.
+   **Das Symptom variiert mit dem Zufall**, welche Objekte noch lose auf der
+   Platte liegen: Im Probe-Repo lautete es `staged-Basis "HEAD" nicht
+   auflösbar: reference not found`. Wer nur eine der beiden kennt, erkennt die
+   andere nicht wieder.
+
+   **Abhilfe:** `git repack -A -d` (die `-A`-Form, damit unerreichbare Objekte
+   lose werden statt verworfen). **Die entlastende Hälfte gehört dazu:** Exit
+   **2** ist fail-closed — es gibt hier **kein stilles Grün**, der Lauf
+   verweigert die Aussage, statt eine falsche zu treffen.
+
+   **Die Reichweite ist gemessen, nicht geschätzt:** betroffen sind die Module,
+   die die **Objektdatenbank** lesen — `vcs` (dieses Target) und `commits`
+   ([`make trace-check`](trace-check.md)), beide mit Exit 2. **`tracked` ist
+   nicht betroffen**, weil es den git-**Index** liest: Es meldete unter beiden
+   Pack-Namen denselben `target-untracked`-Befund — eine Positiv-Kontrolle,
+   kein grüner Lauf, der auch *„nichts geprüft"* heißen könnte. **Über andere
+   Stellen des Produkts sagt das nichts** — drei Module sind geprüft, nicht
+   alle. Permanent, solange die Module über go-git lesen; ein Bump der
+   Abhängigkeit kann es verschieben und ist der Anlass, hier nachzumessen
+   *(seit slice-218)*.
+
 ## Bindung
 
 **nicht** Teil von `gates`/`ci` — Diff-/Commit-Zeit-Bindepunkt.
