@@ -21,7 +21,7 @@ mechanischer Ersetzung). Der neue Eintrag der Serie wird **`MR-071`** <!-- d-che
 
 **Berührte Spec-Stellen:** — (der Slice berührt keine Spec-Stelle).
 
-**Verantwortlich:** — (wird bei der Beanspruchung gesetzt).
+**Verantwortlich:** pt9912 (Implementer-Rolle).
 
 **Autor:** pt9912.
 
@@ -172,7 +172,9 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Sub-Area-Modus-Begründung. **Der Abschnitt entfällt nie**; bedingt
 ist allein der Modus-Block am Ende.
 
-**Die drei Vorprüfungen entstehen spätestens bei der Beanspruchung**
+**Die drei Vorprüfungen sind bei der Beanspruchung am 2026-09-08 bestätigt**
+— Nachtlauf und Register unverändert gegenüber dem Anlege-Stand desselben
+Tages; die Sub-Area-Wahl trägt der Block unten. Ursprünglich notiert war:
 ([`AGENTS.md`](../../../../AGENTS.md) §5). **Zwei sind schon gelaufen**, weil
 sie den Zuschnitt tragen, und werden bei der Beanspruchung gegen den dann
 gültigen Stand wiederholt:
