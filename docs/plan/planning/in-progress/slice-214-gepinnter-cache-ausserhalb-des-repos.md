@@ -71,11 +71,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - [x] **(2)** Wo die Antwort in der Sensor-Beschreibung fehlt, steht sie dort —
       mit dem Zeitpunkt, nicht nur mit der Bindung.
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
 
@@ -198,23 +198,114 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   der Slice eine Doku-Ergänzung und kein Fund — und das wäre ein **gutes**
   Ergebnis, das als solches dastehen muss. Wer eine Lücke sucht, findet eine;
   die Inventur ist gegen die Konfiguration zu führen, nicht gegen die
-  Erwartung. — **Ausgang:** \<offen\>
+  Erwartung. — **Ausgang:** eingetreten, und zwar in der **anderen** Richtung
+  als befürchtet. Das Risiko warnte, die Antwort könne *„alles in Ordnung, nur
+  unbeschrieben"* lauten und der Slice dann kein Fund sein. Gefunden wurde
+  stattdessen etwas Größeres — **und nicht vom Slice, sondern vom Review**: Die
+  Inventur war um fünf Mitglieder zu klein, und ihre These fiel. **Der Satz
+  *„wer eine Lücke sucht, findet eine"* traf zu, nur umgekehrt:** Ich habe die
+  Lücke gefunden, die ich erwartete (der Cache ist ungeprüft), und dabei
+  übersehen, dass sie der Normalfall ist.
 - **Der Prüfzeitpunkt fremder Werkzeuge ist von hier aus schwer zu belegen.**
   Dass Docker einen Digest beim Pull nachrechnet, ist bekannt, aber nicht in
   diesem Repo gemessen; dass `go.sum` bei jedem Bau greift, ebenso. **Wo der
   Beleg fehlt, gehört das gesagt statt behauptet** — sonst ist die Inventur
-  eine Aufzählung von Vermutungen mit Tabellen-Rahmen. — **Ausgang:** \<offen\>
+  eine Aufzählung von Vermutungen mit Tabellen-Rahmen. — **Ausgang:**
+  eingetreten, und der Review hat es an der schärfsten Stelle gemessen. Die
+  Tabelle schrieb *„jeder Image-Bau"*, wo **kein Pull** stattfindet — eine
+  Prüfung behauptet, die es nur beim ersten Bezug gibt. **Der
+  Quarantäne-Marker war da und stand am falschen Ort:** Er galt den
+  Docker-Zeilen, während die eigene Lieblings-These (der git-Commit-Pin)
+  ungekennzeichnet daneben stand. Jetzt trägt er beide. Eingetragen bei
+  [`wortlaut-behauptet-pruefung-die-fehlt`](../observations/BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt/observation.md).
 - **Vierter Slice in Folge an Grenzen-Beschreibungen.** slice-212, slice-213
   und dieser berühren dieselbe Familie. Die Gefahr ist nicht Wiederholung,
   sondern **Selbstbezug**: ein Harness, der nur noch sich selbst beschreibt.
   Der Unterschied hier ist der Gegenstand — eine **Supply-Chain**-Frage nach
   [`AGENTS.md`](../../../../AGENTS.md) §3.1, die zufällig in einer
-  Grenzen-Zeile landet. — **Ausgang:** \<offen\>
+  Grenzen-Zeile landet. — **Ausgang:** eingetreten — **nicht** als Selbstbezug,
+  sondern als Sachfund: Die Inventur hat fünf gepinnte Artefakte sichtbar
+  gemacht, die in keiner Sensor-Beschreibung stehen, darunter die drei
+  SHA-gepinnten Actions und ein **zweiter** `golang`-Digest im Werkzeug-Baum.
+  **Das ist Supply-Chain-Bestand, keine Nabelschau.** Was der Slice
+  **nicht** widerlegt hat, ist die Gefahr selbst: Vier von fünf Slices dieser
+  Folge ändern nur Beschreibungen. Ob die Reihe damit endet, ist eine
+  Planungs-Entscheidung und steht in der Closure-Notiz.
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** Eine Inventur über **zwölf** gepinnte Fremd-Artefakte mit Ort,
+Bindung und Prüfzeitpunkt (DoD 1) und die fehlende Antwort in
+`harness/sensors/semgrep.md` (DoD 2). Ein unabhängiger Review, blockierend,
+**zwei HIGH** und sechs MEDIUM — der erste HIGH-Befund dieser Slice-Folge.
+`make gates` grün (zehn Gates, 736 Dateien).
 
+**Was der Slice wert war, steht am Ende und nicht am Anfang.** Seine
+Ausgangs-These — *„der `semgrep`-Cache ist das einzige ungeprüfte Artefakt
+außerhalb des Repos"* — war **falsch**. Was an ihre Stelle trat, ist schärfer
+und unbequemer: **Von zwölf gepinnten Fremd-Artefakten wird genau eines bei
+jedem Lauf erneut geprüft — die vendorte Baseline, und ausgerechnet deren
+Bindung beweist die Echtheit nicht** (slice-212). Alle übrigen werden **einmal
+beim Bezug** geprüft und danach geglaubt. Der Cache ist der Normalfall; die
+Ausnahme ist das Repo-interne Artefakt.
+
+**Was Friktion war — und es ist diesmal der ganze Slice.** Beide Liefer-Punkte
+trugen nicht:
+
+- **Die Menge war um fünf Mitglieder zu klein.** §3 schrieb die **Form** eines
+  gepinnten Fremd-Artefakts vorher aus — und gesucht wurde dann an **drei
+  Fundorten** statt an ihr. Es fehlten drei SHA-gepinnte GitHub-Actions (mit
+  eigener Hard Rule in §3.9 und drei Freshness-Achsen in §4), das `trivy`-Image
+  und ein **zweiter** `golang`-Digest im Werkzeug-Baum.
+- **Die Aussage je Mitglied war dreifach.** *„jeder Image-Bau"*, *„jeder
+  Lauf"*, *„bei jedem Bezug"* — für denselben Mechanismus, im selben Artefakt.
+  Gemessen: **kein Pull, 22 Schichten aus dem Cache.**
+- **Und der falsche Schluss stand bereits im Gate-Vertrag**, als der Review ihn
+  widerlegte.
+
+**Steering-Loop-Lerneintrag: eine Form vorher auszuschreiben nützt nichts, wenn
+man danach an Fundorten sucht.** Der Slice hat getan, was
+[`AGENTS.md`](../../../../AGENTS.md) §5 seit slice-210 verlangt — die Form des
+Gegenstands stand in §3, vor der Messung. **Gesucht wurde trotzdem dort, wo
+schon einmal etwas gefunden worden war.** Die drei Fundorte waren die drei aus
+dem Kopf; die Form hätte `.github/workflows/`, `tools/image-scan.sh` und
+`tools/archive-wave/Dockerfile` mitgenommen. Eingetragen als 15. Beleg bei
+[`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md).
+
+**Der zweite Lerneintrag ist der peinlichste dieser Serie.** §8 schrieb
+*„Register durchgegangen"* und folgerte, für `HARN` stehe **kein** Eintrag
+darin. Es steht einer — offen —, und er betrifft `--check-latest`, also
+**genau den Träger, den derselbe Slice als einzige Echtheits-Prüfung führt**.
+Die Gesamtzahl 38 stimmte und deckte die nicht durchgeführte Teilprüfung zu.
+**Eine korrekte Zahl neben einer angenommenen Aussage, in einem Satz** —
+eingetragen bei
+[`commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/observation.md)
+(10×), weil die genannte Probe für dieses Kürzel nicht stattgefunden hat.
+
+**Und die fünfte Instanz der frischen Regel widerlegt eine bequeme Lesart von
+ihr.** *„Gegen den Gegenstand prüfen, nicht gegen die Beschreibung"* war
+**angewandt**: Die neue Grenze stand gegen das Skript, und `[ ! -d … ]` steht
+dort wirklich. Falsch war ihre Aussage über den **Bestand**. **Gegen den
+Gegenstand zu prüfen genügt nicht, wenn der Gegenstand größer ist als die
+Menge, die man gezählt hat** — das gehört zur Regel und steht im Register
+([`grenzen-liste-wird-als-vollstaendig-gelesen`](../observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md),
+5×).
+
+**Eine Planungs-Entscheidung, die hier hingehört.** Vier der letzten fünf
+Slices ändern nur Beschreibungen. §6 hat das als Risiko benannt, und der
+Ausgang sagt: Dieser Slice hat Sachbestand sichtbar gemacht — fünf gepinnte
+Artefakte, die in keiner Sensor-Beschreibung stehen. **Die Gefahr des
+Selbstbezugs ist damit nicht widerlegt, nur diesmal nicht eingetreten.** Der
+nächste Vorgang sollte ein anderer sein; der unentschiedene eingehende CR
+liegt bereit.
+
+**Die drei Paarungen, gemessen.** **(a) Anker** — vakant: Der Slice verkörpert
+keine Regel. **(b) Folge-Slice** — keiner genannt. **(c) Register** — alle
+zitierten Pfade lösen auf; die vier neuen Belege liegen als
+`evidence/slice-214.md` in ihren Verzeichnissen. Der Wachposten
+[`kanal-kennung-als-inhalt-gelesen`](../observations/BEO-ALL/kanal-kennung-als-inhalt-gelesen/observation.md)
+trägt weiterhin kein `evidence/` — unverändert die benannte Spannung aus
+slice-208.
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
