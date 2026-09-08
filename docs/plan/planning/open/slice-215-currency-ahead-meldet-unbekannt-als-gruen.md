@@ -17,7 +17,7 @@ dieses Slice verschieden wäre.
 **Berührte Spec-Stellen:** — *(keine; `baseline-freshness` ist kein Produkt-Gate
 und trägt keine `DC-*`-Bindung)*
 
-**Verantwortlich:** — · **Autor:** pt9912. **Datum:** 2026-09-08.
+**Verantwortlich:** pt9912 · **Autor:** pt9912. **Datum:** 2026-09-08.
 
 ---
 
@@ -165,5 +165,98 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
-\<die drei Vorprüfungen und der Modus-Block entstehen spätestens bei der
-Beanspruchung — ein Plan in `open/` trägt sie noch nicht\>
+Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
+§Ziel-Form: Sub-Area-Modus-Begründung. **Der Abschnitt entfällt nie**; bedingt
+ist allein der Modus-Block am Ende. Dieses Repo führt **drei** Prüfungen — die
+zwei kanonischen und, als Adaption, den Nachtlauf-Stand
+([`MR-053`](../../../../harness/conventions.md#mr-053)).
+
+**Vorgelagert — Sub-Area-Wahl prüfen:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:268-269 -->
+
+> **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+> muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+**Zwei** Sub-Areas, und diesmal wird die zweite **geändert**, nicht nur
+gelesen — anders als in slice-214:
+
+- **`tools/harness/`** (Kürzel `HARN`,
+  [`MR-004`](../../../../harness/conventions.md#mr-004)) — der **Gegenstand**:
+  [`fetch-baseline-cache.sh`](../../../../tools/harness/fetch-baseline-cache.sh)
+  und sein Currency-Zweig. Fällt DoD (1) auf „Exit setzen", bekommt die
+  Sub-Area einen **Verhaltens**-Diff.
+- **`*`** (Repo-Default) — die Sensor-Beschreibung und der Registereintrag.
+
+**Vorgelagert — offene Beobachtungen sichten:**
+
+<!-- d-check:cite .harness/baseline/v6.5.0/regelwerk/modul-05-planning-harness.md:274-274 -->
+
+> **Offene Beobachtungen sichten.** Das
+
+Register durchgegangen (gemergter Stand, **38** Verzeichnisse über beide
+Kürzel). **Diesmal wurde `BEO-HARN/` einzeln geöffnet und nicht angenommen** —
+das ist die Lehre aus slice-214, wo ein „kein Eintrag" ungeprüft dastand.
+**Vier** Einträge sind einschlägig:
+
+- [`BEO-HARN/check-latest-blind-before-pin`](../observations/BEO-HARN/check-latest-blind-before-pin/observation.md)
+  (1×, Stand *offen*) — **der Anlass**, und der einzige Eintrag unter diesem
+  Kürzel. Er bleibt bei 1×: Dieser Slice untersucht ihn, er tritt nicht erneut
+  auf.
+- [`wortlaut-behauptet-pruefung-die-fehlt`](../observations/BEO-ALL/wortlaut-behauptet-pruefung-die-fehlt/observation.md)
+  (9×, Ausgang *geplant*) — **die Klasse des Gegenstands.** Der `ahead`-Zweig
+  ist genau das: ein Lauf, der wie ein bestandener aussieht und die zugesagte
+  Frage nicht beantwortet hat. Der Ableiter — *„wer einen Wächter für eine
+  Zusage schreibt, dreht sie einmal um und belegt, dass genau ein Test rot
+  wird"* — ist DoD (2) dieses Slice.
+- [`gruene-wettlauf-probe-beweist-nichts`](../observations/BEO-ALL/gruene-wettlauf-probe-beweist-nichts/observation.md)
+  — für den Bruch-Test: Eine Probe, die grün ist, weil sie den Zustand gar
+  nicht erzeugt hat, belegt nichts. §6 führt das als erstes Risiko, weil der
+  Currency-Zweig Netz braucht.
+- [`eigene-menge-gemessen-fremde-behauptet`](../observations/BEO-ALL/eigene-menge-gemessen-fremde-behauptet/observation.md)
+  (15×, Stand *gemischt*) — nach slice-214 der wachsamste Eintrag: Dort war die
+  Menge um fünf Mitglieder zu klein. Hier ist die Menge klein und benannt
+  (**vier** Currency-Zustände, aus dem Skript gelesen), aber die Aussage über
+  den **Konsumenten** — *„der Nachtlauf liest nur den Exit-Code"* — gehört am
+  Workflow geprüft, nicht angenommen.
+
+**Keiner der vier erreicht mit diesem Slice die Schwelle erstmalig.**
+
+**Vorgelagert — Nachtlauf-Stand lesen**
+([`MR-053`](../../../../harness/conventions.md#mr-053)):
+
+`make nightly-state` am 2026-09-08 gelesen: **beide Nachtläufe grün** —
+`upstream-drift.yml` (jüngster Lauf 2026-09-07T05:33:45Z) und `image-scan.yml`
+(2026-09-07T08:21:32Z). **Und dieses Grün ist der Gegenstand des Slice, nicht
+seine Kulisse:** `upstream-drift.yml` fährt `make baseline-freshness`. Sein
+Grün heißt heute *„Pin ist der neueste Tag"* (Zustand `current`) — es hieße
+aber **dasselbe**, wenn der Zustand `ahead` wäre. Genau diese Ununterscheidbarkeit
+schließt der Slice.
+
+**Modus-Begründungsblock.** Beide berührten Sub-Areas GF — ein Block je
+Sub-Area.
+
+### Sub-Area: `tools/harness/`
+
+- **Modus:** GF ([`MR-004`](../../../../harness/conventions.md#mr-004)).
+- **Konventions-Dichte:** hoch — die Skript-Mechanik ist über
+  [`MR-004`](../../../../harness/conventions.md#mr-004),
+  [`MR-005`](../../../../harness/conventions.md#mr-005) und die
+  [`MR-011`](../../../../harness/conventions.md#mr-011)-Kette getragen; die
+  fail-open-Linie ist deklariert und darf nicht nebenbei kippen (§6).
+- **Phase-Reife:** Phase 5 — das Skript ist seit vielen Bumps in Gebrauch.
+- **Evidenz-/Diskrepanz-Risiko:** **hoch für den Beleg, niedrig für den
+  Befund.** Dass der Zweig 0 zurückgibt, ist aus dem Skript gelesen und
+  eindeutig. Ob sich das netzlos **brechen** lässt, ist offen — `--selftest`
+  deckt die Alias-Auflösung, nicht den Currency-Zweig.
+- **Reconciliation-Aufwand:** keiner (GF).
+
+### Sub-Area: `*`
+
+- **Modus:** GF (Repo-Default).
+- **Konventions-Dichte:** hoch für die Form der Sensor-Datei; seit slice-213
+  sagt [`AGENTS.md`](../../../../AGENTS.md) §5, wie eine Grenze zu prüfen ist.
+- **Phase-Reife:** Phase 5.
+- **Evidenz-/Diskrepanz-Risiko:** niedrig — die Zahl (58 von 100) ist gemessen
+  und die Bedingung aus dem Skript gelesen.
+- **Reconciliation-Aufwand:** keiner (GF).
