@@ -8,7 +8,9 @@ wird hier nicht erfunden.)*
 **Berührt:** [`DC-FA-LINK-001`](../../../spec/lastenheft.md#dc-fa-link-001--lokale-link--und-bildreferenzen-modul-links),
 [`DC-FA-ANCH-001`](../../../spec/lastenheft.md#dc-fa-anch-001--heading-anker-validierung-modul-anchors),
 [`DC-FA-REF-001`](../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)
-**Stand:** eingegangen, **noch nicht entschieden**.
+**Stand:** **entschieden am 2026-09-08 — nicht umgesetzt**; alle drei Argumente
+beantwortet (§Entscheid), die tragende Messung steht unter §Messung. Die
+Rückfrage an den Absender ist offen und im Entscheid benannt.
 
 **Ablage-Hinweis.** Ein **eingehender** CR ist die dritte Klasse neben
 [`MR-035`](../../../harness/conventions.md#mr-035) (ausgehend) und
@@ -218,3 +220,112 @@ planmäßig fällt und Adressen darauf sterben — bleibt davon unberührt. Für
 gilt weiterhin die Antwort oben:
 [`DC-FA-REF-001`](../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)
 mit `in:`-Skopus, in diesem Repo 25-fach gelebt.
+
+---
+
+## Messung: Ist die erbetene Fähigkeit heute ausdrückbar? (2026-09-08, slice-216)
+
+**Ja — und zwar wörtlich.** Drei Konfigurationen über denselben Mini-Bestand:
+eine eingefrorene Datei mit **zwei** toten Verweisen (einer auf einen
+entfernten Baseline-Baum, einer **ohne** jeden Baseline-Bezug) und ein
+lebendes Dokument mit demselben Baseline-Verweis.
+
+| Konfiguration | Befunde | in `frozen/` |
+|---|---|---|
+| **C** — kein Ventil (Kontrolle) | **3** | beide gemeldet |
+| **A** — `in: frozen/**` · `refs: ["**"]` | **1** | **beide stumm** |
+| **B** — `in: frozen/**` · `refs: [".harness/baseline/v6.0.0/**"]` | **2** | nur der Baseline-Verweis stumm |
+
+**A ist `exempt-paths`.** Ein `refs: ["**"]` mit `in:` nimmt die genannte Datei
+**vollständig** aus der Prüfung — einschließlich des Verweises, der mit der
+Baseline nichts zu tun hat. Die erbetene Fähigkeit existiert also, sie heißt
+nur anders.
+
+**B ist das, was der CR eigentlich braucht.** Dieselbe Datei, derselbe
+Quell-Skopus — aber der tote Verweis **ohne** Baseline-Bezug meldet weiter.
+**Eine Zeile Konfiguration, und der blinde Fleck ist um genau den Anteil
+kleiner, den `exempt-paths` unvermeidlich mitnimmt.**
+
+---
+
+## Entscheid (2026-09-08)
+
+**Der CR wird nicht umgesetzt.** `links` und `anchors` bekommen kein
+`exempt-paths`. Die Bitte ist sorgfältig begründet, und zwei ihrer drei
+Argumente treffen ganz oder teilweise zu — was gegen die Umsetzung spricht, ist
+nicht ihre Berechtigung, sondern dass das Werkzeug die Aufgabe bereits löst,
+und schärfer.
+
+### Antwort auf (a) — *„kein Knopf"*
+
+**Die Prämisse trifft nicht zu.**
+[`DC-FA-REF-001`](../../../spec/lastenheft.md#dc-fa-ref-001--geteiltes-referenz-ventil-ignore-refs-mit-quell-skopus)
+ist ein **geteiltes** Ventil, nennt `links` und `anchors` ausdrücklich,
+unterdrückt `target-missing` **und** `anchor-missing` und trägt mit `in:` genau
+den Quell-Skopus, den `exempt-paths` böte. Die Messung oben zeigt, dass es
+dessen Wirkung **exakt** erreicht. Richtig ist an der Beobachtung nur, dass die
+beiden Module **keine modul-lokale** Options-Sektion führen — der Knopf sitzt
+eine Ebene höher.
+
+### Antwort auf (b) — *„sechs Module führen `exempt-paths`"*
+
+**Das Argument steht, und es wird nicht mit (a) erledigt.** `links` und
+`anchors` sind tatsächlich die einzigen referenz-prüfenden Module mit **einer**
+Ventil-Achse; `codepaths` führt drei (Zeile · Datei · Ziel), `ids` zwei.
+
+**Trotzdem trägt es die Bitte nicht, und der Grund ist die Messung:** Ihre eine
+Achse **kann**, was die fehlende könnte — und mehr. Ein zweiter Knopf für
+dieselbe Aufgabe wäre nicht Konsistenz, sondern eine **zweite
+Konfigurationsfläche mit strikt geringerer Auflösung**. Und die schwächere ist
+die bequemere: Wer `exempt-paths` schreiben kann, schreibt es, und verliert die
+Unterscheidung, die B oben sichtbar macht. **Konsistenz, die einen blinden
+Fleck verbreitert, ist kein Gewinn** — zumal `links` das Kern-Modul ist und
+[`MR-069`](../../../harness/conventions.md#mr-069) das vorhandene Ventil
+bereits als **Gate-Senkung** deklariert.
+
+### Antwort auf (c) — die drei verworfenen Wege
+
+- **`scan.ignore`: zugestimmt.** Es ist das falsche Instrument, und die
+  Begründung des CR — es nimmt die Datei aus **allen** Modulen — ist richtig.
+  Genau deshalb gibt es die Ziel-Achse.
+- **Koexistenz des alten Baums: zugestimmt.** Ein Aufschub, kein Weg.
+- **`ignore-refs`-Breite: nicht beurteilbar von hier, und die Messung legt
+  eine Rückfrage nahe.** Der Grund war ein **Breiten-Wächter im eigenen Repo**
+  (*„6 von 24 Paaren überschreiten die Kappung"*). Ob diese Kappung eine
+  bewusste Regel ist, weiß nur der Absender; dieses Repo fährt 25 Einträge
+  ohne Konflikt. **Was die Messung dazu beiträgt:** Form **B** ist *eine*
+  Zeile `refs:` mit *einem* Glob — deutlich kürzer als ein Paar je Ziel. Ob
+  die Kappung sie trifft, wäre neu zu messen.
+
+### Was an die Stelle des Nein tritt
+
+**Ein Rezept, kein Verweis auf eine Doku.** Für den beschriebenen Fall:
+
+```yaml
+ignore-refs:
+  - in: docs/reviews/**
+    refs: [".harness/baseline/v6.0.0/**"]
+```
+
+Das deckt `links` **und** `anchors`, gilt nur in den genannten Dateien, und
+lässt jeden anderen Defekt darin sichtbar. **Wer die volle `exempt-paths`-
+Wirkung will, schreibt `refs: ["**"]`** — dann aber wissentlich, und das ist
+der Unterschied.
+
+### Was den Entscheid umkehren würde
+
+Drei Bedingungen, jede einzeln hinreichend:
+
+1. **Ein Fall, den `ignore-refs` nicht ausdrücken kann.** Ein gemessenes
+   Beispiel genügt — die Messung oben deckt den beschriebenen Fall, nicht jeden
+   denkbaren.
+2. **Der Breiten-Wächter erweist sich als Eigenschaft des Werkzeugs**, nicht des
+   Absender-Repos — dann wäre die Kürze der Konfiguration eine Produkt-Frage.
+3. **Die Ziel-Achse bekommt aus anderem Grund eine Einschränkung**, die die
+   Datei-Achse nicht hätte. Dann fiele die Rechnung anders aus, und zwar ohne
+   dass jemand den CR erneut stellen müsste.
+
+**Kein Sensor wacht über die drei** — sie sind Wiedervorlage-Bedingungen, kein
+Trigger mit Wächter. Und **eine Rückfrage bleibt offen**, die dieser Entscheid
+nicht ersetzt: ob nach (1), (2) und Form **B** ein Fall übrig bleibt. Der
+Entscheid ist ohne sie gefallen, und das steht hier, statt es zu verschweigen.

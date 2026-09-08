@@ -56,18 +56,18 @@ beantworten, nicht aus dem Schema zu erschließen.**
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** **Gemessen**, ob `ignore-refs` mit `in: <datei>` und
+- [x] **(1)** **Gemessen**, ob `ignore-refs` mit `in: <datei>` und
       `refs: ["**"]` die erbetene datei-weite Wirkung erzielt — mit echter
       Ausgabe, in beide Richtungen: der gedeckte Verweis schweigt, ein
       **nicht** gedeckter in derselben Datei meldet weiter. Fällt die Messung
       negativ aus, kippt der Entscheid.
-- [ ] **(2)** Der CR ist **entschieden**: Bitte beantwortet, Begründung je
+- [x] **(2)** Der CR ist **entschieden**: Bitte beantwortet, Begründung je
       Argument des Absenders (drei: der Knopf, die sechs Module, die drei
       verworfenen Wege), `Stand:`-Zeile gesetzt.
-- [ ] **(3)** Der Entscheid trägt **Umkehr-Bedingungen**, wie der
+- [x] **(3)** Der Entscheid trägt **Umkehr-Bedingungen**, wie der
       Zeilenlängen-CR sie führt — beobachtbar formuliert, mit der Grenze, dass
       kein Sensor über sie wacht.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
