@@ -310,7 +310,7 @@ a-check-digest: ## Neueren Digest fuer denselben a-check-Tag melden (Netz, NICHT
 nightly-state: ## Ausgang des juengsten Nachtlaufs lesen (Netz, fail-open, NICHT in gates; Vorpruefung der Slice-Planung).
 	@bash tools/harness/nightly-state.sh
 
-baseline-freshness: ## Upstream-Audit des Baseline-Pins: neuerer Release-Tag (Currency) + Content-Drift am gepinnten Tag (Netz, NICHT in gates, fail-open). MR-011-Kette.
+baseline-freshness: ## Upstream-Audit des Baseline-Pins: neuerer Release-Tag ODER unbestimmter Currency-Stand (Exit 3, seit slice-215) + Content-Drift am gepinnten Tag (Netz, NICHT in gates, fail-open). MR-011-Kette.
 	@bash tools/harness/fetch-baseline-cache.sh --check-latest
 
 # record-gates läuft als LETZTER Prerequisite — der Nachweis entsteht

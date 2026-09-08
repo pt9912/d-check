@@ -22,7 +22,9 @@ name: upstream-drift
 #
 # WAS ER MELDET. Exit 3 heisst „Pin und Upstream sind verschieden"; das WORT
 # dazu unterscheidet sich, weil die Messungen sich unterscheiden — VERALTET bei
-# den Versions-Achsen (ihre Reihen sind monoton, „anders" heisst dort „neuer"),
+# den Versions-Achsen (ihre Reihen sind monoton, „anders" heisst dort „neuer"
+# -- mit einer Ausnahme seit slice-215: baseline-freshness meldet mit 3 auch
+# einen UNBESTIMMTEN Currency-Stand, wenn der Pin nicht in der Liste steht),
 # ABWEICHEND bei den Digest-Achsen (Digests haben keine Ordnung). Exit 4 gibt
 # es nur beim Baseline-Skript: der GEPINNTE Tag wurde upstream verschoben oder
 # sein Asset neu gebaut — der schwerere Fall, weil unser vendorter Bestand

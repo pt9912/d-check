@@ -234,9 +234,18 @@ check_latest() {
 
   # --- (A) Currency: Release-LISTE gegen den Pin (nicht /releases/latest, der
   #         Prereleases überspringt und einen zurückgezogenen Pin verbirgt) ---
-  local api tags newest newer currency="skip"
+  #
+  # ZWEI SCHRITTE, und die Trennung ist die Zusage: erst der Transfer, dann das
+  # Parsen. Ein Pipeline-Ausdruck verliert curls Status -- ein ABGEBROCHENER
+  # Transfer lieferte dann eine nicht-leere, aber abgeschnittene Liste, der Pin
+  # fehlte darin, und der ahead-Zweig meldete seit slice-215 Exit 3. Also ein
+  # Netz-Ausfall als Befund verkleidet (gemessen: 12 000 von 322 579 Bytes,
+  # Pin nicht enthalten). Schlaegt curl fehl, bleibt die Liste leer und der
+  # Zustand skip -- fail-open wie deklariert.
+  local api raw tags newest newer currency="skip"
   api="https://api.github.com/repos/${repo}/releases?per_page=100"
-  tags="$(curl -fsSL --connect-timeout "$CT" --max-time "$MT" -H 'Accept: application/vnd.github+json' "$api" 2>/dev/null \
+  raw="$(curl -fsSL --connect-timeout "$CT" --max-time "$MT" -H 'Accept: application/vnd.github+json' "$api" 2>/dev/null)" || raw=""
+  tags="$(printf '%s' "$raw" \
     | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' \
     | sed 's/.*"\([^"]*\)"$/\1/' \
     | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | LC_ALL=C sort -V -u || true)"

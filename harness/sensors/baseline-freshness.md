@@ -25,19 +25,36 @@ verschiedene Fragen.
    Eigenschaft dieses Repos, keine Produktzusage.
 4. **Die Currency-Hälfte sieht nur die jüngsten 100 Releases.** Die
    Release-Liste wird mit `per_page=100` gelesen und **nicht paginiert**;
-   GitHub liefert neueste zuerst. Liegt der Pin außerhalb dieses Fensters,
-   findet die Liste ihn nicht — die Currency-Antwort lautet dann *unbestimmt*
-   und **nicht** *„aktuell"*. **Gemessen am 2026-09-08: 58 Releases von 100** —
-   der Fall ist terminiert, nicht hypothetisch, und tritt ein, sobald der Pin
-   um mehr als 100 Releases zurückfällt oder das Repo diese Zahl überschreitet.
+   GitHub liefert neueste zuerst. Der Pin fällt aus dem Fenster, sobald **mehr
+   als 100 Releases über ihm** liegen — die Gesamtzahl des Repos allein genügt
+   dafür nicht. **Gemessen am 2026-09-08: 58 Releases insgesamt**, der Pin ist
+   der neueste; der Abstand ist also 0.
 5. **Ein unbestimmter Currency-Stand meldet seit slice-215 Exit 3, nicht 0.**
    Vorher endete er mit 0 und war für den Nachtlauf — der ausschließlich den
    Exit-Code liest — von *„Pin ist der neueste Tag"* nicht zu unterscheiden.
    **Bruch-Test, beide Richtungen gefahren:** ein Pin, den es nicht gibt, ergab
-   vorher Exit 0 mit derselben stderr-Zeile, jetzt Exit 3. **Die
-   fail-open-Linie ist davon unberührt und das ist gemessen:** Ein Netz- oder
-   API-Ausfall landet im `skip`-Zweig (Exit 0), nicht hier — geprüft in einer
-   isolierten Kopie mit unerreichbarem API-Host.
+   vorher Exit 0 mit derselben stderr-Zeile, jetzt Exit 3.
+   **Die fail-open-Linie bleibt unberührt, und das ist an der schwierigen
+   Ausfall-Form gemessen:** Ein **abgebrochener** Transfer liefert Teildaten
+   *und* einen Fehlerstatus (gemessen: 35 010 von 322 579 Bytes, `curl`-Exit
+   28). Die erste Fassung wertete nur den Pipeline-Ausgang und hielt die
+   abgeschnittene Liste für vollständig — der Pin fehlte darin und der Lauf
+   meldete **Exit 3 auf einen Netzausfall**. Seit dem Nachzug wird `curl`s
+   Status getrennt geprüft; derselbe Abbruch ergibt jetzt `SKIP`, Exit 0.
+6. **Gemessen werden Release-*Objekte*, nicht Tags.** Ein Tag, der geschoben
+   ist, bevor (oder ohne dass) sein Release-Objekt existiert, kommt in der
+   Liste nicht vor — der Pin gilt dann als *aktuell* und der Lauf meldet
+   **Exit 0**. **Das ist die Lage der offenen Beobachtung**
+   [`BEO-HARN/check-latest-blind-before-pin`](../../docs/plan/planning/observations/BEO-HARN/check-latest-blind-before-pin/observation.md),
+   deren Ursache nicht feststeht; sie ist damit **nicht ausgeschlossen**,
+   sondern die naheliegendste verbliebene Erklärung.
+7. **Prereleases fallen durch den Filter.** Die Tag-Auswahl verlangt
+   `vX.Y.Z` — ein `v7.0.0-rc1` wird verworfen (gemessen). Die Wahl des
+   Listen-Endpunkts ist im Skript-Kopf ausdrücklich damit begründet, dass
+   `releases/latest` *„Prereleases überspringt"*; der Filter nimmt diesen
+   Gewinn wieder zurück. **Für einen Prerelease-Pin ist die Prüfung damit
+   blind**, und die `**Stand:**`-Zeile könnte einen solchen Pin tragen, ohne
+   dass etwas meldet.
 
 ## Ausgabe und Ausgänge
 
