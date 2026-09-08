@@ -59,17 +59,17 @@ nicht hypothetisch, sondern terminiert.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** Der `ahead`-Zweig ist **entschieden**: Exit-Code gesetzt (und
+- [x] **(1)** Der `ahead`-Zweig ist **entschieden**: Exit-Code gesetzt (und
       damit im Nachtlauf sichtbar) **oder** begründet bei 0 belassen — die
       Begründung nennt, wer den stderr-Text dann liest.
-- [ ] **(2)** Ein **Bruch-Test** belegt die Entscheidung: ein Pin, der nicht in
+- [x] **(2)** Ein **Bruch-Test** belegt die Entscheidung: ein Pin, der nicht in
       der Liste steht, führt zu dem Verhalten, das (1) festlegt — mit echter
       Ausgabe, netzlos oder mit benanntem Netz-Bedarf.
-- [ ] **(3)** Das **100er-Fenster** steht in
+- [x] **(3)** Das **100er-Fenster** steht in
       [`harness/sensors/baseline-freshness.md`](../../../../harness/sensors/baseline-freshness.md)
       §Grenze, mit der gemessenen Zahl und der Bedingung, unter der es greift.
       Der Registereintrag trägt einen untersuchten Stand.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.

@@ -28,7 +28,10 @@
 #   --check-latest  Upstream-Audit (Netz, informativ, KEIN Gate, KEIN
 #                   fail-closed). Zwei Teile:
 #                   (A) Currency: die Release-LISTE des Kurs-Repos gegen den Pin
-#                       (exit 3 = neuerer Release-Tag; kein Auto-Update).
+#                       (exit 3 = neuerer Release-Tag ODER Pin nicht in der
+#                       Liste; kein Auto-Update). Ein Netz-/API-Ausfall bleibt
+#                       SKIP mit exit 0 -- gemessen: leere Liste faellt in den
+#                       skip-Zweig, nicht in den ahead-Zweig.
 #                   (B) Content-Drift am GEPINNTEN Tag: die Bytes BEIDER Bäume des
 #                       Release-Assets gegen das committete SHA256SUMS (exit 4 =
 #                       Tag verschoben / Asset neu). Netz-/Werkzeug-/Manifest-
@@ -279,7 +282,8 @@ check_latest() {
              printf '%s\n' "$newer" | sed 's/^/  /' >&2
              echo "  -> Re-Adopt erwägen: fetch-baseline-cache.sh <neuer-tag> (re-vendor), §Baseline-Pin + Pointer nach MR-Bump-Prozedur." >&2
              rc=3 ;;
-    ahead)   echo "fetch-baseline-cache: check-latest (Currency) — Pin ${tag} nicht in der Release-Liste (zurückgezogen/Fenster?); manuell prüfen." >&2 ;;
+    ahead)   echo "fetch-baseline-cache: check-latest (Currency) — Pin ${tag} NICHT in der Release-Liste; Currency unbestimmt (zurueckgezogenes Release, oder Pin ausserhalb der juengsten 100 Releases -- die Liste wird nicht paginiert). Manuell pruefen." >&2
+             rc=3 ;;
     skip)    echo "fetch-baseline-cache: check-latest SKIP (Currency) — Release-Liste nicht lesbar (Netz/API/Rate-Limit). Pin: ${tag}." ;;
   esac
   case "$authenticity" in
