@@ -21,7 +21,7 @@ der der Eintrag oben seine Notwendigkeit ableitet).
 
 **Berührte Spec-Stellen:** — (der Slice berührt keine Spec-Stelle).
 
-**Verantwortlich:** — (wird bei der Beanspruchung gesetzt).
+**Verantwortlich:** pt9912 (Implementer-Rolle).
 
 **Autor:** pt9912.
 
@@ -37,11 +37,21 @@ schützt, greift sie nicht.
 **Der Anlass ist eine Auftraggeber-Frage** (*„Warum brauchen wir diese
 Abweichung? Ist Baseline nicht gut genug?"*), und die Antwort ist gemessen:
 
-| | Vorlage `v6.6.0` | d-check |
+| | Vorlage `v6.9.0` | d-check |
 |---|---|---|
-| §3.3 | **13** Zeilen | **87** (72 davon Ausnahmen, 83 %) |
-| §3 gesamt | 109 Zeilen | 326 |
-| `AGENTS.md` gesamt | 10 498 B | 40 320 B |
+| §3.3 | **15** Zeilen | **88** (73 davon Ausnahmen, 83 %) |
+| §3 gesamt | 110 Zeilen | 328 |
+| `AGENTS.md` gesamt | 10 504 B | 40 994 B |
+
+**Nachgemessen bei der Beanspruchung (2026-09-16), gegen die jetzt aktuelle
+Vorlage `v6.9.0` statt der ursprünglich zitierten `v6.6.0`** — der Pin ist
+zwischen Anlage und Beanspruchung dieses Slice gehoben worden
+([slice-224](../done/slice-224-baseline-v690-bump.md)). Die Zahlen
+verschieben sich nur geringfügig (die Zeilendifferenz stammt aus dem
+Baseline-Bump selbst, byte-genau: siehe [`MR-072`](../../../../harness/conventions.md#mr-072)), der **Befund bleibt
+unverändert**: `AGENTS.template.md` §3.3 hat die zwei Kanon-Fälle unverändert
+seit `v6.6.0` (byte-identisch geprüft), und die Schlussfolgerung unten trägt
+weiter.
 
 **Zwei Kanon-Stellen tragen den Entscheid, und beide sind wörtlich geprüft.**
 
@@ -145,9 +155,15 @@ Behauptung.
 
 ## 4. Trigger
 
-**Beanspruchung:** slice-222 ist geschlossen (der Pin steht auf `v6.6.0`, und
-die Vorlage ist die Grundlage dieses Entscheids), WIP-Limit frei,
-Auftraggeber-Freigabe vom 2026-09-08.
+**Beanspruchung:** slice-222 war zum Anlege-Zeitpunkt geschlossen (der Pin
+stand damals auf `v6.6.0`, und die Vorlage war die Grundlage dieses
+Entscheids — inzwischen gehoben auf `v6.9.0` durch
+[slice-224](../done/slice-224-baseline-v690-bump.md), Befund unverändert,
+siehe §1 Nachmessung), WIP-Limit frei, Auftraggeber-Freigabe vom 2026-09-08.
+**Diese Zeile war zwischen dem `v6.9.0`-Bump und dieser Beanspruchung kurz
+veraltet** — ein Gegenwarts-Satz über einen bereits abgelösten Pin,
+gefunden vom unabhängigen Review von slice-224 (F-2), hier bei der
+Beanspruchung selbst nachgezogen, wie dort empfohlen.
 
 **Rückführung nach `open/`** (`in-progress→open`): wenn die Probe aus Schritt 1
 zeigt, dass die Zwei-Commit-Form im Alltag **nicht** trägt — etwa weil ein
@@ -201,9 +217,17 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Sub-Area-Modus-Begründung. **Der Abschnitt entfällt nie**; bedingt
 ist allein der Modus-Block am Ende.
 
-**Die drei Vorprüfungen entstehen spätestens bei der Beanspruchung**
-([`AGENTS.md`](../../../../AGENTS.md) §5) — dieser Plan liegt in `open/` und
-trägt sie noch nicht.
+**Die drei Vorprüfungen sind bei der Beanspruchung am 2026-09-16 bestätigt.**
+**Sub-Area-Wahl:** eine, `*` (Repo-Default) — der Slice ändert `AGENTS.md`
+und den Konventionsspeicher, `tools/harness/` ist nicht berührt. **Register**
+(40 Verzeichnisse, gemergter Stand): einschlägig ist
+[`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+(18×, bereits über der Schwelle) — er trägt §1 und §6 dieses Plans bereits;
+kein weiterer Treffer erreicht mit diesem Slice erstmals die Schwelle.
+**Nachtlauf:** `make nightly-state` am 2026-09-16 — `upstream-drift.yml`
+planmäßig rot (derselbe, mit slice-224 bereits gelesene Fremd-Release-Befund,
+inzwischen durch den Bump erledigt), `image-scan.yml` grün, ohne Bezug zu
+diesem Slice.
 
 **Ein Eintrag ist jetzt schon absehbar** und formt §6:
 [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
