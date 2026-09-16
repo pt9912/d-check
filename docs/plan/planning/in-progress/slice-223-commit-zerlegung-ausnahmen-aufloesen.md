@@ -140,14 +140,14 @@ fällt.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** `AGENTS.md` §3.3 trägt die Kanon-Form plus **einen** Satz für
+- [x] **(1)** `AGENTS.md` §3.3 trägt die Kanon-Form plus **einen** Satz für
       die Klasse, die die Zerlegung nicht braucht (vollständig ersetzter
       Inhalt), und einen **kurzen, korrekt zitierten** Rest-Block für die
       eine Klasse, die sie weiter braucht (Move-Commit ändert die bewegte
       Datei selbst — s. Plan-Änderung). Sechs der sieben Ausnahme-Blöcke sind
       weg; wo ein Leser mehr braucht, steht der Zeiger auf den
       Konventions-Index.
-- [ ] **(2)** **Fünf** `MR`-Einträge liegen in `harness/conventions/done/`,
+- [x] **(2)** **Fünf** `MR`-Einträge liegen in `harness/conventions/done/`,
       mit **zwei verschiedenen** Auflösungsgründen: *Baseline-Konformität* für
       059/062/063/064, *erschöpft* für 061. [`MR-013`](../../../../harness/conventions.md#mr-013) bleibt aktiv, getrimmt auf
       den einen verbleibenden Fall, `Ersetzt-Baseline-Regel` korrigiert. Index-Zeilen
@@ -158,11 +158,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Ausgabe — reiner Move (Rename-Score 100 %), dann die gekoppelten
       Verweise; `make gates` auf dem **zweiten** Commit grün, und der rote
       Zwischenstand ausdrücklich benannt.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
@@ -219,24 +219,98 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   und genau die Klasse, die
   [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
   (18×) führt. Der Slice muss das benennen, statt den Satz als Beleg
-  auszugeben. — **Ausgang:** \<offen\>
+  auszugeben. — **Ausgang:** eingetreten, wie vorab benannt — und mit einer
+  Korrektur, nicht nur einer Feststellung: Für die Slice-Lifecycle-Hälfte
+  trägt eine andere, tragfähige Begründung (reine Git-Semantik). Für die
+  MR-/Wellen-Hälfte trägt der Satz tatsächlich nicht — die richtige Stelle
+  ist `grundlagen-traceability.md` §Ruheort-Regel, jetzt in [`MR-013`](../../../../harness/conventions.md#mr-013)s
+  `Ersetzt-Baseline-Regel`-Feld korrigiert. Beleg:
+  `evidence/slice-223.md` bei
+  [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md).
 - **Eine Abweichung aufzulösen ist teurer als sie zu behalten, wenn sie
   gebraucht wird.** Sechs Einträge zu bewegen und die Praxis umzustellen ist
   irreversibel genug, dass ein Irrtum teuer wird: Käme [`MR-013`](../../../../harness/conventions.md#mr-013) zurück, wäre
   er ein neuer Eintrag mit neuer Nummer, und die Historie läge in zwei
   Richtungen. **Die Probe aus Schritt 1 ist die einzige Absicherung** — und
-  sie misst **einen** Übergang, nicht die Klasse. — **Ausgang:** \<offen\>
+  sie misst **einen** Übergang, nicht die Klasse. — **Ausgang:** entfallen
+  in der zunächst befürchteten Form: [`MR-013`](../../../../harness/conventions.md#mr-013) kommt nicht als ganzer neuer
+  Eintrag zurück, weil er gar nicht ganz aufgelöst wurde — er ist getrimmt,
+  nicht verschwunden. Das Risiko einer vollständigen Rückkehr besteht für
+  die verbleibende MR-/Wellen-Hälfte real fort, ist aber jetzt korrekt (statt
+  falsch) begründet und damit weniger wahrscheinlich, still zu brechen.
 - **Der gemeldete Widerspruch könnte in die andere Richtung aufzulösen sein.**
   `AGENTS.md` §1 sagt, bei Konflikt gewinnt die höherrangige Quelle — hier der
   Kanon. Aber die Möglichkeit, dass **unsere** Form die bessere ist und der
   richtige Weg ein Change Request an die Baseline wäre, ist mit dieser Regel
   nicht ausgeschlossen; sie ist nur nicht der Default. Der Slice entscheidet
   sich für Konformität, und das ist eine **Wahl**, kein Zwang. — **Ausgang:**
-  \<offen\>
+  weiter offen im Prinzip, aber durch den Implementierungs-Befund entschärft:
+  Die verbleibende MR-/Wellen-Abweichung ist keine Frage von „unsere Form vs.
+  Kanon" mehr, sondern eine **lokale Werkzeug-Grenze** (der `pre-commit`-Hook
+  prüft jeden Commit einzeln) gegenüber einem Kanon, der nur den Push-Tip
+  meint. Ein CR wäre hier unpassend — die Baseline hat bereits eine Antwort,
+  nur eine, die diese Sitzung lokal nicht einlösen kann.
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** `AGENTS.md` §3.3 ist von 88 auf 42 Zeilen geschrumpft (§3
+gesamt 328→282, `AGENTS.md` 40 994→37 816 B); sechs der sieben
+Ausnahme-Blöcke sind weg. Fünf `MR`-Einträge (059/061/062/063/064) liegen in
+`harness/conventions/done/`, [`MR-013`](../../../../harness/conventions.md#mr-013)
+bleibt aktiv, getrimmt auf den einen Fall, der ihn wirklich noch braucht.
+
+**Was gegen den Plan geändert wurde, und warum das kein Rückschritt ist.**
+Der Plan wollte sechs Einträge auflösen; geworden sind es fünf. Die
+Implementierung fand, dass die eigene Prämisse *„[`MR-013`](../../../../harness/conventions.md#mr-013) (drei Fälle): Die
+Slice-Datei bleibt im Move-Commit unverändert"* nur für zwei der drei Fälle
+zutrifft — und zwar für exakt die zwei, deren Auflösung der Plan wollte.
+Für den dritten (MR-/Wellen-Lifecycle-Move) bestätigte sich der bereits im
+Plan gemeldete Widerspruch als real: Der Kanon hat dafür eine Antwort
+(zwei Commits im selben Push), aber der lokale `pre-commit`-Hook macht sie
+lokal nicht gangbar. **Das ist keine Verwässerung des Ziels, sondern seine
+Präzisierung** — die Auflösung sollte immer nur so weit gehen, wie die
+Baseline wirklich trägt, und §1 hatte diese Grenze schon vorgezeichnet
+(„im Geltungsbereich der sechs Einträge wird sie nicht verletzt" — nur dass
+„nicht verletzt" für den dritten Fall genauer geprüft werden musste, statt
+pauschal für alle sechs übernommen zu werden).
+
+**Steering-Loop-Fund: der gemeldete Widerspruch trug in beide Richtungen.**
+[`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+(19×, weiterhin verkörpert) — der Plan hatte den mis-zitierten Kanon-Satz
+selbst schon als Risiko benannt, bevor implementiert wurde. Die
+Implementierung bestätigte den Verdacht **und** fand die eigentlich
+zutreffende Stelle (`grundlagen-traceability.md` §Ruheort-Regel), die jetzt
+in [`MR-013`](../../../../harness/conventions.md#mr-013)s
+`Ersetzt-Baseline-Regel`-Feld steht.
+
+**Was funktioniert hat: die Zwei-Commit-Form an diesem Slice selbst
+gefahren, wie geplant.** Die Beanspruchung (`b2aef315`) bündelte den reinen
+Slice-Move mit zwei fremden Dateien (`.d-check.yml`, `roadmap.md`) — die
+Slice-Datei selbst zeigt `0` Änderungen im Diff, Rename-Score 100 %, genau
+die Git-Semantik, die die Plan-Änderung für die Slice-Lifecycle-Hälfte
+tragfähig macht. Die Closure-Hälfte der Probe entsteht mit dem `git mv`
+dieses Slice nach `done/` (unten).
+
+**Was Friktion war: Zitier-Stellen wurden reaktiv gefunden, nicht vorab
+gezählt.** §3 Schritt 2 sah vor, vor dem Move zu zählen, wer auf die sechs
+Einträge verweist. Tatsächlich sind die Fundstellen (Referenzen in
+`harness/sensors/archive-wave.md`, wechselseitige Verweise unter den fünf
+bewegten Dateien selbst, `reviewer.md`s Zitat-Anker nach der
+§3.3-Umschreibung) über mehrere `doc-check`-Läufe hinweg aufgefallen, nicht
+in einer vorab geschriebenen Liste. Das Ergebnis ist dasselbe (`make gates`
+grün), der Weg dahin war die im Plan selbst als Risiko benannte
+Iteration statt der geplanten Einmal-Zählung.
+
+**Review-Runde 1:** \<wird nach dem Review ergänzt\>
+
+**Die drei Paarungen, gemessen.** **(a) Anker** — vakant: keine neue
+Steering-Loop-Regel verkörpert; der Lerneintrag liegt bei einem
+bestehenden Registereintrag. **(b) Folge-Slice** — keiner genannt; §1
+Abgrenzung 1 verweist auf [slice-221](../next/slice-221-agents-md-tabellenzellen.md)
+als bereits bestehenden, unabhängigen Folge-Slice für §3/§5 insgesamt, nicht
+als von diesem Slice neu erzeugter. **(c) Register** — alle zitierten Pfade
+lösen auf; ein neuer Beleg liegt als `evidence/slice-223.md` bei
+`citation-stretched-beyond-scope`.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
