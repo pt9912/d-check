@@ -8,7 +8,7 @@
 `max-open-tasks: 0` für `## N. Definition of Done`).
 
 **Geltungsbereich:** genau eine Datei —
-[`docs/plan/planning/next/slice-221-agents-md-tabellenzellen.md`](../planning/in-progress/slice-221-agents-md-tabellenzellen.md).
+[`docs/plan/planning/in-progress/slice-221-agents-md-tabellenzellen.md`](../planning/in-progress/slice-221-agents-md-tabellenzellen.md).
 
 **Folge-Slice:** [`slice-225`](../planning/open/slice-225-gegenstand-entfallen-uebernommen.md)
 
@@ -70,7 +70,7 @@ gegen `slice-221`s Datei **ohne** den `exempt-paths`-Eintrag unten — vorher
 
 | Datei | Zeile/Section | Wert |
 |---|---|---|
-| [`.d-check.closure.yml`](../../../.d-check.closure.yml) | `structure`-Regel für `## N. Definition of Done`, `exempt-paths` | `docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md` <!-- d-check:ignore (slice-221 liegt zum Anlegen dieses Carveouts noch in next/, wandert erst mit ihm nach done/) --> |
+| [`.d-check.closure.yml`](../../../.d-check.closure.yml) | `structure`-Regel für `## N. Definition of Done`, `exempt-paths` | `docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md` <!-- d-check:ignore (slice-221 liegt noch nicht in done/, wandert erst mit dem Closure-Move dorthin) --> |
 
 ## Verifikation (nach Auflösung)
 

@@ -322,7 +322,16 @@ menschliches Verhaltensmuster, sondern eine Werkzeug-Lücke, die
 schließt) — er steht hier, weil hier der Ort ist, an dem er zum ersten Mal
 sichtbar wurde.
 
-**Review-Runde 1:** \<wird nach dem Review ergänzt\>
+**Review-Runde 1:** unabhängiger Review
+([`docs/reviews/2026-09-16-slice-221-gegenstand-entfallen-review-r1.md`](../../../reviews/2026-09-16-slice-221-gegenstand-entfallen-review-r1.md)),
+0 HIGH · 1 MEDIUM · 2 LOW · 1 INFO. Alle vier eingearbeitet: Label/Ziel-Drift
+im `Geltungsbereich`-Link von [`CO-002`](../../carveouts/CO-002-slice-221-gegenstand-entfallen.md)
+korrigiert (`next/` → `in-progress/`, MEDIUM — selbst ein Beispiel der oben
+zitierten [`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)-Klasse),
+ein veralteter `d-check:ignore`-Begründungstext in derselben Datei
+nachgezogen (LOW), zwei Register-Zählstände oben auf den aktuellen Beleg-Bestand
+korrigiert (LOW), dieser Platzhalter durch das Review-Ergebnis ersetzt (INFO).
+Keine wiederkehrende Finding-Klasse — keine neue Register-Beobachtung.
 
 **Die drei Paarungen, gemessen.** **(a) Anker** — vakant: keine neue
 Steering-Loop-Regel verkörpert. **(b) Folge-Slice** —
@@ -361,12 +370,12 @@ Fehler gehört hierher, weil er die Sichtung selbst betrifft:
 Klasse ist eine andere — *„Artefakt ⇒ registriert" ungeprüft*, nicht doppelte
 Beschreibung. **Zitiert war der Titel, nicht der Inhalt** — genau
 [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
-(18×), und der Eintrag bekommt dafür bei der Closure seinen Beleg.
+(19×), und der Eintrag bekommt dafür bei der Closure seinen Beleg.
 
 **Vier Einträge sind wirklich einschlägig:**
 
 - [`semantic-change-body-only-edges-stale`](../observations/BEO-ALL/semantic-change-body-only-edges-stale/observation.md)
-  (16×, verkörpert) — **der tragende.** Substanz aus §4 in die Sensor-Dateien
+  (17×, verkörpert) — **der tragende.** Substanz aus §4 in die Sensor-Dateien
   zu ziehen **ist** eine Semantik-Verschiebung, deren Kanten mitmüssen: Wer
   heute auf eine §4-Zeile verweist, muss danach noch ankommen. In slice-218
   hat genau diese Klasse dreimal zugeschlagen, jede Review-Runde einmal.
@@ -380,7 +389,7 @@ Beschreibung. **Zitiert war der Titel, nicht der Inhalt** — genau
   vorab; **bei dieser Beanspruchung bestätigt**, unverändert: mechanische
   Vollprüfung über die Zeichenmenge plus fünf Zellen Wort für Wort.
 - [`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)
-  (3×, verkörpert als [`MR-070`](../../../../harness/conventions.md#mr-070))
+  (5×, verkörpert als [`MR-070`](../../../../harness/conventions.md#mr-070))
   — **einschlägig dem Thema nach, aber nicht dem Geltungsbereich nach.**
   [`MR-070`](../../../../harness/conventions.md#mr-070) gilt der **mechanischen** Ersetzung über mehr als eine Datei; §3
   schreibt ausdrücklich das Gegenteil vor (eine Datei nach der anderen, jede
