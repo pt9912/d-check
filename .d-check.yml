@@ -258,6 +258,15 @@ ignore-refs:
     refs: ["docs/plan/planning/open/slice-223-commit-zerlegung-ausnahmen-aufloesen.md"]
   - in: docs/plan/planning/done/slice-224-baseline-v690-bump.md
     refs: ["docs/plan/planning/open/slice-223-commit-zerlegung-ausnahmen-aufloesen.md"]
+  # Dieselbe Klasse, eine Lifecycle-Stufe spaeter: MR-013 (jetzt in
+  # conventions/done/, slice-223 hat es dort aufgeloest) zitiert slice-223
+  # dreifach als "liegt in in-progress/" -- der Stand zum Zeitpunkt, als
+  # MR-013 diesen Beleg schrieb. Slice-223 ist inzwischen selbst nach
+  # done/ gewandert; der Beleg ist ein Lauf-Beleg seiner Zeit, kein
+  # lebender Zeiger (Modul 6, Folge-Slice-Paarung toleriert den
+  # Lifecycle-Fortschritt).
+  - in: harness/conventions/done/MR-013-lifecycle-move-buendelung.md
+    refs: ["docs/plan/planning/in-progress/slice-223-commit-zerlegung-ausnahmen-aufloesen.md"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
   # ausgeloest, die docs/plan/planning/observations/README.md seit
   # slice-190 benennt: ein

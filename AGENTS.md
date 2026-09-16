@@ -194,7 +194,7 @@ jeweiligen Commits, und ein Zwei-Commit-Vorgang, dessen Korrektur bereits
 im Arbeitsbaum vorliegt, bevor der reine Move committet wird, passiert ihn
 anstandslos, obwohl der Move-Commit für sich genommen inkonsistent bleibt
 — genau das hat die eigene Commit-Historie von
-[slice-223](docs/plan/planning/in-progress/slice-223-commit-zerlegung-ausnahmen-aufloesen.md)
+[slice-223](docs/plan/planning/done/slice-223-commit-zerlegung-ausnahmen-aufloesen.md)
 gezeigt, als der unabhängige Review sie isoliert nachstellte. [`MR-013`](harness/conventions.md#mr-013)
 ist seither vollständig aufgelöst
 ([`conventions/done/`](harness/conventions/done/MR-013-lifecycle-move-buendelung.md)).
