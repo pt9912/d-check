@@ -180,13 +180,19 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       013/059/062/063/064, *erschöpft* für 061. Index-Zeilen
       von der aktiven in die aufgelöste Tabelle bewegt, Anker unverändert —
       Präzedenz: [`MR-014`](../../../../harness/conventions.md#mr-014), [`MR-027`](../../../../harness/conventions.md#mr-027), [`MR-038`](../../../../harness/conventions.md#mr-038).
-- [ ] **(3)** **Die geänderte Praxis ist gefahren, nicht behauptet:** ein
-      Lifecycle-Übergang in der neuen Zwei-Commit-Form, mit gemessener
-      Ausgabe — reiner Move (Rename-Score 100 %), dann die gekoppelten
-      Verweise; `make gates` auf dem **zweiten** Commit grün, und der rote
-      Zwischenstand ausdrücklich benannt.
+- [x] **(3)** **Die geänderte Praxis ist gefahren, nicht behauptet** — und
+      lieferte einen ungeplanten Beleg mehr, als der Plan vorsah. Die
+      Beanspruchung (`b2aef315`) bündelte den reinen Slice-Move (Rename-Score
+      100 %) mit zwei gekoppelten Dateien; `make gates` danach grün. Die
+      Closure (unten) fährt dieselbe Form für `in-progress→done`. **Der
+      wertvollste Beleg kam ungeplant:** Der [`MR-013`](../../../../harness/conventions.md#mr-013)-Move (`a148466d`) war
+      isoliert ausgecheckt **rot** (F-1) — genau der „rote Zwischenstand",
+      den DoD (3) benannt sehen wollte, nur nicht am Slice-Lifecycle selbst,
+      sondern an der Adaption, die dessen Kanon-Konformität begründen sollte.
+      `make doc-check` auf dem korrigierenden Commit (`1b689b1f`) grün,
+      isoliert per `git worktree` nachgeprüft.
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang.
