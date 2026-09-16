@@ -245,6 +245,19 @@ ignore-refs:
     refs: [".harness/baseline/v6.5.0/**"]
   - in: docs/plan/adr/0084-mentions-eigenes-modul.md
     refs: [".harness/baseline/v6.3.1/**"]
+  # Folge-Slice-Zitate zweier eingefrorener done/-Slices zeigten auf
+  # slice-223, solange es in open/ lag (slice-222 zweifach: DoD-Punkt (3) und
+  # die (b)-Paarung; slice-224s Review-Report F-2 einfach). Modul 6 sagt
+  # ausdruecklich, dass die Folge-Slice-Paarung den Lifecycle-Stand toleriert
+  # -- "bis zur Pruefung kann er weitergewandert sein" -- die Aussage
+  # "liegt als Datei in open/" ist Lauf-Beleg ihrer Zeit, kein lebender
+  # Zeiger; nachziehen wuerde den Beleg verfaelschen (dieselbe Begruendung
+  # wie beim Review-Report-Eintrag oben). Mit der Beanspruchung von
+  # slice-223 (open/ -> in-progress/) bricht der woertliche Pfad.
+  - in: docs/plan/planning/done/slice-222-baseline-v660-bump.md
+    refs: ["docs/plan/planning/open/slice-223-commit-zerlegung-ausnahmen-aufloesen.md"]
+  - in: docs/plan/planning/done/slice-224-baseline-v690-bump.md
+    refs: ["docs/plan/planning/open/slice-223-commit-zerlegung-ausnahmen-aufloesen.md"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
   # ausgeloest, die docs/plan/planning/observations/README.md seit
   # slice-190 benennt: ein
