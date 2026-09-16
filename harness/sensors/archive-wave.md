@@ -58,8 +58,8 @@ Testsuite ist deshalb `make archive-wave-test` und **nicht** Teil von
 ## Bindung
 
 **Kein Gate** — weder in `gates` noch in `ci`. Die Commit-Granularität der
-drei Modi ist geregelt: [`MR-059`](../conventions/MR-059-wellen-archiv-stub-move.md)
-(Welle) · [`MR-062`](../conventions/MR-062-wellenloser-slice-archiv-move.md)
-(Einzel-Slice) · [`MR-063`](../conventions/MR-063-eigenstaendiger-review-archiv-move.md)
-(eigenständiger Review) · [`MR-064`](../conventions/MR-064-buendelung-slice-archiv-move.md)
+drei Modi ist geregelt: [`MR-059`](../conventions/done/MR-059-wellen-archiv-stub-move.md)
+(Welle) · [`MR-062`](../conventions/done/MR-062-wellenloser-slice-archiv-move.md)
+(Einzel-Slice) · [`MR-063`](../conventions/done/MR-063-eigenstaendiger-review-archiv-move.md)
+(eigenständiger Review) · [`MR-064`](../conventions/done/MR-064-buendelung-slice-archiv-move.md)
 (Bündelung mehrerer Einzel-Slice-Moves).

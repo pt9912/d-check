@@ -94,6 +94,30 @@ eigener Commit nach dem Umzug**"*. [`MR-013`](../../../../harness/conventions.md
 nennt `modul-05`, **nicht** diese Stelle; die Abweichung ist also gegen die
 falsche Regel deklariert.
 
+**Plan-Änderung bei der Implementierung (2026-09-16) — [`MR-013`](../../../../harness/conventions.md#mr-013) löst sich nur
+zur Hälfte auf.** Die obige Analyse *„[`MR-013`](../../../../harness/conventions.md#mr-013) (drei Fälle): Die Slice-Datei
+bleibt im Move-Commit unverändert"* trifft nur auf **zwei** seiner drei Fälle
+zu (Slice-Lifecycle-Move, Beanspruchung — dort ändert sich die bewegte Datei
+nicht, nur andere Dateien reisen mit; das ist plain Git-Semantik und braucht
+keine Ausnahme). Der **dritte** Fall — *Ausnahme MR-/Wellen-Lifecycle-Move*
+(`conventions/` → `conventions/done/`) — ändert die **bewegte Datei selbst**
+(Link-Tiefen-Fixes), fällt damit unter **keine** der beiden Kanon-Bedingungen
+und wurde in dieser Sitzung noch aktiv gebraucht: der Move von [`MR-071`](../../../../harness/conventions/done/MR-071-baseline-v660.md#mr-071--baseline-pin-hebung-auf-v660-dreizehnter-nachtrag-zu-mr-011-nachtrag-zu-mr-023) nach
+`conventions/done/` (slice-224) brauchte genau diese Bündelung, weil der
+lokale `pre-commit`-Hook `doc-check` auf **jedem** Commit fährt — der
+kanonische Zwei-Commit-Weg (*„der `git mv` zieht die Pfad-Berichtigung nach
+sich, als eigener Commit nach dem Umzug"*, `grundlagen-traceability.md`)
+wäre zwischen den beiden Commits lokal gar nicht committierbar, weil der
+Zwischenstand (Datei am neuen Pfad, Links noch für den alten berechnet) den
+Hook sofort rot macht. **Konsequenz:** [`MR-013`](../../../../harness/conventions.md#mr-013) wird nicht aufgelöst,
+sondern auf genau diesen einen Fall **getrimmt**; sein
+`Ersetzt-Baseline-Regel`-Feld wird von `modul-05` (falsch, wie §1 oben schon
+zeigte) auf die tatsächlich einschlägige Kanon-Stelle korrigiert. DoD (2)
+zählt deshalb **fünf** aufgelöste Einträge (059/061/062/063/064), nicht
+sechs. Der gemeldete Widerspruch oben besteht als Befund fort — er trägt
+jetzt die Begründung, warum die Abweichung **bleibt**, statt warum sie
+fällt.
+
 **Abgrenzung — vier Punkte, jeder mit Grund:**
 
 1. **Kein anderer Abschnitt von `AGENTS.md`.** §3 hat 326 Zeilen gegen 109 in
@@ -116,16 +140,19 @@ falsche Regel deklariert.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** `AGENTS.md` §3.3 trägt die Kanon-Form plus **einen** Satz, der
-      sagt, wann die Zerlegung nicht greift (vollständig ersetzter Inhalt ·
-      Move-Commit lässt die bewegte Datei unverändert). Die sieben
-      Ausnahme-Blöcke sind weg; wo ein Leser mehr braucht, steht der Zeiger
-      auf den Konventions-Index.
-- [ ] **(2)** Die sechs `MR`-Einträge liegen in `harness/conventions/done/`,
+- [ ] **(1)** `AGENTS.md` §3.3 trägt die Kanon-Form plus **einen** Satz für
+      die Klasse, die die Zerlegung nicht braucht (vollständig ersetzter
+      Inhalt), und einen **kurzen, korrekt zitierten** Rest-Block für die
+      eine Klasse, die sie weiter braucht (Move-Commit ändert die bewegte
+      Datei selbst — s. Plan-Änderung). Sechs der sieben Ausnahme-Blöcke sind
+      weg; wo ein Leser mehr braucht, steht der Zeiger auf den
+      Konventions-Index.
+- [ ] **(2)** **Fünf** `MR`-Einträge liegen in `harness/conventions/done/`,
       mit **zwei verschiedenen** Auflösungsgründen: *Baseline-Konformität* für
-      013/059/062/063/064, *erschöpft* für 061. Index-Zeilen von der aktiven
-      in die aufgelöste Tabelle bewegt, Anker unverändert — Präzedenz:
-      [`MR-014`](../../../../harness/conventions.md#mr-014), [`MR-027`](../../../../harness/conventions.md#mr-027), [`MR-038`](../../../../harness/conventions.md#mr-038).
+      059/062/063/064, *erschöpft* für 061. [`MR-013`](../../../../harness/conventions.md#mr-013) bleibt aktiv, getrimmt auf
+      den einen verbleibenden Fall, `Ersetzt-Baseline-Regel` korrigiert. Index-Zeilen
+      von der aktiven in die aufgelöste Tabelle bewegt, Anker unverändert —
+      Präzedenz: [`MR-014`](../../../../harness/conventions.md#mr-014), [`MR-027`](../../../../harness/conventions.md#mr-027), [`MR-038`](../../../../harness/conventions.md#mr-038).
 - [ ] **(3)** **Die geänderte Praxis ist gefahren, nicht behauptet:** ein
       Lifecycle-Übergang in der neuen Zwei-Commit-Form, mit gemessener
       Ausgabe — reiner Move (Rename-Score 100 %), dann die gekoppelten

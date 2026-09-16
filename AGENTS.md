@@ -154,10 +154,17 @@ permanent — die Berechtigungsfrage ist ein Urteil.)*
 
 ### 3.3 git mv + Inhaltsänderung = zwei Commits
 
-Wenn eine Datei verschoben **und** der Inhalt umgeschrieben wird:
+Wenn eine Datei verschoben **und** der Inhalt umgeschrieben wird, sind das
+zwei Commits — der Move-Commit bleibt rein (Git erkennt R-Rename). Welcher
+zuerst kommt, sagt der Vorgang:
 
-1. `git mv source target` → eigener Commit (reiner Move, Git erkennt R-Rename).
-2. Inhalt umschreiben → zweiter Commit.
+1. Regelfall: `git mv source target` → eigener Commit, dann Inhalt umschreiben.
+2. Lifecycle-Übergang nach `done/`: erst der Inhalt (DoD-Häkchen,
+   Closure-Notiz), dann der reine `git mv` — die Notiz ist die Bedingung für
+   `done/`, nicht ihre Folge. Andere Dateien (Roadmap-Ruhe-Marker,
+   Pfad-Verweise) dürfen im selben Move-Commit mitreisen, ohne die
+   Rename-Erkennung zu berühren — die bewegte Datei selbst bleibt
+   unverändert.
 
 **Begründung:** Sonst fällt die Rename-Detection unter die
 50%-Similarity-Schwelle und `git log --follow` wird unzuverlässig.
@@ -167,77 +174,24 @@ Lifecycle-Verzeichnis ↔ Roadmap-Ruhe-Marker in beide Richtungen. Die
 **Commit-Zerlegung** selbst — Move und Inhaltsänderung in einem Commit — sieht
 kein Gate. *(Auflösungs-Trigger: permanent.)*
 
-**Ausnahme Slice-Lifecycle-Move (`in-progress/` → `done/`):** Der
-`git mv`-Commit trägt hier **zusätzlich** den Roadmap-Flip §Offene Wellen
-(zurück auf den Ruhe-Marker „Nichts in Arbeit", sofern kein Slice mehr
-beansprucht ist — der Marker steht dann **zusätzlich** zur Zeiger-Liste;
-das flache Wellendokument darf offen bleiben, nur die Bijektion muss
-stimmen: `wave-drift` misst unter `mode: many` Zeiger ⟺ Dateien in beide
-Richtungen) und alle Pfad-Verweise auf den Slice
-(Roadmap, §4, `harness/README.md` §Sensors) von `in-progress/` nach
-`done/`. Sonst ist der Commit gate-rot: `make planning-check` koppelt
-in-progress-Stand und Roadmap atomar, und die alten Verweise laufen ins
-Leere (`target-missing`). Nur der **Slice-Body** (DoD-Haken + Closure-Notiz;
-historische Slices auch die Status-Zeile) bleibt Commit 2 — die Slice-Datei selbst ist im Move-Commit
-unverändert, also hält die Rename-Detection. Kanonisch:
-[`MR-013`](harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise).
-
-**Ausnahme Beanspruchung (`open/` → `in-progress/`):** dieselbe Kopplung mit
-umgekehrtem Vorzeichen — der Ruhe-Marker **verlässt** §Offene Wellen, und die
-Pfad-Verweise auf den Slice wandern von `open/` nach `in-progress/`. Auch hier
-ist ein byte-reiner Move-Commit gate-rot: `planning-drift` meldet den Slice in
-`in-progress/` gegen die Roadmap, die den Marker noch trägt. Kanonisch:
-[`MR-013`](harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise).
+**Wo die Zerlegung nichts schützt, greift sie nicht:** Ersetzt ein Stub den
+Volltext einer Datei im selben Akt vollständig, der sie verschiebt — kein
+Zwischenzustand mit unverändertem Inhalt (Wellen-/Slice-/Review-Archiv-Stub-
+Moves, die einmalige Register-Formatmigration) —, bleibt es bewusst bei
+**einem** deklarierten Commit; git zeigt reine `D`/`A`-Paare, keine Renames.
+Einzelfälle im Konventionsspeicher (`harness/conventions/done/`).
 
 **Ausnahme MR-/Wellen-Lifecycle-Move** (`conventions/` → `conventions/done/`,
 flaches Wellendokument → `done/`): hier trägt der Move-Commit die
 **Link-Tiefen-Fixes der bewegten Datei selbst** mit — ein reiner Move wäre
 `doc-check`-rot, weil die relativen Verweise vom neuen Ort nicht mehr
-auflösen. Alles Übrige bleibt Commit 2; sinkt der Rename-Score dadurch
-Richtung 50 %, deklariert die Commit-Botschaft den Move ausdrücklich als
-`git mv`. Kanonisch:
+auflösen, und der lokale `pre-commit`-Hook prüft `doc-check` auf **jedem**
+Commit: der kanonische Zwei-Commit-Weg (Move, dann Korrektur, beide im
+selben Push, `grundlagen-traceability.md`) wäre zwischen den beiden Commits
+lokal gar nicht committierbar. Alles Übrige bleibt Commit 2; sinkt der
+Rename-Score dadurch Richtung 50 %, deklariert die Commit-Botschaft den Move
+ausdrücklich als `git mv`. Kanonisch:
 [`MR-013`](harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise).
-
-**Ausnahme Wellen-Archiv-Stub-Move** (`tools/archive-wave`, Modul 6
-Schritt 4): hier gibt es **keine** Zwei-Commit-Zerlegung, weil es keine
-Phase gibt, in der die bewegte Datei ihren Inhalt unverändert behält — der
-Stub *ersetzt* den Volltext im selben Akt, der ihn verschiebt. Ein
-Wellen-Archivierungs-Commit bleibt deshalb bewusst **ein** Commit, in der
-Botschaft ausdrücklich als solcher deklariert; git zeigt reine `D`/`A`-Paare,
-keine Renames. Kanonisch:
-[`MR-059`](harness/conventions.md#mr-059--wellen-archiv-stub-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013).
-
-**Ausnahme Register-Formatmigration** (Beobachtungs-Register, Tabellen- auf
-Verzeichnis-Form, slice-195, **einmalig, erschöpft**): dieselbe Begründung
-wie beim Wellen-Archiv-Stub-Move — die neue Verzeichnisform ersetzt die
-Tabelle im selben Akt, der sie verschiebt, ohne Phase mit unverändertem
-Inhalt. Anders als die vier übrigen Fälle deckt diese Ausnahme **keinen**
-wiederkehrenden Vorgang: sie ist mit dem einen Migrations-Commit, den sie
-trägt, bereits verbraucht und begründet keinen künftigen Formatwechsel.
-Kanonisch:
-[`MR-061`](harness/conventions.md#mr-061--register-formatmigration-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013).
-
-**Ausnahme Wellenloser Einzel-Slice-Archiv-Move** (`tools/archive-wave
--slice=<id>`, seit slice-196): dieselbe Begründung wie beim
-Wellen-Archiv-Stub-Move, jetzt für den wellenlosen Modus — der Stub ersetzt
-den Volltext im selben Akt, der die Slice-Datei nach
-`docs/plan/planning/done/wellenlos/` verschiebt, ohne Phase mit
-unverändertem Inhalt. Anders als die Register-Formatmigration ist dies ein
-**wiederkehrender** Vorgang (jeder künftige `-slice=<id> -apply`-Lauf), wie
-der Wellen-Archiv-Stub-Move — nur mit anderem Geltungsbereich. Kanonisch:
-[`MR-062`](harness/conventions.md#mr-062--wellenloser-einzel-slice-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013).
-
-**Ausnahme Eigenständiger Review-Archiv-Move** (`tools/archive-wave
--review=<datei>`, seit slice-198): dieselbe Begründung wie bei den beiden
-vorigen Ausnahmen — der Stub ersetzt den Volltext des Review-Reports im
-selben Akt, der ihn nach `docs/reviews/archiv/` verschiebt, ohne Phase mit
-unverändertem Inhalt. Anders als bei Welle und Einzel-Slice dürfen hier
-zusätzlich **mehrere unabhängige Review-Moves in einem gemeinsamen Commit
-gebündelt werden**, wenn die Operation mechanisch uniform und
-werkzeug-verifiziert bleibt (kein inhaltliches Unterscheidungsurteil je
-Datei) — dieselbe Praxis, die der Einzel-Slice-Modus bereits vorlebt (45
-gebündelte Archive in einem Commit, slice-197). Kanonisch:
-[`MR-063`](harness/conventions.md#mr-063--eigenständiger-review-archiv-move-ist-ein-einziger-deklarierter-commit-nachtrag-zu-mr-013).
 
 ### 3.4 Architektur sprach-/meilensteinfrei; Spec-Straten nie abwärts
 
