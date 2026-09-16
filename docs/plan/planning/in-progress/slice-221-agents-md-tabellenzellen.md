@@ -170,11 +170,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       `make gate-consistency` grün (alle 54 Namen weiterhin in der
       Autoritäts-Doku) und `make doc-check` grün.
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
 - [x] Jedes Risiko aus §6 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 **Gegenstand:** entfallen — [slice-222](../done/slice-222-baseline-v660-bump.md)
 hat `AGENTS.md` §4 zwischen Anlage und Wiederaufnahme dieses Slice durch eine
