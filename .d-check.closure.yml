@@ -226,11 +226,19 @@ structure:
   # ausgenommen -- sie tragen den offenen Review-Haken, der welle-86 ausgeloest
   # hat, und ein nachtraeglicher Haken behauptete einen Review, den es nicht
   # gab.
+  # CO-002: slice-221 schliesst ohne Lieferung -- sein Gegenstand ist
+  # zwischen Anlage und Wiederaufnahme entfallen (slice-222 hat AGENTS.md
+  # Paragraph 4 anders geloest). Baseline v6.9.0 kennt fuer genau diesen
+  # Fall einen vierten Lifecycle-Zweig (Gegenstand: entfallen/uebernommen,
+  # Liefer-Haken bleiben leer) -- diese Regel kennt ihn noch nicht.
+  # Folge-Slice slice-225 macht die Erkennung generisch; bis dahin ist
+  # slice-221 die einzige, namentlich gefuehrte Ausnahme.
   - files: "docs/plan/planning/done/slice-*.md"
     exempt-paths:
       - "docs/plan/planning/done/slice-0??-*"
       - "docs/plan/planning/done/slice-1[0-6]?-*"
       - "docs/plan/planning/done/slice-170-*"
+      - "docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md"
     section-pattern: '^#{2,3} [0-9]+\. Definition of Done'
     sections: each
     max-open-tasks: 0

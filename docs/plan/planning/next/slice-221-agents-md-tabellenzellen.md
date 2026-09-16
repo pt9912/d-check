@@ -169,12 +169,20 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Vorher/Nachher-Inventur je Target über die Zeichenmenge, plus
       `make gate-consistency` grün (alle 54 Namen weiterhin in der
       Autoritäts-Doku) und `make doc-check` grün.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
 - [ ] Jedes Risiko aus §6 trägt einen Ausgang.
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+
+**Gegenstand:** entfallen — [slice-222](../done/slice-222-baseline-v660-bump.md)
+hat `AGENTS.md` §4 zwischen Anlage und Wiederaufnahme dieses Slice durch eine
+andere Lösung ersetzt (Streichung statt Kürzung). Die Liefer-Punkte (1)–(3)
+bleiben deshalb bewusst leer — [`CO-002`](../../carveouts/CO-002-slice-221-gegenstand-entfallen.md)
+dokumentiert, warum `make verify-closure-notes` das für diesen einen Slice
+toleriert, bis [slice-225](../open/slice-225-gegenstand-entfallen-uebernommen.md)
+die Form generisch trägt.
 
 ## 3. Plan (vor Code)
 
@@ -259,7 +267,9 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   womöglich eine Regel aus dem Dokument, das **jeder Lauf lädt**, in eines,
   das nur bei Bedarf gelesen wird. **Das ist der teuerste Fehler, den dieser
   Slice machen kann**, und §4 nennt ihn als Rückführungs-Bedingung. —
-  **Ausgang:** \<offen\>
+  **Ausgang:** entfallen — der Gegenstand (die §4-Tabelle, deren Zellen
+  hätten wandern sollen) existiert nicht mehr; das Risiko kann an einem
+  nicht mehr existierenden Gegenstand nicht eintreten.
 - **Der Slice ist groß, und seine Größe ist nicht die Zahl der Liefer-Punkte,
   sondern die Zahl der Urteile:** 43 Zellen, jede einzeln. Die
   Ein-Sitzungs-Review-Grenze
@@ -268,13 +278,16 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   nicht in den Bericht. **Vorschlag, hier schon benannt:** eine mechanische
   Vollprüfung entlang der Zeichenmenge (Inventur vorher/nachher, kein Zeichen
   darf verschwinden) plus eine Stichprobe von fünf Zellen Wort für Wort.
-  Bestätigt oder ersetzt wird sie bei der Beanspruchung. — **Ausgang:** \<offen\>
+  Bestätigt oder ersetzt wird sie bei der Beanspruchung. — **Ausgang:**
+  entfallen — ohne Gegenstand keine Zellen, die die Ein-Sitzungs-Grenze
+  überschreiten könnten.
 - **Ein `cell-max-chars` auf §4 ist eine neue Schwelle, und Schwellen altern.**
   Eine zu enge zwingt künftige Autoren, Substanz in die Sensor-Datei zu
   schreiben — das ist der Zweck. Eine zu weite hält nichts. Die Wahl ist ein
   Urteil, das kein Sensor prüft; sie gehört in den
   Konfigurations-Kommentar, samt der Zahl, aus der sie abgeleitet wurde. —
-  **Ausgang:** \<offen\>
+  **Ausgang:** entfallen — kein `cell-max-chars`-Wächter entsteht, weil
+  die Tabelle, die er hätte bewachen sollen, nicht mehr existiert.
 
 ## 7. Closure-Notiz
 
