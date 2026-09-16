@@ -23,6 +23,47 @@ Entscheidung, er stellt eine bereits geltende Regel wieder her.
 
 ## 1. Ziel und Abgrenzung
 
+**Gegenstand entfallen (2026-09-16, bei der Wiederaufnahme nach dem
+`v6.9.0`-Bump).** Der eigene Trigger dieses Slice (§4 unten) verlangte einen
+Neuzuschnitt gegen die dann aktuelle Vorlage, sobald der Baseline-Bump
+abgeschlossen ist — [slice-224](../done/slice-224-baseline-v690-bump.md) hat
+das inzwischen getan. Bei diesem Neuzuschnitt zeigte sich: **Der Gegenstand
+existiert nicht mehr.** [slice-222](../done/slice-222-baseline-v660-bump.md)
+hat `AGENTS.md` §4 — zwischen der Anlage dieses Slice und seiner geplanten
+Wiederaufnahme — bereits vollständig durch die `v6.6.0`-Kanon-Form ersetzt:
+Die 41-Zeilen-Tabelle, deren Zellen dieser Slice hätte kürzen sollen, ist
+komplett verschwunden, nicht geschrumpft — §4 ist seither ein Sieben-Zeilen-
+Zeiger auf `harness/README.md` §Sensors. Nachgemessen gegen `v6.9.0`
+(unverändert seit `v6.6.0`, siehe `AGENTS.template.md`-Diff): keine erneute
+Änderung an §4s Form.
+
+**Das ist eine andere, radikalere Lösung desselben Problems, kein
+Zufalls-Nebeneffekt.** slice-222 hat sich — auf ausdrückliche
+Auftraggeber-Weisung, nicht durch diesen Slice — für „ganz streichen" statt
+„je Zelle kürzen" entschieden, genau wie
+[`form-vom-nachbarn-statt-von-der-vorlage`](../observations/BEO-ALL/form-vom-nachbarn-statt-von-der-vorlage/observation.md)
+es für diesen Fall schon vorausgesagt hatte: „an der Vorlage nachschlagen"
+lieferte eine andere Antwort als „vom Bestand ableiten". Jede DoD dieses
+Plans (Zellen kürzen, `cell-max-chars`-Wächter, Vorher/Nachher-Inventur)
+setzt eine Tabelle voraus, die es nicht mehr gibt — sie ist nicht erfüllbar
+und nicht mehr sinnvoll.
+
+**Was bleibt und was nicht.** Abgrenzung 3 dieses Plans hatte
+`harness/README.md`s eigene Sensors-Tabelle ausdrücklich ausgeklammert —
+„ob sie zu lang ist, ist nicht gemessen … ein Folge-Slice übernähme es". Das
+bleibt unerledigt und ist jetzt der einzige noch offene Teil des
+ursprünglichen Anliegens; er braucht einen **neuen** Slice, keine
+Wiederbelebung dieses hier, weil sein Gegenstand ein anderer ist
+(`harness/README.md`, nicht `AGENTS.md`). Dieser Slice schließt ohne
+Lieferung — Ausgang „entfallen", nicht „übernommen": kein anderer Slice hat
+seinen konkreten Gegenstand fortgeführt, der Gegenstand selbst ist durch
+eine andere Entscheidung verschwunden.
+
+---
+
+**Der ursprüngliche Plan, unverändert stehen gelassen als Beleg dessen, was
+zum Anlege-Zeitpunkt (2026-09-08) galt:**
+
 **Ziel.** Die Gates-Tabelle in [`AGENTS.md`](../../../../AGENTS.md) §4 trägt
 wieder **eine Zeile Zusage je Target** statt eines Absatzes; die Substanz zieht
 dorthin, wo sie ohnehin hingehört — `harness/sensors/<target>.md`. Ein neuer
