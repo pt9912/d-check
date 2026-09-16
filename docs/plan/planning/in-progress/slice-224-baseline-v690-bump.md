@@ -112,10 +112,10 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       nicht pauschal als „liegt in `conventions/`, also lebend, also
       retargeten".
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
@@ -187,7 +187,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   grüner `make gates`-Lauf nach dem Bump sagt über Release-URLs, Prosa-Pins
   und zitierende Verweise **nichts**. — **Ausgang:** eingetreten, wie
   erwartet — und diesmal mit einem neuen Datenpunkt: kein neuer
-  `ignore-refs`-Eintrag nötig, weil alle acht eingefrorenen Fundstellen den
+  `ignore-refs`-Eintrag nötig, weil alle neun eingefrorenen Fundstellen (eine davon erst im Review gefunden, siehe unten) den
   entfernten Baum nur in Inline-Code/Prosa tragen, nicht als Markdown-Link
   (Beleg: `evidence/slice-224.md` bei `pin-bump-mirrors-ungated`).
 - **Die Über-Hebungs-Falle bei lebenden `MR`-Einträgen ist bekannt, aber die
@@ -234,7 +234,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 vierzehnter Nachtrag der Serie, [`MR-071`](../../../../harness/conventions.md#mr-071)
 liegt in `harness/conventions/done/`. Alle vier Spiegel-Klassen sind
 nachgezogen (Pfad-Verweise, Release-/Tree-URLs, bare Versionsnennungen,
-`d-check:cite`-Direktiven), die acht eingefrorenen Lauf-Belege unangetastet.
+`d-check:cite`-Direktiven), die neun eingefrorenen Lauf-Belege/Vergangenheits-Aussagen unangetastet (eine erst im Review gefunden).
 `make gates` grün — zehn Gates, 783 Dateien, 0 Befunde.
 
 **Was funktioniert hat: die Lehren aus slice-222 wurden vorab in den Plan
@@ -280,7 +280,35 @@ inhaltliche Delta dieses Bumps (ID-Schema-Generalisierung in
 `modul-05-planning-harness.md`) ist gemessen und in [`MR-072`](../../../../harness/conventions.md#mr-072) gelistet,
 bewusst nicht beurteilt — Sache des Folge-Slice.
 
-**Review-Runde 1:** \<wird nach dem Review ergänzt\>
+**Review-Runde 1: 0 HIGH, 1 MEDIUM, 1 LOW, 0 INFO** — der Report liegt unter
+[`docs/reviews/2026-09-16-slice-224-baseline-v690-review-r1.md`](../../../reviews/2026-09-16-slice-224-baseline-v690-review-r1.md).
+Beide Findings sind eigene Klassen, die dieser Slice teils schon kannte:
+
+**F-1 (MEDIUM) — ein neunter lebender Fundort war weder retargetet noch als
+eingefroren deklariert.** Der Kommentar bei `.d-check.yml:235` trägt `v6.6.0`
+als Begründung für einen anderen, bereits bestehenden `ignore-refs`-Eintrag
+(den elften, aus dem `v6.5.0`→`v6.6.0`-Bump) — inhaltlich korrekt
+unverändert, aber in der ersten Frozen-Liste dieses Slice schlicht
+ausgelassen, nicht bewusst ausgenommen. Behoben: [`MR-072`](../../../../harness/conventions.md#mr-072)
+nennt jetzt neun statt acht Frozen-Stellen (50 statt 51 lebende), und
+`evidence/slice-224.md` bei
+[`pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+trägt den Fund nach — **derselbe Vorgang**, kein achtes Auftreten, da
+Modul 6 einen Vorgang nur einmal zählt. **Lerneintrag:** Eine
+Konfigurationsdatei mit genau einem frozen-artigen Kommentar entgeht einer
+datei-basierten Frozen-Liste so leicht wie eine Tabellenzeile innerhalb
+einer lebenden Doku-Datei (die Über-Hebungs-Falle oben) — dieselbe Grenze
+von [`MR-070`](../../../../harness/conventions.md#mr-070), an einer noch
+feineren Stelle.
+
+**F-2 (LOW) — eine unbeteiligte Slice-Plan-Datei trägt jetzt eine falsche
+Gegenwarts-Aussage.** [slice-223](../open/slice-223-commit-zerlegung-ausnahmen-aufloesen.md) §4 sagt
+weiterhin *„der Pin steht auf `v6.6.0`"* als Trigger-Bedingung — mit diesem
+Bump ist das nicht mehr aktuell. Der Fund liegt außerhalb dessen, was dieser
+Slice an sich selbst bindet (kein Abgrenzungspunkt nennt slice-223), und
+bleibt bewusst unangefasst — die nächste Beanspruchung von slice-223 liest
+den Satz ohnehin als Datumsanker vom 2026-09-08, nicht als aktuelle
+Bedingung, und trägt die Korrektur dann selbst nach.
 
 **Die drei Paarungen, gemessen.** **(a) Anker** — vakant: Der Slice
 verkörpert keine neue Steering-Loop-Regel; seine Lerneinträge liegen bei

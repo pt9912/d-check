@@ -46,16 +46,26 @@
   Entfernen erledigt, keine Retargeting-Frage. **59** Dateien liegen
   außerhalb.
 
-  Von diesen 59 blieben **acht eingefroren** — Lauf-Belege, die den alten
-  Pin korrekt als ihren damaligen Stand nennen: die MR-071-Datei selbst
-  (jetzt in `conventions/done/`; Vergangenheits-Aussage über die
-  v6.6.0-Hebung, bleibt bei ihrer Auflösung unverändert stehen), ein
-  `done/`-Slice
+  Von diesen 59 blieben **neun eingefroren** — Lauf-Belege bzw. eine
+  Vergangenheits-Aussage, die den alten Pin korrekt als ihren damaligen
+  Stand nennen: die MR-071-Datei selbst (jetzt in `conventions/done/`;
+  Vergangenheits-Aussage über die v6.6.0-Hebung, bleibt bei ihrer Auflösung
+  unverändert stehen), ein `done/`-Slice
   ([slice-222](../../docs/plan/planning/done/slice-222-baseline-v660-bump.md)),
-  zwei Review-Reports, drei Evidence-Dateien im Beobachtungs-Register und ein
-  wörtliches Fremdzitat im CR.
+  zwei Review-Reports, drei Evidence-Dateien im Beobachtungs-Register, ein
+  wörtliches Fremdzitat im CR — und ein **neunter, erst im Review
+  gefundener** Fall: der Kommentar bei `.d-check.yml:235` (*„Die
+  v6.6.0-Vorlage fuehrt 40 Tabellenzeilen statt 39"*), der den elften
+  `ignore-refs`-Eintrag aus [`MR-071`](../conventions/done/MR-071-baseline-v660.md)
+  begründet — eine Vergangenheits-Aussage über den **vorherigen**
+  Bump (`v6.5.0`→`v6.6.0`), nicht über diesen. Inhaltlich korrekt
+  unverändert, aber **erst im Review deklariert**, nicht in der ersten
+  Frozen-Liste dieses Slice — Beleg bei
+  [`BEO-ALL/pin-bump-mirrors-ungated`](../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+  (Review-Finding F-1,
+  [2026-09-16-slice-224-baseline-v690-review-r1.md](../../docs/reviews/2026-09-16-slice-224-baseline-v690-review-r1.md)).
 
-  Die übrigen **51 lebenden** Dateien sind retargetet — mehrheitlich als
+  Die übrigen **50 lebenden** Dateien sind retargetet — mehrheitlich als
   einfacher Pfad-Verweis (`.harness/baseline/v6.6.0/…`, gate-gedeckt — ein im
   Index behaupteter Verweis ohne Ziel meldet `target-missing`, sobald der
   alte Baum fehlt); mehrere davon tragen **zusätzlich** eine der drei
