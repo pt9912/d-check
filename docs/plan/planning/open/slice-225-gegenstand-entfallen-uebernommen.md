@@ -33,7 +33,7 @@ bleiben **leer**. Dieser Slice macht `make verify-closure-notes` (Modul
 verlangt sie ausnahmslos, dass jeder DoD-Haken gesetzt ist, ohne Rücksicht
 auf einen `Gegenstand:`-Ausgang.
 
-**Der Anlass ist [slice-221](../in-progress/slice-221-agents-md-tabellenzellen.md)**,
+**Der Anlass ist [slice-221](../done/slice-221-agents-md-tabellenzellen.md)**,
 das erste Repo-Beispiel dieses Zwecks (Ausgang „entfallen" — slice-222 hat
 seinen Gegenstand durch eine andere Lösung erledigt) und deshalb per
 [`CO-002`](../../carveouts/CO-002-slice-221-gegenstand-entfallen.md) statt
@@ -67,7 +67,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Risiken, Paarungen) bleiben **weiterhin** Pflicht.
 - [ ] **(2)** [`CO-002`](../../carveouts/CO-002-slice-221-gegenstand-entfallen.md)
       ist aufgelöst: `make verify-closure-notes` läuft gegen
-      [slice-221](../in-progress/slice-221-agents-md-tabellenzellen.md) grün ohne
+      [slice-221](../done/slice-221-agents-md-tabellenzellen.md) grün ohne
       dessen `exempt-paths`-Eintrag; der Eintrag ist entfernt, der Carveout
       liegt in `docs/plan/carveouts/done/`. <!-- d-check:ignore (done/ entsteht erst bei erster Carveout-Auflösung) -->
 - [ ] **(3)** **Ein Bruch-Test bestätigt beide Richtungen**: ein `done/`-Slice

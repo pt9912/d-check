@@ -8,7 +8,7 @@
 `max-open-tasks: 0` für `## N. Definition of Done`).
 
 **Geltungsbereich:** genau eine Datei —
-[`docs/plan/planning/in-progress/slice-221-agents-md-tabellenzellen.md`](../planning/in-progress/slice-221-agents-md-tabellenzellen.md).
+[`docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md`](../planning/done/slice-221-agents-md-tabellenzellen.md).
 
 **Folge-Slice:** [`slice-225`](../planning/open/slice-225-gegenstand-entfallen-uebernommen.md)
 
@@ -30,7 +30,7 @@ Ein Slice, dessen Gegenstand ein anderer übernimmt oder der ganz entfällt,
 geht **ohne Lieferung** nach `done/` — §7 trägt eine `**Gegenstand:**`-Zeile
 statt gelieferter DoD-Punkte, und die Liefer-Häkchen bleiben leer.
 
-[`slice-221`](../planning/in-progress/slice-221-agents-md-tabellenzellen.md) ist
+[`slice-221`](../planning/done/slice-221-agents-md-tabellenzellen.md) ist
 genau dieser Fall: Sein Gegenstand (`AGENTS.md` §4s Zellen kürzen) verschwand
 zwischen Anlage und Wiederaufnahme, weil
 [slice-222](../planning/done/slice-222-baseline-v660-bump.md) §4 radikaler
@@ -83,4 +83,4 @@ gegen `slice-221`s Datei **ohne** den `exempt-paths`-Eintrag unten — vorher
 
 | Datum | Ereignis | Verweis |
 |---|---|---|
-| 2026-09-16 | Angelegt | [slice-221](../planning/in-progress/slice-221-agents-md-tabellenzellen.md) |
+| 2026-09-16 | Angelegt | [slice-221](../planning/done/slice-221-agents-md-tabellenzellen.md) |
