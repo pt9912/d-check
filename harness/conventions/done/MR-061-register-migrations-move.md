@@ -2,12 +2,12 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. `AGENTS.md` §3.3 (Baseline-§3.3-Adaption
-  über [MR-013](MR-013-lifecycle-move-buendelung.md)) verlangt Move und
+  über [MR-013](../MR-013-lifecycle-move-buendelung.md)) verlangt Move und
   Inhaltsänderung als zwei Commits, **weil** ein reiner `git mv` die
   Rename-Detection (`R100`) über der 50 %-Schwelle hält. Diese Regel benennt
   einen weiteren Fall, in dem diese Prämisse strukturell nicht zutrifft — und
   korrigiert zugleich eine fehlgeschlagene Analogie: der Migrations-Commit
-  von [slice-195](../../docs/plan/planning/done/welle-88/slice-195-beobachtungsregister-migration.md)
+  von [slice-195](../../../docs/plan/planning/done/welle-88/slice-195-beobachtungsregister-migration.md)
   berief sich in seiner Botschaft auf [MR-059](MR-059-wellen-archiv-stub-move.md),
   dessen eigener Geltungsbereich (`tools/archive-wave`) und dessen eigene
   Grenzklausel (*„keine Blankovollmacht für beliebige Content-Move-Commits"*)
@@ -18,7 +18,7 @@
 - **Datum:** 2026-09-03
 - **Geltungsbereich:** ausschließlich der eine Commit, der das
   Beobachtungs-Register von der Tabellen-Form auf die Verzeichnis-Form
-  ([ADR-0083](../../docs/plan/adr/0083-beobachtungsregister-verzeichnis-modus.md))
+  ([ADR-0083](../../../docs/plan/adr/0083-beobachtungsregister-verzeichnis-modus.md))
   umgestellt hat — kein wiederkehrender Vorgang. Anders als die drei
   MR-013-Fälle und anders als MR-059 (die je einen fortlaufenden
   Operations-Typ decken) deckt diese Regel einen **einmaligen, bereits
@@ -26,7 +26,7 @@
 - **Adaption:** Ein Registerformat-Wechsel dieser Art ersetzt Inhalt und
   Ablageform im selben Akt: die alte Tabellendatei wird gelöscht, während an
   ihrer Stelle eine komplett neue Verzeichnisstruktur mit templatierten
-  Dateien entsteht ([`observation.template.md`](../../.harness/baseline/v6.9.0/templates/docs/plan/planning/observation.template.md)),
+  Dateien entsteht ([`observation.template.md`](../../../.harness/baseline/v6.9.0/templates/docs/plan/planning/observation.template.md)),
   und jedes lebende Zitat der alten Kennungsform wird im selben Zug auf die
   neue umgehängt. Es gibt **keine Phase**, in der die alte Tabellendatei
   bereits gelöscht ist, während die neue Verzeichnisform noch fehlt oder ein

@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. `AGENTS.md` §3.3 (Baseline-§3.3-Adaption
-  über [MR-013](MR-013-lifecycle-move-buendelung.md)) verlangt Move und
+  über [MR-013](../MR-013-lifecycle-move-buendelung.md)) verlangt Move und
   Inhaltsänderung als zwei Commits, **weil** ein reiner `git mv` die
   Rename-Detection (`R100`) über der 50 %-Schwelle hält. Diese Regel benennt
   einen weiteren Fall, in dem diese Prämisse strukturell nicht zutrifft.
@@ -16,7 +16,7 @@
   Einzel-Slice-Archiv-Move Inhalt und Ablageort im selben Akt: die Slice-Datei
   wandert nach `docs/plan/planning/done/wellenlos/`, ihr Volltext wird durch
   einen komplett neuen, templatierten Stub ersetzt
-  ([`archiv-stub-slice.template.md`](../../.harness/baseline/v6.9.0/templates/docs/plan/planning/archiv-stub-slice.template.md)),
+  ([`archiv-stub-slice.template.md`](../../../.harness/baseline/v6.9.0/templates/docs/plan/planning/archiv-stub-slice.template.md)),
   und ihre Review-Reports verschwinden ersatzlos ins Archiv. Es gibt **keine
   Phase**, in der die bewegte Datei ihren Inhalt unverändert behält — die
   Inhaltsersetzung ist der Zweck der Operation, nicht ihr Nebeneffekt. Der

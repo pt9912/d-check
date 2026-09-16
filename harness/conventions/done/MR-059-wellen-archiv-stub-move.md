@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. `AGENTS.md` §3.3 (Baseline-§3.3-Adaption
-  über [MR-013](MR-013-lifecycle-move-buendelung.md)) verlangt Move und
+  über [MR-013](../MR-013-lifecycle-move-buendelung.md)) verlangt Move und
   Inhaltsänderung als zwei Commits, **weil** ein reiner `git mv` die
   Rename-Detection (`R100`) über der 50 %-Schwelle hält. Diese Regel benennt
   den Fall, in dem diese Prämisse strukturell nicht zutrifft.
@@ -10,7 +10,7 @@
 - **Geltungsbereich:** `tools/archive-wave` (`Apply()`), jeder
   Wellen-Archivierungs-Commit (`make archive-wave WELLE=<id> APPLY=1`).
 - **Adaption:** Ein Slice- oder Welle-Stub **ersetzt** den Volltext durch
-  einen komplett neuen, templatierten Text ([`archiv-stub-slice.template.md`](../../.harness/baseline/v6.9.0/templates/docs/plan/planning/archiv-stub-slice.template.md)) —
+  einen komplett neuen, templatierten Text ([`archiv-stub-slice.template.md`](../../../.harness/baseline/v6.9.0/templates/docs/plan/planning/archiv-stub-slice.template.md)) —
   Identität, Archiv-Zeiger, Zustand, überlebende Kennungen, sonst nichts.
   Die alte Datei wird zugleich gelöscht, die neue liegt eine Verzeichnisebene
   tiefer (`done/<welle-id>/`). Anders als bei den drei MR-013-Fällen gibt es
@@ -28,8 +28,8 @@
   Form wie beim MR-/Wellen-Lifecycle-Move in MR-013, aus demselben Grund —
   „git mv trifft hier nicht zu" statt eines stillschweigenden Bruchs der
   Zwei-Commit-Erwartung.
-- **Begründung:** Gemessen bei [slice-191](../../docs/plan/planning/done/welle-87/slice-191-alt-bestand-archivieren.md)
-  (Anwendung von [slice-190](../../docs/plan/planning/done/welle-87/slice-190-wellen-archiv-werkzeug.md)s
+- **Begründung:** Gemessen bei [slice-191](../../../docs/plan/planning/done/welle-87/slice-191-alt-bestand-archivieren.md)
+  (Anwendung von [slice-190](../../../docs/plan/planning/done/welle-87/slice-190-wellen-archiv-werkzeug.md)s
   Werkzeug auf welle-01…85, 85 Archivierungs-Commits): jeder Commit trägt
   D/A-Paare statt Renames, keiner löste `make planning-check` oder eine
   andere Lifecycle-Kopplung aus (die betroffenen Dateien sind bereits in
