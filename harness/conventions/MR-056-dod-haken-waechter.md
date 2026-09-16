@@ -2,10 +2,15 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. Der Kanon macht die DoD-Häkchen zur
-  **Bedingung des Übergangs** und sagt das wörtlich:   <!-- d-check:cite .harness/baseline/v6.6.0/regelwerk/modul-05-planning-harness.md:33-34 -->
+  **Bedingung des Übergangs** und sagte das bei Einführung dieses Eintrags
+  wörtlich:
   „DoD-Häkchen und Closure-Notiz
   sind die Bedingung dafür, dass die Datei überhaupt nach `done/` darf."
-  ([`modul-05-planning-harness.md`](../../.harness/baseline/v6.6.0/regelwerk/modul-05-planning-harness.md)).
+  ([`modul-05-planning-harness.md`](../../.harness/baseline/v6.9.0/regelwerk/modul-05-planning-harness.md)).
+  Der Wortlaut ist mit `v6.9.0` nicht mehr deckungsgleich — Zitat-Delta
+  vermerkt in [`MR-072`](../conventions.md#mr-072) nach
+  [`MR-039`](../conventions.md#mr-039); die Direktive ist deshalb entfernt,
+  das Zitat bleibt unmechanisiert stehen.
   Gehalten war davon nur die zweite Hälfte. Diese Adaption ist die
   Werkzeug-Wahl für die erste, keine Abweichung.
 - **Datum:** 2026-08-30

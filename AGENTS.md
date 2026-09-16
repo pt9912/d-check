@@ -9,7 +9,7 @@ einhalten muss.
 
 Diese Datei trägt **Hard Rules und Pointer** auf die kanonischen Quellen und
 **dupliziert deren Inhalt nicht** — sonst entsteht Drift (Kanon:
-[`modul-09-implementierung.md` §AGENTS.md-Regeln](.harness/baseline/v6.6.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)).
+[`modul-09-implementierung.md` §AGENTS.md-Regeln](.harness/baseline/v6.9.0/regelwerk/modul-09-implementierung.md#agentsmd-regeln-modul-9)).
 
 **Bei Konflikt gilt die höherrangige Quelle, und die niedriger rangierte wird
 angepasst** (Source Precedence — siehe
@@ -33,7 +33,7 @@ per `tools/harness/fetch-baseline-cache.sh` (`--verify` offline-Integrität;
 `--check-latest` = Currency- + Content-Drift-Audit ggü. Upstream, informativ/kein Gate,
 [`MR-022`](harness/conventions.md#mr-022--baseline-currency-audit-modus-nachtrag-zu-mr-019); Tag aus §Baseline;
 Quelle ist das derivative Release-Bundle
-[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v6.6.0/lab-regelwerk.zip);
+[`lab-regelwerk.zip`](https://github.com/pt9912/ai-harness-course/releases/download/v6.9.0/lab-regelwerk.zip);
 Pfadschema/Provenance siehe
 [`harness/conventions.md`](harness/conventions.md) §Adoptierte Konventions-Quellen,
 [`MR-019`](harness/conventions.md#mr-019--regelwerk-lese-form-committet-statt-gecacht-nachtrag-zu-mr-017)).
@@ -47,7 +47,7 @@ startet — nicht das gesamte Regelwerk im Kontext halten. **Breiterer
 Pflicht-Blick** bleibt bei: Bootstrap, Änderung an
 [`harness/conventions.md`](harness/conventions.md) (Adaptionen `MR-<NNN>`,
 Source-Precedence, ID-Schema) und dem Drift-Audit gegen die Baseline
-([`modul-02-harness-bootstrap.md` §Freshness-Audit](.harness/baseline/v6.6.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)
+([`modul-02-harness-bootstrap.md` §Freshness-Audit](.harness/baseline/v6.9.0/regelwerk/modul-02-harness-bootstrap.md#freshness-audit-der-vendored-baseline-schritt-2)
 — darunter die **Bestands-Stichprobe, die auch bei aktuellem Pin läuft**).
 Die **Skelett-Vorlagen** der Baseline liegen aus demselben self-contained Bundle
 **committet vendored** unter `.harness/baseline/<tag>/templates/` (parallel zum
@@ -296,7 +296,7 @@ Zustandsfelder (unten). **Ein Kommentar beschreibt, was da ist**
 (Baseline-Merksatz). Er
 beantwortet in Code, Konfiguration oder Skript, was der Code nicht
 beantworten kann — **Zusage · Kopplung · Abgrenzung · Rang-Zeiger ·
-Grenze** ([Baseline §Was ein Kommentar trägt](.harness/baseline/v6.6.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte)).
+Grenze** ([Baseline §Was ein Kommentar trägt](.harness/baseline/v6.9.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte)).
 Keine Review-Historie und keine Review-Befund-Marker, keine Deliberation
 über Verworfenes, keine Herkunfts-Prosa, keine Slice-Nummern und keine
 Mess-Labels; Herkunft nur als **ein** auflösbares Feld nach dem
@@ -326,7 +326,7 @@ bleiben, wie sie sind — sie sind eingefrorene Lauf-Belege, ihr
 Lifecycle-Zustand ist ohnehin das Verzeichnis, und das Feld hat dort keine
 Funktion (§5). Gemeldet wird von ihnen nur, was dem Verzeichnis
 **widerspricht**. Kanon:
-[Baseline §Was ein Kommentar trägt](.harness/baseline/v6.6.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
+[Baseline §Was ein Kommentar trägt](.harness/baseline/v6.9.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
 
 **Kein Gate prüft das** — weder die fünf Klassen noch die Zustandsfeld-Form;
 die Prüfung ist ein Urteil, kein `grep`. Der Reviewer-Skill trägt dazu **zwei**
@@ -459,7 +459,7 @@ zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
   schärfen die Spezifikation, nicht das Lastenheft). Der
   Anlege-Prozess (Akzeptanzkriterien-Trio, Versions-Bump + Historie,
   Beleg-Pflicht) folgt dem Baseline-Regelwerk
-  ([`modul-03-spec`](.harness/baseline/v6.6.0/regelwerk/modul-03-spec.md)); das
+  ([`modul-03-spec`](.harness/baseline/v6.9.0/regelwerk/modul-03-spec.md)); das
   repo-spezifische ID-Schema steht in `spec/lastenheft.md` §3.
 - Neue ADRs müssen den ADR-Index aktualisieren.
 - Neue ADRs tragen die Sektion `## Re-Evaluierungs-Trigger` (oder „permanent");
@@ -580,7 +580,7 @@ zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
   keiner ist; das macht die Klasse beim Schreiben unsichtbar und im Review
   auffindbar. Urteil, kein `grep`; der Reviewer-Skill trägt den Anker dazu.
   Kanon:
-  [`grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz](.harness/baseline/v6.6.0/regelwerk/grundlagen-source-precedence.md)
+  [`grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz](.harness/baseline/v6.9.0/regelwerk/grundlagen-source-precedence.md)
   — dort als Frage an **jede** zitierte Aussage, hier als operative Form für den
   Implementer. *(Hard Rule aus dem Steering Loop,
   [`BEO-ALL/citation-stretched-beyond-scope`](docs/plan/planning/observations/BEO-ALL/citation-stretched-beyond-scope/observation.md),
@@ -611,7 +611,7 @@ Pro Slice:
    gebunden: Er darf die Abgrenzung nicht ausweiten, weder still noch
    begründet. Wer im Lauf etwas mitnimmt, das der Plan ausschließt, hat den
    **Plan geändert** — und das gehört vor den Code, nicht in den Bericht
-   danach. Der Abschnitt heißt in der Baseline-Form `v6.6.0` §1 *Ziel und
+   danach. Der Abschnitt heißt in der Baseline-Form `v6.9.0` §1 *Ziel und
    Abgrenzung*; der eingefrorene Bestand führt ihn als §3 (Kanon:
    Baseline-Regelwerk `modul-09-implementierung.md` §Minimal Agent Workflow).
 5. Engsten nützlichen Sensor laufen lassen.
