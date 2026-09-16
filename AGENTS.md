@@ -181,17 +181,23 @@ Moves, die einmalige Register-Formatmigration) —, bleibt es bewusst bei
 **einem** deklarierten Commit; git zeigt reine `D`/`A`-Paare, keine Renames.
 Einzelfälle im Konventionsspeicher (`harness/conventions/done/`).
 
-**Ausnahme MR-/Wellen-Lifecycle-Move** (`conventions/` → `conventions/done/`,
-flaches Wellendokument → `done/`): hier trägt der Move-Commit die
-**Link-Tiefen-Fixes der bewegten Datei selbst** mit — ein reiner Move wäre
-`doc-check`-rot, weil die relativen Verweise vom neuen Ort nicht mehr
-auflösen, und der lokale `pre-commit`-Hook prüft `doc-check` auf **jedem**
-Commit: der kanonische Zwei-Commit-Weg (Move, dann Korrektur, beide im
-selben Push, `grundlagen-traceability.md`) wäre zwischen den beiden Commits
-lokal gar nicht committierbar. Alles Übrige bleibt Commit 2; sinkt der
-Rename-Score dadurch Richtung 50 %, deklariert die Commit-Botschaft den Move
-ausdrücklich als `git mv`. Kanonisch:
-[`MR-013`](harness/conventions.md#mr-013--lifecycle-move-commit-bündelt-gekoppelte-verweise).
+**MR-/Wellen-Lifecycle-Move** (`conventions/` → `conventions/done/`, flaches
+Wellendokument → `done/`) ist der **Regelfall** (Fall 1): reiner `git mv`
+zuerst — die relativen Verweise der bewegten Datei lösen für den Moment
+nicht mehr auf, was Kanon ausdrücklich zulässt, solange dieser
+Zwischenstand nicht die Spitze eines Push wird —, dann die
+Link-Tiefen-Korrektur als eigener Commit. **Historische Klärung:** Diese
+Datei nannte hier früher eine eigene „Ausnahme" mit der Begründung, der
+lokale `pre-commit`-Hook mache den kanonischen Weg unmöglich. Das war
+falsch — der Hook prüft den **Arbeitsbaum**, nicht den git-Diff des
+jeweiligen Commits, und ein Zwei-Commit-Vorgang, dessen Korrektur bereits
+im Arbeitsbaum vorliegt, bevor der reine Move committet wird, passiert ihn
+anstandslos, obwohl der Move-Commit für sich genommen inkonsistent bleibt
+— genau das hat die eigene Commit-Historie von
+[slice-223](docs/plan/planning/in-progress/slice-223-commit-zerlegung-ausnahmen-aufloesen.md)
+gezeigt, als der unabhängige Review sie isoliert nachstellte. [`MR-013`](harness/conventions.md#mr-013)
+ist seither vollständig aufgelöst
+([`conventions/done/`](harness/conventions/done/MR-013-lifecycle-move-buendelung.md)).
 
 ### 3.4 Architektur sprach-/meilensteinfrei; Spec-Straten nie abwärts
 

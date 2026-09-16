@@ -11,7 +11,7 @@ Ruhe-Marker „Nichts in Arbeit" **genau dann** tragen, wenn kein `slice-*` in
 ein stehengebliebener Marker bei beanspruchtem Slice sind derselbe Defekt.
 **Fail-closed via Heading-Guard:** Fehlt die §Offene-Wellen-Überschrift oder
 ist sie umbenannt, meldet der Lauf — er passiert nicht still grün. Das
-ist die Kopplung, die [`MR-013`](../conventions/MR-013-lifecycle-move-buendelung.md)
+ist die Kopplung, die [`MR-013`](../conventions/done/MR-013-lifecycle-move-buendelung.md)
 atomar hält — ein byte-reiner Lifecycle-Move ist deshalb gate-rot.
 
 ## Grenze — was das Grün nicht abdeckt

@@ -118,6 +118,34 @@ sechs. Der gemeldete Widerspruch oben besteht als Befund fort — er trägt
 jetzt die Begründung, warum die Abweichung **bleibt**, statt warum sie
 fällt.
 
+**Plan-Änderung 2, nach Review-Runde 1 (2026-09-16) — die verbleibende
+Begründung war falsch, nicht nur unbelegt.** Finding F-1 (HIGH) prüfte den
+eigenen Beleg der ersten Plan-Änderung nach: Commit `a148466d` bewegt die
+fünf `MR`-Dateien und korrigiert dabei nur ihre **eigenen** Verweise; die
+**externen** Rückverweise in `harness/conventions.md` und
+`harness/sensors/archive-wave.md` bleiben bis zum nächsten Commit
+gebrochen. Isoliert ausgecheckt (`git worktree` + `make doc-check`) ist
+`a148466d` **rot** — neun `target-missing`. Trotzdem hat der lokale
+`pre-commit`-Hook diesen Commit durchgelassen, weil er `make doc-check`
+gegen den **Arbeitsbaum** fährt, nicht gegen den Commit-Diff: Die
+externen Korrekturen lagen zum Zeitpunkt des Commits bereits unstaged im
+Arbeitsbaum. **Die eigene Commit-Historie widerlegt damit die eigene
+Prämisse** — ein reiner Move-Commit ist lokal sehr wohl committierbar,
+solange die Korrektur vorher schon im Arbeitsbaum steht, aber gezielt aus
+der Staging-Area ausgeschlossen bleibt (dieselbe Technik, mit der
+[slice-224](../done/slice-224-baseline-v690-bump.md) einen DoD-Haken vor
+einem reinen Move committet hatte). **Konsequenz:** Es gibt keinen
+tragenden Grund mehr, [`MR-013`](../../../../harness/conventions.md#mr-013)
+nicht ebenfalls vollständig aufzulösen — der einzige verbleibende Fall
+reduziert sich auf den Kanon-Regelfall (Fall 1: reiner Move zuerst, dann
+Korrektur), ohne Ausnahme. [`MR-013`](../../../../harness/conventions.md#mr-013) liegt jetzt vollständig in
+`conventions/done/`; DoD (2) zählt **sechs** aufgelöste Einträge, wie
+ursprünglich geplant, nur über einen anderen Weg als angenommen. Der
+gemeldete Widerspruch aus §1 ist damit endgültig zur zweiten Seite
+aufgelöst — nicht weil die Kanon-Regel falsch zitiert war (das war schon
+korrigiert), sondern weil die Zusatz-Begründung für eine Ausnahme *davon*
+nicht trug.
+
 **Abgrenzung — vier Punkte, jeder mit Grund:**
 
 1. **Kein anderer Abschnitt von `AGENTS.md`.** §3 hat 326 Zeilen gegen 109 in
@@ -142,15 +170,14 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 - [x] **(1)** `AGENTS.md` §3.3 trägt die Kanon-Form plus **einen** Satz für
       die Klasse, die die Zerlegung nicht braucht (vollständig ersetzter
-      Inhalt), und einen **kurzen, korrekt zitierten** Rest-Block für die
-      eine Klasse, die sie weiter braucht (Move-Commit ändert die bewegte
-      Datei selbst — s. Plan-Änderung). Sechs der sieben Ausnahme-Blöcke sind
-      weg; wo ein Leser mehr braucht, steht der Zeiger auf den
-      Konventions-Index.
-- [x] **(2)** **Fünf** `MR`-Einträge liegen in `harness/conventions/done/`,
+      Inhalt). **Zweite Korrektur (Review-Runde 1, F-1):** Der zunächst
+      belassene Rest-Block (MR-/Wellen-Lifecycle-Move) ist ebenfalls
+      entfallen — die Prämisse, die ihn trug, war falsch, nicht nur
+      unbelegt (s. Plan-Änderung 2). Alle sieben ursprünglichen
+      Ausnahme-Blöcke sind weg.
+- [x] **(2)** **Sechs** `MR`-Einträge liegen in `harness/conventions/done/`,
       mit **zwei verschiedenen** Auflösungsgründen: *Baseline-Konformität* für
-      059/062/063/064, *erschöpft* für 061. [`MR-013`](../../../../harness/conventions.md#mr-013) bleibt aktiv, getrimmt auf
-      den einen verbleibenden Fall, `Ersetzt-Baseline-Regel` korrigiert. Index-Zeilen
+      013/059/062/063/064, *erschöpft* für 061. Index-Zeilen
       von der aktiven in die aufgelöste Tabelle bewegt, Anker unverändert —
       Präzedenz: [`MR-014`](../../../../harness/conventions.md#mr-014), [`MR-027`](../../../../harness/conventions.md#mr-027), [`MR-038`](../../../../harness/conventions.md#mr-038).
 - [ ] **(3)** **Die geänderte Praxis ist gefahren, nicht behauptet:** ein
@@ -219,89 +246,134 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   und genau die Klasse, die
   [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
   (18×) führt. Der Slice muss das benennen, statt den Satz als Beleg
-  auszugeben. — **Ausgang:** eingetreten, wie vorab benannt — und mit einer
-  Korrektur, nicht nur einer Feststellung: Für die Slice-Lifecycle-Hälfte
+  auszugeben. — **Ausgang:** eingetreten, wie vorab benannt — und am Ende
+  vollständig aufgelöst statt nur korrigiert: Für die Slice-Lifecycle-Hälfte
   trägt eine andere, tragfähige Begründung (reine Git-Semantik). Für die
-  MR-/Wellen-Hälfte trägt der Satz tatsächlich nicht — die richtige Stelle
-  ist `grundlagen-traceability.md` §Ruheort-Regel, jetzt in [`MR-013`](../../../../harness/conventions.md#mr-013)s
-  `Ersetzt-Baseline-Regel`-Feld korrigiert. Beleg:
-  `evidence/slice-223.md` bei
-  [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md).
+  MR-/Wellen-Hälfte trug zunächst eine korrigierte Kanon-Stelle
+  (`grundlagen-traceability.md` §Ruheort-Regel), bis Review-Runde 1 (F-1)
+  zeigte, dass auch diese Stelle keine **Ausnahme** begründet, sondern den
+  **Regelfall** — die vermeintliche Notwendigkeit einer Abweichung war die
+  eigentliche Fehlzitierung. Beleg: `evidence/slice-223.md` bei
+  [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
+  (19×).
 - **Eine Abweichung aufzulösen ist teurer als sie zu behalten, wenn sie
   gebraucht wird.** Sechs Einträge zu bewegen und die Praxis umzustellen ist
   irreversibel genug, dass ein Irrtum teuer wird: Käme [`MR-013`](../../../../harness/conventions.md#mr-013) zurück, wäre
   er ein neuer Eintrag mit neuer Nummer, und die Historie läge in zwei
   Richtungen. **Die Probe aus Schritt 1 ist die einzige Absicherung** — und
-  sie misst **einen** Übergang, nicht die Klasse. — **Ausgang:** entfallen
-  in der zunächst befürchteten Form: [`MR-013`](../../../../harness/conventions.md#mr-013) kommt nicht als ganzer neuer
-  Eintrag zurück, weil er gar nicht ganz aufgelöst wurde — er ist getrimmt,
-  nicht verschwunden. Das Risiko einer vollständigen Rückkehr besteht für
-  die verbleibende MR-/Wellen-Hälfte real fort, ist aber jetzt korrekt (statt
-  falsch) begründet und damit weniger wahrscheinlich, still zu brechen.
+  sie misst **einen** Übergang, nicht die Klasse. — **Ausgang:** eingetreten,
+  aber tragbar: [`MR-013`](../../../../harness/conventions.md#mr-013) ist
+  vollständig aufgelöst, DoD (2) zählt die ursprünglich geplanten sechs
+  Einträge. Käme die Notwendigkeit einer Abweichung doch zurück, wäre es
+  tatsächlich ein neuer Eintrag mit neuer Nummer — das Risiko ist real,
+  aber die Probe aus Schritt 1 **plus** die Review-Korrektur (F-1) sind
+  jetzt zwei unabhängige Absicherungen statt einer.
 - **Der gemeldete Widerspruch könnte in die andere Richtung aufzulösen sein.**
   `AGENTS.md` §1 sagt, bei Konflikt gewinnt die höherrangige Quelle — hier der
   Kanon. Aber die Möglichkeit, dass **unsere** Form die bessere ist und der
   richtige Weg ein Change Request an die Baseline wäre, ist mit dieser Regel
   nicht ausgeschlossen; sie ist nur nicht der Default. Der Slice entscheidet
   sich für Konformität, und das ist eine **Wahl**, kein Zwang. — **Ausgang:**
-  weiter offen im Prinzip, aber durch den Implementierungs-Befund entschärft:
-  Die verbleibende MR-/Wellen-Abweichung ist keine Frage von „unsere Form vs.
-  Kanon" mehr, sondern eine **lokale Werkzeug-Grenze** (der `pre-commit`-Hook
-  prüft jeden Commit einzeln) gegenüber einem Kanon, der nur den Push-Tip
-  meint. Ein CR wäre hier unpassend — die Baseline hat bereits eine Antwort,
-  nur eine, die diese Sitzung lokal nicht einlösen kann.
+  entfallen, in seiner geschärften Form gleich mit: Die vermeintliche
+  „lokale Werkzeug-Grenze" (der `pre-commit`-Hook prüfe jeden Commit
+  einzeln) existiert nicht — der Hook prüft den Arbeitsbaum, nicht den
+  Commit-Diff, und lässt den kanonischen Weg zu. Es bleibt bei „unsere Form
+  vs. Kanon" nichts aufzulösen, weil am Ende **keine** Form mehr übrig ist,
+  die vom Kanon abweicht. Kein CR nötig.
 
 ## 7. Closure-Notiz
 
-**Geliefert.** `AGENTS.md` §3.3 ist von 88 auf 42 Zeilen geschrumpft (§3
-gesamt 328→282, `AGENTS.md` 40 994→37 816 B); sechs der sieben
-Ausnahme-Blöcke sind weg. Fünf `MR`-Einträge (059/061/062/063/064) liegen in
-`harness/conventions/done/`, [`MR-013`](../../../../harness/conventions.md#mr-013)
-bleibt aktiv, getrimmt auf den einen Fall, der ihn wirklich noch braucht.
+**Geliefert.** `AGENTS.md` §3.3 ist von 88 auf 48 Zeilen geschrumpft (§3
+gesamt 328→288, `AGENTS.md` 40 994→38 215 B); **alle sieben** ursprünglichen
+Ausnahme-Blöcke sind weg — §3.3 ist dafür nicht mehr ganz so kurz wie nach
+der ersten Plan-Änderung (42 Zeilen), weil die „Historische Klärung" die
+Hook-Verwechslung selbst dokumentiert, statt sie stillschweigend
+verschwinden zu lassen. **Sechs** `MR`-Einträge
+(013/059/061/062/063/064) liegen in `harness/conventions/done/` — die
+ursprünglich geplante Zahl, nur über einen anderen Weg als angenommen.
 
-**Was gegen den Plan geändert wurde, und warum das kein Rückschritt ist.**
-Der Plan wollte sechs Einträge auflösen; geworden sind es fünf. Die
-Implementierung fand, dass die eigene Prämisse *„[`MR-013`](../../../../harness/conventions.md#mr-013) (drei Fälle): Die
-Slice-Datei bleibt im Move-Commit unverändert"* nur für zwei der drei Fälle
-zutrifft — und zwar für exakt die zwei, deren Auflösung der Plan wollte.
-Für den dritten (MR-/Wellen-Lifecycle-Move) bestätigte sich der bereits im
-Plan gemeldete Widerspruch als real: Der Kanon hat dafür eine Antwort
-(zwei Commits im selben Push), aber der lokale `pre-commit`-Hook macht sie
-lokal nicht gangbar. **Das ist keine Verwässerung des Ziels, sondern seine
-Präzisierung** — die Auflösung sollte immer nur so weit gehen, wie die
-Baseline wirklich trägt, und §1 hatte diese Grenze schon vorgezeichnet
-(„im Geltungsbereich der sechs Einträge wird sie nicht verletzt" — nur dass
-„nicht verletzt" für den dritten Fall genauer geprüft werden musste, statt
-pauschal für alle sechs übernommen zu werden).
+**Zwei Plan-Änderungen, nicht eine — die zweite hebt die erste teilweise
+wieder auf.** Erste Änderung: Die Implementierung fand, dass die eigene
+Prämisse *„[`MR-013`](../../../../harness/conventions.md#mr-013) (drei Fälle): Die Slice-Datei bleibt im Move-Commit
+unverändert"* nur für zwei der drei Fälle zutrifft, und trimmte [`MR-013`](../../../../harness/conventions.md#mr-013)
+auf den dritten (MR-/Wellen-Lifecycle-Move) statt es aufzulösen — mit der
+Begründung, der lokale `pre-commit`-Hook mache den kanonischen
+Zwei-Commit-Weg dafür lokal uncommittierbar. **Zweite Änderung, ausgelöst
+durch Review-Runde 1 (F-1, HIGH):** Diese Begründung war **falsch**, nicht
+nur unbelegt. Der Review prüfte den eigenen Beleg der ersten Änderung nach
+— den Move-Commit der fünf `MR`-Dateien (`a148466d`) isoliert ausgecheckt
+(`git worktree` + `make doc-check`) — und fand ihn **rot** (neun
+`target-missing`, weil externe Rückverweise erst im nächsten Commit
+korrigiert wurden), obwohl der lokale Hook ihn anstandslos hatte
+passieren lassen: Der Hook prüft `make doc-check` gegen den
+**Arbeitsbaum**, nicht gegen den Commit-Diff, und die externen Korrekturen
+lagen zum Commit-Zeitpunkt bereits unstaged im Arbeitsbaum. Ein reiner
+Move-Commit ist damit lokal sehr wohl committierbar. Konsequenz: Es gibt
+keinen tragenden Grund mehr, [`MR-013`](../../../../harness/conventions.md#mr-013) nicht vollständig aufzulösen — der
+verbleibende Fall reduziert sich auf den Kanon-Regelfall, ohne Ausnahme.
+[`MR-013`](../../../../harness/conventions.md#mr-013) liegt jetzt ebenfalls in `conventions/done/`.
 
-**Steering-Loop-Fund: der gemeldete Widerspruch trug in beide Richtungen.**
+**Was das für die Architektur-Entscheidung bedeutet.** Beide
+Plan-Änderungen zusammen zeigen: Die *Richtung* der ersten Änderung
+(„zwei der drei Fälle brauchen keine Abweichung — reine Git-Semantik")
+war korrekt und hält; nur die *Ausnahme für den Rest* war unbegründet.
+Am Ende trifft die ursprüngliche Ziel-Formulierung exakt zu — „die
+Baseline reicht" —, nur dass der Beleg dafür zwei Anläufe brauchte statt
+eines, und der zweite kam vom Review, nicht vom Implementierer selbst.
+
+**Steering-Loop-Fund: der gemeldete Widerspruch trug in beide Richtungen,
+und noch weiter, als beim Schreiben absehbar war.**
 [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
 (19×, weiterhin verkörpert) — der Plan hatte den mis-zitierten Kanon-Satz
-selbst schon als Risiko benannt, bevor implementiert wurde. Die
-Implementierung bestätigte den Verdacht **und** fand die eigentlich
-zutreffende Stelle (`grundlagen-traceability.md` §Ruheort-Regel), die jetzt
-in [`MR-013`](../../../../harness/conventions.md#mr-013)s
-`Ersetzt-Baseline-Regel`-Feld steht.
+selbst schon als Risiko benannt. Die Implementierung fand die korrekte
+Stelle (`grundlagen-traceability.md` §Ruheort-Regel) — und der Review fand
+dann, dass **auch diese korrekte Stelle keine Ausnahme trägt**, sondern
+den Regelfall selbst beschreibt. Eine korrigierte Fehlzitierung kann
+selbst noch falsch **verwendet** werden, wenn die Schlussfolgerung (hier:
+„also bleibt es eine Abweichung") nicht mit hinterfragt wird.
+
+**Zweiter Steering-Loop-Fund: der lokale `pre-commit`-Hook prüft den
+Arbeitsbaum, nicht den Commit-Diff — eine bisher nirgends festgehaltene
+Eigenschaft mit realer Tragweite.** Sie erklärt, warum „ich habe alles vor
+dem Commit schon im Editor gefixt, dann in zwei Commits gesplittet"
+niemals vom Hook aufgehalten wird, selbst wenn der zweite Commit für sich
+genommen inkonsistent bleibt. Das ist keine Sicherheitslücke (die Blockade
+gilt weiterhin für echte Werkzeug-Läufe, die auf einen tatsächlich
+gebrochenen Arbeitsbaum träfen), aber es bedeutet: **Commit-Grenzen sind
+für dieses Repo eine Historie-Frage, keine Gate-Frage.** Ein Werkzeug, das
+Commits einzeln prüfen will (wie es der Review mit `git worktree` tat),
+muss das explizit tun — der lokale Hook tut es nicht.
 
 **Was funktioniert hat: die Zwei-Commit-Form an diesem Slice selbst
 gefahren, wie geplant.** Die Beanspruchung (`b2aef315`) bündelte den reinen
 Slice-Move mit zwei fremden Dateien (`.d-check.yml`, `roadmap.md`) — die
 Slice-Datei selbst zeigt `0` Änderungen im Diff, Rename-Score 100 %, genau
-die Git-Semantik, die die Plan-Änderung für die Slice-Lifecycle-Hälfte
-tragfähig macht. Die Closure-Hälfte der Probe entsteht mit dem `git mv`
-dieses Slice nach `done/` (unten).
+die Git-Semantik, die beide Plan-Änderungen tragfähig macht. Die
+Closure-Hälfte der Probe entsteht mit dem `git mv` dieses Slice nach
+`done/` (unten).
 
-**Was Friktion war: Zitier-Stellen wurden reaktiv gefunden, nicht vorab
-gezählt.** §3 Schritt 2 sah vor, vor dem Move zu zählen, wer auf die sechs
-Einträge verweist. Tatsächlich sind die Fundstellen (Referenzen in
-`harness/sensors/archive-wave.md`, wechselseitige Verweise unter den fünf
-bewegten Dateien selbst, `reviewer.md`s Zitat-Anker nach der
-§3.3-Umschreibung) über mehrere `doc-check`-Läufe hinweg aufgefallen, nicht
-in einer vorab geschriebenen Liste. Das Ergebnis ist dasselbe (`make gates`
-grün), der Weg dahin war die im Plan selbst als Risiko benannte
-Iteration statt der geplanten Einmal-Zählung.
+**Was Friktion war, zweimal.** Erstens (schon vor dem Review notiert):
+Zitier-Stellen wurden reaktiv gefunden (`harness/sensors/archive-wave.md`,
+wechselseitige Verweise unter den bewegten Dateien, `reviewer.md`s
+Zitat-Anker), nicht vorab gezählt wie §3 Schritt 2 vorsah. Zweitens (Review
+F-2, MEDIUM): Die Scope-Reduktion von sechs auf fünf Einträge war im Code
+(`a148466d`) vollzogen, bevor der Plan sie dokumentierte (`67082e6f`, eine
+Minute später) — ein Teilverstoß gegen `AGENTS.md` §6 („Plan-Änderung vor
+dem Code"). Für **diese** Closure-Notiz gilt die Regel diesmal strenger:
+Beide Plan-Änderungen stehen jetzt in §1, **vor** dieser Notiz geschrieben
+und vor den entsprechenden Korrektur-Commits.
 
-**Review-Runde 1:** \<wird nach dem Review ergänzt\>
+**F-3 (LOW), zur Kenntnis:** Die Commit-Botschaft von `67082e6f` schrieb
+den `harness/sensors/archive-wave.md`-Link-Fix fälschlich der
+§3.3-Umschreibung zu; tatsächlich stammte er aus dem MR-Datei-Move in
+`a148466d` (F-1). Historisch, nicht mehr korrigierbar (Commit-Botschaften
+sind unveränderlich) — hier für den Beleg richtiggestellt.
+
+**Review-Runde 1: 1 HIGH, 1 MEDIUM, 1 LOW, 0 INFO** — Report unter
+[`docs/reviews/2026-09-16-slice-223-commit-zerlegung-review-r1.md`](../../../reviews/2026-09-16-slice-223-commit-zerlegung-review-r1.md).
+F-1 löste die zweite Plan-Änderung aus (oben); F-2 und F-3 sind hier als
+Befund festgehalten, ohne weitere Korrektur-Commits — die Historie bleibt,
+wie sie ist.
 
 **Die drei Paarungen, gemessen.** **(a) Anker** — vakant: keine neue
 Steering-Loop-Regel verkörpert; der Lerneintrag liegt bei einem

@@ -2,7 +2,7 @@
 
 - **Status:** Accepted
 - **Ersetzt-Baseline-Regel:** keine. `AGENTS.md` §3.3 (Baseline-§3.3-Adaption
-  über [MR-013](../MR-013-lifecycle-move-buendelung.md)) verlangt Move und
+  über [MR-013](MR-013-lifecycle-move-buendelung.md)) verlangt Move und
   Inhaltsänderung als zwei Commits, **weil** ein reiner `git mv` die
   Rename-Detection (`R100`) über der 50 %-Schwelle hält. Diese Regel benennt
   den Fall, in dem diese Prämisse strukturell nicht zutrifft.
