@@ -258,6 +258,14 @@ ignore-refs:
     refs: ["docs/plan/planning/open/slice-223-commit-zerlegung-ausnahmen-aufloesen.md"]
   - in: docs/plan/planning/done/slice-224-baseline-v690-bump.md
     refs: ["docs/plan/planning/open/slice-223-commit-zerlegung-ausnahmen-aufloesen.md"]
+  # Dieselbe Klasse: zwei eingefrorene Lauf-Belege zitieren slice-221 noch
+  # in next/ -- slice-223s (b)-Paarung und Abgrenzung 1, sowie eine
+  # Evidence-Datei von slice-222. slice-221 ist seither ueber
+  # in-progress/ nach done/ gewandert (Ausgang "entfallen", CO-002).
+  - in: docs/plan/planning/done/slice-223-commit-zerlegung-ausnahmen-aufloesen.md
+    refs: ["docs/plan/planning/next/slice-221-agents-md-tabellenzellen.md"]
+  - in: docs/plan/planning/observations/BEO-ALL/form-vom-nachbarn-statt-von-der-vorlage/evidence/slice-222.md
+    refs: ["docs/plan/planning/next/slice-221-agents-md-tabellenzellen.md"]
   # Dieselbe Klasse, eine Lifecycle-Stufe spaeter: MR-013 (jetzt in
   # conventions/done/, slice-223 hat es dort aufgeloest) zitiert slice-223
   # dreifach als "liegt in in-progress/" -- der Stand zum Zeitpunkt, als
