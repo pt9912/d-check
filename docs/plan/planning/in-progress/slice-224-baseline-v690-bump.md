@@ -17,7 +17,7 @@ Verweise), [`MR-051`](../../../../harness/conventions.md#mr-051)
 [`MR-069`](../../../../harness/conventions.md#mr-069) (`ignore-refs` als
 deklarierte Gate-Senkung),
 [`MR-070`](../../../../harness/conventions.md#mr-070) (Frozen-Klassen vor
-mechanischer Ersetzung). Der neue Eintrag der Serie wird **`MR-072`** <!-- d-check:ignore (entsteht erst mit diesem Slice) -->.
+mechanischer Ersetzung). Der neue Eintrag der Serie ist [`MR-072`](../../../../harness/conventions.md#mr-072).
 
 **Berührte Spec-Stellen:** — (der Slice berührt keine Spec-Stelle).
 
@@ -83,16 +83,16 @@ aktuellen** Tag, nicht auf jeden dazwischen. Dasselbe gilt hier: Ziel ist
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** `.harness/baseline/v6.9.0/` ist materialisiert (`regelwerk/`,
+- [x] **(1)** `.harness/baseline/v6.9.0/` ist materialisiert (`regelwerk/`,
       `templates/`, `SHA256SUMS`), der `v6.6.0`-Baum entfernt, §Baseline in
       [`harness/conventions.md`](../../../../harness/conventions.md) zeigt auf
-      den neuen Tag, und **`MR-072`** <!-- d-check:ignore (entsteht erst mit diesem Slice) --> trägt die Hebung als nächster Eintrag der
+      den neuen Tag, und [`MR-072`](../../../../harness/conventions.md#mr-072) trägt die Hebung als nächster Eintrag der
       [`MR-011`](../../../../harness/conventions.md#mr-011)-Serie.
       `make baseline-verify` grün.
-- [ ] **(2)** **Alle vier Spiegel-Klassen sind nachgezogen, nicht nur die
+- [x] **(2)** **Alle vier Spiegel-Klassen sind nachgezogen, nicht nur die
       grep-bare** —
       [`pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
-      (6×, weiterhin ohne formgültigen Ausgang) nennt sie: Pfad-Verweise
+      (7×, weiterhin ohne formgültigen Ausgang) nennt sie: Pfad-Verweise
       (gate-gedeckt) · Release-/Tree-**URLs** mit dem Tag ·
       **Prosa-/Ellipsen-Pins** · der **zitierende Verweis**, dessen Wortlaut
       am neuen Ziel nicht mehr stehen muss
@@ -100,7 +100,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       im Slice, **wie** sie gesucht wurde — Suchform **nach der Version**, mit
       Gruppierung nach Präfix (Lehre aus slice-222, nicht nach dem Pfad
       suchen).
-- [ ] **(3)** **Die Frozen-Klassen sind VOR der mechanischen Ersetzung
+- [x] **(3)** **Die Frozen-Klassen sind VOR der mechanischen Ersetzung
       aufgelistet** ([`MR-070`](../../../../harness/conventions.md#mr-070),
       Geltungsbereich trifft hier zu: eine mechanische Ersetzung über mehr als
       eine Datei) — über die **Eigenschaft**, nicht über Verzeichnisse. Was
@@ -111,7 +111,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       der [`MR-011`](../../../../harness/conventions.md#mr-011)-Kette wird einzeln gegen seinen `Geltungsbereich` gelesen,
       nicht pauschal als „liegt in `conventions/`, also lebend, also
       retargeten".
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
@@ -146,7 +146,7 @@ hinterher.
 6. **`d-check:cite`-Spannen neu ankern** — der Bump verschiebt Zeilennummern,
    und `citations` ist fail-closed im inneren Loop
    ([`MR-051`](../../../../harness/conventions.md#mr-051)).
-7. `MR-072` <!-- d-check:ignore (entsteht erst mit diesem Slice) --> schreiben, §Baseline umstellen, `make gates`, Handoff.
+7. [`MR-072`](../../../../harness/conventions.md#mr-072) schreiben, §Baseline umstellen, `make gates`, Handoff.
 
 ## 4. Trigger
 
@@ -180,12 +180,16 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Offene Risiken werden bei Closure aufgelöst.
 
 - **Drei der vier Spiegel-Klassen deckt kein Gate** — dieselbe Lücke wie bei
-  jedem Vorgänger-Bump, zuletzt gemessen bei 6×
+  jedem Vorgänger-Bump, zuletzt gemessen bei 7×
   ([`pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md),
   weiterhin ohne formgültigen Ausgang: die mechanische Form `versions.patterns`
   existiert seit slice-122, ist aber bewusst nicht scharfgeschaltet). Ein
   grüner `make gates`-Lauf nach dem Bump sagt über Release-URLs, Prosa-Pins
-  und zitierende Verweise **nichts**. — **Ausgang:** \<offen\>
+  und zitierende Verweise **nichts**. — **Ausgang:** eingetreten, wie
+  erwartet — und diesmal mit einem neuen Datenpunkt: kein neuer
+  `ignore-refs`-Eintrag nötig, weil alle acht eingefrorenen Fundstellen den
+  entfernten Baum nur in Inline-Code/Prosa tragen, nicht als Markdown-Link
+  (Beleg: `evidence/slice-224.md` bei `pin-bump-mirrors-ungated`).
 - **Die Über-Hebungs-Falle bei lebenden `MR`-Einträgen ist bekannt, aber die
   Frozen-Liste fängt sie nicht.** slice-222 hat gezeigt: Eine mechanische
   Ersetzung über den `Geltungsbereich`-Text kann einen Eintrag treffen, der
@@ -195,22 +199,97 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   bereits als [`MR-070`](../../../../harness/conventions.md#mr-070)
   verkörpert — die Grenze der Regel ist benannt, nicht behoben). Gegenmittel
   dieses Slice: jedes [`MR-011`](../../../../harness/conventions.md#mr-011)-Kettenglied einzeln lesen statt pauschal
-  „`conventions/` ⇒ retargeten". — **Ausgang:** \<offen\>
+  „`conventions/` ⇒ retargeten". — **Ausgang:** eingetreten, trotz
+  korrekt vorab erstellter Frozen-Liste — nicht an der gelisteten Datei
+  selbst (die stand korrekt darauf), sondern an der
+  **Tabellenzeile**, mit der `harness/conventions.md` denselben Eintrag im
+  Adaptions-Index führt. Ein pauschaler `sed` über diese lebende Datei traf
+  die Zeile mit; erkannt und behoben im selben Arbeitsschritt, vor dem
+  nächsten Schritt. Beleg: `evidence/slice-224.md` bei
+  `mechanical-id-rewrite-misses-frozen-classes`.
 - **Der `citations`-Bruch ist die planmäßige Rot-Quelle, nicht ein Unfall.**
   Der Bump verschiebt Zeilenspannen; `citations` läuft fail-closed im inneren
   Loop und nimmt den `pre-commit`-Hook mit
   ([`MR-051`](../../../../harness/conventions.md#mr-051)). — **Ausgang:**
-  \<offen\>
+  eingetreten: sieben `d-check:cite`-Direktiven zeigten `citation-mismatch`
+  (sechs reine Zeilenverschiebung, neu geankert; eine — in
+  [`MR-056`](../../../../harness/conventions.md#mr-056) —
+  ein echtes Zitat-Delta, nach [`MR-039`](../../../../harness/conventions.md#mr-039)
+  in [`MR-072`](../../../../harness/conventions.md#mr-072) vermerkt statt am
+  zitierenden Dokument nachgezogen). Alle sieben behoben, `citations` grün.
 - **Ändert `v6.9.0`s `AGENTS.template.md` §4 (oder eine andere Sektion mit
   Pointer-Charakter) erneut die Form**, entsteht dieselbe Zwickmühle wie bei
   slice-222: Bump ohne Adoption ließe `AGENTS.md` einer Vorlage widersprechen,
   die jeder Lauf lädt. Abgrenzung 2 hält dagegen fest, dass die Übernahme
   einer erneuten Weisung bedarf, keiner stillen Wiederholung. — **Ausgang:**
-  \<offen\>
+  entfallen: `diff` zwischen `v6.6.0`s und `v6.9.0`s `AGENTS.template.md`
+  zeigt keine Änderung an §4 (nur Release-URL im Kopf und eine
+  Kennungs-Terminologie fernab von §4) — Abgrenzung 2 hält ohne erzwungene
+  Ausnahme.
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** Der Baseline-Pin steht auf `v6.9.0` (54 Dateien, `verify ok`),
+[`MR-072`](../../../../harness/conventions.md#mr-072) trägt die Hebung als
+vierzehnter Nachtrag der Serie, [`MR-071`](../../../../harness/conventions.md#mr-071)
+liegt in `harness/conventions/done/`. Alle vier Spiegel-Klassen sind
+nachgezogen (Pfad-Verweise, Release-/Tree-URLs, bare Versionsnennungen,
+`d-check:cite`-Direktiven), die acht eingefrorenen Lauf-Belege unangetastet.
+`make gates` grün — zehn Gates, 783 Dateien, 0 Befunde.
+
+**Was funktioniert hat: die Lehren aus slice-222 wurden vorab in den Plan
+geschrieben, nicht erst im Review gefunden.** Die Suchform „nach der Version,
+gruppiert nach Präfix" fand alle vier Mirror-Klassen auf Anhieb; das
+Vier-Klassen-Raster aus [`pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
+strukturierte die Suche, statt sie dem Zufall zu überlassen.
+
+**Was Friktion war, und wie beim Vorgänger: die mechanische Ersetzung ging
+einmal daneben — diesmal aber am eigenen Fund erkannt, nicht erst im
+Review.** Ein pauschaler `sed` über `harness/conventions.md` traf die
+Tabellenzeile, mit der die Datei selbst [`MR-071`](../../../../harness/conventions.md#mr-071) beschreibt — dieselbe
+Über-Hebungs-Klasse wie [`MR-067`](../../../../harness/conventions.md#mr-067) in slice-222, nur an einer Stelle, die
+[`MR-070`](../../../../harness/conventions.md#mr-070)s Frozen-Liste
+strukturell nicht abdeckt: eine Zeile *innerhalb* einer unbestreitbar
+lebenden Datei, die über eine eingefrorene Datei berichtet. Fünftes
+Auftreten von [`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md).
+
+**Steering-Loop-relevanter Fund: ein echtes Zitat-Delta, nicht nur eine
+Zeilenverschiebung.** Sechs der sieben `citation-mismatch`-Befunde waren
+reine Zeilenverschiebung (Wortlaut unverändert, neu geankert). Der siebte
+([`MR-056`](../../../../harness/conventions.md#mr-056)) traf ein Zitat, dessen Quellsatz seit `v6.9.0` eine Ausnahme
+trägt, die es vorher nicht gab (§Ein Slice, dessen Gegenstand ein anderer
+übernimmt). Nach [`MR-039`](../../../../harness/conventions.md#mr-039)
+bleibt das Zitat in [`MR-056`](../../../../harness/conventions.md#mr-056) unangetastet stehen, die Direktive ist entfernt,
+und der Delta ist in [`MR-072`](../../../../harness/conventions.md#mr-072) vermerkt — die Regel hat zum ersten Mal seit
+ihrer Einführung tatsächlich gegriffen.
+
+**Zweiter Fund: die `versions.patterns`-Lücke bleibt real, aber ihre Größe
+schwankt.** Anders als beim Vorgänger (ein neuer `ignore-refs`-Eintrag für
+vier `target-missing`-Befunde) brauchte dieser Bump **keinen** neuen
+Eintrag — `make doc-check` meldete 0 Befunde direkt nach dem Entfernen des
+alten Baums. Der Unterschied liegt nicht an sorgfältigerer Arbeit, sondern
+daran, welche **Form** die eingefrorenen Lauf-Belege zufällig zitieren
+(Markdown-Link vs. Inline-Code/Prosa) — ein Datenpunkt gegen die Annahme,
+jeder Bump brauche zwingend einen neuen Eintrag.
+
+**Was diesmal NICHT eintrat: die Zwangslage aus slice-222.** Der
+`AGENTS.template.md`-Diff zeigt keine erneute Änderung an §4; Abgrenzung 2
+(keine Template-Adoption) hielt ohne Auftraggeber-Eingriff. Der große
+inhaltliche Delta dieses Bumps (ID-Schema-Generalisierung in
+`grundlagen-source-precedence.md`, neuer vierter Lifecycle-Zweig in
+`modul-05-planning-harness.md`) ist gemessen und in [`MR-072`](../../../../harness/conventions.md#mr-072) gelistet,
+bewusst nicht beurteilt — Sache des Folge-Slice.
+
+**Review-Runde 1:** \<wird nach dem Review ergänzt\>
+
+**Die drei Paarungen, gemessen.** **(a) Anker** — vakant: Der Slice
+verkörpert keine neue Steering-Loop-Regel; seine Lerneinträge liegen bei
+bestehenden Registereinträgen. **(b) Folge-Slice** — kein neuer; der
+bekannte Folge-Slice für den Regel-Delta ist noch nicht angelegt (Sache
+eines künftigen Adoptions-Slice, analog slice-208). **(c) Register** — alle
+zitierten Pfade lösen auf; zwei neue Belege liegen als
+`evidence/slice-224.md` in ihren Verzeichnissen
+(`pin-bump-mirrors-ungated`, `mechanical-id-rewrite-misses-frozen-classes`).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
@@ -226,7 +305,7 @@ Register sind gegen denselben Stand gelesen, der unten steht.
 
 **Vorgelagert — Sub-Area-Wahl prüfen:**
 
-<!-- d-check:cite .harness/baseline/v6.6.0/regelwerk/modul-05-planning-harness.md:268-269 -->
+<!-- d-check:cite .harness/baseline/v6.9.0/regelwerk/modul-05-planning-harness.md:363-364 -->
 
 > **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
 > muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
@@ -237,7 +316,7 @@ berührt (das Werkzeug selbst ändert sich nicht, nur sein Ziel-Tag).
 
 **Vorgelagert — offene Beobachtungen sichten:**
 
-<!-- d-check:cite .harness/baseline/v6.6.0/regelwerk/modul-05-planning-harness.md:274-274 -->
+<!-- d-check:cite .harness/baseline/v6.9.0/regelwerk/modul-05-planning-harness.md:369-369 -->
 
 > **Offene Beobachtungen sichten.** Das
 
@@ -245,9 +324,9 @@ Register durchgegangen (gemergter Stand, **40** Verzeichnisse). **Vier
 Einträge sind einschlägig, alle vier aus dem Vorgänger-Bump bekannt:**
 
 - [`pin-bump-mirrors-ungated`](../observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
-  (6×, **kein formgültiger Ausgang**) — der tragende Eintrag für DoD (2).
+  (7×, **kein formgültiger Ausgang**) — der tragende Eintrag für DoD (2).
 - [`mechanical-id-rewrite-misses-frozen-classes`](../observations/BEO-ALL/mechanical-id-rewrite-misses-frozen-classes/observation.md)
-  (4×, verkörpert als [`MR-070`](../../../../harness/conventions.md#mr-070))
+  (5×, verkörpert als [`MR-070`](../../../../harness/conventions.md#mr-070))
   — trägt DoD (3); die Grenze der Regel (Frozen-Liste über Eigenschaften kann
   eine im *Inhalt* versteckte Vergangenheits-Aussage nicht fangen) ist
   benannt, nicht behoben — §6 trägt sie deshalb erneut als Risiko.
@@ -285,5 +364,5 @@ Slice auslöst, keine unerwartete Störung. `image-scan.yml` grün
 - **Evidenz-/Diskrepanz-Risiko:** **niedrig für den vendorten Baum**
   (`baseline-verify` prüft ihn hart), **mittel für die Spiegel** — drei der
   vier Klassen sind gate-blind, und der Registereintrag dazu steht
-  unverändert bei 6× ohne Ausgang.
+  unverändert bei 7× ohne Ausgang.
 - **Reconciliation-Aufwand:** keiner (GF).
