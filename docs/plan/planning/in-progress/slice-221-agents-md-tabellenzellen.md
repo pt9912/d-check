@@ -171,9 +171,9 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Autoritäts-Doku) und `make doc-check` grün.
 - [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 **Gegenstand:** entfallen — [slice-222](../done/slice-222-baseline-v660-bump.md)
@@ -291,7 +291,44 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Gegenstand:** entfallen — [slice-222](../done/slice-222-baseline-v660-bump.md)
+hat `AGENTS.md` §4 zwischen der Anlage dieses Slice (2026-09-08) und seiner
+geplanten Wiederaufnahme (nach dem `v6.9.0`-Bump) vollständig durch die
+`v6.6.0`-Kanon-Form ersetzt — auf ausdrückliche Auftraggeber-Weisung, nicht
+als Nebeneffekt (siehe §1). Die 41-Zeilen-Tabelle, deren Zellen dieser
+Slice hätte kürzen sollen, existiert nicht mehr; §4 ist seither ein
+Sieben-Zeilen-Zeiger auf `harness/README.md`.
+
+**Was geliefert wurde: nichts am Gegenstand, aber eine Lücke im eigenen
+Werkzeug gefunden.** Der Versuch, diesen Slice regulär zu schließen, zeigte:
+`make verify-closure-notes` kennt für „Gegenstand entfallen" keine Ausnahme
+— Baseline `v6.9.0` führt seit dem `v6.6.0`-Delta einen vierten
+Slice-Lifecycle-Zweig genau für diesen Fall ([`MR-072`](../../../../harness/conventions.md#mr-072), Delta-Punkt 1), aber
+`.d-check.closure.yml`s `structure`-Regel (`max-open-tasks: 0`) wusste davon
+nichts. [`CO-002`](../../carveouts/CO-002-slice-221-gegenstand-entfallen.md)
+dokumentiert die Lücke, ein einzelner, namentlich geführter
+`exempt-paths`-Eintrag trägt diesen Slice bis
+[slice-225](../open/slice-225-gegenstand-entfallen-uebernommen.md) die
+Erkennung generisch macht.
+
+**Steering-Loop-Fund: „Gegenstand entfallen" ist in diesem Repo ein echter
+Erstfall, kein theoretisches Feld.** Bislang hat jeder Slice etwas
+geliefert oder wurde vor der Beanspruchung verworfen (bleibt dann in
+`open/`) — ein Slice, der **während** der Bearbeitung seinen Gegenstand an
+eine andere, unabhängige Entscheidung verliert, kam so noch nicht vor. Der
+Fund gehört nicht ins Beobachtungs-Register (kein wiederkehrendes
+menschliches Verhaltensmuster, sondern eine Werkzeug-Lücke, die
+[slice-225](../open/slice-225-gegenstand-entfallen-uebernommen.md) direkt
+schließt) — er steht hier, weil hier der Ort ist, an dem er zum ersten Mal
+sichtbar wurde.
+
+**Review-Runde 1:** \<wird nach dem Review ergänzt\>
+
+**Die drei Paarungen, gemessen.** **(a) Anker** — vakant: keine neue
+Steering-Loop-Regel verkörpert. **(b) Folge-Slice** —
+[slice-225](../open/slice-225-gegenstand-entfallen-uebernommen.md) ist
+genannt und liegt als Datei in `open/`. **(c) Register** — keine neue
+Beobachtung angefallen; alle zitierten Pfade lösen auf.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
