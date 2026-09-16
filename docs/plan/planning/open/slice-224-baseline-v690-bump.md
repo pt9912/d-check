@@ -21,7 +21,7 @@ mechanischer Ersetzung). Der neue Eintrag der Serie wird **`MR-072`** <!-- d-che
 
 **Berührte Spec-Stellen:** — (der Slice berührt keine Spec-Stelle).
 
-**Verantwortlich:** — (wird bei der Beanspruchung gesetzt).
+**Verantwortlich:** pt9912 (Implementer-Rolle).
 
 **Autor:** pt9912. **Datum:** 2026-09-16.
 
@@ -219,6 +219,10 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 ist allein der Modus-Block am Ende. Dieses Repo führt **drei** Prüfungen — die
 zwei kanonischen und, als Adaption, den Nachtlauf-Stand
 ([`MR-053`](../../../../harness/conventions.md#mr-053)).
+
+**Die drei Vorprüfungen sind bei der Beanspruchung am 2026-09-16 bestätigt** —
+Anlage und Beanspruchung fallen in dieser Sitzung zusammen; Nachtlauf und
+Register sind gegen denselben Stand gelesen, der unten steht.
 
 **Vorgelagert — Sub-Area-Wahl prüfen:**
 
