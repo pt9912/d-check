@@ -70,12 +70,13 @@ gegen `slice-221`s Datei **ohne** den `exempt-paths`-Eintrag unten — vorher
 
 | Datei | Zeile/Section | Wert |
 |---|---|---|
-| [`.d-check.closure.yml`](../../../.d-check.closure.yml) | `structure`-Regel für `## N. Definition of Done`, `exempt-paths` | `docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md` <!-- d-check:ignore (slice-221 liegt noch nicht in done/, wandert erst mit dem Closure-Move dorthin) --> |
+| [`.d-check.closure.yml`](../../../.d-check.closure.yml) | `structure`-Regel für `## N. Definition of Done`, `open-tasks-require-marker` | `"Gegenstand"` — löst auf, was zuvor der namentliche `exempt-paths`-Eintrag für `docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md` trug |
 
 ## Verifikation (nach Auflösung)
 
-- [ ] Gate ist für den Geltungsbereich aktiviert (`exempt-paths`-Eintrag entfernt).
-- [ ] `make gates` grün ohne Ausnahme.
+- [x] Gate ist für den Geltungsbereich aktiviert (`exempt-paths`-Eintrag entfernt,
+      ersetzt durch die Marken-Kopplung `open-tasks-require-marker`, [ADR-0085](../adr/0085-bedingte-pflicht-marke-open-tasks.md)).
+- [x] `make gates` grün ohne Ausnahme.
 - [ ] Datei wird nach `docs/plan/carveouts/done/` bewegt (reiner `git mv`). <!-- d-check:ignore (done/ entsteht erst bei erster Carveout-Auflösung) -->
 - [ ] Folge-Slice geschlossen oder explizit dokumentiert.
 
@@ -84,3 +85,4 @@ gegen `slice-221`s Datei **ohne** den `exempt-paths`-Eintrag unten — vorher
 | Datum | Ereignis | Verweis |
 |---|---|---|
 | 2026-09-16 | Angelegt | [slice-221](../planning/done/slice-221-agents-md-tabellenzellen.md) |
+| 2026-09-17 | Technisch aufgelöst: `open-tasks-require-marker` ersetzt den `exempt-paths`-Eintrag, `make verify-closure-notes` grün ohne ihn | [ADR-0085](../adr/0085-bedingte-pflicht-marke-open-tasks.md), [slice-225](../planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md) |
