@@ -199,18 +199,40 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   aus anderem Anlass in einem Fließtext auftaucht (nicht als Closure-Feld
   gemeint), könnte die Prüfung fälschlich entschärfen. Die Form muss eng
   genug sein (z. B. nur als Zeilenanfang direkt unter `## 7.
-  Closure-Notiz`), um das auszuschließen. — **Ausgang:** \<offen\>
+  Closure-Notiz`), um das auszuschließen. — **Ausgang:** weiter offen.
+  `open-tasks-require-marker-section` (Review-Runde 1, [ADR-0085](../../adr/0085-bedingte-pflicht-marke-open-tasks.md)-Geschichte)
+  verengt den Suchraum auf den benannten Abschnitt, hebt die reine
+  Form-Prüfung (kein Orts-Bezug **innerhalb** dieses Abschnitts) aber nicht
+  auf — genau die Grenze, die dieses Risiko schon beim Schreiben benannte,
+  jetzt nur eine Stufe kleiner. Register:
+  [`messmethode-scope-enger-als-dokumentierte-ziel-form`](../observations/BEO-ALL/messmethode-scope-enger-als-dokumentierte-ziel-form/observation.md)
+  (1×, neu — trägt zugleich R1-F-1, siehe unten).
 - **Zwei parallele Wächter-Sprachen** — heute `max-open-tasks: 0` als
   Zahl, künftig zusätzlich eine Bedingung. Ob sich das sauber in die
   bestehende `structure`-Modul-Konfiguration einfügt oder eine neue
   Regel-Klasse braucht, ist vor Schritt 1 nicht abschließend geklärt. —
-  **Ausgang:** \<offen\>
+  **Ausgang:** entfallen. Umgesetzt als **Erweiterung** derselben
+  `structure`-Bedingungssprache (`OpenTasksRequireMarker`/
+  `OpenTasksRequireMarkerSection`, [ADR-0085](../../adr/0085-bedingte-pflicht-marke-open-tasks.md)),
+  kein zweiter Mechanismus neben `max-open-tasks` — beide leben in
+  derselben Regel, demselben Config-Rand-Stil, derselben Test-Datei.
 - **Die CR-Aufnahme könnte den Zuschnitt sprengen** — `modul-05-planning-harness.md`
   §Ziel-Form: Slice zählt Liefer-Punkte, nicht berührte Artefakte; DoD (1)
   bündelt jetzt Go-Code, Config, Spec-Erweiterung und eine begleitende ADR
   in einem Punkt. Trägt der Bruch-Test in DoD (3) am Ende **eine**
   Review-Sitzung, war das Bündeln richtig; sonst zieht §4s Trigger. —
-  **Ausgang:** \<offen\>
+  **Ausgang:** entfallen. Der unabhängige Review (Runde 1) konnte den
+  gesamten Diff (zwölf Dateien, ~320 Zeilen) in einer Sitzung prüfen und
+  bewertete den Zuschnitt als angemessen — **mit einer Nachschärfung**
+  (R1-F-3): Die Prüfung deckte nur Liefer-Punkte und Review-Sitzung ab, die
+  dritte Baseline-Achse „mehrere Schichten betroffen" blieb unbenannt,
+  obwohl DoD (1) tatsächlich drei Hexagon-Schichten bündelt (Core:
+  `hexagon/core/rules`, `hexagon/core/model`, `hexagon/core/app`; Driven:
+  `adapter/driven/configyaml`; Driving: `adapter/driving/cli`). Das ist für
+  dieses Modul **etabliertes Muster** (vergleichbar [ADR-0074](../../adr/0074-offene-tasks-auf-rohen-zeilen.md)/[ADR-0075](../../adr/0075-erklaerte-teilmenge-in-structure.md),
+  die dieselbe Bündelung tragen) und rechtfertigt die Bündelung in der
+  Sache — dieser Nachtrag benennt die Achse jetzt ausdrücklich, statt sie
+  auszulassen.
 - **Die CR-eigene DC-Zuordnung ist falsch übernehmbar** — der CR nennt
   [`DC-FA-PLAN-001`](../../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in),
   der Kanon dieses Repos trägt die Bedingung in
@@ -219,11 +241,56 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   das Feld nachzuschlagen, überträgt die falsche Kennung in Commit oder
   Spec — genau die Klasse, die
   [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)
-  benennt. — **Ausgang:** \<offen\>
+  benennt. — **Ausgang:** entfallen. Jede Übernahme dieser Session (ADR,
+  Spec, CR-Antwort) verlinkt [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), nie die vom CR genannte
+  falsche Kennung ungeprüft; der unabhängige Review bestätigte das
+  ausdrücklich als Negativbefund.
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** Baseline `v6.9.0`s vierter Slice-Lifecycle-Zweig „Gegenstand
+entfallen/übernommen" ist jetzt gate-tragfähig — als neue, opt-in
+`structure`-Bedingung (`open-tasks-require-marker`,
+`open-tasks-require-marker-section`, [ADR-0085](../../adr/0085-bedingte-pflicht-marke-open-tasks.md),
+[`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
+0.87.1). [`CO-002`](../../carveouts/CO-002-slice-221-gegenstand-entfallen.md)s
+namentlicher `exempt-paths`-Eintrag ist durch eine generische
+Inhalts-Erkennung ersetzt. Ein zweiter, unabhängiger Adopter
+(`ai-harness-init`) hat dieselbe Lücke von der anderen Seite gemeldet — die
+Antwort auf seinen eingehenden CR liegt bei der Datei.
+
+**Steering-Loop-Fund: Der Anlassfall verdeckte die eigentliche Baseline-Ziel-Form.**
+Der Erstentwurf (Review-Runde 1) prüfte die Marke nur im selben Abschnitt,
+den `max-open-tasks` zählt — Baseline `v6.9.0` verortet sie aber in einem
+**eigenen** Abschnitt „Closure-Notiz". Grün lief der Anlassfall
+(`slice-221`) trotzdem nur, weil er die Marke **zweimal** trug: einmal an
+der kanonischen Stelle (§7), einmal — undokumentiert — direkt unter der
+DoD-Checkliste. Der unabhängige Reviewer fand das nur, weil er eine eigene
+Fixture baute, die exakt der zitierten Baseline-Form folgt, statt sich auf
+die bestehende Test-Suite zu verlassen (die den Fall strukturell nicht
+unterscheiden konnte — Coverage blieb bei 100 %). Registriert als
+[`messmethode-scope-enger-als-dokumentierte-ziel-form`](../observations/BEO-ALL/messmethode-scope-enger-als-dokumentierte-ziel-form/observation.md):
+eine neue Prüfung, gegen ihren Anlassfall korrekt getestet, kann trotzdem
+enger sein als die Ziel-Form, die sie zu belegen behauptet — wenn der
+Anlassfall selbst über einen unbemerkten Umweg konform ist.
+
+**Review-Runde 1** ([`docs/reviews/2026-09-17-slice-225-open-tasks-marker-review-r1.md`](../../../reviews/2026-09-17-slice-225-open-tasks-marker-review-r1.md)):
+1 HIGH · 2 MEDIUM · 1 LOW. Das HIGH (R1-F-1, siehe oben) ist behoben und
+durch vier neue Tests (`TestOpenTasksRequireMarkerSection_*`) sowie eine
+empirische Gegenprobe gegen das gebaute Image belegt — dieselbe Methode,
+mit der der Reviewer den Fehler fand. Die beiden MEDIUM (R1-F-2: die
+Commit-Botschaft von `b2874d18` zählt „fünf" statt der tatsächlich vier
+neuen `TestOpenTasksRequireMarker_*`-Funktionen — unkorrigierbar am
+Commit selbst, hier festgehalten, damit die Diskrepanz nicht verschwindet;
+R1-F-3: §6-Risiko drei benannte nur zwei der drei Baseline-Größenachsen)
+und das LOW (R1-F-4: Registerzählung 39 statt 40) sind eingearbeitet — §6
+und §8 oben tragen die Korrekturen.
+
+**Was `slice-221` bewusst NICHT nachträglich geändert wurde:** Die zweite,
+jetzt überflüssige Marken-Kopie unter seiner DoD-Checkliste bleibt stehen
+— `done/`-Slices sind eingefrorene Lauf-Belege (`AGENTS.md` §3.7), und ihr
+nachträglich zu bereinigen fälschte die Geschichte, die genau diesen Fund
+ausgelöst hat.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
@@ -254,7 +321,9 @@ Default `*`. Beide Greenfield, wie der Rest des Produkts.
 
 > **Offene Beobachtungen sichten.** Das
 
-Register durchgegangen (gemergter Stand, **39** Verzeichnisse). **Ein
+Register durchgegangen (gemergter Stand, **40** Verzeichnisse — berichtigt
+nach Review-Runde 1, R1-F-4: `find … -mindepth 2 -maxdepth 2 -type d | wc -l`
+zählt 40, nicht 39, ändert aber nichts am einschlägigen Eintrag). **Ein
 Eintrag ist einschlägig:**
 
 - [`citation-stretched-beyond-scope`](../observations/BEO-ALL/citation-stretched-beyond-scope/observation.md)

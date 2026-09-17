@@ -1,0 +1,2 @@
+**Vorgang:** slice-225
+**Fund:** `open-tasks-require-marker` (R1-Erstentwurf) prüfte die Marke nur im selben Abschnitt, den `max-open-tasks` zählt. Baseline `v6.9.0` und der zitierte CR verorten sie in einem eigenen Abschnitt „Closure-Notiz"; der einzige Grund, warum der Anlassfall (`slice-221`) trotzdem grün lief, war eine zweite, nirgends vorgeschriebene Kopie der Marke direkt im gezählten Abschnitt. Unabhängiger Review (R1) fand es mit einer isolierten Fixture, die exakt die zitierte Baseline-Form nachbaute — kein Test der ursprünglichen Suite konstruierte diesen Fall.
