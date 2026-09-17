@@ -201,3 +201,59 @@ func TestOffenerHaken_FolgtDerErweitertenLexik(t *testing.T) {
 		t.Fatalf("die Verengung auf die LEERE Box haelt nicht mit")
 	}
 }
+
+// gegenstandRule ist rohRule() plus die Marken-Kopplung (ADR-0085).
+func gegenstandRule() model.StructureRule {
+	r := rohRule()
+	r.OpenTasksRequireMarker = "Gegenstand"
+	return r
+}
+
+// ERLAUBNIS: eine vorhandene Marke ersetzt ALLE Einzelbefunde durch keinen —
+// die Ablösung von CO-002s exempt-paths-Eintrag durch eine Inhalts-Pruefung.
+func TestOpenTasksRequireMarker_VorhandeneMarkeErlaubtAlles(t *testing.T) {
+	body := "# D\n\n## DoD\n\n- [ ] eins\n- [ ] zwei\n- [ ] drei\n\n**Gegenstand:** entfallen: Beispiel.\n"
+	if f := laufe(t, body, gegenstandRule()); f != nil {
+		t.Fatalf("vorhandene Marke muss alle Einzelbefunde tilgen, got %+v", f)
+	}
+}
+
+// PFLICHT: fehlt die Marke, ersetzt EIN section-open-tasks-marker-missing die
+// sonst drei section-tasks-open — nicht vier Befunde, einer.
+func TestOpenTasksRequireMarker_FehlendeMarkeErgibtEinenBefund(t *testing.T) {
+	body := "# D\n\n## DoD\n\n- [ ] eins\n- [ ] zwei\n- [ ] drei\n"
+	f := laufe(t, body, gegenstandRule())
+	if len(f) != 1 {
+		t.Fatalf("erwartet GENAU einen Befund statt der drei Einzelbefunde, got %+v", f)
+	}
+	if f[0].Reason != model.ReasonSectionOpenTasksMarkerMissing {
+		t.Fatalf("falscher Grund-Code, got %s", f[0].Reason)
+	}
+	if f[0].Line != 3 {
+		t.Fatalf("Befund gehoert auf die Ueberschriftszeile (3), got %d", f[0].Line)
+	}
+}
+
+// NORMALFALL UNBERUEHRT: ohne Ueberschuss-Items greift die Kopplung nicht --
+// unabhaengig davon, ob die Marke dasteht.
+func TestOpenTasksRequireMarker_NormalfallOhneOffeneItems(t *testing.T) {
+	body := "# D\n\n## DoD\n\n- [x] eins\n- [x] zwei\n"
+	if f := laufe(t, body, gegenstandRule()); f != nil {
+		t.Fatalf("keine offenen Items ⇒ befundfrei, unabhaengig von der Marke, got %+v", f)
+	}
+}
+
+// ABWESENDER SCHLUESSEL: byte-identisches Verhalten zum Vorzustand -- die
+// Kopplung greift nur, wenn OpenTasksRequireMarker gesetzt ist.
+func TestOpenTasksRequireMarker_AbwesenderSchluesselByteIdentisch(t *testing.T) {
+	body := "# D\n\n## DoD\n\n- [ ] eins\n- [ ] zwei\n- [ ] drei\n\n**Gegenstand:** entfallen: Beispiel.\n"
+	f := laufe(t, body, rohRule())
+	if len(f) != 3 {
+		t.Fatalf("ohne den Schluessel muessen weiterhin alle drei melden, got %+v", f)
+	}
+	for _, x := range f {
+		if x.Reason != model.ReasonSectionTasksOpen {
+			t.Fatalf("ohne den Schluessel bleibt der alte Grund-Code, got %s", x.Reason)
+		}
+	}
+}

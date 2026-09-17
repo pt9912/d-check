@@ -188,6 +188,11 @@ modules: [links, anchors]
 #     # max-open-tasks: 0                           # OFFENE Task-Items, gezaehlt auf den ROHEN Zeilen ⇒ section-tasks-open
 #     #                                             # je Item auf SEINER Zeile. Anders als max-tasks blind gegen die
 #     #                                             # absatzweise Inline-Code-Paarung — ein Backtick schaltet es nicht ab
+#     # open-tasks-require-marker: "Gegenstand"     # nur mit max-open-tasks: traegt der Abschnitt Ueberschuss-Items,
+#     #                                             # ersetzt eine VORHANDENE Marke (hasMarker-Form, z. B. **Gegenstand:**)
+#     #                                             # alle section-tasks-open dieses Abschnitts (Erlaubnis); eine FEHLENDE
+#     #                                             # ersetzt sie durch EINEN section-open-tasks-marker-missing statt
+#     #                                             # vieler Einzel-Befunde (Pflicht). Ohne max-open-tasks ⇒ Exit 2
 #     # forbid-pattern: 'TODO'                      # Treffer ⇒ section-forbidden
 #     # require-pattern: 'Beleg'                    # kein Treffer ⇒ section-pattern-missing
 #     # require-all: ["Beleg", "Lernsignal"]        # fehlende Marke ⇒ section-marker-missing

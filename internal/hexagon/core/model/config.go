@@ -562,6 +562,18 @@ type StructureRule struct {
 	// BEIDE Richtungen, denn eine erweiterte Aufzaehlung ohne nachgezogene
 	// Zahl hat dieselbe Luecke wie eine veraltete (ADR-0078).
 	ExemptExpectCount *int
+	// OpenTasksRequireMarker koppelt MaxOpenTasks an eine Marke (dieselbe
+	// hasMarker-Form wie RequireAll): traegt der Abschnitt offene Task-Items
+	// UEBER der MaxOpenTasks-Schwelle, ersetzt eine VORHANDENE Marke
+	// saemtliche section-tasks-open-Befunde dieses Abschnitts durch KEINEN
+	// (Erlaubnis) -- eine FEHLENDE Marke ersetzt sie durch EINEN
+	// section-open-tasks-marker-missing-Befund statt vieler Einzel-Befunde
+	// (Pflicht, eigener Grund-Code statt des generischen, damit die Reparatur
+	// unterscheidbar bleibt: dort Haken setzen oder Punkt aufloesen, hier die
+	// Marke ergaenzen). Nur wirksam mit gesetztem MaxOpenTasks; ohne den
+	// Schluessel byte-identisches Verhalten (ADR-0085, eingehender CR eines
+	// Adopters).
+	OpenTasksRequireMarker string
 }
 
 // TableRule sind die tabellenbezogenen Bedingungen einer StructureRule

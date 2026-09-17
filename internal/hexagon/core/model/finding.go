@@ -101,6 +101,13 @@ const (
 	// laeuft; und weil die Reparatur eine andere ist: dort zerlegen, hier den
 	// Haken setzen oder den Punkt aufloesen (ADR-0074).
 	ReasonSectionTasksOpen = "section-tasks-open"
+	// section-open-tasks-marker-missing: der Abschnitt traegt offene
+	// Task-Items ueber der MaxOpenTasks-Schwelle UND die geforderte Marke
+	// (open-tasks-require-marker) fehlt. Eigener Code statt section-tasks-open,
+	// weil die Reparatur eine andere ist: dort Haken setzen oder Punkt
+	// aufloesen, hier die Marke ergaenzen -- und weil EIN Befund fuer den
+	// ganzen Abschnitt steht, nicht einer je offenem Item (ADR-0085).
+	ReasonSectionOpenTasksMarkerMissing = "section-open-tasks-marker-missing"
 )
 
 // Finding ist ein einzelner Befund (spec/spezifikation.md §2). json- und

@@ -214,7 +214,7 @@ func structureAmAbschnitt(
 		out = append(out, structureCellMax(r, c, file, lines, prose, h.Line, h.Level)...)
 	}
 	if r.MaxOpenTasks != nil {
-		out = append(out, structureOpenTasks(r, file, lines, prose, h.Line, h.Level)...)
+		out = append(out, structureOpenTasks(r, file, lines, prose, h.Line, h.Level, body)...)
 	}
 	if r.HeadingsMatch != "" {
 		out = append(out, structureHeadings(r, file, lines, h)...)
@@ -360,8 +360,17 @@ func offenerHaken(line string) bool {
 // SCHWELLE: die ersten MaxOpenTasks offenen Items in Dokument-Reihenfolge sind
 // erlaubt und melden nicht. Sonst meldete eine Verletzung jedes Item, auch die
 // erlaubten, und keiner der Befunde waere die Reparaturstelle.
+//
+// KOPPLUNG mit OpenTasksRequireMarker (ADR-0085): traegt der Abschnitt
+// Ueberschuss-Items (die Schleife oben liefert mindestens einen Befund) UND
+// ist die Marke gesetzt, ersetzt eine VORHANDENE Marke die Einzel-Befunde
+// vollstaendig (Erlaubnis) -- eine FEHLENDE ersetzt sie durch EINEN
+// section-open-tasks-marker-missing statt der vielen section-tasks-open
+// (Pflicht). Ohne Ueberschuss-Items greift die Kopplung nicht: der
+// Normalfall (alle Haken gesetzt) bleibt unveraendert gruen, unabhaengig
+// davon, ob die Marke dasteht.
 func structureOpenTasks(
-	r model.StructureRule, file string, lines []string, prose map[int]bool, headingNo, level int,
+	r model.StructureRule, file string, lines []string, prose map[int]bool, headingNo, level int, body string,
 ) []model.Finding {
 	end := SectionEnd(lines, headingNo, level)
 	if end == 0 {
@@ -380,7 +389,14 @@ func structureOpenTasks(
 		out = append(out, structureFinding(r, file, i+1, model.ReasonSectionTasksOpen,
 			"offenes Task-Item über der Grenze von "+strconv.Itoa(*r.MaxOpenTasks)))
 	}
-	return out
+	if len(out) == 0 || r.OpenTasksRequireMarker == "" {
+		return out
+	}
+	if hasMarker(body, r.OpenTasksRequireMarker) {
+		return nil
+	}
+	return []model.Finding{structureFinding(r, file, headingNo, model.ReasonSectionOpenTasksMarkerMissing,
+		"offene Task-Items ohne die geforderte Marke **"+r.OpenTasksRequireMarker+":**")}
 }
 
 // countTaskItems zaehlt die Task-Items des bereinigten Abschnitts-Textes und

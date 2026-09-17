@@ -258,6 +258,10 @@ type rawStructure struct {
 	// soll heute noch nichts treffen") und von "nicht deklariert" (dann gilt
 	// die Nullmengen-Haerte) unterscheidbar bleiben muss.
 	ExemptExpectCount *int `yaml:"exempt-expect-count"`
+	// OpenTasksRequireMarker koppelt max-open-tasks an eine Marke (ADR-0085):
+	// nur wirksam MIT max-open-tasks, sonst wirkungslose halbe Aktivierung
+	// wie tasks-ignore-pattern ohne max-tasks.
+	OpenTasksRequireMarker string `yaml:"open-tasks-require-marker"`
 
 	// MIGRATIONS-FANGNETZ (ADR-0070): die fuenf flachen Vorgaenger-Schluessel
 	// stehen hier NUR, um mit Klartext abgelehnt zu werden. Ohne sie meldete
@@ -395,6 +399,12 @@ func structureUeberschriftFehler(r rawStructure) string {
 	if r.ExemptExpectCount != nil && *r.ExemptExpectCount < 0 {
 		return fmt.Sprintf("exempt-expect-count %d muss >= 0 sein", *r.ExemptExpectCount)
 	}
+	// Dieselbe halbe Aktivierung an der Marken-Kopplung (ADR-0085): eine
+	// geforderte Marke ohne die Zaehlung, die sie bedingt, ist eine Zusage
+	// ohne Gegenstand.
+	if r.OpenTasksRequireMarker != "" && r.MaxOpenTasks == nil {
+		return "open-tasks-require-marker ist ohne max-open-tasks wirkungslos (halbe Aktivierung)"
+	}
 	return structureTabellenFehler(r)
 }
 
@@ -512,6 +522,8 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 		TasksIgnorePattern:   r.TasksIgnorePattern,
 		ExemptSectionPattern: r.ExemptSectionPattern,
 		ExemptExpectCount:    r.ExemptExpectCount,
+
+		OpenTasksRequireMarker: r.OpenTasksRequireMarker,
 	}, nil
 }
 
