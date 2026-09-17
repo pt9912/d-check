@@ -63,12 +63,13 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       diesem Bereich mehr unter `docs/plan/planning/done/` oder
       `docs/reviews/`.
 - [x] `make gates` grün auf dem Endstand.
-- [x] `make fullbuild` grün auf dem Endstand — mit einer belegten
-      Ausnahme: `verify-closure-notes` (Teilschritt) meldet, solange
-      dieser Slice-Plan noch in `in-progress/` liegt, sieben
-      Glob-Leerlauf-Befunde (siehe §6 Risiko 3); die unabhängige
-      Verifikation bestätigt, dass keine andere Ursache vorliegt. Echte
-      Bestätigung nach dem `git mv` folgt in dieser Zeile.
+- [x] `make fullbuild` grün auf dem Endstand — bestätigt nach dem `git mv`
+      dieses Slice-Plans nach `done/`: alle Teilschritte grün, inklusive
+      `verify-closure-notes` (0 Befunde, 688 Dateien geprüft), Image-Hash
+      `sha256:025a9c24f36ae3bc652ea316a67686647071cb184e45fa125005e8102260015d`.
+      Vor dem `git mv` traf derselbe Teilschritt auf den erwarteten
+      Glob-Leerlauf (siehe §6 Risiko 3) — beide Läufe bestätigen, dass
+      keine andere Ursache vorlag.
 - [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
@@ -202,8 +203,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - **Folge-Slices:** keine.
 - **Risiken aus §6:** alle drei mit Ausgang — siehe §6 (1× weiter offen,
   2× eingetreten/behoben).
-- **Drei Paarungen:** wird nach dem `git mv` dieses Slice-Plans geprüft
-  (siehe DoD).
+- **Drei Paarungen:** bestätigt nach dem `git mv` — siehe DoD.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
