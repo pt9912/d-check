@@ -276,7 +276,7 @@ Anlassfall selbst über einen unbemerkten Umweg konform ist.
 
 **Review-Runde 1** ([`docs/reviews/2026-09-17-slice-225-open-tasks-marker-review-r1.md`](../../../reviews/2026-09-17-slice-225-open-tasks-marker-review-r1.md)):
 1 HIGH · 2 MEDIUM · 1 LOW. Das HIGH (R1-F-1, siehe oben) ist behoben und
-durch vier neue Tests (`TestOpenTasksRequireMarkerSection_*`) sowie eine
+durch drei neue Tests (`TestOpenTasksRequireMarkerSection_*`) sowie eine
 empirische Gegenprobe gegen das gebaute Image belegt — dieselbe Methode,
 mit der der Reviewer den Fehler fand. Die beiden MEDIUM (R1-F-2: die
 Commit-Botschaft von `b2874d18` zählt „fünf" statt der tatsächlich vier
@@ -285,6 +285,24 @@ Commit selbst, hier festgehalten, damit die Diskrepanz nicht verschwindet;
 R1-F-3: §6-Risiko drei benannte nur zwei der drei Baseline-Größenachsen)
 und das LOW (R1-F-4: Registerzählung 39 statt 40) sind eingearbeitet — §6
 und §8 oben tragen die Korrekturen.
+
+**Review-Runde 2** ([`docs/reviews/2026-09-17-slice-225-open-tasks-marker-review-r2.md`](../../../reviews/2026-09-17-slice-225-open-tasks-marker-review-r2.md)),
+verifiziert gezielt die R1-Fixes: **0 HIGH** (R1-F-1 bestätigt behoben,
+empirisch nachgefahren), 3 MEDIUM. **R2-F-1: dieselbe Zählfehler-Klasse
+trat bei der Korrektur der ersten Instanz erneut auf** — der Fix-Commit,
+seine [ADR-0085](../../adr/0085-bedingte-pflicht-marke-open-tasks.md)-Geschichte-Zeile
+und dieser Abschnitt behaupteten „vier neue Tests", tatsächlich sind es
+**drei** (jetzt oben korrigiert, [ADR-0085](../../adr/0085-bedingte-pflicht-marke-open-tasks.md)
+trägt eine eigene Geschichte-Zeile dafür — die vorige bleibt als Lauf-Beleg
+stehen, `AGENTS.md` §3.5). **R2-F-2:** diese zweite Instanz ist als Evidenz
+in das bereits bestehende Register
+[`commit-message-overclaims-work`](../observations/BEO-ALL/commit-message-overclaims-work/observation.md)
+eingetragen (13×, weiterhin `verkörpert` — der Fund zeigt, dass eine
+geschriebene Hard Rule weiter verfehlt werden kann). **R2-F-3:** die
+Antwort an `ai-harness-init` erwähnte nur `open-tasks-require-marker`,
+nicht den neuen `open-tasks-require-marker-section`-Schlüssel, den der
+Adopter für seine eigene, Baseline-konforme Umsetzung braucht — im
+eingehenden CR nachgetragen.
 
 **Was `slice-221` bewusst NICHT nachträglich geändert wurde:** Die zweite,
 jetzt überflüssige Marken-Kopie unter seiner DoD-Checkliste bleibt stehen

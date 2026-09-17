@@ -114,6 +114,24 @@ Eine engere Abgrenzung (z. B. eine zweite, unter einer benannten
 zweiten gemessenen Bedarf, ist das ein eigener Schlüssel, keine Erweiterung
 dieses.
 
+**Nachtrag 2026-09-17 (nach unabhängigem Review, vor der ersten Closure
+dieser Fähigkeit): die Marke lebt in einem eigenen Abschnitt — Ihre Bitte
+zitiert das korrekt, der Erstentwurf oben prüfte es falsch.** Baseline
+`v6.9.0` verortet `Gegenstand:` in „§7 Closure-Notiz", einem **anderen**
+Abschnitt als dem, den `max-open-tasks` zählt (bei Ihnen vermutlich
+ebenfalls die DoD-Sektion). Der Erstentwurf suchte die Marke ausschließlich
+im gezählten Abschnitt selbst — ein Dokument, das exakt Ihrer eigenen
+Baseline-Zitierung folgt (Marke nur in Closure-Notiz), hätte fälschlich
+`section-open-tasks-marker-missing` erhalten. Unabhängiger Review fand das
+empirisch, **bevor** dieser Slice geschlossen wurde. Behoben durch
+`open-tasks-require-marker-section` (RE2, dieselbe Zeile wie
+`section-pattern`): durchsucht **jeden** Abschnitt der Datei, dessen
+Überschrift trifft, statt nur den gezählten. Für Ihre eigene Umsetzung
+heißt das: **setzen Sie diesen zweiten Schlüssel** auf ein Muster, das
+Ihren Closure-Abschnitt trifft (z. B. `^#{1,3} [0-9]+\. Closure-Notiz` oder
+Ihre eigene Überschriftenform) — ohne ihn sucht die Bedingung weiterhin nur
+im gezählten Abschnitt und trifft Ihre eigene Ziel-Form nicht.
+
 **Die genannte DC-ID war nicht zutreffend.** Sie schreiben
 [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
 — in diesem Repos Schnitt lebt `max-open-tasks` und die
@@ -123,9 +141,13 @@ neue Bedingung in
 `.d-check.closure.yml` nebeneinander, was die Verwechslung erklärt.
 
 **Beleg.** `internal/hexagon/core/rules/structure_offene_tasks_test.go`:
-vier neue Tests decken Erlaubnis, Pflicht (genau **ein** Befund statt
+vier Tests decken Erlaubnis, Pflicht (genau **ein** Befund statt
 mehrerer), Normalfall unberührt (keine Überschuss-Items ⇒ Kopplung
 wirkungslos, unabhängig von der Marke) und den abwesenden Schlüssel
-(byte-identisches Verhalten). `slice-221` selbst ist der lebende Beleg:
-`make verify-closure-notes` läuft grün gegen seine `**Gegenstand:**`-Zeile,
-ohne einen namentlichen `exempt-paths`-Eintrag.
+(byte-identisches Verhalten); drei weitere Tests
+(`TestOpenTasksRequireMarkerSection_*`) belegen die Abschnitts-Verlegung
+aus dem Nachtrag oben — Erkennung in einem anderen Abschnitt, fehlender
+benannter Abschnitt gilt als fehlende Marke, abweichende
+Überschriften-Nummerierung. `slice-221` selbst ist der lebende Beleg:
+`make verify-closure-notes` läuft grün gegen seine `**Gegenstand:**`-Zeile
+in „## 7. Closure-Notiz", ohne einen namentlichen `exempt-paths`-Eintrag.
