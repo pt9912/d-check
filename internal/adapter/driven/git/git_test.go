@@ -3,12 +3,14 @@ package git_test
 import (
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"testing"
 	"time"
 
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/filemode"
 	"github.com/go-git/go-git/v5/plumbing/object"
 
 	gitadapter "github.com/pt9912/d-check/internal/adapter/driven/git"
@@ -71,17 +73,18 @@ func snapshot(t *testing.T, wt *gogit.Worktree, msg string) string {
 	return h.String()
 }
 
-func statusOf(changes []driven.VCSChange, path string) (driven.VCSStatus, bool) {
-	for _, c := range changes {
-		if c.Path == path {
-			return c.Status, true
+func contains(all []string, path string) bool {
+	for _, p := range all {
+		if p == path {
+			return true
 		}
 	}
-	return 0, false
+	return false
 }
 
-// TestRangeAndFileAt: Range-Diff (Added/Modified/Deleted) + FileAt an Refs.
-func TestRangeAndFileAt(t *testing.T) {
+// TestAllPathsAndFileAt: AllPaths an zwei Ständen (Added/Modified/Deleted
+// zeigen sich als Mengen-Differenz) + FileAt an Refs.
+func TestAllPathsAndFileAt(t *testing.T) {
 	dir, wt := repoAt(t)
 	put(t, dir, "keep.md", "v1\n")
 	put(t, dir, "sub/gone.md", "alt\n")
@@ -98,16 +101,15 @@ func TestRangeAndFileAt(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	changes, err := a.ChangedPaths(first, second)
+	baseAll, headAll, err := a.AllPaths(first, second)
 	if err != nil {
 		t.Fatal(err)
 	}
-	for path, want := range map[string]driven.VCSStatus{
-		"keep.md": driven.VCSModified, "sub/gone.md": driven.VCSDeleted, "fresh.md": driven.VCSAdded,
-	} {
-		if got, ok := statusOf(changes, path); !ok || got != want {
-			t.Fatalf("%s: %c erwartet, got %c ok=%v (alle %v)", path, want, got, ok, changes)
-		}
+	if !contains(baseAll, "keep.md") || !contains(baseAll, "sub/gone.md") || contains(baseAll, "fresh.md") {
+		t.Fatalf("BASE-Menge falsch: %v", baseAll)
+	}
+	if !contains(headAll, "keep.md") || contains(headAll, "sub/gone.md") || !contains(headAll, "fresh.md") {
+		t.Fatalf("HEAD-Menge falsch: %v", headAll)
 	}
 
 	if b, ok, err := a.FileAt(first, "keep.md"); err != nil || !ok || string(b) != "v1\n" {
@@ -116,7 +118,7 @@ func TestRangeAndFileAt(t *testing.T) {
 	if _, ok, err := a.FileAt(second, "sub/gone.md"); err != nil || ok {
 		t.Fatalf("FileAt(second, gelöscht) erwartet ok=false, got ok=%v err=%v", ok, err)
 	}
-	if _, err := a.ChangedPaths("0000000000000000000000000000000000000000", second); err == nil {
+	if _, _, err := a.AllPaths("0000000000000000000000000000000000000000", second); err == nil {
 		t.Fatal("unauflösbare Basis hätte fail-closed liefern müssen")
 	}
 	if _, _, err := a.FileAt("0000000000000000000000000000000000000000", "keep.md"); err == nil {
@@ -124,7 +126,8 @@ func TestRangeAndFileAt(t *testing.T) {
 	}
 }
 
-// TestStaged: staged-Diff (HEAD-Tree vs. Index) + FileAt(Index) + ohne HEAD leer.
+// TestStaged: staged-Menge (base-Tree gegen den Index) + FileAt(Index) + ohne
+// HEAD leer.
 func TestStaged(t *testing.T) {
 	dir, wt := repoAt(t)
 	put(t, dir, "adr.md", "Accepted A\n")
@@ -138,12 +141,12 @@ func TestStaged(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	changes, err := a.ChangedPaths("HEAD", driven.IndexRef)
+	baseAll, headAll, err := a.AllPaths("HEAD", driven.IndexRef)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got, ok := statusOf(changes, "adr.md"); !ok || got != driven.VCSModified {
-		t.Fatalf("staged: adr.md Modified erwartet, got %v", changes)
+	if !contains(baseAll, "adr.md") || !contains(headAll, "adr.md") {
+		t.Fatalf("staged: adr.md an beiden Enden erwartet, base=%v head=%v", baseAll, headAll)
 	}
 	if b, ok, err := a.FileAt(driven.IndexRef, "adr.md"); err != nil || !ok || string(b) != "Accepted B, zweite Fassung\n" {
 		t.Fatalf("FileAt(Index) = %q,%v,%v", b, ok, err)
@@ -163,9 +166,9 @@ func TestStagedNoHead(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	changes, err := a.ChangedPaths("HEAD", driven.IndexRef)
-	if err != nil || changes != nil {
-		t.Fatalf("ohne HEAD: leer/kein Fehler erwartet, got %v / %v", changes, err)
+	baseAll, headAll, err := a.AllPaths("HEAD", driven.IndexRef)
+	if err != nil || baseAll != nil || headAll != nil {
+		t.Fatalf("ohne HEAD: leer/kein Fehler erwartet, got %v / %v / %v", baseAll, headAll, err)
 	}
 }
 
@@ -261,13 +264,13 @@ func TestCommitMessagesFailClosed(t *testing.T) {
 	}
 }
 
-// Ein REINER Rename (Inhalt byte-identisch) muss auch im Range-Pfad die
-// Delete-Hälfte auf dem ALTEN Pfad erzeugen: DC-FA-VCS-001 sagt den Befund für
-// die umbenannte immutable Datei zu, ohne einen Eingabe-Modus einzuschränken.
-// Grenze, die dieser Test hält: er misst die Übersetzung, nicht die Ähnlichkeit
-// — eine Rename-Erkennung würde beide Hälften zu einer Modified-Änderung auf
-// dem neuen Pfad zusammenziehen, und der alte Pfad verschwände spurlos.
-func TestRangePureRenameYieldsDelete(t *testing.T) {
+// Ein REINER Rename (Inhalt byte-identisch) muss auch über AllPaths die
+// ALTE Menge tragen (Delete-Hälfte) und den alten Pfad aus der NEUEN Menge
+// verlieren: DC-FA-VCS-001 sagt den Befund für die umbenannte immutable Datei
+// zu, ohne einen Eingabe-Modus einzuschränken oder Inhalts-Ähnlichkeit zu
+// messen — der Kern (CheckVCS) bildet die Mengen-Differenz selbst, ohne dass
+// der Adapter eine Rename-Erkennung bräuchte.
+func TestAllPathsPureRenameYieldsDelete(t *testing.T) {
 	dir, wt := repoAt(t)
 	const body = "# ADR-0001 — Kern\n\n**Status:** Accepted\n\nEin Text, der unverändert bleibt.\n"
 	put(t, dir, "adr/0001-kern.md", body)
@@ -283,17 +286,155 @@ func TestRangePureRenameYieldsDelete(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	changes, err := a.ChangedPaths(first, second)
+	baseAll, headAll, err := a.AllPaths(first, second)
 	if err != nil {
 		t.Fatal(err)
 	}
-	for path, want := range map[string]driven.VCSStatus{
-		"adr/0001-kern.md": driven.VCSDeleted, "adr/0002-kern.md": driven.VCSAdded,
-	} {
-		if got, ok := statusOf(changes, path); !ok || got != want {
-			t.Fatalf("reiner Rename, %s: %c erwartet, got %c ok=%v (alle %v)", path, want, got, ok, changes)
-		}
+	if !contains(baseAll, "adr/0001-kern.md") {
+		t.Fatalf("reiner Rename: alter Pfad fehlt in BASE-Menge: %v", baseAll)
 	}
+	if contains(headAll, "adr/0001-kern.md") {
+		t.Fatalf("reiner Rename: alter Pfad taucht noch in HEAD-Menge auf: %v", headAll)
+	}
+	if !contains(headAll, "adr/0002-kern.md") {
+		t.Fatalf("reiner Rename: neuer Pfad fehlt in HEAD-Menge: %v", headAll)
+	}
+}
+
+// TestAllPathsUnlesbarerUnterbaum: den Kern der Regression von slice-220 —
+// ein Unterbaum, dessen Objekt fehlt, macht die gemeinsame git-Wartungsaufgabe
+// `git maintenance run --task=loose-objects` real (CO-001, dritte Ausprägung).
+// Hier ohne Pack-Mechanik: dieselbe Wirkung entsteht, wenn das lose Objekt
+// fehlt. Anders als der geteilte Walker hinter Tree.Files() (der das still
+// abschneidet) muss AllPaths hier abbrechen.
+func TestAllPathsUnlesbarerUnterbaum(t *testing.T) {
+	dir, wt := repoAt(t)
+	put(t, dir, "keep.md", "x\n")
+	put(t, dir, "sub/a.md", "a\n")
+	put(t, dir, "sub/b.md", "b\n")
+	base := snapshot(t, wt, "base")
+
+	a, err := gitadapter.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Vorbedingung: alle drei Pfade lesbar.
+	baseAll, _, err := a.AllPaths(base, base)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(baseAll) != 3 {
+		t.Fatalf("Vorbedingung verfehlt: erwartet 3 Pfade, got %v", baseAll)
+	}
+
+	// Den Unterbaum "sub" unlesbar machen.
+	repo, err := gogit.PlainOpen(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	commit, err := repo.CommitObject(plumbing.NewHash(base))
+	if err != nil {
+		t.Fatal(err)
+	}
+	tree, err := commit.Tree()
+	if err != nil {
+		t.Fatal(err)
+	}
+	entry, err := tree.FindEntry("sub")
+	if err != nil {
+		t.Fatal(err)
+	}
+	h := entry.Hash.String()
+	if err := os.Remove(filepath.Join(dir, ".git", "objects", h[:2], h[2:])); err != nil {
+		t.Fatal(err)
+	}
+
+	// Kern der Regression: AllPaths bricht ab, statt den Unterbaum wortlos zu
+	// überspringen.
+	if _, _, err := a.AllPaths(base, base); err == nil {
+		t.Fatal("unlesbarer Unterbaum still übersprungen — erwartet war ein Fehler")
+	}
+}
+
+// TestAllPathsGitlinkWirdUebersprungen: ein Gitlink (Submodul) trägt den
+// Commit-Hash eines FREMDEN Repos, keinen Blob oder Tree dieses Repos — der
+// Walker darf ihn weder als Datei-Pfad melden noch versuchen, ihn als
+// Unterbaum zu lesen (das wäre ein Fehlalarm ohne Ursache).
+func TestAllPathsGitlinkWirdUebersprungen(t *testing.T) {
+	dir, wt := repoAt(t)
+	put(t, dir, "keep.md", "x\n")
+	first := snapshot(t, wt, "first")
+
+	repo, err := gogit.PlainOpen(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	commit, err := repo.CommitObject(plumbing.NewHash(first))
+	if err != nil {
+		t.Fatal(err)
+	}
+	baseTree, err := commit.Tree()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	gitlinkHash := plumbing.NewHash("cafebabecafebabecafebabecafebabecafebabe")
+	entries := append([]object.TreeEntry{
+		{Name: "mod", Mode: filemode.Submodule, Hash: gitlinkHash},
+	}, baseTree.Entries...)
+	sort.Slice(entries, func(i, j int) bool { return entries[i].Name < entries[j].Name })
+	newTree := &object.Tree{Entries: entries}
+	obj := repo.Storer.NewEncodedObject()
+	if err := newTree.Encode(obj); err != nil {
+		t.Fatal(err)
+	}
+	treeHash, err := repo.Storer.SetEncodedObject(obj)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	second := commitWithTree(t, repo, treeHash, plumbing.NewHash(first), "gitlink hinzugefügt")
+
+	a, err := gitadapter.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	baseAll, headAll, err := a.AllPaths(first, second.String())
+	if err != nil {
+		t.Fatalf("Gitlink hätte nicht scheitern dürfen: %v", err)
+	}
+	if contains(headAll, "mod") {
+		t.Fatal("Gitlink als Datei-Pfad gemeldet")
+	}
+	if len(headAll) != 1 || headAll[0] != "keep.md" {
+		t.Fatalf("erwartet nur keep.md in HEAD-Menge, got %v", headAll)
+	}
+	if len(baseAll) != 1 || baseAll[0] != "keep.md" {
+		t.Fatalf("erwartet nur keep.md in BASE-Menge, got %v", baseAll)
+	}
+}
+
+// commitWithTree legt einen Commit mit gegebenem Tree und Parent direkt über
+// den Storer an (ohne Worktree — für Bäume, die Konstrukte tragen, die ein
+// Worktree-Checkout nicht herstellen kann, wie ein synthetischer Gitlink).
+func commitWithTree(t *testing.T, repo *gogit.Repository, treeHash, parent plumbing.Hash, msg string) plumbing.Hash {
+	t.Helper()
+	sig := object.Signature{Name: "T", Email: "t@example.com", When: time.Unix(1700000001, 0)}
+	c := &object.Commit{
+		Author: sig, Committer: sig, Message: msg,
+		TreeHash:     treeHash,
+		ParentHashes: []plumbing.Hash{parent},
+	}
+	obj := repo.Storer.NewEncodedObject()
+	if err := c.Encode(obj); err != nil {
+		t.Fatal(err)
+	}
+	h, err := repo.Storer.SetEncodedObject(obj)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return h
 }
 
 // TestFileAtUnlesbaresObjekt: Ein UNLESBARES Objekt darf nicht wie eine im

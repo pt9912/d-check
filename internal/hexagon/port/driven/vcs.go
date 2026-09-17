@@ -1,29 +1,5 @@
 package driven
 
-// VCSStatus klassifiziert eine Änderung im git-Diff einer Commit-Range
-// (DC-FA-VCS-001.a Schritt 2). Ein Rename erscheint hier als Löschung des alten
-// plus Hinzufügung des neuen Pfads — eine immutable Datei behält ihren Pfad,
-// ihr Verschwinden ist der Befund (kein Inhalts-Ähnlichkeits-Matching,
-// spec/lastenheft.md §DC-FA-VCS-001 Out-of-Scope). Grenze: diese Form ist eine
-// Zusage der Diff-Übersetzung im VCS-Adapter, keine Eigenschaft von git — der
-// Port beschreibt sie, hält sie aber nicht.
-type VCSStatus rune
-
-// Diff-Status-Klassen einer Commit-Range bzw. eines staged Index-Diffs.
-const (
-	VCSAdded    VCSStatus = 'A'
-	VCSModified VCSStatus = 'M'
-	VCSDeleted  VCSStatus = 'D'
-)
-
-// VCSChange ist ein geänderter Pfad zwischen zwei git-Refs.
-type VCSChange struct {
-	Status VCSStatus
-	// Path ist der betroffene Pfad ('/'-getrennt, relativ zur Repo-Wurzel):
-	// bei Added/Modified der Ziel-Pfad, bei Deleted der entfallene.
-	Path string
-}
-
 // IndexRef ist der Sentinel-Ref für den staged Index (--staged-Modus,
 // DC-FA-VCS-001.a Schritt 1): BASE = HEAD, HEAD = der staged Index.
 const IndexRef = ":index:"
@@ -44,9 +20,17 @@ type CommitMeta struct {
 // (DC-QA-02/DC-QA-03). Ein nicht auflösbares Ref/`.git` ⇒ Fehler (fail-closed,
 // Exit 2).
 type VCS interface {
-	// ChangedPaths liefert die Änderungen zwischen base und head (head ==
-	// IndexRef ⇒ staged-Diff gegen die base-Version).
-	ChangedPaths(base, head string) ([]VCSChange, error)
+	// AllPaths liefert für die Range base..head (head == IndexRef ⇒ staged:
+	// base-Tree gegen den Index) JEDEN Datei-Pfad ('/'-getrennt, repo-relativ)
+	// an BEIDEN Enden — direkt über die Baum-Struktur aufgelöst, nicht aus
+	// einem Diff hergeleitet (DC-FA-VCS-001.a Schritt 2). Ein Unterbaum, dessen
+	// Objekt nicht lesbar ist, ist ein Umgebungsfehler und wird zum Fehler
+	// (fail-closed, Exit 2) — nicht zu einer Lücke, die den Rest des Trees
+	// wortlos verschluckt (CO-001, dritte Ausprägung). Eine Ausnahme bleibt:
+	// staged VOR dem ersten Commit hat nichts, das immutabel sein könnte —
+	// beide Mengen sind dann leer, kein Fehler (Parität zum abgelösten
+	// ChangedPaths).
+	AllPaths(base, head string) (baseAll, headAll []string, err error)
 	// FileAt liefert den Inhalt von path an ref; ok=false, wenn an ref abwesend.
 	FileAt(ref, path string) (content []byte, ok bool, err error)
 	// CommitMessages liefert die rohen Messages der **Nicht-Merge**-Commits der

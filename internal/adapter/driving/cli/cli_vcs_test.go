@@ -9,6 +9,7 @@ import (
 	"time"
 
 	gogit "github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 
 	"github.com/pt9912/d-check/internal/adapter/driving/cli"
@@ -21,6 +22,18 @@ import (
 const vcsConfig = `modules: [links]
 vcs:
   paths: ["adr-*.md"]
+  immutable-when: '^\*\*Status:\*\* Accepted'
+  exclude-sections: [Geschichte]
+  status-line: '^\*\*Status:\*\*'
+  head-allow: '^\*\*Status:\*\* (Accepted|Superseded by ADR-[0-9]{4})'
+`
+
+// vcsConfigSub ist dieselbe Klasse wie vcsConfig, aber mit "**/" davor — die
+// ADR liegt in einem Unterverzeichnis, dessen Tree unlesbar gemacht wird
+// (TestVCS_UnlesbareUnterbaeume).
+const vcsConfigSub = `modules: [links]
+vcs:
+  paths: ["**/adr-*.md"]
   immutable-when: '^\*\*Status:\*\* Accepted'
   exclude-sections: [Geschichte]
   status-line: '^\*\*Status:\*\*'
@@ -54,6 +67,9 @@ func writeAt(t *testing.T, dir, name, content string) {
 		vor = len(b)
 	}
 	if err := coretest.GitFixtureRewriteHazard(name, vor, len(content)); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Dir(full), 0o755); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.WriteFile(full, []byte(content), 0o644); err != nil {
@@ -177,4 +193,128 @@ func TestVCS_RangeStagedExklusiv(t *testing.T) {
 	if !strings.Contains(stderr.String(), "nicht kombinierbar") {
 		t.Fatalf("stderr ohne Kombinations-Fehler: %s", stderr.String())
 	}
+}
+
+// treeEntryHash löst den Tree-Eintrag path an ref auf und liefert seinen Hash.
+func treeEntryHash(t *testing.T, dir, ref, path string) plumbing.Hash {
+	t.Helper()
+	repo, err := gogit.PlainOpen(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	h, err := repo.ResolveRevision(plumbing.Revision(ref))
+	if err != nil {
+		t.Fatal(err)
+	}
+	c, err := repo.CommitObject(*h)
+	if err != nil {
+		t.Fatal(err)
+	}
+	tree, err := c.Tree()
+	if err != nil {
+		t.Fatal(err)
+	}
+	e, err := tree.FindEntry(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return e.Hash
+}
+
+// removeLooseObject entfernt das lose Objekt zu h — dieselbe Wirkung wie ein
+// Pack unter unkanonischem Namen (CO-001), nur ohne Pack-Mechanik im Test.
+func removeLooseObject(t *testing.T, dir string, h plumbing.Hash) {
+	t.Helper()
+	s := h.String()
+	if err := os.Remove(filepath.Join(dir, ".git", "objects", s[:2], s[2:])); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// TestVCS_UnlesbareObjekte deckt CO-001s vier Ausprägungen End-to-End gegen
+// dasselbe Muster von Probe-Repo ab (slice-220, DoD 2): BASE-Blob, BASE-Tree
+// mit Pendant, BASE-Tree ohne Pendant und HEAD-Tree unlesbar. Vor slice-220
+// meldeten die ersten beiden zwar schon Exit 2 (slice-218), die dritte blieb
+// `0 Befund(e)`/Exit 0, und die vierte meldete fälschlich `core-drift-vcs`
+// mit Exit 1 statt eines Umgebungsfehlers — der neue Entwurf (die geschützte
+// Klasse direkt gegen beide Trees aufgelöst) schließt alle vier auf demselben
+// Codepfad.
+func TestVCS_UnlesbareObjekte(t *testing.T) {
+	t.Run("BASE-Blob unlesbar (M)", func(t *testing.T) {
+		dir := t.TempDir()
+		wt := initVCSRepo(t, dir)
+		writeAt(t, dir, ".d-check.yml", vcsConfig)
+		writeAt(t, dir, "adr-x.md", adrText("Accepted", "Tue A."))
+		c1 := commitAll(t, wt, "c1")
+		writeAt(t, dir, "adr-x.md", adrText("Accepted", "Tue B, zweite Fassung."))
+		c2 := commitAll(t, wt, "c2")
+
+		removeLooseObject(t, dir, treeEntryHash(t, dir, c1, "adr-x.md"))
+
+		var stdout, stderr bytes.Buffer
+		code := cli.Run([]string{"--enable", "vcs", "--range", c1 + ".." + c2, dir}, &stdout, &stderr)
+		if code != 2 {
+			t.Fatalf("Exit = %d, want 2\nstdout=%s\nstderr=%s", code, stdout.String(), stderr.String())
+		}
+	})
+
+	t.Run("BASE-Tree unlesbar, mit Pendant (A)", func(t *testing.T) {
+		dir := t.TempDir()
+		wt := initVCSRepo(t, dir)
+		writeAt(t, dir, ".d-check.yml", vcsConfigSub)
+		writeAt(t, dir, "sub/other.md", "x\n")
+		c1 := commitAll(t, wt, "c1")
+		writeAt(t, dir, "sub/adr-x.md", adrText("Accepted", "Tue A."))
+		c2 := commitAll(t, wt, "c2")
+
+		removeLooseObject(t, dir, treeEntryHash(t, dir, c1, "sub"))
+
+		var stdout, stderr bytes.Buffer
+		code := cli.Run([]string{"--enable", "vcs", "--range", c1 + ".." + c2, dir}, &stdout, &stderr)
+		if code != 2 {
+			t.Fatalf("Exit = %d, want 2\nstdout=%s\nstderr=%s", code, stdout.String(), stderr.String())
+		}
+	})
+
+	t.Run("BASE-Tree unlesbar, ohne Pendant (Verzeichnis geloescht)", func(t *testing.T) {
+		dir := t.TempDir()
+		wt := initVCSRepo(t, dir)
+		writeAt(t, dir, ".d-check.yml", vcsConfigSub)
+		writeAt(t, dir, "sub/adr-x.md", adrText("Accepted", "Tue A."))
+		c1 := commitAll(t, wt, "c1")
+		if _, err := wt.Remove("sub/adr-x.md"); err != nil {
+			t.Fatal(err)
+		}
+		c2 := commitAll(t, wt, "c2 - verzeichnis geloescht")
+
+		removeLooseObject(t, dir, treeEntryHash(t, dir, c1, "sub"))
+
+		var stdout, stderr bytes.Buffer
+		code := cli.Run([]string{"--enable", "vcs", "--range", c1 + ".." + c2, dir}, &stdout, &stderr)
+		if code != 2 {
+			t.Fatalf("Exit = %d, want 2 (vor slice-220: still 0 Befund(e)/Exit 0)\nstdout=%s\nstderr=%s", code, stdout.String(), stderr.String())
+		}
+	})
+
+	t.Run("HEAD-Tree unlesbar (vierte Ausprägung, vorher Fehldiagnose)", func(t *testing.T) {
+		dir := t.TempDir()
+		wt := initVCSRepo(t, dir)
+		writeAt(t, dir, ".d-check.yml", vcsConfigSub)
+		writeAt(t, dir, "sub/adr-x.md", adrText("Accepted", "Tue A."))
+		writeAt(t, dir, "sub/other.md", "x\n")
+		c1 := commitAll(t, wt, "c1")
+		writeAt(t, dir, "sub/other.md", "geaendert\n")
+		c2 := commitAll(t, wt, "c2")
+
+		removeLooseObject(t, dir, treeEntryHash(t, dir, c2, "sub"))
+
+		var stdout, stderr bytes.Buffer
+		code := cli.Run([]string{"--enable", "vcs", "--range", c1 + ".." + c2, dir}, &stdout, &stderr)
+		if code != 2 {
+			t.Fatalf("Exit = %d, want 2 (vor slice-220: faelschlich core-drift-vcs, Exit 1)\nstdout=%s\nstderr=%s", code, stdout.String(), stderr.String())
+		}
+		if strings.Contains(stdout.String(), "core-drift-vcs") {
+			t.Fatalf("Fehldiagnose als core-drift-vcs, statt als Umgebungsfehler zu brechen: %s", stdout.String())
+		}
+	})
 }

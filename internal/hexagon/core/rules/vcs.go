@@ -2,6 +2,7 @@ package rules
 
 import (
 	"regexp"
+	"sort"
 	"strings"
 
 	"github.com/pt9912/d-check/internal/hexagon/core/model"
@@ -16,45 +17,60 @@ import (
 // lesend/deterministisch) — ein Port-Fehler (fehlendes `.git`/Range) wird als
 // error zurückgegeben, den der Aufrufer auf Exit 2 abbildet (fail-closed).
 // Diagnose-only: kein `--repair`-Hunk.
+//
+// Die geschützte Klasse (`cfg.Paths`) wird direkt gegen BEIDE Tree-Stände
+// aufgelöst, statt einem Diff zu vertrauen (slice-220, CO-001 dritte
+// Ausprägung): ein Unterbaum, den ein Diff-Walker stillschweigend
+// überspringt, wenn sein Objekt unlesbar ist, bricht hier stattdessen den
+// Lauf ab (AllPaths ist fail-closed). Ein Pfad in beiden Mengen ist
+// Modified/unverändert, nur in der BASE-Menge ist Deleted/umbenannt, nur in
+// der HEAD-Menge ist Added (noch nicht immutabel — Proposed→Accepted-Reifung
+// frei, ohne Sonderbehandlung: seine BASE-Lesbarkeit ist durch den
+// fail-closed Walk oben bereits sichergestellt).
 func CheckVCS(vcs driven.VCS, cfg model.VCSConfig, base, head string) ([]model.Finding, error) {
 	if len(cfg.Paths) == 0 || vcs == nil {
 		return nil, nil // inert (Modul ohne Klassen-Config oder ohne Port)
 	}
-	changes, err := vcs.ChangedPaths(base, head)
+	baseAll, headAll, err := vcs.AllPaths(base, head)
 	if err != nil {
 		return nil, err
 	}
+	baseSet := protectedSet(baseAll, cfg.Paths)
+	headSet := protectedSet(headAll, cfg.Paths)
+	paths := make([]string, 0, len(baseSet))
+	for p := range baseSet {
+		paths = append(paths, p)
+	}
+	sort.Strings(paths) // DC-QA-02 Determinismus (Kandidaten kommen aus einer Menge)
 	var findings []model.Finding
-	for _, c := range changes {
-		if !ignored(c.Path, cfg.Paths) {
-			continue // nicht in der geschützten Klasse (vcs.paths)
-		}
-		switch c.Status {
-		case driven.VCSAdded:
-			// Neue Datei ist noch nicht immutabel (Proposed→Accepted-Reifung
-			// frei). Der BASE-Stand wird trotzdem angefasst: „Added" ist auch
-			// die Antwort, die ein Tree-Diff gibt, wenn er den BASE-Stand gar
-			// nicht lesen konnte — dann verschwände eine echte Kern-Änderung
-			// befundfrei. Der Zugriff unterscheidet die beiden, sein Ergebnis
-			// wird nicht gebraucht.
-			if _, _, err := vcs.FileAt(base, c.Path); err != nil {
-				return nil, err
-			}
-		case driven.VCSDeleted:
-			f, err := vcsDeleted(vcs, cfg, base, c.Path)
+	for _, p := range paths {
+		if headSet[p] {
+			f, err := vcsModified(vcs, cfg, base, head, p)
 			if err != nil {
 				return nil, err
 			}
 			findings = append(findings, f...)
-		case driven.VCSModified:
-			f, err := vcsModified(vcs, cfg, base, head, c.Path)
-			if err != nil {
-				return nil, err
-			}
-			findings = append(findings, f...)
+			continue
 		}
+		f, err := vcsDeleted(vcs, cfg, base, p)
+		if err != nil {
+			return nil, err
+		}
+		findings = append(findings, f...)
 	}
 	return findings, nil
+}
+
+// protectedSet filtert all auf die über patterns (vcs.paths) geschützte
+// Klasse.
+func protectedSet(all []string, patterns []string) map[string]bool {
+	out := make(map[string]bool, len(all))
+	for _, p := range all {
+		if ignored(p, patterns) {
+			out[p] = true
+		}
+	}
+	return out
 }
 
 // vcsDeleted meldet die Löschung/Umbenennung einer immutablen BASE-Datei

@@ -11,22 +11,44 @@ import (
 )
 
 // fakeVCS ist ein hermetischer driven.VCS-Doppelgänger (kein echtes git) für die
-// Akzeptanztests von CheckVCS (DC-FA-VCS-001): er liefert vorgegebene Changes und
-// Datei-Inhalte je Ref. err simuliert den fail-closed-Pfad (fehlendes .git/Range).
+// Akzeptanztests von CheckVCS (DC-FA-VCS-001): AllPaths leitet seine Mengen aus
+// files her (die Schlüssel je Ref sind die "im Tree vorhandenen" Pfade). err
+// simuliert den fail-closed-Pfad (fehlendes .git/Range); allPathsErr simuliert
+// gezielt einen unlesbaren Unterbaum an einem der beiden Enden (slice-220).
 type fakeVCS struct {
-	changes []driven.VCSChange
-	files   map[string]map[string][]byte // ref → pfad → inhalt
-	commits []driven.CommitMeta          // Modul commits (DC-FA-COMMITS-001)
-	tracked map[string]bool              // Modul tracked (DC-FA-TRK-001)
-	err     error
-	fileErr error // FileAt scheitert — unlesbares Objekt oder unlesbarer Tree-Eintrag
+	files       map[string]map[string][]byte // ref → pfad → inhalt (auch AllPaths-Quelle)
+	allPathsErr map[string]error             // ref → Fehler von AllPaths an genau diesem Ende
+	commits     []driven.CommitMeta          // Modul commits (DC-FA-COMMITS-001)
+	tracked     map[string]bool              // Modul tracked (DC-FA-TRK-001)
+	err         error
+	fileErr     error // FileAt scheitert — unlesbares Objekt oder unlesbarer Tree-Eintrag
 }
 
-func (f *fakeVCS) ChangedPaths(_, _ string) ([]driven.VCSChange, error) {
+func (f *fakeVCS) AllPaths(base, head string) ([]string, []string, error) {
 	if f.err != nil {
-		return nil, f.err
+		return nil, nil, f.err
 	}
-	return f.changes, nil
+	baseAll, err := f.pathsAt(base)
+	if err != nil {
+		return nil, nil, err
+	}
+	headAll, err := f.pathsAt(head)
+	if err != nil {
+		return nil, nil, err
+	}
+	return baseAll, headAll, nil
+}
+
+func (f *fakeVCS) pathsAt(ref string) ([]string, error) {
+	if err, ok := f.allPathsErr[ref]; ok {
+		return nil, err
+	}
+	m := f.files[ref]
+	out := make([]string, 0, len(m))
+	for p := range m {
+		out = append(out, p)
+	}
+	return out, nil
 }
 
 func (f *fakeVCS) CommitMessages(_, _ string) ([]driven.CommitMeta, error) {
@@ -132,10 +154,7 @@ func TestVCSModified(t *testing.T) {
 	cfg := adrConfig()
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			fv := &fakeVCS{
-				changes: []driven.VCSChange{{Status: driven.VCSModified, Path: adrPath}},
-				files:   refs(c.base, c.head),
-			}
+			fv := &fakeVCS{files: refs(c.base, c.head)}
 			got, err := CheckVCS(fv, cfg, "BASE", "HEAD")
 			if err != nil {
 				t.Fatalf("unerwarteter Fehler: %v", err)
@@ -162,17 +181,11 @@ func TestVCSNoStatusLine(t *testing.T) {
 		ExcludeSections: []string{"Geschichte"},
 		// StatusLine + HeadAllow bewusst nil
 	}
-	drift := &fakeVCS{
-		changes: []driven.VCSChange{{Status: driven.VCSModified, Path: adrPath}},
-		files:   refs(adr("Accepted", "Tue A."), adr("Accepted", "Tue B.")),
-	}
+	drift := &fakeVCS{files: refs(adr("Accepted", "Tue A."), adr("Accepted", "Tue B."))}
 	if got, err := CheckVCS(drift, cfg, "BASE", "HEAD"); err != nil || len(got) != 1 || got[0].Reason != model.ReasonCoreDriftVCS {
 		t.Fatalf("ohne status-line: ein core-drift-vcs (Body) erwartet, got %v err=%v", got, err)
 	}
-	clean := &fakeVCS{
-		changes: []driven.VCSChange{{Status: driven.VCSModified, Path: adrPath}},
-		files:   refs(adr("Accepted", "Tue A."), adr("Accepted", "Tue  A.")),
-	}
+	clean := &fakeVCS{files: refs(adr("Accepted", "Tue A."), adr("Accepted", "Tue  A."))}
 	if got, err := CheckVCS(clean, cfg, "BASE", "HEAD"); err != nil || len(got) != 0 {
 		t.Fatalf("ohne status-line + reflow: kein Befund erwartet, got %v err=%v", got, err)
 	}
@@ -182,23 +195,21 @@ func TestVCSNoStatusLine(t *testing.T) {
 func TestVCSDeleteAddClass(t *testing.T) {
 	cfg := adrConfig()
 	cases := []struct {
-		name   string
-		change driven.VCSChange
-		files  map[string]map[string][]byte
-		want   int
+		name  string
+		files map[string]map[string][]byte
+		want  int
 	}{
-		{"geloeschte accepted feuert", driven.VCSChange{Status: driven.VCSDeleted, Path: adrPath},
-			refs(adr("Accepted", "Tue A."), nil), 1},
-		{"geloeschte proposed ist frei", driven.VCSChange{Status: driven.VCSDeleted, Path: adrPath},
-			refs(adr("Proposed", "Tue A."), nil), 0},
-		{"neue datei ist frei", driven.VCSChange{Status: driven.VCSAdded, Path: adrPath},
-			refs(nil, adr("Accepted", "Tue A.")), 0},
-		{"pfad ausserhalb der klasse ignoriert", driven.VCSChange{Status: driven.VCSModified, Path: "docs/other.md"},
+		{"geloeschte accepted feuert", refs(adr("Accepted", "Tue A."), nil), 1},
+		{"geloeschte proposed ist frei", refs(adr("Proposed", "Tue A."), nil), 0},
+		{"neue datei ist frei", refs(nil, adr("Accepted", "Tue A.")), 0},
+		{"unveraenderte datei bleibt unveraendert",
+			refs(adr("Accepted", "Tue A."), adr("Accepted", "Tue A.")), 0},
+		{"pfad ausserhalb der klasse ignoriert",
 			map[string]map[string][]byte{"BASE": {"docs/other.md": adr("Accepted", "Tue A.")}, "HEAD": {"docs/other.md": adr("Accepted", "Tue B.")}}, 0},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			fv := &fakeVCS{changes: []driven.VCSChange{c.change}, files: c.files}
+			fv := &fakeVCS{files: c.files}
 			got, err := CheckVCS(fv, cfg, "BASE", "HEAD")
 			if err != nil {
 				t.Fatalf("unerwarteter Fehler: %v", err)
@@ -221,8 +232,7 @@ func TestVCSFailClosed(t *testing.T) {
 
 // TestVCSInert: ohne paths-Klasse oder ohne Port ist das Modul wirkungslos.
 func TestVCSInert(t *testing.T) {
-	fv := &fakeVCS{changes: []driven.VCSChange{{Status: driven.VCSModified, Path: adrPath}},
-		files: refs(adr("Accepted", "Tue A."), adr("Accepted", "Tue B."))}
+	fv := &fakeVCS{files: refs(adr("Accepted", "Tue A."), adr("Accepted", "Tue B."))}
 	if got, err := CheckVCS(fv, model.VCSConfig{}, "BASE", "HEAD"); err != nil || got != nil {
 		t.Fatalf("ohne paths inert erwartet: got=%v err=%v", got, err)
 	}
@@ -237,10 +247,7 @@ func TestVCSInert(t *testing.T) {
 func TestVCSDispatch(t *testing.T) {
 	m := coretest.NewMemFS(map[string]string{"docs/x.md": "x"})
 	cfg := model.Config{VCS: adrConfig()}
-	driftPort := &fakeVCS{
-		changes: []driven.VCSChange{{Status: driven.VCSModified, Path: adrPath}},
-		files:   refs(adr("Accepted", "Tue A."), adr("Accepted", "Tue B.")),
-	}
+	driftPort := &fakeVCS{files: refs(adr("Accepted", "Tue A."), adr("Accepted", "Tue B."))}
 
 	res, err := RunWithVCS(m, nil, driftPort, nil, "BASE", "HEAD", cfg, []string{"vcs"})
 	if err != nil {
@@ -276,10 +283,7 @@ func TestVCSStatusImFenceZaehltNicht(t *testing.T) {
 		"```markdown\n**Status:** Accepted\n```\n\n## Entscheidung\n\n"
 	base := []byte(beispiel + "Tue A.\n")
 	head := []byte(beispiel + "Tue B.\n")
-	fv := &fakeVCS{
-		changes: []driven.VCSChange{{Status: driven.VCSModified, Path: adrPath}},
-		files:   refs(base, head),
-	}
+	fv := &fakeVCS{files: refs(base, head)}
 	got, err := CheckVCS(fv, adrConfig(), "BASE", "HEAD")
 	if err != nil {
 		t.Fatalf("unerwarteter Fehler: %v", err)
@@ -295,13 +299,10 @@ func TestVCSStatusImFenceZaehltNicht(t *testing.T) {
 // Klassen-Prüfung je auf den NEUEN Pfad umstellte, machte genau diesen Fall
 // still — und der Rename innerhalb der Klasse bliebe grün, also unauffällig.
 func TestVCSRenameOutOfClass(t *testing.T) {
-	fv := &fakeVCS{
-		changes: []driven.VCSChange{
-			{Status: driven.VCSDeleted, Path: adrPath},
-			{Status: driven.VCSAdded, Path: "docs/notes/kern.md"},
-		},
-		files: refs(adr("Accepted", "Tue A."), nil),
-	}
+	fv := &fakeVCS{files: map[string]map[string][]byte{
+		"BASE": {adrPath: adr("Accepted", "Tue A.")},
+		"HEAD": {"docs/notes/kern.md": adr("Accepted", "Tue A.")},
+	}}
 	got, err := CheckVCS(fv, adrConfig(), "BASE", "HEAD")
 	if err != nil {
 		t.Fatalf("unerwarteter Fehler: %v", err)
@@ -314,24 +315,32 @@ func TestVCSRenameOutOfClass(t *testing.T) {
 	}
 }
 
-// TestVCSAddedMeldetUnlesbareBasis: "Added" ist auch die Antwort, die ein
-// Tree-Diff gibt, wenn er den BASE-Stand gar nicht lesen konnte. Wer den Zweig
-// ohne Rückfrage passieren lässt, verliert dort jede Kern-Änderung befundfrei
-// (DC-FA-VCS-001).
-func TestVCSAddedMeldetUnlesbareBasis(t *testing.T) {
+// TestVCSAllPathsFehlerAnBeidenEnden: ein unlesbarer Unterbaum an BASE ODER
+// an HEAD bricht CheckVCS fail-closed ab — unabhängig davon, ob es zu einem
+// betroffenen Pfad ein "Pendant" auf der Gegenseite gibt (CO-001s zweite und
+// dritte Ausprägung fallen im neuen Entwurf auf denselben Codepfad: die
+// AllPaths-Fehlerprüfung, nicht mehr ein Sonderfall im "Added"-Zweig).
+func TestVCSAllPathsFehlerAnBeidenEnden(t *testing.T) {
 	cfg := adrConfig()
-	unlesbar := &fakeVCS{
-		changes: []driven.VCSChange{{Status: driven.VCSAdded, Path: "docs/plan/adr/0001-a.md"}},
-		fileErr: errors.New("nicht lesbarer Tree-Eintrag"),
+	unlesbarBase := &fakeVCS{allPathsErr: map[string]error{"BASE": errors.New("Unterbaum nicht lesbar")}}
+	if _, err := CheckVCS(unlesbarBase, cfg, "BASE", "HEAD"); err == nil {
+		t.Fatal("unlesbarer BASE-Tree still passiert — erwartet war ein Fehler")
 	}
-	if _, err := CheckVCS(unlesbar, cfg, "BASE", "HEAD"); err == nil {
-		t.Fatal("unlesbare BASE bei Added still passiert — erwartet war ein Fehler")
+
+	// Die vierte, bisher fehldiagnostizierte Ausprägung (CO-001): ein
+	// unlesbarer HEAD-Tree darf nicht als core-drift-vcs "gelöscht" erscheinen,
+	// sondern muss den Umgebungsfehler selbst melden.
+	unlesbarHead := &fakeVCS{
+		files:       refs(adr("Accepted", "Tue A."), nil),
+		allPathsErr: map[string]error{"HEAD": errors.New("Unterbaum nicht lesbar")},
+	}
+	if _, err := CheckVCS(unlesbarHead, cfg, "BASE", "HEAD"); err == nil {
+		t.Fatal("unlesbarer HEAD-Tree still als Loeschung gemeldet — erwartet war ein Fehler")
 	}
 
 	// Gegenrichtung: eine wirklich neu angelegte Datei bleibt befundfrei.
 	echtNeu := &fakeVCS{
-		changes: []driven.VCSChange{{Status: driven.VCSAdded, Path: "docs/plan/adr/0001-a.md"}},
-		files:   map[string]map[string][]byte{"HEAD": {"docs/plan/adr/0001-a.md": adr("Accepted", "Neu.")}},
+		files: map[string]map[string][]byte{"HEAD": {"docs/plan/adr/0001-a.md": adr("Accepted", "Neu.")}},
 	}
 	if got, err := CheckVCS(echtNeu, cfg, "BASE", "HEAD"); err != nil || len(got) != 0 {
 		t.Errorf("neu angelegte Datei falsch behandelt: %d Befund(e), err=%v", len(got), err)

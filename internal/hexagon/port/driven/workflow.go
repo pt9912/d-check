@@ -6,7 +6,7 @@ package driven
 // trägt keine Fremd-Bibliothek (Hexagon-Schnitt, ADR-0004/ADR-0012; die
 // yaml-Abhängigkeit lebt in den Adaptern, ADR-0009).
 //
-// Die Typen hier sind PORT-Typen wie DirEntry und VCSStatus, nicht
+// Die Typen hier sind PORT-Typen wie DirEntry und CommitMeta, nicht
 // Modell-Typen: der Port beschreibt, was von außen hereinkommt, und bleibt
 // dadurch frei von der Kern-Konfiguration.
 

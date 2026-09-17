@@ -8,7 +8,6 @@
 package git
 
 import (
-	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -17,7 +16,6 @@ import (
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/filemode"
-	"github.com/go-git/go-git/v5/plumbing/format/index"
 	"github.com/go-git/go-git/v5/plumbing/object"
 
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
@@ -58,98 +56,84 @@ func (a *Adapter) hasHead() bool {
 	return err == nil
 }
 
-// ChangedPaths liefert die Änderungen zwischen base und head (DC-FA-VCS-001.a
-// Schritt 2). head == driven.IndexRef ⇒ staged-Diff (base-Tree vs. Index).
-func (a *Adapter) ChangedPaths(base, head string) ([]driven.VCSChange, error) {
+// AllPaths liefert für base..head (head == driven.IndexRef ⇒ staged:
+// base-Tree gegen den Index) JEDEN Datei-Pfad an beiden Enden — direkt über
+// die Baum-Struktur aufgelöst, nicht über einen Diff (DC-FA-VCS-001.a
+// Schritt 2). Kein auflösbarer HEAD im staged-Modus (erster Commit) ⇒ nichts
+// zu schützen — wie das abgelöste Skript, das im --staged-Modus
+// `git rev-parse --verify HEAD` prüfte und bei Fehlschlag still blieb.
+func (a *Adapter) AllPaths(base, head string) ([]string, []string, error) {
 	if head == driven.IndexRef {
-		// Kein auflösbarer HEAD (erster Commit) ⇒ nichts zu schützen — wie das
-		// abgelöste Skript, das im --staged-Modus `git rev-parse --verify HEAD`
-		// prüfte und bei Fehlschlag still blieb (jeder Head()-Fehler ⇒ leer).
 		if !a.hasHead() {
-			return nil, nil
+			return nil, nil, nil
 		}
-		baseTree, err := a.treeAt(base)
+		baseAll, err := a.pathsAt(base)
 		if err != nil {
-			return nil, fmt.Errorf("staged-Basis %q nicht auflösbar: %w", base, err)
+			return nil, nil, fmt.Errorf("staged-Basis %q nicht auflösbar: %w", base, err)
 		}
 		idx, err := a.repo.Storer.Index()
 		if err != nil {
-			return nil, fmt.Errorf("git-Index nicht lesbar: %w", err)
+			return nil, nil, fmt.Errorf("git-Index nicht lesbar: %w", err)
 		}
-		return diffTreeIndex(baseTree, idx)
+		headAll := make([]string, 0, len(idx.Entries))
+		for _, e := range idx.Entries {
+			headAll = append(headAll, e.Name)
+		}
+		return baseAll, headAll, nil
 	}
-	baseTree, err := a.treeAt(base)
+	baseAll, err := a.pathsAt(base)
 	if err != nil {
-		return nil, fmt.Errorf("Range-Basis %q nicht auflösbar: %w", base, err)
+		return nil, nil, fmt.Errorf("Range-Basis %q nicht auflösbar: %w", base, err)
 	}
-	headTree, err := a.treeAt(head)
+	headAll, err := a.pathsAt(head)
 	if err != nil {
-		return nil, fmt.Errorf("Range-Spitze %q nicht auflösbar: %w", head, err)
+		return nil, nil, fmt.Errorf("Range-Spitze %q nicht auflösbar: %w", head, err)
 	}
-	return diffTrees(baseTree, headTree)
+	return baseAll, headAll, nil
 }
 
-// diffTrees übersetzt einen go-git-Tree-Diff in VCSChanges. Die
-// Rename-Erkennung ist hier **ausgeschaltet**, und das ist die Zusage, nicht
-// eine Sparmaßnahme: mit ihr (go-gits Default) kommt ein Rename als EINE
-// Änderung mit From und To an und wird zu Modified auf dem NEUEN Pfad — der
-// alte Pfad verschwindet, und der core-drift-vcs-Befund für die umbenannte
-// immutable Datei entsteht nie (DC-FA-VCS-001). Ohne
-// sie erscheint der Rename als Delete(alt) + Add(neu), und der Delete des
-// immutablen Pfads ist der Befund. Grenze: der Range-Pfad misst damit keine
-// Inhalts-Ähnlichkeit — dieselbe Eigenschaft, die der --staged-Pfad über seine
-// eigene Übersetzung (diffTreeIndex) immer schon hatte.
-func diffTrees(base, head *object.Tree) ([]driven.VCSChange, error) {
-	changes, err := object.DiffTreeWithOptions(context.Background(), base, head,
-		&object.DiffTreeOptions{DetectRenames: false})
+// pathsAt enumeriert jeden Datei-Pfad im Tree von ref (fail-closed über
+// walkTree).
+func (a *Adapter) pathsAt(ref string) ([]string, error) {
+	tree, err := a.treeAt(ref)
 	if err != nil {
-		return nil, fmt.Errorf("git-Diff fehlgeschlagen: %w", err)
+		return nil, err
 	}
-	out := make([]driven.VCSChange, 0, len(changes))
-	for _, c := range changes {
-		switch {
-		case c.From.Name == "":
-			out = append(out, driven.VCSChange{Status: driven.VCSAdded, Path: c.To.Name})
-		case c.To.Name == "":
-			out = append(out, driven.VCSChange{Status: driven.VCSDeleted, Path: c.From.Name})
-		default:
-			out = append(out, driven.VCSChange{Status: driven.VCSModified, Path: c.To.Name})
-		}
+	var out []string
+	if err := walkTree(a.repo, tree, "", &out); err != nil {
+		return nil, fmt.Errorf("nicht vollständig lesbarer Tree zu %q: %w", ref, err)
 	}
 	return out, nil
 }
 
-// diffTreeIndex difft den HEAD-Tree gegen den staged Index (rein lesend, ohne
-// Working-Tree-Zugriff): in Index, nicht in HEAD ⇒ Added; beide mit
-// abweichendem Blob-Hash ⇒ Modified; in HEAD, nicht im Index ⇒ Deleted.
-func diffTreeIndex(headTree *object.Tree, idx *index.Index) ([]driven.VCSChange, error) {
-	headFiles := map[string]plumbing.Hash{}
-	if err := headTree.Files().ForEach(func(f *object.File) error {
-		headFiles[f.Name] = f.Hash
-		return nil
-	}); err != nil {
-		return nil, fmt.Errorf("HEAD-Tree nicht lesbar: %w", err)
-	}
-	idxFiles := make(map[string]plumbing.Hash, len(idx.Entries))
-	for _, e := range idx.Entries {
-		idxFiles[e.Name] = e.Hash
-	}
-	var out []driven.VCSChange
-	for name, ih := range idxFiles {
-		hh, ok := headFiles[name]
-		switch {
-		case !ok:
-			out = append(out, driven.VCSChange{Status: driven.VCSAdded, Path: name})
-		case hh != ih:
-			out = append(out, driven.VCSChange{Status: driven.VCSModified, Path: name})
+// walkTree sammelt jeden Datei-Pfad (regulär/ausführbar/symlink) unter tree,
+// rekursiv über *jeden* Unterbaum. Anders als der geteilte Walker hinter
+// Tree.Files() (der einen nicht ladbaren Unterbaum in ein stilles io.EOF
+// verwandelt, CO-001 dritte Ausprägung) bricht dieser hier mit einem Fehler
+// ab, sobald ein Unterbaum-Objekt nicht lesbar ist — der Aufruf über
+// repo.TreeObject liest das Objekt tatsächlich, statt nur den Tree-Eintrag zu
+// prüfen. Ein Gitlink (Submodul) trägt keinen Blob dieses Repos und wird
+// übersprungen, nicht aufgelöst.
+func walkTree(repo *gogit.Repository, tree *object.Tree, prefix string, out *[]string) error {
+	for _, e := range tree.Entries {
+		full := e.Name
+		if prefix != "" {
+			full = prefix + "/" + e.Name
+		}
+		switch e.Mode {
+		case filemode.Dir:
+			sub, err := repo.TreeObject(e.Hash)
+			if err != nil {
+				return fmt.Errorf("nicht lesbarer Unterbaum %q: %w", full, err)
+			}
+			if err := walkTree(repo, sub, full, out); err != nil {
+				return err
+			}
+		case filemode.Regular, filemode.Executable, filemode.Symlink:
+			*out = append(*out, full)
 		}
 	}
-	for name := range headFiles {
-		if _, ok := idxFiles[name]; !ok {
-			out = append(out, driven.VCSChange{Status: driven.VCSDeleted, Path: name})
-		}
-	}
-	return out, nil
+	return nil
 }
 
 // CommitMessages liefert die rohen Messages der Nicht-Merge-Commits der Range
