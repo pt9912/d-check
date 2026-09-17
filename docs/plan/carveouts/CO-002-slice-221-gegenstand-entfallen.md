@@ -10,7 +10,7 @@
 **Geltungsbereich:** genau eine Datei —
 [`docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md`](../planning/done/slice-221-agents-md-tabellenzellen.md).
 
-**Folge-Slice:** [`slice-225`](../planning/open/slice-225-gegenstand-entfallen-uebernommen.md)
+**Folge-Slice:** [`slice-225`](../planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md)
 
 Regeln: Baseline-Regelwerk `modul-07-carveouts.md` §Ziel-Form: Carveout — ein
 Carveout braucht immer einen Auflösungs-Trigger **und** einen Folge-Slice.
@@ -53,7 +53,7 @@ Slice-Closure-Move aus und würde den Commit blockieren.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-07-carveouts.md`
 §Ziel-Form: Carveout — konkret und prüfbar. „Wenn Zeit ist" ist kein Trigger.
 
-[`slice-225`](../planning/open/slice-225-gegenstand-entfallen-uebernommen.md)
+[`slice-225`](../planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md)
 ist geschlossen: `.d-check.closure.yml`s `structure`-Regel erkennt die
 `**Gegenstand:**`-Zeile und lässt offene Liefer-Häkchen dafür zu; ein
 Bruch-Test bestätigt beide Richtungen (mit `Gegenstand:`-Zeile grün, ohne

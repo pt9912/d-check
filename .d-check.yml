@@ -275,6 +275,15 @@ ignore-refs:
   # Lifecycle-Fortschritt).
   - in: harness/conventions/done/MR-013-lifecycle-move-buendelung.md
     refs: ["docs/plan/planning/in-progress/slice-223-commit-zerlegung-ausnahmen-aufloesen.md"]
+  # Dieselbe Klasse, eine weitere Stufe: slice-221 (jetzt in done/) und sein
+  # Review-Report zitieren slice-225 vierfach bzw. einfach als "liegt in
+  # open/" -- der Stand zum Zeitpunkt ihrer Entstehung. slice-225 ist
+  # inzwischen ueber die Beanspruchung nach in-progress/ gewandert; beide
+  # Zitate sind Lauf-Belege ihrer Zeit, kein lebender Zeiger.
+  - in: docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md
+    refs: ["docs/plan/planning/open/slice-225-gegenstand-entfallen-uebernommen.md"]
+  - in: docs/reviews/2026-09-16-slice-221-gegenstand-entfallen-review-r1.md
+    refs: ["docs/plan/planning/open/slice-225-gegenstand-entfallen-uebernommen.md"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
   # ausgeloest, die docs/plan/planning/observations/README.md seit
   # slice-190 benennt: ein
