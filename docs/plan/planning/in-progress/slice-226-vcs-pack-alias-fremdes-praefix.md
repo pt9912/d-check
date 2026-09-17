@@ -88,11 +88,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       `os`/`io/fs`-Kapsel-Erweiterung trägt eine eigene ADR
       ([ADR-0086](../../adr/0086-pack-alias-fs-os-kapsel-erweiterung.md)).
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 - [x] Der eingehende CR trägt eine `## Antwort`-Sektion, `Stand: entschieden
       und umgesetzt`.
 - [x] `spec/spezifikation.md` §[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
@@ -145,20 +145,83 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   öffentliche API, kein SemVer-Vertrag). Ein Bump von go-git könnte diesen
   Mechanismus intern ändern, ohne die öffentliche API zu brechen — dann liefe
   der Dekorator ins Leere, ohne dass ein Compile-Fehler warnt. — **Ausgang:**
-  \<offen\>
+  weiter offen →
+  [`BEO-ALL/undokumentierte-bibliotheks-interna-als-vertrag`](../observations/BEO-ALL/undokumentierte-bibliotheks-interna-als-vertrag/observation.md).
 - **Der Hash-Suffix-Regex ist eine Heuristik, kein Beleg über den
   Pack-Inhalt.** Ein Dateiname, der zufällig mit 40/64 Hex-Zeichen endet, aber
   nicht der tatsächliche Content-Hash des Packs ist, würde fälschlich als
   Alias-Ziel akzeptiert. `git maintenance` benennt Packs korrekt (der Hash-Teil
   ist der echte Content-Hash), ein von Hand falsch benanntes Pack wäre ein
-  Angriffs- oder Fehlerfall außerhalb des CR-Anlasses. — **Ausgang:** \<offen\>
+  Angriffs- oder Fehlerfall außerhalb des CR-Anlasses. Der unabhängige Review
+  (R1-F-2) fand dazu einen konkreten, seither behobenen
+  Determinismus-Mangel bei zwei kollidierenden Namen — die Heuristik selbst
+  bleibt aber bestehen. — **Ausgang:** weiter offen →
+  [`BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert`](../observations/BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert/observation.md).
 - **Nur ein Adopter-Fall belegt die Klasse.** Wie bei
   [ADR-0072](../../adr/0072-workflows-modul.md) gilt: eine Aussage über „jedes
-  Präfix" ist an einem Exemplar (`loose-`) geeicht. — **Ausgang:** \<offen\>
+  Präfix" ist an einem Exemplar (`loose-`) geeicht. — **Ausgang:** weiter offen →
+  [`BEO-ALL/beleg-fuer-generalitaet-ist-ein-exemplar`](../observations/BEO-ALL/beleg-fuer-generalitaet-ist-ein-exemplar/observation.md).
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** `vcs` (und jedes Modul, das denselben git-Port liest) löst
+seither einen Pack mit gültigem SHA1/SHA256-Hash-Suffix und passender
+`.idx`-Datei unabhängig vom Namens-Präfix auf — ein read-only
+`billy.Filesystem`-Dekorator (`packAliasFS`,
+`internal/adapter/driven/git/packalias.go`), der go-gits kanonische
+Pack-Namensauflösung nicht ändert, sondern ihr zusätzliche Sichtbarkeit
+vorschaltet. Der eingehende CR trägt seine `## Antwort`, `Stand: entschieden
+und umgesetzt`; `spec/spezifikation.md`
+§[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
+Schritt 2 nennt den Mechanismus; die Architektur-Ausnahme (`os`/`io/fs` auch
+im git-Adapter) trägt
+[ADR-0086](../../adr/0086-pack-alias-fs-os-kapsel-erweiterung.md).
+
+**Was funktionierte.** Die empirische Verifikation VOR dem geschriebenen
+Plan (go-gits Quelltext lesen, ein Probe-Repo bauen) traf die richtige
+Ursache im ersten Anlauf — kein Fehlversuch, keine verworfene Konstruktion.
+Der unabhängige Review (R1) verifizierte das unabhängig noch einmal: eigene
+End-to-End-Proben mit echtem `git`-Binary und gebautem Image, ein
+bewusstes Zurücknehmen des Fixes (Modul 11) gegen den Parent-Commit, und
+eine Lektüre des tatsächlichen go-git-Quelltexts — alle drei bestätigten die
+Implementierung unabhängig von der Commit-Botschaft.
+
+**Was anders lief.** Die Recherche ersetzte den geschriebenen Plan (§1), eine
+bewusste, benannte Abweichung von „Plan vor Code" (`AGENTS.md` §6 Schritt 4)
+— **Lerneintrag:** Wo die korrekte Lösung ohne Kenntnis des internen
+Verhaltens einer Fremdbibliothek nicht seriös planbar ist, IST die Recherche
+die Plan-Arbeit; das Slice-Kopf-Feld sollte das dann so benennen, statt es
+als Verzug zu behandeln. Am Ergebnis dieses Laufs ist keine durch die
+Reihenfolge verursachte Qualitätslücke sichtbar (bestätigt durch R1) — die
+Abweichung bleibt aber eine, die sich wiederholen kann, sobald ein Slice auf
+undokumentiertes Fremdverhalten trifft.
+
+**Review-Runde 1 (drei Findings, alle behoben):**
+
+- **R1-F-1 (MEDIUM):** vier Doku-Stellen (`harness/sensors/adr-check.md`,
+  `harness/sensors/trace-check.md`, zwei Abschnitte
+  `docs/user/benutzerhandbuch.md`) beschrieben weiterhin den
+  Vor-slice-226-Stand. Nachgezogen. **Zweiter Treffer** der Registerklasse
+  [`BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/observation.md)
+  — noch nicht die 3×-Schwelle, aber ein zweiter Treffer in zwei
+  aufeinanderfolgenden Slices (`slice-219`, `slice-226`); wird bei einem
+  dritten Treffer verkörperungspflichtig.
+- **R1-F-2 (MEDIUM):** `packAliases()` löste eine Namenskollision (zwei
+  alias-fähige Dateien mit identischem Hash-Suffix) nicht deterministisch
+  auf (Go-Map-Iteration). Behoben durch sortierte Verarbeitung mit
+  Erstbelegungs-Regel; Regressionstest über fünf Läufe.
+- **R1-F-3 (LOW):** ein Kommentar behauptete eine falsche technische
+  Begründung für den fest verdrahteten `/`-Trenner in `splitPackPath`
+  (tatsächlicher Grund: Linux-only-Distribution, nicht
+  Trennzeichenunabhängigkeit von go-git/go-billy). Korrigiert.
+
+**Register.** Drei neue Einträge
+([`BEO-ALL/undokumentierte-bibliotheks-interna-als-vertrag`](../observations/BEO-ALL/undokumentierte-bibliotheks-interna-als-vertrag/observation.md),
+[`BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert`](../observations/BEO-ALL/dateiname-als-inhalts-beleg-akzeptiert/observation.md),
+[`BEO-ALL/beleg-fuer-generalitaet-ist-ein-exemplar`](../observations/BEO-ALL/beleg-fuer-generalitaet-ist-ein-exemplar/observation.md))
+für die drei §6-Risiken, die weiter offen bleiben; eine weitere Evidence-Datei
+für den bestehenden Eintrag `guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`
+(R1-F-1, jetzt 2×).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
