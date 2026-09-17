@@ -17,15 +17,25 @@ für den Hook über stdin.
 2. **Der lokale Hook ist opt-in pro Klon** (`make hooks`); `--no-verify`
    umgeht ihn, nicht die PR-/Push-CI.
 
-3. **Pack-Dateien mit unkanonischem Namen sind unsichtbar — hier bricht der
-   Lauf ab.** Das Modul liest die Objektdatenbank über go-git (`v5.19.2`), und
-   go-git findet einen Pack nur unter git's kanonischem Namen
-   `pack-<Hash-des-Packs>.{idx,pack}` — **beide** Namensteile zählen (gemessen;
-   `git` selbst liest weiter). Schreibt etwa
-   `git maintenance run --task=loose-objects` einen `loose-<Hash>.pack`, meldet
-   dieses Target `Range-Basis "<base>" nicht auflösbar: reference not found`
-   oder `commit <sha> nicht lesbar: object not found` — beides **Exit 2**.
+3. **Pack-Dateien ohne gültiges Hash-Suffix oder ohne passenden Index sind
+   unsichtbar — hier bricht der Lauf ab.** Das Modul liest die
+   Objektdatenbank über go-git (`v5.19.2`), und go-gits `DotGit`-Schicht
+   findet einen Pack nur unter git's kanonischem Namen
+   `pack-<Hash-des-Packs>.{idx,pack}` (gemessen; `git` selbst liest weiter).
+   Ein Pack ohne gültiges Hash-Suffix meldet
+   `Range-Basis "<base>" nicht auflösbar: reference not found` oder
+   `commit <sha> nicht lesbar: object not found` — beides **Exit 2**.
    **Abhilfe:** `git repack -A -d`.
+
+   **Seit [`slice-226`](../../docs/plan/planning/in-progress/slice-226-vcs-pack-alias-fremdes-praefix.md)
+   <!-- d-check:status-provenance --> löst der Adapter einen Pack zusätzlich
+   unter seinem kanonischen Namen auf, wenn seine Datei einen gültigen
+   SHA1/SHA256-Hash als Namens-Suffix trägt **und** eine passende
+   `.idx`-Datei existiert.** Schreibt etwa
+   `git maintenance run --task=loose-objects` einen `loose-<Hash>.pack`, liest
+   dieses Target ihn jetzt wie jeden anderen — kein `Exit 2` mehr allein wegen
+   des Präfixes; die Abhilfe oben bleibt nur für einen Pack ohne gültiges
+   Hash-Suffix oder ohne passenden Index nötig.
 
    **Dieses Target war dabei immer fail-closed** — ein unlesbarer Commit
    bricht den Lauf ab (gemessen). [`make adr-check`](adr-check.md#grenze--was-das-grün-nicht-abdeckt)

@@ -30,15 +30,26 @@ Eine gelöschte oder umbenannte `Accepted`-ADR ist ein **FAIL**.
    Permanent — die Unterscheidung *Anhang gegen verkleidete Kern-Änderung* ist
    ein Urteil.
 
-3. **Pack-Dateien mit unkanonischem Namen sind unsichtbar — der Lauf bricht
-   dann ab.** Das Modul liest die Objektdatenbank über go-git (`v5.19.2`), und
-   go-git findet einen Pack nur unter git's kanonischem Namen
-   `pack-<Hash-des-Packs>.{idx,pack}`. **Beide Namensteile zählen** — gemessen
-   an sechs Proben in einem isolierten Repo (`.idx`/`.pack`/`.rev` gemeinsam
-   umbenannt, sonst nichts verändert): `pack-<eigener Hash>` ⇒ Exit 0;
-   `loose-<eigener Hash>`, `pack-<gültige Form, fremder Hash>`,
-   `pack-zzzzzzzz`, `packXYZ`, `xpack-abc` ⇒ **je Exit 2**. **`git` selbst
-   liest weiter** — es enumeriert `*.idx` unabhängig vom Namen.
+3. **Pack-Dateien ohne gültiges Hash-Suffix oder ohne passenden Index sind
+   unsichtbar — der Lauf bricht dann ab.** Das Modul liest die
+   Objektdatenbank über go-git (`v5.19.2`), und go-gits `DotGit`-Schicht
+   findet einen Pack nur unter git's kanonischem Namen
+   `pack-<Hash-des-Packs>.{idx,pack}`. Gemessen an sechs Proben in einem
+   isolierten Repo (`.idx`/`.pack`/`.rev` gemeinsam umbenannt, sonst nichts
+   verändert): `pack-<eigener Hash>` ⇒ Exit 0; `pack-<gültige Form, fremder
+   Hash>`, `pack-zzzzzzzz`, `packXYZ`, `xpack-abc` ⇒ **je Exit 2**. **`git`
+   selbst liest weiter** — es enumeriert `*.idx` unabhängig vom Namen.
+
+   **Seit [`slice-226`](../../docs/plan/planning/in-progress/slice-226-vcs-pack-alias-fremdes-praefix.md)
+   <!-- d-check:status-provenance --> löst der Adapter einen Pack zusätzlich
+   unter seinem kanonischen Namen auf, wenn seine Datei einen gültigen
+   SHA1/SHA256-Hash als Namens-Suffix trägt **und** eine passende
+   `.idx`-Datei existiert.** `loose-<eigener Hash>` liefert damit nicht mehr
+   `Exit 2`, sondern den echten Befund — genau der Fall, den `git maintenance
+   run --task=loose-objects` erzeugt (siehe unten). Ein Präfix allein macht
+   einen Pack also nicht mehr unsichtbar; unsichtbar bleibt nur ein Pack ohne
+   gültiges Hash-Suffix oder ohne passenden Index — die verbleibenden vier
+   Proben oben.
 
    **Auslöser in freier Wildbahn:** `git maintenance run --task=loose-objects`
    schreibt `loose-<Hash>.pack`. **Vier Ausgänge waren gemessen, bevor
@@ -52,7 +63,9 @@ Eine gelöschte oder umbenannte `Accepted`-ADR ist ein **FAIL**.
    | der **BASE**-Tree, **mit Pendant** auf der Gegenseite | Exit 2 (seit slice-218) | **Exit 2** (unverändert) |
    | der **BASE**-Tree, **ohne Pendant** (Verzeichnis gelöscht/umbenannt) | **Exit 0, 0 Befunde** — die Löschung erreichte die Änderungsliste nie | **Exit 2** mit derselben Meldungsform |
 
-   **Abhilfe, falls Sie trotzdem auf einen unlesbaren Pack treffen:**
+   **Abhilfe, falls Sie trotzdem auf einen unlesbaren Pack treffen** — seit
+   slice-226 nur noch für einen Pack ohne gültiges Hash-Suffix oder ohne
+   passenden Index nötig, nicht mehr für einen bloß umbenannten:
    `git repack -A -d` (die `-A`-Form, damit unerreichbare Objekte lose werden
    statt verworfen).
 

@@ -1744,18 +1744,22 @@ pre-commit); ohne `.git`/Range bricht es ab (fail-closed). Das `--print-mk`-Targ
 make doc-immutable RANGE="$BASE..$HEAD"
 ```
 
-**Grenze — Pack-Dateien mit unkanonischem Namen sind unsichtbar.** `vcs` liest
-die Objektdatenbank über eine reine Go-Bibliothek (kein `git`-Binary), und die
-findet einen Pack nur unter git's kanonischem Namen
-`pack-<Hash-des-Packs>.{idx,pack}`. **Beide Namensteile zählen** — ein anderes
-Präfix ebenso wie ein nicht passender Hash. Der praktische Auslöser ist
+**Grenze — Pack-Dateien ohne gültiges Hash-Suffix oder ohne passenden Index
+sind unsichtbar.** `vcs` liest die Objektdatenbank über eine reine
+Go-Bibliothek (kein `git`-Binary), und deren `DotGit`-Schicht findet einen
+Pack primär unter git's kanonischem Namen `pack-<Hash-des-Packs>.{idx,pack}`.
+Seit [`slice-226`](../plan/planning/in-progress/slice-226-vcs-pack-alias-fremdes-praefix.md)
+<!-- d-check:status-provenance --> löst der Adapter zusätzlich jeden Pack
+auf, dessen Datei einen gültigen SHA1/SHA256-Hash als Namens-Suffix trägt
+**und** eine passende `.idx`-Datei hat — unabhängig vom Präfix. Der
+praktische Fall, den das jetzt abdeckt, ist
 `git maintenance run --task=loose-objects`: Es schreibt `loose-<Hash>.pack`,
-und Objekte, die danach nur noch dort liegen, sind für das Modul nicht
-auffindbar. Sie sehen dann je nach Repo-Zustand
-`staged-Basis "HEAD" nicht auflösbar: reference not found` oder
-`HEAD-Tree nicht lesbar: object not found`.
+und Objekte, die danach nur noch dort liegen, sind für das Modul weiterhin
+auffindbar. Unsichtbar bleibt nur ein Pack **ohne** gültiges Hash-Suffix oder
+**ohne** passenden Index — etwa ein Garbage-Name oder ein Hash, der zu keiner
+Idx-Datei passt.
 
-Je nachdem, was der unsichtbare Pack verschluckt, sehen Sie
+Je nachdem, was ein solcher unauflösbarer Pack verschluckt, sehen Sie
 `staged-Basis "HEAD" nicht auflösbar: reference not found`,
 `Range-Spitze "<ref>" nicht auflösbar: nicht vollständig lesbarer Tree zu
 "<ref>": nicht lesbarer Unterbaum "<name>": object not found` oder
@@ -1763,8 +1767,8 @@ Je nachdem, was der unsichtbare Pack verschluckt, sehen Sie
 Exit 2**. Der Lauf verweigert die Aussage, statt fälschlich grün zu melden.
 **Abhilfe:** `git repack -A -d` in Ihrem Repository — danach liegen alle
 Objekte wieder unter dem kanonischen Namen. `git` selbst ist von der
-Namensform nicht betroffen und arbeitet durchgehend normal; nur diese Prüfung
-ist es.
+Namensform nicht betroffen und arbeitet durchgehend normal; nur ein Pack ohne
+gültiges Hash-Suffix oder ohne passenden Index betrifft diese Prüfung noch.
 
 > **Wichtig, wenn Sie ein Image bis `v0.76.0` pinnen.** Bis einschließlich
 > `v0.75.0` **schwieg** dieser Fall vollständig, sobald der unsichtbare Pack
@@ -1811,14 +1815,15 @@ Range-Prüfung an eigene Repos:
 make doc-commits RANGE="$BASE..$HEAD"
 ```
 
-**Grenze — dieselbe Pack-Namensform wie bei `vcs`, aber mit besserem
-Ausgang.** Weil `commits` denselben git-Port benutzt, ist auch hier ein Pack
-unter einem anderen Namen als `pack-<Hash-des-Packs>.{idx,pack}` unsichtbar
-(Einzelheiten oben bei
-[`vcs`](#immutabilität-über-eine-commit-range-prüfen-modul-vcs)). Sie sehen
-dann `Range-Basis "<base>" nicht auflösbar: reference not found` oder
-`commit <sha> nicht lesbar: object not found`, jeweils mit **Exit 2**;
-`git repack -A -d` behebt es.
+**Grenze — dieselbe Pack-Auflösung wie bei `vcs`, aber mit besserem
+Ausgang.** Weil `commits` denselben git-Port benutzt, gilt hier dieselbe seit
+`slice-226` erweiterte Auflösung: ein Pack mit gültigem Hash-Suffix **und**
+passender `.idx`-Datei wird unabhängig vom Präfix gelesen (Einzelheiten oben
+bei [`vcs`](#immutabilität-über-eine-commit-range-prüfen-modul-vcs)).
+Unsichtbar bleibt nur ein Pack ohne gültiges Hash-Suffix oder ohne passenden
+Index. Sie sehen dann `Range-Basis "<base>" nicht auflösbar: reference not
+found` oder `commit <sha> nicht lesbar: object not found`, jeweils mit
+**Exit 2**; `git repack -A -d` behebt es.
 
 **Dieses Modul war von dem stillen Fall nie betroffen**, den `vcs` bis
 `v0.75.0` hatte — gemessen an einem unsichtbar gemachten Zwischen-Commit, der
