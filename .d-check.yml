@@ -294,6 +294,16 @@ ignore-refs:
   # AGENTS.md Paragraph 3.5 verbietet das Editieren des Kerntexts.
   - in: docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md
     refs: ["docs/plan/carveouts/CO-002-slice-221-gegenstand-entfallen.md"]
+  # Dieselbe Klasse, eine weitere Stufe: CO-002 (jetzt in carveouts/done/)
+  # und beide Review-Reports zitieren slice-225 noch in in-progress/ --
+  # der Stand zum Zeitpunkt ihrer Entstehung. slice-225 ist inzwischen
+  # ueber seine eigene Closure nach done/ gewandert.
+  - in: docs/plan/carveouts/done/CO-002-slice-221-gegenstand-entfallen.md
+    refs: ["docs/plan/planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md"]
+  - in: docs/reviews/2026-09-17-slice-225-open-tasks-marker-review-r1.md
+    refs: ["docs/plan/planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md"]
+  - in: docs/reviews/2026-09-17-slice-225-open-tasks-marker-review-r2.md
+    refs: ["docs/plan/planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
   # ausgeloest, die docs/plan/planning/observations/README.md seit
   # slice-190 benennt: ein
