@@ -16,17 +16,25 @@ var commitScissorsRE = regexp.MustCompile(`^#.*>8`)
 // CheckCommits ist das Regelmodul commits (DC-FA-COMMITS-001): es prüft, dass
 // jede Nicht-Merge-Commit-Message der Range base..head eine Traceability-Kennung
 // (cfg.IDPatterns) auf einer Inhalts-Zeile trägt; sonst `commit-untraceable`.
-// Opt-in (leere IDPatterns ⇒ inert); es liest die Commit-Messages über den
-// VCS-Port (nicht-hermetisch, aber lokal/lesend/deterministisch) — ein Port-Fehler
+// Opt-in (leere IDPatterns ⇒ inert, aber erst NACHDEM die Range aufgelöst
+// wurde — eine angegebene, nicht auflösbare Range bricht unabhängig von der
+// Klassen-Config ab); es liest die Commit-Messages über den VCS-Port
+// (nicht-hermetisch, aber lokal/lesend/deterministisch) — ein Port-Fehler
 // (fehlendes `.git`/Range) wird als error zurückgegeben, den der Aufrufer auf
 // Exit 2 abbildet (fail-closed). Diagnose-only: kein `--repair`-Hunk.
 func CheckCommits(vcs driven.VCS, cfg model.CommitsConfig, base, head string) ([]model.Finding, error) {
-	if len(cfg.IDPatterns) == 0 || vcs == nil {
-		return nil, nil // inert (Modul ohne ID-Muster oder ohne Port)
+	if vcs == nil {
+		return nil, nil // Modul ohne Port (inaktiv oder keine Range-Quelle)
 	}
+	// CommitMessages löst die Range fail-closed auf, BEVOR die Klassen-Config
+	// geprüft wird: eine angegebene, aber nicht auflösbare Range fällt sonst
+	// nie auf, wenn commits.id-patterns leer ist.
 	metas, err := vcs.CommitMessages(base, head)
 	if err != nil {
 		return nil, err
+	}
+	if len(cfg.IDPatterns) == 0 {
+		return nil, nil // inert (Modul ohne ID-Muster) — Range ist bereits geprüft
 	}
 	var findings []model.Finding
 	for _, m := range metas {

@@ -230,7 +230,10 @@ func TestVCSFailClosed(t *testing.T) {
 	}
 }
 
-// TestVCSInert: ohne paths-Klasse oder ohne Port ist das Modul wirkungslos.
+// TestVCSInert: ohne paths-Klasse oder ohne Port ist das Modul wirkungslos —
+// aber nur, NACHDEM eine angegebene Range aufgelöst wurde (GitHub Issue #4
+// Punkt 1): eine nicht auflösbare Range darf auch ohne Klassen-Config nicht
+// still mit 0 Befunden durchgehen.
 func TestVCSInert(t *testing.T) {
 	fv := &fakeVCS{files: refs(adr("Accepted", "Tue A."), adr("Accepted", "Tue B."))}
 	if got, err := CheckVCS(fv, model.VCSConfig{}, "BASE", "HEAD"); err != nil || got != nil {
@@ -238,6 +241,10 @@ func TestVCSInert(t *testing.T) {
 	}
 	if got, err := CheckVCS(nil, adrConfig(), "BASE", "HEAD"); err != nil || got != nil {
 		t.Fatalf("ohne Port inert erwartet: got=%v err=%v", got, err)
+	}
+	unaufloesbar := &fakeVCS{err: errors.New("Range nicht auflösbar")}
+	if _, err := CheckVCS(unaufloesbar, model.VCSConfig{}, "deadbeef", "cafebabe"); err == nil {
+		t.Fatal("unauflösbare Range mit leerer Klassen-Config still passiert — erwartet war ein Fehler")
 	}
 }
 

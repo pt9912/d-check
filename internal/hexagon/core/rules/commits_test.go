@@ -92,12 +92,17 @@ func TestCheckCommitsRange(t *testing.T) {
 	}
 }
 
-// TestCheckCommitsInert: leere id-patterns ⇒ inert, ohne den Port zu berühren
-// (der Fake würde bei Aufruf einen Fehler liefern).
+// TestCheckCommitsInert: leere id-patterns ⇒ inert — aber erst NACHDEM eine
+// angegebene Range aufgelöst wurde (GitHub Issue #4 Punkt 1): eine
+// auflösbare Range bleibt befundfrei, eine nicht auflösbare bricht trotz
+// leerer Config ab, statt den Port-Aufruf zu überspringen.
 func TestCheckCommitsInert(t *testing.T) {
-	findings, err := CheckCommits(&fakeVCS{err: errors.New("darf nicht gerufen werden")}, model.CommitsConfig{}, "BASE", "HEAD")
+	findings, err := CheckCommits(&fakeVCS{commits: nil}, model.CommitsConfig{}, "BASE", "HEAD")
 	if err != nil || findings != nil {
 		t.Fatalf("inert erwartet, bekam findings=%v err=%v", findings, err)
+	}
+	if _, err := CheckCommits(&fakeVCS{err: errors.New("Range nicht auflösbar")}, model.CommitsConfig{}, "deadbeef", "cafebabe"); err == nil {
+		t.Fatal("unauflösbare Range mit leerer Klassen-Config still passiert — erwartet war ein Fehler")
 	}
 }
 

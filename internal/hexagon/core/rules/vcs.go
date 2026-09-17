@@ -12,8 +12,10 @@ import (
 // CheckVCS ist das Regelmodul vcs (DC-FA-VCS-001): es vergleicht den **Core**
 // einer immutablen Datei über zwei git-Stände (`core(BASE)` vs. `core(HEAD)`)
 // und meldet Körper-Drift, unzulässigen Status-Übergang (HeadAllow) oder
-// Löschung/Umbenennung als `core-drift-vcs`. Opt-in (leere Paths ⇒ inert);
-// es liest die git-Historie über den VCS-Port (nicht-hermetisch, aber lokal/
+// Löschung/Umbenennung als `core-drift-vcs`. Opt-in (leere Paths ⇒ inert,
+// aber erst NACHDEM die Range aufgelöst wurde — eine angegebene, nicht
+// auflösbare Range bricht unabhängig von der Klassen-Config ab); es liest
+// die git-Historie über den VCS-Port (nicht-hermetisch, aber lokal/
 // lesend/deterministisch) — ein Port-Fehler (fehlendes `.git`/Range) wird als
 // error zurückgegeben, den der Aufrufer auf Exit 2 abbildet (fail-closed).
 // Diagnose-only: kein `--repair`-Hunk.
@@ -28,12 +30,18 @@ import (
 // frei, ohne Sonderbehandlung: seine BASE-Lesbarkeit ist durch den
 // fail-closed Walk oben bereits sichergestellt).
 func CheckVCS(vcs driven.VCS, cfg model.VCSConfig, base, head string) ([]model.Finding, error) {
-	if len(cfg.Paths) == 0 || vcs == nil {
-		return nil, nil // inert (Modul ohne Klassen-Config oder ohne Port)
+	if vcs == nil {
+		return nil, nil // Modul ohne Port (inaktiv oder keine Range-Quelle)
 	}
+	// AllPaths löst die Range fail-closed auf, BEVOR die Klassen-Config
+	// geprüft wird: eine angegebene, aber nicht auflösbare Range fällt sonst
+	// nie auf, wenn vcs.paths leer ist.
 	baseAll, headAll, err := vcs.AllPaths(base, head)
 	if err != nil {
 		return nil, err
+	}
+	if len(cfg.Paths) == 0 {
+		return nil, nil // inert (Modul ohne Klassen-Config) — Range ist bereits geprüft
 	}
 	baseSet := protectedSet(baseAll, cfg.Paths)
 	headSet := protectedSet(headAll, cfg.Paths)
