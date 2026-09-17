@@ -312,6 +312,17 @@ ignore-refs:
     refs:
       - "docs/plan/planning/open/slice-220-vcs-pfadmenge-statt-diff.md"
       - "docs/plan/planning/open/slice-219-release-loest-co-001.md"
+      - "docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md"
+  # CO-001 ist inzwischen selbst nach carveouts/done/ gewandert (Ausgang
+  # aufgeloest, slice-219/slice-220). Zwei weitere eingefrorene Lauf-Belege
+  # zitieren seinen frueheren Pfad.
+  - in: docs/plan/planning/done/slice-220-vcs-pfadmenge-statt-diff.md
+    refs: ["docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md"]
+  # CHANGELOG-Eintraege sind Lauf-Belege ihres Release-Zeitpunkts (AGENTS.md
+  # §5: keine [Unreleased]-Umschreibung) -- der v0.76.1-Eintrag zitiert
+  # CO-001 an seinem damaligen, noch aktiven Pfad.
+  - in: CHANGELOG.md
+    refs: ["docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
   # ausgeloest, die docs/plan/planning/observations/README.md seit
   # slice-190 benennt: ein

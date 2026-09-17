@@ -41,68 +41,66 @@ Eine gelöschte oder umbenannte `Accepted`-ADR ist ein **FAIL**.
    liest weiter** — es enumeriert `*.idx` unabhängig vom Namen.
 
    **Auslöser in freier Wildbahn:** `git maintenance run --task=loose-objects`
-   schreibt `loose-<Hash>.pack`. **Was der Lauf dann tut, hängt davon ab, was
-   der unsichtbare Pack verschluckt — und es sind drei verschiedene Ausgänge,
-   nicht einer:**
+   schreibt `loose-<Hash>.pack`. **Vier Ausgänge waren gemessen, bevor
+   slice-220 die Kandidaten-Bestimmung umbaute — heute brechen alle vier
+   einheitlich ab:**
 
-   | Verschluckt | Ausgang |
-   | --- | --- |
-   | eine ganze Referenz, ein Commit, ein Blob (BASE oder HEAD), der BASE-Tree | **Exit 2** mit `… nicht auflösbar` / `… nicht lesbar` |
-   | der **HEAD**-Tree des geschützten Verzeichnisses | **Exit 1** mit `core-drift-vcs` *„gelöscht oder umbenannt"* — **eine Fehldiagnose**: laut, aber inhaltlich falsch |
-   | der **BASE**-Tree, **ohne Pendant** auf der Gegenseite (Verzeichnis gelöscht/umbenannt) | **Exit 0, 0 Befunde** — die Löschung erreicht die Änderungsliste nie |
-
-   **Die dritte Zeile ist weiterhin offen** und als
-   [`CO-001`](../../docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md)
-   geführt: Der Tree-Walker der Bibliothek macht aus einem nicht ladbaren
-   Unterbaum ein `io.EOF`, die Änderung entsteht also **vor** jeder Stelle, an
-   der dieses Modul prüfen könnte. Gemessen ist auch, dass der naheliegende
-   Wachposten nicht trägt: `tree.Files()` benutzt denselben Walker und
-   schweigt ebenso. **Abhilfe für alle drei:** `git repack -A -d` (die
-   `-A`-Form, damit unerreichbare Objekte lose werden statt verworfen).
-
-   **Die dritte Form gab es bis slice-218 nicht — dort war der Lauf still
-   grün, in zwei Ausprägungen.** go-git meldet ein *unlesbares* Objekt mit
-   demselben Fehler wie eine *im Tree fehlende* Datei
-   (`object.ErrFileNotFound`); der zweite Fall ist legitim (Datei später
-   angelegt) und muss befundfrei bleiben, der erste ist ein Umgebungsfehler.
-   Gemessen an derselben echten `core-drift-vcs`-Verletzung, kanonisch je
-   Exit 1:
-
-   | Der unsichtbar benannte Pack verschluckt … | Ankunft | vor slice-218 |
+   | Verschluckt | vor slice-220 | **heute** |
    | --- | --- | --- |
-   | das BASE-**Blob** | `M` | `0 Befund(e)`, Exit 0 |
-   | das BASE-**Tree** des Verzeichnisses | `A` | `0 Befund(e)`, Exit 0 |
+   | eine ganze Referenz, ein Commit, das BASE-Blob | Exit 2 mit `… nicht auflösbar` / `… nicht lesbar` | **Exit 2** (unverändert) |
+   | der **HEAD**-Tree des geschützten Verzeichnisses | **Exit 1** mit `core-drift-vcs` *„gelöscht oder umbenannt"* — eine Fehldiagnose: laut, aber inhaltlich falsch | **Exit 2** mit `Range-Spitze "…" nicht auflösbar: … nicht lesbarer Unterbaum …` |
+   | der **BASE**-Tree, **mit Pendant** auf der Gegenseite | Exit 2 (seit slice-218) | **Exit 2** (unverändert) |
+   | der **BASE**-Tree, **ohne Pendant** (Verzeichnis gelöscht/umbenannt) | **Exit 0, 0 Befunde** — die Löschung erreichte die Änderungsliste nie | **Exit 2** mit derselben Meldungsform |
 
-   Die **zweite** Zeile fand erst Review-Runde 2; sie läuft über den
-   `A`-Zweig, der `FileAt` gar nicht rief. Seit slice-218 trennt der Adapter
-   die beiden Zustände über den **Tree-Eintrag** (Name und Modus, ohne den
-   Datei-Inhalt), und der `A`-Zweig fasst den BASE-Stand an, statt ihn
-   ungesehen für frei zu erklären. **Die Gegenrichtung gehört zur Zusage:** ein
-   Eintrag **ohne** Datei-Inhalt — Verzeichnis oder Gitlink — ist kein
-   unlesbares Objekt und bleibt befundfrei; ein wandernder Submodul-Zeiger in
-   der Klasse brach in der Zwischenfassung fälschlich ab. Zwei
-   Regressionstests halten beide Richtungen und fallen ohne ihren Fix
-   (`TestFileAtUnlesbaresObjekt`, `TestFileAtEintragOhneBlob`,
-   `TestVCSAddedMeldetUnlesbareBasis`) — verifiziert durch Zurücknehmen.
+   **Abhilfe, falls Sie trotzdem auf einen unlesbaren Pack treffen:**
+   `git repack -A -d` (die `-A`-Form, damit unerreichbare Objekte lose werden
+   statt verworfen).
 
-   **Geprüft sind die drei Diff-Zustände, die das Modul kennt** (`A`, `M`,
-   `D`); alle drei fassen den BASE-Stand jetzt über denselben Adapter-Pfad an.
-   **Das deckt aber nur, was im Diff ankommt** — die dritte Tabellenzeile oben
-   entsteht davor und bleibt offen. Das ist die Menge, über die hier geurteilt
-   wird; „jeder denkbare Repo-Zustand" wäre eine andere Aussage.
+   **Warum die letzten beiden Zeilen bis `v0.76.0` offen blieben.** Der
+   Adapter bestimmte seine Kandidaten aus einem **Tree-Diff** (`BASE..HEAD`);
+   dessen Walker (aus derselben Bibliothek, die auch `tree.Files()` trägt)
+   macht aus einem nicht ladbaren Unterbaum ein stilles `io.EOF` statt eines
+   Fehlers — eine Löschung ohne Pendant erreichte die Änderungsliste also
+   **nie**, und ein unlesbarer HEAD-Tree ließ den Diff eine Löschung
+   **erfinden**, die dann als `core-drift-vcs` gemeldet wurde. **slice-220
+   hat die Kandidaten-Bestimmung umgebaut, nicht nur gepatcht:** Die
+   geschützte Klasse (`vcs.paths`) wird jetzt über einen eigenen,
+   fail-closed Tree-Walker (`repo.TreeObject`, statt des geteilten
+   `Files()`-Walkers) **vollständig** gegen BASE **und** HEAD aufgelöst,
+   unabhängig von jedem Diff — ein nicht ladbarer Unterbaum bricht diese
+   Auflösung selbst ab, **bevor** irgendein Pfad als Added/Deleted/Modified
+   eingeordnet wird. Damit fallen alle vier Zeilen auf denselben Codepfad;
+   `CO-001` (jetzt [aufgelöst](../../docs/plan/carveouts/done/CO-001-vcs-range-stiller-skip.md))
+   trug die dritte und vierte, bis der Fix im Release `v0.76.1` das
+   publizierte Image erreichte.
+
+   **Zwei frühere Ausprägungen — Blob und BASE-Tree mit Pendant — waren
+   bereits mit slice-218 geschlossen**, über eine andere Reparatur:
+   go-git meldet ein *unlesbares* Objekt mit demselben Fehler wie eine *im
+   Tree fehlende* Datei (`object.ErrFileNotFound`); der zweite Fall ist
+   legitim (Datei später angelegt) und muss befundfrei bleiben, der erste ist
+   ein Umgebungsfehler. `FileAt` trennt beide seither über den
+   **Tree-Eintrag** (Name und Modus, ohne den Datei-Inhalt) — dieser
+   Mechanismus ist von slice-220 **unberührt** und trägt weiterhin. **Die
+   Gegenrichtung gehört zur Zusage:** ein Eintrag **ohne** Datei-Inhalt —
+   Verzeichnis oder Gitlink — ist kein unlesbares Objekt und bleibt
+   befundfrei; Regressionstests halten beide Richtungen
+   (`TestFileAtUnlesbaresObjekt`, `TestFileAtEintragOhneBlob` in
+   `internal/adapter/driven/git/`) und fallen ohne ihren Fix — verifiziert
+   durch Zurücknehmen.
 
    **Und die Gegenrichtung hat einen Preis, der hierher gehört:** Weil ein
    Eintrag ohne Datei-Inhalt befundfrei bleibt, geht auch der Fall durch, in
    dem eine `Accepted`-ADR am geschützten Pfad durch einen **Gitlink** ersetzt
    wird — sie ist dann verschwunden, und niemand meldet es. Das ist kein
-   Neuzugang dieses Slice (der Vor-Fix-Stand schwieg ebenso), aber die Regel
-   sanktioniert es jetzt ausdrücklich, und deshalb steht es hier.
+   Neuzugang, sondern eine benannte, unverändert bestehende Grenze.
 
-   **Für gepinnte Konsumenten gilt das noch nicht:** Wer ein veröffentlichtes
-   Image ab `v0.75.0` abwärts fährt, hat den stillen Pfad weiterhin — geführt
-   als [`CO-001`](../../docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md).
-   **Dieses Repo ist nicht betroffen**, weil `make adr-check` die Prerequisite
-   `build` trägt und aus dem Quellstand baut.
+   **Für gepinnte Konsumenten galt das länger:** Wer ein veröffentlichtes
+   Image `v0.76.0` oder älter fährt, hat die dritte/vierte Ausprägung
+   weiterhin — Konsumenten lösen das durch einen Pin-Wechsel auf `v0.76.1`
+   oder neuer. **Dieses Repo ist nicht betroffen**, weil `make adr-check` die
+   Prerequisite `build` trägt und aus dem Quellstand baut, der den Fix seit
+   slice-220 trägt.
 
    **Die Reichweite ist gemessen, nicht geschätzt** — und die Module verhalten
    sich **unterschiedlich**: `commits`

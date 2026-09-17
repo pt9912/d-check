@@ -14,7 +14,7 @@ zuvor fehldiagnostizierte fallen auf denselben Codepfad). Die Gegenprobe aus
 diesem Eintrag trägt sich damit: eine Schicht tiefer gesetzt, deckte der
 Wachposten alle vier bekannten Formen auf einmal ab, statt eine fünfte offen
 zu lassen — Beleg in
-[`CO-001`](../../../../carveouts/CO-001-vcs-range-stiller-skip.md)s
+[`CO-001`](../../../../carveouts/done/CO-001-vcs-range-stiller-skip.md)s
 Auflösungs-Trigger. **Der Zähler bleibt bei 1×**: eine erfolgreich
 umgesetzte Diagnose löst die Beobachtung selbst nicht auf — dieselbe
 Verkürzung (Fix auf der Fund-Schicht statt der Ursache) bleibt in anderen

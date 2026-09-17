@@ -30,12 +30,15 @@ für den Hook über stdin.
    **Dieses Target war dabei immer fail-closed** — ein unlesbarer Commit
    bricht den Lauf ab (gemessen). [`make adr-check`](adr-check.md#grenze--was-das-grün-nicht-abdeckt)
    war es **nicht**: Bis slice-218 meldete es im `RANGE=`-Modus still grün,
-   wenn der unsichtbare Pack nur einzelne Objekte verschluckte; der Fix liegt
-   dort, und für gepinnte Konsumenten führt
-   [`CO-001`](../../docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md) die
-   Reststrecke. Die vollständige Messung steht bei `adr-check`, damit sie an
-   *einem* Ort gepflegt wird; dass sie für dieses Target **günstiger** ausfiel,
-   ist gemessen und nicht angenommen *(seit slice-218)*.
+   wenn der unsichtbare Pack nur einzelne Objekte verschluckte, und bis
+   slice-220 blieben zwei weitere Ausprägungen offen bzw. fehldiagnostiziert
+   — beide Fixe liegen dort. Für Konsumenten, die ein Image `v0.76.0` oder
+   älter pinnen, führte
+   [`CO-001`](../../docs/plan/carveouts/done/CO-001-vcs-range-stiller-skip.md)
+   (inzwischen aufgelöst) die Reststrecke. Die vollständige Messung steht bei
+   `adr-check`, damit sie an *einem* Ort gepflegt wird; dass sie für dieses
+   Target **günstiger** ausfiel, ist gemessen und nicht angenommen
+   *(seit slice-218)*.
 
 **Dependabot braucht dafür keine Ausnahme:** Seine Botschaften tragen die
 Kennung im Präfix und erfüllen die Regel wie jeder andere Commit

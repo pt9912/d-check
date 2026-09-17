@@ -10,7 +10,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Bezug:** [`DC-FA-VCS-001`](../../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
 [`DC-FA-DIST-001`](../../../../spec/lastenheft.md#dc-fa-dist-001--docker-image)
-— und [`CO-001`](../../carveouts/CO-001-vcs-range-stiller-skip.md), dessen
+— und [`CO-001`](../../carveouts/done/CO-001-vcs-range-stiller-skip.md), dessen
 Auflösung dieser Slice trägt.
 
 **Berührte Spec-Stellen:** — (der Slice berührt keine Spec-Stelle).
@@ -23,7 +23,7 @@ Auflösung dieser Slice trägt.
 
 **Ziel.** Der Fix aus [slice-218](../done/slice-218-go-git-pack-namenskonvention.md)
 erreicht das **publizierte** Image, und
-[`CO-001`](../../carveouts/CO-001-vcs-range-stiller-skip.md) wird aufgelöst.
+[`CO-001`](../../carveouts/done/CO-001-vcs-range-stiller-skip.md) wird aufgelöst.
 Solange das nicht geschehen ist, fährt jeder Konsument mit gepinntem
 `v0.75.0` weiterhin den stillen Pfad — **der Fix im Quellstand hilft ihm
 nicht.**
