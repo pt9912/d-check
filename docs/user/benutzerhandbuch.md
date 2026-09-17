@@ -1748,11 +1748,9 @@ make doc-immutable RANGE="$BASE..$HEAD"
 sind unsichtbar.** `vcs` liest die Objektdatenbank über eine reine
 Go-Bibliothek (kein `git`-Binary), und deren `DotGit`-Schicht findet einen
 Pack primär unter git's kanonischem Namen `pack-<Hash-des-Packs>.{idx,pack}`.
-Seit [`slice-226`](../plan/planning/done/slice-226-vcs-pack-alias-fremdes-praefix.md)
-<!-- d-check:status-provenance --> löst der Adapter zusätzlich jeden Pack
-auf, dessen Datei einen gültigen SHA1/SHA256-Hash als Namens-Suffix trägt
-**und** eine passende `.idx`-Datei hat — unabhängig vom Präfix. Der
-praktische Fall, den das jetzt abdeckt, ist
+Der Adapter löst zusätzlich jeden Pack auf, dessen Datei einen gültigen
+SHA1/SHA256-Hash als Namens-Suffix trägt **und** eine passende `.idx`-Datei
+hat — unabhängig vom Präfix. Der praktische Fall, den das abdeckt, ist
 `git maintenance run --task=loose-objects`: Es schreibt `loose-<Hash>.pack`,
 und Objekte, die danach nur noch dort liegen, sind für das Modul weiterhin
 auffindbar. Unsichtbar bleibt nur ein Pack **ohne** gültiges Hash-Suffix oder
@@ -1816,14 +1814,14 @@ make doc-commits RANGE="$BASE..$HEAD"
 ```
 
 **Grenze — dieselbe Pack-Auflösung wie bei `vcs`, aber mit besserem
-Ausgang.** Weil `commits` denselben git-Port benutzt, gilt hier dieselbe seit
-`slice-226` erweiterte Auflösung: ein Pack mit gültigem Hash-Suffix **und**
-passender `.idx`-Datei wird unabhängig vom Präfix gelesen (Einzelheiten oben
-bei [`vcs`](#immutabilität-über-eine-commit-range-prüfen-modul-vcs)).
-Unsichtbar bleibt nur ein Pack ohne gültiges Hash-Suffix oder ohne passenden
-Index. Sie sehen dann `Range-Basis "<base>" nicht auflösbar: reference not
-found` oder `commit <sha> nicht lesbar: object not found`, jeweils mit
-**Exit 2**; `git repack -A -d` behebt es.
+Ausgang.** Weil `commits` denselben git-Port benutzt, gilt hier dieselbe
+Auflösung: ein Pack mit gültigem Hash-Suffix **und** passender `.idx`-Datei
+wird unabhängig vom Präfix gelesen (Einzelheiten oben bei
+[`vcs`](#immutabilität-über-eine-commit-range-prüfen-modul-vcs)). Unsichtbar
+bleibt nur ein Pack ohne gültiges Hash-Suffix oder ohne passenden Index. Sie
+sehen dann `Range-Basis "<base>" nicht auflösbar: reference not found` oder
+`commit <sha> nicht lesbar: object not found`, jeweils mit **Exit 2**;
+`git repack -A -d` behebt es.
 
 **Dieses Modul war von dem stillen Fall nie betroffen**, den `vcs` bis
 `v0.75.0` hatte — gemessen an einem unsichtbar gemachten Zwischen-Commit, der
