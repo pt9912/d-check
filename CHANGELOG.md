@@ -4,6 +4,28 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.76.0] — 2026-09-17
+
+### Added
+
+- slice-225 — **Eine bedingte Pflicht-Marke koppelt `max-open-tasks` an
+  eine Marke** ([`DC-FA-STRUCT-001`](spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in),
+  [ADR-0085](docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md)).
+  Neue, elfte `structure`-Bedingung `open-tasks-require-marker`: Trägt der
+  geprüfte Abschnitt Überschuss-Task-Items gegen `max-open-tasks`, tilgt
+  eine vorhandene Marke (`hasMarker`-Form wie bei `require-all`) **alle**
+  `section-tasks-open`-Einzelbefunde des Abschnitts (Erlaubnis); fehlt sie,
+  ersetzt **ein** neuer Grund-Code `section-open-tasks-marker-missing`
+  dieselben Einzelbefunde (Pflicht) — nie beide zugleich für denselben
+  Abschnitt. `open-tasks-require-marker-section` verlegt die Marken-Suche
+  wahlweise in einen **anderen**, benannten Abschnitt derselben Datei (RE2
+  gegen dieselbe rohe Überschriften-Zeile wie `section-pattern`) statt im
+  gezählten Abschnitt selbst zu suchen; trifft das Muster keinen Abschnitt,
+  gilt die Marke als fehlend. Anlass ist ein eingehender Change Request
+  eines Adopters, der eine Pflichtzeile für Baseline-konforme
+  Stilllegungs-Slices bittet. Opt-in, ohne die Schlüssel byte-identisches
+  Verhalten.
+
 ## [0.75.0] — 2026-09-08
 
 ### Added

@@ -617,8 +617,13 @@ versions:
   pin-pattern: 'ghcr\.io/[^\s:]+:(v[0-9]+\.[0-9]+\.[0-9]+)'
   current-from: version.md#aktuell
   # historische Pins (DC-FA-VER-001): done/-Slices, Changelog, Lastenheft-
-  # Historie, Review-Reports bleiben unberührt.
-  exempt-paths: [CHANGELOG.md, "docs/plan/planning/done/**", spec/lastenheft.md, "docs/reviews/**"]
+  # Historie, Review-Reports bleiben unberührt. Carveouts gehören dazu: ein
+  # Carveout wie CO-001 nennt die Version, ab der ein Fix im PUBLIZIERTEN
+  # Image ankommt -- diese Grenze ist mit dem Fix-Commit eingefroren und
+  # wandert nicht mit jedem weiteren Release mit (gemessen: v0.76.0 traegt
+  # den Quellstand-Fix aus slice-218 bereits, "v0.75.0 oder frueher" bleibt
+  # deshalb richtig, unabhaengig davon, wie viele Releases seither folgen).
+  exempt-paths: [CHANGELOG.md, "docs/plan/planning/done/**", spec/lastenheft.md, "docs/reviews/**", "docs/plan/carveouts/**"]
 
 # Modul structure (DC-FA-STRUCT-001): zwei Regel-Arten. Zuerst die
 # Chronologie-Monotonie (§Chronologie-Monotonie, ADR-0057): die sechs eigenen

@@ -134,12 +134,17 @@ Dokuments:
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — Struktur-Invarianten **innerhalb** eines Dokuments: je Regel eine
   Dokumentklasse über **eigene** Globs, ein Abschnitt (Klartext oder RE2) und bis
-  zu **zehn** Bedingungen mit je eigenem Grund-Code — nicht leer (`section-empty`),
+  zu **elf** Bedingungen mit je eigenem Grund-Code — nicht leer (`section-empty`),
   Mindest-Sätze (`section-thin`), Task-Obergrenze (`section-oversized`),
   **offene** Task-Items auf den **rohen** Zeilen (`max-open-tasks` ⇒
   `section-tasks-open`, ein Befund je Haken auf **seiner** Zeile — anders als
   `max-tasks` immun gegen die absatzweise Inline-Code-Paarung, dabei ebenso
-  fence-treu),
+  fence-treu), eine **bedingte Pflicht-Marke** dazu (`open-tasks-require-marker`,
+  nur wirksam mit Überschuss-Fund von `max-open-tasks`): eine vorhandene Marke
+  tilgt alle `section-tasks-open`-Einzelbefunde des Abschnitts, eine fehlende
+  ersetzt sie durch **einen** `section-open-tasks-marker-missing` —
+  `open-tasks-require-marker-section` verlegt die Suche wahlweise in einen
+  **anderen**, benannten Abschnitt derselben Datei,
   verbotenes bzw. gefordertes Muster (`section-forbidden`,
   `section-pattern-missing`), geforderte Marken (`section-marker-missing`),
   Chronologie-Monotonie der Schlüsselspalte (`section-unordered`,
@@ -288,7 +293,7 @@ Lastenhefts, und beide werden gemessen, nicht behauptet:
 ## Nutzung
 
 Verteilung als Container-Image über GHCR
-([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)); **seit `v0.67.0`**
+([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)),
 zusätzlich nach Docker Hub gespiegelt als
 `pt9912/d-check` — dasselbe Bild, kein zweiter Bau, gleicher **Config**-Digest
 (der **Manifest**-Digest ist registry-lokal: per Digest pinnt man den der
@@ -296,7 +301,7 @@ Registry, aus der man zieht)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0
 ```
 
 CI-Pipelines pinnen auf den Digest aus den Release-Notes statt auf

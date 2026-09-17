@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.71 · **Software-Version:** [v0.75.0](../../version.md#v0.75.0) ·
-**Stand:** 2026-09-08 · **Autor:** pt9912
+**Handbuch-Version:** 1.72 · **Software-Version:** [v0.76.0](../../version.md#v0.76.0) ·
+**Stand:** 2026-09-17 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.75.0
+docker pull ghcr.io/pt9912/d-check:v0.76.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -79,12 +79,12 @@ jeweiligen Registrys; wer per Digest pinnt, nimmt den Digest **der Registry, aus
 der er zieht**. GHCR bleibt die Quelle; Docker Hub folgt ihr.
 
 ```bash
-docker pull pt9912/d-check:v0.75.0
+docker pull pt9912/d-check:v0.76.0
 ```
 
 ### Versionen und Tags
 
-- `:v0.75.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.76.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -113,7 +113,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -172,7 +172,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -191,7 +191,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.75.0
+  ghcr.io/pt9912/d-check:v0.76.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -210,7 +210,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.75.0 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.76.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -229,7 +229,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -249,7 +249,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -258,7 +258,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -277,7 +277,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -297,7 +297,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
   --enable ids --disable anchors
 ```
 
@@ -318,7 +318,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
   --enable ids
 ```
 
@@ -339,7 +339,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
   --enable matrix
 ```
 
@@ -407,7 +407,7 @@ Konfigurationsfehler (Exit 2); ohne `token` verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
   --enable external
 ```
 
@@ -429,7 +429,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
   --enable ids --doctor
 ```
 
@@ -464,7 +464,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
   --enable ids --doctor --json
 ```
 
@@ -512,7 +512,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -548,7 +548,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
     --enable ids --repair | git apply
   ```
 
@@ -565,7 +565,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -585,7 +585,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -647,7 +647,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -785,7 +785,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -830,7 +830,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.75.0 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.76.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -848,7 +848,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und dreizehn
 # Benutzerhandbuch (aufgabenorientiert, deutsch):
 #   https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md
 #   https://raw.githubusercontent.com/pt9912/d-check/refs/heads/main/docs/user/benutzerhandbuch.md  (roh, für Werkzeuge/Agenten)
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.75.0
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.76.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -913,7 +913,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -1126,7 +1126,7 @@ planning:
 ```
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0 \
   --enable planning
 ```
 
@@ -1179,6 +1179,171 @@ Prüf-Logik (Fließtext/Linktext zählen, Inline-Code-Beispiele nicht, nur die
 erste Registerzelle bzw. das Verzeichnis selbst deklariert) ist in beiden
 Modi identisch — nur die Frage „hat diese Kennung einen Nachweis?" wird
 unterschiedlich beantwortet.
+
+### 4.21 Eine Überschriften-Form innerhalb eines Abschnitts erzwingen (Modul `structure`)
+
+**Ausgangslage:** Ein Abschnitt gliedert sich in Unterabschnitte, die alle
+demselben Namensschema folgen sollen — jede Anforderung im Lastenheft trägt
+eine `SPEC-NNN`-Überschrift, jeder Akzeptanzkriterien-Block eine `AC-NNN`. Wer
+beim Einfügen einer neuen Überschrift das Schema verlässt, merkt es meist erst,
+wenn ein Werkzeug oder ein Kollege das Muster **an anderer Stelle** erwartet.
+
+**Ziel:** ein Befund **je** Überschrift, die vom Schema abweicht — auf ihrer
+eigenen Zeile, nicht am Abschnittskopf.
+
+**Vorgehen:**
+
+```yaml
+structure:
+  - files: spec/lastenheft.md
+    section: "## 2. Funktionale Anforderungen"
+    headings-match: '^SPEC-[0-9]{3} '   # JEDE Überschrift im Abschnitt matcht dieses Muster
+    # headings-level: 4                 # geprüfte ATX-Ebene (Default: Abschnitts-Ebene + 1)
+```
+
+```bash
+docker run --rm --network none -v "$PWD":/repo:ro \
+  ghcr.io/pt9912/d-check:latest --enable structure
+```
+
+**Ergebnis:** je verletzender Überschrift ein Befund `section-heading-mismatch`
+auf **ihrer** Zeile:
+
+<!-- d-check-test:not-replayable: gekürzte Illustration, nicht die wörtliche Ausgabe dieses Repos -->
+```text
+spec/lastenheft.md:214   …	section-heading-mismatch	Überschrift „## Sonderfall Import" genügt nicht dem Muster …
+```
+
+**Drei Dinge, die dabei zählen:**
+
+- **Geprüft wird der Text, nicht die `#`-Folge.** Das Muster sieht die
+  Überschrift ohne ihre führenden `#`-Zeichen — `^SPEC-[0-9]{3} ` matcht
+  unabhängig davon, ob die Überschrift `##` oder `###` trägt.
+- **Die geprüfte Ebene ist konfigurierbar, nicht immer die nächsttiefere.**
+  Ohne `headings-level` prüft die Regel die unmittelbaren Unterabschnitte
+  (Abschnitts-Ebene + 1). Eine Ebene, die **flacher** ist als der Abschnitt
+  selbst, kann in ihm nicht vorkommen — die Bedingung wäre dann wirkungslos
+  wahr, und trägt der Abschnitt **keine** Überschrift der geprüften Ebene,
+  gilt dasselbe.
+- **Nicht zu verwechseln mit `planning.closure.heading-pattern`.** Jener
+  Schlüssel ist ein **Selektor** (welcher Abschnitt wird geprüft), dieser eine
+  **Bedingung** (welche Form müssen seine Unterabschnitte haben) — beide lösen
+  unterschiedliche Fragen.
+
+### 4.22 Offene Task-Items in einem Abschnitt begrenzen (Modul `structure`)
+
+**Ausgangslage:** Ein Abschnitt führt eine Checkliste — DoD-Punkte, offene
+Aufgaben —, und ein Übergang (etwa nach `done/`) soll erst zulässig sein, wenn
+keine offenen Haken mehr stehen. Ein selbst geschriebenes `forbid-pattern: '-
+\[ \]'` wirkt zunächst richtig, hat aber eine Lücke: Es liest den
+**bereinigten** Text, und ein einzelner überzähliger Backtick irgendwo im
+Absatz macht dort den Rest **unsichtbar** — derselbe offene Haken meldet dann
+plötzlich nichts mehr.
+
+**Ziel:** eine Obergrenze für offene Task-Items, die diese Lücke nicht hat.
+
+**Vorgehen:**
+
+```yaml
+structure:
+  - files: "docs/plan/planning/done/slice-*.md"
+    section: "## 5. Definition of Done"
+    max-open-tasks: 0   # offene Task-Items, ROH gezählt ⇒ je Item ein Befund auf SEINER Zeile
+```
+
+```bash
+docker run --rm --network none -v "$PWD":/repo:ro \
+  ghcr.io/pt9912/d-check:latest --enable structure
+```
+
+**Ergebnis:** ein Befund `section-tasks-open` **je offenem Haken auf seiner
+Zeile** — nicht einer für den ganzen Abschnitt:
+
+<!-- d-check-test:not-replayable: gekürzte Illustration, nicht die wörtliche Ausgabe dieses Repos -->
+```text
+docs/plan/planning/done/slice-140-beispiel.md:88   …	section-tasks-open	offenes Task-Item …
+```
+
+**Vier Grenzen, damit Sie nicht überrascht werden:**
+
+- **Der Fence bleibt außen vor.** Ein Haken **innerhalb** eines wohlgeformten
+  Fenced-Blocks (eine Illustration, ein Beispiel-Diff) ist unsichtbar — das ist
+  dieselbe Fence-Treue, die eine Illustration schützt.
+- **Eine einzeilige Inline-Spanne meldet nicht, eine mehrzeilige schon.** Das
+  ist der ausgewiesene Preis der **rohen** Lesung: `max-open-tasks` liest die
+  Zeile, nicht den bereinigten Text.
+- **Blockquote und Tabulator in der Box zählen für keine der beiden
+  Bedingungen** (`max-tasks` und `max-open-tasks`) — das ist eine Eigenschaft
+  der geteilten Lexik des Moduls, nicht dieser Bedingung allein.
+- **Ein vergessener Schluss-Fence blendet alles Folgende aus** — die Bedingung
+  meldet dann grün, ohne geprüft zu haben. `max-open-tasks` behebt das
+  **nicht**: Wenn diese Regel bei Ihnen über einen Übergang entscheidet,
+  schalten Sie im **selben Profil** das Modul `spans` dazu — `fence-unclosed`
+  ist der Sensor, der die offene Fence meldet.
+
+**Ohne den Schlüssel ist der Befundsatz byte-identisch.**
+
+### 4.23 Offene Task-Items gegen eine Pflicht-Marke tolerieren (Modul `structure`)
+
+**Ausgangslage:** [Aufgabe §4.22](#422-offene-task-items-in-einem-abschnitt-begrenzen-modul-structure)
+zählt jeden offenen Haken als Befund — auch dann, wenn ein offener Haken
+**legitim** ist, weil der Vorgang seinen Gegenstand nachweislich nicht liefert
+(ein Slice, dessen Gegenstand ein anderer übernommen hat oder der ganz
+entfallen ist, Baseline-Regelwerk Modul 5). Eine pauschale Ausnahme über
+`tasks-ignore-pattern` oder `exempt-section-pattern` würde jeden offenen Haken
+durchwinken — nicht nur den begründeten.
+
+**Ziel:** offene Haken bleiben ein Befund, **außer** der Abschnitt trägt eine
+verfasste Begründungs-Marke — und diese Marke darf in einem **anderen**
+Abschnitt derselben Datei stehen als die gezählten Haken selbst.
+
+**Vorgehen:**
+
+```yaml
+structure:
+  - files: "docs/plan/planning/done/slice-*.md"
+    section: "## 5. Definition of Done"
+    max-open-tasks: 0
+    open-tasks-require-marker: "Gegenstand"
+    open-tasks-require-marker-section: '^#{1,3} [0-9]+\. Closure-Notiz'
+```
+
+```bash
+docker run --rm --network none -v "$PWD":/repo:ro \
+  ghcr.io/pt9912/d-check:latest --enable structure
+```
+
+**Ergebnis:** Trägt der Abschnitt „## 7. Closure-Notiz" die Zeile
+`**Gegenstand:** entfallen — Anforderung gestrichen`, tilgt das **alle**
+`section-tasks-open`-Einzelbefunde der DoD. Fehlt die Marke, ersetzt **ein**
+neuer Befund dieselben Einzelbefunde:
+
+<!-- d-check-test:not-replayable: gekürzte Illustration, nicht die wörtliche Ausgabe dieses Repos -->
+```text
+docs/plan/planning/done/slice-140-beispiel.md:12   …	section-open-tasks-marker-missing	offene Task-Items ohne die geforderte Marke **Gegenstand:** …
+```
+
+**Drei Dinge, die dabei zählen:**
+
+- **Die Kopplung ist einseitig.** `open-tasks-require-marker` wirkt **nur**,
+  wenn `max-open-tasks` bereits einen Überschuss-Fund meldet — trägt der
+  Abschnitt keinen offenen Haken über der Grenze, entscheidet die Marke
+  nichts, und ihr Fehlen ist kein Befund.
+- **Nie beide Befundarten zugleich.** Eine vorhandene Marke tilgt die
+  Einzelbefunde vollständig (Erlaubnis); eine fehlende ersetzt sie durch
+  **einen** `section-open-tasks-marker-missing` (Pflicht) — nicht durch beide
+  nebeneinander.
+- **`open-tasks-require-marker-section` verlegt nur die Suche, nicht die
+  Zählung.** Die offenen Haken werden weiter im **gezählten** Abschnitt
+  gesucht; nur die Marke selbst darf in einem anderen, über RE2 benannten
+  Abschnitt derselben Datei stehen (geprüft gegen dieselbe rohe
+  Überschriften-Zeile wie `section-pattern`). Trifft das Muster keinen
+  Abschnitt, gilt die Marke als fehlend — nicht als Konfigurationsfehler.
+
+**Fail-closed:** `open-tasks-require-marker` ohne `max-open-tasks` bzw.
+`open-tasks-require-marker-section` ohne `open-tasks-require-marker` ⇒
+Exit 2. Ohne die beiden Schlüssel ist der Befundsatz byte-identisch mit
+[Aufgabe §4.22](#422-offene-task-items-in-einem-abschnitt-begrenzen-modul-structure).
 
 ## 5. Konfiguration
 
@@ -2150,6 +2315,15 @@ structure:
     # max-open-tasks: 0                           # OFFENE Task-Items, ROH gezählt ⇒ je Item
     #                                             # ein Befund auf SEINER Zeile; anders als
     #                                             # max-tasks kein Backtick-Ausfall
+    # open-tasks-require-marker: "Gegenstand"     # nur mit max-open-tasks: eine VORHANDENE
+    #                                             # Marke tilgt alle Einzelbefunde (Erlaubnis),
+    #                                             # eine FEHLENDE ersetzt sie durch EINEN
+    #                                             # section-open-tasks-marker-missing (Pflicht)
+    # open-tasks-require-marker-section: '^#{1,3} [0-9]+\. Closure-Notiz'
+    #                                             # nur mit open-tasks-require-marker: sucht die
+    #                                             # Marke in einem ANDEREN, benannten Abschnitt
+    #                                             # statt im gezählten selbst; kein Treffer ⇒
+    #                                             # Marke gilt als fehlend
     # forbid-pattern: 'TODO'
     # require-pattern: 'Beleg'
     # require-all: ["Beleg", "Lernsignal"]
@@ -2393,7 +2567,7 @@ weil die **Welle** den Punkt einlöst, nicht der Slice.
 | `planning`  | opt-in        | Zwei Seiten derselben Lifecycle-Invariante. **Eintritt:** der Ruhe-Marker (`marker`) steht im `heading`-Block (Default `## Aktuelle Welle`) genau dann, wenn kein `slice-*` (`slice-glob`) im Verzeichnis liegt. **Austritt** (zusätzlich opt-in über `closure.dir`): die **Struktur** der Closure-Notizen abgeschlossener Pakete — Abschnitt vorhanden, genug Satzende-Zeichen außerhalb von Code-Blöcken, keine deklarierte Floskel und — opt-in über `placeholder` — kein unausgefüllter Vorlagen-Platzhalter. **Hermetisch** (kein git), fail-closed bei fehlender/mehrdeutiger Überschrift, fehlendem Closure-Verzeichnis und bei null Kandidaten. Überschriften und Marker zählen nur **außerhalb von Code-Blöcken**; die Block-Grenze ist die geteilte Abschnittsgrenze. **Dritte Fähigkeit** (opt-in über `waves.dir`): die Wellen-Register der Roadmap gegen die Wellen-Dateien — Plan-Dokument flach ⟺ aktive Welle (`waves.mode: one`, Default) **oder** Kennungs-Bijektion Aktiv-Block ⟺ flache Dokumente, Marker außen vor (`waves.mode: many`); Vorschau ohne Datei, Abschluss-Register ⟺ Ergebnisnotizen (beidseitig). **Vierte Fähigkeit** (opt-in über `observations.register` **oder** `observations.dir`, mutually exclusive): eine **zitierte** Kennung hat einen Nachweis — im Tabellen-Modus (`register`) eine Zeile im Register, im Verzeichnis-Modus (`dir`) ein Ordner `<zitierter-pfad>/observation.md`; gezählt werden Prosa und Linktext, ein reines Inline-Code-Span nicht (Beispiel statt Behauptung); im Tabellen-Modus deklariert nur die **erste** Tabellenzelle; die Umkehrung („jede Kennung ist zitiert") bleibt in beiden Modi ausgeschlossen | `planning-drift`, `closure-note-missing`, `closure-note-thin`, `closure-note-boilerplate`, `closure-note-placeholder`, `closure-note-ambiguous`, `wave-drift`, `wave-preview-exists`, `wave-results-missing`, `wave-unregistered`, `observation-unregistered` |
 | `tracked`   | opt-in (git)  | Getrackt-Status auflösbarer, **existierender** Link-/Bild-Ziele gegen den git-**Index** (gestagt = getrackt, keine `.gitignore`-Interpretation); liest `.git` read-only, **ohne** Range; fail-closed ohne `.git` | `target-untracked`                                          |
 | `targets`   | opt-in        | Deklarations-Konsistenz Doku ↔ Build-Targets: jedes in einer Doku-**Tabellenzeile** behauptete `make X` ist eine Makefile-Regel (`makefiles`), und jede Regel steht in der Autoritäts-Doku (`authority`); **hermetisch** (kein git, kein Makefile-Ausführen), fail-closed bei fehlender Datei. Tabellenzeilen zählen nur **außerhalb von Code-Blöcken** — ein Beispiel-Block dokumentiert kein Target | `gate-phantom`, `gate-undocumented`                         |
-| `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu **zehn** Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table.order`/`table.order-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle; die achte die **Überschriften-Form** (`headings-match`/`headings-level`): **jede** Überschrift der geprüften Ebene innerhalb des Abschnitts matcht das Muster, geprüft auf ihrem **Text**, gemeldet **je** Überschrift auf **ihrer** Zeile; die neunte die **Zellenlänge** (`table.column` je Eintrag `name` mit `cell-max-chars`/`cell-min-chars`): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte liegt in einer Spanne aus **Zeichen**, gemeldet auf **ihrer** Zeile — eine Obergrenze allein ließe die leere Zelle passieren; die **zehnte** die **offenen Task-Items** (`max-open-tasks`): gezählt auf den **rohen** Abschnitts-Zeilen statt auf dem bereinigten Text, ein Befund je Item auf **seiner** Zeile ⇒ `section-tasks-open` — ein überzähliger Backtick im Absatz schaltet sie nicht ab, ein vergessener Schluss-Fence sehr wohl. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat; **einzige Ausnahme** ist die per `exempt-expect-count` **erklärte** Leermenge, deren Abweichung `section-exempt-mismatch` meldet | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped`, `section-heading-mismatch`, `section-cell-oversized`, `section-cell-undersized`, `section-column-missing`, `section-exempt-mismatch`, `section-tasks-open` |
+| `structure` | opt-in        | Struktur-Invarianten **innerhalb** eines Dokuments. Je Regel eine Dokumentklasse über **eigene** Globs (unabhängig vom Scan-Bereich, daher kein `scope`), ein Abschnitt (Klartext **oder** RE2) und bis zu **elf** Bedingungen mit je eigenem Grund-Code — die siebte ist die **Chronologie-Monotonie** (`table.order`/`table.order-column`): typisierte Schlüsselspalte (ISO-Datum, Punkt-Version), rohe Zellen, nicht-strikt je zusammenhängender Tabelle; die achte die **Überschriften-Form** (`headings-match`/`headings-level`): **jede** Überschrift der geprüften Ebene innerhalb des Abschnitts matcht das Muster, geprüft auf ihrem **Text**, gemeldet **je** Überschrift auf **ihrer** Zeile; die neunte die **Zellenlänge** (`table.column` je Eintrag `name` mit `cell-max-chars`/`cell-min-chars`): jede Zelle einer über ihren **Kopfzeilen-Namen** benannten Spalte liegt in einer Spanne aus **Zeichen**, gemeldet auf **ihrer** Zeile — eine Obergrenze allein ließe die leere Zelle passieren; die **zehnte** die **offenen Task-Items** (`max-open-tasks`): gezählt auf den **rohen** Abschnitts-Zeilen statt auf dem bereinigten Text, ein Befund je Item auf **seiner** Zeile ⇒ `section-tasks-open` — ein überzähliger Backtick im Absatz schaltet sie nicht ab, ein vergessener Schluss-Fence sehr wohl; die **elfte** eine **bedingte Pflicht-Marke** dazu (`open-tasks-require-marker`, nur wirksam, wenn die zehnte bereits einen Überschuss-Fund meldet): eine vorhandene Marke (`hasMarker`-Form wie bei den geforderten Marken) tilgt **alle** `section-tasks-open`-Einzelbefunde des Abschnitts, eine fehlende ersetzt sie durch **einen** `section-open-tasks-marker-missing` auf der Überschriftszeile — `open-tasks-require-marker-section` verlegt die Suche wahlweise in einen **anderen**, benannten Abschnitt derselben Datei (RE2 gegen dieselbe rohe Überschriften-Zeile wie `section-pattern`); trifft das Muster keinen Abschnitt, gilt die Marke als fehlend. `sections: one` (Default) erwartet genau einen Treffer, `each` prüft jeden. **Hermetisch** (kein git), fail-closed bei leerer Kandidaten-Menge — auch wenn erst `exempt-paths` sie geleert hat; **einzige Ausnahme** ist die per `exempt-expect-count` **erklärte** Leermenge, deren Abweichung `section-exempt-mismatch` meldet | `section-missing`, `section-ambiguous`, `section-empty`, `section-thin`, `section-oversized`, `section-forbidden`, `section-pattern-missing`, `section-marker-missing`, `section-unordered`, `section-cell-untyped`, `section-heading-mismatch`, `section-cell-oversized`, `section-cell-undersized`, `section-column-missing`, `section-exempt-mismatch`, `section-tasks-open`, `section-open-tasks-marker-missing` |
 | `workflows` | opt-in        | Deklarations-Konsistenz der `uses:`-Referenzen von CI-Workflows unterhalb eines **konfigurierten** Verzeichnisses (`workflows.dir` — der Ort ist nicht verdrahtet, weil er CI-System-spezifisch ist). **Fremde** Referenz: voller 40-stelliger Commit-SHA plus Tag-Kommentar dahinter — ein Tag lässt sich umhängen, ein SHA nicht; geprüft wird die **Form**, nicht die **Gültigkeit** (das wäre Netz). **Derselbe SHA trägt dateiübergreifend überall denselben Tag-Kommentar** — ein Widerspruch meldet jede beteiligte Zeile, welcher Wert stimmt bleibt Netz. **Lokale** Referenz (`./…`): kein Pin nötig — sie löst auf denselben Commit auf wie ihr Aufrufer —, dafür zwei andere Fragen: **existiert** das Ziel, und **bekommt es die Rechte, die es verlangt?** Ein aufgerufener Workflow erhält nur, was der aufrufende **Job** selbst führt; ein Job ohne eigenes `permissions:` erbt zwar den Workflow-Kopf, kann aber nichts weitergeben, was er nicht deklariert. Stufen: `none` < `read` < `write`; ein nicht genannter Scope ist `none`, `read-all`/`write-all` setzen jeden. Die Referenzen kommen aus dem **YAML-Baum**, nicht aus einer Textsuche. **Hermetisch** (kein git, kein Netz, kein Ausführen), fail-closed bei leerer Prüfmenge und bei unlesbarem YAML. **Benannte Grenze:** das Modul liest die **Ziele** lokaler Referenzen, die es nicht scannt — dieselbe Parse-Zusage gilt dort —, und es deckt **eine** Deklarations-Klasse, nicht die Lauffähigkeit | `uses-pin-missing`, `uses-pin-untagged`, `uses-pin-tag-conflict`, `uses-local-missing`, `uses-local-perms-undeclared`, `uses-local-perms-narrow`, `workflow-unparsable` |
 | `reviews`   | opt-in        | Review-Report-Deckung: jeder `done/`-Slice mit einer Review-Zusage (DoD-Haken, dessen Zeile „unabhängiger Review" nennt, jede Bullet-Form, Haken-Zustand egal) braucht mindestens einen Report unter `reviews-dir` mit derselben `slice-<NNN>`-Kennung im Dateinamen (Substring-Match, 1:N zulässig). Beide Verzeichnisse (`done-dir`, `reviews-dir`) **nicht rekursiv** gescannt. Fail-closed bei leerer Kandidatenmenge oder unlesbarem `reviews-dir`, **nicht** bei null gefundenen Zusagen unter vorhandenen Kandidaten | `review-missing`                                             |
 | `mentions`  | opt-in        | Erwähnungs-Deckung: jedes Mitglied einer über Pfad-Globs konfigurierten **Soll-Menge** (`artifacts`) muss in mindestens einem Dokument der ebenso konfigurierten **Ist-Menge** (`documents`) wörtlich vorkommen. Gesucht wird eine **eigenständige Nennung**: links blockiert Buchstabe, Ziffer, `-` und `.`, rechts nur Buchstabe und Ziffer — Satz-Schlusspunkt, Kompositum, Kursivierung und `../`-relative Verlinkung zählen damit. Preis: ein Unterstrich-Kompositum, eine angehängte Endung und ein fremdes Pfad-Präfix decken das Mitglied darunter. `match: path` (Default, Pfad ab der Scan-Wurzel) oder `basename` (nur der Dateiname) — für Dokumente, die **relativ** verlinken, ist `basename` die richtige Form; kollidierende Suchbegriffe prüft das Modul selbst und bricht ab (Exit 2), statt sie dem Konfigurierenden aufzugeben. **Ein Block ist EIN Paar** — die Ist-Menge wird als Vereinigung gelesen. Fail-closed: fehlende oder leer bleibende Menge und unlesbares Verzeichnis ⇒ Exit 2, nicht „0 Befunde". Die Zusammenfassung nennt die Bezugsmenge (`N von M`) | `artifact-unmentioned` |
@@ -2602,3 +2776,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.69             | v0.74.0          | 2026-09-04 | **Fünfte `planning`-Fähigkeit, additiv: Verzeichnis-Register für die Register-Deckung** (§4.19, [`DC-FA-PLAN-001`](../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in), Lastenheft 0.85.0). Statt einer Tabellen-Datei (`observations.register`) kann die Register-Deckung jetzt gegen eine **Verzeichnis-Ablage** prüfen (`observations.dir`): eine zitierte Kennung `<pfad>` gilt als nachgewiesen, wenn `<observations.dir>/<pfad>/observation.md` existiert. Beide Schlüssel schließen sich aus — sind beide gesetzt, bricht der Lauf mit Exit 2, bevor eine Datei geöffnet wird. **Anlass:** die adoptierte Harness-Baseline gestaltet ihr eigenes Beobachtungs-Register neu (Tabelle → Verzeichnis, Kennung wird Pfad, abgeleiteter statt gepflegter Zähler); `.register` bleibt für Rückwärtskompatibilität unverändert bestehen. Kein neuer Grund-Code — derselbe `observation-unregistered` wie im Tabellen-Modus. Opt-in, keine Breaking Changes |
 | 1.70             | v0.74.1          | 2026-09-04 | **Sicherheitsrelevant:** dieses Release behebt zwei behebbare CVEs im ausgelieferten Image — `CVE-2026-56855` und `CVE-2026-78662` in `golang.org/x/crypto`, gehoben auf `v0.56.0` (laut `vuln.go.dev`/`osv.dev`). Gefunden über einen Fremd-Scanner (Docker Scout), bevor Trivys eigene Vuln-DB die Severity nachzog — `make image-scan` blieb deshalb zunächst grün, der Fund stand im Vollbericht mit Severity `UNKNOWN`, als Beobachtung festgehalten (`BEO-ALL/scanner-vendor-severity-lag`). **Keine Software-Änderung am Prüf-Verhalten:** Modulsatz, Grund-Codes und Konfigurations-Fläche sind unverändert; der Befundsatz bleibt byte-identisch |
 | 1.71             | v0.75.0          | 2026-09-08 | **Neues Modul `mentions`: Erwähnungs-Deckung einer Artefakt-Menge** (§6, [`DC-FA-MENT-001`](../../spec/lastenheft.md#dc-fa-ment-001--erwähnungs-deckung-einer-artefakt-menge-modul-mentions-opt-in), Lastenheft 0.86.2). Eine über Pfad-Globs konfigurierte **Soll-Menge** (`artifacts`) wird gegen eine ebenso konfigurierte **Ist-Menge** von Dokumenten (`documents`) gehalten; jedes Mitglied, das in **keinem** Dokument vorkommt, meldet `artifact-unmentioned`. **Andere Achse als die RTM:** jene misst *verfolgt* über Kennungen, diese misst *erwähnt* über Pfade — schema-frei, für Artefakte ohne Kennungs-Konvention. **Ein Block ist EIN Paar:** die Ist-Menge ist eine Vereinigung, zwei unabhängige Invarianten in einem Block halten keine von beiden. **Zwei Eingaben, eine Scan-Zusage:** die Ist-Dokumente werden als Text gelesen, die Soll-Artefakte **nie geöffnet**; aufgesammelt wird aus dem ganzen Baum unter `scan.ignore`, **nicht** aus `scan.roots`. Gesucht wird eine **eigenständige** Nennung, keine Teilzeichenkette. **Fail-closed** bei fehlender oder leerer Menge und bei unlesbarem Verzeichnis (Exit 2, nicht „0 Befunde"). Die Zusammenfassung nennt die **Bezugsmenge** (`N von M`) — dafür trägt sie ab jetzt allgemein **Notiz-Zeilen** einzelner Module, auch in `--json`/`--yaml` als `summary.notes` ([`DC-FA-CLI-004`](../../spec/lastenheft.md#dc-fa-cli-004--ausgabeformate) lässt weitere Felder ausdrücklich zu); wer `summary` strikt gegen zwei Felder validiert, sieht ein zusätzliches. Opt-in, keine Breaking Changes |
+| 1.72             | v0.76.0          | 2026-09-17 | **Eine bedingte Pflicht-Marke koppelt `max-open-tasks` an eine Marke** (§5, §6, [`DC-FA-STRUCT-001`](../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), Lastenheft 0.87.1). Neu ist die **elfte** `structure`-Bedingung `open-tasks-require-marker`: trägt der Abschnitt Überschuss-Task-Items gegen `max-open-tasks`, tilgt eine vorhandene Marke (`hasMarker`-Form wie bei `require-all`) **alle** `section-tasks-open`-Einzelbefunde (Erlaubnis); fehlt sie, ersetzt **ein** neuer Grund-Code `section-open-tasks-marker-missing` dieselben Einzelbefunde (Pflicht) — nie beide zugleich. `open-tasks-require-marker-section` verlegt die Suche wahlweise in einen **anderen**, benannten Abschnitt derselben Datei (RE2 gegen dieselbe rohe Überschriften-Zeile wie `section-pattern`); kein Treffer ⇒ Marke gilt als fehlend. **Anlass ist ein eingehender CR** eines Adopters, der eine Pflichtzeile für Baseline-konforme Stilllegungs-Slices bittet — die Erlaubnis-Hälfte trägt zugleich den eigenen Bedarf dieses Repos. Ohne die Schlüssel byte-identisches Verhalten; `open-tasks-require-marker` ohne `max-open-tasks` bzw. `open-tasks-require-marker-section` ohne `open-tasks-require-marker` ⇒ Exit 2. **Drei neue §4-Aufgaben** schließen dabei eine bestehende Lücke: `headings-match` (v0.64.0) und `max-open-tasks` (v0.70.0) trugen bisher nur §5/§6, ohne eigenen aufgabenbasierten Einstieg — §4.21 (Überschriften-Form erzwingen), §4.22 (offene Task-Items begrenzen) und §4.23 (die neue Pflicht-Marke selbst) holen das für alle drei zugleich nach |

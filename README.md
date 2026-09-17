@@ -132,12 +132,18 @@ planning-lifecycle and tracked-status consistency, up to structure invariants
   ([`DC-FA-CITE-001`](spec/lastenheft.md#dc-fa-cite-001--verbatim-zitat-verifikation-modul-citations-opt-in))
 - `structure` — structure invariants **within** a document: each rule defines a
   document class via **its own** globs, a section (literal or RE2) and up to
-  **ten** conditions, each with its own reason code — non-empty (`section-empty`),
+  **eleven** conditions, each with its own reason code — non-empty (`section-empty`),
   minimum sentences (`section-thin`), task ceiling (`section-oversized`),
   **open** task items on the **raw** lines (`max-open-tasks` ⇒
   `section-tasks-open`, one finding per box on **its** line — unlike
   `max-tasks` it is immune to the paragraph-wide inline-code pairing, while
-  staying fence-true),
+  staying fence-true), plus a **conditional required marker**
+  (`open-tasks-require-marker`, only active once `max-open-tasks` already found
+  excess items): a marker present clears all `section-tasks-open` findings of
+  the section, a missing one replaces them with a single
+  `section-open-tasks-marker-missing` — `open-tasks-require-marker-section`
+  optionally moves the search into a **different**, named section of the same
+  file,
   forbidden and required patterns (`section-forbidden`,
   `section-pattern-missing`), required markers (`section-marker-missing`),
   chronological monotonicity of the key column (`section-unordered`,
@@ -284,7 +290,7 @@ spec, and both are measured, not asserted:
 ## Usage
 
 Distributed as a container image via GHCR
-([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)); **since `v0.67.0`**
+([`DC-FA-DIST-001`](spec/lastenheft.md#dc-fa-dist-001--docker-image)),
 also mirrored to Docker Hub as `pt9912/d-check` —
 the same image, not a second build, same **config** digest (the **manifest**
 digest is registry-local: when pinning by digest, use the one from the registry
@@ -292,7 +298,7 @@ you pull from)
 ([`DC-FA-DIST-002`](spec/lastenheft.md#dc-fa-dist-002--docker-hub-spiegel)):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.75.0
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.0
 ```
 
 CI pipelines pin to the digest from the release notes rather than to
