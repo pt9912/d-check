@@ -52,9 +52,11 @@ hat der unabhängige Review an der ersten Fassung von `CO-001` beanstandet.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** Ein Release nach `docs/user/releasing.md` ist veröffentlicht und
-      am **gezogenen** Image verifiziert (Digest, OCI-Label, Smoke).
-- [ ] **(2)** Die Auflösung ist **gemessen, nicht angenommen**: dasselbe
+- [x] **(1)** Ein Release nach `docs/user/releasing.md` ist veröffentlicht und
+      am **gezogenen** Image verifiziert (Digest, OCI-Label, Smoke). `v0.76.1`,
+      GHCR-Digest `sha256:1470ecdcaa686a5ef4513dee9b0ae522586f54b87d568b06fc6b5b2741b633b3`,
+      `make ci` (inkl. `image-test`, Smoke eingeschlossen) grün vor dem Tag.
+- [x] **(2)** Die Auflösung ist **gemessen, nicht angenommen**: dasselbe
       Probe-Repo-Muster mit partiell unsichtbarem Pack, gegen das
       **publizierte** Image gefahren — vorher `0 Befund(e)`/Exit 0, danach
       Exit 2. **Präzisierung ggü. dem Erstentwurf dieses Punkts:** `CO-001`
@@ -62,17 +64,19 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       BASE-Tree mit Pendant, BASE-Tree ohne Pendant) statt der hier
       ursprünglich genannten zwei — slice-220 hat die dritte geschlossen und
       eine vierte, zuvor fehldiagnostizierte (unlesbarer HEAD-Tree)
-      zusätzlich aufgedeckt und behoben. Geprüft werden **alle vier**.
-- [ ] **(3)** `CO-001` ist aufgelöst: Verifikations-Haken abgehakt, Datei per
-      reinem `git mv` nach `docs/plan/carveouts/done/` <!-- d-check:ignore (entsteht erst mit dieser Auflösung) -->, Index in
+      zusätzlich aufgedeckt und behoben. **Alle vier** gegen das gezogene
+      `v0.76.1`-Image gemessen, alle brechen mit Exit 2 ab (Belege in
+      `CO-001`s Auflösungs-Trigger).
+- [x] **(3)** `CO-001` ist aufgelöst: Verifikations-Haken abgehakt, Datei per
+      reinem `git mv` nach `docs/plan/carveouts/done/`, Index in
       `docs/plan/carveouts/README.md` und die Bindung-Spalte in
       `harness/README.md` §Sensors nachgezogen.
-- [ ] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] `make gates` grün.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
 
@@ -106,16 +110,51 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   lange `CO-001` schon aktiv ist; die kanonische Frist misst in **Wellen**, und
   dieses Repo arbeitet wellenlos — eine benannte Lücke des Kanons
   (Baseline-Regelwerk `modul-06-roadmap.md` §Wann Arbeit eine Welle braucht).
-  Der einzige Träger ist dieser Slice in `open/`. — **Ausgang:** \<offen\>
+  Der einzige Träger ist dieser Slice in `open/`. — **Ausgang:** entfallen.
+  Der Carveout ist jetzt aufgelöst, bevor die Lücke praktisch relevant wurde
+  (angelegt 2026-09-08, aufgelöst 2026-09-17 — neun Tage, kein Wellen-Maß
+  nötig). Die benannte Kanon-Lücke selbst bleibt bestehen, betrifft aber
+  keinen aktiven Carveout mehr.
 - **Ein Release kann aus anderen Gründen fällig werden und den Carveout
   „nebenbei" auflösen**, ohne dass jemand die Probe aus DoD (2) fährt. Dann
   wäre der Carveout formal offen, obwohl der Defekt weg ist — oder schlimmer,
   er würde geschlossen, ohne dass die Auflösung gemessen wurde. — **Ausgang:**
-  \<offen\>
+  entfallen. Genau umgekehrt eingetreten: Dieser Slice **ist** das Release,
+  das die Auflösung trägt, und die Probe aus DoD (2) wurde vor dem Abhaken der
+  Verifikations-Liste gefahren (Plan-Schritt 3), nicht übersprungen.
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** Release `v0.76.1` ist veröffentlicht (GHCR-Digest
+`sha256:1470ecdcaa686a5ef4513dee9b0ae522586f54b87d568b06fc6b5b2741b633b3`,
+Docker-Hub-Spiegel gleichgeprüft) und trägt slice-220s Klassen-Fix.
+[`CO-001`](../../carveouts/done/CO-001-vcs-range-stiller-skip.md) ist
+aufgelöst — alle vier Ausprägungen seiner Tabelle (nicht nur die zwei aus
+diesem Slice-Plans Erstentwurf) wurden gegen das **gezogene** Image
+gemessen, nicht nur den Quellstand angenommen; alle vier brechen jetzt mit
+Exit 2 ab.
+
+**Ein Nachzug, den weder slice-220 noch seine zwei Review-Runden fanden:**
+`harness/sensors/adr-check.md` und `trace-check.md` beschrieben nach
+slice-220s Feature-Commit weiterhin den abgelösten Diff-Mechanismus (drei
+statt vier Ausprägungen, zwei nicht mehr existierende Testnamen, `CO-001`
+als „weiterhin offen"). Der `git mv` von `CO-001` machte die Staleness
+sichtbar (gebrochene Link-Tiefe im Doc-Check), nicht ein gezielter
+Vergleich — beide Guide-Dateien sind jetzt nachgezogen. Registriert als
+[`guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen`](../observations/BEO-ALL/guide-doku-ausserhalb-spec-bleibt-bei-mechanismuswechsel-stehen/observation.md):
+`AGENTS.md` §6 Schritt 7 nennt „öffentlicher Vertrag", ohne zu sagen, dass
+eine Guide-Doku wie `harness/sensors/*.md` denselben Rang trägt wie
+Spec/Handbuch/README — ein Implementer, der nur die im Slice-Kopf genannte
+Spec-Stelle prüft, lässt sie unbemerkt zurück.
+
+**Review** ([`docs/reviews/2026-09-17-slice-219-release-loest-co-001-review-r1.md`](../../../reviews/2026-09-17-slice-219-release-loest-co-001-review-r1.md)):
+**0 HIGH · 0 MEDIUM · 0 LOW · 0 INFO**, Verdikt „Freigegeben". Der Reviewer
+verifizierte den Digest unabhängig (eigener `docker pull`, `gh release
+view`, OCI-Label, Docker-Hub-Spiegel-Gleichheit) und fuhr alle vier
+Ausprägungen selbst gegen fünf eigene Probe-Repos (die vier Defekte plus
+eine Kontrolle mit einer echten, unversteckten Verletzung) — die Kontrolle
+meldete korrekt `1 Befund(e)`/`core-drift-vcs`/Exit 1, alle vier Defekte
+Exit 2.
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
