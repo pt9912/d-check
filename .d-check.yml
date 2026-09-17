@@ -304,6 +304,12 @@ ignore-refs:
     refs: ["docs/plan/planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md"]
   - in: docs/reviews/2026-09-17-slice-225-open-tasks-marker-review-r2.md
     refs: ["docs/plan/planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md"]
+  # Dieselbe Klasse, eine weitere Stufe: slice-218 (done/) zitiert slice-220
+  # dreifach als "liegt in open/" -- der Stand zum Zeitpunkt seiner
+  # Entstehung. slice-220 ist inzwischen ueber die Beanspruchung nach
+  # in-progress/ gewandert.
+  - in: docs/plan/planning/done/slice-218-go-git-pack-namenskonvention.md
+    refs: ["docs/plan/planning/open/slice-220-vcs-pfadmenge-statt-diff.md"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
   # ausgeloest, die docs/plan/planning/observations/README.md seit
   # slice-190 benennt: ein

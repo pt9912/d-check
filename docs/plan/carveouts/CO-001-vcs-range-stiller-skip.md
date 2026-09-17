@@ -24,7 +24,7 @@ erste schrieb „dieses Repo eingeschlossen", ohne den Image-Pin nachzuschlagen;
 die zweite nahm dieses Repo ganz aus, als alle Ausprägungen behoben wären. Die
 Unterscheidung oben ist die gemessene.
 
-**Folge-Slice:** [`slice-220`](../planning/open/slice-220-vcs-pfadmenge-statt-diff.md)
+**Folge-Slice:** [`slice-220`](../planning/in-progress/slice-220-vcs-pfadmenge-statt-diff.md)
 — der **Klassen**-Fix für die offene dritte Ausprägung; danach
 [`slice-219`](../planning/open/slice-219-release-loest-co-001.md), das Release,
 das beides ausliefert. **Nicht** slice-218: der liefert zwei der drei
@@ -71,7 +71,7 @@ dass der naheliegende Wachposten nicht trägt — `tree.Files()` benutzt denselb
 Walker und schweigt ebenso. Ein Fix ist deshalb eine **Entwurfsänderung** (die
 geschützte Pfad-Menge direkt gegen beide Trees auflösen, statt dem Diff zu
 vertrauen) und liegt bei
-[slice-220](../planning/open/slice-220-vcs-pfadmenge-statt-diff.md).
+[slice-220](../planning/in-progress/slice-220-vcs-pfadmenge-statt-diff.md).
 
 **Ein vierter Ausgang gehört daneben, obwohl er kein stiller ist:** Verschluckt
 der Pack den **HEAD**-Tree, meldet der Lauf `core-drift-vcs` *„gelöscht oder

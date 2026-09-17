@@ -6,7 +6,7 @@ Der Review von Runde 3 nannte die Schwelle erreicht; das trifft nicht zu, und
 der Eintrag korrigiert es hier, statt die Zahl passend zu machen.
 
 **Ohne Ausgang, aber nicht ohne Wirkung:**
-[`slice-220`](../../../open/slice-220-vcs-pfadmenge-statt-diff.md) trägt den
+[`slice-220`](../../../in-progress/slice-220-vcs-pfadmenge-statt-diff.md) trägt den
 Ableiter bereits in §3 und wechselt die Schicht, statt ein viertes Mal zu
 patchen; bis dahin führt
 [`CO-001`](../../../../carveouts/CO-001-vcs-range-stiller-skip.md) die offene
