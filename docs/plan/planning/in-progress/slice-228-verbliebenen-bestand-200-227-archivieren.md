@@ -57,23 +57,23 @@ letzten Sweep (slice-200, 2026-09-04) angefallen ist.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] Alle 28 wellenlosen Slices `slice-200`–`slice-227` archiviert (Stub +
+- [x] Alle 28 wellenlosen Slices `slice-200`–`slice-227` archiviert (Stub +
       `archiv.zip` je Slice unter `docs/plan/planning/done/wellenlos/`,
       inklusive ihrer 37 zugehörigen Review-Reports); kein flacher Rest aus
       diesem Bereich mehr unter `docs/plan/planning/done/` oder
       `docs/reviews/`.
-- [ ] `make gates` grün auf dem Endstand.
+- [x] `make gates` grün auf dem Endstand.
 - [ ] `make fullbuild` grün auf dem Endstand.
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Doku-Update: — kein öffentlicher Vertrag berührt (reine
+- [x] Doku-Update: — kein öffentlicher Vertrag berührt (reine
       Bestandspflege, keine Schnittstellen-Änderung).
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — zweites
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — zweites
       Auftreten in `BEO-ALL/batch-slice-archival-zips-post-rewrite-content/`
       (siehe §6).
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen /
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen /
       weiter offen).
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
       Repo ohne Wellen-Betrieb, hier geprüft.
@@ -143,8 +143,10 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   nicht neu angelegt).
 - **Verwaiste `exempt-paths`/Konfig-Einträge**, die auf jetzt archivierte
   flache Pfade zeigen (dieselbe Klasse wie slice-200 Fund F-4). **Ausgang:**
-  im Review/in der Verifikation gezielt geprüft — Ausgang wird bei Closure
-  eingetragen.
+  eingetreten — zehn gegenstandslose `ignore-refs`-Einträge in
+  `.d-check.yml` gefunden (Kommit `14b1527c`) und im selben Slice entfernt,
+  kein Carveout/Folge-Slice nötig; `make doc-check`/`make gates` bestätigen
+  den bereinigten Stand grün.
 - **`make fullbuild`-DoD-Haken-Timing**: das Closure-Profil des
   nicht-rekursiven `done/slice-*.md`-Globs kann vor dem `git mv` dieses
   Slices selbst auf eine andere Menge treffen als danach (dasselbe Muster
@@ -156,13 +158,26 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 <!-- BEDIENHINWEIS — wird vor dem `git mv` nach done/ gefüllt. -->
 
-- **Was hat funktioniert:** <wird bei Closure gefüllt>
-- **Was ging anders als geplant:** <wird bei Closure gefüllt>
-- **Beobachtungs-Register (`../observations/`):** <wird bei Closure
-  gefüllt — siehe §6>
-- **Folge-Slices:** <falls welche entstehen>
-- **Risiken aus §6:** <jedes mit genau einem Ausgang — siehe §6>
-- **Drei Paarungen:** <Anker · Folge-Slice · Register, Ergebnis>
+- **Was hat funktioniert:** Der Dry-Run-vor-Apply-Ablauf aus slice-200 trug
+  unverändert: 28 Einzel-Läufe (`make archive-wave SLICE=<id> APPLY=1`),
+  `make gates` und `make doc-check` auf dem Endstand grün, ein gebündelter
+  Commit für den reinen Move.
+- **Was ging anders als geplant:** Die im §6-Risiko vorab benannte
+  Order-Abhängigkeit (Zip-Inhalt bei sequenzieller Archivierung) trat wie
+  erwartet erneut auf (mehrfach, als **ein** Vorgang gezählt). Zusätzlich,
+  nicht vorab benannt: die Archivierung machte zehn `ignore-refs`-Einträge
+  in `.d-check.yml` gegenstandslos (dieselbe Klasse wie slice-200 F-4,
+  aber ein anderer Konfig-Block als dort — dort `reviews.exempt-paths`,
+  hier `ignore-refs`); im selben Slice bereinigt (Kommit `14b1527c`).
+- **Beobachtungs-Register (`../observations/`):**
+  `evidence/slice-228.md` in
+  `BEO-ALL/batch-slice-archival-zips-post-rewrite-content/` ergänzt —
+  Zähler steht damit bei 2×.
+- **Folge-Slices:** keine.
+- **Risiken aus §6:** alle drei mit Ausgang — siehe §6 (1× weiter offen,
+  1× eingetreten/behoben, 1× entfallen).
+- **Drei Paarungen:** wird nach dem `git mv` dieses Slice-Plans geprüft
+  (siehe DoD).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
