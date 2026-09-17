@@ -4,6 +4,27 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.76.1] — 2026-09-17
+
+### Fixed
+
+- slice-220 — **`vcs` löst die geschützte Pfad-Menge jetzt direkt gegen
+  beide git-Tree-Stände auf, statt einem Diff zu vertrauen**
+  ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
+  [`CO-001`](docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md)).
+  Ein Unterbaum, dessen Objekt in der Objektdatenbank nicht lesbar ist
+  (z. B. durch `git maintenance run --task=loose-objects` mit unkanonisch
+  benannten Packs), bricht den Lauf jetzt **fail-closed** ab (Exit 2),
+  statt stillschweigend übersprungen zu werden. Das schließt eine **dritte**
+  Ausprägung des in `v0.75.0`/`v0.76.0` teilweise behobenen Defekts
+  (ein geschütztes Verzeichnis wird gelöscht, ohne Pendant auf der
+  Gegenseite — bisher `0 Befund(e)`, Exit 0) und behebt eine **vierte**,
+  bisher fehldiagnostizierte (ein unlesbarer HEAD-Tree meldete fälschlich
+  `core-drift-vcs` „gelöscht oder umbenannt", Exit 1, statt eines
+  Umgebungsfehlers). Kein Konfigurations-Bruch, keine Änderung am
+  Grund-Code; betroffen ist ausschließlich, **wann** der Lauf abbricht statt
+  fälschlich grün oder falsch-diagnostiziert zu melden.
+
 ## [0.76.0] — 2026-09-17
 
 ### Added
