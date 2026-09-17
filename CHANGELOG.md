@@ -4,6 +4,29 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.76.3] — 2026-09-17
+
+### Fixed
+
+- slice-227 — **`vcs` und `commits` lösen eine angegebene Range jetzt
+  immer auf, auch ohne eigenen Klassen-Config-Block**
+  ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
+  [`DC-FA-COMMITS-001`](spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)).
+  War `vcs.paths` bzw. `commits.id-patterns` leer (kein `vcs:`- bzw.
+  `commits:`-Block in der Konfiguration), übersprang der Lauf die
+  Range-Auflösung ganz, bevor er sie je versuchte — eine syntaktisch
+  gültige, aber unauflösbare Range (`--range deadbeef..cafebabe`, auch
+  `--staged`) meldete `0 Befund(e)`, Exit 0, statt fail-closed
+  abzubrechen. Ein `--enable vcs`/`--enable commits` ohne passenden
+  Config-Block war damit ein Gate, das jede Range unbesehen passieren
+  ließ. Jetzt wird die Range immer zuerst über die Objektdatenbank
+  aufgelöst; ist sie nicht auflösbar, bricht der Lauf mit Exit 2 ab,
+  unabhängig davon, ob es eine geschützte Datei bzw. ein ID-Muster gibt.
+  Eine auflösbare Range mit leerer Klassen-Config bleibt weiterhin
+  befundfrei (die dokumentierte Opt-in-Trägheit ist unverändert). Anlass
+  ist [GitHub Issue #4](https://github.com/pt9912/d-check/issues/4)
+  Punkt 1. Kein Konfigurations-Bruch, kein neuer Grund-Code.
+
 ## [0.76.2] — 2026-09-17
 
 ### Fixed
