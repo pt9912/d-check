@@ -4,7 +4,9 @@
 **Richtung:** eingehend — dieses Repo ist der **Empfänger**, nicht der Bittsteller.
 **Ziel-Dokument:** [`spec/lastenheft.md`](../../../spec/lastenheft.md)
 **Berührt:** [`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in) (Modul `planning`, Fähigkeit `planning.closure`)
-**Stand:** **offen** — eingegangen, nicht entschieden.
+**Stand:** **entschieden und umgesetzt am 2026-09-17** — Bitte angenommen,
+mit einer Abweichung von der Form (Belege unten); Träger
+slice-225 <!-- d-check:status-provenance -->.
 
 **Ablage-Hinweis.** Ein **eingehender** CR ist die dritte Klasse neben
 [`MR-035`](../../../harness/conventions.md#mr-035) (ausgehend) und
@@ -79,3 +81,51 @@ Vorgang.
 > Im Adopter-Repo steht die Lücke in der Sensor-Datei seines Doku-Gates
 > (Ziel `docs-check`), Abschnitt *Ein stillgelegter Slice in `done/`*, mit
 > dieser Datei als Adresse.
+
+## Antwort
+
+**Angenommen: eine bedingte Pflichtzeile, gekoppelt an die bestehende
+Überschuss-Zählung.** Umgesetzt als neue, opt-in `structure`-Bedingung
+`open-tasks-require-marker`
+([ADR-0085](../adr/0085-bedingte-pflicht-marke-open-tasks.md),
+[`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
+0.87.0): trägt der geprüfte Abschnitt Überschuss-Task-Items gegen
+`max-open-tasks`, ersetzt eine vorhandene Marke alle Einzelbefunde
+(Erlaubnis — der eigene Bedarf dieses Repos), eine fehlende ersetzt sie
+durch **einen** neuen Grund-Code `section-open-tasks-marker-missing`
+(Pflicht — Ihre Bitte).
+
+**Eine Abweichung von der beantragten Form, mit Grund.** Sie fragten nach
+einer Bedingung, die eine **konkrete** Zeile `Gegenstand:` erkennt.
+Umgesetzt ist eine **generische** Marken-Kopplung (`hasMarker`-Form,
+dieselbe Erkennung wie `require-all`) — der Marken-**Name** ist
+Konfiguration, nicht Produktkonstante. Grund: `Gegenstand` ist eine
+Konvention der Baseline `v6.9.0`-Slice-Vorlage, keine Eigenschaft des
+Werkzeugs, und eine hartkodierte Erkennung hätte jedem Adopter mit
+abweichender Feld-Benennung nicht gedient.
+
+**Die Abgrenzung der gezählten Task-Items bleibt unkonfiguriert.** Sie
+merken an, dass Ihre Slice-Vorlage Liefer-Punkte von übrigen DoD-Zeilen
+trennt, und lassen die Abgrenzung offen. Für den ersten Anwendungsfall
+(dieses Repo, `slice-221`) genügt „alle offenen Task-Items" — die
+Boilerplate-Haken sind zum Zeitpunkt der Stilllegung bereits gesetzt.
+Eine engere Abgrenzung (z. B. eine zweite, unter einer benannten
+Überschrift verankerte Zählung) ist **nicht** umgesetzt; folgt sie einem
+zweiten gemessenen Bedarf, ist das ein eigener Schlüssel, keine Erweiterung
+dieses.
+
+**Die genannte DC-ID war nicht zutreffend.** Sie schreiben
+[`DC-FA-PLAN-001`](../../../spec/lastenheft.md#dc-fa-plan-001--planning-lifecycle-konsistenz-modul-planning-opt-in)
+— in diesem Repos Schnitt lebt `max-open-tasks` und die
+neue Bedingung in
+[`DC-FA-STRUCT-001`](../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
+(Modul `structure`, nicht `planning`) — beide Module laufen unter
+`.d-check.closure.yml` nebeneinander, was die Verwechslung erklärt.
+
+**Beleg.** `internal/hexagon/core/rules/structure_offene_tasks_test.go`:
+vier neue Tests decken Erlaubnis, Pflicht (genau **ein** Befund statt
+mehrerer), Normalfall unberührt (keine Überschuss-Items ⇒ Kopplung
+wirkungslos, unabhängig von der Marke) und den abwesenden Schlüssel
+(byte-identisches Verhalten). `slice-221` selbst ist der lebende Beleg:
+`make verify-closure-notes` läuft grün gegen seine `**Gegenstand:**`-Zeile,
+ohne einen namentlichen `exempt-paths`-Eintrag.
