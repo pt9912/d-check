@@ -99,17 +99,17 @@ ID-Muster gibt.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** `--enable vcs --range <unauflösbar>` ohne (oder mit leerem)
+- [x] **(1)** `--enable vcs --range <unauflösbar>` ohne (oder mit leerem)
       `vcs:`-Block bricht mit Exit 2 ab, in derselben Fehlermeldungsform wie
       mit konfigurierten `vcs.paths` — Regressionstest gegen die
       Issue-#4-Reproduktion.
-- [ ] **(2)** Dieselbe Zusage für `commits`: `--enable commits --range
+- [x] **(2)** Dieselbe Zusage für `commits`: `--enable commits --range
       <unauflösbar>` ohne (oder mit leerem) `commits:`-Block bricht mit
       Exit 2 ab.
-- [ ] **(3)** Eine **auflösbare** Range mit leerer Klassen-Config bleibt
+- [x] **(3)** Eine **auflösbare** Range mit leerer Klassen-Config bleibt
       weiterhin befundfrei (Exit 0) — Regressionstest für die unveränderte
       Rückwärtskompatibilität des dokumentierten Opt-in-Vertrags.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
