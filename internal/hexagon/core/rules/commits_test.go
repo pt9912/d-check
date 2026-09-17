@@ -93,9 +93,9 @@ func TestCheckCommitsRange(t *testing.T) {
 }
 
 // TestCheckCommitsInert: leere id-patterns ⇒ inert — aber erst NACHDEM eine
-// angegebene Range aufgelöst wurde (GitHub Issue #4 Punkt 1): eine
-// auflösbare Range bleibt befundfrei, eine nicht auflösbare bricht trotz
-// leerer Config ab, statt den Port-Aufruf zu überspringen.
+// angegebene Range aufgelöst wurde: eine auflösbare Range bleibt befundfrei,
+// eine nicht auflösbare bricht trotz leerer Config ab, statt den
+// Port-Aufruf zu überspringen.
 func TestCheckCommitsInert(t *testing.T) {
 	findings, err := CheckCommits(&fakeVCS{commits: nil}, model.CommitsConfig{}, "BASE", "HEAD")
 	if err != nil || findings != nil {
@@ -103,6 +103,17 @@ func TestCheckCommitsInert(t *testing.T) {
 	}
 	if _, err := CheckCommits(&fakeVCS{err: errors.New("Range nicht auflösbar")}, model.CommitsConfig{}, "deadbeef", "cafebabe"); err == nil {
 		t.Fatal("unauflösbare Range mit leerer Klassen-Config still passiert — erwartet war ein Fehler")
+	}
+}
+
+// TestCheckCommitsStagedTrotzLeererConfigAufgeloest: head == driven.IndexRef
+// (--staged) löst der Port grundsätzlich nicht auf (eigener Vertrag,
+// port/driven/vcs.go) — der Fehler muss auch bei leerer Klassen-Config
+// durchgereicht werden, statt vom Frühausstieg verschluckt zu werden.
+func TestCheckCommitsStagedTrotzLeererConfigAufgeloest(t *testing.T) {
+	fv := &fakeVCS{err: errors.New("commits: --staged wird nicht unterstützt")}
+	if _, err := CheckCommits(fv, model.CommitsConfig{}, "HEAD", driven.IndexRef); err == nil {
+		t.Fatal("--staged mit leerer Klassen-Config still passiert — erwartet war ein Fehler")
 	}
 }
 

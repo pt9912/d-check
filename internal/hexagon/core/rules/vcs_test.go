@@ -231,9 +231,9 @@ func TestVCSFailClosed(t *testing.T) {
 }
 
 // TestVCSInert: ohne paths-Klasse oder ohne Port ist das Modul wirkungslos —
-// aber nur, NACHDEM eine angegebene Range aufgelöst wurde (GitHub Issue #4
-// Punkt 1): eine nicht auflösbare Range darf auch ohne Klassen-Config nicht
-// still mit 0 Befunden durchgehen.
+// aber nur, NACHDEM eine angegebene Range aufgelöst wurde: eine nicht
+// auflösbare Range darf auch ohne Klassen-Config nicht still mit 0 Befunden
+// durchgehen.
 func TestVCSInert(t *testing.T) {
 	fv := &fakeVCS{files: refs(adr("Accepted", "Tue A."), adr("Accepted", "Tue B."))}
 	if got, err := CheckVCS(fv, model.VCSConfig{}, "BASE", "HEAD"); err != nil || got != nil {
