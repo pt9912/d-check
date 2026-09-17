@@ -15,7 +15,7 @@ offene dritte Ausprägung dieser Slice schließt.
 **Berührte Spec-Stellen:** [`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 (die Kandidaten-Menge —
 der Slice ändert, **woher** sie kommt).
 
-**Verantwortlich:** — (wird bei der Beanspruchung gesetzt).
+**Verantwortlich:** pt9912 (Implementer-Rolle).
 
 **Autor:** pt9912.
 
@@ -161,9 +161,56 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Sub-Area-Modus-Begründung. **Der Abschnitt entfällt nie**; bedingt
 ist allein der Modus-Block am Ende.
 
-**Die drei Vorprüfungen entstehen spätestens bei der Beanspruchung**
-([`AGENTS.md`](../../../../AGENTS.md) §5) — dieser Plan liegt in `open/` und
-trägt sie noch nicht. **Einer ist trotzdem schon absehbar:**
-[`fix-schliesst-pfad-nicht-klasse`](../observations/BEO-ALL/fix-schliesst-pfad-nicht-klasse/observation.md)
-steht nach slice-218 bei **1×** (drei Instanzen, aber ein Vorgang) und ist der Anlass dieses Slice; §3
-trägt seinen Ableiter bereits.
+Dieses Repo führt **drei** Prüfungen — die zwei kanonischen und, als
+Adaption, den Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)).
+
+**Die drei Vorprüfungen sind bei der Beanspruchung am 2026-09-17 gelesen.**
+
+**Vorgelagert — Sub-Area-Wahl prüfen:**
+
+<!-- d-check:cite .harness/baseline/v6.9.0/regelwerk/modul-05-planning-harness.md:363-364 -->
+
+> **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+> muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+**Zwei** Sub-Areas: `*` (Repo-Default, Konfig-Schema in `internal/hexagon/core/model/`
+und Reason-Codes) und `internal/adapter/driven/git/` (der Tree-Walker,
+den dieser Slice neu baut) — letztere trägt keine eigene Modus-Deklaration in
+`harness/conventions.md` und fällt damit unter den Default `*`. Beide
+Greenfield, wie der Rest des Produkts.
+
+**Vorgelagert — offene Beobachtungen sichten:**
+
+<!-- d-check:cite .harness/baseline/v6.9.0/regelwerk/modul-05-planning-harness.md:369-369 -->
+
+> **Offene Beobachtungen sichten.** Das
+
+Register durchgegangen (gemergter Stand, 41 Verzeichnisse). **Zwei Einträge
+sind einschlägig:**
+
+- [`fix-schliesst-pfad-nicht-klasse`](../observations/BEO-ALL/fix-schliesst-pfad-nicht-klasse/observation.md)
+  (Sub-Area `*`, 1×) — der Anlass dieses Slice selbst; §3 trägt seinen
+  Ableiter bereits.
+- [`racily-clean-git-fixture`](../observations/BEO-ALL/racily-clean-git-fixture/observation.md)
+  (Sub-Area `internal/adapter/driven/git`, unter der Schwelle) — jedes neue
+  git-Fixture in diesem Slice schreibt Dateien über den bestehenden
+  `put()`-Helfer, der `coretest.GitFixtureRewriteHazard` bereits trägt; kein
+  neuer Fundort.
+
+**Keine** der übrigen Einträge trifft `internal/adapter/driven/git/`,
+`internal/hexagon/core/rules/` oder `internal/hexagon/port/driven/` als
+Sub-Area.
+
+**Vorgelagert — Nachtlauf-Stand lesen**
+([`MR-053`](../../../../harness/conventions.md#mr-053)):
+
+`make nightly-state` am 2026-09-17 gelesen: `image-scan.yml` grün
+(2026-09-16T08:37:54Z). `upstream-drift.yml` **rot** (2026-09-17T05:38:51Z)
+— `make freshness-semgrep` und `make go-base-digest` melden neuere
+Fremd-Releases, laut eigener Meldung eine **planmäßige** Benachrichtigung
+([`MR-051`](../../../../harness/conventions.md#mr-051)), keine unerwartete;
+betrifft gepinnte Fremd-Bestände, nicht diesen Slice
+(`internal/adapter/driven/git/`, `internal/hexagon/core/rules/`).
+
+**Modus-Begründung:** alle berührten Sub-Areas GF — kein Begründungsblock
+nötig.
