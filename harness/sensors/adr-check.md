@@ -40,7 +40,7 @@ Eine gelöschte oder umbenannte `Accepted`-ADR ist ein **FAIL**.
    Hash>`, `pack-zzzzzzzz`, `packXYZ`, `xpack-abc` ⇒ **je Exit 2**. **`git`
    selbst liest weiter** — es enumeriert `*.idx` unabhängig vom Namen.
 
-   **Seit [`slice-226`](../../docs/plan/planning/in-progress/slice-226-vcs-pack-alias-fremdes-praefix.md)
+   **Seit [`slice-226`](../../docs/plan/planning/done/slice-226-vcs-pack-alias-fremdes-praefix.md)
    <!-- d-check:status-provenance --> löst der Adapter einen Pack zusätzlich
    unter seinem kanonischen Namen auf, wenn seine Datei einen gültigen
    SHA1/SHA256-Hash als Namens-Suffix trägt **und** eine passende

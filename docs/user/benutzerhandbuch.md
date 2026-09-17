@@ -1748,7 +1748,7 @@ make doc-immutable RANGE="$BASE..$HEAD"
 sind unsichtbar.** `vcs` liest die Objektdatenbank über eine reine
 Go-Bibliothek (kein `git`-Binary), und deren `DotGit`-Schicht findet einen
 Pack primär unter git's kanonischem Namen `pack-<Hash-des-Packs>.{idx,pack}`.
-Seit [`slice-226`](../plan/planning/in-progress/slice-226-vcs-pack-alias-fremdes-praefix.md)
+Seit [`slice-226`](../plan/planning/done/slice-226-vcs-pack-alias-fremdes-praefix.md)
 <!-- d-check:status-provenance --> löst der Adapter zusätzlich jeden Pack
 auf, dessen Datei einen gültigen SHA1/SHA256-Hash als Namens-Suffix trägt
 **und** eine passende `.idx`-Datei hat — unabhängig vom Präfix. Der

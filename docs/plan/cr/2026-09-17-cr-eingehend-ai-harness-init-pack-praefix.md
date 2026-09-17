@@ -5,7 +5,7 @@
 **Ziel-Dokument:** [`spec/lastenheft.md`](../../../spec/lastenheft.md)
 **Berührt:** [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (Modul `vcs`) und jedes weitere Modul, das die Historie über denselben Objektspeicher liest
 **Stand:** **entschieden und umgesetzt am 2026-09-17** — Bitte angenommen,
-Träger [`slice-226`](../planning/in-progress/slice-226-vcs-pack-alias-fremdes-praefix.md)
+Träger [`slice-226`](../planning/done/slice-226-vcs-pack-alias-fremdes-praefix.md)
 <!-- d-check:status-provenance --> (Belege unten).
 
 **Ablage-Hinweis.** Ein **eingehender** CR ist die dritte Klasse neben
@@ -99,7 +99,7 @@ davon, ob das Objekt selbst lesbar ist. Empirisch reproduziert: derselbe
 Objektspeicher meldet vor und nach `git repack -a -d` identische Befunde,
 sobald diese Auflösung ergänzt ist.
 
-Der `vcs`-Port löst seit [`slice-226`](../planning/in-progress/slice-226-vcs-pack-alias-fremdes-praefix.md)
+Der `vcs`-Port löst seit [`slice-226`](../planning/done/slice-226-vcs-pack-alias-fremdes-praefix.md)
 <!-- d-check:status-provenance --> einen Pack zusätzlich unter seinem
 kanonischen Namen auf, wenn seine Datei einen gültigen SHA1/SHA256-Hash als
 Namens-Suffix trägt **und** eine passende `.idx`-Datei existiert — rein
