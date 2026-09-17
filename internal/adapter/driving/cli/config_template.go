@@ -193,6 +193,13 @@ modules: [links, anchors]
 #     #                                             # alle section-tasks-open dieses Abschnitts (Erlaubnis); eine FEHLENDE
 #     #                                             # ersetzt sie durch EINEN section-open-tasks-marker-missing statt
 #     #                                             # vieler Einzel-Befunde (Pflicht). Ohne max-open-tasks ⇒ Exit 2
+#     # open-tasks-require-marker-section: '^#{1,3} [0-9]+\. Closure-Notiz'
+#     #                                             # nur mit open-tasks-require-marker: verlegt die Marken-Suche in
+#     #                                             # JEDEN Abschnitt der Datei, dessen rohe Ueberschriften-Zeile trifft
+#     #                                             # (RE2, samt #-Folge — dieselbe Lesart wie section-pattern) statt im
+#     #                                             # gezaehlten Abschnitt selbst zu suchen. Abwesend ⇒ derselbe
+#     #                                             # Abschnitt (Vorzustand). Kein Treffer ⇒ Marke gilt als fehlend.
+#     #                                             # Ohne open-tasks-require-marker ⇒ Exit 2
 #     # forbid-pattern: 'TODO'                      # Treffer ⇒ section-forbidden
 #     # require-pattern: 'Beleg'                    # kein Treffer ⇒ section-pattern-missing
 #     # require-all: ["Beleg", "Lernsignal"]        # fehlende Marke ⇒ section-marker-missing

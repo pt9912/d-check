@@ -229,10 +229,12 @@ structure:
   # CO-002/ADR-0085: Baseline v6.9.0 fuehrt einen vierten Lifecycle-Zweig
   # (Gegenstand: entfallen/uebernommen, Liefer-Haken bleiben leer). Die
   # Marken-Kopplung erkennt ihn generisch -- eine vorhandene
-  # **Gegenstand:**-Zeile im Closure-Abschnitt laesst offene Haken zu, eine
-  # fehlende meldet section-open-tasks-marker-missing statt der Einzelbefunde.
-  # slice-221 war der Anlassfall und ist seither ueber diese Kopplung
-  # gedeckt, kein namentlicher exempt-paths-Eintrag mehr.
+  # **Gegenstand:**-Zeile im Closure-Notiz-Abschnitt laesst offene Haken
+  # der DoD-Sektion zu (open-tasks-require-marker-section durchsucht einen
+  # ANDEREN Abschnitt als max-open-tasks selbst zaehlt, ADR-0085-Geschichte
+  # 2026-09-17), eine fehlende meldet section-open-tasks-marker-missing
+  # statt der Einzelbefunde. slice-221 war der Anlassfall und ist seither
+  # ueber diese Kopplung gedeckt, kein namentlicher exempt-paths-Eintrag mehr.
   - files: "docs/plan/planning/done/slice-*.md"
     exempt-paths:
       - "docs/plan/planning/done/slice-0??-*"
@@ -242,7 +244,8 @@ structure:
     sections: each
     max-open-tasks: 0
     open-tasks-require-marker: "Gegenstand"
-    hint: "Ein geschlossener Slice trägt einen DoD-Abschnitt, dessen Haken alle gesetzt sind — sonst gehört er zurück nach in-progress/, oder eine **Gegenstand:**-Zeile erklärt, warum nicht"
+    open-tasks-require-marker-section: '^#{1,3} [0-9]+\. Closure-Notiz'
+    hint: "Ein geschlossener Slice trägt einen DoD-Abschnitt, dessen Haken alle gesetzt sind — sonst gehört er zurück nach in-progress/, oder eine **Gegenstand:**-Zeile im Closure-Notiz-Abschnitt erklärt, warum nicht"
 
   # Jede Wellen-Ergebnisnotiz beantwortet die erste Pflichtfrage.
   - files: "docs/plan/planning/done/welle-*-results.md"

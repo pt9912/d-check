@@ -257,3 +257,59 @@ func TestOpenTasksRequireMarker_AbwesenderSchluesselByteIdentisch(t *testing.T) 
 		}
 	}
 }
+
+// gegenstandSectionRule ist gegenstandRule() plus die Sektions-Verlegung
+// (ADR-0085, Geschichte 2026-09-17): die Marke wird in "Closure-Notiz"
+// gesucht, nicht im gezaehlten DoD-Abschnitt.
+func gegenstandSectionRule() model.StructureRule {
+	r := gegenstandRule()
+	r.OpenTasksRequireMarkerSection = `^#{1,3} [0-9]+\. Closure-Notiz`
+	return r
+}
+
+// R1-F-1 REPRODUKTION: die Marke steht NUR in "## 7. Closure-Notiz", nicht
+// im gezaehlten DoD-Abschnitt -- exakt Baseline v6.9.0s eigene Ziel-Form.
+// Ohne OpenTasksRequireMarkerSection findet die Kopplung sie NICHT (Vorzustand,
+// vom Review R1-F-1 empirisch belegt); MIT gesetzter Sektion findet sie sie.
+func TestOpenTasksRequireMarkerSection_BaselineZielFormWirdErkannt(t *testing.T) {
+	body := "# D\n\n## 2. Definition of Done\n\n- [ ] eins\n- [ ] zwei\n\n" +
+		"## 3. Plan (vor Code)\n\nText.\n\n## 7. Closure-Notiz\n\n" +
+		"**Gegenstand:** entfallen: Beispiel.\n"
+	rule := rohRule()
+	rule.Section = ""
+	rule.SectionPattern = `^## [0-9]+\. Definition of Done`
+	rule.OpenTasksRequireMarker = "Gegenstand"
+
+	// VORZUSTAND (R1-F-1): ohne die Sektions-Verlegung bleibt die Marke im
+	// falschen Abschnitt unsichtbar -- die Pflicht-Haelfte feuert faelschlich.
+	f := laufe(t, body, rule)
+	if len(f) != 1 || f[0].Reason != model.ReasonSectionOpenTasksMarkerMissing {
+		t.Fatalf("VORZUSTAND: ohne Sektions-Verlegung muss die Marke im falschen Abschnitt unsichtbar bleiben, got %+v", f)
+	}
+
+	// FIX: mit OpenTasksRequireMarkerSection wird "Closure-Notiz" durchsucht.
+	rule.OpenTasksRequireMarkerSection = `^#{1,3} [0-9]+\. Closure-Notiz`
+	if f := laufe(t, body, rule); f != nil {
+		t.Fatalf("mit Sektions-Verlegung muss die Marke in Closure-Notiz gefunden werden, got %+v", f)
+	}
+}
+
+// FEHLENDER ABSCHNITT: existiert der benannte Abschnitt in der Datei gar
+// nicht, gilt die Marke als fehlend -- dieselbe Lesart wie "Marke nicht da".
+func TestOpenTasksRequireMarkerSection_FehlenderAbschnittGiltAlsFehlend(t *testing.T) {
+	body := "# D\n\n## DoD\n\n- [ ] eins\n"
+	if f := laufe(t, body, gegenstandSectionRule()); len(f) != 1 || f[0].Reason != model.ReasonSectionOpenTasksMarkerMissing {
+		t.Fatalf("kein Closure-Notiz-Abschnitt ⇒ Marke fehlt, got %+v", f)
+	}
+}
+
+// ANDERE NUMMERIERUNG: die Baseline-Form variiert die Ueberschriften-Nummer
+// ("## 9. Closure-Notiz (nach `done/`)" ist realer Bestand dieses Repos) --
+// das RE2-Praefix trifft trotzdem, weil es nicht auf das Zeilenende ankert.
+func TestOpenTasksRequireMarkerSection_AndereNummerierungTrifftTrotzdem(t *testing.T) {
+	body := "# D\n\n## DoD\n\n- [ ] eins\n\n## 9. Closure-Notiz (nach `done/`)\n\n" +
+		"**Gegenstand:** entfallen: Beispiel.\n"
+	if f := laufe(t, body, gegenstandSectionRule()); f != nil {
+		t.Fatalf("Praefix-Muster muss abweichende Nummerierung treffen, got %+v", f)
+	}
+}

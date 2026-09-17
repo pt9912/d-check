@@ -214,7 +214,7 @@ func structureAmAbschnitt(
 		out = append(out, structureCellMax(r, c, file, lines, prose, h.Line, h.Level)...)
 	}
 	if r.MaxOpenTasks != nil {
-		out = append(out, structureOpenTasks(r, file, lines, prose, h.Line, h.Level, body)...)
+		out = append(out, structureOpenTasks(r, file, content, lines, prose, h.Line, h.Level, body)...)
 	}
 	if r.HeadingsMatch != "" {
 		out = append(out, structureHeadings(r, file, lines, h)...)
@@ -369,8 +369,16 @@ func offenerHaken(line string) bool {
 // (Pflicht). Ohne Ueberschuss-Items greift die Kopplung nicht: der
 // Normalfall (alle Haken gesetzt) bleibt unveraendert gruen, unabhaengig
 // davon, ob die Marke dasteht.
+//
+// ABGRENZUNG, WO gesucht wird (ADR-0085 Geschichte 2026-09-17): OHNE
+// OpenTasksRequireMarkerSection sucht hasMarker im UEBERGEBENEN body --
+// demselben Abschnitt, den diese Funktion zaehlt (byte-identisch zum
+// Erstentwurf). MIT gesetzter Sektion durchsucht markerBody stattdessen
+// JEDEN Abschnitt der Datei, dessen rohe Ueberschriften-Zeile matcht --
+// Baseline v6.9.0 verortet die Marke in einem EIGENEN Abschnitt
+// ("Closure-Notiz"), nicht in dem, den max-open-tasks zaehlt.
 func structureOpenTasks(
-	r model.StructureRule, file string, lines []string, prose map[int]bool, headingNo, level int, body string,
+	r model.StructureRule, file string, content []byte, lines []string, prose map[int]bool, headingNo, level int, body string,
 ) []model.Finding {
 	end := SectionEnd(lines, headingNo, level)
 	if end == 0 {
@@ -392,11 +400,30 @@ func structureOpenTasks(
 	if len(out) == 0 || r.OpenTasksRequireMarker == "" {
 		return out
 	}
-	if hasMarker(body, r.OpenTasksRequireMarker) {
+	if hasMarker(markerBody(r, content, lines, body), r.OpenTasksRequireMarker) {
 		return nil
 	}
 	return []model.Finding{structureFinding(r, file, headingNo, model.ReasonSectionOpenTasksMarkerMissing,
 		"offene Task-Items ohne die geforderte Marke **"+r.OpenTasksRequireMarker+":**")}
+}
+
+// markerBody liefert den Text, gegen den OpenTasksRequireMarker prueft.
+// ABWESENDE OpenTasksRequireMarkerSection: derselbe Abschnitt, der bereits
+// gezaehlt wurde (body). GESETZTE: die VEREINIGUNG aller Abschnitte der
+// Datei, deren rohe Ueberschriften-Zeile matcht -- keiner Treffer liefert
+// den leeren String, und eine leere Marken-Suche findet per Konstruktion
+// keine Marke (dieselbe Lesart wie eine Datei ohne den benannten Abschnitt).
+func markerBody(r model.StructureRule, content []byte, lines []string, body string) string {
+	if r.OpenTasksRequireMarkerSection == "" {
+		return body
+	}
+	re := regexp.MustCompile(r.OpenTasksRequireMarkerSection)
+	heads := FindSectionHeads(lines, func(raw string) bool { return re.MatchString(strings.TrimSpace(raw)) })
+	var b strings.Builder
+	for _, h := range heads {
+		b.WriteString(SectionProse(content, lines, h.Line, h.Level))
+	}
+	return b.String()
 }
 
 // countTaskItems zaehlt die Task-Items des bereinigten Abschnitts-Textes und

@@ -574,6 +574,21 @@ type StructureRule struct {
 	// Schluessel byte-identisches Verhalten (ADR-0085, eingehender CR eines
 	// Adopters).
 	OpenTasksRequireMarker string
+	// OpenTasksRequireMarkerSection verlegt die Marken-Suche in einen ANDEREN
+	// Abschnitt derselben Datei -- RE2 gegen dieselbe rohe, getrimmte
+	// Ueberschriften-Zeile wie SectionPattern/ExemptSectionPattern (samt
+	// #-Folge). ABWESEND (Default) sucht OpenTasksRequireMarker weiterhin im
+	// GLEICHEN Abschnitt, den MaxOpenTasks zaehlt -- byte-identisch zum
+	// Vorzustand. GESETZT durchsucht sie JEDEN Abschnitt der Datei, dessen
+	// rohe Ueberschriften-Zeile trifft (Vereinigung mehrerer Treffer); trifft
+	// keiner, gilt die Marke als fehlend -- eine Datei ohne den benannten
+	// Abschnitt hat per Definition auch keine Marke darin (ADR-0085
+	// Geschichte 2026-09-17: Baseline v6.9.0 verortet die Marke in einem
+	// EIGENEN Abschnitt, "Closure-Notiz", nicht in dem, den max-open-tasks
+	// scannt -- der urspruengliche Entwurf traf nur den Gleichschnitt-Fall).
+	// Nur wirksam mit gesetztem OpenTasksRequireMarker. Nicht kompilierend
+	// oder ohne ihn gesetzt ⇒ Exit 2.
+	OpenTasksRequireMarkerSection string
 }
 
 // TableRule sind die tabellenbezogenen Bedingungen einer StructureRule

@@ -269,6 +269,8 @@ func TestDecode_StructureFehler(t *testing.T) {
 		// Die Marken-Kopplung (ADR-0085): dieselbe halbe Aktivierung wie
 		// tasks-ignore-pattern ohne max-tasks.
 		"open-tasks-require-marker ohne max-open-tasks": "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    open-tasks-require-marker: 'Gegenstand'\n",
+		"open-tasks-require-marker-section ohne marker": "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-open-tasks: 0\n    open-tasks-require-marker-section: '^## Closure'\n",
+		"open-tasks-require-marker-section RE2":         "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-open-tasks: 0\n    open-tasks-require-marker: 'Gegenstand'\n    open-tasks-require-marker-section: '^(['\n",
 	} {
 		if _, err := configyaml.Decode([]byte(bad)); err == nil {
 			t.Fatalf("%s: ungültige structure-Config akzeptiert: %q", name, bad)
@@ -286,7 +288,8 @@ func TestDecode_StructureFehler(t *testing.T) {
 	teil := "structure:\n  - files: 'a/*.md'\n    section: '## H'\n    max-tasks: 3\n" +
 		"    tasks-ignore-pattern: '^\\*\\*Konstante:'\n    exempt-section-pattern: '^## Alt'\n" +
 		"    exempt-expect-count: 2\n    max-open-tasks: 0\n" +
-		"    open-tasks-require-marker: 'Gegenstand'\n"
+		"    open-tasks-require-marker: 'Gegenstand'\n" +
+		"    open-tasks-require-marker-section: '^## Closure-Notiz'\n"
 	cfg, err = configyaml.Decode([]byte(teil))
 	if err != nil {
 		t.Fatalf("gültige Teilmengen-Regel abgelehnt: %v", err)
@@ -299,7 +302,8 @@ func TestDecode_StructureFehler(t *testing.T) {
 		cfg.Structure[0].ExemptSectionPattern != "^## Alt" ||
 		cfg.Structure[0].ExemptExpectCount == nil || *cfg.Structure[0].ExemptExpectCount != 2 ||
 		cfg.Structure[0].MaxOpenTasks == nil || *cfg.Structure[0].MaxOpenTasks != 0 ||
-		cfg.Structure[0].OpenTasksRequireMarker != "Gegenstand" {
+		cfg.Structure[0].OpenTasksRequireMarker != "Gegenstand" ||
+		cfg.Structure[0].OpenTasksRequireMarkerSection != "^## Closure-Notiz" {
 		t.Fatalf("Teilmengen-Schlüssel nicht durchgereicht: %+v", cfg.Structure)
 	}
 }

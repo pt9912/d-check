@@ -262,6 +262,10 @@ type rawStructure struct {
 	// nur wirksam MIT max-open-tasks, sonst wirkungslose halbe Aktivierung
 	// wie tasks-ignore-pattern ohne max-tasks.
 	OpenTasksRequireMarker string `yaml:"open-tasks-require-marker"`
+	// OpenTasksRequireMarkerSection verlegt die Marken-Suche in einen ANDEREN
+	// Abschnitt derselben Datei (ADR-0085 Geschichte 2026-09-17); nur wirksam
+	// MIT open-tasks-require-marker.
+	OpenTasksRequireMarkerSection string `yaml:"open-tasks-require-marker-section"`
 
 	// MIGRATIONS-FANGNETZ (ADR-0070): die fuenf flachen Vorgaenger-Schluessel
 	// stehen hier NUR, um mit Klartext abgelehnt zu werden. Ohne sie meldete
@@ -328,6 +332,7 @@ func structureBedingungsFehler(r rawStructure) string {
 		{"require-pattern", r.RequirePattern}, {"headings-match", r.HeadingsMatch},
 		{"tasks-ignore-pattern", r.TasksIgnorePattern},
 		{"exempt-section-pattern", r.ExemptSectionPattern},
+		{"open-tasks-require-marker-section", r.OpenTasksRequireMarkerSection},
 	} {
 		if m.pat == "" {
 			continue
@@ -399,13 +404,25 @@ func structureUeberschriftFehler(r rawStructure) string {
 	if r.ExemptExpectCount != nil && *r.ExemptExpectCount < 0 {
 		return fmt.Sprintf("exempt-expect-count %d muss >= 0 sein", *r.ExemptExpectCount)
 	}
-	// Dieselbe halbe Aktivierung an der Marken-Kopplung (ADR-0085): eine
-	// geforderte Marke ohne die Zaehlung, die sie bedingt, ist eine Zusage
-	// ohne Gegenstand.
+	if msg := structureMarkenFehler(r); msg != "" {
+		return msg
+	}
+	return structureTabellenFehler(r)
+}
+
+// structureMarkenFehler prüft die Config-Ränder der Marken-Kopplung
+// (ADR-0085): zwei halbe Aktivierungen in Kette — eine geforderte Marke ohne
+// die Zählung, die sie bedingt, und ein Such-Ort ohne die Marke, die er
+// verortet, sind beide eine Zusage ohne Gegenstand. Ausgelagert, damit
+// structureUeberschriftFehler unter der gocyclo-Schwelle bleibt.
+func structureMarkenFehler(r rawStructure) string {
 	if r.OpenTasksRequireMarker != "" && r.MaxOpenTasks == nil {
 		return "open-tasks-require-marker ist ohne max-open-tasks wirkungslos (halbe Aktivierung)"
 	}
-	return structureTabellenFehler(r)
+	if r.OpenTasksRequireMarkerSection != "" && r.OpenTasksRequireMarker == "" {
+		return "open-tasks-require-marker-section ist ohne open-tasks-require-marker wirkungslos (halbe Aktivierung)"
+	}
+	return ""
 }
 
 // structureTabellenFehler prüft die Config-Ränder der Tabellen-Klammer
@@ -523,7 +540,8 @@ func applyStructureRule(i int, r rawStructure) (model.StructureRule, error) {
 		ExemptSectionPattern: r.ExemptSectionPattern,
 		ExemptExpectCount:    r.ExemptExpectCount,
 
-		OpenTasksRequireMarker: r.OpenTasksRequireMarker,
+		OpenTasksRequireMarker:        r.OpenTasksRequireMarker,
+		OpenTasksRequireMarkerSection: r.OpenTasksRequireMarkerSection,
 	}, nil
 }
 
