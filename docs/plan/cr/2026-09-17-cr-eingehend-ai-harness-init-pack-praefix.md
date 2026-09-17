@@ -4,7 +4,9 @@
 **Richtung:** eingehend — dieses Repo ist der **Empfänger**, nicht der Bittsteller.
 **Ziel-Dokument:** [`spec/lastenheft.md`](../../../spec/lastenheft.md)
 **Berührt:** [`DC-FA-VCS-001`](../../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in) (Modul `vcs`) und jedes weitere Modul, das die Historie über denselben Objektspeicher liest
-**Stand:** **offen** — eingegangen, nicht entschieden.
+**Stand:** **entschieden und umgesetzt am 2026-09-17** — Bitte angenommen,
+Träger [`slice-226`](../planning/in-progress/slice-226-vcs-pack-alias-fremdes-praefix.md)
+<!-- d-check:status-provenance --> (Belege unten).
 
 **Ablage-Hinweis.** Ein **eingehender** CR ist die dritte Klasse neben
 [`MR-035`](../../../harness/conventions.md#mr-035) (ausgehend) und
@@ -85,3 +87,42 @@ diesem Repo.
 > Er hat sein Repo einmal umgepackt; danach laufen die history-lesenden Ziele
 > wieder. Das hält, bis erneut Packs unter dem Präfix `loose-` entstehen.
 > Frische Klone, wie seine CI sie fährt, sind nicht betroffen.
+
+## Antwort
+
+Die Ursachen-Vermutung trifft zu: go-gits `DotGit`-Schicht (`v5.19.2`)
+entdeckt und öffnet einen Pack ausschließlich über den rekonstruierten
+kanonischen Namen `pack-<hash>.{pack,idx}` — ein valider Pack unter anderem
+Präfix (z. B. `loose-<hash>.pack`, wie `git maintenance
+run --task=loose-objects` es anlegt) bleibt für sie unsichtbar, unabhängig
+davon, ob das Objekt selbst lesbar ist. Empirisch reproduziert: derselbe
+Objektspeicher meldet vor und nach `git repack -a -d` identische Befunde,
+sobald diese Auflösung ergänzt ist.
+
+Der `vcs`-Port löst seit [`slice-226`](../planning/in-progress/slice-226-vcs-pack-alias-fremdes-praefix.md)
+<!-- d-check:status-provenance --> einen Pack zusätzlich unter seinem
+kanonischen Namen auf, wenn seine Datei einen gültigen SHA1/SHA256-Hash als
+Namens-Suffix trägt **und** eine passende `.idx`-Datei existiert — rein
+lesend, ohne den gemounteten Objektspeicher zu verändern
+([`DC-QA-03`](../../../spec/lastenheft.md#dc-qa-03--seiteneffektfreiheit-und-netzwerk-sparsamkeit)).
+Ein Pack ohne ein solches Suffix oder ohne passenden Index bleibt weiterhin
+unsichtbar, und die Enumeration bricht fail-closed ab, wenn er die einzige
+Quelle eines benötigten Objekts ist — genau die Grenze, die die Bitte
+ausdrücklich zieht.
+
+Damit ist erfüllt:
+
+- **Die Bitte** — jede Pack-Datei mit gültigem Index wird unabhängig vom
+  Namens-Präfix gelesen, für jedes Modul, das über den `vcs`-Port liest (der
+  Fix sitzt im Adapter selbst, nicht in einem einzelnen Modul).
+- **Die Gegenprobe** — ein Repo mit `loose-`-präfigierten Packs meldet
+  dieselben Befunde wie derselbe Stand nach `git repack -a -d` (zwei
+  Go-Tests, `TestAllPathsPackUnterFremdemPraefix`); das rote
+  Gegenbeispiel bleibt rot (`TestAllPathsPackMitUnbrauchbaremPraefixBleibtFehlerhaft`
+  — ein Pack ohne gültiges Hash-Suffix wird weiterhin nicht gelesen).
+- **Die beiden Nicht-Bitten** — der fail-closed-Abbruch für ein wirklich
+  fehlendes Objekt ist unverändert, und der Objektspeicher des Adopters wird
+  nie beschrieben.
+
+Der Adopter braucht sein Workaround (einmaliges manuelles Umpacken) ab dem
+Release, das diesen Fix trägt, nicht mehr.
