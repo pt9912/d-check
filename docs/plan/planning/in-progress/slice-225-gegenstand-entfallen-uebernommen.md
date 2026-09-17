@@ -100,7 +100,7 @@ regulärer Closure nach `done/` gewandert; der CR bestätigt unabhängig
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] **(1)** `structure`-Modul um eine **bedingte Pflicht-Zeile** erweitert
+- [x] **(1)** `structure`-Modul um eine **bedingte Pflicht-Zeile** erweitert
       ([`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in),
       neue Bedingung, begleitende ADR nach dem etablierten Muster dieses
       Moduls): Trägt der geprüfte Abschnitt offene Task-Items (Menge
@@ -114,12 +114,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       **diesen** Slice; die Boilerplate-Haken (`make gates`, Review,
       Closure-Notiz, Register, Risiken, Paarungen) bleiben **weiterhin**
       Pflicht.
-- [ ] **(2)** [`CO-002`](../../carveouts/CO-002-slice-221-gegenstand-entfallen.md)
+- [x] **(2)** [`CO-002`](../../carveouts/CO-002-slice-221-gegenstand-entfallen.md)
       ist aufgelöst: `make verify-closure-notes` läuft gegen
       [slice-221](../done/slice-221-agents-md-tabellenzellen.md) grün ohne
       dessen `exempt-paths`-Eintrag; der Eintrag ist entfernt, der Carveout
       liegt in `docs/plan/carveouts/done/`. <!-- d-check:ignore (done/ entsteht erst bei erster Carveout-Auflösung) -->
-- [ ] **(3)** **Ein Bruch-Test bestätigt alle vier Zustände**: `Gegenstand:`
+- [x] **(3)** **Ein Bruch-Test bestätigt alle vier Zustände**: `Gegenstand:`
       + offene Punkte → grün (Erlaubnis) · **ohne** `Gegenstand:` + offene
       Punkte → der neue eigene Befund, **nicht** `section-tasks-open`
       (Pflicht) · ohne `Gegenstand:` + alle Punkte gesetzt → grün
@@ -129,7 +129,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       Bruch-Test als Beleg — Kennung ohne Link, da die Zeile erst nach dem
       `git mv` nach `done/` geschrieben wird und der Zielort bis dahin nicht
       existiert.
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
