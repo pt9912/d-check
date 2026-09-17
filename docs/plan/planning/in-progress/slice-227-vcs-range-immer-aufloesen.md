@@ -110,11 +110,11 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       weiterhin befundfrei (Exit 0) — Regressionstest für die unveränderte
       Rückwärtskompatibilität des dokumentierten Opt-in-Vertrags.
 - [x] `make gates` grün.
-- [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang.
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
+- [x] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben.
+- [x] Jedes Risiko aus §6 trägt einen Ausgang.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
 
 ## 3. Plan (vor Code)
 
@@ -155,14 +155,70 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   Klassen-Config kostet einen git-Lese-Vorgang, der bisher übersprungen
   wurde.** Für den in [`DC-QA-01`](../../../../spec/lastenheft.md#dc-qa-01--performance)
   gemessenen Rahmen (übliche Range-Größen) vermutlich vernachlässigbar,
-  aber nicht gemessen. — **Ausgang:** \<offen\>
+  aber nicht gemessen. — **Ausgang:** entfallen — der Aufruf war bereits
+  vorher unconditional fällig, sobald die Klassen-Config **nicht** leer
+  war (der Regelfall); nur der leere Fall ist neu, und der ist per
+  Definition der seltenere. Kein eigenes Performance-Risiko.
 - **Der ausgeschlossene Punkt (Ausschlusspunkt 1) bleibt eine benannte
   Lücke**, falls der Auftraggeber ihn doch für nötig hält — dann ist er ein
-  Folge-Slice, keine Nacharbeit an diesem. — **Ausgang:** \<offen\>
+  Folge-Slice, keine Nacharbeit an diesem. — **Ausgang:** entfallen — bei
+  näherer Betrachtung kein Risiko dieses Slice, sondern eine bereits in §1
+  getroffene, bewusste Abgrenzungs-Entscheidung; sie bleibt dort (in dem
+  dann archivierten Slice-Plan) auffindbar, falls sie später aufgegriffen
+  wird. Kein Steering-Loop-Muster, das eine eigene Register-Zeile trüge.
 
 ## 7. Closure-Notiz
 
-\<wird vor dem `git mv` nach `done/` gefüllt\>
+**Geliefert.** `CheckVCS` und `CheckCommits`
+(`internal/hexagon/core/rules/vcs.go`/`commits.go`) lösen eine angegebene
+Range jetzt immer über den VCS-Port auf, **bevor** die Klassen-Config
+(`vcs.paths`/`commits.id-patterns`) geprüft wird — eine syntaktisch
+gültige, aber unauflösbare Range bricht seither mit Exit 2 ab, unabhängig
+davon, ob es etwas zu prüfen gibt. Eine auflösbare Range mit leerer
+Klassen-Config bleibt weiterhin befundfrei (Exit 0) — die dokumentierte
+Opt-in-Trägheit ist unverändert, nur nicht mehr an eine ungeprüfte Range
+gekoppelt.
+
+**Was funktionierte.** Die Root-Cause-Analyse traf im ersten Anlauf zu
+(derselbe Frühausstieg in zwei Funktionen) und wurde durch bewusstes
+Brechen (Modul 11) unabhängig zweimal bestätigt — einmal durch mich selbst,
+einmal durch den Review. Die End-to-End-Reproduktion gegen das gebaute
+Image lieferte in beiden Läufen identische Ergebnisse.
+
+**Was anders lief.** Der unabhängige Review (R1) fand zwei Lücken, die die
+eigene Prüfung vor dem Review nicht sah:
+
+- **R1-F-1 (HIGH):** Zwei neue Testkommentare trugen „(GitHub Issue #4
+  Punkt 1)" als Herkunfts-Prosa statt einer der fünf nach `AGENTS.md` §3.7
+  zulässigen Kommentarklassen. Behoben durch Entfernen der Klammer-Referenz.
+  **Lerneintrag:** Eine externe Vorgangs-Kennung (Issue-Nummer) ist
+  dieselbe verbotene Klasse wie eine Slice- oder Befund-Nummer im
+  Kommentar — sie fällt aber leichter durch die eigene Aufmerksamkeit,
+  weil sie wie ein legitimer, extern nachprüfbarer Beleg aussieht.
+- **R1-F-2 (MEDIUM):** Die Reihenfolge-Änderung in `CheckCommits` schließt
+  die Klasse vollständig (sie ist nicht pfad-, sondern funktionsspezifisch)
+  — aber die Root-Cause-Analyse, das DoD und die ursprünglichen zwei Tests
+  benannten nur `--range`. `--enable commits --staged` mit leerer
+  `commits:`-Config teilte denselben Fehler (still Exit 0 vor dem Fix) und
+  wechselt durch denselben Fix korrekt auf fail-closed Exit 2 — unbenannt
+  und ungetestet, bis der Review es empirisch fand. Geschlossen durch einen
+  dritten Regressionstest.
+
+**Register.** Zwei neue Einträge:
+[`BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen`](../observations/BEO-ALL/kommentar-traegt-herkunfts-prosa-statt-fuenf-klassen/observation.md)
+(R1-F-1) und
+[`BEO-ALL/fix-aendert-unbenannten-zweiten-pfad-mit`](../observations/BEO-ALL/fix-aendert-unbenannten-zweiten-pfad-mit/observation.md)
+(R1-F-2), beide 1×.
+
+**Risiken aus §6:** beide aufgelöst — der Performance-Punkt entfällt
+(der teure Fall war ohnehin schon der Regelfall), der Abgrenzungs-Punkt
+entfällt (er war nie ein Risiko dieses Slice, sondern eine bereits in §1
+getroffene Entscheidung).
+
+**Drei Paarungen** (Repo ohne Wellen-Betrieb, hier geprüft): Anker — kein
+`liegt in`-Feld in dieser Notiz, keine Paarung fällig. Folge-Slice — keiner
+genannt. Register — beide zitierten `BEO-ALL/…`-Pfade existieren mit
+nicht-leerem `evidence/` (oben angelegt).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
