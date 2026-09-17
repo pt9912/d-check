@@ -204,3 +204,12 @@ linters:
       - linters:
           - testpackage
         path: internal/hexagon/core/
+
+      # Why: packAliases() ist eine unexportierte Analyse-Primitive (Map-
+      # Alias-Auflösung) ohne öffentliches Äquivalent; ihr Determinismus
+      # (DC-QA-02, R1-F-2 aus dem Review von slice-226) ist nur White-Box
+      # prüfbar. Dieselbe Ausnahme-Klasse wie oben für internal/hexagon/core/,
+      # hier auf eine Datei statt einen Teilbaum begrenzt.
+      - linters:
+          - testpackage
+        path: internal/adapter/driven/git/packalias_test\.go$

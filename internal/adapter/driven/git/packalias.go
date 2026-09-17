@@ -3,6 +3,7 @@ package git
 import (
 	"os"
 	"regexp"
+	"sort"
 	"strings"
 
 	billy "github.com/go-git/go-billy/v5"
@@ -47,17 +48,29 @@ func newPackAliasFS(fs billy.Filesystem) billy.Filesystem {
 // Eintrag — auch mit ungültigem oder fremdem Hash — wird nie überschrieben:
 // die bestehende Fehldiagnose für einen wirklich kaputt benannten
 // kanonischen Pack bleibt unverändert bestehen.
+//
+// Kandidaten-Namen werden **sortiert** verarbeitet, und ein bereits
+// vergebener kanonischer Name wird nie neu belegt (DC-QA-02): Tragen zwei
+// Dateien denselben Hash-Suffix — etwa zwei Kopien desselben Packs unter
+// verschiedenen Fremdnamen —, gewinnt deterministisch die lexikografisch
+// kleinste, statt von Gos randomisierter Map-Iteration abzuhängen. Ohne
+// diese Ordnung könnten ReadDir und Open, die packAliases() unabhängig
+// voneinander neu aufrufen, für dieselbe Kollision unterschiedliche
+// Gewinner liefern.
 func (fs *packAliasFS) packAliases() map[string]string {
 	entries, err := fs.Filesystem.ReadDir(packDir)
 	if err != nil {
 		return nil
 	}
 	onDisk := make(map[string]bool, len(entries))
+	names := make([]string, 0, len(entries))
 	for _, e := range entries {
 		onDisk[e.Name()] = true
+		names = append(names, e.Name())
 	}
+	sort.Strings(names)
 	aliases := make(map[string]string)
-	for name := range onDisk {
+	for _, name := range names {
 		if strings.HasPrefix(name, packPrefix) || !strings.HasSuffix(name, packExt) {
 			continue
 		}
@@ -73,6 +86,9 @@ func (fs *packAliasFS) packAliases() map[string]string {
 		canonicalPack := packPrefix + m[1] + packExt
 		canonicalIdx := packPrefix + m[1] + idxExt
 		if onDisk[canonicalPack] || onDisk[canonicalIdx] {
+			continue
+		}
+		if _, taken := aliases[canonicalPack]; taken {
 			continue
 		}
 		aliases[canonicalPack] = name
@@ -129,8 +145,11 @@ func (fs *packAliasFS) Open(filename string) (billy.File, error) {
 }
 
 // splitPackPath zerlegt einen '/'-getrennten .git-relativen Pfad in
-// Verzeichnis und Basisname — ohne path/filepath, weil DotGit seine eigenen
-// Pfade unabhängig vom Host-Trennzeichen immer mit '/' zusammensetzt.
+// Verzeichnis und Basisname — ohne path/filepath, dessen Join/Split unter
+// go-billy den Host-Trenner verwendet (filepath.Join). DotGit übergibt an
+// Open/ReadDir aber stets mit '/' zusammengesetzte Pfade, und dieses Produkt
+// läuft ausschließlich unter Linux (Docker-only-Distribution, AGENTS.md
+// §3.1/ADR-0002), wo '/' ohnehin der Host-Trenner ist.
 func splitPackPath(filename string) (dir, base string) {
 	i := strings.LastIndex(filename, "/")
 	if i < 0 {
