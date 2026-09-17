@@ -10,7 +10,7 @@ Baseline-Regelwerk `modul-05-planning-harness.md` §Lifecycle als State Machine.
 
 **Bezug:** [`MR-072`](../../../../harness/conventions.md#mr-072) (Delta-Messung
 v6.6.0→v6.9.0, Punkt 1: neuer vierter Slice-Lifecycle-Zweig — dieser Slice
-ist die dort angekündigte Adoption), [`CO-002`](../../carveouts/CO-002-slice-221-gegenstand-entfallen.md)
+ist die dort angekündigte Adoption), [`CO-002`](../../carveouts/done/CO-002-slice-221-gegenstand-entfallen.md)
 (dessen Auflösung dieser Slice trägt), [eingehender CR des Adopters
 `ai-harness-init`](../../cr/2026-09-17-cr-eingehend-ai-harness-init-stilllegungs-form.md)
 (seit 2026-09-17 in diesen Plan aufgenommen — Auftraggeber-Entscheid, siehe
@@ -63,7 +63,7 @@ pauschalen `section-tasks-open` (Pflicht; der CR-Zweck) — heute kennt
 **Der Anlass ist [slice-221](../done/slice-221-agents-md-tabellenzellen.md)**,
 das erste Repo-Beispiel dieses Zwecks (Ausgang „entfallen" — slice-222 hat
 seinen Gegenstand durch eine andere Lösung erledigt) und deshalb per
-[`CO-002`](../../carveouts/CO-002-slice-221-gegenstand-entfallen.md) statt
+[`CO-002`](../../carveouts/done/CO-002-slice-221-gegenstand-entfallen.md) statt
 regulärer Closure nach `done/` gewandert; der CR bestätigt unabhängig
 (anderer Adopter, andere Messung), dass dieselbe Lücke auch dort auffällt.
 
@@ -114,7 +114,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       **diesen** Slice; die Boilerplate-Haken (`make gates`, Review,
       Closure-Notiz, Register, Risiken, Paarungen) bleiben **weiterhin**
       Pflicht.
-- [x] **(2)** [`CO-002`](../../carveouts/CO-002-slice-221-gegenstand-entfallen.md)
+- [x] **(2)** [`CO-002`](../../carveouts/done/CO-002-slice-221-gegenstand-entfallen.md)
       ist aufgelöst: `make verify-closure-notes` läuft gegen
       [slice-221](../done/slice-221-agents-md-tabellenzellen.md) grün ohne
       dessen `exempt-paths`-Eintrag; der Eintrag ist entfernt, der Carveout
@@ -253,7 +253,7 @@ entfallen/übernommen" ist jetzt gate-tragfähig — als neue, opt-in
 `structure`-Bedingung (`open-tasks-require-marker`,
 `open-tasks-require-marker-section`, [ADR-0085](../../adr/0085-bedingte-pflicht-marke-open-tasks.md),
 [`DC-FA-STRUCT-001`](../../../../spec/lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in)
-0.87.1). [`CO-002`](../../carveouts/CO-002-slice-221-gegenstand-entfallen.md)s
+0.87.1). [`CO-002`](../../carveouts/done/CO-002-slice-221-gegenstand-entfallen.md)s
 namentlicher `exempt-paths`-Eintrag ist durch eine generische
 Inhalts-Erkennung ersetzt. Ein zweiter, unabhängiger Adopter
 (`ai-harness-init`) hat dieselbe Lücke von der anderen Seite gemeldet — die

@@ -281,9 +281,19 @@ ignore-refs:
   # inzwischen ueber die Beanspruchung nach in-progress/ gewandert; beide
   # Zitate sind Lauf-Belege ihrer Zeit, kein lebender Zeiger.
   - in: docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md
-    refs: ["docs/plan/planning/open/slice-225-gegenstand-entfallen-uebernommen.md"]
+    refs:
+      - "docs/plan/planning/open/slice-225-gegenstand-entfallen-uebernommen.md"
+      - "docs/plan/carveouts/CO-002-slice-221-gegenstand-entfallen.md"
   - in: docs/reviews/2026-09-16-slice-221-gegenstand-entfallen-review-r1.md
-    refs: ["docs/plan/planning/open/slice-225-gegenstand-entfallen-uebernommen.md"]
+    refs:
+      - "docs/plan/planning/open/slice-225-gegenstand-entfallen-uebernommen.md"
+      - "docs/plan/carveouts/CO-002-slice-221-gegenstand-entfallen.md"
+  # CO-002 ist inzwischen selbst nach carveouts/done/ gewandert (Ausgang
+  # aufgeloest, ADR-0085). Ein weiterer eingefrorener Lauf-Beleg zitiert
+  # seinen frueheren Pfad: ADR-0085s eigener Kontext-Absatz -- Accepted,
+  # AGENTS.md Paragraph 3.5 verbietet das Editieren des Kerntexts.
+  - in: docs/plan/adr/0085-bedingte-pflicht-marke-open-tasks.md
+    refs: ["docs/plan/carveouts/CO-002-slice-221-gegenstand-entfallen.md"]
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
   # ausgeloest, die docs/plan/planning/observations/README.md seit
   # slice-190 benennt: ein
