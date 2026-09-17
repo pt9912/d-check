@@ -1,8 +1,8 @@
 # CO-002: `slice-221` schließt ohne Lieferung — der DoD-Wächter kennt diese Form noch nicht
 
-**Status:** Aktiv.
+**Status:** Aufgelöst (2026-09-17).
 
-**Datum angelegt:** 2026-09-16. **Letzte Prüfung:** 2026-09-16.
+**Datum angelegt:** 2026-09-16. **Letzte Prüfung:** 2026-09-17.
 
 **Betroffenes Gate:** `verify-closure-notes` (Modul `structure`, Regel
 `max-open-tasks: 0` für `## N. Definition of Done`).
@@ -77,8 +77,11 @@ gegen `slice-221`s Datei **ohne** den `exempt-paths`-Eintrag unten — vorher
 - [x] Gate ist für den Geltungsbereich aktiviert (`exempt-paths`-Eintrag entfernt,
       ersetzt durch die Marken-Kopplung `open-tasks-require-marker`, [ADR-0085](../adr/0085-bedingte-pflicht-marke-open-tasks.md)).
 - [x] `make gates` grün ohne Ausnahme.
-- [ ] Datei wird nach `docs/plan/carveouts/done/` bewegt (reiner `git mv`). <!-- d-check:ignore (done/ entsteht erst bei erster Carveout-Auflösung) -->
-- [ ] Folge-Slice geschlossen oder explizit dokumentiert.
+- [x] Datei wird nach `docs/plan/carveouts/done/` bewegt (reiner `git mv`). <!-- d-check:ignore (der Move folgt im naechsten Commit) -->
+- [x] Folge-Slice geschlossen oder explizit dokumentiert: `slice-225`
+      liefert die generische Erkennung, unabhängiger Review (zwei Runden)
+      abgeschlossen — Kennung ohne Link, da sein `git mv` nach `done/` im
+      unmittelbar folgenden Commit dieses Pushs liegt.
 
 ## Geschichte
 
@@ -86,3 +89,4 @@ gegen `slice-221`s Datei **ohne** den `exempt-paths`-Eintrag unten — vorher
 |---|---|---|
 | 2026-09-16 | Angelegt | [slice-221](../planning/done/slice-221-agents-md-tabellenzellen.md) |
 | 2026-09-17 | Technisch aufgelöst: `open-tasks-require-marker` ersetzt den `exempt-paths`-Eintrag, `make verify-closure-notes` grün ohne ihn | [ADR-0085](../adr/0085-bedingte-pflicht-marke-open-tasks.md), [slice-225](../planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md) |
+| 2026-09-17 | Vollständig aufgelöst nach zwei Review-Runden (R1 fand, dass der Erstentwurf Baseline `v6.9.0`s eigene Ziel-Form nicht erkannte; `open-tasks-require-marker-section` behebt es) — `git mv` nach `carveouts/done/` | `slice-225` |
