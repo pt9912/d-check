@@ -26,7 +26,7 @@ Unterscheidung oben ist die gemessene.
 
 **Folge-Slice:** [`slice-220`](../planning/done/slice-220-vcs-pfadmenge-statt-diff.md)
 — der **Klassen**-Fix für die offene dritte Ausprägung; danach
-[`slice-219`](../planning/open/slice-219-release-loest-co-001.md), das Release,
+[`slice-219`](../planning/in-progress/slice-219-release-loest-co-001.md), das Release,
 das beides ausliefert. **Nicht** slice-218: der liefert zwei der drei
 Ausprägungen und schließt davor; ein Carveout, dessen Folge-Slice vor ihm
 schließt, hat faktisch keinen.

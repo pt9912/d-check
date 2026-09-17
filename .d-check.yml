@@ -309,7 +309,9 @@ ignore-refs:
   # Entstehung. slice-220 ist inzwischen ueber die Beanspruchung nach
   # in-progress/ gewandert.
   - in: docs/plan/planning/done/slice-218-go-git-pack-namenskonvention.md
-    refs: ["docs/plan/planning/open/slice-220-vcs-pfadmenge-statt-diff.md"]
+    refs:
+      - "docs/plan/planning/open/slice-220-vcs-pfadmenge-statt-diff.md"
+      - "docs/plan/planning/open/slice-219-release-loest-co-001.md"
   # Die Wellen-Archivierung (slice-191, welle-60) hat genau die Grenze
   # ausgeloest, die docs/plan/planning/observations/README.md seit
   # slice-190 benennt: ein
