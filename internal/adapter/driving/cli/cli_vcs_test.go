@@ -92,7 +92,7 @@ func commitAll(t *testing.T, wt *gogit.Worktree, msg string) string {
 }
 
 // TestVCS_RangeDrift: ein Körper-Edit an einer Accepted-ADR über die Range ⇒
-// core-drift-vcs, Exit 1 (deckt setupVCS/Open/ChangedPaths/FileAt/CheckVCS ab).
+// core-drift-vcs, Exit 1 (deckt setupVCS/Open/AllPaths/FileAt/CheckVCS ab).
 func TestVCS_RangeDrift(t *testing.T) {
 	dir := t.TempDir()
 	wt := initVCSRepo(t, dir)

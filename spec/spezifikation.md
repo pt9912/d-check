@@ -1754,41 +1754,53 @@ abdeckt:
 
 1. **Range/Modus (vom CLI geliefert).**
    - `--range <base>..<head>`: zwei Commit-Refs. Der `..`-Separator ist Pflicht —
-     ohne ihn ist `base == head`, der Diff leer und der Lauf still grün; das ist
-     ein **fail-closed** Nutzungsfehler (Exit 2). Eine leere oder nicht auflösbare
-     Basis (nur Nullen, oder kein `^{commit}`) → Fehler (Exit 2).
+     ohne ihn ist `base == head`, beide Tree-Stände identisch und der Lauf still
+     grün; das ist ein **fail-closed** Nutzungsfehler (Exit 2). Eine leere oder
+     nicht auflösbare Basis (nur Nullen, oder kein `^{commit}`) → Fehler (Exit 2).
    - `--staged`: BASE = `HEAD`, HEAD = der staged Index. Existiert kein `HEAD`
      (erster Commit), ist nichts zu schützen (kein Befund).
    - Fehlt das `.git` oder ist es unlesbar → Fehler (Exit 2). **fail-closed.**
-2. **Geänderte Kandidaten.** Aus dem Diff `BASE..HEAD` (bzw. staged) werden die
-   Pfade gewählt, die der Klasse `vcs.paths` entsprechen (Glob, `matchGlob` wie
-   `scan.ignore`). Pro Eintrag zählt der Diff-Status: Modifikation/Typänderung
-   (M/T) → Core-Vergleich; Löschung (D) / Umbenennung (R) →
-   Pfad-Stabilitäts-Prüfung; Hinzufügung (A) → frei (eine neue Datei ist noch
-   nicht immutabel — wie eine frisch reifende ADR).
-   **Dass eine Umbenennung überhaupt als solche ankommt, ist eine Zusage des
-   Adapters und keine Selbstverständlichkeit.** Der Range-Pfad difft **ohne
-   Rename-Erkennung**: nur dann erscheint die Umbenennung als **Löschung des
-   alten** plus **Hinzufügung des neuen** Pfads, und nur dann greift die
-   Pfad-Stabilitäts-Prüfung. Mit eingeschalteter Erkennung — dem Default der
-   verwendeten Bibliothek — kommt sie als **eine** Änderung auf dem **neuen**
-   Pfad an, der alte verschwindet aus dem Diff, und die Prüfung läuft still ins
-   Leere; erst wenn der Inhalt zusätzlich stark genug abweicht, zerfällt die
-   Änderung wieder und der Befund erscheint. Der `--staged`-Pfad trägt dieselbe
-   Eigenschaft über seine eigene Übersetzung. **Beide Modi antworten damit
-   gleich — das ist eine gehaltene Eigenschaft, keine Folge des gemeinsamen
-   Moduls**, und der Preis ist benannt: der Range-Pfad misst keine
-   Inhalts-Ähnlichkeit (Out-of-Scope der Anforderung).
-   **Dass eine Hinzufügung (A) wirklich eine ist, ist ebenfalls eine Zusage des
-   Adapters.** `A` ist auch die Antwort, die ein Tree-Diff gibt, wenn er den
-   **BASE-Stand gar nicht lesen konnte** — dann sähe der Schritt eine freie
-   neue Datei, wo eine geschützte geändert wurde, und der Befund entstünde nie.
-   Der Schritt fasst deshalb den BASE-Stand jedes `A`-Kandidaten der Klasse an
-   und trennt *nicht vorhanden* von *nicht lesbar*: Das Erste bleibt frei, das
-   Zweite ist ein Umgebungsfehler (Exit 2, **fail-closed**). Die Unterscheidung
-   trifft der Adapter am **Tree-Eintrag**, der Name und Modus trägt und den
-   Datei-Inhalt nicht braucht — ein Eintrag **ohne** Datei-Inhalt (Verzeichnis,
-   Gitlink) ist dabei kein unlesbares Objekt, sondern bleibt befundfrei — mit dem benannten Preis, dass eine immutable Datei, die durch einen Gitlink **ersetzt** wird, unbemerkt bleibt.
+2. **Geschützte Kandidaten.** Die Klasse `vcs.paths` (Glob, `matchGlob` wie
+   `scan.ignore`) wird **direkt gegen beide Tree-Stände aufgelöst**, statt
+   einem Diff zu vertrauen (slice-220 <!-- d-check:status-provenance -->): der VCS-Port enumeriert **jeden**
+   Datei-Pfad (regulär/ausführbar/symlink) an BASE und an HEAD (bzw. am
+   staged Index) über einen vollständigen Durchlauf beider Bäume — nicht nur
+   die laut einem Diff „geänderten" Pfade. Ein Unterbaum, dessen Objekt nicht
+   lesbar ist, bricht diesen Schritt **fail-closed** ab (Exit 2,
+   Umgebungsfehler), statt ihn stillschweigend zu überspringen — ein Tree-
+   Walker, der einen nicht ladbaren Unterbaum als stilles Ende der
+   Aufzählung liest (statt als Fehler), verschluckt eine Löschung darunter
+   spurlos. Ein Tree-Eintrag **ohne** Datei-Inhalt (Verzeichnis, Gitlink)
+   trägt keinen Blob und wird beim Durchlaufen übersprungen — das ist kein
+   unlesbares Objekt, sondern der Normalfall, mit dem benannten Preis, dass
+   eine immutable Datei, die durch einen Gitlink **ersetzt** wird, unbemerkt
+   bleibt.
+
+   Aus beiden vollständigen Pfad-Mengen wird über `vcs.paths` gefiltert und
+   dann die Mengen-**Differenz** gebildet: ein Pfad in **beiden** gefilterten
+   Mengen → Core-Vergleich (Schritt 4/5); ein Pfad **nur** in der BASE-Menge
+   → Pfad-Stabilitäts-Prüfung (Löschung/Umbenennung); ein Pfad **nur** in der
+   HEAD-Menge → frei (eine neue Datei ist noch nicht immutabel — wie eine
+   frisch reifende ADR).
+
+   **Eine Umbenennung ist damit strukturell Löschung(alt) + Hinzufügung(neu)
+   — nicht die Zusage einer (ab-/an-)geschalteten Rename-Erkennung.** Weil
+   beide Mengen unabhängig voneinander direkt aus dem jeweiligen Tree gelesen
+   werden, gibt es keinen Zwischenschritt, der eine Umbenennung als **eine**
+   Änderung erkennen und die Pfad-Stabilitäts-Prüfung dadurch **umgehen**
+   könnte: der alte Pfad fehlt in der HEAD-Menge, der neue fehlt in der
+   BASE-Menge, unabhängig vom Inhalt. Der Preis aus der Vorgänger-Fassung
+   bleibt bestehen — der Schritt misst keine Inhalts-Ähnlichkeit
+   (Out-of-Scope der Anforderung); das war nie eine Eigenschaft einer
+   Rename-Erkennung, sondern der fehlenden Ähnlichkeits-Analyse selbst.
+
+   **Dass eine Kandidaten-Menge vollständig ist, prüft dieser Schritt VOR
+   der Klassifikation, nicht danach.** Eine frühere Fassung ließ eine
+   Hinzufügung zusätzlich den BASE-Stand nachlesen, um *nicht vorhanden* von
+   *nicht lesbar* zu trennen — diese Sonderbehandlung entfällt: Ein nicht
+   lesbarer Unterbaum an BASE lässt bereits die Enumeration selbst
+   fehlschlagen (s. o.), bevor irgendein Pfad als Added/Deleted/Modified
+   eingeordnet wird.
 3. **Immutabilitäts-Bedingung.** Geprüft wird nur, wenn die **BASE**-Version die
    Bedingung `vcs.immutable-when` erfüllt (Zeilen-Regex, erstes Vorkommen
    **außerhalb** von Fenced-Code — eine Datei, die ihren eigenen Kopf als
@@ -3319,6 +3331,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-09-17 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 **umgeschrieben** (slice-220 <!-- d-check:status-provenance -->, [`CO-001`](../docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md)-Anlass, kein Lastenheft-Bump — dieselbe Zusage, ein anderer Mechanismus): die geschützte Klasse `vcs.paths` wird jetzt **direkt gegen beide vollständigen Tree-Stände** aufgelöst statt gegen einen Diff, und beide Mengen-Enden brechen fail-closed ab, sobald ein Unterbaum-Objekt nicht lesbar ist — der frühere Diff-Walker (ohne bzw. mit Rename-Erkennung) machte aus genau diesem Fall ein stilles Ende der Aufzählung. Damit entfallen ersatzlos: die Diff-Status-Klassen `M`/`T`/`D`/`R`/`A`, der Absatz über die (ab-/an-)geschaltete Rename-Erkennung des Range-Pfads (eine Umbenennung ist jetzt strukturell Löschung+Hinzufügung, weil beide Mengen unabhängig gelesen werden — kein Diff-Modus kann das mehr verdecken) und der Absatz aus dem 2026-09-08-Eintrag darunter über die nachgelesene BASE-Lesbarkeit einer Hinzufügung (`A`) — eine unlesbare BASE lässt schon die Enumeration selbst fehlschlagen, bevor ein Pfad klassifiziert wird. **Die Gegenrichtungs-Zusagen bleiben unverändert:** ein Tree-Eintrag ohne Datei-Inhalt (Verzeichnis, Gitlink) bleibt befundfrei, der Preis (keine Inhalts-Ähnlichkeits-Messung, ein durch Gitlink ersetzter immutabler Pfad bleibt unbemerkt) ebenso. **Anlass:** [`CO-001`](../docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md)s dritte Ausprägung (ein geschütztes Verzeichnis wird gelöscht, dessen BASE-Tree unlesbar ist — **ohne** Pendant auf der Gegenseite) lag **unterhalb** jeder Stelle, an der die alte Diff-basierte Fassung hätte eingreifen können; der neue Mechanismus schließt sie strukturell, statt einen vierten Patch auf derselben Schicht zu versuchen ([`BEO-ALL/fix-schliesst-pfad-nicht-klasse`](../docs/plan/planning/observations/BEO-ALL/fix-schliesst-pfad-nicht-klasse/observation.md)). **Eine vierte, bisher fehldiagnostizierte Ausprägung fällt auf denselben Codepfad:** ein unlesbarer **HEAD**-Tree meldete zuvor fälschlich `core-drift-vcs` „gelöscht oder umbenannt" (Exit 1) statt eines Umgebungsfehlers |
 | 2026-09-17 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Fähigkeit: §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 6 um `open-tasks-require-marker-section` erweitert ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), Begründung in begleitender ADR-Geschichte). **Der Erstentwurf traf nur den Gleichschnitt-Fall:** `open-tasks-require-marker` suchte die Marke ausschließlich im selben Abschnitt, den `max-open-tasks` bereits zählt — Baseline `v6.9.0` verortet die Zeile `Gegenstand:` aber in einem **eigenen** Abschnitt „Closure-Notiz", nicht im DoD-Abschnitt. Ein Dokument, das exakt der Baseline-Ziel-Form folgt (Marke nur in Closure-Notiz), erhielt fälschlich `section-open-tasks-marker-missing` — empirisch reproduziert und durch neue Tests belegt. Der neue Schlüssel (RE2, dieselbe Zeile wie `section-pattern`) durchsucht stattdessen **jeden** Abschnitt, dessen Überschrift trifft; **abwesend** bleibt das Verhalten wie zuvor (derselbe Abschnitt), **byte-identisch** für Bestandskonfigurationen. Trifft das Muster keinen Abschnitt, gilt die Marke als fehlend. **Ohne** `open-tasks-require-marker` ⇒ Exit 2 |
 | 2026-09-17 | §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 6 um `open-tasks-require-marker` erweitert ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), Begründung in begleitender ADR): eine Marke (`hasMarker`-Form wie `require-all`), konditioniert auf `max-open-tasks` — greift nur, wenn dessen Zählung bereits meldet. Vorhanden ⇒ alle `section-tasks-open`-Einzelbefunde des Abschnitts entfallen (Erlaubnis); fehlt sie ⇒ **ein** neuer `section-open-tasks-marker-missing` ([`SPEC-083`](#4-grund--und-fehler-codes)) ersetzt sie (Pflicht) — nie beide Codes zugleich. **Anlass ist ein eingehender CR** des Adopters `ai-harness-init` (`docs/plan/cr/2026-09-17-cr-eingehend-ai-harness-init-stilllegungs-form.md`), der die Pflicht-Hälfte bittet; die Erlaubnis-Hälfte trägt den eigenen Ursprungs-Zweck (Träger slice-225 <!-- d-check:status-provenance -->). Ohne den Schlüssel byte-identisches Verhalten. **Ohne** `max-open-tasks` ⇒ Exit 2 |
 | 2026-09-08 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 nennt den **Mechanismus**, durch den eine Hinzufügung (`A`) als solche ankommt — das Geschwister zur Rename-Zusage darüber. `A` ist auch die Antwort eines Tree-Diffs, der den **BASE-Stand nicht lesen konnte**; der Schritt sah dann eine freie neue Datei, wo eine geschützte geändert wurde, und der Befund entstand nie. Zugrunde liegt eine Zusammenfassung zweier Zustände in der verwendeten Bibliothek: ein **unlesbares** Objekt wird mit demselben Fehler gemeldet wie eine **im Tree fehlende** Datei. Reproduziert mit einer Pack-Datei unter unkanonischem Namen (`git maintenance run --task=loose-objects` schreibt solche), in zwei Ausprägungen — unsichtbares BASE-**Blob** (kam als `M` an, wurde in Schritt 4 übersprungen) und unsichtbares BASE-**Tree** (kam als `A` an) —, je gemessen als `0 Befund(e)`/Exit 0 gegen `1 Befund`/Exit 1 bei kanonischem Namen. **Kein Lastenheft-Bump:** die Anforderung sagte den Befund bereits zu, ohne einen Repo-Zustand auszunehmen; sie wurde nicht geändert, sondern eingelöst. Kein neuer Grund-Code. **Die Gegenrichtung ist Teil der Zusage:** ein Tree-Eintrag ohne Datei-Inhalt (Verzeichnis, Gitlink) bleibt befundfrei — sonst tauschte die Schärfung ein stilles Übersehen gegen einen Fehlalarm. **Der Preis gehört dazu:** Wird eine immutable Datei am geschützten Pfad durch einen Gitlink ersetzt, bleibt das unbemerkt|

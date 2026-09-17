@@ -75,8 +75,8 @@ func protectedSet(all []string, patterns []string) map[string]bool {
 
 // vcsDeleted meldet die Löschung/Umbenennung einer immutablen BASE-Datei
 // (der Pfad einer immutablen Datei ist stabil). Dass ein Rename überhaupt als
-// Delete-Hälfte hier ankommt, hält die Diff-Übersetzung im VCS-Adapter, nicht
-// diese Funktion.
+// Delete-Hälfte hier ankommt, entscheidet die Mengen-Differenz in CheckVCS
+// (der Pfad fehlt in headSet), nicht diese Funktion.
 func vcsDeleted(vcs driven.VCS, cfg model.VCSConfig, base, path string) ([]model.Finding, error) {
 	content, ok, err := vcs.FileAt(base, path)
 	if err != nil {
