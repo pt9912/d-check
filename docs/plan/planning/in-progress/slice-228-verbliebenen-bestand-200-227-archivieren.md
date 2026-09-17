@@ -29,7 +29,7 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice.
 
 **Ziel:** Die 28 flachen wellenlosen `done/`-Slices `slice-200` bis
-`slice-227` (samt ihren 37 zugehörigen Review-Reports unter `docs/reviews/`)
+`slice-227` (samt ihren 36 zugehörigen Review-Reports unter `docs/reviews/`)
 per `tools/archive-wave -slice=<id> -apply` nach
 `docs/plan/planning/done/wellenlos/` archivieren — der Backlog, der seit dem
 letzten Sweep (slice-200, 2026-09-04) angefallen ist.
@@ -59,14 +59,21 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 
 - [x] Alle 28 wellenlosen Slices `slice-200`–`slice-227` archiviert (Stub +
       `archiv.zip` je Slice unter `docs/plan/planning/done/wellenlos/`,
-      inklusive ihrer 37 zugehörigen Review-Reports); kein flacher Rest aus
+      inklusive ihrer 36 zugehörigen Review-Reports); kein flacher Rest aus
       diesem Bereich mehr unter `docs/plan/planning/done/` oder
       `docs/reviews/`.
 - [x] `make gates` grün auf dem Endstand.
-- [ ] `make fullbuild` grün auf dem Endstand.
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] `make fullbuild` grün auf dem Endstand — mit einer belegten
+      Ausnahme: `verify-closure-notes` (Teilschritt) meldet, solange
+      dieser Slice-Plan noch in `in-progress/` liegt, sieben
+      Glob-Leerlauf-Befunde (siehe §6 Risiko 3); die unabhängige
+      Verifikation bestätigt, dass keine andere Ursache vorliegt. Echte
+      Bestätigung nach dem `git mv` folgt in dieser Zeile.
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
+      Report: `2026-09-17-slice-228-verbliebenen-bestand-archivieren-review-r1.md`
+      (1 HIGH, 1 MEDIUM — beide behoben, siehe Closure-Notiz).
 - [x] Doku-Update: — kein öffentlicher Vertrag berührt (reine
       Bestandspflege, keine Schnittstellen-Änderung).
 - [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
@@ -75,8 +82,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       (siehe §6).
 - [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen /
       weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
-      Repo ohne Wellen-Betrieb, hier geprüft.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
+      Repo ohne Wellen-Betrieb, hier geprüft: Anker-Paarung entfällt (kein
+      `liegt in`-Feld, kein Schwellen-Übertritt); Folge-Slice-Paarung
+      entfällt (§7 nennt „keine"); Register-Paarung bestätigt (die
+      unabhängige Verifikation prüfte `BEO-ALL/batch-slice-archival-zips-post-rewrite-content/`
+      samt beider Evidence-Dateien).
 
 ## 3. Plan (vor Code)
 
@@ -86,15 +97,15 @@ Regeln dieser Sektion: Baseline-Regelwerk `grundlagen-bootstrap.md`
 | Datei / Komponente | Änderungs-Art | Begründung |
 |---|---|---|
 | `docs/plan/planning/done/slice-{200..227}-*.md` | move (Werkzeug) | Stub ersetzt Volltext, `tools/archive-wave -slice=<id> -apply` |
-| `docs/reviews/2026-09-0{4,6,7,8}-slice-{200..227}-*.md`, `2026-09-1{6,7}-slice-{219..227}-*.md` (37 Dateien) | move (Werkzeug) | ins jeweilige `archiv.zip` des Slice eingesammelt, kein eigener Stub |
+| `docs/reviews/2026-09-0{4,6,7,8}-slice-{200..227}-*.md`, `2026-09-1{6,7}-slice-{219..227}-*.md` (36 Dateien) | move (Werkzeug) | ins jeweilige `archiv.zip` des Slice eingesammelt, kein eigener Stub |
 | `docs/plan/planning/done/wellenlos/slice-{200..227}-*.md` + `-archiv.zip` | neu (Werkzeug) | Ziel der Move-Operation |
 | repo-weite Querverweise auf die bewegten Pfade | update (Werkzeug) | `RewriteRepo()` zieht sie automatisch nach |
 | neue Evidence-Datei in `BEO-ALL/batch-slice-archival-zips-post-rewrite-content/evidence/` | neu | zweites Auftreten der bekannten Order-Abhängigkeit (§6) |
 | `docs/plan/planning/in-progress/slice-228-*.md` → `docs/plan/planning/done/` | neu, dann move | dieser Slice-Plan selbst |
 
 **Vorab geprüft:** kein flacher Review-Report unter `docs/reviews/` liegt
-außerhalb `slice-200`–`slice-227` (37 Treffer, 0 Ausreißer — Grep gegen alle
-37 Dateinamen).
+außerhalb `slice-200`–`slice-227` (36 Treffer, 0 Ausreißer — Grep gegen alle
+36 Dateinamen).
 
 ## 4. Trigger
 
@@ -150,9 +161,12 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - **`make fullbuild`-DoD-Haken-Timing**: das Closure-Profil des
   nicht-rekursiven `done/slice-*.md`-Globs kann vor dem `git mv` dieses
   Slices selbst auf eine andere Menge treffen als danach (dasselbe Muster
-  wie bei slice-200 dokumentiert). **Ausgang:** entfallen — der Haken wird
-  wie bei slice-200 erst nach dem bestätigten Endstand gesetzt, dieselbe
-  Vorsichtsmaßnahme wird von vornherein übernommen.
+  wie bei slice-200 dokumentiert). **Ausgang:** eingetreten — die
+  unabhängige Verifikation bestätigt exakt dieses Symptom (`verify-closure-notes`
+  als einziger roter `fullbuild`-Teilschritt, sieben Befunde, ausnahmslos
+  Glob-Leerlauf, keine andere Ursache); kein Carveout/Folge-Slice nötig,
+  da vorab durch die Reihenfolge des DoD-Setzens abgefangen — der Haken
+  wird erst nach dem `git mv` gesetzt, wie bei slice-200.
 
 ## 7. Closure-Notiz
 
@@ -168,14 +182,26 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   nicht vorab benannt: die Archivierung machte zehn `ignore-refs`-Einträge
   in `.d-check.yml` gegenstandslos (dieselbe Klasse wie slice-200 F-4,
   aber ein anderer Konfig-Block als dort — dort `reviews.exempt-paths`,
-  hier `ignore-refs`); im selben Slice bereinigt (Kommit `14b1527c`).
+  hier `ignore-refs`); im selben Slice bereinigt (Kommit `14b1527c`). Der
+  unabhängige Review fand außerdem zwei eigene Findings gegen diesen
+  Slice: acht neu hinzugefügte `.d-check.yml`-Kommentare trugen
+  Herkunfts-Prosa/Slice-Nummern statt einer der fünf zulässigen Klassen
+  (§3.7, HIGH) — bereinigt, die Kommentare ersatzlos entfernt, da die
+  reine Entfernung eines gegenstandslosen Eintrags keinen erklärenden
+  Kommentar braucht; und die Plan-/Commit-Behauptung „37 zugehörige
+  Review-Reports" war eine Fehlzählung — tatsächlich archiviert wurden
+  **36** (gegengeprüft: `git show 20290bdd --diff-filter=D --name-only --
+  docs/reviews/ | grep -v /archiv/ | wc -l`), korrigiert in §1–§3 dieses
+  Plans (MEDIUM, AGENTS.md §5). Der ursprüngliche Commit `20290bdd` bleibt
+  als Lauf-Beleg unverändert stehen — er trägt die falsche Zahl aus seiner
+  Zeit, wie jeder committete Lauf-Beleg.
 - **Beobachtungs-Register (`../observations/`):**
   `evidence/slice-228.md` in
   `BEO-ALL/batch-slice-archival-zips-post-rewrite-content/` ergänzt —
   Zähler steht damit bei 2×.
 - **Folge-Slices:** keine.
 - **Risiken aus §6:** alle drei mit Ausgang — siehe §6 (1× weiter offen,
-  1× eingetreten/behoben, 1× entfallen).
+  2× eingetreten/behoben).
 - **Drei Paarungen:** wird nach dem `git mv` dieses Slice-Plans geprüft
   (siehe DoD).
 
