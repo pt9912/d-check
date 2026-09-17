@@ -15,7 +15,7 @@ Auflösung dieser Slice trägt.
 
 **Berührte Spec-Stellen:** — (der Slice berührt keine Spec-Stelle).
 
-**Verantwortlich:** — (wird bei der Beanspruchung gesetzt).
+**Verantwortlich:** pt9912 (Implementer-Rolle).
 
 **Autor:** pt9912.
 
@@ -55,10 +55,14 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 - [ ] **(1)** Ein Release nach `docs/user/releasing.md` ist veröffentlicht und
       am **gezogenen** Image verifiziert (Digest, OCI-Label, Smoke).
 - [ ] **(2)** Die Auflösung ist **gemessen, nicht angenommen**: dasselbe
-      Probe-Repo mit partiell unsichtbarem Pack, gegen das **publizierte**
-      Image gefahren — vorher `0 Befund(e)`/Exit 0, danach
-      `nicht lesbares Objekt …`/Exit 2. Beide Ausprägungen (unsichtbares
-      BASE-Blob **und** unsichtbares BASE-Tree).
+      Probe-Repo-Muster mit partiell unsichtbarem Pack, gegen das
+      **publizierte** Image gefahren — vorher `0 Befund(e)`/Exit 0, danach
+      Exit 2. **Präzisierung ggü. dem Erstentwurf dieses Punkts:** `CO-001`
+      nennt inzwischen **drei** Ausprägungen (unsichtbares BASE-Blob,
+      BASE-Tree mit Pendant, BASE-Tree ohne Pendant) statt der hier
+      ursprünglich genannten zwei — slice-220 hat die dritte geschlossen und
+      eine vierte, zuvor fehldiagnostizierte (unlesbarer HEAD-Tree)
+      zusätzlich aufgedeckt und behoben. Geprüft werden **alle vier**.
 - [ ] **(3)** `CO-001` ist aufgelöst: Verifikations-Haken abgehakt, Datei per
       reinem `git mv` nach `docs/plan/carveouts/done/` <!-- d-check:ignore (entsteht erst mit dieser Auflösung) -->, Index in
       `docs/plan/carveouts/README.md` und die Bindung-Spalte in
@@ -119,8 +123,45 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Sub-Area-Modus-Begründung. **Der Abschnitt entfällt nie**; bedingt
 ist allein der Modus-Block am Ende.
 
-**Die drei Vorprüfungen entstehen spätestens bei der Beanspruchung**
-([`AGENTS.md`](../../../../AGENTS.md) §5) — dieser Plan liegt in `open/` und
-trägt sie noch nicht. Das ist die Regel, nicht eine Auslassung: Ein
-Register-Stand und ein Nachtlauf-Stand, die beim Anlegen gelesen werden,
-wären beim Beanspruchen alt.
+Dieses Repo führt **drei** Prüfungen — die zwei kanonischen und, als
+Adaption, den Nachtlauf-Stand ([`MR-053`](../../../../harness/conventions.md#mr-053)).
+
+**Die drei Vorprüfungen sind bei der Beanspruchung am 2026-09-17 gelesen.**
+
+**Vorgelagert — Sub-Area-Wahl prüfen:**
+
+<!-- d-check:cite .harness/baseline/v6.9.0/regelwerk/modul-05-planning-harness.md:363-364 -->
+
+> **Sub-Area-Wahl prüfen.** Jede Sub-Area, die der Slice als berührt führt,
+> muss das Inklusionskriterium erfüllen — drei Achsen, Schwelle ≥ 2
+
+**Zwei** Sub-Areas: `*` (Repo-Default — Release-Prosa in `README*.md`,
+`docs/user/benutzerhandbuch.md`, `CHANGELOG.md`, `version.md`) und
+`docs/plan/carveouts/` (die Auflösung selbst: `git mv` nach `done/`,
+Index-Nachzug). Keine trägt eine eigene Modus-Deklaration in
+`harness/conventions.md` und fällt damit unter den Default `*`. Beide
+Greenfield, wie der Rest des Produkts.
+
+**Vorgelagert — offene Beobachtungen sichten:**
+
+<!-- d-check:cite .harness/baseline/v6.9.0/regelwerk/modul-05-planning-harness.md:369-369 -->
+
+> **Offene Beobachtungen sichten.** Das
+
+Register durchgegangen (gemergter Stand, 41 Verzeichnisse). **Keine**
+Beobachtung trifft `docs/plan/carveouts/`, `docs/user/` oder die
+Release-Prosa als Sub-Area; die einschlägigen Einträge aus slice-220
+(`fix-schliesst-pfad-nicht-klasse`, `racily-clean-git-fixture`) betreffen
+den bereits geschlossenen Code-Umbau, nicht diesen Release-Slice.
+
+**Vorgelagert — Nachtlauf-Stand lesen**
+([`MR-053`](../../../../harness/conventions.md#mr-053)):
+
+`make nightly-state` am 2026-09-17 gelesen: `image-scan.yml` grün
+(2026-09-16T08:37:54Z). `upstream-drift.yml` **rot** (2026-09-17T05:38:51Z)
+— laut eigener Meldung eine **planmäßige** Fremd-Release-Benachrichtigung
+([`MR-051`](../../../../harness/conventions.md#mr-051)), keine unerwartete;
+betrifft gepinnte Fremd-Bestände, nicht diesen Release-Slice.
+
+**Modus-Begründung:** alle berührten Sub-Areas GF — kein Begründungsblock
+nötig.
