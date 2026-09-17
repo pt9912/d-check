@@ -15,8 +15,12 @@ import (
 
 	gogit "github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/cache"
 	"github.com/go-git/go-git/v5/plumbing/filemode"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/go-git/go-git/v5/storage/filesystem"
+
+	"github.com/go-git/go-billy/v5/osfs"
 
 	"github.com/pt9912/d-check/internal/hexagon/port/driven"
 )
@@ -27,9 +31,21 @@ type Adapter struct {
 }
 
 // Open öffnet das Repository unter root (erwartet root/.git). Fehlt oder ist
-// `.git` unlesbar ⇒ Fehler (fail-closed, Exit 2; DC-FA-VCS-001).
+// `.git` unlesbar ⇒ Fehler (fail-closed, Exit 2; DC-FA-VCS-001). Die
+// Objekt-Storage wird — anders als über das bequeme gogit.PlainOpen — über
+// packAliasFS aufgebaut, damit ein Pack unter unkanonischem Präfix nicht
+// unsichtbar bleibt (eingehender CR, ai-harness-init, 2026-09-17).
 func Open(root string) (*Adapter, error) {
-	repo, err := gogit.PlainOpen(root)
+	wt := osfs.New(root)
+	dot, err := wt.Chroot(gogit.GitDirName)
+	if err != nil {
+		return nil, fmt.Errorf("kein lesbares git-Repository unter %s: %w", root, err)
+	}
+	if _, err := dot.Stat(""); err != nil {
+		return nil, fmt.Errorf("kein lesbares git-Repository unter %s: %w", root, err)
+	}
+	s := filesystem.NewStorage(newPackAliasFS(dot), cache.NewObjectLRUDefault())
+	repo, err := gogit.Open(s, wt)
 	if err != nil {
 		return nil, fmt.Errorf("kein lesbares git-Repository unter %s: %w", root, err)
 	}

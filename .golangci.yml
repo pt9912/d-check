@@ -91,6 +91,11 @@ linters:
         - stdlib
         - generic
         - github.com/pt9912/d-check/internal/hexagon/port/driven\..*
+        # packAliasFS (internal/adapter/driven/git) implementiert/dekoriert
+        # billy.Filesystem/billy.File selbst -- eine konkrete Rückgabe wäre
+        # hier keine Abstraktion, sondern ein Fremdtyp-Leck in die andere
+        # Richtung (CR ai-harness-init, 2026-09-17).
+        - github.com/go-git/go-billy/v5\..*
 
     maintidx:
       under: 20

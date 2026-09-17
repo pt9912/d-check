@@ -522,3 +522,123 @@ func TestFileAtEintragOhneBlob(t *testing.T) {
 		t.Errorf("fehlende Datei falsch behandelt: ok=%v err=%v", ok, err)
 	}
 }
+
+// repackToPack packt alle losen Objekte des Repos unter dir in EINEN Pack
+// (go-gits eigene RepackObjects-API, kein git-Binary) und löscht anschließend
+// die losen Kopien, damit die Auflösung wirklich nur noch über den Pack
+// laufen kann. Liefert den kanonischen Pack-Hash (Hex, ohne Präfix/Endung).
+func repackToPack(t *testing.T, dir string) string {
+	t.Helper()
+	repo, err := gogit.PlainOpen(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := repo.RepackObjects(&gogit.RepackConfig{}); err != nil {
+		t.Fatal(err)
+	}
+	objDir := filepath.Join(dir, ".git", "objects")
+	entries, err := os.ReadDir(objDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, e := range entries {
+		if !e.IsDir() || e.Name() == "pack" || e.Name() == "info" {
+			continue
+		}
+		if err := os.RemoveAll(filepath.Join(objDir, e.Name())); err != nil {
+			t.Fatal(err)
+		}
+	}
+	packDir := filepath.Join(objDir, "pack")
+	packEntries, err := os.ReadDir(packDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, e := range packEntries {
+		if strings.HasPrefix(e.Name(), "pack-") && strings.HasSuffix(e.Name(), ".pack") {
+			return strings.TrimSuffix(strings.TrimPrefix(e.Name(), "pack-"), ".pack")
+		}
+	}
+	t.Fatal("repackToPack: kein Pack nach RepackObjects gefunden")
+	return ""
+}
+
+// renamePackPrefix benennt jede Datei des Packs hash von "pack-" auf newPrefix
+// um — simuliert das Ergebnis von `git maintenance run --task=loose-objects`
+// (das `loose-<hash>.pack` schreibt), ohne git-Binary im Test.
+func renamePackPrefix(t *testing.T, dir, hash, newPrefix string) {
+	t.Helper()
+	packDir := filepath.Join(dir, ".git", "objects", "pack")
+	for _, ext := range []string{"pack", "idx", "rev"} {
+		old := filepath.Join(packDir, "pack-"+hash+"."+ext)
+		if _, err := os.Stat(old); err != nil {
+			continue // .rev existiert nicht in jeder go-git-Fassung
+		}
+		if err := os.Rename(old, filepath.Join(packDir, newPrefix+hash+"."+ext)); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+// TestAllPathsPackUnterFremdemPraefix: der Kern des eingehenden CR
+// (ai-harness-init, 2026-09-17) — ein Pack, dessen einzige Kopie der
+// Objekte unter einem anderen Präfix als "pack-" liegt (wie
+// `git maintenance run --task=loose-objects` es hinterlässt), darf AllPaths
+// nicht mehr scheitern lassen: die Objekte sind vorhanden und gültig, nur
+// der Dateiname ist untypisch.
+func TestAllPathsPackUnterFremdemPraefix(t *testing.T) {
+	dir, wt := repoAt(t)
+	put(t, dir, "adr-x.md", "# ADR-0001\n\n**Status:** Accepted\n\nUrsprung.\n")
+	first := snapshot(t, wt, "first")
+	put(t, dir, "adr-x.md", "# ADR-0001\n\n**Status:** Accepted\n\nGeaendert.\n")
+	second := snapshot(t, wt, "second")
+
+	hash := repackToPack(t, dir)
+	renamePackPrefix(t, dir, hash, "loose-")
+
+	a, err := gitadapter.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	baseAll, headAll, err := a.AllPaths(first, second)
+	if err != nil {
+		t.Fatalf("Pack unter Fremdpräfix hätte gelesen werden müssen: %v", err)
+	}
+	if !contains(baseAll, "adr-x.md") || !contains(headAll, "adr-x.md") {
+		t.Fatalf("adr-x.md fehlt: base=%v head=%v", baseAll, headAll)
+	}
+	if b, ok, err := a.FileAt(first, "adr-x.md"); err != nil || !ok || !strings.Contains(string(b), "Ursprung") {
+		t.Fatalf("FileAt(first) = %q,%v,%v", b, ok, err)
+	}
+}
+
+// TestAllPathsPackMitUnbrauchbaremPraefixBleibtFehlerhaft: die Gegenprobe aus
+// dem CR — ein Pack, dessen Dateiname KEINEN gültigen Hash trägt (Garbage
+// statt eines Präfix-Austauschs), ist kein legitimes Alias-Ziel und darf
+// weiterhin scheitern, wenn er die einzige Quelle eines Objekts ist. Der
+// Abbruch aus v0.76.1 bleibt für einen wirklich nicht auflösbaren Bestand
+// richtig.
+func TestAllPathsPackMitUnbrauchbaremPraefixBleibtFehlerhaft(t *testing.T) {
+	dir, wt := repoAt(t)
+	put(t, dir, "adr-x.md", "# ADR-0001\n\n**Status:** Accepted\n\nUrsprung.\n")
+	first := snapshot(t, wt, "first")
+	put(t, dir, "adr-x.md", "# ADR-0001\n\n**Status:** Accepted\n\nGeaendert.\n")
+	second := snapshot(t, wt, "second")
+
+	hash := repackToPack(t, dir)
+	packDir := filepath.Join(dir, ".git", "objects", "pack")
+	for _, ext := range []string{"pack", "idx"} {
+		old := filepath.Join(packDir, "pack-"+hash+"."+ext)
+		if err := os.Rename(old, filepath.Join(packDir, "xpack-garbage."+ext)); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	a, err := gitadapter.Open(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err := a.AllPaths(first, second); err == nil {
+		t.Fatal("Pack ohne gültiges Hash-Suffix still gelesen — erwartet war ein Fehler")
+	}
+}
