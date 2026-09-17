@@ -87,15 +87,15 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       stillschweigend verletzt: `make arch-check` bleibt grün, die
       `os`/`io/fs`-Kapsel-Erweiterung trägt eine eigene ADR
       ([ADR-0086](../../adr/0086-pack-alias-fs-os-kapsel-erweiterung.md)).
-- [ ] `make gates` grün.
+- [x] `make gates` grün.
 - [ ] Unabhängiger Review durchgeführt, Report unter `docs/reviews/` liegt vor.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben.
 - [ ] Jedes Risiko aus §6 trägt einen Ausgang.
 - [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen.
-- [ ] Der eingehende CR trägt eine `## Antwort`-Sektion, `Stand: entschieden
+- [x] Der eingehende CR trägt eine `## Antwort`-Sektion, `Stand: entschieden
       und umgesetzt`.
-- [ ] `spec/spezifikation.md` §[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
+- [x] `spec/spezifikation.md` §[`DC-FA-VCS-001.a`](../../../../spec/spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs)
       Schritt 2 nennt den Alias-Mechanismus.
 
 ## 3. Plan (vor Code)
