@@ -4,6 +4,30 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.76.2] — 2026-09-17
+
+### Fixed
+
+- slice-226 — **`vcs` (und jedes Modul, das denselben git-Port liest)
+  erkennt jetzt Packs unter einem anderen Namens-Präfix als `pack-`**
+  ([`DC-FA-VCS-001`](spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in),
+  [ADR-0086](docs/plan/adr/0086-pack-alias-fs-os-kapsel-erweiterung.md)).
+  go-gits Objekt-Storage fand einen Pack bislang ausschließlich unter dem
+  rekonstruierten kanonischen Namen `pack-<Hash>.{idx,pack}` — ein Pack
+  unter anderem Präfix (z. B. `loose-<Hash>.pack`, wie
+  `git maintenance run --task=loose-objects` es schreibt) war unsichtbar
+  und brach den Lauf mit Exit 2 ab, obwohl seine Objekte gültig waren und
+  `git` selbst sie anstandslos las. Ein read-only `billy.Filesystem`-
+  Dekorator löst jetzt zusätzlich jeden Pack auf, dessen Datei einen
+  gültigen SHA1/SHA256-Hash als Namens-Suffix trägt **und** eine passende
+  `.idx`-Datei hat, unabhängig vom Präfix. Ein Pack ohne gültiges
+  Hash-Suffix oder ohne passenden Index bleibt weiterhin unsichtbar, der
+  fail-closed-Abbruch für eine wirklich unauflösbare Objekt-Menge ist
+  unverändert. Anlass ist ein eingehender Change Request
+  (`ai-harness-init`); siehe auch
+  [GitHub Issue #4](https://github.com/pt9912/d-check/issues/4) Punkt 2.
+  Kein Konfigurations-Bruch, kein neuer Grund-Code.
+
 ## [0.76.1] — 2026-09-17
 
 ### Fixed
