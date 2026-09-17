@@ -51,7 +51,7 @@
   Stand nennen: die MR-071-Datei selbst (jetzt in `conventions/done/`;
   Vergangenheits-Aussage über die v6.6.0-Hebung, bleibt bei ihrer Auflösung
   unverändert stehen), ein `done/`-Slice
-  ([slice-222](../../docs/plan/planning/done/slice-222-baseline-v660-bump.md)),
+  ([slice-222](../../docs/plan/planning/done/wellenlos/slice-222-baseline-v660-bump.md)),
   zwei Review-Reports, drei Evidence-Dateien im Beobachtungs-Register, ein
   wörtliches Fremdzitat im CR — und ein **neunter, erst im Review
   gefundener** Fall: der Kommentar bei `.d-check.yml:235` (*„Die
@@ -62,8 +62,8 @@
   unverändert, aber **erst im Review deklariert**, nicht in der ersten
   Frozen-Liste dieses Slice — Beleg bei
   [`BEO-ALL/pin-bump-mirrors-ungated`](../../docs/plan/planning/observations/BEO-ALL/pin-bump-mirrors-ungated/observation.md)
-  (Review-Finding F-1,
-  [2026-09-16-slice-224-baseline-v690-review-r1.md](../../docs/reviews/2026-09-16-slice-224-baseline-v690-review-r1.md)).
+  (Review-Finding F-1, Report jetzt archiviert, siehe
+  [Slice-Stub](../../docs/plan/planning/done/wellenlos/slice-224-baseline-v690-bump.md)).
 
   Die übrigen **50 lebenden** Dateien sind retargetet — mehrheitlich als
   einfacher Pfad-Verweis (`.harness/baseline/v6.6.0/…`, gate-gedeckt — ein im

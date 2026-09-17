@@ -18,7 +18,8 @@ sie hängt davon ab, in welcher **Form** die eingefrorenen Belege zufällig
 zitieren.
 
 **Der unabhängige Review fand eine neunte Stelle, die die eigene
-Frozen-Liste ausgelassen hatte** (F-1, [2026-09-16-slice-224-baseline-v690-review-r1.md](../../../../../../reviews/2026-09-16-slice-224-baseline-v690-review-r1.md)):
+Frozen-Liste ausgelassen hatte** (F-1, Report jetzt archiviert, siehe
+[Slice-Stub](../../../../done/wellenlos/slice-224-baseline-v690-bump.md)):
 der Kommentar bei `.d-check.yml:235` trägt `v6.6.0` als Begründung für einen
 **anderen**, bereits bestehenden `ignore-refs`-Eintrag (den elften, aus dem
 `v6.5.0`→`v6.6.0`-Bump) — korrekt unverändert, aber weder in der ersten

@@ -6,7 +6,7 @@ Der Review von Runde 3 nannte die Schwelle erreicht; das trifft nicht zu, und
 der Eintrag korrigiert es hier, statt die Zahl passend zu machen.
 
 **Ohne Ausgang, aber nicht ohne Wirkung:**
-[`slice-220`](../../../done/slice-220-vcs-pfadmenge-statt-diff.md) hat den
+[`slice-220`](../../../done/wellenlos/slice-220-vcs-pfadmenge-statt-diff.md) hat den
 Ableiter umgesetzt — die geschützte Klasse wird jetzt direkt gegen beide
 Tree-Stände aufgelöst statt gegen einen Diff, empirisch gegen ein
 Probe-Repo bestätigt (die dritte, zuvor offene Ausprägung UND eine vierte,

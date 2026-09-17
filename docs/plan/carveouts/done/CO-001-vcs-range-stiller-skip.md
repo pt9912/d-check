@@ -24,9 +24,9 @@ Richtungen: die erste schrieb „dieses Repo eingeschlossen", ohne den
 Image-Pin nachzuschlagen; die zweite nahm dieses Repo ganz aus, als alle
 Ausprägungen behoben wären, während die dritte/vierte noch offen waren.
 
-**Folge-Slice:** [`slice-220`](../../planning/done/slice-220-vcs-pfadmenge-statt-diff.md)
+**Folge-Slice:** [`slice-220`](../../planning/done/wellenlos/slice-220-vcs-pfadmenge-statt-diff.md)
 — der **Klassen**-Fix für die offene dritte Ausprägung; danach
-[`slice-219`](../../planning/done/slice-219-release-loest-co-001.md), das Release,
+[`slice-219`](../../planning/done/wellenlos/slice-219-release-loest-co-001.md), das Release,
 das beides ausliefert. **Nicht** slice-218: der liefert zwei der drei
 Ausprägungen und schließt davor; ein Carveout, dessen Folge-Slice vor ihm
 schließt, hat faktisch keinen.
@@ -73,7 +73,7 @@ auch, dass der naheliegende Wachposten nicht trug — `tree.Files()` benutzt
 denselben Walker und schwieg ebenso. Der Fix war deshalb eine
 **Entwurfsänderung** (die geschützte Pfad-Menge direkt gegen beide Trees
 auflösen, statt dem Diff zu vertrauen) —
-[slice-220](../../planning/done/slice-220-vcs-pfadmenge-statt-diff.md).
+[slice-220](../../planning/done/wellenlos/slice-220-vcs-pfadmenge-statt-diff.md).
 
 **Der vierte Ausgang war kein stiller, aber eine Fehldiagnose:** Verschluckte
 der Pack den **HEAD**-Tree, meldete der Lauf `core-drift-vcs` *„gelöscht oder
@@ -156,5 +156,5 @@ der ihn ausdrückt. Er beschreibt einen Zustand des gepinnten Images.
 
 | Datum | Ereignis | Verweis |
 |---|---|---|
-| 2026-09-08 | Angelegt | [slice-218](../../planning/done/slice-218-go-git-pack-namenskonvention.md) |
-| 2026-09-17 | Aufgelöst — Klassen-Fix (slice-220) im Release `v0.76.1` (slice-219) publiziert, alle vier Ausprägungen gegen das gezogene Image gemessen | [slice-220](../../planning/done/slice-220-vcs-pfadmenge-statt-diff.md), [slice-219](../../planning/done/slice-219-release-loest-co-001.md) |
+| 2026-09-08 | Angelegt | [slice-218](../../planning/done/wellenlos/slice-218-go-git-pack-namenskonvention.md) |
+| 2026-09-17 | Aufgelöst — Klassen-Fix (slice-220) im Release `v0.76.1` (slice-219) publiziert, alle vier Ausprägungen gegen das gezogene Image gemessen | [slice-220](../../planning/done/wellenlos/slice-220-vcs-pfadmenge-statt-diff.md), [slice-219](../../planning/done/wellenlos/slice-219-release-loest-co-001.md) |

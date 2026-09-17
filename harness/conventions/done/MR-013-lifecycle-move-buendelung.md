@@ -57,7 +57,7 @@
   committierbar**, solange die Korrektur vor dem `git commit`-Aufruf schon
   im Arbeitsbaum geschrieben, aber gezielt aus der Staging-Area
   ausgeschlossen ist (`git add <nur-die-Move-Dateien>`) — exakt die
-  Technik, mit der dieses Repo in [slice-224](../../../docs/plan/planning/done/slice-224-baseline-v690-bump.md)
+  Technik, mit der dieses Repo in [slice-224](../../../docs/plan/planning/done/wellenlos/slice-224-baseline-v690-bump.md)
   bereits einen DoD-Haken vor einem reinen Move committet hatte, nur hier
   nicht bewusst als Beleg gegen die eigene `MR-013`-Prämisse erkannt.
   Die Prämisse *„lokal nicht committierbar"* war damit falsch, nicht nur

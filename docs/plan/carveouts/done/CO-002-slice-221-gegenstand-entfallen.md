@@ -8,7 +8,7 @@
 `max-open-tasks: 0` für `## N. Definition of Done`).
 
 **Geltungsbereich:** genau eine Datei —
-[`docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md`](../../planning/done/slice-221-agents-md-tabellenzellen.md).
+[`docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md`](../../planning/done/wellenlos/slice-221-agents-md-tabellenzellen.md).
 
 **Folge-Slice:** [`slice-225`](../../planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md)
 
@@ -30,10 +30,10 @@ Ein Slice, dessen Gegenstand ein anderer übernimmt oder der ganz entfällt,
 geht **ohne Lieferung** nach `done/` — §7 trägt eine `**Gegenstand:**`-Zeile
 statt gelieferter DoD-Punkte, und die Liefer-Häkchen bleiben leer.
 
-[`slice-221`](../../planning/done/slice-221-agents-md-tabellenzellen.md) ist
+[`slice-221`](../../planning/done/wellenlos/slice-221-agents-md-tabellenzellen.md) ist
 genau dieser Fall: Sein Gegenstand (`AGENTS.md` §4s Zellen kürzen) verschwand
 zwischen Anlage und Wiederaufnahme, weil
-[slice-222](../../planning/done/slice-222-baseline-v660-bump.md) §4 radikaler
+[slice-222](../../planning/done/wellenlos/slice-222-baseline-v660-bump.md) §4 radikaler
 gelöst hat (ganz gestrichen statt gekürzt) — eine andere Entscheidung, kein
 Bezug auf diesen Slice. Keiner seiner drei Liefer-Punkte (Zellen kürzen,
 `cell-max-chars`-Wächter, Inventur) ist erfüllbar, weil ihr gemeinsamer
@@ -70,7 +70,7 @@ gegen `slice-221`s Datei **ohne** den `exempt-paths`-Eintrag unten — vorher
 
 | Datei | Zeile/Section | Wert |
 |---|---|---|
-| [`.d-check.closure.yml`](../../../../.d-check.closure.yml) | `structure`-Regel für `## N. Definition of Done`, `open-tasks-require-marker` | `"Gegenstand"` — löst auf, was zuvor der namentliche `exempt-paths`-Eintrag für `docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md` trug |
+| [`.d-check.closure.yml`](../../../../.d-check.closure.yml) | `structure`-Regel für `## N. Definition of Done`, `open-tasks-require-marker` | `"Gegenstand"` — löst auf, was zuvor der namentliche `exempt-paths`-Eintrag für `docs/plan/planning/done/wellenlos/slice-221-agents-md-tabellenzellen.md` trug |
 
 ## Verifikation (nach Auflösung)
 
@@ -87,6 +87,6 @@ gegen `slice-221`s Datei **ohne** den `exempt-paths`-Eintrag unten — vorher
 
 | Datum | Ereignis | Verweis |
 |---|---|---|
-| 2026-09-16 | Angelegt | [slice-221](../../planning/done/slice-221-agents-md-tabellenzellen.md) |
+| 2026-09-16 | Angelegt | [slice-221](../../planning/done/wellenlos/slice-221-agents-md-tabellenzellen.md) |
 | 2026-09-17 | Technisch aufgelöst: `open-tasks-require-marker` ersetzt den `exempt-paths`-Eintrag, `make verify-closure-notes` grün ohne ihn | [ADR-0085](../../adr/0085-bedingte-pflicht-marke-open-tasks.md), [slice-225](../../planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md) |
 | 2026-09-17 | Vollständig aufgelöst nach zwei Review-Runden (R1 fand, dass der Erstentwurf Baseline `v6.9.0`s eigene Ziel-Form nicht erkannte; `open-tasks-require-marker-section` behebt es) — `git mv` nach `carveouts/done/` | `slice-225` |

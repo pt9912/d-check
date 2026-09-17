@@ -27,7 +27,7 @@ für den Hook über stdin.
    `commit <sha> nicht lesbar: object not found` — beides **Exit 2**.
    **Abhilfe:** `git repack -A -d`.
 
-   **Seit [`slice-226`](../../docs/plan/planning/done/slice-226-vcs-pack-alias-fremdes-praefix.md)
+   **Seit [`slice-226`](../../docs/plan/planning/done/wellenlos/slice-226-vcs-pack-alias-fremdes-praefix.md)
    <!-- d-check:status-provenance --> löst der Adapter einen Pack zusätzlich
    unter seinem kanonischen Namen auf, wenn seine Datei einen gültigen
    SHA1/SHA256-Hash als Namens-Suffix trägt **und** eine passende
