@@ -239,8 +239,10 @@ ignore-refs:
   # diese Verzeichnisse aus), die sieben in docs/reviews/ stehen in Inline-Code
   # und Fences. Ein Verweis feuert, wenn ein Modul ihn aufloest -- nicht, weil
   # die Zeichenkette dasteht.
-  - in: docs/plan/planning/done/slice-217-tabellen-padding-harness-readme.md
-    refs: [".harness/baseline/v6.5.0/**"]
+  # slice-217 selbst ist mit slice-228 archiviert (done/wellenlos/) -- der
+  # Stub traegt den Zellen-Padding-Beleg nicht mehr, der Eintrag dafuer ist
+  # gegenstandslos (dieselbe Klasse wie slice-200 F-4). Die Evidence-Datei
+  # unten bleibt unberuehrt, sie wandert nicht mit.
   - in: docs/plan/planning/observations/BEO-ALL/form-vom-nachbarn-statt-von-der-vorlage/evidence/slice-217.md
     refs: [".harness/baseline/v6.5.0/**"]
   - in: docs/plan/adr/0084-mentions-eigenes-modul.md
@@ -254,16 +256,14 @@ ignore-refs:
   # Zeiger; nachziehen wuerde den Beleg verfaelschen (dieselbe Begruendung
   # wie beim Review-Report-Eintrag oben). Mit der Beanspruchung von
   # slice-223 (open/ -> in-progress/) bricht der woertliche Pfad.
-  - in: docs/plan/planning/done/slice-222-baseline-v660-bump.md
-    refs: ["docs/plan/planning/open/slice-223-commit-zerlegung-ausnahmen-aufloesen.md"]
-  - in: docs/plan/planning/done/slice-224-baseline-v690-bump.md
-    refs: ["docs/plan/planning/open/slice-223-commit-zerlegung-ausnahmen-aufloesen.md"]
+  # slice-222 und slice-224 sind mit slice-228 archiviert -- beide Eintraege
+  # dafuer sind gegenstandslos, ihre Stubs tragen den Beleg nicht mehr.
   # Dieselbe Klasse: zwei eingefrorene Lauf-Belege zitieren slice-221 noch
   # in next/ -- slice-223s (b)-Paarung und Abgrenzung 1, sowie eine
   # Evidence-Datei von slice-222. slice-221 ist seither ueber
   # in-progress/ nach done/ gewandert (Ausgang "entfallen", CO-002).
-  - in: docs/plan/planning/done/slice-223-commit-zerlegung-ausnahmen-aufloesen.md
-    refs: ["docs/plan/planning/next/slice-221-agents-md-tabellenzellen.md"]
+  # slice-223 ist mit slice-228 archiviert -- der (b)-Paarungs-Eintrag dafuer
+  # ist gegenstandslos, sein Stub traegt den Beleg nicht mehr.
   - in: docs/plan/planning/observations/BEO-ALL/form-vom-nachbarn-statt-von-der-vorlage/evidence/slice-222.md
     refs: ["docs/plan/planning/next/slice-221-agents-md-tabellenzellen.md"]
   # Dieselbe Klasse, eine Lifecycle-Stufe spaeter: MR-013 (jetzt in
@@ -280,14 +280,10 @@ ignore-refs:
   # open/" -- der Stand zum Zeitpunkt ihrer Entstehung. slice-225 ist
   # inzwischen ueber die Beanspruchung nach in-progress/ gewandert; beide
   # Zitate sind Lauf-Belege ihrer Zeit, kein lebender Zeiger.
-  - in: docs/plan/planning/done/slice-221-agents-md-tabellenzellen.md
-    refs:
-      - "docs/plan/planning/open/slice-225-gegenstand-entfallen-uebernommen.md"
-      - "docs/plan/carveouts/CO-002-slice-221-gegenstand-entfallen.md"
-  - in: docs/reviews/2026-09-16-slice-221-gegenstand-entfallen-review-r1.md
-    refs:
-      - "docs/plan/planning/open/slice-225-gegenstand-entfallen-uebernommen.md"
-      - "docs/plan/carveouts/CO-002-slice-221-gegenstand-entfallen.md"
+  # Beide Eintraege sind mit slice-228 gegenstandslos: slice-221 ist
+  # archiviert (Stub traegt den Beleg nicht mehr), sein Review-Report ist
+  # ohne eigenen Stub vollstaendig im archiv.zip aufgegangen (kein Ziel
+  # mehr, das ein Modul ueberhaupt liest).
   # CO-002 ist inzwischen selbst nach carveouts/done/ gewandert (Ausgang
   # aufgeloest, ADR-0085). Ein weiterer eingefrorener Lauf-Beleg zitiert
   # seinen frueheren Pfad: ADR-0085s eigener Kontext-Absatz -- Accepted,
@@ -300,24 +296,20 @@ ignore-refs:
   # ueber seine eigene Closure nach done/ gewandert.
   - in: docs/plan/carveouts/done/CO-002-slice-221-gegenstand-entfallen.md
     refs: ["docs/plan/planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md"]
-  - in: docs/reviews/2026-09-17-slice-225-open-tasks-marker-review-r1.md
-    refs: ["docs/plan/planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md"]
-  - in: docs/reviews/2026-09-17-slice-225-open-tasks-marker-review-r2.md
-    refs: ["docs/plan/planning/in-progress/slice-225-gegenstand-entfallen-uebernommen.md"]
+  # Beide Review-Report-Eintraege fuer slice-225 sind mit slice-228
+  # gegenstandslos: beide Reports sind ohne eigenen Stub vollstaendig im
+  # archiv.zip von slice-225 aufgegangen.
   # Dieselbe Klasse, eine weitere Stufe: slice-218 (done/) zitiert slice-220
   # dreifach als "liegt in open/" -- der Stand zum Zeitpunkt seiner
   # Entstehung. slice-220 ist inzwischen ueber die Beanspruchung nach
   # in-progress/ gewandert.
-  - in: docs/plan/planning/done/slice-218-go-git-pack-namenskonvention.md
-    refs:
-      - "docs/plan/planning/open/slice-220-vcs-pfadmenge-statt-diff.md"
-      - "docs/plan/planning/open/slice-219-release-loest-co-001.md"
-      - "docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md"
+  # slice-218 ist mit slice-228 archiviert -- der Eintrag dafuer ist
+  # gegenstandslos, sein Stub traegt den Beleg nicht mehr.
   # CO-001 ist inzwischen selbst nach carveouts/done/ gewandert (Ausgang
-  # aufgeloest, slice-219/slice-220). Zwei weitere eingefrorene Lauf-Belege
-  # zitieren seinen frueheren Pfad.
-  - in: docs/plan/planning/done/slice-220-vcs-pfadmenge-statt-diff.md
-    refs: ["docs/plan/carveouts/CO-001-vcs-range-stiller-skip.md"]
+  # aufgeloest, slice-219/slice-220). Ein weiterer eingefrorener Lauf-Beleg
+  # zitierte seinen frueheren Pfad -- der Eintrag dafuer ist mit slice-228
+  # ebenfalls gegenstandslos: slice-220 ist archiviert, sein Stub traegt
+  # den Beleg nicht mehr.
   # CHANGELOG-Eintraege sind Lauf-Belege ihres Release-Zeitpunkts (AGENTS.md
   # §5: keine [Unreleased]-Umschreibung) -- der v0.76.1-Eintrag zitiert
   # CO-001 an seinem damaligen, noch aktiven Pfad.
