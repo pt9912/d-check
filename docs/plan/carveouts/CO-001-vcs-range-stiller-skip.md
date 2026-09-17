@@ -1,28 +1,28 @@
 # CO-001: `vcs` überspringt still, solange das publizierte Image den Fix nicht trägt
 
-**Status:** Aktiv.
+**Status:** Aufgelöst (2026-09-17).
 
-**Datum angelegt:** 2026-09-08. **Letzte Prüfung:** 2026-09-08.
+**Datum angelegt:** 2026-09-08. **Letzte Prüfung:** 2026-09-17.
 
 **Betroffenes Gate:** `adr-check` (Modul `vcs`) — in beiden Modi, und darunter der
 Bindepunkt der PR-/Push-CI.
 
-**Geltungsbereich — zwei ungleiche Hälften, und die zweite trifft auch uns:**
+**Geltungsbereich — aufgelöst.** Alle vier Ausprägungen (Begründung unten) sind
+seit `v0.76.1` im publizierten Image behoben, empirisch gegen das **gezogene**
+Image geprüft (nicht nur den Quellstand) — siehe Auflösungs-Trigger. Ein
+Konsument, der `ghcr.io/pt9912/d-check:v0.76.0` oder früher pinnt
+(typischerweise über das `DCHECK_IMAGE` eines per `--print-mk` erzeugten
+`d-check.mk`), fährt weiterhin den blinden bzw. fehldiagnostizierenden Pfad und
+löst den Carveout für sich durch einen Pin-Wechsel auf `v0.76.1` oder neuer
+auf. **Dieses Repo ist nicht betroffen** — `make adr-check` trägt die
+Prerequisite `build` und fährt `$(IMAGE):latest` aus dem lokalen Quellstand
+([`Makefile`](../../../Makefile), `DCHECK_RUN`), der den Fix seit dem
+Feature-Commit von slice-220 trägt.
 
-- **Zwei der drei Ausprägungen sind im Quellstand behoben** (slice-218). Für
-  sie gilt der Carveout nur **Konsumenten**, die ein veröffentlichtes Image
-  pinnen (`ghcr.io/pt9912/d-check:v0.75.0` oder früher, typischerweise über das
-  `DCHECK_IMAGE` eines per `--print-mk` erzeugten `d-check.mk`). **Dieses Repo
-  ist da nicht betroffen** — gemessen, nicht angenommen: `make adr-check` trägt
-  die Prerequisite `build` und fährt `$(IMAGE):latest` aus dem lokalen
-  Quellstand ([`Makefile`](../../../Makefile), `DCHECK_RUN`).
-- **Die dritte Ausprägung ist offen** und trifft damit **jeden**, dieses Repo
-  eingeschlossen — Quellstand wie gepinntes Image.
-
-**Zwei frühere Fassungen dieses Feldes lagen falsch**, in beide Richtungen: die
-erste schrieb „dieses Repo eingeschlossen", ohne den Image-Pin nachzuschlagen;
-die zweite nahm dieses Repo ganz aus, als alle Ausprägungen behoben wären. Die
-Unterscheidung oben ist die gemessene.
+**Zwei frühere Fassungen des Geltungsbereichs lagen falsch**, in beide
+Richtungen: die erste schrieb „dieses Repo eingeschlossen", ohne den
+Image-Pin nachzuschlagen; die zweite nahm dieses Repo ganz aus, als alle
+Ausprägungen behoben wären, während die dritte/vierte noch offen waren.
 
 **Folge-Slice:** [`slice-220`](../planning/done/slice-220-vcs-pfadmenge-statt-diff.md)
 — der **Klassen**-Fix für die offene dritte Ausprägung; danach
@@ -49,34 +49,37 @@ harmlos und muss befundfrei bleiben — eine später angelegte Datei —, der er
 ist ein Umgebungsfehler. Vor dem Fix behandelte der Adapter beide gleich und
 übersprang die Datei ohne Befund.
 
-**Gemessen, mit echter Verletzung, in zwei Ausprägungen** — dieselbe Range,
-eine geänderte `**Status:** Accepted`-Datei, kanonisch je
+**Gemessen, mit echter Verletzung, in allen vier Ausprägungen** — dieselbe
+Range, eine geänderte `**Status:** Accepted`-Datei, kanonisch je
 `1 Befund(e)`/Exit 1:
 
-| Was der unsichtbar benannte Pack verschluckt | wie die Datei ankommt | vor slice-218 | **heute** |
-| --- | --- | --- | --- |
-| das BASE-**Blob** | `M` | `0 Befund(e)`, Exit 0 | **zu** (Exit 2) |
-| das BASE-**Tree**, mit Pendant auf der Gegenseite | `A` | `0 Befund(e)`, Exit 0 | **zu** (Exit 2) |
-| das BASE-**Tree**, **ohne** Pendant (Verzeichnis gelöscht/umbenannt) | **gar nicht** | `0 Befund(e)`, Exit 0 | **weiterhin offen** |
+| Was der unsichtbar benannte Pack verschluckt | wie die Datei ankommt | vor slice-218 | vor slice-220 | **heute** |
+| --- | --- | --- | --- | --- |
+| das BASE-**Blob** | `M` | `0 Befund(e)`, Exit 0 | zu (Exit 2) | **zu** (Exit 2) |
+| das BASE-**Tree**, mit Pendant auf der Gegenseite | `A` | `0 Befund(e)`, Exit 0 | zu (Exit 2) | **zu** (Exit 2) |
+| das BASE-**Tree**, **ohne** Pendant (Verzeichnis gelöscht/umbenannt) | **gar nicht** | `0 Befund(e)`, Exit 0 | offen | **zu** (Exit 2) |
+| der **HEAD**-Tree | — | fälschlich `core-drift-vcs`, Exit 1 | fälschlich `core-drift-vcs`, Exit 1 | **zu** (Exit 2) |
 
-`git diff` zeigt die Änderung in allen drei Fällen unverändert an. **Jede Zeile
-fand eine andere Review-Runde** — die erste Fassung dieses Carveouts kannte nur
-die erste und sagte den Abschluss trotzdem über die ganze Klasse zu.
+`git diff` zeigt die Änderung in allen vier Fällen unverändert an. **Jede
+Zeile fand eine andere Review-Runde** — die erste Fassung dieses Carveouts
+kannte nur die erste und sagte den Abschluss trotzdem über die ganze Klasse
+zu.
 
-**Die dritte Zeile ist der eigentliche Grund, warum dieser Carveout bleibt.**
-Sie entsteht **vor** jeder Stelle, an der das Modul prüfen könnte: Der
-Tree-Walker der Bibliothek macht aus einem nicht ladbaren Unterbaum ein
-`io.EOF`, die Löschung erreicht die Änderungsliste also nie. Gemessen ist auch,
-dass der naheliegende Wachposten nicht trägt — `tree.Files()` benutzt denselben
-Walker und schweigt ebenso. Ein Fix ist deshalb eine **Entwurfsänderung** (die
-geschützte Pfad-Menge direkt gegen beide Trees auflösen, statt dem Diff zu
-vertrauen) und liegt bei
+**Die dritte Zeile war der eigentliche Grund, warum dieser Carveout bestand.**
+Sie entstand **vor** jeder Stelle, an der das Modul prüfen konnte: Der
+Tree-Walker der Bibliothek machte aus einem nicht ladbaren Unterbaum ein
+`io.EOF`, die Löschung erreichte die Änderungsliste also nie. Gemessen war
+auch, dass der naheliegende Wachposten nicht trug — `tree.Files()` benutzt
+denselben Walker und schwieg ebenso. Der Fix war deshalb eine
+**Entwurfsänderung** (die geschützte Pfad-Menge direkt gegen beide Trees
+auflösen, statt dem Diff zu vertrauen) —
 [slice-220](../planning/done/slice-220-vcs-pfadmenge-statt-diff.md).
 
-**Ein vierter Ausgang gehört daneben, obwohl er kein stiller ist:** Verschluckt
-der Pack den **HEAD**-Tree, meldet der Lauf `core-drift-vcs` *„gelöscht oder
-umbenannt"* mit Exit 1 — laut, aber eine **Fehldiagnose**; das Umgebungsproblem
-erscheint als Inhalts-Befund.
+**Der vierte Ausgang war kein stiller, aber eine Fehldiagnose:** Verschluckte
+der Pack den **HEAD**-Tree, meldete der Lauf `core-drift-vcs` *„gelöscht oder
+umbenannt"* mit Exit 1 — laut, aber falsch; das Umgebungsproblem erschien als
+Inhalts-Befund. slice-220s Entwurfsänderung schließt beide (dritte und
+vierte) auf demselben Codepfad, ohne sie einzeln zu unterscheiden.
 
 Der praktische Auslöser ist `git maintenance run --task=loose-objects`: Es
 schreibt `loose-<Hash>.pack` und packt in Stapeln, hinterlässt also genau die
@@ -98,32 +101,39 @@ dritte Ausprägung zusätzlich (c), dass das geschützte **Verzeichnis** gelösc
 oder umbenannt wird. Trifft nur (a) zu, ist der Lauf grün und auch korrekt
 grün.
 
-## Auflösungs-Trigger
+## Auflösungs-Trigger (erfüllt am 2026-09-17)
 
 Regeln dieser Sektion: Baseline-Regelwerk `modul-07-carveouts.md`
 §Ziel-Form: Carveout — konkret und prüfbar. „Wenn Zeit ist" ist kein Trigger.
 
-**Der Klassen-Fix aus slice-220 ist drin UND das nächste Release ist veröffentlicht** — also der Tag nach `v0.75.0`, mit
-dem der Fix aus slice-218 das publizierte Image erreicht; ein Konsument löst
-den Carveout für sich auf, indem er sein `DCHECK_IMAGE` darauf zieht. Prüfbar
-mit:
+**Der Klassen-Fix aus slice-220 ist drin UND das nächste Release ist
+veröffentlicht** — `v0.76.1` (slice-219), getaggt und über GHCR publiziert
+(Digest `sha256:1470ecdcaa686a5ef4513dee9b0ae522586f54b87d568b06fc6b5b2741b633b3`).
+Ein Konsument löst den Carveout für sich auf, indem er sein `DCHECK_IMAGE`
+darauf zieht. Geprüft mit:
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" <neues-image> \
+docker run --rm --network none -v "$PWD:/repo:ro" \
+  ghcr.io/pt9912/d-check@sha256:1470ecdcaa686a5ef4513dee9b0ae522586f54b87d568b06fc6b5b2741b633b3 \
   --enable vcs --disable links --range <base>..<head>
 ```
 
-gegen ein Probe-Repo mit **partiell** unsichtbarem Pack, in **allen drei**
-Ausprägungen der Tabelle oben — unsichtbares BASE-**Blob** (`M`), unsichtbares
-BASE-**Tree** mit Pendant (`A`) und unsichtbares BASE-**Tree ohne** Pendant
-(Verzeichnis gelöscht, erscheint gar nicht). Vor der Auflösung meldet der Lauf
-je `0 Befund(e)` mit Exit 0; danach müssen alle drei mit **Exit 2** abbrechen.
+gegen ein Probe-Repo mit **partiell** unsichtbarem Pack, in **allen vier**
+Ausprägungen der Tabelle oben — unsichtbares BASE-**Blob**, unsichtbares
+BASE-**Tree** mit Pendant, unsichtbares BASE-**Tree ohne** Pendant und
+unsichtbarer **HEAD**-Tree. **Gemessen** (2026-09-17, gegen das gezogene
+Image, nicht nur den Quellstand): alle vier brechen mit **Exit 2** ab —
+`nicht lesbares Objekt zu "adr-x.md" in "<ref>": file not found` (Blob) bzw.
+`Range-Basis/-Spitze "<ref>" nicht auflösbar: nicht vollständig lesbarer Tree
+zu "<ref>": nicht lesbarer Unterbaum "sub": object not found` (alle drei
+Tree-Fälle).
 
-**Alle drei sind zu fahren, und der Grund steht in der Geschichte dieses
-Carveouts:** Die erste Fassung kannte nur die Blob-Ausprägung, die zweite zwei
-— und hätte den Trigger jedes Mal für erfüllt gehalten, während die nächste
-noch offen war. **Dreimal denselben Fehler zu machen ist der Grund für die
-Zahl in dieser Zeile.**
+**Alle vier wurden gefahren, und der Grund steht in der Geschichte dieses
+Carveouts:** Die erste Fassung kannte nur die Blob-Ausprägung, die zweite
+zwei — und hätte den Trigger jedes Mal für erfüllt gehalten, während die
+nächste noch offen war. **Denselben Fehler zweimal zu machen war der Grund
+für die Zahl in dieser Zeile; die vierte kam erst durch slice-220 selbst
+dazu, nicht durch eine weitere Wiederholung desselben Fehlers.**
 
 ## Geltungs-Konfiguration
 
@@ -137,13 +147,14 @@ der ihn ausdrückt. Er beschreibt einen Zustand des gepinnten Images.
 
 ## Verifikation (nach Auflösung)
 
-- [ ] Gate ist für den Geltungsbereich aktiviert (Gate-Konfiguration aktualisiert).
-- [ ] `make gates` grün ohne Ausnahme.
-- [ ] Datei wird nach `docs/plan/carveouts/done/` bewegt (reiner `git mv`). <!-- d-check:ignore (done/ entsteht erst bei erster Carveout-Auflösung) -->
-- [ ] Folge-Slice geschlossen oder explizit dokumentiert.
+- [x] Gate ist für den Geltungsbereich aktiviert (Gate-Konfiguration aktualisiert).
+- [x] `make gates` grün ohne Ausnahme.
+- [x] Datei wird nach `docs/plan/carveouts/done/` bewegt (reiner `git mv`). <!-- d-check:ignore (done/ entsteht erst bei erster Carveout-Auflösung) -->
+- [x] Folge-Slice geschlossen oder explizit dokumentiert.
 
 ## Geschichte
 
 | Datum | Ereignis | Verweis |
 |---|---|---|
 | 2026-09-08 | Angelegt | [slice-218](../planning/done/slice-218-go-git-pack-namenskonvention.md) |
+| 2026-09-17 | Aufgelöst — Klassen-Fix (slice-220) im Release `v0.76.1` (`slice-219`, zum Schreibzeitpunkt dieser Zeile noch nicht selbst geschlossen) publiziert, alle vier Ausprägungen gegen das gezogene Image gemessen | [slice-220](../planning/done/slice-220-vcs-pfadmenge-statt-diff.md) |
