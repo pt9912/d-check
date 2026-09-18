@@ -1,7 +1,7 @@
 # Benutzerhandbuch: d-check
 
-**Handbuch-Version:** 1.75 · **Software-Version:** [v0.76.3](../../version.md#v0.76.3) ·
-**Stand:** 2026-09-17 · **Autor:** pt9912
+**Handbuch-Version:** 1.76 · **Software-Version:** [v0.77.0](../../version.md#v0.77.0) ·
+**Stand:** 2026-09-18 · **Autor:** pt9912
 
 Dieses Handbuch folgt dem
 [Benutzerhandbuch-Standard](benutzerhandbuch-standard.md): aufgabenbasiert,
@@ -64,7 +64,7 @@ d-check wird als Container-Image über die GitHub Container Registry (GHCR)
 verteilt. Es braucht keine Installation — Sie ziehen und starten das Image:
 
 ```bash
-docker pull ghcr.io/pt9912/d-check:v0.76.3
+docker pull ghcr.io/pt9912/d-check:v0.77.0
 ```
 
 Das Image läuft als Nicht-root-Prozess; ein **read-only**-Mount des
@@ -79,12 +79,12 @@ jeweiligen Registrys; wer per Digest pinnt, nimmt den Digest **der Registry, aus
 der er zieht**. GHCR bleibt die Quelle; Docker Hub folgt ihr.
 
 ```bash
-docker pull pt9912/d-check:v0.76.3
+docker pull pt9912/d-check:v0.77.0
 ```
 
 ### Versionen und Tags
 
-- `:v0.76.3` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
+- `:v0.77.0` — eine feste Version (empfohlen für reproduzierbare Läufe; die jeweils
   aktuelle steht in [version.md](../../version.md#aktuell)).
 - `:latest` — die jeweils neueste **stabile** Version. Vorabversionen
   (Prereleases, z. B. `v1.0.0-rc1`) erhalten **kein** `:latest`; für
@@ -113,7 +113,7 @@ Veröffentlichung geprüft).
 Prüfen Sie das aktuelle Verzeichnis:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0
 ```
 
 d-check mountet Ihr Repository nach `/repo` und prüft es. Eine typische
@@ -172,7 +172,7 @@ Ergebnis.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0
 ```
 
 **Ergebnis:** Exit-Code 0 und „0 Befund(e)" bei sauberer Doku; sonst die
@@ -191,7 +191,7 @@ Befund-Zeilen und Exit-Code 1.
 
 ```bash
 docker run --rm --network none -v "$PWD:/repo:ro" \
-  ghcr.io/pt9912/d-check:v0.76.3
+  ghcr.io/pt9912/d-check:v0.77.0
 ```
 
 **Ergebnis:** Der Schritt ist grün bei Exit-Code 0 und rot bei 1 oder 2 —
@@ -210,7 +210,7 @@ reproduzierbare Läufe auf den Image-Digest (siehe
 **Vorgehen:**
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.76.3 --print-config > .d-check.yml
+docker run --rm ghcr.io/pt9912/d-check:v0.77.0 --print-config > .d-check.yml
 ```
 
 **Ergebnis:** Eine kommentierte `.d-check.yml` im aktuellen Verzeichnis.
@@ -229,7 +229,7 @@ ableiten, in denen Kennungen definiert sind.
 **Vorgehen** (Quellen kommagetrennt):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
   --suggest-config spec/,docs/plan/adr/ > .d-check.yml
 ```
 
@@ -249,7 +249,7 @@ Ausgangslage ab:
   `docs/plan/adr/`, …), dann läuft d-check.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
     --suggest-config ai-harness-init > .d-check.yml
   ```
 
@@ -258,7 +258,7 @@ Ausgangslage ab:
   Hinweis (Ihre TODO-Liste). Läuft sofort.
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
     --suggest-config ai-harness > .d-check.yml
   ```
 
@@ -277,7 +277,7 @@ projektspezifisch — nur sein Präfix wechselt pro Repo (d-check: `DC`,
 a-check: `AC`, …). Geben Sie es mit `--id-prefix` an:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
   --suggest-config ai-harness-init --id-prefix AC > .d-check.yml
 ```
 
@@ -297,7 +297,7 @@ ihn durch Ihr Projekt-Präfix.
 Konfiguration):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
   --enable ids --disable anchors
 ```
 
@@ -318,7 +318,7 @@ ausgeführt sind.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
   --enable ids
 ```
 
@@ -339,7 +339,7 @@ Architekturentscheidungen) und nicht auf abgelöste Dokumente.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
   --enable matrix
 ```
 
@@ -399,6 +399,39 @@ Markdown-Links und Fenced-Code zählen nicht) — eine verbotene Kante meldet
 grandfathern. Ein nicht kompilierbares `token`-Regex ist ein
 Konfigurationsfehler (Exit 2); ohne `token` verhält sich `matrix` unverändert.
 
+**Eine sonst verbotene Token-Referenz auf die eigene Instanz zulassen
+(`allow-if-same-id`).** Manchmal ist eine verbotene Token-Referenz harmlos,
+weil Quelle und Ziel **dieselbe Instanz** sind — ein Slice, der seinen
+eigenen Review-Report zitiert (beide wandern gemeinsam ins selbe
+Wellen-Archiv) —, während dieselbe Kante auf eine **fremde** Instanz (etwa
+eine andere, ggf. bereits archivierte) ein reales Risiko bleibt. Setzen Sie
+dazu `allow-if-same-id: true` auf der Regel:
+
+```yaml
+matrix:
+  classes:
+    - name: slice
+      paths: ["docs/plan/planning/**/slice-*.md"]
+      token: 'slice-(\d{3})'
+    - name: review
+      paths: ["docs/reviews/**/review-slice-*.md"]
+      token: 'review-slice-(\d{3})'
+  rules:
+    - {from: slice, to: review, allow: false, allow-if-same-id: true}
+```
+
+d-check nutzt dann das **bereits vorhandene** `token`-Regex der beteiligten
+Klassen zweifach: wie gewohnt gegen den Fließtext (Fund-Erkennung) und
+zusätzlich gegen den repo-wurzel-relativen Pfad der Quelldatei
+(Instanz-Ermittlung). Trägt das Regex genau eine Capture-Gruppe, ist ihr
+Wert die Instanz-ID; stimmen Quell- und Ziel-ID überein (getrimmt,
+case-sensitiv), wird der Fund ausgenommen. Die Ausnahme wirkt
+**ausschließlich** auf die Token-Form von `matrix-forbidden` — Link-Referenzen
+und `matrix-inactive` bleiben unberührt. Trägt eine beteiligte Klasse kein
+`token` mit genau einer Capture-Gruppe, ist `allow-if-same-id: true` ein
+Konfigurationsfehler (Exit 2); ohne das Feld verhält sich `matrix`
+unverändert.
+
 ### 4.8 Externe Links prüfen (Modul `external`)
 
 **Ziel:** die Erreichbarkeit externer (HTTP-)Links prüfen.
@@ -407,7 +440,7 @@ Konfigurationsfehler (Exit 2); ohne `token` verhält sich `matrix` unverändert.
 **Vorgehen** (ohne `--network none`, da Netz gebraucht wird):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
   --enable external
 ```
 
@@ -429,7 +462,7 @@ Fix-Vorschlägen.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
   --enable ids --doctor
 ```
 
@@ -464,7 +497,7 @@ dessen `findings` je Eintrag zusätzlich `reasonText` (Grund-Klartext) und
 `fixCandidate` (`{original, replacement, note}` oder `null`) tragen:
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
   --enable ids --doctor --json
 ```
 
@@ -512,7 +545,7 @@ Dieselben maschinenlesbaren Varianten gibt es als **YAML** (`--yaml` bzw.
 **Vorgehen** (Patch erzeugen, sichten, anwenden, aufräumen):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
   --enable ids --repair > fix.patch
 # fix.patch sichten (besonders bei --repair-broad), dann anwenden:
 git apply fix.patch
@@ -548,7 +581,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
   Markierung/Zusammenfassung auf stderr gehen, können Sie direkt pipen:
 
   ```bash
-  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+  docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
     --enable ids --repair | git apply
   ```
 
@@ -565,7 +598,7 @@ selbst schreibt nichts — Sie wenden den Patch an.
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 --json
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 --json
 ```
 
 **Ergebnis:** Ein JSON-Dokument auf stdout mit den Feldern `findings`,
@@ -585,7 +618,7 @@ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 --json
 (`--json` und `--yaml` schließen sich gegenseitig aus):
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 --yaml
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 --yaml
 ```
 
 <!-- d-check-test:not-config: --yaml-Ausgabe-Beispiel, kein .d-check.yml-Input -->
@@ -647,7 +680,7 @@ Zeile) sind **Konfiguration**; die Felder, Regeln und Fehlerbilder stehen in §5
 **Vorgehen:**
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 --trace
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 --trace
 ```
 
 **Ergebnis:** eine Markdown-Tabelle auf stdout — je Anforderung Titel,
@@ -785,7 +818,7 @@ Spezifikations-Zwischenschicht).
 `--trace` (dann meldet der Lauf, ändert aber den Exit-Code nicht):
 
 ```text
-$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+$ docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
     --trace --require-complete
 …
 ## Kreuzverweis-Konsistenz
@@ -830,7 +863,7 @@ ein Recipe oder Skript zu kopieren — der Image-Pin bleibt bei d-check.
 **Vorgehen** (Fragment erzeugen, einbinden):
 
 ```bash
-docker run --rm ghcr.io/pt9912/d-check:v0.76.3 --print-mk > d-check.mk
+docker run --rm ghcr.io/pt9912/d-check:v0.77.0 --print-mk > d-check.mk
 # im eigenen Makefile:  include d-check.mk
 ```
 
@@ -848,7 +881,7 @@ Komfort-Variable `DCHECK_DIGEST` (sticht den Tag), `TRACE_FLAGS` und dreizehn
 # Benutzerhandbuch (aufgabenorientiert, deutsch):
 #   https://github.com/pt9912/d-check/blob/main/docs/user/benutzerhandbuch.md
 #   https://raw.githubusercontent.com/pt9912/d-check/refs/heads/main/docs/user/benutzerhandbuch.md  (roh, für Werkzeuge/Agenten)
-DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.76.3
+DCHECK_IMAGE ?= ghcr.io/pt9912/d-check:v0.77.0
 DCHECK_DIGEST ?=
 TRACE_FLAGS ?=
 
@@ -913,7 +946,7 @@ planning:
 ```
 
 ```bash
-docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+docker run --rm --network none -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
   --config .d-check.closure.yml --enable planning
 ```
 
@@ -1126,7 +1159,7 @@ planning:
 ```
 
 ```bash
-docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.76.3 \
+docker run --rm -v "$PWD:/repo:ro" ghcr.io/pt9912/d-check:v0.77.0 \
   --enable planning
 ```
 
@@ -2796,3 +2829,4 @@ Software-Version gekoppelt und wird mit den Releases fortgeschrieben.
 | 1.73             | v0.76.1          | 2026-09-17 | **`vcs` löst die geschützte Pfad-Menge jetzt direkt gegen beide git-Tree-Stände auf, statt einem Diff zu vertrauen** (Modul `vcs`, [`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)). `v0.76.0` behob zwei der vier bekannten Ausprägungen eines Bibliotheks-Effekts (ein *unlesbares* Objekt meldet denselben Fehler wie eine *fehlende* Datei): das unsichtbare **Blob** einer Datei und ihr unsichtbares **Verzeichnis-Objekt mit Pendant** auf der Gegenseite. **Zwei blieben offen:** ein unsichtbares Verzeichnis-Objekt **ohne** Pendant (das ganze Verzeichnis gelöscht) meldete weiterhin `0 Befunde`/Exit 0, und ein unsichtbarer **HEAD**-Tree meldete **fälschlich** `core-drift-vcs` „gelöscht oder umbenannt" (Exit 1) statt eines Umgebungsfehlers — ein Tree-Diff verwandelt einen nicht ladbaren Unterbaum in ein stilles Ende der Aufzählung, statt einen Fehler zu melden. **Ab dieser Version sind alle vier behoben:** die geschützte Klasse (`vcs.paths`) wird jetzt vollständig gegen BASE **und** HEAD aufgelöst, nicht mehr über einen Diff hergeleitet; ein nicht ladbarer Unterbaum bricht diese Auflösung selbst fail-closed ab (Exit 2), bevor irgendein Pfad klassifiziert wird. Zwei Fehlermeldungen ändern sich dadurch (siehe [„Immutabilität über eine Commit-Range prüfen"](#immutabilität-über-eine-commit-range-prüfen-modul-vcs)); kein neuer Grund-Code, kein Konfigurations-Bruch, Befundsatz unverändert für jeden Bestand ohne die genannten Defekte |
 | 1.74             | v0.76.2          | 2026-09-17 | **`vcs` (und jedes Modul, das denselben git-Port liest) löst einen Pack jetzt unabhängig von seinem Namens-Präfix auf** (Modul `vcs`, [`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in)). Bisher fand die Objekt-Auflösung einen Pack nur unter dem kanonischen Namen `pack-<Hash>.{idx,pack}` — etwa ein von `git maintenance run --task=loose-objects` als `loose-<Hash>.pack` geschriebener Pack blieb unsichtbar und brach den Lauf mit Exit 2 ab, obwohl seine Objekte gültig waren. **Jetzt** wird jeder Pack aufgelöst, dessen Datei einen gültigen SHA1/SHA256-Hash als Namens-Suffix trägt **und** eine passende `.idx`-Datei hat, unabhängig vom Präfix (siehe [„Immutabilität über eine Commit-Range prüfen"](#immutabilität-über-eine-commit-range-prüfen-modul-vcs)). Ein Pack ohne gültiges Hash-Suffix oder ohne passenden Index bleibt weiterhin unsichtbar, der fail-closed-Abbruch für eine wirklich unauflösbare Objekt-Menge ist unverändert. Kein neuer Grund-Code, kein Konfigurations-Bruch |
 | 1.75             | v0.76.3          | 2026-09-17 | **`vcs` und `commits` lösen eine angegebene Range jetzt immer auf, auch ohne eigenen Klassen-Config-Block** ([`DC-FA-VCS-001`](../../spec/lastenheft.md#dc-fa-vcs-001--git-diff-immutabilität-des-core-über-eine-commit-range-modul-vcs-opt-in), [`DC-FA-COMMITS-001`](../../spec/lastenheft.md#dc-fa-commits-001--traceability-kennung-in-commit-messages-über-eine-commit-range-modul-commits-opt-in)). War `vcs.paths` bzw. `commits.id-patterns` leer (kein `vcs:`- bzw. `commits:`-Block in der Konfiguration), übersprang der Lauf bislang die Range-Auflösung ganz — eine syntaktisch gültige, aber unauflösbare Range (`--range deadbeef..cafebabe`, auch `--staged` ohne Klassen-Config) meldete `0 Befund(e)`, Exit 0, statt abzubrechen. **Jetzt** wird die Range immer über die Objektdatenbank aufgelöst; ist sie nicht auflösbar, bricht der Lauf mit Exit 2 ab — unabhängig davon, ob es etwas zu prüfen gibt. Eine auflösbare Range mit leerer Klassen-Config bleibt weiterhin befundfrei. Kein neuer Grund-Code, kein Konfigurations-Bruch |
+| 1.76             | v0.77.0          | 2026-09-18 | **`matrix` bekommt eine Instanz-Identitäts-Ausnahme für die Token-Form** (§4.7, Modul `matrix`, [`DC-FA-MTX-003`](../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix), [ADR-0087](../plan/adr/0087-matrix-instanz-identitaets-ausnahme.md)). Neues Regel-Feld `matrix.rules[].allow-if-same-id`: nimmt eine sonst verbotene Token-Referenz aus, wenn Quell- und Ziel-Datei über das bereits vorhandene `token`-Regex dieselbe Instanz-ID tragen (z. B. ein Slice, der seinen eigenen Review-Report zitiert). Wirkt ausschließlich auf die Token-Form von `matrix-forbidden`; fail-closed am Config-Rand ohne `token` mit genau einer Capture-Gruppe auf beiden beteiligten Klassen (Exit 2). Ohne den Schlüssel byte-identisches Verhalten |

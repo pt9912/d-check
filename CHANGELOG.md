@@ -4,6 +4,30 @@ Alle nennenswerten Änderungen an diesem Projekt werden in dieser Datei
 dokumentiert. Das Format folgt [Keep a Changelog](https://keepachangelog.com/de/1.1.0/),
 die Versionierung folgt [SemVer](https://semver.org/lang/de/).
 
+## [0.77.0] — 2026-09-18
+
+### Added
+
+- slice-229 — **`matrix` bekommt eine Instanz-Identitäts-Ausnahme für die
+  Token-Form (`matrix.rules[].allow-if-same-id`)**
+  ([`DC-FA-MTX-003`](spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix),
+  [ADR-0087](docs/plan/adr/0087-matrix-instanz-identitaets-ausnahme.md)).
+  Bisher behandelte `matrix` jede verbotene Token-Referenz gleich, ob eine
+  Quelldatei die **eigene** Instanz des Ziels zitiert (harmlos, z. B. ein
+  Slice, der seinen eigenen Review-Report nennt) oder eine **fremde**
+  (ein reales Risiko für Archivierungs-Werkzeuge). Mit `allow-if-same-id:
+  true` auf einer Regel wird das bereits vorhandene `token`-Regex der
+  beteiligten Klassen zusätzlich gegen den repo-wurzel-relativen Pfad der
+  Quelldatei angewandt; trägt es genau eine Capture-Gruppe und stimmen
+  Quell- und Ziel-ID überein (getrimmt, case-sensitiv), wird der Fund
+  ausgenommen. Wirkt ausschließlich auf die Token-Form von
+  `matrix-forbidden`; Link-Referenzen und `matrix-inactive` sind
+  unberührt. Fail-closed am Config-Rand: `allow-if-same-id: true` auf
+  einer Regel, deren beteiligte Klassen kein `token` mit genau einer
+  Capture-Gruppe tragen, ist Exit 2. Anlass ist ein eingehender Change
+  Request des Adopters `pg-change-feed`. Ohne den Schlüssel
+  byte-identisches Verhalten.
+
 ## [0.76.3] — 2026-09-17
 
 ### Fixed
