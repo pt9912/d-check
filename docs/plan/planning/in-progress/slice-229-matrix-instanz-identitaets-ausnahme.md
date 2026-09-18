@@ -78,18 +78,26 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
       (`internal/adapter/driven/configyaml/configyaml_test.go`).
 - [x] [ADR-0087](../../adr/0087-matrix-instanz-identitaets-ausnahme.md) `Accepted`, referenziert von diesem Slice.
 - [x] `make gates` grün (795 Dateien, Coverage 94,70 %, 0 Lint-/Semgrep-Befunde).
-- [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
+- [x] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
+      Report: `2026-09-18-slice-229-matrix-instanz-identitaet-review-r1.md`
+      (2 MEDIUM, F-1/F-2 behoben, siehe Closure-Notiz).
 - [x] Doku-Update: `harness/README.md` §Sensors unverändert (kein neues
       Modul, kein neues Gate) — kein weiterer öffentlicher Vertrag berührt.
-- [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
-- [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — falls
-      eine Beobachtung anfällt, sonst „keine" in §7 notiert.
-- [ ] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen /
+- [x] Closure-Notiz mit Steering-Loop-Lerneintrag.
+- [x] Beobachtungs-Register (`../observations/`) fortgeschrieben — zwei neue
+      Verzeichnisse (`BEO-ALL/adr-fitness-function-names-wrong-gate`,
+      `BEO-ALL/negativtest-deckt-nur-eine-regelseite`), je 1× (Beleg
+      `evidence/slice-229.md`).
+- [x] Jedes Risiko aus §6 trägt einen Ausgang (eingetreten / entfallen /
       weiter offen).
-- [ ] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
-      Repo ohne Wellen-Betrieb, hier geprüft.
+- [x] Die drei Paarungen (Anker · Folge-Slice · Register) sind getragen —
+      Repo ohne Wellen-Betrieb, hier geprüft: Anker-Paarung entfällt (kein
+      `liegt in`-Feld, kein Schwellen-Übertritt); Folge-Slice-Paarung
+      entfällt (§7 nennt „keine"); Register-Paarung bestätigt (beide neuen
+      BEO-Verzeichnisse existieren mit `observation.md`/`state.md`/
+      `evidence/slice-229.md`).
 
 ## 3. Plan (vor Code)
 
@@ -141,28 +149,58 @@ Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
   Pfad-Extraktion) könnte eine Konnotation verletzen, die
   [`DC-FA-MTX-003`](../../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)
   bisher implizit trug — dass `token` nur gegen **fremden** Text läuft, nie
-  gegen den eigenen Pfad. Die Spec ist bereits geschrieben und erlaubt es
-  explizit; das Risiko ist, dass die Implementierung eine Diskrepanz zur
-  Spec-Absicht aufdeckt, die eine Nacharbeit an der Spec selbst verlangt.
-  **Ausgang:** wird bei Closure eingetragen.
+  gegen den eigenen Pfad. **Ausgang:** entfallen — der unabhängige Review
+  prüfte ADR-Treue und Spec-Konformität gezielt (siehe Report, Negativbefunde)
+  und fand keine Diskrepanz; die Spec erlaubt die Doppelnutzung explizit
+  und die Implementierung folgt ihr wörtlich.
 - **Capture-Gruppen-Zählung am Regex** (`regexp.Regexp.NumSubexp()`) könnte
   Fälle mit **benannten**, aber verschachtelten oder nicht-capturing Gruppen
-  (`(?:...)`) falsch zählen. **Ausgang:** wird bei Closure eingetragen.
+  (`(?:...)`) falsch zählen. **Ausgang:** entfallen — `NumSubexp()` ist in
+  Gos `regexp`-Paket als Zahl der **capturing** Gruppen dokumentiert;
+  nicht-capturing Gruppen (`(?:...)`) zählen per Sprachdefinition nicht mit,
+  unabhängig von Verschachtelung. Kein repo-eigener Test nötig, um eine
+  Standardbibliotheks-Zusage zu bestätigen.
 - **Bestehende Repos mit `token`-Mustern ohne Capture-Gruppe** — das Feature
   ist opt-in (`allow-if-same-id: false` per Default), daher sollte kein
-  bestehendes `.d-check.yml` brechen. **Ausgang:** wird bei Closure
-  eingetragen (Gegenprobe: eigenes `.d-check.yml` bleibt unverändert grün).
+  bestehendes `.d-check.yml` brechen. **Ausgang:** entfallen — bestätigt:
+  dieses Repos eigene `.d-check.yml` (nutzt `token` ohne `allow-if-same-id`)
+  blieb über den gesamten Slice hinweg unverändert grün (`make gates`,
+  wiederholt), `TestMatrixTokenReferenz` (Klassen ohne Capture-Gruppe,
+  unverändert im Diff) blieb grün.
 
 ## 7. Closure-Notiz
 
 <!-- BEDIENHINWEIS — wird vor dem `git mv` nach done/ gefüllt. -->
 
-- **Was hat funktioniert:** <wird bei Closure gefüllt>
-- **Was ging anders als geplant:** <wird bei Closure gefüllt>
-- **Beobachtungs-Register (`../observations/`):** <wird bei Closure gefüllt>
-- **Folge-Slices:** <falls welche entstehen>
-- **Risiken aus §6:** <jedes mit genau einem Ausgang — siehe §6>
-- **Drei Paarungen:** <Anker · Folge-Slice · Register, Ergebnis>
+- **Was hat funktioniert:** Spec-first (Lastenheft + Spezifikation vor Code)
+  trug wie erwartet — die Implementierung folgte der bereits geschriebenen
+  Schritt-7-Beschreibung ohne Diskrepanz (Risiko 1 aus §6 entfallen). Die
+  Wiederverwendung von `token` für die Quell-Pfad-Extraktion ([ADR-0087](../../adr/0087-matrix-instanz-identitaets-ausnahme.md),
+  Alternative D) hielt sich als eng begründete, lokale Änderung — nur
+  `matrix.go`, `config.go`, `configyaml.go` und ihre Tests berührt, keine
+  andere Modul-Datei. `golangci-lint`s `gocognit`-Schwelle zwang zu einer
+  Zerlegung (`applyMatrix` → drei Helfer, `tokenFindings` →
+  `tokenFindingsOnLine`), die den Code im Ergebnis lesbarer macht.
+- **Was ging anders als geplant:** Zwei unabhängige Korrektur-Runden nach
+  Review und Verifikation. Review (F-1/F-2, beide MEDIUM): eine
+  Fitness-Function-Zeile in [ADR-0087](../../adr/0087-matrix-instanz-identitaets-ausnahme.md) nannte ein Gate, das die behauptete
+  Eigenschaft nicht prüft (die ADR war zu diesem Zeitpunkt bereits
+  `Accepted` — Korrektur per `## Geschichte`-Nachtrag statt Kern-Edit,
+  `AGENTS.md` §3.5); ein Negativtest deckte nur eine Seite einer
+  symmetrischen Validierung. Verifikation: ein Zählfehler in der eigenen
+  DoD-Formulierung („sieben" statt tatsächlich acht Akzeptanzkriterien,
+  3+5 statt der behaupteten 4+5) — eine Instanz der in `AGENTS.md` §5
+  benannten Zählmethoden-Pflicht, hier gegen die eigene Planung statt
+  gegen fremden Code angewandt.
+- **Beobachtungs-Register (`../observations/`):** zwei neue Verzeichnisse
+  angelegt, je mit `evidence/slice-229.md` (1×):
+  `BEO-ALL/adr-fitness-function-names-wrong-gate` (Review-Finding-Klasse F-1)
+  und `BEO-ALL/negativtest-deckt-nur-eine-regelseite` (Review-Finding-Klasse
+  F-2).
+- **Folge-Slices:** keine.
+- **Risiken aus §6:** alle drei entfallen — siehe §6.
+- **Drei Paarungen:** Anker entfällt (kein Schwellen-Übertritt), Folge-Slice
+  entfällt (keine), Register bestätigt (siehe oben).
 
 ## 8. Sub-Area-Prüfungen und Modus-Begründung
 
