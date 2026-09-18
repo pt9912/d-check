@@ -667,6 +667,65 @@ func TestDecode_MatrixTokenFailClosed(t *testing.T) {
 	}
 }
 
+// DC-FA-MTX-003 Instanz-Identität Happy: allow-if-same-id mit genau einer
+// Capture-Gruppe auf beiden beteiligten token-Mustern wird übernommen.
+func TestDecode_MatrixAllowIfSameIDHappy(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"matrix:\n  classes:\n" +
+			"    - {name: slice, paths: [s.md], token: 'slice-(\\d{3})'}\n" +
+			"    - {name: review, paths: [r.md], token: 'review-slice-(\\d{3})'}\n" +
+			"  rules:\n    - {from: slice, to: review, allow: false, allow-if-same-id: true}\n"))
+	if err != nil {
+		t.Fatalf("gültige allow-if-same-id-Regel: %v", err)
+	}
+	if len(cfg.Matrix.Rules) != 1 || !cfg.Matrix.Rules[0].AllowIfSameID {
+		t.Fatalf("allow-if-same-id nicht übernommen: %+v", cfg.Matrix.Rules)
+	}
+}
+
+// DC-FA-MTX-003 Instanz-Identität Fehlkonfiguration (fail-closed):
+// allow-if-same-id ohne token, ohne Capture-Gruppe oder mit mehr als einer
+// Capture-Gruppe auf einer der beiden beteiligten Klassen ⇒ Exit 2.
+func TestDecode_MatrixAllowIfSameIDFailClosed(t *testing.T) {
+	cases := []struct {
+		name       string
+		sliceToken string
+	}{
+		{"kein token", ""},
+		{"keine Capture-Gruppe", "token: 'slice-\\d{3}'"},
+		{"zwei Capture-Gruppen", "token: 'slice-(\\d)(\\d{2})'"},
+	}
+	for _, c := range cases {
+		sliceCls := "{name: slice, paths: [s.md]}"
+		if c.sliceToken != "" {
+			sliceCls = "{name: slice, paths: [s.md], " + c.sliceToken + "}"
+		}
+		in := "matrix:\n  classes:\n" +
+			"    - " + sliceCls + "\n" +
+			"    - {name: review, paths: [r.md], token: 'review-slice-(\\d{3})'}\n" +
+			"  rules:\n    - {from: slice, to: review, allow: false, allow-if-same-id: true}\n"
+		if _, err := configyaml.Decode([]byte(in)); err == nil {
+			t.Errorf("%s: Konfigurationsfehler erwartet", c.name)
+		}
+	}
+}
+
+// DC-FA-MTX-003 Default: allow-if-same-id fehlt ⇒ AllowIfSameID bleibt false,
+// keine Capture-Gruppen-Pflicht (byte-identisches Verhalten, DC-QA-02).
+func TestDecode_MatrixAllowIfSameIDDefaultAus(t *testing.T) {
+	cfg, err := configyaml.Decode([]byte(
+		"matrix:\n  classes:\n" +
+			"    - {name: slice, paths: [s.md]}\n" + // kein token, waere sonst fail-closed
+			"    - {name: review, paths: [r.md]}\n" +
+			"  rules:\n    - {from: slice, to: review, allow: false}\n"))
+	if err != nil {
+		t.Fatalf("Regel ohne allow-if-same-id sollte keine token-Pflicht auslösen: %v", err)
+	}
+	if cfg.Matrix.Rules[0].AllowIfSameID {
+		t.Fatalf("AllowIfSameID sollte ohne den Schlüssel false sein")
+	}
+}
+
 // DC-FA-SRC-001 Happy: gültige sources[]-Pins werden übernommen; sha256 wird
 // case-insensitiv zu Kleinbuchstaben normalisiert, unpack-Default ist none, und
 // die Befund-Zeile ist die yaml-Node-Zeile des url-Feldes.

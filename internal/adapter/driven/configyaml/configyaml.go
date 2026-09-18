@@ -615,9 +615,10 @@ type rawMatrix struct {
 		Token     string   `yaml:"token"`
 	} `yaml:"classes"`
 	Rules []struct {
-		From  string `yaml:"from"`
-		To    string `yaml:"to"`
-		Allow bool   `yaml:"allow"`
+		From          string `yaml:"from"`
+		To            string `yaml:"to"`
+		Allow         bool   `yaml:"allow"`
+		AllowIfSameID bool   `yaml:"allow-if-same-id"`
 	} `yaml:"rules"`
 	Status *struct {
 		Forbidden             []string `yaml:"forbidden"`
@@ -2182,44 +2183,103 @@ func compileMatrixToken(i int, token string) (*regexp.Regexp, error) {
 	return re, nil
 }
 
-func applyMatrix(m *rawMatrix, cfg *model.Config) error {
-	if m == nil {
-		return nil
+// validateMatrixAllowIfSameID prüft die Fail-closed-Randbedingung von
+// allow-if-same-id (DC-FA-MTX-003): eine Instanz-Ausnahme, die strukturell
+// nie greifen könnte, lädt nicht still. Beide beteiligten Klassen müssen ein
+// token tragen, das genau eine Capture-Gruppe hat — nicht null (keine
+// ID gewinnbar), nicht mehr als eine (uneindeutig, welche die ID ist).
+func validateMatrixAllowIfSameID(i int, from string, fromToken *regexp.Regexp, to string, toToken *regexp.Regexp) error {
+	for _, side := range []struct {
+		class string
+		token *regexp.Regexp
+	}{{from, fromToken}, {to, toToken}} {
+		switch {
+		case side.token == nil:
+			return fmt.Errorf("%s: matrix.rules[%d].allow-if-same-id verlangt ein token auf Klasse %q",
+				FileName, i, side.class)
+		case side.token.NumSubexp() != 1:
+			return fmt.Errorf("%s: matrix.rules[%d].allow-if-same-id verlangt genau eine Capture-Gruppe im token von Klasse %q (hat %d)",
+				FileName, i, side.class, side.token.NumSubexp())
+		}
 	}
-	classes := map[string]bool{}
+	return nil
+}
+
+// applyMatrixClasses validiert und übernimmt matrix.classes[] nach cfg;
+// liefert zusätzlich die Token-Regexes je Klassenname zurück, die
+// applyMatrixRules für die Instanz-Identitäts-Ausnahme braucht.
+func applyMatrixClasses(m *rawMatrix, cfg *model.Config) (classes map[string]bool, tokenOf map[string]*regexp.Regexp, err error) {
+	classes = map[string]bool{}
+	tokenOf = map[string]*regexp.Regexp{}
 	for i, c := range m.Classes {
 		if c.Name == "" || classes[c.Name] {
-			return fmt.Errorf("%s: matrix.classes[%d].name fehlt oder doppelt", FileName, i)
+			return nil, nil, fmt.Errorf("%s: matrix.classes[%d].name fehlt oder doppelt", FileName, i)
 		}
 		if err := validateMatrixDirection(i, c.Direction, c.Order); err != nil {
-			return err
+			return nil, nil, err
 		}
 		token, err := compileMatrixToken(i, c.Token)
 		if err != nil {
-			return err
+			return nil, nil, err
 		}
 		classes[c.Name] = true
+		tokenOf[c.Name] = token
 		cfg.Matrix.Classes = append(cfg.Matrix.Classes, model.MatrixClass{
 			Name: c.Name, Paths: c.Paths, Order: c.Order, Direction: c.Direction, Token: token,
 		})
 	}
+	return classes, tokenOf, nil
+}
+
+// applyMatrixRules validiert und übernimmt matrix.rules[] nach cfg.
+func applyMatrixRules(m *rawMatrix, cfg *model.Config, classes map[string]bool, tokenOf map[string]*regexp.Regexp) error {
 	for i, rule := range m.Rules {
 		if !classes[rule.From] || !classes[rule.To] {
 			return fmt.Errorf("%s: matrix.rules[%d] referenziert undeklarierte Klasse", FileName, i)
 		}
-		cfg.Matrix.Rules = append(cfg.Matrix.Rules, model.MatrixRule{From: rule.From, To: rule.To, Allow: rule.Allow})
-	}
-	if m.Status != nil {
-		cfg.Matrix.StatusForbidden = m.Status.Forbidden
-		cfg.Matrix.AllowSupersedeLineage = m.Status.AllowSupersedeLineage
-		for i, f := range m.Status.SupersedeFields {
-			if strings.TrimSpace(f) == "" {
-				return fmt.Errorf("%s: matrix.status.supersede-fields[%d] ist leer", FileName, i)
+		if rule.AllowIfSameID {
+			if err := validateMatrixAllowIfSameID(i, rule.From, tokenOf[rule.From], rule.To, tokenOf[rule.To]); err != nil {
+				return err
 			}
 		}
-		cfg.Matrix.SupersedeFields = m.Status.SupersedeFields
-	} else {
+		cfg.Matrix.Rules = append(cfg.Matrix.Rules, model.MatrixRule{
+			From: rule.From, To: rule.To, Allow: rule.Allow, AllowIfSameID: rule.AllowIfSameID,
+		})
+	}
+	return nil
+}
+
+// applyMatrixStatus validiert und übernimmt matrix.status nach cfg (Default
+// ohne den Block: forbidden = [superseded, deprecated]).
+func applyMatrixStatus(m *rawMatrix, cfg *model.Config) error {
+	if m.Status == nil {
 		cfg.Matrix.StatusForbidden = []string{"superseded", "deprecated"}
+		return nil
+	}
+	cfg.Matrix.StatusForbidden = m.Status.Forbidden
+	cfg.Matrix.AllowSupersedeLineage = m.Status.AllowSupersedeLineage
+	for i, f := range m.Status.SupersedeFields {
+		if strings.TrimSpace(f) == "" {
+			return fmt.Errorf("%s: matrix.status.supersede-fields[%d] ist leer", FileName, i)
+		}
+	}
+	cfg.Matrix.SupersedeFields = m.Status.SupersedeFields
+	return nil
+}
+
+func applyMatrix(m *rawMatrix, cfg *model.Config) error {
+	if m == nil {
+		return nil
+	}
+	classes, tokenOf, err := applyMatrixClasses(m, cfg)
+	if err != nil {
+		return err
+	}
+	if err := applyMatrixRules(m, cfg, classes, tokenOf); err != nil {
+		return err
+	}
+	if err := applyMatrixStatus(m, cfg); err != nil {
+		return err
 	}
 	cfg.Matrix.ExcludeSections = m.ExcludeSections
 	cfg.Matrix.ExemptPaths = m.ExemptPaths

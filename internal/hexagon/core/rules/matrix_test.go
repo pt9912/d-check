@@ -398,3 +398,74 @@ func TestMatrixTokenReferenz(t *testing.T) {
 		}
 	}
 }
+
+// DC-FA-MTX-003 Instanz-Identitäts-Ausnahme (allow-if-same-id): eigenes
+// Zitat frei, fremdes verboten, keine Quell-ID ⇒ weiter verboten, Default
+// (ohne das Feld) byte-identisch zu TestMatrixTokenReferenz.
+func TestMatrixAllowIfSameID(t *testing.T) {
+	cfgFor := func(allowIfSameID bool) model.MatrixConfig {
+		return model.MatrixConfig{
+			Classes: []model.MatrixClass{
+				{Name: "slice", Paths: []string{"docs/plan/planning/**/slice-*.md"},
+					Token: regexp.MustCompile(`slice-(\d{3})`)},
+				{Name: "review", Paths: []string{"docs/reviews/*.md"},
+					Token: regexp.MustCompile(`review-slice-(\d{3})`)},
+			},
+			Rules: []model.MatrixRule{{From: "slice", To: "review", Allow: false, AllowIfSameID: allowIfSameID}},
+		}
+	}
+	m := coretest.NewMemFS(map[string]string{
+		// Happy: eigene ID (036) zitiert — mit allow-if-same-id frei.
+		"docs/plan/planning/done/slice-036-x.md": "# S\nSiehe review-slice-036-y.\n",
+		// Boundary: fremde ID (099) zitiert — bleibt verboten.
+		"docs/plan/planning/done/slice-037-x.md": "# S\nSiehe review-slice-099-y.\n",
+		// Negative: eigener Pfad matcht das token-Muster der Quell-Klasse
+		// nicht (kein `\d{3}` im Pfad) — keine Quell-ID, bleibt verboten,
+		// obwohl dieselbe ID wie im Happy-Fall zitiert wird.
+		"docs/plan/planning/done/slice-abc-x.md": "# S\nSiehe review-slice-036-y.\n",
+	})
+
+	t.Run("mit allow-if-same-id", func(t *testing.T) {
+		res, err := Run(m, nil, model.Config{Matrix: cfgFor(true)}, []string{"matrix"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		var got []string
+		for _, f := range res.Findings {
+			got = append(got, fmt.Sprintf("%s:%d %s %s", f.File, f.Line, f.Reason, f.Target))
+		}
+		want := []string{
+			"docs/plan/planning/done/slice-037-x.md:2 matrix-forbidden review-slice-099",
+			"docs/plan/planning/done/slice-abc-x.md:2 matrix-forbidden review-slice-036",
+		}
+		if fmt.Sprint(got) != fmt.Sprint(want) {
+			t.Fatalf("Befunde = %v, want %v", got, want)
+		}
+	})
+
+	t.Run("ohne allow-if-same-id byte-identisch zur Basisregel", func(t *testing.T) {
+		withFlag, err := Run(m, nil, model.Config{Matrix: cfgFor(false)}, []string{"matrix"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		baseline, err := Run(m, nil, model.Config{Matrix: model.MatrixConfig{
+			Classes: []model.MatrixClass{
+				{Name: "slice", Paths: []string{"docs/plan/planning/**/slice-*.md"},
+					Token: regexp.MustCompile(`slice-(\d{3})`)},
+				{Name: "review", Paths: []string{"docs/reviews/*.md"},
+					Token: regexp.MustCompile(`review-slice-(\d{3})`)},
+			},
+			Rules: []model.MatrixRule{{From: "slice", To: "review", Allow: false}},
+		}}, []string{"matrix"})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if fmt.Sprint(withFlag.Findings) != fmt.Sprint(baseline.Findings) {
+			t.Fatalf("Default (allow-if-same-id=false) weicht vom Basisverhalten ab: %v != %v",
+				withFlag.Findings, baseline.Findings)
+		}
+		if len(withFlag.Findings) != 3 {
+			t.Fatalf("erwarte 3 Befunde ohne die Ausnahme (alle drei Dateien), got %d", len(withFlag.Findings))
+		}
+	})
+}

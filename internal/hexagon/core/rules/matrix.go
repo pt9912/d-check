@@ -94,8 +94,13 @@ func CheckMatrix(fsys driven.Filesystem, file string, content []byte, lines []Li
 // Link-befreite Text gegen das token-Regex jeder anderen Klasse geprüft; eine
 // verbotene Kante (`rules`) erzeugt matrix-forbidden. Token in Markdown-Links
 // (linkSpanRe-entfernt) und in Fences (proseLines) zählen nicht.
+//
+// Instanz-Identitäts-Ausnahme (allow-if-same-id): die Quell-ID wird einmalig
+// vorab ermittelt — sie hängt nur von srcClass und file ab, nicht von der
+// geprüften Zeile.
 func tokenFindings(srcClass string, cfg model.MatrixConfig, content []byte,
 	excluded []lineRange, file string) []model.Finding {
+	srcID, srcIDOk := sourceInstanceID(cfg.Classes, srcClass, file)
 	var findings []model.Finding
 	for _, pl := range proseLines(content) {
 		if inRanges(excluded, pl.no) || strings.Contains(pl.raw, provenanceMarker) {
@@ -106,21 +111,67 @@ func tokenFindings(srcClass string, cfg model.MatrixConfig, content []byte,
 			if c.Token == nil || c.Name == srcClass {
 				continue
 			}
-			if rule, found := ruleFor(cfg.Rules, srcClass, c.Name); !found || rule.Allow {
+			rule, found := ruleFor(cfg.Rules, srcClass, c.Name)
+			if !found || rule.Allow {
 				continue
 			}
-			for _, loc := range c.Token.FindAllStringIndex(stripped, -1) {
-				tok := stripped[loc[0]:loc[1]]
-				findings = append(findings, model.Finding{
-					File: file, Line: pl.no, Rule: "matrix",
-					Target: tok, Reason: ReasonMatrixForbidden,
-					Message: "Token-Referenz " + srcClass + " → " + c.Name + " (" + tok +
-						") ist nicht erlaubt — Provenance via <!-- d-check:status-provenance --> deklarieren",
-				})
-			}
+			findings = append(findings,
+				tokenFindingsOnLine(srcClass, c, rule, stripped, pl.no, file, srcID, srcIDOk)...)
 		}
 	}
 	return findings
+}
+
+// tokenFindingsOnLine prüft eine bereits Link-befreite Zeile gegen das
+// token-Regex einer einzelnen verbotenen Ziel-Klasse c und wendet dabei die
+// Instanz-Identitäts-Ausnahme an (rule.AllowIfSameID).
+func tokenFindingsOnLine(srcClass string, c model.MatrixClass, rule model.MatrixRule,
+	stripped string, line int, file string, srcID string, srcIDOk bool) []model.Finding {
+	var findings []model.Finding
+	for _, loc := range c.Token.FindAllStringSubmatchIndex(stripped, -1) {
+		tok := stripped[loc[0]:loc[1]]
+		if rule.AllowIfSameID && srcIDOk && sameInstance(loc, stripped, srcID) {
+			continue
+		}
+		findings = append(findings, model.Finding{
+			File: file, Line: line, Rule: "matrix",
+			Target: tok, Reason: ReasonMatrixForbidden,
+			Message: "Token-Referenz " + srcClass + " → " + c.Name + " (" + tok +
+				") ist nicht erlaubt — Provenance via <!-- d-check:status-provenance --> deklarieren",
+		})
+	}
+	return findings
+}
+
+// sourceInstanceID ermittelt die Instanz-ID der Quelldatei (DC-FA-MTX-003,
+// allow-if-same-id): das eigene token-Regex der Quell-Klasse wird gegen file
+// (repo-wurzel-relativ) ausgewertet, Capture-Gruppe 1 des ersten Treffers ist
+// die ID. Kein Treffer oder die Klasse ohne token ⇒ ok=false — dieselbe
+// Quelldatei bleibt dann für jede Regel ohne Instanz-Ausnahme (fail-closed
+// pro Datei, nicht nur am Config-Rand).
+func sourceInstanceID(classes []model.MatrixClass, srcClass, file string) (id string, ok bool) {
+	for _, c := range classes {
+		if c.Name != srcClass || c.Token == nil {
+			continue
+		}
+		m := c.Token.FindStringSubmatch(file)
+		if len(m) < 2 {
+			return "", false
+		}
+		return strings.TrimSpace(m[1]), true
+	}
+	return "", false
+}
+
+// sameInstance liest die Capture-Gruppe 1 des Ziel-Treffers loc (Indizes in
+// stripped) und vergleicht sie — getrimmt, case-sensitiv — mit der bereits
+// ermittelten Quell-ID. loc[2]/loc[3] < 0 (Gruppe hat nicht teilgenommen)
+// zählt als keine Übereinstimmung.
+func sameInstance(loc []int, stripped, srcID string) bool {
+	if len(loc) < 4 || loc[2] < 0 {
+		return false
+	}
+	return strings.TrimSpace(stripped[loc[2]:loc[3]]) == srcID
 }
 
 // lineageValues liefert die Supersede-Feldwerte der Quelldatei, falls das

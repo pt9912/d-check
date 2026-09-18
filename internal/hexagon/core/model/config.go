@@ -176,6 +176,12 @@ const DirectionNoDownward = "no-downward"
 type MatrixRule struct {
 	From, To string
 	Allow    bool
+	// AllowIfSameID (Default false) nimmt einen Token-Form-Fund von
+	// matrix-forbidden aus, wenn die token-Capture-Gruppe der From- und
+	// der To-Klasse dieselbe Instanz-ID liefern (DC-FA-MTX-003). Nur
+	// wirksam, wenn beide Klassen ein token mit genau einer Capture-Gruppe
+	// tragen — fail-closed im Config-Adapter validiert.
+	AllowIfSameID bool
 }
 
 // MatrixConfig ist die validierte matrix-Konfiguration
