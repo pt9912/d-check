@@ -1173,6 +1173,33 @@ additiv (ein Muster mit `always` findet eine Obermenge seiner
    (Config-Adapter, Exit 2): `token` kompiliert nicht oder matcht den Leerstring.
    Ohne `token`/`exempt-paths` ist der Befundsatz byte-identisch
    ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
+7. **Instanz-Identitäts-Ausnahme** (`rules[].allow-if-same-id`, Default
+   `false`): Trägt die verbotene Regel, gegen die ein Token-Fund aus Schritt 6
+   geprüft wird, `allow-if-same-id: true`, wird vor dem Emittieren des
+   `matrix-forbidden`-Befundes (Token-Form) eine Instanz-Korrelation versucht.
+   Das `token`-Regex der **Ziel**-Klasse muss dafür bereits **genau eine**
+   Capture-Gruppe tragen (Config-Adapter validiert dies fail-closed, siehe
+   unten) — ihr Wert am Fund ist die **Ziel-ID**. Zusätzlich wird dasselbe
+   `token`-Regex der **Quell**-Klasse — ebenfalls mit genau einer
+   Capture-Gruppe — **einmalig gegen den repo-wurzel-relativen Pfad der
+   Quelldatei** ausgewertet (erster Treffer, First-Match wie die
+   Klassenzuordnung); liefert das eine Capture-Gruppe, ist ihr Wert die
+   **Quell-ID**. Stimmen Quell-ID und Ziel-ID — nach Trim, case-sensitiv wie
+   alle übrigen `matrix`-Vergleiche — überein, wird der Fund ausgenommen; sonst
+   bleibt er `matrix-forbidden`. Matcht der Quell-Pfad das eigene `token`-Regex
+   der Quell-Klasse **nicht** (keine Quell-ID ermittelbar), gilt dieselbe
+   Nicht-Ausnahme — die Regel bleibt für diese Quelldatei streng, unabhängig
+   vom Ziel-Fund. Die Ausnahme wirkt **ausschließlich** auf die Token-Form von
+   `matrix-forbidden` (Schritt 6); die Link-Form (Schritt 1) und
+   `matrix-inactive` (Schritt 2/4) sind unberührt — eine Regel mit
+   `allow-if-same-id: true` ändert an ihrer Link-Prüfung nichts.
+   **Fehlkonfiguration ist fail-closed** (Config-Adapter, Exit 2, Regel und
+   fehlende Klasse benannt): `allow-if-same-id: true` auf einer Regel, deren
+   `from`- oder `to`-Klasse kein `token` trägt, dessen Regex nicht kompiliert,
+   den Leerstring matcht oder nicht **genau eine** Capture-Gruppe hat — eine
+   Instanz-Ausnahme, die strukturell nie greifen könnte, lädt nicht still.
+   Ohne `allow-if-same-id` ist der Befundsatz byte-identisch
+   ([`DC-QA-02`](lastenheft.md#dc-qa-02--determinismus)).
 
 ### DC-FA-EXT-001.a — Externe Erreichbarkeit
 
@@ -3048,8 +3075,15 @@ matrix:
       paths: [spec/lastenheft.md]
     - name: adr
       paths: ["docs/plan/adr/[0-9]*.md"]
+    - name: slice
+      paths: ["docs/plan/planning/**/slice-*.md"]
+      token: 'slice-(\d{3})'     # Capture-Gruppe = Instanz-ID
+    - name: review
+      paths: ["docs/reviews/*.md"]
+      token: 'review-slice-(\d{3})'  # Capture-Gruppe = Instanz-ID
   rules:
     - {from: contract, to: adr, allow: false}
+    - {from: slice, to: review, allow: false, allow-if-same-id: true}  # eigenes Zitat frei, fremdes verboten
   status:
     forbidden: [superseded, deprecated]
     allow-supersede-lineage: true        # ablösende Datei darf auf ihr abgelöstes Ziel zeigen
@@ -3095,7 +3129,8 @@ Exit 2 ohne Prüfung
 | `matrix.classes[].order` | string[] | leer | Glob-Liste, autoritativste Schicht zuerst (Rang = Index des ersten Treffers); nur zusammen mit `direction` (Exit 2) |
 | `matrix.classes[].direction` | string | leer | nur `no-downward` (Exit 2 bei unbekanntem Wert); verlangt nicht-leeres `order` (Exit 2) — keine still wirkungslose Richtungs-Deklaration |
 | `matrix.classes[].token` | string | leer | Regex; erkennt Referenzen auf diese Klasse als **bare ID-Token** im Fließtext ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)). Muss kompilieren und darf den Leerstring nicht matchen (Exit 2). Ohne `token` nur Link-Erkennung |
-| `matrix.rules[]` | {from,to,allow} | — | Klassen müssen deklariert sein |
+| `matrix.rules[]` | {from,to,allow,allow-if-same-id} | — | Klassen müssen deklariert sein |
+| `matrix.rules[].allow-if-same-id` | bool | `false` | nimmt eine Token-Form-`matrix-forbidden`-Kante aus, wenn Quell- und Ziel-`token`-Capture-Gruppe übereinstimmen ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)); verlangt genau eine Capture-Gruppe auf **beiden** beteiligten `token`-Mustern (sonst Exit 2); ohne `true` byte-identisch |
 | `matrix.status.forbidden` | string[] | `[superseded, deprecated]` | case-insensitiv |
 | `matrix.status.allow-supersede-lineage` | bool | `false` | nimmt die deklarierte Supersede-Lineage-Kante von der Status-Prüfung aus (nur `matrix-inactive`); ohne `true` byte-identisch |
 | `matrix.status.supersede-fields` | string[] | leer | Feldnamen (z. B. `Supersedes`, `Aenderungstyp`), aus denen die Ablösung gelesen wird; Einträge nicht leer (Exit 2); nur wirksam bei `allow-supersede-lineage: true` |
@@ -3259,7 +3294,7 @@ Grund-Codes der Befunde (stabil, maschinenlesbar):
 | `SPEC-015` | `symlink` | links | Ziel ist/enthält Symlink (Vorrang vor `repo-escape`) |
 | `SPEC-016` | `anchor-missing` | anchors, codepaths | Anker entspricht keinem Heading-Slug und keinem HTML-Anker der Zieldatei |
 | `SPEC-017` | `id-unlinked` | ids | Kennung im Fließtext ohne Markdown-Link |
-| `SPEC-018` | `matrix-forbidden` | matrix | Referenz zwischen Klassen nicht erlaubt (**Link** oder, bei gesetztem `matrix.classes[].token`, **bare ID-Token** im Körper; Token-Form via `<!-- d-check:status-provenance -->` deklarierbar) |
+| `SPEC-018` | `matrix-forbidden` | matrix | Referenz zwischen Klassen nicht erlaubt (**Link** oder, bei gesetztem `matrix.classes[].token`, **bare ID-Token** im Körper; Token-Form via `<!-- d-check:status-provenance -->` oder, bei `matrix.rules[].allow-if-same-id`, per Instanz-ID-Übereinstimmung ausnehmbar) |
 | `SPEC-019` | `matrix-inactive` | matrix | Referenz auf Dokument mit verbotenem Status |
 | `SPEC-020` | `matrix-downward` | matrix | klasseninterner Abwärtsverweis gegen die deklarierte Rangordnung (`order`/`direction: no-downward`) |
 | `SPEC-021` | `external-status` | external | HTTP-Status ≥ 400 oder Transportfehler (DNS/Verbindung) |
@@ -3344,6 +3379,7 @@ Moduls `external` finden keine Netzwerkzugriffe statt
 
 | Datum | Änderung |
 |---|---|
+| 2026-09-18 | §[`DC-FA-MTX-001.a`](spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung) Schritt 7 + §2-Schema (`matrix.rules[].allow-if-same-id`) ergänzt: Instanz-Identitäts-Ausnahme ([`DC-FA-MTX-003`](lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)) — eine Regel mit `allow-if-same-id: true` nimmt eine Token-Form-`matrix-forbidden`-Kante aus, wenn das (bereits vorhandene) `token`-Muster der Ziel-Klasse am Fund und dasselbe Muster der Quell-Klasse am Pfad der Quelldatei dieselbe Capture-Gruppen-ID liefern — kein neues Klassen-Feld, dieselbe Regex doppelt genutzt. Fail-closed: `allow-if-same-id` ohne genau eine Capture-Gruppe auf **beiden** beteiligten `token`-Mustern ⇒ Exit 2. Wirkt ausschließlich auf die Token-Form (Schritt 6); Link-Form und `matrix-inactive` unberührt. Default-aus byte-identisch. Anlass: eingehender CR des Adopters `pg-change-feed` (`docs/plan/cr/2026-09-18-cr-eingehend-pg-change-feed-matrix-instanz-identitaet.md`). Begründung in begleitender ADR |
 | 2026-09-17 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 um die Pack-Namens-Auflösung ergänzt (slice-226 <!-- d-check:status-provenance -->, eingehender CR `ai-harness-init`, kein Lastenheft-Bump — dieselbe Zusage, eine erweiterte Erkennung): ein Pack mit gültigem SHA1/SHA256-Hash-Suffix und passender Index-Datei wird jetzt **unabhängig vom Dateinamens-Präfix** aufgelöst — vorher machte allein der rekonstruierte kanonische Name `pack-<hash>.{pack,idx}` einen Pack für die Enumeration sichtbar, und `git maintenance run --task=loose-objects` (eine von git selbst empfohlene Routine-Wartung, die `loose-<hash>.pack` schreibt) machte damit gültige Objekte grundlos unsichtbar. Ein Pack ohne gültiges Hash-Suffix oder ohne passenden Index bleibt weiterhin unsichtbar, der fail-closed-Abbruch für eine wirklich unauflösbare Menge ist unverändert. Kein neuer Grund-Code, kein Konfigurations-Schlüssel |
 | 2026-09-17 | §[`DC-FA-VCS-001.a`](spezifikation.md#dc-fa-vcs-001a--git-diff-immutabilität-über-eine-commit-range-vcs) Schritt 2 **umgeschrieben** (slice-220 <!-- d-check:status-provenance -->, [`CO-001`](../docs/plan/carveouts/done/CO-001-vcs-range-stiller-skip.md)-Anlass, kein Lastenheft-Bump — dieselbe Zusage, ein anderer Mechanismus): die geschützte Klasse `vcs.paths` wird jetzt **direkt gegen beide vollständigen Tree-Stände** aufgelöst statt gegen einen Diff, und beide Mengen-Enden brechen fail-closed ab, sobald ein Unterbaum-Objekt nicht lesbar ist — der frühere Diff-Walker (ohne bzw. mit Rename-Erkennung) machte aus genau diesem Fall ein stilles Ende der Aufzählung. Damit entfallen ersatzlos: die Diff-Status-Klassen `M`/`T`/`D`/`R`/`A`, der Absatz über die (ab-/an-)geschaltete Rename-Erkennung des Range-Pfads (eine Umbenennung ist jetzt strukturell Löschung+Hinzufügung, weil beide Mengen unabhängig gelesen werden — kein Diff-Modus kann das mehr verdecken) und der Absatz aus dem 2026-09-08-Eintrag darunter über die nachgelesene BASE-Lesbarkeit einer Hinzufügung (`A`) — eine unlesbare BASE lässt schon die Enumeration selbst fehlschlagen, bevor ein Pfad klassifiziert wird. **Die Gegenrichtungs-Zusagen bleiben unverändert:** ein Tree-Eintrag ohne Datei-Inhalt (Verzeichnis, Gitlink) bleibt befundfrei, der Preis (keine Inhalts-Ähnlichkeits-Messung, ein durch Gitlink ersetzter immutabler Pfad bleibt unbemerkt) ebenso. **Anlass:** [`CO-001`](../docs/plan/carveouts/done/CO-001-vcs-range-stiller-skip.md)s dritte Ausprägung (ein geschütztes Verzeichnis wird gelöscht, dessen BASE-Tree unlesbar ist — **ohne** Pendant auf der Gegenseite) lag **unterhalb** jeder Stelle, an der die alte Diff-basierte Fassung hätte eingreifen können; der neue Mechanismus schließt sie strukturell, statt einen vierten Patch auf derselben Schicht zu versuchen ([`BEO-ALL/fix-schliesst-pfad-nicht-klasse`](../docs/plan/planning/observations/BEO-ALL/fix-schliesst-pfad-nicht-klasse/observation.md)). **Eine vierte, bisher fehldiagnostizierte Ausprägung fällt auf denselben Codepfad:** ein unlesbarer **HEAD**-Tree meldete zuvor fälschlich `core-drift-vcs` „gelöscht oder umbenannt" (Exit 1) statt eines Umgebungsfehlers |
 | 2026-09-17 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Fähigkeit: §[`DC-FA-STRUCT-001.a`](spezifikation.md#dc-fa-struct-001a--struktur-invarianten-innerhalb-eines-dokuments-structure) Schritt 6 um `open-tasks-require-marker-section` erweitert ([`DC-FA-STRUCT-001`](lastenheft.md#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in), Begründung in begleitender ADR-Geschichte). **Der Erstentwurf traf nur den Gleichschnitt-Fall:** `open-tasks-require-marker` suchte die Marke ausschließlich im selben Abschnitt, den `max-open-tasks` bereits zählt — Baseline `v6.9.0` verortet die Zeile `Gegenstand:` aber in einem **eigenen** Abschnitt „Closure-Notiz", nicht im DoD-Abschnitt. Ein Dokument, das exakt der Baseline-Ziel-Form folgt (Marke nur in Closure-Notiz), erhielt fälschlich `section-open-tasks-marker-missing` — empirisch reproduziert und durch neue Tests belegt. Der neue Schlüssel (RE2, dieselbe Zeile wie `section-pattern`) durchsucht stattdessen **jeden** Abschnitt, dessen Überschrift trifft; **abwesend** bleibt das Verhalten wie zuvor (derselbe Abschnitt), **byte-identisch** für Bestandskonfigurationen. Trifft das Muster keinen Abschnitt, gilt die Marke als fehlend. **Ohne** `open-tasks-require-marker` ⇒ Exit 2 |

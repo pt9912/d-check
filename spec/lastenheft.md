@@ -1,6 +1,6 @@
 # Lastenheft — d-check
 
-**Version:** 0.87.1
+**Version:** 0.88.0
 
 **Status:** Draft
 
@@ -1355,13 +1355,46 @@ und können nicht nachträglich markiert werden; sie werden grandfathered, neue
 Dokumente ab Einführung tragen die Deklaration. Ohne `token`/`exempt-paths` ist
 der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
 
+**Instanz-Identitäts-Ausnahme (opt-in).** Eine verbotene Klassen-Regel trifft
+heute jede Token-Referenz gleich, ob die Quelldatei die **eigene** Instanz des
+Ziels zitiert (etwa ein Slice, der seinen eigenen Review-Report nennt — beide
+wandern gemeinsam ins selbe Archiv, harmlos) oder eine **fremde** (ein Zitat auf
+eine andere, ggf. bereits archivierte Instanz — real ein Risiko für
+Archivierungs-Werkzeuge). Der Unterschied ist **instanzbasiert**, nicht
+klassenbasiert — dieselbe Figur wie die Supersede-Lineage-Ausnahme
+([`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)),
+hier auf die Klassen-Regelprüfung (`matrix-forbidden`, Token-Form) statt auf die
+Status-Prüfung angewandt. Ist `allow-if-same-id` auf einer Regel gesetzt, wird
+das **bereits vorhandene** `token`-Muster der beteiligten Klassen doppelt
+genutzt: gegen den **Fließtext** (wie bisher, zur Fund-Erkennung) und gegen den
+**repo-wurzel-relativen Pfad der Quelldatei** (neu, zur Instanz-Ermittlung der
+Quelle). Trägt das `token`-Muster **genau eine** Capture-Gruppe, ist ihr Wert die
+Instanz-ID; matcht der Quell-Pfad das eigene `token`-Muster der Quell-Klasse
+**und** stimmt die gewonnene Quell-ID — nach Trim, case-sensitiv — mit der
+Capture-Gruppen-ID des gefundenen Ziel-Tokens überein, wird der Fund
+ausgenommen. Matcht der Quell-Pfad das eigene Muster nicht (keine Instanz-ID
+ermittelbar) oder weichen die IDs ab, bleibt es beim `matrix-forbidden`-Befund —
+**ohne eindeutige Korrelation keine Freigabe**. Die Ausnahme wirkt ausschließlich
+auf die Token-Form von `matrix-forbidden`; Link-Referenzen und `matrix-inactive`
+sind unberührt. **Fehlkonfiguration ist fail-closed am Config-Rand:** `allow-if-
+same-id: true` auf einer Regel, deren `from`- oder `to`-Klasse kein `token`
+trägt oder dessen Regex nicht **genau eine** Capture-Gruppe hat, ist ein
+Konfigurationsfehler (Exit 2, Regel und fehlende Klasse benannt) — eine
+Instanz-Ausnahme, die nie greifen kann, wird nicht still geladen. Ohne das Feld
+ist der Befundsatz byte-identisch ([`DC-QA-02`](#dc-qa-02--determinismus)).
+
 **Akzeptanzkriterien:**
 
 - **Happy Path:** Given eine Klasse `slice` mit `token: 'slice-\d{3}'`, eine verbotene Regel `{from: adr, to: slice}` und ein ADR-Körper, der eine Slice-Kennung **mit** `<!-- d-check:status-provenance -->` auf derselben Zeile nennt, when das Modul `matrix` läuft, then kein Befund.
 - **Boundary:** Given dieselbe Konfiguration und derselbe ADR-Körper **ohne** Marker, when das Modul läuft, then ein `matrix-forbidden`-Befund (Token-Form) mit Nennung beider Klassen.
 - **Negative:** Given eine Datei, die ein `matrix.exempt-paths`-Glob matcht und einen unmarkierten verbotenen Token trägt, when das Modul läuft, then kein Befund (grandfathered).
+- **Instanz-Identität Happy:** Given zwei Klassen `slice`/`review` mit je `token: 'slice-(\d{3})'` bzw. `token: 'review-slice-(\d{3})'`, eine Regel `{from: slice, to: review, allow: false, allow-if-same-id: true}` und eine Quelldatei `slice-<NNN>-x.md`, die im Körper `review-slice-<NNN>-y.md` (dieselbe Kennung) als Token nennt, when das Modul läuft, then kein Befund — Quell- und Ziel-ID stimmen überein.
+- **Instanz-Identität Boundary:** Given dieselbe Konfiguration und dieselbe Quelldatei, die stattdessen `review-slice-<MMM>-y.md` (eine **andere** Kennung) nennt, when das Modul läuft, then ein `matrix-forbidden`-Befund (Token-Form) — die IDs weichen ab.
+- **Instanz-Identität Negative (keine Korrelation):** Given dieselbe Regel und eine Quelldatei, deren **eigener** Pfad das `token`-Muster der Quell-Klasse nicht matcht (z. B. außerhalb des erwarteten Namensschemas, aber innerhalb `classes[].paths`), die denselben Token wie im Happy-Fall nennt, when das Modul läuft, then bleibt der `matrix-forbidden`-Befund — ohne ermittelbare Quell-ID keine Freigabe.
+- **Instanz-Identität Fehlkonfiguration:** Given eine Regel mit `allow-if-same-id: true`, deren `to`-Klasse kein `token` trägt (oder dessen Regex keine oder mehr als eine Capture-Gruppe hat), when die Konfiguration geladen wird, then ein Konfigurationsfehler (Exit 2) statt eines stillen No-op.
+- **Instanz-Identität Default:** Given keine `allow-if-same-id`-Angabe (Default aus), when das Modul über dieselben Dateien läuft, then ist der Befundsatz bit-genau wie ohne das Feature.
 
-**Out-of-Scope:** Marker für **Link**-Referenzen (Links bleiben strukturell, `matrix-forbidden` ohne Ausnahme); die semantische Beurteilung „Provenance vs. Entscheidungsgrundlage" (sie steht hinter dem Marker und bleibt Reviewer-Sache, kein Linter-Urteil); Token-Erkennung für ohnehin link-pflichtige Kennungen (`ADR-`/`MR-`/`DC-` sind über `ids` Links — die Token-Erkennung zielt auf bare Kennungen ohne Linkpflicht).
+**Out-of-Scope:** Marker für **Link**-Referenzen (Links bleiben strukturell, `matrix-forbidden` ohne Ausnahme); die semantische Beurteilung „Provenance vs. Entscheidungsgrundlage" (sie steht hinter dem Marker und bleibt Reviewer-Sache, kein Linter-Urteil); Token-Erkennung für ohnehin link-pflichtige Kennungen (`ADR-`/`MR-`/`DC-` sind über `ids` Links — die Token-Erkennung zielt auf bare Kennungen ohne Linkpflicht); die Instanz-Identitäts-Ausnahme gilt ausschließlich der **Token-Form** von `matrix-forbidden` — eine **Link**-Referenz (z. B. ein Slice, der seinen eigenen Review per Markdown-Link nennt) bleibt strukturell geprüft, ohne Instanz-Ausnahme; sie erkennt Ablösungen/Zugehörigkeit ausschließlich über den **Pfad** der Quelldatei (keine deklarierten Felder wie bei `allow-supersede-lineage` — ein Slice trägt keine „**MeinReview:**"-Zeile, die Korrelation liegt in der Namenskonvention).
 
 ---
 
@@ -3791,6 +3824,7 @@ der Zustand nicht geraten werden muss.
 
 | Version | Datum | Änderung | Verweis |
 |---|---|---|---|
+| 0.88.0 | 2026-09-18 | [`DC-FA-MTX-003`](#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix) um die **Instanz-Identitäts-Ausnahme** erweitert (`matrix.rules[].allow-if-same-id`, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): eine sonst verbotene Token-Referenz wird ausgenommen, wenn Quelle und Ziel dieselbe Instanz-ID tragen — dasselbe Freigabe-Prinzip wie die Supersede-Lineage-Ausnahme aus [`DC-FA-MTX-001`](#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix), hier auf `matrix-forbidden` (Token-Form) statt `matrix-inactive` angewandt und über den **Quell-Pfad** statt ein deklariertes Feld korreliert (ein Slice trägt keine „Supersedes"-Zeile, die Zugehörigkeit liegt in der Namenskonvention). Nutzt das **bereits vorhandene** `token`-Muster der beteiligten Klassen doppelt — gegen den Fließtext (Fund-Erkennung, unverändert) und gegen den Pfad der Quelldatei (neu, Instanz-Ermittlung) —, kein neues Klassen-Feld. Fail-closed am Config-Rand: `allow-if-same-id: true` ohne `token` mit genau einer Capture-Gruppe auf **beiden** beteiligten Klassen ⇒ Exit 2. **Anlass ist ein eingehender CR** des Adopters `pg-change-feed` (`docs/plan/cr/2026-09-18-cr-eingehend-pg-change-feed-matrix-instanz-identitaet.md`): die Klassen-Engine konnte „eigenes Zitat" (harmlos) nicht von „fremdes Zitat" (Archivierungs-Risiko) unterscheiden. Fünf neue Akzeptanzkriterien (Happy, Boundary, keine Korrelation, Fehlkonfiguration, Default). Ohne den Schlüssel byte-identisches Verhalten. Begründung in begleitender ADR | — |
 | 0.87.1 | 2026-09-17 | Nachzug nach unabhängigem Review, **vor** der ersten Closure dieser Fähigkeit: [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um `open-tasks-require-marker-section` erweitert (**Erweiterung** der elften Bedingung, kein neues Kürzel; Begründung in begleitender ADR-Geschichte). **Der Erstentwurf (0.87.0) traf nur den Gleichschnitt-Fall:** die Marken-Suche lief ausschließlich im selben Abschnitt, den `max-open-tasks` bereits zählt. Baseline `v6.9.0` verortet die Zeile `Gegenstand:` aber in einem **eigenen** Abschnitt „Closure-Notiz", nicht im DoD-Abschnitt — ein Dokument, das exakt der Baseline-Ziel-Form folgt, erhielt fälschlich `section-open-tasks-marker-missing`, **empirisch reproduziert** (unabhängiger Review, isolierte Fixture gegen das gebaute Image). Der einzige Grund, warum der Anlassfall (`slice-221` <!-- d-check:status-provenance -->) zuvor grün lief, war eine zweite, undokumentierte Kopie der Marke direkt im DoD-Abschnitt — nirgends als Voraussetzung genannt. **Der neue Schlüssel** (RE2, dieselbe Zeile wie `section-pattern`) durchsucht **jeden** Abschnitt, dessen Überschrift trifft (Vereinigung mehrerer Treffer); **abwesend** bleibt das Verhalten wie 0.87.0 (byte-identisch für Bestandskonfigurationen ohne den neuen Schlüssel). Trifft das Muster keinen Abschnitt, gilt die Marke als fehlend — dieselbe Lesart wie eine Datei ohne den Abschnitt. Vier neue Akzeptanzkriterien (Erkennung im anderen Abschnitt, Vorzustand-Gegenprobe, fehlender Abschnitt, abweichende Nummerierung). **Ohne** `open-tasks-require-marker` ⇒ Exit 2 | — |
 | 0.87.0 | 2026-09-17 | [`DC-FA-STRUCT-001`](#dc-fa-struct-001--struktur-invarianten-innerhalb-eines-dokuments-modul-structure-opt-in) um `open-tasks-require-marker` erweitert (elfte Bedingung, opt-in; Erweiterung statt neues Kürzel nach dem etablierten Schnitt-Kriterium — Einzelmodul-Frage ⇒ bestehende Anforderung ändern): eine Marke, konditioniert auf `max-open-tasks` — greift nur, wenn dessen Zählung für den Abschnitt bereits meldet. Vorhanden ⇒ **alle** `section-tasks-open`-Einzelbefunde des Abschnitts entfallen (Erlaubnis); fehlt sie ⇒ **ein** neuer Grund-Code `section-open-tasks-marker-missing` ersetzt sie (Pflicht) — nie beide zugleich für denselben Abschnitt. **Anlass ist ein eingehender CR** des Adopters `ai-harness-init` (`docs/plan/cr/2026-09-17-cr-eingehend-ai-harness-init-stilllegungs-form.md`), der die Pflicht-Hälfte bittet, um Baseline `v6.9.0`s neuen Slice-Lifecycle-Zweig „Gegenstand entfallen/übernommen" gate-tragfähig zu machen — die Erlaubnis-Hälfte trägt denselben Zweck für den eigenen Bestand (Träger slice-225 <!-- d-check:status-provenance -->). **Der CR nennt selbst `DC-FA-PLAN-001`**; zutreffend ist `DC-FA-STRUCT-001`, weil `max-open-tasks` und diese Bedingung im Modul `structure` leben, nicht `planning` — beide Module laufen unter `.d-check.closure.yml` nebeneinander, was die Verwechslung erklärt. Fünf neue Akzeptanzkriterien (Erlaubnis, Pflicht, Normalfall unberührt, abwesender Schlüssel, Config-Rand). Ohne den Schlüssel byte-identisches Verhalten. Begründung in begleitender ADR | — |
 | 0.86.5 | 2026-09-06 | Dritte Review-Runde: **die Grenz-Regel trägt — geprüft, indem beide Gegenrichtungen gebaut und gefahren wurden** (symmetrisch streng bricht die vier reparierten Formen, symmetrisch lax holt die Teilzeichenketten-Kollision zurück). Nicht getragen hat der **Vertrag um sie herum**. **(1) Die Kollisions-Vorbedingung ist vom Menschen zum Modul gewandert.** Die Grenze wurde dreimal geändert, die zugesagte Prüfung — *„keiner darf Endstück eines anderen sein"* — kein Mal. Unter der vorigen Fassung war sie vollständig; seit die rechte Seite `.`/`-`/`_` öffnet, ist sie die **falsche Richtung**: Gefährlich ist jetzt das **Anfangs**stück. Gemessen: die Soll-Menge `x.md`, `x.md.bak` meldete `2 von 2 erwähnt`, Exit 0, obwohl `x.md` nirgends stand — und beide bestanden die zugesagte Zwei-Punkte-Prüfung. **Das Modul prüft es jetzt selbst und bricht ab** (Exit 2, mit Nennung beider Mitglieder), weil eine Vorbedingung, die an der Grenz-Regel hängt, bei jeder Änderung der Grenze still falsch wird — sie war es zweimal. Gewöhnliche Bestände treffen das: `x.md`/`x.md.bak`, `x.yml`/`x.yml.example`, `x.sh`/`x.sh.in`. **(2) Die Runen-Basiertheit der RECHTEN Grenze hielt kein Test** — eine byte-basierte Fassung lief grün durch; jetzt gewächtert. **(3) Ein Akzeptanzkriterium führte unter `path` den Preis vor statt der Eigenschaft** und fror ihn als Vertrag ein. **(4) „Drei benannte Grenzen" war eine geschlossene Zahl über einer offenen Menge** — gemessen decken weitere Formen (`x.md~`, `x.md+2`, `a@x.md`, …). Die Klasse schließt nicht ihre Aufzählung, sondern der Wächter aus (1): Der gefährliche Fall bricht ab, statt still grün zu werden. **Zwei Akzeptanzkriterien nachgetragen** (Kollisions-Abbruch, rechte Runen-Grenze) | — |
