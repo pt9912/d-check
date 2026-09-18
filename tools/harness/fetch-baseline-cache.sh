@@ -125,7 +125,13 @@ check_aliases() {
   [ -d "$root" ] || return 0
   while IFS= read -r l; do
     [ -n "$l" ] || continue
-    if tgt="$(readlink -e "$l" 2>/dev/null)" && [ -n "$tgt" ]; then continue; fi
+    # -f statt -e: BSD-readlink (macOS-Host) kennt -e nicht ("illegal
+    # option"). -f kanonisiert auf beiden Plattformen, verlangt aber auf
+    # keiner die Existenz der letzten Pfadkomponente und meldet ein
+    # fehlendes Ziel deshalb nicht zuverlaessig per Exit-Code — das
+    # explizite [ -e "$tgt" ] danach traegt die Existenzpruefung, die -e
+    # sonst allein leistete.
+    if tgt="$(readlink -f "$l" 2>/dev/null)" && [ -n "$tgt" ] && [ -e "$tgt" ]; then continue; fi
     if [ -e "$l" ]; then
       echo "fetch-baseline-cache: unaufloesbarer Symlink ${l} — Zyklus oder zu tiefe Kette" >&2
     else
@@ -211,9 +217,13 @@ verify() {
   local on_disk manifest
   on_disk="$(find "${baseline}" -type f ! -path "$sums" 2>/dev/null | wc -l)"
   manifest="$(grep -c . "$sums" || true)"
+  # -eq statt =: BSD-`wc -l` (macOS-Host) rechtsbuendigt die Zahl mit
+  # fuehrenden Leerzeichen; ein String-Vergleich schlaegt dann trotz
+  # numerischer Gleichheit fehl. -eq parst beide Operanden numerisch und
+  # ist damit GNU- wie BSD-`wc`-kompatibel.
   [ "$on_disk" -gt 0 ] \
     || { echo "fetch-baseline-cache: 0 Dateien — leeres/kaputtes Vendoring" >&2; exit 1; }
-  [ "$on_disk" = "$manifest" ] \
+  [ "$on_disk" -eq "$manifest" ] \
     || { echo "fetch-baseline-cache: Manifest (${manifest} Zeilen) != Dateien auf Platte (${on_disk}) — unvollständig" >&2; exit 1; }
   check_aliases || exit 1
   echo "fetch-baseline-cache: verify ok (${manifest} Dateien, vollständig)"

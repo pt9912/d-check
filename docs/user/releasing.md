@@ -105,11 +105,61 @@ In **einem** Commit vor dem Tag (kein Slice-Commit), sonst läuft `make ci` rot:
      diese Enumerationen — die Modul-Liste blieb so von v0.25 bis v0.37 still
      bei acht Modulen stehen.
 5. **`make ci`** lokal grün fahren (Pre-Tag-De-Risk, „grün = Boden"), erst dann
-   taggen.
+   taggen. **Auf macOS** siehe den eigenen Absatz direkt darunter — `image-test`
+   braucht dort einen Umweg.
 
 Der Digest-Pin in Handbuch §2 entsteht **nach** dem Tag (er existiert erst nach
 dem GHCR-Push) als Folge-Commit.
 
+### `image-test` auf macOS
+
+`make gates` läuft auf macOS nativ (Host-Werkzeuge sind POSIX-Klasse,
+`AGENTS.md` §3.1). `make image-test` **nicht**: Das Skript
+(`tools/image-test.sh`) extrahiert das statische Binary aus dem gebauten
+Runtime-Image (`docker create` + `docker cp`, bewusst ohne den Container zu
+starten — das distroless-Basisimage hat weder Shell noch `tar`) und führt es
+**direkt auf dem Host** aus, um es byte-identisch mit dem Container-Lauf zu
+vergleichen ([`DC-QA-02`](../../spec/lastenheft.md#dc-qa-02--determinismus)).
+Dieses Binary ist ein **Linux-ELF** — der macOS-Kernel (Mach-O-Loader) kann
+es unter keinen Umständen ausführen, unabhängig von der CPU-Architektur
+(auch nicht mit Rosetta, das nur Mach-O übersetzt) und unabhängig davon, ob
+das gebaute Binary zufällig dieselbe CPU-Architektur trägt wie der Host. Der
+native Lauf bricht deshalb mit `exec format error` (Shell-Exit 126) ab.
+
+**Abhilfe: das unveränderte Skript in einem Linux-Container ausführen**, der
+über den gemounteten Docker-Socket denselben Docker-Daemon anspricht
+(Docker-out-of-Docker, kein `--privileged` nötig). Wichtig: `TMPDIR` auf einen
+Pfad umlenken, der **identisch** im Wrapper-Container und auf dem Host
+gemountet ist (`-v "$PWD":"$PWD"`) — sonst löst der host-seitige Docker-Daemon
+die `-v`-Mounts, die das Skript für seine eigenen `docker run`-Aufrufe setzt,
+gegen einen im Wrapper-Container nur lokal existierenden Pfad auf und mountet
+etwas Leeres:
+
+```bash
+mkdir -p .image-test-scratch
+docker run --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v "$PWD":"$PWD" \
+  -w "$PWD" \
+  -e TMPDIR="$PWD/.image-test-scratch" \
+  docker:27-cli \
+  sh -c "apk add --no-cache bash coreutils grep findutils diffutils >/dev/null 2>&1 \
+    && bash tools/image-test.sh"
+rm -rf .image-test-scratch
+```
+
+Das Wrapper-Image braucht nur `bash` und die POSIX-Werkzeuge, die
+`tools/image-test.sh` selbst ruft — `docker:27-cli` (Alpine, enthält die
+Docker-CLI) plus `apk add` genügt. Der Wrapper ist reine Ausführungsumgebung
+für diesen einen Testlauf, **keine** Änderung an `tools/image-test.sh`, dem
+Dockerfile oder dem Makefile.
+
+**Warum keine dauerhafte `make`-Zielfunktion dafür:** Der Wartungsaufwand
+einer neuen, dauerhaften Automatisierungs-Fläche lohnt für einen Vorgang, der
+nur einmal pro Release relevant ist, nicht — die eigentliche, autoritative
+Prüfung läuft ohnehin in der Release-CI (`ubuntu-latest`, Linux), wo `image-test`
+ohne jeden Umweg läuft. Dieser Absatz ist Pre-Tag-De-Risk-Komfort, kein
+zweites Gate.
 
 ## Vorbedingungen (einmalig, im Konto des Betreibers)
 
