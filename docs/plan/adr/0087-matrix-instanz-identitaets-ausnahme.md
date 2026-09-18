@@ -111,3 +111,17 @@ Quelle braucht (der Linktext selbst, wie bei der Lineage-Ausnahme).
 | Datum | Ereignis | Verweis |
 |---|---|---|
 | 2026-09-18 | Accepted | `slice-229` |
+
+**Nachtrag (2026-09-18, unabhängiger Review F-1, MEDIUM):** Die
+Fitness-Function-Zeile „`matrix` (Selbstanwendung) — das erweiterte
+Config-Beispiel in `spec/spezifikation.md` bleibt syntaktisch gültig
+(`make doc-check`)" ist **falsch**. Weder dekodiert `make doc-check`
+gefenctes YAML, noch deckt `TestDocExamples_ConfigBeispieleValidieren`
+(`internal/adapter/driven/configyaml/docexamples_test.go`)
+`spec/spezifikation.md` ab — dieser Test prüft ausdrücklich nur vier
+Nutzer-Doku-Dateien (`docs/user/benutzerhandbuch.md`,
+`docs/user/operations.md`, `README.md`, `README.de.md`). Das
+Config-Beispiel dieser ADR ist **nicht** maschinell geprüft; die Zeile
+im Kern (§Fitness Function) bleibt stehen (ADR nach `Accepted` immutabel,
+`AGENTS.md` §3.5) und ist mit diesem Nachtrag als falsch deklariert,
+statt stillschweigend fortzugelten.

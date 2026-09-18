@@ -68,16 +68,20 @@ spezifiziert.
 Regeln dieser Sektion: Baseline-Regelwerk `modul-05-planning-harness.md`
 §Ziel-Form: Slice — **≤ 3 Liefer-Punkte**.
 
-- [ ] [`DC-FA-MTX-003`](../../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)
-      erfüllt: alle sieben Akzeptanzkriterien (die vier bestehenden
-      unverändert grün, die fünf neuen — Happy, Boundary, keine Korrelation,
-      Fehlkonfiguration, Default) als Tests referenziert.
-- [ ] [ADR-0087](../../adr/0087-matrix-instanz-identitaets-ausnahme.md) `Accepted`, referenziert von diesem Slice.
-- [ ] `make gates` grün.
+- [x] [`DC-FA-MTX-003`](../../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix)
+      erfüllt: alle **acht** Akzeptanzkriterien (die drei bestehenden —
+      Happy Path, Boundary, Negative — unverändert grün, die fünf neuen —
+      Instanz-Identität Happy, Boundary, keine Korrelation,
+      Fehlkonfiguration, Default) als Tests referenziert:
+      `TestMatrixAllowIfSameID` (`internal/hexagon/core/rules/matrix_test.go`)
+      und `TestDecode_MatrixAllowIfSameID{Happy,FailClosed,DefaultAus}`
+      (`internal/adapter/driven/configyaml/configyaml_test.go`).
+- [x] [ADR-0087](../../adr/0087-matrix-instanz-identitaets-ausnahme.md) `Accepted`, referenziert von diesem Slice.
+- [x] `make gates` grün (795 Dateien, Coverage 94,70 %, 0 Lint-/Semgrep-Befunde).
 - [ ] Review durchgeführt, Report unter `docs/reviews/` liegt vor
       (`.harness/skills/reviewer.md`) — Rollenwechsel nach Schritt 8 des
       Minimal Agent Workflow (`AGENTS.md` §6), kein Self-Review (Modul 8).
-- [ ] Doku-Update: `harness/README.md` §Sensors unverändert (kein neues
+- [x] Doku-Update: `harness/README.md` §Sensors unverändert (kein neues
       Modul, kein neues Gate) — kein weiterer öffentlicher Vertrag berührt.
 - [ ] Closure-Notiz mit Steering-Loop-Lerneintrag.
 - [ ] Beobachtungs-Register (`../observations/`) fortgeschrieben — falls

@@ -687,22 +687,35 @@ func TestDecode_MatrixAllowIfSameIDHappy(t *testing.T) {
 // allow-if-same-id ohne token, ohne Capture-Gruppe oder mit mehr als einer
 // Capture-Gruppe auf einer der beiden beteiligten Klassen ⇒ Exit 2.
 func TestDecode_MatrixAllowIfSameIDFailClosed(t *testing.T) {
+	validSliceToken := "token: 'slice-(\\d{3})'"
+	validReviewToken := "token: 'review-slice-(\\d{3})'"
 	cases := []struct {
-		name       string
-		sliceToken string
+		name        string
+		sliceToken  string // "" = kein token; sonst überschreibt validSliceToken
+		reviewToken string // "" = kein token; sonst überschreibt validReviewToken
 	}{
-		{"kein token", ""},
-		{"keine Capture-Gruppe", "token: 'slice-\\d{3}'"},
-		{"zwei Capture-Gruppen", "token: 'slice-(\\d)(\\d{2})'"},
+		{"from: kein token", "", validReviewToken},
+		{"from: keine Capture-Gruppe", "token: 'slice-\\d{3}'", validReviewToken},
+		{"from: zwei Capture-Gruppen", "token: 'slice-(\\d)(\\d{2})'", validReviewToken},
+		// to-Seite isoliert gebrochen (from bleibt gültig) — die im
+		// Lastenheft genannte Fehlkonfigurations-AK nennt wörtlich die
+		// to-Klasse; ohne diesen Fall bliebe validateMatrixAllowIfSameIDs
+		// zweite Schleifen-Iteration (die to-Klasse) ungetestet, weil jeder
+		// from-Bruch die Schleife vorher verlässt.
+		{"to: kein token", validSliceToken, ""},
 	}
 	for _, c := range cases {
 		sliceCls := "{name: slice, paths: [s.md]}"
 		if c.sliceToken != "" {
 			sliceCls = "{name: slice, paths: [s.md], " + c.sliceToken + "}"
 		}
+		reviewCls := "{name: review, paths: [r.md]}"
+		if c.reviewToken != "" {
+			reviewCls = "{name: review, paths: [r.md], " + c.reviewToken + "}"
+		}
 		in := "matrix:\n  classes:\n" +
 			"    - " + sliceCls + "\n" +
-			"    - {name: review, paths: [r.md], token: 'review-slice-(\\d{3})'}\n" +
+			"    - " + reviewCls + "\n" +
 			"  rules:\n    - {from: slice, to: review, allow: false, allow-if-same-id: true}\n"
 		if _, err := configyaml.Decode([]byte(in)); err == nil {
 			t.Errorf("%s: Konfigurationsfehler erwartet", c.name)
