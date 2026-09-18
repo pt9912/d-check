@@ -169,3 +169,77 @@ Vereinfachung, kein Versehen) passt, oder ob eine Instanz-Korrelation
 grundsätzlich woanders hingehört (z. B. `vcs`/`commits`, die bereits
 Instanz-Bezüge über Commit-Ranges tragen). Das ist die eigentliche Frage
 für den Entscheid.
+
+## Zweite Messung (2026-09-18) — ein vorhandener Präzedenzfall im selben Modul
+
+**`matrix` kennt bereits eine Instanz-Korrelation — für einen anderen
+Zweck.** Die Supersede-Lineage-Ausnahme
+(`matrix.status.allow-supersede-lineage`/`supersede-fields`,
+[`spec/spezifikation.md` §DC-FA-MTX-001.a Schritt 4](../../../spec/spezifikation.md#dc-fa-mtx-001a--klassen--und-status-auflösung),
+Implementierung `lineageValues`/`supersedeFieldValues`/`supersedeFieldValue`
+in `matrix.go` Zeile 126–166) nimmt eine sonst als `matrix-inactive` gemeldete Kante aus, **wenn**
+ein deklariertes Feld der Quelldatei (`**Supersedes:** ADR-0007`) <!-- d-check:ignore (Beispielwert aus der Spec, keine Fundstellen-Referenz) --> den
+Linktext oder den aufgelösten Zielpfad der Referenz als Teilzeichenkette
+enthält — dieselbe Grundidee wie die Bitte: eine sonst verbotene/inaktive
+Kante wird **instanzbasiert** freigegeben, nicht klassenbasiert.
+
+**Zwei Unterschiede zur Bitte, beide relevant für den Entscheid:**
+
+1. **Geltung.** Die Lineage-Ausnahme wirkt nur auf `matrix-inactive`
+   (Status-Prüfung); die Klassen-Regelprüfung (`matrix-forbidden`) „bleibt
+   unberührt" — genau die Prüfung, um die die Bitte geht, ist bei der
+   vorhandenen Ausnahme **ausdrücklich ausgenommen**. Es gibt also *keinen*
+   bestehenden Weg, der die Bitte bereits erfüllt — nur ein
+   Konstruktionsprinzip, das sich wiederverwenden ließe.
+2. **Quelle der Korrelation.** Die Lineage-Ausnahme liest ein **deklariertes
+   Feld** im Fließtext der Quelldatei (Kopplung über Inhalt); die Bitte
+   verlangt eine **aus dem Dateinamen/Pfad extrahierte** ID (Kopplung über
+   Namenskonvention). Ein Slice deklariert keine „**MeinReview:**
+   review-slice-036"-Zeile — die Korrelation existiert nur in der
+   Namenskonvention (`slice-036-x.md` ↔ `review-slice-036-x.md`). Die
+   Pfad-Extraktion der Bitte ist damit keine Vereinfachung des
+   Lineage-Mechanismus, sondern eine andere Informationsquelle für dieselbe
+   Grundfigur.
+
+**Eine Wiederverwendungs-Möglichkeit, die die Bitte selbst nicht benennt:**
+`MatrixClass.Token` ist bereits ein `*regexp.Regexp` mit (laut Bitte)
+potenzieller Capture-Gruppe. Er wird heute ausschließlich auf **fremden
+Prosa-Text** angewendet (`tokenFindings`, um Bare-Token-Zitate zu finden).
+Dieselbe Regex ließe sich für die **Quell-ID-Extraktion** auf den
+**Pfad der Quelldatei selbst** anwenden — kein neues Schema-Feld für die
+Quellseite nötig, nur eine zweite Anwendung des bereits vorhandenen
+`token`-Feldes auf einen anderen Input. Für die Zielseite genügt der
+Wechsel von `FindAllStringIndex` auf `FindAllStringSubmatchIndex`. Das
+wäre eine schmalere Erweiterung als das in der Bitte skizzierte Schema
+(kein zusätzliches `id-pattern`-Feld je Klasse) — bei identischer
+Außenwirkung für den beschriebenen Fall.
+
+## Empfehlung (kein Entscheid — zur Bestätigung)
+
+**Einordnung:** Die Bitte passt in den bestehenden Scope von `matrix` — sie
+ist keine Erweiterung auf „Instanzen statt Klassen", sondern eine **zweite
+Instanz-Ausnahme neben einer bereits existierenden** (Lineage), nur für
+`matrix-forbidden` statt `matrix-inactive` und mit Pfad- statt
+Feld-Korrelation. Der in der ersten Messung erwogene Alternativ-Standort
+(`vcs`/`commits`) trägt nicht: jene Module korrelieren Commit-Ranges, nicht
+Dokumentklassen-Paare — die Bitte bleibt eine `matrix`-Frage.
+
+**Vorschlag, falls angenommen:** ein neues Rule-Feld
+`allow-if-same-id: bool` (Default `false`, byte-identisch ohne Nutzung —
+dieselbe Zusage wie bei `allow-supersede-lineage`), das bei `true` **beide**
+beteiligten Klassen zwingt, ein `token`-Regex mit **genau einer**
+Capture-Gruppe zu tragen (sonst Exit 2 bei Config-Laden — fail-closed vor
+dem Lauf, nicht erst beim ersten Fund); die Quell-ID wird durch Anwendung
+von `srcClass.Token` auf den Quell-Dateipfad gewonnen, die Ziel-ID durch
+`FindAllStringSubmatchIndex` auf den Prosa-Treffer; eine Übereinstimmung
+(nach Trim, case-sensitiv wie die übrigen `matrix`-Vergleiche) nimmt den
+Fund aus `matrix-forbidden` aus, jeder Nicht-Treffer bleibt gemeldet.
+
+**Was das für die Umsetzung heißt, sollte diese Empfehlung bestätigt
+werden:** eine neue ADR (`Schärft:` →
+[`DC-FA-MTX-001`](../../../spec/lastenheft.md#dc-fa-mtx-001--referenzmatrix-zwischen-dokumentklassen-modul-matrix)/[`DC-FA-MTX-003`](../../../spec/lastenheft.md#dc-fa-mtx-003--token-basierte-referenz-richtung-mit-provenance-marker-modul-matrix),
+mit `Supersedes` keiner bestehenden ADR — echte Erweiterung, keine Korrektur),
+danach ein Slice mit dem in §Bitte skizzierten Gegenprobe-Test als
+Akzeptanzkriterien-Trio. **Nicht ohne Bestätigung ausgelöst** — die ADR ist
+nach `Accepted` immutable (`AGENTS.md` §3.5), und diese Empfehlung ist ein
+Vorschlag, kein Entscheid.
