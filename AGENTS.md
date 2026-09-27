@@ -88,55 +88,20 @@ Docker und die POSIX-Standardwerkzeuge, die die Gate-Skripte rufen
 (coreutils, findutils, `grep`, `awk`) — als **Klasse**, nicht als Liste.
 
 **Auch keine Host-Skript-Interpreter** (`python`, `perl`, `ruby`, `node`, `uv`, …)
-([`MR-040`](harness/conventions.md#mr-040)). Datei-Änderungen macht das Werkzeug
-ohne Shell; für Messungen gilt die Rangfolge **Produkt vor `grep`/`awk` vor
-allem anderen**. Eine Stage für Skripte gibt es nicht, und diese Regel verweist
-auch nicht auf eine: ein Fall, der `bash` und die genannte Host-Klasse
-übersteigt, ist ein **Entscheid** — keine vierte Toolchain nebenbei
-([`MR-046`](harness/conventions.md#mr-046)).
-
-**Die Host-Klasse oben ist die Zusage an den Agenten, nicht die vollständige
-Liste dessen, was Gate-Skripte rufen.** Die **Netz**-Targets holen sich mehr:
-[`fetch-baseline-cache.sh`](tools/harness/fetch-baseline-cache.sh) braucht
-`curl` und `unzip`, [`pin-freshness.sh`](tools/harness/pin-freshness.sh)
-braucht `curl`, [`nightly-state.sh`](tools/harness/nightly-state.sh) ebenso,
-und [`image-scan.sh`](tools/image-scan.sh) braucht **Docker mit Netz** (Trivy
-zieht seine Vuln-DB). **Alle vier** stehen bewusst außerhalb von `gates`; wer
-sie fährt, fährt sie mit dieser zusätzlichen Erwartung. **Die ersten drei sind
-fail-open, das vierte nicht** — ein gescheiterter CVE-Scan meldet Exit 2 und
-ausdrücklich keinen grünen Befundstand ([ADR-0066](docs/plan/adr/0066-cve-scan-gegen-das-publizierte-image.md)).
+([`MR-040`](harness/conventions.md#mr-040)).
 
 **Falsch:** `go build ./…`, `go test ./…`, `pip install …`, `python3 - <<EOF`
 **Richtig:** `make gates`
 
-**Begründung:** Toolchain-Reproduzierbarkeit + Supply-Chain-Defense.
+**Begründung:** Toolchain-Reproduzierbarkeit + Supply-Chain-Defense — gilt
+unabhängig von ihrer Durchsetzung.
 
-**Die Regel gilt unabhängig von ihrer Durchsetzung.** Wer sich auf den Wächter
-verlässt, verlässt sich auf nichts.
-
-**Durchsetzung, zwei unabhängige Schichten.** Die zweite ist eine
-**Permission-Sperrliste** in [`.claude/settings.json`](.claude/settings.json):
-sie hängt an keinem Hook, matcht aber den **ganzen** Befehl ab dem Anfang und
-sieht deshalb weder Präfixe noch Sub-Shells noch zusammengesetzte Kommandos.
-Ihre git-/docker-Hälfte hat keine zweite Schicht unter sich. Grenzen und
-Nicht-Zusagen: [`MR-047`](harness/conventions.md#mr-047).
-
-Die erste ist ein Tool-Call-Wächter
-([`.claude/hooks/pretooluse-command-guard.sh`](.claude/hooks/pretooluse-command-guard.sh)):
-er prüft die Befehlsposition jedes Segments und Sub-Shell-Strings rekursiv. Er ist
-**werkzeug-lokal**, kein Repo-Gate: keine CI ruft ihn, ein Lauf ohne dieses
-Werkzeug ist ungebunden. Er ist in `bash` geschrieben und liest die Hook-Eingabe
-mit `awk`, läuft also in derselben Klasse, die er durchsetzt
-([`MR-042`](harness/conventions.md#mr-042)); `make guard-probe` (§4) fährt ihn
-gegen seine Proben.
-
-**Er ist ein Stolperdraht, keine Sandbox.** Ungeprüft bleiben: ein
-Shell-Schlüsselwort als Segment-Kopf (`if … then pip …`), ein
-Wrapper außerhalb seiner Präfix-Liste (`nohup`, `timeout`), ein wort-interner
-Quote-/Backslash-Splice (`p"i"p`) und escapte Quotes in der Verschachtelung
-erreichen ein gelistetes Werkzeug, ohne dass er es als Kopf sieht. Die Regel
-gilt trotzdem — sie hängt nicht an ihm. Tabelle in
-[`MR-042`](harness/conventions.md#mr-042).
+**Durchsetzung, zwei unabhängige Schichten:** ein Tool-Call-Wächter
+([`.claude/hooks/pretooluse-command-guard.sh`](.claude/hooks/pretooluse-command-guard.sh),
+`make guard-probe`, §4) und eine Permission-Sperrliste in
+[`.claude/settings.json`](.claude/settings.json). Beides ein
+**Stolperdraht, keine Sandbox** — Begründung, Netz-Targets, Guard-Grenzen
+und -Tabelle: [`harness/rules/docker-make-only.md`](harness/rules/docker-make-only.md).
 
 ### 3.2 Suppression-Verbot
 
@@ -258,42 +223,13 @@ Mess-Labels; Herkunft nur als **ein** auflösbares Feld nach dem
 Baseline-Schema (`DC-*` — die Baseline-Form `LH-*` —, `ADR-*`, `MR-*`,
 `seit welle-<NN>`). Der Reviewer-Skill trägt den HIGH-Anker dazu.
 
-**Zustandsfelder** sind Zustands-Artefakte wie der
-Kommentar, nur im Rumpf — sie tragen **nicht** dessen fünf Klassen, sondern
-eine **eigene Form**; übertragen sind die **zwei Tests**: Adressat ist, wer
-den Zustand liest, um zu handeln, und die Zeitform ist der Indikativ über das,
-was ist. Ein Feld, das einen Zustand trägt — etwa eine `Stand`- oder
-`Status`-Zelle in Roadmap, Beobachtungs-Register oder Meilenstein-Tabelle —,
-nennt **den Zustand und den Beleg als auflösbaren Anker**, nicht die Chronik,
-wie es dazu kam; das
-Drift-Log der Roadmap trägt **nur Umplanungen**, keine Schließungen und keine
-erreichten Meilensteine (die stehen im Closure-Log bzw. in der Status-Spalte).
-Ein lebendes Register trägt **keine** Kopfzeile `Status: Aktiv. Letzte
-Änderung: <Datum>` — sein Zustand ist sein Inhalt, sein Änderungsdatum hält
-`git`; ein Datum, das ein **benannter Trigger** pflegt, ist davon ausgenommen
-(der Frische-Marker der Architektur-Sicht). **Verhältnis zu §3.5:** das
-`**Status:**`-Feld einer ADR ist ein Zustandsfeld wie jedes andere — `adr-check`
-nimmt die Kopf-Status-Zeile ausdrücklich **aus** dem Kern-Vergleich und lässt
-den Übergang zu. Es darf also korrigiert werden, solange der Wert die erlaubte
-Form behält; §3.5 schützt den **Kern**, nicht dieses Feld. **Benannte
-Bestands-Ausnahme:** die historischen `**Status:**`-Felder der `done/`-Slices
-bleiben, wie sie sind — sie sind eingefrorene Lauf-Belege, ihr
-Lifecycle-Zustand ist ohnehin das Verzeichnis, und das Feld hat dort keine
-Funktion (§5). Gemeldet wird von ihnen nur, was dem Verzeichnis
-**widerspricht**. Kanon:
+**Zustandsfelder** (Roadmap-/Register-/Meilenstein-Zellen, das
+`**Status:**`-Feld einer ADR) tragen **nicht** die fünf Klassen, sondern
+eine eigene Form — Zustand und Beleg als auflösbarer Anker, keine Chronik.
+Kein Gate prüft eines von beidem; Bestandsgrenze und Zustandsfeld-Details:
+[`harness/rules/kommentare-fuenf-klassen.md`](harness/rules/kommentare-fuenf-klassen.md).
+Kanon:
 [Baseline §Was ein Kommentar trägt](.harness/baseline/v6.9.0/regelwerk/grundlagen-harness-dateien.md#was-ein-kommentar-trägt--code-konfiguration-skripte).
-
-**Kein Gate prüft das** — weder die fünf Klassen noch die Zustandsfeld-Form;
-die Prüfung ist ein Urteil, kein `grep`. Der Reviewer-Skill trägt dazu **zwei**
-HIGH-Anker.
-
-**Bestandsgrenze:** vor der Einführung bzw. vor dieser Schärfung
-geschriebene Kommentare (Test-Kommentare; ältere Config-Kommentare mit
-Slice-Nummer) sind grandfathered — geräumt wird beim nächsten Anfassen
-der Zeile; Neuzugänge fallen überall unter den Anker. **Für Zustandsfelder
-gibt es keine Bestandsgrenze:** auch Altbestand fällt unter die Form — bis
-auf die oben benannte Ausnahme wird nichts grandfathered.
-*(Auflösungs-Trigger: permanent.)*
 
 ### 3.8 Ein Modul verspricht nur über das, was es scannt
 
@@ -320,40 +256,18 @@ Das gilt für jeden Workflow gleich und für jeden Neuzugang.
 
 **Eine Ausnahme, und sie ist keine Lockerung** ([ADR-0068](docs/plan/adr/0068-lokale-workflow-referenzen-ohne-pin.md)):
 eine **lokale** Workflow-Referenz (`uses: ./.github/workflows/x.yml`) kann keinen
-SHA tragen und **braucht keinen**. Sie löst auf denselben Commit auf wie der
-aufrufende Workflow und ist damit **stärker** gebunden als ein SHA-Pin — sie kann
-per Konstruktion nicht driften. **An die Stelle des Pin-Checks tritt die Frage,
-die hier trägt: existiert das Ziel?** Ein vertippter Verweis fiele sonst erst zur
-Laufzeit auf; `make workflow-pins` meldet ihn als `uses-local-missing`. Sie gilt
-**nur** dem `./`-Präfix; eine Referenz in ein fremdes Repository
-(`owner/repo/.github/workflows/x.yml@ref`) fällt unter die Regel wie jede
-Action. Die Zahl der lokalen Referenzen steht in der Erfolgsmeldung, statt
-stillschweigend übergangen zu werden.
-
-**Die Existenz ist nicht die einzige Frage**
-([ADR-0071](docs/plan/adr/0071-lokale-workflow-referenz-rechte-pruefung.md)).
-Ein aufgerufener Workflow bekommt nur die Rechte, die der aufrufende **Job**
-selbst führt; verlangt er mehr, lehnt GitHub den **ganzen Lauf vor dem ersten
-Job** ab (`startup_failure`, kein Log) — die Existenz-Prüfung allein sieht das
-nicht. Geprüft wird deshalb auch die
-**Rechte-Anforderung des Ziels**: ein Job ohne eigenes `permissions:`, dessen
-Ziel Rechte verlangt (`uses-local-perms-undeclared`), und ein Aufrufer, der
-einen geforderten Scope zu niedrig führt (`uses-local-perms-narrow`). Was der
-Wächter nicht sicher liest, meldet er (`uses-local-perms-unreadable`), statt es
-zu übergehen. **Er deckt damit eine Fehlerklasse, nicht die Lauffähigkeit** —
-und die Zerlegung ist eine Näherung über die YAML-Block-Form, keine
-Parser-Zusage.
+SHA tragen und **braucht keinen** — sie löst auf denselben Commit auf wie der
+aufrufende Workflow und kann per Konstruktion nicht driften. Geprüft wird
+stattdessen Existenz und Rechte-Anforderung des Ziels. Details, Grund-Codes
+und die Grenze der Prüfung:
+[`harness/rules/github-action-sha-pin.md`](harness/rules/github-action-sha-pin.md).
 
 **Begründung:** Supply-Chain-Härtung — ein Tag lässt sich umhängen, ein SHA
 nicht; dieselbe Härtung wie der Docker/make-only-Pfad in §3.1.
 
 **Durchgesetzt:** `make workflow-pins` in `make gates` — über das Modul
 `workflows` ([ADR-0072](docs/plan/adr/0072-workflows-modul.md); Dogfooding über
-das eigene Image). Er trägt die **Form** —
-voller SHA plus Tag-Kommentar —, nicht die **Gültigkeit**: ob der SHA existiert
-und den Commit bezeichnet, den der Tag-Kommentar behauptet, prüft er nicht.
-*(Auflösungs-Trigger: permanent — die Gültigkeitsfrage ist Netz und gehört zur
-Freshness-Familie.)*
+das eigene Image).
 
 ## 4. Quality Gates
 
@@ -381,164 +295,30 @@ zu decken hieße, jede Backtick-Nennung im Repo als Deklaration zu lesen.)*
 
 ## 5. Dokumentations-Regeln
 
-- Commits/PRs müssen mindestens eine `DC-*`-, `ADR-*`-, `MR-*`- oder
-  `slice-*`-ID nennen (maschinell erzwungen: `make trace-check` /
-  `commit-msg`-Hook / PR-CI — über das Modul `commits`, dogfooded über das
-  eigene Image, [ADR-0027](docs/plan/adr/0027-commits-traceability-modul.md).
-  Ausnahme: Merge-/Revert-Commits). Vergeben werden IDs nur beim
-  Spec-/ADR-Schreiben nach dem deklarierten Schema
-  ([`MR-008`](harness/conventions.md#mr-008--id-schema-deklaration-nachtrag-zur-baseline-aussage))
-  — nie ad hoc im Commit/PR; Agenten referenzieren IDs, sie erfinden
-  keine. Struktur-IDs (`SPEC-<NNN>`/`ARC-<NNN>`,
-  [`MR-000`](harness/conventions.md#mr-000--baseline-aussage)) entstehen nur
-  beim Schreiben der Spec-Straten — fortlaufend je Datei — und gehören
-  **nicht** in Commit-Botschaften.
-- **Dependabot-Commits tragen die Kennung im Präfix, nicht in einer Ausnahme.**
-  `commit-message.prefix` in [`.github/dependabot.yml`](.github/dependabot.yml)
-  lautet `build(deps) [ADR-0067]` bzw. `build(ci) [ADR-0067]`; damit erfüllt <!-- d-check:ignore (literale Konfigurationswerte, keine Verweise) -->
-  jeder Bump-Commit dieselbe Regel wie jeder andere
-  ([ADR-0067](docs/plan/adr/0067-dependabot-als-hebender-kanal.md)). Eine
-  Erweiterung von `commits.exempt-pattern` machte den Gate für eine **ganze
-  Commit-Klasse** blind; das ist der Grund gegen sie, nicht §3.6 — der
-  **verbietet** eine Lockerung nicht, sondern verlangt eine ADR dafür. Der
-  Grund ist ein sachlicher, kein verfahrensmäßiger. **Die Kennung gilt dem Kanal,
-  nicht dem Inhalt des einzelnen Bumps**; wer mehr Bezug hineinliest, liest zu
-  viel.
-- Neue oder geänderte `DC-*`-Anforderungen entstehen nur in
-  [`spec/lastenheft.md`](spec/lastenheft.md) — nie per ADR (ADRs
-  schärfen die Spezifikation, nicht das Lastenheft). Der
-  Anlege-Prozess (Akzeptanzkriterien-Trio, Versions-Bump + Historie,
-  Beleg-Pflicht) folgt dem Baseline-Regelwerk
-  ([`modul-03-spec`](.harness/baseline/v6.9.0/regelwerk/modul-03-spec.md)); das
-  repo-spezifische ID-Schema steht in `spec/lastenheft.md` §3.
-- Neue ADRs müssen den ADR-Index aktualisieren.
-- Neue ADRs tragen die Sektion `## Re-Evaluierungs-Trigger` (oder „permanent");
-  die vor Einführung `Accepted`-ADRs sind immutable und **grandfathered** (das
-  Trigger-Feld liegt im ADR-Core, nachträgliches Ergänzen bräche `make adr-check`).
-  Der Welle-Closure-Trigger-Audit (Baseline-Regelwerk Modul 6) bestätigt oder
-  revidiert sie (Folge-ADR mit `supersedes`).
-- Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der Architektur-Spec.
-- Slice-Lifecycle (`open → next → in-progress → done`) ist reine Datei-Bewegung (`git mv`, siehe §3.3).
-- Neue Slice-Köpfe tragen das Feld `**Verantwortlich:**` (Rolleninhaber der
-  Implementer-Rolle, gesetzt **spätestens bei der Beanspruchung** — beim
-  Move `open→next` bzw. direkt `open→in-progress`; Deklaration, kein Sensor).
-  Bestand: kein Retrofit.
-- Das Slice-Kopf-Feld `**Berührte Spec-Stellen:**` nennt die **Kennung**, wo
-  das Zielelement eine trägt (`SPEC-<NNN>`, `ARC-<NNN>`,
-  `<DC-ID>.<Buchstabe>`), sonst den Abschnitt; `—`, wenn der Slice keine
-  Spec-Stelle berührt. Der Verweis zeigt **aufwärts** — die Spec nennt den
-  Slice nie (§3.4). Feld-Form aus der Baseline-`slice.template.md`, die
-  Kennungs-Regel aus
-  [`MR-000`](harness/conventions.md#mr-000--baseline-aussage).
-- **Was eine Welle einlöst, gehört in ihren Closure-Trigger — nicht in die DoD
-  eines Slice.** Ein DoD-Punkt, den der Slice **selbst nicht abhaken kann** (das
-  Release, das erst mit der Welle fällt), zwingt ihn, mit offenem Haken zu
-  schließen. Damit ist der Haken als Zustandsfeld unbrauchbar: er sagt nicht
-  mehr *„hier fehlt etwas"*, sondern *„hier fehlt vielleicht etwas"*. Der
-  Wellen-Closure-Trigger trägt ihn; die Slice-DoD nennt ihn gar nicht.
-  **Bestands-Grenze:** vor dieser Regel geschriebene `done/`-Slices behalten
-  ihre Form — ein nachträglich umgeschriebener DoD-Punkt fälschte einen
-  Lauf-Beleg.
+Index-Tabelle nach dem Muster des Adaptions-Blocks in
+[`harness/conventions.md`](harness/conventions.md) — vier kurze Regeln
+stehen vollständig in der Tabelle, die übrigen als Volltext-Pointer
+([ADR-0096](docs/plan/adr/0096-agents-md-regel-auslagerung-harness-rules.md)).
 
-  **Ein Sensor hält das**, und zwar am **Ruheort**: eine
-  `structure`-Regel im Closure-Profil meldet jeden offenen DoD-Haken eines
-  `done/`-Slice (`max-open-tasks: 0` ⇒ `section-tasks-open`, je Haken auf
-  seiner Zeile, mit verfasstem Reparatur-Hinweis). Sie läuft in
-  `make verify-closure-notes`, **nicht** in `gates` — sonst meldete sie beim
-  Arbeiten an einem laufenden Slice. Der Altbestand ist mit
-  fester Ziffernzahl ausgenommen
-  ([`MR-056`](harness/conventions.md#mr-056)). **Drei Grenzen gehören dazu:**
-  ein Haken ist eine **Selbstauskunft** — die Regel verschiebt die Lücke von
-  *unsichtbar* nach *behauptet* und prüft keinen Review; und ein **vergessener
-  Schluss-Fence** macht die **Bedingung** blind (isoliert gemessen: 0 Befunde, Exit 0), weshalb dasselbe Profil `spans` fährt — `fence-unclosed` meldet den Fall. **Der Bindepunkt als Ganzes wird davon nicht grün:** im heutigen Profil melden Nachbarregeln, und `spans` nennt die Ursache. Und **ein Haken INNERHALB eines wohlgeformten Fenced-Blocks ist unsichtbar** — dort meldet auch `fence-unclosed` nichts; dieselbe Fence-Treue, die eine Illustration schützt, ist der Weg, einen Haken zu verstecken.
-- Slice-Pläne tragen **kein** `**Status:**`-Feld — der Lifecycle-Zustand **ist** die
-  Verzeichnis-Position; neue Slices führen stattdessen den `**Lifecycle:**`-Hinweis
-  (Baseline-`slice.template.md`). Alt-Slices in `done/` behalten ihr historisches Feld.
-- Jeder Slice-Plan trägt **vor** der Sub-Area-Modus-Begründung die **drei**
-  Vorprüfungen: Sub-Area prüfen · offene Beobachtungen im Register
-  (`docs/plan/planning/observations/`) sichten (beide Baseline-Regelwerk Modul 5/6, unabhängig vom
-  Sub-Area-Modus) · den **Nachtlauf-Stand** lesen (`make nightly-state`). Die
-  dritte ist eine Adaption ([`MR-053`](harness/conventions.md#mr-053)): der
-  Kanon kennt keinen Nachtlauf. Sie hängt an diesem Moment, weil dort ohnehin
-  gelesen wird — **benannte Grenze:** in einer Pause liest niemand. Der dritte
-  Block entsteht **spätestens bei der Beanspruchung**; ein Plan in `open/`
-  trägt ihn noch nicht.
-  **Die beiden kanonischen Blöcke belegen ihre Regel** mit einer
-  `d-check:cite`-Direktive auf die **vorschreibende** Regelwerk-Zeile, samt
-  wörtlichem Zitat darunter ([`MR-054`](harness/conventions.md#mr-054));
-  `citations` prüft es wortgleich im inneren Loop, ein falsch angekerter Beleg
-  wird rot. Der dritte Block trägt bewusst keine — sein Ziel ist repo-eigen und
-  meldete bei jeder Änderung. **Kein Sensor hält das:** ein Plan ganz ohne
-  Direktiven ist grün.
-- **Wer eine Grenze aufschreibt, prüft sie gegen den Gegenstand, nicht gegen
-  seine Beschreibung.** Ein Abschnitt, der aufzählt, **was ein grüner Lauf
-  nicht abdeckt**, liest sich durch seine Form als Menge und ist immer eine
-  Auswahl. Vor dem Handoff deshalb zweierlei: **den Vertrags-Teil desselben
-  Artefakts durchgehen und jede Zusage einmal umdrehen** — was folgt daraus für
-  das Grün? —, und **wo der Gegenstand Code oder Konfiguration ist, gegen
-  diese prüfen statt gegen die Prosa darüber**. In den belegten Fällen stand die
-  fehlende Grenze fast immer bereits im Vertrags-Teil oder in der
-  Konfiguration; in einem stand sie **nur im Code**, und der Vertrags-Text
-  daneben sagte das Gegenteil des Verhaltens — **dafür ist die zweite Hälfte
-  der Regel da**, denn eine nur aus der Prosa abgeleitete Grenze beschrieb dort
-  einen Mechanismus, den es nicht gibt.
-  **Nächste Verwandte:** [§3.8](#38-ein-modul-verspricht-nur-über-das-was-es-scannt)
-  verlangt dieselbe Umkehrung für ein **Modul** und seine Scan-Menge; dieser
-  Absatz verlangt sie für **jede** aufgeschriebene Grenze. **Drei Grenzen:**
-  Die Regel gilt dem **Autor vor der Übergabe** und ersetzt den fremden Leser
-  nicht — in den belegten Fällen fand die Lücke **jemand anderes als der
-  Autor**; §6 richtet davon den Review ein, nicht jeden fremden Leser. Ihre erste Hälfte setzt
-  einen **korrekten** Vertrags-Text voraus — wo er lügt, fängt nur die zweite.
-  Und belegt ist sie an **Sensor-Beschreibungen**, nicht an Grenzen-Listen
-  überhaupt. Urteil, kein `grep`; der Reviewer-Skill trägt den Anker dazu.
-  *(Hard Rule aus dem Steering Loop,
-  [`BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen`](docs/plan/planning/observations/BEO-ALL/grenzen-liste-wird-als-vollstaendig-gelesen/observation.md),
-  seit slice-213; Auflösungs-Trigger: permanent.)*
-- **Vor einer Messung steht die Form ihres Gegenstands.** Was macht eine
-  Kennung zu einer Kennung, einen Verweis zu einem *Folge*-Verweis, eine Regel
-  zu einer Regel? Die Antwort wird **ausgeschrieben, bevor** gezählt wird, und
-  die Trefferliste wird stichprobenweise gegen sie gehalten — nicht nur ihre
-  Zahl gelesen. **Sie steht dort, wo die Zahl steht** — im selben Artefakt, das
-  die Aussage trägt; wer die Zahl liest, findet die Form daneben. Ein Muster,
-  das dem Gegenstand nur ähnelt, liefert eine plausible Zahl, und aus ihren
-  Fehltreffern entsteht die Kategorie, die es nie gab. **Andere Frage als der
-  Absatz über die gemessene Menge:** Der prüft, ob der **Schluss** weiter reicht
-  als die gemessene Menge, und setzt eine korrekte Messung voraus; dieser prüft
-  die **Messung** selbst. **Grenze:** Die Regel gilt der Methode, nicht der
-  Sorgfalt — sie verhindert keinen Zählfehler, sie macht ihn auffindbar, und
-  belegt ist sie nur an Doku-/Planning-Messungen. Urteil, kein `grep`; der
-  Reviewer-Skill trägt den Anker dazu. *(Hard Rule aus dem Steering Loop,
-  [`BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand`](docs/plan/planning/observations/BEO-ALL/zaehlmethode-misst-proxy-statt-gegenstand/observation.md),
-  seit slice-210; Auflösungs-Trigger: permanent.)*
-- Eine Commit-Botschaft oder Closure-Notiz behauptet **nicht mehr, als die
-  Arbeit trägt**: eine genannte Probe muss gelaufen sein (§6 Schritt 8), und ihr
-  Schluss reicht **nicht weiter als die gemessene Menge** — wer N Formen
-  geprüft hat, berichtet N; „damit ist X allgemein" ist eine andere Aussage als
-  die gemessene. Beides ist Urteil, kein `grep`; der Reviewer-Skill trägt die
-  Anker dazu. *(Hard Rule aus dem Steering Loop,
-  [`BEO-ALL/commit-message-overclaims-work`](docs/plan/planning/observations/BEO-ALL/commit-message-overclaims-work/observation.md),
-  seit welle-82; Auflösungs-Trigger: permanent.)*
-- Eine zitierte Quelle trägt **nur, was in ihrem Geltungsbereich steht**. Vor
-  jedem Verweis das **Feld** lesen, nicht den Titel: bei `MR-<NNN>` den
-  `Geltungsbereich` **und** `Ersetzt-Baseline-Regel`, bei einer Kanon-Stelle den
-  Absatz, bei einer ADR die Unterscheidung **Akt gegen stehendes Verbot**. Und
-  die **direkteste** Quelle wählen — für eine Regel dieser Datei ist das ihre
-  Vorlage, nicht eine andere. Ein Zitat sieht aus wie ein Beleg, auch wenn es
-  keiner ist; das macht die Klasse beim Schreiben unsichtbar und im Review
-  auffindbar. Urteil, kein `grep`; der Reviewer-Skill trägt den Anker dazu.
-  Kanon:
-  [`grundlagen-source-precedence.md` §Wie weit trägt ein zitierter Satz](.harness/baseline/v6.9.0/regelwerk/grundlagen-source-precedence.md)
-  — dort als Frage an **jede** zitierte Aussage, hier als operative Form für den
-  Implementer. *(Hard Rule aus dem Steering Loop,
-  [`BEO-ALL/citation-stretched-beyond-scope`](docs/plan/planning/observations/BEO-ALL/citation-stretched-beyond-scope/observation.md),
-  seit slice-147; Auflösungs-Trigger: permanent.)*
-- `CHANGELOG.md` wird bei nutzersichtbaren Änderungen gepflegt — **in der
-  Release-Prep, nicht im Feature-Commit.** Die Datei führt **keinen**
-  `[Unreleased]`-Abschnitt: jeder Eintrag steht unter seiner Versions-Nummer,
-  und die steht erst fest, wenn das Release geschnitten wird. Ein Slice, der
-  seine Zeile vorzieht, muss sie beim Bump wieder anfassen. Dieselbe Grenze
-  gilt den beiden `README*.md` und dem Handbuch-Kopf. Ein fehlender Eintrag
-  dort im Feature-Commit ist deshalb kein Rückstand.
+| # | Regel | Datei |
+|---|---|---|
+| 1 | Commits/PRs nennen mindestens eine `DC-*`/`ADR-*`/`MR-*`/`slice-*`-Kennung (`make trace-check`); IDs werden nur beim Spec-/ADR-Schreiben vergeben, nie ad hoc. | [Volltext](harness/rules/dokumentations-regeln/01-commit-id-pflicht.md) |
+| 2 | Dependabot-Commits tragen die Kennung im Commit-Präfix ([ADR-0067](docs/plan/adr/0067-dependabot-als-hebender-kanal.md)), nicht als Gate-Ausnahme. | [Volltext](harness/rules/dokumentations-regeln/02-dependabot-kennung-praefix.md) |
+| 3 | Neue/geänderte `DC-*`-Anforderungen entstehen nur in `spec/lastenheft.md`, nie per ADR. | [Volltext](harness/rules/dokumentations-regeln/03-dc-anforderungen-nur-lastenheft.md) |
+| 4 | Neue ADRs müssen den [ADR-Index](docs/plan/adr/README.md) aktualisieren. | — |
+| 5 | Neue ADRs tragen `## Re-Evaluierungs-Trigger` (oder „permanent"); vor Einführung `Accepted`-ADRs bleiben grandfathered. | [Volltext](harness/rules/dokumentations-regeln/05-adr-re-evaluierungs-trigger.md) |
+| 6 | Roadmap/Status-Geschichte lebt in `docs/plan/planning/`, nicht in der Architektur-Spec. | — |
+| 7 | Slice-Lifecycle (`open → next → in-progress → done`) ist reine Datei-Bewegung (`git mv`, siehe §3.3). | — |
+| 8 | Neue Slice-Köpfe tragen `**Verantwortlich:**`, gesetzt spätestens bei Beanspruchung; Bestand kein Retrofit. | [Volltext](harness/rules/dokumentations-regeln/08-slice-verantwortlich-feld.md) |
+| 9 | Slice-Kopf-Feld `**Berührte Spec-Stellen:**` nennt die Kennung des Zielelements, sonst den Abschnitt. | [Volltext](harness/rules/dokumentations-regeln/09-slice-beruehrte-spec-stellen.md) |
+| 10 | Was eine Welle einlöst, gehört in ihren Closure-Trigger, nicht in die Slice-DoD; ein `structure`-Sensor hält offene DoD-Haken in `done/`. | [Volltext](harness/rules/dokumentations-regeln/10-welle-einloesung-nicht-in-slice-dod.md) |
+| 11 | Slice-Pläne tragen **kein** `**Status:**`-Feld — der Lifecycle-Zustand **ist** die Verzeichnis-Position; neue Slices führen den `**Lifecycle:**`-Hinweis. Alt-Slices in `done/` behalten ihr historisches Feld. | — |
+| 12 | Jeder Slice-Plan trägt vor der Modus-Begründung drei Vorprüfungen: Sub-Area · Beobachtungs-Register · Nachtlauf-Stand. | [Volltext](harness/rules/dokumentations-regeln/12-drei-vorpruefungen-slice-plan.md) |
+| 13 | Wer eine Grenze aufschreibt, prüft sie gegen den Gegenstand (Code/Config), nicht gegen ihre eigene Beschreibung. | [Volltext](harness/rules/dokumentations-regeln/13-grenzen-gegen-gegenstand-pruefen.md) |
+| 14 | Vor einer Messung steht die ausgeschriebene Form ihres Gegenstands, nicht nur ihre Zahl. | [Volltext](harness/rules/dokumentations-regeln/14-messung-form-vor-zaehlung.md) |
+| 15 | Eine Commit-Botschaft/Closure-Notiz behauptet nicht mehr, als die gemessene Arbeit trägt. | [Volltext](harness/rules/dokumentations-regeln/15-commit-botschaft-nicht-mehr-behaupten.md) |
+| 16 | Eine zitierte Quelle trägt nur, was in ihrem Geltungsbereich steht — das Feld lesen, nicht den Titel. | [Volltext](harness/rules/dokumentations-regeln/16-zitierte-quelle-nur-geltungsbereich.md) |
+| 17 | `CHANGELOG.md`/READMEs/Handbuch-Kopf werden in der Release-Prep gepflegt, nicht im Feature-Commit. | [Volltext](harness/rules/dokumentations-regeln/17-changelog-release-prep.md) |
 
 ## 6. Minimal Agent Workflow
 

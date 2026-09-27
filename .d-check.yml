@@ -26,7 +26,7 @@ scan:
 #
 # Diese Liste hat Spiegel ausserhalb dieser Datei (BEO-ALL/modulliste-spiegel-ungegated): FOCUS_DISABLE im
 # Makefile und netlessDocModules() im Go-Test. Beide sind hier nachzuziehen.
-modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions, structure, diagrams, citations]
+modules: [links, anchors, ids, matrix, codepaths, spans, hostpaths, versions, structure, diagrams, citations, file]
 
 # Geteiltes Referenz-Ventil (DC-FA-REF-001): Ziel-Achsen-Pendant zu scan.ignore
 # (jenes entfernt Quell-Dateien, dieses Ziel-Referenzen), honoriert von
@@ -780,6 +780,17 @@ structure:
     section-pattern: '^# '
     sections: one
     require-pattern: '(?m)^@AGENTS\.md$'
+
+# Modul file (DC-FA-FILE-001, ADR-0088/ADR-0096): Zeilenobergrenze für die
+# beiden Dateien, die jeder Agentenlauf laedt (Leseordnung,
+# harness/README.md). Auftraggeber-Entscheid 2026-09-27: 400 Zeilen. Kein
+# max-bytes -- die Beobachtung (BEO-ALL/briefing-datei-ueberschreitet-lade-budget)
+# meint das Lade-Budget in Zeilen, nicht in Bytes. seit slice-239.
+file:
+  - files: AGENTS.md
+    max-lines: 400
+  - files: harness/README.md
+    max-lines: 400
 
 # Modul vcs (DC-FA-VCS-001, slice-053): git-Diff-Immutabilität der eigenen
 # Accepted-ADRs über die Commit-Range — `make adr-check` aktiviert es mit
